@@ -7,7 +7,11 @@ from eps_calculator import calculate_eps
 
 def save_result(ticker, period, result):
     os.makedirs(f"data/{ticker}", exist_ok=True)
+    # アクセッション番号（期間）ごとの保存
     with open(f"data/{ticker}/{period}.json", "w") as f:
+        json.dump(result, f, indent=2)
+    # サイトが読み込むための「最新版」としても保存
+    with open(f"data/{ticker}/latest.json", "w") as f:
         json.dump(result, f, indent=2)
 
 def run():
