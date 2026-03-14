@@ -19,14 +19,26 @@ def run():
         tickers = yaml.safe_load(f)["tickers"]
 
     for ticker in tickers:
-        filings = fetch_filings(ticker)
+        # 10年分をカバーするため多めに取得 (10Q/Kを40件以上)
+        filings = fetch_filings(ticker, count=45) 
 
+        results_history = []
         for filing in filings:
-            data = parse_xbrl(filing)
-            adjustments = detect_adjustments(data)
-            net_adjustments = apply_tax(adjustments, data)
-            result = calculate_eps(data, net_adjustments)
-            save_result(ticker, filing, result)
+            raw_data = parse_xbrl(filing)
+            if not raw_data: continue
+            
+            adjustments = detect_adjustments(raw_data)
+            net_adjustments = apply_tax(adjustments, raw_data)
+            
+            # EPS計算ロジック（株式分割等は別途考慮が必要）
+            result = calculate_eps(raw_data, net_adjustments)
+            result["period"] = filing.period_end_date
+            
+            save_result(ticker, filing.accession_no, result)
+            results_history.append(result)
+        
+        # ここでYoY成長率やCAGRの「推移データ」をまとめて生成するロジックへ
+        generate_trend_data(ticker, results_history)
 
 if __name__ == "__main__":
     run()
