@@ -7,11 +7,13 @@ def analyze_adjustments(ticker, data, adjustments):
         base_url="https://api.x.ai/v1",
     )
 
-    # 調整内訳を文字列化（snippet付きで）
-    adj_text = []
+    # 調整内訳を文字列化（f-string外で\nを扱う）
+    adj_lines = []
     for adj in adjustments:
         snippet = adj.get("context_snippet", "N/A")
-        adj_text.append(f"- {adj['item_name']}: {adj['net_amount']:,} USD (理由: {adj['reason']}) Snippet: {snippet}")
+        adj_lines.append(f"- {adj['item_name']}: {adj['net_amount']:,} USD (理由: {adj['reason']}) Snippet: {snippet}")
+
+    adj_text = "\n".join(adj_lines)   # ← ここで\nを結合（f-stringの外）
 
     prompt = f"""
 あなたは米国株のNon-GAAP調整専門のシニアアナリストです。
@@ -19,7 +21,7 @@ def analyze_adjustments(ticker, data, adjustments):
 GAAP純利益: {data['gaap_net_income']:,} USD
 調整後純利益: {data['adjusted_net_income']:,} USD
 調整項目詳細:
-{'\n'.join(adj_text)}
+{adj_text}
 
 以下の4段階で健全性を評価してください：
 - Excellent: 調整が極めて合理的で本質的成長を示唆
@@ -27,7 +29,7 @@ GAAP純利益: {data['gaap_net_income']:,} USD
 - Caution: 一部調整が恣意的or連続発生
 - Warning: 調整が利益水増しに見える、または連続Caution
 
-評価理由を日本語で150-250文字。**各調整項目に引用した原文snippetを必ず明記**。
+評価理由を日本語で150-250文字。各調整項目に引用した原文snippetを必ず明記。
 連続Cautionが複数四半期なら強調。
 出力はJSON形式で:
 {{
@@ -38,13 +40,13 @@ GAAP純利益: {data['gaap_net_income']:,} USD
 """
 
     response = client.chat.completions.create(
-        model="grok-beta",  # または grok-4-0709 など最新モデル（APIで確認）
+        model="grok-beta",  # 必要に応じて最新モデル名に変更
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1,
         max_tokens=800
     )
 
     try:
-        return response.choices[0].message.content.strip()  # JSON文字列として返す
-    except:
-        return '{"health": "Error", "comment": "AI解析失敗"}'
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f'{{"health": "Error", "comment": "API call failed: {str(e)}"}}'
