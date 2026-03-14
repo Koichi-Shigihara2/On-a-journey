@@ -21,25 +21,27 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Upgrade pip and core dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade urllib3 requests pyopenssl cryptography
+          pip install --upgrade certifi
+
+      - name: Install project dependencies
         run: |
           pip install -r requirements.txt
 
       - name: Run pipeline
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          HTTP2: "0"
         run: |
           python src/pipeline.py
 
       - name: Check for changes
         id: git-check
         run: |
-          # data/ディレクトリがなければ作成
           mkdir -p data
-          
-          # 変更ファイルを確認
-          git status --porcelain
-          
           if [ -n "$(git status --porcelain data/)" ]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
