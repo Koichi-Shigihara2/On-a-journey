@@ -1,9 +1,9 @@
 name: Update EPS Data
 
 on:
-  workflow_dispatch:  # 手動実行
+  workflow_dispatch:
   schedule:
-    - cron: '0 10 * * 1'  # 毎週月曜日10:00 UTC
+    - cron: '0 10 * * 1'
 
 jobs:
   update:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 全履歴取得（差分比較用）
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -28,17 +28,19 @@ jobs:
       - name: Run pipeline
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           python src/pipeline.py
 
       - name: Check for changes
         id: git-check
         run: |
+          # data/ディレクトリがなければ作成
+          mkdir -p data
+          
+          # 変更ファイルを確認
           git status --porcelain
-          if [ -n "$(git status --porcelain)" ]; then
+          
+          if [ -n "$(git status --porcelain data/)" ]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
             echo "changes=false" >> $GITHUB_OUTPUT
@@ -52,3 +54,5 @@ jobs:
           git add data/
           git commit -m "Update EPS data - $(date +'%Y-%m-%d')"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
