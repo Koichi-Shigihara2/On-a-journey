@@ -25,9 +25,8 @@ os.environ["HTTPX_HTTP2"] = "0"
 os.environ["NO_PROXY"] = "sec.gov,www.sec.gov"
 os.environ["no_proxy"] = "sec.gov,www.sec.gov"
 
-# SSLコンテキストの設定（証明書検証をスキップしない）
+# SSLコンテキストの設定
 try:
-    # より安全なSSLコンテキストの作成
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = True
     ssl_context.verify_mode = ssl.CERT_REQUIRED
@@ -36,13 +35,6 @@ except Exception as e:
 
 # edgarライブラリのインポート（設定後）
 from edgar import Company, set_identity
-from edgar.httprequests import set_http2_enabled
-
-# HTTP/2を無効化（edgar固有の設定）
-try:
-    set_http2_enabled(False)
-except Exception as e:
-    print(f"Note: Could not disable HTTP2 in edgar: {e}")
 
 # ============================================
 # 定数設定
@@ -77,7 +69,6 @@ def load_cik_map() -> Dict[str, str]:
             reader = csv.DictReader(f)
             for row in reader:
                 if row['ticker'] and row['cik']:
-                    # CIKは0埋め10桁に統一
                     cik = row['cik'].strip().zfill(10)
                     cik_map[row['ticker'].strip().upper()] = cik
         print(f"Loaded {len(cik_map)} CIK mappings from {CIK_FILE}")
@@ -125,8 +116,7 @@ def get_cik(ticker: str) -> str:
     # SEC APIから直接取得を試みる
     print(f"CIK not found for {ticker} in local file. Trying SEC API...")
     try:
-        # ティッカーからCIKを検索
-        url = f"https://www.sec.gov/files/company_tickers.json"
+        url = "https://www.sec.gov/files/company_tickers.json"
         headers = {'User-Agent': 'jamablue01@gmail.com'}
         response = requests.get(url, headers=headers, timeout=10)
         
@@ -135,7 +125,6 @@ def get_cik(ticker: str) -> str:
             for item in data.values():
                 if item['ticker'] and item['ticker'].upper() == ticker:
                     cik = str(item['cik_str']).zfill(10)
-                    # 見つかったら保存
                     cik_map[ticker] = cik
                     save_cik_map(cik_map)
                     return cik
@@ -163,21 +152,17 @@ def fetch_filings(ticker: str, count: int = 40) -> List:
     print(f"Fetching filings for {ticker}...")
     
     try:
-        # CIKを取得
         cik = get_cik(ticker)
         print(f"CIK: {cik}")
         
-        # CIKでCompany作成
         company = Company(cik)
         filings = company.get_filings(form=["10-Q", "10-K"])
         print(f"Found {len(filings)} total filings")
         
-        # リストに変換
         filing_list = []
         for filing in filings:
             filing_list.append(filing)
         
-        # 最初の5件を表示
         for i, filing in enumerate(filing_list[:5]):
             try:
                 filing_date = getattr(filing, 'filing_date', 'unknown')
@@ -199,7 +184,7 @@ def safe_get_xbrl_value(xbrl, tag: str) -> Optional[Dict[str, Any]]:
         xbrl: XBRLオブジェクト
         tag: 取得するタグ名
     Returns:
-        Optional[Dict]: 値と単位を含む辞書、失敗時はNone
+        Optional[Dict]: 値と単位を含む辞書
     """
     try:
         df = xbrl.to_pandas(tag)
@@ -211,8 +196,7 @@ def safe_get_xbrl_value(xbrl, tag: str) -> Optional[Dict[str, Any]]:
                 "period": latest.get("period", {}),
                 "filed": latest.get("filed", None)
             }
-    except Exception as e:
-        # 単にNoneを返す（エラーログは抑制）
+    except Exception:
         pass
     return None
 
@@ -226,7 +210,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         List[Dict]: 四半期データのリスト
     """
     try:
-        # ファイリング取得
         filings = fetch_filings(ticker, count=years * 4)
         if not filings:
             print(f"No filings found for {ticker}")
@@ -237,7 +220,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             try:
                 print(f"\nProcessing filing {i+1}/{len(filings)}: {getattr(filing, 'filing_date', 'unknown')} ({getattr(filing, 'form', 'unknown')})")
                 
-                # XBRLデータ取得
                 xbrl = filing.xbrl()
                 if not xbrl:
                     print("  No XBRL data available")
@@ -255,7 +237,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     period_data["net_income"] = net_income
                     print(f"  Net Income: {net_income['value']:,.0f} {net_income['unit']}")
                 
-                # 親会社株主に帰属する当期純利益（代替）
                 if "net_income" not in period_data:
                     net_income_parent = safe_get_xbrl_value(xbrl, "us-gaap:NetIncomeLossAttributableToParent")
                     if net_income_parent:
@@ -268,7 +249,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     period_data["diluted_shares"] = diluted_shares
                     print(f"  Diluted Shares: {diluted_shares['value']:,.0f} {diluted_shares['unit']}")
                 
-                # Basic Shares（代替）
                 if "diluted_shares" not in period_data:
                     basic_shares = safe_get_xbrl_value(xbrl, "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic")
                     if basic_shares:
@@ -289,18 +269,17 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     period_data["pretax_income"] = pretax_income
                     print(f"  Pretax Income: {pretax_income['value']:,.0f} {pretax_income['unit']}")
                 
-                # SBC（調整項目用）
+                # SBC
                 sbc = safe_get_xbrl_value(xbrl, "us-gaap:ShareBasedCompensation")
                 if sbc:
                     period_data["sbc"] = sbc
                     print(f"  SBC: {sbc['value']:,.0f} {sbc['unit']}")
                 
-                # Restructuring（調整項目用）
+                # Restructuring
                 restructuring = safe_get_xbrl_value(xbrl, "us-gaap:RestructuringCharges")
                 if restructuring:
                     period_data["restructuring"] = restructuring
                 
-                # 必須データが揃っている場合のみ追加
                 if "net_income" in period_data and "diluted_shares" in period_data:
                     quarterly_data.append(period_data)
                     print(f"  ✓ Added to results")
@@ -314,8 +293,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 
             except Exception as e:
                 print(f"  Error processing filing: {e}")
-                import traceback
-                traceback.print_exc()
                 continue
         
         print(f"\n{ticker}: {len(quarterly_data)}件の四半期データを取得")
@@ -323,8 +300,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         
     except Exception as e:
         print(f"{ticker} データ取得エラー: {e}")
-        import traceback
-        traceback.print_exc()
         return []
 
 def normalize_value(value_dict: Optional[Dict]) -> float:
@@ -341,14 +316,13 @@ def normalize_value(value_dict: Optional[Dict]) -> float:
     value = float(value_dict.get("value", 0))
     unit = value_dict.get("unit", "USD").lower()
     
-    # 単位変換
     if unit in ["thousands", "thousand"]:
         return value * 1_000
     elif unit in ["millions", "million"]:
         return value * 1_000_000
     elif unit in ["billions", "billion"]:
         return value * 1_000_000_000
-    else:  # USD or others
+    else:
         return value
 
 # ============================================
@@ -363,7 +337,7 @@ def main():
     
     if data:
         print(f"\nSuccessfully extracted {len(data)} quarters:")
-        for i, quarter in enumerate(data[:5]):  # 最初の5件だけ表示
+        for i, quarter in enumerate(data[:5]):
             print(f"\nQuarter {i+1}: {quarter['filing_date']}")
             print(f"  Net Income: {normalize_value(quarter.get('net_income')):,.0f} USD")
             print(f"  Diluted Shares: {normalize_value(quarter.get('diluted_shares')):,.0f}")
