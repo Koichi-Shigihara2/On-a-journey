@@ -4,8 +4,8 @@ pyyaml
 requests
 openai==1.12.0
 urllib3==2.2.3
-httpx==0.27.2
-httpcore==1.0.5
+httpx>=0.28.0        # ← hishelの要件に合わせて>=0.28.0に変更
+httpcore>=1.0.5      # ← httpxと合わせて緩和
 pyarrow
 pyopenssl
 cryptography
