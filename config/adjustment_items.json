@@ -4,24 +4,66 @@
     {
       "category_name": "事業構造変更・一過性損益",
       "sub_items": [
-        {"item_name": "リストラ費用", "xbrl_tags": ["us-gaap:RestructuringAndRelatedCosts", "us-gaap:RestructuringCharges"], "keywords": ["restructuring"], "direction": "add_back", "pre_tax": true, "reason": "一過性リストラ（非営業）"},
-        {"item_name": "買収関連費用", "xbrl_tags": ["us-gaap:BusinessCombinationAcquisitionRelatedCosts"], "keywords": ["acquisition related costs"], "direction": "add_back", "pre_tax": true, "reason": "M&A一過性費用"},
-        {"item_name": "のれん・無形資産減損", "xbrl_tags": ["us-gaap:GoodwillImpairmentLoss", "us-gaap:ImpairmentOfIntangibleAssets"], "keywords": ["goodwill impairment", "intangible impairment"], "direction": "add_back", "pre_tax": true, "reason": "非現金減損"},
-        {"item_name": "買収無形資産償却", "xbrl_tags": ["us-gaap:AmortizationOfIntangibleAssets"], "keywords": ["amortization of acquired intangibles"], "direction": "add_back", "pre_tax": true, "reason": "M&A由来追加償却"}
+        {
+          "item_name": "リストラ費用",
+          "xbrl_tags": ["us-gaap:RestructuringAndRelatedCosts", "us-gaap:RestructuringCharges"],
+          "keywords": ["restructuring"],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）"
+        },
+        {
+          "item_name": "買収関連費用",
+          "xbrl_tags": ["us-gaap:BusinessCombinationAcquisitionRelatedCosts"],
+          "keywords": ["acquisition related costs"],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A一過性費用"
+        },
+        {
+          "item_name": "のれん・無形資産減損",
+          "xbrl_tags": ["us-gaap:GoodwillImpairmentLoss", "us-gaap:ImpairmentOfIntangibleAssets"],
+          "keywords": ["goodwill impairment", "intangible impairment"],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金減損"
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "xbrl_tags": ["us-gaap:AmortizationOfIntangibleAssets"],
+          "keywords": ["amortization of acquired intangibles"],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却"
+        }
       ]
     },
     {
       "category_name": "株式報酬 (SBC)",
       "sub_items": [
-        {"item_name": "株式報酬費用", "xbrl_tags": ["us-gaap:ShareBasedCompensation"], "keywords": ["stock-based compensation"], "direction": "add_back", "pre_tax": true, "reason": "非現金費用（ConfigでON/OFF可）", "special": "toggle"}
+        {
+          "item_name": "株式報酬費用",
+          "xbrl_tags": ["us-gaap:ShareBasedCompensation"],
+          "keywords": ["stock-based compensation"],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "special": "toggle"
+        }
       ]
     },
     {
       "category_name": "非継続事業",
       "sub_items": [
-        {"item_name": "非継続事業損益", "xbrl_tags": ["us-gaap:IncomeLossFromDiscontinuedOperationsNetOfTax"], "keywords": ["discontinued operations"], "direction": "add_back", "pre_tax": false, "reason": "継続事業ベース調整"}
+        {
+          "item_name": "非継続事業損益",
+          "xbrl_tags": ["us-gaap:IncomeLossFromDiscontinuedOperationsNetOfTax"],
+          "keywords": ["discontinued operations"],
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "継続事業ベース調整"
+        }
       ]
     }
-    // 他のカテゴリ（税効果、年金、訴訟など）は必要に応じて後で追加
   ]
 }
