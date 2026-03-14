@@ -1,60 +1,29 @@
-name: Update EPS Data
+- name: Setup Python
+  uses: actions/setup-python@v4
+  with:
+    python-version: '3.10'
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 10 * * 1'
+- name: Upgrade all dependencies
+  run: |
+    pip install --upgrade pip setuptools wheel
+    pip install --upgrade urllib3 requests pyopenssl cryptography certifi
+    pip install --upgrade httpx httpcore
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+- name: Install project dependencies
+  run: |
+    pip install -r requirements.txt
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+- name: Verify installations
+  run: |
+    python -c "import urllib3; print(f'urllib3: {urllib3.__version__}')"
+    python -c "import httpx; print(f'httpx: {httpx.__version__}')"
 
-      - name: Upgrade pip and core dependencies
-        run: |
-          pip install --upgrade pip
-          pip install --upgrade urllib3 requests pyopenssl cryptography
-          pip install --upgrade certifi
-
-      - name: Install project dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Run pipeline
-        env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          HTTP2: "0"
-        run: |
-          python src/pipeline.py
-
-      - name: Check for changes
-        id: git-check
-        run: |
-          mkdir -p data
-          if [ -n "$(git status --porcelain data/)" ]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push if changed
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add data/
-          git commit -m "Update EPS data - $(date +'%Y-%m-%d')"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+- name: Run pipeline
+  env:
+    XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+    HTTP2: "0"
+    HTTPX_HTTP2: "0"           # ← httpx専用の設定
+    REQUESTS_CA_BUNDLE: "/etc/ssl/certs/ca-certificates.crt"
+    SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
+  run: |
+    python src/pipeline.py
