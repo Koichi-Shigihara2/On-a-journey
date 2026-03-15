@@ -245,24 +245,44 @@
       return sorted[0];
     }
 
+    // ===== 修正: 四半期ベースで前年同期を計算 =====
     function calculateYoY(latest, allQuarters) {
       const latestDate = latest.filing_date;
-      const [year, month, day] = latestDate.split('-');
+      const [year, month] = latestDate.split('-');
+      const latestQuarter = Math.floor((parseInt(month) - 1) / 3) + 1;
+      
       const targetYear = parseInt(year) - 1;
-      const targetDate = `${targetYear}-${month}-${day}`;
+      // 同じ四半期の候補をすべて取得
+      const candidates = allQuarters.filter(q => {
+        const qYear = parseInt(q.filing_date.split('-')[0]);
+        const qMonth = parseInt(q.filing_date.split('-')[1]);
+        const qQuarter = Math.floor((qMonth - 1) / 3) + 1;
+        return qYear === targetYear && qQuarter === latestQuarter;
+      });
 
-      let prevQuarter = allQuarters.find(q => q.filing_date === targetDate);
-      if (!prevQuarter) {
-        const idx = allQuarters.findIndex(q => q.filing_date === latestDate);
-        if (idx >= 4) prevQuarter = allQuarters[idx - 4];
-      }
-
-      if (prevQuarter) {
+      if (candidates.length > 0) {
+        // 日付が最も近いものを選ぶ
+        const prevQuarter = candidates.reduce((prev, curr) => {
+          const prevDiff = Math.abs(new Date(latestDate) - new Date(prev.filing_date));
+          const currDiff = Math.abs(new Date(latestDate) - new Date(curr.filing_date));
+          return currDiff < prevDiff ? curr : prev;
+        });
+        
         const prevEps = prevQuarter.adjusted_eps;
         if (Math.abs(prevEps) > 0.0001) {
           return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
         }
       }
+
+      // フォールバック: 4四半期前
+      const idx = allQuarters.findIndex(q => q.filing_date === latestDate);
+      if (idx >= 4) {
+        const prevEps = allQuarters[idx - 4].adjusted_eps;
+        if (Math.abs(prevEps) > 0.0001) {
+          return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+        }
+      }
+      
       return null;
     }
 
