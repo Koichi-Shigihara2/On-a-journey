@@ -191,11 +191,10 @@
       document.getElementById('error').classList.add('hidden');
 
       try {
-        // ★★★ キャッシュ無効化オプションを追加 ★★★
+        // キャッシュ無効化オプション付きでフェッチ
         const qResp = await fetch(`data/${currentTicker}/quarterly.json`, { cache: 'no-store' });
         if (!qResp.ok) throw new Error('四半期データが見つかりません');
         quarterlyData = await qResp.json();
-        // ★★★ 読み込んだデータを詳細に表示 ★★★
         console.log('Quarterly data loaded:', JSON.parse(JSON.stringify(quarterlyData)));
 
         try {
@@ -256,7 +255,7 @@
       });
     }
 
-    // 日付範囲適用時の処理
+    // 日付範囲適用時の処理（改善版）
     function applyDateRange() {
       if (!quarterlyData) return;
 
@@ -272,7 +271,22 @@
       console.log(`Date range: ${startDate} to ${endDate}, filtered count: ${filtered.length}`);
 
       if (currentTab === 'quarterly') {
+        // チャートを先に更新
         updateChart(filtered, 'quarterly', 'filing_date');
+        
+        // その後メトリクスを更新（最新のフィルタリング結果を使用）
+        const latestInRange = getLatestFromArray(filtered);
+        console.log('latestInRange:', latestInRange ? {...latestInRange} : null);
+
+        if (latestInRange) {
+          // ディープコピーしてからメトリクス更新に渡す
+          const latestCopy = JSON.parse(JSON.stringify(latestInRange));
+          updateMetricsWithQuarter(latestCopy, quarterlyData.quarters);
+          updateAI(latestCopy.ai_analysis);
+        } else {
+          resetMetrics();
+          updateAI(null);
+        }
       } else if (currentTab === 'ttm') {
         // TTMタブの場合は期間指定を無視（全TTMデータを表示）
         if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
@@ -280,17 +294,7 @@
         } else {
           updateChart([], 'ttm', '');
         }
-      }
-
-      const latestInRange = getLatestFromArray(filtered);
-      console.log('latestInRange:', latestInRange);
-
-      if (latestInRange) {
-        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
-        updateAI(latestInRange.ai_analysis);
-      } else {
-        resetMetrics();
-        updateAI(null);
+        // TTMタブではメトリクスは更新しない（または別の処理）
       }
     }
 
@@ -411,6 +415,7 @@
     }
 
     function updateMetricsWithQuarter(quarter, allQuarters) {
+      console.log('Updating metrics with quarter:', quarter);
       document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
       document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
       
@@ -627,7 +632,8 @@
       if (!currentTicker) return;
 
       if (tab === 'quarterly' && quarterlyData) {
-        applyDateRange(); // 現在の日付範囲で更新
+        // タブ切り替え時に現在の日付範囲で再適用
+        applyDateRange();
         updateAllAdjustments(quarterlyData.quarters);
       } else if (tab === 'ttm') {
         if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
