@@ -192,7 +192,7 @@
         updateHeader(quarterlyData);
         currentRange = 'all';
         document.getElementById('range-select').value = 'all';
-        applyRangeUpdate();
+        applyRangeUpdate(); // 初回表示を更新
 
         document.getElementById('ticker-title').innerText = currentTicker;
         showLoading(false);
@@ -212,18 +212,18 @@
         `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
     }
 
-    function getLatestFromArray(dataArray) {
-      if (!dataArray || dataArray.length === 0) return null;
-      const sorted = [...dataArray].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
-      return sorted[0];
+    // 日付文字列をパースして比較可能なオブジェクトに
+    function parseDate(dateStr) {
+      return new Date(dateStr);
     }
 
-    // 期間フィルタリング（全データから）
+    // 期間フィルタリング
     function filterDataByRange(dataArray, labelField) {
       if (currentRange === 'all' || !dataArray || dataArray.length === 0) return dataArray;
 
+      // データを古い順にソートして最新日付を取得
       const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
-      const latestDate = new Date(sorted[sorted.length - 1][labelField]);
+      const latestDate = parseDate(sorted[sorted.length - 1][labelField]);
       let cutoffDate = new Date(latestDate);
 
       switch (currentRange) {
@@ -240,55 +240,26 @@
           return dataArray;
       }
 
-      return dataArray.filter(item => new Date(item[labelField]) >= cutoffDate);
+      console.log(`Filtering from ${cutoffDate.toISOString()} to ${latestDate.toISOString()}`);
+      return dataArray.filter(item => parseDate(item[labelField]) >= cutoffDate);
     }
 
-    // 期間変更時の一括更新
-    function applyRangeUpdate() {
-      if (!quarterlyData) return;
-
-      const filtered = filterDataByRange(quarterlyData.quarters, 'filing_date');
-      console.log(`Range: ${currentRange}, filtered count: ${filtered.length}`);
-
-      if (currentTab === 'quarterly') {
-        updateChart(filtered, 'quarterly', 'filing_date');
-      } else if (currentTab === 'ttm' && ttmData && ttmData.ttm) {
-        updateChart(ttmData.ttm, 'ttm', 'period');
-      }
-
-      const latestInRange = getLatestFromArray(filtered);
-      if (latestInRange) {
-        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
-        if (latestInRange.ai_analysis) updateAI(latestInRange.ai_analysis);
-        else resetAI();
-      } else {
-        resetMetrics();
-        resetAI();
-      }
+    // 配列から最新の要素を取得（日付降順）
+    function getLatestFromArray(dataArray) {
+      if (!dataArray || dataArray.length === 0) return null;
+      const sorted = [...dataArray].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+      return sorted[0];
     }
 
-    function resetMetrics() {
-      document.getElementById('gaap-eps').innerText = '$0.00';
-      document.getElementById('adj-eps').innerText = '$0.00';
-      document.getElementById('diff').innerText = '$0.00';
-      document.getElementById('yoy').innerText = '--';
-    }
-
-    function resetAI() {
-      document.getElementById('health-badge').innerText = 'Good';
-      document.getElementById('health-badge').className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-600';
-      document.getElementById('ai-comment').innerHTML = '<p>分析コメント準備中</p>';
-      document.getElementById('ai-sources').innerHTML = '';
-    }
-
-    // YoY計算：前年同期を日付一致で探し、なければ4四半期前のインデックス
+    // YoY成長率を計算（前年同期を探す）
     function calculateYoY(latest, allQuarters) {
       const latestDate = latest.filing_date;
       const [year, month, day] = latestDate.split('-');
       const targetYear = parseInt(year) - 1;
       const targetDate = `${targetYear}-${month}-${day}`;
-      let prevQuarter = allQuarters.find(q => q.filing_date === targetDate);
 
+      // 日付一致で探す
+      let prevQuarter = allQuarters.find(q => q.filing_date === targetDate);
       if (!prevQuarter) {
         // 日付一致しない場合、4四半期前をインデックスで探す（データが連続している前提）
         const idx = allQuarters.findIndex(q => q.filing_date === latestDate);
@@ -304,6 +275,7 @@
       return null;
     }
 
+    // メトリクス更新（指定された四半期を使用）
     function updateMetricsWithQuarter(quarter, allQuarters) {
       document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
       document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
@@ -318,6 +290,92 @@
         document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
       } else {
         document.getElementById('yoy').innerText = '--';
+      }
+    }
+
+    // メトリクスリセット
+    function resetMetrics() {
+      document.getElementById('gaap-eps').innerText = '$0.00';
+      document.getElementById('adj-eps').innerText = '$0.00';
+      document.getElementById('diff').innerText = '$0.00';
+      document.getElementById('yoy').innerText = '--';
+    }
+
+    // AI分析更新
+    function updateAI(ai) {
+      const badge = document.getElementById('health-badge');
+      const commentEl = document.getElementById('ai-comment');
+      const sourcesEl = document.getElementById('ai-sources');
+
+      if (!ai) {
+        badge.innerText = 'Good';
+        badge.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-600';
+        badge.title = '健全性: Good';
+        commentEl.innerHTML = '<p>分析コメント準備中</p>';
+        sourcesEl.innerHTML = '';
+        return;
+      }
+
+      badge.innerText = ai.health || 'Good';
+      const colors = {
+        'Excellent': 'bg-green-600',
+        'Good': 'bg-green-600',
+        'Caution': 'bg-yellow-600',
+        'Warning': 'bg-red-600',
+        'Error': 'bg-gray-600'
+      };
+      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-green-600'}`;
+      
+      const tooltips = {
+        'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
+        'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
+        'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
+        'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
+        'Error': '健全性: Error（AI分析エラー）'
+      };
+      badge.title = tooltips[ai.health] || '健全性評価';
+      
+      commentEl.innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
+      
+      if (ai.sources && ai.sources.length) {
+        let sourcesHtml = '<h4 class="font-semibold mb-2">引用ソース:</h4><ul class="list-disc pl-5 space-y-1">';
+        ai.sources.forEach(source => {
+          sourcesHtml += `<li><span class="font-mono text-xs">${source.item}:</span> "${source.snippet}"</li>`;
+        });
+        sourcesHtml += '</ul>';
+        sourcesEl.innerHTML = sourcesHtml;
+      } else {
+        sourcesEl.innerHTML = '';
+      }
+    }
+
+    // 期間変更時の一括更新
+    function applyRangeUpdate() {
+      if (!quarterlyData) return;
+
+      const filtered = filterDataByRange(quarterlyData.quarters, 'filing_date');
+      console.log(`Range: ${currentRange}, filtered count: ${filtered.length}`);
+
+      // チャート更新（現在のタブに応じて）
+      if (currentTab === 'quarterly') {
+        updateChart(filtered, 'quarterly', 'filing_date');
+      } else if (currentTab === 'ttm') {
+        // TTMタブの場合は期間選択を無視し、全TTMデータを表示
+        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+          updateChart(ttmData.ttm, 'ttm', 'period');
+        } else {
+          updateChart([], 'ttm', '');
+        }
+      }
+
+      // メトリクス更新（フィルタリング後の最新四半期）
+      const latestInRange = getLatestFromArray(filtered);
+      if (latestInRange) {
+        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
+        updateAI(latestInRange.ai_analysis);
+      } else {
+        resetMetrics();
+        updateAI(null);
       }
     }
 
@@ -421,6 +479,7 @@
       });
     }
 
+    // 全期間の調整内訳表示（変更なし）
     function updateAllAdjustments(quarters) {
       const container = document.getElementById('adjustments-accordion');
       const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
@@ -453,49 +512,11 @@
       container.innerHTML = html;
     }
 
-    function updateAI(ai) {
-      if (!ai) return resetAI();
-      
-      const badge = document.getElementById('health-badge');
-      badge.innerText = ai.health || 'Good';
-      
-      const colors = {
-        'Excellent': 'bg-green-600',
-        'Good': 'bg-green-600',
-        'Caution': 'bg-yellow-600',
-        'Warning': 'bg-red-600',
-        'Error': 'bg-gray-600'
-      };
-      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-green-600'}`;
-      
-      const tooltips = {
-        'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
-        'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
-        'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
-        'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
-        'Error': '健全性: Error（AI分析エラー）'
-      };
-      badge.title = tooltips[ai.health] || '健全性評価';
-      
-      document.getElementById('ai-comment').innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
-      
-      if (ai.sources && ai.sources.length) {
-        let sourcesHtml = '<h4 class="font-semibold mb-2">引用ソース:</h4><ul class="list-disc pl-5 space-y-1">';
-        ai.sources.forEach(source => {
-          sourcesHtml += `<li><span class="font-mono text-xs">${source.item}:</span> "${source.snippet}"</li>`;
-        });
-        sourcesHtml += '</ul>';
-        document.getElementById('ai-sources').innerHTML = sourcesHtml;
-      } else {
-        document.getElementById('ai-sources').innerHTML = '';
-      }
-    }
-
     function changeRange() {
       const select = document.getElementById('range-select');
       currentRange = select.value;
       console.log('Range changed to:', currentRange);
-      applyRangeUpdate();
+      applyRangeUpdate(); // 期間変更時にメトリクス・チャート・AIを更新
     }
 
     async function switchTab(tab) {
@@ -511,27 +532,23 @@
 
       if (!currentTicker) return;
 
-      try {
-        if (tab === 'quarterly' && quarterlyData) {
-          applyRangeUpdate();
-          updateAllAdjustments(quarterlyData.quarters);
-        } else if (tab === 'ttm') {
-          if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
-            updateChart([], 'ttm', '');
-            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
-            document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
-            document.getElementById('ai-sources').innerHTML = '';
-          } else {
-            updateChart(ttmData.ttm, 'ttm', 'period');
-            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
-            document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
-            document.getElementById('ai-sources').innerHTML = '';
-          }
+      if (tab === 'quarterly' && quarterlyData) {
+        // 四半期タブ：期間選択に従って更新
+        applyRangeUpdate();
+        updateAllAdjustments(quarterlyData.quarters);
+      } else if (tab === 'ttm') {
+        // TTMタブ：期間選択無効、全TTMデータを表示
+        if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
+          updateChart([], 'ttm', '');
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
+        } else {
+          updateChart(ttmData.ttm, 'ttm', 'period');
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
         }
-      } catch (error) {
-        console.error('タブデータ取得エラー:', error);
-        updateChart([], tab, '');
-        document.getElementById('adjustments-accordion').innerHTML = '<p class="text-red-400">データを読み込めませんでした。</p>';
       }
     }
 
