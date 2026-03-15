@@ -11,6 +11,17 @@
   <script>
     tailwind.config = { darkMode: 'class' }
   </script>
+  <style>
+    .spinner-border {
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-6">
   <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
@@ -33,7 +44,7 @@
 
   <main class="container mx-auto mt-24">
     <div id="loading" class="hidden text-center py-10">
-      <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-500"></div>
+      <div class="spinner-border inline-block w-8 h-8"></div>
       <p class="mt-2">データを読み込み中...</p>
     </div>
 
@@ -46,7 +57,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold" id="ticker-title">PLTR</h2>
         <div class="flex space-x-2">
-          <span id="health-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-600">Good</span>
+          <span id="health-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-600" title="健全性: Good">Good</span>
           <span class="text-gray-400" id="last-updated"></span>
         </div>
       </div>
@@ -117,42 +128,48 @@
 
   <script>
     let currentTicker = 'PLTR';
-    let currentData = null;
+    let quarterlyData = null;
+    let annualData = null;
+    let ttmData = null;
     let chart = null;
 
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('hidden', !show);
+    }
+
     async function loadTicker(ticker = null) {
-      if (ticker) {
-        currentTicker = ticker;
-      } else {
-        currentTicker = document.getElementById('ticker-search').value.toUpperCase();
-      }
-      
-      document.getElementById('loading').classList.remove('hidden');
+      if (ticker) currentTicker = ticker;
+      else currentTicker = document.getElementById('ticker-search').value.toUpperCase();
+
+      showLoading(true);
       document.getElementById('content').classList.add('hidden');
       document.getElementById('error').classList.add('hidden');
-      
+
       try {
-        // 四半期データをfetch
-        const response = await fetch(`data/${currentTicker}/quarterly.json`);
-        if (!response.ok) throw new Error('データが見つかりません');
+        const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
+        if (!qResp.ok) throw new Error('データが見つかりません');
+        quarterlyData = await qResp.json();
+
+        annualData = null;
+        ttmData = null;
+
+        updateHeader(quarterlyData);
+        updateMetrics(quarterlyData);
+        updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
         
-        const data = await response.json();
-        currentData = data;
-        
-        // UI更新
-        updateHeader(data);
-        updateMetrics(data);
-        updateChart(data.quarters, 'quarterly');
-        updateAdjustments(data.quarters[data.quarters.length - 1].adjustments);
-        updateAI(data.quarters[data.quarters.length - 1].ai_analysis);
-        
+        const latest = quarterlyData.quarters[quarterlyData.quarters.length - 1];
+        updateAdjustments(latest.adjustments, latest.filing_date);
+        updateAI(latest.ai_analysis);
+
         document.getElementById('ticker-title').innerText = currentTicker;
-        document.getElementById('loading').classList.add('hidden');
+        showLoading(false);
         document.getElementById('content').classList.remove('hidden');
-        
+        document.getElementById('error').classList.add('hidden');
+
+        switchTab('quarterly');
       } catch (error) {
         console.error('Error:', error);
-        document.getElementById('loading').classList.add('hidden');
+        showLoading(false);
         document.getElementById('error').classList.remove('hidden');
       }
     }
@@ -171,25 +188,63 @@
       document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
       document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
       
-      if (latest.yoy_growth) {
-        const yoy = (latest.yoy_growth * 100).toFixed(1);
-        document.getElementById('yoy').innerText = `${yoy}%`;
-        document.getElementById('yoy').className = latest.yoy_growth >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+      // YoY成長率（4四半期前と比較）
+      const idx = data.quarters.length - 1;
+      const prevIdx = idx - 4;
+      if (prevIdx >= 0) {
+        const prevEps = data.quarters[prevIdx].adjusted_eps;
+        if (prevEps !== 0) {
+          const yoy = (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+          document.getElementById('yoy').innerText = (yoy * 100).toFixed(1) + '%';
+          document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+        } else {
+          document.getElementById('yoy').innerText = '--';
+        }
+      } else {
+        document.getElementById('yoy').innerText = '--';
       }
     }
 
-    function updateChart(quarters, type) {
-      const ctx = document.getElementById('eps-chart').getContext('2d');
-      
-      // データ準備
-      const labels = quarters.map(q => q.filing_date);
-      const gaapData = quarters.map(q => q.gaap_eps);
-      const adjData = quarters.map(q => q.adjusted_eps);
-      
-      if (chart) {
-        chart.destroy();
+    function formatLabel(dateStr) {
+      // "2025-09-30" → "2025-Q3" に変換
+      const [year, month] = dateStr.split('-');
+      const quarter = Math.floor((parseInt(month) - 1) / 3) + 1;
+      return `${year}-Q${quarter}`;
+    }
+
+    function updateChart(dataArray, type, labelField) {
+      if (!dataArray || dataArray.length === 0) {
+        if (chart) chart.destroy();
+        const ctx = document.getElementById('eps-chart').getContext('2d');
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: [], datasets: [] },
+          options: { plugins: { legend: { display: false } } }
+        });
+        return;
       }
-      
+
+      // 古い順にソート（昇順）
+      const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
+
+      const labels = sorted.map(item => formatLabel(item[labelField]));
+      let gaapData, adjData;
+
+      if (type === 'quarterly') {
+        gaapData = sorted.map(item => item.gaap_eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else if (type === 'ttm') {
+        gaapData = sorted.map(item => item.eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else if (type === 'annual') {
+        gaapData = sorted.map(item => item.gaap_eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else {
+        return;
+      }
+
+      if (chart) chart.destroy();
+
       chart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -215,28 +270,33 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              labels: { color: 'white' }
-            }
+            legend: { labels: { color: 'white' } }
           },
           scales: {
-            y: {
-              grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: 'white' }
+            y: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white' },
+              beginAtZero: false
             },
-            x: {
-              grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: 'white', maxRotation: 45 }
+            x: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white', maxRotation: 45, maxTicksLimit: 15 }
             }
           }
         }
       });
     }
 
-    function updateAdjustments(adjustments) {
+    function updateAdjustments(adjustments, filingDate) {
       const accordion = document.getElementById('adjustments-accordion');
       
-      // カテゴリごとにグループ化
+      let headerHtml = `<p class="text-sm text-gray-400 mb-2">${filingDate || '最新'} 期の調整内訳</p>`;
+      
+      if (!adjustments || adjustments.length === 0) {
+        accordion.innerHTML = headerHtml + '<p class="text-gray-400">この四半期には調整項目はありません。</p>';
+        return;
+      }
+
       const categories = {};
       adjustments.forEach(adj => {
         if (!categories[adj.category]) {
@@ -247,7 +307,7 @@
       
       let html = '';
       for (const [category, items] of Object.entries(categories)) {
-        const total = items.reduce((sum, item) => sum + item.amount, 0);
+        const total = items.reduce((sum, item) => sum + item.net_amount, 0);
         
         html += `
           <div class="border border-gray-700 rounded">
@@ -261,7 +321,7 @@
                 <thead>
                   <tr class="text-gray-400">
                     <th class="text-left">項目</th>
-                    <th class="text-right">金額</th>
+                    <th class="text-right">金額（税後）</th>
                     <th class="text-left">理由</th>
                     <th class="text-left">抽出元</th>
                   </tr>
@@ -273,7 +333,7 @@
           html += `
             <tr class="border-t border-gray-700">
               <td class="py-2">${item.item_name}</td>
-              <td class="text-right text-green-400">+$${(item.amount/1e6).toFixed(1)}M</td>
+              <td class="text-right text-green-400">+$${(item.net_amount/1e6).toFixed(1)}M</td>
               <td>${item.reason}</td>
               <td><span class="text-xs bg-gray-600 px-2 py-1 rounded">${item.extracted_from}</span></td>
             </tr>
@@ -288,7 +348,7 @@
         `;
       }
       
-      accordion.innerHTML = html;
+      accordion.innerHTML = headerHtml + html;
     }
 
     function toggleAccordion(button) {
@@ -302,7 +362,6 @@
       const badge = document.getElementById('health-badge');
       badge.innerText = ai.health || 'Good';
       
-      // ヘルスに応じた色
       const colors = {
         'Excellent': 'bg-green-600',
         'Good': 'bg-green-600',
@@ -311,6 +370,15 @@
         'Error': 'bg-gray-600'
       };
       badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-gray-600'}`;
+      
+      const tooltips = {
+        'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
+        'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
+        'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
+        'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
+        'Error': '健全性: Error（AI分析エラー）'
+      };
+      badge.title = tooltips[ai.health] || '健全性評価';
       
       document.getElementById('ai-comment').innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
       
@@ -321,28 +389,69 @@
         });
         sourcesHtml += '</ul>';
         document.getElementById('ai-sources').innerHTML = sourcesHtml;
+      } else {
+        document.getElementById('ai-sources').innerHTML = '';
       }
     }
 
-    function switchTab(tab) {
+    async function switchTab(tab) {
       ['quarterly', 'annual', 'ttm'].forEach(t => {
-        document.getElementById(`tab-${t}`).className = t === tab ? 
-          'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold' : 
-          'inline-block p-4 border-b-2 border-transparent hover:text-gray-300';
+        const el = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          el.className = 'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold';
+        } else {
+          el.className = 'inline-block p-4 border-b-2 border-transparent hover:text-gray-300';
+        }
       });
-      
-      if (!currentData) return;
-      
-      if (tab === 'quarterly') {
-        updateChart(currentData.quarters, 'quarterly');
-      } else if (tab === 'annual' && currentData.years) {
-        updateChart(currentData.years, 'annual');
-      } else if (tab === 'ttm' && currentData.ttm) {
-        updateChart(currentData.ttm, 'ttm');
+
+      if (!currentTicker) return;
+
+      try {
+        if (tab === 'quarterly' && quarterlyData) {
+          updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
+          const latest = quarterlyData.quarters[quarterlyData.quarters.length - 1];
+          updateAdjustments(latest.adjustments, latest.filing_date);
+          updateAI(latest.ai_analysis);
+        } else if (tab === 'annual') {
+          if (!annualData) {
+            const resp = await fetch(`data/${currentTicker}/annual.json`);
+            if (!resp.ok) throw new Error('年次データが見つかりません');
+            annualData = await resp.json();
+          }
+          if (annualData.years && annualData.years.length > 0) {
+            updateChart(annualData.years, 'annual', 'fiscal_year');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データには調整内訳はありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>年次データにはAI分析はありません。</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          } else {
+            updateChart([], 'annual', '');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データはまだありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>年次データなし</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          }
+        } else if (tab === 'ttm') {
+          if (!ttmData) {
+            const resp = await fetch(`data/${currentTicker}/ttm.json`);
+            if (!resp.ok) throw new Error('TTMデータが見つかりません');
+            ttmData = await resp.json();
+          }
+          if (ttmData.ttm && ttmData.ttm.length > 0) {
+            updateChart(ttmData.ttm, 'ttm', 'period');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          } else {
+            updateChart([], 'ttm', '');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータはまだありません。</p>';
+          }
+        }
+      } catch (error) {
+        console.error('タブデータ取得エラー:', error);
+        updateChart([], tab, '');
+        document.getElementById('adjustments-accordion').innerHTML = '<p class="text-red-400">データを読み込めませんでした。</p>';
       }
     }
 
-    // 初期読み込み
     window.onload = () => loadTicker('PLTR');
   </script>
 </body>
