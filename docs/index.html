@@ -100,25 +100,30 @@
         </div>
       </div>
 
-      <!-- タブと期間選択（年次タブ削除） -->
-      <div class="flex flex-wrap items-center justify-between mb-6">
-        <div class="border-b border-gray-700 flex-1">
-          <ul class="flex flex-wrap -mb-px">
-            <li class="mr-2">
-              <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
-            </li>
-            <li class="mr-2">
-              <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
-            </li>
-          </ul>
+      <!-- タブ -->
+      <div class="border-b border-gray-700 mb-4">
+        <ul class="flex flex-wrap -mb-px">
+          <li class="mr-2">
+            <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
+          </li>
+          <li class="mr-2">
+            <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 任意期間指定UI（開始日・終了日） -->
+      <div class="flex flex-wrap items-end gap-4 mb-6 bg-gray-800 p-4 rounded-lg">
+        <div>
+          <label class="block text-sm text-gray-400 mb-1">開始日</label>
+          <input type="date" id="start-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
         </div>
-        <div class="ml-4">
-          <select id="range-select" class="bg-gray-700 text-white px-3 py-2 rounded" onchange="changeRange()">
-            <option value="all">全期間</option>
-            <option value="5y">5年</option>
-            <option value="3y">3年</option>
-            <option value="1y">1年</option>
-          </select>
+        <div>
+          <label class="block text-sm text-gray-400 mb-1">終了日</label>
+          <input type="date" id="end-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+        </div>
+        <div>
+          <button onclick="applyDateRange()" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">適用</button>
         </div>
       </div>
 
@@ -158,7 +163,6 @@
     let quarterlyData = null;
     let ttmData = null;
     let chart = null;
-    let currentRange = 'all';
     let currentTab = 'quarterly';
 
     function showLoading(show) {
@@ -188,9 +192,12 @@
         }
 
         updateHeader(quarterlyData);
-        currentRange = 'all';
-        document.getElementById('range-select').value = 'all';
-        applyRangeUpdate();
+        
+        // 日付入力欄の初期値を設定（データの最小日付・最大日付）
+        setInitialDateRange(quarterlyData.quarters);
+        
+        // 初期表示は全期間
+        applyDateRange();
 
         document.getElementById('ticker-title').innerText = currentTicker;
         showLoading(false);
@@ -210,33 +217,64 @@
         `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
     }
 
-    function parseDate(dateStr) {
-      return new Date(dateStr);
+    // データから最小日付と最大日付を取得し、inputにセット
+    function setInitialDateRange(quarters) {
+      if (!quarters || quarters.length === 0) return;
+      const dates = quarters.map(q => q.filing_date).sort(); // 昇順
+      const minDate = dates[0];
+      const maxDate = dates[dates.length - 1];
+      document.getElementById('start-date').value = minDate;
+      document.getElementById('end-date').value = maxDate;
     }
 
-    function filterDataByRange(dataArray, labelField) {
-      if (currentRange === 'all' || !dataArray || dataArray.length === 0) return dataArray;
+    // 開始日・終了日でデータをフィルタリング
+    function filterDataByDateRange(dataArray, labelField, startStr, endStr) {
+      if (!dataArray || dataArray.length === 0) return [];
+      const start = startStr ? new Date(startStr) : null;
+      const end = endStr ? new Date(endStr) : null;
+      
+      return dataArray.filter(item => {
+        const itemDate = new Date(item[labelField]);
+        if (start && itemDate < start) return false;
+        if (end && itemDate > end) return false;
+        return true;
+      });
+    }
 
-      const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
-      const latestDate = parseDate(sorted[sorted.length - 1][labelField]);
-      let cutoffDate = new Date(latestDate);
+    // 日付範囲適用時の処理
+    function applyDateRange() {
+      if (!quarterlyData) return;
 
-      switch (currentRange) {
-        case '1y':
-          cutoffDate.setFullYear(latestDate.getFullYear() - 1);
-          break;
-        case '3y':
-          cutoffDate.setFullYear(latestDate.getFullYear() - 3);
-          break;
-        case '5y':
-          cutoffDate.setFullYear(latestDate.getFullYear() - 5);
-          break;
-        default:
-          return dataArray;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      if (!startDate || !endDate) {
+        alert('開始日と終了日を入力してください。');
+        return;
       }
 
-      console.log(`Filtering from ${cutoffDate.toISOString()} to ${latestDate.toISOString()}`);
-      return dataArray.filter(item => parseDate(item[labelField]) >= cutoffDate);
+      const filtered = filterDataByDateRange(quarterlyData.quarters, 'filing_date', startDate, endDate);
+      console.log(`Date range: ${startDate} to ${endDate}, filtered count: ${filtered.length}`);
+
+      if (currentTab === 'quarterly') {
+        updateChart(filtered, 'quarterly', 'filing_date');
+      } else if (currentTab === 'ttm') {
+        // TTMタブの場合は期間指定を無視（全TTMデータを表示）
+        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+          updateChart(ttmData.ttm, 'ttm', 'period');
+        } else {
+          updateChart([], 'ttm', '');
+        }
+      }
+
+      const latestInRange = getLatestFromArray(filtered);
+      if (latestInRange) {
+        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
+        updateAI(latestInRange.ai_analysis);
+      } else {
+        resetMetrics();
+        updateAI(null);
+      }
     }
 
     function getLatestFromArray(dataArray) {
@@ -245,14 +283,13 @@
       return sorted[0];
     }
 
-    // 修正: 四半期ベースで前年同期を計算（デバッグログ付き）
+    // YoY計算（四半期ベース）
     function calculateYoY(latest, allQuarters) {
       const latestDate = latest.filing_date;
       const [year, month] = latestDate.split('-');
       const latestQuarter = Math.floor((parseInt(month) - 1) / 3) + 1;
       
       const targetYear = parseInt(year) - 1;
-      // 同じ四半期の候補をすべて取得
       const candidates = allQuarters.filter(q => {
         const qYear = parseInt(q.filing_date.split('-')[0]);
         const qMonth = parseInt(q.filing_date.split('-')[1]);
@@ -260,10 +297,7 @@
         return qYear === targetYear && qQuarter === latestQuarter;
       });
 
-      console.log(`YoY: latest=${latestDate} Q${latestQuarter}, candidates=`, candidates.map(c => c.filing_date));
-
       if (candidates.length > 0) {
-        // 日付が最も近いものを選ぶ
         const prevQuarter = candidates.reduce((prev, curr) => {
           const prevDiff = Math.abs(new Date(latestDate) - new Date(prev.filing_date));
           const currDiff = Math.abs(new Date(latestDate) - new Date(curr.filing_date));
@@ -272,9 +306,7 @@
         
         const prevEps = prevQuarter.adjusted_eps;
         if (Math.abs(prevEps) > 0.0001) {
-          const yoy = (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
-          console.log(`YoY: found candidate ${prevQuarter.filing_date}, prevEps=${prevEps}, yoy=${yoy}`);
-          return yoy;
+          return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
         }
       }
 
@@ -283,13 +315,10 @@
       if (idx >= 4) {
         const prevEps = allQuarters[idx - 4].adjusted_eps;
         if (Math.abs(prevEps) > 0.0001) {
-          const yoy = (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
-          console.log(`YoY: fallback to 4-quarters before, prevEps=${prevEps}, yoy=${yoy}`);
-          return yoy;
+          return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
         }
       }
       
-      console.log('YoY: no candidate found');
       return null;
     }
 
@@ -361,32 +390,6 @@
         sourcesEl.innerHTML = sourcesHtml;
       } else {
         sourcesEl.innerHTML = '';
-      }
-    }
-
-    function applyRangeUpdate() {
-      if (!quarterlyData) return;
-
-      const filtered = filterDataByRange(quarterlyData.quarters, 'filing_date');
-      console.log(`Range: ${currentRange}, filtered count: ${filtered.length}`);
-
-      if (currentTab === 'quarterly') {
-        updateChart(filtered, 'quarterly', 'filing_date');
-      } else if (currentTab === 'ttm') {
-        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
-          updateChart(ttmData.ttm, 'ttm', 'period');
-        } else {
-          updateChart([], 'ttm', '');
-        }
-      }
-
-      const latestInRange = getLatestFromArray(filtered);
-      if (latestInRange) {
-        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
-        updateAI(latestInRange.ai_analysis);
-      } else {
-        resetMetrics();
-        updateAI(null);
       }
     }
 
@@ -522,13 +525,6 @@
       container.innerHTML = html;
     }
 
-    function changeRange() {
-      const select = document.getElementById('range-select');
-      currentRange = select.value;
-      console.log('Range changed to:', currentRange);
-      applyRangeUpdate();
-    }
-
     async function switchTab(tab) {
       currentTab = tab;
       ['quarterly', 'ttm'].forEach(t => {
@@ -543,7 +539,7 @@
       if (!currentTicker) return;
 
       if (tab === 'quarterly' && quarterlyData) {
-        applyRangeUpdate();
+        applyDateRange(); // 現在の日付範囲で更新
         updateAllAdjustments(quarterlyData.quarters);
       } else if (tab === 'ttm') {
         if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
