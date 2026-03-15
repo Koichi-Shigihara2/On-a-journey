@@ -86,31 +86,28 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-gray-800 p-4 rounded-lg">
           <div class="text-gray-400 text-sm">GAAP EPS</div>
-          <div class="text-2xl font-bold" id="gaap-eps">$0.00</div>
+          <div class="text-2xl font-bold text-gray-300" id="gaap-eps">$0.00</div> <!-- 灰色 -->
         </div>
         <div class="bg-gray-800 p-4 rounded-lg">
           <div class="text-gray-400 text-sm">Adjusted EPS</div>
-          <div class="text-2xl font-bold" id="adj-eps">$0.00</div>
+          <div class="text-2xl font-bold text-green-400" id="adj-eps">$0.00</div> <!-- 緑 -->
         </div>
         <div class="bg-gray-800 p-4 rounded-lg">
           <div class="text-gray-400 text-sm">差分</div>
-          <div class="text-2xl font-bold" id="diff">$0.00</div>
+          <div class="text-2xl font-bold" id="diff">$0.00</div> <!-- 動的に色変更 -->
         </div>
         <div class="bg-gray-800 p-4 rounded-lg">
           <div class="text-gray-400 text-sm">YoY成長率</div>
-          <div class="text-2xl font-bold" id="yoy">--</div>
+          <div class="text-2xl font-bold" id="yoy">--</div> <!-- 動的に色変更 -->
         </div>
       </div>
 
-      <!-- タブと期間選択 -->
+      <!-- タブと期間選択（年次タブ削除） -->
       <div class="flex flex-wrap items-center justify-between mb-6">
         <div class="border-b border-gray-700 flex-1">
           <ul class="flex flex-wrap -mb-px">
             <li class="mr-2">
               <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
-            </li>
-            <li class="mr-2">
-              <a href="#" onclick="switchTab('annual')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-annual">年次</a>
             </li>
             <li class="mr-2">
               <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
@@ -161,7 +158,6 @@
 
     let currentTicker = 'NVDA';
     let quarterlyData = null;
-    let annualData = null;
     let ttmData = null;
     let chart = null;
     let currentRange = 'all';      // 現在選択中の期間
@@ -180,16 +176,22 @@
       document.getElementById('error').classList.add('hidden');
 
       try {
+        // 四半期データ取得
         const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
-        if (!qResp.ok) throw new Error('データが見つかりません');
+        if (!qResp.ok) throw new Error('四半期データが見つかりません');
         quarterlyData = await qResp.json();
         console.log('Quarterly data loaded:', quarterlyData);
 
-        annualData = null;
-        ttmData = null;
+        // TTMデータ取得（存在しなければnull）
+        try {
+          const tResp = await fetch(`data/${currentTicker}/ttm.json`);
+          if (tResp.ok) ttmData = await tResp.json();
+        } catch (e) {
+          console.log('TTM data not found');
+          ttmData = null;
+        }
 
         updateHeader(quarterlyData);
-        // 初期表示は全期間
         currentRange = 'all';
         document.getElementById('range-select').value = 'all';
         applyRangeUpdate(); // 期間適用（メトリクス・チャート・AI更新）
@@ -207,7 +209,6 @@
       }
     }
 
-    // ヘッダーの最終更新日時
     function updateHeader(data) {
       document.getElementById('last-updated').innerText = 
         `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
@@ -224,7 +225,7 @@
     function filterDataByRange(dataArray, labelField) {
       if (currentRange === 'all' || !dataArray || dataArray.length === 0) return dataArray;
 
-      // 日付でソートして最新日付を取得（古い順→最新）
+      // 日付でソートして最新日付を取得
       const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
       const latestDate = new Date(sorted[sorted.length - 1][labelField]);
       let cutoffDate = new Date(latestDate);
@@ -253,17 +254,19 @@
       const filtered = filterDataByRange(quarterlyData.quarters, 'filing_date');
       console.log(`Range: ${currentRange}, filtered count: ${filtered.length}`);
 
-      // チャート更新
+      // チャート更新（現在のタブに応じて）
       if (currentTab === 'quarterly') {
         updateChart(filtered, 'quarterly', 'filing_date');
+      } else if (currentTab === 'ttm' && ttmData && ttmData.ttm) {
+        // TTMタブの場合は期間選択を無視（全期間表示）
+        updateChart(ttmData.ttm, 'ttm', 'period');
       }
 
       // メトリクス更新（フィルタリング後の最新）
       const latestInRange = getLatestFromArray(filtered);
       if (latestInRange) {
-        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters); // YoY計算のために全データも渡す
+        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
       } else {
-        // データがない場合のフォールバック
         document.getElementById('gaap-eps').innerText = '$0.00';
         document.getElementById('adj-eps').innerText = '$0.00';
         document.getElementById('diff').innerText = '$0.00';
@@ -276,10 +279,12 @@
       } else {
         document.getElementById('ai-comment').innerHTML = '<p>分析コメント準備中</p>';
         document.getElementById('ai-sources').innerHTML = '';
+        // ヘルスバッジはデフォルトに
+        document.getElementById('health-badge').innerText = 'Good';
+        document.getElementById('health-badge').className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-600';
       }
     }
 
-    // メトリクス更新（指定された四半期データを使用）
     function updateMetricsWithQuarter(quarter, allQuarters) {
       document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
       document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
@@ -342,9 +347,6 @@
       } else if (type === 'ttm') {
         gaapData = sorted.map(item => item.eps);
         adjData = sorted.map(item => item.adjusted_eps);
-      } else if (type === 'annual') {
-        gaapData = sorted.map(item => item.gaap_eps);
-        adjData = sorted.map(item => item.adjusted_eps);
       } else {
         return;
       }
@@ -359,7 +361,7 @@
             {
               label: 'GAAP EPS',
               data: gaapData,
-              borderColor: 'rgb(156, 163, 175)',
+              borderColor: 'rgb(156, 163, 175)', // 灰色
               backgroundColor: 'rgba(156, 163, 175, 0.1)',
               tension: 0.1,
               datalabels: {
@@ -373,7 +375,7 @@
             {
               label: 'Adjusted EPS',
               data: adjData,
-              borderColor: 'rgb(34, 197, 94)',
+              borderColor: 'rgb(34, 197, 94)', // 緑
               backgroundColor: 'rgba(34, 197, 94, 0.1)',
               tension: 0.1,
               datalabels: {
@@ -413,7 +415,6 @@
       });
     }
 
-    // 全期間の調整内訳（変更なし）
     function updateAllAdjustments(quarters) {
       const container = document.getElementById('adjustments-accordion');
       const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
@@ -447,7 +448,13 @@
     }
 
     function updateAI(ai) {
-      if (!ai) return;
+      if (!ai) {
+        document.getElementById('health-badge').innerText = 'Good';
+        document.getElementById('health-badge').className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-600';
+        document.getElementById('ai-comment').innerHTML = '<p>分析コメント準備中</p>';
+        document.getElementById('ai-sources').innerHTML = '';
+        return;
+      }
       
       const badge = document.getElementById('health-badge');
       badge.innerText = ai.health || 'Good';
@@ -459,7 +466,7 @@
         'Warning': 'bg-red-600',
         'Error': 'bg-gray-600'
       };
-      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-gray-600'}`;
+      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-green-600'}`;
       
       const tooltips = {
         'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
@@ -484,7 +491,6 @@
       }
     }
 
-    // 期間選択変更時のハンドラ
     function changeRange() {
       const select = document.getElementById('range-select');
       currentRange = select.value;
@@ -494,7 +500,7 @@
 
     async function switchTab(tab) {
       currentTab = tab;
-      ['quarterly', 'annual', 'ttm'].forEach(t => {
+      ['quarterly', 'ttm'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         if (t === tab) {
           el.className = 'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold';
@@ -509,39 +515,17 @@
         if (tab === 'quarterly' && quarterlyData) {
           applyRangeUpdate(); // 期間フィルタリング済みのデータでチャート・メトリクス・AI更新
           updateAllAdjustments(quarterlyData.quarters); // 調整内訳は全期間固定
-        } else if (tab === 'annual') {
-          if (!annualData) {
-            const resp = await fetch(`data/${currentTicker}/annual.json`);
-            if (!resp.ok) throw new Error('年次データが見つかりません');
-            annualData = await resp.json();
-          }
-          if (annualData.years && annualData.years.length > 0) {
-            // 年次タブでは期間選択は無視（全期間表示）
-            updateChart(annualData.years, 'annual', 'fiscal_year');
-            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データには調整内訳はありません。</p>';
-            document.getElementById('ai-comment').innerHTML = '<p>年次データにはAI分析はありません。</p>';
-            document.getElementById('ai-sources').innerHTML = '';
-          } else {
-            updateChart([], 'annual', '');
-            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データはまだありません。</p>';
-            document.getElementById('ai-comment').innerHTML = '<p>年次データなし</p>';
-            document.getElementById('ai-sources').innerHTML = '';
-          }
         } else if (tab === 'ttm') {
-          if (!ttmData) {
-            const resp = await fetch(`data/${currentTicker}/ttm.json`);
-            if (!resp.ok) throw new Error('TTMデータが見つかりません');
-            ttmData = await resp.json();
-          }
-          if (ttmData.ttm && ttmData.ttm.length > 0) {
-            // TTMタブでも期間選択は無視（全期間表示）
-            updateChart(ttmData.ttm, 'ttm', 'period');
+          if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
+            updateChart([], 'ttm', '');
             document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
             document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
             document.getElementById('ai-sources').innerHTML = '';
           } else {
-            updateChart([], 'ttm', '');
-            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータはまだありません。</p>';
+            updateChart(ttmData.ttm, 'ttm', 'period');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+            document.getElementById('ai-sources').innerHTML = '';
           }
         }
       } catch (error) {
