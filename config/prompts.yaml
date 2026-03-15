@@ -1,0 +1,18 @@
+# config/prompts.yaml
+# AI分析プロンプト設定
+adjustment_analysis: |
+  あなたは財務分析のエキスパートです。以下の調整項目リストを分析し、健全性とコメントを返してください。
+  ティッカー: {ticker}
+  期: {fiscal_period}
+  GAAP EPS: {gaap_eps}
+  Adjusted EPS: {adjusted_eps}
+  調整項目: {adjustments_json}
+  
+  以下のJSON形式で返してください：
+  {{
+    "health": "Excellent/Good/Caution/Warning/Error",
+    "comment": "分析コメント（日本語）",
+    "sources": [
+      {{"item": "項目名", "snippet": "引用テキスト"}}
+    ]
+  }}
