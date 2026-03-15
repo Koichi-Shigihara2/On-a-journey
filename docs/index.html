@@ -1,445 +1,438 @@
 <!DOCTYPE html>
 <html lang="ja" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adjusted EPS Analyzer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- jQueryはChart.jsやDataTablesに必要ないので読み込まない -->
-    <style>
-        .spinner-border {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adjusted EPS Analyzer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <style>
+    .spinner-border {
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-6">
-    <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Adjusted EPS Analyzer</h1>
-            <div class="space-x-4">
-                <a href="#" class="text-blue-400 hover:text-blue-300">ダッシュボード</a>
-                <a href="#" class="text-blue-400 hover:text-blue-300">銘柄一覧</a>
-                <a href="#" class="text-blue-400 hover:text-blue-300">設定</a>
-            </div>
-            <div class="flex items-center space-x-2">
-                <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)" 
-                       class="px-3 py-1 bg-gray-700 rounded text-white" value="PLTR">
-                <button onclick="loadTicker()" class="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
-                    検索
-                </button>
-            </div>
-        </nav>
-    </header>
+  <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Adjusted EPS Analyzer</h1>
+      <div class="space-x-4">
+        <a href="#" class="text-blue-400 hover:text-blue-300">ダッシュボード</a>
+        <a href="#" class="text-blue-400 hover:text-blue-300">銘柄一覧</a>
+        <a href="#" class="text-blue-400 hover:text-blue-300">設定</a>
+      </div>
+      <div class="flex items-center space-x-2">
+        <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)" 
+               class="px-3 py-1 bg-gray-700 rounded text-white" value="PLTR">
+        <button onclick="loadTicker()" class="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
+          検索
+        </button>
+      </div>
+    </nav>
+  </header>
 
-    <main class="container mx-auto mt-24">
-        <div id="loading" class="hidden text-center py-10">
-            <div class="spinner-border inline-block w-8 h-8"></div>
-            <p class="mt-2">データを読み込み中...</p>
+  <main class="container mx-auto mt-24">
+    <div id="loading" class="hidden text-center py-10">
+      <div class="spinner-border inline-block w-8 h-8"></div>
+      <p class="mt-2">データを読み込み中...</p>
+    </div>
+
+    <div id="error" class="hidden bg-red-900 text-white p-4 rounded-lg mb-6">
+      <p>エラーが発生しました。 <button onclick="loadTicker()" class="underline">再試行</button></p>
+    </div>
+
+    <div id="content" class="hidden">
+      <!-- 銘柄ヘッダー -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold" id="ticker-title">PLTR</h2>
+        <div class="flex space-x-2">
+          <span id="health-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-600" title="健全性: Good">Good</span>
+          <span class="text-gray-400" id="last-updated"></span>
         </div>
+      </div>
 
-        <div id="error" class="hidden bg-red-900 text-white p-4 rounded-lg mb-6">
-            <p>エラーが発生しました。 <button onclick="loadTicker()" class="underline">再試行</button></p>
+      <!-- メトリクスカード -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-gray-800 p-4 rounded-lg">
+          <div class="text-gray-400 text-sm">GAAP EPS</div>
+          <div class="text-2xl font-bold" id="gaap-eps">$0.00</div>
         </div>
-
-        <div id="content" class="hidden">
-            <!-- 銘柄ヘッダー -->
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold" id="ticker-title">PLTR</h2>
-                <div class="flex space-x-2">
-                    <span id="health-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-600" title="健全性: Good">Good</span>
-                    <span class="text-gray-400" id="last-updated"></span>
-                </div>
-            </div>
-
-            <!-- メトリクスカード -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <div class="text-gray-400 text-sm">GAAP EPS</div>
-                    <div class="text-2xl font-bold" id="gaap-eps">$0.00</div>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <div class="text-gray-400 text-sm">Adjusted EPS</div>
-                    <div class="text-2xl font-bold" id="adj-eps">$0.00</div>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <div class="text-gray-400 text-sm">差分</div>
-                    <div class="text-2xl font-bold" id="diff">$0.00</div>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg">
-                    <div class="text-gray-400 text-sm">YoY成長率</div>
-                    <div class="text-2xl font-bold" id="yoy">--</div>
-                </div>
-            </div>
-
-            <!-- タブ -->
-            <div class="border-b border-gray-700 mb-6">
-                <ul class="flex flex-wrap -mb-px">
-                    <li class="mr-2">
-                        <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" onclick="switchTab('annual')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-annual">年次</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- チャート -->
-            <div class="bg-gray-800 p-6 rounded-lg mb-8">
-                <canvas id="eps-chart" height="300"></canvas>
-            </div>
-
-            <!-- 調整内訳アコーディオン（全期間表示） -->
-            <div class="bg-gray-800 p-6 rounded-lg mb-8">
-                <h3 class="text-xl font-semibold mb-4">調整内訳（全期間）</h3>
-                <div id="adjustments-list" class="space-y-4">
-                    <!-- JSで動的生成 -->
-                </div>
-            </div>
-
-            <!-- AIコメント（最新四半期） -->
-            <div class="bg-gray-800 p-6 rounded-lg mb-8">
-                <h3 class="text-xl font-semibold mb-4 flex items-center">
-                    AI分析（最新四半期）
-                    <span class="ml-2 text-sm bg-gray-700 px-2 py-1 rounded">Grok</span>
-                </h3>
-                <div id="ai-comment" class="prose prose-invert max-w-none">
-                    <!-- AIコメントが入る -->
-                </div>
-                <div id="ai-sources" class="mt-4 text-sm text-gray-400 border-t border-gray-700 pt-4">
-                    <!-- ソース表示 -->
-                </div>
-            </div>
+        <div class="bg-gray-800 p-4 rounded-lg">
+          <div class="text-gray-400 text-sm">Adjusted EPS</div>
+          <div class="text-2xl font-bold" id="adj-eps">$0.00</div>
         </div>
-    </main>
+        <div class="bg-gray-800 p-4 rounded-lg">
+          <div class="text-gray-400 text-sm">差分</div>
+          <div class="text-2xl font-bold" id="diff">$0.00</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg">
+          <div class="text-gray-400 text-sm">YoY成長率</div>
+          <div class="text-2xl font-bold" id="yoy">--</div>
+        </div>
+      </div>
 
-    <script>
-        let currentTicker = 'PLTR';
-        let quarterlyData = null;
-        let annualData = null;
-        let ttmData = null;
-        let chart = null;
+      <!-- タブ -->
+      <div class="border-b border-gray-700 mb-6">
+        <ul class="flex flex-wrap -mb-px">
+          <li class="mr-2">
+            <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
+          </li>
+          <li class="mr-2">
+            <a href="#" onclick="switchTab('annual')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-annual">年次</a>
+          </li>
+          <li class="mr-2">
+            <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
+          </li>
+        </ul>
+      </div>
 
-        function showLoading(show) {
-            document.getElementById('loading').classList.toggle('hidden', !show);
+      <!-- チャート -->
+      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+        <canvas id="eps-chart" height="300"></canvas>
+      </div>
+
+      <!-- 調整内訳（全期間） -->
+      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+        <h3 class="text-xl font-semibold mb-4">調整内訳（全期間）</h3>
+        <div id="adjustments-accordion" class="space-y-4">
+          <!-- JSで動的生成 -->
+        </div>
+      </div>
+
+      <!-- AIコメント（最新四半期） -->
+      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center">
+          AI分析（最新四半期）
+          <span class="ml-2 text-sm bg-gray-700 px-2 py-1 rounded">Grok</span>
+        </h3>
+        <div id="ai-comment" class="prose prose-invert max-w-none">
+          <!-- AIコメントが入る -->
+        </div>
+        <div id="ai-sources" class="mt-4 text-sm text-gray-400 border-t border-gray-700 pt-4">
+          <!-- ソース表示 -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentTicker = 'PLTR';
+    let quarterlyData = null;
+    let annualData = null;
+    let ttmData = null;
+    let chart = null;
+
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('hidden', !show);
+    }
+
+    async function loadTicker(ticker = null) {
+      if (ticker) currentTicker = ticker;
+      else currentTicker = document.getElementById('ticker-search').value.toUpperCase();
+
+      showLoading(true);
+      document.getElementById('content').classList.add('hidden');
+      document.getElementById('error').classList.add('hidden');
+
+      try {
+        const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
+        if (!qResp.ok) throw new Error('データが見つかりません');
+        quarterlyData = await qResp.json();
+
+        annualData = null;
+        ttmData = null;
+
+        updateHeader(quarterlyData);
+        updateMetrics(quarterlyData);
+        updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
+        updateAllAdjustments(quarterlyData.quarters);  // ← 全期間の調整内訳を表示
+
+        const latest = quarterlyData.quarters[quarterlyData.quarters.length - 1];
+        updateAI(latest.ai_analysis);
+
+        document.getElementById('ticker-title').innerText = currentTicker;
+        showLoading(false);
+        document.getElementById('content').classList.remove('hidden');
+        document.getElementById('error').classList.add('hidden');
+
+        switchTab('quarterly');
+      } catch (error) {
+        console.error('Error:', error);
+        showLoading(false);
+        document.getElementById('error').classList.remove('hidden');
+      }
+    }
+
+    function updateHeader(data) {
+      document.getElementById('last-updated').innerText = 
+        `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
+    }
+
+    function updateMetrics(data) {
+      // 最新四半期（日付が最も新しいもの）を取得
+      const latest = data.quarters.reduce((latest, current) => 
+        current.filing_date > latest.filing_date ? current : latest
+      );
+      document.getElementById('gaap-eps').innerText = `$${latest.gaap_eps.toFixed(4)}`;
+      document.getElementById('adj-eps').innerText = `$${latest.adjusted_eps.toFixed(4)}`;
+      
+      const diff = latest.adjusted_eps - latest.gaap_eps;
+      document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
+      document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+      
+      // YoY成長率（4四半期前と比較）
+      // 最新の日付から4四半期前のデータを探す
+      const latestDate = latest.filing_date;
+      const [year, month, day] = latestDate.split('-');
+      const targetDate = `${parseInt(year)-1}-${month}-${day}`; // 簡易的に1年前の同じ日付
+      // より正確には、4四半期前のデータを日付順で探す（実装簡略化のため、配列インデックスで代用）
+      const idx = data.quarters.findIndex(q => q.filing_date === latestDate);
+      const prevIdx = idx - 4;
+      if (prevIdx >= 0) {
+        const prev = data.quarters[prevIdx];
+        const prevEps = prev.adjusted_eps;
+        if (Math.abs(prevEps) > 0.0001) {
+          const yoy = (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+          document.getElementById('yoy').innerText = (yoy * 100).toFixed(1) + '%';
+          document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+        } else {
+          document.getElementById('yoy').innerText = 'N/A';
         }
+      } else {
+        document.getElementById('yoy').innerText = '--';
+      }
+    }
 
-        // 最新の四半期を取得するヘルパー
-        function getLatestQuarter(quarters) {
-            return quarters.reduce((latest, current) => 
-                current.filing_date > latest.filing_date ? current : latest
-            );
-        }
+    function formatLabel(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length < 2) return dateStr;
+      const [year, month] = parts;
+      const quarter = Math.floor((parseInt(month) - 1) / 3) + 1;
+      return `${year}-Q${quarter}`;
+    }
 
-        async function loadTicker(ticker = null) {
-            if (ticker) currentTicker = ticker;
-            else currentTicker = document.getElementById('ticker-search').value.toUpperCase();
+    function updateChart(dataArray, type, labelField) {
+      const ctx = document.getElementById('eps-chart').getContext('2d');
 
-            showLoading(true);
-            document.getElementById('content').classList.add('hidden');
-            document.getElementById('error').classList.add('hidden');
+      if (!dataArray || dataArray.length === 0) {
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: [], datasets: [] },
+          options: { plugins: { legend: { display: false } } }
+        });
+        return;
+      }
 
-            try {
-                const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
-                if (!qResp.ok) throw new Error('データが見つかりません');
-                quarterlyData = await qResp.json();
+      // 古い順にソート（昇順）
+      const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
 
-                // 年次・TTMはタブ切り替え時に取得
-                annualData = null;
-                ttmData = null;
+      const labels = sorted.map(item => formatLabel(item[labelField]));
+      let gaapData, adjData;
 
-                updateHeader(quarterlyData);
-                updateMetrics(quarterlyData); // 修正版
-                updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
-                
-                // 全期間の調整内訳を表示（降順）
-                updateAllAdjustments(quarterlyData.quarters);
+      if (type === 'quarterly') {
+        gaapData = sorted.map(item => item.gaap_eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else if (type === 'ttm') {
+        gaapData = sorted.map(item => item.eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else if (type === 'annual') {
+        gaapData = sorted.map(item => item.gaap_eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else {
+        return;
+      }
 
-                // AI分析は最新四半期のもの
-                const latest = getLatestQuarter(quarterlyData.quarters);
-                updateAI(latest.ai_analysis);
+      if (chart) chart.destroy();
 
-                document.getElementById('ticker-title').innerText = currentTicker;
-                showLoading(false);
-                document.getElementById('content').classList.remove('hidden');
-                document.getElementById('error').classList.add('hidden');
-
-                switchTab('quarterly');
-            } catch (error) {
-                console.error('Error:', error);
-                showLoading(false);
-                document.getElementById('error').classList.remove('hidden');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'GAAP EPS',
+              data: gaapData,
+              borderColor: 'rgb(156, 163, 175)',
+              backgroundColor: 'rgba(156, 163, 175, 0.1)',
+              tension: 0.1
+            },
+            {
+              label: 'Adjusted EPS',
+              data: adjData,
+              borderColor: 'rgb(34, 197, 94)',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              tension: 0.1
             }
-        }
-
-        function updateHeader(data) {
-            document.getElementById('last-updated').innerText = 
-                `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
-        }
-
-        function updateMetrics(data) {
-            const quarters = data.quarters;
-            const latest = getLatestQuarter(quarters); // 修正：最新を正しく取得
-
-            document.getElementById('gaap-eps').innerText = `$${latest.gaap_eps.toFixed(4)}`;
-            document.getElementById('adj-eps').innerText = `$${latest.adjusted_eps.toFixed(4)}`;
-
-            const diff = latest.adjusted_eps - latest.gaap_eps;
-            document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
-            document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
-
-            // YoY成長率：最新と4四半期前のadjusted EPSを比較
-            // まず日付でソート（古い順）してインデックスを特定するのが確実だが、単純に配列の最後から4番目が4四半期前とは限らない（データ欠損の可能性）
-            // より正確には、同じ四半期（例：Q3）同士で比較する必要があるが、簡易的に直近4四半期前のデータを探す
-            const sorted = [...quarters].sort((a, b) => a.filing_date.localeCompare(b.filing_date)); // 古い順
-            const latestDate = latest.filing_date;
-            // 最新の日付から約1年前の日付を探す（単純に12ヶ月前）
-            const oneYearAgo = new Date(latestDate);
-            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-            const targetDateStr = oneYearAgo.toISOString().slice(0, 10);
-            
-            //  targetDateStr に最も近い日付の四半期を探す（前後）
-            let prevQuarter = null;
-            let minDiff = Infinity;
-            for (let q of quarters) {
-                const qDate = new Date(q.filing_date);
-                const diffTime = Math.abs(qDate - oneYearAgo);
-                if (diffTime < minDiff) {
-                    minDiff = diffTime;
-                    prevQuarter = q;
-                }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: 'white' } }
+          },
+          scales: {
+            y: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white' },
+              beginAtZero: false
+            },
+            x: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white', maxRotation: 45, autoSkip: true }
             }
-
-            if (prevQuarter && Math.abs(prevQuarter.adjusted_eps) > 0.0001) {
-                const yoy = (latest.adjusted_eps - prevQuarter.adjusted_eps) / Math.abs(prevQuarter.adjusted_eps);
-                document.getElementById('yoy').innerText = (yoy * 100).toFixed(1) + '%';
-                document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
-            } else {
-                document.getElementById('yoy').innerText = '--';
-            }
+          }
         }
+      });
+    }
 
-        function formatLabel(dateStr) {
-            if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length < 2) return dateStr;
-            const [year, month] = parts;
-            const quarter = Math.floor((parseInt(month) - 1) / 3) + 1;
-            return `${year}-Q${quarter}`;
+    // 全期間の調整内訳を表示（降順：新しい順）
+    function updateAllAdjustments(quarters) {
+      const container = document.getElementById('adjustments-accordion');
+      // 降順（新しい順）にソート
+      const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+      
+      let html = '';
+      sorted.forEach(q => {
+        html += `<div class="border border-gray-700 rounded-lg overflow-hidden">`;
+        html += `<div class="bg-gray-800 px-4 py-2 font-semibold border-b border-gray-700">${q.filing_date}</div>`;
+        
+        if (q.adjustments && q.adjustments.length > 0) {
+          // 調整項目あり → テーブル生成
+          html += `<div class="p-4 bg-gray-750">`;
+          html += `<table class="w-full text-sm">`;
+          html += `<thead><tr class="text-gray-400"><th class="text-left">項目</th><th class="text-right">金額（税後）</th><th class="text-left">理由</th><th class="text-left">抽出元</th></tr></thead>`;
+          html += `<tbody>`;
+          q.adjustments.forEach(item => {
+            html += `<tr class="border-t border-gray-700">`;
+            html += `<td class="py-2">${item.item_name}</td>`;
+            html += `<td class="text-right text-green-400">+$${(item.net_amount/1e6).toFixed(1)}M</td>`;
+            html += `<td>${item.reason}</td>`;
+            html += `<td><span class="text-xs bg-gray-600 px-2 py-1 rounded">${item.extracted_from}</span></td>`;
+            html += `</tr>`;
+          });
+          html += `</tbody></table>`;
+          html += `</div>`;
+        } else {
+          html += `<div class="p-4 text-gray-400">この四半期には調整項目はありません。</div>`;
         }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
 
-        function updateChart(dataArray, type, labelField) {
-            const ctx = document.getElementById('eps-chart').getContext('2d');
+    function updateAI(ai) {
+      if (!ai) return;
+      
+      const badge = document.getElementById('health-badge');
+      badge.innerText = ai.health || 'Good';
+      
+      const colors = {
+        'Excellent': 'bg-green-600',
+        'Good': 'bg-green-600',
+        'Caution': 'bg-yellow-600',
+        'Warning': 'bg-red-600',
+        'Error': 'bg-gray-600'
+      };
+      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-gray-600'}`;
+      
+      const tooltips = {
+        'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
+        'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
+        'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
+        'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
+        'Error': '健全性: Error（AI分析エラー）'
+      };
+      badge.title = tooltips[ai.health] || '健全性評価';
+      
+      document.getElementById('ai-comment').innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
+      
+      if (ai.sources && ai.sources.length) {
+        let sourcesHtml = '<h4 class="font-semibold mb-2">引用ソース:</h4><ul class="list-disc pl-5 space-y-1">';
+        ai.sources.forEach(source => {
+          sourcesHtml += `<li><span class="font-mono text-xs">${source.item}:</span> "${source.snippet}"</li>`;
+        });
+        sourcesHtml += '</ul>';
+        document.getElementById('ai-sources').innerHTML = sourcesHtml;
+      } else {
+        document.getElementById('ai-sources').innerHTML = '';
+      }
+    }
 
-            if (!dataArray || dataArray.length === 0) {
-                if (chart) chart.destroy();
-                chart = new Chart(ctx, {
-                    type: 'line',
-                    data: { labels: [], datasets: [] },
-                    options: { plugins: { legend: { display: false } } }
-                });
-                return;
-            }
-
-            // 古い順にソート（昇順）
-            const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
-
-            const labels = sorted.map(item => formatLabel(item[labelField]));
-            let gaapData, adjData;
-
-            if (type === 'quarterly') {
-                gaapData = sorted.map(item => item.gaap_eps);
-                adjData = sorted.map(item => item.adjusted_eps);
-            } else if (type === 'ttm') {
-                gaapData = sorted.map(item => item.eps);
-                adjData = sorted.map(item => item.adjusted_eps);
-            } else if (type === 'annual') {
-                gaapData = sorted.map(item => item.gaap_eps);
-                adjData = sorted.map(item => item.adjusted_eps);
-            } else {
-                return;
-            }
-
-            if (chart) chart.destroy();
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'GAAP EPS',
-                            data: gaapData,
-                            borderColor: 'rgb(156, 163, 175)',
-                            backgroundColor: 'rgba(156, 163, 175, 0.1)',
-                            tension: 0.1,
-                            pointRadius: 2
-                        },
-                        {
-                            label: 'Adjusted EPS',
-                            data: adjData,
-                            borderColor: 'rgb(34, 197, 94)',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            tension: 0.1,
-                            pointRadius: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: 'white' } }
-                    },
-                    scales: {
-                        y: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-                            ticks: { color: 'white' },
-                            beginAtZero: false
-                        },
-                        x: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-                            ticks: { color: 'white', maxRotation: 45, autoSkip: true, maxTicksLimit: 20 }
-                        }
-                    }
-                }
-            });
+    async function switchTab(tab) {
+      ['quarterly', 'annual', 'ttm'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          el.className = 'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold';
+        } else {
+          el.className = 'inline-block p-4 border-b-2 border-transparent hover:text-gray-300';
         }
+      });
 
-        // 全期間の調整内訳を降順で表示
-        function updateAllAdjustments(quarters) {
-            // 降順（新しい順）にソート
-            const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
-            const container = document.getElementById('adjustments-list');
-            let html = '';
+      if (!currentTicker) return;
 
-            sorted.forEach(q => {
-                html += `<div class="border border-gray-700 rounded mb-3">`;
-                html += `<div class="p-3 bg-gray-800 font-semibold border-b border-gray-700">${q.filing_date}</div>`;
-                if (q.adjustments && q.adjustments.length > 0) {
-                    html += `<div class="p-3">`;
-                    html += `<table class="w-full text-sm">`;
-                    html += `<thead><tr class="text-gray-400"><th class="text-left">項目</th><th class="text-right">金額（税後）</th><th class="text-left">理由</th><th class="text-left">抽出元</th></tr></thead>`;
-                    html += `<tbody>`;
-                    q.adjustments.forEach(adj => {
-                        html += `<tr class="border-t border-gray-700">`;
-                        html += `<td class="py-2">${adj.item_name}</td>`;
-                        html += `<td class="text-right text-green-400">+$${(adj.net_amount/1e6).toFixed(1)}M</td>`;
-                        html += `<td>${adj.reason}</td>`;
-                        html += `<td><span class="text-xs bg-gray-600 px-2 py-1 rounded">${adj.extracted_from}</span></td>`;
-                        html += `</tr>`;
-                    });
-                    html += `</tbody></table>`;
-                    html += `</div>`;
-                } else {
-                    html += `<div class="p-3 text-gray-400">この四半期には調整項目はありません。</div>`;
-                }
-                html += `</div>`;
-            });
-
-            container.innerHTML = html;
+      try {
+        if (tab === 'quarterly' && quarterlyData) {
+          updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
+          updateAllAdjustments(quarterlyData.quarters);  // ← 全期間表示
+          const latest = quarterlyData.quarters.reduce((latest, current) => 
+            current.filing_date > latest.filing_date ? current : latest
+          );
+          updateAI(latest.ai_analysis);
+        } else if (tab === 'annual') {
+          if (!annualData) {
+            const resp = await fetch(`data/${currentTicker}/annual.json`);
+            if (!resp.ok) throw new Error('年次データが見つかりません');
+            annualData = await resp.json();
+          }
+          if (annualData.years && annualData.years.length > 0) {
+            updateChart(annualData.years, 'annual', 'fiscal_year');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データには調整内訳はありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>年次データにはAI分析はありません。</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          } else {
+            updateChart([], 'annual', '');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">年次データはまだありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>年次データなし</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          }
+        } else if (tab === 'ttm') {
+          if (!ttmData) {
+            const resp = await fetch(`data/${currentTicker}/ttm.json`);
+            if (!resp.ok) throw new Error('TTMデータが見つかりません');
+            ttmData = await resp.json();
+          }
+          if (ttmData.ttm && ttmData.ttm.length > 0) {
+            updateChart(ttmData.ttm, 'ttm', 'period');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+            document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+            document.getElementById('ai-sources').innerHTML = '';
+          } else {
+            updateChart([], 'ttm', '');
+            document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータはまだありません。</p>';
+          }
         }
+      } catch (error) {
+        console.error('タブデータ取得エラー:', error);
+        updateChart([], tab, '');
+        document.getElementById('adjustments-accordion').innerHTML = '<p class="text-red-400">データを読み込めませんでした。</p>';
+      }
+    }
 
-        function updateAI(ai) {
-            if (!ai) return;
-
-            const badge = document.getElementById('health-badge');
-            badge.innerText = ai.health || 'Good';
-
-            const colors = {
-                'Excellent': 'bg-green-600',
-                'Good': 'bg-green-600',
-                'Caution': 'bg-yellow-600',
-                'Warning': 'bg-red-600',
-                'Error': 'bg-gray-600'
-            };
-            badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-gray-600'}`;
-
-            const tooltips = {
-                'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
-                'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
-                'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
-                'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
-                'Error': '健全性: Error（AI分析エラー）'
-            };
-            badge.title = tooltips[ai.health] || '健全性評価';
-
-            document.getElementById('ai-comment').innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
-
-            if (ai.sources && ai.sources.length) {
-                let sourcesHtml = '<h4 class="font-semibold mb-2">引用ソース:</h4><ul class="list-disc pl-5 space-y-1">';
-                ai.sources.forEach(source => {
-                    sourcesHtml += `<li><span class="font-mono text-xs">${source.item}:</span> "${source.snippet}"</li>`;
-                });
-                sourcesHtml += '</ul>';
-                document.getElementById('ai-sources').innerHTML = sourcesHtml;
-            } else {
-                document.getElementById('ai-sources').innerHTML = '';
-            }
-        }
-
-        async function switchTab(tab) {
-            ['quarterly', 'annual', 'ttm'].forEach(t => {
-                const el = document.getElementById(`tab-${t}`);
-                if (t === tab) {
-                    el.className = 'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold';
-                } else {
-                    el.className = 'inline-block p-4 border-b-2 border-transparent hover:text-gray-300';
-                }
-            });
-
-            if (!currentTicker) return;
-
-            try {
-                if (tab === 'quarterly' && quarterlyData) {
-                    updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
-                    // 調整内訳は全期間表示なので更新不要（既に表示済み）
-                } else if (tab === 'annual') {
-                    if (!annualData) {
-                        const resp = await fetch(`data/${currentTicker}/annual.json`);
-                        if (!resp.ok) throw new Error('年次データが見つかりません');
-                        annualData = await resp.json();
-                    }
-                    if (annualData.years && annualData.years.length > 0) {
-                        updateChart(annualData.years, 'annual', 'fiscal_year');
-                        // 年次には調整内訳がないのでクリア
-                        document.getElementById('adjustments-list').innerHTML = '<p class="text-gray-400">年次データには調整内訳はありません。</p>';
-                    } else {
-                        updateChart([], 'annual', '');
-                        document.getElementById('adjustments-list').innerHTML = '<p class="text-gray-400">年次データはまだありません。</p>';
-                    }
-                } else if (tab === 'ttm') {
-                    if (!ttmData) {
-                        const resp = await fetch(`data/${currentTicker}/ttm.json`);
-                        if (!resp.ok) throw new Error('TTMデータが見つかりません');
-                        ttmData = await resp.json();
-                    }
-                    if (ttmData.ttm && ttmData.ttm.length > 0) {
-                        updateChart(ttmData.ttm, 'ttm', 'period');
-                        document.getElementById('adjustments-list').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
-                    } else {
-                        updateChart([], 'ttm', '');
-                        document.getElementById('adjustments-list').innerHTML = '<p class="text-gray-400">TTMデータはまだありません。</p>';
-                    }
-                }
-            } catch (error) {
-                console.error('タブデータ取得エラー:', error);
-                updateChart([], tab, '');
-                document.getElementById('adjustments-list').innerHTML = '<p class="text-red-400">データを読み込めませんでした。</p>';
-            }
-        }
-
-        // 初期読み込み
-        window.onload = () => loadTicker('PLTR');
-    </script>
+    window.onload = () => loadTicker('PLTR');
+  </script>
 </body>
 </html>
