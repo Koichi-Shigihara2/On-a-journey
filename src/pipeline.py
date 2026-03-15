@@ -1,217 +1,168 @@
+#!/usr/bin/env python3
 """
-メインパイプライン
-- 設定ファイル読み込み
-- 銘柄ごとに四半期データ取得
-- 調整項目検出、税効果適用、EPS計算
-- TTM計算、年次集計
-- AI分析（オプション）
-- JSON保存
+Adjusted EPS Analyzer Pipeline
+メイン実行スクリプト：全監視銘柄のデータを取得・計算し、docs/data/配下にJSON保存
 """
-import yaml
 import json
-import os
+from pathlib import Path
+import yaml
+import sys
 from datetime import datetime
-from typing import Dict, List, Any, Optional
 
-# 各モジュールのインポート
-from extract_key_facts import extract_quarterly_facts, normalize_value
+# 自作モジュール
+from extract_key_facts import extract_quarterly_data
 from adjustment_detector import detect_adjustments
-from tax_adjuster import apply_tax_adjustments
-from eps_calculator import calculate_eps
+from tax_adjuster.apply_tax_effect import apply_tax_effect_to_adjustments
+from eps_calculator.calculate import calculate_eps
 from ai_analyzer import analyze_adjustments
 
-# ============================================
-# TTM計算関数
-# ============================================
-def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:
-    """
-    TTM（直近4四半期）を計算
-    Args:
-        quarterly_results: 四半期結果のリスト（新しい順）
-        end_idx: 現在のインデックス（このインデックスを含む過去4四半期）
-    Returns:
-        Optional[Dict]: TTMデータ
-    """
-    if end_idx < 3:
-        return None
-    
-    ttm_data = quarterly_results[end_idx-3:end_idx+1]
-    if len(ttm_data) < 4:
-        return None
-    
-    # TTM集計
-    total_net_income = sum(q["gaap_net_income"] for q in ttm_data)
-    total_adjustments = sum(q.get("net_adjustment_total", 0) for q in ttm_data)
-    avg_shares = sum(q["diluted_shares_used"] for q in ttm_data) / 4
+# 設定ファイルのパス
+CONFIG_DIR = Path(__file__).parent.parent / "config"
+MONITOR_TICKERS_PATH = CONFIG_DIR / "monitor_tickers.yaml"
+ADJUSTMENT_ITEMS_PATH = CONFIG_DIR / "adjustment_items.json"
+CIK_LOOKUP_PATH = CONFIG_DIR / "cik_lookup.csv"
 
-    return {
-        "period": f"{ttm_data[0]['filing_date']} to {ttm_data[-1]['filing_date']}",
-        "net_income": total_net_income,
-        "adjusted_income": total_net_income + total_adjustments,
-        "diluted_shares": avg_shares,
-        "eps": total_net_income / avg_shares if avg_shares else 0,
-        "adjusted_eps": (total_net_income + total_adjustments) / avg_shares if avg_shares else 0
-    }
+# 出力先（docs/data/）
+OUTPUT_BASE = Path(__file__).parent.parent / "docs" / "data"
 
-# ============================================
-# 年次集計関数
-# ============================================
-def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
-    """
-    四半期データを年次に集計（暦年ベース）
-    """
-    annual_map = {}
-    for q in quarterly_results:
-        # filing_dateから年を取得（例: "2025-09-30" -> "2025"）
-        year = q["filing_date"][:4]
-        if year not in annual_map:
-            annual_map[year] = []
-        annual_map[year].append(q)
+def load_config():
+    with open(MONITOR_TICKERS_PATH) as f:
+        tickers_config = yaml.safe_load(f)
+    with open(ADJUSTMENT_ITEMS_PATH) as f:
+        items_config = json.load(f)
+    return tickers_config, items_config
+
+def get_cik(ticker):
+    """cik_lookup.csvからCIKを取得（文字列、先頭ゼロ補完なし）"""
+    import csv
+    with open(CIK_LOOKUP_PATH) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['ticker'].upper() == ticker.upper():
+                return row['cik']
+    raise ValueError(f"CIK not found for ticker {ticker}")
+
+def save_json(data, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=2, default=str)
+
+def process_ticker(ticker):
+    print(f"\n=== Processing {ticker} ===")
+    cik = get_cik(ticker)
     
-    annual_results = []
-    for year, quarters in annual_map.items():
-        if len(quarters) < 4:
-            # 完全な年でなければスキップ（必要に応じて変更可）
-            continue
+    # 1. SECから四半期データを取得
+    print("  Fetching quarterly data from SEC...")
+    quarters_raw = extract_quarterly_data(cik, ticker)
+    if not quarters_raw:
+        print(f"  No data for {ticker}, skipping.")
+        return
+    
+    # 2. 各四半期ごとに調整項目検出・税効果・EPS計算・AI分析
+    quarters_processed = []
+    for i, q in enumerate(quarters_raw):
+        filing_date = q.get('filing_date', 'unknown')
+        form = q.get('form', '10-Q')
+        print(f"  Processing quarter {i+1}/{len(quarters_raw)}: {filing_date} ({form})")
         
-        # 年の最後の四半期のデータを基本とするが、net_incomeは合計
-        latest_q = max(quarters, key=lambda x: x["filing_date"])
-        total_net_income = sum(q["gaap_net_income"] for q in quarters)
-        total_adjustments = sum(q.get("net_adjustment_total", 0) for q in quarters)
-        avg_shares = sum(q["diluted_shares_used"] for q in quarters) / 4
+        gaap_net_income = q['net_income']  # 親会社株主帰属
+        diluted_shares = q['weighted_average_shares_diluted']
+        tax_rate = q.get('effective_tax_rate', 0.21)  # 実効税率（後で改善）
         
-        annual_results.append({
-            "year": year,
-            "filing_date": latest_q["filing_date"],
-            "gaap_net_income": total_net_income,
-            "adjusted_net_income": total_net_income + total_adjustments,
-            "diluted_shares_used": avg_shares,
-            "gaap_eps": total_net_income / avg_shares if avg_shares else 0,
-            "adjusted_eps": (total_net_income + total_adjustments) / avg_shares if avg_shares else 0,
-            "adjustments": [adj for q in quarters for adj in q.get("adjustments", [])],  # 全調整項目をフラットに
-            "net_adjustment_total": total_adjustments
-        })
+        # 調整項目検出（period_dataから該当項目を抽出）
+        adjustments_raw = detect_adjustments(q, ticker, filing_date)
+        
+        # 税効果適用
+        adjustments_with_tax = apply_tax_effect_to_adjustments(adjustments_raw, tax_rate)
+        net_adjustment_total = sum(item['net_amount'] for item in adjustments_with_tax)
+        
+        # EPS計算
+        gaap_eps, adjusted_eps = calculate_eps(gaap_net_income, 
+                                                gaap_net_income + net_adjustment_total,
+                                                diluted_shares)
+        
+        # AI分析（adjustmentsが空なら早期リターン）
+        ai_analysis = analyze_adjustments(ticker, filing_date, adjustments_with_tax, 
+                                           gaap_eps, adjusted_eps)
+        
+        # 出力用に整形
+        quarter_record = {
+            "gaap_net_income": gaap_net_income,
+            "gaap_eps": gaap_eps,
+            "adjusted_net_income": gaap_net_income + net_adjustment_total,
+            "adjusted_eps": adjusted_eps,
+            "diluted_shares_used": diluted_shares,
+            "adjustments": adjustments_with_tax,
+            "net_adjustment_total": net_adjustment_total,
+            "effective_tax_rate": tax_rate,
+            "yoy_growth": None,  # 後で計算する場合はここで
+            "filing_date": filing_date,
+            "form": form,
+            "ai_analysis": ai_analysis
+        }
+        quarters_processed.append(quarter_record)
+        
+        print(f"    GAAP EPS=${gaap_eps:.4f} → Adj EPS=${adjusted_eps:.4f}")
     
-    # 年でソート（新しい順）
-    annual_results.sort(key=lambda x: x["year"], reverse=True)
-    return annual_results
+    # 3. TTMデータの計算（簡易版：直近4四半期の和）
+    ttm_data = []
+    if len(quarters_processed) >= 4:
+        for i in range(len(quarters_processed) - 3):
+            ttm_quarters = quarters_processed[i:i+4]
+            ttm_net_income = sum(q['gaap_net_income'] for q in ttm_quarters)
+            ttm_adjusted_income = sum(q['adjusted_net_income'] for q in ttm_quarters)
+            # 加重平均株式数は単純平均では正確でないが、簡易的に平均
+            avg_shares = sum(q['diluted_shares_used'] for q in ttm_quarters) / 4
+            ttm_eps = ttm_net_income / avg_shares
+            ttm_adj_eps = ttm_adjusted_income / avg_shares
+            period_str = f"{ttm_quarters[-1]['filing_date']} to {ttm_quarters[0]['filing_date']}"
+            ttm_data.append({
+                "period": period_str,
+                "net_income": ttm_net_income,
+                "adjusted_income": ttm_adjusted_income,
+                "diluted_shares": avg_shares,
+                "eps": ttm_eps,
+                "adjusted_eps": ttm_adj_eps
+            })
+    
+    # 4. 年次データ（四半期から集計）※今回は空のままにするか、必要なら実装
+    # ここでは空リストを出力（後で必要なら追加）
+    years_data = []
+    
+    # 5. 保存
+    ticker_dir = OUTPUT_BASE / ticker
+    save_json({
+        "ticker": ticker,
+        "last_updated": datetime.now().isoformat(),
+        "quarters": quarters_processed
+    }, ticker_dir / "quarterly.json")
+    
+    save_json({
+        "ticker": ticker,
+        "last_updated": datetime.now().isoformat(),
+        "ttm": ttm_data
+    }, ticker_dir / "ttm.json")
+    
+    save_json({
+        "ticker": ticker,
+        "last_updated": datetime.now().isoformat(),
+        "years": years_data
+    }, ticker_dir / "annual.json")   # 空のファイルでも残す（削除してもOK）
+    
+    print(f"✓ {ticker} 保存完了: {ticker_dir}")
 
-# ============================================
-# メイン実行関数
-# ============================================
-def run():
-    # 設定読み込み
-    config_base = "config"
-    with open(os.path.join(config_base, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
-        tickers = yaml.safe_load(f)["tickers"]
-    
-    with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
-        adjustment_config = json.load(f)
+def main():
+    tickers_config, _ = load_config()
+    tickers = tickers_config.get('tickers', [])
+    if not tickers:
+        print("No tickers to process.")
+        return
     
     for ticker in tickers:
-        print(f"\n=== Processing {ticker} ===")
-        
-        # 1. 過去10年分の四半期データを取得（extract_key_facts.py の最新版を使用）
-        quarterly_raw = extract_quarterly_facts(ticker, years=10)
-        if not quarterly_raw:
-            print(f"{ticker}: データなし")
-            continue
-        
-        # 2. 各四半期ごとに調整後EPSを計算
-        quarterly_results = []
-        for i, period_data in enumerate(quarterly_raw):
-            print(f"\nProcessing quarter {i+1}/{len(quarterly_raw)}: {period_data['filing_date']} ({period_data['form']})")
-            
-            # データの整形（normalize_value で USD 絶対値に変換）
-            data = {
-                "net_income": normalize_value(period_data.get("net_income")),
-                "diluted_shares": normalize_value(period_data.get("diluted_shares")),
-                "tax_expense": normalize_value(period_data.get("tax_expense")),
-                "pretax_income": normalize_value(period_data.get("pretax_income")),
-                "filing_date": period_data["filing_date"],
-                "form": period_data["form"],
-                # 調整項目検出用に raw データも保持（detect_adjustments 内で使う）
-                "raw_facts": {k: v for k, v in period_data.items() 
-                            if k not in ["net_income", "diluted_shares", "tax_expense", "pretax_income", "filing_date", "form"]}
-            }
-            
-            # 調整項目検出（period_data 全体を渡す）
-            adjustments_raw = detect_adjustments(period_data, adjustment_config)
-            
-            # 税効果適用
-            net_adjustment, detailed = apply_tax_adjustments(adjustments_raw, data)
-            data["total_adjustments"] = net_adjustment
-            
-            # EPS計算
-            result = calculate_eps(data, net_adjustment, detailed)
-            # 必要なフィールドを追加
-            result["filing_date"] = data["filing_date"]
-            result["form"] = data["form"]
-            result["net_adjustment_total"] = net_adjustment
-            
-            quarterly_results.append(result)
-            
-            print(f"  {result['filing_date']} ({result['form']}): "
-                  f"GAAP EPS=${result['gaap_eps']:.4f} → "
-                  f"Adj EPS=${result['adjusted_eps']:.4f}")
-        
-        # 3. TTM計算
-        ttm_results = []
-        for i in range(3, len(quarterly_results)):
-            ttm = calculate_ttm(quarterly_results, i)
-            if ttm:
-                ttm_results.append(ttm)
-        
-        # 4. 年次集計
-        annual_results = aggregate_annual(quarterly_results)
-        
-        # 5. AI分析（最新四半期）
-        if quarterly_results:
-            latest = quarterly_results[-1]
-            ai_result = analyze_adjustments(
-                ticker, 
-                latest, 
-                latest.get("adjustments", [])
-            )
-            try:
-                latest["ai_analysis"] = json.loads(ai_result)
-            except:
-                latest["ai_analysis"] = {"health": "Error", "comment": ai_result, "sources": []}
-        
-        # 6. 保存
-        ticker_dir = f"data/{ticker}"
-        os.makedirs(ticker_dir, exist_ok=True)
-        
-        # 四半期データ
-        with open(f"{ticker_dir}/quarterly.json", "w", encoding="utf-8") as f:
-            json.dump({
-                "ticker": ticker,
-                "last_updated": datetime.now().isoformat(),
-                "quarters": quarterly_results
-            }, f, indent=2, ensure_ascii=False)
-        
-        # TTMデータ
-        if ttm_results:
-            with open(f"{ticker_dir}/ttm.json", "w", encoding="utf-8") as f:
-                json.dump({
-                    "ticker": ticker,
-                    "last_updated": datetime.now().isoformat(),
-                    "ttm": ttm_results
-                }, f, indent=2, ensure_ascii=False)
-        
-        # 年次データ
-        if annual_results:
-            with open(f"{ticker_dir}/annual.json", "w", encoding="utf-8") as f:
-                json.dump({
-                    "ticker": ticker,
-                    "last_updated": datetime.now().isoformat(),
-                    "years": annual_results
-                }, f, indent=2, ensure_ascii=False)
-        
-        print(f"✓ {ticker} 保存完了: {ticker_dir}/")
+        try:
+            process_ticker(ticker)
+        except Exception as e:
+            print(f"Error processing {ticker}: {e}", file=sys.stderr)
 
-# ============================================
-# エントリーポイント
-# ============================================
 if __name__ == "__main__":
-    run()
+    main()
