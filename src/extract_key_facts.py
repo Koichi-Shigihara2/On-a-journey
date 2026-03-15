@@ -57,12 +57,37 @@ def load_required_xbrl_tags() -> List[str]:
             xbrl_tags = sub.get("xbrl_tags", [])
             for tag in xbrl_tags:
                 tags.add(tag)
-    # 基本的な必須タグも追加（プレフィックス付きで格納）
+    
+    # 基本的な必須タグ（プレフィックス付きで格納）- バリエーションを拡充
+    # 当期純利益
     tags.add("us-gaap:NetIncomeLoss")
+    tags.add("us-gaap:NetIncomeLossAttributableToParent")                  # 親会社帰属
+    tags.add("us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic")   # 普通株主帰属（基本）
+
+    # 税引前利益（継続事業）系 → 四半期でよく使われるバリエーションを網羅
+    tags.add("us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxExpenseBenefit")   # 標準・最優先
+    tags.add("us-gaap:IncomeFromContinuingOperationsBeforeIncomeTaxes")                  # 古いor代替
+    tags.add("us-gaap:IncomeLossBeforeIncomeTaxExpenseBenefit")                          # 広め
+    tags.add("us-gaap:IncomeLossBeforeIncomeTaxExpenseBenefitAndExtraordinaryItems")     # 稀だが存在
+    tags.add("us-gaap:IncomeBeforeTax")                                                  # 簡略版
+
+    # 法人税費用（継続事業）系 → これが四半期で一番取れやすい
+    tags.add("us-gaap:IncomeTaxExpenseBenefitContinuingOperations")                      # 四半期最優先
+    tags.add("us-gaap:IncomeTaxExpenseBenefit")                                          # 通期・全体用（フォールバック）
+    tags.add("us-gaap:ProvisionForIncomeTaxes")                                          # 代替表現（Provision）
+    tags.add("us-gaap:IncomeTaxExpenseBenefitFromContinuingOperations")                  # 稀なバリエーション
+
+    # 税引後継続事業利益（最終チェック用）
+    tags.add("us-gaap:IncomeLossFromContinuingOperations")
+    tags.add("us-gaap:IncomeFromContinuingOperations")
+
+    # EPS計算に必須
     tags.add("us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding")
-    tags.add("us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxExpenseBenefit")  # 税引前利益
-    tags.add("us-gaap:IncomeTaxExpenseBenefit")  # 法人税等
-    tags.add("us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic")  # 親会社株主帰属当期利益（あれば）
+    tags.add("us-gaap:EarningsPerShareDiluted")   # 直接EPSがあれば便利（ただし計算優先）
+
+    # その他よく使う調整関連（adjustment_items.json にない場合の保険）
+    tags.add("us-gaap:ShareBasedCompensation")
+
     return list(tags)
 
 # ============================================
@@ -329,9 +354,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             tag_data_map[tag] = items
             print(f"Extracted {len(items)} items for {tag}")
         
-        # ---------- 10-Qデータを期間フィルタリング ----------
-        # タグ別に期間フィルタを適用するのは後で行う。まずは10-Kから年次データを抽出。
-        
+        # ---------- 10-Kから年次データを抽出 ----------
         # 年次データ（10-K）のみを期間フィルタ（300日以上）で抽出
         annual_data_by_tag = {}
         for tag, items in tag_data_map.items():
@@ -555,6 +578,16 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 if 'diluted_shares' not in data:
                     missing.append('diluted_shares')
                 print(f"  ✗ {data.get('filing_date', 'unknown')} (FY{fiscal_year} Q{quarter}): missing {', '.join(missing)}")
+        
+        # デバッグ：税関連タグの存在確認
+        print("\n=== Tax-related tags presence ===")
+        tax_tags = [t for t in required_tags if 'tax' in t.lower() or 'income' in t.lower()]
+        for tag in tax_tags:
+            items = tag_data_map.get(tag, [])
+            if items:
+                print(f"  {tag}: {len(items)} items (first: {items[0]['end']} {items[0].get('form','')})")
+            else:
+                print(f"  {tag}: none")
         
         print(f"\n{ticker}: {len(quarterly_list)}件の四半期データを取得")
         return quarterly_list
