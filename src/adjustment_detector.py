@@ -12,13 +12,24 @@ from typing import Dict, List, Any, Optional
 CONFIG_DIR = Path(__file__).parent.parent / "config"
 ADJUSTMENT_ITEMS_PATH = CONFIG_DIR / "adjustment_items.json"
 
+# キャッシュ用（複数回呼ばれることを考慮）
+_items_config_cache = None
+
 def load_adjustment_items() -> List[Dict[str, Any]]:
     """
     adjustment_items.json を読み込み、フラットな項目リストを返す
     各項目には category フィールドが追加される
     """
-    with open(ADJUSTMENT_ITEMS_PATH, 'r', encoding='utf-8') as f:
-        config = json.load(f)
+    global _items_config_cache
+    if _items_config_cache is not None:
+        return _items_config_cache
+
+    try:
+        with open(ADJUSTMENT_ITEMS_PATH, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        print(f"Warning: {ADJUSTMENT_ITEMS_PATH} not found. Using empty list.")
+        return []
     
     items = []
     categories = config.get("categories", [])
@@ -28,14 +39,16 @@ def load_adjustment_items() -> List[Dict[str, Any]]:
             item = sub.copy()
             item["category"] = category_name
             items.append(item)
+    
+    _items_config_cache = items
     return items
 
-def detect_adjustments(period_data: Dict[str, Any], adjustment_config: Dict) -> List[Dict[str, Any]]:
+def detect_adjustments(period_data: Dict[str, Any], adjustment_config: Optional[Dict] = None) -> List[Dict[str, Any]]:
     """
     period_data から調整項目を検出する
     Args:
         period_data: 1四半期分のデータ（extract_quarterly_facts の戻り値の要素）
-        adjustment_config: adjustment_items.json の内容（カテゴリ構造のまま渡すことを想定）
+        adjustment_config: 互換性のため残しているが、使用しない
     Returns:
         List[Dict]: 検出された調整項目のリスト
         各要素は以下の形式：
@@ -50,11 +63,7 @@ def detect_adjustments(period_data: Dict[str, Any], adjustment_config: Dict) -> 
             "category": str
         }
     """
-    # 設定からフラットな項目リストを生成
-    items_config = load_adjustment_items()  # ここでは adjustment_config は使わず、直接ファイルを読む
-    # ※ adjustment_config を引数で受け取る設計になっているが、ここではファイルを直接読む実装に変更
-    #   必要に応じて adjustment_config を使うように修正可能
-    
+    items_config = load_adjustment_items()
     detected = []
     
     for item in items_config:
@@ -81,36 +90,18 @@ def detect_adjustments(period_data: Dict[str, Any], adjustment_config: Dict) -> 
     
     return detected
 
-# 互換性のため、adjustment_config を引数に取る関数も残すが、上記を使う
-# pipeline.py では detect_adjustments(period_data, adjustment_config) と呼び出しているので、
-# 第二引数は無視する形にする
-def detect_adjustments(period_data: Dict[str, Any], adjustment_config: Optional[Dict] = None) -> List[Dict[str, Any]]:
-    """
-    後方互換性のためのラッパー。adjustment_config は無視してファイルから読み込む。
-    """
-    return _detect_adjustments_impl(period_data)
-
-def _detect_adjustments_impl(period_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """実際の実装"""
-    items_config = load_adjustment_items()
-    detected = []
-    for item in items_config:
-        for tag in item.get('xbrl_tags', []):
-            if tag in period_data:
-                value_dict = period_data[tag]
-                amount = value_dict.get('value')
-                unit = value_dict.get('unit', 'USD')
-                if amount is None or amount == 0:
-                    continue
-                detected.append({
-                    "item_name": item['item_name'],
-                    "amount": amount,
-                    "unit": unit,
-                    "direction": item['direction'],
-                    "pre_tax": item['pre_tax'],
-                    "reason": item['reason'],
-                    "extracted_from": tag,
-                    "category": item['category']
-                })
-                break
-    return detected
+# テスト用
+if __name__ == "__main__":
+    # 簡易テスト
+    sample_period = {
+        "filing_date": "2025-03-31",
+        "form": "10-Q",
+        "net_income": {"value": 214031000, "unit": "USD"},
+        "diluted_shares": {"value": 2552818000, "unit": "shares"},
+        "us-gaap:ShareBasedCompensation": {"value": 155339000, "unit": "USD"},
+        "us-gaap:RestructuringCharges": {"value": 5000000, "unit": "USD"}
+    }
+    adjustments = detect_adjustments(sample_period)
+    print("Detected adjustments:")
+    for adj in adjustments:
+        print(f"  {adj['item_name']}: {adj['amount']} {adj['unit']} (category: {adj['category']})")
