@@ -6,7 +6,6 @@
   <title>Adjusted EPS Analyzer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- chartjs-plugin-datalabels を追加 -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -55,7 +54,7 @@
       </div>
       <div class="flex items-center space-x-2">
         <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)" 
-               class="px-3 py-1 bg-gray-700 rounded text-white" value="PLTR">
+               class="px-3 py-1 bg-gray-700 rounded text-white" value="NVDA">
         <button onclick="loadTicker()" class="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
           検索
         </button>
@@ -76,7 +75,7 @@
     <div id="content" class="hidden">
       <!-- 銘柄ヘッダー -->
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold" id="ticker-title">PLTR</h2>
+        <h2 class="text-3xl font-bold" id="ticker-title">NVDA</h2>
         <div class="flex space-x-2">
           <span id="health-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-600" title="健全性: Good">Good</span>
           <span class="text-gray-400" id="last-updated"></span>
@@ -103,19 +102,30 @@
         </div>
       </div>
 
-      <!-- タブ -->
-      <div class="border-b border-gray-700 mb-6">
-        <ul class="flex flex-wrap -mb-px">
-          <li class="mr-2">
-            <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
-          </li>
-          <li class="mr-2">
-            <a href="#" onclick="switchTab('annual')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-annual">年次</a>
-          </li>
-          <li class="mr-2">
-            <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
-          </li>
-        </ul>
+      <!-- タブと期間選択 -->
+      <div class="flex flex-wrap items-center justify-between mb-6">
+        <div class="border-b border-gray-700 flex-1">
+          <ul class="flex flex-wrap -mb-px">
+            <li class="mr-2">
+              <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
+            </li>
+            <li class="mr-2">
+              <a href="#" onclick="switchTab('annual')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-annual">年次</a>
+            </li>
+            <li class="mr-2">
+              <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
+            </li>
+          </ul>
+        </div>
+        <!-- 期間選択ドロップダウン -->
+        <div class="ml-4">
+          <select id="range-select" class="bg-gray-700 text-white px-3 py-2 rounded" onchange="changeRange()">
+            <option value="all">全期間</option>
+            <option value="5y">5年</option>
+            <option value="3y">3年</option>
+            <option value="1y">1年</option>
+          </select>
+        </div>
       </div>
 
       <!-- チャート（データラベル付き） -->
@@ -151,11 +161,12 @@
     // Chart.js に datalabels プラグインを登録
     Chart.register(ChartDataLabels);
 
-    let currentTicker = 'PLTR';
+    let currentTicker = 'NVDA';
     let quarterlyData = null;
     let annualData = null;
     let ttmData = null;
     let chart = null;
+    let currentRange = 'all'; // 選択中の期間
 
     function showLoading(show) {
       document.getElementById('loading').classList.toggle('hidden', !show);
@@ -173,13 +184,14 @@
         const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
         if (!qResp.ok) throw new Error('データが見つかりません');
         quarterlyData = await qResp.json();
+        console.log('Quarterly data loaded:', quarterlyData); // デバッグ
 
         annualData = null;
         ttmData = null;
 
         updateHeader(quarterlyData);
         updateMetrics(quarterlyData);
-        updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
+        updateChartWithRange(); // 期間指定付きでチャート更新
         updateAllAdjustments(quarterlyData.quarters);
 
         const latest = getLatestQuarter(quarterlyData.quarters);
@@ -218,13 +230,14 @@
       document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
       document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
       
-      // YoY成長率：前年同期（同じ月の4四半期前）を検索
+      // YoY成長率：前年同期（同じ月の1年前）を検索
       const latestDate = latest.filing_date;
       const [year, month, day] = latestDate.split('-');
       const targetYear = parseInt(year) - 1;
       const targetDate = `${targetYear}-${month}-${day}`;
       
       const prevQuarter = data.quarters.find(q => q.filing_date === targetDate);
+      console.log('YoY check:', { latestDate, targetDate, found: prevQuarter }); // デバッグ
       
       if (prevQuarter) {
         const prevEps = prevQuarter.adjusted_eps;
@@ -236,6 +249,7 @@
           document.getElementById('yoy').innerText = 'N/A';
         }
       } else {
+        // フォールバック：4つ前のインデックス
         const idx = data.quarters.findIndex(q => q.filing_date === latestDate);
         const prevIdx = idx - 4;
         if (prevIdx >= 0) {
@@ -262,8 +276,48 @@
       return `${year}-Q${quarter}`;
     }
 
+    // 期間に基づいてデータをフィルタリング
+    function filterDataByRange(dataArray, labelField) {
+      if (currentRange === 'all' || !dataArray || dataArray.length === 0) return dataArray;
+      
+      const now = new Date();
+      const latestDate = new Date(dataArray[dataArray.length - 1][labelField]);
+      let cutoffDate = new Date(latestDate);
+      
+      switch (currentRange) {
+        case '1y':
+          cutoffDate.setFullYear(latestDate.getFullYear() - 1);
+          break;
+        case '3y':
+          cutoffDate.setFullYear(latestDate.getFullYear() - 3);
+          break;
+        case '5y':
+          cutoffDate.setFullYear(latestDate.getFullYear() - 5);
+          break;
+        default:
+          return dataArray;
+      }
+      
+      return dataArray.filter(item => new Date(item[labelField]) >= cutoffDate);
+    }
+
+    function updateChartWithRange() {
+      if (!quarterlyData) return;
+      const filtered = filterDataByRange(quarterlyData.quarters, 'filing_date');
+      updateChart(filtered, 'quarterly', 'filing_date');
+    }
+
+    function changeRange() {
+      const select = document.getElementById('range-select');
+      currentRange = select.value;
+      if (quarterlyData) {
+        updateChartWithRange();
+      }
+    }
+
     function updateChart(dataArray, type, labelField) {
       const ctx = document.getElementById('eps-chart').getContext('2d');
+      console.log('updateChart called with', dataArray.length, 'items'); // デバッグ
 
       if (!dataArray || dataArray.length === 0) {
         if (chart) chart.destroy();
@@ -360,6 +414,7 @@
     function updateAllAdjustments(quarters) {
       const container = document.getElementById('adjustments-accordion');
       const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+      console.log('Adjustments sorted:', sorted.map(q => q.filing_date)); // デバッグ
       
       let html = '';
       sorted.forEach(q => {
@@ -441,7 +496,7 @@
 
       try {
         if (tab === 'quarterly' && quarterlyData) {
-          updateChart(quarterlyData.quarters, 'quarterly', 'filing_date');
+          updateChartWithRange(); // 期間指定付き
           updateAllAdjustments(quarterlyData.quarters);
           const latest = getLatestQuarter(quarterlyData.quarters);
           updateAI(latest.ai_analysis);
@@ -485,7 +540,7 @@
       }
     }
 
-    window.onload = () => loadTicker('PLTR');
+    window.onload = () => loadTicker('NVDA');
   </script>
 </body>
 </html>
