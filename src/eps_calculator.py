@@ -1,30 +1,75 @@
-def calculate_eps(data, net_adjustment, detailed_adjustments):
+"""
+eps_calculator.py
+EPS計算モジュール
+- GAAP EPS と Adjusted EPS を計算
+- 調整後純利益 = GAAP純利益 + 税効果適用後の調整額合計
+- 分母には希薄化後株式数を使用
+"""
+from typing import Dict, Any, List
+from extract_key_facts import normalize_value
+
+def calculate_eps(period_data: Dict[str, Any], net_adjustment: float, adjustments_detail: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    厳密な調整後EPS計算
-    - 希薄化後加重平均株式数を使用
-    - 非支配持分を考慮（TODO: 必要に応じて実装）
+    EPSを計算する
+    Args:
+        period_data: 当該四半期のデータ（normalize_value で各値を取得）
+        net_adjustment: 税効果適用後の調整額合計（純利益への加算額）
+        adjustments_detail: 税効果適用後の詳細リスト（各項目に net_amount を含む）
+    Returns:
+        Dict: 以下のキーを含む辞書
+            - gaap_eps: float
+            - adjusted_eps: float
+            - gaap_net_income: float (正規化済み)
+            - adjusted_net_income: float
+            - diluted_shares_used: float
+            - adjustments: List[Dict] (adjustments_detail をそのまま)
+            - net_adjustment_total: float (net_adjustment と同じ)
     """
-    # GAAP EPS（基本）
-    gaap_eps = data["net_income"] / data["diluted_shares"] if data["diluted_shares"] else 0
+    # 正規化された値を取得
+    gaap_net_income = normalize_value(period_data.get('net_income'))
+    diluted_shares = normalize_value(period_data.get('diluted_shares'))
     
-    # 調整後純利益
-    adjusted_income = data["net_income"] + net_adjustment
+    if diluted_shares == 0:
+        # エラー処理：株式数が0の場合は0を返す
+        print(f"Warning: diluted_shares is 0 for {period_data.get('filing_date', 'unknown')}")
+        gaap_eps = 0.0
+        adjusted_eps = 0.0
+    else:
+        gaap_eps = gaap_net_income / diluted_shares
+        adjusted_net_income = gaap_net_income + net_adjustment
+        adjusted_eps = adjusted_net_income / diluted_shares
     
-    # 調整後EPS
-    adjusted_eps = adjusted_income / data["diluted_shares"] if data["diluted_shares"] else 0
-    
-    # YoY成長率（過去データがあれば計算）
-    yoy_growth = None
-    # TODO: 前年同期比を計算
-    
-    return {
-        "gaap_net_income": data["net_income"],
+    result = {
         "gaap_eps": gaap_eps,
-        "adjusted_net_income": adjusted_income,
         "adjusted_eps": adjusted_eps,
-        "diluted_shares_used": data["diluted_shares"],
-        "adjustments": detailed_adjustments,
-        "net_adjustment_total": net_adjustment,
-        "effective_tax_rate": data.get("tax_expense", 0) / data.get("pretax_income", 1) if data.get("pretax_income", 0) != 0 else 0.21,
-        "yoy_growth": yoy_growth
+        "gaap_net_income": gaap_net_income,
+        "adjusted_net_income": gaap_net_income + net_adjustment,
+        "diluted_shares_used": diluted_shares,
+        "adjustments": adjustments_detail,
+        "net_adjustment_total": net_adjustment
     }
+    return result
+
+# テスト用
+if __name__ == "__main__":
+    # 簡易テスト
+    sample_period = {
+        "filing_date": "2025-03-31",
+        "net_income": {"value": 214031000, "unit": "USD"},
+        "diluted_shares": {"value": 2552818000, "unit": "shares"}
+    }
+    sample_adjustments = [
+        {
+            "item_name": "株式報酬費用",
+            "amount": 155339000,
+            "unit": "USD",
+            "net_amount": 122717810,  # 税効果適用後
+            "category": "株式報酬 (SBC)"
+        }
+    ]
+    net_adj = 122717810
+    
+    result = calculate_eps(sample_period, net_adj, sample_adjustments)
+    print(f"GAAP EPS: {result['gaap_eps']:.4f}")
+    print(f"Adjusted EPS: {result['adjusted_eps']:.4f}")
+    print(f"Adjustments count: {len(result['adjustments'])}")
