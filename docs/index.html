@@ -128,7 +128,7 @@
           </div>
         </div>
         
-        <!-- プリセットボタン（変更後） -->
+        <!-- プリセットボタン -->
         <div class="flex flex-wrap gap-2">
           <button onclick="setPreset('all')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">全期間</button>
           <button onclick="setPreset('5y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">5年</button>
@@ -191,13 +191,15 @@
       document.getElementById('error').classList.add('hidden');
 
       try {
-        const qResp = await fetch(`data/${currentTicker}/quarterly.json`);
+        // ★★★ キャッシュ無効化オプションを追加 ★★★
+        const qResp = await fetch(`data/${currentTicker}/quarterly.json`, { cache: 'no-store' });
         if (!qResp.ok) throw new Error('四半期データが見つかりません');
         quarterlyData = await qResp.json();
-        console.log('Quarterly data loaded:', quarterlyData);
+        // ★★★ 読み込んだデータを詳細に表示 ★★★
+        console.log('Quarterly data loaded:', JSON.parse(JSON.stringify(quarterlyData)));
 
         try {
-          const tResp = await fetch(`data/${currentTicker}/ttm.json`);
+          const tResp = await fetch(`data/${currentTicker}/ttm.json`, { cache: 'no-store' });
           if (tResp.ok) ttmData = await tResp.json();
         } catch (e) {
           console.log('TTM data not found');
@@ -281,7 +283,7 @@
       }
 
       const latestInRange = getLatestFromArray(filtered);
-      console.log('latestInRange:', latestInRange); // デバッグ
+      console.log('latestInRange:', latestInRange);
 
       if (latestInRange) {
         updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
@@ -292,7 +294,7 @@
       }
     }
 
-    // プリセット設定（変更後）
+    // プリセット設定
     function setPreset(range) {
       if (!quarterlyData) return;
       const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
@@ -349,17 +351,18 @@
       return sorted[0];
     }
 
-    // YoY計算（四半期ベース）- 改善版（フォールバック強化）
+    // YoY計算（四半期ベース）- デバッグ強化版
     function calculateYoY(latest, allQuarters) {
         const latestDate = latest.filing_date;
         const [year, month] = latestDate.split('-');
         const latestQuarter = Math.floor((parseInt(month) - 1) / 3) + 1;
         
+        // デバッグ: allQuarters の内容を確認
+        console.log('allQuarters for YoY:', allQuarters.map(q => ({ date: q.filing_date, year: q.filing_date.split('-')[0], quarter: Math.floor((parseInt(q.filing_date.split('-')[1]) - 1) / 3) + 1 })));
+
         // 前年の同じ四半期を探す
         const targetYear = parseInt(year) - 1;
-        const targetQuarterStr = `${targetYear}-Q${latestQuarter}`;
         
-        // 候補を探す: 同じ四半期で年が1年前のもの
         const candidates = allQuarters.filter(q => {
             const qYear = parseInt(q.filing_date.split('-')[0]);
             const qMonth = parseInt(q.filing_date.split('-')[1]);
