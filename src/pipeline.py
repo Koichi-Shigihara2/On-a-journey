@@ -5,7 +5,7 @@ pipeline.py
 - 銘柄ごとに四半期データ取得
 - 調整項目検出、税効果適用、EPS計算
 - TTM計算、年次集計
-- AI分析
+- AI分析（全四半期）
 - JSON保存（docs/data/配下）
 """
 import yaml
@@ -46,7 +46,6 @@ def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]
     if len(ttm_data) < 4:
         return None
     
-    # TTM集計
     total_net_income = sum(q["gaap_net_income"] for q in ttm_data)
     total_adjustments = sum(q.get("net_adjustment_total", 0) for q in ttm_data)
     avg_shares = sum(q["diluted_shares_used"] for q in ttm_data) / 4
@@ -77,10 +76,8 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     annual_results = []
     for year, quarters in annual_map.items():
         if len(quarters) < 4:
-            # 完全な年でなければスキップ（必要に応じて変更可）
             continue
         
-        # 年の最後の四半期のデータを基本とするが、net_incomeは合計
         latest_q = max(quarters, key=lambda x: x["filing_date"])
         total_net_income = sum(q["gaap_net_income"] for q in quarters)
         total_adjustments = sum(q.get("net_adjustment_total", 0) for q in quarters)
@@ -109,12 +106,10 @@ def run():
     with open(os.path.join(CONFIG_DIR, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
         tickers = yaml.safe_load(f)["tickers"]
     
-    # adjustment_items.json は各モジュール内で読み込むのでここでは不要
-    
     for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
         
-        # 1. 過去N年分の四半期データを取得（extract_quarterly_facts を使用）
+        # 1. 過去N年分の四半期データを取得
         quarterly_raw = extract_quarterly_facts(ticker, years=10)
         if not quarterly_raw:
             print(f"{ticker}: データなし")
@@ -125,8 +120,6 @@ def run():
         for i, period_data in enumerate(quarterly_raw):
             print(f"\nProcessing quarter {i+1}/{len(quarterly_raw)}: {period_data.get('filing_date', 'unknown')} ({period_data.get('form', '10-Q')})")
             
-            # 必要な値を正規化（normalize_value で数値化）
-            # period_data 内の各項目は {'value': ..., 'unit': ...} 形式
             data_for_eps = {
                 "net_income": period_data.get('net_income'),
                 "diluted_shares": period_data.get('diluted_shares'),
@@ -136,23 +129,26 @@ def run():
                 "form": period_data.get('form')
             }
             
-            # 調整項目検出（period_data 全体を渡す）
             adjustments_raw = detect_adjustments(period_data)
-            
-            # 税効果適用
             net_adjustment, detailed = apply_tax_adjustments(adjustments_raw, data_for_eps)
-            
-            # EPS計算
             result = calculate_eps(data_for_eps, net_adjustment, detailed)
-            # filing_date と form を追加（calculate_eps に含まれていない場合）
             result["filing_date"] = data_for_eps["filing_date"]
             result["form"] = data_for_eps["form"]
             
-            quarterly_results.append(result)
+            # ★★★ AI分析（各四半期ごとに実行）★★★
+            ai_result_str = analyze_adjustments(ticker, result, result.get("adjustments", []))
+            try:
+                result["ai_analysis"] = json.loads(ai_result_str)
+            except Exception as e:
+                print(f"AI analysis parse error for {result['filing_date']}: {e}")
+                result["ai_analysis"] = {
+                    "health": "Error",
+                    "comment": f"AI分析エラー: {str(e)}",
+                    "sources": []
+                }
             
-            print(f"  {result['filing_date']} ({result['form']}): "
-                  f"GAAP EPS=${result['gaap_eps']:.4f} → "
-                  f"Adj EPS=${result['adjusted_eps']:.4f}")
+            quarterly_results.append(result)
+            print(f"  {result['filing_date']}: GAAP EPS=${result['gaap_eps']:.4f} → Adj EPS=${result['adjusted_eps']:.4f}")
         
         # 3. TTM計算
         ttm_results = []
@@ -164,17 +160,7 @@ def run():
         # 4. 年次集計
         annual_results = aggregate_annual(quarterly_results)
         
-        # 5. AI分析（最新四半期）
-        if quarterly_results:
-            latest = quarterly_results[-1]
-            ai_result_str = analyze_adjustments(ticker, latest, latest.get("adjustments", []))
-            try:
-                latest["ai_analysis"] = json.loads(ai_result_str)
-            except Exception as e:
-                print(f"AI analysis parse error: {e}")
-                latest["ai_analysis"] = {"health": "Error", "comment": ai_result_str, "sources": []}
-        
-        # 6. 保存（docs/data/ 配下）
+        # 5. 保存（docs/data/ 配下）
         ticker_dir = os.path.join(OUTPUT_BASE, ticker)
         os.makedirs(ticker_dir, exist_ok=True)
         
@@ -204,7 +190,6 @@ def run():
                     "years": annual_results
                 }, f, indent=2, ensure_ascii=False)
         else:
-            # 空の年次ファイルを作成（UIでタブ切り替え時のエラー防止）
             with open(os.path.join(ticker_dir, "annual.json"), "w", encoding="utf-8") as f:
                 json.dump({
                     "ticker": ticker,
