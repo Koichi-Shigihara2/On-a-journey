@@ -1,6 +1,6 @@
 """
 ai_analyzer.py
-AI分析モジュール（Grok API利用）
+AI分析モジュール（XAI API利用）
 - 調整項目リストを分析し、健全性・コメント・引用ソースを返す
 - 調整項目がない場合は早期に「調整なし」レスポンスを返す
 - 戻り値はJSON文字列（pipeline.py が json.loads する想定）
@@ -28,10 +28,10 @@ Adjusted EPS: {adjusted_eps}
 }}
 """
 
-# ★★★ 環境変数名を XAI_API_KEY に変更 ★★★
-XAI_API_KEY = os.environ.get("XAI_API_KEY")
-GROK_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROK_MODEL = "llama3-70b-8192"
+# ★★★ XAI API用の設定 ★★★
+XAI_API_KEY = os.environ.get("XAI_API_KEY")  # GitHub Secretsのキー
+XAI_API_URL = "https://api.x.ai/v1/chat/completions"
+XAI_MODEL = "grok-4.20-beta-0309-reasoning"  # 画像にあるモデル名
 
 def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustments: List[Dict[str, Any]]) -> str:
     if not adjustments:
@@ -62,13 +62,13 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
 
     try:
         response = requests.post(
-            GROK_API_URL,
+            XAI_API_URL,
             headers={
                 "Authorization": f"Bearer {XAI_API_KEY}",
                 "Content-Type": "application/json"
             },
             json={
-                "model": GROK_MODEL,
+                "model": XAI_MODEL,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.3,
                 "response_format": {"type": "json_object"}
