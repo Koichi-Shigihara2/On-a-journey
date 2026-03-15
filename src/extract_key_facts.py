@@ -1,9 +1,10 @@
 """
-SEC EDGARから企業の財務データを抽出するモジュール（最終版）
+SEC EDGARから企業の財務データを抽出するモジュール（最終版・修正版）
 - CIKマップファイルから銘柄のCIKを取得
 - SECのCompany Facts APIから直接XBRLデータを取得
 - 期間の長さ（60〜100日）で四半期データのみをフィルタリング
 - 複数クラス株式（PLTRなど）の希薄化後株式数を合算
+- 調整項目は元のXBRLタグ名で保存
 - 詳細なデバッグ出力とエラーハンドリング
 """
 import os
@@ -176,6 +177,7 @@ def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: str 
 def get_diluted_shares_from_facts(facts_data: Dict, form_type: str = "10-Q", limit: int = 40) -> List[Dict]:
     """
     希薄化後株式数を取得（複数クラスがある場合は合算）
+    戻り値の各要素は {'end': str, 'val': float, 'filed': str, 'form': str, 'unit': str, 'start': str} の形式
     """
     tag = "WeightedAverageNumberOfDilutedSharesOutstanding"
     try:
@@ -228,6 +230,14 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         years: 取得する年数
     Returns:
         List[Dict]: 四半期データのリスト
+        各辞書には以下のキーが含まれる：
+            - filing_date: 提出日 (str)
+            - form: フォーム種類 (str)
+            - net_income: {'value': float, 'unit': str} 形式の純利益
+            - diluted_shares: {'value': float, 'unit': str} 形式の希薄化後株式数
+            - pretax_income: {'value': float, 'unit': str} 形式の税引前利益（存在すれば）
+            - tax_expense: {'value': float, 'unit': str} 形式の法人税等（存在すれば）
+            - さらに、取得できたすべてのXBRLタグ（例：'us-gaap:ShareBasedCompensation'）が同様の形式で格納される
     """
     try:
         # CIK取得
@@ -240,11 +250,9 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             print(f"No facts data for {ticker}")
             return []
         
-        # 各タグのデータを取得
+        # 各タグのデータを取得（必要に応じてタグを追加）
         net_income_data = extract_value_from_facts(facts, 'NetIncomeLoss', form_type="10-Q", limit=years*4)
-        
-        # 希薄化後株式数（複数クラス合算）
-        diluted_shares_data = get_diluted_shares_from_facts(facts, form_type="10-Q", limit=years*4)
+        diluted_shares_data = get_diluted_shares_from_facts(facts, form_type="10-Q", limit=years*4)  # 複数クラス合算版
         
         # フォールバック：通常の単一クラス用（合算が取れなかった場合）
         if not diluted_shares_data:
@@ -253,67 +261,60 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         basic_shares_data = extract_value_from_facts(facts, 'WeightedAverageNumberOfSharesOutstandingBasic', form_type="10-Q", limit=years*4)
         pretax_data = extract_value_from_facts(facts, 'IncomeLossFromContinuingOperationsBeforeIncomeTaxes', form_type="10-Q", limit=years*4)
         tax_data = extract_value_from_facts(facts, 'IncomeTaxExpenseBenefit', form_type="10-Q", limit=years*4)
+        
+        # 調整項目として検出したいタグ（adjustment_items.json と整合させる）
         sbc_data = extract_value_from_facts(facts, 'ShareBasedCompensation', form_type="10-Q", limit=years*4)
         restructuring_data = extract_value_from_facts(facts, 'RestructuringCharges', form_type="10-Q", limit=years*4)
+        acquisition_costs_data = extract_value_from_facts(facts, 'BusinessCombinationAcquisitionRelatedCosts', form_type="10-Q", limit=years*4)
+        goodwill_impairment_data = extract_value_from_facts(facts, 'GoodwillImpairmentLoss', form_type="10-Q", limit=years*4)
+        intangible_impairment_data = extract_value_from_facts(facts, 'ImpairmentOfIntangibleAssets', form_type="10-Q", limit=years*4)
+        amortization_intangibles_data = extract_value_from_facts(facts, 'AmortizationOfIntangibleAssets', form_type="10-Q", limit=years*4)
+        discontinued_ops_data = extract_value_from_facts(facts, 'IncomeLossFromDiscontinuedOperationsNetOfTax', form_type="10-Q", limit=years*4)
         
         # 期間をキーにマップ作成
         quarterly_map = {}
         
-        # Net Income
-        for item in net_income_data:
-            end_date = item['end']
-            if end_date not in quarterly_map:
-                quarterly_map[end_date] = {
-                    'filing_date': end_date,
-                    'form': '10-Q',
-                    'net_income': {'value': item['val'], 'unit': item['unit']}
+        # 各タグのデータをマップに追加するヘルパー
+        def add_to_map(data_list, tag_name):
+            for item in data_list:
+                end_date = item['end']
+                if end_date not in quarterly_map:
+                    quarterly_map[end_date] = {}
+                # 値を {'value': val, 'unit': unit} 形式で保存
+                quarterly_map[end_date][tag_name] = {
+                    'value': item['val'],
+                    'unit': item['unit']
                 }
-            else:
-                quarterly_map[end_date]['net_income'] = {'value': item['val'], 'unit': item['unit']}
+                # 付帯情報も必要なら保存（filed, start, form など）だが、今は省略
         
-        # Diluted Shares
-        for item in diluted_shares_data:
-            end_date = item['end']
-            if end_date in quarterly_map:
-                quarterly_map[end_date]['diluted_shares'] = {'value': item['val'], 'unit': item['unit']}
-            else:
-                quarterly_map[end_date] = {
-                    'filing_date': end_date,
-                    'form': '10-Q',
-                    'diluted_shares': {'value': item['val'], 'unit': item['unit']}
-                }
+        # 主要項目
+        add_to_map(net_income_data, 'net_income')
+        add_to_map(diluted_shares_data, 'diluted_shares')
+        add_to_map(basic_shares_data, 'basic_shares')
+        add_to_map(pretax_data, 'pretax_income')
+        add_to_map(tax_data, 'tax_expense')
         
-        # フォールバック：Basic Shares（Dilutedがない場合）
-        for item in basic_shares_data:
-            end_date = item['end']
-            if end_date in quarterly_map and 'diluted_shares' not in quarterly_map[end_date]:
-                quarterly_map[end_date]['diluted_shares'] = {'value': item['val'], 'unit': item['unit']}
+        # 調整項目（元のタグ名で保存）
+        add_to_map(sbc_data, 'us-gaap:ShareBasedCompensation')
+        add_to_map(restructuring_data, 'us-gaap:RestructuringCharges')
+        add_to_map(acquisition_costs_data, 'us-gaap:BusinessCombinationAcquisitionRelatedCosts')
+        add_to_map(goodwill_impairment_data, 'us-gaap:GoodwillImpairmentLoss')
+        add_to_map(intangible_impairment_data, 'us-gaap:ImpairmentOfIntangibleAssets')
+        add_to_map(amortization_intangibles_data, 'us-gaap:AmortizationOfIntangibleAssets')
+        add_to_map(discontinued_ops_data, 'us-gaap:IncomeLossFromDiscontinuedOperationsNetOfTax')
         
-        # Pretax Income
-        for item in pretax_data:
-            end_date = item['end']
-            if end_date in quarterly_map:
-                quarterly_map[end_date]['pretax_income'] = {'value': item['val'], 'unit': item['unit']}
+        # さらに他のタグが必要なら同様に追加
         
-        # Tax Expense
-        for item in tax_data:
-            end_date = item['end']
-            if end_date in quarterly_map:
-                quarterly_map[end_date]['tax_expense'] = {'value': item['val'], 'unit': item['unit']}
+        # 各エントリに filing_date と form を設定（最初に見つかったものから）
+        for end_date, data in quarterly_map.items():
+            # まず net_income から filing_date と form を探す（代表として）
+            # 実際には各タグごとに filed や form があるが、簡易的に最初のデータを使う
+            # より正確には、各タグの filed 日付が異なる可能性があるが、ここでは end_date を filing_date として扱う
+            data['filing_date'] = end_date
+            # form は "10-Q" 固定で良い（フィルタ済み）
+            data['form'] = '10-Q'
         
-        # SBC
-        for item in sbc_data:
-            end_date = item['end']
-            if end_date in quarterly_map:
-                quarterly_map[end_date]['sbc'] = {'value': item['val'], 'unit': item['unit']}
-        
-        # Restructuring
-        for item in restructuring_data:
-            end_date = item['end']
-            if end_date in quarterly_map:
-                quarterly_map[end_date]['restructuring'] = {'value': item['val'], 'unit': item['unit']}
-        
-        # リストに変換し、必須データが揃っているものだけ抽出
+        # リストに変換し、必須データ（net_income, diluted_shares）が揃っているものだけ抽出
         quarterly_list = []
         for end_date, data in sorted(quarterly_map.items(), reverse=True):
             if 'net_income' in data and 'diluted_shares' in data:
@@ -382,6 +383,12 @@ def main():
             if shares > 0:
                 eps = net / shares
                 print(f"  Implied EPS: {eps:.4f} USD")
+            
+            # 調整項目の例
+            sbc = quarter.get('us-gaap:ShareBasedCompensation')
+            if sbc:
+                sbc_val = normalize_value(sbc)
+                print(f"  SBC: {sbc_val:,.0f} USD")
     else:
         print("No data extracted")
 
