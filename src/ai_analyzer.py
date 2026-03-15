@@ -8,9 +8,8 @@ AI分析モジュール（Grok API利用）
 import json
 import os
 import requests
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
-# デフォルトプロンプトテンプレート
 PROMPT_TEMPLATE = """
 あなたは財務分析のエキスパートです。以下の調整項目リストを分析し、健全性とコメントを返してください。
 ティッカー: {ticker}
@@ -29,27 +28,12 @@ Adjusted EPS: {adjusted_eps}
 }}
 """
 
-# 環境変数からAPIキーを取得
-GROK_API_KEY = os.environ.get("GROK_API_KEY")
+# ★★★ 環境変数名を XAI_API_KEY に変更 ★★★
+XAI_API_KEY = os.environ.get("XAI_API_KEY")
 GROK_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROK_MODEL = "llama3-70b-8192"  # または "mixtral-8x7b-32768"
+GROK_MODEL = "llama3-70b-8192"
 
 def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustments: List[Dict[str, Any]]) -> str:
-    """
-    調整項目を分析し、JSON文字列を返す
-    Args:
-        ticker: 銘柄ティッカー
-        fiscal_period_data: 当該期のデータ（filing_date, gaap_eps, adjusted_eps などを含む）
-        adjustments: 税効果適用後の調整項目リスト（各項目に item_name, amount, net_amount, category 等を含む）
-    Returns:
-        str: JSON文字列。例：
-        {
-            "health": "Good",
-            "comment": "コメント",
-            "sources": [...]
-        }
-    """
-    # --- ガード節：調整項目なし ---
     if not adjustments:
         return json.dumps({
             "health": "Good",
@@ -57,15 +41,13 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
             "sources": []
         }, ensure_ascii=False)
 
-    # APIキーチェック
-    if not GROK_API_KEY:
+    if not XAI_API_KEY:
         return json.dumps({
             "health": "Caution",
-            "comment": "AI分析にはGROK_API_KEY環境変数が必要です。",
+            "comment": "AI分析にはXAI_API_KEY環境変数が必要です。",
             "sources": []
         }, ensure_ascii=False)
 
-    # プロンプト作成
     fiscal_period = fiscal_period_data.get('filing_date', 'unknown')
     gaap_eps = fiscal_period_data.get('gaap_eps', 0)
     adjusted_eps = fiscal_period_data.get('adjusted_eps', 0)
@@ -78,12 +60,11 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
         adjustments_json=json.dumps(adjustments, ensure_ascii=False, indent=2)
     )
 
-    # APIリクエスト
     try:
         response = requests.post(
             GROK_API_URL,
             headers={
-                "Authorization": f"Bearer {GROK_API_KEY}",
+                "Authorization": f"Bearer {XAI_API_KEY}",
                 "Content-Type": "application/json"
             },
             json={
@@ -97,39 +78,12 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
         response.raise_for_status()
         result = response.json()
         content = result['choices'][0]['message']['content']
-        # レスポンスがJSON文字列であることを確認（念のためパースして戻す）
         parsed = json.loads(content)
         return json.dumps(parsed, ensure_ascii=False)
     except Exception as e:
-        # エラーレスポンス
         error_msg = str(e)
         return json.dumps({
             "health": "Error",
             "comment": f"AI分析中にエラーが発生しました: {error_msg}",
             "sources": []
         }, ensure_ascii=False)
-
-# テスト用
-if __name__ == "__main__":
-    # ダミーデータ
-    sample_ticker = "PLTR"
-    sample_period = {
-        "filing_date": "2025-03-31",
-        "gaap_eps": 0.0838,
-        "adjusted_eps": 0.1319
-    }
-    sample_adjustments = [
-        {
-            "item_name": "株式報酬費用",
-            "amount": 155339000,
-            "net_amount": 122717810,
-            "category": "株式報酬 (SBC)",
-            "reason": "非現金費用",
-            "extracted_from": "us-gaap:ShareBasedCompensation"
-        }
-    ]
-    result = analyze_adjustments(sample_ticker, sample_period, sample_adjustments)
-    print(result)
-    # 空調整のテスト
-    empty_result = analyze_adjustments(sample_ticker, sample_period, [])
-    print(empty_result)
