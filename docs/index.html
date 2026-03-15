@@ -112,18 +112,29 @@
         </ul>
       </div>
 
-      <!-- 任意期間指定UI（開始日・終了日） -->
-      <div class="flex flex-wrap items-end gap-4 mb-6 bg-gray-800 p-4 rounded-lg">
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">開始日</label>
-          <input type="date" id="start-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+      <!-- 任意期間指定UI（日付ピッカー + プリセットボタン） -->
+      <div class="bg-gray-800 p-4 rounded-lg mb-6">
+        <div class="flex flex-wrap items-end gap-4 mb-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">開始日</label>
+            <input type="date" id="start-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">終了日</label>
+            <input type="date" id="end-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+          </div>
+          <div>
+            <button onclick="applyDateRange()" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">適用</button>
+          </div>
         </div>
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">終了日</label>
-          <input type="date" id="end-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
-        </div>
-        <div>
-          <button onclick="applyDateRange()" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">適用</button>
+        
+        <!-- プリセットボタン -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="setPreset('all')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">全期間</button>
+          <button onclick="setPreset('1y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">1年</button>
+          <button onclick="setPreset('6m')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">6ヶ月</button>
+          <button onclick="setPreset('3m')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">3ヶ月</button>
+          <button onclick="resetDateRange()" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">リセット</button>
         </div>
       </div>
 
@@ -275,6 +286,46 @@
         resetMetrics();
         updateAI(null);
       }
+    }
+
+    // プリセット設定
+    function setPreset(range) {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      const maxDate = dates[dates.length - 1];
+      const maxDateObj = new Date(maxDate);
+
+      let startDate;
+      const endDate = maxDate; // 終了日は常に最新
+
+      switch (range) {
+        case 'all':
+          startDate = dates[0];
+          break;
+        case '1y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 1)).toISOString().split('T')[0];
+          break;
+        case '6m':
+          startDate = new Date(maxDateObj.setMonth(maxDateObj.getMonth() - 6)).toISOString().split('T')[0];
+          break;
+        case '3m':
+          startDate = new Date(maxDateObj.setMonth(maxDateObj.getMonth() - 3)).toISOString().split('T')[0];
+          break;
+        default:
+          return;
+      }
+
+      document.getElementById('start-date').value = startDate;
+      document.getElementById('end-date').value = endDate;
+      applyDateRange();
+    }
+
+    function resetDateRange() {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      document.getElementById('start-date').value = dates[0];
+      document.getElementById('end-date').value = dates[dates.length - 1];
+      applyDateRange();
     }
 
     function getLatestFromArray(dataArray) {
