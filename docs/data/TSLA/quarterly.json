@@ -1,6 +1,6 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-03-16T00:02:33.060352",
+  "last_updated": "2026-03-16T00:12:21.529811",
   "quarters": [
     {
       "gaap_eps": 0.23809523809523808,
@@ -45,11 +45,11 @@
       "fiscal_year": 2025,
       "ai_analysis": {
         "health": "Good",
-        "comment": "調整項目は一過性のリストラ費用（非営業）のみで、金額がEPS差（約0.0675）と整合（約3.5B株ベース）。事業構造変更として一般的に許容される調整であり、税率適用0%でも数値が一致するため透明性は高い。ただし、リストラが今後も発生する可能性を考慮するとExcellentではなくGoodと評価。",
+        "comment": "一過性のリストラ費用（非営業）を加算調整したもので、理由付けは明確かつ妥当。調整によるEPS影響は約0.067と合理的で、税率0%適用もデータ上問題なし。調整項目が1つに留まり、健全性は良好。",
         "sources": [
           {
             "item": "リストラ費用",
-            "snippet": "一過性リストラ（非営業） / us-gaap:RestructuringCharges / amount: 238000000 / direction: add_back"
+            "snippet": "一過性リストラ（非営業）"
           }
         ]
       }
@@ -109,15 +109,15 @@
       "fiscal_year": 2025,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目として在庫評価損112Mと株式報酬費用573M（合計685M）が加算されており、GAAP EPSを約2.7倍に引き上げています。株式報酬はテスラでは標準的な調整ですが継続的な性質を持ち、在庫評価損も製造業では定期的に発生しうるため一過性扱いの妥当性に注意が必要です。調整依存度が高いため持続可能性を慎重に評価すべきです。",
+        "comment": "調整後EPSがGAAP EPSの約2.67倍と大幅に上方修正されており、主に株式報酬費用573百万ドルの追加が影響。株式報酬は継続的に発生する非現金費用であるため収益の質に懸念あり。在庫評価損112百万ドルは一過性とされるが、全体として調整依存度が高い。",
         "sources": [
           {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 (us-gaap:InventoryWriteDown)"
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           },
           {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） (us-gaap:ShareBasedCompensation)"
+            "item": "在庫評価損",
+            "snippet": "一過性の在庫評価減"
           }
         ]
       }
@@ -211,15 +211,15 @@
       "fiscal_year": 2024,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "在庫評価損は一過性の項目として妥当な調整ですが、株式報酬費用524百万ドルが調整額の大半を占めており、継続的な非現金費用として株主希薄化の影響が大きい点に注意が必要です。調整後EPSの健全性は中立的ですが、SBC依存度が高いため慎重に評価すべきです。",
+        "comment": "在庫評価損68百万ドルは一過性の項目として加算が妥当ですが、株式報酬費用524百万ドルはテスラにとって規模が大きく継続的に発生する非現金費用であり、調整後EPSをGAAP EPS比で約52%押し上げています。非GAAP指標の解釈には注意が必要で、SBCの経済的影響（希薄化含む）を考慮すべきです。",
         "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
           {
             "item": "株式報酬費用",
             "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "在庫評価損",
+            "snippet": "一過性の在庫評価減"
           }
         ]
       }
@@ -313,15 +313,15 @@
       "fiscal_year": 2023,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "在庫評価損50Mの加算は一過性項目として妥当ですが、株式報酬費用418Mの大幅加算と税効果適用率0%である点が懸念されます。SBCは非現金費用として一般的ですが、金額規模が大きく株主価値に実質的な影響を与えるため、調整後EPSの健全性は慎重に評価すべきです。",
+        "comment": "在庫評価損50Mは一過性項目として加算調整可能ですが、株式報酬418Mは非常に大きな金額で、テスラでは定期的に発生する非現金費用です。調整後EPSがGAAP EPSを約18%上回っており、SBC調整への依存度が高いため持続可能性に注意が必要です。全体として調整は合理的ですが、SBCの扱いを慎重に評価すべきです。",
         "sources": [
           {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
+            "item": "在庫評価損",
+            "snippet": "amount: 50000000, reason: 一過性の在庫評価減, extracted_from: us-gaap:InventoryWriteDown"
           },
           {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 extracted_from: us-gaap:InventoryWriteDown"
+            "item": "株式報酬費用",
+            "snippet": "amount: 418000000, reason: 非現金費用（ConfigでON/OFF可）, extracted_from: us-gaap:ShareBasedCompensation"
           }
         ]
       }
@@ -415,15 +415,15 @@
       "fiscal_year": 2022,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用（SBC）の追加が4.18億ドルと大きく、継続的に発生する報酬コストであるため調整後EPSの解釈には注意が必要。在庫評価損は一過性として小さく妥当だが、SBCの影響を考慮すべき。全体として標準的な非GAAP調整だが過度に楽観視しないこと。",
+        "comment": "在庫評価損33Mは一過性として妥当ですが、株式報酬費用418Mのadd_backは金額が非常に大きく、非現金項目ながら経済的コストを伴うため調整後EPSの持続可能性に注意が必要です。TSLAではSBC調整が慣行ですが、GAAP EPSに対する上方修正幅が大きい点は慎重に評価すべきです。",
         "sources": [
           {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
+            "item": "在庫評価損",
+            "snippet": "us-gaap:InventoryWriteDown 一過性の在庫評価減"
           },
           {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
+            "item": "株式報酬費用",
+            "snippet": "us-gaap:ShareBasedCompensation 非現金費用"
           }
         ]
       }
@@ -517,15 +517,15 @@
       "fiscal_year": 2021,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は在庫評価損(49M USD、一過性)と株式報酬費用(614M USD、非現金)の加算調整です。在庫評価損の調整は合理的ですが、株式報酬は金額が非常に大きく継続的に発生する性質上、調整の妥当性に議論があります。調整後EPSがGAAP EPSの約2.5倍となっており、調整依存度が高いため投資判断時は注意が必要です。",
+        "comment": "在庫評価損49Mは一過性項目としてadd_backは妥当ですが、株式報酬費用614Mのadd_backが極めて大きく、調整後EPSがGAAP EPSの2.5倍以上に膨らんでいます。SBCはテスラにとって継続的な主要費用であり、調整後の健全性は限定的です。投資判断ではGAAPベースも併せて考慮すべきです。",
         "sources": [
           {
             "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 (us-gaap:InventoryWriteDown)"
+            "snippet": "一過性の在庫評価減"
           },
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） (us-gaap:ShareBasedCompensation)"
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           }
         ]
       }

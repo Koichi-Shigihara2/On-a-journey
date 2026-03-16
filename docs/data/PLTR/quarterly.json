@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-16T00:00:01.954266",
+  "last_updated": "2026-03-16T00:09:37.755317",
   "quarters": [
     {
       "gaap_eps": 0.23728236076995257,
@@ -79,11 +79,11 @@
       "fiscal_year": 2025,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "唯一の調整項目は株式報酬費用（SBC）の加算戻しのみで、非現金費用として標準的な処理ですが、調整額155百万ドルが大きく、Adjusted EPSがGAAP EPSの約1.73倍に跳ね上がっています。PLTRでは恒常的に高水準のSBCが見られるため、株主希薄化の実態を過小評価するリスクがあり、注意が必要です。",
+        "comment": "調整項目は株式報酬費用の追加戻しのみで、非現金費用として標準的な処理ですが、金額が155M USDと大きく、PLTRのビジネスモデル上SBC依存度が高いため調整後EPSの持続可能性に注意が必要です。税効果が適用されていない点も簡易的です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 155339000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           }
         ]
       }
@@ -164,12 +164,16 @@
       "form": "10-Q",
       "fiscal_year": 2024,
       "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目は株式報酬費用のみの単一項目で、非現金支出に対する標準的なadd-back調整です。PLTRではSBCが伝統的に大きいため一般的ですが、調整後のEPSがGAAPの2倍以上になる点は投資家が本質的な経済的コストを考慮する必要があることを示しています。全体として透明性が高く健全な調整内容です。",
+        "health": "Caution",
+        "comment": "調整項目は株式報酬費用（SBC）の追加バックのみで、非現金費用として標準的な処理。調整後EPSがGAAP EPSの2倍以上となっており、SBC依存度が非常に高いため、持続的な収益力の評価には注意が必要。透明性は確保されているが、過度な調整の影響を考慮すべき。",
         "sources": [
           {
             "item": "株式報酬費用",
             "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "Adjusted EPS",
+            "snippet": "GAAP EPS: 0.043968873054409656 → Adjusted EPS: 0.0963211223499619"
           }
         ]
       }
@@ -251,11 +255,11 @@
       "fiscal_year": 2023,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は株式報酬費用の追加戻しのみで、非現金項目として標準的な処理です。ただしGAAP EPS 0.0076からAdjusted EPS 0.0593への大幅な上方修正（約7.8倍）となっており、SBCの規模が非常に大きい点が懸念されます。PLTR特有の高額な株式報酬による希薄化リスクを考慮する必要があります。",
+        "comment": "唯一の調整項目は株式報酬費用（SBC）の加算のみで、非現金費用として標準的な処理です。ただし、GAAP EPS 0.0076からAdjusted EPS 0.0593への大幅な上方修正（約7.8倍）となっており、PLTRの高いSBC依存が利益の質に影響を与えている可能性があります。継続的なSBC水準の監視が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
+            "snippet": "amount: 114714000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
           }
         ]
       }
@@ -337,15 +341,11 @@
       "fiscal_year": 2022,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "GAAP EPSは赤字(-0.05)ですが、株式報酬費用1.49億ドルの加算によりAdjusted EPSは黒字(+0.024)となっています。SBCは非現金費用として調整されるのが一般的ですが、PLTRのように金額が大きく損益の符号を反転させるケースでは希薄化効果を無視した過度な調整と見なされやすく、収益性の健全性に注意が必要です。",
+        "comment": "調整項目は株式報酬費用（SBC）のみで、非現金項目として加算されています。PLTRのようなテック企業では一般的ですが、149百万ドルの金額が大きく、GAAP EPSの赤字（-0.05）を調整後黒字（+0.024）に転換させる影響は無視できません。SBCは継続的な報酬コストであり株主希薄化を伴うため、調整後利益の持続可能性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 149323000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
-          },
-          {
-            "item": "EPS比較",
-            "snippet": "GAAP EPS: -0.049785715022341914, Adjusted EPS: 0.02354458340515453"
+            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
           }
         ]
       }
@@ -427,11 +427,11 @@
       "fiscal_year": 2021,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "GAAP EPSが赤字(-0.068)である一方、株式報酬費用(193.7M USD)を全額加算することで調整後EPSがプラス(0.039)に転換されています。SBCは非現金費用として調整されることがテック企業で一般的ですが、本四半期では調整幅が大きく利益転換の主因となっており、株主希薄化の実質的コストを考慮すると調整の健全性に注意が必要です。",
+        "comment": "GAAP EPSが-0.068の赤字である一方、株式報酬費用（1.94億ドル）を全額加算することでAdjusted EPSを+0.039の黒字に転換しています。SBCは非現金費用として調整されることが多いものの、金額が大きく損益の符号を反転させるため、株主希薄化の実質コストを十分に考慮する必要があります。PLTRのような成長企業では一般的ですが、調整の依存度が高い点に留意すべきです。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
+            "snippet": "amount: 193731000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
           }
         ]
       }
