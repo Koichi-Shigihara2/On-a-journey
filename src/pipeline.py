@@ -4,7 +4,7 @@ pipeline.py
 - 設定ファイル読み込み
 - 銘柄ごとに四半期データ取得
 - 調整項目検出、税効果適用、EPS計算
-- TTM計算、年次集計
+- TTM計算、年次集計（加重平均税率適用）
 - AI分析（全四半期）
 - JSON保存（docs/data/配下）
 """
@@ -60,13 +60,15 @@ def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]
     }
 
 # ============================================
-# 年次集計関数（会計年度ベースに修正）
+# 年次集計関数（加重平均税率適用版）
 # ============================================
 def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     """
     四半期データを年次に集計（会計年度ベース）
     各四半期データには 'fiscal_year' フィールドが含まれていることを前提とする。
+    年次調整額は加重平均税率を用いて再計算する。
     """
+    # 年度ごとに四半期をグループ化
     annual_map = {}
     for q in quarterly_results:
         fiscal_year = q.get("fiscal_year")
@@ -80,32 +82,105 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     
     annual_results = []
     for year, quarters in annual_map.items():
-        # その年に属する四半期が4つ未満でも集計は行うが、警告を出す
         if len(quarters) < 4:
             print(f"Warning: Fiscal year {year} has only {len(quarters)} quarters")
         
         # 最新のfiling_dateを取得（その年の最大日付）
         latest_q = max(quarters, key=lambda x: x["filing_date"])
-        total_net_income = sum(q["gaap_net_income"] for q in quarters)
-        total_adjustments = sum(q.get("net_adjustment_total", 0) for q in quarters)
-        # 加重平均株式数：各四半期の株式数を単純平均（本来は日数加重が理想だが簡易的に平均）
+        
+        # 年度のGAAP純利益、希薄化後株式数（平均）を計算
+        total_gaap_net_income = sum(q["gaap_net_income"] for q in quarters)
         avg_shares = sum(q["diluted_shares_used"] for q in quarters) / len(quarters)
         
-        # 調整項目は全四半期のものをフラットに結合
-        all_adjustments = []
-        for q in quarters:
-            all_adjustments.extend(q.get("adjustments", []))
+        # ---------- 加重平均税率の計算 ----------
+        total_pretax = 0.0
+        total_tax = 0.0
+        weighted_tax_rate = 0.21  # デフォルト
+        valid_quarters = []
         
+        for q in quarters:
+            # 税引前利益を取得
+            pretax = q.get("pretax_income")  # 数値（すでに正規化済み）か、辞書の場合がある
+            if isinstance(pretax, dict):
+                pretax = pretax.get("value", 0.0)
+            if pretax is None:
+                pretax = 0.0
+            
+            # 税費用を取得（実効税率再計算用）
+            tax_exp = q.get("tax_expense")
+            if isinstance(tax_exp, dict):
+                tax_exp = tax_exp.get("value", 0.0)
+            if tax_exp is None:
+                tax_exp = 0.0
+            
+            # 実効税率を取得（調整項目のtax_rate_appliedから採取）
+            tax_rate = None
+            adjustments = q.get("adjustments", [])
+            if adjustments and len(adjustments) > 0:
+                # 最初の調整項目から税率を取得（全項目同じ税率のはず）
+                first_adj = adjustments[0]
+                tax_rate = first_adj.get("tax_rate_applied")
+            if tax_rate is None and pretax != 0:
+                # 税引前利益と税費用から再計算
+                tax_rate = abs(tax_exp / pretax) if pretax != 0 else None
+                if tax_rate is not None and (tax_rate < 0 or tax_rate > 0.5):
+                    # 常識的な範囲外ならデフォルト
+                    tax_rate = 0.21
+            
+            if tax_rate is not None and pretax != 0:
+                total_pretax += pretax
+                total_tax += pretax * tax_rate
+                valid_quarters.append(q)
+        
+        if total_pretax != 0 and valid_quarters:
+            weighted_tax_rate = total_tax / total_pretax
+        else:
+            # 有効な四半期がなければデフォルト
+            weighted_tax_rate = 0.21
+        
+        # ---------- 税前調整額合計を計算 ----------
+        total_pretax_adjustments = 0.0
+        all_adjustments = []  # 年次用にフラットに結合するリスト
+        
+        for q in quarters:
+            for adj in q.get("adjustments", []):
+                # 税前額（amount）を合計
+                amount = adj.get("amount", 0.0)
+                total_pretax_adjustments += amount
+                
+                # 年次調整項目としてコピーを作成（後でnet_amountを再計算）
+                adj_copy = adj.copy()
+                # 一旦税前額を保持（オプション）
+                adj_copy["pre_tax_amount"] = amount
+                all_adjustments.append(adj_copy)
+        
+        # 加重平均税率を適用して税効果後調整額合計を計算
+        net_adjustment_total = total_pretax_adjustments * (1 - weighted_tax_rate)
+        
+        # 各調整項目のnet_amountを再計算
+        for adj in all_adjustments:
+            pre_tax = adj.get("pre_tax", True)
+            amount = adj.get("amount", 0.0)
+            if pre_tax:
+                adj["net_amount"] = amount * (1 - weighted_tax_rate)
+                adj["tax_rate_applied"] = weighted_tax_rate
+            else:
+                # 税後項目はそのまま
+                adj["net_amount"] = amount
+                adj["tax_rate_applied"] = 0.0
+        
+        # 年次オブジェクトの構築
         annual_results.append({
-            "year": str(year),  # JSONでは文字列として保存
+            "year": str(year),
             "filing_date": latest_q["filing_date"],
-            "gaap_net_income": total_net_income,
-            "adjusted_net_income": total_net_income + total_adjustments,
+            "gaap_net_income": total_gaap_net_income,
+            "adjusted_net_income": total_gaap_net_income + net_adjustment_total,
             "diluted_shares_used": avg_shares,
-            "gaap_eps": total_net_income / avg_shares if avg_shares else 0,
-            "adjusted_eps": (total_net_income + total_adjustments) / avg_shares if avg_shares else 0,
+            "gaap_eps": total_gaap_net_income / avg_shares if avg_shares else 0,
+            "adjusted_eps": (total_gaap_net_income + net_adjustment_total) / avg_shares if avg_shares else 0,
             "adjustments": all_adjustments,
-            "net_adjustment_total": total_adjustments
+            "net_adjustment_total": net_adjustment_total,
+            "weighted_tax_rate": weighted_tax_rate  # 使用した加重平均税率を記録
         })
     
     annual_results.sort(key=lambda x: x["year"], reverse=True)
@@ -172,7 +247,7 @@ def run():
             if ttm:
                 ttm_results.append(ttm)
         
-        # 4. 年次集計
+        # 4. 年次集計（加重平均税率適用）
         annual_results = aggregate_annual(quarterly_results)
         
         # 5. 保存（docs/data/ 配下）
