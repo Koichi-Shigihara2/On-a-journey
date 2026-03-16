@@ -99,19 +99,13 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
         valid_quarters = []
         
         for q in quarters:
-            # 税引前利益を取得
-            pretax = q.get("pretax_income")  # 数値（すでに正規化済み）か、辞書の場合がある
-            if isinstance(pretax, dict):
-                pretax = pretax.get("value", 0.0)
-            if pretax is None:
-                pretax = 0.0
+            # 税引前利益を取得（正規化）
+            pretax_obj = q.get("pretax_income")
+            pretax = normalize_value(pretax_obj) if pretax_obj is not None else 0.0
             
-            # 税費用を取得（実効税率再計算用）
-            tax_exp = q.get("tax_expense")
-            if isinstance(tax_exp, dict):
-                tax_exp = tax_exp.get("value", 0.0)
-            if tax_exp is None:
-                tax_exp = 0.0
+            # 税費用を取得（正規化）
+            tax_obj = q.get("tax_expense")
+            tax_exp = normalize_value(tax_obj) if tax_obj is not None else 0.0
             
             # 実効税率を取得（調整項目のtax_rate_appliedから採取）
             tax_rate = None
@@ -120,12 +114,12 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
                 # 最初の調整項目から税率を取得（全項目同じ税率のはず）
                 first_adj = adjustments[0]
                 tax_rate = first_adj.get("tax_rate_applied")
+            
+            # 取得できなければ税引前利益と税費用から再計算
             if tax_rate is None and pretax != 0:
-                # 税引前利益と税費用から再計算
-                tax_rate = abs(tax_exp / pretax) if pretax != 0 else None
-                if tax_rate is not None and (tax_rate < 0 or tax_rate > 0.5):
-                    # 常識的な範囲外ならデフォルト
-                    tax_rate = 0.21
+                computed = abs(tax_exp / pretax) if pretax != 0 else None
+                if computed is not None and 0.0 <= computed <= 0.5:
+                    tax_rate = computed
             
             if tax_rate is not None and pretax != 0:
                 total_pretax += pretax
@@ -222,10 +216,12 @@ def run():
             result = calculate_eps(data_for_eps, net_adjustment, detailed)
             result["filing_date"] = data_for_eps["filing_date"]
             result["form"] = data_for_eps["form"]
-            # fiscal_year を引き継ぐ
             result["fiscal_year"] = period_data.get("fiscal_year")
+            # ★★★ pretax_income と tax_expense を保存（年次集計で使用）★★★
+            result["pretax_income"] = data_for_eps["pretax_income"]
+            result["tax_expense"] = data_for_eps["tax_expense"]
             
-            # ★★★ AI分析（各四半期ごとに実行）★★★
+            # AI分析（各四半期ごとに実行）
             ai_result_str = analyze_adjustments(ticker, result, result.get("adjustments", []))
             try:
                 result["ai_analysis"] = json.loads(ai_result_str)
