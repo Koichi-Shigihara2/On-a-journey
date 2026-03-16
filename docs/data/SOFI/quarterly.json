@@ -1,0 +1,700 @@
+{
+  "ticker": "SOFI",
+  "last_updated": "2026-03-16T02:41:41.173622",
+  "quarters": [
+    {
+      "gaap_eps": 0.1386432139527564,
+      "adjusted_eps": 0.3532551990514847,
+      "gaap_net_income": 173549000.0,
+      "adjusted_net_income": 442193200.75107986,
+      "diluted_shares_used": 1251767000.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 948000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 754401.7130856634,
+          "tax_rate_applied": 0.20421760223031282
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 74579000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 59348655.4432655,
+          "tax_rate_applied": 0.20421760223031282
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 262058000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 208541143.59472868,
+          "tax_rate_applied": 0.20421760223031282
+        }
+      ],
+      "net_adjustment_total": 268644200.75107986,
+      "filing_date": "2025-12-31",
+      "form": "10-K",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "リストラ費用は小規模で一過性として妥当ですが、買収無形資産償却と特に株式報酬費用（262Mドル）が大きく、調整後EPSをGAAPの約2.5倍に押し上げています。SBCの追加はフィンテック企業で一般的ですが継続的な報酬コストであり、株主希薄化を考慮すると調整の健全性に注意が必要です。全体として積極的な非GAAP調整と言えます。",
+        "sources": [
+          {
+            "item": "リストラ費用",
+            "snippet": "us-gaap:RestructuringCharges - 一過性リストラ（非営業）"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "us-gaap:AmortizationOfIntangibleAssets - M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "us-gaap:ShareBasedCompensation - 非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.10797119466836456,
+      "adjusted_eps": 0.10797119466836456,
+      "gaap_net_income": 139392000.0,
+      "adjusted_net_income": 139392000.0,
+      "diluted_shares_used": 1291011000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2025-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": 0.08222579355249954,
+      "adjusted_eps": 0.08222579355249954,
+      "gaap_net_income": 97263000.0,
+      "adjusted_net_income": 97263000.0,
+      "diluted_shares_used": 1182877000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2025-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": 0.05998991114042916,
+      "adjusted_eps": 0.10792950622038708,
+      "gaap_net_income": 71116000.0,
+      "adjusted_net_income": 127946760.02105738,
+      "diluted_shares_used": 1185466000.0,
+      "adjustments": [
+        {
+          "item_name": "株式報酬費用",
+          "amount": 63756000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 56830760.02105738,
+          "tax_rate_applied": 0.10862099220375523
+        }
+      ],
+      "net_adjustment_total": 56830760.02105738,
+      "filing_date": "2025-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "株式報酬費用の加算は非現金項目として標準的な調整であり、Adjusted EPS算出において合理的です。ただし調整幅がGAAP EPSの約1.8倍と大きく、株式希薄化の経済的影響を投資家は別途考慮する必要があります。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "us-gaap:ShareBasedCompensation 非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.30186673203860576,
+      "adjusted_eps": 0.5336729405569326,
+      "gaap_net_income": 332473000.0,
+      "adjusted_net_income": 587782040.0,
+      "diluted_shares_used": 1101390000.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 1530000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 1208700.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 75494000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 59640260.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 246152000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 194460080.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 255309040.0,
+      "filing_date": "2024-12-31",
+      "form": "10-K",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はリストラ費用（小規模・一過性）、買収関連無形資産償却、株式報酬費用の3項目で、全てadd_back処理されており標準的な非GAAP調整です。SBCの金額が相対的に大きく継続的な性質を持つ点と、償却費を一過性カテゴリに含めている点は軽微な留意事項ですが、理由説明・税効果適用ともに適切で全体として健全です。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "リストラ費用",
+            "snippet": "一過性リストラ（非営業）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.055000226357010275,
+      "adjusted_eps": 0.055000226357010275,
+      "gaap_net_income": 60745000.0,
+      "adjusted_net_income": 60745000.0,
+      "diluted_shares_used": 1104450000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2024-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": 0.01633916056670713,
+      "adjusted_eps": 0.01633916056670713,
+      "gaap_net_income": 17404000.0,
+      "adjusted_net_income": 17404000.0,
+      "diluted_shares_used": 1065171000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2024-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": 0.08445558031496138,
+      "adjusted_eps": 0.13382605422777422,
+      "gaap_net_income": 88043000.0,
+      "adjusted_net_income": 139510583.5332074,
+      "diluted_shares_used": 1042477000.0,
+      "adjustments": [
+        {
+          "item_name": "株式報酬費用",
+          "amount": 55082000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 51467583.533207394,
+          "tax_rate_applied": 0.06561883132044234
+        }
+      ],
+      "net_adjustment_total": 51467583.533207394,
+      "filing_date": "2024-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は株式報酬費用（非現金支出）の追加のみで、SOFIのような成長企業では標準的な非GAAP調整です。GAAP EPS 0.084からAdjusted EPS 0.134への差異は主にこれによる妥当な加算であり、健全性に問題はありません。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.05070029109097063,
+      "adjusted_eps": 0.7178653709174663,
+      "gaap_net_income": 47913000.0,
+      "adjusted_net_income": 678400119.144367,
+      "diluted_shares_used": 945024160.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 12749000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 12637338.547697749,
+          "tax_rate_applied": 0.008758447901972756
+        },
+        {
+          "item_name": "のれん・無形資産減損",
+          "amount": 247174000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金減損",
+          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 245009139.3982778,
+          "tax_rate_applied": 0.008758447901972756
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 104919000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 104000072.40457292,
+          "tax_rate_applied": 0.008758447901972756
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 271216000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 268840568.79381853,
+          "tax_rate_applied": 0.008758447901972756
+        }
+      ],
+      "net_adjustment_total": 630487119.144367,
+      "filing_date": "2023-12-31",
+      "form": "10-K",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "調整項目総額が約6.36億ドルと非常に大きく、GAAP EPS(0.05)をAdjusted EPS(0.72)へ大幅に引き上げています。のれん減損(2.47億ドル)と株式報酬(2.71億ドル)が特に巨額で、減損は過去買収の課題を示唆し、SBCは株主希薄化の実質コストです。適用税率が0.87%と異常に低い点も含め、調整後利益の持続可能性に注意が必要です。",
+        "sources": [
+          {
+            "item": "のれん・無形資産減損",
+            "snippet": "非現金減損 - us-gaap:GoodwillImpairmentLoss"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可） - us-gaap:ShareBasedCompensation"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 - us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.2803708329525663,
+      "adjusted_eps": -0.02074883651825582,
+      "gaap_net_income": -266684000.0,
+      "adjusted_net_income": -19735942.78606963,
+      "diluted_shares_used": 951183107.0,
+      "adjustments": [
+        {
+          "item_name": "のれん・無形資産減損",
+          "amount": 247174000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金減損",
+          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 246948057.21393037,
+          "tax_rate_applied": 0.0009141041779056525
+        }
+      ],
+      "net_adjustment_total": 246948057.21393037,
+      "filing_date": "2023-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "非現金性ののれん・無形資産減損をadd_backしており、調整EPS計算としては一般的で妥当。ただし、調整幅が非常に大きく（GAAP EPS -0.28→Adjusted -0.02）、EPSの大部分をこの一過性項目が説明している。のれん減損は過去の買収・投資判断に問題があった可能性を示唆するため、継続的な資産価値評価に注意が必要。",
+        "sources": [
+          {
+            "item": "のれん・無形資産減損",
+            "snippet": "us-gaap:GoodwillImpairmentLoss, 非現金減損, category: 事業構造変更・一過性損益"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.0507693279159168,
+      "adjusted_eps": -0.0507693279159168,
+      "gaap_net_income": -47549000.0,
+      "adjusted_net_income": -47549000.0,
+      "diluted_shares_used": 936569420.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2023-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": -0.03704195036821364,
+      "adjusted_eps": 0.034022834693009665,
+      "gaap_net_income": -34422000.0,
+      "adjusted_net_income": 31616424.193682574,
+      "diluted_shares_used": 929270723.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 4953000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 4728144.596355972,
+          "tax_rate_applied": 0.045397820239052665
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 64226000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 61310279.5973266,
+          "tax_rate_applied": 0.045397820239052665
+        }
+      ],
+      "net_adjustment_total": 66038424.193682574,
+      "filing_date": "2023-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "GAAP EPSが赤字(-0.037)である一方、調整後EPSはプラス(0.034)へ転換。主な調整は株式報酬費用(約6420万ドル)とリストラ費用(約495万ドル)のadd_backです。リストラは一過性として妥当ですが、株式報酬のadd back額が大きく、成長企業で継続的に発生する性質上、調整の健全性に注意が必要です。また適用税率が約4.5%と低い点も今後の収益性評価で考慮すべきです。",
+        "sources": [
+          {
+            "item": "リストラ費用",
+            "snippet": "一過性リストラ（非営業） extracted_from: us-gaap:RestructuringCharges"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.044407388928194076,
+      "adjusted_eps": 0.3790139375877615,
+      "gaap_net_income": -40006000.0,
+      "adjusted_net_income": 341448393.006263,
+      "diluted_shares_used": 900886113.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 93016000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 88923490.18789144,
+          "tax_rate_applied": 0.04399791231732777
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 305994000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 292530902.8183716,
+          "tax_rate_applied": 0.04399791231732777
+        }
+      ],
+      "net_adjustment_total": 381454393.006263,
+      "filing_date": "2022-12-31",
+      "form": "10-K",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "GAAP EPSは微減益（-0.044）に対し、調整後EPSは+0.379と大幅にプラス転換。主な調整は買収無形資産償却と多額の株式報酬費用（約3.06億ドル）。SBCのadd backは継続的な報酬コストであり株主希薄化の実態を反映しない可能性が高く、調整後利益の品質に注意が必要。税率が約4.4%と低い点も含め、調整の健全性はCautionレベル。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.08094676834204996,
+      "adjusted_eps": -0.08094676834204996,
+      "gaap_net_income": -74209000.0,
+      "adjusted_net_income": -74209000.0,
+      "diluted_shares_used": 916762973.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2022-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": -0.10530777677080876,
+      "adjusted_eps": -0.10530777677080876,
+      "gaap_net_income": -95835000.0,
+      "adjusted_net_income": -95835000.0,
+      "diluted_shares_used": 910046750.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2022-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": -0.12939735555737752,
+      "adjusted_eps": -0.039707215056120675,
+      "gaap_net_income": -110357000.0,
+      "adjusted_net_income": -33864441.14775786,
+      "diluted_shares_used": 852853596.0,
+      "adjustments": [
+        {
+          "item_name": "株式報酬費用",
+          "amount": 77021000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 76492558.85224214,
+          "tax_rate_applied": 0.006861000866748779
+        }
+      ],
+      "net_adjustment_total": 76492558.85224214,
+      "filing_date": "2022-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は株式報酬費用の追加戻しのみで、標準的な非現金費用調整です。SOFIのような成長企業では一般的ですが、金額規模が相対的に大きくEPSを大幅に改善しているため、株式希薄化効果を別途考慮する必要があります。全体として健全な調整と言えます。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.43320340199706125,
+      "adjusted_eps": 0.1472233650164167,
+      "gaap_net_income": -228181341.0,
+      "adjusted_net_income": 77547001.48039544,
+      "diluted_shares_used": 526730261.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 70507000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 69643730.71441802,
+          "tax_rate_applied": 0.012243738715049166
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 239011000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 236084611.76597738,
+          "tax_rate_applied": 0.012243738715049166
+        }
+      ],
+      "net_adjustment_total": 305728342.48039544,
+      "filing_date": "2021-12-31",
+      "form": "10-K",
+      "fiscal_year": 2021,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "GAAP EPSは-0.43と大幅赤字だが、Adjusted EPSは+0.15と黒字化。主な調整は買収無形資産償却(70.5M)と株式報酬費用(239M)の加算で、合計でEPSを約0.58押し上げている。SBCは継続的な費用であり株主希薄化の実質コストであるため、調整後利益の質については慎重に評価すべき。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.03753220394130487,
+      "adjusted_eps": -0.03753220394130487,
+      "gaap_net_income": -30047000.0,
+      "adjusted_net_income": -30047000.0,
+      "diluted_shares_used": 800565830.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2021-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2021,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": -0.452869948998095,
+      "adjusted_eps": -0.452869948998095,
+      "gaap_net_income": -165314000.0,
+      "adjusted_net_income": -165314000.0,
+      "diluted_shares_used": 365036365.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2021-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2021,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
+        "sources": []
+      }
+    },
+    {
+      "gaap_eps": -0.5199596275909226,
+      "adjusted_eps": -0.20348095406563166,
+      "gaap_net_income": -60394659.0,
+      "adjusted_net_income": -23634840.44083701,
+      "diluted_shares_used": 116152593.0,
+      "adjustments": [
+        {
+          "item_name": "株式報酬費用",
+          "amount": 37454000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 36759818.55916299,
+          "tax_rate_applied": 0.018534240423906917
+        }
+      ],
+      "net_adjustment_total": 36759818.55916299,
+      "filing_date": "2021-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2021,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "調整項目は株式報酬費用（非現金）の追加バックのみで、標準的な非GAAP調整です。ただし、GAAP EPS -0.52からAdjusted EPS -0.20への大幅な改善（約0.316）の大半をSBCが占めており、調整幅が相対的に大きいため投資家は注意が必要です。SBCの希薄化影響も実質的なコストとして考慮すべきです。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "amount: 37454000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
+          }
+        ]
+      }
+    }
+  ]
+}

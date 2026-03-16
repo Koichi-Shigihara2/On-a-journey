@@ -1,0 +1,793 @@
+{
+  "ticker": "CELH",
+  "last_updated": "2026-03-16T02:40:22.937333",
+  "quarters": [
+    {
+      "gaap_eps": 0.09704955847334952,
+      "adjusted_eps": 0.9641159115578117,
+      "gaap_net_income": 24739000.0,
+      "adjusted_net_income": 245763751.13111335,
+      "diluted_shares_used": 254911000.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 327461000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 193930473.72704855,
+          "tax_rate_applied": 0.4077753572882005
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 17700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 10482376.17599885,
+          "tax_rate_applied": 0.4077753572882005
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 28050000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 16611901.228065973,
+          "tax_rate_applied": 0.4077753572882005
+        }
+      ],
+      "net_adjustment_total": 221024751.13111335,
+      "filing_date": "2025-12-31",
+      "form": "10-K",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "リストラ費用が327百万ドルと極めて大規模で、GAAP純利益の約8倍に相当する調整となっており、調整後EPSを大幅に押し上げている（約10倍）。買収無形資産償却は標準的だが、株式報酬費用の調整は継続的な現金性費用を除外する点で議論があり、リストラの一過性についても検証が必要。全体として調整の健全性に注意を要する。",
+        "sources": [
+          {
+            "item": "リストラ費用",
+            "snippet": "us-gaap:RestructuringCharges - 一過性リストラ（非営業） amount: 327461000"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "us-gaap:AmortizationOfIntangibleAssets - M&A由来追加償却 amount: 17700000"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "us-gaap:ShareBasedCompensation - 非現金費用 amount: 28050000"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.23669203733445057,
+      "adjusted_eps": 0.44223239009691007,
+      "gaap_net_income": -61014000.0,
+      "adjusted_net_income": 113997781.05440128,
+      "diluted_shares_used": 257778000.0,
+      "adjustments": [
+        {
+          "item_name": "リストラ費用",
+          "amount": 246707000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性リストラ（非営業）",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 170991819.90435186,
+          "tax_rate_applied": 0.3069032499914803
+        },
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 5800000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 4019961.150049414,
+          "tax_rate_applied": 0.3069032499914803
+        }
+      ],
+      "net_adjustment_total": 175011781.05440128,
+      "filing_date": "2025-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "リストラ費用が2.467億ドルと極めて大きく、GAAP EPSの赤字(-0.24)を調整後黒字(0.44)に転換させる主因となっています。一過性項目として扱われていますが規模が大きく事業再編の影響が継続する可能性があるため注意が必要です。買収無形資産償却の加算は比較的標準的な調整です。",
+        "sources": [
+          {
+            "item": "リストラ費用",
+            "snippet": "一過性リストラ（非営業） extracted_from: us-gaap:RestructuringCharges"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 extracted_from: us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.38374626745218304,
+      "adjusted_eps": 0.40093800538307295,
+      "gaap_net_income": 99855000.0,
+      "adjusted_net_income": 104328479.3187348,
+      "diluted_shares_used": 260211000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 5800000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 4473479.318734794,
+          "tax_rate_applied": 0.22871046228710462
+        }
+      ],
+      "net_adjustment_total": 4473479.318734794,
+      "filing_date": "2025-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "買収に伴う無形資産償却費の加算調整が1項目のみで、M&A関連の標準的な非現金項目です。税効果も適切に反映されており、調整幅はEPSに対して小さい水準です。ただし償却は今後も継続的に発生する可能性があるため、投資家は非GAAP指標の性質を十分理解する必要があります。全体として健全性は良好です。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / category: 事業構造変更・一過性損益"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.1872860202722075,
+      "adjusted_eps": 0.20334226607096104,
+      "gaap_net_income": 44419000.0,
+      "adjusted_net_income": 48227091.92858197,
+      "diluted_shares_used": 237172000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 145652.7798271933,
+          "tax_rate_applied": 0.2717361008640336
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 5029000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 3662439.148754775,
+          "tax_rate_applied": 0.2717361008640336
+        }
+      ],
+      "net_adjustment_total": 3808091.9285819684,
+      "filing_date": "2025-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2025,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収無形資産償却と株式報酬費用の2項目のみで、どちらも非現金項目として非GAAP調整で一般的な内容です。調整によるEPS影響は約8.5%と過度に大きくなく、健全性は良好と判断します。ただし株式報酬は継続的に発生する可能性が高いため、今後の推移を注視する必要があります。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.07951003352934238,
+      "adjusted_eps": -0.012321233003656215,
+      "gaap_net_income": -18876000.0,
+      "adjusted_net_income": -2925110.0,
+      "diluted_shares_used": 237404000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 474000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 19591000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 15476890.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 15950890.0,
+      "filing_date": "2024-12-31",
+      "form": "10-K",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "買収無形資産償却はM&A由来の標準的な非現金調整として妥当ですが、株式報酬費用が1,959万ドルと大きく、調整後EPSを大幅に改善させる主因となっています。SBCは非現金とはいえ継続的な報酬コストであり株主希薄化の実態を反映しない可能性があるため、調整の健全性に注意が必要です。税率適用は適切ですが、SBC依存度を継続的に監視すべきです。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.027197726961522662,
+      "adjusted_eps": 0.02753042086930887,
+      "gaap_net_income": 6356000.0,
+      "adjusted_net_income": 6433749.235474006,
+      "diluted_shares_used": 233696000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 77749.23547400611,
+          "tax_rate_applied": 0.22250764525993882
+        }
+      ],
+      "net_adjustment_total": 77749.23547400611,
+      "filing_date": "2024-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "唯一の調整項目は買収に伴う無形資産償却の加算戻しのみで、非現金項目として一般的な非GAAP調整です。EPSへの影響は約1.2%と小さく、利益操作の懸念は低いです。カテゴリが「一過性」とされていますが償却は定期的に発生する可能性があるため、継続的なモニタリングを推奨します。全体として健全性は良好です。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 (us-gaap:AmortizationOfIntangibleAssets), amount: 100000 USD, direction: add_back"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.3357941034112671,
+      "adjusted_eps": 0.33611503516515573,
+      "gaap_net_income": 79783000.0,
+      "adjusted_net_income": 79859251.78006518,
+      "diluted_shares_used": 237595000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 76251.78006518145,
+          "tax_rate_applied": 0.23748219934818554
+        }
+      ],
+      "net_adjustment_total": 76251.78006518145,
+      "filing_date": "2024-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収無形資産償却の加算戻し1件のみで、金額は10万ドル（税引後約7.6万ドル）と小さく、GAAP EPSとAdjusted EPSの差は0.00032程度と軽微です。M&A関連の非現金償却を調整するのは比較的一般的な処理であり、全体として健全性は良好と判断します。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.3275935383099742,
+      "adjusted_eps": 0.34057171430665856,
+      "gaap_net_income": 77811000.0,
+      "adjusted_net_income": 80893615.29726046,
+      "diluted_shares_used": 237523000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 84155.48177069251,
+          "tax_rate_applied": 0.15844518229307492
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 3563000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 2998459.815489774,
+          "tax_rate_applied": 0.15844518229307492
+        }
+      ],
+      "net_adjustment_total": 3082615.2972604665,
+      "filing_date": "2024-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2024,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収無形資産償却（100千USD）と株式報酬費用（3,563千USD）の2項目で、いずれも非現金項目としてadd_backされています。株式報酬は成長企業で一般的ですが株主希薄化の実質コストであり、買収償却も継続的な性質を持つため完全な一過性とは言えません。税率15.8%適用後の純影響は約308万USDでEPS差0.013と整合しており、標準的な非GAAP調整と言えます。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.21149204098512855,
+      "adjusted_eps": 0.3083000793369457,
+      "gaap_net_income": 50116000.0,
+      "adjusted_net_income": 73056020.0,
+      "diluted_shares_used": 236964000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 395000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "在庫評価損",
+          "amount": 7312000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価減",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 5776480.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 21226000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 16768540.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 22940020.0,
+      "filing_date": "2023-12-31",
+      "form": "10-K",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "株式報酬費用の加算は成長企業で一般的ですが、在庫評価損の7.3百万ドルを一過性として加算している点に注意が必要です。在庫評価損は事業運営上の課題（過剰在庫や陳腐化）を示唆する可能性があり、再発リスクを考慮すべきです。買収無形資産償却の加算は標準的です。調整後EPSがGAAP EPSを約46%上回る水準ですが、非GAAP調整の質は中立的と評価します。",
+        "sources": [
+          {
+            "item": "在庫評価損",
+            "snippet": "一過性の在庫評価減"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.353807639301564,
+      "adjusted_eps": 0.35414541928084853,
+      "gaap_net_income": 83949000.0,
+      "adjusted_net_income": 84029146.06902477,
+      "diluted_shares_used": 237273000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 80146.06902477446,
+          "tax_rate_applied": 0.19853930975225548
+        }
+      ],
+      "net_adjustment_total": 80146.06902477446,
+      "filing_date": "2023-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収に伴う無形資産償却の加算（100,000ドル）のみで、税引後約80,146ドルの影響です。EPS差は約0.00034と極めて小さく、GAAP EPSとAdjusted EPSの乖離は最小限です。この調整は非キャッシュ項目として一般的ですが、カテゴリが「一過性」とされる点は償却の継続性を考慮するとやや注意が必要です。全体として財務健全性は良好です。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.21749172409133902,
+      "adjusted_eps": 0.21780486457667678,
+      "gaap_net_income": 51509000.0,
+      "adjusted_net_income": 51583161.68742351,
+      "diluted_shares_used": 236832000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 74161.68742351163,
+          "tax_rate_applied": 0.25838312576488376
+        }
+      ],
+      "net_adjustment_total": 74161.68742351163,
+      "filing_date": "2023-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収に伴う無形資産償却の加算戻しのみで、標準的な非GAAP調整です。調整によるEPS影響は0.0003程度と極めて小さく、財務報告の健全性は良好と判断します。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.17448587886252154,
+      "adjusted_eps": 0.19414551881875813,
+      "gaap_net_income": 41227000.0,
+      "adjusted_net_income": 45872120.74993972,
+      "diluted_shares_used": 236277000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 82845.0285346837,
+          "tax_rate_applied": 0.17154971465316293
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 5507000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 4562275.721405032,
+          "tax_rate_applied": 0.17154971465316293
+        }
+      ],
+      "net_adjustment_total": 4645120.7499397155,
+      "filing_date": "2023-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2023,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "買収無形資産償却と株式報酬費用の2項目が追加調整されています。両者とも非GAAPで一般的な調整項目ですが、株式報酬が550万ドルと比較的大きく、継続的な性質を持つため希薄化影響に留意が必要です。全体の調整幅はEPSで約11%と過度ではなく、健全性は良好と判断します。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -0.2805456780658039,
+      "adjusted_eps": 0.004505545347592169,
+      "gaap_net_income": -21223000.0,
+      "adjusted_net_income": 340840.0,
+      "diluted_shares_used": 75649000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 395000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "在庫評価損",
+          "amount": 6131000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価減",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 4843490.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 20665000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 16325350.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 21563840.0,
+      "filing_date": "2022-12-31",
+      "form": "10-K",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "GAAP EPSが大幅赤字(-0.28)である一方、調整後EPSは微増益(0.0045)となっており、調整項目への依存度が非常に高い。株式報酬費用の追加が2,066万ドルと最も大きく、非現金費用として処理されているが恒常的に発生する項目。在庫評価損(613万ドル)は一過性と主張されているが、成長企業における在庫管理の問題を示唆する可能性がある。買収無形資産償却は比較的標準的な調整。全体として調整の質は一定程度認められるものの、赤字を黒字化する規模の調整であるため注意が必要。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可）"
+          },
+          {
+            "item": "在庫評価損",
+            "snippet": "一過性の在庫評価減"
+          },
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": -2.3998100163597025,
+      "adjusted_eps": -2.398810524394893,
+      "gaap_net_income": -181896000.0,
+      "adjusted_net_income": -181820242.50703532,
+      "diluted_shares_used": 75796000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 75757.49296467309,
+          "tax_rate_applied": 0.24242507035326905
+        }
+      ],
+      "net_adjustment_total": 75757.49296467309,
+      "filing_date": "2022-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収関連無形資産償却の加算のみで、金額はEPSへの影響が0.001程度と極めて小さい。非現金項目として一般的な調整であり、GAAP EPSとAdjusted EPSの差がほとんどないため透明性は高い。ただし「一過性損益」として分類されている点は、償却が継続的に発生する可能性を考慮するとやや不適切な分類と言える。全体として大きな懸念はなく健全。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.11685295768897055,
+      "adjusted_eps": 0.11782933601190647,
+      "gaap_net_income": 9158000.0,
+      "adjusted_net_income": 9234520.721925134,
+      "diluted_shares_used": 78372000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 76520.72192513368,
+          "tax_rate_applied": 0.2347927807486631
+        }
+      ],
+      "net_adjustment_total": 76520.72192513368,
+      "filing_date": "2022-06-30",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は買収無形資産償却の加算のみで、金額は10万ドルと小さく、EPS差も0.001未満と軽微です。M&A関連の標準的な非現金費用調整であり、事業構造変更・一過性項目として適切に扱われており、財務の健全性は良好です。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.0853121128127834,
+      "adjusted_eps": 0.12282222422897232,
+      "gaap_net_income": 6679000.0,
+      "adjusted_net_income": 9615629.112662014,
+      "diluted_shares_used": 78289000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 66590.2293120638,
+          "tax_rate_applied": 0.3340977068793619
+        },
+        {
+          "item_name": "株式報酬費用",
+          "amount": 4310000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用（ConfigでON/OFF可）",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬 (SBC)",
+          "net_amount": 2870038.88334995,
+          "tax_rate_applied": 0.3340977068793619
+        }
+      ],
+      "net_adjustment_total": 2936629.1126620136,
+      "filing_date": "2022-03-31",
+      "form": "10-Q",
+      "fiscal_year": 2022,
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "買収無形資産償却と株式報酬費用の2項目を加算調整しています。買収償却はM&A関連の非現金項目として標準的ですが、株式報酬費用は431万ドルと金額が大きく、継続的な報酬コストであるため調整後のEPSの質に留意が必要です。調整幅はEPSで約44%と大きく、過度に楽観的な印象を与える可能性があります。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 extracted_from: us-gaap:AmortizationOfIntangibleAssets"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 0.036802409896929324,
+      "adjusted_eps": 0.037558028985958544,
+      "gaap_net_income": 2745791.0,
+      "adjusted_net_income": 2802166.984613381,
+      "diluted_shares_used": 74609000.0,
+      "adjustments": [
+        {
+          "item_name": "買収無形資産償却",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "M&A由来追加償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "事業構造変更・一過性損益",
+          "net_amount": 56375.98461338086,
+          "tax_rate_applied": 0.4362401538661914
+        }
+      ],
+      "net_adjustment_total": 56375.98461338086,
+      "filing_date": "2021-09-30",
+      "form": "10-Q",
+      "fiscal_year": 2021,
+      "ai_analysis": {
+        "health": "Good",
+        "comment": "調整項目は1つのみで、買収に伴う無形資産償却（非現金費用）の加算戻しです。M&A関連の標準的な調整項目であり、EPSへの影響も約2%と軽微です。カテゴリは一過性とされていますが償却は一定期間継続する性質を持つため完全な一過性とは言えませんが、全体として健全で過度な調整は見られません。",
+        "sources": [
+          {
+            "item": "買収無形資産償却",
+            "snippet": "M&A由来追加償却 / us-gaap:AmortizationOfIntangibleAssets"
+          }
+        ]
+      }
+    }
+  ]
+}
