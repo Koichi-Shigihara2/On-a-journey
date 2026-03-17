@@ -7,10 +7,12 @@ pipeline.py
 - TTM計算、年次集計（加重平均税率適用）
 - AI分析（全四半期）
 - JSON保存（docs/data/配下）
+- サマリJSONを生成（銘柄一覧用）
 """
 import yaml
 import json
 import os
+import csv
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
@@ -26,6 +28,72 @@ from ai_analyzer import analyze_adjustments
 # ============================================
 CONFIG_DIR = "config"
 OUTPUT_BASE = "docs/data"  # GitHub Pages用
+
+# ============================================
+# サマリ生成用関数
+# ============================================
+def load_company_names() -> Dict[str, str]:
+    """cik_lookup.csv からティッカー→会社名のマップを作成"""
+    name_map = {}
+    csv_path = os.path.join(CONFIG_DIR, "cik_lookup.csv")
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                ticker = row['ticker'].strip().upper()
+                name_map[ticker] = row['name']
+    except Exception as e:
+        print(f"Warning: Cannot load company names: {e}")
+    return name_map
+
+def calculate_yoy(latest_quarter: Dict, all_quarters: List[Dict]) -> Optional[float]:
+    """最新四半期のYoY成長率を計算（前年同期比）"""
+    if not all_quarters or len(all_quarters) < 5:
+        return None
+    # 日付でソート
+    sorted_q = sorted(all_quarters, key=lambda x: x['filing_date'])
+    latest = sorted_q[-1]
+    # 4四半期前のデータ（同じ四半期であることを簡易チェック：月が一致）
+    if len(sorted_q) >= 5:
+        candidate = sorted_q[-5]
+        if latest['filing_date'][5:7] == candidate['filing_date'][5:7]:
+            prev_eps = candidate['adjusted_eps']
+            if abs(prev_eps) > 1e-6:
+                return (latest['adjusted_eps'] - prev_eps) / abs(prev_eps)
+    # フォールバック：単純に4四半期前
+    idx = sorted_q.index(latest)
+    if idx >= 4:
+        prev_eps = sorted_q[idx-4]['adjusted_eps']
+        if abs(prev_eps) > 1e-6:
+            return (latest['adjusted_eps'] - prev_eps) / abs(prev_eps)
+    return None
+
+def generate_summary(tickers: List[str], quarterly_results_map: Dict[str, List[Dict]], company_names: Dict[str, str]):
+    """全銘柄のサマリJSONを生成"""
+    summary = []
+    for ticker in tickers:
+        quarters = quarterly_results_map.get(ticker, [])
+        if not quarters:
+            continue
+        latest = max(quarters, key=lambda x: x['filing_date'])
+        yoy = calculate_yoy(latest, quarters)
+        summary.append({
+            "ticker": ticker,
+            "company_name": company_names.get(ticker, ""),
+            "latest_filing_date": latest['filing_date'],
+            "gaap_eps": latest['gaap_eps'],
+            "adjusted_eps": latest['adjusted_eps'],
+            "health": latest.get('ai_analysis', {}).get('health', 'Good'),
+            "yoy_growth": yoy if yoy is not None else None
+        })
+    # 保存
+    summary_path = os.path.join(OUTPUT_BASE, "summary.json")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "last_updated": datetime.now().isoformat(),
+            "tickers": summary
+        }, f, indent=2, ensure_ascii=False)
+    print(f"Summary saved to {summary_path} ({len(summary)} tickers)")
 
 # ============================================
 # TTM計算関数
@@ -188,6 +256,8 @@ def run():
     with open(os.path.join(CONFIG_DIR, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
         tickers = yaml.safe_load(f)["tickers"]
     
+    quarterly_results_map = {}  # サマリ生成用に保持
+    
     for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
         
@@ -235,6 +305,8 @@ def run():
             
             quarterly_results.append(result)
             print(f"  {result['filing_date']}: GAAP EPS=${result['gaap_eps']:.4f} → Adj EPS=${result['adjusted_eps']:.4f}")
+        
+        quarterly_results_map[ticker] = quarterly_results
         
         # 3. TTM計算
         ttm_results = []
@@ -284,6 +356,10 @@ def run():
                 }, f, indent=2, ensure_ascii=False)
         
         print(f"✓ {ticker} 保存完了: {ticker_dir}/")
+    
+    # 全銘柄処理後、サマリJSONを生成
+    company_names = load_company_names()
+    generate_summary(tickers, quarterly_results_map, company_names)
 
 # ============================================
 # エントリーポイント
