@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adjusted EPS Analyzer · ダッシュボード</title>
+  <!-- フォント (MACRO PULSE と同じ) -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* 色定義 (MACRO PULSE 完全移植) */
+    :root {
+      --bg: #0a0d14;
+      --sur: #111520;
+      --sur2: #161c2d;
+      --bdr: #1e2840;
+      --acc: #3b82f6;
+      --grn: #10b981;
+      --red: #f43f5e;
+      --amb: #f59e0b;
+      --txt: #e2e8f0;
+      --mut: #64748b;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 48px;
+    }
+
+    /* ヘッダー */
+    header {
+      border-bottom: 1px solid var(--bdr);
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--acc);
+      border-radius: 50%;
+      animation: pdot 2s ease-in-out infinite;
+    }
+
+    @keyframes pdot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
+      50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+    }
+
+    .hdr-r {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mut);
+      text-decoration: none;
+      letter-spacing: .08em;
+      padding: 5px 0;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      color: var(--acc);
+      border-bottom-color: var(--acc);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .search-box input {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--sur2);
+      border: 1px solid var(--bdr);
+      padding: 5px 10px;
+      color: var(--txt);
+      width: 120px;
+    }
+
+    .search-box button {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 12px;
+      border: 1px solid var(--bdr);
+      background: var(--sur2);
+      color: var(--txt);
+      cursor: pointer;
+    }
+
+    .search-box button:hover {
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    /* セクション見出し */
+    .sec {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--mut);
+      text-transform: uppercase;
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sec::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bdr);
+    }
+
+    /* カードグリッド */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 18px 20px;
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: var(--mut);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .top-list {
+      list-style: none;
+    }
+
+    .top-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(30,40,64,.5);
+    }
+
+    .top-list li:last-child {
+      border-bottom: none;
+    }
+
+    .top-ticker {
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+
+    .top-ticker a {
+      color: var(--acc);
+      text-decoration: none;
+    }
+
+    .top-ticker a:hover {
+      text-decoration: underline;
+    }
+
+    .top-value {
+      font-family: var(--mono);
+      color: var(--grn);
+    }
+
+    .health-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .health-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .health-dot.Excellent { background: var(--grn); }
+    .health-dot.Good { background: var(--grn); opacity: .7; }
+    .health-dot.Caution { background: var(--amb); }
+    .health-dot.Warning { background: var(--red); }
+
+    .health-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      flex: 1;
+    }
+
+    .health-name a {
+      color: var(--txt);
+      text-decoration: none;
+    }
+
+    .health-name a:hover {
+      color: var(--acc);
+    }
+
+    /* テーブル */
+    .table-wrap {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .12em;
+      color: var(--mut);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--bdr);
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(30,40,64,.5);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,.02);
+    }
+
+    .ticker-cell a {
+      color: var(--acc);
+      font-family: var(--mono);
+      text-decoration: none;
+    }
+
+    .ticker-cell a:hover {
+      text-decoration: underline;
+    }
+
+    .health-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    .health-Excellent, .health-Good {
+      background: rgba(16,185,129,.15);
+      color: var(--grn);
+    }
+
+    .health-Caution {
+      background: rgba(245,158,11,.15);
+      color: var(--amb);
+    }
+
+    .health-Warning {
+      background: rgba(244,63,94,.15);
+      color: var(--red);
+    }
+
+    .health-Error {
+      background: rgba(100,116,139,.15);
+      color: var(--mut);
+    }
+
+    .number {
+      font-family: var(--mono);
+      text-align: right;
+    }
+
+    /* ローディング／エラー */
+    .empty {
+      color: var(--mut);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .spin {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--bdr);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="logo">
+      <!-- 狸アイコン (添付の Untitled design.png) -->
+      <img src="Untitled design.png" alt="TANUKI" style="height:30px; width:auto; object-fit:contain">
+      <span class="logo-dot"></span>
+      Adjusted EPS Analyzer
+    </div>
+    <div class="hdr-r">
+      <div class="nav-links">
+        <a href="index.html" style="color:var(--acc); border-bottom-color:var(--acc);">ダッシュボード</a>
+        <a href="tickers.html">銘柄一覧</a>
+      </div>
+      <div class="search-box">
+        <input type="text" id="ticker-search" placeholder="ティッカー (例: TSLA)" value="TSLA">
+        <button onclick="window.location.href='stock.html?ticker='+document.getElementById('ticker-search').value.toUpperCase()">検索</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ (JSで動的生成) -->
+  <div id="dashboard-content">
+    <div class="empty"><span class="spin"></span>データを読み込み中...</div>
+  </div>
+</div>
+
+<script>
+  (async function() {
+    const contentDiv = document.getElementById('dashboard-content');
+
+    try {
+      const res = await fetch('data/summary.json?t=' + Date.now());
+      if (!res.ok) throw new Error('データが見つかりません');
+      const data = await res.json();
+      const tickers = data.tickers || [];
+
+      // YoY成長率トップ5 (降順、null除外)
+      const withGrowth = tickers.filter(t => t.yoy_growth !== null && t.yoy_growth !== undefined);
+      const topGrowth = [...withGrowth].sort((a,b) => b.yoy_growth - a.yoy_growth).slice(0,5);
+
+      // 健全性 Excellent の銘柄
+      const excellent = tickers.filter(t => t.health === 'Excellent');
+
+      // テーブル用の全銘柄
+      const allTickers = tickers.sort((a,b) => a.ticker.localeCompare(b.ticker));
+
+      function formatPercent(val) {
+        if (val === null || val === undefined) return '—';
+        return (val * 100).toFixed(1) + '%';
+      }
+
+      function healthClass(health) {
+        return 'health-' + (health || 'Good');
+      }
+
+      function healthDot(health) {
+        return 'health-dot ' + (health || 'Good');
+      }
+
+      function formatMoney(val) {
+        if (val === null || val === undefined) return '—';
+        return '$' + val.toFixed(4);
+      }
+
+      // HTML構築
+      let html = '';
+
+      // カード行
+      html += '<div class="grid-2">';
+
+      // 左カード: YoY成長率トップ5
+      html += '<div class="card">';
+      html += '<div class="card-title">🔥 TTM調整後EPS成長率トップ5</div>';
+      html += '<ul class="top-list">';
+      if (topGrowth.length === 0) {
+        html += '<li class="empty" style="padding:10px 0">データなし</li>';
+      } else {
+        topGrowth.forEach(t => {
+          const pct = formatPercent(t.yoy_growth);
+          const color = t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)';
+          html += `<li><span class="top-ticker"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></span> <span class="top-value" style="color:${color}">${pct}</span></li>`;
+        });
+      }
+      html += '</ul></div>';
+
+      // 右カード: 健全性 Excellent
+      html += '<div class="card">';
+      html += '<div class="card-title">✨ 健全性 Excellent の銘柄</div>';
+      html += '<div class="health-list">';
+      if (excellent.length === 0) {
+        html += '<div class="empty" style="padding:10px 0">該当なし</div>';
+      } else {
+        excellent.slice(0,8).forEach(t => {
+          html += `<div class="health-item"><span class="${healthDot(t.health)}"></span><span class="health-name"><a href="stock.html?ticker=${t.ticker}">${t.ticker} · ${t.company_name || ''}</a></span></div>`;
+        });
+      }
+      html += '</div></div>';
+      html += '</div>'; // grid-2
+
+      // 全銘柄一覧テーブル
+      html += '<div class="sec">📋 全監視銘柄一覧</div>';
+      html += '<div class="table-wrap">';
+      html += '<table><thead><tr>';
+      html += '<th>ティッカー</th><th>会社名</th><th>最新決算日</th><th>GAAP EPS</th><th>Adjusted EPS</th><th>YoY成長率</th><th>健全性</th>';
+      html += '</tr></thead><tbody>';
+
+      allTickers.forEach(t => {
+        html += '<tr>';
+        html += `<td class="ticker-cell"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></td>`;
+        html += `<td>${t.company_name || ''}</td>`;
+        html += `<td>${t.latest_filing_date || ''}</td>`;
+        html += `<td class="number">${formatMoney(t.gaap_eps)}</td>`;
+        html += `<td class="number">${formatMoney(t.adjusted_eps)}</td>`;
+        html += `<td class="number" style="color:${t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)'}">${formatPercent(t.yoy_growth)}</td>`;
+        html += `<td><span class="health-badge ${healthClass(t.health)}">${t.health || 'Good'}</span></td>`;
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+
+      contentDiv.innerHTML = html;
+
+    } catch (e) {
+      contentDiv.innerHTML = `<div class="empty">⚠️ データを読み込めませんでした。<br><small>${e.message}</small></div>`;
+    }
+  })();
+</script>
+</body>
+</html>
