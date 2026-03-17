@@ -296,16 +296,23 @@
           resetMetrics();
           updateAI(null);
         }
-      } else if (currentTab === 'ttm') {
-        // TTMタブの場合は期間指定を無視（全TTMデータを表示）
-        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
-          updateChart(ttmData.ttm, 'ttm', 'period');
-        } else {
-          updateChart([], 'ttm', '');
-        }
-        // TTMタブではメトリクスは更新しない（または別の処理）
-      }
+     else if (currentTab === 'ttm') {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+        const filteredTTM = ttmData.ttm.filter(item => {
+            const endDateStr = item.period.split(' to ')[1];
+            const itemEnd = new Date(endDateStr);
+            return itemEnd >= start && itemEnd <= end;
+        });
+        updateChart(filteredTTM, 'ttm', 'period');
+    } else {
+        updateChart([], 'ttm', '');
     }
+}
 
     // プリセット設定
     function setPreset(range) {
