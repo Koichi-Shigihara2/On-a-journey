@@ -61,7 +61,6 @@
   </header>
 
   <main class="container mx-auto mt-24">
-    <!-- 以降は既存の内容と同じ（変更なし） -->
     <div id="loading" class="hidden text-center py-10">
       <div class="spinner-border inline-block w-8 h-8"></div>
       <p class="mt-2">データを読み込み中...</p>
@@ -179,7 +178,6 @@
     let chart = null;
     let currentTab = 'quarterly';
 
-    // URLからtickerパラメータを取得
     const urlParams = new URLSearchParams(window.location.search);
     const tickerParam = urlParams.get('ticker');
     if (tickerParam) {
@@ -200,11 +198,9 @@
       document.getElementById('error').classList.add('hidden');
 
       try {
-        // キャッシュ無効化オプション付きでフェッチ
         const qResp = await fetch(`data/${currentTicker}/quarterly.json`, { cache: 'no-store' });
         if (!qResp.ok) throw new Error('四半期データが見つかりません');
         quarterlyData = await qResp.json();
-        console.log('Quarterly data loaded:', JSON.parse(JSON.stringify(quarterlyData)));
 
         try {
           const tResp = await fetch(`data/${currentTicker}/ttm.json`, { cache: 'no-store' });
@@ -215,11 +211,7 @@
         }
 
         updateHeader(quarterlyData);
-        
-        // 日付入力欄の初期値を設定（データの最小日付・最大日付）
         setInitialDateRange(quarterlyData.quarters);
-        
-        // 初期表示は全期間
         applyDateRange();
 
         document.getElementById('ticker-title').innerText = currentTicker;
@@ -240,17 +232,15 @@
         `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
     }
 
-    // データから最小日付と最大日付を取得し、inputにセット
     function setInitialDateRange(quarters) {
       if (!quarters || quarters.length === 0) return;
-      const dates = quarters.map(q => q.filing_date).sort(); // 昇順
+      const dates = quarters.map(q => q.filing_date).sort();
       const minDate = dates[0];
       const maxDate = dates[dates.length - 1];
       document.getElementById('start-date').value = minDate;
       document.getElementById('end-date').value = maxDate;
     }
 
-    // 開始日・終了日でデータをフィルタリング
     function filterDataByDateRange(dataArray, labelField, startStr, endStr) {
       if (!dataArray || dataArray.length === 0) return [];
       const start = startStr ? new Date(startStr) : null;
@@ -264,7 +254,6 @@
       });
     }
 
-    // 日付範囲適用時の処理（改善版）
     function applyDateRange() {
       if (!quarterlyData) return;
 
@@ -280,15 +269,10 @@
       console.log(`Date range: ${startDate} to ${endDate}, filtered count: ${filtered.length}`);
 
       if (currentTab === 'quarterly') {
-        // チャートを先に更新
         updateChart(filtered, 'quarterly', 'filing_date');
         
-        // その後メトリクスを更新（最新のフィルタリング結果を使用）
         const latestInRange = getLatestFromArray(filtered);
-        console.log('latestInRange:', latestInRange ? {...latestInRange} : null);
-
         if (latestInRange) {
-          // ディープコピーしてからメトリクス更新に渡す
           const latestCopy = JSON.parse(JSON.stringify(latestInRange));
           updateMetricsWithQuarter(latestCopy, quarterlyData.quarters);
           updateAI(latestCopy.ai_analysis);
@@ -296,25 +280,23 @@
           resetMetrics();
           updateAI(null);
         }
-     else if (currentTab === 'ttm') {
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
-        const filteredTTM = ttmData.ttm.filter(item => {
+      } else if (currentTab === 'ttm') {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+          const filteredTTM = ttmData.ttm.filter(item => {
             const endDateStr = item.period.split(' to ')[1];
             const itemEnd = new Date(endDateStr);
             return itemEnd >= start && itemEnd <= end;
-        });
-        updateChart(filteredTTM, 'ttm', 'period');
-    } else {
-        updateChart([], 'ttm', '');
+          });
+          updateChart(filteredTTM, 'ttm', 'period');
+        } else {
+          updateChart([], 'ttm', '');
+        }
+      }
     }
-}
 
-    // プリセット設定
     function setPreset(range) {
       if (!quarterlyData) return;
       const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
@@ -322,7 +304,7 @@
       const maxDateObj = new Date(maxDate);
 
       let startDate;
-      const endDate = maxDate; // 終了日は常に最新
+      const endDate = maxDate;
 
       switch (range) {
         case 'all':
@@ -347,7 +329,6 @@
           return;
       }
 
-      // 開始日がデータの最小日付より前にならないように調整
       if (startDate < dates[0]) {
         startDate = dates[0];
       }
@@ -371,16 +352,11 @@
       return sorted[0];
     }
 
-    // YoY計算（四半期ベース）- デバッグ強化版
     function calculateYoY(latest, allQuarters) {
         const latestDate = latest.filing_date;
         const [year, month] = latestDate.split('-');
         const latestQuarter = Math.floor((parseInt(month) - 1) / 3) + 1;
         
-        // デバッグ: allQuarters の内容を確認
-        console.log('allQuarters for YoY:', allQuarters.map(q => ({ date: q.filing_date, year: q.filing_date.split('-')[0], quarter: Math.floor((parseInt(q.filing_date.split('-')[1]) - 1) / 3) + 1 })));
-
-        // 前年の同じ四半期を探す
         const targetYear = parseInt(year) - 1;
         
         const candidates = allQuarters.filter(q => {
@@ -390,10 +366,7 @@
             return qYear === targetYear && qQuarter === latestQuarter;
         });
 
-        console.log(`YoY candidates for ${latestDate} (Q${latestQuarter}):`, candidates.map(c => c.filing_date));
-
         if (candidates.length > 0) {
-            // 最も近い日付のものを選ぶ（通常は1つだが、複数ある場合）
             const prevQuarter = candidates.reduce((prev, curr) => {
                 const prevDiff = Math.abs(new Date(latestDate) - new Date(prev.filing_date));
                 const currDiff = Math.abs(new Date(latestDate) - new Date(curr.filing_date));
@@ -401,29 +374,24 @@
             });
             
             const prevEps = prevQuarter.adjusted_eps;
-            console.log('Selected prevQuarter:', prevQuarter.filing_date, 'prevEps:', prevEps);
             if (Math.abs(prevEps) > 0.0001) {
                 return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
             }
         }
 
-        // フォールバック1: 4四半期前を探す（同じ並び順）
         const idx = allQuarters.findIndex(q => q.filing_date === latestDate);
         if (idx >= 4 && idx - 4 < allQuarters.length) {
             const prevEps = allQuarters[idx - 4].adjusted_eps;
-            console.log('Fallback 1: using 4 quarters before, prevEps:', prevEps);
             if (Math.abs(prevEps) > 0.0001) {
                 return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
             }
         }
 
-        // フォールバック2: 日付が1年前のデータを直接探す（期間をまたぐ場合）
         const oneYearAgo = new Date(latestDate);
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const oneYearAgoStr = oneYearAgo.toISOString().split('T')[0];
         const prevByDate = allQuarters.find(q => q.filing_date === oneYearAgoStr);
         if (prevByDate && Math.abs(prevByDate.adjusted_eps) > 0.0001) {
-            console.log('Fallback 2: exact date match', prevByDate.filing_date, prevByDate.adjusted_eps);
             return (latest.adjusted_eps - prevByDate.adjusted_eps) / Math.abs(prevByDate.adjusted_eps);
         }
         
@@ -431,7 +399,6 @@
     }
 
     function updateMetricsWithQuarter(quarter, allQuarters) {
-      console.log('Updating metrics with quarter:', quarter);
       document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
       document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
       
@@ -648,37 +615,34 @@
       if (!currentTicker) return;
 
       if (tab === 'quarterly' && quarterlyData) {
-        // タブ切り替え時に現在の日付範囲で再適用
         applyDateRange();
         updateAllAdjustments(quarterlyData.quarters);
       } else if (tab === 'ttm') {
-  if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
-    // ★ データがない場合（この部分はそのまま残す）
-    updateChart([], 'ttm', '');
-    document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
-    document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
-    document.getElementById('ai-sources').innerHTML = '';
-  } else {
-    // ★★★ ここを修正：データがある場合、日付範囲でフィルタリングして表示 ★★★
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    const filteredTTM = ttmData.ttm.filter(item => {
-      const endDateStr = item.period.split(' to ')[1]; // "2025-03-31" を抽出
-      const itemEnd = new Date(endDateStr);
-      return itemEnd >= start && itemEnd <= end;
-    });
-    
-    updateChart(filteredTTM, 'ttm', 'period');
-    
-    // TTMタブでは調整内訳とAI分析は表示しない（現在のまま）
-    document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
-    document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
-    document.getElementById('ai-sources').innerHTML = '';
-  }
-}
+        if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
+          updateChart([], 'ttm', '');
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
+        } else {
+          const startDate = document.getElementById('start-date').value;
+          const endDate = document.getElementById('end-date').value;
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          
+          const filteredTTM = ttmData.ttm.filter(item => {
+            const endDateStr = item.period.split(' to ')[1];
+            const itemEnd = new Date(endDateStr);
+            return itemEnd >= start && itemEnd <= end;
+          });
+          
+          updateChart(filteredTTM, 'ttm', 'period');
+          
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
+        }
+      }
+    }
 
     window.onload = () => loadTicker();
   </script>
