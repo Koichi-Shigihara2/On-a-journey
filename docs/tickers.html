@@ -8,41 +8,116 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
   <style>
-    body { background-color: #111827; color: #f3f4f6; }
-    .dataTables_wrapper .dataTables_length, 
-    .dataTables_wrapper .dataTables_filter,
-    .dataTables_wrapper .dataTables_info,
-    .dataTables_wrapper .dataTables_paginate {
-      color: #f3f4f6 !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-      color: #f3f4f6 !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-      background: #3b82f6 !important;
-      color: white !important;
-    }
-    table.dataTable tbody tr {
-      background-color: #1f2937 !important;
-    }
-    table.dataTable tbody td {
-      color: #f3f4f6 !important;
-    }
-    table.dataTable thead th {
-      background-color: #374151 !important;
-      color: #f3f4f6 !important;
-    }
-    .dt-button {
-      background: #3b82f6 !important;
-      color: white !important;
-      border-radius: 0.375rem !important;
-      padding: 0.25rem 0.75rem !important;
-      margin: 0 0.25rem !important;
-    }
-    .dt-button:hover {
-      background: #2563eb !important;
-    }
-  </style>
+  :root {
+    --bg: #0a0d14;
+    --sur: #111520;
+    --sur2: #161c2d;
+    --bdr: #1e2840;
+    --acc: #3b82f6;
+    --grn: #10b981;
+    --red: #f43f5e;
+    --amb: #f59e0b;
+    --txt: #e2e8f0;
+    --mut: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  .shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 48px;
+  }
+  /* ヘッダー（後述） */
+  header {
+    border-bottom: 1px solid var(--bdr);
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--acc);
+    border-radius: 50%;
+    animation: pdot 2s ease-in-out infinite;
+  }
+  @keyframes pdot {
+    0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
+    50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+  }
+  .hdr-r {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .nav-links {
+    display: flex;
+    gap: 16px;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mut);
+    text-decoration: none;
+    letter-spacing: .08em;
+    padding: 5px 0;
+    border-bottom: 1px solid transparent;
+  }
+  .nav-links a:hover {
+    color: var(--acc);
+    border-bottom-color: var(--acc);
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .search-box input {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--sur2);
+    border: 1px solid var(--bdr);
+    padding: 5px 10px;
+    color: var(--txt);
+    width: 120px;
+  }
+  .search-box button {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--bdr);
+    background: var(--sur2);
+    color: var(--txt);
+    cursor: pointer;
+  }
+  .search-box button:hover {
+    border-color: var(--acc);
+    color: var(--acc);
+  }
+  /* 以下、各ページ固有のスタイルはそのまま残す（例：テーブル、カードなど） */
+</style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-6">
   <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
