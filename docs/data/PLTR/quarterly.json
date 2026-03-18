@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-17T15:40:37.955973",
+  "last_updated": "2026-03-18T11:57:10.305481",
   "quarters": [
     {
       "gaap_eps": 0.23728236076995257,
@@ -36,15 +36,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は株式報酬費用のみで、非現金項目として標準的なadd_back処理だが、調整後EPSがGAAP EPSの約2倍に跳ね上がるほど影響が大きい。PLTR特有の高水準SBCを考慮すると、経済的実態の歪曲リスクがあり、健全性は注意が必要。",
+        "comment": "調整項目は株式報酬費用（SBC）の加算のみであり、調整後EPSがGAAP EPSの約2倍に跳ね上がっています。PLTRは伝統的に極めて高いSBCを計上する企業として知られており、非GAAP調整への依存度が非常に高いため、収益の質に注意が必要です。SBCは非現金費用ですが株主希薄化という実質的なコストを伴います。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "調整後EPS",
-            "snippet": "GAAP EPS: 0.237 → Adjusted EPS: 0.494"
+            "snippet": "amount: 684033000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
           }
         ]
       }
@@ -133,11 +129,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は株式報酬費用の加算（約1.55億ドル）のみで、非現金費用として一般的な処理です。ただし、調整後EPSがGAAP EPSの約1.7倍となっており、SBC依存度が高いため収益の質に注意が必要です。PLTRのビジネスモデル上SBCが構造的に大きい点も考慮すべきです。",
+        "comment": "調整項目は株式報酬費用（SBC）の加算のみで、標準的な非現金調整ですが、調整後EPSがGAAP EPSを約71%上回る大幅な差異が生じています。Palantirのような成長企業ではSBCが継続的に高水準であるため、希薄化効果を考慮した実質的な収益性を慎重に評価する必要があります。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
+            "snippet": "amount: 155339000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
           }
         ]
       }
@@ -188,15 +184,15 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用が6.9億ドルと極めて大きく、GAAP純利益の約9倍に相当する非現金費用を調整で加算しており、Adjusted EPSを大幅に押し上げています。買収無形資産償却は標準的な調整ですが、SBCの規模が株主希薄化リスクを示唆するため調整の健全性は中程度と評価。継続的なSBC依存に注意が必要です。",
+        "comment": "調整後EPSがGAAP EPSの約8倍と大幅に乖離しており、主に株式報酬費用（6.9億ドル）のadd_backによるものです。SBCは継続的に発生する非現金費用であり株主希薄化の実態を伴うため収益の質に懸念があります。買収無形資産償却は比較的標準的な調整ですが、全体として調整依存度が高く持続可能性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 691638000, category: 株式報酬 (SBC), reason: 非現金費用"
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           },
           {
             "item": "買収無形資産償却",
-            "snippet": "amount: 7800000, category: 事業構造変更・一過性損益"
+            "snippet": "M&A由来追加償却"
           }
         ]
       }
@@ -285,7 +281,7 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は株式報酬（SBC）のみで、非現金費用の追加戻しとして標準的ですが、調整額125.65M USDが大きく、GAAP EPSを約2倍に引き上げています。PLTRのSBCは伝統的に高水準で株主希薄化の実質コストが大きいため、調整後EPSの健全性に注意が必要です。また税効果適用率が4.22%と低い点も確認を要します。",
+        "comment": "調整項目は株式報酬費用のみであり、非現金費用として追加戻しする標準的な処理ですが、金額が125Mドル超と大きく、PLTRの希薄化影響が大きいため真の経済的コストを過小評価する可能性があります。非GAAPの健全性は中立的ですが、投資判断時はSBCの持続可能性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
@@ -340,15 +336,15 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用が約4.76億ドルと極めて大規模で、調整後EPSをGAAP EPSの約5倍に押し上げている。SBCは非現金費用として加算されるが、株主希薄化の実質コストとして批判されることが多く、調整依存度が高い。買収無形資産償却の調整は標準的だが、全体として持続可能性に注意が必要。",
+        "comment": "株式報酬費用475.9百万USDのadd_backが極めて大きく、GAAP EPS(0.04)をAdjusted EPS(0.215)へ大幅に引き上げています。SBCは継続的な報酬コストであり株主希薄化の実態を反映しない調整として警戒が必要です。買収無形資産償却は比較的小規模です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 475903000, category: 株式報酬 (SBC), reason: 非現金費用"
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           },
           {
             "item": "買収無形資産償却",
-            "snippet": "amount: 9600000, category: 事業構造変更・一過性損益"
+            "snippet": "M&A由来追加償却"
           }
         ]
       }
@@ -437,11 +433,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用を114.7百万ドル加算した結果、GAAP EPS 0.0076からAdjusted EPS 0.0546へ約7倍に引き上げられています。非現金費用としての標準的な調整ですが、調整幅が極めて大きくGAAPベースでの利益が極めて薄いため、収益の質と将来の株主希薄化リスクに注意が必要です。",
+        "comment": "調整項目は株式報酬費用（SBC）の加算のみで、GAAP EPSが0.0076からAdjusted EPS 0.0546へ大幅に上昇。非現金費用として標準的な調整だが、金額規模が大きく（約1.15億ドル）、株主希薄化の実質コストを考慮すると調整後利益の質に注意が必要。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "us-gaap:ShareBasedCompensation"
+            "snippet": "非現金費用（ConfigでON/OFF可）"
           }
         ]
       }
@@ -480,15 +476,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は株式報酬費用（SBC）のみで、非現金費用として全額加算されています。GAAP EPS 0.015に対しAdjusted EPS 0.221と調整幅が極めて大きく（約15倍）、SBCが利益に与える影響が甚大です。SBCは経済的コストを伴うため、調整後利益の質に注意が必要であり、過度な調整依存は健全性に懸念があります。",
+        "comment": "唯一の調整項目が株式報酬費用（SBC）の加算戻しです。非現金費用として一般的ですが、GAAP EPS 0.015からAdjusted EPS 0.221へ約15倍に跳ね上がる影響は極めて大きく、収益の質を過大評価するリスクがあります。PLTRのビジネスモデル上SBC依存が高いため、希薄化効果も含め慎重に分析すべきです。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "調整項目",
-            "snippet": "category: 株式報酬 (SBC), amount: 564798000 USD, direction: add_back"
+            "snippet": "us-gaap:ShareBasedCompensation 金額: 564798000 USD direction: add_back"
           }
         ]
       }
@@ -577,11 +569,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "GAAP EPSが赤字（-0.05）である一方、調整後EPSは黒字（+0.022）に転換。唯一の調整項目が多額の株式報酬費用（約1.49億ドル）の加算であり、非現金項目として標準的ではあるものの、PLTRのSBC規模が大きいため株主希薄化の実質コストを過小評価する可能性がある。調整の透明性は確保されているが、持続的な収益性評価には注意が必要。",
+        "comment": "GAAP EPSが-0.05と赤字である一方、Adjusted EPSは+0.022と黒字化しています。唯一の調整項目が株式報酬費用（約1.49億ドル）の全額加算であり、非現金費用として一般的ですが、調整後の黒字化がこの項目に大きく依存しているため、株主希薄化の実質コストを考慮すると持続可能性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
+            "snippet": "amount: 149323000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
           }
         ]
       }
@@ -620,11 +612,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "GAAP EPSが赤字(-0.08)である一方、株式報酬費用(778M USD)の加算によりAdjusted EPSが+0.22と黒字化。SBCは非現金費用として一般的な調整だが、金額規模が極めて大きく利益の質に影響を与えている。株主希薄化効果も考慮する必要があり、調整後の収益性を過度に楽観視すべきではない。",
+        "comment": "唯一の調整項目として株式報酬費用（非現金）を加算しており、標準的な非GAAP調整ですが、GAAP EPSが赤字からAdjusted EPSが黒字へ転換するほど影響が大きく、調整依存度が高いため注意が必要です。成長企業では一般的ですが、株主希薄化の実質的コストを考慮すべきです。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 778215000, direction: add_back, category: 株式報酬 (SBC), reason: 非現金費用"
+            "snippet": "us-gaap:ShareBasedCompensation 金額:778215000 USD direction:add_back 非現金費用"
           }
         ]
       }
@@ -713,11 +705,11 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "GAAP EPSが-0.068と赤字である一方、株式報酬費用193.7百万ドルを加算することでAdjusted EPSが+0.036の黒字に転換しています。SBCは非現金費用として標準的な調整ですが、金額が極めて大きく収益規模に対して相対的に大きいため、株主希薄化の経済的影響を考慮する必要があります。調整依存度が高い点に留意すべきです。",
+        "comment": "GAAP EPSが赤字である一方で、唯一の調整項目として多額の株式報酬費用（約1.94億ドル）を全額加算することでAdjusted EPSを黒字化しています。SBCは非現金費用ですが、株主希薄化の実質的コストであり、調整依存度が高いため持続可能性に注意が必要です。",
         "sources": [
           {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） extracted_from: us-gaap:ShareBasedCompensation"
+            "item": "調整項目",
+            "snippet": "株式報酬費用 amount: 193731000 USD direction: add_back category: 株式報酬 (SBC) reason: 非現金費用"
           }
         ]
       }
