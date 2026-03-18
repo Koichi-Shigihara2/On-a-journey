@@ -123,23 +123,23 @@
 </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-6">
-  <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
-    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Adjusted EPS Analyzer</h1>
-      <div class="space-x-4">
-        <a href="index.html" class="text-blue-400 hover:text-blue-300 font-semibold underline">ダッシュボード</a>
-        <a href="tickers.html" class="text-blue-400 hover:text-blue-300">銘柄一覧</a>
-        <a href="#" class="text-blue-400 hover:text-blue-300">設定</a>
-      </div>
-      <div class="flex items-center space-x-2">
-        <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)" 
-               class="px-3 py-1 bg-gray-700 rounded text-white" value="TSLA">
-        <button onclick="loadTicker()" class="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
-          検索
-        </button>
-      </div>
-    </nav>
-  </header>
+  <header>
+  <div class="logo">
+    <img src="Untitled design.png" alt="TANUKI" style="height:30px; width:auto; object-fit:contain">
+    <span class="logo-dot"></span>
+    Adjusted EPS Analyzer
+  </div>
+  <div class="hdr-r">
+    <div class="nav-links">
+      <a href="index.html" id="nav-dashboard">ダッシュボード</a>
+      <a href="tickers.html" id="nav-tickers">銘柄一覧</a>
+    </div>
+    <div class="search-box">
+      <input type="text" id="ticker-search" placeholder="ティッカー (例: TSLA)" value="TSLA">
+      <button onclick="window.location.href='stock.html?ticker='+document.getElementById('ticker-search').value.toUpperCase()">検索</button>
+    </div>
+  </div>
+</header>
 
   <main class="container mx-auto mt-24">
     <div id="loading" class="hidden text-center py-10">
