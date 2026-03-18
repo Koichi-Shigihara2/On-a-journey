@@ -13,7 +13,6 @@ import yaml
 import json
 import os
 import csv
-import argparse
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
@@ -47,26 +46,51 @@ def load_company_names() -> Dict[str, str]:
         print(f"Warning: Cannot load company names: {e}")
     return name_map
 
+# === 修正済み YoY 計算関数 ===
 def calculate_yoy(latest_quarter: Dict, all_quarters: List[Dict]) -> Optional[float]:
-    """最新四半期のYoY成長率を計算（前年同期比）"""
+    """
+    最新四半期のYoY成長率を計算（前年同期比）
+    前年同期のEPSが0に近い場合はNoneを返す。
+    """
     if not all_quarters or len(all_quarters) < 5:
         return None
-    # 日付でソート
+
+    # 日付でソート（古い順）
     sorted_q = sorted(all_quarters, key=lambda x: x['filing_date'])
-    latest = sorted_q[-1]
-    # 4四半期前のデータ（同じ四半期であることを簡易チェック：月が一致）
-    if len(sorted_q) >= 5:
-        candidate = sorted_q[-5]
-        if latest['filing_date'][5:7] == candidate['filing_date'][5:7]:
-            prev_eps = candidate['adjusted_eps']
-            if abs(prev_eps) > 1e-6:
-                return (latest['adjusted_eps'] - prev_eps) / abs(prev_eps)
-    # フォールバック：単純に4四半期前
-    idx = sorted_q.index(latest)
-    if idx >= 4:
-        prev_eps = sorted_q[idx-4]['adjusted_eps']
+    latest = latest_quarter  # 引数で渡された最新四半期（すでに特定済み）
+
+    # 最新四半期の年・四半期番号を取得
+    latest_year, latest_month = latest['filing_date'].split('-')[0:2]
+    latest_quarter_num = (int(latest_month) - 1) // 3 + 1
+
+    # 前年同期の候補を探す（同じ四半期番号で1年前）
+    prev_year = str(int(latest_year) - 1)
+    candidates = [
+        q for q in sorted_q
+        if q['filing_date'].startswith(prev_year) 
+        and ((int(q['filing_date'].split('-')[1]) - 1) // 3 + 1) == latest_quarter_num
+    ]
+
+    if candidates:
+        # 最も近いものを選ぶ（通常は1件だが、複数ある場合は filing_date が最新のものを採用）
+        prev_quarter = max(candidates, key=lambda x: x['filing_date'])
+        prev_eps = prev_quarter['adjusted_eps']
         if abs(prev_eps) > 1e-6:
             return (latest['adjusted_eps'] - prev_eps) / abs(prev_eps)
+        else:
+            # 前年同期EPSが極小 → YoYは参考値としない
+            return None
+
+    # フォールバック：単純に4四半期前（ただし同じ四半期番号か簡易チェック）
+    idx = sorted_q.index(latest)
+    if idx >= 4:
+        prev_candidate = sorted_q[idx-4]
+        # 同じ四半期かどうか月でチェック
+        prev_month = prev_candidate['filing_date'].split('-')[1]
+        if prev_month == latest_month:
+            prev_eps = prev_candidate['adjusted_eps']
+            if abs(prev_eps) > 1e-6:
+                return (latest['adjusted_eps'] - prev_eps) / abs(prev_eps)
     return None
 
 def generate_summary(tickers: List[str], quarterly_results_map: Dict[str, List[Dict]], company_names: Dict[str, str]):
@@ -253,30 +277,13 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
 # メイン実行関数
 # ============================================
 def run():
-    # コマンドライン引数の解析
-    parser = argparse.ArgumentParser(description='Adjusted EPS Analyzer Pipeline')
-    parser.add_argument('--tickers', type=str, help='カンマ区切りのティッカーリスト（例: TSLA,NVDA）。指定がない場合は全銘柄を処理')
-    args = parser.parse_args()
-
     # 設定読み込み
     with open(os.path.join(CONFIG_DIR, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
-        all_tickers = yaml.safe_load(f)["tickers"]
-    
-    # 処理対象のティッカーを決定
-    if args.tickers:
-        target_tickers = [t.strip().upper() for t in args.tickers.split(',')]
-        tickers_to_process = [t for t in all_tickers if t in target_tickers]
-        if not tickers_to_process:
-            print(f"エラー: 指定されたティッカー {target_tickers} は monitor_tickers.yaml に含まれていません。")
-            return
-        print(f"指定されたティッカーのみ処理: {tickers_to_process}")
-    else:
-        tickers_to_process = all_tickers
-        print(f"全監視銘柄を処理: {tickers_to_process}")
+        tickers = yaml.safe_load(f)["tickers"]
     
     quarterly_results_map = {}  # サマリ生成用に保持
     
-    for ticker in tickers_to_process:
+    for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
         
         # 1. 過去N年分の四半期データを取得
@@ -375,9 +382,9 @@ def run():
         
         print(f"✓ {ticker} 保存完了: {ticker_dir}/")
     
-    # 全銘柄処理後、サマリJSONを生成（処理した銘柄のみ含める）
+    # 全銘柄処理後、サマリJSONを生成
     company_names = load_company_names()
-    generate_summary(tickers_to_process, quarterly_results_map, company_names)
+    generate_summary(tickers, quarterly_results_map, company_names)
 
 # ============================================
 # エントリーポイント
