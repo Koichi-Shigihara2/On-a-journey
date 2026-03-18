@@ -13,6 +13,7 @@ import yaml
 import json
 import os
 import csv
+import argparse
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
@@ -252,13 +253,30 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
 # メイン実行関数
 # ============================================
 def run():
+    # コマンドライン引数の解析
+    parser = argparse.ArgumentParser(description='Adjusted EPS Analyzer Pipeline')
+    parser.add_argument('--tickers', type=str, help='カンマ区切りのティッカーリスト（例: TSLA,NVDA）。指定がない場合は全銘柄を処理')
+    args = parser.parse_args()
+
     # 設定読み込み
     with open(os.path.join(CONFIG_DIR, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
-        tickers = yaml.safe_load(f)["tickers"]
+        all_tickers = yaml.safe_load(f)["tickers"]
+    
+    # 処理対象のティッカーを決定
+    if args.tickers:
+        target_tickers = [t.strip().upper() for t in args.tickers.split(',')]
+        tickers_to_process = [t for t in all_tickers if t in target_tickers]
+        if not tickers_to_process:
+            print(f"エラー: 指定されたティッカー {target_tickers} は monitor_tickers.yaml に含まれていません。")
+            return
+        print(f"指定されたティッカーのみ処理: {tickers_to_process}")
+    else:
+        tickers_to_process = all_tickers
+        print(f"全監視銘柄を処理: {tickers_to_process}")
     
     quarterly_results_map = {}  # サマリ生成用に保持
     
-    for ticker in tickers:
+    for ticker in tickers_to_process:
         print(f"\n=== Processing {ticker} ===")
         
         # 1. 過去N年分の四半期データを取得
@@ -357,9 +375,9 @@ def run():
         
         print(f"✓ {ticker} 保存完了: {ticker_dir}/")
     
-    # 全銘柄処理後、サマリJSONを生成
+    # 全銘柄処理後、サマリJSONを生成（処理した銘柄のみ含める）
     company_names = load_company_names()
-    generate_summary(tickers, quarterly_results_map, company_names)
+    generate_summary(tickers_to_process, quarterly_results_map, company_names)
 
 # ============================================
 # エントリーポイント
