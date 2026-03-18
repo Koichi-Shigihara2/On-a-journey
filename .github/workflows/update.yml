@@ -2,19 +2,21 @@ name: Update EPS Data
 
 on:
   workflow_dispatch:
+    inputs:
+      tickers:
+        description: '更新するティッカー（カンマ区切り、空の場合は全銘柄）'
+        required: false
+        default: ''
   schedule:
-    - cron: '0 10 * * 1'  # 毎週月曜日10:00 UTC
+    - cron: '0 10 * * 1'
 
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -22,15 +24,15 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run pipeline
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          HTTP2: "0"
+          TICKERS: ${{ github.event.inputs.tickers }}
         run: |
-          python src/pipeline.py
+          # TICKERS が指定されていればそれだけ処理、なければ全銘柄
+          python src/pipeline.py --tickers "$TICKERS"
 
       - name: Check for changes
         id: git-check
