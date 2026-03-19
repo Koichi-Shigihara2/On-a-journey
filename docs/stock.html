@@ -686,7 +686,7 @@
   }
 
   // ★★★ 修正: データタイプに応じてラベル生成を分岐 ★★★
-  function updateChart(dataArray, type, labelField) {
+    function updateChart(dataArray, type, labelField) {
     const ctx = document.getElementById('eps-chart').getContext('2d');
 
     if (!dataArray || dataArray.length === 0) {
@@ -699,29 +699,27 @@
       return;
     }
 
-    // 日付でソート（古い→新しい）
+    // ソート（文字列比較で安定）
     const sorted = [...dataArray].sort((a, b) => {
       if (type === 'quarterly') {
-        return new Date(a[labelField]) - new Date(b[labelField]);
+        return a.filing_date.localeCompare(b.filing_date);
       } else {
-        // TTMの場合は終了日でソート
         const aEnd = a.period.split(' to ')[1];
         const bEnd = b.period.split(' to ')[1];
-        return new Date(aEnd) - new Date(bEnd);
+        return aEnd.localeCompare(bEnd);
       }
     });
     
     // ラベル生成
-    const labels = sorted.map(item => {
+    const rawLabels = sorted.map(item => {
       if (type === 'quarterly') {
-        return formatQuarterLabel(item[labelField]);
+        return formatQuarterLabel(item.filing_date);
       } else {
         return formatTTMLabel(item.period);
       }
     });
 
     let gaapData, adjData;
-
     if (type === 'quarterly') {
       gaapData = sorted.map(item => item.gaap_eps);
       adjData = sorted.map(item => item.adjusted_eps);
@@ -730,8 +728,25 @@
       adjData = sorted.map(item => item.adjusted_eps);
     }
 
-    // Y軸スケールの動的調整（余白10%）
-    const allValues = [...gaapData, ...adjData].filter(v => v !== null && v !== undefined);
+    // 重複ラベルの除去
+    const labels = [];
+    const cleanGaap = [];
+    const cleanAdj = [];
+    for (let i = 0; i < rawLabels.length; i++) {
+      if (i === 0 || rawLabels[i] !== rawLabels[i-1]) {
+        labels.push(rawLabels[i]);
+        cleanGaap.push(gaapData[i]);
+        cleanAdj.push(adjData[i]);
+      } else {
+        console.warn(`重複ラベルをスキップ: ${rawLabels[i]}`);
+      }
+    }
+
+    // デバッグ: 生成されたラベルを確認
+    console.log('Chart labels:', labels);
+
+    // Y軸スケール
+    const allValues = [...cleanGaap, ...cleanAdj].filter(v => v !== null && v !== undefined);
     const min = Math.min(...allValues);
     const max = Math.max(...allValues);
     const padding = (max - min) * 0.1;
@@ -745,7 +760,7 @@
         datasets: [
           {
             label: 'GAAP EPS',
-            data: gaapData,
+            data: cleanGaap,
             borderColor: '#64748b',
             backgroundColor: 'rgba(100,116,139,0.1)',
             tension: 0.1,
@@ -759,7 +774,7 @@
           },
           {
             label: 'Adjusted EPS',
-            data: adjData,
+            data: cleanAdj,
             borderColor: '#10b981',
             backgroundColor: 'rgba(16,185,129,0.1)',
             tension: 0.1,
@@ -789,13 +804,18 @@
           },
           x: {
             grid: { display: false },
-            ticks: { color: '#94a3b8', font: { family: 'Space Mono', size: 9 }, maxRotation: 45 }
+            ticks: {
+              color: '#94a3b8',
+              font: { family: 'Space Mono', size: 9 },
+              maxRotation: 45,
+              autoSkip: true,
+              maxTicksLimit: 12
+            }
           }
         }
       }
     });
   }
-
   function updateAllAdjustments(quarters) {
     const container = document.getElementById('adjustments-accordion');
     const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
