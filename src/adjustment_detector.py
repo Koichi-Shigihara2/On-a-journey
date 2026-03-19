@@ -3,6 +3,7 @@ adjustment_detector.py
 調整項目検出モジュール
 - adjustment_items.json（カテゴリ構造）を読み込み、フラットな項目リストに変換
 - period_data から各項目の xbrl_tags に該当するタグを探し、値があれば調整項目として抽出
+- sector_exclusions に基づき、セクター別除外項目をスキップ
 """
 import json
 from pathlib import Path
@@ -30,7 +31,7 @@ def load_adjustment_items() -> List[Dict[str, Any]]:
     except FileNotFoundError:
         print(f"Warning: {ADJUSTMENT_ITEMS_PATH} not found. Using empty list.")
         return []
-    
+
     items = []
     categories = config.get("categories", [])
     for cat in categories:
@@ -39,29 +40,36 @@ def load_adjustment_items() -> List[Dict[str, Any]]:
             item = sub.copy()
             item["category"] = category_name
             items.append(item)
-    
+
     _items_config_cache = items
     return items
 
 
-# sector item_id → adjustment_items.json の item_name へのマッピング
+# sectors.yaml の item_id → adjustment_items.json の item_name へのマッピング
+# ★新adjustment_items.jsonのitem_nameに合わせて更新済み
 SECTOR_ITEM_ID_TO_NAME = {
-    'sbc':                        '株式報酬費用',
-    'amortization_intangibles':   '買収無形資産償却',
-    'inventory_writeoff':         '在庫評価損',
-    'ma_integration':             '買収関連費用',
-    'iprd_amortization':          '買収無形資産償却',
-    # 以下はadjustment_items.jsonに未定義（将来追加時に対応）
-    'depreciation':               None,
-    'asset_sale_gain':            None,
-    'logistics_one_time':         None,
-    'gov_subsidy_timing':         None,
-    'loan_fair_value':            None,
-    'loan_loss_provision_abnormal': None,
-    'milestone_rd':               None,
-    'crypto_fair_value':          None,
-    'impairment_legacy':          None,
+    'sbc':                          '株式報酬費用',
+    'amortization_intangibles':     '無形資産償却費',        # 旧: 買収無形資産償却
+    'inventory_writeoff':           '在庫評価損・減損',      # 旧: 在庫評価損
+    'ma_integration':               'M&A統合費用',           # 旧: 買収関連費用
+    'iprd_amortization':            'IPR&D償却',             # 旧: 買収無形資産償却
+    'goodwill_impairment':          'のれん減損',
+    'loan_fair_value':              'ローン公正価値評価損益',
+    'loan_loss_provision_abnormal': '貸倒引当金繰入（異常変動分）',
+    'investment_gains':             '投資有価証券評価損益',
+    'logistics_one_time':           '物流・関税一時的コスト',
+    'milestone_rd':                 'マイルストーン型研究開発費',
+    'depreciation':                 '減価償却費',
+    'asset_sale_gain':              '資産売却損益',
+    'crypto_fair_value':            '暗号資産公正価値変動損益',
+    'impairment_legacy':            '暗号資産減損',
+    'restructuring':                'リストラ費用',
+    'litigation_settlement':        '訴訟和解金・罰金',
+    'fx_gains_losses':              '為替差損益',
+    'derivative_gains_losses':      'デリバティブ評価損益',
+    'tax_one_time':                 '一過性税効果',
 }
+
 
 def detect_adjustments(
     period_data: Dict[str, Any],
@@ -78,17 +86,6 @@ def detect_adjustments(
         sector_exclusions: セクター別除外項目リスト（各要素は item_id キーを持つ dict）
     Returns:
         List[Dict]: 検出された調整項目のリスト
-        各要素は以下の形式：
-        {
-            "item_name": str,
-            "amount": float,          # 生の値（単位未正規化）
-            "unit": str,               # 単位
-            "direction": str,          # "add_back" など
-            "pre_tax": bool,
-            "reason": str,
-            "extracted_from": str,     # 実際に使われたXBRLタグ
-            "category": str
-        }
     """
     items_config = load_adjustment_items()
     detected = []
@@ -97,15 +94,18 @@ def detect_adjustments(
     excluded_item_names: set = set()
     if sector_exclusions:
         for ex in sector_exclusions:
-            item_id = ex.get('item_id') if isinstance(ex, dict) else ex
+            item_id = ex.get('item_id') if isinstance(ex, dict) else str(ex)
             mapped_name = SECTOR_ITEM_ID_TO_NAME.get(item_id)
             if mapped_name:
                 excluded_item_names.add(mapped_name)
 
     for item in items_config:
+        item_name = item.get('item_name', '')
+
         # セクター除外対象はスキップ
-        if item.get('item_name', '') in excluded_item_names:
+        if item_name in excluded_item_names:
             continue
+
         xbrl_tags = item.get('xbrl_tags', [])
         for tag in xbrl_tags:
             if tag in period_data:
@@ -116,22 +116,23 @@ def detect_adjustments(
                 if amount is None or amount == 0:
                     continue
                 detected.append({
-                    "item_name": item.get('item_name', ''),
+                    "item_name": item_name,
                     "amount": amount,
                     "unit": unit,
                     "direction": item.get('direction', 'add_back'),
                     "pre_tax": item.get('pre_tax', True),
-                    "reason": item.get('reason', ''),        # ★ KeyError修正
+                    # ★ reason_default キーを使用（旧: reason）
+                    "reason": item.get('reason_default', item.get('reason', '')),
                     "extracted_from": tag,
                     "category": item.get('category', 'その他')
                 })
-                break  # 最初に見つかったタグで採用（優先順位が必要なら変更）
-    
+                break  # 最初に見つかったタグで採用
+
     return detected
+
 
 # テスト用
 if __name__ == "__main__":
-    # 簡易テスト
     sample_period = {
         "filing_date": "2025-03-31",
         "form": "10-Q",
@@ -143,4 +144,4 @@ if __name__ == "__main__":
     adjustments = detect_adjustments(sample_period)
     print("Detected adjustments:")
     for adj in adjustments:
-        print(f"  {adj['item_name']}: {adj['amount']} {adj['unit']} (category: {adj['category']})")
+        print(f"  {adj['item_name']}: {adj['amount']} {adj['unit']} (reason: {adj['reason']})")
