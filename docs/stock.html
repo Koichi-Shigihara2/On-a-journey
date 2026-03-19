@@ -11,6 +11,9 @@
     tailwind.config = { darkMode: 'class' }
   </script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+    body { font-family: 'Noto Sans JP', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
     .spinner-border {
       border: 4px solid rgba(255,255,255,0.1);
       border-top-color: #3b82f6;
@@ -42,25 +45,27 @@
   </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-6">
-  <header class="fixed top-0 left-0 right-0 bg-gray-800 shadow z-10">
-    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Adjusted EPS Analyzer</h1>
-      <div class="space-x-4">
-        <a href="index.html" class="text-blue-400 hover:text-blue-300 font-semibold underline">ダッシュボード</a>
-        <a href="tickers.html" class="text-blue-400 hover:text-blue-300">銘柄一覧</a>
-        <a href="#" class="text-blue-400 hover:text-blue-300">設定</a>
+  <header class="fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-700/50 shadow-lg z-10">
+    <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center space-x-2 group">
+        <img src="../images/logo.png" alt="TANUKI" class="h-8 w-8 rounded object-contain">
+        <span class="text-lg font-bold tracking-wide text-white group-hover:text-blue-300 transition-colors">Adjusted EPS Analyzer</span>
+      </a>
+      <div class="flex items-center space-x-6">
+        <a href="index.html" class="text-sm text-gray-300 hover:text-white transition-colors">ダッシュボード</a>
+        <a href="tickers.html" class="text-sm text-gray-300 hover:text-white transition-colors">銘柄一覧</a>
       </div>
       <div class="flex items-center space-x-2">
-        <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)" 
-               class="px-3 py-1 bg-gray-700 rounded text-white" value="TSLA">
-        <button onclick="loadTicker()" class="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
+        <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)"
+               class="px-3 py-1.5 bg-gray-800 border border-gray-600 rounded-md text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 w-36">
+        <button onclick="loadTicker()" class="bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-md text-sm font-medium transition-colors">
           検索
         </button>
       </div>
     </nav>
   </header>
 
-  <main class="container mx-auto mt-24">
+  <main class="container mx-auto mt-20 px-4">
     <div id="loading" class="hidden text-center py-10">
       <div class="spinner-border inline-block w-8 h-8"></div>
       <p class="mt-2">データを読み込み中...</p>
@@ -81,72 +86,70 @@
       </div>
 
       <!-- メトリクスカード -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <div class="text-gray-400 text-sm">GAAP EPS</div>
-          <div class="text-2xl font-bold text-gray-300" id="gaap-eps">$0.00</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div class="bg-gray-800/80 border border-gray-700/50 p-4 rounded-xl">
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">GAAP EPS</div>
+          <div class="text-2xl font-bold text-gray-200 font-mono" id="gaap-eps">$0.00</div>
         </div>
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <div class="text-gray-400 text-sm">Adjusted EPS</div>
-          <div class="text-2xl font-bold text-green-400" id="adj-eps">$0.00</div>
+        <div class="bg-gray-800/80 border border-green-900/40 p-4 rounded-xl">
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Adjusted EPS</div>
+          <div class="text-2xl font-bold text-green-400 font-mono" id="adj-eps">$0.00</div>
         </div>
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <div class="text-gray-400 text-sm">差分</div>
-          <div class="text-2xl font-bold" id="diff">$0.00</div>
+        <div class="bg-gray-800/80 border border-gray-700/50 p-4 rounded-xl">
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">差分</div>
+          <div class="text-2xl font-bold font-mono" id="diff">$0.00</div>
         </div>
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <div class="text-gray-400 text-sm">YoY成長率</div>
-          <div class="text-2xl font-bold" id="yoy">--</div>
+        <div class="bg-gray-800/80 border border-gray-700/50 p-4 rounded-xl">
+          <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">YoY成長率</div>
+          <div class="text-2xl font-bold font-mono" id="yoy">--</div>
         </div>
       </div>
 
       <!-- タブ -->
-      <div class="border-b border-gray-700 mb-4">
-        <ul class="flex flex-wrap -mb-px">
-          <li class="mr-2">
-            <a href="#" onclick="switchTab('quarterly')" class="inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold" id="tab-quarterly">四半期</a>
-          </li>
-          <li class="mr-2">
-            <a href="#" onclick="switchTab('ttm')" class="inline-block p-4 border-b-2 border-transparent hover:text-gray-300" id="tab-ttm">TTM</a>
-          </li>
-        </ul>
+      <div class="flex space-x-1 mb-5 bg-gray-800/60 border border-gray-700/50 p-1 rounded-lg w-fit">
+        <a href="#" onclick="switchTab('quarterly')" 
+           class="px-4 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white transition-all" 
+           id="tab-quarterly">四半期</a>
+        <a href="#" onclick="switchTab('ttm')" 
+           class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all" 
+           id="tab-ttm">TTM</a>
       </div>
 
       <!-- 任意期間指定UI（日付ピッカー + プリセットボタン） -->
-      <div class="bg-gray-800 p-4 rounded-lg mb-6">
+      <div class="bg-gray-800/60 border border-gray-700/50 p-4 rounded-xl mb-5">
         <div class="flex flex-wrap items-end gap-4 mb-4">
           <div>
             <label class="block text-sm text-gray-400 mb-1">開始日</label>
-            <input type="date" id="start-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+            <input type="date" id="start-date" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg border border-gray-600 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div>
             <label class="block text-sm text-gray-400 mb-1">終了日</label>
-            <input type="date" id="end-date" class="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
+            <input type="date" id="end-date" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg border border-gray-600 text-sm focus:outline-none focus:border-blue-500">
           </div>
           <div>
-            <button onclick="applyDateRange()" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">適用</button>
+            <button onclick="applyDateRange()" class="bg-blue-600 hover:bg-blue-500 px-5 py-1.5 rounded-lg text-sm font-medium transition-colors">適用</button>
           </div>
         </div>
         
         <!-- プリセットボタン -->
         <div class="flex flex-wrap gap-2">
-          <button onclick="setPreset('all')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">全期間</button>
-          <button onclick="setPreset('5y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">5年</button>
-          <button onclick="setPreset('4y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">4年</button>
-          <button onclick="setPreset('3y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">3年</button>
-          <button onclick="setPreset('2y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">2年</button>
-          <button onclick="setPreset('1y')" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">1年</button>
-          <button onclick="resetDateRange()" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600">リセット</button>
+          <button onclick="setPreset('all')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">全期間</button>
+          <button onclick="setPreset('5y')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">5年</button>
+          <button onclick="setPreset('4y')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">4年</button>
+          <button onclick="setPreset('3y')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">3年</button>
+          <button onclick="setPreset('2y')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">2年</button>
+          <button onclick="setPreset('1y')" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">1年</button>
+          <button onclick="resetDateRange()" class="bg-gray-700/80 border border-gray-600/50 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600 transition-colors">リセット</button>
         </div>
       </div>
 
       <!-- チャート -->
-      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+      <div class="bg-gray-800/80 border border-gray-700/50 p-6 rounded-xl mb-6">
         <canvas id="eps-chart" height="300"></canvas>
       </div>
 
       <!-- AI分析（選択期間内の最新四半期） -->
-      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+      <div class="bg-gray-800/80 border border-gray-700/50 p-6 rounded-xl mb-6">
         <h3 class="text-xl font-semibold mb-4 flex items-center">
           AI分析（選択期間内の最新四半期）
           <span class="ml-2 text-sm bg-gray-700 px-2 py-1 rounded">Grok</span>
@@ -160,7 +163,7 @@
       </div>
 
       <!-- 調整内訳（全期間） -->
-      <div class="bg-gray-800 p-6 rounded-lg mb-8">
+      <div class="bg-gray-800/80 border border-gray-700/50 p-6 rounded-xl mb-6">
         <h3 class="text-xl font-semibold mb-4">調整内訳（全期間）</h3>
         <div id="adjustments-accordion" class="scrollable-adjustments space-y-4 pr-2">
           <!-- JSで動的生成 -->
@@ -301,40 +304,30 @@
       if (!quarterlyData) return;
       const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
       const maxDate = dates[dates.length - 1];
+      const maxDateObj = new Date(maxDate);
 
       let startDate;
       const endDate = maxDate;
 
-      // ★修正①: new Date(maxDate) を毎回生成して元の日付オブジェクトが変わらないようにする
       switch (range) {
         case 'all':
           startDate = dates[0];
           break;
-        case '5y': {
-          const d = new Date(maxDate); d.setFullYear(d.getFullYear() - 5);
-          startDate = d.toISOString().split('T')[0];
+        case '5y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 5)).toISOString().split('T')[0];
           break;
-        }
-        case '4y': {
-          const d = new Date(maxDate); d.setFullYear(d.getFullYear() - 4);
-          startDate = d.toISOString().split('T')[0];
+        case '4y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 4)).toISOString().split('T')[0];
           break;
-        }
-        case '3y': {
-          const d = new Date(maxDate); d.setFullYear(d.getFullYear() - 3);
-          startDate = d.toISOString().split('T')[0];
+        case '3y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 3)).toISOString().split('T')[0];
           break;
-        }
-        case '2y': {
-          const d = new Date(maxDate); d.setFullYear(d.getFullYear() - 2);
-          startDate = d.toISOString().split('T')[0];
+        case '2y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 2)).toISOString().split('T')[0];
           break;
-        }
-        case '1y': {
-          const d = new Date(maxDate); d.setFullYear(d.getFullYear() - 1);
-          startDate = d.toISOString().split('T')[0];
+        case '1y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 1)).toISOString().split('T')[0];
           break;
-        }
         default:
           return;
       }
@@ -479,18 +472,8 @@
       }
     }
 
-    function formatLabel(dateStr, fieldType) {
+    function formatLabel(dateStr) {
       if (!dateStr) return '';
-      // ★修正②: TTMの period フィールド ("YYYY-MM-DD to YYYY-MM-DD") に対応
-      if (fieldType === 'period') {
-        // "2025-12-31 to 2025-03-31" → 末尾日付を使う
-        const endPart = dateStr.includes(' to ') ? dateStr.split(' to ')[1] : dateStr;
-        const parts = endPart.split('-');
-        if (parts.length < 2) return dateStr;
-        const [year, month] = parts;
-        const quarter = Math.floor((parseInt(month) - 1) / 3) + 1;
-        return `${year}-Q${quarter} TTM`;
-      }
       const parts = dateStr.split('-');
       if (parts.length < 2) return dateStr;
       const [year, month] = parts;
@@ -512,7 +495,7 @@
       }
 
       const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
-      const labels = sorted.map(item => formatLabel(item[labelField], labelField));
+      const labels = sorted.map(item => formatLabel(item[labelField]));
       let gaapData, adjData;
 
       if (type === 'quarterly') {
@@ -596,12 +579,12 @@
       let html = '';
       sorted.forEach(q => {
         html += `<div class="border border-gray-700 rounded-lg overflow-hidden">`;
-        html += `<div class="bg-gray-800 px-4 py-2 font-semibold border-b border-gray-700">${q.filing_date}</div>`;
+        html += `<div class="bg-gray-750 px-4 py-2.5 text-sm font-semibold text-gray-300 border-b border-gray-700/50 bg-gray-900/40">${q.filing_date}</div>`;
         
         if (q.adjustments && q.adjustments.length > 0) {
           html += `<div class="p-4 bg-gray-750">`;
           html += `<table class="w-full text-sm">`;
-          html += `<thead><tr class="text-gray-400"><th class="text-left">項目</th><th class="text-right">金額（税後）</th><th class="text-left">理由</th><th class="text-left">抽出元</th></tr></thead>`;
+          html += `<thead><tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-gray-700"><th class="text-left pb-2">項目</th><th class="text-right pb-2">金額（税後）</th><th class="text-left pb-2">理由</th><th class="text-left pb-2">抽出元</th></tr></thead>`;
           html += `<tbody>`;
           q.adjustments.forEach(item => {
             html += `<tr class="border-t border-gray-700">`;
@@ -626,9 +609,9 @@
       ['quarterly', 'ttm'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         if (t === tab) {
-          el.className = 'inline-block p-4 border-b-2 border-blue-600 text-blue-600 font-semibold';
+          el.className = 'px-4 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white transition-all';
         } else {
-          el.className = 'inline-block p-4 border-b-2 border-transparent hover:text-gray-300';
+          el.className = 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all';
         }
       });
 
