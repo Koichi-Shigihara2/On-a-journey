@@ -1,0 +1,16 @@
+sectors:
+  - name: "ハイパーグロース / SaaS"
+    keywords: ["PLTR", "SNOW", "CRWD", "DDOG", "SAAS"]
+    sic_codes: ["7370", "7372"]
+    exclusions:
+      - item_id: "sbc"
+        reason: "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み"
+        criteria: ["non_cash"]
+        maturity_watch: true
+  - name: "フィンテック / 銀行"
+    keywords: ["SOFI", "NU", "AFRM", "FINTECH"]
+    sic_codes: ["6021", "6199"]
+    exclusions:
+      - item_id: "loan_fair_value"
+        reason: "ローン公正価値評価損益 - 市場金利変動による一時的評価替え"
+        criteria: ["non_operating", "non_recurring"]
