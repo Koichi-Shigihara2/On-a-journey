@@ -11,11 +11,15 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "xbrl_tags": ["us-gaap:ShareBasedCompensation"],
+          "xbrl_tags": [
+            "us-gaap:ShareBasedCompensation"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非現金費用",
-          "criteria": ["non_cash"]
+          "criteria": [
+            "non_cash"
+          ]
         }
       ]
     },
@@ -25,29 +29,42 @@
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
-          "xbrl_tags": ["us-gaap:AmortizationOfIntangibleAssets"],
+          "xbrl_tags": [
+            "us-gaap:AmortizationOfIntangibleAssets"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "買収関連無形資産の償却",
-          "criteria": ["non_cash"]
+          "criteria": [
+            "non_cash"
+          ]
         },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
-          "xbrl_tags": ["us-gaap:BusinessCombinationIntegrationCosts"],
+          "xbrl_tags": [
+            "us-gaap:BusinessCombinationIntegrationCosts"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "一過性の買収統合コスト",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         },
         {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
-          "xbrl_tags": ["us-gaap:GoodwillImpairmentLoss"],
+          "xbrl_tags": [
+            "us-gaap:GoodwillImpairmentLoss"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非現金減損",
-          "criteria": ["non_cash", "non_recurring"]
+          "criteria": [
+            "non_cash",
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -57,29 +74,43 @@
         {
           "item_id": "loan_fair_value",
           "item_name": "ローン公正価値評価損益",
-          "xbrl_tags": ["us-gaap:LoansHeldForSaleFairValueDisclosure"],
+          "xbrl_tags": [
+            "us-gaap:LoansHeldForSaleFairValueDisclosure"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "市場金利変動による一時的評価替え",
-          "criteria": ["non_operating", "non_recurring"]
+          "criteria": [
+            "non_operating",
+            "non_recurring"
+          ]
         },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
-          "xbrl_tags": ["us-gaap:ProvisionForLoanLosses"],
+          "xbrl_tags": [
+            "us-gaap:ProvisionForLoanLosses"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "マクロ変動による一時的影響",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         },
         {
           "item_id": "investment_gains",
           "item_name": "投資有価証券評価損益",
-          "xbrl_tags": ["us-gaap:InvestmentGainsLosses"],
+          "xbrl_tags": [
+            "us-gaap:InvestmentGainsLosses"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非営業性の評価変動",
-          "criteria": ["non_operating", "non_recurring"]
+          "criteria": [
+            "non_operating",
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -89,20 +120,29 @@
         {
           "item_id": "inventory_writeoff",
           "item_name": "在庫評価損・減損",
-          "xbrl_tags": ["us-gaap:InventoryWriteDown"],
+          "xbrl_tags": [
+            "us-gaap:InventoryWriteDown"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "一過性の在庫評価損",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         },
         {
           "item_id": "logistics_one_time",
           "item_name": "物流・関税一時的コスト",
-          "xbrl_tags": ["us-gaap:OtherCostAndExpense"],
+          "xbrl_tags": [
+            "us-gaap:OtherCostAndExpense"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "外部ショック要因による一時的コスト",
-          "criteria": ["non_recurring", "non_operating"]
+          "criteria": [
+            "non_recurring",
+            "non_operating"
+          ]
         }
       ]
     },
@@ -112,20 +152,29 @@
         {
           "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "xbrl_tags": ["us-gaap:ResearchAndDevelopmentExpense"],
+          "xbrl_tags": [
+            "us-gaap:ResearchAndDevelopmentExpense"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "成功報酬型の一過性R&D費用",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         },
         {
           "item_id": "iprd_amortization",
           "item_name": "IPR&D償却",
-          "xbrl_tags": ["us-gaap:AmortizationOfIntangibleAssets"],
+          "xbrl_tags": [
+            "us-gaap:AmortizationOfIntangibleAssets"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "買収に伴うIPR&D償却",
-          "criteria": ["non_cash", "non_recurring"]
+          "criteria": [
+            "non_cash",
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -135,20 +184,29 @@
         {
           "item_id": "depreciation",
           "item_name": "減価償却費",
-          "xbrl_tags": ["us-gaap:Depreciation"],
+          "xbrl_tags": [
+            "us-gaap:Depreciation"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "不動産の実態価値維持のため会計上の減価を除外",
-          "criteria": ["non_cash"]
+          "criteria": [
+            "non_cash"
+          ]
         },
         {
           "item_id": "asset_sale_gain",
           "item_name": "資産売却損益",
-          "xbrl_tags": ["us-gaap:GainLossOnSaleOfPropertyPlantEquipment"],
+          "xbrl_tags": [
+            "us-gaap:GainLossOnSaleOfPropertyPlantEquipment"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非経常的な資産入替",
-          "criteria": ["non_recurring", "non_operating"]
+          "criteria": [
+            "non_recurring",
+            "non_operating"
+          ]
         }
       ]
     },
@@ -158,20 +216,30 @@
         {
           "item_id": "crypto_fair_value",
           "item_name": "暗号資産公正価値変動損益",
-          "xbrl_tags": ["us-gaap:OtherComprehensiveIncome"],
+          "xbrl_tags": [
+            "us-gaap:OtherComprehensiveIncome"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非営業性の評価変動",
-          "criteria": ["non_operating", "non_recurring"]
+          "criteria": [
+            "non_operating",
+            "non_recurring"
+          ]
         },
         {
           "item_id": "impairment_legacy",
           "item_name": "暗号資産減損",
-          "xbrl_tags": ["us-gaap:ImpairmentOfIntangibleAssets"],
+          "xbrl_tags": [
+            "us-gaap:ImpairmentOfIntangibleAssets"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "旧会計基準下での一過性減損",
-          "criteria": ["non_cash", "non_recurring"]
+          "criteria": [
+            "non_cash",
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -181,11 +249,15 @@
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
-          "xbrl_tags": ["us-gaap:RestructuringCharges"],
+          "xbrl_tags": [
+            "us-gaap:RestructuringCharges"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "一過性の事業再編費用",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -195,11 +267,15 @@
         {
           "item_id": "litigation_settlement",
           "item_name": "訴訟和解金・罰金",
-          "xbrl_tags": ["us-gaap:LitigationSettlementExpense"],
+          "xbrl_tags": [
+            "us-gaap:LitigationSettlementExpense"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非経常的な訴訟関連費用",
-          "criteria": ["non_recurring"]
+          "criteria": [
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -209,20 +285,30 @@
         {
           "item_id": "fx_gains_losses",
           "item_name": "為替差損益",
-          "xbrl_tags": ["us-gaap:ForeignCurrencyTransactionGainLoss"],
+          "xbrl_tags": [
+            "us-gaap:ForeignCurrencyTransactionGainLoss"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非営業性の為替変動",
-          "criteria": ["non_operating", "non_recurring"]
+          "criteria": [
+            "non_operating",
+            "non_recurring"
+          ]
         },
         {
           "item_id": "derivative_gains_losses",
           "item_name": "デリバティブ評価損益",
-          "xbrl_tags": ["us-gaap:DerivativeGainLoss"],
+          "xbrl_tags": [
+            "us-gaap:DerivativeGainLoss"
+          ],
           "direction": "add_back",
           "pre_tax": true,
           "reason_default": "非営業性のデリバティブ変動",
-          "criteria": ["non_operating", "non_recurring"]
+          "criteria": [
+            "non_operating",
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -232,11 +318,16 @@
         {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
-          "xbrl_tags": ["us-gaap:IncomeTaxExpenseBenefit"],
+          "xbrl_tags": [
+            "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
+            "us-gaap:DeferredIncomeTaxExpenseBenefit"
+          ],
           "direction": "add_back",
           "pre_tax": false,
-          "reason_default": "法人税率変更・過年度税額戻し等の一過性影響",
-          "criteria": ["non_recurring"]
+          "reason_default": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "criteria": [
+            "non_recurring"
+          ]
         }
       ]
     }
