@@ -39,10 +39,8 @@ HEADERS = {
     'Host': 'data.sec.gov'
 }
 
-# 四半期とみなす期間の範囲（日数）- 少し余裕を持たせる
 QUARTER_DAYS_MIN = 70
 QUARTER_DAYS_MAX = 120
-# 年次とみなす期間の最小日数（10-Kの場合）
 ANNUAL_DAYS_MIN = 300
 
 # ============================================
@@ -65,7 +63,7 @@ def load_required_xbrl_tags() -> List[str]:
             for tag in xbrl_tags:
                 tags.add(tag)
     
-    # 基本的な必須タグ（プレフィックス付きで格納）- バリエーションを拡充
+    # 基本的な必須タグ
     tags.add("us-gaap:NetIncomeLoss")
     tags.add("us-gaap:NetIncomeLossAttributableToParent")
     tags.add("us-gaap:NetIncomeLossAvailableToCommonStockholders")
@@ -85,7 +83,7 @@ def load_required_xbrl_tags() -> List[str]:
     tags.add("us-gaap:EarningsPerShareDiluted")
     tags.add("us-gaap:ShareBasedCompensation")
 
-    # ★★★ ここを追加 ★★★ 売上高を必ず取得（SBC/売上高比率のため）
+    # ★★★ 売上高タグ（SBC/売上高比率用）★★★
     tags.add("us-gaap:Revenues")
     tags.add("us-gaap:RevenueFromContractWithCustomer")
     tags.add("us-gaap:NetSales")
@@ -95,7 +93,7 @@ def load_required_xbrl_tags() -> List[str]:
     return list(tags)
 
 # ============================================
-# CIKマップ管理（以下は元のまま）
+# CIKマップ管理
 # ============================================
 def load_cik_map() -> Dict[str, str]:
     cik_map = {}
@@ -110,7 +108,7 @@ def load_cik_map() -> Dict[str, str]:
         with open(CIK_FILE, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                if row['ticker'] and row['cik']:
+                if row.get('ticker') and row.get('cik'):
                     cik = row['cik'].strip().zfill(10)
                     cik_map[row['ticker'].strip().upper()] = cik
         print(f"Loaded {len(cik_map)} CIK mappings from {CIK_FILE}")
@@ -145,7 +143,7 @@ def get_cik(ticker: str) -> str:
         if response.status_code == 200:
             data = response.json()
             for item in data.values():
-                if item['ticker'] and item['ticker'].upper() == ticker:
+                if item.get('ticker') and item['ticker'].upper() == ticker:
                     cik = str(item['cik_str']).zfill(10)
                     cik_map[ticker] = cik
                     save_cik_map(cik_map)
@@ -155,7 +153,7 @@ def get_cik(ticker: str) -> str:
     raise Exception(f"CIK not found for {ticker}. Please add to {CIK_FILE}")
 
 # ============================================
-# SEC Company Facts APIからデータ取得（以下は元のまま）
+# SEC Company Facts APIからデータ取得
 # ============================================
 def fetch_company_facts(cik: str) -> Dict:
     url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
@@ -235,7 +233,7 @@ def get_diluted_shares_from_facts(facts_data: Dict, form_type: Optional[str] = N
     return []
 
 # ============================================
-# 会計年度判定と四半期分類（以下は元のまま）
+# 会計年度判定と四半期分類
 # ============================================
 def determine_fiscal_year_end(annual_data: List[Dict]) -> int:
     month_counts = {}
@@ -264,7 +262,7 @@ def get_quarter_number(end_date: datetime, fiscal_end_month: int) -> int:
         return 1
 
 # ============================================
-# メイン抽出関数（以下は元のまま）
+# メイン抽出関数
 # ============================================
 def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]]:
     try:
@@ -280,14 +278,134 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         
         tag_data_map = {}
         for tag in required_tags:
-            items = extract_value_from_facts(facts, tag, form_type=None, limit=years*6)
+            items = extract_value_from_facts(facts, tag, limit=years*6)
             tag_data_map[tag] = items
             print(f"Extracted {len(items)} items for {tag}")
         
-        # （以下は元のコードと同じなので省略せず全文をコピーしていますが、ここではスペース節約のため「元のまま」とします。実際はあなたの元のextract_key_facts.pyをそのまま残して、上記のload_required_xbrl_tags関数だけ置き換えてください）
-        # ...（残りの関数はすべて元のまま）...
-
-        # 最終的なリストを返す部分まで元のコード通り
+        # 年次データ抽出
+        annual_data_by_tag = {}
+        for tag, items in tag_data_map.items():
+            annual_items = [item for item in items if item.get('form', '').startswith('10-K') and 'start' in item and 'end' in item and (datetime.strptime(item['end'], '%Y-%m-%d') - datetime.strptime(item['start'], '%Y-%m-%d')).days >= ANNUAL_DAYS_MIN]
+            annual_data_by_tag[tag] = annual_items
+        
+        net_income_annual = annual_data_by_tag.get('us-gaap:NetIncomeLoss', [])
+        fiscal_end_month = determine_fiscal_year_end(net_income_annual)
+        print(f"Detected fiscal year end month: {fiscal_end_month}")
+        
+        # 希薄化後株式数マップ
+        diluted_shares_all = tag_data_map.get('us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding', [])
+        diluted_map = {}
+        for item in diluted_shares_all:
+            if 'start' in item and 'end' in item:
+                key = (item['end'], item['start'])
+                diluted_map[key] = item['val']
+        
+        # 10-Q 四半期候補
+        net_income_10q = tag_data_map.get('us-gaap:NetIncomeLoss', [])
+        quarterly_candidates = []
+        for q_item in net_income_10q:
+            if not q_item.get('form', '').startswith('10-Q'):
+                continue
+            if 'start' not in q_item or 'end' not in q_item:
+                continue
+            start = datetime.strptime(q_item['start'], '%Y-%m-%d')
+            end = datetime.strptime(q_item['end'], '%Y-%m-%d')
+            days_diff = (end - start).days
+            if QUARTER_DAYS_MIN <= days_diff <= QUARTER_DAYS_MAX:
+                quarterly_candidates.append({
+                    'start': start, 'end': end, 'end_str': q_item['end'], 'start_str': q_item['start'],
+                    'val': q_item['val'], 'unit': q_item['unit'], 'filed': q_item.get('filed', q_item['end']),
+                    'days': days_diff
+                })
+        
+        best_quarterly = {}
+        for cand in quarterly_candidates:
+            end_str = cand['end_str']
+            if end_str not in best_quarterly or cand['days'] < best_quarterly[end_str]['days']:
+                best_quarterly[end_str] = cand
+        
+        quarters_map = {}
+        for end_str, cand in best_quarterly.items():
+            if cand['end'].month > fiscal_end_month:
+                fiscal_year = cand['end'].year + 1
+            else:
+                fiscal_year = cand['end'].year
+            quarter_num = get_quarter_number(cand['end'], fiscal_end_month)
+            key = (fiscal_year, quarter_num)
+            
+            if key not in quarters_map:
+                quarters_map[key] = {
+                    'filing_date': end_str, 'form': '10-Q', 'start': cand['start_str'],
+                    'end': end_str, 'filed': cand['filed'], 'quarter': quarter_num, 'fiscal_year': fiscal_year
+                }
+            quarters_map[key]['net_income'] = {'value': cand['val'], 'unit': cand['unit']}
+        
+        # 他のタグ追加（10-Q）
+        for tag in required_tags:
+            if tag in ['us-gaap:NetIncomeLoss', 'us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding']:
+                continue
+            for item in tag_data_map.get(tag, []):
+                if not item.get('form', '').startswith('10-Q'):
+                    continue
+                if 'start' not in item or 'end' not in item:
+                    continue
+                start = datetime.strptime(item['start'], '%Y-%m-%d')
+                end = datetime.strptime(item['end'], '%Y-%m-%d')
+                days_diff = (end - start).days
+                if not (QUARTER_DAYS_MIN <= days_diff <= QUARTER_DAYS_MAX):
+                    continue
+                if end.month > fiscal_end_month:
+                    fiscal_year = end.year + 1
+                else:
+                    fiscal_year = end.year
+                quarter_num = get_quarter_number(end, fiscal_end_month)
+                key = (fiscal_year, quarter_num)
+                if key in quarters_map:
+                    quarters_map[key][tag] = {'value': item['val'], 'unit': item['unit']}
+        
+        # 希薄化後株式数追加
+        for item in diluted_shares_all:
+            if not item.get('form', '').startswith('10-Q'):
+                continue
+            if 'start' not in item or 'end' not in item:
+                continue
+            start = datetime.strptime(item['start'], '%Y-%m-%d')
+            end = datetime.strptime(item['end'], '%Y-%m-%d')
+            days_diff = (end - start).days
+            if not (QUARTER_DAYS_MIN <= days_diff <= QUARTER_DAYS_MAX):
+                continue
+            if end.month > fiscal_end_month:
+                fiscal_year = end.year + 1
+            else:
+                fiscal_year = end.year
+            quarter_num = get_quarter_number(end, fiscal_end_month)
+            key = (fiscal_year, quarter_num)
+            if key in quarters_map:
+                quarters_map[key]['diluted_shares'] = {'value': item['val'], 'unit': item['unit']}
+        
+        # 税費用・pretax_income計算（省略せず完全実装）
+        tax_tag_candidates = [
+            'us-gaap:IncomeTaxExpenseBenefit', 'us-gaap:IncomeTaxExpenseBenefitContinuingOperations',
+            'us-gaap:ProvisionForIncomeTaxes', 'us-gaap:IncomeTaxExpenseBenefitFromContinuingOperations'
+        ]
+        for key, data in quarters_map.items():
+            for tax_tag in tax_tag_candidates:
+                if tax_tag in data:
+                    data['tax_expense'] = data[tax_tag]
+                    break
+            net = normalize_value(data.get('net_income'))
+            tax = normalize_value(data.get('tax_expense'))
+            if net and tax is not None:
+                data['pretax_income'] = {'value': net + tax, 'unit': 'USD'}
+        
+        # quarterly_list 作成（ここがエラー原因だった部分）
+        quarterly_list = []
+        for (fiscal_year, quarter), data in sorted(quarters_map.items()):
+            if 'net_income' in data and 'diluted_shares' in data:
+                data['fiscal_year'] = fiscal_year
+                data['quarter'] = quarter
+                quarterly_list.append(data)
+        
         quarterly_list.sort(key=lambda x: x['filing_date'], reverse=True)
         print(f"\n{ticker}: {len(quarterly_list)}件の四半期データを取得")
         return quarterly_list
@@ -309,24 +427,18 @@ def normalize_value(value_dict: Optional[Dict]) -> float:
         return value * 1_000_000
     elif unit in ["billions", "billion"]:
         return value * 1_000_000_000
-    else:
-        return value
+    return value
 
-# テスト用メイン関数（元のまま）
+# テスト用
 if __name__ == "__main__":
     ticker = "TSLA"
     print(f"Testing data extraction for {ticker}...")
     data = extract_quarterly_facts(ticker, years=5)
     if data:
         print(f"\nSuccessfully extracted {len(data)} quarters:")
-        for i, quarter in enumerate(data[:15]):
+        for i, quarter in enumerate(data[:5]):
             print(f"\nQuarter {i+1}: {quarter['filing_date']} ({quarter.get('form', 'unknown')})")
-            net = normalize_value(quarter.get('net_income'))
-            shares = normalize_value(quarter.get('diluted_shares'))
-            print(f"  Net Income: {net:,.0f} USD")
-            print(f"  Diluted Shares: {shares:,.0f}")
-            revenue = normalize_value(quarter.get('us-gaap:Revenues') or quarter.get('us-gaap:RevenueFromContractWithCustomer') or {})
-            if revenue > 0:
-                print(f"  Revenue: {revenue:,.0f} USD")
+            print(f"  Net Income: {normalize_value(quarter.get('net_income')):,.0f}")
+            print(f"  Revenue: {normalize_value(quarter.get('us-gaap:Revenues') or quarter.get('us-gaap:RevenueFromContractWithCustomer') or {}):,.0f}")
     else:
         print("No data extracted")
