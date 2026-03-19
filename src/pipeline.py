@@ -18,7 +18,6 @@ from company_metadata import get_company_metadata
 from maturity_monitor import MaturityMonitor
 
 def load_cik_data() -> List[Dict]:
-    """cik_lookup.csv から全データを読み込む（セクター情報含む）"""
     cik_file = os.path.join("config", "cik_lookup.csv")
     data = []
     try:
@@ -31,7 +30,6 @@ def load_cik_data() -> List[Dict]:
     return data
 
 def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:
-    """TTM（直近4四半期）を計算"""
     if end_idx < 3:
         return None
     ttm_data = quarterly_results[end_idx-3:end_idx+1]
@@ -50,7 +48,6 @@ def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]
     }
 
 def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
-    """四半期データを年次に集計（暦年ベース）"""
     annual_map = {}
     for q in quarterly_results:
         year = q["filing_date"][:4]
@@ -80,22 +77,18 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     return annual_results
 
 def generate_summary(tickers_data: Dict[str, Dict]) -> Dict:
-    """全銘柄のサマリー情報を生成"""
     summary = {
         "last_updated": datetime.now().isoformat(),
         "tickers": []
     }
     for ticker, data in tickers_data.items():
         if data.get("quarters") and len(data["quarters"]) > 0:
-            # 最新四半期を取得（新しい順にソート済みと仮定）
             latest = data["quarters"][0]
-            # YoY成長率を計算（4四半期前と比較）
             yoy_growth = None
             if len(data["quarters"]) >= 5:
-                prev = data["quarters"][4]  # 4つ前の四半期
+                prev = data["quarters"][4]
                 if prev["adjusted_eps"] != 0:
                     yoy_growth = (latest["adjusted_eps"] - prev["adjusted_eps"]) / abs(prev["adjusted_eps"])
-            # 健全性は ai_analysis から取得、なければデフォルト "Caution"
             health = "Caution"
             if "ai_analysis" in latest:
                 health = latest["ai_analysis"].get("health", "Caution")
@@ -118,60 +111,44 @@ def run():
     with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
         adjustment_config = json.load(f)
     
-    # セクター分類器の初期化
     classifier = SectorClassifierV2(os.path.join(config_base, "sectors.yaml"))
     
-    # 銘柄マスタ（セクター情報）を読み込み
     cik_data = load_cik_data()
     ticker_to_sector = {row['ticker']: row.get('sector') for row in cik_data if row.get('sector')}
-    # 会社名マップも作成
     ticker_to_name = {row['ticker']: row.get('name', '') for row in cik_data}
     
-    # 成熟度監視の設定（調整項目設定から取得）
     maturity_config = adjustment_config.get('maturity_defaults', {})
     
-    # 全銘柄のデータを一時保存（summary用）
     all_tickers_data = {}
 
     for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
         
-        # データ取得
         quarterly_raw = extract_quarterly_facts(ticker, years=10)
         if not quarterly_raw:
             print(f"{ticker}: データなし")
             continue
         
-        # CIK取得（cik_lookup.csvにあればそれを使う）
         from extract_key_facts import get_cik as get_cik_func
         try:
             cik = get_cik_func(ticker)
         except:
             cik = None
         
-        # 企業メタデータ取得（SICコードなど）
         metadata = {}
         if cik:
             metadata = get_company_metadata(cik)
         
-        # セクター判定（優先順位: 銘柄マスタ > SICコード > 会社名キーワード > ティッカー直接マッチ）
-        # ★設計方針: セクター判定が失敗しても sector=None として処理を継続
-        #   sector=None の場合は除外項目なし（全調整項目を適用）で動作する
         sector = ticker_to_sector.get(ticker)
         if not sector:
             sector = classifier.classify_by_sic(metadata.get('sic', ''))
         if not sector:
             sector = classifier.classify_by_keywords(metadata.get('name', ''))
         if not sector:
-            # ★フォールバック: ティッカーシンボル自体でマッチ
-            # CIKが誤っていてmetadata取得が失敗しても、sectors.yamlに
-            # ティッカーがキーワードとして登録されていれば必ず解決できる
             sector = classifier.classify_by_keywords(ticker)
         
         print(f"  Sector: {sector or 'Unknown（除外項目なしで処理）'}")
         
-        # セクター別デフォルト除外項目を取得
-        # sector が None（不明）の場合は空リスト → 全調整項目を適用
         sector_exclusions = classifier.get_exclusions_for_sector(sector) if sector else []
         exclusion_item_ids = [ex['item_id'] for ex in sector_exclusions]
         
@@ -184,20 +161,26 @@ def run():
                 "diluted_shares": normalize_value(period_data.get("diluted_shares")),
                 "tax_expense": normalize_value(period_data.get("tax_expense")),
                 "pretax_income": normalize_value(period_data.get("pretax_income")),
+                
+                # ★★★ ここを追加 ★★★
+                "revenue": normalize_value(
+                    period_data.get("us-gaap:Revenues") or
+                    period_data.get("us-gaap:RevenueFromContractWithCustomer") or
+                    period_data.get("us-gaap:NetSales") or
+                    period_data.get("us-gaap:TotalRevenue") or
+                    period_data.get("us-gaap:SalesRevenueNet")
+                ),
+                
                 "filing_date": period_data["filing_date"],
                 "form": period_data["form"],
                 "raw_facts": {k: v for k, v in period_data.items() 
                             if k not in ["net_income", "diluted_shares", "tax_expense", "pretax_income", "filing_date", "form"]}
             }
             
-            # 調整項目検出（セクター情報を渡す）
             adjustments_raw = detect_adjustments(period_data, adjustment_config, sector, sector_exclusions)
-            
-            # 税効果適用
             net_adjustment, detailed = apply_tax_adjustments(adjustments_raw, data)
             data["total_adjustments"] = net_adjustment
             
-            # EPS計算
             result = calculate_eps(data, net_adjustment, detailed)
             result["filing_date"] = data["filing_date"]
             result["form"] = data["form"]
@@ -211,45 +194,38 @@ def run():
                   f"GAAP EPS=${result['gaap_eps']:.4f} → "
                   f"Adj EPS=${result['adjusted_eps']:.4f}")
         
-        # 成熟度監視（SBCが含まれるセクターのみ）
-        if sector in ['ハイパーグロース / SaaS', 'テクノロジー']:
+        # ★★★ 成熟度監視（全セクター対応・正しいsector引数）★★★
+        if sector:
             monitor = MaturityMonitor(maturity_config)
-            maturity_status = monitor.monitor(quarterly_results)
+            maturity_status = monitor.monitor(quarterly_results, sector=sector)
+            
             if maturity_status.get('alert'):
-                print(f"  ⚠ Maturity Alert: {maturity_status['alert']}")
-            # 最新四半期に結果を保存
+                print(f"  ⚠ Maturity Alert for {ticker} ({sector}): {maturity_status['alert']}")
+            
             if quarterly_results:
                 quarterly_results[-1]['maturity_monitor'] = maturity_status
         
-        # TTM計算
+        # TTM・年次集計・AI分析（元のまま）
         ttm_results = []
         for i in range(3, len(quarterly_results)):
             ttm = calculate_ttm(quarterly_results, i)
             if ttm:
                 ttm_results.append(ttm)
         
-        # 年次集計
         annual_results = aggregate_annual(quarterly_results)
         
-        # ★★★ 修正点：最新四半期を確実に特定してAI分析を実行 ★★★
         if quarterly_results:
-            # 新しい順にソート
             quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
-            latest = quarterly_results[0]  # 最新
+            latest = quarterly_results[0]
             print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
-            ai_result = analyze_adjustments(
-                ticker, 
-                latest, 
-                latest.get("adjustments", [])
-            )
+            ai_result = analyze_adjustments(ticker, latest, latest.get("adjustments", []))
             try:
                 latest["ai_analysis"] = json.loads(ai_result)
-                print(f"  [AI] Analysis stored for {latest['filing_date']}")
             except Exception as e:
                 print(f"  [AI] Failed to parse AI result: {e}")
                 latest["ai_analysis"] = {"health": "Error", "comment": str(ai_result), "sources": []}
         
-        # 保存
+        # 保存（元のまま）
         ticker_dir = f"docs/data/{ticker}"
         os.makedirs(ticker_dir, exist_ok=True)
         
@@ -262,21 +238,12 @@ def run():
         
         if ttm_results:
             with open(f"{ticker_dir}/ttm.json", "w", encoding="utf-8") as f:
-                json.dump({
-                    "ticker": ticker,
-                    "last_updated": datetime.now().isoformat(),
-                    "ttm": ttm_results
-                }, f, indent=2, ensure_ascii=False)
+                json.dump({"ticker": ticker, "last_updated": datetime.now().isoformat(), "ttm": ttm_results}, f, indent=2, ensure_ascii=False)
         
         if annual_results:
             with open(f"{ticker_dir}/annual.json", "w", encoding="utf-8") as f:
-                json.dump({
-                    "ticker": ticker,
-                    "last_updated": datetime.now().isoformat(),
-                    "years": annual_results
-                }, f, indent=2, ensure_ascii=False)
+                json.dump({"ticker": ticker, "last_updated": datetime.now().isoformat(), "years": annual_results}, f, indent=2, ensure_ascii=False)
         
-        # サマリー用にデータを保持
         all_tickers_data[ticker] = {
             "quarters": quarterly_results,
             "company_name": ticker_to_name.get(ticker, metadata.get('name', ''))
@@ -284,7 +251,6 @@ def run():
         
         print(f"✓ {ticker} 保存完了: {ticker_dir}/")
     
-    # サマリーファイル生成
     if all_tickers_data:
         summary = generate_summary(all_tickers_data)
         with open("docs/data/summary.json", "w", encoding="utf-8") as f:
