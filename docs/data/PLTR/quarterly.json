@@ -1,62 +1,7 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-19T15:56:20.947751",
+  "last_updated": "2026-03-19T16:35:06.684323",
   "quarters": [
-    {
-      "gaap_eps": 0.23728236076995257,
-      "adjusted_eps": 0.2897046546884351,
-      "gaap_net_income": 608676000.0,
-      "adjusted_net_income": 743149511.0928097,
-      "diluted_shares_used": 2565197000.0,
-      "adjustments": [
-        {
-          "item_name": "マイルストーン型研究開発費",
-          "amount": 143554000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "成功報酬型の一過性R&D費用",
-          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
-          "category": "研究開発関連",
-          "net_amount": 138387511.09280962,
-          "tax_rate_applied": 0.035989863794741846
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -3914000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -3914000,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 134473511.09280962,
-      "filing_date": "2025-12-31",
-      "form": "10-K",
-      "sector": "ハイパーグロース / SaaS",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "マイルストーン型研究開発費の加算調整は「一過性」と位置づけられていますが、Palantirの事業特性上R&Dは継続的なコア費用であり、調整の妥当性に疑問が残ります。一過性税効果の調整は比較的標準的です。調整後EPSはGAAPを上回っていますが、調整項目の質は中程度であり、過度に楽観的な解釈には注意が必要です。",
-        "sources": [
-          {
-            "item": "マイルストーン型研究開発費",
-            "snippet": "成功報酬型の一過性R&D費用"
-          },
-          {
-            "item": "一過性税効果",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）"
-          }
-        ]
-      }
-    },
     {
       "gaap_eps": 0.18498189655071826,
       "adjusted_eps": 0.2424775109405363,
@@ -96,7 +41,21 @@
       "sector_exclusions": [
         "sbc",
         "amortization_intangibles"
-      ]
+      ],
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "マイルストーン型R&D費の加算は一過性費用として一定の合理性があるものの、減価償却費（不動産関連）の加算は「実態価値維持」という主観的な理由に基づいており、調整の恣意性が高い。税率が0.78%と極めて低く適用されている点も含め、調整後EPSの信頼性に懸念あり。投資判断ではGAAPベースを優先すべき。",
+        "sources": [
+          {
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用"
+          },
+          {
+            "item": "減価償却費",
+            "snippet": "不動産の実態価値維持のため会計上の減価を除外"
+          }
+        ]
+      }
     },
     {
       "gaap_eps": 0.1274827227778402,
@@ -174,71 +133,6 @@
       "net_adjustment_total": 136810080.85871693,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "sector": "ハイパーグロース / SaaS",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ]
-    },
-    {
-      "gaap_eps": 0.03223780794820342,
-      "adjusted_eps": 0.09145826460332594,
-      "gaap_net_income": 79009000.0,
-      "adjusted_net_income": 224147561.1385941,
-      "diluted_shares_used": 2450818000.0,
-      "adjustments": [
-        {
-          "item_name": "マイルストーン型研究開発費",
-          "amount": 171502000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "成功報酬型の一過性R&D費用",
-          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
-          "category": "研究開発関連",
-          "net_amount": 135145231.76813212,
-          "tax_rate_applied": 0.2119903454879119
-        },
-        {
-          "item_name": "IPR&D償却",
-          "amount": 7800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 6146475.305194287,
-          "tax_rate_applied": 0.2119903454879119
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 5600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4412854.065267693,
-          "tax_rate_applied": 0.2119903454879119
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -566000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -566000,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 145138561.1385941,
-      "filing_date": "2024-12-31",
-      "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
       "sector_exclusions": [
         "sbc",
@@ -369,71 +263,6 @@
       ]
     },
     {
-      "gaap_eps": 0.040641412890835955,
-      "adjusted_eps": 0.0832430484757843,
-      "gaap_net_income": 93391000.0,
-      "adjusted_net_income": 191286448.6548136,
-      "diluted_shares_used": 2297927000.0,
-      "adjustments": [
-        {
-          "item_name": "マイルストーン型研究開発費",
-          "amount": 109283000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "成功報酬型の一過性R&D費用",
-          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
-          "category": "研究開発関連",
-          "net_amount": 90233572.21922605,
-          "tax_rate_applied": 0.17431281883526217
-        },
-        {
-          "item_name": "IPR&D償却",
-          "amount": 9600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 7926596.939181483,
-          "tax_rate_applied": 0.17431281883526217
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 5500000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4541279.496406058,
-          "tax_rate_applied": 0.17431281883526217
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -4806000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -4806000,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 97895448.65481359,
-      "filing_date": "2023-12-31",
-      "form": "10-K",
-      "sector": "ハイパーグロース / SaaS",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ]
-    },
-    {
       "gaap_eps": 0.0307469040247678,
       "adjusted_eps": 0.07487965504682446,
       "gaap_net_income": 71505000.0,
@@ -550,59 +379,6 @@
       "net_adjustment_total": 87268949.84580426,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "sector": "ハイパーグロース / SaaS",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ]
-    },
-    {
-      "gaap_eps": 0.014961771844366175,
-      "adjusted_eps": 0.04690503587277718,
-      "gaap_net_income": 30878000.0,
-      "adjusted_net_income": 96802284.69898644,
-      "diluted_shares_used": 2063793000.0,
-      "adjustments": [
-        {
-          "item_name": "マイルストーン型研究開発費",
-          "amount": 82044000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "成功報酬型の一過性R&D費用",
-          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
-          "category": "研究開発関連",
-          "net_amount": 61872136.57345219,
-          "tax_rate_applied": 0.24586640615459762
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 5600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4223148.125534253,
-          "tax_rate_applied": 0.24586640615459762
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -171000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -171000.0,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 65924284.69898644,
-      "filing_date": "2022-12-31",
-      "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
       "sector_exclusions": [
         "sbc",
@@ -745,59 +521,6 @@
       ]
     },
     {
-      "gaap_eps": -0.08119495720821765,
-      "adjusted_eps": -0.025787953713749923,
-      "gaap_net_income": -156188000.0,
-      "adjusted_net_income": -49606146.158982486,
-      "diluted_shares_used": 1923617000.0,
-      "adjustments": [
-        {
-          "item_name": "マイルストーン型研究開発費",
-          "amount": 84176000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "成功報酬型の一過性R&D費用",
-          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
-          "category": "研究開発関連",
-          "net_amount": 62583988.86591635,
-          "tax_rate_applied": 0.2565103014408341
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 3400000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 2527864.975101164,
-          "tax_rate_applied": 0.2565103014408341
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 41470000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 41470000.0,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 106581853.84101751,
-      "filing_date": "2021-12-31",
-      "form": "10-K",
-      "sector": "ハイパーグロース / SaaS",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ]
-    },
-    {
       "gaap_eps": -0.05199412541774948,
       "adjusted_eps": -0.0031114506827972037,
       "gaap_net_income": -102137000.0,
@@ -933,10 +656,13 @@
       ],
       "maturity_monitor": {
         "alert": null,
-        "sbc_ratio": -0.8171511968242893,
+        "sbc_contribution": 0.0,
         "sbc_to_revenue": 0,
-        "threshold_ratio": 0.15,
-        "threshold_sbc_to_revenue": 0.25
+        "sbc_per_share": 0,
+        "sector_threshold": {
+          "sbc_contribution": 0.4,
+          "sbc_to_revenue": 0.25
+        }
       }
     }
   ]
