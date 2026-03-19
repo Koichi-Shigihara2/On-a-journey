@@ -87,7 +87,8 @@ def generate_summary(tickers_data: Dict[str, Dict]) -> Dict:
     }
     for ticker, data in tickers_data.items():
         if data.get("quarters") and len(data["quarters"]) > 0:
-            latest = data["quarters"][0]  # 最新が先頭
+            # 最新四半期を取得（新しい順にソート済みと仮定）
+            latest = data["quarters"][0]
             # YoY成長率を計算（4四半期前と比較）
             yoy_growth = None
             if len(data["quarters"]) >= 5:
@@ -222,9 +223,12 @@ def run():
         # 年次集計
         annual_results = aggregate_annual(quarterly_results)
         
-        # AI分析（最新四半期）
+        # ★★★ 修正点：最新四半期を確実に特定してAI分析を実行 ★★★
         if quarterly_results:
-            latest = quarterly_results[-1]
+            # 新しい順にソート
+            quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
+            latest = quarterly_results[0]  # 最新
+            print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
             ai_result = analyze_adjustments(
                 ticker, 
                 latest, 
@@ -232,15 +236,14 @@ def run():
             )
             try:
                 latest["ai_analysis"] = json.loads(ai_result)
-            except:
-                latest["ai_analysis"] = {"health": "Error", "comment": ai_result, "sources": []}
+                print(f"  [AI] Analysis stored for {latest['filing_date']}")
+            except Exception as e:
+                print(f"  [AI] Failed to parse AI result: {e}")
+                latest["ai_analysis"] = {"health": "Error", "comment": str(ai_result), "sources": []}
         
         # 保存
         ticker_dir = f"docs/data/{ticker}"
         os.makedirs(ticker_dir, exist_ok=True)
-        
-        # 日付順にソート（新しい順）
-        quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
         
         with open(f"{ticker_dir}/quarterly.json", "w", encoding="utf-8") as f:
             json.dump({
