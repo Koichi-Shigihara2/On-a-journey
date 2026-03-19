@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjusted EPS Analyzer - 管理画面</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-6">⚙️ 設定管理画面</h1>
+        
+        <!-- タブ -->
+        <div class="mb-4 border-b border-gray-300">
+            <ul class="flex flex-wrap -mb-px">
+                <li class="mr-2">
+                    <a href="#" class="tab-link active inline-block p-4 border-b-2 border-blue-600 text-blue-600" data-tab="sectors">セクター管理</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="tab-link inline-block p-4 border-b-2 border-transparent hover:text-blue-600" data-tab="items">調整科目管理</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="tab-link inline-block p-4 border-b-2 border-transparent hover:text-blue-600" data-tab="tickers">銘柄管理</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="tab-link inline-block p-4 border-b-2 border-transparent hover:text-blue-600" data-tab="monitor">監視銘柄</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- セクター管理タブ -->
+        <div id="tab-sectors" class="tab-content">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between mb-4">
+                    <h2 class="text-xl font-semibold">セクター定義</h2>
+                    <button onclick="addSector()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">新規セクター追加</button>
+                </div>
+                <div id="sectors-list" class="space-y-4">
+                    <!-- JSで動的生成 -->
+                </div>
+                <div class="mt-6 flex justify-end space-x-2">
+                    <button onclick="saveSectors()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">変更を保存</button>
+                    <button onclick="downloadConfig('sectors.yaml')" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">ダウンロード</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 調整科目管理タブ -->
+        <div id="tab-items" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between mb-4">
+                    <h2 class="text-xl font-semibold">調整科目マスタ</h2>
+                    <button onclick="addItem()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">新規科目追加</button>
+                </div>
+                <div id="items-list" class="space-y-4">
+                    <!-- JSで動的生成 -->
+                </div>
+                <div class="mt-6 flex justify-end space-x-2">
+                    <button onclick="saveItems()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">変更を保存</button>
+                    <button onclick="downloadConfig('adjustment_items.json')" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">ダウンロード</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 銘柄管理タブ -->
+        <div id="tab-tickers" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between mb-4">
+                    <h2 class="text-xl font-semibold">銘柄マスタ (CIK/Lookup)</h2>
+                    <button onclick="addTicker()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">新規銘柄追加</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 border-b">ティッカー</th>
+                                <th class="py-2 px-4 border-b">CIK</th>
+                                <th class="py-2 px-4 border-b">会社名</th>
+                                <th class="py-2 px-4 border-b">セクター</th>
+                                <th class="py-2 px-4 border-b">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickers-table">
+                            <!-- JSで動的生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 flex justify-end space-x-2">
+                    <button onclick="saveTickers()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">変更を保存</button>
+                    <button onclick="downloadConfig('cik_lookup.csv')" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">ダウンロード</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 監視銘柄タブ -->
+        <div id="tab-monitor" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">監視銘柄リスト</h2>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">監視する銘柄（カンマ区切り）</label>
+                    <input type="text" id="monitor-tickers" class="w-full border rounded px-3 py-2">
+                </div>
+                <div class="mt-6 flex justify-end space-x-2">
+                    <button onclick="saveMonitor()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">変更を保存</button>
+                    <button onclick="downloadConfig('monitor_tickers.yaml')" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">ダウンロード</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GitHub連携セクション -->
+        <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-2">🚀 GitHubへの反映方法</h3>
+            <p class="mb-2">変更を保存した後、以下のいずれかの方法でリポジトリに反映してください：</p>
+            <ol class="list-decimal pl-6 space-y-1">
+                <li><strong>手動コミット:</strong> ダウンロードボタンで設定ファイルを保存し、Gitでコミット＆プッシュ</li>
+                <li><strong>自動コミット (GitHub API):</strong> <button onclick="pushToGitHub()" class="text-blue-600 underline">ここをクリック</button>（個人アクセストークンが必要）</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
