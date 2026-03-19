@@ -6,7 +6,7 @@ tax_adjuster.py
 - 純額合計と詳細リストを返す
 """
 from typing import Dict, List, Any, Tuple
-from extract_key_facts import normalize_value
+#　from extract_key_facts import normalize_value
 
 def apply_tax_adjustments(adjustments: List[Dict[str, Any]], period_data: Dict[str, Any]) -> Tuple[float, List[Dict[str, Any]]]:
     """
