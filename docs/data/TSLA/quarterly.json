@@ -1,124 +1,41 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-03-18T14:15:03.965119",
+  "last_updated": "2026-03-19T11:37:24.730750",
   "quarters": [
     {
-      "gaap_eps": 0.23809523809523808,
-      "adjusted_eps": 1.0390674603174603,
-      "gaap_net_income": 840000000.0,
-      "adjusted_net_income": 3665830000.0,
-      "diluted_shares_used": 3528000000.0,
-      "adjustments": [
-        {
-          "item_name": "リストラ費用",
-          "amount": 390000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性リストラ（非営業）",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 308100000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_name": "在庫評価損",
-          "amount": 362000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 285980000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 2825000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 2231750000.0,
-          "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 2825830000.0,
-      "filing_date": "2025-12-31",
-      "form": "10-K",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 2263000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1423000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整後EPSがGAAP EPSの約4.4倍と大幅に上方修正されており、主に株式報酬費用（28.25億ドル）の追加戻しが要因です。SBCは継続的な非現金費用であるため調整の妥当性に疑問が残り、一過性のリストラ費用・在庫評価損も事業環境の悪化を示唆しています。コア収益力の評価には慎重な判断が必要です。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "リストラ費用",
-            "snippet": "一過性リストラ（非営業）"
-          },
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          }
-        ]
-      }
-    },
-    {
       "gaap_eps": 0.3893930799773114,
-      "adjusted_eps": 0.437090225131506,
+      "adjusted_eps": 0.44271695972773684,
       "gaap_net_income": 1373000000.0,
-      "adjusted_net_income": 1541180133.8136902,
+      "adjusted_net_income": 1561020000.0,
       "diluted_shares_used": 3526000000.0,
       "adjustments": [
         {
+          "item_id": "restructuring",
           "item_name": "リストラ費用",
-          "amount": 238000000,
-          "unit": "USD",
+          "amount": 238000000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "一過性リストラ（非営業）",
+          "reason": "一過性の事業再編費用",
+          "criteria": [
+            "non_recurring"
+          ],
           "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 168180133.8136902,
-          "tax_rate_applied": 0.29336078229541945
+          "category": "リストラ・事業再編関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 188020000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 168180133.8136902,
+      "net_adjustment_total": 188020000.0,
       "filing_date": "2025-09-30",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 1943000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 570000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目は一過性のリストラ費用のみで、非営業・一時的な項目として適切にadd_back調整されています。調整幅はEPSで約0.048と比較的小さく、GAAPからAdjustedへの修正は合理的です。将来的な再発リスクを注視すべきですが、現時点の健全性は良好と評価します。",
-        "sources": [
-          {
-            "item": "リストラ費用",
-            "snippet": "amount: 238000000, reason: 一過性リストラ（非営業）, extracted_from: us-gaap:RestructuringCharges, category: 事業構造変更・一過性損益"
-          }
-        ]
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
       "gaap_eps": 0.333049161693663,
@@ -130,766 +47,482 @@
       "net_adjustment_total": 0.0,
       "filing_date": "2025-06-30",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 1531000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 359000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
       "gaap_eps": 0.1161601817665436,
-      "adjusted_eps": 0.25382406500198024,
+      "adjusted_eps": 0.24472309003124113,
       "gaap_net_income": 409000000.0,
-      "adjusted_net_income": 893714532.8719723,
+      "adjusted_net_income": 861670000.0,
       "diluted_shares_used": 3521000000.0,
       "adjustments": [
         {
-          "item_name": "在庫評価損",
-          "amount": 112000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 79252595.15570936,
-          "tax_rate_applied": 0.29238754325259514
-        },
-        {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 573000000,
-          "unit": "USD",
+          "amount": 573000000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 405461937.716263,
-          "tax_rate_applied": 0.29238754325259514
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 452670000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 484714532.8719723,
+      "net_adjustment_total": 452670000.0,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 578000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 169000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目は2つで合計約6.85億ドルの税引前加算となっており、GAAP EPS(0.116)をAdjusted EPS(0.254)へ2倍以上に引き上げています。在庫評価損(1.12億ドル)は一過性として妥当ですが、株式報酬費用(5.73億ドル)は継続的に発生する非現金費用であり、Teslaの特徴的な高水準SBCを排除した調整は投資判断に注意を要します。調整依存度が高いため健全性はCautionと評価。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 / us-gaap:InventoryWriteDown"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） / us-gaap:ShareBasedCompensation"
-          }
-        ]
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.6623785020011436,
-      "adjusted_eps": 1.034547838464954,
-      "gaap_net_income": 2317000000.0,
-      "adjusted_net_income": 3618848338.9504094,
-      "diluted_shares_used": 3498000000.0,
-      "adjustments": [
-        {
-          "item_name": "在庫評価損",
-          "amount": 335000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 186854838.70967743,
-          "tax_rate_applied": 0.4422243620606644
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 1999000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 1114993500.240732,
-          "tax_rate_applied": 0.4422243620606644
-        }
-      ],
-      "net_adjustment_total": 1301848338.9504094,
-      "filing_date": "2024-12-31",
-      "form": "10-K",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 4154000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1837000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損は一過性項目として妥当ですが、株式報酬費用が約20億ドルと非常に大きく、継続的に発生する非現金費用であるため調整後EPSの健全性に留意が必要です。SBCの大幅加算により実質的な収益性を過大評価するリスクがあります。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 / us-gaap:InventoryWriteDown"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） / us-gaap:ShareBasedCompensation"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.6196740062911067,
-      "adjusted_eps": 0.6196740062911067,
-      "gaap_net_income": 2167000000.0,
-      "adjusted_net_income": 2167000000.0,
-      "diluted_shares_used": 3497000000.0,
+      "gaap_eps": 0.3106948813268516,
+      "adjusted_eps": 0.3106948813268516,
+      "gaap_net_income": 2173000000.0,
+      "adjusted_net_income": 2173000000.0,
+      "diluted_shares_used": 6994000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2024-09-30",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 2769000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 602000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.4245906348750359,
-      "adjusted_eps": 0.4245906348750359,
-      "gaap_net_income": 1478000000.0,
-      "adjusted_net_income": 1478000000.0,
-      "diluted_shares_used": 3481000000.0,
+      "gaap_eps": 0.20109164033323756,
+      "adjusted_eps": 0.20109164033323756,
+      "gaap_net_income": 1400000000.0,
+      "adjusted_net_income": 1400000000.0,
+      "diluted_shares_used": 6962000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2024-06-30",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 1849000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 371000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.324052812858783,
-      "adjusted_eps": 0.44305980120394406,
-      "gaap_net_income": 1129000000.0,
-      "adjusted_net_income": 1543620347.394541,
-      "diluted_shares_used": 3484000000.0,
+      "gaap_eps": 0.1994833524684271,
+      "adjusted_eps": 0.25889207807118253,
+      "gaap_net_income": 1390000000.0,
+      "adjusted_net_income": 1803960000.0,
+      "diluted_shares_used": 6968000000.0,
       "adjustments": [
         {
-          "item_name": "在庫評価損",
-          "amount": 68000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 47625310.17369727,
-          "tax_rate_applied": 0.29962779156327546
-        },
-        {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 524000000,
-          "unit": "USD",
+          "amount": 524000000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 366995037.2208437,
-          "tax_rate_applied": 0.29962779156327546
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 413960000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 414620347.39454097,
+      "net_adjustment_total": 413960000.0,
       "filing_date": "2024-03-31",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 1612000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 483000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損の一過性損失加算は適切ですが、株式報酬費用524百万ドルは多額で継続的な非現金費用です。調整後EPSはGAAP比で約37%上振れしており、SBC依存の調整が収益の持続可能性に影響を与える可能性があります。TSLAの標準的な調整ですが、投資家はSBCの経済的実態を考慮すべきです。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 2.2748923959827834,
-      "adjusted_eps": 2.790602582496413,
-      "gaap_net_income": 7928000000.0,
-      "adjusted_net_income": 9725250000.0,
-      "diluted_shares_used": 3485000000.0,
-      "adjustments": [
-        {
-          "item_name": "在庫評価損",
-          "amount": 463000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 365770000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 1812000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 1431480000.0,
-          "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 1797250000.0,
-      "filing_date": "2023-12-31",
-      "form": "10-K",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 2927000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": -5001000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損は一過性の項目として妥当な加算ですが、株式報酬費用が18億ドル超と非常に大きく、継続的に発生する非現金費用であるため調整後EPSの持続可能性に注意が必要です。TSLAの調整は透明性が高いものの、SBC依存度が高い点が懸念材料です。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "us-gaap:InventoryWriteDown - 一過性の在庫評価減"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "us-gaap:ShareBasedCompensation - 非現金費用"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.5304895505296306,
-      "adjusted_eps": 0.5304895505296306,
+      "gaap_eps": 0.2652447752648153,
+      "adjusted_eps": 0.2652447752648153,
       "gaap_net_income": 1853000000.0,
       "adjusted_net_income": 1853000000.0,
-      "diluted_shares_used": 3493000000.0,
+      "diluted_shares_used": 6986000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 2020000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 167000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.7771707878090857,
-      "adjusted_eps": 0.7771707878090857,
+      "gaap_eps": 0.38858539390454283,
+      "adjusted_eps": 0.38858539390454283,
       "gaap_net_income": 2703000000.0,
       "adjusted_net_income": 2703000000.0,
-      "diluted_shares_used": 3478000000.0,
+      "diluted_shares_used": 6956000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2023-06-30",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 3026000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 323000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.7246251441753172,
-      "adjusted_eps": 0.8468762499698552,
+      "gaap_eps": 0.3623125720876586,
+      "adjusted_eps": 0.40992214532871973,
       "gaap_net_income": 2513000000.0,
-      "adjusted_net_income": 2936966834.8954577,
-      "diluted_shares_used": 3468000000.0,
+      "adjusted_net_income": 2843220000.0,
+      "diluted_shares_used": 6936000000.0,
       "adjustments": [
         {
-          "item_name": "在庫評価損",
-          "amount": 50000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 45295602.0187455,
-          "tax_rate_applied": 0.09408795962509012
-        },
-        {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 418000000,
-          "unit": "USD",
+          "amount": 418000000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 378671232.8767123,
-          "tax_rate_applied": 0.09408795962509012
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 330220000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 423966834.8954578,
+      "net_adjustment_total": 330220000.0,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 2774000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 261000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "在庫評価損の一過性損失と株式報酬費用の非現金支出を加回調整しており、両項目とも非GAAP調整として一般的に認められる内容です。在庫評価損は真正の一過性項目ですが、株式報酬は継続的に発生する性質を持つため、調整後EPSの解釈には注意が必要です。全体としてTeslaの事業特性を考慮した妥当な調整と言え、健全性は良好です。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減 (extracted_from: us-gaap:InventoryWriteDown)"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可） (extracted_from: us-gaap:ShareBasedCompensation)"
-          }
-        ]
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 1.0610071942446042,
-      "adjusted_eps": 1.4434453549424415,
-      "gaap_net_income": 3687000000.0,
-      "adjusted_net_income": 5015972608.424984,
-      "diluted_shares_used": 3475000000.0,
-      "adjustments": [
-        {
-          "item_name": "在庫評価損",
-          "amount": 177000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 135422079.26955798,
-          "tax_rate_applied": 0.23490350695164972
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 1560000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 1193550529.1554265,
-          "tax_rate_applied": 0.23490350695164972
-        }
-      ],
-      "net_adjustment_total": 1328972608.4249845,
-      "filing_date": "2022-12-31",
-      "form": "10-K",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": 4819000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1132000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損は一過性の項目としてadd_backは妥当ですが、株式報酬費用（SBC）が15.6億ドルと非常に大きく、継続的に発生する非現金費用であるため調整後EPSの健全性は限定的です。調整後EPSがGAAP EPSを約36%上回っており、投資判断ではGAAPベースの収益性を重視すべきです。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.9492502883506344,
-      "adjusted_eps": 0.9492502883506344,
+      "gaap_eps": 0.4746251441753172,
+      "adjusted_eps": 0.4746251441753172,
       "gaap_net_income": 3292000000.0,
       "adjusted_net_income": 3292000000.0,
-      "diluted_shares_used": 3468000000.0,
+      "diluted_shares_used": 6936000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2022-09-30",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": 3597000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 305000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.6521362586605081,
-      "adjusted_eps": 0.6521362586605081,
+      "gaap_eps": 0.48906689759688243,
+      "adjusted_eps": 0.48906689759688243,
       "gaap_net_income": 2259000000.0,
       "adjusted_net_income": 2259000000.0,
-      "diluted_shares_used": 3464000000.0,
+      "diluted_shares_used": 4619000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2022-06-30",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": 2464000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 205000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 0.9556451612903226,
-      "adjusted_eps": 1.0732750651500211,
+      "gaap_eps": 0.7167854828256643,
+      "adjusted_eps": 0.7881227046878375,
       "gaap_net_income": 3318000000.0,
-      "adjusted_net_income": 3726411026.2008734,
-      "diluted_shares_used": 3472000000.0,
+      "adjusted_net_income": 3648220000.0,
+      "diluted_shares_used": 4629000000.0,
       "adjustments": [
         {
-          "item_name": "在庫評価損",
-          "amount": 33000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 29883733.624454148,
-          "tax_rate_applied": 0.09443231441048035
-        },
-        {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 418000000,
-          "unit": "USD",
+          "amount": 418000000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 378527292.5764192,
-          "tax_rate_applied": 0.09443231441048035
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 330220000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 408411026.2008733,
+      "net_adjustment_total": 330220000.0,
       "filing_date": "2022-03-31",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": 3664000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 346000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損は一過性の項目として調整は妥当ですが、株式報酬費用が4.18億ドルと大幅で、継続的に発生する非現金費用であるため調整後EPSの持続可能性に注意が必要です。TSLAのような成長企業ではSBC調整が一般的ですが、加算額の大部分を占めており過度に楽観的な印象を与える可能性があります。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 2.0558015943312666,
-      "adjusted_eps": 3.629647053302753,
-      "gaap_net_income": 2321000000.0,
-      "adjusted_net_income": 4097871523.178808,
-      "diluted_shares_used": 1129000000.0,
-      "adjustments": [
-        {
-          "item_name": "買収無形資産償却",
-          "amount": 51000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "M&A由来追加償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 39195695.36423841,
-          "tax_rate_applied": 0.2314569536423841
-        },
-        {
-          "item_name": "在庫評価損",
-          "amount": 140000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 107596026.49006623,
-          "tax_rate_applied": 0.2314569536423841
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 2121000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 1630079801.3245034,
-          "tax_rate_applied": 0.2314569536423841
-        }
-      ],
-      "net_adjustment_total": 1776871523.178808,
-      "filing_date": "2021-12-31",
-      "form": "10-K",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": 3020000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 699000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整額の大部分（約21億ドル）が株式報酬費用によるものであり、これは非現金ながら継続的に発生するコストです。在庫評価損も一過性と分類されていますが、自動車製造業では定期的に発生しうる項目です。買収無形資産償却は標準的な調整ですが、全体として調整後EPSがGAAP EPSの約1.77倍と大幅に上昇しており、調整の質に注意が必要です。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
-          {
-            "item": "買収無形資産償却",
-            "snippet": "M&A由来追加償却"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.4802612051053725,
-      "adjusted_eps": 0.4802612051053725,
+      "gaap_eps": 0.3601959038290294,
+      "adjusted_eps": 0.3601959038290294,
       "gaap_net_income": 1618000000.0,
       "adjusted_net_income": 1618000000.0,
-      "diluted_shares_used": 3369000000.0,
+      "diluted_shares_used": 4492000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2021-09-30",
       "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": 1841000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 223000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
     },
     {
-      "gaap_eps": 1.0205540661304737,
-      "adjusted_eps": 1.0205540661304737,
+      "gaap_eps": 0.5102770330652369,
+      "adjusted_eps": 0.5102770330652369,
       "gaap_net_income": 1142000000.0,
       "adjusted_net_income": 1142000000.0,
-      "diluted_shares_used": 1119000000.0,
+      "diluted_shares_used": 2238000000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2021-06-30",
       "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": 1257000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 115000000.0,
-        "unit": "USD"
-      },
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.19329214474845544,
+      "adjusted_eps": 0.4073521624007061,
+      "gaap_net_income": 438000000.0,
+      "adjusted_net_income": 923060000.0,
+      "diluted_shares_used": 2266000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 614000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 485060000.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 485060000.0,
+      "filing_date": "2021-03-31",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.1497737556561086,
+      "adjusted_eps": 0.1497737556561086,
+      "gaap_net_income": 331000000.0,
+      "adjusted_net_income": 331000000.0,
+      "diluted_shares_used": 2210000000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2020-09-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.083668543845535,
+      "adjusted_eps": 0.083668543845535,
+      "gaap_net_income": 104000000.0,
+      "adjusted_net_income": 104000000.0,
+      "diluted_shares_used": 1243000000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2020-06-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.013411567476948869,
+      "adjusted_eps": 0.1531349538977368,
+      "gaap_net_income": 16000000.0,
+      "adjusted_net_income": 182690000.0,
+      "diluted_shares_used": 1193000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 211000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 166690000.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 166690000.0,
+      "filing_date": "2020-03-31",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.12929475587703435,
+      "adjusted_eps": 0.12929475587703435,
+      "gaap_net_income": 143000000.0,
+      "adjusted_net_income": 143000000.0,
+      "diluted_shares_used": 1106000000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2019-09-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": -1.153669971214803,
+      "adjusted_eps": -1.153669971214803,
+      "gaap_net_income": -408000000.0,
+      "adjusted_net_income": -408000000.0,
+      "diluted_shares_used": 353654000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2019-06-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": -2.0289662388110603,
+      "adjusted_eps": -1.5540378451338048,
+      "gaap_net_income": -702000000.0,
+      "adjusted_net_income": -537680000.0,
+      "diluted_shares_used": 345989000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 208000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 164320000.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 164320000.0,
+      "filing_date": "2019-03-31",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ]
+    },
+    {
+      "gaap_eps": 0.8745634425990185,
+      "adjusted_eps": 0.8745634425990185,
+      "gaap_net_income": 311516000.0,
+      "adjusted_net_income": 311516000.0,
+      "diluted_shares_used": 356196000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2018-09-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "logistics_one_time",
+        "gov_subsidy_timing"
+      ],
       "ai_analysis": {
         "health": "Good",
         "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
         "sources": []
-      }
-    },
-    {
-      "gaap_eps": 0.38658428949691087,
-      "adjusted_eps": 0.8921175911467173,
-      "gaap_net_income": 438000000.0,
-      "adjusted_net_income": 1010769230.7692307,
-      "diluted_shares_used": 1133000000.0,
-      "adjustments": [
-        {
-          "item_name": "在庫評価損",
-          "amount": 49000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価減",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 42331360.94674556,
-          "tax_rate_applied": 0.13609467455621302
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 614000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 530437869.8224852,
-          "tax_rate_applied": 0.13609467455621302
-        }
-      ],
-      "net_adjustment_total": 572769230.7692307,
-      "filing_date": "2021-03-31",
-      "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": 507000000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 69000000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "在庫評価損は一過性の項目として加算調整するのは合理的ですが、株式報酬費用が6.14億ドルと極めて大きく、これを全額加算している点が懸念されます。SBCは非現金費用とはいえ、継続的に発生する株主希薄化コストであり、調整後EPSがGAAP EPSの2倍以上となる大幅調整は持続可能性を過大評価する可能性があります。調整の健全性には注意が必要です。",
-        "sources": [
-          {
-            "item": "在庫評価損",
-            "snippet": "一過性の在庫評価減"
-          },
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
       }
     }
   ]

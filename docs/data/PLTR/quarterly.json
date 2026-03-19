@@ -1,50 +1,7 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-18T14:10:25.425496",
+  "last_updated": "2026-03-19T11:37:18.048918",
   "quarters": [
-    {
-      "gaap_eps": 0.23728236076995257,
-      "adjusted_eps": 0.4943443897286997,
-      "gaap_net_income": 608676000.0,
-      "adjusted_net_income": 1268090745.4988914,
-      "diluted_shares_used": 2565197000.0,
-      "adjustments": [
-        {
-          "item_name": "株式報酬費用",
-          "amount": 684033000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 659414745.4988914,
-          "tax_rate_applied": 0.035989863794741846
-        }
-      ],
-      "net_adjustment_total": 659414745.4988914,
-      "filing_date": "2025-12-31",
-      "form": "10-K",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 631400000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 22724000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目は株式報酬費用の加算のみで、非現金費用として一般的な調整ですが、調整後EPSがGAAP EPSの約2.08倍となっており影響度が非常に大きいです。PLTRのビジネスモデル上SBCが構造的に高水準であるため、調整後の収益性を過度に楽観視するリスクがあります。また適用税率が約3.6%と著しく低い点も注意が必要です。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
-      }
-    },
     {
       "gaap_eps": 0.18498189655071826,
       "adjusted_eps": 0.18498189655071826,
@@ -55,20 +12,11 @@
       "net_adjustment_total": 0.0,
       "filing_date": "2025-09-30",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 479352000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 3753000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
       "gaap_eps": 0.1274827227778402,
@@ -80,646 +28,427 @@
       "net_adjustment_total": 0.0,
       "filing_date": "2025-06-30",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 330323000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 3596000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
       "gaap_eps": 0.08384107288494519,
-      "adjusted_eps": 0.14313984090786783,
+      "adjusted_eps": 0.131912580528655,
       "gaap_net_income": 214031000.0,
-      "adjusted_net_income": 365409962.38674134,
+      "adjusted_net_income": 336748810.0,
       "diluted_shares_used": 2552818000.0,
       "adjustments": [
         {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 155339000,
-          "unit": "USD",
+          "amount": 155339000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 151378962.38674134,
-          "tax_rate_applied": 0.025492874379638483
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 122717810.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 151378962.38674134,
+      "net_adjustment_total": 122717810.0,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "fiscal_year": 2025,
-      "pretax_income": {
-        "value": 219630000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 5599000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目は株式報酬費用のみで、非現金支出に対する標準的なadd-back調整です。PLTRのような成長企業ではSBCが大きいためAdjusted EPSへの影響は一般的ですが、税率適用が約2.55%と著しく低い点は有効税率の確認が必要です。全体として透明性は確保されており、健全な調整と言えます。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "tax_rate_applied",
-            "snippet": "0.025492874379638483"
-          }
-        ]
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.03223780794820342,
-      "adjusted_eps": 0.2571275781117267,
-      "gaap_net_income": 79009000.0,
-      "adjusted_net_income": 630172896.7326258,
-      "diluted_shares_used": 2450818000.0,
-      "adjustments": [
-        {
-          "item_name": "買収無形資産償却",
-          "amount": 7800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "M&A由来追加償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 6146475.305194287,
-          "tax_rate_applied": 0.2119903454879119
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 691638000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 545017421.4274316,
-          "tax_rate_applied": 0.2119903454879119
-        }
-      ],
-      "net_adjustment_total": 551163896.7326258,
-      "filing_date": "2024-12-31",
-      "form": "10-K",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 100264000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 21255000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "株式報酬費用（SBC）の調整額が6.92億ドルと極めて大きく、GAAP EPS（0.032）をAdjusted EPS（0.257）へ大幅に引き上げています。SBCは現金支出ではないものの株主希薄化の実態を伴うため、調整依存度が高いと評価。買収無形資産償却の調整は標準的ですが、全体として収益の質に注意が必要です。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 691638000, direction: add_back, category: 株式報酬 (SBC)"
-          },
-          {
-            "item": "買収無形資産償却",
-            "snippet": "amount: 7800000, direction: add_back, category: 事業構造変更・一過性損益"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.05835324519665684,
-      "adjusted_eps": 0.05835324519665684,
+      "gaap_eps": 0.02917662259832842,
+      "adjusted_eps": 0.02917662259832842,
       "gaap_net_income": 143525000.0,
       "adjusted_net_income": 143525000.0,
-      "diluted_shares_used": 2459589000.0,
+      "diluted_shares_used": 4919178000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2024-09-30",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 151334000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 7809000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.055545708445286696,
-      "adjusted_eps": 0.055545708445286696,
+      "gaap_eps": 0.027772854222643348,
+      "adjusted_eps": 0.027772854222643348,
       "gaap_net_income": 134126000.0,
       "adjusted_net_income": 134126000.0,
-      "diluted_shares_used": 2414696000.0,
+      "diluted_shares_used": 4829392000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2024-06-30",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 139315000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 5189000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.043968873054409656,
-      "adjusted_eps": 0.09410939007723153,
+      "gaap_eps": 0.021984436527204828,
+      "adjusted_eps": 0.04266357499894796,
       "gaap_net_income": 105530000.0,
-      "adjusted_net_income": 225872605.89009392,
-      "diluted_shares_used": 2400107000.0,
+      "adjusted_net_income": 204794290.0,
+      "diluted_shares_used": 4800214000.0,
       "adjustments": [
         {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 125651000,
-          "unit": "USD",
+          "amount": 125651000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 120342605.89009392,
-          "tax_rate_applied": 0.04224712982710895
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 99264290.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 120342605.89009392,
+      "net_adjustment_total": 99264290.0,
       "filing_date": "2024-03-31",
       "form": "10-Q",
-      "fiscal_year": 2024,
-      "pretax_income": {
-        "value": 110185000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 4655000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "唯一の調整項目が株式報酬費用（1.256億ドル）のadd_backであり、透明性は確保されているが、金額が売上の約20%に相当する大型調整である。SBCは株主希薄化の実質コストであるため経済的実態を過大評価する可能性が高い。また適用税率が4.2%と異常に低い点も調整の質に影響を与えている。Adjusted EPSの健全性は注意を要する。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          }
-        ]
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.040641412890835955,
-      "adjusted_eps": 0.21509151662216586,
-      "gaap_net_income": 93391000.0,
-      "adjusted_net_income": 494264603.51702374,
-      "diluted_shares_used": 2297927000.0,
-      "adjustments": [
-        {
-          "item_name": "買収無形資産償却",
-          "amount": 9600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "M&A由来追加償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "事業構造変更・一過性損益",
-          "net_amount": 7926596.939181483,
-          "tax_rate_applied": 0.17431281883526217
-        },
-        {
-          "item_name": "株式報酬費用",
-          "amount": 475903000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 392947006.57784224,
-          "tax_rate_applied": 0.17431281883526217
-        }
-      ],
-      "net_adjustment_total": 400873603.51702374,
-      "filing_date": "2023-12-31",
-      "form": "10-K",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 113107000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 19716000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "買収無形資産償却と株式報酬費用の2項目が調整されており、どちらもテック企業では標準的な項目です。ただし株式報酬費用が4.76億ドルと極めて大きく、GAAP EPS 0.04に対する調整幅が5倍以上となるため、調整後EPSの健全性に注意が必要です。SBCは継続的な株主希薄化コストであり、一過性とは言い難い点が懸念されます。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 475903000, category: 株式報酬 (SBC), reason: 非現金費用"
-          },
-          {
-            "item": "買収無形資産償却",
-            "snippet": "amount: 9600000, category: 事業構造変更・一過性損益"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": 0.0307469040247678,
-      "adjusted_eps": 0.0307469040247678,
+      "gaap_eps": 0.0153734520123839,
+      "adjusted_eps": 0.0153734520123839,
       "gaap_net_income": 71505000.0,
       "adjusted_net_income": 71505000.0,
-      "diluted_shares_used": 2325600000.0,
+      "diluted_shares_used": 4651200000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 78035000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 6530000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.01234639434103474,
-      "adjusted_eps": 0.01234639434103474,
+      "gaap_eps": 0.00617319717051737,
+      "adjusted_eps": 0.00617319717051737,
       "gaap_net_income": 28127000.0,
       "adjusted_net_income": 28127000.0,
-      "diluted_shares_used": 2278155000.0,
+      "diluted_shares_used": 4556310000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2023-06-30",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 30298000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 2171000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.007577209564727598,
-      "adjusted_eps": 0.05460485756603484,
+      "gaap_eps": 0.003788604782363799,
+      "adjusted_eps": 0.02422300230130344,
       "gaap_net_income": 16802000.0,
-      "adjusted_net_income": 121082940.75637072,
-      "diluted_shares_used": 2217439000.0,
+      "adjusted_net_income": 107426060.0,
+      "diluted_shares_used": 4434878000.0,
       "adjustments": [
         {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 114714000,
-          "unit": "USD",
+          "amount": 114714000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 104280940.75637072,
-          "tax_rate_applied": 0.0909484391062057
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 90624060.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 104280940.75637072,
+      "net_adjustment_total": 90624060.0,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "fiscal_year": 2023,
-      "pretax_income": {
-        "value": 18483000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1681000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目は株式報酬費用のみで、非現金費用としてadd_backする標準的な処理ですが、調整後EPSがGAAP EPSの約7倍となっており影響度が非常に大きいです。PLTRのようなテック企業では一般的ですが、株主希薄化の実質コストを無視しているため収益の質に注意が必要です。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 114714000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
-          }
-        ]
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": 0.014961771844366175,
-      "adjusted_eps": 0.22134542831412624,
-      "gaap_net_income": 30878000.0,
-      "adjusted_net_income": 456811145.53669554,
-      "diluted_shares_used": 2063793000.0,
-      "adjustments": [
-        {
-          "item_name": "株式報酬費用",
-          "amount": 564798000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 425933145.53669554,
-          "tax_rate_applied": 0.24586640615459762
-        }
-      ],
-      "net_adjustment_total": 425933145.53669554,
-      "filing_date": "2022-12-31",
-      "form": "10-K",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": 40945000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 10067000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目は株式報酬（SBC）のみで、非現金費用として標準的なadd-back処理です。ただしGAAP EPS 0.015に対しAdjusted EPS 0.221と約15倍の開きがあり、調整額（税引後約4.26億ドル）が極めて大きい点が懸念されます。PLTRはSBC水準が高い企業として知られており、株主希薄化リスクを考慮する必要があります。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 564798000, direction: add_back, category: 株式報酬 (SBC), reason: 非現金費用"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": -0.059748753777254714,
-      "adjusted_eps": -0.059748753777254714,
+      "gaap_eps": -0.029874376888627357,
+      "adjusted_eps": -0.029874376888627357,
       "gaap_net_income": -123875000.0,
       "adjusted_net_income": -123875000.0,
-      "diluted_shares_used": 2073265000.0,
+      "diluted_shares_used": 4146530000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2022-09-30",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": -122779000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1096000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": -0.08727325641096768,
-      "adjusted_eps": -0.08727325641096768,
+      "gaap_eps": -0.04363662820548384,
+      "adjusted_eps": -0.04363662820548384,
       "gaap_net_income": -179329000.0,
       "adjusted_net_income": -179329000.0,
-      "diluted_shares_used": 2054799000.0,
+      "diluted_shares_used": 4109598000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2022-06-30",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": -176741000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 2588000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": -0.049785715022341914,
-      "adjusted_eps": 0.022051495984980355,
+      "gaap_eps": -0.024892857511170957,
+      "adjusted_eps": 0.004072610367690137,
       "gaap_net_income": -101379000.0,
-      "adjusted_net_income": 44903615.634687394,
-      "diluted_shares_used": 2036307000.0,
+      "adjusted_net_income": 16586170.0,
+      "diluted_shares_used": 4072614000.0,
       "adjustments": [
         {
+          "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 149323000,
-          "unit": "USD",
+          "amount": 149323000.0,
           "direction": "add_back",
           "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
           "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 146282615.6346874,
-          "tax_rate_applied": 0.020361125649180724
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 117965170.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 146282615.6346874,
+      "net_adjustment_total": 117965170.0,
       "filing_date": "2022-03-31",
       "form": "10-Q",
-      "fiscal_year": 2022,
-      "pretax_income": {
-        "value": -99356000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 2023000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "株式報酬費用のadd_backのみで調整されており、非現金費用として一般的な処理ですが、GAAP EPSが-0.05から調整後+0.022へ大幅に転換しています。PLTRのSBCは規模が大きく、株主希薄化の影響も無視できないため、調整後利益の質については慎重に評価する必要があります。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 149323000, direction: add_back, category: 株式報酬 (SBC), reason: 非現金費用"
-          }
-        ]
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": -0.08119495720821765,
-      "adjusted_eps": 0.21958988497409895,
-      "gaap_net_income": -156188000.0,
-      "adjusted_net_income": 422406835.7642213,
-      "diluted_shares_used": 1923617000.0,
-      "adjustments": [
-        {
-          "item_name": "株式報酬費用",
-          "amount": 778215000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 578594835.7642213,
-          "tax_rate_applied": 0.2565103014408341
-        }
-      ],
-      "net_adjustment_total": 578594835.7642213,
-      "filing_date": "2021-12-31",
-      "form": "10-K",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": -124303000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 31885000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "GAAP EPSが赤字(-0.08)である一方、株式報酬費用778百万ドルのadd backにより調整後EPSが+0.22と黒字化。非現金費用として妥当な調整だが、金額規模が極めて大きくEPSを大幅に変動させるため、調整後指標の持続可能性と株主希薄化の影響に注意が必要。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用（ConfigでON/OFF可）"
-          },
-          {
-            "item": "調整後EPS",
-            "snippet": "GAAP EPS: -0.08119495720821765 → Adjusted EPS: 0.21958988497409895"
-          }
-        ]
-      }
-    },
-    {
-      "gaap_eps": -0.05199412541774948,
-      "adjusted_eps": -0.05199412541774948,
+      "gaap_eps": -0.02599706270887474,
+      "adjusted_eps": -0.02599706270887474,
       "gaap_net_income": -102137000.0,
       "adjusted_net_income": -102137000.0,
-      "diluted_shares_used": 1964395000.0,
+      "diluted_shares_used": 3928790000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2021-09-30",
       "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": -100699000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 1438000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
-      }
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
     },
     {
-      "gaap_eps": -0.07314449547821553,
-      "adjusted_eps": -0.07314449547821553,
+      "gaap_eps": -0.03657224773910776,
+      "adjusted_eps": -0.03657224773910776,
       "gaap_net_income": -138580000.0,
       "adjusted_net_income": -138580000.0,
-      "diluted_shares_used": 1894606000.0,
+      "diluted_shares_used": 3789212000.0,
       "adjustments": [],
       "net_adjustment_total": 0.0,
       "filing_date": "2021-06-30",
       "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": -144241000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": -5661000.0,
-        "unit": "USD"
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
+    },
+    {
+      "gaap_eps": -0.033899859320278634,
+      "adjusted_eps": 0.008119419072919538,
+      "gaap_net_income": -123474000.0,
+      "adjusted_net_income": 29573490.0,
+      "diluted_shares_used": 3642316000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 193731000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 153047490.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 153047490.0,
+      "filing_date": "2021-03-31",
+      "form": "10-Q",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
+    },
+    {
+      "gaap_eps": -0.4712064091524194,
+      "adjusted_eps": -0.46754198151031195,
+      "gaap_net_income": -853319000.0,
+      "adjusted_net_income": -846683000.0,
+      "diluted_shares_used": 1810924010.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 8400000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 6636000.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 6636000.0,
+      "filing_date": "2020-09-30",
+      "form": "10-Q",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
+    },
+    {
+      "gaap_eps": -0.17240571964618234,
+      "adjusted_eps": -0.17240571964618234,
+      "gaap_net_income": -110455000.0,
+      "adjusted_net_income": -110455000.0,
+      "diluted_shares_used": 640669000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2020-06-30",
+      "form": "10-Q",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
+    },
+    {
+      "gaap_eps": -0.09131456702385579,
+      "adjusted_eps": -0.01939802780455715,
+      "gaap_net_income": -54274000.0,
+      "adjusted_net_income": -11529470.0,
+      "diluted_shares_used": 594363000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 54107000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "sector_default": true,
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 42744530.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 42744530.0,
+      "filing_date": "2020-03-31",
+      "form": "10-Q",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ]
+    },
+    {
+      "gaap_eps": -0.2410943486584837,
+      "adjusted_eps": -0.2410943486584837,
+      "gaap_net_income": -139860000.0,
+      "adjusted_net_income": -139860000.0,
+      "diluted_shares_used": 580104846.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2019-09-30",
+      "form": "10-Q",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ],
+      "maturity_monitor": {
+        "alert": null,
+        "sbc_ratio": -0.0,
+        "sbc_to_revenue": 0,
+        "threshold_ratio": 0.15,
+        "threshold_sbc_to_revenue": 0.25
       },
       "ai_analysis": {
         "health": "Good",
         "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
         "sources": []
-      }
-    },
-    {
-      "gaap_eps": -0.06779971864055727,
-      "adjusted_eps": 0.03583683036071074,
-      "gaap_net_income": -123474000.0,
-      "adjusted_net_income": 65264530.306051254,
-      "diluted_shares_used": 1821158000.0,
-      "adjustments": [
-        {
-          "item_name": "株式報酬費用",
-          "amount": 193731000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用（ConfigでON/OFF可）",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬 (SBC)",
-          "net_amount": 188738530.30605125,
-          "tax_rate_applied": 0.025770112650782575
-        }
-      ],
-      "net_adjustment_total": 188738530.30605125,
-      "filing_date": "2021-03-31",
-      "form": "10-Q",
-      "fiscal_year": 2021,
-      "pretax_income": {
-        "value": -120372000.0,
-        "unit": "USD"
-      },
-      "tax_expense": {
-        "value": 3102000.0,
-        "unit": "USD"
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "GAAP EPSが-0.068の赤字である一方、株式報酬費用193.7百万ドル（非現金）をほぼ全額加算することでAdjusted EPS+0.036の黒字に転換。SBCの規模が極めて大きく、調整後利益の質に疑問が残る。希薄化効果も考慮すべきであり、投資判断には慎重な分析が必要。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "amount: 193731000, direction: add_back, reason: 非現金費用（ConfigでON/OFF可）, category: 株式報酬 (SBC)"
-          }
-        ]
       }
     }
   ]
