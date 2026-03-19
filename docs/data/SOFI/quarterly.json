@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-19T15:50:19.111927",
+  "last_updated": "2026-03-19T15:57:05.297578",
   "quarters": [
     {
       "gaap_eps": 0.1386432139527564,
@@ -85,23 +85,26 @@
       "net_adjustment_total": 422190800.14306283,
       "filing_date": "2025-12-31",
       "form": "10-K",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ],
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目は非現金費用（株式報酬）と買収関連償却、一過性R&Dを主とするが、株式報酬198Mとマイルストーン型R&D172Mが大きく、調整後EPSがGAAPの約3.4倍に膨張。無形資産償却とIPR&D償却が同一金額・同一ソースで重複記載されておりデータ品質に懸念。調整の透明性・持続可能性に注意が必要。",
+        "comment": "調整項目の総額は大きく、GAAP EPSの約3.4倍となるAdjusted EPSを生み出しています。株式報酬や無形資産/IPR&D償却は非現金項目として標準的ですが継続性が高く、マイルストーン型R&Dの172M追加は一過性とされていますが規模が大きく判断が分かれるため、調整の健全性は注意を要します。リストラや税効果は妥当です。",
         "sources": [
           {
             "item": "株式報酬費用",
-            "snippet": "amount: 198302000.0, reason: 非現金費用, category: 株式報酬関連"
+            "snippet": "非現金費用"
           },
           {
-            "item": "無形資産償却費 / IPR&D償却",
-            "snippet": "両項目とも amount: 74579000, extracted_from: us-gaap:AmortizationOfIntangibleAssets"
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用"
+          },
+          {
+            "item": "無形資産償却費",
+            "snippet": "買収関連無形資産の償却"
           }
         ]
       }
@@ -129,11 +132,10 @@
       "net_adjustment_total": 156838637.5588182,
       "filing_date": "2025-09-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -159,11 +161,10 @@
       "net_adjustment_total": 131900459.90801483,
       "filing_date": "2025-06-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -213,11 +214,10 @@
       "net_adjustment_total": 204863509.3128776,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -303,11 +303,10 @@
       "net_adjustment_total": 103183460.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -333,11 +332,10 @@
       "net_adjustment_total": 132909356.04103045,
       "filing_date": "2024-09-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -363,11 +361,10 @@
       "net_adjustment_total": 114383904.30247718,
       "filing_date": "2024-06-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -417,11 +414,10 @@
       "net_adjustment_total": 172829766.13673508,
       "filing_date": "2024-03-31",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -507,11 +503,10 @@
       "net_adjustment_total": 545583856.0119587,
       "filing_date": "2023-12-31",
       "form": "10-K",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -549,11 +544,10 @@
       "net_adjustment_total": 372531156.146976,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -579,11 +573,10 @@
       "net_adjustment_total": 122267893.22710778,
       "filing_date": "2023-06-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -645,11 +638,10 @@
       "net_adjustment_total": 177851200.7543193,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -723,11 +715,10 @@
       "net_adjustment_total": 501584518.89352816,
       "filing_date": "2022-12-31",
       "form": "10-K",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -753,11 +744,10 @@
       "net_adjustment_total": 110342167.57330324,
       "filing_date": "2022-09-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -783,11 +773,10 @@
       "net_adjustment_total": 99242462.09620126,
       "filing_date": "2022-06-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -837,11 +826,10 @@
       "net_adjustment_total": 157798587.99324846,
       "filing_date": "2022-03-31",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -915,11 +903,10 @@
       "net_adjustment_total": 404461694.40801966,
       "filing_date": "2021-12-31",
       "form": "10-K",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -945,11 +932,10 @@
       "net_adjustment_total": 73982899.95312396,
       "filing_date": "2021-09-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -975,11 +961,10 @@
       "net_adjustment_total": 69356275.67234208,
       "filing_date": "2021-06-30",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     },
     {
@@ -1029,11 +1014,10 @@
       "net_adjustment_total": 102108522.47168717,
       "filing_date": "2021-03-31",
       "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV・半導体",
+      "sector": "フィンテック / 銀行",
       "sector_exclusions": [
-        "inventory_writeoff",
-        "logistics_one_time",
-        "gov_subsidy_timing"
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
       ]
     }
   ]
