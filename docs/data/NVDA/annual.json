@@ -1,16 +1,33 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-19T11:57:29.853578",
+  "last_updated": "2026-03-19T12:09:50.941580",
   "years": [
     {
       "year": "2025",
-      "filing_date": "2025-10-26",
-      "gaap_net_income": 149987000000.0,
-      "adjusted_net_income": 154893690000.0,
-      "diluted_shares_used": 30808500000.0,
-      "gaap_eps": 4.868364250125777,
-      "adjusted_eps": 5.027628414236331,
+      "filing_date": "2025-12-31",
+      "gaap_net_income": 72880000000.0,
+      "adjusted_net_income": 76622230000.0,
+      "diluted_shares_used": 24527250000.0,
+      "gaap_eps": 2.9713889653344747,
+      "adjusted_eps": 3.123963346889684,
       "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 3263000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 2577770000.0,
+          "tax_rate_applied": 0.21
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -27,11 +44,23 @@
           "exclude_priority": "medium",
           "net_amount": 1164460000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 3742230000.0
+    },
+    {
+      "year": "2024",
+      "filing_date": "2024-12-31",
+      "gaap_net_income": 29760000000.0,
+      "adjusted_net_income": 32563710000.0,
+      "diluted_shares_used": 44042750000.0,
+      "gaap_eps": 0.6757071254633282,
+      "adjusted_eps": 0.7393659569395644,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 4737000000.0,
+          "amount": 2538000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -42,21 +71,9 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 3742230000.0,
+          "net_amount": 2005020000.0,
           "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 4906690000.0
-    },
-    {
-      "year": "2024",
-      "filing_date": "2024-10-27",
-      "gaap_net_income": 80549000000.0,
-      "adjusted_net_income": 84151400000.0,
-      "diluted_shares_used": 44749250000.0,
-      "gaap_eps": 1.8000078213601345,
-      "adjusted_eps": 1.8805097292133388,
-      "adjustments": [
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -73,11 +90,23 @@
           "exclude_priority": "medium",
           "net_amount": 798690000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 2803710000.0
+    },
+    {
+      "year": "2023",
+      "filing_date": "2023-12-31",
+      "gaap_net_income": 4368000000.0,
+      "adjusted_net_income": 6508110000.0,
+      "diluted_shares_used": 21835250000.0,
+      "gaap_eps": 0.2000435076310095,
+      "adjusted_eps": 0.2980552088938757,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 3549000000.0,
+          "amount": 1974000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -88,21 +117,9 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 2803710000.0,
+          "net_amount": 1559460000.0,
           "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 3602400000.0
-    },
-    {
-      "year": "2023",
-      "filing_date": "2023-10-29",
-      "gaap_net_income": 21842000000.0,
-      "adjusted_net_income": 24562760000.0,
-      "diluted_shares_used": 22497750000.0,
-      "gaap_eps": 0.9708526408196375,
-      "adjusted_eps": 1.0917874009623185,
-      "adjustments": [
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -119,11 +136,23 @@
           "exclude_priority": "medium",
           "net_amount": 580650000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 2140110000.0
+    },
+    {
+      "year": "2022",
+      "filing_date": "2022-12-31",
+      "gaap_net_income": 9752000000.0,
+      "adjusted_net_income": 11335160000.0,
+      "diluted_shares_used": 5025500000.0,
+      "gaap_eps": 1.9405034324942791,
+      "adjusted_eps": 2.255528803104169,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 2709000000.0,
+          "amount": 1426000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -134,21 +163,9 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 2140110000.0,
+          "net_amount": 1126540000.0,
           "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 2720760000.0
-    },
-    {
-      "year": "2022",
-      "filing_date": "2022-10-30",
-      "gaap_net_income": 12706000000.0,
-      "adjusted_net_income": 14745780000.0,
-      "diluted_shares_used": 5677250000.0,
-      "gaap_eps": 2.238055396538817,
-      "adjusted_eps": 2.5973455458188384,
-      "adjustments": [
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -165,11 +182,23 @@
           "exclude_priority": "medium",
           "net_amount": 456620000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 1583160000.0
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": 4332000000.0,
+      "adjusted_net_income": 5524110000.0,
+      "diluted_shares_used": 4594000000.0,
+      "gaap_eps": 0.9429690901175446,
+      "adjusted_eps": 1.2024619068350022,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 2004000000.0,
+          "amount": 56000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -180,21 +209,9 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 1583160000.0,
+          "net_amount": 44240000.0,
           "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 2039780000.0
-    },
-    {
-      "year": "2021",
-      "filing_date": "2021-10-31",
-      "gaap_net_income": 11082000000.0,
-      "adjusted_net_income": 13333500000.0,
-      "diluted_shares_used": 4737000000.0,
-      "gaap_eps": 2.339455351488284,
-      "adjusted_eps": 2.8147561747941734,
-      "adjustments": [
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -245,11 +262,23 @@
           "exclude_priority": "medium",
           "net_amount": 338910000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 1192110000.0
+    },
+    {
+      "year": "2020",
+      "filing_date": "2020-12-31",
+      "gaap_net_income": 950000000.0,
+      "adjusted_net_income": 1833220000.0,
+      "diluted_shares_used": 2668500000.0,
+      "gaap_eps": 0.3560052463931047,
+      "adjusted_eps": 0.6869851976765974,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1397000000.0,
+          "amount": 137000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -260,21 +289,9 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 1103630000.0,
+          "net_amount": 108230000.0,
           "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 2251500000.0
-    },
-    {
-      "year": "2020",
-      "filing_date": "2020-10-25",
-      "gaap_net_income": 3825000000.0,
-      "adjusted_net_income": 5266750000.0,
-      "diluted_shares_used": 2808000000.0,
-      "gaap_eps": 1.3621794871794872,
-      "adjusted_eps": 1.8756232193732194,
-      "adjustments": [
+        },
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
@@ -325,11 +342,23 @@
           "exclude_priority": "medium",
           "net_amount": 176960000.0,
           "tax_rate_applied": 0.21
-        },
+        }
+      ],
+      "net_adjustment_total": 883220000.0
+    },
+    {
+      "year": "2019",
+      "filing_date": "2019-12-31",
+      "gaap_net_income": 0.0,
+      "adjusted_net_income": 547470000.0,
+      "diluted_shares_used": 1234000000.0,
+      "gaap_eps": 0.0,
+      "adjusted_eps": 0.4436547811993517,
+      "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 844000000.0,
+          "amount": 68000000.0,
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
@@ -340,11 +369,62 @@
           "category": "株式報酬関連",
           "criteria_score": 1,
           "exclude_priority": "medium",
-          "net_amount": 666760000.0,
+          "net_amount": 53720000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 223000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 176170000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 224000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 176960000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 178000000.0,
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "criteria": [
+            "non_cash"
+          ],
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "criteria_score": 1,
+          "exclude_priority": "medium",
+          "net_amount": 140620000.0,
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 1441750000.0
+      "net_adjustment_total": 547470000.0
     }
   ]
 }
