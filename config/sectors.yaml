@@ -1,73 +1,133 @@
-# セクター定義（VER2完全準拠）
 sectors:
-  - name: "ハイパーグロース / SaaS"
-    keywords: ["PLTR", "SNOW", "CRWD", "DDOG", "CLOUD", "SAAS"]
-    sic_codes: ["7370", "7372", "7373"]  # ソフトウェア関連SICコード
-    exclusions:
-      - item_id: "sbc"
-        reason: "株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。"
-        criteria: ["non_cash", "non_recurring"]
-        maturity_watch: true  # 成熟度監視対象
-      - item_id: "amortization_intangibles"
-        reason: "無形資産償却費 - 買収関連の非現金費用"
-        criteria: ["non_cash"]
-    
-  - name: "フィンテック / 銀行"
-    keywords: ["SOFI", "NU", "AFRM", "UPST", "FINTECH", "BANK"]
-    sic_codes: ["6020", "6021", "6199"]
-    exclusions:
-      - item_id: "loan_fair_value"
-        reason: "ローン公正価値評価損益 - 市場金利変動による一時的評価替え"
-        criteria: ["non_operating", "non_recurring"]
-      - item_id: "loan_loss_provision_abnormal"
-        reason: "貸倒引当金繰入の異常変動 - マクロ変動による一時的影響"
-        criteria: ["non_recurring"]
-    
-  - name: "ヘルスケア / バイオ"
-    keywords: ["VRTX", "PFE", "REGN", "BMRN", "BIO", "PHARMA"]
-    sic_codes: ["2834", "2835", "2836"]
-    exclusions:
-      - item_id: "ma_integration"
-        reason: "M&A統合費用 - 一過性の買収関連コスト"
-        criteria: ["non_recurring", "non_cash"]
-      - item_id: "milestone_rd"
-        reason: "臨床試験成功報酬型マイルストーン費用 - 成果連動型の一過性費用"
-        criteria: ["non_recurring"]
-      - item_id: "iprd_amortization"
-        reason: "IPR&D償却 - 買収に伴う無形資産償却"
-        criteria: ["non_cash", "non_recurring"]
-    
-  - name: "一般消費財 / 製造 / EV・半導体"
-    keywords: ["TSLA", "CELH", "NVDA", "ASML", "AMD", "INDUSTRIAL"]
-    sic_codes: ["3570", "3571", "3674", "3711"]
-    exclusions:
-      - item_id: "inventory_writeoff"
-        reason: "在庫評価損・減損 - サプライチェーン混乱による一過性コスト"
-        criteria: ["non_recurring"]
-      - item_id: "logistics_one_time"
-        reason: "物流・関税の一時的コスト増 - 外部ショック要因"
-        criteria: ["non_recurring", "non_operating"]
-      - item_id: "gov_subsidy_timing"
-        reason: "政府補助金の一時的影響 - タイミング差による変動"
-        criteria: ["non_recurring"]
-    
-  - name: "不動産 (REITs)"
-    keywords: ["O", "AMT", "PLD", "REIT", "PROPERTY"]
-    sic_codes: ["6798"]
-    exclusions:
-      - item_id: "depreciation"
-        reason: "減価償却費 - 不動産の実態価値維持のため会計上の減価を除外（FFO/AFFO基準）"
-        criteria: ["non_cash"]
-      - item_id: "asset_sale_gain"
-        reason: "資産売却損益・減損 - 非経常的な資産入替"
-        criteria: ["non_recurring", "non_operating"]
-    
-  - name: "暗号資産 / ブロックチェーン"
-    keywords: ["COIN", "MSTR", "MARA", "RIOT", "CRYPTO"]
-    exclusions:
-      - item_id: "crypto_fair_value"
-        reason: "暗号資産公正価値変動損益 - 非営業性の評価変動"
-        criteria: ["non_operating", "non_recurring"]
-      - item_id: "impairment_legacy"
-        reason: "減損（旧基準下） - 会計基準変更に伴う一過性影響"
-        criteria: ["non_cash", "non_recurring"]
+- name: ハイパーグロース / SaaS
+  keywords:
+  - PLTR
+  - SNOW
+  - CRWD
+  - DDOG
+  - CLOUD
+  - SAAS
+  sic_codes:
+  - '7370'
+  - '7372'
+  - '7373'
+  exclusions:
+  - item_id: sbc
+    reason: 株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み。成長投資の本質的価値を反映。
+    criteria:
+    - non_cash
+    - non_recurring
+    maturity_watch: true
+  - item_id: amortization_intangibles
+    reason: 無形資産償却費 - 買収関連の非現金費用
+    criteria:
+    - non_cash
+- name: フィンテック / 銀行
+  keywords:
+  - SOFI
+  - NU
+  - AFRM
+  - UPST
+  - FINTECH
+  - BANK
+  sic_codes:
+  - '6020'
+  - '6021'
+  - '6199'
+  exclusions:
+  - item_id: loan_fair_value
+    reason: ローン公正価値評価損益 - 市場金利変動による一時的評価替え
+    criteria:
+    - non_operating
+    - non_recurring
+  - item_id: loan_loss_provision_abnormal
+    reason: 貸倒引当金繰入の異常変動 - マクロ変動による一時的影響
+    criteria:
+    - non_recurring
+- name: ヘルスケア / バイオ
+  keywords:
+  - VRTX
+  - PFE
+  - REGN
+  - BMRN
+  - BIO
+  - PHARMA
+  sic_codes:
+  - '2834'
+  - '2835'
+  - '2836'
+  exclusions:
+  - item_id: ma_integration
+    reason: M&A統合費用 - 一過性の買収関連コスト
+    criteria:
+    - non_recurring
+    - non_cash
+  - item_id: iprd_amortization
+    reason: IPR&D償却 - 買収に伴う無形資産償却
+    criteria:
+    - non_cash
+    - non_recurring
+- name: 一般消費財 / 製造 / EV・半導体
+  keywords:
+  - TSLA
+  - CELH
+  - NVDA
+  - ASML
+  - AMD
+  - INDUSTRIAL
+  sic_codes:
+  - '3570'
+  - '3571'
+  - '3674'
+  - '3711'
+  exclusions:
+  - item_id: inventory_writeoff
+    reason: 在庫評価損・減損 - サプライチェーン混乱による一過性コスト
+    criteria:
+    - non_recurring
+  - item_id: logistics_one_time
+    reason: 物流・関税の一時的コスト増 - 外部ショック要因
+    criteria:
+    - non_recurring
+    - non_operating
+  - item_id: gov_subsidy_timing
+    reason: 政府補助金の一時的影響 - タイミング差による変動
+    criteria:
+    - non_recurring
+- name: 不動産 (REITs)
+  keywords:
+  - O
+  - AMT
+  - PLD
+  - REIT
+  - PROPERTY
+  sic_codes:
+  - '6798'
+  exclusions:
+  - item_id: depreciation
+    reason: 減価償却費 - 不動産の実態価値維持のため会計上の減価を除外（FFO/AFFO基準）
+    criteria:
+    - non_cash
+  - item_id: asset_sale_gain
+    reason: 資産売却損益・減損 - 非経常的な資産入替
+    criteria:
+    - non_recurring
+    - non_operating
+- name: 暗号資産 / ブロックチェーン
+  keywords:
+  - COIN
+  - MSTR
+  - MARA
+  - RIOT
+  - CRYPTO
+  exclusions:
+  - item_id: crypto_fair_value
+    reason: 暗号資産公正価値変動損益 - 非営業性の評価変動
+    criteria:
+    - non_operating
+    - non_recurring
+  - item_id: impairment_legacy
+    reason: 減損（旧基準下） - 会計基準変更に伴う一過性影響
+    criteria:
+    - non_cash
+    - non_recurring
