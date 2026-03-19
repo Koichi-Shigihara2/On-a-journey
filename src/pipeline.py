@@ -84,7 +84,7 @@ def run():
     with open(os.path.join(config_base, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
         tickers = yaml.safe_load(f)["tickers"]
     
-    with open(os.path.join(config_base, "adjustment_items_v2.json"), 'r', encoding='utf-8') as f:
+    with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
         adjustment_config = json.load(f)
     
     # セクター分類器の初期化
