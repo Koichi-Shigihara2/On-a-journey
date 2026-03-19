@@ -1,12 +1,12 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-19T15:36:59.679006",
+  "last_updated": "2026-03-19T15:42:43.769935",
   "quarters": [
     {
       "gaap_eps": 0.23728236076995257,
-      "adjusted_eps": 0.30008904232026223,
+      "adjusted_eps": 0.2897046546884351,
       "gaap_net_income": 608676000.0,
-      "adjusted_net_income": 769787511.0928097,
+      "adjusted_net_income": 743149511.0928097,
       "diluted_shares_used": 2565197000.0,
       "adjustments": [
         {
@@ -23,18 +23,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 22724000,
+          "amount": -3914000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 22724000,
+          "net_amount": -3914000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 161111511.09280962,
+      "net_adjustment_total": 134473511.09280962,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -43,8 +43,8 @@
         "amortization_intangibles"
       ],
       "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目としてマイルストーン型研究開発費の加算戻し（約1.38億ドル）と一過性税効果の加算戻しが計上されています。R&D関連の調整は「成功報酬型の一過性」と説明されていますが、Palantirの事業特性上研究開発が継続的に重要であるため調整の質に注意が必要です。税効果の調整は比較的標準的です。全体として調整後のEPSはGAAPを約26%上回っており、正常化の範囲がやや積極的である可能性があります。",
+        "health": "Good",
+        "comment": "調整項目は成功報酬型の一過性R&D費用と一過性税効果であり、非経常項目を適切に除外した比較的健全な調整です。項目ごとに理由と抽出元が明示されており透明性が高いですが、研究開発費の加算は事業のコア部分に関連する可能性があるため、継続的な検証が必要です。調整後EPSはGAAPを上回り、業績の正常化を示しています。",
         "sources": [
           {
             "item": "マイルストーン型研究開発費",
@@ -52,16 +52,16 @@
           },
           {
             "item": "一過性税効果",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響"
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）"
           }
         ]
       }
     },
     {
       "gaap_eps": 0.18498189655071826,
-      "adjusted_eps": 0.24393722186876543,
+      "adjusted_eps": 0.2424775109405363,
       "gaap_net_income": 475599000.0,
-      "adjusted_net_income": 627176501.8462424,
+      "adjusted_net_income": 623423501.8462424,
       "diluted_shares_used": 2571057000.0,
       "adjustments": [
         {
@@ -87,21 +87,9 @@
           "category": "不動産関連",
           "net_amount": 4762419.266009112,
           "tax_rate_applied": 0.007829319581434938
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 3753000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 3753000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 151577501.84624243,
+      "net_adjustment_total": 147824501.84624243,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -112,9 +100,9 @@
     },
     {
       "gaap_eps": 0.1274827227778402,
-      "adjusted_eps": 0.18308747758804647,
+      "adjusted_eps": 0.18168438610460888,
       "gaap_net_income": 326727000.0,
-      "adjusted_net_income": 469237093.3601354,
+      "adjusted_net_income": 465641093.3601354,
       "diluted_shares_used": 2562912000.0,
       "adjustments": [
         {
@@ -140,21 +128,9 @@
           "category": "不動産関連",
           "net_amount": 5341213.902755788,
           "tax_rate_applied": 0.010886314304483793
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 3596000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 3596000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 142510093.36013538,
+      "net_adjustment_total": 138914093.36013538,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -165,9 +141,9 @@
     },
     {
       "gaap_eps": 0.08384107288494519,
-      "adjusted_eps": 0.13962612331106916,
+      "adjusted_eps": 0.13743286080665248,
       "gaap_net_income": 214031000.0,
-      "adjusted_net_income": 356440080.85871696,
+      "adjusted_net_income": 350841080.85871696,
       "diluted_shares_used": 2552818000.0,
       "adjustments": [
         {
@@ -193,21 +169,9 @@
           "category": "不動産関連",
           "net_amount": 5359789.190911989,
           "tax_rate_applied": 0.025492874379638483
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 5599000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 5599000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 142409080.85871693,
+      "net_adjustment_total": 136810080.85871693,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -218,9 +182,9 @@
     },
     {
       "gaap_eps": 0.03223780794820342,
-      "adjusted_eps": 0.1003618225174591,
+      "adjusted_eps": 0.09145826460332594,
       "gaap_net_income": 79009000.0,
-      "adjusted_net_income": 245968561.1385941,
+      "adjusted_net_income": 224147561.1385941,
       "diluted_shares_used": 2450818000.0,
       "adjustments": [
         {
@@ -261,18 +225,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 21255000,
+          "amount": -566000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 21255000,
+          "net_amount": -566000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 166959561.1385941,
+      "net_adjustment_total": 145138561.1385941,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -283,9 +247,9 @@
     },
     {
       "gaap_eps": 0.05835324519665684,
-      "adjusted_eps": 0.10920859813906,
+      "adjusted_eps": 0.10603367745109141,
       "gaap_net_income": 143525000.0,
-      "adjusted_net_income": 268608266.68825245,
+      "adjusted_net_income": 260799266.68825248,
       "diluted_shares_used": 2459589000.0,
       "adjustments": [
         {
@@ -311,21 +275,9 @@
           "category": "不動産関連",
           "net_amount": 5785233.324963327,
           "tax_rate_applied": 0.05160109426830719
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 7809000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 7809000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 125083266.68825248,
+      "net_adjustment_total": 117274266.68825248,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -336,9 +288,9 @@
     },
     {
       "gaap_eps": 0.055545708445286696,
-      "adjusted_eps": 0.10345849179749445,
+      "adjusted_eps": 0.10130956704671835,
       "gaap_net_income": 134126000.0,
-      "adjusted_net_income": 249820806.30944264,
+      "adjusted_net_income": 244631806.30944264,
       "diluted_shares_used": 2414696000.0,
       "adjustments": [
         {
@@ -364,21 +316,9 @@
           "category": "不動産関連",
           "net_amount": 5776520.83408104,
           "tax_rate_applied": 0.037246527653160104
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 5189000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 5189000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 115694806.30944264,
+      "net_adjustment_total": 110505806.30944264,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -389,9 +329,9 @@
     },
     {
       "gaap_eps": 0.043968873054409656,
-      "adjusted_eps": 0.09221365674732929,
+      "adjusted_eps": 0.09027415988323115,
       "gaap_net_income": 105530000.0,
-      "adjusted_net_income": 221322643.05486226,
+      "adjusted_net_income": 216667643.05486226,
       "diluted_shares_used": 2400107000.0,
       "adjustments": [
         {
@@ -417,21 +357,9 @@
           "category": "不動産関連",
           "net_amount": 5746517.221037346,
           "tax_rate_applied": 0.04224712982710895
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 4655000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 4655000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 115792643.05486228,
+      "net_adjustment_total": 111137643.05486228,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -442,9 +370,9 @@
     },
     {
       "gaap_eps": 0.040641412890835955,
-      "adjusted_eps": 0.09391440574692476,
+      "adjusted_eps": 0.0832430484757843,
       "gaap_net_income": 93391000.0,
-      "adjusted_net_income": 215808448.6548136,
+      "adjusted_net_income": 191286448.6548136,
       "diluted_shares_used": 2297927000.0,
       "adjustments": [
         {
@@ -485,18 +413,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 19716000,
+          "amount": -4806000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 19716000,
+          "net_amount": -4806000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 122417448.65481359,
+      "net_adjustment_total": 97895448.65481359,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -507,9 +435,9 @@
     },
     {
       "gaap_eps": 0.0307469040247678,
-      "adjusted_eps": 0.07768753258380418,
+      "adjusted_eps": 0.07487965504682446,
       "gaap_net_income": 71505000.0,
-      "adjusted_net_income": 180670125.776895,
+      "adjusted_net_income": 174140125.776895,
       "diluted_shares_used": 2325600000.0,
       "adjustments": [
         {
@@ -535,21 +463,9 @@
           "category": "不動産関連",
           "net_amount": 5772813.481130262,
           "tax_rate_applied": 0.08368039982059332
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 6530000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 6530000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 109165125.77689499,
+      "net_adjustment_total": 102635125.77689499,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -560,9 +476,9 @@
     },
     {
       "gaap_eps": 0.01234639434103474,
-      "adjusted_eps": 0.056303914350122525,
+      "adjusted_eps": 0.05535095021906033,
       "gaap_net_income": 28127000.0,
-      "adjusted_net_income": 128269043.99630338,
+      "adjusted_net_income": 126098043.99630338,
       "diluted_shares_used": 2278155000.0,
       "adjustments": [
         {
@@ -588,21 +504,9 @@
           "category": "不動産関連",
           "net_amount": 5570070.631724866,
           "tax_rate_applied": 0.07165489471252227
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 2171000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 2171000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 100142043.99630338,
+      "net_adjustment_total": 97971043.99630338,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -613,9 +517,9 @@
     },
     {
       "gaap_eps": 0.007577209564727598,
-      "adjusted_eps": 0.047691029988109826,
+      "adjusted_eps": 0.046932948255083574,
       "gaap_net_income": 16802000.0,
-      "adjusted_net_income": 105751949.84580426,
+      "adjusted_net_income": 104070949.84580426,
       "diluted_shares_used": 2217439000.0,
       "adjustments": [
         {
@@ -641,21 +545,9 @@
           "category": "不動産関連",
           "net_amount": 5363404.209273387,
           "tax_rate_applied": 0.0909484391062057
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 1681000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 1681000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 88949949.84580426,
+      "net_adjustment_total": 87268949.84580426,
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -666,9 +558,9 @@
     },
     {
       "gaap_eps": 0.014961771844366175,
-      "adjusted_eps": 0.05186580470957428,
+      "adjusted_eps": 0.04690503587277718,
       "gaap_net_income": 30878000.0,
-      "adjusted_net_income": 107040284.69898644,
+      "adjusted_net_income": 96802284.69898644,
       "diluted_shares_used": 2063793000.0,
       "adjustments": [
         {
@@ -697,18 +589,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 10067000,
+          "amount": -171000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 10067000,
+          "net_amount": -171000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 76162284.69898644,
+      "net_adjustment_total": 65924284.69898644,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -719,9 +611,9 @@
     },
     {
       "gaap_eps": -0.059748753777254714,
-      "adjusted_eps": -0.008375900236369986,
+      "adjusted_eps": -0.008904535022564709,
       "gaap_net_income": -123875000.0,
-      "adjusted_net_income": -17365460.80355762,
+      "adjusted_net_income": -18461460.80355762,
       "diluted_shares_used": 2073265000.0,
       "adjustments": [
         {
@@ -747,21 +639,9 @@
           "category": "不動産関連",
           "net_amount": 5450903.656162699,
           "tax_rate_applied": 0.008926607970418395
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 1096000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 1096000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 106509539.19644238,
+      "net_adjustment_total": 105413539.19644238,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -772,9 +652,9 @@
     },
     {
       "gaap_eps": -0.08727325641096768,
-      "adjusted_eps": -0.041574368963706095,
+      "adjusted_eps": -0.04283385955134995,
       "gaap_net_income": -179329000.0,
-      "adjusted_net_income": -85426971.77225432,
+      "adjusted_net_income": -88014971.77225432,
       "diluted_shares_used": 2054799000.0,
       "adjustments": [
         {
@@ -800,21 +680,9 @@
           "category": "不動産関連",
           "net_amount": 4434106.970086171,
           "tax_rate_applied": 0.01464289553640638
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 2588000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 2588000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 93902028.22774568,
+      "net_adjustment_total": 91314028.22774568,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -825,9 +693,9 @@
     },
     {
       "gaap_eps": -0.049785715022341914,
-      "adjusted_eps": -0.0042913099467196516,
+      "adjusted_eps": -0.005286248332729227,
       "gaap_net_income": -101379000.0,
-      "adjusted_net_income": -8738424.483674854,
+      "adjusted_net_income": -10764424.483674854,
       "diluted_shares_used": 2036307000.0,
       "adjustments": [
         {
@@ -856,18 +724,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 2023000,
+          "amount": -3000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 2023000,
+          "net_amount": -3000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 92640575.51632515,
+      "net_adjustment_total": 90614575.51632515,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -878,9 +746,9 @@
     },
     {
       "gaap_eps": -0.08119495720821765,
-      "adjusted_eps": -0.030770754344020917,
+      "adjusted_eps": -0.025787953713749923,
       "gaap_net_income": -156188000.0,
-      "adjusted_net_income": -59191146.158982486,
+      "adjusted_net_income": -49606146.158982486,
       "diluted_shares_used": 1923617000.0,
       "adjustments": [
         {
@@ -909,18 +777,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 31885000,
+          "amount": 41470000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 31885000,
+          "net_amount": 41470000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 96996853.84101751,
+      "net_adjustment_total": 106581853.84101751,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -931,9 +799,9 @@
     },
     {
       "gaap_eps": -0.05199412541774948,
-      "adjusted_eps": -0.002379418683123004,
+      "adjusted_eps": -0.0031114506827972037,
       "gaap_net_income": -102137000.0,
-      "adjusted_net_income": -4674118.164033413,
+      "adjusted_net_income": -6112118.164033413,
       "diluted_shares_used": 1964395000.0,
       "adjustments": [
         {
@@ -959,21 +827,9 @@
           "category": "不動産関連",
           "net_amount": 3055731.437253597,
           "tax_rate_applied": 0.014280181531097627
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 1438000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 1438000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 97462881.83596659,
+      "net_adjustment_total": 96024881.83596659,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -984,9 +840,9 @@
     },
     {
       "gaap_eps": -0.07314449547821553,
-      "adjusted_eps": -0.018513812492779797,
+      "adjusted_eps": -0.01552585615779511,
       "gaap_net_income": -138580000.0,
-      "adjusted_net_income": -35076380.23169556,
+      "adjusted_net_income": -29415380.231695563,
       "diluted_shares_used": 1894606000.0,
       "adjustments": [
         {
@@ -1012,21 +868,9 @@
           "category": "不動産関連",
           "net_amount": 2978334.8701132135,
           "tax_rate_applied": 0.039246816092511835
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -5661000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -5661000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 103503619.76830444,
+      "net_adjustment_total": 109164619.76830444,
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -1037,9 +881,9 @@
     },
     {
       "gaap_eps": -0.06779971864055727,
-      "adjusted_eps": -0.011707426331662439,
+      "adjusted_eps": -0.012397097409075821,
       "gaap_net_income": -123474000.0,
-      "adjusted_net_income": -21321073.123317704,
+      "adjusted_net_income": -22577073.123317704,
       "diluted_shares_used": 1821158000.0,
       "adjustments": [
         {
@@ -1068,18 +912,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 3102000,
+          "amount": 1846000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 3102000,
+          "net_amount": 1846000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 102152926.8766823,
+      "net_adjustment_total": 100896926.8766823,
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -1089,7 +933,7 @@
       ],
       "maturity_monitor": {
         "alert": null,
-        "sbc_ratio": -0.8273233788221188,
+        "sbc_ratio": -0.8171511968242893,
         "sbc_to_revenue": 0,
         "threshold_ratio": 0.15,
         "threshold_sbc_to_revenue": 0.25

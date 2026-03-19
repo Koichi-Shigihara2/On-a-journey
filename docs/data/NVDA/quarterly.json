@@ -1,12 +1,12 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-19T15:37:13.314101",
+  "last_updated": "2026-03-19T15:42:57.081945",
   "quarters": [
     {
       "gaap_eps": 1.7524679774822551,
-      "adjusted_eps": 2.982140328302991,
+      "adjusted_eps": 2.1405804033621405,
       "gaap_net_income": 42960000000.0,
-      "adjusted_net_income": 73104188008.01952,
+      "adjusted_net_income": 52474188008.019516,
       "diluted_shares_used": 24514000000.0,
       "adjustments": [
         {
@@ -71,18 +71,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 21383000000,
+          "amount": 753000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 21383000000,
+          "net_amount": 753000000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 30144188008.01952,
+      "net_adjustment_total": 9514188008.01952,
       "filing_date": "2026-01-25",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -93,28 +93,28 @@
       ],
       "ai_analysis": {
         "health": "Warning",
-        "comment": "調整項目の総額が非常に大きく、特に減価償却費の全額加算（不動産価値維持を理由とする）は非標準的で積極的な調整です。また21B超の税効果加算は規模が異常であり、GAAP EPSからの乖離を過度に拡大しています。マイルストーンR&Dも一過性と主張されていますが、AI関連企業として再発リスクが高い可能性があります。調整後EPSの信頼性に重大な懸念あり。",
+        "comment": "株式報酬や無形資産償却の調整はテック企業で一般的ですが、マイルストーン型研究開発費(55億ドル超)や減価償却費(24億ドル)の全額加算はコア事業コストを除外しており調整の健全性に大きな懸念があります。これらは一過性と主張されていますが、事業継続性との関連が強く、調整後EPSの信頼性を低下させています。",
         "sources": [
+          {
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用"
+          },
           {
             "item": "減価償却費",
             "snippet": "不動産の実態価値維持のため会計上の減価を除外"
           },
           {
-            "item": "一過性税効果",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響"
-          },
-          {
-            "item": "マイルストーン型研究開発費",
-            "snippet": "成功報酬型の一過性R&D費用"
+            "item": "IPR&D償却",
+            "snippet": "買収に伴うIPR&D償却"
           }
         ]
       }
     },
     {
       "gaap_eps": 1.3033533472205203,
-      "adjusted_eps": 1.7177277619518327,
+      "adjusted_eps": 1.4715977942191203,
       "gaap_net_income": 31910000000.0,
-      "adjusted_net_income": 42055128795.86672,
+      "adjusted_net_income": 36029128795.86672,
       "diluted_shares_used": 24483000000.0,
       "adjustments": [
         {
@@ -152,21 +152,9 @@
           "category": "研究開発関連",
           "net_amount": 80750738.08519612,
           "tax_rate_applied": 0.1588464782792071
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 6026000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 6026000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 10145128795.866722,
+      "net_adjustment_total": 4119128795.8667226,
       "filing_date": "2025-10-26",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -178,9 +166,9 @@
     },
     {
       "gaap_eps": 1.0770422305560086,
-      "adjusted_eps": 1.4259505186988262,
+      "adjusted_eps": 1.230939920296739,
       "gaap_net_income": 26422000000.0,
-      "adjusted_net_income": 34981418124.719604,
+      "adjusted_net_income": 30197418124.719604,
       "diluted_shares_used": 24532000000.0,
       "adjustments": [
         {
@@ -218,21 +206,9 @@
           "category": "研究開発関連",
           "net_amount": 71122476.44683714,
           "tax_rate_applied": 0.1533038518233673
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 4784000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 4784000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 8559418124.7196045,
+      "net_adjustment_total": 3775418124.7196045,
       "filing_date": "2025-07-27",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -244,9 +220,9 @@
     },
     {
       "gaap_eps": 0.7628702612652879,
-      "adjusted_eps": 1.0915372636841765,
+      "adjusted_eps": 0.8756988174609429,
       "gaap_net_income": 18775000000.0,
-      "adjusted_net_income": 26863823596.531265,
+      "adjusted_net_income": 21551823596.531265,
       "diluted_shares_used": 24611000000.0,
       "adjustments": [
         {
@@ -299,18 +275,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 3135000000,
+          "amount": -2177000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 3135000000,
+          "net_amount": -2177000000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 8088823596.531264,
+      "net_adjustment_total": 2776823596.5312643,
       "filing_date": "2025-04-27",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -322,9 +298,9 @@
     },
     {
       "gaap_eps": 0.8906224802451218,
-      "adjusted_eps": 1.582490328592933,
+      "adjusted_eps": 1.016210696275565,
       "gaap_net_income": 22091000000.0,
-      "adjusted_net_income": 39252090110.41911,
+      "adjusted_net_income": 25206090110.419113,
       "diluted_shares_used": 24804000000.0,
       "adjustments": [
         {
@@ -389,18 +365,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 11146000000,
+          "amount": -2900000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 11146000000,
+          "net_amount": -2900000000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 17161090110.419111,
+      "net_adjustment_total": 3115090110.4191113,
       "filing_date": "2025-01-26",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -412,9 +388,9 @@
     },
     {
       "gaap_eps": 0.77940582869137,
-      "adjusted_eps": 1.0295897063966233,
+      "adjusted_eps": 0.9082124560535215,
       "gaap_net_income": 19309000000.0,
-      "adjusted_net_income": 25507055386.269943,
+      "adjusted_net_income": 22500055386.269943,
       "diluted_shares_used": 24774000000.0,
       "adjustments": [
         {
@@ -452,21 +428,9 @@
           "category": "研究開発関連",
           "net_amount": 128922790.8227281,
           "tax_rate_applied": 0.13474637031726117
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 3007000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 3007000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 6198055386.269941,
+      "net_adjustment_total": 3191055386.2699413,
       "filing_date": "2024-10-27",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -478,9 +442,9 @@
     },
     {
       "gaap_eps": 0.6680215711526079,
-      "adjusted_eps": 0.8908449078736388,
+      "adjusted_eps": 0.7856050495349395,
       "gaap_net_income": 16599000000.0,
-      "adjusted_net_income": 22135714270.844177,
+      "adjusted_net_income": 19520714270.844177,
       "diluted_shares_used": 24848000000.0,
       "adjustments": [
         {
@@ -518,21 +482,9 @@
           "category": "研究開発関連",
           "net_amount": 126129593.00510046,
           "tax_rate_applied": 0.1360986780472572
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 2615000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 2615000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 5536714270.844175,
+      "net_adjustment_total": 2921714270.844176,
       "filing_date": "2024-07-28",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -544,9 +496,9 @@
     },
     {
       "gaap_eps": 0.5978706307754118,
-      "adjusted_eps": 0.8332067497823806,
+      "adjusted_eps": 0.6735040579382665,
       "gaap_net_income": 14881000000.0,
-      "adjusted_net_income": 20738516002.083454,
+      "adjusted_net_income": 16763516002.083454,
       "diluted_shares_used": 24890000000.0,
       "adjustments": [
         {
@@ -599,18 +551,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 2398000000,
+          "amount": -1577000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 2398000000,
+          "net_amount": -1577000000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 5857516002.083454,
+      "net_adjustment_total": 1882516002.0834537,
       "filing_date": "2024-04-28",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -622,9 +574,9 @@
     },
     {
       "gaap_eps": 4.926222935044106,
-      "adjusted_eps": 8.500427850139404,
+      "adjusted_eps": 6.330419830893214,
       "gaap_net_income": 12286000000.0,
-      "adjusted_net_income": 21200067058.247673,
+      "adjusted_net_income": 15788067058.247675,
       "diluted_shares_used": 2494000000.0,
       "adjustments": [
         {
@@ -689,18 +641,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 4058000000,
+          "amount": -1354000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 4058000000,
+          "net_amount": -1354000000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 8914067058.247675,
+      "net_adjustment_total": 3502067058.247675,
       "filing_date": "2024-01-28",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -712,9 +664,9 @@
     },
     {
       "gaap_eps": 0.3706094627105052,
-      "adjusted_eps": 0.5128366242829969,
+      "adjusted_eps": 0.4615535448924596,
       "gaap_net_income": 9243000000.0,
-      "adjusted_net_income": 12790145409.617943,
+      "adjusted_net_income": 11511145409.617943,
       "diluted_shares_used": 24940000000.0,
       "adjustments": [
         {
@@ -752,21 +704,9 @@
           "category": "研究開発関連",
           "net_amount": 126496103.40239498,
           "tax_rate_applied": 0.12155483748336818
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 1279000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 1279000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 3547145409.6179433,
+      "net_adjustment_total": 2268145409.6179433,
       "filing_date": "2023-10-29",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -778,9 +718,9 @@
     },
     {
       "gaap_eps": 0.24757941906057454,
-      "adjusted_eps": 0.3620108304577828,
+      "adjusted_eps": 0.33028321583027226,
       "gaap_net_income": 6188000000.0,
-      "adjusted_net_income": 9048098696.461824,
+      "adjusted_net_income": 8255098696.461824,
       "diluted_shares_used": 24994000000.0,
       "adjustments": [
         {
@@ -818,21 +758,9 @@
           "category": "研究開発関連",
           "net_amount": 129415270.01862197,
           "tax_rate_applied": 0.11359404096834265
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 793000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 793000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2860098696.4618244,
+      "net_adjustment_total": 2067098696.4618247,
       "filing_date": "2023-07-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -844,9 +772,9 @@
     },
     {
       "gaap_eps": 0.8204819277108434,
-      "adjusted_eps": 1.9910292141858519,
+      "adjusted_eps": 1.4685392543464941,
       "gaap_net_income": 2043000000.0,
-      "adjusted_net_income": 4957662743.322771,
+      "adjusted_net_income": 3656662743.3227706,
       "diluted_shares_used": 2490000000.0,
       "adjustments": [
         {
@@ -899,18 +827,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 166000000,
+          "amount": -1135000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 166000000,
+          "net_amount": -1135000000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2914662743.3227706,
+      "net_adjustment_total": 1613662743.3227706,
       "filing_date": "2023-04-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -922,9 +850,9 @@
     },
     {
       "gaap_eps": 0.5640207419226166,
-      "adjusted_eps": 2.2775963244236435,
+      "adjusted_eps": 1.7051990368289087,
       "gaap_net_income": 1414000000.0,
-      "adjusted_net_income": 5709933985.330074,
+      "adjusted_net_income": 4274933985.3300743,
       "diluted_shares_used": 2507000000.0,
       "adjustments": [
         {
@@ -989,18 +917,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": -187000000,
+          "amount": -1622000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": -187000000,
+          "net_amount": -1622000000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 4295933985.330074,
+      "net_adjustment_total": 2860933985.3300743,
       "filing_date": "2023-01-29",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1012,9 +940,9 @@
     },
     {
       "gaap_eps": 0.272108843537415,
-      "adjusted_eps": 1.067566341381577,
+      "adjusted_eps": 1.094377065671293,
       "gaap_net_income": 680000000.0,
-      "adjusted_net_income": 2667848287.112561,
+      "adjusted_net_income": 2734848287.112561,
       "diluted_shares_used": 2499000000.0,
       "adjustments": [
         {
@@ -1052,21 +980,9 @@
           "category": "研究開発関連",
           "net_amount": 161216965.74225122,
           "tax_rate_applied": 0.10929853181076672
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -67000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -67000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1987848287.112561,
+      "net_adjustment_total": 2054848287.112561,
       "filing_date": "2022-10-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1078,9 +994,9 @@
     },
     {
       "gaap_eps": 0.26073131955484896,
-      "adjusted_eps": 0.7270496192787215,
+      "adjusted_eps": 0.7989892059241904,
       "gaap_net_income": 656000000.0,
-      "adjusted_net_income": 1829256842.1052632,
+      "adjusted_net_income": 2010256842.1052632,
       "diluted_shares_used": 2516000000.0,
       "adjustments": [
         {
@@ -1118,21 +1034,9 @@
           "category": "研究開発関連",
           "net_amount": 112648421.05263159,
           "tax_rate_applied": 0.38105263157894737
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": -181000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": -181000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1173256842.1052632,
+      "net_adjustment_total": 1354256842.1052632,
       "filing_date": "2022-07-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1144,9 +1048,9 @@
     },
     {
       "gaap_eps": 0.637761135199054,
-      "adjusted_eps": 1.5969158940751669,
+      "adjusted_eps": 1.3095686335312173,
       "gaap_net_income": 1618000000.0,
-      "adjusted_net_income": 4051375623.268698,
+      "adjusted_net_income": 3322375623.268698,
       "diluted_shares_used": 2537000000.0,
       "adjustments": [
         {
@@ -1199,18 +1103,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 187000000,
+          "amount": -542000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 187000000,
+          "net_amount": -542000000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2433375623.268698,
+      "net_adjustment_total": 1704375623.2686982,
       "filing_date": "2022-05-01",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1222,9 +1126,9 @@
     },
     {
       "gaap_eps": 1.1842209072978305,
-      "adjusted_eps": 2.0637207580244485,
+      "adjusted_eps": 1.8195392984583736,
       "gaap_net_income": 3002000000.0,
-      "adjusted_net_income": 5231532121.591977,
+      "adjusted_net_income": 4612532121.591977,
       "diluted_shares_used": 2535000000.0,
       "adjustments": [
         {
@@ -1289,18 +1193,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 189000000,
+          "amount": -430000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 189000000,
+          "net_amount": -430000000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2229532121.591977,
+      "net_adjustment_total": 1610532121.5919774,
       "filing_date": "2022-01-30",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1312,9 +1216,9 @@
     },
     {
       "gaap_eps": 0.970843183609141,
-      "adjusted_eps": 2.1427323634508317,
+      "adjusted_eps": 2.0741744438290826,
       "gaap_net_income": 2464000000.0,
-      "adjusted_net_income": 5438254738.438211,
+      "adjusted_net_income": 5264254738.438211,
       "diluted_shares_used": 2538000000.0,
       "adjustments": [
         {
@@ -1364,21 +1268,9 @@
           "category": "研究開発関連",
           "net_amount": 483833206.97498107,
           "tax_rate_applied": 0.06595905989385899
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 174000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 174000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2974254738.4382114,
+      "net_adjustment_total": 2800254738.4382114,
       "filing_date": "2021-10-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1390,9 +1282,9 @@
     },
     {
       "gaap_eps": 0.9375987361769352,
-      "adjusted_eps": 1.7233051032003388,
+      "adjusted_eps": 1.7154062090455204,
       "gaap_net_income": 2374000000.0,
-      "adjusted_net_income": 4363408521.303258,
+      "adjusted_net_income": 4343408521.303258,
       "diluted_shares_used": 2532000000.0,
       "adjustments": [
         {
@@ -1442,21 +1334,9 @@
           "category": "研究開発関連",
           "net_amount": 136847117.79448622,
           "tax_rate_applied": 0.00835421888053467
-        },
-        {
-          "item_name": "一過性税効果",
-          "amount": 20000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
-          "category": "税効果関連",
-          "net_amount": 20000000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1989408521.3032582,
+      "net_adjustment_total": 1969408521.3032582,
       "filing_date": "2021-08-01",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1468,9 +1348,9 @@
     },
     {
       "gaap_eps": 0.7563291139240507,
-      "adjusted_eps": 1.4953089003938667,
+      "adjusted_eps": 1.4525873814065249,
       "gaap_net_income": 1912000000.0,
-      "adjusted_net_income": 3780140900.195695,
+      "adjusted_net_income": 3672140900.195695,
       "diluted_shares_used": 2528000000.0,
       "adjustments": [
         {
@@ -1523,18 +1403,18 @@
         },
         {
           "item_name": "一過性税効果",
-          "amount": 132000000,
+          "amount": 24000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxExpenseBenefit",
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 132000000,
+          "net_amount": 24000000,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1868140900.195695,
+      "net_adjustment_total": 1760140900.195695,
       "filing_date": "2021-05-02",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
