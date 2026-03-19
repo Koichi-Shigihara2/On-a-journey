@@ -1,3 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adjusted EPS Analyzer · CELH</title>
+  <!-- フォント (MACRO PULSE と同じ) -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <style>
+    /* 色定義 (MACRO PULSE 完全移植) */
+    :root {
+      --bg: #0a0d14;
+      --sur: #111520;
+      --sur2: #161c2d;
+      --bdr: #1e2840;
+      --acc: #3b82f6;
+      --grn: #10b981;
+      --red: #f43f5e;
+      --amb: #f59e0b;
+      --txt: #e2e8f0;
+      --mut: #64748b;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 48px;
+    }
+
+    /* ヘッダー (index.html と完全統一) */
+    header {
+      border-bottom: 1px solid var(--bdr);
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--acc);
+      border-radius: 50%;
+      animation: pdot 2s ease-in-out infinite;
+    }
+
+    @keyframes pdot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
+      50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+    }
+
+    .hdr-r {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mut);
+      text-decoration: none;
+      letter-spacing: .08em;
+      padding: 5px 0;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      color: var(--acc);
+      border-bottom-color: var(--acc);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .search-box input {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--sur2);
+      border: 1px solid var(--bdr);
+      padding: 5px 10px;
+      color: var(--txt);
+      width: 120px;
+    }
+
+    .search-box button {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 12px;
+      border: 1px solid var(--bdr);
+      background: var(--sur2);
+      color: var(--txt);
+      cursor: pointer;
+    }
+
+    .search-box button:hover {
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    /* セクション見出し (統一感のため) */
+    .sec {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--mut);
+      text-transform: uppercase;
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sec::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bdr);
+    }
+
+    /* カード系 (stock.html 固有) */
+    .metric-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 16px;
+      border-radius: 0; /* 角を揃える */
+    }
+
+    .tab-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 10px 16px;
+      color: var(--mut);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab-link.active {
+      color: var(--acc);
+      border-bottom-color: var(--acc);
+    }
+
+    .chart-container {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 20px;
+    }
+
+    .adjustments-panel {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 20px;
+    }
+
+    /* スクロールバー (stock.html から流用) */
+    .scrollable-adjustments {
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .scrollable-adjustments::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scrollable-adjustments::-webkit-scrollbar-track {
+      background: var(--sur2);
+      border-radius: 4px;
+    }
+    .scrollable-adjustments::-webkit-scrollbar-thumb {
+      background: var(--bdr);
+      border-radius: 4px;
+    }
+    .scrollable-adjustments::-webkit-scrollbar-thumb:hover {
+      background: var(--mut);
+    }
+
+    /* ローディングスピナー (回転を復活) */
+    .spinner-border {
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* テーブル類 (index.html 準拠) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .12em;
+      color: var(--mut);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--bdr);
+      text-transform: uppercase;
+    }
+    td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(30,40,64,.5);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .number {
+      font-family: var(--mono);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <!-- ヘッダー (index.html 完全統一) -->
+  <header>
+    <div class="logo">
+      <img src="images/logo.png" alt="TANUKI" style="height:30px; width:auto; object-fit:contain">
+      <span class="logo-dot"></span>
+      Adjusted EPS Analyzer
+    </div>
+    <div class="hdr-r">
+      <div class="nav-links">
+        <a href="index.html">ダッシュボード</a>
+        <a href="tickers.html">銘柄一覧</a>
+        <a href="#">設定</a>
+      </div>
+      <div class="search-box">
+        <input type="text" id="ticker-search" placeholder="ティッカー (例: CELH)" value="CELH">
+        <button onclick="loadTicker()">検索</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ローディング -->
+  <div id="loading" class="hidden text-center py-10">
+    <div class="spinner-border"></div>
+    <p class="mt-2 text-sm font-mono text-gray-500">読み込み中...</p>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="error" class="hidden bg-red-900/20 border border-red-800 text-white p-4 rounded-none mb-6 font-mono text-sm">
+    <p>エラーが発生しました。 <button onclick="loadTicker()" class="underline text-blue-400">再試行</button></p>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <div id="content" class="hidden">
+    <!-- 銘柄ヘッダー -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold font-mono" id="ticker-title">CELH</h2>
+      <div class="flex space-x-3 items-center">
+        <span id="health-badge" class="px-3 py-1 text-xs font-mono border" style="background:rgba(16,185,129,.15); color:var(--grn); border-color:var(--grn);">Caution</span>
+        <span class="text-xs text-gray-500 font-mono" id="last-updated"></span>
+      </div>
+    </div>
+
+    <!-- メトリクスカード (4列) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="metric-card">
+        <div class="text-xs font-mono text-gray-500 mb-1">GAAP EPS</div>
+        <div class="text-2xl font-mono text-gray-300" id="gaap-eps">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="text-xs font-mono text-gray-500 mb-1">Adjusted EPS</div>
+        <div class="text-2xl font-mono text-green-400" id="adj-eps">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="text-xs font-mono text-gray-500 mb-1">差分</div>
+        <div class="text-2xl font-mono" id="diff">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="text-xs font-mono text-gray-500 mb-1">YoY成長率</div>
+        <div class="text-2xl font-mono" id="yoy">--</div>
+      </div>
+    </div>
+
+    <!-- タブ -->
+    <div class="border-b border-[var(--bdr)] mb-4">
+      <div class="flex">
+        <button onclick="switchTab('quarterly')" class="tab-link active" id="tab-quarterly">四半期</button>
+        <button onclick="switchTab('ttm')" class="tab-link" id="tab-ttm">TTM</button>
+      </div>
+    </div>
+
+    <!-- 日付範囲指定 (プリセット付き) -->
+    <div class="metric-card mb-6">
+      <div class="flex flex-wrap items-end gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-mono text-gray-500 mb-1">開始日</label>
+          <input type="date" id="start-date" class="bg-[var(--sur2)] border border-[var(--bdr)] px-3 py-2 text-sm font-mono text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-gray-500 mb-1">終了日</label>
+          <input type="date" id="end-date" class="bg-[var(--sur2)] border border-[var(--bdr)] px-3 py-2 text-sm font-mono text-white">
+        </div>
+        <div>
+          <button onclick="applyDateRange()" class="bg-[var(--sur2)] border border-[var(--bdr)] px-6 py-2 text-sm font-mono hover:border-[var(--acc)]">適用</button>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="setPreset('all')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">全期間</button>
+        <button onclick="setPreset('5y')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">5年</button>
+        <button onclick="setPreset('4y')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">4年</button>
+        <button onclick="setPreset('3y')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">3年</button>
+        <button onclick="setPreset('2y')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">2年</button>
+        <button onclick="setPreset('1y')" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">1年</button>
+        <button onclick="resetDateRange()" class="bg-[var(--sur2)] border border-[var(--bdr)] px-4 py-1 text-xs font-mono hover:border-[var(--acc)]">リセット</button>
+      </div>
+    </div>
+
+    <!-- チャート -->
+    <div class="chart-container mb-8">
+      <canvas id="eps-chart" height="300"></canvas>
+    </div>
+
+    <!-- AI分析 -->
+    <div class="adjustments-panel mb-8">
+      <h3 class="text-sm font-mono mb-4 flex items-center">
+        <span class="text-[var(--acc)]">●</span>
+        <span class="ml-2">AI分析（選択期間内の最新四半期）</span>
+        <span class="ml-2 text-xs bg-[var(--sur2)] px-2 py-0.5 border border-[var(--bdr)]">Grok</span>
+      </h3>
+      <div id="ai-comment" class="prose prose-invert max-w-none text-sm text-gray-300 leading-relaxed"></div>
+      <div id="ai-sources" class="mt-4 text-xs text-gray-500 border-t border-[var(--bdr)] pt-4 font-mono"></div>
+    </div>
+
+    <!-- 調整内訳 -->
+    <div class="adjustments-panel">
+      <h3 class="text-sm font-mono mb-4">調整内訳（全期間）</h3>
+      <div id="adjustments-accordion" class="scrollable-adjustments space-y-4 pr-2"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  Chart.register(ChartDataLabels);
+
+  let currentTicker = 'CELH';
+  let quarterlyData = null;
+  let ttmData = null;
+  let chart = null;
+  let currentTab = 'quarterly';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const tickerParam = urlParams.get('ticker');
+  if (tickerParam) {
+    currentTicker = tickerParam.toUpperCase();
+    document.getElementById('ticker-search').value = currentTicker;
+  }
+
+  function showLoading(show) {
+    const loadingEl = document.getElementById('loading');
+    if (show) {
+      loadingEl.classList.remove('hidden');
+    } else {
+      loadingEl.classList.add('hidden');
+    }
+  }
+
+  async function loadTicker(ticker = null) {
+    if (ticker) currentTicker = ticker;
+    else currentTicker = document.getElementById('ticker-search').value.toUpperCase();
+
+    showLoading(true);
+    document.getElementById('content').classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
+
+    try {
+      const qResp = await fetch(`data/${currentTicker}/quarterly.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!qResp.ok) {
+        throw new Error(`四半期データが見つかりません (HTTP ${qResp.status})`);
+      }
+      quarterlyData = await qResp.json();
+
+      try {
+        const tResp = await fetch(`data/${currentTicker}/ttm.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (tResp.ok) {
+          ttmData = await tResp.json();
+        } else {
+          ttmData = null;
+        }
+      } catch (e) {
+        console.log('TTM data not found');
+        ttmData = null;
+      }
+
+      updateHeader(quarterlyData);
+      setInitialDateRange(quarterlyData.quarters);
+      applyDateRange();
+
+      document.getElementById('ticker-title').innerText = currentTicker;
+      document.getElementById('content').classList.remove('hidden');
+      document.getElementById('error').classList.add('hidden');
+    } catch (error) {
+      console.error('Error:', error);
+      document.getElementById('error').classList.remove('hidden');
+      document.getElementById('error').querySelector('p').innerHTML = 
+        `データの読み込みに失敗しました: ${error.message} <button onclick="loadTicker()" class="underline ml-2">再試行</button>`;
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  function updateHeader(data) {
+    document.getElementById('last-updated').innerText = 
+      `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
+  }
+
+  function setInitialDateRange(quarters) {
+    if (!quarters || quarters.length === 0) return;
+    const dates = quarters.map(q => q.filing_date).sort();
+    document.getElementById('start-date').value = dates[0];
+    document.getElementById('end-date').value = dates[dates.length - 1];
+  }
+
+  function filterDataByDateRange(dataArray, labelField, startStr, endStr) {
+    if (!dataArray || dataArray.length === 0) return [];
+    const start = startStr ? new Date(startStr) : null;
+    const end = endStr ? new Date(endStr) : null;
+    return dataArray.filter(item => {
+      const itemDate = new Date(item[labelField]);
+      if (start && itemDate < start) return false;
+      if (end && itemDate > end) return false;
+      return true;
+    });
+  }
+
+  // ★★★ 修正箇所: applyDateRange 内で updateAllAdjustments を呼び出す
+  function applyDateRange() {
+    if (!quarterlyData) return;
+
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
+    if (!startDate || !endDate) {
+      alert('開始日と終了日を入力してください。');
+      return;
+    }
+
+    const filtered = filterDataByDateRange(quarterlyData.quarters, 'filing_date', startDate, endDate);
+
+    if (currentTab === 'quarterly') {
+      updateChart(filtered, 'quarterly', 'filing_date');
+      const latestInRange = getLatestFromArray(filtered);
+      if (latestInRange) {
+        updateMetricsWithQuarter(latestInRange, quarterlyData.quarters);
+        updateAI(latestInRange.ai_analysis);
+      } else {
+        resetMetrics();
+        updateAI(null);
+      }
+      // ★★★ 追加: 調整内訳を常に全期間で更新
+      updateAllAdjustments(quarterlyData.quarters);
+    } else if (currentTab === 'ttm') {
+      if (ttmData && ttmData.ttm) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const filteredTTM = ttmData.ttm.filter(item => {
+          const endDateStr = item.period.split(' to ')[1];
+          return new Date(endDateStr) >= start && new Date(endDateStr) <= end;
+        });
+        updateChart(filteredTTM, 'ttm', 'period');
+        // TTMの場合は調整内訳をクリア（または非表示）
+        document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-500 text-xs font-mono p-4">TTMデータには調整内訳はありません。</p>';
+      } else {
+        updateChart([], 'ttm', '');
+      }
+    }
+  }
+
+  function setPreset(range) {
+    if (!quarterlyData) return;
+    const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+    const maxDate = dates[dates.length - 1];
+    const maxDateObj = new Date(maxDate);
+
+    let startDate;
+    const endDate = maxDate;
+
+    switch (range) {
+      case 'all': startDate = dates[0]; break;
+      case '5y': startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 5)).toISOString().split('T')[0]; break;
+      case '4y': startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 4)).toISOString().split('T')[0]; break;
+      case '3y': startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 3)).toISOString().split('T')[0]; break;
+      case '2y': startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 2)).toISOString().split('T')[0]; break;
+      case '1y': startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 1)).toISOString().split('T')[0]; break;
+      default: return;
+    }
+
+    if (startDate < dates[0]) startDate = dates[0];
+    document.getElementById('start-date').value = startDate;
+    document.getElementById('end-date').value = endDate;
+    applyDateRange();
+  }
+
+  function resetDateRange() {
+    if (!quarterlyData) return;
+    const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+    document.getElementById('start-date').value = dates[0];
+    document.getElementById('end-date').value = dates[dates.length - 1];
+    applyDateRange();
+  }
+
+  function getLatestFromArray(dataArray) {
+    if (!dataArray || dataArray.length === 0) return null;
+    return [...dataArray].sort((a, b) => b.filing_date.localeCompare(a.filing_date))[0];
+  }
+
+  function calculateYoY(latest, allQuarters) {
+    if (!latest || !allQuarters || allQuarters.length < 5) return null;
+
+    const [latestYear, latestMonth] = latest.filing_date.split('-');
+    const latestQuarter = Math.floor((parseInt(latestMonth) - 1) / 3) + 1;
+    const prevYear = (parseInt(latestYear) - 1).toString();
+
+    const candidates = allQuarters.filter(q => {
+      const qYear = q.filing_date.split('-')[0];
+      const qMonth = parseInt(q.filing_date.split('-')[1]);
+      const qQuarter = Math.floor((qMonth - 1) / 3) + 1;
+      return qYear === prevYear && qQuarter === latestQuarter;
+    });
+
+    if (candidates.length > 0) {
+      const prevQuarter = candidates.reduce((prev, curr) => 
+        new Date(curr.filing_date) > new Date(prev.filing_date) ? curr : prev
+      );
+      const prevEps = prevQuarter.adjusted_eps;
+      if (Math.abs(prevEps) > 1e-6) {
+        return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+      }
+      return null;
+    }
+
+    const idx = allQuarters.findIndex(q => q.filing_date === latest.filing_date);
+    if (idx >= 4 && idx - 4 < allQuarters.length) {
+      const prevQuarter = allQuarters[idx - 4];
+      const prevMonth = prevQuarter.filing_date.split('-')[1];
+      if (prevMonth === latestMonth) {
+        const prevEps = prevQuarter.adjusted_eps;
+        if (Math.abs(prevEps) > 1e-6) {
+          return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+        }
+      }
+    }
+    return null;
+  }
+
+  function updateMetricsWithQuarter(quarter, allQuarters) {
+    document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
+    document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
+    const diff = quarter.adjusted_eps - quarter.gaap_eps;
+    document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
+    document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-mono text-green-400' : 'text-2xl font-mono text-red-400';
+    const yoy = calculateYoY(quarter, allQuarters);
+    if (yoy !== null) {
+      document.getElementById('yoy').innerText = (yoy * 100).toFixed(1) + '%';
+      document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-mono text-green-400' : 'text-2xl font-mono text-red-400';
+    } else {
+      document.getElementById('yoy').innerText = '--';
+    }
+  }
+
+  function resetMetrics() {
+    document.getElementById('gaap-eps').innerText = '$0.00';
+    document.getElementById('adj-eps').innerText = '$0.00';
+    document.getElementById('diff').innerText = '$0.00';
+    document.getElementById('yoy').innerText = '--';
+  }
+
+  // ★★★ 修正済み updateAI 関数 ★★★
   function updateAI(ai) {
     const badge = document.getElementById('health-badge');
     const commentEl = document.getElementById('ai-comment');
@@ -40,3 +661,161 @@
       sourcesEl.innerHTML = '';
     }
   }
+
+  function formatLabel(dateStr) {
+    if (!dateStr) return '';
+    const [year, month] = dateStr.split('-');
+    const q = Math.floor((parseInt(month) - 1) / 3) + 1;
+    return `${year}-Q${q}`;
+  }
+
+  function updateChart(dataArray, type, labelField) {
+    const ctx = document.getElementById('eps-chart').getContext('2d');
+
+    if (!dataArray || dataArray.length === 0) {
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: { plugins: { legend: { display: false } } }
+      });
+      return;
+    }
+
+    const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
+    const labels = sorted.map(item => formatLabel(item[labelField]));
+    let gaapData, adjData;
+
+    if (type === 'quarterly') {
+      gaapData = sorted.map(item => item.gaap_eps);
+      adjData = sorted.map(item => item.adjusted_eps);
+    } else {
+      gaapData = sorted.map(item => item.eps);
+      adjData = sorted.map(item => item.adjusted_eps);
+    }
+
+    // Y軸スケールの動的調整（余白10%）
+    const allValues = [...gaapData, ...adjData].filter(v => v !== null && v !== undefined);
+    const min = Math.min(...allValues);
+    const max = Math.max(...allValues);
+    const padding = (max - min) * 0.1;
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'GAAP EPS',
+            data: gaapData,
+            borderColor: '#64748b',
+            backgroundColor: 'rgba(100,116,139,0.1)',
+            tension: 0.1,
+            datalabels: {
+              align: 'top',
+              offset: 4,
+              color: '#94a3b8',
+              font: { family: 'Space Mono', size: 9 },
+              formatter: v => v?.toFixed(2)
+            }
+          },
+          {
+            label: 'Adjusted EPS',
+            data: adjData,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16,185,129,0.1)',
+            tension: 0.1,
+            datalabels: {
+              align: 'bottom',
+              offset: 4,
+              color: '#10b981',
+              font: { family: 'Space Mono', size: 9 },
+              formatter: v => v?.toFixed(2)
+            }
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { family: 'Space Mono', size: 10 } } },
+          datalabels: { display: true, backgroundColor: '#1e2840', borderRadius: 2, padding: { top: 2, bottom: 2, left: 4, right: 4 } }
+        },
+        scales: {
+          y: {
+            grid: { color: 'rgba(30,40,64,0.5)' },
+            ticks: { color: '#94a3b8', font: { family: 'Space Mono', size: 10 } },
+            suggestedMin: min - padding,
+            suggestedMax: max + padding
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#94a3b8', font: { family: 'Space Mono', size: 9 }, maxRotation: 45 }
+          }
+        }
+      }
+    });
+  }
+
+  function updateAllAdjustments(quarters) {
+    const container = document.getElementById('adjustments-accordion');
+    const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+    let html = '';
+    sorted.forEach(q => {
+      html += `<div class="border border-[var(--bdr)]">`;
+      html += `<div class="bg-[var(--sur2)] px-4 py-2 font-mono text-xs border-b border-[var(--bdr)]">${q.filing_date}</div>`;
+      if (q.adjustments && q.adjustments.length) {
+        html += `<div class="p-4"><table class="w-full"><thead><tr class="text-gray-500"><th>項目</th><th class="text-right">金額（税後）</th><th>理由</th><th>抽出元</th></tr></thead><tbody>`;
+        q.adjustments.forEach(item => {
+          html += `<tr class="border-t border-[var(--bdr)]"><td class="py-2 font-mono text-xs">${item.item_name}</td>`;
+          html += `<td class="text-right text-green-400 font-mono text-xs">+$${(item.net_amount/1e6).toFixed(1)}M</td>`;
+          html += `<td class="text-xs">${item.reason}</td>`;
+          html += `<td><span class="bg-[var(--sur2)] px-2 py-0.5 text-xs font-mono border border-[var(--bdr)]">${item.extracted_from}</span></td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+      } else {
+        html += `<div class="p-4 text-gray-500 text-xs font-mono">調整項目なし</div>`;
+      }
+      html += `</div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  async function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-quarterly').className = tab === 'quarterly' ? 'tab-link active' : 'tab-link';
+    document.getElementById('tab-ttm').className = tab === 'ttm' ? 'tab-link active' : 'tab-link';
+
+    if (!currentTicker) return;
+
+    if (tab === 'quarterly' && quarterlyData) {
+      applyDateRange();  // この中で updateAllAdjustments が呼ばれる
+    } else if (tab === 'ttm') {
+      if (ttmData && ttmData.ttm) {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const filteredTTM = ttmData.ttm.filter(item => {
+          const endDateStr = item.period.split(' to ')[1];
+          return new Date(endDateStr) >= start && new Date(endDateStr) <= end;
+        });
+        updateChart(filteredTTM, 'ttm', 'period');
+        // TTM表示時は調整内訳をクリア
+        document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-500 text-xs font-mono p-4">TTMデータには調整内訳はありません。</p>';
+        // AI分析もクリア
+        document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+        document.getElementById('ai-sources').innerHTML = '';
+      } else {
+        updateChart([], 'ttm', '');
+      }
+    }
+  }
+
+  window.onload = () => loadTicker();
+</script>
+</body>
+</html>
