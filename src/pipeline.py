@@ -187,6 +187,8 @@ def run():
             result["net_adjustment_total"] = net_adjustment
             result["sector"] = sector
             result["sector_exclusions"] = exclusion_item_ids
+            result["revenue"] = data.get("revenue", 0)           # ★ MaturityMonitor 用
+            result["diluted_shares"] = data.get("diluted_shares", 0)  # ★ MaturityMonitor 用
             
             quarterly_results.append(result)
             
@@ -195,15 +197,20 @@ def run():
                   f"Adj EPS=${result['adjusted_eps']:.4f}")
         
         # ★★★ 成熟度監視（全セクター対応・正しいsector引数）★★★
-        if sector:
+        if sector and quarterly_results:
+            # sort前に最新四半期（filing_date最大）を正しく取得
+            latest_for_monitor = max(quarterly_results, key=lambda x: x["filing_date"])
             monitor = MaturityMonitor(maturity_config)
-            maturity_status = monitor.monitor(quarterly_results, sector=sector)
+            maturity_status = monitor.monitor(quarterly_results, sector=sector,
+                                              latest_override=latest_for_monitor)
             
             if maturity_status.get('alert'):
                 print(f"  ⚠ Maturity Alert for {ticker} ({sector}): {maturity_status['alert']}")
             
-            if quarterly_results:
-                quarterly_results[-1]['maturity_monitor'] = maturity_status
+            # sort後の最新四半期に付与するため、一時保存
+            _pending_maturity = maturity_status
+        else:
+            _pending_maturity = None
         
         # TTM・年次集計・AI分析（元のまま）
         ttm_results = []
@@ -217,6 +224,9 @@ def run():
         if quarterly_results:
             quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
             latest = quarterly_results[0]
+            # ★ sort後に正しい最新四半期へ maturity_monitor を付与
+            if _pending_maturity is not None:
+                latest['maturity_monitor'] = _pending_maturity
             print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
             ai_result = analyze_adjustments(ticker, latest, latest.get("adjustments", []))
             try:
