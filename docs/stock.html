@@ -714,7 +714,8 @@
           q.adjustments.forEach(item => {
             // ★ ai_analysis.sources から該当項目の confidence を取得
             const aiSources = (q.ai_analysis && q.ai_analysis.sources) ? q.ai_analysis.sources : [];
-            const srcMatch = aiSources.find(s => s.item === item.item_name);
+            // ★ item_name（日本語）またはitem_id（英語）どちらでも照合
+            const srcMatch = aiSources.find(s => s.item === item.item_name || s.item === item.item_id);
             const conf = srcMatch && srcMatch.confidence != null ? srcMatch.confidence : null;
             const confHtml = conf != null
               ? `<span class="conf-bar-wrap" title="一過性確信度: ${(conf*100).toFixed(0)}%">
