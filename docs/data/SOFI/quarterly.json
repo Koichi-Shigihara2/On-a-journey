@@ -1,12 +1,12 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-20T05:34:50.084117",
+  "last_updated": "2026-03-20T05:43:46.875994",
   "quarters": [
     {
       "gaap_eps": 0.1386432139527564,
-      "adjusted_eps": 0.4735112524934752,
+      "adjusted_eps": 0.42644385896097275,
       "gaap_net_income": 173549000.0,
-      "adjusted_net_income": 592725760.0,
+      "adjusted_net_income": 533808350.0,
       "diluted_shares_used": 1251767000.0,
       "adjustments": [
         {
@@ -49,19 +49,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 74579000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 58917410.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 948000.0,
@@ -88,7 +75,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 419176760.0,
+      "net_adjustment_total": 360259350.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -99,8 +86,8 @@
       "revenue": 1025051000.0,
       "diluted_shares": 1251767000.0,
       "maturity_monitor": {
-        "alert": "SBC寄与率が30%超（現在 47.3%）",
-        "sbc_contribution": 0.473,
+        "alert": "SBC寄与率が30%超（現在 55.0%）",
+        "sbc_contribution": 0.55,
         "sbc_to_revenue": 0.193,
         "sbc_per_share": 0.1584,
         "sector_threshold": {
@@ -110,19 +97,19 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "標準的な非現金項目（SBC、無形資産償却）のほか、大規模なマイルストーンR&D（1.73億ドル）の加算が見られます。また無形資産償却とIPR&D償却で同額・同一ソースの項目が重複計上されており、調整の正確性に疑問があります。調整後EPSがGAAPの約3.4倍と大幅に上方修正されており、過度に積極的な非GAAP調整の可能性が高いです。",
+        "comment": "調整項目の総額が大きく、GAAP EPSの約3倍に引き上げられている。SBC（1.98億ドル）とマイルストーンR&D（1.73億ドル）が主な要因で、非現金・一過性として妥当性はあるものの、SBCは成長企業で継続発生しやすく、無形資産償却も恒常的。調整後EPSの質と持続可能性に注意が必要。",
         "sources": [
           {
-            "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用 amount:172836000"
+            "item": "株式報酬費用",
+            "snippet": "非現金費用"
           },
           {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却 amount:74579000"
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用"
           },
           {
-            "item": "iprd_amortization",
-            "snippet": "買収に伴うIPR&D償却 amount:74579000"
+            "item": "無形資産償却費",
+            "snippet": "買収関連無形資産の償却"
           }
         ]
       }
@@ -277,9 +264,9 @@
     },
     {
       "gaap_eps": 0.30186673203860576,
-      "adjusted_eps": 0.3955514940211914,
+      "adjusted_eps": 0.341401501738712,
       "gaap_net_income": 332473000.0,
-      "adjusted_net_income": 435656460.0,
+      "adjusted_net_income": 376016200.0,
       "diluted_shares_used": 1101390000.0,
       "adjustments": [
         {
@@ -322,19 +309,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 75494000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 59640260.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 1530000.0,
@@ -361,7 +335,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 103183460.0,
+      "net_adjustment_total": 43543200.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -522,9 +496,9 @@
     },
     {
       "gaap_eps": 0.05070029109097063,
-      "adjusted_eps": 0.5074001388493602,
+      "adjusted_eps": 0.41969231770751764,
       "gaap_net_income": 47913000.0,
-      "adjusted_net_income": 479505390.0,
+      "adjusted_net_income": 396619380.0,
       "diluted_shares_used": 945024160.0,
       "adjustments": [
         {
@@ -567,19 +541,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 104919000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 82886010.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 7796000.0,
@@ -606,7 +567,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 431592390.0,
+      "net_adjustment_total": 348706380.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -793,9 +754,9 @@
     },
     {
       "gaap_eps": -0.044407388928194076,
-      "adjusted_eps": 0.41501576570533727,
+      "adjusted_eps": 0.3334486964169687,
       "gaap_net_income": -40006000.0,
-      "adjusted_net_income": 373881940.0,
+      "adjusted_net_income": 300399300.0,
       "diluted_shares_used": 900886113.0,
       "adjustments": [
         {
@@ -838,19 +799,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 93016000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 73482640.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -3458000.0,
@@ -864,7 +812,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 413887940.0,
+      "net_adjustment_total": 340405300.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -1025,9 +973,9 @@
     },
     {
       "gaap_eps": -0.43320340199706125,
-      "adjusted_eps": 0.18115607943018866,
+      "adjusted_eps": 0.07540834833486053,
       "gaap_net_income": -228181341.0,
-      "adjusted_net_income": 95420389.0,
+      "adjusted_net_income": 39719859.0,
       "diluted_shares_used": 526730261.0,
       "adjustments": [
         {
@@ -1070,19 +1018,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 70507000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 55700530.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 581000.0,
@@ -1096,7 +1031,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 323601730.0,
+      "net_adjustment_total": 267901200.0,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",

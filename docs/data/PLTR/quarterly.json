@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-20T05:33:58.250101",
+  "last_updated": "2026-03-20T05:42:50.388138",
   "quarters": [
     {
       "gaap_eps": 0.23728236076995257,
@@ -57,8 +57,8 @@
         }
       },
       "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はマイルストーン型研究開発費（成功報酬型の一過性R&D）と一過性税効果の2項目のみで、比較的シンプル。R&Dマイルストーンは真に一過性か継続的に発生する可能性を注視する必要があるが、税効果調整は標準的で妥当。全体として非GAAP調整の健全性は良好で、Adjusted EPSがGAAPを上回る合理的な水準。",
+        "health": "Caution",
+        "comment": "マイルストーン型の成功報酬R&D費用（約1.43億ドル）を加算調整しており、一過性と説明されていますが、研究開発はPalantirの事業コアであるため調整の妥当性に注意が必要です。一過性税効果の調整は比較的標準的です。調整後EPSはGAAP比で約18%上昇しており、過度に積極的とは言えませんが、R&Dの実態を反映した健全性評価には慎重を要します。",
         "sources": [
           {
             "item": "milestone_rd",
@@ -169,9 +169,9 @@
     },
     {
       "gaap_eps": 0.03223780794820342,
-      "adjusted_eps": 0.08980331464841534,
+      "adjusted_eps": 0.08728905206343351,
       "gaap_net_income": 79009000.0,
-      "adjusted_net_income": 220091580.0,
+      "adjusted_net_income": 213929580.0,
       "diluted_shares_used": 2450818000.0,
       "adjustments": [
         {
@@ -188,19 +188,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 7800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 6162000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -566000.0,
@@ -214,7 +201,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 141082580.0,
+      "net_adjustment_total": 134920580.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -323,9 +310,9 @@
     },
     {
       "gaap_eps": 0.040641412890835955,
-      "adjusted_eps": 0.07942052554323963,
+      "adjusted_eps": 0.076120159604722,
       "gaap_net_income": 93391000.0,
-      "adjusted_net_income": 182502570.0,
+      "adjusted_net_income": 174918570.0,
       "diluted_shares_used": 2297927000.0,
       "adjustments": [
         {
@@ -342,19 +329,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 9600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 7584000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -4806000.0,
@@ -368,7 +342,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 89111570.0,
+      "net_adjustment_total": 81527570.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",

@@ -1,6 +1,6 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-03-20T05:34:28.947335",
+  "last_updated": "2026-03-20T05:43:24.906676",
   "quarters": [
     {
       "gaap_eps": 0.23809523809523808,
@@ -98,7 +98,7 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目の総額が大きく、GAAP EPSの約5倍に調整後EPSが上昇しています。株式報酬とマイルストーン型R&Dの加算が大部分を占めており、SBCは継続的な性質、R&Dもコア事業に関連するため調整の妥当性に注意が必要です。一過性項目の説明はあるものの、収益の質を過大評価するリスクがあります。",
+        "comment": "調整項目総額は約34.7億ドルと非常に大きく、GAAP EPSを0.24から1.22へ大幅に引き上げています。株式報酬（22.5億ドル）とマイルストーン型R&D（17.8億ドル）の加算戻しが主因ですが、テスラの成長企業特性上、これらは繰り返し発生する可能性が高く、非一過性と見なされるリスクがあります。投資損益やリストラは比較的妥当ですが、全体として調整後EPSの信頼性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
@@ -109,8 +109,8 @@
             "snippet": "成功報酬型の一過性R&D費用"
           },
           {
-            "item": "リストラ費用",
-            "snippet": "一過性の事業再編費用"
+            "item": "一過性税効果",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響"
           }
         ]
       }
@@ -1093,9 +1093,9 @@
     },
     {
       "gaap_eps": 2.0558015943312666,
-      "adjusted_eps": 3.657068201948627,
+      "adjusted_eps": 3.621381753764393,
       "gaap_net_income": 2321000000.0,
-      "adjusted_net_income": 4128830000.0,
+      "adjusted_net_income": 4088540000.0,
       "diluted_shares_used": 1129000000.0,
       "adjustments": [
         {
@@ -1151,19 +1151,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 51000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 40290000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -149000000.0,
@@ -1177,7 +1164,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1807830000.0,
+      "net_adjustment_total": 1767540000.0,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",

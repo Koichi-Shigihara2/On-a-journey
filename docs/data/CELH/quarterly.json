@@ -1,12 +1,12 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-03-20T05:34:36.579181",
+  "last_updated": "2026-03-20T05:43:34.778530",
   "quarters": [
     {
       "gaap_eps": 0.09704955847334952,
-      "adjusted_eps": 0.26310131771481027,
+      "adjusted_eps": 0.24481650458395282,
       "gaap_net_income": 24739000.0,
-      "adjusted_net_income": 67067420.0,
+      "adjusted_net_income": 62406420.0,
       "diluted_shares_used": 254911000.0,
       "adjustments": [
         {
@@ -62,19 +62,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 5900000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 4661000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 80754000.0,
@@ -101,7 +88,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 42328420.0,
+      "net_adjustment_total": 37667420.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -113,8 +100,8 @@
       "revenue": 721628000.0,
       "diluted_shares": 254911000.0,
       "maturity_monitor": {
-        "alert": "SBC寄与率が20%超（現在 54.4%）",
-        "sbc_contribution": 0.544,
+        "alert": "SBC寄与率が20%超（現在 61.1%）",
+        "sbc_contribution": 0.611,
         "sbc_to_revenue": 0.032,
         "sbc_per_share": 0.0903,
         "sector_threshold": {
@@ -124,28 +111,28 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目の総額は大きいものの、リストラ費用が80.75百万ドルと突出して巨額であり、調整後EPSがGAAP EPSの約2.7倍となる大幅な上方修正となっています。また貸倒引当金やIPR&D償却などの項目がCELHの飲料事業内容と必ずしも整合しない可能性があり、調整の積極性と持続可能性に懸念があります。一過性項目の判定についても慎重な検証が必要です。",
+        "comment": "調整項目の総額は大きく、GAAP EPSを2倍以上に引き上げる要因となっています。株式報酬と無形資産償却は標準的な調整ですが、8,075万ドルの大規模リストラ費用、異常変動とされる貸倒引当金、マイルストーン型R&D費用など、主観的判断の余地が大きい項目が多く含まれています。特にリストラの規模が突出しており、一過性と言えるか継続的な監視が必要です。税効果の一過性調整も含め、Adjusted EPSの健全性は「要注意」と判断します。",
         "sources": [
           {
             "item": "リストラ費用",
-            "snippet": "一過性の事業再編費用"
+            "snippet": "一過性の事業再編費用 amount: 80754000.0"
           },
           {
             "item": "貸倒引当金繰入（異常変動分）",
-            "snippet": "マクロ変動による一時的影響"
+            "snippet": "マクロ変動による一時的影響 amount: 8523000.0"
           },
           {
             "item": "一過性税効果",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響"
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響 amount: -57605000.0"
           }
         ]
       }
     },
     {
       "gaap_eps": -0.23669203733445057,
-      "adjusted_eps": 0.47768067331779124,
+      "adjusted_eps": 0.4620860098862749,
       "gaap_net_income": -61014000.0,
-      "adjusted_net_income": 123135568.60651359,
+      "adjusted_net_income": 119115607.45646417,
       "diluted_shares_used": 257778000.0,
       "adjustments": [
         {
@@ -175,19 +162,6 @@
           "tax_rate_applied": 0.3069032499914803
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 5800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 4019961.150049414,
-          "tax_rate_applied": 0.3069032499914803
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 246707000,
@@ -201,7 +175,7 @@
           "tax_rate_applied": 0.3069032499914803
         }
       ],
-      "net_adjustment_total": 184149568.6065136,
+      "net_adjustment_total": 180129607.45646417,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -215,9 +189,9 @@
     },
     {
       "gaap_eps": 0.38374626745218304,
-      "adjusted_eps": 0.45210713846944406,
+      "adjusted_eps": 0.43491540053855415,
       "gaap_net_income": 99855000.0,
-      "adjusted_net_income": 117643250.60827251,
+      "adjusted_net_income": 113169771.28953771,
       "diluted_shares_used": 260211000.0,
       "adjustments": [
         {
@@ -245,22 +219,9 @@
           "category": "買収・統合関連",
           "net_amount": 4473479.318734794,
           "tax_rate_applied": 0.22871046228710462
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 5800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 4473479.318734794,
-          "tax_rate_applied": 0.22871046228710462
         }
       ],
-      "net_adjustment_total": 17788250.608272508,
+      "net_adjustment_total": 13314771.289537713,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -274,9 +235,9 @@
     },
     {
       "gaap_eps": 0.1872860202722075,
-      "adjusted_eps": 0.21146825437621036,
+      "adjusted_eps": 0.21085413137759673,
       "gaap_net_income": 44419000.0,
-      "adjusted_net_income": 50154348.826914564,
+      "adjusted_net_income": 50008696.04708737,
       "diluted_shares_used": 237172000.0,
       "adjustments": [
         {
@@ -319,19 +280,6 @@
           "tax_rate_applied": 0.2717361008640336
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 145652.7798271933,
-          "tax_rate_applied": 0.2717361008640336
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 269000,
@@ -345,7 +293,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 5735348.826914564,
+      "net_adjustment_total": 5589696.04708737,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -359,9 +307,9 @@
     },
     {
       "gaap_eps": -0.07951003352934238,
-      "adjusted_eps": -0.08785917676197537,
+      "adjusted_eps": -0.08885747502148236,
       "gaap_net_income": -18876000.0,
-      "adjusted_net_income": -20858120.0,
+      "adjusted_net_income": -21095120.0,
       "diluted_shares_used": 237404000.0,
       "adjustments": [
         {
@@ -417,19 +365,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 300000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 237000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -16180000.0,
@@ -443,7 +378,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": -1982120.0,
+      "net_adjustment_total": -2219120.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -457,9 +392,9 @@
     },
     {
       "gaap_eps": 0.027197726961522662,
-      "adjusted_eps": 0.04674682098304035,
+      "adjusted_eps": 0.04641412707525414,
       "gaap_net_income": 6356000.0,
-      "adjusted_net_income": 10924545.076452598,
+      "adjusted_net_income": 10846795.840978593,
       "diluted_shares_used": 233696000.0,
       "adjustments": [
         {
@@ -500,22 +435,9 @@
           "category": "研究開発関連",
           "net_amount": 233247.70642201835,
           "tax_rate_applied": 0.22250764525993882
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 77749.23547400611,
-          "tax_rate_applied": 0.22250764525993882
         }
       ],
-      "net_adjustment_total": 4568545.076452599,
+      "net_adjustment_total": 4490795.840978593,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -529,9 +451,9 @@
     },
     {
       "gaap_eps": 0.3357941034112671,
-      "adjusted_eps": 0.3637440498574324,
+      "adjusted_eps": 0.3634231181035438,
       "gaap_net_income": 79783000.0,
-      "adjusted_net_income": 86423767.52587666,
+      "adjusted_net_income": 86347515.74581148,
       "diluted_shares_used": 237595000.0,
       "adjustments": [
         {
@@ -572,22 +494,9 @@
           "category": "研究開発関連",
           "net_amount": 152503.5601303629,
           "tax_rate_applied": 0.23748219934818554
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 76251.78006518145,
-          "tax_rate_applied": 0.23748219934818554
         }
       ],
-      "net_adjustment_total": 6640767.525876653,
+      "net_adjustment_total": 6564515.745811472,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -601,9 +510,9 @@
     },
     {
       "gaap_eps": 0.3275935383099742,
-      "adjusted_eps": 0.3767617455253307,
+      "adjusted_eps": 0.3764074409663166,
       "gaap_net_income": 77811000.0,
-      "adjusted_net_income": 89489580.08241312,
+      "adjusted_net_income": 89405424.60064243,
       "diluted_shares_used": 237523000.0,
       "adjustments": [
         {
@@ -659,19 +568,6 @@
           "tax_rate_applied": 0.15844518229307492
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 84155.48177069251,
-          "tax_rate_applied": 0.15844518229307492
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 6450000,
@@ -685,7 +581,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 11678580.082413126,
+      "net_adjustment_total": 11594424.600642432,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -699,9 +595,9 @@
     },
     {
       "gaap_eps": 0.21149204098512855,
-      "adjusted_eps": 0.09439366317246502,
+      "adjusted_eps": 0.09372689522459107,
       "gaap_net_income": 50116000.0,
-      "adjusted_net_income": 22367900.0,
+      "adjusted_net_income": 22209900.0,
       "diluted_shares_used": 236964000.0,
       "adjustments": [
         {
@@ -757,19 +653,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 158000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -42055000.0,
@@ -783,7 +666,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": -27748100.0,
+      "net_adjustment_total": -27906100.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -797,9 +680,9 @@
     },
     {
       "gaap_eps": 0.353807639301564,
-      "adjusted_eps": 0.3729901643251316,
+      "adjusted_eps": 0.372652384345847,
       "gaap_net_income": 83949000.0,
-      "adjusted_net_income": 88500495.25991695,
+      "adjusted_net_income": 88420349.19089216,
       "diluted_shares_used": 237273000.0,
       "adjustments": [
         {
@@ -840,22 +723,9 @@
           "category": "研究開発関連",
           "net_amount": 400730.3451238723,
           "tax_rate_applied": 0.19853930975225548
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 80146.06902477446,
-          "tax_rate_applied": 0.19853930975225548
         }
       ],
-      "net_adjustment_total": 4551495.259916941,
+      "net_adjustment_total": 4471349.190892166,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -869,9 +739,9 @@
     },
     {
       "gaap_eps": 0.21749172409133902,
-      "adjusted_eps": 0.25394753939436066,
+      "adjusted_eps": 0.2536343989090229,
       "gaap_net_income": 51509000.0,
-      "adjusted_net_income": 60142903.64984523,
+      "adjusted_net_income": 60068741.962421715,
       "diluted_shares_used": 236832000.0,
       "adjustments": [
         {
@@ -912,22 +782,9 @@
           "category": "研究開発関連",
           "net_amount": 148323.37484702325,
           "tax_rate_applied": 0.25838312576488376
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 74161.68742351163,
-          "tax_rate_applied": 0.25838312576488376
         }
       ],
-      "net_adjustment_total": 8633903.649845224,
+      "net_adjustment_total": 8559741.962421712,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -941,9 +798,9 @@
     },
     {
       "gaap_eps": 0.17448587886252154,
-      "adjusted_eps": 0.19848277129349767,
+      "adjusted_eps": 0.19813214457767395,
       "gaap_net_income": 41227000.0,
-      "adjusted_net_income": 46896913.75291375,
+      "adjusted_net_income": 46814068.72437907,
       "diluted_shares_used": 236277000.0,
       "adjustments": [
         {
@@ -997,22 +854,9 @@
           "category": "研究開発関連",
           "net_amount": 248535.08560405113,
           "tax_rate_applied": 0.17154971465316293
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 82845.0285346837,
-          "tax_rate_applied": 0.17154971465316293
         }
       ],
-      "net_adjustment_total": 5669913.752913753,
+      "net_adjustment_total": 5587068.724379069,
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1026,9 +870,9 @@
     },
     {
       "gaap_eps": -0.2805456780658039,
-      "adjusted_eps": 0.18288516702137503,
+      "adjusted_eps": 0.18079657364935425,
       "gaap_net_income": -21223000.0,
-      "adjusted_net_income": 13835080.0,
+      "adjusted_net_income": 13677080.0,
       "diluted_shares_used": 75649000.0,
       "adjustments": [
         {
@@ -1084,19 +928,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 158000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 20244000.0,
@@ -1110,7 +941,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 35058080.0,
+      "net_adjustment_total": 34900080.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1124,9 +955,9 @@
     },
     {
       "gaap_eps": -2.3998100163597025,
-      "adjusted_eps": -2.3342133587092793,
+      "adjusted_eps": -2.335212850674088,
       "gaap_net_income": -181896000.0,
-      "adjusted_net_income": -176924035.73672852,
+      "adjusted_net_income": -176999793.22969317,
       "diluted_shares_used": 75796000.0,
       "adjustments": [
         {
@@ -1167,22 +998,9 @@
           "category": "研究開発関連",
           "net_amount": 75757.49296467309,
           "tax_rate_applied": 0.24242507035326905
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 75757.49296467309,
-          "tax_rate_applied": 0.24242507035326905
         }
       ],
-      "net_adjustment_total": 4971964.263271494,
+      "net_adjustment_total": 4896206.770306821,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1196,9 +1014,9 @@
     },
     {
       "gaap_eps": 0.11685295768897055,
-      "adjusted_eps": 0.20294023442223033,
+      "adjusted_eps": 0.20196385609929446,
       "gaap_net_income": 9158000.0,
-      "adjusted_net_income": 15904832.052139036,
+      "adjusted_net_income": 15828311.330213904,
       "diluted_shares_used": 78372000.0,
       "adjustments": [
         {
@@ -1239,22 +1057,9 @@
           "category": "研究開発関連",
           "net_amount": 76520.72192513368,
           "tax_rate_applied": 0.2347927807486631
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 76520.72192513368,
-          "tax_rate_applied": 0.2347927807486631
         }
       ],
-      "net_adjustment_total": 6746832.052139037,
+      "net_adjustment_total": 6670311.330213903,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1268,9 +1073,9 @@
     },
     {
       "gaap_eps": 0.0853121128127834,
-      "adjusted_eps": 0.12839345392910922,
+      "adjusted_eps": 0.12754288450924098,
       "gaap_net_income": 6679000.0,
-      "adjusted_net_income": 10051795.114656031,
+      "adjusted_net_income": 9985204.885343967,
       "diluted_shares_used": 78289000.0,
       "adjustments": [
         {
@@ -1324,22 +1129,9 @@
           "category": "研究開発関連",
           "net_amount": 66590.2293120638,
           "tax_rate_applied": 0.3340977068793619
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 66590.2293120638,
-          "tax_rate_applied": 0.3340977068793619
         }
       ],
-      "net_adjustment_total": 3372795.114656031,
+      "net_adjustment_total": 3306204.8853439675,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1353,9 +1145,9 @@
     },
     {
       "gaap_eps": 0.036802409896929324,
-      "adjusted_eps": 0.25742051532078986,
+      "adjusted_eps": 0.2566648962317606,
       "gaap_net_income": 2745791.0,
-      "adjusted_net_income": 19205887.22756881,
+      "adjusted_net_income": 19149511.242955428,
       "diluted_shares_used": 74609000.0,
       "adjustments": [
         {
@@ -1396,22 +1188,9 @@
           "category": "研究開発関連",
           "net_amount": 169127.95384014258,
           "tax_rate_applied": 0.4362401538661914
-        },
-        {
-          "item_id": "iprd_amortization",
-          "item_name": "IPR&D償却",
-          "amount": 100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収に伴うIPR&D償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "研究開発関連",
-          "net_amount": 56375.98461338086,
-          "tax_rate_applied": 0.4362401538661914
         }
       ],
-      "net_adjustment_total": 16460096.227568809,
+      "net_adjustment_total": 16403720.242955428,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
