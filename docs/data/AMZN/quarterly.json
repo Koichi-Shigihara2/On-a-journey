@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-03-20T10:41:53.916901",
+  "last_updated": "2026-03-20T10:53:42.610737",
   "quarters": [
     {
       "gaap_eps": 1.9573288999722915,
@@ -74,7 +74,7 @@
       "quarter": 4,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用（43.97億ドル）と貸倒引当金の異常変動分（16億ドル）が大きく、継続的な性質を持つ項目を大幅に加算しているため調整の健全性に注意が必要。無形資産償却と一過性税効果は比較的標準的だが、全体として調整幅がGAAP EPS比で約29%と大きく、主観的判断の余地がある。",
+        "comment": "株式報酬費用（43.97億ドル）と無形資産償却費はAmazonにとって経常的な項目であり、調整後EPSを構造的に押し上げている可能性が高いです。貸倒引当金の異常変動分と一過性税効果は一時的と見なせますが、全体として調整の質は中程度で持続可能性に注意が必要です。",
         "sources": [
           {
             "item": "株式報酬費用",
@@ -85,8 +85,8 @@
             "snippet": "マクロ変動による一時的影響"
           },
           {
-            "item": "無形資産償却費",
-            "snippet": "買収関連無形資産の償却"
+            "item": "一過性税効果",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響"
           }
         ]
       }
@@ -639,6 +639,77 @@
       "quarter": 1
     },
     {
+      "gaap_eps": 0.02728432623417411,
+      "adjusted_eps": 0.3023751104131907,
+      "gaap_net_income": 278000000.0,
+      "adjusted_net_income": 3080900000.0,
+      "diluted_shares_used": 10189000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 5606000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 4428740000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 604000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 477160000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1600000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 1264000000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -3367000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -3367000000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 2802900000.0,
+      "filing_date": "2022-12-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 149204000000.0,
+      "diluted_shares": 10189000000.0,
+      "period_end": "2022-12-31",
+      "fiscal_year": 2022,
+      "quarter": 4
+    },
+    {
       "gaap_eps": 0.27799825767108705,
       "adjusted_eps": 0.4227331037984436,
       "gaap_net_income": 2872000000.0,
@@ -685,22 +756,22 @@
     },
     {
       "gaap_eps": -0.1993120393120393,
-      "adjusted_eps": 0.7542393479954456,
+      "adjusted_eps": -0.27044142146581174,
       "gaap_net_income": -2028000000.0,
-      "adjusted_net_income": 7674385365.853659,
+      "adjusted_net_income": -2751741463.414634,
       "diluted_shares_used": 10175000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 15319000000,
+          "amount": 1618000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 11657385365.853659,
+          "net_amount": 1231258536.5853658,
           "tax_rate_applied": 0.23902439024390243
         },
         {
@@ -717,7 +788,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 9702385365.853659,
+      "net_adjustment_total": -723741463.4146342,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": null,
@@ -726,6 +797,141 @@
       "diluted_shares": 10175000000.0,
       "period_end": "2022-06-30",
       "fiscal_year": 2022,
+      "quarter": 2
+    },
+    {
+      "gaap_eps": -0.37793727263789206,
+      "adjusted_eps": 0.40863845036805685,
+      "gaap_net_income": -3844000000.0,
+      "adjusted_net_income": 4156261678.6935062,
+      "diluted_shares_used": 10171000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 13701000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 10001261678.693506,
+          "tax_rate_applied": 0.27003418154196734
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -2001000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -2001000000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 8000261678.693506,
+      "filing_date": "2022-03-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 116444000000.0,
+      "diluted_shares": 10171000000.0,
+      "period_end": "2022-03-31",
+      "fiscal_year": 2022,
+      "quarter": 1
+    },
+    {
+      "gaap_eps": 0.30614026578717624,
+      "adjusted_eps": 0.45765990935756656,
+      "gaap_net_income": 3156000000.0,
+      "adjusted_net_income": 4718016005.567154,
+      "diluted_shares_used": 10309000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 892000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 653016005.5671538,
+          "tax_rate_applied": 0.26791927627000695
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 909000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 909000000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 1562016005.567154,
+      "filing_date": "2021-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 110812000000.0,
+      "diluted_shares": 10309000000.0,
+      "period_end": "2021-09-30",
+      "fiscal_year": 2021,
+      "quarter": 3
+    },
+    {
+      "gaap_eps": 0.756173439626677,
+      "adjusted_eps": 1.7642498338857284,
+      "gaap_net_income": 7778000000.0,
+      "adjusted_net_income": 18147073791.348602,
+      "diluted_shares_used": 10286000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 10747000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 9668073791.3486,
+          "tax_rate_applied": 0.10039324543141337
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 701000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 701000000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 10369073791.3486,
+      "filing_date": "2021-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 113080000000.0,
+      "diluted_shares": 10286000000.0,
+      "period_end": "2021-06-30",
+      "fiscal_year": 2021,
       "quarter": 2
     }
   ]
