@@ -104,8 +104,12 @@ def generate_summary(tickers_data: Dict[str, Dict]) -> Dict:
     return summary
 
 def get_revenue(period_data: Dict) -> float:
-    """売上高を取得（一般企業：Revenues、銀行：純金利収益＋非金利収益の合算）"""
-    # 一般企業系タグを優先チェック
+    """売上高を取得（一般企業：Revenues、銀行：RevenuesNetOfInterestExpense優先）"""
+    # ★ RevenuesNetOfInterestExpense を最優先（銀行・金融機関の総収益）
+    rev_net = normalize_value(period_data.get("us-gaap:RevenuesNetOfInterestExpense"))
+    if rev_net and rev_net > 0:
+        return rev_net
+    # 一般企業系タグ
     for tag in [
         "us-gaap:Revenues",
         "us-gaap:RevenueFromContractWithCustomer",
@@ -114,12 +118,11 @@ def get_revenue(period_data: Dict) -> float:
         "us-gaap:NetSales",
         "us-gaap:TotalRevenue",
         "us-gaap:SalesRevenueNet",
-        "us-gaap:RevenuesNetOfInterestExpense",
     ]:
         val = normalize_value(period_data.get(tag))
         if val and val > 0:
             return val
-    # 銀行系：純金利収益 ＋ 非金利収益 を合算
+    # 銀行系フォールバック：純金利収益 ＋ 非金利収益 を合算
     net_interest = normalize_value(
         period_data.get("us-gaap:NetInterestIncome") or
         period_data.get("us-gaap:InterestIncomeExpenseNet") or
