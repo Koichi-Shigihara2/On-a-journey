@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-03-20T04:33:15.862881",
+  "last_updated": "2026-03-20T04:58:57.870322",
   "quarters": [
     {
       "gaap_eps": -0.23669203733445057,
@@ -85,19 +85,15 @@
       },
       "ai_analysis": {
         "health": "Warning",
-        "comment": "調整項目に無形資産償却費とIPR&D償却が同額・同一ソースで重複計上されており、抽出エラーの可能性が高いです。また、2.46億ドルの極めて大規模なリストラ費用を加算しており、調整後EPSの黒字化は一時的要因に大きく依存しています。持続的な収益性を判断する上で注意が必要です。",
+        "comment": "GAAP EPSが赤字である一方、調整後EPSは大幅にプラス転換していますが、2.467億ドルの大規模リストラ費用を全額加算している点が懸念されます。また、無形資産償却費（5.8M）が同一ソースから2項目で重複計上されており、調整の正確性に問題がある可能性が高いです。調整の健全性は低く、投資判断には慎重を要します。",
         "sources": [
           {
             "item": "リストラ費用",
-            "snippet": "amount: 246707000, reason: 一過性の事業再編費用"
+            "snippet": "amount: 246707000, reason: 一過性の事業再編費用, category: リストラ・事業再編関連"
           },
           {
             "item": "無形資産償却費",
-            "snippet": "amount: 5800000, extracted_from: us-gaap:AmortizationOfIntangibleAssets"
-          },
-          {
-            "item": "IPR&D償却",
-            "snippet": "amount: 5800000, extracted_from: us-gaap:AmortizationOfIntangibleAssets"
+            "snippet": "amortization_intangiblesとiprd_amortizationの両方がamount:5800000、同一extracted_from:us-gaap:AmortizationOfIntangibleAssetsで計上"
           }
         ]
       }
