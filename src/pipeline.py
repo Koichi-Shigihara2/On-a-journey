@@ -178,7 +178,45 @@ def run():
         
         sector_exclusions = classifier.get_exclusions_for_sector(sector) if sector else []
         exclusion_item_ids = [ex['item_id'] for ex in sector_exclusions]
-        
+
+        # ★★★ YTD累計SBCタグを四半期差分に変換 ★★★
+        SBC_YTD_TAGS = [
+            'us-gaap:ShareBasedCompensation',
+            'us-gaap:AllocatedShareBasedCompensationExpense',
+            'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
+            'us-gaap:StockBasedCompensation',
+        ]
+        raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
+        for sbc_tag in SBC_YTD_TAGS:
+            ytd_by_fq = {}
+            for pd in raw_sorted:
+                val_dict = pd.get(sbc_tag)
+                if val_dict and normalize_value(val_dict) > 0:
+                    fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
+                    qn = pd.get('quarter', 0)
+                    ytd_by_fq[(fy, qn)] = normalize_value(val_dict)
+            if not ytd_by_fq:
+                continue
+            applied = 0
+            for pd in raw_sorted:
+                existing = normalize_value(pd.get(sbc_tag))
+                fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
+                qn = pd.get('quarter', 0)
+                ytd_val = ytd_by_fq.get((fy, qn), 0)
+                if existing > 0 or ytd_val <= 0:
+                    continue
+                if qn <= 1:
+                    qval = ytd_val
+                else:
+                    prev_ytd = ytd_by_fq.get((fy, qn - 1), 0)
+                    qval = ytd_val - prev_ytd
+                if qval > 0:
+                    pd[sbc_tag] = {'value': qval, 'unit': 'USD'}
+                    applied += 1
+            if applied:
+                print(f"  [pipeline YTD→Q diff] {sbc_tag}: {applied}四半期に注入")
+
+        quarterly_results = []
         quarterly_results = []
         for i, period_data in enumerate(quarterly_raw):
             print(f"\nProcessing quarter {i+1}/{len(quarterly_raw)}: {period_data['filing_date']} ({period_data['form']})")
