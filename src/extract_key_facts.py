@@ -436,12 +436,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     ytd_map[key] = {'val': it['val'], 'unit': it['unit'], 'is_quarterly': True}
 
             if not ytd_map:
-                print(f"  [YTD debug] {tag}: ytd_map empty, skip")
                 continue
-
-            # デバッグ: ytd_mapの内容とquarters_mapのキーを表示
-            print(f"  [YTD debug] {tag}: ytd_map keys={sorted(ytd_map.keys())}")
-            print(f"  [YTD debug] quarters_map keys={sorted(quarters_map.keys())[:6]}")
 
             # 各四半期に値を設定
             for (fy, qnum), qdata in quarters_map.items():
