@@ -189,8 +189,10 @@ def run():
         ]
         # filing_date順にソート（古い順）してYTD差分を計算
         raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
-        _sbc_sample = raw_sorted[0].get('us-gaap:ShareBasedCompensation')
-        print(f"  [YTD check] ShareBasedCompensation value: {_sbc_sample}")
+        
+        _latest = max(raw_sorted, key=lambda x: x['filing_date'])
+        print(f"  [YTD check] latest={_latest['filing_date']} SBC={_latest.get('us-gaap:ShareBasedCompensation')}")
+        
         for sbc_tag in SBC_YTD_TAGS:
             # fiscal_year × quarter → YTD値 のマップ（最大のYTD値を採用）
             ytd_by_fq = {}
