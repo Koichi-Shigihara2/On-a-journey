@@ -1,7 +1,132 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-20T04:59:09.989303",
+  "last_updated": "2026-03-20T05:26:56.570658",
   "quarters": [
+    {
+      "gaap_eps": 0.1386432139527564,
+      "adjusted_eps": 0.8208627004865922,
+      "gaap_net_income": 173549000.0,
+      "adjusted_net_income": 1027528840.0,
+      "diluted_shares_used": 1251767000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 262058000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 207025820.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 74579000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 58917410.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 648332000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 512182280.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "iprd_amortization",
+          "item_name": "IPR&D償却",
+          "amount": 74579000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収に伴うIPR&D償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "研究開発関連",
+          "net_amount": 58917410.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 948000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 748920.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 16188000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 16188000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 853979840.0,
+      "filing_date": "2025-12-31",
+      "form": "10-K",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 3613354000.0,
+      "diluted_shares": 1251767000.0,
+      "maturity_monitor": {
+        "alert": "SBC寄与率が30%超（現在 30.7%）",
+        "sbc_contribution": 0.307,
+        "sbc_to_revenue": 0.073,
+        "sbc_per_share": 0.2094,
+        "sector_threshold": {
+          "sbc_contribution": 0.3,
+          "sbc_to_revenue": 0.05
+        }
+      },
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "調整項目の中に648百万ドルの大規模なマイルストーン型R&D費用が含まれており、これが真に一過性かどうかの判断が難しい。SBCや無形資産償却の調整は標準的だが、全体の調整幅が非常に大きくGAAP EPSの約6倍に跳ね上がるため、Adjusted EPSの持続可能性に注意が必要。",
+        "sources": [
+          {
+            "item": "milestone_rd",
+            "snippet": "amount: 648332000, reason: 成功報酬型の一過性R&D費用, category: 研究開発関連"
+          },
+          {
+            "item": "sbc",
+            "snippet": "amount: 262058000, reason: 非現金費用, category: 株式報酬関連"
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "amount: 74579000, reason: 買収関連無形資産の償却"
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.10797119466836456,
       "adjusted_eps": 0.27776792912360654,
@@ -45,31 +170,7 @@
         "loan_loss_provision_abnormal"
       ],
       "revenue": 961600000.0,
-      "diluted_shares": 1291011000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が30%超（現在 30.3%）",
-        "sbc_contribution": 0.303,
-        "sbc_to_revenue": 0.069,
-        "sbc_per_share": 0.0515,
-        "sector_threshold": {
-          "sbc_contribution": 0.3,
-          "sbc_to_revenue": 0.05
-        }
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目として株式報酬（非現金）とマイルストーン型R&D（一過性）を加算し、Adjusted EPSがGAAPの約2.57倍に上昇。SBCは継続的に発生する項目であり、適用税率が約6%と低い点も考慮すると、調整の質に注意が必要。全体として過度に楽観的な調整の可能性あり。",
-        "sources": [
-          {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用"
-          },
-          {
-            "item": "マイルストーン型研究開発費",
-            "snippet": "成功報酬型の一過性R&D費用"
-          }
-        ]
-      }
+      "diluted_shares": 1291011000.0
     },
     {
       "gaap_eps": 0.08222579355249954,
@@ -173,6 +274,103 @@
       ],
       "revenue": 771759000.0,
       "diluted_shares": 1185466000.0
+    },
+    {
+      "gaap_eps": 0.30186673203860576,
+      "adjusted_eps": 0.7231017441596528,
+      "gaap_net_income": 332473000.0,
+      "adjusted_net_income": 796417030.0,
+      "diluted_shares_used": 1101390000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 246152000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 194460080.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 75494000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 59640260.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 551787000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 435911730.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "iprd_amortization",
+          "item_name": "IPR&D償却",
+          "amount": 75494000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収に伴うIPR&D償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "研究開発関連",
+          "net_amount": 59640260.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 1530000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 1208700.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -286917000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -286917000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 463944030.0,
+      "filing_date": "2024-12-31",
+      "form": "10-K",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 2674859000.0,
+      "diluted_shares": 1101390000.0
     },
     {
       "gaap_eps": 0.055000226357010275,
@@ -321,6 +519,116 @@
       ],
       "revenue": 644995000.0,
       "diluted_shares": 1042477000.0
+    },
+    {
+      "gaap_eps": 0.05070029109097063,
+      "adjusted_eps": 1.0809012967456832,
+      "gaap_net_income": 47913000.0,
+      "adjusted_net_income": 1021477840.0,
+      "diluted_shares_used": 945024160.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 271216000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 214260640.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 104919000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 82886010.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "goodwill_impairment",
+          "item_name": "のれん減損",
+          "amount": 247174000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金減損",
+          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
+          "category": "買収・統合関連",
+          "net_amount": 195267460.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 511419000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 404021010.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "iprd_amortization",
+          "item_name": "IPR&D償却",
+          "amount": 104919000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収に伴うIPR&D償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "研究開発関連",
+          "net_amount": 82886010.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 12749000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 10071710.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -15828000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -15828000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 973564840.0,
+      "filing_date": "2023-12-31",
+      "form": "10-K",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 2122789000.0,
+      "diluted_shares": 945024160.0
     },
     {
       "gaap_eps": -0.2803708329525663,
@@ -497,6 +805,90 @@
       "diluted_shares": 929270723.0
     },
     {
+      "gaap_eps": -0.044407388928194076,
+      "adjusted_eps": 0.7385501456830649,
+      "gaap_net_income": -40006000.0,
+      "adjusted_net_income": 665349570.0,
+      "diluted_shares_used": 900886113.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 305994000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 241735260.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 93016000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 73482640.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 405257000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 320153030.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "iprd_amortization",
+          "item_name": "IPR&D償却",
+          "amount": 93016000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収に伴うIPR&D償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "研究開発関連",
+          "net_amount": 73482640.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -3498000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -3498000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 705355570.0,
+      "filing_date": "2022-12-31",
+      "form": "10-K",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 1573535000.0,
+      "diluted_shares": 900886113.0
+    },
+    {
       "gaap_eps": -0.08094676834204996,
       "adjusted_eps": 0.12406162373155434,
       "gaap_net_income": -74209000.0,
@@ -643,6 +1035,90 @@
       ],
       "revenue": 330344000.0,
       "diluted_shares": 852853596.0
+    },
+    {
+      "gaap_eps": -0.43320340199706125,
+      "adjusted_eps": 0.5531315752523283,
+      "gaap_net_income": -228181341.0,
+      "adjusted_net_income": 291351139.0,
+      "diluted_shares_used": 526730261.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 239011000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 188818690.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 70507000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 55700530.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 276087000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 218108730.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "iprd_amortization",
+          "item_name": "IPR&D償却",
+          "amount": 70507000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収に伴うIPR&D償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "研究開発関連",
+          "net_amount": 55700530.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 1204000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 1204000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 519532480.0,
+      "filing_date": "2021-12-31",
+      "form": "10-K",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 984872000.0,
+      "diluted_shares": 526730261.0
     },
     {
       "gaap_eps": -0.03753220394130487,

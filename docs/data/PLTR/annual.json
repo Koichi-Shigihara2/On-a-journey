@@ -1,29 +1,31 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-19T15:56:20.949432",
+  "last_updated": "2026-03-20T05:26:02.215886",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": 1625033000.0,
-      "adjusted_net_income": 2183055187.1579046,
+      "adjusted_net_income": 2469769083.7054176,
       "diluted_shares_used": 2562996000.0,
       "gaap_eps": 0.6340364947896915,
-      "adjusted_eps": 0.851759108152297,
+      "adjusted_eps": 0.9636258049975176,
       "adjustments": [
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "amount": 143554000.0,
+          "amount": 557677000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 138387511.09280962,
-          "tax_rate_applied": 0.035989863794741846
+          "net_amount": 440564830.0,
+          "tax_rate_applied": 0.21
         },
         {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -3914000,
           "unit": "USD",
@@ -36,6 +38,7 @@
           "tax_rate_applied": 0.0
         },
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 144191000,
           "unit": "USD",
@@ -48,18 +51,7 @@
           "tax_rate_applied": 0.007829319581434938
         },
         {
-          "item_name": "減価償却費",
-          "amount": 4800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4762419.266009112,
-          "tax_rate_applied": 0.007829319581434938
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 135043000,
           "unit": "USD",
@@ -72,18 +64,7 @@
           "tax_rate_applied": 0.010886314304483793
         },
         {
-          "item_name": "減価償却費",
-          "amount": 5400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5341213.902755788,
-          "tax_rate_applied": 0.010886314304483793
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 134889000,
           "unit": "USD",
@@ -94,44 +75,34 @@
           "category": "研究開発関連",
           "net_amount": 131450291.66780496,
           "tax_rate_applied": 0.025492874379638483
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 5500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5359789.190911989,
-          "tax_rate_applied": 0.025492874379638483
         }
       ],
-      "net_adjustment_total": 558022187.1579044
+      "net_adjustment_total": 844736083.7054179
     },
     {
       "year": "2024",
       "filing_date": "2024-12-31",
       "gaap_net_income": 462190000.0,
-      "adjusted_net_income": 946246277.1911515,
+      "adjusted_net_income": 1190619064.6724756,
       "diluted_shares_used": 2431302500.0,
       "gaap_eps": 0.19009975105936017,
-      "adjusted_eps": 0.3891931494296376,
+      "adjusted_eps": 0.48970420779498874,
       "adjustments": [
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "amount": 171502000.0,
+          "amount": 507878000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 135145231.76813212,
-          "tax_rate_applied": 0.2119903454879119
+          "net_amount": 401223620.0,
+          "tax_rate_applied": 0.21
         },
         {
+          "item_id": "iprd_amortization",
           "item_name": "IPR&D償却",
           "amount": 7800000,
           "unit": "USD",
@@ -140,22 +111,11 @@
           "reason": "買収に伴うIPR&D償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "研究開発関連",
-          "net_amount": 6146475.305194287,
-          "tax_rate_applied": 0.2119903454879119
+          "net_amount": 6162000.0,
+          "tax_rate_applied": 0.21
         },
         {
-          "item_name": "減価償却費",
-          "amount": 5600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4412854.065267693,
-          "tax_rate_applied": 0.2119903454879119
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -566000,
           "unit": "USD",
@@ -168,6 +128,7 @@
           "tax_rate_applied": 0.0
         },
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 117555000,
           "unit": "USD",
@@ -180,18 +141,7 @@
           "tax_rate_applied": 0.05160109426830719
         },
         {
-          "item_name": "減価償却費",
-          "amount": 6100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5785233.324963327,
-          "tax_rate_applied": 0.05160109426830719
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 108781000,
           "unit": "USD",
@@ -204,18 +154,7 @@
           "tax_rate_applied": 0.037246527653160104
         },
         {
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5776520.83408104,
-          "tax_rate_applied": 0.037246527653160104
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 110040000,
           "unit": "USD",
@@ -226,44 +165,34 @@
           "category": "研究開発関連",
           "net_amount": 105391125.83382493,
           "tax_rate_applied": 0.04224712982710895
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5746517.221037346,
-          "tax_rate_applied": 0.04224712982710895
         }
       ],
-      "net_adjustment_total": 484056277.1911515
+      "net_adjustment_total": 728429064.6724756
     },
     {
       "year": "2023",
       "filing_date": "2023-12-31",
       "gaap_net_income": 209825000.0,
-      "adjusted_net_income": 595595568.2738162,
+      "adjusted_net_income": 803424791.2968742,
       "diluted_shares_used": 2279780250.0,
       "gaap_eps": 0.09203737947988627,
-      "adjusted_eps": 0.26125130624928267,
+      "adjusted_eps": 0.35241326057494976,
       "adjustments": [
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "amount": 109283000.0,
+          "amount": 404624000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 90233572.21922605,
-          "tax_rate_applied": 0.17431281883526217
+          "net_amount": 319652960.0,
+          "tax_rate_applied": 0.21
         },
         {
+          "item_id": "iprd_amortization",
           "item_name": "IPR&D償却",
           "amount": 9600000,
           "unit": "USD",
@@ -272,22 +201,11 @@
           "reason": "買収に伴うIPR&D償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "研究開発関連",
-          "net_amount": 7926596.939181483,
-          "tax_rate_applied": 0.17431281883526217
+          "net_amount": 7584000.0,
+          "tax_rate_applied": 0.21
         },
         {
-          "item_name": "減価償却費",
-          "amount": 5500000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4541279.496406058,
-          "tax_rate_applied": 0.17431281883526217
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -4806000,
           "unit": "USD",
@@ -300,6 +218,7 @@
           "tax_rate_applied": 0.0
         },
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 105708000,
           "unit": "USD",
@@ -312,18 +231,7 @@
           "tax_rate_applied": 0.08368039982059332
         },
         {
-          "item_name": "減価償却費",
-          "amount": 6300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5772813.481130262,
-          "tax_rate_applied": 0.08368039982059332
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 99533000,
           "unit": "USD",
@@ -336,18 +244,7 @@
           "tax_rate_applied": 0.07165489471252227
         },
         {
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5570070.631724866,
-          "tax_rate_applied": 0.07165489471252227
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 90100000,
           "unit": "USD",
@@ -358,68 +255,47 @@
           "category": "研究開発関連",
           "net_amount": 81905545.63653088,
           "tax_rate_applied": 0.0909484391062057
-        },
-        {
-          "item_name": "減価償却費",
-          "amount": 5900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5363404.209273387,
-          "tax_rate_applied": 0.0909484391062057
         }
       ],
-      "net_adjustment_total": 385770568.2738162
+      "net_adjustment_total": 593599791.2968742
     },
     {
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": -373705000.0,
-      "adjusted_net_income": -20438572.360500336,
+      "adjusted_net_income": 183903950.7042961,
       "diluted_shares_used": 2057041000.0,
       "gaap_eps": -0.1816711480228153,
-      "adjusted_eps": -0.009935909085186117,
+      "adjusted_eps": 0.08940218046421831,
       "adjustments": [
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "amount": 82044000.0,
+          "amount": 359679000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 61872136.57345219,
-          "tax_rate_applied": 0.24586640615459762
+          "net_amount": 284146410.0,
+          "tax_rate_applied": 0.21
         },
         {
-          "item_name": "減価償却費",
-          "amount": 5600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4223148.125534253,
-          "tax_rate_applied": 0.24586640615459762
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
-          "amount": -171000.0,
+          "amount": -174000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
           "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
           "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": -171000.0,
+          "net_amount": -174000,
           "tax_rate_applied": 0.0
         },
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 100863000,
           "unit": "USD",
@@ -432,18 +308,7 @@
           "tax_rate_applied": 0.008926607970418395
         },
         {
-          "item_name": "減価償却費",
-          "amount": 5500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5450903.656162699,
-          "tax_rate_applied": 0.008926607970418395
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 88171000,
           "unit": "USD",
@@ -456,18 +321,7 @@
           "tax_rate_applied": 0.01464289553640638
         },
         {
-          "item_name": "減価償却費",
-          "amount": 4500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4434106.970086171,
-          "tax_rate_applied": 0.01464289553640638
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 88601000,
           "unit": "USD",
@@ -480,18 +334,7 @@
           "tax_rate_applied": 0.020361125649180724
         },
         {
-          "item_name": "減価償却費",
-          "amount": 3900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3820591.609968195,
-          "tax_rate_applied": 0.020361125649180724
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -3000,
           "unit": "USD",
@@ -504,54 +347,45 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 353266427.63949966
+      "net_adjustment_total": 557608950.7042961
     },
     {
       "year": "2021",
       "filing_date": "2021-12-31",
       "gaap_net_income": -520379000.0,
-      "adjusted_net_income": -107710717.67802918,
+      "adjusted_net_income": 125986556.53406906,
       "diluted_shares_used": 1900944000.0,
       "gaap_eps": -0.2737476748394482,
-      "adjusted_eps": -0.05666169949142593,
+      "adjusted_eps": 0.066275785364571,
       "adjustments": [
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
-          "amount": 84176000.0,
+          "amount": 387487000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 62583988.86591635,
-          "tax_rate_applied": 0.2565103014408341
+          "net_amount": 306114730.0,
+          "tax_rate_applied": 0.21
         },
         {
-          "item_name": "減価償却費",
-          "amount": 3400000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 2527864.975101164,
-          "tax_rate_applied": 0.2565103014408341
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
-          "amount": 41470000.0,
+          "amount": 43316000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": false,
           "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
           "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
           "category": "税効果関連",
-          "net_amount": 41470000.0,
+          "net_amount": 43316000,
           "tax_rate_applied": 0.0
         },
         {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 94316000,
           "unit": "USD",
@@ -564,18 +398,7 @@
           "tax_rate_applied": 0.014280181531097627
         },
         {
-          "item_name": "減価償却費",
-          "amount": 3100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3055731.437253597,
-          "tax_rate_applied": 0.014280181531097627
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 110524000,
           "unit": "USD",
@@ -588,18 +411,7 @@
           "tax_rate_applied": 0.039246816092511835
         },
         {
-          "item_name": "減価償却費",
-          "amount": 3100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 2978334.8701132135,
-          "tax_rate_applied": 0.039246816092511835
-        },
-        {
+          "item_id": "milestone_rd",
           "item_name": "マイルストーン型研究開発費",
           "amount": 98471000,
           "unit": "USD",
@@ -612,18 +424,7 @@
           "tax_rate_applied": 0.025770112650782575
         },
         {
-          "item_name": "減価償却費",
-          "amount": 3200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3117535.639517496,
-          "tax_rate_applied": 0.025770112650782575
-        },
-        {
+          "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 1846000,
           "unit": "USD",
@@ -636,7 +437,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 412668282.3219708
+      "net_adjustment_total": 646365556.5340691
     }
   ]
 }
