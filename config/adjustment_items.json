@@ -12,7 +12,11 @@
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "xbrl_tags": [
-            "us-gaap:ShareBasedCompensation"
+            "us-gaap:ShareBasedCompensation",
+            "us-gaap:AllocatedShareBasedCompensationExpense",
+            "us-gaap:EmployeeBenefitsAndShareBasedCompensation",
+            "us-gaap:ShareBasedCompensationArrangementByShareBasedPaymentAwardEquityInstrumentsOtherThanOptionsGrantsInPeriodWeightedAverageGrantDateFairValue",
+            "us-gaap:StockBasedCompensation"
           ],
           "direction": "add_back",
           "pre_tax": true,
@@ -75,7 +79,10 @@
           "item_id": "loan_fair_value",
           "item_name": "ローン公正価値評価損益",
           "xbrl_tags": [
-            "us-gaap:LoansHeldForSaleFairValueDisclosure"
+            "us-gaap:LoansHeldForSaleFairValueDisclosure",
+            "us-gaap:FairValueOptionChangesInFairValueGainLoss1",
+            "us-gaap:GainLossOnSaleOfLoansAndLeases",
+            "us-gaap:GainLossOnSalesOfLoansNet"
           ],
           "direction": "add_back",
           "pre_tax": true,
@@ -89,7 +96,10 @@
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "xbrl_tags": [
-            "us-gaap:ProvisionForLoanLosses"
+            "us-gaap:ProvisionForLoanLosses",
+            "us-gaap:ProvisionForLoanAndLeaseLosses",
+            "us-gaap:ProvisionForLoanLeaseAndOtherLosses",
+            "us-gaap:ProvisionForDoubtfulAccounts"
           ],
           "direction": "add_back",
           "pre_tax": true,
@@ -102,7 +112,10 @@
           "item_id": "investment_gains",
           "item_name": "投資有価証券評価損益",
           "xbrl_tags": [
-            "us-gaap:InvestmentGainsLosses"
+            "us-gaap:InvestmentGainsLosses",
+            "us-gaap:GainLossOnInvestments",
+            "us-gaap:RealizedInvestmentGainsLosses",
+            "us-gaap:UnrealizedGainLossOnInvestments"
           ],
           "direction": "add_back",
           "pre_tax": true,
@@ -330,26 +343,6 @@
           ]
         }
       ]
-    },
-    {
-  "item_id": "loan_fair_value",
-  "item_name": "ローン公正価値評価損益",
-  "reason_default": "市場金利変動による一時的評価替え",
-  "xbrl_tags": [
-    "us-gaap:FairValueOptionChangesInFairValueGainLoss1",
-    "us-gaap:GainLossOnSaleOfLoansAndLeases",
-    "us-gaap:GainLossOnSalesOfLoansNet"
-  ]
-},
-{
-  "item_id": "loan_loss_provision_abnormal",
-  "item_name": "貸倒引当金繰入（異常変動）",
-  "reason_default": "マクロ変動による一時的な貸倒引当金の増加",
-  "xbrl_tags": [
-    "us-gaap:ProvisionForLoanAndLeaseLosses",
-    "us-gaap:ProvisionForLoanLeaseAndOtherLosses",
-    "us-gaap:ProvisionForDoubtfulAccounts"
-  ]
-}
+    }
   ]
 }
