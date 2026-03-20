@@ -338,7 +338,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         
         tag_data_map = {}
         for tag in required_tags:
-            items = extract_value_from_facts(facts, tag, limit=years*6)
+            items = extract_value_from_facts(facts, tag, limit=years*8)  # ★ 大企業でも古い四半期が欠落しないよう拡張
             tag_data_map[tag] = items
             print(f"Extracted {len(items)} items for {tag}")
         
