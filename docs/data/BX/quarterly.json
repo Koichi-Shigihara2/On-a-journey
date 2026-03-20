@@ -1,6 +1,6 @@
 {
   "ticker": "BX",
-  "last_updated": "2026-03-20T12:26:17.936641",
+  "last_updated": "2026-03-20T12:35:01.666508",
   "quarters": [
     {
       "gaap_eps": 1.3011796571332435,
@@ -74,27 +74,27 @@
       "quarter": 4,
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用と無形資産償却は恒常的に発生する項目であり調整の妥当性は低い。投資評価損益の18億ドル超の大幅加算は非営業性変動を排除するが、Blackstoneの事業特性上コアに近い性質を持ちボラティリティ調整として過度となる可能性がある。一過性税効果は適切だが、全体としてGAAP EPS 1.30からAdjusted 4.04への大幅上方修正は投資家に注意を要する。",
+        "comment": "調整後EPSはGAAPの3倍超と大幅に上方修正されており、主に投資評価損益の1.78Bドルのadd_backが寄与しています。BXのような資産運用会社にとって投資損益は事業の核心部分である可能性が高く、恒常的な株式報酬・無形資産償却も調整対象に含まれるため、調整の健全性は限定的です。一過性税効果は適切ですが、全体として注意が必要です。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として株式報酬費用を加算。ただし恒常的に発生する報酬コストであり調整の正当性は限定的。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされていますが、運用会社の人材確保に必要な毎期発生する継続的コストです。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却を加算。過去のM&Aによる定期的な非現金費用であり、毎期発生する可能性が高い。",
+            "snippet": "買収関連無形資産の償却は典型的には毎期発生する非現金項目であり、調整の正当性は限定的です。",
             "confidence": 0.2
           },
           {
             "item": "investment_gains",
-            "snippet": "非営業性の評価変動として投資有価証券の損益を加算。未実現損失の除外目的と思われるが、運用会社として事業の変動要因に含まれるべき性質を持つ。",
-            "confidence": 0.45
+            "snippet": "投資有価証券の評価変動（損失のadd_backと推定）は非営業性とされていますが、Blackstoneのコア事業である運用・投資活動と密接に関連しており一過性とは言いにくいです。",
+            "confidence": 0.4
           },
           {
             "item": "tax_one_time",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響を加算。明確に一時的な税効果項目であり調整は適切。",
-            "confidence": 0.95
+            "snippet": "法人税率変更等の一過性税効果は明確に非経常的な項目であり、適切な調整です。",
+            "confidence": 0.9
           }
         ]
       }
@@ -1251,6 +1251,251 @@
       "diluted_shares": 709912344.0,
       "period_end": "2021-03-31",
       "fiscal_year": 2021,
+      "quarter": 1
+    },
+    {
+      "gaap_eps": 1.0740209249514616,
+      "adjusted_eps": 4.154112165629938,
+      "gaap_net_income": 748870000.0,
+      "adjusted_net_income": 2896489170.0,
+      "diluted_shares_used": 697258296.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 88829000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 70174910.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 17953000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 14182870.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "investment_gains",
+          "item_name": "投資有価証券評価損益",
+          "amount": 2500941000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非営業性の評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "金融関連",
+          "net_amount": 1975743390.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 87518000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 87518000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 2147619170.0,
+      "filing_date": "2020-12-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 3628924000.0,
+      "diluted_shares": 697258296.0,
+      "period_end": "2020-12-31",
+      "fiscal_year": 2020,
+      "quarter": 4
+    },
+    {
+      "gaap_eps": 1.1344572073800692,
+      "adjusted_eps": 3.9965203372992275,
+      "gaap_net_income": 794719000.0,
+      "adjusted_net_income": 2799674262.965862,
+      "diluted_shares_used": 700527966.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 110751000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 98267263.12551707,
+          "tax_rate_applied": 0.11271895400026126
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 17700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 15704874.514195377,
+          "tax_rate_applied": 0.11271895400026126
+        },
+        {
+          "item_id": "investment_gains",
+          "item_name": "投資有価証券評価損益",
+          "amount": 2131211000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非営業性の評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "金融関連",
+          "net_amount": 1890983125.3261492,
+          "tax_rate_applied": 0.11271895400026126
+        }
+      ],
+      "net_adjustment_total": 2004955262.9658618,
+      "filing_date": "2020-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 3032898000.0,
+      "diluted_shares": 700527966.0,
+      "period_end": "2020-09-30",
+      "fiscal_year": 2020,
+      "quarter": 3
+    },
+    {
+      "gaap_eps": 0.4718202909704258,
+      "adjusted_eps": 1.671093129105767,
+      "gaap_net_income": 568266000.0,
+      "adjusted_net_income": 2012684545.9555304,
+      "diluted_shares_used": 1204411957.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 238721000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 189549572.76496094,
+          "tax_rate_applied": 0.20597864132204152
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 17700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 14054178.048599865,
+          "tax_rate_applied": 0.20597864132204152
+        },
+        {
+          "item_id": "investment_gains",
+          "item_name": "投資有価証券評価損益",
+          "amount": 1562697000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非営業性の評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "金融関連",
+          "net_amount": 1240814795.1419697,
+          "tax_rate_applied": 0.20597864132204152
+        }
+      ],
+      "net_adjustment_total": 1444418545.9555304,
+      "filing_date": "2020-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 2516069000.0,
+      "diluted_shares": 1204411957.0,
+      "period_end": "2020-06-30",
+      "fiscal_year": 2020,
+      "quarter": 2
+    },
+    {
+      "gaap_eps": -1.576938561564762,
+      "adjusted_eps": -6.802157135613398,
+      "gaap_net_income": -1066492000.0,
+      "adjusted_net_income": -4600335323.575431,
+      "diluted_shares_used": 676305359.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 118812000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 103421943.04090369,
+          "tax_rate_applied": 0.1295328498728774
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 17700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 15407268.55725007,
+          "tax_rate_applied": 0.1295328498728774
+        },
+        {
+          "item_id": "investment_gains",
+          "item_name": "投資有価証券評価損益",
+          "amount": -4196221000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非営業性の評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "金融関連",
+          "net_amount": -3652672535.1735845,
+          "tax_rate_applied": 0.1295328498728774
+        }
+      ],
+      "net_adjustment_total": -3533843323.575431,
+      "filing_date": "2020-03-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 0.0,
+      "diluted_shares": 676305359.0,
+      "period_end": "2020-03-31",
+      "fiscal_year": 2020,
       "quarter": 1
     }
   ]

@@ -1,6 +1,6 @@
 {
   "ticker": "APP",
-  "last_updated": "2026-03-20T12:25:54.678249",
+  "last_updated": "2026-03-20T12:34:26.325131",
   "years": [
     {
       "year": "2025",
@@ -490,6 +490,83 @@
         }
       ],
       "net_adjustment_total": 305310765.9227271
+    },
+    {
+      "year": "2020",
+      "filing_date": "2020-12-31",
+      "gaap_net_income": -125187000.0,
+      "adjusted_net_income": 26468032.923205614,
+      "diluted_shares_used": 214267101.0,
+      "gaap_eps": -0.5842567497097932,
+      "adjusted_eps": 0.12352821688293442,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 80702000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 63754580.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 686000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
+          "category": "税効果関連",
+          "net_amount": 686000.0,
+          "tax_rate_applied": 0.0
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 51136000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 48700642.09486795,
+          "tax_rate_applied": 0.04762511547895894
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 29702000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 28756924.14230108,
+          "tax_rate_applied": 0.03181859328324432
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 19112000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 9756886.686036576,
+          "tax_rate_applied": 0.4894889762433772
+        }
+      ],
+      "net_adjustment_total": 151655032.9232056
     }
   ]
 }

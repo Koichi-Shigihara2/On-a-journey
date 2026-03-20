@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-20T12:25:42.041217",
+  "last_updated": "2026-03-20T12:34:15.886089",
   "quarters": [
     {
       "gaap_eps": 0.1386432139527564,
@@ -100,21 +100,21 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用と無形資産償却が大きな割合を占めており、これらは恒常的に発生しやすい項目である。マイルストーン型R&Dは一過性の可能性があるが判断が難しく、全体として調整後EPSの健全性は注意を要する。リストラと税効果は一過性が高いが影響度は限定的。",
+        "comment": "株式報酬費用（約1.98億ドル）と無形資産償却（約0.75億ドル）が調整額の大きな部分を占めており、これらはフィンテック企業として恒常的に発生しやすい項目であるため調整の健全性に懸念。マイルストーン型R&D（1.73億ドル）は一過性とされるが規模が大きく判断が分かれる。リストラと税の一過性項目は適切だが、全体としてAdjusted EPSが実態を過度に上方修正している可能性がある。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが継続的に発生する株式報酬",
+            "snippet": "非現金費用であるが、テック企業では従業員報酬として恒常的に発生する株式報酬",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却、定期的に発生",
+            "snippet": "買収関連無形資産の償却は複数年にわたって継続的に発生",
             "confidence": 0.2
           },
           {
             "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用",
+            "snippet": "成功報酬型の一過性R&D費用だが研究開発の本質に関わる可能性",
             "confidence": 0.5
           },
           {
@@ -124,8 +124,8 @@
           },
           {
             "item": "tax_one_time",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響",
-            "confidence": 0.9
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+            "confidence": 0.85
           }
         ]
       }
@@ -1265,23 +1265,23 @@
     },
     {
       "gaap_eps": -0.7045536040133387,
-      "adjusted_eps": 0.9517699138629458,
+      "adjusted_eps": 0.3838553865723265,
       "gaap_net_income": -53067000.0,
-      "adjusted_net_income": 71687340.36879432,
+      "adjusted_net_income": 28912000.0,
       "diluted_shares_used": 75320032.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 69781000,
+          "amount": 26551000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 69527610.83687943,
-          "tax_rate_applied": 0.0036312056737588653
+          "net_amount": 26551000.0,
+          "tax_rate_applied": 0.0
         },
         {
           "item_id": "milestone_rd",
@@ -1293,11 +1293,11 @@
           "reason": "成功報酬型の一過性R&D費用",
           "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
           "category": "研究開発関連",
-          "net_amount": 55226729.5319149,
-          "tax_rate_applied": 0.0036312056737588653
+          "net_amount": 55428000.0,
+          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 124754340.36879432,
+      "net_adjustment_total": 81979000.0,
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -1310,6 +1310,54 @@
       "period_end": "2020-09-30",
       "fiscal_year": 2020,
       "quarter": 3
+    },
+    {
+      "gaap_eps": -0.031089177524650857,
+      "adjusted_eps": 0.9660344429000267,
+      "gaap_net_income": -2243000.0,
+      "adjusted_net_income": 69696770.0,
+      "diluted_shares_used": 72147293.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 43230000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 34151700.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 47833000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 37788070.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 71939770.0,
+      "filing_date": "2020-06-30",
+      "form": "10-Q",
+      "sector": "フィンテック / 銀行",
+      "sector_exclusions": [
+        "loan_fair_value",
+        "loan_loss_provision_abnormal"
+      ],
+      "revenue": 114952000.0,
+      "diluted_shares": 72147293.0,
+      "period_end": "2020-06-30",
+      "fiscal_year": 2020,
+      "quarter": 2
     }
   ]
 }
