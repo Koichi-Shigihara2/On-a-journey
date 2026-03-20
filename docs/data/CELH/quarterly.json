@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-03-20T11:18:30.091195",
+  "last_updated": "2026-03-20T11:42:59.669823",
   "quarters": [
     {
       "gaap_eps": 0.05648638152139374,
@@ -114,15 +114,32 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整後EPSはGAAP EPSの約3.6倍となっており、主に大規模なリストラ費用（約8075万ドル）のadd_backが寄与しています。この金額はGAAP純利益規模に対して極めて大きく、一過性と主張するものの事業の持続可能性に疑問を呈します。また、飲料会社のCELHにおいて「貸倒引当金繰入（異常変動分）」を金融関連として調整している点は抽出の妥当性に懸念があり、調整項目全体として積極的な利益調整の可能性があります。税効果の一過性項目も含め、調整後数値の信頼性には注意が必要です。",
+        "comment": "調整項目全体としてリストラ費用（80.7M）が極めて大きく、GAAP EPSを大幅に押し上げる主因となっている。株式報酬や無形資産償却は経常的な性質が強く、貸倒引当金の異常変動も飲料企業としては不自然。一過性税効果は妥当だが、全体として調整の積極性が高くコア収益性の見通しに注意が必要。",
         "sources": [
           {
-            "item": "リストラ費用",
-            "snippet": "amount: 80754000.0, reason: 一過性の事業再編費用, category: リストラ・事業再編関連"
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用",
+            "confidence": 0.75
           },
           {
-            "item": "貸倒引当金繰入（異常変動分）",
-            "snippet": "amount: 8523000.0, reason: マクロ変動による一時的影響, extracted_from: us-gaap:ProvisionForDoubtfulAccounts"
+            "item": "sbc",
+            "snippet": "非現金費用",
+            "confidence": 0.25
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却",
+            "confidence": 0.2
+          },
+          {
+            "item": "tax_one_time",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+            "confidence": 0.9
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響",
+            "confidence": 0.55
           }
         ]
       }

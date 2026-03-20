@@ -1,6 +1,6 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-20T11:18:12.571857",
+  "last_updated": "2026-03-20T11:42:36.742311",
   "quarters": [
     {
       "gaap_eps": 1.7524679774822551,
@@ -100,9 +100,35 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 503 Server Error: Service Unavailable for url: https://api.x.ai/v1/chat/completions",
-        "sources": []
+        "health": "Caution",
+        "comment": "調整項目の総額が非常に大きく、特に投資有価証券評価損益（91億ドル）とマイルストーン型R&D（55億ドル）がEPSに与える影響が大きい。株式報酬と無形資産償却は恒常的に発生する項目であり非GAAP調整として一般的だが、健全性を過度に高く見積もるリスクがある。一過性税効果は妥当。",
+        "sources": [
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "無形資産償却費",
+            "snippet": "買収関連無形資産の償却",
+            "confidence": 0.2
+          },
+          {
+            "item": "投資有価証券評価損益",
+            "snippet": "非営業性の評価変動",
+            "confidence": 0.65
+          },
+          {
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用",
+            "confidence": 0.5
+          },
+          {
+            "item": "一過性税効果",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+            "confidence": 0.85
+          }
+        ]
       }
     },
     {
