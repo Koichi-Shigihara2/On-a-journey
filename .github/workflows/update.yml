@@ -2,6 +2,11 @@ name: Update EPS Data
 
 on:
   workflow_dispatch:
+    inputs:
+      ticker:
+        description: '更新する銘柄（例: AMZN）。空欄の場合は全銘柄を更新'
+        required: false
+        default: ''
   schedule:
     - cron: '0 10 * * 1'  # 毎週月曜日10:00 UTC
 
@@ -30,7 +35,11 @@ jobs:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           HTTP2: "0"
         run: |
-          python src/pipeline.py
+          if [ -n "${{ github.event.inputs.ticker }}" ]; then
+            python src/pipeline.py --ticker ${{ github.event.inputs.ticker }}
+          else
+            python src/pipeline.py
+          fi
 
       - name: Check for changes
         id: git-check
