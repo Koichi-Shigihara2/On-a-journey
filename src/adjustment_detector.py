@@ -118,12 +118,12 @@ def detect_adjustments(
                 if amount is None or amount == 0:
                     continue
                 detected.append({
+                    "item_id": item.get('item_id', ''),   # ★ MaturityMonitor用に追加
                     "item_name": item_name,
                     "amount": amount,
                     "unit": unit,
                     "direction": item.get('direction', 'add_back'),
                     "pre_tax": item.get('pre_tax', True),
-                    # ★ reason_default キーを使用（旧: reason）
                     "reason": item.get('reason_default', item.get('reason', '')),
                     "extracted_from": tag,
                     "category": item.get('category', 'その他')
