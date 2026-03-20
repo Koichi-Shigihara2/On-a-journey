@@ -86,9 +86,13 @@ def load_required_xbrl_tags() -> List[str]:
     # ★★★ 売上高タグ（SBC/売上高比率用）★★★
     tags.add("us-gaap:Revenues")
     tags.add("us-gaap:RevenueFromContractWithCustomer")
+    tags.add("us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax")
+    tags.add("us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax")
     tags.add("us-gaap:NetSales")
     tags.add("us-gaap:TotalRevenue")
     tags.add("us-gaap:SalesRevenueNet")
+    tags.add("us-gaap:InterestAndDividendIncomeOperating")   # 金融・FinTech系
+    tags.add("us-gaap:RevenuesNetOfInterestExpense")         # 金融系
 
     return list(tags)
 
