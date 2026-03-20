@@ -133,10 +133,17 @@ def get_revenue(period_data: Dict) -> float:
         return net_interest + non_interest
     return 0.0
 
-def run():
+def run(ticker_filter: str = None):
     config_base = "config"
     with open(os.path.join(config_base, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
         tickers = yaml.safe_load(f)["tickers"]
+    
+    # ★ --ticker 引数が指定された場合は対象を絞る
+    if ticker_filter:
+        ticker_upper = ticker_filter.upper()
+        if ticker_upper not in tickers:
+            print(f"Warning: {ticker_upper} は monitor_tickers.yaml に未登録ですが処理を続行します")
+        tickers = [ticker_upper]
     
     with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
         adjustment_config = json.load(f)
@@ -346,4 +353,8 @@ def run():
         print("✓ summary.json 生成完了")
 
 if __name__ == "__main__":
-    run()
+    import argparse
+    parser = argparse.ArgumentParser(description="AEA Pipeline")
+    parser.add_argument("--ticker", type=str, default=None, help="更新する銘柄ティッカー（省略時は全銘柄）")
+    args = parser.parse_args()
+    run(ticker_filter=args.ticker)
