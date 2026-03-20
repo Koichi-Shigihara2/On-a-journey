@@ -31,9 +31,9 @@ class MaturityMonitor:
         revenue = latest.get('revenue', 0) or 0
         diluted_shares = latest.get('diluted_shares', 0) or 0
         
-        # SBC金額取得
+        # SBC金額取得（item_id優先、なければitem_nameでフォールバック）
         for adj in latest.get('adjustments', []):
-            if adj.get('item_id') == 'sbc':
+            if adj.get('item_id') == 'sbc' or adj.get('item_name') == '株式報酬費用':
                 sbc_amount = adj.get('net_amount', 0)
                 break
         
