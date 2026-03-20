@@ -1,6 +1,6 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-20T12:36:58.163803",
+  "last_updated": "2026-03-20T12:52:39.985468",
   "quarters": [
     {
       "gaap_eps": 1.7524679774822551,
@@ -101,31 +101,31 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目の総額が非常に大きく、特にSBC（約49億ドル）とマイルストーンR&D（約55億ドル）が目立つ。SBCと無形資産償却は恒常的に発生する項目であり調整の正当性に疑問が残る一方、投資評価損益と一過性税効果は非経常的として妥当。調整後EPSは実態を過大評価している可能性があるため、GAAPベースの分析を併用すべき。",
+        "comment": "株式報酬費用や無形資産償却といった恒常的に発生しやすい項目が大きな調整額を占めており、調整後EPSの質に注意が必要。投資評価変動やマイルストーンR&Dは一過性の可能性が高いが、全体の調整幅が非常に大きくGAAPとの乖離が目立つため、投資判断時は慎重に分析すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だがテック企業では毎期発生する恒常的な報酬コスト",
+            "snippet": "非現金費用",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で定期的に発生する項目",
+            "snippet": "買収関連無形資産の償却",
             "confidence": 0.2
           },
           {
             "item": "investment_gains",
-            "snippet": "非営業性の評価変動でボラティリティが高く一過性",
-            "confidence": 0.8
+            "snippet": "非営業性の評価変動",
+            "confidence": 0.7
           },
           {
             "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用だが判断が難しい",
+            "snippet": "成功報酬型の一過性R&D費用",
             "confidence": 0.5
           },
           {
             "item": "tax_one_time",
-            "snippet": "法人税率変更等の一過性税効果で明確に非経常的",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
             "confidence": 0.9
           }
         ]

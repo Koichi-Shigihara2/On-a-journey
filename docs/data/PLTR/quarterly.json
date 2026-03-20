@@ -1,7 +1,81 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-20T12:36:44.304049",
+  "last_updated": "2026-03-20T12:52:26.580656",
   "quarters": [
+    {
+      "gaap_eps": 0.23728236076995257,
+      "adjusted_eps": 0.27996666922657404,
+      "gaap_net_income": 608676000.0,
+      "adjusted_net_income": 718169660.0,
+      "diluted_shares_used": 2565197000.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 143554000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 113407660.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -3914000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -3914000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 109493660.0,
+      "filing_date": "2025-12-31",
+      "form": "10-K",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ],
+      "revenue": 1406802000.0,
+      "diluted_shares": 2565197000.0,
+      "period_end": "2025-12-31",
+      "fiscal_year": 2025,
+      "quarter": 4,
+      "maturity_monitor": {
+        "alert": "SBC寄与率が60%超（現在 482.9%）",
+        "sbc_contribution": 4.829,
+        "sbc_to_revenue": 0.376,
+        "sbc_per_share": 0.2061,
+        "sector_threshold": {
+          "sbc_contribution": 0.6,
+          "sbc_to_revenue": 0.3
+        }
+      },
+      "ai_analysis": {
+        "health": "Caution",
+        "comment": "マイルストーン型R&D費は成功報酬型の一過性費用と説明されているが、研究開発関連の性質上継続発生の可能性があり判断が難しい項目。一過性税効果の調整は適切。調整全体の健全性は注意を要する。",
+        "sources": [
+          {
+            "item": "milestone_rd",
+            "snippet": "成功報酬型の一過性R&D費用",
+            "confidence": 0.5
+          },
+          {
+            "item": "tax_one_time",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.18498189655071826,
       "adjusted_eps": 0.2406251913435732,
@@ -35,28 +109,7 @@
       "diluted_shares": 2571057000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2025,
-      "quarter": 3,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が60%超（現在 120.4%）",
-        "sbc_contribution": 1.204,
-        "sbc_to_revenue": 0.146,
-        "sbc_per_share": 0.067,
-        "sector_threshold": {
-          "sbc_contribution": 0.6,
-          "sbc_to_revenue": 0.3
-        }
-      },
-      "ai_analysis": {
-        "health": "Caution",
-        "comment": "マイルストーン型研究開発費144M USDを加算調整しており、成功報酬型の一過性費用と位置づけられています。ただし同社は継続的なR&D投資を行う企業であり、マイルストーン支払いは今後も発生する可能性が高いため、調整の非経常性について判断が難しく、Adjusted EPSの健全性は慎重に評価すべきです。",
-        "sources": [
-          {
-            "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用",
-            "confidence": 0.5
-          }
-        ]
-      }
+      "quarter": 3
     },
     {
       "gaap_eps": 0.1274827227778402,
@@ -127,6 +180,54 @@
       "period_end": "2025-03-31",
       "fiscal_year": 2025,
       "quarter": 1
+    },
+    {
+      "gaap_eps": 0.03223780794820342,
+      "adjusted_eps": 0.08728905206343351,
+      "gaap_net_income": 79009000.0,
+      "adjusted_net_income": 213929580.0,
+      "diluted_shares_used": 2450818000.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 171502000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 135486580.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -566000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -566000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 134920580.0,
+      "filing_date": "2024-12-31",
+      "form": "10-K",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ],
+      "revenue": 827519000.0,
+      "diluted_shares": 2450818000.0,
+      "period_end": "2024-12-31",
+      "fiscal_year": 2024,
+      "quarter": 4
     },
     {
       "gaap_eps": 0.05835324519665684,
@@ -232,6 +333,54 @@
       "period_end": "2024-03-31",
       "fiscal_year": 2024,
       "quarter": 1
+    },
+    {
+      "gaap_eps": 0.040641412890835955,
+      "adjusted_eps": 0.076120159604722,
+      "gaap_net_income": 93391000.0,
+      "adjusted_net_income": 174918570.0,
+      "diluted_shares_used": 2297927000.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 109283000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 86333570.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -4806000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -4806000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 81527570.0,
+      "filing_date": "2023-12-31",
+      "form": "10-K",
+      "sector": "ハイパーグロース / SaaS",
+      "sector_exclusions": [
+        "sbc",
+        "amortization_intangibles"
+      ],
+      "revenue": 608350000.0,
+      "diluted_shares": 2297927000.0,
+      "period_end": "2023-12-31",
+      "fiscal_year": 2023,
+      "quarter": 4
     },
     {
       "gaap_eps": 0.0307469040247678,
