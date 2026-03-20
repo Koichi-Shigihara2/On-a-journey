@@ -189,10 +189,6 @@ def run():
         ]
         # filing_date順にソート（古い順）してYTD差分を計算
         raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
-        
-        _latest = max(raw_sorted, key=lambda x: x['filing_date'])
-        print(f"  [YTD check] latest={_latest['filing_date']} SBC={_latest.get('us-gaap:ShareBasedCompensation')}")
-        
         for sbc_tag in SBC_YTD_TAGS:
             # fiscal_year × quarter → YTD値 のマップ（最大のYTD値を採用）
             ytd_by_fq = {}
@@ -270,9 +266,18 @@ def run():
         # ★★★ 成熟度監視（全セクター対応・正しいsector引数）★★★
         if sector and quarterly_results:
             latest_for_monitor = max(quarterly_results, key=lambda x: x["filing_date"])
+            # ★ SBCはセクター除外されている場合もあるため、quarterly_rawから直接取得
+            _latest_raw = max(quarterly_raw, key=lambda x: x["filing_date"])
+            _sbc_raw = (
+                _latest_raw.get("us-gaap:ShareBasedCompensation") or
+                _latest_raw.get("us-gaap:AllocatedShareBasedCompensationExpense") or
+                {}
+            )
+            _sbc_val = _sbc_raw.get("value", 0) if isinstance(_sbc_raw, dict) else 0
             monitor = MaturityMonitor(maturity_config)
             maturity_status = monitor.monitor(quarterly_results, sector=sector,
-                                              latest_override=latest_for_monitor)
+                                              latest_override=latest_for_monitor,
+                                              sbc_override=_sbc_val)
             if maturity_status.get('alert'):
                 print(f"  ⚠ Maturity Alert for {ticker} ({sector}): {maturity_status['alert']}")
             _pending_maturity = maturity_status
