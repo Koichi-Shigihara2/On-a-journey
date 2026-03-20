@@ -3,31 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adjusted EPS Analyzer · ダッシュボード</title>
-  <!-- フォント (MACRO PULSE と同じ) -->
+  <title>Adjusted EPS Analyzer · 銘柄詳細</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <style>
-    /* 色定義 (MACRO PULSE 完全移植) */
     :root {
-      --bg: #0a0d14;
-      --sur: #111520;
+      --bg:   #0a0d14;
+      --sur:  #111520;
       --sur2: #161c2d;
-      --bdr: #1e2840;
-      --acc: #3b82f6;
-      --grn: #10b981;
-      --red: #f43f5e;
-      --amb: #f59e0b;
-      --txt: #e2e8f0;
-      --mut: #64748b;
+      --bdr:  #1e2840;
+      --acc:  #3b82f6;
+      --grn:  #10b981;
+      --red:  #f43f5e;
+      --amb:  #f59e0b;
+      --txt:  #e2e8f0;
+      --mut:  #64748b;
       --mono: 'Space Mono', monospace;
       --sans: 'DM Sans', sans-serif;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
@@ -37,455 +32,1165 @@
       min-height: 100vh;
     }
 
-    .shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px 48px;
-    }
-
-    /* ヘッダー */
-    header {
+    /* ── ヘッダー ── */
+    .hdr {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--bg);
       border-bottom: 1px solid var(--bdr);
-      padding: 16px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
+      z-index: 100;
     }
-
+    .hdr-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
     .logo {
-      font-family: var(--mono);
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: .15em;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      letter-spacing: .12em;
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--txt);
     }
-
     .logo-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--acc);
-      border-radius: 50%;
+      width: 7px; height: 7px;
+      background: var(--acc); border-radius: 50%;
       animation: pdot 2s ease-in-out infinite;
     }
-
     @keyframes pdot {
       0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
-      50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+      50%      { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
     }
-
-    .hdr-r {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 16px;
-    }
-
+    .nav-links { display: flex; gap: 16px; }
     .nav-links a {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--mut);
-      text-decoration: none;
-      letter-spacing: .08em;
-      padding: 5px 0;
-      border-bottom: 1px solid transparent;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+      color: var(--mut); text-decoration: none;
+      border-bottom: 1px solid transparent; padding-bottom: 2px;
+    }
+    .nav-links a:hover { color: var(--acc); border-bottom-color: var(--acc); }
+    .search-row { display: flex; align-items: center; gap: 4px; }
+    .search-row input {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--sur2); border: 1px solid var(--bdr);
+      color: var(--txt); padding: 5px 10px; width: 130px;
+    }
+    .search-row button {
+      font-family: var(--mono); font-size: 11px;
+      padding: 5px 12px; border: 1px solid var(--bdr);
+      background: var(--sur2); color: var(--txt); cursor: pointer;
+    }
+    .search-row button:hover { border-color: var(--acc); color: var(--acc); }
+
+    /* ── メインレイアウト ── */
+    .shell {
+      max-width: 1200px; margin: 0 auto;
+      padding: 80px 20px 48px;
     }
 
-    .nav-links a:hover {
-      color: var(--acc);
-      border-bottom-color: var(--acc);
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .search-box input {
-      font-family: var(--mono);
-      font-size: 11px;
-      background: var(--sur2);
-      border: 1px solid var(--bdr);
-      padding: 5px 10px;
-      color: var(--txt);
-      width: 120px;
-    }
-
-    .search-box button {
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 5px 12px;
-      border: 1px solid var(--bdr);
-      background: var(--sur2);
-      color: var(--txt);
-      cursor: pointer;
-    }
-
-    .search-box button:hover {
-      border-color: var(--acc);
-      color: var(--acc);
-    }
-
-    /* セクション見出し */
-    .sec {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .2em;
-      color: var(--mut);
-      text-transform: uppercase;
-      margin: 32px 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .sec::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--bdr);
-    }
-
-    /* カードグリッド */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: var(--sur);
-      border: 1px solid var(--bdr);
-      padding: 18px 20px;
-    }
-
-    .card-title {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .15em;
-      color: var(--mut);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .top-list {
-      list-style: none;
-    }
-
-    .top-list li {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(30,40,64,.5);
-    }
-
-    .top-list li:last-child {
-      border-bottom: none;
-    }
-
-    .top-ticker {
-      font-family: var(--mono);
-      font-weight: 700;
-    }
-
-    .top-ticker a {
-      color: var(--acc);
-      text-decoration: none;
-    }
-
-    .top-ticker a:hover {
-      text-decoration: underline;
-    }
-
-    .top-value {
-      font-family: var(--mono);
-      color: var(--grn);
-    }
-
-    .health-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .health-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    }
-
-    .health-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .health-dot.Excellent { background: var(--grn); }
-    .health-dot.Good { background: var(--grn); opacity: .7; }
-    .health-dot.Caution { background: var(--amb); }
-    .health-dot.Warning { background: var(--red); }
-
-    .health-name {
-      font-family: var(--mono);
-      font-size: 11px;
-      flex: 1;
-    }
-
-    .health-name a {
-      color: var(--txt);
-      text-decoration: none;
-    }
-
-    .health-name a:hover {
-      color: var(--acc);
-    }
-
-    /* テーブル */
-    .table-wrap {
-      background: var(--sur);
-      border: 1px solid var(--bdr);
-      margin-top: 16px;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .12em;
-      color: var(--mut);
-      text-align: left;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--bdr);
-      text-transform: uppercase;
-    }
-
-    td {
-      padding: 10px 16px;
-      border-bottom: 1px solid rgba(30,40,64,.5);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover {
-      background: rgba(255,255,255,.02);
-    }
-
-    .ticker-cell a {
-      color: var(--acc);
-      font-family: var(--mono);
-      text-decoration: none;
-    }
-
-    .ticker-cell a:hover {
-      text-decoration: underline;
-    }
-
-    .health-badge {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 9px;
-      padding: 2px 8px;
-      border-radius: 2px;
-    }
-
-    .health-Excellent, .health-Good {
-      background: rgba(16,185,129,.15);
-      color: var(--grn);
-    }
-
-    .health-Caution {
-      background: rgba(245,158,11,.15);
-      color: var(--amb);
-    }
-
-    .health-Warning {
-      background: rgba(244,63,94,.15);
-      color: var(--red);
-    }
-
-    .health-Error {
-      background: rgba(100,116,139,.15);
-      color: var(--mut);
-    }
-
-    .number {
-      font-family: var(--mono);
-      text-align: right;
-    }
-
-    /* ローディング／エラー */
-    .empty {
-      color: var(--mut);
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 40px;
-      text-align: center;
-    }
-
+    /* ── ローディング・エラー ── */
     .spin {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border: 2px solid var(--bdr);
-      border-top-color: var(--acc);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin-right: 6px;
+      display: inline-block; width: 12px; height: 12px;
+      border: 2px solid var(--bdr); border-top-color: var(--acc);
+      border-radius: 50%; animation: spin .8s linear infinite; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty {
+      color: var(--mut); font-family: var(--mono); font-size: 11px;
+      padding: 40px; text-align: center;
+    }
+    .err-box {
+      background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3);
+      color: var(--red); padding: 14px 18px; font-size: 13px;
+      margin-bottom: 20px; display: none;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* ── 銘柄ヘッダー行 ── */
+    .ticker-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 8px;
     }
+    .ticker-title {
+      font-family: var(--mono); font-size: 28px; font-weight: 700;
+    }
+    .ticker-meta { display: flex; align-items: center; gap: 10px; }
+    .health-badge {
+      font-family: var(--mono); font-size: 11px;
+      padding: 3px 10px; border-radius: 2px;
+    }
+    .badge-Excellent,.badge-Good  { background: rgba(16,185,129,.15); color: var(--grn); }
+    .badge-Caution                { background: rgba(245,158,11,.15);  color: var(--amb); }
+    .badge-Warning                { background: rgba(244,63,94,.15);   color: var(--red); }
+    .badge-Error                  { background: rgba(100,116,139,.15); color: var(--mut); }
+    .last-updated { font-family: var(--mono); font-size: 10px; color: var(--mut); }
+
+    /* ── メトリクスカード ── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media(max-width:600px){ .metrics-grid { grid-template-columns: repeat(2,1fr); } }
+    .metric-card {
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 14px 16px;
+    }
+    .metric-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: .15em;
+      color: var(--mut); text-transform: uppercase; margin-bottom: 8px;
+    }
+    .metric-val {
+      font-family: var(--mono); font-size: 22px; font-weight: 700;
+      color: var(--txt);
+    }
+    .metric-val.green { color: var(--grn); }
+    .metric-val.red   { color: var(--red); }
+
+    /* ── タブ ── */
+    .tab-bar {
+      display: flex; gap: 2px; margin-bottom: 16px;
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 3px; width: fit-content;
+    }
+    .tab-btn {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+      padding: 5px 16px; cursor: pointer; border: none;
+      background: transparent; color: var(--mut);
+    }
+    .tab-btn.active { background: var(--acc); color: #fff; }
+    .tab-btn:hover:not(.active) { color: var(--txt); }
+
+    /* ── 期間ピッカー ── */
+    .date-panel {
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 14px 16px; margin-bottom: 16px;
+    }
+    .date-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 10px; }
+    .date-label { font-family: var(--mono); font-size: 9px; color: var(--mut); margin-bottom: 4px; letter-spacing: .1em; }
+    .date-input {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--sur2); border: 1px solid var(--bdr);
+      color: var(--txt); padding: 5px 8px;
+    }
+    .date-input:focus { outline: none; border-color: var(--acc); }
+    .btn-apply {
+      font-family: var(--mono); font-size: 11px;
+      padding: 5px 16px; background: var(--acc); border: none;
+      color: #fff; cursor: pointer;
+    }
+    .btn-apply:hover { background: #2563eb; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .preset-btn {
+      font-family: var(--mono); font-size: 10px;
+      padding: 4px 10px; border: 1px solid var(--bdr);
+      background: var(--sur2); color: var(--mut); cursor: pointer;
+    }
+    .preset-btn:hover { border-color: var(--acc); color: var(--acc); }
+    .preset-btn.active-preset { border-color: var(--acc); color: var(--acc); background: rgba(59,130,246,.1); }
+
+    /* ── チャート ── */
+    .chart-box {
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 20px; margin-bottom: 16px; position: relative;
+      height: 320px;
+    }
+
+    /* ── セクション見出し ── */
+    .sec {
+      font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+      color: var(--mut); text-transform: uppercase;
+      margin: 24px 0 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sec::after { content:''; flex:1; height:1px; background: var(--bdr); }
+
+    /* ── AI分析 ── */
+    .ai-box {
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .ai-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .ai-header h3 { font-family: var(--sans); font-size: 15px; font-weight: 600; }
+    .ai-tag {
+      font-family: var(--mono); font-size: 9px;
+      background: var(--sur2); border: 1px solid var(--bdr);
+      padding: 2px 7px; color: var(--mut);
+    }
+    #ai-comment { line-height: 1.7; color: var(--txt); }
+    #ai-sources {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--bdr);
+      font-size: 12px; color: var(--mut);
+    }
+
+    /* ── 調整内訳テーブル ── */
+    .adj-box {
+      background: var(--sur); border: 1px solid var(--bdr);
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .adj-box h3 { font-family: var(--sans); font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+    .scrollable-adjustments {
+      max-height: 600px; overflow-y: auto; padding-right: 4px;
+    }
+    .scrollable-adjustments::-webkit-scrollbar { width: 6px; }
+    .scrollable-adjustments::-webkit-scrollbar-track { background: var(--sur2); }
+    .scrollable-adjustments::-webkit-scrollbar-thumb { background: var(--bdr); }
+
+    .q-block { border: 1px solid var(--bdr); margin-bottom: 10px; }
+    .q-block-hdr {
+      background: var(--sur2); padding: 7px 12px;
+      font-family: var(--mono); font-size: 11px; color: var(--mut);
+      border-bottom: 1px solid var(--bdr);
+    }
+    .q-block-body { padding: 12px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+      color: var(--mut); text-align: left; text-transform: uppercase;
+      padding: 0 10px 8px;
+    }
+    td { padding: 6px 10px; border-top: 1px solid var(--bdr); }
+    tr:first-child td { border-top: none; }
+
+    .tag-pill {
+      font-family: var(--mono); font-size: 9px;
+      background: var(--sur2); border: 1px solid var(--bdr);
+      padding: 2px 6px; color: var(--mut); white-space: nowrap;
+    }
+    .amt-cell { font-family: var(--mono); text-align: right; color: var(--grn); }
   </style>
 </head>
 <body>
-<div class="shell">
-  <header>
-    <div class="logo">
-      <!-- 狸アイコン (添付の images/logo.png.png) -->
-      <img src="images/logo.png" alt="TANUKI" style="height:30px; width:auto; object-fit:contain">
-      <span class="logo-dot"></span>
-      Adjusted EPS Analyzer
-    </div>
-    <div class="hdr-r">
-      <div class="nav-links">
-        <a href="index.html" style="color:var(--acc); border-bottom-color:var(--acc);">ダッシュボード</a>
-        <a href="tickers.html">銘柄一覧</a>
+  <!-- ヘッダー -->
+  <div class="hdr">
+    <div class="hdr-inner">
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="AEA" style="height:26px;width:auto;object-fit:contain">
+        <span class="logo-dot"></span>
+        Adjusted EPS Analyzer
+      </a>
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <nav class="nav-links">
+          <a href="index.html">ダッシュボード</a>
+          <a href="tickers.html">銘柄一覧</a>
+        </nav>
+        <div class="search-row">
+          <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)">
+          <button onclick="loadTicker()">検索</button>
+        </div>
       </div>
-      <div class="search-box">
-        <input type="text" id="ticker-search" placeholder="ティッカー (例: TSLA)" value="TSLA">
-        <button onclick="window.location.href='stock.html?ticker='+document.getElementById('ticker-search').value.toUpperCase()">検索</button>
-      </div>
     </div>
-  </header>
-
-  <!-- メインコンテンツ (JSで動的生成) -->
-  <div id="dashboard-content">
-    <div class="empty"><span class="spin"></span>データを読み込み中...</div>
   </div>
-</div>
 
-<script>
-  (async function() {
-    const contentDiv = document.getElementById('dashboard-content');
+  <div class="shell">
+    <!-- ローディング -->
+    <div id="loading" class="empty" style="display:none">
+      <span class="spin"></span>データを読み込み中...
+    </div>
 
-    try {
-      const res = await fetch('data/summary.json?t=' + Date.now());
-      if (!res.ok) throw new Error('データが見つかりません');
-      const data = await res.json();
-      const tickers = data.tickers || [];
+    <!-- エラー -->
+    <div id="error" class="err-box">
+      データを読み込めませんでした。<a href="#" onclick="loadTicker()" style="color:var(--acc)">再試行</a>
+    </div>
 
-      // YoY成長率トップ5 (降順、null除外)
-      const withGrowth = tickers.filter(t => t.yoy_growth !== null && t.yoy_growth !== undefined);
-      const topGrowth = [...withGrowth].sort((a,b) => b.yoy_growth - a.yoy_growth).slice(0,5);
+    <!-- メインコンテンツ -->
+    <div id="content" style="display:none">
 
-      // 健全性 Excellent の銘柄
-      const excellent = tickers.filter(t => t.health === 'Excellent');
+      <!-- 銘柄ヘッダー -->
+      <div class="ticker-row">
+        <div class="ticker-title" id="ticker-title">—</div>
+        <div class="ticker-meta">
+          <span id="health-badge" class="health-badge badge-Good">Good</span>
+          <span class="last-updated" id="last-updated"></span>
+        </div>
+      </div>
 
-      // テーブル用の全銘柄
-      const allTickers = tickers.sort((a,b) => a.ticker.localeCompare(b.ticker));
+      <!-- メトリクスカード -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">GAAP EPS</div>
+          <div class="metric-val" id="gaap-eps">$0.0000</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Adjusted EPS</div>
+          <div class="metric-val green" id="adj-eps">$0.0000</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">差分</div>
+          <div class="metric-val" id="diff">$0.0000</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">YoY成長率</div>
+          <div class="metric-val" id="yoy">—</div>
+        </div>
+      </div>
 
-      function formatPercent(val) {
-        if (val === null || val === undefined) return '—';
-        return (val * 100).toFixed(1) + '%';
+      <!-- タブ -->
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-quarterly" onclick="switchTab('quarterly')">四半期</button>
+        <button class="tab-btn" id="tab-ttm" onclick="switchTab('ttm')">TTM</button>
+      </div>
+
+      <!-- 期間ピッカー -->
+      <div class="date-panel">
+        <div class="date-row">
+          <div>
+            <div class="date-label">開始日</div>
+            <input type="date" id="start-date" class="date-input">
+          </div>
+          <div>
+            <div class="date-label">終了日</div>
+            <input type="date" id="end-date" class="date-input">
+          </div>
+          <button class="btn-apply" onclick="applyDateRange()">適用</button>
+        </div>
+        <div class="preset-row">
+          <button class="preset-btn" onclick="setPreset('all')">全期間</button>
+          <button class="preset-btn" onclick="setPreset('5y')">5年</button>
+          <button class="preset-btn" onclick="setPreset('4y')">4年</button>
+          <button class="preset-btn" onclick="setPreset('3y')">3年</button>
+          <button class="preset-btn" onclick="setPreset('2y')">2年</button>
+          <button class="preset-btn" onclick="setPreset('1y')">1年</button>
+          <button class="preset-btn" onclick="resetDateRange()">リセット</button>
+        </div>
+      </div>
+
+      <!-- チャート -->
+      <div class="chart-box">
+        <canvas id="eps-chart"></canvas>
+      </div>
+
+      <!-- AI分析 -->
+      <div class="sec">AI 分析</div>
+      <div class="ai-box">
+        <div class="ai-header">
+          <h3>AI分析（選択期間内の最新四半期）</h3>
+          <span class="ai-tag">Grok</span>
+        </div>
+        <div id="ai-comment"></div>
+        <div id="ai-sources"></div>
+      </div>
+
+      <!-- 調整内訳 -->
+      <div class="sec">調整内訳（全期間）</div>
+      <div class="adj-box">
+        <div class="scrollable-adjustments" id="adjustments-accordion"></div>
+      </div>
+
+    </div><!-- /#content -->
+  </div><!-- /.shell -->
+
+  <script>
+    Chart.register(ChartDataLabels);
+
+    let currentTicker = 'TSLA';
+    let quarterlyData = null;
+    let ttmData = null;
+    let chart = null;
+    let currentTab = 'quarterly';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const tickerParam = urlParams.get('ticker');
+    if (tickerParam) {
+      currentTicker = tickerParam.toUpperCase();
+      document.getElementById('ticker-search').value = currentTicker;
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    async function loadTicker(ticker = null) {
+      if (ticker) currentTicker = ticker;
+      else currentTicker = document.getElementById('ticker-search').value.trim().toUpperCase();
+      if (!currentTicker) return;
+
+      showLoading(true);
+      document.getElementById('content').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+
+      try {
+        const qResp = await fetch(`data/${currentTicker}/quarterly.json`, { cache: 'no-store' });
+        if (!qResp.ok) throw new Error('四半期データが見つかりません');
+        quarterlyData = await qResp.json();
+
+        ttmData = null;
+        try {
+          const tResp = await fetch(`data/${currentTicker}/ttm.json`, { cache: 'no-store' });
+          if (tResp.ok) ttmData = await tResp.json();
+        } catch (e) {}
+
+        document.getElementById('ticker-title').innerText = currentTicker;
+        document.getElementById('last-updated').innerText =
+          `最終更新: ${new Date(quarterlyData.last_updated).toLocaleDateString('ja-JP')}`;
+
+        setInitialDateRange(quarterlyData.quarters);
+
+        showLoading(false);
+        document.getElementById('content').style.display = 'block';
+
+        switchTab('quarterly');
+      } catch (error) {
+        console.error('Error:', error);
+        showLoading(false);
+        document.getElementById('error').style.display = 'block';
       }
+    }
 
-      function healthClass(health) {
-        return 'health-' + (health || 'Good');
+    // ★ デフォルト3年、日付境界はUTCずれを避けて文字列比較
+    function setInitialDateRange(quarters) {
+      if (!quarters || quarters.length === 0) return;
+      const dates = quarters.map(q => q.filing_date).sort();
+      document.getElementById('start-date').value = dates[0];
+      document.getElementById('end-date').value = dates[dates.length - 1];
+      setPreset('3y');
+    }
+
+    // ★ 文字列(YYYY-MM-DD)比較でUTCずれを排除
+    function filterDataByDateRange(dataArray, labelField, startStr, endStr) {
+      if (!dataArray || dataArray.length === 0) return [];
+      return dataArray.filter(item => {
+        const d = (item[labelField] || '').substring(0, 10);
+        if (startStr && d < startStr) return false;
+        if (endStr   && d > endStr)   return false;
+        return true;
+      });
+    }
+
+    function applyDateRange() {
+      if (!quarterlyData) return;
+      const startDate = document.getElementById('start-date').value;
+      const endDate   = document.getElementById('end-date').value;
+      if (!startDate || !endDate) return;
+
+      const filtered = filterDataByDateRange(quarterlyData.quarters, 'filing_date', startDate, endDate);
+
+      if (currentTab === 'quarterly') {
+        updateChart(filtered, 'quarterly', 'filing_date');
+        const latest = getLatestFromArray(filtered);
+        if (latest) {
+          updateMetricsWithQuarter(JSON.parse(JSON.stringify(latest)), quarterlyData.quarters);
+          updateAI(latest.ai_analysis);
+        } else {
+          resetMetrics(); updateAI(null);
+        }
+      } else if (currentTab === 'ttm') {
+        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+          const filteredTTM = ttmData.ttm.filter(item => {
+            const d = (item.period.split(' to ')[1] || '').substring(0, 10);
+            return d >= startDate && d <= endDate;
+          });
+          updateChart(filteredTTM, 'ttm', 'period');
+        } else {
+          updateChart([], 'ttm', '');
+        }
       }
+    }
 
-      function healthDot(health) {
-        return 'health-dot ' + (health || 'Good');
+    function setPreset(range) {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      const maxDate = dates[dates.length - 1];
+      let startDate;
+
+      // setFullYear はmutable なので毎回 new Date() を作る
+      const maxObj = () => new Date(maxDate + 'T00:00:00');
+
+      switch (range) {
+        case 'all': startDate = dates[0]; break;
+        case '5y': { const d = maxObj(); d.setFullYear(d.getFullYear()-5); startDate = d.toISOString().split('T')[0]; break; }
+        case '4y': { const d = maxObj(); d.setFullYear(d.getFullYear()-4); startDate = d.toISOString().split('T')[0]; break; }
+        case '3y': { const d = maxObj(); d.setFullYear(d.getFullYear()-3); startDate = d.toISOString().split('T')[0]; break; }
+        case '2y': { const d = maxObj(); d.setFullYear(d.getFullYear()-2); startDate = d.toISOString().split('T')[0]; break; }
+        case '1y': { const d = maxObj(); d.setFullYear(d.getFullYear()-1); startDate = d.toISOString().split('T')[0]; break; }
+        default: return;
       }
+      if (startDate < dates[0]) startDate = dates[0];
 
-      function formatMoney(val) {
-        if (val === null || val === undefined) return '—';
-        return '$' + val.toFixed(4);
+      document.getElementById('start-date').value = startDate;
+      document.getElementById('end-date').value = maxDate;
+
+      // アクティブなプリセットボタンを強調
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active-preset'));
+      const activeBtn = [...document.querySelectorAll('.preset-btn')].find(b =>
+        b.getAttribute('onclick') === `setPreset('${range}')`);
+      if (activeBtn) activeBtn.classList.add('active-preset');
+
+      applyDateRange();
+    }
+
+    function resetDateRange() {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      document.getElementById('start-date').value = dates[0];
+      document.getElementById('end-date').value = dates[dates.length - 1];
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active-preset'));
+      applyDateRange();
+    }
+
+    function getLatestFromArray(arr) {
+      if (!arr || arr.length === 0) return null;
+      return [...arr].sort((a,b) => b.filing_date.localeCompare(a.filing_date))[0];
+    }
+
+    function calculateYoY(latest, allQuarters) {
+      const [year, month] = latest.filing_date.split('-');
+      const latestQ = Math.floor((parseInt(month)-1)/3)+1;
+      const targetYear = parseInt(year)-1;
+      const candidates = allQuarters.filter(q => {
+        const qY = parseInt(q.filing_date.split('-')[0]);
+        const qM = parseInt(q.filing_date.split('-')[1]);
+        return qY === targetYear && Math.floor((qM-1)/3)+1 === latestQ;
+      });
+      if (candidates.length > 0) {
+        const prev = candidates.reduce((a,b) =>
+          Math.abs(new Date(latest.filing_date)-new Date(a.filing_date)) <
+          Math.abs(new Date(latest.filing_date)-new Date(b.filing_date)) ? a : b);
+        if (Math.abs(prev.adjusted_eps) > 0.0001)
+          return (latest.adjusted_eps - prev.adjusted_eps) / Math.abs(prev.adjusted_eps);
       }
+      const idx = allQuarters.findIndex(q => q.filing_date === latest.filing_date);
+      if (idx >= 4) {
+        const prevEps = allQuarters[idx-4].adjusted_eps;
+        if (Math.abs(prevEps) > 0.0001) return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+      }
+      return null;
+    }
 
-      // HTML構築
+    function updateMetricsWithQuarter(q, allQuarters) {
+      document.getElementById('gaap-eps').innerText = `$${q.gaap_eps.toFixed(4)}`;
+      document.getElementById('adj-eps').innerText  = `$${q.adjusted_eps.toFixed(4)}`;
+      const diff = q.adjusted_eps - q.gaap_eps;
+      const diffEl = document.getElementById('diff');
+      diffEl.innerText = `$${diff.toFixed(4)}`;
+      diffEl.className = 'metric-val ' + (diff >= 0 ? 'green' : 'red');
+      const yoy = calculateYoY(q, allQuarters);
+      const yoyEl = document.getElementById('yoy');
+      if (yoy !== null) {
+        yoyEl.innerText = (yoy*100).toFixed(1)+'%';
+        yoyEl.className = 'metric-val ' + (yoy >= 0 ? 'green' : 'red');
+      } else {
+        yoyEl.innerText = '—'; yoyEl.className = 'metric-val';
+      }
+    }
+
+    function resetMetrics() {
+      ['gaap-eps','adj-eps','diff','yoy'].forEach(id => {
+        document.getElementById(id).innerText = id === 'yoy' ? '—' : '$0.0000';
+        document.getElementById(id).className = 'metric-val';
+      });
+    }
+
+    function updateAI(ai) {
+      const badge     = document.getElementById('health-badge');
+      const commentEl = document.getElementById('ai-comment');
+      const sourcesEl = document.getElementById('ai-sources');
+      if (!ai) {
+        badge.innerText   = 'Good';
+        badge.className   = 'health-badge badge-Good';
+        commentEl.innerHTML = '<span style="color:var(--mut)">分析コメント準備中</span>';
+        sourcesEl.innerHTML = '';
+        return;
+      }
+      const h = ai.health || 'Good';
+      badge.innerText = h;
+      badge.className = `health-badge badge-${h}`;
+      commentEl.innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
+      if (ai.sources && ai.sources.length) {
+        let s = '<div style="font-family:var(--mono);font-size:10px;color:var(--mut);margin-bottom:6px">引用ソース:</div><ul style="list-style:disc;padding-left:20px;line-height:1.8">';
+        ai.sources.forEach(src => {
+          s += `<li><span style="color:var(--acc);font-family:var(--mono);font-size:11px">${src.item}:</span> ${src.snippet}</li>`;
+        });
+        sourcesEl.innerHTML = s + '</ul>';
+      } else {
+        sourcesEl.innerHTML = '';
+      }
+    }
+
+    function formatLabel(dateStr) {
+      if (!dateStr) return '';
+      const [year, month] = dateStr.split('-');
+      return `${year}-Q${Math.floor((parseInt(month)-1)/3)+1}`;
+    }
+
+    function updateChart(dataArray, type, labelField) {
+      const canvas = document.getElementById('eps-chart');
+      const ctx = canvas.getContext('2d');
+      if (chart) { chart.destroy(); chart = null; }
+      if (!dataArray || dataArray.length === 0) return;
+
+      const sorted = [...dataArray].sort((a,b) => a[labelField].localeCompare(b[labelField]));
+      const labels = sorted.map(item => formatLabel(
+        type === 'ttm' ? item.period.split(' to ')[1] : item[labelField]
+      ));
+      const gaapData = sorted.map(item => type === 'quarterly' ? item.gaap_eps : item.eps);
+      const adjData  = sorted.map(item => item.adjusted_eps);
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'GAAP EPS', data: gaapData,
+              borderColor: '#94a3b8', backgroundColor: 'rgba(148,163,184,.08)',
+              tension: 0.15, pointRadius: 3,
+              datalabels: {
+                align: 'top', offset: 4,
+                color: '#94a3b8', font: { family: "'Space Mono'", size: 9 },
+                formatter: v => v.toFixed(2),
+                backgroundColor: 'rgba(10,13,20,.7)', borderRadius: 2,
+                padding: { top:1,bottom:1,left:3,right:3 }
+              }
+            },
+            {
+              label: 'Adjusted EPS', data: adjData,
+              borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.08)',
+              tension: 0.15, pointRadius: 3,
+              datalabels: {
+                align: 'bottom', offset: 4,
+                color: '#10b981', font: { family: "'Space Mono'", size: 9 },
+                formatter: v => v.toFixed(2),
+                backgroundColor: 'rgba(10,13,20,.7)', borderRadius: 2,
+                padding: { top:1,bottom:1,left:3,right:3 }
+              }
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8', font: { family: "'Space Mono'", size: 11 }, boxWidth: 14 } },
+            datalabels: { display: true }
+          },
+          scales: {
+            y: { grid: { color: 'rgba(30,40,64,.8)' }, ticks: { color: '#64748b', font: { family: "'Space Mono'", size: 10 } }, beginAtZero: false },
+            x: { grid: { color: 'rgba(30,40,64,.8)' }, ticks: { color: '#64748b', font: { family: "'Space Mono'", size: 10 }, maxRotation: 45, autoSkip: true } }
+          }
+        }
+      });
+    }
+
+    function updateAllAdjustments(quarters) {
+      const container = document.getElementById('adjustments-accordion');
+      const sorted = [...quarters].sort((a,b) => b.filing_date.localeCompare(a.filing_date));
       let html = '';
+      sorted.forEach(q => {
+        html += `<div class="q-block">`;
+        html += `<div class="q-block-hdr">${q.filing_date}</div>`;
+        if (q.adjustments && q.adjustments.length > 0) {
+          html += `<div class="q-block-body"><table>
+            <thead><tr>
+              <th>項目</th><th style="text-align:right">金額（税後）</th><th>理由</th><th>抽出元</th>
+            </tr></thead><tbody>`;
+          q.adjustments.forEach(item => {
+            html += `<tr>
+              <td>${item.item_name}</td>
+              <td class="amt-cell">+$${(item.net_amount/1e6).toFixed(1)}M</td>
+              <td>${item.reason || ''}</td>
+              <td><span class="tag-pill">${item.extracted_from || ''}</span></td>
+            </tr>`;
+          });
+          html += `</tbody></table></div>`;
+        } else {
+          html += `<div class="q-block-body" style="color:var(--mut)">この四半期には調整項目はありません。</div>`;
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
 
-      // カード行
-      html += '<div class="grid-2">';
-
-      // 左カード: YoY成長率トップ5
-      html += '<div class="card">';
-      html += '<div class="card-title">🔥 TTM調整後EPS成長率トップ5</div>';
-      html += '<ul class="top-list">';
-      if (topGrowth.length === 0) {
-        html += '<li class="empty" style="padding:10px 0">データなし</li>';
-      } else {
-        topGrowth.forEach(t => {
-          const pct = formatPercent(t.yoy_growth);
-          const color = t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)';
-          html += `<li><span class="top-ticker"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></span> <span class="top-value" style="color:${color}">${pct}</span></li>`;
-        });
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      if (!currentTicker) return;
+      if (tab === 'quarterly' && quarterlyData) {
+        applyDateRange();
+        updateAllAdjustments(quarterlyData.quarters);
+      } else if (tab === 'ttm') {
+        if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
+          updateChart([], 'ttm', '');
+          document.getElementById('adjustments-accordion').innerHTML = '<div style="color:var(--mut)">TTMデータには調整内訳はありません。</div>';
+          document.getElementById('ai-comment').innerHTML = '<span style="color:var(--mut)">TTMデータにはAI分析はありません。</span>';
+          document.getElementById('ai-sources').innerHTML = '';
+        } else {
+          const startDate = document.getElementById('start-date').value;
+          const endDate   = document.getElementById('end-date').value;
+          const filteredTTM = ttmData.ttm.filter(item => {
+            const d = (item.period.split(' to ')[1] || '').substring(0, 10);
+            return d >= startDate && d <= endDate;
+          });
+          updateChart(filteredTTM, 'ttm', 'period');
+          document.getElementById('adjustments-accordion').innerHTML = '<div style="color:var(--mut)">TTMデータには調整内訳はありません。</div>';
+          document.getElementById('ai-comment').innerHTML = '<span style="color:var(--mut)">TTMデータにはAI分析はありません。</span>';
+          document.getElementById('ai-sources').innerHTML = '';
+        }
       }
-      html += '</ul></div>';
+    }
 
-      // 右カード: 健全性 Excellent
-      html += '<div class="card">';
-      html += '<div class="card-title">✨ 健全性 Excellent の銘柄</div>';
-      html += '<div class="health-list">';
-      if (excellent.length === 0) {
-        html += '<div class="empty" style="padding:10px 0">該当なし</div>';
-      } else {
-        excellent.slice(0,8).forEach(t => {
-          html += `<div class="health-item"><span class="${healthDot(t.health)}"></span><span class="health-name"><a href="stock.html?ticker=${t.ticker}">${t.ticker} · ${t.company_name || ''}</a></span></div>`;
-        });
+    window.onload = () => loadTicker();
+  </script>
+</body>
+</html>
+
+    async function loadTicker(ticker = null) {
+      if (ticker) currentTicker = ticker;
+      else currentTicker = document.getElementById('ticker-search').value.toUpperCase();
+
+      showLoading(true);
+      document.getElementById('content').classList.add('hidden');
+      document.getElementById('error').classList.add('hidden');
+
+      try {
+        const qResp = await fetch(`data/${currentTicker}/quarterly.json`, { cache: 'no-store' });
+        if (!qResp.ok) throw new Error('四半期データが見つかりません');
+        quarterlyData = await qResp.json();
+
+        try {
+          const tResp = await fetch(`data/${currentTicker}/ttm.json`, { cache: 'no-store' });
+          if (tResp.ok) ttmData = await tResp.json();
+        } catch (e) {
+          console.log('TTM data not found');
+          ttmData = null;
+        }
+
+        updateHeader(quarterlyData);
+        setInitialDateRange(quarterlyData.quarters);
+        applyDateRange();
+
+        document.getElementById('ticker-title').innerText = currentTicker;
+        showLoading(false);
+        document.getElementById('content').classList.remove('hidden');
+        document.getElementById('error').classList.add('hidden');
+
+        switchTab('quarterly');
+      } catch (error) {
+        console.error('Error:', error);
+        showLoading(false);
+        document.getElementById('error').classList.remove('hidden');
       }
-      html += '</div></div>';
-      html += '</div>'; // grid-2
+    }
 
-      // 全銘柄一覧テーブル
-      html += '<div class="sec">📋 全監視銘柄一覧</div>';
-      html += '<div class="table-wrap">';
-      html += '<table><thead><tr>';
-      html += '<th>ティッカー</th><th>会社名</th><th>最新決算日</th><th>GAAP EPS</th><th>Adjusted EPS</th><th>YoY成長率</th><th>健全性</th>';
-      html += '</tr></thead><tbody>';
+    function updateHeader(data) {
+      document.getElementById('last-updated').innerText = 
+        `最終更新: ${new Date(data.last_updated).toLocaleDateString('ja-JP')}`;
+    }
 
-      allTickers.forEach(t => {
-        html += '<tr>';
-        html += `<td class="ticker-cell"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></td>`;
-        html += `<td>${t.company_name || ''}</td>`;
-        html += `<td>${t.latest_filing_date || ''}</td>`;
-        html += `<td class="number">${formatMoney(t.gaap_eps)}</td>`;
-        html += `<td class="number">${formatMoney(t.adjusted_eps)}</td>`;
-        html += `<td class="number" style="color:${t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)'}">${formatPercent(t.yoy_growth)}</td>`;
-        html += `<td><span class="health-badge ${healthClass(t.health)}">${t.health || 'Good'}</span></td>`;
-        html += '</tr>';
+    function setInitialDateRange(quarters) {
+      if (!quarters || quarters.length === 0) return;
+      const dates = quarters.map(q => q.filing_date).sort();
+      const minDate = dates[0];
+      const maxDate = dates[dates.length - 1];
+      document.getElementById('start-date').value = minDate;
+      document.getElementById('end-date').value = maxDate;
+    }
+
+    function filterDataByDateRange(dataArray, labelField, startStr, endStr) {
+      if (!dataArray || dataArray.length === 0) return [];
+      const start = startStr ? new Date(startStr) : null;
+      const end = endStr ? new Date(endStr) : null;
+      
+      return dataArray.filter(item => {
+        const itemDate = new Date(item[labelField]);
+        if (start && itemDate < start) return false;
+        if (end && itemDate > end) return false;
+        return true;
+      });
+    }
+
+    function applyDateRange() {
+      if (!quarterlyData) return;
+
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      if (!startDate || !endDate) {
+        alert('開始日と終了日を入力してください。');
+        return;
+      }
+
+      const filtered = filterDataByDateRange(quarterlyData.quarters, 'filing_date', startDate, endDate);
+      console.log(`Date range: ${startDate} to ${endDate}, filtered count: ${filtered.length}`);
+
+      if (currentTab === 'quarterly') {
+        updateChart(filtered, 'quarterly', 'filing_date');
+        
+        const latestInRange = getLatestFromArray(filtered);
+        if (latestInRange) {
+          const latestCopy = JSON.parse(JSON.stringify(latestInRange));
+          updateMetricsWithQuarter(latestCopy, quarterlyData.quarters);
+          updateAI(latestCopy.ai_analysis);
+        } else {
+          resetMetrics();
+          updateAI(null);
+        }
+      } else if (currentTab === 'ttm') {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
+          const filteredTTM = ttmData.ttm.filter(item => {
+            const endDateStr = item.period.split(' to ')[1];
+            const itemEnd = new Date(endDateStr);
+            return itemEnd >= start && itemEnd <= end;
+          });
+          updateChart(filteredTTM, 'ttm', 'period');
+        } else {
+          updateChart([], 'ttm', '');
+        }
+      }
+    }
+
+    function setPreset(range) {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      const maxDate = dates[dates.length - 1];
+      const maxDateObj = new Date(maxDate);
+
+      let startDate;
+      const endDate = maxDate;
+
+      switch (range) {
+        case 'all':
+          startDate = dates[0];
+          break;
+        case '5y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 5)).toISOString().split('T')[0];
+          break;
+        case '4y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 4)).toISOString().split('T')[0];
+          break;
+        case '3y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 3)).toISOString().split('T')[0];
+          break;
+        case '2y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 2)).toISOString().split('T')[0];
+          break;
+        case '1y':
+          startDate = new Date(maxDateObj.setFullYear(maxDateObj.getFullYear() - 1)).toISOString().split('T')[0];
+          break;
+        default:
+          return;
+      }
+
+      if (startDate < dates[0]) {
+        startDate = dates[0];
+      }
+
+      document.getElementById('start-date').value = startDate;
+      document.getElementById('end-date').value = endDate;
+      applyDateRange();
+    }
+
+    function resetDateRange() {
+      if (!quarterlyData) return;
+      const dates = quarterlyData.quarters.map(q => q.filing_date).sort();
+      document.getElementById('start-date').value = dates[0];
+      document.getElementById('end-date').value = dates[dates.length - 1];
+      applyDateRange();
+    }
+
+    function getLatestFromArray(dataArray) {
+      if (!dataArray || dataArray.length === 0) return null;
+      const sorted = [...dataArray].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+      return sorted[0];
+    }
+
+    function calculateYoY(latest, allQuarters) {
+        const latestDate = latest.filing_date;
+        const [year, month] = latestDate.split('-');
+        const latestQuarter = Math.floor((parseInt(month) - 1) / 3) + 1;
+        
+        const targetYear = parseInt(year) - 1;
+        
+        const candidates = allQuarters.filter(q => {
+            const qYear = parseInt(q.filing_date.split('-')[0]);
+            const qMonth = parseInt(q.filing_date.split('-')[1]);
+            const qQuarter = Math.floor((qMonth - 1) / 3) + 1;
+            return qYear === targetYear && qQuarter === latestQuarter;
+        });
+
+        if (candidates.length > 0) {
+            const prevQuarter = candidates.reduce((prev, curr) => {
+                const prevDiff = Math.abs(new Date(latestDate) - new Date(prev.filing_date));
+                const currDiff = Math.abs(new Date(latestDate) - new Date(curr.filing_date));
+                return currDiff < prevDiff ? curr : prev;
+            });
+            
+            const prevEps = prevQuarter.adjusted_eps;
+            if (Math.abs(prevEps) > 0.0001) {
+                return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+            }
+        }
+
+        const idx = allQuarters.findIndex(q => q.filing_date === latestDate);
+        if (idx >= 4 && idx - 4 < allQuarters.length) {
+            const prevEps = allQuarters[idx - 4].adjusted_eps;
+            if (Math.abs(prevEps) > 0.0001) {
+                return (latest.adjusted_eps - prevEps) / Math.abs(prevEps);
+            }
+        }
+
+        const oneYearAgo = new Date(latestDate);
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const oneYearAgoStr = oneYearAgo.toISOString().split('T')[0];
+        const prevByDate = allQuarters.find(q => q.filing_date === oneYearAgoStr);
+        if (prevByDate && Math.abs(prevByDate.adjusted_eps) > 0.0001) {
+            return (latest.adjusted_eps - prevByDate.adjusted_eps) / Math.abs(prevByDate.adjusted_eps);
+        }
+        
+        return null;
+    }
+
+    function updateMetricsWithQuarter(quarter, allQuarters) {
+      document.getElementById('gaap-eps').innerText = `$${quarter.gaap_eps.toFixed(4)}`;
+      document.getElementById('adj-eps').innerText = `$${quarter.adjusted_eps.toFixed(4)}`;
+      
+      const diff = quarter.adjusted_eps - quarter.gaap_eps;
+      document.getElementById('diff').innerText = `$${diff.toFixed(4)}`;
+      document.getElementById('diff').className = diff >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+      
+      const yoy = calculateYoY(quarter, allQuarters);
+      if (yoy !== null) {
+        document.getElementById('yoy').innerText = (yoy * 100).toFixed(1) + '%';
+        document.getElementById('yoy').className = yoy >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+      } else {
+        document.getElementById('yoy').innerText = '--';
+      }
+    }
+
+    function resetMetrics() {
+      document.getElementById('gaap-eps').innerText = '$0.00';
+      document.getElementById('adj-eps').innerText = '$0.00';
+      document.getElementById('diff').innerText = '$0.00';
+      document.getElementById('diff').className = 'metric-value';
+      document.getElementById('yoy').innerText = '--';
+      document.getElementById('yoy').className = 'metric-value';
+    }
+
+    function updateAI(ai) {
+      const badge = document.getElementById('health-badge');
+      const commentEl = document.getElementById('ai-comment');
+      const sourcesEl = document.getElementById('ai-sources');
+
+      if (!ai) {
+        badge.innerText = 'Good';
+        badge.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-600';
+        badge.title = '健全性: Good';
+        commentEl.innerHTML = '<p>分析コメント準備中</p>';
+        sourcesEl.innerHTML = '';
+        return;
+      }
+
+      badge.innerText = ai.health || 'Good';
+      const colors = {
+        'Excellent': 'bg-green-600',
+        'Good': 'bg-green-600',
+        'Caution': 'bg-yellow-600',
+        'Warning': 'bg-red-600',
+        'Error': 'bg-gray-600'
+      };
+      badge.className = `px-3 py-1 rounded-full text-sm font-semibold ${colors[ai.health] || 'bg-green-600'}`;
+      
+      const tooltips = {
+        'Excellent': '健全性: Excellent（非常に健全、調整後EPSは持続可能）',
+        'Good': '健全性: Good（調整項目がなく、EPSは安定しています）',
+        'Caution': '健全性: Caution（一部の調整項目に注意が必要）',
+        'Warning': '健全性: Warning（大幅な調整があり、実態を確認要）',
+        'Error': '健全性: Error（AI分析エラー）'
+      };
+      badge.title = tooltips[ai.health] || '健全性評価';
+      
+      commentEl.innerHTML = `<p>${ai.comment || '分析コメント準備中'}</p>`;
+      
+      if (ai.sources && ai.sources.length) {
+        let sourcesHtml = '<div style="font-family:var(--mono);font-size:10px;color:var(--mut);margin-bottom:6px">引用ソース:</div><ul>';
+        ai.sources.forEach(source => {
+          sourcesHtml += `<li><span style="color:var(--acc)">${source.item}:</span> ${source.snippet}</li>`;
+        });
+        sourcesHtml += '</ul>';
+        sourcesEl.innerHTML = sourcesHtml;
+      } else {
+        sourcesEl.innerHTML = '';
+      }
+    }
+
+    function formatLabel(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length < 2) return dateStr;
+      const [year, month] = parts;
+      const quarter = Math.floor((parseInt(month) - 1) / 3) + 1;
+      return `${year}-Q${quarter}`;
+    }
+
+    function updateChart(dataArray, type, labelField) {
+      const ctx = document.getElementById('eps-chart').getContext('2d');
+
+      if (!dataArray || dataArray.length === 0) {
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: [], datasets: [] },
+          options: { plugins: { legend: { display: false } } }
+        });
+        return;
+      }
+
+      const sorted = [...dataArray].sort((a, b) => a[labelField].localeCompare(b[labelField]));
+      const labels = sorted.map(item => formatLabel(item[labelField]));
+      let gaapData, adjData;
+
+      if (type === 'quarterly') {
+        gaapData = sorted.map(item => item.gaap_eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else if (type === 'ttm') {
+        gaapData = sorted.map(item => item.eps);
+        adjData = sorted.map(item => item.adjusted_eps);
+      } else {
+        return;
+      }
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'GAAP EPS',
+              data: gaapData,
+              borderColor: 'rgb(156, 163, 175)',
+              backgroundColor: 'rgba(156, 163, 175, 0.1)',
+              tension: 0.1,
+              datalabels: {
+                align: 'top',
+                offset: 4,
+                color: 'white',
+                font: { size: 10 },
+                formatter: (value) => value.toFixed(2)
+              }
+            },
+            {
+              label: 'Adjusted EPS',
+              data: adjData,
+              borderColor: 'rgb(34, 197, 94)',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              tension: 0.1,
+              datalabels: {
+                align: 'bottom',
+                offset: 4,
+                color: '#4ade80',
+                font: { size: 10 },
+                formatter: (value) => value.toFixed(2)
+              }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: 'white' } },
+            datalabels: {
+              display: true,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              borderRadius: 4,
+              padding: { top: 2, bottom: 2, left: 4, right: 4 }
+            }
+          },
+          scales: {
+            y: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white' },
+              beginAtZero: false
+            },
+            x: { 
+              grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+              ticks: { color: 'white', maxRotation: 45, autoSkip: true }
+            }
+          }
+        }
+      });
+    }
+
+    function updateAllAdjustments(quarters) {
+      const container = document.getElementById('adjustments-accordion');
+      const sorted = [...quarters].sort((a, b) => b.filing_date.localeCompare(a.filing_date));
+      
+      let html = '';
+      sorted.forEach(q => {
+        html += `<div class="border border-gray-700 rounded-lg overflow-hidden">`;
+        html += `<div class="bg-gray-750 px-4 py-2.5 text-sm font-semibold text-gray-300 border-b border-gray-700/50 bg-gray-900/40">${q.filing_date}</div>`;
+        
+        if (q.adjustments && q.adjustments.length > 0) {
+          html += `<div class="p-4 bg-gray-750">`;
+          html += `<table class="w-full text-sm">`;
+          html += `<thead><tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-gray-700"><th class="text-left pb-2">項目</th><th class="text-right pb-2">金額（税後）</th><th class="text-left pb-2">理由</th><th class="text-left pb-2">抽出元</th></tr></thead>`;
+          html += `<tbody>`;
+          q.adjustments.forEach(item => {
+            html += `<tr class="border-t border-gray-700">`;
+            html += `<td class="py-2">${item.item_name}</td>`;
+            html += `<td class="text-right text-green-400">+$${(item.net_amount/1e6).toFixed(1)}M</td>`;
+            html += `<td>${item.reason}</td>`;
+            html += `<td><span class="text-xs bg-gray-600 px-2 py-1 rounded">${item.extracted_from}</span></td>`;
+            html += `</tr>`;
+          });
+          html += `</tbody></table>`;
+          html += `</div>`;
+        } else {
+          html += `<div class="p-4 text-gray-400">この四半期には調整項目はありません。</div>`;
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    async function switchTab(tab) {
+      currentTab = tab;
+      ['quarterly', 'ttm'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          el.className = 'px-4 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white transition-all';
+        } else {
+          el.className = 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition-all';
+        }
       });
 
-      html += '</tbody></table></div>';
+      if (!currentTicker) return;
 
-      contentDiv.innerHTML = html;
-
-    } catch (e) {
-      contentDiv.innerHTML = `<div class="empty">⚠️ データを読み込めませんでした。<br><small>${e.message}</small></div>`;
+      if (tab === 'quarterly' && quarterlyData) {
+        applyDateRange();
+        updateAllAdjustments(quarterlyData.quarters);
+      } else if (tab === 'ttm') {
+        if (!ttmData || !ttmData.ttm || ttmData.ttm.length === 0) {
+          updateChart([], 'ttm', '');
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
+        } else {
+          const startDate = document.getElementById('start-date').value;
+          const endDate = document.getElementById('end-date').value;
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          
+          const filteredTTM = ttmData.ttm.filter(item => {
+            const endDateStr = item.period.split(' to ')[1];
+            const itemEnd = new Date(endDateStr);
+            return itemEnd >= start && itemEnd <= end;
+          });
+          
+          updateChart(filteredTTM, 'ttm', 'period');
+          
+          document.getElementById('adjustments-accordion').innerHTML = '<p class="text-gray-400">TTMデータには調整内訳はありません。</p>';
+          document.getElementById('ai-comment').innerHTML = '<p>TTMデータにはAI分析はありません。</p>';
+          document.getElementById('ai-sources').innerHTML = '';
+        }
+      }
     }
-  })();
-</script>
+
+    window.onload = () => loadTicker();
+  </script>
 </body>
 </html>
