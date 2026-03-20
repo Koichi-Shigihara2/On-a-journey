@@ -606,9 +606,15 @@
       }
     }
 
-    function formatLabel(dateStr) {
+    function formatLabel(dateStr, item) {
       if (!dateStr) return '';
-      const [year, month] = dateStr.split('-');
+      // ★ fiscal_year + quarter が存在する場合はそちらを優先（決算期末日ベース）
+      if (item && item.fiscal_year && item.quarter) {
+        return `${item.fiscal_year}-Q${item.quarter}`;
+      }
+      // ★ period_end が存在する場合は period_end の月からQ番号を計算
+      const base = (item && item.period_end) ? item.period_end : dateStr;
+      const [year, month] = base.split('-');
       return `${year}-Q${Math.floor((parseInt(month)-1)/3)+1}`;
     }
 
@@ -620,7 +626,8 @@
 
       const sorted = [...dataArray].sort((a,b) => a[labelField].localeCompare(b[labelField]));
       const labels = sorted.map(item => formatLabel(
-        type === 'ttm' ? item.period.split(' to ')[1] : item[labelField]
+        type === 'ttm' ? item.period.split(' to ')[1] : item[labelField],
+        type === 'ttm' ? null : item
       ));
       const gaapData = sorted.map(item => type === 'quarterly' ? item.gaap_eps : item.eps);
       const adjData  = sorted.map(item => item.adjusted_eps);
