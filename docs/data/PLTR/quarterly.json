@@ -1,12 +1,12 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-20T01:55:14.564560",
+  "last_updated": "2026-03-20T02:05:58.377854",
   "quarters": [
     {
       "gaap_eps": 0.18498189655071826,
-      "adjusted_eps": 0.2424775109405363,
+      "adjusted_eps": 0.2406251913435732,
       "gaap_net_income": 475599000.0,
-      "adjusted_net_income": 623423501.8462424,
+      "adjusted_net_income": 618661082.5802333,
       "diluted_shares_used": 2571057000.0,
       "adjustments": [
         {
@@ -21,22 +21,9 @@
           "category": "研究開発関連",
           "net_amount": 143062082.5802333,
           "tax_rate_applied": 0.007829319581434938
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 4800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4762419.266009112,
-          "tax_rate_applied": 0.007829319581434938
         }
       ],
-      "net_adjustment_total": 147824501.84624243,
+      "net_adjustment_total": 143062082.5802333,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -58,24 +45,20 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "マイルストーン型R&D費の加算は成功報酬型の一過性費用として一定の合理性がありますが、不動産関連の減価償却費を「実態価値維持」の理由で加算するのはソフトウェア企業としては非標準的で、調整の恣意性が高い可能性があります。調整項目の選択性と税率の異常な低さ（約0.78%）も考慮すると、Adjusted EPSの健全性は注意が必要です。",
+        "comment": "調整項目は成功報酬型の一過性R&D費用をAdd-backしており、金額も約1.44億ドルとEPS差に大きく寄与しています。ただし、研究開発はPLTRの技術企業としてのコア活動であり、定期的に発生する可能性が高いため調整の持続可能性に疑問があります。また適用税率が0.78%と極めて低く、税効果の計算根拠が不明瞭です。非GAAP利益の質に注意が必要です。",
         "sources": [
           {
             "item": "milestone_rd",
             "snippet": "成功報酬型の一過性R&D費用"
-          },
-          {
-            "item": "depreciation",
-            "snippet": "不動産の実態価値維持のため会計上の減価を除外"
           }
         ]
       }
     },
     {
       "gaap_eps": 0.1274827227778402,
-      "adjusted_eps": 0.18168438610460888,
+      "adjusted_eps": 0.17960034502057798,
       "gaap_net_income": 326727000.0,
-      "adjusted_net_income": 465641093.3601354,
+      "adjusted_net_income": 460299879.4573796,
       "diluted_shares_used": 2562912000.0,
       "adjustments": [
         {
@@ -90,22 +73,9 @@
           "category": "研究開発関連",
           "net_amount": 133572879.4573796,
           "tax_rate_applied": 0.010886314304483793
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 5400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5341213.902755788,
-          "tax_rate_applied": 0.010886314304483793
         }
       ],
-      "net_adjustment_total": 138914093.36013538,
+      "net_adjustment_total": 133572879.4573796,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -118,9 +88,9 @@
     },
     {
       "gaap_eps": 0.08384107288494519,
-      "adjusted_eps": 0.13743286080665248,
+      "adjusted_eps": 0.13533330290988427,
       "gaap_net_income": 214031000.0,
-      "adjusted_net_income": 350841080.85871696,
+      "adjusted_net_income": 345481291.66780496,
       "diluted_shares_used": 2552818000.0,
       "adjustments": [
         {
@@ -135,22 +105,9 @@
           "category": "研究開発関連",
           "net_amount": 131450291.66780496,
           "tax_rate_applied": 0.025492874379638483
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 5500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5359789.190911989,
-          "tax_rate_applied": 0.025492874379638483
         }
       ],
-      "net_adjustment_total": 136810080.85871693,
+      "net_adjustment_total": 131450291.66780496,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -163,9 +120,9 @@
     },
     {
       "gaap_eps": 0.05835324519665684,
-      "adjusted_eps": 0.10603367745109141,
+      "adjusted_eps": 0.1036815636121682,
       "gaap_net_income": 143525000.0,
-      "adjusted_net_income": 260799266.68825248,
+      "adjusted_net_income": 255014033.36328915,
       "diluted_shares_used": 2459589000.0,
       "adjustments": [
         {
@@ -180,22 +137,9 @@
           "category": "研究開発関連",
           "net_amount": 111489033.36328915,
           "tax_rate_applied": 0.05160109426830719
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 6100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5785233.324963327,
-          "tax_rate_applied": 0.05160109426830719
         }
       ],
-      "net_adjustment_total": 117274266.68825248,
+      "net_adjustment_total": 111489033.36328915,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -208,9 +152,9 @@
     },
     {
       "gaap_eps": 0.055545708445286696,
-      "adjusted_eps": 0.10130956704671835,
+      "adjusted_eps": 0.09891733181955889,
       "gaap_net_income": 134126000.0,
-      "adjusted_net_income": 244631806.30944264,
+      "adjusted_net_income": 238855285.4753616,
       "diluted_shares_used": 2414696000.0,
       "adjustments": [
         {
@@ -225,22 +169,9 @@
           "category": "研究開発関連",
           "net_amount": 104729285.4753616,
           "tax_rate_applied": 0.037246527653160104
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5776520.83408104,
-          "tax_rate_applied": 0.037246527653160104
         }
       ],
-      "net_adjustment_total": 110505806.30944264,
+      "net_adjustment_total": 104729285.4753616,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -253,9 +184,9 @@
     },
     {
       "gaap_eps": 0.043968873054409656,
-      "adjusted_eps": 0.09027415988323115,
+      "adjusted_eps": 0.08787988445257855,
       "gaap_net_income": 105530000.0,
-      "adjusted_net_income": 216667643.05486226,
+      "adjusted_net_income": 210921125.83382493,
       "diluted_shares_used": 2400107000.0,
       "adjustments": [
         {
@@ -270,22 +201,9 @@
           "category": "研究開発関連",
           "net_amount": 105391125.83382493,
           "tax_rate_applied": 0.04224712982710895
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5746517.221037346,
-          "tax_rate_applied": 0.04224712982710895
         }
       ],
-      "net_adjustment_total": 111137643.05486228,
+      "net_adjustment_total": 105391125.83382493,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -298,9 +216,9 @@
     },
     {
       "gaap_eps": 0.0307469040247678,
-      "adjusted_eps": 0.07487965504682446,
+      "adjusted_eps": 0.07239736510825798,
       "gaap_net_income": 71505000.0,
-      "adjusted_net_income": 174140125.776895,
+      "adjusted_net_income": 168367312.29576474,
       "diluted_shares_used": 2325600000.0,
       "adjustments": [
         {
@@ -315,22 +233,9 @@
           "category": "研究開発関連",
           "net_amount": 96862312.29576473,
           "tax_rate_applied": 0.08368039982059332
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 6300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5772813.481130262,
-          "tax_rate_applied": 0.08368039982059332
         }
       ],
-      "net_adjustment_total": 102635125.77689499,
+      "net_adjustment_total": 96862312.29576473,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -343,9 +248,9 @@
     },
     {
       "gaap_eps": 0.01234639434103474,
-      "adjusted_eps": 0.05535095021906033,
+      "adjusted_eps": 0.05290595827087205,
       "gaap_net_income": 28127000.0,
-      "adjusted_net_income": 126098043.99630338,
+      "adjusted_net_income": 120527973.36457852,
       "diluted_shares_used": 2278155000.0,
       "adjustments": [
         {
@@ -360,22 +265,9 @@
           "category": "研究開発関連",
           "net_amount": 92400973.36457852,
           "tax_rate_applied": 0.07165489471252227
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5570070.631724866,
-          "tax_rate_applied": 0.07165489471252227
         }
       ],
-      "net_adjustment_total": 97971043.99630338,
+      "net_adjustment_total": 92400973.36457852,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -388,9 +280,9 @@
     },
     {
       "gaap_eps": 0.007577209564727598,
-      "adjusted_eps": 0.046932948255083574,
+      "adjusted_eps": 0.04451421014807211,
       "gaap_net_income": 16802000.0,
-      "adjusted_net_income": 104070949.84580426,
+      "adjusted_net_income": 98707545.63653088,
       "diluted_shares_used": 2217439000.0,
       "adjustments": [
         {
@@ -405,22 +297,9 @@
           "category": "研究開発関連",
           "net_amount": 81905545.63653088,
           "tax_rate_applied": 0.0909484391062057
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 5900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5363404.209273387,
-          "tax_rate_applied": 0.0909484391062057
         }
       ],
-      "net_adjustment_total": 87268949.84580426,
+      "net_adjustment_total": 81905545.63653088,
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -433,9 +312,9 @@
     },
     {
       "gaap_eps": -0.059748753777254714,
-      "adjusted_eps": -0.008904535022564709,
+      "adjusted_eps": -0.011533674884648279,
       "gaap_net_income": -123875000.0,
-      "adjusted_net_income": -18461460.80355762,
+      "adjusted_net_income": -23912364.459720314,
       "diluted_shares_used": 2073265000.0,
       "adjustments": [
         {
@@ -450,22 +329,9 @@
           "category": "研究開発関連",
           "net_amount": 99962635.54027969,
           "tax_rate_applied": 0.008926607970418395
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 5500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 5450903.656162699,
-          "tax_rate_applied": 0.008926607970418395
         }
       ],
-      "net_adjustment_total": 105413539.19644238,
+      "net_adjustment_total": 99962635.54027969,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -478,9 +344,9 @@
     },
     {
       "gaap_eps": -0.08727325641096768,
-      "adjusted_eps": -0.04283385955134995,
+      "adjusted_eps": -0.044991786905843587,
       "gaap_net_income": -179329000.0,
-      "adjusted_net_income": -88014971.77225432,
+      "adjusted_net_income": -92449078.74234049,
       "diluted_shares_used": 2054799000.0,
       "adjustments": [
         {
@@ -495,22 +361,9 @@
           "category": "研究開発関連",
           "net_amount": 86879921.25765951,
           "tax_rate_applied": 0.01464289553640638
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 4500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 4434106.970086171,
-          "tax_rate_applied": 0.01464289553640638
         }
       ],
-      "net_adjustment_total": 91314028.22774568,
+      "net_adjustment_total": 86879921.25765951,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -523,9 +376,9 @@
     },
     {
       "gaap_eps": -0.049785715022341914,
-      "adjusted_eps": -0.005286248332729227,
+      "adjusted_eps": -0.007162483895425913,
       "gaap_net_income": -101379000.0,
-      "adjusted_net_income": -10764424.483674854,
+      "adjusted_net_income": -14585016.093643054,
       "diluted_shares_used": 2036307000.0,
       "adjustments": [
         {
@@ -542,19 +395,6 @@
           "tax_rate_applied": 0.020361125649180724
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 3900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3820591.609968195,
-          "tax_rate_applied": 0.020361125649180724
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -3000,
@@ -568,7 +408,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 90614575.51632515,
+      "net_adjustment_total": 86793983.90635695,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -581,9 +421,9 @@
     },
     {
       "gaap_eps": -0.05199412541774948,
-      "adjusted_eps": -0.0031114506827972037,
+      "adjusted_eps": -0.004667009232505177,
       "gaap_net_income": -102137000.0,
-      "adjusted_net_income": -6112118.164033413,
+      "adjusted_net_income": -9167849.601287007,
       "diluted_shares_used": 1964395000.0,
       "adjustments": [
         {
@@ -598,22 +438,9 @@
           "category": "研究開発関連",
           "net_amount": 92969150.398713,
           "tax_rate_applied": 0.014280181531097627
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 3100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3055731.437253597,
-          "tax_rate_applied": 0.014280181531097627
         }
       ],
-      "net_adjustment_total": 96024881.83596659,
+      "net_adjustment_total": 92969150.398713,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -626,9 +453,9 @@
     },
     {
       "gaap_eps": -0.07314449547821553,
-      "adjusted_eps": -0.01552585615779511,
+      "adjusted_eps": -0.017097863672873817,
       "gaap_net_income": -138580000.0,
-      "adjusted_net_income": -29415380.231695563,
+      "adjusted_net_income": -32393715.10180877,
       "diluted_shares_used": 1894606000.0,
       "adjustments": [
         {
@@ -643,22 +470,9 @@
           "category": "研究開発関連",
           "net_amount": 106186284.89819123,
           "tax_rate_applied": 0.039246816092511835
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 3100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 2978334.8701132135,
-          "tax_rate_applied": 0.039246816092511835
         }
       ],
-      "net_adjustment_total": 109164619.76830444,
+      "net_adjustment_total": 106186284.89819123,
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -671,9 +485,9 @@
     },
     {
       "gaap_eps": -0.06779971864055727,
-      "adjusted_eps": -0.012397097409075821,
+      "adjusted_eps": -0.014108939895843855,
       "gaap_net_income": -123474000.0,
-      "adjusted_net_income": -22577073.123317704,
+      "adjusted_net_income": -25694608.762835205,
       "diluted_shares_used": 1821158000.0,
       "adjustments": [
         {
@@ -690,19 +504,6 @@
           "tax_rate_applied": 0.025770112650782575
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 3200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 3117535.639517496,
-          "tax_rate_applied": 0.025770112650782575
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 1846000,
@@ -716,7 +517,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 100896926.8766823,
+      "net_adjustment_total": 97779391.2371648,
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",

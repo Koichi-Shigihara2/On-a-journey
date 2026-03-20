@@ -1,12 +1,12 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-03-20T01:55:46.370853",
+  "last_updated": "2026-03-20T02:06:34.183096",
   "quarters": [
     {
       "gaap_eps": 0.3893930799773114,
-      "adjusted_eps": 1.1677784235861008,
+      "adjusted_eps": 0.8972273901484422,
       "gaap_net_income": 1373000000.0,
-      "adjusted_net_income": 4117586721.5645914,
+      "adjusted_net_income": 3163623777.6634073,
       "diluted_shares_used": 3526000000.0,
       "adjustments": [
         {
@@ -49,19 +49,6 @@
           "tax_rate_applied": 0.29336078229541945
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 1350000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 953962943.9011838,
-          "tax_rate_applied": 0.29336078229541945
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 238000000,
@@ -75,7 +62,7 @@
           "tax_rate_applied": 0.29336078229541945
         }
       ],
-      "net_adjustment_total": 2744586721.5645914,
+      "net_adjustment_total": 1790623777.6634073,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -88,7 +75,7 @@
       "diluted_shares": 3526000000.0,
       "maturity_monitor": {
         "alert": null,
-        "sbc_contribution": 0.171,
+        "sbc_contribution": 0.262,
         "sbc_to_revenue": 0.017,
         "sbc_per_share": 0.1329,
         "sector_threshold": {
@@ -97,25 +84,29 @@
         }
       },
       "ai_analysis": {
-        "health": "Warning",
-        "comment": "調整後EPSがGAAP EPSの約3倍となっており、調整幅が極めて大きい。減価償却費の全額加算やマイルストーン型R&D費1.63Bの調整は、事業運営に不可欠な項目を除外しており、持続的な収益力を過大評価するリスクが高い。株式報酬の調整は一般的だが、全体として積極的な調整姿勢が見られるため注意を要する。",
+        "health": "Caution",
+        "comment": "調整項目総額は約25億ドル超と大きく、特にマイルストーン型R&Dの16.3億ドルを一過性として全額加算している点が懸念されます。SBCも継続的に発生する性質の費用であり、GAAP EPSの2倍以上となる調整後EPSは持続可能性を過大評価している可能性があります。全体として調整の積極性に注意が必要です。",
         "sources": [
-          {
-            "item": "減価償却費",
-            "snippet": "不動産の実態価値維持のため会計上の減価を除外"
-          },
           {
             "item": "マイルストーン型研究開発費",
             "snippet": "成功報酬型の一過性R&D費用"
+          },
+          {
+            "item": "株式報酬費用",
+            "snippet": "非現金費用"
+          },
+          {
+            "item": "リストラ費用",
+            "snippet": "一過性の事業再編費用"
           }
         ]
       }
     },
     {
       "gaap_eps": 0.333049161693663,
-      "adjusted_eps": 1.0663664210465942,
+      "adjusted_eps": 0.8161988600095516,
       "gaap_net_income": 1172000000.0,
-      "adjusted_net_income": 3752543435.6629653,
+      "adjusted_net_income": 2872203788.373612,
       "diluted_shares_used": 3519000000.0,
       "adjustments": [
         {
@@ -156,22 +147,9 @@
           "category": "研究開発関連",
           "net_amount": 1216399738.7328544,
           "tax_rate_applied": 0.23448726322664926
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 1150000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 880339647.2893534,
-          "tax_rate_applied": 0.23448726322664926
         }
       ],
-      "net_adjustment_total": 2580543435.6629653,
+      "net_adjustment_total": 1700203788.373612,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -185,9 +163,9 @@
     },
     {
       "gaap_eps": 0.1161601817665436,
-      "adjusted_eps": 0.7323783448591693,
+      "adjusted_eps": 0.5012637963617209,
       "gaap_net_income": 409000000.0,
-      "adjusted_net_income": 2578704152.249135,
+      "adjusted_net_income": 1764949826.9896195,
       "diluted_shares_used": 3521000000.0,
       "adjustments": [
         {
@@ -230,19 +208,6 @@
           "tax_rate_applied": 0.29238754325259514
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 1150000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 813754325.2595156,
-          "tax_rate_applied": 0.29238754325259514
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -43000000,
@@ -256,7 +221,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2169704152.249135,
+      "net_adjustment_total": 1355949826.9896195,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -270,9 +235,9 @@
     },
     {
       "gaap_eps": 0.6196740062911067,
-      "adjusted_eps": 1.1912332016928713,
+      "adjusted_eps": 0.9562538926984105,
       "gaap_net_income": 2167000000.0,
-      "adjusted_net_income": 4165742506.319971,
+      "adjusted_net_income": 3344019862.7663417,
       "diluted_shares_used": 3497000000.0,
       "adjustments": [
         {
@@ -313,22 +278,9 @@
           "category": "研究開発関連",
           "net_amount": 813114120.6211629,
           "tax_rate_applied": 0.2174070061394005
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 1050000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 821722643.5536295,
-          "tax_rate_applied": 0.2174070061394005
         }
       ],
-      "net_adjustment_total": 1998742506.319971,
+      "net_adjustment_total": 1177019862.7663417,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -342,9 +294,9 @@
     },
     {
       "gaap_eps": 0.4245906348750359,
-      "adjusted_eps": 0.9982128122237864,
+      "adjusted_eps": 0.7729432541857063,
       "gaap_net_income": 1478000000.0,
-      "adjusted_net_income": 3474778799.351001,
+      "adjusted_net_income": 2690615467.8204436,
       "diluted_shares_used": 3481000000.0,
       "adjustments": [
         {
@@ -385,22 +337,9 @@
           "category": "研究開発関連",
           "net_amount": 858502974.5808545,
           "tax_rate_applied": 0.20064899945916712
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 981000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 784163331.530557,
-          "tax_rate_applied": 0.20064899945916712
         }
       ],
-      "net_adjustment_total": 1996778799.3510008,
+      "net_adjustment_total": 1212615467.8204436,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -414,9 +353,9 @@
     },
     {
       "gaap_eps": 0.324052812858783,
-      "adjusted_eps": 0.8648013036554202,
+      "adjusted_eps": 0.6780487830935037,
       "gaap_net_income": 1129000000.0,
-      "adjusted_net_income": 3012967741.935484,
+      "adjusted_net_income": 2362321960.2977667,
       "diluted_shares_used": 3484000000.0,
       "adjustments": [
         {
@@ -459,19 +398,6 @@
           "tax_rate_applied": 0.29962779156327546
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 929000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 650645781.6377171,
-          "tax_rate_applied": 0.29962779156327546
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": 63000000,
@@ -485,7 +411,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1883967741.935484,
+      "net_adjustment_total": 1233321960.2977667,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -499,9 +425,9 @@
     },
     {
       "gaap_eps": 0.5304895505296306,
-      "adjusted_eps": 1.1949145816385245,
+      "adjusted_eps": 0.9593457069726441,
       "gaap_net_income": 1853000000.0,
-      "adjusted_net_income": 4173836633.6633663,
+      "adjusted_net_income": 3350994554.455446,
       "diluted_shares_used": 3493000000.0,
       "adjustments": [
         {
@@ -542,22 +468,9 @@
           "category": "研究開発関連",
           "net_amount": 1065016336.6336634,
           "tax_rate_applied": 0.08267326732673268
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 897000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 822842079.2079208,
-          "tax_rate_applied": 0.08267326732673268
         }
       ],
-      "net_adjustment_total": 2320836633.6633663,
+      "net_adjustment_total": 1497994554.4554458,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -571,9 +484,9 @@
     },
     {
       "gaap_eps": 0.7771707878090857,
-      "adjusted_eps": 1.3419422889300967,
+      "adjusted_eps": 1.1323681439029276,
       "gaap_net_income": 2703000000.0,
-      "adjusted_net_income": 4667275280.898876,
+      "adjusted_net_income": 3938376404.494382,
       "diluted_shares_used": 3478000000.0,
       "adjustments": [
         {
@@ -614,22 +527,9 @@
           "category": "研究開発関連",
           "net_amount": 842342696.6292135,
           "tax_rate_applied": 0.10674157303370786
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 816000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 728898876.4044944,
-          "tax_rate_applied": 0.10674157303370786
         }
       ],
-      "net_adjustment_total": 1964275280.8988762,
+      "net_adjustment_total": 1235376404.494382,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -643,9 +543,9 @@
     },
     {
       "gaap_eps": 0.7246251441753172,
-      "adjusted_eps": 1.209525196481748,
+      "adjusted_eps": 1.0209241315594053,
       "gaap_net_income": 2513000000.0,
-      "adjusted_net_income": 4194633381.398702,
+      "adjusted_net_income": 3540564888.2480173,
       "diluted_shares_used": 3468000000.0,
       "adjustments": [
         {
@@ -688,19 +588,6 @@
           "tax_rate_applied": 0.09408795962509012
         },
         {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 722000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 654068493.150685,
-          "tax_rate_applied": 0.09408795962509012
-        },
-        {
           "item_id": "tax_one_time",
           "item_name": "一過性税効果",
           "amount": -55000000,
@@ -714,7 +601,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 1681633381.3987021,
+      "net_adjustment_total": 1027564888.2480173,
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -728,9 +615,9 @@
     },
     {
       "gaap_eps": 0.9492502883506344,
-      "adjusted_eps": 1.4005202336048976,
+      "adjusted_eps": 1.2369018908811296,
       "gaap_net_income": 3292000000.0,
-      "adjusted_net_income": 4857004170.141785,
+      "adjusted_net_income": 4289575757.5757575,
       "diluted_shares_used": 3468000000.0,
       "adjustments": [
         {
@@ -771,22 +658,9 @@
           "category": "研究開発関連",
           "net_amount": 670846816.7917709,
           "tax_rate_applied": 0.08479288295802058
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 620000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 567428412.5660273,
-          "tax_rate_applied": 0.08479288295802058
         }
       ],
-      "net_adjustment_total": 1565004170.1417847,
+      "net_adjustment_total": 997575757.5757575,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -800,9 +674,9 @@
     },
     {
       "gaap_eps": 0.6521362586605081,
-      "adjusted_eps": 1.075601361686812,
+      "adjusted_eps": 0.9226245932185597,
       "gaap_net_income": 2259000000.0,
-      "adjusted_net_income": 3725883116.8831167,
+      "adjusted_net_income": 3195971590.909091,
       "diluted_shares_used": 3464000000.0,
       "adjustments": [
         {
@@ -843,22 +717,9 @@
           "category": "研究開発関連",
           "net_amount": 611506899.3506494,
           "tax_rate_applied": 0.08319805194805195
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 578000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 529911525.97402596,
-          "tax_rate_applied": 0.08319805194805195
         }
       ],
-      "net_adjustment_total": 1466883116.8831167,
+      "net_adjustment_total": 936971590.9090909,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -872,9 +733,9 @@
     },
     {
       "gaap_eps": 0.9556451612903226,
-      "adjusted_eps": 1.4319028208198339,
+      "adjusted_eps": 1.2881908983659671,
       "gaap_net_income": 3318000000.0,
-      "adjusted_net_income": 4971566593.886463,
+      "adjusted_net_income": 4472598799.126637,
       "diluted_shares_used": 3472000000.0,
       "adjustments": [
         {
@@ -915,22 +776,9 @@
           "category": "研究開発関連",
           "net_amount": 783316048.0349345,
           "tax_rate_applied": 0.09443231441048035
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 551000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 498967794.7598253,
-          "tax_rate_applied": 0.09443231441048035
         }
       ],
-      "net_adjustment_total": 1653566593.8864627,
+      "net_adjustment_total": 1154598799.1266375,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -944,9 +792,9 @@
     },
     {
       "gaap_eps": 0.4802612051053725,
-      "adjusted_eps": 0.8926962758666946,
+      "adjusted_eps": 0.7635657508655217,
       "gaap_net_income": 1618000000.0,
-      "adjusted_net_income": 3007493753.394894,
+      "adjusted_net_income": 2572453014.6659427,
       "diluted_shares_used": 3369000000.0,
       "adjustments": [
         {
@@ -974,22 +822,9 @@
           "category": "研究開発関連",
           "net_amount": 536989679.521999,
           "tax_rate_applied": 0.12112982074959261
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 495000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 435040738.7289517,
-          "tax_rate_applied": 0.12112982074959261
         }
       ],
-      "net_adjustment_total": 1389493753.3948941,
+      "net_adjustment_total": 954453014.6659425,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1003,9 +838,9 @@
     },
     {
       "gaap_eps": 1.0205540661304737,
-      "adjusted_eps": 2.2473298767296344,
+      "adjusted_eps": 1.8730455294852846,
       "gaap_net_income": 1142000000.0,
-      "adjusted_net_income": 2514762132.060461,
+      "adjusted_net_income": 2095937947.4940333,
       "diluted_shares_used": 1119000000.0,
       "adjustments": [
         {
@@ -1033,22 +868,9 @@
           "category": "研究開発関連",
           "net_amount": 523303102.6252983,
           "tax_rate_applied": 0.09148766905330151
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 461000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 418824184.566428,
-          "tax_rate_applied": 0.09148766905330151
         }
       ],
-      "net_adjustment_total": 1372762132.0604613,
+      "net_adjustment_total": 953937947.4940333,
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1062,9 +884,9 @@
     },
     {
       "gaap_eps": 0.38658428949691087,
-      "adjusted_eps": 1.6858734991670017,
+      "adjusted_eps": 1.3625761840847725,
       "gaap_net_income": 438000000.0,
-      "adjusted_net_income": 1910094674.556213,
+      "adjusted_net_income": 1543798816.5680473,
       "diluted_shares_used": 1133000000.0,
       "adjustments": [
         {
@@ -1092,22 +914,9 @@
           "category": "研究開発関連",
           "net_amount": 575360946.7455621,
           "tax_rate_applied": 0.13609467455621302
-        },
-        {
-          "item_id": "depreciation",
-          "item_name": "減価償却費",
-          "amount": 424000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "不動産の実態価値維持のため会計上の減価を除外",
-          "extracted_from": "us-gaap:Depreciation",
-          "category": "不動産関連",
-          "net_amount": 366295857.9881657,
-          "tax_rate_applied": 0.13609467455621302
         }
       ],
-      "net_adjustment_total": 1472094674.556213,
+      "net_adjustment_total": 1105798816.5680473,
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
