@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-20T04:19:34.074761",
+  "last_updated": "2026-03-20T04:25:59.060149",
   "quarters": [
     {
       "gaap_eps": 0.18498189655071826,
@@ -45,15 +45,15 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "マイルストーン型研究開発費144M USDを一過性費用として全額加算調整しており、調整理由は明確ですが、R&DがPalantirの事業コアであることを考慮すると調整の継続性に注意が必要です。GAAP EPS 0.185からAdjusted EPS 0.241へ約30%の上方修正となっており影響度が大きく、適用税率が0.78%と極めて低い点も特徴的です。全体として透明性はありますが、やや積極的な調整と評価します。",
+        "comment": "マイルストーン型研究開発費をadd_backする調整が1項目のみ適用されています。一過性・成功報酬型と説明されていますが、R&DはPLTRのAI・ソフトウェア事業におけるコア支出であり、再発の可能性が高いため調整の妥当性に注意が必要です。調整によりEPSが約30%押し上げられており、税効果が極めて低い点（0.78%）も確認を要します。",
         "sources": [
           {
             "item": "milestone_rd",
             "snippet": "成功報酬型の一過性R&D費用"
           },
           {
-            "item": "調整方向",
-            "snippet": "add_back, pre_tax: true, category: 研究開発関連"
+            "item": "extracted_from",
+            "snippet": "us-gaap:ResearchAndDevelopmentExpense"
           }
         ]
       }

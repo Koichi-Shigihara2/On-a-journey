@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-20T04:20:13.392372",
+  "last_updated": "2026-03-20T04:26:45.012084",
   "quarters": [
     {
       "gaap_eps": 0.10797119466836456,
@@ -17,7 +17,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 3014900.5795989255,
           "tax_rate_applied": 0.06165559302865682
@@ -58,15 +58,15 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用は非現金項目として標準的な調整ですが、マイルストーン型研究開発費1.67億ドルの加算は金額規模が非常に大きく、フィンテック企業におけるR&Dの本質的な性格から調整の妥当性に懸念があります。調整後EPSがGAAP EPSの2倍超となっており、収益の質について注意が必要です。",
+        "comment": "株式報酬費用の調整は非現金項目として標準的ですが、マイルストーン型R&D費の1.67億ドルという巨額の加算は調整後EPSをGAAP比で2倍以上に引き上げており、調整の依存度が高い。 fintech企業における大規模マイルストーン費用の「一過性」判定は慎重に検証する必要がある。",
         "sources": [
           {
-            "item": "株式報酬費用",
-            "snippet": "非現金費用 / amount: 3213000 / category: 株式報酬関連"
+            "item": "milestone_rd",
+            "snippet": "成功報酬型の一過性R&D費用 amount:167144000"
           },
           {
-            "item": "マイルストーン型研究開発費",
-            "snippet": "成功報酬型の一過性R&D費用 / amount: 167144000 / category: 研究開発関連"
+            "item": "sbc",
+            "snippet": "非現金費用 amount:3213000"
           }
         ]
       }
@@ -86,7 +86,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 54838743.65373645,
           "tax_rate_applied": 0.13306652880775813
@@ -189,7 +189,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 2462905.0974864927,
           "tax_rate_applied": 0.04870409521572312
@@ -234,7 +234,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 5171062.58148631,
           "tax_rate_applied": 0.13455019556714473
@@ -337,7 +337,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 61948320.97044896,
           "tax_rate_applied": 0.0009141041779056525
@@ -395,7 +395,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 11231546.311500335,
           "tax_rate_applied": 0.036084250643637614
@@ -511,7 +511,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 77601935.43404387,
           "tax_rate_applied": 0.0032504600341163987
@@ -556,7 +556,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 3117119.78143675,
           "tax_rate_applied": 0.0012432613147227215
@@ -659,7 +659,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 20402598.104868412,
           "tax_rate_applied": 0.0060604031339985265
@@ -704,7 +704,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 14693067.379317015,
           "tax_rate_applied": 0.00047160684918254813
