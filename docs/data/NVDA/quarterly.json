@@ -1,6 +1,6 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-20T10:41:02.560260",
+  "last_updated": "2026-03-20T11:18:12.571857",
   "quarters": [
     {
       "gaap_eps": 1.7524679774822551,
@@ -100,18 +100,9 @@
         }
       },
       "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整額が非常に大きく（投資評価変動90億超、SBC49億、マイルストーンR&D55億）、特に投資有価証券評価損益とマイルストーン型研究開発費のadd_backは一過性・非コア項目として扱うには規模が過大で主観的。SBCと無形資産償却は標準的調整だが、全体として調整後EPSの健全性に懸念あり。注意が必要。",
-        "sources": [
-          {
-            "item": "investment_gains",
-            "snippet": "amount: 9093000000.0, reason: 非営業性の評価変動, category: 金融関連"
-          },
-          {
-            "item": "milestone_rd",
-            "snippet": "amount: 5512000000.0, reason: 成功報酬型の一過性R&D費用, category: 研究開発関連"
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 503 Server Error: Service Unavailable for url: https://api.x.ai/v1/chat/completions",
+        "sources": []
       }
     },
     {
