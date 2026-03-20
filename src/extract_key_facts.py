@@ -85,6 +85,9 @@ def load_required_xbrl_tags() -> List[str]:
     tags.add("us-gaap:AllocatedShareBasedCompensationExpense")       # 銀行・金融機関で主に使用
     tags.add("us-gaap:EmployeeBenefitsAndShareBasedCompensation")    # 給付合算型
     tags.add("us-gaap:StockBasedCompensation")                       # 旧タグ名
+    tags.add("us-gaap:ShareBasedCompensationExpense")                # PLTR等で使用
+    tags.add("us-gaap:RestrictedStockExpense")                       # RSU費用（PLTR等）
+    tags.add("us-gaap:EmployeeServiceShareBasedCompensationNonvestedAwardsTotalCompensationCostNotYetRecognized")  # まれに使用
 
     # ★★★ 売上高タグ（SBC/売上高比率用）★★★
     tags.add("us-gaap:Revenues")
