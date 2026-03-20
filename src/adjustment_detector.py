@@ -68,6 +68,8 @@ SECTOR_ITEM_ID_TO_NAME = {
     'fx_gains_losses':              '為替差損益',
     'derivative_gains_losses':      'デリバティブ評価損益',
     'tax_one_time':                 '一過性税効果',
+    'loan_fair_value':              "ローン公正価値評価損益",
+    'loan_loss_provision_abnormal': "貸倒引当金繰入（異常変動）",
 }
 
 
