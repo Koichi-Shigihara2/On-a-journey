@@ -254,6 +254,10 @@
       background-size: 200% 100%;
     }
     .conf-val { font-family: var(--mono); font-size: 10px; color: var(--mut); min-width: 26px; }
+    /* ★ ウォーターフォール図 */
+    .wf-box { background: var(--sur); border: 1px solid var(--bdr); padding: 16px; margin-bottom: 16px; }
+    .wf-box h3 { font-family: var(--sans); font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--mut); letter-spacing: .08em; }
+    #waterfall-chart { width: 100%; height: 260px; }
 
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
@@ -383,6 +387,12 @@
         <div id="ai-sources"></div>
       </div>
 
+      <!-- ウォーターフォール図 -->
+      <div class="sec">ウォーターフォール図（最新四半期）</div>
+      <div class="wf-box">
+        <canvas id="waterfall-chart"></canvas>
+      </div>
+
       <!-- 調整内訳 -->
       <div class="sec">調整内訳（全期間）</div>
       <div class="adj-box">
@@ -483,8 +493,10 @@
         if (latest) {
           updateMetricsWithQuarter(JSON.parse(JSON.stringify(latest)), quarterlyData.quarters);
           updateAI(latest.ai_analysis);
+          updateWaterfall(latest);  // ★ ウォーターフォール図
         } else {
           resetMetrics(); updateAI(null);
+          updateWaterfall(null);
         }
       } else if (currentTab === 'ttm') {
         if (ttmData && ttmData.ttm && ttmData.ttm.length > 0) {
@@ -694,6 +706,113 @@
           scales: {
             y: { grid: { color: 'rgba(30,40,64,.8)' }, ticks: { color: '#64748b', font: { family: "'Space Mono'", size: 10 } }, beginAtZero: false },
             x: { grid: { color: 'rgba(30,40,64,.8)' }, ticks: { color: '#64748b', font: { family: "'Space Mono'", size: 10 }, maxRotation: 45, autoSkip: true } }
+          }
+        }
+      });
+    }
+
+    // ★ ウォーターフォール図（要件定義書 4.1）
+    let wfChart = null;
+    function updateWaterfall(quarter) {
+      const canvas = document.getElementById('waterfall-chart');
+      if (!canvas) return;
+      if (wfChart) { wfChart.destroy(); wfChart = null; }
+      if (!quarter) return;
+
+      const gaap = quarter.gaap_net_income || 0;
+      const adjs = quarter.adjustments || [];
+      const adjTotal = quarter.net_adjustment_total || 0;
+      const adjusted = quarter.adjusted_net_income || (gaap + adjTotal);
+      const shares = quarter.diluted_shares_used || 1;
+
+      // ラベルと値の構築（単位：百万ドル）
+      const toM = v => v / 1e6;
+      const labels = ['GAAP純利益'];
+      const starts = [0];       // 積み上げ開始位置
+      const values = [toM(gaap)]; // バーの高さ
+      const colors = [];
+
+      // GAAP EPS バー色
+      colors.push(gaap >= 0 ? 'rgba(148,163,184,0.85)' : 'rgba(239,68,68,0.85)');
+
+      // 各調整項目
+      let running = toM(gaap);
+      adjs.forEach(adj => {
+        const amt = toM(adj.net_amount || 0);
+        if (Math.abs(amt) < 0.1) return; // 0.1M未満は省略
+        labels.push(adj.item_name || adj.item_id || '');
+        starts.push(running);
+        values.push(amt);
+        colors.push(amt >= 0 ? 'rgba(52,211,153,0.85)' : 'rgba(239,68,68,0.85)');
+        running += amt;
+      });
+
+      // Adjusted EPS バー（合計）
+      labels.push('Adjusted純利益');
+      starts.push(0);
+      values.push(toM(adjusted));
+      colors.push('rgba(56,189,248,0.9)');
+
+      const ctx = canvas.getContext('2d');
+      wfChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            // 透明な積み上げベース
+            {
+              data: starts.map((s, i) => i === labels.length - 1 ? 0 : s),
+              backgroundColor: 'transparent',
+              borderColor: 'transparent',
+              stack: 'wf'
+            },
+            // 実際の値バー
+            {
+              data: values,
+              backgroundColor: colors,
+              borderColor: colors.map(c => c.replace('0.85','1').replace('0.9','1')),
+              borderWidth: 1,
+              stack: 'wf',
+              datalabels: {
+                display: true,
+                color: '#e2e8f0',
+                font: { family: "'Space Mono'", size: 9 },
+                formatter: v => v >= 0 ? `+$${v.toFixed(0)}M` : `-$${Math.abs(v).toFixed(0)}M`,
+                anchor: v => v >= 0 ? 'end' : 'start',
+                align: v => v >= 0 ? 'top' : 'bottom',
+                offset: 2
+              }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const v = ctx.datasetIndex === 1 ? ctx.raw : null;
+                  if (v === null) return '';
+                  return `$${v.toFixed(1)}M`;
+                }
+              }
+            },
+            datalabels: { display: ctx => ctx.datasetIndex === 1 }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              ticks: { color: '#94a3b8', font: { family: "'Space Mono'", size: 9 }, maxRotation: 30 },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y: {
+              stacked: true,
+              ticks: { color: '#94a3b8', font: { family: "'Space Mono'", size: 9 },
+                callback: v => `$${v.toFixed(0)}M` },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            }
           }
         }
       });
