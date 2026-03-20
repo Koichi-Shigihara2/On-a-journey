@@ -166,9 +166,13 @@ def run():
                 "revenue": normalize_value(
                     period_data.get("us-gaap:Revenues") or
                     period_data.get("us-gaap:RevenueFromContractWithCustomer") or
+                    period_data.get("us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax") or
+                    period_data.get("us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax") or
                     period_data.get("us-gaap:NetSales") or
                     period_data.get("us-gaap:TotalRevenue") or
-                    period_data.get("us-gaap:SalesRevenueNet")
+                    period_data.get("us-gaap:SalesRevenueNet") or
+                    period_data.get("us-gaap:InterestAndDividendIncomeOperating") or
+                    period_data.get("us-gaap:RevenuesNetOfInterestExpense")
                 ),
                 
                 "filing_date": period_data["filing_date"],
@@ -198,16 +202,12 @@ def run():
         
         # ★★★ 成熟度監視（全セクター対応・正しいsector引数）★★★
         if sector and quarterly_results:
-            # sort前に最新四半期（filing_date最大）を正しく取得
             latest_for_monitor = max(quarterly_results, key=lambda x: x["filing_date"])
             monitor = MaturityMonitor(maturity_config)
             maturity_status = monitor.monitor(quarterly_results, sector=sector,
                                               latest_override=latest_for_monitor)
-            
             if maturity_status.get('alert'):
                 print(f"  ⚠ Maturity Alert for {ticker} ({sector}): {maturity_status['alert']}")
-            
-            # sort後の最新四半期に付与するため、一時保存
             _pending_maturity = maturity_status
         else:
             _pending_maturity = None
@@ -224,7 +224,7 @@ def run():
         if quarterly_results:
             quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
             latest = quarterly_results[0]
-            # ★ sort後に正しい最新四半期へ maturity_monitor を付与
+            # ★ sort後の正しい最新四半期に maturity_monitor を付与
             if _pending_maturity is not None:
                 latest['maturity_monitor'] = _pending_maturity
             print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
