@@ -1,25 +1,25 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-03-20T04:26:45.012084",
+  "last_updated": "2026-03-20T04:33:23.115826",
   "quarters": [
     {
       "gaap_eps": 0.10797119466836456,
-      "adjusted_eps": 0.23179162543031556,
+      "adjusted_eps": 0.27776792912360654,
       "gaap_net_income": 139392000.0,
-      "adjusted_net_income": 299245538.1384171,
+      "adjusted_net_income": 358601451.9457964,
       "diluted_shares_used": 1291011000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 3213000,
+          "amount": 66469000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 3014900.5795989255,
+          "net_amount": 62370814.38697821,
           "tax_rate_applied": 0.06165559302865682
         },
         {
@@ -36,7 +36,7 @@
           "tax_rate_applied": 0.06165559302865682
         }
       ],
-      "net_adjustment_total": 159853538.13841712,
+      "net_adjustment_total": 219209451.9457964,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -47,10 +47,10 @@
       "revenue": 156791000.0,
       "diluted_shares": 1291011000.0,
       "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.02,
-        "sbc_to_revenue": 0.02,
-        "sbc_per_share": 0.0025,
+        "alert": "SBC寄与率が30%超（現在 30.3%）",
+        "sbc_contribution": 0.303,
+        "sbc_to_revenue": 0.424,
+        "sbc_per_share": 0.0515,
         "sector_threshold": {
           "sbc_contribution": 0.3,
           "sbc_to_revenue": 0.05
@@ -58,37 +58,37 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用の調整は非現金項目として標準的ですが、マイルストーン型R&D費の1.67億ドルという巨額の加算は調整後EPSをGAAP比で2倍以上に引き上げており、調整の依存度が高い。 fintech企業における大規模マイルストーン費用の「一過性」判定は慎重に検証する必要がある。",
+        "comment": "株式報酬費用の加算は非現金費用として標準的な調整ですが、マイルストーン型R&D費167Mの加算は規模が大きく、一過性とされるものの研究開発の本質的支出を除外する点で積極的です。調整後EPSがGAAP EPSの約2.5倍となっており、調整依存度が高いため健全性に注意が必要です。税率6.16%も低めで今後の収益性向上次第です。",
         "sources": [
           {
-            "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用 amount:167144000"
+            "item": "株式報酬費用",
+            "snippet": "非現金費用"
           },
           {
-            "item": "sbc",
-            "snippet": "非現金費用 amount:3213000"
+            "item": "マイルストーン型研究開発費",
+            "snippet": "成功報酬型の一過性R&D費用"
           }
         ]
       }
     },
     {
       "gaap_eps": 0.08222579355249954,
-      "adjusted_eps": 0.24009445070091923,
+      "adjusted_eps": 0.2868213803726709,
       "gaap_net_income": 97263000.0,
-      "adjusted_net_income": 284002203.56175125,
+      "adjusted_net_income": 339274413.95108384,
       "diluted_shares_used": 1182877000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 63256000,
+          "amount": 127012000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 54838743.65373645,
+          "net_amount": 110110954.04306902,
           "tax_rate_applied": 0.13306652880775813
         },
         {
@@ -105,7 +105,7 @@
           "tax_rate_applied": 0.13306652880775813
         }
       ],
-      "net_adjustment_total": 186739203.56175128,
+      "net_adjustment_total": 242011413.95108384,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -176,22 +176,22 @@
     },
     {
       "gaap_eps": 0.055000226357010275,
-      "adjusted_eps": 0.17757006757980617,
+      "adjusted_eps": 0.2301602926315637,
       "gaap_net_income": 60745000.0,
-      "adjusted_net_income": 196117261.13851693,
+      "adjusted_net_income": 254200535.19693053,
       "diluted_shares_used": 1104450000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 2589000,
+          "amount": 63646000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 2462905.0974864927,
+          "net_amount": 60546179.15590008,
           "tax_rate_applied": 0.04870409521572312
         },
         {
@@ -208,7 +208,7 @@
           "tax_rate_applied": 0.04870409521572312
         }
       ],
-      "net_adjustment_total": 135372261.13851693,
+      "net_adjustment_total": 193455535.19693053,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -221,22 +221,22 @@
     },
     {
       "gaap_eps": 0.01633916056670713,
-      "adjusted_eps": 0.1285793237742705,
+      "adjusted_eps": 0.2180874048763105,
       "gaap_net_income": 17404000.0,
-      "adjusted_net_income": 136958966.8839635,
+      "adjusted_net_income": 232300379.13950455,
       "diluted_shares_used": 1065171000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 5975000,
+          "amount": 116139000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 5171062.58148631,
+          "net_amount": 100512474.83702737,
           "tax_rate_applied": 0.13455019556714473
         },
         {
@@ -253,7 +253,7 @@
           "tax_rate_applied": 0.13455019556714473
         }
       ],
-      "net_adjustment_total": 119554966.8839635,
+      "net_adjustment_total": 214896379.13950455,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -337,7 +337,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 61948320.97044896,
           "tax_rate_applied": 0.0009141041779056525
@@ -382,22 +382,22 @@
     },
     {
       "gaap_eps": -0.0507693279159168,
-      "adjusted_eps": 0.09177156300769261,
+      "adjusted_eps": 0.22397415599468493,
       "gaap_net_income": -47549000.0,
-      "adjusted_net_income": 85950439.53860812,
+      "adjusted_net_income": 209767345.37493157,
       "diluted_shares_used": 936569420.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 11652000,
+          "amount": 140104000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 11231546.311500335,
+          "net_amount": 135048452.14782378,
           "tax_rate_applied": 0.036084250643637614
         },
         {
@@ -414,7 +414,7 @@
           "tax_rate_applied": 0.036084250643637614
         }
       ],
-      "net_adjustment_total": 133499439.53860812,
+      "net_adjustment_total": 257316345.37493157,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -511,7 +511,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 77601935.43404387,
           "tax_rate_applied": 0.0032504600341163987
@@ -543,22 +543,22 @@
     },
     {
       "gaap_eps": -0.10530777677080876,
-      "adjusted_eps": 0.007169501871896155,
+      "adjusted_eps": 0.17622728438752788,
       "gaap_net_income": -95835000.0,
-      "adjusted_net_income": 6524581.877638012,
+      "adjusted_net_income": 160375067.4181955,
       "diluted_shares_used": 910046750.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 3121000,
+          "amount": 157163000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 3117119.78143675,
+          "net_amount": 156967605.32199422,
           "tax_rate_applied": 0.0012432613147227215
         },
         {
@@ -575,7 +575,7 @@
           "tax_rate_applied": 0.0012432613147227215
         }
       ],
-      "net_adjustment_total": 102359581.87763801,
+      "net_adjustment_total": 256210067.4181955,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -646,22 +646,22 @@
     },
     {
       "gaap_eps": -0.03753220394130487,
-      "adjusted_eps": 0.08036628050686646,
+      "adjusted_eps": 0.14511788967178602,
       "gaap_net_income": -30047000.0,
-      "adjusted_net_income": 64338498.05799237,
+      "adjusted_net_income": 116176423.79294181,
       "diluted_shares_used": 800565830.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 20527000,
+          "amount": 72681000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 20402598.104868412,
+          "net_amount": 72240523.83981785,
           "tax_rate_applied": 0.0060604031339985265
         },
         {
@@ -678,7 +678,7 @@
           "tax_rate_applied": 0.0060604031339985265
         }
       ],
-      "net_adjustment_total": 94385498.05799237,
+      "net_adjustment_total": 146223423.7929418,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -691,22 +691,22 @@
     },
     {
       "gaap_eps": -0.452869948998095,
-      "adjusted_eps": -0.22262071601644648,
+      "adjusted_eps": -0.017510540557238642,
       "gaap_net_income": -165314000.0,
-      "adjusted_net_income": -81264656.94834091,
+      "adjusted_net_income": -6391984.074199468,
       "diluted_shares_used": 365036365.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 14700000,
+          "amount": 89608000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 14693067.379317015,
+          "net_amount": 89565740.25345846,
           "tax_rate_applied": 0.00047160684918254813
         },
         {
@@ -723,7 +723,7 @@
           "tax_rate_applied": 0.00047160684918254813
         }
       ],
-      "net_adjustment_total": 84049343.05165909,
+      "net_adjustment_total": 158922015.92580053,
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",

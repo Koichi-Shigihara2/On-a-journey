@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-03-20T04:25:59.060149",
+  "last_updated": "2026-03-20T04:32:38.860378",
   "quarters": [
     {
       "gaap_eps": 0.18498189655071826,
@@ -34,10 +34,10 @@
       "revenue": 1181092000.0,
       "diluted_shares": 2571057000.0,
       "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.086,
-        "sbc_to_revenue": 0.01,
-        "sbc_per_share": 0.0048,
+        "alert": "SBC寄与率が60%超（現在 120.4%）",
+        "sbc_contribution": 1.204,
+        "sbc_to_revenue": 0.146,
+        "sbc_per_share": 0.067,
         "sector_threshold": {
           "sbc_contribution": 0.6,
           "sbc_to_revenue": 0.3
@@ -45,15 +45,15 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "マイルストーン型研究開発費をadd_backする調整が1項目のみ適用されています。一過性・成功報酬型と説明されていますが、R&DはPLTRのAI・ソフトウェア事業におけるコア支出であり、再発の可能性が高いため調整の妥当性に注意が必要です。調整によりEPSが約30%押し上げられており、税効果が極めて低い点（0.78%）も確認を要します。",
+        "comment": "マイルストーン型R&D費用を一過性として全額add_backしていますが、研究開発はPLTRの技術企業としてのコア活動であり、定期的に発生する可能性があります。また適用税率が0.78%と極めて低く、税効果の計算が合理的でない点が懸念されます。調整後のEPS上昇幅は大きいものの、調整の質は中立的ではなく注意が必要です。",
         "sources": [
           {
             "item": "milestone_rd",
             "snippet": "成功報酬型の一過性R&D費用"
           },
           {
-            "item": "extracted_from",
-            "snippet": "us-gaap:ResearchAndDevelopmentExpense"
+            "item": "tax_rate_applied",
+            "snippet": "0.007829319581434938"
           }
         ]
       }
