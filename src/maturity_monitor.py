@@ -21,7 +21,7 @@ class MaturityMonitor:
         self.config = config
     
     def monitor(self, quarterly_results: List[Dict], sector: str = "default",
-                latest_override: Dict = None) -> Dict:
+                latest_override: Dict = None, sbc_override=None) -> Dict:
         if not quarterly_results:
             return {"alert": None, "sbc_contribution": 0, "sbc_to_revenue": 0}
         
@@ -31,11 +31,14 @@ class MaturityMonitor:
         revenue = latest.get('revenue', 0) or 0
         diluted_shares = latest.get('diluted_shares', 0) or 0
         
-        # SBC金額取得（item_id優先、なければitem_nameでフォールバック）
-        for adj in latest.get('adjustments', []):
-            if adj.get('item_id') == 'sbc' or adj.get('item_name') == '株式報酬費用':
-                sbc_amount = adj.get('net_amount', 0)
-                break
+        # SBC金額取得：sbc_overrideを優先（セクター除外でadjustmentsにない場合に対応）
+        if sbc_override is not None and sbc_override > 0:
+            sbc_amount = sbc_override
+        else:
+            for adj in latest.get('adjustments', []):
+                if adj.get('item_id') == 'sbc' or adj.get('item_name') == '株式報酬費用':
+                    sbc_amount = adj.get('net_amount', 0)
+                    break
         
         print(f"  [MaturityMonitor] filing_date={latest.get('filing_date')} "
               f"sbc={sbc_amount:,.0f} revenue={revenue:,.0f} diluted_shares={diluted_shares:,.0f}")
@@ -55,7 +58,17 @@ class MaturityMonitor:
         sbc_to_revenue = sbc_amount / revenue if revenue > 0 else 0
         
         # セクター別閾値
-        thresh = self.thresholds.get(sector.lower(), self.thresholds["default"])
+        # 日本語セクター名 → 閾値キーのマッピング
+        SECTOR_THRESHOLD_MAP = {
+            "ハイパーグロース / saas": "saas",
+            "フィンテック / 銀行":     "banking",
+            "ヘルスケア / バイオ":     "default",
+            "一般消費財 / 製造 / ev・半導体": "manufacturing",
+            "不動産 (reits)":          "default",
+            "暗号資産 / ブロックチェーン": "default",
+        }
+        threshold_key = SECTOR_THRESHOLD_MAP.get(sector.lower(), sector.lower())
+        thresh = self.thresholds.get(threshold_key, self.thresholds["default"])
         
         alert = None
         if sbc_contribution > thresh["sbc_contribution"]:
