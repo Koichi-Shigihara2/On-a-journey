@@ -503,7 +503,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             quarters_map[q4_key] = q4_data
             print(f"  [Q4計算] FY{fiscal_year} Q4 end={target_k_item['end']}: net={q4_net/1e6:.1f}M (annual={annual_net/1e6:.1f}M - Q1-Q3={(ni_q1+ni_q2+ni_q3)/1e6:.1f}M)")
 
-            # Q4に年次の税費用タグを追加（差し引きではなく年次値をそのまま）
+            # Q4の税費用 = 年次 - Q1 - Q2 - Q3（差し引き計算）
             tax_tag_candidates_q4 = [
                 'us-gaap:IncomeTaxExpenseBenefit',
                 'us-gaap:IncomeTaxExpenseBenefitContinuingOperations',
@@ -512,12 +512,23 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             ]
             for tax_tag in tax_tag_candidates_q4:
                 annual_tax_items = annual_data_by_tag.get(tax_tag, [])
+                annual_tax_val = None
                 for item in annual_tax_items:
                     if item['end'] == target_k_item['end']:
-                        q4_data[tax_tag] = {'value': item['val'], 'unit': item['unit']}
+                        annual_tax_val = item
                         break
+                if not annual_tax_val:
+                    continue
+                v_annual = annual_tax_val['val']
+                v_q1 = normalize_value(quarters_map[q1_key].get(tax_tag))
+                v_q2 = normalize_value(quarters_map[q2_key].get(tax_tag))
+                v_q3 = normalize_value(quarters_map[q3_key].get(tax_tag))
+                v_q4 = v_annual - v_q1 - v_q2 - v_q3
+                q4_data[tax_tag] = {'value': v_q4, 'unit': annual_tax_val['unit']}
+                break  # 最初に見つかった税費用タグを使用
 
-            # Q4に年次の調整項目タグを追加（年次値をそのまま — 差し引きしない）
+            # Q4の調整項目タグ = 年次値 - Q1値 - Q2値 - Q3値（差し引き計算）
+            # SBC・R&D等はYTD累計で報告されるため、差し引きでQ4単体値を得る
             skip_tags = {
                 'us-gaap:NetIncomeLoss', 'us-gaap:NetIncomeLossAttributableToParent',
                 'us-gaap:NetIncomeLossAvailableToCommonStockholders',
@@ -534,10 +545,21 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 if tag in skip_tags:
                     continue
                 annual_tag_items = annual_data_by_tag.get(tag, [])
+                annual_tag_val = None
                 for item in annual_tag_items:
                     if item['end'] == target_k_item['end']:
-                        q4_data[tag] = {'value': item['val'], 'unit': item['unit']}
+                        annual_tag_val = item
                         break
+                if not annual_tag_val:
+                    continue
+                # Q1〜Q3の値を取得（normalize_valueで単位統一）
+                v_annual = annual_tag_val['val']
+                v_q1 = normalize_value(quarters_map[q1_key].get(tag))
+                v_q2 = normalize_value(quarters_map[q2_key].get(tag))
+                v_q3 = normalize_value(quarters_map[q3_key].get(tag))
+                v_q4 = v_annual - v_q1 - v_q2 - v_q3
+                if v_q4 != 0:
+                    q4_data[tag] = {'value': v_q4, 'unit': annual_tag_val['unit']}
 
         # quarterly_list 作成（ここがエラー原因だった部分）
         quarterly_list = []
