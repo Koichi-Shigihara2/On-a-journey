@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-03-20T12:34:06.557224",
+  "last_updated": "2026-03-20T12:37:30.093838",
   "quarters": [
     {
       "gaap_eps": 0.05648638152139374,
@@ -113,22 +113,22 @@
         }
       },
       "ai_analysis": {
-        "health": "Caution",
-        "comment": "調整項目に株式報酬費用や無形資産償却といった経常的に発生する項目が含まれており、調整の質は限定的です。大規模なリストラ費用（80M超）の調整は一過性として一定の合理性がありますが、貸倒引当金の異常分やマイルストーンR&Dも含め全体として調整後EPSの健全性には注意が必要です。一過性税効果の影響も大きく、GAAPとAdjustedの乖離が大きい点が懸念されます。",
+        "health": "Warning",
+        "comment": "大規模なリストラ費用（約8075万ドル）の加算によりGAAP EPSが大幅に圧縮されており、事業再編の影響が強い。株式報酬や無形資産償却といった恒常的に発生しやすい項目も含まれており、調整後EPSの質は低い。一過性とされる項目もあるが全体として調整の健全性に懸念あり。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが、株式報酬は毎期発生する経常的費用",
+            "snippet": "非現金費用",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で継続的に発生する費用",
+            "snippet": "買収関連無形資産の償却",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響とされるが、飲料企業における貸倒引当金の異常性の判断が難しい",
+            "snippet": "マクロ変動による一時的影響",
             "confidence": 0.5
           },
           {
@@ -139,12 +139,12 @@
           {
             "item": "restructuring",
             "snippet": "一過性の事業再編費用",
-            "confidence": 0.8
+            "confidence": 0.7
           },
           {
             "item": "tax_one_time",
             "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-            "confidence": 0.9
+            "confidence": 0.85
           }
         ]
       }
