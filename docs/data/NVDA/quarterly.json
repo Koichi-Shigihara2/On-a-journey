@@ -1,25 +1,25 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-20T02:59:45.039687",
+  "last_updated": "2026-03-20T03:05:12.110232",
   "quarters": [
     {
       "gaap_eps": 1.3033533472205203,
-      "adjusted_eps": 1.5284236703342284,
+      "adjusted_eps": 1.4725941366661204,
       "gaap_net_income": 31910000000.0,
-      "adjusted_net_income": 37420396720.792915,
+      "adjusted_net_income": 36053522247.99663,
       "diluted_shares_used": 24483000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1654000000,
+          "amount": 29000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 1391267924.9261916,
+          "net_amount": 24393452.129902996,
           "tax_rate_applied": 0.1588464782792071
         },
         {
@@ -62,7 +62,7 @@
           "tax_rate_applied": 0.1588464782792071
         }
       ],
-      "net_adjustment_total": 5510396720.792914,
+      "net_adjustment_total": 4143522247.996626,
       "filing_date": "2025-10-26",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -75,9 +75,9 @@
       "diluted_shares": 24483000000.0,
       "maturity_monitor": {
         "alert": null,
-        "sbc_contribution": 0.252,
-        "sbc_to_revenue": 0.024,
-        "sbc_per_share": 0.0568,
+        "sbc_contribution": 0.006,
+        "sbc_to_revenue": 0.0,
+        "sbc_per_share": 0.001,
         "sector_threshold": {
           "sbc_contribution": 0.4,
           "sbc_to_revenue": 0.25
@@ -85,37 +85,37 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用と無形資産償却の加回はテック企業として標準的ですが、47億ドル超のマイルストーン型R&D費加算は極めて大きく、継続的な研究開発コストを排除している可能性が高いです。調整後EPSがGAAP比で約17%上昇しており、非GAAPの健全性に注意が必要です。",
+        "comment": "調整後EPSはGAAPを上回るものの、主に47億5000万ドルの極めて大規模なマイルストーン型R&D費加算が差分の大半を占めています。この項目の「一過性」判断の妥当性に懸念があり、研究開発関連の調整が過度に積極的である可能性があります。株式報酬や無形資産償却は標準的ですが、全体として調整の質に注意が必要です。",
         "sources": [
           {
             "item": "milestone_rd",
-            "snippet": "成功報酬型の一過性R&D費用"
+            "snippet": "amount: 4705000000, reason: 成功報酬型の一過性R&D費用, category: 研究開発関連"
           },
           {
-            "item": "sbc",
-            "snippet": "非現金費用"
+            "item": "Adjusted EPS vs GAAP",
+            "snippet": "GAAP EPS: 1.3033533472205203, Adjusted EPS: 1.4725941366661204"
           }
         ]
       }
     },
     {
       "gaap_eps": 1.0770422305560086,
-      "adjusted_eps": 1.2870250841964224,
+      "adjusted_eps": 1.2361515262960328,
       "gaap_net_income": 26422000000.0,
-      "adjusted_net_income": 31573299365.506634,
+      "adjusted_net_income": 30325269243.094276,
       "diluted_shares_used": 24532000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1625000000,
+          "amount": 151000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 1375881240.787028,
+          "net_amount": 127851118.37467153,
           "tax_rate_applied": 0.1533038518233673
         },
         {
@@ -158,7 +158,7 @@
           "tax_rate_applied": 0.1533038518233673
         }
       ],
-      "net_adjustment_total": 5151299365.506633,
+      "net_adjustment_total": 3903269243.0942764,
       "filing_date": "2025-07-27",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -270,22 +270,22 @@
     },
     {
       "gaap_eps": 0.77940582869137,
-      "adjusted_eps": 0.9519396516764643,
+      "adjusted_eps": 0.911670117688243,
       "gaap_net_income": 19309000000.0,
-      "adjusted_net_income": 23583352930.63273,
+      "adjusted_net_income": 22585715495.608532,
       "diluted_shares_used": 24774000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1252000000,
+          "amount": 99000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 1083297544.3627892,
+          "net_amount": 85660109.33859114,
           "tax_rate_applied": 0.13474637031726117
         },
         {
@@ -328,7 +328,7 @@
           "tax_rate_applied": 0.13474637031726117
         }
       ],
-      "net_adjustment_total": 4274352930.6327305,
+      "net_adjustment_total": 3276715495.6085324,
       "filing_date": "2024-10-27",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -342,22 +342,22 @@
     },
     {
       "gaap_eps": 0.6680215711526079,
-      "adjusted_eps": 0.8256919065943209,
+      "adjusted_eps": 0.7905420258596856,
       "gaap_net_income": 16599000000.0,
-      "adjusted_net_income": 20516792495.055687,
+      "adjusted_net_income": 19643388258.561466,
       "diluted_shares_used": 24848000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1153000000,
+          "amount": 142000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 996078224.2115124,
+          "net_amount": 122673987.71728948,
           "tax_rate_applied": 0.1360986780472572
         },
         {
@@ -400,7 +400,7 @@
           "tax_rate_applied": 0.1360986780472572
         }
       ],
-      "net_adjustment_total": 3917792495.0556884,
+      "net_adjustment_total": 3044388258.5614653,
       "filing_date": "2024-07-28",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -512,22 +512,22 @@
     },
     {
       "gaap_eps": 0.3706094627105052,
-      "adjusted_eps": 0.4960362158669497,
+      "adjusted_eps": 0.46641422782859815,
       "gaap_net_income": 9243000000.0,
-      "adjusted_net_income": 12371143223.721725,
+      "adjusted_net_income": 11632370842.045238,
       "diluted_shares_used": 24940000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 979000000,
+          "amount": 138000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 859997814.1037825,
+          "net_amount": 121225432.4272952,
           "tax_rate_applied": 0.12155483748336818
         },
         {
@@ -570,7 +570,7 @@
           "tax_rate_applied": 0.12155483748336818
         }
       ],
-      "net_adjustment_total": 3128143223.721726,
+      "net_adjustment_total": 2389370842.0452385,
       "filing_date": "2023-10-29",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -584,22 +584,22 @@
     },
     {
       "gaap_eps": 0.24757941906057454,
-      "adjusted_eps": 0.36010907049721724,
+      "adjusted_eps": 0.33404247931980396,
       "gaap_net_income": 6188000000.0,
-      "adjusted_net_income": 9000566108.007448,
+      "adjusted_net_income": 8349057728.119181,
       "diluted_shares_used": 24994000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 841000000,
+          "amount": 106000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 745467411.5456238,
+          "net_amount": 93959031.65735568,
           "tax_rate_applied": 0.11359404096834265
         },
         {
@@ -642,7 +642,7 @@
           "tax_rate_applied": 0.11359404096834265
         }
       ],
-      "net_adjustment_total": 2812566108.0074487,
+      "net_adjustment_total": 2161057728.1191807,
       "filing_date": "2023-07-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -754,22 +754,22 @@
     },
     {
       "gaap_eps": 0.272108843537415,
-      "adjusted_eps": 1.3599123172923329,
+      "adjusted_eps": 1.1289501118555088,
       "gaap_net_income": 680000000.0,
-      "adjusted_net_income": 3398420880.91354,
+      "adjusted_net_income": 2821246329.5269165,
       "diluted_shares_used": 2499000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 745000000,
+          "amount": 97000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 663572593.8009788,
+          "net_amount": 86398042.41435562,
           "tax_rate_applied": 0.10929853181076672
         },
         {
@@ -812,7 +812,7 @@
           "tax_rate_applied": 0.10929853181076672
         }
       ],
-      "net_adjustment_total": 2718420880.91354,
+      "net_adjustment_total": 2141246329.5269167,
       "filing_date": "2022-10-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -826,22 +826,22 @@
     },
     {
       "gaap_eps": 0.26073131955484896,
-      "adjusted_eps": 0.9584001338800101,
+      "adjusted_eps": 0.8162095222157142,
       "gaap_net_income": 656000000.0,
-      "adjusted_net_income": 2411334736.8421054,
+      "adjusted_net_income": 2053583157.894737,
       "diluted_shares_used": 2516000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 648000000,
+          "amount": 70000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 401077894.73684216,
+          "net_amount": 43326315.78947369,
           "tax_rate_applied": 0.38105263157894737
         },
         {
@@ -884,7 +884,7 @@
           "tax_rate_applied": 0.38105263157894737
         }
       ],
-      "net_adjustment_total": 1755334736.8421054,
+      "net_adjustment_total": 1397583157.894737,
       "filing_date": "2022-07-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -996,22 +996,22 @@
     },
     {
       "gaap_eps": 0.970843183609141,
-      "adjusted_eps": 2.0741744438290826,
+      "adjusted_eps": 1.9030440115401321,
       "gaap_net_income": 2464000000.0,
-      "adjusted_net_income": 5264254738.438211,
+      "adjusted_net_income": 4829925701.288856,
       "diluted_shares_used": 2538000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 559000000,
+          "amount": 94000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 522128885.5193328,
+          "net_amount": 87799848.36997725,
           "tax_rate_applied": 0.06595905989385899
         },
         {
@@ -1054,7 +1054,7 @@
           "tax_rate_applied": 0.06595905989385899
         }
       ],
-      "net_adjustment_total": 2800254738.4382114,
+      "net_adjustment_total": 2365925701.2888556,
       "filing_date": "2021-10-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
@@ -1068,22 +1068,22 @@
     },
     {
       "gaap_eps": 0.9375987361769352,
-      "adjusted_eps": 1.7154062090455204,
+      "adjusted_eps": 1.5473903954198294,
       "gaap_net_income": 2374000000.0,
-      "adjusted_net_income": 4343408521.303258,
+      "adjusted_net_income": 3917992481.2030077,
       "diluted_shares_used": 2532000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 465000000,
+          "amount": 36000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 461115288.2205514,
+          "net_amount": 35699248.120300755,
           "tax_rate_applied": 0.00835421888053467
         },
         {
@@ -1126,7 +1126,7 @@
           "tax_rate_applied": 0.00835421888053467
         }
       ],
-      "net_adjustment_total": 1969408521.3032582,
+      "net_adjustment_total": 1543992481.2030077,
       "filing_date": "2021-08-01",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV・半導体",
