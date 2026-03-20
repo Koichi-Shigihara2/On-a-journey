@@ -396,7 +396,36 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             if key in quarters_map:
                 quarters_map[key]['diluted_shares'] = {'value': item['val'], 'unit': item['unit']}
         
-        # YTD差分計算はpipeline.py側で実施（extract_key_facts.pyでは行わない）
+        # ★★★ SBC YTD累計値を _ytd_ プレフィックスで quarters_map に追加 ★★★
+        # pipeline.py でYTD差分計算するために、生のYTD累計値を別キーで保存
+        SBC_YTD_TAGS = [
+            'us-gaap:ShareBasedCompensation',
+            'us-gaap:AllocatedShareBasedCompensationExpense',
+            'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
+            'us-gaap:StockBasedCompensation',
+            'us-gaap:ShareBasedCompensationExpense',
+            'us-gaap:RestrictedStockExpense',
+        ]
+        for tag in SBC_YTD_TAGS:
+            for item in tag_data_map.get(tag, []):
+                if 'start' not in item or 'end' not in item:
+                    continue
+                start = datetime.strptime(item['start'], '%Y-%m-%d')
+                end   = datetime.strptime(item['end'],   '%Y-%m-%d')
+                days  = (end - start).days
+                # YTD累計値（120日超）のみ対象
+                if days <= QUARTER_DAYS_MAX:
+                    continue
+                fy   = end.year if end.month <= fiscal_end_month else end.year + 1
+                qnum = get_quarter_number(end, fiscal_end_month)
+                key  = (fy, qnum)
+                if key not in quarters_map:
+                    continue
+                ytd_key = f'_ytd_{tag}'
+                # 既存値より大きければ上書き（最新・最大のYTD値を保持）
+                existing = quarters_map[key].get(ytd_key, {}).get('value', 0)
+                if item['val'] > existing:
+                    quarters_map[key][ytd_key] = {'value': item['val'], 'unit': item['unit']}
 
                 # 税費用・pretax_income計算（省略せず完全実装）
         tax_tag_candidates = [
