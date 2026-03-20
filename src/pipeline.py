@@ -178,32 +178,41 @@ def run():
         
         sector_exclusions = classifier.get_exclusions_for_sector(sector) if sector else []
         exclusion_item_ids = [ex['item_id'] for ex in sector_exclusions]
-
-        # ★★★ YTD累計SBCタグを四半期差分に変換 ★★★
+        
+        # ★★★ YTD累計SBCタグを四半期差分に変換してquarterly_rawに注入 ★★★
+        # PLTRのようにSBCをYTD累計でのみ報告する企業に対応
         SBC_YTD_TAGS = [
             'us-gaap:ShareBasedCompensation',
             'us-gaap:AllocatedShareBasedCompensationExpense',
             'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
             'us-gaap:StockBasedCompensation',
         ]
+        # filing_date順にソート（古い順）してYTD差分を計算
         raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
         for sbc_tag in SBC_YTD_TAGS:
+            # fiscal_year × quarter → YTD値 のマップ（最大のYTD値を採用）
             ytd_by_fq = {}
             for pd in raw_sorted:
                 val_dict = pd.get(sbc_tag)
-                if val_dict and normalize_value(val_dict) > 0:
-                    fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
-                    qn = pd.get('quarter', 0)
-                    ytd_by_fq[(fy, qn)] = normalize_value(val_dict)
+                if not val_dict:
+                    continue
+                raw_val = val_dict.get('value', 0) if isinstance(val_dict, dict) else 0
+                if raw_val <= 0:
+                    continue
+                fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
+                qn = pd.get('quarter', 0)
+                # 同じ(fy,qn)に複数エントリある場合は最大値（最新申告）を採用
+                if (fy, qn) not in ytd_by_fq or raw_val > ytd_by_fq[(fy, qn)]:
+                    ytd_by_fq[(fy, qn)] = raw_val
             if not ytd_by_fq:
                 continue
+            # YTD差分から四半期値を計算して常に上書き
             applied = 0
             for pd in raw_sorted:
-                existing = normalize_value(pd.get(sbc_tag))
                 fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
                 qn = pd.get('quarter', 0)
                 ytd_val = ytd_by_fq.get((fy, qn), 0)
-                if existing > 0 or ytd_val <= 0:
+                if ytd_val <= 0:
                     continue
                 if qn <= 1:
                     qval = ytd_val
@@ -211,12 +220,11 @@ def run():
                     prev_ytd = ytd_by_fq.get((fy, qn - 1), 0)
                     qval = ytd_val - prev_ytd
                 if qval > 0:
-                    pd[sbc_tag] = {'value': qval, 'unit': 'USD'}
+                    pd[sbc_tag] = {'value': qval, 'unit': 'USD'}  # 常に上書き
                     applied += 1
             if applied:
                 print(f"  [pipeline YTD→Q diff] {sbc_tag}: {applied}四半期に注入")
 
-        quarterly_results = []
         quarterly_results = []
         for i, period_data in enumerate(quarterly_raw):
             print(f"\nProcessing quarter {i+1}/{len(quarterly_raw)}: {period_data['filing_date']} ({period_data['form']})")
