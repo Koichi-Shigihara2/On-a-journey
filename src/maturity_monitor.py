@@ -10,10 +10,13 @@ class MaturityMonitor:
     
     def __init__(self, config: Dict):
         # デフォルト（SaaS用）
+        # sbc_to_revenue: 銀行はNetInterestIncome+NoninterestIncomeの合算が"revenue"
         self.thresholds = {
-            "default": {"sbc_contribution": 0.40, "sbc_to_revenue": 0.25},  # 40%超 or 25%超でアラート
-            "saas": {"sbc_contribution": 0.60, "sbc_to_revenue": 0.30},     # SaaSは緩め
-            "manufacturing": {"sbc_contribution": 0.20, "sbc_to_revenue": 0.08}  # 製造/EVは厳しめ
+            "default":       {"sbc_contribution": 0.40, "sbc_to_revenue": 0.25},
+            "saas":          {"sbc_contribution": 0.60, "sbc_to_revenue": 0.30},  # SaaSは緩め
+            "manufacturing": {"sbc_contribution": 0.20, "sbc_to_revenue": 0.08},  # 製造/EVは厳しめ
+            "banking":       {"sbc_contribution": 0.30, "sbc_to_revenue": 0.05},  # 銀行：SBC/純収益5%超でアラート
+            "fintech":       {"sbc_contribution": 0.50, "sbc_to_revenue": 0.15},  # FinTechは中間
         }
         self.config = config
     
