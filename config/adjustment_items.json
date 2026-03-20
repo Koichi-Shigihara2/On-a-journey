@@ -156,6 +156,21 @@
             "non_recurring",
             "non_operating"
           ]
+        },
+        {
+          "item_id": "gov_subsidy_timing",
+          "item_name": "政府補助金（一時的影響）",
+          "xbrl_tags": [
+            "us-gaap:GovernmentAssistanceAmount",
+            "us-gaap:SubsidyIncome",
+            "us-gaap:GrantsReceivable"
+          ],
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason_default": "政府補助金のタイミング差による一時的影響",
+          "criteria": [
+            "non_recurring"
+          ]
         }
       ]
     },
@@ -179,7 +194,9 @@
           "item_id": "iprd_amortization",
           "item_name": "IPR&D償却",
           "xbrl_tags": [
-            "us-gaap:AmortizationOfIntangibleAssets"
+            "us-gaap:ImpairmentOfInProcessResearchAndDevelopment",
+            "us-gaap:ResearchAndDevelopmentInProcessExpense",
+            "us-gaap:BusinessAcquisitionCostOfAcquiredEntityTransactionCosts"
           ],
           "direction": "add_back",
           "pre_tax": true,
