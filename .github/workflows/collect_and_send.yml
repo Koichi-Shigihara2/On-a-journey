@@ -1,8 +1,8 @@
-name: Market Data Update (collect_and_send)
+name: Market Pulse Data Update
 
 on:
   schedule:
-    # 毎日 08:00 JST = 23:00 UTC（前日）など、適宜設定
+    # 毎日 08:00 JST（前日データ取得）
     - cron: "0 23 * * *"
   workflow_dispatch:
 
@@ -22,7 +22,8 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt   # または必要なパッケージをインストール
+        run: |
+          pip install feedparser yfinance requests
 
       - name: Run collect_and_send
         env:
@@ -36,6 +37,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/
-          git diff --staged --quiet || git commit -m "chore: auto-update market data $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git add docs/market-monitor/data/
+          git diff --staged --quiet || git commit -m "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
           git push
