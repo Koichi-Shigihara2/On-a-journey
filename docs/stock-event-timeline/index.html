@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Event Timeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0d14; --sur:#111520; --sur2:#161c2d; --bdr:#1e2840;
+      --acc:#3b82f6; --grn:#10b981; --red:#f43f5e; --amb:#f59e0b;
+      --txt:#e2e8f0; --mut:#64748b;
+      --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:999}
+    .shell{max-width:980px;margin:0 auto;padding:0 20px 64px}
+    header{border-bottom:1px solid var(--bdr);padding:16px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
+    .logo{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:.15em;display:flex;align-items:center;gap:12px}
+    .logo-dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:pdot 2s ease-in-out infinite}
+    @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
+    .hero{text-align:center;padding:48px 0 56px;border-bottom:1px solid var(--bdr);margin-bottom:48px;position:relative}
+    .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:120px;height:1px;background:var(--acc)}
+    .hero-label{font-family:var(--mono);font-size:9px;letter-spacing:.3em;color:var(--mut);text-transform:uppercase;margin-bottom:20px}
+    .hero-title{font-family:var(--mono);font-size:36px;font-weight:700;letter-spacing:.08em;line-height:1.2;margin-bottom:16px}
+    .hero-title span{color:var(--acc)}
+    .hero-sub{font-size:14px;color:var(--mut);line-height:1.7;max-width:520px;margin:0 auto}
+    .sec{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--mut);text-transform:uppercase;margin:0 0 20px;display:flex;align-items:center;gap:10px}
+    .sec::after{content:'';flex:1;height:1px;background:var(--bdr)}
+    .panel{background:var(--sur);border:1px solid var(--bdr);padding:24px 20px;margin-bottom:24px}
+    .panel-label{font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.15em;margin-bottom:12px;text-transform:uppercase}
+    .form-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+    .field{flex:1;min-width:140px}
+    .field-label{font-family:var(--mono);font-size:10px;color:var(--mut);margin-bottom:4px}
+    .field-input{width:100%;padding:8px 10px;border-radius:4px;border:1px solid var(--bdr);background:var(--sur2);color:var(--txt);font-family:var(--mono);font-size:12px}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--acc);background:var(--acc);color:#0b1020;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none}
+    .btn-primary span{font-size:13px}
+    .hint{font-size:11px;color:var(--mut);margin-top:6px}
+    .info{font-size:12px;color:var(--mut);line-height:1.7}
+    .badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:999px;border:1px solid var(--bdr);background:var(--sur2);color:var(--mut);margin-right:6px}
+    .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 0 0 rgba(16,185,129,.4);animation:live 2s ease-in-out infinite}
+    @keyframes live{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
+    footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+    .ft-left{font-family:var(--mono);font-size:10px;color:var(--mut)}
+    .ft-right{font-family:var(--mono);font-size:9px;color:var(--mut);letter-spacing:.1em}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="logo">
+      <img src="../common/images/logo.png" alt="TANUKI" style="height:30px;width:auto;object-fit:contain">
+      <span class="logo-dot"></span>
+      ON A JOURNEY
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.1em">STOCK EVENT TIMELINE</div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-label">Event-driven equity analysis</div>
+    <div class="hero-title">STOCK EVENT<br><span>TIMELINE</span></div>
+    <div class="hero-sub">
+      米国株の価格・出来高スパイクと、その背後にあるイベントを一画面で可視化。<br>
+      類似過去イベントと銘柄固有のイベント傾向を、xAI Grok を用いて分析します。
+    </div>
+  </div>
+
+  <div class="sec">launcher</div>
+  <div class="panel">
+    <div class="panel-label">PARAMETERS</div>
+    <form class="form-row" onsubmit="openApp(event)">
+      <div class="field">
+        <div class="field-label">TICKER</div>
+        <input class="field-input" id="ticker" type="text" value="TSLA" placeholder="TSLA, NVDA, AAPL ...">
+      </div>
+      <div class="field">
+        <div class="field-label">PERIOD (YEARS)</div>
+        <input class="field-input" id="years" type="number" min="1" max="10" value="5">
+      </div>
+      <div class="field" style="align-self:flex-end">
+        <button type="submit" class="btn-primary">
+          <span>→</span> OPEN APP
+        </button>
+      </div>
+    </form>
+    <div class="hint">※ Streamlit アプリにパラメータ付きで遷移します（例：?ticker=TSLA&period=5）。</div>
+  </div>
+
+  <div class="sec">about</div>
+  <div class="panel">
+    <div class="panel-label">OVERVIEW</div>
+    <div class="info">
+      <span class="badge"><span class="badge-dot"></span>AI POWERED</span>
+      <span class="badge">PRICE + VOLUME</span>
+      <span class="badge">SIMILAR EVENTS</span>
+      <br><br>
+      ・日次リターン ±7%以上、出来高 20日平均比 200%以上のスパイクを自動検出。<br>
+      ・スパイク前後 ±3日のニュースを取得し、xAI Grok がイベント要約と因果スコアを生成。<br>
+      ・足許イベントに類似した過去イベントを抽出し、その後の株価パターンを比較。<br>
+      ・銘柄ごとのイベントカテゴリ分布・季節性・再現性スコアを可視化。
+    </div>
+  </div>
+
+  <footer>
+    <div class="ft-left">Koichi-Shigihara2 / Stock Event Timeline</div>
+    <div class="ft-right">PERSONAL USE ONLY</div>
+  </footer>
+
+</div>
+
+<script>
+  function openApp(e){
+    e.preventDefault();
+    const ticker = document.getElementById('ticker').value || 'TSLA';
+    const years = document.getElementById('years').value || '5';
+    // ここに実際の Streamlit / Render の URL を設定
+    const baseUrl = 'https://your-streamlit-app-url.example.com';
+    const url = `${baseUrl}/?ticker=${encodeURIComponent(ticker)}&years=${encodeURIComponent(years)}`;
+    window.open(url, '_blank');
+  }
+</script>
+</body>
+</html>
