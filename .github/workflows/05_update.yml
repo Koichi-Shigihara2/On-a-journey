@@ -99,9 +99,10 @@ jobs:
          # ── Git commit & push ───────────────────────────────────────
       - name: Commit and push data
         run: |
-          git config user.name  "github-actions[bot]"
+          # ── Git commit & push ───────────────────────────────────────
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # ルートにある更新ファイルをステージングに追加
           git add market_data.csv market_data.json 02_market_rss.txt
-          # 変更がある場合のみコミットしてプッシュ
           git diff --staged --quiet || (git commit -m "chore: auto-update $(date -u '+%Y-%m-%d %H:%M') UTC" && git push)
