@@ -123,7 +123,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # 特定のパスを指定せず、リポジトリ内のすべての変更（CSV/JSONの更新）を対象にする
+          
+          # 1. 全ての階層の変更をインデックスに追加
           git add -A
-          # 変更がある場合のみコミットしてプッシュ
-          git diff --staged --quiet || (git commit -m "chore: auto-update $(date -u '+%Y-%m-%d %H:%M') UTC" && git push)
+          
+          # 2. 変更があるか確認。なければ空のコミットを作って強制的に時間を更新する
+          # (これにより、Actionsが動いたことがファイル一覧のタイムスタンプで分かります)
+          git commit -m "chore: auto-update $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "No changes to commit"
+          git push
