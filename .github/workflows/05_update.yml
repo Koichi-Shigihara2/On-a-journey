@@ -105,8 +105,12 @@ jobs:
           # ── Git commit & push ───────────────────────────────────────
       - name: Commit and push data
         run: |
+          # ── Git commit & push ───────────────────────────────────────
+      - name: Commit and push data
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # data フォルダの中のファイルを指定する
+          # 1. まず、dataフォルダの中にある更新ファイルをGitに認識させる
           git add data/market_data.csv data/market_data.json data/02_market_rss.txt
+          # 2. 次に、もし変更があればコミットしてGitHubに送る（この1行が重要です）
           git diff --staged --quiet || (git commit -m "chore: auto-update $(date -u '+%Y-%m-%d %H:%M') UTC" && git push)
