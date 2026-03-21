@@ -53,6 +53,16 @@ jobs:
         run: |
           python src/macro-pulse/05_main.py --date $(date -u +%Y-%m-%d)
 
+      # ★ここを追加：実行直後の全ファイルの居場所をログに出す
+      - name: Check file locations
+        run: |
+          echo "--- Root directory ---"
+          ls -F
+          echo "--- data directory ---"
+          ls -R data/ || echo "data folder not found at root"
+          echo "--- src/macro-pulse directory ---"
+          ls -R src/macro-pulse/
+
       # ── 毎朝 22:00 UTC: Discord リマインダー（手入力指標） ─────
       - name: Send Discord reminder for manual indicators
         if: |
