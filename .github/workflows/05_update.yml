@@ -93,13 +93,9 @@ jobs:
 
       # ── Git commit & push (特定ファイルのみ) ─────────────────────
       - name: Commit and push data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 更新対象のファイルを直接指定
-          git add docs/data/market_data.csv
-          
-          # 中身に変化がなくても、実行の記録として必ずプッシュする
-          git commit --allow-empty -m "chore: auto-update market_data.csv $(date -u '+%Y-%m-%d %H:%M') UTC"
-          git push origin main
+  run: |
+    git config user.name "github-actions[bot]"
+    git config user.email "github-actions[bot]@users.noreply.github.com"
+    git add data/
+    git diff --staged --quiet || git commit -m "chore: auto-update data $(date -u '+%Y-%m-%d %H:%M') UTC"
+    git push
