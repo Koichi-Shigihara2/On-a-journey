@@ -91,4 +91,15 @@ jobs:
         run: |
           python src/macro-pulse/05_main.py --recalc
 
-      # ── Git commit & push (全ての
+      # ── Git commit & push (全ての変更を自動検知して保存) ────────
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 全ての階層（src内やdata内）の変更をすべて追加
+          git add -A
+          
+          # 変更がある場合のみコミットしてプッシュ
+          # (変更がない場合はエラーにせずメッセージを出すのみ)
+          git diff --staged --quiet || (git commit -m "chore: auto-update $(date -u '+%Y-%m-%d %H:%M') UTC" && git push)
