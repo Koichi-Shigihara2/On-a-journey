@@ -109,7 +109,7 @@ def load_required_xbrl_tags() -> List[str]:
 # CIKマップ管理
 # ============================================
 def load_cik_map() -> Dict[str, str]:
-    cik_map = {}`n    print(f"DEBUG: CONFIG_DIR = {CONFIG_DIR}")`n    print(f"DEBUG: CIK_FILE = {CIK_FILE}")
+    cik_map = {}
     try:
         if not os.path.exists(CIK_FILE):
             print(f"Warning: {CIK_FILE} not found. Creating empty mapping.")

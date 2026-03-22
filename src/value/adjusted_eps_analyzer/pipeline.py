@@ -167,7 +167,7 @@ def run(ticker_filter: str = None):
             print(f"{ticker}: データなし")
             continue
         
-        from .extract_key_facts import get_cik as get_cik_func
+        from value.adjusted_eps_analyzer.extract_key_facts import get_cik as get_cik_fun
         try:
             cik = get_cik_func(ticker)
         except:
