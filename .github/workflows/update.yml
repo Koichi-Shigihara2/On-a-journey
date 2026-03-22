@@ -36,9 +36,9 @@ jobs:
           HTTP2: "0"
         run: |
           if [ -n "${{ github.event.inputs.ticker }}" ]; then
-            python src/pipeline.py --ticker ${{ github.event.inputs.ticker }}
+            python -m value.adjusted_eps_analyzer.pipeline --ticker ${{ github.event.inputs.ticker }}
           else
-            python src/pipeline.py
+            python -m value.adjusted_eps_analyzer.pipeline
           fi
 
       - name: Check for changes
