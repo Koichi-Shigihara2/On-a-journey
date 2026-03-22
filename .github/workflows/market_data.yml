@@ -1,28 +1,28 @@
-﻿name: Market Data Collection
+﻿name: Market Data Update (collect_and_send)
 
 on:
   schedule:
-    - cron: '30 10 * * *'   # 毎日19:30 JST
+    - cron: "0 23 * * *"   # 毎日 08:00 JST
   workflow_dispatch:
 
 jobs:
-  collect-and-send:
+  update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
-          pip install yfinance feedparser requests
+          pip install feedparser yfinance requests
 
       - name: Run data collection and email
         env:
@@ -33,8 +33,8 @@ jobs:
 
       - name: Commit and push data
         run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add docs/market-monitor/data/
-        git diff --staged --quiet || git commit -m "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
-        git push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/market-monitor/data/
+          git diff --staged --quiet || git commit -m "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git push
