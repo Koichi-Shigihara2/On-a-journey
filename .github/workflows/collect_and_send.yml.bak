@@ -1,8 +1,9 @@
-name: Market Data Update (collect_and_send)
+name: Market Pulse Data Update
 
 on:
   schedule:
-    - cron: "0 23 * * *"   # 毎日 08:00 JST
+    # 毎日 08:00 JST（前日データ取得）
+    - cron: "0 23 * * *"
   workflow_dispatch:
     branches:
       - refactor/reorganize
@@ -27,12 +28,13 @@ jobs:
           pip install --upgrade pip
           pip install -e .
 
-      - name: Run data collection and email
+      - name: Run collect_and_send
         env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-        run: python src/market/market_pulse/collect_and_send.py
+          XAI_API_KEY:     ${{ secrets.XAI_API_KEY }}
+          GMAIL_USER:      ${{ secrets.GMAIL_USER }}
+          GMAIL_PASSWORD:  ${{ secrets.GMAIL_PASSWORD }}
+        run: |
+          python src/market/market_pulse/collect_and_send.py
 
       - name: Commit and push data
         run: |
