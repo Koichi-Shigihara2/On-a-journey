@@ -1,4 +1,4 @@
-name: Market Data Update (collect_and_send)
+﻿name: Market Data Update (collect_and_send)
 
 on:
   schedule:
@@ -29,7 +29,7 @@ jobs:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-        run: python -m market.market_pulse.collect_and_send
+        run: python src/market-monitor/collect_and_send.py
 
       - name: Commit and push data
         run: |
