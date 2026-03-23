@@ -1,6 +1,6 @@
 {
   "ticker": "NVDA",
-  "last_updated": "2026-03-23T22:56:49.744888",
+  "last_updated": "2026-03-23T14:12:48.057807",
   "quarters": [
     {
       "gaap_eps": 1.7524679774822551,
@@ -100,9 +100,35 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "Caution",
+        "comment": "調整項目の規模が大きく、特に投資評価損益(9B)とマイルストーンR&D(5.5B)、SBC(4.9B)が目立つ。SBCと無形資産償却は恒常的に発生する項目であり調整の正当性に疑問。投資損益は非営業性だがボラティリティが高く、マイルストーンR&Dもコア事業に関連する可能性が高いため、調整後EPSの健全性は注意が必要。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だがテック企業では毎期発生する恒常的な報酬コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で過去のM&Aに基づく継続的費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "investment_gains",
+            "snippet": "非営業性の評価変動でボラティリティが高い",
+            "confidence": 0.75
+          },
+          {
+            "item": "milestone_rd",
+            "snippet": "成功報酬型の一過性R&D費用だが事業のコアに関連",
+            "confidence": 0.5
+          },
+          {
+            "item": "tax_one_time",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響",
+            "confidence": 0.9
+          }
+        ]
       }
     },
     {
