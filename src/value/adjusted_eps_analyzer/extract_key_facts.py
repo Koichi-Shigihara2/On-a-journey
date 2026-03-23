@@ -1,4 +1,4 @@
-"""
+﻿"""
 SEC EDGARから企業の財務データを抽出するモジュール（会計年度対応・四半期分類改善版・複数期間対応）
 - CIKマップファイルから銘柄のCIKを取得
 - SECのCompany Facts APIから直接XBRLデータを取得
@@ -28,6 +28,7 @@ from datetime import datetime, timedelta
 # 定数設定
 # ============================================
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# extract_key_facts.py は src/value/adjusted_eps_analyzer/ にある → ルートまで4階層上
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
 CONFIG_DIR = os.path.join(PROJECT_ROOT, "config")
 CIK_FILE = os.path.join(CONFIG_DIR, "cik_lookup.csv")
@@ -114,11 +115,11 @@ def load_cik_map() -> Dict[str, str]:
         if not os.path.exists(CIK_FILE):
             print(f"Warning: {CIK_FILE} not found. Creating empty mapping.")
             os.makedirs(CONFIG_DIR, exist_ok=True)
-            with open(CIK_FILE, 'w', encoding='utf-8') as f:
+            with open(CIK_FILE, 'w', encoding='utf-8-sig') as f:
                 f.write("ticker,cik,name,sector\n")
             return cik_map
         
-        with open(CIK_FILE, 'r', encoding='utf-8') as f:
+        with open(CIK_FILE, 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 if row.get('ticker') and row.get('cik'):
@@ -133,7 +134,7 @@ def load_cik_map() -> Dict[str, str]:
 def save_cik_map(cik_map: Dict[str, str]) -> bool:
     try:
         os.makedirs(CONFIG_DIR, exist_ok=True)
-        with open(CIK_FILE, 'w', encoding='utf-8') as f:
+        with open(CIK_FILE, 'w', encoding='utf-8-sig') as f:
             f.write("ticker,cik,name,sector\n")
             for ticker, cik in sorted(cik_map.items()):
                 f.write(f"{ticker},{cik},\n")
@@ -249,20 +250,14 @@ def get_diluted_shares_from_facts(facts_data: Dict, form_type: Optional[str] = N
 # 会計年度判定と四半期分類
 # ============================================
 
-# ★ 非支配持分考慮：純利益タグの優先順位（要件定義書 4.2①）
 NET_INCOME_PRIORITY_TAGS = [
     'us-gaap:NetIncomeLossAvailableToCommonStockholders',
     'us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic',
     'us-gaap:NetIncomeLossAttributableToParent',
-    'us-gaap:NetIncomeLoss',  # フォールバック：連結純利益
+    'us-gaap:NetIncomeLoss',
 ]
 
 def select_net_income_items(tag_data_map: Dict) -> List[Dict]:
-    """
-    非支配持分を考慮した純利益タグを優先順位に従って選択する（四半期10-Q用）。
-    10-Qデータが最も多いタグを優先し、上位タグのデータ件数が
-    フォールバック(NetIncomeLoss)の50%未満の場合はスキップする。
-    """
     fallback_count = len(tag_data_map.get('us-gaap:NetIncomeLoss', []))
     threshold = max(4, fallback_count // 2)
 
@@ -278,11 +273,6 @@ def select_net_income_items(tag_data_map: Dict) -> List[Dict]:
     return []
 
 def select_net_income_annual(annual_data_by_tag: Dict) -> List[Dict]:
-    """
-    年次データから非支配持分考慮の純利益を優先順位に従って選択する（10-K用）。
-    四半期用とは独立して最も多くの年次データを持つタグを選択する。
-    """
-    # 年次データが最も多いタグを優先（件数が同じなら優先順位順）
     best_tag = None
     best_items = []
     best_count = 0
@@ -342,21 +332,19 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         
         tag_data_map = {}
         for tag in required_tags:
-            items = extract_value_from_facts(facts, tag, limit=years*8)  # ★ 大企業でも古い四半期が欠落しないよう拡張
+            items = extract_value_from_facts(facts, tag, limit=years*8)
             tag_data_map[tag] = items
             print(f"Extracted {len(items)} items for {tag}")
         
-        # 年次データ抽出
         annual_data_by_tag = {}
         for tag, items in tag_data_map.items():
             annual_items = [item for item in items if item.get('form', '').startswith('10-K') and 'start' in item and 'end' in item and (datetime.strptime(item['end'], '%Y-%m-%d') - datetime.strptime(item['start'], '%Y-%m-%d')).days >= ANNUAL_DAYS_MIN]
             annual_data_by_tag[tag] = annual_items
         
-        net_income_annual = select_net_income_annual(annual_data_by_tag)  # ★ 非支配持分考慮
+        net_income_annual = select_net_income_annual(annual_data_by_tag)
         fiscal_end_month = determine_fiscal_year_end(net_income_annual)
         print(f"Detected fiscal year end month: {fiscal_end_month}")
         
-        # 希薄化後株式数マップ
         diluted_shares_all = tag_data_map.get('us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding', [])
         diluted_map = {}
         for item in diluted_shares_all:
@@ -364,8 +352,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 key = (item['end'], item['start'])
                 diluted_map[key] = item['val']
         
-        # 10-Q 四半期候補
-        net_income_10q = select_net_income_items(tag_data_map)  # ★ 非支配持分考慮
+        net_income_10q = select_net_income_items(tag_data_map)
         quarterly_candidates = []
         for q_item in net_income_10q:
             if not q_item.get('form', '').startswith('10-Q'):
@@ -404,7 +391,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 }
             quarters_map[key]['net_income'] = {'value': cand['val'], 'unit': cand['unit']}
         
-        # 他のタグ追加（10-Q）
         for tag in required_tags:
             if tag in ['us-gaap:NetIncomeLoss', 'us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding']:
                 continue
@@ -427,7 +413,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 if key in quarters_map:
                     quarters_map[key][tag] = {'value': item['val'], 'unit': item['unit']}
         
-        # 希薄化後株式数追加
         for item in diluted_shares_all:
             if not item.get('form', '').startswith('10-Q'):
                 continue
@@ -447,8 +432,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             if key in quarters_map:
                 quarters_map[key]['diluted_shares'] = {'value': item['val'], 'unit': item['unit']}
         
-        # ★★★ SBC YTD累計値を _ytd_ プレフィックスで quarters_map に追加 ★★★
-        # pipeline.py でYTD差分計算するために、生のYTD累計値を別キーで保存
         SBC_YTD_TAGS = [
             'us-gaap:ShareBasedCompensation',
             'us-gaap:AllocatedShareBasedCompensationExpense',
@@ -464,7 +447,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 start = datetime.strptime(item['start'], '%Y-%m-%d')
                 end   = datetime.strptime(item['end'],   '%Y-%m-%d')
                 days  = (end - start).days
-                # YTD累計値（120日超）のみ対象
                 if days <= QUARTER_DAYS_MAX:
                     continue
                 fy   = end.year if end.month <= fiscal_end_month else end.year + 1
@@ -473,12 +455,10 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 if key not in quarters_map:
                     continue
                 ytd_key = f'_ytd_{tag}'
-                # 既存値より大きければ上書き（最新・最大のYTD値を保持）
                 existing = quarters_map[key].get(ytd_key, {}).get('value', 0)
                 if item['val'] > existing:
                     quarters_map[key][ytd_key] = {'value': item['val'], 'unit': item['unit']}
 
-                # 税費用・pretax_income計算（省略せず完全実装）
         tax_tag_candidates = [
             'us-gaap:IncomeTaxExpenseBenefit', 'us-gaap:IncomeTaxExpenseBenefitContinuingOperations',
             'us-gaap:ProvisionForIncomeTaxes', 'us-gaap:IncomeTaxExpenseBenefitFromContinuingOperations'
@@ -493,8 +473,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             if net and tax is not None:
                 data['pretax_income'] = {'value': net + tax, 'unit': 'USD'}
         
-        # ★★★ 10-KからQ4を計算（旧版ロジックベース） ★★★
-        # Q1〜Q3が10-Qで取得済みの fiscal_year について、年次(10-K)からQ4を計算
         fiscal_years_with_q1q3 = set(k[0] for k in quarters_map.keys() if k[1] in (1,2,3))
         for fiscal_year in fiscal_years_with_q1q3:
             q1_key = (fiscal_year, 1)
@@ -503,14 +481,13 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             q4_key = (fiscal_year, 4)
 
             if q4_key in quarters_map:
-                continue  # 既にQ4データあり
+                continue
 
             if not (q1_key in quarters_map and q2_key in quarters_map and q3_key in quarters_map):
                 print(f"  Warning: Missing Q1-Q3 for FY{fiscal_year}")
                 continue
 
-            # この fiscal_year に対応する10-Kを探す
-            net_income_annual_items = select_net_income_annual(annual_data_by_tag)  # ★ 非支配持分考慮
+            net_income_annual_items = select_net_income_annual(annual_data_by_tag)
             target_k_item = None
             for item in net_income_annual_items:
                 item_end = datetime.strptime(item['end'], '%Y-%m-%d')
@@ -523,14 +500,12 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 print(f"  Warning: No 10-K found for FY{fiscal_year}")
                 continue
 
-            # Q4純利益 = 年次 - Q1 - Q2 - Q3
             annual_net = target_k_item['val']
             ni_q1 = normalize_value(quarters_map[q1_key].get('net_income', {'value': 0}))
             ni_q2 = normalize_value(quarters_map[q2_key].get('net_income', {'value': 0}))
             ni_q3 = normalize_value(quarters_map[q3_key].get('net_income', {'value': 0}))
             q4_net = annual_net - ni_q1 - ni_q2 - ni_q3
 
-            # 希薄化後株式数：10-Kの年次値を優先、なければQ3を使用
             diluted_val = 0
             for d_item in diluted_shares_all:
                 if d_item.get('form', '').startswith('10-K') and d_item.get('end') == target_k_item['end']:
@@ -539,7 +514,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             if diluted_val == 0:
                 diluted_val = normalize_value(quarters_map[q3_key].get('diluted_shares', {'value': 0}))
 
-            # Q4データを作成
             q4_data = {
                 'filing_date': target_k_item['end'],
                 'form': '10-K',
@@ -554,14 +528,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             quarters_map[q4_key] = q4_data
             print(f"  [Q4計算] FY{fiscal_year} Q4 end={target_k_item['end']}: net={q4_net/1e6:.1f}M (annual={annual_net/1e6:.1f}M - Q1-Q3={(ni_q1+ni_q2+ni_q3)/1e6:.1f}M)")
 
-            # Q4の税費用 = 年次 - Q1 - Q2 - Q3（差し引き計算）
-            tax_tag_candidates_q4 = [
-                'us-gaap:IncomeTaxExpenseBenefit',
-                'us-gaap:IncomeTaxExpenseBenefitContinuingOperations',
-                'us-gaap:ProvisionForIncomeTaxes',
-                'us-gaap:IncomeTaxExpenseBenefitFromContinuingOperations'
-            ]
-            for tax_tag in tax_tag_candidates_q4:
+            for tax_tag in tax_tag_candidates:
                 annual_tax_items = annual_data_by_tag.get(tax_tag, [])
                 annual_tax_val = None
                 for item in annual_tax_items:
@@ -576,10 +543,8 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 v_q3 = normalize_value(quarters_map[q3_key].get(tax_tag))
                 v_q4 = v_annual - v_q1 - v_q2 - v_q3
                 q4_data[tax_tag] = {'value': v_q4, 'unit': annual_tax_val['unit']}
-                break  # 最初に見つかった税費用タグを使用
+                break
 
-            # Q4の調整項目タグ = 年次値 - Q1値 - Q2値 - Q3値（差し引き計算）
-            # SBC・R&D等はYTD累計で報告されるため、差し引きでQ4単体値を得る
             skip_tags = {
                 'us-gaap:NetIncomeLoss', 'us-gaap:NetIncomeLossAttributableToParent',
                 'us-gaap:NetIncomeLossAvailableToCommonStockholders',
@@ -591,7 +556,7 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 'us-gaap:IncomeLossBeforeIncomeTaxExpenseBenefit',
                 'us-gaap:IncomeLossBeforeIncomeTaxExpenseBenefitAndExtraordinaryItems',
                 'us-gaap:IncomeBeforeTax',
-            } | set(tax_tag_candidates_q4)
+            } | set(tax_tag_candidates)
             for tag in required_tags:
                 if tag in skip_tags:
                     continue
@@ -603,7 +568,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                         break
                 if not annual_tag_val:
                     continue
-                # Q1〜Q3の値を取得（normalize_valueで単位統一）
                 v_annual = annual_tag_val['val']
                 v_q1 = normalize_value(quarters_map[q1_key].get(tag))
                 v_q2 = normalize_value(quarters_map[q2_key].get(tag))
@@ -612,7 +576,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 if v_q4 != 0:
                     q4_data[tag] = {'value': v_q4, 'unit': annual_tag_val['unit']}
 
-        # quarterly_list 作成（ここがエラー原因だった部分）
         quarterly_list = []
         for (fiscal_year, quarter), data in sorted(quarters_map.items()):
             if 'net_income' in data and 'diluted_shares' in data:
@@ -643,7 +606,6 @@ def normalize_value(value_dict: Optional[Dict]) -> float:
         return value * 1_000_000_000
     return value
 
-# テスト用
 if __name__ == "__main__":
     ticker = "TSLA"
     print(f"Testing data extraction for {ticker}...")

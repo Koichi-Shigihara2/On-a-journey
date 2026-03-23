@@ -12,7 +12,10 @@ import yaml
 import requests
 from typing import List, Dict, Any
 
-CONFIG_DIR = "config"
+# プロジェクトルートを取得（ai_analyzer.py の場所から3階層上）
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
+CONFIG_DIR = os.path.join(PROJECT_ROOT, "config")
 PROMPTS_FILE = os.path.join(CONFIG_DIR, "prompts.yaml")
 
 # デフォルトプロンプト（ファイルがない場合のフォールバック）
@@ -53,12 +56,11 @@ def load_prompt() -> str:
         return DEFAULT_PROMPT
 
 # XAI API用の設定
-XAI_API_KEY = os.environ.get("XAI_API_KEY")  # GitHub Secretsのキー
+XAI_API_KEY = os.environ.get("XAI_API_KEY")
 XAI_API_URL = "https://api.x.ai/v1/chat/completions"
 XAI_MODEL = "grok-4.20-0309-reasoning"
 
 def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustments: List[Dict[str, Any]]) -> str:
-    # 調整項目がない場合
     if not adjustments:
         return json.dumps({
             "health": "Good",
@@ -66,7 +68,6 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
             "sources": []
         }, ensure_ascii=False)
 
-    # APIキーがない場合
     if not XAI_API_KEY:
         print(f"  [AI] XAI_API_KEY not set for {ticker}")
         return json.dumps({
@@ -108,10 +109,8 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
         response.raise_for_status()
         result = response.json()
         content = result['choices'][0]['message']['content']
-        # APIレスポンスがJSON形式であることを確認
         parsed = json.loads(content)
 
-        # ★ ai_confidence を sources の各項目に正規化して保存（要件定義書 4.2③）
         for source in parsed.get("sources", []):
             raw_conf = source.get("confidence")
             if raw_conf is not None:

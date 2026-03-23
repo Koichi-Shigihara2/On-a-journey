@@ -8,20 +8,23 @@ import csv
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from value.adjusted_eps_analyzer.extract_key_facts import extract_quarterly_facts, normalize_value
-from value.adjusted_eps_analyzer.adjustment_detector import detect_adjustments
-from value.adjusted_eps_analyzer.tax_adjuster import apply_tax_adjustments
-from value.adjusted_eps_analyzer.eps_calculator import calculate_eps
-from value.adjusted_eps_analyzer.ai_analyzer import analyze_adjustments
-from value.adjusted_eps_analyzer.sector_classifier_v2 import SectorClassifierV2
-from value.adjusted_eps_analyzer.company_metadata import get_company_metadata
-from value.adjusted_eps_analyzer.maturity_monitor import MaturityMonitor
+from .extract_key_facts import extract_quarterly_facts, normalize_value
+from .adjustment_detector import detect_adjustments
+from .tax_adjuster import apply_tax_adjustments
+from .eps_calculator import calculate_eps
+from .ai_analyzer import analyze_adjustments
+from .sector_classifier_v2 import SectorClassifierV2
+from .company_metadata import get_company_metadata
+from .maturity_monitor import MaturityMonitor
+
+# プロジェクトルートを取得（pipeline.py の場所から4階層上）
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 def load_cik_data() -> List[Dict]:
-    cik_file = os.path.join("config", "cik_lookup.csv")
+    cik_file = os.path.join(PROJECT_ROOT, "config", "cik_lookup.csv")
     data = []
     try:
-        with open(cik_file, 'r', encoding='utf-8') as f:
+        with open(cik_file, 'r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 data.append(row)
@@ -134,11 +137,10 @@ def get_revenue(period_data: Dict) -> float:
     return 0.0
 
 def run(ticker_filter: str = None):
-    config_base = "config"
+    config_base = os.path.join(PROJECT_ROOT, "config")
     with open(os.path.join(config_base, "monitor_tickers.yaml"), 'r', encoding='utf-8') as f:
         tickers = yaml.safe_load(f)["tickers"]
     
-    # ★ --ticker 引数が指定された場合は対象を絞る（カンマ区切りで複数指定可能）
     if ticker_filter:
         requested = [t.strip().upper() for t in ticker_filter.split(',') if t.strip()]
         for t in requested:
@@ -149,7 +151,7 @@ def run(ticker_filter: str = None):
     with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
         adjustment_config = json.load(f)
     
-    classifier = SectorClassifierV2(os.path.join(config_base, "sectors.yaml"))
+    classifier = SectorClassifierV2(os.path.join(PROJECT_ROOT, "config", "sectors.yaml"))
     
     cik_data = load_cik_data()
     ticker_to_sector = {row['ticker']: row.get('sector') for row in cik_data if row.get('sector')}
@@ -158,6 +160,7 @@ def run(ticker_filter: str = None):
     maturity_config = adjustment_config.get('maturity_defaults', {})
     
     all_tickers_data = {}
+    DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
 
     for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
@@ -167,7 +170,7 @@ def run(ticker_filter: str = None):
             print(f"{ticker}: データなし")
             continue
         
-        from value.adjusted_eps_analyzer.extract_key_facts import get_cik as get_cik_func
+        from .extract_key_facts import get_cik as get_cik_func
         try:
             cik = get_cik_func(ticker)
         except:
@@ -190,18 +193,15 @@ def run(ticker_filter: str = None):
         sector_exclusions = classifier.get_exclusions_for_sector(sector) if sector else []
         exclusion_item_ids = [ex['item_id'] for ex in sector_exclusions]
         
-        # ★★★ YTD累計SBCタグを四半期差分に変換してquarterly_rawに注入 ★★★
-        # PLTRのようにSBCをYTD累計でのみ報告する企業に対応
+        # YTD累計SBCタグを四半期差分に変換
         SBC_YTD_TAGS = [
             'us-gaap:ShareBasedCompensation',
             'us-gaap:AllocatedShareBasedCompensationExpense',
             'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
             'us-gaap:StockBasedCompensation',
         ]
-        # filing_date順にソート（古い順）してYTD差分を計算
         raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
         for sbc_tag in SBC_YTD_TAGS:
-            # extract_key_facts.py が _ytd_{tag} キーで保存したYTD累計値を使用
             ytd_key = f'_ytd_{sbc_tag}'
             ytd_by_fq = {}
             for pd in raw_sorted:
@@ -217,7 +217,6 @@ def run(ticker_filter: str = None):
                     ytd_by_fq[(fy, qn)] = ytd_val
             if not ytd_by_fq:
                 continue
-            # YTD差分から四半期値を計算して上書き
             applied = 0
             for pd in raw_sorted:
                 fy = pd.get('fiscal_year', int(pd['filing_date'][:4]))
@@ -245,10 +244,7 @@ def run(ticker_filter: str = None):
                 "diluted_shares": normalize_value(period_data.get("diluted_shares")),
                 "tax_expense": normalize_value(period_data.get("tax_expense")),
                 "pretax_income": normalize_value(period_data.get("pretax_income")),
-                
-                # ★★★ 売上高（銀行系は純金利収益＋非金利収益の合算） ★★★
                 "revenue": get_revenue(period_data),
-                
                 "filing_date": period_data["filing_date"],
                 "form": period_data["form"],
                 "raw_facts": {k: v for k, v in period_data.items() 
@@ -265,11 +261,11 @@ def run(ticker_filter: str = None):
             result["net_adjustment_total"] = net_adjustment
             result["sector"] = sector
             result["sector_exclusions"] = exclusion_item_ids
-            result["revenue"] = data.get("revenue", 0)           # ★ MaturityMonitor 用
-            result["diluted_shares"] = data.get("diluted_shares", 0)  # ★ MaturityMonitor 用
-            result["period_end"] = period_data.get("end", period_data["filing_date"])  # ★ 決算期末日（X軸ラベル用）
-            result["fiscal_year"] = period_data.get("fiscal_year")    # ★ 会計年度
-            result["quarter"] = period_data.get("quarter")            # ★ 四半期番号（1-4）
+            result["revenue"] = data.get("revenue", 0)
+            result["diluted_shares"] = data.get("diluted_shares", 0)
+            result["period_end"] = period_data.get("end", period_data["filing_date"])
+            result["fiscal_year"] = period_data.get("fiscal_year")
+            result["quarter"] = period_data.get("quarter")
             
             quarterly_results.append(result)
             
@@ -277,10 +273,9 @@ def run(ticker_filter: str = None):
                   f"GAAP EPS=${result['gaap_eps']:.4f} → "
                   f"Adj EPS=${result['adjusted_eps']:.4f}")
         
-        # ★★★ 成熟度監視（全セクター対応・正しいsector引数）★★★
+        # 成熟度監視
         if sector and quarterly_results:
             latest_for_monitor = max(quarterly_results, key=lambda x: x["filing_date"])
-            # ★ SBCはセクター除外されている場合もあるため、quarterly_rawから直接取得
             _latest_raw = max(quarterly_raw, key=lambda x: x["filing_date"])
             _sbc_raw = (
                 _latest_raw.get("us-gaap:ShareBasedCompensation") or
@@ -298,7 +293,7 @@ def run(ticker_filter: str = None):
         else:
             _pending_maturity = None
         
-        # TTM・年次集計・AI分析（元のまま）
+        # TTM・年次集計・AI分析
         ttm_results = []
         for i in range(3, len(quarterly_results)):
             ttm = calculate_ttm(quarterly_results, i)
@@ -310,7 +305,6 @@ def run(ticker_filter: str = None):
         if quarterly_results:
             quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
             latest = quarterly_results[0]
-            # ★ sort後の正しい最新四半期に maturity_monitor を付与
             if _pending_maturity is not None:
                 latest['maturity_monitor'] = _pending_maturity
             print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
@@ -321,11 +315,11 @@ def run(ticker_filter: str = None):
                 print(f"  [AI] Failed to parse AI result: {e}")
                 latest["ai_analysis"] = {"health": "Error", "comment": str(ai_result), "sources": []}
         
-        # 保存（元のまま）
-        ticker_dir = f"docs/data/{ticker}"
+        # 保存
+        ticker_dir = os.path.join(DATA_ROOT, ticker)
         os.makedirs(ticker_dir, exist_ok=True)
         
-        with open(f"{ticker_dir}/quarterly.json", "w", encoding="utf-8") as f:
+        with open(os.path.join(ticker_dir, "quarterly.json"), "w", encoding="utf-8") as f:
             json.dump({
                 "ticker": ticker,
                 "last_updated": datetime.now().isoformat(),
@@ -333,11 +327,11 @@ def run(ticker_filter: str = None):
             }, f, indent=2, ensure_ascii=False)
         
         if ttm_results:
-            with open(f"{ticker_dir}/ttm.json", "w", encoding="utf-8") as f:
+            with open(os.path.join(ticker_dir, "ttm.json"), "w", encoding="utf-8") as f:
                 json.dump({"ticker": ticker, "last_updated": datetime.now().isoformat(), "ttm": ttm_results}, f, indent=2, ensure_ascii=False)
         
         if annual_results:
-            with open(f"{ticker_dir}/annual.json", "w", encoding="utf-8") as f:
+            with open(os.path.join(ticker_dir, "annual.json"), "w", encoding="utf-8") as f:
                 json.dump({"ticker": ticker, "last_updated": datetime.now().isoformat(), "years": annual_results}, f, indent=2, ensure_ascii=False)
         
         all_tickers_data[ticker] = {
@@ -349,7 +343,7 @@ def run(ticker_filter: str = None):
     
     if all_tickers_data:
         summary = generate_summary(all_tickers_data)
-        with open("docs/data/summary.json", "w", encoding="utf-8") as f:
+        with open(os.path.join(DATA_ROOT, "summary.json"), "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, ensure_ascii=False)
         print("✓ summary.json 生成完了")
 

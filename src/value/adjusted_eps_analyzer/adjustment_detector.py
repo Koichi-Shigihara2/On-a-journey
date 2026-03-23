@@ -9,8 +9,9 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
-# 設定ファイルのパス
-CONFIG_DIR = Path(__file__).parent.parent / "config"
+# プロジェクトルートを取得（adjustment_detector.py の場所から4階層上）
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+CONFIG_DIR = PROJECT_ROOT / "config"
 ADJUSTMENT_ITEMS_PATH = CONFIG_DIR / "adjustment_items.json"
 
 # キャッシュ用（複数回呼ばれることを考慮）
@@ -46,13 +47,12 @@ def load_adjustment_items() -> List[Dict[str, Any]]:
 
 
 # sectors.yaml の item_id → adjustment_items.json の item_name へのマッピング
-# ★新adjustment_items.jsonのitem_nameに合わせて更新済み
 SECTOR_ITEM_ID_TO_NAME = {
     'sbc':                          '株式報酬費用',
-    'amortization_intangibles':     '無形資産償却費',        # 旧: 買収無形資産償却
-    'inventory_writeoff':           '在庫評価損・減損',      # 旧: 在庫評価損
-    'ma_integration':               'M&A統合費用',           # 旧: 買収関連費用
-    'iprd_amortization':            'IPR&D償却',             # 旧: 買収無形資産償却
+    'amortization_intangibles':     '無形資産償却費',
+    'inventory_writeoff':           '在庫評価損・減損',
+    'ma_integration':               'M&A統合費用',
+    'iprd_amortization':            'IPR&D償却',
     'goodwill_impairment':          'のれん減損',
     'loan_fair_value':              'ローン公正価値評価損益',
     'loan_loss_provision_abnormal': '貸倒引当金繰入（異常変動分）',
@@ -68,7 +68,6 @@ SECTOR_ITEM_ID_TO_NAME = {
     'fx_gains_losses':              '為替差損益',
     'derivative_gains_losses':      'デリバティブ評価損益',
     'tax_one_time':                 '一過性税効果',
-    # ★ gov_subsidy_timing を追加（製造/EV セクターで使用）
     'gov_subsidy_timing':           '政府補助金（一時的影響）',
 }
 
@@ -82,17 +81,16 @@ def detect_adjustments(
     """
     period_data から調整項目を検出する
     Args:
-        period_data: 1四半期分のデータ（extract_quarterly_facts の戻り値の要素）
+        period_data: 1四半期分のデータ
         adjustment_config: 互換性のため残しているが、使用しない
-        sector: セクター名（pipeline.py から渡される）
-        sector_exclusions: セクター別除外項目リスト（各要素は item_id キーを持つ dict）
+        sector: セクター名
+        sector_exclusions: セクター別除外項目リスト
     Returns:
         List[Dict]: 検出された調整項目のリスト
     """
     items_config = load_adjustment_items()
     detected = []
 
-    # セクター除外対象の item_name セットを構築
     excluded_item_names: set = set()
     if sector_exclusions:
         for ex in sector_exclusions:
@@ -101,7 +99,6 @@ def detect_adjustments(
             if mapped_name:
                 excluded_item_names.add(mapped_name)
 
-    # REIT専用項目（depreciation等）を非REITセクターでは適用しない
     REIT_ONLY_ITEM_IDS = {'depreciation', 'asset_sale_gain'}
     is_reit = sector and '不動産' in sector
 
@@ -109,11 +106,9 @@ def detect_adjustments(
         item_name = item.get('item_name', '')
         item_id   = item.get('item_id', '')
 
-        # REIT専用項目を非REITセクターでスキップ
         if item_id in REIT_ONLY_ITEM_IDS and not is_reit:
             continue
 
-        # セクター除外対象はスキップ
         if item_name in excluded_item_names:
             continue
 
@@ -121,13 +116,12 @@ def detect_adjustments(
         for tag in xbrl_tags:
             if tag in period_data:
                 value_dict = period_data[tag]
-                # value_dict は {"value": ..., "unit": ...} 形式を想定
                 amount = value_dict.get('value')
                 unit = value_dict.get('unit', 'USD')
                 if amount is None or amount == 0:
                     continue
                 detected.append({
-                    "item_id": item.get('item_id', ''),   # ★ MaturityMonitor用に追加
+                    "item_id": item.get('item_id', ''),
                     "item_name": item_name,
                     "amount": amount,
                     "unit": unit,
@@ -137,12 +131,11 @@ def detect_adjustments(
                     "extracted_from": tag,
                     "category": item.get('category', 'その他')
                 })
-                break  # 最初に見つかったタグで採用
+                break
 
     return detected
 
 
-# テスト用
 if __name__ == "__main__":
     sample_period = {
         "filing_date": "2025-03-31",
