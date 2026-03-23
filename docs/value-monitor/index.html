@@ -3,52 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adjusted EPS Analyzer · ダッシュボード</title>
-  <!-- フォント (MACRO PULSE と同じ) -->
+  <title>Adjusted EPS Analyzer · 管理</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- DataTables + Excel出力 -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    /* 色定義 (MACRO PULSE 完全移植) */
+    /* 同じデザイン変数を使用 */
     :root {
-      --bg: #0a0d14;
-      --sur: #111520;
-      --sur2: #161c2d;
-      --bdr: #1e2840;
-      --acc: #3b82f6;
-      --grn: #10b981;
-      --red: #f43f5e;
-      --amb: #f59e0b;
-      --txt: #e2e8f0;
-      --mut: #64748b;
-      --mono: 'Space Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
+      --bg: #0a0d14; --sur: #111520; --sur2: #161c2d; --bdr: #1e2840;
+      --acc: #3b82f6; --grn: #10b981; --red: #f43f5e; --amb: #f59e0b;
+      --txt: #e2e8f0; --mut: #64748b;
+      --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
       color: var(--txt);
       font-family: var(--sans);
       font-size: 14px;
-      min-height: 100vh;
+      padding: 20px;
     }
-
-    .shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px 48px;
-    }
-
-    /* ヘッダー */
+    .shell { max-width: 1000px; margin: 0 auto; }
     header {
       border-bottom: 1px solid var(--bdr);
       padding: 16px 0;
@@ -56,552 +29,451 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
     }
-
     .logo {
       font-family: var(--mono);
       font-size: 16px;
       font-weight: 700;
-      letter-spacing: .15em;
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
-    .logo-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--acc);
-      border-radius: 50%;
-      animation: pdot 2s ease-in-out infinite;
-    }
-
-    @keyframes pdot {
-      0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
-      50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
-    }
-
-    .hdr-r {
+    .token-input {
       display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
     }
-
-    .nav-links {
-      display: flex;
-      gap: 16px;
-    }
-
-    .nav-links a {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--mut);
-      text-decoration: none;
-      letter-spacing: .08em;
-      padding: 5px 0;
-      border-bottom: 1px solid transparent;
-    }
-
-    .nav-links a:hover {
-      color: var(--acc);
-      border-bottom-color: var(--acc);
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .search-box input {
-      font-family: var(--mono);
-      font-size: 11px;
+    .token-input input {
+      flex: 1;
       background: var(--sur2);
       border: 1px solid var(--bdr);
-      padding: 5px 10px;
+      padding: 8px 12px;
       color: var(--txt);
-      width: 120px;
+      font-family: var(--mono);
     }
-
-    .search-box button {
+    button {
       font-family: var(--mono);
       font-size: 11px;
-      padding: 5px 12px;
+      padding: 8px 16px;
       border: 1px solid var(--bdr);
       background: var(--sur2);
       color: var(--txt);
       cursor: pointer;
     }
-
-    .search-box button:hover {
-      border-color: var(--acc);
-      color: var(--acc);
-    }
-
-    /* セクション見出し */
-    .sec {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .2em;
-      color: var(--mut);
-      text-transform: uppercase;
-      margin: 32px 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .sec::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--bdr);
-    }
-
-    /* カードグリッド */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .card {
+    button:hover { border-color: var(--acc); color: var(--acc); }
+    .panel {
       background: var(--sur);
       border: 1px solid var(--bdr);
-      padding: 18px 20px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
-
-    .card-title {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .15em;
-      color: var(--mut);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .top-list {
-      list-style: none;
-    }
-
-    .top-list li {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(30,40,64,.5);
-    }
-
-    .top-list li:last-child {
-      border-bottom: none;
-    }
-
-    .top-ticker {
-      font-family: var(--mono);
-      font-weight: 700;
-    }
-
-    .top-ticker a {
-      color: var(--acc);
-      text-decoration: none;
-    }
-
-    .top-ticker a:hover {
-      text-decoration: underline;
-    }
-
-    .top-value {
-      font-family: var(--mono);
-      color: var(--grn);
-    }
-
-    .health-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .health-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    }
-
-    .health-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .health-dot.Excellent { background: var(--grn); }
-    .health-dot.Good { background: var(--grn); opacity: .7; }
-    .health-dot.Caution { background: var(--amb); }
-    .health-dot.Warning { background: var(--red); }
-
-    .health-name {
-      font-family: var(--mono);
-      font-size: 11px;
-      flex: 1;
-    }
-
-    .health-name a {
-      color: var(--txt);
-      text-decoration: none;
-    }
-
-    .health-name a:hover {
-      color: var(--acc);
-    }
-
-    /* テーブル */
-    .table-wrap {
-      background: var(--sur);
-      border: 1px solid var(--bdr);
-      margin-top: 16px;
-      overflow-x: auto;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
     }
-
     th {
       font-family: var(--mono);
       font-size: 9px;
-      letter-spacing: .12em;
       color: var(--mut);
       text-align: left;
-      padding: 10px 16px;
+      padding: 8px 0;
       border-bottom: 1px solid var(--bdr);
-      text-transform: uppercase;
     }
-
     td {
-      padding: 10px 16px;
+      padding: 8px 0;
       border-bottom: 1px solid rgba(30,40,64,.5);
     }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover {
-      background: rgba(255,255,255,.02);
-    }
-
-    .ticker-cell a {
-      color: var(--acc);
-      font-family: var(--mono);
-      text-decoration: none;
-    }
-
-    .ticker-cell a:hover {
-      text-decoration: underline;
-    }
-
-    .health-badge {
+    .checkbox-col { width: 30px; }
+    .status-badge {
       display: inline-block;
       font-family: var(--mono);
       font-size: 9px;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 2px;
     }
-
-    .health-Excellent, .health-Good {
-      background: rgba(16,185,129,.15);
-      color: var(--grn);
+    .status-ok { background: rgba(16,185,129,.15); color: var(--grn); }
+    .status-old { background: rgba(245,158,11,.15); color: var(--amb); }
+    .error { color: var(--red); }
+    .success { color: var(--grn); }
+    .form-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-
-    .health-Caution {
-      background: rgba(245,158,11,.15);
-      color: var(--amb);
-    }
-
-    .health-Warning {
-      background: rgba(244,63,94,.15);
-      color: var(--red);
-    }
-
-    .health-Error {
-      background: rgba(100,116,139,.15);
-      color: var(--mut);
-    }
-
-    .number {
-      font-family: var(--mono);
-      text-align: right;
-    }
-
-    /* DataTables スタイル上書き */
-    .dataTables_wrapper {
-      font-family: var(--sans);
-      font-size: 13px;
-      color: var(--txt);
-    }
-    .dataTables_filter input, .dataTables_length select {
+    .form-row input {
       background: var(--sur2);
       border: 1px solid var(--bdr);
+      padding: 6px 10px;
       color: var(--txt);
       font-family: var(--mono);
-      font-size: 11px;
-      padding: 4px 8px;
-      margin-left: 6px;
     }
-    .dataTables_filter label, .dataTables_length label,
-    .dataTables_info, .dataTables_paginate {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--mut);
-    }
-    .dataTables_paginate .paginate_button {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--mut) !important;
-      padding: 3px 8px !important;
-    }
-    .dataTables_paginate .paginate_button.current {
-      background: var(--sur2) !important;
-      border: 1px solid var(--bdr) !important;
-      color: var(--acc) !important;
-    }
-    .dataTables_paginate .paginate_button:hover {
-      background: var(--sur2) !important;
-      border: 1px solid var(--bdr) !important;
-      color: var(--acc) !important;
-    }
-    table.dataTable thead th {
-      background: var(--sur);
-      border-bottom: 1px solid var(--bdr) !important;
-    }
-    table.dataTable thead .sorting::after,
-    table.dataTable thead .sorting_asc::after,
-    table.dataTable thead .sorting_desc::after {
-      opacity: 0.5;
-    }
-    .dt-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .excel-btn {
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 5px 14px;
-      background: rgba(16,185,129,.15);
-      border: 1px solid var(--grn);
-      color: var(--grn);
-      cursor: pointer;
-      letter-spacing: .05em;
-    }
-    .excel-btn:hover { background: rgba(16,185,129,.25); }
-
-    /* ローディング／エラー */
-    .empty {
-      color: var(--mut);
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 40px;
-      text-align: center;
-    }
-
-    .spin {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border: 2px solid var(--bdr);
-      border-top-color: var(--acc);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin-right: 6px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    hr { border: none; border-top: 1px solid var(--bdr); margin: 20px 0; }
   </style>
 </head>
 <body>
 <div class="shell">
   <header>
     <div class="logo">
-      <!-- 狸アイコン (添付の images/logo.png.png) -->
-      <img src="../common/images/logo.png" alt="TANUKI" style="height:30px; width:auto; object-fit:contain">
-      <span class="logo-dot"></span>
-      Adjusted EPS Analyzer
+      <img src="../../common/images/logo.png" style="height:30px" alt="TANUKI">
+      <span>管理ダッシュボード</span>
     </div>
-    <div class="hdr-r">
-      <div class="nav-links">
-        <a href="/On-a-journey/">HOME</a> <a href="index.html" style="color:var(--acc); border-bottom-color:var(--acc);">ダッシュボード</a>
-        <a href="tickers.html">銘柄一覧</a>
-        <a href="/On-a-journey/market-monitor/">Market Pulse</a>
-        <a href="/On-a-journey/market-monitor/macro-pulse/">MACRO PULSE</a>
-      </div>
-      <div class="search-box">
-        <input type="text" id="ticker-search" placeholder="ティッカー (例: TSLA)" value="TSLA">
-        <button onclick="window.location.href='stock.html?ticker='+document.getElementById('ticker-search').value.toUpperCase()">検索</button>
-      </div>
+    <div>
+      <a href="index.html" style="color:var(--acc);">← ダッシュボードに戻る</a>
     </div>
   </header>
 
-  <!-- メインコンテンツ (JSで動的生成) -->
-  <div id="dashboard-content">
-    <div class="empty"><span class="spin"></span>データを読み込み中...</div>
+  <!-- トークン入力 -->
+  <div class="token-input">
+    <input type="password" id="token" placeholder="GitHub Personal Access Token (repo 権限)" value="">
+    <button id="loadBtn">読み込む</button>
+  </div>
+
+  <!-- メインコンテンツ (token が有効な場合のみ表示) -->
+  <div id="content" style="display:none;">
+
+    <!-- 現在の監視銘柄一覧 -->
+    <div class="panel">
+      <h3 style="font-family:var(--mono); margin-bottom:15px;">📋 監視銘柄一覧</h3>
+      <table id="tickerTable">
+        <thead>
+          <tr><th class="checkbox-col"><input type="checkbox" id="selectAll"></th><th>ティッカー</th><th>CIK</th><th>会社名</th><th>最終更新</th><th>状態</th></tr>
+        </thead>
+        <tbody id="tickerList"></tbody>
+      </table>
+      <div style="margin-top:15px; display:flex; gap:10px;">
+        <button id="updateSelected">選択した銘柄を更新</button>
+        <button id="refreshList">↻ リスト再読込</button>
+      </div>
+    </div>
+
+    <!-- 新規ティッカー登録 -->
+    <div class="panel">
+      <h3 style="font-family:var(--mono); margin-bottom:15px;">➕ 新規ティッカー登録</h3>
+      <div class="form-row">
+        <input type="text" id="newTicker" placeholder="ティッカー (例: AAPL)" style="width:150px;">
+        <input type="text" id="newCik" placeholder="CIK (空欄で自動取得)" style="width:200px;">
+        <input type="text" id="newName" placeholder="会社名 (任意)" style="width:250px;">
+        <button id="lookupCik">CIK 自動取得</button>
+        <button id="addTicker">追加</button>
+      </div>
+      <div id="addResult" style="margin-top:10px; font-family:var(--mono);"></div>
+    </div>
+
+    <!-- 最終更新日時 (グローバル) -->
+    <div class="panel">
+      <span style="font-family:var(--mono); color:var(--mut);">データ最終更新: </span><span id="globalLastUpdated">—</span>
+    </div>
   </div>
 </div>
 
 <script>
-  (async function() {
-    const contentDiv = document.getElementById('dashboard-content');
+  const REPO_OWNER = 'Koichi-Shigihara2';
+  const REPO_NAME = 'On-a-journey';
+  const BRANCH = 'refactor/reorganize';   // 実際のブランチ名に合わせてください
+
+  let token = '';
+  let tickerList = [];
+
+  const contentDiv = document.getElementById('content');
+  const tokenInput = document.getElementById('token');
+  const loadBtn = document.getElementById('loadBtn');
+  const refreshBtn = document.getElementById('refreshList');
+  const selectAll = document.getElementById('selectAll');
+  const updateSelectedBtn = document.getElementById('updateSelected');
+  const lookupCikBtn = document.getElementById('lookupCik');
+  const addTickerBtn = document.getElementById('addTicker');
+  const tickerListTbody = document.getElementById('tickerList');
+  const globalLastUpdatedSpan = document.getElementById('globalLastUpdated');
+  const addResultDiv = document.getElementById('addResult');
+
+  // GitHub API のヘッダー
+  function apiHeaders() {
+    return {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+  }
+
+  // ファイルの内容を取得 (Base64 デコード)
+  async function fetchFileContent(path) {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`;
+    const res = await fetch(url, { headers: apiHeaders() });
+    if (!res.ok) throw new Error(`ファイル取得失敗: ${path}`);
+    const data = await res.json();
+    const content = atob(data.content.replace(/\n/g, ''));
+    return { content, sha: data.sha };
+  }
+
+  // ファイルを更新/作成 (コミット)
+  async function updateFile(path, content, message, sha = null) {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+    const body = {
+      message,
+      content: btoa(unescape(encodeURIComponent(content))), // UTF-8 対応
+      branch: BRANCH
+    };
+    if (sha) body.sha = sha;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: apiHeaders(),
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`コミット失敗: ${path}`);
+    return await res.json();
+  }
+
+  // YAML パース (簡易)
+  function parseYaml(yaml) {
+    const lines = yaml.split('\n');
+    const tickers = [];
+    let inList = false;
+    for (let line of lines) {
+      line = line.trim();
+      if (line.startsWith('tickers:')) { inList = true; continue; }
+      if (inList && line.startsWith('-')) {
+        const ticker = line.substring(1).trim();
+        if (ticker) tickers.push(ticker);
+      }
+    }
+    return tickers;
+  }
+
+  // YAML 生成 (tickers: の下に - TICKER を並べる)
+  function buildYaml(tickers) {
+    let yaml = '# 監視銘柄リスト\n';
+    yaml += '# 追加したい銘柄はここに追記してください（CIKがcik_lookup.csvに存在する必要あり）\n';
+    yaml += 'tickers:\n';
+    tickers.forEach(t => yaml += `  - ${t}\n`);
+    return yaml;
+  }
+
+  // CSV パース
+  function parseCsv(csv) {
+    const lines = csv.split('\n');
+    const headers = lines[0].split(',');
+    const rows = [];
+    for (let i=1; i<lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const vals = lines[i].split(',');
+      const row = {};
+      headers.forEach((h, idx) => row[h.trim()] = vals[idx] ? vals[idx].trim() : '');
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  // CSV 生成
+  function buildCsv(rows) {
+    const headers = ['ticker', 'cik', 'name'];
+    let csv = headers.join(',') + '\n';
+    rows.forEach(r => csv += `${r.ticker},${r.cik},${r.name || ''}\n`);
+    return csv;
+  }
+
+  // CIK を SEC API から取得 (CORS 対策として cors-anywhere デモを使用、必要に応じて変更)
+  async function fetchCikFromSec(ticker) {
+    const proxy = 'https://cors-anywhere.herokuapp.com/';
+    const url = `https://www.sec.gov/files/company_tickers.json`;
+    try {
+      const res = await fetch(proxy + url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; YourApp/1.0; +your@email.com)' }
+      });
+      if (!res.ok) throw new Error('SEC API 応答エラー');
+      const data = await res.json();
+      for (let key in data) {
+        if (data[key].ticker && data[key].ticker.toUpperCase() === ticker.toUpperCase()) {
+          const cik = String(data[key].cik_str).padStart(10, '0');
+          return { cik, name: data[key].title };
+        }
+      }
+      throw new Error('CIK が見つかりません');
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  // 最終更新日を summary.json から取得
+  async function fetchGlobalLastUpdated() {
+    try {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/value-monitor/adjusted_eps_analyzer/data/summary.json?ref=${BRANCH}`;
+      const res = await fetch(url, { headers: apiHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+        return content.last_updated || '不明';
+      }
+    } catch (e) {}
+    return '—';
+  }
+
+  // 特定ティッカーの最終更新日 (quarterly.json から)
+  async function fetchTickerLastUpdated(ticker) {
+    try {
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/value-monitor/adjusted_eps_analyzer/data/${ticker}/quarterly.json?ref=${BRANCH}`;
+      const res = await fetch(url, { headers: apiHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+        return content.last_updated || '—';
+      }
+    } catch (e) {}
+    return '—';
+  }
+
+  // メイン: データ読み込み
+  async function loadData() {
+    token = tokenInput.value.trim();
+    if (!token) { alert('トークンを入力してください'); return; }
 
     try {
-      const res = await fetch('data/summary.json?t=' + Date.now());
-      if (!res.ok) throw new Error('データが見つかりません');
-      const data = await res.json();
-      const tickers = data.tickers || [];
+      // monitor_tickers.yaml を取得
+      const { content: yamlContent, sha: yamlSha } = await fetchFileContent('config/monitor_tickers.yaml');
+      const tickers = parseYaml(yamlContent);
+      // cik_lookup.csv を取得
+      const { content: csvContent } = await fetchFileContent('config/cik_lookup.csv');
+      const csvRows = parseCsv(csvContent);
 
-      // YoY成長率トップ5 (降順、null除外)
-      const withGrowth = tickers.filter(t => t.yoy_growth !== null && t.yoy_growth !== undefined);
-      const topGrowth = [...withGrowth].sort((a,b) => b.yoy_growth - a.yoy_growth).slice(0,5);
+      // マップ作成
+      const cikMap = {};
+      const nameMap = {};
+      csvRows.forEach(r => { if (r.ticker) { cikMap[r.ticker.toUpperCase()] = r.cik; nameMap[r.ticker.toUpperCase()] = r.name; } });
 
-      // 健全性 Excellent の銘柄
-      const excellent = tickers.filter(t => t.health === 'Excellent');
+      // 各ティッカーの最終更新日を取得 (並列)
+      const promises = tickers.map(async t => {
+        const last = await fetchTickerLastUpdated(t);
+        return { ticker: t, lastUpdated: last };
+      });
+      const lastUpdatedList = await Promise.all(promises);
 
-      // テーブル用の全銘柄
-      const allTickers = tickers.sort((a,b) => a.ticker.localeCompare(b.ticker));
-
-      function formatPercent(val) {
-        if (val === null || val === undefined) return '—';
-        return (val * 100).toFixed(1) + '%';
-      }
-
-      function healthClass(health) {
-        return 'health-' + (health || 'Good');
-      }
-
-      function healthDot(health) {
-        return 'health-dot ' + (health || 'Good');
-      }
-
-      function formatMoney(val) {
-        if (val === null || val === undefined) return '—';
-        return '$' + val.toFixed(4);
-      }
-
-      // HTML構築
-      let html = '';
-
-      // カード行
-      html += '<div class="grid-2">';
-
-      // 左カード: YoY成長率トップ5
-      html += '<div class="card">';
-      html += '<div class="card-title">🔥 TTM調整後EPS成長率トップ5</div>';
-      html += '<ul class="top-list">';
-      if (topGrowth.length === 0) {
-        html += '<li class="empty" style="padding:10px 0">データなし</li>';
-      } else {
-        topGrowth.forEach(t => {
-          const pct = formatPercent(t.yoy_growth);
-          const color = t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)';
-          html += `<li><span class="top-ticker"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></span> <span class="top-value" style="color:${color}">${pct}</span></li>`;
-        });
-      }
-      html += '</ul></div>';
-
-      // 右カード: 健全性 Excellent
-      html += '<div class="card">';
-      html += '<div class="card-title">✨ 健全性 Excellent の銘柄</div>';
-      html += '<div class="health-list">';
-      if (excellent.length === 0) {
-        html += '<div class="empty" style="padding:10px 0">該当なし</div>';
-      } else {
-        excellent.slice(0,8).forEach(t => {
-          html += `<div class="health-item"><span class="${healthDot(t.health)}"></span><span class="health-name"><a href="stock.html?ticker=${t.ticker}">${t.ticker} · ${t.company_name || ''}</a></span></div>`;
-        });
-      }
-      html += '</div></div>';
-      html += '</div>'; // grid-2
-
-      // 全銘柄一覧テーブル
-      html += '<div class="sec">📋 全監視銘柄一覧</div>';
-      html += '<div class="dt-toolbar"><span></span><button class="excel-btn" onclick="exportExcel()">⬇ Excel出力</button></div>';
-      html += '<div class="table-wrap">';
-      html += '<table id="main-table"><thead><tr>';
-      html += '<th>ティッカー</th><th>会社名</th><th>最新決算日</th><th>GAAP EPS</th><th>Adjusted EPS</th><th>YoY成長率</th><th>健全性</th>';
-      html += '</tr></thead><tbody>';
-
-      allTickers.forEach(t => {
-        html += '<tr>';
-        html += `<td class="ticker-cell"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></td>`;
-        html += `<td>${t.company_name || ''}</td>`;
-        html += `<td>${t.latest_filing_date || ''}</td>`;
-        html += `<td class="number">${formatMoney(t.gaap_eps)}</td>`;
-        html += `<td class="number">${formatMoney(t.adjusted_eps)}</td>`;
-        html += `<td class="number" style="color:${t.yoy_growth >= 0 ? 'var(--grn)' : 'var(--red)'}">${formatPercent(t.yoy_growth)}</td>`;
-        html += `<td><span class="health-badge ${healthClass(t.health)}">${t.health || 'Good'}</span></td>`;
-        html += '</tr>';
+      // テーブル描画
+      tickerListTbody.innerHTML = '';
+      tickerList = tickers;
+      lastUpdatedList.forEach(({ ticker, lastUpdated }) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input type="checkbox" class="ticker-check" value="${ticker}"></td>
+          <td><strong>${ticker}</strong></td>
+          <td>${cikMap[ticker] || '—'}</td>
+          <td>${nameMap[ticker] || '—'}</td>
+          <td>${lastUpdated}</td>
+          <td><span class="status-badge ${lastUpdated !== '—' ? 'status-ok' : 'status-old'}">${lastUpdated !== '—' ? 'データ有' : '未取得'}</span></td>
+        `;
+        tickerListTbody.appendChild(row);
       });
 
-      html += '</tbody></table></div>';
+      // 全選択チェックボックス
+      selectAll.onclick = () => {
+        document.querySelectorAll('.ticker-check').forEach(cb => cb.checked = selectAll.checked);
+      };
 
-      contentDiv.innerHTML = html;
+      // グローバル最終更新日
+      const globalLast = await fetchGlobalLastUpdated();
+      globalLastUpdatedSpan.textContent = globalLast;
 
-    } catch (e) {
-      contentDiv.innerHTML = `<div class="empty">⚠️ データを読み込めませんでした。<br><small>${e.message}</small></div>`;
+      contentDiv.style.display = 'block';
+    } catch (err) {
+      alert('読み込みエラー: ' + err.message);
     }
-  })();
+  }
 
-  // ★ DataTables 初期化（テーブル描画後に呼ぶ）
-  let dtInstance = null;
-  function initDataTable() {
-    if (dtInstance) { dtInstance.destroy(); dtInstance = null; }
-    const tbl = document.getElementById('main-table');
-    if (!tbl) return;
-    dtInstance = $('#main-table').DataTable({
-      pageLength: 25,
-      order: [[5, 'desc']],  // YoY成長率降順
-      language: {
-        search: '🔍 検索:',
-        lengthMenu: '表示件数: _MENU_',
-        info: '_TOTAL_ 銘柄中 _START_〜_END_ 件',
-        paginate: { previous: '‹', next: '›' },
-        emptyTable: 'データなし',
-        zeroRecords: '該当なし'
-      },
-      columnDefs: [
-        { targets: [3,4,5], type: 'num-fmt' }  // 数値列をソート対応
-      ]
+  // 選択されたティッカーを取得
+  function getSelectedTickers() {
+    const checkboxes = document.querySelectorAll('.ticker-check:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+  }
+
+  // GitHub Actions を起動 (workflow_dispatch)
+  async function triggerUpdate(tickers) {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/update.yml/dispatches`;
+    const body = {
+      ref: BRANCH,
+      inputs: {
+        ticker: tickers.join(',')
+      }
+    };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error(`Dispatch 失敗: ${res.status}`);
   }
 
-  // ★ Excel出力
-  function exportExcel() {
-    const tbl = document.getElementById('main-table');
-    if (!tbl) return;
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.table_to_sheet(tbl);
-    XLSX.utils.book_append_sheet(wb, ws, 'AEA Summary');
-    XLSX.writeFile(wb, `AEA_summary_${new Date().toISOString().slice(0,10)}.xlsx`);
-  }
-
-  // MutationObserver でテーブル描画を検知してDataTables初期化
-  const observer = new MutationObserver(() => {
-    if (document.getElementById('main-table')) {
-      observer.disconnect();
-      setTimeout(initDataTable, 50);
+  // 更新ボタン
+  updateSelectedBtn.onclick = async () => {
+    const selected = getSelectedTickers();
+    if (selected.length === 0) { alert('銘柄を選択してください'); return; }
+    if (!confirm(`以下の銘柄の更新を開始しますか？\n${selected.join(', ')}`)) return;
+    try {
+      await triggerUpdate(selected);
+      alert('更新をリクエストしました。GitHub Actions の完了後、リストを再読込してください。');
+    } catch (err) {
+      alert('エラー: ' + err.message);
     }
-  });
-  observer.observe(document.getElementById('dashboard-content'), { childList: true, subtree: true });
+  };
+
+  // CIK 自動取得ボタン
+  lookupCikBtn.onclick = async () => {
+    const ticker = document.getElementById('newTicker').value.trim().toUpperCase();
+    if (!ticker) { alert('ティッカーを入力してください'); return; }
+    lookupCikBtn.disabled = true;
+    lookupCikBtn.textContent = '取得中...';
+    const result = await fetchCikFromSec(ticker);
+    if (result) {
+      document.getElementById('newCik').value = result.cik;
+      document.getElementById('newName').value = result.name || '';
+      addResultDiv.innerHTML = `<span class="success">✓ CIK 取得成功</span>`;
+    } else {
+      addResultDiv.innerHTML = `<span class="error">✗ CIK が見つかりませんでした。手動入力してください。</span>`;
+    }
+    lookupCikBtn.disabled = false;
+    lookupCikBtn.textContent = 'CIK 自動取得';
+  };
+
+  // 新規ティッカー追加
+  addTickerBtn.onclick = async () => {
+    const ticker = document.getElementById('newTicker').value.trim().toUpperCase();
+    const cik = document.getElementById('newCik').value.trim();
+    const name = document.getElementById('newName').value.trim();
+
+    if (!ticker) { alert('ティッカーは必須です'); return; }
+    if (!cik) { alert('CIK がありません。自動取得するか手動で入力してください。'); return; }
+
+    try {
+      // 現在の monitor_tickers.yaml を取得
+      const { content: yamlContent, sha: yamlSha } = await fetchFileContent('config/monitor_tickers.yaml');
+      const tickers = parseYaml(yamlContent);
+      if (tickers.includes(ticker)) {
+        alert('このティッカーは既に登録されています');
+        return;
+      }
+      tickers.push(ticker);
+      const newYaml = buildYaml(tickers);
+      await updateFile('config/monitor_tickers.yaml', newYaml, `Add ticker ${ticker}`, yamlSha);
+
+      // cik_lookup.csv を更新
+      const { content: csvContent, sha: csvSha } = await fetchFileContent('config/cik_lookup.csv');
+      const rows = parseCsv(csvContent);
+      rows.push({ ticker, cik, name });
+      const newCsv = buildCsv(rows);
+      await updateFile('config/cik_lookup.csv', newCsv, `Add CIK for ${ticker}`, csvSha);
+
+      addResultDiv.innerHTML = `<span class="success">✓ ティッカー ${ticker} を追加しました。リストを再読込してください。</span>`;
+      document.getElementById('newTicker').value = '';
+      document.getElementById('newCik').value = '';
+      document.getElementById('newName').value = '';
+    } catch (err) {
+      addResultDiv.innerHTML = `<span class="error">✗ 追加失敗: ${err.message}</span>`;
+    }
+  };
+
+  // 再読込
+  refreshBtn.onclick = loadData;
+
+  // 読み込みボタン
+  loadBtn.onclick = loadData;
 </script>
 </body>
 </html>
