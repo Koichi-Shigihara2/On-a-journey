@@ -115,7 +115,7 @@
 <div class="shell">
   <header>
     <div class="logo">
-      <img src="../common/images/logo.png" style="height:30px" alt="TANUKI">
+      <img src="../../common/images/logo.png" style="height:30px" alt="TANUKI">
       <span>管理ダッシュボード</span>
     </div>
     <div>
@@ -168,9 +168,9 @@
 </div>
 
 <script>
-  const REPO_OWNER = 'Koichi-Shigihara2';      // あなたのユーザー名
-  const REPO_NAME = 'Adjusted-EPS-Analyzer';   // リポジトリ名
-  const BRANCH = 'main';                        // デフォルトブランチ
+  const REPO_OWNER = 'Koichi-Shigihara2';
+  const REPO_NAME = 'On-a-journey';
+  const BRANCH = 'refactor/reorganize';   // 実際のブランチ名に合わせてください
 
   let token = '';
   let tickerList = [];
@@ -273,7 +273,6 @@
 
   // CIK を SEC API から取得 (CORS 対策として cors-anywhere デモを使用、必要に応じて変更)
   async function fetchCikFromSec(ticker) {
-    // 無料の CORS プロキシ (注意: 本番では信頼できるものを)
     const proxy = 'https://cors-anywhere.herokuapp.com/';
     const url = `https://www.sec.gov/files/company_tickers.json`;
     try {
@@ -298,7 +297,7 @@
   // 最終更新日を summary.json から取得
   async function fetchGlobalLastUpdated() {
     try {
-      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/data/summary.json?ref=${BRANCH}`;
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/value-monitor/adjusted_eps_analyzer/data/summary.json?ref=${BRANCH}`;
       const res = await fetch(url, { headers: apiHeaders() });
       if (res.ok) {
         const data = await res.json();
@@ -312,7 +311,7 @@
   // 特定ティッカーの最終更新日 (quarterly.json から)
   async function fetchTickerLastUpdated(ticker) {
     try {
-      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/data/${ticker}/quarterly.json?ref=${BRANCH}`;
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/docs/value-monitor/adjusted_eps_analyzer/data/${ticker}/quarterly.json?ref=${BRANCH}`;
       const res = await fetch(url, { headers: apiHeaders() });
       if (res.ok) {
         const data = await res.json();
@@ -391,7 +390,7 @@
     const body = {
       ref: BRANCH,
       inputs: {
-        tickers: tickers.join(',')
+        ticker: tickers.join(',')
       }
     };
     const res = await fetch(url, {
