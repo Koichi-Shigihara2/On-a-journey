@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-03-24T12:14:22.851398",
+  "last_updated": "2026-03-24T15:29:06.764188",
   "quarters": [
     {
       "gaap_eps": 0.05648638152139374,
@@ -114,21 +114,21 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "調整項目に株式報酬費用や無形資産償却費などの恒常的に発生しやすい項目が含まれており、調整の質は中程度です。大規模なリストラ費用（80M超）は一過性として扱われていますが事業構造の変革を示唆し、貸倒引当金の異常分も業種（飲料メーカー）との整合性に疑問が残ります。税効果の調整は妥当ですが、全体としてAdjusted EPSの持続可能性に注意が必要です。",
+        "comment": "リストラ費用が80.75百万ドルと極めて大きく、事業再編の影響がAdjusted EPSを大幅に押し上げている。SBCや無形資産償却は経常的に発生する項目であり、貸倒引当金の異常変動も飲料事業との関連性が不明瞭。一過性税効果の調整も大きく、調整の質に懸念あり。全体としてAdjusted EPSの健全性は注意を要する。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用",
+            "snippet": "非現金費用だが継続的に発生する株式報酬",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却",
+            "snippet": "買収関連無形資産の償却で毎期発生する可能性が高い",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響",
+            "snippet": "マクロ変動による一時的影響とされるが事業特性との適合性が低い",
             "confidence": 0.5
           },
           {
@@ -138,13 +138,13 @@
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用",
+            "snippet": "一過性の事業再編費用だが金額規模が極めて大きい",
             "confidence": 0.7
           },
           {
             "item": "tax_one_time",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-            "confidence": 0.85
+            "snippet": "法人税率変更等の一過性税効果",
+            "confidence": 0.9
           }
         ]
       }
