@@ -1,6 +1,6 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-03-24T12:14:11.931883",
+  "last_updated": "2026-03-24T15:28:57.054251",
   "quarters": [
     {
       "gaap_eps": 0.23809523809523808,
@@ -101,17 +101,17 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "SBC調整額が22.5億ドルと極めて大きく、テスラの恒常的な報酬コストを除外しているため調整後EPSの信頼性が低い。マイルストーンR&Dもコア事業に関連する可能性が高く判断が難しい一方、リストラ費用と一過性税効果は比較的妥当。全体として調整の健全性に注意が必要。",
+        "comment": "SBCの調整額が極めて大きく恒常的な報酬コストであるため、調整後EPSの健全性はCaution。マイルストーンR&Dも判断が難しく一過性とは言い切れないが、リストラや税の一過性項目は比較的妥当。全体としてGAAP EPSからの乖離が大きく、調整の質には注意が必要。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用",
+            "snippet": "非現金費用だがテスラでは定期的に発生する株式報酬",
             "confidence": 0.2
           },
           {
             "item": "investment_gains",
             "snippet": "非営業性の評価変動",
-            "confidence": 0.85
+            "confidence": 0.75
           },
           {
             "item": "milestone_rd",
@@ -126,7 +126,7 @@
           {
             "item": "tax_one_time",
             "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
-            "confidence": 0.75
+            "confidence": 0.85
           }
         ]
       }
