@@ -1,15 +1,42 @@
 {
   "ticker": "GOOGL",
-  "last_updated": "2026-03-22T14:00:00.978300",
+  "last_updated": "2026-03-24T12:15:10.779106",
   "quarters": [
     {
       "gaap_eps": 2.8172526573998367,
-      "adjusted_eps": 2.8172526573998367,
+      "adjusted_eps": 4.691486508585446,
       "gaap_net_income": 34455000000.0,
-      "adjusted_net_income": 34455000000.0,
+      "adjusted_net_income": 57376880000.0,
       "diluted_shares_used": 12230000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 18572000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 14671880000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 8250000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": 8250000000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 22921880000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -23,8 +50,8 @@
       "fiscal_year": 2025,
       "quarter": 4,
       "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0,
+        "alert": "SBC寄与率が60%超（現在 84.8%）",
+        "sbc_contribution": 0.848,
         "sbc_to_revenue": 0.095,
         "sbc_per_share": 1.5893,
         "sector_threshold": {
@@ -33,19 +60,44 @@
         }
       },
       "ai_analysis": {
-        "health": "Good",
-        "comment": "調整項目はありません。GAAP EPSがそのまま実質EPSと見なせます。",
-        "sources": []
+        "health": "Caution",
+        "comment": "マイルストーン型R&D費用の調整額が185億ドル超と極めて大きく、Googleのコア事業である研究開発の性質上、完全に一過性とみなすのは困難。税効果の一過性調整は妥当だが、全体として調整後EPSの健全性は慎重に評価すべき。",
+        "sources": [
+          {
+            "item": "milestone_rd",
+            "snippet": "成功報酬型の一過性R&D費用",
+            "confidence": 0.5
+          },
+          {
+            "item": "tax_one_time",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+            "confidence": 0.9
+          }
+        ]
       }
     },
     {
       "gaap_eps": 2.866426288617553,
-      "adjusted_eps": 2.866426288617553,
+      "adjusted_eps": 3.8537458307287347,
       "gaap_net_income": 34979000000.0,
-      "adjusted_net_income": 34979000000.0,
+      "adjusted_net_income": 47027260372.38275,
       "diluted_shares_used": 12203000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 15151000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 12048260372.38275,
+          "tax_rate_applied": 0.20478777820719757
+        }
+      ],
+      "net_adjustment_total": 12048260372.38275,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -61,12 +113,26 @@
     },
     {
       "gaap_eps": 2.311526479750779,
-      "adjusted_eps": 2.311526479750779,
+      "adjusted_eps": 3.2521317204426934,
       "gaap_net_income": 28196000000.0,
-      "adjusted_net_income": 28196000000.0,
+      "adjusted_net_income": 39669502725.95998,
       "diluted_shares_used": 12198000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 13808000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 11473502725.95998,
+          "tax_rate_applied": 0.16906845843279403
+        }
+      ],
+      "net_adjustment_total": 11473502725.95998,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -82,12 +148,26 @@
     },
     {
       "gaap_eps": 2.810186315189976,
-      "adjusted_eps": 2.810186315189976,
+      "adjusted_eps": 3.7217871117803547,
       "gaap_net_income": 34540000000.0,
-      "adjusted_net_income": 34540000000.0,
+      "adjusted_net_income": 45744485390.89234,
       "diluted_shares_used": 12291000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 13556000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 11204485390.89234,
+          "tax_rate_applied": 0.173466701763622
+        }
+      ],
+      "net_adjustment_total": 11204485390.89234,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -103,12 +183,39 @@
     },
     {
       "gaap_eps": 2.1319193379930907,
-      "adjusted_eps": 2.1319193379930907,
+      "adjusted_eps": 2.5421097453201575,
       "gaap_net_income": 26536000000.0,
-      "adjusted_net_income": 26536000000.0,
+      "adjusted_net_income": 31641640000.0,
       "diluted_shares_used": 12447000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 13116000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 10361640000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": -5256000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響（繰延税金ベース）",
+          "extracted_from": "us-gaap:DeferredIncomeTaxExpenseBenefit",
+          "category": "税効果関連",
+          "net_amount": -5256000000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 5105640000.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "ハイパーグロース / SaaS",
@@ -124,12 +231,26 @@
     },
     {
       "gaap_eps": 2.1178033658104516,
-      "adjusted_eps": 2.1178033658104516,
+      "adjusted_eps": 2.949201160998829,
       "gaap_net_income": 26301000000.0,
-      "adjusted_net_income": 26301000000.0,
+      "adjusted_net_income": 36626129218.44446,
       "diluted_shares_used": 12419000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 12447000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 10325129218.44446,
+          "tax_rate_applied": 0.17047246577934777
+        }
+      ],
+      "net_adjustment_total": 10325129218.44446,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -145,12 +266,26 @@
     },
     {
       "gaap_eps": 1.8902761104441776,
-      "adjusted_eps": 1.8902761104441776,
+      "adjusted_eps": 2.703991571584171,
       "gaap_net_income": 23619000000.0,
-      "adjusted_net_income": 23619000000.0,
+      "adjusted_net_income": 33786374686.944214,
       "diluted_shares_used": 12495000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 11860000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 10167374686.944212,
+          "tax_rate_applied": 0.14271714275343908
+        }
+      ],
+      "net_adjustment_total": 10167374686.944212,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -166,12 +301,26 @@
     },
     {
       "gaap_eps": 1.8888800191586175,
-      "adjusted_eps": 1.8888800191586175,
+      "adjusted_eps": 2.6829234190542564,
       "gaap_net_income": 23662000000.0,
-      "adjusted_net_income": 23662000000.0,
+      "adjusted_net_income": 33608981670.492672,
       "diluted_shares_used": 12527000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 11903000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 9946981670.492672,
+          "tax_rate_applied": 0.16432986049796927
+        }
+      ],
+      "net_adjustment_total": 9946981670.492672,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -187,12 +336,39 @@
     },
     {
       "gaap_eps": 1.5508034026465027,
-      "adjusted_eps": 1.5508034026465027,
+      "adjusted_eps": 2.381917553425588,
       "gaap_net_income": 19689000000.0,
-      "adjusted_net_income": 19689000000.0,
+      "adjusted_net_income": 30240825258.291267,
       "diluted_shares_used": 12696000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 11258000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 10457081756.852385,
+          "tax_rate_applied": 0.07114214275605038
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 102000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 94743501.43888286,
+          "tax_rate_applied": 0.07114214275605038
+        }
+      ],
+      "net_adjustment_total": 10551825258.291267,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
@@ -208,12 +384,39 @@
     },
     {
       "gaap_eps": 1.439047320589157,
-      "adjusted_eps": 1.439047320589157,
+      "adjusted_eps": 2.1392877599280253,
       "gaap_net_income": 18368000000.0,
-      "adjusted_net_income": 18368000000.0,
+      "adjusted_net_income": 27305868967.721313,
       "diluted_shares_used": 12764000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "milestone_rd",
+          "item_name": "マイルストーン型研究開発費",
+          "amount": 10588000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "成功報酬型の一過性R&D費用",
+          "extracted_from": "us-gaap:ResearchAndDevelopmentExpense",
+          "category": "研究開発関連",
+          "net_amount": 8879166506.871204,
+          "tax_rate_applied": 0.16139341642697347
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 70000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 58702460.85011186,
+          "tax_rate_applied": 0.16139341642697347
+        }
+      ],
+      "net_adjustment_total": 8937868967.721315,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "ハイパーグロース / SaaS",
