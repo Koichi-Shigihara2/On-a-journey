@@ -40,7 +40,6 @@ On-a-journey-git/
 ├── pyproject.toml # 依存パッケージ定義（pip install -e . でインストール）
 └── README.md # 本ファイル
 
-text
 
 ---
 
