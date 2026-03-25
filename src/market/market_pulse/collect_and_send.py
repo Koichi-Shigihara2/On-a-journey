@@ -1,4 +1,5 @@
 import os
+import sys
 import urllib.request
 import feedparser
 import yfinance as yf
@@ -10,6 +11,13 @@ import csv
 import re
 import requests   # 追加: requests で非ASCII URLを扱う
 
+# --- 必須環境変数チェック ---
+required_env_vars = ["XAI_API_KEY", "GMAIL_USER", "GMAIL_PASSWORD"]
+missing = [v for v in required_env_vars if not os.getenv(v)]
+if missing:
+    print(f"[ERROR] 必須環境変数が設定されていません: {', '.join(missing)}")
+    sys.exit(1)
+
 # --- 設定 ---
 XAI_API_KEY  = os.getenv("XAI_API_KEY")
 GMAIL_USER = os.getenv("GMAIL_USER")
@@ -20,7 +28,7 @@ RSS_LIST_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "02_mar
 JST = timezone(timedelta(hours=9))
 
 # データ保存先（GitHub Pages 配信対象の docs/data/）
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 DATA_DIR = os.path.join(REPO_ROOT, "docs", "market-monitor", "data")
 JSON_PATH = os.path.join(DATA_DIR, "market_data.json")
 CSV_PATH = os.path.join(DATA_DIR, "market_data.csv")

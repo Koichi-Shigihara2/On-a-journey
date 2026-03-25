@@ -2,11 +2,8 @@
 
 on:
   schedule:
-    # 毎日 08:00 JST（前日データ取得）
     - cron: "0 23 * * *"
   workflow_dispatch:
-    branches:
-      - refactor/reorganize
 
 jobs:
   update:
@@ -17,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: kaihatsu   # 明示的に kaihatsu ブランチをチェックアウト
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -42,5 +41,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/market-monitor/data/
           git diff --staged --quiet || git commit -m "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
-          git pull --rebase origin ${{ github.ref_name }}
+          git pull --rebase origin kaihatsu
           git push
