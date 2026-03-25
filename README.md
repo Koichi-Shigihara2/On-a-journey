@@ -40,7 +40,6 @@ On-a-journey-git/
 ├── pyproject.toml # 依存パッケージ定義（pip install -e . でインストール）
 └── README.md # 本ファイル
 
-
 ---
 
 ## 環境構築
@@ -64,6 +63,7 @@ cd On-a-journey
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -e .
+
 各システムの使用方法
 Market Pulse
 bash
@@ -134,3 +134,4 @@ CIK は SEC EDGAR の URL や company_tickers.json から確認可能。
 問い合わせ
 リポジトリ管理者：Koichi Shigihara
 GitHub Issues または直接連絡ください。
+
