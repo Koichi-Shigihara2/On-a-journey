@@ -835,24 +835,26 @@ function renderL2() {
 
 // 色定数：レーダーと類似度バーで共有
 const L3_COLORS = {
-  now:   {line:'#3b82f6', area:'rgba(59,130,246,0.14)'},
-  y2019: {line:'#f59e0b', area:'rgba(245,158,11,0.07)'},
-  y2001: {line:'#f43f5e', area:'rgba(244,63,94,0.07)'},
+  now:    {line:'#3b82f6', area:'rgba(59,130,246,0.14)'},
+  slider: {line:'#a855f7', area:'rgba(168,85,247,0.10)'},
+  y2019:  {line:'#f59e0b', area:'rgba(245,158,11,0.07)'},
+  y2001:  {line:'#f43f5e', area:'rgba(244,63,94,0.07)'},
 };
+let L3_NOW_VALS = null; // 現在値を固定保存
 
 const L3_INDICATORS=[
   {label:'YC 10Y-2Y',     key:'Yield Curve 10Y-2Y',          min:-1.0,  max:1.5},
   {label:'ISM Mfg',       key:'ISM Manufacturing PMI',        min:44,    max:56},
   {label:'ISM Non-Mfg',   key:'ISM Non-Manufacturing PMI',    min:44,    max:56},
-  {label:'HY Spread',     key:'HY Spread',                    min:10,    max:2.5},
-  {label:'VIX',           key:'VIX',                          min:45,    max:10},
+  {label:'OECD CLI',      key:'Conference Board LEI',         min:98.5,  max:101.0},
+  {label:'CB Confidence', key:'CB Consumer Confidence', min:50,    max:140},
   {label:'Michigan',      key:'Michigan Consumer Sentiment',  min:50,    max:110},
   {label:'Initial Clms',  key:'Initial Claims 4W MA',         min:350000,max:180000},
-  {label:'OECD CLI',      key:'Conference Board LEI',         min:98.5,  max:101.0},
+  {label:'HY Spread',     key:'HY Spread',                    min:10,    max:2.5},
 ];
 
-const REF_2019={'Yield Curve 10Y-2Y':-0.05,'ISM Manufacturing PMI':47.8,'ISM Non-Manufacturing PMI':53.9,'HY Spread':4.0,'VIX':16.0,'Michigan Consumer Sentiment':96.0,'Initial Claims 4W MA':215000,'Conference Board LEI':99.1};
-const REF_2001={'Yield Curve 10Y-2Y':0.2,'ISM Manufacturing PMI':41.9,'ISM Non-Manufacturing PMI':51.0,'HY Spread':8.5,'VIX':26.0,'Michigan Consumer Sentiment':90.0,'Initial Claims 4W MA':360000,'Conference Board LEI':99.2};
+const REF_2019={'Yield Curve 10Y-2Y':-0.05,'ISM Manufacturing PMI':47.8,'ISM Non-Manufacturing PMI':53.9,'HY Spread':4.0,'CB Consumer Confidence':126.0,'Michigan Consumer Sentiment':96.0,'Initial Claims 4W MA':215000,'Conference Board LEI':99.1};
+const REF_2001={'Yield Curve 10Y-2Y':0.2,'ISM Manufacturing PMI':41.9,'ISM Non-Manufacturing PMI':51.0,'HY Spread':8.5,'CB Consumer Confidence':85.0,'Michigan Consumer Sentiment':90.0,'Initial Claims 4W MA':360000,'Conference Board LEI':99.2};
 
 // スライダー用: {date, vals[]} のスナップショット配列
 let L3_SNAPSHOTS = [];
@@ -983,8 +985,19 @@ function drawL3Chart(nowVals, isNow){
   let chart=echarts.getInstanceByDom(chartEl);
   if(!chart)chart=echarts.init(chartEl,null,{renderer:'svg'});
 
-  const nowColor=isNow?L3_COLORS.now.line:'#94a3b8';
-  const nowArea=isNow?L3_COLORS.now.area:'rgba(148,163,184,0.10)';
+  const sliderColor=isNow?L3_COLORS.now.line:L3_COLORS.slider.line;
+  const sliderArea=isNow?L3_COLORS.now.area:L3_COLORS.slider.area;
+  const seriesData=[
+    {name:'2019年末',value:vals2019,lineStyle:{color:L3_COLORS.y2019.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2019.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2019.line}},
+    {name:'2001年',value:vals2001,lineStyle:{color:L3_COLORS.y2001.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2001.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2001.line}},
+  ];
+  // スライダー移動時は紫線を追加、現在値（青）は常に固定表示
+  if(!isNow && L3_NOW_VALS){
+    seriesData.unshift({name:'スライダー',value:nowVals,lineStyle:{color:sliderColor,width:2},areaStyle:{color:sliderArea},symbol:'circle',symbolSize:4,itemStyle:{color:sliderColor}});
+    seriesData.unshift({name:'現在',value:L3_NOW_VALS,lineStyle:{color:L3_COLORS.now.line,width:2},areaStyle:{color:L3_COLORS.now.area},symbol:'circle',symbolSize:4,itemStyle:{color:L3_COLORS.now.line}});
+  } else {
+    seriesData.unshift({name:'現在',value:nowVals,lineStyle:{color:L3_COLORS.now.line,width:2},areaStyle:{color:L3_COLORS.now.area},symbol:'circle',symbolSize:4,itemStyle:{color:L3_COLORS.now.line}});
+  }
 
   chart.setOption({
     backgroundColor:'transparent',
@@ -998,14 +1011,7 @@ function drawL3Chart(nowVals, isNow){
       splitArea:{show:false},
       axisLine:{lineStyle:{color:'#1e2840'}},
     },
-    series:[{
-      type:'radar',
-      data:[
-        {name:'現在',value:nowVals,lineStyle:{color:nowColor,width:2},areaStyle:{color:nowArea},symbol:'circle',symbolSize:4,itemStyle:{color:nowColor}},
-        {name:'2019年末',value:vals2019,lineStyle:{color:L3_COLORS.y2019.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2019.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2019.line}},
-        {name:'2001年',value:vals2001,lineStyle:{color:L3_COLORS.y2001.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2001.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2001.line}},
-      ],
-    }],
+    series:[{type:'radar',data:seriesData}],
   });
 
   const mkRow=(label,score,color,desc)=>`
@@ -1038,8 +1044,8 @@ function renderL3() {
   const scoresEl=el('l3Scores');
   if(!DATA.length){scoresEl.innerHTML='<div class="empty">データなし</div>';return;}
   buildL3Snapshots();
-  const nowVals=L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key,new Date()),d.min,d.max));
-  drawL3Chart(nowVals, true);
+  L3_NOW_VALS=L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key,new Date()),d.min,d.max));
+  drawL3Chart(L3_NOW_VALS, true);
 }
 
 // ═══════════════════════════════════════════════════════
