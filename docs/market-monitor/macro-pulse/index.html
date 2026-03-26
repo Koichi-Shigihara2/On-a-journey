@@ -86,6 +86,18 @@
     .pg-sig-val{font-family:var(--mono);font-size:11px;font-weight:700}
     .pg-sig-badge{font-family:var(--mono);font-size:8px;padding:1px 5px;border-radius:2px;white-space:nowrap}
     .pg-sig-lead{font-family:var(--mono);font-size:8px;color:var(--mut)}
+    .pg-sig{position:relative;cursor:default;}
+    .pg-sig-tooltip{
+      display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+      background:#0d1117;border:1px solid var(--bdr);border-radius:4px;
+      padding:10px 14px;min-width:240px;max-width:300px;z-index:100;
+      box-shadow:0 4px 16px rgba(0,0,0,.5);pointer-events:none;
+    }
+    .pg-sig:hover .pg-sig-tooltip{display:block;}
+    .pg-sig-tooltip-name{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--txt);margin-bottom:6px;letter-spacing:.08em;}
+    .pg-sig-tooltip-desc{font-family:var(--sans);font-size:11px;color:var(--mut);line-height:1.6;margin-bottom:6px;}
+    .pg-sig-tooltip-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:3px;}
+    .pg-sig-tooltip-row span:last-child{color:var(--txt);}
 
     /* phase colors */
     .phase-expand   {color:var(--grn)}
@@ -262,15 +274,6 @@
     <div id="manualAlertBody"></div>
   </div>
 
-  <!-- ② スコア比較バー（前日比・先週比・前月末比） -->
-  <div class="compare-bar" id="compareBar" style="display:none">
-    <div class="cmp-cell"><span class="cmp-label">現在</span><span class="cmp-score" id="cmp-now">—</span><span class="cmp-phase" id="cmp-now-phase">—</span></div>
-    <div class="cmp-cell"><span class="cmp-label">前日比</span><span class="cmp-score" id="cmp-d1-score">—</span><span class="cmp-delta" id="cmp-d1-delta">—</span><span class="cmp-snap-label" id="cmp-d1-date">—</span></div>
-    <div class="cmp-cell"><span class="cmp-label">先週比</span><span class="cmp-score" id="cmp-w1-score">—</span><span class="cmp-delta" id="cmp-w1-delta">—</span><span class="cmp-snap-label" id="cmp-w1-date">—</span></div>
-    <div class="cmp-cell"><span class="cmp-label">前月末比</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-delta" id="cmp-m1-delta">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
-    <div class="cmp-cell"><span class="cmp-label">カスタム比較 <input type="date" id="cmpDateInput" style="font-family:var(--mono);font-size:9px;background:transparent;border:none;border-bottom:1px solid var(--bdr);color:var(--mut);padding:1px 2px;vertical-align:middle;margin-left:4px;width:110px" onchange="renderCustomCmp()"></span><span class="cmp-score" id="cmp-custom-score">—</span><span class="cmp-delta" id="cmp-custom-delta">—</span><span class="cmp-snap-label" id="cmp-custom-label">日付を選択</span></div>
-  </div>
-
   <!-- ① 景気フェーズ判定 -->
   <div class="sec">① 景気フェーズ判定</div>
   <div class="phase-wrap" id="phaseGauge">
@@ -309,6 +312,14 @@
       <span id="pg-alert-msg"></span>
     </div>
     <div class="phase-signals" id="pg-signals"></div>
+    <!-- スコア比較バー -->
+    <div class="compare-bar" id="compareBar" style="display:none;border-top:1px solid var(--bdr);border-left:none;border-right:none;border-bottom:none;margin-top:0">
+      <div class="cmp-cell"><span class="cmp-label">現在</span><span class="cmp-score" id="cmp-now">—</span><span class="cmp-phase" id="cmp-now-phase">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">前日比</span><span class="cmp-score" id="cmp-d1-score">—</span><span class="cmp-delta" id="cmp-d1-delta">—</span><span class="cmp-snap-label" id="cmp-d1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">先週比</span><span class="cmp-score" id="cmp-w1-score">—</span><span class="cmp-delta" id="cmp-w1-delta">—</span><span class="cmp-snap-label" id="cmp-w1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">前月末比</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-delta" id="cmp-m1-delta">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">カスタム比較 <input type="date" id="cmpDateInput" style="font-family:var(--mono);font-size:9px;background:transparent;border:none;border-bottom:1px solid var(--bdr);color:var(--mut);padding:1px 2px;vertical-align:middle;margin-left:4px;width:110px" onchange="renderCustomCmp()"></span><span class="cmp-score" id="cmp-custom-score">—</span><span class="cmp-delta" id="cmp-custom-delta">—</span><span class="cmp-snap-label" id="cmp-custom-label">日付を選択</span></div>
+    </div>
   </div>
 
   <!-- ② 指標ヘルスバー -->
@@ -611,49 +622,49 @@ function renderPhaseGauge() {
   if(yc!==null){ycLabel=(yc>=0?'+':'')+yc.toFixed(2)+'%';
     if(yc<-0.5){ycScore=90;ycSignal='bear';}else if(yc<0){ycScore=70;ycSignal='caution';}
     else if(yc<0.5){ycScore=40;ycSignal='neutral';}else{ycScore=15;ycSignal='bull';}}
-  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月'});
+  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月',desc:'10年債と2年債の金利差。逆イールド（マイナス）は景気後退の強力な先行指標。',thresh:'BULL≥+0.5% / BEAR≤-0.2%'});
 
   let hyScore=50,hySignal='neutral',hyLabel='—';
   if(hy!==null){hyLabel=hy.toFixed(2)+'%';
     if(hy>6){hyScore=90;hySignal='bear';}else if(hy>4.5){hyScore=70;hySignal='caution';}
     else if(hy>3.5){hyScore=40;hySignal='neutral';}else{hyScore=15;hySignal='bull';}}
-  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月'});
+  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤4.0% / BEAR≥6.5%'});
 
   let cbcc2Score=50,cbcc2Signal='neutral',cbcc2Label='—';
   if(cbcc2!==null){cbcc2Label=cbcc2.toFixed(1);
     if(cbcc2>=110){cbcc2Score=15;cbcc2Signal='bull';}else if(cbcc2>=100){cbcc2Score=35;cbcc2Signal='neutral';}
     else if(cbcc2>=90){cbcc2Score=60;cbcc2Signal='caution';}else{cbcc2Score=85;cbcc2Signal='bear';}}
-  signals.push({name:'CB Confidence',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行2ヶ月'});
+  signals.push({name:'CB Confidence',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行2ヶ月',desc:'コンファレンスボード消費者信頼感指数。消費者の景気見通しを反映。100が基準値。',thresh:'BULL≥110 / BEAR≤90'});
 
   let ismScore=50,ismSignal='neutral',ismLabel='—';
   if(ism!==null){ismLabel=ism.toFixed(1);const t=trend3('ISM Manufacturing PMI');
     if(ism<45){ismScore=88;ismSignal='bear';}else if(ism<50){ismScore=65+(t<0?10:0);ismSignal=t<0?'bear':'caution';}
     else if(ism<53){ismScore=35;ismSignal='neutral';}else{ismScore=12;ismSignal='bull';}}
-  signals.push({name:'ISM Mfg PMI',val:ismLabel,score:ismScore,signal:ismSignal,weight:18,lead:'先行3ヶ月'});
+  signals.push({name:'ISM Mfg PMI',val:ismLabel,score:ismScore,signal:ismSignal,weight:18,lead:'先行3ヶ月',desc:'ISM製造業景況感指数。50超が拡張、50未満が縮小を示す。製造業の先行指標として最重要。',thresh:'BULL≥52 / BEAR≤48'});
 
   let ismNmScore=50,ismNmSignal='neutral',ismNmLabel='—';
   if(ismNm!==null){ismNmLabel=ismNm.toFixed(1);
     if(ismNm<48){ismNmScore=82;ismNmSignal='bear';}else if(ismNm<52){ismNmScore=50;ismNmSignal='neutral';}
     else{ismNmScore=18;ismNmSignal='bull';}}
-  signals.push({name:'ISM Non-Mfg',val:ismNmLabel,score:ismNmScore,signal:ismNmSignal,weight:12,lead:'先行1ヶ月'});
+  signals.push({name:'ISM Non-Mfg',val:ismNmLabel,score:ismNmScore,signal:ismNmSignal,weight:12,lead:'先行1ヶ月',desc:'ISM非製造業（サービス業）景況感指数。GDPの約80%を占めるサービス業の健全性を示す。',thresh:'BULL≥52 / BEAR≤48'});
 
   let clScore=50,clSignal='neutral',clLabel='—';
   if(claims!==null){clLabel=(claims/1000).toFixed(0)+'K';const t=trend3('Initial Claims 4W MA');
     if(claims>300000){clScore=85;clSignal='bear';}else if(claims>250000){clScore=60+(t>0?10:0);clSignal=t>0?'bear':'caution';}
     else if(claims>215000){clScore=35;clSignal='neutral';}else{clScore=15;clSignal='bull';}}
-  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月'});
+  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月',desc:'新規失業保険申請件数4週移動平均。労働市場の健全性を示す週次指標。増加は雇用悪化のサイン。',thresh:'BULL≤215K / BEAR≥245K'});
 
   let cbScore=50,cbSignal='neutral',cbLabel='—';
   if(cbcc!==null){cbLabel=cbcc.toFixed(1);
     if(cbcc<60){cbScore=82;cbSignal='bear';}else if(cbcc<75){cbScore=72;cbSignal='bear';}
     else if(cbcc<90){cbScore=60;cbSignal='caution';}else{cbScore=30;cbSignal='neutral';}}
-  signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月'});
+  signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。',thresh:'BULL≥90 / BEAR≤65'});
 
   let leiScore=50,leiSignal='neutral',leiLabel='—';
   if(lei!==null){leiLabel=lei.toFixed(2);const t=trend3('Conference Board LEI');
     leiScore=lei<99?(t<0?85:70):lei<100?45:18;
     leiSignal=leiScore>75?'bear':leiScore>55?'caution':'neutral';}
-  signals.push({name:'OECD CLI',val:leiLabel,score:leiScore,signal:leiSignal,weight:7,lead:'先行6ヶ月'});
+  signals.push({name:'OECD CLI',val:leiLabel,score:leiScore,signal:leiSignal,weight:7,lead:'先行6ヶ月',desc:'OECD景気先行指数（米国）。100が中立、100超が拡張局面、100未満が縮小局面を示す。',thresh:'BULL≥100.5 / BEAR≤99.2'});
 
   const totalW=signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.weight:0),0);
   const rawScore=totalW>0?signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW:50;
@@ -705,6 +716,13 @@ function renderPhaseGauge() {
       <span class="pg-sig-val" style="color:${valColor}">${sg.val}</span>
       <span class="pg-sig-badge badge ${bcls}">${btxt}</span>
       <span class="pg-sig-lead">${sg.lead}</span>
+      <div class="pg-sig-tooltip">
+        <div class="pg-sig-tooltip-name">${sg.name}</div>
+        <div class="pg-sig-tooltip-desc">${sg.desc||''}</div>
+        <div class="pg-sig-tooltip-row"><span>閾値</span><span>${sg.thresh||'—'}</span></div>
+        <div class="pg-sig-tooltip-row"><span>先行性</span><span>${sg.lead}</span></div>
+        <div class="pg-sig-tooltip-row"><span>ウェイト</span><span>${sg.weight}%</span></div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -773,6 +791,9 @@ function renderL2() {
     const bullPct=toP(normBull);
     const bearPct=toP(normBear);
     const midPct=toP(normMid);
+    // マーカー位置: 元の値から直接計算（dir:leftの反転に依存しない）
+    const rawBullPct=toP(cfg.bull);
+    const rawBearPct=toP(cfg.bear);
     // 現在値左側(0～valPct)をシグナル色で塗りつぶし
     const fillColor=signal==='BULL'?'rgba(16,185,129,.45)':signal==='BEAR'?'rgba(244,63,94,.45)':signal==='CAUTION'?'rgba(245,158,11,.35)':'rgba(100,116,139,.3)';
     const trackBg='rgba(30,40,64,.6)';
@@ -793,15 +814,15 @@ function renderL2() {
       </div>
       <div style="position:relative;height:10px;border-radius:3px;border:1px solid var(--bdr);background:${trackBg};margin-top:4px;overflow:hidden">
         <div style="position:absolute;top:0;left:0;width:${valPct}%;height:100%;background:${fillColor};transition:width .6s ease"></div>
-        <div style="position:absolute;top:0;left:${bearPct}%;width:1px;height:100%;background:var(--red);opacity:.6"></div>
-        <div style="position:absolute;top:0;left:${bullPct}%;width:1px;height:100%;background:var(--grn);opacity:.6"></div>
+        <div style="position:absolute;top:0;left:${rawBullPct}%;width:1px;height:100%;background:var(--grn);opacity:.6"></div>
+        <div style="position:absolute;top:0;left:${rawBearPct}%;width:1px;height:100%;background:var(--red);opacity:.6"></div>
         <div style="position:absolute;top:0;left:${midPct}%;width:1px;height:100%;background:var(--mut);opacity:.5"></div>
         <div style="position:absolute;top:0;left:calc(${valPct}% - 1px);width:3px;height:100%;background:${barColor};box-shadow:0 0 5px ${barColor}"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:3px;position:relative">
         <span style="font-family:var(--mono);font-size:8px;color:var(--red);opacity:.8">◀ BEAR</span>
-        <span style="font-family:var(--mono);font-size:8px;color:var(--mut);position:absolute;left:${bearPct}%;transform:translateX(-50%)">${bearThreshLabel}</span>
-        <span style="font-family:var(--mono);font-size:8px;color:var(--mut);position:absolute;left:${bullPct}%;transform:translateX(-50%)">${bullThreshLabel}</span>
+        <span style="font-family:var(--mono);font-size:8px;color:var(--mut);position:absolute;left:${rawBearPct}%;transform:translateX(-50%)">${cfg.fmt(cfg.dir==='right'?cfg.bear:cfg.bull)}</span>
+        <span style="font-family:var(--mono);font-size:8px;color:var(--mut);position:absolute;left:${rawBullPct}%;transform:translateX(-50%)">${cfg.fmt(cfg.dir==='right'?cfg.bull:cfg.bear)}</span>
         <span style="font-family:var(--mono);font-size:8px;color:var(--grn);opacity:.8">BULL ▶</span>
       </div>
     </div>`;
