@@ -41,7 +41,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 以下、各モード実行ステップ（変更なし）
+      # 以下、全ステップのパスを src/market/macro_pulse/ に修正
       - name: Run daily update
         if: |
           (github.event_name == 'schedule' && github.event.schedule == '0 22 * * *') ||
@@ -52,7 +52,7 @@ jobs:
           GEMINI_API_KEY:   ${{ secrets.GEMINI_API_KEY }}
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/macro-pulse/05_main.py --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --date $(date -u +%Y-%m-%d)
 
       - name: Send Discord reminder for manual indicators
         if: |
@@ -61,7 +61,7 @@ jobs:
         env:
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/macro-pulse/05_main.py --remind --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --remind --date $(date -u +%Y-%m-%d)
 
       - name: Fill S&P500 returns (t+1/5/10/20)
         if: |
@@ -70,7 +70,7 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
-          python src/macro-pulse/05_main.py --fill-returns
+          python src/market/macro_pulse/05_main.py --fill-returns
 
       - name: Update schedule + fed context (weekly)
         if: |
@@ -81,12 +81,12 @@ jobs:
           GEMINI_API_KEY:   ${{ secrets.GEMINI_API_KEY }}
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/market/macro_pulse/05_main.py --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --update-schedule --date $(date -u +%Y-%m-%d)
 
       - name: Recalculate surprises
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'recalc'
         run: |
-          python src/macro-pulse/05_main.py --recalc
+          python src/market/macro_pulse/05_main.py --recalc
 
       - name: Commit and push data
         run: |
