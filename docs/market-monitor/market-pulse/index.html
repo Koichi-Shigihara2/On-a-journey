@@ -1,0 +1,900 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MARKET PULSE · 市場サマリー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    :root {
+      --bg:   #0a0d14;
+      --sur:  #111520;
+      --sur2: #161c2d;
+      --bdr:  #1e2840;
+      --acc:  #3b82f6;
+      --grn:  #10b981;
+      --red:  #f43f5e;
+      --amb:  #f59e0b;
+      --pur:  #a78bfa;
+      --cyn:  #22d3ee;
+      --txt:  #e2e8f0;
+      --mut:  #64748b;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+
+      /* 指標カラー */
+      --c-vix:  #f43f5e;
+      --c-sp:   #3b82f6;
+      --c-y10:  #10b981;
+      --c-jpy:  #f59e0b;
+      --c-oil:  #a78bfa;
+
+      /* 判定カラー */
+      --sunny:  #f59e0b;
+      --cloudy: #64748b;
+      --storm:  #f43f5e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--bdr);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img { height: 28px; width: auto; }
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--acc);
+      border-radius: 50%;
+      animation: pdot 2s ease-in-out infinite;
+    }
+    @keyframes pdot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); }
+      50%      { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+    }
+    .nav-links { display: flex; gap: 16px; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mut);
+      text-decoration: none;
+      letter-spacing: .08em;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--acc);
+      border-bottom-color: var(--acc);
+    }
+
+    /* ── SHELL ──────────────────────────────────────────── */
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* ── SECTION LABEL ──────────────────────────────────── */
+    .sec {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--mut);
+      text-transform: uppercase;
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sec::after { content:''; flex:1; height:1px; background:var(--bdr); }
+
+    /* ── TOP BAR ────────────────────────────────────────── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .phase-pills { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+    .phase-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 12px;
+      border: 1px solid var(--bdr);
+      background: var(--sur);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .05em;
+      color: var(--mut);
+    }
+    .phase-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .pill-sunny  { border-color: rgba(245,158,11,.4);  color: var(--amb); }
+    .pill-sunny  .dot { background: var(--amb); box-shadow: 0 0 4px var(--amb); }
+    .pill-cloudy { border-color: rgba(100,116,139,.4); color: var(--mut); }
+    .pill-cloudy .dot { background: var(--mut); }
+    .pill-storm  { border-color: rgba(244,63,94,.4);   color: var(--red); }
+    .pill-storm  .dot { background: var(--red); box-shadow: 0 0 4px var(--red); }
+    .pill-total  { border-color: var(--bdr); color: var(--mut); }
+
+    /* 期間ボタン */
+    .period-group { display: flex; gap: 2px; }
+    .period-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .06em;
+      padding: 4px 10px;
+      border: 1px solid var(--bdr);
+      background: var(--sur);
+      color: var(--mut);
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .period-btn:hover { border-color: var(--acc); color: var(--acc); }
+    .period-btn.active {
+      background: rgba(59,130,246,.12);
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────────────────── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ── TIMELINE PANEL ─────────────────────────────────── */
+    .timeline-panel {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+    }
+    .tl-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--bdr);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tl-header-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: var(--mut);
+      text-transform: uppercase;
+    }
+    .tl-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--mut);
+    }
+
+    /* タイムラインアイテム */
+    .tl-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(30,40,64,.6);
+      cursor: pointer;
+      transition: background .1s;
+      display: grid;
+      grid-template-columns: 20px 1fr auto;
+      gap: 8px;
+      align-items: start;
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-item:hover { background: var(--sur2); }
+    .tl-item.active { background: rgba(59,130,246,.08); border-left: 2px solid var(--acc); }
+
+    /* ビジュアルインジケーター（左列） */
+    .tl-vis {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding-top: 2px;
+    }
+    .tl-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .tl-dot.sunny  { background: var(--amb); box-shadow: 0 0 5px rgba(245,158,11,.5); }
+    .tl-dot.cloudy { background: var(--mut); }
+    .tl-dot.storm  { background: var(--red); box-shadow: 0 0 5px rgba(244,63,94,.6); animation: pulse-red 1.5s ease-in-out infinite; }
+    @keyframes pulse-red {
+      0%,100% { box-shadow: 0 0 4px rgba(244,63,94,.4); }
+      50%      { box-shadow: 0 0 10px rgba(244,63,94,.8); }
+    }
+    .tl-line {
+      width: 1px;
+      flex: 1;
+      min-height: 8px;
+      background: var(--bdr);
+    }
+    /* VIXバー（右端視覚化） */
+    .tl-vix-bar-wrap {
+      width: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      padding-top: 3px;
+    }
+    .tl-vix-val {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--txt);
+      text-align: right;
+    }
+    .tl-vix-chg {
+      font-family: var(--mono);
+      font-size: 9px;
+      text-align: right;
+    }
+    .up   { color: var(--red); }
+    .down { color: var(--grn); }
+    .flat { color: var(--mut); }
+
+    .tl-main {}
+    .tl-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--mut);
+      letter-spacing: .04em;
+    }
+    .tl-judgment {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      margin: 1px 0 3px;
+    }
+    .tl-judgment.sunny  { color: var(--amb); }
+    .tl-judgment.cloudy { color: var(--mut); }
+    .tl-judgment.storm  { color: var(--red); }
+    .tl-haiku {
+      font-size: 10px;
+      color: var(--mut);
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    /* ── RIGHT COLUMN ───────────────────────────────────── */
+    .right-col { display: flex; flex-direction: column; gap: 14px; }
+
+    /* メトリクスカード */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 10px;
+    }
+    .metric-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 12px 14px;
+    }
+    .metric-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .12em;
+      color: var(--mut);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--txt);
+      line-height: 1;
+    }
+    .metric-chg {
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    /* ── CHART CARD ─────────────────────────────────────── */
+    .chart-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 16px;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chart-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: var(--mut);
+      text-transform: uppercase;
+    }
+    .chart-metric-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+    .metric-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 9px;
+      border: 1px solid var(--bdr);
+      background: var(--sur2);
+      color: var(--mut);
+      cursor: pointer;
+      transition: all .12s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .metric-btn:hover { border-color: var(--acc); color: var(--acc); }
+    .metric-btn.active { background: var(--sur2); }
+    .metric-btn .mbdot {
+      width: 7px; height: 7px; border-radius: 50%;
+      transition: box-shadow .12s;
+    }
+    .metric-btn.active .mbdot { box-shadow: 0 0 5px currentColor; }
+    .chart-wrap { position: relative; height: 200px; }
+
+    /* 凡例 */
+    .chart-legend {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--mono); font-size: 10px; color: var(--mut);
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── DETAIL CARD ────────────────────────────────────── */
+    .detail-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      padding: 16px;
+    }
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--bdr);
+      padding-bottom: 12px;
+    }
+    .detail-phase-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+      padding: 3px 10px;
+      border: 1px solid;
+    }
+    .detail-phase-badge.sunny  { border-color: rgba(245,158,11,.5); color: var(--amb); background: rgba(245,158,11,.07); }
+    .detail-phase-badge.cloudy { border-color: rgba(100,116,139,.5); color: var(--mut); background: rgba(100,116,139,.07); }
+    .detail-phase-badge.storm  { border-color: rgba(244,63,94,.5);  color: var(--red); background: rgba(244,63,94,.07); }
+    .detail-title-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--mut);
+      letter-spacing: .06em;
+    }
+
+    .credit-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .credit-badge {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .06em;
+      padding: 3px 9px;
+      border: 1px solid;
+    }
+    .risk-on  { border-color: rgba(16,185,129,.4);  color: var(--grn); background: rgba(16,185,129,.07); }
+    .risk-off { border-color: rgba(244,63,94,.4);   color: var(--red); background: rgba(244,63,94,.07); }
+
+    .detail-body {
+      font-size: 13px;
+      color: var(--txt);
+      line-height: 1.8;
+      white-space: pre-wrap;
+      font-family: var(--sans);
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .detail-body::-webkit-scrollbar { width: 4px; }
+    .detail-body::-webkit-scrollbar-track { background: var(--sur); }
+    .detail-body::-webkit-scrollbar-thumb { background: var(--bdr); }
+
+    .haiku-box {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-left: 2px solid var(--acc);
+      background: rgba(59,130,246,.06);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--acc);
+      letter-spacing: .06em;
+    }
+
+    .placeholder-msg {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mut);
+      letter-spacing: .06em;
+      padding: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="../common/images/logo.png" alt="TANUKI"
+         style="height:28px;width:auto;vertical-align:middle"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'🦝',style:'font-size:22px;line-height:1'}))">
+    <span class="logo-dot"></span>
+    MARKET PULSE
+  </div>
+  <div class="nav-links">
+    <a href="/On-a-journey/">HOME</a>
+        <a href="/On-a-journey/value-monitor/adjusted_eps_analyzer/">EPS Analyzer</a>
+    <a href="#" class="active">Market Pulse</a>
+        <a href="/On-a-journey/market-monitor/macro-pulse/">MACRO PULSE</a>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="sec">市場フェーズ概要 &amp; 表示期間</div>
+
+  <div class="top-bar">
+    <div class="phase-pills" id="phasePills"></div>
+    <div class="period-group" id="periodGroup"></div>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- タイムライン -->
+    <div class="timeline-panel">
+      <div class="tl-header">
+        <span class="tl-header-label">分析履歴</span>
+        <span class="tl-count" id="tlCount">— 件</span>
+      </div>
+      <div id="timeline"></div>
+    </div>
+
+    <!-- 右カラム -->
+    <div class="right-col">
+
+      <!-- メトリクス -->
+      <div class="metrics-row" id="metricsRow">
+        <div class="metric-card"><div class="metric-label">VIX</div><div class="metric-value">—</div></div>
+        <div class="metric-card"><div class="metric-label">S&P500</div><div class="metric-value">—</div></div>
+        <div class="metric-card"><div class="metric-label">10Y利回</div><div class="metric-value">—</div></div>
+        <div class="metric-card"><div class="metric-label">USD/JPY</div><div class="metric-value">—</div></div>
+      </div>
+
+      <!-- チャート -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">推移チャート（複数同時選択可）</span>
+          <div class="chart-metric-btns" id="metricBtns"></div>
+        </div>
+        <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+
+      <!-- 詳細 -->
+      <div class="detail-card">
+        <div id="detailInner">
+          <div class="placeholder-msg">← 日付を選択してください</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── サンプルデータ生成 ────────────────────────────────────────────────────────
+function makeSample() {
+  const base = [
+    { d:"2026-01-07", j:"晴れ", vix:17.2,  sp:5940, jpy:157.1, y10:4.62, oil:73.8, haiku:"新春や 指数清々し 買い気満つ",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-08", j:"晴れ", vix:16.8,  sp:5965, jpy:157.5, y10:4.58, oil:74.1, haiku:"冬晴れや 値を重ねゆく 大型株",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-09", j:"曇り", vix:19.4,  sp:5910, jpy:156.8, y10:4.65, oil:73.5, haiku:"雲の間 指数揺れつつ 春を待つ",         st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-12", j:"晴れ", vix:18.1,  sp:5948, jpy:157.2, y10:4.60, oil:74.3, haiku:"陽光に 相場は明るく 週明けぬ",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-13", j:"晴れ", vix:17.9,  sp:5972, jpy:157.8, y10:4.55, oil:75.0, haiku:"春近し 高値追いかけ 陽が沈む",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-14", j:"曇り", vix:21.3,  sp:5885, jpy:156.2, y10:4.68, oil:74.2, haiku:"薄氷 市場の足元 割れそうな",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-01-15", j:"曇り", vix:22.8,  sp:5860, jpy:155.9, y10:4.72, oil:73.8, haiku:"冬曇り 方向感なく 模索する",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-01-16", j:"嵐",   vix:29.4,  sp:5720, jpy:154.1, y10:4.58, oil:72.0, haiku:"嵐来る 止まらぬ売りに 冬の海",         st:"リスクオフ", bo:"リスクオフ", cr:"リスクオフ" },
+    { d:"2026-01-19", j:"嵐",   vix:31.2,  sp:5680, jpy:153.5, y10:4.50, oil:71.5, haiku:"吹雪くや 底値を探る 手が震え",         st:"リスクオフ", bo:"リスクオフ", cr:"リスクオフ" },
+    { d:"2026-01-20", j:"曇り", vix:26.5,  sp:5748, jpy:154.2, y10:4.55, oil:72.4, haiku:"嵐明け 静かに戻す 指数かな",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-01-21", j:"曇り", vix:24.8,  sp:5772, jpy:154.9, y10:4.58, oil:73.0, haiku:"寒波去り 一歩一歩と 戻り道",           st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-22", j:"晴れ", vix:22.1,  sp:5810, jpy:155.6, y10:4.60, oil:73.8, haiku:"春立てば 押し目買いの 機到来",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-23", j:"晴れ", vix:21.0,  sp:5840, jpy:156.1, y10:4.55, oil:74.2, haiku:"冬日和 指数明るく 週を閉ず",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-26", j:"曇り", vix:22.5,  sp:5818, jpy:155.8, y10:4.62, oil:73.6, haiku:"月曜や 慎重な手が 動き出す",           st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-27", j:"晴れ", vix:20.8,  sp:5855, jpy:156.3, y10:4.58, oil:74.5, haiku:"寒明けや 力強い 買い戻し",             st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-28", j:"晴れ", vix:19.9,  sp:5880, jpy:156.8, y10:4.54, oil:75.1, haiku:"春霞 遠くを見つつ 値を積む",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-29", j:"曇り", vix:21.4,  sp:5852, jpy:156.2, y10:4.60, oil:74.8, haiku:"節分前 市場もためらう 冬の夜",         st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-01-30", j:"晴れ", vix:20.2,  sp:5875, jpy:156.9, y10:4.57, oil:75.3, haiku:"如月に 弾む市場の 足どりや",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-02", j:"晴れ", vix:19.5,  sp:5900, jpy:157.2, y10:4.54, oil:75.8, haiku:"立春や 相場も芽吹き 買い萌ゆ",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-03", j:"曇り", vix:22.0,  sp:5870, jpy:156.5, y10:4.61, oil:75.2, haiku:"春霞 雇用統計に 目を向けて",           st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-04", j:"晴れ", vix:20.5,  sp:5895, jpy:157.0, y10:4.57, oil:75.9, haiku:"週末に 指数に微笑む 春の日よ",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-09", j:"晴れ", vix:19.8,  sp:5920, jpy:157.5, y10:4.52, oil:76.4, haiku:"春光に 高値更新の 予感あり",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-10", j:"曇り", vix:21.9,  sp:5888, jpy:157.0, y10:4.59, oil:76.0, haiku:"薄曇り CPI控えて 手が止まる",          st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-02-11", j:"晴れ", vix:20.4,  sp:5912, jpy:157.4, y10:4.55, oil:76.5, haiku:"雨上がり 指数に光が 射し込める",       st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-12", j:"晴れ", vix:19.2,  sp:5935, jpy:157.9, y10:4.50, oil:77.0, haiku:"春の風 上昇気流に 乗る市場",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-16", j:"晴れ", vix:18.8,  sp:5950, jpy:158.1, y10:4.48, oil:77.3, haiku:"春暖か 買い一色の 週明けぬ",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-17", j:"曇り", vix:21.1,  sp:5920, jpy:157.6, y10:4.55, oil:76.8, haiku:"春しぐれ 利確の波が 押し寄せる",       st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-18", j:"晴れ", vix:20.0,  sp:5940, jpy:158.0, y10:4.51, oil:77.1, haiku:"春暁や 押し目に集まる 買いの群",       st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-19", j:"晴れ", vix:18.42, sp:5820, jpy:152.3, y10:4.05, oil:91.2, haiku:"春光や 買い意欲満ちる 指数の朝",       st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-20", j:"晴れ", vix:17.95, sp:5856, jpy:152.8, y10:4.02, oil:90.8, haiku:"陽光に 値を刻みつつ 春相場",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-23", j:"晴れ", vix:18.10, sp:5841, jpy:153.1, y10:4.08, oil:91.5, haiku:"緩やかな 上昇続く 春の午後",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-24", j:"曇り", vix:20.33, sp:5780, jpy:151.9, y10:4.15, oil:92.1, haiku:"風向きが 変わりし午後の 市場かな",     st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-25", j:"晴れ", vix:19.12, sp:5812, jpy:152.5, y10:4.11, oil:91.8, haiku:"反発の 兆し見えたり 春の午後",         st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-02-26", j:"曇り", vix:21.45, sp:5765, jpy:151.2, y10:4.19, oil:93.0, haiku:"霞立つ 市場の先に 何が待つ",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-02-27", j:"曇り", vix:22.18, sp:5748, jpy:150.8, y10:4.22, oil:92.6, haiku:"曇り空 投資家の眉 寄せられる",         st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-03-02", j:"嵐",   vix:28.60, sp:5612, jpy:149.5, y10:4.18, oil:94.2, haiku:"嵐来る 損切り急ぐ 春の午後",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオフ" },
+    { d:"2026-03-03", j:"嵐",   vix:30.11, sp:5580, jpy:148.9, y10:4.10, oil:95.1, haiku:"底知れぬ 恐怖の淵に 春迷う",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオフ" },
+    { d:"2026-03-04", j:"曇り", vix:26.88, sp:5640, jpy:149.8, y10:4.14, oil:94.8, haiku:"嵐明け 静かに戻す 市場かな",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-03-05", j:"曇り", vix:25.44, sp:5672, jpy:150.4, y10:4.17, oil:94.5, haiku:"霞の中 値を模索する 春相場",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-03-06", j:"曇り", vix:24.20, sp:5698, jpy:150.9, y10:4.20, oil:93.8, haiku:"立春や 値はじわじわと 戻りゆく",       st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-09", j:"晴れ", vix:22.05, sp:5740, jpy:151.5, y10:4.16, oil:93.2, haiku:"春霞 晴れ間に戻る 買い意欲",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-10", j:"曇り", vix:23.18, sp:5718, jpy:151.8, y10:4.21, oil:93.9, haiku:"揺れ動く 春の指数に 月映る",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-03-11", j:"曇り", vix:22.90, sp:5732, jpy:152.1, y10:4.18, oil:94.1, haiku:"春の雲 方向感なく 漂える",             st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-12", j:"晴れ", vix:21.33, sp:5765, jpy:152.4, y10:4.14, oil:93.5, haiku:"日脚伸び 指数も高く 春の空",           st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-13", j:"曇り", vix:22.50, sp:5750, jpy:152.2, y10:4.16, oil:93.8, haiku:"春雨や 市場の迷い 深まれり",           st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-16", j:"曇り", vix:23.40, sp:5728, jpy:151.9, y10:4.19, oil:94.2, haiku:"霞たつ 週初の空に 不安漂う",           st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+    { d:"2026-03-17", j:"曇り", vix:23.68, sp:5748, jpy:152.5, y10:4.20, oil:93.8, haiku:"春光や 買い意欲じわり 芽吹き初む",     st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-18", j:"曇り", vix:23.68, sp:5748, jpy:158.9, y10:4.20, oil:93.8, haiku:"春霞 資金は流れ 指数上ぐ",             st:"リスクオン", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-19", j:"曇り", vix:25.55, sp:5547, jpy:159.2, y10:4.26, oil:95.5, haiku:"静かなる波紋 広がる市場の影 目指すは光か", st:"リスクオフ", bo:"リスクオン", cr:"リスクオン" },
+    { d:"2026-03-20", j:"曇り", vix:25.93, sp:5546, jpy:159.1, y10:4.39, oil:96.6, haiku:"春の山笑う 市に影伸び VIX二十六",      st:"リスクオフ", bo:"リスクオフ", cr:"リスクオン" },
+  ];
+  return base.map((b,i) => {
+    const p = i > 0 ? base[i-1] : b;
+    const pct = (a,pp) => pp ? +((a-pp)/pp*100).toFixed(2) : 0;
+    return {
+      date: b.d + "T19:30:00+09:00",
+      judgment: b.j,
+      haiku: b.haiku,
+      credit: { stock: b.st, bond: b.bo, credit: b.cr },
+      summary: `1. 市場フェーズ判定\n● VIX指数: ${b.vix}  判定：${b.j}\n\n2. 金利・債券（米10年債）\n● 米10年債: ${b.y10}%\n\n4. 通貨の勢い（ドル円）\n● ドル円: ${b.jpy}\n\n5. 指数・需給\n● S&P500: ${b.sp.toLocaleString()}\n\n7. コモディティ（原油）\n● WTI原油: ${b.oil}\n\n10. 総評\n市場フェーズ「${b.j}」。各指標を総合すると現在の需給構造は${b.j === "晴れ" ? "強気" : b.j === "嵐" ? "リスクオフ優勢" : "中立〜慎重"}。`,
+      indicators: {
+        "VIX指数":  { value: b.vix,  change_percent: pct(b.vix,  p.vix)  },
+        "S&P500":  { value: b.sp,   change_percent: pct(b.sp,   p.sp)   },
+        "米10年債": { value: b.y10,  change_percent: pct(b.y10,  p.y10)  },
+        "ドル円":   { value: b.jpy,  change_percent: pct(b.jpy,  p.jpy)  },
+        "WTI原油": { value: b.oil,  change_percent: pct(b.oil,  p.oil)  },
+      }
+    };
+  });
+}
+
+// ── 定数 ──────────────────────────────────────────────────────────────────────
+const PERIODS = [
+  { label:"1W",  days:7   },
+  { label:"2W",  days:14  },
+  { label:"1M",  days:30  },
+  { label:"2M",  days:60  },
+  { label:"3M",  days:90  },
+  { label:"6M",  days:180 },
+  { label:"全期間", days:9999 },
+];
+const DEFAULT_DAYS = 14;
+
+const METRIC_DEFS = [
+  { key:"VIX指数",  label:"VIX",    color:"#f43f5e" },
+  { key:"S&P500",  label:"S&P500", color:"#3b82f6" },
+  { key:"米10年債", label:"10Y",    color:"#10b981" },
+  { key:"ドル円",   label:"JPY",    color:"#f59e0b" },
+  { key:"WTI原油", label:"OIL",    color:"#a78bfa" },
+];
+
+// ── 状態 ──────────────────────────────────────────────────────────────────────
+let allData      = [];
+let filteredData = [];
+let selectedIdx  = 0;
+let periodDays   = DEFAULT_DAYS;
+let activeMetrics = new Set(["VIX指数", "S&P500"]);
+let chartInst    = null;
+
+// ── ユーティリティ ─────────────────────────────────────────────────────────────
+const phaseClass = j => j==="晴れ"?"sunny": (j==="嵐")?"storm":"cloudy";
+const fmtDate    = iso => { const d=new Date(iso); return `${d.getMonth()+1}/${d.getDate()}`; };
+const fmtDateFull= iso => { const d=new Date(iso); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+const fmtChg     = v => {
+  if (v==null) return {text:"-", cls:"flat"};
+  const t = (v>=0?"+":"")+v.toFixed(2)+"%";
+  return {text:t, cls: v>0.05?"up": v<-0.05?"down":"flat"};
+};
+const phaseLabel = j => j==="晴れ"?"☀ 晴れ": j==="嵐"?"⛈ 嵐":"☁ 曇り";
+
+// ── 期間フィルタ ───────────────────────────────────────────────────────────────
+function applyPeriod() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - periodDays);
+  filteredData = periodDays>=9999 ? [...allData]
+    : allData.filter(d => new Date(d.date) >= cutoff);
+  if (!filteredData.length) filteredData = [...allData];
+  selectedIdx = filteredData.length - 1;
+}
+
+// ── 期間ボタン ─────────────────────────────────────────────────────────────────
+function renderPeriodGroup() {
+  document.getElementById("periodGroup").innerHTML = PERIODS.map(p =>
+    `<button class="period-btn ${p.days===periodDays?"active":""}"
+      onclick="switchPeriod(${p.days})">${p.label}</button>`
+  ).join("");
+}
+function switchPeriod(days) {
+  periodDays = days;
+  applyPeriod();
+  renderAll();
+}
+
+// ── フェーズ集計 ───────────────────────────────────────────────────────────────
+function renderPhasePills() {
+  const c = {"晴れ":0,"曇り":0,"嵐":0};
+  filteredData.forEach(d => { if (c[d.judgment]!=null) c[d.judgment]++; });
+  document.getElementById("phasePills").innerHTML =
+    Object.entries(c).filter(([,v])=>v>0).map(([k,v]) =>
+      `<div class="phase-pill pill-${phaseClass(k)}">
+        <span class="dot"></span>${phaseLabel(k)} <strong>${v}日</strong>
+      </div>`).join("") +
+    `<div class="phase-pill pill-total">計 ${filteredData.length} 日</div>`;
+}
+
+// ── タイムライン ───────────────────────────────────────────────────────────────
+function renderTimeline() {
+  document.getElementById("tlCount").textContent = `${filteredData.length} 件`;
+  const rev = [...filteredData].reverse();
+  document.getElementById("timeline").innerHTML = rev.map((d, ri) => {
+    const i = filteredData.length - 1 - ri;
+    const vix = d.indicators["VIX指数"];
+    const chg = fmtChg(vix?.change_percent);
+    const pc  = phaseClass(d.judgment);
+    const isLast = ri === rev.length - 1;
+    return `<div class="tl-item ${i===selectedIdx?"active":""}" onclick="selectItem(${i})">
+      <div class="tl-vis">
+        <div class="tl-dot ${pc}"></div>
+        ${!isLast ? '<div class="tl-line"></div>' : ''}
+      </div>
+      <div class="tl-main">
+        <div class="tl-date">${fmtDateFull(d.date)}</div>
+        <div class="tl-judgment ${pc}">${phaseLabel(d.judgment)}</div>
+        ${d.haiku ? `<div class="tl-haiku">${d.haiku}</div>` : ""}
+      </div>
+      <div class="tl-vix-bar-wrap">
+        <div class="tl-vix-val">${vix ? vix.value.toFixed(2) : "-"}</div>
+        <div class="tl-vix-chg ${chg.cls}">${chg.text}</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── メトリクス ─────────────────────────────────────────────────────────────────
+function renderMetrics() {
+  const d = filteredData[selectedIdx];
+  const SHOW  = ["VIX指数","S&P500","米10年債","ドル円"];
+  const SHORT = {"VIX指数":"VIX","S&P500":"S&P500","米10年債":"10Y利回","ドル円":"USD/JPY"};
+  document.getElementById("metricsRow").innerHTML = SHOW.map(k => {
+    const ind = d?.indicators[k];
+    if (!ind) return `<div class="metric-card"><div class="metric-label">${SHORT[k]}</div><div class="metric-value">—</div></div>`;
+    const chg = fmtChg(ind.change_percent);
+    const val = ind.value>=1000
+      ? ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0})
+      : ind.value.toFixed(2);
+    const mdef = METRIC_DEFS.find(m=>m.key===k);
+    return `<div class="metric-card">
+      <div class="metric-label" style="color:${mdef?.color||'var(--mut)'}">${SHORT[k]}</div>
+      <div class="metric-value">${val}</div>
+      <div class="metric-chg ${chg.cls}">${chg.text}</div>
+    </div>`;
+  }).join("");
+}
+
+// ── チャートボタン ─────────────────────────────────────────────────────────────
+function renderMetricBtns() {
+  document.getElementById("metricBtns").innerHTML = METRIC_DEFS.map(m =>
+    `<button class="metric-btn ${activeMetrics.has(m.key)?"active":""}"
+      onclick="toggleMetric('${m.key}')"
+      style="color:${activeMetrics.has(m.key)?m.color:'var(--mut)'};
+             border-color:${activeMetrics.has(m.key)?m.color+'80':'var(--bdr)'}">
+      <span class="mbdot" style="background:${m.color}"></span>${m.label}
+    </button>`
+  ).join("");
+}
+function toggleMetric(key) {
+  if (activeMetrics.has(key)) {
+    if (activeMetrics.size <= 1) return; // 最低1つは残す
+    activeMetrics.delete(key);
+  } else {
+    activeMetrics.add(key);
+  }
+  renderMetricBtns();
+  renderChart();
+  renderLegend();
+}
+
+// ── チャート ───────────────────────────────────────────────────────────────────
+function renderChart() {
+  const labels = filteredData.map(d => fmtDate(d.date));
+  const datasets = METRIC_DEFS.filter(m => activeMetrics.has(m.key)).map(m => {
+    const raw = filteredData.map(d => d.indicators[m.key]?.value ?? null);
+    // 正規化（複数指標を同一スケールで見やすく）
+    const valid = raw.filter(v=>v!=null);
+    const mn = Math.min(...valid), mx = Math.max(...valid);
+    const normed = raw.map(v => v==null ? null : mx===mn ? 50 : (v-mn)/(mx-mn)*80+10);
+    const judgments = filteredData.map(d=>d.judgment);
+    return {
+      label: m.label,
+      data: activeMetrics.size>1 ? normed : raw,
+      borderColor: m.color,
+      pointBackgroundColor: judgments.map(j =>
+        j==="嵐"?"#f43f5e": j==="晴れ"?"#f59e0b": m.color),
+      pointBorderColor: "transparent",
+      pointRadius: filteredData.length>40 ? 2 : 4,
+      pointHoverRadius: 6,
+      borderWidth: 1.5,
+      fill: false,
+      tension: 0.35,
+      _rawData: raw,
+      _meta: m,
+    };
+  });
+
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(document.getElementById("mainChart"), {
+    type:"line",
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:"index", intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:"#111520",
+          borderColor:"#1e2840",
+          borderWidth:1,
+          titleColor:"#64748b",
+          bodyColor:"#e2e8f0",
+          titleFont:{ family:"Space Mono", size:10 },
+          bodyFont:{ family:"Space Mono", size:11 },
+          callbacks:{
+            label: ctx => {
+              const ds = ctx.dataset;
+              const raw = ds._rawData?.[ctx.dataIndex];
+              const j = filteredData[ctx.dataIndex]?.judgment;
+              return ` ${ds._meta?.label||ds.label}: ${raw!=null?raw.toFixed(2):"—"} (${j})`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          ticks:{ color:"#64748b", font:{family:"Space Mono",size:10}, maxTicksLimit:10 },
+          grid:{ color:"rgba(30,40,64,.5)" },
+          border:{ color:"#1e2840" }
+        },
+        y:{
+          display: activeMetrics.size>1 ? false : true,
+          ticks:{ color:"#64748b", font:{family:"Space Mono",size:10} },
+          grid:{ color:"rgba(30,40,64,.5)" },
+          border:{ color:"#1e2840" }
+        }
+      },
+      onClick:(_, els) => { if(els.length) selectItem(els[0].index); }
+    }
+  });
+}
+
+function renderLegend() {
+  const active = METRIC_DEFS.filter(m=>activeMetrics.has(m.key));
+  const note = activeMetrics.size>1 ? ' <span style="color:var(--mut);font-size:9px">（正規化表示）</span>' : '';
+  document.getElementById("chartLegend").innerHTML =
+    active.map(m =>
+      `<div class="legend-item">
+        <div class="legend-dot" style="background:${m.color}"></div>${m.label}
+      </div>`
+    ).join("") + note;
+}
+
+// ── 詳細パネル ─────────────────────────────────────────────────────────────────
+function renderDetail() {
+  const d = filteredData[selectedIdx];
+  const pc = phaseClass(d.judgment);
+  const { stock, bond, credit } = d.credit || {};
+  const creditHTML = d.credit ? `
+    <div class="credit-row">
+      <span class="credit-badge ${stock==='リスクオン'?'risk-on':'risk-off'}">株 ${stock}</span>
+      <span class="credit-badge ${bond==='リスクオン'?'risk-on':'risk-off'}">債券 ${bond}</span>
+      <span class="credit-badge ${credit==='リスクオン'?'risk-on':'risk-off'}">クレジット ${credit}</span>
+    </div>` : "";
+
+  document.getElementById("detailInner").innerHTML = `
+    <div class="detail-header">
+      <span class="detail-phase-badge ${pc}">${phaseLabel(d.judgment)}</span>
+      <span class="detail-title-text">${fmtDateFull(d.date)}</span>
+    </div>
+    ${creditHTML}
+    <div class="detail-body">${d.summary ?? "詳細なし"}</div>
+    ${d.haiku ? `<div class="haiku-box">${d.haiku}</div>` : ""}
+  `;
+}
+
+// ── アイテム選択 ───────────────────────────────────────────────────────────────
+function selectItem(i) {
+  selectedIdx = i;
+  renderTimeline();
+  renderMetrics();
+  renderDetail();
+}
+
+// ── 全再描画 ───────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderPeriodGroup();
+  renderPhasePills();
+  renderTimeline();
+  renderMetrics();
+  renderMetricBtns();
+  renderChart();
+  renderLegend();
+  renderDetail();
+}
+
+// ── データロード ───────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const resp = await fetch('./data/market_data.json');
+    const json = await resp.json();
+    if (Array.isArray(json) && json.length > 0) {
+      allData = json
+        .map(d => {
+          // judgment の表記ゆれを正規化（「曇」→「曇り」「晴」→「晴れ」）
+          const j = d.judgment || "不明";
+          d.judgment = j === "曇" ? "曇り" : j === "晴" ? "晴れ" : j;
+          // credit が無い場合は summary から簡易推定
+          if (!d.credit) {
+            const s = d.summary || "";
+            const st = s.includes("株（S&P500の方向）は下落") ? "リスクオフ" : "リスクオン";
+            const bo = s.includes("債券（米10年債利回りの方向）は上昇") ? "リスクオフ" : "リスクオン";
+            const cr = s.includes("クレジット（HYG対LQD比の方向）は上昇") ? "リスクオン" : "リスクオフ";
+            d.credit = { stock: st, bond: bo, credit: cr };
+          }
+          return d;
+        })
+        .sort((a,b) => new Date(a.date) - new Date(b.date));
+    } else {
+      allData = makeSample();
+    }
+  } catch { allData = makeSample(); }
+  applyPeriod();
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>

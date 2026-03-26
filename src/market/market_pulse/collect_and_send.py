@@ -27,9 +27,9 @@ RSS_LIST_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "02_mar
 
 JST = timezone(timedelta(hours=9))
 
-# データ保存先（GitHub Pages 配信対象の docs/data/）
+# データ保存先（GitHub Pages 配信対象の docs/market-monitor/market-pulse/data/）
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-DATA_DIR = os.path.join(REPO_ROOT, "docs", "market-monitor", "data")
+DATA_DIR = os.path.join(REPO_ROOT, "docs", "market-monitor", "market-pulse", "data")
 JSON_PATH = os.path.join(DATA_DIR, "market_data.json")
 CSV_PATH = os.path.join(DATA_DIR, "market_data.csv")
 
