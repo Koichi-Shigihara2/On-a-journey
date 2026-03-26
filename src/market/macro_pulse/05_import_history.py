@@ -47,9 +47,7 @@ logger = logging.getLogger(__name__)
 
 # 05_main.py と同じパス・定数を参照
 sys.path.insert(0, os.path.dirname(__file__))
-from importlib import import_module
 
-# 05_main.py のモジュールを動的ロード（ファイル名に数字があるため）
 import importlib.util, pathlib
 
 _main_path = pathlib.Path(__file__).parent / "05_main.py"
@@ -57,6 +55,7 @@ _spec = importlib.util.spec_from_file_location("main05", _main_path)
 _m = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_m)
 
+# 出力先は _m からそのまま継承（既に docs/market-monitor/macro-pulse/data/ に変更済み）
 EVENTS_PATH      = _m.EVENTS_PATH
 SCHEDULE_PATH    = _m.SCHEDULE_PATH
 FED_CONTEXT_PATH = _m.FED_CONTEXT_PATH
@@ -72,19 +71,12 @@ get_ff_current   = _m.get_ff_current
 _fmt             = _m._fmt
 _safe_float      = _m._safe_float
 
-
 # ─────────────────────────────────────────────────────────────────
 #  金融環境キャッシュ（全期間を一括取得してメモリに保持）
 # ─────────────────────────────────────────────────────────────────
-
 _CTX_CACHE: dict = {}   # {series_id: pd.Series}
 
-
 def _load_ctx_cache(fred, from_date: str, to_date: str):
-    """
-    金融環境に使う全系列を1回だけ FRED から一括取得してキャッシュする。
-    API呼び出しは系列数（5本）のみ。行数には依存しない。
-    """
     global _CTX_CACHE
     series_ids = ["T10Y2Y", "BAMLH0A0HYM2", "VIXCLS", "DFEDTARU", "DFEDTARL"]
     for sid in series_ids:
@@ -104,9 +96,7 @@ def _load_ctx_cache(fred, from_date: str, to_date: str):
         else:
             _CTX_CACHE[sid] = pd.Series(dtype=float)
 
-
 def _lookup_ctx(series_id: str, target_date):
-    """キャッシュから target_date 以前の最新値を返す"""
     s = _CTX_CACHE.get(series_id)
     if s is None or s.empty:
         return None
@@ -115,7 +105,6 @@ def _lookup_ctx(series_id: str, target_date):
     if s_before.empty:
         return None
     return float(s_before.iloc[-1])
-
 
 def get_historical_context(fred, target_date) -> dict:
     """キャッシュから指定日付の金融環境スナップショットを返す（API呼び出しなし）"""
@@ -131,11 +120,9 @@ def get_historical_context(fred, target_date) -> dict:
     if vx: ctx["vix"]        = str(round(vx, 2))
     return ctx
 
-
 # ─────────────────────────────────────────────────────────────────
 #  FRED 一括取得
 # ─────────────────────────────────────────────────────────────────
-
 FRED_INDICATORS = {
     "NFP":                   "PAYEMS",
     "Initial Claims 4W MA":  "IC4WSA",
@@ -148,18 +135,13 @@ FRED_INDICATORS = {
     "VIX":                   "VIXCLS",
 }
 
-
 def import_from_fred(from_date: str, to_date: str, overwrite: bool = False,
                      indicators: list = None):
-    """
-    FRED から指定期間の過去データを取得して 05_events.csv に投入。
-    """
     fred = get_fred()
     if fred is None:
         logger.error("FRED client unavailable. Set FRED_API_KEY.")
         sys.exit(1)
 
-    # 金融環境系列を事前に一括取得（5本のAPIコールで完結）
     logger.info("金融環境系列をキャッシュ中（T10Y2Y / HY / VIX / FF上下限）...")
     _load_ctx_cache(fred, from_date, to_date)
 
@@ -235,23 +217,10 @@ def import_from_fred(from_date: str, to_date: str, overwrite: bool = False,
     save_events(combined)
     logger.info(f"インポート完了: {len(new_rows)} 行追加 → {EVENTS_PATH}")
 
-
 # ─────────────────────────────────────────────────────────────────
 #  手動 CSV 投入
 # ─────────────────────────────────────────────────────────────────
-
 def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
-    """
-    tradingeconomics 等から手動DLした CSV を 05_events.csv に投入。
-
-    入力フォーマット（必須列）:
-      date        : YYYY-MM-DD または MM/DD/YYYY
-      actual      : 実際値
-      consensus   : コンセンサス（任意）
-
-    追加で以下列があれば利用:
-      previous    : 前回値
-    """
     if not os.path.exists(source_path):
         logger.error(f"ファイルが見つかりません: {source_path}")
         sys.exit(1)
@@ -262,7 +231,6 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
         logger.error(f"CSV読み込みエラー: {e}")
         sys.exit(1)
 
-    # 列名を正規化（小文字・空白除去）
     src_df.columns = [c.strip().lower() for c in src_df.columns]
 
     required = ["date", "actual"]
@@ -273,7 +241,6 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
 
     fred   = get_fred()
     if fred:
-        # 日付範囲を src_df から推定してキャッシュ
         dates = src_df["date"].str.strip()
         try:
             from_d = min(dates)[:10]
@@ -288,7 +255,6 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
     skipped  = 0
 
     for _, src_row in src_df.iterrows():
-        # 日付パース
         date_raw = src_row["date"].strip()
         rd = None
         for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%Y/%m/%d", "%d/%m/%Y"]:
@@ -302,7 +268,6 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
             skipped += 1
             continue
 
-        # 実際値パース
         try:
             actual_val = float(src_row["actual"].replace(",", ""))
         except (ValueError, AttributeError):
@@ -315,7 +280,6 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
             skipped += 1
             continue
 
-        # コンセンサス・サプライズ
         consensus_val = None
         surprise      = None
         surprise_pct  = None
@@ -363,23 +327,19 @@ def import_from_csv(source_path: str, indicator: str, overwrite: bool = False):
     save_events(combined)
     logger.info(f"インポート完了: {len(new_rows)} 行追加、{skipped} 行スキップ → {EVENTS_PATH}")
 
-
 # ─────────────────────────────────────────────────────────────────
 #  Entry Point
 # ─────────────────────────────────────────────────────────────────
-
 def main():
     p = argparse.ArgumentParser(description="MACRO PULSE v6.0 — 過去データ一括投入")
     sub = p.add_subparsers(dest="mode", required=True)
 
-    # FRED 自動取得モード
     fred_p = sub.add_parser("fred", help="FRED から過去データを一括取得")
     fred_p.add_argument("--from",  dest="from_date", default="2020-01-01", help="開始日 YYYY-MM-DD")
     fred_p.add_argument("--to",    dest="to_date",   default=date.today().strftime("%Y-%m-%d"), help="終了日")
     fred_p.add_argument("--indicators", nargs="*",   help="取得する指標名（省略時は全FRED指標）")
     fred_p.add_argument("--overwrite", action="store_true", help="既存データを上書き")
 
-    # 手動CSV投入モード
     csv_p = sub.add_parser("csv", help="手動DLしたCSVを投入")
     csv_p.add_argument("--source",    required=True, help="入力CSVファイルパス")
     csv_p.add_argument("--indicator", required=True, help="指標名（例: 'ISM Manufacturing PMI'）")
@@ -391,7 +351,6 @@ def main():
         import_from_fred(args.from_date, args.to_date, args.overwrite, args.indicators)
     elif args.mode == "csv":
         import_from_csv(args.source, args.indicator, args.overwrite)
-
 
 if __name__ == "__main__":
     main()
