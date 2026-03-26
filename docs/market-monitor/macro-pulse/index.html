@@ -55,7 +55,7 @@
     /* ══════════════════════════════════════════
        ① 景気フェーズ判定（メイン）
     ══════════════════════════════════════════ */
-    .phase-wrap{border:1px solid var(--bdr);background:var(--sur);margin-bottom:14px;overflow:hidden;position:relative}
+    .phase-wrap{border:1px solid var(--bdr);background:var(--sur);margin-bottom:14px;overflow:visible;position:relative}
     .phase-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc) 0%,transparent 60%)}
     .phase-top{display:flex;align-items:stretch}
     /* 左：フェーズ名 */
@@ -276,7 +276,7 @@
 
   <!-- ① 景気フェーズ判定 -->
   <div class="sec">① 景気フェーズ判定</div>
-  <div class="phase-wrap" id="phaseGauge">
+  <div class="phase-wrap" id="phaseGauge" style="position:relative">
     <div class="phase-top">
       <div class="phase-verdict">
         <span class="pv-label">現在の局面</span>
@@ -302,9 +302,37 @@
         </div>
         <div id="pg-signal-text" style="font-family:var(--mono);font-size:10px;color:var(--mut);margin-top:6px"></div>
       </div>
-      <div class="phase-score">
+      <div class="phase-score" style="flex-direction:column;gap:6px">
         <span class="ps-num" id="pg-score-num">—</span>
         <span class="ps-label">RECESSION<br>RISK SCORE</span>
+        <button onclick="toggleScoreHelp()" style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--bdr);background:transparent;color:var(--mut);cursor:pointer;border-radius:2px;letter-spacing:.05em">? 見方</button>
+      </div>
+      <div id="scoreHelp" style="display:none;position:absolute;right:0;top:0;width:320px;max-height:80vh;overflow-y:auto;background:#0d1117;border:1px solid var(--bdr);border-radius:4px;padding:14px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--txt)">RECESSION RISK SCORE とは</span>
+          <button onclick="toggleScoreHelp()" style="background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:14px">✕</button>
+        </div>
+        <div style="font-family:var(--sans);font-size:11px;color:var(--mut);line-height:1.7;margin-bottom:10px">8つの経済指標を加重平均して算出する景気後退リスク指数。各指標を 0（完全拡張）〜 100（深刻後退）にスコア化し、ウェイトで合算します。</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--mut);border-top:1px solid var(--bdr);padding-top:8px;margin-bottom:6px">指標とウェイト</div>
+        <table style="width:100%;font-family:var(--mono);font-size:9px;border-collapse:collapse">
+          <tr style="color:var(--mut)"><td style="padding:2px 4px">指標</td><td style="padding:2px 4px;text-align:right">WT</td><td style="padding:2px 4px;text-align:right">先行性</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">長短金利差 (YC 10Y-2Y)</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">20%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">12ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">ISM製造業PMI</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">18%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">HYスプレッド</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">15%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">ISM非製造業PMI</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">新規失業保険申請</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">CB消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">ミシガン消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">8%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">OECD景気先行指数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">7%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">6ヶ月</td></tr>
+        </table>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--mut);border-top:1px solid var(--bdr);padding-top:8px;margin-top:8px;margin-bottom:4px">スコアの解釈</div>
+        <table style="width:100%;font-family:var(--mono);font-size:9px;border-collapse:collapse">
+          <tr><td style="padding:2px 4px"><span style="color:#10b981">0〜25</span></td><td style="padding:2px 4px;color:var(--mut)">拡張局面 — 景気後退リスク低</td></tr>
+          <tr><td style="padding:2px 4px"><span style="color:#3b82f6">25〜52</span></td><td style="padding:2px 4px;color:var(--mut)">踊り場 — 拡張と後退の境界付近</td></tr>
+          <tr><td style="padding:2px 4px"><span style="color:#f59e0b">52〜70</span></td><td style="padding:2px 4px;color:var(--mut)">後退入口 — 複数指標が悪化傾向</td></tr>
+          <tr><td style="padding:2px 4px"><span style="color:#f43f5e">70〜100</span></td><td style="padding:2px 4px;color:var(--mut)">後退局面 — 景気後退の可能性高</td></tr>
+        </table>
+        <div style="font-family:var(--sans);font-size:10px;color:var(--mut);margin-top:10px;line-height:1.6;border-top:1px solid var(--bdr);padding-top:8px">⚠ このスコアは目安です。単一の指標ではなく複数の指標を総合的に判断し、③類似度と合わせて参照することを推奨します。</div>
       </div>
     </div>
     <div class="phase-alert" id="pg-alert">
@@ -337,6 +365,7 @@
       <span class="l3-slider-label">過去に戻る:</span>
       <input type="range" class="l3-slider" id="l3Slider" min="0" max="0" value="0" oninput="onL3SliderInput(this.value)">
       <span class="l3-slider-date" id="l3SliderDate">現在</span>
+      <span id="l3SliderScore" style="font-family:var(--mono);font-size:10px;color:var(--mut);margin-left:8px"></span>
       <button class="btn" onclick="resetL3Slider()" style="font-size:9px;padding:3px 8px">現在に戻す</button>
     </div>
     <div class="l3-body">
@@ -549,6 +578,10 @@ function render() {
 // ═══════════════════════════════════════════════════════
 // REGIME BAR
 // ═══════════════════════════════════════════════════════
+function toggleScoreHelp(){
+  const p=el('scoreHelp');
+  if(p)p.style.display=p.style.display==='none'?'block':'none';
+}
 function renderRegimeBar(d) {
   const regime=(d.regime||'BALANCED').toUpperCase();
   const ff=parseFloat(d.ff_current);
@@ -936,6 +969,15 @@ function onL3SliderInput(idx){
   const isNow=idx>=L3_SNAPSHOTS.length-1;
   const dateStr=snap.date.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'});
   el('l3SliderDate').textContent=isNow?'現在':dateStr;
+  const scoreEl=el('l3SliderScore');
+  if(!isNow&&scoreEl){
+    const snapDate=new Date(snap.date);snapDate.setHours(23,59,59,0);
+    const snapScore=computeScoreAsOf(snapDate);
+    if(snapScore!==null){
+      const ph=phaseLabel(snapScore);const col=phaseColor(snapScore);
+      scoreEl.innerHTML=`→ スコア: <span style="color:${col};font-weight:700">${snapScore}</span> <span style="color:var(--mut)">(${ph})</span>`;
+    }
+  } else if(scoreEl){scoreEl.innerHTML='';}
   drawL3Chart(snap.vals, isNow);
 }
 
