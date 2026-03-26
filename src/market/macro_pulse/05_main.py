@@ -40,12 +40,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ─────────────────────────────────────────────────────────────────
-#  パス定数
-# ─────────────────────────────────────────────────────────────────
-EVENTS_PATH      = "data/05_events.csv"
-SCHEDULE_PATH    = "data/05_indicator_schedule.csv"
-FED_CONTEXT_PATH = "data/05_fed_context.csv"
+# ============================================================
+# 出力先を docs/market-monitor/macro-pulse/data/ に変更
+# ============================================================
+BASE_DATA_DIR = "docs/market-monitor/macro-pulse/data"
+os.makedirs(BASE_DATA_DIR, exist_ok=True)
+
+EVENTS_PATH      = os.path.join(BASE_DATA_DIR, "05_events.csv")
+SCHEDULE_PATH    = os.path.join(BASE_DATA_DIR, "05_indicator_schedule.csv")
+FED_CONTEXT_PATH = os.path.join(BASE_DATA_DIR, "05_fed_context.csv")
 
 # ─────────────────────────────────────────────────────────────────
 #  カラム定義
@@ -71,7 +74,7 @@ FED_CONTEXT_COLUMNS = [
 ]
 
 # ─────────────────────────────────────────────────────────────────
-#  指標マスタ（v6.0 確定12指標）
+#  指標マスタ（v6.0 確定12指標）※変更なし
 # ─────────────────────────────────────────────────────────────────
 INDICATOR_CONFIG = {
     # ── 手入力指標 ──────────────────────────────────────────────
@@ -205,7 +208,6 @@ INDICATOR_CONFIG = {
 # ─────────────────────────────────────────────────────────────────
 #  event_id 生成
 # ─────────────────────────────────────────────────────────────────
-
 def make_event_id(indicator: str, release_date) -> str:
     slug = INDICATOR_CONFIG.get(indicator, {}).get("slug", "")
     if not slug:
@@ -217,18 +219,15 @@ def make_event_id(indicator: str, release_date) -> str:
     return f"{slug}_{date_str}"
 
 # ─────────────────────────────────────────────────────────────────
-#  米国祝日・営業日計算
+#  米国祝日・営業日計算（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
     first = date(year, month, 1)
     delta = (weekday - first.weekday()) % 7
     return first + timedelta(days=delta + (n - 1) * 7)
 
-
 def us_holidays(year: int) -> set:
     import calendar
-
     def last_weekday(y, m, wd):
         last_day = calendar.monthrange(y, m)[1]
         last = date(y, m, last_day)
@@ -260,7 +259,6 @@ def us_holidays(year: int) -> set:
     holidays.add(xmas)
     return holidays
 
-
 def nth_us_business_day(year: int, month: int, n: int) -> date:
     import calendar
     holidays = us_holidays(year) | us_holidays(year - 1) | us_holidays(year + 1)
@@ -275,9 +273,7 @@ def nth_us_business_day(year: int, month: int, n: int) -> date:
         d += timedelta(days=1)
     raise ValueError(f"{year}-{month:02d} の第{n}営業日が見つかりません")
 
-
 def us_business_days_add(start: date, n: int) -> date:
-    """start から n 営業日後の日付を返す"""
     holidays = us_holidays(start.year) | us_holidays(start.year + 1)
     count = 0
     d = start + timedelta(days=1)
@@ -289,9 +285,8 @@ def us_business_days_add(start: date, n: int) -> date:
         d += timedelta(days=1)
 
 # ─────────────────────────────────────────────────────────────────
-#  ISM 発表予定日算出
+#  ISM 発表予定日算出（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def ism_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
     today = date.today()
     results = []
@@ -299,8 +294,8 @@ def ism_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
         year  = today.year + (today.month - 1 + offset) // 12
         month = (today.month - 1 + offset) % 12 + 1
         try:
-            mfg_date = nth_us_business_day(year, month, 1)   # 製造業: 第1営業日
-            svc_date = nth_us_business_day(year, month, 3)   # 非製造業: 第3営業日
+            mfg_date = nth_us_business_day(year, month, 1)
+            svc_date = nth_us_business_day(year, month, 3)
             if mfg_date >= today:
                 results.append(("ISM Manufacturing PMI", mfg_date))
             if svc_date >= today:
@@ -309,21 +304,13 @@ def ism_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
             logger.warning(f"ISM date calc error: {e}")
     return results
 
-
 def michigan_consumer_sentiment_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
-    """
-    Michigan Consumer Sentiment（ミシガン大学消費者信頼感指数）の発表予定日。
-    発表スケジュール: 毎月第2金曜日（速報値）
-    Returns: [("Michigan Consumer Sentiment", release_date), ...]
-    """
-    import calendar
     today = date.today()
     results = []
     for offset in range(months_ahead + 1):
         year  = today.year + (today.month - 1 + offset) // 12
         month = (today.month - 1 + offset) % 12 + 1
         try:
-            # 第2金曜日を算出（weekday=4が金曜）
             first_day = date(year, month, 1)
             first_friday = first_day + timedelta(days=(4 - first_day.weekday()) % 7)
             second_friday = first_friday + timedelta(weeks=1)
@@ -333,52 +320,33 @@ def michigan_consumer_sentiment_release_dates(months_ahead: int = 3) -> list[tup
             logger.warning(f"Michigan Consumer Sentiment date calc error: {e}")
     return results
 
-
 def cb_lei_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
-    """
-    OECD CLI (USALOLITONOSTSAM) の発表予定日。
-    OECD CLIは毎月第2週月曜日前後に発表（前々月分データ）。
-    FRED自動取得のため、スケジュールは概算でよい。
-    Returns: [("Conference Board LEI", release_date), ...]
-    """
     today = date.today()
     results = []
     for offset in range(months_ahead + 1):
         year  = today.year + (today.month - 1 + offset) // 12
         month = (today.month - 1 + offset) % 12 + 1
         try:
-            release_date = nth_weekday(year, month, 0, 2)  # 0=月曜, 第2週
+            release_date = nth_weekday(year, month, 0, 2)
             if release_date >= today:
                 results.append(("Conference Board LEI", release_date))
         except Exception as e:
             logger.warning(f"OECD CLI date calc error: {e}")
     return results
 
-
 def building_permit_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
-    """
-    Building Permits（住宅建築許可）の発表予定日をルールベースで算出。
-
-    発表スケジュール:
-      毎月第3週火曜日（Housing Starts と同日）
-      ※ 前月分データを当月第3週火曜に発表
-
-    Returns: [("Building Permits", release_date), ...]
-    """
     today = date.today()
     results = []
     for offset in range(months_ahead + 1):
         year  = today.year + (today.month - 1 + offset) // 12
         month = (today.month - 1 + offset) % 12 + 1
         try:
-            # 第3週火曜 = weekday=1（火曜）の第3週
             release_date = nth_weekday(year, month, 1, 3)
             if release_date >= today:
                 results.append(("Building Permits", release_date))
         except Exception as e:
             logger.warning(f"Building Permits date calc error: {e}")
     return results
-
 
 def michigan_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
     today = date.today()
@@ -398,9 +366,8 @@ def michigan_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
     return results
 
 # ─────────────────────────────────────────────────────────────────
-#  FRED Release Calendar
+#  FRED Release Calendar（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def fred_release_dates(fred_api_key: str, days_ahead: int = 90) -> dict[str, list[date]]:
     today    = date.today()
     end_date = today + timedelta(days=days_ahead)
@@ -444,22 +411,18 @@ def fred_release_dates(fred_api_key: str, days_ahead: int = 90) -> dict[str, lis
     return results
 
 # ─────────────────────────────────────────────────────────────────
-#  スケジュール CSV（v6.0 スキーマ）
+#  スケジュール CSV（v6.0 スキーマ）※パス修正のみ
 # ─────────────────────────────────────────────────────────────────
-
 def ensure_schedule_csv():
-    os.makedirs("data", exist_ok=True)
     if os.path.exists(SCHEDULE_PATH):
         return
     pd.DataFrame(columns=SCHEDULE_COLUMNS).to_csv(SCHEDULE_PATH, index=False, encoding="utf-8")
     logger.info(f"Created schedule: {SCHEDULE_PATH}")
 
-
 def load_schedule() -> pd.DataFrame:
     if not os.path.exists(SCHEDULE_PATH):
         return pd.DataFrame(columns=SCHEDULE_COLUMNS)
     df = pd.read_csv(SCHEDULE_PATH, encoding="utf-8", dtype=str).fillna("")
-    # 後方互換: 旧スキーマ（指標名/発表予定日）を新スキーマに変換
     if "指標名" in df.columns and "indicator" not in df.columns:
         df = df.rename(columns={"指標名": "indicator", "発表予定日": "release_date"})
     for col in SCHEDULE_COLUMNS:
@@ -467,14 +430,12 @@ def load_schedule() -> pd.DataFrame:
             df[col] = ""
     return df
 
-
 def update_schedule(fred_api_key: str, days_ahead: int = 90):
     ensure_schedule_csv()
     df = load_schedule()
     registered = set(zip(df["indicator"], df["release_date"]))
     new_rows = []
 
-    # FRED Release Calendar
     for ind_name, dates in fred_release_dates(fred_api_key, days_ahead).items():
         cfg = INDICATOR_CONFIG.get(ind_name, {})
         for rd in dates:
@@ -491,7 +452,6 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
                 "status":       "scheduled",
             })
 
-    # ISM 製造業・非製造業
     for ind_name, rd in ism_release_dates(months_ahead=3):
         date_str = rd.strftime("%Y-%m-%d")
         if (ind_name, date_str) in registered:
@@ -506,7 +466,6 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
             "status":       "scheduled",
         })
 
-    # Michigan
     for ind_name, rd in michigan_release_dates(months_ahead=3):
         date_str = rd.strftime("%Y-%m-%d")
         if (ind_name, date_str) in registered:
@@ -521,7 +480,6 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
             "status":       "scheduled",
         })
 
-    # Building Permits（第3週火曜ルール）
     for ind_name, rd in building_permit_release_dates(months_ahead=3):
         date_str = rd.strftime("%Y-%m-%d")
         if (ind_name, date_str) in registered:
@@ -537,7 +495,6 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
         })
         logger.info(f"[Schedule+] {ind_name}: {date_str} (第3週火曜 ルールベース算出)")
 
-    # Michigan Consumer Sentiment（毎月第2金曜ルール）
     for ind_name, rd in michigan_consumer_sentiment_release_dates(months_ahead=3):
         date_str = rd.strftime("%Y-%m-%d")
         if (ind_name, date_str) in registered:
@@ -553,7 +510,6 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
         })
         logger.info(f"[Schedule+] {ind_name}: {date_str} (第2金曜 ルールベース算出)")
 
-    # Conference Board LEI（毎月第3木曜ルール）
     for ind_name, rd in cb_lei_release_dates(months_ahead=3):
         date_str = rd.strftime("%Y-%m-%d")
         if (ind_name, date_str) in registered:
@@ -580,9 +536,8 @@ def update_schedule(fred_api_key: str, days_ahead: int = 90):
     logger.info(f"Schedule updated: +{len(new_rows)} rows")
 
 # ─────────────────────────────────────────────────────────────────
-#  Discord リマインダー
+#  Discord リマインダー（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def send_discord(message: str):
     webhook_url = os.environ.get("DISCORD_WEB_HOOK", "")
     if not webhook_url:
@@ -595,12 +550,7 @@ def send_discord(message: str):
     except Exception as e:
         logger.warning(f"Discord notification failed: {e}")
 
-
 def remind_manual_indicators(target_date: date):
-    """
-    当日発表予定の手入力指標を Discord に通知。
-    --remind フラグで実行（GitHub Actions 朝7時 JST に呼び出す）。
-    """
     schedule = load_schedule()
     date_str = target_date.strftime("%Y-%m-%d")
     today_rows = schedule[
@@ -623,11 +573,7 @@ def remind_manual_indicators(target_date: date):
     send_discord("\n".join(lines))
     logger.info(f"Reminded {len(today_rows)} manual indicators.")
 
-
 def remind_missing_actuals(target_date: date):
-    """
-    毎週日曜: 過去30日以内で actual が空の手入力指標をアラート。
-    """
     schedule = load_schedule()
     cutoff = (target_date - timedelta(days=30)).strftime("%Y-%m-%d")
     today_str = target_date.strftime("%Y-%m-%d")
@@ -650,9 +596,8 @@ def remind_missing_actuals(target_date: date):
     logger.info(f"Missing actuals alert: {len(missing)} rows")
 
 # ─────────────────────────────────────────────────────────────────
-#  FRED クライアント
+#  FRED クライアント（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def get_fred():
     try:
         from fredapi import Fred
@@ -664,7 +609,6 @@ def get_fred():
     except ImportError:
         logger.warning("fredapi not installed.")
         return None
-
 
 def fred_latest(fred, series_id: str, target_date: date, lookback: int = 60):
     try:
@@ -681,7 +625,6 @@ def fred_latest(fred, series_id: str, target_date: date, lookback: int = 60):
         logger.warning(f"FRED [{series_id}]: {e}")
         return None, None
 
-
 def get_ff_current(fred):
     if fred is None:
         return None
@@ -691,7 +634,6 @@ def get_ff_current(fred):
         return round((v_hi + v_lo) / 2, 4)
     v, _ = fred_latest(fred, "FEDFUNDS", date.today(), lookback=45)
     return round(v, 4) if v is not None else None
-
 
 def get_zq_futures(target_date: date, fred=None):
     if fred is None:
@@ -706,14 +648,9 @@ def get_zq_futures(target_date: date, fred=None):
     return "FRED:T1YFF", round(t1yff, 4), implied_rate
 
 # ─────────────────────────────────────────────────────────────────
-#  金融環境スナップショット
+#  金融環境スナップショット（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def get_financial_context(target_date: date, fred) -> dict:
-    """
-    イベント記録時点の金融環境を取得。
-    regime は fed_context.csv の最新値を使用。
-    """
     ctx = {
         "regime": "BALANCED",
         "ff_rate": None,
@@ -723,7 +660,6 @@ def get_financial_context(target_date: date, fred) -> dict:
         "cuts_implied": None,
     }
 
-    # fed_context.csv から最新 regime・cuts_implied を読み込み
     if os.path.exists(FED_CONTEXT_PATH):
         try:
             fc = pd.read_csv(FED_CONTEXT_PATH, dtype=str).fillna("")
@@ -747,7 +683,6 @@ def get_financial_context(target_date: date, fred) -> dict:
 
     return ctx
 
-
 def _safe_float(v):
     try:
         return float(v) if v not in (None, "", "nan") else None
@@ -755,9 +690,8 @@ def _safe_float(v):
         return None
 
 # ─────────────────────────────────────────────────────────────────
-#  S&P500 取得
+#  S&P500 取得（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def _stooq(symbol: str, target_date: date):
     try:
         d1 = (target_date - timedelta(days=10)).strftime("%Y%m%d")
@@ -778,9 +712,7 @@ def _stooq(symbol: str, target_date: date):
         logger.warning(f"stooq [{symbol}]: {e}")
         return None
 
-
 def get_sp500(target_date: date, fred=None):
-    """指定日のS&P500終値を返す"""
     if fred:
         v, _ = fred_latest(fred, "SP500", target_date, lookback=10)
         if v:
@@ -788,9 +720,8 @@ def get_sp500(target_date: date, fred=None):
     return _stooq("%5Espx", target_date)
 
 # ─────────────────────────────────────────────────────────────────
-#  events.csv I/O
+#  events.csv I/O（パス修正のみ）
 # ─────────────────────────────────────────────────────────────────
-
 def load_events() -> pd.DataFrame:
     if not os.path.exists(EVENTS_PATH):
         return pd.DataFrame(columns=EVENTS_COLUMNS)
@@ -804,28 +735,18 @@ def load_events() -> pd.DataFrame:
         logger.warning(f"events.csv read error: {e}")
         return pd.DataFrame(columns=EVENTS_COLUMNS)
 
-
 def save_events(df: pd.DataFrame):
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(BASE_DATA_DIR, exist_ok=True)
     df = df.drop_duplicates(subset=["event_id"], keep="last")
     df = df.sort_values(["release_date", "indicator"]).reset_index(drop=True)
     df.to_csv(EVENTS_PATH, index=False, encoding="utf-8")
     logger.info(f"events.csv saved: {EVENTS_PATH} ({len(df)} rows)")
 
 # ─────────────────────────────────────────────────────────────────
-#  期待値解決
+#  期待値解決（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def resolve_forecast(indicator: str, release_date_str: str, actual_val,
                      schedule: pd.DataFrame, events: pd.DataFrame):
-    """
-    優先順位:
-      1. schedule.csv の consensus 列
-      2. events.csv に既存の consensus
-      3. actual_as_forecast フォールバック
-    Returns: (forecast_val, forecast_source, surprise, surprise_pct)
-    """
-    # schedule から取得
     mask = (schedule["indicator"] == indicator) & (schedule["release_date"] == release_date_str)
     hits = schedule[mask]
     if not hits.empty:
@@ -840,7 +761,6 @@ def resolve_forecast(indicator: str, release_date_str: str, actual_val,
             except (ValueError, TypeError):
                 pass
 
-    # events.csv に既存 consensus
     if not events.empty:
         ev_mask = (events["indicator"] == indicator) & (events["release_date"] == release_date_str)
         ev_hits = events[ev_mask]
@@ -856,15 +776,13 @@ def resolve_forecast(indicator: str, release_date_str: str, actual_val,
                 except (ValueError, TypeError):
                     pass
 
-    # フォールバック
     if actual_val is not None:
         return actual_val, "actual_as_forecast", 0.0, 0.0
     return None, "none", None, None
 
 # ─────────────────────────────────────────────────────────────────
-#  指標フェッチ → event row 生成
+#  指標フェッチ → event row 生成（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def fetch_event_row(indicator: str, target_date: date, fred,
                     fin_ctx: dict, schedule: pd.DataFrame,
                     events: pd.DataFrame,
@@ -890,7 +808,6 @@ def fetch_event_row(indicator: str, target_date: date, fred,
 
     actual_val = override_actual
 
-    # FRED から実績値取得
     if fred and fred_id and actual_val is None:
         for attempt in range(3):
             try:
@@ -907,7 +824,6 @@ def fetch_event_row(indicator: str, target_date: date, fred,
 
     row["actual"] = _fmt(actual_val)
 
-    # 期待値・サプライズ
     fv, src, surp, surp_pct = resolve_forecast(
         indicator, row["release_date"], actual_val, schedule, events)
     row["consensus"]     = _fmt(fv)
@@ -919,35 +835,27 @@ def fetch_event_row(indicator: str, target_date: date, fred,
 
     return row
 
-
 def _fmt(v) -> str:
     if v is None or v == "" :
         return ""
     try:
         f = float(v)
-        if f != f:  # nan
+        if f != f:
             return ""
         return str(v)
     except (ValueError, TypeError):
         return str(v)
 
 # ─────────────────────────────────────────────────────────────────
-#  S&P500 変化率の後補完 (--fill-returns)
+#  S&P500 変化率の後補完 (--fill-returns) パス修正のみ
 # ─────────────────────────────────────────────────────────────────
-
 def _load_sp500_cache(fred, from_date: str, to_date: str) -> pd.Series:
-    """
-    S&P500終値を指定期間まとめて取得してキャッシュ返却。
-    FRED SP500 → 失敗時 stooq にフォールバック。
-    Returns: pd.Series（index=date, value=終値）
-    """
     logger.info(f"S&P500 一括取得中 ({from_date} 〜 {to_date})...")
     if fred:
         try:
             s = fred.get_series("SP500", observation_start=from_date, observation_end=to_date)
             if s is not None and not s.empty:
                 s = s.dropna()
-                # タイムゾーンをtz-naiveに正規化（比較エラー対策）
                 if hasattr(s.index, 'tz') and s.index.tz is not None:
                     s.index = s.index.tz_localize(None)
                 logger.info(f"S&P500 (FRED): {len(s)} obs")
@@ -955,14 +863,12 @@ def _load_sp500_cache(fred, from_date: str, to_date: str) -> pd.Series:
         except Exception as e:
             logger.warning(f"S&P500 FRED: {e} → stooq fallback")
 
-    # stooq fallback: 一括取得
     try:
         d1 = from_date.replace("-", "")
         d2 = to_date.replace("-", "")
         url = f"https://stooq.com/q/d/l/?s=%5Espx&d1={d1}&d2={d2}&i=d"
         r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
         r.raise_for_status()
-        from io import StringIO
         df = pd.read_csv(StringIO(r.text))
         df.columns = [c.strip() for c in df.columns]
         df["Date"] = pd.to_datetime(df["Date"])
@@ -973,13 +879,10 @@ def _load_sp500_cache(fred, from_date: str, to_date: str) -> pd.Series:
         logger.warning(f"S&P500 stooq: {e}")
         return pd.Series(dtype=float)
 
-
 def _lookup_sp500(cache: pd.Series, target_date: date):
-    """キャッシュから target_date 以前の最新終値を返す"""
     if cache.empty:
         return None
     td = pd.Timestamp(target_date)
-    # FREDのSP500はUTC付きDatetimeIndexの場合があるためtz-naiveに正規化
     idx = cache.index
     if hasattr(idx, 'tz') and idx.tz is not None:
         idx = idx.tz_localize(None)
@@ -989,22 +892,14 @@ def _lookup_sp500(cache: pd.Series, target_date: date):
         return None
     return round(float(s.iloc[-1]), 2)
 
-
 def fill_returns(fred=None):
-    """
-    events.csv の sp500_t0〜t20 と ret_* を一括補完。
-    S&P500を全期間まとめて1回取得してキャッシュし、行ごとのAPI呼び出しをゼロにする。
-    """
     events = load_events()
     if events.empty:
         logger.info("No events to fill.")
         return
 
     today = date.today()
-
-    # デイリー指標はsp0のみ補完するが、needから除外して期間計算を正確にする
     DAILY_INDS_SET = {'Yield Curve 10Y-2Y', 'HY Spread', 'VIX', 'Michigan Inflation 5Y'}
-    # 補完が必要な行に絞る（デイリー指標は除外）
     need = events[
         (events["release_date"] != "") &
         (~events["indicator"].isin(DAILY_INDS_SET)) &
@@ -1020,15 +915,12 @@ def fill_returns(fred=None):
         logger.info("fill-returns: nothing to update.")
         return
 
-    # 対象期間を算出（t20補完のため最大+30日余裕）
-    # min_dateは7日前倒し（元旦・週末等でS&P500休場の場合に前日終値を取得するため）
     raw_min = pd.to_datetime(need["release_date"].min()).date()
     min_date = (raw_min - timedelta(days=7)).strftime("%Y-%m-%d")
     max_rd   = pd.to_datetime(need["release_date"].max()).date()
     max_date = min(today, max_rd + timedelta(days=45)).strftime("%Y-%m-%d")
     logger.info(f"fill-returns: {len(need)} rows need update ({need['release_date'].min()} 〜 {need['release_date'].max()})")
 
-    # S&P500 を一括キャッシュ
     sp_cache = _load_sp500_cache(fred, min_date, max_date)
     if sp_cache.empty:
         logger.error("S&P500 cache empty. Cannot fill returns.")
@@ -1038,7 +930,6 @@ def fill_returns(fred=None):
     skip_no_sp0 = 0
     skip_future = 0
     skip_no_spn = 0
-    first_rows_logged = 0
     DAILY_INDS = {'Yield Curve 10Y-2Y', 'HY Spread', 'VIX', 'Michigan Inflation 5Y'}
 
     for idx, row in need.iterrows():
@@ -1048,7 +939,6 @@ def fill_returns(fred=None):
             logger.warning(f"fill-returns: release_date parse error idx={idx} val={repr(row['release_date'])}: {e}")
             continue
 
-        # t0: 発表日当日または直前の終値
         if not events.at[idx, "sp500_t0"]:
             sp0 = _lookup_sp500(sp_cache, rd)
             if sp0:
@@ -1068,11 +958,9 @@ def fill_returns(fred=None):
         except (ValueError, TypeError):
             continue
 
-        # デイリー指標はt1〜t20補完不要（コンテキスト用途のためsp0のみ）
         if row.get("indicator", "") in DAILY_INDS:
             continue
 
-        # t1/t5/t10/t20
         for n, col_sp, col_ret in [
             (1,  "sp500_t1",  "ret_t1"),
             (5,  "sp500_t5",  "ret_t5"),
@@ -1082,7 +970,7 @@ def fill_returns(fred=None):
             if events.at[idx, col_sp]:
                 continue
             target_n = us_business_days_add(rd, n)
-            if target_n > today:  # todayを含まない（当日終値は翌朝確定）
+            if target_n > today:
                 skip_future += 1
                 continue
             sp_n = _lookup_sp500(sp_cache, target_n)
@@ -1103,9 +991,8 @@ def fill_returns(fred=None):
         logger.info("fill-returns: nothing to update.")
 
 # ─────────────────────────────────────────────────────────────────
-#  --recalc（サプライズ再計算）
+#  --recalc（サプライズ再計算）（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def recalc(events: pd.DataFrame) -> pd.DataFrame:
     updated = 0
     for idx, row in events.iterrows():
@@ -1137,9 +1024,8 @@ def recalc(events: pd.DataFrame) -> pd.DataFrame:
     return events
 
 # ─────────────────────────────────────────────────────────────────
-#  fed_context.csv 更新（v5から継承）
+#  fed_context.csv 更新（v5から継承）パス修正のみ
 # ─────────────────────────────────────────────────────────────────
-
 def fetch_latest_fomc_statement():
     cal_url = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
     found_url = None
@@ -1198,7 +1084,6 @@ def fetch_latest_fomc_statement():
         logger.warning(f"FOMC statement body: {e}")
         return None, None
 
-
 def _fallback_regime(ff_current, zq_rate, cuts_implied):
     if cuts_implied is None:
         return {"regime":"BALANCED","dominant_concern":"BALANCED","dominant_label":"両睨み","ai_reason":"データ取得失敗のためルールベース判定。"}
@@ -1208,7 +1093,6 @@ def _fallback_regime(ff_current, zq_rate, cuts_implied):
         return {"regime":"TIGHTENING","dominant_concern":"INFLATION_FOCUS","dominant_label":"インフレ警戒","ai_reason":f"ZQ先物が{abs(cuts_implied):.1f}回の利上げを織り込み。TIGHTENING局面と判定（AI分析なし）。"}
     else:
         return {"regime":"BALANCED","dominant_concern":"BALANCED","dominant_label":"両睨み","ai_reason":f"ZQ先物の織り込みが{cuts_implied:+.1f}回でBALANCED局面と判定（AI分析なし）。"}
-
 
 def analyze_fomc_with_gemini(fomc_date, stmt_text, ff_current, zq_rate, cuts_implied):
     api_key = os.environ.get("GEMINI_API_KEY", "")
@@ -1247,7 +1131,6 @@ Respond ONLY in this exact JSON format (no markdown, no extra text):
     except Exception as e:
         logger.warning(f"Gemini API error: {e}")
     return _fallback_regime(ff_current, zq_rate, cuts_implied)
-
 
 def update_fed_context(target_date: date, fred):
     logger.info("=== Updating Fed Context ===")
@@ -1303,14 +1186,13 @@ def update_fed_context(target_date: date, fred):
         }
         ctx_df = pd.concat([ctx_df, pd.DataFrame([new_row])], ignore_index=True)
 
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(BASE_DATA_DIR, exist_ok=True)
     ctx_df.to_csv(FED_CONTEXT_PATH, index=False, encoding="utf-8")
     logger.info(f"Fed context saved: {FED_CONTEXT_PATH}")
 
 # ─────────────────────────────────────────────────────────────────
-#  メインオーケストレーター
+#  メインオーケストレーター（変更なし）
 # ─────────────────────────────────────────────────────────────────
-
 def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         do_update_schedule: bool = False, do_remind: bool = False,
         do_fill_returns: bool = False):
@@ -1323,12 +1205,10 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
     schedule = load_schedule()
     events   = load_events()
 
-    # ── Discord リマインダーモード ──────────────────────────────
     if do_remind:
         remind_manual_indicators(target_date)
         return
 
-    # ── スケジュール更新モード ──────────────────────────────────
     if do_update_schedule:
         logger.info("=== UPDATE SCHEDULE MODE ===")
         fred_api_key = os.environ.get("FRED_API_KEY", "")
@@ -1341,20 +1221,17 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         logger.info("=== Schedule + Fed Context update complete ===")
         return
 
-    # ── 再計算モード ────────────────────────────────────────────
     if do_recalc:
         logger.info("=== RECALC MODE ===")
         updated = recalc(events)
         save_events(updated)
         return
 
-    # ── 変化率補完モード ────────────────────────────────────────
     if do_fill_returns:
         logger.info("=== FILL RETURNS MODE ===")
         fill_returns(fred)
         return
 
-    # ── 通常実行：当日発表指標を処理 ───────────────────────────
     fin_ctx  = get_financial_context(target_date, fred)
     sp500_t0 = get_sp500(target_date, fred)
     logger.info(f"Financial context: {fin_ctx}")
@@ -1366,11 +1243,10 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
 
     new_rows = []
 
-    # スケジュール済み指標
     for sched in scheduled:
         ind = sched["indicator"]
         if INDICATOR_CONFIG.get(ind, {}).get("daily"):
-            continue  # デイリー指標はまとめて後で記録
+            continue
 
         override = None
         raw = str(sched.get("actual", "")).strip()
@@ -1388,7 +1264,6 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         except Exception as e:
             logger.error(f"[{ind}]: {e}\n{traceback.format_exc()}")
 
-    # デイリー指標（YC / HY / VIX）
     for ind_name in ["Yield Curve 10Y-2Y", "HY Spread", "VIX"]:
         try:
             row = fetch_event_row(ind_name, target_date, fred, fin_ctx, schedule, events)
@@ -1411,7 +1286,6 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
 # ─────────────────────────────────────────────────────────────────
 #  Entry Point
 # ─────────────────────────────────────────────────────────────────
-
 def main():
     p = argparse.ArgumentParser(description="MACRO PULSE v6.0")
     p.add_argument("--test",            action="store_true")
@@ -1429,7 +1303,6 @@ def main():
         do_update_schedule=args.update_schedule,
         do_remind=args.remind,
         do_fill_returns=args.fill_returns)
-
 
 if __name__ == "__main__":
     main()
