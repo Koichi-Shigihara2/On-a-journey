@@ -45,6 +45,17 @@ def load_adjustment_items() -> List[Dict[str, Any]]:
     _items_config_cache = items
     return items
 
+# ★ SBC 関連タグを取得する関数（YTD変換用）
+def get_sbc_xbrl_tags() -> List[str]:
+    """
+    adjustment_items.json から SBC（株式報酬費用）項目の xbrl_tags を返す
+    """
+    items = load_adjustment_items()
+    sbc_tags = set()
+    for item in items:
+        if item.get('item_id') == 'sbc':
+            sbc_tags.update(item.get('xbrl_tags', []))
+    return list(sbc_tags)
 
 # sectors.yaml の item_id → adjustment_items.json の item_name へのマッピング
 SECTOR_ITEM_ID_TO_NAME = {
@@ -149,3 +160,7 @@ if __name__ == "__main__":
     print("Detected adjustments:")
     for adj in adjustments:
         print(f"  {adj['item_name']}: {adj['amount']} {adj['unit']} (reason: {adj['reason']})")
+    
+    # SBC タグ取得のテスト
+    sbc_tags = get_sbc_xbrl_tags()
+    print(f"\nSBC XBRL tags: {sbc_tags}")

@@ -57,8 +57,9 @@ def load_prompt() -> str:
 
 # XAI API用の設定
 XAI_API_KEY = os.environ.get("XAI_API_KEY")
+# ★ モデル名を環境変数から取得可能に（デフォルトは現行値）
+XAI_MODEL = os.environ.get("XAI_MODEL", "grok-4.20-0309-reasoning")
 XAI_API_URL = "https://api.x.ai/v1/chat/completions"
-XAI_MODEL = "grok-4.20-0309-reasoning"
 
 def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustments: List[Dict[str, Any]]) -> str:
     if not adjustments:

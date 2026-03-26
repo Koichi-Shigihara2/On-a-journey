@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 
 from .extract_key_facts import extract_quarterly_facts, normalize_value
-from .adjustment_detector import detect_adjustments
+from .adjustment_detector import detect_adjustments, get_sbc_xbrl_tags
 from .tax_adjuster import apply_tax_adjustments
 from .eps_calculator import calculate_eps
 from .ai_analyzer import analyze_adjustments
@@ -163,6 +163,20 @@ def run(ticker_filter: str = None):
     all_tickers_data = {}
     DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
 
+    # ★ YTD 変換用の基本タグ（固定）
+    BASE_SBC_YTD_TAGS = [
+        'us-gaap:ShareBasedCompensation',
+        'us-gaap:AllocatedShareBasedCompensationExpense',
+        'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
+        'us-gaap:StockBasedCompensation',
+        'us-gaap:ShareBasedCompensationExpense',
+        'us-gaap:RestrictedStockExpense',
+    ]
+    # adjustment_items.json から SBC 関連タグを動的に取得しマージ
+    dynamic_sbc_tags = get_sbc_xbrl_tags()
+    SBC_YTD_TAGS = list(set(BASE_SBC_YTD_TAGS + dynamic_sbc_tags))
+    print(f"  [pipeline] SBC YTD tags: {SBC_YTD_TAGS}")
+
     for ticker in tickers:
         print(f"\n=== Processing {ticker} ===")
         
@@ -194,13 +208,7 @@ def run(ticker_filter: str = None):
         sector_exclusions = classifier.get_exclusions_for_sector(sector) if sector else []
         exclusion_item_ids = [ex['item_id'] for ex in sector_exclusions]
         
-        # YTD累計SBCタグを四半期差分に変換
-        SBC_YTD_TAGS = [
-            'us-gaap:ShareBasedCompensation',
-            'us-gaap:AllocatedShareBasedCompensationExpense',
-            'us-gaap:EmployeeBenefitsAndShareBasedCompensation',
-            'us-gaap:StockBasedCompensation',
-        ]
+        # YTD累計SBCタグを四半期差分に変換（動的タグリスト使用）
         raw_sorted = sorted(quarterly_raw, key=lambda x: x['filing_date'])
         for sbc_tag in SBC_YTD_TAGS:
             ytd_key = f'_ytd_{sbc_tag}'
