@@ -266,9 +266,7 @@
     <div class="tick"><span class="tl">10Y-2Y SPREAD</span><span class="tv" id="tk-yc">—</span><span class="ts2" id="tk-yc-i">—</span></div>
     <div class="tsep"></div>
     <div class="tick"><span class="tl">HY SPREAD</span><span class="tv" id="tk-hy">—</span><span class="ts2 neu">credit risk</span></div>
-    <div class="tsep"></div>
-    <div class="tick"><span class="tl">VIX</span><span class="tv" id="tk-vx">—</span><span class="ts2 neu">fear index</span></div>
-    <div class="tsep"></div>
+    <div class="tsep"></div>    <div class="tsep"></div>
     <div class="tick"><span class="tl">LAST UPDATE</span><span class="tv" style="font-size:13px" id="tk-last">—</span><span class="ts2 neu" id="tk-src">—</span></div>
   </div>
 
@@ -322,13 +320,13 @@
         <table style="width:100%;font-family:var(--mono);font-size:9px;border-collapse:collapse">
           <tr style="color:var(--mut)"><td style="padding:2px 4px">指標</td><td style="padding:2px 4px;text-align:right">WT</td><td style="padding:2px 4px;text-align:right">先行性</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">長短金利差 (YC 10Y-2Y)</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">20%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">12ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">ISM製造業PMI</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">18%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">フィラデルフィア連銀製造業</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">18%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">HYスプレッド</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">15%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">ISM非製造業PMI</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">シカゴ連銀全米活動指数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">新規失業保険申請</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">CB消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">ミシガン消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">8%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">OECD景気先行指数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">7%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">6ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">サームルール不況指標</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">7%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
         </table>
         <div style="font-family:var(--mono);font-size:9px;color:var(--mut);border-top:1px solid var(--bdr);padding-top:8px;margin-top:8px;margin-bottom:4px">スコアの解釈</div>
         <table style="width:100%;font-family:var(--mono);font-size:9px;border-collapse:collapse">
@@ -433,16 +431,14 @@ const COL = {
   regime:      'regime',
   ff_rate:     'ff_rate',
   yc:          'yc_10y2y',
-  hy:          'hy_spread',
-  vix:         'vix',
-  sp0:         'sp500_t0',
+  hy:          'hy_spread',  sp0:         'sp500_t0',
   sp1:         'sp500_t1',
   ret1:        'ret_t1',
   src:         'forecast_source',
   dsrc:        'data_source',
 };
 
-const DAILY_INDICATORS = new Set(['Yield Curve 10Y-2Y','HY Spread','VIX','Michigan Inflation 5Y']);
+const DAILY_INDICATORS = new Set(['Yield Curve 10Y-2Y','HY Spread','Michigan Inflation 5Y']);
 
 let DATA = [];
 let RAW  = [];
@@ -672,7 +668,7 @@ function renderPhaseGauge() {
   const claims=latestActual('Initial Claims 4W MA');
   const cbcc  =latestActual('Michigan Consumer Sentiment');
   const cbcc2 =latestActual('CB Consumer Confidence');
-  const lei   =latestActual('Conference Board LEI');
+  const sahm   =latestActual('Sahm Rule Recession Indicator');
 
   const signals=[];
 
@@ -717,13 +713,13 @@ function renderPhaseGauge() {
     if(cbcc<60){cbScore=82;cbSignal='bear';}else if(cbcc<75){cbScore=72;cbSignal='bear';}
     else if(cbcc<90){cbScore=60;cbSignal='caution';}else{cbScore=30;cbSignal='neutral';}}
   signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。',thresh:'BULL≥90 / BEAR≤65'});
+  let sahmScore=50,sahmSignal='neutral',sahmLabel='—';
+  if(sahm!==null){sahmLabel=sahm.toFixed(2);
+    sahmScore=sahm>=0.5?88:sahm>=0.3?50:12;
+    sahmSignal=sahmScore>75?'bear':sahmScore>40?'caution':'neutral';}
 
-  let leiScore=50,leiSignal='neutral',leiLabel='—';
-  if(lei!==null){leiLabel=lei.toFixed(2);const t=trend3('Conference Board LEI');
-    leiScore=lei<99?(t<0?85:70):lei<100?45:18;
-    leiSignal=leiScore>75?'bear':leiScore>55?'caution':'neutral';}
-  signals.push({name:'OECD CLI',val:leiLabel,score:leiScore,signal:leiSignal,weight:7,lead:'先行6ヶ月',desc:'OECD景気先行指数（米国）。100が中立、100超が拡張局面、100未満が縮小局面を示す。',thresh:'BULL≥100.5 / BEAR≤99.2'});
 
+signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,weight:7,lead:'先行1ヶ月',desc:'サームルール不況指標。失業率の3ヶ月移動平均が過去12ヶ月の最低値より0.5pp以上上昇で不況シグナル。',thresh:'BULL<0.3 / BEAR≥0.5'});
   const totalW=signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.weight:0),0);
   const rawScore=totalW>0?signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW:50;
   const score=Math.round(rawScore);
@@ -805,7 +801,7 @@ function renderL2() {
     // 📈 景気活動
     {label:'Philly Fed Mfg',labelJa:'フィラデルフィア連銀製造業',key:'Philadelphia Fed Manufacturing',mid:0,bull:5,bear:-5,dir:'right',fmt:v=>v.toFixed(1),rMin:-30,rMax:30},
     {label:'CFNAI MA3',labelJa:'シカゴ連銀全米活動指数',key:'Chicago Fed National Activity',mid:-0.2,bull:0,bear:-0.7,dir:'right',fmt:v=>v.toFixed(2),rMin:-3,rMax:1},
-    {label:'OECD CLI',labelJa:'OECD景気先行指数',key:'Conference Board LEI',mid:100,bull:100.5,bear:99.2,dir:'right',fmt:v=>v.toFixed(2),rMin:98.0,rMax:101.5},
+    {label:'Sahm Rule',labelJa:'サームルール不況指標',key:'Sahm Rule Recession Indicator',mid:0.3,bull:0.3,bear:0.5,dir:'left',fmt:v=>v.toFixed(2),rMin:0,rMax:1.5},
     // 👷 雇用
     {label:'Initial Claims 4WMA',labelJa:'新規失業保険申請4週MA',key:'Initial Claims 4W MA',mid:230000,bull:215000,bear:245000,dir:'left',fmt:v=>(v/1000).toFixed(1)+'K',rMin:180000,rMax:400000},
     // 🛍️ 消費・信頼感
@@ -904,7 +900,7 @@ const L3_INDICATORS=[
   {label:'YC 10Y-2Y',     key:'Yield Curve 10Y-2Y',              min:-1.0,  max:1.5},
   {label:'Philly Fed',    key:'Philadelphia Fed Manufacturing',  min:-30,   max:30},
   {label:'CFNAI',         key:'Chicago Fed National Activity',   min:-3,    max:1},
-  {label:'OECD CLI',      key:'Conference Board LEI',            min:98.5,  max:101.0},
+  {label:'Sahm Rule',      key:'Sahm Rule Recession Indicator',  min:0,     max:1.5},
   {label:'CB Confidence', key:'CB Consumer Confidence',          min:50,    max:140},
   {label:'Michigan',      key:'Michigan Consumer Sentiment',     min:50,    max:110},
   {label:'Initial Clms',  key:'Initial Claims 4W MA',            min:350000,max:180000},
@@ -961,7 +957,7 @@ function buildL3Snapshots(){
 
   // 月次指標の発表日を追加
   const monthlyInds = ['Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Michigan Consumer Sentiment','Conference Board LEI','Initial Claims 4W MA'];
+    'Michigan Consumer Sentiment','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
   DATA.forEach(r=>{
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
     if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator].trim())){
@@ -969,7 +965,7 @@ function buildL3Snapshots(){
     }
   });
 
-  // デイリー指標（YC/HY/VIX）は週次でサンプリング（変化が多いので間引く）
+  // デイリー指標（YC/HY）は週次でサンプリング（変化が多いので間引く）
   for(let d=new Date(start); d<=today; d.setDate(d.getDate()+7)){
     changeDates.add(new Date(d).toISOString().slice(0,10));
   }
@@ -1173,9 +1169,9 @@ function setScoreRange(years) {
 function buildScoreTimeSeries(startDate, endDate) {
   // 全データの発表日を収集し週次でサンプリング
   const changeDates = new Set();
-  const allInds = ['Yield Curve 10Y-2Y','HY Spread','VIX',
+  const allInds = ['Yield Curve 10Y-2Y','HY Spread',
     'Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Initial Claims 4W MA','Michigan Consumer Sentiment','Conference Board LEI'];
+    'Initial Claims 4W MA','Michigan Consumer Sentiment','Sahm Rule Recession Indicator'];
 
   console.log('[buildScoreTimeSeries] startDate:', startDate, 'endDate:', endDate);
   console.log('[buildScoreTimeSeries] DATA.length:', DATA.length);
@@ -1466,7 +1462,7 @@ function renderRecentSignals() {
 function renderSchedule(rows) {
   const today=new Date(); today.setHours(0,0,0,0);
   const cutFut=new Date(today); cutFut.setDate(cutFut.getDate()+14);
-  const SCHED_EXCLUDE=new Set(['Yield Curve 10Y-2Y','HY Spread','VIX','Michigan Inflation 5Y']);
+  const SCHED_EXCLUDE=new Set(['Yield Curve 10Y-2Y','HY Spread','Michigan Inflation 5Y']);
 
   const visible=rows.filter(r=>{
     const dateStr=r['release_date']||r['発表予定日'];
@@ -1547,13 +1543,11 @@ function computeScoreAsOf(asOf) {
   const la = ind => latestActualAsOf(ind, asOf);
 
   const yc     = la('Yield Curve 10Y-2Y');
-  const hy     = la('HY Spread');
-  const vix    = la('VIX');
-  const philly = la('Philadelphia Fed Manufacturing');
+  const hy     = la('HY Spread');  const philly = la('Philadelphia Fed Manufacturing');
   const cfnai  = la('Chicago Fed National Activity');
   const claims = la('Initial Claims 4W MA');
   const cbcc   = la('Michigan Consumer Sentiment');
-  const lei    = la('Conference Board LEI');
+  const sahm    = la('Sahm Rule Recession Indicator');
 
   function calcSignal(ind, val) {
     if(val === null) return {score:50, w:0};
@@ -1561,10 +1555,7 @@ function computeScoreAsOf(asOf) {
       case 'yc':
         return {score: val<-0.5?90:val<0?70:val<0.5?40:15, w:20};
       case 'hy':
-        return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};
-      case 'vix':
-        return {score: val>35?90:val>25?70:val>18?40:15, w:10};
-      case 'philly':
+        return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};      case 'philly':
         return {score: val<-10?88:val<0?65:val<5?35:12, w:18};
       case 'cfnai':
         return {score: val<-0.7?82:val<-0.35?50:18, w:12};
@@ -1572,21 +1563,19 @@ function computeScoreAsOf(asOf) {
         return {score: val>300000?85:val>250000?60:val>215000?35:15, w:10};
       case 'cbcc':
         return {score: val<60?82:val<75?72:val<90?60:30, w:8};
-      case 'lei':
-        return {score: val<99?85:val<100?45:18, w:7};
+      case 'sahm':
+        return {score: val>=0.5?88:val>=0.3?50:12, w:7};
     }
     return {score:50, w:0};
   }
 
   const sigs = [
     calcSignal('yc',     yc),
-    calcSignal('hy',     hy),
-    calcSignal('vix',    vix),
-    calcSignal('philly', philly),
+    calcSignal('hy',     hy),    calcSignal('philly', philly),
     calcSignal('cfnai',  cfnai),
     calcSignal('claims', claims),
     calcSignal('cbcc',   cbcc),
-    calcSignal('lei',    lei),
+    calcSignal('sahm',    sahm),
   ];
 
   const totalW = sigs.reduce((s,sg)=>s+sg.w, 0);
