@@ -668,8 +668,8 @@ function renderPhaseGauge() {
 
   const yc    =latestActual('Yield Curve 10Y-2Y');
   const hy    =latestActual('HY Spread');
-  const ism   =latestActual('ISM Manufacturing PMI');
-  const ismNm =latestActual('ISM Non-Manufacturing PMI');
+  const philly =latestActual('Philadelphia Fed Manufacturing');
+  const cfnai  =latestActual('Chicago Fed National Activity');
   const claims=latestActual('Initial Claims 4W MA');
   const cbcc  =latestActual('Michigan Consumer Sentiment');
   const cbcc2 =latestActual('CB Consumer Confidence');
@@ -695,17 +695,17 @@ function renderPhaseGauge() {
     else if(cbcc2>=90){cbcc2Score=60;cbcc2Signal='caution';}else{cbcc2Score=85;cbcc2Signal='bear';}}
   signals.push({name:'CB Confidence',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行2ヶ月',desc:'コンファレンスボード消費者信頼感指数。消費者の景気見通しを反映。100が基準値。',thresh:'BULL≥110 / BEAR≤90'});
 
-  let ismScore=50,ismSignal='neutral',ismLabel='—';
-  if(ism!==null){ismLabel=ism.toFixed(1);const t=trend3('ISM Manufacturing PMI');
-    if(ism<45){ismScore=88;ismSignal='bear';}else if(ism<50){ismScore=65+(t<0?10:0);ismSignal=t<0?'bear':'caution';}
-    else if(ism<53){ismScore=35;ismSignal='neutral';}else{ismScore=12;ismSignal='bull';}}
-  signals.push({name:'ISM Mfg PMI',val:ismLabel,score:ismScore,signal:ismSignal,weight:18,lead:'先行3ヶ月',desc:'ISM製造業景況感指数。50超が拡張、50未満が縮小を示す。製造業の先行指標として最重要。',thresh:'BULL≥52 / BEAR≤48'});
+  let phillyScore=50,phillySignal='neutral',phillyLabel='—';
+  if(philly!==null){phillyLabel=philly.toFixed(1);const t=trend3('Philadelphia Fed Manufacturing');
+    if(philly<-10){phillyScore=88;phillySignal='bear';}else if(philly<0){phillyScore=65+(t<0?10:0);phillySignal=t<0?'bear':'caution';}
+    else if(philly<5){phillyScore=35;phillySignal='neutral';}else{phillyScore=12;phillySignal='bull';}}
+  signals.push({name:'Philly Fed Mfg',val:phillyLabel,score:phillyScore,signal:phillySignal,weight:18,lead:'先行3ヶ月',desc:'フィラデルフィア連銀製造業景況指数。0超が拡張、0未満が縮小を示す。製造業の先行指標。',thresh:'BULL≥+5 / BEAR≤0'});
 
-  let ismNmScore=50,ismNmSignal='neutral',ismNmLabel='—';
-  if(ismNm!==null){ismNmLabel=ismNm.toFixed(1);
-    if(ismNm<48){ismNmScore=82;ismNmSignal='bear';}else if(ismNm<52){ismNmScore=50;ismNmSignal='neutral';}
-    else{ismNmScore=18;ismNmSignal='bull';}}
-  signals.push({name:'ISM Non-Mfg',val:ismNmLabel,score:ismNmScore,signal:ismNmSignal,weight:12,lead:'先行1ヶ月',desc:'ISM非製造業（サービス業）景況感指数。GDPの約80%を占めるサービス業の健全性を示す。',thresh:'BULL≥52 / BEAR≤48'});
+  let cfnaiScore=50,cfnaiSignal='neutral',cfnaiLabel='—';
+  if(cfnai!==null){cfnaiLabel=cfnai.toFixed(2);
+    if(cfnai<-0.7){cfnaiScore=82;cfnaiSignal='bear';}else if(cfnai<-0.35){cfnaiScore=50;cfnaiSignal='neutral';}
+    else{cfnaiScore=18;cfnaiSignal='bull';}}
+  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥0 / BEAR≤-0.35'});
 
   let clScore=50,clSignal='neutral',clLabel='—';
   if(claims!==null){clLabel=(claims/1000).toFixed(0)+'K';const t=trend3('Initial Claims 4W MA');
@@ -804,8 +804,8 @@ function renderL2() {
     {label:'YC 10Y-2Y',labelJa:'長短金利差',key:'Yield Curve 10Y-2Y',mid:0,bull:0.5,bear:-0.2,dir:'right',fmt:v=>(v>=0?'+':'')+v.toFixed(2)+'%',rMin:-1.5,rMax:2.0},
     {label:'HY Spread',labelJa:'ハイイールドスプレッド',key:'HY Spread',mid:5.0,bull:4.0,bear:6.5,dir:'left',fmt:v=>v.toFixed(2)+'%',rMin:2.0,rMax:12.0},
     // 📈 景気活動
-    {label:'ISM Manufacturing',labelJa:'ISM製造業PMI',key:'ISM Manufacturing PMI',mid:50,bull:52,bear:48,dir:'right',fmt:v=>v.toFixed(1),rMin:44,rMax:62},
-    {label:'ISM Non-Mfg',labelJa:'ISM非製造業PMI',key:'ISM Non-Manufacturing PMI',mid:50,bull:52,bear:48,dir:'right',fmt:v=>v.toFixed(1),rMin:44,rMax:62},
+    {label:'Philly Fed Mfg',labelJa:'フィラデルフィア連銀製造業',key:'Philadelphia Fed Manufacturing',mid:0,bull:5,bear:-5,dir:'right',fmt:v=>v.toFixed(1),rMin:-30,rMax:30},
+    {label:'CFNAI MA3',labelJa:'シカゴ連銀全米活動指数',key:'Chicago Fed National Activity',mid:-0.2,bull:0,bear:-0.7,dir:'right',fmt:v=>v.toFixed(2),rMin:-3,rMax:1},
     {label:'OECD CLI',labelJa:'OECD景気先行指数',key:'Conference Board LEI',mid:100,bull:100.5,bear:99.2,dir:'right',fmt:v=>v.toFixed(2),rMin:98.0,rMax:101.5},
     // 👷 雇用
     {label:'Initial Claims 4WMA',labelJa:'新規失業保険申請4週MA',key:'Initial Claims 4W MA',mid:230000,bull:215000,bear:245000,dir:'left',fmt:v=>(v/1000).toFixed(1)+'K',rMin:180000,rMax:400000},
@@ -902,14 +902,14 @@ const L3_COLORS = {
 let L3_NOW_VALS = null; // 現在値を固定保存
 
 const L3_INDICATORS=[
-  {label:'YC 10Y-2Y',     key:'Yield Curve 10Y-2Y',          min:-1.0,  max:1.5},
-  {label:'ISM Mfg',       key:'ISM Manufacturing PMI',        min:44,    max:56},
-  {label:'ISM Non-Mfg',   key:'ISM Non-Manufacturing PMI',    min:44,    max:56},
-  {label:'OECD CLI',      key:'Conference Board LEI',         min:98.5,  max:101.0},
-  {label:'CB Confidence', key:'CB Consumer Confidence', min:50,    max:140},
-  {label:'Michigan',      key:'Michigan Consumer Sentiment',  min:50,    max:110},
-  {label:'Initial Clms',  key:'Initial Claims 4W MA',         min:350000,max:180000},
-  {label:'HY Spread',     key:'HY Spread',                    min:10,    max:2.5},
+  {label:'YC 10Y-2Y',     key:'Yield Curve 10Y-2Y',              min:-1.0,  max:1.5},
+  {label:'Philly Fed',    key:'Philadelphia Fed Manufacturing',  min:-30,   max:30},
+  {label:'CFNAI',         key:'Chicago Fed National Activity',   min:-3,    max:1},
+  {label:'OECD CLI',      key:'Conference Board LEI',            min:98.5,  max:101.0},
+  {label:'CB Confidence', key:'CB Consumer Confidence',          min:50,    max:140},
+  {label:'Michigan',      key:'Michigan Consumer Sentiment',     min:50,    max:110},
+  {label:'Initial Clms',  key:'Initial Claims 4W MA',            min:350000,max:180000},
+  {label:'HY Spread',     key:'HY Spread',                       min:10,    max:2.5},
 ];
 
 // 参照日はCSVから動的取得。ハードコード廃止。
@@ -961,7 +961,7 @@ function buildL3Snapshots(){
   const changeDates = new Set();
 
   // 月次指標の発表日を追加
-  const monthlyInds = ['ISM Manufacturing PMI','ISM Non-Manufacturing PMI',
+  const monthlyInds = ['Philadelphia Fed Manufacturing','Chicago Fed National Activity',
     'Michigan Consumer Sentiment','Conference Board LEI','Initial Claims 4W MA'];
   DATA.forEach(r=>{
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
@@ -1170,8 +1170,11 @@ function buildScoreTimeSeries(startDate, endDate) {
   // 全データの発表日を収集し週次でサンプリング
   const changeDates = new Set();
   const allInds = ['Yield Curve 10Y-2Y','HY Spread','VIX',
-    'ISM Manufacturing PMI','ISM Non-Manufacturing PMI',
+    'Philadelphia Fed Manufacturing','Chicago Fed National Activity',
     'Initial Claims 4W MA','Michigan Consumer Sentiment','Conference Board LEI'];
+
+  console.log('[buildScoreTimeSeries] startDate:', startDate, 'endDate:', endDate);
+  console.log('[buildScoreTimeSeries] DATA.length:', DATA.length);
 
   DATA.forEach(r => {
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
@@ -1179,21 +1182,31 @@ function buildScoreTimeSeries(startDate, endDate) {
       changeDates.add(d.toISOString().slice(0,10));
     }
   });
+  console.log('[buildScoreTimeSeries] changeDates from DATA:', changeDates.size);
+
   // 週次サンプリング補完
   for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+7)) {
     changeDates.add(new Date(d).toISOString().slice(0,10));
   }
   changeDates.add(endDate.toISOString().slice(0,10));
+  
+  console.log('[buildScoreTimeSeries] total changeDates:', changeDates.size);
 
-  return [...changeDates].sort().map(ds => {
+  const result = [...changeDates].sort().map(ds => {
     const d = new Date(ds); d.setHours(23,59,59,0);
     const score = computeScoreAsOf(d);
     return [ds, score];
   }).filter(p => p[1] !== null);
+  
+  console.log('[buildScoreTimeSeries] result length:', result.length);
+  console.log('[buildScoreTimeSeries] first:', result[0], 'last:', result[result.length-1]);
+  
+  return result;
 }
 
 function renderScoreHistory() {
   const chartEl = el('scoreHistoryChart');
+  console.log('[renderScoreHistory] chartEl:', chartEl, 'DATA.length:', DATA.length);
   if(!chartEl || !DATA.length) return;
 
   const today = new Date(); today.setHours(23,59,59,0);
@@ -1203,13 +1216,16 @@ function renderScoreHistory() {
     const allDates = DATA.map(r => new Date(r[COL.date])).filter(d => !isNaN(d));
     startDate = allDates.length ? new Date(Math.min(...allDates)) : new Date(today);
     startDate.setHours(0,0,0,0);
+    console.log('[renderScoreHistory] mode: 全期間, startDate:', startDate);
   } else {
     startDate = new Date(today);
     startDate.setFullYear(startDate.getFullYear() - SCORE_RANGE_YEARS);
     startDate.setHours(0,0,0,0);
+    console.log('[renderScoreHistory] mode:', SCORE_RANGE_YEARS + '年, startDate:', startDate);
   }
 
   const series = buildScoreTimeSeries(startDate, today);
+  console.log('[renderScoreHistory] series.length:', series.length);
 
   // NBER後退期をmarkAreaに変換（通常 vs 外生で色分け）
   const markAreasNormal = NBER_RECESSIONS
@@ -1529,8 +1545,8 @@ function computeScoreAsOf(asOf) {
   const yc     = la('Yield Curve 10Y-2Y');
   const hy     = la('HY Spread');
   const vix    = la('VIX');
-  const ism    = la('ISM Manufacturing PMI');
-  const ismNm  = la('ISM Non-Manufacturing PMI');
+  const philly = la('Philadelphia Fed Manufacturing');
+  const cfnai  = la('Chicago Fed National Activity');
   const claims = la('Initial Claims 4W MA');
   const cbcc   = la('Michigan Consumer Sentiment');
   const lei    = la('Conference Board LEI');
@@ -1544,10 +1560,10 @@ function computeScoreAsOf(asOf) {
         return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};
       case 'vix':
         return {score: val>35?90:val>25?70:val>18?40:15, w:10};
-      case 'ism':
-        return {score: val<45?88:val<50?65:val<53?35:12, w:18};
-      case 'ismNm':
-        return {score: val<48?82:val<52?50:18, w:12};
+      case 'philly':
+        return {score: val<-10?88:val<0?65:val<5?35:12, w:18};
+      case 'cfnai':
+        return {score: val<-0.7?82:val<-0.35?50:18, w:12};
       case 'claims':
         return {score: val>300000?85:val>250000?60:val>215000?35:15, w:10};
       case 'cbcc':
@@ -1559,14 +1575,14 @@ function computeScoreAsOf(asOf) {
   }
 
   const sigs = [
-    calcSignal('yc',    yc),
-    calcSignal('hy',    hy),
-    calcSignal('vix',   vix),
-    calcSignal('ism',   ism),
-    calcSignal('ismNm', ismNm),
-    calcSignal('claims',claims),
-    calcSignal('cbcc',  cbcc),
-    calcSignal('lei',   lei),
+    calcSignal('yc',     yc),
+    calcSignal('hy',     hy),
+    calcSignal('vix',    vix),
+    calcSignal('philly', philly),
+    calcSignal('cfnai',  cfnai),
+    calcSignal('claims', claims),
+    calcSignal('cbcc',   cbcc),
+    calcSignal('lei',    lei),
   ];
 
   const totalW = sigs.reduce((s,sg)=>s+sg.w, 0);
@@ -1653,8 +1669,8 @@ function checkManualInputAlerts() {
   if(!DATA.length) return;
 
   const MANUAL_INDICATORS = [
-    {name:'ISM Manufacturing PMI',     freq:'月次（毎月第1営業日）'},
-    {name:'ISM Non-Manufacturing PMI', freq:'月次（毎月第1週金曜）'},
+    {name:'Philadelphia Fed Manufacturing',     freq:'月次（毎月第1営業日）'},
+    {name:'Chicago Fed National Activity', freq:'月次（毎月第1週金曜）'},
   ];
 
   const today = new Date(); today.setHours(0,0,0,0);

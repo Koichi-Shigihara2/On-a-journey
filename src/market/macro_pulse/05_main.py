@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 MACRO PULSE — Economic Indicators Auto-Update  v6.0
 ====================================================
@@ -77,29 +76,6 @@ FED_CONTEXT_COLUMNS = [
 #  指標マスタ（v6.0 確定12指標）※変更なし
 # ─────────────────────────────────────────────────────────────────
 INDICATOR_CONFIG = {
-    # ── 手入力指標 ──────────────────────────────────────────────
-    "ISM Manufacturing PMI": {
-        "fred_id": "",
-        "input_method": "manual",
-        "fred_release_id": None,
-        "ism_rule": "mfg",
-        "slug": "ism_mfg_pmi",
-        "threshold_bull": 50.0,
-        "threshold_bear": 50.0,
-        "unit": "index",
-        "discord_remind": True,
-    },
-    "ISM Non-Manufacturing PMI": {
-        "fred_id": "",
-        "input_method": "manual",
-        "fred_release_id": None,
-        "ism_rule": "svc",
-        "slug": "ism_svc_pmi",
-        "threshold_bull": 50.0,
-        "threshold_bear": 50.0,
-        "unit": "index",
-        "discord_remind": True,
-    },
     "Conference Board LEI": {
         "fred_id": "USALOLITONOSTSAM",   # OECD CLI Normalized (FRED free API)
         "input_method": "FRED",
@@ -109,6 +85,26 @@ INDICATOR_CONFIG = {
         "threshold_bear": 99.5,
         "unit": "index",                  # 正規化指数（100基準）
         "discord_remind": False,          # FRED自動取得のためリマインド不要
+    },
+    "Philadelphia Fed Manufacturing": {
+        "fred_id": "OUTMS",
+        "input_method": "FRED",
+        "fred_release_id": None,
+        "slug": "philly_fed_mfg",
+        "threshold_bull": 5.0,
+        "threshold_bear": 0.0,
+        "unit": "index",
+        "discord_remind": False,
+    },
+    "Chicago Fed National Activity": {
+        "fred_id": "CFNAI",
+        "input_method": "FRED",
+        "fred_release_id": None,
+        "slug": "cfnai_ma3",
+        "threshold_bull": 0.0,
+        "threshold_bear": -0.35,
+        "unit": "index",
+        "discord_remind": False,
     },
     # ── FRED自動取得 ─────────────────────────────────────────────
     "NFP": {
