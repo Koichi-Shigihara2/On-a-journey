@@ -372,10 +372,12 @@
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
       <div class="l3-title" style="margin-bottom:0">SCORE HISTORY — NBER景気後退期（灼色帯）と合わせて表示</div>
       <div style="display:flex;gap:6px">
-　　　　<button class="btn score-range-btn" data-range="1" onclick="setScoreRange(1)">1年</button>
-　　　　<button class="btn score-range-btn" data-range="3" onclick="setScoreRange(3)">3年</button>
-　　　　<button class="btn score-range-btn" data-range="5" onclick="setScoreRange(5)">5年</button>
-　　　　<button class="btn score-range-btn active" data-range="0" onclick="setScoreRange(0)">全期間</button>    </div>
+        <button class="btn score-range-btn" data-range="1" onclick="setScoreRange(1)">1年</button>
+        <button class="btn score-range-btn" data-range="3" onclick="setScoreRange(3)">3年</button>
+        <button class="btn score-range-btn" data-range="5" onclick="setScoreRange(5)">5年</button>
+        <button class="btn score-range-btn active" data-range="0" onclick="setScoreRange(0)">全期間</button>
+      </div>
+    </div>
     <div id="scoreHistoryChart" style="width:100%;height:260px"></div>
   </div>
 
@@ -396,15 +398,15 @@
     </div>
   </div>
 
-  <!-- ④ 直近の動き -->
-  <div class="sec">④ 直近の動き（過去2週間の発表実績）</div>
+  <!-- ⑤ 直近の動き -->
+  <div class="sec">⑤ 直近の動き（過去2週間の発表実績）</div>
   <div class="signals-wrap">
     <div class="signals-title">RECENT SIGNALS — サプライズの大きい順に並べています</div>
     <div id="recentSignals"><div class="empty"><span class="spin"></span>Loading...</div></div>
   </div>
 
-  <!-- ⑤ 今後のスケジュール -->
-  <div class="sec">⑤ 今後2週間の発表スケジュール</div>
+  <!-- ⑥ 今後のスケジュール -->
+  <div class="sec">⑥ 今後2週間の発表スケジュール</div>
   <div class="sched-wrap">
     <div class="sched-title">UPCOMING RELEASES</div>
     <div id="schedGrid"><div class="empty"><span class="spin"></span>Loading...</div></div>
@@ -484,6 +486,8 @@ function updateTs() {
 // CSV PARSERS
 // ═══════════════════════════════════════════════════════
 function parseCSV(text) {
+  if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   const lines = text.trim().split('\n');
   if (lines.length < 2) return [];
   const hdrs = lines[0].split(',').map(h => h.trim());
@@ -503,6 +507,7 @@ function parseCSV(text) {
 }
 
 function parseCSVRaw(text) {
+  if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
   let clean='';
   for (let i=0;i<text.length;i++){
     if (text[i]==='\r'&&text[i+1]==='\n'){clean+='\n';i++;}
@@ -541,6 +546,43 @@ function applyForecasts(rows) {
 }
 
 // ═══════════════════════════════════════════════════════
+// PERFORMANCE INDEX — O(log n) lookup for latestActualAsOf
+// ═══════════════════════════════════════════════════════
+// indicator → [{dateMs, actual}] sorted ascending by dateMs
+let IND_INDEX = {};
+
+function buildIndex() {
+  IND_INDEX = {};
+  for (const r of DATA) {
+    const v = n(r[COL.actual]);
+    if (v === null) continue;
+    const ind = r[COL.indicator];
+    const dMs = new Date(r[COL.date]).getTime();
+    if (isNaN(dMs)) continue;
+    if (!IND_INDEX[ind]) IND_INDEX[ind] = [];
+    IND_INDEX[ind].push({dateMs: dMs, actual: v});
+  }
+  // sort ascending by date
+  for (const ind in IND_INDEX) {
+    IND_INDEX[ind].sort((a,b) => a.dateMs - b.dateMs);
+  }
+}
+
+// binary search: find latest entry with dateMs <= targetMs
+function idxLatestAsOf(ind, targetMs) {
+  const arr = IND_INDEX[ind];
+  if (!arr || !arr.length) return null;
+  let lo = 0, hi = arr.length - 1;
+  if (arr[0].dateMs > targetMs) return null;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (arr[mid].dateMs <= targetMs) lo = mid;
+    else hi = mid - 1;
+  }
+  return arr[lo].actual;
+}
+
+// ═══════════════════════════════════════════════════════
 // LOAD
 // ═══════════════════════════════════════════════════════
 async function loadFedContext() {
@@ -574,6 +616,7 @@ async function loadCSVData() {
       if(!parsed.length)continue;
       RAW=parsed;
       DATA=applyForecasts(parsed);
+      buildIndex();
       showNotice(`${DATA.length}行ロード完了 → ${path.split('/').pop()}`,'ok');
       render();
       return;
@@ -590,10 +633,13 @@ function render() {
   updateTicker();
   renderPhaseGauge();
   renderL2();
-  renderScoreHistory();
-  renderL3();
   renderRecentSignals();
   checkManualInputAlerts();
+  // Defer heavy chart rendering to allow UI to update first
+  requestAnimationFrame(() => {
+    renderScoreHistory();
+    renderL3();
+  });
 }
 
 // ═══════════════════════════════════════════════════════
@@ -934,9 +980,8 @@ function l3ScoreColor(s){
 
 // 指定日以前の最新値を取得
 function l3LatestBefore(ind, beforeDate){
-  const rows=DATA.filter(r=>r[COL.indicator]===ind&&n(r[COL.actual])!==null&&new Date(r[COL.date])<=beforeDate)
-    .sort((a,b)=>new Date(b[COL.date])-new Date(a[COL.date]));
-  return rows[0]?n(rows[0][COL.actual]):null;
+  const ms = beforeDate instanceof Date ? beforeDate.getTime() : new Date(beforeDate).getTime();
+  return idxLatestAsOf(ind, ms);
 }
 
 // スナップショット構築（直近6ヶ月、週次）
@@ -957,7 +1002,7 @@ function buildL3Snapshots(){
 
   // 月次指標の発表日を追加
   const monthlyInds = ['Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Michigan Consumer Sentiment','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
+    'Michigan Consumer Sentiment','CB Consumer Confidence','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
   DATA.forEach(r=>{
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
     if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator].trim())){
@@ -1171,7 +1216,8 @@ function buildScoreTimeSeries(startDate, endDate) {
   const changeDates = new Set();
   const allInds = ['Yield Curve 10Y-2Y','HY Spread',
     'Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Initial Claims 4W MA','Michigan Consumer Sentiment','Sahm Rule Recession Indicator'];
+    'Initial Claims 4W MA','CB Consumer Confidence','Michigan Consumer Sentiment',
+    'Sahm Rule Recession Indicator'];
 
   console.log('[buildScoreTimeSeries] startDate:', startDate, 'endDate:', endDate);
   console.log('[buildScoreTimeSeries] DATA.length:', DATA.length);
@@ -1527,15 +1573,8 @@ function phaseColor(score){
 
 // asOfDate (Date) 時点での最新実績値を指標名から取得
 function latestActualAsOf(ind, asOf) {
-  if(!DATA.length) return null;
   const asOfMs = asOf instanceof Date ? asOf.getTime() : new Date(asOf).getTime();
-  const rows = DATA.filter(r => {
-    if(r[COL.indicator] !== ind) return false;
-    const v = n(r[COL.actual]);
-    if(v === null) return false;
-    return new Date(r[COL.date]).getTime() <= asOfMs;
-  }).sort((a,b) => new Date(b[COL.date]) - new Date(a[COL.date]));
-  return rows[0] ? n(rows[0][COL.actual]) : null;
+  return idxLatestAsOf(ind, asOfMs);
 }
 
 // asOfDate 時点でのスコアを計算（renderPhaseGaugeと同一ロジック）
@@ -1543,11 +1582,13 @@ function computeScoreAsOf(asOf) {
   const la = ind => latestActualAsOf(ind, asOf);
 
   const yc     = la('Yield Curve 10Y-2Y');
-  const hy     = la('HY Spread');  const philly = la('Philadelphia Fed Manufacturing');
+  const hy     = la('HY Spread');
+  const philly = la('Philadelphia Fed Manufacturing');
   const cfnai  = la('Chicago Fed National Activity');
   const claims = la('Initial Claims 4W MA');
+  const cbcc2  = la('CB Consumer Confidence');
   const cbcc   = la('Michigan Consumer Sentiment');
-  const sahm    = la('Sahm Rule Recession Indicator');
+  const sahm   = la('Sahm Rule Recession Indicator');
 
   function calcSignal(ind, val) {
     if(val === null) return {score:50, w:0};
@@ -1555,7 +1596,10 @@ function computeScoreAsOf(asOf) {
       case 'yc':
         return {score: val<-0.5?90:val<0?70:val<0.5?40:15, w:20};
       case 'hy':
-        return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};      case 'philly':
+        return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};
+      case 'cbcc2':
+        return {score: val>=110?15:val>=100?35:val>=90?60:85, w:10};
+      case 'philly':
         return {score: val<-10?88:val<0?65:val<5?35:12, w:18};
       case 'cfnai':
         return {score: val<-0.7?82:val<-0.35?50:18, w:12};
@@ -1571,11 +1615,13 @@ function computeScoreAsOf(asOf) {
 
   const sigs = [
     calcSignal('yc',     yc),
-    calcSignal('hy',     hy),    calcSignal('philly', philly),
+    calcSignal('hy',     hy),
+    calcSignal('cbcc2',  cbcc2),
+    calcSignal('philly', philly),
     calcSignal('cfnai',  cfnai),
     calcSignal('claims', claims),
     calcSignal('cbcc',   cbcc),
-    calcSignal('sahm',    sahm),
+    calcSignal('sahm',   sahm),
   ];
 
   const totalW = sigs.reduce((s,sg)=>s+sg.w, 0);
