@@ -205,6 +205,7 @@
     .cmp-label{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase}
     .cmp-score{font-family:var(--mono);font-size:20px;font-weight:700}
     .cmp-delta{font-family:var(--mono);font-size:11px}
+    .cmp-delta-lg{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1.1}
     .cmp-phase{font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:1px}
     .cmp-delta.up{color:var(--red)}
     .cmp-delta.dn{color:var(--grn)}
@@ -218,6 +219,10 @@
     .l3-slider-label{font-family:var(--mono);font-size:9px;color:var(--mut);white-space:nowrap}
     .l3-slider-date{font-family:var(--mono);font-size:10px;color:var(--acc);min-width:90px}
     input[type=range].l3-slider{flex:1;min-width:160px;height:3px;accent-color:var(--acc);cursor:pointer}
+
+    /* ── Score History Chart ── */
+    .score-range-btn{font-size:9px;padding:3px 10px;border-radius:2px;transition:background .15s,color .15s}
+    .score-range-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
 
     /* ── Spinner ── */
     .empty{color:var(--mut);font-family:var(--mono);font-size:11px;padding:20px;text-align:center}
@@ -342,11 +347,17 @@
     <div class="phase-signals" id="pg-signals"></div>
     <!-- スコア比較バー -->
     <div class="compare-bar" id="compareBar" style="display:none;border-top:1px solid var(--bdr);border-left:none;border-right:none;border-bottom:none;margin-top:0">
-      <div class="cmp-cell"><span class="cmp-label">現在</span><span class="cmp-score" id="cmp-now">—</span><span class="cmp-phase" id="cmp-now-phase">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">前日比</span><span class="cmp-score" id="cmp-d1-score">—</span><span class="cmp-delta" id="cmp-d1-delta">—</span><span class="cmp-snap-label" id="cmp-d1-date">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">先週比</span><span class="cmp-score" id="cmp-w1-score">—</span><span class="cmp-delta" id="cmp-w1-delta">—</span><span class="cmp-snap-label" id="cmp-w1-date">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">前月末比</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-delta" id="cmp-m1-delta">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">カスタム比較 <input type="date" id="cmpDateInput" style="font-family:var(--mono);font-size:9px;background:transparent;border:none;border-bottom:1px solid var(--bdr);color:var(--mut);padding:1px 2px;vertical-align:middle;margin-left:4px;width:110px" onchange="renderCustomCmp()"></span><span class="cmp-score" id="cmp-custom-score">—</span><span class="cmp-delta" id="cmp-custom-delta">—</span><span class="cmp-snap-label" id="cmp-custom-label">日付を選択</span></div>
+      <div class="cmp-cell"><span class="cmp-label">前月末比</span><span class="cmp-delta cmp-delta-lg" id="cmp-m1-delta">—</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">先週比</span><span class="cmp-delta cmp-delta-lg" id="cmp-w1-delta">—</span><span class="cmp-score" id="cmp-w1-score">—</span><span class="cmp-snap-label" id="cmp-w1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">一昨日比</span><span class="cmp-delta cmp-delta-lg" id="cmp-d2-delta">—</span><span class="cmp-score" id="cmp-d2-score">—</span><span class="cmp-snap-label" id="cmp-d2-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">昨日比</span><span class="cmp-delta cmp-delta-lg" id="cmp-d1-delta">—</span><span class="cmp-score" id="cmp-d1-score">—</span><span class="cmp-snap-label" id="cmp-d1-date">—</span></div>
+      <div class="cmp-cell" style="min-width:140px">
+        <span class="cmp-label">カスタム比較</span>
+        <input type="date" id="cmpDateInput" style="font-family:var(--mono);font-size:11px;background:var(--sur2);border:1px solid var(--bdr);border-radius:3px;color:var(--txt);padding:3px 6px;margin-top:2px;width:100%;cursor:pointer;color-scheme:dark" onchange="renderCustomCmp()">
+        <span class="cmp-delta cmp-delta-lg" id="cmp-custom-delta">—</span>
+        <span class="cmp-score" id="cmp-custom-score">—</span>
+        <span class="cmp-snap-label" id="cmp-custom-label">日付を選択</span>
+      </div>
     </div>
   </div>
 
@@ -357,8 +368,22 @@
     <div class="l2-grid" id="l2Grid"><div class="empty"><span class="spin"></span>Loading...</div></div>
   </div>
 
-  <!-- ③ 過去の後退局面との類似度 -->
-  <div class="sec">③ 過去の後退局面との類似度</div>
+  <!-- score-history chart -->
+  <div class="sec">③ RECESSION RISK SCORE 推移</div>
+  <div class="l3-wrap" id="scoreChartWrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div class="l3-title" style="margin-bottom:0">SCORE HISTORY — NBER景気後退期（灼色帯）と合わせて表示</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn score-range-btn active" data-range="1" onclick="setScoreRange(1)">1年</button>
+        <button class="btn score-range-btn" data-range="3" onclick="setScoreRange(3)">3年</button>
+        <button class="btn score-range-btn" data-range="0" onclick="setScoreRange(0)">全期間</button>
+      </div>
+    </div>
+    <div id="scoreHistoryChart" style="width:100%;height:260px"></div>
+  </div>
+
+  <!-- ③→④ 過去の後退局面との類似度 -->
+  <div class="sec">④ 過去の後退局面との類似度</div>
   <div class="l3-wrap" id="l3Wrap">
     <div class="l3-title">RECESSION SIMILARITY — 8指標を正規化して過去の後退入口時点と比較</div>
     <div class="l3-slider-wrap">
@@ -570,6 +595,7 @@ function render() {
   updateTicker();
   renderPhaseGauge();
   renderL2();
+  renderScoreHistory();
   renderL3();
   renderRecentSignals();
   checkManualInputAlerts();
@@ -886,8 +912,11 @@ const L3_INDICATORS=[
   {label:'HY Spread',     key:'HY Spread',                    min:10,    max:2.5},
 ];
 
-const REF_2019={'Yield Curve 10Y-2Y':-0.05,'ISM Manufacturing PMI':47.8,'ISM Non-Manufacturing PMI':53.9,'HY Spread':4.0,'CB Consumer Confidence':126.0,'Michigan Consumer Sentiment':96.0,'Initial Claims 4W MA':215000,'Conference Board LEI':99.1};
-const REF_2001={'Yield Curve 10Y-2Y':0.2,'ISM Manufacturing PMI':41.9,'ISM Non-Manufacturing PMI':51.0,'HY Spread':8.5,'CB Consumer Confidence':85.0,'Michigan Consumer Sentiment':90.0,'Initial Claims 4W MA':360000,'Conference Board LEI':99.2};
+// 参照日はCSVから動的取得。ハードコード廃止。
+const REF_DATE_2019 = new Date('2019-11-01T23:59:59');
+const REF_DATE_2001 = new Date('2001-09-01T23:59:59');
+let REF_VALS_2019 = null;
+let REF_VALS_2001 = null;
 
 // スライダー用: {date, vals[]} のスナップショット配列
 let L3_SNAPSHOTS = [];
@@ -919,9 +948,16 @@ function l3LatestBefore(ind, beforeDate){
 function buildL3Snapshots(){
   if(!DATA.length)return;
   const today=new Date(); today.setHours(23,59,59,0);
-  const start=new Date(today); start.setMonth(start.getMonth()-6);
 
-  // データ変化点を収集：直近6ヶ月のすべての発表日を集める
+  // データの最古日を取得してスライダー開始点とする
+  const allDates = DATA
+    .map(r=>new Date(r[COL.date]))
+    .filter(d=>!isNaN(d.getTime()));
+  const earliestData = allDates.length ? new Date(Math.min(...allDates)) : new Date(today);
+  earliestData.setHours(0,0,0,0);
+  const start = earliestData;
+
+  // データ変化点を収集：全データ期間の発表日を集める
   const changeDates = new Set();
 
   // 月次指標の発表日を追加
@@ -929,7 +965,7 @@ function buildL3Snapshots(){
     'Michigan Consumer Sentiment','Conference Board LEI','Initial Claims 4W MA'];
   DATA.forEach(r=>{
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
-    if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator])){
+    if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator].trim())){
       changeDates.add(d.toISOString().slice(0,10));
     }
   });
@@ -1018,8 +1054,8 @@ function resetL3Slider(){
 function drawL3Chart(nowVals, isNow){
   const scoresEl=el('l3Scores');
   const chartEl=el('l3Chart');
-  const vals2019=L3_INDICATORS.map(d=>l3norm(REF_2019[d.key],d.min,d.max));
-  const vals2001=L3_INDICATORS.map(d=>l3norm(REF_2001[d.key],d.min,d.max));
+  const vals2019 = REF_VALS_2019 || L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key, REF_DATE_2019), d.min, d.max));
+  const vals2001 = REF_VALS_2001 || L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key, REF_DATE_2001), d.min, d.max));
 
   const sim2019=l3similarity(nowVals,vals2019);
   const sim2001=l3similarity(nowVals,vals2001);
@@ -1027,11 +1063,27 @@ function drawL3Chart(nowVals, isNow){
   let chart=echarts.getInstanceByDom(chartEl);
   if(!chart)chart=echarts.init(chartEl,null,{renderer:'svg'});
 
+  // 現在値（実数）を各頂点ラベルに付加
+  function fmtRaw(val, ind){
+    if(val===null) return '—';
+    if(ind.key==='Initial Claims 4W MA') return (val/1000).toFixed(0)+'k';
+    if(ind.key==='Yield Curve 10Y-2Y') return (val>=0?'+':'')+val.toFixed(2)+'%';
+    if(ind.key==='HY Spread') return val.toFixed(2)+'%';
+    return val.toFixed(1);
+  }
+  const asOfDate = (!isNow && L3_SNAPSHOTS.length) ?
+    L3_SNAPSHOTS[Math.min(parseInt(el('l3Slider').value||0), L3_SNAPSHOTS.length-1)].date :
+    new Date();
+  const radarIndicators = L3_INDICATORS.map(d=>{
+    const raw = l3LatestBefore(d.key, asOfDate);
+    return {name: d.label+'\n'+fmtRaw(raw, d), max:100, min:0};
+  });
+
   const sliderColor=isNow?L3_COLORS.now.line:L3_COLORS.slider.line;
   const sliderArea=isNow?L3_COLORS.now.area:L3_COLORS.slider.area;
   const seriesData=[
-    {name:'2019年末',value:vals2019,lineStyle:{color:L3_COLORS.y2019.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2019.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2019.line}},
-    {name:'2001年',value:vals2001,lineStyle:{color:L3_COLORS.y2001.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2001.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2001.line}},
+    {name:'2019-11-01',value:vals2019,lineStyle:{color:L3_COLORS.y2019.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2019.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2019.line}},
+    {name:'2001-09-01',value:vals2001,lineStyle:{color:L3_COLORS.y2001.line,width:1.5,type:'dashed'},areaStyle:{color:L3_COLORS.y2001.area},symbol:'circle',symbolSize:3,itemStyle:{color:L3_COLORS.y2001.line}},
   ];
   // スライダー移動時は紫線を追加、現在値（青）は常に固定表示
   if(!isNow && L3_NOW_VALS){
@@ -1046,9 +1098,20 @@ function drawL3Chart(nowVals, isNow){
     tooltip:{trigger:'item',backgroundColor:'#111520',borderColor:'#1e2840',textStyle:{color:'#e2e8f0',fontSize:10,fontFamily:"'Space Mono',monospace"}},
     legend:{bottom:0,textStyle:{color:'#64748b',fontSize:9,fontFamily:"'Space Mono',monospace"},itemWidth:10,itemHeight:6},
     radar:{
-      indicator:L3_INDICATORS.map(d=>({name:d.label,max:100,min:0})),
-      center:['50%','48%'],radius:'68%',
-      axisName:{color:'#64748b',fontSize:9,fontFamily:"'Space Mono',monospace"},
+      indicator:radarIndicators,
+      center:['50%','48%'],radius:'62%',
+      axisName:{
+        color:'#64748b',fontSize:9,fontFamily:"'Space Mono',monospace",lineHeight:14,
+        formatter:(name)=>{
+          const lines=name.split('\n');
+          if(lines.length<2) return name;
+          return '{label|'+lines[0]+'}\n{val|'+lines[1]+'}';
+        },
+        rich:{
+          label:{color:'#64748b',fontSize:9,fontFamily:"'Space Mono',monospace",lineHeight:13},
+          val:{color:'#e2e8f0',fontSize:10,fontFamily:"'Space Mono',monospace",fontWeight:700,lineHeight:14},
+        }
+      },
       splitLine:{lineStyle:{color:'#1e2840'}},
       splitArea:{show:false},
       axisLine:{lineStyle:{color:'#1e2840'}},
@@ -1072,8 +1135,8 @@ function drawL3Chart(nowVals, isNow){
   const d2001=sim2001>=75?'⚠ 構造が近似。注意が必要':sim2001>=60?'一部の指標が類似傾向':'現在は大きく乖離';
 
   scoresEl.innerHTML=
-    mkRow('2019年末（後退入口局面）',sim2019,L3_COLORS.y2019.line,d2019)+
-    mkRow('2001年（ITバブル崩壊）',sim2001,L3_COLORS.y2001.line,d2001)+
+    mkRow('2019-11-01（後退入口局面）',sim2019,L3_COLORS.y2019.line,d2019)+
+    mkRow('2001-09-01（ITバブル崩壊直前）',sim2001,L3_COLORS.y2001.line,d2001)+
     `<div class="l3-note">
       各指標を 0（ベア）〜 100（ブル）に正規化し、<br>
       ユークリッド距離から類似度を算出。<br>
@@ -1081,10 +1144,212 @@ function drawL3Chart(nowVals, isNow){
     </div>`;
 }
 
+
+// ═══════════════════════════════════════════════════════
+// SCORE HISTORY CHART
+// ═══════════════════════════════════════════════════════
+
+// NBER景気後退期（開始日, 終了日, ラベル, 外生フラグ）
+const NBER_RECESSIONS = [
+  ['2001-03-01', '2001-11-30', 'IT Bubble', false],
+  ['2007-12-01', '2009-06-30', 'GFC',       false],
+  ['2020-02-01', '2020-04-30', 'COVID⚠',  true],  // 外生ショック
+];
+
+let SCORE_RANGE_YEARS = 1; // 1=1年, 3=3年, 0=全期間
+
+function setScoreRange(years) {
+  SCORE_RANGE_YEARS = years;
+  document.querySelectorAll('.score-range-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.range) === years);
+  });
+  renderScoreHistory();
+}
+
+function buildScoreTimeSeries(startDate, endDate) {
+  // 全データの発表日を収集し週次でサンプリング
+  const changeDates = new Set();
+  const allInds = ['Yield Curve 10Y-2Y','HY Spread','VIX',
+    'ISM Manufacturing PMI','ISM Non-Manufacturing PMI',
+    'Initial Claims 4W MA','Michigan Consumer Sentiment','Conference Board LEI'];
+
+  DATA.forEach(r => {
+    const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
+    if(d >= startDate && d <= endDate && allInds.includes(r[COL.indicator])) {
+      changeDates.add(d.toISOString().slice(0,10));
+    }
+  });
+  // 週次サンプリング補完
+  for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+7)) {
+    changeDates.add(new Date(d).toISOString().slice(0,10));
+  }
+  changeDates.add(endDate.toISOString().slice(0,10));
+
+  return [...changeDates].sort().map(ds => {
+    const d = new Date(ds); d.setHours(23,59,59,0);
+    const score = computeScoreAsOf(d);
+    return [ds, score];
+  }).filter(p => p[1] !== null);
+}
+
+function renderScoreHistory() {
+  const chartEl = el('scoreHistoryChart');
+  if(!chartEl || !DATA.length) return;
+
+  const today = new Date(); today.setHours(23,59,59,0);
+  let startDate;
+  if(SCORE_RANGE_YEARS === 0) {
+    // 全期間: データの最古日
+    const allDates = DATA.map(r => new Date(r[COL.date])).filter(d => !isNaN(d));
+    startDate = allDates.length ? new Date(Math.min(...allDates)) : new Date(today);
+    startDate.setHours(0,0,0,0);
+  } else {
+    startDate = new Date(today);
+    startDate.setFullYear(startDate.getFullYear() - SCORE_RANGE_YEARS);
+    startDate.setHours(0,0,0,0);
+  }
+
+  const series = buildScoreTimeSeries(startDate, today);
+
+  // NBER後退期をmarkAreaに変換（通常 vs 外生で色分け）
+  const markAreasNormal = NBER_RECESSIONS
+    .filter(([s, e, , exog]) => !exog)
+    .map(([s, e, label]) => {
+      const sd = new Date(s), ed = new Date(e);
+      if(ed < startDate || sd > today) return null;
+      return [{xAxis: s, name: label}, {xAxis: e}];
+    })
+    .filter(Boolean);
+  const markAreasExog = NBER_RECESSIONS
+    .filter(([s, e, , exog]) => exog)
+    .map(([s, e, label]) => {
+      const sd = new Date(s), ed = new Date(e);
+      if(ed < startDate || sd > today) return null;
+      return [{xAxis: s, name: label}, {xAxis: e}];
+    })
+    .filter(Boolean);
+
+  // フェーズゾーン（背景）
+  const zoneMarkAreas = [
+    [{yAxis:0},{yAxis:25}],   // 拡張
+    [{yAxis:25},{yAxis:52}],  // 踊り場
+    [{yAxis:52},{yAxis:70}],  // 後退入口
+    [{yAxis:70},{yAxis:100}], // 後退
+  ];
+  const zoneColors = [
+    'rgba(16,185,129,0.04)',
+    'rgba(59,130,246,0.04)',
+    'rgba(245,158,11,0.06)',
+    'rgba(244,63,94,0.06)',
+  ];
+
+  let chart = echarts.getInstanceByDom(chartEl);
+  if(!chart) chart = echarts.init(chartEl, null, {renderer:'svg'});
+
+  chart.setOption({
+    backgroundColor: 'transparent',
+    grid: {top:24, right:20, bottom:36, left:44},
+    tooltip: {
+      trigger:'axis',
+      backgroundColor:'#111520',
+      borderColor:'#1e2840',
+      textStyle:{color:'#e2e8f0', fontSize:10, fontFamily:"'Space Mono',monospace"},
+      formatter: params => {
+        const p = params[0];
+        if(!p) return '';
+        const score = p.value[1];
+        const ph = phaseLabel(score);
+        const col = phaseColor(score);
+        return `<span style="font-family:var(--mono);font-size:9px;color:var(--mut)">${p.value[0]}</span><br>` +
+               `Score: <span style="color:${col};font-weight:700">${score}</span> <span style="color:#64748b">(${ph})</span>`;
+      }
+    },
+    xAxis: {
+      type:'time',
+      axisLabel:{color:'#64748b', fontSize:9, fontFamily:"'Space Mono',monospace"},
+      axisLine:{lineStyle:{color:'#1e2840'}},
+      splitLine:{show:false},
+    },
+    yAxis: {
+      type:'value', min:0, max:100,
+      axisLabel:{color:'#64748b', fontSize:9, fontFamily:"'Space Mono',monospace"},
+      axisLine:{show:false},
+      splitLine:{lineStyle:{color:'#1e2840', type:'dashed'}},
+    },
+    series:[
+      // ゾーン背景（4段階）
+      ...zoneColors.map((color,i) => ({
+        type:'line', data:[], markArea:{
+          silent:true,
+          data:[zoneMarkAreas[i]],
+          itemStyle:{color}
+        }
+      })),
+      // NBER後退期帯（通常: 赤）
+      {
+        type:'line', data:[],
+        markArea:{
+          silent:true,
+          data: markAreasNormal,
+          itemStyle:{color:'rgba(244,63,94,0.13)'},
+          label:{show:true, position:'insideTop', fontSize:8,
+                 fontFamily:"'Space Mono',monospace", color:'rgba(244,63,94,0.7)',
+                 formatter: p => p.name || 'RECESSION'}
+        }
+      },
+      // NBER後退期帯（外生ショック: 黄色）
+      {
+        type:'line', data:[],
+        markArea:{
+          silent:true,
+          data: markAreasExog,
+          itemStyle:{color:'rgba(245,158,11,0.10)'},
+          label:{show:true, position:'insideTop', fontSize:8,
+                 fontFamily:"'Space Mono',monospace", color:'rgba(245,158,11,0.7)',
+                 formatter: p => p.name || 'EXOG'}
+        }
+      },
+      // スコア折れ線
+      {
+        type:'line',
+        data: series.map(p => ({value: [p[0], p[1]]})),
+        lineStyle:{color:'#3b82f6', width:2},
+        itemStyle:{color:'#3b82f6'},
+        symbol:'none',
+        smooth:0.3,
+        areaStyle:{
+          color:{
+            type:'linear', x:0,y:0,x2:0,y2:1,
+            colorStops:[
+              {offset:0, color:'rgba(59,130,246,0.25)'},
+              {offset:1, color:'rgba(59,130,246,0.02)'},
+            ]
+          }
+        },
+        // 閾値ラインマーク
+        markLine:{
+          silent:true, symbol:'none',
+          data:[
+            {yAxis:25, lineStyle:{color:'rgba(16,185,129,0.4)',type:'dashed',width:1},
+             label:{formatter:'25', color:'rgba(16,185,129,0.6)', fontSize:8, fontFamily:"'Space Mono',monospace"}},
+            {yAxis:52, lineStyle:{color:'rgba(59,130,246,0.4)',type:'dashed',width:1},
+             label:{formatter:'52', color:'rgba(59,130,246,0.6)', fontSize:8, fontFamily:"'Space Mono',monospace"}},
+            {yAxis:70, lineStyle:{color:'rgba(245,158,11,0.4)',type:'dashed',width:1},
+             label:{formatter:'70', color:'rgba(245,158,11,0.6)', fontSize:8, fontFamily:"'Space Mono',monospace"}},
+          ]
+        }
+      }
+    ]
+  }, true);
+}
+
 function renderL3() {
   const chartEl=el('l3Chart');
   const scoresEl=el('l3Scores');
   if(!DATA.length){scoresEl.innerHTML='<div class="empty">データなし</div>';return;}
+  // 参照値をCSVから動的取得（ハードコード廃止）
+  REF_VALS_2019 = L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key, REF_DATE_2019), d.min, d.max));
+  REF_VALS_2001 = L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key, REF_DATE_2001), d.min, d.max));
   buildL3Snapshots();
   L3_NOW_VALS=L3_INDICATORS.map(d=>l3norm(l3LatestBefore(d.key,new Date()),d.min,d.max));
   drawL3Chart(L3_NOW_VALS, true);
@@ -1323,9 +1588,6 @@ function renderCompareBar(currentScore, currentPhase) {
   if(!bar) return;
   bar.style.display = 'flex';
 
-  el('cmp-now').textContent = currentScore;
-  el('cmp-now').style.color = phaseColor(currentScore);
-  el('cmp-now-phase').textContent = currentPhase;
 
   function fillCell(scoreId, deltaId, dateId, asOf, label) {
     const score = computeScoreAsOf(asOf);
@@ -1333,7 +1595,7 @@ function renderCompareBar(currentScore, currentPhase) {
     const scoreEl=el(scoreId), deltaEl=el(deltaId), dateEl=el(dateId);
     if(score===null || refDate===null){
       scoreEl.textContent='—'; scoreEl.style.color='var(--mut)';
-      deltaEl.textContent='データなし'; deltaEl.className='cmp-delta flat';
+      deltaEl.textContent='—'; deltaEl.className='cmp-delta-lg flat';
       dateEl.textContent=label;
       return;
     }
@@ -1342,19 +1604,21 @@ function renderCompareBar(currentScore, currentPhase) {
     scoreEl.style.color = phaseColor(score);
     const sign = diff>0?'+':'';
     deltaEl.textContent = `${sign}${diff}`;
-    deltaEl.className = 'cmp-delta '+(diff>0?'up':diff<0?'dn':'flat');
+    deltaEl.className = 'cmp-delta-lg '+(diff>0?'up':diff<0?'dn':'flat');
     dateEl.textContent = refDate+' 時点 ('+phaseLabel(score)+')';
   }
 
   const today = new Date(); today.setHours(23,59,59,0);
   const d1 = new Date(today); d1.setDate(d1.getDate()-1); d1.setHours(23,59,59,0);
+  const d2 = new Date(today); d2.setDate(d2.getDate()-2); d2.setHours(23,59,59,0);
   const w1 = new Date(today); w1.setDate(w1.getDate()-7); w1.setHours(23,59,59,0);
   // 前月末: 今月の1日-1日
   const m1 = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
 
-  fillCell('cmp-d1-score','cmp-d1-delta','cmp-d1-date', d1, '前日');
-  fillCell('cmp-w1-score','cmp-w1-delta','cmp-w1-date', w1, '先週');
   fillCell('cmp-m1-score','cmp-m1-delta','cmp-m1-date', m1, '前月末');
+  fillCell('cmp-w1-score','cmp-w1-delta','cmp-w1-date', w1, '先週');
+  fillCell('cmp-d2-score','cmp-d2-delta','cmp-d2-date', d2, '一昨日');
+  fillCell('cmp-d1-score','cmp-d1-delta','cmp-d1-date', d1, '昨日');
 }
 
 function renderCustomCmp() {

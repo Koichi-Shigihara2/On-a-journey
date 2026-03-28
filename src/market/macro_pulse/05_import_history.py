@@ -4,7 +4,7 @@ MACRO PULSE v6.0 — 過去データ一括投入スクリプト
 ================================================
 使用方法:
   python 05_import_history.py --source <CSV_FILE> --indicator <INDICATOR_NAME>
-  python 05_import_history.py --auto-fred --from 2020-01-01
+  python 05_import_history.py fred --from 2001-01-01
 
 機能:
   1. --auto-fred: FRED から過去データを一括取得して 05_events.csv に投入
@@ -13,11 +13,13 @@ MACRO PULSE v6.0 — 過去データ一括投入スクリプト
 対応指標（FRED自動）:
   NFP, Initial Claims 4W MA, Michigan Inflation 1Y, Michigan Inflation 5Y,
   CB Consumer Confidence, Building Permits,
-  Yield Curve 10Y-2Y, HY Spread, VIX
+  Yield Curve 10Y-2Y, HY Spread, VIX,
+  Michigan Consumer Sentiment（UMCSENT: 1978年〜）,
+  Conference Board LEI / OECD CLI（USALOLITONOSTSAM: 1955年〜）
 
-手入力指標:
-  ISM Manufacturing PMI, ISM Non-Manufacturing PMI, Conference Board LEI
-  → --source オプションでCSVを渡す
+手入力指標（FREDに月次公式データなし）:
+  ISM Manufacturing PMI, ISM Non-Manufacturing PMI
+  → --source オプションでCSVを渡す（ISM公式またはFRED: MANEMP等から手動DL）
 
 入力CSVフォーマット（手入力指標用）:
   date,actual,consensus
@@ -124,15 +126,18 @@ def get_historical_context(fred, target_date) -> dict:
 #  FRED 一括取得
 # ─────────────────────────────────────────────────────────────────
 FRED_INDICATORS = {
-    "NFP":                   "PAYEMS",
-    "Initial Claims 4W MA":  "IC4WSA",
-    "Michigan Inflation 1Y": "MICH",
-    "Michigan Inflation 5Y": "T5YIE",       # 5-Year Breakeven Inflation Rate（代替）
-    "CB Consumer Confidence":"CSCICP03USM665S",
-    "Building Permits":      "PERMIT",
-    "Yield Curve 10Y-2Y":    "T10Y2Y",
-    "HY Spread":             "BAMLH0A0HYM2",
-    "VIX":                   "VIXCLS",
+    "NFP":                         "PAYEMS",
+    "Initial Claims 4W MA":        "IC4WSA",
+    "Michigan Inflation 1Y":       "MICH",
+    "Michigan Inflation 5Y":       "T5YIE",
+    "CB Consumer Confidence":      "CSCICP03USM665S",
+    "Building Permits":            "PERMIT",
+    "Yield Curve 10Y-2Y":          "T10Y2Y",
+    "HY Spread":                   "BAMLH0A0HYM2",
+    "VIX":                         "VIXCLS",
+    # スコア計算に必要な指標（追加）
+    "Michigan Consumer Sentiment": "UMCSENT",           # 1978年〜
+    "Conference Board LEI":        "USALOLITONOSTSAM",  # OECD CLI 1955年〜
 }
 
 def import_from_fred(from_date: str, to_date: str, overwrite: bool = False,
@@ -335,7 +340,7 @@ def main():
     sub = p.add_subparsers(dest="mode", required=True)
 
     fred_p = sub.add_parser("fred", help="FRED から過去データを一括取得")
-    fred_p.add_argument("--from",  dest="from_date", default="2020-01-01", help="開始日 YYYY-MM-DD")
+    fred_p.add_argument("--from",  dest="from_date", default="2001-01-01", help="開始日 YYYY-MM-DD（デフォルト: 2001-01-01）")
     fred_p.add_argument("--to",    dest="to_date",   default=date.today().strftime("%Y-%m-%d"), help="終了日")
     fred_p.add_argument("--indicators", nargs="*",   help="取得する指標名（省略時は全FRED指標）")
     fred_p.add_argument("--overwrite", action="store_true", help="既存データを上書き")
