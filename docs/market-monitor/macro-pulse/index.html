@@ -374,10 +374,12 @@
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
       <div class="l3-title" style="margin-bottom:0">SCORE HISTORY — NBER景気後退期（灼色帯）と合わせて表示</div>
       <div style="display:flex;gap:6px">
-        <button class="btn score-range-btn active" data-range="1" onclick="setScoreRange(1)">1年</button>
-        <button class="btn score-range-btn" data-range="3" onclick="setScoreRange(3)">3年</button>
-        <button class="btn score-range-btn" data-range="0" onclick="setScoreRange(0)">全期間</button>
-      </div>
+　　　　<button class="btn score-range-btn" data-range="1" onclick="setScoreRange(1)">1年</button>
+　　　　<button class="btn score-range-btn" data-range="3" onclick="setScoreRange(3)">3年</button>
+　　　　<button class="btn score-range-btn" data-range="5" onclick="setScoreRange(5)">5年</button>
+　　　　<button class="btn score-range-btn" data-range="10" onclick="setScoreRange(10)">10年</button>
+　　　　<button class="btn score-range-btn" data-range="20" onclick="setScoreRange(20)">20年</button>
+　　　　<button class="btn score-range-btn active" data-range="0" onclick="setScoreRange(0)">全期間</button>      </div>
     </div>
     <div id="scoreHistoryChart" style="width:100%;height:260px"></div>
   </div>
@@ -1151,9 +1153,14 @@ function drawL3Chart(nowVals, isNow){
 
 // NBER景気後退期（開始日, 終了日, ラベル, 外生フラグ）
 const NBER_RECESSIONS = [
-  ['2001-03-01', '2001-11-30', 'IT Bubble', false],
-  ['2007-12-01', '2009-06-30', 'GFC',       false],
-  ['2020-02-01', '2020-04-30', 'COVID⚠',  true],  // 外生ショック
+  ['1969-12-01', '1970-11-30', '1969-70',     false],
+  ['1973-11-01', '1975-03-31', '第1次オイル', false],
+  ['1980-01-01', '1980-07-31', '1980',        false],
+  ['1981-07-01', '1982-11-30', '第2次オイル', false],
+  ['1990-07-01', '1991-03-31', '湾岸戦争',    false],
+  ['2001-03-01', '2001-11-30', 'IT Bubble',   false],
+  ['2007-12-01', '2009-06-30', 'GFC',         false],
+  ['2020-02-01', '2020-04-30', 'COVID⚠',     true],  // 外生ショック
 ];
 
 let SCORE_RANGE_YEARS = 1; // 1=1年, 3=3年, 0=全期間
