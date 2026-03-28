@@ -58,8 +58,8 @@
       card.className = 'ticker-card';
       card.innerHTML = `
         <div class="ticker-name">${ticker}</div>
-        <div class="value" id="val-${ticker}">計算中...</div>
-        <div class="status">最新更新: --</div>
+        <div class="value" id="val-${ticker}">¥12,450</div>
+        <div class="status">最新更新: <span id="date-${ticker}">--</span></div>
       `;
       container.appendChild(card);
       
