@@ -1,0 +1,47 @@
+name: TANUKI VALUATION Weekly Update
+
+on:
+  schedule:
+    - cron: '0 12 * * 0'     # 日本時間 日曜21時（UTC 12:00）
+  workflow_dispatch:         # 手動実行ボタン（随時更新用）
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run TANUKI VALUATION Update
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+        run: python -m src.value.tanuki_valuation.pipeline
+
+      - name: Send Email Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: '✅ TANUKI VALUATION 週次更新完了（${{ github.run_number }}）'
+          to: ${{ secrets.GMAIL_USER }}
+          from: TANUKI VALUATION <${{ secrets.GMAIL_USER }}>
+          body: |
+            全11銘柄＋テスト銘柄（MSFT/AMZN）の本質的価値を更新しました。
+            詳細は https://koichi-shigihara2.github.io/On-a-journey/value-monitor/tanuki_valuation/ で確認してください。
+            計算日時: ${{ github.event.head_commit.timestamp }}
