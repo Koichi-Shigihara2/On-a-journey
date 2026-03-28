@@ -138,6 +138,7 @@ FRED_INDICATORS = {
     # スコア計算に必要な指標（追加）
     "Michigan Consumer Sentiment": "UMCSENT",           # 1978年〜
     "Conference Board LEI":        "USALOLITONOSTSAM",  # OECD CLI 1955年〜
+    "Sahm Rule Recession Indicator": "SAHMCURRENT",     # 1949年〜
 }
 
 def import_from_fred(from_date: str, to_date: str, overwrite: bool = False,
