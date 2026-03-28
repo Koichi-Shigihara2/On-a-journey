@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANUKI VALUATION - [TICKER]</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0d14;--sur:#111520;--acc:#8b5cf6;--txt:#e2e8f0;--mut:#64748b;--mono:'Space Mono',monospace}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif}
+    .shell{max-width:980px;margin:0 auto;padding:20px}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px}
+    .value-box{background:var(--sur);padding:24px;border-radius:12px;margin-bottom:24px}
+    .value{font-family:var(--mono);font-size:42px;font-weight:700;color:var(--acc)}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="header">
+    <h1 id="ticker-title">TANUKI VALUATION</h1>
+    <a href="index.html" style="color:var(--acc);text-decoration:none">← 一覧に戻る</a>
+  </div>
+
+  <div id="content">
+    <!-- JSで最新.jsonから動的に表示 -->
+    <div class="value-box">
+      <div style="font-size:14px;color:var(--mut)">本質的価値 (Koichi式 v5.1)</div>
+      <div id="intrinsic-value" class="value">¥ --,--</div>
+      <div id="implied-irr" style="margin-top:8px;font-family:var(--mono);font-size:14px"></div>
+    </div>
+    <!-- グラフ・AIコメント・日本語解説は後続PhaseでPlotly追加 -->
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const ticker = urlParams.get('ticker') || 'MSFT';
+  document.getElementById('ticker-title').textContent = `${ticker} TANUKI VALUATION`;
+  
+  // 将来的に latest.json をfetchして表示
+  console.log(`Loading data for ${ticker}...`);
+</script>
+</body>
+</html>
