@@ -674,22 +674,19 @@ function updateTicker() {
   const yc = idxLatestAsOf('Yield Curve 10Y-2Y', now);
   const hy = idxLatestAsOf('HY Spread', now);
 
-  // S&P 500: find latest row with sp500_t0 (need raw scan but only once)
+  // S&P 500: find latest row with sp500_t0 (scan once, cache)
   if(!window._spCache){
-    const arr=IND_INDEX['Yield Curve 10Y-2Y']||[];
-    // sp500_t0 is not indexed by indicator, scan DATA once
     let best=null,bestMs=0;
     for(const r of DATA){const v=n(r[COL.sp0]);if(v){const ms=new Date(r[COL.date]).getTime();if(ms>bestMs){bestMs=ms;best=v;}}}
     window._spCache=best;
   }
   const sp=window._spCache;
-  if(sp)el('tk-sp').textContent=sp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const spEl=el('tk-sp'); if(sp&&spEl)spEl.textContent=sp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 
-  if(yc!==null){el('tk-yc').textContent=(yc>=0?'+':'')+yc.toFixed(2)+'%';el('tk-yc-i').textContent=yc<-0.2?'INVERTED':yc<0.5?'FLAT':'NORMAL';}
-  if(hy!==null)el('tk-hy').textContent=hy.toFixed(2)+'%';
-  el('tk-vx').textContent='—';
+  if(yc!==null){const e1=el('tk-yc');if(e1)e1.textContent=(yc>=0?'+':'')+yc.toFixed(2)+'%';const e2=el('tk-yc-i');if(e2)e2.textContent=yc<-0.2?'INVERTED':yc<0.5?'FLAT':'NORMAL';}
+  if(hy!==null){const e1=el('tk-hy');if(e1)e1.textContent=hy.toFixed(2)+'%';}
 
-  // Last update: use the index to find the most recent date across all indicators
+  // Last update
   let latestDate='',latestSrc='—';
   for(const ind in IND_INDEX){
     const arr=IND_INDEX[ind];
@@ -697,13 +694,13 @@ function updateTicker() {
       const last=arr[arr.length-1];
       const ds=new Date(last.dateMs).toISOString().slice(0,10);
       if(ds>latestDate){latestDate=ds;
-        // find the source from DATA (just use first match for this date+indicator)
         const r=DATA.find(x=>x[COL.indicator]===ind&&x[COL.date]===ds);
         if(r)latestSrc=r[COL.dsrc]||'—';
       }
     }
   }
-  if(latestDate){el('tk-last').textContent=latestDate;el('tk-src').textContent=latestSrc;}
+  const eLast=el('tk-last'),eSrc=el('tk-src');
+  if(latestDate&&eLast){eLast.textContent=latestDate;if(eSrc)eSrc.textContent=latestSrc;}
 }
 
 // ═══════════════════════════════════════════════════════
