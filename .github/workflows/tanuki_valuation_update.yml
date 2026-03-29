@@ -1,24 +1,45 @@
-# src/value/tanuki_valuation/segment_kpi_ai.py
-import os
-from typing import Dict, List
+name: TANUKI VALUATION Weekly Update
 
-class SegmentKPIAI:
-    """AIによるブル/中立/ベア セグメント別KPI動的設定"""
-    
-    def __init__(self):
-        self.api_key = os.getenv("GEMINI_API_KEY") or os.getenv("XAI_API_KEY")
-    
-    def generate_scenarios(self, ticker: str, sec_text: str) -> Dict[str, List[Dict]]:
-        """現在はダミーデータを返し、後続Phaseで本AI呼び出しに置き換え予定"""
-        # 将来的にGemini/XAIで本実装（promptはconfig/prompts.yamlに移動）
-        return {
-            "bull": [
-                {"revenue_growth": 0.35, "gross_margin": 0.45, "capex_ratio": 0.12, "working_capital_turnover": 8.5}
-            ],
-            "base": [
-                {"revenue_growth": 0.22, "gross_margin": 0.38, "capex_ratio": 0.15, "working_capital_turnover": 7.2}
-            ],
-            "bear": [
-                {"revenue_growth": 0.08, "gross_margin": 0.30, "capex_ratio": 0.18, "working_capital_turnover": 5.8}
-            ]
-        }
+on:
+  schedule:
+    - cron: '0 12 * * 0'     # 日本時間 日曜21時
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run TANUKI VALUATION Update
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+        run: python -m src.value.tanuki_valuation.pipeline   # ← 相対インポート対応済み
+
+      - name: Send Email Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: '✅ TANUKI VALUATION 週次更新完了'
+          to: ${{ secrets.GMAIL_USER }}
+          body: |
+            全銘柄の本質的価値を更新しました。
+            詳細 → https://koichi-shigihara2.github.io/On-a-journey/value-monitor/tanuki_valuation/
