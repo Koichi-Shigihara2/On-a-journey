@@ -1141,7 +1141,9 @@ Respond ONLY in this exact JSON format (no markdown, no extra text):
             r.raise_for_status()
             break
         data = r.json()
-        raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+        raw_texts = [part["text"] for part in parts if "text" in part]
+        raw = "\n".join(raw_texts).strip()
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         if m:
             return json.loads(m.group())
@@ -1444,12 +1446,22 @@ def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
             break
 
         data = r.json()
-        raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        # Gemini 2.5 Flash は thinking model のため parts に複数ブロックが返る
+        # text ブロックのみ結合してJSONを探す
+        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+        raw_texts = []
+        for part in parts:
+            if "text" in part:
+                raw_texts.append(part["text"])
+        raw = "\n".join(raw_texts).strip()
+        logger.info(f"Gemini raw response length={len(raw)} chars, first 300: {raw[:300]}")
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         if m:
             result = json.loads(m.group())
             logger.info("Weekly analysis generated via Gemini.")
             return result
+        else:
+            logger.warning(f"No JSON found in Gemini response. Full response: {raw[:500]}")
 
     except Exception as e:
         logger.warning(f"Gemini API error for weekly analysis: {e}")
