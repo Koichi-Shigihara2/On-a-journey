@@ -1,6 +1,7 @@
 # src/value/tanuki_valuation/data_fetcher.py
 import os
 import json
+import numpy as np                          # ← ここを追加（NameError対策）
 from typing import Dict, Any
 import requests
 from datetime import datetime
@@ -21,7 +22,7 @@ class TanukiDataFetcher:
         cf_url = f"{base}/cash-flow-statement/{ticker}?period=annual&limit=10&apikey={self.fmp_key}"
         cf_data = requests.get(cf_url).json()
         
-        fcf_list = [item["freeCashFlow"] for item in cf_data if "freeCashFlow" in item]
+        fcf_list = [item.get("freeCashFlow", 0) for item in cf_data if isinstance(item, dict)]
         
         # キー指標（ROEなど）
         metrics_url = f"{base}/key-metrics/{ticker}?limit=10&apikey={self.fmp_key}"
@@ -36,26 +37,29 @@ class TanukiDataFetcher:
         
         return {
             "fcf_5yr_avg": self._normalize_fcf(fcf_list[-5:]),
-            "roe_10yr_avg": np.mean([m.get("roe", 0) for m in metrics]),
+            "roe_10yr_avg": float(np.mean([m.get("roe", 0) for m in metrics if isinstance(m, dict)])),
             "current_price": self._get_current_price(ticker),
             "fcf_list_raw": fcf_list,
-            "eps_data": eps_data  # 再利用
+            "eps_data": eps_data
         }
     
     def _normalize_fcf(self, fcf_list: list) -> float:
-        """ノーマライズ（core_calculatorと共通ロジック）"""
-        import numpy as np
-        return float(np.mean(np.clip(fcf_list, np.mean(fcf_list)-2*np.std(fcf_list), np.mean(fcf_list)+2*np.std(fcf_list)))) if fcf_list else 0.0
+        """ノーマライズ"""
+        if not fcf_list:
+            return 0.0
+        mean = np.mean(fcf_list)
+        std = np.std(fcf_list) if len(fcf_list) > 1 else 0
+        clipped = np.clip(fcf_list, mean - 2*std, mean + 2*std)
+        return float(np.mean(clipped))
     
     def _get_current_price(self, ticker: str) -> float:
         """Alpha Vantageで最新株価"""
         url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={self.alpha_key}"
         data = requests.get(url).json()
-        return float(data.get("Global Quote", {}).get("05. price", 0))
+        return float(data.get("Global Quote", {}).get("05. price", 0) or 0)
     
     def get_fred_risk_free(self) -> float:
-        """FREDから10年国債利回り（WACC用）"""
-        # 簡易実装（実際はfredライブラリ推奨）
+        """FREDから10年国債利回り"""
         url = f"https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key={self.fred_key}&file_type=json&limit=1"
         data = requests.get(url).json()
-        return float(data["observations"][0]["value"]) / 100 if data["observations"] else 0.08
+        return float(data.get("observations", [{}])[0].get("value", 0.08)) / 100
