@@ -12,17 +12,21 @@ class TanukiDataFetcher:
         self.alpha_key = os.getenv("ALPHA_VANTAGE_API_KEY")
 
     def get_financials(self, ticker: str) -> Dict[str, Any]:
-        base = f"https://financialmodelingprep.com/api/v3"
+        base = "https://financialmodelingprep.com/api/v3"
         
         # キャッシュフロー
-        cf_url = f"{base}/cash-flow-statement/{ticker}?period=annual&limit=10&apikey={self.fmp_key}"
-        cf_data = requests.get(cf_url).json()
+        cf_url = f"{base}/cash-flow-statement/{ticker}?period=annual&limit=20&apikey={self.fmp_key}"
+        cf_resp = requests.get(cf_url)
+        print(f"DEBUG {ticker} CF status: {cf_resp.status_code} | length: {len(cf_resp.text)}")
+        cf_data = cf_resp.json()
         fcf_list = [item.get("freeCashFlow", 0) for item in cf_data if isinstance(item, dict)]
         
-        # キー指標（FMPの実際のキー名に修正）
-        metrics_url = f"{base}/key-metrics/{ticker}?limit=10&apikey={self.fmp_key}"
-        metrics = requests.get(metrics_url).json()
-        roe_values = [m.get("returnOnEquity", 0) for m in metrics if isinstance(m, dict)]  # ← ここを修正
+        # キー指標
+        metrics_url = f"{base}/key-metrics/{ticker}?limit=20&apikey={self.fmp_key}"
+        metrics_resp = requests.get(metrics_url)
+        print(f"DEBUG {ticker} Metrics status: {metrics_resp.status_code}")
+        metrics = metrics_resp.json()
+        roe_values = [m.get("returnOnEquity", m.get("roe", 0)) for m in metrics if isinstance(m, dict)]  # 両キー対応
         
         # EPSアナライザー連携（緩やか連携）
         eps_path = f"docs/value-monitor/adjusted_eps_analyzer/data/{ticker}/annual.json"
@@ -31,10 +35,10 @@ class TanukiDataFetcher:
             with open(eps_path, "r", encoding="utf-8") as f:
                 eps_data = json.load(f)
         
-        print(f"DEBUG {ticker}: FCF count={len(fcf_list)}, ROE values={roe_values[:3]}...")  # デバッグ出力
+        fcf_5yr = self._normalize_fcf(fcf_list[-5:]) if fcf_list else 0.0
         
         return {
-            "fcf_5yr_avg": self._normalize_fcf(fcf_list[-5:]),
+            "fcf_5yr_avg": fcf_5yr,
             "roe_10yr_avg": float(np.mean(roe_values)) if roe_values else 0.0,
             "current_price": self._get_current_price(ticker),
             "fcf_list_raw": fcf_list,
@@ -52,4 +56,5 @@ class TanukiDataFetcher:
     def _get_current_price(self, ticker: str) -> float:
         url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={self.alpha_key}"
         data = requests.get(url).json()
-        return float(data.get("Global Quote", {}).get("05. price", 0) or 0)
+        price = data.get("Global Quote", {}).get("05. price", 0)
+        return float(price) if price else 0.0
