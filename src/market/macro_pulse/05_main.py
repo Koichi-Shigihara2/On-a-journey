@@ -1220,7 +1220,9 @@ def load_weekly_analysis() -> pd.DataFrame:
         for c in WEEKLY_ANALYSIS_COLUMNS:
             if c not in df.columns:
                 df[c] = ""
-        return df
+        # 不正行フィルタ（analysis_dateが空またはYYYY-MM-DD形式でない行を除去）
+        df = df[df["analysis_date"].str.match(r"^\d{4}-\d{2}-\d{2}$", na=False)]
+        return df.reset_index(drop=True)
     except Exception as e:
         logger.warning(f"weekly_analysis.csv read error: {e}")
         return pd.DataFrame(columns=WEEKLY_ANALYSIS_COLUMNS)
@@ -1519,11 +1521,17 @@ def run_weekly_analysis(target_date: date):
 
     # CSV に保存
     wa_df = load_weekly_analysis()
-    # テキストフィールド内の改行・カンマを安全な文字に置換（簡易CSVパーサー対策）
+    # テキストフィールド内の改行・カンマ・ダブルクォートを安全な文字に置換
+    # （フロントの簡易CSVパーサーはRFC 4180非準拠のため必要）
     def _sanitize(s):
         if not s:
             return s
-        return str(s).replace('\n', ' ').replace('\r', ' ').replace('"', "'")
+        return (str(s)
+                .replace('\n', ' ')
+                .replace('\r', ' ')
+                .replace('"', "'")
+                .replace(',', '、')  # CSVカラム区切りとの誤認を防止
+               )
     new_row = {
         "analysis_date": target_date.strftime("%Y-%m-%d"),
         "score":         str(score_data['score']),
