@@ -1423,10 +1423,18 @@ def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1000}
         }
+        prompt_len = len(prompt)
+        logger.info(f"Gemini weekly analysis: prompt length={prompt_len} chars")
         for attempt in range(3):
             r = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=45)
+            logger.info(f"Gemini response: status={r.status_code}")
             if r.status_code == 429:
-                wait = 15 * (2 ** attempt)
+                try:
+                    err_body = r.text[:500]
+                    logger.warning(f"Gemini 429 body: {err_body}")
+                except Exception:
+                    pass
+                wait = 30 * (2 ** attempt)
                 if attempt < 2:
                     logger.warning(f"Gemini rate limit. Retry in {wait}s...")
                     time.sleep(wait)
