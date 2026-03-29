@@ -324,7 +324,7 @@
           <tr><td style="padding:2px 4px;color:var(--txt)">HYスプレッド</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">15%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">シカゴ連銀全米活動指数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">新規失業保険申請</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">住宅着工許可件数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">CB消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">ミシガン消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">8%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">サームルール不況指標</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">7%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
         </table>
@@ -345,10 +345,10 @@
     <div class="phase-signals" id="pg-signals"></div>
     <!-- スコア比較バー -->
     <div class="compare-bar" id="compareBar" style="display:none;border-top:1px solid var(--bdr);border-left:none;border-right:none;border-bottom:none;margin-top:0">
-      <div class="cmp-cell"><span class="cmp-label">前月末比</span><span class="cmp-delta cmp-delta-lg" id="cmp-m1-delta">—</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">3ヶ月前比</span><span class="cmp-delta cmp-delta-lg" id="cmp-m3-delta">—</span><span class="cmp-score" id="cmp-m3-score">—</span><span class="cmp-snap-label" id="cmp-m3-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">2ヶ月前比</span><span class="cmp-delta cmp-delta-lg" id="cmp-m2-delta">—</span><span class="cmp-score" id="cmp-m2-score">—</span><span class="cmp-snap-label" id="cmp-m2-date">—</span></div>
+      <div class="cmp-cell"><span class="cmp-label">前月比</span><span class="cmp-delta cmp-delta-lg" id="cmp-m1-delta">—</span><span class="cmp-score" id="cmp-m1-score">—</span><span class="cmp-snap-label" id="cmp-m1-date">—</span></div>
       <div class="cmp-cell"><span class="cmp-label">先週比</span><span class="cmp-delta cmp-delta-lg" id="cmp-w1-delta">—</span><span class="cmp-score" id="cmp-w1-score">—</span><span class="cmp-snap-label" id="cmp-w1-date">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">一昨日比</span><span class="cmp-delta cmp-delta-lg" id="cmp-d2-delta">—</span><span class="cmp-score" id="cmp-d2-score">—</span><span class="cmp-snap-label" id="cmp-d2-date">—</span></div>
-      <div class="cmp-cell"><span class="cmp-label">昨日比</span><span class="cmp-delta cmp-delta-lg" id="cmp-d1-delta">—</span><span class="cmp-score" id="cmp-d1-score">—</span><span class="cmp-snap-label" id="cmp-d1-date">—</span></div>
       <div class="cmp-cell" style="min-width:140px">
         <span class="cmp-label">カスタム比較</span>
         <input type="date" id="cmpDateInput" style="font-family:var(--mono);font-size:11px;background:var(--sur2);border:1px solid var(--bdr);border-radius:3px;color:var(--txt);padding:3px 6px;margin-top:2px;width:100%;cursor:pointer;color-scheme:dark" onchange="renderCustomCmp()">
@@ -727,7 +727,7 @@ function renderPhaseGauge() {
   const cfnai  =latestActual('Chicago Fed National Activity');
   const claims=latestActual('Initial Claims 4W MA');
   const cbcc  =latestActual('Michigan Consumer Sentiment');
-  const permit=latestActual('Building Permits');
+  const cbcc2 =latestActual('CB Consumer Confidence');
   const sahm   =latestActual('Sahm Rule Recession Indicator');
 
   const signals=[];
@@ -744,11 +744,11 @@ function renderPhaseGauge() {
     else if(hy>3.5){hyScore=40;hySignal='neutral';}else{hyScore=15;hySignal='bull';}}
   signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤4.0% / BEAR≥6.5%'});
 
-  let permitScore=50,permitSignal='neutral',permitLabel='—';
-  if(permit!==null){permitLabel=(permit/1000).toFixed(0)+'K';
-    if(permit>=1400){permitScore=15;permitSignal='bull';}else if(permit>=1300){permitScore=35;permitSignal='neutral';}
-    else if(permit>=1200){permitScore=60;permitSignal='caution';}else{permitScore=85;permitSignal='bear';}}
-  signals.push({name:'Building Permits',val:permitLabel,score:permitScore,signal:permitSignal,weight:10,lead:'先行3ヶ月',desc:'住宅着工許可件数（年率換算千件）。住宅市場は景気の最先行セクター。Moody\u0027sが最重要先行指標と評価。',thresh:'BULL≥1,400K / BEAR≤1,200K'});
+  let cbcc2Score=50,cbcc2Signal='neutral',cbcc2Label='—';
+  if(cbcc2!==null){cbcc2Label=cbcc2.toFixed(1);
+    if(cbcc2>=110){cbcc2Score=15;cbcc2Signal='bull';}else if(cbcc2>=100){cbcc2Score=35;cbcc2Signal='neutral';}
+    else if(cbcc2>=90){cbcc2Score=60;cbcc2Signal='caution';}else{cbcc2Score=85;cbcc2Signal='bear';}}
+  signals.push({name:'CB Confidence',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行2ヶ月',desc:'コンファレンスボード消費者信頼感指数。消費者の景気見通しを反映。100が基準値。',thresh:'BULL≥110 / BEAR≤90'});
 
   let phillyScore=50,phillySignal='neutral',phillyLabel='—';
   if(philly!==null){phillyLabel=philly.toFixed(1);const t=trend3('Philadelphia Fed Manufacturing');
@@ -863,7 +863,7 @@ function renderL2() {
     {label:'Initial Claims 4WMA',labelJa:'新規失業保険申請4週MA',key:'Initial Claims 4W MA',mid:230000,bull:215000,bear:245000,dir:'left',fmt:v=>(v/1000).toFixed(1)+'K',rMin:180000,rMax:400000},
     // 🛍️ 消費・信頼感
     {label:'Michigan Sentiment',labelJa:'ミシガン消費者信頼感',key:'Michigan Consumer Sentiment',mid:80,bull:90,bear:65,dir:'right',fmt:v=>v.toFixed(1),rMin:50,rMax:110},
-    {label:'Building Permits',labelJa:'住宅着工許可件数',key:'Building Permits',mid:1300,bull:1400,bear:1200,dir:'right',fmt:v=>(v/1000).toFixed(0)+'K',rMin:800,rMax:1800},
+    {label:'CB Cons. Confidence',labelJa:'CB消費者信頼感',key:'CB Consumer Confidence',mid:100,bull:110,bear:90,dir:'right',fmt:v=>v.toFixed(1),rMin:50,rMax:140},
   ];
 
   const signalColor={BULL:'var(--grn)',CAUTION:'var(--amb)',NEUTRAL:'var(--mut)',BEAR:'var(--red)'};
@@ -958,7 +958,7 @@ const L3_INDICATORS=[
   {label:'Philly Fed',    key:'Philadelphia Fed Manufacturing',  min:-30,   max:30},
   {label:'CFNAI',         key:'Chicago Fed National Activity',   min:-3,    max:1},
   {label:'Sahm Rule',      key:'Sahm Rule Recession Indicator',  min:0,     max:1.5},
-  {label:'Bldg Permits', key:'Building Permits',                  min:800,   max:1800},
+  {label:'CB Confidence', key:'CB Consumer Confidence',          min:50,    max:140},
   {label:'Michigan',      key:'Michigan Consumer Sentiment',     min:50,    max:110},
   {label:'Initial Clms',  key:'Initial Claims 4W MA',            min:350000,max:180000},
   {label:'HY Spread',     key:'HY Spread',                       min:10,    max:2.5},
@@ -1013,7 +1013,7 @@ function buildL3Snapshots(){
 
   // 月次指標の発表日を追加
   const monthlyInds = ['Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Michigan Consumer Sentiment','Building Permits','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
+    'Michigan Consumer Sentiment','CB Consumer Confidence','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
   DATA.forEach(r=>{
     const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
     if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator].trim())){
@@ -1227,7 +1227,7 @@ function buildScoreTimeSeries(startDate, endDate) {
   const changeDates = new Set();
   const allInds = ['Yield Curve 10Y-2Y','HY Spread',
     'Philadelphia Fed Manufacturing','Chicago Fed National Activity',
-    'Initial Claims 4W MA','Building Permits','Michigan Consumer Sentiment',
+    'Initial Claims 4W MA','CB Consumer Confidence','Michigan Consumer Sentiment',
     'Sahm Rule Recession Indicator'];
 
 
@@ -1597,7 +1597,7 @@ function computeScoreAsOf(asOf) {
   const philly = la('Philadelphia Fed Manufacturing');
   const cfnai  = la('Chicago Fed National Activity');
   const claims = la('Initial Claims 4W MA');
-  const permit = la('Building Permits');
+  const cbcc2  = la('CB Consumer Confidence');
   const cbcc   = la('Michigan Consumer Sentiment');
   const sahm   = la('Sahm Rule Recession Indicator');
 
@@ -1608,8 +1608,8 @@ function computeScoreAsOf(asOf) {
         return {score: val<-0.5?90:val<0?70:val<0.5?40:15, w:20};
       case 'hy':
         return {score: val>6?90:val>4.5?70:val>3.5?40:15, w:15};
-      case 'permit':
-        return {score: val>=1400?15:val>=1300?35:val>=1200?60:85, w:10};
+      case 'cbcc2':
+        return {score: val>=110?15:val>=100?35:val>=90?60:85, w:10};
       case 'philly':
         return {score: val<-10?88:val<0?65:val<5?35:12, w:18};
       case 'cfnai':
@@ -1627,7 +1627,7 @@ function computeScoreAsOf(asOf) {
   const sigs = [
     calcSignal('yc',     yc),
     calcSignal('hy',     hy),
-    calcSignal('permit', permit),
+    calcSignal('cbcc2',  cbcc2),
     calcSignal('philly', philly),
     calcSignal('cfnai',  cfnai),
     calcSignal('claims', claims),
@@ -1682,16 +1682,18 @@ function renderCompareBar(currentScore, currentPhase) {
   }
 
   const today = new Date(); today.setHours(23,59,59,0);
-  const d1 = new Date(today); d1.setDate(d1.getDate()-1); d1.setHours(23,59,59,0);
-  const d2 = new Date(today); d2.setDate(d2.getDate()-2); d2.setHours(23,59,59,0);
   const w1 = new Date(today); w1.setDate(w1.getDate()-7); w1.setHours(23,59,59,0);
   // 前月末: 今月の1日-1日
   const m1 = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+  // 2ヶ月前末
+  const m2 = new Date(today.getFullYear(), today.getMonth()-1, 0, 23, 59, 59);
+  // 3ヶ月前末
+  const m3 = new Date(today.getFullYear(), today.getMonth()-2, 0, 23, 59, 59);
 
+  fillCell('cmp-m3-score','cmp-m3-delta','cmp-m3-date', m3, '3ヶ月前');
+  fillCell('cmp-m2-score','cmp-m2-delta','cmp-m2-date', m2, '2ヶ月前');
   fillCell('cmp-m1-score','cmp-m1-delta','cmp-m1-date', m1, '前月末');
   fillCell('cmp-w1-score','cmp-w1-delta','cmp-w1-date', w1, '先週');
-  fillCell('cmp-d2-score','cmp-d2-delta','cmp-d2-date', d2, '一昨日');
-  fillCell('cmp-d1-score','cmp-d1-delta','cmp-d1-date', d1, '昨日');
 }
 
 function renderCustomCmp() {
