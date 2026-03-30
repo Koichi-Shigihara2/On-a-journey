@@ -17,17 +17,21 @@ def run_update():
             print(f"❌ {ticker} skipped")
             continue
             
-        # ここで計算を実行
         calc = calculator.calculate_pt(financials)
         results[ticker] = calc
         
-        # 重要な結果を明確に表示
+        # 詳細表示を強化
         per_share = calc.get("intrinsic_value_per_share", 0)
-        pt = calc.get("intrinsic_value_pt", 0)
-        print(f"   → Intrinsic Value (Total): ${pt:,.0f}")
+        total_value = calc.get("intrinsic_value_pt", 0)
+        fcf_avg = financials.get("fcf_5yr_avg", 0)
+        method = financials.get("fcf_calc_method", "N/A")
+        diluted = financials.get("diluted_shares", 0)
+        
+        print(f"   → FCF 5yr Avg: ${fcf_avg:,.0f} | Method: {method}")
+        print(f"   → Diluted Shares: {diluted:,.0f}")
+        print(f"   → Intrinsic Value (Total): ${total_value:,.0f}")
         print(f"   → Intrinsic Value (Per Share): ${per_share:.2f}")
-        print(f"   → FCF 5yr Avg: ${financials.get('fcf_5yr_avg', 0):,.0f} | Method: {financials.get('fcf_calc_method', 'N/A')}")
-        print(f"✅ {ticker} 更新完了")
+        print(f"✅ {ticker} 更新完了\n")
 
     # 保存
     data_dir = "docs/value-monitor/tanuki_valuation/data"
@@ -40,7 +44,7 @@ def run_update():
     with open(f"{data_dir}/latest.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print("\n🎉 TANUKI VALUATION 全銘柄更新完了！")
+    print("🎉 TANUKI VALUATION 全銘柄更新完了！")
 
 if __name__ == "__main__":
     run_update()
