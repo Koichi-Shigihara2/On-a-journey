@@ -386,6 +386,12 @@
     </div>
   </div>
 
+  <!-- AI週次解説（①の直後） -->
+  <div class="ai-wrap" style="margin-top:14px">
+    <div class="ai-title"><span class="ai-title-icon">🤖</span>AI WEEKLY COMMENTARY — 毎週日曜自動生成（Gemini 2.5 Flash）</div>
+    <div class="ai-timeline" id="aiTimeline"><div class="ai-empty"><span class="spin"></span>Loading...</div></div>
+  </div>
+
   <!-- ② 指標ヘルスバー -->
   <div class="sec">② 各指標の現在地</div>
   <div class="l2-wrap" id="l2Wrap">
@@ -439,12 +445,7 @@
     <div id="schedGrid"><div class="empty"><span class="spin"></span>Loading...</div></div>
   </div>
 
-  <!-- ⑦ AI週次解説 -->
-  <div class="sec">⑦ AI 週次景気解説</div>
-  <div class="ai-wrap">
-    <div class="ai-title"><span class="ai-title-icon">🤖</span>AI WEEKLY COMMENTARY — 毎週日曜自動生成（Gemini 2.5 Flash）</div>
-    <div class="ai-timeline" id="aiTimeline"><div class="ai-empty"><span class="spin"></span>Loading...</div></div>
-  </div>
+  <!-- ⑦ AI週次解説 は ①の直後に移動済み -->
 
 </div><!-- /shell -->
 
@@ -1848,7 +1849,29 @@ function renderWeeklyAnalysis(rows) {
     const dObj = new Date(date);
     const dFmt = dObj.toLocaleDateString('ja-JP',{year:'numeric',month:'numeric',day:'numeric',weekday:'short'});
 
-    // 指標コメントをパース（"指標名:コメント;指標名:コメント" 形式）
+    // 指標差分データをパース（"指標名:値:週差:月差;..." 形式）
+    const indDeltas = r.indicator_deltas || '';
+    const deltaMap = {};
+    if(indDeltas){
+      indDeltas.split(';').filter(s=>s.trim()).forEach(s=>{
+        const p = s.split(':');
+        if(p.length>=4){
+          deltaMap[p[0].trim()] = {val:p[1], w:p[2], m:p[3]};
+        }
+      });
+    }
+
+    // 差分バッジ生成ヘルパー
+    function deltaBadge(valStr){
+      if(!valStr || valStr==='N/A') return '';
+      const v = parseFloat(valStr);
+      if(isNaN(v)) return '';
+      if(Math.abs(v)<0.001) return `<span style="color:var(--mut);font-size:8px">±0</span>`;
+      const col = v>0 ? 'var(--grn)' : 'var(--red)';
+      return `<span style="color:${col};font-size:8px">${v>0?'▲':'▼'}${Math.abs(v).toFixed(2)}</span>`;
+    }
+
+    // 指標コメント+差分チップを構築
     let indChipsHtml = '';
     if(indComments){
       const chips = indComments.split(';').filter(s=>s.trim()).map(s=>{
@@ -1856,7 +1879,14 @@ function renderWeeklyAnalysis(rows) {
         if(parts.length>=2){
           const name = parts[0].trim();
           const comment = parts.slice(1).join(':').trim();
-          return `<div class="ai-ind-chip"><b>${name}</b>: ${comment}</div>`;
+          const d = deltaMap[name];
+          let deltaHtml = '';
+          if(d){
+            const wBadge = deltaBadge(d.w);
+            const mBadge = deltaBadge(d.m);
+            deltaHtml = `<div style="display:flex;gap:8px;margin-top:2px;font-family:var(--mono);font-size:8px;color:var(--mut)"><span>週${wBadge||'—'}</span><span>月${mBadge||'—'}</span></div>`;
+          }
+          return `<div class="ai-ind-chip"><b>${name}</b>: ${comment}${deltaHtml}</div>`;
         }
         return `<div class="ai-ind-chip">${s.trim()}</div>`;
       });
