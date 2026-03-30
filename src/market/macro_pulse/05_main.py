@@ -1388,19 +1388,30 @@ def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
         return _fallback_weekly_analysis(target_date, score_data, score_1w, score_1m)
 
     # 指標サマリを構築（差分情報を含む）
+    # 逆方向指標（値が上がると景気悪化）
+    INVERSE_INDICATORS = {'HY Spread', 'Initial Claims 4W MA', 'Sahm Rule Recession Indicator'}
+
     ind_lines = []
     for key, info in score_data['indicators'].items():
         val = info['value']
         if val is None:
             continue
         trend_str = '↑上昇' if info['trend'] > 0 else '↓下降' if info['trend'] < 0 else '→横ばい'
+        is_inverse = info['name'] in INVERSE_INDICATORS
+        direction_note = '（※この指標は上昇=悪化、下降=改善）' if is_inverse else ''
+
         delta_info = ""
         if indicator_deltas and info['name'] in indicator_deltas:
             d = indicator_deltas[info['name']]
-            w = f"{d['delta_1w']:+.2f}" if d['delta_1w'] is not None else "N/A"
-            m = f"{d['delta_1m']:+.2f}" if d['delta_1m'] is not None else "N/A"
+            # Initial Claimsは件数なので整数フォーマット
+            if info['name'] == 'Initial Claims 4W MA':
+                w = f"{d['delta_1w']:+,.0f}件" if d['delta_1w'] is not None else "N/A"
+                m = f"{d['delta_1m']:+,.0f}件" if d['delta_1m'] is not None else "N/A"
+            else:
+                w = f"{d['delta_1w']:+.2f}" if d['delta_1w'] is not None else "N/A"
+                m = f"{d['delta_1m']:+.2f}" if d['delta_1m'] is not None else "N/A"
             delta_info = f", 週差: {w}, 月差: {m}"
-        ind_lines.append(f"  - {info['name']}: {val} (トレンド: {trend_str}{delta_info})")
+        ind_lines.append(f"  - {info['name']}: {val} (トレンド: {trend_str}{delta_info}){direction_note}")
 
     # 直近発表イベント
     event_lines = []
@@ -1421,6 +1432,13 @@ def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
 - スコアが低いほど景気は良好です。スコア24は「後退リスクが低い=景気が良い」という意味です。
 - 「スコアが低い」ことをネガティブに表現しないでください。「リスクが低い」「良好」と表現してください。
 - フェーズ: 0-25=拡張（好調）、25-52=踊り場、52-70=後退入口、70-100=後退
+
+【重要】指標の方向性ルール:
+- 多くの指標は「上昇=景気改善」だが、以下の3指標は逆方向（上昇=景気悪化）:
+  - HY Spread: 上昇=信用リスク拡大=悪化、下降=改善
+  - Initial Claims 4W MA: 上昇=失業増加=悪化、下降=改善
+  - Sahm Rule Recession Indicator: 上昇=後退リスク上昇=悪化、下降=改善
+- 差分を言及する際は、この方向性を踏まえて「改善」「悪化」を正しく使い分けてください。
 
 ■ 現在の景気後退リスクスコア: {score_data['score']}/100 (フェーズ: {score_data['phase']})
 ■ 先週比: {score_1w:+d}pt, 前月比: {score_1m:+d}pt （マイナス=改善、プラス=悪化）
