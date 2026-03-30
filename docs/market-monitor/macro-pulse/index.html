@@ -1878,7 +1878,13 @@ function renderWeeklyAnalysis(rows) {
     // 指標コメント+差分チップを構築
     let indChipsHtml = '';
     if(indComments){
-      const chips = indComments.split(';').filter(s=>s.trim()).map(s=>{
+      // セミコロン区切りを試行、1つしか分割されない場合は「。」区切りをフォールバック
+      let rawChips = indComments.split(';').filter(s=>s.trim());
+      if(rawChips.length <= 1){
+        // 「指標名:コメント。指標名:コメント」形式のフォールバック
+        rawChips = indComments.split(/。/).filter(s=>s.trim() && s.includes(':'));
+      }
+      const chips = rawChips.map(s=>{
         const parts = s.split(':');
         if(parts.length>=2){
           const name = parts[0].trim();
