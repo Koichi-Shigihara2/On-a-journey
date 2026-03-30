@@ -78,7 +78,8 @@ FED_CONTEXT_COLUMNS = [
 WEEKLY_ANALYSIS_COLUMNS = [
     "analysis_date", "score", "phase",
     "summary", "factor_analysis", "watchpoints",
-    "indicator_comments", "score_change_1w", "score_change_1m",
+    "indicator_comments", "indicator_deltas",
+    "score_change_1w", "score_change_1m",
     "model", "updated_at",
 ]
 
@@ -1378,21 +1379,28 @@ def _get_recent_events_summary(events: pd.DataFrame, target_date: date, days: in
 def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
                                           recent_events: list,
                                           score_1w: int, score_1m: int,
-                                          fed_context: dict) -> dict:
+                                          fed_context: dict,
+                                          indicator_deltas: dict = None) -> dict:
     """Gemini APIで週次AI解説を生成"""
     api_key = os.environ.get("GEMINI_API_KEY", "")
     if not api_key:
         logger.warning("GEMINI_API_KEY not set. Generating fallback analysis.")
         return _fallback_weekly_analysis(target_date, score_data, score_1w, score_1m)
 
-    # 指標サマリを構築
+    # 指標サマリを構築（差分情報を含む）
     ind_lines = []
     for key, info in score_data['indicators'].items():
         val = info['value']
         if val is None:
             continue
         trend_str = '↑上昇' if info['trend'] > 0 else '↓下降' if info['trend'] < 0 else '→横ばい'
-        ind_lines.append(f"  - {info['name']}: {val} (最終更新: {info['date']}, トレンド: {trend_str})")
+        delta_info = ""
+        if indicator_deltas and info['name'] in indicator_deltas:
+            d = indicator_deltas[info['name']]
+            w = f"{d['delta_1w']:+.2f}" if d['delta_1w'] is not None else "N/A"
+            m = f"{d['delta_1m']:+.2f}" if d['delta_1m'] is not None else "N/A"
+            delta_info = f", 週差: {w}, 月差: {m}"
+        ind_lines.append(f"  - {info['name']}: {val} (トレンド: {trend_str}{delta_info})")
 
     # 直近発表イベント
     event_lines = []
@@ -1408,18 +1416,24 @@ def generate_weekly_analysis_with_gemini(target_date: date, score_data: dict,
 
     prompt = f"""あなたは米国マクロ経済の専門アナリストです。以下のデータに基づいて、個人投資家向けの週次景気解説を日本語で作成してください。
 
-■ 現在の景気スコア: {score_data['score']}/100 (フェーズ: {score_data['phase']})
-■ 先週比: {score_1w:+d}pt, 前月比: {score_1m:+d}pt
+【重要】スコアの解釈ルール:
+- このスコアは「景気後退リスク」を測るもので、0=景気好調（後退リスクなし）、100=景気後退の可能性が高い、です。
+- スコアが低いほど景気は良好です。スコア24は「後退リスクが低い=景気が良い」という意味です。
+- 「スコアが低い」ことをネガティブに表現しないでください。「リスクが低い」「良好」と表現してください。
+- フェーズ: 0-25=拡張（好調）、25-52=踊り場、52-70=後退入口、70-100=後退
+
+■ 現在の景気後退リスクスコア: {score_data['score']}/100 (フェーズ: {score_data['phase']})
+■ 先週比: {score_1w:+d}pt, 前月比: {score_1m:+d}pt （マイナス=改善、プラス=悪化）
 ■ FED政策局面: {regime}, FF金利: {ff_rate}%, 利下げ織り込み: {cuts}回
 
-■ 8指標の最新値:
+■ 8指標の最新値（週差=1週間前との差分、月差=1ヶ月前との差分）:
 {chr(10).join(ind_lines)}
 
 ■ 直近1週間の主要発表:
 {chr(10).join(event_lines) if event_lines else '  なし'}
 
 以下のJSON形式で回答してください（マークダウンなし、バッククォートなし）:
-{{"summary":"全体の景気判断を3〜4文で簡潔に（150字以内）","factor_analysis":"スコア変動の要因分析を3〜5文で（200字以内）","watchpoints":"今後1〜2週間で注視すべきポイントを2〜3個、箇条書き風に（200字以内）","indicator_comments":"各指標への短評を指標名:コメント形式でセミコロン区切り（各30字以内、全8指標）"}}"""
+{{"summary":"全体の景気判断を3〜4文で簡潔に（150字以内）","factor_analysis":"スコア変動の要因分析を3〜5文で。各指標の差分データを根拠として言及すること（200字以内）","watchpoints":"今後1〜2週間で注視すべきポイントを2〜3個（200字以内）","indicator_comments":"各指標への短評を指標名:コメント形式でセミコロン区切り（各30字以内、全8指標）"}}"""
 
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
@@ -1501,6 +1515,24 @@ def run_weekly_analysis(target_date: date):
     score_1w = _compute_score_change(events, target_date, 7)
     score_1m = _compute_score_change(events, target_date, 30)
 
+    # 各指標の1週前・1ヶ月前との差分を計算
+    score_data_1w = _compute_current_score(events, target_date - timedelta(days=7))
+    score_data_1m = _compute_current_score(events, target_date - timedelta(days=30))
+    indicator_deltas = {}
+    for key, info in score_data['indicators'].items():
+        val = info['value']
+        if val is None:
+            continue
+        val_1w = score_data_1w['indicators'].get(key, {}).get('value')
+        val_1m = score_data_1m['indicators'].get(key, {}).get('value')
+        delta_1w = round(val - val_1w, 4) if val_1w is not None else None
+        delta_1m = round(val - val_1m, 4) if val_1m is not None else None
+        indicator_deltas[info['name']] = {
+            'value': val,
+            'delta_1w': delta_1w,
+            'delta_1m': delta_1m,
+        }
+
     # 直近1週間の発表イベント
     recent_events = _get_recent_events_summary(events, target_date, days=7)
 
@@ -1516,7 +1548,8 @@ def run_weekly_analysis(target_date: date):
 
     # Gemini で解説生成
     analysis = generate_weekly_analysis_with_gemini(
-        target_date, score_data, recent_events, score_1w, score_1m, fed_context
+        target_date, score_data, recent_events, score_1w, score_1m, fed_context,
+        indicator_deltas
     )
 
     # CSV に保存
@@ -1532,6 +1565,15 @@ def run_weekly_analysis(target_date: date):
                 .replace('"', "'")
                 .replace(',', '、')  # CSVカラム区切りとの誤認を防止
                )
+    # indicator_deltas をセミコロン区切り文字列に変換
+    # 形式: "指標名:値:週差:月差;..."
+    deltas_str_parts = []
+    for ind_name, d in indicator_deltas.items():
+        w = f"{d['delta_1w']:+.2f}" if d['delta_1w'] is not None else "N/A"
+        m = f"{d['delta_1m']:+.2f}" if d['delta_1m'] is not None else "N/A"
+        deltas_str_parts.append(f"{ind_name}:{d['value']}:{w}:{m}")
+    deltas_str = ";".join(deltas_str_parts)
+
     new_row = {
         "analysis_date": target_date.strftime("%Y-%m-%d"),
         "score":         str(score_data['score']),
@@ -1540,6 +1582,7 @@ def run_weekly_analysis(target_date: date):
         "factor_analysis": _sanitize(analysis.get("factor_analysis", "")),
         "watchpoints":   _sanitize(analysis.get("watchpoints", "")),
         "indicator_comments": _sanitize(analysis.get("indicator_comments", "")),
+        "indicator_deltas": _sanitize(deltas_str),
         "score_change_1w": str(score_1w),
         "score_change_1m": str(score_1m),
         "model":         "gemini-2.5-flash",
