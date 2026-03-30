@@ -19,7 +19,6 @@ def run_update():
         results[ticker] = calc
         print(f"✅ {ticker} 更新完了")
 
-    # 保存
     data_dir = "docs/value-monitor/tanuki_valuation/data"
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(f"{data_dir}/history", exist_ok=True)
