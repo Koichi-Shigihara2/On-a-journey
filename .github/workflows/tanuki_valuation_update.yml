@@ -11,15 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # commit履歴を確保
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'   # pipキャッシュを有効化
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run TANUKI VALUATION Update
         env:
@@ -37,7 +40,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
           git add docs/value-monitor/tanuki_valuation/data/
-          git commit -m "chore: TANUKI VALUATION weekly update ${{ github.run_id }}" || echo "No changes to commit"
+          git commit -m "chore: TANUKI VALUATION weekly update ${{ github.run_id }}" || echo "No changes"
           git push
 
       - name: Send Email Notification
