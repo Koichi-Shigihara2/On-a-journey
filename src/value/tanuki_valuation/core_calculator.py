@@ -15,16 +15,16 @@ class KoichiValuationCalculator:
         if fcf_avg <= 0 or diluted_shares <= 0:
             return {"error": "FCF or shares data missing"}
 
-        # V_固定的（10年DC F + 終値0成長）
+        # V_固定的（10年DCF + 終値0成長）
         wacc = self.wacc_default
         v_fixed = sum(fcf_avg / (1 + wacc) ** t for t in range(1, 11))
         terminal = fcf_avg / wacc / (1 + wacc) ** 10
         v0 = v_fixed + terminal
 
         # α個別・βセクター（簡易版：ROEベース成長期待）
-        g_individual = max(0.0, roe_avg * 0.6)  # 内部留保率60%想定
-        alpha = max(0.0, (g_individual / wacc) * 0.7)   # 確度70%想定
-        beta = 0.0  # セクターは今後拡張
+        g_individual = max(0.0, roe_avg * 0.6)
+        alpha = max(0.0, (g_individual / wacc) * 0.7)
+        beta = 0.0
 
         # モメンタム（現在0）
         m_total = 0.0
@@ -35,7 +35,7 @@ class KoichiValuationCalculator:
         # 1株あたり
         intrinsic_value_per_share = intrinsic_value_pt / diluted_shares if diluted_shares > 0 else 0.0
 
-        # 簡略近似形（運用推奨）
+        # 簡略近似形
         approx_value = intrinsic_value_pt * (1 + self.k * m_total)
 
         return {
