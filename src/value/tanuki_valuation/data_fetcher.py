@@ -8,7 +8,7 @@ import requests
 from ..adjusted_eps_analyzer.extract_key_facts import extract_quarterly_facts
 
 class TanukiDataFetcher:
-    """SEC EDGARからより正確なFCF（OCF - CapEx優先）を取得"""
+    """FCF計算をより正確に（OCF優先 + CapEx直接取得）"""
     
     def __init__(self):
         self.alpha_key = os.getenv("ALPHA_VANTAGE_API_KEY")
@@ -22,18 +22,21 @@ class TanukiDataFetcher:
             print(f"⚠️ {ticker} データ取得失敗: {e}")
             quarterly_data = []
 
-        # === FCF計算（より正確版）===
+        # === FCF計算（OCF優先の正確版）===
         fcf_list = []
         method_used = "未計算"
         
         for q in quarterly_data:
-            # 優先1: OCF - CapEx（最も正確）
-            ocf = q.get('us-gaap:NetCashProvidedByUsedInOperatingActivities', {}).get('value', 0)
-            capex = q.get('us-gaap:PaymentsForPropertyPlantAndEquipment', {}).get('value', 0)
+            # 優先1: OCF（Operating Cash Flow） - CapEx
+            ocf_tag = 'us-gaap:NetCashProvidedByUsedInOperatingActivities'
+            ocf = q.get(ocf_tag, {}).get('value', 0)
             
-            if ocf != 0 or capex != 0:
-                fcf = ocf - abs(capex)   # CapExは通常マイナスなので絶対値
-                method_used = "OCF - CapEx (優先)"
+            capex_tag = 'us-gaap:PaymentsForPropertyPlantAndEquipment'
+            capex = q.get(capex_tag, {}).get('value', 0)
+            
+            if ocf != 0:  # OCFが取れたら最優先
+                fcf = ocf - abs(capex)
+                method_used = "OCF - CapEx（最正確）"
             else:
                 # フォールバック: 従来の簡易計算
                 net_income = q.get('net_income', {}).get('value', 0)
@@ -48,7 +51,7 @@ class TanukiDataFetcher:
 
         print(f"DEBUG {ticker}: FCF_5yr_avg = {fcf_5yr_avg:,.0f} | 方法: {method_used} | データ件数: {len(fcf_list)}")
 
-        # ROEは簡易のまま（後で強化予定）
+        # ROE（簡易）
         roe_values = [q.get('adjusted_eps', 0) * 100 for q in quarterly_data if 'adjusted_eps' in q]
 
         return {
@@ -56,12 +59,9 @@ class TanukiDataFetcher:
             "roe_10yr_avg": float(np.mean(roe_values)) if roe_values else 0.0,
             "current_price": self._get_current_price(ticker),
             "fcf_list_raw": fcf_list,
-            "eps_data": {
-                "ticker": ticker,
-                "quarters": quarterly_data
-            },
+            "eps_data": {"ticker": ticker, "quarters": quarterly_data},
             "diluted_shares": quarterly_data[0].get('diluted_shares', {}).get('value', 0) if quarterly_data else 0,
-            "fcf_calc_method": method_used   # デバッグ用に記録
+            "fcf_calc_method": method_used
         }
 
     def _normalize_fcf(self, fcf_list: list) -> float:
