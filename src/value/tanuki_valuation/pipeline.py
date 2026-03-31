@@ -1,43 +1,31 @@
 from .data_fetcher import TanukiDataFetcher
 from .core_calculator import KoichiValuationCalculator
-import json, os, traceback
+import json, os
 from datetime import datetime
 
 def run_update():
     fetcher = TanukiDataFetcher()
     calculator = KoichiValuationCalculator()
-    tickers = ["MSFT", "AMZN", "SOFI", "TSLA", "PLTR", "CELH", "NVDA", "AMD", "APP", "SOUN", "RKLB", "ONDS", "FIG"]
+    tickers = ["MSFT", "AMZN"]   # ← テスト用に2銘柄だけに絞る
 
     results = {}
     for ticker in tickers:
-        print(f"\n🔄 Updating {ticker}...")
-        try:
-            financials = fetcher.get_financials(ticker)
+        print(f"\n=== {ticker} 処理開始 ===")
+        financials = fetcher.get_financials(ticker)
+        print(f"   financials keys: {list(financials.keys())}")
+        
+        if "error" in financials:
+            print(f"❌ {ticker} skipped - {financials.get('error')}")
+            continue
             
-            if "error" in financials:
-                print(f"❌ {ticker} skipped - Error: {financials.get('error')}")
-                continue
-                
-            calc = calculator.calculate_pt(financials)
-            results[ticker] = calc
-            
-            # 結果を必ず表示
-            per_share = calc.get("intrinsic_value_per_share", 0)
-            total_value = calc.get("intrinsic_value_pt", 0)
-            fcf_avg = financials.get("fcf_5yr_avg", 0)
-            diluted = financials.get("diluted_shares", 0)
-            method = financials.get("fcf_calc_method", "N/A")
-            
-            print(f"   → FCF 5yr Avg     : ${fcf_avg:,.0f} | Method: {method}")
-            print(f"   → Diluted Shares  : {diluted:,.0f}")
-            print(f"   → Intrinsic Value (Total)   : ${total_value:,.0f}")
-            print(f"   → Intrinsic Value (Per Share): ${per_share:.2f}")
-            print(f"✅ {ticker} 更新完了")
-            
-        except Exception as e:
-            print(f"❌ {ticker} でエラーが発生しました: {e}")
-            traceback.print_exc()
-            continue   # エラーがあっても次の銘柄に進む
+        calc = calculator.calculate_pt(financials)
+        results[ticker] = calc
+        
+        print(f"   FCF 5yr Avg     : ${financials.get('fcf_5yr_avg', 0):,.0f}")
+        print(f"   Diluted Shares  : {financials.get('diluted_shares', 0):,.0f}")
+        print(f"   Intrinsic Value (Total)   : ${calc.get('intrinsic_value_pt', 0):,.0f}")
+        print(f"   Intrinsic Value (Per Share): ${calc.get('intrinsic_value_per_share', 0):.2f}")
+        print(f"✅ {ticker} 完了")
 
     # 保存
     data_dir = "docs/value-monitor/tanuki_valuation/data"
@@ -50,7 +38,7 @@ def run_update():
     with open(f"{data_dir}/latest.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print("\n🎉 TANUKI VALUATION 全銘柄更新完了！")
+    print("\n🎉 テスト完了！")
 
 if __name__ == "__main__":
     run_update()
