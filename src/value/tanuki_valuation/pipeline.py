@@ -6,28 +6,25 @@ from datetime import datetime
 def run_update():
     fetcher = TanukiDataFetcher()
     calculator = KoichiValuationCalculator()
-    tickers = ["MSFT", "AMZN"]   # ← テスト用に2銘柄だけに絞る
+    tickers = ["MSFT", "AMZN", "SOFI", "TSLA", "PLTR", "CELH", "NVDA", "AMD", "APP", "SOUN", "RKLB", "ONDS", "FIG"]
 
     results = {}
     for ticker in tickers:
-        print(f"\n=== {ticker} 処理開始 ===")
+        print(f"\n🔄 Updating {ticker}...")
         financials = fetcher.get_financials(ticker)
-        print(f"   financials keys: {list(financials.keys())}")
         
         if "error" in financials:
-            print(f"❌ {ticker} skipped - {financials.get('error')}")
+            print(f"❌ {ticker} skipped")
             continue
             
         calc = calculator.calculate_pt(financials)
         results[ticker] = calc
         
-        print(f"   FCF 5yr Avg     : ${financials.get('fcf_5yr_avg', 0):,.0f}")
-        print(f"   Diluted Shares  : {financials.get('diluted_shares', 0):,.0f}")
-        print(f"   Intrinsic Value (Total)   : ${calc.get('intrinsic_value_pt', 0):,.0f}")
-        print(f"   Intrinsic Value (Per Share): ${calc.get('intrinsic_value_per_share', 0):.2f}")
-        print(f"✅ {ticker} 完了")
+        print(f"   → FCF 5yr Avg     : ${financials.get('fcf_5yr_avg', 0):,.0f}")
+        print(f"   → Diluted Shares  : {financials.get('diluted_shares', 0):,.0f}")
+        print(f"   → Intrinsic Value (Per Share): ${calc.get('intrinsic_value_per_share', 0):.2f}")
+        print(f"✅ {ticker} 更新完了")
 
-    # 保存
     data_dir = "docs/value-monitor/tanuki_valuation/data"
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(f"{data_dir}/history", exist_ok=True)
@@ -38,7 +35,7 @@ def run_update():
     with open(f"{data_dir}/latest.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print("\n🎉 テスト完了！")
+    print("\n🎉 TANUKI VALUATION 全銘柄更新完了！")
 
 if __name__ == "__main__":
     run_update()
