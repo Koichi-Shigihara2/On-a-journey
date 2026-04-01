@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 import json
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -13,19 +13,24 @@ from urllib3.util.retry import Retry
 CIK_FILE = "config/cik_lookup.csv"
 ADJUSTMENT_ITEMS_FILE = "config/adjustment_items.json"
 
-# ★★★ SEC公式対応：User-Agentに名前＋メール必須 ★★★
+# ★★★ SEC公式必須：明確なUser-Agent ★★★
 USER_AGENT = "Koichi Shigihara (koichi.shigihara2@gmail.com) - TanukiValuation/1.0 (+https://github.com/koichi-shigihara2/On-a-journey)"
 
-# リトライ設定（403対策）
+# リトライ設定（403/429対応）
 def create_session():
     session = requests.Session()
-    retry = Retry(total=5, backoff_factor=1.5, status_forcelist=[403, 429, 500, 502, 503, 504])
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('https://', adapter)
+    retry_strategy = Retry(
+        total=5,
+        backoff_factor=2,           # 指数バックオフ
+        status_forcelist=[403, 429, 500, 502, 503, 504],
+        allowed_methods=["GET"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
     session.headers.update({"User-Agent": USER_AGENT})
     return session
 
-# ====================== ヘルパー関数（変更なし） ======================
+# ====================== ヘルパー ======================
 def normalize_value(value: Any) -> float:
     if isinstance(value, (int, float)):
         return float(value)
@@ -77,14 +82,18 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict]:
     print(f"CIK: {cik}")
     print(f"Fetching from {url}")
 
-    for attempt in range(4):  # 最大4回リトライ
+    quarterly_data = []
+    diluted_shares = 0.0
+
+    for attempt in range(5):
         try:
-            resp = session.get(url, timeout=15)
+            resp = session.get(url, timeout=20)
             if resp.status_code == 200:
                 break
             if resp.status_code == 403:
-                print(f"   [DEBUG {ticker}] 403 Forbidden → {attempt+1}回目待機...")
-                time.sleep(2 ** attempt)  # 指数バックオフ
+                wait = 2 ** attempt
+                print(f"   [DEBUG {ticker}] 403 Forbidden → {wait}秒待機 ({attempt+1}/5)")
+                time.sleep(wait)
                 continue
             print(f"Error fetching company facts: {resp.status_code} {resp.reason}")
             return []
@@ -99,12 +108,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict]:
     facts = resp.json().get('facts', {}).get('us-gaap', {})
     required_tags = load_required_xbrl_tags()
 
-    # （以下は以前と同じロジック・diluted_shares強化部分は残しています）
-    # ...（省略：全文は長くなるため、必要な部分のみ抜粋）...
-
-    # diluted_shares強化部分（前回と同じ）
-    quarterly_data = []
-    diluted_shares = 0.0
     for tag in required_tags:
         if tag not in facts:
             continue
@@ -113,20 +116,23 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict]:
             for v in values:
                 if v.get('form') not in ['10-Q', '10-K']:
                     continue
-                end = datetime.strptime(v['end'], '%Y-%m-%d')
-                val = normalize_value(v.get('val', 0))
-                if val == 0:
+                try:
+                    end = datetime.strptime(v['end'], '%Y-%m-%d')
+                    val = normalize_value(v.get('val', 0))
+                    if val == 0:
+                        continue
+                    quarterly_data.append({
+                        'tag': tag,
+                        'end': end,
+                        'value': val,
+                        'form': v['form'],
+                        'fy': v.get('fy'),
+                        'fp': v.get('fp')
+                    })
+                    if any(k in tag.lower() for k in ['diluted', 'sharesoutstanding', 'weightedaveragenumberof']):
+                        diluted_shares = max(diluted_shares, val)
+                except:
                     continue
-                quarterly_data.append({
-                    'tag': tag,
-                    'end': end,
-                    'value': val,
-                    'form': v['form'],
-                    'fy': v.get('fy'),
-                    'fp': v.get('fp')
-                })
-                if 'DilutedShares' in tag or 'SharesOutstanding' in tag:
-                    diluted_shares = max(diluted_shares, val)
 
     quarterly_data = sorted(set((d['end'], d['tag'], d['value']) for d in quarterly_data), key=lambda x: x[0], reverse=True)
 
