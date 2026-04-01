@@ -12,25 +12,36 @@ def run_update():
     results = {}
     for ticker in tickers:
         print(f"🔄 Updating {ticker}...")
-        financials = fetcher.get_financials(ticker)
-        
-        if "error" in financials:
-            print(f"❌ {ticker} skipped - {financials.get('error')}")
-            continue
+        try:
+            financials = fetcher.get_financials(ticker)
             
-        calc = calculator.calculate_pt(financials)
-        results[ticker] = calc
-        
-        # 計算過程を詳細表示
-        print(f"   → FCF 5yr Avg          : ${financials.get('fcf_5yr_avg', 0):,.0f}")
-        print(f"   → Diluted Shares       : {financials.get('diluted_shares', 0):,.0f}")
-        print(f"   → 企業別高成長率（CAGR）: {calc['components'].get('high_growth_rate_used', 0):.1%}")
-        print(f"   → V0 (本質的価値ベース) : ${calc.get('v0', 0):,.0f}")
-        print(f"   → α (個別成長期待)    : {calc.get('alpha', 0):.3f}")
-        print(f"   → 2段階DCF内訳        : 高成長期PV + 永続期PV")
-        print(f"   → Intrinsic Value (Per Share) : ${calc.get('intrinsic_value_per_share', 0):.2f}")
-        print(f"✅ {ticker} 更新完了\n")
+            if "error" in financials:
+                print(f"❌ {ticker} skipped - {financials.get('error')}")
+                continue
+                
+            calc = calculator.calculate_pt(financials)
+            
+            if "error" in calc:
+                print(f"❌ {ticker} skipped - {calc.get('error')}")
+                continue
+            
+            results[ticker] = calc
+            
+            # 計算過程を詳細表示（エラー時スキップ済み）
+            print(f"   → FCF 5yr Avg          : ${financials.get('fcf_5yr_avg', 0):,.0f}")
+            print(f"   → Diluted Shares       : {financials.get('diluted_shares', 0):,.0f}")
+            print(f"   → 企業別高成長率（CAGR）: {calc['components'].get('high_growth_rate_used', 0):.1%}")
+            print(f"   → V0 (本質的価値ベース) : ${calc.get('v0', 0):,.0f}")
+            print(f"   → α (個別成長期待)    : {calc.get('alpha', 0):.3f}")
+            print(f"   → 2段階DCF内訳        : 高成長期PV + 永続期PV")
+            print(f"   → Intrinsic Value (Per Share) : ${calc.get('intrinsic_value_per_share', 0):.2f}")
+            print(f"✅ {ticker} 更新完了\n")
+            
+        except Exception as e:
+            print(f"❌ {ticker} エラー: {e}")
+            continue
 
+    # 保存
     data_dir = "docs/value-monitor/tanuki_valuation/data"
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(f"{data_dir}/history", exist_ok=True)
