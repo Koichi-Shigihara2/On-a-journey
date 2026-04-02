@@ -2,7 +2,6 @@ import requests
 import pandas as pd
 import numpy as np
 from typing import Dict, Any, List
-import json
 import os
 from datetime import datetime
 
@@ -14,17 +13,17 @@ class TanukiDataFetcher:
             raise ValueError("FMP_API_KEY missing")
 
     def get_financials(self, ticker: str) -> Dict[str, Any]:
-        print(f"   [DEBUG {ticker}] FMP API 取得開始")
+        print(f"   [DEBUG {ticker}] FMP v4 API 取得開始")
 
-        # 1. キャッシュフロー
-        cf_url = f"https://financialmodelingprep.com/api/v3/cash-flow-statement/{ticker}?period=quarter&apikey={self.fmp_key}"
+        # v4 Cash Flow (quarterly)
+        cf_url = f"https://financialmodelingprep.com/api/v4/cash-flow-statement/{ticker}?period=quarter&apikey={self.fmp_key}"
         cf_data = self._fetch_fmp(cf_url, ticker)[:20]
 
-        # 2. キー指標
-        key_url = f"https://financialmodelingprep.com/api/v3/key-metrics/{ticker}?period=quarter&apikey={self.fmp_key}"
+        # v4 Key Metrics
+        key_url = f"https://financialmodelingprep.com/api/v4/key-metrics/{ticker}?period=quarter&apikey={self.fmp_key}"
         key_data = self._fetch_fmp(key_url, ticker)[:20]
 
-        # 3. 現在株価
+        # Quote (v3はまだ有効な場合が多い)
         quote_url = f"https://financialmodelingprep.com/api/v3/quote/{ticker}?apikey={self.fmp_key}"
         quote = self._fetch_fmp(quote_url, ticker)
         current_price = quote[0].get("price", 0.0) if quote else 0.0
@@ -49,7 +48,7 @@ class TanukiDataFetcher:
             "current_price": float(current_price),
             "fcf_list_raw": fcf_list,
             "eps_data": {"ticker": ticker},
-            "fcf_calc_method": "FMP (OCF - CapEx)"
+            "fcf_calc_method": "FMP v4"
         }
 
     def _fetch_fmp(self, url: str, ticker: str) -> List[Dict]:
@@ -57,7 +56,7 @@ class TanukiDataFetcher:
             resp = requests.get(url, timeout=15)
             print(f"   [FMP STATUS {ticker}] {resp.status_code}")
             if resp.status_code != 200:
-                print(f"   [FMP ERROR BODY {ticker}] {resp.text[:400]}")
+                print(f"   [FMP ERROR BODY {ticker}] {resp.text[:500]}")
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
