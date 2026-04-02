@@ -39,6 +39,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
+   # ★★★ ここを追加 ★★★
+          git pull --rebase origin kaihatsu
           git add docs/value-monitor/tanuki_valuation/data/
           git commit -m "chore: TANUKI VALUATION weekly update ${{ github.run_id }}" || echo "No changes to commit"
           git push
