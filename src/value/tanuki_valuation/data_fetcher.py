@@ -2,6 +2,14 @@ import requests
 import json
 from datetime import datetime
 import os
+import time
+
+# SECフォールバック用
+try:
+    from ..adjusted_eps_analyzer.extract_key_facts import extract_quarterly_facts
+    HAS_SEC_FALLBACK = True
+except:
+    HAS_SEC_FALLBACK = False
 
 class TanukiDataFetcher:
     def __init__(self):
@@ -21,6 +29,7 @@ class TanukiDataFetcher:
     def get_financials(self, ticker: str) -> dict:
         print(f"   [{ticker}] Alpha Vantage API 取得開始")
 
+        # 1. Alpha Vantage メイン
         overview = self._fetch_av(ticker, "OVERVIEW")
         diluted_shares = float(overview.get("SharesOutstanding", 0) or 0) if overview else 0.0
         roe = 0.0
@@ -28,23 +37,37 @@ class TanukiDataFetcher:
             roe_str = overview.get("ReturnOnEquityTTM", "0")
             roe = float(roe_str.replace("%", "")) / 100 if "%" in roe_str else float(roe_str) / 100
 
-        # INCOME / BALANCE で多角的取得
+        # 2. INCOME / BALANCE で多角的取得
         for endpoint in ["INCOME_STATEMENT", "BALANCE_SHEET"]:
             data = self._fetch_av(ticker, endpoint)
             if data and "annualReports" in data:
                 for report in data["annualReports"][:3]:
-                    for key in ["commonStockSharesOutstanding", "weightedAverageShsOutDil", "weightedAverageShsOut", "weightedAverageNumberOfDilutedSharesOutstanding", "sharesOutstanding"]:
+                    for key in ["commonStockSharesOutstanding", "weightedAverageShsOutDil", "weightedAverageShsOut", 
+                               "weightedAverageNumberOfDilutedSharesOutstanding", "sharesOutstanding"]:
                         val = float(report.get(key, 0) or 0)
                         if val > 100_000:
                             diluted_shares = max(diluted_shares, val)
                             print(f"   [{ticker}] {endpoint}から{key}取得成功: {val:,.0f}")
                             break
 
-        # ★ SECフォールバックは一旦オフ（高速化優先）
-        # if diluted_shares <= 100_000:
-        #     print(f"   [{ticker}] SECフォールバックは現在オフ")
+        # 3. SEC EDGARフォールバック（Alpha Vantageで取れなかった場合のみ）
+        if diluted_shares <= 100_000 and HAS_SEC_FALLBACK:
+            print(f"   [{ticker}] Alpha Vantageでshares不足 → SEC EDGARフォールバック実行")
+            try:
+                quarterly_data = extract_quarterly_facts(ticker)
+                if quarterly_data:
+                    for q in quarterly_data[:5]:
+                        for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding", 
+                                   "us-gaap:CommonStockSharesOutstanding"]:
+                            if key in q and isinstance(q[key], dict) and q[key].get("value", 0) > 100_000:
+                                diluted_shares = max(diluted_shares, float(q[key]["value"]))
+                                print(f"   [{ticker}] SEC EDGARからdiluted_shares取得成功: {diluted_shares:,.0f}")
+                                break
+                time.sleep(2)  # rate limit対策
+            except Exception as e:
+                print(f"   [{ticker}] SECフォールバック失敗: {e}")
 
-        # FCF
+        # 4. FCF
         cf_data = self._fetch_av(ticker, "CASH_FLOW")
         fcf_list = []
         if cf_data and "annualReports" in cf_data:
@@ -56,6 +79,7 @@ class TanukiDataFetcher:
 
         fcf_avg = sum(fcf_list) / len(fcf_list) if fcf_list else 0.0
 
+        # 5. 株価
         quote = self._fetch_av(ticker, "GLOBAL_QUOTE")
         current_price = float(quote.get("Global Quote", {}).get("05. price", 0)) if quote else 0.0
 
