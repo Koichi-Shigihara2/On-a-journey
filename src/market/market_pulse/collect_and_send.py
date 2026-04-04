@@ -282,6 +282,7 @@ def get_realtime_data():
         "ドル円": "JPY=X",
         "日経平均": "^N225",
         "S&P500": "^GSPC",
+        "NASDAQ": "^IXIC",
         "WTI原油": "CL=F",
         "金（GOLD）": "GC=F",
     }
@@ -541,7 +542,7 @@ def extract_judgment(report_text):
     return match.group(1) if match else "不明"
 
 
-def save_data_to_json_and_csv(report_text, structured_data, sentiment_data):
+def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     jst_now = datetime.now(JST)
     date_str = jst_now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
@@ -568,6 +569,7 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data):
         "judgment": judgment,
         "indicators": structured_data,
         "sentiment": sentiment_data,
+        "fear_greed": fear_greed_data,
         "summary": report_text
     }
     all_data.append(new_entry)
@@ -618,6 +620,30 @@ def send_email(body, sentiment_data):
         raise
 
 
+def fetch_cnn_fear_greed():
+    """CNN Fear & Greed Indexを取得する"""
+    try:
+        import fear_greed as fg
+        data = fg.get()
+        score = data.get("score")
+        rating = data.get("rating", "")
+        history = data.get("history", {})
+        print(f"[INFO] CNN Fear & Greed: {score:.1f} ({rating})")
+        return {
+            "score": round(score, 1) if score is not None else None,
+            "rating": rating,
+            "previous_close": history.get("1w"),
+            "one_week_ago": history.get("1w"),
+            "one_month_ago": history.get("1m"),
+        }
+    except ImportError:
+        print("[WARN] fear-greed パッケージ未インストール。CNN F&Gスキップ。")
+        return None
+    except Exception as e:
+        print(f"[WARN] CNN Fear & Greed取得失敗: {e}")
+        return None
+
+
 if __name__ == "__main__":
     realtime_text, structured_data = get_realtime_data()
 
@@ -627,11 +653,14 @@ if __name__ == "__main__":
     for k, v in sentiment_data["sub_scores"].items():
         print(f"  {k}: {v['score']:.1f} (weight={v['weight']}, raw={v['raw']})")
 
+    # CNN Fear & Greed Index取得
+    fear_greed_data = fetch_cnn_fear_greed()
+
     news = get_market_news()
     if not news:
         print("[WARN] ニュースなしで分析を実行します。")
     report = analyse_market(realtime_text, "\n".join(news))
-    save_data_to_json_and_csv(report, structured_data, sentiment_data)
+    save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data)
     if GMAIL_USER and GMAIL_PASSWORD:
         send_email(report, sentiment_data)
     else:
