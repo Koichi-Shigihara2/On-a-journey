@@ -15,6 +15,7 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # タイムアウト設定を追加
     permissions:
       contents: write
     
@@ -22,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: kaihatsu   # 明示的に kaihatsu ブランチをチェックアウト
+          ref: kaihatsu
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,12 +38,16 @@ jobs:
       - name: Run pipeline
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: |
+          echo "=== Pipeline Start ==="
+          echo "Ticker input: '${{ github.event.inputs.ticker }}'"
           if [ -n "${{ github.event.inputs.ticker }}" ]; then
             python -m src.value.adjusted_eps_analyzer.pipeline --ticker "${{ github.event.inputs.ticker }}"
           else
             python -m src.value.adjusted_eps_analyzer.pipeline
           fi
+          echo "=== Pipeline End ==="
 
       - name: Check for changes
         id: git-check
