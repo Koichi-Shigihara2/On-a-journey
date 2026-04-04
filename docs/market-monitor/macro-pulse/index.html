@@ -889,10 +889,10 @@ function renderL2() {
     {label:'CFNAI MA3',labelJa:'シカゴ連銀全米活動指数',key:'Chicago Fed National Activity',mid:-0.2,bull:0,bear:-0.7,dir:'right',fmt:v=>v.toFixed(2),rMin:-3,rMax:1},
     {label:'Sahm Rule',labelJa:'サームルール不況指標',key:'Sahm Rule Recession Indicator',mid:0.3,bull:0.3,bear:0.5,dir:'left',fmt:v=>v.toFixed(2),rMin:0,rMax:1.5},
     // 👷 雇用
-    {label:'Initial Claims 4WMA',labelJa:'新規失業保険申請4週MA',key:'Initial Claims 4W MA',mid:230000,bull:215000,bear:245000,dir:'left',fmt:v=>(v/1000).toFixed(1)+'K',rMin:180000,rMax:400000},
+    {label:'Initial Claims 4WMA',labelJa:'新規失業保険申請4週MA',key:'Initial Claims 4W MA',mid:230000,bull:215000,bear:245000,dir:'left',fmt:v=>v.toFixed(0)+'K',rMin:180000,rMax:400000},
     // 🛍️ 消費・信頼感
     {label:'Michigan Sentiment',labelJa:'ミシガン消費者信頼感',key:'Michigan Consumer Sentiment',mid:80,bull:90,bear:65,dir:'right',fmt:v=>v.toFixed(1),rMin:50,rMax:110},
-    {label:'Building Permits',labelJa:'住宅着工許可件数',key:'Building Permits',mid:1300,bull:1500,bear:1100,dir:'right',fmt:v=>(v/1000).toFixed(0)+'K',rMin:500,rMax:2200},
+    {label:'Building Permits',labelJa:'住宅着工許可件数',key:'Building Permits',mid:1300,bull:1500,bear:1100,dir:'right',cbcc2Label=cbcc2.toFixed(0)+'K',rMin:500,rMax:2200},
   ];
 
   const signalColor={BULL:'var(--grn)',CAUTION:'var(--amb)',NEUTRAL:'var(--mut)',BEAR:'var(--red)'};
