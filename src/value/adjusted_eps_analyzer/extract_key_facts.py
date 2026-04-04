@@ -28,8 +28,6 @@ import time
 import csv
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 # ====================== 設定 ======================
 # プロジェクトルートを取得（extract_key_facts.py → adjusted_eps_analyzer → value → src → ROOT）
@@ -39,28 +37,12 @@ _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_DIR)))
 CIK_FILE = os.path.join(_PROJECT_ROOT, "config", "cik_lookup.csv")
 ADJUSTMENT_ITEMS_FILE = os.path.join(_PROJECT_ROOT, "config", "adjustment_items.json")
 
-# SEC公式必須の明確なUser-Agent
-USER_AGENT = "Koichi Shigihara (koichi.shigihara2@gmail.com) - TanukiValuation/1.0 (+https://github.com/koichi-shigihara2/On-a-journey)"
-
-
-def create_session():
-    """リトライ付きHTTPセッション（GitHub Actions対応版）"""
-    session = requests.Session()
-    # ★ 修正: backoff_factor を 1 に短縮、リトライ回数を 3 に削減
-    retry_strategy = Retry(
-        total=3,
-        backoff_factor=1,  # 1, 2, 4秒
-        status_forcelist=[429, 500, 502, 503, 504],  # 403は除外（別途ハンドリング）
-        allowed_methods=["GET"]
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    session.mount("https://", adapter)
-    session.headers.update({
-        "User-Agent": USER_AGENT,
-        "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate",
-    })
-    return session
+# ★ 以前の動作版と同じシンプルなヘッダー（SECが要求する形式）
+HEADERS = {
+    'User-Agent': 'jamablue01@gmail.com',
+    'Accept-Encoding': 'gzip, deflate',
+    'Host': 'data.sec.gov'
+}
 
 
 # ====================== ヘルパー ======================
@@ -217,50 +199,30 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict]:
     """
     cik = get_cik(ticker)
     url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
-    session = create_session()
 
     print(f"   [DEBUG {ticker}] extract_quarterly_facts 開始")
     print(f"   CIK: {cik}")
     print(f"   Fetching from {url}")
 
-    # --- APIリクエスト（★修正: 最大3回、短い待機時間） ---
-    resp = None
-    max_attempts = 3
-    for attempt in range(max_attempts):
-        try:
-            print(f"   [DEBUG {ticker}] APIリクエスト試行 {attempt+1}/{max_attempts}...")
-            resp = session.get(url, timeout=30)  # ★ timeout を 30秒に固定
-            print(f"   [DEBUG {ticker}] レスポンス: {resp.status_code}")
-            
-            if resp.status_code == 200:
-                print(f"   [DEBUG {ticker}] データ取得成功")
-                break
-            elif resp.status_code == 403:
-                # 403 は User-Agent 問題の可能性が高い
-                wait = 5 * (attempt + 1)  # 5, 10, 15秒（最大30秒）
-                print(f"   [DEBUG {ticker}] 403 Forbidden → {wait}秒待機 ({attempt+1}/{max_attempts})")
-                time.sleep(wait)
-                continue
-            elif resp.status_code == 404:
-                print(f"   [DEBUG {ticker}] 404 Not Found - CIK {cik} のデータが存在しません")
-                return []
-            else:
-                print(f"   Error fetching company facts: {resp.status_code} {resp.reason}")
-                return []
-        except requests.exceptions.Timeout:
-            print(f"   [DEBUG {ticker}] タイムアウト ({attempt+1}/{max_attempts})")
-            time.sleep(5)
-        except requests.exceptions.ConnectionError as e:
-            print(f"   [DEBUG {ticker}] 接続エラー: {e} ({attempt+1}/{max_attempts})")
-            time.sleep(5)
-        except Exception as e:
-            print(f"   [DEBUG {ticker}] リクエスト例外: {e}")
-            time.sleep(5)
-    else:
-        print(f"   [DEBUG {ticker}] 最大リトライ失敗 → データ取得不可")
+    # --- APIリクエスト（以前の動作版と同じシンプルな形式） ---
+    try:
+        print(f"   [DEBUG {ticker}] APIリクエスト送信中...")
+        resp = requests.get(url, headers=HEADERS, timeout=30)
+        print(f"   [DEBUG {ticker}] レスポンス: {resp.status_code}")
+        
+        if resp.status_code != 200:
+            print(f"   Error fetching company facts: {resp.status_code} {resp.reason}")
+            return []
+        
+        print(f"   [DEBUG {ticker}] データ取得成功")
+    except requests.exceptions.Timeout:
+        print(f"   [DEBUG {ticker}] タイムアウト")
         return []
-
-    if resp is None or resp.status_code != 200:
+    except requests.exceptions.ConnectionError as e:
+        print(f"   [DEBUG {ticker}] 接続エラー: {e}")
+        return []
+    except Exception as e:
+        print(f"   [DEBUG {ticker}] リクエスト例外: {e}")
         return []
 
     print(f"   [DEBUG {ticker}] JSONパース開始...")
