@@ -6,9 +6,11 @@ from datetime import datetime
 def run_update():
     fetcher = TanukiDataFetcher()
     calculator = KoichiValuationCalculator()
-    tickers = ["MSFT", "AMZN", "TSLA", "NVDA", "PLTR", "CELH", "APP", "AMD", "SOFI", "SOUN", "RKLB", "ONDS", "FIG"]
+    
+    # ユーザーの実際の保有・ウォッチ銘柄のみに限定（高速化）
+    tickers = ["TSLA", "PLTR", "SOFI", "CELH", "NVDA", "AMD", "APP", "SOUN", "RKLB", "ONDS", "FIG"]
 
-    print("=== TANUKI VALUATION 全銘柄実行開始（α自動計算）===\n")
+    print("=== TANUKI VALUATION 主要銘柄実行開始（超高速版）===\n")
     results = {}
     for ticker in tickers:
         print(f"🔄 Updating {ticker}...")
@@ -44,7 +46,7 @@ def run_update():
     with open(f"{data_dir}/latest.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print("🎉 TANUKI VALUATION 全銘柄更新完了！（α自動計算済み）")
+    print("🎉 TANUKI VALUATION 主要銘柄更新完了！（超高速版）")
 
 if __name__ == "__main__":
     run_update()
