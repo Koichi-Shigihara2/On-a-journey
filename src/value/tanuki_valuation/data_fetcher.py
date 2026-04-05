@@ -24,37 +24,46 @@ class TanukiDataFetcher:
         roe = 0.0
         fcf_list = []
 
-        # 1. SEC EDGARを最優先
+        # 1. SEC EDGARを最優先（extract_key_facts対応）
         if HAS_SEC:
             try:
                 quarterly_data = extract_quarterly_facts(ticker)
                 if quarterly_data and len(quarterly_data) > 0:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
 
-                    # デバッグ：最初のデータのキー構造を確認
-                    if quarterly_data:
-                        print(f"   [{ticker}] quarterly_data sample keys: {list(quarterly_data[0].keys())[:10]}...")
-
                     for q in quarterly_data[:12]:  # 最新12四半期をチェック
-                        # diluted_shares（extract_key_factsで出力されるキー）
-                        if isinstance(q, dict):
-                            # 直接キー検索
-                            for key in ["diluted_shares", "WeightedAverageNumberOfDilutedSharesOutstanding", 
-                                      "commonStockSharesOutstanding", "sharesOutstanding"]:
-                                if key in q:
-                                    val = float(q.get(key, 0) or 0)
-                                    if val > 100_000 and val > diluted_shares:
-                                        diluted_shares = val
-                                        print(f"   [{ticker}] SEC shares更新 → {val:,.0f}")
+                        if not isinstance(q, dict):
+                            continue
 
-                            # revenue検索
-                            for key in ["revenue", "totalRevenue", "Revenues", "RevenueFromContractWithCustomer", 
-                                      "NetSales", "RevenueTTM"]:
-                                if key in q:
-                                    rev = float(q.get(key, 0) or 0)
-                                    if rev > latest_revenue:
-                                        latest_revenue = rev
-                                        print(f"   [{ticker}] SEC revenue更新 → ${rev:,.0f}")
+                        # diluted_shares（dict型 or 直接数値 両対応）
+                        for key in ["diluted_shares", "WeightedAverageNumberOfDilutedSharesOutstanding",
+                                   "commonStockSharesOutstanding", "sharesOutstanding"]:
+                            if key in q:
+                                val = q[key]
+                                if isinstance(val, dict) and "value" in val:
+                                    val = float(val["value"] or 0)
+                                elif isinstance(val, (int, float)):
+                                    val = float(val)
+                                else:
+                                    continue
+                                if val > 100_000 and val > diluted_shares:
+                                    diluted_shares = val
+                                    print(f"   [{ticker}] SEC shares更新 → {val:,.0f}")
+
+                        # revenue（dict型 or 直接数値 両対応）
+                        for key in ["revenue", "totalRevenue", "Revenues", "RevenueFromContractWithCustomer",
+                                   "NetSales", "RevenueTTM"]:
+                            if key in q:
+                                rev = q[key]
+                                if isinstance(rev, dict) and "value" in rev:
+                                    rev = float(rev["value"] or 0)
+                                elif isinstance(rev, (int, float)):
+                                    rev = float(rev)
+                                else:
+                                    continue
+                                if rev > latest_revenue:
+                                    latest_revenue = rev
+                                    print(f"   [{ticker}] SEC revenue更新 → ${rev:,.0f}")
 
                 else:
                     print(f"   [{ticker}] SECから四半期データが取得できませんでした")
