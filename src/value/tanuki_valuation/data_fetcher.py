@@ -24,12 +24,17 @@ class TanukiDataFetcher:
         roe = 0.0
         fcf_list = []
 
-        # 1. SEC EDGARを最優先（extract_key_facts対応）
+        # 1. SEC EDGARを最優先
         if HAS_SEC:
             try:
                 quarterly_data = extract_quarterly_facts(ticker)
                 if quarterly_data and len(quarterly_data) > 0:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
+
+                    # デバッグ：最初のデータの実際のキー一覧を表示（1回だけ）
+                    if quarterly_data and not hasattr(self, "_debug_keys_printed"):
+                        print(f"   [{ticker}] quarterly_data sample keys: {list(quarterly_data[0].keys())[:15]}...")
+                        self._debug_keys_printed = True
 
                     for q in quarterly_data[:12]:  # 最新12四半期をチェック
                         if not isinstance(q, dict):
@@ -50,9 +55,9 @@ class TanukiDataFetcher:
                                     diluted_shares = val
                                     print(f"   [{ticker}] SEC shares更新 → {val:,.0f}")
 
-                        # revenue（dict型 or 直接数値 両対応）
+                        # revenue（より多くのキーに対応）
                         for key in ["revenue", "totalRevenue", "Revenues", "RevenueFromContractWithCustomer",
-                                   "NetSales", "RevenueTTM"]:
+                                   "NetSales", "RevenueTTM", "salesRevenueNet", "total_revenue", "revenue_ttm"]:
                             if key in q:
                                 rev = q[key]
                                 if isinstance(rev, dict) and "value" in rev:
