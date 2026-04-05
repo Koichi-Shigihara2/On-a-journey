@@ -38,6 +38,9 @@ jobs:
       - name: Run pipeline
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}  # ← これを追加
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}  # ← これを追加
+          
           PYTHONUNBUFFERED: "1"
         run: |
           echo "=== Pipeline Start ==="
