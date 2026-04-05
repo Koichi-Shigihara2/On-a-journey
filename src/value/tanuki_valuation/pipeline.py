@@ -7,10 +7,9 @@ def run_update():
     fetcher = TanukiDataFetcher()
     calculator = KoichiValuationCalculator()
     
-    # ユーザーの実際の保有・ウォッチ銘柄のみに限定（高速化）
     tickers = ["TSLA", "PLTR", "SOFI", "CELH", "NVDA", "AMD", "APP", "SOUN", "RKLB", "ONDS", "FIG"]
 
-    print("=== TANUKI VALUATION 主要銘柄実行開始（超高速版）===\n")
+    print("=== TANUKI VALUATION Phase 3 実行開始（成長率減衰カーブ＋RPO補正）===\n")
     results = {}
     for ticker in tickers:
         print(f"🔄 Updating {ticker}...")
@@ -28,8 +27,7 @@ def run_update():
             print(f"   → Diluted Shares   : {financials.get('diluted_shares', 0):,.0f}")
             print(f"   → ROE_10yr_avg     : {financials.get('roe_10yr_avg', 0):.1%}")
             print(f"   → α (個別成長期待): {calc.get('alpha', 0):.3f}")
-            print(f"   → V0               : ${calc.get('v0', 0):,.0f}")
-            print(f"   → Intrinsic Value (Per Share) : ${calc.get('intrinsic_value_per_share', 0):.2f}")
+            print(f"   → 理論株価         : ${calc.get('intrinsic_value_per_share', 0):.2f}")
             print(f"✅ {ticker} 更新完了\n")
 
         except Exception as e:
@@ -46,7 +44,7 @@ def run_update():
     with open(f"{data_dir}/latest.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print("🎉 TANUKI VALUATION 主要銘柄更新完了！（超高速版）")
+    print("🎉 TANUKI VALUATION Phase 3 更新完了！")
 
 if __name__ == "__main__":
     run_update()
