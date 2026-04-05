@@ -24,7 +24,7 @@ class TanukiDataFetcher:
         roe = 0.0
         fcf_list = []
 
-        # 1. SEC EDGARを優先（信頼性最高）
+        # 1. SEC EDGARを優先（最優先）
         if HAS_SEC:
             print(f"   [{ticker}] SEC EDGARから財務データ取得")
             try:
@@ -33,7 +33,7 @@ class TanukiDataFetcher:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
 
                     for q in quarterly_data[:8]:  # 最新8四半期
-                        # shares
+                        # shares取得
                         for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
                                    "us-gaap:CommonStockSharesOutstanding",
                                    "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic"]:
@@ -43,19 +43,20 @@ class TanukiDataFetcher:
                                     diluted_shares = max(diluted_shares, val)
                                     print(f"   [{ticker}] SECから{key}取得成功: {val:,.0f}")
 
-                        # revenue
+                        # revenue取得
                         for key in ["us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
                                    "us-gaap:TotalRevenue", "us-gaap:NetSales"]:
                             if key in q and isinstance(q[key], dict):
                                 rev = float(q[key].get("value", 0) or 0)
                                 if rev > latest_revenue:
                                     latest_revenue = rev
+
                 else:
                     print(f"   [{ticker}] SECから四半期データが取得できませんでした")
             except Exception as e:
                 print(f"   [{ticker}] SEC取得エラー: {e}")
 
-        # 2. Alpha Vantageを補完（ROEなど）
+        # 2. Alpha Vantageを補完
         overview = self._fetch_av(ticker, "OVERVIEW")
         if overview:
             if diluted_shares == 0:
