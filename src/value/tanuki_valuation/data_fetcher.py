@@ -4,9 +4,9 @@ from datetime import datetime
 import os
 import time
 
-# SEC EDGARフォールバック（信頼できるメインソース）
+# SEC EDGARフォールバック
 try:
-    from ..adjusted_eps_analyzer.extract_key_facts import extract_quarterly_facts
+    from ..adjusted_eps_analyzer.extract_key_facts import extract_quarterly_facts, get_cik
     HAS_SEC = True
 except:
     HAS_SEC = False
@@ -17,42 +17,48 @@ class TanukiDataFetcher:
         self.cache_dir = "cache"
         os.makedirs(self.cache_dir, exist_ok=True)
 
-    def _get_cache_path(self, ticker: str, endpoint: str):
-        return os.path.join(self.cache_dir, f"{ticker}_{endpoint}.json")
-
-    def _is_cache_valid(self, path: str) -> bool:
-        if not os.path.exists(path):
-            return False
-        age = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(path))).total_seconds()
-        return age < 86400
-
     def get_financials(self, ticker: str) -> dict:
         print(f"   [{ticker}] データ取得開始（SEC優先）")
 
-        # 1. SEC EDGARを優先（信頼性が高い）
-        latest_revenue = 0.0
         diluted_shares = 0.0
+        latest_revenue = 0.0
         roe = 0.0
+        fcf_list = []
 
+        # 1. SEC EDGARを優先
         if HAS_SEC:
             print(f"   [{ticker}] SEC EDGARから財務データ取得")
             try:
                 quarterly_data = extract_quarterly_facts(ticker)
-                if quarterly_data:
-                    for q in quarterly_data[:5]:
-                        # shares
-                        for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding", "us-gaap:CommonStockSharesOutstanding"]:
-                            if key in q and q[key].get("value", 0) > 100_000:
-                                diluted_shares = max(diluted_shares, float(q[key]["value"]))
-                        # revenue
-                        rev = float(q.get("us-gaap:Revenues", {}).get("value", 0) or q.get("us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", {}).get("value", 0) or 0)
-                        if rev > latest_revenue:
-                            latest_revenue = rev
-                print(f"   [{ticker}] SECから取得: shares = {diluted_shares:,.0f}, Revenue = ${latest_revenue:,.0f}")
+                if quarterly_data and len(quarterly_data) > 0:
+                    print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
+
+                    for q in quarterly_data[:8]:  # 最新8四半期まで確認
+                        # shares取得（複数のタグ対応）
+                        for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
+                                   "us-gaap:CommonStockSharesOutstanding",
+                                   "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic"]:
+                            if key in q and isinstance(q[key], dict):
+                                val = float(q[key].get("value", 0) or 0)
+                                if val > 100_000:
+                                    diluted_shares = max(diluted_shares, val)
+                                    print(f"   [{ticker}] SECから{key}取得成功: {val:,.0f}")
+
+                        # 売上高取得
+                        for key in ["us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                                   "us-gaap:TotalRevenue", "us-gaap:NetSales"]:
+                            if key in q and isinstance(q[key], dict):
+                                rev = float(q[key].get("value", 0) or 0)
+                                if rev > latest_revenue:
+                                    latest_revenue = rev
+
+                else:
+                    print(f"   [{ticker}] SECから四半期データが取得できませんでした")
+
             except Exception as e:
                 print(f"   [{ticker}] SEC取得エラー: {e}")
 
-        # 2. Alpha Vantageを補完（ROEなど）
+        # 2. Alpha Vantageを補完（ROEとRevenueTTM）
         overview = self._fetch_av(ticker, "OVERVIEW")
         if overview:
             if diluted_shares == 0:
@@ -60,10 +66,11 @@ class TanukiDataFetcher:
             if roe == 0:
                 roe_str = overview.get("ReturnOnEquityTTM", "0")
                 roe = float(roe_str.replace("%", "")) / 100 if "%" in roe_str else float(roe_str) / 100
+            if latest_revenue == 0:
+                latest_revenue = float(overview.get("RevenueTTM", 0) or 0)
 
         # 3. FCF
         cf_data = self._fetch_av(ticker, "CASH_FLOW")
-        fcf_list = []
         if cf_data and "annualReports" in cf_data:
             for report in cf_data["annualReports"][:5]:
                 ocf = float(report.get("operatingCashflow", 0))
@@ -90,10 +97,12 @@ class TanukiDataFetcher:
         }
 
     def _fetch_av(self, ticker: str, function: str):
-        cache_path = self._get_cache_path(ticker, function)
-        if self._is_cache_valid(cache_path):
-            with open(cache_path, "r") as f:
-                return json.load(f)
+        cache_path = os.path.join(self.cache_dir, f"{ticker}_{function}.json")
+        if os.path.exists(cache_path):
+            age = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds()
+            if age < 86400:
+                with open(cache_path, "r") as f:
+                    return json.load(f)
 
         url = f"https://www.alphavantage.co/query?function={function}&symbol={ticker}&apikey={self.av_key}"
         try:
@@ -104,7 +113,7 @@ class TanukiDataFetcher:
                 with open(cache_path, "w") as f:
                     json.dump(data, f)
                 return data
-            else:
-                return None
-        except Exception:
+            return None
+        except Exception as e:
+            print(f"   [AV EXCEPTION {ticker} {function}] {e}")
             return None
