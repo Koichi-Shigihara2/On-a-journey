@@ -24,50 +24,50 @@ class TanukiDataFetcher:
         roe = 0.0
         fcf_list = []
 
-        # 1. SEC EDGARを優先（最優先）
+        # 1. SEC EDGARを最優先
         if HAS_SEC:
-            print(f"   [{ticker}] SEC EDGARから財務データ取得")
             try:
                 quarterly_data = extract_quarterly_facts(ticker)
                 if quarterly_data and len(quarterly_data) > 0:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
 
-                    for q in quarterly_data[:8]:  # 最新8四半期
-                        # shares取得
+                    # 最新の四半期から順にsharesとrevenueを取得（最新を優先）
+                    for q in quarterly_data[:12]:  # 最新12四半期をチェック
+                        # diluted shares
                         for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
                                    "us-gaap:CommonStockSharesOutstanding",
                                    "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic"]:
                             if key in q and isinstance(q[key], dict):
                                 val = float(q[key].get("value", 0) or 0)
-                                if val > 100_000:
-                                    diluted_shares = max(diluted_shares, val)
-                                    print(f"   [{ticker}] SECから{key}取得成功: {val:,.0f}")
+                                if val > 100_000 and val > diluted_shares:
+                                    diluted_shares = val
+                                    print(f"   [{ticker}] SEC shares更新: {val:,.0f}")
 
-                        # revenue取得
+                        # revenue
                         for key in ["us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-                                   "us-gaap:TotalRevenue", "us-gaap:NetSales"]:
+                                   "us-gaap:TotalRevenue", "us-gaap:NetSales", "us-gaap:RevenueFromContractWithCustomer"]:
                             if key in q and isinstance(q[key], dict):
                                 rev = float(q[key].get("value", 0) or 0)
                                 if rev > latest_revenue:
                                     latest_revenue = rev
+                                    print(f"   [{ticker}] SEC revenue更新: ${rev:,.0f}")
 
                 else:
                     print(f"   [{ticker}] SECから四半期データが取得できませんでした")
             except Exception as e:
                 print(f"   [{ticker}] SEC取得エラー: {e}")
 
-        # 2. Alpha Vantageを補完
+        # 2. Alpha Vantageで補完（SECが0の場合のみ）
         overview = self._fetch_av(ticker, "OVERVIEW")
         if overview:
             if diluted_shares == 0:
                 diluted_shares = float(overview.get("SharesOutstanding", 0) or 0)
-            if roe == 0:
-                roe_str = overview.get("ReturnOnEquityTTM", "0")
-                roe = float(roe_str.replace("%", "")) / 100 if "%" in roe_str else float(roe_str) / 100
+            roe_str = overview.get("ReturnOnEquityTTM", "0")
+            roe = float(roe_str.replace("%", "")) / 100 if "%" in roe_str else float(roe_str) / 100
             if latest_revenue == 0:
                 latest_revenue = float(overview.get("RevenueTTM", 0) or 0)
 
-        # 3. FCF
+        # 3. FCF（AV）
         cf_data = self._fetch_av(ticker, "CASH_FLOW")
         if cf_data and "annualReports" in cf_data:
             for report in cf_data["annualReports"][:5]:
@@ -78,7 +78,6 @@ class TanukiDataFetcher:
 
         fcf_avg = sum(fcf_list) / len(fcf_list) if fcf_list else 0.0
 
-        # 4. 株価
         quote = self._fetch_av(ticker, "GLOBAL_QUOTE")
         current_price = float(quote.get("Global Quote", {}).get("05. price", 0)) if quote else 0.0
 
@@ -98,7 +97,7 @@ class TanukiDataFetcher:
         cache_path = os.path.join(self.cache_dir, f"{ticker}_{function}.json")
         if os.path.exists(cache_path):
             age = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds()
-            if age < 86400:
+            if age < 86400:  # 24時間以内
                 with open(cache_path, "r") as f:
                     return json.load(f)
 
