@@ -98,6 +98,21 @@ def load_required_xbrl_tags() -> List[str]:
     # その他よく使う調整関連（adjustment_items.json にない場合の保険）
     tags.add("us-gaap:ShareBasedCompensation")
 
+    # ★★★ 特殊事情検知用タグ（公正価値変動など） ★★★
+    # 買収関連・条件付対価の公正価値変動
+    tags.add("us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1")
+    tags.add("us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInTheRangeOfOutcomesContingentConsiderationLiabilityValueHigh")
+    tags.add("us-gaap:FairValueAdjustmentOfWarrants")
+    tags.add("us-gaap:GainLossOnDerivativeInstrumentsNetPretax")
+    tags.add("us-gaap:GainLossOnSaleOfDerivatives")
+    tags.add("us-gaap:DerivativeGainLossOnDerivativeNet")
+    tags.add("us-gaap:UnrealizedGainLossOnDerivatives")
+    # 営業外・非現金の公正価値変動
+    tags.add("us-gaap:GainLossOnInvestments")
+    tags.add("us-gaap:UnrealizedGainLossOnInvestments")
+    tags.add("us-gaap:OtherNonoperatingIncomeExpense")
+    tags.add("us-gaap:OtherNonoperatingGainsLosses")
+
     return list(tags)
 
 # ============================================
@@ -401,6 +416,45 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                 continue
             print(f"\n{tag} ({len(items)} items):")
             # 2024年と2025年のデータのみ表示
+            for item in items:
+                end_date = item.get('end', '')
+                if end_date.startswith('2024') or end_date.startswith('2025') or end_date.startswith('2026'):
+                    start = item.get('start', 'N/A')
+                    end = item.get('end', 'N/A')
+                    val = item.get('val', 0)
+                    form = item.get('form', 'N/A')
+                    filed = item.get('filed', 'N/A')
+                    try:
+                        start_dt = datetime.strptime(start, '%Y-%m-%d')
+                        end_dt = datetime.strptime(end, '%Y-%m-%d')
+                        days = (end_dt - start_dt).days
+                    except:
+                        days = '?'
+                    val_m = val / 1_000_000
+                    print(f"  {start} to {end} ({days:>3} days) | {form:>5} | ${val_m:>12.2f}M | filed: {filed}")
+        print("="*80 + "\n")
+        
+        # ★★★ DEBUG: 公正価値変動関連タグの取得値を出力 ★★★
+        print("\n" + "="*80)
+        print("DEBUG: 公正価値変動関連タグ（特殊事情検知用）")
+        print("="*80)
+        fv_debug_tags = [
+            'us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1',
+            'us-gaap:FairValueAdjustmentOfWarrants',
+            'us-gaap:GainLossOnDerivativeInstrumentsNetPretax',
+            'us-gaap:DerivativeGainLossOnDerivativeNet',
+            'us-gaap:UnrealizedGainLossOnDerivatives',
+            'us-gaap:GainLossOnInvestments',
+            'us-gaap:UnrealizedGainLossOnInvestments',
+            'us-gaap:OtherNonoperatingIncomeExpense',
+            'us-gaap:OtherNonoperatingGainsLosses',
+        ]
+        for tag in fv_debug_tags:
+            items = tag_data_map.get(tag, [])
+            if not items:
+                print(f"{tag}: NOT FOUND")
+                continue
+            print(f"\n{tag} ({len(items)} items):")
             for item in items:
                 end_date = item.get('end', '')
                 if end_date.startswith('2024') or end_date.startswith('2025') or end_date.startswith('2026'):
