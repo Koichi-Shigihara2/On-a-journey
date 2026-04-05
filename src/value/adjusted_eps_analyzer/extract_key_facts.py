@@ -398,81 +398,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         fiscal_end_month = determine_fiscal_year_end(net_income_annual)
         print(f"Detected fiscal year end month: {fiscal_end_month}")
         
-        # ★★★ DEBUG: NetIncomeLoss関連タグの全取得値を出力 ★★★
-        print("\n" + "="*80)
-        print("DEBUG: NetIncomeLoss関連タグの全取得値")
-        print("="*80)
-        ni_debug_tags = [
-            'us-gaap:NetIncomeLoss',
-            'us-gaap:NetIncomeLossAttributableToParent',
-            'us-gaap:NetIncomeLossAvailableToCommonStockholders',
-            'us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic',
-            'us-gaap:ProfitLoss',
-        ]
-        for tag in ni_debug_tags:
-            items = tag_data_map.get(tag, [])
-            if not items:
-                print(f"\n{tag}: NOT FOUND")
-                continue
-            print(f"\n{tag} ({len(items)} items):")
-            # 2024年と2025年のデータのみ表示
-            for item in items:
-                end_date = item.get('end', '')
-                if end_date.startswith('2024') or end_date.startswith('2025') or end_date.startswith('2026'):
-                    start = item.get('start', 'N/A')
-                    end = item.get('end', 'N/A')
-                    val = item.get('val', 0)
-                    form = item.get('form', 'N/A')
-                    filed = item.get('filed', 'N/A')
-                    try:
-                        start_dt = datetime.strptime(start, '%Y-%m-%d')
-                        end_dt = datetime.strptime(end, '%Y-%m-%d')
-                        days = (end_dt - start_dt).days
-                    except:
-                        days = '?'
-                    val_m = val / 1_000_000
-                    print(f"  {start} to {end} ({days:>3} days) | {form:>5} | ${val_m:>12.2f}M | filed: {filed}")
-        print("="*80 + "\n")
-        
-        # ★★★ DEBUG: 公正価値変動関連タグの取得値を出力 ★★★
-        print("\n" + "="*80)
-        print("DEBUG: 公正価値変動関連タグ（特殊事情検知用）")
-        print("="*80)
-        fv_debug_tags = [
-            'us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1',
-            'us-gaap:FairValueAdjustmentOfWarrants',
-            'us-gaap:GainLossOnDerivativeInstrumentsNetPretax',
-            'us-gaap:DerivativeGainLossOnDerivativeNet',
-            'us-gaap:UnrealizedGainLossOnDerivatives',
-            'us-gaap:GainLossOnInvestments',
-            'us-gaap:UnrealizedGainLossOnInvestments',
-            'us-gaap:OtherNonoperatingIncomeExpense',
-            'us-gaap:OtherNonoperatingGainsLosses',
-        ]
-        for tag in fv_debug_tags:
-            items = tag_data_map.get(tag, [])
-            if not items:
-                print(f"{tag}: NOT FOUND")
-                continue
-            print(f"\n{tag} ({len(items)} items):")
-            for item in items:
-                end_date = item.get('end', '')
-                if end_date.startswith('2024') or end_date.startswith('2025') or end_date.startswith('2026'):
-                    start = item.get('start', 'N/A')
-                    end = item.get('end', 'N/A')
-                    val = item.get('val', 0)
-                    form = item.get('form', 'N/A')
-                    filed = item.get('filed', 'N/A')
-                    try:
-                        start_dt = datetime.strptime(start, '%Y-%m-%d')
-                        end_dt = datetime.strptime(end, '%Y-%m-%d')
-                        days = (end_dt - start_dt).days
-                    except:
-                        days = '?'
-                    val_m = val / 1_000_000
-                    print(f"  {start} to {end} ({days:>3} days) | {form:>5} | ${val_m:>12.2f}M | filed: {filed}")
-        print("="*80 + "\n")
-        
         # 希薄化後株式数のマップ（end, start -> value）を作成（Q4計算用に年次も必要）
         diluted_shares_all = tag_data_map.get('us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding', [])
         diluted_map = {}  # key: (end, start) -> value
@@ -512,16 +437,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
             end_str = cand['end_str']
             if end_str not in best_quarterly or cand['days'] < best_quarterly[end_str]['days']:
                 best_quarterly[end_str] = cand
-        
-        # ★★★ DEBUG: 10-Qから取得したNetIncomeLossの詳細 ★★★
-        print("\n" + "="*80)
-        print("DEBUG: 10-Qから取得したNetIncomeLoss (四半期期間のみ)")
-        print("="*80)
-        for end_str in sorted(best_quarterly.keys(), reverse=True):
-            cand = best_quarterly[end_str]
-            val_m = cand['val'] / 1_000_000
-            print(f"  {cand['start_str']} to {end_str} ({cand['days']} days) | ${val_m:>12.2f}M")
-        print("="*80 + "\n")
         
         # quarters_map の構築
         quarters_map = {}  # key: (fiscal_year, quarter) -> data
@@ -664,15 +579,6 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     
                     annual_net = target_k_item['val']
                     q4_net = annual_net - q1q3_sum
-                    
-                    # ★★★ DEBUG: Q4計算の詳細ログ ★★★
-                    print(f"\n  DEBUG Q4 Calculation for FY{fiscal_year}:")
-                    print(f"    10-K Annual NetIncomeLoss: ${annual_net/1_000_000:,.2f}M (period: {target_k_item.get('start')} to {target_k_item.get('end')})")
-                    print(f"    Q1 net_income: ${q1_income/1_000_000:,.2f}M (from {quarters_map[q1_key].get('start')} to {quarters_map[q1_key].get('end')})")
-                    print(f"    Q2 net_income: ${q2_income/1_000_000:,.2f}M (from {quarters_map[q2_key].get('start')} to {quarters_map[q2_key].get('end')})")
-                    print(f"    Q3 net_income: ${q3_income/1_000_000:,.2f}M (from {quarters_map[q3_key].get('start')} to {quarters_map[q3_key].get('end')})")
-                    print(f"    Q1+Q2+Q3 sum: ${q1q3_sum/1_000_000:,.2f}M")
-                    print(f"    Calculated Q4: ${q4_net/1_000_000:,.2f}M (= Annual - Q1Q3 sum)")
                     
                     # 希薄化後株式数（年次）を取得
                     diluted_val = 0

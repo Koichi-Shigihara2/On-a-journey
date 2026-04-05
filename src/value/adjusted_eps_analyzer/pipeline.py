@@ -5,6 +5,7 @@ import yaml
 import json
 import os
 import csv
+import requests
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
@@ -20,6 +21,112 @@ from .maturity_monitor import MaturityMonitor
 # プロジェクトルートを取得（pipeline.py の場所から3階層上）
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 print("DEBUG: PROJECT_ROOT =", PROJECT_ROOT)
+
+# ============================================
+# FMP API 差分検知機能
+# ============================================
+FMP_API_KEY = os.environ.get("FMP_API_KEY", "")
+EPS_DISCREPANCY_THRESHOLD = 0.20  # 20%以上の差異で警告
+
+def fetch_fmp_income_statements(ticker: str, limit: int = 20) -> List[Dict]:
+    """FMP APIから四半期損益計算書を取得"""
+    if not FMP_API_KEY:
+        print("  [FMP] Warning: FMP_API_KEY not set, skipping EPS discrepancy check")
+        return []
+    
+    url = f"https://financialmodelingprep.com/api/v3/income-statement/{ticker}?period=quarter&limit={limit}&apikey={FMP_API_KEY}"
+    try:
+        response = requests.get(url, timeout=15)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"  [FMP] API error: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"  [FMP] Request failed: {e}")
+        return []
+
+def check_eps_discrepancy(ticker: str, quarterly_results: List[Dict]) -> Dict[str, Dict]:
+    """
+    XBRLから計算したEPSとFMP APIの公式EPSを比較し、差異が大きい四半期を検出
+    
+    Returns:
+        Dict[period_end, special_note_dict]
+    """
+    if not FMP_API_KEY:
+        return {}
+    
+    print(f"  [FMP] Checking EPS discrepancy for {ticker}...")
+    fmp_data = fetch_fmp_income_statements(ticker)
+    if not fmp_data:
+        return {}
+    
+    # FMPデータをdate(period_end)でインデックス化
+    fmp_by_date = {}
+    for item in fmp_data:
+        date_str = item.get('date', '')
+        if date_str:
+            fmp_by_date[date_str] = item
+    
+    discrepancies = {}
+    
+    for q in quarterly_results:
+        period_end = q.get('period_end', q.get('filing_date', ''))
+        if not period_end:
+            continue
+        
+        fmp_item = fmp_by_date.get(period_end)
+        if not fmp_item:
+            continue
+        
+        # FMPの公式値
+        fmp_eps = fmp_item.get('epsdiluted', 0)
+        fmp_net_income = fmp_item.get('netIncome', 0)
+        
+        # XBRLから計算した値
+        xbrl_eps = q.get('gaap_eps', 0)
+        xbrl_net_income = q.get('gaap_net_income', 0)
+        
+        # 差異を計算（EPSベース）
+        if fmp_eps and abs(fmp_eps) > 0.001:
+            eps_diff_ratio = abs(xbrl_eps - fmp_eps) / abs(fmp_eps)
+        else:
+            eps_diff_ratio = 0
+        
+        # 差異を計算（純利益ベース）
+        if fmp_net_income and abs(fmp_net_income) > 1000:
+            ni_diff_ratio = abs(xbrl_net_income - fmp_net_income) / abs(fmp_net_income)
+        else:
+            ni_diff_ratio = 0
+        
+        # 閾値を超えたら警告
+        if eps_diff_ratio > EPS_DISCREPANCY_THRESHOLD or ni_diff_ratio > EPS_DISCREPANCY_THRESHOLD:
+            print(f"    [FMP] Discrepancy detected for {period_end}:")
+            print(f"          XBRL EPS: ${xbrl_eps:.4f}, FMP EPS: ${fmp_eps:.4f} (diff: {eps_diff_ratio*100:.1f}%)")
+            print(f"          XBRL NI: ${xbrl_net_income/1e6:.2f}M, FMP NI: ${fmp_net_income/1e6:.2f}M (diff: {ni_diff_ratio*100:.1f}%)")
+            
+            discrepancies[period_end] = {
+                'flag': 'EPS_DISCREPANCY',
+                'xbrl_eps': xbrl_eps,
+                'official_eps': fmp_eps,
+                'xbrl_net_income': xbrl_net_income,
+                'official_net_income': fmp_net_income,
+                'eps_diff_pct': round(eps_diff_ratio * 100, 1),
+                'ni_diff_pct': round(ni_diff_ratio * 100, 1),
+                'note': (
+                    f"XBRLと公式発表のGAAP EPSに{eps_diff_ratio*100:.0f}%の差異があります。"
+                    f"公式EPS: ${fmp_eps:.2f}, XBRL計算EPS: ${xbrl_eps:.2f}。"
+                    f"買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。"
+                    f"当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+                )
+            }
+    
+    if discrepancies:
+        print(f"  [FMP] Found {len(discrepancies)} quarters with EPS discrepancy")
+    else:
+        print(f"  [FMP] No significant EPS discrepancy found")
+    
+    return discrepancies
 
 def load_cik_data() -> List[Dict]:
     cik_file = os.path.join(PROJECT_ROOT, "config", "cik_lookup.csv")
@@ -301,6 +408,17 @@ def run(ticker_filter: str = None):
             _pending_maturity = maturity_status
         else:
             _pending_maturity = None
+        
+        # ★★★ EPS差分検知（FMP API vs XBRL） ★★★
+        eps_discrepancies = check_eps_discrepancy(ticker, quarterly_results)
+        if eps_discrepancies:
+            # 差異が見つかった四半期に special_notes を追加
+            for q in quarterly_results:
+                period_end = q.get('period_end', q.get('filing_date', ''))
+                if period_end in eps_discrepancies:
+                    q['special_flags'] = q.get('special_flags', []) + ['EPS_DISCREPANCY']
+                    q['special_notes'] = q.get('special_notes', {})
+                    q['special_notes']['eps_discrepancy'] = eps_discrepancies[period_end]
         
         # TTM・年次集計・AI分析
         ttm_results = []
