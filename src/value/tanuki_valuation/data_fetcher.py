@@ -17,7 +17,7 @@ class TanukiDataFetcher:
         os.makedirs(self.cache_dir, exist_ok=True)
 
     def get_financials(self, ticker: str) -> dict:
-        print(f"   [{ticker}] データ取得開始（SEC優先）")
+        print(f"\n   [{ticker}] データ取得開始（SEC優先）")
 
         diluted_shares = 0.0
         latest_revenue = 0.0
@@ -31,33 +31,37 @@ class TanukiDataFetcher:
                 if quarterly_data and len(quarterly_data) > 0:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
 
-                    # 最新の四半期から順にsharesとrevenueを取得（最新を優先）
-                    for q in quarterly_data[:12]:  # 最新12四半期をチェック
-                        # diluted shares
-                        for key in ["us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
-                                   "us-gaap:CommonStockSharesOutstanding",
-                                   "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic"]:
-                            if key in q and isinstance(q[key], dict):
-                                val = float(q[key].get("value", 0) or 0)
-                                if val > 100_000 and val > diluted_shares:
-                                    diluted_shares = val
-                                    print(f"   [{ticker}] SEC shares更新: {val:,.0f}")
+                    # デバッグ：最初のデータのキー構造を確認
+                    if quarterly_data:
+                        print(f"   [{ticker}] quarterly_data sample keys: {list(quarterly_data[0].keys())[:10]}...")
 
-                        # revenue
-                        for key in ["us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-                                   "us-gaap:TotalRevenue", "us-gaap:NetSales", "us-gaap:RevenueFromContractWithCustomer"]:
-                            if key in q and isinstance(q[key], dict):
-                                rev = float(q[key].get("value", 0) or 0)
-                                if rev > latest_revenue:
-                                    latest_revenue = rev
-                                    print(f"   [{ticker}] SEC revenue更新: ${rev:,.0f}")
+                    for q in quarterly_data[:12]:  # 最新12四半期をチェック
+                        # diluted_shares（extract_key_factsで出力されるキー）
+                        if isinstance(q, dict):
+                            # 直接キー検索
+                            for key in ["diluted_shares", "WeightedAverageNumberOfDilutedSharesOutstanding", 
+                                      "commonStockSharesOutstanding", "sharesOutstanding"]:
+                                if key in q:
+                                    val = float(q.get(key, 0) or 0)
+                                    if val > 100_000 and val > diluted_shares:
+                                        diluted_shares = val
+                                        print(f"   [{ticker}] SEC shares更新 → {val:,.0f}")
+
+                            # revenue検索
+                            for key in ["revenue", "totalRevenue", "Revenues", "RevenueFromContractWithCustomer", 
+                                      "NetSales", "RevenueTTM"]:
+                                if key in q:
+                                    rev = float(q.get(key, 0) or 0)
+                                    if rev > latest_revenue:
+                                        latest_revenue = rev
+                                        print(f"   [{ticker}] SEC revenue更新 → ${rev:,.0f}")
 
                 else:
                     print(f"   [{ticker}] SECから四半期データが取得できませんでした")
             except Exception as e:
                 print(f"   [{ticker}] SEC取得エラー: {e}")
 
-        # 2. Alpha Vantageで補完（SECが0の場合のみ）
+        # 2. Alpha Vantageで補完
         overview = self._fetch_av(ticker, "OVERVIEW")
         if overview:
             if diluted_shares == 0:
@@ -67,7 +71,7 @@ class TanukiDataFetcher:
             if latest_revenue == 0:
                 latest_revenue = float(overview.get("RevenueTTM", 0) or 0)
 
-        # 3. FCF（AV）
+        # 3. FCF
         cf_data = self._fetch_av(ticker, "CASH_FLOW")
         if cf_data and "annualReports" in cf_data:
             for report in cf_data["annualReports"][:5]:
@@ -97,7 +101,7 @@ class TanukiDataFetcher:
         cache_path = os.path.join(self.cache_dir, f"{ticker}_{function}.json")
         if os.path.exists(cache_path):
             age = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds()
-            if age < 86400:  # 24時間以内
+            if age < 86400:
                 with open(cache_path, "r") as f:
                     return json.load(f)
 
