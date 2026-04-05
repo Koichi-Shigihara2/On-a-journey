@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-04-04T16:51:05.485981",
+  "last_updated": "2026-04-05T02:41:07.947504",
   "quarters": [
     {
       "gaap_eps": 1.9573288999722915,
@@ -54,7 +54,7 @@
       "form": "10-K",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 213386000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10827000000.0,
       "period_end": "2025-12-31",
       "fiscal_year": 2025,
@@ -62,7 +62,7 @@
       "maturity_monitor": {
         "alert": "SBC寄与率が40%超（現在 122.6%）",
         "sbc_contribution": 1.226,
-        "sbc_to_revenue": 0.021,
+        "sbc_to_revenue": 0,
         "sbc_per_share": 0.4061,
         "sector_threshold": {
           "sbc_contribution": 0.4,
@@ -71,22 +71,22 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用と無形資産償却費はAmazonの事業運営上、毎期継続的に発生する項目であり、調整の妥当性は低い。異常貸倒引当金はマクロ要因による一時的変動として一定の合理性があるが、全体として調整後EPSは実態よりも過大に表示されている可能性が高いため注意が必要。",
+        "comment": "株式報酬費用（SBC）と無形資産償却はAmazonのようなテック企業ではほぼ恒常的に発生する項目であり、調整の質を低下させています。貸倒引当金の異常変動分はマクロ要因による一時的項目として一定の合理性がありますが、全体として調整後EPSの健全性は注意を要します。SBCの巨額加算（約44億ドル）は特に投資家が警戒すべき点です。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "毎期発生する株式報酬費用を非現金費用として加算。恒常的な運用コストであり、調整の非経常性は低い。",
+            "snippet": "非現金費用として株式報酬費用を加算。ただしテック企業では毎期継続的に発生する恒常的な報酬コストであり、一過性とは言えない。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却費。定期的に発生する非現金費用であり、経常的性格が強い。",
+            "snippet": "買収関連無形資産の償却を加算。買収が完了した後も定期的に発生する経常的費用であり、調整の正当性は限定的。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として位置づけられた異常貸倒引当金。異常変動分に限定されている。",
-            "confidence": 0.75
+            "snippet": "マクロ変動による一時的影響として異常変動分の貸倒引当金を加算。異常分に限定されているため比較的一過性が高い。",
+            "confidence": 0.65
           }
         ]
       }
@@ -117,7 +117,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 180169000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10845000000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2025,
@@ -149,7 +149,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 167702000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10806000000.0,
       "period_end": "2025-06-30",
       "fiscal_year": 2025,
@@ -181,7 +181,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 155667000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10793000000.0,
       "period_end": "2025-03-31",
       "fiscal_year": 2025,
@@ -239,7 +239,7 @@
       "form": "10-K",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 187792000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10721000000.0,
       "period_end": "2024-12-31",
       "fiscal_year": 2024,
@@ -271,7 +271,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 158877000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10735000000.0,
       "period_end": "2024-09-30",
       "fiscal_year": 2024,
@@ -303,7 +303,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 147977000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10708000000.0,
       "period_end": "2024-06-30",
       "fiscal_year": 2024,
@@ -335,7 +335,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 143313000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10670000000.0,
       "period_end": "2024-03-31",
       "fiscal_year": 2024,
@@ -393,7 +393,7 @@
       "form": "10-K",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 169961000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10492000000.0,
       "period_end": "2023-12-31",
       "fiscal_year": 2023,
@@ -425,7 +425,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 143083000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10558000000.0,
       "period_end": "2023-09-30",
       "fiscal_year": 2023,
@@ -457,7 +457,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 134383000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10449000000.0,
       "period_end": "2023-06-30",
       "fiscal_year": 2023,
@@ -489,7 +489,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 127358000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10347000000.0,
       "period_end": "2023-03-31",
       "fiscal_year": 2023,
@@ -521,7 +521,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 127101000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10331000000.0,
       "period_end": "2022-09-30",
       "fiscal_year": 2022,
@@ -553,7 +553,7 @@
       "form": "10-Q",
       "sector": "Consumer Cyclical",
       "sector_exclusions": [],
-      "revenue": 121234000000.0,
+      "revenue": 0.0,
       "diluted_shares": 10175000000.0,
       "period_end": "2022-06-30",
       "fiscal_year": 2022,
