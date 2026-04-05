@@ -119,7 +119,7 @@
                 "prior": 25182000000
             },
             "cfo": {
-                "current": null,
+                "current": 0,
                 "prior": null
             }
         },
@@ -209,7 +209,7 @@
                 "prior": 725516000
             },
             "cfo": {
-                "current": null,
+                "current": 0,
                 "prior": null
             }
         },
@@ -263,7 +263,7 @@
                 "prior": 25094000
             },
             "cfo": {
-                "current": null,
+                "current": 0,
                 "prior": null
             }
         },
@@ -281,7 +281,7 @@
                 "prior": 725516000
             },
             "cfo": {
-                "current": null,
+                "current": 0,
                 "prior": null
             }
         },
@@ -317,12 +317,81 @@
                 "prior": 25182000000
             },
             "cfo": {
-                "current": null,
+                "current": 0,
                 "prior": null
             }
         },
         "predicted_lag_q": 4,
         "cluster_name": "High-Margin AI/Enterprise",
         "comment": "CFO data for the three months ended September 30 for both current and prior periods is not available in the provided document, as the Consolidated Statements of Cash Flows only present data for the nine months ended September 30."
+    },
+    {
+        "timestamp": "2026-04-05 13:38:35",
+        "ticker": "SOUN",
+        "filing_type": "10-Q",
+        "filing_date": "2025-11-10",
+        "metrics": {
+            "revenue": {
+                "current": 42049,
+                "prior": 25094,
+                "status": "CONFIRMED",
+                "derivation_logic": ""
+            },
+            "cfo": {
+                "current": null,
+                "prior": null,
+                "status": "NULL",
+                "derivation_logic": "ドキュメントに記載されているキャッシュフロー計算書は「Nine Months Ended September 30, 2025」および「Nine Months Ended September 30, 2024」の年初からの累計値のみであり、当期（3ヶ月間）および前年同期（3ヶ月間）の営業キャッシュフローの数値を直接特定または逆算するための情報（前四半期までの累計値など）が不足しているため、算出不能。"
+            }
+        },
+        "predicted_lag_q": 4,
+        "cluster_name": "High-Growth AI/Enterprise SaaS",
+        "comment": "SoundHound AIは、直近四半期および年初来累計で、SYNQ3、Amelia、InteractionsといったAI関連企業の積極的な買収により、売上高が大幅に成長しており、特にサービスサブスクリプションが大きく貢献しています。一方で、営業費用も増加していますが、純損失の変動は、買収関連の偶発的負債（Contingent Acquisition Liabilities）の公正価値評価変動（非現金項目）に大きく左右されており、当四半期では評価損が計上され純損失が拡大しています。営業キャッシュフローは引き続きマイナスですが、大規模なエクイティファイナンスにより潤沢な手元現金を確保しており、事業拡大と投資を継続する戦略が見て取れます。ただし、CFOの当四半期単独の数値は本報告書から直接読み取れず、類推も困難でした。"
+    },
+    {
+        "timestamp": "2026-04-05 13:39:05",
+        "ticker": "PLTR",
+        "filing_type": "10-Q",
+        "filing_date": "2025-11-04",
+        "metrics": {
+            "revenue": {
+                "current": 1181092,
+                "prior": 725516,
+                "status": "CONFIRMED",
+                "derivation_logic": ""
+            },
+            "cfo": {
+                "current": null,
+                "prior": null,
+                "status": "NULL",
+                "derivation_logic": "当四半期報告書には、四半期単独の営業活動によるキャッシュフローは明記されていません。表示されているのは9ヶ月累計の数値（2025年9月30日までの9ヶ月間で$1,357,178千、2024年9月30日までの9ヶ月間で$693,538千）のみです。四半期単独の数値を計算するためには、前四半期（2025年6月30日および2024年6月30日）までの累計営業活動によるキャッシュフローが必要ですが、当該データは本報告書内には見当たらず、類推も不可能なためNULLとしました。"
+            }
+        },
+        "predicted_lag_q": 4,
+        "cluster_name": "High-Growth Enterprise AI/Data Analytics",
+        "comment": "収益は前年同期比で大幅に増加しており、特に商業部門の成長率が政府部門を上回っています。これは、AIプラットフォームへの注力と製品の市場浸透が成功している兆候と考えられます。キャッシュフロー計算書は9ヶ月累計の数値のみが提供されており、四半期単独の営業キャッシュフローを計算するための前四半期までの累計データが本報告書内には存在しないため、類推は不可能と判断しました。"
+    },
+    {
+        "timestamp": "2026-04-05 13:39:40",
+        "ticker": "TSLA",
+        "filing_type": "10-Q",
+        "filing_date": "2025-10-23",
+        "metrics": {
+            "revenue": {
+                "current": 28095,
+                "prior": 25182,
+                "status": "CONFIRMED",
+                "derivation_logic": ""
+            },
+            "cfo": {
+                "current": null,
+                "prior": null,
+                "status": "NULL",
+                "derivation_logic": "当期単独（3ヶ月間）のCFOは、年初からの累計額（9ヶ月間）から前期までの累計額（6ヶ月間）を差し引くことで計算されますが、提供された資料には前期までの累計額（6ヶ月間）の情報がないため、当期単独のCFOを計算することはできませんでした。"
+            }
+        },
+        "predicted_lag_q": 4,
+        "cluster_name": "AI-Driven Mobility & Energy Innovator",
+        "comment": "当期（2025年Q3）の売上高は前年同期比で増加しているものの、営業利益および純利益は大幅に減少しており、利益率の悪化が見られます。これは、自動車販売における平均販売価格の低下、規制クレジット収入の減少、およびAI関連プログラムやその他の研究開発費の増加、さらには再編費用が主な要因と考えられます。特にR&D費用は前年同期比で57%増と、将来の成長に向けた積極的な投資姿勢を示しています。通期（9ヶ月間）で見ると、売上高も前年比で減少しており、Q3の増加が通期の流れを反転させる兆候となるか注目されます。エネルギー発電・貯蔵セグメントは堅調な成長を続けており、メガパックやパワーウォールの導入拡大が貢献しています。CEOの報酬に関する訴訟、製品関連の集団訴訟、データ漏洩に関する訴訟など、法的リスクが継続している点も重要です。2025年の設備投資はAI関連の支出を含め90億ドルと予測されており、今後の資金繰りへの影響も考慮する必要があります。"
     }
 ]
