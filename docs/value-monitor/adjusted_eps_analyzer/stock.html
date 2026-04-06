@@ -142,6 +142,78 @@
     .metric-val.green { color: var(--grn); }
     .metric-val.red   { color: var(--red); }
 
+    /* ★ EPS差分警告アイコン */
+    .eps-warning {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .eps-warning-icon {
+      cursor: help;
+      font-size: 16px;
+      animation: pulse-warning 2s ease-in-out infinite;
+    }
+    @keyframes pulse-warning {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    /* 警告ツールチップ */
+    .eps-tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .eps-tooltip .eps-tooltip-text {
+      visibility: hidden;
+      width: 320px;
+      background: var(--sur2);
+      border: 1px solid var(--amb);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .eps-tooltip .eps-tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--amb) transparent transparent transparent;
+    }
+    .eps-tooltip:hover .eps-tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    .eps-tooltip-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--amb);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .eps-tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .eps-tooltip-key {
+      color: var(--mut);
+    }
+    .eps-tooltip-val {
+      font-family: var(--mono);
+      color: var(--txt);
+    }
+
     /* ── タブ ── */
     .tab-bar {
       display: flex; gap: 2px; margin-bottom: 16px;
@@ -585,7 +657,43 @@
     }
 
     function updateMetricsWithQuarter(q, allQuarters) {
-      document.getElementById('gaap-eps').innerText = `$${q.gaap_eps.toFixed(4)}`;
+      // ★ EPS差分警告をチェック
+      const hasEpsDiscrepancy = q.special_flags && q.special_flags.includes('EPS_DISCREPANCY');
+      const epsDiscrepancy = q.special_notes && q.special_notes.eps_discrepancy;
+      
+      const gaapEpsEl = document.getElementById('gaap-eps');
+      if (hasEpsDiscrepancy && epsDiscrepancy) {
+        const officialEps = epsDiscrepancy.official_eps;
+        const diffPct = epsDiscrepancy.eps_diff_pct;
+        gaapEpsEl.innerHTML = `
+          <span class="eps-warning">
+            $${q.gaap_eps.toFixed(4)}
+            <span class="eps-tooltip">
+              <span class="eps-warning-icon">⚠️</span>
+              <span class="eps-tooltip-text">
+                <span class="eps-tooltip-label">⚠ EPS差分検出</span>
+                <div class="eps-tooltip-row">
+                  <span class="eps-tooltip-key">公式GAAP EPS:</span>
+                  <span class="eps-tooltip-val">$${officialEps.toFixed(2)}</span>
+                </div>
+                <div class="eps-tooltip-row">
+                  <span class="eps-tooltip-key">XBRL計算EPS:</span>
+                  <span class="eps-tooltip-val">$${q.gaap_eps.toFixed(2)}</span>
+                </div>
+                <div class="eps-tooltip-row">
+                  <span class="eps-tooltip-key">差異:</span>
+                  <span class="eps-tooltip-val" style="color:var(--amb)">${diffPct}%</span>
+                </div>
+                <div style="margin-top:8px;font-size:11px;color:var(--mut)">
+                  買収関連負債の公正価値変動など特殊な会計処理が影響している可能性があります。
+                </div>
+              </span>
+            </span>
+          </span>`;
+      } else {
+        gaapEpsEl.innerText = `$${q.gaap_eps.toFixed(4)}`;
+      }
+      
       document.getElementById('adj-eps').innerText  = `$${q.adjusted_eps.toFixed(4)}`;
       const diff = q.adjusted_eps - q.gaap_eps;
       const diffEl = document.getElementById('diff');
