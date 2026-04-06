@@ -31,16 +31,11 @@ class TanukiDataFetcher:
                 if quarterly_data and len(quarterly_data) > 0:
                     print(f"   [{ticker}] SECから{len(quarterly_data)}件の四半期データを取得")
 
-                    # デバッグ：1回だけキー構造を表示
-                    if quarterly_data and not hasattr(self, "_debug_keys_printed"):
-                        print(f"   [{ticker}] quarterly_data sample keys: {list(quarterly_data[0].keys())[:20]}...")
-                        self._debug_keys_printed = True
-
-                    for q in quarterly_data[:12]:  # 最新12四半期をチェック
+                    for q in quarterly_data[:12]:
                         if not isinstance(q, dict):
                             continue
 
-                        # diluted_shares（両対応）
+                        # diluted_shares
                         for key in ["diluted_shares", "WeightedAverageNumberOfDilutedSharesOutstanding",
                                    "commonStockSharesOutstanding", "sharesOutstanding"]:
                             if key in q:
@@ -55,7 +50,7 @@ class TanukiDataFetcher:
                                     diluted_shares = val
                                     print(f"   [{ticker}] SEC shares更新 → {val:,.0f}")
 
-                        # revenue（大幅強化版）
+                        # revenue（強化版）
                         for key in ["revenue", "totalRevenue", "Revenues", "RevenueFromContractWithCustomer",
                                    "NetSales", "RevenueTTM", "salesRevenueNet", "total_revenue", "revenue_ttm",
                                    "us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
