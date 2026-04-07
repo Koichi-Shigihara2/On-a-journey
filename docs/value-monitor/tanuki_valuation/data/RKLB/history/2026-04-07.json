@@ -1,0 +1,135 @@
+{
+  "intrinsic_value_pt": 0.0,
+  "intrinsic_value_per_share": 0.0,
+  "v0": 0.0,
+  "alpha": 0.0,
+  "future_values": {
+    "1年後": 0.0,
+    "2年後": 0.0,
+    "3年後": 0.0
+  },
+  "upside_percent": 0,
+  "calculation_date": "2026-04-07",
+  "formula": "Koichi式 v5.1 Phase 4（将来価値予測版）",
+  "calculation_steps": {
+    "step1": {
+      "title": "FCF 5年平均算出",
+      "description": "過去5年のFCF（営業CF - 設備投資）を平均化",
+      "formula": "Σ(FCF_t) / n",
+      "inputs": {
+        "fcf_list": [],
+        "years": 0
+      },
+      "result": 0,
+      "detail": {
+        "input": [],
+        "sum": 0,
+        "count": 0,
+        "result": 0
+      }
+    },
+    "step2": {
+      "title": "企業別高成長率（CAGR）",
+      "description": "直近5年FCFのCAGRを算出し、15%〜50%にクリップ",
+      "formula": "(FCF_end / FCF_start)^(1/n) - 1",
+      "inputs": {
+        "method": "default",
+        "result": 0.25
+      },
+      "result": 0.25,
+      "constraints": {
+        "min": 0.15,
+        "max": 0.5
+      }
+    },
+    "step3": {
+      "title": "2段階DCF計算",
+      "description": "高成長期3年 + ターミナル価値のDCF",
+      "formula": "PV_high + PV_terminal",
+      "inputs": {
+        "fcf_base": 0,
+        "wacc": 0.085,
+        "high_growth_rate": 0.25,
+        "terminal_growth": 0.03
+      },
+      "result": {
+        "pv_high": 0.0,
+        "pv_terminal": 0.0,
+        "v0": 0.0
+      },
+      "detail": {
+        "wacc": 0.085,
+        "high_growth_years": 3,
+        "terminal_growth": 0.03,
+        "high_growth_detail": [
+          {
+            "year": 1,
+            "fcf": 0.0,
+            "discount_factor": 1.085,
+            "pv": 0.0
+          },
+          {
+            "year": 2,
+            "fcf": 0.0,
+            "discount_factor": 1.177225,
+            "pv": 0.0
+          },
+          {
+            "year": 3,
+            "fcf": 0.0,
+            "discount_factor": 1.2772891249999998,
+            "pv": 0.0
+          }
+        ],
+        "pv_high": 0.0,
+        "terminal_fcf": 0.0,
+        "terminal_value": 0.0,
+        "pv_terminal": 0.0
+      }
+    },
+    "step4": {
+      "title": "α 成長期待プレミアム",
+      "description": "α = max(0, (g_individual / WACC) × 0.7)",
+      "formula": "max(0, (ROE × 内部留保率 / WACC) × 0.7)",
+      "inputs": {
+        "roe_10yr_avg": -0.188,
+        "retention_rate": 0.6,
+        "g_individual": 0.0,
+        "wacc": 0.085,
+        "alpha_raw": 0.0,
+        "alpha_clipped": 0.0
+      },
+      "result": 0.0
+    },
+    "step5": {
+      "title": "本質的価値（P_t）算出",
+      "description": "P_t = V_0 × (1 + α)",
+      "formula": "V_0 × (1 + α)",
+      "inputs": {
+        "v0": 0.0,
+        "alpha": 0.0,
+        "formula": "V_0 × (1 + α)",
+        "intrinsic_value_pt": 0.0,
+        "diluted_shares": 569408000,
+        "intrinsic_value_per_share": 0.0
+      },
+      "result": 0.0
+    }
+  },
+  "components": {
+    "fcf_5yr_avg": 0,
+    "diluted_shares": 569408000,
+    "roe_10yr_avg": -0.188,
+    "current_price": 0.0,
+    "fcf_list_raw": [],
+    "latest_revenue": 0.0,
+    "eps_data": {
+      "ticker": "RKLB"
+    },
+    "high_growth_rate_used": 0.25,
+    "pv_high": 0.0,
+    "pv_terminal": 0.0,
+    "roe_used": -0.188,
+    "fcf_floor_applied": 0.0
+  }
+}
