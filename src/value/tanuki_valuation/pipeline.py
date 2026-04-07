@@ -3,8 +3,8 @@ TANUKI VALUATION - Pipeline v2.0
 全ティッカーを処理し、latest.jsonを生成
 
 使用方法:
-    python -m src.pipeline
-    python -m src.pipeline TSLA PLTR  # 特定ティッカーのみ
+    python pipeline.py
+    python pipeline.py TSLA PLTR  # 特定ティッカーのみ
 """
 
 import json
@@ -13,13 +13,9 @@ import sys
 from datetime import datetime
 from typing import List, Optional
 
-# ローカル実行とパッケージ実行の両方に対応
-try:
-    from .data_fetcher import TanukiDataFetcher
-    from .core_calculator import KoichiValuationCalculator
-except ImportError:
-    from data_fetcher import TanukiDataFetcher
-    from core_calculator import KoichiValuationCalculator
+# 同一ディレクトリからのインポート
+from data_fetcher import TanukiDataFetcher
+from core_calculator import KoichiValuationCalculator
 
 
 class TanukiValuationPipeline:
@@ -40,13 +36,14 @@ class TanukiValuationPipeline:
         if output_dir:
             self.output_dir = output_dir
         else:
-            # リポジトリルートからの相対パス
-            self.output_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
-                "docs", "value-monitor", "tanuki_valuation", "data"
-            )
+            # リポジトリルートからの相対パス（GitHub Actions実行時）
+            # src/value/tanuki_valuation/ から見て ../../../docs/value-monitor/tanuki_valuation/data
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            repo_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+            self.output_dir = os.path.join(repo_root, "docs", "value-monitor", "tanuki_valuation", "data")
         
         os.makedirs(self.output_dir, exist_ok=True)
+        print(f"   出力先: {self.output_dir}")
 
     def run(self, tickers: Optional[List[str]] = None) -> dict:
         """
@@ -140,12 +137,13 @@ class TanukiValuationPipeline:
         history_dir = os.path.join(ticker_dir, "history")
         os.makedirs(history_dir, exist_ok=True)
 
-        # latest.json
+        # latest.json（calculation_stepsを除外した軽量版）
+        latest_data = {k: v for k, v in valuation.items() if k != "calculation_steps"}
         latest_path = os.path.join(ticker_dir, "latest.json")
         with open(latest_path, "w", encoding="utf-8") as f:
-            json.dump(valuation, f, ensure_ascii=False, indent=2)
+            json.dump(latest_data, f, ensure_ascii=False, indent=2)
 
-        # 履歴ファイル
+        # 履歴ファイル（フル版）
         date_str = valuation.get("calculation_date", datetime.now().strftime("%Y-%m-%d"))
         history_path = os.path.join(history_dir, f"{date_str}.json")
         with open(history_path, "w", encoding="utf-8") as f:
