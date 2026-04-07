@@ -1,0 +1,75 @@
+name: TANUKI VALUATION Daily Update
+
+on:
+  schedule:
+    - cron: '0 14 * * 1-5'  # UTC 14:00 (JST 23:00) 平日のみ
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: '対象ティッカー（カンマ区切り、空白で全て）'
+        required: false
+        default: ''
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  update-valuations:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: kaihatsu
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install requests numpy
+
+      - name: Run TANUKI VALUATION Pipeline
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: |
+          cd src/value/tanuki_valuation
+          if [ -n "${{ github.event.inputs.tickers }}" ]; then
+            # 入力をスペース区切りに変換
+            TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
+            python -m src.pipeline $TICKERS
+          else
+            python -m src.pipeline
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 変更をステージング
+          git add docs/value-monitor/tanuki_valuation/data/
+          
+          # 変更があればコミット
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🦝 TANUKI VALUATION: $(date +'%Y-%m-%d %H:%M') JST"
+            git push origin kaihatsu
+          fi
+
+      - name: Summary
+        run: |
+          echo "## 🦝 TANUKI VALUATION 更新完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| ティッカー | ファイル |" >> $GITHUB_STEP_SUMMARY
+          echo "|:-----------|:---------|" >> $GITHUB_STEP_SUMMARY
+          for f in docs/value-monitor/tanuki_valuation/data/*/latest.json; do
+            ticker=$(basename $(dirname $f))
+            echo "| $ticker | ✅ |" >> $GITHUB_STEP_SUMMARY
+          done
