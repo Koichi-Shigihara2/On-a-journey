@@ -2,15 +2,429 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>TANUKI VALUATION Admin</title>
-  <style> /* ON A JOURNEYデザイン準拠 */ </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANUKI VALUATION | Admin Console</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d14;
+      --sur: #111520;
+      --sur2: #161c2d;
+      --bdr: #1e2840;
+      --acc: #c4d0ff;
+      --acc2: #8b9dff;
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --txt: #e2e8f0;
+      --mut: #94a3b8;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    .shell {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--acc);
+      letter-spacing: .12em;
+    }
+    .back-link {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--acc);
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+    
+    h1 {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--txt);
+      margin: 32px 0 24px;
+    }
+    
+    /* Status Cards */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .status-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .status-label {
+      font-size: 11px;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .status-value {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--acc);
+    }
+    .status-value.ok { color: var(--green); }
+    .status-value.warn { color: var(--yellow); }
+    .status-value.error { color: var(--red); }
+    
+    /* Formula Reference */
+    .formula-section {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .formula-section h2 {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--acc);
+      margin-bottom: 16px;
+    }
+    .formula-block {
+      background: var(--sur2);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .formula-block:last-child { margin-bottom: 0; }
+    .formula-block code {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--acc);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .formula-block p {
+      font-size: 13px;
+      color: var(--mut);
+      line-height: 1.6;
+    }
+    
+    /* History Table */
+    .section-title {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--acc);
+      margin-bottom: 16px;
+      letter-spacing: .08em;
+    }
+    .history-table {
+      width: 100%;
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      overflow: hidden;
+      border-collapse: collapse;
+    }
+    .history-table th,
+    .history-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .history-table th {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mut);
+      text-transform: uppercase;
+      background: var(--sur2);
+    }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table .mono {
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .history-table .ticker {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--acc);
+    }
+    
+    .btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-danger {
+      background: rgba(248,113,113,.15);
+      color: var(--red);
+    }
+    .btn-danger:hover {
+      background: rgba(248,113,113,.25);
+    }
+    .btn-primary {
+      background: var(--acc);
+      color: var(--bg);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+    
+    /* Ticker Select */
+    .ticker-select {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .ticker-select select {
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 10px 16px;
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 6px;
+      color: var(--txt);
+      cursor: pointer;
+    }
+    .ticker-select select:focus {
+      outline: none;
+      border-color: var(--acc);
+    }
+    
+    #history-list {
+      margin-top: 16px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--mut);
+    }
+    
+    /* Parameter Table */
+    .param-table {
+      width: 100%;
+      margin-top: 16px;
+    }
+    .param-table td {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .param-table td:first-child {
+      color: var(--mut);
+      font-size: 13px;
+    }
+    .param-table td:last-child {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--txt);
+      text-align: right;
+    }
+    
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--bdr);
+      text-align: center;
+      font-size: 11px;
+      color: var(--mut);
+    }
+  </style>
 </head>
 <body>
-  <h1>履歴管理（手動削除）</h1>
-  <div id="history-list"></div>
-  <script>
-    // 簡易削除機能（後で拡張）
-    console.log("Admin panel loaded - 履歴削除ボタンを追加予定");
-  </script>
+<div class="shell">
+  <header>
+    <div class="logo">TANUKI VALUATION ADMIN</div>
+    <a href="index.html" class="back-link">← 銘柄一覧に戻る</a>
+  </header>
+
+  <h1>システム状態</h1>
+  
+  <div class="status-grid">
+    <div class="status-card">
+      <div class="status-label">登録銘柄数</div>
+      <div class="status-value" id="ticker-count">--</div>
+    </div>
+    <div class="status-card">
+      <div class="status-label">データ取得済</div>
+      <div class="status-value ok" id="data-count">--</div>
+    </div>
+    <div class="status-card">
+      <div class="status-label">最終更新</div>
+      <div class="status-value" id="last-update" style="font-size:16px">--</div>
+    </div>
+    <div class="status-card">
+      <div class="status-label">モデルバージョン</div>
+      <div class="status-value" style="font-size:14px">v5.1 Phase 4</div>
+    </div>
+  </div>
+
+  <div class="formula-section">
+    <h2>KOICHI式 v5.1 計算モデル</h2>
+    
+    <div class="formula-block">
+      <code>P<sub>t</sub> = V<sub>0</sub> × (1 + α)</code>
+      <p>本質的価値 = DCF企業価値 × (1 + 成長期待プレミアム)</p>
+    </div>
+    
+    <div class="formula-block">
+      <code>V<sub>0</sub> = Σ[FCF×(1+g)<sup>t</sup> / (1+WACC)<sup>t</sup>] + TV/(1+WACC)<sup>n</sup></code>
+      <p>2段階DCF: 高成長期(3年) + ターミナル価値。WACC=8.5%、ターミナル成長率=3%</p>
+    </div>
+    
+    <div class="formula-block">
+      <code>α = max(0, (ROE × 内部留保率 / WACC) × 0.7)</code>
+      <p>成長期待プレミアム: 過去10年平均ROEと内部留保率(60%)から算出</p>
+    </div>
+    
+    <table class="param-table">
+      <tr><td>WACC（加重平均資本コスト）</td><td>8.5%</td></tr>
+      <tr><td>高成長期間</td><td>3年</td></tr>
+      <tr><td>内部留保率</td><td>60%</td></tr>
+      <tr><td>ターミナル成長率</td><td>3.0%</td></tr>
+      <tr><td>高成長率範囲</td><td>15% 〜 50%</td></tr>
+      <tr><td>FCFフロア</td><td>売上高 × 8%</td></tr>
+    </table>
+  </div>
+
+  <h2 class="section-title">履歴管理</h2>
+  
+  <div class="ticker-select">
+    <select id="ticker-selector">
+      <option value="">銘柄を選択</option>
+    </select>
+    <button class="btn btn-primary" onclick="loadHistory()">履歴を表示</button>
+  </div>
+
+  <div id="history-list">
+    <div class="empty-state">銘柄を選択して履歴を表示</div>
+  </div>
+
+  <footer>
+    <p>TANUKI VALUATION Admin Console | Koichi式 v5.1 Phase 4</p>
+  </footer>
+</div>
+
+<script>
+const TICKERS = ["TSLA","PLTR","SOFI","CELH","NVDA","AMD","APP","SOUN","RKLB","ONDS","MSFT","AMZN","FIG"];
+
+async function init() {
+  // Populate ticker selector
+  const selector = document.getElementById('ticker-selector');
+  TICKERS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    selector.appendChild(opt);
+  });
+  
+  // Count data
+  let dataCount = 0;
+  let latestDate = null;
+  
+  for (const ticker of TICKERS) {
+    try {
+      const res = await fetch(`data/${ticker}/latest.json`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.intrinsic_value_per_share > 0) {
+          dataCount++;
+          if (!latestDate || (data.calculation_date && data.calculation_date > latestDate)) {
+            latestDate = data.calculation_date;
+          }
+        }
+      }
+    } catch(e) {}
+  }
+  
+  document.getElementById('ticker-count').textContent = TICKERS.length;
+  document.getElementById('data-count').textContent = dataCount;
+  document.getElementById('last-update').textContent = latestDate || '--';
+}
+
+async function loadHistory() {
+  const ticker = document.getElementById('ticker-selector').value;
+  const container = document.getElementById('history-list');
+  
+  if (!ticker) {
+    container.innerHTML = '<div class="empty-state">銘柄を選択してください</div>';
+    return;
+  }
+  
+  container.innerHTML = '<div class="empty-state">読み込み中...</div>';
+  
+  // In production, this would fetch from data/{ticker}/history/
+  // For demo, we show the structure
+  
+  try {
+    const res = await fetch(`data/${ticker}/latest.json`);
+    if (!res.ok) throw new Error("No data");
+    const data = await res.json();
+    
+    container.innerHTML = `
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>日時</th>
+            <th>本質的価値</th>
+            <th>V₀</th>
+            <th>α</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">${data.calculation_date || '--'}</td>
+            <td class="mono">$${data.intrinsic_value_per_share?.toFixed(2) || '--'}</td>
+            <td class="mono">$${Math.round(data.v0 || 0).toLocaleString()}</td>
+            <td class="mono">${(data.alpha || 0).toFixed(4)}</td>
+            <td>
+              <span style="color:var(--green);font-size:11px">● 最新</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:16px;font-size:12px;color:var(--mut)">
+        ※ 履歴データは data/${ticker}/history/ ディレクトリに保存されます。<br>
+        パイプライン実行時に自動的に履歴が蓄積されます。
+      </p>
+    `;
+  } catch(e) {
+    container.innerHTML = `
+      <div class="empty-state">
+        ${ticker}のデータがありません。<br>
+        パイプラインを実行してデータを生成してください。
+      </div>
+    `;
+  }
+}
+
+init();
+</script>
 </body>
 </html>

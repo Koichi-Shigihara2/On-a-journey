@@ -3,43 +3,876 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TANUKI VALUATION - [TICKER]</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>TANUKI VALUATION - Stock Detail</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
-    :root{--bg:#0a0d14;--sur:#111520;--acc:#8b5cf6;--txt:#e2e8f0;--mut:#64748b;--mono:'Space Mono',monospace}
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif}
-    .shell{max-width:980px;margin:0 auto;padding:20px}
-    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px}
-    .value-box{background:var(--sur);padding:24px;border-radius:12px;margin-bottom:24px}
-    .value{font-family:var(--mono);font-size:42px;font-weight:700;color:var(--acc)}
+    :root {
+      --bg: #0a0d14;
+      --sur: #111520;
+      --sur2: #161c2d;
+      --sur3: #1a2035;
+      --bdr: #1e2840;
+      --acc: #c4d0ff;
+      --acc2: #8b9dff;
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+      --txt: #e2e8f0;
+      --mut: #94a3b8;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .shell {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--bdr);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+    .back-link {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--acc);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .header-right {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--mut);
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .ticker-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .ticker-symbol {
+      font-family: var(--mono);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .ticker-sector {
+      font-size: 13px;
+      color: var(--mut);
+      background: var(--sur);
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+    .company-name {
+      font-size: 15px;
+      color: var(--mut);
+      margin-bottom: 24px;
+    }
+    
+    /* Main Value Display */
+    .value-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .value-box {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .value-box.primary {
+      border-color: var(--acc);
+      background: linear-gradient(135deg, var(--sur) 0%, var(--sur2) 100%);
+    }
+    .value-label {
+      font-size: 12px;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+    .value-main {
+      font-family: var(--mono);
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--acc);
+      text-shadow: 0 0 30px rgba(196,208,255,.3);
+    }
+    .value-sub {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--mut);
+      margin-top: 8px;
+    }
+    .upside-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+    }
+    .upside-badge.positive {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--green);
+    }
+    .upside-badge.negative {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--red);
+    }
+    
+    /* Future Values */
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .future-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .future-year {
+      font-size: 11px;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .future-value {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--txt);
+      margin-top: 4px;
+    }
+    
+    /* Calculation Breakdown */
+    .calc-section {
+      margin-top: 40px;
+    }
+    .section-title {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--acc);
+      letter-spacing: .1em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bdr);
+    }
+    
+    .calc-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .calc-step {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .calc-step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .calc-step-header:hover {
+      background: var(--sur2);
+    }
+    .calc-step-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--acc);
+      background: var(--sur2);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .step-result {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--acc);
+    }
+    .calc-step-body {
+      padding: 0 20px 20px;
+      display: none;
+    }
+    .calc-step.open .calc-step-body {
+      display: block;
+    }
+    .calc-step.open .calc-step-header {
+      border-bottom: 1px solid var(--bdr);
+    }
+    
+    .formula-box {
+      background: var(--sur2);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .formula-box code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--acc);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .formula-desc {
+      font-size: 13px;
+      color: var(--mut);
+      line-height: 1.7;
+    }
+    
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .input-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--sur2);
+      border-radius: 6px;
+    }
+    .input-label {
+      font-size: 12px;
+      color: var(--mut);
+    }
+    .input-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--txt);
+    }
+    
+    /* Chart */
+    .chart-container {
+      margin-top: 40px;
+    }
+    #valuation-chart {
+      width: 100%;
+      height: 300px;
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+    }
+    
+    /* Components Table */
+    .components-table {
+      margin-top: 40px;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .data-table th,
+    .data-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .data-table th {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: var(--sur2);
+    }
+    .data-table td {
+      font-size: 13px;
+    }
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    .data-table .mono {
+      font-family: var(--mono);
+      color: var(--acc);
+    }
+    
+    /* Footer */
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--bdr);
+      font-size: 11px;
+      color: var(--mut);
+      text-align: center;
+    }
+    
+    /* Toggle Arrow */
+    .toggle-arrow {
+      font-size: 10px;
+      color: var(--mut);
+      transition: transform .2s;
+    }
+    .calc-step.open .toggle-arrow {
+      transform: rotate(180deg);
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--mut);
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--bdr);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Error state */
+    .error-state {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .error-state h2 {
+      font-family: var(--mono);
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    
+    @media (max-width: 768px) {
+      .value-display { grid-template-columns: 1fr; }
+      .inputs-grid { grid-template-columns: 1fr; }
+      .value-main { font-size: 32px; }
+    }
   </style>
 </head>
 <body>
 <div class="shell">
-  <div class="header">
-    <h1 id="ticker-title">TANUKI VALUATION</h1>
-    <a href="index.html" style="color:var(--acc);text-decoration:none">← 一覧に戻る</a>
-  </div>
+  <header>
+    <a href="index.html" class="back-link">← 銘柄一覧に戻る</a>
+    <div class="header-right">Koichi式 v5.1 Phase 4</div>
+  </header>
 
   <div id="content">
-    <!-- JSで最新.jsonから動的に表示 -->
-    <div class="value-box">
-      <div style="font-size:14px;color:var(--mut)">本質的価値 (Koichi式 v5.1)</div>
-      <div id="intrinsic-value" class="value">¥ --,--</div>
-      <div id="implied-irr" style="margin-top:8px;font-family:var(--mono);font-size:14px"></div>
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p style="margin-top:16px">データを読み込み中...</p>
     </div>
-    <!-- グラフ・AIコメント・日本語解説は後続PhaseでPlotly追加 -->
   </div>
 </div>
 
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const ticker = urlParams.get('ticker') || 'MSFT';
-  document.getElementById('ticker-title').textContent = `${ticker} TANUKI VALUATION`;
+const urlParams = new URLSearchParams(window.location.search);
+const ticker = urlParams.get('ticker') || 'TSLA';
+
+const COMPANY_NAMES = {
+  TSLA: "Tesla, Inc.",
+  PLTR: "Palantir Technologies Inc.",
+  SOFI: "SoFi Technologies, Inc.",
+  CELH: "Celsius Holdings, Inc.",
+  NVDA: "NVIDIA Corporation",
+  AMD: "Advanced Micro Devices, Inc.",
+  APP: "AppLovin Corporation",
+  SOUN: "SoundHound AI, Inc.",
+  RKLB: "Rocket Lab USA, Inc.",
+  ONDS: "Ondas Holdings Inc.",
+  MSFT: "Microsoft Corporation",
+  AMZN: "Amazon.com, Inc.",
+  FIG: "Simplify Asset Management"
+};
+
+const SECTORS = {
+  TSLA: "EV/Energy", PLTR: "AI/Defense", SOFI: "Fintech", CELH: "Consumer",
+  NVDA: "Semiconductor", AMD: "Semiconductor", APP: "AdTech", SOUN: "AI/Audio",
+  RKLB: "Space", ONDS: "Semiconductor", MSFT: "Cloud/Software", AMZN: "E-Commerce/Cloud", FIG: "Fintech"
+};
+
+document.title = `${ticker} | TANUKI VALUATION`;
+
+async function loadData() {
+  const contentEl = document.getElementById('content');
   
-  // 将来的に latest.json をfetchして表示
-  console.log(`Loading data for ${ticker}...`);
+  try {
+    const res = await fetch(`data/${ticker}/latest.json`);
+    if (!res.ok) throw new Error("Data not found");
+    const data = await res.json();
+    
+    renderDetail(data);
+  } catch(e) {
+    contentEl.innerHTML = `
+      <div class="error-state">
+        <h2>データが見つかりません</h2>
+        <p style="color:var(--mut)">
+          ${ticker}のバリュエーションデータがまだ計算されていません。<br>
+          パイプラインを実行してデータを生成してください。
+        </p>
+        <a href="index.html" style="color:var(--acc);margin-top:24px;display:inline-block">← 一覧に戻る</a>
+      </div>
+    `;
+  }
+}
+
+function renderDetail(data) {
+  const contentEl = document.getElementById('content');
+  
+  const ivps = data.intrinsic_value_per_share || 0;
+  const v0 = data.v0 || 0;
+  const alpha = data.alpha || 0;
+  const futureValues = data.future_values || {};
+  const components = data.components || {};
+  const currentPrice = components.current_price || 0;
+  const fcfAvg = components.fcf_5yr_avg || 0;
+  const roeAvg = components.roe_10yr_avg || 0;
+  const dilutedShares = components.diluted_shares || 0;
+  const highGrowthRate = components.high_growth_rate_used || 0.25;
+  const pvHigh = components.pv_high || 0;
+  const pvTerminal = components.pv_terminal || 0;
+  const calcDate = data.calculation_date || '--';
+  const formula = data.formula || 'Koichi式 v5.1';
+  
+  // Calculate upside
+  let upsidePercent = 0;
+  let upsideClass = '';
+  if (ivps > 0 && currentPrice > 0) {
+    upsidePercent = ((ivps - currentPrice) / currentPrice) * 100;
+    upsideClass = upsidePercent >= 0 ? 'positive' : 'negative';
+  }
+  
+  // Format numbers
+  const fmt = (n, d=2) => n ? n.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d}) : '--';
+  const fmtPct = (n) => n ? (n * 100).toFixed(1) + '%' : '--';
+  const fmtInt = (n) => n ? n.toLocaleString('en-US') : '--';
+  
+  contentEl.innerHTML = `
+    <div class="hero">
+      <div class="ticker-header">
+        <span class="ticker-symbol">${ticker}</span>
+        <span class="ticker-sector">${SECTORS[ticker] || 'Other'}</span>
+      </div>
+      <p class="company-name">${COMPANY_NAMES[ticker] || ticker}</p>
+      
+      <div class="value-display">
+        <div class="value-box primary">
+          <div class="value-label">本質的価値 (1株当り)</div>
+          <div class="value-main">$${fmt(ivps)}</div>
+          <div class="value-sub">企業価値: $${fmtInt(Math.round(v0 * (1 + alpha)))}</div>
+          ${currentPrice > 0 ? `
+            <div class="upside-badge ${upsideClass}">
+              ${upsidePercent >= 0 ? '+' : ''}${upsidePercent.toFixed(1)}% vs 現在価格
+            </div>
+          ` : ''}
+        </div>
+        <div class="value-box">
+          <div class="value-label">現在の市場価格</div>
+          <div class="value-main" style="color:var(--txt);font-size:36px">$${fmt(currentPrice)}</div>
+          <div class="value-sub">計算日: ${calcDate}</div>
+          <div class="value-sub" style="margin-top:4px">${formula}</div>
+        </div>
+      </div>
+      
+      <div class="future-grid">
+        <div class="future-card">
+          <div class="future-year">1年後予測</div>
+          <div class="future-value">$${futureValues['1年後'] || '--'}</div>
+        </div>
+        <div class="future-card">
+          <div class="future-year">2年後予測</div>
+          <div class="future-value">$${futureValues['2年後'] || '--'}</div>
+        </div>
+        <div class="future-card">
+          <div class="future-year">3年後予測</div>
+          <div class="future-value">$${futureValues['3年後'] || '--'}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="calc-section">
+      <h2 class="section-title">CALCULATION BREAKDOWN</h2>
+      
+      <div class="calc-flow">
+        <!-- Step 1: FCF -->
+        <div class="calc-step open">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">1</span>
+              <span class="step-name">FCF 5年平均の算出</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">$${fmtInt(Math.round(fcfAvg))}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>FCF_avg = Σ(OCF - CapEx) / 5</code>
+              <p class="formula-desc">
+                過去5年間の営業キャッシュフロー（OCF）から設備投資（CapEx）を差し引いたフリーキャッシュフローの平均値。
+                FCFがマイナスの場合は売上高×8%をフロアとして適用。
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">FCF 5年平均</span>
+                <span class="input-value">$${fmtInt(Math.round(fcfAvg))}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">直近売上高</span>
+                <span class="input-value">$${fmtInt(Math.round(components.latest_revenue || 0))}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 2: CAGR -->
+        <div class="calc-step">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">2</span>
+              <span class="step-name">企業別高成長率（CAGR）</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">${fmtPct(highGrowthRate)}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>CAGR = (FCF_最新 / FCF_開始)^(1/n) - 1</code>
+              <p class="formula-desc">
+                過去のFCF実績から年平均成長率を算出。15%〜50%の範囲でクリップ。
+                この成長率を高成長期（3年間）に適用。
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">高成長率</span>
+                <span class="input-value">${fmtPct(highGrowthRate)}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">高成長期間</span>
+                <span class="input-value">3年</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 3: DCF -->
+        <div class="calc-step">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">3</span>
+              <span class="step-name">2段階DCF計算</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">$${fmtInt(Math.round(v0))}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>V₀ = Σ(FCF×(1+g)^t / (1+WACC)^t) + TV/(1+WACC)^n</code>
+              <p class="formula-desc">
+                <strong>Phase 1（高成長期）:</strong> 3年間、企業別CAGRで成長<br>
+                <strong>Phase 2（ターミナル）:</strong> 永続成長率3%でゴーイングコンサーン価値<br>
+                <strong>WACC:</strong> 8.5%（成長期待を含まない固定値）
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">PV (高成長期)</span>
+                <span class="input-value">$${fmtInt(Math.round(pvHigh))}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">PV (ターミナル)</span>
+                <span class="input-value">$${fmtInt(Math.round(pvTerminal))}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">WACC</span>
+                <span class="input-value">8.5%</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">ターミナル成長率</span>
+                <span class="input-value">3.0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 4: Alpha -->
+        <div class="calc-step">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">4</span>
+              <span class="step-name">α（成長期待プレミアム）</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">${alpha.toFixed(3)}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>α = max(0, (g_個別 / WACC) × 0.7)</code>
+              <code>g_個別 = ROE_10yr × 内部留保率(60%)</code>
+              <p class="formula-desc">
+                過去10年平均ROEと内部留保率から個別成長期待を算出。
+                WACCとの比率に0.7を乗じて過大評価を抑制。
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">ROE (10年平均)</span>
+                <span class="input-value">${fmtPct(roeAvg)}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">内部留保率</span>
+                <span class="input-value">60%</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">g_個別</span>
+                <span class="input-value">${fmtPct(roeAvg * 0.6)}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">α</span>
+                <span class="input-value">${alpha.toFixed(4)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 5: Final -->
+        <div class="calc-step">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">5</span>
+              <span class="step-name">本質的価値（P_t）算出</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">$${fmt(ivps)}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>P_t = V₀ × (1 + α)</code>
+              <code>1株当り = P_t / 希薄化後株式数</code>
+              <p class="formula-desc">
+                DCFで算出した本質的企業価値に成長期待プレミアム(1+α)を乗じ、
+                希薄化後株式数で除して1株当り本質価値を算出。
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">V₀（DCF価値）</span>
+                <span class="input-value">$${fmtInt(Math.round(v0))}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">1 + α</span>
+                <span class="input-value">${(1 + alpha).toFixed(4)}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">企業価値 P_t</span>
+                <span class="input-value">$${fmtInt(Math.round(v0 * (1 + alpha)))}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">希薄化後株式数</span>
+                <span class="input-value">${fmtInt(dilutedShares)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <h2 class="section-title">VALUATION COMPONENTS</h2>
+      <div id="valuation-chart"></div>
+    </div>
+    
+    <div class="components-table">
+      <h2 class="section-title">RAW DATA</h2>
+      <table class="data-table">
+        <tr>
+          <th>項目</th>
+          <th>値</th>
+          <th>説明</th>
+        </tr>
+        <tr>
+          <td>intrinsic_value_per_share</td>
+          <td class="mono">$${fmt(ivps)}</td>
+          <td>1株当り本質的価値</td>
+        </tr>
+        <tr>
+          <td>v0</td>
+          <td class="mono">$${fmtInt(Math.round(v0))}</td>
+          <td>DCF計算による企業価値</td>
+        </tr>
+        <tr>
+          <td>alpha</td>
+          <td class="mono">${alpha.toFixed(4)}</td>
+          <td>成長期待プレミアム係数</td>
+        </tr>
+        <tr>
+          <td>pv_high</td>
+          <td class="mono">$${fmtInt(Math.round(pvHigh))}</td>
+          <td>高成長期PV</td>
+        </tr>
+        <tr>
+          <td>pv_terminal</td>
+          <td class="mono">$${fmtInt(Math.round(pvTerminal))}</td>
+          <td>ターミナルPV</td>
+        </tr>
+        <tr>
+          <td>high_growth_rate</td>
+          <td class="mono">${fmtPct(highGrowthRate)}</td>
+          <td>企業別高成長率（CAGR）</td>
+        </tr>
+        <tr>
+          <td>fcf_5yr_avg</td>
+          <td class="mono">$${fmtInt(Math.round(fcfAvg))}</td>
+          <td>FCF 5年平均</td>
+        </tr>
+        <tr>
+          <td>roe_10yr_avg</td>
+          <td class="mono">${fmtPct(roeAvg)}</td>
+          <td>ROE 10年平均</td>
+        </tr>
+        <tr>
+          <td>diluted_shares</td>
+          <td class="mono">${fmtInt(dilutedShares)}</td>
+          <td>希薄化後発行済株式数</td>
+        </tr>
+      </table>
+    </div>
+    
+    <footer>
+      <p>計算日: ${calcDate} | ${formula}</p>
+      <p style="margin-top:8px">
+        データソース: SEC EDGAR, Alpha Vantage | 
+        <a href="index.html" style="color:var(--acc);text-decoration:none">銘柄一覧に戻る</a>
+      </p>
+    </footer>
+  `;
+  
+  // Render chart
+  renderChart(pvHigh, pvTerminal, alpha, v0);
+}
+
+function toggleStep(header) {
+  const step = header.parentElement;
+  step.classList.toggle('open');
+}
+
+function renderChart(pvHigh, pvTerminal, alpha, v0) {
+  const data = [{
+    type: 'waterfall',
+    orientation: 'v',
+    x: ['PV (高成長期)', 'PV (ターミナル)', 'V₀', 'α Premium', '本質的価値'],
+    y: [pvHigh, pvTerminal, 0, v0 * alpha, 0],
+    measure: ['relative', 'relative', 'total', 'relative', 'total'],
+    text: [
+      '$' + Math.round(pvHigh).toLocaleString(),
+      '$' + Math.round(pvTerminal).toLocaleString(),
+      '$' + Math.round(v0).toLocaleString(),
+      '$' + Math.round(v0 * alpha).toLocaleString(),
+      '$' + Math.round(v0 * (1 + alpha)).toLocaleString()
+    ],
+    textposition: 'outside',
+    connector: { line: { color: '#1e2840' } },
+    increasing: { marker: { color: '#4ade80' } },
+    decreasing: { marker: { color: '#f87171' } },
+    totals: { marker: { color: '#c4d0ff' } }
+  }];
+  
+  const layout = {
+    paper_bgcolor: '#111520',
+    plot_bgcolor: '#111520',
+    font: { family: 'Space Mono, monospace', color: '#94a3b8', size: 11 },
+    margin: { t: 40, b: 60, l: 60, r: 40 },
+    showlegend: false,
+    yaxis: {
+      gridcolor: '#1e2840',
+      tickformat: '$,.0f',
+      title: { text: '企業価値 (USD)', font: { size: 11 } }
+    },
+    xaxis: {
+      tickangle: -30
+    }
+  };
+  
+  const config = { displayModeBar: false, responsive: true };
+  
+  Plotly.newPlot('valuation-chart', data, layout, config);
+}
+
+loadData();
 </script>
 </body>
 </html>

@@ -3,69 +3,488 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TANUKI VALUATION</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>TANUKI VALUATION | Koichi式 v5.1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {--bg:#0a0d14; --sur:#111520; --sur2:#161c2d; --bdr:#1e2840; --acc:#c4d0ff; --txt:#e2e8f0; --mut:#b0c4e0;
-           --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:14px;min-height:100vh}
-    .shell{max-width:980px;margin:0 auto;padding:0 20px 64px}
-    header{border-bottom:1px solid var(--bdr);padding:16px 0;display:flex;align-items:center;justify-content:space-between}
-    .logo{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:.15em}
-    .hero{text-align:center;padding:48px 0;border-bottom:1px solid var(--bdr)}
-    .hero-title{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--acc)}
-    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:40px}
-    .ticker-card{background:var(--sur);padding:24px;border-radius:8px;border:1px solid var(--bdr);transition:all .2s}
-    .ticker-card:hover{background:var(--sur2);transform:translateY(-2px);box-shadow:0 0 0 3px rgba(196,208,255,.3)}
-    .ticker-name{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt)}
-    .value{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--acc);text-shadow:0 0 8px rgba(196,208,255,.5)}
-    .status{font-size:12px;color:var(--mut);margin-top:8px}
+    :root {
+      --bg: #0a0d14;
+      --sur: #111520;
+      --sur2: #161c2d;
+      --sur3: #1a2035;
+      --bdr: #1e2840;
+      --acc: #c4d0ff;
+      --acc2: #8b9dff;
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --txt: #e2e8f0;
+      --mut: #94a3b8;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--bdr);
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--acc);
+    }
+    .version-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--mut);
+      background: var(--sur);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--bdr);
+    }
+    
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 56px 0 40px;
+      border-bottom: 1px solid var(--bdr);
+    }
+    .hero-title {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--txt);
+      letter-spacing: .08em;
+    }
+    .hero-subtitle {
+      color: var(--mut);
+      margin-top: 12px;
+      font-size: 15px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Formula Preview */
+    .formula-preview {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-top: 32px;
+      display: inline-block;
+    }
+    .formula-preview code {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--acc);
+    }
+    
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--bdr);
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--acc);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--mut);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .ticker-card {
+      background: var(--sur);
+      padding: 20px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--bdr);
+      text-decoration: none;
+      color: inherit;
+      transition: all .2s ease;
+      display: block;
+    }
+    .ticker-card:hover {
+      background: var(--sur2);
+      border-color: var(--acc);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .ticker-name {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .ticker-sector {
+      font-size: 11px;
+      color: var(--mut);
+      background: var(--sur2);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .card-value {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--acc);
+      text-shadow: 0 0 20px rgba(196,208,255,.3);
+    }
+    .card-value.no-data {
+      color: var(--mut);
+      font-size: 14px;
+    }
+    .card-metrics {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--bdr);
+    }
+    .metric {
+      flex: 1;
+    }
+    .metric-label {
+      font-size: 10px;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--txt);
+      margin-top: 2px;
+    }
+    .metric-value.positive { color: var(--green); }
+    .metric-value.negative { color: var(--red); }
+    
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--mut);
+    }
+    
+    /* Methodology Section */
+    .methodology {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--bdr);
+    }
+    .section-title {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--acc);
+      letter-spacing: .1em;
+      margin-bottom: 24px;
+    }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .method-card {
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .method-card h3 {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--txt);
+      margin-bottom: 8px;
+    }
+    .method-card p {
+      font-size: 13px;
+      color: var(--mut);
+      line-height: 1.6;
+    }
+    .method-card code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--acc2);
+      background: var(--sur2);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    
+    /* Footer */
+    footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--bdr);
+      text-align: center;
+      font-size: 11px;
+      color: var(--mut);
+    }
+    footer a {
+      color: var(--acc);
+      text-decoration: none;
+    }
+    
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--bdr);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 <div class="shell">
   <header>
     <div class="logo">TANUKI VALUATION</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--mut)">Koichi式 v5.1</div>
+    <div class="version-tag">Koichi式 v5.1 Phase 4</div>
   </header>
 
   <div class="hero">
-    <div class="hero-title">TANUKI VALUATION</div>
-    <p style="color:var(--mut);margin-top:16px">本質的価値を過去実績＋AIセグメントKPIで実証計算</p>
+    <h1 class="hero-title">TANUKI VALUATION</h1>
+    <p class="hero-subtitle">
+      アナリスト予測を排除し、過去実績データとFCFベースのDCFから本質的価値を算出
+    </p>
+    <div class="formula-preview">
+      <code>P<sub>t</sub> = V<sub>0</sub> × (1 + α) | V<sub>0</sub> = DCF(FCF<sub>5yr</sub>) + TV</code>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value" id="total-tickers">--</div>
+      <div class="stat-label">銘柄数</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="last-update">--</div>
+      <div class="stat-label">最終更新</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="avg-alpha">--</div>
+      <div class="stat-label">平均 α</div>
+    </div>
   </div>
 
   <div id="ticker-list" class="card-grid"></div>
+
+  <div class="methodology">
+    <h2 class="section-title">METHODOLOGY</h2>
+    <div class="method-grid">
+      <div class="method-card">
+        <h3>V<sub>0</sub> 本質的価値</h3>
+        <p>
+          過去5年平均FCFを起点に、2段階DCFで算出。
+          高成長期（3年）はFCF CAGRを適用し、その後ターミナル成長率3%で永続価値を算出。
+          <br><code>WACC = 8.5%</code>
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>α 成長期待プレミアム</h3>
+        <p>
+          過去10年平均ROE × 内部留保率から個別成長率を算出。
+          <br><code>α = (g<sub>個別</sub> / WACC) × 0.7</code>
+          <br>確度調整により過大評価を抑制。
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>FCF補正</h3>
+        <p>
+          FCFがマイナスの場合、売上高×8%をフロアとして適用。
+          成長投資期の企業でも合理的な本質価値を算出。
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>1〜3年後予測</h3>
+        <p>
+          高成長期間中は企業別CAGRを適用、以降はターミナル成長率。
+          Phase 4では将来価値予測を自動生成。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      TANUKI VALUATION | Part of <a href="/On-a-journey/">ON A JOURNEY</a> Investment Suite
+    </p>
+    <p style="margin-top:8px">
+      データソース: SEC EDGAR, Alpha Vantage | 計算: Koichi式 v5.1
+    </p>
+  </footer>
 </div>
 
 <script>
-  async function loadTickers() {
-    const tickers = ["MSFT","AMZN","SOFI","TSLA","PLTR","CELH","NVDA","AMD","APP","SOUN","RKLB","ONDS","FIG"];
-    const container = document.getElementById('ticker-list');
+const TICKERS = ["TSLA","PLTR","SOFI","CELH","NVDA","AMD","APP","SOUN","RKLB","ONDS","MSFT","AMZN","FIG"];
+
+const SECTORS = {
+  TSLA: "EV/Energy",
+  PLTR: "AI/Defense",
+  SOFI: "Fintech",
+  CELH: "Consumer",
+  NVDA: "Semiconductor",
+  AMD: "Semiconductor",
+  APP: "AdTech",
+  SOUN: "AI/Audio",
+  RKLB: "Space",
+  ONDS: "Semiconductor",
+  MSFT: "Cloud/Software",
+  AMZN: "E-Commerce/Cloud",
+  FIG: "Fintech"
+};
+
+async function loadTickers() {
+  const container = document.getElementById('ticker-list');
+  let loadedCount = 0;
+  let totalAlpha = 0;
+  let latestDate = null;
+  
+  for (const ticker of TICKERS) {
+    const card = document.createElement('a');
+    card.href = `stock.html?ticker=${ticker}`;
+    card.className = 'ticker-card';
     
-    for (let ticker of tickers) {
-      const card = document.createElement('a');
-      card.href = `stock.html?ticker=${ticker}`;
-      card.className = 'ticker-card';
-      card.innerHTML = `
+    // Initial loading state
+    card.innerHTML = `
+      <div class="card-header">
         <div class="ticker-name">${ticker}</div>
-        <div class="value" id="val-${ticker}">計算中...</div>
-        <div class="status">最新更新: <span id="date-${ticker}">--</span></div>
-      `;
-      container.appendChild(card);
+        <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+      </div>
+      <div class="card-value"><span class="loading"></span></div>
+    `;
+    container.appendChild(card);
+    
+    try {
+      const res = await fetch(`data/${ticker}/latest.json`);
+      if (!res.ok) throw new Error("no data");
+      const data = await res.json();
       
-      try {
-        const res = await fetch(`data/${ticker}/latest.json`);
-        if (!res.ok) throw new Error("no data");
-        const data = await res.json();
-        document.getElementById(`val-${ticker}`).textContent = `$${data.intrinsic_value_pt.toLocaleString('en-US')}`;
-        document.getElementById(`date-${ticker}`).textContent = data.calculation_date || '--';
-      } catch(e) {
-        document.getElementById(`val-${ticker}`).textContent = 'データなし';
+      const value = data.intrinsic_value_per_share || 0;
+      const currentPrice = data.components?.current_price || 0;
+      const alpha = data.alpha || 0;
+      const futureValues = data.future_values || {};
+      const calcDate = data.calculation_date || '--';
+      
+      // Calculate upside/downside
+      let upsideText = '--';
+      let upsideClass = '';
+      if (value > 0 && currentPrice > 0) {
+        const upside = ((value - currentPrice) / currentPrice) * 100;
+        upsideText = (upside >= 0 ? '+' : '') + upside.toFixed(1) + '%';
+        upsideClass = upside >= 0 ? 'positive' : 'negative';
       }
+      
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="ticker-name">${ticker}</div>
+          <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+        </div>
+        <div class="card-value">${value > 0 ? '$' + value.toFixed(2) : '<span class="no-data">計算中...</span>'}</div>
+        <div class="card-metrics">
+          <div class="metric">
+            <div class="metric-label">現在価格</div>
+            <div class="metric-value">${currentPrice > 0 ? '$' + currentPrice.toFixed(2) : '--'}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">乖離率</div>
+            <div class="metric-value ${upsideClass}">${upsideText}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">α</div>
+            <div class="metric-value">${alpha.toFixed(3)}</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>1Y: ${futureValues['1年後'] ? '$' + futureValues['1年後'] : '--'}</span>
+          <span>${calcDate}</span>
+        </div>
+      `;
+      
+      if (value > 0) {
+        loadedCount++;
+        totalAlpha += alpha;
+        if (!latestDate || calcDate > latestDate) {
+          latestDate = calcDate;
+        }
+      }
+    } catch(e) {
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="ticker-name">${ticker}</div>
+          <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+        </div>
+        <div class="card-value no-data">データ未取得</div>
+        <div class="card-footer">
+          <span>--</span>
+          <span>--</span>
+        </div>
+      `;
     }
   }
-  loadTickers();
+  
+  // Update stats
+  document.getElementById('total-tickers').textContent = loadedCount > 0 ? loadedCount : '--';
+  document.getElementById('last-update').textContent = latestDate || '--';
+  document.getElementById('avg-alpha').textContent = loadedCount > 0 ? (totalAlpha / loadedCount).toFixed(3) : '--';
+}
+
+loadTickers();
 </script>
 </body>
 </html>
