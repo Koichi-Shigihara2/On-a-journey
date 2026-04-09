@@ -1,14 +1,14 @@
 {
-  "intrinsic_value_pt": 0.0,
-  "intrinsic_value_per_share": 0.0,
-  "v0": 0.0,
-  "alpha": 5.0152941176470565,
+  "intrinsic_value_pt": 1902498978075.149,
+  "intrinsic_value_per_share": 76.28303841520244,
+  "v0": 592123338668.1699,
+  "alpha": 2.2130112998996694,
   "future_values": {
-    "1年後": 0.0,
-    "2年後": 0.0,
-    "3年後": 0.0
+    "1年後": 114.42,
+    "2年後": 171.64,
+    "3年後": 257.46
   },
-  "upside_percent": 0,
+  "upside_percent": -58.1,
   "calculation_date": "2026-04-09",
   "formula": "Koichi式 v5.1 Phase 4（将来価値予測版）",
   "calculation_steps": {
@@ -17,15 +17,27 @@
       "description": "過去5年のFCF（営業CF - 設備投資）を平均化",
       "formula": "Σ(FCF_t) / n",
       "inputs": {
-        "fcf_list": [],
-        "years": 0
+        "fcf_list": [
+          4761000000,
+          5822000000,
+          9108000000,
+          5641000000,
+          28090000000
+        ],
+        "years": 5
       },
-      "result": 0,
+      "result": 10684400000.0,
       "detail": {
-        "input": [],
-        "sum": 0,
-        "count": 0,
-        "result": 0
+        "input": [
+          4761000000,
+          5822000000,
+          9108000000,
+          5641000000,
+          28090000000
+        ],
+        "sum": 53422000000,
+        "count": 5,
+        "result": 10684400000.0
       }
     },
     "step2": {
@@ -33,10 +45,14 @@
       "description": "直近5年FCFのCAGRを算出し、15%〜50%にクリップ",
       "formula": "(FCF_end / FCF_start)^(1/n) - 1",
       "inputs": {
-        "method": "default",
-        "result": 0.25
+        "method": "cagr",
+        "start_value": 4761000000,
+        "end_value": 28090000000,
+        "periods": 4,
+        "raw_cagr": 0.5585236231438555,
+        "clipped_result": 0.5
       },
-      "result": 0.25,
+      "result": 0.5,
       "constraints": {
         "min": 0.15,
         "max": 0.5
@@ -47,15 +63,15 @@
       "description": "高成長期3年 + ターミナル価値のDCF",
       "formula": "PV_high + PV_terminal",
       "inputs": {
-        "fcf_base": 0,
+        "fcf_base": 10684400000.0,
         "wacc": 0.085,
-        "high_growth_rate": 0.25,
+        "high_growth_rate": 0.5,
         "terminal_growth": 0.03
       },
       "result": {
-        "pv_high": 0.0,
-        "pv_terminal": 0.0,
-        "v0": 0.0
+        "pv_high": 63423428650.11084,
+        "pv_terminal": 528699910018.05914,
+        "v0": 592123338668.1699
       },
       "detail": {
         "wacc": 0.085,
@@ -64,27 +80,27 @@
         "high_growth_detail": [
           {
             "year": 1,
-            "fcf": 0.0,
+            "fcf": 16026600000.0,
             "discount_factor": 1.085,
-            "pv": 0.0
+            "pv": 14771059907.834103
           },
           {
             "year": 2,
-            "fcf": 0.0,
+            "fcf": 24039900000.0,
             "discount_factor": 1.177225,
-            "pv": 0.0
+            "pv": 20420820149.079403
           },
           {
             "year": 3,
-            "fcf": 0.0,
+            "fcf": 36059850000.0,
             "discount_factor": 1.2772891249999998,
-            "pv": 0.0
+            "pv": 28231548593.197334
           }
         ],
-        "pv_high": 0.0,
-        "terminal_fcf": 0.0,
-        "terminal_value": 0.0,
-        "pv_terminal": 0.0
+        "pv_high": 63423428650.11084,
+        "terminal_fcf": 37141645500.0,
+        "terminal_value": 675302645454.5454,
+        "pv_terminal": 528699910018.05914
       }
     },
     "step4": {
@@ -92,44 +108,50 @@
       "description": "α = max(0, (g_individual / WACC) × 0.7)",
       "formula": "max(0, (ROE × 内部留保率 / WACC) × 0.7)",
       "inputs": {
-        "roe_10yr_avg": 1.015,
+        "roe_10yr_avg": 0.4478713345035046,
         "retention_rate": 0.6,
-        "g_individual": 0.6089999999999999,
+        "g_individual": 0.26872280070210275,
         "wacc": 0.085,
-        "alpha_raw": 5.0152941176470565,
-        "alpha_clipped": 5.0152941176470565
+        "alpha_raw": 2.2130112998996694,
+        "alpha_clipped": 2.2130112998996694
       },
-      "result": 5.0152941176470565
+      "result": 2.2130112998996694
     },
     "step5": {
       "title": "本質的価値（P_t）算出",
       "description": "P_t = V_0 × (1 + α)",
       "formula": "V_0 × (1 + α)",
       "inputs": {
-        "v0": 0.0,
-        "alpha": 5.0152941176470565,
+        "v0": 592123338668.1699,
+        "alpha": 2.2130112998996694,
         "formula": "V_0 × (1 + α)",
-        "intrinsic_value_pt": 0.0,
-        "diluted_shares": 24300000000,
-        "intrinsic_value_per_share": 0.0
+        "intrinsic_value_pt": 1902498978075.149,
+        "diluted_shares": 24940000000,
+        "intrinsic_value_per_share": 76.28303841520244
       },
-      "result": 0.0
+      "result": 76.28303841520244
     }
   },
   "components": {
-    "fcf_5yr_avg": 0,
-    "diluted_shares": 24300000000,
-    "roe_10yr_avg": 1.015,
-    "current_price": 0.0,
-    "fcf_list_raw": [],
+    "fcf_5yr_avg": 10684400000.0,
+    "diluted_shares": 24940000000,
+    "roe_10yr_avg": 0.4478713345035046,
+    "current_price": 182.08,
+    "fcf_list_raw": [
+      4761000000,
+      5822000000,
+      9108000000,
+      5641000000,
+      28090000000
+    ],
     "latest_revenue": 0.0,
     "eps_data": {
       "ticker": "NVDA"
     },
-    "high_growth_rate_used": 0.25,
-    "pv_high": 0.0,
-    "pv_terminal": 0.0,
-    "roe_used": 1.015,
+    "high_growth_rate_used": 0.5,
+    "pv_high": 63423428650.11084,
+    "pv_terminal": 528699910018.05914,
+    "roe_used": 0.4478713345035046,
     "fcf_floor_applied": 0.0
   }
 }

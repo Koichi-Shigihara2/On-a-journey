@@ -1,14 +1,14 @@
 {
-  "intrinsic_value_pt": 0.0,
-  "intrinsic_value_per_share": 0.0,
-  "v0": 0.0,
-  "alpha": 0.27967058823529406,
+  "intrinsic_value_pt": 1100657910.764722,
+  "intrinsic_value_per_share": 1.1646877865162388,
+  "v0": 1100657910.764722,
+  "alpha": 0.0,
   "future_values": {
-    "1年後": 0.0,
-    "2年後": 0.0,
-    "3年後": 0.0
+    "1年後": 1.46,
+    "2年後": 1.82,
+    "3年後": 2.27
   },
-  "upside_percent": 0,
+  "upside_percent": -92.9,
   "calculation_date": "2026-04-09",
   "formula": "Koichi式 v5.1 Phase 4（将来価値予測版）",
   "calculation_steps": {
@@ -17,15 +17,27 @@
       "description": "過去5年のFCF（営業CF - 設備投資）を平均化",
       "formula": "Σ(FCF_t) / n",
       "inputs": {
-        "fcf_list": [],
-        "years": 0
+        "fcf_list": [
+          -92323000,
+          -503885000,
+          -1402478000,
+          -7349059000,
+          -7338548000
+        ],
+        "years": 5
       },
-      "result": 0,
+      "result": 33716320.0,
       "detail": {
-        "input": [],
-        "sum": 0,
-        "count": 0,
-        "result": 0
+        "input": [
+          -92323000,
+          -503885000,
+          -1402478000,
+          -7349059000,
+          -7338548000
+        ],
+        "sum": -16686293000,
+        "count": 5,
+        "result": -3337258600.0
       }
     },
     "step2": {
@@ -47,15 +59,15 @@
       "description": "高成長期3年 + ターミナル価値のDCF",
       "formula": "PV_high + PV_terminal",
       "inputs": {
-        "fcf_base": 0,
+        "fcf_base": 33716320.0,
         "wacc": 0.085,
         "high_growth_rate": 0.25,
         "terminal_growth": 0.03
       },
       "result": {
-        "pv_high": 0.0,
-        "pv_terminal": 0.0,
-        "v0": 0.0
+        "pv_high": 135150688.58430937,
+        "pv_terminal": 965507222.1804128,
+        "v0": 1100657910.764722
       },
       "detail": {
         "wacc": 0.085,
@@ -64,27 +76,27 @@
         "high_growth_detail": [
           {
             "year": 1,
-            "fcf": 0.0,
+            "fcf": 42145400.0,
             "discount_factor": 1.085,
-            "pv": 0.0
+            "pv": 38843686.6359447
           },
           {
             "year": 2,
-            "fcf": 0.0,
+            "fcf": 52681750.0,
             "discount_factor": 1.177225,
-            "pv": 0.0
+            "pv": 44750791.05523583
           },
           {
             "year": 3,
-            "fcf": 0.0,
+            "fcf": 65852187.5,
             "discount_factor": 1.2772891249999998,
-            "pv": 0.0
+            "pv": 51556210.89312884
           }
         ],
-        "pv_high": 0.0,
-        "terminal_fcf": 0.0,
-        "terminal_value": 0.0,
-        "pv_terminal": 0.0
+        "pv_high": 135150688.58430937,
+        "terminal_fcf": 67827753.125,
+        "terminal_value": 1233231874.9999998,
+        "pv_terminal": 965507222.1804128
       }
     },
     "step4": {
@@ -92,44 +104,50 @@
       "description": "α = max(0, (g_individual / WACC) × 0.7)",
       "formula": "max(0, (ROE × 内部留保率 / WACC) × 0.7)",
       "inputs": {
-        "roe_10yr_avg": 0.0566,
+        "roe_10yr_avg": -0.0654709743300172,
         "retention_rate": 0.6,
-        "g_individual": 0.03396,
+        "g_individual": 0.0,
         "wacc": 0.085,
-        "alpha_raw": 0.27967058823529406,
-        "alpha_clipped": 0.27967058823529406
+        "alpha_raw": 0.0,
+        "alpha_clipped": 0.0
       },
-      "result": 0.27967058823529406
+      "result": 0.0
     },
     "step5": {
       "title": "本質的価値（P_t）算出",
       "description": "P_t = V_0 × (1 + α)",
       "formula": "V_0 × (1 + α)",
       "inputs": {
-        "v0": 0.0,
-        "alpha": 0.27967058823529406,
+        "v0": 1100657910.764722,
+        "alpha": 0.0,
         "formula": "V_0 × (1 + α)",
-        "intrinsic_value_pt": 0.0,
-        "diluted_shares": 1275264000,
-        "intrinsic_value_per_share": 0.0
+        "intrinsic_value_pt": 1100657910.764722,
+        "diluted_shares": 945024000,
+        "intrinsic_value_per_share": 1.1646877865162388
       },
-      "result": 0.0
+      "result": 1.1646877865162388
     }
   },
   "components": {
-    "fcf_5yr_avg": 0,
-    "diluted_shares": 1275264000,
-    "roe_10yr_avg": 0.0566,
-    "current_price": 0.0,
-    "fcf_list_raw": [],
-    "latest_revenue": 0.0,
+    "fcf_5yr_avg": -3337258600.0,
+    "diluted_shares": 945024000,
+    "roe_10yr_avg": -0.0654709743300172,
+    "current_price": 16.49,
+    "fcf_list_raw": [
+      -92323000,
+      -503885000,
+      -1402478000,
+      -7349059000,
+      -7338548000
+    ],
+    "latest_revenue": 421454000.0,
     "eps_data": {
       "ticker": "SOFI"
     },
     "high_growth_rate_used": 0.25,
-    "pv_high": 0.0,
-    "pv_terminal": 0.0,
-    "roe_used": 0.0566,
-    "fcf_floor_applied": 0.0
+    "pv_high": 135150688.58430937,
+    "pv_terminal": 965507222.1804128,
+    "roe_used": -0.0654709743300172,
+    "fcf_floor_applied": 3370974920.0
   }
 }
