@@ -1,0 +1,71 @@
+name: SEC Data Update
+
+on:
+  schedule:
+    - cron: '0 12 * * 0'  # UTC 12:00 日曜（JST 21:00）週次更新
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: '対象ティッカー（カンマ区切り、空白で全て）'
+        required: false
+        default: ''
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  update-sec-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: kaihatsu
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run SEC Data Update
+        run: |
+          if [ -n "${{ github.event.inputs.tickers }}" ]; then
+            TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
+            python common/sec_data/update.py $TICKERS
+          else
+            python common/sec_data/update.py
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add common/sec_data/data/
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 SEC Data Update: $(date +'%Y-%m-%d')"
+            git push origin kaihatsu
+          fi
+
+      - name: Summary
+        run: |
+          echo "## 📊 SEC Data Update 完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| ティッカー | 年次データ |" >> $GITHUB_STEP_SUMMARY
+          echo "|:-----------|:-----------|" >> $GITHUB_STEP_SUMMARY
+          for dir in common/sec_data/data/*/; do
+            ticker=$(basename $dir)
+            if [ "$ticker" != "_cik_cache.json" ]; then
+              annual_count=$(ls -1 $dir/annual_*.json 2>/dev/null | wc -l)
+              echo "| $ticker | ${annual_count}件 |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
