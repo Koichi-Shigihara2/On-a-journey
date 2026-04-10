@@ -169,6 +169,9 @@ class SECParser:
             }
         """
         result = {"annual": {}, "quarterly": {}}
+        # 期末日を記録（同一FYで最新のend日付を優先するため）
+        annual_end_dates = {}
+        quarterly_end_dates = {}
         
         for key in xbrl_keys:
             if key not in us_gaap:
@@ -197,9 +200,15 @@ class SECParser:
                             # 最大値を採用（株式数の異常値対策）
                             if fy not in result["annual"] or val > result["annual"][fy]:
                                 result["annual"][fy] = val
+                                annual_end_dates[fy] = end_date
                         else:
+                            # 同一FYでは最新のend日付を優先
                             if fy not in result["annual"]:
                                 result["annual"][fy] = val
+                                annual_end_dates[fy] = end_date
+                            elif end_date > annual_end_dates.get(fy, ""):
+                                result["annual"][fy] = val
+                                annual_end_dates[fy] = end_date
                     
                     # 四半期（10-Q）
                     elif form == "10-Q" and fp in ["Q1", "Q2", "Q3"]:
@@ -207,9 +216,15 @@ class SECParser:
                         if use_max:
                             if quarter_key not in result["quarterly"] or val > result["quarterly"][quarter_key]:
                                 result["quarterly"][quarter_key] = val
+                                quarterly_end_dates[quarter_key] = end_date
                         else:
+                            # 同一四半期では最新のend日付を優先
                             if quarter_key not in result["quarterly"]:
                                 result["quarterly"][quarter_key] = val
+                                quarterly_end_dates[quarter_key] = end_date
+                            elif end_date > quarterly_end_dates.get(quarter_key, ""):
+                                result["quarterly"][quarter_key] = val
+                                quarterly_end_dates[quarter_key] = end_date
                 
                 # 最初に見つかったunit_typeのデータを使用
                 if result["annual"] or result["quarterly"]:
