@@ -254,7 +254,10 @@ class SECParser:
                 # 最新FYのデータがあるか確認
                 if max_fy_in_data in result["annual"]:
                     break  # 最新FYが取れたので終了
-                # 最新FYがない場合は次のキーを試す
+                # 最新FYがない場合は次のキーを試す → resultをクリア
+                result = {"annual": {}, "quarterly": {}}
+                annual_end_dates = {}
+                quarterly_end_dates = {}
             elif result["quarterly"]:
                 break  # 四半期データは従来通り
         
