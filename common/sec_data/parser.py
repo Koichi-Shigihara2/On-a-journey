@@ -246,7 +246,7 @@ class SECParser:
                     break
             
             # use_max=Trueの場合は全キーを検索
-            # use_max=Falseの場合は「最新FYのデータが取れた」場合のみ終了
+            # use_max=Falseの場合は「最新FYのannualデータが取れた」場合のみ終了
             if use_max:
                 continue  # 全キーを検索
             
@@ -258,8 +258,11 @@ class SECParser:
                 result = {"annual": {}, "quarterly": {}}
                 annual_end_dates = {}
                 quarterly_end_dates = {}
-            elif result["quarterly"]:
-                break  # 四半期データは従来通り
+            elif result["quarterly"] and not result["annual"]:
+                # quarterlyのみでannualがない場合も次のキーを試す → resultをクリア
+                result = {"annual": {}, "quarterly": {}}
+                annual_end_dates = {}
+                quarterly_end_dates = {}
         
         return result
     
