@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>TANUKI VALUATION | Koichi式 v5.2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0d14; --sur:#111520; --sur2:#161c2d; --bdr:#1e2840;
+      --acc:#3b82f6; --grn:#10b981; --red:#f43f5e; --amb:#f59e0b;
+      --txt:#e2e8f0; --mut:#64748b;
+      --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:14px;min-height:100vh;line-height:1.6}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:999}
+    .shell{max-width:1100px;margin:0 auto;padding:0 20px 60px}
+
+    /* ── Header ── */
+    header{border-bottom:1px solid var(--bdr);padding:16px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:100}
+    .logo{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.12em;display:flex;align-items:center;gap:10px}
+    .logo-text{display:flex;gap:4px}
+    .logo-accent{color:var(--acc)}
+    .logo-dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:pdot 2s ease-in-out infinite}
+    @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
+    .hdr-r{display:flex;align-items:center;gap:12px}
+    .version-tag{font-family:var(--mono);font-size:10px;color:var(--mut);background:var(--sur);padding:4px 10px;border-radius:4px;border:1px solid var(--bdr)}
+    .nav-link{font-family:var(--mono);font-size:11px;color:var(--acc);text-decoration:none;padding:5px 12px;border:1px solid var(--bdr);background:var(--sur2)}
+    .nav-link:hover{border-color:var(--acc)}
+
+    /* ── Hero ── */
+    .hero{text-align:center;padding:48px 0 36px;border-bottom:1px solid var(--bdr)}
+    .hero-title{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:.08em}
+    .hero-subtitle{color:var(--mut);margin-top:12px;font-size:14px;max-width:560px;margin-left:auto;margin-right:auto}
+    .formula-preview{background:var(--sur);border:1px solid var(--bdr);border-radius:6px;padding:16px 20px;margin-top:28px;display:inline-block}
+    .formula-preview code{font-family:var(--mono);font-size:12px;color:var(--acc)}
+
+    /* ── Stats Bar ── */
+    .stats-bar{display:flex;gap:32px;justify-content:center;padding:20px 0;border-bottom:1px solid var(--bdr);flex-wrap:wrap}
+    .stat-item{text-align:center}
+    .stat-value{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--acc)}
+    .stat-label{font-size:10px;color:var(--mut);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+
+    /* ── Card Grid ── */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-top:28px}
+    .ticker-card{background:var(--sur);padding:18px 22px;border-radius:8px;border:1px solid var(--bdr);text-decoration:none;color:inherit;transition:all .2s ease;display:block}
+    .ticker-card:hover{background:var(--sur2);border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+    .ticker-name{font-family:var(--mono);font-size:18px;font-weight:700}
+    .ticker-sector{font-size:10px;color:var(--mut);background:var(--sur2);padding:3px 8px;border-radius:4px}
+    .card-value{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--acc);text-shadow:0 0 16px rgba(59,130,246,.25)}
+    .card-value.no-data{color:var(--mut);font-size:13px}
+    .card-metrics{display:flex;gap:14px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)}
+    .metric{flex:1}
+    .metric-label{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+    .metric-value{font-family:var(--mono);font-size:12px;color:var(--txt);margin-top:2px}
+    .metric-value.positive{color:var(--grn)}
+    .metric-value.negative{color:var(--red)}
+    .card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:10px;color:var(--mut);font-family:var(--mono)}
+
+    /* ── Methodology ── */
+    .methodology{margin-top:40px;padding-top:28px;border-top:1px solid var(--bdr)}
+    .section-title{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.15em;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+    .method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .method-card{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:18px}
+    .method-card h3{font-family:var(--mono);font-size:11px;color:var(--txt);margin-bottom:8px}
+    .method-card p{font-size:12px;color:var(--mut);line-height:1.6}
+    .method-card code{font-family:var(--mono);font-size:10px;color:var(--acc);background:var(--sur2);padding:2px 6px;border-radius:3px}
+
+    /* ── Footer ── */
+    footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--bdr);text-align:center;font-size:11px;color:var(--mut)}
+    footer a{color:var(--acc);text-decoration:none}
+    footer a:hover{text-decoration:underline}
+
+    /* ── Loading ── */
+    .loading{display:inline-block;width:14px;height:14px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="logo">
+      <span class="logo-dot"></span>
+      <span class="logo-text">TANUKI<span class="logo-accent">VALUATION</span></span>
+    </div>
+    <div class="hdr-r">
+      <div class="version-tag">Koichi式 v5.2</div>
+      <a href="/On-a-journey/market-monitor/macro-pulse/" class="nav-link">MACRO PULSE</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1 class="hero-title">TANUKI VALUATION</h1>
+    <p class="hero-subtitle">
+      アナリスト予測を排除し、SEC実績データとFCFベースの2段階DCFから本質的価値を算出
+    </p>
+    <div class="formula-preview">
+      <code>P<sub>t</sub> = (V<sub>0</sub> + RPO<sub>PV</sub>) × (1 + α)</code>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value" id="total-tickers">--</div>
+      <div class="stat-label">銘柄数</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="last-update">--</div>
+      <div class="stat-label">最終更新</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="avg-alpha">--</div>
+      <div class="stat-label">平均 α</div>
+    </div>
+  </div>
+
+  <div id="ticker-list" class="card-grid"></div>
+
+  <div class="methodology">
+    <h2 class="section-title">METHODOLOGY</h2>
+    <div class="method-grid">
+      <div class="method-card">
+        <h3>V₀ 本質的価値</h3>
+        <p>
+          過去5年平均FCFを起点に、2段階DCFで算出。
+          高成長期（3年）はFCF CAGRを適用し、ターミナル成長率3%で永続価値を計算。
+          <br><code>WACC = 8.5%</code>
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>α 成長期待プレミアム</h3>
+        <p>
+          直近連続黒字期間のROE平均 × 内部留保率から個別成長率を算出。
+          <br><code>α = (g / WACC) × 0.7</code>
+          <br>αは1.0でキャップ。
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>RPO補正</h3>
+        <p>
+          SaaS企業向け。Remaining Performance Obligations（残存履行義務）を
+          15%割引率で現在価値化し、V₀に加算。
+        </p>
+      </div>
+      <div class="method-card">
+        <h3>1〜3年後予測</h3>
+        <p>
+          高成長期間中は企業別CAGRを適用、以降はターミナル成長率。
+          本質的価値の将来推移を自動計算。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      TANUKI VALUATION | Part of <a href="/On-a-journey/">ON A JOURNEY</a> Investment Suite
+    </p>
+    <p style="margin-top:8px">
+      データソース: SEC EDGAR | 計算: Koichi式 v5.2
+    </p>
+  </footer>
+</div>
+
+<script>
+const TICKERS = ["TSLA","PLTR","SOFI","CELH","NVDA","AMD","APP","SOUN","RKLB","ONDS","MSFT","AMZN","FIG"];
+
+const SECTORS = {
+  TSLA: "EV/Energy",
+  PLTR: "AI/Defense",
+  SOFI: "Fintech",
+  CELH: "Consumer",
+  NVDA: "Semiconductor",
+  AMD: "Semiconductor",
+  APP: "AdTech",
+  SOUN: "AI/Audio",
+  RKLB: "Space",
+  ONDS: "Semiconductor",
+  MSFT: "Cloud/Software",
+  AMZN: "E-Commerce/Cloud",
+  FIG: "Fintech"
+};
+
+async function loadTickers() {
+  const container = document.getElementById('ticker-list');
+  let loadedCount = 0;
+  let totalAlpha = 0;
+  let latestDate = null;
+
+  for (const ticker of TICKERS) {
+    const card = document.createElement('a');
+    card.href = `stock.html?ticker=${ticker}`;
+    card.className = 'ticker-card';
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="ticker-name">${ticker}</div>
+        <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+      </div>
+      <div class="card-value"><span class="loading"></span></div>
+    `;
+    container.appendChild(card);
+
+    try {
+      const res = await fetch(`data/${ticker}/latest.json`);
+      if (!res.ok) throw new Error("no data");
+      const data = await res.json();
+
+      const value = data.intrinsic_value_per_share || 0;
+      const currentPrice = data.components?.current_price || 0;
+      const alpha = data.alpha || 0;
+      const futureValues = data.future_values || {};
+      const calcDate = data.calculation_date || '--';
+
+      let upsideText = '--';
+      let upsideClass = '';
+      if (value > 0 && currentPrice > 0) {
+        const upside = ((value - currentPrice) / currentPrice) * 100;
+        upsideText = (upside >= 0 ? '+' : '') + upside.toFixed(1) + '%';
+        upsideClass = upside >= 0 ? 'positive' : 'negative';
+      }
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="ticker-name">${ticker}</div>
+          <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+        </div>
+        <div class="card-value">${value > 0 ? '$' + value.toFixed(2) : '<span class="no-data">計算中...</span>'}</div>
+        <div class="card-metrics">
+          <div class="metric">
+            <div class="metric-label">現在価格</div>
+            <div class="metric-value">${currentPrice > 0 ? '$' + currentPrice.toFixed(2) : '--'}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">乖離率</div>
+            <div class="metric-value ${upsideClass}">${upsideText}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">α</div>
+            <div class="metric-value">${alpha.toFixed(3)}</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span>1Y: ${futureValues['1年後'] ? '$' + futureValues['1年後'] : '--'}</span>
+          <span>${calcDate}</span>
+        </div>
+      `;
+
+      if (value > 0) {
+        loadedCount++;
+        totalAlpha += alpha;
+        if (!latestDate || calcDate > latestDate) {
+          latestDate = calcDate;
+        }
+      }
+    } catch(e) {
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="ticker-name">${ticker}</div>
+          <div class="ticker-sector">${SECTORS[ticker] || 'Other'}</div>
+        </div>
+        <div class="card-value no-data">データ未取得</div>
+        <div class="card-footer">
+          <span>--</span>
+          <span>--</span>
+        </div>
+      `;
+    }
+  }
+
+  document.getElementById('total-tickers').textContent = loadedCount > 0 ? loadedCount : '--';
+  document.getElementById('last-update').textContent = latestDate || '--';
+  document.getElementById('avg-alpha').textContent = loadedCount > 0 ? (totalAlpha / loadedCount).toFixed(3) : '--';
+}
+
+loadTickers();
+</script>
+</body>
+</html>
