@@ -173,6 +173,21 @@ class SECParser:
         annual_end_dates = {}
         quarterly_end_dates = {}
         
+        # 最新FYを特定するため、全キーの最大FYを事前に調べる
+        max_fy_in_data = 0
+        for key in xbrl_keys:
+            if key not in us_gaap:
+                continue
+            units = us_gaap[key].get("units", {})
+            for unit_type in ["USD", "shares", "USD/shares"]:
+                if unit_type not in units:
+                    continue
+                for entry in units[unit_type]:
+                    if entry.get("form") == "10-K" and entry.get("fp") == "FY":
+                        fy = entry.get("fy", 0)
+                        if fy > max_fy_in_data:
+                            max_fy_in_data = fy
+        
         for key in xbrl_keys:
             if key not in us_gaap:
                 continue
@@ -230,9 +245,18 @@ class SECParser:
                 if result["annual"] or result["quarterly"]:
                     break
             
-            # use_max=Trueの場合は全キーを検索、Falseの場合は最初に見つかったキーで終了
-            if not use_max and (result["annual"] or result["quarterly"]):
-                break
+            # use_max=Trueの場合は全キーを検索
+            # use_max=Falseの場合は「最新FYのデータが取れた」場合のみ終了
+            if use_max:
+                continue  # 全キーを検索
+            
+            if result["annual"]:
+                # 最新FYのデータがあるか確認
+                if max_fy_in_data in result["annual"]:
+                    break  # 最新FYが取れたので終了
+                # 最新FYがない場合は次のキーを試す
+            elif result["quarterly"]:
+                break  # 四半期データは従来通り
         
         return result
     
