@@ -21,6 +21,8 @@
     /* ── Header ── */
     header{border-bottom:1px solid var(--bdr);padding:16px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:100}
     .logo{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.12em;display:flex;align-items:center;gap:10px}
+    .logo-text{display:flex;gap:4px}
+    .logo-accent{color:var(--acc)}
     .logo-dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:pdot 2s ease-in-out infinite}
     @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
     .hdr-r{display:flex;align-items:center;gap:12px}
@@ -83,7 +85,7 @@
   <header>
     <div class="logo">
       <span class="logo-dot"></span>
-      TANUKI VALUATION
+      <span class="logo-text">TANUKI<span class="logo-accent">VALUATION</span></span>
     </div>
     <div class="hdr-r">
       <div class="version-tag">Koichi式 v5.2</div>
