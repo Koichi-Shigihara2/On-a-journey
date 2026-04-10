@@ -26,28 +26,6 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: pip install requests
-      - name: Debug SOUN revenue extraction
-        run: |
-          cat > /tmp/debug_revenue.py << 'PYTHONSCRIPT'
-          import json
-          import sys
-          sys.path.insert(0, '.')
-          from common.sec_data.parser import SECParser
-          with open('common/sec_data/data/SOUN/company_facts.json', 'r') as f:
-              raw_data = json.load(f)
-          print('=== SOUN Revenue Debug ===')
-          us_gaap = raw_data.get('facts', {}).get('us-gaap', {})
-          parser = SECParser(data_dir='common/sec_data/data')
-          xbrl_keys = parser.XBRL_MAPPING['revenue']
-          print(f'XBRL keys for revenue: {xbrl_keys}')
-          result = parser._extract_values(us_gaap, xbrl_keys, use_max=False)
-          print(f'Extracted revenue data: {result}')
-          if result['annual']:
-              print(f'FY2025 revenue: {result["annual"].get(2025, "NOT FOUND")}')
-          else:
-              print('No annual revenue data extracted!')
-          PYTHONSCRIPT
-          python /tmp/debug_revenue.py
       - name: Run SEC Data Update
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
@@ -56,9 +34,6 @@ jobs:
           else
             python common/sec_data/update.py
           fi
-          echo ""
-          echo "=== DEBUG: SOUN annual_2025.json ==="
-          cat common/sec_data/data/SOUN/annual_2025.json
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
