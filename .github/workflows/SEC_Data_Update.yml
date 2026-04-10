@@ -29,6 +29,10 @@ jobs:
           pip install requests
       - name: Run SEC Data Update
         run: |
+          echo "=== DEBUG: parser.py line 253-262 ==="
+          sed -n '253,262p' common/sec_data/parser.py
+          echo ""
+          
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
             python common/sec_data/update.py $TICKERS
