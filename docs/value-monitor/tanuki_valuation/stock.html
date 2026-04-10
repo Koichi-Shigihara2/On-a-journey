@@ -151,6 +151,106 @@
       color: var(--red);
     }
     
+    /* Calculation Summary Panel */
+    .calc-summary {
+      margin-top: 24px;
+      background: var(--sur);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .calc-summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .calc-summary-header:hover {
+      background: var(--sur2);
+    }
+    .calc-summary-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--acc);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .calc-summary-toggle {
+      font-size: 10px;
+      color: var(--mut);
+      transition: transform .2s;
+    }
+    .calc-summary.open .calc-summary-toggle {
+      transform: rotate(180deg);
+    }
+    .calc-summary-body {
+      display: none;
+      padding: 0 20px 20px;
+      border-top: 1px solid var(--bdr);
+    }
+    .calc-summary.open .calc-summary-body {
+      display: block;
+    }
+    
+    /* Summary Cards Grid */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .summary-card {
+      background: var(--sur2);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .summary-card-label {
+      font-size: 10px;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .summary-card-value {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .summary-card-value.accent {
+      color: var(--acc);
+    }
+    
+    /* Detail Rows */
+    .summary-details {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .summary-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--sur2);
+      border-radius: 6px;
+    }
+    .summary-detail-label {
+      font-size: 12px;
+      color: var(--mut);
+    }
+    .summary-detail-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--txt);
+    }
+    
     /* Future Values */
     .future-grid {
       display: grid;
@@ -409,6 +509,8 @@
     @media (max-width: 768px) {
       .value-display { grid-template-columns: 1fr; }
       .inputs-grid { grid-template-columns: 1fr; }
+      .summary-cards { grid-template-columns: repeat(2, 1fr); }
+      .summary-details { grid-template-columns: 1fr; }
       .value-main { font-size: 32px; }
     }
   </style>
@@ -417,7 +519,7 @@
 <div class="shell">
   <header>
     <a href="index.html" class="back-link">← 銘柄一覧に戻る</a>
-    <div class="header-right">Koichi式 v5.1 Phase 4</div>
+    <div class="header-right">Koichi式 v5.2 Phase 4</div>
   </header>
 
   <div id="content">
@@ -494,8 +596,11 @@ function renderDetail(data) {
   const highGrowthRate = components.high_growth_rate_used || 0.25;
   const pvHigh = components.pv_high || 0;
   const pvTerminal = components.pv_terminal || 0;
+  const latestRevenue = components.latest_revenue || 0;
+  const rpo = components.rpo || 0;
+  const rpoPV = components.rpo_pv || 0;
   const calcDate = data.calculation_date || '--';
-  const formula = data.formula || 'Koichi式 v5.1';
+  const formula = data.formula || 'Koichi式 v5.2';
   
   // Calculate upside
   let upsidePercent = 0;
@@ -509,6 +614,14 @@ function renderDetail(data) {
   const fmt = (n, d=2) => n ? n.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d}) : '--';
   const fmtPct = (n) => n ? (n * 100).toFixed(1) + '%' : '--';
   const fmtInt = (n) => n ? n.toLocaleString('en-US') : '--';
+  const fmtB = (n) => {
+    if (!n) return '--';
+    const abs = Math.abs(n);
+    if (abs >= 1e12) return '$' + (n/1e12).toFixed(2) + 'T';
+    if (abs >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+    if (abs >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+    return '$' + fmtInt(Math.round(n));
+  };
   
   contentEl.innerHTML = `
     <div class="hero">
@@ -537,6 +650,66 @@ function renderDetail(data) {
         </div>
       </div>
       
+      <!-- Calculation Summary Panel -->
+      <div class="calc-summary" id="calcSummary">
+        <div class="calc-summary-header" onclick="toggleSummary()">
+          <div class="calc-summary-title">
+            <span>📊</span>
+            <span>計算要素サマリー</span>
+          </div>
+          <span class="calc-summary-toggle">▼</span>
+        </div>
+        <div class="calc-summary-body">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <div class="summary-card-label">FCF 5yr Avg</div>
+              <div class="summary-card-value accent">${fmtB(fcfAvg)}</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card-label">ROE Avg</div>
+              <div class="summary-card-value">${fmtPct(roeAvg)}</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card-label">Growth Rate</div>
+              <div class="summary-card-value">${fmtPct(highGrowthRate)}</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card-label">α</div>
+              <div class="summary-card-value accent">${alpha.toFixed(3)}</div>
+            </div>
+          </div>
+          
+          <div class="summary-details">
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">希薄化後株式数</span>
+              <span class="summary-detail-value">${fmtInt(dilutedShares)}</span>
+            </div>
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">直近売上高</span>
+              <span class="summary-detail-value">${fmtB(latestRevenue)}</span>
+            </div>
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">V₀ (DCF価値)</span>
+              <span class="summary-detail-value">${fmtB(v0)}</span>
+            </div>
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">PV (高成長期)</span>
+              <span class="summary-detail-value">${fmtB(pvHigh)}</span>
+            </div>
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">PV (ターミナル)</span>
+              <span class="summary-detail-value">${fmtB(pvTerminal)}</span>
+            </div>
+            ${rpo > 0 ? `
+            <div class="summary-detail-row">
+              <span class="summary-detail-label">RPO → PV</span>
+              <span class="summary-detail-value">${fmtB(rpo)} → ${fmtB(rpoPV)}</span>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+      
       <div class="future-grid">
         <div class="future-card">
           <div class="future-year">1年後予測</div>
@@ -558,7 +731,7 @@ function renderDetail(data) {
       
       <div class="calc-flow">
         <!-- Step 1: FCF -->
-        <div class="calc-step open">
+        <div class="calc-step">
           <div class="calc-step-header" onclick="toggleStep(this)">
             <div class="calc-step-title">
               <span class="step-num">1</span>
@@ -584,7 +757,7 @@ function renderDetail(data) {
               </div>
               <div class="input-item">
                 <span class="input-label">直近売上高</span>
-                <span class="input-value">$${fmtInt(Math.round(components.latest_revenue || 0))}</span>
+                <span class="input-value">$${fmtInt(Math.round(latestRevenue))}</span>
               </div>
             </div>
           </div>
@@ -679,16 +852,16 @@ function renderDetail(data) {
           </div>
           <div class="calc-step-body">
             <div class="formula-box">
-              <code>α = max(0, (g_個別 / WACC) × 0.7)</code>
-              <code>g_個別 = ROE_10yr × 内部留保率(60%)</code>
+              <code>α = min(1.0, max(0, (g_個別 / WACC) × 0.7))</code>
+              <code>g_個別 = ROE_連続黒字平均 × 内部留保率(60%)</code>
               <p class="formula-desc">
-                過去10年平均ROEと内部留保率から個別成長期待を算出。
-                WACCとの比率に0.7を乗じて過大評価を抑制。
+                直近連続黒字期間の平均ROEと内部留保率から個別成長期待を算出。
+                WACCとの比率に0.7を乗じて過大評価を抑制。αは1.0でキャップ。
               </p>
             </div>
             <div class="inputs-grid">
               <div class="input-item">
-                <span class="input-label">ROE (10年平均)</span>
+                <span class="input-label">ROE (連続黒字平均)</span>
                 <span class="input-value">${fmtPct(roeAvg)}</span>
               </div>
               <div class="input-item">
@@ -707,11 +880,54 @@ function renderDetail(data) {
           </div>
         </div>
         
-        <!-- Step 5: Final -->
+        <!-- Step 5: RPO (if available) -->
+        ${rpo > 0 ? `
         <div class="calc-step">
           <div class="calc-step-header" onclick="toggleStep(this)">
             <div class="calc-step-title">
               <span class="step-num">5</span>
+              <span class="step-name">RPO補正</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="step-result">+$${fmtInt(Math.round(rpoPV))}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
+          </div>
+          <div class="calc-step-body">
+            <div class="formula-box">
+              <code>RPO_PV = RPO / (1 + discount_rate)^1.5</code>
+              <p class="formula-desc">
+                Remaining Performance Obligations（残存履行義務）を現在価値に割り引き。
+                契約済み未認識売上を企業価値に加算。割引率15%、平均1.5年で回収と仮定。
+              </p>
+            </div>
+            <div class="inputs-grid">
+              <div class="input-item">
+                <span class="input-label">RPO</span>
+                <span class="input-value">${fmtB(rpo)}</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">割引率</span>
+                <span class="input-value">15%</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">平均回収期間</span>
+                <span class="input-value">1.5年</span>
+              </div>
+              <div class="input-item">
+                <span class="input-label">RPO現在価値</span>
+                <span class="input-value">${fmtB(rpoPV)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Step Final: P_t -->
+        <div class="calc-step">
+          <div class="calc-step-header" onclick="toggleStep(this)">
+            <div class="calc-step-title">
+              <span class="step-num">${rpo > 0 ? '6' : '5'}</span>
               <span class="step-name">本質的価値（P_t）算出</span>
             </div>
             <div style="display:flex;align-items:center;gap:16px">
@@ -721,11 +937,11 @@ function renderDetail(data) {
           </div>
           <div class="calc-step-body">
             <div class="formula-box">
-              <code>P_t = V₀ × (1 + α)</code>
+              <code>P_t = (V₀ + RPO_PV) × (1 + α)</code>
               <code>1株当り = P_t / 希薄化後株式数</code>
               <p class="formula-desc">
-                DCFで算出した本質的企業価値に成長期待プレミアム(1+α)を乗じ、
-                希薄化後株式数で除して1株当り本質価値を算出。
+                DCFで算出した本質的企業価値にRPO現在価値を加算し、
+                成長期待プレミアム(1+α)を乗じ、希薄化後株式数で除して1株当り本質価値を算出。
               </p>
             </div>
             <div class="inputs-grid">
@@ -739,7 +955,7 @@ function renderDetail(data) {
               </div>
               <div class="input-item">
                 <span class="input-label">企業価値 P_t</span>
-                <span class="input-value">$${fmtInt(Math.round(v0 * (1 + alpha)))}</span>
+                <span class="input-value">$${fmtInt(Math.round((v0 + rpoPV) * (1 + alpha)))}</span>
               </div>
               <div class="input-item">
                 <span class="input-label">希薄化後株式数</span>
@@ -800,29 +1016,45 @@ function renderDetail(data) {
           <td>FCF 5年平均</td>
         </tr>
         <tr>
-          <td>roe_10yr_avg</td>
+          <td>roe_avg</td>
           <td class="mono">${fmtPct(roeAvg)}</td>
-          <td>ROE 10年平均</td>
+          <td>ROE 連続黒字期間平均</td>
         </tr>
         <tr>
           <td>diluted_shares</td>
           <td class="mono">${fmtInt(dilutedShares)}</td>
           <td>希薄化後発行済株式数</td>
         </tr>
+        ${rpo > 0 ? `
+        <tr>
+          <td>rpo</td>
+          <td class="mono">$${fmtInt(Math.round(rpo))}</td>
+          <td>Remaining Performance Obligations</td>
+        </tr>
+        <tr>
+          <td>rpo_pv</td>
+          <td class="mono">$${fmtInt(Math.round(rpoPV))}</td>
+          <td>RPO現在価値</td>
+        </tr>
+        ` : ''}
       </table>
     </div>
     
     <footer>
       <p>計算日: ${calcDate} | ${formula}</p>
       <p style="margin-top:8px">
-        データソース: SEC EDGAR, Alpha Vantage | 
+        データソース: SEC EDGAR | 
         <a href="index.html" style="color:var(--acc);text-decoration:none">銘柄一覧に戻る</a>
       </p>
     </footer>
   `;
   
   // Render chart
-  renderChart(pvHigh, pvTerminal, alpha, v0);
+  renderChart(pvHigh, pvTerminal, alpha, v0, rpoPV);
+}
+
+function toggleSummary() {
+  document.getElementById('calcSummary').classList.toggle('open');
 }
 
 function toggleStep(header) {
@@ -830,20 +1062,46 @@ function toggleStep(header) {
   step.classList.toggle('open');
 }
 
-function renderChart(pvHigh, pvTerminal, alpha, v0) {
+function renderChart(pvHigh, pvTerminal, alpha, v0, rpoPV) {
+  const hasRPO = rpoPV > 0;
+  const totalV0 = v0 + rpoPV;
+  
+  const x = hasRPO 
+    ? ['PV (高成長期)', 'PV (ターミナル)', 'V₀', 'RPO PV', 'α Premium', '本質的価値']
+    : ['PV (高成長期)', 'PV (ターミナル)', 'V₀', 'α Premium', '本質的価値'];
+  
+  const y = hasRPO
+    ? [pvHigh, pvTerminal, 0, rpoPV, totalV0 * alpha, 0]
+    : [pvHigh, pvTerminal, 0, v0 * alpha, 0];
+  
+  const measure = hasRPO
+    ? ['relative', 'relative', 'total', 'relative', 'relative', 'total']
+    : ['relative', 'relative', 'total', 'relative', 'total'];
+  
+  const text = hasRPO
+    ? [
+        '$' + Math.round(pvHigh).toLocaleString(),
+        '$' + Math.round(pvTerminal).toLocaleString(),
+        '$' + Math.round(v0).toLocaleString(),
+        '$' + Math.round(rpoPV).toLocaleString(),
+        '$' + Math.round(totalV0 * alpha).toLocaleString(),
+        '$' + Math.round(totalV0 * (1 + alpha)).toLocaleString()
+      ]
+    : [
+        '$' + Math.round(pvHigh).toLocaleString(),
+        '$' + Math.round(pvTerminal).toLocaleString(),
+        '$' + Math.round(v0).toLocaleString(),
+        '$' + Math.round(v0 * alpha).toLocaleString(),
+        '$' + Math.round(v0 * (1 + alpha)).toLocaleString()
+      ];
+  
   const data = [{
     type: 'waterfall',
     orientation: 'v',
-    x: ['PV (高成長期)', 'PV (ターミナル)', 'V₀', 'α Premium', '本質的価値'],
-    y: [pvHigh, pvTerminal, 0, v0 * alpha, 0],
-    measure: ['relative', 'relative', 'total', 'relative', 'total'],
-    text: [
-      '$' + Math.round(pvHigh).toLocaleString(),
-      '$' + Math.round(pvTerminal).toLocaleString(),
-      '$' + Math.round(v0).toLocaleString(),
-      '$' + Math.round(v0 * alpha).toLocaleString(),
-      '$' + Math.round(v0 * (1 + alpha)).toLocaleString()
-    ],
+    x: x,
+    y: y,
+    measure: measure,
+    text: text,
     textposition: 'outside',
     connector: { line: { color: '#1e2840' } },
     increasing: { marker: { color: '#4ade80' } },
