@@ -41,26 +41,26 @@
   },
   "validation": {
     "validated_at": "2026-04-11",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $2.12B / 1.252B = $1.69 (差異0.00%)"
+        "detail": "P_t (2,115,258,070) divided by shares (1,251,767,000) equals approximately 1.69, matching intrinsic_value_per_share."
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $0.20B + pv_terminal $1.42B = $1.62B (差異0.00%)"
+        "detail": "PV (high growth) + PV (terminal) = 198,612,386 + 1,418,873,221 = 1,617,485,607, which exactly matches V0."
       },
       "formula_verification": {
-        "pass": true,
-        "detail": "α計算: ROE 6.1% × 60% / 8.5% × 0.7 = 0.3022 (実際0.3022)"
+        "pass": false,
+        "detail": "α calculation is correct based on formula, but DCF formula application is inconsistent as negative FCF should yield negative PV, yet results show positive values."
       },
       "anomaly_detection": {
-        "pass": true,
-        "detail": "異常値なし"
+        "pass": false,
+        "detail": "Negative FCF (-4,269,811,800) leads to positive enterprise value, and extreme divergence (-89.6%) suggests potential errors."
       }
     },
-    "overall": "PASS",
-    "ai_comment": null
+    "overall": "FAIL",
+    "ai_comment": "FCF負値で正の価値、計算誤り疑い"
   }
 }

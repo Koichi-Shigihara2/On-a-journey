@@ -41,26 +41,26 @@
   },
   "validation": {
     "validated_at": "2026-04-11",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $0.51B / 0.409B = $1.23 (差異0.00%)"
+        "detail": "P_t (505,611,383) / shares (409,456,342) ≈ 1.2356, which rounds to 1.23 as given, so consistent."
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $0.05B + pv_terminal $0.39B = $0.44B (差異0.00%)"
+        "detail": "PV (high growth) 54,168,793 + PV (terminal) 386,978,128 = 441,146,921, exactly matches V₀."
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
+        "detail": "α calculated correctly as 0 based on ROE=0; DCF formula appears applied per results, though FCF negative input yielding positive PV needs scrutiny."
       },
       "anomaly_detection": {
-        "pass": true,
-        "detail": "異常値なし"
+        "pass": false,
+        "detail": "FCF average is negative but PV (high growth) is positive, indicating potential anomaly; divergence rate -80.8% is extreme but plausible given data."
       }
     },
-    "overall": "PASS",
-    "ai_comment": null
+    "overall": "WARN",
+    "ai_comment": "FCF negative with positive PV raises concerns."
   }
 }

@@ -41,26 +41,26 @@
   },
   "validation": {
     "validated_at": "2026-04-11",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $440.32B / 10.827B = $40.67 (差異0.00%)"
+        "detail": "P_t ($440,323,176,023) divided by shares (10,827,000,000) equals intrinsic value per share ($40.67), as 440,323,176,023 / 10,827,000,000 = 40.67."
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $27.78B + pv_terminal $183.61B = $211.39B (差異0.00%)"
+        "detail": "PV high growth ($27,782,337,411) + PV terminal ($183,611,658,334) = $211,393,995,745, which exactly matches V0."
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 18.2% × 60% / 8.5% × 0.7 = 0.9007 (実際0.9007)"
+        "detail": "Alpha calculation: (ROE 0.1823 * 0.60 / 0.085) * 0.7 ≈ 0.9007, and DCF formula appears correctly applied based on provided values."
       },
       "anomaly_detection": {
-        "pass": true,
-        "detail": "異常値なし"
+        "pass": false,
+        "detail": "Shares outstanding (10,827,000,000) is abnormally high compared to typical AMZN figures (around 1 billion), and divergence rate (-82.9%) is extreme, indicating potential issues."
       }
     },
-    "overall": "PASS",
-    "ai_comment": null
+    "overall": "FAIL",
+    "ai_comment": "株式数の異常が検出されたため、全体失敗"
   }
 }

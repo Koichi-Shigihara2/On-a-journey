@@ -41,26 +41,26 @@
   },
   "validation": {
     "validated_at": "2026-04-11",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $84.86B / 2.565B = $33.08 (差異0.00%)"
+        "detail": "P_t (84,858,079,286) divided by shares (2,565,197,000) equals approximately 33.04, which is close to the reported intrinsic value per share (33.08), likely due to rounding; thus, consistent."
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $5.28B + pv_terminal $43.98B = $49.25B (差異0.00%)"
+        "detail": "PV (high growth period) 5,275,778,103 + PV (terminal) 43,979,070,002 equals exactly 49,254,848,105, matching V₀."
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 12.4% × 60% / 8.5% × 0.7 = 0.6139 (実際0.6139)"
+        "detail": "α calculation: (0.1242 * 0.6 / 0.085) * 0.7 ≈ 0.6137, matches reported 0.6139. DCF and P_t formulas align as V₀ + RPO_PV adjusted by (1 + α) yields P_t accurately."
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "異常値なし"
+        "detail": "No clear anomalies; divergence rate (-74.2%) is extreme but plausible for volatile stocks like PLTR; shares and other values are reasonable."
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "All checks passed with no major issues."
   }
 }
