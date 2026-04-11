@@ -38,5 +38,29 @@
     "rpo_adjustment": 64464462.83052605,
     "rpo_pv": 64464462.83052605,
     "alpha_uncapped": 0.0
+  },
+  "validation": {
+    "validated_at": "2026-04-11",
+    "model": "basic_checks",
+    "checks": {
+      "pt_shares_consistency": {
+        "pass": true,
+        "detail": "P_t $0.51B / 0.409B = $1.23 (差異0.00%)"
+      },
+      "dcf_components": {
+        "pass": true,
+        "detail": "pv_high $0.05B + pv_terminal $0.39B = $0.44B (差異0.00%)"
+      },
+      "formula_verification": {
+        "pass": true,
+        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
+      },
+      "anomaly_detection": {
+        "pass": true,
+        "detail": "異常値なし"
+      }
+    },
+    "overall": "PASS",
+    "ai_comment": null
   }
 }
