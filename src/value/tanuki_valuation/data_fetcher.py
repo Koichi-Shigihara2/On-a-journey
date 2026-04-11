@@ -11,7 +11,7 @@ v2.2 変更点:
 
 import os
 import sys
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Tuple
 
 # yfinance
 try:
@@ -21,123 +21,47 @@ except ImportError:
     HAS_YFINANCE = False
 
 # SEC EDGAR - common/sec_data/reader.py
+# クラス名は SECReader（SECDataReaderではない）
 HAS_SEC = False
-SECDataReader = None
+SECReader = None
 
-# デバッグ出力
-print("[DEBUG] data_fetcher.py loading...")
-print(f"[DEBUG] __file__: {os.path.abspath(__file__)}")
-print(f"[DEBUG] cwd: {os.getcwd()}")
-print(f"[DEBUG] GITHUB_WORKSPACE: {os.environ.get('GITHUB_WORKSPACE', 'not set')}")
-
-# 方法1: __file__ ベースのパス解決
+# パス解決
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # src/value/tanuki_valuation → src/value → src → repo_root
     repo_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-    common_path = os.path.join(repo_root, "common", "sec_data")
     
-    print(f"[DEBUG] Method 1: repo_root={repo_root}")
-    print(f"[DEBUG] Method 1: common_path={common_path}")
-    print(f"[DEBUG] Method 1: exists={os.path.exists(common_path)}")
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
     
-    if os.path.exists(common_path):
-        if repo_root not in sys.path:
-            sys.path.insert(0, repo_root)
-        from common.sec_data.reader import SECDataReader
-        HAS_SEC = True
-        print("[DEBUG] Method 1: SUCCESS - SECDataReader loaded")
+    from common.sec_data.reader import SECReader
+    HAS_SEC = True
 except Exception as e:
-    print(f"[DEBUG] Method 1: FAILED - {e}")
+    pass
 
-# 方法2: GITHUB_WORKSPACE 環境変数
+# フォールバック: GITHUB_WORKSPACE
 if not HAS_SEC:
     try:
         github_workspace = os.environ.get("GITHUB_WORKSPACE", "")
-        print(f"[DEBUG] Method 2: GITHUB_WORKSPACE={github_workspace}")
-        
-        if github_workspace:
-            common_path = os.path.join(github_workspace, "common", "sec_data")
-            print(f"[DEBUG] Method 2: common_path={common_path}")
-            print(f"[DEBUG] Method 2: exists={os.path.exists(common_path)}")
-            
-            if os.path.exists(common_path):
-                if github_workspace not in sys.path:
-                    sys.path.insert(0, github_workspace)
-                from common.sec_data.reader import SECDataReader
-                HAS_SEC = True
-                print("[DEBUG] Method 2: SUCCESS - SECDataReader loaded")
+        if github_workspace and github_workspace not in sys.path:
+            sys.path.insert(0, github_workspace)
+        from common.sec_data.reader import SECReader
+        HAS_SEC = True
     except Exception as e:
-        print(f"[DEBUG] Method 2: FAILED - {e}")
-
-# 方法3: cwd ベース（working-directory: src/value/tanuki_valuation の場合）
-if not HAS_SEC:
-    try:
-        cwd = os.getcwd()
-        # src/value/tanuki_valuation → src/value → src → repo_root
-        repo_root = os.path.dirname(os.path.dirname(os.path.dirname(cwd)))
-        common_path = os.path.join(repo_root, "common", "sec_data")
-        
-        print(f"[DEBUG] Method 3: cwd-based repo_root={repo_root}")
-        print(f"[DEBUG] Method 3: common_path={common_path}")
-        print(f"[DEBUG] Method 3: exists={os.path.exists(common_path)}")
-        
-        if os.path.exists(common_path):
-            if repo_root not in sys.path:
-                sys.path.insert(0, repo_root)
-            from common.sec_data.reader import SECDataReader
-            HAS_SEC = True
-            print("[DEBUG] Method 3: SUCCESS - SECDataReader loaded")
-    except Exception as e:
-        print(f"[DEBUG] Method 3: FAILED - {e}")
-
-# 方法4: ディレクトリ一覧で確認
-if not HAS_SEC:
-    try:
-        # cwdの親ディレクトリ構造を表示
-        cwd = os.getcwd()
-        print(f"[DEBUG] Method 4: Listing directory structure from cwd...")
-        
-        # 3階層上まで表示
-        for i, path in enumerate([cwd, os.path.dirname(cwd), os.path.dirname(os.path.dirname(cwd)), os.path.dirname(os.path.dirname(os.path.dirname(cwd)))]):
-            if os.path.exists(path):
-                contents = os.listdir(path)
-                print(f"[DEBUG]   Level -{i}: {path}")
-                print(f"[DEBUG]     Contents: {contents[:10]}...")  # 最初の10個
-                
-                # commonがあれば詳細表示
-                if "common" in contents:
-                    common_full = os.path.join(path, "common")
-                    print(f"[DEBUG]     FOUND 'common' at {common_full}")
-                    print(f"[DEBUG]     common contents: {os.listdir(common_full)}")
-                    
-                    # sec_dataがあればインポート試行
-                    if "sec_data" in os.listdir(common_full):
-                        sec_data_full = os.path.join(common_full, "sec_data")
-                        print(f"[DEBUG]     sec_data contents: {os.listdir(sec_data_full)}")
-                        
-                        # インポート試行
-                        if path not in sys.path:
-                            sys.path.insert(0, path)
-                        from common.sec_data.reader import SECDataReader
-                        HAS_SEC = True
-                        print(f"[DEBUG] Method 4: SUCCESS - SECDataReader loaded from {path}")
-                        break
-    except Exception as e:
-        print(f"[DEBUG] Method 4: FAILED - {e}")
-
-print(f"[DEBUG] Final: HAS_SEC={HAS_SEC}, HAS_YFINANCE={HAS_YFINANCE}")
+        pass
 
 
 class TanukiDataFetcher:
-    """TANUKI VALUATION 用データフェッチャー v2.2"""
+    """
+    TANUKI VALUATION 用データフェッチャー v2.2
+    
+    データソース優先順位:
+    1. 株式数: yfinance implied > max(SEC diluted, yfinance outstanding)
+    2. FCF/Revenue/ROE/RPO: SEC XBRL (SECReaderのヘルパーメソッド使用)
+    3. 株価: yfinance
+    """
     
     def __init__(self):
-        self.sec_reader = SECDataReader() if HAS_SEC else None
-        if self.sec_reader:
-            print("[INFO] SECDataReader initialized")
-        else:
-            print("[WARN] SECDataReader not available - FCF/ROE will be 0")
+        self.sec_reader = SECReader() if HAS_SEC else None
     
     def get_financials(self, ticker: str) -> Dict[str, Any]:
         """財務データ取得メイン関数"""
@@ -150,47 +74,43 @@ class TanukiDataFetcher:
         revenue = 0.0
         rpo = 0.0
         
-        # 1. SEC EDGAR
+        # ========================================
+        # 1. SEC EDGAR - SECReaderのヘルパーメソッド使用
+        # ========================================
         if self.sec_reader:
             try:
-                annual = self.sec_reader.get_annual_data(ticker, years=10)
+                # FCF 5年平均
+                fcf_avg = self.sec_reader.get_fcf_5yr_avg(ticker)
+                print(f"   [{ticker}] SEC FCF 5yr avg: ${fcf_avg:,.0f}")
                 
-                if annual and len(annual) > 0:
-                    for yr in annual[:5]:
-                        ocf = yr.get("operating_cash_flow", 0) or 0
-                        capex = abs(yr.get("capital_expenditures", 0) or 0)
-                        fcf_list.append(ocf - capex)
+                # FCFリスト
+                fcf_list = self.sec_reader.get_fcf_list(ticker, years=5)
+                print(f"   [{ticker}] SEC FCF list: {len(fcf_list)}年分")
+                
+                # 希薄化後株式数
+                sec_diluted = self.sec_reader.get_diluted_shares(ticker)
+                if sec_diluted > 0:
+                    print(f"   [{ticker}] SEC shares: {sec_diluted:,.0f}")
+                
+                # ROE平均（連続黒字期間）
+                roe_avg = self.sec_reader.get_roe_avg(ticker, years=10)
+                print(f"   [{ticker}] SEC ROE avg: {roe_avg:.1%}")
+                
+                # 売上高
+                revenue = self.sec_reader.get_latest_revenue(ticker)
+                print(f"   [{ticker}] SEC revenue: ${revenue:,.0f}")
+                
+                # RPO
+                rpo = self.sec_reader.get_rpo(ticker)
+                if rpo > 0:
+                    print(f"   [{ticker}] SEC RPO: ${rpo:,.0f}")
                     
-                    if fcf_list:
-                        fcf_avg = sum(fcf_list) / len(fcf_list)
-                        print(f"   [{ticker}] SEC FCF 5yr avg: ${fcf_avg:,.0f}")
-                        print(f"   [{ticker}] SEC FCF list: {len(fcf_list)}年分")
-                    
-                    sec_diluted = annual[0].get("diluted_shares", 0) or 0
-                    if sec_diluted > 0:
-                        print(f"   [{ticker}] SEC shares: {sec_diluted:,.0f}")
-                    
-                    roe_list = []
-                    for yr in annual:
-                        r = yr.get("return_on_equity", 0) or 0
-                        if r > 0:
-                            roe_list.append(r)
-                        else:
-                            break
-                    roe_avg = sum(roe_list) / len(roe_list) if roe_list else 0.0
-                    print(f"   [{ticker}] SEC ROE avg: {roe_avg:.1%}")
-                    
-                    revenue = annual[0].get("total_revenue", 0) or 0
-                    print(f"   [{ticker}] SEC revenue: ${revenue:,.0f}")
-                    
-                    rpo = annual[0].get("remaining_performance_obligation", 0) or 0
-                    if rpo > 0:
-                        print(f"   [{ticker}] SEC RPO: ${rpo:,.0f}")
-                        
             except Exception as e:
                 print(f"   [{ticker}] SEC取得エラー: {e}")
         
-        # 2. yfinance
+        # ========================================
+        # 2. yfinance から株式数と株価を取得
+        # ========================================
         yf_implied = 0
         yf_outstanding = 0
         current_price = 0.0
@@ -200,14 +120,17 @@ class TanukiDataFetcher:
                 stock = yf.Ticker(ticker)
                 info = stock.info
                 
+                # 完全希薄化後株式数（最優先）
                 yf_implied = info.get("impliedSharesOutstanding", 0) or 0
                 if yf_implied > 0:
                     print(f"   [{ticker}] yfinance implied shares: {yf_implied:,.0f}")
                 
+                # 発行済株式数
                 yf_outstanding = info.get("sharesOutstanding", 0) or 0
                 if yf_outstanding > 0:
                     print(f"   [{ticker}] yfinance outstanding shares: {yf_outstanding:,.0f}")
                 
+                # 株価
                 current_price = (
                     info.get("currentPrice") or 
                     info.get("regularMarketPrice") or 
@@ -219,11 +142,16 @@ class TanukiDataFetcher:
             except Exception as e:
                 print(f"   [{ticker}] yfinance取得エラー: {e}")
         
-        # 3. 株式数決定
+        # ========================================
+        # 3. 完全希薄化後株式数の決定
+        # ========================================
         final_shares, shares_source = self._determine_diluted_shares(
             ticker, yf_implied, yf_outstanding, sec_diluted
         )
         
+        # ========================================
+        # 最終サマリー
+        # ========================================
         print(f"   [{ticker}] 最終結果:")
         print(f"       FCF 5yr Avg: ${fcf_avg:,.0f}")
         print(f"       Diluted Shares: {final_shares:,.0f} ({shares_source})")
@@ -246,15 +174,28 @@ class TanukiDataFetcher:
         }
     
     def _determine_diluted_shares(
-        self, ticker: str, yf_implied: int, yf_outstanding: int, sec_diluted: int
+        self, 
+        ticker: str,
+        yf_implied: int, 
+        yf_outstanding: int, 
+        sec_diluted: int
     ) -> Tuple[int, str]:
-        """完全希薄化後株式数を決定"""
+        """
+        完全希薄化後株式数を決定
+        
+        優先順位:
+        1. yfinance impliedSharesOutstanding（取得できれば最優先）
+        2. 大規模増資検出（乖離5倍以上）→ yfinance outstanding
+        3. max(SEC diluted, yfinance outstanding)
+        """
         MIN_SHARES = 100_000
         
+        # 1. yfinance implied（完全希薄化後）
         if yf_implied > MIN_SHARES:
             print(f"   [{ticker}] → yfinance implied採用（完全希薄化後）")
             return int(yf_implied), "yf_implied"
         
+        # 2. SEC vs yfinance 比較
         has_sec = sec_diluted > MIN_SHARES
         has_yf = yf_outstanding > MIN_SHARES
         
@@ -262,18 +203,24 @@ class TanukiDataFetcher:
             ratio = yf_outstanding / sec_diluted
             
             if ratio > 5:
+                # 大規模増資
                 print(f"   [{ticker}] ⚠️ 大規模増資検出: yf={yf_outstanding:,.0f} vs SEC={sec_diluted:,.0f} (×{ratio:.1f})")
                 print(f"   [{ticker}] → yfinance outstanding採用（増資後の現在値）")
                 return int(yf_outstanding), "yf_outstanding_post_dilution"
+            
             elif ratio < 0.2:
+                # 株式併合など
                 print(f"   [{ticker}] → SEC diluted採用")
                 return int(sec_diluted), "sec_diluted"
+            
             else:
+                # 通常ケース → max
                 max_shares = max(sec_diluted, yf_outstanding)
                 source = "max_sec" if sec_diluted >= yf_outstanding else "max_yf"
                 print(f"   [{ticker}] → max採用: {max_shares:,.0f} ({source})")
                 return int(max_shares), source
         
+        # 3. どちらか一方のみ
         if has_yf:
             print(f"   [{ticker}] → yfinance outstanding採用")
             return int(yf_outstanding), "yf_outstanding"
@@ -284,3 +231,13 @@ class TanukiDataFetcher:
         
         print(f"   [{ticker}] ⚠️ 株式数取得不可")
         return 0, "none"
+
+
+# スタンドアロンテスト
+if __name__ == "__main__":
+    print(f"HAS_SEC: {HAS_SEC}")
+    print(f"HAS_YFINANCE: {HAS_YFINANCE}")
+    
+    fetcher = TanukiDataFetcher()
+    result = fetcher.get_financials("ONDS")
+    print(f"\nONDS: {result['diluted_shares']:,} ({result['_shares_source']})")
