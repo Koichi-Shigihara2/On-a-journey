@@ -1,10 +1,15 @@
 """
-TANUKI VALUATION - Core Calculator v5.2
-Koichi式株価評価モデル
+TANUKI VALUATION - Core Calculator v5.3
+Koichi式株価評価モデル（セグメント別成長率対応）
 
 P_t = (V_0 + RPO調整) × (1 + α)
 V_0 = 2段階DCF（高成長期3年 + ターミナル）
 α = min(1.0, max(0, (ROE_10yr × retention_rate / WACC) × 0.7))
+
+v5.3 新機能:
+- セグメント別成長率による加重平均成長率計算
+- growth_scenarios フィールドで基本/セグメント両方を出力
+- シナリオ別（bull/base/bear）成長率計算
 
 パラメータ:
 - WACC: 8.5%（成長期待を含まない固定値）
@@ -17,12 +22,23 @@ V_0 = 2段階DCF（高成長期3年 + ターミナル）
 - RPO割引率: 15%（バックログの現在価値化）
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from datetime import datetime
+
+# セグメント設定のインポート
+try:
+    from segment_config import get_segment_growth, calculate_scenario_growth
+    HAS_SEGMENT_CONFIG = True
+except ImportError:
+    HAS_SEGMENT_CONFIG = False
+    def get_segment_growth(ticker: str) -> Optional[Dict]:
+        return None
+    def calculate_scenario_growth(ticker: str, scenario: str = "base") -> Dict:
+        return {"rate": None, "scenario": scenario, "source": "not_available"}
 
 
 class KoichiValuationCalculator:
-    """Koichi式 v5.2 バリュエーション計算エンジン"""
+    """Koichi式 v5.3 バリュエーション計算エンジン"""
 
     def __init__(self):
         # 固定パラメータ
@@ -35,6 +51,96 @@ class KoichiValuationCalculator:
         self.alpha_cap = 1.0         # α上限（100%）
         self.min_fcf_years = 3       # 最低FCFデータ年数
         self.rpo_discount_rate = 0.15  # RPO割引率
+
+    def _calculate_cagr_growth(self, ticker: str, fcf_list_raw: List[float]) -> Dict[str, Any]:
+        """FCF CAGRベースの成長率計算（従来方式）"""
+        high_growth_rate = 0.25  # デフォルト
+        cagr_calculation = {"method": "default", "result": high_growth_rate}
+
+        if len(fcf_list_raw) >= 3:
+            recent_fcfs = [f for f in fcf_list_raw[-5:] if f > 0]
+            if len(recent_fcfs) >= 2:
+                raw_cagr = (recent_fcfs[-1] / recent_fcfs[0]) ** (1 / (len(recent_fcfs) - 1)) - 1
+                high_growth_rate = max(0.15, min(0.50, raw_cagr))
+                cagr_calculation = {
+                    "method": "cagr",
+                    "start_value": recent_fcfs[0],
+                    "end_value": recent_fcfs[-1],
+                    "periods": len(recent_fcfs) - 1,
+                    "raw_cagr": raw_cagr,
+                    "clipped_result": high_growth_rate
+                }
+
+        return {
+            "rate": high_growth_rate,
+            "source": "fcf_cagr",
+            "calculation": cagr_calculation
+        }
+
+    def _get_growth_scenarios(self, ticker: str, fcf_list_raw: List[float]) -> Dict[str, Any]:
+        """
+        成長率シナリオを取得
+        
+        Returns:
+            {
+                "primary": {...},      # 計算に使用する成長率
+                "base_cagr": {...},    # FCF CAGRベース
+                "segment": {...},      # セグメント加重平均（あれば）
+                "scenarios": {         # シナリオ別
+                    "bull": {...},
+                    "base": {...},
+                    "bear": {...}
+                }
+            }
+        """
+        # 1. FCF CAGRベース（常に計算）
+        cagr_result = self._calculate_cagr_growth(ticker, fcf_list_raw)
+        
+        # 2. セグメント別成長率（設定があれば）
+        segment_result = None
+        if HAS_SEGMENT_CONFIG:
+            segment_data = get_segment_growth(ticker)
+            if segment_data and segment_data.get("enabled"):
+                segment_result = {
+                    "rate": segment_data["weighted_growth"],
+                    "source": "segment_weighted",
+                    "fiscal_year": segment_data.get("fiscal_year"),
+                    "segments": segment_data.get("segments")
+                }
+        
+        # 3. プライマリ成長率を決定
+        # セグメント設定がある場合はそちらを優先
+        if segment_result:
+            primary = {
+                "rate": segment_result["rate"],
+                "source": "segment_weighted",
+                "note": "Segment-based weighted average"
+            }
+            print(f"   [{ticker}] セグメント加重成長率: {segment_result['rate']:.1%}")
+        else:
+            primary = {
+                "rate": cagr_result["rate"],
+                "source": "fcf_cagr",
+                "note": "FCF CAGR-based (no segment config)"
+            }
+            print(f"   [{ticker}] FCF CAGR成長率: {cagr_result['rate']:.1%}")
+        
+        # 4. シナリオ別成長率
+        scenarios = {}
+        base_rate = primary["rate"]
+        for scenario, multiplier in [("bull", 1.2), ("base", 1.0), ("bear", 0.7)]:
+            adjusted = max(0.0, min(0.50, base_rate * multiplier))
+            scenarios[scenario] = {
+                "rate": adjusted,
+                "multiplier": multiplier
+            }
+        
+        return {
+            "primary": primary,
+            "base_cagr": cagr_result,
+            "segment": segment_result,
+            "scenarios": scenarios
+        }
 
     def calculate_pt(self, financials: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -92,26 +198,10 @@ class KoichiValuationCalculator:
         }
 
         # ========================================
-        # STEP 2: 企業別高成長率（CAGR）算出
+        # STEP 2: 成長率シナリオ取得（v5.3 新機能）
         # ========================================
-        high_growth_rate = 0.25  # デフォルト
-        cagr_calculation = {"method": "default", "result": high_growth_rate}
-
-        if len(fcf_list_raw) >= 3:
-            recent_fcfs = [f for f in fcf_list_raw[-5:] if f > 0]
-            if len(recent_fcfs) >= 2:
-                raw_cagr = (recent_fcfs[-1] / recent_fcfs[0]) ** (1 / (len(recent_fcfs) - 1)) - 1
-                high_growth_rate = max(0.15, min(0.50, raw_cagr))
-                cagr_calculation = {
-                    "method": "cagr",
-                    "start_value": recent_fcfs[0],
-                    "end_value": recent_fcfs[-1],
-                    "periods": len(recent_fcfs) - 1,
-                    "raw_cagr": raw_cagr,
-                    "clipped_result": high_growth_rate
-                }
-
-        print(f"   [{ticker}] 企業別高成長率（CAGR）: {high_growth_rate:.1%}")
+        growth_scenarios = self._get_growth_scenarios(ticker, fcf_list_raw)
+        high_growth_rate = growth_scenarios["primary"]["rate"]
 
         # ========================================
         # FCF現実的補正（マイナスFCF対応）
@@ -175,12 +265,12 @@ class KoichiValuationCalculator:
         v0_adjusted = v0 + rpo_adjustment
 
         # ========================================
-        # STEP 5: α（成長期待プレミアム）算出 ★キャップ追加
+        # STEP 5: α（成長期待プレミアム）算出
         # ========================================
         g_individual = max(0.0, roe_avg * self.retention_rate)
         alpha_raw = (g_individual / self.wacc) * 0.7
         alpha_uncapped = max(0.0, alpha_raw)
-        alpha = min(self.alpha_cap, alpha_uncapped)  # ★キャップ適用
+        alpha = min(self.alpha_cap, alpha_uncapped)
 
         alpha_calculation = {
             "roe_10yr_avg": roe_avg,
@@ -223,6 +313,21 @@ class KoichiValuationCalculator:
 
         print(f"   [{ticker}] 1〜3年後理論株価: {future_values}")
 
+        # ========================================
+        # シナリオ別理論株価（v5.3 新機能）
+        # ========================================
+        scenario_valuations = {}
+        for scenario_name, scenario_data in growth_scenarios["scenarios"].items():
+            scenario_rate = scenario_data["rate"]
+            scenario_v0 = self._calculate_dcf(fcf_avg, scenario_rate)
+            scenario_v0_adj = scenario_v0 + rpo_adjustment
+            scenario_pt = scenario_v0_adj * (1 + alpha)
+            scenario_per_share = scenario_pt / diluted_shares if diluted_shares > 0 else 0.0
+            scenario_valuations[scenario_name] = {
+                "growth_rate": scenario_rate,
+                "intrinsic_value_per_share": round(scenario_per_share, 2)
+            }
+
         # 乖離率計算
         upside_percent = ((intrinsic_value_per_share / current_price) - 1) * 100 if current_price > 0 else 0
 
@@ -239,64 +344,92 @@ class KoichiValuationCalculator:
             "future_values": future_values,
             "upside_percent": round(upside_percent, 1),
             "calculation_date": datetime.now().strftime("%Y-%m-%d"),
-            "formula": "Koichi式 v5.2（αキャップ＋RPO補正＋データガード）",
+            "formula": "Koichi式 v5.3（セグメント成長率＋αキャップ＋RPO補正）",
+            
+            # v5.3 新規: 成長率シナリオ
+            "growth_scenarios": {
+                "primary": growth_scenarios["primary"],
+                "base_cagr": {
+                    "rate": growth_scenarios["base_cagr"]["rate"],
+                    "source": growth_scenarios["base_cagr"]["source"]
+                },
+                "segment": growth_scenarios["segment"],
+                "scenario_valuations": scenario_valuations
+            },
             
             # 計算コンポーネント
             "components": {
-                **financials,
+                "fcf_5yr_avg": financials.get("fcf_5yr_avg"),
+                "fcf_list_raw": fcf_list_raw,
+                "diluted_shares": diluted_shares,
+                "roe_10yr_avg": roe_avg,
+                "current_price": current_price,
+                "latest_revenue": latest_revenue,
+                "rpo": rpo,
+                "eps_data": financials.get("eps_data"),
                 "high_growth_rate_used": float(high_growth_rate),
                 "pv_high": float(pv_high),
                 "pv_terminal": float(pv_terminal),
                 "roe_used": float(roe_avg),
                 "fcf_floor_applied": float(fcf_floor_applied),
                 "rpo_adjustment": float(rpo_adjustment),
-                "rpo_pv": float(rpo_adjustment),  # RPO現在価値（フロントエンド表示用）
-                "alpha_uncapped": float(alpha_uncapped),
+                "rpo_pv": float(rpo_adjustment),
+                "alpha_uncapped": float(alpha_uncapped)
             }
         }
+
+    def _calculate_dcf(self, fcf_avg: float, growth_rate: float) -> float:
+        """DCF計算ヘルパー（シナリオ別計算用）"""
+        current_fcf = fcf_avg
+        pv_high = 0.0
+
+        for t in range(self.high_growth_years):
+            current_fcf *= (1 + growth_rate)
+            discount_factor = (1 + self.wacc) ** (t + 1)
+            pv_high += current_fcf / discount_factor
+
+        terminal_fcf = current_fcf * (1 + self.terminal_growth)
+        terminal_value = terminal_fcf / (self.wacc - self.terminal_growth)
+        pv_terminal = terminal_value / (1 + self.wacc) ** self.high_growth_years
+
+        return pv_high + pv_terminal
 
 
 if __name__ == "__main__":
     calculator = KoichiValuationCalculator()
     
-    # テスト: 通常ケース
-    test_data = {
-        "fcf_5yr_avg": 4850000000,
-        "diluted_shares": 3180000000,
-        "roe_10yr_avg": 0.148,
-        "current_price": 248.50,
-        "fcf_list_raw": [2800000000, 3500000000, 4200000000, 5800000000, 7950000000],
-        "latest_revenue": 96773000000,
-        "eps_data": {"ticker": "TSLA"}
+    # テスト: NVDA（セグメント設定あり）
+    test_nvda = {
+        "fcf_5yr_avg": 39859800000,
+        "diluted_shares": 24514000000,
+        "roe_10yr_avg": 0.456,
+        "current_price": 188.63,
+        "fcf_list_raw": [9108000000, 5641000000, 27021000000, 60853000000, 96676000000],
+        "latest_revenue": 215938000000,
+        "rpo": 2300000000,
+        "eps_data": {"ticker": "NVDA"}
     }
     
-    result = calculator.calculate_pt(test_data)
-    print(f"\nTSLA: ${result.get('intrinsic_value_per_share', 0):.2f}")
+    result = calculator.calculate_pt(test_nvda)
+    print(f"\n=== NVDA ===")
+    print(f"理論株価: ${result.get('intrinsic_value_per_share', 0):.2f}")
+    print(f"成長率ソース: {result.get('growth_scenarios', {}).get('primary', {}).get('source')}")
+    print(f"シナリオ別:")
+    for name, data in result.get('growth_scenarios', {}).get('scenario_valuations', {}).items():
+        print(f"  {name}: ${data['intrinsic_value_per_share']:.2f} (growth: {data['growth_rate']:.1%})")
     
-    # テスト: 異常ROE（FIGケース）
-    test_high_roe = {
+    # テスト: UNKNOWN（セグメント設定なし）
+    test_unknown = {
         "fcf_5yr_avg": 1000000000,
-        "diluted_shares": 187000000,
-        "roe_10yr_avg": 2.579,  # 257.9%
-        "current_price": 20.0,
-        "fcf_list_raw": [800000000, 900000000, 1000000000],
-        "latest_revenue": 500000000,
-        "eps_data": {"ticker": "TEST_HIGH_ROE"}
-    }
-    
-    result2 = calculator.calculate_pt(test_high_roe)
-    print(f"\nTEST_HIGH_ROE: ${result2.get('intrinsic_value_per_share', 0):.2f} (α capped: {result2.get('alpha_was_capped')})")
-    
-    # テスト: データ不足
-    test_insufficient = {
-        "fcf_5yr_avg": 500000000,
         "diluted_shares": 100000000,
         "roe_10yr_avg": 0.15,
         "current_price": 50.0,
-        "fcf_list_raw": [400000000, 500000000],  # 2年分のみ
-        "latest_revenue": 2000000000,
-        "eps_data": {"ticker": "TEST_INSUFFICIENT"}
+        "fcf_list_raw": [800000000, 900000000, 1000000000, 1100000000, 1200000000],
+        "latest_revenue": 5000000000,
+        "eps_data": {"ticker": "UNKNOWN"}
     }
     
-    result3 = calculator.calculate_pt(test_insufficient)
-    print(f"\nTEST_INSUFFICIENT: {result3.get('error', 'OK')}")
+    result2 = calculator.calculate_pt(test_unknown)
+    print(f"\n=== UNKNOWN ===")
+    print(f"理論株価: ${result2.get('intrinsic_value_per_share', 0):.2f}")
+    print(f"成長率ソース: {result2.get('growth_scenarios', {}).get('primary', {}).get('source')}")
