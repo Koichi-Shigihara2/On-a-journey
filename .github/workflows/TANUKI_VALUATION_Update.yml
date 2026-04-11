@@ -31,10 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install yfinance numpy
+          pip install yfinance numpy requests
 
       - name: Run TANUKI VALUATION Pipeline
         working-directory: src/value/tanuki_valuation
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
@@ -61,10 +63,11 @@ jobs:
         run: |
           echo "## 🦝 TANUKI VALUATION 更新完了" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| ティッカー | 理論株価 |" >> $GITHUB_STEP_SUMMARY
-          echo "|:-----------|:---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| ティッカー | 理論株価 | 検証 |" >> $GITHUB_STEP_SUMMARY
+          echo "|:-----------|:---------|:-----|" >> $GITHUB_STEP_SUMMARY
           for f in docs/value-monitor/tanuki_valuation/data/*/latest.json; do
             ticker=$(basename $(dirname $f))
-            value=$(cat $f | python -c "import sys,json; print(f'${json.load(sys.stdin).get(\"intrinsic_value_per_share\", 0):.2f}')" 2>/dev/null || echo "N/A")
-            echo "| $ticker | \$$value |" >> $GITHUB_STEP_SUMMARY
+            value=$(cat $f | python -c "import sys,json; d=json.load(sys.stdin); print(f\"{d.get('intrinsic_value_per_share', 0):.2f}\")" 2>/dev/null || echo "N/A")
+            validation=$(cat $f | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('validation',{}).get('overall','--'))" 2>/dev/null || echo "--")
+            echo "| $ticker | \$$value | $validation |" >> $GITHUB_STEP_SUMMARY
           done
