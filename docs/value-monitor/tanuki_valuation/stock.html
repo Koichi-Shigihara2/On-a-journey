@@ -108,6 +108,25 @@
     footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--bdr);text-align:center;font-size:11px;color:var(--mut)}
     footer a{color:var(--acc);text-decoration:none}
 
+    /* ── Validation ── */
+    .validation-section{margin-top:36px}
+    .validation-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:4px;margin-left:12px}
+    .validation-badge.pass{background:rgba(16,185,129,.15);color:var(--grn)}
+    .validation-badge.warn{background:rgba(245,158,11,.15);color:var(--amb)}
+    .validation-badge.fail{background:rgba(244,63,94,.15);color:var(--red)}
+    .validation-card{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:16px 18px}
+    .validation-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .validation-title{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--acc)}
+    .validation-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .validation-check{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--sur2);border-radius:6px}
+    .validation-check-icon{font-size:14px;flex-shrink:0}
+    .validation-check-content{flex:1}
+    .validation-check-name{font-family:var(--mono);font-size:10px;color:var(--mut);margin-bottom:2px}
+    .validation-check-detail{font-size:11px;color:var(--txt);line-height:1.5}
+    .validation-comment{margin-top:12px;padding:12px;background:var(--sur2);border-radius:6px;border-left:3px solid var(--acc)}
+    .validation-comment-label{font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px}
+    .validation-comment-text{font-size:12px;color:var(--txt);line-height:1.6}
+
     @media(max-width:700px){
       .value-display{grid-template-columns:1fr}
       .summary-cards{grid-template-columns:repeat(2,1fr)}
@@ -161,6 +180,14 @@ function renderDetail(ticker,data){
   const upsideClass=upside>=0?'positive':'negative';
   const upsideText=(upside>=0?'+':'')+upside.toFixed(1)+'%';
   const enterpriseValue=(v0+rpoPV)*(1+alpha);
+  
+  // Validation data
+  const validation=data.validation||null;
+  const vChecks=validation?.checks||{};
+  const vOverall=validation?.overall||'';
+  const vComment=validation?.ai_comment||'';
+  const vModel=validation?.model||'';
+  const vDate=validation?.validated_at||'';
 
   document.getElementById('main-content').innerHTML=`
     <div class="hero">
@@ -219,6 +246,48 @@ function renderDetail(ticker,data){
         <div class="calc-step"><div class="calc-step-header" onclick="toggleStep(this)"><div class="calc-step-title"><span class="step-num">${rpo>0?'6':'5'}</span><span class="step-name">本質的価値（P_t）算出</span></div><div style="display:flex;align-items:center;gap:16px"><span class="step-result">$${fmt(ivps)}</span><span class="toggle-arrow">▼</span></div></div><div class="calc-step-body"><div class="formula-box"><code>P_t = (V₀ + RPO_PV) × (1 + α)</code><code>1株当り = P_t / 希薄化後株式数</code><p class="formula-desc">DCFで算出した本質的企業価値にRPO現在価値を加算し、成長期待プレミアム(1+α)を乗じ、希薄化後株式数で除して1株当り本質価値を算出。</p></div><div class="inputs-grid"><div class="input-item"><span class="input-label">V₀（DCF価値）</span><span class="input-value">${fmtB(v0)}</span></div><div class="input-item"><span class="input-label">1 + α</span><span class="input-value">${(1+alpha).toFixed(4)}</span></div><div class="input-item"><span class="input-label">企業価値 P_t</span><span class="input-value">${fmtB(enterpriseValue)}</span></div><div class="input-item"><span class="input-label">希薄化後株式数</span><span class="input-value">${fmtInt(dilutedShares)}</span></div></div></div></div>
       </div>
     </div>
+    ${validation ? `
+    <div class="validation-section">
+      <h2 class="section-title">AI VALIDATION <span class="validation-badge ${vOverall.toLowerCase()}">${vOverall==='PASS'?'✓ VERIFIED':vOverall==='WARN'?'⚠ WARNING':'✗ FAILED'}</span></h2>
+      <div class="validation-card">
+        <div class="validation-header">
+          <div class="validation-title">計算整合性チェック</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--mut)">${vModel} | ${vDate}</div>
+        </div>
+        <div class="validation-checks">
+          <div class="validation-check">
+            <div class="validation-check-icon">${vChecks.pt_shares_consistency?.pass?'✅':'❌'}</div>
+            <div class="validation-check-content">
+              <div class="validation-check-name">P_t / shares 整合性</div>
+              <div class="validation-check-detail">${vChecks.pt_shares_consistency?.detail||'--'}</div>
+            </div>
+          </div>
+          <div class="validation-check">
+            <div class="validation-check-icon">${vChecks.dcf_components?.pass?'✅':'❌'}</div>
+            <div class="validation-check-content">
+              <div class="validation-check-name">DCF構成要素</div>
+              <div class="validation-check-detail">${vChecks.dcf_components?.detail||'--'}</div>
+            </div>
+          </div>
+          <div class="validation-check">
+            <div class="validation-check-icon">${vChecks.formula_verification?.pass?'✅':'❌'}</div>
+            <div class="validation-check-content">
+              <div class="validation-check-name">算式検証</div>
+              <div class="validation-check-detail">${vChecks.formula_verification?.detail||'--'}</div>
+            </div>
+          </div>
+          <div class="validation-check">
+            <div class="validation-check-icon">${vChecks.anomaly_detection?.pass?'✅':'⚠️'}</div>
+            <div class="validation-check-content">
+              <div class="validation-check-name">異常値検出</div>
+              <div class="validation-check-detail">${vChecks.anomaly_detection?.detail||'--'}</div>
+            </div>
+          </div>
+        </div>
+        ${vComment?`<div class="validation-comment"><div class="validation-comment-label">AI評価コメント</div><div class="validation-comment-text">${vComment}</div></div>`:''}
+      </div>
+    </div>
+    ` : ''}
     <div class="chart-container"><h2 class="section-title">VALUATION COMPONENTS</h2><div id="valuation-chart"></div></div>
     <div class="components-table">
       <h2 class="section-title">RAW DATA</h2>
