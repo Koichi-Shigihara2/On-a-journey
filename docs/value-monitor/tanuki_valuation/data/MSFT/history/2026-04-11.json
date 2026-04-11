@@ -45,22 +45,22 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t (3,960,227,091,659) divided by shares (7,465,000,000) equals intrinsic value per share (530.51)."
+        "detail": "P_t $3960.23B / 7.465B = $530.51 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV high (220,272,077,602) + PV terminal (1,455,763,813,367) equals V0 (1,676,035,890,969)."
+        "detail": "pv_high $220.27B + pv_terminal $1455.76B = $1676.04B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "Alpha formula applied correctly: (0.3328 * 0.60 / 0.085) * 0.7 = 1.6443, then min(1.0, 1.6443) = 1.0; DCF components align with the formula."
+        "detail": "α計算: ROE 33.3% × 60% / 8.5% × 0.7 = 1.0000 (実際1.0000)"
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "No anomalies; 43.0% divergence is plausible, and shares (7,465,000,000) are reasonable for MSFT."
+        "detail": "異常値なし"
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed successfully."
+    "ai_comment": "All checks passed without issues."
   }
 }

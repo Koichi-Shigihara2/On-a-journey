@@ -45,19 +45,19 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t ($175,018,211,940) divided by shares (341,970,000) equals $511.79, matching intrinsic_value_per_share exactly."
+        "detail": "P_t $175.02B / 0.342B = $511.79 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth) $9,373,262,590 + PV (terminal) $78,135,843,381 = $87,509,105,971, which is approximately equal to V0 $87,509,105,970 (minor rounding difference)."
+        "detail": "pv_high $9.37B + pv_terminal $78.14B = $87.51B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α calculated as min(1.0, max(0, (1.0984 * 0.6 / 0.085) * 0.7)) = 1.0000, and DCF formula aligns with provided V0 components."
+        "detail": "α計算: ROE 109.8% × 60% / 8.5% × 0.7 = 1.0000 (実際1.0000)"
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "No anomalies detected; divergence rate +30.8% is reasonable, shares and values are consistent with typical large-cap profiles."
+        "detail": "異常値なし"
       }
     },
     "overall": "PASS",

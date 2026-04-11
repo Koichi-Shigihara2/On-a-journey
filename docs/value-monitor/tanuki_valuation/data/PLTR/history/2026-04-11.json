@@ -45,22 +45,23 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t (84,858,079,286) divided by shares (2,565,197,000) equals approximately 33.04, which is close to the reported intrinsic value per share (33.08), likely due to rounding; thus, consistent."
+        "detail": "P_t $84.86B / 2.565B = $33.08 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth period) 5,275,778,103 + PV (terminal) 43,979,070,002 equals exactly 49,254,848,105, matching V₀."
+        "detail": "pv_high $5.28B + pv_terminal $43.98B = $49.25B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α calculation: (0.1242 * 0.6 / 0.085) * 0.7 ≈ 0.6137, matches reported 0.6139. DCF and P_t formulas align as V₀ + RPO_PV adjusted by (1 + α) yields P_t accurately."
+        "detail": "α計算: ROE 12.4% × 60% / 8.5% × 0.7 = 0.6139 (実際0.6139)"
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "No clear anomalies; divergence rate (-74.2%) is extreme but plausible for volatile stocks like PLTR; shares and other values are reasonable."
+        "detail": "異常値なし"
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed with no major issues."
+    "ai_comment": "Most checks pass, but anomalies in deviation rate.",
+    "ai_concerns": "Deviations rate (-74.2%) is extreme, indicating potential overvaluation in market price compared to intrinsic value, though other values like shares are normal."
   }
 }

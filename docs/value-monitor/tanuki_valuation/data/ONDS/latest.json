@@ -45,22 +45,23 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t ($139,380,950) divided by shares (221,769) equals $628.50, which matches intrinsic_value_per_share exactly."
+        "detail": "P_t $0.14B / 0.000B = $628.50 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth period) $16,268,275 + PV (terminal) $116,219,438 = $132,487,713, which matches V0 exactly."
+        "detail": "pv_high $0.02B + pv_terminal $0.12B = $0.13B (差異0.00%)"
       },
       "formula_verification": {
-        "pass": false,
-        "detail": "α calculation is correct (ROE=0 leads to α=0). However, DCF formula application is questionable as FCF is negative but PV outputs are positive, suggesting potential inconsistencies in FCF projection or growth application."
+        "pass": true,
+        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
       },
       "anomaly_detection": {
         "pass": false,
-        "detail": "Deviations like +6783.9% are extreme, and negative FCF with high enterprise value indicate potential anomalies in inputs or calculations."
+        "detail": "乖離率+6784%が極端、株式数221,769が異常に少ない"
       }
     },
     "overall": "FAIL",
-    "ai_comment": "Multiple issues detected in formulas and values."
+    "ai_comment": "FCF負値なのにPV正値が異常",
+    "ai_concerns": "Deviations include extreme upside gap (+6783.9%) and positive PV despite negative FCF, indicating possible calculation anomalies."
   }
 }

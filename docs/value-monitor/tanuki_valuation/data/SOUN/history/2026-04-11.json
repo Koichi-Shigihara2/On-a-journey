@@ -45,22 +45,23 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t (505,611,383) / shares (409,456,342) ≈ 1.2356, which rounds to 1.23 as given, so consistent."
+        "detail": "P_t $0.51B / 0.409B = $1.23 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth) 54,168,793 + PV (terminal) 386,978,128 = 441,146,921, exactly matches V₀."
+        "detail": "pv_high $0.05B + pv_terminal $0.39B = $0.44B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α calculated correctly as 0 based on ROE=0; DCF formula appears applied per results, though FCF negative input yielding positive PV needs scrutiny."
+        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
       },
       "anomaly_detection": {
-        "pass": false,
-        "detail": "FCF average is negative but PV (high growth) is positive, indicating potential anomaly; divergence rate -80.8% is extreme but plausible given data."
+        "pass": true,
+        "detail": "異常値なし"
       }
     },
-    "overall": "WARN",
-    "ai_comment": "FCF negative with positive PV raises concerns."
+    "overall": "PASS",
+    "ai_comment": "Anomalies in FCF and valuation gap indicate potential errors.",
+    "ai_concerns": "Deviations include a negative FCF average (-$74,702,272) leading to positive enterprise value, and an extreme undervaluation gap (-80.8%), suggesting potential issues with assumptions or market dynamics."
   }
 }

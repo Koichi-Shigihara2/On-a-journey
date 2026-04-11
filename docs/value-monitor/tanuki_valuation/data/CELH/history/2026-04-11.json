@@ -45,22 +45,22 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t ($14,618,071,249) divided by shares (254,911,000) equals $57.35, matching intrinsic_value_per_share."
+        "detail": "P_t $14.62B / 0.255B = $57.35 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth) $790,658,408 + PV (terminal) $6,518,377,217 equals $7,309,035,625, which matches V0."
+        "detail": "pv_high $0.79B + pv_terminal $6.52B = $7.31B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α calculation: (ROE 0.4377 * 0.60 / 0.085) * 0.7 = 2.163, then min(1.0, max(0, 2.163)) = 1.0. DCF and P_t formulas align with provided values."
+        "detail": "α計算: ROE 43.8% × 60% / 8.5% × 0.7 = 1.0000 (実際1.0000)"
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "No anomalies; 64.5% divergence is high but plausible for growth stocks, shares and other values are reasonable."
+        "detail": "異常値なし"
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed successfully."
+    "ai_comment": "All checks passed without issues."
   }
 }

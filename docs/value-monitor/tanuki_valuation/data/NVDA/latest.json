@@ -45,22 +45,22 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t ($4,421,744,667,626) divided by shares (24,514,000,000) equals $180.38, matching intrinsic_value_per_share exactly."
+        "detail": "P_t $4421.74B / 24.514B = $180.38 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "PV (high growth) $236,610,870,176 + PV (terminal) $1,972,396,454,021 equals $2,209,007,324,197, which matches V₀ exactly."
+        "detail": "pv_high $236.61B + pv_terminal $1972.40B = $2209.01B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α calculation: (ROE 0.4564 * 0.60 / 0.085) * 0.7 = 2.254, then min(1.0, max(0, 2.254)) = 1.0000. DCF formula aligns with provided values."
+        "detail": "α計算: ROE 45.6% × 60% / 8.5% × 0.7 = 1.0000 (実際1.0000)"
       },
       "anomaly_detection": {
         "pass": true,
-        "detail": "Deviations like -4.4% are reasonable; share count and other values are consistent with typical NVDA data, no extremes detected."
+        "detail": "異常値なし"
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed without issues."
+    "ai_comment": "All checks passed successfully."
   }
 }
