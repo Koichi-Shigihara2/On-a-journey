@@ -1,44 +1,64 @@
 {
-  "intrinsic_value_pt": 505611383.45858246,
-  "intrinsic_value_per_share": 1.1862962347488082,
-  "v0": 441146920.6280564,
-  "v0_adjusted": 505611383.45858246,
+  "intrinsic_value_pt": 227837990.90759456,
+  "intrinsic_value_per_share": 0.5345673764256795,
+  "v0": 163373528.0770685,
+  "v0_adjusted": 227837990.90759456,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 1.48,
-    "2年後": 1.85,
-    "3年後": 2.32
+    "1年後": 0.67,
+    "2年後": 0.84,
+    "3年後": 1.04
   },
-  "upside_percent": -81.6,
+  "upside_percent": -91.7,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3（セグメント成長率＋αキャップ＋RPO補正）",
+  "formula": "Koichi式 v5.3（動的WACC＋感度分析）",
+  "wacc": {
+    "value": 0.2121,
+    "beta": 2.97,
+    "risk_free_rate": 0.043,
+    "market_return": 0.1,
+    "method": "CAPM"
+  },
+  "sensitivity": {
+    "wacc_values": [
+      0.202,
+      0.212,
+      0.222
+    ],
+    "growth_years": [
+      3,
+      5,
+      7
+    ],
+    "matrix": [
+      [
+        0.47,
+        0.56,
+        0.66
+      ],
+      [
+        0.45,
+        0.53,
+        0.63
+      ],
+      [
+        0.43,
+        0.51,
+        0.59
+      ]
+    ],
+    "base_wacc": 0.212,
+    "base_years": 5
+  },
   "growth_scenarios": {
     "primary": {
       "rate": 0.25,
-      "source": "fcf_cagr",
-      "note": "FCF CAGR-based (no segment config)"
+      "source": "default"
     },
-    "base_cagr": {
-      "rate": 0.25,
-      "source": "fcf_cagr"
-    },
-    "segment": null,
-    "scenario_valuations": {
-      "bull": {
-        "growth_rate": 0.3,
-        "intrinsic_value_per_share": 1.31
-      },
-      "base": {
-        "growth_rate": 0.25,
-        "intrinsic_value_per_share": 1.19
-      },
-      "bear": {
-        "growth_rate": 0.175,
-        "intrinsic_value_per_share": 1.02
-      }
-    }
+    "segment": null
   },
+  "scenario_valuations": null,
   "components": {
     "fcf_5yr_avg": -74702271.6,
     "fcf_list_raw": [
@@ -53,16 +73,20 @@
     "current_price": 6.43,
     "latest_revenue": 168920000.0,
     "rpo": 79500000.0,
+    "beta": 2.966,
+    "sector": "Technology",
     "eps_data": {
       "ticker": "SOUN"
     },
+    "_shares_source": "yf_implied",
+    "_beta_source": "yfinance",
     "high_growth_rate_used": 0.25,
-    "pv_high": 54168792.59815197,
-    "pv_terminal": 386978128.0299044,
+    "high_growth_years": 5,
+    "pv_high": 74183795.45075426,
+    "pv_terminal": 89189732.62631427,
     "roe_used": 0.0,
     "fcf_floor_applied": 88215871.6,
     "rpo_adjustment": 64464462.83052605,
-    "rpo_pv": 64464462.83052605,
     "alpha_uncapped": 0.0
   },
   "validation": {
@@ -70,12 +94,12 @@
     "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
-        "pass": true,
-        "detail": "P_t $0.51B / 0.426B = $1.19 (差異0.00%)"
+        "pass": false,
+        "detail": "P_t $0.16B / 0.426B = $0.38 (差異28.29%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $0.05B + pv_terminal $0.39B = $0.44B (差異0.00%)"
+        "detail": "pv_high $0.07B + pv_terminal $0.09B = $0.16B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -86,7 +110,8 @@
         "detail": "異常値なし"
       }
     },
-    "overall": "PASS",
-    "ai_comment": "All checks passed successfully."
+    "overall": "WARN",
+    "ai_comment": "Multiple inconsistencies detected, including per share value mismatch and extreme valuation gap.",
+    "ai_concerns": "乖離率 of -91.7% is extremely negative, suggesting potential overvaluation or market anomaly, while FCF being negative yet intrinsic value positive is unusual."
   }
 }
