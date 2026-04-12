@@ -1,16 +1,16 @@
 {
-  "intrinsic_value_pt": 250930609948.77042,
-  "intrinsic_value_per_share": 23.33315368086356,
-  "v0": 133825041525.53177,
-  "v0_adjusted": 154096885182.9299,
+  "intrinsic_value_pt": 247128688194.2234,
+  "intrinsic_value_per_share": 22.979626366680666,
+  "v0": 131490275351.70975,
+  "v0_adjusted": 151762119009.10788,
   "alpha": 0.6283950817752629,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 26.19,
-    "2年後": 29.39,
-    "3年後": 32.99
+    "1年後": 25.69,
+    "2年後": 28.72,
+    "3年後": 32.1
   },
-  "upside_percent": -90.2,
+  "upside_percent": -90.4,
   "calculation_date": "2026-04-12",
   "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
@@ -23,19 +23,19 @@
   "sensitivity": {
     "matrix": [
       [
-        22.99,
-        25.89,
-        28.85
+        22.76,
+        25.48,
+        28.24
       ],
       [
-        20.79,
-        23.29,
-        25.8
+        20.59,
+        22.94,
+        25.28
       ],
       [
-        19.02,
-        21.21,
-        23.37
+        18.84,
+        20.9,
+        22.91
       ]
     ],
     "wacc_values": [
@@ -53,55 +53,28 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.12240000000000001,
+      "rate": 0.11790000000000002,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.12240000000000001,
+      "weighted_growth": 0.11790000000000002,
       "fiscal_year": "FY2024",
-      "source": "segment_config",
-      "segments": [
-        {
-          "name": "AWS",
-          "weight": 0.17,
-          "growth": 0.18
-        },
-        {
-          "name": "Online Stores",
-          "weight": 0.4,
-          "growth": 0.08
-        },
-        {
-          "name": "Third-Party Seller",
-          "weight": 0.24,
-          "growth": 0.12
-        },
-        {
-          "name": "Advertising",
-          "weight": 0.08,
-          "growth": 0.25
-        },
-        {
-          "name": "Other",
-          "weight": 0.11,
-          "growth": 0.1
-        }
-      ]
+      "source": "segment_config"
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.086,
-      "intrinsic_value_per_share": 20.6
+      "growth_rate": 0.083,
+      "intrinsic_value_per_share": 20.38
     },
     "base": {
-      "growth_rate": 0.122,
-      "intrinsic_value_per_share": 23.33
+      "growth_rate": 0.118,
+      "intrinsic_value_per_share": 22.98
     },
     "bull": {
-      "growth_rate": 0.147,
-      "intrinsic_value_per_share": 25.35
+      "growth_rate": 0.141,
+      "intrinsic_value_per_share": 24.89
     }
   },
   "components": {
@@ -125,10 +98,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.12240000000000001,
+    "high_growth_rate_used": 0.11790000000000002,
     "high_growth_years": 5,
-    "pv_high": 41233688981.64705,
-    "pv_terminal": 92591352543.88472,
+    "pv_high": 40740215771.46366,
+    "pv_terminal": 90750059580.2461,
     "roe_used": 0.18228095525657637,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 20271843657.39813,
@@ -136,15 +109,15 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
-        "detail": "P_t $217.92B / 10.754B = $20.26 (差異13.16%)"
+        "detail": "P_t $214.12B / 10.754B = $19.91 (差異13.36%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $41.23B + pv_terminal $92.59B = $133.83B (差異0.00%)"
+        "detail": "pv_high $40.74B + pv_terminal $90.75B = $131.49B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -156,6 +129,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": null
+    "ai_comment": "Multiple inconsistencies in calculations",
+    "ai_concerns": "Deviation rate of -90.4% is extremely high, suggesting potential errors in valuation or inputs, while shares count appears normal."
   }
 }

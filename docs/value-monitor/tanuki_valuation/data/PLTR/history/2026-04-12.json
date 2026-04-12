@@ -1,16 +1,16 @@
 {
-  "intrinsic_value_pt": 39400530769.09999,
-  "intrinsic_value_per_share": 16.474027221953918,
-  "v0": 25289009784.15731,
-  "v0_adjusted": 28613592143.970604,
+  "intrinsic_value_pt": 39163934705.234184,
+  "intrinsic_value_per_share": 16.375102412550355,
+  "v0": 25117188157.844746,
+  "v0_adjusted": 28441770517.65804,
   "alpha": 0.37698652342755173,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 21.84,
-    "2年後": 28.97,
-    "3年後": 38.41
+    "1年後": 21.68,
+    "2年後": 28.71,
+    "3年後": 38.01
   },
-  "upside_percent": -87.1,
+  "upside_percent": -87.2,
   "calculation_date": "2026-04-12",
   "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
@@ -23,19 +23,19 @@
   "sensitivity": {
     "matrix": [
       [
-        12.79,
-        18.25,
-        25.8
+        12.74,
+        18.14,
+        25.57
       ],
       [
-        11.73,
-        16.54,
-        23.06
+        11.69,
+        16.44,
+        22.86
       ],
       [
-        10.86,
-        15.12,
-        20.81
+        10.82,
+        15.03,
+        20.63
       ]
     ],
     "wacc_values": [
@@ -53,50 +53,28 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.326,
+      "rate": 0.324,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.326,
+      "weighted_growth": 0.324,
       "fiscal_year": "FY2024",
-      "source": "segment_config",
-      "segments": [
-        {
-          "name": "Commercial US",
-          "weight": 0.38,
-          "growth": 0.5
-        },
-        {
-          "name": "Commercial International",
-          "weight": 0.18,
-          "growth": 0.3
-        },
-        {
-          "name": "Government US",
-          "weight": 0.32,
-          "growth": 0.2
-        },
-        {
-          "name": "Government International",
-          "weight": 0.12,
-          "growth": 0.15
-        }
-      ]
+      "source": "segment_config"
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.228,
-      "intrinsic_value_per_share": 12.25
+      "growth_rate": 0.227,
+      "intrinsic_value_per_share": 12.2
     },
     "base": {
-      "growth_rate": 0.326,
-      "intrinsic_value_per_share": 16.47
+      "growth_rate": 0.324,
+      "intrinsic_value_per_share": 16.38
     },
     "bull": {
-      "growth_rate": 0.391,
-      "intrinsic_value_per_share": 20.02
+      "growth_rate": 0.389,
+      "intrinsic_value_per_share": 19.88
     }
   },
   "components": {
@@ -120,10 +98,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.326,
+    "high_growth_rate_used": 0.324,
     "high_growth_years": 5,
-    "pv_high": 7186798592.030974,
-    "pv_terminal": 18102211192.126335,
+    "pv_high": 7151083198.912719,
+    "pv_terminal": 17966104958.932026,
     "roe_used": 0.12424219190427348,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 3324582359.813293,
@@ -135,11 +113,11 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
-        "detail": "P_t $34.82B / 2.392B = $14.56 (差異11.62%)"
+        "detail": "P_t $34.59B / 2.392B = $14.46 (差異11.69%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $7.19B + pv_terminal $18.10B = $25.29B (差異0.00%)"
+        "detail": "pv_high $7.15B + pv_terminal $17.97B = $25.12B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -151,7 +129,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple calculation errors detected.",
-    "ai_concerns": "Deviations rate of -87.1% is extremely high, indicating potential overvaluation in market price compared to intrinsic value."
+    "ai_comment": "Multiple calculation errors detected",
+    "ai_concerns": "Divergence rate of -87.2% is extreme, and inconsistencies in per-share value may indicate errors."
   }
 }
