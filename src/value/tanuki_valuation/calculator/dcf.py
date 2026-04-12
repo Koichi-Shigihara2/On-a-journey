@@ -1,211 +1,302 @@
 """
-TANUKI VALUATION - DCF Calculator
-2段階DCFモデル
+TANUKI VALUATION - Adjustments
+FCF補正、RPO補正、α計算
 
-責務: 高成長期 + ターミナル価値の現在価値計算
+責務: 各種調整・補正ロジック
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 
 
 @dataclass
-class DCFResult:
-    """DCF計算結果"""
-    v0: float                    # 本質的価値（総額）
-    pv_high_growth: float        # 高成長期PV
-    pv_terminal: float           # ターミナル価値PV
-    high_growth_detail: List[Dict[str, float]]  # 年別詳細
-    terminal_fcf: float          # ターミナルFCF
-    terminal_value: float        # ターミナル価値（割引前）
+class FCFAdjustmentResult:
+    """FCF補正結果"""
+    adjusted_fcf: float
+    original_fcf: float
+    floor_applied: float
+    method: str  # "none" | "revenue_floor"
     
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "v0": self.v0,
-            "pv_high_growth": self.pv_high_growth,
-            "pv_terminal": self.pv_terminal,
-            "high_growth_detail": self.high_growth_detail,
-            "terminal_fcf": self.terminal_fcf,
-            "terminal_value": self.terminal_value
+            "adjusted_fcf": self.adjusted_fcf,
+            "original_fcf": self.original_fcf,
+            "floor_applied": self.floor_applied,
+            "method": self.method
         }
 
 
-def calculate_two_stage_dcf(
-    base_fcf: float,
-    high_growth_rate: float,
-    wacc: float,
-    high_growth_years: int = 5,
-    terminal_growth: float = 0.03
-) -> DCFResult:
+@dataclass
+class RPOAdjustmentResult:
+    """RPO補正結果"""
+    rpo_pv: float
+    rpo_raw: float
+    discount_rate: float
+    assumed_years: float
+    applied: bool
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "rpo_pv": self.rpo_pv,
+            "rpo_raw": self.rpo_raw,
+            "discount_rate": self.discount_rate,
+            "assumed_realization_years": self.assumed_years,
+            "applied": self.applied
+        }
+
+
+@dataclass
+class AlphaResult:
+    """α計算結果"""
+    alpha: float
+    alpha_uncapped: float
+    was_capped: bool
+    roe: float
+    retention_rate: float
+    wacc: float
+    g_individual: float
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "alpha": self.alpha,
+            "alpha_uncapped": self.alpha_uncapped,
+            "was_capped": self.was_capped,
+            "roe": self.roe,
+            "retention_rate": self.retention_rate,
+            "wacc": self.wacc,
+            "g_individual": self.g_individual
+        }
+
+
+def adjust_fcf(
+    fcf_avg: float,
+    latest_revenue: float,
+    revenue_floor_ratio: float = 0.08
+) -> FCFAdjustmentResult:
     """
-    2段階DCF計算
+    FCF補正（マイナスFCF対応）
     
     Args:
-        base_fcf: ベースFCF（5年平均など）
-        high_growth_rate: 高成長期の成長率
-        wacc: 割引率
-        high_growth_years: 高成長期間（年）
-        terminal_growth: 永続成長率
+        fcf_avg: 平均FCF
+        latest_revenue: 直近売上高
+        revenue_floor_ratio: 売上高に対するFCFフロア比率
     
     Returns:
-        DCFResult: DCF計算結果
+        FCFAdjustmentResult: 補正結果
     
-    計算式:
-        V_0 = Σ(FCF_t / (1+WACC)^t) + TV / (1+WACC)^n
-        TV = FCF_n+1 / (WACC - g_terminal)
+    ロジック:
+        FCFがマイナスの場合、売上高 × 8% をフロアとして適用
     """
-    # ========================================
-    # Phase 1: 高成長期のPV計算
-    # ========================================
-    current_fcf = base_fcf
-    pv_high = 0.0
-    high_growth_detail = []
+    if fcf_avg > 0:
+        return FCFAdjustmentResult(
+            adjusted_fcf=fcf_avg,
+            original_fcf=fcf_avg,
+            floor_applied=0.0,
+            method="none"
+        )
     
-    for t in range(high_growth_years):
-        # 成長後FCF
-        current_fcf *= (1 + high_growth_rate)
-        
-        # 割引係数
-        discount_factor = (1 + wacc) ** (t + 1)
-        
-        # 現在価値
-        pv_year = current_fcf / discount_factor
-        pv_high += pv_year
-        
-        high_growth_detail.append({
-            "year": t + 1,
-            "fcf": current_fcf,
-            "discount_factor": discount_factor,
-            "pv": pv_year
-        })
+    if latest_revenue <= 0:
+        # 売上高もない場合は補正不可
+        return FCFAdjustmentResult(
+            adjusted_fcf=fcf_avg,
+            original_fcf=fcf_avg,
+            floor_applied=0.0,
+            method="none"
+        )
     
-    # ========================================
-    # Phase 2: ターミナル価値計算
-    # ========================================
-    # ターミナル年のFCF（高成長期最終年から永続成長）
-    terminal_fcf = current_fcf * (1 + terminal_growth)
+    # フロア適用
+    fcf_floor = latest_revenue * revenue_floor_ratio
+    adjusted_fcf = max(fcf_avg, fcf_floor)
+    floor_applied = adjusted_fcf - fcf_avg
     
-    # ターミナル価値（ゴードン成長モデル）
-    # TV = FCF_terminal / (WACC - g_terminal)
-    if wacc <= terminal_growth:
-        # 安全ガード：WACCが永続成長率以下の場合
-        terminal_value = terminal_fcf * 20  # 20倍をキャップ
-    else:
-        terminal_value = terminal_fcf / (wacc - terminal_growth)
-    
-    # ターミナル価値の現在価値
-    pv_terminal = terminal_value / (1 + wacc) ** high_growth_years
-    
-    # ========================================
-    # V_0（本質的価値）
-    # ========================================
-    v0 = pv_high + pv_terminal
-    
-    return DCFResult(
-        v0=v0,
-        pv_high_growth=pv_high,
-        pv_terminal=pv_terminal,
-        high_growth_detail=high_growth_detail,
-        terminal_fcf=terminal_fcf,
-        terminal_value=terminal_value
+    return FCFAdjustmentResult(
+        adjusted_fcf=adjusted_fcf,
+        original_fcf=fcf_avg,
+        floor_applied=floor_applied,
+        method="revenue_floor"
     )
 
 
-def calculate_dcf_with_varying_wacc(
-    base_fcf: float,
-    high_growth_rate: float,
-    wacc_values: List[float],
-    high_growth_years: int = 5,
-    terminal_growth: float = 0.03
-) -> Dict[float, DCFResult]:
+def adjust_rpo(
+    rpo: float,
+    discount_rate: float = 0.15,
+    assumed_realization_years: float = 1.5
+) -> RPOAdjustmentResult:
     """
-    複数のWACCでDCF計算（感度分析用）
+    RPO補正（残存履行義務の現在価値化）
     
     Args:
-        base_fcf: ベースFCF
-        high_growth_rate: 高成長率
-        wacc_values: WACCのリスト
-        high_growth_years: 高成長期間
-        terminal_growth: 永続成長率
+        rpo: 残存履行義務（生値）
+        discount_rate: 割引率
+        assumed_realization_years: 想定実現期間
     
     Returns:
-        {wacc: DCFResult} の辞書
+        RPOAdjustmentResult: 補正結果
+    
+    ロジック:
+        RPO_PV = RPO / (1 + discount_rate)^assumed_years
     """
-    results = {}
-    for wacc in wacc_values:
-        results[wacc] = calculate_two_stage_dcf(
-            base_fcf=base_fcf,
-            high_growth_rate=high_growth_rate,
-            wacc=wacc,
-            high_growth_years=high_growth_years,
-            terminal_growth=terminal_growth
+    if rpo <= 0:
+        return RPOAdjustmentResult(
+            rpo_pv=0.0,
+            rpo_raw=0.0,
+            discount_rate=discount_rate,
+            assumed_years=assumed_realization_years,
+            applied=False
         )
-    return results
+    
+    rpo_pv = rpo / (1 + discount_rate) ** assumed_realization_years
+    
+    return RPOAdjustmentResult(
+        rpo_pv=rpo_pv,
+        rpo_raw=rpo,
+        discount_rate=discount_rate,
+        assumed_years=assumed_realization_years,
+        applied=True
+    )
 
 
-def calculate_dcf_with_varying_years(
-    base_fcf: float,
-    high_growth_rate: float,
+def calculate_alpha(
+    roe: float,
     wacc: float,
-    years_list: List[int],
-    terminal_growth: float = 0.03
-) -> Dict[int, DCFResult]:
+    retention_rate: float = 0.60,
+    alpha_cap: float = 1.0,
+    discount_factor: float = 0.7
+) -> AlphaResult:
     """
-    複数の高成長期間でDCF計算（感度分析用）
+    α（成長期待プレミアム）計算
     
     Args:
-        base_fcf: ベースFCF
-        high_growth_rate: 高成長率
+        roe: ROE（10年平均など）
         wacc: WACC
-        years_list: 高成長期間のリスト
-        terminal_growth: 永続成長率
+        retention_rate: 内部留保率
+        alpha_cap: αの上限
+        discount_factor: 割引係数（保守性調整）
     
     Returns:
-        {years: DCFResult} の辞書
+        AlphaResult: α計算結果
+    
+    計算式:
+        g_individual = ROE × retention_rate
+        α = min(alpha_cap, max(0, (g_individual / WACC) × discount_factor))
     """
-    results = {}
-    for years in years_list:
-        results[years] = calculate_two_stage_dcf(
-            base_fcf=base_fcf,
-            high_growth_rate=high_growth_rate,
-            wacc=wacc,
-            high_growth_years=years,
-            terminal_growth=terminal_growth
-        )
-    return results
+    # 個別成長率
+    g_individual = max(0.0, roe * retention_rate)
+    
+    # α計算（WACCが0の場合の安全ガード）
+    if wacc <= 0:
+        alpha_raw = 0.0
+    else:
+        alpha_raw = (g_individual / wacc) * discount_factor
+    
+    # 範囲制限
+    alpha_uncapped = max(0.0, alpha_raw)
+    alpha = min(alpha_cap, alpha_uncapped)
+    
+    return AlphaResult(
+        alpha=alpha,
+        alpha_uncapped=alpha_uncapped,
+        was_capped=alpha_uncapped > alpha_cap,
+        roe=roe,
+        retention_rate=retention_rate,
+        wacc=wacc,
+        g_individual=g_individual
+    )
+
+
+def calculate_intrinsic_value(
+    v0: float,
+    rpo_pv: float,
+    alpha: float
+) -> Tuple[float, float]:
+    """
+    本質的価値（P_t）計算
+    
+    Args:
+        v0: DCFによる本質的価値
+        rpo_pv: RPOの現在価値
+        alpha: 成長期待プレミアム
+    
+    Returns:
+        (v0_adjusted, intrinsic_value_pt)
+    
+    計算式:
+        V_0_adjusted = V_0 + RPO_PV
+        P_t = V_0_adjusted × (1 + α)
+    """
+    v0_adjusted = v0 + rpo_pv
+    intrinsic_value_pt = v0_adjusted * (1 + alpha)
+    
+    return v0_adjusted, intrinsic_value_pt
+
+
+def calculate_per_share_value(
+    intrinsic_value_pt: float,
+    diluted_shares: int
+) -> float:
+    """
+    1株あたり本質的価値計算
+    
+    Args:
+        intrinsic_value_pt: 本質的価値（総額）
+        diluted_shares: 希薄化後株式数
+    
+    Returns:
+        1株あたり本質的価値
+    """
+    if diluted_shares <= 0:
+        return 0.0
+    return intrinsic_value_pt / diluted_shares
+
+
+def calculate_upside(
+    intrinsic_value_per_share: float,
+    current_price: float
+) -> float:
+    """
+    乖離率計算
+    
+    Args:
+        intrinsic_value_per_share: 1株あたり本質的価値
+        current_price: 現在株価
+    
+    Returns:
+        乖離率（%）
+    """
+    if current_price <= 0:
+        return 0.0
+    return ((intrinsic_value_per_share / current_price) - 1) * 100
 
 
 # デフォルトパラメータ
-DEFAULT_HIGH_GROWTH_YEARS = 5
-DEFAULT_TERMINAL_GROWTH = 0.03
+DEFAULT_RETENTION_RATE = 0.60
+DEFAULT_ALPHA_CAP = 1.0
+DEFAULT_RPO_DISCOUNT_RATE = 0.15
+DEFAULT_FCF_FLOOR_RATIO = 0.08
 
 
 if __name__ == "__main__":
-    print("=== DCF Calculator テスト ===\n")
+    print("=== Adjustments テスト ===\n")
     
-    # 基本テスト
-    result = calculate_two_stage_dcf(
-        base_fcf=5_000_000_000,  # $5B
-        high_growth_rate=0.25,   # 25%
-        wacc=0.10,               # 10%
-        high_growth_years=5,
-        terminal_growth=0.03
-    )
+    # FCF補正テスト
+    print("1. FCF補正:")
+    fcf_result = adjust_fcf(fcf_avg=-1_000_000_000, latest_revenue=5_000_000_000)
+    print(f"   Original: ${fcf_result.original_fcf/1e9:.2f}B → Adjusted: ${fcf_result.adjusted_fcf/1e9:.2f}B")
     
-    print(f"Base FCF: $5B, Growth: 25%, WACC: 10%")
-    print(f"  V_0: ${result.v0 / 1e9:.2f}B")
-    print(f"  PV (High Growth): ${result.pv_high_growth / 1e9:.2f}B")
-    print(f"  PV (Terminal): ${result.pv_terminal / 1e9:.2f}B")
-    print(f"\n  年別詳細:")
-    for detail in result.high_growth_detail:
-        print(f"    Year {detail['year']}: FCF ${detail['fcf']/1e9:.2f}B → PV ${detail['pv']/1e9:.2f}B")
+    # RPO補正テスト
+    print("\n2. RPO補正:")
+    rpo_result = adjust_rpo(rpo=10_000_000_000)
+    print(f"   RPO: ${rpo_result.rpo_raw/1e9:.2f}B → PV: ${rpo_result.rpo_pv/1e9:.2f}B")
     
-    # WACC感度分析
-    print(f"\n=== WACC感度分析 ===")
-    wacc_results = calculate_dcf_with_varying_wacc(
-        base_fcf=5_000_000_000,
-        high_growth_rate=0.25,
-        wacc_values=[0.08, 0.10, 0.12]
-    )
-    for wacc, res in wacc_results.items():
-        print(f"  WACC {wacc:.0%}: V_0 = ${res.v0 / 1e9:.2f}B")
+    # α計算テスト
+    print("\n3. α計算:")
+    alpha_result = calculate_alpha(roe=0.45, wacc=0.15)
+    print(f"   ROE=45%, WACC=15%: α = {alpha_result.alpha:.3f} (capped: {alpha_result.was_capped})")
+    
+    alpha_result2 = calculate_alpha(roe=0.15, wacc=0.12)
+    print(f"   ROE=15%, WACC=12%: α = {alpha_result2.alpha:.3f} (capped: {alpha_result2.was_capped})")
+    
+    # 本質的価値計算
+    print("\n4. 本質的価値:")
+    v0_adj, pt = calculate_intrinsic_value(v0=100_000_000_000, rpo_pv=10_000_000_000, alpha=0.5)
+    print(f"   V0=$100B + RPO=$10B, α=0.5: P_t = ${pt/1e9:.2f}B")

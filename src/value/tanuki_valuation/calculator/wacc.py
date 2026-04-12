@@ -1,126 +1,197 @@
 """
-TANUKI VALUATION - WACC Calculator
-CAPM: WACC = Rf + β × (Rm - Rf)
+TANUKI VALUATION - Sensitivity Analysis
+感度分析マトリクス
 
-責務: 動的WACC計算（CAPM）
+責務: WACC ± 1% × 高成長期間 3/5/7年 の9パターン計算
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Callable
 from dataclasses import dataclass
 
 
 @dataclass
-class WACCResult:
-    """WACC計算結果"""
-    value: float
-    beta: float
-    risk_free_rate: float
-    market_return: float
-    method: str = "CAPM"
+class SensitivityResult:
+    """感度分析結果"""
+    matrix: List[List[float]]     # 3×3マトリクス（1株あたり価格）
+    wacc_values: List[float]      # WACCの値（3つ）
+    growth_years: List[int]       # 高成長期間の値（3つ）
+    base_wacc: float
+    base_years: int
     
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "value": self.value,
-            "beta": self.beta,
-            "risk_free_rate": self.risk_free_rate,
-            "market_return": self.market_return,
-            "method": self.method
+            "matrix": self.matrix,
+            "wacc_values": self.wacc_values,
+            "growth_years": self.growth_years,
+            "base_wacc": self.base_wacc,
+            "base_years": self.base_years
         }
+    
+    def get_value(self, wacc_idx: int, years_idx: int) -> float:
+        """マトリクスから値を取得"""
+        return self.matrix[wacc_idx][years_idx]
 
 
-# セクター別デフォルトβ
-SECTOR_DEFAULT_BETA: Dict[str, float] = {
-    "Technology": 1.20,
-    "Consumer Cyclical": 1.10,
-    "Consumer Defensive": 0.80,
-    "Financial Services": 1.30,
-    "Healthcare": 0.90,
-    "Communication Services": 1.15,
-    "Industrials": 1.05,
-    "Energy": 1.10,
-    "Utilities": 0.60,
-    "Real Estate": 0.85,
-    "Basic Materials": 1.00,
-}
-
-
-def get_default_beta(sector: Optional[str]) -> float:
-    """セクターに基づくデフォルトβを取得"""
-    if sector and sector in SECTOR_DEFAULT_BETA:
-        return SECTOR_DEFAULT_BETA[sector]
-    return 1.00  # 汎用デフォルト
-
-
-def calculate_wacc(
-    beta: Optional[float] = None,
-    sector: Optional[str] = None,
-    risk_free_rate: float = 0.043,
-    market_return: float = 0.10,
-) -> WACCResult:
+def calculate_sensitivity_matrix(
+    calc_func: Callable[[float, int], float],
+    base_wacc: float,
+    base_years: int = 5,
+    wacc_delta: float = 0.01,
+    years_options: List[int] = None
+) -> SensitivityResult:
     """
-    CAPMに基づくWACC計算
+    感度分析マトリクスを計算
     
     Args:
-        beta: yfinanceから取得したβ（None可）
-        sector: セクター名（βがNoneの場合のフォールバック用）
-        risk_free_rate: リスクフリーレート（デフォルト: 4.3% = 10年国債利回り）
-        market_return: 市場期待リターン（デフォルト: 10%）
+        calc_func: 計算関数 (wacc, years) -> per_share_value
+        base_wacc: ベースWACC
+        base_years: ベース高成長期間
+        wacc_delta: WACCの変動幅
+        years_options: 高成長期間オプション
     
     Returns:
-        WACCResult: WACC計算結果
+        SensitivityResult: 感度分析結果
     
-    計算式:
-        WACC = Rf + β × (Rm - Rf)
-        
-    例:
-        β = 1.5, Rf = 4.3%, Rm = 10%
-        WACC = 4.3% + 1.5 × (10% - 4.3%) = 4.3% + 8.55% = 12.85%
+    マトリクス構造:
+                    3年    5年    7年
+        WACC-1%   [ ][0,0] [0,1] [0,2]
+        WACC      [ ][1,0] [1,1] [1,2]
+        WACC+1%   [ ][2,0] [2,1] [2,2]
     """
-    # βの決定
-    if beta is not None and beta > 0:
-        used_beta = beta
-        beta_source = "provided"
-    else:
-        used_beta = get_default_beta(sector)
-        beta_source = f"sector_default ({sector or 'unknown'})"
+    if years_options is None:
+        years_options = [3, 5, 7]
     
-    # CAPM計算
-    equity_risk_premium = market_return - risk_free_rate
-    wacc = risk_free_rate + used_beta * equity_risk_premium
+    # WACCの3つの値
+    wacc_values = [
+        round(base_wacc - wacc_delta, 3),
+        round(base_wacc, 3),
+        round(base_wacc + wacc_delta, 3)
+    ]
     
-    # 下限・上限（現実的範囲）
-    wacc = max(0.06, min(0.25, wacc))  # 6% - 25%
+    # マトリクス計算
+    matrix = []
+    for wacc in wacc_values:
+        row = []
+        for years in years_options:
+            value = calc_func(wacc, years)
+            row.append(round(value, 2))
+        matrix.append(row)
     
-    return WACCResult(
-        value=wacc,
-        beta=used_beta,
-        risk_free_rate=risk_free_rate,
-        market_return=market_return,
-        method="CAPM"
+    return SensitivityResult(
+        matrix=matrix,
+        wacc_values=wacc_values,
+        growth_years=years_options,
+        base_wacc=base_wacc,
+        base_years=base_years
     )
 
 
-# 定数（互換性維持）
-DEFAULT_RISK_FREE_RATE = 0.043
-DEFAULT_MARKET_RETURN = 0.10
+def create_sensitivity_calc_func(
+    base_fcf: float,
+    high_growth_rate: float,
+    diluted_shares: int,
+    rpo_pv: float,
+    alpha: float,
+    terminal_growth: float = 0.03
+) -> Callable[[float, int], float]:
+    """
+    感度分析用の計算関数を生成
+    
+    Args:
+        base_fcf: ベースFCF
+        high_growth_rate: 高成長率
+        diluted_shares: 希薄化後株式数
+        rpo_pv: RPO現在価値
+        alpha: α（成長期待プレミアム）
+        terminal_growth: 永続成長率
+    
+    Returns:
+        calc_func: (wacc, years) -> per_share_value
+    """
+    def calc_func(wacc: float, years: int) -> float:
+        # DCF計算（簡易版）
+        current_fcf = base_fcf
+        pv_high = 0.0
+        
+        for t in range(years):
+            current_fcf *= (1 + high_growth_rate)
+            pv_high += current_fcf / (1 + wacc) ** (t + 1)
+        
+        # ターミナル価値
+        terminal_fcf = current_fcf * (1 + terminal_growth)
+        if wacc <= terminal_growth:
+            terminal_value = terminal_fcf * 20
+        else:
+            terminal_value = terminal_fcf / (wacc - terminal_growth)
+        pv_terminal = terminal_value / (1 + wacc) ** years
+        
+        # V_0
+        v0 = pv_high + pv_terminal
+        
+        # P_t
+        v0_adjusted = v0 + rpo_pv
+        pt = v0_adjusted * (1 + alpha)
+        
+        # Per share
+        if diluted_shares > 0:
+            return pt / diluted_shares
+        return 0.0
+    
+    return calc_func
+
+
+def format_matrix_for_display(
+    result: SensitivityResult,
+    currency: str = "$"
+) -> str:
+    """
+    マトリクスを表示用文字列に変換
+    
+    Args:
+        result: SensitivityResult
+        currency: 通貨記号
+    
+    Returns:
+        フォーマット済み文字列
+    """
+    lines = []
+    
+    # ヘッダー
+    header = "WACC \\ Years"
+    for years in result.growth_years:
+        header += f"\t{years}年"
+    lines.append(header)
+    
+    # データ行
+    for i, wacc in enumerate(result.wacc_values):
+        row = f"{wacc:.1%}"
+        for value in result.matrix[i]:
+            row += f"\t{currency}{value:.2f}"
+        lines.append(row)
+    
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
-    # テスト
-    print("=== WACC Calculator テスト ===\n")
+    print("=== Sensitivity Analysis テスト ===\n")
     
-    # ケース1: βあり
-    result1 = calculate_wacc(beta=1.92, sector="Technology")
-    print(f"TSLA (β=1.92): WACC = {result1.value:.2%}")
+    # テスト用計算関数
+    calc_func = create_sensitivity_calc_func(
+        base_fcf=1_000_000_000,       # $1B
+        high_growth_rate=0.30,        # 30%
+        diluted_shares=500_000_000,   # 500M
+        rpo_pv=500_000_000,           # $500M
+        alpha=0.5
+    )
     
-    # ケース2: βなし、セクターあり
-    result2 = calculate_wacc(beta=None, sector="Technology")
-    print(f"Unknown Tech (β=None): WACC = {result2.value:.2%} (default β={result2.beta})")
+    # 感度分析実行
+    result = calculate_sensitivity_matrix(
+        calc_func=calc_func,
+        base_wacc=0.12,
+        base_years=5
+    )
     
-    # ケース3: βなし、セクターなし
-    result3 = calculate_wacc(beta=None, sector=None)
-    print(f"Unknown (β=None, sector=None): WACC = {result3.value:.2%} (default β={result3.beta})")
+    print(format_matrix_for_display(result))
     
-    # ケース4: 低β
-    result4 = calculate_wacc(beta=0.60, sector="Utilities")
-    print(f"Utility (β=0.60): WACC = {result4.value:.2%}")
+    print(f"\n基準値: WACC={result.base_wacc:.1%}, Years={result.base_years}")
+    print(f"基準価格: ${result.get_value(1, 1):.2f}")

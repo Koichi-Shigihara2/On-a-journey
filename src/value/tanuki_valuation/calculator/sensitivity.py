@@ -1,120 +1,122 @@
 """
-TANUKI VALUATION - Sensitivity Analysis
-感度分析マトリクス
+TANUKI VALUATION - Scenario Analysis
+シナリオ別理論株価計算
 
-責務: WACC ± 1% × 高成長期間 3/5/7年 の9パターン計算
+責務: Bear/Base/Bull の3シナリオでの理論株価算出
 """
 
-from typing import Dict, Any, List, Callable
+from typing import Dict, Any, Optional, Callable
 from dataclasses import dataclass
 
 
 @dataclass
-class SensitivityResult:
-    """感度分析結果"""
-    matrix: List[List[float]]     # 3×3マトリクス（1株あたり価格）
-    wacc_values: List[float]      # WACCの値（3つ）
-    growth_years: List[int]       # 高成長期間の値（3つ）
-    base_wacc: float
-    base_years: int
+class ScenarioValuation:
+    """単一シナリオの評価結果"""
+    growth_rate: float
+    intrinsic_value_per_share: float
     
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "matrix": self.matrix,
-            "wacc_values": self.wacc_values,
-            "growth_years": self.growth_years,
-            "base_wacc": self.base_wacc,
-            "base_years": self.base_years
+            "growth_rate": self.growth_rate,
+            "intrinsic_value_per_share": self.intrinsic_value_per_share
         }
+
+
+@dataclass
+class ScenarioResult:
+    """シナリオ分析結果"""
+    bear: ScenarioValuation
+    base: ScenarioValuation
+    bull: ScenarioValuation
     
-    def get_value(self, wacc_idx: int, years_idx: int) -> float:
-        """マトリクスから値を取得"""
-        return self.matrix[wacc_idx][years_idx]
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "bear": self.bear.to_dict(),
+            "base": self.base.to_dict(),
+            "bull": self.bull.to_dict()
+        }
 
 
-def calculate_sensitivity_matrix(
-    calc_func: Callable[[float, int], float],
-    base_wacc: float,
-    base_years: int = 5,
-    wacc_delta: float = 0.01,
-    years_options: List[int] = None
-) -> SensitivityResult:
+def calculate_scenario_valuations(
+    calc_func: Callable[[float], float],
+    base_growth_rate: float,
+    bear_multiplier: float = 0.7,
+    bull_multiplier: float = 1.2
+) -> ScenarioResult:
     """
-    感度分析マトリクスを計算
+    シナリオ別理論株価を計算
     
     Args:
-        calc_func: 計算関数 (wacc, years) -> per_share_value
-        base_wacc: ベースWACC
-        base_years: ベース高成長期間
-        wacc_delta: WACCの変動幅
-        years_options: 高成長期間オプション
+        calc_func: 計算関数 (growth_rate) -> per_share_value
+        base_growth_rate: ベース成長率
+        bear_multiplier: Bear乗数（成長率に適用）
+        bull_multiplier: Bull乗数（成長率に適用）
     
     Returns:
-        SensitivityResult: 感度分析結果
+        ScenarioResult: シナリオ分析結果
     
-    マトリクス構造:
-                    3年    5年    7年
-        WACC-1%   [ ][0,0] [0,1] [0,2]
-        WACC      [ ][1,0] [1,1] [1,2]
-        WACC+1%   [ ][2,0] [2,1] [2,2]
+    シナリオ設定:
+        Bear: 成長率 × 0.7（悲観）
+        Base: 成長率 × 1.0（基準）
+        Bull: 成長率 × 1.2（楽観）
     """
-    if years_options is None:
-        years_options = [3, 5, 7]
+    # 成長率計算
+    bear_rate = base_growth_rate * bear_multiplier
+    base_rate = base_growth_rate
+    bull_rate = base_growth_rate * bull_multiplier
     
-    # WACCの3つの値
-    wacc_values = [
-        round(base_wacc - wacc_delta, 3),
-        round(base_wacc, 3),
-        round(base_wacc + wacc_delta, 3)
-    ]
+    # 各シナリオの理論株価計算
+    bear_value = calc_func(bear_rate)
+    base_value = calc_func(base_rate)
+    bull_value = calc_func(bull_rate)
     
-    # マトリクス計算
-    matrix = []
-    for wacc in wacc_values:
-        row = []
-        for years in years_options:
-            value = calc_func(wacc, years)
-            row.append(round(value, 2))
-        matrix.append(row)
-    
-    return SensitivityResult(
-        matrix=matrix,
-        wacc_values=wacc_values,
-        growth_years=years_options,
-        base_wacc=base_wacc,
-        base_years=base_years
+    return ScenarioResult(
+        bear=ScenarioValuation(
+            growth_rate=round(bear_rate, 3),
+            intrinsic_value_per_share=round(bear_value, 2)
+        ),
+        base=ScenarioValuation(
+            growth_rate=round(base_rate, 3),
+            intrinsic_value_per_share=round(base_value, 2)
+        ),
+        bull=ScenarioValuation(
+            growth_rate=round(bull_rate, 3),
+            intrinsic_value_per_share=round(bull_value, 2)
+        )
     )
 
 
-def create_sensitivity_calc_func(
+def create_scenario_calc_func(
     base_fcf: float,
-    high_growth_rate: float,
+    wacc: float,
+    high_growth_years: int,
     diluted_shares: int,
     rpo_pv: float,
     alpha: float,
     terminal_growth: float = 0.03
-) -> Callable[[float, int], float]:
+) -> Callable[[float], float]:
     """
-    感度分析用の計算関数を生成
+    シナリオ分析用の計算関数を生成
     
     Args:
         base_fcf: ベースFCF
-        high_growth_rate: 高成長率
+        wacc: WACC
+        high_growth_years: 高成長期間
         diluted_shares: 希薄化後株式数
         rpo_pv: RPO現在価値
-        alpha: α（成長期待プレミアム）
+        alpha: α
         terminal_growth: 永続成長率
     
     Returns:
-        calc_func: (wacc, years) -> per_share_value
+        calc_func: (growth_rate) -> per_share_value
     """
-    def calc_func(wacc: float, years: int) -> float:
-        # DCF計算（簡易版）
+    def calc_func(growth_rate: float) -> float:
+        # DCF計算
         current_fcf = base_fcf
         pv_high = 0.0
         
-        for t in range(years):
-            current_fcf *= (1 + high_growth_rate)
+        for t in range(high_growth_years):
+            current_fcf *= (1 + growth_rate)
             pv_high += current_fcf / (1 + wacc) ** (t + 1)
         
         # ターミナル価値
@@ -123,12 +125,10 @@ def create_sensitivity_calc_func(
             terminal_value = terminal_fcf * 20
         else:
             terminal_value = terminal_fcf / (wacc - terminal_growth)
-        pv_terminal = terminal_value / (1 + wacc) ** years
+        pv_terminal = terminal_value / (1 + wacc) ** high_growth_years
         
-        # V_0
+        # V_0 + RPO + α
         v0 = pv_high + pv_terminal
-        
-        # P_t
         v0_adjusted = v0 + rpo_pv
         pt = v0_adjusted * (1 + alpha)
         
@@ -140,58 +140,45 @@ def create_sensitivity_calc_func(
     return calc_func
 
 
-def format_matrix_for_display(
-    result: SensitivityResult,
-    currency: str = "$"
-) -> str:
+def format_scenario_for_display(result: ScenarioResult) -> str:
     """
-    マトリクスを表示用文字列に変換
-    
-    Args:
-        result: SensitivityResult
-        currency: 通貨記号
-    
-    Returns:
-        フォーマット済み文字列
+    シナリオ結果を表示用文字列に変換
     """
-    lines = []
-    
-    # ヘッダー
-    header = "WACC \\ Years"
-    for years in result.growth_years:
-        header += f"\t{years}年"
-    lines.append(header)
-    
-    # データ行
-    for i, wacc in enumerate(result.wacc_values):
-        row = f"{wacc:.1%}"
-        for value in result.matrix[i]:
-            row += f"\t{currency}{value:.2f}"
-        lines.append(row)
-    
+    lines = [
+        "シナリオ\t成長率\t理論株価",
+        f"Bear\t{result.bear.growth_rate:.1%}\t${result.bear.intrinsic_value_per_share:.2f}",
+        f"Base\t{result.base.growth_rate:.1%}\t${result.base.intrinsic_value_per_share:.2f}",
+        f"Bull\t{result.bull.growth_rate:.1%}\t${result.bull.intrinsic_value_per_share:.2f}"
+    ]
     return "\n".join(lines)
 
 
+# デフォルトパラメータ
+DEFAULT_BEAR_MULTIPLIER = 0.7
+DEFAULT_BULL_MULTIPLIER = 1.2
+
+
 if __name__ == "__main__":
-    print("=== Sensitivity Analysis テスト ===\n")
+    print("=== Scenario Analysis テスト ===\n")
     
     # テスト用計算関数
-    calc_func = create_sensitivity_calc_func(
+    calc_func = create_scenario_calc_func(
         base_fcf=1_000_000_000,       # $1B
-        high_growth_rate=0.30,        # 30%
+        wacc=0.12,                    # 12%
+        high_growth_years=5,
         diluted_shares=500_000_000,   # 500M
         rpo_pv=500_000_000,           # $500M
         alpha=0.5
     )
     
-    # 感度分析実行
-    result = calculate_sensitivity_matrix(
+    # シナリオ分析実行
+    result = calculate_scenario_valuations(
         calc_func=calc_func,
-        base_wacc=0.12,
-        base_years=5
+        base_growth_rate=0.30
     )
     
-    print(format_matrix_for_display(result))
+    print(format_scenario_for_display(result))
     
-    print(f"\n基準値: WACC={result.base_wacc:.1%}, Years={result.base_years}")
-    print(f"基準価格: ${result.get_value(1, 1):.2f}")
+    print(f"\n詳細:")
+    print(f"  Bear差分: ${result.base.intrinsic_value_per_share - result.bear.intrinsic_value_per_share:.2f}")
+    print(f"  Bull差分: ${result.bull.intrinsic_value_per_share - result.base.intrinsic_value_per_share:.2f}")
