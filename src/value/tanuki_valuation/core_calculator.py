@@ -11,21 +11,29 @@ V_0 = 2段階DCF（高成長期5年 + ターミナル）
 - テスト容易性の向上
 
 計算フロー:
-1. WACC計算（CAPM）: wacc.py
-2. 成長率決定: growth.py
-3. FCF補正: adjustments.py
-4. 2段階DCF: dcf.py
-5. RPO補正 + α計算: adjustments.py
-6. 感度分析: sensitivity.py
-7. シナリオ分析: scenarios.py
-8. 将来価値予測: future_values.py
+1. WACC計算（CAPM）: calculator/wacc.py
+2. 成長率決定: calculator/growth.py
+3. FCF補正: calculator/adjustments.py
+4. 2段階DCF: calculator/dcf.py
+5. RPO補正 + α計算: calculator/adjustments.py
+6. 感度分析: calculator/sensitivity.py
+7. シナリオ分析: calculator/scenarios.py
+8. 将来価値予測: calculator/future_values.py
 """
+
+import os
+import sys
+
+# GitHub Actions互換: 同一ディレクトリをsys.pathに追加
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+if _current_dir not in sys.path:
+    sys.path.insert(0, _current_dir)
 
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-# Calculator modules
-from .calculator import (
+# Calculator modules - 絶対インポート
+from calculator import (
     # WACC
     calculate_wacc,
     WACCResult,
