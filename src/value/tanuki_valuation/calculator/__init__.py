@@ -27,7 +27,6 @@ from .growth import (
     calculate_fcf_cagr,
     get_scenario_growth_rates,
     GrowthResult,
-    SEGMENT_CONFIG,
 )
 
 from .dcf import (
@@ -93,7 +92,6 @@ __all__ = [
     "calculate_fcf_cagr",
     "get_scenario_growth_rates",
     "GrowthResult",
-    "SEGMENT_CONFIG",
     
     # DCF
     "calculate_two_stage_dcf",
