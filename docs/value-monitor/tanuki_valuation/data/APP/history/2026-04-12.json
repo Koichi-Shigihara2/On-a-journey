@@ -12,15 +12,32 @@
   },
   "upside_percent": -54.9,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1856,
-    "beta": 2.5,
+    "value": 0.185614,
+    "beta": 2.502,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        131.4,
+        190.59,
+        266.29
+      ],
+      [
+        122.42,
+        176.18,
+        243.8
+      ],
+      [
+        114.53,
+        163.58,
+        224.24
+      ]
+    ],
     "wacc_values": [
       0.176,
       0.186,
@@ -31,24 +48,7 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        131.77,
-        191.19,
-        267.23
-      ],
-      [
-        122.75,
-        176.7,
-        244.61
-      ],
-      [
-        114.82,
-        164.04,
-        224.95
-      ]
-    ],
-    "base_wacc": 0.186,
+    "base_wacc": 0.185614,
     "base_years": 5
   },
   "growth_scenarios": {
@@ -60,7 +60,19 @@
       "enabled": true,
       "weighted_growth": 0.33,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "Software Platform",
+          "weight": 0.7,
+          "growth": 0.45
+        },
+        {
+          "name": "Apps",
+          "weight": 0.3,
+          "growth": 0.05
+        }
+      ]
     }
   },
   "scenario_valuations": {
@@ -129,6 +141,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed without issues."
+    "ai_comment": "All checks passed successfully."
   }
 }

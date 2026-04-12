@@ -12,15 +12,32 @@
   },
   "upside_percent": 2.0,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.107,
-    "beta": 1.12,
+    "value": 0.10701100000000001,
+    "beta": 1.123,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        29.24,
+        41.36,
+        57.42
+      ],
+      [
+        25.33,
+        35.55,
+        48.84
+      ],
+      [
+        22.32,
+        31.08,
+        42.28
+      ]
+    ],
     "wacc_values": [
       0.097,
       0.107,
@@ -31,36 +48,31 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        29.23,
-        41.36,
-        57.41
-      ],
-      [
-        25.33,
-        35.54,
-        48.83
-      ],
-      [
-        22.32,
-        31.08,
-        42.27
-      ]
-    ],
-    "base_wacc": 0.107,
+    "base_wacc": 0.10701100000000001,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.263,
+      "rate": 0.2625,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
       "weighted_growth": 0.2625,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "North America",
+          "weight": 0.95,
+          "growth": 0.25
+        },
+        {
+          "name": "International",
+          "weight": 0.05,
+          "growth": 0.5
+        }
+      ]
     }
   },
   "scenario_valuations": {
@@ -129,6 +141,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "All verifications passed without issues."
+    "ai_comment": "All checks passed successfully."
   }
 }

@@ -1,26 +1,43 @@
 {
-  "intrinsic_value_pt": 73482137030.31683,
-  "intrinsic_value_per_share": 45.06970577430533,
-  "v0": 50968317987.97748,
-  "v0_adjusted": 51223743218.06069,
+  "intrinsic_value_pt": 75209378570.80394,
+  "intrinsic_value_per_share": 46.129096140140696,
+  "v0": 52172362681.30174,
+  "v0_adjusted": 52427787911.38496,
   "alpha": 0.4345327462208614,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 53.88,
-    "2年後": 64.41,
-    "3年後": 77.01
+    "1年後": 55.45,
+    "2年後": 66.65,
+    "3年後": 80.11
   },
-  "upside_percent": -81.6,
+  "upside_percent": -81.2,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1549,
-    "beta": 1.96,
+    "value": 0.154891,
+    "beta": 1.963,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        40.15,
+        50.51,
+        61.92
+      ],
+      [
+        36.84,
+        46.08,
+        56.1
+      ],
+      [
+        34.03,
+        42.33,
+        51.17
+      ]
+    ],
     "wacc_values": [
       0.145,
       0.155,
@@ -31,50 +48,55 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        39.59,
-        49.38,
-        60.06
-      ],
-      [
-        36.33,
-        45.07,
-        54.43
-      ],
-      [
-        33.56,
-        41.41,
-        49.67
-      ]
-    ],
-    "base_wacc": 0.155,
+    "base_wacc": 0.154891,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.195,
+      "rate": 0.20199999999999999,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.19549999999999998,
+      "weighted_growth": 0.20199999999999999,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "Data Center",
+          "weight": 0.5,
+          "growth": 0.35
+        },
+        {
+          "name": "Client",
+          "weight": 0.28,
+          "growth": 0.1
+        },
+        {
+          "name": "Gaming",
+          "weight": 0.12,
+          "growth": -0.05
+        },
+        {
+          "name": "Embedded",
+          "weight": 0.1,
+          "growth": 0.05
+        }
+      ]
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.137,
-      "intrinsic_value_per_share": 36.42
+      "growth_rate": 0.141,
+      "intrinsic_value_per_share": 37.03
     },
     "base": {
-      "growth_rate": 0.195,
-      "intrinsic_value_per_share": 45.07
+      "growth_rate": 0.202,
+      "intrinsic_value_per_share": 46.13
     },
     "bull": {
-      "growth_rate": 0.235,
-      "intrinsic_value_per_share": 51.77
+      "growth_rate": 0.242,
+      "intrinsic_value_per_share": 53.2
     }
   },
   "components": {
@@ -98,10 +120,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.19549999999999998,
+    "high_growth_rate_used": 0.20199999999999999,
     "high_growth_years": 5,
-    "pv_high": 18430949845.88366,
-    "pv_terminal": 32537368142.093815,
+    "pv_high": 18740786139.68769,
+    "pv_terminal": 33431576541.61405,
     "roe_used": 0.16025050379737013,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 255425230.08321643,
@@ -109,15 +131,15 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $73.12B / 1.630B = $44.84 (差異0.50%)"
+        "detail": "P_t $74.84B / 1.630B = $45.90 (差異0.49%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $18.43B + pv_terminal $32.54B = $50.97B (差異0.00%)"
+        "detail": "pv_high $18.74B + pv_terminal $33.43B = $52.17B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -129,7 +151,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple inconsistencies and anomalies detected.",
-    "ai_concerns": "乖離率 -81.6% is extreme (market price $245.04 vs intrinsic $45.07), suggesting overvaluation. Shares count is reasonable, but overall anomaly present."
+    "ai_comment": null
   }
 }

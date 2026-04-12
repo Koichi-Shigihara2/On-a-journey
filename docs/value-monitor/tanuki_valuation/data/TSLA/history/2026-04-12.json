@@ -1,26 +1,43 @@
 {
-  "intrinsic_value_pt": 102725582085.69427,
-  "intrinsic_value_per_share": 27.375734596577907,
-  "v0": 64696534954.75144,
-  "v0_adjusted": 73145839391.15498,
+  "intrinsic_value_pt": 107246813598.26418,
+  "intrinsic_value_per_share": 28.580614933342968,
+  "v0": 67915881755.753624,
+  "v0_adjusted": 76365186192.15717,
   "alpha": 0.4043940563229925,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 30.77,
-    "2年後": 34.59,
-    "3年後": 38.87
+    "1年後": 32.5,
+    "2年後": 36.95,
+    "3年後": 42.01
   },
-  "upside_percent": -92.2,
+  "upside_percent": -91.8,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1522,
-    "beta": 1.92,
+    "value": 0.152155,
+    "beta": 1.915,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        27.28,
+        31.05,
+        34.78
+      ],
+      [
+        25.26,
+        28.62,
+        31.88
+      ],
+      [
+        23.55,
+        26.55,
+        29.43
+      ]
+    ],
     "wacc_values": [
       0.142,
       0.152,
@@ -31,50 +48,50 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        26.5,
-        29.67,
-        32.74
-      ],
-      [
-        24.55,
-        27.38,
-        30.06
-      ],
-      [
-        22.9,
-        25.43,
-        27.8
-      ]
-    ],
-    "base_wacc": 0.152,
+    "base_wacc": 0.152155,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.124,
+      "rate": 0.13699999999999998,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.124,
+      "weighted_growth": 0.13699999999999998,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "Automotive",
+          "weight": 0.82,
+          "growth": 0.1
+        },
+        {
+          "name": "Energy",
+          "weight": 0.1,
+          "growth": 0.35
+        },
+        {
+          "name": "Services",
+          "weight": 0.08,
+          "growth": 0.25
+        }
+      ]
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.087,
-      "intrinsic_value_per_share": 24.2
+      "growth_rate": 0.096,
+      "intrinsic_value_per_share": 24.94
     },
     "base": {
-      "growth_rate": 0.124,
-      "intrinsic_value_per_share": 27.38
+      "growth_rate": 0.137,
+      "intrinsic_value_per_share": 28.58
     },
     "bull": {
-      "growth_rate": 0.149,
-      "intrinsic_value_per_share": 29.72
+      "growth_rate": 0.164,
+      "intrinsic_value_per_share": 31.29
     }
   },
   "components": {
@@ -98,10 +115,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.124,
+    "high_growth_rate_used": 0.13699999999999998,
     "high_growth_years": 5,
-    "pv_high": 24845178499.41114,
-    "pv_terminal": 39851356455.3403,
+    "pv_high": 25706025253.60206,
+    "pv_terminal": 42209856502.151566,
     "roe_used": 0.14650137533291652,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 8449304436.40354,
@@ -109,15 +126,15 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
-        "detail": "P_t $90.86B / 3.752B = $24.21 (差異11.55%)"
+        "detail": "P_t $95.38B / 3.752B = $25.42 (差異11.06%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $24.85B + pv_terminal $39.85B = $64.70B (差異0.00%)"
+        "detail": "pv_high $25.71B + pv_terminal $42.21B = $67.92B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -129,7 +146,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple calculation errors detected",
-    "ai_concerns": "乖離率 of -92.2% is extremely negative, indicating potential anomaly in valuation relative to market price"
+    "ai_comment": null
   }
 }

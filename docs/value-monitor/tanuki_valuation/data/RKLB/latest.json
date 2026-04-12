@@ -12,15 +12,32 @@
   },
   "upside_percent": -94.1,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1687,
-    "beta": 2.21,
+    "value": 0.16868500000000003,
+    "beta": 2.205,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        3.73,
+        4.1,
+        4.54
+      ],
+      [
+        3.65,
+        3.98,
+        4.36
+      ],
+      [
+        3.57,
+        3.88,
+        4.22
+      ]
+    ],
     "wacc_values": [
       0.159,
       0.169,
@@ -31,24 +48,7 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        3.73,
-        4.11,
-        4.54
-      ],
-      [
-        3.65,
-        3.98,
-        4.37
-      ],
-      [
-        3.57,
-        3.88,
-        4.22
-      ]
-    ],
-    "base_wacc": 0.169,
+    "base_wacc": 0.16868500000000003,
     "base_years": 5
   },
   "growth_scenarios": {
@@ -111,7 +111,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple errors detected in valuation",
-    "ai_concerns": "Negative FCF with positive PV is illogical;乖離率 -94.1% is extreme, suggesting potential errors in inputs or calculations."
+    "ai_comment": "計算不一致と異常値あり",
+    "ai_concerns": "FCF average is negative, yet enterprise value is positive; divergence rate of -94.1% is extreme, suggesting potential issues."
   }
 }

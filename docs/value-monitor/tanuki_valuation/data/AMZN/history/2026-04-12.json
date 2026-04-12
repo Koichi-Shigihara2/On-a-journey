@@ -1,26 +1,43 @@
 {
-  "intrinsic_value_pt": 247128688194.2234,
-  "intrinsic_value_per_share": 22.979626366680666,
-  "v0": 131490275351.70975,
-  "v0_adjusted": 151762119009.10788,
+  "intrinsic_value_pt": 250930609948.77042,
+  "intrinsic_value_per_share": 23.33315368086356,
+  "v0": 133825041525.53177,
+  "v0_adjusted": 154096885182.9299,
   "alpha": 0.6283950817752629,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 25.69,
-    "2年後": 28.72,
-    "3年後": 32.1
+    "1年後": 26.19,
+    "2年後": 29.39,
+    "3年後": 32.99
   },
-  "upside_percent": -90.4,
+  "upside_percent": -90.2,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1218,
-    "beta": 1.38,
+    "value": 0.12183100000000001,
+    "beta": 1.383,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        22.99,
+        25.89,
+        28.85
+      ],
+      [
+        20.79,
+        23.29,
+        25.8
+      ],
+      [
+        19.02,
+        21.21,
+        23.37
+      ]
+    ],
     "wacc_values": [
       0.112,
       0.122,
@@ -31,50 +48,60 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        22.8,
-        25.53,
-        28.29
-      ],
-      [
-        20.62,
-        22.98,
-        25.32
-      ],
-      [
-        18.87,
-        20.93,
-        22.94
-      ]
-    ],
-    "base_wacc": 0.122,
+    "base_wacc": 0.12183100000000001,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.118,
+      "rate": 0.12240000000000001,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.11790000000000002,
+      "weighted_growth": 0.12240000000000001,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "AWS",
+          "weight": 0.17,
+          "growth": 0.18
+        },
+        {
+          "name": "Online Stores",
+          "weight": 0.4,
+          "growth": 0.08
+        },
+        {
+          "name": "Third-Party Seller",
+          "weight": 0.24,
+          "growth": 0.12
+        },
+        {
+          "name": "Advertising",
+          "weight": 0.08,
+          "growth": 0.25
+        },
+        {
+          "name": "Other",
+          "weight": 0.11,
+          "growth": 0.1
+        }
+      ]
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.083,
-      "intrinsic_value_per_share": 20.38
+      "growth_rate": 0.086,
+      "intrinsic_value_per_share": 20.6
     },
     "base": {
-      "growth_rate": 0.118,
-      "intrinsic_value_per_share": 22.98
+      "growth_rate": 0.122,
+      "intrinsic_value_per_share": 23.33
     },
     "bull": {
-      "growth_rate": 0.141,
-      "intrinsic_value_per_share": 24.89
+      "growth_rate": 0.147,
+      "intrinsic_value_per_share": 25.35
     }
   },
   "components": {
@@ -98,10 +125,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.11790000000000002,
+    "high_growth_rate_used": 0.12240000000000001,
     "high_growth_years": 5,
-    "pv_high": 40740215771.46366,
-    "pv_terminal": 90750059580.2461,
+    "pv_high": 41233688981.64705,
+    "pv_terminal": 92591352543.88472,
     "roe_used": 0.18228095525657637,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 20271843657.39813,
@@ -109,15 +136,15 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
-        "detail": "P_t $214.12B / 10.754B = $19.91 (差異13.36%)"
+        "detail": "P_t $217.92B / 10.754B = $20.26 (差異13.16%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $40.74B + pv_terminal $90.75B = $131.49B (差異0.00%)"
+        "detail": "pv_high $41.23B + pv_terminal $92.59B = $133.83B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -129,7 +156,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple calculation errors detected",
-    "ai_concerns": "乖離率 of -90.4% is extremely negative, suggesting potential overvaluation or error, while shares count is reasonable."
+    "ai_comment": null
   }
 }

@@ -12,15 +12,32 @@
   },
   "upside_percent": 25.5,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1061,
-    "beta": 1.11,
+    "value": 0.106099,
+    "beta": 1.107,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        454.02,
+        527.24,
+        607.46
+      ],
+      [
+        404.25,
+        465.84,
+        532.11
+      ],
+      [
+        366.08,
+        418.82,
+        474.55
+      ]
+    ],
     "wacc_values": [
       0.096,
       0.106,
@@ -31,36 +48,36 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        453.45,
-        526.54,
-        606.6
-      ],
-      [
-        403.82,
-        465.32,
-        531.47
-      ],
-      [
-        365.75,
-        418.41,
-        474.04
-      ]
-    ],
-    "base_wacc": 0.106,
+    "base_wacc": 0.106099,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.147,
+      "rate": 0.1472,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
       "weighted_growth": 0.1472,
       "fiscal_year": "FY2024",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "Intelligent Cloud",
+          "weight": 0.44,
+          "growth": 0.22
+        },
+        {
+          "name": "Productivity",
+          "weight": 0.32,
+          "growth": 0.12
+        },
+        {
+          "name": "More Personal Computing",
+          "weight": 0.24,
+          "growth": 0.05
+        }
+      ]
     }
   },
   "scenario_valuations": {
@@ -109,7 +126,7 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
@@ -129,7 +146,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Inconsistencies in per share calc",
-    "ai_concerns": "Inconsistency in per share value; 乖離率 +25.5% is not extreme, but calculation errors suggest anomalies."
+    "ai_comment": null
   }
 }

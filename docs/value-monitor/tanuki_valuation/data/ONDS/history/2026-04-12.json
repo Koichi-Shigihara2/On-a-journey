@@ -12,25 +12,15 @@
   },
   "upside_percent": -98.6,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1908,
-    "beta": 2.59,
+    "value": 0.190801,
+    "beta": 2.593,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
-    "wacc_values": [
-      0.181,
-      0.191,
-      0.201
-    ],
-    "growth_years": [
-      3,
-      5,
-      7
-    ],
     "matrix": [
       [
         0.11,
@@ -48,7 +38,17 @@
         0.15
       ]
     ],
-    "base_wacc": 0.191,
+    "wacc_values": [
+      0.181,
+      0.191,
+      0.201
+    ],
+    "growth_years": [
+      3,
+      5,
+      7
+    ],
+    "base_wacc": 0.190801,
     "base_years": 5
   },
   "growth_scenarios": {
@@ -111,7 +111,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple errors detected in calculations.",
-    "ai_concerns": "Negative FCF with positive PV is anomalous, and a -98.6% divergence rate is extreme, possibly indicating underlying issues."
+    "ai_comment": "Multiple errors in DCF and per-share value.",
+    "ai_concerns": "Negative FCF with positive PV is anomalous, and -98.6% divergence rate is extremely unusual."
   }
 }

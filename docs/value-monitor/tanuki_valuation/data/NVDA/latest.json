@@ -1,26 +1,43 @@
 {
-  "intrinsic_value_pt": 1812733675628.8406,
-  "intrinsic_value_per_share": 74.58274740295579,
-  "v0": 904501828197.9397,
-  "v0_adjusted": 906366837814.4203,
+  "intrinsic_value_pt": 1789493530311.5178,
+  "intrinsic_value_per_share": 73.62655956846402,
+  "v0": 892881755539.2783,
+  "v0_adjusted": 894746765155.7589,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 101.66,
-    "2年後": 138.56,
-    "3年後": 188.85
+    "1年後": 100.06,
+    "2年後": 135.98,
+    "3年後": 184.8
   },
-  "upside_percent": -60.5,
+  "upside_percent": -61.0,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1761,
-    "beta": 2.33,
+    "value": 0.176095,
+    "beta": 2.335,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        52.96,
+        80.16,
+        117.12
+      ],
+      [
+        49.1,
+        73.68,
+        106.52
+      ],
+      [
+        45.74,
+        68.07,
+        97.39
+      ]
+    ],
     "wacc_values": [
       0.166,
       0.176,
@@ -31,50 +48,50 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        53.35,
-        81.14,
-        119.12
-      ],
-      [
-        49.46,
-        74.58,
-        108.33
-      ],
-      [
-        46.07,
-        68.89,
-        99.03
-      ]
-    ],
-    "base_wacc": 0.176,
+    "base_wacc": 0.176095,
     "base_years": 5
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.363,
+      "rate": 0.35900000000000004,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.36300000000000004,
+      "weighted_growth": 0.35900000000000004,
       "fiscal_year": "FY2025",
-      "source": "segment_config"
+      "source": "segment_config",
+      "segments": [
+        {
+          "name": "Data Center",
+          "weight": 0.88,
+          "growth": 0.4
+        },
+        {
+          "name": "Gaming",
+          "weight": 0.1,
+          "growth": 0.05
+        },
+        {
+          "name": "Other",
+          "weight": 0.02,
+          "growth": 0.1
+        }
+      ]
     }
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.254,
-      "intrinsic_value_per_share": 52.0
+      "growth_rate": 0.251,
+      "intrinsic_value_per_share": 51.51
     },
     "base": {
-      "growth_rate": 0.363,
-      "intrinsic_value_per_share": 74.58
+      "growth_rate": 0.359,
+      "intrinsic_value_per_share": 73.63
     },
     "bull": {
-      "growth_rate": 0.436,
-      "intrinsic_value_per_share": 93.85
+      "growth_rate": 0.431,
+      "intrinsic_value_per_share": 92.45
     }
   },
   "components": {
@@ -98,10 +115,10 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "yfinance",
-    "high_growth_rate_used": 0.36300000000000004,
+    "high_growth_rate_used": 0.35900000000000004,
     "high_growth_years": 5,
-    "pv_high": 317006728915.3659,
-    "pv_terminal": 587495099282.5737,
+    "pv_high": 313956824370.0598,
+    "pv_terminal": 578924931169.2185,
     "roe_used": 0.4564387976956358,
     "fcf_floor_applied": 0.0,
     "rpo_adjustment": 1865009616.4806278,
@@ -109,15 +126,15 @@
   },
   "validation": {
     "validated_at": "2026-04-12",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $1809.00B / 24.305B = $74.43 (差異0.21%)"
+        "detail": "P_t $1785.76B / 24.305B = $73.47 (差異0.21%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $317.01B + pv_terminal $587.50B = $904.50B (差異0.00%)"
+        "detail": "pv_high $313.96B + pv_terminal $578.92B = $892.88B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -129,6 +146,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "Minor issues in consistency and anomalies detected.",
+    "ai_concerns": "Diviation rate of -61.0% is extreme, suggesting market overvaluation, though shares count (24,305,000,000) is reasonable for the company."
   }
 }

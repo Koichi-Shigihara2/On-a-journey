@@ -12,15 +12,32 @@
   },
   "upside_percent": -95.5,
   "calculation_date": "2026-04-12",
-  "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
   "wacc": {
-    "value": 0.1713,
-    "beta": 2.25,
+    "value": 0.171307,
+    "beta": 2.251,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
   },
   "sensitivity": {
+    "matrix": [
+      [
+        0.6,
+        0.79,
+        1.02
+      ],
+      [
+        0.56,
+        0.73,
+        0.93
+      ],
+      [
+        0.52,
+        0.68,
+        0.85
+      ]
+    ],
     "wacc_values": [
       0.161,
       0.171,
@@ -31,24 +48,7 @@
       5,
       7
     ],
-    "matrix": [
-      [
-        0.6,
-        0.79,
-        1.02
-      ],
-      [
-        0.55,
-        0.73,
-        0.93
-      ],
-      [
-        0.52,
-        0.68,
-        0.85
-      ]
-    ],
-    "base_wacc": 0.171,
+    "base_wacc": 0.171307,
     "base_years": 5
   },
   "growth_scenarios": {
@@ -111,7 +111,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Multiple inconsistencies detected.",
-    "ai_concerns": "Divergence rate of -95.5% is extremely negative, suggesting potential anomalies given negative FCF and low intrinsic value compared to market price."
+    "ai_comment": "Multiple inconsistencies in formulas and results detected.",
+    "ai_concerns": "Divergence rate of -95.5% is extreme, and positive enterprise value with negative FCF average suggests anomalies in valuation logic."
   }
 }
