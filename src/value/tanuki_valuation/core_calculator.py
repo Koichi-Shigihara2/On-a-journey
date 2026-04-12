@@ -1,140 +1,125 @@
 """
-TANUKI VALUATION - Core Calculator v5.3.1
-Koichi式株価評価モデル
-
-v5.3.1 変更点:
-- get_segment_growth() 戻り値の dict -> float 変換を修正
-- 動的WACC（CAPM: Rf + β × (Rm - Rf)）
-- 感度分析マトリクス（WACC ±1% × 高成長期間 3/5/7年）
+TANUKI VALUATION - Core Calculator v6.0
+Koichi式株価評価モデル（モジュール分割版）
 
 P_t = (V_0 + RPO調整) × (1 + α)
-V_0 = 2段階DCF（高成長期 + ターミナル）
-α = min(1.0, max(0, (ROE_10yr × retention_rate / WACC) × 0.7))
+V_0 = 2段階DCF（高成長期5年 + ターミナル）
+
+新機能 (v6.0):
+- モジュール分割によるコード整理
+- 明確な責務分離
+- テスト容易性の向上
+
+計算フロー:
+1. WACC計算（CAPM）: wacc.py
+2. 成長率決定: growth.py
+3. FCF補正: adjustments.py
+4. 2段階DCF: dcf.py
+5. RPO補正 + α計算: adjustments.py
+6. 感度分析: sensitivity.py
+7. シナリオ分析: scenarios.py
+8. 将来価値予測: future_values.py
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from datetime import datetime
 
-# セグメント別成長率（segment_config.pyからインポート試行）
-try:
-    from segment_config import get_segment_growth, calculate_scenario_growth, SEGMENT_OVERRIDES
-    HAS_SEGMENT_CONFIG = True
-except ImportError:
-    HAS_SEGMENT_CONFIG = False
-    SEGMENT_OVERRIDES = {}
-    def get_segment_growth(ticker):
-        return None
-    def calculate_scenario_growth(ticker, scenario):
-        return None
+# Calculator modules
+from .calculator import (
+    # WACC
+    calculate_wacc,
+    WACCResult,
+    
+    # Growth
+    determine_growth_rate,
+    GrowthResult,
+    
+    # DCF
+    calculate_two_stage_dcf,
+    DCFResult,
+    DEFAULT_HIGH_GROWTH_YEARS,
+    DEFAULT_TERMINAL_GROWTH,
+    
+    # Adjustments
+    adjust_fcf,
+    adjust_rpo,
+    calculate_alpha,
+    calculate_intrinsic_value,
+    calculate_per_share_value,
+    calculate_upside,
+    DEFAULT_RETENTION_RATE,
+    DEFAULT_ALPHA_CAP,
+    
+    # Sensitivity
+    calculate_sensitivity_matrix,
+    create_sensitivity_calc_func,
+    SensitivityResult,
+    
+    # Scenarios
+    calculate_scenario_valuations,
+    create_scenario_calc_func as create_scenario_func,
+    ScenarioResult,
+    
+    # Future Values
+    calculate_future_values,
+)
 
 
 class KoichiValuationCalculator:
-    """Koichi式 v5.3.1 バリュエーション計算エンジン"""
-
-    def __init__(self):
-        # CAPM パラメータ
-        self.risk_free_rate = 0.043   # 10年国債利回り（Rf）
-        self.market_return = 0.10     # 市場期待リターン（Rm）
-        self.default_beta = 1.0       # デフォルトβ
-        
-        # 計算パラメータ
-        self.high_growth_years = 5    # 高成長期間（年）- 感度分析の基準値
-        self.retention_rate = 0.60    # 内部留保率
-        self.terminal_growth = 0.03   # 永続成長率
-        
-        # v5.2 追加パラメータ
-        self.alpha_cap = 1.0          # α上限（100%）
-        self.min_fcf_years = 3        # 最低FCFデータ年数
-        self.rpo_discount_rate = 0.15 # RPO割引率
-        
-        # 感度分析パラメータ
-        self.sensitivity_wacc_delta = 0.01  # ±1%
-        self.sensitivity_growth_years = [3, 5, 7]
-
-    def _calculate_wacc(self, beta: float) -> float:
-        """
-        CAPM によるWACC計算
-        WACC = Rf + β × (Rm - Rf)
-        """
-        market_risk_premium = self.market_return - self.risk_free_rate
-        wacc = self.risk_free_rate + beta * market_risk_premium
-        return wacc
-
-    def _calculate_dcf(
-        self, 
-        fcf_avg: float, 
-        high_growth_rate: float, 
-        wacc: float,
-        high_growth_years: int
-    ) -> Dict[str, float]:
-        """
-        2段階DCF計算（内部ヘルパー）
-        """
-        current_fcf = fcf_avg
-        pv_high = 0.0
-        
-        for t in range(high_growth_years):
-            current_fcf *= (1 + high_growth_rate)
-            discount_factor = (1 + wacc) ** (t + 1)
-            pv_high += current_fcf / discount_factor
-        
-        # ターミナル価値
-        terminal_fcf = current_fcf * (1 + self.terminal_growth)
-        terminal_value = terminal_fcf / (wacc - self.terminal_growth)
-        pv_terminal = terminal_value / (1 + wacc) ** high_growth_years
-        
-        v0 = pv_high + pv_terminal
-        
-        return {
-            "pv_high": pv_high,
-            "pv_terminal": pv_terminal,
-            "v0": v0
-        }
-
-    def _calculate_sensitivity_matrix(
+    """
+    Koichi式 v6.0 バリュエーション計算エンジン
+    
+    各計算ステップを独立モジュールに委譲するオーケストレーター
+    """
+    
+    VERSION = "6.0.0"
+    
+    def __init__(
         self,
-        fcf_avg: float,
-        high_growth_rate: float,
-        base_wacc: float,
-        rpo_adjustment: float,
-        alpha: float,
-        diluted_shares: int
-    ) -> Dict[str, Any]:
+        high_growth_years: int = DEFAULT_HIGH_GROWTH_YEARS,
+        terminal_growth: float = DEFAULT_TERMINAL_GROWTH,
+        retention_rate: float = DEFAULT_RETENTION_RATE,
+        alpha_cap: float = DEFAULT_ALPHA_CAP,
+        min_fcf_years: int = 3,
+    ):
         """
-        感度分析マトリクス生成
+        Args:
+            high_growth_years: 高成長期間（年）
+            terminal_growth: 永続成長率
+            retention_rate: 内部留保率
+            alpha_cap: αの上限
+            min_fcf_years: 最低FCFデータ年数
         """
-        wacc_low = base_wacc - self.sensitivity_wacc_delta
-        wacc_mid = base_wacc
-        wacc_high = base_wacc + self.sensitivity_wacc_delta
-        
-        wacc_values = [wacc_low, wacc_mid, wacc_high]
-        growth_years = self.sensitivity_growth_years
-        
-        matrix = []
-        
-        for wacc in wacc_values:
-            row = []
-            for years in growth_years:
-                dcf = self._calculate_dcf(fcf_avg, high_growth_rate, wacc, years)
-                v0_adjusted = dcf["v0"] + rpo_adjustment
-                intrinsic_value_pt = v0_adjusted * (1 + alpha)
-                price_per_share = intrinsic_value_pt / diluted_shares if diluted_shares > 0 else 0
-                row.append(round(price_per_share, 2))
-            matrix.append(row)
-        
-        return {
-            "wacc_values": [round(w, 3) for w in wacc_values],
-            "growth_years": growth_years,
-            "matrix": matrix,
-            "base_wacc": round(base_wacc, 3),
-            "base_years": self.high_growth_years
-        }
-
+        self.high_growth_years = high_growth_years
+        self.terminal_growth = terminal_growth
+        self.retention_rate = retention_rate
+        self.alpha_cap = alpha_cap
+        self.min_fcf_years = min_fcf_years
+    
     def calculate_pt(self, financials: Dict[str, Any]) -> Dict[str, Any]:
         """
         メイン計算関数
+        
+        Args:
+            financials: {
+                "fcf_5yr_avg": float,
+                "diluted_shares": int,
+                "roe_10yr_avg": float,
+                "current_price": float,
+                "fcf_list_raw": list,
+                "latest_revenue": float,
+                "eps_data": {"ticker": str},
+                "rpo": float (optional),
+                "beta": float (optional),
+                "sector": str (optional)
+            }
+        
+        Returns:
+            完全なバリュエーション結果
         """
+        # ========================================
         # データ抽出
+        # ========================================
         fcf_avg = financials.get("fcf_5yr_avg", 0.0)
         diluted_shares = financials.get("diluted_shares", 0)
         roe_avg = financials.get("roe_10yr_avg", 0.0)
@@ -143,8 +128,9 @@ class KoichiValuationCalculator:
         current_price = financials.get("current_price", 0.0)
         ticker = financials.get("eps_data", {}).get("ticker", "Unknown")
         rpo = financials.get("rpo", 0.0)
-        beta = financials.get("beta", self.default_beta)
-
+        beta = financials.get("beta")
+        sector = financials.get("sector")
+        
         # ========================================
         # バリデーション
         # ========================================
@@ -159,248 +145,238 @@ class KoichiValuationCalculator:
                 "fcf_years_available": len(fcf_list_raw),
                 "min_required": self.min_fcf_years
             }
-
-        # ========================================
-        # STEP 1: 動的WACC計算
-        # ========================================
-        wacc = self._calculate_wacc(beta)
-        print(f"   [{ticker}] 動的WACC: {wacc:.1%} (β={beta:.2f}, Rf={self.risk_free_rate:.1%}, Rm={self.market_return:.0%})")
-
-        # ========================================
-        # STEP 2: 高成長率決定（セグメント優先）
-        # ========================================
-        high_growth_rate = 0.25  # デフォルト
-        growth_source = "default"
-        segment_info = None
         
-        # セグメント加重成長率を優先
-        segment_data = get_segment_growth(ticker)
+        # ========================================
+        # STEP 1: WACC計算（CAPM）
+        # ========================================
+        wacc_result: WACCResult = calculate_wacc(
+            beta=beta,
+            sector=sector
+        )
+        wacc = wacc_result.value
+        print(f"   [{ticker}] WACC (CAPM): {wacc:.1%} (β={wacc_result.beta:.2f})")
         
-        # ★修正: segment_data は dict、weighted_growth を抽出
-        if segment_data is not None and isinstance(segment_data, dict):
-            weighted_growth = segment_data.get("weighted_growth")
-            if weighted_growth is not None:
-                high_growth_rate = float(weighted_growth)
-                growth_source = "segment_weighted"
-                print(f"   [{ticker}] セグメント加重成長率: {high_growth_rate:.1%}")
-                
-                # セグメント詳細保存
-                segment_info = segment_data
-        else:
-            # FCF CAGR計算
-            if len(fcf_list_raw) >= 3:
-                recent_fcfs = [f for f in fcf_list_raw[-5:] if f > 0]
-                if len(recent_fcfs) >= 2:
-                    raw_cagr = (recent_fcfs[-1] / recent_fcfs[0]) ** (1 / (len(recent_fcfs) - 1)) - 1
-                    high_growth_rate = max(0.15, min(0.50, raw_cagr))
-                    growth_source = "fcf_cagr"
-            
-            print(f"   [{ticker}] FCF CAGR成長率: {high_growth_rate:.1%}")
-
         # ========================================
-        # STEP 3: FCF補正（マイナス対応）
+        # STEP 2: 成長率決定
         # ========================================
-        original_fcf = fcf_avg
-        fcf_floor_applied = 0.0
-
-        if fcf_avg <= 0 and latest_revenue > 0:
-            fcf_floor = latest_revenue * 0.08
-            fcf_avg = max(fcf_avg, fcf_floor)
-            fcf_floor_applied = fcf_avg - original_fcf
-            print(f"   [{ticker}] FCFが{original_fcf:,.0f}のため補正 → ${fcf_avg:,.0f} (売上高×8%)")
-
+        growth_result: GrowthResult = determine_growth_rate(
+            ticker=ticker,
+            fcf_list=fcf_list_raw
+        )
+        high_growth_rate = growth_result.rate
+        print(f"   [{ticker}] 成長率: {high_growth_rate:.1%} (source: {growth_result.source})")
+        
+        # ========================================
+        # STEP 3: FCF補正
+        # ========================================
+        fcf_adjustment = adjust_fcf(
+            fcf_avg=fcf_avg,
+            latest_revenue=latest_revenue
+        )
+        adjusted_fcf = fcf_adjustment.adjusted_fcf
+        
+        if fcf_adjustment.method != "none":
+            print(f"   [{ticker}] FCF補正: ${fcf_adjustment.original_fcf:,.0f} → ${adjusted_fcf:,.0f}")
+        
         # ========================================
         # STEP 4: 2段階DCF計算
         # ========================================
-        dcf_result = self._calculate_dcf(
-            fcf_avg, high_growth_rate, wacc, self.high_growth_years
+        dcf_result: DCFResult = calculate_two_stage_dcf(
+            base_fcf=adjusted_fcf,
+            high_growth_rate=high_growth_rate,
+            wacc=wacc,
+            high_growth_years=self.high_growth_years,
+            terminal_growth=self.terminal_growth
         )
-        v0 = dcf_result["v0"]
-        pv_high = dcf_result["pv_high"]
-        pv_terminal = dcf_result["pv_terminal"]
-
+        v0 = dcf_result.v0
+        
         # ========================================
         # STEP 5: RPO補正
         # ========================================
-        rpo_adjustment = 0.0
-        rpo_calculation = {"applied": False}
+        rpo_adjustment = adjust_rpo(rpo=rpo)
+        rpo_pv = rpo_adjustment.rpo_pv
         
-        if rpo > 0:
-            rpo_pv = rpo / (1 + self.rpo_discount_rate) ** 1.5
-            rpo_adjustment = rpo_pv
-            rpo_calculation = {
-                "applied": True,
-                "rpo_raw": rpo,
-                "discount_rate": self.rpo_discount_rate,
-                "assumed_realization_years": 1.5,
-                "rpo_pv": rpo_pv
-            }
+        if rpo_adjustment.applied:
             print(f"   [{ticker}] RPO補正: ${rpo:,.0f} → PV ${rpo_pv:,.0f}")
-
-        v0_adjusted = v0 + rpo_adjustment
-
+        
         # ========================================
-        # STEP 6: α（成長期待プレミアム）算出
+        # STEP 6: α計算
         # ========================================
-        g_individual = max(0.0, roe_avg * self.retention_rate)
-        alpha_raw = (g_individual / wacc) * 0.7
-        alpha_uncapped = max(0.0, alpha_raw)
-        alpha = min(self.alpha_cap, alpha_uncapped)
-
-        if alpha_uncapped > self.alpha_cap:
-            print(f"   [{ticker}] ROE_10yr = {roe_avg:.1%} → α = {alpha_uncapped:.3f} → キャップ適用 → {alpha:.3f}")
+        alpha_result = calculate_alpha(
+            roe=roe_avg,
+            wacc=wacc,
+            retention_rate=self.retention_rate,
+            alpha_cap=self.alpha_cap
+        )
+        alpha = alpha_result.alpha
+        
+        if alpha_result.was_capped:
+            print(f"   [{ticker}] α: {alpha_result.alpha_uncapped:.3f} → キャップ適用 → {alpha:.3f}")
         else:
-            print(f"   [{ticker}] ROE_10yr = {roe_avg:.1%} → α = {alpha:.3f}")
-
+            print(f"   [{ticker}] α: {alpha:.3f}")
+        
         # ========================================
-        # STEP 7: 本質的価値算出
+        # STEP 7: 本質的価値（P_t）算出
         # ========================================
-        intrinsic_value_pt = v0_adjusted * (1 + alpha)
-        intrinsic_value_per_share = intrinsic_value_pt / diluted_shares
-
+        v0_adjusted, intrinsic_value_pt = calculate_intrinsic_value(
+            v0=v0,
+            rpo_pv=rpo_pv,
+            alpha=alpha
+        )
+        
+        intrinsic_value_per_share = calculate_per_share_value(
+            intrinsic_value_pt=intrinsic_value_pt,
+            diluted_shares=diluted_shares
+        )
+        
+        upside_percent = calculate_upside(
+            intrinsic_value_per_share=intrinsic_value_per_share,
+            current_price=current_price
+        )
+        
         # ========================================
         # STEP 8: 感度分析マトリクス
         # ========================================
-        sensitivity = self._calculate_sensitivity_matrix(
-            fcf_avg=fcf_avg,
+        sensitivity_calc_func = create_sensitivity_calc_func(
+            base_fcf=adjusted_fcf,
             high_growth_rate=high_growth_rate,
-            base_wacc=wacc,
-            rpo_adjustment=rpo_adjustment,
+            diluted_shares=diluted_shares,
+            rpo_pv=rpo_pv,
             alpha=alpha,
-            diluted_shares=diluted_shares
+            terminal_growth=self.terminal_growth
         )
-        print(f"   [{ticker}] 感度分析マトリクス生成完了")
-
+        
+        sensitivity_result: SensitivityResult = calculate_sensitivity_matrix(
+            calc_func=sensitivity_calc_func,
+            base_wacc=wacc,
+            base_years=self.high_growth_years
+        )
+        
         # ========================================
-        # STEP 9: シナリオ別理論株価
+        # STEP 9: シナリオ分析（セグメント設定がある場合のみ）
         # ========================================
-        scenario_valuations = None
-        if segment_info is not None:
-            scenario_valuations = {}
-            for scenario in ["bear", "base", "bull"]:
-                scenario_result = calculate_scenario_growth(ticker, scenario)
-                if scenario_result and isinstance(scenario_result, dict):
-                    scenario_rate = scenario_result.get("rate")
-                    if scenario_rate is not None:
-                        dcf_scenario = self._calculate_dcf(
-                            fcf_avg, scenario_rate, wacc, self.high_growth_years
-                        )
-                        v0_scenario = dcf_scenario["v0"] + rpo_adjustment
-                        pt_scenario = v0_scenario * (1 + alpha)
-                        price_scenario = pt_scenario / diluted_shares
-                        scenario_valuations[scenario] = {
-                            "growth_rate": round(scenario_rate, 3),
-                            "intrinsic_value_per_share": round(price_scenario, 2)
-                        }
-
-        # ========================================
-        # 1〜3年後価値予測
-        # ========================================
-        future_values = {}
-        current_value = intrinsic_value_per_share
-
-        for year in range(1, 4):
-            if year <= self.high_growth_years:
-                growth_rate = high_growth_rate
-            else:
-                growth_rate = self.terminal_growth
+        scenario_result: Optional[ScenarioResult] = None
+        
+        if growth_result.source == "segment_weighted":
+            scenario_calc_func = create_scenario_func(
+                base_fcf=adjusted_fcf,
+                wacc=wacc,
+                high_growth_years=self.high_growth_years,
+                diluted_shares=diluted_shares,
+                rpo_pv=rpo_pv,
+                alpha=alpha,
+                terminal_growth=self.terminal_growth
+            )
             
-            future_value = current_value * (1 + growth_rate)
-            future_values[f"{year}年後"] = round(future_value, 2)
-            current_value = future_value
-
+            scenario_result = calculate_scenario_valuations(
+                calc_func=scenario_calc_func,
+                base_growth_rate=high_growth_rate
+            )
+        
+        # ========================================
+        # STEP 10: 将来価値予測
+        # ========================================
+        future_values = calculate_future_values(
+            current_value=intrinsic_value_per_share,
+            high_growth_rate=high_growth_rate,
+            high_growth_years=self.high_growth_years,
+            terminal_growth=self.terminal_growth
+        )
+        
         print(f"   [{ticker}] 1〜3年後理論株価: {future_values}")
-
-        # 乖離率
-        upside_percent = ((intrinsic_value_per_share / current_price) - 1) * 100 if current_price > 0 else 0
-
+        
         # ========================================
         # 結果返却
         # ========================================
-        # segment_info をシリアライズ可能な形式に変換
-        segment_info_serializable = None
-        if segment_info:
-            segment_info_serializable = {
-                "enabled": segment_info.get("enabled"),
-                "weighted_growth": segment_info.get("weighted_growth"),
-                "fiscal_year": segment_info.get("fiscal_year"),
-                "source": segment_info.get("source")
-            }
-        
         result = {
             "intrinsic_value_pt": float(intrinsic_value_pt),
             "intrinsic_value_per_share": float(intrinsic_value_per_share),
             "v0": float(v0),
             "v0_adjusted": float(v0_adjusted),
             "alpha": float(alpha),
-            "alpha_was_capped": alpha_uncapped > self.alpha_cap,
+            "alpha_was_capped": alpha_result.was_capped,
             "future_values": future_values,
             "upside_percent": round(upside_percent, 1),
             "calculation_date": datetime.now().strftime("%Y-%m-%d"),
-            "formula": "Koichi式 v5.3.1（動的WACC＋感度分析＋セグメント成長率）",
+            "formula": f"Koichi式 v{self.VERSION}（動的WACC＋感度分析＋セグメント成長率）",
             
-            # WACC情報
-            "wacc": {
-                "value": round(wacc, 4),
-                "beta": round(beta, 2),
-                "risk_free_rate": self.risk_free_rate,
-                "market_return": self.market_return,
-                "method": "CAPM"
-            },
+            # WACC詳細
+            "wacc": wacc_result.to_dict(),
             
             # 感度分析
-            "sensitivity": sensitivity,
+            "sensitivity": sensitivity_result.to_dict(),
             
-            # 成長率情報
+            # 成長シナリオ
             "growth_scenarios": {
                 "primary": {
-                    "rate": round(high_growth_rate, 3),
-                    "source": growth_source
+                    "rate": high_growth_rate,
+                    "source": growth_result.source
                 },
-                "segment": segment_info_serializable
+                "segment": growth_result.segment_detail
             },
             
             # シナリオ別理論株価
-            "scenario_valuations": scenario_valuations,
+            "scenario_valuations": scenario_result.to_dict() if scenario_result else None,
             
             # 計算コンポーネント
             "components": {
-                **financials,
-                "high_growth_rate_used": float(high_growth_rate),
+                "fcf_5yr_avg": financials.get("fcf_5yr_avg"),
+                "fcf_list_raw": fcf_list_raw,
+                "diluted_shares": diluted_shares,
+                "roe_10yr_avg": roe_avg,
+                "current_price": current_price,
+                "latest_revenue": latest_revenue,
+                "rpo": rpo,
+                "beta": wacc_result.beta,
+                "sector": sector,
+                "eps_data": financials.get("eps_data"),
+                "_shares_source": financials.get("_shares_source"),
+                "_beta_source": financials.get("_beta_source"),
+                "high_growth_rate_used": high_growth_rate,
                 "high_growth_years": self.high_growth_years,
-                "pv_high": float(pv_high),
-                "pv_terminal": float(pv_terminal),
-                "roe_used": float(roe_avg),
-                "fcf_floor_applied": float(fcf_floor_applied),
-                "rpo_adjustment": float(rpo_adjustment),
-                "alpha_uncapped": float(alpha_uncapped),
+                "pv_high": dcf_result.pv_high_growth,
+                "pv_terminal": dcf_result.pv_terminal,
+                "roe_used": roe_avg,
+                "fcf_floor_applied": fcf_adjustment.floor_applied,
+                "rpo_adjustment": rpo_pv,
+                "alpha_uncapped": alpha_result.alpha_uncapped,
             }
         }
         
         return result
 
 
+# ========================================
+# エントリーポイント
+# ========================================
+def create_calculator(**kwargs) -> KoichiValuationCalculator:
+    """計算エンジンを生成"""
+    return KoichiValuationCalculator(**kwargs)
+
+
 if __name__ == "__main__":
+    # 簡易テスト
     calculator = KoichiValuationCalculator()
     
-    # テスト
     test_data = {
-        "fcf_5yr_avg": 4850000000,
-        "diluted_shares": 3180000000,
-        "roe_10yr_avg": 0.148,
-        "current_price": 248.50,
-        "fcf_list_raw": [2800000000, 3500000000, 4200000000, 5800000000, 7950000000],
-        "latest_revenue": 96773000000,
-        "eps_data": {"ticker": "TSLA"},
-        "beta": 2.31
+        "fcf_5yr_avg": 5_000_000_000,
+        "diluted_shares": 3_000_000_000,
+        "roe_10yr_avg": 0.15,
+        "current_price": 100.0,
+        "fcf_list_raw": [3e9, 4e9, 5e9, 6e9, 7e9],
+        "latest_revenue": 50_000_000_000,
+        "eps_data": {"ticker": "TEST"},
+        "rpo": 5_000_000_000,
+        "beta": 1.5,
+        "sector": "Technology"
     }
     
     result = calculator.calculate_pt(test_data)
-    print(f"\nTSLA: ${result.get('intrinsic_value_per_share', 0):.2f}")
-    print(f"WACC: {result.get('wacc', {}).get('value', 0):.1%}")
-    print(f"感度分析マトリクス:")
-    sens = result.get("sensitivity", {})
-    print(f"  WACC: {sens.get('wacc_values')}")
-    print(f"  Years: {sens.get('growth_years')}")
-    for i, row in enumerate(sens.get("matrix", [])):
-        print(f"  {row}")
+    
+    if "error" not in result:
+        print(f"\n=== 結果 ===")
+        print(f"理論株価: ${result['intrinsic_value_per_share']:.2f}")
+        print(f"乖離率: {result['upside_percent']:.1f}%")
+        print(f"WACC: {result['wacc']['value']:.1%}")
+    else:
+        print(f"エラー: {result['error']}")
