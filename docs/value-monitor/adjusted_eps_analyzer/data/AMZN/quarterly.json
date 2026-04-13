@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-04-07T12:25:52.314274",
+  "last_updated": "2026-04-13T11:22:08.203419",
   "quarters": [
     {
       "gaap_eps": 1.9573288999722915,
@@ -71,21 +71,21 @@
       },
       "ai_analysis": {
         "health": "Caution",
-        "comment": "株式報酬費用（43.97億ドル）が調整の大半を占めており、Amazonのようなテック企業では毎期発生する恒常的コストであるため調整の正当性は低い。無形資産償却も買収関連で継続的に発生する項目です。異常貸倒引当金はマクロ変動による一時的影響と説明されていますが、全体として調整後EPS（+17%）の健全性には注意が必要で、投資家はGAAPベースの収益性を重視すべきです。",
+        "comment": "調整項目の主力である株式報酬費用（43.97億ドル）と無形資産償却費（8.17億ドル）は、Amazonのような成長企業で毎期継続的に発生する性質のものであり、調整後のEPS（2.29）を過大に評価させる可能性が高いです。貸倒引当金の異常変動分はマクロ要因による一時的項目として一定の正当性がありますが、全体として非経常項目の選定に甘さが見られ、持続的な収益性を示す指標としての健全性は「要注意」と判断します。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として株式報酬費用をadd_back。ただし毎期発生する恒常的な報酬形態であり株主希薄化を伴う（category: 株式報酬関連）",
+            "snippet": "非現金費用として株式報酬費用をadd_back。ただしテック企業では毎年多額に発生する継続的な報酬コストであり、恒常性の高い項目。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却をadd_back。継続的に発生する経常的費用であり経済的コストを反映（category: 買収・統合関連）",
+            "snippet": "買収関連無形資産の償却をadd_back。M&Aを実施する限り定期的に発生する非現金費用であり、再発可能性が高い。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分の貸倒引当金をadd_back（category: 金融関連）",
+            "snippet": "マクロ変動による一時的影響として異常変動分の貸倒引当金をadd_back。金融関連の一過性項目として調整の合理性はある。",
             "confidence": 0.65
           }
         ]
@@ -526,38 +526,6 @@
       "period_end": "2022-09-30",
       "fiscal_year": 2022,
       "quarter": 3
-    },
-    {
-      "gaap_eps": -0.1993120393120393,
-      "adjusted_eps": 0.19026259962845332,
-      "gaap_net_income": -2028000000.0,
-      "adjusted_net_income": 1935921951.2195125,
-      "diluted_shares_used": 10175000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5209000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 3963921951.2195125,
-          "tax_rate_applied": 0.23902439024390243
-        }
-      ],
-      "net_adjustment_total": 3963921951.2195125,
-      "filing_date": "2022-06-30",
-      "form": "10-Q",
-      "sector": "Consumer Cyclical",
-      "sector_exclusions": [],
-      "revenue": 0.0,
-      "diluted_shares": 10175000000.0,
-      "period_end": "2022-06-30",
-      "fiscal_year": 2022,
-      "quarter": 2
     }
   ]
 }
