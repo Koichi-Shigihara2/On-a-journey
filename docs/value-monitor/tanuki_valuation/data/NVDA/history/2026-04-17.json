@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 1812733675628.8406,
-  "intrinsic_value_per_share": 74.58274740295579,
-  "v0": 904501828197.9397,
-  "v0_adjusted": 906366837814.4203,
+  "intrinsic_value_pt": 2471206507937.052,
+  "intrinsic_value_per_share": 101.67482032244607,
+  "v0": 1231878529914.8252,
+  "v0_adjusted": 1235603253968.526,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 101.66,
-    "2年後": 138.56,
-    "3年後": 188.85
+    "1年後": 138.58,
+    "2年後": 188.89,
+    "3年後": 257.45
   },
-  "upside_percent": -62.6,
+  "upside_percent": -49.3,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.176095,
     "beta": 2.335,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        53.39,
-        81.21,
-        119.23
+        53.54,
+        81.36,
+        119.38
       ],
       [
-        49.49,
-        74.64,
-        108.42
+        49.65,
+        74.79,
+        108.57
       ],
       [
-        46.1,
-        68.95,
-        99.11
+        46.26,
+        69.1,
+        99.27
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,162 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.254,
-      "intrinsic_value_per_share": 52.0
+      "intrinsic_value_per_share": 52.15
     },
     "base": {
       "growth_rate": 0.363,
-      "intrinsic_value_per_share": 74.58
+      "intrinsic_value_per_share": 74.74
     },
     "bull": {
       "growth_rate": 0.436,
-      "intrinsic_value_per_share": 93.85
+      "intrinsic_value_per_share": 94.0
     }
+  },
+  "growth_options": {
+    "total_pv": 1859714437.220018,
+    "count": 3,
+    "applied": true,
+    "options": [
+      {
+        "name": "Sovereign AI",
+        "tam": 80000000000,
+        "penetration": 0.15,
+        "fcf_margin": 0.2,
+        "probability": 0.7,
+        "delay_years": 3,
+        "expected_fcf": 1680000000.0,
+        "pv": 1104627270.4857402,
+        "note": "各国政府のAIインフラ独自整備需要。CUDAエコシステムの延長。"
+      },
+      {
+        "name": "Robotics / Isaac",
+        "tam": 200000000000,
+        "penetration": 0.05,
+        "fcf_margin": 0.2,
+        "probability": 0.4,
+        "delay_years": 5,
+        "expected_fcf": 800000000.0,
+        "pv": 397741388.2386319,
+        "note": "Isaacプラットフォームによるロボティクス向けGPU需要。実現期間長い。"
+      },
+      {
+        "name": "NIM / Inference SaaS",
+        "tam": 50000000000,
+        "penetration": 0.1,
+        "fcf_margin": 0.25,
+        "probability": 0.5,
+        "delay_years": 4,
+        "expected_fcf": 625000000.0,
+        "pv": 357345778.4956459,
+        "note": "NIMAによる推論SaaS化。AWSのようなソフトウェア収益転換。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 5,
+      "growth": null
+    },
+    "phase2": {
+      "years": 5,
+      "growth": 0.15
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 1231878529914.8252,
+    "pv_phase1": 317006728915.3659,
+    "pv_phase2": 389724144470.5272,
+    "pv_high_growth": 706730873385.8931,
+    "pv_terminal": 525147656528.9321,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.36300000000000004,
+        "fcf": 54328907400.0,
+        "discount_factor": 1.1760950000000001,
+        "pv": 46194318826.285286
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.36300000000000004,
+        "fcf": 74050300786.2,
+        "discount_factor": 1.3831994490250004,
+        "pv": 53535519290.72637
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.36300000000000004,
+        "fcf": 100930559971.59059,
+        "discount_factor": 1.626773956001058,
+        "pv": 62043383224.36541
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.36300000000000004,
+        "fcf": 137568353241.27798,
+        "discount_factor": 1.9132407157830642,
+        "pv": 71903316768.46689
+      },
+      {
+        "year": 5,
+        "phase": "phase1",
+        "growth_rate": 0.36300000000000004,
+        "fcf": 187505665467.86188,
+        "discount_factor": 2.2501528396288832,
+        "pv": 83330190805.52196
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 215631515288.04114,
+        "discount_factor": 2.6463935039233317,
+        "pv": 81481274409.25284
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 247976242581.24728,
+        "discount_factor": 3.112410167996711,
+        "pv": 79673381462.07642
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 285172678968.4343,
+        "discount_factor": 3.660490036530092,
+        "pv": 77905601742.53598
+      },
+      {
+        "year": 9,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 327948580813.69946,
+        "discount_factor": 4.30508402951286,
+        "pv": 76177045225.01698
+      },
+      {
+        "year": 10,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 377140867935.75433,
+        "discount_factor": 5.063187801689927,
+        "pv": 74486841631.64499
+      }
+    ],
+    "terminal_fcf": 388455093973.82697,
+    "terminal_value": 2658921208623.341,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 39859800000.0,
@@ -88,7 +235,7 @@
     ],
     "diluted_shares": 24305000000,
     "roe_10yr_avg": 0.4564387976956358,
-    "current_price": 199.515,
+    "current_price": 200.61,
     "latest_revenue": 215938000000.0,
     "rpo": 2300000000.0,
     "beta": 2.335,
@@ -100,11 +247,13 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.36300000000000004,
     "high_growth_years": 5,
-    "pv_high": 317006728915.3659,
-    "pv_terminal": 587495099282.5737,
+    "terminal_growth_used": 0.03,
+    "pv_high": 706730873385.8931,
+    "pv_terminal": 525147656528.9321,
     "roe_used": 0.4564387976956358,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 1865009616.4806278,
+    "rpo_pv": 1865009616.4806278,
+    "growth_option_pv": 1859714437.220018,
     "alpha_uncapped": 1.0886413301466085
   },
   "validation": {
@@ -113,11 +262,11 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $1809.00B / 24.305B = $74.43 (差異0.21%)"
+        "detail": "P_t $2467.49B / 24.305B = $101.52 (差異0.15%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $317.01B + pv_terminal $587.50B = $904.50B (差異0.00%)"
+        "detail": "pv_high $706.73B + pv_terminal $525.15B = $1231.88B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
