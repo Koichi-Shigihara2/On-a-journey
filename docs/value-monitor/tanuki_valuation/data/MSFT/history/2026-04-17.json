@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 3458416153186.178,
-  "intrinsic_value_per_share": 465.3176026912831,
-  "v0": 1425130421732.1172,
-  "v0_adjusted": 1729208076593.089,
+  "intrinsic_value_pt": 3954632631442.439,
+  "intrinsic_value_per_share": 532.0817663577615,
+  "v0": 1670661197229.1143,
+  "v0_adjusted": 1977316315721.2195,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 533.81,
-    "2年後": 612.39,
-    "3年後": 702.53
+    "1年後": 610.4,
+    "2年後": 700.26,
+    "3年後": 803.33
   },
-  "upside_percent": 11.4,
+  "upside_percent": 24.1,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.106099,
     "beta": 1.107,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        454.02,
-        527.24,
-        607.46
+        454.71,
+        527.93,
+        608.15
       ],
       [
-        404.25,
-        465.84,
-        532.11
+        404.95,
+        466.54,
+        532.8
       ],
       [
-        366.08,
-        418.82,
-        474.55
+        366.77,
+        419.51,
+        475.24
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,140 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.103,
-      "intrinsic_value_per_share": 403.45
+      "intrinsic_value_per_share": 404.14
     },
     "base": {
       "growth_rate": 0.147,
-      "intrinsic_value_per_share": 465.32
+      "intrinsic_value_per_share": 466.01
     },
     "bull": {
       "growth_rate": 0.177,
-      "intrinsic_value_per_share": 511.88
+      "intrinsic_value_per_share": 512.57
     }
+  },
+  "growth_options": {
+    "total_pv": 2577463631.133394,
+    "count": 1,
+    "applied": true,
+    "options": [
+      {
+        "name": "Copilot Enterprise",
+        "tam": 80000000000,
+        "penetration": 0.2,
+        "fcf_margin": 0.35,
+        "probability": 0.7,
+        "delay_years": 3,
+        "expected_fcf": 3919999999.9999995,
+        "pv": 2577463631.133394,
+        "note": "M365 Copilotの企業採用拡大。Officeの自然延長。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 5,
+      "growth": null
+    },
+    "phase2": {
+      "years": 5,
+      "growth": 0.08
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 1670661197229.1143,
+    "pv_phase1": 364666138260.2399,
+    "pv_phase2": 364875444301.2709,
+    "pv_high_growth": 729541582561.5107,
+    "pv_terminal": 941119614667.6034,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.1472,
+        "fcf": 74894722560.0,
+        "discount_factor": 1.106099,
+        "pv": 67710686439.45976
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.1472,
+        "fcf": 85919225720.832,
+        "discount_factor": 1.2234549978009999,
+        "pv": 70226715224.72061
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.1472,
+        "fcf": 98566535746.93848,
+        "discount_factor": 1.353262349612688,
+        "pv": 72836235911.79405
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.1472,
+        "fcf": 113075529808.88782,
+        "discount_factor": 1.4968421316442446,
+        "pv": 75542722521.23015
+      },
+      {
+        "year": 5,
+        "phase": "phase1",
+        "growth_rate": 0.1472,
+        "fcf": 129720247796.7561,
+        "discount_factor": 1.6556555849695673,
+        "pv": 78349778163.03534
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 140097867620.4966,
+        "discount_factor": 1.8313189868792532,
+        "pv": 76501073064.95909
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 151305697030.13635,
+        "discount_factor": 2.025620100068155,
+        "pv": 74695989156.62688
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 163410152792.54727,
+        "discount_factor": 2.2405363670652862,
+        "pv": 72933497172.63737
+      },
+      {
+        "year": 9,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 176482965015.95108,
+        "discount_factor": 2.478255035074546,
+        "pv": 71212592133.65927
+      },
+      {
+        "year": 10,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 190601602217.22717,
+        "discount_factor": 2.7411954160409198,
+        "pv": 69532292773.38829
+      }
+    ],
+    "terminal_fcf": 196319650283.744,
+    "terminal_value": 2579792773673.0312,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 65284800000.0,
@@ -88,7 +213,7 @@
     ],
     "diluted_shares": 7432377656,
     "roe_10yr_avg": 0.33282252757802594,
-    "current_price": 417.515,
+    "current_price": 428.705,
     "latest_revenue": 281724000000.0,
     "rpo": 375000000000.0,
     "beta": 1.107,
@@ -100,24 +225,26 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.1472,
     "high_growth_years": 5,
-    "pv_high": 364666138260.2399,
-    "pv_terminal": 1060464283471.8773,
+    "terminal_growth_used": 0.03,
+    "pv_high": 729541582561.5107,
+    "pv_terminal": 941119614667.6034,
     "roe_used": 0.33282252757802594,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 304077654860.9719,
+    "rpo_pv": 304077654860.9719,
+    "growth_option_pv": 2577463631.133394,
     "alpha_uncapped": 1.3175002741097548
   },
   "validation": {
     "validated_at": "2026-04-17",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
-        "pass": false,
-        "detail": "P_t $2850.26B / 7.432B = $383.49 (差異17.58%)"
+        "pass": true,
+        "detail": "P_t $3949.48B / 7.432B = $531.39 (差異0.13%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $364.67B + pv_terminal $1060.46B = $1425.13B (差異0.00%)"
+        "detail": "pv_high $729.54B + pv_terminal $941.12B = $1670.66B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -128,7 +255,7 @@
         "detail": "異常値なし"
       }
     },
-    "overall": "WARN",
-    "ai_comment": null
+    "overall": "PASS",
+    "ai_comment": "All checks passed with minor rounding issues."
   }
 }

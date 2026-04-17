@@ -10,9 +10,10 @@
     "2年後": 1.14,
     "3年後": 1.43
   },
-  "upside_percent": -96.2,
+  "upside_percent": -96.4,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + two_stage DCF + 成長オプション）",
+  "dcf_type": "two_stage",
   "wacc": {
     "value": 0.171307,
     "beta": 2.251,
@@ -59,6 +60,52 @@
     "segment": null
   },
   "scenario_valuations": null,
+  "growth_options": {
+    "total_pv": 0,
+    "count": 0,
+    "applied": false,
+    "options": []
+  },
+  "maturity_profile": null,
+  "dcf_components": {
+    "v0": 802295564.0321257,
+    "pv_high_growth": 302378279.84759957,
+    "pv_terminal": 499917284.18452615,
+    "high_growth_detail": [
+      {
+        "year": 1,
+        "fcf": 61935300.0,
+        "discount_factor": 1.171307,
+        "pv": 52877085.17066832
+      },
+      {
+        "year": 2,
+        "fcf": 77419125.0,
+        "discount_factor": 1.3719600882490002,
+        "pv": 56429575.220958635
+      },
+      {
+        "year": 3,
+        "fcf": 96773906.25,
+        "discount_factor": 1.606986455086672,
+        "pv": 60220735.491376966
+      },
+      {
+        "year": 4,
+        "fcf": 120967382.8125,
+        "discount_factor": 1.8822744837482046,
+        "pv": 64266600.78375797
+      },
+      {
+        "year": 5,
+        "fcf": 151209228.515625,
+        "discount_factor": 2.2047212787356583,
+        "pv": 68584283.1808377
+      }
+    ],
+    "terminal_fcf": 155745505.37109375,
+    "terminal_value": 1102178274.049366
+  },
   "components": {
     "fcf_5yr_avg": -4269811800.0,
     "fcf_list_raw": [
@@ -70,7 +117,7 @@
     ],
     "diluted_shares": 1275263850,
     "roe_10yr_avg": 0.061154046555506165,
-    "current_price": 19.2201,
+    "current_price": 20.075,
     "latest_revenue": 619353000.0,
     "rpo": 8535000.0,
     "beta": 2.251,
@@ -82,20 +129,22 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.25,
     "high_growth_years": 5,
+    "terminal_growth_used": 0.03,
     "pv_high": 302378279.84759957,
     "pv_terminal": 499917284.18452615,
     "roe_used": 0.061154046555506165,
     "fcf_floor_applied": 4319360040.0,
-    "rpo_adjustment": 6920807.424635721,
+    "rpo_pv": 6920807.424635721,
+    "growth_option_pv": 0,
     "alpha_uncapped": 0.14993374207307691
   },
   "validation": {
     "validated_at": "2026-04-17",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $0.92B / 1.275B = $0.72 (差異0.86%)"
+        "detail": "P_t $0.93B / 1.275B = $0.73 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
@@ -111,6 +160,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": null
+    "ai_comment": "α計算に不一致、乖離率極端",
+    "ai_concerns": "Deviations rate of -96.4% is extremely high, indicating potential overvaluation in market price. FCF is negative, which may contribute, but warrants further review."
   }
 }

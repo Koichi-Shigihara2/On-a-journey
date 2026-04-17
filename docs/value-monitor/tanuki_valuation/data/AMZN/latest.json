@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 247128688194.2234,
-  "intrinsic_value_per_share": 22.979626366680666,
-  "v0": 131490275351.70975,
-  "v0_adjusted": 151762119009.10788,
+  "intrinsic_value_pt": 296265356201.37195,
+  "intrinsic_value_per_share": 27.548672073023305,
+  "v0": 161150603113.62625,
+  "v0_adjusted": 181937024692.0581,
   "alpha": 0.6283950817752629,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 25.69,
-    "2年後": 28.72,
-    "3年後": 32.1
+    "1年後": 30.8,
+    "2年後": 34.43,
+    "3年後": 38.49
   },
-  "upside_percent": -90.7,
+  "upside_percent": -89.2,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.12183100000000001,
     "beta": 1.383,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        22.76,
-        25.48,
-        28.24
+        22.84,
+        25.56,
+        28.31
       ],
       [
-        20.59,
-        22.94,
-        25.28
+        20.67,
+        23.02,
+        25.35
       ],
       [
-        18.84,
-        20.9,
-        22.91
+        18.92,
+        20.98,
+        22.98
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,140 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.083,
-      "intrinsic_value_per_share": 20.38
+      "intrinsic_value_per_share": 20.46
     },
     "base": {
       "growth_rate": 0.118,
-      "intrinsic_value_per_share": 22.98
+      "intrinsic_value_per_share": 23.06
     },
     "bull": {
       "growth_rate": 0.141,
-      "intrinsic_value_per_share": 24.89
+      "intrinsic_value_per_share": 24.97
     }
+  },
+  "growth_options": {
+    "total_pv": 514577921.03373003,
+    "count": 1,
+    "applied": true,
+    "options": [
+      {
+        "name": "Alexa+ / AI Assistant",
+        "tam": 60000000000,
+        "penetration": 0.15,
+        "fcf_margin": 0.2,
+        "probability": 0.5,
+        "delay_years": 4,
+        "expected_fcf": 900000000.0,
+        "pv": 514577921.03373003,
+        "note": "Alexa+の有料化・企業向け展開。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 5,
+      "growth": null
+    },
+    "phase2": {
+      "years": 5,
+      "growth": 0.1
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 161150603113.62625,
+    "pv_phase1": 40740215771.46366,
+    "pv_phase2": 38153331658.8812,
+    "pv_high_growth": 78893547430.34486,
+    "pv_terminal": 82257055683.28139,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.11790000000000002,
+        "fcf": 9205012180.0,
+        "discount_factor": 1.121831,
+        "pv": 8205346598.551831
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.11790000000000002,
+        "fcf": 10290283116.022001,
+        "discount_factor": 1.258504792561,
+        "pv": 8176594302.101737
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.11790000000000002,
+        "fcf": 11503507495.400997,
+        "discount_factor": 1.4118296899434992,
+        "pv": 8147942756.368413
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.11790000000000002,
+        "fcf": 12859771029.108776,
+        "discount_factor": 1.5838343128990058,
+        "pv": 8119391608.311992
+      },
+      {
+        "year": 5,
+        "phase": "phase1",
+        "growth_rate": 0.11790000000000002,
+        "fcf": 14375938033.440702,
+        "discount_factor": 1.7767944310738046,
+        "pv": 8090940506.129689
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 15813531836.784775,
+        "discount_factor": 1.9932630734059573,
+        "pv": 7933489586.883104
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 17394885020.463253,
+        "discount_factor": 2.2361043069020785,
+        "pv": 7779102686.208007
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 19134373522.50958,
+        "discount_factor": 2.508531130716266,
+        "pv": 7627720177.842123
+      },
+      {
+        "year": 9,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 21047810874.76054,
+        "discount_factor": 2.814147986902559,
+        "pv": 7479283595.859214
+      },
+      {
+        "year": 10,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 23152591962.236595,
+        "discount_factor": 3.1569984502948847,
+        "pv": 7333735612.088751
+      }
+    ],
+    "terminal_fcf": 23847169721.103695,
+    "terminal_value": 259685397317.9394,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 8234200000.0,
@@ -88,7 +213,7 @@
     ],
     "diluted_shares": 10754251799,
     "roe_10yr_avg": 0.18228095525657637,
-    "current_price": 248.145,
+    "current_price": 254.71,
     "latest_revenue": 716924000000.0,
     "rpo": 25000000000.0,
     "beta": 1.383,
@@ -100,11 +225,13 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.11790000000000002,
     "high_growth_years": 5,
-    "pv_high": 40740215771.46366,
-    "pv_terminal": 90750059580.2461,
+    "terminal_growth_used": 0.03,
+    "pv_high": 78893547430.34486,
+    "pv_terminal": 82257055683.28139,
     "roe_used": 0.18228095525657637,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 20271843657.39813,
+    "rpo_pv": 20271843657.39813,
+    "growth_option_pv": 514577921.03373003,
     "alpha_uncapped": 0.6283950817752629
   },
   "validation": {
@@ -112,12 +239,12 @@
     "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
-        "pass": false,
-        "detail": "P_t $214.12B / 10.754B = $19.91 (差異13.36%)"
+        "pass": true,
+        "detail": "P_t $295.43B / 10.754B = $27.47 (差異0.28%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $40.74B + pv_terminal $90.75B = $131.49B (差異0.00%)"
+        "detail": "pv_high $78.89B + pv_terminal $82.26B = $161.15B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,

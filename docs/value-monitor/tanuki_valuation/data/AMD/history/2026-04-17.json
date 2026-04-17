@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 73482137030.31683,
-  "intrinsic_value_per_share": 45.06970577430533,
-  "v0": 50968317987.97748,
-  "v0_adjusted": 51223743218.06069,
+  "intrinsic_value_pt": 78270618527.20938,
+  "intrinsic_value_per_share": 48.006684214135035,
+  "v0": 53872365075.026794,
+  "v0_adjusted": 54561751018.51512,
   "alpha": 0.4345327462208614,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 53.88,
-    "2年後": 64.41,
-    "3年後": 77.01
+    "1年後": 57.39,
+    "2年後": 68.61,
+    "3年後": 82.03
   },
-  "upside_percent": -83.6,
+  "upside_percent": -82.8,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.154891,
     "beta": 1.963,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        39.55,
-        49.33,
-        59.99
+        39.94,
+        49.72,
+        60.38
       ],
       [
-        36.3,
-        45.03,
-        54.38
+        36.68,
+        45.41,
+        54.76
       ],
       [
-        33.53,
-        41.37,
-        49.62
+        33.91,
+        41.75,
+        50.01
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,124 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.137,
-      "intrinsic_value_per_share": 36.42
+      "intrinsic_value_per_share": 36.8
     },
     "base": {
       "growth_rate": 0.195,
-      "intrinsic_value_per_share": 45.07
+      "intrinsic_value_per_share": 45.45
     },
     "bull": {
       "growth_rate": 0.235,
-      "intrinsic_value_per_share": 51.77
+      "intrinsic_value_per_share": 52.15
     }
+  },
+  "growth_options": {
+    "total_pv": 433960713.40511227,
+    "count": 1,
+    "applied": true,
+    "options": [
+      {
+        "name": "AI PC / Client AI",
+        "tam": 40000000000,
+        "penetration": 0.2,
+        "fcf_margin": 0.15,
+        "probability": 0.55,
+        "delay_years": 3,
+        "expected_fcf": 660000000.0,
+        "pv": 433960713.40511227,
+        "note": "NPU搭載RyzenによるAI PC市場の取り込み。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 4,
+      "growth": null
+    },
+    "phase2": {
+      "years": 4,
+      "growth": 0.1
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 53872365075.026794,
+    "pv_phase1": 14485683394.782455,
+    "pv_phase2": 13517625109.679436,
+    "pv_high_growth": 28003308504.46189,
+    "pv_terminal": 25869056570.564907,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.19549999999999998,
+        "fcf": 3968103600.0,
+        "discount_factor": 1.1548910000000001,
+        "pv": 3435911787.3461647
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.19549999999999998,
+        "fcf": 4743867853.8,
+        "discount_factor": 1.3337732218810003,
+        "pv": 3556727467.589876
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.19549999999999998,
+        "fcf": 5671294019.2179,
+        "discount_factor": 1.5403626899913705,
+        "pv": 3681791344.381155
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.19549999999999998,
+        "fcf": 6780031999.974999,
+        "discount_factor": 1.778951007406824,
+        "pv": 3811252795.4652605
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 5,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 7458035199.9725,
+        "discount_factor": 2.0544945078950745,
+        "pv": 3630107148.6502075
+      },
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 8203838719.96975,
+        "discount_factor": 2.372717216717451,
+        "pv": 3457571202.403714
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 9024222591.966726,
+        "discount_factor": 2.7402297591320335,
+        "pv": 3293235744.8833575
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 9926644851.1634,
+        "discount_factor": 3.164666686753754,
+        "pv": 3136711013.742157
+      }
+    ],
+    "terminal_fcf": 10224444196.698303,
+    "terminal_value": 81866941546.61507,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 3319200000.0,
@@ -88,7 +197,7 @@
     ],
     "diluted_shares": 1630410844,
     "roe_10yr_avg": 0.16025050379737013,
-    "current_price": 274.42,
+    "current_price": 278.88,
     "latest_revenue": 34639000000.0,
     "rpo": 315000000.0,
     "beta": 1.963,
@@ -100,24 +209,26 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.19549999999999998,
     "high_growth_years": 5,
-    "pv_high": 18430949845.88366,
-    "pv_terminal": 32537368142.093815,
+    "terminal_growth_used": 0.03,
+    "pv_high": 28003308504.46189,
+    "pv_terminal": 25869056570.564907,
     "roe_used": 0.16025050379737013,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 255425230.08321643,
+    "rpo_pv": 255425230.08321643,
+    "growth_option_pv": 433960713.40511227,
     "alpha_uncapped": 0.4345327462208614
   },
   "validation": {
     "validated_at": "2026-04-17",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $73.12B / 1.630B = $44.84 (差異0.50%)"
+        "detail": "P_t $77.65B / 1.630B = $47.62 (差異0.80%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $18.43B + pv_terminal $32.54B = $50.97B (差異0.00%)"
+        "detail": "pv_high $28.00B + pv_terminal $25.87B = $53.87B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -129,6 +240,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "α計算に不整合あり"
+    "ai_comment": null
   }
 }

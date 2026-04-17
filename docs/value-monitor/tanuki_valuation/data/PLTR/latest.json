@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 39163934705.234184,
-  "intrinsic_value_per_share": 16.375102412550355,
-  "v0": 25117188157.844746,
-  "v0_adjusted": 28441770517.65804,
+  "intrinsic_value_pt": 55824563662.85177,
+  "intrinsic_value_per_share": 23.341192706895274,
+  "v0": 35798008962.106384,
+  "v0_adjusted": 40541111124.23599,
   "alpha": 0.37698652342755173,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 21.68,
-    "2年後": 28.71,
-    "3年後": 38.01
+    "1年後": 30.9,
+    "2年後": 40.92,
+    "3年後": 54.17
   },
-  "upside_percent": -88.5,
+  "upside_percent": -84.2,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.138418,
     "beta": 1.674,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        12.74,
-        18.14,
-        25.57
+        13.56,
+        18.96,
+        26.39
       ],
       [
-        11.69,
-        16.44,
-        22.86
+        12.51,
+        17.26,
+        23.68
       ],
       [
-        10.82,
-        15.03,
-        20.63
+        11.64,
+        15.85,
+        21.45
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,151 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.227,
-      "intrinsic_value_per_share": 12.2
+      "intrinsic_value_per_share": 13.02
     },
     "base": {
       "growth_rate": 0.324,
-      "intrinsic_value_per_share": 16.38
+      "intrinsic_value_per_share": 17.19
     },
     "bull": {
       "growth_rate": 0.389,
-      "intrinsic_value_per_share": 19.88
+      "intrinsic_value_per_share": 20.7
     }
+  },
+  "growth_options": {
+    "total_pv": 1418519802.3163157,
+    "count": 2,
+    "applied": true,
+    "options": [
+      {
+        "name": "AI Platform (AIP) Global",
+        "tam": 100000000000,
+        "penetration": 0.08,
+        "fcf_margin": 0.3,
+        "probability": 0.6,
+        "delay_years": 3,
+        "expected_fcf": 1440000000.0,
+        "pv": 946823374.7020631,
+        "note": "AIPの国際展開。米国商業での実績を他地域へ横展開。"
+      },
+      {
+        "name": "Defense AI / NATO",
+        "tam": 50000000000,
+        "penetration": 0.12,
+        "fcf_margin": 0.25,
+        "probability": 0.55,
+        "delay_years": 4,
+        "expected_fcf": 825000000.0000001,
+        "pv": 471696427.6142526,
+        "note": "地政学的緊張継続によるNATO加盟国への拡大。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 5,
+      "growth": null
+    },
+    "phase2": {
+      "years": 5,
+      "growth": 0.15
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 35798008962.106384,
+    "pv_phase1": 7151083198.912719,
+    "pv_phase2": 9748119864.949324,
+    "pv_high_growth": 16899203063.862041,
+    "pv_terminal": 18898805898.244347,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.324,
+        "fcf": 1176724860.0,
+        "discount_factor": 1.138418,
+        "pv": 1033649204.4222773
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.324,
+        "fcf": 1557983714.64,
+        "discount_factor": 1.2959955427239997,
+        "pv": 1202152062.471865
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.324,
+        "fcf": 2062770438.1833603,
+        "discount_factor": 1.4753846537567703,
+        "pv": 1398123826.8480902
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.324,
+        "fcf": 2731108060.1547694,
+        "discount_factor": 1.679604446760475,
+        "pv": 1626042408.629231
+      },
+      {
+        "year": 5,
+        "phase": "phase1",
+        "growth_rate": 0.324,
+        "fcf": 3615987071.644915,
+        "discount_factor": 1.9120919350721661,
+        "pv": 1891115696.5412548
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 4158385132.391652,
+        "discount_factor": 2.1767598765409852,
+        "pv": 1910355467.8707142
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 4782142902.2504,
+        "discount_factor": 2.478062625132035,
+        "pv": 1929790980.1595912
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 5499464337.587959,
+        "discount_factor": 2.821071097577561,
+        "pv": 1949424224.830888
+      },
+      {
+        "year": 9,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 6324383988.226152,
+        "discount_factor": 3.2115581167620517,
+        "pv": 1969257213.567882
+      },
+      {
+        "year": 10,
+        "phase": "phase2",
+        "growth_rate": 0.15,
+        "fcf": 7273041586.460074,
+        "discount_factor": 3.656095568168021,
+        "pv": 1989291978.5202484
+      }
+    ],
+    "terminal_fcf": 7491232834.053877,
+    "terminal_value": 69095840488.23882,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 888765000.0,
@@ -88,7 +224,7 @@
     ],
     "diluted_shares": 2391675711,
     "roe_10yr_avg": 0.12424219190427348,
-    "current_price": 142.8401,
+    "current_price": 147.425,
     "latest_revenue": 4475446000.0,
     "rpo": 4100000000.0,
     "beta": 1.674,
@@ -100,11 +236,13 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.324,
     "high_growth_years": 5,
-    "pv_high": 7151083198.912719,
-    "pv_terminal": 17966104958.932026,
+    "terminal_growth_used": 0.03,
+    "pv_high": 16899203063.862041,
+    "pv_terminal": 18898805898.244347,
     "roe_used": 0.12424219190427348,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 3324582359.813293,
+    "rpo_pv": 3324582359.813293,
+    "growth_option_pv": 1418519802.3163157,
     "alpha_uncapped": 0.37698652342755173
   },
   "validation": {
@@ -113,11 +251,11 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": false,
-        "detail": "P_t $34.59B / 2.392B = $14.46 (差異11.69%)"
+        "detail": "P_t $53.87B / 2.392B = $22.52 (差異3.50%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $7.15B + pv_terminal $17.97B = $25.12B (差異0.00%)"
+        "detail": "pv_high $16.90B + pv_terminal $18.90B = $35.80B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,

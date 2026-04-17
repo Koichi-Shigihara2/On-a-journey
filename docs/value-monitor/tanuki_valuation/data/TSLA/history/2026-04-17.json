@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 102725582085.69427,
-  "intrinsic_value_per_share": 27.375734596577907,
-  "v0": 64696534954.75144,
-  "v0_adjusted": 73145839391.15498,
+  "intrinsic_value_pt": 108582403773.79247,
+  "intrinsic_value_per_share": 28.936541484769645,
+  "v0": 68185973929.48537,
+  "v0_adjusted": 77316194329.4496,
   "alpha": 0.4043940563229925,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 30.77,
-    "2年後": 34.59,
-    "3年後": 38.87
+    "1年後": 32.52,
+    "2年後": 36.56,
+    "3年後": 41.09
   },
-  "upside_percent": -92.9,
+  "upside_percent": -92.8,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.152155,
     "beta": 1.915,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        26.53,
-        29.71,
-        32.79
+        26.79,
+        29.97,
+        33.05
       ],
       [
-        24.58,
-        27.41,
-        30.1
+        24.83,
+        27.66,
+        30.36
       ],
       [
-        22.92,
-        25.46,
-        27.83
+        23.18,
+        25.71,
+        28.09
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,135 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.087,
-      "intrinsic_value_per_share": 24.2
+      "intrinsic_value_per_share": 24.45
     },
     "base": {
       "growth_rate": 0.124,
-      "intrinsic_value_per_share": 27.38
+      "intrinsic_value_per_share": 27.63
     },
     "bull": {
       "growth_rate": 0.149,
-      "intrinsic_value_per_share": 29.72
+      "intrinsic_value_per_share": 29.97
     }
+  },
+  "growth_options": {
+    "total_pv": 680915963.5607014,
+    "count": 2,
+    "applied": true,
+    "options": [
+      {
+        "name": "Robotaxi / FSD Network",
+        "tam": 300000000000,
+        "penetration": 0.05,
+        "fcf_margin": 0.25,
+        "probability": 0.3,
+        "delay_years": 5,
+        "expected_fcf": 1125000000.0,
+        "pv": 559323827.2105762,
+        "note": "FSD完全自律化後の配車ネットワーク収益。規制リスク高い。"
+      },
+      {
+        "name": "Optimus Robot",
+        "tam": 150000000000,
+        "penetration": 0.05,
+        "fcf_margin": 0.15,
+        "probability": 0.25,
+        "delay_years": 6,
+        "expected_fcf": 281250000.0,
+        "pv": 121592136.35012525,
+        "note": "汎用ヒューマノイドロボット。量産コスト・需要ともに不確実。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 4,
+      "growth": null
+    },
+    "phase2": {
+      "years": 4,
+      "growth": 0.08
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 68185973929.48537,
+    "pv_phase1": 20118923695.719788,
+    "pv_phase2": 16528691226.01032,
+    "pv_high_growth": 36647614921.73011,
+    "pv_terminal": 31538359007.755257,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.124,
+        "fcf": 6011826400.000001,
+        "discount_factor": 1.152155,
+        "pv": 5217897244.728357
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.124,
+        "fcf": 6757292873.600001,
+        "discount_factor": 1.3274611440250002,
+        "pv": 5090388448.667647
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.124,
+        "fcf": 7595197189.926402,
+        "discount_factor": 1.529440994394124,
+        "pv": 4965995561.623598
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.124,
+        "fcf": 8537001641.477277,
+        "discount_factor": 1.762153088896162,
+        "pv": 4844642440.700188
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 5,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 9219961772.79546,
+        "discount_factor": 2.0302734921371575,
+        "pv": 4541241270.450767
+      },
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 9957558714.619097,
+        "discount_factor": 2.3391897553332868,
+        "pv": 4256840939.011529
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 10754163411.788626,
+        "discount_factor": 2.6951091725560232,
+        "pv": 3990251497.5263324
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.08,
+        "fcf": 11614496484.731716,
+        "discount_factor": 3.1051835087062853,
+        "pv": 3740357519.0216928
+      }
+    ],
+    "terminal_fcf": 11962931379.273668,
+    "terminal_value": 97932392282.53995,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 5348600000.0,
@@ -88,7 +208,7 @@
     ],
     "diluted_shares": 3752431984,
     "roe_10yr_avg": 0.14650137533291652,
-    "current_price": 388.01,
+    "current_price": 402.52,
     "latest_revenue": 94827000000.0,
     "rpo": 10420000000.0,
     "beta": 1.915,
@@ -100,24 +220,26 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.124,
     "high_growth_years": 5,
-    "pv_high": 24845178499.41114,
-    "pv_terminal": 39851356455.3403,
+    "terminal_growth_used": 0.03,
+    "pv_high": 36647614921.73011,
+    "pv_terminal": 31538359007.755257,
     "roe_used": 0.14650137533291652,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 8449304436.40354,
+    "rpo_pv": 8449304436.40354,
+    "growth_option_pv": 680915963.5607014,
     "alpha_uncapped": 0.4043940563229925
   },
   "validation": {
     "validated_at": "2026-04-17",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
-        "pass": false,
-        "detail": "P_t $90.86B / 3.752B = $24.21 (差異11.55%)"
+        "pass": true,
+        "detail": "P_t $107.63B / 3.752B = $28.68 (差異0.88%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $24.85B + pv_terminal $39.85B = $64.70B (差異0.00%)"
+        "detail": "pv_high $36.65B + pv_terminal $31.54B = $68.19B (差異0.00%)"
       },
       "formula_verification": {
         "pass": false,
@@ -129,6 +251,7 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": null
+    "ai_comment": "Multiple inconsistencies detected, especially in α and anomalies.",
+    "ai_concerns": "Deviations rate of -92.8% is extremely low, suggesting potential anomalies in valuation or inputs."
   }
 }

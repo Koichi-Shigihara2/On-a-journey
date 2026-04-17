@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 59718045542.19219,
-  "intrinsic_value_per_share": 176.70413381128313,
-  "v0": 29859022771.096096,
-  "v0_adjusted": 29859022771.096096,
+  "intrinsic_value_pt": 61430927180.879486,
+  "intrinsic_value_per_share": 181.77250575040904,
+  "v0": 30360404824.926468,
+  "v0_adjusted": 30715463590.439743,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 235.02,
-    "2年後": 312.57,
-    "3年後": 415.72
+    "1年後": 241.76,
+    "2年後": 321.54,
+    "3年後": 427.64
   },
-  "upside_percent": -62.7,
+  "upside_percent": -62.4,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.185614,
     "beta": 2.502,
@@ -23,19 +24,19 @@
   "sensitivity": {
     "matrix": [
       [
-        131.4,
-        190.59,
-        266.29
+        133.5,
+        192.69,
+        268.4
       ],
       [
-        122.42,
-        176.18,
-        243.8
+        124.52,
+        178.29,
+        245.9
       ],
       [
-        114.53,
-        163.58,
-        224.24
+        116.64,
+        165.69,
+        226.34
       ]
     ],
     "wacc_values": [
@@ -66,16 +67,124 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.231,
-      "intrinsic_value_per_share": 127.0
+      "intrinsic_value_per_share": 129.1
     },
     "base": {
       "growth_rate": 0.33,
-      "intrinsic_value_per_share": 176.7
+      "intrinsic_value_per_share": 178.81
     },
     "bull": {
       "growth_rate": 0.396,
-      "intrinsic_value_per_share": 218.3
+      "intrinsic_value_per_share": 220.4
     }
+  },
+  "growth_options": {
+    "total_pv": 355058765.51327366,
+    "count": 1,
+    "applied": true,
+    "options": [
+      {
+        "name": "E-commerce Ad Network",
+        "tam": 50000000000,
+        "penetration": 0.08,
+        "fcf_margin": 0.3,
+        "probability": 0.45,
+        "delay_years": 3,
+        "expected_fcf": 540000000.0,
+        "pv": 355058765.51327366,
+        "note": "モバイル広告からEC広告への拡張。AXONエンジン転用。"
+      }
+    ]
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 4,
+      "growth": null
+    },
+    "phase2": {
+      "years": 4,
+      "growth": 0.12
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 30360404824.926468,
+    "pv_phase1": 8487893598.337824,
+    "pv_phase2": 8692618724.546755,
+    "pv_high_growth": 17180512322.88458,
+    "pv_terminal": 13179892502.041891,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.33,
+        "fcf": 2100113890.0,
+        "discount_factor": 1.185614,
+        "pv": 1771330205.2776031
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.33,
+        "fcf": 2793151473.7000003,
+        "discount_factor": 1.4056805569959998,
+        "pv": 1987045676.7710338
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.33,
+        "fcf": 3714891460.0210004,
+        "discount_factor": 1.6665945479022553,
+        "pv": 2229031329.0037694
+      },
+      {
+        "year": 4,
+        "phase": "phase1",
+        "growth_rate": 0.33,
+        "fcf": 4940805641.82793,
+        "discount_factor": 1.9759378283165845,
+        "pv": 2500486387.2854176
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 5,
+        "phase": "phase2",
+        "growth_rate": 0.12,
+        "fcf": 5533702318.847282,
+        "discount_factor": 2.3426995523817387,
+        "pv": 2362104996.87054
+      },
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.12,
+        "fcf": 6197746597.108957,
+        "discount_factor": 2.7775373870975226,
+        "pv": 2231381880.186136
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.12,
+        "fcf": 6941476188.7620325,
+        "discount_factor": 3.293087211666242,
+        "pv": 2107893214.6621685
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.12,
+        "fcf": 7774453331.413477,
+        "discount_factor": 3.9043303013724597,
+        "pv": 1991238632.8279097
+      }
+    ],
+    "terminal_fcf": 8007686931.355882,
+    "terminal_value": 51458653664.55384,
+    "dcf_type": "three_stage"
   },
   "components": {
     "fcf_5yr_avg": 1579033000.0,
@@ -88,7 +197,7 @@
     ],
     "diluted_shares": 337955000,
     "roe_10yr_avg": 1.0984085183814432,
-    "current_price": 473.735,
+    "current_price": 483.8201,
     "latest_revenue": 5480717000.0,
     "rpo": 0.0,
     "beta": 2.502,
@@ -100,11 +209,13 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.33,
     "high_growth_years": 5,
-    "pv_high": 11292893282.12159,
-    "pv_terminal": 18566129488.974506,
+    "terminal_growth_used": 0.03,
+    "pv_high": 17180512322.88458,
+    "pv_terminal": 13179892502.041891,
     "roe_used": 1.0984085183814432,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 0.0,
+    "rpo_pv": 0.0,
+    "growth_option_pv": 355058765.51327366,
     "alpha_uncapped": 2.4854352458338598
   },
   "validation": {
@@ -112,12 +223,12 @@
     "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
-        "pass": true,
-        "detail": "P_t $59.72B / 0.338B = $176.70 (差異0.00%)"
+        "pass": false,
+        "detail": "P_t $60.72B / 0.338B = $179.67 (差異1.16%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $11.29B + pv_terminal $18.57B = $29.86B (差異0.00%)"
+        "detail": "pv_high $17.18B + pv_terminal $13.18B = $30.36B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -128,8 +239,8 @@
         "detail": "異常値なし"
       }
     },
-    "overall": "PASS",
-    "ai_comment": "Anomaly in diviation rate, but other checks pass.",
-    "ai_concerns": "Diviation rate of -62.7% is extremely negative, suggesting potential overvaluation, while other values like shares (337,955,000) are normal."
+    "overall": "WARN",
+    "ai_comment": "不一致と異常値が見つかりました",
+    "ai_concerns": "乖離率 -62.4% is extreme, indicating market price ($483.82) is much higher than intrinsic value ($181.77). Additionally, inconsistency in per-share value suggests potential anomalies."
   }
 }

@@ -1,18 +1,19 @@
 {
-  "intrinsic_value_pt": 9162318884.543056,
-  "intrinsic_value_per_share": 35.65437666735149,
-  "v0": 4581159442.271528,
-  "v0_adjusted": 4581159442.271528,
+  "intrinsic_value_pt": 8357631116.712831,
+  "intrinsic_value_per_share": 32.52300336160128,
+  "v0": 4178815558.3564153,
+  "v0_adjusted": 4178815558.3564153,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 45.01,
-    "2年後": 56.83,
-    "3年後": 71.75
+    "1年後": 41.06,
+    "2年後": 51.84,
+    "3年後": 65.45
   },
-  "upside_percent": 1.5,
+  "upside_percent": -8.3,
   "calculation_date": "2026-04-17",
-  "formula": "Koichi式 v6.0.0（動的WACC＋感度分析＋セグメント成長率）",
+  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "dcf_type": "three_stage",
   "wacc": {
     "value": 0.10701100000000001,
     "beta": 1.123,
@@ -77,6 +78,102 @@
       "intrinsic_value_per_share": 43.05
     }
   },
+  "growth_options": {
+    "total_pv": 0,
+    "count": 0,
+    "applied": false,
+    "options": []
+  },
+  "maturity_profile": {
+    "type": "three_stage",
+    "phase1": {
+      "years": 3,
+      "growth": null
+    },
+    "phase2": {
+      "years": 5,
+      "growth": 0.1
+    },
+    "terminal_growth": 0.03
+  },
+  "dcf_components": {
+    "v0": 4178815558.3564153,
+    "pv_phase1": 539099191.6210433,
+    "pv_phase2": 999630715.3109406,
+    "pv_high_growth": 1538729906.931984,
+    "pv_terminal": 2640085651.4244313,
+    "phase1_detail": [
+      {
+        "year": 1,
+        "phase": "phase1",
+        "growth_rate": 0.2625,
+        "fcf": 173429449.765,
+        "discount_factor": 1.107011,
+        "pv": 156664612.87647548
+      },
+      {
+        "year": 2,
+        "phase": "phase1",
+        "growth_rate": 0.2625,
+        "fcf": 218954680.3283125,
+        "discount_factor": 1.225473354121,
+        "pv": 178669474.6091505
+      },
+      {
+        "year": 3,
+        "phase": "phase1",
+        "growth_rate": 0.2625,
+        "fcf": 276430283.9144945,
+        "discount_factor": 1.3566124832188422,
+        "pv": 203765104.13541737
+      }
+    ],
+    "phase2_detail": [
+      {
+        "year": 4,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 304073312.30594397,
+        "discount_factor": 1.5017849416605737,
+        "pv": 202474604.632618
+      },
+      {
+        "year": 5,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 334480643.53653836,
+        "discount_factor": 1.6624924500526133,
+        "pv": 201192278.2121224
+      },
+      {
+        "year": 6,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 367928707.8901922,
+        "discount_factor": 1.8403974296251935,
+        "pv": 199918073.11159027
+      },
+      {
+        "year": 7,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 404721578.67921144,
+        "discount_factor": 2.037340198966815,
+        "pv": 198651937.89650625
+      },
+      {
+        "year": 8,
+        "phase": "phase2",
+        "growth_rate": 0.1,
+        "fcf": 445193736.5471326,
+        "discount_factor": 2.2553580109984526,
+        "pv": 197393821.45810378
+      }
+    ],
+    "terminal_fcf": 458549548.6435466,
+    "terminal_value": 5954338323.662159,
+    "dcf_type": "three_stage"
+  },
   "components": {
     "fcf_5yr_avg": 137369861.2,
     "fcf_list_raw": [
@@ -88,7 +185,7 @@
     ],
     "diluted_shares": 256975994,
     "roe_10yr_avg": 0.4377082903943001,
-    "current_price": 35.1199,
+    "current_price": 35.475,
     "latest_revenue": 2515269000.0,
     "rpo": 0.0,
     "beta": 1.123,
@@ -100,24 +197,26 @@
     "_beta_source": "yfinance",
     "high_growth_rate_used": 0.2625,
     "high_growth_years": 5,
-    "pv_high": 1036510957.6355796,
-    "pv_terminal": 3544648484.635949,
+    "terminal_growth_used": 0.03,
+    "pv_high": 1538729906.931984,
+    "pv_terminal": 2640085651.4244313,
     "roe_used": 0.4377082903943001,
     "fcf_floor_applied": 0.0,
-    "rpo_adjustment": 0.0,
+    "rpo_pv": 0.0,
+    "growth_option_pv": 0,
     "alpha_uncapped": 1.7179306983918101
   },
   "validation": {
     "validated_at": "2026-04-17",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $9.16B / 0.257B = $35.65 (差異0.00%)"
+        "detail": "P_t $8.36B / 0.257B = $32.52 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $1.04B + pv_terminal $3.54B = $4.58B (差異0.00%)"
+        "detail": "pv_high $1.54B + pv_terminal $2.64B = $4.18B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -129,6 +228,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed without issues."
+    "ai_comment": null
   }
 }
