@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install yfinance numpy requests
+          pip install yfinance numpy requests pyyaml
 
       - name: Run TANUKI VALUATION Pipeline
         working-directory: src/value/tanuki_valuation
