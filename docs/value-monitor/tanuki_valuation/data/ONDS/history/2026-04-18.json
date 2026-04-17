@@ -128,7 +128,7 @@
     ],
     "diluted_shares": 481883390,
     "roe_10yr_avg": 0.0,
-    "current_price": 10.255,
+    "current_price": 10.0,
     "latest_revenue": 50731000.0,
     "rpo": 8501000.0,
     "beta": 2.593,
@@ -155,15 +155,15 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $0.06B / 0.482B = $0.13 (差異0.00%)"
+        "detail": "(V₀ $0.06B + RPO $0.01B + GO $0.00B) × (1+0.000) / 0.482B = $0.13 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $0.02B + pv_terminal $0.03B = $0.06B (差異0.00%)"
+        "detail": "2段階: pv_high $0.02B + pv_terminal $0.03B = $0.06B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
+        "detail": "α計算: ROE 0.0% × 60% / WACC 19.08% × 0.7 = 0.0000 (実際0.0000)"
       },
       "anomaly_detection": {
         "pass": true,
@@ -171,7 +171,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "主にpassだが乖離率異常",
-    "ai_concerns": "Deviations like -98.7% gap are extreme, possibly due to negative FCF, indicating potential overvaluation anomaly."
+    "ai_comment": "All checks passed without issues."
   }
 }

@@ -10,7 +10,7 @@
     "2年後": 614.12,
     "3年後": 816.78
   },
-  "upside_percent": -28.0,
+  "upside_percent": -27.2,
   "calculation_date": "2026-04-18",
   "formula": "Koichi式 v6.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
@@ -208,7 +208,7 @@
     ],
     "diluted_shares": 337955000,
     "roe_10yr_avg": 1.0984085183814432,
-    "current_price": 482.29,
+    "current_price": 477.2,
     "latest_revenue": 5480717000.0,
     "rpo": 0.0,
     "beta": 2.502,
@@ -231,19 +231,19 @@
   },
   "validation": {
     "validated_at": "2026-04-18",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $116.62B / 0.338B = $345.07 (差異0.61%)"
+        "detail": "(V₀ $58.31B + RPO $0.00B + GO $0.36B) × (1+1.000) / 0.338B = $347.17 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $33.00B + pv_terminal $25.31B = $58.31B (差異0.00%)"
+        "detail": "3段階: P1 $16.30B + P2 $16.69B + TV $25.31B = $58.31B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 109.8% × 60% / 8.5% × 0.7 = 1.0000 (実際1.0000)"
+        "detail": "α計算: ROE 109.8% × 60% / WACC 18.56% × 0.7 = 2.4854 → cap適用 → 1.0000"
       },
       "anomaly_detection": {
         "pass": true,
@@ -251,6 +251,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "すべての検証が合格しました。"
   }
 }

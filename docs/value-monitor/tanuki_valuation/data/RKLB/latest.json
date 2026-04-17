@@ -128,7 +128,7 @@
     ],
     "diluted_shares": 578044302,
     "roe_10yr_avg": 0.0,
-    "current_price": 83.96,
+    "current_price": 84.8,
     "latest_revenue": 601799000.0,
     "rpo": 1847322000.0,
     "beta": 2.205,
@@ -151,19 +151,19 @@
   },
   "validation": {
     "validated_at": "2026-04-18",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "P_t $2.29B / 0.578B = $3.97 (差異0.00%)"
+        "detail": "(V₀ $0.80B + RPO $1.50B + GO $0.00B) × (1+0.000) / 0.578B = $3.97 (差異0.00%)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "pv_high $0.30B + pv_terminal $0.50B = $0.80B (差異0.00%)"
+        "detail": "2段階: pv_high $0.30B + pv_terminal $0.50B = $0.80B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
-        "detail": "α計算: ROE 0.0% × 60% / 8.5% × 0.7 = 0.0000 (実際0.0000)"
+        "detail": "α計算: ROE 0.0% × 60% / WACC 16.87% × 0.7 = 0.0000 (実際0.0000)"
       },
       "anomaly_detection": {
         "pass": true,
@@ -171,6 +171,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "Anomalies in ROE and pricing detected.",
+    "ai_concerns": "ROE at 0% results in alpha=0, and market price (84.80) vs intrinsic value (3.97) shows extreme discrepancy."
   }
 }
