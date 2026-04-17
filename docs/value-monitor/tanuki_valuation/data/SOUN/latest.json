@@ -10,9 +10,9 @@
     "2年後": 0.84,
     "3年後": 1.04
   },
-  "upside_percent": -93.4,
+  "upside_percent": -93.3,
   "calculation_date": "2026-04-18",
-  "formula": "Koichi式 v6.1.0（動的WACC + two_stage DCF + 成長オプション）",
+  "formula": "Koichi式 v6.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "wacc": {
     "value": 0.21206200000000003,
@@ -106,8 +106,19 @@
     "terminal_fcf": 42477441.40625,
     "terminal_value": 233313054.92771688
   },
+  "fcf_base": {
+    "base_fcf": 13513600.0,
+    "method": "avg_5yr",
+    "fcf_5yr_avg": 13513600.0,
+    "fcf_2yr_avg": 13513600.0,
+    "ratio": 1.0,
+    "threshold": 1.5
+  },
   "components": {
     "fcf_5yr_avg": -74702271.6,
+    "fcf_2yr_avg": -104321000.0,
+    "fcf_base_used": 13513600.0,
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       -864358,
       -95348000,
@@ -117,7 +128,7 @@
     ],
     "diluted_shares": 426210055,
     "roe_10yr_avg": 0.0,
-    "current_price": 8.055,
+    "current_price": 8.01,
     "latest_revenue": 168920000.0,
     "rpo": 79500000.0,
     "beta": 2.966,
@@ -160,7 +171,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "FCF negative and extreme deviation raise concerns",
-    "ai_concerns": "Deviations like -93.4% gap (market $8.05 vs intrinsic $0.53) and negative FCF with positive PV indicate potential anomalies."
+    "ai_comment": "Anomalies in divergence and FCF detected.",
+    "ai_concerns": "Extreme divergence rate of -93.3% (market price $8.01 vs intrinsic $0.53) and negative FCF average indicate anomalies."
   }
 }

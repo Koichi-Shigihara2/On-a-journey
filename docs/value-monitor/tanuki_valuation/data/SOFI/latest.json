@@ -12,7 +12,7 @@
   },
   "upside_percent": -96.3,
   "calculation_date": "2026-04-18",
-  "formula": "Koichi式 v6.1.0（動的WACC + two_stage DCF + 成長オプション）",
+  "formula": "Koichi式 v6.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "wacc": {
     "value": 0.171307,
@@ -106,8 +106,19 @@
     "terminal_fcf": 155745505.37109375,
     "terminal_value": 1102178274.049366
   },
+  "fcf_base": {
+    "base_fcf": 49548240.0,
+    "method": "avg_5yr",
+    "fcf_5yr_avg": 49548240.0,
+    "fcf_2yr_avg": 49548240.0,
+    "ratio": 1.0,
+    "threshold": 1.5
+  },
   "components": {
     "fcf_5yr_avg": -4269811800.0,
+    "fcf_2yr_avg": -2629487000.0,
+    "fcf_base_used": 49548240.0,
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       -1402478000,
       -7349059000,
@@ -117,7 +128,7 @@
     ],
     "diluted_shares": 1275263850,
     "roe_10yr_avg": 0.061154046555506165,
-    "current_price": 19.805,
+    "current_price": 19.885,
     "latest_revenue": 619353000.0,
     "rpo": 8535000.0,
     "beta": 2.251,
@@ -140,7 +151,7 @@
   },
   "validation": {
     "validated_at": "2026-04-18",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -160,7 +171,6 @@
       }
     },
     "overall": "WARN",
-    "ai_comment": "Inconsistencies in alpha and DCF detected.",
-    "ai_concerns": "Negative FCF leads to positive valuation and extreme -96.3% divergence, indicating potential errors."
+    "ai_comment": null
   }
 }

@@ -10,9 +10,9 @@
     "2年後": 700.26,
     "3年後": 803.33
   },
-  "upside_percent": 23.5,
+  "upside_percent": 24.2,
   "calculation_date": "2026-04-18",
-  "formula": "Koichi式 v6.1.0（動的WACC + three_stage DCF + 成長オプション）",
+  "formula": "Koichi式 v6.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "wacc": {
     "value": 0.106099,
@@ -202,8 +202,19 @@
     "terminal_value": 2579792773673.0312,
     "dcf_type": "three_stage"
   },
+  "fcf_base": {
+    "base_fcf": 65284800000.0,
+    "method": "avg_5yr",
+    "fcf_5yr_avg": 65284800000.0,
+    "fcf_2yr_avg": 72841000000.0,
+    "ratio": 1.12,
+    "threshold": 1.5
+  },
   "components": {
     "fcf_5yr_avg": 65284800000.0,
+    "fcf_2yr_avg": 72841000000.0,
+    "fcf_base_used": 65284800000.0,
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       56118000000,
       65149000000,
@@ -213,7 +224,7 @@
     ],
     "diluted_shares": 7432377656,
     "roe_10yr_avg": 0.33282252757802594,
-    "current_price": 430.83,
+    "current_price": 428.31,
     "latest_revenue": 281724000000.0,
     "rpo": 375000000000.0,
     "beta": 1.107,

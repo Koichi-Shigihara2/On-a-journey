@@ -12,7 +12,7 @@
   },
   "upside_percent": -98.7,
   "calculation_date": "2026-04-18",
-  "formula": "Koichi式 v6.1.0（動的WACC + two_stage DCF + 成長オプション）",
+  "formula": "Koichi式 v6.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "wacc": {
     "value": 0.190801,
@@ -106,8 +106,19 @@
     "terminal_fcf": 12757062.98828125,
     "terminal_value": 79334475.45899124
   },
+  "fcf_base": {
+    "base_fcf": 4058480.0,
+    "method": "avg_5yr",
+    "fcf_5yr_avg": 4058480.0,
+    "fcf_2yr_avg": 4058480.0,
+    "ratio": 1.0,
+    "threshold": 1.5
+  },
   "components": {
     "fcf_5yr_avg": -33755936.4,
+    "fcf_2yr_avg": -37943009.0,
+    "fcf_base_used": 4058480.0,
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       -17819134,
       -40843976,
@@ -117,7 +128,7 @@
     ],
     "diluted_shares": 481883390,
     "roe_10yr_avg": 0.0,
-    "current_price": 10.269,
+    "current_price": 10.255,
     "latest_revenue": 50731000.0,
     "rpo": 8501000.0,
     "beta": 2.593,
@@ -140,7 +151,7 @@
   },
   "validation": {
     "validated_at": "2026-04-18",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -160,6 +171,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "主にpassだが乖離率異常",
+    "ai_concerns": "Deviations like -98.7% gap are extreme, possibly due to negative FCF, indicating potential overvaluation anomaly."
   }
 }
