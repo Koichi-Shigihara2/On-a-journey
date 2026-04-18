@@ -540,19 +540,39 @@ async function addTicker() {
     const { sha: ys } = await fetchFile(YAML_PATH);
     await commitFile(YAML_PATH, buildYaml(newList), `chore: add ticker ${ticker}`, ys);
 
-    // CIKが入力されていればCSVも更新
-    if (cik) {
+    // CIK解決: 入力欄 → cik_lookup_result.json → スキップの順で試みる
+    let resolvedCik  = cik;
+    let resolvedName = name;
+
+    if (!resolvedCik) {
+      try {
+        const { content: resultJson } = await fetchFile('config/cik_lookup_result.json');
+        const result = JSON.parse(resultJson);
+        if (result.ticker === ticker && result.status === 'ok') {
+          resolvedCik  = result.cik;
+          resolvedName = result.name;
+          console.log(`[INFO] cik_lookup_result.jsonからCIK取得: ${resolvedCik}`);
+        }
+      } catch(e) {
+        // result.jsonなし → スキップ
+      }
+    }
+
+    // CSV更新（CIKが解決できた場合のみ）
+    if (resolvedCik) {
       const { content: csv, sha: cs } = await fetchFile(CIK_PATH);
       const rows = parseCsv(csv);
       if (!rows.find(r => r.ticker.toUpperCase() === ticker)) {
-        rows.push({ ticker, cik, name });
+        rows.push({ ticker, cik: resolvedCik, name: resolvedName });
         rows.sort((a, b) => a.ticker.localeCompare(b.ticker));
         await commitFile(CIK_PATH, buildCsv(rows), `chore: add CIK for ${ticker}`, cs);
       }
     }
 
-    showResult('tickerResult', 'success',
-      `✓ ${ticker} を追加しました。CIKが未入力の場合は「CIK自動取得」で取得後に再読込してください。`);
+    const cikMsg = resolvedCik
+      ? `CIK: ${resolvedCik} をcik_lookup.csvに登録しました。`
+      : `⚠ CIK未登録。「CIK自動取得」→「再読込」後に再度追加してください。`;
+    showResult('tickerResult', 'success', `✓ ${ticker} をmonitor_tickers.yamlに追加しました。\n${cikMsg}`);
     document.getElementById('newTicker').value = '';
     document.getElementById('newCik').value = '';
     document.getElementById('newName').value = '';
