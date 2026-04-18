@@ -207,29 +207,6 @@
 </div>
 
 <script>
-const SECTORS = {
-  TSLA: "EV/Energy",
-  PLTR: "AI/Defense",
-  SOFI: "Fintech",
-  CELH: "Consumer",
-  NVDA: "Semiconductor",
-  AMD: "Semiconductor",
-  APP: "AdTech",
-  SOUN: "AI/Audio",
-  RKLB: "Space",
-  ONDS: "Semiconductor",
-  MSFT: "Cloud/Software",
-  AMZN: "E-Commerce/Cloud",
-  GOOGL: "Cloud/Ads",
-  FIG: "Design/SaaS",
-  KO: "Consumer Staples"
-};
-
-// ティッカーリストは data/ ディレクトリのフォルダ一覧を解決する
-// GitHub Pagesの制約上ディレクトリ直接列挙はできないため、
-// 既知候補全てに対して並列fetchし、成功したものだけを表示する
-const CANDIDATE_TICKERS = Object.keys(SECTORS);
-
 const fmtPct = (n) => n != null ? (n * 100).toFixed(1) + '%' : '—';
 
 async function loadTickers() {
@@ -238,7 +215,23 @@ async function loadTickers() {
   let totalAlpha = 0;
   let latestDate = null;
 
-  // 並列fetchで成功したティッカーのみ描画
+  // tickers.jsonからパイプライン成功銘柄リストを取得
+  let CANDIDATE_TICKERS = [];
+  try {
+    const idxRes = await fetch('data/tickers.json', { cache: 'no-cache' });
+    if (idxRes.ok) {
+      const idxData = await idxRes.json();
+      CANDIDATE_TICKERS = idxData.tickers || [];
+    }
+  } catch(e) {}
+
+  // tickers.jsonが存在しない場合（初回等）は空で終了
+  if (CANDIDATE_TICKERS.length === 0) {
+    container.innerHTML = '<p style="color:var(--mut);text-align:center;padding:40px">データがありません。パイプラインを実行してください。</p>';
+    return;
+  }
+
+  // 並列fetchで各銘柄のlatest.jsonを取得
   const results = await Promise.all(
     CANDIDATE_TICKERS.map(async (ticker) => {
       try {
@@ -289,7 +282,7 @@ async function loadTickers() {
     card.innerHTML = `
       <div class="card-header">
         <div class="ticker-name">${r.ticker}</div>
-        <div class="ticker-sector">${SECTORS[r.ticker] || 'Other'}</div>
+        <div class="ticker-sector">${d.components?.sector || d.sector || 'Other'}</div>
       </div>
       <div class="card-value">${value > 0 ? '$' + value.toFixed(2) : '<span class="no-data">計算中...</span>'}</div>
       <div class="tag-row">
