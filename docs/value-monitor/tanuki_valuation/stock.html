@@ -46,7 +46,11 @@
       text-decoration: none; display: flex; align-items: center; gap: 6px;
     }
     .back-link:hover { text-decoration: underline; }
-    .header-right { font-family: var(--mono); font-size: 10px; color: var(--mut); }
+    .header-right { font-family: var(--mono); font-size: 10px; color: var(--mut); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .nav-links a { font-family: var(--mono); font-size: 11px; color: var(--mut); text-decoration: none; letter-spacing: .06em; padding: 4px 0; border-bottom: 1px solid transparent; transition: all .2s; }
+    .nav-links a:hover { color: var(--acc); border-bottom-color: var(--acc); }
+    .nav-links a.active { color: var(--acc); border-bottom-color: var(--acc); }
 
     .hero { padding: 40px 0 32px; border-bottom: 1px solid var(--bdr); }
     .ticker-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
@@ -250,7 +254,18 @@ async function loadData() {
     render(globalData);
   } catch (error) {
     document.getElementById('app').innerHTML = `
-      <header><a href="index.html" class="back-link">← BACK TO LIST</a></header>
+      <header>
+        <a href="index.html" class="back-link">← BACK TO LIST</a>
+        <div class="header-right">
+          <nav class="nav-links">
+            <a href="../../">HOME</a>
+            <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
+            <a href="index.html" class="active">TANUKI</a>
+            <a href="../../market-monitor/market-pulse/">Market Pulse</a>
+            <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
+          </nav>
+        </div>
+      </header>
       <div class="hero">
         <div class="error-box">
           <div class="error-title">ERROR</div>
@@ -334,7 +349,16 @@ function render(d) {
   document.getElementById('app').innerHTML = `
     <header>
       <a href="index.html" class="back-link">← BACK TO LIST</a>
-      <span class="header-right">v6.2 | ${calcDate}</span>
+      <div class="header-right">
+        <nav class="nav-links">
+          <a href="../../">HOME</a>
+          <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
+          <a href="index.html" class="active">TANUKI</a>
+          <a href="../../market-monitor/market-pulse/">Market Pulse</a>
+          <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
+        </nav>
+        <span>v6.2 | ${calcDate}</span>
+      </div>
     </header>
 
     <div class="hero">

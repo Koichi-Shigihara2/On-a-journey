@@ -24,10 +24,12 @@
     .logo-accent{color:var(--acc)}
     .logo-dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:pdot 2s ease-in-out infinite}
     @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
-    .hdr-r{display:flex;align-items:center;gap:12px}
+    .hdr-r{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
     .version-tag{font-family:var(--mono);font-size:10px;color:var(--mut);background:var(--sur);padding:4px 10px;border-radius:4px;border:1px solid var(--bdr)}
-    .nav-link{font-family:var(--mono);font-size:11px;color:var(--acc);text-decoration:none;padding:5px 12px;border:1px solid var(--bdr);background:var(--sur2)}
-    .nav-link:hover{border-color:var(--acc)}
+    .nav-links{display:flex;gap:14px;flex-wrap:wrap}
+    .nav-links a{font-family:var(--mono);font-size:11px;color:var(--mut);text-decoration:none;letter-spacing:.06em;padding:4px 0;border-bottom:1px solid transparent;transition:all .2s}
+    .nav-links a:hover{color:var(--acc);border-bottom-color:var(--acc)}
+    .nav-links a.active{color:var(--acc);border-bottom-color:var(--acc)}
 
     .hero{text-align:center;padding:48px 0 36px;border-bottom:1px solid var(--bdr)}
     .hero-title{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:.08em}
@@ -89,8 +91,14 @@
       <span class="logo-text">TANUKI<span class="logo-accent">VALUATION</span></span>
     </a>
     <div class="hdr-r">
+      <nav class="nav-links">
+        <a href="../../">HOME</a>
+        <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
+        <a href="index.html" class="active">TANUKI</a>
+        <a href="../../market-monitor/market-pulse/">Market Pulse</a>
+        <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
+      </nav>
       <div class="version-tag">Koichi式 v6.2</div>
-      <a href="../macro-pulse/" class="nav-link">MACRO PULSE</a>
     </div>
   </header>
 
