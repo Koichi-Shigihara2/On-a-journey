@@ -38,8 +38,6 @@ jobs:
           import requests
 
           ticker = os.environ.get("TICKER", "").strip().upper()
-          # SEC APIはメールアドレスを含むUser-Agentが必須
-          # https://www.sec.gov/os/accessing-edgar-data
           sec_email = os.environ.get("SEC_USER_AGENT_EMAIL", "")
           csv_path = "config/cik_lookup.csv"
           result_path = "config/cik_lookup_result.json"
@@ -49,14 +47,20 @@ jobs:
               with open(result_path, "w", encoding="utf-8") as f:
                   json.dump(data, f, ensure_ascii=False, indent=2)
 
-          # ── 既存CSVを読み込む ──
+          # ── 既存CSVを読み込む（ヘッダーをそのまま保持） ──
           rows = []
           existing_tickers = set()
+          fieldnames = ["ticker", "cik", "name"]  # フォールバック
+
           try:
               with open(csv_path, newline='', encoding='utf-8') as f:
                   reader = csv.DictReader(f)
+                  # 実際のヘッダーを取得（余分な列も含めて保持）
+                  fieldnames = [fn for fn in reader.fieldnames if fn]  # 空列を除去
                   for row in reader:
-                      rows.append(row)
+                      # 空キーの列を除去してから追加
+                      clean_row = {k: v for k, v in row.items() if k}
+                      rows.append(clean_row)
                       existing_tickers.add(row['ticker'].upper())
           except FileNotFoundError:
               pass
@@ -68,8 +72,6 @@ jobs:
 
           # ── SEC company_tickers.json から CIK を取得 ──
           print(f"[INFO] SEC APIからCIKを取得中: {ticker}")
-
-          # SEC公式要件: "Name OrganizationName email@domain.com"
           user_agent = f"Koichi-Shigihara2 On-a-journey {sec_email}"
           headers = {
               "User-Agent": user_agent,
@@ -86,8 +88,7 @@ jobs:
               )
               if res.status_code == 403:
                   raise Exception(
-                      f"403 Forbidden: SEC_USER_AGENT_EMAIL Secretが未設定か無効です。"
-                      f"GitHub Settings → Secrets → SEC_USER_AGENT_EMAIL にメールアドレスを登録してください。"
+                      "403 Forbidden: SEC_USER_AGENT_EMAIL Secretが未設定か無効です。"
                   )
               res.raise_for_status()
               data = res.json()
@@ -111,13 +112,18 @@ jobs:
 
           print(f"[OK] {ticker}: CIK={cik}, Name={name}")
 
-          # ── CSVに追記・ソート ──
-          rows.append({"ticker": ticker, "cik": cik, "name": name})
+          # ── 新規行を作成（既存のfieldnamesに合わせて列を埋める） ──
+          new_row = {fn: "" for fn in fieldnames}
+          new_row["ticker"] = ticker
+          new_row["cik"]    = cik
+          new_row["name"]   = name
+          rows.append(new_row)
           rows.sort(key=lambda r: r["ticker"])
 
+          # ── CSVを書き戻す（元のヘッダー構造を維持） ──
           os.makedirs(os.path.dirname(csv_path), exist_ok=True)
           with open(csv_path, "w", newline='', encoding='utf-8') as f:
-              writer = csv.DictWriter(f, fieldnames=["ticker", "cik", "name"])
+              writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
               writer.writeheader()
               writer.writerows(rows)
 
