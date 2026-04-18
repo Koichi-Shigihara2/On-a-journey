@@ -109,16 +109,19 @@ class GrowthOptionResult:
 @dataclass
 class FCFBaseResult:
     """
-    FCFベース判定結果 v6.2 新規
+    FCFベース判定結果 v6.3
 
     DCFの出発点となるベースFCFと、その選択根拠を保持する。
+
+    v6.3変更: ratio方式 → CV（変動係数）方式
+        recent_2yr がデフォルト。FCFが安定している場合のみ avg_5yr を使用。
     """
     base_fcf: float       # 採用したベースFCF
     method: str           # "avg_5yr" | "recent_2yr"
     fcf_5yr_avg: float    # 5年平均（参考値）
     fcf_2yr_avg: float    # 直近2年平均（参考値）
-    ratio: float          # recent_2yr / avg_5yr（判定根拠）
-    threshold: float      # 判定閾値
+    cv: float             # 変動係数 std/|mean|（安定性の指標）
+    cv_threshold: float   # CV判定閾値
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -126,96 +129,116 @@ class FCFBaseResult:
             "method": self.method,
             "fcf_5yr_avg": self.fcf_5yr_avg,
             "fcf_2yr_avg": self.fcf_2yr_avg,
-            "ratio": round(self.ratio, 2),
-            "threshold": self.threshold
+            "cv": round(self.cv, 3),
+            "cv_threshold": self.cv_threshold,
+            # 後方互換: ratio/thresholdはcv/cv_thresholdのエイリアス
+            "ratio": round(self.cv, 3),
+            "threshold": self.cv_threshold
         }
 
 
 # ========================================
-# FCFベース自動判定 v6.2 新規
+# FCFベース自動判定 v6.3（CV方式）
 # ========================================
+
+DEFAULT_FCF_CV_THRESHOLD = 0.5  # CV≤この値なら安定→avg_5yr
 
 def determine_fcf_base(
     fcf_5yr_avg: float,
     fcf_2yr_avg: float,
     fcf_list: List[float],
-    threshold: float = 1.5
+    threshold: float = DEFAULT_FCF_CV_THRESHOLD
 ) -> FCFBaseResult:
     """
-    FCFトレンドから5年平均 or 直近2年平均を自動判定
+    FCFの変動係数（CV）で安定性を判定し、ベースFCFを自動選択
 
-    判定ロジック:
-        ratio = fcf_2yr_avg / fcf_5yr_avg
-        ratio > threshold → recent_2yr（急拡大中）
-        ratio ≤ threshold → avg_5yr（安定・成熟）
+    判定ロジック（v6.3）:
+        CV = std(fcf_list) / |mean(fcf_list)|
+        CV ≤ threshold（安定） → avg_5yr（成熟企業: KO, MSFT等）
+        CV > threshold（不安定）→ recent_2yr（成長企業: NVDA, AMD等）
 
-    特殊ケース:
-        fcf_5yr_avg ≤ 0（赤字期間含む） → recent_2yr
-        fcf_2yr_avg ≤ 0（直近も赤字）   → avg_5yr（FCF補正に委ねる）
-        データ不足（< 2年）              → avg_5yr
+    旧ratio方式との違い:
+        旧: 5年平均がデフォルト、急成長時だけ2年平均
+        新: 2年平均がデフォルト、安定時だけ5年平均
+        → 成長企業のFCF過小評価を構造的に解消
+
+    特殊ケース（CVより優先）:
+        fcf_2yr_avg ≤ 0（直近赤字）  → avg_5yr（FCF補正に委ねる）
+        fcf_5yr_avg ≤ 0（過去赤字含む）→ recent_2yr
+        データ不足（< 3年）           → recent_2yr（保守的にデフォルト）
 
     Args:
-        fcf_5yr_avg : 5年平均FCF
-        fcf_2yr_avg : 直近2年平均FCF
-        fcf_list    : FCFリスト（件数チェック用）
-        threshold   : 切り替え閾値（デフォルト1.5）
+        fcf_5yr_avg  : 5年平均FCF
+        fcf_2yr_avg  : 直近2年平均FCF
+        fcf_list     : FCFリスト（CV計算用）
+        threshold    : CV閾値（デフォルト0.5）
 
     Returns:
         FCFBaseResult
     """
-    # データ不足
-    if len(fcf_list) < 2:
+    import statistics
+
+    # ── 特殊ケース（データ不足）──
+    if len(fcf_list) < 3:
         return FCFBaseResult(
-            base_fcf=fcf_5yr_avg,
-            method="avg_5yr",
+            base_fcf=fcf_2yr_avg if fcf_2yr_avg > 0 else fcf_5yr_avg,
+            method="recent_2yr" if fcf_2yr_avg > 0 else "avg_5yr",
             fcf_5yr_avg=fcf_5yr_avg,
             fcf_2yr_avg=fcf_2yr_avg,
-            ratio=0.0,
-            threshold=threshold
+            cv=999.0,
+            cv_threshold=threshold
         )
 
-    # 直近2年も赤字 → avg_5yr（FCF補正ロジックに委ねる）
+    # ── 特殊ケース（直近赤字）──
     if fcf_2yr_avg <= 0:
         return FCFBaseResult(
             base_fcf=fcf_5yr_avg,
             method="avg_5yr",
             fcf_5yr_avg=fcf_5yr_avg,
             fcf_2yr_avg=fcf_2yr_avg,
-            ratio=0.0,
-            threshold=threshold
+            cv=999.0,
+            cv_threshold=threshold
         )
 
-    # 5年平均が0以下（赤字期間含む）→ recent_2yr
+    # ── 特殊ケース（過去赤字含む）──
     if fcf_5yr_avg <= 0:
         return FCFBaseResult(
             base_fcf=fcf_2yr_avg,
             method="recent_2yr",
             fcf_5yr_avg=fcf_5yr_avg,
             fcf_2yr_avg=fcf_2yr_avg,
-            ratio=0.0,
-            threshold=threshold
+            cv=999.0,
+            cv_threshold=threshold
         )
 
-    # 通常判定
-    ratio = fcf_2yr_avg / fcf_5yr_avg
+    # ── CV計算 ──
+    try:
+        mean_fcf = abs(statistics.mean(fcf_list))
+        std_fcf  = statistics.stdev(fcf_list)
+        cv = std_fcf / mean_fcf if mean_fcf > 0 else 999.0
+    except Exception:
+        cv = 999.0
 
-    if ratio > threshold:
-        return FCFBaseResult(
-            base_fcf=fcf_2yr_avg,
-            method="recent_2yr",
-            fcf_5yr_avg=fcf_5yr_avg,
-            fcf_2yr_avg=fcf_2yr_avg,
-            ratio=ratio,
-            threshold=threshold
-        )
-    else:
+    # ── CV判定 ──
+    if cv <= threshold:
+        # 安定 → avg_5yr（成熟企業）
         return FCFBaseResult(
             base_fcf=fcf_5yr_avg,
             method="avg_5yr",
             fcf_5yr_avg=fcf_5yr_avg,
             fcf_2yr_avg=fcf_2yr_avg,
-            ratio=ratio,
-            threshold=threshold
+            cv=cv,
+            cv_threshold=threshold
+        )
+    else:
+        # 不安定・成長 → recent_2yr
+        return FCFBaseResult(
+            base_fcf=fcf_2yr_avg,
+            method="recent_2yr",
+            fcf_5yr_avg=fcf_5yr_avg,
+            fcf_2yr_avg=fcf_2yr_avg,
+            cv=cv,
+            cv_threshold=threshold
         )
 
 
