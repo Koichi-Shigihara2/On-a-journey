@@ -438,30 +438,84 @@ async function loadTickerTab() {
   }
 }
 
-// CIK自動取得（Actions経由）
+// CIK自動取得（Actions経由）＋ポーリング自動反映
 async function lookupCik() {
   const ticker = document.getElementById('newTicker').value.trim().toUpperCase();
   if (!ticker) { alert('ティッカーを入力してください'); return; }
 
   const btn = document.getElementById('lookupCikBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Actionsを起動中...';
-  showResult('tickerResult', 'info',
-    `⏳ GitHub Actions (TANUKI_CIK_Lookup.yml) を起動しました。\n` +
-    `完了後（約30秒）「再読込」ボタンを押してCIKを確認してください。`);
+  btn.innerHTML = '<span class="spinner"></span>Actions起動中...';
 
   try {
     await dispatchWorkflow('TANUKI_CIK_Lookup.yml', { ticker });
-    btn.innerHTML = '✓ Actions起動済み';
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.innerHTML = '🔍 CIK自動取得（Actions経由）';
-    }, 3000);
   } catch(e) {
     showResult('tickerResult', 'error', '起動失敗: ' + e.message);
     btn.disabled = false;
     btn.innerHTML = '🔍 CIK自動取得（Actions経由）';
+    return;
   }
+
+  // ポーリング開始（5秒×12回 = 最大60秒）
+  showResult('tickerResult', 'info',
+    `⏳ CIK取得中... Actions完了を待っています（最大60秒）`);
+  btn.innerHTML = '<span class="spinner"></span>取得中...';
+
+  const startTime = Date.now();
+  let found = false;
+
+  for (let i = 0; i < 12; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
+    btn.innerHTML = `<span class="spinner"></span>取得中... ${elapsed}秒`;
+
+    try {
+      const { content } = await fetchFile('config/cik_lookup_result.json');
+      const result = JSON.parse(content);
+
+      if (result.ticker !== ticker) continue;  // 別銘柄の結果はスキップ
+
+      if (result.status === 'ok') {
+        // ✅ 取得成功 → フォームに自動反映
+        document.getElementById('newCik').value  = result.cik;
+        document.getElementById('newName').value = result.name;
+        showResult('tickerResult', 'success',
+          `✓ CIK取得完了: ${result.cik}（${result.name}）\nそのまま「＋ 銘柄を追加」をクリックしてください。`);
+        found = true;
+        break;
+
+      } else if (result.status === 'already_exists') {
+        showResult('tickerResult', 'info',
+          `ℹ ${ticker} はcik_lookup.csvに既に登録されています。\nCIK欄を手動で確認してください。`);
+        found = true;
+        break;
+
+      } else if (result.status === 'not_found') {
+        showResult('tickerResult', 'error',
+          `✗ ${ticker} のCIKがSEC EDGARに見つかりませんでした。\n手動でCIKを入力してください。`);
+        found = true;
+        break;
+
+      } else if (result.status === 'api_error') {
+        showResult('tickerResult', 'error',
+          `✗ SEC API エラー: ${result.error || '不明'}`);
+        found = true;
+        break;
+      }
+      // status が上記以外（Actions未完了）なら次のポーリングへ
+    } catch(e) {
+      // result.jsonがまだ存在しない or 取得失敗 → 次のポーリングへ継続
+    }
+  }
+
+  if (!found) {
+    showResult('tickerResult', 'info',
+      `⏱ タイムアウト（60秒）。Actions完了後に「🔄 再読込」でCIKを確認してください。`);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔍 CIK自動取得（Actions経由）';
 }
 
 // 銘柄追加
