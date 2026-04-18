@@ -213,10 +213,18 @@ class TanukiDataFetcher:
         )
         
         # ========================================
+        # FCF 直近2年平均の計算（CV方式のベース判定用）
+        # ========================================
+        fcf_2yr_avg = self._calc_fcf_2yr_avg(fcf_list)
+        if fcf_2yr_avg > 0:
+            print(f"   [{ticker}] SEC FCF 2yr avg: ${fcf_2yr_avg:,.0f}")
+
+        # ========================================
         # 最終サマリー
         # ========================================
         print(f"   [{ticker}] 最終結果:")
         print(f"       FCF 5yr Avg: ${fcf_avg:,.0f}")
+        print(f"       FCF 2yr Avg: ${fcf_2yr_avg:,.0f}")
         print(f"       Diluted Shares: {final_shares:,.0f} ({shares_source})")
         print(f"       ROE avg: {roe_avg:.1%}")
         print(f"       Current Price: ${current_price:.2f}")
@@ -227,6 +235,7 @@ class TanukiDataFetcher:
         
         return {
             "fcf_5yr_avg": fcf_avg,
+            "fcf_2yr_avg": fcf_2yr_avg,
             "fcf_list_raw": fcf_list,
             "diluted_shares": final_shares,
             "roe_10yr_avg": roe_avg,
@@ -241,6 +250,21 @@ class TanukiDataFetcher:
             "_beta_source": beta_source
         }
     
+    def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:
+        """
+        FCFリストから直近2年平均を計算
+
+        fcf_listはget_fcf_list()の返却値（新しい順、インデックス0が最新）。
+        最新2件はリストの先頭[:2]で取得する。
+        2件未満の場合は0.0を返す。
+        """
+        if not fcf_list or len(fcf_list) < 2:
+            return 0.0
+        recent_2 = fcf_list[:2]  # 新しい順なので先頭が最新
+        if all(v is not None for v in recent_2):
+            return sum(recent_2) / 2
+        return 0.0
+
     def _determine_beta(
         self,
         ticker: str,
