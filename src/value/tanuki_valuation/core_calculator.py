@@ -134,17 +134,16 @@ class KoichiValuationCalculator:
         if fcf_adjustment.method != "none":
             print(f"   [{ticker}] FCF補正: ${fcf_adjustment.original_fcf:,.0f} → ${adjusted_fcf_5yr:,.0f}")
 
-        # ── STEP 4: FCFベース自動判定（v6.2追加） ──
-        # FCF補正後の5年平均と直近2年平均を比較してベースを選択
-        # 直近2年平均もマイナスなら補正済み5年平均で代替
-        adjusted_fcf_2yr = fcf_2yr_avg if fcf_2yr_avg > 0 else adjusted_fcf_5yr
-
+        # ── STEP 4: FCFベース自動判定（v6.3 CV方式） ──
+        # 元のfcf_2yr_avg（マイナス含む）をそのまま渡す。
+        # フォールバック処理はdetermine_fcf_base内で行う。
         fcf_base_result: FCFBaseResult = determine_fcf_base(
             fcf_5yr_avg=adjusted_fcf_5yr,
-            fcf_2yr_avg=adjusted_fcf_2yr,
+            fcf_2yr_avg=fcf_2yr_avg,
             fcf_list=fcf_list_raw,
             threshold=self.fcf_base_threshold
         )
+        adjusted_fcf_2yr = fcf_2yr_avg  # ログ表示用
         base_fcf = fcf_base_result.base_fcf
         print(f"   [{ticker}] FCFベース: {fcf_base_result.method}  "
               f"5yr=${adjusted_fcf_5yr/1e9:.2f}B  "
