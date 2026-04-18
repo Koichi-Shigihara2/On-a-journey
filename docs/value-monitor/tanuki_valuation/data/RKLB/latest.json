@@ -108,17 +108,19 @@
   },
   "fcf_base": {
     "base_fcf": 48143920.0,
-    "method": "avg_5yr",
+    "method": "recent_2yr",
     "fcf_5yr_avg": 48143920.0,
     "fcf_2yr_avg": 48143920.0,
-    "ratio": 1.0,
-    "threshold": 1.5
+    "cv": 0.533,
+    "cv_threshold": 0.5,
+    "ratio": 0.533,
+    "threshold": 0.5
   },
   "components": {
     "fcf_5yr_avg": -167560600.0,
     "fcf_2yr_avg": 0.0,
     "fcf_base_used": 48143920.0,
-    "fcf_base_method": "avg_5yr",
+    "fcf_base_method": "recent_2yr",
     "fcf_list_raw": [
       -97490000,
       -148950000,
@@ -151,7 +153,7 @@
   },
   "validation": {
     "validated_at": "2026-04-18",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -171,6 +173,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "全ての検証が合格しました。"
   }
 }
