@@ -149,6 +149,7 @@
 
     <div class="action-bar">
       <button class="btn" id="refreshBtn" onclick="loadTickerTab()" disabled>🔄 再読込</button>
+      <button class="btn" id="fetchSecBtn" onclick="fetchSecData()" disabled>📥 SECデータ取得</button>
       <button class="btn primary" id="updateSelectedBtn" onclick="triggerUpdate()" disabled>▶ 選択銘柄を更新実行</button>
       <span id="globalUpdated" style="font-family:var(--mono);font-size:11px;color:var(--mut)"></span>
     </div>
@@ -366,7 +367,7 @@ async function connect() {
     document.getElementById('statusText').style.color = 'var(--grn)';
 
     // 両タブのボタンを有効化
-    ['refreshBtn','updateSelectedBtn','lookupCikBtn','addTickerBtn',
+    ['refreshBtn','fetchSecBtn','updateSelectedBtn','lookupCikBtn','addTickerBtn',
      'deleteSelectedBtn','saveBetaBtn','resetBetaBtn'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.disabled = false;
@@ -626,6 +627,34 @@ async function triggerUpdate() {
       `✓ 更新をリクエストしました (${selected.join(', ')})。\nGitHub Actionsの完了後（約3分）、一覧ページで結果を確認してください。`);
   } catch(e) {
     showResult('tickerResult', 'error', 'エラー: ' + e.message);
+  }
+}
+
+// SECデータ取得（新規銘柄の初回実行前に使用）
+async function fetchSecData() {
+  const selected = Array.from(document.querySelectorAll('.ticker-check:checked')).map(c => c.value);
+  if (selected.length === 0) { alert('銘柄を選択してください'); return; }
+  if (!confirm(
+    `以下の銘柄のSECデータを取得しますか？\n${selected.join(', ')}\n\n` +
+    `※新規銘柄の初回実行前に必要です。\n` +
+    `※既存銘柄は週次で自動更新されるため通常不要です。`
+  )) return;
+
+  const btn = document.getElementById('fetchSecBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>取得中...';
+
+  try {
+    await dispatchWorkflow('SEC_Data_Update.yml', { tickers: selected.join(',') });
+    showResult('tickerResult', 'info',
+      `📥 SECデータ取得をリクエストしました (${selected.join(', ')})。\n` +
+      `完了まで約1〜2分かかります。\n` +
+      `完了後に「▶ 選択銘柄を更新実行」をクリックしてください。`);
+  } catch(e) {
+    showResult('tickerResult', 'error', 'エラー: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📥 SECデータ取得';
   }
 }
 
