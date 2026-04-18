@@ -1,15 +1,14 @@
 """
-TANUKI VALUATION - Pipeline v2.2
+TANUKI VALUATION - Pipeline v2.1
 全ティッカーを処理し、latest.jsonを生成
 
 使用方法:
     python pipeline.py
     python pipeline.py TSLA PLTR  # 特定ティッカーのみ
 
-v2.2変更点:
-    - 監視銘柄を config/monitor_tickers.yaml から読み込むよう変更
-      （DEFAULT_TICKERSハードコードを廃止）
-    - yaml未インストール時は PyYAML を自動インストール
+v2.1変更点:
+    - AI検証機能（validator.py）を統合
+    - latest.jsonに"validation"フィールドを追加
 """
 
 import json
@@ -24,100 +23,51 @@ from core_calculator import KoichiValuationCalculator
 from validator import validate_calculation
 
 
-def _load_monitor_tickers(repo_root: str) -> List[str]:
-    """
-    config/monitor_tickers.yaml から監視銘柄リストを読み込む
-
-    Args:
-        repo_root: リポジトリルートパス
-
-    Returns:
-        ティッカーリスト
-
-    Raises:
-        FileNotFoundError: YAMLファイルが存在しない場合
-    """
-    yaml_path = os.path.join(repo_root, "config", "monitor_tickers.yaml")
-
-    if not os.path.exists(yaml_path):
-        raise FileNotFoundError(
-            f"monitor_tickers.yaml が見つかりません: {yaml_path}\n"
-            f"config/monitor_tickers.yaml に銘柄リストを定義してください。"
-        )
-
-    try:
-        import yaml
-    except ImportError:
-        import subprocess
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "pyyaml", "-q"])
-        import yaml
-
-    with open(yaml_path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-
-    tickers = data.get("tickers", [])
-    if not tickers:
-        raise ValueError(f"monitor_tickers.yaml に tickers が定義されていません: {yaml_path}")
-
-    return [t.strip().upper() for t in tickers if t and str(t).strip()]
-
-
 class TanukiValuationPipeline:
-    """TANUKI VALUATION パイプライン v2.2"""
+    """TANUKI VALUATION パイプライン"""
+
+    # 監視対象ティッカー
+    DEFAULT_TICKERS = [
+        "TSLA", "PLTR", "SOFI", "CELH", "NVDA",
+        "AMD", "APP", "SOUN", "RKLB", "ONDS",
+        "MSFT", "AMZN", "FIG"
+    ]
 
     def __init__(self, output_dir: str = None, use_ai_validation: bool = True):
         self.fetcher = TanukiDataFetcher()
         self.calculator = KoichiValuationCalculator()
         self.use_ai_validation = use_ai_validation
-
-        # リポジトリルート（src/value/tanuki_valuation/ の3階層上）
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.repo_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
-
-        # 出力ディレクトリ
+        
+        # 出力ディレクトリ（デフォルト: docs/value-monitor/tanuki_valuation/data）
         if output_dir:
             self.output_dir = output_dir
         else:
-            self.output_dir = os.path.join(
-                self.repo_root, "docs", "value-monitor", "tanuki_valuation", "data"
-            )
-
+            # リポジトリルートからの相対パス（GitHub Actions実行時）
+            # src/value/tanuki_valuation/ から見て ../../../docs/value-monitor/tanuki_valuation/data
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            repo_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+            self.output_dir = os.path.join(repo_root, "docs", "value-monitor", "tanuki_valuation", "data")
+        
         os.makedirs(self.output_dir, exist_ok=True)
         print(f"   出力先: {self.output_dir}")
-
-    def _get_default_tickers(self) -> List[str]:
-        """
-        config/monitor_tickers.yaml から監視銘柄を取得
-
-        YAMLが読み込めない場合はエラーを出力して終了する。
-        pipeline.py 内にハードコードされた銘柄リストは持たない。
-        """
-        try:
-            tickers = _load_monitor_tickers(self.repo_root)
-            print(f"   監視銘柄: {len(tickers)}件 (config/monitor_tickers.yaml)")
-            return tickers
-        except (FileNotFoundError, ValueError) as e:
-            print(f"❌ 銘柄リスト読み込みエラー: {e}")
-            sys.exit(1)
 
     def run(self, tickers: Optional[List[str]] = None) -> dict:
         """
         パイプライン実行
-
+        
         Args:
-            tickers: 処理対象ティッカーリスト
-                     Noneの場合は config/monitor_tickers.yaml を参照
-
+            tickers: 処理対象ティッカーリスト（Noneの場合はDEFAULT_TICKERS）
+        
         Returns:
             dict: ティッカー別の計算結果
         """
         print("=" * 60)
-        print("TANUKI VALUATION 実行開始")
-        print(f"  Koichi式 v6.1（3段階DCF + 成長オプション + 動的WACC）")
+        print("TANUKI VALUATION Phase 4 実行開始")
+        print(f"  Koichi式 v5.2（成長率減衰カーブ＋FCF補正＋将来予測＋AI検証）")
         print("=" * 60)
-
+        
         if tickers is None:
-            tickers = self._get_default_tickers()
+            tickers = self.DEFAULT_TICKERS
 
         results = {}
         success_count = 0
@@ -128,17 +78,17 @@ class TanukiValuationPipeline:
             print(f"\n{'─' * 40}")
             print(f"🔄 処理中: {ticker}")
             print(f"{'─' * 40}")
-
+            
             try:
                 # データ取得
                 financials = self.fetcher.get_financials(ticker)
-
+                
                 # バリデーション
                 if "error" in financials:
                     print(f"❌ {ticker} スキップ: {financials['error']}")
                     error_count += 1
                     continue
-
+                
                 if financials.get("diluted_shares", 0) <= 100_000:
                     print(f"❌ {ticker} スキップ: diluted_shares不足")
                     error_count += 1
@@ -146,21 +96,21 @@ class TanukiValuationPipeline:
 
                 # 計算実行
                 valuation = self.calculator.calculate_pt(financials)
-
+                
                 if "error" in valuation:
                     print(f"❌ {ticker} 計算エラー: {valuation['error']}")
                     error_count += 1
                     continue
 
-                # AI検証
+                # AI検証を実行
                 try:
                     validation = validate_calculation(
-                        ticker,
-                        valuation,
+                        ticker, 
+                        valuation, 
                         use_ai=self.use_ai_validation
                     )
                     valuation["validation"] = validation
-
+                    
                     overall = validation.get("overall", "ERROR")
                     if overall == "PASS":
                         print(f"   ✅ 検証パス")
@@ -171,7 +121,7 @@ class TanukiValuationPipeline:
                     else:
                         print(f"   ❌ 検証失敗: {self._get_warn_details(validation)}")
                         validation_stats["fail"] += 1
-
+                        
                 except Exception as e:
                     print(f"   ⚠️  検証エラー: {e}")
                     valuation["validation"] = {
@@ -187,12 +137,12 @@ class TanukiValuationPipeline:
                 self._save_result(ticker, valuation)
                 results[ticker] = valuation
                 success_count += 1
-
+                
                 # サマリー表示
                 per_share = valuation.get("intrinsic_value_per_share", 0)
                 current = financials.get("current_price", 0)
                 upside = valuation.get("upside_percent", 0)
-
+                
                 print(f"✅ {ticker} 完了:")
                 print(f"   理論株価: ${per_share:,.2f}")
                 print(f"   現在株価: ${current:,.2f}")
@@ -212,6 +162,10 @@ class TanukiValuationPipeline:
         print(f"   出力先: {self.output_dir}")
         print("=" * 60)
 
+        # 銘柄一覧インデックスを更新（index.htmlが参照）
+        if results:
+            self._save_tickers_index(list(results.keys()))
+
         return results
 
     def _get_warn_details(self, validation: dict) -> str:
@@ -223,7 +177,7 @@ class TanukiValuationPipeline:
     def _save_result(self, ticker: str, valuation: dict) -> None:
         """
         計算結果をJSONファイルに保存
-
+        
         ファイル構造:
             data/{TICKER}/latest.json
             data/{TICKER}/history/{YYYY-MM-DD}.json
@@ -246,6 +200,45 @@ class TanukiValuationPipeline:
 
         print(f"   💾 保存: {latest_path}")
 
+    def _save_tickers_index(self, success_tickers: List[str]) -> None:
+        """
+        成功した銘柄一覧を tickers.json に保存
+        index.html がこのファイルを参照して銘柄カードを動的生成する
+
+        部分実行（特定銘柄のみ）の場合は既存のtickers.jsonとマージして
+        全成功銘柄を維持する
+        """
+        index_path = os.path.join(self.output_dir, "tickers.json")
+
+        # 既存のtickers.jsonを読み込んでマージ
+        existing_tickers = []
+        if os.path.exists(index_path):
+            try:
+                with open(index_path, encoding="utf-8") as f:
+                    existing_tickers = json.load(f).get("tickers", [])
+            except Exception:
+                pass
+
+        # 成功した銘柄を追加（重複排除・アルファベット順）
+        merged = sorted(set(existing_tickers) | set(success_tickers))
+
+        # latest.jsonが存在しない銘柄は除外（削除された銘柄の掃除）
+        valid = [
+            t for t in merged
+            if os.path.exists(os.path.join(self.output_dir, t, "latest.json"))
+        ]
+
+        index_data = {
+            "tickers": valid,
+            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "count": len(valid)
+        }
+
+        with open(index_path, "w", encoding="utf-8") as f:
+            json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+        print(f"   📋 tickers.json 更新: {valid}")
+
     def run_single(self, ticker: str) -> dict:
         """単一ティッカーの処理"""
         return self.run([ticker]).get(ticker, {})
@@ -254,12 +247,14 @@ class TanukiValuationPipeline:
 def main():
     """コマンドライン実行"""
     tickers = sys.argv[1:] if len(sys.argv) > 1 else None
-
+    
+    # AI検証を有効化（XAI_API_KEYが設定されている場合）
     use_ai = bool(os.environ.get("XAI_API_KEY"))
-
+    
     pipeline = TanukiValuationPipeline(use_ai_validation=use_ai)
     results = pipeline.run(tickers)
-
+    
+    # 終了コード
     sys.exit(0 if results else 1)
 
 
