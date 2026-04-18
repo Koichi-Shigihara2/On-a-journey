@@ -1,0 +1,76 @@
+{
+  "_comment": "Koichi式 β設定ファイル。未設定銘柄はyfinanceβにフォールバック。",
+  "_damodaran_ref_2025": {
+    "Semiconductor":      0.93,
+    "Software_Internet":  1.03,
+    "Software_System":    0.87,
+    "AdTech_Internet":    1.15,
+    "EV_Automotive":      1.25,
+    "Fintech":            1.20,
+    "Consumer_Beverage":  0.55,
+    "Space_Defense":      0.85,
+    "Cloud_Services":     0.90
+  },
+  "overrides": {
+    "NVDA": {
+      "beta": 1.05,
+      "sector": "Semiconductor",
+      "reason": "Semiconductor業種β基準。CUDAエコシステムによるボトルネック性でやや低め設定。"
+    },
+    "AMD": {
+      "beta": 1.10,
+      "sector": "Semiconductor",
+      "reason": "Semiconductor業種β。NVDAほどの独占性はなくやや高め。"
+    },
+    "MSFT": {
+      "beta": 0.90,
+      "sector": "Cloud_Services",
+      "reason": "Tech Services業種β。Azure・Office365の安定収益を反映。"
+    },
+    "AMZN": {
+      "beta": 1.10,
+      "sector": "Software_Internet",
+      "reason": "E-Commerce+AWS複合。AWS高成長だがEC事業が安定化に寄与。"
+    },
+    "PLTR": {
+      "beta": 1.08,
+      "sector": "Software_Internet",
+      "reason": "Software業種β。政府長期契約・RPOで収益可視性が高い。"
+    },
+    "APP": {
+      "beta": 1.18,
+      "sector": "AdTech_Internet",
+      "reason": "AdTech業種β。AXON急成長だが広告市場依存リスクを加味。"
+    },
+    "TSLA": {
+      "beta": 1.25,
+      "sector": "EV_Automotive",
+      "reason": "EV業種β。自動車サイクル+エネルギー+ロボット多角化途上。"
+    },
+    "CELH": {
+      "beta": 0.60,
+      "sector": "Consumer_Beverage",
+      "reason": "Consumer Staples業種β。飲料カテゴリは景気連動性低い。"
+    },
+    "SOFI": {
+      "beta": 1.20,
+      "sector": "Fintech",
+      "reason": "Fintech業種β。金利感応度が高く景気連動性あり。"
+    },
+    "SOUN": {
+      "beta": 1.08,
+      "sector": "Software_Internet",
+      "reason": "Software業種β。小型株プレミアムは成長オプションで別途反映済み。"
+    },
+    "RKLB": {
+      "beta": 0.85,
+      "sector": "Space_Defense",
+      "reason": "Space業種β。政府契約・RPO比率が高く収益安定性あり。"
+    },
+    "ONDS": {
+      "beta": 1.10,
+      "sector": "Semiconductor",
+      "reason": "Semiconductor業種β。極小型株だが業種特性を優先。"
+    }
+  }
+}
