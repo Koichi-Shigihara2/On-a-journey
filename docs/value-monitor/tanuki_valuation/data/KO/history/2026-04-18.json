@@ -1,0 +1,176 @@
+{
+  "intrinsic_value_pt": 590335323495.7413,
+  "intrinsic_value_per_share": 137.1548224158817,
+  "v0": 295167661747.87067,
+  "v0_adjusted": 295167661747.87067,
+  "alpha": 1.0,
+  "alpha_was_capped": true,
+  "future_values": {
+    "1年後": 157.73,
+    "2年後": 181.39,
+    "3年後": 208.6
+  },
+  "upside_percent": 81.1,
+  "calculation_date": "2026-04-18",
+  "formula": "Koichi式 v6.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
+  "dcf_type": "two_stage",
+  "wacc": {
+    "value": 0.07719999999999999,
+    "beta": 0.6,
+    "risk_free_rate": 0.043,
+    "market_return": 0.1,
+    "method": "CAPM"
+  },
+  "sensitivity": {
+    "matrix": [
+      [
+        144.59,
+        176.4,
+        213.36
+      ],
+      [
+        113.52,
+        137.76,
+        165.39
+      ],
+      [
+        93.36,
+        112.71,
+        134.36
+      ]
+    ],
+    "wacc_values": [
+      0.067,
+      0.077,
+      0.087
+    ],
+    "growth_years": [
+      3,
+      5,
+      7
+    ],
+    "base_wacc": 0.07719999999999999,
+    "base_years": 5
+  },
+  "growth_scenarios": {
+    "primary": {
+      "rate": 0.15,
+      "source": "fcf_cagr"
+    },
+    "segment": null
+  },
+  "scenario_valuations": null,
+  "growth_options": {
+    "total_pv": 0,
+    "count": 0,
+    "applied": false,
+    "options": []
+  },
+  "maturity_profile": null,
+  "dcf_components": {
+    "v0": 295167661747.87067,
+    "pv_high_growth": 49582608302.964615,
+    "pv_terminal": 245585053444.90607,
+    "high_growth_detail": [
+      {
+        "year": 1,
+        "fcf": 9332480000.0,
+        "discount_factor": 1.0772,
+        "pv": 8663646490.90234
+      },
+      {
+        "year": 2,
+        "fcf": 10732352000.0,
+        "discount_factor": 1.16035984,
+        "pv": 9249158433.473534
+      },
+      {
+        "year": 3,
+        "fcf": 12342204800.0,
+        "discount_factor": 1.2499396196479997,
+        "pv": 9874240808.108583
+      },
+      {
+        "year": 4,
+        "fcf": 14193535519.999998,
+        "discount_factor": 1.3464349582848252,
+        "pv": 10541567888.344662
+      },
+      {
+        "year": 5,
+        "fcf": 16322565847.999996,
+        "discount_factor": 1.4503797370644138,
+        "pv": 11253994682.135498
+      }
+    ],
+    "terminal_fcf": 16812242823.439997,
+    "terminal_value": 356191585242.37286
+  },
+  "fcf_base": {
+    "base_fcf": 8115200000.0,
+    "method": "avg_5yr",
+    "fcf_5yr_avg": 8115200000.0,
+    "fcf_2yr_avg": 8115200000.0,
+    "ratio": 1.0,
+    "threshold": 1.5
+  },
+  "components": {
+    "fcf_5yr_avg": 8115200000.0,
+    "fcf_2yr_avg": 0.0,
+    "fcf_base_used": 8115200000.0,
+    "fcf_base_method": "avg_5yr",
+    "fcf_list_raw": [
+      11258000000,
+      9534000000,
+      9747000000,
+      4741000000,
+      5296000000
+    ],
+    "diluted_shares": 4304152877,
+    "roe_10yr_avg": 0.3675234999062005,
+    "current_price": 75.74,
+    "latest_revenue": 47941000000.0,
+    "rpo": 0.0,
+    "beta": 0.6,
+    "sector": "Consumer Defensive",
+    "eps_data": {
+      "ticker": "KO"
+    },
+    "_shares_source": "yf_implied",
+    "_beta_source": "beta_config(Consumer_Beverage)",
+    "high_growth_rate_used": 0.15,
+    "high_growth_years": 5,
+    "terminal_growth_used": 0.03,
+    "pv_high": 49582608302.964615,
+    "pv_terminal": 245585053444.90607,
+    "roe_used": 0.3675234999062005,
+    "fcf_floor_applied": 0.0,
+    "rpo_pv": 0.0,
+    "growth_option_pv": 0,
+    "alpha_uncapped": 1.999480180836842
+  },
+  "validation": {
+    "validated_at": "2026-04-18",
+    "model": "basic_checks",
+    "checks": {
+      "pt_shares_consistency": {
+        "pass": true,
+        "detail": "(V₀ $295.17B + RPO $0.00B + GO $0.00B) × (1+1.000) / 4.304B = $137.15 (差異0.00%)"
+      },
+      "dcf_components": {
+        "pass": true,
+        "detail": "2段階: pv_high $49.58B + pv_terminal $245.59B = $295.17B (差異0.00%)"
+      },
+      "formula_verification": {
+        "pass": true,
+        "detail": "α計算: ROE 36.8% × 60% / WACC 7.72% × 0.7 = 1.9995 → cap適用 → 1.0000"
+      },
+      "anomaly_detection": {
+        "pass": true,
+        "detail": "異常値なし"
+      }
+    },
+    "overall": "PASS",
+    "ai_comment": null
+  }
+}
