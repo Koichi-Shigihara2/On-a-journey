@@ -31,26 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install yfinance numpy requests pyyaml
-
-      - name: Update SEC XBRL data
-        env:
-          SEC_USER_AGENT_EMAIL: ${{ secrets.SEC_USER_AGENT_EMAIL }}
-        run: |
-          # 対象ティッカーを決定
-          if [ -n "${{ github.event.inputs.tickers }}" ]; then
-            TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
-          else
-            # monitor_tickers.yamlから全銘柄を取得
-            TICKERS=$(python -c "
-import yaml
-with open('config/monitor_tickers.yaml') as f:
-    data = yaml.safe_load(f)
-print(' '.join(data.get('tickers', [])))
-")
-          fi
-          echo "SECデータ更新対象: $TICKERS"
-          python common/sec_data/update.py $TICKERS
+          pip install yfinance numpy requests
 
       - name: Run TANUKI VALUATION Pipeline
         working-directory: src/value/tanuki_valuation
