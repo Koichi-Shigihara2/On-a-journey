@@ -635,14 +635,23 @@ function renderBetaTable() {
 
   tbody.innerHTML = '';
   for (const [ticker, cfg] of Object.entries(overrides)) {
-    const refBeta = damoRef[cfg.sector] || '—';
-    const refLabel = cfg.sector ? `${cfg.sector}` : '—';
+    const sectorOptions = Object.keys(damoRef);
+    const sectorSelect = sectorOptions.map(s =>
+      `<option value="${s}" ${s === cfg.sector ? 'selected' : ''}>${s}</option>`
+    ).join('');
+    const refBeta = damoRef[cfg.sector] || null;
     const tr = document.createElement('tr');
     tr.dataset.ticker = ticker;
     tr.innerHTML = `
       <td><strong class="mono">${ticker}</strong></td>
-      <td class="mono" style="font-size:11px">${refLabel}</td>
-      <td class="damodaran-ref">${refBeta !== '—' ? refBeta.toFixed(2) : '—'}</td>
+      <td>
+        <select class="beta-input" id="sector-${ticker}" style="width:160px;font-size:11px"
+                onchange="updateDamoRef('${ticker}')">
+          <option value="">— 未設定 —</option>
+          ${sectorSelect}
+        </select>
+      </td>
+      <td class="damodaran-ref" id="damo-${ticker}">${refBeta !== null ? refBeta.toFixed(2) : '—'}</td>
       <td>
         <input type="number" class="beta-input" id="beta-${ticker}"
                value="${cfg.beta}" step="0.01" min="0.3" max="3.0"
@@ -678,6 +687,14 @@ function updateWaccPreview(ticker) {
   }
 }
 
+function updateDamoRef(ticker) {
+  const sector = document.getElementById(`sector-${ticker}`)?.value;
+  const damoRef = betaConfig._damodaran_ref_2025 || {};
+  const refBeta = damoRef[sector];
+  const el = document.getElementById(`damo-${ticker}`);
+  if (el) el.textContent = refBeta != null ? refBeta.toFixed(2) : '—';
+}
+
 function removeBetaRow(ticker) {
   if (!confirm(`${ticker} のβ設定を削除しますか？（yfinanceβにフォールバックします）`)) return;
   delete betaConfig.overrides[ticker];
@@ -703,10 +720,12 @@ async function saveBeta() {
     const ticker = row.dataset.ticker;
     const beta   = parseFloat(document.getElementById(`beta-${ticker}`)?.value);
     const reason = document.getElementById(`reason-${ticker}`)?.value || '';
+    const sector = document.getElementById(`sector-${ticker}`)?.value || '';
     if (isNaN(beta)) continue;
     newOverrides[ticker] = {
       ...betaConfig.overrides[ticker],
       beta,
+      sector,
       reason
     };
   }
@@ -722,6 +741,8 @@ async function saveBeta() {
     await commitFile(BETA_PATH, content, 'chore: update beta_config.json', sha);
     betaSha = sha;
     showResult('betaResult', 'success', '✓ beta_config.json を保存しました。次回のパイプライン実行から反映されます。');
+    // GitHub APIのコミット反映を待ってから再読込（2秒待機）
+    await new Promise(r => setTimeout(r, 2000));
     await loadBetaTab();
   } catch(e) {
     showResult('betaResult', 'error', '保存失敗: ' + e.message);
