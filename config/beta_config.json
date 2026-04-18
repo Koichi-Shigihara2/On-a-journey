@@ -1,15 +1,15 @@
 {
   "_comment": "Koichi式 β設定ファイル。未設定銘柄はyfinanceβにフォールバック。",
   "_damodaran_ref_2025": {
-    "Semiconductor":      0.93,
-    "Software_Internet":  1.03,
-    "Software_System":    0.87,
-    "AdTech_Internet":    1.15,
-    "EV_Automotive":      1.25,
-    "Fintech":            1.20,
-    "Consumer_Beverage":  0.55,
-    "Space_Defense":      0.85,
-    "Cloud_Services":     0.90
+    "Semiconductor": 0.93,
+    "Software_Internet": 1.03,
+    "Software_System": 0.87,
+    "AdTech_Internet": 1.15,
+    "EV_Automotive": 1.25,
+    "Fintech": 1.2,
+    "Consumer_Beverage": 0.55,
+    "Space_Defense": 0.85,
+    "Cloud_Services": 0.9
   },
   "overrides": {
     "NVDA": {
@@ -18,17 +18,17 @@
       "reason": "Semiconductor業種β基準。CUDAエコシステムによるボトルネック性でやや低め設定。"
     },
     "AMD": {
-      "beta": 1.10,
+      "beta": 1.1,
       "sector": "Semiconductor",
       "reason": "Semiconductor業種β。NVDAほどの独占性はなくやや高め。"
     },
     "MSFT": {
-      "beta": 0.90,
+      "beta": 0.9,
       "sector": "Cloud_Services",
       "reason": "Tech Services業種β。Azure・Office365の安定収益を反映。"
     },
     "AMZN": {
-      "beta": 1.10,
+      "beta": 1.1,
       "sector": "Software_Internet",
       "reason": "E-Commerce+AWS複合。AWS高成長だがEC事業が安定化に寄与。"
     },
@@ -48,12 +48,12 @@
       "reason": "EV業種β。自動車サイクル+エネルギー+ロボット多角化途上。"
     },
     "CELH": {
-      "beta": 0.60,
+      "beta": 0.6,
       "sector": "Consumer_Beverage",
       "reason": "Consumer Staples業種β。飲料カテゴリは景気連動性低い。"
     },
     "SOFI": {
-      "beta": 1.20,
+      "beta": 1.2,
       "sector": "Fintech",
       "reason": "Fintech業種β。金利感応度が高く景気連動性あり。"
     },
@@ -68,9 +68,14 @@
       "reason": "Space業種β。政府契約・RPO比率が高く収益安定性あり。"
     },
     "ONDS": {
-      "beta": 1.10,
+      "beta": 1.1,
       "sector": "Semiconductor",
       "reason": "Semiconductor業種β。極小型株だが業種特性を優先。"
+    },
+    "KO": {
+      "beta": 0.6,
+      "sector": "",
+      "reason": " Consumer Staples業種β。世界的ブランド力で安定。"
     }
   }
 }
