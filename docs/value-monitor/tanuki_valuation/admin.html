@@ -97,8 +97,19 @@
     .spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px}
     @keyframes spin{to{transform:rotate(360deg)}}
 
+    /* ── ワークフローカード ── */
+    .wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+    .wf-card{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px}
+    .wf-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .wf-name{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px}
+    .wf-desc{font-size:11px;color:var(--mut);line-height:1.5}
+    .wf-schedule{font-family:var(--mono);font-size:9px;color:var(--acc);background:rgba(59,130,246,.1);padding:3px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+    .wf-inputs{display:flex;gap:10px;flex-wrap:wrap}
+    .wf-actions{display:flex;gap:8px}
+
     @media(max-width:700px){
       .form-grid{grid-template-columns:1fr}
+      .wf-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -140,6 +151,7 @@
   <div class="tabs">
     <button class="tab active" onclick="switchTab('tickers', this)">📋 銘柄管理</button>
     <button class="tab" onclick="switchTab('beta', this)">β 設定</button>
+    <button class="tab" onclick="switchTab('workflows', this)">🚀 実行</button>
   </div>
 
   <!-- ───────────────────────────────── -->
@@ -241,9 +253,170 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px" id="damodaranRef"></div>
 
     <div class="result-msg" id="betaResult"></div>
-  </div>
+  </div><!-- /tab-beta -->
 
-</div>
+  <!-- ───────────────────────────────── -->
+  <!-- Tab: 実行                          -->
+  <!-- ───────────────────────────────── -->
+  <div class="tab-content" id="tab-workflows">
+
+    <p style="font-size:12px;color:var(--mut);margin-bottom:20px;line-height:1.7">
+      GitHub Actionsワークフローを手動実行します。実行後の結果はGitHub Actions画面で確認してください。
+    </p>
+
+    <h3 class="section-title">TANUKI VALUATION</h3>
+    <div class="wf-grid">
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">TANUKI 評価更新</div>
+            <div class="wf-desc">DCF計算・理論株価を更新（平日毎日自動実行）</div>
+          </div>
+          <span class="wf-schedule">平日 JST 23:00</span>
+        </div>
+        <div class="wf-inputs">
+          <div class="form-group" style="flex:1">
+            <label>対象ティッカー（空=全銘柄）</label>
+            <input type="text" class="form-input" id="wf-tanuki-tickers"
+                   placeholder="例: NVDA,MSFT （カンマ区切り）"
+                   autocomplete="off" autocorrect="off" autocapitalize="off">
+          </div>
+        </div>
+        <div class="wf-actions">
+          <button class="btn primary" onclick="runWorkflow('TANUKI_VALUATION_Update.yml', {tickers: document.getElementById('wf-tanuki-tickers').value.trim()}, 'wf-tanuki-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-tanuki-result"></div>
+      </div>
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">SECデータ取得</div>
+            <div class="wf-desc">XBRL財務データをSEC EDGARから取得（週次自動実行。新規銘柄追加時に手動実行）</div>
+          </div>
+          <span class="wf-schedule">日曜 JST 21:00</span>
+        </div>
+        <div class="wf-inputs">
+          <div class="form-group" style="flex:1">
+            <label>対象ティッカー（空=全銘柄）</label>
+            <input type="text" class="form-input" id="wf-sec-tickers"
+                   placeholder="例: KO （カンマ区切り）"
+                   autocomplete="off" autocorrect="off" autocapitalize="off">
+          </div>
+        </div>
+        <div class="wf-actions">
+          <button class="btn" onclick="runWorkflow('SEC_Data_Update.yml', {tickers: document.getElementById('wf-sec-tickers').value.trim()}, 'wf-sec-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-sec-result"></div>
+      </div>
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">CIK取得</div>
+            <div class="wf-desc">新規銘柄のSEC CIKをEDGARから取得してcik_lookup.csvに追記</div>
+          </div>
+          <span class="wf-schedule">手動のみ</span>
+        </div>
+        <div class="wf-inputs">
+          <div class="form-group" style="flex:1">
+            <label>ティッカー（必須）</label>
+            <input type="text" class="form-input" id="wf-cik-ticker"
+                   placeholder="例: KO"
+                   autocomplete="off" autocorrect="off" autocapitalize="off">
+          </div>
+        </div>
+        <div class="wf-actions">
+          <button class="btn" onclick="runWorkflow('TANUKI_CIK_Lookup.yml', {ticker: document.getElementById('wf-cik-ticker').value.trim().toUpperCase()}, 'wf-cik-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-cik-result"></div>
+      </div>
+
+    </div>
+
+    <h3 class="section-title" style="margin-top:28px">EPS / MARKET</h3>
+    <div class="wf-grid">
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">Adjusted EPS Analyzer 更新</div>
+            <div class="wf-desc">SEC XBRLからEPSデータを取得・更新</div>
+          </div>
+          <span class="wf-schedule">自動実行</span>
+        </div>
+        <div class="wf-inputs">
+          <div class="form-group" style="flex:1">
+            <label>対象ティッカー（空=全銘柄）</label>
+            <input type="text" class="form-input" id="wf-eps-tickers"
+                   placeholder="例: NVDA,CELH"
+                   autocomplete="off" autocorrect="off" autocapitalize="off">
+          </div>
+        </div>
+        <div class="wf-actions">
+          <button class="btn" onclick="runWorkflow('Adjusted_Eps_Analyzer_update.yml', {tickers: document.getElementById('wf-eps-tickers').value.trim()}, 'wf-eps-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-eps-result"></div>
+      </div>
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">MACRO PULSE 更新</div>
+            <div class="wf-desc">景気指標・景気後退リスクスコアを更新</div>
+          </div>
+          <span class="wf-schedule">毎日 JST 22:00</span>
+        </div>
+        <div class="wf-inputs">
+          <div class="form-group" style="flex:1">
+            <label>実行モード</label>
+            <select class="form-input" id="wf-macro-mode">
+              <option value="normal">normal（通常更新）</option>
+              <option value="weekly-analysis">weekly-analysis（AI解説生成）</option>
+              <option value="update-schedule">update-schedule（スケジュール更新）</option>
+              <option value="recalc">recalc（再計算）</option>
+            </select>
+          </div>
+        </div>
+        <div class="wf-actions">
+          <button class="btn" onclick="runWorkflow('MACRO_PULSE_Update.yml', {mode: document.getElementById('wf-macro-mode').value}, 'wf-macro-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-macro-result"></div>
+      </div>
+
+      <div class="wf-card">
+        <div class="wf-card-head">
+          <div>
+            <div class="wf-name">Market Pulse 更新</div>
+            <div class="wf-desc">市場センチメント・恐怖指数を更新</div>
+          </div>
+          <span class="wf-schedule">自動実行</span>
+        </div>
+        <div class="wf-inputs"></div>
+        <div class="wf-actions">
+          <button class="btn" onclick="runWorkflow('Market_Pulse_Update.yml', {}, 'wf-market-result')">
+            ▶ 実行
+          </button>
+        </div>
+        <div class="result-msg" id="wf-market-result"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /tab-workflows -->
+
+</div><!-- /shell -->
 
 <script>
 // ── 定数 ──
@@ -814,6 +987,33 @@ function renderDamodaranRef() {
 }
 
 // ── ユーティリティ ──
+
+// 汎用ワークフロー実行
+async function runWorkflow(workflowFile, inputs, resultId) {
+  // 空文字のinputsを除去
+  const cleanInputs = {};
+  for (const [k, v] of Object.entries(inputs)) {
+    if (v !== '' && v !== null && v !== undefined) {
+      cleanInputs[k] = v;
+    }
+  }
+
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>起動中...';
+
+  try {
+    await dispatchWorkflow(workflowFile, cleanInputs);
+    showResult(resultId, 'success',
+      `✓ ${workflowFile} を起動しました。\nGitHub Actions画面で進捗を確認してください。`);
+  } catch(e) {
+    showResult(resultId, 'error', `起動失敗: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '▶ 実行';
+  }
+}
+
 function showResult(id, type, msg) {
   const el = document.getElementById(id);
   el.className = `result-msg ${type}`;
