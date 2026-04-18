@@ -52,7 +52,7 @@ from calculator.dcf import calculate_three_stage_dcf, ThreeStageDCFResult
 from calculator.adjustments import (
     calculate_growth_option_pv, GrowthOptionResult,
     determine_fcf_base, FCFBaseResult,          # v6.2追加
-    DEFAULT_FCF_BASE_THRESHOLD,
+    DEFAULT_FCF_CV_THRESHOLD,
 )
 
 try:
@@ -79,7 +79,7 @@ class KoichiValuationCalculator:
         retention_rate: float = DEFAULT_RETENTION_RATE,
         alpha_cap: float = DEFAULT_ALPHA_CAP,
         min_fcf_years: int = 3,
-        fcf_base_threshold: float = DEFAULT_FCF_BASE_THRESHOLD,
+        fcf_base_threshold: float = DEFAULT_FCF_CV_THRESHOLD,
     ):
         self.high_growth_years = high_growth_years
         self.terminal_growth = terminal_growth
@@ -150,7 +150,7 @@ class KoichiValuationCalculator:
               f"5yr=${adjusted_fcf_5yr/1e9:.2f}B  "
               f"2yr=${adjusted_fcf_2yr/1e9:.2f}B  "
               f"→ 採用=${base_fcf/1e9:.2f}B"
-              + (f"  (ratio={fcf_base_result.ratio:.2f})" if fcf_base_result.ratio > 0 else ""))
+              + (f"  (CV={fcf_base_result.cv:.2f})" if fcf_base_result.cv < 999 else "  (CV=データ不足)"))
 
         # ── STEP 5: DCF計算（2段階 or 3段階） ──
         dcf_type = "two_stage"
@@ -372,7 +372,7 @@ if __name__ == "__main__":
     if "error" not in result:
         print(f"\n=== 結果 ===")
         print(f"DCFタイプ      : {result['dcf_type']}")
-        print(f"FCFベース      : {result['fcf_base']['method']}  (ratio={result['fcf_base']['ratio']})")
+        print(f"FCFベース      : {result['fcf_base']['method']}  (CV={result['fcf_base']['cv']})")
         print(f"理論株価       : ${result['intrinsic_value_per_share']:.2f}")
         print(f"乖離率         : {result['upside_percent']:.1f}%")
     else:
