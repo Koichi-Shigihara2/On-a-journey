@@ -124,8 +124,10 @@
   <div class="token-section">
     <div class="token-row">
       <span class="token-label">GitHub Token:</span>
-      <input type="password" class="token-input" id="tokenInput"
-             placeholder="ghp_xxxxxxxxxxxx（repo権限が必要）">
+      <input type="text" class="token-input" id="tokenInput"
+             placeholder="ghp_xxxxxxxxxxxx（repo権限が必要）"
+             autocomplete="off" autocorrect="off" autocapitalize="off"
+             spellcheck="false" style="-webkit-text-security:disc">
       <button class="btn primary" onclick="connect()">接続</button>
       <div class="status-indicator">
         <div class="status-dot" id="statusDot"></div>
