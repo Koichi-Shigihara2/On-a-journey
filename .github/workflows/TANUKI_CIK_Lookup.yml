@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       ticker:
-        description: 'ティッカーシンボル（例: META）'
+        description: 'ティッカーシンボル（例: KO）'
         required: true
         type: string
 
@@ -38,11 +38,13 @@ jobs:
           import requests
 
           ticker = os.environ.get("TICKER", "").strip().upper()
+          # SEC APIはメールアドレスを含むUser-Agentが必須
+          # https://www.sec.gov/os/accessing-edgar-data
+          sec_email = os.environ.get("SEC_USER_AGENT_EMAIL", "")
           csv_path = "config/cik_lookup.csv"
           result_path = "config/cik_lookup_result.json"
 
           def write_result(data: dict):
-              """result.jsonを必ず書き込む（commitステップが参照）"""
               os.makedirs(os.path.dirname(result_path), exist_ok=True)
               with open(result_path, "w", encoding="utf-8") as f:
                   json.dump(data, f, ensure_ascii=False, indent=2)
@@ -66,10 +68,15 @@ jobs:
 
           # ── SEC company_tickers.json から CIK を取得 ──
           print(f"[INFO] SEC APIからCIKを取得中: {ticker}")
+
+          # SEC公式要件: "Name OrganizationName email@domain.com"
+          user_agent = f"Koichi-Shigihara2 On-a-journey {sec_email}"
           headers = {
-              "User-Agent": "Koichi-Shigihara2 On-a-journey tanuki-valuation",
-              "Accept": "application/json"
+              "User-Agent": user_agent,
+              "Accept": "application/json",
+              "Accept-Encoding": "gzip, deflate"
           }
+          print(f"[INFO] User-Agent: Koichi-Shigihara2 On-a-journey ***")
 
           try:
               res = requests.get(
@@ -77,6 +84,11 @@ jobs:
                   headers=headers,
                   timeout=30
               )
+              if res.status_code == 403:
+                  raise Exception(
+                      f"403 Forbidden: SEC_USER_AGENT_EMAIL Secretが未設定か無効です。"
+                      f"GitHub Settings → Secrets → SEC_USER_AGENT_EMAIL にメールアドレスを登録してください。"
+                  )
               res.raise_for_status()
               data = res.json()
           except Exception as e:
@@ -99,7 +111,7 @@ jobs:
 
           print(f"[OK] {ticker}: CIK={cik}, Name={name}")
 
-          # ── CSVに追記 ──
+          # ── CSVに追記・ソート ──
           rows.append({"ticker": ticker, "cik": cik, "name": name})
           rows.sort(key=lambda r: r["ticker"])
 
@@ -109,7 +121,6 @@ jobs:
               writer.writeheader()
               writer.writerows(rows)
 
-          # ── result.jsonに成功を記録 ──
           write_result({
               "ticker": ticker,
               "cik": cik,
@@ -121,19 +132,17 @@ jobs:
           EOF
         env:
           TICKER: ${{ github.event.inputs.ticker }}
+          SEC_USER_AGENT_EMAIL: ${{ secrets.SEC_USER_AGENT_EMAIL }}
 
-      # exitコード0/1に関わらず常にコミットを試みる
       - name: Commit updated files
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 存在するファイルのみ add（存在しないファイルはエラーを無視）
           git add config/cik_lookup.csv 2>/dev/null || true
           git add config/cik_lookup_result.json 2>/dev/null || true
 
-          # 差分があればコミット、なければスキップ
           if git diff --staged --quiet; then
             echo "[INFO] コミットする変更はありません"
           else
