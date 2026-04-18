@@ -204,19 +204,19 @@
   },
   "fcf_base": {
     "base_fcf": 8234200000.0,
-    "method": "recent_2yr",
+    "method": "avg_5yr",
     "fcf_5yr_avg": 8234200000.0,
-    "fcf_2yr_avg": 8234200000.0,
-    "cv": 2.938,
+    "fcf_2yr_avg": -15809500000.0,
+    "cv": 999.0,
     "cv_threshold": 0.5,
-    "ratio": 2.938,
+    "ratio": 999.0,
     "threshold": 0.5
   },
   "components": {
     "fcf_5yr_avg": 8234200000.0,
     "fcf_2yr_avg": -15809500000.0,
     "fcf_base_used": 8234200000.0,
-    "fcf_base_method": "recent_2yr",
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       -14726000000,
       -16893000000,
@@ -249,7 +249,7 @@
   },
   "validation": {
     "validated_at": "2026-04-19",
-    "model": "grok-3-mini",
+    "model": "basic_checks",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -269,6 +269,6 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": "All checks passed without issues."
+    "ai_comment": null
   }
 }

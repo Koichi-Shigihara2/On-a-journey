@@ -108,19 +108,19 @@
   },
   "fcf_base": {
     "base_fcf": 48143920.0,
-    "method": "recent_2yr",
+    "method": "avg_5yr",
     "fcf_5yr_avg": 48143920.0,
-    "fcf_2yr_avg": 48143920.0,
-    "cv": 0.533,
+    "fcf_2yr_avg": -123220000.0,
+    "cv": 999.0,
     "cv_threshold": 0.5,
-    "ratio": 0.533,
+    "ratio": 999.0,
     "threshold": 0.5
   },
   "components": {
     "fcf_5yr_avg": -167560600.0,
     "fcf_2yr_avg": -123220000.0,
     "fcf_base_used": 48143920.0,
-    "fcf_base_method": "recent_2yr",
+    "fcf_base_method": "avg_5yr",
     "fcf_list_raw": [
       -97490000,
       -148950000,
@@ -153,7 +153,7 @@
   },
   "validation": {
     "validated_at": "2026-04-19",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -173,6 +173,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "計算正しいが、市場乖離が異常",
+    "ai_concerns": "Intrinsic value per share ($5.98) is significantly lower than market price ($84.80), resulting in -92.9% divergence, indicating potential overvaluation anomaly."
   }
 }
