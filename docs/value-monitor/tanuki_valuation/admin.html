@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TANUKI VALUATION · Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0d14; --sur:#111520; --sur2:#161c2d; --bdr:#1e2840;
+      --acc:#3b82f6; --grn:#10b981; --red:#f43f5e; --amb:#f59e0b;
+      --txt:#e2e8f0; --mut:#64748b;
+      --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:14px;min-height:100vh}
+    .shell{max-width:1000px;margin:0 auto;padding:0 20px 60px}
+
+    /* ── Header ── */
+    header{border-bottom:1px solid var(--bdr);padding:16px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .logo{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.12em;display:flex;align-items:center;gap:10px;color:var(--txt);text-decoration:none}
+    .logo-dot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:pdot 2s ease-in-out infinite}
+    @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
+    .header-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .nav-links{display:flex;gap:14px}
+    .nav-links a{font-family:var(--mono);font-size:11px;color:var(--mut);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent;transition:all .2s}
+    .nav-links a:hover{color:var(--acc);border-bottom-color:var(--acc)}
+    .nav-links a.active{color:var(--acc);border-bottom-color:var(--acc)}
+
+    /* ── Token ── */
+    .token-section{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:20px;margin-bottom:24px}
+    .token-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .token-label{font-family:var(--mono);font-size:11px;color:var(--mut);white-space:nowrap}
+    .token-input{font-family:var(--mono);font-size:12px;background:var(--sur2);border:1px solid var(--bdr);padding:8px 12px;color:var(--txt);flex:1;min-width:260px;border-radius:4px}
+    .token-input:focus{outline:none;border-color:var(--acc)}
+    .btn{font-family:var(--mono);font-size:12px;padding:8px 18px;border:1px solid var(--bdr);background:var(--sur2);color:var(--txt);cursor:pointer;border-radius:4px;transition:all .2s;white-space:nowrap}
+    .btn:hover{border-color:var(--acc);color:var(--acc)}
+    .btn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+    .btn.primary:hover{background:#2563eb}
+    .btn.danger{border-color:var(--red);color:var(--red)}
+    .btn.danger:hover{background:rgba(244,63,94,.1)}
+    .btn.success{border-color:var(--grn);color:var(--grn)}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+    .status-indicator{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+    .status-dot.connected{background:var(--grn)}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:0;border-bottom:1px solid var(--bdr);margin-bottom:24px}
+    .tab{font-family:var(--mono);font-size:12px;padding:10px 20px;cursor:pointer;color:var(--mut);border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none}
+    .tab:hover{color:var(--txt)}
+    .tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* ── Section ── */
+    .section-title{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.15em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+    /* ── Table ── */
+    .table-wrap{overflow-x:auto;margin-bottom:24px}
+    table{width:100%;border-collapse:collapse;min-width:600px}
+    th{font-family:var(--mono);font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;padding:10px 12px;text-align:left;background:var(--sur2);border-bottom:1px solid var(--bdr)}
+    td{padding:10px 12px;border-bottom:1px solid var(--bdr);font-size:13px;background:var(--sur)}
+    tr:hover td{background:var(--sur2)}
+    .mono{font-family:var(--mono);font-size:12px}
+    .badge{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase}
+    .badge.ok{background:rgba(16,185,129,.15);color:var(--grn)}
+    .badge.warn{background:rgba(245,158,11,.15);color:var(--amb)}
+    .badge.err{background:rgba(100,116,139,.15);color:var(--mut)}
+
+    /* ── Add Form ── */
+    .add-form{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:20px;margin-bottom:24px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px;margin-bottom:12px}
+    .form-group label{font-size:11px;color:var(--mut);display:block;margin-bottom:4px;font-family:var(--mono)}
+    .form-input{width:100%;font-family:var(--mono);font-size:12px;background:var(--sur2);border:1px solid var(--bdr);padding:8px 10px;color:var(--txt);border-radius:4px}
+    .form-input:focus{outline:none;border-color:var(--acc)}
+    .form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .result-msg{font-family:var(--mono);font-size:12px;padding:8px 12px;border-radius:4px;margin-top:10px;display:none}
+    .result-msg.success{background:rgba(16,185,129,.1);color:var(--grn);border:1px solid var(--grn);display:block}
+    .result-msg.error{background:rgba(244,63,94,.1);color:var(--red);border:1px solid var(--red);display:block}
+    .result-msg.info{background:rgba(59,130,246,.1);color:var(--acc);border:1px solid var(--acc);display:block}
+
+    /* ── β設定テーブル ── */
+    .beta-input{font-family:var(--mono);font-size:12px;background:var(--sur2);border:1px solid var(--bdr);padding:6px 8px;color:var(--txt);border-radius:4px;width:80px;text-align:center}
+    .beta-input:focus{outline:none;border-color:var(--acc)}
+    .reason-input{font-family:var(--sans);font-size:12px;background:var(--sur2);border:1px solid var(--bdr);padding:6px 8px;color:var(--txt);border-radius:4px;width:100%}
+    .reason-input:focus{outline:none;border-color:var(--acc)}
+    .damodaran-ref{font-family:var(--mono);font-size:11px;color:var(--mut)}
+    .wacc-preview{font-family:var(--mono);font-size:12px;color:var(--acc)}
+
+    /* ── Actions ── */
+    .action-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+    .divider{height:1px;background:var(--bdr);margin:24px 0}
+
+    /* ── Spinner ── */
+    .spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:700px){
+      .form-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <a href="index.html" class="logo">
+      <span class="logo-dot"></span>
+      TANUKI <span style="color:var(--acc)">ADMIN</span>
+    </a>
+    <div class="header-right">
+      <nav class="nav-links">
+        <a href="../../">HOME</a>
+        <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
+        <a href="index.html">TANUKI</a>
+        <a href="../../market-monitor/market-pulse/">Market Pulse</a>
+        <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Token Section -->
+  <div class="token-section">
+    <div class="token-row">
+      <span class="token-label">GitHub Token:</span>
+      <input type="password" class="token-input" id="tokenInput"
+             placeholder="ghp_xxxxxxxxxxxx（repo権限が必要）">
+      <button class="btn primary" onclick="connect()">接続</button>
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText" style="color:var(--mut)">未接続</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tickers', this)">📋 銘柄管理</button>
+    <button class="tab" onclick="switchTab('beta', this)">β 設定</button>
+  </div>
+
+  <!-- ───────────────────────────────── -->
+  <!-- Tab: 銘柄管理                     -->
+  <!-- ───────────────────────────────── -->
+  <div class="tab-content active" id="tab-tickers">
+
+    <div class="action-bar">
+      <button class="btn" id="refreshBtn" onclick="loadTickerTab()" disabled>🔄 再読込</button>
+      <button class="btn primary" id="updateSelectedBtn" onclick="triggerUpdate()" disabled>▶ 選択銘柄を更新実行</button>
+      <span id="globalUpdated" style="font-family:var(--mono);font-size:11px;color:var(--mut)"></span>
+    </div>
+
+    <h3 class="section-title">監視銘柄一覧</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+            <th>ティッカー</th>
+            <th>CIK</th>
+            <th>会社名</th>
+            <th>データ状態</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tickerTableBody">
+          <tr><td colspan="6" style="text-align:center;color:var(--mut);padding:24px">接続後に表示されます</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+    <h3 class="section-title">新規銘柄追加</h3>
+    <div class="add-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>ティッカー *</label>
+          <input type="text" class="form-input" id="newTicker" placeholder="例: GOOGL"
+                 oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="form-group">
+          <label>CIK</label>
+          <input type="text" class="form-input" id="newCik" placeholder="自動取得">
+        </div>
+        <div class="form-group">
+          <label>会社名</label>
+          <input type="text" class="form-input" id="newName" placeholder="自動取得">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn" id="lookupCikBtn" onclick="lookupCik()" disabled>🔍 CIK自動取得（Actions経由）</button>
+        <button class="btn primary" id="addTickerBtn" onclick="addTicker()" disabled>＋ 銘柄を追加</button>
+        <button class="btn danger" id="deleteSelectedBtn" onclick="deleteSelected()" disabled>🗑 選択銘柄を削除</button>
+      </div>
+      <div class="result-msg" id="tickerResult"></div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────── -->
+  <!-- Tab: β設定                        -->
+  <!-- ───────────────────────────────── -->
+  <div class="tab-content" id="tab-beta">
+
+    <div class="action-bar">
+      <button class="btn primary" id="saveBetaBtn" onclick="saveBeta()" disabled>💾 保存してコミット</button>
+      <button class="btn" id="resetBetaBtn" onclick="loadBetaTab()" disabled>↺ リセット</button>
+    </div>
+
+    <p style="font-size:12px;color:var(--mut);margin-bottom:20px;line-height:1.7">
+      Damodaran 2025の業種別Unlevered β参照値をベースに、Koichiが企業特性を見て設定します。<br>
+      未設定（行を削除）の銘柄はyfinanceβにフォールバックします。
+      WACC = Rf(4.3%) + β × (Rm-Rf)(5.7%)
+    </p>
+
+    <h3 class="section-title">銘柄別β設定</h3>
+    <div class="table-wrap">
+      <table id="betaTable">
+        <thead>
+          <tr>
+            <th>ティッカー</th>
+            <th>業種</th>
+            <th>Damodaran参照β</th>
+            <th>設定β</th>
+            <th>推定WACC</th>
+            <th>理由・メモ</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="betaTableBody">
+          <tr><td colspan="7" style="text-align:center;color:var(--mut);padding:24px">接続後に表示されます</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+    <h3 class="section-title">Damodaran 2025 参照値</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px" id="damodaranRef"></div>
+
+    <div class="result-msg" id="betaResult"></div>
+  </div>
+
+</div>
+
+<script>
+// ── 定数 ──
+const REPO_OWNER = 'Koichi-Shigihara2';
+const REPO_NAME  = 'On-a-journey';
+const BRANCH     = 'kaihatsu';
+const YAML_PATH  = 'config/monitor_tickers.yaml';
+const CIK_PATH   = 'config/cik_lookup.csv';
+const BETA_PATH  = 'config/beta_config.json';
+const RF = 0.043;
+const RM_RF = 0.057;
+
+let token = '';
+let yamlSha = null;
+let csvSha  = null;
+let betaSha = null;
+let tickerList = [];
+let cikMap  = {};
+let nameMap = {};
+let betaConfig = null;
+
+// ── GitHub API ──
+function apiHeaders() {
+  return {
+    'Authorization': `token ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+}
+
+async function fetchFile(path) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`;
+  const res = await fetch(url, { headers: apiHeaders() });
+  if (!res.ok) throw new Error(`取得失敗: ${path} (${res.status})`);
+  const data = await res.json();
+  const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+  return { content, sha: data.sha };
+}
+
+async function commitFile(path, content, message, sha) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  const body = {
+    message,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: BRANCH,
+    ...(sha ? { sha } : {})
+  };
+  const res = await fetch(url, { method: 'PUT', headers: apiHeaders(), body: JSON.stringify(body) });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(`コミット失敗: ${err.message}`);
+  }
+  return await res.json();
+}
+
+async function dispatchWorkflow(workflowFile, inputs = {}) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}/dispatches`;
+  const body = { ref: BRANCH, inputs };
+  const res = await fetch(url, { method: 'POST', headers: apiHeaders(), body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`Dispatch失敗: ${res.status}`);
+}
+
+// ── YAML パース / 生成 ──
+function parseYaml(yaml) {
+  const lines = yaml.split('\n');
+  const tickers = [];
+  let inList = false;
+  for (let line of lines) {
+    line = line.trim();
+    if (line.startsWith('tickers:')) { inList = true; continue; }
+    if (inList && line.startsWith('-')) {
+      const t = line.substring(1).trim();
+      if (t) tickers.push(t);
+    }
+  }
+  return tickers;
+}
+
+function buildYaml(tickers) {
+  let y = '# 監視銘柄リスト\n';
+  y += '# 追加したい銘柄はここに追記してください（CIKがcik_lookup.csvに存在する必要あり）\n';
+  y += 'tickers:\n';
+  tickers.forEach(t => y += `  - ${t}\n`);
+  return y;
+}
+
+// ── CSV パース / 生成 ──
+function parseCsv(csv) {
+  const lines = csv.split('\n');
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const [ticker, cik, ...rest] = lines[i].split(',');
+    if (ticker) rows.push({ ticker: ticker.trim(), cik: (cik||'').trim(), name: rest.join(',').trim() });
+  }
+  return rows;
+}
+
+function buildCsv(rows) {
+  let csv = 'ticker,cik,name\n';
+  rows.forEach(r => csv += `${r.ticker},${r.cik},${r.name||''}\n`);
+  return csv;
+}
+
+// ── WACC計算 ──
+function calcWacc(beta) {
+  return (RF + beta * RM_RF * 100).toFixed(2) + '%';
+}
+
+// ── 接続 ──
+async function connect() {
+  token = document.getElementById('tokenInput').value.trim();
+  if (!token) { alert('トークンを入力してください'); return; }
+  try {
+    // 疎通確認
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { headers: apiHeaders() });
+    if (!res.ok) throw new Error('認証失敗');
+
+    document.getElementById('statusDot').className = 'status-dot connected';
+    document.getElementById('statusText').textContent = '接続済み';
+    document.getElementById('statusText').style.color = 'var(--grn)';
+
+    // 両タブのボタンを有効化
+    ['refreshBtn','updateSelectedBtn','lookupCikBtn','addTickerBtn',
+     'deleteSelectedBtn','saveBetaBtn','resetBetaBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = false;
+    });
+
+    await loadTickerTab();
+    await loadBetaTab();
+  } catch(e) {
+    alert('接続エラー: ' + e.message);
+  }
+}
+
+// ── Tab切替 ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function toggleAll(cb) {
+  document.querySelectorAll('.ticker-check').forEach(c => c.checked = cb.checked);
+}
+
+// ════════════════════════════════════
+// 銘柄管理タブ
+// ════════════════════════════════════
+
+async function loadTickerTab() {
+  const tbody = document.getElementById('tickerTableBody');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px"><span class="spinner"></span>読み込み中...</td></tr>`;
+
+  try {
+    // YAML・CSV取得
+    const { content: yaml, sha: ys } = await fetchFile(YAML_PATH);
+    const { content: csv }           = await fetchFile(CIK_PATH);
+    yamlSha = ys;
+
+    tickerList = parseYaml(yaml);
+    const rows = parseCsv(csv);
+    cikMap = {}; nameMap = {};
+    rows.forEach(r => {
+      cikMap[r.ticker.toUpperCase()] = r.cik;
+      nameMap[r.ticker.toUpperCase()] = r.name;
+    });
+
+    // テーブル描画
+    tbody.innerHTML = '';
+    for (const ticker of tickerList) {
+      const hasCik = !!cikMap[ticker];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="ticker-check" value="${ticker}"></td>
+        <td><strong class="mono">${ticker}</strong></td>
+        <td class="mono">${cikMap[ticker] || '<span style="color:var(--red)">未登録</span>'}</td>
+        <td>${nameMap[ticker] || '—'}</td>
+        <td><span class="badge ${hasCik ? 'ok' : 'warn'}">${hasCik ? 'CIK有' : 'CIK無'}</span></td>
+        <td><button class="btn danger" style="padding:4px 10px;font-size:11px"
+            onclick="deleteTicker('${ticker}')">削除</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    document.getElementById('globalUpdated').textContent =
+      `監視銘柄: ${tickerList.length}件`;
+
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--red);padding:16px">エラー: ${e.message}</td></tr>`;
+  }
+}
+
+// CIK自動取得（Actions経由）
+async function lookupCik() {
+  const ticker = document.getElementById('newTicker').value.trim().toUpperCase();
+  if (!ticker) { alert('ティッカーを入力してください'); return; }
+
+  const btn = document.getElementById('lookupCikBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Actionsを起動中...';
+  showResult('tickerResult', 'info',
+    `⏳ GitHub Actions (TANUKI_CIK_Lookup.yml) を起動しました。\n` +
+    `完了後（約30秒）「再読込」ボタンを押してCIKを確認してください。`);
+
+  try {
+    await dispatchWorkflow('TANUKI_CIK_Lookup.yml', { ticker });
+    btn.innerHTML = '✓ Actions起動済み';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = '🔍 CIK自動取得（Actions経由）';
+    }, 3000);
+  } catch(e) {
+    showResult('tickerResult', 'error', '起動失敗: ' + e.message);
+    btn.disabled = false;
+    btn.innerHTML = '🔍 CIK自動取得（Actions経由）';
+  }
+}
+
+// 銘柄追加
+async function addTicker() {
+  const ticker = document.getElementById('newTicker').value.trim().toUpperCase();
+  const cik    = document.getElementById('newCik').value.trim();
+  const name   = document.getElementById('newName').value.trim();
+
+  if (!ticker) { alert('ティッカーは必須です'); return; }
+
+  const btn = document.getElementById('addTickerBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>追加中...';
+
+  try {
+    // YAML更新
+    if (tickerList.includes(ticker)) {
+      showResult('tickerResult', 'error', `${ticker} は既に登録されています`);
+      return;
+    }
+    const newList = [...tickerList, ticker].sort();
+    const { sha: ys } = await fetchFile(YAML_PATH);
+    await commitFile(YAML_PATH, buildYaml(newList), `chore: add ticker ${ticker}`, ys);
+
+    // CIKが入力されていればCSVも更新
+    if (cik) {
+      const { content: csv, sha: cs } = await fetchFile(CIK_PATH);
+      const rows = parseCsv(csv);
+      if (!rows.find(r => r.ticker.toUpperCase() === ticker)) {
+        rows.push({ ticker, cik, name });
+        rows.sort((a, b) => a.ticker.localeCompare(b.ticker));
+        await commitFile(CIK_PATH, buildCsv(rows), `chore: add CIK for ${ticker}`, cs);
+      }
+    }
+
+    showResult('tickerResult', 'success',
+      `✓ ${ticker} を追加しました。CIKが未入力の場合は「CIK自動取得」で取得後に再読込してください。`);
+    document.getElementById('newTicker').value = '';
+    document.getElementById('newCik').value = '';
+    document.getElementById('newName').value = '';
+    await loadTickerTab();
+  } catch(e) {
+    showResult('tickerResult', 'error', '追加失敗: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '＋ 銘柄を追加';
+  }
+}
+
+// 銘柄削除（個別）
+async function deleteTicker(ticker) {
+  if (!confirm(`${ticker} を監視銘柄から削除しますか？\n（cik_lookup.csvは変更されません）`)) return;
+  try {
+    const { content: yaml, sha: ys } = await fetchFile(YAML_PATH);
+    const list = parseYaml(yaml).filter(t => t !== ticker);
+    await commitFile(YAML_PATH, buildYaml(list), `chore: remove ticker ${ticker}`, ys);
+    showResult('tickerResult', 'success', `✓ ${ticker} を削除しました`);
+    await loadTickerTab();
+  } catch(e) {
+    showResult('tickerResult', 'error', '削除失敗: ' + e.message);
+  }
+}
+
+// 選択銘柄を削除
+async function deleteSelected() {
+  const selected = Array.from(document.querySelectorAll('.ticker-check:checked')).map(c => c.value);
+  if (selected.length === 0) { alert('銘柄を選択してください'); return; }
+  if (!confirm(`以下の銘柄を削除しますか？\n${selected.join(', ')}`)) return;
+  try {
+    const { content: yaml, sha: ys } = await fetchFile(YAML_PATH);
+    const list = parseYaml(yaml).filter(t => !selected.includes(t));
+    await commitFile(YAML_PATH, buildYaml(list), `chore: remove tickers ${selected.join(',')}`, ys);
+    showResult('tickerResult', 'success', `✓ ${selected.join(', ')} を削除しました`);
+    await loadTickerTab();
+  } catch(e) {
+    showResult('tickerResult', 'error', '削除失敗: ' + e.message);
+  }
+}
+
+// 選択銘柄の更新実行
+async function triggerUpdate() {
+  const selected = Array.from(document.querySelectorAll('.ticker-check:checked')).map(c => c.value);
+  if (selected.length === 0) { alert('銘柄を選択してください'); return; }
+  if (!confirm(`以下の銘柄の更新を開始しますか？\n${selected.join(', ')}`)) return;
+  try {
+    await dispatchWorkflow('TANUKI_VALUATION_Update.yml', { ticker: selected.join(',') });
+    showResult('tickerResult', 'success',
+      `✓ 更新をリクエストしました (${selected.join(', ')})。\nGitHub Actionsの完了後（約3分）、一覧ページで結果を確認してください。`);
+  } catch(e) {
+    showResult('tickerResult', 'error', 'エラー: ' + e.message);
+  }
+}
+
+// ════════════════════════════════════
+// β設定タブ
+// ════════════════════════════════════
+
+async function loadBetaTab() {
+  const tbody = document.getElementById('betaTableBody');
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px"><span class="spinner"></span>読み込み中...</td></tr>`;
+
+  try {
+    const { content, sha } = await fetchFile(BETA_PATH);
+    betaConfig = JSON.parse(content);
+    betaSha = sha;
+    renderBetaTable();
+    renderDamodaranRef();
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">エラー: ${e.message}</td></tr>`;
+  }
+}
+
+function renderBetaTable() {
+  const tbody = document.getElementById('betaTableBody');
+  const overrides = betaConfig.overrides || {};
+  const damoRef = betaConfig._damodaran_ref_2025 || {};
+
+  tbody.innerHTML = '';
+  for (const [ticker, cfg] of Object.entries(overrides)) {
+    const refBeta = damoRef[cfg.sector] || '—';
+    const refLabel = cfg.sector ? `${cfg.sector}` : '—';
+    const tr = document.createElement('tr');
+    tr.dataset.ticker = ticker;
+    tr.innerHTML = `
+      <td><strong class="mono">${ticker}</strong></td>
+      <td class="mono" style="font-size:11px">${refLabel}</td>
+      <td class="damodaran-ref">${refBeta !== '—' ? refBeta.toFixed(2) : '—'}</td>
+      <td>
+        <input type="number" class="beta-input" id="beta-${ticker}"
+               value="${cfg.beta}" step="0.01" min="0.3" max="3.0"
+               oninput="updateWaccPreview('${ticker}')">
+      </td>
+      <td class="wacc-preview" id="wacc-${ticker}">${calcWacc(cfg.beta)}</td>
+      <td>
+        <input type="text" class="reason-input" id="reason-${ticker}"
+               value="${cfg.reason || ''}" placeholder="設定理由...">
+      </td>
+      <td>
+        <button class="btn danger" style="padding:4px 10px;font-size:11px"
+                onclick="removeBetaRow('${ticker}')">削除</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // 新規行追加ボタン
+  const addRow = document.createElement('tr');
+  addRow.innerHTML = `
+    <td colspan="7" style="text-align:center;padding:10px">
+      <button class="btn" onclick="addBetaRow()" style="font-size:11px">＋ 銘柄を追加</button>
+    </td>
+  `;
+  tbody.appendChild(addRow);
+}
+
+function updateWaccPreview(ticker) {
+  const beta = parseFloat(document.getElementById(`beta-${ticker}`)?.value);
+  if (!isNaN(beta)) {
+    document.getElementById(`wacc-${ticker}`).textContent = calcWacc(beta);
+  }
+}
+
+function removeBetaRow(ticker) {
+  if (!confirm(`${ticker} のβ設定を削除しますか？（yfinanceβにフォールバックします）`)) return;
+  delete betaConfig.overrides[ticker];
+  renderBetaTable();
+}
+
+function addBetaRow() {
+  const ticker = prompt('ティッカーを入力してください（例: GOOGL）');
+  if (!ticker) return;
+  const t = ticker.trim().toUpperCase();
+  if (betaConfig.overrides[t]) { alert('既に設定済みです'); return; }
+  betaConfig.overrides[t] = { beta: 1.0, sector: '', reason: '' };
+  renderBetaTable();
+  // 追加した行にスクロール
+  setTimeout(() => document.getElementById(`beta-${t}`)?.focus(), 100);
+}
+
+async function saveBeta() {
+  // テーブルから最新値を収集
+  const rows = document.querySelectorAll('#betaTableBody tr[data-ticker]');
+  const newOverrides = {};
+  for (const row of rows) {
+    const ticker = row.dataset.ticker;
+    const beta   = parseFloat(document.getElementById(`beta-${ticker}`)?.value);
+    const reason = document.getElementById(`reason-${ticker}`)?.value || '';
+    if (isNaN(beta)) continue;
+    newOverrides[ticker] = {
+      ...betaConfig.overrides[ticker],
+      beta,
+      reason
+    };
+  }
+  betaConfig.overrides = newOverrides;
+
+  const btn = document.getElementById('saveBetaBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>保存中...';
+
+  try {
+    const { sha } = await fetchFile(BETA_PATH);
+    const content = JSON.stringify(betaConfig, null, 2);
+    await commitFile(BETA_PATH, content, 'chore: update beta_config.json', sha);
+    betaSha = sha;
+    showResult('betaResult', 'success', '✓ beta_config.json を保存しました。次回のパイプライン実行から反映されます。');
+    await loadBetaTab();
+  } catch(e) {
+    showResult('betaResult', 'error', '保存失敗: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 保存してコミット';
+  }
+}
+
+function renderDamodaranRef() {
+  const container = document.getElementById('damodaranRef');
+  const damoRef = betaConfig._damodaran_ref_2025 || {};
+  container.innerHTML = Object.entries(damoRef).map(([sector, beta]) => `
+    <div style="background:var(--sur);border:1px solid var(--bdr);border-radius:6px;padding:12px 14px">
+      <div style="font-size:11px;color:var(--mut);font-family:var(--mono)">${sector}</div>
+      <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--acc);margin-top:4px">${beta.toFixed(2)}</div>
+      <div style="font-size:11px;color:var(--mut);margin-top:2px">WACC: ${calcWacc(beta)}</div>
+    </div>
+  `).join('');
+}
+
+// ── ユーティリティ ──
+function showResult(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = `result-msg ${type}`;
+  el.style.whiteSpace = 'pre-line';
+  el.textContent = msg;
+}
+</script>
+</body>
+</html>
