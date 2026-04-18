@@ -301,7 +301,8 @@ function render(d) {
   const fcfBaseUsed = fcfBase.base_fcf || d.components?.fcf_base_used || 0;
   const fcf5yr = fcfBase.fcf_5yr_avg ?? d.components?.fcf_5yr_avg ?? 0;
   const fcf2yr = fcfBase.fcf_2yr_avg ?? d.components?.fcf_2yr_avg ?? 0;
-  const fcfRatio = fcfBase.ratio || 0;
+  const fcfRatio = fcfBase.ratio || 0;   // 後方互換（旧ratio）
+  const fcfCv    = fcfBase.cv    ?? fcfBase.ratio ?? 0;  // v6.3: CV値
 
   // v6.2: 成長オプション
   const growthOptions = d.growth_options || { total_pv: 0, count: 0, options: [] };
@@ -528,17 +529,17 @@ function render(d) {
           </div>
           <div class="calc-step-body">
             <div class="formula-box">
-              <code>ratio = fcf_2yr_avg / fcf_5yr_avg</code>
+              <code>CV = std(FCF過去5年) / |mean(FCF過去5年)|</code>
               <p class="formula-desc">
-                ratio &gt; 1.5（急拡大） → <strong>recent_2yr</strong>を採用<br>
-                ratio ≤ 1.5（安定・成熟） → <strong>avg_5yr</strong>を採用<br>
-                成長企業のFCF急拡大を捉え、出発点の過小評価を回避。
+                CV ≤ 0.5（安定） → <strong>avg_5yr</strong>を採用（成熟企業: KO, MSFT等）<br>
+                CV &gt; 0.5（不安定）→ <strong>recent_2yr</strong>を採用（成長企業: NVDA, AMD等）<br>
+                FCFの変動係数で安定性を測定。成長企業の過小評価を構造的に解消。（v6.3）
               </p>
             </div>
             <div class="inputs-grid">
               <div class="input-item"><span class="input-label">5年平均FCF</span><span class="input-value">${fmtB(fcf5yr)}</span></div>
               <div class="input-item"><span class="input-label">直近2年平均FCF</span><span class="input-value">${fmtB(fcf2yr)}</span></div>
-              <div class="input-item"><span class="input-label">比率 (2y/5y)</span><span class="input-value">${fcfRatio ? fcfRatio.toFixed(2) : '—'}</span></div>
+              <div class="input-item"><span class="input-label">変動係数 (CV)</span><span class="input-value">${fcfCv && fcfCv < 999 ? fcfCv.toFixed(2) : '—'}</span></div>
               <div class="input-item"><span class="input-label">採用ベース</span><span class="input-value highlight">${fmtBaseLabel(fcfBaseMethod)}</span></div>
             </div>
           </div>
