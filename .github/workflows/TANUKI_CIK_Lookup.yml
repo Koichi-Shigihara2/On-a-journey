@@ -1,0 +1,124 @@
+name: TANUKI CIK Lookup
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'ティッカーシンボル（例: GOOGL）'
+        required: true
+        type: string
+
+jobs:
+  cik-lookup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: kaihatsu
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests --break-system-packages
+
+      - name: Lookup CIK from SEC
+        env:
+          TICKER: ${{ github.event.inputs.ticker }}
+        run: |
+          python - <<'EOF'
+          import os
+          import csv
+          import json
+          import requests
+          import time
+
+          ticker = os.environ["TICKER"].strip().upper()
+          csv_path = "config/cik_lookup.csv"
+
+          # ── 既存CSVを読み込む ──
+          rows = []
+          existing_tickers = set()
+          try:
+              with open(csv_path, newline='', encoding='utf-8') as f:
+                  reader = csv.DictReader(f)
+                  for row in reader:
+                      rows.append(row)
+                      existing_tickers.add(row['ticker'].upper())
+          except FileNotFoundError:
+              pass
+
+          if ticker in existing_tickers:
+              print(f"[SKIP] {ticker} は既にcik_lookup.csvに存在します")
+              exit(0)
+
+          # ── SEC company_tickers.json から CIK を取得 ──
+          print(f"[INFO] SEC APIからCIKを取得中: {ticker}")
+          url = "https://data.sec.gov/submissions/CIK{}.json"
+          search_url = "https://efts.sec.gov/LATEST/search-index?q=%22{}%22&dateRange=custom&startdt=2020-01-01&forms=10-K"
+
+          # SEC company_tickers.jsonを使用（最も安定）
+          headers = {
+              "User-Agent": "Koichi-Shigihara2 On-a-journey tanuki-valuation",
+              "Accept": "application/json"
+          }
+
+          res = requests.get(
+              "https://www.sec.gov/files/company_tickers.json",
+              headers=headers,
+              timeout=30
+          )
+          res.raise_for_status()
+          data = res.json()
+
+          cik = None
+          name = None
+          for entry in data.values():
+              if entry.get("ticker", "").upper() == ticker:
+                  cik = str(entry["cik_str"]).zfill(10)
+                  name = entry.get("title", "")
+                  break
+
+          if not cik:
+              print(f"[ERROR] {ticker} のCIKが見つかりませんでした")
+              # result.jsonに失敗を記録
+              with open("config/cik_lookup_result.json", "w") as f:
+                  json.dump({"ticker": ticker, "status": "not_found"}, f)
+              exit(1)
+
+          print(f"[OK] {ticker}: CIK={cik}, Name={name}")
+
+          # ── CSVに追記 ──
+          rows.append({"ticker": ticker, "cik": cik, "name": name})
+          rows.sort(key=lambda r: r["ticker"])
+
+          with open(csv_path, "w", newline='', encoding='utf-8') as f:
+              writer = csv.DictWriter(f, fieldnames=["ticker", "cik", "name"])
+              writer.writeheader()
+              writer.writerows(rows)
+
+          # ── 結果をJSONで記録（admin.htmlが参照） ──
+          with open("config/cik_lookup_result.json", "w", encoding='utf-8') as f:
+              json.dump({
+                  "ticker": ticker,
+                  "cik": cik,
+                  "name": name,
+                  "status": "ok"
+              }, f, ensure_ascii=False)
+
+          print(f"[DONE] cik_lookup.csv を更新しました")
+          EOF
+
+      - name: Commit updated CSV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/cik_lookup.csv config/cik_lookup_result.json
+          git diff --staged --quiet || git commit -m "chore: add CIK for ${{ github.event.inputs.ticker }}"
+          git push
