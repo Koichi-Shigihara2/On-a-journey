@@ -601,7 +601,7 @@ async function triggerUpdate() {
   if (selected.length === 0) { alert('銘柄を選択してください'); return; }
   if (!confirm(`以下の銘柄の更新を開始しますか？\n${selected.join(', ')}`)) return;
   try {
-    await dispatchWorkflow('TANUKI_VALUATION_Update.yml', { ticker: selected.join(',') });
+    await dispatchWorkflow('TANUKI_VALUATION_Update.yml', { tickers: selected.join(',') });
     showResult('tickerResult', 'success',
       `✓ 更新をリクエストしました (${selected.join(', ')})。\nGitHub Actionsの完了後（約3分）、一覧ページで結果を確認してください。`);
   } catch(e) {
