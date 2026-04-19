@@ -221,7 +221,7 @@
   },
   "validation": {
     "validated_at": "2026-04-19",
-    "model": "basic_checks",
+    "model": "grok-3-mini",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
@@ -241,6 +241,7 @@
       }
     },
     "overall": "PASS",
-    "ai_comment": null
+    "ai_comment": "Results indicate possible input errors leading to anomalies.",
+    "ai_concerns": "Intrinsic value per share of 0.04 is unrealistically low compared to market price of 35.25, suggesting potential scale error in FCF or other inputs."
   }
 }
