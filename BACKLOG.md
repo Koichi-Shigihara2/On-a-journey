@@ -6924,59 +6924,6 @@ None:`（921行）の条件が成立せずFRED取得がスキップされる。*
 
 ## 優先度：低（アイデア段階）
 
-### [VRT-REVENUE-2018-MISSING-1] VRT FY2018のrevenue=0取得失敗（gross_profitと定義上矛盾）
-**優先度:** 低（実害はGP法入力整合性ガードで既に遮断済み、着手緊急性なし）
-**分類:** バグ / データ取得 / SEC EDGAR
-**登録日:** 2026-08-19
-**発見:** `[[OPERATING-INCOME-EXTRACTION-GAP-1]]`案D（GP法入力整合性
-ガード）実装時の全105銘柄実測
-
-#### 内容
-VRT（Vertiv Holdings）FY2018の`annual_2018.json`で`revenue=0`
-（取得失敗）であるにもかかわらず`gross_profit=-$2,865,200,000`
-（マイナス28.65億ドル）という、定義上（`gross_profit = revenue - COGS`）
-成立しない組み合わせが存在する。FY2019も同様に`revenue=0`だが、こちらは
-`operating_income`が標準タグ（比較年度再掲、`is_own_data=False`）から
-取得されているため実害はない。
-
-**推測（未検証）**: VRTは2020年2月にVertiv Holdings（旧GS Acquisition
-Holdings、SPAC）とVertiv Group（Platinum Equity傘下）の合併により上場した
-企業。2018年は合併前の前身法人（Vertiv Group、非公開）のデータであり、
-SEC EDGARへの遡及登録時にrevenueタグが適切に紐付けられなかった可能性が
-高いと推測されるが、実際の登録経緯（S-4等）は未確認。
-
-#### 実害
-`_backfill_operating_income()`のGP法計算にこの矛盾したgross_profitが
-そのまま入力されると、`operating_income=-$4,287,300,000`という明らかに
-誤った値を生成することを実際に確認した（2026-08-19、
-`[[QUALITY-GATES-EPIC-1]]`本線3のフォールバック向き反転〈案A〉検証時に
-発見）。現在は案D（GP法入力の整合性ガード）により、この年度はGP法を
-使わずpretax調整法（$6,370,187、元の値と同一）へフォールバックする設計に
-なっており、実害は遮断済み。ただし根本原因（revenue取得失敗）自体は
-未解消のまま残っている。
-
-**全105銘柄・全年度の実測で、他に該当する年度は無かった**（`revenue=0`
-または未取得なのに`gross_profit`が非ゼロという組み合わせは、標準タグ
-採用済みで実害ゼロの数件〈AMD/CELH/JNJ/KO等の`revenue`未取得だが
-`gross_profit`は個別に正常取得されている古い年度、IONQ 2020〈標準タグ〉〉
-を除き、GP法が実際に計算されうる年度としてはVRT FY2018のみ）。
-
-#### 対応方針
-`_extract_values_best_candidate()`等のrevenue抽出ロジックで、VRT FY2018
-に該当するcompany_facts.jsonのタグを実際に調査し、取得可能な候補タグが
-あるかを確認する。実装は本項目のスコープ外（登録のみ）。
-
-**`[[QUALITY-GATES-EPIC-1]]`ゲート1のyfinance照合をrevenueへ横展開すれば、
-この種の破綻は取得時点で検知できる**（CHECK-35のoperating_income照合と
-同型のパターンをrevenueに適用すれば、
-`revenue=0`という取得失敗を、yfinance実測値との突合で即座に検知できる）。
-ただし2026-08-19時点の優先順位では、revenue横展開は他3件（Layer3範囲
-実測・ゲート3対象棚卸し・`RestructuringCharges`追加）より後回し
-（`CHAT_RULES.md`「本線の定義」参照）。
-
-#### 着手条件
-なし
-
 ### [STOCKHTML-LAYER3-PUBLISH-PIPELINE-MISSING-1] stock.htmlのLayer3切替は新規公開パイプライン構築が前提だが、現時点で着手しない
 **優先度:** 低（対応不要、記録のみ）
 **分類:** アーキテクチャ上のブロッカー / 着手見送り
@@ -7107,38 +7054,6 @@ layer3_builder.py）自体には手を入れていない。TANUKI TAILの
 なし。実害が発生した時点で対応。
 
 ---
-
-### [RCAT-2016Q3-ORPHANED-QUARTERLY-FILE-1] RCAT 2016Q3のquarterly_*.jsonが新ロジックで未上書きのまま残存
-**優先度:** 低
-**分類:** データ品質 / SEC EDGARデータ（新DB構築プロジェクト フェーズ1）
-**登録日:** 2026-08-05
-**発見:** `[[SECDATA-STORAGE-FRAGMENTATION-1]]` quarterly_*.json YTD→SA修正の
-検証中（メモリ上シミュレーションと実書き込み結果のSBC集計に±1件の
-差異が発生、原因調査で発見）
-
-#### 内容
-`parser.py::save_parsed_data()`は`parsed["quarterly"]`に存在する
-四半期キーのみを上書き保存する。RCATの`2016Q3`は、当該四半期の
-XBRL申告が極端に薄く（`AllocatedShareBasedCompensationExpense`タグの
-単独9ヶ月YTD候補〈起点四半期なし〉のみで、他フィールドも同様に
-差分計算不能）、統一アルゴリズム適用後は**どのフィールドも解決できず
-四半期キー自体が`parsed["quarterly"]`から消滅**した。結果、
-`common/sec_data/data/RCAT/quarterly_2016Q3.json`は今回の一括再パースで
-一切上書きされず、修正前（YTD値をSA値として誤保存していた）の内容が
-そのまま残存している（`stock_based_compensation=78472`は9ヶ月YTD値）。
-
-全105銘柄・2,296ファイルの再パースでこのパターンに該当するのは
-RCAT 2016Q3の1ファイルのみと確認済み（全銘柄横断で「旧ファイルには
-存在したが新抽出結果には四半期キー自体が存在しない」ケースを検索）。
-
-#### 実害
-現時点でゼロ。`data/quarterly_*.json`のpl/cf区分を直接参照する本番
-消費者は存在しない（`[[SECDATA-STORAGE-FRAGMENTATION-1]]`調査で確認済み）。
-
-#### 対応方針（未実施）
-残存ファイルを放置するか、明示的に削除する（「その四半期は再現不能」と
-正直に示す）か、設計判断が必要。優先度は低（1ファイルのみ・実害ゼロ・
-将来のアクセサ実装時に再検討で十分）。
 
 ### [PARSER-MERGED-TAG-MIXING-RISK-1] parser.py::_extract_values_merged()が、Layer3が[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]で廃棄した危険パターン（複数タグの生エントリを先に混ぜてからYTD変換）と同型の構造を持つ疑い
 **優先度:** 低（Layer3統一方針確定により、data/系統の重要度自体が
@@ -7749,70 +7664,6 @@ WATCH丸めに限られ、IV・upside等のDCF計算値自体は変更されな�
 
 #### 着手条件
 なし（修正方針の設計から着手可能。優先度：低のため次回以降の余力時対応）
-
----
-
-### [LAYER3-RPO-CANDIDATE-ORDER-1] layer3_builder.pyのrpo候補統合（union）で総額系タグが長期限定タグより優先され値が大幅変動する
-**優先度:** 中〜高→**実害調査完了により低（2026-08-15）**
-**分類:** データ品質 / バグ
-**登録日:** 2026-07-24
-**発見:** フェーズA（layer3_builder.py）105銘柄回帰レポート
-
-#### 内容
-統合スキーマのrpo候補リスト（quarterly.py・parser.py双方のunion後）
-において、`ContractWithCustomerLiability`（総額系）が
-`ContractWithCustomerLiabilityNoncurrent`（長期のみ）より優先順位で
-先に選ばれてしまい、値が大きく変動する（AMZN実データ: 4.4B→25B）。
-15銘柄で差異確認。
-
-#### 影響（登録時点の記述）
-RPO（残存履行義務）はHypeCore・STONKS SILO等で成長シグナルとして
-参照される指標であり、値の大幅な変動は下流の判定に影響しうる、と
-記載されていたが、下記「実害調査結果」の通りこの記述自体が実態と
-食い違っていることが判明した。
-
-#### 実害調査結果（2026-08-13〜15、読み取り専用調査・チャット記録）
-①**TANUKI VALUATIONのRPO取得経路**: `core_calculator.py`が呼ぶ
-`SECReader.get_rpo_context()`/`get_rpo_series()`（`reader.py:264-330`）
-は`common/sec_data/normalized/{TICKER}_quarterly_normalized.json`を
-直接読んでおり、**Layer3（`layer3_builder.py`）を一切経由しない**。
-normalized/側のRPOフォールバック候補（`RemainingPerformanceObligation`
-→`ContractWithCustomerLiabilityNoncurrent`→`DeferredRevenueNoncurrent`）
-は本バグの原因である総額系タグ`ContractWithCustomerLiability`を
-そもそも含んでおらず、構造的に別物。
-
-②**フェーズD Step2-1（2026-08-06完了）にrpoが含まれなかった理由**:
-見落としではなく、TANUKI VALUATIONのRPO取得が元々別経路
-（`SECReader`専用メソッド、normalized/直読み）のままで、Layer3切替の
-対象リスト（SharesDiluted/NetIncome/LTDebt/TTM営業利益/Moat入力の
-6項目）に最初から含まれていなかったため。
-
-③**layer3_builder.py側のrpoフィールドの実消費者**: `layer3_builder.py`
-は`rpo`を`NO_CANDIDATE_MERGE_FIELDS`（本バグ対応を意図的に別タスクへ
-委ねる旨のコメント付き）として保持しているが、リポジトリ全体で
-`get_field_entries(store, "rpo")`という呼び出しは0件。「影響」欄が
-挙げていたHypeCore・STONKS SILOも実コードを確認したところ`rpo`/`RPO`
-への参照は一切存在しない（当初の記述自体が誤りだった可能性が高い）。
-
-**結論**: バグを含むコード（layer3_builder.pyのrpo候補統合ロジック）
-自体は現存するが、リポジトリ全体で実際にこれを読む消費者がゼロ
-（TANUKI VALUATIONは別経路、HypeCore・STONKS SILOはそもそも無関係）。
-着手条件の締切（フェーズD Step2-1着手前）は形式的には超過している
-が、rpoがLayer3切替の対象になったことが一度もないため実害はない。
-
-#### 対応方針
-未定。総額系タグと長期のみタグのどちらを正とすべきか（あるいは
-両者を別フィールドとして分離すべきか）の判断が必要。
-[[SCHEMA-NORMALIZED-ISSUES-1]]（旧SCHEMA-SHARESBASIC-CONCEPT-
-MISMATCH-1）と同種の「候補統合時の概念混在」パターンの可能性がある。
-実消費者が現れた場合（RPOをLayer3経由に切替する計画が具体化した場合
-等）に優先度を再度引き上げて対応する。
-
-#### 着手条件
-なし（優先度を中〜高→低に格下げ、実消費者が現れた時点で再判断する。
-登録時点の「フェーズD Step2-1着手前までに解消」という締切は、rpoが
-同Step2-1の切替対象に一度も含まれなかったため実質的に意味を持たな
-かったと2026-08-15に確認済み）。
 
 ---
 
