@@ -8083,41 +8083,6 @@ report_consistency_check.pyに、gross_profitとcost_of_revenueの整合性
 
 ---
 
-### [JOBY-BLADE-ACQUISITION-IMPACT-SCOPE-1] JOBYの2025年Blade買収による事業実態変化がCOGS以外の指標にも波及していないかの確認未了
-**優先度:** 中〜未定
-**分類:** データ品質 / 事業実態変化の反映確認 / TANUKI VALUATION
-**登録日:** 2026-09-04
-**発見:** [[LAYER3-COGS-STRUCTURAL-GAP-16TICKERS-1]]JOBY個別調査
-
-#### 内容
-JOBY（Joby Aviation）は2025年8月にBlade Urban Air Mobilityの旅客輸送
-事業を買収し、2022-2024年は売上ほぼゼロ（$0〜$103万）だった状態から
-FY2025売上$53,425K・2026年上半期はさらに増加という実質的な収益事業を
-新たに抱えるに至った。[[LAYER3-COGS-CANDIDATE-TAG-EXPANSION-1]]で
-判明した通りcost_of_revenue（原価）は`OtherCostAndExpenseOperating`
-タグで新規に発生・報告されているが、この事業実態の変化がCOGS以外の
-既存の指標・分類ロジックにも影響していないかは未確認のまま。
-
-具体的に確認が必要と考えられる観点（未調査、着手前の仮説レベル）:
-- revenue_growth系指標（rev_cagr_3yr/5yr等）が、売上ほぼゼロの期間
-  からの急増を「異常成長」として誤検知・誤処理していないか
-  （`growth_sanity.py`の外れ値検知ロジック等）
-- hype_phase判定・TANUKI SCOREの成長性評価が、事業実態の質的変化
-  （航空機開発企業→実運航収益企業への転換）を適切に反映できているか
-- 過去のJOBY関連の分類・前提（例: 旧FINTREND-SM-JOBY-NONE-1、
-  2026-09-05に[[LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1]]へ統合済み、
-  のSMフィールドNone化等）がBlade買収後のデータでも引き続き妥当か
-
-#### 対応方針（未定）
-上記観点について個別に実データを確認し、問題があれば当該指標ごとに
-別途BACKLOGへ切り出す。問題がなければ「確認済み・対応不要」として
-本エントリをクローズする。
-
-#### 着手条件
-なし。優先度は要調査（実害の有無が未確認のため中〜未定の保守的表現）。
-
----
-
 ### [LAYER3-VISA-EPS-TAG-MISSING-1] Visa(V)がEPS関連タグを一切報告せずeps_diluted経由のROEフォールバックが機能しない
 **優先度:** 低
 **分類:** データ品質
