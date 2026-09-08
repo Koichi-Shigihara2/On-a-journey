@@ -7068,23 +7068,6 @@ annual_*.json`（parser.py経由）の直読みを継続する。
 
 ---
 
-### [HYPECORE-SUBSTAGE-LAYER3-UNVERIFIED-1] detect_substage()がrev_yoy・eps_surpriseを直接参照するが、Layer3切替時の影響が未検証
-**優先度:** 低（`determine_stage()`〈ステージ本体〉への影響はゼロと
-確認済み、substageは別ロジックのため範囲外のまま）
-**分類:** 未検証事項
-**登録日:** 2026-08-07
-**発見:** フェーズD Step2-4事前調査（チャット記録、2026-08-07）
-
-#### 内容
-substage（内部フェーズ）はrev_yoy・eps_surpriseを直接参照する別
-ロジックのため、stageとは独立してLayer3切替の影響を受ける可能性が
-ある。Step2-4実装時のスコープには含めない。
-
-#### 着手条件
-Step2-4実装完了後、必要であれば追加調査。
-
----
-
 ### [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ
 **優先度:** 低（現時点で10銘柄全数、最新四半期はWeightedAverage側が
 採用されており実害なし）
@@ -7197,27 +7180,6 @@ Layer3が明示的に廃棄した「生エントリを先に混ぜてから変�
 merge_all_tags対象フィールド一覧の洗い出し・実データでの影響有無検証
 から。ただしdata/系統の位置づけがLayer3統一に伴い補助的になったため、
 緊急性は低い。
-
-### [LAYER3-SNPS-STALE-TAG-PRIORITY-1] SNPS FY2022のRevenueで、Layer3の候補タグ優先順位が後発の修正再表示（restatement）を拾えず、原本の古い値に固定される構造的リスク
-**優先度:** 低（現時点でMoat Score計算への実害なし、将来的リスクの記録）
-**分類:** 設計上の潜在リスク
-**登録日:** 2026-08-06
-**発見:** フェーズD Step2-1事前調査（チャット記録、2026-08-06）
-
-#### 内容
-SNPS FY2022（2022-10-31）で、原本$5,081,542,000（`Revenues`タグ、
-2022年10-K）が、後に$4,615,714,000へ修正再表示
-（`RevenueFromContractWithCustomerExcludingAssessedTax`タグ、2024年
-10-K）されたが、Layer3の候補優先順位は`Revenues`が固定で先頭のため、
-修正再表示を拾えていない。SEC EDGARで裏取り確認済み。
-
-現時点では`rev_annual[-3:]`の対象外（FY2023/24/25は完全一致）のため
-実害なし。将来的にFY2022が対象窓に入る用途、または他の類似ケース
-（同種のrestatementパターン）で実害化しうる。
-
-#### 着手条件
-なし。実害が発生した時点、または類似ケースの横断調査を行う際に
-再検討する。
 
 ### [LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1] Layer3のSM/SGA概念分離に伴うNone化2件の統合（元LAYER3-ROIC-WACC-NONE-4TICKERS-1/FINTREND-SM-JOBY-NONE-1）
 **優先度:** 低（意図的な仕様、既知の`[[SCHEMA-NORMALIZED-ISSUES-1]]`②
@@ -7854,36 +7816,6 @@ MISMATCH-1）と同種の「候補統合時の概念混在」パターンの可�
 
 ---
 
-### [LAYER3-UNEXPLAINED-SINGLE-TICKER-DIFFS-1] layer3_builder.py回帰レポートで検出された原因未調査の単一銘柄差異
-**優先度:** 低
-**分類:** データ品質 / 要調査
-**登録日:** 2026-07-24
-**発見:** フェーズA（layer3_builder.py）105銘柄回帰レポート
-
-#### 内容
-【2026-07-24再調査】
-- capital_expenditure（LLY）・stock_based_compensation（CAT）:
-  解消済み。一連の修正（候補タグ正規化順序変更・優先タグ内欠落
-  フォールバック・年次/四半期複合キー分離・Q4逆算統一）の副次効果と
-  推定される（どの修正が直接要因かは未特定）
-- gross_profit（ABBV/HON）: 原因判明。normalizer.py::
-  _calc_gross_profit()（Revenue−cost_of_revenueからのGrossProfit
-  逆算バックフィル）はlayer3_builder.pyのモジュールdocstringに
-  フェーズA当初から「未実装（既知の制限）」と明記済みのスコープ外
-  機能であり、新規バグではない。対応は当該バックフィル機能の
-  layer3_builder.pyへの実装が必要（別タスク化を検討）
-- 残る未調査: cash_and_equivalents（PAYS/RCAT 2件）・
-  short_term_investments（7件）・total_liabilities（AVAV/ELF/ESTC
-  3件）。いずれもSTOCK分類のためTTM非対象、フェーズD以降に持ち越し可
-
-#### 対応方針
-未定。フェーズB以降で個別に原因調査する。
-
-#### 着手条件
-なし
-
----
-
 ### [SEC-BKNG-SHARES-ANOMALY-1] BKNGのWeightedAverageNumberOfDilutedSharesOutstandingがSEC提出データ自体で異常値
 **優先度:** 低〜中
 **分類:** データ品質 / SEC提出データ異常
@@ -8029,31 +7961,6 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 強化するタイミングで、選択肢A（新規フィールド化）を再検討する。
 
 ---
-
----
-
-### [HON-GROSSPROFIT-2009-RESIDUAL-DISCREPANCY-1] HON(2009)のgross_profit乖離が期間長是正後も残存、既知パターンと異なる原因の疑い
-**優先度:** 低
-**分類:** データ品質 / 要個別確認
-**登録日:** 2026-08-02
-**発見:** [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]現状再確認（チャット記録）
-
-#### 内容
-HON(2009)のみ、[[PERIOD-LENGTH-VALIDATION-GAP-1]]是正後も乖離が残存
-（gross_profit=$6,896M vs revenue-cost_of_revenue逆算値=$7,723M、差$827M）。
-同じ「四半期→年次誤採用」パターンが確認されていた他の8銘柄（TDY/AVGO/CPRT/
-ABBV/CAT/FICO/HEI/KLAC）は全て解消したのに対し、この1件のみ既知パターンとは
-異なる原因の可能性がある。
-
-#### 影響
-HON単一年度。金額規模（$827M差）は小さくないが、他年度・他フィールドへの
-波及は未確認。
-
-#### 対応方針
-未定。10-K原本での個別確認が必要。
-
-#### 着手条件
-なし。優先度低。
 
 ---
 
