@@ -4848,21 +4848,20 @@ XOM: $41.871B `reconstructed_pretax`）。実装（Layer3側への再構成移�
 
 ---
 
-### [TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1] ADBE・APGEの{ticker}_thesis.jsonのkpisフィールドが空でレビューのKPIステータス表に一切表示されない
+### [TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1] ADBE・APGEの{ticker}_thesis.jsonのkpisフィールドが空でレビューのKPIステータス表に一切表示されない（表示バグは解消済み・閾値設定は未着手）
 
-**優先度:** 低（実務上の実害は限定的。ADBE・APGEはsatelliteの
-ウォッチ対象であり、KPI追跡表自体が空でも他の分析セクション
-〈summary/concerns等〉は生成される。ただし研究開発費・営業費用を
-将来取得可能にしても、この表示側のギャップが解消されない限り
-効果が出ない点に注意）
-**分類:** バグ / TAIL自動化パイプライン / 表示側の欠落
+**優先度:** 低〜中（表示バグ自体は解消済み。ADBEは保有銘柄のため
+「## 監視KPI実績」セクション自体が丸ごと消えていた実害は解消したが、
+警戒ライン・エグジット閾値が未設定のままのため、投資判断への
+実質的な活用は次項の閾値設定待ち）
+**分類:** バグ（解消済み）/ TAIL自動化パイプライン / 表示側の欠落
 **登録日:** 2026-08-21
 **発見:** `[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`残5件
 調査中（2026-08-21⑥⑦セッション）、ADBE「研究開発費」・APGE
 「営業費用」をtext_kpi_extractor.py誘導で解決できないか検討する
 過程で発見
 
-#### 内容
+#### 内容（登録時点）
 `quarterly_review_generator.py::_build_kpi_status_table()`が表示する
 KPIステータス表は、`{ticker}_thesis.json`（`docs/portfolio/tail/data/
 positions/`配下）の`kpis`フィールドを唯一のソースとする
@@ -4878,27 +4877,63 @@ json`へ保存しているにもかかわらず、`_build_kpi_status_table()`が
 `thesis_kpis`（空リスト）でループするため、**この表は完全に空
 （ヘッダーのみ）になり、取得済みのKPI値も含め一切表示されない**。
 これは`missing_kpis`の話（取得失敗の可視化不足）とは別次元の問題
-——取得に成功していても表示されない。
+——取得に成功していても表示されない。ADBEは保有銘柄のため実害あり。
 
-#### 対応方針（未確定・着手前にユーザー判断を仰ぐこと）
-`[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`Step5
-（2026-08-21⑦）の調査時点での結論: 対応するとしても以下2点を
-セットで検討する必要がある。
-- `[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`のoption(a)
-  （`xbrl_segment_fetcher.py`自体の非ディメンション取得対応、
-  `parse_default_contexts()`新設）で研究開発費・営業費用自体を
-  取得可能にする
-- `ADBE_thesis.json`・`APGE_thesis.json`へ`kpis`フィールドを新規
-  登録する（`config/tail_kpi_map.json`の既存5件・3件をベースに、
-  `warning_threshold`/`exit_threshold`等の投資判断上の閾値を
-  ユーザーが設定する必要がある——他のticker同様、機械的に埋められる
-  性質の項目ではない）
+#### 表示バグの解消（2026-09-09）
+以下2点を実装し、表示バグ自体は解消した（閾値設定は別スコープ、
+下記「残タスク」参照）。
 
-satellite全体（他5銘柄: APP/CELH/CRWV/NVDA/SOUN）でも同型のギャップが
-無いか未確認（今回はADBE・APGEの2件のみ実測、横断確認は未実施）。
+1. **`ADBE_thesis.json`・`APGE_thesis.json`へ`kpis`フィールドを新規
+   登録**（`config/tail_kpi_map.json`の既存エントリ〈ADBE 5件・APGE
+   3件〉をベースに、`name`/`layer2_name`/`description`/`source`/
+   `auto_fetchable`/`xbrl_tag`等を実データ・実コード〈`_layer2.json`の
+   `kpi_name`キー・`kpi_proposer.py`のスキーマ〉と整合する形で構築）。
+   `warning_threshold`/`exit_threshold`は今回設定せず`null`のまま
+   登録した。
+2. **None安全な表示処理を追加**（`quarterly_review_generator.py`）:
+   `_build_kpi_status_table()`の`warn`/`exit_thr`が
+   `k.get("warning_threshold", "—")`という、キー自体が存在しない
+   場合にしか効かないデフォルト値だったため、`null`を明示的に
+   登録すると表の警戒ライン・エグジット閾値列に文字列`"None"`が
+   そのまま表示される不具合を発見・修正した（`or "—"`方式に変更）。
+   同型の未サニタイズ箇所を`_resolve_kpi_value()`にも発見し、
+   あわせて修正した（`_compare_threshold()`は元々`None`安全だった
+   ため、判定ロジック自体の修正は不要）。
+
+**検証結果**: `_build_kpi_monitoring_section()`をADBE・APGEの実データ
+（`_layer2.json`）で直接呼び出し、「## 監視KPI実績」セクションが
+出現し5件・3件が実績値付き（例: ADBEサブスクリプション売上高
+$6.42B、APGE現金及び現金等価物残高$105.6M）で表示され、警戒ライン・
+エグジット閾値列は文字列`"None"`ではなく`"—"`、状態列は
+「✅ 取得済」（判定不能時の信頼度ベース表示）になることを確認した。
+コード変更前後でPLTR/SOFI/TSLA（core、既存の閾値あり）の出力が
+完全一致（diff差分0）であることも確認済み。`pytest`: 1161 passed、
+`audit.py`: 既存警告10銘柄のみ（変化なし）、
+`report_consistency_check.py --fail-on-ng`: NG=0/WARN=119件
+（コード変更前後で完全一致）。
+
+#### satellite全体への横断確認結果（2026-09-09）
+登録時点で「未確認」としていたsatellite残5銘柄（APP/CELH/CRWV/NVDA/
+SOUN）を確認した結果、**全銘柄で同型のギャップが存在する**
+（`config/tail_kpi_map.json`にKPI登録済み・対応する`{ticker}_
+layer2.json`も`layer2_complete: true`で実データ取得済みにも
+関わらず、`{ticker}_thesis.json`の`kpis`フィールドが存在しない）。
+保有銘柄はNVDA・CRWV・APP・CELH・SOUNのすべてが該当する
+（ADBEを含め、satellite全10銘柄中7銘柄が保有銘柄）ため、対応要否・
+優先順位はKoichiさんと相談の上で別途判断する。今回はADBE・APGEの
+2件のみ実装対象とし、他5件のthesis.jsonは変更していない。
+
+#### 残タスク（次項、要ユーザー判断）
+- ADBE・APGE 8件の`warning_threshold`/`exit_threshold`設定
+  （投資判断上の閾値のため機械的に埋められる性質の項目ではなく、
+  Koichiさんとの相談が必要）
+- satellite残5銘柄（APP/CELH/CRWV/NVDA/SOUN）の同型ギャップへの
+  対応要否判断（対応する場合、ADBE・APGEと同じ表示バグ修正パターンを
+  横展開できる見込み）
 
 #### 着手条件
-なし（着手要否・優先度をユーザーに確認してから着手すること）
+なし（次にお話しする機会に、上記残タスク2点をKoichiさんと相談してから
+着手する）
 
 ---
 

@@ -407,7 +407,7 @@ def _resolve_kpi_value(
 
     unit      = kinfo.get("unit", "")
     kpi_name  = kpi.get("name", "")
-    warn_thr  = str(kpi.get("warning_threshold", ""))
+    warn_thr  = str(kpi.get("warning_threshold") or "")
 
     try:
         curr_f = float(curr_val)
@@ -622,8 +622,10 @@ def _build_kpi_status_table(
 
     for k in thesis_kpis:
         name     = k.get("name", "")
-        warn     = k.get("warning_threshold", "—")
-        exit_thr = k.get("exit_threshold", "—")
+        # .get(key, default)のdefaultはキー自体が無い場合にしか効かないため、
+        # 値が明示的にNone（閾値未設定のKPI）の場合はorで「—」にフォールバックする
+        warn     = k.get("warning_threshold") or "—"
+        exit_thr = k.get("exit_threshold") or "—"
         auto_f   = k.get("auto_fetchable", False)
 
         comp_val: Optional[float] = None
