@@ -3306,66 +3306,6 @@ CONSIDERATION-1]]`）を挙げていたが、本文側の更新が漏れ「Stage
 
 ---
 
-### [SECDATA-LEGACY-CIK-GRANULARITY-1] MRVL・DELLの旧CIK拡張データの年度×フィールド粒度の個別確認未了
-**優先度:** 低（2026-09-04、規模感チェックでAVGO型の問題は不検出のため「低〜未定」から確定）
-**分類:** データ品質 / common/sec_data再設計 残課題
-**登録日:** 2026-09-02
-**発見:** `[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]` Stage 3b完了記録
-（BACKLOG_DONE.md、2026-08-05付）内に残タスクメモとして記載されていた
-ものの、正式なBACKLOG IDが採番されないまま残っていた。今回の
-`[[AVGO-CIK-HISTORY-WRONG-LEGACY-CIK-1]]`対応（AVGO削除、2026-09-02）
-に伴い`[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]`本文の「残タスク」欄
-を精査した際にこの未採番メモを発見し、正式にBACKLOG登録した。
-
-#### 内容
-2026-08-05付Stage 3残タスクメモは「MRVL/AVGO/DELL旧CIK拡張分（MRVL
-2007-2018・AVGO 2006-2014・DELL 2007-2013、フィールド別の詳細特定が
-必要）」の年度×フィールド粒度の個別確認を挙げていたが、Stage 3a・3bでは
-MO/PM/LLY・SCCO/RDW/ASTSのみ実装され、この項目自体は一度も対応されない
-まま残っていた。AVGO分は`[[AVGO-CIK-HISTORY-WRONG-LEGACY-CIK-1]]`対応
-（AVGO自体をOn-a-journey管理対象から除外）により対象外となったため、
-対象はMRVL・DELLの2銘柄に絞られる。
-
-`cik_history.json`にlegacy_ciks登録されたMRVL（旧CIK 1058057、
-2007-2018）・DELL（旧CIK 826083、2007-2013）の統合データについて、
-年度・フィールド単位で「本当に正しく統合されているか」の個別粒度確認が
-Stage 1〜3bのいずれの実装でも行われていない。AVGOで実際に旧CIK誤統合
-（無関係な買収先企業のデータ）が発覚した前例があるため、同型の問題が
-MRVL・DELLにも潜在する可能性はゼロではないが、現時点で実害が確認されて
-いるわけではない。
-
-#### 対応方針
-未定。MRVL（2007-2018）・DELL（2007-2013）それぞれの旧CIK拡張データを
-SEC EDGAR一次情報と突合し、AVGO型の誤統合がないかを確認する調査から
-着手する。
-
-#### 規模感チェック実施記録（2026-09-04）
-MRVL・DELLについて、規模感チェック（実データの売上・純利益が実在の
-企業規模と整合するかの確認）を実施した。結果、AVGO型（無関係な買収先
-企業データの混入）の問題は見当たらなかった。
-
-`cik_history.json`のtransition_noteを確認したところ、両社とも自社の
-持株会社再編・LBO（同一事業の継続）と説明されている：
-- MRVL: 2021年Inphi買収に伴う持株会社再編（旧CIK 1058057「MARVELL
-  TECHNOLOGY GROUP LTD」→新CIK 1835632「Marvell Technology, Inc.」）
-- DELL: 2013年のLBOによる非公開化・2016年EMC統合を経た新CIK 1571996
-  「Dell Technologies Inc.」への切替（旧CIK 826083「Dell Inc.」）
-
-これはAVGOの「無関係な買収先企業（Broadcom Corporation）のデータへの
-誤統合」ケースとは構造が異なり、旧CIKが指すのが正真正銘の自社の前身で
-ある点で問題の性質が異なる。
-
-**未確認のまま残る範囲**: 上記は規模感（売上・純利益の水準）レベルの
-確認に留まり、フィールド単位の取り違え（CRM/VRT型、他銘柄で過去に
-確認された個別フィールドの誤選択パターン）までは未確認。年度×
-フィールド粒度の個別確認自体は引き続き未実施のため、対応方針・着手
-条件に変更はない。
-
-#### 着手条件
-なし（優先度低、次回セッション以降で判断）
-
----
-
 ### [XBRL-UNIT-SCALE-MISMATCH-DETECTION-1] 同一タグ・同一期間の値が複数filing間で10のべき乗単位で乖離する場合を検知する汎用チェックの新設提案
 **優先度:** 中
 **分類:** アーキテクチャ改善 / 新規検知チェック提案
@@ -4357,31 +4297,6 @@ Policy B判定に新たな下限閾値を追加する方向（＝異常検知と
 
 ---
 
-### [AMZN-CONVRATE-OVERRIDE-REVIEW-1] AMZNのticker_override（conversion_rate 0.55）の前提再検証
-**優先度:** 低
-**分類:** データ品質 / TANUKI VALUATION / FCF-CONVRATE②派生
-**登録日:** 2026-07-20
-**発見:** [[AMZN-DIVERGENCE-HIGH-1]]（完了・BACKLOG_DONE.md参照）原因調査時の副次発見
-
-#### 背景
-AMZNのticker_override（`fcf_conversion_config.json`、conversion_rate
-0.55）の設定根拠は「EC部門の重いCapEx・ファイナンスリースを考慮。AWSの
-高転換とEC低転換の加重平均」——すなわちAWS＝軽CapEx・高転換率、EC＝重
-CapEx・低転換率という二分法を前提としている。
-
-しかし2025年以降のCapEx急増（$131.8B、前年比+59%、2026年計画$200B）は
-10-K・外部報道とも「大部分はAWS事業成長を支えるための技術インフラ投資」
-と明記されており、**AWS自体が現在のCapEx急増の主因**になっている。
-当初の二分法（AWS=軽CapEx）の前提が現在の実態とズレている可能性がある。
-
-0.55という数値自体が誤りとまでは断定できないため、次回セッションで
-実測データに基づく再較正の要否を検討する。
-
-#### 着手条件
-なし
-
----
-
 ### [GROK-MODEL-PRICE-1] Grok呼び出しモデルの実価格確認
 **優先度:** 未定
 **分類:** コスト管理 / 全体
@@ -5203,40 +5118,6 @@ STONKS SILOのYoY計算（`financial_trend_calculator.py::_calc_yoy_change()`）
 #### 着手条件
 なし。優先度低〜中（現状は自然解消済みで緊急性なし、将来の決算期変更
 銘柄への予防的対応）。
-
----
-
-### [LITE-COGS-DA-TAG-UNMERGED-1] LITEのcost_of_revenueがCOGS由来の償却費タグを合算しておらずgross_profitが過大評価される
-**優先度:** 低〜中
-**分類:** データ品質 / タグ拡張で解消可能な構造的ギャップ
-**登録日:** 2026-08-02
-**発見:** [[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]個別調査
-（チャット記録）
-
-#### 内容
-LITE（2024年他、9年持続: 2015-2016・2019-2025）で、`cost_of_revenue`が
-`CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization`
-（$1,023.8M、現在採用中）のみを拾い、COGS由来の償却費
-`CostOfGoodsAndServicesSoldAmortization`（$83.9M、未採用）が候補タグに
-含まれていない。SCCOと類似の「D&A分離型」構造だが、SCCOと異なりタグの
-合算拡張で原理的に解消可能。
-
-#### 影響
-LITE単独、9年間持続。gross_profit自体はown-dataの正しい値を維持している
-ため、`gross_profit`自体への実害はない。`cost_of_revenue`フィールド単体
-を参照する消費者がいる場合、過小評価（$83.9M程度、年度により変動）の
-影響を受ける可能性がある。
-
-#### 対応方針
-未定。`cost_of_revenue`のXBRL_MAPPINGに
-`CostOfGoodsAndServicesSoldAmortization`型タグの合算を追加するか検討
-する。他銘柄への影響範囲（全母集団シミュレーション）を踏まえて判断する。
-
-#### 着手条件
-なし。優先度低〜中。
-
----
-
 
 ---
 
@@ -7841,30 +7722,6 @@ report_consistency_check.pyに、gross_profitとcost_of_revenueの整合性
 
 ---
 
-### [LAYER3-VISA-EPS-TAG-MISSING-1] Visa(V)がEPS関連タグを一切報告せずeps_diluted経由のROEフォールバックが機能しない
-**優先度:** 低
-**分類:** データ品質
-**登録日:** 2026-07-29
-**発見:** cost_of_revenue/EPS投資調査（チャット記録）
-
-#### 内容
-Visa(V)はEarningsPerShareBasic・EarningsPerShareDiluted・
-EarningsPerShareBasicAndDilutedのいずれのタグも全期間にわたり一切報告していない
-(実際に報告しているのはBusinessAcquisitionProFormaEarningsPerShareDiluted等の
-非該当タグのみ)。これによりVisaのeps_basic/eps_dilutedは全期間で暗黙にNoneになって
-いると推測される。
-
-#### 影響
-common/sec_data/reader.py::get_roe_avg_detail()のNetIncome欠損時フォールバック
-(net_income = eps_diluted × shares_diluted)がVisaに対して機能しない。Visaで
-net_incomeが欠損するケースが実際に発生した場合、代替推計手段が失われる。
-
-#### 対応方針
-未定。Visa向けのEPS個別override候補タグの探索、またはVisaについては
-ROEフォールバック不可を許容する明示的な設計判断が必要。
-
-#### 着手条件
-なし
 
 ---
 
