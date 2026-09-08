@@ -57,6 +57,7 @@ TANUKI_DATA_DIR       = os.path.join(repo_root, "docs", "value-monitor", "tanuki
 MACRO_DATA_DIR        = os.path.join(repo_root, "docs", "market-monitor", "macro-pulse", "data")
 PORTFOLIO_PATH        = os.path.join(repo_root, "docs", "portfolio", "data", "portfolio.json")
 PREDICTION_HISTORY_PATH  = os.path.join(DATA_DIR, "prediction_history.json")
+KPI_MAP_PATH          = os.path.join(repo_root, "config", "tail_kpi_map.json")
 
 # PascalCase（本ファイル内の既存呼び出し表記）→ SEC EDGAR Layer3の
 # snake_caseフィールド名の対応表（フェーズD Step2-3対応）。
@@ -580,13 +581,73 @@ def _build_macro_text(macro_ctx: Optional[Dict[str, Any]]) -> str:
     return "\n".join(lines) or "（主要フィールドが空）"
 
 
+def _load_tail_kpi_map() -> Dict[str, List[Dict[str, Any]]]:
+    """config/tail_kpi_map.json を読み込む（存在しなければ空dict）"""
+    if not os.path.exists(KPI_MAP_PATH):
+        return {}
+    with open(KPI_MAP_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _kpi_map_entry_to_thesis_kpi(entry: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    tail_kpi_map.json の1エントリ（KPI自動取得フェッチャー向けの取得
+    定義）を、thesis.jsonの`kpis`エントリと同じ形（_build_kpi_status_
+    table()等が読む形）に変換する。
+
+    `kpi_name`が{ticker}_layer2.jsonの"kpis"辞書のキーと一致するため、
+    そのまま`name`として使う（layer2_nameは明示せずnameで直接引かせる）。
+    tail_kpi_map.jsonには現状warning_threshold/exit_thresholdフィールド
+    が存在しないため、.get()で取得を試みつつ通常はNone
+    （= 表示側で「—」に変換される）になる。
+    """
+    return {
+        "name":                   entry.get("kpi_name", ""),
+        "layer2_name":            None,
+        "description":            None,
+        "source":                 "SEC EDGAR（Layer3統合スキーマ）" if entry.get("source") == "layer3" else "EDGAR XBRL",
+        "warning_threshold":      entry.get("warning_threshold"),
+        "exit_threshold":         entry.get("exit_threshold"),
+        "related_exit_condition": None,
+        "auto_fetchable":         True,
+        "extraction_hint":        None,
+        "xbrl_tag":               entry.get("revenue_tag"),
+        "xbrl_dimension":         entry.get("dimension"),
+        "xbrl_member":            (entry.get("tag_history") or [{}])[0].get("tag"),
+    }
+
+
+def _get_effective_thesis_kpis(thesis: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    レビューで監視するKPIリストを返す（[[TAIL-THESIS-KPIS-EMPTY-ADBE-
+    APGE-1]]根本修正）。
+
+    thesis.json側に`kpis`が個別登録されていれば、それをそのまま使う
+    （PLTR/SOFI/TSLA等、警戒ライン・エグジット閾値を含めて手動で
+    キュレーションされたリストが既にある場合は変更しない）。
+
+    thesis.json側が空/未登録の場合のみ、config/tail_kpi_map.json
+    （新規銘柄登録時に既に自動生成されるKPI自動取得の定義ファイル）
+    から自動的にフォールバック生成する。これにより、新規銘柄登録の
+    たびにthesis.jsonへ手作業でKPIをコピーする必要がなくなる。
+    """
+    kpis = thesis.get("kpis") or []
+    if kpis:
+        return kpis
+
+    ticker      = thesis.get("ticker", "")
+    kpi_map     = _load_tail_kpi_map()
+    map_entries = kpi_map.get(ticker) or []
+    return [_kpi_map_entry_to_thesis_kpi(e) for e in map_entries]
+
+
 def _build_kpi_monitoring_section(
     thesis: Dict[str, Any],
     kpi_data_layer2: Optional[Dict[str, Any]] = None,
     kpi_data_layer3: Optional[Dict[str, Any]] = None,
     quarter: str = "",
 ) -> str:
-    kpis = thesis.get("kpis") or []
+    kpis = _get_effective_thesis_kpis(thesis)
     if not kpis:
         return ""
     table = _build_kpi_status_table(kpis, kpi_data_layer2, kpi_data_layer3, quarter)
@@ -1515,9 +1576,10 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
         raise
 
     # Stage 2 — 失敗しても継続
+    effective_kpis = _get_effective_thesis_kpis(thesis)
     stage2_prompt = build_stage2_prompt(
         ticker, quarter, kpi_table, stage1, kpi_data,
-        thesis_kpis=thesis.get("kpis", []), layer1=layer1,
+        thesis_kpis=effective_kpis, layer1=layer1,
     )
     print(f"\n  ── Stage 2: DCFパラメータ生成 ({ticker} {quarter}) ──")
     try:
@@ -1534,9 +1596,10 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
         print(f"  [WARN] Stage 2 失敗（スキップ）: {e}")
 
     # Call 2 — 定性分析、失敗しても継続
-    call2_kpi_table = _build_kpi_status_table(
-        thesis.get("kpis") or [], kpi_data, kpi_layer3, quarter
-    ) if thesis.get("kpis") else ""
+    call2_kpi_table = (
+        _build_kpi_status_table(effective_kpis, kpi_data, kpi_layer3, quarter)
+        if effective_kpis else ""
+    )
     past_call2_items = _load_past_call2(ticker, quarter)
     if past_call2_items:
         print(f"  [INFO] 過去Call2引き継ぎ: {[x['quarter'] for x in past_call2_items]}")

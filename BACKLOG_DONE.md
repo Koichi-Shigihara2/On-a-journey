@@ -2,6 +2,100 @@
 
 ---
 
+## 2026-09-09③（完了）
+
+### ✅ [TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1] ADBE・APGEの{ticker}_thesis.jsonのkpisフィールドが空でレビューのKPIステータス表に一切表示されない — 根本修正完了でクローズ
+**状態:** ✅クローズ（表示バグは根本修正済み。閾値設定は別タスクとして
+Koichiさんと相談予定）
+**優先度:** 低〜中 → クローズ
+**分類:** バグ（根本修正済み）/ TAIL自動化パイプライン / 表示側の欠落
+**登録日:** 2026-08-21
+**完了日:** 2026-09-09
+**発見:** `[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`残5件
+調査中（2026-08-21⑥⑦セッション）
+
+#### 内容（登録時点）
+`quarterly_review_generator.py::_build_kpi_status_table()`が表示する
+KPIステータス表は、`{ticker}_thesis.json`の`kpis`フィールドを唯一の
+ソースとする（`thesis.get("kpis") or []`）。PLTR・SOFI・TSLA（core）の
+`{ticker}_thesis.json`はこのフィールドに追跡対象KPIのリストが実際に
+登録されているが、ADBE・APGE（satellite、ADBEは保有銘柄）はこの
+フィールド自体が存在しない（`None`）ため、`config/tail_kpi_map.json`
+にKPI登録済み・`{ticker}_layer2.json`にも実データ取得済みにも関わらず
+「## 監視KPI実績」セクション自体がレビュー文書から丸ごと消えていた。
+
+#### 対応の経緯（2段階）
+**第1段階（2026-09-09、表面的な対症療法）**: ADBE・APGEの
+`{ticker}_thesis.json`へ`config/tail_kpi_map.json`の内容を手作業で
+コピーした`kpis`フィールドを追加し、表示は復旧した。しかしこれは
+「既にtail_kpi_map.jsonに存在する定義を手作業で複製しているだけ」で
+あり、新規銘柄登録のたびに同種の抜け漏れが再発する構造的な問題を
+放置したままだった（Koichiさんの指摘により根本修正が必要と判断）。
+
+**第2段階（2026-09-09、根本修正）**: `quarterly_review_generator.py`に
+`_get_effective_thesis_kpis(thesis)`を新設し、KPIリスト取得ロジックを
+「`thesis.json`の`kpis`が空/未登録の場合のみ、`config/tail_kpi_map.
+json`の該当銘柄エントリを自動変換してフォールバックする」設計に変更。
+これに伴い、ADBE・APGEの`{ticker}_thesis.json`に第1段階で手作業追加
+した`kpis`フィールドは、自動フォールバックで完全に同じ表示結果が
+再現できることを確認した上で削除し、単一の情報源
+（`config/tail_kpi_map.json`）に統一した。
+
+**同時に発見・修正したNone安全性の不具合**: `_build_kpi_status_
+table()`の`warn = k.get("warning_threshold", "—")`は、キー自体が
+存在しない場合にしか効かないデフォルト値のため、閾値`null`を明示的に
+持つエントリでは表の警戒ライン・エグジット閾値列に文字列`"None"`が
+そのまま表示される不具合があった（`or "—"`方式に修正。`_resolve_kpi_
+value()`の同型箇所も修正。`_compare_threshold()`は元々`None`安全な
+実装だったため判定ロジック自体の変更は不要）。
+
+#### 効果（今後の新規銘柄登録への影響）
+`kpi_proposer.py`は新規銘柄登録時に`config/tail_kpi_map.json`への
+KPI登録を既に自動で行っているため、**今後は`{ticker}_thesis.json`へ
+`kpis`を手作業でコピーする対応が一切不要になった**——
+`tail_kpi_map.json`に登録された時点で、レビュー生成時に自動的に
+「## 監視KPI実績」セクションへ反映される。個別銘柄ごとの手作業対応
+（ADBE・APGE第1段階のような）は今後発生しない設計。
+
+#### 副次的に判明した事実: satellite全10銘柄中7銘柄で同型ギャップが存在していた
+横断確認の結果、ADBE・APGE以外のsatellite残5銘柄（APP/CELH/CRWV/
+NVDA/SOUN、うちNVDA/CRWV/APP/CELH/SOUNは保有銘柄）も、登録時点では
+全く同じ理由（`thesis.json`の`kpis`が空・`tail_kpi_map.json`には登録
+済み）で「## 監視KPI実績」セクションが表示されていなかったことが
+判明した。今回の根本修正により、**この5銘柄についても個別対応なしで
+自動的に表示されるようになったことを実測確認済み**（全7銘柄で
+`_get_effective_thesis_kpis()`が1件以上を返し、セクションが出現する
+ことを確認）。
+
+#### 検証結果（2026-09-09）
+- ADBE・APGE・satellite残5銘柄（計7銘柄）: `_get_effective_thesis_
+  kpis()`が`config/tail_kpi_map.json`から自動生成したリスト
+  （5件/3件/6件/5件/6件/6件/6件）で「## 監視KPI実績」セクションが
+  出現し、文字列`"None"`は含まれないことを確認
+- PLTR/SOFI/TSLA（core、`thesis.json`側に個別の閾値あり）: コード
+  変更前後で出力が完全一致（diff差分0）であることを確認
+  （pre-existing baseline commit `86f0cea853`時点のコードとの比較）
+- ADBE・APGEの第1段階手作業`kpis`削除前後で、`_build_kpi_monitoring_
+  section()`の出力が完全一致することを削除前に確認済み
+  （手作業版とフォールバック自動生成版が同じ結果を再現することの
+  裏付け）
+- `tail_kpi_map.json`に登録のない架空ticker: `_get_effective_thesis_
+  kpis()`が空リストを返し、セクション自体が出ない（空文字列）ことを
+  確認。エラーは発生しない
+- `pytest`: 1161 passed
+- `audit.py`: 既存警告10銘柄のみ（変化なし）
+- `report_consistency_check.py --fail-on-ng`: NG=0/WARN=119件
+  （コード変更前後で完全一致）
+
+#### 残タスク（今後、要ユーザー判断・別途相談予定）
+satellite全7銘柄（ADBE・APGE・APP/CELH/CRWV/NVDA/SOUN）の
+`warning_threshold`/`exit_threshold`は現状すべて未設定（`config/
+tail_kpi_map.json`にこれらのフィールドが存在しないため）。投資判断上
+の閾値であり機械的に埋められる性質の項目ではないため、Koichiさんとの
+相談の上で個別に設定する（次にお話しする機会に相談予定）。
+
+---
+
 ## 2026-09-09②（完了）
 
 BACKLOG.md残86件（前述の8件クローズ後の残数）全件に対し、以下3条件を
