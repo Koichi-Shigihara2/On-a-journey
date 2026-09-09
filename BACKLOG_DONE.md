@@ -2,6 +2,63 @@
 
 ---
 
+## 2026-09-09⑤（完了）
+
+### ✅ [ONDS-LOAR-SHARES-SCALE-SUSPECT-1] ONDS/LOARのshares_diluted・shares_basicがいずれも100万未満で、get_diluted_shares()のフォールバックが救済不能な疑い — クローズ
+**状態:** ✅クローズ（実害なしを実データで確認）
+**優先度:** 中 → クローズ
+**分類:** バグ疑い / データ品質
+**登録日:** 2026-08-05
+**完了日:** 2026-09-09
+**発見:** `[[SCHEMA-NORMALIZED-ISSUES-1]]`④SharesBasic実害調査の副次発見
+（チャット記録）
+
+#### 内容（登録時点）
+`reader.py::get_diluted_shares()`のフォールバックロジック
+（`shares_diluted<1,000,000`の場合に`shares_basic`を試す）が、
+ONDS（shares_diluted=221,769・shares_basic=221,769、同一）・LOAR
+（shares_diluted=95,893・shares_basic=93,597）の2銘柄では両方とも
+100万未満のため、フォールバックが発火しても救済されず、最終的に
+桁違いの小さい値がDCF計算の株式数インプットにそのまま使われている
+可能性がある、という疑いだった。
+
+#### クローズ理由（実データ・実コードで独立検証済み）
+TANUKI VALUATIONの実データ（`latest.json`）を確認したところ、両銘柄
+とも`components._shares_source`は`"yf_implied"`で、`diluted_shares`
+はONDS 571,454,656株・LOAR 93,688,471株という妥当な値が採用されて
+おり、`validation.checks.pt_shares_consistency`も両銘柄`pass: True`
+（差異0.00%）だった。
+
+`data_fetcher.py::_determine_diluted_shares()`の実装を確認したところ、
+`yf_implied（yfinance実装株数）> 100,000`であれば**`sec_diluted`
+（`reader.py::get_diluted_shares()`の戻り値）を一切参照せず最優先で
+採用する**設計になっていた。すなわちTANUKI VALUATIONの株式数入力は
+`reader.py::get_diluted_shares()`のフォールバックの成否そのものに
+依存しておらず、これが上位で機能する別の安全策（yfinance implied
+shares優先）により実害が構造的に遮断されていることを確認した。
+
+**登録時点の記述の一部訂正（本クローズ時に判明）**: 依頼文・登録時点
+いずれも「shares_diluted/shares_basicが両方とも100万未満」という
+前提だったが、`common/sec_data/layer3_builder.py`経由の最新値を
+実測したところ、ONDS側の`shares_diluted`は直近四半期（2026-06-30、
+`WeightedAverageNumberOfDilutedSharesOutstanding`）で503,593,000へ
+既に正常化しており、100万未満のまま残っているのはLOARの
+`shares_diluted`（95,521、直近四半期時点）のみだった
+（`shares_basic`はLayer3では両銘柄ともNone）。ただし、この訂正は
+クローズ判断自体を左右しない——`_determine_diluted_shares()`は
+`yf_implied`優先のため、`sec_diluted`側の値が小さいままかどうかに
+関わらずTANUKI VALUATIONの計算には影響しないため。
+
+**残る理論上のリスク（軽微、参考記録）**: yfinance側の実装株数取得が
+将来何らかの理由で利用不能になった場合にのみ、`sec_diluted`
+（＝`reader.py::get_diluted_shares()`の出力、LOARは依然として
+救済不能な値になりうる）へフォールバックする経路が理論上残っている。
+現時点でyfinance implied sharesは安定的に取得できており、実消費者が
+実際にこの経路を辿った実績もないため、実害ゼロと判断してクローズする
+（将来yfinance側に異常が生じた場合は別途新規登録の上で対応する）。
+
+---
+
 ## 2026-09-09④（完了）
 
 ### ✅ [TAIL-KPI-TREND-DISPLAY-1] 監視KPI実績表に複数四半期の推移表示を追加（固定閾値方式を採用しないsatellite銘柄向けの判断材料）

@@ -5305,29 +5305,6 @@ START.md`自体の記述「`fetcher.py`・`dcf_validity_checker.py`
 
 ---
 
-### [ONDS-LOAR-SHARES-SCALE-SUSPECT-1] ONDS/LOARのshares_diluted・shares_basicがいずれも100万未満で、get_diluted_shares()のフォールバックが救済不能な疑い
-**優先度:** 中（実害の可能性はDCF計算に直結するが、規模2銘柄限定）
-**分類:** バグ疑い / データ品質
-**登録日:** 2026-08-05
-**発見:** [[SCHEMA-NORMALIZED-ISSUES-1]]④SharesBasic実害調査の副次発見
-（チャット記録）
-
-#### 内容
-`reader.py::get_diluted_shares()`のフォールバックロジック
-（`shares_diluted<1,000,000`の場合に`shares_basic`を試す）が、
-ONDS（shares_diluted=221,769・shares_basic=221,769、同一）・LOAR
-（shares_diluted=95,893・shares_basic=93,597）の2銘柄では両方とも
-100万未満のため、フォールバックが発火しても救済されず、最終的に
-桁違いの小さい値がDCF計算の株式数インプットにそのまま使われている
-可能性がある。`[[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]`（解決済み）
-と同型の単位スケール異常の疑い。
-
-#### 着手条件
-なし。次回の個別バグ対応セッションで着手可能（本線＝新DB構築
-フェーズ1とは別トラック）。
-
----
-
 ### [SEC-SUBMISSIONS-DUAL-FETCH-1] SEC EDGAR submissions APIがfetcher.pyとedgar_rss_monitor.pyで独立に重複取得されている
 **優先度:** 低〜中
 **分類:** 技術的負債 / API呼び出し重複
