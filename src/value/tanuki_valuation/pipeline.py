@@ -3362,7 +3362,12 @@ class TanukiValuationPipeline:
                         ann = json.load(f)
                     rev = ann.get("pl", {}).get("revenue") or 0
                     fcf = ann.get("cf", {}).get("free_cash_flow")
-                    if fcf and rev and rev > 0:
+                    # MACRO-STYLE-FCF-ZERO-TRUTHY-EXCLUDE-1: `if fcf and ...`は
+                    # 正当な実測値0.0を欠損（None）と誤判定して3年平均から
+                    # 暗黙除外してしまうfalsy-zeroパターンのため、`is not None`
+                    # による明示的な欠損判定に修正（revは`rev > 0`側で既に
+                    # ゼロ除外されるため対象外）
+                    if fcf is not None and rev and rev > 0:
                         fcf_margins.append(fcf / rev)
                 if fcf_margins:
                     result["moat_fcf_margin_3yr"] = sum(fcf_margins) / len(fcf_margins)
