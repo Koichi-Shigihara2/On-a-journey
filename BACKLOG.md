@@ -4976,64 +4976,6 @@ Grok Web検索（条件③）・Discord通知の呼び出し回数もこれに�
 
 ---
 
-### [OPERATING-CASH-FLOW-CONTINUING-DISCONTINUED-GAP-1] 標準OCFタグ不在時にContinuing/Discontinued分割タグを拾えずoperating_cash_flowが構造的に欠落する（25銘柄該当）
-**優先度:** 高（登録時）→中（実害確認調査の結果、緊急性は低いと判明）
-**分類:** バグ / 確定・候補タグ設計欠陥
-**登録日:** 2026-08-02
-**訂正日:** 2026-08-02（実害確認調査結果を反映）
-**発見:** [[RCAT-OCF-CONTINUING-DISCONTINUED-SPLIT-1]]根本原因調査から
-派生した横断スキャン（チャット記録）
-
-#### 内容
-標準タグ`NetCashProvidedByUsedInOperatingActivities`が存在せず、
-`ContinuingOperations`分割タグ（および一部で`DiscontinuedOperations`
-分割タグ）のみが存在する年度で、`operating_cash_flow`が構造的に欠落する。
-105銘柄スキャンで**25銘柄該当**（AAPL/ABBV/AVAV/BKNG/CAKE/CAT/CELH/CIX/
-CPRT/ELF/FICO/HEI/HON/LRCX/MRVL/MSFT/ONDS/PAYS/RCAT/RMBS/SCCO/SNPS/TER/
-TSLA/XOM）。
-
-2つのサブパターン:
-- **パターンA（大多数）**: 非継続事業タグが一切存在せず、
-  `ContinuingOperations`タグがそのまま企業全体のOCF。候補タグリストへの
-  追加のみで解決可能（[[TOTAL-LIABILITIES-FALLBACK-TAG-DESIGN-FLAW-1]]と
-  同型の低リスク）
-- **パターンB（少数、RCAT/HON/AVAV）**: 非継続事業タグが存在し真の合算が
-  必要な可能性。合算時は必ず「営業活動限定タグ」（`CashProvidedByUsedIn
-  OperatingActivitiesDiscontinuedOperations`、範囲の広い
-  `NetCashProvidedByUsedInDiscontinuedOperations`ではなく）を選択する
-  ガードが必須（RCATでは投資・財務活動の非継続事業CFが偶然$0のため実害
-  なしだったが、他銘柄では非営業CFの混入という設計トラップになりうる
-  ことを確認済み）
-
-#### 実害確認結果（2026-08-02、チャット記録）
-25銘柄すべての`get_annual_range(ticker, 5)`（直近5ファイル）を実測した
-結果、`operating_cash_flow=None`が現在の直近5年窓に含まれるのは
-**RCATのみ**（2024・2025年）。**残り24銘柄（AAPL/MSFT/TSLA/XOM/CAT/ABBV
-等を含む）は該当年度がすべて2011〜2017年頃の古い年度であり、現在の直近
-5年窓（2021〜2026年）の外**にあるため、実害なしと確定した。将来的に
-該当年度が直近5年窓に入る銘柄は原理的に存在しない（過去の固定年度の
-ため）。優先度を「高→中」に訂正する理由: 現在進行形の実害が確定した
-のはRCATのみで、それは[[RCAT-FCF-5YR-AVG-ACTUAL-3YR-1]]として個別に
-切り出したため。
-
-RCAT単独の実害は[[RCAT-FCF-5YR-AVG-ACTUAL-3YR-1]]（優先度：高）として
-独立登録した。
-
-#### 影響
-現在進行形の実害はRCAT以外に確認されていない。候補タグ追加という低
-リスク修正自体は、将来のデータ品質向上（過去年度の`operating_cash_flow`
-充足）として引き続き価値がある。
-
-#### 対応方針
-未定。実害の緊急性は低いため、パターンA（候補タグ追加）・パターンB
-（ガード付き合算）の実装設計・全母集団シミュレーションは優先度中として
-着手する。
-
-#### 着手条件
-なし。優先度中（過去年度のデータ品質向上、現在進行形の実害はRCAT分を
-除き確認されていない）。
-
----
 
 ### [STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1] STONKS SILOのYoY計算がfpラベルの完全一致のみで照合し期間長の妥当性チェックを持たない
 **優先度:** 低〜中
@@ -6100,48 +6042,6 @@ WARN-26（前年値あり→当年None遷移検知）実装後の全100銘柄検
 
 ---
 
-### [BS-FIELD-FADEOUT-NONZERO-LAST-VALUE-1] CSGP/KULR/RCATのBS項目フェードアウトは直近既知値が非ゼロで単純な$0フォールバック不可
-**優先度:** 中〜低
-**分類:** データ品質ゲート / アーキテクチャ
-**登録日:** 2026-07-19
-**発見:** [[FY52WEEK-BS-FADEOUT-FALLBACK-1]]（完了・BACKLOG_DONE.md参照）
-事前調査時、25件の「生涯フェードアウト」候補のうち3件が単純パターンと
-異なることが判明したため分離
-
-#### 内容
-FY52WEEK-BS-FADEOUT-FALLBACK-1で実装した履歴フォールバック（過去の
-直近既知値が明示的$0であれば真のゼロと推定する）の条件判定ロジックでは、
-以下3件は「直近の既知値が非ゼロ」のため対象外のまま残っている：
-
-- **CSGP（short_term_investments）**: 2013年$0の後、2015-2018年に
-  $9.95M〜$15.5Mの実額が続き、2019年から消失。直近既知値（2018年、
-  $10.07M）は非ゼロ。
-- **KULR（short_term_debt）**: 2021-2022年$0の後、2024年に$516,547の
-  実額が出現し、2025年から消失。直近既知値は非ゼロ。
-- **RCAT（long_term_debt）**: 2012-2015年$0の後、2018/2020/2022/2023年
-  に$0.4M〜$2.0Mの実額が断続的に出現し、2024年から消失。直近既知値
-  （2023年、$401,569）は非ゼロ。
-
-これら3件は「過去に$0実績があれば真のゼロと推定する」という単純な
-フォールバックロジックを適用すると誤り（特にCSGPは直近既知額が$10M超
-であり真のゼロとは考えにくい）になるため、意図的に対象外としている
-（`_lookup_last_confirmed_zero_year()`の条件判定により自然に除外される
-設計、コード変更は不要）。
-
-#### 対応方針（未確定・要設計）
-以下いずれかの方向性が考えられるが、優先度は低く次回以降の判断とする：
-- 直近の非ゼロ実額を「暫定値」として採用し、経過年数に応じた信頼度
-  低下の注記を付ける別ロジックを設計する
-- 一次情報（10-K/10-Q原本）で当該期間のBS実態を個別確認し、真の
-  最新値を特定してticker_restrictions等で個別対応する
-- 現状（Noneのまま、または`or 0`による暗黙のゼロ扱い）を許容し、
-  対応不要と判断する
-
-#### 着手条件
-なし
-
----
-
 ### [REVENUE-TAG-PRIORITY-FRAGILE-1] XBRL_MAPPING["revenue"]の候補優先順位が脆弱で誤った銘柄への波及リスクあり
 **優先度:** 中〜低
 **分類:** データ品質 / SECデータ正規化
@@ -6752,24 +6652,6 @@ Update.yml`への追加ステップとして実装可能、ファイルサイズ
 #### 着手条件
 なし。DAフィールド欠如が実際にユーザー影響を持つと判明した場合、
 またはstock.htmlの利用実態が変化した場合に再検討。
-
----
-
-### [STOCKHTML-YTD-FILTER-BUG-SUSPECT-1] stock.htmlのJS側フィルタがis_ytdを除外していない（構造的リスク、現状未発現）
-**優先度:** 低
-**分類:** バグ疑い（潜在的、実データでは未発現）
-**登録日:** 2026-08-07
-**発見:** フェーズD Step2-5事前調査・着手要否投資調査（チャット記録、2026-08-07）
-
-#### 内容
-JS側`getQ()`は`.filter(e => e.is_annual === false)`のみで`is_ytd`を
-除外しない。`normalizer.py`側がYTDエントリを標準四半期値へ変換完了
-させてから`normalized/`へ永続化しているため、現状データ（105銘柄×
-5フィールド全数実測）には未解決のYTD残骸が1件も存在せず、実害なし。
-
-#### 着手条件
-なし。将来`normalizer.py`側の変換ロジックが変わり未解決YTDが
-残存するようになった場合に再検討。
 
 ---
 
@@ -7472,33 +7354,6 @@ WATCH丸めに限られ、IV・upside等のDCF計算値自体は変更されな�
 
 ---
 
-### [SEC-BKNG-SHARES-ANOMALY-1] BKNGのWeightedAverageNumberOfDilutedSharesOutstandingがSEC提出データ自体で異常値
-**優先度:** 低〜中
-**分類:** データ品質 / SEC提出データ異常
-**登録日:** 2026-07-24
-**発見:** eps_basic/eps_diluted加法性検証時の希薄化銘柄スクリーニング
-
-#### 内容
-BKNGのWeightedAverageNumberOfDilutedSharesOutstanding
-（2026-03-31期、accession 0001075531-26-000025、2026-04-28提出）
-が、前四半期比24倍（32.6M→794M株）という異常値でSEC XBRL上に
-そのまま存在する。company_facts.json（Layer1）の生データ自体に
-含まれており、本コードベースのパイプラインが生成した値ではない。
-既知の大型分割の発表・登録もない（config/split_history.yaml未登録）
-ため、SEC提出企業側のXBRLタグ付けミスの可能性が高い。
-
-#### 影響
-BKNGの株式数・1株当たり指標を参照する計算（EPS・希薄化率等）が、
-この四半期のみ大きく歪む可能性がある。
-
-#### 対応方針
-未定。原因の詳細調査（他のSEC提出書類との突合等）と、判明した場合の
-除外・補正方法の検討が必要。
-
-#### 着手条件
-なし
-
----
 
 ### [SEC-XBRL-MISSING-START-ENTRY-1] raw XBRLにstart日付が欠落した変則的なエントリが含まれる
 **優先度:** 低
@@ -7530,37 +7385,6 @@ shares_dilutedはNO_CANDIDATE_MERGE_FIELDS（今回の変更対象外パス）
 ---
 
 ---
-
----
-
-### [LAYER3-CROSS-TAG-YEARLY-QUARTERLY-GENERAL-RISK-1] _merge_normalized_by_priority()のキー単位独立選択が他フィールドでも年次/四半期クロスタグ混入を起こしうる一般的リスク
-**優先度:** 低
-**分類:** データ品質 / 要調査
-**登録日:** 2026-07-24
-**発見:** LAYER3-DA-SBC-CANDIDATE-REGRESSION-1対応方針検討時
-
-#### 内容
-_merge_normalized_by_priority()の「(end_date, is_annual)キーごとに
-独立して候補タグを評価・選択する」という設計は、DA/SBC以外の複数
-候補タグを持つ他フィールドでも、理論上同型の年次/四半期クロスタグ
-混入を起こしうる一般的な性質。今回はDA/SBCの範囲内でのみ実例を
-確認・修正するが、他フィールドでの発生有無は未調査。
-
-【2026-07-24】懸念が実際に43銘柄・9フィールドで顕在化していた
-ことを確認。[[LAYER3-DA-SBC-CANDIDATE-REGRESSION-1]]対応
-（同一source_tagガード＋単独タグ完結フォールバック）で同時に解消
-済み。本項目は「他フィールドでも起こりうる」という一般的懸念の
-記録としては役割を終えたが、今後Layer2 candidatesに新規タグが
-追加された際に同型の問題が再発しうるため、設計上の注意点として
-クローズせず残す。
-
-#### 対応方針
-未定。他の複数候補タグフィールド（LTDebt・SM・Revenue等）で同様の
-機械スキャンを行う必要がある。
-
-#### 着手条件
-対応不要（[[LAYER3-DA-SBC-CANDIDATE-REGRESSION-1]]で機構自体は
-解消済み）。将来Layer2 candidates拡張時の設計注意点として保持
 
 ---
 
