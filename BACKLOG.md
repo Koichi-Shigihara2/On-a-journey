@@ -3247,62 +3247,12 @@ Yahoo Finance自体が2026-07-13〜07-17の5件しか返さず、`period="5d"`�
 
 ---
 
-
-### [SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1] common/sec_data再設計の運用方針確定（フィックス機構・銘柄数絞り込み・新規登録フロー）— 真の残タスク2件（訂正済み）
-**優先度:** 低（Stage 1〜3b実装完了済み。残る2件はいずれも低優先度の
-個別調査、2026-09-02に本文訂正）
-**分類:** アーキテクチャ再設計 / 運用方針確定・実装
-**登録日:** 2026-08-04
-**更新日:** 2026-09-02（本文訂正。「残タスク（Stage 2〜3、未着手）」の
-記載が2026-08-05時点のまま更新されておらず、実際にはStage 2・3・3a・
-3bまで全て実装完了していた〈BACKLOG_DONE.md参照〉という陳腐化を
-[[AVGO-CIK-HISTORY-WRONG-LEGACY-CIK-1]]対応〈AVGO削除〉の過程で発見・
-訂正した。詳細は下記「真の残タスク」参照）
-**発見:** common/sec_data一次データ取得層 再設計 運用方針検討（chat記録）
-
-#### 内容（要約。運用方針・スキーマ設計・Stage 1〜3b実装の全詳細は
-BACKLOG_DONE.md「[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 1」
-〜「Stage 3b」の各エントリ参照）
-`common/sec_data/`再設計の運用方針3点（フィックス機構・銘柄数絞り込み
-基準・新規登録フロー）を確定し、フィックス機構（`fixed_registry.json`、
-銘柄×年度単位の差分適用方式）のスキーマ設計・`parser.py`/`utils.py`/
-`report_consistency_check.py`（CHECK-31/WARN-31）への実装・taxonomy属性
-①〜⑧非該当26銘柄・372銘柄×年度エントリのStage 1登録（機能コミット
-`7c15b2a75`）に続き、Stage 2（個別バグ調査で正しさ確定済みの12銘柄・
-17エントリ）・Stage 3（準備調査・記録訂正）・Stage 3a（MO/PM/LLY
-31エントリ）・Stage 3b（SCCO(2010-2019)・RDW(2020)・ASTS(2020)
-12エントリ）まで**全て実装・検証・push済み**（各Stageの詳細・
-コミットハッシュはBACKLOG_DONE.md該当エントリ参照）。
-
-#### 真の残タスク（2026-09-02訂正、2件）
-Stage 3b完了時点の記録（BACKLOG_DONE.md、2026-08-05付）が残タスクとして
-3項目（`[[AVGO-2015-DATA-THIN-1]]`・MRVL/AVGO/DELL旧CIK拡張分の年度×
-フィールド粒度の個別確認・`[[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-
-CONSIDERATION-1]]`）を挙げていたが、本文側の更新が漏れ「Stage 2〜3
-未着手」という誤った記載のまま残っていた。実態は以下の通り:
-
-1. `[[AVGO-2015-DATA-THIN-1]]`: 2026-08-30に既にクローズ済み（原因確定、
-   BACKLOG_DONE.md参照）
-2. MRVL/AVGO/DELL旧CIK拡張分の年度×フィールド粒度の個別確認:
-   AVGO分は本タスク（AVGO自体をOn-a-journey管理対象から除外）により
-   対象外。MRVL・DELL分は未対応のまま残っていたため、
-   `[[SECDATA-LEGACY-CIK-GRANULARITY-1]]`として新規に正式登録した
-   （下記参照）
-3. `[[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1]]`: 優先度低、
-   意図的据え置きのまま継続
-
-以上により、本エントリの真の残タスクは以下2件のみ:
-- `[[SECDATA-LEGACY-CIK-GRANULARITY-1]]`（MRVL・DELL旧CIK拡張データの
-  粒度確認、優先度低〜未定）
-- `[[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1]]`（優先度低、
-  意図的据え置き）
-
-#### 着手条件
-なし。優先度低（土台となる方針決定・実装は完了済み、残る2件は
-いずれも個別調査レベルの低優先度課題）。
-
-#### 完了報告の必須項目
-- 反映されたコミットハッシュ
+（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]は2026-09-10、「真の残タスク
+2件」のうち`[[SECDATA-LEGACY-CIK-GRANULARITY-1]]`が2026-09-09に根拠薄弱
+判定でクローズ済み・もう1件`[[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-
+CONSIDERATION-1]]`は既に本ファイルへ独立登録済みと判明し、本エントリ
+固有の残タスクが消滅したためクローズ、BACKLOG_DONE.md「2026-09-10
+（完了）」参照）
 
 ---
 
