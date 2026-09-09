@@ -2,6 +2,77 @@
 
 ---
 
+## 2026-09-09⑦（完了）
+
+### ✅ [POLICY-AB-TREND-BLIND-1] Policy A/B判定ロジックが直近トレンド好転を検知できず、健全企業を恒常的にLOW判定 — 実装完了
+**状態:** ✅実装完了（2026-07-14に確定済みの修正方針をそのまま実装）
+**優先度:** 低
+**分類:** DCF信頼性判定ロジック / バグ（解消済み）
+**登録日:** 2026-07-14
+**完了日:** 2026-09-09
+**発見:** `[[FLAG-THRESHOLD-DESIGN-1]]`検討過程の調査（tanuki=true・
+DCF_Reliability=LOW 23銘柄の原因分類調査）
+
+#### 内容（登録時点）
+`_calc_dcf_reliability_policy_b()`（`pipeline.py`）は、FCF-OUTLIER-1
+ルール（上方乖離時は一過性費用が検出されても`action=excluded`に
+しない設計）により、黒字転換・拡大による健全な乖離であっても恒常的に
+「未解決の外れ値」としてLOW判定し続けていた。2026-07-14の網羅調査で
+tanuki=true全100銘柄中70銘柄がDCF_Reliability=LOWであり、うち50銘柄
+（AAPL/TSLA/PLTR/CRM/ADBE/AVGO/INTU/KO/LLY/PEP/NOW等の主力銘柄含む）が
+Policy Bの上方乖離起因と判明。修正方針「直近2年連続黒字
+（`fcf_2yr_avg>0`）を主基準に上方乖離をLOW対象から除外」は確定済み
+（実データ検証で50銘柄中48銘柄を安全に救済できることを確認済み）
+だったが、実装は2ヶ月放置されていた。
+
+#### 実装内容（2026-09-09）
+確定済みの修正方針をそのまま実装した。`_calc_dcf_reliability_policy_b()`
+に、`detected and not explained`（従来は無条件でLOW）の場合でも、
+上方乖離（`rule=="deviation_large"`かつ`fcf_value>fcf_5yr_avg`、
+いずれも`fcf_outlier`辞書経由）かつ直近2年連続黒字
+（`fcf_2yr_avg>0`、`components`辞書経由）であればLOW対象から除外する
+分岐を追加した。SOFI・XOM（下方乖離/継続赤字＝正当な懸念）は本分岐の
+対象外のため引き続きLOWのまま。Policy A起因（S）・Policy B
+eps_invalid起因（AMZN/SPIR等）は本修正のスコープ外（別原因のため）
+として意図的に無変更とした。
+
+#### 検証結果（2026-09-09、全銘柄再生成）
+tanuki=true全銘柄（今回時点で99銘柄）を再生成し実測した。
+
+- **DCF_Reliability=LOW→NORMALへの救済**: 49銘柄で変化。うち45銘柄で
+  表示上のClassificationも実際にWATCHから別のラベル（BUY/TRIM/HOLD等）
+  へ変化（AAPL/ADBE/APP/CELH/PLTR等）。残り4銘柄
+  （ADSK/CRM/NOW/RBRK）は`pre_rounding_score`自体が別理由で既に
+  WATCHだったため表示上のラベルは変わらない（内部の判定理由フラグは
+  変化）
+- **正当な懸念の維持確認**: SOFI（継続赤字）・XOM（下方乖離）は
+  引き続きLOWのままであることを確認
+- **スコープ外の無変更確認**: S（`rounded_by_policy=="A"`のままPolicy A
+  でゲートされ、Policy Bの結果に関わらず無変化であることをコードの
+  分岐構造・実データ両方で確認）・AMZN/SPIR（eps_invalid該当のまま
+  LOW維持）
+- **追加で判明した事実（登録時点からのデータ変化、本修正の副次効果では
+  ない）**: LITE・SITMは登録時点ではeps_invalid該当（Policy B
+  eps_invalid起因4銘柄に含まれていた）だったが、その後の別修正
+  （EPS Analyzer側の改善等）でeps_invalidが解消済みだったため、
+  今回は上方乖離＋2年連続黒字の条件を満たし追加で救済された。
+  TSLAはfcf_outlier自体が現在`detected=false`のため、本修正の
+  有無に関わらず既にNORMALだった（登録時点からのデータ変化によるもの）
+- **IV・upside等のDCF計算値自体は無変化**: ADBEの個別確認で
+  `upside_percent`が73.8%で完全一致することを確認（変更差分は
+  `roe_used`等の末尾桁の浮動小数点表現差異のみで実質的な値の変化なし）
+- `pytest`: 1161 passed
+- `audit.py`: 既存警告10銘柄のみ（変化なし）
+- `report_consistency_check.py --fail-on-ng`: NG=0/WARN=119件
+  （再生成前後で完全一致。CEG/LYFTの`validation.overall=FAIL`
+  〈anomaly_detection、理論株価がゼロ以下〉は再生成前から存在する
+  既存事象であり本修正とは無関係と確認済み）
+
+コミットは実装（`a940760cb5`）・本番データ再生成（`22e1624837`）・
+BACKLOG更新の3件に分けて実施。
+
+---
+
 ## 2026-09-09⑥（完了）
 
 VRT-REVENUE-2018-MISSING-1・ONDS-LOAR-SHARES-SCALE-SUSPECT-1の2件で

@@ -7301,59 +7301,6 @@ admin.htmlにrpo_config.jsonの編集UIセクションを追加する。追加�
 
 ---
 
-### [POLICY-AB-TREND-BLIND-1] Policy A/B判定ロジックが直近トレンド好転を検知できず、健全企業を恒常的にLOW判定
-**優先度:** 低（2026-07-14 高→低に変更。理由は下記参照）
-**分類:** DCF信頼性判定ロジック / バグ
-**登録日:** 2026-07-14
-**発見:** [[FLAG-THRESHOLD-DESIGN-1]]検討過程の調査（tanuki=true・DCF_Reliability=LOW
-23銘柄の原因分類調査）
-
-#### 優先度変更の理由（2026-07-14）
-WATCH等のラベルはDCF数値自体には影響せず、他AI/外部評価者への見え方を
-緩和する程度の実利用価値のため、優先度を高→低に変更した。ただし対応自体は
-取り下げない。修正方針〈直近2年連続黒字を主基準に上方乖離をLOW対象から
-除外〉は既に確定済みのため、後日着手時にそのまま使用可能。
-
-#### 内容
-tanuki=true・DCF_Reliability=LOW判定の23銘柄を精査した結果、うち8銘柄
-（CWAN, ESTC, FROG, IOT, NET, RBRK, ZETA, S）はFCF実績がいずれも黒字化・
-拡大という健全な業績改善を示しているにもかかわらず、恒常的にLOW判定に
-なっていることが判明した。データ・事業実態には問題がなく、判定ロジック
-自体の設計特性に起因する：
-- Policy A（`_calc_dcf_reliability_policy_a`等）が5年平均FCFを基準にする
-  ため、過去の大幅赤字が牽引して現在の黒字転換を反映できない
-  （例: S＝SentinelOneは直近2年連続黒字転換にもかかわらずPolicy A発火）
-- Policy B（`_calc_dcf_reliability_policy_b`、pipeline.py:335-381）は
-  FCF-OUTLIER-1ルール（CLAUDE_CODE_START.md記載: 上方乖離時は一過性費用が
-  検出されてもaction=excludedにしない設計）により、黒字転換・好転による
-  乖離も恒久的に「未解決の外れ値」としてLOW判定し続ける
-
-続く網羅調査（2026-07-14 同日2回目）で、tanuki=true全100銘柄中70銘柄
-（70%）がDCF_Reliability=LOWであり、うち50銘柄（AAPL/TSLA/PLTR/CRM/ADBE/
-AVGO/INTU/KO/LLY/PEP/NOW等の主力銘柄含む）がPolicy Bの上方乖離
-（latest_fcf>fcf_5yr_avg）起因と判明。修正方針は「直近2年連続黒字
-（`fcf_2yr_avg>0`）を主基準に上方乖離をLOW対象から除外」で確定済み
-（実データ検証で50銘柄中48銘柄を安全に救済できることを確認）。
-
-関連: [[TRUST-SUMMARY-EPIC-1]]（段階2＝FCF/DCF計算の「解消可能バグ vs
-構造的限界」切り分けを扱うEPIC。本件はその棚卸し対象の具体事例）
-
-#### 影響範囲
-tanuki=true全100銘柄中70銘柄（DCF_Reliability=LOW）。うちPolicy A起因14
-銘柄（trend-blindはS 1銘柄のみ）、Policy B eps_invalid起因4銘柄（AMZN,
-LITE, SITM, SPIR）、Policy B上方乖離起因50銘柄（AAPL, ADBE, ADSK, ALAB,
-AMD, APP, AVGO, BROS, CAKE, CEG, CELH, CPRT, CRM, CWAN, DDOG, DELL, DOCN,
-ELF, ENTG, ESTC, FCX, FICO, FLYW, FROG, FRSH, GEV, GTLB, HEI, HQY, HWM,
-INTU, IOT, KO, LLY, LOAR, LRCX, LYFT, MRVL, NET, NOW, PAYS, PEP, PLTR,
-RBRK, RMBS, SCCO, SNPS, TSLA, VRT, ZETA）、Policy B下方乖離/継続赤字
-（正当な懸念）2銘柄（SOFI, XOM）。ただし影響はClassification表示の
-WATCH丸めに限られ、IV・upside等のDCF計算値自体は変更されない。
-
-#### 着手条件
-なし（修正方針の設計から着手可能。優先度：低のため次回以降の余力時対応）
-
----
-
 
 ### [SEC-XBRL-MISSING-START-ENTRY-1] raw XBRLにstart日付が欠落した変則的なエントリが含まれる
 **優先度:** 低
