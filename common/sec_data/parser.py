@@ -17,6 +17,9 @@ from .utils import (
     detect_fiscal_anchor_clusters, _day_of_year,
 )
 from .fetcher import load_submissions, load_former_names
+from .dimension_aggregate_fetcher import (
+    load_dimension_aggregate_registry as _load_dimension_aggregate_registry,
+)
 
 _FACT_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "fact_overrides.json")
 _FIXED_REGISTRY_PATH = os.path.join(os.path.dirname(__file__), "fixed_registry.json")
@@ -3559,7 +3562,25 @@ class SECParser:
            EquityCarryingAmount`が、既にmatched済みの`TemporaryEquity
            CarryingAmountIncludingPortion...`と同額$764,000,000で重複
            していた）。
+
+        [[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]型D対応（2026-09-10）:
+        `dimension_aggregate_registry.json`に当該accn・end_dateの登録
+        エントリがある場合は、以下の全フォールバック（cross-accn探索・
+        HEI/RDW型フォールバック含む）より優先し、そのエントリの値のみを
+        単独で返す（早期return）。理由: レジストリの値は個別filingの
+        生XBRLを直接パースして当該accn・end_date自身から機械的に抽出・
+        `--expect`で既知の正解と突合検証済みの確定値であり、他の
+        フォールバック（他filingの近似値探索等）より正確性の確実性が
+        高い。ASTS(2019)で、cross-accnフォールバックが見つける近似値
+        （後年10-K/Aの$202,557,751、本人年度とは厳密には不一致）と
+        本レジストリの値（本人年度own-accnの$218,519,748、diff_baseと
+        完全一致）を両方加算すると二重計上になることを実データで確認
+        したため、早期returnで排他的にした。
         """
+        dim_entry = _load_dimension_aggregate_registry().get(f"{accn}|{end_date}")
+        if dim_entry is not None:
+            return {f"DimensionAggregate:{dim_entry['concept']}": dim_entry["computed_value"]}
+
         matched: Dict[str, float] = {}
         for tag in self._BS_IDENTITY_ALLOWLIST:
             tagdata = us_gaap.get(tag)
