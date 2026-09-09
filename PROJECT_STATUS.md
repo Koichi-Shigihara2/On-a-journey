@@ -349,6 +349,65 @@
   参照。新DB構築プロジェクトのコード・データには変更なし。現存
   BACKLOG.md総数は機械カウントで**94件**。
 
+- **2026-09-08〜09-09**（非常に長時間のセッション、根拠薄弱項目の
+  系統的クローズ〈計17件〉・保有銘柄関連の実バグ修正・複数の根治的
+  対応を実施、全てpush済み）:
+  1. **根拠薄弱項目クローズ17件**（BACKLOG.md全86件へ判定基準を機械的
+     適用したバッチ12件〈`[[JOBY-BLADE-ACQUISITION-IMPACT-SCOPE-1]]`・
+     `[[HYPECORE-SUBSTAGE-LAYER3-UNVERIFIED-1]]`・`[[LAYER3-SNPS-
+     STALE-TAG-PRIORITY-1]]`・`[[LAYER3-UNEXPLAINED-SINGLE-TICKER-
+     DIFFS-1]]`・`[[HON-GROSSPROFIT-2009-RESIDUAL-DISCREPANCY-1]]`・
+     `[[VRT-REVENUE-2018-MISSING-1]]`・`[[RCAT-2016Q3-ORPHANED-
+     QUARTERLY-FILE-1]]`・`[[LAYER3-RPO-CANDIDATE-ORDER-1]]`・
+     `[[SECDATA-LEGACY-CIK-GRANULARITY-1]]`・`[[AMZN-CONVRATE-
+     OVERRIDE-REVIEW-1]]`・`[[LITE-COGS-DA-TAG-UNMERGED-1]]`・
+     `[[LAYER3-VISA-EPS-TAG-MISSING-1]]`〉＋既存の安全策・後続実装で
+     無効化された5件〈`[[STOCKHTML-YTD-FILTER-BUG-SUSPECT-1]]`・
+     `[[SEC-BKNG-SHARES-ANOMALY-1]]`・`[[LAYER3-CROSS-TAG-YEARLY-
+     QUARTERLY-GENERAL-RISK-1]]`・`[[OPERATING-CASH-FLOW-CONTINUING-
+     DISCONTINUED-GAP-1]]`・`[[BS-FIELD-FADEOUT-NONZERO-LAST-VALUE-1]]`〉）
+  2. **`[[TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1]]`**（保有銘柄ADBE含む）:
+     thesis.jsonのkpis未登録による監視KPI実績セクション消失バグを発見。
+     対症療法（手作業コピー）を撤回し`_get_effective_thesis_kpis()`
+     による自動フォールバックへ根治的修正、satellite全7銘柄へ波及。
+     直近4四半期の推移表示も追加
+  3. **`[[POLICY-AB-TREND-BLIND-1]]`**: Policy Bの上方乖離トレンド好転
+     検知不能バグを修正。49銘柄でDCF_Reliability LOW→NORMAL（保有銘柄
+     4つ含む）、うち45銘柄でClassificationもWATCHから変化
+  4. **`[[FALSY-ZERO-PATTERN-SWEEP-1]]`・`[[MACRO-STYLE-FCF-ZERO-
+     TRUTHY-EXCLUDE-1]]`**: falsy-zeroパターン横断調査、新規発見2件
+     含む4箇所を修正
+  5. **`[[REVENUE-TAG-PRIORITY-FRAGILE-1]]`**: revenue/cost_of_revenue
+     タグ選択の根治的対応（四半期整合性tie-break新設）、TDY
+     FY2013-2015のrevenue誤取得を修正
+  6. **`[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]`**: 案a/c/d実装で
+     対象9銘柄・全15年度分（LRCX/AMD/KO/JNJ/RMBS/BSY/CRM/ONDS/MRVL）を
+     完全解消。MRVL(2017)の前回判断（対応困難）をrevenue restatement
+     見落としと訂正
+  7. **`[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]`**:
+     CHECK-46新設（revenue−cost_of_revenue=gross_profit整合性検証）。
+     実データ校正（105銘柄・1034件）で許容誤差0.1%を確定、CRM(2018)の
+     新規未調査乖離を発見（次セッション候補）
+  8. **`[[DEAD-CODE-AUDIT-BATCH-1]]`**: 3件削除（phase1_scan.py・
+     backfill_history.py・quality_checker.py）、report_txt_parser.py
+     はCLI運用手順の現役利用と判明し現状維持に訂正
+  9. **`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`**: 当初23件を全件
+     最終トリアージ完了。PLTR(2019)含む残存7件は構造的制約で対応不可と
+     確定
+  10. **`[[ONDS-LOAR-SHARES-SCALE-SUSPECT-1]]`**クローズ（安全策
+      〈yf_implied優先〉により実害ゼロと確認）
+
+  依頼書は「SN-TANUKI-DELAY-1・STONKS-SILO-PRICE-SCHEDULE-LAG-
+  SUSPECT-1・CWAN登録抹消」も本日の対応として例示していたが、git log
+  照合の結果これらは2026-09-06〜09-07セッション（上記）で既に完了済み
+  だったと確認し、本サマリーからは除外した（詳細は`CLAUDE_CODE_
+  START.md`該当ブロック参照）。
+
+  詳細はBACKLOG_DONE.md「2026-09-08」「2026-09-08②」「2026-09-09」〜
+  「2026-09-09⑬」（完了）各節・`CLAUDE_CODE_START.md`該当ブロック
+  参照。新DB構築プロジェクトのコード・データには変更なし。現存
+  BACKLOG.md総数は機械カウントで**67件**（94件から27件減）。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。

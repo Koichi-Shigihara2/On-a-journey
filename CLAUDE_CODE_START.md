@@ -1,5 +1,150 @@
 # Claude Code 作業開始テンプレート
 
+最終更新: 2026-09-09（**セッション終了時ブラッシュアップ・2026-09-08〜
+09-09セッションサマリー**。前回2026-09-07サマリー〈下記ブロック、
+コミット`5769026dc9`〉作成後の09-07 20:32に`[[QUALITY-GATES-EPIC-1]]`
+ゲート1週次化の実地確認（CHECK-41本番稼働確認・追加対応不要と判断、
+コミット`a21f5506b7`）を1件挟んでいるが、本ブロックでは重複記録しない。
+非常に長時間のセッションで、根拠薄弱項目の体系的クローズ（計17件）・
+保有銘柄関連の実バグ修正（KPI表示・DCF_Reliability誤判定）・複数の
+根治的対応（falsy-zero横断調査・revenue/cost_of_revenueタグ選択の
+根本修正・BS恒等式検証の全件トリアージ・自動検知チェックの新設）を
+実施した（全てpush済み）:
+
+1. **根拠薄弱項目の系統的クローズ（計17件、BACKLOG.md総数94→67件の
+   一部）**:
+   - 個別クローズ1件: `[[JOBY-BLADE-ACQUISITION-IMPACT-SCOPE-1]]`
+     （JOBYの2025年Blade買収影響範囲確認、調査見送り・対応不要と判断）
+   - 根拠薄弱バッチ2〜4（計11件、BACKLOG.md全86件へ判定基準を機械的
+     適用）: `[[HYPECORE-SUBSTAGE-LAYER3-UNVERIFIED-1]]`・
+     `[[LAYER3-SNPS-STALE-TAG-PRIORITY-1]]`・`[[LAYER3-UNEXPLAINED-
+     SINGLE-TICKER-DIFFS-1]]`・`[[HON-GROSSPROFIT-2009-RESIDUAL-
+     DISCREPANCY-1]]`（以上4件）・`[[VRT-REVENUE-2018-MISSING-1]]`・
+     `[[RCAT-2016Q3-ORPHANED-QUARTERLY-FILE-1]]`・`[[LAYER3-RPO-
+     CANDIDATE-ORDER-1]]`（以上3件）・`[[SECDATA-LEGACY-CIK-
+     GRANULARITY-1]]`・`[[AMZN-CONVRATE-OVERRIDE-REVIEW-1]]`・
+     `[[LITE-COGS-DA-TAG-UNMERGED-1]]`・`[[LAYER3-VISA-EPS-TAG-
+     MISSING-1]]`（以上4件）。いずれも非保有銘柄・推測段階の懸念
+   - 既存の安全策・後続実装により無効化された5件: `[[STOCKHTML-
+     YTD-FILTER-BUG-SUSPECT-1]]`・`[[SEC-BKNG-SHARES-ANOMALY-1]]`・
+     `[[LAYER3-CROSS-TAG-YEARLY-QUARTERLY-GENERAL-RISK-1]]`・
+     `[[OPERATING-CASH-FLOW-CONTINUING-DISCONTINUED-GAP-1]]`・
+     `[[BS-FIELD-FADEOUT-NONZERO-LAST-VALUE-1]]`（登録時の懸念リスクが
+     別の安全策・フォールバック機構により既に実害ゼロになっている
+     パターンを横断調査して発見）
+   - `[[ONDS-LOAR-SHARES-SCALE-SUSPECT-1]]`個別クローズ（上記とは別
+     コミット。TANUKI VALUATIONがyf_implied優先で保護されていることを
+     確認）
+
+2. `[[TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1]]`（保有銘柄ADBE含む）:
+   ADBE/APGEのthesis.jsonでkpisフィールドが未登録のため「## 監視KPI
+   実績」セクション自体がレビュー文書から丸ごと消えていた表示バグを
+   発見。第1段階の対症療法（thesis.jsonへの手作業コピー）は新規銘柄
+   登録のたびに再発する構造的問題を放置すると判断し撤回、
+   `_get_effective_thesis_kpis()`新設によるtail_kpi_map.jsonへの
+   自動フォールバックという根治的修正に変更した。satellite残5銘柄
+   （APP/CELH/CRWV/NVDA/SOUN）にも同型ギャップが波及することを確認し
+   全7銘柄で解消。あわせて監視KPI実績表に直近4四半期の推移表示
+   （`_build_kpi_trend_suffix()`）を追加
+
+3. `[[POLICY-AB-TREND-BLIND-1]]`: `_calc_dcf_reliability_policy_b()`が
+   上方乖離を一過性費用要因と誤って扱えず恒常的にLOW判定し続けていた
+   トレンド好転検知不能バグを修正（直近2年連続黒字を主基準に追加）。
+   全銘柄再生成で49銘柄がDCF_Reliability: LOW→NORMALに変化、うち45
+   銘柄でClassificationもWATCHから変化。保有銘柄4つ（ADBE/CELH/PLTR/
+   TSLA等）を含む。SOFI/XOM（下方乖離・継続赤字の正当な懸念）は
+   引き続きLOWのまま
+
+4. `[[FALSY-ZERO-PATTERN-SWEEP-1]]`・`[[MACRO-STYLE-FCF-ZERO-TRUTHY-
+   EXCLUDE-1]]`: falsy-zeroパターンの横断調査を実施し新規発見2件を
+   含む4箇所を修正、いずれも実装完了としてクローズ
+
+5. `[[REVENUE-TAG-PRIORITY-FRAGILE-1]]`: revenue/cost_of_revenueタグ
+   選択の根治的対応として四半期整合性tie-breakを新設。TDY
+   FY2013-2015のrevenue誤取得を修正・クローズ
+
+6. `[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]`: 案a（候補タグ拡張＋
+   gross_profitアンカー）・案c（2タグ合算バックフィル）・案d（BSY型
+   revenue個別対応）を実装、残存4銘柄（MRVL/ONDS/RMBS(2019)/CRM）の
+   追加調査対応で当初対象9銘柄・全15年度分（LRCX/AMD/KO/JNJ/RMBS/
+   BSY/CRM/ONDS/MRVL）を完全解消。前回セッションで「これ以上の機械的
+   対応が困難」と報告していたMRVL(2017)の判断を、revenue自体の
+   restatement見落としが原因だったと訂正
+
+7. `[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]`:
+   report_consistency_check.pyにCHECK-46（revenue−cost_of_revenue=
+   gross_profitの算術整合性検証、WARN-46）を新設。実データ校正
+   （tanuki=true全105銘柄・1034件のrevenue/cost_of_revenue/
+   gross_profit三つ組）でCRM(FY2017、0.0005%)とCRM(FY2018、0.5741%)の
+   間に約1000倍のギャップを発見し許容誤差0.1%を確定。この校正過程で
+   CRM(FY2018)の新規未調査乖離を発見した（下記「次セッションの着手
+   候補」参照）。2026-09-06〜09-07棚卸しで「軽微な更新余地」と
+   報告していた本エントリを、今日の教訓を踏まえ自動検知チェックへ
+   転換した形
+
+8. `[[DEAD-CODE-AUDIT-BATCH-1]]`: 4件を一括判断。phase1_scan.py・
+   backfill_history.py・quality_checker.pyは全リポジトリ参照ゼロを
+   再確認し削除。report_txt_parser.pyは登録時「孤立モジュール」と
+   判断していたが、CHAT_RULES.md標準フロー手順②としてCLI直接実行
+   される現役の運用手順と判明（import文でのgrepでは検知できないCLI
+   実行パターンの見落とし）、現状維持に訂正
+
+9. `[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`: 当初23件を全件最終
+   トリアージ完了。PLTR(2019、BS恒等式diff_base_pct=133.45%・
+   $2,127,231,000)を10-K原文（R2.htm）で個別調査し、乖離の正体を
+   Temporary Equity区分の転換優先株式2値と特定したが、この2値は
+   company_facts.jsonに次元付き開示のみで非次元版が一件も存在しない
+   構造的制約（CDNS/INTU等で既に確立済みの既知パターン）により解決
+   不可能と確定。残存6件（CART/V/CELH/ASTS2019等）もあわせて個別調査
+   し、23件中7件は現行データソース・アーキテクチャの構造的制約で対応
+   不可と確定（うち一部はconfig/warn_acknowledged.jsonへ登録し
+   「未確認」表示を解消）
+
+**次セッションの着手候補**:
+- `[[MA-INTEGRATION-TAG-GAP-1]]`（ADBE含む境界近傍17銘柄、設計課題
+  として保留中、いずれ向き合う必要あり）
+- CRM(2018)のGP-COGS不整合（CHECK-46実装過程の実データ校正で新規
+  発見、未確認のまま`config/warn_acknowledged.json`にも意図的に
+  未登録）
+- `[[SEC-SUBMISSIONS-DUAL-FETCH-1]]`（技術的負債、優先度低〜中）
+- `Market_Pulse_Update.yml`観察の最終確認・`SEC_Data_Update.yml`次回
+  サイクル確認（いずれも継続観察中、本セッションでは新規の実地確認
+  なし）
+
+**依頼書の前提の訂正**: 本ブラッシュアップの依頼書は「ONDS-LOAR-
+SHARES-SCALE-SUSPECT-1・SN-TANUKI-DELAY-1・STONKS-SILO-PRICE-SCHEDULE-
+LAG-SUSPECT-1・CWAN登録抹消等」を本日の対応項目として例示していたが、
+git log（コミット日時ベース、本セッション範囲は09-08 17:52〜09-09
+22:01と確認）を照合した結果、`[[SN-TANUKI-DELAY-1]]`・
+`[[STONKS-SILO-PRICE-SCHEDULE-LAG-SUSPECT-1]]`・CWAN登録抹消は
+いずれも2026-09-06〜09-07セッション（下記ブロック参照）で既に完了
+済みの過去の作業であり、本セッションでの対応はなかったことを確認
+した（`[[ONDS-LOAR-SHARES-SCALE-SUSPECT-1]]`のみ本セッションで実施、
+上記1.参照）。依頼書側の記憶違いと判断し、本ブロックには実際の作業
+内容のみを記録する。
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本セッションでクローズした27件
+  全件が`### ✅ [ID]`パターンでBACKLOG_DONE.mdに存在し、BACKLOG.md側に
+  アクティブヘッダーとして残存していないことを機械的に確認（漏れ0件）
+- ID重複チェック: BACKLOG.mdとBACKLOG_DONE.md間でヘッダーIDが重複する
+  ものは、既知の2件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`・
+  `[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]`、いずれも段階的完了・
+  部分対応の意図的な分割）以外に新規重複なしを確認
+- git status: クリーン（未コミット変更・未追跡ファイルなし）。
+  origin/kaihatsuに1件のみ後行（自動マクロデータ更新）していたため
+  fast-forward pullで追従。作業ディレクトリに`common/sec_data/data/
+  --HELP`という空の不審ディレクトリ（09-09 14:56作成、gitは空
+  ディレクトリを追跡しないため`git status`には現れない）を発見・
+  削除した（コード変更ではないためコミットは不要）
+- BACKLOG.mdアクティブ件数: 機械カウントで**67件**（前回09-06〜09-07
+  時点の94件から27件減、本セッションのクローズ件数と一致）
+
+詳細は各BACKLOGエントリ・BACKLOG_DONE.md「2026-09-08」「2026-09-08②」
+「2026-09-09」〜「2026-09-09⑬」（完了）各節・PROJECT_STATUS.md参照。
+
+---
+
 最終更新: 2026-09-07（**セッション終了時ブラッシュアップ・2026-09-06〜
 09-07セッションサマリー**。前回2026-09-05サマリー〈下記ブロック〉の
 続き。実装・修正10件、BACKLOG.md全97件棚卸し（陳腐化2件クローズ・
