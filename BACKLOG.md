@@ -6124,6 +6124,50 @@ ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこ
   対応方針①〈候補タグ合算の近似値〉採用・cross_filing_tags機構で
   実装完了。詳細はBACKLOG_DONE.md「NVDA-STI-TAG-UNIDENTIFIED-1」参照）
 
+**型D：次元分解開示専用型（company_facts一括APIが構造的に返せない）
+（2026-09-10追加）**
+- 症状: 正しい値が10-K原文には確実に存在し、金額まで厳密に特定できて
+  いるにもかかわらず、SECのcompanyfacts一括API（`company_facts.json`）
+  を全namespace・全accn・全期間で横断検索しても**該当する値が一件も
+  存在しない**
+- 根本原因: XBRLの基底タグ（例:
+  `TemporaryEquityCarryingAmountAttributableToParent`）が
+  `StatementClassOfStockAxis`等のディメンションで次元分解された文脈
+  でのみ開示され、非次元（デフォルトコンテキスト）版の事実が提出企業
+  側でそもそも作成されていない。加えて発行体固有の名前空間
+  （例: `cart:SeriesARedeemableConvertiblePreferredStockMember`）による
+  開示や、初期XBRL移行期（2008〜2010年頃、義務化直後）の未タグ付けも
+  同根の構造的欠落として現れる。SECのcompanyfacts一括APIは次元付き
+  （dimensionally-qualified）事実を返さない設計上の制約を持つため、
+  `parser.py`が参照する`us_gaap`辞書には対象タグの値自体が現れない
+- 型A・型B・型Cとの違い: 型A（候補タグは存在するが優先順位の問題）・
+  型C（一時的にタグが未整備なだけで翌四半期以降に登場しうる）とは
+  異なり、型Dは**該当する非次元タグの事実自体が構造的に存在しない**
+  （翌四半期を待っても解消しない）。型Bとも異なり、BS構造自体の科目
+  制約ではなく、XBRL開示方式（次元分解 or 発行体固有名前空間）に
+  起因する
+- 対応方法（2026-09-10時点で未確定・要Koichiさんの判断）:
+  `_BS_IDENTITY_ALLOWLIST`・`_BS_IDENTITY_FALLBACK_ONLY_TAGS`・
+  `fact_overrides.json`はいずれも「`us_gaap`辞書内に既に存在するタグの
+  探索・差し替え」のみで機能する設計のため、型Dには構造的に対応でき
+  ない。真に解消するには(a) XBRLインスタンス文書・R-file群を直接
+  パースする別経路の新設（大規模、既存パイプライン外）、または
+  (b) 一次情報の引用付き手動登録機構の新設（`fixed_registry.json`の
+  ような差分適用方式だが、抽出元がタグではなく10-K原文の引用になる
+  点が既存機構と異なる）のいずれかが必要。(b)は本システム全体で
+  一貫している「タグ由来のない生の数値の直接注入は行わない」という
+  設計哲学と衝突するため、採否はKoichiさんの明示的な判断が必要
+  （詳細は`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`のPLTR/CART/V/
+  CELH/ASTS(2019)個別調査、BACKLOG_DONE.md「2026-09-09⑬」参照）
+- 実例: PLTR(2019、$2,127,231,000)・CART(2023-2025、Series A優先株式、
+  年度ごとに$177M〜$195M）・V(2008、$1,136,000,000)・CELH(2025、
+  $1,759,975,000)・ASTS(2019、$218,519,748)。いずれも
+  `[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`の個別調査（2026-09-09）で
+  10-K原文により金額まで厳密に特定済みだが、company_facts.jsonには
+  該当タグが一切存在しないため`config/warn_acknowledged.json`へ登録し
+  「確認済み・現行アーキテクチャでは対応不可」として記録した
+  （BACKLOG_DONE.md「2026-09-09⑬」参照）
+
 #### 対応方針（設計・未着手）
 - REGISTER-FLOW-REDESIGN-1・PREFLIGHT-CHECK-1（完了・BACKLOG_DONE.md
   参照。2026-09-05実装。ただし実装場所は`common/registration/
