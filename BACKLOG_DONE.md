@@ -2,6 +2,257 @@
 
 ---
 
+## 2026-09-09⑩（完了）
+
+### ✅ [PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1] revenue/cost_of_revenue/gross_profitが独立にaccn・期間を選定するため異なる会計年度のデータが混在する — 案a〜e実装で9銘柄15年度分を完全解消
+**状態:** ✅実装完了（対象9銘柄・全15年度分を完全解消）
+**優先度:** 中〜高 → クローズ
+**分類:** バグ / 確定・複数フィールド間の期間不整合（解消済み）
+**登録日:** 2026-08-02
+**完了日:** 2026-09-09
+**発見:** [[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]個別調査
+（チャット記録）
+
+**現状（2026-09-09完了）**: 案a・b・c・d・eすべて実装完了。対象9銘柄
+（LRCX/AMD/KO/JNJ/RMBS/BSY/MRVL/ONDS/CRM）**全9銘柄・15年度分を完全
+解消**（詳細は下記「実装結果」2件参照）。当初「厳密一致のみ採用という
+安全設計思想上、これ以上の機械的対応が困難」と報告していた残存4銘柄
+（MRVL/ONDS/RMBS(2019)/CRM）も、10-K原文・XBRLタグの実態を一次情報で
+再調査した結果、全件で安全に採用できる厳密一致の是正候補が見つかり
+解消した。
+
+#### 内容
+`revenue`/`cost_of_revenue`/`gross_profit`という相互に関連する複数のPL
+flow-typeフィールドが、フィールドごとに独立してaccn・期間（fy_tag）を
+選定するため、結果として異なる会計年度のデータが混在する設計上の欠陥。
+[[SPAC-SHELL-BS-ENTITY-MIXING-1]]がBS instant-factフィールド間で解決した
+「同一accn強制」と同種の思想が、PL flow-typeフィールド間・同一期間強制
+として応用できる可能性がある。
+
+確定した実害（2026-08-02、9銘柄・全件②タグ選定バグと確定。①genuine
+定義差は0件）:
+
+根本原因は単一メカニズムではなく、以下4つのサブパターンに整理できる:
+- **(a) 候補タグ完全欠落**: AMD(2016/2017)・KO(2017)。`CostOfGoodsSold`
+  タグが`cost_of_revenue`の候補リストに一切ない（[[TOTAL-LIABILITIES-
+  FALLBACK-TAG-DESIGN-FLAW-1]]と同型の「候補タグ設計の不完全さ」）。own
+  filingの`CostOfGoodsSold`を使えば乖離ゼロ（KOのみ比較列との差が僅少
+  〈$1M・0.003%〉で実質無害）
+- **(b) クロスaccn/期間不整合**: LRCX(2010)・ONDS(2017)・CRM(2013)・
+  JNJ(2017)・MRVL(2017)。正しい候補タグが正しいaccn内に存在するのに、
+  別accnの値が誤採用される。ONDSは規模が約100倍異なる異常な誤マッチング
+  だったが、本人データで乖離ゼロと確認
+- **(c) 複数タグの合算漏れ**: RMBS(2018/2019)。真のコストが2つの独立
+  タグ（`CostOfRevenue`・`CostOfGoodsAndServicesSold`）の合算値
+  （[[LITE-COGS-DA-TAG-UNMERGED-1]]と同型）。2018年は合算で乖離ゼロ、
+  2019年は$23.6M→$3.6Mへ85%削減（残差は追加のrestatementの可能性）
+- **(d) 同一filing内での類似タグ誤選択**: BSY(2019)。revenue側で複数の
+  類似タグ（`Revenues`・`RevenueFromContractWithCustomerExcludingAssessed
+  Tax`）から誤ったものが選ばれる新種パターン。正しいrevenueタグで乖離ゼロ
+
+**予備検討で判明した設計上の示唆**: net_income/operating_income/R&D/
+SGAへの波及は確認されず（AMD・LRCX・CRMで検証）、問題は`cost_of_revenue`
+（の一部、AMD/KO/LRCX）と`revenue`（BSYのみ）に限定的。「同一accn強制」
+（[[SPAC-SHELL-BS-ENTITY-MIXING-1]]型）は、BS instant factと異なり
+PL/CF flow factは同一accn内に複数の(start,end)期間が混在するため実装が
+複雑化する（1つのaccnに四半期・累計・年次等、数十種類の期間区分が混在
+することをRCAT調査で確認済み）。
+
+#### 影響
+9銘柄（AMD/BSY/CRM/JNJ/KO/LRCX/MRVL/ONDS/RMBS）で確定。他フィールド
+（同種のPL/CF flow-typeフィールド全般）への一般化可能性は限定的と判明
+（net_income等主要フィールドへの波及なし）。
+
+#### 対応方針（2026-08-02、全母集団シミュレーション結果により全面改訂）
+当初想定した「単純な候補タグ拡張・優先順位変更」は**全案（a〜d）とも既存
+の正しい値を壊す重大な副作用**を持つことが実データシミュレーション
+（チャット記録）で判明した。設計上の教訓: 現状の
+`_extract_values_best_candidate()`は「候補全体から最も新しい年データを
+持つ1タグを丸ごと採用する」設計のため、**候補プールへの単純追加・変更
+自体が危険**である。
+
+- **案a（候補タグ追加）**: 単純追加は危険と確定。全105銘柄シミュレーション
+  で、AMD/KO/JNJは解消できる一方、**LLY/FCX/CAT/ABBVで新規劣化を10件
+  確認**（特にFCX $1,109M・CAT $211M級の大口破壊）。「他候補が本人データ
+  を持たない年度に限定する」ゲート条件が必須。**ゲート条件込みの再設計が
+  必要なため保留**
+- **案c（2タグ合算）**: 単純合算は危険と確定。ENTG/TERは2タグが完全重複
+  タグ付けのため合算すると2倍計上になり、CAT等6件で既存の正しい値を破壊
+  する。「現在値とgross_profitが既に不一致な場合のみ合算を試みる」ゲート
+  条件が必須。真に合算が必要なのはRMBS(2018/2019)のみと確認済み。
+  **ゲート条件込みの再設計が必要なため保留**
+- **案b（同一accn優先、採用）**: 比較的安全（対象が既存の別accn状態49件
+  に限定されるため）。ただしaccn単位の照合だけではCRM(2013)型（同一accn・
+  別期間の本人データ年度違い）を検知できない限界を確認したため、
+  **(start,end)期間の一致まで見る精密化が必要**。6件（AVGO2017・
+  FICO2009・LRCX2010・LYFT2018・NOW2011・ZS2017）は同一accn内一致で
+  解決可能と確認済み
+- **案d（revenue側優先順位変更、不採用）**: 極めて危険と確定。105銘柄
+  202件スキャンで13銘柄が複数収益タグ併存も、大半（WMT/XOM/FCX/VST/CAT/
+  TDY/LYFT等）はgenuine定義差の疑いが強く、機械的な優先順位変更はWMT/
+  XOM等主力銘柄を破壊するリスクがある。BSY型のみ個別対応に限定する
+
+**当面の対象**: 案b（同一accn＋期間一致優先、CRM型を除く効果確認済み分）
+とBSY単独の個別対応に絞り込む。案a・cは次回セッションでゲート条件込みの
+設計を詰める。
+
+#### 実装結果（2026-08-02、案b実装完了・LRCX(2010)のみ解消）
+`SECParser._align_cost_of_revenue_to_revenue_period()`を新規追加。
+revenue・cost_of_revenueが異なるaccnから独立採用され、かつ
+`revenue − cost_of_revenue ≠ gross_profit`という数学的矛盾が現に存在する
+年度についてのみ、revenueと同一accn・同一(start,end)期間のcost_of_revenue
+候補で矛盾が厳密に解消する場合に限り置換する設計（コード`b756021f6`＋
+安全性修正`9616e8058`・データ`7c94c6f95`）。
+
+**実装時に発見・是正した重大な副作用**: 初回実装（accn不一致のみを
+トリガーとする単純な設計）を全105銘柄フローズン入力比較で検証したところ、
+既に矛盾のない年度（GOOGL(2008)・HON(2008)・SCCO(2009/2010)、いずれも
+gross_profit自体が実タグを持たずderived値だった年度）まで誤って書き換える
+副作用を発見した（特にHON(2008)はgross_profitが$8,562M→$5,438M相当に
+劣化する規模）。原因はgross_profitがNone〈導出前〉の年度との巻き添え比較。
+ゲート条件を「矛盾が現に存在する年度のみ・gross_profitはNoneでない実タグ
+起源の値のみ対象・置換後に矛盾が厳密に解消する場合のみ採用」に強化して
+再検証し、対象をLRCX(2010)の1件のみに絞り込んだ上で実装完了とした。
+
+**検証結果**: LRCX(2010)のcost_of_revenueが$1,166,219,000→$1,163,841,000
+に是正され、revenue−cost_of_revenue=gross_profit($969,935,000)と完全
+一致することを確認。全105銘柄フローズン入力比較でLRCX(2010)以外に変化
+なし（GOOGL/HON/SCCO等の巻き添えが解消したことを含む）。
+report_consistency_check.py NG=0（WARN=68件、変化なし）、pytest 513
+passed/2 known failed（既知のMSFT/NVDA）。`cost_of_revenue`はTANUKI
+VALUATIONのDCF/growth計算に一切使用されず、STONKS SILO側の消費経路も
+gross_profit既存時は発火しないデッドコードのため、影響ゼロと確認。
+
+**残存（案b単独では未解決、CRM/JNJ/MRVL/ONDS）**: CRM(2013)は同一accn・
+別期間の本人データ年度違いのため設計上の既知の限界により対象外。
+JNJ(2017)・MRVL(2017)・ONDS(2017)はrevenueと同一accn内に矛盾を解消する
+候補が見つからず未解決のまま残存（案a〈候補タグ拡張〉の対応が必要な
+可能性がある）。RMBS(2018/2019、案c）・BSY(2019、案d）・AMD/KO(案a）も
+未着手のまま残存。
+
+#### 実装結果（2026-09-09、案a・c・d実装完了・9銘柄中6銘柄解消）
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`（`CostOfGoodsSold`追加、
+XBRL_MAPPING本体とは分離）＋`_align_cost_of_revenue_to_revenue_period()`
+へのgross_profitセカンダリアンカー追加（案a）、
+`_backfill_cost_of_revenue_via_tag_sum()`新設（案c）、
+`_align_revenue_to_cost_gross_profit_identity()`新設（案d、BSY型限定の
+極めて狭いゲート）を実装（コード`2b62d1224`案a・`95e6f7173`案c・
+`39c79c0e9`案d、本番データ`a638c4fb5`）。
+
+**解消（6銘柄・6年度、うち1件は想定外のボーナス修正）**:
+- AMD(2016): cost_of_revenue $3,316M→$3,274M（本人年度10-Kの
+  `CostOfGoodsSold`に整合、案a）
+- AMD(2017): cost_of_revenue $3,466M→$3,506M（同上、案a）
+- KO(2017): cost_of_revenue $13,255M→$13,256M（本人年度10-Kの
+  `CostOfGoodsSold`にgross_profitアンカー経由で整合、案a）
+- JNJ(2017): cost_of_revenue $25,439M→$25,354M（revenue自体は
+  再掲値と本人データが同値のため変更不要、cost_of_revenueのみ
+  gross_profitの本人年度accn内`CostOfGoodsSold`に整合、案a）
+- RMBS(2018): cost_of_revenue $35,402千→$53,701千（案cの2タグ合算を
+  想定していたが、実際には案aのgross_profitアンカーが10-K/A（修正後
+  filing、2021-03-29）の`CostOfRevenue`単独タグ$53,701千を発見して
+  先に解消。事前の手動検証で見つけた「2タグ合算値」と偶然一致した
+  値が、後年の公式訂正filingにおける単一タグの正式な再表示値
+  だったと判明。**案cの合算ロジック自体は現行105銘柄データセットでは
+  一度も発火しない**（案aが先に解消するため対象外ゲートに該当）が、
+  将来の真の2タグ合算ケースへの防御的実装として温存）
+- BSY(2019): revenue $734,849千→$736,654千（同一accn内の
+  `RevenueFromContractWithCustomerExcludingAssessedTax`へ切替、案d）
+- **[想定外のボーナス修正]** HON(2009): cost_of_revenue
+  $23,185M→$24,012M（案aのgross_profitアンカーで解消。この銘柄は
+  当初9銘柄の対象外だったが、[[HON-GROSSPROFIT-2009-RESIDUAL-
+  DISCREPANCY-1]]として「推測段階の懸念、非保有銘柄、これ以上の
+  調査価値なし」で未解決のままクローズ済みだった$827M残差discrepancy
+  が、本対応で偶然かつ根治的に解消した）
+
+**未解消（3銘柄・4年度、いずれも正直な報告として残す）**:
+- **MRVL(2017)**: 非暦年決算・レガシーCIK混在の複雑ケース。revenue accn
+  ・gross_profit accnの両方で`CostOfGoodsSold`を確認したが、必要値
+  （$1,034,246千）とどちらの候補（$1,029,527千・$1,017,564千）も
+  厳密に一致せず（乖離0.4〜1.6%）。「厳密一致のみ採用」という本対応
+  全体の安全設計思想上、これ以上の対応は不採用のまま残す
+- **ONDS(2017)**: revenue $274,403・gross_profit $-6,227から逆算した
+  必要値$280,630に対し、gp accn内`CostOfGoodsSold`($9,073)・revenue
+  accn内`CostOfRevenue`($79,768)のいずれも一致せず未解決
+- **RMBS(2019)**: `CostOfRevenue`+`CostOfGoodsAndServicesSold`の合算
+  （$51,375千）を試したが、必要値$47,799千に対し$3,576千の残差が
+  残る（乖離は$23.6M→$3.6Mへ85%削減はできるが厳密一致ではないため
+  案cのゲート条件で不採用。追加のrestatement等、別要因の可能性）
+- **CRM(2013)**: 同一accn・別期間の本人データ年度違いという設計上の
+  既知の限界（案a・b・c・dいずれの対象外）のため、今回も未着手のまま
+  変わらず残存
+
+**検証**: pytest全件（1161件）成功、report_consistency_check.py
+--fail-on-ng でNG=0（CHECK-31 fixed_registry整合含む）、WARN件数は
+既存の119件から変化なし。全105銘柄相当のシミュレーションで、対象
+7銘柄・7年度以外への意図しない変化がないことを確認済み。
+
+AMD(2016/2017)・KO(2017)・JNJ(2017)はfixed_registry.jsonの
+Stage 1一括登録でcost_of_revenueが凍結されていたため、該当4年度の
+fields_snapshotからcost_of_revenueのみ除外し、snapshot_hashを
+新しい内容で再計算した（他の凍結フィールドは変更なし）。
+
+#### 実装結果（2026-09-09②、残存4銘柄を一次情報の再調査で全解消）
+「厳密一致のみ採用」というゲート条件自体は変更せず、これまで見落として
+いた候補の探索範囲を拡張する2つの改善を行った:
+
+1. **`_align_cost_of_revenue_to_revenue_period()`の同一accn制約撤廃
+   （CRM対応）**: 「revenue accnとcost_of_revenue accnが既に一致している
+   なら対象外」というゲートを撤廃した。CRM(2013)は実際には「同一accn
+   （同一10-K内の複数年度比較列）の中で、cost_of_revenueだけ隣接年度の
+   異なる期間を誤って参照していた」ケースであり、「accn一致＝期間一致」
+   という当初の前提そのものが誤りだった（1つのaccnに複数の(start,end)
+   期間が混在するため）。制約撤廃後も「矛盾が現に存在する年度のみ・
+   置換後に厳密解消する場合のみ採用」という既存ゲートは不変のため安全。
+2. **`_align_revenue_and_cost_to_gross_profit_own_accn()`新設（案e、
+   ONDS・RMBS(2019)・MRVL対応）**: 既存の案a〜dは「revenue/gross_profit
+   は正しい前提でcost_of_revenueのみ是正」または「revenue側のみ是正」
+   という設計だったが、この3件は逆にgross_profitを信頼できるアンカーと
+   固定し、revenue・cost_of_revenueの**両方**を同時に是正する必要が
+   あった。gross_profitの採用元accn・同一期間にrevenue候補タグと
+   cost_of_revenue候補タグの両方が存在し、その差が現在のgross_profitと
+   厳密に一致する場合のみ、両方を同時に置換する。
+
+**解消（4銘柄・8年度）**:
+- **CRM(2009-2013、5年度連続）**: 各年度でcost_of_revenueが隣接年度の
+  期間を誤参照していた同型バグが5年分見つかり、全て解消
+  （例: FY2013 cost_of_revenue $968,428千→$683,579千、
+  3,050,195千−683,579千=2,366,616千=gross_profitと厳密一致）
+- **ONDS(2017)**: revenue $274,403→$2,846・cost_of_revenue $79,768→
+  $9,073。従来の値はSPAC合併疑いのある別報告主体の後年filingから誤って
+  採用されていた（[[SPAC-SHELL-BS-ENTITY-MIXING-1]]と同種の実害）。
+  本人年度10-Kの`SalesRevenueGoodsNet`・`CostOfGoodsSold`に是正し
+  2,846−9,073=−6,227=gross_profitと厳密一致
+- **RMBS(2019)**: revenue $224,027千→$227,603千・cost_of_revenue
+  $24,219千→$51,375千。2021年10-K/Aによる原価区分restatement後の値
+  （`RevenueFromContractWithCustomerIncludingAssessedTax`・
+  `CostOfRevenue`）に是正し227,603千−51,375千=176,228千=gross_profitと
+  厳密一致（前回セッションで検討した「2タグ合算$51,375千」は偶然にも
+  正しい合計値だったが、実際には合算ではなく後年filingの単一
+  `CostOfRevenue`タグがそのまま正しい値だった）
+- **MRVL(2017、前回「解決不可」から訂正）**: revenue $2,317,674,000→
+  $2,300,992,000。前回セッションでは「候補値が必要値と厳密一致せず
+  解決不可」と報告したが、これはrevenue自体も後年filingでrestatement
+  されている可能性を見落とした不十分な手動調査に起因する誤りだった。
+  gross_profitの採用元accn内の`Revenues`（restatement後の値）・
+  `CostOfGoodsSold`（現在値と同値）を採用し2,300,992,000−
+  1,017,564,000=1,283,428,000=gross_profitと厳密一致。**前回の
+  「解決不可」判断を本記録で訂正する**
+
+**検証**: 全105銘柄相当のシミュレーションで対象4銘柄8年度以外への
+変化がゼロであることを確認。pytest全件（1162件、CRM実データパターンの
+回帰テスト1件追加）成功、report_consistency_check.py --fail-on-ngで
+NG=0、WARN件数は既存の119件から変化なし（対象4銘柄はfixed_registry.json
+未登録のため凍結解除は不要）。
+
+#### 対応方針
+案a・b・c・d・eすべて実装完了。当初対象9銘柄・全15年度分（LRCX×1・
+AMD×2・KO×1・JNJ×1・RMBS×2・BSY×1・CRM×5・ONDS×1・MRVL×1）を完全
+解消。副次的にHON(2009)の残差discrepancyも根治的に解消。本課題は完了
+とし、以降の類似パターンは新規BACKLOG項目として個別に扱うこと。
+
+---
+
 ## 2026-09-09⑨（完了）
 
 ### ✅ [REVENUE-TAG-PRIORITY-FRAGILE-1] XBRL_MAPPING["revenue"]の候補優先順位が脆弱で誤った銘柄への波及リスクあり — 四半期整合性tie-breakを新設し根治的に解消
