@@ -853,11 +853,15 @@ class TanukiValuationPipeline:
         extra = self._load_extra_data(ticker, valuation)
 
         # ---- Growth Sanity Check（original phase1_growth で実行） ----
-        _phase1_growth = (
-            valuation.get("growth", {}).get("rate")
-            or valuation.get("growth_scenarios", {}).get("primary", {}).get("rate")
-            or 0
-        )
+        # FALSY-ZERO-PATTERN-SWEEP-1: `or`チェーンは成長率が正当な0.0
+        # （横ばい・成熟企業等）の場合に、Noneと区別できず次の候補
+        # （growth_scenarios.primary.rate）へ誤ってフォールバックして
+        # しまうfalsy-zeroパターンのため、is not Noneによる明示判定へ
+        # 修正する
+        _g_rate_raw = valuation.get("growth", {}).get("rate")
+        if _g_rate_raw is None:
+            _g_rate_raw = valuation.get("growth_scenarios", {}).get("primary", {}).get("rate")
+        _phase1_growth = _g_rate_raw if _g_rate_raw is not None else 0
         _phase1_growth_source = valuation.get("growth", {}).get("source")  # GROWTH-FLOOR-VERDICT-1
         _annual_revs = self._load_annual_revenues(ticker)
         _g_fund = self._calc_g_fundamental(ticker)
@@ -1241,7 +1245,10 @@ class TanukiValuationPipeline:
                 if _floor <= 0:
                     fcb = comps.get("fcf_base_used")
                     rev = comps.get("latest_revenue")
-                    if fcb and rev:
+                    # FALSY-ZERO-PATTERN-SWEEP-1: fcbが正当な実測値0.0の場合を
+                    # 欠損と誤判定しないよう、直前のfor文（_fh_fcf is not None）
+                    # と同じ判定方式に統一（revは除算対象のため0ガードを維持）
+                    if fcb is not None and rev:
                         fcf_margin = fcb / rev * 100
             key_metric_y = f"FCF_Margin = {fcf_margin:.1f}%" if fcf_margin is not None else "FCF_Margin = N/A"
             qx = upside is not None and upside >= 0

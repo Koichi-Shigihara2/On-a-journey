@@ -417,7 +417,14 @@ def backfill_liquidity(from_date: str, to_date: str, overwrite: bool = False) ->
             continue
 
         # NET LIQUIDITY計算
-        if walcl_val and tga_val and rrp_val:
+        # FALSY-ZERO-PATTERN-SWEEP-1: truthy判定(`if walcl_val and tga_val and
+        # rrp_val:`)は、rrp（オーバーナイト・リバースレポ残高）が実際に
+        # ゼロ近傍まで低下しうる指標のため、正当なゼロ値をPythonの偽値として
+        # 扱い欠落させるリスクがあった（[[MACRO-TRUTHY-ZERO-BUG-1]]と同型。
+        # 05_main.py::update_liquidity_csv()は既にis not None判定で実装
+        # 済みだったが、本ファイルは未追従だった）。is not Noneによる
+        # 明示判定へ統一する。
+        if walcl_val is not None and tga_val is not None and rrp_val is not None:
             net_liq = round((walcl_val - tga_val - rrp_val) / 1_000_000, 4)
         else:
             net_liq = None
