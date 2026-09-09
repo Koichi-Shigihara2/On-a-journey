@@ -1272,7 +1272,6 @@
         "stockholders_equity",
         "total_assets",
         "total_liabilities",
-        "cost_of_revenue",
         "eps_basic",
         "eps_diluted",
         "gross_profit",
@@ -1293,8 +1292,10 @@
         "shares_diluted",
         "rpo"
       ],
-      "snapshot_hash": "sha256:711c663df6f5d1ca8fe5a672ea501dc357f0ad2b30a8c25117a61efa721cd0b7",
-      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）"
+      "snapshot_hash": "sha256:f543fc62fc66f0727466d23ee3e21ef80ee8ead339261350a715ac69a4a4de53",
+      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）",
+      "refreshed_at": "2026-09-09",
+      "refreshed_reason": "[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a（CostOfGoodsSold候補追加＋本人年度10-K accnへの整合）でcost_of_revenueが3,316,000,000→3,274,000,000へ是正されたための更新（revenue-cost_of_revenue=gross_profitの恒等式が厳密に解消することを確認済み）。cost_of_revenueをfields_snapshotから除外し、他の凍結フィールドは変更なしを機械照合済み"
     },
     "2017": {
       "fixed_at": "2026-08-05",
@@ -1316,7 +1317,6 @@
         "stockholders_equity",
         "total_assets",
         "total_liabilities",
-        "cost_of_revenue",
         "eps_basic",
         "eps_diluted",
         "gross_profit",
@@ -1337,8 +1337,10 @@
         "shares_diluted",
         "rpo"
       ],
-      "snapshot_hash": "sha256:39da0e40adab179d82e14e92055e05622d46c6c815121c480bf05b2c9cab93db",
-      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）"
+      "snapshot_hash": "sha256:52970ad19a071c6507a35c061e6fc3b2c19b88ddfe05a13249a563cfb767f67a",
+      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）",
+      "refreshed_at": "2026-09-09",
+      "refreshed_reason": "[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a（CostOfGoodsSold候補追加＋本人年度10-K accnへの整合）でcost_of_revenueが3,466,000,000→3,506,000,000へ是正されたための更新（revenue-cost_of_revenue=gross_profitの恒等式が厳密に解消することを確認済み）。cost_of_revenueをfields_snapshotから除外し、他の凍結フィールドは変更なしを機械照合済み"
     },
     "2018": {
       "fixed_at": "2026-08-05",
@@ -4776,7 +4778,6 @@
         "stockholders_equity",
         "total_assets",
         "total_liabilities",
-        "cost_of_revenue",
         "eps_basic",
         "eps_diluted",
         "gross_profit",
@@ -4796,8 +4797,10 @@
         "shares_basic",
         "shares_diluted"
       ],
-      "snapshot_hash": "sha256:68f9b7dc0ef3b03daff3a53f26933adc26b7cbbae3916081f5a6da0b88b972c0",
-      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）"
+      "snapshot_hash": "sha256:bb3d186b5cc0969a789c2d27512d3a684abcc5fd3e1893266c87d00baf8a6848",
+      "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）",
+      "refreshed_at": "2026-09-09",
+      "refreshed_reason": "[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a（CostOfGoodsSold候補追加＋本人年度10-K accnへの整合、gross_profitアンカーで解決）でcost_of_revenueが13,255,000,000→13,256,000,000へ是正されたための更新（revenue-cost_of_revenue=gross_profitの恒等式が厳密に解消することを確認済み）。cost_of_revenueをfields_snapshotから除外し、他の凍結フィールドは変更なしを機械照合済み"
     },
     "2018": {
       "fixed_at": "2026-08-05",
@@ -13062,7 +13065,6 @@
         "stockholders_equity",
         "total_assets",
         "total_liabilities",
-        "cost_of_revenue",
         "eps_basic",
         "eps_diluted",
         "gross_profit",
@@ -13082,10 +13084,12 @@
         "shares_basic",
         "shares_diluted"
       ],
-      "snapshot_hash": "sha256:9152bbc405051fae9e7fc29ff56503333c6c53a0a0ab24d2c219de0ac4d50d5d",
+      "snapshot_hash": "sha256:0275cc7d0d0c550da8bfc79d3f98c4bc418ab53edc52d12ad16fadbefa98e7ea",
       "note": "Stage 1一括登録（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]、taxonomy属性①〜⑧非該当・既存チェックゲート全通過銘柄）",
       "refreshed_at": "2026-08-19",
-      "refreshed_reason": "[[OPERATING-INCOME-EXTRACTION-GAP-1]]案D（フォールバック向き反転＋GP法入力整合性ガード）でoperating_incomeが変更されたための更新。fields_snapshot記載の全フィールド（171件）を機械照合し不一致0件を確認済み（operating_income自体はfields_snapshot対象外の新規/変更フィールドのため純粋な追加的変更）"
+      "refreshed_reason": "[[OPERATING-INCOME-EXTRACTION-GAP-1]]案D（フォールバック向き反転＋GP法入力整合性ガード）でoperating_incomeが変更されたための更新。fields_snapshot記載の全フィールド（171件）を機械照合し不一致0件を確認済み（operating_income自体はfields_snapshot対象外の新規/変更フィールドのため純粋な追加的変更）",
+      "refreshed_at_2": "2026-09-09",
+      "refreshed_reason_2": "[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a（gross_profitアンカーで本人年度10-K accnのCostOfGoodsSoldに整合）でcost_of_revenueが25,439,000,000→25,354,000,000へ是正されたための更新（revenue-cost_of_revenue=gross_profitの恒等式が厳密に解消することを確認済み）。cost_of_revenueをfields_snapshotから除外し、他の凍結フィールドは変更なしを機械照合済み"
     },
     "2018": {
       "fixed_at": "2026-08-05",
