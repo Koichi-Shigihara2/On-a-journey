@@ -623,6 +623,13 @@ class SECParser:
         # 一切触れない）
         self._align_cost_of_revenue_to_revenue_period(extracted, us_gaap)
 
+        # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案c: 上記でもなお矛盾が
+        # 残る年度についてのみ、cost_of_revenue採用元accn内の2つの異なる
+        # 候補タグの合算で矛盾が厳密に解消する場合に限り合算値を採用する
+        # （RMBS(2018)型。ENTG/TER等の重複タグ付けは矛盾が既にないため
+        # 対象外＝二重計上の巻き添えなし）
+        self._backfill_cost_of_revenue_via_tag_sum(extracted, us_gaap)
+
         # [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]①: 標準タグから
         # gross_profitが取得できない年度のみ、revenue-cost_of_revenueで
         # 逆算した値を本番annual_YYYY.jsonへ書き戻す（欠損の穴埋めのみ、
@@ -1615,6 +1622,116 @@ class SECParser:
                     "accn_aligned_anchor": anchor_kind,
                 }
                 break  # このyearについては解決済み、次のyearへ
+
+    def _backfill_cost_of_revenue_via_tag_sum(self, extracted: Dict[str, Any], us_gaap: dict) -> None:
+        """
+        [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案c: cost_of_revenueが
+        単一タグでは矛盾を解消できない年度についてのみ、cost_of_revenueの
+        採用元accn・同一期間に存在する2つの異なる候補タグ（例:
+        `CostOfRevenue`+`CostOfGoodsAndServicesSold`）の合算値を試し、
+        合算すると`revenue − 合算値 = gross_profit`が厳密に成立する場合
+        のみ採用する（RMBS(2018)実例: 真のコストが2つの独立タグの合算値
+        だったケース）。
+
+        _align_cost_of_revenue_to_revenue_period()（案a・b）の後に実行し、
+        その時点でなお矛盾が残る年度のみを対象とする。
+
+        安全ゲート（ENTG/TER型の巻き添え防止）:
+          - 現に`revenue − cost_of_revenue ≠ gross_profit`という矛盾が
+            確認できる年度のみ（ENTG/TERのように2タグが同一filingへの
+            重複タグ付けで、既存の単一タグ採用値が既に正しい年度は
+            この時点で矛盾なし＝対象外となり、合算による二重計上を
+            起こさない）
+          - 2つの候補タグは異なるタグ名で、かつ両方が現在のcost_of_revenue
+            採用元accn・同一(start,end)期間に実在する場合のみ
+          - 合算値を採用すると矛盾が厳密に解消する場合のみ（RMBS(2019)の
+            ように合算しても残差が残る場合＝restatement等の別要因の
+            可能性が高いため、採用せず現状維持のまま残す）
+        """
+        rev_field = extracted.get("revenue")
+        cogs_field = extracted.get("cost_of_revenue")
+        gp_field = extracted.get("gross_profit")
+        if rev_field is None or cogs_field is None or gp_field is None:
+            return
+
+        rev_annual = rev_field.get("annual", {})
+        gp_annual = gp_field.get("annual", {})
+        cogs_annual = cogs_field.setdefault("annual", {})
+        cogs_prov = cogs_field.setdefault("_annual_provenance", {})
+
+        candidates = self._COST_OF_REVENUE_ALIGNMENT_CANDIDATES
+
+        for year, cogs_val in list(cogs_annual.items()):
+            rev_val = rev_annual.get(year)
+            gp_val = gp_annual.get(year)
+            if rev_val is None or cogs_val is None or gp_val is None:
+                continue
+            if (rev_val - cogs_val) == gp_val:
+                continue  # 現に矛盾がない（対象外、ゲート条件）
+            cogs_p = cogs_prov.get(year)
+            if not cogs_p:
+                continue
+            cogs_accn = cogs_p.get("accn")
+            if not cogs_accn:
+                continue
+
+            # cogs採用元accn・同一期間に存在する候補タグを全て集める
+            # （end_dateはcogs_valそのものの逆引きで特定する）
+            cogs_end = None
+            for tag in candidates:
+                for entry in us_gaap.get(tag, {}).get("units", {}).get("USD", []):
+                    if entry.get("accn") != cogs_accn or entry.get("val") != cogs_val:
+                        continue
+                    days = self._period_days(entry.get("start"), entry.get("end"))
+                    if days is not None and 340 <= days <= 380:
+                        cogs_end = entry.get("end")
+                        break
+                if cogs_end:
+                    break
+            if cogs_end is None:
+                continue
+
+            present_tags: Dict[str, float] = {}
+            for tag in candidates:
+                for entry in us_gaap.get(tag, {}).get("units", {}).get("USD", []):
+                    if entry.get("accn") != cogs_accn or entry.get("end") != cogs_end:
+                        continue
+                    days = self._period_days(entry.get("start"), entry.get("end"))
+                    if days is None or not (340 <= days <= 380):
+                        continue
+                    val = entry.get("val")
+                    if val is not None:
+                        present_tags[tag] = val
+                    break
+
+            if len(present_tags) < 2:
+                continue  # 合算候補が1つ以下なら合算のしようがない
+
+            # 2タグの組み合わせを総当たりし、厳密に矛盾解消する組み合わせのみ採用
+            tag_items = list(present_tags.items())
+            for i in range(len(tag_items)):
+                for j in range(i + 1, len(tag_items)):
+                    tag_a, val_a = tag_items[i]
+                    tag_b, val_b = tag_items[j]
+                    summed = val_a + val_b
+                    if summed == cogs_val:
+                        continue  # 合算しても既存値と同じなら意味がない
+                    if (rev_val - summed) != gp_val:
+                        continue  # 矛盾が解消しないなら不採用（巻き添え防止）
+
+                    cogs_annual[year] = summed
+                    cogs_prov[year] = {
+                        "accn": cogs_accn,
+                        "filed": cogs_p.get("filed", ""),
+                        "is_own_data": cogs_p.get("is_own_data", False),
+                        "fy_tag": cogs_p.get("fy_tag"),
+                        "tag_sum_backfilled": True,
+                        "tag_sum_components": [tag_a, tag_b],
+                    }
+                    break
+                else:
+                    continue
+                break
 
     def _extract_values(self, us_gaap: dict, xbrl_keys: List[str], use_max: bool = False, merge_all_tags: bool = False,
                          fiscal_end_month: int = 12, accn_reportdate: Optional[Dict[str, str]] = None,
