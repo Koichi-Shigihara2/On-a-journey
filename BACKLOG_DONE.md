@@ -2,6 +2,149 @@
 
 ---
 
+## 2026-09-09⑧（完了）
+
+### ✅ [MACRO-STYLE-FCF-ZERO-TRUTHY-EXCLUDE-1] Moat Score算出用FCFマージン平均で、正当なFCF=0年がtruthy判定により暗黙除外される — 実装完了
+**状態:** ✅実装完了（2026-08-16に確定済みの対応方針をそのまま実装）
+**優先度:** 低
+**分類:** バグ / TANUKI VALUATION / データ品質（解消済み）
+**登録日:** 2026-08-16
+**完了日:** 2026-09-09
+**発見:** `[[MOAT-SCORE-PARTIAL-NULL-1]]`調査中の観察事項（チャット記録）
+
+#### 内容（登録時点）
+`pipeline.py::_calc_moat_inputs()`のfcf_margin_3yr_avg計算部分が
+`if fcf and rev and rev > 0:`というtruthy判定を使っており、
+`[[MACRO-TRUTHY-ZERO-BUG-1]]`と同型のfalsy-zeroパターンを持つ。FCFが
+正当な実測値0.0の年は暗黙にNoneと同じ扱いで平均対象から除外され、
+3年平均のはずが実質1〜2年平均になりうる。全105銘柄の直近3年分
+annual_*.jsonを実データ走査した結果、登録時点でFCF=0.0ちょうどの年は
+0件で、実害ゼロの潜伏バグだった。
+
+#### 実装内容（2026-09-09）
+確定済みの対応方針をそのまま実装した:
+`if fcf is not None and rev and rev > 0:`へ修正（revは除算対象のため
+`rev > 0`側のゼロ除外はそのまま維持）。
+
+#### 検証結果
+全102銘柄（tanuki=true相当）の直近3年分annual_*.jsonを実データ走査した
+結果、現時点でも`free_cash_flow`が正確に`0.0`の年は0件のため、変更前後で
+`moat_fcf_margin_3yr`の計算結果に差分は生じないことを確認した（登録時点
+から実データ状況は変わらず、実害ゼロの潜伏バグを解消した形）。
+`pytest`: 1161 passed。
+
+---
+
+### ✅ [FALSY-ZERO-PATTERN-SWEEP-1] 数値のfalsy判定（0/0.0）による欠損誤認バグの横断調査 — 実施完了
+**状態:** ✅実施完了（横断調査＋発見箇所2件を追加修正）
+**優先度:** 中
+**分類:** データ品質 / 横断調査（完了）
+**登録日:** 2026-08-16
+**完了日:** 2026-09-09
+**発見:** `[[MOAT-SCORE-PARTIAL-NULL-1]]`調査過程の連鎖的発見（チャット記録）
+
+#### 内容（登録時点、記載の陳腐化を訂正）
+Pythonの`0`/`0.0`がfalsyであることに起因し、正当なゼロ値を欠損と誤認
+するバグが繰り返し発見されていた（登録時点で5例目）。登録時点の
+「既知の発見」一覧は下記の通りだったが、着手前に確認したところ
+`[[MACRO-TRUTHY-ZERO-BUG-1]]`が「未対応」という記載は陳腐化しており、
+実際は2026-08-26に既に完了済み（BACKLOG_DONE.md参照、10,570行復元）
+だった（本移設時に訂正）:
+- `[[STONKS-SILO-COGS-DEAD-FALLBACK-1]]`（2026-07-30対応済み）
+- `[[MACRO-TRUTHY-ZERO-BUG-1]]`（2026-08-26対応済み。登録時点の
+  「未対応」記載は陳腐化していた）
+- `[[MOAT-SCORE-PARTIAL-NULL-1]]`（2026-08-16対応済み）
+- `pipeline.py`の`(oi or 0)`（タグ不在が根本原因でfalsy-zero自体は
+  無関係と確認済み、対応不要）
+- `[[MACRO-STYLE-FCF-ZERO-TRUTHY-EXCLUDE-1]]`（本セッションで対応、
+  上記参照）
+
+#### 横断調査の実施内容（2026-09-09）
+`grep -rn`で以下パターンをsrc/・common/全体から網羅的に抽出し、各箇所
+について実データ（該当銘柄群のannual/quarterly実データ）で「0が正当な
+実測値でありうるか」を確認した:
+- `or 0` / `or 0.0`（src/ 21ファイル・common/ 11ファイルで検出）
+- `if <数値変数> and <数値変数>`型の複合truthy条件（約30箇所）
+- `if not <数値変数>`型の否定truthy条件
+
+#### 発見した全箇所の判定結果一覧
+
+**A. 修正した箇所（3件、影響範囲ごとに分割してコミット）**
+1. `pipeline.py::_calc_moat_inputs()` fcf_margin_3yr_avg
+   （`[[MACRO-STYLE-FCF-ZERO-TRUTHY-EXCLUDE-1]]`、上記参照。コミット
+   `f0e529f7d7`）
+2. `pipeline.py::_save_result()` `_phase1_growth`算出:
+   `growth.rate or growth_scenarios.primary.rate or 0`という3値
+   フォールバックチェーンが、成長率が正当な0.0（横ばい・成熟企業）の
+   場合にNoneと区別できず誤って次候補へフォールバックしていた。
+   `_phase1_growth_original`経由でreport.txt表示・成長率フロア判定に
+   使われるため実質的な影響範囲を持つ。is not Noneによる段階判定へ
+   修正（コミット`504b018c07`）
+3. マトリクス④（キャッシュ創出力系）のFCF_Margin表示箇所
+   `if fcb and rev:`: 同一関数内の直前for文（`_fh_fcf is not None`）と
+   不整合な判定方式だった。is not Noneに統一（コミット`504b018c07`）
+4. `src/market/macro_pulse/05_import_history.py`（NET LIQUIDITY計算）:
+   `if walcl_val and tga_val and rrp_val:`が、rrp（オーバーナイト・
+   リバースレポ残高、実際にゼロ近傍まで低下しうる指標）の正当なゼロ値を
+   欠落させるリスクを持っていた。05_main.py::update_liquidity_csv()は
+   既にis not None判定で実装済みだったが本ファイルは未追従だった
+   （コミット`504b018c07`）
+
+いずれも実データ検証で該当値が現時点0件（RRPのみ全履歴1,321日分の
+最小値$30M、厳密な0は0件）のため、修正前後で計算結果に差分は生じない
+ことを確認済み。
+
+**B. 確認したが対応不要と判断した箇所（代表例、除算・非数値・現実的に
+起こらない値のいずれか）**
+- `pipeline.py`/`registration_validator.py`/`beta_fetcher.py`等の
+  revenue・shares等を除数とするtruthy判定（`if fcb and rev:`型で
+  revが除数の場合等）: revenue=0は数学的にZeroDivisionErrorとなるため
+  「missing」でも「正当な0」でも除外が必要で、falsy-zero誤判定と実質
+  無関係
+- `quarterly_review_generator.py`/`tail_dcf_bridge.py`の
+  `if rev and oi and rev.get("val"):`型: 除数側（rev/sd）のみ0ガード
+  され、被除数側（oi/ni）は0を正しく許容する設計で問題なし
+  （operating_margin/eps_diluted計算）
+- `pipeline.py`の`if iv and current_price:`・`if ma200 and
+  current_price:`型: current_price・ma200は実在する上場株式で
+  ちょうど0.0になることが現実的にほぼ想定されない値。IVも同様に
+  この計算モデル上ちょうど0.0になることは実質的に起こらない
+- `extract_key_facts.py::if not net_income:` /
+  `fair_value_detector.py::if not net_income:`:
+  `net_income`はdictオブジェクト（`{value, unit}`型）であり、真偽判定は
+  「値が0か」ではなく「キーが存在するか」を見ているため、
+  falsy-zero誤判定のパターンには該当しない
+- `05_main.py`の`rrp_inc`/`tga_inc`等: 変数名は数値に見えるが実際は
+  既に`is not None and ... >`で計算済みのbool値であり、追加のtruthy
+  判定は安全
+- `growth_sanity.py`の`if v and v > 0:`型: 明示的に`v > 0`（正の成長率
+  のみ採用）を意図した設計であり、`v and`は冗長だが動作に影響しない
+- リスト・辞書・regex Matchオブジェクト等に対する真偽判定（空か否かの
+  判定として元々正しい用法）多数
+
+**C. 検討したが結論を保留した箇所（1件）**
+- `fair_value_detector.py`の`if not net_income or abs(xbrl_value) <
+  abs(net_income) * MATERIALITY_THRESHOLD:`（EPS Analyzer公正価値
+  変動タグ検出の重要性閾値判定）: `net_income`がここでは生の数値。
+  net_income=0（損益分岐点）の場合、現状は「閾値0=常に非該当」として
+  スキップされるが、これは「損益分岐点では重要性を判定できない」という
+  解釈もでき、正誤が一意に定まらない設計判断のグレーゾーンと判断し
+  今回は見送った。対応するとしても影響範囲・意図の確認が別途必要な
+  ため、着手要否の判断が必要な状態のまま記録に留める（新規BACKLOG
+  登録はせず、本エントリの記録のみで足りると判断——実データでnet_income
+  =0が発生した実例は未確認、優先度は低）
+
+#### 検証結果
+- `pytest`: 1161 passed
+- `audit.py`: 既存警告10銘柄のみ（変化なし）
+- `report_consistency_check.py --fail-on-ng`: NG=0/WARN=119件
+  （変化なし）
+
+コミットは「MACRO-STYLE修正」（`f0e529f7d7`）・「その他発見箇所の修正」
+（`504b018c07`）・BACKLOG更新の3件に分けて実施。
+
+---
+
 ## 2026-09-09⑦（完了）
 
 ### ✅ [POLICY-AB-TREND-BLIND-1] Policy A/B判定ロジックが直近トレンド好転を検知できず、健全企業を恒常的にLOW判定 — 実装完了
