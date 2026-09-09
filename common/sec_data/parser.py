@@ -630,6 +630,14 @@ class SECParser:
         # 対象外＝二重計上の巻き添えなし）
         self._backfill_cost_of_revenue_via_tag_sum(extracted, us_gaap)
 
+        # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案d: revenue・
+        # cost_of_revenue・gross_profitが同一accn・同一期間から採用されて
+        # いるにも関わらず矛盾が残る年度についてのみ、同一accn内の別の
+        # revenue候補タグへ切り替えると矛盾が厳密に解消する場合に限り
+        # 採用する（BSY(2019)型。他銘柄のrevenue優先順位には一切影響
+        # しない極めて狭いゲート条件）
+        self._align_revenue_to_cost_gross_profit_identity(extracted, us_gaap)
+
         # [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]①: 標準タグから
         # gross_profitが取得できない年度のみ、revenue-cost_of_revenueで
         # 逆算した値を本番annual_YYYY.jsonへ書き戻す（欠損の穴埋めのみ、
@@ -1731,6 +1739,95 @@ class SECParser:
                     break
                 else:
                     continue
+                break
+
+    def _align_revenue_to_cost_gross_profit_identity(self, extracted: Dict[str, Any], us_gaap: dict) -> None:
+        """
+        [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案d: revenue・
+        cost_of_revenue・gross_profitが同一accn・同一期間からの採用で
+        あるにも関わらず矛盾が残る年度についてのみ、同一accn・同一期間に
+        存在する別のrevenue候補タグ（例:
+        `RevenueFromContractWithCustomerExcludingAssessedTax`）へ切り替える
+        と矛盾が厳密に解消する場合に限り採用する（BSY(2019)実例:
+        `Revenues`＄734.8Mではなく`RevenueFromContractWithCustomerExcluding
+        AssessedTax`＄736.7Mが正しく、cost_of_revenue・gross_profitは
+        元々同一accn内の正しい値だった）。
+
+        案dの一般適用（revenue優先順位の恒久的な変更）は全105銘柄
+        シミュレーションで「極めて危険」と確定済み（WMT/XOM等主力銘柄を
+        破壊するリスク）のため、本メソッドは以下の極めて狭いゲート条件
+        でのみ発動する:
+          - revenue・cost_of_revenue・gross_profitの採用元accnが
+            3つとも完全に一致している（cross-accn問題ではなく、
+            同一filing内でのrevenueタグ誤選択のみを対象とする）
+          - その一致accn・同一期間で現に矛盾が確認できる年度のみ
+          - 同一accn・同一期間に存在する別のrevenue候補タグへ切り替えると
+            矛盾が厳密に解消する場合のみ（他銘柄13件中12件はgenuine定義差
+            のため解消せず、この場合は現状を一切変更しない）
+        """
+        rev_field = extracted.get("revenue")
+        cogs_field = extracted.get("cost_of_revenue")
+        gp_field = extracted.get("gross_profit")
+        if rev_field is None or cogs_field is None or gp_field is None:
+            return
+
+        rev_annual = rev_field.get("annual", {})
+        rev_prov = rev_field.setdefault("_annual_provenance", {})
+        cogs_annual = cogs_field.get("annual", {})
+        cogs_prov = cogs_field.get("_annual_provenance", {})
+        gp_annual = gp_field.get("annual", {})
+        gp_prov = gp_field.get("_annual_provenance", {})
+
+        for year, rev_val in list(rev_annual.items()):
+            cogs_val = cogs_annual.get(year)
+            gp_val = gp_annual.get(year)
+            if rev_val is None or cogs_val is None or gp_val is None:
+                continue
+            if (rev_val - cogs_val) == gp_val:
+                continue  # 現に矛盾がない（対象外、ゲート条件）
+
+            rev_p = rev_prov.get(year)
+            cogs_p = cogs_prov.get(year)
+            gp_p = gp_prov.get(year)
+            if not rev_p or not cogs_p or not gp_p:
+                continue
+            rev_accn = rev_p.get("accn")
+            cogs_accn = cogs_p.get("accn")
+            gp_accn = gp_p.get("accn")
+            if not rev_accn or not (rev_accn == cogs_accn == gp_accn):
+                continue  # 3フィールドが同一accnでない（cross-accn型は案a/bの対象、本メソッド対象外）
+
+            rev_end = self._find_revenue_end_date_by_value(us_gaap, rev_accn, rev_val)
+            if rev_end is None:
+                continue
+
+            for tag in self.XBRL_MAPPING["revenue"]:
+                found_alt = None
+                for entry in us_gaap.get(tag, {}).get("units", {}).get("USD", []):
+                    if entry.get("accn") != rev_accn or entry.get("end") != rev_end:
+                        continue
+                    days = self._period_days(entry.get("start"), entry.get("end"))
+                    if days is None or not (340 <= days <= 380):
+                        continue
+                    val = entry.get("val")
+                    if val is None or val == rev_val:
+                        continue  # 現在値と同じなら候補にならない
+                    found_alt = (tag, val, entry.get("filed", ""))
+                    break
+                if found_alt is None:
+                    continue
+                alt_tag, alt_val, alt_filed = found_alt
+                if (alt_val - cogs_val) != gp_val:
+                    continue  # 切り替えても矛盾が解消しないなら不採用
+                rev_annual[year] = alt_val
+                rev_prov[year] = {
+                    "accn": rev_accn,
+                    "filed": alt_filed,
+                    "is_own_data": rev_p.get("is_own_data", False),
+                    "fy_tag": rev_p.get("fy_tag"),
+                    "revenue_tag_realigned": True,
+                    "revenue_tag_realigned_to": alt_tag,
+                }
                 break
 
     def _extract_values(self, us_gaap: dict, xbrl_keys: List[str], use_max: bool = False, merge_all_tags: bool = False,
