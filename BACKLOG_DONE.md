@@ -405,6 +405,40 @@ $2,093,662,000）を特定したが、この2値はcompany_facts.jsonに一件�
 「④原因特定済み・現行データソースの構造的制約で対応不可」参照）。
 **原因は特定できたが、現行アーキテクチャでは解決不可能という結論**。
 
+**追記（2026-09-10、根治的解決——「解決不可能」の結論を覆した）**:
+67件総点検（BACKLOG.md棚卸し）の依頼で「一括APIに値がない＝対応不可」
+という判断を再検討した結果、company_facts.json一括APIとは別に個別
+filingの生XBRLインスタンス文書を直接パースする機構
+（`common/sec_data/dimension_aggregate_fetcher.py`、新設）を実装し、
+上記④の7件のうちBKNG(2011/2012、公正価値基準タグのみでgenuineな
+対応不能ケース)を除く**6件全て**（PLTR2019・CART2023/2024/2025・
+V2008・CELH2025・ASTS2019）を解消した。
+
+各件、10-K原文で既に特定済みだった正解額と`--expect`で機械的に突合
+検証済み（CART2025のみ$1M差——TA/TL/SEが百万ドル単位開示のための
+丸め差で、BS恒等式チェックの許容誤差$2M/2%の範囲内）。値は個別filingの
+生XBRLタグから機械的に抽出・合算したもので、「タグ由来のない生の数値の
+直接注入」ではなくaccn・concept・axis・periodの引用付きで誰でも再現
+できる。
+
+根本原因は当初想定より2系統に分かれることが判明した: ①PLTR/CART/CELH
+＝標準`us-gaap:`タグだが次元分解開示のみ（例: PLTRの
+`TemporaryEquityCarryingAmountAttributableToParent`が
+`StatementClassOfStockAxis`のRedeemable/Nonredeemableメンバーでのみ
+開示）、②V/ASTS＝発行体固有のカスタム名前空間タグ（`v:
+TotalTemporaryEquityAndMinorityInterest`・`npac:
+TemporaryEquitySharesRedemptions`）でcompany_facts.jsonの`facts`辞書に
+その名前空間自体が存在しない。いずれもcompany_facts.json一括APIの
+構造的制約であり、個別filingの生XBRLには確実に値が存在することを
+実証した。
+
+適用はBS恒等式チェック（診断・表示専用のextra_components）に限定。
+revenue/cost_of_revenue等DCF計算に直接使われるフィールド
+（CDNS/INTUのcost_of_revenue、同型の次元限定パターン）への適用は
+実害リスクが格段に大きいため対象外とし、`[[LAYER3-COGS-DIMENSION-
+RECOVERY-CDNS-INTU-1]]`として別途起票した。詳細・検証結果は
+BACKLOG.md該当エントリ・コミット履歴（2026-09-10）参照。
+
 ---
 
 ## 2026-09-09⑫（完了）
