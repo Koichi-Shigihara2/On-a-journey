@@ -2,6 +2,136 @@
 
 ---
 
+## 2026-09-09⑫（完了）
+
+### ✅ [DEAD-CODE-AUDIT-BATCH-1] common/sec_data配下の陳腐化・未使用ファイル一括監査（削除要否判断） — 3件削除・1件は現状維持と判断根拠を訂正
+**状態:** ✅対応完了（①②③削除・④は現状維持に判断変更）
+**優先度:** 低 → クローズ
+**分類:** 保守 / リポジトリ整理（解消済み）
+**登録日:** 2026-07-13〜2026-07-18（統合日: 2026-08-03）
+**完了日:** 2026-09-09
+**発見:** [[TICKER-DIRECT-ACCESS-GUARD-1]]実装時の全リポジトリスキャン・
+[[ARCH-DATA-1]]残課題③調査時・[[GATE2-PHASE3B-1]]③-b事前調査時
+
+#### 内容
+以下4ファイルは、いずれも「全リポジトリでのimport/参照有無をgrep確認
+→未使用と確認できれば削除、継続利用の可能性があれば個別対応」という
+共通の判定基準で削除要否を判断できる状態にある。1つの監査作業単位として
+まとめて調査・判断する。
+
+**対象ファイルリスト**:
+
+① `common/sec_data/phase1_scan.py`（旧PHASE1-SCAN-CLEANUP-1、優先度
+低）: `os.listdir(DATA)`で`docs/value-monitor/tanuki_valuation/data/`を
+無条件スキャンし、tanukiフラグを見ずに全ディレクトリを対象銘柄として
+扱う。ハードコードされた`TODAY = date(2026, 6, 11)`から、2026-06-11頃に
+使われた一回限りの診断スクリプトと推測される。CIワークフロー・他
+スクリプトからの参照なし（grep全数確認済み）。一回限りの診断スクリプト
+であることを確認できれば削除、継続利用の可能性がある場合は
+`tickers.get_tanuki_tickers()`経由に修正する。
+
+② `src/value/tanuki_valuation/backfill_history.py`（旧BACKFILL-
+HISTORY-CLEANUP-1、優先度低）: `os.listdir(DATA_ROOT)`で無条件スキャン
+し、tanukiフラグを見ない。ファイル内コメント「May 14-16 History
+Backfill (v8.2)」から特定日付向けの一回限りのバックフィルスクリプトと
+推測される。一回限りのバックフィルスクリプトであることを確認できれば
+削除、継続利用の可能性がある場合は`tickers.get_tanuki_tickers()`経由に
+修正する。
+
+③ `common/sec_data/quality_checker.py`（旧QUALITY-CHECKER-CLEANUP-1、
+優先度低）: 独自のQ01〜Q13チェックカタログ、独自の`TICKER_RESTRICTIONS`
+定義を保持するが、全リポジトリを検索した結果どこからもimportされて
+いない未使用コードと判明している。同ファイル内の`TICKER_RESTRICTIONS`は
+コメント上「quarterly.pyと同期」とあるが実態は非同期で、SOFI・IONQの
+エントリ（quarterly.py側には存在）を欠いている。
+`report_consistency_check.py`（CHECK-N命名）・`quality_checker.py`
+（Q0N命名）・`registration_validator.py`（P1-xxx命名）と、既に3種類の
+独立したチェックカタログ・命名規則が併存しており、本ファイルは実質的に
+その一つが死蔵された状態。一度も呼ばれていないことを再確認できれば
+削除する、何らかの理由で将来利用予定がある場合は`TICKER_RESTRICTIONS`を
+quarterly.py側と同期させるか共有カタログへの統合を検討する。
+
+④ `common/screening/report_txt_parser.py`（旧REPORT-TXT-PARSER-
+CLEANUP-1、優先度低）: report.txt を regex でパースして
+`Classification`/`Matrix`/`FCF_History`等を抽出する公開API
+（`parse_report_text()`/`parse_ticker_report()`）を持つが、
+`common/sec_data/report_consistency_check.py`・
+`common/screening/dcf_validity_checker.py`のどちらからも`import`されて
+おらず、`tests/test_report_txt_parser.py`からのみ使用される孤立モジュール
+であることが判明した。一方`report_consistency_check.py`は同じ
+「report.txtのClassification行をregexでパースする」ロジックを255-259
+行目に**独自に**実装しており（`report_txt_parser.py::_parse_tanuki_
+score()`とは別の正規表現・別の実装）、実質的な重複が存在する。対応方針
+候補（未確定）: a.`report_txt_parser.py`を削除する（未使用コードの
+整理）b.`report_consistency_check.py`側の独自パース実装を
+`report_txt_parser.py`に統合し重複を解消する c.現状維持（実害なし、
+テストのみで担保されている状態を許容）。
+
+#### 対応結果（2026-09-09）
+「grep確認→未使用なら削除、継続利用の可能性があれば個別対応」の共通
+フローで4件を一括調査・判断した。
+
+**① `phase1_scan.py` → 削除**。全リポジトリ最終確認（本番コード・
+テスト・CI workflow・非Pythonファイルすべて）で参照ゼロを再確認。
+一回限りの診断スクリプトと確定。
+
+**② `backfill_history.py` → 削除**。同様に全リポジトリ参照ゼロを
+再確認。一回限りのバックフィルスクリプトと確定。
+
+**③ `quality_checker.py` → 削除**。全リポジトリ参照ゼロを再確認
+（`SYSTEM_MAP.md`は既に2026-08-02時点で「importゼロの死蔵コード」と
+記録済みだった）。`TICKER_RESTRICTIONS`のSOFI・IONQ欠落は削除により
+実害なしで解消。`docs/architecture/new_data_platform/
+SEC_EDGAR_LAYER_DESIGN.md`のフェーズD対象リスト（`normalized/`直接
+消費者7件）から本ファイルを除外し6件に訂正。
+
+①②③の削除に伴い、`tests/test_no_direct_ticker_access.py`の許可リスト
+（`_ROOT_DIR_LISTDIR_ALLOWED`）からphase1_scan.py・backfill_history.py
+のエントリも除去（ファイル自体が存在しなくなるため許可リストへの
+掲載自体が不要）。対応するテストファイルは①②③いずれも専用テスト
+ファイルが存在しなかったため削除対象なし。
+
+**④ `report_txt_parser.py` → 現状維持（登録時の判断根拠を訂正）**。
+`import`文でのgrepでは参照ゼロ（登録時の調査通り）だが、
+`CHAT_RULES.md`「銘柄スクリーニング着手前の確認事項」（2026-07-10の
+教訓、本ファイルと同日付）の標準フロー手順②として、「銘柄を見繕って」
+「スクリーニングして」等の依頼時にCLI直接実行（`python common/
+screening/report_txt_parser.py ...`）される現役の運用手順であることが
+判明した。Pythonの`import`文ではなくCLI実行のため、登録時のgrep調査
+（import参照のみ確認）が見落としていたと判断される。実際にAAPLの
+report.txtに対して動作することも再確認済み。
+
+`report_consistency_check.py`側の独自パース実装（`_parse_report()`）
+との「重複」は、Classification/Matrix/DCF_Reliability等の一部フィールド
+名が重なるという表面的なものに留まり、実態は用途・出力構造が大きく
+異なる別物と判断した:
+  - `report_consistency_check.py::_parse_report()`: report_consistency_
+    check.py内の15以上のCHECK-N判定が直接依存するフラットな辞書
+    （has_fcf_base・discount_rate_primary_data・rpo_pv_value等、
+    report_txt_parser.pyには存在しないフィールドを多数含む）
+  - `report_txt_parser.py::parse_report_text()`: セクション[1]〜[8]
+    ベースのネスト構造（BEAR/BASE/BULLシナリオ・HypeCore Phase
+    History・STONKS SILO 7項目等、report_consistency_check.py側には
+    存在しないフィールドを多数含む）で、標準スクリーニングフローの
+    JSON一括出力用
+
+いずれかに統合する（対応方針b）と、CI本番稼働中のreport_consistency_
+check.pyを大規模改修するか、report_txt_parser.py側に8項目以上を新規
+追加する必要があり、現状ゼロの実利益に対してリスクが不釣り合いに
+大きいため不採用。対応方針a（削除）も、現役の運用手順を壊すため不採用。
+**対応方針c（現状維持）を採用**。`tests/test_report_txt_parser.py`
+（`_all_tickers_with_report()`のZS-TICKERS-LEAK-1回帰テスト）も維持。
+なお同種の回帰保護は`tests/test_report_consistency_check.py::
+TestRunChecksTickerScan`側にも独立して存在するため、仮に将来
+report_txt_parser.py側のテストを失っても本番のCI検知能力は失われない
+ことも確認済み。
+
+**検証**: pytest全件（1169件、変化なし）成功、audit.py・
+report_consistency_check.py --fail-on-ngいずれもNG=0（WARN=124件、
+変化なし）。
+
+---
+
 ## 2026-09-09⑪（完了）
 
 ### ✅ [REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1] gross_profit/cost_of_revenue整合性を検証する監査項目が存在しない — CHECK-46新設で解消
