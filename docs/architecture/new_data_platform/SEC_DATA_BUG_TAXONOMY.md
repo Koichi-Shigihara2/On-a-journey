@@ -777,13 +777,17 @@ XBRLタグ選定・accn選定・会計年度判定・CIK照合・SEC EDGAR取得
     CLAUDE_CODE_START.md Step 0で登録拒否されるべきだった）は
     TANUKI-FIN-1（代替DDM型評価フレームワーク）へのルーティング判断
     待ちで開いたまま。
-98. **[[DEAD-CODE-AUDIT-BATCH-1]]** — OPEN（統合）。
-    `common/sec_data/`内/隣接の削除候補4ファイル: `phase1_scan.py`
-    （2026-06-11一回限りの診断、参照なし）、`quality_checker.py`
-    （独立Q01-Q13チェックカタログ、何にもimportされず、
-    `TICKER_RESTRICTIONS`の非同期コピー）、`backfill_history.py`と
-    `report_txt_parser.py`（孤立/重複したパースロジック）。未対応
-    （優先度低）。
+98. **[[DEAD-CODE-AUDIT-BATCH-1]]** — DONE（2026-09-09）。
+    `phase1_scan.py`（2026-06-11一回限りの診断）・`quality_checker.py`
+    （独立Q01-Q13チェックカタログ、何にもimportされず）・
+    `backfill_history.py`（一回限りのバックフィル）は3件とも参照ゼロを
+    確認しファイルごと削除。`report_txt_parser.py`は当初「孤立モジュール」
+    と見立てていたが、CHAT_RULES.md「銘柄スクリーニング着手前の確認事項」
+    （2026-07-10の教訓）の標準フロー手順②として現役で参照されている
+    （Pythonの`import`ではなくCLI直接実行のため、当初のgrep調査が
+    見落としていた）ことが判明し、削除せず現状維持とした
+    （report_consistency_check.py側の独自パース実装とは対象フィールド・
+    用途が異なり、統合は不採用）。
 99. **[[TICKER-DIRECT-ACCESS-GUARD-1]]** — DONE（CIガード）。新設
     `tests/test_no_direct_ticker_access.py`（AST解析ベースのCI
     チェック）が`cik_lookup.csv`の直接パースまたは共有`tickers.py`

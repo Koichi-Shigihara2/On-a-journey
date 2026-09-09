@@ -86,10 +86,10 @@ _ROOT_DIR_LISTDIR_ALLOWED = {
     # 検出される。2026-07-13 TICKER-DIRECT-ACCESS-GUARD-1で発見・同日中に
     # tanuki=falseの除外フィルタを追加して解消済み）
     "src/tail/tail_dcf_bridge.py",
-    # 2026-07-13時点で発見した既存の直し漏れ（本タスクのスコープ外の発見。
-    # BACKLOG登録済み・未修正）
-    "common/sec_data/phase1_scan.py",
-    "src/value/tanuki_valuation/backfill_history.py",
+    # 2026-07-13時点で発見した既存の直し漏れ（phase1_scan.py・
+    # backfill_history.py）は、[[DEAD-CODE-AUDIT-BATCH-1]]（2026-09-09）で
+    # いずれも一回限りの診断/バックフィルスクリプトと確認しファイルごと
+    # 削除したため、本許可リストからも除外した
 }
 
 
