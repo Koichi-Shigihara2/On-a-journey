@@ -1,18 +1,17 @@
 DOCN INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-09T08:36:36+09:00
+Generated: 2026-09-09T12:36:13+09:00
 Price: $126.69
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: WATCH
-Classification_Pre_Rounding: TRIM
+Classification: TRIM
 Funda_Score: 65/100
 Timing_Score (components):
   Deviation_Rate: -58.7%
   MA200_Deviation: +29.9%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $175 median ($140-$200) | 15 analysts | vs IV: +234.1%
-Comment: DCF信頼性LOW(FCF_Conversion_Rate方式・要注意フラグ)のためupside依存判定を抑制→WATCH
+Comment: 割高(-59%超)、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -96,11 +95,7 @@ DCF_FCF_Base: $174M (= Adj_NI $249M × FCF_Conv 0.7)
     含まれたままだと推定FCFが過大になるため、FCF換算専用に控除して
     います。分類判定には使用しません。詳細はBACKLOG_DONE.md
     [[CWAN-SNPS-MA-DISTORTION-1]]参照。]
-DCF_Reliability: LOW ⚠️ (FCF_Conversion_Rate方式: 要注意フラグ検出, IV参考値)
-  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
-   fcf_outlier未解消（一過性費用で説明不可）または推定FCFが生FCFから
-   大幅乖離（eps_invalid）のため、IVは参考値扱い。]
-   [DCF-REL-SYNC-1: FCF実績が5年平均から54%乖離]
+DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
 DCF_FCF_PV: $1.57B (6yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $4.71B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $6.28B (= FCF_PV + TV_PV, Rm=10% enterprise value)

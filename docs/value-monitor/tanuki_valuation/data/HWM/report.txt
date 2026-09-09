@@ -1,18 +1,17 @@
 HWM INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-09T08:36:08+09:00
+Generated: 2026-09-09T12:35:19+09:00
 Price: $231.53
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: WATCH
-Classification_Pre_Rounding: TRIM
+Classification: TRIM
 Funda_Score: 80/100
 Timing_Score (components):
   Deviation_Rate: -80.4%
   MA200_Deviation: -5.8%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Strong Buy | Target: $340 median ($257-$375) | 20 analysts | vs IV: +649.2%
-Comment: DCF信頼性LOW(FCF_Conversion_Rate方式・要注意フラグ)のためupside依存判定を抑制→WATCH
+Comment: 割高(-80%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -91,11 +90,7 @@ FCF_Conversion_Rate: 0.7 (Industry: Aerospace & Defense)
 DCF_FCF_Base: $1,035M (= Adj_NI $1,478M × FCF_Conv 0.7)
 ⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく
    デフォルト値（0.7）を使用しています。分類判定には使用しません。
-DCF_Reliability: LOW ⚠️ (FCF_Conversion_Rate方式: 要注意フラグ検出, IV参考値)
-  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
-   fcf_outlier未解消（一過性費用で説明不可）または推定FCFが生FCFから
-   大幅乖離（eps_invalid）のため、IVは参考値扱い。]
-   [DCF-REL-SYNC-1: FCF実績が5年平均から64%乖離]
+DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
 DCF_FCF_PV: $6.24B (6yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $15.35B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $21.59B (= FCF_PV + TV_PV, Rm=10% enterprise value)

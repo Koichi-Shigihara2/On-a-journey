@@ -8,7 +8,7 @@
   "v0": 26188956927.724598,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "v0_adjusted": 26188956927.724598,
-  "alpha": 0.31994752502071033,
+  "alpha": 0.31994752502071044,
   "alpha_was_capped": false,
   "future_values": {
     "1年後": 48.01,
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -70.7,
-  "calculation_date": "2026-09-09T08:36:18+09:00",
+  "calculation_date": "2026-09-09T12:35:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -93,12 +93,12 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.0785,
+      "rate": 0.07850000000000001,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.0785,
+      "weighted_growth": 0.07850000000000001,
       "fiscal_year": "FY2025",
       "source": "segment_config"
     }
@@ -289,7 +289,7 @@
       2606000000
     ],
     "diluted_shares": 335635195,
-    "roe_10yr_avg": 0.07617798214778819,
+    "roe_10yr_avg": 0.0761779821477882,
     "roe_years_used": 9,
     "roe_outlier_adj": false,
     "current_price": 151.72000122070312,
@@ -303,7 +303,7 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "beta_config()",
-    "high_growth_rate_used": 0.0785,
+    "high_growth_rate_used": 0.07850000000000001,
     "high_growth_years": 4,
     "terminal_growth_used": 0.02,
     "moat_score": 0.1756,
@@ -315,7 +315,7 @@
     "moat_fcf_margin_norm": 0.5268,
     "pv_high": 7906539105.190946,
     "pv_terminal": 18282417822.533653,
-    "roe_used": 0.07617798214778819,
+    "roe_used": 0.0761779821477882,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -323,7 +323,7 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 0.31994752502071033,
+    "alpha_uncapped": 0.31994752502071044,
     "per": 25.177067,
     "per_is_forward": false,
     "per_adjusted": 19.64,

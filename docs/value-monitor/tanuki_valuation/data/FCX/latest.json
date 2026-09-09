@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -84.5,
-  "calculation_date": "2026-09-09T08:36:23+09:00",
+  "calculation_date": "2026-09-09T12:35:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -93,12 +93,12 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.0636,
+      "rate": 0.06359999999999999,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.0636,
+      "weighted_growth": 0.06359999999999999,
       "fiscal_year": "FY2025",
       "source": "segment_config"
     }
@@ -200,7 +200,7 @@
     "estimated_fcf": 1319500000.0,
     "raw_fcf": 1319500000.0,
     "sector": "",
-    "note": "EPSデータなし(/home/runner/work/On-a-journey/On-a-journey/docs/value-monitor/adjusted_eps_analyzer/data/FCX/annual.json)",
+    "note": "EPSデータなし(C:\\Users\\shigi\\Documents\\On-a-journey-git\\docs\\value-monitor\\adjusted_eps_analyzer\\data\\FCX\\annual.json)",
     "divergence_ratio": 0.0,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
@@ -329,7 +329,7 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "beta_config()",
-    "high_growth_rate_used": 0.0636,
+    "high_growth_rate_used": 0.06359999999999999,
     "high_growth_years": 5,
     "terminal_growth_used": 0.03,
     "moat_score": 0.3005,
@@ -399,14 +399,14 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "tanuki_score": "WATCH",
+  "tanuki_score": "HOLD",
   "funda_score": 40,
-  "score_comment": "DCF信頼性LOW(FCF_Base方式・外れ値未説明)のためupside依存判定を抑制→WATCH",
+  "score_comment": "割高(-84%超)、FCF黒字、売上安定成長",
   "timing_score": 30,
   "sell_reason": null,
-  "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "割高(-84%超)、FCF黒字、売上安定成長",
-  "rounded_by_policy": "B",
+  "pre_rounding_score": null,
+  "pre_rounding_comment": null,
+  "rounded_by_policy": null,
   "matrix": {
     "matrix": "①投資効率系",
     "quadrant": "左下",
