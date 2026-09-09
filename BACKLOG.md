@@ -3883,11 +3883,18 @@ Stage 1/2の「積極的な値の検証」基準にそのまま当てはめて�
 ---
 
 ### [PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1] revenue/cost_of_revenue/gross_profitが独立にaccn・期間を選定するため異なる会計年度のデータが混在する
-**優先度:** 中〜高
+**優先度:** 中→低（2026-09-09、9銘柄中6銘柄解消済みのため格下げ）
 **分類:** バグ / 確定・複数フィールド間の期間不整合
 **登録日:** 2026-08-02
 **発見:** [[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]個別調査
 （チャット記録）
+
+**現状（2026-09-09時点）**: 案a・b・c・dすべて実装完了。対象9銘柄中
+LRCX(2010、案b)・AMD(2016/2017)・KO(2017)・JNJ(2017)・RMBS(2018)・
+BSY(2019)の6銘柄7年度は解消済み（詳細は下記「実装結果」参照）。
+**残存はMRVL(2017)・ONDS(2017)・RMBS(2019)・CRM(2013)の3銘柄4年度
+のみ**——いずれも「厳密一致のみ採用」という安全設計思想上、これ以上の
+機械的対応が困難な既知の限界。
 
 #### 内容
 `revenue`/`cost_of_revenue`/`gross_profit`という相互に関連する複数のPL
@@ -3998,15 +4005,82 @@ JNJ(2017)・MRVL(2017)・ONDS(2017)はrevenueと同一accn内に矛盾を解消�
 可能性がある）。RMBS(2018/2019、案c）・BSY(2019、案d）・AMD/KO(案a）も
 未着手のまま残存。
 
+#### 実装結果（2026-09-09、案a・c・d実装完了・9銘柄中6銘柄解消）
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`（`CostOfGoodsSold`追加、
+XBRL_MAPPING本体とは分離）＋`_align_cost_of_revenue_to_revenue_period()`
+へのgross_profitセカンダリアンカー追加（案a）、
+`_backfill_cost_of_revenue_via_tag_sum()`新設（案c）、
+`_align_revenue_to_cost_gross_profit_identity()`新設（案d、BSY型限定の
+極めて狭いゲート）を実装（コード`2b62d1224`案a・`95e6f7173`案c・
+`39c79c0e9`案d、本番データ`a638c4fb5`）。
+
+**解消（6銘柄・6年度、うち1件は想定外のボーナス修正）**:
+- AMD(2016): cost_of_revenue $3,316M→$3,274M（本人年度10-Kの
+  `CostOfGoodsSold`に整合、案a）
+- AMD(2017): cost_of_revenue $3,466M→$3,506M（同上、案a）
+- KO(2017): cost_of_revenue $13,255M→$13,256M（本人年度10-Kの
+  `CostOfGoodsSold`にgross_profitアンカー経由で整合、案a）
+- JNJ(2017): cost_of_revenue $25,439M→$25,354M（revenue自体は
+  再掲値と本人データが同値のため変更不要、cost_of_revenueのみ
+  gross_profitの本人年度accn内`CostOfGoodsSold`に整合、案a）
+- RMBS(2018): cost_of_revenue $35,402千→$53,701千（案cの2タグ合算を
+  想定していたが、実際には案aのgross_profitアンカーが10-K/A（修正後
+  filing、2021-03-29）の`CostOfRevenue`単独タグ$53,701千を発見して
+  先に解消。事前の手動検証で見つけた「2タグ合算値」と偶然一致した
+  値が、後年の公式訂正filingにおける単一タグの正式な再表示値
+  だったと判明。**案cの合算ロジック自体は現行105銘柄データセットでは
+  一度も発火しない**（案aが先に解消するため対象外ゲートに該当）が、
+  将来の真の2タグ合算ケースへの防御的実装として温存）
+- BSY(2019): revenue $734,849千→$736,654千（同一accn内の
+  `RevenueFromContractWithCustomerExcludingAssessedTax`へ切替、案d）
+- **[想定外のボーナス修正]** HON(2009): cost_of_revenue
+  $23,185M→$24,012M（案aのgross_profitアンカーで解消。この銘柄は
+  当初9銘柄の対象外だったが、[[HON-GROSSPROFIT-2009-RESIDUAL-
+  DISCREPANCY-1]]として「推測段階の懸念、非保有銘柄、これ以上の
+  調査価値なし」で未解決のままクローズ済みだった$827M残差discrepancy
+  が、本対応で偶然かつ根治的に解消した）
+
+**未解消（3銘柄・4年度、いずれも正直な報告として残す）**:
+- **MRVL(2017)**: 非暦年決算・レガシーCIK混在の複雑ケース。revenue accn
+  ・gross_profit accnの両方で`CostOfGoodsSold`を確認したが、必要値
+  （$1,034,246千）とどちらの候補（$1,029,527千・$1,017,564千）も
+  厳密に一致せず（乖離0.4〜1.6%）。「厳密一致のみ採用」という本対応
+  全体の安全設計思想上、これ以上の対応は不採用のまま残す
+- **ONDS(2017)**: revenue $274,403・gross_profit $-6,227から逆算した
+  必要値$280,630に対し、gp accn内`CostOfGoodsSold`($9,073)・revenue
+  accn内`CostOfRevenue`($79,768)のいずれも一致せず未解決
+- **RMBS(2019)**: `CostOfRevenue`+`CostOfGoodsAndServicesSold`の合算
+  （$51,375千）を試したが、必要値$47,799千に対し$3,576千の残差が
+  残る（乖離は$23.6M→$3.6Mへ85%削減はできるが厳密一致ではないため
+  案cのゲート条件で不採用。追加のrestatement等、別要因の可能性）
+- **CRM(2013)**: 同一accn・別期間の本人データ年度違いという設計上の
+  既知の限界（案a・b・c・dいずれの対象外）のため、今回も未着手のまま
+  変わらず残存
+
+**検証**: pytest全件（1161件）成功、report_consistency_check.py
+--fail-on-ng でNG=0（CHECK-31 fixed_registry整合含む）、WARN件数は
+既存の119件から変化なし。全105銘柄相当のシミュレーションで、対象
+7銘柄・7年度以外への意図しない変化がないことを確認済み。
+
+AMD(2016/2017)・KO(2017)・JNJ(2017)はfixed_registry.jsonの
+Stage 1一括登録でcost_of_revenueが凍結されていたため、該当4年度の
+fields_snapshotからcost_of_revenueのみ除外し、snapshot_hashを
+新しい内容で再計算した（他の凍結フィールドは変更なし）。
+
 #### 対応方針
-案bは完了。残る案a（候補タグ拡張、AMD/KO/JNJ/MRVL等）・案c（2タグ合算、
-RMBS）・案d（BSY個別対応）は、いずれもゲート条件込みの再設計
-（[[TOTAL-LIABILITIES-FALLBACK-TAG-DESIGN-FLAW-1]]と同一思想）が必要な
-まま次回セッションに引き継ぐ。
+案a・b・c・dいずれも実装完了。9銘柄中6銘柄（AMD×2年度・KO・JNJ・
+RMBS(2018)・BSY、+ボーナスでHON(2009)）を解消。残るMRVL(2017)・
+ONDS(2017)・RMBS(2019)・CRM(2013)は、いずれも「厳密一致のみ採用」
+という安全設計思想上、これ以上の機械的対応が困難な既知の限界として
+未解決のまま残す。追加対応が必要になった場合も、既存の解消済み銘柄
+（特にLLY/FCX/CAT/ABBV等の巻き添えリスク）を壊さないことを最優先に
+再設計すること。
 
 #### 着手条件
-案a・案c・案d（BSY）: ゲート条件（欠損穴埋めのみ・既存の正しい値を上書き
-しない設計）を伴わない実装は行わないこと。優先度中〜高。
+MRVL(2017)・ONDS(2017)・RMBS(2019)・CRM(2013)への追加対応は、厳密
+一致という既存のゲート条件を緩めない範囲でのみ検討すること。優先度は
+中→低に格下げ（主要9銘柄中6銘柄解消済み、残りは非主力銘柄の小規模
+残差のため）。
 
 ---
 
