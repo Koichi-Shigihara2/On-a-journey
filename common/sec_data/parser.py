@@ -638,6 +638,15 @@ class SECParser:
         # しない極めて狭いゲート条件）
         self._align_revenue_to_cost_gross_profit_identity(extracted, us_gaap)
 
+        # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e: gross_profitの
+        # 採用元accn・同一期間に revenue候補タグとcost_of_revenue候補
+        # タグの両方が存在し、その差が現在のgross_profitと厳密に一致する
+        # 年度についてのみ、revenue・cost_of_revenueの両方をそのaccnの
+        # 値に置き換える（ONDS(2017)・RMBS(2019)型。gross_profitは
+        # 既に信頼できる値である前提でアンカーとして固定し、revenue・
+        # cost_of_revenueの2フィールドを同時に是正する）
+        self._align_revenue_and_cost_to_gross_profit_own_accn(extracted, us_gaap)
+
         # [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]①: 標準タグから
         # gross_profitが取得できない年度のみ、revenue-cost_of_revenueで
         # 逆算した値を本番annual_YYYY.jsonへ書き戻す（欠損の穴埋めのみ、
@@ -1594,12 +1603,24 @@ class SECParser:
 
             # アンカー候補: revenue accn（従来通り、第一候補） →
             # gross_profit accn（案a拡張、JNJ/MRVL/ONDS型のセカンダリ
-            # アンカー）。revenueのaccnと一致するだけの状態（従来の
-            # 「既に一致」ゲート）は各アンカーごとに個別判定する。
+            # アンカー）。
+            #
+            # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a再拡張
+            # （2026-09-09、CRM(2013)型対応）: revenueアンカーの
+            # 「rev_accn != cogs_accn」制約を撤廃した。CRM(2013)は
+            # revenue・cost_of_revenueが同一accn（同一10-K内の複数年度
+            # 比較列）から採用されているにも関わらず、cost_of_revenueだけ
+            # 異なる期間（隣接年度の比較列）を誤って参照していたケース
+            # だった。「accnが一致している＝同じ期間を見ている」という
+            # 当初の前提が誤りだったと判明（1つのaccnに複数の(start,end)
+            # 期間が混在するため）。既存のゲート（矛盾が現に存在する年度
+            # のみ・置換後に矛盾が厳密に解消する場合のみ採用）は不変の
+            # ため、accnが一致し期間も一致済みの真に正しいケースは
+            # 「値が変わらないなら何もしない」で安全にスキップされる。
             anchor_candidates = []
-            if rev_accn and rev_accn != cogs_accn:
+            if rev_accn:
                 anchor_candidates.append(("revenue", rev_accn, rev_val))
-            if gp_accn and gp_accn != cogs_accn and gp_accn != rev_accn:
+            if gp_accn and gp_accn != rev_accn:
                 anchor_candidates.append(("gross_profit", gp_accn, gp_val))
 
             for anchor_kind, anchor_accn, anchor_val in anchor_candidates:
@@ -1829,6 +1850,150 @@ class SECParser:
                     "revenue_tag_realigned_to": alt_tag,
                 }
                 break
+
+    # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e: _align_revenue_and_
+    # cost_to_gross_profit_own_accn()専用の拡張revenue候補タグリスト。
+    # XBRL_MAPPING["revenue"]に加え、ONDS(2017)の本人データが使う
+    # `SalesRevenueGoodsNet`（商品売上高、サービス売上高と分離して
+    # 報告する小型企業に見られるタグ）を追加。案aのcost_of_revenue版
+    # 拡張リストと同じ理由で、主候補選定に使われるXBRL_MAPPING本体とは
+    # 意図的に分離する。
+    _REVENUE_ALIGNMENT_CANDIDATES = [
+        "Revenues",
+        "RevenueFromContractWithCustomerExcludingAssessedTax",
+        "RevenueFromContractWithCustomerIncludingAssessedTax",
+        "RevenueFromContractWithCustomer",
+        "SalesRevenueNet",
+        "TotalRevenue",
+        "RevenuesNetOfInterestExpense",
+        "SalesRevenueGoodsNet",
+    ]
+
+    def _align_revenue_and_cost_to_gross_profit_own_accn(self, extracted: Dict[str, Any], us_gaap: dict) -> None:
+        """
+        [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e: revenue・
+        cost_of_revenueの両方が、gross_profitの採用元accn・同一期間とは
+        異なる誤ったaccnから採用されている年度についてのみ、
+        gross_profitの採用元accn・同一期間に存在するrevenue候補タグと
+        cost_of_revenue候補タグの両方を調べ、その差が現在のgross_profit
+        と厳密に一致する場合に限り、revenue・cost_of_revenueの両方を
+        そのaccnの値へ同時に置き換える。
+
+        既存の案a〜dはいずれも「revenue・gross_profitは正しい前提で
+        cost_of_revenueのみ是正する」（案a・b・c）か「revenue側のみを
+        是正する」（案d）設計だったが、以下2つの実例ではgross_profitを
+        アンカーとして固定し、revenue・cost_of_revenueの**両方**を同時に
+        是正する必要があることが判明した:
+
+        - ONDS(2017)実例: gross_profitは本人データ（accn内に
+          `SalesRevenueGoodsNet`=$2,846・`CostOfGoodsSold`=$9,073が
+          存在し、2,846−9,073=−6,227=gross_profitと厳密に一致）。一方
+          revenue・cost_of_revenueは共に別の後年filing（SPAC合併疑いの
+          ある異なる報告主体、[[SPAC-SHELL-BS-ENTITY-MIXING-1]]と同種）
+          から誤って採用されており、$274,403・$79,768という本人データと
+          二桁近く乖離した値になっていた。
+        - RMBS(2019)実例: gross_profitの採用元accn（2022年提出の
+          10-K）に、revenue候補`RevenueFromContractWithCustomer
+          IncludingAssessedTax`=$227,603千・cost_of_revenue候補
+          `CostOfRevenue`=$51,375千が同一期間で存在し、227,603−51,375
+          =176,228=gross_profitと厳密に一致する。一方revenue・
+          cost_of_revenueは共に本人年度の10-K（2020年提出）の値
+          （restatement前の値、$224,027千・$24,219千）を使っており、
+          2021年の10-K/Aによる事後的な原価区分の見直し
+          （restatement）を反映できていなかった。
+
+        安全ゲート（他銘柄への巻き添え防止）:
+          - 現に`revenue − cost_of_revenue ≠ gross_profit`という矛盾が
+            確認できる年度のみ（矛盾のない年度は対象外）
+          - gross_profitの採用元accn・同一期間に、revenue候補タグと
+            cost_of_revenue候補タグの両方が実在する場合のみ
+          - その2つの値の差が現在のgross_profitと厳密に一致する場合の
+            み採用（部分的にしか解消しない組み合わせは不採用のまま
+            現状維持）
+          - gross_profit自体は変更しない（アンカーとして固定するのみ）
+        """
+        rev_field = extracted.get("revenue")
+        cogs_field = extracted.get("cost_of_revenue")
+        gp_field = extracted.get("gross_profit")
+        if rev_field is None or cogs_field is None or gp_field is None:
+            return
+
+        rev_annual = rev_field.get("annual", {})
+        rev_prov = rev_field.setdefault("_annual_provenance", {})
+        cogs_annual = cogs_field.get("annual", {})
+        cogs_prov = cogs_field.setdefault("_annual_provenance", {})
+        gp_annual = gp_field.get("annual", {})
+        gp_prov = gp_field.get("_annual_provenance", {})
+
+        for year, gp_val in list(gp_annual.items()):
+            rev_val = rev_annual.get(year)
+            cogs_val = cogs_annual.get(year)
+            if rev_val is None or cogs_val is None or gp_val is None:
+                continue
+            if (rev_val - cogs_val) == gp_val:
+                continue  # 現に矛盾がない（対象外、ゲート条件）
+
+            gp_p = gp_prov.get(year)
+            if not gp_p:
+                continue
+            gp_accn = gp_p.get("accn")
+            if not gp_accn:
+                continue
+
+            gp_end = self._find_gross_profit_end_date_by_value(us_gaap, gp_accn, gp_val)
+            if gp_end is None:
+                continue
+
+            # gp採用元accn・同一期間に存在するrevenue候補タグを探す
+            found_rev = None
+            for tag in self._REVENUE_ALIGNMENT_CANDIDATES:
+                for entry in us_gaap.get(tag, {}).get("units", {}).get("USD", []):
+                    if entry.get("accn") != gp_accn or entry.get("end") != gp_end:
+                        continue
+                    days = self._period_days(entry.get("start"), entry.get("end"))
+                    if days is None or not (340 <= days <= 380):
+                        continue
+                    val = entry.get("val")
+                    if val is None:
+                        continue
+                    found_rev = (tag, val, entry.get("filed", ""))
+                    break
+                if found_rev:
+                    break
+            if found_rev is None:
+                continue
+
+            # 同一accn・同一期間に存在するcost_of_revenue候補タグを探す
+            found_cogs = self._find_cost_of_revenue_in_accn(us_gaap, gp_accn, gp_end)
+            if found_cogs is None:
+                continue
+
+            rev_tag, cand_rev_val, rev_filed = found_rev
+            cogs_tag, cand_cogs_val, cogs_filed = found_cogs
+
+            if cand_rev_val == rev_val and cand_cogs_val == cogs_val:
+                continue  # 両方とも値が変わらないなら何もしない（無用な書き換え回避）
+            if (cand_rev_val - cand_cogs_val) != gp_val:
+                continue  # 置換しても矛盾が解消しないなら採用しない（巻き添え防止）
+
+            rev_annual[year] = cand_rev_val
+            rev_prov[year] = {
+                "accn": gp_accn,
+                "filed": rev_filed,
+                "is_own_data": gp_p.get("is_own_data", False),
+                "fy_tag": rev_prov.get(year, {}).get("fy_tag"),
+                "gp_anchor_realigned": True,
+                "gp_anchor_realigned_tag": rev_tag,
+            }
+            cogs_annual[year] = cand_cogs_val
+            cogs_prov[year] = {
+                "accn": gp_accn,
+                "filed": cogs_filed,
+                "is_own_data": gp_p.get("is_own_data", False),
+                "fy_tag": cogs_prov.get(year, {}).get("fy_tag"),
+                "gp_anchor_realigned": True,
+                "gp_anchor_realigned_tag": cogs_tag,
+            }
 
     def _extract_values(self, us_gaap: dict, xbrl_keys: List[str], use_max: bool = False, merge_all_tags: bool = False,
                          fiscal_end_month: int = 12, accn_reportdate: Optional[Dict[str, str]] = None,

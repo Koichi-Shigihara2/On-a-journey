@@ -94,22 +94,52 @@ def test_does_not_touch_years_with_no_existing_mismatch():
     assert "accn_aligned" not in prov
 
 
-def test_does_not_touch_already_same_accn_years():
-    """revenue/cost_of_revenueが既に同一accnの場合は、矛盾があっても
-    何もしない（本ロジックの対象はクロスaccn型に限定するゲート条件）"""
+def test_realigns_same_accn_different_period_when_it_resolves_mismatch():
+    """revenue/cost_of_revenueが既に同一accnでも、cost_of_revenueだけが
+    異なる期間（隣接年度の比較列）を誤って参照しており、revenueと同一
+    期間の候補で矛盾が厳密に解消する場合は置換する（CRM(2009-2013)実データ
+    相当。「accnが一致＝同じ期間を見ている」という当初の前提が誤りだったと
+    判明したための2026-09-09拡張。1つのaccnに複数の(start,end)期間が
+    混在するケースへの対応）"""
     extracted = _extracted(
         revenue={2020: {"val": 1000, "accn": "accn_a"}},
-        cost_of_revenue={2020: {"val": 400, "accn": "accn_a"}},
-        gross_profit={2020: {"val": 999}},  # 矛盾あり(1000-400=600 != 999)だが同一accn
+        cost_of_revenue={2020: {"val": 400, "accn": "accn_a"}},  # accn_a内の別期間の値を誤採用
+        gross_profit={2020: {"val": 999}},  # 矛盾あり(1000-400=600 != 999)
     )
     us_gaap = _merge_us_gaap(
         _us_gaap_entry("accn_a", "2019-01-01", "2020-01-01", 1000, tag="Revenues"),
+        # accn_a内・revenueと同一期間の正しい候補（1000-1=999=gross_profit）
         _us_gaap_entry("accn_a", "2019-01-01", "2020-01-01", 1, tag="CostOfRevenue"),
     )
     parser = SECParser()
     parser._align_cost_of_revenue_to_revenue_period(extracted, us_gaap)
 
+    assert extracted["cost_of_revenue"]["annual"][2020] == 1
+    prov = extracted["cost_of_revenue"]["_annual_provenance"][2020]
+    assert prov["accn"] == "accn_a"
+    assert prov["accn_aligned"] is True
+
+
+def test_does_not_touch_same_accn_when_replacement_does_not_resolve():
+    """revenue/cost_of_revenueが同一accnで矛盾があっても、同一期間の候補に
+    置換して尚矛盾が解消しない場合は現状維持する（同一accnへのゲート緩和後も
+    「厳密解消のみ採用」という安全条件自体は変わらないことの回帰確認）"""
+    extracted = _extracted(
+        revenue={2020: {"val": 1000, "accn": "accn_a"}},
+        cost_of_revenue={2020: {"val": 400, "accn": "accn_a"}},
+        gross_profit={2020: {"val": 999}},  # 矛盾あり(1000-400=600 != 999)
+    )
+    us_gaap = _merge_us_gaap(
+        _us_gaap_entry("accn_a", "2019-01-01", "2020-01-01", 1000, tag="Revenues"),
+        # 置換しても 1000-500=500 != 999 のため採用されない
+        _us_gaap_entry("accn_a", "2019-01-01", "2020-01-01", 500, tag="CostOfRevenue"),
+    )
+    parser = SECParser()
+    parser._align_cost_of_revenue_to_revenue_period(extracted, us_gaap)
+
     assert extracted["cost_of_revenue"]["annual"][2020] == 400
+    prov = extracted["cost_of_revenue"]["_annual_provenance"][2020]
+    assert "accn_aligned" not in prov
 
 
 def test_keeps_current_value_when_no_candidate_in_revenue_accn():
