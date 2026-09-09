@@ -1,1 +1,103 @@
-{}
+{
+  "0001193125-09-239249|2008-09-30": {
+    "axis": null,
+    "cik": 1403161,
+    "components": {
+      "base": 1136000000.0
+    },
+    "computed_value": 1136000000.0,
+    "concept": "TotalTemporaryEquityAndMinorityInterest",
+    "field": "temporary_equity",
+    "instance_filename": "v-20090930.xml",
+    "source_citation": "FY2009 10-K（Visa最初のXBRL提出）accn 0001193125-09-239249、比較列(FY2008)。カスタム名前空間タグ v:TotalTemporaryEquityAndMinorityInterest（company_facts.jsonのfacts辞書にはus-gaap/dei/srt/invest/ffdのみでvが存在せず一括APIから漏れていた）",
+    "ticker": "V",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker V --cik 1403161 --accn 0001193125-09-239249 --concept TotalTemporaryEquityAndMinorityInterest --period 2008-09-30"
+  },
+  "0001193125-21-060650|2019-12-31": {
+    "axis": "StatementClassOfStockAxis",
+    "cik": 1321655,
+    "components": {
+      "us-gaap:NonredeemableConvertiblePreferredStockMember": 2093662000.0,
+      "us-gaap:RedeemableConvertiblePreferredStockMember": 33569000.0
+    },
+    "computed_value": 2127231000.0,
+    "concept": "TemporaryEquityCarryingAmountAttributableToParent",
+    "field": "temporary_equity",
+    "instance_filename": "pltr-20201231.xml",
+    "source_citation": "10-K accn 0001193125-21-060650 R2.htm CONSOLIDATED BALANCE SHEETS, Temporary Equity区分（Convertible preferred stock Redeemable+Nonredeemable）",
+    "ticker": "PLTR",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker PLTR --cik 1321655 --accn 0001193125-21-060650 --concept TemporaryEquityCarryingAmountAttributableToParent --period 2019-12-31 --axis StatementClassOfStockAxis"
+  },
+  "0001213900-20-008037|2019-12-31": {
+    "axis": null,
+    "cik": 1780312,
+    "components": {
+      "base": 218519748.0
+    },
+    "computed_value": 218519748.0,
+    "concept": "TemporaryEquitySharesRedemptions",
+    "field": "temporary_equity",
+    "instance_filename": "npac-20191231.xml",
+    "source_citation": "原初10-K（New Providence Acquisition Corp.、SPAC本体）accn 0001213900-20-008037。カスタム名前空間タグ npac:TemporaryEquitySharesRedemptions（unit=USD、名称に反しSPAC trust勘定の一時的持分ドル額を表す。company_facts.jsonのfacts辞書にnpacが存在せず一括APIから漏れていた）",
+    "ticker": "ASTS",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker ASTS --cik 1780312 --accn 0001213900-20-008037 --concept TemporaryEquitySharesRedemptions --period 2019-12-31"
+  },
+  "0001341766-26-000024|2025-12-31": {
+    "axis": "StatementClassOfStockAxis",
+    "cik": 1341766,
+    "components": {
+      "us-gaap:SeriesAPreferredStockMember": 852355000.0,
+      "us-gaap:SeriesBPreferredStockMember": 907620000.0
+    },
+    "computed_value": 1759975000.0,
+    "concept": "TemporaryEquityCarryingAmountAttributableToParent",
+    "field": "temporary_equity",
+    "instance_filename": "celh-20251231_htm.xml",
+    "source_citation": "10-K(FY2025) accn 0001341766-26-000024、Series A Convertible Preferred Stock改定額+新規発行Series B（Mezzanine equity）",
+    "ticker": "CELH",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker CELH --cik 1341766 --accn 0001341766-26-000024 --concept TemporaryEquityCarryingAmountAttributableToParent --period 2025-12-31 --axis StatementClassOfStockAxis"
+  },
+  "0001579091-24-000027|2023-12-31": {
+    "axis": "StatementClassOfStockAxis",
+    "cik": 1579091,
+    "components": {
+      "cart:SeriesARedeemableConvertiblePreferredStockMember": 177000000.0,
+      "us-gaap:RedeemableConvertiblePreferredStockMember": 0.0
+    },
+    "computed_value": 177000000.0,
+    "concept": "TemporaryEquityCarryingAmountAttributableToParent",
+    "field": "temporary_equity",
+    "instance_filename": "cart-20231231_htm.xml",
+    "source_citation": "10-K(FY2023) accn 0001579091-24-000027、Series A Redeemable Convertible Preferred Stock（未転換残存分）",
+    "ticker": "CART",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker CART --cik 1579091 --accn 0001579091-24-000027 --concept TemporaryEquityCarryingAmountAttributableToParent --period 2023-12-31 --axis StatementClassOfStockAxis"
+  },
+  "0001579091-25-000015|2024-12-31": {
+    "axis": "StatementClassOfStockAxis",
+    "cik": 1579091,
+    "components": {
+      "cart:SeriesARedeemableConvertiblePreferredStockMember": 186000000.0
+    },
+    "computed_value": 186000000.0,
+    "concept": "TemporaryEquityCarryingAmountAttributableToParent",
+    "field": "temporary_equity",
+    "instance_filename": "cart-20241231_htm.xml",
+    "source_citation": "10-K(FY2024) accn 0001579091-25-000015、Series A Redeemable Convertible Preferred Stock（未転換残存分）",
+    "ticker": "CART",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker CART --cik 1579091 --accn 0001579091-25-000015 --concept TemporaryEquityCarryingAmountAttributableToParent --period 2024-12-31 --axis StatementClassOfStockAxis"
+  },
+  "0001579091-26-000018|2025-12-31": {
+    "axis": "StatementClassOfStockAxis",
+    "cik": 1579091,
+    "components": {
+      "cart:SeriesARedeemableConvertiblePreferredStockMember": 196000000.0
+    },
+    "computed_value": 196000000.0,
+    "concept": "TemporaryEquityCarryingAmountAttributableToParent",
+    "field": "temporary_equity",
+    "instance_filename": "cart-20251231_htm.xml",
+    "source_citation": "10-K(FY2025) accn 0001579091-26-000018、Series A Redeemable Convertible Preferred Stock（未転換残存分）。CARTのTA/TL/SEは百万ドル単位で開示されているため base_diff(195,000,000)と厳密値(196,000,000)の間に$1M丸め差があるが、BS恒等式チェックの許容誤差($2M/2%)の範囲内",
+    "ticker": "CART",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker CART --cik 1579091 --accn 0001579091-26-000018 --concept TemporaryEquityCarryingAmountAttributableToParent --period 2025-12-31 --axis StatementClassOfStockAxis"
+  }
+}
