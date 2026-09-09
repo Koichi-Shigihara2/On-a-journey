@@ -597,11 +597,24 @@ class TanukiValuationPipeline:
         対象母集団が存在しないため一旦見送り、判定はシンプルな
         `action=="excluded"`→NORMAL基準のまま維持する。
 
-        判定表（仕様: detected×eps_invalidの組み合わせはeps_invalid優先）:
-          eps_invalid=true                           → LOW（detected/actionに関わらず）
-          eps_invalid=false, detected=true,  action!="excluded" → LOW
-          eps_invalid=false, detected=true,  action=="excluded" → NORMAL
-          eps_invalid=false, detected=false                     → NORMAL
+        POLICY-AB-TREND-BLIND-1（2026-09-09修正）: `analyze_fcf_outlier`は
+        設計上、上方乖離（`rule=="deviation_large"`かつ`fcf_value>fcf_5yr_avg`）
+        を一過性費用で`excluded`にしない（一過性コストはFCFを下押しする方向
+        にしか働かないため、上方乖離を一過性コスト由来とするのは論理矛盾）。
+        そのため黒字転換・拡大による健全な乖離であっても、`action`は常に
+        `"flagged"`のままとなり恒常的にLOW判定され続けていた（例: S・ADBE・
+        CELH・PLTR・TSLA等、tanuki=true全100銘柄中50銘柄が該当）。
+        この上方乖離ケースについてのみ、直近2年連続黒字（`fcf_2yr_avg>0`、
+        `components`経由で取得）を主基準に追加し、LOW判定対象から除外する
+        （下方乖離・継続赤字＝正当な懸念〈SOFI/XOM等〉は本除外の対象外の
+        ため引き続きLOWのまま）。
+
+        判定表（更新後、上方乖離＋直近2年連続黒字の行を追加）:
+          eps_invalid=true                                            → LOW（他条件に関わらず）
+          eps_invalid=false, detected=true, action=="excluded"        → NORMAL
+          eps_invalid=false, detected=true, 上方乖離かつfcf_2yr_avg>0  → NORMAL（新設）
+          eps_invalid=false, detected=true, 上記いずれにも該当しない    → LOW
+          eps_invalid=false, detected=false                           → NORMAL
         """
         fcf_outlier = valuation.get("fcf_outlier", {}) or {}
         detected = fcf_outlier.get("detected", False)
@@ -612,7 +625,21 @@ class TanukiValuationPipeline:
         if eps_invalid:
             return "LOW"
         if detected and not explained:
-            return "LOW"
+            # POLICY-AB-TREND-BLIND-1: 上方乖離＋直近2年連続黒字は
+            # 一過性費用の有無に関わらず健全なトレンド好転とみなし、
+            # LOW判定対象から除外する
+            comps = valuation.get("components", {}) or {}
+            fcf_5yr_avg = comps.get("fcf_5yr_avg")
+            fcf_2yr_avg = comps.get("fcf_2yr_avg")
+            latest_fcf  = fcf_outlier.get("fcf_value")
+            is_upward_trend_recovery = (
+                fcf_outlier.get("rule") == "deviation_large"
+                and latest_fcf is not None and fcf_5yr_avg
+                and latest_fcf > fcf_5yr_avg
+                and fcf_2yr_avg is not None and fcf_2yr_avg > 0
+            )
+            if not is_upward_trend_recovery:
+                return "LOW"
         return "NORMAL"
 
     def _compute_tanuki_score(self, ticker: str, valuation: dict) -> dict:
