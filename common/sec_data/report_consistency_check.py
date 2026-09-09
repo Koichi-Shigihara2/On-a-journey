@@ -2156,6 +2156,84 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False) ->
             f"（自動修正なし、[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]参照）"
         )
 
+    # CHECK-46: revenue − cost_of_revenue = gross_profit の算術的整合性
+    # （[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]）。
+    #
+    # [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]で発見・是正した9銘柄
+    # 15年度分（AMD/BSY/CRM/JNJ/KO/LRCX/MRVL/ONDS/RMBS）は、いずれも
+    # revenue/cost_of_revenue/gross_profitが独立にaccn・期間を選定する
+    # ため異なる会計年度のデータが混在する構造的欠陥であり、既存の常設
+    # 監査では一件も検知できず個別調査でのみ発覚していた。CHAT_RULES.md
+    # 「探索的スキャンツールと常設WARN条件の分離」の原則に従い、その
+    # 探索手法（accn/期間の突き合わせ）はそのまま転用せず、常設WARN
+    # としては3フィールドの算術的整合性を許容誤差込みで検証するだけの
+    # 軽量な設計とする（自動修正なし、検知のみ）。
+    #
+    # 許容誤差0.1%は実データ校正（tanuki=true全105銘柄・annual_YYYY.json
+    # 全年度、1034件のrevenue/cost_of_revenue/gross_profit三つ組を実測）
+    # により決定した:
+    #   - 1000件（96.7%）は完全一致（diff=0）
+    #   - 非一致34件中、最小はCRM(FY2017)のdiff=$39,000（rev比0.0005%、
+    #     丸め誤差の範囲内）で、次に小さいCRM(FY2018)のdiff=$60,510,000
+    #     （rev比0.5741%）との間に約1000倍のギャップがある
+    #   - 0.5741%以上の残り33件は、[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-
+    #     GAP-MO-PM-SCCO-1]]で個別確認済みの物品税定義差（MO 13.5-24.8%・
+    #     PM 63.2-64.4%）・D&A別建て業界慣行（SCCO 4.2-12.0%）という
+    #     genuine定義差、または[[LITE-COGS-DA-TAG-UNMERGED-1]]の未解消
+    #     タグ分離バグ（LITE 0.75-6.17%）のいずれかで、既に個別調査済み
+    #     か調査対象として登録済みである
+    # 0.0005%と0.5741%の間（約1000倍のギャップ）に閾値を置けば、実データ
+    # 上は丸め誤差とそれ以外を完全に分離できるため、0.1%（0.001）を
+    # 採用した。genuine定義差（MO/PM/SCCO）も含めて発火する設計とした
+    # （WARNは「バグ確定」ではなく「要確認」のシグナルであり、
+    # warn_acknowledged.jsonで確認済み銘柄として登録することで、既存の
+    # WARN-21等と同じ運用に合流させる）。
+    _GP_COGS_TOLERANCE_PCT = 0.001
+    _ann_files_c46 = sorted(glob.glob(os.path.join(SEC_DATA_DIR, ticker, "annual_*.json")))
+    _mismatches_c46: list[tuple[str, float]] = []
+    for _path_c46 in _ann_files_c46:
+        try:
+            with open(_path_c46, encoding="utf-8") as _f46:
+                _ann46 = json.load(_f46)
+        except Exception:
+            continue
+        _pl46 = _ann46.get("pl", {}) or {}
+        _rev46 = _pl46.get("revenue")
+        _cogs46 = _pl46.get("cost_of_revenue")
+        _gp46 = _pl46.get("gross_profit")
+        if _rev46 is None or _cogs46 is None or _gp46 is None:
+            continue
+        # gross_profitがrevenue-cost_of_revenueの逆算値（derived）の場合、
+        # 定義上diff=0で恒等的に成立するため比較対象から除外する
+        # （[[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]と同じ整理）
+        _gp_prov46 = (_ann46.get("pl_provenance", {}) or {}).get("gross_profit", {}) or {}
+        if _gp_prov46.get("derived"):
+            continue
+        _diff46 = (_rev46 - _cogs46) - _gp46
+        if _diff46 == 0:
+            continue
+        _denom46 = abs(_rev46) if _rev46 else 0
+        if _denom46 == 0:
+            continue
+        _rel46 = abs(_diff46) / _denom46
+        if _rel46 > _GP_COGS_TOLERANCE_PCT:
+            _period46 = _ann46.get("period", "?")
+            _mismatches_c46.append((str(_period46), _rel46))
+    if _mismatches_c46:
+        _mismatches_c46.sort()
+        _periods_str_c46 = ", ".join(
+            f"{p}({r*100:.1f}%)" for p, r in _mismatches_c46[:5]
+        )
+        _more_c46 = "..." if len(_mismatches_c46) > 5 else ""
+        warn.append(
+            f"  [WARN-46 GP-COGS不整合] {len(_mismatches_c46)}件"
+            f" (対象年度: {_periods_str_c46}{_more_c46})"
+            f" → revenue−cost_of_revenue≠gross_profit（許容誤差{_GP_COGS_TOLERANCE_PCT*100:.1f}%超）"
+            f"。accn/期間の取り違え等のタグ選定バグ、または業界特有の"
+            f"non-GAAP調整（物品税・D&A別建て等）のgenuine定義差の可能性"
+            f"（自動修正なし、[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]参照）"
+        )
+
     return ng, warn
 
 

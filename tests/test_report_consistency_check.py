@@ -922,3 +922,137 @@ class TestCheckDupontNullValidity:
         latest = {"dupont": {"roe_decomposed": 0.15}}
         warn = rcc._check_dupont_null_validity("TESTCO", latest)
         assert not any("WARN-43" in w for w in warn)
+
+
+class TestCheck46GrossProfitCogsConsistency:
+    """CHECK-46（[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]で新設）が
+    revenue-cost_of_revenue=gross_profitの算術的整合性を許容誤差0.1%で検証し、
+    許容誤差以下の丸め誤差では発火しない一方、それを超える乖離（タグ選定バグ・
+    genuine定義差いずれも）では発火することを確認する"""
+
+    def _make_ticker_dir(self, tmp_path, ticker: str) -> None:
+        ticker_dir = tmp_path / ticker
+        ticker_dir.mkdir(parents=True, exist_ok=True)
+        (ticker_dir / "report.txt").write_text("Classification: WATCH\n", encoding="utf-8")
+        (ticker_dir / "latest.json").write_text("{}", encoding="utf-8")
+
+    def _write_annual(self, sec_data_path, ticker: str, period: int, pl: dict,
+                       pl_provenance: dict | None = None) -> None:
+        ticker_dir = sec_data_path / ticker
+        ticker_dir.mkdir(parents=True, exist_ok=True)
+        data = {"period": period, "pl": pl}
+        if pl_provenance is not None:
+            data["pl_provenance"] = pl_provenance
+        (ticker_dir / f"annual_{period}.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+
+    def test_warn_46_fires_when_mismatch_exceeds_tolerance(self, tmp_path, monkeypatch):
+        """PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1実データ相当（CRM(2013)修正前:
+        revenue=3,050,195,000, cost_of_revenue=968,428,000〈誤り〉,
+        gross_profit=2,366,616,000。乖離$284,807,000=rev比9.3%）で発火する"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2013, {
+            "revenue": 3050195000,
+            "cost_of_revenue": 968428000,
+            "gross_profit": 2366616000,
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert any("WARN-46" in w and "2013" in w for w in warn)
+        assert not any("WARN-46" in n for n in ng)  # 非ブロッキング（NGにはならない）
+
+    def test_warn_46_not_fired_when_identity_holds_exactly(self, tmp_path, monkeypatch):
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2020, {
+            "revenue": 1000000,
+            "cost_of_revenue": 400000,
+            "gross_profit": 600000,
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert not any("WARN-46" in w for w in warn)
+
+    def test_warn_46_not_fired_within_tolerance(self, tmp_path, monkeypatch):
+        """CRM(FY2017)実データ相当の丸め誤差（diff=$39,000、rev比0.0005%）は
+        許容誤差0.1%以下のため発火しない"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2017, {
+            "revenue": 8391984000,
+            "cost_of_revenue": 2234000000,
+            "gross_profit": 6157945000,  # 差引6157984000との乖離$39,000
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert not any("WARN-46" in w for w in warn)
+
+    def test_warn_46_fires_just_above_tolerance_boundary(self, tmp_path, monkeypatch):
+        """許容誤差0.1%をわずかに超える乖離（rev比0.11%）では発火する
+        （境界値の回帰確認）"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2020, {
+            "revenue": 1000000,
+            "cost_of_revenue": 400000,
+            "gross_profit": 598900,  # 差引600000との乖離1100=rev比0.11%
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert any("WARN-46" in w for w in warn)
+
+    def test_warn_46_skips_derived_gross_profit(self, tmp_path, monkeypatch):
+        """gross_profitがrevenue-cost_of_revenueの逆算値（derived）の場合は
+        定義上恒等的に成立するため、pl_provenanceに関わらず比較対象から除外する
+        （[[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]と同じ整理）"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(
+            sec_data_path, "TESTCO", 2020,
+            {"revenue": 1000000, "cost_of_revenue": 400000, "gross_profit": 999999},
+            pl_provenance={"gross_profit": {"derived": True}},
+        )
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert not any("WARN-46" in w for w in warn)
+
+    def test_warn_46_skips_years_with_missing_field(self, tmp_path, monkeypatch):
+        """revenue/cost_of_revenue/gross_profitのいずれかがNone（未報告）の
+        年度は比較不能として対象外とする"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2020, {
+            "revenue": 1000000,
+            "cost_of_revenue": None,
+            "gross_profit": 600000,
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        assert not any("WARN-46" in w for w in warn)
+
+    def test_warn_46_aggregates_multiple_years(self, tmp_path, monkeypatch):
+        """複数年度で乖離がある場合、1銘柄1行に集約して件数・年度を列挙する
+        （MO/SCCO実データ相当の複数年度連続パターン）"""
+        self._make_ticker_dir(tmp_path, "TESTCO")
+        sec_data_path = tmp_path / "sec_data"
+        self._write_annual(sec_data_path, "TESTCO", 2019, {
+            "revenue": 1000000, "cost_of_revenue": 400000, "gross_profit": 500000,
+        })
+        self._write_annual(sec_data_path, "TESTCO", 2020, {
+            "revenue": 1000000, "cost_of_revenue": 400000, "gross_profit": 500000,
+        })
+        monkeypatch.setattr(rcc, "DATA_DIR", str(tmp_path))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", str(sec_data_path))
+        ng, warn = rcc.check_ticker("TESTCO", whitelist=set())
+        w46 = [w for w in warn if "WARN-46" in w]
+        assert len(w46) == 1  # 1銘柄1行に集約される
+        assert "2件" in w46[0]
+        assert "2019" in w46[0] and "2020" in w46[0]

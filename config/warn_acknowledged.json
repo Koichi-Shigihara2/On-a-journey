@@ -2,6 +2,24 @@
   "_comment": "report_consistency_check.py WARN確認済み台帳（QUALITY-GATES-EPIC-1 Phase 1 2026-07-12新設）。CHECK番号・対象銘柄の組み合わせ単位で確認済み扱いにする。数値が変わっても再確認は不要（意図的な粗さ）。未登録の(check, ticker)組み合わせは実行時に「未確認」として強調表示される。",
   "acknowledged": [
     {
+      "check": "WARN-46",
+      "ticker": "MO",
+      "acknowledged_date": "2026-09-09",
+      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-filingのExciseAndSalesTaxesタグが検出diffと一致、たばこ産業特有の物品税込み収益計上）。"
+    },
+    {
+      "check": "WARN-46",
+      "ticker": "PM",
+      "acknowledged_date": "2026-09-09",
+      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-filingのExciseAndSalesTaxesタグが検出diffと一致、2018年以降はASC606適用等により乖離ゼロ）。"
+    },
+    {
+      "check": "WARN-46",
+      "ticker": "SCCO",
+      "acknowledged_date": "2026-09-09",
+      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-data同一accn内のDepreciationDepletionAndAmortizationタグが検出diffと一致、鉱業界特有のD&A別建て表示）。"
+    },
+    {
       "check": "WARN-10",
       "ticker": "ELF",
       "acknowledged_date": "2026-07-12",
