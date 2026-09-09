@@ -658,6 +658,55 @@ def _build_kpi_monitoring_section(
     )
 
 
+def _build_kpi_trend_suffix(
+    kpi: Dict[str, Any],
+    kpi_data_layer2: Optional[Dict[str, Any]],
+    quarter: str,
+    n: int = 4,
+) -> str:
+    """
+    直近n四半期（当四半期含む）の推移を「(前期$X・2期前$Y・3期前$Z)」の
+    ような接尾辞文字列で返す（[[TAIL-KPI-TREND-DISPLAY-1]]）。
+
+    satellite銘柄（ADBE/APGE/APP/CELH/CRWV/NVDA/SOUN）はwarning_
+    threshold/exit_thresholdという固定閾値方式を導入せず、傾向・周辺
+    環境を踏まえた総合判断をレビュー生成プロセス（Stage2/Call2）と
+    Koichiさんご自身が都度行う方針としたため、判断材料として実績値
+    列に複数四半期の推移を表示する。
+
+    過去四半期が無い（当四半期の1件のみ、または該当KPIがlayer2に
+    存在しない）場合は空文字列を返す——呼び出し側は_resolve_kpi_
+    value()が返す単一値のdisplayをそのまま使えばよく、エラーには
+    ならない。
+    """
+    lookup_key = kpi.get("layer2_name") or kpi.get("name", "")
+    kpis  = (kpi_data_layer2 or {}).get("kpis", {})
+    kinfo = kpis.get(lookup_key)
+    if not kinfo:
+        return ""
+
+    dp_map = {dp["quarter"]: dp["value"] for dp in kinfo.get("data", [])}
+    unit   = kinfo.get("unit", "")
+    # 当四半期以前（未来の四半期を誤って拾わないためのガード）を新しい順に
+    all_q  = sorted((q for q in dp_map if q <= quarter), reverse=True)
+    past_q = all_q[1:n]  # all_q[0]が当四半期。以降を「前期」「2期前」…として使う
+    if not past_q:
+        return ""
+
+    labels = ["前期", "2期前", "3期前"]
+    parts: List[str] = []
+    for i, q in enumerate(past_q):
+        val = dp_map.get(q)
+        if val is None:
+            continue
+        label = labels[i] if i < len(labels) else f"{i + 1}期前"
+        parts.append(f"{label}{_fmt_kpi_value(val, unit)}")
+
+    if not parts:
+        return ""
+    return " (" + "・".join(parts) + ")"
+
+
 def _lookup_layer2_value(kpi: Dict[str, Any], kpi_data_layer2: Dict[str, Any], quarter: str) -> Optional[Any]:
     lookup_key = kpi.get("layer2_name") or kpi.get("name", "")
     kpis = kpi_data_layer2.get("kpis", {})
@@ -696,6 +745,12 @@ def _build_kpi_status_table(
         # layer2から取得（_resolve_kpi_valueでYoY/比率変換も実施）
         if auto_f and kpi_data_layer2:
             comp_val, display = _resolve_kpi_value(k, kpi_data_layer2, quarter)
+            # 閾値判定に使うcomp_valは変えず、表示のみ複数四半期の推移を
+            # 追記する（display=="—"＝当四半期の値自体が無い場合は対象外、
+            # 過去データが無ければ_build_kpi_trend_suffix側が空文字列を
+            # 返すため無変化）
+            if display != "—":
+                display += _build_kpi_trend_suffix(k, kpi_data_layer2, quarter)
 
         # auto_fetchable=True でも layer2 にデータがなければ layer3 にフォールバック
         if comp_val is None and name in l3_kpis:
