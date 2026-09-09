@@ -1,0 +1,377 @@
+{
+  "intrinsic_value_pt": 16693988844.310207,
+  "intrinsic_value_per_share": 103.88964084699319,
+  "intrinsic_value_beta": 84.11,
+  "upside_percent_beta": -5.3,
+  "intrinsic_value_rf": 919.05,
+  "upside_percent_rf": 934.7,
+  "v0": 16693988844.310207,
+  "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
+  "v0_adjusted": 16693988844.310207,
+  "alpha": 0.0,
+  "alpha_was_capped": false,
+  "future_values": {
+    "1年後": 151.39,
+    "2年後": 220.62,
+    "3年後": 321.5,
+    "4年後": 468.51,
+    "5年後": 682.75
+  },
+  "return_metrics": {
+    "1年後": {
+      "future_value": 151.39,
+      "value_growth_pct": 45.7,
+      "expected_return_pct": 70.4
+    },
+    "2年後": {
+      "future_value": 220.62,
+      "value_growth_pct": 112.4,
+      "expected_return_pct": 148.4
+    },
+    "3年後": {
+      "future_value": 321.5,
+      "value_growth_pct": 209.5,
+      "expected_return_pct": 262.0
+    },
+    "4年後": {
+      "future_value": 468.51,
+      "value_growth_pct": 351.0,
+      "expected_return_pct": 427.5
+    },
+    "5年後": {
+      "future_value": 682.75,
+      "value_growth_pct": 557.2,
+      "expected_return_pct": 668.7
+    }
+  },
+  "upside_percent": 17.0,
+  "calculation_date": "2026-09-10T08:28:52+09:00",
+  "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
+  "dcf_type": "two_stage",
+  "growth": {
+    "rate": 0.4573,
+    "source": "segment_weighted",
+    "phase1_years": 5
+  },
+  "wacc": {
+    "value": 0.11385100000000001,
+    "beta": 1.243,
+    "risk_free_rate": 0.043,
+    "market_return": 0.1,
+    "method": "CAPM"
+  },
+  "sensitivity": {
+    "matrix": [
+      [
+        68.68,
+        124.47,
+        224.18
+      ],
+      [
+        58.2,
+        103.89,
+        184.07
+      ],
+      [
+        50.52,
+        88.86,
+        154.94
+      ]
+    ],
+    "wacc_values": [
+      0.09,
+      0.1,
+      0.11
+    ],
+    "growth_years": [
+      3,
+      5,
+      7
+    ],
+    "base_wacc": 0.1,
+    "base_years": 5
+  },
+  "growth_scenarios": {
+    "primary": {
+      "rate": 0.45726,
+      "source": "segment_weighted"
+    },
+    "segment": {
+      "enabled": true,
+      "weighted_growth": 0.45726,
+      "fiscal_year": null,
+      "source": "growth_override"
+    }
+  },
+  "scenario_valuations": {
+    "bear": {
+      "growth_rate": 0.32,
+      "intrinsic_value_per_share": 66.19
+    },
+    "base": {
+      "growth_rate": 0.457,
+      "intrinsic_value_per_share": 103.89
+    },
+    "bull": {
+      "growth_rate": 0.549,
+      "intrinsic_value_per_share": 137.97
+    }
+  },
+  "growth_options": {
+    "total_pv": 0,
+    "count": 0,
+    "applied": false,
+    "options": []
+  },
+  "maturity_profile": null,
+  "dcf_components": {
+    "v0": 16693988844.310207,
+    "pv_high_growth": 3219665756.9498243,
+    "pv_terminal": 13474323087.360384,
+    "high_growth_detail": [
+      {
+        "year": 1,
+        "fcf": 390266371.8333333,
+        "discount_factor": 1.113851,
+        "pv": 350375743.1050772
+      },
+      {
+        "year": 2,
+        "fcf": 568719573.0178432,
+        "discount_factor": 1.2406640502009998,
+        "pv": 458399332.9424715
+      },
+      {
+        "year": 3,
+        "fcf": 828772284.9759823,
+        "discount_factor": 1.3819148929804337,
+        "pv": 599727442.8300967
+      },
+      {
+        "year": 4,
+        "fcf": 1207736700.0041,
+        "discount_factor": 1.539247285461149,
+        "pv": 784628117.5297117
+      },
+      {
+        "year": 5,
+        "fcf": 1759986383.447975,
+        "discount_factor": 1.7144921281581862,
+        "pv": 1026535120.5424672
+      }
+    ],
+    "terminal_fcf": 1821585906.868654,
+    "terminal_value": 23101620865.539486,
+    "v0_rm": 20766132797.791634,
+    "pv_fcf_rm": 3365186161.502477,
+    "pv_tv_rm": 17400946636.289158
+  },
+  "fcf_base": {
+    "base_fcf": 198526000.0,
+    "method": "recent_2yr",
+    "fcf_5yr_avg": 122003666.66666667,
+    "fcf_2yr_avg": 198526000.0,
+    "cv": 1.338,
+    "cv_threshold": 0.5,
+    "ratio": 1.338,
+    "threshold": 0.5
+  },
+  "fcf_outlier": {
+    "detected": true,
+    "rule": "deviation_large",
+    "fiscal_year": 2026,
+    "fcf_value": 293884000,
+    "threshold_pct": 0.6,
+    "deviation_pct": 140.8812849887025,
+    "transient_evidence": {
+      "found": false,
+      "source": null,
+      "items": [],
+      "total_transient_amount": 0.0
+    },
+    "action": "flagged",
+    "note": "FY2026 FCF($294M)が5年平均($122M)から141%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+  },
+  "fcf_estimation": {
+    "applied": false,
+    "method": "raw_fcf",
+    "adj_net_income": -55402288.238473594,
+    "conversion_rate": 0.7,
+    "estimated_fcf": 198526000.0,
+    "raw_fcf": 198526000.0,
+    "sector": "",
+    "note": "調整済み純利益がマイナス($-55M) → 従来FCFを使用",
+    "divergence_ratio": 0.0,
+    "divergence_warning": "",
+    "ma_addback_excluded": 0.0,
+    "ma_addback_detected_but_not_applied": 0.0,
+    "rate_is_sector_default": false
+  },
+  "software_system_reclassification": {
+    "applicable": false,
+    "current_subgroup": "",
+    "recommended_subgroup": null,
+    "realized_ratio": null,
+    "years_used": 0,
+    "deviation_from_current": null,
+    "reclassify_recommended": false,
+    "note": "対象外"
+  },
+  "software_system_provisional": {
+    "is_provisional": false,
+    "note": ""
+  },
+  "rd_capitalization": {
+    "applied": true,
+    "rd_current": 373682000.0,
+    "rd_avg_3yr": 304399666.6666667,
+    "capitalized_rd": 373682000.0,
+    "amortization_current": 304399666.6666667,
+    "rd_adjustment": 69282333.33333331,
+    "rd_revenue_ratio": 0.2839,
+    "threshold": 0.05,
+    "years_used": 3,
+    "note": "R&D資本化適用: 当年R&D$0.37B - 過去3年平均償却$0.30B = FCF調整$+0.07B (R&D/Rev=28.4%)"
+  },
+  "rpo_adjustment": {
+    "rpo_pv": 0.0,
+    "rpo_raw": 2440000000,
+    "discount_rate": 0.15,
+    "assumed_realization_years": 1.5,
+    "applied": false,
+    "application_rate": 1.0,
+    "sector_category": "SaaS",
+    "rpo_incremental": 0.0,
+    "op_margin": -0.21403966091559526,
+    "exclusion_reason": ""
+  },
+  "bs_adjustment": {
+    "cash": 429397000.0,
+    "short_term_investments": 1319717000.0,
+    "long_term_debt": 1131791000.0,
+    "short_term_debt": 0.0,
+    "net_cash": 617323000.0,
+    "net_cash_per_share": 2.9992095460646606,
+    "fiscal_year": 2026,
+    "applied": true,
+    "sector_guard": "none",
+    "net_debt_period": "2027Q1",
+    "sti_approximated": false,
+    "sti_residual_pct": null,
+    "sti_estimated_zero": false,
+    "sti_last_confirmed_zero_year": null,
+    "ltdebt_estimated_zero": false,
+    "ltdebt_last_confirmed_zero_year": null,
+    "stdebt_estimated_zero": false,
+    "stdebt_last_confirmed_zero_year": null
+  },
+  "rice": {
+    "available": false,
+    "q": 0.0,
+    "cf_conversion": 0.0,
+    "cf_adj": 0.0,
+    "wacc": 0.1,
+    "q_years": 0,
+    "cf_years": 0,
+    "avg_intensity": 0.0,
+    "avg_rev_growth_lagged": 0.0,
+    "warnings": true,
+    "note": "Q計算不可（OCF/純利益データなし）"
+  },
+  "fcf_source": "ttm_series",
+  "fcf_ttm_end": "2026-04-30",
+  "fcf_ttm_periods": 3,
+  "rice_data_source": "ttm_series",
+  "components": {
+    "fcf_5yr_avg": 122003666.66666667,
+    "fcf_2yr_avg": 198526000.0,
+    "fcf_base_used": 267808333.3333333,
+    "fcf_base_method": "recent_2yr",
+    "fcf_outlier_excl_avg": null,
+    "fcf_list_raw": [
+      293884000,
+      103168000,
+      -31041000
+    ],
+    "diluted_shares": 205828566,
+    "roe_10yr_avg": null,
+    "roe_years_used": 0,
+    "roe_outlier_adj": false,
+    "current_price": 88.81999969482422,
+    "latest_revenue": 1316191000.0,
+    "rpo": 2440000000,
+    "beta": 1.243,
+    "sector": "Technology",
+    "industry": "Software - Infrastructure",
+    "eps_data": {
+      "ticker": "RBRK"
+    },
+    "_shares_source": "yf_implied",
+    "_beta_source": "beta_config()",
+    "high_growth_rate_used": 0.45726,
+    "high_growth_years": 5,
+    "terminal_growth_used": 0.035,
+    "moat_score": 0.3474,
+    "moat_score_source": "measured",
+    "moat_score_n_present": 3,
+    "moat_phase1_years": 5,
+    "moat_gross_margin_norm": 0.7568,
+    "moat_roic_norm": 0.0,
+    "moat_fcf_margin_norm": 0.2233,
+    "pv_high": 3219665756.9498243,
+    "pv_terminal": 13474323087.360384,
+    "roe_used": null,
+    "fcf_floor_applied": 0.0,
+    "fcf_growth_floor": 0.15,
+    "fcf_growth_cap": 0.5,
+    "bear_multiplier": 0.7,
+    "bull_multiplier": 1.2,
+    "rpo_pv": 0.0,
+    "growth_option_pv": 0,
+    "alpha_uncapped": 0.0,
+    "per": 122.43484,
+    "per_is_forward": true,
+    "per_adjusted": 532.66,
+    "peg": null,
+    "ps": 12.501773,
+    "ev_ebitda": null,
+    "ma200": 69.12789993286133,
+    "forward_eps": 0.76506,
+    "analyst_target_median": 120.0,
+    "analyst_target_mean": 118.7037,
+    "analyst_target_low": 90.0,
+    "analyst_target_high": 135.0,
+    "analyst_count": 27,
+    "analyst_rec_key": "strong_buy",
+    "dividend_yield": 0.0,
+    "payout_ratio": 0.0,
+    "insider_buy_count": 0,
+    "insider_sell_count": 63,
+    "insider_net_direction": "Sell優勢",
+    "insider_latest_date": "2026-09-03"
+  },
+  "validation": {
+    "validated_at": "2026-09-10",
+    "model": "basic_checks_only",
+    "checks": {
+      "pt_shares_consistency": {
+        "pass": true,
+        "detail": "(V₀ $20.77B + RPO $0.00B + GO $0.00B) / 0.206B + BS $+3.00/株 = $103.89 (差異0.00%、α=0.000は参考値・P_t未乗算)"
+      },
+      "dcf_components": {
+        "pass": true,
+        "detail": "2段階: pv_high $3.22B + pv_terminal $13.47B = $16.69B (差異0.00%)"
+      },
+      "formula_verification": {
+        "pass": true,
+        "detail": "α計算: ROE 0.0% × 60% / Rm 10.00% × 0.7 = 0.0000 (実際0.0000)"
+      },
+      "anomaly_detection": {
+        "pass": true,
+        "detail": "異常値なし"
+      }
+    },
+    "overall": "PASS",
+    "ai_comment": null
+  }
+}
