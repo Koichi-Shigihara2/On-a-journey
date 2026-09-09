@@ -8,6 +8,30 @@
       "comment": "会計恒等式不成立(2019)。10-K原文(accn 0001193125-21-060650、R2.htm)で乖離$2,127,231,000の正体（Temporary Equity区分のConvertible preferred stock Redeemable $33,569,000+Nonredeemable $2,093,662,000）を特定済み。ただしStatementClassOfStockAxisによる次元分解開示のみでcompany_facts.jsonに一切現れないため（SECのcompanyfacts一括APIの構造的制約、CDNS/INTU等と同型）、現行アーキテクチャでは対応不可と確定（[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]参照）。"
     },
     {
+      "check": "WARN-29",
+      "ticker": "CART",
+      "acknowledged_date": "2026-09-09",
+      "comment": "会計恒等式不成立(2023/2024/2025)。10-K原文（各年R3.htm）で「Series A Redeemable Convertible Preferred Stock (Mezzanine equity)」$177M(2023)/$186M(2024)/$195M(2025)と厳密一致することを特定済み。company_facts.jsonの'TemporaryEquityCarryingAmountAttributableToParent'は2022年分の非次元値のみ存在し、2023年以降はcart:SeriesARedeemableConvertiblePreferredStockMemberという発行体固有名前空間の次元分解開示のみとなりcompany_facts.jsonから消失（PLTRと同型の構造的制約）。対応不可と確定。"
+    },
+    {
+      "check": "WARN-29",
+      "ticker": "V",
+      "acknowledged_date": "2026-09-09",
+      "comment": "会計恒等式不成立(2008)。10-K原文（FY2009 10-K比較列、R1.xml）で乖離$1,136,000,000の正体が「Total temporary equity and minority interest」区分と厳密一致することを特定済み。ただしMinorityInterestタグは$0のみでcompany_facts.jsonに該当額の事実が一切存在せず（2009年の初期XBRL移行期特有の未タグ付け、全namespace横断確認済み）、対応不可と確定。"
+    },
+    {
+      "check": "WARN-29",
+      "ticker": "CELH",
+      "acknowledged_date": "2026-09-09",
+      "comment": "会計恒等式不成立(2025)。10-K原文（R3.htm）で乖離$1,759,975,000の正体が「Series A Convertible Preferred Stock (Mezzanine equity)」$852,355,000+「Series B Convertible Preferred Stock (Mezzanine equity)」$907,620,000と厳密一致することを特定済み。2024年以前のSeries A（$824,488,000固定）はTemporaryEquityCarryingAmountAttributableToParentで非次元開示されcompany_facts.jsonに存在するが、2025年分（Series A改定額・Series B新規）は次元分解開示のみとなり消失（PLTR/CARTと同型）。対応不可と確定。"
+    },
+    {
+      "check": "WARN-29",
+      "ticker": "ASTS",
+      "acknowledged_date": "2026-09-09",
+      "comment": "会計恒等式不成立(2019)。10-K原文（SPAC New Providence Acquisition Corp、R2.htm）で乖離$218,519,748の正体が「Class A common stock subject to possible redemption」と厳密一致することを特定済み。しかし本人年度の原初10-K（2020年提出）にはこのタグ自体が一切存在せず（初期XBRL整備不足）、後年の10-K/A（2021年、SPAC業界全体の会計是正）のTemporaryEquityValueExcludingAdditionalPaidInCapitalは$202,557,751と近いが一致せず（残差$15,961,997、restatementでtotal_assets等自体も変更されている可能性が高く単純代替不可）。対応不可と確定（2020年分は別途[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]に記載の通り実装済みで解消済み）。"
+    },
+    {
       "check": "WARN-46",
       "ticker": "MO",
       "acknowledged_date": "2026-09-09",
