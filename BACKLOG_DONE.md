@@ -2,6 +2,78 @@
 
 ---
 
+## 2026-09-09⑪（完了）
+
+### ✅ [REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1] gross_profit/cost_of_revenue整合性を検証する監査項目が存在しない — CHECK-46新設で解消
+**状態:** ✅実装完了（CHECK-46/WARN-46を新設）
+**優先度:** 低〜中 → クローズ
+**分類:** 品質ゲート / 監査カバレッジ欠如（解消済み）
+**登録日:** 2026-07-31
+**完了日:** 2026-09-09
+**発見:** [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]調査（チャット記録）
+
+#### 内容（登録時点）
+report_consistency_check.pyに、gross_profitとcost_of_revenueの整合性
+(Revenue−cost_of_revenueとの乖離検知等)を検証するWARN項目が一件も存在しない。
+今回発見した複数の乖離事象は、いずれも既存の常設監査では検知できず、個別調査
+でのみ発覚した。
+
+#### 影響
+同種の新規乖離が将来再発しても、既存の監査プロセスでは検知できない。
+
+#### 着手条件（解消済み）
+[[PERIOD-LENGTH-VALIDATION-GAP-1]]系統の対応確定後——2026-09-09、
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]の完全解消（9銘柄15年度分、
+AMD/BSY/CRM/JNJ/KO/LRCX/MRVL/ONDS/RMBS/HON）をもって満たされた。
+
+#### 実装結果（2026-09-09）
+`report_consistency_check.py`にCHECK-46（既存最大番号45の次）を新設。
+CHAT_RULES.md「探索的スキャンツールと常設WARN条件の分離」の原則に従い、
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]の探索的スキャン手法（accn/
+期間の突き合わせ）はそのまま転用せず、常設WARNとしては`revenue −
+cost_of_revenue = gross_profit`という3フィールドの算術的整合性を許容
+誤差込みで検証するだけの軽量な設計とした（自動修正なし、検知のみ）。
+
+**許容誤差の校正（推測ではなく実データ、tanuki=true全105銘柄・
+annual_YYYY.json全年度、1034件のrevenue/cost_of_revenue/gross_profit
+三つ組を実測）**:
+- 1000件（96.7%）は完全一致（diff=0）
+- 非一致34件中、最小はCRM(FY2017)のdiff=$39,000（rev比0.0005%、丸め
+  誤差の範囲内）で、次に小さいCRM(FY2018)のdiff=$60,510,000（rev比
+  0.5741%）との間に約1000倍のギャップがあり、この間に閾値を置けば
+  実データ上「丸め誤差」と「それ以外」を完全に分離できる
+- 0.5741%以上の残り33件は、[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-
+  GAP-MO-PM-SCCO-1]]で個別確認済みの物品税定義差（MO 13.5-24.8%・
+  PM 63.2-64.4%）・D&A別建て業界慣行（SCCO 4.2-12.0%）というgenuine
+  定義差、または[[LITE-COGS-DA-TAG-UNMERGED-1]]の未解消タグ分離バグ
+  （LITE 0.75-6.17%）のいずれかで、既に個別調査済みか調査対象として
+  登録済み
+- 上記ギャップに基づき**許容誤差0.1%（0.001）**を採用。genuine定義差
+  （MO/PM/SCCO）も含めて発火する設計とし、これら3銘柄は
+  `config/warn_acknowledged.json`へ事前登録して「確認済みWARN」として
+  扱う（LITEは[[LITE-COGS-DA-TAG-UNMERGED-1]]が未解消のため、CRM(2018)
+  は本校正で新たに判明した未調査事案のため、いずれも意図的に「未確認」
+  のまま残す）
+
+**現行105銘柄相当データでの発火結果**: CRM(1件・FY2018)・LITE(10件)・
+MO(10件)・PM(2件)・SCCO(10件)の5銘柄33件で発火。NG=0/WARN=124件
+（既存119件から+5行、確認済み60/未確認64）。
+
+**過去データ（今回是正した9銘柄15年度分の修正前annual_YYYY.json、git
+履歴から復元）での回帰確認**: AMD(2016/2017)・BSY(2019)・CRM(2009-2013
+の5年度)・HON(2009)・JNJ(2017)・MRVL(2017)・ONDS(2017)・RMBS
+(2018/2019)の**8銘柄で発火を確認**（新設したCHECK-46が実際にこれらの
+バグを検知できたことを実証）。**KO(2017)のみ不発火**——修正前の乖離が
+$1M・0.003%と極めて僅少で、[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]
+自身が当時「比較列との差が僅少で実質無害」と記録していた通り、校正済み
+閾値0.1%を下回る真に無害なケースであり、閾値設計の正しさを裏付ける
+結果と言える。
+
+**検証**: pytest全件（1169件、CHECK-46の回帰テスト7件を新設）成功、
+audit.py・report_consistency_check.py --fail-on-ngいずれもNG=0。
+
+---
+
 ## 2026-09-09⑩（完了）
 
 ### ✅ [PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1] revenue/cost_of_revenue/gross_profitが独立にaccn・期間を選定するため異なる会計年度のデータが混在する — 案a〜e実装で9銘柄15年度分を完全解消

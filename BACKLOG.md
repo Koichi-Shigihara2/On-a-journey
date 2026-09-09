@@ -7158,37 +7158,6 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 
 ---
 
----
-
-### [REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1] gross_profit/cost_of_revenue整合性を検証する監査項目が存在しない
-**優先度:** 低〜中
-**分類:** 品質ゲート / 監査カバレッジ欠如
-**登録日:** 2026-07-31
-**発見:** [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]調査（チャット記録）
-
-#### 内容
-report_consistency_check.pyに、gross_profitとcost_of_revenueの整合性
-(Revenue−cost_of_revenueとの乖離検知等)を検証するWARN項目が一件も存在しない。
-今回発見した複数の乖離事象は、いずれも既存の常設監査では検知できず、個別調査
-でのみ発覚した。
-
-#### 影響
-同種の新規乖離が将来再発しても、既存の監査プロセスでは検知できない。
-
-#### 対応方針
-未定。[[PERIOD-LENGTH-VALIDATION-GAP-1]]等の根本原因対応が固まった後、
-再発防止のための常設WARN項目化を検討する(CHAT_RULES.md「探索的スキャンツールと
-常設WARN条件の分離」の原則に従い、今回の探索的スキャン手法をそのまま常設WARNに
-転用しない設計とする)。
-
-#### 着手条件
-[[PERIOD-LENGTH-VALIDATION-GAP-1]]系統の対応確定後。
-
----
-
-
----
-
 ## システム全体バックログ（TANUKI VALUATION以外）
 
 ### 【Stonks Silo】
