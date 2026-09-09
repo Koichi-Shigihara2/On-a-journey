@@ -1687,6 +1687,61 @@ class SECParser:
                         "combined_tags": source_tags,
                     }
 
+    def _tag_quarterly_corroboration(self, us_gaap: dict, tag: str, annual_end_date: str,
+                                      annual_val: float) -> bool:
+        """
+        REVENUE-TAG-PRIORITY-FRAGILE-1: 指定タグの年次end_date・年次値が、
+        同一タグの10-Q単独四半期実績（Q1〜Q3、80〜100日）による裏付けを
+        持つかを判定する。
+
+        annual_end_dateまでの過去366日以内にある単独四半期エントリ（重複
+        end_dateは1件に統合）が3件以上存在し、それらの合計を年次値から
+        差し引いた残差（Q4相当）が正の値で、かつQ1〜Q3平均から極端に
+        乖離していない（1.5倍以内）場合に「裏付けあり」とする。判定基準は
+        意図的に緩め（早期成長企業の四半期変動が大きいケースも許容する
+        ため）に設定しており、目的は「タグが四半期分解できる実在の
+        集計値か、それとも年次エントリしか存在しない断片的・誤タグ付けの
+        可能性がある値か」の大まかな判別であり、厳密な整合性検証ではない。
+        """
+        if tag not in us_gaap or annual_val is None:
+            return False
+        units = us_gaap[tag].get("units", {}).get("USD", [])
+        try:
+            annual_dt = datetime.strptime(annual_end_date, '%Y-%m-%d')
+        except (ValueError, TypeError):
+            return False
+
+        standalone_qs: Dict[str, float] = {}
+        for entry in units:
+            if entry.get("form") != "10-Q":
+                continue
+            end = entry.get("end", "")
+            start = entry.get("start", "")
+            if not end or not start or len(end) < 10 or len(start) < 10:
+                continue
+            try:
+                end_dt = datetime.strptime(end, '%Y-%m-%d')
+                start_dt = datetime.strptime(start, '%Y-%m-%d')
+            except ValueError:
+                continue
+            if not (80 <= (end_dt - start_dt).days <= 100):
+                continue  # 単独四半期（YTD等は除外）のみ対象
+            if not (0 <= (annual_dt - end_dt).days <= 366):
+                continue  # 当該年度の直近4四半期の範囲外
+            val = entry.get("val")
+            if val is None:
+                continue
+            standalone_qs[end] = val  # 同一end_dateの重複filingは後勝ちで統合
+
+        if len(standalone_qs) < 3:
+            return False
+        total_q = sum(standalone_qs.values())
+        implied_q4 = annual_val - total_q
+        if implied_q4 <= 0:
+            return False
+        avg_q = total_q / len(standalone_qs)
+        return abs(implied_q4 - avg_q) / avg_q < 1.5
+
     def _collect_own_data_annual(self, us_gaap: dict, xbrl_keys: List[str],
                                   accn_reportdate: Dict[str, str], fiscal_end_month: int, field_name: str,
                                   collisions_out: Optional[List[Dict[str, Any]]],
@@ -1773,6 +1828,30 @@ class SECParser:
                         # （ARCH-DATA-1ステージ1: 値の確定）。異なるタグ間の優先順位
                         # （上記WMT対応）はここでは変更しない（先勝ちのまま）。
                         if filed and filed > existing.get("filed", ""):
+                            fy_bucket[end_date] = {"val": val, "accn": accn, "filed": filed, "key": key}
+                    elif field_name == "revenue":
+                        # REVENUE-TAG-PRIORITY-FRAGILE-1: 異なるタグが同一
+                        # (fy, end_date)で競合した場合、従来はxbrl_keysの
+                        # 優先順位（先勝ち）を無条件に尊重していたが、これは
+                        # 「先に列挙されたタグがたまたま正しい」という前提に
+                        # 依存する脆弱な設計だった（ASTS・TDYで実例確認、
+                        # 2026-09-09対応）。全105銘柄相当の実データ調査の
+                        # 結果、現在の勝者が10-Q単独四半期実績による裏付け
+                        # （Q1〜Q3合計から逆算した残差=Q4相当が正の妥当な値）
+                        # を一切持たず、かつ今回の候補が持つ場合に限り、
+                        # 頑健な四半期整合性を優先して逆転させる（TDYで
+                        # 実証済み: Revenuesタグは同年度の10-Q実績が一切
+                        # 存在しないがSalesRevenueNetは存在し四半期合計と
+                        # 完全一致）。両者とも裏付けを持つ場合は既存の
+                        # 優先順位を変更しない（CAT/WMT/XOM/LYFT/PM/CEG/
+                        # VST/FCXで実例確認済みの通り、両タグが真に異なる
+                        # 会計上の集計範囲—例: CATの「Financial Products
+                        # 含む総売上」vs「Machinery/Energy/Transportation
+                        # セグメント売上」—を意味し、数値の優劣だけでは
+                        # どちらが望ましいか決められないため、この場合は
+                        # 既存のタグ優先順位に委ねる）。
+                        if (not self._tag_quarterly_corroboration(us_gaap, existing["key"], end_date, existing["val"])
+                                and self._tag_quarterly_corroboration(us_gaap, key, end_date, val)):
                             fy_bucket[end_date] = {"val": val, "accn": accn, "filed": filed, "key": key}
 
         winners: Dict[int, tuple] = {}  # fy -> (val, end_date, accn, filed, raw_fy_tag)
