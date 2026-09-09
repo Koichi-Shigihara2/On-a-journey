@@ -3753,12 +3753,56 @@ CHECK29本体（133件解消分）は実装完了済み
   のみ対象）と同型だが別タグ名のため現行フォールバックの対象外に
   なっている。
 
-**③要さらなる確認（7件）**:
-- **PLTR(2019)**: 全namespace横断でもNCI/TemporaryEquity系タグは
-  一切存在しない。stockholders_equity（$-1,980,642,000）は自身の
-  内訳（CommonStock+APIC+RetainedEarnings+AOCI−TreasuryStock）と
-  完全一致し抽出バグではない。乖離$2,127,231,000の原因は上場前の
-  複雑な資本構成に起因する可能性が高いが特定できず。
+**④原因特定済み・現行データソースの構造的制約で対応不可（1件、
+2026-09-09個別調査）**:
+- **PLTR(2019)**: 実際の10-K原文（accn 0001193125-21-060650、2021年
+  提出の初回10-K、FY2020本体・FY2019比較列。SEC EDGARの財務諸表
+  ビューアR2.htm「CONSOLIDATED BALANCE SHEETS」を直接確認）で、
+  乖離$2,127,231,000の正体を特定した。TOTAL LIABILITIESと
+  STOCKHOLDERS' EQUITYの間に「TEMPORARY EQUITY」区分が存在し、
+  「Convertible preferred stock (Redeemable)」$33,569,000＋
+  「Convertible preferred stock (Nonredeemable)」$2,093,662,000
+  ＝$2,127,231,000と厳密に一致することを確認した（Palantirは
+  2020年9月の直接上場〈IPO〉まで大型の転換優先株式による資金調達を
+  重ねており、上場前年度末時点でこの区分が実在した）。
+
+  しかし、この2つの金額は`company_facts.json`（company_facts一括
+  API）を全namespace・全accn・全期間にわたり該当金額そのもので
+  横断検索しても**一件も存在しない**ことを確認済み（発見手順②に
+  相当する事前調査は完了、対応方針の判断に進めなかった）。10-Kの
+  財務諸表ビューア側の調査で、この2行は基底タグ（推定
+  `us-gaap:TemporaryEquityCarryingAmountAttributableToParent`相当）
+  を`us-gaap:StatementClassOfStockAxis`のRedeemable/Nonredeemable
+  メンバーで次元分解した開示としてのみ存在し、非次元（デフォルト
+  コンテキスト）版の値がそもそも存在しないと判明した。SECの
+  companyfacts一括APIは次元付き（dimensionally-qualified）事実を
+  返さない構造的制約があるため、`us_gaap`辞書（parser.pyが参照する
+  データソース）にこの値が一切現れない。
+
+  これは`[[LITE-COGS-DA-TAG-UNMERGED-1]]`調査等で既に確立している
+  「③標準タグだが常にディメンション付き文脈でのみ開示
+  （company_facts.json非対応）」パターン（CDNS/INTUの前例）と同型
+  であり、COHR・HEI・ONDS・RDW・ASTS(2020)の前例（いずれも
+  company_facts.json内に該当タグの値が実在し、許可リストへの追加
+  可否のみが論点だった）とは根本的に異なる。`_BS_IDENTITY_ALLOWLIST`
+  ・`_BS_IDENTITY_FALLBACK_ONLY_TAGS`はいずれも`us_gaap`辞書内のタグ
+  探索のみで機能する設計のため、どのタグ名を追加してもマッチする
+  データが存在せず無意味（no-op）。`fact_overrides.json`
+  （`_apply_fact_overrides()`）も「既存の抽出値を差し替える」設計
+  （抽出値が存在しない年度は対象外というゲートが明示的にある）であり、
+  temporary_equityという新規フィールド自体が存在しないため適用不可。
+
+  現行のcompany_facts.json一括APIベースの抽出パイプラインでは
+  構造的に解決不可能と判断し、コード変更は一切行わなかった
+  （安全に実装できる変更が存在しないため）。10-K原文の実測値そのもの
+  を`fact_overrides.json`へハードコードする案は、この codebase 全体で
+  一貫している「タグ由来のない生の数値の直接注入は行わない」という
+  設計哲学（本セッション内の複数タスクで踏襲済み）に反するため採用
+  しなかった。真に解決するには、XBRLインスタンス文書またはR-file群を
+  直接パースする別経路の新設が必要であり、それは本タスクの個別調査の
+  スコープを大きく超える別エピック相当の対応となる。
+
+**③要さらなる確認（6件、PLTR以外は今回スコープ外・未着手）**:
 - **CART(2023/2024/2025)**: 3年度ともNCI/一時的持分/優先株式系タグは
   一切存在せず、stockholders_equity・liabilitiesとも各々の内訳合計と
   一致（抽出は正しい）。乖離（$177M〜$195M）の原因が特定できず、
@@ -3790,10 +3834,16 @@ CHECK29本体（133件解消分）は実装完了済み
 なし（充足済み）。実測で対象は当初23件から**13件**に減少（HEI×5・
 ONDS×1・COHR×2・CRWV×1・VRT×1〈2018分〉の計10件が解消）。残る13件は
 上記個別調査により①genuine2件（BKNG×2）・②許可リスト拡張可能2件
-（ASTS2020・RDW2020）・③要さらなる確認7件（PLTR・CART×3・V・CELH・
-ASTS2019）に整理。CRM・VRTの2件は[[PARSER-STOCKHOLDERS-EQUITY-
-CROSS-YEAR-MISSELECT-1]]へ分離（CHECK29対象外）。WARN-29発火銘柄も
-13→9銘柄に減少（ASTS/BKNG/CART/CELH/CRM/PLTR/RDW/V/VRT）。
+（ASTS2020・RDW2020、両方実装完了）・③要さらなる確認7件（PLTR・CART
+×3・V・CELH・ASTS2019）に整理。CRM・VRTの2件は[[PARSER-STOCKHOLDERS-
+EQUITY-CROSS-YEAR-MISSELECT-1]]へ分離（CHECK29対象外）。
+
+**2026-09-09更新**: ③のうちPLTR(2019)は個別調査完了・原因特定済みだが
+現行データソースの構造的制約で対応不可と確定（④へ分類変更）。③の
+残りは6件（CART×3・V・CELH・ASTS2019、未着手のまま）。WARN-29発火
+銘柄は9銘柄のまま変化なし（ASTS/BKNG/CART/CELH/CRM/PLTR/RDW/V/VRT、
+PLTRはWARN自体は解消せず「④対応不可・確認済み」として
+`config/warn_acknowledged.json`への登録を検討可能）。
 
 **追記（2026-08-05、[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 3
 準備調査）**: RDW(2020)について、②許可リスト拡張（`RedeemableNoncontrolling
@@ -3843,6 +3893,21 @@ Excluding APIC」という名称通り簿価（CarryingAmount系と同種の測�
 497 passed/2 known failed（既知）を確認。詳細はBACKLOG_DONE.md該当
 エントリ参照。**`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`の「②許可
 リスト拡張で対応可能」2件（RDW/ASTS）が両方解消**。
+
+**個別調査完了・対応不可と確定（2026-09-09、PLTR(2019)）**: 10-K原文
+（R2.htm）で乖離$2,127,231,000の正体（Temporary Equity区分の
+Convertible preferred stock Redeemable $33,569,000＋Nonredeemable
+$2,093,662,000）を特定したが、この2値はcompany_facts.jsonに一件も
+存在しないことを全namespace・全accn・全期間の横断検索で確認した。
+`StatementClassOfStockAxis`による次元分解開示のみで非次元
+（デフォルトコンテキスト）版が存在しないため、SECのcompanyfacts
+一括APIの構造的制約（次元付き事実を返さない、CDNS/INTU等で確立済みの
+既知パターン）でparser.pyの`us_gaap`辞書に一切現れない。
+`_BS_IDENTITY_ALLOWLIST`・`_BS_IDENTITY_FALLBACK_ONLY_TAGS`はいずれも
+`us_gaap`辞書内のタグ探索のみで機能するため、対応する安全な実装は
+存在しないと判断し、コード変更は行わなかった（詳細は上記
+「④原因特定済み・現行データソースの構造的制約で対応不可」参照）。
+**原因は特定できたが、現行アーキテクチャでは解決不可能という結論**。
 
 ---
 

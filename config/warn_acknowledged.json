@@ -2,6 +2,12 @@
   "_comment": "report_consistency_check.py WARN確認済み台帳（QUALITY-GATES-EPIC-1 Phase 1 2026-07-12新設）。CHECK番号・対象銘柄の組み合わせ単位で確認済み扱いにする。数値が変わっても再確認は不要（意図的な粗さ）。未登録の(check, ticker)組み合わせは実行時に「未確認」として強調表示される。",
   "acknowledged": [
     {
+      "check": "WARN-29",
+      "ticker": "PLTR",
+      "acknowledged_date": "2026-09-09",
+      "comment": "会計恒等式不成立(2019)。10-K原文(accn 0001193125-21-060650、R2.htm)で乖離$2,127,231,000の正体（Temporary Equity区分のConvertible preferred stock Redeemable $33,569,000+Nonredeemable $2,093,662,000）を特定済み。ただしStatementClassOfStockAxisによる次元分解開示のみでcompany_facts.jsonに一切現れないため（SECのcompanyfacts一括APIの構造的制約、CDNS/INTU等と同型）、現行アーキテクチャでは対応不可と確定（[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]参照）。"
+    },
+    {
       "check": "WARN-46",
       "ticker": "MO",
       "acknowledged_date": "2026-09-09",
