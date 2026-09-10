@@ -1592,7 +1592,13 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
                 w = f"{d['delta_1w']:+.2f}" if d['delta_1w'] is not None else "N/A"
                 m = f"{d['delta_1m']:+.2f}" if d['delta_1m'] is not None else "N/A"
             delta_info = f", 週差: {w}, 月差: {m}"
-        ind_lines.append(f"  - {info['name']}: {val} (トレンド: {trend_str}{delta_info}){direction_note}")
+        # [[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]対応: 各指標の観測日を
+        # 付記し、AI生成コメントが遅延データ（CFNAI・Building Permits等）を
+        # 「直近」と誤って記述するリスクを防ぐ。info['date']は
+        # _compute_current_score()のlatest()で値と同時に取得済み
+        # （valがNoneでない場合はdateも必ず設定される）。
+        obs_date = info.get('date') or '不明'
+        ind_lines.append(f"  - {info['name']}: {val} (観測日: {obs_date}, トレンド: {trend_str}{delta_info}){direction_note}")
 
     # 直近発表イベント
     event_lines = []
