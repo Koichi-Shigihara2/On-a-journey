@@ -1128,11 +1128,25 @@ function computeCurrentScore() {
 
   const signals=[];
 
+  // [[MACRO-THRESHOLD-INCONSISTENCY-1]]対応（①YC閾値3セットの調査）:
+  // 10Y-2Yスプレッドの判定閾値は用途によって意図的に異なる基準を使う。
+  // ・ticker widget（updateTicker()のtk-yc-i、-0.2/0.5の2閾値）とLAYER2
+  //   健全性バー（L2_CFG、bull=0.5/bear=-0.2）: 「一目でINVERTED/FLAT/
+  //   NORMALか分かる」粗い3〜4状態ラベル用途。閾値は一致させてある。
+  // ・本関数（RECESSION RISK SCORE、直下の4段階ステップ関数）:
+  //   8指標加重平均スコアへの入力値を算出する用途で、ticker/L2より
+  //   細かい段階（bear<-0.5・caution 0〜-0.5・neutral 0〜0.5・
+  //   bull≥0.5の4段階）を使う。単純な2状態ラベルでは加重平均の
+  //   グラデーションを表現できないため、意図的に閾値セットを分けている
+  //   （STONKS SILOのs2/s3スコアと同種の「用途別に異なる閾値」パターン）。
+  // 統一はせず、以前thresh表示が「BEAR≤-0.2%」（ticker/L2の閾値の
+  // 誤記載）になっていたのを、本関数自身の実際の閾値（-0.5%）に修正した
+  // （表示とロジックの不一致はバグ、閾値セット自体の相違は意図的）。
   let ycScore=50,ycSignal='neutral',ycLabel='—';
   if(yc!==null){ycLabel=(yc>=0?'+':'')+yc.toFixed(2)+'%';
     if(yc<-0.5){ycScore=90;ycSignal='bear';}else if(yc<0){ycScore=70;ycSignal='caution';}
     else if(yc<0.5){ycScore=40;ycSignal='neutral';}else{ycScore=15;ycSignal='bull';}}
-  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月',desc:'10年債と2年債の金利差。逆イールド（マイナス）は景気後退の強力な先行指標。',thresh:'BULL≥+0.5% / BEAR≤-0.2%',obsDate:latestDate('Yield Curve 10Y-2Y')});
+  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月',desc:'10年債と2年債の金利差。逆イールド（マイナス）は景気後退の強力な先行指標。',thresh:'BULL≥+0.5% / BEAR<-0.5%',obsDate:latestDate('Yield Curve 10Y-2Y')});
 
   let hyScore=50,hySignal='neutral',hyLabel='—';
   if(hy!==null){hyLabel=hy.toFixed(2)+'%';
