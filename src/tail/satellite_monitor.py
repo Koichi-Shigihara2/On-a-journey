@@ -41,7 +41,11 @@ JST = timezone(timedelta(hours=9))
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
 GROK_URL    = "https://api.x.ai/v1/chat/completions"
 
-GROK_MODELS            = ["grok-3-mini", "grok-3", "grok-2-1212"]
+# [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
+# 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
+# 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
+# ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
+GROK_MODELS            = ["grok-4.3", "grok-4.3", "grok-4.3"]
 PRICE_CHANGE_THRESHOLD = 20.0    # ±20%
 EARNINGS_WARN_DAYS     = 14      # 2週間前
 EARNINGS_CYCLE_DAYS    = 90      # 前回決算から次回予測サイクル

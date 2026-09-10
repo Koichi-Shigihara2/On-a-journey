@@ -1178,7 +1178,11 @@ NASDAQハイテク株保有者の体感と市場全体の実態が乖離して�
         "Content-Type": "application/json",
         "Authorization": f"Bearer {XAI_API_KEY}",
     }
-    models = ["grok-3-mini", "grok-3", "grok-2-1212"]
+    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
+    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
+    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
+    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
+    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
     last_error = None
     for model in models:
         try:

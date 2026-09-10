@@ -1272,7 +1272,11 @@ Respond ONLY in this exact JSON format (no markdown, no extra text):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
     }
-    models = ["grok-3-mini", "grok-3", "grok-2-1212"]
+    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
+    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
+    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
+    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
+    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
     text = None
     for model in models:
         try:
@@ -1635,7 +1639,11 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
     }
-    models = ["grok-3-mini", "grok-3", "grok-2-1212"]
+    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
+    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
+    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
+    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
+    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
     text = None
     used_model = None
     prompt_len = len(prompt)

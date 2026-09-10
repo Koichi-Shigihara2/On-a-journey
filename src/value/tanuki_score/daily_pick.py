@@ -157,12 +157,17 @@ def select_ticker(stocks, history, today_str):
 
 # ── Grok API helpers（collect_and_send.py と同方式） ─────────
 def _call_grok(messages, temperature=0.3, max_tokens=4096):
-    """grok-3-mini → grok-3 → grok-2-1212 の順でフォールバック呼び出し"""
+    """grok-4.3への呼び出し（[[GROK-MODEL-PRICE-1]]対応: 従来はgrok-3-mini→
+    grok-3→grok-2-1212の順でフォールバックしていたが、前2つは実際には
+    grok-4.3へ自動ルーティングされ、grok-2-1212は廃止済み（API側でModel
+    not found）と判明したため、実態に合わせ現行モデル名を明示する
+    （フォールバックループ構造自体は一時的なネットワーク障害時の
+    再試行として維持）"""
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {XAI_API_KEY}",
     }
-    models = ["grok-3-mini", "grok-3", "grok-2-1212"]
+    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
     last_error = None
     for model in models:
         try:

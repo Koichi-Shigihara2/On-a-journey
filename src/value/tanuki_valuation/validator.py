@@ -31,7 +31,10 @@ from core_calculator import resolve_alpha_cap, DEFAULT_ALPHA_CAP
 
 # xAI API設定
 XAI_API_KEY = os.environ.get("XAI_API_KEY", "")
-XAI_MODEL = "grok-3-mini"
+# [[GROK-MODEL-PRICE-1]]対応: grok-3-miniは実際にはgrok-4.3へ自動
+# ルーティングされる（実測確認済み）ため、実態に合わせ現行モデル名を
+# 明示する。
+XAI_MODEL = "grok-4.3"
 XAI_ENDPOINT = "https://api.x.ai/v1/chat/completions"
 
 
