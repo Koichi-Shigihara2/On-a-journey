@@ -4,6 +4,91 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [TTM-SBC-QUARTERS-GAP-1] build_rice_annual_shape()のSBCがquarters完全性チェック対象外 — 実害を実測確認し、行全体除外ではなくSBC単独のNone化で根治的に修正
+**状態:** ✅調査・実装完了
+**優先度:** 低〜未定 → 完了
+**分類:** データ品質 / SECデータ取得層
+**登録日:** 2026-07-18
+**完了日:** 2026-09-10
+**発見:** TRUST-SUMMARY-EPIC-1ステップ1棚卸し調査時の副次発見
+
+#### 内容（登録時点）
+`data_fetcher.py::build_rice_annual_shape()`は、OCF/CapEx/Revenue/
+NetIncomeの4フィールドについて`_quarters_complete()`（quarters_used≥4）
+で完全性を判定してから出力対象に含めるが、同じ辞書内に含まれるSBC
+（stock_based_compensation）はこの完全性チェックの対象外のまま無条件
+で出力される。RD/SMがrice.py側で意図的にNone許容とされているのとは
+異なり、SBCについては「意図的な許容」か「チェック漏れ」か未確認だった。
+
+#### 調査結果: 実際に発生していた（実データ確認）
+`common/sec_data/ttm/*.json`（102銘柄相当）に対し、
+`build_rice_annual_shape()`の既存フィルタ（OCF/CapEx/Revenue/
+NetIncome完全性・鮮度チェック）を通過する374行を対象に、SBCの
+`quarters_used`を精査した:
+- **40行（約10.7%）**でSBCの`quarters_used<4`だった
+- うち**32行はSBCの`val`自体がNone**（データ取得不能）で、rice.py
+  側の既存フォールバック（`sbc = ... or 0.0`）により**元々安全に
+  SBC=0扱いされていた**（実害なし）
+- 残る**8行（GEV 3件・HWM 4件・TDY 1件）はSBCの`val`が非Noneの
+  部分四半期合計**（例: GEV`quarters_used=1`で`val=54,000,000`）
+  であり、これが完全な年間SBCであるかのようにrice.py::_calc_q()
+  （Q=OCF÷(純利益+SBC)）へ渡っていた
+
+#### RICE計算への実際の影響（実測）
+GEV/HWM/TDYの3銘柄でrice.py::_calc_q()を実行し、修正前後のQ値を比較:
+```
+GEV: Q=2.1996 → 2.2811（+3.71%、sbc_applied: True→False）
+HWM: Q=1.1478 → 1.1722（+2.12%、sbc_applied: True→False）
+TDY: Q=1.2283 → 1.2411（+1.04%、sbc_applied: True→False）
+```
+修正前は部分四半期のSBC合計（本来の年間値より過小）が「SBC補正
+適用済み」として扱われ、Q（分母=純利益+SBC）を実際より小さく算出
+していた（誤って過大なQを出力）。
+
+#### 対応方針の判断: `_quarters_complete()`への追加ではなく、SBC単独のNone化
+依頼文が示した「`_quarters_complete()`の対象にSBCを追加する」修正
+（OCF/CapEx/Revenue/NetIncomeと同様、行全体を除外する）も検討したが、
+これは40行中32行（val=None、元々無害だったケース）についても該当
+期間全体を不必要に失うことになり、影響を与えたくないticker・期間の
+OCF/CapEx/Revenue/NetIncome自体は完全であるにも関わらずRICE計算対象
+から除外してしまう。
+
+より対象を絞った修正として、SBC自体の`quarters_used<4`の場合のみ
+SBCの`val`をNoneへ差し替える（research_and_development/selling_
+and_marketingの既存のNone許容パターンと同一の扱いに揃える）方式を
+採用した。これにより8行の誤った部分合計はNone化されrice.py側の
+`or 0.0`フォールバックで正しくSBC=0扱いとなり、残り32行（元々無害）
+・334行（SBC完全）は一切変更されず、期間も1件も失われない。
+
+#### 検証結果
+1. **全102銘柄シミュレーション（修正前後の全行比較）**: 374行中
+   SBC値が変化したのは意図通り40行（None化）のみ。行数（374）・
+   period・SBC以外の全フィールドは完全一致。
+2. **99/102銘柄でQ値完全一致**（変化ゼロ）を確認。変化したのは
+   GEV/HWM/TDYの3銘柄のみで、いずれも上記の実測差分と一致。
+3. **既存テスト**: `tests/test_pipeline_logic.py`の
+   `TestBuildRiceAnnualShapeQuartersCompleteness`・
+   `TestTTMReaderQuartersCompleteness`・`TestSelectFcfSource`・
+   `TestRiceValueCreationFactor`（計28件）全て成功（共有フィクスチャ
+   `_make_ttm_entry()`にSBC用の`sbc_q`/`sbc_val`引数をデフォルト値
+   〈完全〉付きで追加、既存呼び出し元は無影響）。
+4. **新規回帰テスト3件追加**: SBC不完全時のNone化・期間維持、SBC
+   フィールド自体不在時の挙動、SBC完全時の値そのまま通過、いずれも
+   成功。
+5. **フルゲート**: `pytest tests/`（1,165件成功）・
+   `common/sec_data/audit.py`（NG=0、既存WARNのみ）・
+   `report_consistency_check.py --fail-on-ng`（NG=0、警告119件、
+   本変更に起因する新規NG・WARNなし）全て通過。
+
+#### 変更ファイル
+- `src/value/tanuki_valuation/data_fetcher.py`:
+  `build_rice_annual_shape()`にSBC単独のNone化ロジックを追加、
+  docstringに調査結果・設計判断の理由を記録
+- `tests/test_pipeline_logic.py`: `_make_ttm_entry()`にSBC引数追加、
+  回帰テスト3件追加
+
+---
+
 ### ✅ [MACRO-THRESHOLD-INCONSISTENCY-1] MACRO PULSEの閾値不一致・重複判定の軽微な構造的リスク — ②実害を実測・再現確認し根治的に修正（当初想定の2倍以上の範囲に実害拡大）・①用途別の意図を明文化
 **状態:** ✅調査・実装完了
 **優先度:** 低 → 完了

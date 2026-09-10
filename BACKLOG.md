@@ -6627,31 +6627,6 @@ BACKLOG_DONE.md参照）と同型のパターン。Sahm Rule・Building Permits�
 
 ---
 
-### [TTM-SBC-QUARTERS-GAP-1] build_rice_annual_shape()のSBCがquarters完全性チェック対象外
-**優先度:** 低〜未定
-**分類:** データ品質 / SECデータ取得層
-**登録日:** 2026-07-18
-**発見:** TRUST-SUMMARY-EPIC-1ステップ1棚卸し調査時の副次発見
-
-#### 内容
-`data_fetcher.py::build_rice_annual_shape()`は、OCF/CapEx/Revenue/
-NetIncomeの4フィールドについて`_quarters_complete()`（quarters_used≥4）で
-完全性を判定してから出力対象に含めるが、同じ辞書内に含まれる`SBC`
-（stock_based_compensation）はこの完全性チェックの対象外のまま無条件で
-出力される（298行目付近、`_quarters_complete()`呼び出し引数にSBCが
-含まれていない）。RD/SMがrice.py側で意図的にNone許容（0扱い・警告ログ
-のみ）とされているのとは異なり、SBCについては「意図的な許容」なのか
-「チェック漏れ」なのか、現時点では未確認。
-
-#### 対応方針（未定）
-`build_rice_annual_shape()`のSBC出力が実際にquarters_used<4の不完全な
-値を含むケースがあるか実データで確認し、意図的な設計か単純な漏れかを
-切り分けてから対応要否を判断する。
-
-#### 着手条件
-なし
-
----
 
 ### [FUTURE-FEATURE-IDEAS-CATALOG-1] 将来構想6件の統合カタログ（元UX-FLOW-1/MULTI-1/ARCH-1/EVAL-2/DESIGN-8-3/DESIGN-8-4）
 **優先度:** 低（いずれも構想段階・実装未着手のアイデアメモ）
