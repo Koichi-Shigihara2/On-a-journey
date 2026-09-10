@@ -3793,21 +3793,174 @@ xAI現行価格表（docs.x.ai/developers/models）に存在せず、レガシ�
 $0.30/M入力・$0.50/M出力）の4倍以上の価格で課金されている可能性がある
 （UI-DISCOVER-1事前調査時に発見）。
 
-#### 2026-09-10対応済み（コード側、詳細はBACKLOG_DONE.md参照）
+#### 2026-09-10（1回目）対応済み: レガシーエイリアスのモデル名是正
 呼び出し箇所9ファイル全てのモデル名を`grok-4.3`へ明示的に変更し、実際に
 応答するモデルとコード上の表記を一致させた。全呼び出し箇所を実API経由で
 動作確認済み。reasoning_tokens起因のJSON打ち切りリスクも実データ検証の
 結果、対応不要と判断（既存の全呼び出し箇所が"JSON only"指示を持っており、
 実測で打ち切りが発生しないことを確認）。
 
+#### 2026-09-10（2回目）xAI Console実データ確認 → 想定と異なる結果が判明
+Koichiさんがxai Consoleで直近7日間の支出を確認したところ、$1.65のうち
+**$1.33（80%）が「grok-4.20-0309-reasoning」**というモデル名に帰属して
+おり、1回目調査が想定していた`grok-3-mini`→`grok-4.3`の自動ルーティング
+（残り$0.32）はむしろ少数派だった。追加調査の結果を以下に記録する。
+
+**①grok-4.20-0309-reasoningの呼び出し元特定（推測ではなくコード確認）**
+`grep -rln "grok-4.20-0309-reasoning"` で該当するのは
+`src/value/adjusted_eps_analyzer/ai_analyzer.py`の1箇所のみ
+（`XAI_MODEL = os.environ.get("XAI_MODEL", "grok-4.20-0309-reasoning")`、
+環境変数未設定時のデフォルト値）。実API検証の結果、このモデル名は
+grok-3系のような自動ルーティングを受けず、指定通り
+`grok-4.20-0309-reasoning`として応答することを確認した（`grok-4.3`への
+リダイレクトではなく、独立した現行の有効なモデル）。呼び出し元は
+`pipeline.py`が`get_eps_tickers()`（99銘柄）をループし、各銘柄の
+最新四半期についてのみ`analyze_adjustments()`を呼ぶ構造（過去四半期は
+対象外、調整項目が0件のティッカーはAPI呼び出し自体をスキップ）。
+
+**②9/6・9/7に集中した理由: `Adjusted_Eps_Analyzer_update.yml`が週1回のはず
+が実質週2回発火する構造的バグ（新規発見）**
+GitHub Actions実行履歴（API直接確認、`gh`コマンド不使用）で以下を確認:
+```
+2026-09-06T14:27:03Z  SEC Data Update          schedule   success
+2026-09-06T14:29:19Z  Adjusted_EPS_Data_Update  workflow_run  success  (SEC Data Update完了の2分後)
+2026-09-07T09:14:55Z  Adjusted_EPS_Data_Update  schedule      success  (月曜フォールバックcron)
+```
+同型パターンが直近3週連続（08-23/24・08-30/31・09-06/07）で発生。原因は
+`.github/workflows/Adjusted_Eps_Analyzer_update.yml`（2026-08-22、
+`[[WORKFLOW-SEC-TANUKI-GAP-1]]`対応コミット`ca925ffa27`で導入）の
+`on:`設定:
+```yaml
+on:
+  workflow_run: {workflows: ["SEC Data Update"], types: [completed]}
+  schedule: [{cron: '10 4 * * 1'}]  # コメント上は「安全網」の想定
+jobs:
+  update:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+```
+コメントでは月曜cronを「workflow_run連鎖が発火しなかった場合の安全網」と
+説明しているが、`if`条件はworkflow_runイベント自体にしか効かず、
+**scheduleイベント側は「workflow_runが既にその週成功済みか」を一切
+判定できない**ため、workflow_run連鎖が成功した週でも月曜cronは無条件に
+追加実行される。結果として、99銘柄分のGrok呼び出し（調整項目ありの
+銘柄のみ、内容は前日と実質同一）が週2回発生している。
+実行履歴で唯一の例外は08-23（SEC Data Update失敗→workflow_run側は
+`skipped`）→08-24（cronのみ成功）で、この週だけは設計意図通りの
+「真の安全網」として機能していた。つまり本バグは「SEC Data Updateが
+失敗した週は正しく安全網として機能するが、成功した週は毎回無条件に
+二重実行される」という構造。本件は新規`[[WORKFLOW-FALLBACK-CRON-
+DUPLICATE-1]]`として別途登録した（同型の`workflow_run`+週次フォール
+バックcronパターンは`TANUKI_VALUATION_Update.yml`・`TANUKI_Score_
+Update.yml`にも存在するため、横展開調査が必要）。
+
+**③grok-4.3の「X searches」とrisk_fetcher/Discover削除の関連（一部訂正）**
+risk_fetcher.py・Discoverサブシステム（2026-09-01削除）のGrok呼び出し
+コードを削除前のgit履歴で直接確認した結果、**いずれも`search_parameters`
+（xAI Live Search機能の明示的な有効化パラメータ）を指定していなかった**
+ことが判明した。実は両方とも2026-05-23の別コミット
+（`899858a5db`・`445a78331f`、「Grok API呼び出し方式を修正」）で
+`search_parameters: {"mode": "on"}`が既に削除済みだった（当時は
+エラー解消目的の修正で、コスト目的ではない）。実API検証でも、
+`search_parameters`なしでの「web検索して」という指示プロンプトは
+`num_sources_used: 0`（実際には検索を行わない）ことを確認した。
+よって**「X searches」課金の直接origin ではない**というのが訂正点。
+
+ただし、risk_fetcher.py・Discoverはいずれも高頻度・高銘柄数の
+legacy-aliasモデル呼び出し元だった（Discoverは`Discover_Update.yml`で
+**毎日**実行、多数ティッカーのニュース分類・カタリスト抽出を実施）。
+これらの削除により`grok-4.3`（旧エイリアス経由）への総呼び出し回数が
+劇的に減少したことが、2026-09-01を境に日次支出がほぼゼロに落ちた
+直接の原因と考えられる（「X searches」という個別費目自体の消滅では
+なく、grok-4.3の呼び出し総量そのものが激減したため）。
+`search_parameters`を現在も明示的に使っている呼び出し元は
+`src/tail/satellite_monitor.py`（`TANUKI_TAIL_Satellite_Monitor.yml`、
+平日2回/日）のみで、これが引き続き「X searches」費目の実際の発生源と
+みられる（削除前後で継続稼働しており、9/1以降の残存$0.32/7日の
+出どころとして矛盾しない）。
+
+**④現時点でGrokを呼び出している箇所の完全な一覧**
+
+| ファイル | モデル | トリガー | search_parameters |
+|---|---|---|---|
+| `src/market/macro_pulse/05_main.py`（2箇所） | grok-4.3 | `MACRO_PULSE_Update.yml`（毎日+週次） | なし |
+| `src/market/market_pulse/collect_and_send.py` | grok-4.3 | `Market_Pulse_Update.yml` | なし |
+| `src/tail/kpi_proposer.py` | grok-4.3 | 該当workflowなし（手動実行想定） | なし |
+| `src/tail/quarterly_review_generator.py` | grok-4.3 | `TANUKI_TAIL_RSS_Monitor.yml`（平日毎日） | なし |
+| `src/tail/satellite_monitor.py` | grok-4.3 | `TANUKI_TAIL_Satellite_Monitor.yml`（平日2回/日） | **あり**（"X searches"の実源） |
+| `src/tail/sec_ctrl_fetcher.py` | grok-4.3 | `TANUKI_TAIL_SEC_Ctrl.yml`（毎週月曜） | なし |
+| `src/tail/text_kpi_extractor.py` | grok-4.3 | `TANUKI_TAIL_RSS_Monitor.yml`（平日毎日） | なし |
+| `src/value/tanuki_score/daily_pick.py` | grok-4.3 | `TANUKI_Score_Update.yml`（workflow_run連鎖+週末独立cron） | なし |
+| `src/value/tanuki_valuation/validator.py` | grok-4.3 | `TANUKI_VALUATION_Update.yml`（workflow_run連鎖・4系統いずれか完了で発火+金曜安全網cron） | なし |
+| `src/value/adjusted_eps_analyzer/ai_analyzer.py` | **grok-4.20-0309-reasoning**（grok-4.3とは別モデル、非エイリアス） | `Adjusted_Eps_Analyzer_update.yml`（99銘柄ループ、**週2回発火バグあり**） | なし |
+
 #### 残課題（Koichiさん本人のみ対応可能）
 xAI Console（https://console.x.ai/ 等の管理画面）で実際の請求明細・
 モデル別単価を確認すること。本セッションはKoichiさんのアカウントに
-アクセスできないため対象外。実測で判明した通り、レガシーエイリアス
-経由の呼び出しは実際には`grok-4.3`として課金されている可能性が高い
-（$1.25/M入力・$2.50/M出力、旧`grok-3-mini`想定単価の4倍以上）ため、
-実際の請求額・月次コストへの影響を確認の上、必要ならレート制限・
-呼び出し頻度の見直しを検討すること。
+アクセスできないため対象外。`grok-4.3`は$1.25/M入力・$2.50/M出力
+（旧`grok-3-mini`想定単価の4倍以上）。`grok-4.20-0309-reasoning`の
+単価はxAI価格表に個別記載がなく未確認（reasoning系モデルは一般に
+プレミアム価格帯のため、Console上の実額での確認が必要）。
+`[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]`の対応（週2回発火の解消）に
+より`ai_analyzer.py`分のコストは理論上半減が見込まれる。
+
+---
+
+### [WORKFLOW-FALLBACK-CRON-DUPLICATE-1] workflow_run連鎖の週次フォールバックcronが「安全網」ではなく毎週無条件に二重実行している
+**優先度:** 中（実コスト・API呼び出し重複の実害が実行履歴で確認済み）
+**分類:** インフラ / GitHub Actions / コスト管理
+**登録日:** 2026-09-10
+**発見:** `[[GROK-MODEL-PRICE-1]]`のgrok-4.20-0309-reasoning呼び出し元調査
+（xAI Console実データで9/6・9/7に支出が集中していた理由の特定）
+
+#### 内容
+`[[WORKFLOW-SEC-TANUKI-GAP-1]]`対応（2026-08-22、commit `ca925ffa27`）で
+`Adjusted_Eps_Analyzer_update.yml`・`TANUKI_VALUATION_Update.yml`・
+`TANUKI_Score_Update.yml`の3ワークフローに「`workflow_run`連鎖 +
+週1回の低頻度フォールバックcron（`workflow_run`が発火しなかった場合の
+安全網、という触れ込み）」パターンが導入された。しかし実際のjob-level
+`if`条件（例: `if: github.event_name != 'workflow_run' ||
+github.event.workflow_run.conclusion == 'success'`）は「scheduleイベント
+実行時にworkflow_runが同じ週に既に成功しているか」を判定する手段を
+持たない構造的な設計であり、GitHub Actions単体でもこの種の週内条件は
+表現できない。結果として、workflow_run連鎖が正常に成功した週でも、
+フォールバックcronは無条件に追加実行される。
+
+#### 実測（Adjusted_Eps_Analyzer_update.yml、GitHub Actions API直接確認）
+```
+2026-08-23  SEC Data Update失敗 → workflow_run側 skipped（正しい安全網動作）
+2026-08-24  schedule成功                            （唯一の正常フォールバック）
+2026-08-30  workflow_run成功
+2026-08-31  schedule成功                            （＝無条件の重複実行）
+2026-09-06  workflow_run成功
+2026-09-07  schedule成功                            （＝無条件の重複実行）
+```
+直近3週のうち2週（08-30/31・09-06/07）で無条件重複を確認。`pipeline.py`
+に冪等性ガード（同一データでの再実行をスキップする仕組み）が存在しない
+ため、99銘柄分の`ai_analyzer.py`（Grok）呼び出しが実質週2回発生して
+いる。同型パターンの`TANUKI_VALUATION_Update.yml`
+（`workflow_run`が4系統いずれかの完了で発火する設計のため、週内の
+重複発火頻度はさらに高い可能性）・`TANUKI_Score_Update.yml`は本調査の
+スコープ外（`Adjusted_Eps_Analyzer_update.yml`のみ実行履歴で確認）の
+ため、横展開調査が必要。
+
+#### 対応方針（未定・要判断）
+以下のいずれかの設計変更が必要:
+1. フォールバックcronを削除し、`workflow_run`連鎖の失敗を別の手段
+   （Slack/Discord通知等）で検知する運用に切り替える
+2. フォールバックcron実行時に、直近成果物のタイムスタンプ等から
+   「今週既に更新済みか」を判定し、既に最新なら早期returnする
+   冪等性ガードをpipeline.py側に追加する
+3. 各パイプライン側に「入力データが前回実行から変化していなければ
+   Grok呼び出し自体をスキップする」キャッシュ機構を設ける
+
+いずれも設計判断を伴うため対応方針は保留。`[[WORKFLOW-SEC-TANUKI-
+GAP-1]]`のクローズ時（2026-08-31）は「workflow_run連鎖が発火すること」
+のみを実地確認しており、フォールバックcronとの重複可能性は検証範囲外
+だった。
+
+#### 着手条件
+なし（Koichiさんの判断待ち。`TANUKI_VALUATION_Update.yml`・
+`TANUKI_Score_Update.yml`への同型バグの横展開調査も含めて次回対応）
 
 ---
 
