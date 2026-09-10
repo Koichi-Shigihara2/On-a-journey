@@ -4,6 +4,91 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [BS-FIELD-NEWLY-MISSING-2026-1] LLY/SCCO/SPIRのBS項目が実額から当年Noneへ新規遷移 — 一次情報調査完了・全3件が生涯フェードアウト（真の値）と確定
+**状態:** ✅一次情報調査完了（3件とも対応不要、コード変更なし）
+**優先度:** 未定〜中 → クローズ
+**分類:** データ取得 / データ品質ゲート（調査完了）
+**登録日:** 2026-07-19
+**完了日:** 2026-09-10
+**発見:** [[BS-FIELD-NONE-TRANSITION-DETECT-1]]（完了・本ファイル参照）
+実装後の全銘柄検証時、WARN-26が事前確認済み8件に加え想定外3件で発火し判明
+
+#### 内容（登録時点）
+WARN-26（前年値あり→当年None遷移検知）実装後の全100銘柄検証で、以下3件が
+新規に発火した。事前調査（FY52WEEK-BS-NULL-SILENT-1 Phase B/C）の「生涯
+フェードアウト25件」は「過去に明示的`val=0`の申告実績がある」ケースに
+限定して抽出していたため、この3件（過去は実額の非ゼロ値）は元々その25件の
+定義に該当しない別カテゴリであり、事前確認・`config/warn_acknowledged.json`
+登録の対象外のまま「🆕未確認」で残っていた：
+
+- **LLY（short_term_investments）**: FY2024=$154.8M（実額）→FY2025=None
+- **SCCO（short_term_debt）**: FY2024=$499.8M（実額）→FY2025=None
+- **SPIR（long_term_debt）**: FY2024=$4.618M（実額）→FY2025=None
+
+[[CASH-TAG-MISSING-1]]と同型のパターン（候補タグリストの網羅漏れ）が
+疑われていたが、登録から約7週間、一次情報（SEC EDGAR 10-K原本）での
+確認は未実施のまま残っていた。
+
+#### 一次情報調査結果（2026-09-10、67件総点検の一環）
+[[CASH-TAG-MISSING-1]]の対応手順に準じ、3件それぞれのFY2025 10-K原本
+（Consolidated Balance Sheets R-file・company_facts.json実測）を直接
+確認した。**3件とも「候補タグの申告停止によるデータ取得ミス」（判定1）
+ではなく、「実際に真のゼロ・借入/投資の解消が発生した」（判定2、生涯
+フェードアウト）と確定した**。候補タグ追加は不要、コード変更は一切
+行っていない。
+
+**LLY（short_term_investments）**: FY2025 10-K（accn
+0000059478-26-000013、Consolidated Balance Sheets R5.htm）を確認した
+ところ、FY2025のBS本体はInvestmentsを単一のNoncurrent Assets科目
+（$2,802M、FY2024比較列$3,216M）としてのみ表示し、従来存在した流動
+（Short-term）区分の科目行自体がBS本体から消滅していた。
+company_facts.json内のAvailableForSaleSecurities系footnote詳細タグ
+（満期別公正価値内訳等、`AvailableForSaleSecuritiesDebtMaturities
+WithinOneYearFairValue`等）も2025-09-30（Q3 10-Q）を最後に2025-12-31
+（FY2025 10-K）分の申告が一切存在しないことを確認し、単一タグの
+申告停止ではなくBS表示方法自体の変更（現金及び現金同等物が
+$3,268M→$7,268Mへ増加）と判断した。
+
+**SCCO（short_term_debt）**: FY2025 10-K（accn
+0001104659-26-021492、Consolidated Balance Sheets R5.htm）を確認した
+ところ、「Current portion of long-term debt」行がFY2025列で空欄
+（$0相当の表示。FY2024列は$499.8Mで比較列として残存）だった。
+`LongTermDebtNoncurrent`$6,750.7Mが負債全額を占め、1年以内償還予定分が
+存在しない状態と確認した。なお本件は`long_term_debt`の候補タグ拡張
+（[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]等とは別件）に関する
+2026-07-19付の既存コードコメント（`parser.py`
+`_BS_IDENTITY_ALLOWLIST`近傍、「SCCOは最新年度のCurrent portion of
+long-term debtが明示的に$0（生涯フェードアウト相当）のため対象外」）
+と完全に整合する結果だった。
+
+**SPIR（long_term_debt）**: FY2025 10-K（accn
+0001193125-26-116169、Consolidated Balance Sheets R2.htm）を確認した
+ところ、「Long-term debt, current portion」がFY2025列で$0（FY2024列は
+$93,936K）、かつ「Long-term debt, net of current portion」（非流動
+区分）の行自体がFY2025のBS本体から消滅していた（FY2024比較列の
+LongTermDebtNoncurrent $4,618Kも含め、2025年中に負債を完済したと
+判断できる）。
+
+#### 対応内容
+`config/warn_acknowledged.json`へ3件を「生涯フェードアウト」として
+登録した（既存のAPP/BKNG/CPRT/DOCN/ENTG/KULR/MSCI/SOUNの8件と同型の
+運用）。`report_consistency_check.py`実行結果はWARN-26の表示自体は
+維持されるが（診断ログとしての記録は継続）、確認済み件数が60→63件に
+増加、未確認件数が59→56件に減少したことを確認した。
+
+#### 検証ゲート結果
+- `pytest tests/`: 1147 passed（診断台帳の追加のみのためコード変更
+  なし・既存テストに影響なし）
+- `python common/sec_data/audit.py`: 🟢89/🟡10銘柄（本タスクによる
+  新規警告なし）
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0件・WARN=119件（総数不変、確認済み内訳のみ60→63件に変化）
+
+#### 完了報告の必須項目
+- 反映コミット: 別途コミットハッシュ参照
+  （`config/warn_acknowledged.json`・BACKLOG.md/BACKLOG_DONE.md更新のみ、
+  本番データ・コード変更なし）
+
 ### ✅ [BACKTEST-SCORE-1] TANUKI SCORE分類の事後検証 — 実装完了
 **状態:** ✅実装完了
 **優先度:** 高 → 完了

@@ -5526,51 +5526,6 @@ CON 2件・GEV 2件・FLYW 3件・PAYS 3件。データ蓄積によりCAGR系候
 
 ---
 
-
----
-
-### [BS-FIELD-NEWLY-MISSING-2026-1] LLY/SCCO/SPIRのBS項目が実額から当年Noneへ新規遷移（CASH-TAG-MISSING-1と同型、一次情報確認が必要）
-**優先度:** 未定〜中
-**分類:** データ取得 / データ品質ゲート
-**登録日:** 2026-07-19
-**発見:** [[BS-FIELD-NONE-TRANSITION-DETECT-1]]（完了・BACKLOG_DONE.md参照）
-実装後の全銘柄検証時、WARN-26が事前確認済み8件に加え想定外3件で発火し判明
-
-#### 内容
-WARN-26（前年値あり→当年None遷移検知）実装後の全100銘柄検証で、以下3件が
-新規に発火した。事前調査（FY52WEEK-BS-NULL-SILENT-1 Phase B/C）の「生涯
-フェードアウト25件」は「過去に明示的`val=0`の申告実績がある」ケースに
-限定して抽出していたため、この3件（過去は実額の非ゼロ値）は元々その25件の
-定義に該当しない別カテゴリであり、事前確認・`config/warn_acknowledged.json`
-登録の対象外のまま「🆕未確認」で残っている：
-
-- **LLY（short_term_investments）**: FY2024=$154.8M（実額）→FY2025=None
-- **SCCO（short_term_debt）**: FY2024=$499.8M（実額）→FY2025=None
-- **SPIR（long_term_debt）**: FY2024=$4.618M（実額）→FY2025=None
-
-いずれも直近年度に実額の非ゼロ値が申告されていたにも関わらず、最新年度で
-候補タグ自体の申告が停止した可能性がある。[[CASH-TAG-MISSING-1]]
-（CAT/CPRT/ELF/GEV/HEI/SITMのcash_and_equivalents欠落）と同型のパターン
-（候補タグリストの網羅漏れによる`_extract_values_best_candidate`の単一
-勝者タグ設計の限界）が疑われるが、一次情報（SEC EDGAR 10-K原本）での
-確認は未実施。
-
-#### 対応方針（未確認・要一次情報調査）
-[[CASH-TAG-MISSING-1]]の対応手順に準じ、各銘柄の10-K原本を確認し、
-以下いずれかを判定する：
-- 候補タグの申告停止によるデータ取得ミス（別タグへの移行・
-  `XBRL_MAPPING`への候補追加が必要）
-- 実際に真のゼロ・借入/投資解消が発生した（真の値、対応不要。
-  `config/warn_acknowledged.json`への「生涯フェードアウト」登録を検討）
-
-調査後、`report_consistency_check.py::CHECK-26`（WARN-26）は現状
-「🆕未確認」のまま維持しておりブロッキングではないため、緊急対応は不要。
-
-#### 着手条件
-なし
-
----
-
 ### [EPS-UPC-PREREORG-1] Up-C構造・組織再編前四半期のAdjusted EPS計算への算入方針
 **優先度:** 中
 **分類:** データ品質 / EPS ANALYZER / 設計方針

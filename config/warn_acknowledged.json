@@ -270,6 +270,24 @@
       "ticker": "WST",
       "acknowledged_date": "2026-09-05",
       "comment": "決算期変更境界バケツ競合（rpo、end=2013-06-30）。FYE-BOUNDARY-COLLISION-UNCONFIRMED-1一次情報調査でSEC EDGAR原本（FY2022 10-K、accn 0000105770-23-000012）を確認したところ、該当値は開示書類のどこにも表示されない非表示のXBRLタグ付けアーティファクト（2013年当時のDeferredRevenue用コンテキストがContractWithCustomerLiabilityへ誤って使い回された可能性）と確定。決算期変更ではない。"
+    },
+    {
+      "check": "WARN-26",
+      "ticker": "LLY",
+      "acknowledged_date": "2026-09-10",
+      "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_investments（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0000059478-26-000013、Consolidated Balance Sheets R5.htm）で「生涯フェードアウト」と確認済み。FY2025のBS本体はInvestmentsを単一のNoncurrentAssets科目（$2,802M）としてのみ表示し、従来存在した流動（Short-term）区分の科目行自体がBS本体から消滅している。company_facts.json内のAvailableForSaleSecurities系footnote詳細タグ（満期別内訳等）も2025-09-30（Q3 10-Q）を最後に2025-12-31（FY2025 10-K）分の申告が一切存在せず、タグ申告停止による欠損ではなくBS表示方法自体の変更（現金同等物が$3,268M→$7,268Mへ増加する一方で投資残高は減少）と確認した。"
+    },
+    {
+      "check": "WARN-26",
+      "ticker": "SCCO",
+      "acknowledged_date": "2026-09-10",
+      "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_debt（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0001104659-26-021492、Consolidated Balance Sheets R5.htm）で「生涯フェードアウト」（真の無流動負債継続、タグ申告停止による欠損ではない）と確認済み。BS本体の「Current portion of long-term debt」行がFY2025列で空欄（$0相当の表示）、FY2024列は$499.8Mで比較列として残存。長期負債（LongTermDebtNoncurrent）$6,750.7Mが全額を占め、1年以内償還予定分が存在しない状態。"
+    },
+    {
+      "check": "WARN-26",
+      "ticker": "SPIR",
+      "acknowledged_date": "2026-09-10",
+      "comment": "BS項目遷移(有値→None)。対象フィールド: long_term_debt（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0001193125-26-116169、Consolidated Balance Sheets R2.htm）で「生涯フェードアウト」（実際の負債完済、タグ申告停止による欠損ではない）と確認済み。BS本体の「Long-term debt, current portion」がFY2025列で$0（FY2024列は$93,936K）、かつ「Long-term debt, net of current portion」（非流動区分）の行自体がFY2025のBS本体から消滅している（FY2024比較列のLongTermDebtNoncurrent $4,618Kも含め、2025年中に負債を完済したと判断できる）。"
     }
   ]
 }
