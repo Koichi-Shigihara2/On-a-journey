@@ -1,6 +1,6 @@
 GEV INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-10T08:30:14+09:00
-Price: $951.04
+Generated: 2026-09-11T08:23:06+09:00
+Price: $923.91
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 ⚠️ CIK断絶(構造的境界): 2024年4月General ElectricからのスピンオフによりGE Vernova Inc.発足。スピンオフ以前のデータは親会社連結からの区分推定値であり接続していません。
@@ -9,11 +9,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: TRIM
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -65.7%
-  MA200_Deviation: +6.9%
+  Deviation_Rate: -64.7%
+  MA200_Deviation: +3.6%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $1250 median ($940-$1450) | 33 analysts | vs IV: +282.9%
-Comment: 割高(-66%超)、FCF黒字、売上安定成長
+Comment: 割高(-65%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -34,8 +34,8 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左上
 Label: 割高×高効率
-Key_Metric_Y: RICE = 9.654
-Deviation_Rate: -65.7%
+Key_Metric_Y: RICE = 10.012
+Deviation_Rate: -64.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,30 +59,30 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $951.04
+Current_Price: $923.91
 Intrinsic_Value_BASE: $326.49
-Deviation_BASE: -65.7%
+Deviation_BASE: -64.7%
 Growth_Rate_Original: 50.0% (TTM実績)
 Growth_Rate_Adjusted: 10.7% (推奨値・中央値ベース)
 Scenarios:
 BEAR: Growth=7.5%, IV=$290.87 （推奨値ベース）
 BASE: Growth=10.7%, IV=$326.49 （推奨値ベース）
 BULL: Growth=12.9%, IV=$352.51 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $361.50 (-62.0%) / 3年後: $443.18 (-53.4%) / 5年後: $543.31 (-42.9%)
-  5yr_Annualized_Return: -10.6%/yr
+Return_Outlook(BASE): 1年後: $361.50 (-60.9%) / 3年後: $443.18 (-52.0%) / 5年後: $543.31 (-41.2%)
+  5yr_Annualized_Return: -10.1%/yr
 TTM_YoY_Growth: 13.0%
 (DCF Base vs TTM actual: -2.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 9.81%
-  参考①β込みWACC_IV: $334.71 (Deviation: -64.8%)
-  参考②Rf理論上限_IV: $1,637.58 (Deviation: +72.2%)
+  参考①β込みWACC_IV: $334.71 (Deviation: -63.8%)
+  参考②Rf理論上限_IV: $1,637.58 (Deviation: +77.2%)
 Terminal_Growth_Rate: 3.0%
 Beta: 0.967
 Valuation_Gap_Analysis:
   DCF_IV:           $326 (保守的FCFベース・現在実力値)
-  Market_Price:     $951
-  Gap:              -66% (市場が将来成長を先取り)
-  Implied_FCF_2030: $16.51B (現在株価を正当化するために必要な5年後FCF)
+  Market_Price:     $924
+  Gap:              -65% (市場が将来成長を先取り)
+  Implied_FCF_2030: $16.02B (現在株価を正当化するために必要な5年後FCF)
   Current_FCF:      $3.77B
   Required_Growth:  34%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -206,19 +206,19 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=6.767
-BASE: RICE=9.654
-BULL: RICE=11.639
+BEAR: RICE=7.018
+BASE: RICE=10.012
+BULL: RICE=12.071
 Components (BASE scenario):
 G  = 10.7%  [TANUKI forward growth rate]
-Q  = 2.1996   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 2.2811   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 2.051  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 4.4463  [R&D除外・CapExのみ投資強度]
-RICE_adj = 20.929  [参考：R&D資本化想定]
+RICE_adj = 21.705  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 2.00  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 2.11  [NOPAT/InvestedCapital / 0.10]
-SBC_Adjusted: true
+SBC_Adjusted: false
 Definition:
 
 RICE measures reinvestment efficiency and compounding power
@@ -270,8 +270,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 27.0x
-  Adjusted_EPS_PER: 25.4x (TTM調整後EPS: $37.4427)
-  Delta: -1.6x (cheaper on adjusted basis)
+  Adjusted_EPS_PER: 24.7x (TTM調整後EPS: $37.4427)
+  Delta: -2.3x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-28
   Next_Quarter_EPS: N/A (no analyst estimates in data)
@@ -320,9 +320,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 2.66%  (ForwardEPS $25.28 / Price $951.04)
+  Forward_Earnings_Yield: 2.74%  (ForwardEPS $25.28 / Price $923.91)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: -1.64%
+  ERP: -1.56%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.

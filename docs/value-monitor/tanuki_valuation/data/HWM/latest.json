@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 18616605955.28195,
   "intrinsic_value_per_share": 45.38204167891758,
   "intrinsic_value_beta": 37.94,
-  "upside_percent_beta": -83.7,
+  "upside_percent_beta": -83.4,
   "intrinsic_value_rf": 295.37,
-  "upside_percent_rf": 27.0,
+  "upside_percent_rf": 29.6,
   "v0": 18616605955.28195,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "v0_adjusted": 18616605955.28195,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 49.99,
       "value_growth_pct": 10.2,
-      "expected_return_pct": -78.5
+      "expected_return_pct": -78.1
     },
     "2年後": {
       "future_value": 55.06,
       "value_growth_pct": 21.3,
-      "expected_return_pct": -76.3
+      "expected_return_pct": -75.8
     },
     "3年後": {
       "future_value": 60.65,
       "value_growth_pct": 33.6,
-      "expected_return_pct": -73.9
+      "expected_return_pct": -73.4
     },
     "4年後": {
       "future_value": 66.81,
       "value_growth_pct": 47.2,
-      "expected_return_pct": -71.3
+      "expected_return_pct": -70.7
     },
     "5年後": {
       "future_value": 73.59,
       "value_growth_pct": 62.2,
-      "expected_return_pct": -68.4
+      "expected_return_pct": -67.7
     }
   },
-  "upside_percent": -80.5,
-  "calculation_date": "2026-09-10T08:29:32+09:00",
+  "upside_percent": -80.1,
+  "calculation_date": "2026-09-11T08:22:24+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -280,7 +280,7 @@
   },
   "rice": {
     "available": true,
-    "q": 1.1478,
+    "q": 1.1722,
     "cf_conversion": 3.1159,
     "cf_adj": 3.5385,
     "wacc": 0.1,
@@ -289,26 +289,26 @@
     "avg_intensity": 0.0445,
     "avg_rev_growth_lagged": 0.138,
     "warnings": true,
-    "note": "SBC補正済み（純利益+SBCを分母に使用） / RICE-1価値創造係数=2.00(ROIC/WACC=2.11) / 販売・マーケティング費未取得（FYTTM@2025-06-30, TTM@2024-06-30, TTM@2023-06-30）: 投資強度が過小になる可能性",
+    "note": "RICE-1価値創造係数=2.00(ROIC/WACC=2.11) / 販売・マーケティング費未取得（FYTTM@2025-06-30, TTM@2024-06-30, TTM@2023-06-30）: 投資強度が過小になる可能性",
     "vc_factor": 2.0,
     "roic_wacc_ratio": 2.11,
     "bear": {
       "growth_rate": 0.071,
-      "rice": 5.079,
-      "rice_per_ratio": 0.0909,
-      "rice_adj": 5.767
+      "rice": 5.186,
+      "rice_per_ratio": 0.0928,
+      "rice_adj": 5.89
     },
     "base": {
       "growth_rate": 0.102,
-      "rice": 7.296,
-      "rice_per_ratio": 0.1306,
-      "rice_adj": 8.286
+      "rice": 7.451,
+      "rice_per_ratio": 0.1333,
+      "rice_adj": 8.461
     },
     "bull": {
       "growth_rate": 0.122,
-      "rice": 8.727,
-      "rice_per_ratio": 0.1562,
-      "rice_adj": 9.91
+      "rice": 8.912,
+      "rice_per_ratio": 0.1595,
+      "rice_adj": 10.12
     }
   },
   "fcf_source": "ttm_series",
@@ -331,7 +331,7 @@
     "roe_10yr_avg": 0.10197624243346434,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 232.6199951171875,
+    "current_price": 227.91000366210938,
     "latest_revenue": 8252000000.0,
     "rpo": 106000000,
     "beta": 1.186,
@@ -365,11 +365,11 @@
     "alpha_uncapped": 0.4283002182205502,
     "per": 55.877155,
     "per_is_forward": false,
-    "per_adjusted": 51.35,
+    "per_adjusted": 50.31,
     "peg": 0.8,
     "ps": 11.341147,
     "ev_ebitda": 38.475,
-    "ma200": 245.8432006072998,
+    "ma200": 245.9931506347656,
     "forward_eps": 6.41876,
     "analyst_target_median": 340.0,
     "analyst_target_mean": 337.128,
@@ -385,11 +385,11 @@
     "insider_latest_date": "2026-07-06",
     "analyst_vs_iv": 649.2,
     "max_eps": 4.8746,
-    "max_eps_per": 47.7,
+    "max_eps_per": 46.8,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-10",
+    "validated_at": "2026-09-11",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -425,7 +425,7 @@
     "matrix": "①投資効率系",
     "quadrant": "左上",
     "label": "割高×高効率",
-    "key_metric_y": "RICE = 7.296",
+    "key_metric_y": "RICE = 7.451",
     "qx": false,
     "qy": true
   },
@@ -481,7 +481,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 1000000000
   },
-  "net_current_assets_ratio": 0.0203,
+  "net_current_assets_ratio": 0.0208,
   "dupont": {
     "ni_ttm": 1871000000,
     "revenue_ttm": 9117000000,
@@ -527,8 +527,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0154,
-  "forward_earnings_yield": 0.0276,
+  "erp": -0.0148,
+  "forward_earnings_yield": 0.0282,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
