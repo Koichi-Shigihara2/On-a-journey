@@ -915,6 +915,11 @@ function idxLatestKnownAsOf(ind, targetMs) {
 }
 
 // binary search: find latest entry with dateMs <= targetMs
+// [[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]対応: 従来は`.actual`（値）
+// のみを返し観測日情報を構造的に破棄していたが、エントリ全体
+// {dateMs, actual, updatedMs} を返すよう拡張し、呼び出し元が観測日にも
+// アクセスできるようにする。値のみ必要な既存の呼び出し元は
+// idxLatestVal()（下記、本関数の薄いラッパー）へ移行済み。
 function idxLatestAsOf(ind, targetMs) {
   const arr = IND_INDEX[ind];
   if (!arr || !arr.length) return null;
@@ -925,7 +930,14 @@ function idxLatestAsOf(ind, targetMs) {
     if (arr[mid].dateMs <= targetMs) lo = mid;
     else hi = mid - 1;
   }
-  return arr[lo].actual;
+  return arr[lo];
+}
+
+// idxLatestAsOf()の値のみが必要な呼び出し元向けの薄いラッパー
+// （[[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]対応で追加）
+function idxLatestVal(ind, targetMs) {
+  const e = idxLatestAsOf(ind, targetMs);
+  return e ? e.actual : null;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1022,8 +1034,8 @@ function renderRegimeBar(d) {
 // ═══════════════════════════════════════════════════════
 function updateTicker() {
   const now = Date.now();
-  const yc = idxLatestAsOf('Yield Curve 10Y-2Y', now);
-  const hy = idxLatestAsOf('HY Spread', now);
+  const yc = idxLatestVal('Yield Curve 10Y-2Y', now);
+  const hy = idxLatestVal('HY Spread', now);
 
   // S&P 500: find latest row with sp500_t0 (scan once, cache)
   if(!window._spCache){
@@ -1087,7 +1099,13 @@ function updateTicker() {
 function computeCurrentScore() {
   if(!DATA.length)return null;
   const now=Date.now();
-  const latestActual=(ind)=>idxLatestAsOf(ind,now);
+  const latestActual=(ind)=>idxLatestVal(ind,now);
+  // [[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]対応: 各指標の観測日
+  // （YYYY-MM-DD）をツールチップ表示用に取得する
+  const latestDate=(ind)=>{
+    const e=idxLatestAsOf(ind,now);
+    return e?new Date(e.dateMs).toISOString().slice(0,10):null;
+  };
   const trend3=(ind)=>{
     const arr=IND_INDEX[ind];
     if(!arr||arr.length<2)return 0;
@@ -1114,50 +1132,50 @@ function computeCurrentScore() {
   if(yc!==null){ycLabel=(yc>=0?'+':'')+yc.toFixed(2)+'%';
     if(yc<-0.5){ycScore=90;ycSignal='bear';}else if(yc<0){ycScore=70;ycSignal='caution';}
     else if(yc<0.5){ycScore=40;ycSignal='neutral';}else{ycScore=15;ycSignal='bull';}}
-  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月',desc:'10年債と2年債の金利差。逆イールド（マイナス）は景気後退の強力な先行指標。',thresh:'BULL≥+0.5% / BEAR≤-0.2%'});
+  signals.push({name:'YC 10Y-2Y',val:ycLabel,score:ycScore,signal:ycSignal,weight:20,lead:'先行12ヶ月',desc:'10年債と2年債の金利差。逆イールド（マイナス）は景気後退の強力な先行指標。',thresh:'BULL≥+0.5% / BEAR≤-0.2%',obsDate:latestDate('Yield Curve 10Y-2Y')});
 
   let hyScore=50,hySignal='neutral',hyLabel='—';
   if(hy!==null){hyLabel=hy.toFixed(2)+'%';
     if(hy>6){hyScore=90;hySignal='bear';}else if(hy>4.5){hyScore=70;hySignal='caution';}
     else if(hy>3.5){hyScore=40;hySignal='neutral';}else{hyScore=15;hySignal='bull';}}
-  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤4.0% / BEAR≥6.5%'});
+  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤4.0% / BEAR≥6.5%',obsDate:latestDate('HY Spread')});
 
   let cbcc2Score=50,cbcc2Signal='neutral',cbcc2Label='—';
   if(cbcc2!==null){cbcc2Label=cbcc2.toFixed(0)+'K';
     if(cbcc2>=1500){cbcc2Score=15;cbcc2Signal='bull';}else if(cbcc2>=1300){cbcc2Score=35;cbcc2Signal='neutral';}
     else if(cbcc2>=1100){cbcc2Score=60;cbcc2Signal='caution';}else{cbcc2Score=85;cbcc2Signal='bear';}}
-  signals.push({name:'Building Permits',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行3ヶ月',desc:'住宅着工許可件数。住宅投資と建設活動の先行指標。景気サイクルに敏感に反応する。',thresh:'BULL≥1500K / BEAR≤1100K'});
+  signals.push({name:'Building Permits',val:cbcc2Label,score:cbcc2Score,signal:cbcc2Signal,weight:10,lead:'先行3ヶ月',desc:'住宅着工許可件数。住宅投資と建設活動の先行指標。景気サイクルに敏感に反応する。',thresh:'BULL≥1500K / BEAR≤1100K',obsDate:latestDate('Building Permits')});
 
   let phillyScore=50,phillySignal='neutral',phillyLabel='—';
   if(philly!==null){phillyLabel=philly.toFixed(1);const t=trend3('Philadelphia Fed Manufacturing');
     if(philly<-10){phillyScore=88;phillySignal='bear';}else if(philly<0){phillyScore=65+(t<0?10:0);phillySignal=t<0?'bear':'caution';}
     else if(philly<5){phillyScore=35;phillySignal='neutral';}else{phillyScore=12;phillySignal='bull';}}
-  signals.push({name:'Philly Fed Mfg',val:phillyLabel,score:phillyScore,signal:phillySignal,weight:18,lead:'先行3ヶ月',desc:'フィラデルフィア連銀製造業景況指数。0超が拡張、0未満が縮小を示す。製造業の先行指標。',thresh:'BULL≥+5 / BEAR≤0'});
+  signals.push({name:'Philly Fed Mfg',val:phillyLabel,score:phillyScore,signal:phillySignal,weight:18,lead:'先行3ヶ月',desc:'フィラデルフィア連銀製造業景況指数。0超が拡張、0未満が縮小を示す。製造業の先行指標。',thresh:'BULL≥+5 / BEAR≤0',obsDate:latestDate('Philadelphia Fed Manufacturing')});
 
   let cfnaiScore=50,cfnaiSignal='neutral',cfnaiLabel='—';
   if(cfnai!==null){cfnaiLabel=cfnai.toFixed(2);
     if(cfnai<-0.7){cfnaiScore=82;cfnaiSignal='bear';}else if(cfnai<-0.35){cfnaiScore=50;cfnaiSignal='neutral';}
     else{cfnaiScore=18;cfnaiSignal='bull';}}
-  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥0 / BEAR≤-0.35'});
+  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥0 / BEAR≤-0.35',obsDate:latestDate('Chicago Fed National Activity')});
 
   let clScore=50,clSignal='neutral',clLabel='—';
   if(claims!==null){clLabel=(claims/1000).toFixed(0)+'K';const t=trend3('Initial Claims 4W MA');
     if(claims>300000){clScore=85;clSignal='bear';}else if(claims>250000){clScore=60+(t>0?10:0);clSignal=t>0?'bear':'caution';}
     else if(claims>215000){clScore=35;clSignal='neutral';}else{clScore=15;clSignal='bull';}}
-  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月',desc:'新規失業保険申請件数4週移動平均。労働市場の健全性を示す週次指標。増加は雇用悪化のサイン。',thresh:'BULL≤215K / BEAR≥245K'});
+  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月',desc:'新規失業保険申請件数4週移動平均。労働市場の健全性を示す週次指標。増加は雇用悪化のサイン。',thresh:'BULL≤215K / BEAR≥245K',obsDate:latestDate('Initial Claims 4W MA')});
 
   let cbScore=50,cbSignal='neutral',cbLabel='—';
   if(cbcc!==null){cbLabel=cbcc.toFixed(1);
     if(cbcc<60){cbScore=82;cbSignal='bear';}else if(cbcc<75){cbScore=72;cbSignal='bear';}
     else if(cbcc<90){cbScore=60;cbSignal='caution';}else{cbScore=30;cbSignal='neutral';}}
-  signals.push({name:'Michigan Sent.*',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。※FREDは1ヶ月遅延公開のため、最新発表値と異なる場合があります。',thresh:'BULL≥90 / BEAR≤65'});
+  signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。',thresh:'BULL≥90 / BEAR≤65',obsDate:latestDate('Michigan Consumer Sentiment')});
   let sahmScore=50,sahmSignal='neutral',sahmLabel='—';
   if(sahm!==null){sahmLabel=sahm.toFixed(2);
     sahmScore=sahm>=0.5?88:sahm>=0.3?50:12;
     sahmSignal=sahmScore>75?'bear':sahmScore>40?'caution':'neutral';}
 
 
-signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,weight:7,lead:'先行1ヶ月',desc:'サームルール不況指標。失業率の3ヶ月移動平均が過去12ヶ月の最低値より0.5pp以上上昇で不況シグナル。',thresh:'BULL<0.3 / BEAR≥0.5'});
+signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,weight:7,lead:'先行1ヶ月',desc:'サームルール不況指標。失業率の3ヶ月移動平均が過去12ヶ月の最低値より0.5pp以上上昇で不況シグナル。',thresh:'BULL<0.3 / BEAR≥0.5',obsDate:latestDate('Sahm Rule Recession Indicator')});
   const totalW=signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.weight:0),0);
   const rawScore=totalW>0?signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW:50;
   const liveScore=Math.round(rawScore);
@@ -1238,6 +1256,7 @@ function renderPhaseGauge() {
         <div class="pg-sig-tooltip-row"><span>閾値</span><span>${sg.thresh||'—'}</span></div>
         <div class="pg-sig-tooltip-row"><span>先行性</span><span>${sg.lead}</span></div>
         <div class="pg-sig-tooltip-row"><span>ウェイト</span><span>${sg.weight}%</span></div>
+        <div class="pg-sig-tooltip-row"><span>観測日</span><span>${sg.obsDate||'—'}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -1251,7 +1270,7 @@ function renderL2() {
   if(!DATA.length){grid.innerHTML='<div class="empty">データなし</div>';return;}
 
   const now=Date.now();
-  const latestActual=(ind)=>idxLatestAsOf(ind,now);
+  const latestActual=(ind)=>idxLatestVal(ind,now);
 
   const L2_CFG=[
     // 💰 金融環境
@@ -1394,7 +1413,7 @@ function l3ScoreColor(s){
 // 指定日以前の最新値を取得
 function l3LatestBefore(ind, beforeDate){
   const ms = beforeDate instanceof Date ? beforeDate.getTime() : new Date(beforeDate).getTime();
-  return idxLatestAsOf(ind, ms);
+  return idxLatestVal(ind, ms);
 }
 
 // スナップショット構築（直近6ヶ月、週次）
