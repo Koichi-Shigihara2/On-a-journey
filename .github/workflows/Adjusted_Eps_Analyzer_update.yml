@@ -56,10 +56,19 @@ jobs:
         run: |
           echo "=== Pipeline Start ==="
           echo "Ticker input: '${{ github.event.inputs.ticker }}'"
+          # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応: workflow_dispatch
+          # （手動実行）は常に意図的な実行のため、pipeline.py側の
+          # 冪等性ガード（直近24時間以内の完了ならスキップ）を --force で
+          # バイパスする。workflow_run（正規連鎖）・schedule（週次
+          # フォールバック）はガードをそのまま適用する。
+          FORCE_FLAG=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FORCE_FLAG="--force"
+          fi
           if [ -n "${{ github.event.inputs.ticker }}" ]; then
-            python -m src.value.adjusted_eps_analyzer.pipeline --ticker "${{ github.event.inputs.ticker }}"
+            python -m src.value.adjusted_eps_analyzer.pipeline --ticker "${{ github.event.inputs.ticker }}" $FORCE_FLAG
           else
-            python -m src.value.adjusted_eps_analyzer.pipeline
+            python -m src.value.adjusted_eps_analyzer.pipeline $FORCE_FLAG
           fi
           echo "=== Pipeline End ==="
 

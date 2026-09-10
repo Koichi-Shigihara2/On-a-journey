@@ -9,7 +9,7 @@ import csv
 import threading
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 
 from .extract_key_facts import extract_quarterly_facts, normalize_value, get_cik as get_cik_func
@@ -760,8 +760,56 @@ def _filter_eps_tickers(target, eps_tickers):
     return [t for t in target if t in eps_set]
 
 
-def run(ticker_filter: str = None):
+# [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応（案2: 冪等性ガード）:
+# Adjusted_Eps_Analyzer_update.ymlはworkflow_run連鎖成功後も週次
+# フォールバックcronが無条件に追加実行され、実行履歴で直近3週中2週
+# （08-30/31・09-06/07）で約19時間差の無条件重複を実測確認した。
+# summary.jsonのlast_updatedが本閾値未満なら「直近で既に完了済み」と
+# 判断しGrok呼び出しを含む本処理をスキップする。SEC Data Update失敗週
+# （workflow_run側skipped）はsummary.jsonが更新されないため、フォール
+# バックcronは従来通り正常に「真の安全網」として機能する。
+_RECENT_UPDATE_THRESHOLD_HOURS = 24
+
+
+def _recently_completed_at(data_root: str, threshold_hours: float = _RECENT_UPDATE_THRESHOLD_HOURS) -> Optional[str]:
+    """summary.jsonのlast_updatedが閾値時間以内なら、そのISO文字列を返す
+    （＝直近で完了済みと判定）。閾値超過・ファイル不在・パース失敗時は
+    None（＝通常通り処理継続すべき）を返す。"""
+    summary_path = os.path.join(data_root, "summary.json")
+    if not os.path.exists(summary_path):
+        return None
+    try:
+        with open(summary_path, 'r', encoding='utf-8') as f:
+            last_updated_str = json.load(f).get("last_updated")
+        if not last_updated_str:
+            return None
+        last_updated = datetime.fromisoformat(last_updated_str)
+        if datetime.now() - last_updated < timedelta(hours=threshold_hours):
+            return last_updated_str
+    except (ValueError, TypeError, json.JSONDecodeError, OSError):
+        pass
+    return None
+
+
+def run(ticker_filter: str = None, force: bool = False):
     config_base = os.path.join(PROJECT_ROOT, "config")
+    DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
+
+    # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応（案2: 冪等性ガード）。
+    # 全銘柄バッチ経路（ticker_filter未指定）のみ対象とする。--ticker
+    # 明示指定時（新規銘柄登録オーケストレーション等）はスキップ対象外。
+    if not ticker_filter and not force:
+        recent = _recently_completed_at(DATA_ROOT)
+        if recent:
+            print(
+                f"[Idempotency Guard] summary.jsonの最終更新は{recent}"
+                f"（{_RECENT_UPDATE_THRESHOLD_HOURS}時間以内）のため、"
+                f"意図的にスキップします（[[WORKFLOW-FALLBACK-CRON-"
+                f"DUPLICATE-1]]対応: 週次フォールバックcronによる無条件"
+                f"重複実行の防止。強制実行するには --force を指定）"
+            )
+            return
+
     tickers = get_eps_tickers()
 
     if ticker_filter:
@@ -798,7 +846,6 @@ def run(ticker_filter: str = None):
 
     all_tickers_data = {}
     lock = threading.Lock()
-    DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
 
     # ★ YTD 変換用の基本タグ（固定）
     BASE_SBC_YTD_TAGS = [
@@ -843,5 +890,8 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="AEA Pipeline")
     parser.add_argument("--ticker", type=str, default=None, help="更新する銘柄ティッカー（省略時は全銘柄）")
+    parser.add_argument("--force", action="store_true",
+                         help="[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応の冪等性ガードを"
+                              "無視して強制実行する（手動re-run等の正当な再実行用）")
     args = parser.parse_args()
-    run(ticker_filter=args.ticker)
+    run(ticker_filter=args.ticker, force=args.force)
