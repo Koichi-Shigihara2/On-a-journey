@@ -1,5 +1,213 @@
 # Claude Code 作業開始テンプレート
 
+最終更新: 2026-09-10（**セッション終了時ブラッシュアップ・2026-09-10
+セッションサマリー**。既知の安全策で無効化された案件の体系的クローズに
+始まり、CDNS/INTUの次元分解値回収機構、KPI unit表示バグ、Grokコスト
+調査（新規バグ発見含む）、MACRO PULSEの複数の根治的修正（観測日開示・
+重複判定統合）、RICE計算のSBC部分合計誤用修正等、非常に多数の実装・
+調査を実施した（全てpush済み）:
+
+1. `[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]`クローズ: 前回
+   （09-08〜09-09）ブラッシュアップで「既知の2件のID重複」の一つと
+   していた本エントリの残存BACKLOG.mdアクティブヘッダーを再確認した
+   ところ、「真の残タスク2件」として記載されていた内容が実際には
+   既に消滅していることが判明し、クローズした（クロスファイル重複は
+   これでCONFIG-LOAD-SILENT-FALLBACK-1のみに減少）
+
+2. **PLTR(2019)・CHECK29系のBS恒等式「対応不可」7件を型D対応の
+   新機構で全件解消**（`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`）:
+   SECの`data.sec.gov/api/xbrl/companyfacts`バルクAPIが構造的に返せ
+   ない「次元分解開示専用・非次元版が一件も存在しない」ファクト
+   （`[[ANOMALY-PATTERN-CATALOG-1]]`型Dとして新規カタログ化）に対応
+   するため、生XBRLインスタンス文書を直接パースし次元別ファクトを
+   機械合算する新モジュール`dimension_aggregate_fetcher.py`を新設。
+   PLTR(2019)・CART(2023-2025、3件)・V(2008)・CELH・ASTS(2019)の
+   BS恒等式チェックを全件解消（BKNGのみ真に開示自体が存在せず対応
+   不可と確定）。CELH実データで単一軸コンテキストと二重軸コンテキスト
+   （Statement of Stockholders Equity再掲）の重複計上リスクを発見し
+   単一軸限定フィルタで対処、ASTS(2019)では既存クロスaccnフォール
+   バックとの二重計上を早期return方式の優先順位付けで解消
+
+3. `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`: 上記②の機構を
+   duration fact（P&L・cost_of_revenue）にも拡張し、CDNS/INTUの
+   cost_of_revenue（standard tagだが次元限定開示のため消失していた）
+   を回収。**正直な経緯として記録**: 登録時「cost_of_revenueは
+   DCF/FCF計算に直接影響しうるため慎重な検証が必要」と過大な警戒を
+   実際の消費先確認前に書いたが、後の確認でTANUKI VALUATIONの
+   DCF/Moat Scoreは別系統のLayer3パイプライン（本フィールドは
+   元々空）を参照しており実害なしと判明、これを報告時に訂正した。
+   また実装完了直後、コミット前の`git status`未コミット差分を指して
+   「NG=2」と報告したが、これは自分のローカル未コミット状態のみを
+   反映したもので、Koichiさんの独立確認（クリーンな状態）と食い違い、
+   「正直に状況を教えてください」とのご指摘を受けた。再確認の結果、
+   説明不足だったことを認め、実際に何がコミット・pushされているかを
+   正確に再報告した。最終的に一次情報citation・`--expect`ライブ再取得
+   検証・CHECK-46整合確認・全105銘柄シミュレーション・DCF/FCF実消費
+   確認を経て、Koichiさんの承認を得てコミット・push（fixed_registry.
+   json snapshot_hash再計算込み）した
+
+4. `[[KPI-UNIT-HARDCODE-USD-1]]`: `xbrl_segment_fetcher.py`が全KPIの
+   unitを`"USD"`に固定していたため、PLTR等の比率系KPI（貢献利益率等）
+   がツールチップで金額表記になっていた表示バグを修正。値そのものの
+   型ではなくKPI名のキーワード（「率」「マージン」等）で判定する
+   `_infer_kpi_unit()`を新設し、`docs/portfolio/tail/index.html`・
+   `detail.html`双方のフォーマッタに`unit==='ratio'`分岐を追加。
+   検証過程で`detail.html`のformatVal()が元々ratio表示に一切対応して
+   いなかった副産物バグも発見・修正
+
+5. `[[GROK-MODEL-PRICE-1]]`（未クローズ、xAI Console確認待ちのまま
+   BACKLOG.mdに残置）: 1回目調査でレガシーエイリアス
+   （grok-3-mini/grok-3/grok-2-1212）が実際には`grok-4.3`へ自動
+   ルーティングされていることを実測確認し、全9ファイル・10箇所の
+   モデル名表記を是正（実API呼び出しで動作確認）。grok-2-1212は
+   完全に廃止済み（HTTP 400）だったことも判明。その後Koichiさんが
+   xAI Console実データを確認したところ、直近7日支出$1.65の**80%
+   （$1.33）が想定外の「grok-4.20-0309-reasoning」**に帰属している
+   ことが判明し、2回目の追加調査を実施: 呼び出し元を
+   `ai_analyzer.py`（adjusted_eps_analyzer）1箇所と特定し、9/6・9/7
+   への支出集中の原因が新規発見バグ`[[WORKFLOW-FALLBACK-CRON-
+   DUPLICATE-1]]`（下記6.）であることを実行履歴の実測で突き止めた。
+   また当初の想定（risk_fetcher.py/Discover削除がX searches費目の
+   直接原因）を訂正: 両者は実は`search_parameters`を指定しておらず
+   （2026-05-23に別コミットで既に削除済み）、X searches課金の直接
+   originではなかった（ただし高頻度呼び出し元だったため削除は
+   grok-4.3総呼び出し量の激減に寄与したと判断）
+
+6. **新規発見・実装完了** `[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]`:
+   上記5.の調査から、`Adjusted_Eps_Analyzer_update.yml`が
+   `workflow_run`連鎖成功後も週次フォールバックcronが無条件に追加
+   実行され、99銘柄分のGrok呼び出しが実質週2回発生していたことを
+   GitHub Actions実行履歴（API直接確認）で実測。冪等性ガード
+   （`summary.json`のlast_updatedが24時間以内なら早期return、
+   `--force`で手動re-run時はバイパス）を実装し解消。同型パターンを
+   `TANUKI_VALUATION_Update.yml`・`TANUKI_Score_Update.yml`にも
+   確認したが、前者は`validate_calculation()`のGrok呼び出しが本番
+   エントリポイントで`use_ai_validation=False`ハードコードのため
+   実害ゼロと判明し対応不要、後者（daily_pick.py）には「1日1回」の
+   設計意図に合わせた日付ベースの冪等性ガードを追加した
+
+7. `[[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]`: 景気サイクルフェーズ
+   複合スコアの22%（CFNAI・Building Permits）が実測約7週間遅れの
+   データに基づくが閲覧者が気づく手段がなかった問題を、個別注記の
+   追加ではなく`idxLatestAsOf()`拡張（`.actual`のみでなくエントリ
+   全体`{dateMs,actual,updatedMs}`を返す）で根治的に解消。数値のみ
+   必要な既存呼び出し元（ticker widget・LAYER2ヘルスバー・L3類似度
+   計算）は薄いラッパー`idxLatestVal()`へ個別移行し破壊的変更を回避。
+   8指標全てのツールチップに「観測日」行を追加し、Michigan
+   Sentimentの個別注記文言はこの汎用機構に統合し廃止。AI週次レポート
+   プロンプト（05_main.py）にも各指標の観測日を付記（既存の`info
+   ['date']`を1行追記するだけで対応完了）
+
+8. `[[MACRO-THRESHOLD-INCONSISTENCY-1]]`: ②`dedupe_new_rows()`の
+   重複判定を実データで検証したところ、Sahm Rule（930ヶ月中155件・
+   約17%）が直前月と完全一致する値を取ることを確認、現行コードへ
+   模擬データを実際に投入し正当な新規行が誤除外されることを再現した
+   （本番でまだ実害が顕在化していないのは導入後の実データに偶然
+   反復値が発生していないためで「次に発生すれば確実に起きる既知
+   バグ」と判断し先行修正）。修正は静的な例外リストではなく、
+   `05_audit.py::check_duplicate_events()`に既に存在していた
+   `_duplicate_risk_indicators(schedule)`（監査側では既に正しく
+   機能していた判定ロジック）を`05_main.py`へ移動して両者で共有する
+   形に統合し、[[MACRO-THRESHOLD-INCONSISTENCY-1]]が指す「監査側と
+   書き込み側の不一致」自体を解消。**対応範囲は当初想定の2指標
+   （Sahm Rule・CFNAI）から、実際のschedule.csv適用結果に基づき
+   10指標へ拡大**（HY Spread 651件・Yield Curve 1086件等、同種の
+   正当な反復パターンを実データで確認済み）。①YC閾値3セットは
+   ticker/L2（粗いラベル用途）とRECESSION RISK SCORE（加重平均への
+   入力用途、4段階）の相違を意図的な設計と判断し統一せず、判断根拠を
+   コードコメントに明記。あわせてYC自身のツールチップ表示バグ
+   （実際の閾値-0.5%ではなく-0.2%と誤表示）を修正し、調査中に発見した
+   同型パターン（HY Spread等5指標）は新規`[[MACRO-TOOLTIP-THRESH-
+   LABEL-MISMATCH-1]]`として別途登録（未対応、次セッション候補）
+
+9. `[[TTM-SBC-QUARTERS-GAP-1]]`: `build_rice_annual_shape()`でSBCが
+   quarters完全性チェック対象外だった件を実データ調査したところ、
+   102銘柄相当374行中40行でSBCのquarters_used<4、うち8行
+   （GEV/HWM/TDY）はSBCが非Noneの部分四半期合計として完全な年間値
+   であるかのようにrice.py::_calc_q()（Q=OCF÷(純利益+SBC)）へ渡って
+   いたことを実測確認した（Q値がGEVで+3.71%等、過大に算出）。
+   `_quarters_complete()`にSBCを追加し行全体を除外する案（依頼文の
+   想定）ではなく、SBC自体をNone化しrice.py既存のNone許容
+   フォールバック（RD/SMと同型）に委ねる、より対象を絞った修正を採用
+   （40行中32行はvalが元々Noneで無害だったため、行全体除外だと
+   その32行の他フィールドまで不必要に失うと判断）
+
+10. `[[NORMALIZER-YTD-METADATA-STALE-1]]`: `normalizer.py::
+    _ytd_to_quarterly()`のQ2以降エントリでstart/period_daysが変換前
+    のYTD期間のまま残るバグを、`layer3_builder.py`側に既に存在した
+    「正しい実装」（2026-07-24新規構築時から同種の再計算込みで実装
+    済み）を参照し移植して解消。parser.py側のperiod_days参照11箇所は
+    全て無関係と確認済み。**移植過程で移植元のlayer3_builder.py自身
+    にもオフバイワンバグ**（start起点が前四半期end日そのものになって
+    おり真の慣例より1日短い、AAPL実データのQ2 CapEx start/period_days
+    で発見）を発見し両モジュールとも修正。全103銘柄・18,114変換
+    エントリの新旧ロジック突合でval不一致0件を確認、normalized/
+    102ファイルを再生成
+
+11. `[[BACKTEST-SCORE-1]]`: TANUKI SCORE分類別の勝率・平均リターン
+    バックテストの着手条件（90日リターンのサンプル数）が実データで
+    充足していることを確認し実装。既存の部分実装
+    `renderScoreVerify()`を拡張（重複実装を避ける）し90日指標・
+    低サンプル数フラグを追加。実データ・既知の集計値との突合検証、
+    claude-in-chromeでのブラウザ実地検証（ライブDOM値と独立Python
+    集計の完全一致確認）を実施
+
+12. `[[BS-FIELD-NEWLY-MISSING-2026-1]]`: LLY/SCCO/SPIRのBSフィールド
+    None遷移を一次情報（10-K）で個別調査し、全3件が生涯フェードアウト
+    （真のゼロ継続）と確定、抽出バグではないことを確認して
+    `warn_acknowledged.json`へ登録
+
+13. `[[MA-INTEGRATION-TAG-GAP-1]]`: 長期停滞していた本エントリの
+    停滞原因を分析し、新たな設計角度を提案（実装は未着手、次セッション
+    以降の判断待ち）
+
+**次セッションの着手候補**:
+- `[[MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1]]`（本日新規登録。
+  RECESSION RISK SCOREのHY Spread・Philadelphia Fed Manufacturing・
+  CFNAI MA3・Initial Claims 4W MA・Michigan Consumer Sentimentで、
+  ツールチップ表示閾値と実際のスコア計算ステップ関数の境界値が
+  食い違っている）
+- CRM(2018)のGP-COGS不整合（CHECK-46実装過程の実データ校正で発見、
+  前回09-08〜09-09セッションから継続未着手）
+- `[[TAIL-SEC-ITEMS-1]]`（機能追加要望、Koichiさん判断待ちで保留中）
+- `[[MA-INTEGRATION-TAG-GAP-1]]`（本日新設計角度を提案済み、実装は
+  いずれ向き合う必要あり）
+- `[[GROK-MODEL-PRICE-1]]`のxAI Console側実請求確認（Koichiさん本人
+  のアカウントアクセスが必要、本セッションでは対象外のまま）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本セッションでクローズした
+  8件（LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1・BACKTEST-SCORE-1・
+  BS-FIELD-NEWLY-MISSING-2026-1・KPI-UNIT-HARDCODE-USD-1・
+  NORMALIZER-YTD-METADATA-STALE-1・WORKFLOW-FALLBACK-CRON-
+  DUPLICATE-1・MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1・
+  MACRO-THRESHOLD-INCONSISTENCY-1・TTM-SBC-QUARTERS-GAP-1・
+  SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1、計10件）全件が
+  `### ✅ [ID]`パターンでBACKLOG_DONE.mdに存在し、BACKLOG.md側に
+  アクティブヘッダーとして残存していないことを機械的に確認
+  （移設漏れ0件）。GROK-MODEL-PRICE-1（xAI Console確認待ち・意図的
+  に保留）・MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1（新規登録・未着手）
+  はBACKLOG.mdにアクティブヘッダーとして意図通り残存
+- ID重複チェック: BACKLOG.mdとBACKLOG_DONE.md間でヘッダーIDが重複
+  するものは、既知の1件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、
+  段階的完了・部分対応の意図的な分割）以外に新規重複なしを確認
+  （`[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]`は本セッション1.で
+  クローズしたため既知2件から1件に減少）。BACKLOG_DONE.md内部での
+  同一ID複数エントリ（MARKETDATA-LAYER-CONSTRUCTION-1・DESIGN-8等）
+  は多段階プロジェクトの進捗記録として妥当なパターンと確認、新規の
+  誤登録ではない
+- git status: クリーン（未コミット変更・未追跡ファイルなし）。
+  作業中にorigin/kaihatsuへ自動データ更新コミットが複数回入ったため、
+  都度fetch→マージ（コンフリクトなし）で追従した
+- BACKLOG.mdアクティブ件数: 機械カウントで**60件**（前回09-08〜
+  09-09時点の67件から、本セッションでクローズした8件・新規登録した
+  1件〈MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1〉により7件減）
+
+詳細は各BACKLOGエントリ・BACKLOG_DONE.md「2026-09-10（完了）」節・
+PROJECT_STATUS.md参照。
+
+---
+
 最終更新: 2026-09-09（**セッション終了時ブラッシュアップ・2026-09-08〜
 09-09セッションサマリー**。前回2026-09-07サマリー〈下記ブロック、
 コミット`5769026dc9`〉作成後の09-07 20:32に`[[QUALITY-GATES-EPIC-1]]`

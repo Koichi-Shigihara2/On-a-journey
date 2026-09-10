@@ -408,6 +408,57 @@
   参照。新DB構築プロジェクトのコード・データには変更なし。現存
   BACKLOG.md総数は機械カウントで**67件**（94件から27件減）。
 
+- **2026-09-10**（非常に長時間のセッション、10件クローズ・1件新規
+  登録、全てpush済み）:
+  1. `[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]`クローズ（既知の
+     クロスファイルID重複2件のうち1件を解消）
+  2. **PLTR(2019)・CHECK29系のBS恒等式「対応不可」7件を新規機構
+     `dimension_aggregate_fetcher.py`（生XBRLインスタンス直接パース）
+     で全件解消**（`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`、
+     `[[ANOMALY-PATTERN-CATALOG-1]]`型D新規カタログ化）
+  3. `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`: 上記②の機構を
+     duration factへ拡張しCDNS/INTUのcost_of_revenueを回収。過大な
+     事前警戒（DCF影響を未検証のまま記載）・NG=2報告の説明不足を
+     自ら訂正した経緯を含め正直に記録（詳細は`CLAUDE_CODE_START.md`
+     該当ブロック参照）
+  4. `[[KPI-UNIT-HARDCODE-USD-1]]`: PLTR等の比率KPI誤表示（unit
+     ハードコード）を名前ベース判定で修正、detail.htmlの副次バグも
+     解消
+  5. `[[GROK-MODEL-PRICE-1]]`（未クローズ、xAI Console確認待ちで
+     BACKLOG.mdに残置）: レガシーエイリアス是正後、Koichiさんの
+     xAI Console実データ確認で支出の80%が想定外の
+     「grok-4.20-0309-reasoning」だったと判明し追加調査。呼び出し元
+     特定・risk_fetcher/Discover仮説の訂正・新規バグ発見（下記6.）
+  6. **新規発見・実装完了** `[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]`:
+     週次フォールバックcronが`workflow_run`連鎖成功後も無条件に追加
+     実行される構造的バグを実行履歴の実測で発見、冪等性ガードで解消
+     （Adjusted_EPS・TANUKI_Score。TANUKI_VALUATIONは実害ゼロと確認
+     し対応不要）
+  7. `[[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]`: 景気サイクル
+     フェーズ複合スコアの観測日開示を`idxLatestAsOf()`拡張で根治的に
+     解消、AI週次レポートプロンプトにも観測日を付記
+  8. `[[MACRO-THRESHOLD-INCONSISTENCY-1]]`: `dedupe_new_rows()`の
+     実害（Sahm Rule 930ヶ月中155件の反復値誤除外）を実データ・
+     再現実験で確認し、監査側の既存ロジックとの統合で根治的修正。
+     対応範囲は当初想定2指標から10指標へ拡大。YC閾値3セットは意図的
+     設計と判断し統一せず理由を明記、新規`[[MACRO-TOOLTIP-THRESH-
+     LABEL-MISMATCH-1]]`を発見・登録
+  9. `[[TTM-SBC-QUARTERS-GAP-1]]`: GEV/HWM/TDYのRICE計算Q値過大評価
+     （SBC部分四半期合計の誤用）を実測確認し修正
+  10. `[[NORMALIZER-YTD-METADATA-STALE-1]]`: layer3_builder.py側の
+      既存正実装を参照移植して解消、移植過程でlayer3_builder.py自身の
+      オフバイワンバグも副次発見・修正
+  11. `[[BACKTEST-SCORE-1]]`実装（TANUKI SCORE初の答え合わせ、着手
+      条件充足を実データで確認）・`[[BS-FIELD-NEWLY-MISSING-2026-1]]`
+      （LLY/SCCO/SPIR全3件が生涯フェードアウトと確定）・
+      `[[MA-INTEGRATION-TAG-GAP-1]]`（長期停滞原因分析・新設計角度
+      提案、実装は未着手）
+
+  詳細はBACKLOG_DONE.md「2026-09-10（完了）」節・`CLAUDE_CODE_
+  START.md`該当ブロック参照。新DB構築プロジェクトのコード・データには
+  変更なし。現存BACKLOG.md総数は機械カウントで**60件**（67件から
+  クローズ8件・新規登録1件で7件減）。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。
