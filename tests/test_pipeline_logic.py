@@ -3306,12 +3306,15 @@ def _make_flow_entry(val, quarters_used=4, missing=0):
     return {"val": val, "quarters_used": quarters_used, "missing": missing}
 
 
-def _make_ttm_entry(ttm_end, ocf_q=4, capex_q=4, revenue_q=4, ni_q=4, fcf_val=100.0):
+def _make_ttm_entry(ttm_end, ocf_q=4, capex_q=4, revenue_q=4, ni_q=4, fcf_val=100.0,
+                     sbc_q=4, sbc_val=50.0):
     """完全性フィルタのテスト用にoperating_cash_flow/capital_expenditure/
     revenue/net_incomeのquarters_usedを個別に指定できるTTM seriesエントリを
     構築する（MO実データ同様、FCF自体にはquarters_usedフィールドが存在しない）。
     フィールド名はフェーズC移行後のLayer3 snake_case命名
-    （[[TTM-PASCALCASE-KEY-STALE-1]]対応、2026-07-29）。"""
+    （[[TTM-PASCALCASE-KEY-STALE-1]]対応、2026-07-29）。
+    sbc_q/sbc_valは[[TTM-SBC-QUARTERS-GAP-1]]対応の回帰テスト用
+    （デフォルトは完全〈quarters_used=4〉、既存テストへの影響なし）。"""
     return {
         "ttm_end": ttm_end,
         "flow": {
@@ -3319,6 +3322,7 @@ def _make_ttm_entry(ttm_end, ocf_q=4, capex_q=4, revenue_q=4, ni_q=4, fcf_val=10
             "capital_expenditure": _make_flow_entry(400.0, capex_q),
             "revenue": _make_flow_entry(1000.0, revenue_q),
             "net_income": _make_flow_entry(300.0, ni_q),
+            "stock_based_compensation": _make_flow_entry(sbc_val, sbc_q),
             "FCF": {"val": fcf_val},
         },
     }
@@ -3543,6 +3547,39 @@ class TestBuildRiceAnnualShapeQuartersCompleteness:
         # RD/SMキーは元々存在しないダミーデータだが、期間自体は残ることを確認
         result = _df.build_rice_annual_shape([entry])
         assert len(result) == 1
+
+    def test_sbc_incomplete_quarters_nulled_but_period_kept(self):
+        """[[TTM-SBC-QUARTERS-GAP-1]]回帰テスト: SBCがquarters_used<4
+        （部分四半期合計）の場合、期間自体は除外せずSBC値のみNoneへ
+        差し替える（OCF/CapEx/Revenue/NetIncomeが完全な期間を、SBC単独の
+        不完全性で失わないため）。実データ確認: GEV/HWM/TDYでquarters_
+        used=1〜3の非NoneなSBC部分合計が、完全な年間SBCであるかのように
+        rice.py::_calc_q()へ渡っていた。"""
+        entry = _make_ttm_entry(_rel_date(90), sbc_q=1, sbc_val=54.0)
+        result = _df.build_rice_annual_shape([entry])
+        assert len(result) == 1
+        assert result[0]["cf"]["stock_based_compensation"] is None
+        # SBC以外のフィールドは影響を受けない
+        assert result[0]["cf"]["operating_cash_flow"] == 500.0
+        assert result[0]["pl"]["revenue"] == 1000.0
+
+    def test_sbc_missing_field_still_none_period_kept(self):
+        """SBCフィールド自体が存在しない場合（quarters_used=0扱い）も
+        同様にNoneとなり、期間は除外されないことを確認する
+        （従来のrice.py側or 0.0フォールバックと同じ結果になることの確認）。"""
+        entry = _make_ttm_entry(_rel_date(90), sbc_q=0, sbc_val=None)
+        result = _df.build_rice_annual_shape([entry])
+        assert len(result) == 1
+        assert result[0]["cf"]["stock_based_compensation"] is None
+
+    def test_sbc_complete_quarters_value_passed_through(self):
+        """SBCがquarters_used=4（完全）の場合は値がそのまま渡ることを確認する
+        （デフォルトのsbc_q=4フィクスチャで既存テスト全てが暗黙に検証済みだが、
+        明示的に確認する）。"""
+        entry = _make_ttm_entry(_rel_date(90), sbc_q=4, sbc_val=54.0)
+        result = _df.build_rice_annual_shape([entry])
+        assert len(result) == 1
+        assert result[0]["cf"]["stock_based_compensation"] == 54.0
 
 
 # ─────────────────────────────────────────────

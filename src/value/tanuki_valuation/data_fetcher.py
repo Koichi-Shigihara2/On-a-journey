@@ -361,6 +361,25 @@ def build_rice_annual_shape(ttm_series: list[dict]) -> list[dict]:
     （TTM-QUARTERS-CHECK-1）。research_and_development/selling_and_marketingは
     rice.py側で既にNone許容（0扱い・警告ログのみ）のためチェック対象外。
 
+    stock_based_compensationは[[TTM-SBC-QUARTERS-GAP-1]]対応（2026-09-10）:
+    quarters_used<4の期間が実データで105銘柄相当中40件（うち32件は
+    val自体もNone、rice.py側の`sbc = ... or 0.0`により従来通り安全に
+    SBC=0へフォールバックする）存在したが、残り8件（GEV/HWM/TDY）は
+    val自体は非Noneの部分四半期合計（例: GEV quarters_used=1で
+    54,000,000）であり、これが完全な年間SBCであるかのように
+    _calc_q()のQ=OCF/(純利益+SBC)計算へ渡り、SBCを最大約13%
+    過小評価する形で分母を歪めていた（実データで影響を実測・確認済み）。
+    OCF/CapEx/Revenue/NetIncomeと同様に行全体を除外する対応（本関数の
+    _quarters_complete()対象に追加）も検討したが、40件中32件（val=None
+    のケース）はrice.py側で元々安全にフォールバックしており行全体を
+    捨てる必要がないため、より対象を絞った修正として、
+    stock_based_compensation自体のquarters_used<4の場合のみvalを
+    Noneへ差し替える（research_and_development/selling_and_marketingの
+    既存のNone許容パターンと同一の扱いに揃える）。これにより8件の
+    誤った部分合計はNone化されrice.py側のor 0.0フォールバックで
+    正しくSBC=0扱いとなり、残り32件の他フィールドが完全な行は
+    引き続きRICE計算の対象として維持される。
+
     鮮度チェック（LLY-CAPEX-STALE-1型対策）はttm_series[0]（最新、降順ソート
     前提）のみに適用する。TTM系列は各エントリが約1年間隔で保存される設計の
     ため、series[0]以外は正常な銘柄でも構造的に365日以上古く、全エントリに
@@ -380,12 +399,18 @@ def build_rice_annual_shape(ttm_series: list[dict]) -> list[dict]:
         flow = s.get("flow", {})
         if not _quarters_complete(flow, "operating_cash_flow", "capital_expenditure", "revenue", "net_income"):
             continue
+        # [[TTM-SBC-QUARTERS-GAP-1]]対応: SBCのquarters_used<4は行全体を
+        # 除外せず、SBC自体をNone化してresearch_and_development/
+        # selling_and_marketingと同じNone許容パス（rice.py側でor 0.0）に
+        # 委ねる（理由は本関数docstring参照）。
+        sbc_field = flow.get("stock_based_compensation", {})
+        sbc_val = sbc_field.get("val") if sbc_field.get("quarters_used", 0) >= 4 else None
         result.append({
             "period": f"TTM@{s.get('ttm_end', '?')}",
             "cf": {
                 "operating_cash_flow":    flow.get("operating_cash_flow", {}).get("val"),
                 "capital_expenditure":    flow.get("capital_expenditure", {}).get("val"),
-                "stock_based_compensation": flow.get("stock_based_compensation", {}).get("val"),
+                "stock_based_compensation": sbc_val,
             },
             "pl": {
                 "revenue":                  flow.get("revenue", {}).get("val"),
