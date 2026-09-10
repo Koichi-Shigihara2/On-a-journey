@@ -26,10 +26,15 @@ _spec = importlib.util.spec_from_file_location("main05_audit", _main_path)
 _m = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_m)
 
-load_events           = _m.load_events
-load_schedule         = _m.load_schedule
-INDICATOR_CONFIG      = _m.INDICATOR_CONFIG
-_MONTHLY_REFRESH_SET  = _m._MONTHLY_REFRESH_SET
+load_events            = _m.load_events
+load_schedule          = _m.load_schedule
+INDICATOR_CONFIG       = _m.INDICATOR_CONFIG
+_MONTHLY_REFRESH_SET   = _m._MONTHLY_REFRESH_SET
+# [[MACRO-THRESHOLD-INCONSISTENCY-1]]対応（2026-09-10）: 本関数の実体は
+# 05_main.py::dedupe_new_rows()（データ書き込み側の重複判定）でも
+# 使われるため05_main.py側へ移動・単一化した。ここでは移動先を再利用する
+# （二重定義による将来の判定ドリフトを防ぐ）。
+_duplicate_risk_indicators = _m._duplicate_risk_indicators
 
 # CHECK-2: NFPが「水準」のまま格納されている兆候を判定するための閾値。
 # 直近実績が全てこのレンジに収まり、かつ単調非減少（一度も減少しない）場合、
@@ -44,21 +49,6 @@ def _parse_date(s: str):
         return datetime.strptime(str(s), "%Y-%m-%d").date()
     except (ValueError, TypeError):
         return None
-
-
-def _duplicate_risk_indicators(schedule: pd.DataFrame) -> set:
-    """
-    MACRO-NFP-1: run()内でscheduledループとrefresh_monthly_indicators()の
-    両方から処理されうる指標（= 05_indicator_schedule.csvにも
-    _MONTHLY_REFRESH_SETにも含まれる指標）のみを重複検出の対象にする。
-
-    Sahm Rule / CFNAI等の平滑化指標は元々「隣接月で同値が続く」のが正常であり、
-    一律に同値近接をNG扱いすると誤検知になるため対象外とする。
-    """
-    if schedule.empty:
-        return set()
-    scheduled_inds = set(schedule["indicator"].unique())
-    return scheduled_inds & _MONTHLY_REFRESH_SET
 
 
 def check_duplicate_events(events: pd.DataFrame, schedule: pd.DataFrame) -> tuple[list, list]:

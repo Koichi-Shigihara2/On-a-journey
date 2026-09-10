@@ -138,12 +138,25 @@ class TestDedupeNewRows:
         })
         return r
 
+    def _schedule(self, *indicators):
+        """指定した指標が05_indicator_schedule.csvに登録済み（＝scheduled
+        ループの対象になりうる）状態を模したscheduleDataFrameを返す。
+        _duplicate_risk_indicators()はscheduleとの積集合で判定するため、
+        重複判定を有効化したい指標のみ渡す。"""
+        if not indicators:
+            return pd.DataFrame(columns=main05.SCHEDULE_COLUMNS)
+        rows = [
+            {**{c: "" for c in main05.SCHEDULE_COLUMNS}, "indicator": ind, "release_date": "2026-01-01"}
+            for ind in indicators
+        ]
+        return pd.DataFrame(rows)
+
     def test_duplicate_within_lag_window_is_dropped(self):
         rows = [
             self._row("NFP", "2026-06-01", "158984.0"),
             self._row("NFP", "2026-07-02", "158984.0"),  # 同一観測値・lag(35日)以内
         ]
-        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS))
+        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS), self._schedule("NFP"))
         assert len(kept) == 1
         assert kept[0]["event_id"] == "NFP_2026-06-01"
 
@@ -152,7 +165,7 @@ class TestDedupeNewRows:
             self._row("NFP", "2026-06-01", "158984.0"),
             self._row("NFP", "2026-07-02", "159200.0"),
         ]
-        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS))
+        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS), self._schedule("NFP"))
         assert len(kept) == 2
 
     def test_dedup_against_existing_events(self):
@@ -162,7 +175,7 @@ class TestDedupeNewRows:
             "actual": "158984.0", "event_id": "nfp_2026-06-01",
         }])
         rows = [self._row("NFP", "2026-07-02", "158984.0")]
-        kept = main05.dedupe_new_rows(rows, existing)
+        kept = main05.dedupe_new_rows(rows, existing, self._schedule("NFP"))
         assert kept == []
 
     def test_outside_lag_window_not_treated_as_duplicate(self):
@@ -170,7 +183,9 @@ class TestDedupeNewRows:
             self._row("Initial Claims 4W MA", "2026-01-01", "210000.0"),
             self._row("Initial Claims 4W MA", "2026-06-01", "210000.0"),  # lag=7日を大きく超える
         ]
-        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS))
+        kept = main05.dedupe_new_rows(
+            rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS), self._schedule("Initial Claims 4W MA")
+        )
         assert len(kept) == 2
 
     def test_regression_building_permits_duplicate_across_runs(self):
@@ -184,7 +199,7 @@ class TestDedupeNewRows:
             "actual": "1363.0", "event_id": "permit_2026-03-01",
         }])
         new_row = self._row("Building Permits", "2026-03-17", "1363.0", event_id="permit_2026-03-17")
-        kept = main05.dedupe_new_rows([new_row], existing)
+        kept = main05.dedupe_new_rows([new_row], existing, self._schedule("Building Permits"))
         assert kept == []
 
     def test_regression_michigan_sentiment_duplicate_across_runs(self):
@@ -198,7 +213,71 @@ class TestDedupeNewRows:
             "actual": "53.3", "event_id": "mich_sent_2026-03-01",
         }])
         new_row = self._row("Michigan Consumer Sentiment", "2026-03-13", "53.3", event_id="mich_sent_2026-03-13")
-        kept = main05.dedupe_new_rows([new_row], existing)
+        kept = main05.dedupe_new_rows([new_row], existing, self._schedule("Michigan Consumer Sentiment"))
+        assert kept == []
+
+    def test_sahm_rule_legitimate_repeat_value_is_kept(self):
+        """
+        [[MACRO-THRESHOLD-INCONSISTENCY-1]]回帰テスト。Sahm Ruleは狭い値域の
+        低カーディナリティ指標のため、異なる観測月でも値が完全一致しうる
+        （実データ確認: 930ヶ月中155件、約17%が直前月と完全一致）。
+        修正前はこれをvalue等価性で誤って重複と判定し、正当な新規データを
+        捨てていた（実データ再現済み）。Sahm Ruleは05_indicator_schedule.csv
+        に登録されない（実測: 該当行0件）ため、本テストでもscheduleに
+        含めず _duplicate_risk_indicators() の対象外とする。
+        """
+        existing = pd.DataFrame([{
+            **{c: "" for c in main05.EVENTS_COLUMNS},
+            "indicator": "Sahm Rule Recession Indicator", "release_date": "2026-08-01",
+            "actual": "-0.07", "event_id": "sahm_rule_2026-08-01",
+        }])
+        new_row = self._row("Sahm Rule Recession Indicator", "2026-09-01", "-0.07",
+                             event_id="sahm_rule_2026-09-01")
+        kept = main05.dedupe_new_rows([new_row], existing, self._schedule())
+        assert len(kept) == 1
+        assert kept[0]["event_id"] == "sahm_rule_2026-09-01"
+
+    def test_cfnai_legitimate_repeat_value_is_kept(self):
+        """[[MACRO-THRESHOLD-INCONSISTENCY-1]]回帰テスト。CFNAI MA3も同様に
+        低カーディナリティ指標のため、修正前は正当な反復値が誤って
+        重複除外されていた（実データ確認: 367ヶ月中1件が該当）。CFNAIも
+        schedule未登録（実測: 該当行0件）のため対象外とする。"""
+        existing = pd.DataFrame([{
+            **{c: "" for c in main05.EVENTS_COLUMNS},
+            "indicator": "Chicago Fed National Activity", "release_date": "2026-07-01",
+            "actual": "-0.08", "event_id": "cfnai_ma3_2026-07-01",
+        }])
+        new_row = self._row("Chicago Fed National Activity", "2026-08-01", "-0.08",
+                             event_id="cfnai_ma3_2026-08-01")
+        kept = main05.dedupe_new_rows([new_row], existing, self._schedule())
+        assert len(kept) == 1
+        assert kept[0]["event_id"] == "cfnai_ma3_2026-08-01"
+
+    def test_nfp_true_duplicate_still_caught_after_exemption_added(self):
+        """[[MACRO-THRESHOLD-INCONSISTENCY-1]]非退行確認: schedule登録済みの
+        NFP（MACRO-NFP-1の元々の対象）では、従来通りvalue等価性による
+        重複判定が機能し続けることを確認する。"""
+        rows = [
+            self._row("NFP", "2026-06-01", "158984.0"),
+            self._row("NFP", "2026-07-02", "158984.0"),
+        ]
+        kept = main05.dedupe_new_rows(rows, pd.DataFrame(columns=main05.EVENTS_COLUMNS), self._schedule("NFP"))
+        assert len(kept) == 1
+        assert kept[0]["event_id"] == "NFP_2026-06-01"
+
+    def test_sahm_rule_would_still_dedupe_if_ever_schedule_registered(self):
+        """_duplicate_risk_indicators()は動的判定のため、将来Sahm Ruleが
+        05_indicator_schedule.csvに登録される事態になれば、value等価性
+        チェックも自動的に有効化されることを確認する（静的な例外リストで
+        はなく動的判定を採用した設計意図の裏付け）。"""
+        existing = pd.DataFrame([{
+            **{c: "" for c in main05.EVENTS_COLUMNS},
+            "indicator": "Sahm Rule Recession Indicator", "release_date": "2026-08-01",
+            "actual": "-0.07", "event_id": "sahm_rule_2026-08-01",
+        }])
+        new_row = self._row("Sahm Rule Recession Indicator", "2026-09-01", "-0.07",
+                             event_id="sahm_rule_2026-09-01")
+        kept = main05.dedupe_new_rows([new_row], existing, self._schedule("Sahm Rule Recession Indicator"))
         assert kept == []
 
 

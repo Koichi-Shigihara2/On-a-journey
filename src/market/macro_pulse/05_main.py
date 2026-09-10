@@ -1909,10 +1909,39 @@ def refresh_monthly_indicators(target_date: date, fin_ctx: dict,
         logger.info(f"[monthly-refresh] {len(new_rows)} indicators refreshed.")
     return new_rows
 
+def _duplicate_risk_indicators(schedule: pd.DataFrame) -> set:
+    """
+    MACRO-NFP-1: run()内でscheduledループとrefresh_monthly_indicators()の
+    両方から処理されうる指標（= 05_indicator_schedule.csvにも
+    _MONTHLY_REFRESH_SETにも含まれる指標）のみを重複検出の対象にする。
+
+    Sahm Rule / CFNAI等の平滑化指標は元々「隣接月で同値が続く」のが正常であり、
+    一律に同値近接をNG扱いすると誤検知になるため対象外とする。
+
+    [[MACRO-THRESHOLD-INCONSISTENCY-1]]対応（2026-09-10、05_audit.py::
+    check_duplicate_events()から本体をこちらへ移動・単一化）: 元々は
+    05_audit.py側にのみ実装されており、この関数が計算する「重複検出
+    対象外の指標」判定がdedupe_new_rows()（実際にデータを捨てる本体）
+    には反映されていなかった。このため、schedule未登録のSahm Rule・
+    CFNAI MA3のような低カーディナリティ指標で、異なる観測月の正当な
+    完全一致値がdedupe_new_rows()によって誤って除外されるリスクが
+    残っていた（実データ確認: Sahm Ruleは930ヶ月中155件〈約17%〉が
+    直前月と完全一致。CFNAI MA3は367ヶ月中1件。同一値の行をdedupe_new_
+    rows()へ実際に投入し、正当な新規データが即座に誤除外されることを
+    再現確認した）。監査側の判定とデータ書き込み側の判定を本関数へ
+    一本化し、将来_MONTHLY_REFRESH_SET/schedule構成が変わっても両者が
+    自動的に同期するようにした。
+    """
+    if schedule.empty:
+        return set()
+    scheduled_inds = set(schedule["indicator"].unique())
+    return scheduled_inds & _MONTHLY_REFRESH_SET
+
+
 # ─────────────────────────────────────────────────────────────────
 #  MACRO-NFP-1: 同一FRED観測値の重複書き込み防止（防御的ガード）
 # ─────────────────────────────────────────────────────────────────
-def dedupe_new_rows(new_rows: list, events: pd.DataFrame) -> list:
+def dedupe_new_rows(new_rows: list, events: pd.DataFrame, schedule: pd.DataFrame) -> list:
     """
     run()内で今回新規に追加しようとしている行(new_rows)のうち、
     「同一indicator×同一actual値×release_dateが指標のobs_to_release_lag以内」
@@ -1923,9 +1952,16 @@ def dedupe_new_rows(new_rows: list, events: pd.DataFrame) -> list:
     （events_snapshot反映後も理論上残りうる取りこぼし）への
     最終防御ライン。既存events（保存済み）とも比較し、実行をまたいだ
     重複も検出する。
+
+    _duplicate_risk_indicators(schedule)が返す集合に含まれない指標
+    （scheduled未登録でrefresh_monthly_indicators()のみが単独処理する
+    指標）は、value等価性による重複判定自体が構造的に成立しない
+    （[[MACRO-THRESHOLD-INCONSISTENCY-1]]対応）ためスキップする。
     """
     if not new_rows:
         return new_rows
+
+    risk_inds = _duplicate_risk_indicators(schedule)
 
     seen: list[tuple[str, float, date]] = []
     if events is not None and not events.empty:
@@ -1947,15 +1983,18 @@ def dedupe_new_rows(new_rows: list, events: pd.DataFrame) -> list:
             kept.append(row)
             continue
 
-        # refresh_monthly_indicators()のスケジュール窓判定は obs_date±(lag±14日) で
-        # スロットを探すため、同一観測値の重複候補はraw obs_date基準の行（差0日）から
-        # 窓上限（lag+14日）まで離れうる。窓の下限（lag-14日）ではなく上限側で
-        # 比較しないと、このケース（MACRO-NFP-1で実際に発生）を取りこぼす。
-        lag = INDICATOR_CONFIG.get(ind, {}).get("obs_to_release_lag", 35) + 14
-        is_dup = any(
-            s_ind == ind and abs(s_av - av) < 1e-6 and abs((s_rd - rd).days) <= lag
-            for s_ind, s_av, s_rd in seen
-        )
+        if ind not in risk_inds:
+            is_dup = False
+        else:
+            # refresh_monthly_indicators()のスケジュール窓判定は obs_date±(lag±14日) で
+            # スロットを探すため、同一観測値の重複候補はraw obs_date基準の行（差0日）から
+            # 窓上限（lag+14日）まで離れうる。窓の下限（lag-14日）ではなく上限側で
+            # 比較しないと、このケース（MACRO-NFP-1で実際に発生）を取りこぼす。
+            lag = INDICATOR_CONFIG.get(ind, {}).get("obs_to_release_lag", 35) + 14
+            is_dup = any(
+                s_ind == ind and abs(s_av - av) < 1e-6 and abs((s_rd - rd).days) <= lag
+                for s_ind, s_av, s_rd in seen
+            )
         if is_dup:
             logger.warning(
                 f"[dedupe] {ind} {row.get('event_id')}: 同一観測値(actual={av})の"
@@ -2298,7 +2337,7 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         return
 
     # MACRO-NFP-1: 同一indicator×同一actual値×近接release_dateの重複行を除外する
-    new_rows = dedupe_new_rows(new_rows, events)
+    new_rows = dedupe_new_rows(new_rows, events, schedule)
 
     if not new_rows:
         logger.info("No rows to add after dedup.")
