@@ -3893,6 +3893,12 @@ legacy-aliasモデル呼び出し元だった（Discoverは`Discover_Update.yml`
 | `src/value/tanuki_valuation/validator.py` | grok-4.3 | `TANUKI_VALUATION_Update.yml`（workflow_run連鎖・4系統いずれか完了で発火+金曜安全網cron） | なし |
 | `src/value/adjusted_eps_analyzer/ai_analyzer.py` | **grok-4.20-0309-reasoning**（grok-4.3とは別モデル、非エイリアス） | `Adjusted_Eps_Analyzer_update.yml`（99銘柄ループ、**週2回発火バグあり**） | なし |
 
+#### 2026-09-10（3回目）対応済み: 週次重複発火の解消
+`[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]`（2回目調査で新規発見した
+`ai_analyzer.py`分の週2回発火バグ）を冪等性ガードで解消済み
+（実装・横展開調査の詳細はBACKLOG_DONE.md該当エントリ参照）。
+これにより`ai_analyzer.py`分のコストは理論上半減が見込まれる。
+
 #### 残課題（Koichiさん本人のみ対応可能）
 xAI Console（https://console.x.ai/ 等の管理画面）で実際の請求明細・
 モデル別単価を確認すること。本セッションはKoichiさんのアカウントに
@@ -3900,67 +3906,6 @@ xAI Console（https://console.x.ai/ 等の管理画面）で実際の請求明�
 （旧`grok-3-mini`想定単価の4倍以上）。`grok-4.20-0309-reasoning`の
 単価はxAI価格表に個別記載がなく未確認（reasoning系モデルは一般に
 プレミアム価格帯のため、Console上の実額での確認が必要）。
-`[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]`の対応（週2回発火の解消）に
-より`ai_analyzer.py`分のコストは理論上半減が見込まれる。
-
----
-
-### [WORKFLOW-FALLBACK-CRON-DUPLICATE-1] workflow_run連鎖の週次フォールバックcronが「安全網」ではなく毎週無条件に二重実行している
-**優先度:** 中（実コスト・API呼び出し重複の実害が実行履歴で確認済み）
-**分類:** インフラ / GitHub Actions / コスト管理
-**登録日:** 2026-09-10
-**発見:** `[[GROK-MODEL-PRICE-1]]`のgrok-4.20-0309-reasoning呼び出し元調査
-（xAI Console実データで9/6・9/7に支出が集中していた理由の特定）
-
-#### 内容
-`[[WORKFLOW-SEC-TANUKI-GAP-1]]`対応（2026-08-22、commit `ca925ffa27`）で
-`Adjusted_Eps_Analyzer_update.yml`・`TANUKI_VALUATION_Update.yml`・
-`TANUKI_Score_Update.yml`の3ワークフローに「`workflow_run`連鎖 +
-週1回の低頻度フォールバックcron（`workflow_run`が発火しなかった場合の
-安全網、という触れ込み）」パターンが導入された。しかし実際のjob-level
-`if`条件（例: `if: github.event_name != 'workflow_run' ||
-github.event.workflow_run.conclusion == 'success'`）は「scheduleイベント
-実行時にworkflow_runが同じ週に既に成功しているか」を判定する手段を
-持たない構造的な設計であり、GitHub Actions単体でもこの種の週内条件は
-表現できない。結果として、workflow_run連鎖が正常に成功した週でも、
-フォールバックcronは無条件に追加実行される。
-
-#### 実測（Adjusted_Eps_Analyzer_update.yml、GitHub Actions API直接確認）
-```
-2026-08-23  SEC Data Update失敗 → workflow_run側 skipped（正しい安全網動作）
-2026-08-24  schedule成功                            （唯一の正常フォールバック）
-2026-08-30  workflow_run成功
-2026-08-31  schedule成功                            （＝無条件の重複実行）
-2026-09-06  workflow_run成功
-2026-09-07  schedule成功                            （＝無条件の重複実行）
-```
-直近3週のうち2週（08-30/31・09-06/07）で無条件重複を確認。`pipeline.py`
-に冪等性ガード（同一データでの再実行をスキップする仕組み）が存在しない
-ため、99銘柄分の`ai_analyzer.py`（Grok）呼び出しが実質週2回発生して
-いる。同型パターンの`TANUKI_VALUATION_Update.yml`
-（`workflow_run`が4系統いずれかの完了で発火する設計のため、週内の
-重複発火頻度はさらに高い可能性）・`TANUKI_Score_Update.yml`は本調査の
-スコープ外（`Adjusted_Eps_Analyzer_update.yml`のみ実行履歴で確認）の
-ため、横展開調査が必要。
-
-#### 対応方針（未定・要判断）
-以下のいずれかの設計変更が必要:
-1. フォールバックcronを削除し、`workflow_run`連鎖の失敗を別の手段
-   （Slack/Discord通知等）で検知する運用に切り替える
-2. フォールバックcron実行時に、直近成果物のタイムスタンプ等から
-   「今週既に更新済みか」を判定し、既に最新なら早期returnする
-   冪等性ガードをpipeline.py側に追加する
-3. 各パイプライン側に「入力データが前回実行から変化していなければ
-   Grok呼び出し自体をスキップする」キャッシュ機構を設ける
-
-いずれも設計判断を伴うため対応方針は保留。`[[WORKFLOW-SEC-TANUKI-
-GAP-1]]`のクローズ時（2026-08-31）は「workflow_run連鎖が発火すること」
-のみを実地確認しており、フォールバックcronとの重複可能性は検証範囲外
-だった。
-
-#### 着手条件
-なし（Koichiさんの判断待ち。`TANUKI_VALUATION_Update.yml`・
-`TANUKI_Score_Update.yml`への同型バグの横展開調査も含めて次回対応）
 
 ---
 

@@ -4,6 +4,127 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [WORKFLOW-FALLBACK-CRON-DUPLICATE-1] workflow_run連鎖の週次フォールバックcronが「安全網」ではなく毎週無条件に二重実行している — 冪等性ガード実装完了（Adjusted_EPS・TANUKI_Score）・TANUKI_VALUATIONは実害なしと確認
+**状態:** ✅実装完了（Adjusted_Eps_Analyzer・TANUKI_Scoreに冪等性ガード追加、TANUKI_VALUATIONは調査の結果対応不要と判断）
+**優先度:** 中 → 完了
+**分類:** インフラ / GitHub Actions / コスト管理
+**登録日:** 2026-09-10
+**完了日:** 2026-09-10
+**発見:** `[[GROK-MODEL-PRICE-1]]`のgrok-4.20-0309-reasoning呼び出し元調査
+
+#### 内容（登録時点）
+`[[WORKFLOW-SEC-TANUKI-GAP-1]]`対応（2026-08-22、commit `ca925ffa27`）で
+`Adjusted_Eps_Analyzer_update.yml`・`TANUKI_VALUATION_Update.yml`・
+`TANUKI_Score_Update.yml`の3ワークフローに「`workflow_run`連鎖 + 週1回の
+低頻度フォールバックcron（安全網の触れ込み）」パターンが導入されたが、
+job-level`if`条件はscheduleイベント側が「workflow_runが同じ週に既に
+成功しているか」を判定できない構造的欠陥があり、workflow_run連鎖が
+成功した週でもフォールバックcronが無条件に追加実行される。
+`Adjusted_Eps_Analyzer_update.yml`で実行履歴上の実測（直近3週中2週で
+無条件重複、99銘柄分のGrok呼び出しが週2回発生）を確認済みだった。
+
+#### 実装内容（案2: 冪等性ガード。フォールバックcron自体は維持）
+
+**①`Adjusted_Eps_Analyzer_update.yml` / `pipeline.py`**
+- `_recently_completed_at(data_root, threshold_hours=24)`関数を新設。
+  `summary.json`の`last_updated`が24時間以内なら、そのISO文字列を返す
+  （＝直近で完了済みと判定）。ファイル不在・パース失敗時はNone
+  （＝通常通り処理継続）。
+- `run(ticker_filter, force=False)`の冒頭（`get_eps_tickers()`呼び出し
+  前）でガード判定。**全銘柄バッチ経路（`ticker_filter`未指定）のみ
+  対象**とし、`--ticker`明示指定時（新規銘柄登録オーケストレーション
+  `register_ticker.py`経由の呼び出し等）はスキップ対象外のまま維持。
+- SEC Data Update失敗週（workflow_run側`skipped`）は`summary.json`が
+  更新されないため、フォールバックcronは従来通り正常に「真の安全網」
+  として機能する（閾値24時間は実測の重複ギャップ約19時間に対して
+  十分なマージンを持たせつつ、翌週の正規実行はブロックしない値として
+  選定）。
+- `--force`フラグを追加し、`workflow_dispatch`（手動実行）時は
+  ワークフロー側から自動的に`--force`を付与してガードをバイパス
+  （手動re-run等の正当な再実行を誤って止めないため）。
+
+**②`TANUKI_VALUATION_Update.yml`（横展開調査） — 対応不要と判断**
+同型の`workflow_run`（4系統いずれかの完了で発火）+ 金曜フォールバック
+cronパターンを持ち、GitHub Actions実行履歴でも1日に最大3回発火する
+高頻度な挙動を確認した。しかし`validator.py::validate_calculation()`
+のGrok呼び出し（`call_xai_api()`）は`use_ai=True`の場合のみ発火する
+設計であり、実際の本番エントリポイント
+（`src/value/tanuki_valuation/pipeline.py::main()`、`TANUKI_VALUATION_
+Update.yml`が直接`python pipeline.py`で呼ぶ関数）は
+`TanukiValuationPipeline(use_ai_validation=False)`を**ハードコード**
+しており、Grok自体を一切呼んでいない（`validation["model"] =
+"basic_checks_only"`、コード内コメント「v7.3: Grok廃止、basic_checks
+で代替」）。よって本ワークフローの高頻度発火・フォールバックcronの
+重複自体は事実だが、**Grokコスト面では実害ゼロ**と確認できたため、
+冪等性ガードは実装しなかった（CI実行時間・コンピュート面の無駄は
+残るが、本課題〈GROK-MODEL-PRICE-1由来〉のスコープ外）。
+
+**③`TANUKI_Score_Update.yml` / `daily_pick.py` — 冪等性ガード実装**
+同型パターンを持つが、週末cronは「pipeline.pyが平日のみ実行のため
+土日は独立実行する」という異なる設計意図（TANUKI_VALUATION側の
+workflow_run連鎖が週末に発火しなかった場合の代替、という趣旨に近い）
+を持つ。Grok呼び出しは`_call_grok()`の2箇所（`grok_news_search()`・
+`generate_report()`）のみで、Adjusted_EPSの99銘柄ループと比べ規模は
+小さいが、実行履歴上はTANUKI_VALUATION連鎖の高頻度発火に引きずられて
+本ワークフロー自体も1日に複数回発火するケースがあり、同日中の再発火は
+無条件に重複コストとなる。本パイプラインは設計上「1日1銘柄選出」が
+前提のため、`history`（`daily_pick_history.json`相当）に当日
+（JST基準）のエントリが既に存在するかを見る、日付ベースの冪等性ガード
+を`main(force=False)`に追加した（時間窓ベースではなく、パイプライン
+自体の「1日1回」という設計意図に直接対応した、より自然な判定基準）。
+`--force`フラグ・`workflow_dispatch`時の自動付与も同様に実装。
+
+#### 検証結果
+1. **`_recently_completed_at()`単体テスト**: ファイル不在→None、
+   1時間前更新→検出（スキップ対象）、30時間前更新→None（閾値外）、
+   23時間54分前（境界近傍）→検出、JSON破損→None（例外握りつぶし
+   確認）の5パターン全て期待通り。
+2. **`run()`結合テスト**: (a)全銘柄バッチ・`force=False`・直近1時間
+   更新状態 → ガードメッセージを出力しGrok呼び出し前に`return`する
+   ことを確認、(b)同状態で`force=True` → ガードを通過し
+   `get_eps_tickers()`まで到達することを確認、(c)`ticker_filter`指定時
+   はガード自体が発火しないことを確認。
+3. **`daily_pick.main()`結合テスト**: (a)当日エントリあり・
+   `force=False` → スキップメッセージを出力しGrok呼び出し前に
+   `return`することを確認、(b)同状態で`force=True` → ガードを通過し
+   `load_market()`まで到達することを確認、(c)前日エントリのみ・
+   `force=False` → ガードを通過することを確認、(d)空history・
+   `force=False` → ガードを通過することを確認。
+4. **既存テスト**: `pytest tests/`全1,158件成功（`test_pipeline_logic.
+   py`・`test_flag_consumer_audit_3.py`・`test_eps_analyzer_ttm_period_
+   label.py`等、`run()`本体を直接exerciseするテストは元々存在せず
+   影響なし）。`common/sec_data/audit.py` NG=0（既存WARNのみ）。
+   `report_consistency_check.py --fail-on-ng` NG=0（警告119件、
+   本変更に起因する新規NG・WARNなし）。
+5. **YAML構文検証**: `Adjusted_Eps_Analyzer_update.yml`・
+   `TANUKI_Score_Update.yml`双方とも`yaml.safe_load()`でパース成功。
+
+#### 変更ファイル
+- `src/value/adjusted_eps_analyzer/pipeline.py`: `_recently_completed_
+  at()`新設、`run()`にforce引数・ガード追加、`--force` CLI引数追加、
+  重複していた`DATA_ROOT`定義を統合
+- `.github/workflows/Adjusted_Eps_Analyzer_update.yml`:
+  `workflow_dispatch`時に`--force`を自動付与
+- `src/value/tanuki_score/daily_pick.py`: `main()`にforce引数・
+  当日エントリチェックガード追加、`--force` CLI引数追加
+- `.github/workflows/TANUKI_Score_Update.yml`: `workflow_dispatch`時に
+  `--force`を自動付与
+
+#### 対応しなかった範囲・残課題
+- `TANUKI_VALUATION_Update.yml`自体の高頻度発火・フォールバックcronの
+  重複実行は構造として残っている（CI実行時間の無駄は解消していない）。
+  Grokコスト面の実害がないため本課題のスコープでは対応を見送ったが、
+  純粋なCI実行時間削減が目的であれば別途検討の余地がある。
+- 3ワークフロー共通の根本原因（`schedule`イベント単体では「同じ週に
+  workflow_runが既に成功したか」を判定できないというGitHub Actions
+  の構造的制約）そのものは解消していない。今回はアプリケーション層
+  （pipeline.py側）で冪等性ガードを実装することで実害を打ち消す
+  アプローチを取った。将来同様のworkflow_run+フォールバックcron
+  パターンを追加する場合、同種の冪等性ガードを最初から組み込むことが
+  望ましい。
+
+---
+
 ### ✅ [NORMALIZER-YTD-METADATA-STALE-1] normalizer.py::_ytd_to_quarterly()変換後にstart/period_daysが変換前のYTD期間のまま残る — 調査・修正完了（parser.py側は無影響と判明、layer3_builder.py側の関連バグも副次発見・修正）
 **状態:** ✅修正完了
 **優先度:** 低〜中 → 完了
