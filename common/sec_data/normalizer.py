@@ -8,7 +8,7 @@ import json
 import logging
 import os
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from .contracts import validate_fields
 from .q4_implied import build_q4_implied_entries
@@ -186,12 +186,21 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     （2つの累計値の差分はどちらも同じ起点からの累計である限り、起点の
     絶対値が未確定でも常に正しい単独四半期値になるため）。
 
+    [[NORMALIZER-YTD-METADATA-STALE-1]]対応: Q2以降のYTD差分変換エントリは
+    valのみYTD差分値に更新し、start/period_daysが変換前のYTD期間（FY開始日
+    起点）のまま残っていた。前四半期end翌日〜当四半期endの単四半期期間に
+    再計算する（起点は「前四半期endの翌日」——SECの実際の本人申告SA
+    エントリの慣例〈例: AAPL Revenue実データで確認: Q1 end=2025-12-27の
+    翌日、Q2 start=2025-12-28〉と一致させるため、prev_end自体ではなく
+    +1日した日付を採用する）。
+
     戻り値: (converted, unresolved)
     """
     converted: list = []
     unresolved: list = []
     prev_ytd: float = 0
     prev_ytd_known = False
+    prev_end: str | None = None
 
     for entry in fy_entries:
         new_entry = dict(entry)
@@ -201,6 +210,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             standalone = entry["val"]
             prev_ytd += standalone
             prev_ytd_known = True
+            prev_end = entry["end"]
             new_entry["val"] = standalone
             converted.append(new_entry)
             continue
@@ -212,6 +222,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             unresolved.append(new_entry)
             prev_ytd = entry["val"]
             prev_ytd_known = True
+            prev_end = entry["end"]
             continue
 
         # YTD entry: 前回YTDとの差分
@@ -223,9 +234,29 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
                 "YTD reversal for end=%s fp=%s val=%s prev_ytd=%s",
                 entry.get("end"), entry.get("fp"), entry["val"], prev_ytd,
             )
+
+        # start/period_daysを変換後の単四半期期間（前回end翌日〜当期end）に
+        # 再計算する。prev_endがパース不能等で使えない場合は元のstart/
+        # period_days（YTD期間のまま）にフォールバックする（安全側）。
+        new_start = None
+        period_days = entry.get("period_days")
+        if prev_end:
+            try:
+                new_start_date = date.fromisoformat(prev_end) + timedelta(days=1)
+                new_start = new_start_date.isoformat()
+                period_days = (date.fromisoformat(entry["end"]) - new_start_date).days
+            except (ValueError, TypeError):
+                new_start = None
+                period_days = entry.get("period_days")
+
         prev_ytd = entry["val"]  # YTDは全Q累積なのでprevを上書き
+        prev_end = entry["end"]
         new_entry["is_ytd"] = False
         new_entry["val"] = standalone
+        if new_start:
+            new_entry["start"] = new_start
+        if period_days is not None:
+            new_entry["period_days"] = period_days
         converted.append(new_entry)
 
     return converted, unresolved

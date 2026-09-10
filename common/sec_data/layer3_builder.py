@@ -628,6 +628,14 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     不整合を修正: 旧実装はvalのみYTD差分にし、start/period_daysをYTD期間
     のまま残していた）。
 
+    [[NORMALIZER-YTD-METADATA-STALE-1]]normalizer.py側修正時に発見した
+    本関数自体のオフバイワン修正（2026-09-10）: 起点をprev_end自体（前
+    四半期のend日そのもの）としていたため、start日が前四半期のend日と
+    同一になり、period_daysが1日過大だった（AAPL実データ: Q2 CapEx
+    start=2025-12-27・period_days=91だったが、本人申告SAエントリ
+    〈Revenue等〉の実際の慣例はstart=2025-12-28・period_days=90）。
+    起点を「prev_endの翌日」に修正する。
+
     戻り値: (converted, unresolved)
     """
     converted: list = []
@@ -664,17 +672,17 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             )
 
         # --- NORMALIZER-YTD-METADATA-STALE-1対応: start/period_daysを
-        #     変換後の単四半期期間に再計算する ---
-        new_start = prev_end
-        try:
-            if new_start:
-                period_days = (
-                    date.fromisoformat(entry["end"]) - date.fromisoformat(new_start)
-                ).days
-            else:
+        #     変換後の単四半期期間に再計算する（起点はprev_endの翌日） ---
+        new_start = None
+        period_days = entry.get("period_days")
+        if prev_end:
+            try:
+                new_start_date = date.fromisoformat(prev_end) + timedelta(days=1)
+                new_start = new_start_date.isoformat()
+                period_days = (date.fromisoformat(entry["end"]) - new_start_date).days
+            except (ValueError, TypeError):
+                new_start = None
                 period_days = entry.get("period_days")
-        except (ValueError, TypeError):
-            period_days = entry.get("period_days")
 
         prev_ytd = entry["val"]
         prev_end = entry["end"]
