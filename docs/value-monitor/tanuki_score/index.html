@@ -208,6 +208,7 @@
     .sv-badge.sv-trim           { background: rgba(245,158,11,.15); color: #f59e0b; border-color: rgba(245,158,11,.3); }
     .sv-badge.sv-sell           { background: rgba(244,63,94,.15);  color: #f43f5e; border-color: rgba(244,63,94,.3); }
     .sv-badge.sv-pass           { background: rgba(100,116,139,.1); color: var(--sub); border-color: rgba(100,116,139,.2); }
+    .sv-lowsample               { color: var(--mut); font-style: italic; }
 
     /* accordion */
     .sec-accordion { cursor: pointer; user-select: none; }
@@ -789,36 +790,56 @@ function renderScoreVerify(allEntries) {
 
   const SCORE_TYPES = ['BUY', 'GROWTH_PREMIUM', 'WATCH', 'HOLD', 'TRIM', 'SELL', 'PASS'];
   const byScore = {};
+  const tickersByScore = {};
   for (const e of allEntries) {
     const s = e.tanuki_score;
     if (!s) continue;
-    if (!byScore[s]) byScore[s] = { total: 0, win30: 0, n30: 0, win60: 0, n60: 0, ret30s: [] };
+    if (!byScore[s]) byScore[s] = { total: 0, win30: 0, n30: 0, ret30s: [], win60: 0, n60: 0, ret60s: [], win90: 0, n90: 0, ret90s: [] };
     const b = byScore[s];
     b.total++;
     if (e.return_30d != null) { b.n30++; if (e.return_30d > 0) b.win30++; b.ret30s.push(e.return_30d); }
-    if (e.return_60d != null) { b.n60++; if (e.return_60d > 0) b.win60++; }
+    if (e.return_60d != null) { b.n60++; if (e.return_60d > 0) b.win60++; b.ret60s.push(e.return_60d); }
+    if (e.return_90d != null) {
+      b.n90++; if (e.return_90d > 0) b.win90++; b.ret90s.push(e.return_90d);
+      (tickersByScore[s] = tickersByScore[s] || new Set()).add(e.ticker);
+    }
   }
 
   const badgeCls = s => `sv-badge sv-${(s||'').toLowerCase().replace('_premium','-premium').replace('_','-')}`;
+  const avgOf = arr => arr.length > 0 ? arr.reduce((a,c) => a+c, 0) / arr.length : null;
+  const fmtPct = v => v != null
+    ? `<span style="color:${v>=0?'var(--grn)':'var(--red)'}">${v>=0?'+':''}${v.toFixed(1)}%</span>`
+    : '<span style="color:var(--mut)">—</span>';
+  const fmtWin = (win, n) => n > 0
+    ? `${(win/n*100).toFixed(0)}% <span style="color:var(--mut)">(${n}件)</span>`
+    : '<span style="color:var(--mut)">—</span>';
+
+  // [[BACKTEST-SCORE-1]] 2026-09-10: n<10・対象銘柄数が極端に少ない区分は
+  // 参考値扱いとする旨をバッジで明示（サンプルサイズ不足の透明化。
+  // 単純なn<10だけでなく「ごく少数の銘柄に集中」しているケースも
+  // 別途注記する——GROWTH_PREMIUM 90日実績はALAB/SITMの2銘柄のみに由来）。
+  const lowSampleNote = (s, n90) => {
+    if (n90 === 0) return '<span class="sv-lowsample">90日実績なし</span>';
+    const nTickers = (tickersByScore[s] || new Set()).size;
+    if (nTickers > 0 && nTickers <= 2) return `<span class="sv-lowsample">${nTickers}銘柄のみに由来</span>`;
+    if (n90 < 10) return '<span class="sv-lowsample">n&lt;10</span>';
+    return '';
+  };
 
   const winRows = SCORE_TYPES.filter(s => byScore[s]).map(s => {
     const b = byScore[s];
-    const w30 = b.n30 > 0 ? `${(b.win30/b.n30*100).toFixed(0)}% <span style="color:var(--mut)">(${b.n30}件)</span>` : '—';
-    const w60 = b.n60 > 0 ? `${(b.win60/b.n60*100).toFixed(0)}% <span style="color:var(--mut)">(${b.n60}件)</span>` : '—';
-    const avg30 = b.ret30s.length > 0 ? b.ret30s.reduce((a,c) => a+c, 0) / b.ret30s.length : null;
-    const avg30Str = avg30 != null ? `<span style="color:${avg30>=0?'var(--grn)':'var(--red)'}">${avg30>=0?'+':''}${avg30.toFixed(1)}%</span>` : '—';
     return `<tr>
       <td><span class="${badgeCls(s)}">${s}</span></td>
       <td style="font-family:var(--mono)">${b.total}</td>
-      <td style="font-family:var(--mono)">${w30}</td>
-      <td style="font-family:var(--mono)">${w60}</td>
-      <td style="font-family:var(--mono)">${avg30Str}</td>
+      <td style="font-family:var(--mono)">${fmtWin(b.win30, b.n30)}</td>
+      <td style="font-family:var(--mono)">${fmtPct(avgOf(b.ret30s))}</td>
+      <td style="font-family:var(--mono)">${fmtWin(b.win60, b.n60)}</td>
+      <td style="font-family:var(--mono)">${fmtPct(avgOf(b.ret60s))}</td>
+      <td style="font-family:var(--mono)">${fmtWin(b.win90, b.n90)}</td>
+      <td style="font-family:var(--mono)">${fmtPct(avgOf(b.ret90s))}</td>
+      <td style="font-size:10px">${lowSampleNote(s, b.n90)}</td>
     </tr>`;
   }).join('');
-
-  const fmtR = r => r != null
-    ? `<span style="color:${r>=0?'var(--grn)':'var(--red)'}">${r>=0?'+':''}${r.toFixed(1)}%</span>`
-    : '<span style="color:var(--mut)">—</span>';
 
   const recentArr = [...allEntries]
     .filter(e => e.date && e.tanuki_score)
@@ -830,8 +851,9 @@ function renderScoreVerify(allEntries) {
       <td style="font-family:var(--mono);font-size:11px;color:var(--mut)">${e.date}</td>
       <td><span class="${badgeCls(e.tanuki_score)}">${e.tanuki_score}</span></td>
       <td style="font-family:var(--mono);font-size:12px">${e.price_at_judgment != null ? '$'+e.price_at_judgment.toFixed(2) : '—'}</td>
-      <td style="font-family:var(--mono);font-size:12px">${fmtR(e.return_30d)}</td>
-      <td style="font-family:var(--mono);font-size:12px">${fmtR(e.return_60d)}</td>
+      <td style="font-family:var(--mono);font-size:12px">${fmtPct(e.return_30d)}</td>
+      <td style="font-family:var(--mono);font-size:12px">${fmtPct(e.return_60d)}</td>
+      <td style="font-family:var(--mono);font-size:12px">${fmtPct(e.return_90d)}</td>
     </tr>`)
     .join('');
 
@@ -845,21 +867,22 @@ function renderScoreVerify(allEntries) {
     <div id="sv-body">
     <div class="sv-card">
       <div class="sv-subtitle">
-        TANUKI SCOREが BUY / WATCH / HOLD 等と判定した銘柄を、判定日から30日後・60日後に保有した場合のリターン実績。母数が少ないため参考値として活用。
-        <br><code style="font-size:11px">score_verifier.py</code>を定期実行することでリターンが蓄積される（初回記録: 2026-07-03以降）。
+        TANUKI SCOREが BUY / WATCH / HOLD 等と判定した銘柄を、判定日から30日後・60日後・90日後に保有した場合のリターン実績。
+        90日実績は2026-06-03以降の判定分から蓄積中のため、現時点では判定日が2026年6月前半のものに限られ母数が少ない（下表「補足」列を参照）。過去実績は将来を保証しない。
+        <br><code style="font-size:11px">score_verifier.py</code>が<code style="font-size:11px">common.market_data.reader</code>経由で日次に自動更新する。
       </div>
-      <div class="sv-sec-lbl">判定別勝率（30日・60日後リターン）</div>
+      <div class="sv-sec-lbl">判定別勝率・平均リターン（30日・60日・90日後）</div>
       <div class="sv-table-wrap">
         <table class="sv-table">
-          <thead><tr><th>判定</th><th>件数(n)</th><th>30日勝率</th><th>60日勝率</th><th>平均30dリターン</th></tr></thead>
+          <thead><tr><th>判定</th><th>件数(n)</th><th>30日勝率</th><th>30日平均</th><th>60日勝率</th><th>60日平均</th><th>90日勝率</th><th>90日平均</th><th>補足</th></tr></thead>
           <tbody>${winRows || noData}</tbody>
         </table>
       </div>
-      <div class="sv-note">※ n &lt; 10 の場合は統計的信頼性が低い。過去実績は将来を保証しない。</div>
+      <div class="sv-note">※ n &lt; 10、または対象銘柄が1〜2件に集中する区分は統計的信頼性が低い参考値。過去実績は将来を保証しない。</div>
       <div class="sv-sec-lbl">直近${recentArr.length}件（全銘柄横断・判定日降順）</div>
       <div class="sv-table-wrap">
         <table class="sv-table">
-          <thead><tr><th>銘柄</th><th>判定日</th><th>判定</th><th>判定時株価</th><th>30日後</th><th>60日後</th></tr></thead>
+          <thead><tr><th>銘柄</th><th>判定日</th><th>判定</th><th>判定時株価</th><th>30日後</th><th>60日後</th><th>90日後</th></tr></thead>
           <tbody>${recentRows || noData}</tbody>
         </table>
       </div>
