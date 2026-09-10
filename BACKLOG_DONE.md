@@ -4,6 +4,138 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [MACRO-THRESHOLD-INCONSISTENCY-1] MACRO PULSEの閾値不一致・重複判定の軽微な構造的リスク — ②実害を実測・再現確認し根治的に修正（当初想定の2倍以上の範囲に実害拡大）・①用途別の意図を明文化
+**状態:** ✅調査・実装完了
+**優先度:** 低 → 完了
+**分類:** データ品質 / MACRO PULSE
+**登録日:** 2026-07-23
+**完了日:** 2026-09-10
+**発見:** `FIELD_DEFINITIONS.md`フェーズ10
+
+#### 内容（登録時点）
+①10Y-2Yスプレッドの判定閾値が用途によって3セット存在する（ティッカー
+表示のINVERTED/FLAT/NORMAL: -0.2/0.5、RECESSION RISK SCOREのステップ
+関数: -0.5/0/0.5の4段階、LAYER2健全性バーのbull/bear: 0.5/-0.2）。②
+`dedupe_new_rows()`の重複判定は`obs_to_release_lag`に基づく日数窓＋
+完全一致する`actual`値のみで行われ、指標ごとの「値の反復が正常で
+ありうるか」を区別する例外リストがない。Sahm Rule・CFNAI MA3で
+正当な反復値を誤って重複除外するリスクが構造的に残る。
+
+#### ②の実害調査結果: 実際に発生していた（実データ再現・確認済み）
+`docs/market-monitor/macro-pulse/data/05_events.csv`実データで
+Sahm Rule Recession Indicator・Chicago Fed National Activityの
+全履歴（各930・367ヶ月分）を調査した:
+- **Sahm Rule**: 930ヶ月中**155件（約17%）**が直前月と完全一致する値
+- **CFNAI MA3**: 367ヶ月中1件が直前月と完全一致する値
+- いずれも欠落月（gap）は0件で、これらの反復値自体は現在のデータに
+  存在する（＝過去の追加時点では捨てられていない）が、これは
+  `dedupe_new_rows()`導入（2026-07-07、commit `1694241086`）**より
+  前**に追加されたデータのため。2026-07-07以降の実データ（2026年
+  1〜8月）には偶然にも連続一致値が発生しておらず、本番運用で実害が
+  顕在化した実例はまだ確認できなかった。
+- **しかし、現行コードへ実際に模擬データを投入して再現した**: 直近の
+  Sahm Rule（2026-08分、-0.07）・CFNAI（2026-07分、-0.08）と同値の
+  「翌月分」新規行を`dedupe_new_rows()`へ渡したところ、修正前のコード
+  はいずれも正当な新規データとして即座に誤除外することを実際に確認
+  した（"[dedupe] ... 重複行を除外しました"のWARNログも実際に発生）。
+  よって「まだ実害は出ていないが、次に反復値が発生すれば確実に発生する
+  既知バグ」と判定し、実害待ちではなく先行して修正することにした。
+
+#### ②の修正: 静的な例外リストではなく、既存の05_audit.py側ロジックとの統合による根治的対応
+当初は「Sahm Rule・CFNAI MA3のみを対象とする静的な例外セット」を
+実装したが、`05_audit.py::check_duplicate_events()`（軽量整合性
+チェックスクリプト）に**全く同じ問題意識に基づく`_duplicate_risk_
+indicators(schedule)`関数が既に存在し**、「`05_indicator_schedule.csv`
+にも`_MONTHLY_REFRESH_SET`にも含まれる指標のみを重複検出対象とする」
+という、監査側では既に運用中のより一般的で正確なロジックを発見した
+（該当関数のdocstring自身が「Sahm Rule / CFNAI等の平滑化指標は元々
+『隣接月で同値が続く』のが正常」と明記していた）。この関数を
+`05_audit.py`から`05_main.py`へ移動し、`dedupe_new_rows()`（実際に
+データを書き込む側）と`check_duplicate_events()`（監査側）の両方が
+同一の判定ロジックを共有するよう統合した。これにより
+[[MACRO-THRESHOLD-INCONSISTENCY-1]]のタイトルが指す「不一致」
+（監査側は既に正しく除外していたのに、書き込み側には未反映だった
+ギャップ）そのものを解消した。
+
+**⚠️ 重要: 対応範囲が当初想定（Sahm Rule・CFNAI MA3の2指標）から拡大した。**
+`_duplicate_risk_indicators()`を実際のschedule.csv・_MONTHLY_REFRESH_
+SETに適用した結果、value等価性チェックが有効なまま残る「真にリスクの
+ある」指標は以下4件のみだった:
+```
+NFP・Initial Claims 4W MA・Building Permits・Michigan Consumer Sentiment
+```
+残り10指標（Sahm Rule・CFNAI・Philadelphia Fed Manufacturing・
+HY Spread・Yield Curve 10Y-2Y・VIX・Michigan Inflation 1Y・
+Michigan Inflation 5Y・CB Consumer Confidence・Conference Board LEI）
+は全てvalue等価性チェックから除外された。除外の妥当性は、当初
+Sahm Rule/CFNAIに適用したのと同じ構造的根拠（scheduled ループと
+refresh_monthly_indicators()の両方から処理されうる指標のみが
+「同一観測値の別event_idスロットへの二重書き込み」というMACRO-NFP-1
+型の失敗モードを起こしうる。それ以外の指標は単一経路でしか処理
+されないため当該失敗モードが構造的に発生しない）で個別に検証した。
+実データでも、この追加10指標のうち少なくとも4件（HY Spread 651件・
+Yield Curve 10Y-2Y 1086件・VIX 38件・Michigan Inflation 5Y 723件、
+いずれも直近値との完全一致・lag窓内）で、Sahm Rule/CFNAIと同種の
+「正当な反復値が存在する」パターンを確認しており、この拡大は
+同一バグクラスへのより完全な対処と判断した。狭い範囲の指標
+（CB Consumer Confidence・Conference Board LEI 0件、Philadelphia Fed
+Manufacturing 0件）では実際の反復発生は確認されなかったが、
+構造的に安全（真の二重書き込みを見逃さない）であることは同じ根拠で
+確認済み。
+
+#### ①YC閾値3セットの調査結果: 統一せず、用途別の意図を明文化
+ticker widget・LAYER2健全性バーは共に-0.2/0.5の2閾値（既に一致）で
+「一目でINVERTED/FLAT/NORMALか分かる」粗いラベル用途。RECESSION RISK
+SCOREのステップ関数は8指標加重平均スコアへの入力値算出のため、より
+細かい4段階（bear<-0.5・caution 0〜-0.5・neutral 0〜0.5・bull≥0.5）
+を使う。単純な2状態ラベルでは加重平均のグラデーションを表現できない
+ため、この相違は意図的と判断した（2026-09-10の別タスクで扱った
+STONKS SILOのs2/s3スコアと同種の「用途別に異なる閾値」パターン）。
+`docs/market-monitor/macro-pulse/index.html`のcomputeCurrentScore()
+内に、この判断根拠をコードコメントとして明記した。
+
+一方、RECESSION RISK SCORE自体の`signals.push()`の`thresh`表示
+フィールドは「BULL≥+0.5% / BEAR≤-0.2%」となっており、-0.2%は
+ticker/L2側の閾値の誤記載で、本関数自身の実際のbearティア境界
+（-0.5%）と一致していなかった（表示バグ）。これを実際の閾値
+（-0.5%）に修正した。
+
+調査の過程で、同種の「`thresh`表示値と実際のスコア計算ステップ関数の
+境界値が食い違う」パターンがHY Spread・Philadelphia Fed Manufacturing・
+CFNAI MA3・Initial Claims 4W MA・Michigan Consumer Sentimentにも存在
+することを発見したが、これは①で名指しされたYC 10Y-2Y固有の範囲を
+超えるため今回は対象外とし、新規`[[MACRO-TOOLTIP-THRESH-LABEL-
+MISMATCH-1]]`として別途登録した。
+
+#### 検証結果
+1. **`dedupe_new_rows()`単体テスト**: 既存9件（NFP/Building Permits/
+   Michigan Sentiment/Initial Claims）全て成功を維持。新規追加5件
+   （Sahm Rule反復値保持・CFNAI反復値保持・NFP非退行確認・schedule
+   登録時は動的に再有効化されることの確認）全て成功。計26件
+   （tests/test_macro_pulse_logic.py）。
+2. **`05_audit.py`実行確認**: リファクタ後も`check_duplicate_events()`
+   の出力は完全に同一（NG=0、WARN=48件、内容は全て従来通りNFP/
+   Initial Claims/Michigan Sentimentの既知の重複疑いのみ）。
+3. **ブラウザ実地検証**: YC 10Y-2Yの`thresh`が"BULL≥+0.5% /
+   BEAR<-0.5%"へ正しく修正されていることをJS直接実行で確認。
+4. **フルゲート**: `pytest tests/`（1,162件成功）・
+   `common/sec_data/audit.py`（NG=0）・
+   `report_consistency_check.py --fail-on-ng`（NG=0、警告119件、
+   本変更に起因する新規NG・WARNなし）全て通過。
+
+#### 変更ファイル
+- `src/market/macro_pulse/05_main.py`: `_duplicate_risk_indicators()`
+  を`05_audit.py`から移動・`dedupe_new_rows()`のシグネチャに`schedule`
+  引数追加・呼び出し元(`run()`)更新
+- `src/market/macro_pulse/05_audit.py`: `_duplicate_risk_indicators()`
+  のローカル定義を削除し、移動先（`05_main.py`）を再利用する形に変更
+- `tests/test_macro_pulse_logic.py`: `_schedule()`ヘルパー追加、
+  既存9テストを新シグネチャに対応、新規回帰テスト5件追加
+- `docs/market-monitor/macro-pulse/index.html`: YC 10Y-2Yの`thresh`
+  修正・用途別閾値の設計意図をコードコメントとして明記
+
+---
+
 ### ✅ [MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1] 景気サイクルフェーズ複合スコアで、CFNAI・Building Permitsに鮮度注記が欠けている — idxLatestAsOf()拡張による根治的対応で実装完了
 **状態:** ✅実装完了
 **優先度:** 中 → 完了

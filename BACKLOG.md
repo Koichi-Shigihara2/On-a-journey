@@ -6590,25 +6590,37 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [MACRO-THRESHOLD-INCONSISTENCY-1] MACRO PULSEの閾値不一致・重複判定の軽微な構造的リスク（YC閾値3セット・dedupe_new_rows()のCFNAI/Sahm無条件適用）
+### [MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1] RECESSION RISK SCOREの一部指標でツールチップ表示閾値と実スコア計算ロジックの境界値が食い違っている
 **優先度:** 低
-**分類:** データ品質 / MACRO PULSE
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ10
+**分類:** UI/UX表示 / MACRO PULSE
+**登録日:** 2026-09-10
+**発見:** `[[MACRO-THRESHOLD-INCONSISTENCY-1]]`①（YC閾値3セット）対応時の
+副次発見
 
 #### 内容
-①10Y-2Yスプレッドの判定閾値が用途によって3セット存在する（ティッカー
-表示のINVERTED/FLAT/NORMAL: -0.2/0.5、RECESSION RISK SCOREのステップ
-関数: -0.5/0/0.5の4段階、LAYER2健全性バーのbull/bear: 0.5/-0.2）。②
-`dedupe_new_rows()`の重複判定は`obs_to_release_lag`に基づく日数窓＋
-完全一致する`actual`値のみで行われ、指標ごとの「値の反復が正常で
-ありうるか」を区別する例外リストがない。Sahm Ruleが複数月連続で0.00に
-近い値を取る、CFNAI MA3が安定期に近似値を繰り返す、といった正当な
-ケースを重複と誤判定して新規データ行を捨てるリスクが構造的に残る。
+`computeCurrentScore()`の`signals.push({...})`各エントリの`thresh`
+フィールド（ツールチップの「閾値」表示行）は、多くの指標で自身の
+実際のスコア計算ステップ関数の境界値と一致していない。具体的には
+`thresh`のBEAR側の値が、実際の最も深刻な（score最大）ティアの境界
+ではなく、中間ティアの境界を指していることが多い。実データ・
+実コードで確認した例:
+- HY Spread: `thresh`「BEAR≥6.5%」だが実際のbearティア境界は`hy>6`
+- Philadelphia Fed Manufacturing: `thresh`「BEAR≤0」だが実際は`philly<-10`
+- Chicago Fed National Activity: `thresh`「BEAR≤-0.35」だが実際は`cfnai<-0.7`
+- Initial Claims 4W MA: `thresh`「BEAR≥245K」だが実際は`claims>300000`
+- Michigan Consumer Sentiment: `thresh`「BULL≥90」だが実際は
+  'bull'シグナル自体が存在しない（最高評価でも'neutral'止まり）
 
-#### 対応方針
-①閾値セットを統一するか、用途別に異なる理由を明示する②指標別の
-「反復許容」例外リストを`dedupe_new_rows()`に追加する。
+YC 10Y-2Y（`[[MACRO-THRESHOLD-INCONSISTENCY-1]]`①で発見・修正済み、
+BACKLOG_DONE.md参照）と同型のパターン。Sahm Rule・Building Permitsは
+`thresh`表示が実ロジックと一致していることを確認済みで対象外。
+
+#### 対応方針（未定）
+各該当指標の`thresh`文字列を、実際のスコア計算ステップ関数の最も
+深刻なティアの境界値に合わせて修正する（YC 10Y-2Yで実施した修正と
+同じパターン）。表示のみの修正でスコア計算ロジック自体への影響はない
+見込みだが、着手時に各指標の実際の意図（表示用の簡略化なのか、単純な
+記載ミスなのか）を個別に確認すること。
 
 #### 着手条件
 なし
