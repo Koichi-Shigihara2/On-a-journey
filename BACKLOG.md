@@ -4571,36 +4571,6 @@ overrideにも健全性チェックを適用する③許容範囲の基準を1�
 
 ---
 
-### [NORMALIZER-YTD-METADATA-STALE-1] normalizer.py::_ytd_to_quarterly()変換後にstart/period_daysが変換前のYTD期間のまま残る
-**優先度:** 低〜中
-**分類:** データ品質
-**登録日:** 2026-07-23
-**発見:** common/sec_data統合投資調査（フェーズ1）⑤(B)
-
-#### 内容
-`normalizer.py::_ytd_to_quarterly()`のQ2以降エントリで、val（値）は
-正しくYTD差分変換済みだが、start/period_daysが変換前のYTD期間の
-まま残る（AAPL実データ: Q2 CapEx val=1,971,000,000は正しい単四半期値
-だがperiod_days=181・start=2025-09-28＝会計年度開始日のまま、本来は
-約90日・2025-12-28になるべき）。原因は`normalizer.py`L186の
-`new_entry = dict(entry)`が元のYTDエントリをコピーするのみで、
-start/period_daysを再計算していないこと（L215-218）。
-
-#### 影響
-valのみを参照するロジックには実害なし。period_daysやstartを期間長
-判定・比較に使う将来のコード（または既存の未確認箇所）があれば
-誤動作しうる。既知の[[CAPEX-SIGN-UNNORMALIZED-1]]（符号バグ）とは
-別種の問題。
-
-#### 対応方針
-未定。start/period_daysを実際に参照している箇所の網羅調査を行って
-から判断する。
-
-#### 着手条件
-なし（優先度低のため急ぎではない）
-
----
-
 ### [SCHEMA-NORMALIZED-ISSUES-1] normalized/スキーマ関連の構造的ギャップまとめ（STDebtタグ網羅性劣化・SM/SGA概念混同・LTDebt優先順序逆転・SharesBasic概念不一致・ファイル名annualデータ混在・DAフォールバック欠如）
 **優先度:** 中〜高（内訳: 中〜高1件・低5件、個別優先度は各項目参照。
 2026-08-15、①②を実害調査完了により中〜高/中→低へ引き下げ）

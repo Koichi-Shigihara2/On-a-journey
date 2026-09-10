@@ -4,6 +4,130 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [NORMALIZER-YTD-METADATA-STALE-1] normalizer.py::_ytd_to_quarterly()変換後にstart/period_daysが変換前のYTD期間のまま残る — 調査・修正完了（parser.py側は無影響と判明、layer3_builder.py側の関連バグも副次発見・修正）
+**状態:** ✅修正完了
+**優先度:** 低〜中 → 完了
+**分類:** データ品質
+**登録日:** 2026-07-23
+**完了日:** 2026-09-10
+
+#### 内容（登録時点）
+`normalizer.py::_ytd_to_quarterly()`のQ2以降エントリで、val（値）は
+正しくYTD差分変換済みだが、start/period_daysが変換前のYTD期間のまま
+残る（AAPL実データ: Q2 CapEx val=1,971,000,000は正しい単四半期値だが
+period_days=181・start=会計年度開始日のまま）。原因は`new_entry =
+dict(entry)`が元のYTDエントリをコピーするのみで、start/period_daysを
+再計算していないこと。
+
+#### 調査結果①: parser.pyのperiod_days参照11箇所は全て無影響
+`parser.py`内の`period_days`参照11箇所を全て個別に確認した結果、
+**いずれもこのバグの影響を受けていないことを確認した**:
+- 3箇所（`_pick_quarterly_period_representative()`内）:
+  `quarterly.py::_classify_period()`でYTD変換前の生start/endから
+  毎回再計算しており、かつparser.py自身が`_ytd_to_quarterly()`を呼ぶ
+  唯一の箇所（`_resolve_quarterly_values()`）は変換後エントリの
+  `val`のみを`resolved`辞書に採用し、start/period_daysは破棄している
+  （`resolved[f"{fy}{c['fp']}"] = c["val"]`）。よってparser.pyの
+  `data/quarterly_*.json`出力は本バグの影響を一切受けない。
+- 残り8箇所（`_period_days()`静的メソッド定義＋7呼び出し箇所）:
+  全てcompany_facts.jsonの生XBRLファクト（`us_gaap[tag]["units"]
+  ["USD"]`）に対し340〜380日の年次期間フィルタとして使われており、
+  `_ytd_to_quarterly()`の四半期変換出力とは無関係（年次ロジック専用）。
+- [[PERIOD-LENGTH-VALIDATION-GAP-1]]の期間長ゲート（`_extract_single_
+  key()`内、340-380日必須）・`_tag_quarterly_corroboration()`
+  （[[REVENUE-TAG-PRIORITY-FRAGILE-1]]、10-Q単独四半期80-100日の
+  裏付け判定）も同様に生XBRLファクトから毎回period_daysを再計算する
+  実装であり、本バグの影響を受けない。両者ともgit log確認の結果、
+  依頼文にあった「本日構築した」という表現はやや不正確で、実際の完了日は
+  PERIOD-LENGTH-VALIDATION-GAP-1が2026-07-31（約6週間前）、
+  `_tag_quarterly_corroboration()`（REVENUE-TAG-PRIORITY-FRAGILE-1）が
+  2026-09-09（前日）だった。
+
+結論: 本バグの実害は**normalizer.py自身の出力
+（`normalized/{ticker}_quarterly_normalized.json`）に限定**される。
+かつ、[[SECDATA-STORAGE-FRAGMENTATION-1]]（quarterly系はparser.py側
+data/へ統合済み）・フェーズD Step2-1（TANUKI VALUATION/HYPECORE/
+quarterly_review_generator.pyはLayer3へ切替済み）により、現在
+normalized/を実際に読む経路は`reader.py`のRPO時系列・
+`get_lt_debt_from_normalized()`等ごく一部に限られ、いずれも
+`val`/`end`のみ参照しstart/period_daysは読んでいないため、**現時点
+での実害は確認されなかった**（潜在的なデータ品質問題として修正）。
+
+#### 調査結果②: layer3_builder.pyに既に「正しい実装」が存在していた
+`layer3_builder.py::_ytd_to_quarterly()`（2026-07-24新規構築時から
+存在、独立実装）は、コミットメッセージ・docstring双方で明示的に
+「NORMALIZER-YTD-METADATA-STALE-1のメタデータ不整合を修正」と
+述べた上で、start/period_daysを再計算する実装が最初から入っていた。
+これを参照実装として同一ロジックをnormalizer.pyに移植した。
+
+#### 修正内容
+1. `normalizer.py::_ytd_to_quarterly()`: Q2以降のYTD差分変換時に、
+   start/period_daysを「前四半期end翌日〜当四半期end」の単四半期期間
+   に再計算するよう修正（layer3_builder.py実装を移植）。
+2. **副次発見・修正**: 移植元のlayer3_builder.py自身にオフバイワン
+   バグがあることを実データ検証中に発見した。`new_start = prev_end`
+   （前四半期のend日そのもの）を起点としていたため、start日が前
+   四半期のend日と重複し、period_daysが1日過大だった（AAPL実データ:
+   本人申告SAエントリ〈Revenue等〉を直接確認した結果、真の慣例は
+   start=前四半期end+1日であり、例えばQ1 end=2025-12-27→Q2
+   start=2025-12-28。修正前の実装ではQ2 start=2025-12-27〈Q1 end
+   と同日〉・period_days=91になっていた）。normalizer.py側の修正でも
+   同じ誤りを踏襲しないよう、両モジュールとも「prev_end+1日」を起点
+   とする実装に修正した。
+3. 検証用に実行したAAPL実データ確認で、`_build_missing_quarter_
+   implied_entries()`（中間YTD累計からの欠落四半期逆算、BUG-CON-
+   YTD-1対応）が本バグ修正の副作用として一部ティッカー（102銘柄中
+   96銘柄）でQ4エントリの導出経路を変える現象を確認した。従来は
+   Q2/Q3のstart停滞により期間長サニティチェック
+   （`abs(covered_span + 91 - span_days) > 20`）で弾かれ
+   `q4_implied.py::build_q4_implied_entries()`（fp="Q4"・
+   form="10-K"固定）にフォールバックしていたが、修正後はstart/
+   period_daysが正確になったことでチェックを通過し、より一般化された
+   `_build_missing_quarter_implied_entries()`（fp="implied"・formは
+   元の年次エントリのformを継承）側が先に解決するようになった。
+   **算出されるval自体は全銘柄・全エントリで完全に同一**（後述の
+   全銘柄シミュレーションで確認済み）であり、`is_implied: True`
+   フラグもどちらの経路でも変わらないため、実質的な意味は変わらない
+   （むしろ「implied」という値の性質を正しく表すラベルになった、
+   意図した設計通りの動作）。
+
+#### 検証結果
+1. **既存テスト**: `tests/test_normalizer.py`・`tests/test_contracts.
+   py`・`tests/test_ttm_calculator.py`（68件）、layer3関連テスト
+   （26件）含め全て成功。
+2. **AAPL Q2 CapEx個別確認**（依頼文の確認項目）: 修正後
+   `{"end": "2026-03-28", "start": "2025-12-28", "val": 1971000000,
+   "period_days": 90, "is_ytd": false, ...}` — 依頼文が示した期待値
+   （period_days≈90、start=正しい四半期開始日）と完全一致。
+3. **全銘柄シミュレーション（normalizer.py）**: company_facts.json
+   保持103銘柄・2,652フィールド・YTD変換対象18,114エントリを新旧
+   ロジックで突合。**val不一致=0件**、start変化=11,764件、
+   period_days変化=11,764件（他キー不一致=0件）。valが一切変わらない
+   ことを完全確認。
+4. **全銘柄シミュレーション（layer3_builder.py）**: 102銘柄・
+   26,450変換エントリで同様に突合。**val不一致=0件**、start/
+   period_days変化=17,172件（他キー不一致=0件）。
+5. **normalized/実ファイル102件を再生成**し、git diffで内容を確認
+   （`val`の差分=0件を確認。`fp`/`form`の差分は上記調査結果②で
+   説明した96銘柄のQ4導出経路変更によるもの、valは不変）。
+6. **フルゲート**: `pytest tests/`（1,158件成功）・
+   `python common/sec_data/audit.py`（NG=0、既存WARNのみ）・
+   `python common/sec_data/report_consistency_check.py --fail-on-ng`
+   （NG=0、警告119件は全て既知パターン、新規NGなし）全て通過。
+
+#### 影響範囲
+- `common/sec_data/normalizer.py`: `_ytd_to_quarterly()`修正
+- `common/sec_data/layer3_builder.py`: 同名関数の副次発見バグ修正
+- `common/sec_data/normalized/*.json`: 102ファイル再生成
+   （start/period_days訂正、valは不変）
+- parser.pyの`data/`出力・Layer3の`ttm/`出力・TANUKI VALUATION/
+  HYPECORE/quarterly_review_generator.py（フェーズD Step2-1で
+  Layer3経由済み）には影響なし（Layer3側は本修正でstart/period_days
+  が是正されるのみで、既存の消費側ロジックはis_implied/valのみ参照
+  しているため実質無風）
+
+---
+
 ### ✅ [LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1] CDNS/INTUのcost_of_revenueを次元分解値の機械合算で回収 — 実装完了（DCF計算への影響なしと判明）
 **状態:** ✅実装完了
 **優先度:** 低〜中 → 完了
