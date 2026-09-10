@@ -6037,28 +6037,44 @@ ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこ
   （翌四半期を待っても解消しない）。型Bとも異なり、BS構造自体の科目
   制約ではなく、XBRL開示方式（次元分解 or 発行体固有名前空間）に
   起因する
-- 対応方法（2026-09-10実装完了・BS恒等式チェック限定）:
+- 対応方法（2026-09-10実装完了。BS恒等式チェック・PLフロー項目
+  〈cost_of_revenue〉の両方に適用済み）:
   `common/sec_data/dimension_aggregate_fetcher.py`を新設した。
   当初検討していた(a) XBRLインスタンス文書を直接パースする経路を
   採用（(b)の「10-K原文の実測値を`fact_overrides.json`へハードコード」
   案は不採用のまま——(a)は個別filingの生XBRLタグから機械的に抽出・
   合算するため「タグ由来のない生の数値の直接注入」には当たらず、
-  設計哲学と衝突しない）。`_bs_identity_extra_components()`から
-  `dimension_aggregate_registry.json`（事前検証済みの結果をキャッシュ、
+  設計哲学と衝突しない）。当初instant（BS項目）のみ対応していたが、
+  duration契約（PLフロー項目）にも対応するよう拡張し、`_bs_identity_
+  extra_components()`（BS恒等式チェックのextra_components）・
+  `_apply_dimension_aggregate_field_overrides()`（annual[field][year]
+  の直接補完、cost_of_revenue向けに新設）の2経路から`dimension_
+  aggregate_registry.json`（事前検証済みの結果をキャッシュ、
   パイプライン実行時のライブ取得はしない設計）を参照する形で統合済み。
-  **適用はBS恒等式チェック（診断・表示専用）に限定**——revenue/
-  cost_of_revenue等DCF計算に直接使われるフィールドへの適用は
-  `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`として別途起票し、
-  本エントリの対応方針には含めない
-- 実例: PLTR(2019、$2,127,231,000)・CART(2023-2025、Series A優先株式、
-  年度ごとに$177M〜$195M）・V(2008、$1,136,000,000)・CELH(2025、
-  $1,759,975,000)・ASTS(2019、$218,519,748)。いずれも
-  `[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`の個別調査（2026-09-09）で
-  10-K原文により金額まで厳密に特定済みだった値を、2026-09-10に
-  `dimension_aggregate_fetcher.py`で機械的に再現・検証し
-  **全件解消済み**（BKNG2011/2012は公正価値基準タグのみのgenuineな
-  対応不能ケースのため型D対象外のまま。詳細はBACKLOG_DONE.md
-  「2026-09-09⑬」追記・「2026-09-10（完了）」参照）
+  当初「cost_of_revenue等DCF計算に直接使われるフィールドへの適用は
+  実害リスクが格段に大きい」として別エントリ（`[[LAYER3-COGS-
+  DIMENSION-RECOVERY-CDNS-INTU-1]]`）に切り出していたが、実装時の
+  消費経路の全数調査で**TANUKI VALUATIONのDCF計算は実際にはこの
+  フィールドを一切消費していない**（Moat Score/TTMはLayer3という
+  別パイプライン経由でありCDNS/INTUのLayer3側は元々空、`SECReader`に
+  対応アクセサも存在しない）と判明し、想定していたリスクは実在しな
+  かった。詳細はBACKLOG_DONE.md「2026-09-10（完了）」
+  `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`参照
+- 実例（BS恒等式チェック用、5件）: PLTR(2019、$2,127,231,000)・
+  CART(2023-2025、Series A優先株式、年度ごとに$177M〜$195M）・
+  V(2008、$1,136,000,000)・CELH(2025、$1,759,975,000)・
+  ASTS(2019、$218,519,748)。いずれも`[[CHECK29-UNRESOLVED-23-MIXED-
+  CAUSES-1]]`の個別調査（2026-09-09）で10-K原文により金額まで厳密に
+  特定済みだった値を、2026-09-10に`dimension_aggregate_fetcher.py`で
+  機械的に再現・検証し**全件解消済み**（BKNG2011/2012は公正価値基準
+  タグのみのgenuineな対応不能ケースのため型D対象外のまま。詳細は
+  BACKLOG_DONE.md「2026-09-09⑬」追記・「2026-09-10（完了）」参照）
+- 実例（PLフロー項目用、2件）: CDNS(FY2025、cost_of_revenue
+  $722,249,000、`srt:ProductOrServiceAxis`でProduct/Service区分）・
+  INTU(FY2025、$3,692,000,000、同軸）。10-K原文の「Total costs and
+  expenses」から明示開示項目の合計を差し引いた残差と厳密一致する
+  独立検算で裏付け済み。詳細はBACKLOG_DONE.md「2026-09-10（完了）」
+  `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`参照
 
 #### 対応方針（設計・未着手）
 - REGISTER-FLOW-REDESIGN-1・PREFLIGHT-CHECK-1（完了・BACKLOG_DONE.md
@@ -6078,62 +6094,6 @@ ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこ
 #### 着手条件
 なし（ただし新規銘柄登録はいつでも発生しうるため、着手を
 先延ばしにする前提にはしないこと）
-
----
-
-### [LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1] CDNS/INTUのcost_of_revenueが次元分解開示専用でcompany_facts.jsonから消失（型D、DCF計算フィールドへの慎重な拡張候補）
-**優先度:** 低〜中（非保有銘柄2件、STONKS SILOの粗利率表示への影響に
-留まる現状把握だが、cost_of_revenueはgross_profit・DCF計算にも
-関わりうるフィールドのため、着手する場合は個別に慎重な検証が必要）
-**分類:** データ品質 / 一次データ取得層 / [[ANOMALY-PATTERN-CATALOG-1]]型D
-**登録日:** 2026-09-10
-**発見:** [[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]のPLTR/CART/V/CELH/
-ASTS(2019)を`dimension_aggregate_fetcher.py`（2026-09-10新設）で解消した
-過程で、同型パターンの既存事例として[[LAYER3-COGS-STRUCTURAL-GAP-
-16TICKERS-1]]（完了・BACKLOG_DONE.md参照）が既に文書化していたCDNS/INTU
-のcost_of_revenue次元限定問題を想起・参照
-
-#### 内容
-[[LAYER3-COGS-STRUCTURAL-GAP-16TICKERS-1]]の一次情報裏取り調査
-（2026-09-04、BACKLOG_DONE.md参照）で、CDNS・INTUの`cost_of_revenue`は
-標準タグ`us-gaap:CostOfGoodsAndServicesSold`を使用しているにも
-関わらず、次元分解開示（セグメント/製品区分軸）のみで非次元版が
-存在しないためcompany_facts.jsonから消失していると判明済みだった
-（「標準タグだが恒久的にディメンション限定」、当時は「対応不可」と
-結論づけ文書化のみで対応終了としていた）:
-- **CDNS**: 「Product and maintenance cost of sales」$518,673K＋
-  「Services cost of sales」$203,576K（FY2025合計$722,249K）
-- **INTU**: 「Service cost of revenue」$3,624M＋「Product and Other
-  cost of revenue」$68M（FY2025合計$3,692M）
-
-`[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]`のPLTR等5件を解消した
-`dimension_aggregate_fetcher.py`（生XBRLインスタンス直接パース＋
-指定軸の全メンバー機械合算）は技術的には同じ手法でCDNS/INTUの
-cost_of_revenueも回収できる可能性が高い。
-
-#### BS恒等式チェックとの違い（着手をより慎重にすべき理由）
-BS恒等式チェックは診断・表示専用の補助情報（`extra_components`）で
-実害範囲が限定的だったのに対し、`cost_of_revenue`は`gross_profit`
-逆算・DCF計算（TANUKI VALUATION）・STONKS SILO粗利率表示など、
-実際の計算結果に直接影響しうるフィールドである。誤ったコンテキスト
-選択（他の軸との多重タグ付けによる二重計上等、実装時にCELHで実際に
-発生したリスク）が仮に発生した場合の影響範囲がBS恒等式チェックより
-大きいため、同じ機構をそのまま横展開するのではなく、個別に:
-- CDNS/INTU双方で`--expect`検証（10-K原文の合計額との一致確認）
-- `[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]`
-  （CHECK-46、revenue−cost_of_revenue=gross_profitの算術整合性検証、
-  2026-09-09実装済み）との整合確認
-- 全105銘柄相当のシミュレーションでCDNS/INTU以外に影響がないことの確認
-- TANUKI VALUATION/STONKS SILO双方の再生成・IV変化幅の実測
-を実施した上で判断すること。
-
-#### 対応方針
-未定。着手する場合は`dimension_aggregate_fetcher.py`の
-`fetch_dimension_aggregate()`をそのまま再利用可能な見込みだが、
-上記の追加検証を経てから実装する。
-
-#### 着手条件
-なし
 
 ---
 

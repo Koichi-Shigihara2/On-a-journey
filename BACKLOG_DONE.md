@@ -4,6 +4,94 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1] CDNS/INTUのcost_of_revenueを次元分解値の機械合算で回収 — 実装完了（DCF計算への影響なしと判明）
+**状態:** ✅実装完了
+**優先度:** 低〜中 → 完了
+**分類:** データ品質 / 一次データ取得層 / [[ANOMALY-PATTERN-CATALOG-1]]型D（完了）
+**登録日:** 2026-09-10
+**完了日:** 2026-09-10
+**発見:** [[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]のPLTR/CART/V/CELH/
+ASTS(2019)を`dimension_aggregate_fetcher.py`で解消した過程で、同型
+パターンの既存事例として[[LAYER3-COGS-STRUCTURAL-GAP-16TICKERS-1]]
+が既に文書化していたCDNS/INTUのcost_of_revenue次元限定問題を想起・参照
+
+#### 内容（登録時点）
+CDNS・INTUの`cost_of_revenue`は標準タグ`us-gaap:CostOfGoodsAndServices
+Sold`を使用しているにも関わらず、次元分解開示（`srt:ProductOrService
+Axis`）のみで非次元版が存在しないためcompany_facts.jsonから消失して
+いた。登録時は「cost_of_revenueはgross_profit逆算・DCF計算・STONKS
+SILO粗利率表示など実際の計算結果に直接影響しうるフィールド」として
+BS恒等式チェックより慎重な検証（`--expect`検証・CHECK-46整合確認・
+全105銘柄シミュレーション・TANUKI VALUATION/STONKS SILO再生成・IV
+変化幅実測）を経てから着手する方針とした。
+
+#### 実装・検証結果
+1. **一次情報での裏付け**: 両社ともR-file・生XBRLで金額まで厳密に
+   特定し、`--expect`によるライブ再取得での突合検証も実施:
+   - CDNS（FY2025、accn 0000813672-26-000016）: `cdns:Productand
+     maintenanceMember` $518,673,000 + `us-gaap:TechnologyService
+     Member` $203,576,000 = $722,249,000。**独立検算**: 10-K
+     Consolidated Income StatementsのTotal costs and expenses
+     $3,804,717,000から明示6項目（Marketing/R&D/G&A/Amortization等）
+     の合計$3,082,468,000を差し引くと$722,249,000と完全一致（財務
+     諸表本体の数字だけで、次元分解タグの値とは独立に裏取りできた）
+   - INTU（FY2025〈7月末決算〉、accn 0000896878-25-000035）:
+     `us-gaap:ProductMember` $3,624,000,000 + `us-gaap:ServiceMember`
+     $68,000,000 = $3,692,000,000。**独立検算**: 同R-fileにセグメント
+     別のCost of revenue実額行が既に存在し合計が一致、かつ全社Total
+     costs and expenses $13,908Mから明示6項目$10,216Mを差し引いた
+     $3,692Mとも一致
+2. `revenue − cost_of_revenue = gross_profit`の算術整合性: CDNS
+   $5,296,759,000−$722,249,000=$4,574,510,000、INTU
+   $18,831,000,000−$3,692,000,000=$15,139,000,000、いずれも既存の
+   `_backfill_gross_profit_from_revenue_cogs()`が自動算出した値と完全
+   一致（新規コード不要、既存の欠損穴埋めロジックがそのまま機能）
+3. 全105銘柄相当のシミュレーション（pl/bs/cf/shares全セクション）で
+   現在のディスク状態との差分0件（再現性確認）。
+   `dimension_aggregate_applied`のprovenanceマーカーを持つのは全体で
+   CDNS/INTUの2件のみであることも確認
+4. **DCF計算への影響範囲の再調査（登録時の想定を訂正）**:
+   登録時「DCF計算に直接使われるフィールドのため実害リスクが格段に
+   大きい」としていたが、実際に消費経路を全数確認した結果、
+   **現状は影響ゼロと判明した**:
+   - Moat Score・TTM系列（FCF計算のベース）は`layer3_builder.py`
+     （parser.pyとは完全に独立した別パイプライン）のLayer3ストア
+     経由でgross_profitを取得しており、CDNS/INTUのLayer3側
+     `gross_profit`/`cost_of_revenue`年次エントリは元々0件（空）
+     ——parser.py側の本修正とは無関係に、Layer3側は別途未解決のまま
+   - `cost_of_revenue`はTTM出力の`EXCLUDED_FIELDS`に元々明示除外
+   - `SECReader`に`get_gross_profit()`/`get_cost_of_revenue()`相当の
+     アクセサは存在せず、`calculator/`配下のDCF計算コードを全数grep
+     しても参照は0件
+   - 唯一の実消費者は[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-
+     MISSING-1]]で新設したCHECK-46（診断のみ、自動修正なし）で、
+     修正前はNoneのためスキップ、修正後は算術一致のため無警告で通過
+   - 以上によりTANUKI VALUATION/STONKS SILOの再生成・IV変化幅実測は
+     **実施不要**と判断した（変化させるべき消費者自体が存在しないため）
+
+#### fixed_registry.json整合性対応
+CDNS/INTUの2025年度は2026-08-05にfixed_registry.json（Stage 1一括
+登録）でフリーズ済みだったため、cost_of_revenue/gross_profitの新規
+追加（フリーズ対象24フィールドには元々含まれない）によりannual_2025.
+json全体のsnapshot_hashが変化し、report_consistency_check.pyのNG-31
+（fixed_registry不整合）が発火した。フリーズ対象24フィールドの値
+自体は一切変更されていないことを個別に確認した上で、Koichiさんの
+承認を得てsnapshot_hashを再計算・更新し、fields_snapshotへ両
+フィールドを追加した（`_apply_fixed_registry_freeze()`は`fields_
+snapshot`に無いフィールドを素通しする差分適用方式のため、この更新は
+既存24フィールドの挙動に影響しない）。
+
+#### 検証ゲート結果
+- `pytest tests/`: 1158 passed（本タスクによる新規テストなし、
+  既存回帰なし）
+- `python common/sec_data/audit.py`: 🟢89/🟡10銘柄（新規警告なし）
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0件・WARN=119件（fixed_registry.json更新後、CDNS/INTUのNG-31
+  解消を確認）
+
+#### 完了報告の必須項目
+- 反映コミット: 別途コミットハッシュ参照
+
 ### ✅ [KPI-UNIT-HARDCODE-USD-1] TANUKI TAILのkpis.{kpi_name}.unitが常時USD固定 — 実装完了
 **状態:** ✅実装完了
 **優先度:** 低 → 完了
