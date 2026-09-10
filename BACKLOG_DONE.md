@@ -4,6 +4,104 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1] 景気サイクルフェーズ複合スコアで、CFNAI・Building Permitsに鮮度注記が欠けている — idxLatestAsOf()拡張による根治的対応で実装完了
+**状態:** ✅実装完了
+**優先度:** 中 → 完了
+**分類:** UI/UX / データ鮮度の開示不足
+**登録日:** 2026-08-15
+**完了日:** 2026-09-10
+**発見:** MACRO PULSEにおける遅延系列の扱い確認調査（チャット記録、
+2026-08-15）
+
+#### 内容（登録時点）
+`docs/market-monitor/macro-pulse/index.html`の「景気サイクルフェーズ」
+複合スコア（`computeCurrentScore()`、合計100%）で、Michigan Sentiment
+（8%）のみ個別の鮮度注記があったが、より大きなウェイトを持つCFNAI
+（12%）・Building Permits（10%）には注記がなく、複合スコアの22%が
+実測約7週間遅れのデータに基づくことに閲覧者・AI週次レポートの双方が
+気づく手段がなかった。技術的制約として`idxLatestAsOf()`が`.actual`
+（値）のみを返し観測日情報を構造的に破棄していた。
+
+#### 対応方針: 案2（idxLatestAsOf()拡張）+ 案3（AIプロンプト付記）を採用
+個別注記の追加（案1）ではなく、根本原因（観測日情報の構造的破棄）を
+解消する案2・案3を実装した。
+
+**①`idxLatestAsOf(ind, targetMs)`の拡張（安全な移行設計）**
+`.actual`のみを返していたのを、既にメモリ上に存在するエントリ全体
+`{dateMs, actual, updatedMs}`（`arr[lo]`）をそのまま返すよう変更。
+ただし本関数は`idxLatestAsOf(`で全文検索した結果、以下5箇所（うち1箇所
+は定義自体）から呼ばれており、うち3箇所（ticker widgetのYC/HY表示・
+`renderL2()`のヘルスバー・`l3LatestBefore()`の類似度計算）は戻り値を
+`.toFixed()`・不等号比較等で直接数値として使用する既存コードが広範囲
+（特に`computeScoreAsOf()`の後続スコア計算ロジック）に及んでおり、
+戻り値の型を変えるとこれら全てが壊れるリスクが高いと判断した。
+このため、値のみが必要な既存の呼び出し元は薄いラッパー
+`idxLatestVal(ind, targetMs)`（`idxLatestAsOf()?.actual`）へ個別に
+移行し、数値としての挙動を完全に維持したまま、観測日が実際に必要な
+`computeCurrentScore()`内の`latestActual`のみ従来通り`idxLatestAsOf()`
+（今は拡張後のオブジェクトを返す）を使い続ける設計とした
+（`idxLatestKnownAsOf()`との既存の関数分離パターンを踏襲）。
+移行した呼び出し元: ticker widget（YC/HY）・`renderL2()`・
+`l3LatestBefore()`の3箇所。
+
+**②ツールチップへの観測日表示（Phase Gauge信号カード）**
+`computeCurrentScore()`に`latestDate(ind)`ヘルパーを追加し、8指標
+全ての`signals.push({...})`に`obsDate`フィールド（`YYYY-MM-DD`）を
+付与。既存の唯一の per-indicator ホバー式ツールチップ機構
+（`pg-sig-tooltip`、閾値・先行性・ウェイトを表示済み）に「観測日」行を
+追加した（L2ヘルスバーには元々ツールチップ機構自体が存在しないため
+対象外）。Michigan Sentimentの個別注記文言（「※FREDは1ヶ月遅延公開の
+ため...」）とdisplay name末尾の`*`は、汎用の観測日表示に統合される
+形で廃止した（8指標全てが同じ仕組みで鮮度を開示するようになり、
+Michiganだけ特別扱いする理由がなくなったため）。
+
+**③AI週次レポートプロンプトへの観測日付記（`05_main.py`）**
+`_compute_current_score()`は元々`indicators[key]`に`'date': val_date`
+（観測日）を既に保持していた（プロンプト生成側で単に未使用だった）。
+`generate_weekly_analysis_with_grok()`の`ind_lines`構築箇所
+（1行の追記のみで対応完了）に観測日を付記し、AI生成コメントが
+CFNAI・Building Permits等の遅延データを「直近」と誤って記述する
+リスクを防ぐ。
+
+#### 検証結果
+1. **ブラウザ実地検証**（`python3 -m http.server`でdocs/を配信、
+   claude-in-chrome経由）: `computeCurrentScore()`の`signals`全8件で
+   `obsDate`が正しく設定されていることをJS直接実行で確認
+   （例: CFNAI MA3=2026-07-01〈本日2026-09-10比で約71日遅延、
+   約7週間超の遅延という登録時点の実測と整合〉、Building
+   Permits=2026-08-18、Michigan Sent.=2026-07-10〈本日比約62日遅延、
+   BACKLOG記載の前例〈大学発表2026-06-12・FRED反映2026-07-31〉と
+   同程度〜それ以上の遅延幅で整合〉）。DOM上の`pg-sig-tooltip-row`にも
+   「観測日」行が8件全てで正しくレンダリングされていることを確認。
+   コンソールエラー0件。
+2. **数値回帰の非退行確認**: ticker widget（`tk-yc`="+0.40%"・
+   `tk-hy`="2.66%"）・`renderL2()`（8行全て正常レンダリング）・
+   `l3LatestBefore()`（CFNAI=-0.08、型はnumber）が全て
+   `idxLatestVal()`移行後も従来と同じ値・型で動作することを確認。
+3. **AI週次レポートプロンプト検証**: `generate_weekly_analysis_with_
+   grok()`を実行し（`requests.post`をインターセプトして実際の送信
+   payloadを検証、API自体は呼ばずに済ませた）、CFNAI・Building
+   Permits・Michigan Sentimentそれぞれの行に
+   「(観測日: YYYY-MM-DD, トレンド: ...)」が正しく付記されることを
+   確認。
+4. **フルゲート**: `pytest tests/`（1,158件成功）・
+   `common/sec_data/audit.py`（NG=0、既存WARNのみ）・
+   `report_consistency_check.py --fail-on-ng`（NG=0、警告119件、
+   本変更に起因する新規NG・WARNなし）全て通過。
+
+#### 変更ファイル
+- `docs/market-monitor/macro-pulse/index.html`:
+  `idxLatestAsOf()`拡張・`idxLatestVal()`新設、3箇所の呼び出し元移行、
+  `computeCurrentScore()`に`latestDate()`ヘルパー追加、8指標の
+  `signals.push()`に`obsDate`付与、Michigan Sentimentの個別注記・
+  `*`廃止、ツールチップテンプレートに「観測日」行追加
+- `src/market/macro_pulse/05_main.py`:
+  `generate_weekly_analysis_with_grok()`の`ind_lines`構築に観測日を
+  付記（既存の`info['date']`をそのまま利用、新規データ取得ロジックは
+  不要だった）
+
+---
+
 ### ✅ [WORKFLOW-FALLBACK-CRON-DUPLICATE-1] workflow_run連鎖の週次フォールバックcronが「安全網」ではなく毎週無条件に二重実行している — 冪等性ガード実装完了（Adjusted_EPS・TANUKI_Score）・TANUKI_VALUATIONは実害なしと確認
 **状態:** ✅実装完了（Adjusted_Eps_Analyzer・TANUKI_Scoreに冪等性ガード追加、TANUKI_VALUATIONは調査の結果対応不要と判断）
 **優先度:** 中 → 完了

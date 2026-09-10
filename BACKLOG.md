@@ -6615,47 +6615,6 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1] 景気サイクルフェーズ複合スコアで、CFNAI・Building Permitsに鮮度注記が欠けている
-**優先度:** 中（複合スコアの22%〈CFNAI 12%＋Building Permits 10%〉が
-実測約7週間遅れのデータに基づくが、閲覧者がこれに気づく手段がない）
-**分類:** UI/UX / データ鮮度の開示不足
-**登録日:** 2026-08-15
-**発見:** MACRO PULSEにおける遅延系列の扱い確認調査（チャット記録、
-2026-08-15）
-
-#### 内容
-`docs/market-monitor/macro-pulse/index.html`の「景気サイクルフェーズ」
-複合スコア（`computeCurrentScore()`、合計100%）で、Michigan Sentiment
-（8%）のみ「※FREDは1ヶ月遅延公開のため、最新発表値と異なる場合が
-あります」という鮮度注記があるが、より大きなウェイトを持つCFNAI
-（12%）・Building Permits（10%）には注記がない。
-
-FRED自身の再公開遅延（大学等の発表からFRED反映まで）が実測で約
-7週間（49日）規模であることを、Michigan Consumer Sentiment
-2026年6月分の実データ（大学発表2026-06-12、FRED反映検知
-2026-07-31）で具体的に確認済み。`obs_to_release_lag`設定
-（大学の速報発表タイミングのみを表す、10日）とは別に、この
-FRED再公開遅延が上乗せされる構造。
-
-技術的制約: `idxLatestAsOf()`（901-912行目）が`.actual`（値）のみを
-返し観測日情報を構造的に破棄する実装のため、現状は各指標の
-ツールチップに観測日自体を表示する手段がない。
-
-#### 対応方針の選択肢（未実装）
-1. CFNAI・Building Permitsへの鮮度注記追加（低コスト、Michigan
-   Sentimentと同様のdesc文言追加のみ）
-2. `idxLatestAsOf()`が観測日も返すよう拡張し、各指標のツールチップに
-   「観測日: YYYY-MM-DD」を表示できるようにする（中コスト、構造変更）
-3. AI週次レポートのプロンプト（`05_main.py` 1626-1631行目）へ各指標の
-   観測月を付記し、AI生成コメントが遅延データを「直近」と誤って
-   記述しないようにする（低〜中コスト）
-
-#### 着手条件
-なし。優先度に応じて対応方針を選択の上、実装する。
-
----
-
-
 ### [TTM-SBC-QUARTERS-GAP-1] build_rice_annual_shape()のSBCがquarters完全性チェック対象外
 **優先度:** 低〜未定
 **分類:** データ品質 / SECデータ取得層
