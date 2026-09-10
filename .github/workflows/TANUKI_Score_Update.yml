@@ -39,7 +39,14 @@ jobs:
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
-          python src/value/tanuki_score/daily_pick.py
+          # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]横展開対応: workflow_dispatch
+          # （手動実行）は常に意図的な実行のため、daily_pick.py側の冪等性
+          # ガード（当日分が既に選出済みならスキップ）を --force でバイパスする。
+          FORCE_FLAG=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FORCE_FLAG="--force"
+          fi
+          python src/value/tanuki_score/daily_pick.py $FORCE_FLAG
 
       - name: Portfolio snapshot
         env:

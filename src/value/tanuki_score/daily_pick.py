@@ -465,14 +465,31 @@ def generate_report(stock, mkt):
         }
 
 # ── Main ──────────────────────────────────────────────────────
-def main():
+def main(force: bool = False):
     now_jst   = datetime.now(JST)
     today_str = now_jst.strftime("%Y-%m-%d")
     print(f"[daily_pick] Starting — {today_str} JST")
 
+    history = load_history()
+
+    # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]横展開対応: TANUKI_Score_
+    # Update.ymlもworkflow_run連鎖＋週末独立cron（土日は独立実行の設計
+    # 意図があるが、TANUKI VALUATION側の連鎖が既に同日中に発火していた
+    # 場合は無条件の重複実行になる）という同型構造を持つ。本パイプライン
+    # は「1日1銘柄選出」が設計上の前提のため、当日分が既にhistoryに
+    # 存在するなら重複実行とみなしスキップする（Grok呼び出し2箇所を含む
+    # 後続処理を回避）。
+    if not force and history and history[0].get("date") == today_str:
+        print(
+            f"[Idempotency Guard] {today_str}分は既に選出済み"
+            f"（ticker={history[0].get('ticker')}）のため、意図的に"
+            f"スキップします（[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応: "
+            f"重複実行によるGrok呼び出し防止。強制実行するには --force を指定）"
+        )
+        return
+
     mkt     = load_market()
     tickers = load_tickers()
-    history = load_history()
 
     if not tickers:
         print("[daily_pick] No tickers found. Exiting.")
@@ -543,4 +560,11 @@ def main():
     print("[daily_pick] Done.")
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    _parser = argparse.ArgumentParser(description="TANUKI Score daily_pick")
+    _parser.add_argument("--force", action="store_true",
+                          help="[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応の冪等性ガード"
+                               "（当日分が既に選出済みならスキップ）を無視して強制実行する"
+                               "（手動re-run等の正当な再実行用）")
+    _args = _parser.parse_args()
+    main(force=_args.force)
