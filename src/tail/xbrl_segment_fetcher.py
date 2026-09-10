@@ -563,6 +563,28 @@ def fetch_ticker(ticker: str, kpi_map: Dict[str, Any], out_dir: str, n_quarters:
     return _write_layer2_output(ticker, kpi_data, out_dir)
 
 
+# [[KPI-UNIT-HARDCODE-USD-1]]: KPI名に比率・マージン・成長率を示す語を
+# 含む場合、unitを"ratio"とする（値は0〜1の小数比率として保存される
+# 前提。tail_kpi_map.jsonの実データで「率」「マージン」を含むKPI名は
+# 例外なく比率値〈貢献利益率=0.78・営業利益率=-0.234456等〉であることを
+# 全ティッカー横断で確認済み。「希薄化後EPS成長率」は現状missing_kpis
+# のまま値0件だが、KPI名の意図〈将来的にYoY成長率として実装される
+# 予定、[[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]参照〉に基づき同様に
+# ratio扱いとする——値の有無ではなく定義そのものに基づく判定のため、
+# 将来値が入るようになった時点でも再判定不要）。
+# 値の型（int/float、542-543行付近の既存ロジック）だけでは「小数の
+# ドル金額（例: EPS $0.08）」と「小数の比率（例: 0.78）」を区別できない
+# ため、判定はKPI名（定義）ベースに統一する。
+_RATIO_KPI_NAME_KEYWORDS = ("率", "マージン", "Margin", "Rate", "Ratio")
+
+
+def _infer_kpi_unit(kpi_name: str) -> str:
+    """KPI名から表示単位を推定する（"ratio" or "USD"）。"""
+    if any(kw in kpi_name for kw in _RATIO_KPI_NAME_KEYWORDS):
+        return "ratio"
+    return "USD"
+
+
 def _write_layer2_output(ticker: str, kpi_data: Dict[str, List[Dict[str, Any]]], out_dir: str) -> str:
     """`{ticker}_layer2.json`を書き出し、状態文字列を返す。XBRL直接
     取得・Layer3経由取得の両経路が同じ`kpi_data`スキーマへ書き込んで
@@ -579,7 +601,7 @@ def _write_layer2_output(ticker: str, kpi_data: Dict[str, List[Dict[str, Any]]],
         "layer2_complete": layer2_complete,
         "missing_kpis":    missing_kpis,
         "kpis": {
-            n: {"unit": "USD", "data": d}
+            n: {"unit": _infer_kpi_unit(n), "data": d}
             for n, d in kpi_data.items()
         },
     }

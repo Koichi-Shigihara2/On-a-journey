@@ -316,6 +316,9 @@ def _fmt_kpi_value(value: Any, unit: str = "") -> str:
 
     if unit == "USD":
         if abs(v) < 2:  # 比率（貢献利益率等）→ パーセント表示
+            # [[KPI-UNIT-HARDCODE-USD-1]]修正後もこの分岐自体は削除しない
+            # （unit判定漏れ・未分類KPIへの保険として維持。比率KPIは
+            # 本来下のunit=="ratio"分岐で処理される）
             return f"{v * 100:.1f}%"
         elif abs(v) >= 1_000_000_000:
             return f"${v / 1_000_000_000:.2f}B"
@@ -323,6 +326,12 @@ def _fmt_kpi_value(value: Any, unit: str = "") -> str:
             return f"${v / 1_000_000:.1f}M"
         else:
             return f"${v:,.0f}"
+    elif unit == "ratio":
+        # [[KPI-UNIT-HARDCODE-USD-1]]: 0〜1の小数比率をパーセント表示に
+        # 変換する（貢献利益率0.78→78.0%等）。上のunit=="USD"分岐が
+        # abs(v)<2の場合に行っていた変換と同一だが、こちらは値の大きさ
+        # ではなくKPI定義（unit）に基づく正式な分岐。
+        return f"{v * 100:.1f}%"
     elif unit == "%":
         return f"{v:.1f}%"
     else:

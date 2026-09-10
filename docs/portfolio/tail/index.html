@@ -1446,6 +1446,10 @@ function _buildDashboardKpi(ticker) {
     var lv = rawD[rawD.length - 1];
     var unit = kinfo.unit || '';
     function fvM(v) {
+      /* [[KPI-UNIT-HARDCODE-USD-1]]: unit==='ratio'のKPI（貢献利益率等）は
+         常にパーセント表示。unit==='USD'かつ小さい値（既存の保険分岐）
+         も従来通り維持する */
+      if (unit === 'ratio') return (v * 100).toFixed(1) + '%';
       if (Math.abs(v) >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
       if (Math.abs(v) >= 1e6) return '$' + (v / 1e6).toFixed(0) + 'M';
       if (Math.abs(v) <= 2 && unit === 'USD') return (v * 100).toFixed(1) + '%';
@@ -2028,6 +2032,8 @@ function buildSparkline(kinfo) {
   function xAt(i) { return PL + (n > 1 ? (i / (n - 1)) * cW : cW / 2); }
   function yAt(v) { return PT + cH - ((v - minV) / rng) * cH; }
   function fv(v) {
+    /* [[KPI-UNIT-HARDCODE-USD-1]] */
+    if (unit === 'ratio') return (v * 100).toFixed(1) + '%';
     if (unit === 'USD') {
       if (Math.abs(v) < 2)  return (v * 100).toFixed(1) + '%';
       if (Math.abs(v) >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';

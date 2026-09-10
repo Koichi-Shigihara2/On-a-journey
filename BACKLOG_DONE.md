@@ -4,6 +4,87 @@
 
 ## 2026-09-10（完了）
 
+### ✅ [KPI-UNIT-HARDCODE-USD-1] TANUKI TAILのkpis.{kpi_name}.unitが常時USD固定 — 実装完了
+**状態:** ✅実装完了
+**優先度:** 低 → 完了
+**分類:** バグ / TANUKI TAIL（完了）
+**登録日:** 2026-07-23
+**完了日:** 2026-09-10
+**発見:** `FIELD_DEFINITIONS.md`フェーズ7（AS-IS-419）
+
+#### 内容（登録時点）
+`xbrl_segment_fetcher.py:fetch_ticker()`は抽出したKPIの`unit`欄に無条件
+で`"USD"`を設定する。同じ関数内で「整数に近い値（USD金額）はint、小数値
+（比率）はfloat」と値の型を使い分けている（コード自身が比率KPIの存在を
+認識している）にもかかわらず、`unit`フィールドは比率KPIであっても
+"USD"のままになる。PLTR（保有銘柄）の「貢献利益率（Commercial）」
+「営業利益率」「希薄化後EPS成長率」等、比率であるべきKPIが実データで
+`unit: "USD"`と誤表示されていることを確認済み。
+
+#### 調査結果（値の型による判定は不採用と判断）
+対応方針が想定していた「値の型判定ロジック（int/float）との連動」は
+不採用とした。理由: 小数値は「比率」（例: 0.78）と「小数のドル金額」
+（例: 希薄化後EPS成長率が将来正しく実装された場合のEPS成長率、または
+仮にEPS自体を保存するケース: $0.08）の両方でありうる、値の形だけでは
+区別できない。代わりに**KPI名（定義）に基づく判定**へ変更した——
+tail_kpi_map.json全KPI（PLTR/SOFI/TSLA/ADBE/APGE/APP/CELH/CRWV/NVDA/
+SOUN、計55件）を実地棚卸しした結果、「率」「マージン」を含むKPI名
+16件は例外なく比率値（0〜1の小数）であり、それ以外39件は例外なく
+金額値であることを確認した（誤判定0件）。
+
+`fetch_layer3_kpis()`（`layer3_formula`による除算、例: PLTR「営業利益率」
+=operating_income/revenue）は元々値の型判定ロジック自体を経由しない
+経路であることも判明した——名前ベースの判定に統一したことで、この
+経路のKPIも正しく分類できるようになった（旧方針〈値の型と連動〉では
+この経路は対象外のまま取りこぼされていた）。
+
+「希薄化後EPS成長率」は現状`missing_kpis`（[[TAIL-LAYER3-FORMULA-
+YOY-UNSUPPORTED-1]]により値0件）だが、KPI名の定義的意図に基づき
+ratio扱いとした（値の有無ではなく定義ベースの判定のため、将来値が
+入るようになった時点でも再判定不要）。
+
+#### 実装内容
+1. `src/tail/xbrl_segment_fetcher.py`: `_infer_kpi_unit(kpi_name)`を
+   新設（「率」「マージン」「Margin」「Rate」「Ratio」を含む場合
+   `"ratio"`、それ以外`"USD"`）。`_write_layer2_output()`の
+   `"unit": "USD"`ハードコードをこの関数呼び出しへ置換
+2. `src/tail/quarterly_review_generator.py::_fmt_kpi_value()`:
+   `elif unit == "ratio":`分岐を新設（`{v*100:.1f}%`形式）。既存の
+   `unit=="USD"`分岐内の`abs(v)<2`時の同型変換（保険的処理）は削除
+   せず維持した（unit判定漏れへの後方互換）
+3. `docs/portfolio/tail/index.html`: KPIテーブルの`fvM()`・
+   `buildSparkline()`の`fv()`の2箇所に`unit === 'ratio'`分岐を追加
+4. `docs/portfolio/tail/detail.html`: `formatVal()`に`unit === 'ratio'`
+   分岐を追加（既存の`unit === '%'`分岐と同じ変換式に統合）。
+   **この関数は修正前、ratio KPIに対応する分岐が一切なく実際に
+   「0.78」のような生の小数がそのまま表示される実害のある表示バグ
+   だったことを発見・是正した**（`quarterly_review_generator.py`側は
+   `unit=="USD"`時の`abs(v)<2`保険分岐により偶然正しく表示されていた
+   ため、実害はdetail.htmlのスパークライン表示に限定されていた）
+5. 既存の11銘柄分の`{ticker}_layer2.json`（PLTR/SOFI/TSLA/ADBE/APGE/
+   APP/CELH/CRWV/NVDA/SOUN）を、SEC EDGARへの再取得を伴わずローカルで
+   `_infer_kpi_unit()`により`unit`フィールドのみ再計算する移行スクリプト
+   で更新した（データ値自体は変更なし、単位ラベルのみ修正）。5銘柄
+   （PLTR/SOFI/TSLA/CRWV/SOUN）で計18件のKPIがUSD→ratioへ訂正された。
+   ADBE/APGE/APP/CELH/NVDAは現状ratio該当KPIが存在せず変更なし
+
+#### 検証結果
+- 新規テスト`tests/test_kpi_unit_hardcode.py`（11件）: `_infer_kpi_unit()`
+  の判定網羅（全55KPI名の実データ相当）・`_write_layer2_output()`の
+  出力確認・`_fmt_kpi_value()`のratio/USD/%各分岐の回帰防止
+- `pytest tests/`: 1158 passed（新規11件含む、既存1147件無変化）
+- `python common/sec_data/audit.py`: 🟢89/🟡10銘柄（本タスクによる
+  新規警告なし）
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=2件（CDNS/INTU、[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]
+  作業中の`fixed_registry.json`snapshot_hash更新が保留中であることに
+  起因する別件・本タスクとは無関係。本タスク自体はNG=0）・WARN=119件
+  （本タスクによる変化なし、KPI unitはreport_consistency_check.pyの
+  対象外）
+
+#### 完了報告の必須項目
+- 反映コミット: 別途コミットハッシュ参照
+
 ### ✅ [BS-FIELD-NEWLY-MISSING-2026-1] LLY/SCCO/SPIRのBS項目が実額から当年Noneへ新規遷移 — 一次情報調査完了・全3件が生涯フェードアウト（真の値）と確定
 **状態:** ✅一次情報調査完了（3件とも対応不要、コード変更なし）
 **優先度:** 未定〜中 → クローズ

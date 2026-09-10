@@ -6629,28 +6629,6 @@ FRED再公開遅延が上乗せされる構造。
 
 ---
 
-### [KPI-UNIT-HARDCODE-USD-1] TANUKI TAILのkpis.{kpi_name}.unitが常時USD固定
-**優先度:** 低
-**分類:** バグ / TANUKI TAIL
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ7（AS-IS-419）
-
-#### 内容
-`xbrl_segment_fetcher.py:fetch_ticker()`は抽出したKPIの`unit`欄に無条件
-で`"USD"`を設定する。同じ関数内で「整数に近い値（USD金額）はint、小数値
-（比率）はfloat」と値の型を使い分けている（コード自身が比率KPIの存在を
-認識している）にもかかわらず、`unit`フィールドは比率KPIであっても
-"USD"のままになる。
-
-#### 対応方針
-値の型判定ロジックと連動させ、比率KPIには`"ratio"`等の適切な`unit`を
-設定する。
-
-#### 着手条件
-なし
-
----
-
 
 ### [TTM-SBC-QUARTERS-GAP-1] build_rice_annual_shape()のSBCがquarters完全性チェック対象外
 **優先度:** 低〜未定
