@@ -650,6 +650,19 @@ class SECParser:
         # cost_of_revenueの2フィールドを同時に是正する）
         self._align_revenue_and_cost_to_gross_profit_own_accn(extracted, us_gaap)
 
+        # [[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]（[[ANOMALY-
+        # PATTERN-CATALOG-1]]型D）: 上記案a〜eはいずれも「本人accn内の
+        # 別候補タグ」を探す設計のため、標準候補タグが次元分解開示のみで
+        # company_facts.json一括APIに一切現れないケース（CDNS/INTUの
+        # cost_of_revenue、srt:ProductOrServiceAxisで製品/サービス区分の
+        # みに分解されている）は解消できない。dimension_aggregate_
+        # registry.json（[[CHECK29-UNRESOLVED-23-MIXED-CAUSES-1]]で
+        # 新設、個別filingの生XBRLインスタンスを直接パース・機械的に
+        # 抽出・合算した値のみを事前登録したレジストリ）に、当該ticker・
+        # fieldの登録があり、かつ標準抽出で当該年度が依然None（欠損の
+        # 穴埋めのみ、既存の正しい値は上書きしない）の場合に限り適用する。
+        self._apply_dimension_aggregate_field_overrides(ticker, extracted)
+
         # [[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]①: 標準タグから
         # gross_profitが取得できない年度のみ、revenue-cost_of_revenueで
         # 逆算した値を本番annual_YYYY.jsonへ書き戻す（欠損の穴埋めのみ、
@@ -3766,6 +3779,48 @@ class SECParser:
                     "override_applied": True,
                     "override_reason": reason,
                 }
+
+    def _apply_dimension_aggregate_field_overrides(self, ticker: str, extracted: Dict[str, Any]) -> None:
+        """dimension_aggregate_registry.json記載の値を、annual[field][year]
+        が現在Noneの年度に限り補完する（[[LAYER3-COGS-DIMENSION-RECOVERY-
+        CDNS-INTU-1]]、[[ANOMALY-PATTERN-CATALOG-1]]型D対応）。
+
+        `_apply_fact_overrides()`と異なり「annual[year]が既にNoneでない
+        場合は対象外」ではなく「Noneの場合のみ適用」という逆のゲート
+        条件を持つ（fact_overrides.jsonは既存抽出値の差し替え専用、
+        本メソッドは次元分解開示等でcompany_facts.json一括APIから
+        構造的に消失している値の穴埋め専用のため、意図的にゲート条件を
+        分離した独立メソッドとした）。
+
+        レジストリの値は個別filingの生XBRLインスタンスを
+        `dimension_aggregate_fetcher.py`で直接パース・機械的に抽出・
+        （次元分解されている場合は）合算したものであり、`--expect`で
+        既知の正解と事前に突合検証済み。タグ由来のない生数値の手入力
+        ではない。
+
+        対象は`field`・`ticker`が一致し、かつ`year`が明示されている
+        レジストリエントリのみ（BS恒等式チェック向けのエントリは
+        `year`未設定＝Noneのためここでは無視され、
+        `_bs_identity_extra_components()`側でのみ参照される）。
+        """
+        registry = _load_dimension_aggregate_registry()
+        for entry in registry.values():
+            if entry.get("ticker") != ticker or entry.get("year") is None:
+                continue
+            field = entry.get("field")
+            field_data = extracted.get(field)
+            if field_data is None:
+                continue
+            annual = field_data.setdefault("annual", {})
+            year = entry["year"]
+            if annual.get(year) is not None:
+                continue  # 既に値がある年度は対象外（欠損穴埋めのみ）
+            annual[year] = entry["computed_value"]
+            field_data.setdefault("_annual_provenance", {})[year] = {
+                "accn": None, "filed": "", "is_own_data": False,
+                "dimension_aggregate_applied": True,
+                "source_citation": entry.get("source_citation"),
+            }
 
     _FIXED_REGISTRY_CATEGORIES = ("bs", "pl", "cf", "shares", "other")
 

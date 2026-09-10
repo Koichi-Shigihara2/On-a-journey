@@ -187,6 +187,8 @@ _CTX_RE = re.compile(
     re.DOTALL | re.IGNORECASE,
 )
 _INSTANT_RE = re.compile(r'<(?:\w+:)?instant[^>]*>([\d\-]+)<', re.IGNORECASE)
+_START_RE = re.compile(r'<(?:\w+:)?startDate[^>]*>([\d\-]+)<', re.IGNORECASE)
+_END_RE = re.compile(r'<(?:\w+:)?endDate[^>]*>([\d\-]+)<', re.IGNORECASE)
 _EXPLICIT_MEMBER_RE = re.compile(
     r'<[^>]*?explicitMember[^>]*?dimension=["\']([^"\']+)["\'][^>]*?>\s*(.+?)\s*</[^>]*?explicitMember>',
     re.DOTALL | re.IGNORECASE,
@@ -194,25 +196,36 @@ _EXPLICIT_MEMBER_RE = re.compile(
 
 
 def _parse_contexts(xml_text: str) -> Dict[str, Dict[str, Any]]:
-    """全コンテキストを解析する。instant fact（BS項目）のみ対象とし、
-    duration（start/end）コンテキストは対象外（BS恒等式チェックは
-    instant factのみを扱うため、`xbrl_segment_fetcher.py`のような
-    duration対応は不要）。
+    """全コンテキストを解析する。instant（BS項目）・duration（PL項目、
+    2026-09-10拡張: cost_of_revenue等のフロー型フィールドに対応）の
+    両方を対象とする。1コンテキストはinstant/durationのいずれか一方の
+    みを持つため、両方Noneのままなら（未対応の周期表現等）そのまま
+    保持し、呼び出し側でinstant/durationいずれの照合にもマッチしない
+    ようにする。
 
-    Returns: {ctx_id: {"instant": "2019-12-31", "members": [(axis, member), ...]}}
+    Returns: {ctx_id: {"instant": "2019-12-31"|None,
+                        "start": "2025-01-01"|None, "end": "2025-12-31"|None,
+                        "members": [(axis, member), ...]}}
     """
     result: Dict[str, Dict[str, Any]] = {}
     for m in _CTX_RE.finditer(xml_text):
         ctx_id = m.group(1)
         body = m.group(2)
         inst_m = _INSTANT_RE.search(body)
-        if not inst_m:
-            continue  # instant以外（duration）は対象外
+        start_m = _START_RE.search(body)
+        end_m = _END_RE.search(body)
+        if not inst_m and not (start_m and end_m):
+            continue  # instant・durationいずれの周期情報も取得できない
         members = [
             (mm.group(1).strip(), mm.group(2).strip())
             for mm in _EXPLICIT_MEMBER_RE.finditer(body)
         ]
-        result[ctx_id] = {"instant": inst_m.group(1), "members": members}
+        result[ctx_id] = {
+            "instant": inst_m.group(1) if inst_m else None,
+            "start": start_m.group(1) if start_m else None,
+            "end": end_m.group(1) if end_m else None,
+            "members": members,
+        }
     return result
 
 
@@ -242,20 +255,24 @@ def extract_dimension_aggregate(
     concept_local: str,
     period_end: str,
     axis_local: Optional[str] = None,
+    period_start: Optional[str] = None,
 ) -> Dict[str, Any]:
     """生XBRLインスタンステキストから、指定コンセプトの値を
     (a) axis_local指定時: そのaxisのみを唯一の次元として持つ
-        instant=period_endのコンテキスト全てについて値を合算する
+        対象期間のコンテキスト全てについて値を合算する
         （他の軸も併せ持つコンテキスト——Statement of Stockholders'
         Equityロールフォワード表等での多重タグ付け——は二重計上防止の
         ため除外する。CELH実データで、単一軸コンテキストと2軸
         コンテキストの両方に同一金額が別々にタグ付けされている実例を
         確認済み、この制約により正しく前者のみを採用する）
-    (b) axis_local未指定時: いかなる次元も持たない
-        instant=period_endの単一コンテキストの値を採用する
-        （カスタム名前空間タグの場合、次元分解ではなく単に
-        company_facts.json一括APIの対象namespace集合から漏れている
-        だけのケース。V・ASTSがこれに該当）
+    (b) axis_local未指定時: いかなる次元も持たない対象期間の単一
+        コンテキストの値を採用する（カスタム名前空間タグの場合、
+        次元分解ではなく単にcompany_facts.json一括APIの対象namespace
+        集合から漏れているだけのケース。V・ASTSがこれに該当）
+
+    period_start: Noneならinstant=period_end（BS項目向け）で照合する。
+    指定時はduration契約（start=period_start かつ end=period_end、
+    2026-09-10拡張: cost_of_revenue等のPLフロー項目向け）で照合する。
 
     戻り値: {"total": float, "components": {member_or_ctx_id: value},
              "matched_contexts": [ctx_id, ...]}
@@ -266,8 +283,12 @@ def extract_dimension_aggregate(
     matched_ctx_ids: List[str] = []
     labels: Dict[str, str] = {}
     for ctx_id, info in contexts.items():
-        if info["instant"] != period_end:
-            continue
+        if period_start is None:
+            if info["instant"] != period_end:
+                continue
+        else:
+            if info["start"] != period_start or info["end"] != period_end:
+                continue
         members = info["members"]
         if axis_local is None:
             if members:
@@ -305,8 +326,12 @@ def fetch_dimension_aggregate(
     period_end: str,
     axis_local: Optional[str] = None,
     instance_filename: Optional[str] = None,
+    period_start: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """1件のfilingについてfetch→parse→合算の全工程を実行する。
+
+    period_start省略時はinstant（BS項目）、指定時はduration
+    （period_start〜period_end、PLフロー項目）で照合する。
 
     ネットワークエラー・パース失敗・該当ファクトなし、いずれの場合も
     例外を送出せずNoneを返す（呼び出し側は既存の「対応不可」記録へ
@@ -324,7 +349,7 @@ def fetch_dimension_aggregate(
         xml_text = download_instance_xml(cik, accn, instance_filename)
         if xml_text is None:
             return None
-        result = extract_dimension_aggregate(xml_text, concept_local, period_end, axis_local)
+        result = extract_dimension_aggregate(xml_text, concept_local, period_end, axis_local, period_start)
         if result["total"] is None:
             return None
         result["instance_filename"] = instance_filename
@@ -347,9 +372,11 @@ def main() -> None:
     parser.add_argument("--cik", required=True, type=int)
     parser.add_argument("--accn", required=True)
     parser.add_argument("--concept", required=True, help="コンセプトのローカル名（namespace prefixなし）")
-    parser.add_argument("--period", required=True, help="instant日付、例: 2019-12-31")
+    parser.add_argument("--period", required=True, help="instant日付（例: 2019-12-31）、または--period-start指定時はduration終了日")
+    parser.add_argument("--period-start", default=None, help="指定時はduration契約（この日付〜--period）で照合する。PLフロー項目（cost_of_revenue等）向け")
     parser.add_argument("--axis", default=None, help="次元軸のローカル名（省略時は無次元コンテキストを対象）")
-    parser.add_argument("--field", required=True, help="BS恒等式チェックの対象フィールド名（記録用ラベル）")
+    parser.add_argument("--field", required=True, help="対象フィールド名（記録用ラベル。BS恒等式チェックのextra_components用、または annual[field]直接補完用）")
+    parser.add_argument("--year", type=int, default=None, help="annual[field][year]への直接適用先年度（PLフロー項目のfield直接補完に使用。BS恒等式extra_components用途では不要）")
     parser.add_argument("--citation", required=True, help="一次情報の引用（10-K accn・R-file・区分名等）")
     parser.add_argument("--expect", type=float, default=None, help="期待値。指定時、一致しなければ登録を拒否する")
     parser.add_argument("--register", action="store_true", help="レジストリへ書き込む（省略時は表示のみ）")
@@ -357,13 +384,14 @@ def main() -> None:
 
     result = fetch_dimension_aggregate(
         cik=args.cik, accn=args.accn, concept_local=args.concept,
-        period_end=args.period, axis_local=args.axis,
+        period_end=args.period, axis_local=args.axis, period_start=args.period_start,
     )
     if result is None:
         print(f"[{args.ticker}] 取得失敗（生XBRL取得不可、またはコンセプト・期間に合致するファクトなし）")
         sys.exit(1)
 
-    print(f"[{args.ticker}] {args.concept} @ {args.period} (axis={args.axis})")
+    period_label = f"{args.period_start}~{args.period}" if args.period_start else args.period
+    print(f"[{args.ticker}] {args.concept} @ {period_label} (axis={args.axis})")
     print(f"  instance: {result['instance_filename']}")
     print(f"  components: {result['components']}")
     print(f"  total: {result['total']:,.0f}")
@@ -377,13 +405,16 @@ def main() -> None:
 
     if args.register:
         registry = load_dimension_aggregate_registry()
-        key = f"{args.accn}|{args.period}"
+        key = f"{args.accn}|{period_label}"
         registry[key] = {
             "ticker": args.ticker,
             "cik": args.cik,
             "field": args.field,
+            "year": args.year,
             "concept": args.concept,
             "axis": args.axis,
+            "period_start": args.period_start,
+            "period_end": args.period,
             "computed_value": result["total"],
             "components": result["components"],
             "instance_filename": result["instance_filename"],
@@ -394,6 +425,7 @@ def main() -> None:
                     f"--ticker {args.ticker} --cik {args.cik} --accn {args.accn}",
                     f"--concept {args.concept} --period {args.period}",
                 ]
+                + ([f"--period-start {args.period_start}"] if args.period_start else [])
                 + ([f"--axis {args.axis}"] if args.axis else [])
             ),
         }

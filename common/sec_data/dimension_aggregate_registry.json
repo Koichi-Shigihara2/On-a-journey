@@ -1,4 +1,40 @@
 {
+  "0000813672-26-000016|2025-01-01~2025-12-31": {
+    "axis": "ProductOrServiceAxis",
+    "cik": 813672,
+    "components": {
+      "cdns:ProductandmaintenanceMember": 518673000.0,
+      "us-gaap:TechnologyServiceMember": 203576000.0
+    },
+    "computed_value": 722249000.0,
+    "concept": "CostOfGoodsAndServicesSold",
+    "field": "cost_of_revenue",
+    "instance_filename": "cdns-20251231_htm.xml",
+    "period_end": "2025-12-31",
+    "period_start": "2025-01-01",
+    "source_citation": "10-K(FY2025) accn 0000813672-26-000016、Product and maintenance cost of sales(cdns:ProductandmaintenanceMember) + Services cost of sales(us-gaap:TechnologyServiceMember)、axis=srt:ProductOrServiceAxis",
+    "ticker": "CDNS",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker CDNS --cik 813672 --accn 0000813672-26-000016 --concept CostOfGoodsAndServicesSold --period 2025-12-31 --period-start 2025-01-01 --axis ProductOrServiceAxis",
+    "year": 2025
+  },
+  "0000896878-25-000035|2024-08-01~2025-07-31": {
+    "axis": "ProductOrServiceAxis",
+    "cik": 896878,
+    "components": {
+      "us-gaap:ProductMember": 3624000000.0,
+      "us-gaap:ServiceMember": 68000000.0
+    },
+    "computed_value": 3692000000.0,
+    "concept": "CostOfGoodsAndServicesSold",
+    "field": "cost_of_revenue",
+    "instance_filename": "intu-20250731_htm.xml",
+    "period_end": "2025-07-31",
+    "period_start": "2024-08-01",
+    "source_citation": "10-K(FY2025、7月決算) accn 0000896878-25-000035、us-gaap:ProductMember($3,624M) + us-gaap:ServiceMember($68M)、axis=srt:ProductOrServiceAxis（旧BACKLOG記載のラベル対応は逆だったが金額合計は一致）",
+    "ticker": "INTU",
+    "verification_command": "python common/sec_data/dimension_aggregate_fetcher.py --ticker INTU --cik 896878 --accn 0000896878-25-000035 --concept CostOfGoodsAndServicesSold --period 2025-07-31 --period-start 2024-08-01 --axis ProductOrServiceAxis",
+    "year": 2025
+  },
   "0001193125-09-239249|2008-09-30": {
     "axis": null,
     "cik": 1403161,
