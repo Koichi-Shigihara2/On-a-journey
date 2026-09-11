@@ -44,6 +44,7 @@ from common.sec_data import tickers as _tickers_mod         # noqa: E402
 # Layer3」と明示して区別する。
 from common.sec_data.layer3_builder import (        # noqa: E402
     build_ticker_store, get_latest_quarterly,
+    WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
 
 # ── パス定数 ──────────────────────────────────────────────────────
@@ -141,7 +142,14 @@ def _load_layer1_financials(ticker: str) -> Dict[str, Any]:
         oi  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["OperatingIncome"])
         sbc = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["SBC"])
         ni  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["NetIncome"])
-        sd  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["SharesDiluted"])
+        # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応: shares_dilutedは
+        # CommonStockSharesOutstanding（期末発行済株式数、BS概念）を
+        # フォールバックタグとして含むため、source_tagで加重平均
+        # （PL概念）由来のみに絞り込む（pipeline.py::[[LAYER3-
+        # SHARESDILUTED-TAG-GAP-1]]と同一条件、common/sec_data/
+        # layer3_builder.pyの共通定数を参照）。
+        sd  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["SharesDiluted"],
+                                    source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG)
 
         if rev and oi and rev.get("val"):
             result["operating_margin"] = round(oi["val"] / rev["val"], 4)

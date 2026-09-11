@@ -22,6 +22,7 @@ if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
 from common.sec_data.reader import SECReader, get_quarterly_series, get_latest_quarterly  # noqa: E402
+from common.sec_data.layer3_builder import WEIGHTED_AVG_DILUTED_SHARES_TAG  # noqa: E402
 
 
 # ─────────────────────────────────────────────
@@ -236,8 +237,13 @@ class TestTailDcfBridgeRegression:
                 {"end": "2024-09-30", "val": 14, "is_annual": False, "is_ytd": False},
                 {"end": "2024-12-31", "val": 15, "is_annual": False, "is_ytd": False},
             ],
+            # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応: source_tagが
+            # WeightedAverageNumberOfDilutedSharesOutstandingでないと
+            # _load_layer1_financials()のsource_tagフィルタで除外される
+            # ため、実データ形状に合わせて明示する。
             "shares_diluted": [
-                {"end": "2024-12-31", "val": 1000, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 1000, "is_annual": False, "is_ytd": False,
+                 "source_tag": WEIGHTED_AVG_DILUTED_SHARES_TAG},
             ],
         })
         monkeypatch.setattr(tdb, "build_ticker_store", lambda ticker: store if ticker == "TEST" else None)
@@ -245,6 +251,46 @@ class TestTailDcfBridgeRegression:
         result = tdb._load_layer1_financials("TEST")
         assert result["operating_margin"] == pytest.approx(0.1)
         assert result["sbc_quarterly"] == 5
+        assert result["eps_diluted"] == pytest.approx(0.015)
+
+    def test_load_layer1_financials_q4_timing_excludes_bs_concept_shares(self, tmp_path, monkeypatch):
+        """[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]回帰テスト: 直近end日の
+        shares_dilutedエントリがCommonStockSharesOutstanding（期末発行済
+        株式数、BS概念）由来のQ4タイミングを模す。source_tagフィルタなし
+        では誤ってBS概念の値をeps_diluted計算に使ってしまうが、フィルタ
+        適用後は正しく1つ前のWeightedAverage（PL概念）由来の値を使う。"""
+        monkeypatch.setattr(tdb, "VALUATION_DIR", str(tmp_path))
+
+        store = _make_layer3_store({
+            "revenue": [
+                {"end": "2024-09-30", "val": 160, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 170, "is_annual": False, "is_ytd": False},
+            ],
+            "operating_income": [
+                {"end": "2024-09-30", "val": 16, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 17, "is_annual": False, "is_ytd": False},
+            ],
+            "stock_based_compensation": [
+                {"end": "2024-12-31", "val": 5, "is_annual": False, "is_ytd": False},
+            ],
+            "net_income": [
+                {"end": "2024-09-30", "val": 14, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 15, "is_annual": False, "is_ytd": False},
+            ],
+            "shares_diluted": [
+                {"end": "2024-09-30", "val": 1000, "is_annual": False, "is_ytd": False,
+                 "source_tag": WEIGHTED_AVG_DILUTED_SHARES_TAG},
+                # Q4タイミング: WeightedAverage側の四半期タグが報告されず、
+                # 期末発行済株式数（BS概念）がフォールバックとして混入
+                {"end": "2024-12-31", "val": 5000, "is_annual": False, "is_ytd": False,
+                 "source_tag": "CommonStockSharesOutstanding"},
+            ],
+        })
+        monkeypatch.setattr(tdb, "build_ticker_store", lambda ticker: store if ticker == "TEST" else None)
+
+        result = tdb._load_layer1_financials("TEST")
+        # 修正前ならnet_income(15)/CommonStockSharesOutstanding(5000)=0.003に
+        # なってしまうところ、修正後は1つ前のWeightedAverage値(1000)を使う
         assert result["eps_diluted"] == pytest.approx(0.015)
 
     def test_load_layer1_financials_missing_file_returns_empty(self, tmp_path, monkeypatch):
@@ -289,8 +335,13 @@ class TestQuarterlyReviewGeneratorRegression:
             "net_income": [
                 {"end": "2024-12-31", "val": 15, "is_annual": False, "is_ytd": False},
             ],
+            # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応: source_tagが
+            # WeightedAverageNumberOfDilutedSharesOutstandingでないと
+            # load_layer1_financials()のsource_tagフィルタで除外される
+            # ため、実データ形状に合わせて明示する。
             "shares_diluted": [
-                {"end": "2024-12-31", "val": 1000, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 1000, "is_annual": False, "is_ytd": False,
+                 "source_tag": WEIGHTED_AVG_DILUTED_SHARES_TAG},
             ],
         })
         monkeypatch.setattr(qrg, "build_ticker_store", lambda ticker: store if ticker == "TEST" else None)
@@ -315,6 +366,53 @@ class TestQuarterlyReviewGeneratorRegression:
         ]
         assert result["sbc_ttm"] == 20
         assert result["eps_forward"] == 1.23
+
+    def test_load_layer1_financials_q4_timing_excludes_bs_concept_shares(self, tmp_path, monkeypatch):
+        """[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]回帰テスト: 直近end日の
+        shares_dilutedエントリがCommonStockSharesOutstanding（期末発行済
+        株式数、BS概念）由来のQ4タイミングを模す。source_tagフィルタなし
+        では誤ってBS概念の値をeps_diluted計算に使ってしまうが、フィルタ
+        適用後は正しく1つ前のWeightedAverage（PL概念）由来の値を使う。"""
+        monkeypatch.setattr(qrg, "TANUKI_DATA_DIR", str(tmp_path))
+
+        store = _make_layer3_store({
+            "revenue": [
+                {"end": "2024-09-30", "val": 160, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 170, "is_annual": False, "is_ytd": False},
+            ],
+            "operating_income": [
+                {"end": "2024-09-30", "val": 16, "is_annual": False, "is_ytd": False},
+                {"end": "2024-12-31", "val": 17, "is_annual": False, "is_ytd": False},
+            ],
+            "stock_based_compensation": [
+                {"end": "2024-12-31", "val": 5, "is_annual": False, "is_ytd": False},
+            ],
+            "net_income": [
+                {"end": "2024-12-31", "val": 15, "is_annual": False, "is_ytd": False},
+            ],
+            "shares_diluted": [
+                {"end": "2024-09-30", "val": 1000, "is_annual": False, "is_ytd": False,
+                 "source_tag": WEIGHTED_AVG_DILUTED_SHARES_TAG},
+                # Q4タイミング: WeightedAverage側の四半期タグが報告されず、
+                # 期末発行済株式数（BS概念）がフォールバックとして混入
+                {"end": "2024-12-31", "val": 5000, "is_annual": False, "is_ytd": False,
+                 "source_tag": "CommonStockSharesOutstanding"},
+            ],
+        })
+        monkeypatch.setattr(qrg, "build_ticker_store", lambda ticker: store if ticker == "TEST" else None)
+
+        ticker_dir = tmp_path / "TEST"
+        ticker_dir.mkdir()
+        (ticker_dir / "latest.json").write_text(
+            json.dumps({"financial_health": {"sbc_ttm": 20},
+                        "components": {"forward_eps": 1.23}}),
+            encoding="utf-8",
+        )
+
+        result = qrg.load_layer1_financials("TEST")
+        # 修正前ならnet_income(15)/CommonStockSharesOutstanding(5000)=0.003に
+        # なってしまうところ、修正後は1つ前のWeightedAverage値(1000)を使う
+        assert result["eps_diluted"] == pytest.approx(0.015)
 
 
 # ─────────────────────────────────────────────

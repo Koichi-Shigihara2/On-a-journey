@@ -1305,6 +1305,17 @@ def build_ticker_store(ticker: str) -> dict | None:
     }
 
 
+# [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応（2026-09-11）:
+# shares_dilutedフィールドはCommonStockSharesOutstanding（期末発行済
+# 株式数、BS概念）をフォールバックタグとして含むため、加重平均
+# （WeightedAverageNumberOfDilutedSharesOutstanding、PL概念）と概念が
+# 混在する。get_quarterly_series()/get_latest_quarterly()の
+# source_tag引数でこの定数を渡すと、加重平均由来のエントリのみに
+# 絞り込める（[[LAYER3-SHARESDILUTED-TAG-GAP-1]]でpipeline.py側の
+# 分割検知に個別実装されていたフィルタを、共通アクセサへ統合したもの）。
+WEIGHTED_AVG_DILUTED_SHARES_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
+
+
 def get_field_entries(store: dict, field_name: str) -> list:
     """
     build_ticker_store()の戻り値からフィールド名を指定してentriesを
@@ -1314,7 +1325,7 @@ def get_field_entries(store: dict, field_name: str) -> list:
     return store.get("fields", {}).get(field_name, {}).get("entries", [])
 
 
-def get_quarterly_series(store: dict, field_name: str) -> list:
+def get_quarterly_series(store: dict, field_name: str, source_tag: str | None = None) -> list:
     """
     is_annual・is_ytd両方を除外した四半期エントリをend日昇順で返す
     （reader.py::get_quarterly_series(normalized, field_name)のLayer3版、
@@ -1337,21 +1348,30 @@ def get_quarterly_series(store: dict, field_name: str) -> list:
 
     この段階では新規追加のみで、既存normalized/経由の呼び出し
     （reader.py::get_quarterly_series()）には一切影響しない。
+
+    source_tag: 指定時はそのタグ由来のエントリのみに絞り込む
+    （[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応、既定Noneは従来通り
+    絞り込みなし。shares_diluted以外の既存呼び出し元は全て未指定の
+    ままのため無影響）。
     """
     entries = get_field_entries(store, field_name)
     quarterly = [
         e for e in entries
         if not e.get("is_annual") and not e.get("is_ytd")
+        and (source_tag is None or e.get("source_tag") == source_tag)
     ]
     return sorted(quarterly, key=lambda x: x["end"])
 
 
-def get_latest_quarterly(store: dict, field_name: str) -> dict | None:
+def get_latest_quarterly(store: dict, field_name: str, source_tag: str | None = None) -> dict | None:
     """
     get_quarterly_series()の最新1件（末尾）を返す。空ならNone
     （reader.py::get_latest_quarterly()のLayer3版、フェーズD Step1対応）。
+
+    source_tag: get_quarterly_series()にそのまま伝播する
+    （[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応）。
     """
-    series = get_quarterly_series(store, field_name)
+    series = get_quarterly_series(store, field_name, source_tag=source_tag)
     return series[-1] if series else None
 
 

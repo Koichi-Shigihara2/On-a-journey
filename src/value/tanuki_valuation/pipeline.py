@@ -36,6 +36,8 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     build_ticker_store,
     get_field_entries,
     get_long_term_debt_latest,
+    get_quarterly_series,
+    WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
@@ -2715,10 +2717,25 @@ class TanukiValuationPipeline:
                     # 含むため、加重平均（PL概念）でないエントリが混入する。
                     # 分割検知の中央値計算をWeightedAverageNumberOf
                     # DilutedSharesOutstanding由来のみに絞り、概念混在を防ぐ。
+                    # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応
+                    # （2026-09-11）: このフィルタをget_quarterly_series()
+                    # のsource_tag引数へ統合し、TANUKI TAIL側
+                    # （quarterly_review_generator.py・tail_dcf_bridge.py）
+                    # とsource_tagの絞り込み条件を完全一致させた（実データ
+                    # 確認: shares_dilutedにis_ytd=Trueエントリは全102銘柄
+                    # で0件のため、旧来の独自フィルタ〈is_ytd未チェック〉と
+                    # 本関数〈is_ytdも除外〉の間に実際の値差分はない）。
+                    # val truthyチェックのみ、get_quarterly_series()の
+                    # 一般契約に含めず本箇所で明示的に維持する（実データで
+                    # CEG(2021-09-30)にval=0のWeightedAverage由来エントリ
+                    # が1件存在し、含めると分割検知の中央値計算を歪める
+                    # ため、旧実装と完全に同じ除外挙動を保つ）。
                     q_entries_all = [
-                        e for e in shares_series
-                        if not e.get("is_annual") and e.get("val") and e.get("end")
-                        and e.get("source_tag") == "WeightedAverageNumberOfDilutedSharesOutstanding"
+                        e for e in get_quarterly_series(
+                            _layer3_store_dil, "shares_diluted",
+                            source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG,
+                        )
+                        if e.get("val")
                     ]
 
                     raw_vals = [e["val"] for e in annual_shares]
