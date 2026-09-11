@@ -6280,31 +6280,6 @@ annual_*.json`（parser.py経由）の直読みを継続する。
 
 ---
 
-### [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ
-**優先度:** 低（現時点で10銘柄全数、最新四半期はWeightedAverage側が
-採用されており実害なし）
-**分類:** 潜在リスク
-**登録日:** 2026-08-07
-**発見:** フェーズD Step2-3事前調査（チャット記録、2026-08-07）
-
-#### 内容
-`[[LAYER3-SHARESDILUTED-TAG-GAP-1]]`の対応（source_tagフィルタで
-CommonStockSharesOutstanding由来を除外）はpipeline.pyの希薄化率
-計算箇所に限定実装されており、共通アクセサ（reader.py/
-layer3_builder.py）自体には手を入れていない。TANUKI TAILの
-`quarterly_review_generator.py`・`tail_dcf_bridge.py`は
-`get_latest_quarterly()`を直接呼ぶため、この既存フィルタの恩恵を
-受けない。直近四半期がQ4に当たるタイミング（WeightedAverage系タグが
-四半期報告されない期）でレビューが生成された場合、eps_diluted計算が
-期末発行済株式数ベースの値を使ってしまう可能性がある。
-
-#### 着手条件
-なし。実際にQ4タイミングでの計算誤りが発生した時点、または
-`[[LAYER3-SHARESDILUTED-TAG-GAP-1]]`の対応をpipeline.py外にも展開する
-判断がされた時点で再検討。
-
----
-
 ### [FETCHER-PY-BS-FIELDS-DEAD-KEYS-1] fetcher.pyの_BS_FIELDSでtotal_debt・shares_outstanding・shares_dilutedがannual_*.jsonに実在しないキーを参照しており常にNone
 **優先度:** 低（analyzer.pyがこの4項目を参照しないため現状無害）
 **分類:** バグ（死んだコード）

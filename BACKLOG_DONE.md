@@ -4,6 +4,92 @@
 
 ## 2026-09-11（完了）
 
+### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
+**状態:** ✅実装完了
+**優先度:** 低 → 完了
+**分類:** 潜在リスク
+**登録日:** 2026-08-07
+**完了日:** 2026-09-11
+**発見:** フェーズD Step2-3事前調査（チャット記録、2026-08-07）
+
+#### 内容（登録時点）
+`[[LAYER3-SHARESDILUTED-TAG-GAP-1]]`の対応（source_tagフィルタで
+CommonStockSharesOutstanding由来を除外）はpipeline.pyの希薄化率
+計算箇所に限定実装されており、共通アクセサ（layer3_builder.py）自体
+には手を入れていなかった。TANUKI TAILの`quarterly_review_generator.
+py`・`tail_dcf_bridge.py`は`get_latest_quarterly()`を直接呼ぶため、
+この既存フィルタの恩恵を受けず、Q4タイミング（WeightedAverage系
+四半期タグが報告されない期）でレビューが生成された場合、eps_diluted
+計算が期末発行済株式数ベースの値を誤って使う可能性があった。
+
+#### 対応内容: 共通アクセサへのsource_tagフィルタ統合
+`layer3_builder.py::get_quarterly_series()`/`get_latest_quarterly()`
+に、既定Noneの任意引数`source_tag`を追加した。指定時のみ該当タグの
+エントリに絞り込み、未指定（既定）時は従来通り無絞り込みのため、
+shares_diluted以外の既存呼び出し元（Revenue/OperatingIncome/SBC/
+NetIncome等、`discover/stonks-silo/src/financial_trend_calculator.
+py`・`src/tail/kpi_proposer.py`・`src/tail/xbrl_segment_fetcher.py`・
+`src/value/hypecore/hypecore.py`等の全消費者）には一切影響しない。
+`WeightedAverageNumberOfDilutedSharesOutstanding`を単一の共有定数
+`WEIGHTED_AVG_DILUTED_SHARES_TAG`としてlayer3_builder.pyに定義し、
+以下3箇所全てがこの同一定数を参照するよう統合した（フィルタ条件の
+完全一致を、文字列リテラルの重複ではなく単一の参照元で保証）:
+1. `pipeline.py`（`[[LAYER3-SHARESDILUTED-TAG-GAP-1]]`の分割検知用
+   インライン実装）: 独自の`q_entries_all`フィルタ構築を、共通関数
+   `get_quarterly_series(store, "shares_diluted", source_tag=...)`
+   呼び出しへ置き換えた（「共通関数化できるか検討」の依頼に対し、
+   実データ全102銘柄で新旧ロジックの出力が完全一致することを確認の
+   上で実施。旧実装にのみあった`val`truthyチェックは、実データで
+   CEG(2021-09-30)にval=0のWeightedAverage由来エントリが1件存在し
+   これを除外する必要があったため、共通関数呼び出し後段に維持した）
+2. `quarterly_review_generator.py::load_layer1_financials()`
+3. `tail_dcf_bridge.py::_load_layer1_financials()`
+
+#### 検証結果
+1. **TAIL対象10銘柄（PLTR/SOFI/TSLA/NVDA/ADBE/APGE/APP/CELH/SOUN/
+   CRWV）の実データ回帰確認**: 修正前後で`load_layer1_financials()`・
+   `_load_layer1_financials()`の戻り値（eps_diluted含む全フィールド）
+   が完全一致することを確認（10銘柄×2関数、差分0件。依頼文の期待値
+   「現時点で実害なしのため無変更が期待値」と一致）
+2. **pipeline.py側の全102銘柄シミュレーション**: 旧インライン実装と
+   新共通関数呼び出しの出力（`q_entries_all`の(end, val)組）が全102
+   銘柄で完全一致することを確認
+3. **Q4タイミング模擬の回帰テスト（新規4件、tests/test_layer3_
+   accessor_wrappers.py::TestSourceTagFilter）**: `get_quarterly_
+   series()`/`get_latest_quarterly()`の`source_tag`引数が正しく
+   絞り込むこと、未指定時は従来通り無絞り込みのままであることを
+   直接検証
+4. **Q4タイミング模擬の回帰テスト（新規2件、tests/test_gate2_
+   phase3b1_reader_integration.py）**: `_load_layer1_financials()`・
+   `load_layer1_financials()`それぞれで、直近end日のエントリが
+   CommonStockSharesOutstanding由来（Q4タイミングを模す）・1つ前が
+   WeightedAverage由来という合成フィクスチャを用意し、修正後は正しく
+   1つ前の値（PL概念）を採用することを確認。既存の合成フィクスチャ
+   2件（`_make_layer3_store()`のshares_diluted部分にsource_tagが
+   未設定だった）は、source_tagフィルタ導入により実データ形状との
+   乖離が露呈しテスト失敗したため、実データ形状（各エントリに
+   source_tag付与）に合わせて修正した
+5. **フルゲート**: `pytest tests/`（1,171件成功、新規回帰テスト6件
+   含む）・`common/sec_data/audit.py`（NG=0、既存WARNのみ）・
+   `report_consistency_check.py --fail-on-ng`（NG=0、警告119件、
+   本変更に起因する新規NG・WARNなし）全て通過
+
+#### 変更ファイル
+- `common/sec_data/layer3_builder.py`: `WEIGHTED_AVG_DILUTED_SHARES_
+  TAG`定数新設、`get_quarterly_series()`/`get_latest_quarterly()`に
+  `source_tag`任意引数追加
+- `src/value/tanuki_valuation/pipeline.py`: 希薄化率計算のインライン
+  フィルタを共通関数呼び出しへ置き換え
+- `src/tail/quarterly_review_generator.py`・`src/tail/tail_dcf_
+  bridge.py`: SharesDiluted取得箇所に`source_tag`引数を追加
+- `tests/test_layer3_accessor_wrappers.py`: `source_tag`引数の単体
+  テスト4件追加
+- `tests/test_gate2_phase3b1_reader_integration.py`: Q4タイミング
+  模擬の回帰テスト2件追加、既存フィクスチャ2件を実データ形状に修正
+
+---
+
+
 ### ✅ [MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1] RECESSION RISK SCOREの一部指標でツールチップ表示閾値と実スコア計算ロジックの境界値が食い違っている — 5指標全て修正完了
 **状態:** ✅実装完了
 **優先度:** 低 → 完了
