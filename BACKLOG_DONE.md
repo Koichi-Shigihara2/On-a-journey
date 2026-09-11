@@ -2,6 +2,79 @@
 
 ---
 
+## 2026-09-11（完了）
+
+### ✅ [MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1] RECESSION RISK SCOREの一部指標でツールチップ表示閾値と実スコア計算ロジックの境界値が食い違っている — 5指標全て修正完了
+**状態:** ✅実装完了
+**優先度:** 低 → 完了
+**分類:** UI/UX表示 / MACRO PULSE
+**登録日:** 2026-09-10
+**完了日:** 2026-09-11
+**発見:** `[[MACRO-THRESHOLD-INCONSISTENCY-1]]`①（YC閾値3セット）対応時の
+副次発見
+
+#### 内容（登録時点）
+`computeCurrentScore()`の`signals.push({...})`各エントリの`thresh`
+フィールド（ツールチップの「閾値」表示行）が、HY Spread・
+Philadelphia Fed Manufacturing・Chicago Fed National Activity・
+Initial Claims 4W MA・Michigan Consumer Sentimentの5指標で、実際の
+スコア計算ステップ関数の境界値と食い違っていた。Michigan Consumer
+Sentimentのみ、そもそも'bull'シグナル自体が構造的に存在しない
+（4分岐とも'bear'/'bear'/'caution'/'neutral'）という追加の構造的
+問題があった。
+
+#### 修正内容
+各指標のステップ関数を再確認し、`thresh`文字列を実際に到達しうる
+最も深刻な（score最大）ティア・最も良好なティアの境界値に修正した:
+
+| 指標 | 修正前 | 修正後 |
+|---|---|---|
+| HY Spread | `BULL≤4.0% / BEAR≥6.5%` | `BULL≤3.5% / BEAR>6.0%` |
+| Philadelphia Fed Manufacturing | `BULL≥+5 / BEAR≤0` | `BULL≥+5 / BEAR<-10`（BULL側は元々正確、BEAR側のみ修正） |
+| Chicago Fed National Activity (CFNAI MA3) | `BULL≥0 / BEAR≤-0.35` | `BULL≥-0.35 / BEAR<-0.7` |
+| Initial Claims 4W MA | `BULL≤215K / BEAR≥245K` | `BULL≤215K / BEAR>300K`（BULL側は元々正確、BEAR側のみ修正） |
+| Michigan Consumer Sentiment | `BULL≥90 / BEAR≤65` | `NEUTRAL≥90 / BEAR<60` |
+
+Sahm Rule・Building Permitsは依頼文通り対象外のまま変更していない
+（既に一致確認済み）。
+
+**Michigan Consumer Sentimentの構造的対応**: 依頼文が挙げた3つの選択肢
+（BULL表示自体を削除する／実際に到達可能な最良ティアの境界値に変更する
+等）のうち、両方を組み合わせて対応した。本指標のステップ関数
+（`cbcc<60`→bear82、`cbcc<75`→bear72、`cbcc<90`→caution60、
+それ以外→neutral30）には'bull'ティアが構造的に存在せず、最良でも
+'neutral'止まりであるため、ラベル自体を「BULL」から「NEUTRAL」へ
+変更し到達不可能なシグナルを示唆する誤記載を解消した上で、境界値も
+実際に到達可能な最良ティア（cbcc≥90でneutral）に合わせた。BEAR側は
+他4指標と同じ方針（最も深刻な単一ティアの境界、cbcc<60）を採用した
+（`cbcc<75`ではなく`cbcc<60`を選んだ理由: 60〜75の区間も'bear'
+ラベルだが score72 であり、score82の`cbcc<60`が「最も深刻な」ティア
+であるため。この選定方針はPhilly Fed/Initial Claims 4W MAの
+トレンド補正付き中間ティア〈これも'bear'になりうる〉を除外し、
+無条件に最も深刻な単一ティアの境界を採用するという、依頼文が明示した
+「philly<-10」「claims>300000」の選定基準と一貫させた）。
+
+#### 検証結果
+1. **5指標それぞれの修正内容**: 上表の通り
+2. **ブラウザ実地検証**: `computeCurrentScore()`の`signals`配列・
+   `pg-sig-tooltip-row`のDOM描画双方で、修正後の`thresh`文字列が
+   正しく反映されていることを確認。コンソールエラー0件
+3. **スコア計算ロジックの非変更確認**: `git diff`で変更箇所が
+   `thresh:`文字列（およびMichigan Sentimentへの説明コメント追加）
+   のみであることを確認。`if/else`の分岐条件・score値・signal値は
+   一切変更していない
+4. **フルゲート**: `pytest tests/`（1,165件成功）・
+   `common/sec_data/audit.py`（NG=0、既存WARNのみ）・
+   `report_consistency_check.py --fail-on-ng`（NG=0、警告119件、
+   本変更に起因する新規NG・WARNなし）全て通過
+
+#### 変更ファイル
+- `docs/market-monitor/macro-pulse/index.html`: 5指標の`thresh`
+  文字列を修正、Michigan Consumer SentimentのBULL→NEUTRAL変更理由を
+  コードコメントとして明記
+
+---
+
 ## 2026-09-10（完了）
 
 ### ✅ [TTM-SBC-QUARTERS-GAP-1] build_rice_annual_shape()のSBCがquarters完全性チェック対象外 — 実害を実測確認し、行全体除外ではなくSBC単独のNone化で根治的に修正
