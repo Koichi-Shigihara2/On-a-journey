@@ -1,14 +1,14 @@
 TDY INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-10T08:29:38+09:00
-Price: $595.23
+Generated: 2026-09-11T08:22:30+09:00
+Price: $596.50
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: HOLD
 Funda_Score: 70/100
 Timing_Score (components):
-  Deviation_Rate: -27.2%
-  MA200_Deviation: -3.2%
+  Deviation_Rate: -27.4%
+  MA200_Deviation: -3.1%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: None | Target: $755 median ($640-$877) | 12 analysts | vs IV: +74.3%
 Comment: 割高(-27%超)、FCF黒字、売上安定成長
@@ -32,8 +32,8 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×低効率
-Key_Metric_Y: RICE = 0.915
-Deviation_Rate: -27.2%
+Key_Metric_Y: RICE = 0.924
+Deviation_Rate: -27.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,23 +57,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $595.23
+Current_Price: $596.50
 Intrinsic_Value_BASE: $433.09
-Deviation_BASE: -27.2%
+Deviation_BASE: -27.4%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 13.8% (推奨値・中央値ベース)
 Scenarios:
 BEAR: Growth=9.7%, IV=$360.70 （推奨値ベース）
 BASE: Growth=13.8%, IV=$433.09 （推奨値ベース）
 BULL: Growth=16.6%, IV=$487.24 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $492.96 (-17.2%) / 3年後: $638.67 (+7.3%) / 5年後: $827.45 (+39.0%)
+Return_Outlook(BASE): 1年後: $492.96 (-17.4%) / 3年後: $638.67 (+7.1%) / 5年後: $827.45 (+38.7%)
   5yr_Annualized_Return: +6.8%/yr
 TTM_YoY_Growth: 7.9%
 (DCF Base vs TTM actual: +5.9pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 9.48%
-  参考①β込みWACC_IV: $472.94 (Deviation: -20.5%)
-  参考②Rf理論上限_IV: $2,600.54 (Deviation: +336.9%)
+  参考①β込みWACC_IV: $472.94 (Deviation: -20.7%)
+  参考②Rf理論上限_IV: $2,600.54 (Deviation: +336.0%)
 Terminal_Growth_Rate: 3.0%
 Beta: 0.908
 FCF_TTM_End: 2026-06-28 (FCF/RICE算出に用いたTTM期末日)
@@ -189,19 +189,19 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.643
-BASE: RICE=0.915
-BULL: RICE=1.1
+BEAR: RICE=0.65
+BASE: RICE=0.924
+BULL: RICE=1.112
 Components (BASE scenario):
 G  = 13.8%  [TANUKI forward growth rate]
-Q  = 1.2283   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 1.2411   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.7507  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 2.6831  [R&D除外・CapExのみ投資強度]
-RICE_adj = 3.269  [参考：R&D資本化想定]
+RICE_adj = 3.303  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 0.72  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 0.72  [NOPAT/InvestedCapital / 0.10]
-SBC_Adjusted: true
+SBC_Adjusted: false
 Definition:
 
 RICE measures reinvestment efficiency and compounding power
@@ -303,9 +303,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 4.49%  (ForwardEPS $26.73 / Price $595.23)
+  Forward_Earnings_Yield: 4.48%  (ForwardEPS $26.73 / Price $596.50)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: 0.19%
+  ERP: 0.18%
   ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.

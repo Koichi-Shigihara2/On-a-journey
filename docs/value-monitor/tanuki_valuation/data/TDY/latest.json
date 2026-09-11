@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 23597613817.224464,
   "intrinsic_value_per_share": 433.0943890350933,
   "intrinsic_value_beta": 472.94,
-  "upside_percent_beta": -20.5,
+  "upside_percent_beta": -20.7,
   "intrinsic_value_rf": 2600.54,
-  "upside_percent_rf": 336.9,
+  "upside_percent_rf": 336.0,
   "v0": 23597613817.224464,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "v0_adjusted": 23597613817.224464,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 492.96,
       "value_growth_pct": 13.8,
-      "expected_return_pct": -17.2
+      "expected_return_pct": -17.4
     },
     "2年後": {
       "future_value": 561.1,
       "value_growth_pct": 29.6,
-      "expected_return_pct": -5.7
+      "expected_return_pct": -5.9
     },
     "3年後": {
       "future_value": 638.67,
       "value_growth_pct": 47.5,
-      "expected_return_pct": 7.3
+      "expected_return_pct": 7.1
     },
     "4年後": {
       "future_value": 726.96,
       "value_growth_pct": 67.9,
-      "expected_return_pct": 22.1
+      "expected_return_pct": 21.9
     },
     "5年後": {
       "future_value": 827.45,
       "value_growth_pct": 91.1,
-      "expected_return_pct": 39.0
+      "expected_return_pct": 38.7
     }
   },
-  "upside_percent": -27.2,
-  "calculation_date": "2026-09-10T08:29:38+09:00",
+  "upside_percent": -27.4,
+  "calculation_date": "2026-09-11T08:22:30+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -267,7 +267,7 @@
   },
   "rice": {
     "available": true,
-    "q": 1.2283,
+    "q": 1.2411,
     "cf_conversion": 0.7507,
     "cf_adj": 2.6831,
     "wacc": 0.1,
@@ -276,26 +276,26 @@
     "avg_intensity": 0.0434,
     "avg_rev_growth_lagged": 0.0454,
     "warnings": true,
-    "note": "SBC補正済み（純利益+SBCを分母に使用） / RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-07-02）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-06-29, TTM@2024-06-30, TTM@2023-07-02）: 投資強度が過小になる可能性",
+    "note": "RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-07-02）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-06-29, TTM@2024-06-30, TTM@2023-07-02）: 投資強度が過小になる可能性",
     "vc_factor": 0.719,
     "roic_wacc_ratio": 0.719,
     "bear": {
       "growth_rate": 0.097,
-      "rice": 0.643,
-      "rice_per_ratio": 0.0217,
-      "rice_adj": 2.298
+      "rice": 0.65,
+      "rice_per_ratio": 0.022,
+      "rice_adj": 2.322
     },
     "base": {
       "growth_rate": 0.138,
-      "rice": 0.915,
-      "rice_per_ratio": 0.0309,
-      "rice_adj": 3.269
+      "rice": 0.924,
+      "rice_per_ratio": 0.0312,
+      "rice_adj": 3.303
     },
     "bull": {
       "growth_rate": 0.166,
-      "rice": 1.1,
-      "rice_per_ratio": 0.0372,
-      "rice_adj": 3.932
+      "rice": 1.112,
+      "rice_per_ratio": 0.0376,
+      "rice_adj": 3.973
     }
   },
   "fcf_source": "ttm_series",
@@ -318,7 +318,7 @@
     "roe_10yr_avg": 0.10837662280902076,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 595.22998046875,
+    "current_price": 596.5,
     "latest_revenue": 6115400000.0,
     "rpo": 5176100000,
     "beta": 0.908,
@@ -352,11 +352,11 @@
     "alpha_uncapped": 0.4551818157978871,
     "per": 29.585758,
     "per_is_forward": false,
-    "per_adjusted": 23.85,
+    "per_adjusted": 23.9,
     "peg": 1.4,
     "ps": 4.438204,
     "ev_ebitda": 18.836,
-    "ma200": 614.8587483215332,
+    "ma200": 615.4188983154297,
     "forward_eps": 26.72592,
     "analyst_target_median": 755.0,
     "analyst_target_mean": 757.25,
@@ -376,7 +376,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-10",
+    "validated_at": "2026-09-11",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -412,7 +412,7 @@
     "matrix": "①投資効率系",
     "quadrant": "左下",
     "label": "割高×低効率",
-    "key_metric_y": "RICE = 0.915",
+    "key_metric_y": "RICE = 0.924",
     "qx": false,
     "qy": false
   },
@@ -467,7 +467,7 @@
     "shares_yr_now_label": "2025",
     "shares_yr_3ago_label": "2023"
   },
-  "net_current_assets_ratio": 0.0629,
+  "net_current_assets_ratio": 0.0627,
   "dupont": {
     "ni_ttm": 974800000,
     "revenue_ttm": 6374400000,
@@ -512,8 +512,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0019,
-  "forward_earnings_yield": 0.0449,
+  "erp": 0.0018,
+  "forward_earnings_yield": 0.0448,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
