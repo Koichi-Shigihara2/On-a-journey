@@ -1152,7 +1152,7 @@ function computeCurrentScore() {
   if(hy!==null){hyLabel=hy.toFixed(2)+'%';
     if(hy>6){hyScore=90;hySignal='bear';}else if(hy>4.5){hyScore=70;hySignal='caution';}
     else if(hy>3.5){hyScore=40;hySignal='neutral';}else{hyScore=15;hySignal='bull';}}
-  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤4.0% / BEAR≥6.5%',obsDate:latestDate('HY Spread')});
+  signals.push({name:'HY Spread',val:hyLabel,score:hyScore,signal:hySignal,weight:15,lead:'先行2ヶ月',desc:'ハイイールド債と国債の利回り差。信用リスクの高まりを示し、拡大時は景気後退のサイン。',thresh:'BULL≤3.5% / BEAR>6.0%',obsDate:latestDate('HY Spread')});
 
   let cbcc2Score=50,cbcc2Signal='neutral',cbcc2Label='—';
   if(cbcc2!==null){cbcc2Label=cbcc2.toFixed(0)+'K';
@@ -1164,25 +1164,30 @@ function computeCurrentScore() {
   if(philly!==null){phillyLabel=philly.toFixed(1);const t=trend3('Philadelphia Fed Manufacturing');
     if(philly<-10){phillyScore=88;phillySignal='bear';}else if(philly<0){phillyScore=65+(t<0?10:0);phillySignal=t<0?'bear':'caution';}
     else if(philly<5){phillyScore=35;phillySignal='neutral';}else{phillyScore=12;phillySignal='bull';}}
-  signals.push({name:'Philly Fed Mfg',val:phillyLabel,score:phillyScore,signal:phillySignal,weight:18,lead:'先行3ヶ月',desc:'フィラデルフィア連銀製造業景況指数。0超が拡張、0未満が縮小を示す。製造業の先行指標。',thresh:'BULL≥+5 / BEAR≤0',obsDate:latestDate('Philadelphia Fed Manufacturing')});
+  signals.push({name:'Philly Fed Mfg',val:phillyLabel,score:phillyScore,signal:phillySignal,weight:18,lead:'先行3ヶ月',desc:'フィラデルフィア連銀製造業景況指数。0超が拡張、0未満が縮小を示す。製造業の先行指標。',thresh:'BULL≥+5 / BEAR<-10',obsDate:latestDate('Philadelphia Fed Manufacturing')});
 
   let cfnaiScore=50,cfnaiSignal='neutral',cfnaiLabel='—';
   if(cfnai!==null){cfnaiLabel=cfnai.toFixed(2);
     if(cfnai<-0.7){cfnaiScore=82;cfnaiSignal='bear';}else if(cfnai<-0.35){cfnaiScore=50;cfnaiSignal='neutral';}
     else{cfnaiScore=18;cfnaiSignal='bull';}}
-  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥0 / BEAR≤-0.35',obsDate:latestDate('Chicago Fed National Activity')});
+  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥-0.35 / BEAR<-0.7',obsDate:latestDate('Chicago Fed National Activity')});
 
   let clScore=50,clSignal='neutral',clLabel='—';
   if(claims!==null){clLabel=(claims/1000).toFixed(0)+'K';const t=trend3('Initial Claims 4W MA');
     if(claims>300000){clScore=85;clSignal='bear';}else if(claims>250000){clScore=60+(t>0?10:0);clSignal=t>0?'bear':'caution';}
     else if(claims>215000){clScore=35;clSignal='neutral';}else{clScore=15;clSignal='bull';}}
-  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月',desc:'新規失業保険申請件数4週移動平均。労働市場の健全性を示す週次指標。増加は雇用悪化のサイン。',thresh:'BULL≤215K / BEAR≥245K',obsDate:latestDate('Initial Claims 4W MA')});
+  signals.push({name:'Initial Claims',val:clLabel,score:clScore,signal:clSignal,weight:10,lead:'先行1ヶ月',desc:'新規失業保険申請件数4週移動平均。労働市場の健全性を示す週次指標。増加は雇用悪化のサイン。',thresh:'BULL≤215K / BEAR>300K',obsDate:latestDate('Initial Claims 4W MA')});
 
   let cbScore=50,cbSignal='neutral',cbLabel='—';
   if(cbcc!==null){cbLabel=cbcc.toFixed(1);
     if(cbcc<60){cbScore=82;cbSignal='bear';}else if(cbcc<75){cbScore=72;cbSignal='bear';}
     else if(cbcc<90){cbScore=60;cbSignal='caution';}else{cbScore=30;cbSignal='neutral';}}
-  signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。',thresh:'BULL≥90 / BEAR≤65',obsDate:latestDate('Michigan Consumer Sentiment')});
+  // [[MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1]]対応: 本指標のステップ関数には
+  // 'bull'ティアが構造的に存在しない（4分岐とも'bear'/'bear'/'caution'/
+  // 'neutral'で、最良でも'neutral'止まり）。従来のthresh表示「BULL≥90」は
+  // 到達不可能なシグナルを示唆する誤記載だったため、実際に到達可能な最良
+  // ティアのラベル（NEUTRAL）と境界値に修正した。
+  signals.push({name:'Michigan Sent.',val:cbLabel,score:cbScore,signal:cbSignal,weight:8,lead:'先行2ヶ月',desc:'ミシガン大学消費者信頼感指数。消費者の現況認識と将来期待を測定。消費支出の先行指標。',thresh:'NEUTRAL≥90 / BEAR<60',obsDate:latestDate('Michigan Consumer Sentiment')});
   let sahmScore=50,sahmSignal='neutral',sahmLabel='—';
   if(sahm!==null){sahmLabel=sahm.toFixed(2);
     sahmScore=sahm>=0.5?88:sahm>=0.3?50:12;
