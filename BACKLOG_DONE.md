@@ -216,6 +216,132 @@ report_consistency_check.py --fail-on-ng: NG=0（CRMのWARN-46が消滅し
 
 ---
 
+## 2026-09-12③（完了）
+
+### ✅ [EPS-LITE-ANNUAL-AS-QUARTERLY-1] EPS Analyzer「Q4に年次の調整項目タグを追加」ループが、四半期(10-Q)申告が皆無のタグを年次総額のままQ4へ誤採用する構造的バグ（LITE単独ではなくtanuki=true全銘柄共通、revenue以外の調整項目タグにも波及）
+**状態:** ✅実装完了（対象: 全tanuki=true銘柄、revenue・調整項目タグ双方）
+**優先度:** 中 → 完了
+**分類:** データ品質 / EPS ANALYZER
+**登録日:** 2026-09-05
+**完了日:** 2026-09-12
+**発見:** [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]対応中、EPS閾値校正のための
+実データ分布調査（チャット記録）
+
+#### 内容（登録時点、2026-09-05 — 当初仮説には誤りがあった）
+LITE（Lumentum）のEPS Analyzer quarterly.json、FY2026Q4（filing_date=
+2026-06-27、form=10-K）のadjusted_eps=-95.004（gaap_eps=-96.001、
+gaap_net_income=-$7,161,700,000）が、直前3四半期（+0.93/+1.62/+2.12）
+から見て明らかに桁違いの異常値となっている。
+
+原因を確認したところ、当該レコードのrevenue=$3,014,000,000は
+Q3実績（$808.4M）・Q2実績（$665.5M）と比較して明らかにFY2026の
+**通期revenue**の規模であり、LITEの10-K（annual filing）における
+通期実績（Q4単体ではなくFY全体）がそのまま単一四半期のレコードとして
+誤抽出されていると判明。net_income=-$7.16Bも同様に通期の値と推測される
+（真のQ4単体revenue・net_incomeは、通期実績からQ1〜Q3累計を差し引く
+標準的な手法で導出する必要があるが未実施）。
+
+会計上・タグ付け自体に誤りがあるわけではなく（company_facts.jsonの値
+自体は正しい通期実績）、EPS Analyzer側の四半期抽出ロジック
+（`extract_key_facts.py`）が10-Kのfiscal Q4を「通期実績 − Q1〜Q3累計」
+で導出していない、あるいはこのケースで導出に失敗しフォールバックして
+いる可能性が高い、という仮説のもとで登録した（優先度は中、対応方針は
+未確認・要調査のまま）。
+
+#### 調査で判明した訂正（2026-09-12、STEP1〜2）
+実際に`extract_key_facts.py`のnet_income専用Q4導出ブロック（646〜730
+行目、「通期−Q1〜3累計」を実装済み）を実測したところ、**net_income側の
+導出ロジックは正しく機能していた**。LITE FY2026Q4のnet_income=
+-$7,161,700,000は、年次実績(-$6,935,100,000)からQ1〜3累計
+(+$226,600,000)を正しく差し引いた**真に正しいQ4単独の値**（実際に
+発生した一過性の巨額損失、減損等とみられる）であり、「通期実績が
+そのまま使われている」という当初仮説はnet_incomeに関しては誤りだった。
+
+一方**revenueは実際に別の場所（同ファイル772〜844行目、「Q4に年次の
+調整項目タグを追加」という汎用ループ）でバグがあった**。このループは
+`required_tags`のうち明示除外されていないタグ全てを「調整項目」とみなし
+年次からQ1〜3を差し引くが、revenue系タグもこのループに巻き込まれて
+いる。LITEのケースでは`RevenueFromContractWithCustomerExcludingAssessedTax`
+が年次のみ申告・四半期(10-Q)申告が皆無であり、YTD法・Q1〜3合計法の
+いずれも「該当データなし→0」と判定され`Q4=年次−0=年次そのまま`という
+値が書き込まれ、`pipeline.py::get_revenue()`のタグ優先順位がこの壊れた
+値を他の正しいタグより先に採用していた。
+
+tanuki=true全99銘柄・363件のQ4(10-K)レコードを、独立系統（parser.py・
+common/sec_data側）の年次計算値との厳密一致（0.01%未満）で全数横断
+スキャンした結果、**revenueで同型バグが確定した銘柄は9銘柄・13件**
+（APP・AVAV・CAKE・GOOGL・INTU・LITE・SNPS・SPIR・ASTS。当初報告した
+JOBYはfiscal_year近傍一致による偽陽性と判明し対象から除外）。
+net_incomeについては全銘柄で該当0件（健全性を再確認）。
+
+保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）のうちAPPが
+revenueで該当（FY2023〜2025）。
+
+#### 影響
+[[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]対応の過程でTANUKI VALUATION側に
+EPS絶対値の異常値除外ガード（EPS_MAGNITUDE_CAP=30）を新設したため、
+黒字化予測への実害は解消済み（LITEは正しくACHIEVEDと判定される）。
+ただしEPS Analyzer自体の表示（stock.html・quarterly.json）には
+-95.004という誤った値がそのまま残っており、それを直接参照する他の
+指標（YoY成長率等）に波及している可能性がある。
+
+#### 修正範囲の拡大（依頼者確認済み、2026-09-12）
+上記revenue限定バグの調査後、根本原因（772〜844行目の汎用「調整項目
+Q4補完」ループ）自体は**revenueだけでなく、そこで扱われる全ての
+調整項目タグ（depreciation・goodwill_impairment・sbc・amortization_
+intangibles・restructuring・tax_one_time等）に共通する構造的欠陥**
+であると判明。ガードをrevenue限定にせず全タグ共通で実装する方針を
+提示し、依頼者の承認を得て全tanuki=true銘柄・全調整項目タグを対象に
+修正範囲を拡大した。
+
+#### 対応方針（実装完了）
+`extract_key_facts.py`の「Q4に年次の調整項目タグを追加」ループ
+（772〜844行目）のQ1〜3合計法フォールバックに、「該当タグの四半期
+(10-Q)申告キーがQ1〜Q3のいずれにも1件も存在しない場合はQ4への書き込み
+自体をスキップする」ガードを追加。「未申告（キー自体が無い）」と
+「申告はあるが実際に0円」を区別できず後者と誤認して`年次−0=年次`という
+値を書き込んでいた根本原因を解消し、`get_revenue()`等の呼び出し元が
+優先順位に従って他の正しいタグへフォールバックできるようにした。
+
+#### 検証結果（全母集団シミュレーション・一次情報スポットチェック）
+99銘柄をライブ再取得しbefore/after突合（extract_key_facts.py単体・
+フルパイプライン〈process_one_ticker、AI呼び出しはスタブ化〉の両方で
+実施）:
+- 生データレベルで調整項目タグが是正されたのは74銘柄（revenue 9銘柄・
+  それ以外の調整項目タグ65銘柄）
+- 実際に`adjusted_eps`が変化したのは**47銘柄・110件**（変化率:
+  最小0.02%・中央値7.36%・最大534.73%〈AVAV FY2023〉。符号反転は
+  VST・COHR・LOAR、いずれも非保有銘柄）
+- CELH（SBC）・NVDA（depreciation）は生データは是正されるが
+  `adjusted_eps`は無変化と確認: NVDAの`depreciation`項目は
+  `adjustment_detector.py`の`REIT_ONLY_ITEM_IDS`によりREIT以外では
+  無条件スキップされる設計、CELHのSBCはタグ優先順位で正しい四半期値を
+  持つ`ShareBasedCompensation`が先にヒットするため、いずれも元々バグ値
+  自体が使われていなかったことをコード確認済み
+- 保有9銘柄で`adjusted_eps`が変化したのはAPP（revenue）・PLTR
+  （amortization_intangibles、FY2023-2024、-2.0〜-3.8%）・SOFI
+  （amortization_intangibles等、FY2022/2023/2025、-20.9〜-76.2%）の
+  3銘柄。CELH・NVDA・ADBE・CRWV・SOUN・TSLAは無変化
+- `tanuki_valuation/pipeline.py`内のadjusted_eps参照3箇所（EPS比較
+  パネル・PER比較脚注・黒字化予測表示）を全てコード確認した結果、
+  いずれも表示専用でRICE・DCF_Reliability・TANUKI SCORE分類ロジック
+  には接続されておらず、**保有銘柄の分類変化は0件**
+- `EPS_MAGNITUDE_CAP=30`（[[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]で
+  新設）への新規抵触は0件。逆にLOAR FY2023Q4が106.37→-2.44に是正され
+  cap超過が解消（同コメントが「唯一の外れ値はLITE」としていたのは
+  誤りで、LOARにも同型の未認識バグが潜んでいたと判明）
+- 一次情報スポットチェック: NVDA `Depreciation`・SOFI
+  `AmortizationOfIntangibleAssets`とも、SEC生データで全期間
+  「10-Kの年次(363-365日)エントリのみ・10-Q四半期エントリ皆無」を
+  直接確認、修正前の値が年次総額そのものだったことを裏付け済み
+- 回帰テスト4件追加（`tests/test_eps_analyzer_q4_zero_quarterly_
+  presence_guard.py`）、pytest全件・audit.py・report_consistency_
+  check.py --fail-on-ng すべてNG=0を確認
+- 本番データ再生成: tanuki=true全99銘柄（annual/quarterly/ttm.json
+  計297ファイル＋summary.json、コミット`aba7fcfcc5`・`4e90d7c77d`）
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消

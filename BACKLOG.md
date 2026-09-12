@@ -4820,51 +4820,6 @@ and wacc > 0 else 0.0`と明示的にゼロフロアされるのに対し、直�
 
 ---
 
-### [EPS-LITE-ANNUAL-AS-QUARTERLY-1] LITE FY2026第4四半期のEPSが通期実績の単一四半期誤抽出で異常値化
-**優先度:** 中
-**分類:** データ品質 / EPS ANALYZER
-**登録日:** 2026-09-05
-**発見:** [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]対応中、EPS閾値校正のための
-実データ分布調査（チャット記録）
-
-#### 内容
-LITE（Lumentum）のEPS Analyzer quarterly.json、FY2026Q4（filing_date=
-2026-06-27、form=10-K）のadjusted_eps=-95.004（gaap_eps=-96.001、
-gaap_net_income=-$7,161,700,000）が、直前3四半期（+0.93/+1.62/+2.12）
-から見て明らかに桁違いの異常値となっている。
-
-原因を確認したところ、当該レコードのrevenue=$3,014,000,000は
-Q3実績（$808.4M）・Q2実績（$665.5M）と比較して明らかにFY2026の
-**通期revenue**の規模であり、LITEの10-K（annual filing）における
-通期実績（Q4単体ではなくFY全体）がそのまま単一四半期のレコードとして
-誤抽出されていると判明。net_income=-$7.16Bも同様に通期の値と推測される
-（真のQ4単体revenue・net_incomeは、通期実績からQ1〜Q3累計を差し引く
-標準的な手法で導出する必要があるが未実施）。
-
-会計上・タグ付け自体に誤りがあるわけではなく（company_facts.jsonの値
-自体は正しい通期実績）、EPS Analyzer側の四半期抽出ロジック
-（`extract_key_facts.py`）が10-Kのfiscal Q4を「通期実績 − Q1〜Q3累計」
-で導出していない、あるいはこのケースで導出に失敗しフォールバックして
-いる可能性が高い。
-
-#### 影響
-[[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]対応の過程でTANUKI VALUATION側に
-EPS絶対値の異常値除外ガード（EPS_MAGNITUDE_CAP=30）を新設したため、
-黒字化予測への実害は解消済み（LITEは正しくACHIEVEDと判定される）。
-ただしEPS Analyzer自体の表示（stock.html・quarterly.json）には
--95.004という誤った値がそのまま残っており、それを直接参照する他の
-指標（YoY成長率等）に波及している可能性がある。
-
-#### 対応方針（未確認・要調査）
-`extract_key_facts.py`のLITE（および他社の10-K）向け四半期導出ロジックを
-確認し、通期実績を単一四半期として誤って採用しているケースがLITE以外にも
-ないか横展開調査した上で、Q4=通期−Q1〜Q3累計の正しい導出に修正する。
-
-#### 着手条件
-なし
-
----
-
 ### [EPS-AI-ANALYSIS-LATEST-ONLY-1] EPS Analyzer ai_analysisが最新四半期のみ・過去四半期に遡及されない
 **優先度:** 中
 **分類:** 機能ギャップ / EPS Analyzer
