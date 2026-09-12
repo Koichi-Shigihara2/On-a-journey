@@ -2,6 +2,106 @@
 
 ---
 
+## 2026-09-12（完了）
+
+### ✅ [MA-INTEGRATION-TAG-GAP-1] adjustment_items.jsonのma_integration項目がXBRLタグ不足、境界近傍銘柄の「跳ね返り」を招く二値ゲート設計 — 連続スケーリング化＋未登録2タグ追加で根治的に解消
+**状態:** ✅実装・本番反映完了
+**優先度:** 未定 → 完了
+**分類:** データ品質 / 一過性費用検出 / コアバリュエーション計算
+**登録日:** 2026-07-14
+**完了日:** 2026-09-12
+**発見:** [[TRANSIENT-EXPENSE-COVERAGE-1]]（完了）（AVAV/RDW調査）の副次発見
+
+#### 内容（登録時点、経緯の詳細はBACKLOG.md 2026-07-14〜2026-09-10の
+状況追記を参照。要点のみ再掲）
+`config/adjustment_items.json`のma_integration項目のxbrl_tagsが
+`us-gaap:BusinessCombinationIntegrationCosts`のみで、
+`BusinessCombinationAcquisitionRelatedCosts`・
+`BusinessCombinationIntegrationRelatedCosts`の2タグが未登録だった。
+単純なタグ追加は「改善（グループB）と悪化（グループC）が相殺し
+net効果が薄い」問題に加え、`estimate_fcf_from_eps()`の
+`pre_deduction_dr > 1.0`二値ゲート設計そのものが、境界near
+（pre_dr≈1.0）の銘柄でタグ追加によるAdj_NIの微増だけでも控除額を
+0→満額へ不連続にジャンプさせる構造的脆さを持つことが判明（CSGP:
+dr 0.96→0.45、ZETA: dr 0.95→0.63の「跳ね返り」実例）。2026-09-10の
+分析で、二値ゲートを連続スケーリング（ランプ関数）化する設計案が
+提案され、Koichiさんの承認を得て2026-09-11〜12に実装・本番反映した。
+
+#### 実装内容（2026-09-11〜12）
+1. **`calculator/adjustments.py`**: `pre_deduction_dr > 1.0`の二値
+   判定を、1.0超過分を`MA_ADDBACK_RAMP_BAND`（帯幅）で正規化した
+   連続的な控除割合`deduction_fraction = clamp((pre_dr-1.0)/band, 0, 1)`
+   へ変更。`FCF-EST-DIRECTION-GUARD-1`の「pre_dr<=1.0では無条件で
+   控除しない」という判定はコードレベルで完全に維持（`if
+   pre_deduction_dr > 1.0:`の分岐自体は変更せず、内側のfractionのみ
+   連続化）。
+2. **band=0.20を実データで校正**: CSGPの新2タグ追加後の実測
+   pre_dr≈1.10（境界帯の中間よりやや下寄り）を境界帯の内側に収め
+   つつ、「明確に過大推定が確定的」とされてきた銘柄群（MSFT 1.27・
+   DOCN 1.29・LLY 1.30・SNPS 1.39・MRVL 1.41・GOOGL 1.49等）の
+   判定（frac=1.0、満額控除）を変えない値として採用。0.10案（登録
+   時点の暫定値）ではなく、実データ検証を経て0.20を確定した。
+3. **`config/adjustment_items.json`**: ma_integrationのxbrl_tagsに
+   未登録2タグを追加（本タスクの発端であるタグ不足そのものを解消）。
+4. **`pipeline.py`**: report.txt生成の2箇所で、`ma_addback_excluded`/
+   `ma_addback_detected_but_not_applied`が相互排他という旧前提
+   （二値ゲート由来）を、連続スケーリングにより両者が同時に>0
+   （部分控除）になりうることを踏まえた分岐へ修正。
+5. **`tests/test_estimate_fcf_ma_addback.py`**: 境界帯内部分控除・
+   下限(pre_dr==1.0でfraction=0)・上限(pre_dr>=1.0+bandでfraction=1)
+   の3テストを新規追加（既存7テストは変更なしで全てPASS）。
+
+#### 事前シミュレーション（本番反映前、全103銘柄相当）
+- `ma_addback>0`の70銘柄中、pre_dr∈(1.0,1.2)の境界帯に入るのは
+  5銘柄（CPRT/META/KLAC/JNJ/CDNS）。うち実際にIVへ反映される
+  （`fcf_estimation.applied=True`）のはCPRT・METAのみ（KLAC/JNJ/CDNS
+  は「生FCF安定」フォールバックでIVに構造的に無関係）。
+- COHR: `ma_addback`自体が0（Guard-A一過性費用除外の早期returnで
+  構造的免除）→ 判定不変を確認。
+- 確定的満額控除域（MSFT/DOCN/LLY/SNPS/MRVL/GOOGL/SITM/SOFI/AMZN/
+  SPIR）は全てfrac=1.0のまま変化ゼロを確認。
+- 未登録2タグ追加のcompany_facts.jsonキャッシュ近似試算で、CSGPが
+  タグ追加後pre_dr≈1.09（境界帯へ突入）、旧・二値ゲートのままなら
+  -33.2%の単発急変だったはずが、新ロジックでは-5.8%の緩やかな変化に
+  収まると試算（本タスクの目的の直接的な実証）。
+- 境界近傍17銘柄（INTU/ADBE/NET/CPRT/META/CSGP/ESTC/MSFT/ZETA/ADSK/
+  SCCO/FROG/PM/WST/RMBS/ENTG/KLAC）を個別確認、ADBE（保有銘柄）への
+  影響ゼロを確認。
+
+#### 本番反映の実測結果（2026-09-12、adjusted_eps_analyzer --force
+ライブSEC再抽出 + tanuki_valuation pipeline.py 全銘柄再実行）
+全99銘柄中、IV(理論株価)が±1%を超えて変化したのは4銘柄のみ:
+- **CSGP: $10.09→$9.33 (-7.6%)**。事前シミュレーション予測(-5.8%)と
+  同方向・同オーダー（やや大きめだが緩やかな変化の範囲内）。旧・
+  二値ゲートのままだったら-33.2%の単発急変になっていたはずで、
+  連続スケーリングの目的通り緩和されたことを実データで確認。
+- **ZETA: $26.22→$27.95 (+6.6%)**。新2タグ登録による正当な加算捕捉
+  （ramp機構自体は非該当、実測pre_dr=0.64で境界から離脱済み）。
+- **NOW: $137.69→$139.93 (+1.6%)**。ZETAと同様、新タグ登録の効果。
+- **INTU: $415.77→$472.40 (+13.6%)。本タスクとは無関係**と判明。
+  annual.jsonの年度ラベルが2025→2026に進み、新しい四半期決算が
+  TTMウィンドウに入ったことが原因（ma_addback_excluded/detectedは
+  397M→381Mとほぼ不変、ガード判定不変）。off-schedule実行により
+  次回の通常更新分を先取りしただけで、本タスクによる影響ではない。
+
+ADBE（保有銘柄）: $447.22→$447.22で変化ゼロを確認。COHR・MSFT・
+DOCN・LLY等の確定的判定銘柄も全て変化ゼロを確認。
+
+#### 検証結果
+- `pytest tests/`: 1174 passed（新規3テスト含む）
+- `python common/sec_data/audit.py`: NG=0
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0（CEG・LYFTのanomaly_detection FAILは本タスク以前からの既知
+  事象、無関係）
+
+#### コミット
+- `a9f507b3e9`: 実装（adjustments.py・config/adjustment_items.json・
+  pipeline.py・テスト）
+- `a632b09745`: 本番データ再生成（adjusted_eps_analyzer・
+  tanuki_valuation全銘柄再実行）
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
