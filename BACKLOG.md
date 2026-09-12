@@ -4436,33 +4436,6 @@ STONKS SILOのYoY計算（`financial_trend_calculator.py::_calc_yoy_change()`）
 
 ---
 
-### [BETA-FALLBACK-DESIGN-GAPS-1] β取得の3経路重複・0/負値無条件フォールバック・許容範囲の2基準並存
-**優先度:** 中
-**分類:** 設計不整合 / TANUKI VALUATION
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-013）・`OUTPUT_ITEMS_INVENTORY.md`「β（3経路：日次/月次/監査トリガー時）」
-
-#### 内容
-`beta_fetcher.py::calc_capped_beta()`は生βが`None`かどうかのみをチェックし、
-`0`や負値であっても`max(0.3,min(2.5,raw_beta))`で無条件に0.3へフロアされ
-`beta_config.json`に書き込まれる。警告フラグは一切付与されない。さらに
-実行時の`data_fetcher.py::_determine_beta()`は`beta_config.json`のoverride
-を最優先かつ無条件に採用するため、`_determine_beta()`自身が持つ「yfinance
-直接値は0.1〜3.0の範囲内のみ採用」という健全性チェックが一切適用されない。
-加えて`beta_fetcher.py`の許容範囲（0.3〜2.5）と`_determine_beta()`の
-直接値許容範囲（0.1〜3.0）が異なる2つの基準として並存している。β取得
-自体も日次/月次/監査トリガー時の3経路が重複している。
-
-#### 対応方針
-①生βが0/負値だった場合に警告フラグを付与する②`beta_config.json`の
-overrideにも健全性チェックを適用する③許容範囲の基準を1つに統一する
-④3経路の重複を整理する、の優先順位を検討してから着手する。
-
-#### 着手条件
-なし
-
----
-
 （[[DISCOVER-CONFIG-DUAL-MGMT-1]]は2026-08-15実装完了、BACKLOG_DONE.md
 「2026-08-15（完了）」参照）
 

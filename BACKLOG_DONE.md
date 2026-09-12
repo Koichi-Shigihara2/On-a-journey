@@ -444,6 +444,101 @@ tanuki_valuation`が既存の別要因で常に失敗する状態だったこと
 
 ---
 
+## 2026-09-12⑤（完了）
+
+### ✅ [BETA-FALLBACK-DESIGN-GAPS-1] β取得の3経路重複・0/負値無条件フォールバック・許容範囲の2基準並存 — 読み取り専用調査で4項目とも実害ゼロと確認、案A（WARNログ追加のみ）で解消
+**状態:** ✅調査完了・案A実装完了
+**優先度:** 中 → 低 → 完了（調査結果を踏まえ格下げの上クローズ）
+**分類:** 設計不整合 / TANUKI VALUATION
+**登録日:** 2026-07-23
+**完了日:** 2026-09-12
+**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-013）・
+`OUTPUT_ITEMS_INVENTORY.md`「β（3経路：日次/月次/監査トリガー時）」
+
+#### 内容（登録時点）
+`beta_fetcher.py::calc_capped_beta()`は生βが`None`かどうかのみを
+チェックし、`0`や負値であっても`max(0.3,min(2.5,raw_beta))`で無条件に
+0.3へフロアされ`beta_config.json`に書き込まれる。警告フラグは一切
+付与されない。さらに実行時の`data_fetcher.py::_determine_beta()`は
+`beta_config.json`のoverrideを最優先かつ無条件に採用するため、
+`_determine_beta()`自身が持つ「yfinance直接値は0.1〜3.0の範囲内のみ
+採用」という健全性チェックが一切適用されない。加えて`beta_fetcher.py`
+の許容範囲（0.3〜2.5）と`_determine_beta()`の直接値許容範囲
+（0.1〜3.0）が異なる2つの基準として並存している。β取得自体も日次/
+月次/監査トリガー時の3経路が重複している。
+
+#### 対応方針（登録時点）
+①生βが0/負値だった場合に警告フラグを付与する②`beta_config.json`の
+overrideにも健全性チェックを適用する③許容範囲の基準を1つに統一する
+④3経路の重複を整理する、の優先順位を検討してから着手する。
+
+#### 調査結果（2026-09-12、読み取り専用）
+4項目全てを実データ・実コードで検証し、**いずれも実害ゼロ**と確認した:
+
+1. **beta_config.json全101エントリの実態**: 0.3フロア到達4銘柄
+   （HQY・JNJ・VZ・XOM）・2.5キャップ到達9銘柄（ALAB・ASTS・BBAI・
+   IONQ・JOBY・ONDS・RDW・SITM・SOUN）全てで`source`の`capped_from`
+   マーカーから生β値を直接確認したところ、生β=0.15〜3.36の**全て正の
+   値**（0/負値は0件）。フロア/キャップ値と一致するがマーカーの無い
+   エントリ（生β自体が偶然一致した疑いのあるケース）も0件
+2. **保有9銘柄の個別確認**: ADBE/APP/CELH/NVDA/PLTR/SOFI/TSLAは
+   全て正常範囲（0.9〜2.5）。SOUNは2.5キャップ到達だが生β=2.76由来で
+   妥当。CRWVは`source: manual_legacy`（yfinance自動取得ではなく
+   理由文付きの手動設定）で、そもそも`calc_capped_beta()`のフロア/
+   キャップ処理の対象外。異常値は0件
+3. **β込みWACC（参考表示）のPrimary IVへの非接続性**: `core_
+   calculator.py`を追跡し、Primary IV（`intrinsic_value_per_share`）
+   は`_rm`（Rm=10%固定・β非依存）を割引率として計算しており、β込み
+   CAPM WACCは別変数`intrinsic_value_per_share_beta`（`intrinsic_
+   value_beta`/`upside_percent_beta`フィールド）にのみ使われることを
+   確認。参照先3箇所（report.txtの「参考①β込みWACC_IV」行・
+   history.jsonのチャート用フィールド・validator.pyの説明文）を
+   全て確認し、TANUKI SCORE・DCF_Reliability・BUY/WATCH/SELL判定
+   ロジックのいずれからも参照されていないことをgrep -rlnで実証
+4. **3経路の実態と競合状態**: 自動実行される経路は月次cron
+   （`Beta_Config_Update.yml`）・手動workflow_dispatch（同一
+   ワークフロー）・新規銘柄登録時（`register_ticker.py` Step 2、
+   ローカル実行）の3つ。`audit.py`のβ乖離検知は実行トリガーではなく
+   print文＋Discord通知による**助言表示のみ**（自動再実行はしない）
+   と確認。全経路が同一の`calc_capped_beta()`/`refresh_tickers()`を
+   共有するため値の計算結果自体が経路間で食い違うリスクはなく、
+   理論上の競合はgit push衝突のみ（`git pull --rebase`後にpushする
+   ため衝突時は該当ジョブが失敗するだけで、サイレントなデータ破損には
+   ならない）
+
+副次発見として、`_determine_beta()`の0.1〜3.0チェックは、
+beta_config.jsonにoverrideが存在する銘柄（現状ほぼ全銘柄=101件）に
+対しては到達すらしないコードであることも確認した（override優先度
+1位が無条件採用のため）。「2つの基準が並存」というより「片方が事実上
+到達不能」という状態。
+
+#### 実装結果（2026-09-12、案A）
+コミット`6cfb0af3e7`。
+
+上記4項目とも実害ゼロと確認できたため、大規模な設計変更（②③④への
+対応）は見送り、**軽微な安全網追加（案A）のみ**を実施した:
+- `beta_fetcher.py::calc_capped_beta()`にraw_beta<=0検知時のWARNログを
+  追加（クリップ処理自体は変更しない）。既存の`[WARN]`表記パターンに
+  合わせた形式。
+- `data_fetcher.py::_determine_beta()`のdocstringに、0.1〜3.0チェックが
+  override登録済み銘柄には到達不能である実態をコメントとして明記
+  （将来このコードを触る人が「常に有効な安全網」と誤解しないため）
+
+②（overrideへの健全性チェック適用）・③（許容範囲基準の統一）・
+④（3経路整理）は、実害が確認できず着手の優先度が低いため見送り。
+
+#### 検証結果
+- 新規4テスト（`tests/test_beta_fetcher.py`）: `calc_capped_beta()`
+  単体でのゼロ/負値WARN発火確認2件・通常値での過検知なし確認1件、
+  `refresh_tickers()`経由の統合確認1件。新規3件は変更前のコードに
+  対して実際に失敗することを確認した上で、変更後は全4件成功
+- 本番`beta_config.json`（101銘柄）に対しdry-run実行、WARN発火0件・
+  設定変更0件を確認（前回調査結果と整合）
+- pytest tests/: 1194 passed。audit.py・report_consistency_check.py
+  --fail-on-ng: NG=0
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
