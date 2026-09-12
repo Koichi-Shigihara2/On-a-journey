@@ -459,6 +459,29 @@
   変更なし。現存BACKLOG.md総数は機械カウントで**60件**（67件から
   クローズ8件・新規登録1件で7件減）。
 
+- **2026-09-12**（2026-09-10 23:03〈コミット`d6793202d1`〉以降の3件の
+  指示書を実施、全てpush済み）:
+  1. `[[MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1]]`実装（コミット
+     `43bf5e03a1`）: RECESSION RISK SCORE 5指標のツールチップ表示閾値と
+     実スコア計算ステップ関数の境界値の食い違いを修正。Michigan
+     Consumer Sentimentは構造的に到達不可能な「BULL」ラベルを
+     「NEUTRAL」へ変更
+  2. `[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]`実装（コミット
+     `03435b035d`）: shares_diluted取得のsource_tagフィルタを
+     pipeline.py限定実装から共通アクセサ（layer3_builder.py）へ統合し、
+     TANUKI TAILのQ4タイミング依存リスクを根治的に解消
+  3. `[[MA-INTEGRATION-TAG-GAP-1]]`実装・本番反映（コミット
+     `a9f507b3e9`・`a632b09745`）: 買収統合費用控除を二値ゲートから
+     連続スケーリング（MA_ADDBACK_RAMP_BAND=0.20）へ変更し境界近傍銘柄
+     （CSGP/ZETA等）の単発急変リスクを解消、未登録2タグも追加。**実装が
+     承認取得前に一時未コミットのまま留め置かれる経緯があり、指摘を
+     受けて是正**（詳細は`CLAUDE_CODE_START.md`該当ブロックに正直に
+     記録）
+
+  詳細はBACKLOG_DONE.md該当3節・`CLAUDE_CODE_START.md`該当ブロック
+  参照。新DB構築プロジェクトのコード・データには変更なし。現存
+  BACKLOG.md総数は機械カウントで**57件**（60件から3件減）。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。

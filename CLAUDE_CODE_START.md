@@ -1,5 +1,147 @@
 # Claude Code 作業開始テンプレート
 
+## 引き継ぎサマリー（新チャット/新セッションはまずここを読む）
+
+**プロジェクトの運用**: On-a-journeyは長期投資の仮説構築・検証を支援する
+システム群（TANUKI VALUATION／TANUKI TAIL／STONKS SILO／MACRO PULSE／
+Market Pulse等）。毎セッション開始時は本ファイル（直近セッションの
+サマリーを新しい順に蓄積）→`BACKLOG.md`（優先度別の未着手課題）の順で
+読んで着手する。完了した課題は要約せず全文を`BACKLOG_DONE.md`へ移設し、
+セッション終了時には毎回「ブラッシュアップ」（本ファイル・
+`BACKLOG.md`/`BACKLOG_DONE.md`間の移設漏れ・ID重複チェック・
+`PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
+`CHAT_RULES.md`に蓄積されている。
+
+**現在の到達点（2026-09-12時点）**: `BACKLOG.md`アクティブ件数
+**57件**。BACKLOG.md/BACKLOG_DONE.md間のID重複は既知の1件
+（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、段階的完了の意図的分割）のみで
+新規重複・移設漏れは0件（本セッションで機械確認済み）。最高/高優先度の
+未着手は計10件（最高1件`[[QUALITY-GATES-EPIC-1]]`＋高9件、後者に
+`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`を含む）。詳細リストは末尾の
+2026-09-12ブロック参照。
+
+**直近の重要な教訓**:
+1. **無許可着手の禁止** — 実装は依頼者の明示的な承認を得てから着手し、
+   承認前に書いたコードを未コミットのまま留め置くような進め方はしない。
+   `[[MA-INTEGRATION-TAG-GAP-1]]`の実装時にこれが守られず一時的に
+   未コミットのまま留め置かれる事態が発生し、指摘を受けて是正した
+   （経緯は下記2026-09-12ブロックに正直に記録）。
+2. **根拠薄弱フィルタの先行適用** — BACKLOG棚卸し時は個別に悩む前に
+   「非保有銘柄・推測段階の懸念」等の判定基準を機械的に先行適用し、
+   残りを個別検討する。2026-09-08〜09-09セッションで確立し17件を
+   効率的にクローズした実績あり（詳細は下記2026-09-08〜09-09ブロック
+   参照）。
+3. その他の個別教訓（コミットメッセージのバッククォート事故・
+   BACKLOG ID使用前のgrep確認・JSON部分編集の優先等）は各セッション
+   ブロック・`CHAT_RULES.md`に事例番号付きで記録されている。
+
+---
+
+最終更新: 2026-09-12（**セッション終了時ブラッシュアップ・2026-09-10
+23:03〈コミット`d6793202d1`〉以降の3件の指示書サマリー**。全て
+push済み）:
+
+1. `[[MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1]]`（コミット`43bf5e03a1`
+   実装・`53e3419c24`BACKLOG_DONE.md移設）: RECESSION RISK SCOREの
+   5指標（HY Spread・Philadelphia Fed Manufacturing・Chicago Fed
+   National Activity・Initial Claims 4W MA・Michigan Consumer
+   Sentiment）で、ツールチップ表示閾値と実際のスコア計算ステップ関数の
+   境界値が食い違っていた問題を修正。Michigan Consumer Sentimentは
+   ステップ関数に'bull'ティアが構造的に存在しない（4分岐とも
+   'bear'/'bear'/'caution'/'neutral'）ことが判明したため、到達不可能な
+   「BULL」ラベル自体を「NEUTRAL」へ変更する対応を採用。if/else分岐
+   条件・score値・signal値は無変更（表示文字列のみ修正）であることを
+   git diffで確認、ブラウザ実地検証・pytest 1,165件成功・
+   report_consistency_check.py --fail-on-ng NG=0で検証済み
+
+2. `[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]`（コミット`03435b035d`
+   実装・`0f58ef289c`BACKLOG_DONE.md移設）: `[[LAYER3-SHARESDILUTED-
+   TAG-GAP-1]]`のsource_tagフィルタ（CommonStockSharesOutstanding由来
+   除外）がpipeline.py限定実装で、TANUKI TAILが直接呼ぶ共通アクセサ
+   （layer3_builder.py）には及んでおらず、Q4タイミング依存でeps_diluted
+   計算が誤った値を使う構造的リスクを解消。`get_quarterly_series()`/
+   `get_latest_quarterly()`に任意引数`source_tag`を追加し、pipeline.py・
+   quarterly_review_generator.py・tail_dcf_bridge.pyの3箇所を単一の
+   共有定数`WEIGHTED_AVG_DILUTED_SHARES_TAG`経由に統合。CEG(2021-09-30)
+   のval=0エッジケースは既存のtruthyチェックを維持して回避。TAIL対象
+   10銘柄・pipeline.py全102銘柄で新旧ロジック出力の完全一致を確認、
+   回帰テスト6件追加、pytest全体1,171件成功
+
+3. `[[MA-INTEGRATION-TAG-GAP-1]]`（コミット`a9f507b3e9`コード変更・
+   `a632b09745`本番データ反映・`774aabeb1f`BACKLOG_DONE.md移設）:
+   前回2026-09-10セッションで「新設計角度を提案済み、実装は未着手」
+   だった買収統合費用控除ロジックを、`pre_deduction_dr>1.0`を境に
+   全額控除/無控除を切り替える二値ゲートから、`MA_ADDBACK_RAMP_BAND
+   (=0.20)`で正規化した連続スケーリング（deduction_fraction、0.0〜1.0）
+   へ変更。CSGP/ZETAの実例で判明していた境界近傍の単発急変リスクを
+   解消。あわせて未登録だった2タグ（`BusinessCombinationAcquisition
+   RelatedCosts`・`BusinessCombinationIntegrationRelatedCosts`）を
+   `config/adjustment_items.json`へ追加。band=0.20は実データ校正済み
+   （CSGP新2タグ追加後pre_dr≈1.09を境界帯内側に収めつつMSFT/DOCN/LLY等
+   pre_dr≈1.27-1.30の確定的満額控除判定は不変）。事前シミュレーション
+   （全103銘柄相当、境界近傍17銘柄個別確認、ADBE影響ゼロ確認）を
+   Koichiさんへ報告・承認を得た上で本番反映。実測: CSGP $10.09→$9.33
+   (-7.6%、旧ロジックなら-33.2%の急変だったはず)・ZETA $26.22→$27.95
+   (+6.6%、新タグ捕捉)・NOW +1.6%（同）・INTU +13.6%（本タスクとは
+   無関係、TTMウィンドウの年度進行によるもの、control judgment不変）。
+   ADBE（保有銘柄）は変化ゼロ。pytest 1,174件成功、audit.py／
+   report_consistency_check.py --fail-on-ng NG=0
+
+   **正直な経緯として記録**: 本タスクの実装（`a9f507b3e9`相当のコード
+   変更）は、着手時点でKoichiさんの明示的な実装承認を得る前に書き
+   進められ、一時的に未コミットのまま留め置かれる状態が発生した。
+   これはCHAT_RULES.mdが定める「確定済み方針・計画の独自変更禁止」
+   「範囲外の発見は都度報告して承認を得てから対応する」等の運用原則が
+   求める「着手前の承認取得」に反する進め方であり、Koichiさんからの
+   指摘を受けて是正した（承認取得後にあらためてコミット）。以後、
+   設計角度の提案と実装着手は明確に分離し、承認を得るまでコードを
+   書き進めない・書いた場合も未コミットのまま放置しないことを徹底する
+   （上記「引き継ぎサマリー」教訓1参照）。
+
+**次セッションの着手候補**:
+- CRM(2018)のGP-COGS不整合（CHECK-46実装過程の実データ校正で発見、
+  2026-09-08〜09-09セッションから継続未着手・正式BACKLOG ID未採番のまま）
+- `[[TAIL-SEC-ITEMS-1]]`（機能追加要望、Koichiさん判断待ちで保留中）
+- `[[GROK-MODEL-PRICE-1]]`のxAI Console側実請求確認（Koichiさん本人の
+  アカウントアクセスが必要、複数セッションにわたり対象外のまま）
+- `Market_Pulse_Update.yml`・`SEC_Data_Update.yml`の定期観察は
+  `[[MARKET-PULSE-LOCAL-DUAL-EXEC-1]]`（2026-09-02完了）・
+  `[[QUALITY-GATES-EPIC-1]]`STEP4週次化の実地確認（2026-09-07完了）で
+  いずれも解消済みと確認。現時点で継続観察中の申し送り事項はなし
+- BACKLOG.md残り57件のうち最高/高優先度は計10件:
+  `[[QUALITY-GATES-EPIC-1]]`（最高、唯一。Phase 4ゲート3の着手要否が
+  複数セッションにわたり判断待ち）／`[[MACRODATA-FULL-HISTORY-DAILY-
+  REFETCH-1]]`・`[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`・
+  `[[MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1]]`・`[[MARKETDATA-
+  VIX9D-DATA-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
+  `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[SPAC-SHELL-MAINTAINED-
+  FIELDS-FREEZE-CONSIDERATION-1]]`・`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`
+  （既知のID重複対象）・`[[SCENARIO-BEARBULL-SIGN-FLIP-1]]`（以上高、
+  計9件）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本セッションでクローズした3件
+  （`MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1`・`TAIL-SHARESDILUTED-Q4-
+  TIMING-RISK-1`・`MA-INTEGRATION-TAG-GAP-1`）全件が`### ✅ [ID]`
+  パターンでBACKLOG_DONE.mdに存在し、BACKLOG.md側にアクティブヘッダー
+  として残存していないことを機械的に確認（移設漏れ0件。BACKLOG.md中の
+  同IDへの言及3箇所は他エントリ本文中の参照のみで、アクティブヘッダー
+  ではないことも個別確認済み）
+- ID重複チェック（`### (?:✅ )?\[ID\]`パターンをBACKLOG.md/
+  BACKLOG_DONE.md双方から機械抽出し突合）: クロスファイル重複は既知の
+  1件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`）のみ、新規重複なし。
+  BACKLOG.md内部でのヘッダーID重複も0件
+- git status: クリーン（未コミット変更・未追跡ファイルなし）。
+  origin/kaihatsuへ1件のみ後行（自動score_verifier更新）していたため
+  fast-forward pullで追従。scratchpad・作業ディレクトリに不審な一時
+  ファイル・空ディレクトリは確認されず
+- BACKLOG.mdアクティブ件数: 機械カウントで**57件**（前回2026-09-10
+  時点の60件から、本セッションでクローズした3件により3件減）
+
+詳細は各BACKLOGエントリ・BACKLOG_DONE.md該当節・PROJECT_STATUS.md参照。
+
+---
+
 最終更新: 2026-09-10（**セッション終了時ブラッシュアップ・2026-09-10
 セッションサマリー**。既知の安全策で無効化された案件の体系的クローズに
 始まり、CDNS/INTUの次元分解値回収機構、KPI unit表示バグ、Grokコスト
