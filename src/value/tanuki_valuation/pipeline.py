@@ -1778,7 +1778,15 @@ class TanukiValuationPipeline:
             if not _fcf_note_fb.startswith("生FCF安定"):
                 _ma_excluded_fb = fcf_est.get("ma_addback_excluded") or 0
                 _ma_skipped_fb  = fcf_est.get("ma_addback_detected_but_not_applied") or 0
-                if _ma_excluded_fb > 0:
+                # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: 境界帯連続
+                # スケーリングにより両者が同時に>0（部分控除）になりうるため、
+                # elif（相互排他前提）ではなく両立を考慮した分岐にする。
+                if _ma_excluded_fb > 0 and _ma_skipped_fb > 0:
+                    L.append(f"⚠️ 買収・統合関連加算を境界帯調整で部分控除（控除${_ma_excluded_fb/1e6:,.0f}M・"
+                             f"未控除${_ma_skipped_fb/1e6:,.0f}M）後も調整済み")
+                    L.append("    純利益がマイナスのため、生FCFへフォールバックしています。詳細は")
+                    L.append("    BACKLOG_DONE.md [[MA-INTEGRATION-TAG-GAP-1]]参照。]")
+                elif _ma_excluded_fb > 0:
                     L.append(f"⚠️ 買収・統合関連加算${_ma_excluded_fb/1e6:,.0f}Mを控除後も調整済み")
                     L.append("    純利益がマイナスのため、生FCFへフォールバックしています。詳細は")
                     L.append("    BACKLOG_DONE.md [[CWAN-SNPS-MA-DISTORTION-1]]参照。]")
@@ -1852,7 +1860,16 @@ class TanukiValuationPipeline:
             # Classification（BUY/WATCH等）には影響しない。
             _ma_excluded = fcf_est.get("ma_addback_excluded") or 0
             _ma_skipped  = fcf_est.get("ma_addback_detected_but_not_applied") or 0
-            if _ma_excluded > 0:
+            # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: 境界帯連続
+            # スケーリングにより両者が同時に>0（部分控除）になりうるため、
+            # elif（相互排他前提）ではなく両立を考慮した分岐にする。
+            if _ma_excluded > 0 and _ma_skipped > 0:
+                L.append(f"⚠️ 買収・統合関連加算を境界帯調整で部分控除: 控除${_ma_excluded/1e6:,.0f}M・"
+                         f"未控除${_ma_skipped/1e6:,.0f}M")
+                L.append("   [pre_deduction_drが1.0をわずかに超える境界近傍のため、控除額の一部")
+                L.append("    のみを適用しています。分類判定には使用しません。詳細はBACKLOG_DONE.md")
+                L.append("    [[MA-INTEGRATION-TAG-GAP-1]]参照。]")
+            elif _ma_excluded > 0:
                 L.append(f"⚠️ 買収・統合関連加算を控除: ${_ma_excluded/1e6:,.0f}M")
                 L.append("   [無形資産償却費・M&A統合費用等の買収由来の非現金加算がAdj_NIに")
                 L.append("    含まれたままだと推定FCFが過大になるため、FCF換算専用に控除して")

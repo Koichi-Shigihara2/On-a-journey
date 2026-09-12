@@ -16,6 +16,8 @@ import json
 import os
 import sys
 
+import pytest
+
 _CALC_DIR = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "src", "value", "tanuki_valuation", "calculator")
 )
@@ -220,3 +222,81 @@ class TestMaAddbackDeduction:
         )
         assert result.ma_addback_excluded == 200_000_000
         assert result.adj_net_income == 300_000_000 - 200_000_000
+
+
+class TestMaAddbackRampScaling:
+    """[[MA-INTEGRATION-TAG-GAP-1]]: 二値ゲート（pre_deduction_dr>1.0で全額控除/
+    以下で無控除）を、1.0を超えた分をMA_ADDBACK_RAMP_BAND(=0.20)で正規化した
+    連続的な控除割合（deduction_fraction）へ変更したことの回帰テスト。
+    band幅は実データ校正済み（CSGP実例のpre_dr≈1.10-1.11を境界帯の中間付近に
+    収め、DOCN/MSFT/LLY等のpre_dr≈1.27-1.30は引き続き満額控除域に残す値として
+    0.20を採用）。"""
+
+    def test_ramp_partial_deduction_within_band(self, tmp_path):
+        """境界帯内（1.0 < pre_dr < 1.0+band）では、1.0超過分をbandで正規化した
+        割合だけ部分控除する（CSGP実例に近い pre_dr=1.10 → fraction=0.5 のケース）"""
+        eps_dir = _write_eps_annual(
+            tmp_path, "TESTCO",
+            adjusted_net_income=110_000_000,
+            adjustments=[
+                {"category": "買収・統合関連", "item_name": "M&A統合費用", "amount": 40_000_000},
+            ],
+        )
+        cfg = _config_path(tmp_path, sector_rate=1.0)
+
+        result = estimate_fcf_from_eps(
+            ticker="TESTCO", raw_fcf=100_000_000, diluted_shares=100_000_000,
+            sector="TestSector", eps_data_dir=eps_dir, config_path=cfg,
+            fcf_cv=0.9, outlier_detected=True,
+        )
+        # 控除前dr = (110M×1.0)/100M = 1.10 → fraction = (1.10-1.0)/0.20 = 0.5
+        assert result.applied is True
+        assert result.ma_addback_excluded == pytest.approx(20_000_000)  # 40M×0.5
+        assert result.ma_addback_detected_but_not_applied == pytest.approx(20_000_000)  # 残りの未控除分
+        assert result.adj_net_income == pytest.approx(110_000_000 - 20_000_000)
+        assert result.estimated_fcf == pytest.approx(90_000_000 * 1.0)
+
+    def test_ramp_no_deduction_at_pre_dr_exactly_1(self, tmp_path):
+        """境界帯下限（pre_dr==1.0、超過分なし）ではfraction=0で無控除
+        （従来の二値ゲートと同じ「pre_dr<=1.0では未適用」という判定を維持）"""
+        eps_dir = _write_eps_annual(
+            tmp_path, "TESTCO",
+            adjusted_net_income=100_000_000,
+            adjustments=[
+                {"category": "買収・統合関連", "item_name": "M&A統合費用", "amount": 40_000_000},
+            ],
+        )
+        cfg = _config_path(tmp_path, sector_rate=1.0)
+
+        result = estimate_fcf_from_eps(
+            ticker="TESTCO", raw_fcf=100_000_000, diluted_shares=100_000_000,
+            sector="TestSector", eps_data_dir=eps_dir, config_path=cfg,
+            fcf_cv=0.9, outlier_detected=True,
+        )
+        # 控除前dr = (100M×1.0)/100M = 1.00 ちょうど（>1.0ではない）→ fraction=0
+        assert result.ma_addback_excluded == 0
+        assert result.ma_addback_detected_but_not_applied == 40_000_000
+        assert result.adj_net_income == 100_000_000
+
+    def test_ramp_full_deduction_at_or_above_band_upper_bound(self, tmp_path):
+        """境界帯上限以上（pre_dr>=1.0+band）ではfraction=1で満額控除
+        （従来の二値ゲートで「明確に過大推定が確定的」と判定されていた銘柄
+        〈DOCN/MSFT/LLY等、pre_dr≈1.27-1.30〉の判定を変えないことの確認）"""
+        eps_dir = _write_eps_annual(
+            tmp_path, "TESTCO",
+            adjusted_net_income=130_000_000,
+            adjustments=[
+                {"category": "買収・統合関連", "item_name": "M&A統合費用", "amount": 40_000_000},
+            ],
+        )
+        cfg = _config_path(tmp_path, sector_rate=1.0)
+
+        result = estimate_fcf_from_eps(
+            ticker="TESTCO", raw_fcf=100_000_000, diluted_shares=100_000_000,
+            sector="TestSector", eps_data_dir=eps_dir, config_path=cfg,
+            fcf_cv=0.9, outlier_detected=True,
+        )
+        # 控除前dr = (130M×1.0)/100M = 1.30 >= 1.0+0.20 → fraction=1（満額控除）
+        assert result.ma_addback_excluded == 40_000_000
+        assert result.ma_addback_detected_but_not_applied == 0
+        assert result.adj_net_income == 130_000_000 - 40_000_000

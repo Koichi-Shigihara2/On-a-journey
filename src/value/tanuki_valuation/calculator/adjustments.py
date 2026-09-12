@@ -1593,6 +1593,37 @@ def resolve_fcf_conversion_config_path() -> Optional[str]:
     return next((p for p in candidates if os.path.exists(p)), None)
 
 
+# [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11、二値ゲート→連続スケーリング化）:
+# FCF-EST-DIRECTION-GUARD-1の`pre_deduction_dr > 1.0`という二値
+# （binary）ゲートは、境界のすぐ近くにいる銘柄で入力のごく小さな変化
+# （XBRLタグ追加によるAdj_NIの微増等）が出力（ma_addback控除額）を
+# 0→満額へ不連続にジャンプさせる構造的な脆さを持っていた（CSGP実測:
+# pre_dr 0.96→タグ追加後1.10前後で境界を跨いだ結果、控除後dr
+# 0.96→0.45への急変が発生）。本定数は、pre_deduction_drが1.0を超えた
+# 度合いに応じて控除額を連続的にスケールする「境界帯」の幅。
+#
+# 校正根拠（2026-09-11、実データ）: 現行のma_integration未登録2タグ
+# （BusinessCombinationAcquisitionRelatedCosts・
+# BusinessCombinationIntegrationRelatedCosts）追加を想定し、
+# common/sec_data/data/{ticker}/company_facts.jsonの実タグ値と
+# tax_adjuster.pyの実効税率（CSGPの既存調整項目で観測された21〜33%の
+# レンジ）を用いてCSGPの新pre_deduction_drを試算した結果、約1.10前後
+# （1.0+0.10前後）で境界を跨ぐと推定された。band=0.20はこの実測ベースの
+# 想定超過幅（約+0.10）に対し約2倍の余裕を持たせつつ、pre_dr 1.27
+# （DOCN/MSFT）・1.30（LLY）等、境界から明確に離れている銘柄
+# （1.0+band=1.20を上回る）は従来通り満額控除のまま据え置かれる
+# （goal①: 明確に過大推定が確定的な銘柄の判定は変えない）よう選定した。
+# CPRT(1.05)・META(1.08)のように1.0+band未満の銘柄は部分控除となり
+# 現状（満額控除）から変化するが、これは境界近傍の急変緩和という本対応
+# の意図した効果である。
+#
+# 実装時の注意: この幅は「実データでの校正結果」であり推測値のまま
+# 採用したものではないが、正確な新pre_dr（タグ追加後）はEPS Analyzer
+# パイプラインの正式な再実行（実税率・正式な抽出ロジック）でのみ厳密に
+# 確定する。本番反映前に必ず全母集団シミュレーションで検証すること。
+MA_ADDBACK_RAMP_BAND = 0.20
+
+
 def estimate_fcf_from_eps(
     ticker: str,
     raw_fcf: float,
@@ -1770,25 +1801,43 @@ def estimate_fcf_from_eps(
     # 過小推定側）の場合は控除を適用しない。控除後のdrをガード判定に使うと、
     # 「控除するかどうかを、控除した結果のdrで決める」循環参照になるため、
     # 必ず控除前（adj_net_income_orig）ベースの値を使う。
+    #
+    # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: pre_deduction_dr>1.0の
+    # 二値ゲートを、1.0超過分をMA_ADDBACK_RAMP_BANDで正規化した連続的な
+    # 控除割合（deduction_fraction、0.0〜1.0）へ変更した。pre_deduction_dr<=1.0
+    # ならfraction=0（従来通り無条件未適用、ガードの趣旨を維持）、
+    # pre_deduction_dr>=1.0+bandならfraction=1（従来通り満額控除）、
+    # その間は線形補間する。従来の二値判定（if pre_deduction_dr > 1.0）は
+    # 数学的にband→0の極限に相当するため、既存の「明確に過大推定な銘柄は
+    # 満額控除のまま」という判定は変えず、境界近傍のみ緩和される。
     ma_addback_applied = 0.0
     ma_addback_skipped = 0.0
+    deduction_fraction = 0.0
     if ma_addback > 0:
         pre_deduction_estimated_fcf = adj_net_income_orig * conversion_rate
         pre_deduction_dr = pre_deduction_estimated_fcf / raw_fcf if raw_fcf > 0 else 0.0
         if pre_deduction_dr > 1.0:
-            ma_addback_applied = ma_addback
-        else:
-            ma_addback_skipped = ma_addback
+            deduction_fraction = min(1.0, (pre_deduction_dr - 1.0) / MA_ADDBACK_RAMP_BAND)
+        ma_addback_applied = ma_addback * deduction_fraction
+        ma_addback_skipped = ma_addback - ma_addback_applied
 
     adj_net_income = adj_net_income_orig - ma_addback_applied
 
-    _ma_note_suffix = (
-        f"（買収・統合関連加算${ma_addback_applied/1e6:.0f}Mを控除後）" if ma_addback_applied > 0 else ""
-    )
-    _ma_guard_note_suffix = (
-        f"（買収・統合関連加算${ma_addback_skipped/1e6:.0f}Mを検出したが、"
-        f"控除するとdr<=1のため未適用）" if ma_addback_skipped > 0 else ""
-    )
+    if ma_addback_applied > 0 and ma_addback_skipped > 0:
+        # 部分控除（境界帯内、0<fraction<1）
+        _ma_note_suffix = (
+            f"（買収・統合関連加算${ma_addback/1e6:.0f}Mの内{deduction_fraction*100:.0f}%"
+            f"（${ma_addback_applied/1e6:.0f}M）を境界帯調整で部分控除後）"
+        )
+        _ma_guard_note_suffix = ""
+    else:
+        _ma_note_suffix = (
+            f"（買収・統合関連加算${ma_addback_applied/1e6:.0f}Mを控除後）" if ma_addback_applied > 0 else ""
+        )
+        _ma_guard_note_suffix = (
+            f"（買収・統合関連加算${ma_addback_skipped/1e6:.0f}Mを検出したが、"
+            f"控除するとdr<=1のため未適用）" if ma_addback_skipped > 0 else ""
+        )
 
     # ── フォールバック条件 ──
     # 調整済み純利益がマイナスの場合は従来FCFを使用
