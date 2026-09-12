@@ -3569,12 +3569,96 @@ BS系バックフィル・cost_of_revenue期間整合）の大半はTTM出力対
 (d) gross_profit逆算のように既に個別重複が許容されている先例
     （[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]系）がある
 
+#### 再確認結果（2026-09-12、チャット記録、読み取りのみ・据え置き継続）
+直近1ヶ月の追加修正（CRM(2018) GP-COGS不整合修正
+[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]含む）を踏まえ、鮮度・実害の
+再確認を実施した。結論として「据え置き継続」（クローズしない）。
+
+**STEP1: 鮮度・cron健全性の再確認**
+`common/sec_data/ttm/`の最終コミットは2026-09-06であり、陳腐化はして
+いない。GitHub Actions API（`gh`未導入のため`curl`直接照会、
+workflow ID 258451437「SEC Data Update」）でワークフロー実行履歴を
+確認したところ、2026-08-16・2026-08-23の2回連続でscheduleトリガーの
+実行が失敗していたことが判明した。ただしこれは既に根本原因が診断済み
+（依存パッケージインストール工程の欠落）で、BACKLOG_DONE.mdの
+[[DATA-FRESHNESS-MONITORING-FUTURE-IDEA-1]]（2026-08-30完了）で
+是正済みの事象であり、同タスクでは再発検知のための監視機構
+（`common/system_health.py`の`check_j_workflow_runs()`、通称
+「Check J」）も新設されている。本セッションで`python3
+common/system_health.py`をローカル実行し確認した結果、`[J]
+CronRuns: ✅ 17件監視 / すべて正常`であり、直近2回（08-30・09-06）は
+成功していることを確認した。cron自体は現在健全。
+
+**STEP2: 直近1ヶ月の修正のLayer3/TTM側への反映状況の再確認**
+`layer3_builder.py`を確認したところ、parser.py側の
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a〜e（`_align_revenue_*`
+`_align_cost_of_revenue_*`・`dimension_aggregate`等の関数群）および
+本日実施したCRM修正（`_REVENUE_ALIGNMENT_CANDIDATES`・
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`への`SalesRevenueServicesNet`・
+`CostOfServices`追加）は、依然としてLayer3側へ移植されていないことを
+確認した。Layer3独自の候補タグ設定`config/sec_concept_definitions.json`
+を直接確認したところ、`revenue`候補リストには`SalesRevenueServicesNet`
+が同様に欠落している（parser.py側が今回修正した欠落と同一）一方、
+`cost_of_revenue`候補リストには`CostOfServices`が既に含まれており
+欠落はなかった。なお[[LAYER3-OI-RECONSTRUCTION-FALLBACK-GAP-1]]は
+Layer3側へも移植済み（コミット`b9f781c7f3`）であることを確認しており、
+移植の要否判断・実施は案件ごとに一貫していない運用実態が改めて
+確認された。
+
+**新規発見（構造的リスクの実例化）**: APP（保有銘柄）のFY2023年次
+revenueを直接比較したところ、parser.py側
+（`common/sec_data/data/APP/annual_2023.json`）は$3,283,087,000、
+Layer3側（`build_ticker_store("APP")`→`get_field_entries(store,
+"revenue")`をannual・end=2023-12-31でフィルタ）は$1,841,762,000と、
+**約14.4億ドルの乖離**を確認した（FY2024も$4,709,248,000 vs
+$3,224,058,000で同様に乖離、FY2025は$5,480,717,000で完全一致）。
+原因を`company_facts.json`の生XBRLデータで確認したところ、SECの
+`Revenues`タグ自体が同一期間（FY2023）に対し複数の異なる値を報告して
+いた（FY2023本体・FY2024の10-Kでの比較列では$3,283,087,000、FY2025の
+10-Kでの比較列では$1,841,762,000〈遡及修正後とみられる〉）。
+parser.py側とLayer3側でどちらの値を採用するかのtie-breakロジックが
+異なるため、同一の生データから異なる値を選択してしまっていることが
+直接確認された。これは本日のCRMタグ網羅漏れとは異なる、
+「企業が過去実績を遡及修正した場合、独立した2パイプラインが
+クロスチェックなしに異なる値を選択しうる」という、本チケット登録時
+から理論上の懸念とされていた構造的リスクの、初めての具体的・定量的な
+実例確認である。
+
+**STEP3: 保有9銘柄の現在のTTMローリング窓における実害再確認**
+`common/sec_data/reader.py::SECReader.get_rpo_context()`と同じ手法
+（`common/sec_data/normalized/{ticker}_quarterly_normalized.json`から
+直近4四半期を合算する`rev_ttm = sum(e["val"] for e in rev_all[-4:])`
+方式）をparser.py側の独立再計算値とみなし、`common/sec_data/ttm/
+{ticker}_ttm_series.json`の最新値（`series[0]["flow"][field]["val"]`）
+と、保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）×7指標
+（Revenue/NetIncome/GrossProfit/OCF/SBC/CapEx/OperatingIncome）の
+全63通りで突合した。結果、Revenue/NetIncome/GrossProfit/OCF/SBC/CapExの
+6指標は9銘柄全てで完全一致（乖離ゼロ）。唯一SOFIのOperatingIncomeのみ
+normalized/側が`None`（parser.py側`common/sec_data/data/SOFI/
+quarterly_*.json`の`operating_income`も直近四半期で同じく`None`である
+ことを直接確認済み）に対しLayer3/TTM側は$1,572,033,000と、Layer3側が
+より完全なデータ（自己のGP逆算バックフィル）を持っているという無害な
+差異であり、実害ではない。
+
+**総括・対応方針**: 現在のTTMローリング窓において保有銘柄への実害は
+今回も確認されなかった（STEP3）ため、優先度「中」は維持する。一方で
+APP実例により、構造的リスク自体は理論上の懸念ではなく実例のある
+現実のリスクであることが再確認された（STEP2）ため、クローズはせず
+「据え置き継続」とする。cron健全性は現状問題なし（STEP1）。今後の
+自動検知については、STEP3で用いた「parser.py側の独立再計算値と
+Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`への
+新規WARNチェックとして恒久化する（本チケットとは別コミットで対応、
+下記③参照）。
+
 #### 着手条件
 以下いずれかのトリガー条件が発生するまで保留:
 1. 今後の運用チェックでTTM anchor範囲内×FLOW型フィールドの修正が発生し
    実害が確認された場合 → 案B（部分統合）を個別タスクとして起票
 2. 新DB構築プロジェクトのフェーズDに進む際、3スキーマ併存全体の解消を
    検討するタイミングで本件も合わせて設計する
+3. `report_consistency_check.py`に新設したparser.py⇔Layer3/TTM突合
+   WARNが実際に発火した場合（99銘柄いずれかで乖離検知）→ 発火した
+   銘柄・フィールドを起点に実害確認・案B着手要否を判断する
 
 ---
 
