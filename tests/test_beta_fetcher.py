@@ -111,12 +111,54 @@ class TestRefreshTickersMarketDataSource:
         updated, _ = bf.refresh_tickers(["LOW"], dry_run=False)
         assert updated[0]["new"] == bf.BETA_FLOOR
 
+    def test_zero_or_negative_beta_still_floors_via_refresh(self, isolated_config, market_data_source, capsys):
+        """[[BETA-FALLBACK-DESIGN-GAPS-1]]: raw_beta<=0でもクリップ処理
+        自体（下限0.3への丸め）は従来通り行われることを、refresh_tickers()
+        経由でも確認する（calc_capped_beta()単体のテストはTestCalcCapped
+        BetaZeroOrNegativeWarning参照）。"""
+        _write_config(isolated_config, {})
+        _write_market_data_beta(market_data_source, "ZERO", 0.0)
+        updated, _ = bf.refresh_tickers(["ZERO"], dry_run=False)
+        assert updated[0]["new"] == bf.BETA_FLOOR
+        captured = capsys.readouterr()
+        assert "[WARN] ZERO" in captured.out
+
     def test_dry_run_does_not_write_config(self, isolated_config, market_data_source):
         _write_config(isolated_config, {"XYZ": {"beta": 1.0, "source": "yfinance_5yr"}})
         _write_market_data_beta(market_data_source, "XYZ", 2.0)
         bf.refresh_tickers(["XYZ"], dry_run=True)
         saved = json.loads(isolated_config.read_text(encoding="utf-8"))
         assert saved["overrides"]["XYZ"]["beta"] == 1.0  # 変化していない
+
+
+class TestCalcCappedBetaZeroOrNegativeWarning:
+    """[[BETA-FALLBACK-DESIGN-GAPS-1]]: calc_capped_beta()がraw_beta<=0を
+    検知した場合にWARNログを出すこと（クリップ処理自体は変更しない）を
+    検証する。2026-09-12調査で全101銘柄に実例0件と確認済みだが、将来の
+    データ異常が無警告で握りつぶされないようにするための安全網。"""
+
+    def test_warns_on_zero_raw_beta(self, capsys):
+        capped, src = bf.calc_capped_beta(0.0, "ZEROBETA")
+        assert capped == bf.BETA_FLOOR
+        captured = capsys.readouterr()
+        assert "[WARN]" in captured.out
+        assert "ZEROBETA" in captured.out
+
+    def test_warns_on_negative_raw_beta(self, capsys):
+        capped, src = bf.calc_capped_beta(-0.5, "NEGBETA")
+        assert capped == bf.BETA_FLOOR
+        captured = capsys.readouterr()
+        assert "[WARN]" in captured.out
+        assert "NEGBETA" in captured.out
+
+    def test_no_warning_for_normal_positive_beta(self, capsys):
+        """通常の正のβ（フロア/キャップ範囲内・範囲外いずれも）ではWARNを
+        出さないことを確認する（過検知でないことの確認）"""
+        bf.calc_capped_beta(1.5, "NORMAL")
+        bf.calc_capped_beta(0.05, "BELOWFLOOR")  # 正だがフロア未満（既存の挙動）
+        bf.calc_capped_beta(5.0, "ABOVECAP")     # 正だがキャップ超過（既存の挙動）
+        captured = capsys.readouterr()
+        assert "[WARN]" not in captured.out
 
 
 class TestOverridesMergePreservesExtraKeys:

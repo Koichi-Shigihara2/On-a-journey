@@ -266,7 +266,22 @@ def fetch_market_data_beta(ticker: str) -> Optional[float]:
 
 
 def calc_capped_beta(raw_beta: float, ticker: str) -> tuple[float, str]:
-    """上限・下限を適用し (capped_beta, source_string) を返す。"""
+    """上限・下限を適用し (capped_beta, source_string) を返す。
+
+    [[BETA-FALLBACK-DESIGN-GAPS-1]]: raw_beta<=0は、data_fetcher.py::
+    _determine_beta()の0.1〜3.0範囲チェックであれば無効値として弾かれる
+    はずの値だが、beta_config.jsonにoverrideとして書き込まれると
+    _determine_beta()側のチェックは経由せず無条件採用されてしまう
+    （2026-09-12調査時点でoverrideは101銘柄全てに存在し、raw_beta<=0の
+    実例は0件と確認済み。実害は無いが、将来データ異常が発生した場合に
+    無警告でフロア値0.3へ丸められて書き込まれるのを防ぐため、検知時の
+    みWARNログを出す）。クリップ処理自体（下限0.3・上限2.5）は変更しない。
+    """
+    if raw_beta <= 0:
+        print(f"  [WARN] {ticker}: raw_beta={raw_beta}が0以下です。"
+              f"下限{BETA_FLOOR}へクリップして書き込みますが、取得元データ"
+              f"（common/market_data/attributes/）の異常の可能性があるため"
+              f"確認してください。")
     capped = max(BETA_FLOOR, min(BETA_CAP, raw_beta))
     src = "yfinance_5yr"
     if capped != round(raw_beta, 3):

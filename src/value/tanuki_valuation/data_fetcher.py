@@ -1005,6 +1005,17 @@ class TanukiDataFetcher:
         2. yfinanceのβ（0.1〜3.0の範囲内）
         3. セクター別デフォルトβ
         4. 全体デフォルト（1.0）
+
+        [[BETA-FALLBACK-DESIGN-GAPS-1]]（2026-09-12調査）: 優先順位1
+        （beta_config.jsonのoverride）はbeta値の範囲チェックを一切行わず
+        無条件採用するため、下記2.の0.1〜3.0範囲チェックは「overrideが
+        存在しない銘柄」でしか実際には通過（到達）しない。2026-09-12
+        時点でoverridesは監視対象101銘柄全てに存在しており、この状態が
+        続く限り2.のチェックは新規登録直後（beta_fetcher.py初回実行前）
+        の銘柄以外には事実上到達不能。削除すべきデッドコードではない
+        （新規銘柄登録時のフォールバックとして必要）が、「常に有効な
+        安全網」ではなく「overrides未登録時限定の安全網」であることに
+        注意すること。
         """
         # ── 1. beta_config.json オーバーライド（最優先） ──
         override = self._beta_overrides.get(ticker)
