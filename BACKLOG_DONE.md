@@ -539,6 +539,83 @@ beta_config.jsonにoverrideが存在する銘柄（現状ほぼ全銘柄=101件�
 
 ---
 
+## 2026-09-12⑥（完了）
+
+### ✅ [STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1] STONKS SILOのYoY計算がfpラベルの完全一致のみで照合し期間長の妥当性チェックを持たない — 期間長(330-400日)チェックを追加、9銘柄で現在進行形の実害を確認し是正
+**状態:** ✅実装・本番反映完了
+**優先度:** 低〜中 → 完了
+**分類:** データ品質 / 設計改善
+**登録日:** 2026-08-02
+**完了日:** 2026-09-12
+**発見:** [[FETCHER-10KT-10QT-FORM-EXCLUSION-1]]対応方針確定調査（チャット記録）
+
+#### 内容（登録時点）
+STONKS SILOのYoY計算（`financial_trend_calculator.py::_calc_yoy_
+change()`）がfpラベル（Q1〜Q4）の完全一致のみでYoY照合しており、期間長
+の妥当性チェックを持たない。RCATの決算期変更移行期（2024年）で、8ヶ月
+しか離れていない新旧"Q4"を誤って比較し歪んだYoYシグナル
+（`change_pct=-152.2%`）を生成していた実例が確認済み（登録時点では
+「現在はデータ蓄積により自然解消済み」と記載）。
+
+#### 対応方針（登録時点）
+未定。「同fp・かつ期間長〜365日程度（許容誤差込み）」という追加の
+妥当性チェックを`_calc_yoy_change()`に導入することを検討する。決算期
+変更を経た他銘柄でも将来同様の問題が起こりうるため、ticker非依存の
+一般的な改善として設計する。
+
+#### STEP1調査結果（2026-09-12） — 依頼書の前提を訂正
+「現在は自然解消済み」という登録時点の前提を実データで再検証した結果、
+**この前提は誤りで、9銘柄で現在進行形の実例が確認された**。
+
+STONKS SILO対象24銘柄（`cik_lookup.csv`の`stonks_silo=true`）×全7
+VECTOR_FIELDS（168通り）を`build_ticker_store()`・`_get_quarterly_
+entries()`・`_calc_yoy_change()`をそのまま呼び出して機械スキャンした
+結果、**CRWV・JOBY・ONDS・RCAT・RKLB・ZETA・KULR（Revenue/GrossProfit/
+NetIncome）の9件**で、fpラベル一致だが実際にはend日付差91日
+（隣接四半期、YoYではなくQoQ相当）というケースを検出した。**保有9銘柄
+のうちCRWV・SOUNの2銘柄がSTONKS SILO対象に含まれ、うちCRWVが実際に
+該当していた。**
+
+実データを直接確認したところ、CRWV・RCATとも1〜3月期のエントリが
+`fp="Q2"`と誤タグ付けされ、直近の真の`Q2`（4〜6月期）と隣接比較されて
+いた（例: CRWV NetIncome 2026-03-31→2026-06-30、change_pct=+15.4%と
+表示されていたが実際はQoQ）。この誤タグ自体は複数の無関係な銘柄
+（JOBY・ONDS・RCAT・RKLB・ZETA・KULR・CRWV）で全く同じ日付パターン
+（2026-03-31/2026-06-30）が揃っていたことから、個社の決算期変更では
+なく、比較列（10-Qの前四半期再掲）が申告元filingのfpをそのまま引き
+継ぐという、より一般的なSEC/XBRL申告慣行に起因すると推測される。
+
+#### 実装結果（2026-09-12）
+コミット`d179b5f0f0`（コード・テスト変更）・`8803455c56`（本番反映）。
+
+`_calc_yoy_change()`に、同一fp内の直近2件のend日付差が330〜400日の
+範囲内（真のYoYとして妥当な期間長）であることを確認するチェックを
+追加。範囲外の場合はfpラベルの誤りを疑いYoY計算をスキップ（None）する。
+ticker非依存の一般的な改善として実装（RCAT等特定銘柄のハードコード
+対応はしていない）。
+
+#### 検証結果
+- STONKS SILO対象24銘柄×7フィールド（168通り）で新旧突合、差分は
+  STEP1で特定した9件のみ（他159件は完全ゼロ差分）
+- 新規5テスト（`tests/test_stonks_silo_yoy_period_validation.py`）:
+  RCAT/CRWV実例相当の隣接四半期誤タグ検知1件・真のYoYペア（365日差）
+  の回帰確認1件・52/53週会計年度等の許容範囲内ずれで過検知しない
+  ことの確認1件・許容範囲の上下境界値確認2件。うち3件は変更前の
+  コードに対して実際に失敗することを確認した上で、変更後は全5件成功
+- 本番反映（`pipeline.py`、成功24/エラー0）: CRWV（保有銘柄）・
+  JOBY・ONDS・RCAT・RKLB・ZETA・KULR（3フィールド）の9件で歪んだ
+  YoY値がNoneに是正。`overall_score`・`overall_verdict`（画面表示
+  される最終分類）への影響は0件（financial_vectorsは補助表示のみで
+  STONKS SILOの最終判定ロジックには非接続と実データで確認）。残り
+  62件のfinancial_vectors差分はpopulation_size縮小に伴うangle/
+  length/percentileの僅少な再計算のみで、change_pct等の絶対値は
+  完全不変（[[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]で既に文書化済み
+  の仕様通りの挙動）
+- pytest tests/: 1199 passed。audit.py・report_consistency_check.py
+  --fail-on-ng: NG=0
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
