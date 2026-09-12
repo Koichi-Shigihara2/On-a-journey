@@ -15,7 +15,7 @@ from .wacc import (
 
 from .growth import (
     determine_growth_rate, get_segment_growth,
-    calculate_fcf_cagr, get_scenario_growth_rates, GrowthResult,
+    calculate_fcf_cagr, GrowthResult,
 )
 
 from .dcf import (
@@ -61,7 +61,7 @@ __all__ = [
     "SECTOR_DEFAULT_BETA", "DEFAULT_RISK_FREE_RATE", "DEFAULT_MARKET_RETURN",
     # Growth
     "determine_growth_rate", "get_segment_growth",
-    "calculate_fcf_cagr", "get_scenario_growth_rates", "GrowthResult",
+    "calculate_fcf_cagr", "GrowthResult",
     # DCF
     "calculate_two_stage_dcf", "calculate_three_stage_dcf",
     "calculate_dcf_with_varying_wacc", "calculate_dcf_with_varying_years",

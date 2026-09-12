@@ -59,11 +59,27 @@ def calculate_scenario_valuations(
         Bear: 成長率 × 0.7（悲観）
         Base: 成長率 × 1.0（基準）
         Bull: 成長率 × 1.2（楽観）
+
+    [[SCENARIO-BEARBULL-SIGN-FLIP-1]]: base_growth_rateが負の場合、
+    単純乗算（bear=base×0.7・bull=base×1.2）だと下落幅の大小関係が
+    ラベルと逆転する（例: base=-10%のとき、単純乗算ではbear=-7%
+    〈下落が緩い＝実態は楽観〉・bull=-12%〈下落が急＝実態は悲観〉と
+    なりBear/Bullの意味が入れ替わる）。負の場合のみ乗数を反転させ
+    （bear=×1.3・bull=×0.8）、下落幅で見てBearが最も悲観的
+    （bear_rate < base_rate < bull_rate）となるよう補正する。
+    正の場合は既存の挙動（呼び出し元が渡すbear_multiplier/
+    bull_multiplier、デフォルト0.7/1.2）を一切変更しない。
     """
     # 成長率計算
-    bear_rate = base_growth_rate * bear_multiplier
-    base_rate = base_growth_rate
-    bull_rate = base_growth_rate * bull_multiplier
+    if base_growth_rate < 0:
+        # 負の成長率: 乗数を反転させ、下落幅がBear>Base>Bullになるよう補正
+        bear_rate = base_growth_rate * 1.3
+        base_rate = base_growth_rate
+        bull_rate = base_growth_rate * 0.8
+    else:
+        bear_rate = base_growth_rate * bear_multiplier
+        base_rate = base_growth_rate
+        bull_rate = base_growth_rate * bull_multiplier
     
     # 各シナリオの理論株価計算
     bear_value = calc_func(bear_rate)

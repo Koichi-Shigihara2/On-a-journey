@@ -289,29 +289,6 @@ def determine_growth_rate(
     )
 
 
-def get_scenario_growth_rates(
-    base_rate: float,
-    bear_multiplier: float = 0.7,
-    bull_multiplier: float = 1.2
-) -> Dict[str, float]:
-    """
-    シナリオ別成長率を計算
-    
-    Args:
-        base_rate: ベース成長率
-        bear_multiplier: Bear乗数
-        bull_multiplier: Bull乗数
-    
-    Returns:
-        {"bear": float, "base": float, "bull": float}
-    """
-    return {
-        "bear": base_rate * bear_multiplier,
-        "base": base_rate,
-        "bull": base_rate * bull_multiplier
-    }
-
-
 if __name__ == "__main__":
     print("=== Growth Rate Calculator テスト ===\n")
     

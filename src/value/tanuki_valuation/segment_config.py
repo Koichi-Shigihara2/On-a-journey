@@ -179,24 +179,6 @@ def calculate_growth_option_total_pv(ticker: str) -> Dict[str, Any]:
     return {"total_pv": total_pv, "options": options, "count": len(options)}
 
 
-def calculate_scenario_growth(ticker: str, scenario: str = "base") -> Dict[str, Any]:
-    """シナリオ別成長率を計算"""
-    segment_data = get_segment_growth(ticker)
-    if not segment_data:
-        return {"rate": None, "scenario": scenario, "source": "not_configured"}
-
-    base_rate = segment_data["weighted_growth"]
-    adjustments = {"bull": 1.2, "base": 1.0, "bear": 0.7}
-    adjusted_rate = max(0.0, min(0.50, base_rate * adjustments.get(scenario, 1.0)))
-    return {
-        "rate": adjusted_rate,
-        "base_rate": base_rate,
-        "scenario": scenario,
-        "adjustment": adjustments.get(scenario, 1.0),
-        "source": "segment_config"
-    }
-
-
 if __name__ == "__main__":
     print("=== Segment Growth（JSON読み込み版）===")
     tickers = ["NVDA", "TSLA", "PLTR", "MSFT", "AMZN", "AMD", "SOFI", "RKLB", "APP", "CELH", "SOUN", "ONDS"]
