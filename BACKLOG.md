@@ -3698,44 +3698,6 @@ BACKLOG_DONE.md「2026-08-16（完了）」参照）
 
 ---
 
-### [SCENARIO-BEARBULL-SIGN-FLIP-1] Bear/Bull成長率の符号が負の基準成長率で意図と逆転
-**優先度:** 中（2026-08-16、高→中へ訂正。理由は下記「優先度訂正の経緯」参照）
-**分類:** バグ / 設計上の欠陥 / TANUKI VALUATION
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-015、依頼文名指し）
-
-#### 背景
-`calculate_scenario_valuations()`（`calculator/scenarios.py:64-66`）は
-`bear_rate=base_growth_rate×0.7`・`bull_rate=base_growth_rate×1.2`という
-単純な乗算で構成される。`base_growth_rate`が正の値である前提では
-「Bearは基準より控えめ・Bullは基準より強気」という意図通りに機能するが、
-`base_growth_rate`が負の場合（例: -10%）はBear(-7%、実際は緩やかな下落=
-楽観的)・Bull(-12%、実際は急な下落=悲観的)とラベルと実態が完全に逆転する。
-現状は`growth_floor=0.15`による下限クリップ等により本番データでは顕在化
-していないが、ロジック自体の欠陥は残る。同一の乗算ロジックは
-`calculator/growth.py::get_scenario_growth_rates()`・`segment_config.py::
-calculate_scenario_growth()`という2つの未使用デッドコードにも重複実装
-されている。
-
-#### 対応方針
-`base_growth_rate`が負の場合の乗数を反転させる（例: Bearは`×1.3`、Bullは
-`×0.8`とし、下落幅がBear>Bullになるよう補正する）等の修正方針を設計して
-から実装する。使われていないデッドコード2箇所の削除も合わせて検討する。
-
-#### 優先度訂正の経緯（2026-08-16）
-案2 Step C（BACKLOG優先度中以上の棚卸し）で、本文の「#### 背景」欄に
-「`growth_floor=0.15`による下限クリップ等により本番データでは顕在化
-していない」と明記されているにもかかわらず優先度が「高」のまま維持
-されている自己矛盾を発見した。`calculator/growth.py:142`の
-`max(growth_floor, min(growth_cap, raw_cagr))`で下限クリップ（0.15）
-が実在することをコードで確認済みで、本文の主張自体は正確。さらに
-同一ロジックの重複実装2箇所は本文で明示的に「未使用デッドコード」と
-されている。ロジック自体の欠陥という事実認識は変えないが、優先度
-表記のみを「中」へ訂正する。
-
-#### 着手条件
-なし
-
 ---
 
 ## 優先度：未定（要判断）

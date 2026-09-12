@@ -342,6 +342,108 @@ intangibles・restructuring・tax_one_time等）に共通する構造的欠陥**
 
 ---
 
+## 2026-09-12④（完了）
+
+### ✅ [SCENARIO-BEARBULL-SIGN-FLIP-1] Bear/Bull成長率の符号が負の基準成長率で意図と逆転 — 負の場合のみ乗数を反転させる分岐を追加、デッドコード2箇所も削除
+**状態:** ✅実装・本番反映完了
+**優先度:** 中 → 完了
+**分類:** バグ / 設計上の欠陥 / TANUKI VALUATION
+**登録日:** 2026-07-23
+**完了日:** 2026-09-12
+**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-015、依頼文名指し）
+
+#### 背景（登録時点）
+`calculate_scenario_valuations()`（`calculator/scenarios.py:64-66`）は
+`bear_rate=base_growth_rate×0.7`・`bull_rate=base_growth_rate×1.2`という
+単純な乗算で構成される。`base_growth_rate`が正の値である前提では
+「Bearは基準より控えめ・Bullは基準より強気」という意図通りに機能するが、
+`base_growth_rate`が負の場合（例: -10%）はBear(-7%、実際は緩やかな下落=
+楽観的)・Bull(-12%、実際は急な下落=悲観的)とラベルと実態が完全に逆転する。
+現状は`growth_floor=0.15`による下限クリップ等により本番データでは顕在化
+していないが、ロジック自体の欠陥は残る。同一の乗算ロジックは
+`calculator/growth.py::get_scenario_growth_rates()`・`segment_config.py::
+calculate_scenario_growth()`という2つの未使用デッドコードにも重複実装
+されている。
+
+#### 対応方針（登録時点）
+`base_growth_rate`が負の場合の乗数を反転させる（例: Bearは`×1.3`、Bullは
+`×0.8`とし、下落幅がBear>Bullになるよう補正する）等の修正方針を設計して
+から実装する。使われていないデッドコード2箇所の削除も合わせて検討する。
+
+#### 優先度訂正の経緯（2026-08-16）
+案2 Step C（BACKLOG優先度中以上の棚卸し）で、本文の「#### 背景」欄に
+「`growth_floor=0.15`による下限クリップ等により本番データでは顕在化
+していない」と明記されているにもかかわらず優先度が「高」のまま維持
+されている自己矛盾を発見した。`calculator/growth.py:142`の
+`max(growth_floor, min(growth_cap, raw_cagr))`で下限クリップ（0.15）
+が実在することをコードで確認済みで、本文の主張自体は正確。さらに
+同一ロジックの重複実装2箇所は本文で明示的に「未使用デッドコード」と
+されている。ロジック自体の欠陥という事実認識は変えないが、優先度
+表記のみを「中」へ訂正する。
+
+#### STEP1調査結果（2026-09-12、実装着手前の再確認）
+- tanuki=true全99銘柄の実際の`high_growth_rate_used`（scenario計算への
+  入力値、latest.jsonの`components`から機械抽出）を全数確認した結果、
+  最小値0.0081（XOM）で負の値は0件と確認（登録時の前提に変化なし）。
+  ただし`calculate_fcf_cagr()`の`growth_floor=0.15`クリップは、優先順位
+  1位の`segment_weighted`成長率経路（`get_segment_growth()`が
+  `segment_config.json`の`weighted_growth`をクリップなしで直接採用）
+  には適用されないため、「growth_floorが常に0.15を保証する」という
+  理解は正確ではないと判明（今回0.15を下回る0.0081という実例が既に
+  存在することを確認、負の値は依然0件のため優先度・方針への影響なし）
+- `get_scenario_growth_rates()`（growth.py）・`calculate_scenario_
+  growth()`（segment_config.py）の2箇所は、`grep -rn`で実際の呼び出し
+  元ゼロ（`calculator/__init__.py`・`tanuki_valuation/__init__.py`
+  での再エクスポートのみ、実呼び出しなし）を再確認、デッドコードと
+  確定
+
+#### 実装結果（2026-09-12）
+コミット`acab509d1a`（コード・テスト変更）・`1a72a10cd6`（本番反映、
+差分は市場データ更新のみ）。
+
+`calculator/scenarios.py`に、`base_growth_rate<0`の場合のみ
+`bear_multiplier=1.3`・`bull_multiplier=0.8`を使用し、下落幅で見て
+Bearが最も悲観的（bear_rate<base_rate<bull_rate）となるよう補正する
+分岐を追加。正の場合は呼び出し元が渡す乗数（デフォルト0.7/1.2、または
+`growth_sanity`のFCFマージン補正済み値）を従来通りそのまま使用し、
+一切変更しない設計とした。未使用デッドコード2箇所（`get_scenario_
+growth_rates()`・`calculate_scenario_growth()`）を削除し、
+`calculator/__init__.py`・`tanuki_valuation/__init__.py`の再エクスポート
+（import・`__all__`）も追従して削除した。
+
+**副次発見（修正なし、記録のみ）**: `tanuki_valuation/__init__.py`は
+`.wacc`/`.growth`という誤った相対import（実際のファイルは`calculator/`
+配下、パッケージ直下には存在しない）により、`import src.value.
+tanuki_valuation`が既存の別要因で常に失敗する状態だったことを確認した。
+本番運用は`python pipeline.py`をパッケージのimportを経由しない直接
+スクリプト実行（`working-directory: src/value/tanuki_valuation`）で
+行っているため実害はないが、本タスクとは無関係の既存バグのため修正は
+行わなかった。
+
+#### 検証結果（全母集団シミュレーション・本番反映）
+- 全99銘柄の実際の`high_growth_rate_used`値で新旧ロジックを直接突合、
+  差分0件（全銘柄が正のため分岐に入らない）を確認。保有9銘柄
+  （ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）も個別に明示的に
+  ゼロ差分を確認
+- 新規6テスト（`tests/test_scenario_bearbull_sign_flip.py`）: 正の場合の
+  乗数不変（デフォルト・カスタム・境界値0）3件、負の場合の符号逆転
+  （Bear<Base<Bull・呼び出し元乗数を無視して固定1.3/0.8を使用・小さい
+  負の値）3件。負の場合の3件は変更前のコードに対して実際に失敗する
+  ことを確認した上で、変更後は全6件成功することを検証
+- pytest tests/: 1190 passed。report_consistency_check.py --fail-on-ng:
+  NG=0（common/sec_data側は無変更のため118件のまま）
+- 本番データ再生成（`pipeline.py`、成功99/失敗0、検証PASS=97 WARN=0
+  FAIL=2 ERROR=0。FAIL2件〈CEG・LYFTのanomaly_detection〉は本タスク
+  以前からの既知事象で無関係）: `scenario_valuations`・`rice.bear/bull`
+  の`growth_rate`は全99銘柄で新旧完全一致（0件変化）を確認。一部銘柄
+  （AMD・AMZN・CAKE・CEG・NOW・SOFI・ZETA・SCCO・FICO・HQY・DOCN・
+  FLYW・GEV・LOAR、計14銘柄）で`intrinsic_value_per_share`等の評価額
+  のみ僅少に変化しているが、`growth_rate`が完全一致していることから
+  本修正とは無関係の通常の市場データ更新（本セッション中の自動更新
+  コミット由来）によるものと確認済み
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
