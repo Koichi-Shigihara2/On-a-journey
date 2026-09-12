@@ -5963,6 +5963,82 @@ None:`（921行）の条件が成立せずFRED取得がスキップされる。*
 
 ## 優先度：低（アイデア段階）
 
+### [TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1] tanuki_valuation/__init__.pyの相対importが誤っており、パッケージimport経路は常に失敗する
+**優先度:** 低（実害確認済み・パッケージimport経路が将来使われる場合の
+技術的負債として記録）
+**分類:** バグ / 技術的負債 / TANUKI VALUATION
+**登録日:** 2026-09-12
+**発見:** [[SCENARIO-BEARBULL-SIGN-FLIP-1]]対応中（デッドコード削除に
+伴う`__init__.py`の`__all__`更新作業で発見）
+
+#### 内容
+`src/value/tanuki_valuation/__init__.py`は冒頭で以下のような相対import
+を行っている:
+
+```python
+from .wacc import (
+    calculate_wacc, get_default_beta, WACCResult,
+    SECTOR_DEFAULT_BETA, DEFAULT_RISK_FREE_RATE, DEFAULT_MARKET_RETURN,
+)
+from .growth import (
+    determine_growth_rate, get_segment_growth,
+    calculate_fcf_cagr, GrowthResult,
+)
+```
+
+しかし`wacc.py`・`growth.py`は`tanuki_valuation/`直下には存在せず、
+実際は`tanuki_valuation/calculator/`配下（`calculator/wacc.py`・
+`calculator/growth.py`）にある。パッケージ直下からの相対import
+`from .wacc import ...`は誤りで、`from .calculator.wacc import ...`
+とすべきところが誤ったパスのままになっている。
+
+実際に検証したところ、`import src.value.tanuki_valuation`（または
+このパッケージの何らかのサブモジュールをPythonの通常のimport機構
+経由で読み込む操作全般）は以下のように必ず失敗する:
+
+```
+ModuleNotFoundError: No module named 'src.value.tanuki_valuation.wacc'
+```
+
+#### 実害なしと判断した根拠
+本番運用（GitHub Actions `TANUKI_VALUATION_Update.yml`）は
+`working-directory: src/value/tanuki_valuation`でカレントディレクトリを
+移動した上で`python pipeline.py`と**スクリプトとして直接実行**して
+おり、Pythonの`import`文を経由してこのパッケージ（`__init__.py`）を
+ロードする経路を一切通らない。同様に`pipeline.py`自身や`core_
+calculator.py`等の本体コードも、`sys.path.insert(0, ...)`を使って
+個々のモジュールをトップレベルスクリプトとして直接importする設計
+（本プロジェクト全体で頻出するパターン）になっており、`__init__.py`の
+内容には依存していない。
+
+このため、`tanuki_valuation/__init__.py`が常にimportエラーを起こす
+状態であっても、現行の本番運用・既存のテストスイート（`pytest tests/`
+1190件、いずれも直接モジュールimportまたは`sys.path`操作でこの
+`__init__.py`を経由していない）には一切影響していないことを実測で
+確認済み。
+
+#### 影響
+現時点では実害ゼロ。ただし将来、何らかのコード（新規スクリプト・
+外部ツール・別プロジェクトからの利用等）が`from src.value.
+tanuki_valuation import ...`や`import src.value.tanuki_valuation`
+という標準的なパッケージimportの形でこのモジュールを読み込もうとした
+場合、原因不明のImportErrorとして顕在化するリスクがある。
+
+#### 対応方針（未着手）
+`__init__.py`内の相対importを確認したところ、`.wacc`・`.growth`だけで
+なく`.dcf`・`.adjustments`・`.sensitivity`・`.scenarios`・
+`.future_values`・`.rice`の**計8モジュール全て**が同型の誤り（実体は
+`calculator/`配下にあるが、パッケージ直下からの相対importになっている）
+であることを確認済み。`from .wacc import ...`等を`from .calculator.
+wacc import ...`のように8箇所とも一括で`calculator.`プレフィックスを
+補う形で修正すれば解消すると見込まれる。現時点で実害がなく着手の
+緊急性がないため、本エントリでは調査・記録のみとし実装は行わない。
+
+#### 着手条件
+なし
+
+---
+
 ### [STOCKHTML-LAYER3-PUBLISH-PIPELINE-MISSING-1] stock.htmlのLayer3切替は新規公開パイプライン構築が前提だが、現時点で着手しない
 **優先度:** 低（対応不要、記録のみ）
 **分類:** アーキテクチャ上のブロッカー / 着手見送り
