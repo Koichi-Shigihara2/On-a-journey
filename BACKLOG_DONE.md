@@ -102,6 +102,120 @@ DOCN・LLY等の確定的判定銘柄も全て変化ゼロを確認。
 
 ---
 
+## 2026-09-12②（完了）
+
+### ✅ [CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1] CRM(2018)のrevenue/cost_of_revenueが本人データタグ網羅漏れによりFY2019比較列（restated値）を誤採用しgross_profitと不整合 — 案eの拡張候補リストへ2タグ追加・本番反映で根治的に解消
+**状態:** ✅実装・本番反映完了
+**優先度:** 中 → 完了
+**分類:** バグ / SEC EDGAR タグ選定ロジック / [[PL-FIELD-CROSS-ACCN-
+PERIOD-MISMATCH-1]]系統
+**登録日:** 2026-09-12
+**完了日:** 2026-09-12
+**発見:** CHECK-46（`report_consistency_check.py`、WARN-46）がCRM(2018)
+の`revenue − cost_of_revenue ≠ gross_profit`（乖離0.5741%、
+$60,510,000）を検知。読み取り専用調査（前回セッション）で根本原因を
+特定済み
+
+#### 内容（登録時点）
+CRMのFY2018本人filing（accn `0001108524-18-000011`）は、revenueを
+`SalesRevenueServicesNet`、cost_of_revenueを`CostOfServices`という
+タグで申告している。この2タグはいずれも:
+- 標準候補リスト`parser.py::XBRL_MAPPING["revenue"]`（314行目）・
+  `["cost_of_revenue"]`（327行目）
+- [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e用の拡張候補リスト
+  `_REVENUE_ALIGNMENT_CANDIDATES`（1877行目）・
+  `_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`（1501行目）
+
+のいずれにも**一件も登録されていない**。
+
+`_extract_values_best_candidate()`の「候補タグ横断でannual最新年が
+最も新しいものを勝者採用」ロジック（2921-2929行目、LLY-CAPEX-
+STALE-1由来）により、CRMがFY2019以降ASC606適用で使い始めた新タグ
+`RevenueFromContractWithCustomerExcludingAssessedTax`/
+`CostOfGoodsAndServicesSold`（annual系列がFY2020まで続き「fresher」と
+判定される）が勝者採用され、CRM(2018)分もFY2019 filingの比較列
+（restated値、accn `0001108524-19-000009`、revenue=$10,540,000,000・
+cost_of_revenue=$2,773,000,000）が採用されてしまう。
+
+一方gross_profitは`TAG_CANDIDATES["GROSS_PROFIT"]`（`GrossProfit`/
+`GrossProfitLoss`）にCRM自身の申告タグ`GrossProfit`が含まれているため
+本人データ（$7,706,490,000、同accn）が正しく採用され、両者の差分
+$60,510,000（ASC606移行に伴う収益認識基準変更分とみられる）が
+CHECK-46で検知される不整合として顕在化した。
+
+`_collect_own_data`系関数は`xbrl_keys`（候補リストそのもの）しか
+走査しないため、`SalesRevenueServicesNet`/`CostOfServices`は最初から
+本人データ候補として認識されず、own-data override（`_own_override_
+is_safe`、2523行目）にも到達しない。案e（`_align_revenue_and_cost_
+to_gross_profit_own_accn`、1888行目、gross_profitをアンカーに
+revenue・cost_of_revenue両方を是正する設計）もgp採用元accn内で
+`_REVENUE_ALIGNMENT_CANDIDATES`/`_COST_OF_REVENUE_ALIGNMENT_
+CANDIDATES`を検索するが、両リストにもCRM固有タグが含まれていないため
+`found_rev is None`でゲート不成立のまま発火しない。
+
+#### 影響（登録時点）
+CRM(2018)のannual_2018.jsonのrevenue/cost_of_revenueがFY2019
+restated値になっており、gross_profitとの数学的整合性が0.5741%
+乖離している。CRMは非保有銘柄。
+
+#### 対応方針（読み取り専用調査で確認済み）
+`_REVENUE_ALIGNMENT_CANDIDATES`に`SalesRevenueServicesNet`を、
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`に`CostOfServices`を追加する
+（案eの拡張候補リストにのみ限定、標準`XBRL_MAPPING`本体は変更しない
+——他銘柄の主選定ロジックへの波及を避けるため）。
+
+同型パターンの機械スキャン（tanuki=true全99銘柄、accn突合）は事前に
+実施済みで、未診断の同型ケースはCRM(2018)自身のみと確認済み（他の
+数値乖離8件はMO/PM/SCCO/LITEの既知5銘柄33件に含まれ個別診断済み）。
+保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）も全年度
+確認済みで潜在リスク0件。
+
+#### 実装結果（2026-09-12）
+コミット`eafa361844`（コード・テスト変更）・`4f7608d291`（本番反映）。
+
+**全99銘柄シミュレーション（実装前、`git stash`で変更前後を切り替えて
+`parse_company_facts()`を突合）**: 変化があったのはCRMのみ、それも
+依頼書がスコープしたCRM(2018)に加えCRM(2017)も含む2年度分だった
+（他98銘柄・CRM自身の他の年度は完全ゼロ差分）。
+
+- **CRM(2018)**（依頼書スコープ通り）: 案eが新タグにより発火し
+  revenue・cost_of_revenue双方がCRM自身のFY2018本人filing（accn
+  `0001108524-18-000011`）へ是正された。
+  `revenue: 10,540,000,000→10,480,012,000`・
+  `cost_of_revenue: 2,773,000,000→2,773,522,000`・
+  `revenue-cost_of_revenue=7,706,490,000=gross_profit`（diff=0、
+  完全一致）。
+- **CRM(2017)**（副次効果、シミュレーション結果を報告しKoichiさんの
+  承認を得た上でスコープに追加）: 案a/bがCostOfServices追加により
+  新たに発火し、cost_of_revenueのみCRM自身のFY2017本人filing（accn
+  `0001108524-17-000006`、revenueと同一accn）へ是正された。
+  `cost_of_revenue: 2,234,000,000→2,234,039,000`・
+  `revenue-cost_of_revenue=6,157,945,000=gross_profit`（diff=0、
+  完全一致）。これは前回セッションの調査報告で「CRM(2017)のdiff=
+  $39,000（0.0005%、WARN-46閾値0.1%未満の丸め誤差）」と記載していた
+  乖離そのものが偶然ゼロになったもの。
+
+**テスト追加**: `tests/test_pl_field_cross_accn_alignment.py`に、
+案a/b向けCostOfServicesタグ使用テスト1件、案e
+（`_align_revenue_and_cost_to_gross_profit_own_accn`、従来テスト
+カバレッジ0件だった）向け新規`TestAlignRevenueAndCostToGrossProfit
+OwnAccn`クラス3件（正常系1件・厳密一致ゲートの否定系2件）、実データ
+統合テスト`TestRealDataCrmRevenueCogsGrossProfit`クラス2件（CRM(2017)/
+(2018)双方の完全一致を確認）を追加。新規6テストは変更前のparser.pyに
+対して実際に4件が失敗する（残り2件は否定系で変更前後とも成立するため
+元々パス）ことを確認した上で、変更後は全16件（既存10件含む）成功する
+ことを検証した。
+
+**本番反映**: `parser.SECParser.parse_and_save("CRM")`を実行し、
+`annual_2017.json`・`annual_2018.json`の2ファイルのみが変化（他18年次・
+52四半期は完全ゼロ差分）したことを確認。
+
+**検証**: pytest tests/: 1180 passed。audit.py: 新規WARN・エラーなし。
+report_consistency_check.py --fail-on-ng: NG=0（CRMのWARN-46が消滅し
+警告数119→118に減少、他の変化なし）。
+
+---
+
 ## 2026-09-11（完了）
 
 ### ✅ [TAIL-SHARESDILUTED-Q4-TIMING-RISK-1] TANUKI TAILのeps_diluted計算が、レビュー生成タイミングによってはCommonStockSharesOutstanding（期末発行済株式数）由来のSharesDilutedを拾う構造的リスクを持つ — 共通アクセサへのsource_tagフィルタ統合で根治的に解消
