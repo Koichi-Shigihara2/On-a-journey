@@ -1,13 +1,19 @@
 """
 tests/test_pl_field_cross_accn_alignment.py
 
-[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案bの回帰テスト。
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a・b・eの回帰テスト。
 
-SECParser._align_cost_of_revenue_to_revenue_period()が、
+SECParser._align_cost_of_revenue_to_revenue_period()（案a・b）が、
 「revenue − cost_of_revenue ≠ gross_profit」という数学的矛盾が現に
 存在する年度についてのみ、revenueと同一accn・同一期間のcost_of_revenue
 候補で矛盾が厳密に解消する場合に限り置換することを確認する
 （欠損穴埋め型のゲート条件、既存の正しい値・矛盾のない年度には一切触れない）。
+
+SECParser._align_revenue_and_cost_to_gross_profit_own_accn()（案e）が、
+gross_profitをアンカーにrevenue・cost_of_revenue両方を是正するケースも
+[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]対応（_REVENUE_ALIGNMENT_
+CANDIDATES・_COST_OF_REVENUE_ALIGNMENT_CANDIDATESへのSalesRevenue
+ServicesNet・CostOfServices追加）を機に併せてカバーする。
 
 実行方法:
     python -m pytest tests/test_pl_field_cross_accn_alignment.py -v
@@ -257,3 +263,175 @@ def test_skips_when_gross_profit_is_none():
     parser._align_cost_of_revenue_to_revenue_period(extracted, us_gaap)
 
     assert extracted["cost_of_revenue"]["annual"][2009] == 1823673000
+
+
+def test_finds_cost_of_services_tag_in_revenue_accn_crm_2017_style():
+    """[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]: revenueと同一accn・同一
+    期間にCostOfServices（_COST_OF_REVENUE_ALIGNMENT_CANDIDATES追加分、
+    CRM自身のFY2017本人filingが使うタグ）しか存在しない場合でも発見でき、
+    矛盾が厳密に解消するなら採用する（CRM(2017)実データ相当：
+    8391984000-2234039000=6157945000=gross_profit）"""
+    extracted = _extracted(
+        revenue={2017: {"val": 8391984000, "accn": "accn_crm_2017"}},
+        cost_of_revenue={2017: {"val": 2234000000, "accn": "accn_other"}},  # 別accnの丸め値
+        gross_profit={2017: {"val": 6157945000}},
+    )
+    us_gaap = _merge_us_gaap(
+        _us_gaap_entry("accn_crm_2017", "2016-02-01", "2017-01-31", 8391984000, tag="Revenues"),
+        _us_gaap_entry("accn_crm_2017", "2016-02-01", "2017-01-31", 2234039000, tag="CostOfServices"),
+    )
+    parser = SECParser()
+    parser._align_cost_of_revenue_to_revenue_period(extracted, us_gaap)
+
+    assert extracted["cost_of_revenue"]["annual"][2017] == 2234039000
+    prov = extracted["cost_of_revenue"]["_annual_provenance"][2017]
+    assert prov["accn"] == "accn_crm_2017"
+    assert prov["accn_aligned"] is True
+
+
+class TestAlignRevenueAndCostToGrossProfitOwnAccn:
+    """[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e
+    （_align_revenue_and_cost_to_gross_profit_own_accn）の回帰テスト。
+
+    既存のテストファイルは案a・bのみを対象としており案eは未カバーだった
+    ため、[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]対応（
+    _REVENUE_ALIGNMENT_CANDIDATES・_COST_OF_REVENUE_ALIGNMENT_CANDIDATES
+    へのSalesRevenueServicesNet・CostOfServices追加）を機に新設する。
+    """
+
+    @staticmethod
+    def _extracted_with_gp_accn(revenue, cost_of_revenue, gross_profit_val, gp_accn, year):
+        """gross_profit自身のaccnを持つextracted構造を組み立てる
+        （案eはgp_prov["accn"]をアンカーとして参照するため、共通ヘルパー
+        _extracted()の_build_gp（provenance空）では検証できない）"""
+        def _build(field_map):
+            annual = {y: v["val"] for y, v in field_map.items()}
+            prov = {y: {"accn": v["accn"], "filed": v.get("filed", ""),
+                         "is_own_data": v.get("is_own_data", False), "fy_tag": y}
+                    for y, v in field_map.items()}
+            return {"annual": annual, "quarterly": {}, "_annual_provenance": prov}
+
+        return {
+            "revenue": _build(revenue),
+            "cost_of_revenue": _build(cost_of_revenue),
+            "gross_profit": {
+                "annual": {year: gross_profit_val},
+                "quarterly": {},
+                "_annual_provenance": {year: {"accn": gp_accn, "filed": "", "is_own_data": True, "fy_tag": year}},
+            },
+        }
+
+    def test_finds_sales_revenue_services_net_and_cost_of_services_crm_2018_style(self):
+        """revenue・cost_of_revenueが両方とも別accn（FY2019比較列相当）
+        から採用されており、gross_profitの採用元accn（CRM自身のFY2018
+        本人filing相当）にSalesRevenueServicesNet・CostOfServices
+        （今回追加した拡張候補タグ）の両方が存在し、その差がgross_profitと
+        厳密に一致する場合、revenue・cost_of_revenue両方をそちらへ置換する
+        （CRM(2018)実データ相当:
+        10480012000-2773522000=7706490000=gross_profit）"""
+        extracted = self._extracted_with_gp_accn(
+            revenue={2018: {"val": 10540000000, "accn": "accn_fy2019_restated"}},
+            cost_of_revenue={2018: {"val": 2773000000, "accn": "accn_fy2019_restated"}},
+            gross_profit_val=7706490000,
+            gp_accn="accn_crm_own_2018",
+            year=2018,
+        )
+        us_gaap = _merge_us_gaap(
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 7706490000, tag="GrossProfit"),
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 10480012000, tag="SalesRevenueServicesNet"),
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 2773522000, tag="CostOfServices"),
+        )
+        parser = SECParser()
+        parser._align_revenue_and_cost_to_gross_profit_own_accn(extracted, us_gaap)
+
+        assert extracted["revenue"]["annual"][2018] == 10480012000
+        assert extracted["cost_of_revenue"]["annual"][2018] == 2773522000
+        rev_prov = extracted["revenue"]["_annual_provenance"][2018]
+        cogs_prov = extracted["cost_of_revenue"]["_annual_provenance"][2018]
+        assert rev_prov["accn"] == "accn_crm_own_2018"
+        assert rev_prov["gp_anchor_realigned"] is True
+        assert rev_prov["gp_anchor_realigned_tag"] == "SalesRevenueServicesNet"
+        assert cogs_prov["accn"] == "accn_crm_own_2018"
+        assert cogs_prov["gp_anchor_realigned"] is True
+        assert cogs_prov["gp_anchor_realigned_tag"] == "CostOfServices"
+
+    def test_does_not_apply_when_candidates_do_not_resolve_mismatch(self):
+        """gp採用元accnにSalesRevenueServicesNet・CostOfServicesが存在
+        しても、その差がgross_profitと厳密に一致しない場合は現状維持する
+        （新規追加タグがゲート条件自体を緩めていないことの確認）"""
+        extracted = self._extracted_with_gp_accn(
+            revenue={2018: {"val": 10540000000, "accn": "accn_fy2019_restated"}},
+            cost_of_revenue={2018: {"val": 2773000000, "accn": "accn_fy2019_restated"}},
+            gross_profit_val=7706490000,
+            gp_accn="accn_crm_own_2018",
+            year=2018,
+        )
+        us_gaap = _merge_us_gaap(
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 7706490000, tag="GrossProfit"),
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 10480012000, tag="SalesRevenueServicesNet"),
+            # 差し替えても 10480012000-2700000000=7780012000 != 7706490000 のため不採用
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 2700000000, tag="CostOfServices"),
+        )
+        parser = SECParser()
+        parser._align_revenue_and_cost_to_gross_profit_own_accn(extracted, us_gaap)
+
+        assert extracted["revenue"]["annual"][2018] == 10540000000
+        assert extracted["cost_of_revenue"]["annual"][2018] == 2773000000
+
+    def test_does_not_touch_years_with_no_existing_mismatch(self):
+        """revenue - cost_of_revenue == gross_profitが既に成立している
+        場合、gp採用元accnにSalesRevenueServicesNet・CostOfServicesが
+        存在していても一切触れない（ゲート条件: 矛盾のある年度のみ対象）"""
+        extracted = self._extracted_with_gp_accn(
+            revenue={2018: {"val": 7706490000 + 2773522000, "accn": "accn_crm_own_2018"}},
+            cost_of_revenue={2018: {"val": 2773522000, "accn": "accn_crm_own_2018"}},
+            gross_profit_val=7706490000,
+            gp_accn="accn_crm_own_2018",
+            year=2018,
+        )
+        us_gaap = _merge_us_gaap(
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 7706490000, tag="GrossProfit"),
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 99999999999, tag="SalesRevenueServicesNet"),
+            _us_gaap_entry("accn_crm_own_2018", "2017-02-01", "2018-01-31", 1, tag="CostOfServices"),
+        )
+        parser = SECParser()
+        parser._align_revenue_and_cost_to_gross_profit_own_accn(extracted, us_gaap)
+
+        assert extracted["revenue"]["annual"][2018] == 7706490000 + 2773522000
+        assert extracted["cost_of_revenue"]["annual"][2018] == 2773522000
+
+
+class TestRealDataCrmRevenueCogsGrossProfit:
+    """common/sec_data/data/CRM/配下の実データ（company_facts.json・
+    submissions.json）を使った統合テスト。
+    [[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]の修正後、CHECK-46が検知した
+    CRM(2018)のGP-COGS不整合（乖離0.5741%、$60,510,000）が解消され、かつ
+    副次的に判明したCRM(2017)の丸め誤差（$39,000、WARN-46閾値0.1%未満で
+    従来は不発火）も解消されることを確認する。"""
+
+    def test_crm_2018_revenue_cost_of_revenue_gross_profit_reconcile_exactly(self):
+        parser = SECParser()
+        parsed = parser.parse_company_facts("CRM")
+        annual_2018 = parsed["annual"][2018]
+        pl = annual_2018["pl"]
+        assert pl["revenue"] == 10480012000
+        assert pl["cost_of_revenue"] == 2773522000
+        assert pl["gross_profit"] == 7706490000
+        assert pl["revenue"] - pl["cost_of_revenue"] == pl["gross_profit"]
+
+        prov = annual_2018["pl_provenance"]
+        assert prov["revenue"]["accn"] == prov["cost_of_revenue"]["accn"] == prov["gross_profit"]["accn"]
+        assert prov["revenue"]["is_own_data"] is True
+        assert prov["cost_of_revenue"]["is_own_data"] is True
+        assert prov["revenue"]["gp_anchor_realigned"] is True
+        assert prov["cost_of_revenue"]["gp_anchor_realigned"] is True
+
+    def test_crm_2017_revenue_cost_of_revenue_gross_profit_reconcile_exactly(self):
+        parser = SECParser()
+        parsed = parser.parse_company_facts("CRM")
+        annual_2017 = parsed["annual"][2017]
+        pl = annual_2017["pl"]
+        assert pl["revenue"] == 8391984000
+        assert pl["cost_of_revenue"] == 2234039000
+        assert pl["gross_profit"] == 6157945000
+        assert pl["revenue"] - pl["cost_of_revenue"] == pl["gross_profit"]

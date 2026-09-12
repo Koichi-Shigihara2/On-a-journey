@@ -1503,6 +1503,11 @@ class SECParser:
         "CostOfGoodsAndServicesSold",
         "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization",
         "CostOfGoodsSold",
+        # [[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]: CRMのFY2018本人
+        # filingが使うタグ（ASC606移行前の旧タグ）。標準XBRL_MAPPINGには
+        # 意図的に追加しない（上記_COST_OF_REVENUE_ALIGNMENT_CANDIDATES
+        # 全体と同じ理由、影響範囲を案e経由の検索に限定するため）。
+        "CostOfServices",
     ]
 
     def _find_cost_of_revenue_in_accn(self, us_gaap: dict, accn: str,
@@ -1883,6 +1888,11 @@ class SECParser:
         "TotalRevenue",
         "RevenuesNetOfInterestExpense",
         "SalesRevenueGoodsNet",
+        # [[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]: CRMのFY2018本人
+        # filingが使うタグ（ASC606移行前の旧タグ、サービス売上高を
+        # 商品売上高と分離して報告する企業に見られる）。標準
+        # XBRL_MAPPINGには意図的に追加しない（上記docstringと同じ理由）。
+        "SalesRevenueServicesNet",
     ]
 
     def _align_revenue_and_cost_to_gross_profit_own_accn(self, extracted: Dict[str, Any], us_gaap: dict) -> None:
