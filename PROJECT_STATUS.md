@@ -482,6 +482,51 @@
   参照。新DB構築プロジェクトのコード・データには変更なし。現存
   BACKLOG.md総数は機械カウントで**57件**（60件から3件減）。
 
+- **2026-09-12②**（同日、上記に続く6件の指示書を順次実施、全て
+  push済み）:
+  1. `[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]`実装・本番反映（コミット
+     `eafa361844`・`4f7608d291`）: CRM(2018)のGP-COGS不整合の根本原因
+     （CRM自身のFY2018申告タグ`SalesRevenueServicesNet`・
+     `CostOfServices`が`parser.py`の候補リストに未登録で本人データ
+     ではなくFY2019比較列を誤採用）を特定・修正。tanuki=true全99銘柄
+     スキャンでCRMのみが対象と確認
+  2. `[[EPS-LITE-ANNUAL-AS-QUARTERLY-1]]`実装・本番反映（コミット
+     `aba7fcfcc5`・`4e90d7c77d`）: LITEのadjusted_eps異常値を調査した
+     結果、登録時の当初仮説（net_income側の問題）は誤りで、EPS
+     Analyzerの「Q4に年次調整項目タグを追加」ループが四半期申告皆無の
+     タグを誤ってQ4値に採用する構造的バグ（74銘柄に波及、47銘柄で
+     実値変化）と判明。承認を得て修正範囲を全調整項目タグへ拡大
+  3. `[[SCENARIO-BEARBULL-SIGN-FLIP-1]]`実装・本番反映（コミット
+     `acab509d1a`・`1a72a10cd6`）: `calculate_scenario_valuations()`の
+     base_growth_rate負値時の符号逆転バグを修正、デッドコード2箇所も
+     削除。あわせて調査中に発見した`tanuki_valuation/__init__.py`の
+     相対import破損（実害なし・直接スクリプト実行で回避済み）を
+     `[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1]]`として記録のみ
+     で新規登録（コミット`99a2fc6bd2`）
+  4. `[[BETA-FALLBACK-DESIGN-GAPS-1]]`実装（コミット`6cfb0af3e7`）:
+     β取得の3経路重複・0/負値無条件フォールバック等4項目を読み取り
+     専用調査し全て実害ゼロと確認、案A（`calc_capped_beta()`への
+     WARNログ追加のみ）でクローズ
+  5. `[[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]`実装・本番反映
+     （コミット`d179b5f0f0`・`8803455c56`）: STONKS SILOのYoY計算が
+     fpラベル完全一致のみで照合し期間長の妥当性チェックを持たない
+     バグを調査。登録時の「自然解消済み」という前提は誤りで、9銘柄
+     （保有銘柄CRWV含む）で現在進行形の実例を確認し、期間長
+     (330-400日)検証を追加して是正
+  6. `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`据え置き更新・CHECK-47新設
+     （コミット`db2b590319`・`2d069c3f34`）: 鮮度・実害を再確認し
+     クローズはせず据え置き継続。APP(保有銘柄)FY2023年次revenueで
+     parser.py側とLayer3側が約14.4億ドル乖離する実例（SEC遡及修正時の
+     tie-break不一致）を新規発見し、構造的リスクが実例のある現実の
+     リスクだと確認。この調査手法を`report_consistency_check.py`へ
+     CHECK-47として恒常化、全99銘柄初回実行でWARN1件（RCAT、原因は
+     normalized/側の四半期欠落、本番出力への実害なし）を検知
+
+  詳細はBACKLOG_DONE.md「2026-09-12②〜⑥（完了）」該当5節・
+  `CLAUDE_CODE_START.md`該当ブロック参照。新DB構築プロジェクトの
+  コード・データには変更なし。現存BACKLOG.md総数は機械カウントで
+  **54件**（57件からクローズ5件・新規登録1件で3件減）。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。

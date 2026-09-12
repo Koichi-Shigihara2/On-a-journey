@@ -13,12 +13,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `CHAT_RULES.md`に蓄積されている。
 
 **現在の到達点（2026-09-12時点）**: `BACKLOG.md`アクティブ件数
-**57件**。BACKLOG.md/BACKLOG_DONE.md間のID重複は既知の1件
-（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、段階的完了の意図的分割）のみで
-新規重複・移設漏れは0件（本セッションで機械確認済み）。最高/高優先度の
-未着手は計10件（最高1件`[[QUALITY-GATES-EPIC-1]]`＋高9件、後者に
-`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`を含む）。詳細リストは末尾の
-2026-09-12ブロック参照。
+**54件**（本日のセッションで6件完了〈クローズ5件＋据え置き更新1件〉・
+新規登録1件により、前回57件から3件減）。BACKLOG.md/BACKLOG_DONE.md間の
+ID重複は既知の1件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、段階的完了の
+意図的分割）のみで新規重複・移設漏れは0件（本セッションで機械確認済み）。
+最高/高優先度の未着手は現在**最高1件（`[[QUALITY-GATES-EPIC-1]]`）のみ、
+高は0件**（本セッションで全54件の優先度フィールドを機械確認した結果、
+過去の引き継ぎメモにあった「高9件」は各エントリが個別調査で中〜低へ
+既に引き下げ済みだった記載漏れ〈追随更新されていなかった〉と判明、
+本更新で是正）。詳細は下記の2026-09-12ブロック参照。
 
 **直近の重要な教訓**:
 1. **無許可着手の禁止** — 実装は依頼者の明示的な承認を得てから着手し、
@@ -34,6 +37,131 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 3. その他の個別教訓（コミットメッセージのバッククォート事故・
    BACKLOG ID使用前のgrep確認・JSON部分編集の優先等）は各セッション
    ブロック・`CHAT_RULES.md`に事例番号付きで記録されている。
+
+---
+
+最終更新: 2026-09-12（**セッション終了時ブラッシュアップ・本日6件の
+指示書サマリー〈直前の2026-09-12ブロック〈MACRO-TOOLTIP/TAIL-
+SHARESDILUTED/MA-INTEGRATION〉より後続の同日セッション〉**。全て
+push済み）:
+
+1. `[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]`（コミット`43457e7070`
+   BACKLOG新規登録・`eafa361844`実装・`4f7608d291`本番反映・
+   `99725f1f7d`BACKLOG_DONE.md移設）: CHECK-46実装過程の実データ校正で
+   発見されていたCRM(2018)のGP-COGS不整合を調査。root causeはCRM自身の
+   FY2018申告タグ（`SalesRevenueServicesNet`・`CostOfServices`）が
+   `parser.py`の`_REVENUE_ALIGNMENT_CANDIDATES`・
+   `_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`（案eの拡張候補リスト）に
+   未登録で、本人データではなくFY2019比較列（restated値）が誤採用
+   されていたこと。2タグを候補リストへ追加し根治。tanuki=true全99銘柄を
+   スキャンしCRMのみが対象と確認（CRM(2017)の既知の丸め誤差1件は
+   許容してそのまま含めることをKoichiさんへ確認・承認取得済み）
+
+2. `[[EPS-LITE-ANNUAL-AS-QUARTERLY-1]]`（コミット`aba7fcfcc5`実装・
+   `4e90d7c77d`本番反映〈AI呼び出し含む全99銘柄再生成〉・
+   `d096aa5e12`BACKLOG_DONE.md移設）: LITEのadjusted_eps=-95.004異常を
+   調査した結果、**登録時の当初仮説（net_income Q4算出の問題）は誤り**
+   と判明。真因はEPS Analyzerの`extract_key_facts.py`
+   「Q4に年次の調整項目タグを追加」ループ（汎用ロジック）が、四半期
+   (10-Q)申告が皆無のタグについて年次総額をそのままQ4値として誤採用する
+   構造的バグで、LITE単独ではなくrevenue系だけで9銘柄
+   （APP/AVAV/CAKE/GOOGL/INTU/LITE/SNPS/SPIR/ASTS）、同根の他の調整
+   項目タグも含めると74銘柄（うち47銘柄でadjusted_eps実値が変化）に
+   波及する共通バグと確認。Koichiさんの承認を得て修正範囲をrevenue限定
+   から全調整項目タグへ拡大。保有銘柄影響確認（分類変化なし）を
+   経てSTEP5・6へ進行。BACKLOG IDのタイトル・内容も実体に合わせて
+   訂正し、当初仮説の誤りも経緯としてそのまま記録した
+
+3. `[[SCENARIO-BEARBULL-SIGN-FLIP-1]]`（コミット`acab509d1a`実装・
+   `1a72a10cd6`本番反映・`8ae84a2229`BACKLOG_DONE.md移設）:
+   `calculator/scenarios.py::calculate_scenario_valuations()`が
+   `base_growth_rate`が負の場合にBear/Bull成長率の符号が意図と逆転する
+   バグを修正（負の場合のみ固定乗数1.3/0.8を使う分岐を追加）。現時点で
+   負のbase_growth_rateは0件（最小はXOMの0.0081）と確認。調査中に発見した
+   デッドコード2箇所（`growth.py::get_scenario_growth_rates()`・
+   `segment_config.py::calculate_scenario_growth()`、`__init__.py`
+   re-export含む）も削除。
+
+   あわせて`[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1]]`
+   （コミット`99a2fc6bd2`、記録のみ・実装なし）を新規登録: 調査中に
+   `tanuki_valuation/__init__.py`の相対importが8モジュール全てで誤って
+   おりパッケージimport経路が常に失敗することを発見。本番実行は
+   `working-directory`指定＋直接スクリプト実行で`__init__.py`を経由しない
+   ため無害と確認済みのうえで優先度低として登録に留めた
+
+4. `[[BETA-FALLBACK-DESIGN-GAPS-1]]`（コミット`6cfb0af3e7`実装・
+   `34608df33f`BACKLOG_DONE.md移設）: β取得の3経路重複・raw_beta≤0の
+   無条件フォールバック・許容範囲(0.1-3.0)の到達不可能性の4項目を
+   読み取り専用で調査し、全て実害ゼロ（101件全betaが正値でfloor/cap内、
+   保有銘柄は9件中8件正常・SOUNのみcapで正当・CRWVはmanual_legacy
+   override）と確認。Koichiさんが案A（WARNログ追加のみ、案Bのクローズ
+   据え置きより軽量な対応）を選択。`beta_fetcher.py::calc_capped_beta()`
+   にraw_beta≤0時のWARNログ、`data_fetcher.py::_determine_beta()`に
+   到達不可能である旨のdocstring注記を追加。全101銘柄でのdry-runで
+   WARN発火0件を確認しクローズ
+
+5. `[[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]`（コミット
+   `d179b5f0f0`実装・`8803455c56`本番反映・`2aaadca4d6`BACKLOG_DONE.md
+   移設）: `financial_trend_calculator.py::_calc_yoy_change()`が
+   fpラベル（Q1〜Q4）の完全一致のみでYoY照合し期間長の妥当性チェックを
+   持たないバグを調査した結果、**登録時の「現在は自然解消済み」という
+   前提は誤り**で、STONKS SILO対象24銘柄中9銘柄（保有銘柄CRWV含む、
+   JOBY/ONDS/RCAT/RKLB/ZETA/KULR）で現在進行形の実例（1〜3月期エント
+   リがfp="Q2"と誤タグ付けされ直近の真のQ2〈91日差〉と隣接比較）を確認。
+   同一fp内の直近2エントリのend日付差が330〜400日の範囲外ならスキップ
+   する期間長検証を追加。overall_score/overall_verdictへの影響は0件と
+   確認。**運用メモ**: 本タスクの依頼文は完了後に一度全く同一内容で
+   再送されたが、git log・BACKLOG.md/BACKLOG_DONE.mdの機械確認で
+   既に完了・push済みと確認できたため再実行はせず、その旨をKoichiさんへ
+   報告した（意図確認待ちのまま次の別タスクへ進行、特に指摘なし）
+
+6. `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（コミット`db2b590319`
+   BACKLOG.md更新・`2d069c3f34`CHECK-47実装）: 2026-08-02調査時点の
+   鮮度・実害を再確認（クローズはせず「据え置き継続」）。cron健全性は
+   問題なし（過去2回の失敗は既に是正・監視済み〈Check J〉）。**新規
+   発見**: APP(保有銘柄)FY2023年次revenueでparser.py側$3,283,087,000
+   vs Layer3側$1,841,762,000（約14.4億ドル、SEC遡及修正のtie-break
+   方式の違いによる乖離）を確認し、構造的リスクが理論上ではなく実例の
+   ある現実のリスクだと再確認。保有9銘柄の現在TTM窓は6/7指標完全一致
+   （実害なし）。この調査手法（normalized/⇔ttm/突合）を
+   `report_consistency_check.py`へCHECK-47として恒常化し、全99銘柄
+   初回実行でWARN1件（RCAT・stock_based_compensation、normalized側の
+   四半期欠落が原因、本番出力〈ttm/側〉への実害なし）を検知・報告済み
+
+**次セッションの着手候補**:
+- `[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1]]`（低・記録のみ、
+  本セッションで新規登録。実装は不要と判断済み、着手条件が発生しない
+  限り保留のままで良い）
+- `[[TAIL-SEC-ITEMS-1]]`・`[[GROK-MODEL-PRICE-1]]`（引き続きKoichiさん
+  本人の判断・アカウントアクセスが必要で保留中。複数セッションにわたり
+  対象外のまま、状況変化なし）
+- CHECK-47（parser.py⇔Layer3 TTM突合WARN）が今後発火した場合の個別
+  トリアージ運用: 初回実行でRCAT・stock_based_compensationの1件が
+  発火済み（原因はnormalized/側の四半期欠落、本番出力への実害なしと
+  確認済み）。台帳（`config/warn_acknowledged.json`）へ確認済みとして
+  登録するか、`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`の着手条件3
+  （新規WARN発火をトリガーとした実害確認・案B着手要否の判断）に沿って
+  個別調査するかは未定のまま次セッションへ持ち越し。今後別銘柄・別
+  フィールドで新たに発火した場合も同様に、まず原因（tie-break不一致か
+  片方の欠落か）を切り分けたうえでトリアージすること
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本日クローズした5件
+  （`CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1`・`EPS-LITE-ANNUAL-AS-
+  QUARTERLY-1`・`SCENARIO-BEARBULL-SIGN-FLIP-1`・
+  `BETA-FALLBACK-DESIGN-GAPS-1`・`STONKS-SILO-FP-LABEL-PERIOD-
+  VALIDATION-1`）全件が`### ✅ [ID]`パターンでBACKLOG_DONE.mdに
+  存在し、BACKLOG.md側にアクティブヘッダーとして残存していないことを
+  `grep -n "^### ✅ \["`で機械確認（該当0件、移設漏れなし）。新規登録
+  した`TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1`と、クローズせず
+  据え置き更新のみの`TTM-DATA-DRIFT-BEHIND-PIPELINE-1`は、いずれも
+  BACKLOG.md側にのみアクティブヘッダーとして存在しBACKLOG_DONE.mdには
+  存在しないことも個別確認済み
+- git status: クリーン（未コミット変更・未追跡ファイルなし）
+- BACKLOG.mdアクティブ件数: 機械カウントで**54件**（前回2026-09-12
+  時点の57件から、本日の5件クローズ＋1件新規登録で3件減）
+
+詳細は各BACKLOGエントリ・BACKLOG_DONE.md該当節・PROJECT_STATUS.md参照。
 
 ---
 
