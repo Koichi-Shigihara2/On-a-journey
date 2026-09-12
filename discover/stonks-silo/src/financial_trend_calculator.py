@@ -149,10 +149,29 @@ def _get_quarterly_entries(store: dict, field_name: str) -> list:
     return sorted(quarterly, key=lambda x: x["end"])
 
 
+
+# [[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]: fpラベル（Q1〜Q4）だけで
+# YoYペアを確定すると、比較列（10-Qの前四半期再掲）が申告元filingのfpを
+# そのまま引き継ぐ等のSEC/XBRL申告慣行により、同一fpラベルの下に実際には
+# 隣接する四半期（QoQ相当、約91日差）が混在するケースがある。true YoYの
+# end日付差は約365日のはずなので、この期間長を許容誤差込みで検証する。
+_YOY_GAP_DAYS_MIN = 330
+_YOY_GAP_DAYS_MAX = 400
+
+
 def _calc_yoy_change(entries: list) -> Optional[dict]:
     """
     直近四半期と1年前同期のYoY変化率を計算。
-    同じfp（Q1/Q2/Q3/Q4）同士で比較。
+    同じfp（Q1/Q2/Q3/Q4）同士で比較する。
+
+    [[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]: fpラベルの一致だけでは
+    不十分（上記モジュールコメント参照）なため、同一fp内の直近2件の
+    end日付差が330〜400日の範囲内（真のYoYとして妥当な期間長）である
+    ことも確認する。範囲外の場合はfpラベルの誤りを疑いYoY計算をスキップ
+    する（None、「算出不能」として扱う既存の他のNone分岐と同じ扱い）。
+    実データ確認済み: RCAT・CRWV等9銘柄で、1〜3月期エントリが
+    fp="Q2"と誤タグ付けされ直近の真のQ2（4〜6月期）と隣接比較される
+    （日数差91日）実例を2026-09-12調査で確認している。
     """
     if len(entries) < 5:
         return None
@@ -174,6 +193,16 @@ def _calc_yoy_change(entries: list) -> Optional[dict]:
     if len(same_fp) < 2:
         return None
 
+    end_latest_str = same_fp[-1]["end"]
+    end_prev_str   = same_fp[-2]["end"]
+    try:
+        gap_days = (datetime.strptime(end_latest_str, "%Y-%m-%d")
+                    - datetime.strptime(end_prev_str, "%Y-%m-%d")).days
+    except (ValueError, TypeError):
+        return None
+    if not (_YOY_GAP_DAYS_MIN <= gap_days <= _YOY_GAP_DAYS_MAX):
+        return None
+
     val_latest = same_fp[-1]["val"]
     val_prev   = same_fp[-2]["val"]
 
@@ -185,8 +214,8 @@ def _calc_yoy_change(entries: list) -> Optional[dict]:
         "change_pct": change_pct,
         "val_latest": val_latest,
         "val_prev":   val_prev,
-        "end_latest": same_fp[-1]["end"],
-        "end_prev":   same_fp[-2]["end"],
+        "end_latest": end_latest_str,
+        "end_prev":   end_prev_str,
         "fp":         latest_fp,
     }
 
