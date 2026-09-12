@@ -4125,6 +4125,75 @@ TRUST-SUMMARY-EPIC-1へ統合済み（詳細は同エントリ参照）。
 
 ## 優先度：中（こなれてきたら対応）
 
+### [CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1] CRM(2018)のrevenue/cost_of_revenueが本人データタグ網羅漏れによりFY2019比較列（restated値）を誤採用しgross_profitと不整合
+**優先度:** 中（非保有銘柄・確定済み不整合・影響範囲はCRM(2018)単年度と
+確認済みのため）
+**分類:** バグ / SEC EDGAR タグ選定ロジック / [[PL-FIELD-CROSS-ACCN-
+PERIOD-MISMATCH-1]]系統
+**登録日:** 2026-09-12
+**発見:** CHECK-46（`report_consistency_check.py`、WARN-46）がCRM(2018)
+の`revenue − cost_of_revenue ≠ gross_profit`（乖離0.5741%、
+$60,510,000）を検知。読み取り専用調査（前回セッション）で根本原因を
+特定済み
+
+#### 内容
+CRMのFY2018本人filing（accn `0001108524-18-000011`）は、revenueを
+`SalesRevenueServicesNet`、cost_of_revenueを`CostOfServices`という
+タグで申告している。この2タグはいずれも:
+- 標準候補リスト`parser.py::XBRL_MAPPING["revenue"]`（314行目）・
+  `["cost_of_revenue"]`（327行目）
+- [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案e用の拡張候補リスト
+  `_REVENUE_ALIGNMENT_CANDIDATES`（1877行目）・
+  `_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`（1501行目）
+
+のいずれにも**一件も登録されていない**。
+
+`_extract_values_best_candidate()`の「候補タグ横断でannual最新年が
+最も新しいものを勝者採用」ロジック（2921-2929行目、LLY-CAPEX-
+STALE-1由来）により、CRMがFY2019以降ASC606適用で使い始めた新タグ
+`RevenueFromContractWithCustomerExcludingAssessedTax`/
+`CostOfGoodsAndServicesSold`（annual系列がFY2020まで続き「fresher」と
+判定される）が勝者採用され、CRM(2018)分もFY2019 filingの比較列
+（restated値、accn `0001108524-19-000009`、revenue=$10,540,000,000・
+cost_of_revenue=$2,773,000,000）が採用されてしまう。
+
+一方gross_profitは`TAG_CANDIDATES["GROSS_PROFIT"]`（`GrossProfit`/
+`GrossProfitLoss`）にCRM自身の申告タグ`GrossProfit`が含まれているため
+本人データ（$7,706,490,000、同accn）が正しく採用され、両者の差分
+$60,510,000（ASC606移行に伴う収益認識基準変更分とみられる）が
+CHECK-46で検知される不整合として顕在化した。
+
+`_collect_own_data`系関数は`xbrl_keys`（候補リストそのもの）しか
+走査しないため、`SalesRevenueServicesNet`/`CostOfServices`は最初から
+本人データ候補として認識されず、own-data override（`_own_override_
+is_safe`、2523行目）にも到達しない。案e（`_align_revenue_and_cost_
+to_gross_profit_own_accn`、1888行目、gross_profitをアンカーに
+revenue・cost_of_revenue両方を是正する設計）もgp採用元accn内で
+`_REVENUE_ALIGNMENT_CANDIDATES`/`_COST_OF_REVENUE_ALIGNMENT_
+CANDIDATES`を検索するが、両リストにもCRM固有タグが含まれていないため
+`found_rev is None`でゲート不成立のまま発火しない。
+
+#### 影響
+CRM(2018)のannual_2018.jsonのrevenue/cost_of_revenueがFY2019
+restated値になっており、gross_profitとの数学的整合性が0.5741%
+乖離している。DCF/FCF計算等への実消費影響は未調査（本エントリの
+スコープ外、影響範囲確認は着手時に行う）。CRMは非保有銘柄。
+
+#### 対応方針（読み取り専用調査で確認済み）
+`_REVENUE_ALIGNMENT_CANDIDATES`に`SalesRevenueServicesNet`を、
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`に`CostOfServices`を追加する
+（案eの拡張候補リストにのみ限定、標準`XBRL_MAPPING`本体は変更しない
+——他銘柄の主選定ロジックへの波及を避けるため）。全99銘柄
+（`config/cik_lookup.csv`のtanuki=true）でのシミュレーションにより
+CRM(2018)以外への意図しない波及がないことを確認してから実装する。
+
+同型パターンの機械スキャン（tanuki=true全99銘柄、accn突合）は実施
+済みで、未診断の同型ケースはCRM(2018)自身のみと確認済み（他の
+数値乖離8件はMO/PM/SCCO/LITEの既知5銘柄33件に含まれ個別診断済み、
+CRM(2017)のdiff=$39,000/0.0005%はWARN-46閾値0.1%未満の丸め誤差と
+BACKLOG_DONE.md記載済み）。保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/
+PLTR/SOFI/SOUN/TSLA）も全年度確認済みで潜在リスク0件。
+
 ### [LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1] Layer3の年次期間分類が実在するデータを取りこぼしている（年次側は調査完了・実質解消／四半期側は限定的な残課題あり）
 **優先度:** 低（2026-08-19②の範囲実測により、当初の仮説は大半が誤りと
 判明。年次側は確認された未解決の欠陥が0件、四半期側も確認された欠陥は
