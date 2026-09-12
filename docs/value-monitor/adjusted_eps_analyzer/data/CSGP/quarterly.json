@@ -1,6 +1,6 @@
 {
   "ticker": "CSGP",
-  "last_updated": "2026-09-12T10:14:35.973572",
+  "last_updated": "2026-09-12T16:24:02.206360",
   "quarters": [
     {
       "gaap_eps": 0.13600395647873392,
@@ -62,23 +62,23 @@
       "tax_expense": 19000000.0,
       "pretax_income": 74000000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の大部分を占めるSBCと無形資産償却は恒常的な非現金費用であり、完全にadd_backすると実力以上のEPSを示す可能性が高い。M&A統合費用のみが一過性に近く妥当。市場がGAAP EPS(0.136)で判断する場合、非現金費用の影響で企業の実力(特にキャッシュフロー生成力)が過小評価されやすく、株価の過小評価リスクがある。ただし恒常的コストの調整過多により、逆に調整EPS(0.281)を過信した過大評価リスクも投資家は警戒すべき。",
+        "health": "過大調整",
+        "comment": "調整の大部分を占めるSBC（恒常的）と無形資産償却（継続的）は真に一過性とは言えず、M&A統合費用のみが比較的一過性です。GAAP EPS 0.136に対しAdjusted EPSが0.281と2倍近い水準となるため、市場がGAAPベースで評価している場合に企業の実力（調整後収益力）が過小評価されている可能性があります。ただし恒常コストの加算によりAdjusted EPSが持続可能利益を過大に示すリスクが高く、投資家はSBCによる希薄化や将来償却を考慮したコア利益を慎重に検証すべきです。過大調整の影響で割安に見えやすい点に注意。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが恒常的に発生するコストであり、株主希薄化効果も伴うため調整の正当性は中程度。",
+            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コストであり、株主希薄化の実質的負担を伴う",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aによる定期的な非現金費用で、毎期発生する恒常的性格が強い。",
+            "snippet": "買収関連無形資産の償却は過去のM&Aから生じる継続的・恒常的な非現金費用",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、調整として比較的妥当性が高い。",
-            "confidence": 0.8
+            "snippet": "一過性の買収統合コストとして位置づけられるが、金額は全体の6%程度に留まる",
+            "confidence": 0.7
           }
         ]
       }
@@ -437,9 +437,9 @@
     },
     {
       "gaap_eps": 0.14664051005394801,
-      "adjusted_eps": 0.2901888180480628,
+      "adjusted_eps": 0.23400931829328103,
       "gaap_net_income": 59800000.0,
-      "adjusted_net_income": 118339000.0,
+      "adjusted_net_income": 95429000.0,
       "diluted_shares_used": 407800000.0,
       "adjustments": [
         {
@@ -469,19 +469,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 29000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 22910000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 10600000,
@@ -495,7 +482,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 58539000.0,
+      "net_adjustment_total": 35629000.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
@@ -690,9 +677,9 @@
     },
     {
       "gaap_eps": 0.23709756696977144,
-      "adjusted_eps": 0.34282243794544115,
+      "adjusted_eps": 0.3175828213320226,
       "gaap_net_income": 96475000.0,
-      "adjusted_net_income": 139494450.0,
+      "adjusted_net_income": 129224450.0,
       "diluted_shares_used": 406900000.0,
       "adjustments": [
         {
@@ -722,19 +709,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 13000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 10270000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 9336000,
@@ -748,7 +722,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 43019450.0,
+      "net_adjustment_total": 32749450.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,

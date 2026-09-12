@@ -1,6 +1,6 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-09-12T10:15:16.352289",
+  "last_updated": "2026-09-12T16:24:31.284437",
   "quarters": [
     {
       "gaap_eps": -5.080070633397915,
@@ -111,27 +111,27 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "主にwarrant_fv_changeの巨額（16億超）非現金・非経常変動がGAAP EPSを-5.08まで大幅に悪化させており、市場がGAAPベースで評価する場合、IONQのコア実力（調整後EPS約-0.1）が強く隠蔽され過小評価されている可能性が高い。SBCと無形資産償却は恒常的性格が強く毎期発生する一方、M&A統合費用は一過性。投資家はSBCの継続的な希薄化効果と事業進捗に注目すべきで、調整依存が強いため過小評価の機会がある半面、恒常コストの排除による過大評価リスクも存在する。",
+        "comment": "GAAP EPS(-5.08)がワラント公正価値変動の巨額非現金損失(16.5億ドル)により大幅に悪化しており、調整後EPS(-0.1)との乖離が極めて大きい。市場がGAAP EPS中心に判断する場合、IONQのコア事業の実力(量子コンピューティングの進捗等)を強く過小評価するリスクが高い。特にワラントFV変動は非経常的だが、SBCや償却は恒常コストのため調整の質に注意。投資家は調整後指標を基に分析すべきで、過小評価の機会がある一方、恒常的株式報酬の希薄化効果を過小視すると過大評価リスクも生じる。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、量子コンピューティングなどの成長企業では恒常的に発生する運用コストである。",
+            "snippet": "非現金費用として成長企業で毎期発生する恒常的コスト。SBCはコアオペレーションに関わる。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金だが、買収後複数期にわたって定期的に計上される費用である。",
-            "confidence": 0.2
+            "snippet": "買収関連無形資産の定期的な償却費で、恒常的に発生する非現金項目。",
+            "confidence": 0.25
           },
           {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、取引完了後の非経常項目として調整に適する。",
-            "confidence": 0.8
+            "snippet": "一過性のM&A統合コストであり、非経常的とみなせる。",
+            "confidence": 0.75
           },
           {
             "item": "warrant_fv_change",
-            "snippet": "ワラント公正価値変動損益は非現金かつ株価変動に起因する非経常項目で、コア事業実績の把握のため加算調整される。",
-            "confidence": 0.75
+            "snippet": "非現金・非経常のワラント時価評価変動。SPAC由来の会計項目で事業実態を歪める。",
+            "confidence": 0.85
           }
         ]
       }
@@ -782,9 +782,9 @@
     },
     {
       "gaap_eps": -0.20685519620904483,
-      "adjusted_eps": -0.037267121105791744,
+      "adjusted_eps": -0.053045508043350925,
       "gaap_net_income": -41904000.0,
-      "adjusted_net_income": -7549442.660550453,
+      "adjusted_net_income": -10745772.935779814,
       "diluted_shares_used": 202576492.0,
       "adjustments": [
         {
@@ -799,22 +799,9 @@
           "category": "株式報酬関連",
           "net_amount": 31158227.064220186,
           "tax_rate_applied": 0.0011467889908256881
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 3200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3196330.275229358,
-          "tax_rate_applied": 0.0011467889908256881
         }
       ],
-      "net_adjustment_total": 34354557.33944955,
+      "net_adjustment_total": 31158227.064220186,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -987,9 +974,9 @@
     },
     {
       "gaap_eps": -0.09430649054116572,
-      "adjusted_eps": -0.04122842874948157,
+      "adjusted_eps": -0.04932036766007658,
       "gaap_net_income": -18647000.0,
-      "adjusted_net_income": -8152000.0,
+      "adjusted_net_income": -9752000.0,
       "diluted_shares_used": 197727642.0,
       "adjustments": [
         {
@@ -1004,22 +991,9 @@
           "category": "株式報酬関連",
           "net_amount": 8895000.0,
           "tax_rate_applied": 0.0
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1600000.0,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 10495000.0,
+      "net_adjustment_total": 8895000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "Technology",

@@ -1,6 +1,6 @@
 {
   "ticker": "SOUN",
-  "last_updated": "2026-09-12T10:17:27.441257",
+  "last_updated": "2026-09-12T16:26:12.811411",
   "quarters": [
     {
       "gaap_eps": -0.09761119639200823,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整項目はSBC（株式報酬費用）と無形資産償却費であり、どちらも非現金ではあるが恒常的に発生するコスト（特にSBCは成長AI企業で継続的な報酬形態）であるため、調整により損失が半分近く改善され実力が過度に良く見える可能性が高い。市場がGAAP EPS（-0.0976）で判断する場合、企業の実力が見えにくくなり過小評価のリスクがある一方、SBCの株式希薄化効果を無視した調整は過大評価のリスクも孕む。投資家は調整後EPSだけでなく、フリーキャッシュフローや発行済株式数の増加を注視し、持続可能性を評価すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用として加算されているが、テック企業では毎期発生する恒常的なコストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連無形資産の償却として加算されているが、定期的に計上される恒常的な項目である。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

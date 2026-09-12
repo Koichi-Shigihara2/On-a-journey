@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-09-12T10:13:34.231850",
+  "last_updated": "2026-09-12T16:23:07.212578",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
@@ -89,32 +89,32 @@
       "pretax_income": -5463000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "GAAP EPSが-0.10と赤字である一方、Adjusted EPSは0.96と黒字転換しており、調整額が極めて大きい。特にamortization_intangibles（43M超）が支配的で、無形資産償却とSBCは恒常的性格が強く一過性とは言えない。市場がGAAP EPSのみで判断する場合、企業の実力（特に買収後のコア事業力）を大幅に過小評価するリスクが高い。ただしSBC・償却の恒常性を考慮すると過大調整の可能性もあり、投資家はフリーキャッシュフローや買収シナジーの持続性を注視すべき。過小評価リスクの方が目立つ局面。",
+        "comment": "調整項目の総額が大きく、GAAP EPSが-0.10の赤字からAdjusted EPS+0.96へ大幅に改善している。無形資産償却やSBCは恒常的に発生しやすい項目である一方、M&A統合費用や異常貸倒引当・在庫評価損は一過性が高い。このため市場がGAAP EPSのみで判断する場合、企業の非現金費用を控除した実力（特に買収後の事業運営力やキャッシュ創出力）が過小評価される可能性がある。ただし恒常的項目のadd back依存度が高いため、調整後EPSの持続可能性に疑問が残り、過大評価リスクも伴う。投資家はコアオペレーションの持続的収益力と今後の償却スケジュールを注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用である株式報酬費用。毎期発生する恒常的な運用コストであり、調整の正当性は中程度。",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。買収後複数年にわたり発生する準恒常的費用で、調整規模が最大。",
-            "confidence": 0.2
+            "snippet": "無形資産償却費は買収関連無形資産の償却であり、定期的に発生する非現金費用。",
+            "confidence": 0.25
           },
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト。M&A完了後の非経常的費用として調整が妥当。",
+            "snippet": "M&A統合費用は一過性の買収統合コストとして扱われる。",
             "confidence": 0.8
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による異常変動分の貸倒引当金。一時的なマクロ影響として一過性が高い。",
-            "confidence": 0.75
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされる。",
+            "confidence": 0.7
           },
           {
             "item": "inventory_writeoff",
-            "snippet": "一過性の在庫評価損。サプライチェーン特有の一時的減損として調整が合理的。",
-            "confidence": 0.7
+            "snippet": "在庫評価損・減損は一過性の在庫評価損として調整されている。",
+            "confidence": 0.65
           }
         ]
       }
@@ -491,9 +491,9 @@
     },
     {
       "gaap_eps": 0.5914780590887433,
-      "adjusted_eps": 1.936512514670691,
+      "adjusted_eps": 1.3176281144193382,
       "gaap_net_income": 16664000.0,
-      "adjusted_net_income": 54558312.09392454,
+      "adjusted_net_income": 37122179.870055854,
       "diluted_shares_used": 28173488.0,
       "adjustments": [
         {
@@ -536,19 +536,6 @@
           "tax_rate_applied": 0.05026786732018694
         },
         {
-          "item_id": "goodwill_impairment",
-          "item_name": "のれん減損",
-          "amount": 18359000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金減損",
-          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
-          "category": "買収・統合関連",
-          "net_amount": 17436132.223868687,
-          "tax_rate_applied": 0.05026786732018694
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 107000,
@@ -575,7 +562,7 @@
           "tax_rate_applied": 0.05026786732018694
         }
       ],
-      "net_adjustment_total": 37894312.09392454,
+      "net_adjustment_total": 20458179.870055854,
       "filing_date": "2025-04-30",
       "form": "10-K",
       "sector": null,
@@ -867,9 +854,9 @@
     },
     {
       "gaap_eps": 0.22123834706778503,
-      "adjusted_eps": 5.016761399592518,
+      "adjusted_eps": 0.6678961867319134,
       "gaap_net_income": 6046000.0,
-      "adjusted_net_income": 137098020.41073453,
+      "adjusted_net_income": 18252262.315736424,
       "diluted_shares_used": 27327993.0,
       "adjustments": [
         {
@@ -912,19 +899,6 @@
           "tax_rate_applied": 0.23825122842383772
         },
         {
-          "item_id": "goodwill_impairment",
-          "item_name": "のれん減損",
-          "amount": 156017000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金減損",
-          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
-          "category": "買収・統合関連",
-          "net_amount": 118845758.0949981,
-          "tax_rate_applied": 0.23825122842383772
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 71000,
@@ -951,12 +925,12 @@
           "tax_rate_applied": 0.23825122842383772
         }
       ],
-      "net_adjustment_total": 131052020.41073453,
+      "net_adjustment_total": 12206262.315736424,
       "filing_date": "2024-04-30",
       "form": "10-K",
       "sector": null,
       "sector_exclusions": [],
-      "revenue": 716720000.0,
+      "revenue": 196979000.0,
       "diluted_shares": 27327993.0,
       "period_end": "2024-04-30",
       "fiscal_year": 2024,
@@ -1198,9 +1172,9 @@
     },
     {
       "gaap_eps": -6.407417148438437,
-      "adjusted_eps": 1.0674516383838182,
+      "adjusted_eps": -4.640489625821827,
       "gaap_net_income": -160473000.0,
-      "adjusted_net_income": 26734199.25657776,
+      "adjusted_net_income": -116220510.46044219,
       "diluted_shares_used": 25044881.0,
       "adjustments": [
         {
@@ -1230,19 +1204,6 @@
           "tax_rate_applied": 0.08372350630367258
         },
         {
-          "item_id": "goodwill_impairment",
-          "item_name": "のれん減損",
-          "amount": 156017000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金減損",
-          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
-          "category": "買収・統合関連",
-          "net_amount": 142954709.71701992,
-          "tax_rate_applied": 0.08372350630367258
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 94000,
@@ -1269,7 +1230,7 @@
           "tax_rate_applied": 0.08372350630367258
         }
       ],
-      "net_adjustment_total": 187207199.25657776,
+      "net_adjustment_total": 44252489.53955782,
       "filing_date": "2023-04-30",
       "form": "10-K",
       "sector": null,

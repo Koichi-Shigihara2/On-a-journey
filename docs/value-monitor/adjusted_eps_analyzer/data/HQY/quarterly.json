@@ -1,6 +1,6 @@
 {
   "ticker": "HQY",
-  "last_updated": "2026-09-12T10:19:29.415941",
+  "last_updated": "2026-09-12T16:27:29.382837",
   "quarters": [
     {
       "gaap_eps": 0.781345966148499,
@@ -62,9 +62,25 @@
       "tax_expense": 22221000.0,
       "pretax_income": 87865000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "SBCと無形資産償却は恒常的に発生する非現金項目（それぞれ約2220万、4150万USD）であり、調整後EPSをGAAPの0.78から1.36へ大幅に引き上げている。これにより市場がGAAP EPSのみで判断する場合、非現金費用が企業の実力（特にキャッシュ生成力）を過小表示し、過小評価のリスクが生じやすい。一方、SBCは実質的な希薄化コスト、償却も買収の経済的影響を反映するため、調整を過度に信頼すると過大評価リスクもある。M&A統合費用は一過性だが影響は小さい。投資家はフリーキャッシュフローと株式希薄化を重点的に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、従業員報酬として毎期発生する恒常的な運用コストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連で定期的に発生する非現金費用であり、恒常的な性質を持つ。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は特定の買収イベントに伴う一過性の統合コストである。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
@@ -129,9 +145,9 @@
     },
     {
       "gaap_eps": 0.5686326066329038,
-      "adjusted_eps": 1.1063687080584865,
+      "adjusted_eps": 1.0991436214603363,
       "gaap_net_income": 49740000.0,
-      "adjusted_net_income": 96777390.0,
+      "adjusted_net_income": 96145390.0,
       "diluted_shares_used": 87473000.0,
       "adjustments": [
         {
@@ -172,22 +188,9 @@
           "category": "買収・統合関連",
           "net_amount": 1045960.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 632000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 47037390.0,
+      "net_adjustment_total": 46405390.0,
       "filing_date": "2026-01-31",
       "form": "10-K",
       "sector": null,
@@ -382,9 +385,9 @@
     },
     {
       "gaap_eps": 0.2968095645517179,
-      "adjusted_eps": 0.7020258087333415,
+      "adjusted_eps": 0.70072674726384,
       "gaap_net_income": 26365000.0,
-      "adjusted_net_income": 62359548.538165264,
+      "adjusted_net_income": 62244155.50595238,
       "diluted_shares_used": 88828000.0,
       "adjustments": [
         {
@@ -425,22 +428,9 @@
           "category": "買収・統合関連",
           "net_amount": 1256630.1207983193,
           "tax_rate_applied": 0.42303483893557425
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 115393.03221288515,
-          "tax_rate_applied": 0.42303483893557425
         }
       ],
-      "net_adjustment_total": 35994548.538165264,
+      "net_adjustment_total": 35879155.50595238,
       "filing_date": "2025-01-31",
       "form": "10-K",
       "sector": null,
@@ -635,9 +625,9 @@
     },
     {
       "gaap_eps": 0.3031843324861713,
-      "adjusted_eps": 0.6793447064825175,
+      "adjusted_eps": 0.668064540037046,
       "gaap_net_income": 26364000.0,
-      "adjusted_net_income": 59073777.64160028,
+      "adjusted_net_income": 58092888.208001405,
       "diluted_shares_used": 86957000.0,
       "adjustments": [
         {
@@ -678,22 +668,9 @@
           "category": "買収・統合関連",
           "net_amount": 1314391.8410224984,
           "tax_rate_applied": 0.4230062155300709
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 1700000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 980889.4335988795,
-          "tax_rate_applied": 0.4230062155300709
         }
       ],
-      "net_adjustment_total": 32709777.64160028,
+      "net_adjustment_total": 31728888.2080014,
       "filing_date": "2024-01-31",
       "form": "10-K",
       "sector": null,
@@ -888,9 +865,9 @@
     },
     {
       "gaap_eps": -0.0024750716468108286,
-      "adjusted_eps": 0.5309213424599133,
+      "adjusted_eps": 0.5112747211103479,
       "gaap_net_income": -209000.0,
-      "adjusted_net_income": 44832060.0,
+      "adjusted_net_income": 43173060.0,
       "diluted_shares_used": 84442000.0,
       "adjustments": [
         {
@@ -931,22 +908,9 @@
           "category": "買収・統合関連",
           "net_amount": 4036900.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 2100000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 1659000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 45041060.0,
+      "net_adjustment_total": 43382060.0,
       "filing_date": "2023-01-31",
       "form": "10-K",
       "sector": null,

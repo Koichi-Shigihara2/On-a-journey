@@ -1,6 +1,6 @@
 {
   "ticker": "COHR",
-  "last_updated": "2026-09-12T10:14:15.845232",
+  "last_updated": "2026-09-12T16:23:41.695301",
   "quarters": [
     {
       "gaap_eps": 1.2310440305649812,
@@ -76,26 +76,26 @@
       "pretax_income": 301379000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の多くを占めるSBCと無形資産償却は恒常的な性質が強く、M&A統合・リストラは一過性です。Adjusted EPSがGAAP EPSを約48%上回る中、市場がGAAPベースで評価する場合、非現金費用を加味した企業の実力（キャッシュ生成力）が過小評価されている可能性があります。ただしSBCは実質的な希薄化コストであるため過大調整のリスクもあり、投資家は調整項目の持続可能性とコア事業の収益性を慎重に検証する必要があります。",
+        "comment": "調整項目の合計影響は大きく、Adjusted EPSがGAAP EPSを約48%上回る水準です。SBCと無形資産償却は恒常的な性質が強く、M&A統合・リストラは一過性ですが、全体として調整の妥当性に留意が必要です。市場がGAAP EPSで判断する場合、企業の実力（特に買収後のキャッシュ生成力）が過小評価されている可能性がありますが、恒常的項目の加算による過大評価リスクも存在します。投資家はSBCの希薄化効果や買収統合の継続性を注視し、調整依存のEPSを過信しない慎重な判断が求められます。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、毎期発生する恒常的な報酬コストであり、実質的な経済的負担を伴う。",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、経済的コスト（希薄化効果）として継続的に考慮すべき",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金だが、過去のM&Aに伴う定期的な恒常的費用として毎期計上される。",
+            "snippet": "買収関連無形資産の償却は過去のM&Aによるもので定期的に発生する非現金費用",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、非経常的性質が強い。",
+            "snippet": "M&A統合費用は一過性の買収統合コストであり、事業統合完了後に収束する可能性が高い",
             "confidence": 0.8
           },
           {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編コストとして位置づけられ、調整の妥当性が高い。",
+            "snippet": "リストラ費用は一過性の事業再編費用で、特定の再編イベントに紐づく非経常項目",
             "confidence": 0.8
           }
         ]
@@ -614,9 +614,9 @@
     },
     {
       "gaap_eps": -0.3194497566637211,
-      "adjusted_eps": 1.3845034260505318,
+      "adjusted_eps": -0.13425396242726406,
       "gaap_net_income": -48442000.0,
-      "adjusted_net_income": 209948868.53315476,
+      "adjusted_net_income": -20358539.370395176,
       "diluted_shares_used": 151642000.0,
       "adjustments": [
         {
@@ -633,32 +633,6 @@
           "tax_rate_applied": 0.2978432685867381
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 288000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 202221138.64701945,
-          "tax_rate_applied": 0.2978432685867381
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 40000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 28086269.25653048,
-          "tax_rate_applied": 0.2978432685867381
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 11699000,
@@ -672,7 +646,7 @@
           "tax_rate_applied": 0.2978432685867381
         }
       ],
-      "net_adjustment_total": 258390868.53315476,
+      "net_adjustment_total": 28083460.629604824,
       "filing_date": "2024-06-30",
       "form": "10-K",
       "sector": null,

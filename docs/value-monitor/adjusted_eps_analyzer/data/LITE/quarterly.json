@@ -1,6 +1,6 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-09-12T10:15:46.352154",
+  "last_updated": "2026-09-12T16:24:53.572489",
   "quarters": [
     {
       "gaap_eps": -96.00134048257372,
@@ -67,7 +67,7 @@
       "form": "10-K",
       "sector": null,
       "sector_exclusions": [],
-      "revenue": 3014000000.0,
+      "revenue": 1006300000.0,
       "diluted_shares": 74600000.0,
       "period_end": "2026-06-27",
       "fiscal_year": 2026,
@@ -75,9 +75,30 @@
       "tax_expense": -237700000.0,
       "pretax_income": -7399400000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "調整項目の大部分を占めるSBCと無形資産償却は恒常的な非現金コストであり、リストラや異常貸倒引当は一過性。市場がGAAP EPS(-96)で判断する場合、非現金・一時項目の影響で企業の実力(特にキャッシュ生成力)が過小評価されやすく、株価が実力以下に抑えられる可能性がある。ただしSBCの希薄化効果や償却の継続性を考慮すると、調整後EPS(-95)を過信すれば過大評価リスクも生じる。投資家は各項目の再発可能性を個別に監視し、コア事業の持続性を重視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが継続的に発生する恒常的コストであり、調整の正当性は限定的",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は複数年にわたる恒常的費用で、買収が繰り返される限り継続する",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響の異常変動分であり、非経常的とみなせる",
+            "confidence": 0.8
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用で、リストラが完了すれば再発しない可能性が高い",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
@@ -320,19 +341,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 200000.0,
-          "tax_rate_applied": 0.0
-        },
-        {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
           "amount": -216600000.0,
@@ -549,9 +557,9 @@
     },
     {
       "gaap_eps": -3.7518573551263,
-      "adjusted_eps": -2.461337295690936,
+      "adjusted_eps": -2.474710252600297,
       "gaap_net_income": -252500000.0,
-      "adjusted_net_income": -165648000.0,
+      "adjusted_net_income": -166548000.0,
       "diluted_shares_used": 67300000.0,
       "adjustments": [
         {
@@ -605,22 +613,9 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 28914000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 900000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 900000.0,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 86852000.0,
+      "net_adjustment_total": 85952000.0,
       "filing_date": "2024-06-29",
       "form": "10-K",
       "sector": null,
@@ -828,9 +823,9 @@
     },
     {
       "gaap_eps": -0.8814055636896047,
-      "adjusted_eps": -0.143601756954612,
+      "adjusted_eps": -0.1318887262079063,
       "gaap_net_income": -60200000.0,
-      "adjusted_net_income": -9808000.0,
+      "adjusted_net_income": -9008000.0,
       "diluted_shares_used": 68300000.0,
       "adjustments": [
         {
@@ -871,22 +866,9 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 2607000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -800000.0,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 50392000.0,
+      "net_adjustment_total": 51192000.0,
       "filing_date": "2023-07-01",
       "form": "10-K",
       "sector": null,

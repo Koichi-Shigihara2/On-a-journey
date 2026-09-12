@@ -1,6 +1,6 @@
 {
   "ticker": "BSY",
-  "last_updated": "2026-09-12T10:13:54.082037",
+  "last_updated": "2026-09-12T16:23:20.627901",
   "quarters": [
     {
       "gaap_eps": 0.2463430165528035,
@@ -65,17 +65,17 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBCと無形資産償却の両調整項目は非現金費用だが、技術企業において毎期継続的に発生する恒常的なコストであるため、Adjusted EPSがGAAP EPSを約32%上回る調整は実態をやや過大に示す可能性がある。市場がGAAP EPSのみで判断する場合、非現金項目を過度に考慮して企業の実力（特にキャッシュ生成力）を過小評価しているリスクがあり、本銘柄の実力を十分に反映していない可能性がある。投資家はSBCの希薄化効果や買収による無形資産の今後の償却負担を注視すべきで、過小評価の機会がある一方、調整依存による過大評価リスクも伴う。",
+        "health": "調整中",
+        "comment": "SBCと無形資産償却の調整によりAdjusted EPSがGAAP EPSを約32%上回る水準となっている。これらは非現金費用だがSBCは毎期発生する恒常的コスト、無形資産償却も買収後の継続費用であるため、市場がGAAP EPSのみで判断する場合、企業の現金生成力や実質的な収益力が過小評価されやすい。投資家はSBCによる株主希薄化リスクと調整項目の持続性を注視すべきであり、過小評価の可能性が高い一方、調整依存が強い場合の過大評価リスクにも留意が必要。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、技術企業では毎期継続的に発生する恒常的なコストである。",
+            "snippet": "非現金費用として毎期発生する株式報酬費用。調整によりGAAPから加算されるが、恒常的な運用コストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で非現金だが、定期的に発生する経常的な項目であり一過性とは言えない。",
+            "snippet": "買収関連無形資産の償却費。非現金項目として加算調整されるが、継続的に発生する費用。",
             "confidence": 0.2
           }
         ]
@@ -136,9 +136,9 @@
     },
     {
       "gaap_eps": 0.17604292697404164,
-      "adjusted_eps": 0.25261919844879516,
+      "adjusted_eps": 0.23711515389121893,
       "gaap_net_income": 58638000.0,
-      "adjusted_net_income": 84144730.0,
+      "adjusted_net_income": 78980500.0,
       "diluted_shares_used": 333089213.0,
       "adjustments": [
         {
@@ -166,22 +166,9 @@
           "category": "買収・統合関連",
           "net_amount": 6486690.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 6537000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 5164230.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 25506730.0,
+      "net_adjustment_total": 20342500.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -361,9 +348,9 @@
     },
     {
       "gaap_eps": 0.15008051836438258,
-      "adjusted_eps": 0.22631029440933337,
+      "adjusted_eps": 0.20887829824169707,
       "gaap_net_income": 50093000.0,
-      "adjusted_net_income": 75536530.0,
+      "adjusted_net_income": 69718180.0,
       "diluted_shares_used": 333774167.0,
       "adjustments": [
         {
@@ -391,22 +378,9 @@
           "category": "買収・統合関連",
           "net_amount": 6541990.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 7365000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 5818350.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 25443530.0,
+      "net_adjustment_total": 19625180.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -615,19 +589,6 @@
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
           "net_amount": 7068920.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 6651000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 5254290.0,
           "tax_rate_applied": 0.21
         },
         {

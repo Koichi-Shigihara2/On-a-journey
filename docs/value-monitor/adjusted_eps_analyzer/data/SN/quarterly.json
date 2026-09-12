@@ -1,6 +1,6 @@
 {
   "ticker": "SN",
-  "last_updated": "2026-09-12T10:21:39.349375",
+  "last_updated": "2026-09-12T16:28:46.631396",
   "quarters": [
     {
       "gaap_eps": 0.9173820687634169,
@@ -62,9 +62,25 @@
       "tax_expense": 33877000.0,
       "pretax_income": 163693000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整の大部分が恒常的なSBC（株式報酬）と無形資産償却であり、一過性の貸倒引当異常分は影響が小さい。市場がGAAP EPS（0.92）を基準に評価する場合、非現金項目を加回したAdjusted EPS（1.22）の企業実力が見えにくくなり、実力を過小評価するリスクがある。ただしSBCは経済的コスト・希薄化を伴うため、Adjustedベースで過大評価するリスクも同等に存在。投資家はフリーキャッシュフローと株式発行による希薄化を重点的に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが恒常的に発生する従業員株式報酬であり、経済的コスト（希薄化）を伴う",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で定期的に発生する非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響の異常変動分であり非経常的",
+            "confidence": 0.75
+          }
+        ]
       }
     },
     {

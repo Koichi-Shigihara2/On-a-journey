@@ -1,6 +1,6 @@
 {
   "ticker": "ADBE",
-  "last_updated": "2026-09-12T10:18:02.388603",
+  "last_updated": "2026-09-12T16:26:35.381812",
   "quarters": [
     {
       "gaap_eps": 4.253416149068323,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "SBC（536M）と無形資産償却（50M）の調整によりAdjusted EPSがGAAP EPSを約26%上回るが、両項目とも恒常的費用（SBCは人材確保のための継続コスト、無形資産償却は買収後の定期償却）であり一過性とは言えない。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な実力が見えにくくなり企業価値の過小評価リスクがある。ただしSBCのadd-backは株主希薄化を無視した過大調整の側面が強く、Adjustedベースの評価では逆に過大評価リスクもある。投資家はキャッシュフローとSBCによる希薄化を特に注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、技術企業における毎期発生する恒常的コストであり、株主希薄化を伴う実質的な報酬コストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり、恒常的に発生する非現金費用として分類される。一過性調整の根拠は弱い。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

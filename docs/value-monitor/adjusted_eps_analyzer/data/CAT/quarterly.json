@@ -1,6 +1,6 @@
 {
   "ticker": "CAT",
-  "last_updated": "2026-09-12T10:20:21.135153",
+  "last_updated": "2026-09-12T16:28:07.680329",
   "quarters": [
     {
       "gaap_eps": 7.768648648648648,
@@ -62,9 +62,25 @@
       "tax_expense": 1055000000.0,
       "pretax_income": 4648000000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "調整項目のうちrestructuringは一過性のリストラ費用（202M USD）だが、sbcとamortization_intangiblesは恒常的に発生する非現金費用であるため調整の性質が混在。市場がGAAP EPS（7.77）で判断する場合、リストラによる一時的減益で企業の実力が過小評価されている可能性がある。投資家はSBCや償却を除いた持続可能な利益に注目すべきで、調整後EPS（8.34）使用時は恒常項目のadd_backによる過大評価リスク、GAAP使用時は過小評価リスクの両方を考慮する必要がある。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、従業員報酬として恒常的に発生するコストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用であり、恒常的と判断。",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "リストラ費用は一過性の事業再編費用として位置づけられ、非経常的である。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

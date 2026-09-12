@@ -1,6 +1,6 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-09-12T10:16:13.449482",
+  "last_updated": "2026-09-12T16:25:22.999870",
   "quarters": [
     {
       "gaap_eps": -0.17552269392148023,
@@ -50,11 +50,11 @@
       },
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目は市場金利変動によるローン公正価値評価損（一過性・非現金項目）であり、GAAP EPSに含まれることでコア事業の実力が過小評価されやすい。市場がGAAP EPS中心に判断する場合、企業の実力が見えにくくなり株価が抑制される過小評価リスクがある。投資家は調整後EPSや金利環境の影響を注視し、持続可能性を確認すべき。",
+        "comment": "調整項目は市場金利変動によるローン公正価値評価損益（一時的評価替え）であり、主に非コアで一過性の性質を持つ。GAAP EPSはこれにより-0.1755とより大きな赤字を示すが、Adjusted EPSは-0.1527と改善しており、市場がGAAPベースで評価している場合に企業の実力（調整後業績）が過小評価されるリスクがある。投資家は金利変動による今後の公正価値変動の再発生リスクと金融関連項目の透明性を注視すべきで、過小評価の可能性はあるが恒常的な調整依存も警戒。",
         "sources": [
           {
             "item": "loan_fair_value",
-            "snippet": "市場金利変動による一時的評価替え。これは非経常的な金融関連の公正価値変動であり、コア事業の実績を歪曲する一過性項目としてadd_back調整されている。",
+            "snippet": "市場金利変動による一時的評価替え",
             "confidence": 0.75
           }
         ]
@@ -118,24 +118,11 @@
     },
     {
       "gaap_eps": -0.4503228314146702,
-      "adjusted_eps": -0.08101061915777227,
+      "adjusted_eps": -0.15741557205921478,
       "gaap_net_income": -99867644.0,
-      "adjusted_net_income": -17965644.0,
+      "adjusted_net_income": -34909894.0,
       "diluted_shares_used": 221769000.0,
       "adjustments": [
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -323000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -323000.0,
-          "tax_rate_applied": 0.0
-        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -146,11 +133,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": 82225000.0,
-          "tax_rate_applied": 0.0
+          "net_amount": 64957750.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 81902000.0,
+      "net_adjustment_total": 64957750.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
@@ -177,7 +164,7 @@
               "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
               "xbrl_value": 82225000.0,
               "adjustment_amount": 82225000.0,
-              "net_amount": 82225000.0
+              "net_amount": 64957750.0
             }
           ],
           "condition1": "FV変動が純利益の82%占有（超高materiality → 条件1スキップ）",

@@ -1,6 +1,6 @@
 {
   "ticker": "HON",
-  "last_updated": "2026-09-12T10:18:51.113235",
+  "last_updated": "2026-09-12T16:27:10.939250",
   "quarters": [
     {
       "gaap_eps": 17.83427495291902,
@@ -76,26 +76,26 @@
       "pretax_income": 7260000000.0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目には恒常的なSBC・無形資産償却（毎期発生する非現金費用）と一過性のM&A統合・リストラ費用が混在。市場がGAAP EPSのみで判断する場合、非現金項目を加回した真の実力（調整後EPS18.18）が把握しにくく、企業の実力をやや過小評価している可能性がある。ただし恒常的項目の調整が含まれるためAdjusted EPSが過大評価されるリスクもあり、投資家は各調整の持続可能性を注視すべき。",
+        "comment": "調整項目は恒常的なSBC・無形資産償却と一過性のM&A統合費用・リストラ費用が混在。市場がGAAP EPS（17.83）で評価する場合、非現金・一過性項目を加回したAdjusted EPS（18.18）の方が企業の実力を正確に示しており、実力の過小評価リスクが存在する。ただしSBCや償却費は実質的な継続コストであるため、これらを加算調整することは収益を過大に見せる可能性もあり、投資家はコア利益の持続可能性に注意が必要。全体として軽度の過小評価リスクが優勢。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に利用する恒常的な運用コストである。",
+            "snippet": "株式報酬費用は非現金費用だが、継続的に発生する恒常的なコストである（毎期発生するSBC）。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aに基づく継続的な非現金費用で恒常的性質が強い。",
+            "snippet": "買収関連無形資産の償却は非現金だが、買収戦略に伴い定期的に発生する恒常的可能性が高い費用。",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は買収後の統合プロセスに関わる一過性のコスト。",
+            "snippet": "M&A統合費用は一過性の買収統合コストであり、調整により実力が見えやすくなる。",
             "confidence": 0.8
           },
           {
             "item": "restructuring",
-            "snippet": "リストラ費用は事業再編に伴う一時的な非経常的費用。",
+            "snippet": "リストラ費用は一過性の事業再編費用で、調整により一時的影響を排除できる。",
             "confidence": 0.8
           }
         ]
@@ -176,9 +176,9 @@
     },
     {
       "gaap_eps": -0.17890479153702551,
-      "adjusted_eps": 1.099253266957063,
+      "adjusted_eps": 0.20945861854387057,
       "gaap_net_income": -115000000.0,
-      "adjusted_net_income": 706600000.0,
+      "adjusted_net_income": 134640000.0,
       "diluted_shares_used": 642800000.0,
       "adjustments": [
         {
@@ -221,19 +221,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "goodwill_impairment",
-          "item_name": "のれん減損",
-          "amount": 724000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金減損",
-          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
-          "category": "買収・統合関連",
-          "net_amount": 571960000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 95000000,
@@ -247,7 +234,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 821600000.0,
+      "net_adjustment_total": 249640000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -1039,9 +1026,9 @@
     },
     {
       "gaap_eps": 1.491728883033231,
-      "adjusted_eps": 2.4331137461572245,
+      "adjusted_eps": 1.6524813350900307,
       "gaap_net_income": 1019000000.0,
-      "adjusted_net_income": 1662060000.0,
+      "adjusted_net_income": 1128810000.0,
       "diluted_shares_used": 683100000.0,
       "adjustments": [
         {
@@ -1058,19 +1045,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 333000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 263070000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 114000000,
@@ -1082,22 +1056,9 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 90060000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "litigation_settlement",
-          "item_name": "訴訟和解金・罰金",
-          "amount": 342000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非経常的な訴訟関連費用",
-          "extracted_from": "us-gaap:LitigationSettlementExpense",
-          "category": "訴訟・罰金関連",
-          "net_amount": 270180000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 643060000.0,
+      "net_adjustment_total": 109810000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,

@@ -1,6 +1,6 @@
 {
   "ticker": "PLTR",
-  "last_updated": "2026-09-12T10:16:28.462422",
+  "last_updated": "2026-09-12T16:25:29.942538",
   "quarters": [
     {
       "gaap_eps": 0.413396846802305,
@@ -52,12 +52,12 @@
         }
       },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目は恒常的なSBC（株式報酬費用）であり、一過性ではないため調整後EPSは企業の実力を過大に示す可能性が高い。市場がGAAP EPSで判断する場合、SBCという実質的なコスト（非現金だが希薄化を伴う）を反映した保守的な評価となっており、企業実力が見えにくくなっているわけではなく、むしろ過大評価を避けている。投資家として注目すべきはSBCの売上比率の推移と将来の希薄化リスクであり、調整値を過信すると過大評価のリスクが大きい。過小評価の可能性は低い。",
+        "health": "調整大",
+        "comment": "SBCは成長企業で毎期発生する恒常的なコストであり、非現金費用だが株主希薄化の実質的影響を伴います。この調整によりAdjusted EPSがGAAP EPSを約25%上回っていますが、市場がGAAPベースで判断する場合、企業の実力（特にキャッシュフロー生成力）が過小評価されている可能性があります。ただしSBCの継続性を考慮すると調整が過大で、投資家は希薄化調整後EPSやSBCの将来トレンドを注視すべきです。過大調整による過大評価リスクと、GAAP重視の場合の過小評価リスクの両面があります。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として加算されているが、テック企業では毎期発生する恒常的な株式報酬費用であり、実質的なコストと株式希薄化を伴う。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、PLTRのようなテック企業では毎期継続的に発生する恒常的コストであり、株主希薄化を伴う。",
             "confidence": 0.2
           }
         ]
@@ -265,9 +265,9 @@
     },
     {
       "gaap_eps": 0.03223780794820342,
-      "adjusted_eps": 0.12535203345470436,
+      "adjusted_eps": 0.12284410536490159,
       "gaap_net_income": 79009000.0,
-      "adjusted_net_income": 307215019.92739165,
+      "adjusted_net_income": 301068544.6221974,
       "diluted_shares_used": 2450818000.0,
       "adjustments": [
         {
@@ -282,22 +282,9 @@
           "category": "株式報酬関連",
           "net_amount": 222059544.6221974,
           "tax_rate_applied": 0.2119903454879119
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 7800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 6146475.305194287,
-          "tax_rate_applied": 0.2119903454879119
         }
       ],
-      "net_adjustment_total": 228206019.92739168,
+      "net_adjustment_total": 222059544.6221974,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -438,9 +425,9 @@
     },
     {
       "gaap_eps": 0.040641412890835955,
-      "adjusted_eps": 0.09173934709809103,
+      "adjusted_eps": 0.08828989159355087,
       "gaap_net_income": 93391000.0,
-      "adjusted_net_income": 210810322.65907502,
+      "adjusted_net_income": 202883725.71989357,
       "diluted_shares_used": 2297927000.0,
       "adjustments": [
         {
@@ -455,22 +442,9 @@
           "category": "株式報酬関連",
           "net_amount": 109492725.71989356,
           "tax_rate_applied": 0.17431281883526217
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 9600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 7926596.939181483,
-          "tax_rate_applied": 0.17431281883526217
         }
       ],
-      "net_adjustment_total": 117419322.65907504,
+      "net_adjustment_total": 109492725.71989356,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",

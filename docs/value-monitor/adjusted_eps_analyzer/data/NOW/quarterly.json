@@ -1,6 +1,6 @@
 {
   "ticker": "NOW",
-  "last_updated": "2026-09-12T10:16:02.351551",
+  "last_updated": "2026-09-12T16:25:11.740270",
   "quarters": [
     {
       "gaap_eps": 0.2881080966109593,
@@ -53,11 +53,11 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の無形資産償却費は買収関連の恒常的な非現金費用であり、一過性とは言えません。GAAP EPS 0.288に対しAdjusted EPS 0.432と約50%の上昇となるため、市場がGAAP EPSのみで判断する場合、この銘柄の実力（持続的な収益力）が過小評価されている可能性が高いです。投資家として注目すべきは、調整依存度の高さと買収の経済的効果の持続性であり、過小評価リスクが優勢ですが、償却が長期的に実質的なコストを反映している場合の過大評価リスクも考慮する必要があります。",
+        "comment": "無形資産償却費は買収関連で複数年にわたり恒常的に発生する非現金費用であり、一過性とは言えません。GAAP EPSではこの償却が控除されるため、企業の実力（コア収益力・キャッシュ生成力）が過小表示されており、市場がGAAPベースで判断する場合に実力が見えにくくなる可能性が高いです。これにより株価が過小評価されるリスクがありますが、買収の経済的コストを無視した調整は過大評価のリスクも伴います。投資家は調整後EPSの持続可能性と今後の買収戦略を注視すべきです。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金費用であり、調整により加算されているが、複数年にわたって毎期発生する恒常的な項目である。",
+            "snippet": "買収関連無形資産の償却。恒常的な非現金費用として毎期発生する可能性が高く、SaaS企業における標準的な調整項目だが一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -118,9 +118,9 @@
     },
     {
       "gaap_eps": 0.383112112361719,
-      "adjusted_eps": 0.8593653714420015,
+      "adjusted_eps": 0.7869084572237652,
       "gaap_net_income": 401000000.0,
-      "adjusted_net_income": 899490000.0,
+      "adjusted_net_income": 823650000.0,
       "diluted_shares_used": 1046691000.0,
       "adjustments": [
         {
@@ -148,22 +148,9 @@
           "category": "買収・統合関連",
           "net_amount": 32390000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 96000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 75840000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 498490000.0,
+      "net_adjustment_total": 422650000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "Technology",

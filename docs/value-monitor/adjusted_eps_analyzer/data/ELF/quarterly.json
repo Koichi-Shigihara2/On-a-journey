@@ -1,6 +1,6 @@
 {
   "ticker": "ELF",
-  "last_updated": "2026-09-12T10:14:47.046004",
+  "last_updated": "2026-09-12T16:24:10.130063",
   "quarters": [
     {
       "gaap_eps": 1.1150461072628515,
@@ -49,9 +49,20 @@
       "tax_expense": 27703000.0,
       "pretax_income": 94302000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "SBCと無形資産償却の両調整項目は非現金だが恒常的に発生する性質のものであり、調整によりEPSが約33%押し上げられている。市場がGAAP EPS中心に判断する場合、企業の現金稼得力や事業実力が過小評価されるリスクが高い。ただしSBCは実質的な希薄化コスト、無形資産償却も買収の経済効果を反映するため、調整の持続可能性に疑問があり過大評価リスクも伴う。投資家は調整後EPSの質と将来の現金フローへの影響を注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に利用する恒常的な運用コストであり一過性ではない。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連の定期的な非現金償却であり、複数年にわたって恒常的に発生する。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

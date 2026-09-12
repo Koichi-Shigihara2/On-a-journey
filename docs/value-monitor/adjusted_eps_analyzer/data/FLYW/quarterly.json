@@ -1,6 +1,6 @@
 {
   "ticker": "FLYW",
-  "last_updated": "2026-09-12T10:20:17.931889",
+  "last_updated": "2026-09-12T16:28:01.813981",
   "quarters": [
     {
       "gaap_eps": -0.0665580627311416,
@@ -49,17 +49,17 @@
       "tax_expense": 2830000.0,
       "pretax_income": -5317000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却はともに恒常的な非現金費用であり、毎期継続的に発生する性質を持つ。GAAP EPSがマイナスである一方、Adjusted EPSがプラスに転じているため、市場がGAAPベースで判断している場合に企業の実力（キャッシュ生成力やコアオペレーション）が過小評価されている可能性がある。ただし恒常的費用を大幅に加算しているため調整後EPSが収益性を過大に見せているリスクが高く、投資家は株主希薄化効果や将来の償却継続負担を慎重に評価すべき。",
+        "health": "調整大",
+        "comment": "調整項目の株式報酬費用と無形資産償却費はいずれも恒常的に発生する項目（SBCは毎期の報酬コスト、無形資産償却は買収後の定期償却）であり、一過性とは判断しにくい。GAAP EPSが-0.067の赤字である一方、Adjusted EPSが+0.082と黒字化する大幅調整のため、市場がGAAP EPS中心に判断している場合、企業の実力（非GAAPベースの収益力）を過小評価している可能性がある。ただしSBCの希薄化効果や買収コストの実質性を考慮すると、調整依存による過大評価リスクも存在し、投資家はフリーキャッシュフローや株式希薄化を重点的に検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は恒常的な非現金費用であり、毎期発生する可能性が高い（非一過性）。",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、従業員報酬としての実質コストを伴う（confidence基準: 恒常的な可能性が高いSBCの例）",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の定期的な償却費用で恒常的である（非一過性）。",
+            "snippet": "無形資産償却費は買収に伴う定期的な非現金償却であり、恒常的に発生する費用（confidence基準: 恒常的な可能性が高い無形資産償却の例）",
             "confidence": 0.2
           }
         ]
@@ -127,9 +127,9 @@
     },
     {
       "gaap_eps": 0.0002583221291980751,
-      "adjusted_eps": 0.14623239992624198,
+      "adjusted_eps": 0.14717958106663492,
       "gaap_net_income": 33000.0,
-      "adjusted_net_income": 18680820.0,
+      "adjusted_net_income": 18801820.0,
       "diluted_shares_used": 127747476.0,
       "adjustments": [
         {
@@ -172,19 +172,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -121000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -121000.0,
-          "tax_rate_applied": 0.0
-        },
-        {
           "item_id": "contingent_consideration_fv",
           "item_name": "偶発対価公正価値変動損益",
           "amount": -678000,
@@ -198,7 +185,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 18647820.0,
+      "net_adjustment_total": 18768820.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -678,9 +665,9 @@
     },
     {
       "gaap_eps": 0.01120801950080439,
-      "adjusted_eps": 0.11526860223386715,
+      "adjusted_eps": 0.11528601951358868,
       "gaap_net_income": 1287000.0,
-      "adjusted_net_income": 13236120.0,
+      "adjusted_net_income": 13238120.0,
       "diluted_shares_used": 114828494.0,
       "adjustments": [
         {
@@ -721,22 +708,9 @@
           "category": "金融関連",
           "net_amount": -157210.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -2000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -2000.0,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 11949120.0,
+      "net_adjustment_total": 11951120.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,
@@ -931,9 +905,9 @@
     },
     {
       "gaap_eps": -0.010459949261926895,
-      "adjusted_eps": 0.04684259899850943,
+      "adjusted_eps": 0.044887728055846385,
       "gaap_net_income": -1129000.0,
-      "adjusted_net_income": 5055980.0,
+      "adjusted_net_income": 4844980.0,
       "diluted_shares_used": 107935514.0,
       "adjustments": [
         {
@@ -976,19 +950,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 211000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 211000.0,
-          "tax_rate_applied": 0.0
-        },
-        {
           "item_id": "contingent_consideration_fv",
           "item_name": "偶発対価公正価値変動損益",
           "amount": -3102000,
@@ -1002,7 +963,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 6184980.0,
+      "net_adjustment_total": 5973980.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,

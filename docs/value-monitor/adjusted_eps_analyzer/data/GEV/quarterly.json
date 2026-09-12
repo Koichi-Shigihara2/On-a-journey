@@ -1,6 +1,6 @@
 {
   "ticker": "GEV",
-  "last_updated": "2026-09-12T10:20:45.840975",
+  "last_updated": "2026-09-12T16:28:14.789949",
   "quarters": [
     {
       "gaap_eps": 2.474074074074074,
@@ -37,11 +37,11 @@
       "pretax_income": 944000000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "無形資産償却費は買収に伴う非現金費用だが、償却期間中は恒常的に発生する性質のものであり一過性とは言えない。この調整によりAdjusted EPSがGAAP EPSを約25%上回っており、市場がGAAPベースで判断する場合、非現金償却の影響で企業の実力（特にキャッシュ生成力）が過小評価されている可能性がある。投資家としては買収戦略の持続性や償却スケジュールを注視すべきで、過小評価リスクはある一方、償却が経済的コストを反映しているとの見方では調整依存による過大評価リスクも存在する。",
+        "comment": "調整項目は買収関連無形資産償却費の加算戻しで、恒常的に発生する非現金費用です。市場がGAAP EPS（2.47）で判断する場合、調整後EPS（3.09）で示されるキャッシュ稼得力の実態が見えにくくなり、企業の実力を過小評価している可能性があります。ただし償却は経済的コストを反映するため、調整を過度に信用すると過大評価リスクが生じます。投資家は持続的な償却負担と将来のM&A戦略を注視すべきです。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は恒常的な非現金費用であり、調整項目としてadd_backされている（us-gaap:AmortizationOfIntangibleAssets）。",
+            "snippet": "買収関連無形資産の償却のためadd_back。毎期発生する恒常的な非現金項目であり、一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -109,24 +109,11 @@
     },
     {
       "gaap_eps": 13.27536231884058,
-      "adjusted_eps": 14.294347826086957,
+      "adjusted_eps": 13.558731884057972,
       "gaap_net_income": 3664000000.0,
-      "adjusted_net_income": 3945240000.0,
+      "adjusted_net_income": 3742210000.0,
       "diluted_shares_used": 276000000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 257000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 203030000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
@@ -167,7 +154,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 281240000.0,
+      "net_adjustment_total": 78210000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,

@@ -1,6 +1,6 @@
 {
   "ticker": "VRT",
-  "last_updated": "2026-09-12T10:17:42.824279",
+  "last_updated": "2026-09-12T16:26:21.418338",
   "quarters": [
     {
       "gaap_eps": 1.26748265781112,
@@ -52,9 +52,15 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整小",
+        "comment": "調整項目のリストラ費用は一過性の事業再編費用とされ、GAAP EPSに含まれることで継続的な収益力がやや過小表示されている可能性がある。市場がGAAP EPS中心に判断する場合、企業の実力が見えにくくなり、株価の過小評価リスクが生じる。ただし調整額は約390万ドルと小さくEPS影響は限定的(0.008程度)で、過大調整の兆候はない。投資家は今後のリストラ発生頻度や事業再編の必要性を注視し、恒常化していないかを確認すべき。",
+        "sources": [
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用。リストラ費用は通常、非経常的とみなされ、add_backにより調整。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "KULR",
-  "last_updated": "2026-09-12T10:18:57.707311",
+  "last_updated": "2026-09-12T16:27:07.673425",
   "quarters": [
     {
       "gaap_eps": -0.4744941954475474,
@@ -50,17 +50,17 @@
       "pretax_income": 0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "SBCは恒常的に発生する非現金費用であるため調整の正当性は中程度。一方、貸倒引当金の異常変動分はマクロ要因による一時的項目と判断され、調整によりGAAP EPSが実力（損失幅）を過度に悪化させて表示している可能性がある。市場がGAAP EPS中心に判断する場合、企業の実力が見えにくくなり過小評価リスクが生じやすい。ただしSBCの恒常調整により調整後EPSが楽観視され、過大評価リスクも併存する。投資家はSBCの希薄化効果と貸倒引当金の発生背景を注視すべき。",
+        "comment": "調整項目のうちSBCは恒常的な非現金費用である一方、異常貸倒引当金はマクロ変動による一時的項目と位置づけられる。市場がGAAP EPS(-0.474)で評価する場合、Adjusted EPS(-0.437)の方が企業の実力を正確に反映しており、実力が見えにくくなるため過小評価のリスクがある。ただしSBC調整は将来の希薄化を無視する過大評価リスクも伴う。投資家はSBCの継続性とコア事業のキャッシュ生成力に特に注目すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが成長企業では毎期継続的に発生する恒常的コストであり、調整により実態が歪曲される可能性（confidence低め）",
+            "snippet": "非現金費用",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響としてadd_backされており、一過性の蓋然性が高い",
-            "confidence": 0.7
+            "snippet": "マクロ変動による一時的影響",
+            "confidence": 0.75
           }
         ]
       }
@@ -101,9 +101,9 @@
     },
     {
       "gaap_eps": -1.1141321922848586,
-      "adjusted_eps": -1.0285780021524293,
+      "adjusted_eps": -1.045281423649109,
       "gaap_net_income": -44261358.0,
-      "adjusted_net_income": -40862529.15,
+      "adjusted_net_income": -41526109.4,
       "diluted_shares_used": 39727205.0,
       "adjustments": [
         {
@@ -120,19 +120,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 142296.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 112413.84000000001,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 1450000,
@@ -144,22 +131,9 @@
           "category": "金融関連",
           "net_amount": 1145500.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 697679.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 551166.41,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 3398828.8500000006,
+      "net_adjustment_total": 2735248.6,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -289,9 +263,9 @@
     },
     {
       "gaap_eps": -0.19809354415814828,
-      "adjusted_eps": -0.16341677055536372,
+      "adjusted_eps": -0.1682363017618877,
       "gaap_net_income": -4620461.0,
-      "adjusted_net_income": -3811637.67,
+      "adjusted_net_income": -3924051.51,
       "diluted_shares_used": 23324642.0,
       "adjustments": [
         {
@@ -306,22 +280,9 @@
           "category": "株式報酬関連",
           "net_amount": 696409.49,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 142296.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 112413.84000000001,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 808823.33,
+      "net_adjustment_total": 696409.49,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
@@ -438,9 +399,9 @@
     },
     {
       "gaap_eps": -0.04407907300531299,
-      "adjusted_eps": -0.03590529299001177,
+      "adjusted_eps": -0.03890443117230464,
       "gaap_net_income": -5193429.0,
-      "adjusted_net_income": -4230388.1899999995,
+      "adjusted_net_income": -4583748.87,
       "diluted_shares_used": 117820740.0,
       "adjustments": [
         {
@@ -455,48 +416,9 @@
           "category": "株式報酬関連",
           "net_amount": 609680.13,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 136373.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 107734.67,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 16978.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 13412.62,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 293941.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 232213.39,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 963040.81,
+      "net_adjustment_total": 609680.13,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,

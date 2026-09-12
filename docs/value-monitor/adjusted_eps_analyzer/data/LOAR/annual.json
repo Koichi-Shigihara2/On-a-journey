@@ -1,15 +1,15 @@
 {
   "ticker": "LOAR",
-  "last_updated": "2026-09-12T10:20:22.159563",
+  "last_updated": "2026-09-12T16:28:08.693345",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": 72146000.0,
-      "adjusted_net_income": 106092531.30618298,
+      "adjusted_net_income": 83157271.41027503,
       "diluted_shares_used": 95913000.0,
       "gaap_eps": 0.7522025168642416,
-      "adjusted_eps": 1.1061329674411495,
+      "adjusted_eps": 0.8670073025583084,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -23,32 +23,6 @@
           "category": "株式報酬関連",
           "net_amount": 2577111.8750895285,
           "tax_rate_applied": 0.40261662608031323
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 38500000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 22999259.895907942,
-          "tax_rate_applied": 0.40261662608031323
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -64000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -64000.0,
-          "tax_rate_applied": 0.0
         },
         {
           "item_id": "sbc",
@@ -90,7 +64,7 @@
           "tax_rate_applied": 0.2219456438912878
         }
       ],
-      "net_adjustment_total": 33946531.30618297
+      "net_adjustment_total": 11011271.410275027
     }
   ]
 }

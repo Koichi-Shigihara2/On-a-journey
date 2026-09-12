@@ -1,6 +1,6 @@
 {
   "ticker": "SNPS",
-  "last_updated": "2026-09-12T10:21:09.621102",
+  "last_updated": "2026-09-12T16:28:33.422674",
   "quarters": [
     {
       "gaap_eps": 2.837993126004191,
@@ -104,32 +104,32 @@
         }
       },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整であるsbc（231M）とamortization_intangibles（155M）は恒常的な項目（非現金だが継続発生、買収戦略に伴う定期償却）で全体の9割超を占め、ma_integration/restructuring/loan_loss_provision_abnormalは一過性寄りだが影響小。Adjusted EPSがGAAPの1.58倍に跳ね上がるため、市場がGAAP重視の場合に企業の実力（特に非現金費用調整後キャッシュ生成力）が過小評価される可能性はあるが、SBCの希薄化効果や継続償却を考慮すると過大調整リスクが大きい。投資家はSBCトレンド、買収パイプラインの長期償却影響、持続可能EPSを注視し、過大評価回避を優先すべき。",
+        "health": "調整大",
+        "comment": "調整項目の大部分をSBC（231M）と無形資産償却（155M）が占め、これらは恒常的な非現金費用であるため調整後EPS（4.49）はGAAP EPS（2.84）を大幅に上振れさせている。市場がGAAPベースで判断する場合、非現金・買収関連費用により企業の実力（キャッシュ生成力）が過小評価されるリスクが高い。一方でSBCは経済的・希薄化コストとして実質的であり、過大調整のリスクも存在する。投資家は一過性項目（M&A統合・リストラ・異常貸倒引当）に着目しつつ、恒常的調整の持続可能性を検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コストであり、従業員報酬の本質的な一部",
+            "snippet": "非現金費用として毎期発生する恒常的株式報酬費用（SBCは恒常的コスト）",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は買収戦略に伴う継続的な費用で一過性ではない",
+            "snippet": "買収関連無形資産の償却で恒常的に発生（買収が継続する場合実質的負担）",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト",
+            "snippet": "一過性の買収統合コスト（M&A関連費用はほぼ一過性）",
             "confidence": 0.8
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的な異常貸倒引当金繰入",
-            "confidence": 0.65
+            "snippet": "マクロ変動による異常貸倒引当金の一時的影響（異常変動分は一過性）",
+            "confidence": 0.75
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用",
+            "snippet": "一過性の事業再編・リストラ費用（リストラはほぼ一過性）",
             "confidence": 0.8
           }
         ]
@@ -1377,7 +1377,7 @@
         "derivative_gains_losses",
         "tax_one_time"
       ],
-      "revenue": 5081542000.0,
+      "revenue": 1284292000.0,
       "diluted_shares": 156485000.0,
       "period_end": "2022-10-31",
       "fiscal_year": 2022,

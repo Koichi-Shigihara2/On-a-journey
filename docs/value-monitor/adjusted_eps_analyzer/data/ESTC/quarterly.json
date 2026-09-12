@@ -1,6 +1,6 @@
 {
   "ticker": "ESTC",
-  "last_updated": "2026-09-12T10:14:54.965326",
+  "last_updated": "2026-09-12T16:24:15.496679",
   "quarters": [
     {
       "gaap_eps": -0.1598715889684915,
@@ -92,26 +92,26 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "GAAP EPSがマイナスである一方、Adjusted EPSは大幅プラス転換しており、主にSBCとリストラ費用のadd_backによる。SBCは恒常的運用コスト、償却費も継続的だがリストラと異常貸倒引当は一過性と判断される。市場がGAAP EPSで評価する場合、企業の実力（調整後収益力やキャッシュ生成）が過小評価されやすい。ただしSBCの規模が大きく希薄化効果を伴うため、調整後指標に過大評価リスクもある。投資家は非GAAP調整の持続可能性とフリーキャッシュフローを重点検証すべき。",
+        "comment": "調整項目にはSBC（恒常的・非現金）とリストラ費用（一過性）が混在しており、GAAP EPSがマイナスを示す一方でAdjusted EPSが+0.73と大幅に改善しているため、市場がGAAPベースで判断する場合に企業の実力（特にコア事業の収益力）が過小評価されている可能性が高い。ただしSBCが調整の大部分を占めるため、過大調整のリスクもあり投資家は希薄化効果も含めて実質的な利益質を慎重に検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが、テック企業では毎期発生する恒常的な株式報酬コスト",
+            "snippet": "非現金費用だがテック企業では毎期発生する恒常的な株式報酬コスト",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に発生する継続的項目",
-            "confidence": 0.2
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金項目",
+            "confidence": 0.25
           },
           {
             "item": "loan_loss_provision_abnormal",
             "snippet": "マクロ変動による一時的影響として異常変動分を調整",
-            "confidence": 0.75
+            "confidence": 0.65
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用としてリストラ Chargesをadd back",
+            "snippet": "一過性の事業再編費用としてリストラ費用を全額加算",
             "confidence": 0.8
           }
         ]

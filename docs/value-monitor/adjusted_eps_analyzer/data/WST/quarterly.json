@@ -1,6 +1,6 @@
 {
   "ticker": "WST",
-  "last_updated": "2026-09-12T10:21:12.901852",
+  "last_updated": "2026-09-12T16:28:39.968793",
   "quarters": [
     {
       "gaap_eps": 2.1598877980364657,
@@ -50,16 +50,16 @@
       "pretax_income": 186200000.0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "SBCは恒常的な非現金費用だがリストラは一過性と判断。市場がGAAP EPS（2.16）で評価する場合、非現金・一時費用により企業の実力（調整後2.31）が歪められ過小評価の可能性がある。投資家はSBCの継続性と希薄化効果に注視すべきで、GAAP依存による過小評価リスクとSBC加算による調整EPSの過大評価リスクの両方を考慮する必要がある。",
+        "comment": "SBCは恒常的な非現金費用だが毎期発生するコストであり、リストラ費用は一過性の事業再編費用です。調整によりAdjusted EPSがGAAP EPSを上回っているため、市場がGAAP EPSのみで判断する場合に企業の実力（特に調整後収益性）が見えにくくなり、過小評価のリスクがあります。一方、SBCの調整は株主希薄化の実質影響を無視する可能性があり、過大評価リスクも潜んでいます。投資家はSBCの継続規模とリストラの非再発性を注視し、調整の質を検証すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが毎期発生する恒常的なコストであり、調整の正当性は限定的。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、恒常的に発生するコストであり調整の非経常性は低い",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用であり、正常化された業績を示すために調整するのが適切。",
+            "snippet": "リストラ費用は一過性の事業再編費用としてadd_backされており、真に非経常的とみなせる",
             "confidence": 0.8
           }
         ]
@@ -127,9 +127,9 @@
     },
     {
       "gaap_eps": 1.8170563961485557,
-      "adjusted_eps": 1.9359493254984412,
+      "adjusted_eps": 1.915895096451473,
       "gaap_net_income": 132100000.0,
-      "adjusted_net_income": 140743515.96373668,
+      "adjusted_net_income": 139285573.51202208,
       "diluted_shares_used": 72700000.0,
       "adjustments": [
         {
@@ -146,19 +146,6 @@
           "tax_rate_applied": 0.4793062672447773
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 2800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1457942.4517146235,
-          "tax_rate_applied": 0.4793062672447773
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 7100000,
@@ -172,7 +159,7 @@
           "tax_rate_applied": 0.4793062672447773
         }
       ],
-      "net_adjustment_total": 8643515.963736696,
+      "net_adjustment_total": 7185573.512022072,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -328,9 +315,9 @@
     },
     {
       "gaap_eps": 1.7652645861601086,
-      "adjusted_eps": 1.8239581477369806,
+      "adjusted_eps": 1.7972117146133428,
       "gaap_net_income": 130100000.0,
-      "adjusted_net_income": 134425715.48821548,
+      "adjusted_net_income": 132454503.36700337,
       "diluted_shares_used": 73700000.0,
       "adjustments": [
         {
@@ -345,22 +332,9 @@
           "category": "株式報酬関連",
           "net_amount": 2354503.3670033673,
           "tax_rate_applied": 0.4524410774410774
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 3600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1971212.1212121213,
-          "tax_rate_applied": 0.4524410774410774
         }
       ],
-      "net_adjustment_total": 4325715.488215488,
+      "net_adjustment_total": 2354503.3670033673,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
@@ -490,9 +464,9 @@
     },
     {
       "gaap_eps": 1.8193891102257636,
-      "adjusted_eps": 1.8404387335604235,
+      "adjusted_eps": 1.8151791855588317,
       "gaap_net_income": 137000000.0,
-      "adjusted_net_income": 138585036.6370999,
+      "adjusted_net_income": 136682992.67258003,
       "diluted_shares_used": 75300000.0,
       "adjustments": [
         {
@@ -509,19 +483,6 @@
           "tax_rate_applied": 0.47165445430003855
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 3600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1902043.9645198614,
-          "tax_rate_applied": 0.47165445430003855
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": -2000000,
@@ -535,7 +496,7 @@
           "tax_rate_applied": 0.47165445430003855
         }
       ],
-      "net_adjustment_total": 1585036.6370998845,
+      "net_adjustment_total": -317007.3274199768,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,

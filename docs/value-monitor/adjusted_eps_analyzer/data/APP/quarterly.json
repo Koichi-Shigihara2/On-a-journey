@@ -1,6 +1,6 @@
 {
   "ticker": "APP",
-  "last_updated": "2026-09-12T10:13:31.491984",
+  "last_updated": "2026-09-12T16:22:58.468352",
   "quarters": [
     {
       "gaap_eps": 3.7579273123243855,
@@ -65,17 +65,17 @@
         }
       },
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目はSBCと無形資産償却費の両方とも非現金だが恒常的に発生しやすい性質のものであり、一過性とは判断しにくい。市場がGAAP EPS（3.76）を基準に評価する場合、非現金費用を差し引いた利益が低く表示されるため企業の実力が見えにくく、過小評価のリスクが存在する。ただしSBCは株主希薄化を伴う実質的なコストであるため、Adjusted EPS（4.04）を過度に信頼すると過大評価のリスクもある。投資家は調整後のEPSだけでなく、フリーキャッシュフローや継続的なSBCの規模を注視し、経済的実態を多角的に判断すべき。",
+        "health": "過大調整",
+        "comment": "SBCと無形資産償却はともに恒常的に発生する項目（非現金だが運用上継続的なコスト）であり、調整によりEPSが約7%押し上げられている。これは実態を過大に見せている可能性が高い。市場がGAAP EPSで判断している場合、企業の実力（調整後収益力）が過小評価されるリスクがある一方、SBCの希薄化効果や償却の経済的意味を無視した過大評価リスクも投資家は警戒すべき。キャッシュフローと株式発行動向に注目を。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、継続的な人材獲得コストであり恒常的発生の可能性が高い",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、毎期発生する恒常的な運用コストであり、従業員インセンティブとして実質的な負担。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金だが、買収後の一定期間にわたり定期的に発生する費用",
+            "snippet": "買収関連無形資産の償却は過去のM&Aから生じる定期的な非現金費用であり、一過性ではなく継続的に発生。",
             "confidence": 0.2
           }
         ]
@@ -179,7 +179,7 @@
         "derivative_gains_losses",
         "tax_one_time"
       ],
-      "revenue": 5480717000.0,
+      "revenue": 1657944000.0,
       "diluted_shares": 341970000.0,
       "period_end": "2025-12-31",
       "fiscal_year": 2025,
@@ -456,7 +456,7 @@
         "derivative_gains_losses",
         "tax_one_time"
       ],
-      "revenue": 4709248000.0,
+      "revenue": 1372779000.0,
       "diluted_shares": 347808000.0,
       "period_end": "2024-12-31",
       "fiscal_year": 2024,
@@ -638,9 +638,9 @@
     },
     {
       "gaap_eps": 0.4750088943680034,
-      "adjusted_eps": 0.9560228631354637,
+      "adjusted_eps": 0.95855909262164,
       "gaap_net_income": 172233000.0,
-      "adjusted_net_income": 346643373.9214246,
+      "adjusted_net_income": 347562982.8345878,
       "diluted_shares_used": 362589000.0,
       "adjustments": [
         {
@@ -668,22 +668,9 @@
           "category": "買収・統合関連",
           "net_amount": 97994123.04938498,
           "tax_rate_applied": 0.12167248026436571
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": -1047000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": -919608.9131632091,
-          "tax_rate_applied": 0.12167248026436571
         }
       ],
-      "net_adjustment_total": 174410373.92142463,
+      "net_adjustment_total": 175329982.83458784,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -694,7 +681,7 @@
         "derivative_gains_losses",
         "tax_one_time"
       ],
-      "revenue": 3283087000.0,
+      "revenue": 953261000.0,
       "diluted_shares": 362589000.0,
       "period_end": "2023-12-31",
       "fiscal_year": 2023,

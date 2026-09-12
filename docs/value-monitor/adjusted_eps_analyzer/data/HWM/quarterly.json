@@ -1,6 +1,6 @@
 {
   "ticker": "HWM",
-  "last_updated": "2026-09-12T10:18:33.229560",
+  "last_updated": "2026-09-12T16:26:55.493213",
   "quarters": [
     {
       "gaap_eps": 1.328358208955224,
@@ -50,7 +50,7 @@
       },
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目は税率変更や過年度修正による明確な一過性税効果であり、恒常的コストではない。GAAP EPS(1.328)がAdjusted EPS(1.279)を上回っているため、市場がGAAPベースで判断する場合、一過性の税メリットにより企業の実力(経常収益力)が過大に見え、むしろ過大評価リスクが高い。過小評価の可能性は低い。投資家は調整後EPSを基に持続的な収益力を評価し、一過性税効果の再発リスクを監視すべき。",
+        "comment": "調整項目は一過性の税効果（法人税率変更・過年度税額戻し等）であり、恒常的コストではないため調整の必要性は妥当です。GAAP EPS（1.328）がAdjusted EPS（1.279）を上回っている背景にはこの一過性税メリットが寄与している可能性が高く、市場がGAAP EPSのみで判断する場合に企業の経常的な実力が過大評価されやすい状況です。過小評価リスクは低いが、投資家は調整後EPSをベースに真の収益力を確認し、一過性税効果の再発可能性を注視すべきです。",
         "sources": [
           {
             "item": "tax_one_time",
@@ -406,26 +406,12 @@
     },
     {
       "gaap_eps": 0.5673076923076923,
-      "adjusted_eps": 0.5355079337702656,
+      "adjusted_eps": 0.5673076923076923,
       "gaap_net_income": 236000000.0,
-      "adjusted_net_income": 222771300.44843048,
+      "adjusted_net_income": 236000000.0,
       "diluted_shares_used": 416000000.0,
-      "adjustments": [
-        {
-          "item_id": "litigation_settlement",
-          "item_name": "訴訟和解金・罰金",
-          "amount": -25000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非経常的な訴訟関連費用",
-          "extracted_from": "us-gaap:LitigationSettlementExpense",
-          "category": "訴訟・罰金関連",
-          "net_amount": -13228699.551569507,
-          "tax_rate_applied": 0.47085201793721976
-        }
-      ],
-      "net_adjustment_total": -13228699.551569507,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -593,9 +579,9 @@
     },
     {
       "gaap_eps": 0.26365795724465557,
-      "adjusted_eps": 0.46819477434679335,
+      "adjusted_eps": 0.3462232779097387,
       "gaap_net_income": 111000000.0,
-      "adjusted_net_income": 197110000.0,
+      "adjusted_net_income": 145760000.0,
       "diluted_shares_used": 421000000.0,
       "adjustments": [
         {
@@ -610,22 +596,9 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 34760000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "litigation_settlement",
-          "item_name": "訴訟和解金・罰金",
-          "amount": 65000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非経常的な訴訟関連費用",
-          "extracted_from": "us-gaap:LitigationSettlementExpense",
-          "category": "訴訟・罰金関連",
-          "net_amount": 51350000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 86110000.0,
+      "net_adjustment_total": 34760000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",

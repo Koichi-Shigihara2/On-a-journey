@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-09-12T10:13:33.283825",
+  "last_updated": "2026-09-12T16:22:45.194512",
   "quarters": [
     {
       "gaap_eps": 5.745849766119417,
@@ -36,12 +36,12 @@
       "tax_expense": 18199000000.0,
       "pretax_income": 80846000000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBC（株式報酬費用）はAmazonにとって毎期継続的に発生する恒常的な運用コストであり、一過性項目ではありません。GAAP EPSではこの非現金費用が控除されるため、市場がGAAPベースで判断する場合に同社の現金創出力や成長実力を過小評価している可能性があります。ただし、SBCを全額加算したAdjusted EPSは希薄化効果を無視しており、過大調整のリスクが大きい点に投資家は留意すべきです。注目点は調整後数字だけでなく、発行株式数の増加トレンドやFCFへの影響であり、過小評価リスクはあるものの恒常コストの性質上、過大評価に繋がる恐れもあります。",
+        "health": "調整中",
+        "comment": "調整項目の株式報酬費用（SBC）は恒常的なコストであり、非現金費用として毎期発生する性質上、一過性とはみなせません。市場がGAAP EPS（5.75）を基準に判断する場合、SBCによる費用が利益を圧迫し、Amazonの実力（キャッシュ生成力や成長ポテンシャル）が見えにくくなる可能性があります。これにより株価の過小評価リスクが生じますが、SBCは株式希薄化も伴うため、Adjusted EPS（6.17）を過度に信頼すると実態より過大評価するリスクもあります。投資家はSBCの絶対額推移、希薄化率、フリーキャッシュフローとの整合性を注視すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、成長企業であるAmazonでは毎年恒常的に発生する報酬コストであり、経済的実態（従業員インセンティブと株式希薄化）を反映したGAAP EPSを歪める可能性がある。",
+            "snippet": "非現金費用として毎期継続的に発生する株式報酬費用であり、恒常的な調整項目。Amazonのようなテック企業では標準的に発生する運用コスト。",
             "confidence": 0.2
           }
         ]
@@ -83,9 +83,9 @@
     },
     {
       "gaap_eps": 1.9573288999722915,
-      "adjusted_eps": 2.2884503062736195,
+      "adjusted_eps": 2.170997937763154,
       "gaap_net_income": 21192000000.0,
-      "adjusted_net_income": 24777051466.02448,
+      "adjusted_net_income": 23505394672.16167,
       "diluted_shares_used": 10827000000.0,
       "adjustments": [
         {
@@ -100,35 +100,9 @@
           "category": "株式報酬関連",
           "net_amount": 2313394672.161672,
           "tax_rate_applied": 0.47386975843491647
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 817000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 429848407.3586732,
-          "tax_rate_applied": 0.47386975843491647
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 1600000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 841808386.5041336,
-          "tax_rate_applied": 0.47386975843491647
         }
       ],
-      "net_adjustment_total": 3585051466.024479,
+      "net_adjustment_total": 2313394672.161672,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -245,9 +219,9 @@
     },
     {
       "gaap_eps": 1.8658707210148306,
-      "adjusted_eps": 2.358842065632265,
+      "adjusted_eps": 2.1842971876337476,
       "gaap_net_income": 20004000000.0,
-      "adjusted_net_income": 25289145785.643513,
+      "adjusted_net_income": 23417850148.621407,
       "diluted_shares_used": 10721000000.0,
       "adjustments": [
         {
@@ -262,35 +236,9 @@
           "category": "株式報酬関連",
           "net_amount": 3413850148.6214085,
           "tax_rate_applied": 0.31654651679251083
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 838000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 572734018.927876,
-          "tax_rate_applied": 0.31654651679251083
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 1900000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 1298561618.0942295,
-          "tax_rate_applied": 0.31654651679251083
         }
       ],
-      "net_adjustment_total": 5285145785.643514,
+      "net_adjustment_total": 3413850148.6214085,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
@@ -407,9 +355,9 @@
     },
     {
       "gaap_eps": 1.0125810141059854,
-      "adjusted_eps": 1.5218960248643219,
+      "adjusted_eps": 1.3731817483336524,
       "gaap_net_income": 10624000000.0,
-      "adjusted_net_income": 15967733092.876465,
+      "adjusted_net_income": 14407422903.516682,
       "diluted_shares_used": 10492000000.0,
       "adjustments": [
         {
@@ -424,35 +372,9 @@
           "category": "株式報酬関連",
           "net_amount": 3783422903.5166817,
           "tax_rate_applied": 0.4012623985572588
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 706000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 422708746.61857533,
-          "tax_rate_applied": 0.4012623985572588
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 1900000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 1137601442.7412083,
-          "tax_rate_applied": 0.4012623985572588
         }
       ],
-      "net_adjustment_total": 5343733092.876465,
+      "net_adjustment_total": 3783422903.5166817,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,

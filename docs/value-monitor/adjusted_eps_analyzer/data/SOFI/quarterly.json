@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-09-12T10:17:11.724859",
+  "last_updated": "2026-09-12T16:25:58.626744",
   "quarters": [
     {
       "gaap_eps": 0.11582334188862344,
@@ -49,9 +49,15 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整項目は株式報酬費用（SBC）であり、恒常的に発生する非現金コストです。市場がGAAP EPS（0.116）を基準に判断する場合、SBC控除後の低い利益を見てSOFIの実力を過小評価する可能性がありますが、SBCは実質的な株主希薄化コストであるためAdjusted EPS（0.159）は持続可能性を過大に見せ、過大評価リスクもあります。投資家はSBCの継続額、希薄化影響、キャッシュフローとの整合性を注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、フィンテック企業では毎期発生する恒常的な運用コストであり、株主希薄化を伴う。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -93,9 +99,9 @@
     },
     {
       "gaap_eps": 0.1386432139527564,
-      "adjusted_eps": 0.23025405418756287,
+      "adjusted_eps": 0.18223948186192146,
       "gaap_net_income": 173549000.0,
-      "adjusted_net_income": 288224426.648203,
+      "adjusted_net_income": 228121369.49185184,
       "diluted_shares_used": 1251767000.0,
       "adjustments": [
         {
@@ -110,35 +116,9 @@
           "category": "株式報酬関連",
           "net_amount": 54572369.49185184,
           "tax_rate_applied": 0.20421760223031282
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 74579000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 59348655.4432655,
-          "tax_rate_applied": 0.20421760223031282
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 948000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 754401.7130856634,
-          "tax_rate_applied": 0.20421760223031282
         }
       ],
-      "net_adjustment_total": 114675426.648203,
+      "net_adjustment_total": 54572369.49185184,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -286,32 +266,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 75494000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 59640260.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 1530000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 1208700.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
           "amount": -273986000.0,
@@ -449,9 +403,9 @@
     },
     {
       "gaap_eps": 0.05070029967492889,
-      "adjusted_eps": 0.24141452649410758,
+      "adjusted_eps": 0.1313643347481065,
       "gaap_net_income": 47913000.0,
-      "adjusted_net_income": 228142521.4855675,
+      "adjusted_net_income": 124142449.08099459,
       "diluted_shares_used": 945024000.0,
       "adjustments": [
         {
@@ -468,19 +422,6 @@
           "tax_rate_applied": 0.008758447901972756
         },
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 104919000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 104000072.40457292,
-          "tax_rate_applied": 0.008758447901972756
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 7796000,
@@ -494,7 +435,7 @@
           "tax_rate_applied": 0.008758447901972756
         }
       ],
-      "net_adjustment_total": 180229521.4855675,
+      "net_adjustment_total": 76229449.08099459,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -649,9 +590,9 @@
     },
     {
       "gaap_eps": -0.044407394498305004,
-      "adjusted_eps": 0.1296176146185608,
+      "adjusted_eps": 0.030910907901072215,
       "gaap_net_income": -40006000.0,
-      "adjusted_net_income": 116770694.36325678,
+      "adjusted_net_income": 27847204.175365344,
       "diluted_shares_used": 900886000.0,
       "adjustments": [
         {
@@ -666,22 +607,9 @@
           "category": "株式報酬関連",
           "net_amount": 67853204.17536534,
           "tax_rate_applied": 0.04399791231732777
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 93016000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 88923490.18789144,
-          "tax_rate_applied": 0.04399791231732777
         }
       ],
-      "net_adjustment_total": 156776694.36325678,
+      "net_adjustment_total": 67853204.17536534,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",

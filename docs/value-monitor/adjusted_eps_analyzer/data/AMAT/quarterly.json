@@ -1,6 +1,6 @@
 {
   "ticker": "AMAT",
-  "last_updated": "2026-09-12T10:13:17.189893",
+  "last_updated": "2026-09-12T16:22:38.508914",
   "quarters": [
     {
       "gaap_eps": 3.1725,
@@ -53,11 +53,11 @@
       },
       "ai_analysis": {
         "health": "調整中",
-        "comment": "SBCは恒常的に発生する運用コストであり一過性ではないため、調整の妥当性は中程度。市場がGAAP EPS(3.1725)で評価する場合、非現金費用を控除した保守的な数字となり企業の実力(キャッシュ生成力)を過小評価する可能性がある。ただしSBCは株式希薄化を伴う実質コストのため、Adjusted EPS(3.3569)に依存しすぎると過大評価リスクが生じる。投資家は調整の性質を理解し、希薄化後EPSやFCFを併せて確認すべき。",
+        "comment": "SBCは技術企業で毎期発生する恒常的な報酬コストであり、一過性ではない。GAAP EPSはこれを反映した数値のため、市場がGAAP中心に判断する場合、非現金であるSBCの影響で企業のキャッシュ創出力や実力を過小評価している可能性がある。ただしSBCは株主希薄化を伴う実質コストであるため、調整を加えたAdjusted EPSを過信すると過大評価リスクが生じる。投資家は希薄化効果と継続性を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用としてadd_backされているが、us-gaap:ShareBasedCompensationから抽出される毎期発生する恒常的な株式報酬費用",
+            "snippet": "非現金費用だが、株式報酬として恒常的に発生する運用コスト（毎期の従業員インセンティブ）",
             "confidence": 0.2
           }
         ]
@@ -158,9 +158,9 @@
     },
     {
       "gaap_eps": 2.347772277227723,
-      "adjusted_eps": 2.717351485148515,
+      "adjusted_eps": 2.50029702970297,
       "gaap_net_income": 1897000000.0,
-      "adjusted_net_income": 2195620000.0,
+      "adjusted_net_income": 2020240000.0,
       "diluted_shares_used": 808000000.0,
       "adjustments": [
         {
@@ -175,35 +175,9 @@
           "category": "株式報酬関連",
           "net_amount": 123240000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "goodwill_impairment",
-          "item_name": "のれん減損",
-          "amount": 41000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金減損",
-          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
-          "category": "買収・統合関連",
-          "net_amount": 32390000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 181000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 142990000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 298620000.0,
+      "net_adjustment_total": 123240000.0,
       "filing_date": "2025-10-26",
       "form": "10-K",
       "sector": "Technology",

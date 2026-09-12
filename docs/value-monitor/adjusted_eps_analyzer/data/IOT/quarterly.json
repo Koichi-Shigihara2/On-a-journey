@@ -1,6 +1,6 @@
 {
   "ticker": "IOT",
-  "last_updated": "2026-09-12T10:15:23.856299",
+  "last_updated": "2026-09-12T16:24:37.160574",
   "quarters": [
     {
       "gaap_eps": 0.027507149813952032,
@@ -65,18 +65,18 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整によりGAAP EPS 0.0275からAdjusted EPS 0.1846へ大幅に上方修正されており、市場がGAAPベースで評価している場合に企業の実力（特に非現金費用の調整後収益力）が見えにくくなり、過小評価のリスクが存在する。SBCは恒常的な報酬コストのため調整の正当性に留意すべきだが、異常貸倒引当金はマクロ一時要因と見なせ、全体として投資家は希薄化効果も含めた持続的EPSを注視する必要がある。過大評価リスクはSBCの恒常性から中程度。",
+        "health": "過大調整",
+        "comment": "主な調整項目であるSBC（株式報酬費用）は非現金ながら毎期発生する恒常的コストであり、調整の大半を占めるためAdjusted EPSは実力を過大に示している可能性が高い。異常貸倒引当金はマクロ変動による一時的項目と見なせるが影響度は小さい。市場がGAAP EPSで判断する場合、SBCを考慮した経済的実態は反映される一方で、非現金ベースのキャッシュ生成力が見えにくくなり、企業の実力を過小評価するリスクがある。ただしSBCによる株式希薄化を無視すれば過大評価の危険性も伴う。投資家はSBCの継続性・希薄化効果と異常引当金の再発可能性に注目すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが、従業員報酬として毎期発生する恒常的な株式報酬であり、調整により持続的利益を過大に見せる可能性がある（reason: 非現金費用、category: 株式報酬関連）",
-            "confidence": 0.25
+            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的なコストであり、企業の実質的な報酬コストを反映する",
+            "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分をadd_back。貸倒引当金の非経常的変動と判断（reason: マクロ変動による一時的影響、category: 金融関連）",
-            "confidence": 0.75
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響であり、非経常的と判断",
+            "confidence": 0.65
           }
         ]
       }
@@ -772,9 +772,9 @@
     },
     {
       "gaap_eps": -0.10421964736938726,
-      "adjusted_eps": -0.012917158358162864,
+      "adjusted_eps": -0.02483018106290717,
       "gaap_net_income": -53598000.0,
-      "adjusted_net_income": -6643026.254224062,
+      "adjusted_net_income": -12769646.39779248,
       "diluted_shares_used": 514279230.0,
       "adjustments": [
         {
@@ -789,22 +789,9 @@
           "category": "株式報酬関連",
           "net_amount": 40828353.60220752,
           "tax_rate_applied": 0.07172422067145227
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 6600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 6126620.143568415,
-          "tax_rate_applied": 0.07172422067145227
         }
       ],
-      "net_adjustment_total": 46954973.74577594,
+      "net_adjustment_total": 40828353.60220752,
       "filing_date": "2023-01-28",
       "form": "10-K",
       "sector": "Technology",

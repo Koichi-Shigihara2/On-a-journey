@@ -1,6 +1,6 @@
 {
   "ticker": "RDW",
-  "last_updated": "2026-09-12T10:16:35.681417",
+  "last_updated": "2026-09-12T16:25:40.849059",
   "quarters": [
     {
       "gaap_eps": -0.185837615208855,
@@ -50,11 +50,11 @@
       },
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目はM&A統合費用で一過性の買収統合コストとしてadd_backされており、Adjusted EPSがわずかに改善（-0.18584→-0.18579）。ただし調整額11,000USDの影響は極めて小さく（EPS差約0.00005）、GAAP EPSと実質的に同水準のため市場がGAAPベースで判断していても企業の実力はほぼ正確に把握可能。過小評価リスクは低く、投資家は今後のM&A統合進捗と再発可能性を注視すべき。",
+        "comment": "調整項目はM&A統合費用で一過性の性格が強く、市場がGAAP EPSで判断する場合にわずかに企業の実力を過小評価させる可能性はある。ただし金額が11,000USDと極めて小さく、EPS差が0.00005未満のため実務的な影響はほぼ皆無。投資家としてはこの調整自体に注目する必要性は低く、過小評価リスクは限定的で本質的な事業パフォーマンスを別途検証すべき。",
         "sources": [
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとしてadd_back。M&A関連費用は通常非経常的と分類され、us-gaap:BusinessCombinationAcquisitionRelatedCostsから抽出。",
+            "snippet": "一過性の買収統合コストとしてM&A統合費用をadd_backしており、非経常的な項目である。",
             "confidence": 0.8
           }
         ]
@@ -304,24 +304,11 @@
     },
     {
       "gaap_eps": -1.0154634082661342,
-      "adjusted_eps": -0.3662560429155122,
+      "adjusted_eps": -0.49176388257185927,
       "gaap_net_income": -67169000.0,
-      "adjusted_net_income": -24226428.984376125,
+      "adjusted_net_income": -32528290.0,
       "diluted_shares_used": 66146155.0,
       "adjustments": [
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 385000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 373759.7739525069,
-          "tax_rate_applied": 0.029195392331150906
-        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -332,11 +319,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": 42568811.24167137,
-          "tax_rate_applied": 0.029195392331150906
+          "net_amount": 34640710.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 42942571.015623875,
+      "net_adjustment_total": 34640710.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -363,7 +350,7 @@
               "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
               "xbrl_value": 43849000,
               "adjustment_amount": 43849000,
-              "net_amount": 42568811.24167137
+              "net_amount": 34640710.0
             }
           ],
           "condition1": "純利益変動710% / 売上変動10% = 74.2倍（閾値5倍）",

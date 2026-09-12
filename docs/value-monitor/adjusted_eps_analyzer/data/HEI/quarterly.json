@@ -1,6 +1,6 @@
 {
   "ticker": "HEI",
-  "last_updated": "2026-09-12T10:18:21.278160",
+  "last_updated": "2026-09-12T16:26:51.684666",
   "quarters": [
     {
       "gaap_eps": 1.6666005988574988,
@@ -37,11 +37,11 @@
       "pretax_income": 301539000.0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目は買収関連無形資産の償却費加算戻しであり、恒常的に発生する非現金費用であるため一過性とは言えない。市場がGAAP EPS（1.67）で判断する場合、償却費によるEPS圧縮で企業の実力（キャッシュ生成力や買収シナジー効果）が過小評価される可能性がある。投資家は調整後EPS（1.91）を参考にすべきだが、毎期発生する償却を無視した過大評価リスクも存在する。",
+        "comment": "調整項目の無形資産償却費は買収に伴う恒常的な非現金費用であるため、市場がGAAP EPS（1.67）で評価する場合、非現金償却により企業の実力（キャッシュ生成力）が過小評価されている可能性がある。ただしこの償却はM&Aプレミアムの経済的コストを反映しており、調整後EPS（1.91）を過度に重視すると過大評価リスクが生じる。投資家は継続的な買収戦略と将来の償却負担を注視すべき。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却はM&A後の恒常的な非現金費用であり、毎期発生するため非経常的調整の正当性は限定的。",
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用であり、毎期計上される恒常的な項目である（理由:買収関連無形資産の償却）。",
             "confidence": 0.2
           }
         ]
@@ -389,9 +389,9 @@
     },
     {
       "gaap_eps": 0.7445808286238796,
-      "adjusted_eps": 1.0403225225873798,
+      "adjusted_eps": 0.9174759727871566,
       "gaap_net_income": 103426000.0,
-      "adjusted_net_income": 144506000.0,
+      "adjusted_net_income": 127442000.0,
       "diluted_shares_used": 138905000.0,
       "adjustments": [
         {
@@ -406,22 +406,9 @@
           "category": "買収・統合関連",
           "net_amount": 24016000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 21600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 17064000.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 41080000.0,
+      "net_adjustment_total": 24016000.0,
       "filing_date": "2023-10-31",
       "form": "10-K",
       "sector": null,

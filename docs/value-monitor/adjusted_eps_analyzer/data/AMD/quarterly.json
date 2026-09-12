@@ -1,6 +1,6 @@
 {
   "ticker": "AMD",
-  "last_updated": "2026-09-12T10:13:11.095829",
+  "last_updated": "2026-09-12T16:22:28.639767",
   "quarters": [
     {
       "gaap_eps": 1.38456901748041,
@@ -53,11 +53,11 @@
       },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "調整項目の株式報酬費用（SBC）は恒常的なコストであり、非現金ながら人材確保のための継続的な支出です。市場がGAAP EPS（1.38）で判断する場合、SBC費用により実質的な企業収益力が過小評価され、銘柄の実力を低く見積もる可能性があります。ただしSBCは株式希薄化を伴う実質コストであるため、Adjusted EPS（1.66）を使用すると過大評価リスクが生じます。投資家はSBCの継続性・規模と希薄化効果を注視し、調整の信頼性を慎重に評価すべきです。",
+        "comment": "調整項目はSBC（株式報酬費用）で恒常的なコストであり、AMDのようなテック企業では人材獲得のために毎期発生する非現金費用です。一過性ではなく運用コストの本質を持ちます。市場がGAAP EPS（1.38）を基準に判断する場合、非現金SBCを加算したAdjusted EPS（1.66）の実態が見えにくくなり、企業の実力を過小評価する可能性があります。ただしSBCは株式希薄化を伴うため、調整による過大評価リスクも存在します。投資家は調整幅の持続可能性と希薄化影響を注視し、過大調整による楽観視を避けるべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として加算調整されるが、AMDのようなテック企業では毎期発生する恒常的な報酬コストであり、一過性ではない。",
+            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的な運用コストであり、テック企業の人材確保に不可欠。",
             "confidence": 0.2
           }
         ]
@@ -118,9 +118,9 @@
     },
     {
       "gaap_eps": 0.9235941320293398,
-      "adjusted_eps": 1.267479144671038,
+      "adjusted_eps": 1.5405476390586796,
       "gaap_net_income": 1511000000.0,
-      "adjusted_net_income": 2073595880.6818182,
+      "adjusted_net_income": 2520335937.5,
       "diluted_shares_used": 1636000000.0,
       "adjustments": [
         {
@@ -148,22 +148,9 @@
           "category": "買収・統合関連",
           "net_amount": 558888494.3181819,
           "tax_rate_applied": 0.07315340909090909
-        },
-        {
-          "item_id": "contingent_consideration_fv",
-          "item_name": "偶発対価公正価値変動損益",
-          "amount": -482000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常の買収偶発対価時価変動",
-          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-          "category": "公正価値変動関連",
-          "net_amount": -446740056.8181818,
-          "tax_rate_applied": 0.07315340909090909
         }
       ],
-      "net_adjustment_total": 562595880.6818182,
+      "net_adjustment_total": 1009335937.5,
       "filing_date": "2025-12-27",
       "form": "10-K",
       "sector": "Technology",
@@ -180,26 +167,7 @@
       "fiscal_year": 2025,
       "quarter": 4,
       "tax_expense": -103000000.0,
-      "pretax_income": 1408000000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": -482000000.0,
-              "adjustment_amount": -482000000.0,
-              "net_amount": -446740056.8181818
-            }
-          ],
-          "condition1": "純利益変動213% / 売上変動34% = 6.3倍（閾値5倍）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
-        }
-      }
+      "pretax_income": 1408000000.0
     },
     {
       "gaap_eps": 0.7574649603900061,
@@ -396,9 +364,9 @@
     },
     {
       "gaap_eps": 0.2944410507025046,
-      "adjusted_eps": 0.6748602529427046,
+      "adjusted_eps": 0.6114001887125008,
       "gaap_net_income": 482000000.0,
-      "adjusted_net_income": 1104746234.0672073,
+      "adjusted_net_income": 1000862108.9223638,
       "diluted_shares_used": 1637000000.0,
       "adjustments": [
         {
@@ -426,22 +394,9 @@
           "category": "買収・統合関連",
           "net_amount": 329524913.0938586,
           "tax_rate_applied": 0.44148319814600234
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 186000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 103884125.14484356,
-          "tax_rate_applied": 0.44148319814600234
         }
       ],
-      "net_adjustment_total": 622746234.0672073,
+      "net_adjustment_total": 518862108.9223638,
       "filing_date": "2024-12-28",
       "form": "10-K",
       "sector": "Technology",

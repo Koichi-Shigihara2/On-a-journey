@@ -1,6 +1,6 @@
 {
   "ticker": "SPIR",
-  "last_updated": "2026-09-12T10:17:31.299942",
+  "last_updated": "2026-09-12T16:26:16.021735",
   "quarters": [
     {
       "gaap_eps": -0.5214510696679937,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "調整項目のSBCと無形資産償却費はいずれも恒常的な非現金費用であり、一過性とは言えません。市場がGAAP EPS(-0.52)で評価する場合、非現金項目を加回したAdjusted EPS(-0.43)の企業実力が見えにくくなり、実力を過小評価するリスクがあります。特に成長企業ではSBCが標準的に発生するため、GAAP重視は保守的評価を招きやすい一方、SBCによる株主希薄化を無視すれば過大評価リスクも存在します。投資家は調整後EPSだけでなく、希薄化後株式数やキャッシュ・フローを注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである(毎期発生するSBC)。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連の定期的な非現金償却であり、恒常的に発生する項目である。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -657,7 +668,7 @@
         "derivative_gains_losses",
         "tax_one_time"
       ],
-      "revenue": 97612000.0,
+      "revenue": 27725000.0,
       "diluted_shares": 19580006.0,
       "period_end": "2023-12-31",
       "fiscal_year": 2023,
@@ -826,9 +837,9 @@
     },
     {
       "gaap_eps": -0.5139855602485501,
-      "adjusted_eps": -0.25638306198866323,
+      "adjusted_eps": -0.2640373474222084,
       "gaap_net_income": -8987000.0,
-      "adjusted_net_income": -4482839.122908251,
+      "adjusted_net_income": -4616673.744950952,
       "diluted_shares_used": 17484927.0,
       "adjustments": [
         {
@@ -856,22 +867,9 @@
           "category": "買収・統合関連",
           "net_amount": 1320052.2792844777,
           "tax_rate_applied": 0.037160992498557414
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 139000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 133834.62204270053,
-          "tax_rate_applied": 0.037160992498557414
         }
       ],
-      "net_adjustment_total": 4504160.877091749,
+      "net_adjustment_total": 4370326.255049048,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "Technology",
