@@ -831,6 +831,26 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                     print(f"  [YTD] {adj_tag} Q4 {filing_date}: {q4_val:,.0f} (annual={annual_val:,.0f}, ytd_9m={ytd_9m_val:,.0f})")
                 else:
                     # フォールバック: 同タグのQ1-3合計を減算
+                    # [[EPS-LITE-ANNUAL-AS-QUARTERLY-1]]: Q1〜Q3のいずれにも
+                    # adj_tagの四半期(10-Q)申告が1件も存在しない場合、
+                    # 「未申告（キー自体が無い）」と「申告はあるが実際に0円」を
+                    # 区別できず、q123_sumが常に0になりQ4=年次そのままという
+                    # 誤った値を書き込んでしまう（年次はA、四半期はBという別タグに
+                    # 切り替えている銘柄で発生。revenue系タグ〈us-gaap:Revenues・
+                    # RevenueFromContractWithCustomerExcludingAssessedTax等〉が
+                    # このループに巻き込まれることで顕在化し、LITE・APP等9銘柄で
+                    # 実測確認済み）。少なくとも1四半期でadj_tagの申告キー自体が
+                    # 存在する場合に限り差し引き法を適用し、皆無の場合はこの
+                    # タグへのQ4書き込み自体をスキップする（get_revenue()等の
+                    # 呼び出し元が優先順位に従って他の候補タグへフォールバック
+                    # できるようにするため）。
+                    q1_present = q1_key in quarters_map and adj_tag in quarters_map[q1_key]
+                    q2_present = q2_key in quarters_map and adj_tag in quarters_map[q2_key]
+                    q3_present = q3_key in quarters_map and adj_tag in quarters_map[q3_key]
+                    if not (q1_present or q2_present or q3_present):
+                        print(f"  [SKIP] {adj_tag} Q4 {filing_date}: Q1-Q3にこのタグの四半期申告が"
+                              f"1件も存在しないためスキップ (annual={annual_val:,.0f})")
+                        continue
                     q1_val = normalize_value(quarters_map[q1_key].get(adj_tag)) if q1_key in quarters_map else 0
                     q2_val = normalize_value(quarters_map[q2_key].get(adj_tag)) if q2_key in quarters_map else 0
                     q3_val = normalize_value(quarters_map[q3_key].get(adj_tag)) if q3_key in quarters_map else 0
