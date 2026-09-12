@@ -1,6 +1,6 @@
 {
   "ticker": "APP",
-  "last_updated": "2026-09-07T09:17:30.340013",
+  "last_updated": "2026-09-12T10:13:31.491984",
   "quarters": [
     {
       "gaap_eps": 3.7579273123243855,
@@ -65,17 +65,17 @@
         }
       },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCと無形資産償却の両調整項目は恒常的に発生する費用であり、一過性とはみなせません。SBCは継続的な運用コスト（希薄化効果を含む）であり、無形資産償却も買収の経済的影響を定期的に反映します。市場がGAAP EPS（3.76）を基準に評価する場合、Adjusted EPS（4.04）で示される企業実力が過小評価される可能性がありますが、これらを加算還元した調整は実態を過大に示すリスクが高いです。投資家はSBCの規模推移や買収戦略の持続可能性に注目し、過大評価リスクを警戒すべきです。",
+        "health": "調整中",
+        "comment": "調整項目はSBCと無形資産償却費の両方とも非現金だが恒常的に発生しやすい性質のものであり、一過性とは判断しにくい。市場がGAAP EPS（3.76）を基準に評価する場合、非現金費用を差し引いた利益が低く表示されるため企業の実力が見えにくく、過小評価のリスクが存在する。ただしSBCは株主希薄化を伴う実質的なコストであるため、Adjusted EPS（4.04）を過度に信頼すると過大評価のリスクもある。投資家は調整後のEPSだけでなく、フリーキャッシュフローや継続的なSBCの規模を注視し、経済的実態を多角的に判断すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コスト",
+            "snippet": "株式報酬費用は非現金費用として加算されているが、継続的な人材獲得コストであり恒常的発生の可能性が高い",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で定期的に発生する非現金恒常費用",
+            "snippet": "買収関連無形資産の償却は非現金だが、買収後の一定期間にわたり定期的に発生する費用",
             "confidence": 0.2
           }
         ]
@@ -308,9 +308,9 @@
     },
     {
       "gaap_eps": 1.6713707455969937,
-      "adjusted_eps": 2.404602261286209,
+      "adjusted_eps": 2.420103084202051,
       "gaap_net_income": 576419000.0,
-      "adjusted_net_income": 829294418.6678652,
+      "adjusted_net_income": 834640311.4734349,
       "diluted_shares_used": 344878000.0,
       "adjustments": [
         {
@@ -340,6 +340,19 @@
           "tax_rate_applied": 0.10975973262783655
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 6005000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 5345892.8055698415,
+          "tax_rate_applied": 0.10975973262783655
+        },
+        {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
           "amount": 188943000,
@@ -366,7 +379,7 @@
           "tax_rate_applied": 0.10975973262783655
         }
       ],
-      "net_adjustment_total": 252875418.66786516,
+      "net_adjustment_total": 258221311.47343498,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -387,9 +400,9 @@
     },
     {
       "gaap_eps": 1.7228010856564542,
-      "adjusted_eps": 2.324175652705399,
+      "adjusted_eps": 2.320593049201867,
       "gaap_net_income": 599204000.0,
-      "adjusted_net_income": 808366885.4161594,
+      "adjusted_net_income": 807120827.256803,
       "diluted_shares_used": 347808000.0,
       "adjustments": [
         {
@@ -417,9 +430,22 @@
           "category": "買収・統合関連",
           "net_amount": 115924149.15867947,
           "tax_rate_applied": 0.006333206254943881
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": -1254000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": -1246058.1593563003,
+          "tax_rate_applied": 0.006333206254943881
         }
       ],
-      "net_adjustment_total": 209162885.41615933,
+      "net_adjustment_total": 207916827.25680304,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -546,9 +572,9 @@
     },
     {
       "gaap_eps": 0.6775258469112531,
-      "adjusted_eps": 1.1837870569114008,
+      "adjusted_eps": 1.1847201104765364,
       "gaap_net_income": 236183000.0,
-      "adjusted_net_income": 412663782.1082685,
+      "adjusted_net_income": 412989041.1241113,
       "diluted_shares_used": 348596295.0,
       "adjustments": [
         {
@@ -576,9 +602,22 @@
           "category": "買収・統合関連",
           "net_amount": 92519001.52270056,
           "tax_rate_applied": 0.11853925245852694
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 369000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 325259.0158428036,
+          "tax_rate_applied": 0.11853925245852694
         }
       ],
-      "net_adjustment_total": 176480782.1082685,
+      "net_adjustment_total": 176806041.1241113,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -599,9 +638,9 @@
     },
     {
       "gaap_eps": 0.4750088943680034,
-      "adjusted_eps": 0.95855909262164,
+      "adjusted_eps": 0.9560228631354637,
       "gaap_net_income": 172233000.0,
-      "adjusted_net_income": 347562982.8345878,
+      "adjusted_net_income": 346643373.9214246,
       "diluted_shares_used": 362589000.0,
       "adjustments": [
         {
@@ -629,9 +668,22 @@
           "category": "買収・統合関連",
           "net_amount": 97994123.04938498,
           "tax_rate_applied": 0.12167248026436571
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": -1047000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": -919608.9131632091,
+          "tax_rate_applied": 0.12167248026436571
         }
       ],
-      "net_adjustment_total": 175329982.83458784,
+      "net_adjustment_total": 174410373.92142463,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",

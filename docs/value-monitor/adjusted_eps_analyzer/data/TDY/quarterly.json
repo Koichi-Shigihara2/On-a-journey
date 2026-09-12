@@ -1,6 +1,6 @@
 {
   "ticker": "TDY",
-  "last_updated": "2026-09-07T09:22:06.320980",
+  "last_updated": "2026-09-12T10:18:58.356734",
   "quarters": [
     {
       "gaap_eps": 5.366737739872068,
@@ -49,9 +49,20 @@
       "tax_expense": 69600000.0,
       "pretax_income": 321300000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目のSBCと無形資産償却費はともに恒常的に発生する項目（SBCは毎期の報酬コスト、無形資産償却は買収後の継続的非現金費用）であり、一過性とは言い難い。市場がGAAP EPS（5.37）で判断する場合、Adjusted EPS（6.53）で示される企業の実力が見えにくくなり、実力を過小評価するリスクがある。ただしこれらの調整は実質的な経済的コスト（希薄化効果や買収対価の反映）を無視するため、過大評価のリスクも高く、投資家はフリーキャッシュフローや取得後の統合効果を慎重に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コストであり、実質的な報酬支出としてコア費用に該当",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は買収後も長期的に発生する恒常的非現金費用で、一過性調整とはみなせない",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

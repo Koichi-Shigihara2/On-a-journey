@@ -1,13 +1,13 @@
 {
-  "intrinsic_value_pt": -679016902.1788044,
-  "intrinsic_value_per_share": -1.1515740662236267,
+  "intrinsic_value_pt": -679016902.1788096,
+  "intrinsic_value_per_share": -1.151574066223652,
   "intrinsic_value_beta": 0.19,
   "upside_percent_beta": -98.8,
   "intrinsic_value_rf": -15.88,
   "upside_percent_rf": -203.7,
-  "v0": -679016902.1788044,
+  "v0": -679016902.1788096,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": -679016902.1788044,
+  "v0_adjusted": -679016902.1788096,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -107.5,
-  "calculation_date": "2026-09-12T09:43:23+09:00",
+  "calculation_date": "2026-09-12T10:31:31+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -125,46 +125,46 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": -679016902.1788044,
-    "pv_high_growth": -236342132.54926693,
-    "pv_terminal": -442674769.62953746,
+    "v0": -679016902.1788096,
+    "pv_high_growth": -236342132.54926878,
+    "pv_terminal": -442674769.62954086,
     "high_growth_detail": [
       {
         "year": 1,
-        "fcf": -50687340.53233297,
+        "fcf": -50687340.53233336,
         "discount_factor": 1.147424,
-        "pv": -44174900.06513108
+        "pv": -44174900.065131426
       },
       {
         "year": 2,
-        "fcf": -60128538.06054924,
+        "fcf": -60128538.0605497,
         "discount_factor": 1.316581835776,
-        "pv": -45670186.55935594
+        "pv": -45670186.55935629
       },
       {
         "year": 3,
-        "fcf": -71328285.35347328,
+        "fcf": -71328285.35347383,
         "discount_factor": 1.5106775963334411,
-        "pv": -47216087.3548359
+        "pv": -47216087.35483626
       },
       {
         "year": 4,
-        "fcf": -84614135.90902857,
+        "fcf": -84614135.90902923,
         "discount_factor": 1.7333877302953022,
-        "pv": -48814315.70685781
+        "pv": -48814315.70685819
       },
       {
         "year": 5,
-        "fcf": -100374654.46073462,
+        "fcf": -100374654.4607354,
         "discount_factor": 1.988930683046357,
-        "pv": -50466642.863086216
+        "pv": -50466642.8630866
       }
     ],
-    "terminal_fcf": -103385894.09455666,
-    "terminal_value": -880449431.9266646,
-    "v0_rm": -1186544133.770234,
-    "pv_fcf_rm": -269479760.24386585,
-    "pv_tv_rm": -917064373.5263684
+    "terminal_fcf": -103385894.09455746,
+    "terminal_value": -880449431.9266714,
+    "v0_rm": -1186544133.7702436,
+    "pv_fcf_rm": -269479760.2438679,
+    "pv_tv_rm": -917064373.5263757
   },
   "fcf_base": {
     "base_fcf": 1009087500.0,
@@ -195,9 +195,9 @@
   "fcf_estimation": {
     "applied": true,
     "method": "adj_eps_estimated",
-    "adj_net_income": 155868232.3182974,
+    "adj_net_income": 155868232.3182969,
     "conversion_rate": 0.7,
-    "estimated_fcf": 109107762.62280816,
+    "estimated_fcf": 109107762.62280783,
     "raw_fcf": 1009087500.0,
     "sector": "",
     "note": "調整済み純利益$0.16B（買収・統合関連加算$16Mを検出したが、控除するとdr<=1のため未適用） × 転換率70%[sector()] = 推定FCF$0.11B（従来$1.01Bの0.1倍）",
@@ -285,7 +285,7 @@
   "components": {
     "fcf_5yr_avg": 316185000.0,
     "fcf_2yr_avg": 1009087500.0,
-    "fcf_base_used": -42728570.710525215,
+    "fcf_base_used": -42728570.71052554,
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
@@ -296,7 +296,7 @@
       -101721000
     ],
     "diluted_shares": 378540249,
-    "roe_10yr_avg": -0.42723982028946345,
+    "roe_10yr_avg": -0.4272398202894635,
     "roe_years_used": 7,
     "roe_outlier_adj": true,
     "current_price": 15.319999694824219,
@@ -320,9 +320,9 @@
     "moat_gross_margin_norm": 0.4319,
     "moat_roic_norm": 0.0,
     "moat_fcf_margin_norm": 0.3439,
-    "pv_high": -236342132.54926693,
-    "pv_terminal": -442674769.62953746,
-    "roe_used": -0.42723982028946345,
+    "pv_high": -236342132.54926878,
+    "pv_terminal": -442674769.62954086,
+    "roe_used": -0.4272398202894635,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,

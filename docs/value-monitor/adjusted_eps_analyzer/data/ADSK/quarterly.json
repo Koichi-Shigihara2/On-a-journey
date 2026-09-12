@@ -1,6 +1,6 @@
 {
   "ticker": "ADSK",
-  "last_updated": "2026-09-07T09:21:23.350526",
+  "last_updated": "2026-09-12T10:18:01.415338",
   "quarters": [
     {
       "gaap_eps": 2.3317535545023698,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "SBCと無形資産償却はともに恒常的に発生する非現金費用（SBCは人材確保のための継続コスト、無形資産償却は過去買収の定期的償却）であり、調整によりGAAP EPS 2.33からAdjusted EPS 3.11へ33%上方修正されています。市場がGAAP EPS中心に判断する場合、非現金項目を控除した企業実力が見えにくくなり過小評価の可能性がありますが、恒常的コストを除外したAdjusted EPSは実態を過大表示するリスクが高いです。投資家はSBCの希薄化効果や持続可能性を注視し、過大調整によるバリュエーション歪曲に警戒すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、テック企業の人材獲得に不可欠な継続コストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は過去のM&Aに基づく定期的な非現金費用で、恒常的な性格が強い。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

@@ -1,15 +1,29 @@
 {
   "ticker": "RDW",
-  "last_updated": "2026-09-07T09:19:59.870600",
+  "last_updated": "2026-09-12T10:16:35.681417",
   "quarters": [
     {
       "gaap_eps": -0.185837615208855,
-      "adjusted_eps": -0.185837615208855,
+      "adjusted_eps": -0.18579009653277226,
       "gaap_net_income": -40971000.0,
-      "adjusted_net_income": -40971000.0,
+      "adjusted_net_income": -40960523.71576875,
       "diluted_shares_used": 220466669.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 11000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 10476.284231251118,
+          "tax_rate_applied": 0.04761052443171648
+        }
+      ],
+      "net_adjustment_total": 10476.284231251118,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -25,8 +39,8 @@
       "tax_expense": 1862000.0,
       "pretax_income": -39109000.0,
       "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0,
+        "alert": "SBC寄与率が40%超（現在 37226.9%）",
+        "sbc_contribution": 372.269,
         "sbc_to_revenue": 0.033,
         "sbc_per_share": 0.0177,
         "sector_threshold": {
@@ -35,19 +49,39 @@
         }
       },
       "ai_analysis": {
-        "health": "Excellent",
-        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
-        "sources": []
+        "health": "調整小",
+        "comment": "調整項目はM&A統合費用で一過性の買収統合コストとしてadd_backされており、Adjusted EPSがわずかに改善（-0.18584→-0.18579）。ただし調整額11,000USDの影響は極めて小さく（EPS差約0.00005）、GAAP EPSと実質的に同水準のため市場がGAAPベースで判断していても企業の実力はほぼ正確に把握可能。過小評価リスクは低く、投資家は今後のM&A統合進捗と再発可能性を注視すべき。",
+        "sources": [
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストとしてadd_back。M&A関連費用は通常非経常的と分類され、us-gaap:BusinessCombinationAcquisitionRelatedCostsから抽出。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
       "gaap_eps": -0.3950074919344677,
-      "adjusted_eps": -0.3950074919344677,
+      "adjusted_eps": -0.39480270261594236,
       "gaap_net_income": -76502000.0,
-      "adjusted_net_income": -76502000.0,
+      "adjusted_net_income": -76462337.98658071,
       "diluted_shares_used": 193672276.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 40000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 39662.01341928,
+          "tax_rate_applied": 0.008449664518000026
+        }
+      ],
+      "net_adjustment_total": 39662.01341928,
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -65,11 +99,24 @@
     },
     {
       "gaap_eps": -0.7149903665811899,
-      "adjusted_eps": -0.5071010626230706,
+      "adjusted_eps": -0.5019628802933352,
       "gaap_net_income": -85473000.0,
-      "adjusted_net_income": -60621025.33329713,
+      "adjusted_net_income": -60006785.08783839,
       "diluted_shares_used": 119544268.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 794000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 614240.2454587418,
+          "tax_rate_applied": 0.22639767574465774
+        },
         {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
@@ -97,7 +144,7 @@
           "tax_rate_applied": 0.22639767574465774
         }
       ],
-      "net_adjustment_total": 24851974.66670287,
+      "net_adjustment_total": 25466214.91216161,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -138,11 +185,24 @@
     },
     {
       "gaap_eps": -1.082899502807997,
-      "adjusted_eps": -1.0626927550263456,
+      "adjusted_eps": -0.9236104955846479,
       "gaap_net_income": -96979000.0,
-      "adjusted_net_income": -95169385.91481908,
+      "adjusted_net_income": -82713882.51545341,
       "diluted_shares_used": 89554940.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 16643000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 12455503.399365658,
+          "tax_rate_applied": 0.25160707808894683
+        },
         {
           "item_id": "inventory_writeoff",
           "item_name": "在庫評価損・減損",
@@ -157,7 +217,7 @@
           "tax_rate_applied": 0.25160707808894683
         }
       ],
-      "net_adjustment_total": 1809614.0851809266,
+      "net_adjustment_total": 14265117.484546585,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -175,11 +235,24 @@
     },
     {
       "gaap_eps": -0.04140906101049234,
-      "adjusted_eps": -0.19270186931289107,
+      "adjusted_eps": -0.17152347476071347,
       "gaap_net_income": -2948000.0,
-      "adjusted_net_income": -13718860.0,
+      "adjusted_net_income": -12211124.600638978,
       "diluted_shares_used": 71192148.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 3799000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 3578099.680511182,
+          "tax_rate_applied": 0.058146964856230034
+        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -190,11 +263,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": -10770860.0,
-          "tax_rate_applied": 0.21
+          "net_amount": -12841224.28115016,
+          "tax_rate_applied": 0.058146964856230034
         }
       ],
-      "net_adjustment_total": -10770860.0,
+      "net_adjustment_total": -9263124.600638978,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -221,7 +294,7 @@
               "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
               "xbrl_value": -13634000,
               "adjustment_amount": -13634000,
-              "net_amount": -10770860.0
+              "net_amount": -12841224.28115016
             }
           ],
           "condition1": "FV変動が純利益の462%占有（超高materiality → 条件1スキップ）",
@@ -231,11 +304,24 @@
     },
     {
       "gaap_eps": -1.0154634082661342,
-      "adjusted_eps": -0.49176388257185927,
+      "adjusted_eps": -0.3662560429155122,
       "gaap_net_income": -67169000.0,
-      "adjusted_net_income": -32528290.0,
+      "adjusted_net_income": -24226428.984376125,
       "diluted_shares_used": 66146155.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 385000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 373759.7739525069,
+          "tax_rate_applied": 0.029195392331150906
+        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -246,11 +332,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": 34640710.0,
-          "tax_rate_applied": 0.21
+          "net_amount": 42568811.24167137,
+          "tax_rate_applied": 0.029195392331150906
         }
       ],
-      "net_adjustment_total": 34640710.0,
+      "net_adjustment_total": 42942571.015623875,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -277,7 +363,7 @@
               "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
               "xbrl_value": 43849000,
               "adjustment_amount": 43849000,
-              "net_amount": 34640710.0
+              "net_amount": 42568811.24167137
             }
           ],
           "condition1": "純利益変動710% / 売上変動10% = 74.2倍（閾値5倍）",
@@ -287,12 +373,26 @@
     },
     {
       "gaap_eps": -0.3150341846436114,
-      "adjusted_eps": -0.3150341846436114,
+      "adjusted_eps": -0.298864262423091,
       "gaap_net_income": -20959000.0,
-      "adjusted_net_income": -20959000.0,
+      "adjusted_net_income": -19883226.5876534,
       "diluted_shares_used": 66529288.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 1100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 1075773.4123466008,
+          "tax_rate_applied": 0.022024170593999345
+        }
+      ],
+      "net_adjustment_total": 1075773.4123466008,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -481,11 +581,24 @@
     },
     {
       "gaap_eps": -0.4085785804957127,
-      "adjusted_eps": -0.28051825897411364,
+      "adjusted_eps": -0.24309489955509433,
       "gaap_net_income": -25873000.0,
-      "adjusted_net_income": -17763654.926872507,
+      "adjusted_net_income": -15393842.54690501,
       "diluted_shares_used": 63324416.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 3100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 2369812.3799674986,
+          "tax_rate_applied": 0.23554439355887133
+        },
         {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
@@ -500,7 +613,7 @@
           "tax_rate_applied": 0.23554439355887133
         }
       ],
-      "net_adjustment_total": 8109345.073127492,
+      "net_adjustment_total": 10479157.45309499,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -541,11 +654,24 @@
     },
     {
       "gaap_eps": -1.2228131325063158,
-      "adjusted_eps": -0.6140162709233706,
+      "adjusted_eps": -0.6125604119382074,
       "gaap_net_income": -77028000.0,
-      "adjusted_net_income": -38678391.701391965,
+      "adjusted_net_income": -38586683.571238585,
       "diluted_shares_used": 62992454.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 94000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 91708.13015338239,
+          "tax_rate_applied": 0.024381594112953275
+        },
         {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
@@ -560,7 +686,7 @@
           "tax_rate_applied": 0.024381594112953275
         }
       ],
-      "net_adjustment_total": 38349608.298608035,
+      "net_adjustment_total": 38441316.428761415,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -601,12 +727,26 @@
     },
     {
       "gaap_eps": -0.705216391515084,
-      "adjusted_eps": -0.705216391515084,
+      "adjusted_eps": -0.6629479027734241,
       "gaap_net_income": -31792949.0,
-      "adjusted_net_income": -31792949.0,
+      "adjusted_net_income": -29887377.996490613,
       "diluted_shares_used": 45082544.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 2581000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 1905571.003509386,
+          "tax_rate_applied": 0.2616927533865223
+        }
+      ],
+      "net_adjustment_total": 1905571.003509386,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -680,11 +820,24 @@
     },
     {
       "gaap_eps": -0.1546290322580645,
-      "adjusted_eps": -0.04711366370967742,
+      "adjusted_eps": -0.04024178072070307,
       "gaap_net_income": -5752200.0,
-      "adjusted_net_income": -1752628.29,
+      "adjusted_net_income": -1496994.2428101543,
       "diluted_shares_used": 37200000.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 200000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 161710.38205279582,
+          "tax_rate_applied": 0.19144808973602093
+        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -695,11 +848,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": 3999571.71,
-          "tax_rate_applied": 0.21
+          "net_amount": 4093495.3751370497,
+          "tax_rate_applied": 0.19144808973602093
         }
       ],
-      "net_adjustment_total": 3999571.71,
+      "net_adjustment_total": 4255205.757189846,
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -726,7 +879,7 @@
               "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
               "xbrl_value": 5062749,
               "adjustment_amount": 5062749,
-              "net_amount": 3999571.71
+              "net_amount": 4093495.3751370497
             }
           ],
           "condition1": "FV変動が純利益の88%占有（超高materiality → 条件1スキップ）",
@@ -741,6 +894,19 @@
       "adjusted_net_income": -1406851.0,
       "diluted_shares_used": 37200000.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 2200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 1738000.0,
+          "tax_rate_applied": 0.21
+        },
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",

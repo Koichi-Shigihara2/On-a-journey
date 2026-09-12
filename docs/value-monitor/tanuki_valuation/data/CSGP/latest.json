@@ -1,51 +1,51 @@
 {
-  "intrinsic_value_pt": 4938464268.555738,
-  "intrinsic_value_per_share": 10.090252131765633,
-  "intrinsic_value_beta": 12.86,
-  "upside_percent_beta": -57.8,
-  "intrinsic_value_rf": 79.46,
-  "upside_percent_rf": 160.9,
-  "v0": 4938464268.555738,
+  "intrinsic_value_pt": 4538581962.507418,
+  "intrinsic_value_per_share": 9.327569420075585,
+  "intrinsic_value_beta": 11.87,
+  "upside_percent_beta": -61.0,
+  "intrinsic_value_rf": 73.08,
+  "upside_percent_rf": 139.9,
+  "v0": 4538581962.507418,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 4938464268.555738,
-  "alpha": 0.2043595838070849,
+  "v0_adjusted": 4538581962.507418,
+  "alpha": 0.20435958380708494,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 11.15,
-    "2年後": 12.32,
-    "3年後": 13.61,
-    "4年後": 15.04,
-    "5年後": 16.62
+    "1年後": 10.31,
+    "2年後": 11.39,
+    "3年後": 12.59,
+    "4年後": 13.91,
+    "5年後": 15.37
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 11.15,
+      "future_value": 10.31,
       "value_growth_pct": 10.5,
-      "expected_return_pct": -63.4
+      "expected_return_pct": -66.2
     },
     "2年後": {
-      "future_value": 12.32,
+      "future_value": 11.39,
       "value_growth_pct": 22.1,
-      "expected_return_pct": -59.6
+      "expected_return_pct": -62.6
     },
     "3年後": {
-      "future_value": 13.61,
+      "future_value": 12.59,
       "value_growth_pct": 34.9,
-      "expected_return_pct": -55.3
+      "expected_return_pct": -58.7
     },
     "4年後": {
-      "future_value": 15.04,
+      "future_value": 13.91,
       "value_growth_pct": 49.1,
-      "expected_return_pct": -50.6
+      "expected_return_pct": -54.3
     },
     "5年後": {
-      "future_value": 16.62,
+      "future_value": 15.37,
       "value_growth_pct": 64.7,
-      "expected_return_pct": -45.4
+      "expected_return_pct": -49.5
     }
   },
-  "upside_percent": -66.9,
-  "calculation_date": "2026-09-12T09:40:42+09:00",
+  "upside_percent": -69.4,
+  "calculation_date": "2026-09-12T10:25:16+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -63,19 +63,19 @@
   "sensitivity": {
     "matrix": [
       [
-        10.68,
-        11.86,
-        13.07
+        9.87,
+        10.95,
+        12.06
       ],
       [
-        9.13,
-        10.09,
-        11.06
+        8.44,
+        9.33,
+        10.22
       ],
       [
-        7.99,
-        8.8,
-        9.6
+        7.39,
+        8.14,
+        8.88
       ]
     ],
     "wacc_values": [
@@ -106,15 +106,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.073,
-      "intrinsic_value_per_share": 8.94
+      "intrinsic_value_per_share": 8.27
     },
     "base": {
       "growth_rate": 0.105,
-      "intrinsic_value_per_share": 10.09
+      "intrinsic_value_per_share": 9.33
     },
     "bull": {
       "growth_rate": 0.126,
-      "intrinsic_value_per_share": 10.93
+      "intrinsic_value_per_share": 10.1
     }
   },
   "growth_options": {
@@ -125,46 +125,46 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 4938464268.555738,
-    "pv_high_growth": 942631676.7388629,
-    "pv_terminal": 3995832591.8168755,
+    "v0": 4538581962.507418,
+    "pv_high_growth": 866303954.5664864,
+    "pv_terminal": 3672278007.940932,
     "high_growth_detail": [
       {
         "year": 1,
-        "fcf": 197467318.71906316,
+        "fcf": 181477795.9677625,
         "discount_factor": 1.085579,
-        "pv": 181900459.31163293
+        "pv": 167171431.98953047
       },
       {
         "year": 2,
-        "fcf": 218201387.1845648,
+        "fcf": 200532964.54437757,
         "discount_factor": 1.1784817652410002,
-        "pv": 185154657.13628796
+        "pv": 170162127.62814236
       },
       {
         "year": 3,
-        "fcf": 241112532.8389441,
+        "fcf": 221588925.8215372,
         "discount_factor": 1.2793350562285597,
-        "pv": 188467072.53511557
+        "pv": 173206326.78883553
       },
       {
         "year": 4,
-        "fcf": 266429348.78703323,
+        "fcf": 244855763.0327986,
         "discount_factor": 1.3888192710055438,
-        "pv": 191838747.02007192
+        "pv": 176304986.64921045
       },
       {
         "year": 5,
-        "fcf": 294404430.4096717,
+        "fcf": 270565618.15124243,
         "discount_factor": 1.5076730353989274,
-        "pv": 195270740.73575434
+        "pv": 179459081.51076755
       }
     ],
-    "terminal_fcf": 304708585.4740102,
-    "terminal_value": 6024409052.650512,
-    "v0_rm": 3816545826.103293,
-    "pv_fcf_rm": 905775702.4108925,
-    "pv_tv_rm": 2910770123.6924005
+    "terminal_fcf": 280035414.7865359,
+    "terminal_value": 5536594531.061031,
+    "v0_rm": 3507508630.9171863,
+    "pv_fcf_rm": 832432319.3375689,
+    "pv_tv_rm": 2675076311.5796175
   },
   "fcf_base": {
     "base_fcf": 191016250.0,
@@ -195,16 +195,16 @@
   "fcf_estimation": {
     "applied": true,
     "method": "adj_eps_estimated",
-    "adj_net_income": 255290651.2205083,
+    "adj_net_income": 234618999.31191015,
     "conversion_rate": 0.7,
-    "estimated_fcf": 178703455.8543558,
+    "estimated_fcf": 164233299.5183371,
     "raw_fcf": 191016250.0,
     "sector": "Real_Estate_Ops",
-    "note": "調整済み純利益$0.26B（買収・統合関連加算$85Mを検出したが、控除するとdr<=1のため未適用） × 転換率70%[sector(Real_Estate_Ops)] = 推定FCF$0.18B（従来$0.19Bの0.9倍）",
-    "divergence_ratio": 0.94,
+    "note": "調整済み純利益$0.23B（買収・統合関連加算$130Mの内51%（$66M）を境界帯調整で部分控除後） × 転換率70%[sector(Real_Estate_Ops)] = 推定FCF$0.16B（従来$0.19Bの0.9倍）",
+    "divergence_ratio": 0.86,
     "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 84649836.95139958,
+    "ma_addback_excluded": 65967047.59205137,
+    "ma_addback_detected_but_not_applied": 63978185.042801455,
     "rate_is_sector_default": true
   },
   "software_system_reclassification": {
@@ -285,7 +285,7 @@
   "components": {
     "fcf_5yr_avg": 191016250.0,
     "fcf_2yr_avg": 191800000.0,
-    "fcf_base_used": 178703455.8543558,
+    "fcf_base_used": 164233299.5183371,
     "fcf_base_method": "avg_5yr_recovery",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
@@ -295,7 +295,7 @@
       509865000
     ],
     "diluted_shares": 405197588,
-    "roe_10yr_avg": 0.04865704376359165,
+    "roe_10yr_avg": 0.04865704376359166,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
     "current_price": 30.459999084472656,
@@ -319,9 +319,9 @@
     "moat_gross_margin_norm": 0.7949,
     "moat_roic_norm": 0.0,
     "moat_fcf_margin_norm": 0.1389,
-    "pv_high": 942631676.7388629,
-    "pv_terminal": 3995832591.8168755,
-    "roe_used": 0.04865704376359165,
+    "pv_high": 866303954.5664864,
+    "pv_terminal": 3672278007.940932,
+    "roe_used": 0.04865704376359166,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -329,10 +329,10 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 0.2043595838070849,
+    "alpha_uncapped": 0.20435958380708494,
     "per": 171.72221,
     "per_is_forward": false,
-    "per_adjusted": 37.88,
+    "per_adjusted": 34.4,
     "peg": 0.0961,
     "ps": 3.5221198,
     "ev_ebitda": 31.54,
@@ -350,7 +350,7 @@
     "insider_sell_count": 2,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-08-10",
-    "analyst_vs_iv": 256.8,
+    "analyst_vs_iv": 286.0,
     "max_eps": 0.6614,
     "max_eps_per": 46.1,
     "max_eps_reliability": "HIGH"
@@ -361,11 +361,11 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $3.82B + RPO $0.00B + GO $0.00B) / 0.405B + BS $+0.67/株 = $10.09 (差異0.00%、α=0.204は参考値・P_t未乗算)"
+        "detail": "(V₀ $3.51B + RPO $0.00B + GO $0.00B) / 0.405B + BS $+0.67/株 = $9.33 (差異0.00%、α=0.204は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $0.94B + pv_terminal $4.00B = $4.94B (差異0.00%)"
+        "detail": "2段階: pv_high $0.87B + pv_terminal $3.67B = $4.54B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -381,7 +381,7 @@
   },
   "tanuki_score": "TRIM",
   "funda_score": 90,
-  "score_comment": "割高(-67%超)、FCF黒字、売上成長加速",
+  "score_comment": "割高(-69%超)、FCF黒字、売上成長加速",
   "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": null,

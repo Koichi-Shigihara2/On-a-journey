@@ -1,6 +1,6 @@
 {
   "ticker": "FLYW",
-  "last_updated": "2026-09-07T09:23:24.998400",
+  "last_updated": "2026-09-12T10:20:17.931889",
   "quarters": [
     {
       "gaap_eps": -0.0665580627311416,
@@ -50,16 +50,16 @@
       "pretax_income": -5317000.0,
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "SBCと無形資産償却の両調整項目は恒常的に発生する費用であり、一過性とは判断しにくいため過大調整の可能性が高いです。GAAP EPSが-0.067の赤字である一方、Adjusted EPSが+0.082の黒字となることで、市場がGAAPベースで判断する場合に企業の非現金費用調整後の実力（キャッシュ生成力）が過小評価されるリスクがあります。ただしSBCの株主希薄化効果や買収無形資産の継続的な経済的コストを考慮すると、調整後EPSに過度に依拠すれば過大評価リスクも存在します。投資家は調整の質を慎重に検証し、持続可能性に着目すべきです。",
+        "comment": "調整項目のSBCと無形資産償却はともに恒常的な非現金費用であり、毎期継続的に発生する性質を持つ。GAAP EPSがマイナスである一方、Adjusted EPSがプラスに転じているため、市場がGAAPベースで判断している場合に企業の実力（キャッシュ生成力やコアオペレーション）が過小評価されている可能性がある。ただし恒常的費用を大幅に加算しているため調整後EPSが収益性を過大に見せているリスクが高く、投資家は株主希薄化効果や将来の償却継続負担を慎重に評価すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用ですが、毎期継続して発生する恒常的な報酬コストであり、調整の非経常性は低い",
+            "snippet": "株式報酬費用は恒常的な非現金費用であり、毎期発生する可能性が高い（非一過性）。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に計上される非現金費用で、買収後複数年にわたり恒常的に発生するため一過性とは言えない",
+            "snippet": "無形資産償却費は買収関連の定期的な償却費用で恒常的である（非一過性）。",
             "confidence": 0.2
           }
         ]
@@ -1096,9 +1096,9 @@
     },
     {
       "gaap_eps": -0.22151807827495867,
-      "adjusted_eps": -0.12673020413106803,
+      "adjusted_eps": -0.12495681078880629,
       "gaap_net_income": -23797000.0,
-      "adjusted_net_income": -13614232.712707425,
+      "adjusted_net_income": -13423722.567014392,
       "diluted_shares_used": 107426898.0,
       "adjustments": [
         {
@@ -1128,6 +1128,19 @@
           "tax_rate_applied": 0.04744927153483868
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 190510.14569303227,
+          "tax_rate_applied": 0.04744927153483868
+        },
+        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 53000,
@@ -1141,7 +1154,7 @@
           "tax_rate_applied": 0.04744927153483868
         }
       ],
-      "net_adjustment_total": 10182767.287292575,
+      "net_adjustment_total": 10373277.432985608,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": null,

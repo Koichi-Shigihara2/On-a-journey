@@ -1,13 +1,13 @@
 {
-  "intrinsic_value_pt": 11168111057.235813,
-  "intrinsic_value_per_share": 66.04183659139724,
+  "intrinsic_value_pt": 11168111057.235817,
+  "intrinsic_value_per_share": 66.04183659139726,
   "intrinsic_value_beta": 63.45,
   "upside_percent_beta": -79.9,
   "intrinsic_value_rf": 446.69,
   "upside_percent_rf": 41.4,
-  "v0": 11168111057.235813,
+  "v0": 11168111057.235817,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 11168111057.235813,
+  "v0_adjusted": 11168111057.235817,
   "alpha": 0.6562081288107785,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -79.1,
-  "calculation_date": "2026-09-12T09:42:37+09:00",
+  "calculation_date": "2026-09-12T10:29:41+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -125,52 +125,52 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 11168111057.235813,
-    "pv_high_growth": 3316841990.1697173,
-    "pv_terminal": 7851269067.066095,
+    "v0": 11168111057.235817,
+    "pv_high_growth": 3316841990.1697183,
+    "pv_terminal": 7851269067.066098,
     "high_growth_detail": [
       {
         "year": 1,
-        "fcf": 612285398.0451549,
+        "fcf": 612285398.045155,
         "discount_factor": 1.102166,
-        "pv": 555529201.6312923
+        "pv": 555529201.6312925
       },
       {
         "year": 2,
-        "fcf": 673513937.8496705,
+        "fcf": 673513937.8496706,
         "discount_factor": 1.214769891556,
-        "pv": 554437463.8615433
+        "pv": 554437463.8615434
       },
       {
         "year": 3,
-        "fcf": 740865331.6346376,
+        "fcf": 740865331.6346378,
         "discount_factor": 1.3388780722967102,
-        "pv": 553347871.5980148
+        "pv": 553347871.598015
       },
       {
         "year": 4,
-        "fcf": 814951864.7981014,
+        "fcf": 814951864.7981017,
         "discount_factor": 1.475665889430976,
-        "pv": 552260420.6243128
+        "pv": 552260420.6243129
       },
       {
         "year": 5,
-        "fcf": 896447051.2779117,
+        "fcf": 896447051.2779119,
         "discount_factor": 1.626428770690581,
-        "pv": 551175106.732329
+        "pv": 551175106.7323292
       },
       {
         "year": 6,
-        "fcf": 986091756.405703,
+        "fcf": 986091756.4057032,
         "discount_factor": 1.7925944924769548,
-        "pv": 550091925.7222252
+        "pv": 550091925.7222253
       }
     ],
-    "terminal_fcf": 1015674509.097874,
-    "terminal_value": 14074141688.577362,
-    "v0_rm": 11530049703.447723,
-    "pv_fcf_rm": 3339738534.791754,
-    "pv_tv_rm": 8190311168.655969
+    "terminal_fcf": 1015674509.0978743,
+    "terminal_value": 14074141688.577366,
+    "v0_rm": 11530049703.447725,
+    "pv_fcf_rm": 3339738534.7917547,
+    "pv_tv_rm": 8190311168.655971
   },
   "fcf_base": {
     "base_fcf": 693228250.0,
@@ -201,16 +201,16 @@
   "fcf_estimation": {
     "applied": true,
     "method": "adj_eps_estimated",
-    "adj_net_income": 795175841.6170843,
+    "adj_net_income": 795175841.6170844,
     "conversion_rate": 0.7,
-    "estimated_fcf": 556623089.131959,
+    "estimated_fcf": 556623089.1319591,
     "raw_fcf": 693228250.0,
     "sector": "",
     "note": "調整済み純利益$0.80B（買収・統合関連加算$105Mを検出したが、控除するとdr<=1のため未適用） × 転換率70%[sector()] = 推定FCF$0.56B（従来$0.69Bの0.8倍）",
     "divergence_ratio": 0.8,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 104790841.61708432,
+    "ma_addback_detected_but_not_applied": 104790841.61708434,
     "rate_is_sector_default": true
   },
   "software_system_reclassification": {
@@ -309,7 +309,7 @@
   "components": {
     "fcf_5yr_avg": 693228250.0,
     "fcf_2yr_avg": 906359500.0,
-    "fcf_base_used": 556623089.131959,
+    "fcf_base_used": 556623089.1319591,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
@@ -343,8 +343,8 @@
     "moat_gross_margin_norm": 0.3969,
     "moat_roic_norm": null,
     "moat_fcf_margin_norm": 0.5429,
-    "pv_high": 3316841990.1697173,
-    "pv_terminal": 7851269067.066095,
+    "pv_high": 3316841990.1697183,
+    "pv_terminal": 7851269067.066098,
     "roe_used": 0.15624003066923298,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,

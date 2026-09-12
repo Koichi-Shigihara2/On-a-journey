@@ -1,6 +1,6 @@
 {
   "ticker": "FICO",
-  "last_updated": "2026-09-07T09:22:27.264054",
+  "last_updated": "2026-09-12T10:19:28.857653",
   "quarters": [
     {
       "gaap_eps": 10.446725102409372,
@@ -49,20 +49,9 @@
       "tax_expense": 77487000.0,
       "pretax_income": 314659000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整であるSBC（株式報酬費用）は恒常的な報酬コストであり一過性ではないため、Adjusted EPSは実力を過大に見せている可能性が高い。市場がGAAP EPSで判断する場合、非現金費用として実態が歪められ企業の実力が見えにくくなっているが、SBCの全額加算は過大評価リスクを高める。貸倒引当金の異常分は一時的だが金額が極小で影響は無視できる。投資家はSBCの経済的実態を慎重に分析し、過大評価を避けるべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが企業が継続的に発生させる恒常的な報酬コストであり、毎期のコア費用に該当する",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響で異常変動分のみ調整対象",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

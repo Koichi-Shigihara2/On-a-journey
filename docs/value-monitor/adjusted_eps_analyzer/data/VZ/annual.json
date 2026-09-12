@@ -1,16 +1,29 @@
 {
   "ticker": "VZ",
-  "last_updated": "2026-09-07T09:23:36.648163",
+  "last_updated": "2026-09-12T10:20:59.183801",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": 17174000000.0,
-      "adjusted_net_income": 18995984106.41809,
+      "adjusted_net_income": 19066881320.24771,
       "diluted_shares_used": 4229500000.0,
       "gaap_eps": 4.060527249083816,
-      "adjusted_eps": 4.491307271880386,
+      "adjusted_eps": 4.508069823914815,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 39000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 30810000.0,
+          "tax_rate_applied": 0.21
+        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -23,6 +36,19 @@
           "category": "金融関連",
           "net_amount": 581440000.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 52000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 40087213.82962155,
+          "tax_rate_applied": 0.22909204173804704
         },
         {
           "item_id": "loan_loss_provision_abnormal",
@@ -64,7 +90,7 @@
           "tax_rate_applied": 0.23394567436018213
         }
       ],
-      "net_adjustment_total": 1821984106.418089
+      "net_adjustment_total": 1892881320.2477105
     },
     {
       "year": "2024",
@@ -128,7 +154,7 @@
           "tax_rate_applied": 0.22720403022670024
         }
       ],
-      "net_adjustment_total": 1827933698.9694583
+      "net_adjustment_total": 1827933698.9694586
     },
     {
       "year": "2023",

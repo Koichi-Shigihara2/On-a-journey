@@ -1,6 +1,6 @@
 {
   "ticker": "PAYS",
-  "last_updated": "2026-09-07T09:21:35.777310",
+  "last_updated": "2026-09-12T10:18:29.996682",
   "quarters": [
     {
       "gaap_eps": 0.10901942897431569,
@@ -49,20 +49,9 @@
       "tax_expense": 1148582.0,
       "pretax_income": 7905119.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の株式報酬費用と無形資産償却費はともに恒常的に発生する項目（非現金だが継続コスト）であり、一過性とは判断しにくいです。市場がGAAP EPS（0.109）のみで判断する場合、非現金項目を加算したAdjusted EPS（0.156）の企業実力が見えにくくなり、銘柄の真の実力を過小評価している可能性があります。ただしこれらが毎期発生する性質上、調整後EPSを過度に信頼すると過大評価リスクもあるため、投資家はフリーキャッシュフローやSBCの希薄化効果、買収戦略の持続可能性に注目すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされていますが、毎期発生する恒常的なコストです（criteria: 0.2レベル）。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の償却としてadd_backされていますが、定期的に発生する恒常的非現金費用です（criteria: 0.2レベル）。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

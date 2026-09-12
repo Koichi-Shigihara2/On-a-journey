@@ -1,7 +1,86 @@
 {
   "ticker": "IOT",
-  "last_updated": "2026-09-07T09:19:05.416988",
+  "last_updated": "2026-09-12T10:15:23.856299",
   "quarters": [
+    {
+      "gaap_eps": 0.027507149813952032,
+      "adjusted_eps": 0.1845642032185609,
+      "gaap_net_income": 16242000.0,
+      "adjusted_net_income": 108978640.42443949,
+      "diluted_shares_used": 590464665.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 96385000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "category": "株式報酬関連",
+          "net_amount": 89308298.81909977,
+          "tax_rate_applied": 0.07342118774602088
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 3428341.6053397227,
+          "tax_rate_applied": 0.07342118774602088
+        }
+      ],
+      "net_adjustment_total": 92736640.42443949,
+      "filing_date": "2026-08-01",
+      "form": "10-Q",
+      "sector": "Technology",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing",
+        "fx_gains_losses",
+        "derivative_gains_losses",
+        "tax_one_time"
+      ],
+      "revenue": 508437000.0,
+      "diluted_shares": 590464665.0,
+      "period_end": "2026-08-01",
+      "fiscal_year": 2027,
+      "quarter": 2,
+      "tax_expense": 1287000.0,
+      "pretax_income": 17529000.0,
+      "maturity_monitor": {
+        "alert": "SBC寄与率が40%超（現在 103.9%）",
+        "sbc_contribution": 1.039,
+        "sbc_to_revenue": 0.19,
+        "sbc_per_share": 0.1632,
+        "sector_threshold": {
+          "sbc_contribution": 0.4,
+          "sbc_to_revenue": 0.25
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整によりGAAP EPS 0.0275からAdjusted EPS 0.1846へ大幅に上方修正されており、市場がGAAPベースで評価している場合に企業の実力（特に非現金費用の調整後収益力）が見えにくくなり、過小評価のリスクが存在する。SBCは恒常的な報酬コストのため調整の正当性に留意すべきだが、異常貸倒引当金はマクロ一時要因と見なせ、全体として投資家は希薄化効果も含めた持続的EPSを注視する必要がある。過大評価リスクはSBCの恒常性から中程度。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが、従業員報酬として毎期発生する恒常的な株式報酬であり、調整により持続的利益を過大に見せる可能性がある（reason: 非現金費用、category: 株式報酬関連）",
+            "confidence": 0.25
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分をadd_back。貸倒引当金の非経常的変動と判断（reason: マクロ変動による一時的影響、category: 金融関連）",
+            "confidence": 0.75
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.07573581033108091,
       "adjusted_eps": 0.19983529834491967,
@@ -53,33 +132,7 @@
       "fiscal_year": 2027,
       "quarter": 1,
       "tax_expense": 4419000.0,
-      "pretax_income": 48927000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 106.2%）",
-        "sbc_contribution": 1.062,
-        "sbc_to_revenue": 0.162,
-        "sbc_per_share": 0.1318,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整が恒常的なSBCであるため、Adjusted EPSがGAAPの約2.6倍に跳ね上がっており、調整の妥当性に疑問。市場がGAAP EPSで判断する場合に企業の実力（調整後ベース）が過小評価される可能性はあるが、SBCは毎期発生する実質コストであり過大評価リスクが高い。投資家は株主希薄化の影響と異常貸倒の再発リスクを注視し、持続的収益力を慎重に見極めるべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業で恒常的に発生する報酬コストであり、株主希薄化を伴う恒常的性質が強い。",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響としてadd_backされており、非経常的とみなせる。",
-            "confidence": 0.6
-          }
-        ]
-      }
+      "pretax_income": 48927000.0
     },
     {
       "gaap_eps": 0.03842833012244274,
@@ -891,59 +944,6 @@
       "pretax_income": -70265000.0
     },
     {
-      "gaap_eps": -0.9107294042597024,
-      "adjusted_eps": -0.07824073002776184,
-      "gaap_net_income": -252767000.0,
-      "adjusted_net_income": -21715203.78547895,
-      "diluted_shares_used": 277543471.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 224735000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 223686326.5869877,
-          "tax_rate_applied": 0.004666266549546291
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 7400000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 7365469.627533358,
-          "tax_rate_applied": 0.004666266549546291
-        }
-      ],
-      "net_adjustment_total": 231051796.21452105,
-      "filing_date": "2022-01-29",
-      "form": "10-K",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 125752000.0,
-      "diluted_shares": 277543471.0,
-      "period_end": "2022-01-29",
-      "fiscal_year": 2022,
-      "quarter": 4,
-      "tax_expense": 1174000.0,
-      "pretax_income": -251593000.0
-    },
-    {
       "gaap_eps": -0.1314607902675095,
       "adjusted_eps": -0.12651658836492286,
       "gaap_net_income": -32446000.0,
@@ -958,7 +958,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 1220284.5776667593,
           "tax_rate_applied": 0.0005859314768557067
@@ -982,86 +982,6 @@
       "quarter": 3,
       "tax_expense": 19000.0,
       "pretax_income": -32427000.0
-    },
-    {
-      "gaap_eps": -0.12736061766128234,
-      "adjusted_eps": -0.12208966673063452,
-      "gaap_net_income": -31373000.0,
-      "adjusted_net_income": -30074595.936139334,
-      "diluted_shares_used": 246332034.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1314000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1298404.0638606676,
-          "tax_rate_applied": 0.011869053378487341
-        }
-      ],
-      "net_adjustment_total": 1298404.0638606676,
-      "filing_date": "2021-07-31",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 101043000.0,
-      "diluted_shares": 246332034.0,
-      "period_end": "2021-07-31",
-      "fiscal_year": 2022,
-      "quarter": 2,
-      "tax_expense": 368000.0,
-      "pretax_income": -31005000.0
-    },
-    {
-      "gaap_eps": -0.15673928526037756,
-      "adjusted_eps": -0.15081436248907498,
-      "gaap_net_income": -38438000.0,
-      "adjusted_net_income": -36985000.0,
-      "diluted_shares_used": 245235264.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1453000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1453000.0,
-          "tax_rate_applied": 0.0
-        }
-      ],
-      "net_adjustment_total": 1453000.0,
-      "filing_date": "2021-05-01",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 87731000.0,
-      "diluted_shares": 245235264.0,
-      "period_end": "2021-05-01",
-      "fiscal_year": 2022,
-      "quarter": 1,
-      "tax_expense": 0,
-      "pretax_income": -38438000.0
     }
   ]
 }

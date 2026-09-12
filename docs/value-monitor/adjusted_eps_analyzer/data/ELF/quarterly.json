@@ -1,6 +1,6 @@
 {
   "ticker": "ELF",
-  "last_updated": "2026-09-07T09:18:36.848187",
+  "last_updated": "2026-09-12T10:14:47.046004",
   "quarters": [
     {
       "gaap_eps": 1.1150461072628515,
@@ -49,20 +49,9 @@
       "tax_expense": 27703000.0,
       "pretax_income": 94302000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCと無形資産償却はいずれも恒常的に発生する項目であり、一過性とは言えません。SBCは人材獲得のための継続コスト、無形資産償却は買収後の定期的非現金費用です。市場がGAAP EPS（1.12程度）で判断する場合、非現金項目を控除した保守的な数字を見ているため企業の実力（特にキャッシュ生成力）が過小評価されている可能性がありますが、SBCの株主希薄化効果を無視した調整後EPS（1.48）に依拠すると過大評価リスクが高まります。投資家は調整の持続可能性とFCFへの影響を注視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "毎期発生する株式報酬費用であり、恒常的な非現金コスト。非一過性で調整の妥当性に疑問。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の定期的な償却費で、複数年にわたり恒常的に発生。非一過性。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -222,6 +211,19 @@
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
           "net_amount": 7031000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 3600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 2844000.0,
           "tax_rate_applied": 0.21
         },
         {

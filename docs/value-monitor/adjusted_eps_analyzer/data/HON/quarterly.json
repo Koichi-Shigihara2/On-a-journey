@@ -1,12 +1,12 @@
 {
   "ticker": "HON",
-  "last_updated": "2026-09-07T09:22:03.310548",
+  "last_updated": "2026-09-12T10:18:51.113235",
   "quarters": [
     {
       "gaap_eps": 17.83427495291902,
-      "adjusted_eps": 18.168360544323566,
+      "adjusted_eps": 18.180643102831084,
       "gaap_net_income": 5682000000.0,
-      "adjusted_net_income": 5788439669.421488,
+      "adjusted_net_income": 5792352892.561983,
       "diluted_shares_used": 318600000.0,
       "adjustments": [
         {
@@ -36,6 +36,19 @@
           "tax_rate_applied": 0.21735537190082643
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 5000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 3913223.140495868,
+          "tax_rate_applied": 0.21735537190082643
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 71000000,
@@ -49,7 +62,7 @@
           "tax_rate_applied": 0.21735537190082643
         }
       ],
-      "net_adjustment_total": 106439669.4214876,
+      "net_adjustment_total": 110352892.56198347,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
@@ -63,21 +76,26 @@
       "pretax_income": 7260000000.0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目には恒常的なSBC（株式報酬）と無形資産償却が含まれる一方、リストラは一過性であるため、全体として調整の影響は中程度。市場がGAAP EPSのみで判断する場合、非現金・一時的費用を控除した企業の実力（調整後EPS18.17）が把握しにくく、実力を過小評価するリスクがある。投資家はリストラの反復性とSBCの希薄化効果に注目すべきで、過小評価の可能性はあるが恒常的項目の調整依存度に注意。",
+        "comment": "調整項目には恒常的なSBC・無形資産償却（毎期発生する非現金費用）と一過性のM&A統合・リストラ費用が混在。市場がGAAP EPSのみで判断する場合、非現金項目を加回した真の実力（調整後EPS18.18）が把握しにくく、企業の実力をやや過小評価している可能性がある。ただし恒常的項目の調整が含まれるためAdjusted EPSが過大評価されるリスクもあり、投資家は各調整の持続可能性を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが恒常的に発生する経営コストであり、毎期の調整項目として実質的な負担を反映",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に利用する恒常的な運用コストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金だが、買収の経済的コストを表す可能性が高く、恒常的に発生する",
+            "snippet": "買収関連無形資産の償却は過去のM&Aに基づく継続的な非現金費用で恒常的性質が強い。",
             "confidence": 0.2
           },
           {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は買収後の統合プロセスに関わる一過性のコスト。",
+            "confidence": 0.8
+          },
+          {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用であり、非経常的な調整として加算される",
+            "snippet": "リストラ費用は事業再編に伴う一時的な非経常的費用。",
             "confidence": 0.8
           }
         ]
@@ -85,9 +103,9 @@
     },
     {
       "gaap_eps": 1.2860275689223057,
-      "adjusted_eps": 1.6526582355010333,
+      "adjusted_eps": 1.6568885893461724,
       "gaap_net_income": 821000000.0,
-      "adjusted_net_income": 1055057017.5438597,
+      "adjusted_net_income": 1057757675.4385965,
       "diluted_shares_used": 638400000.0,
       "adjustments": [
         {
@@ -117,6 +135,19 @@
           "tax_rate_applied": 0.09978070175438597
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 3000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 2700657.8947368423,
+          "tax_rate_applied": 0.09978070175438597
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 50000000,
@@ -130,7 +161,7 @@
           "tax_rate_applied": 0.09978070175438597
         }
       ],
-      "net_adjustment_total": 234057017.54385966,
+      "net_adjustment_total": 236757675.43859652,
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": null,
@@ -145,9 +176,9 @@
     },
     {
       "gaap_eps": -0.17890479153702551,
-      "adjusted_eps": 1.0759023024268823,
+      "adjusted_eps": 1.099253266957063,
       "gaap_net_income": -115000000.0,
-      "adjusted_net_income": 691590000.0,
+      "adjusted_net_income": 706600000.0,
       "diluted_shares_used": 642800000.0,
       "adjustments": [
         {
@@ -177,6 +208,19 @@
           "tax_rate_applied": 0.21
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 19000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 15010000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
           "amount": 724000000.0,
@@ -203,7 +247,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 806590000.0,
+      "net_adjustment_total": 821600000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -218,9 +262,9 @@
     },
     {
       "gaap_eps": 2.8569192235441454,
-      "adjusted_eps": 3.1637638385043254,
+      "adjusted_eps": 3.180738221459569,
       "gaap_net_income": 1825000000.0,
-      "adjusted_net_income": 2021012340.0365632,
+      "adjusted_net_income": 2031855575.868373,
       "diluted_shares_used": 638800000.0,
       "adjustments": [
         {
@@ -250,6 +294,19 @@
           "tax_rate_applied": 0.16590493601462522
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 13000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 10843235.831809873,
+          "tax_rate_applied": 0.16590493601462522
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 58000000,
@@ -263,7 +320,7 @@
           "tax_rate_applied": 0.16590493601462522
         }
       ],
-      "net_adjustment_total": 196012340.0365631,
+      "net_adjustment_total": 206855575.86837298,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": null,
@@ -278,9 +335,9 @@
     },
     {
       "gaap_eps": 4.898595943837753,
-      "adjusted_eps": 5.471088964837535,
+      "adjusted_eps": 5.484591158729039,
       "gaap_net_income": 1570000000.0,
-      "adjusted_net_income": 1753484013.2304301,
+      "adjusted_net_income": 1757811466.372657,
       "diluted_shares_used": 320500000.0,
       "adjustments": [
         {
@@ -310,6 +367,19 @@
           "tax_rate_applied": 0.1345093715545755
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 5000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 4327453.142227123,
+          "tax_rate_applied": 0.1345093715545755
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 21000000,
@@ -323,7 +393,7 @@
           "tax_rate_applied": 0.1345093715545755
         }
       ],
-      "net_adjustment_total": 183484013.23043,
+      "net_adjustment_total": 187811466.37265712,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": null,
@@ -338,9 +408,9 @@
     },
     {
       "gaap_eps": 2.223415682062299,
-      "adjusted_eps": 2.50470589486446,
+      "adjusted_eps": 2.5120439004158204,
       "gaap_net_income": 1449000000.0,
-      "adjusted_net_income": 1632316831.6831684,
+      "adjusted_net_income": 1637099009.90099,
       "diluted_shares_used": 651700000.0,
       "adjustments": [
         {
@@ -370,6 +440,19 @@
           "tax_rate_applied": 0.20297029702970298
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 6000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 4782178.217821782,
+          "tax_rate_applied": 0.20297029702970298
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 36000000,
@@ -383,7 +466,7 @@
           "tax_rate_applied": 0.20297029702970298
         }
       ],
-      "net_adjustment_total": 183316831.68316832,
+      "net_adjustment_total": 188099009.9009901,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": null,
@@ -398,9 +481,9 @@
     },
     {
       "gaap_eps": 1.9609339233938654,
-      "adjusted_eps": 2.2779948115367006,
+      "adjusted_eps": 2.290050358614375,
       "gaap_net_income": 1285000000.0,
-      "adjusted_net_income": 1492770000.0,
+      "adjusted_net_income": 1500670000.0,
       "diluted_shares_used": 655300000.0,
       "adjustments": [
         {
@@ -430,6 +513,19 @@
           "tax_rate_applied": 0.21
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 10000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 7900000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 82000000,
@@ -443,7 +539,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 207770000.0,
+      "net_adjustment_total": 215670000.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
@@ -458,9 +554,9 @@
     },
     {
       "gaap_eps": 2.1602201498241858,
-      "adjusted_eps": 2.4222446575690517,
+      "adjusted_eps": 2.4341009701366922,
       "gaap_net_income": 1413000000.0,
-      "adjusted_net_income": 1584390230.5159166,
+      "adjusted_net_income": 1592145444.5664105,
       "diluted_shares_used": 654100000.0,
       "adjustments": [
         {
@@ -490,6 +586,19 @@
           "tax_rate_applied": 0.22447859495060374
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 10000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 7755214.050493963,
+          "tax_rate_applied": 0.22447859495060374
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 56000000,
@@ -503,7 +612,7 @@
           "tax_rate_applied": 0.22447859495060374
         }
       ],
-      "net_adjustment_total": 171390230.5159166,
+      "net_adjustment_total": 179145444.56641054,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": null,
@@ -518,9 +627,9 @@
     },
     {
       "gaap_eps": 2.3601345154387037,
-      "adjusted_eps": 2.5758975789032226,
+      "adjusted_eps": 2.6024159442452306,
       "gaap_net_income": 1544000000.0,
-      "adjusted_net_income": 1685152196.1184883,
+      "adjusted_net_income": 1702500510.7252297,
       "diluted_shares_used": 654200000.0,
       "adjustments": [
         {
@@ -550,6 +659,19 @@
           "tax_rate_applied": 0.21144024514811033
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 22000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 17348314.606741574,
+          "tax_rate_applied": 0.21144024514811033
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 39000000,
@@ -563,7 +685,7 @@
           "tax_rate_applied": 0.21144024514811033
         }
       ],
-      "net_adjustment_total": 141152196.11848825,
+      "net_adjustment_total": 158500510.72522983,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": null,
@@ -578,9 +700,9 @@
     },
     {
       "gaap_eps": 2.228144989339019,
-      "adjusted_eps": 2.434299340154679,
+      "adjusted_eps": 2.4366964837688143,
       "gaap_net_income": 1463000000.0,
-      "adjusted_net_income": 1598360946.745562,
+      "adjusted_net_income": 1599934911.2426035,
       "diluted_shares_used": 656600000.0,
       "adjustments": [
         {
@@ -610,6 +732,19 @@
           "tax_rate_applied": 0.21301775147928995
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 2000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 1573964.49704142,
+          "tax_rate_applied": 0.21301775147928995
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 49000000,
@@ -623,7 +758,7 @@
           "tax_rate_applied": 0.21301775147928995
         }
       ],
-      "net_adjustment_total": 135360946.74556214,
+      "net_adjustment_total": 136934911.24260354,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": null,
@@ -698,9 +833,9 @@
     },
     {
       "gaap_eps": 2.269865067466267,
-      "adjusted_eps": 2.5157863591093568,
+      "adjusted_eps": 2.522713719437331,
       "gaap_net_income": 1514000000.0,
-      "adjusted_net_income": 1678029501.525941,
+      "adjusted_net_income": 1682650050.8646998,
       "diluted_shares_used": 667000000.0,
       "adjustments": [
         {
@@ -730,6 +865,19 @@
           "tax_rate_applied": 0.2299084435401831
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 6000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 4620549.338758901,
+          "tax_rate_applied": 0.2299084435401831
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 87000000,
@@ -743,7 +891,7 @@
           "tax_rate_applied": 0.2299084435401831
         }
       ],
-      "net_adjustment_total": 164029501.525941,
+      "net_adjustment_total": 168650050.8646999,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": null,
@@ -758,9 +906,9 @@
     },
     {
       "gaap_eps": 2.2187406744255447,
-      "adjusted_eps": 2.4265274994907937,
+      "adjusted_eps": 2.4277014363555693,
       "gaap_net_income": 1487000000.0,
-      "adjusted_net_income": 1626258730.15873,
+      "adjusted_net_income": 1627045502.6455026,
       "diluted_shares_used": 670200000.0,
       "adjustments": [
         {
@@ -790,6 +938,19 @@
           "tax_rate_applied": 0.21322751322751324
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 1000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 786772.4867724868,
+          "tax_rate_applied": 0.21322751322751324
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 66000000,
@@ -803,7 +964,7 @@
           "tax_rate_applied": 0.21322751322751324
         }
       ],
-      "net_adjustment_total": 139258730.15873015,
+      "net_adjustment_total": 140045502.64550266,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": null,

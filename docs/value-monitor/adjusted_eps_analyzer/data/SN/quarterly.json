@@ -1,6 +1,6 @@
 {
   "ticker": "SN",
-  "last_updated": "2026-09-07T09:24:19.631185",
+  "last_updated": "2026-09-12T10:21:39.349375",
   "quarters": [
     {
       "gaap_eps": 0.9173820687634169,
@@ -62,25 +62,9 @@
       "tax_expense": 33877000.0,
       "pretax_income": 163693000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の主力であるsbc（株式報酬費用）とamortization_intangibles（無形資産償却費）は恒常的に発生する項目であり、一過性とは言い難い（SBCは株主希薄化を伴う実質コスト）。loan_loss_provision_abnormalはマクロ変動による一時的項目と見られる。市場がGAAP EPSで判断する場合、非現金調整により企業の実力（キャッシュ稼得力）が過小評価されている可能性がある。ただし恒常的項目の加算はAdjusted EPSを過大に表示するため、過大評価リスクも存在。投資家はSBCの継続規模・希薄化効果と買収由来の償却継続性を注視すべきであり、調整依存の評価は慎重に扱う必要がある。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが恒常的な株式報酬費用であり、毎期発生するコスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で継続的に発生する非現金費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分を調整",
-            "confidence": 0.75
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

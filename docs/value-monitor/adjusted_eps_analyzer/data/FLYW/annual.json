@@ -1,6 +1,6 @@
 {
   "ticker": "FLYW",
-  "last_updated": "2026-09-07T09:23:25.000517",
+  "last_updated": "2026-09-12T10:20:17.933724",
   "years": [
     {
       "year": "2025",
@@ -394,10 +394,10 @@
       "year": "2023",
       "filing_date": "2023-12-31",
       "gaap_net_income": -8566000.0,
-      "adjusted_net_income": 40364020.78485221,
+      "adjusted_net_income": 40364020.7848522,
       "diluted_shares_used": 115307409.0,
       "gaap_eps": -0.07428837465249089,
-      "adjusted_eps": 0.35005574346789986,
+      "adjusted_eps": 0.3500557434678998,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -569,16 +569,16 @@
           "tax_rate_applied": 0.12767911818738517
         }
       ],
-      "net_adjustment_total": 48930020.78485221
+      "net_adjustment_total": 48930020.7848522
     },
     {
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": -39347000.0,
-      "adjusted_net_income": -9711722.638522573,
+      "adjusted_net_income": -9521212.492829535,
       "diluted_shares_used": 107506955.0,
       "gaap_eps": -0.36599492563062547,
-      "adjusted_eps": -0.09033576142606377,
+      "adjusted_eps": -0.08856368867325407,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -711,6 +711,19 @@
           "tax_rate_applied": 0.04744927153483868
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 190510.14569303227,
+          "tax_rate_applied": 0.04744927153483868
+        },
+        {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 53000,
@@ -763,7 +776,7 @@
           "tax_rate_applied": 0.05181884133070785
         }
       ],
-      "net_adjustment_total": 29635277.361477427
+      "net_adjustment_total": 29825787.507170465
     }
   ]
 }

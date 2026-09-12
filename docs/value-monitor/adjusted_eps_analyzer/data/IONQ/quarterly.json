@@ -1,12 +1,12 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-09-07T09:19:02.426273",
+  "last_updated": "2026-09-12T10:15:16.352289",
   "quarters": [
     {
       "gaap_eps": -5.080070633397915,
-      "adjusted_eps": -0.12817777024041405,
+      "adjusted_eps": -0.09971129278690728,
       "gaap_net_income": -1867742000.0,
-      "adjusted_net_income": -47125920.5276525,
+      "adjusted_net_income": -36659917.322416544,
       "diluted_shares_used": 367660636.0,
       "adjustments": [
         {
@@ -36,6 +36,19 @@
           "tax_rate_applied": 0.0032377899775270585
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 10500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 10466003.205235966,
+          "tax_rate_applied": 0.0032377899775270585
+        },
+        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": 1649115000,
@@ -49,7 +62,7 @@
           "tax_rate_applied": 0.0032377899775270585
         }
       ],
-      "net_adjustment_total": 1820616079.4723475,
+      "net_adjustment_total": 1831082082.6775835,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -87,8 +100,8 @@
         }
       },
       "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 81.8%）",
-        "sbc_contribution": 0.818,
+        "alert": "SBC寄与率が40%超（現在 77.3%）",
+        "sbc_contribution": 0.773,
         "sbc_to_revenue": 1.808,
         "sbc_per_share": 0.3936,
         "sector_threshold": {
@@ -98,31 +111,36 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "ワラント公正価値変動の巨額調整（16億ドル超）がGAAP EPSを-5.08から-0.13へ大幅に改善させており、この非現金・非経常項目により市場がGAAPベースで判断する場合、IONQの量子コンピューティング事業の実力（技術進捗や運用基盤）を強く過小評価している可能性が高い。SBCと無形資産償却は恒常的に発生しやすい項目のため調整の持続可能性に注意が必要。投資家は調整後EPSの裏付けとなるキャッシュフローや事業マイルストーンを重点的に検証すべきで、過小評価リスクが大きい一方、SBCの過大調整による過大評価リスクも潜む。",
+        "comment": "主にwarrant_fv_changeの巨額（16億超）非現金・非経常変動がGAAP EPSを-5.08まで大幅に悪化させており、市場がGAAPベースで評価する場合、IONQのコア実力（調整後EPS約-0.1）が強く隠蔽され過小評価されている可能性が高い。SBCと無形資産償却は恒常的性格が強く毎期発生する一方、M&A統合費用は一過性。投資家はSBCの継続的な希薄化効果と事業進捗に注目すべきで、調整依存が強いため過小評価の機会がある半面、恒常コストの排除による過大評価リスクも存在する。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが成長企業では毎期継続的に発生する恒常的コストであり、調整の完全な一過性は低い",
+            "snippet": "株式報酬費用は非現金費用だが、量子コンピューティングなどの成長企業では恒常的に発生する運用コストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金項目だが、償却期間を通じて恒常的に計上される性質を持つ",
-            "confidence": 0.25
+            "snippet": "買収関連無形資産の償却は非現金だが、買収後複数期にわたって定期的に計上される費用である。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は一過性の買収統合コストであり、取引完了後の非経常項目として調整に適する。",
+            "confidence": 0.8
           },
           {
             "item": "warrant_fv_change",
-            "snippet": "ワラント公正価値変動損益は非現金かつ非経常的な時価評価変動であり、事業の実力とは直接無関係な一過性項目",
-            "confidence": 0.8
+            "snippet": "ワラント公正価値変動損益は非現金かつ株価変動に起因する非経常項目で、コア事業実績の把握のため加算調整される。",
+            "confidence": 0.75
           }
         ]
       }
     },
     {
       "gaap_eps": 2.1694467538500017,
-      "adjusted_eps": -0.22838654345922282,
+      "adjusted_eps": -0.1971212969855724,
       "gaap_net_income": 805360000.0,
-      "adjusted_net_income": -84783545.0738318,
+      "adjusted_net_income": -73177001.21405101,
       "diluted_shares_used": 371228286.0,
       "adjustments": [
         {
@@ -152,6 +170,19 @@
           "tax_rate_applied": 0.007987704292233328
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 11700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 11606543.85978087,
+          "tax_rate_applied": 0.007987704292233328
+        },
+        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": -1057628000,
@@ -165,7 +196,7 @@
           "tax_rate_applied": 0.007987704292233328
         }
       ],
-      "net_adjustment_total": -890143545.0738318,
+      "net_adjustment_total": -878537001.214051,
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -205,9 +236,9 @@
     },
     {
       "gaap_eps": 2.688354978100808,
-      "adjusted_eps": -0.028266146324639894,
+      "adjusted_eps": -0.002526449154463358,
       "gaap_net_income": 753667000.0,
-      "adjusted_net_income": -7924274.091623902,
+      "adjusted_net_income": -708277.5044246912,
       "diluted_shares_used": 280345046.0,
       "adjustments": [
         {
@@ -237,6 +268,19 @@
           "tax_rate_applied": 0.06285758607802903
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 7700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 7215996.587199177,
+          "tax_rate_applied": 0.06285758607802903
+        },
+        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": -949640000,
@@ -250,7 +294,7 @@
           "tax_rate_applied": 0.06285758607802903
         }
       ],
-      "net_adjustment_total": -761591274.0916239,
+      "net_adjustment_total": -754375277.5044247,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -290,9 +334,9 @@
     },
     {
       "gaap_eps": -3.581888690346082,
-      "adjusted_eps": -0.3032859358262081,
+      "adjusted_eps": -0.25933194238420976,
       "gaap_net_income": -1054955000.0,
-      "adjusted_net_income": -89325225.34602368,
+      "adjusted_net_income": -76379684.83367372,
       "diluted_shares_used": 294524786.0,
       "adjustments": [
         {
@@ -322,6 +366,19 @@
           "tax_rate_applied": 0.004189191357692566
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 13000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 12945540.512349997,
+          "tax_rate_applied": 0.004189191357692566
+        },
+        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": 881847000,
@@ -335,7 +392,7 @@
           "tax_rate_applied": 0.004189191357692566
         }
       ],
-      "net_adjustment_total": 965629774.6539763,
+      "net_adjustment_total": 978575315.1663263,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -375,9 +432,9 @@
     },
     {
       "gaap_eps": -0.7046252272032643,
-      "adjusted_eps": -0.32108245802675883,
+      "adjusted_eps": -0.2631299701433836,
       "gaap_net_income": -176838000.0,
-      "adjusted_net_income": -80581247.33611998,
+      "adjusted_net_income": -66037058.94111095,
       "diluted_shares_used": 250967455.0,
       "adjustments": [
         {
@@ -405,9 +462,22 @@
           "category": "買収・統合関連",
           "net_amount": 4970798.565382834,
           "tax_rate_applied": 0.07948174715132712
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 15800000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 14544188.395009032,
+          "tax_rate_applied": 0.07948174715132712
         }
       ],
-      "net_adjustment_total": 96256752.66388002,
+      "net_adjustment_total": 110800941.05888905,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "Technology",

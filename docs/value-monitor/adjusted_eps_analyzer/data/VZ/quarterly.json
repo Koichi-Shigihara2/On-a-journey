@@ -1,15 +1,29 @@
 {
   "ticker": "VZ",
-  "last_updated": "2026-09-07T09:23:36.646573",
+  "last_updated": "2026-09-12T10:20:59.182377",
   "quarters": [
     {
       "gaap_eps": 0.9194437784703908,
-      "adjusted_eps": 0.9194437784703908,
+      "adjusted_eps": 0.9434989936047906,
       "gaap_net_income": 3835000000.0,
-      "adjusted_net_income": 3835000000.0,
+      "adjusted_net_income": 3935334302.3255816,
       "diluted_shares_used": 4171000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 135000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 100334302.32558139,
+          "tax_rate_applied": 0.2567829457364341
+        }
+      ],
+      "net_adjustment_total": 100334302.32558139,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
@@ -26,7 +40,7 @@
       "pretax_income": 5160000000.0,
       "maturity_monitor": {
         "alert": null,
-        "sbc_contribution": 0,
+        "sbc_contribution": 0.0,
         "sbc_to_revenue": 0.0,
         "sbc_per_share": 0.0,
         "sector_threshold": {
@@ -35,18 +49,37 @@
         }
       },
       "ai_analysis": {
-        "health": "Excellent",
-        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
-        "sources": []
+        "health": "調整小",
+        "comment": "調整項目はM&A統合費用で一過性のコストと分類されており、GAAP EPS（0.919）を押し下げています。市場がGAAPベースで判断する場合、企業の実力（調整後EPS 0.943）が一時的費用により過小評価される可能性があります。投資家は非経常的費用を除いたコア収益力に着目すべきで、過小評価リスクが主ですが、調整規模は小さく（EPS影響約2.6%）恒常的影響は限定的です。",
+        "sources": [
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コスト",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
       "gaap_eps": 1.1983372921615203,
-      "adjusted_eps": 1.3025171465301935,
+      "adjusted_eps": 1.349317390919563,
       "gaap_net_income": 5045000000.0,
-      "adjusted_net_income": 5483597186.892115,
+      "adjusted_net_income": 5680626215.77136,
       "diluted_shares_used": 4210000000.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 261000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 197029028.87924585,
+          "tax_rate_applied": 0.24509950620978602
+        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -61,7 +94,7 @@
           "tax_rate_applied": 0.24509950620978602
         }
       ],
-      "net_adjustment_total": 438597186.8921143,
+      "net_adjustment_total": 635626215.7713602,
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
@@ -79,11 +112,24 @@
     },
     {
       "gaap_eps": 0.5535334436303474,
-      "adjusted_eps": 0.6909572205152447,
+      "adjusted_eps": 0.6982391869534389,
       "gaap_net_income": 2342000000.0,
-      "adjusted_net_income": 2923440000.0,
+      "adjusted_net_income": 2954250000.0,
       "diluted_shares_used": 4231000000.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 39000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 30810000.0,
+          "tax_rate_applied": 0.21
+        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -98,7 +144,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 581440000.0,
+      "net_adjustment_total": 612250000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
@@ -116,11 +162,24 @@
     },
     {
       "gaap_eps": 1.1693834160170091,
-      "adjusted_eps": 1.2564360982870808,
+      "adjusted_eps": 1.2659062645591388,
       "gaap_net_income": 4950000000.0,
-      "adjusted_net_income": 5318494004.049213,
+      "adjusted_net_income": 5358581217.878835,
       "diluted_shares_used": 4233000000.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 52000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 40087213.82962155,
+          "tax_rate_applied": 0.22909204173804704
+        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -135,7 +194,7 @@
           "tax_rate_applied": 0.22909204173804704
         }
       ],
-      "net_adjustment_total": 368494004.04921347,
+      "net_adjustment_total": 408581217.878835,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",

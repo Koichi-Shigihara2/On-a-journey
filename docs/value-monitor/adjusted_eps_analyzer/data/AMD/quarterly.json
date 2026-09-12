@@ -1,6 +1,6 @@
 {
   "ticker": "AMD",
-  "last_updated": "2026-09-07T09:17:11.970879",
+  "last_updated": "2026-09-12T10:13:11.095829",
   "quarters": [
     {
       "gaap_eps": 1.38456901748041,
@@ -52,12 +52,12 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBCは毎期発生する恒常的なコストであり、非現金ながら株主希薄化という実質的影響を伴うため、本調整によりAdjusted EPSがGAAP比で約20%上昇しています。市場がGAAP EPSを中心に判断する場合、AMDの現金創出能力や事業実力が過小評価される可能性があります。投資家はSBCの継続性と希薄化効果を注視し、過大評価リスクを避けるため調整後数字だけでなく希薄化後EPSやFCFも確認すべきです。",
+        "health": "過大調整",
+        "comment": "調整項目の株式報酬費用（SBC）は恒常的なコストであり、非現金ながら人材確保のための継続的な支出です。市場がGAAP EPS（1.38）で判断する場合、SBC費用により実質的な企業収益力が過小評価され、銘柄の実力を低く見積もる可能性があります。ただしSBCは株式希薄化を伴う実質コストであるため、Adjusted EPS（1.66）を使用すると過大評価リスクが生じます。投資家はSBCの継続性・規模と希薄化効果を注視し、調整の信頼性を慎重に評価すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として加算された株式報酬費用。技術企業において毎期発生する恒常的コストであり、一過性ではない。",
+            "snippet": "非現金費用として加算調整されるが、AMDのようなテック企業では毎期発生する恒常的な報酬コストであり、一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -285,6 +285,19 @@
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
           "net_amount": 448720000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 36000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 28440000.0,
           "tax_rate_applied": 0.21
         },
         {

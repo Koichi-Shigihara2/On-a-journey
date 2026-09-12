@@ -1,7 +1,52 @@
 {
   "ticker": "DELL",
-  "last_updated": "2026-09-07T09:23:16.689810",
+  "last_updated": "2026-09-12T10:20:18.079042",
   "quarters": [
+    {
+      "gaap_eps": 6.338957055214724,
+      "adjusted_eps": 6.462499387220468,
+      "gaap_net_income": 4133000000.0,
+      "adjusted_net_income": 4213549600.4677453,
+      "diluted_shares_used": 652000000.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 100000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 80549600.46774508,
+          "tax_rate_applied": 0.19450399532254922
+        }
+      ],
+      "net_adjustment_total": 80549600.46774508,
+      "filing_date": "2026-07-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 46971000000.0,
+      "diluted_shares": 652000000.0,
+      "period_end": "2026-07-31",
+      "fiscal_year": 2027,
+      "quarter": 2,
+      "tax_expense": 998000000.0,
+      "pretax_income": 5131000000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "調整項目は買収関連無形資産の償却費（恒常的に発生する非現金費用）であり、一過性ではなく recurring な性質が強い。市場がGAAP EPS（6.34）で判断する場合、この非現金償却の影響で企業の実力（調整後EPS 6.46）が過小評価されやすく、株価に反映されにくい可能性がある。ただし、無形資産の経済的減耗を無視した調整は過大評価リスクも孕む。調整幅は約2%と小さいため、投資家はキャッシュフローと今後のM&A戦略を注視すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金費用だが、取得後複数年にわたり毎期発生する恒常的項目であり、調整によりGAAP実績を上方修正している。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 5.240853658536586,
       "adjusted_eps": 5.624492642152865,
@@ -47,23 +92,7 @@
       "fiscal_year": 2027,
       "quarter": 1,
       "tax_expense": 510000000.0,
-      "pretax_income": 3948000000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目のSBCと無形資産償却費はいずれも恒常的に発生する項目（非現金ではあるが毎期継続）であるため、一過性とは判断しにくい。市場がGAAP EPSで判断している場合、非現金費用の影響で企業の実質的なキャッシュ生成力やオペレーションの実力が見えにくくなっており、銘柄の実力を過小評価している可能性がある。ただしSBCは株主希薄化を伴う実質コストであるため、調整後EPSを過信すると過大評価リスクが生じる。投資家はフリーキャッシュフローや株式発行による希薄化効果を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、従業員報酬として毎期継続的に発生する恒常的なコストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の償却で、定期的かつ予測可能に複数期にわたって発生する恒常的な項目である。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 3948000000.0
     },
     {
       "gaap_eps": 3.3026315789473686,
@@ -675,72 +704,6 @@
       "quarter": 3,
       "tax_expense": 213000000.0,
       "pretax_income": 458000000.0
-    },
-    {
-      "gaap_eps": 0.6768211920529801,
-      "adjusted_eps": 1.204530215231788,
-      "gaap_net_income": 511000000.0,
-      "adjusted_net_income": 909420312.5,
-      "diluted_shares_used": 755000000.0,
-      "adjustments": [
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 244000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 194818750.0,
-          "tax_rate_applied": 0.2015625
-        },
-        {
-          "item_id": "investment_fv_change",
-          "item_name": "投資公正価値変動損益",
-          "amount": 255000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常の投資時価評価変動",
-          "extracted_from": "us-gaap:GainLossOnInvestments",
-          "category": "公正価値変動関連",
-          "net_amount": 203601562.5,
-          "tax_rate_applied": 0.2015625
-        }
-      ],
-      "net_adjustment_total": 398420312.5,
-      "filing_date": "2022-07-29",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 26425000000.0,
-      "diluted_shares": 755000000.0,
-      "period_end": "2022-07-29",
-      "fiscal_year": 2023,
-      "quarter": 2,
-      "tax_expense": 129000000.0,
-      "pretax_income": 640000000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": -255000000,
-              "adjustment_amount": 255000000,
-              "net_amount": 203601562.5
-            }
-          ],
-          "condition1": "前年同期データなし（条件1スキップ）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
-        }
-      }
     }
   ]
 }

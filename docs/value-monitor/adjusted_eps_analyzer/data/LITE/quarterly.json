@@ -1,6 +1,6 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-09-07T09:19:24.968925",
+  "last_updated": "2026-09-12T10:15:46.352154",
   "quarters": [
     {
       "gaap_eps": -96.00134048257372,
@@ -75,30 +75,9 @@
       "tax_expense": -237700000.0,
       "pretax_income": -7399400000.0,
       "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目の主なものはSBCと無形資産償却という恒常的・非現金項目であり、リストラや異常貸倒引当は一過性です。GAAP EPS(-96)とAdjusted EPS(-95)の差が約1と小さいため、市場がGAAPベースで判断していても企業の実力が見えにくくなっている可能性は低く、過小評価リスクは限定的です。投資家はSBCによる希薄化効果と真のキャッシュ生成力を注視すべきで、恒常的項目の加算により実力以上に良く見える過大評価のリスクに留意する必要があります。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが、株式報酬は継続的に発生する運用コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却であり、定期的に発生する非現金費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響のため異常変動分を調整",
-            "confidence": 0.85
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

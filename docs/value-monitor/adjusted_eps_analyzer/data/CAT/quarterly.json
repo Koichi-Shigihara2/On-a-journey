@@ -1,6 +1,6 @@
 {
   "ticker": "CAT",
-  "last_updated": "2026-09-07T09:23:07.851139",
+  "last_updated": "2026-09-12T10:20:21.135153",
   "quarters": [
     {
       "gaap_eps": 7.768648648648648,
@@ -62,25 +62,9 @@
       "tax_expense": 1055000000.0,
       "pretax_income": 4648000000.0,
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目のうちリストラ費用は一過性が高いが、SBCと無形資産償却は恒常的なコストであるため、Adjusted EPSはGAAPを過度に上方修正している可能性がある。市場がGAAP EPS中心に判断する場合、リストラの影響で企業の実力が過小評価されやすい。ただし恒常的項目の加算により調整後実力も過大評価リスクを抱えており、投資家はコア利益の持続性と今後のリストラ発生頻度を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが企業が継続的に発生させる恒常的な運用コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で定期的に計上される非現金恒常費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は事業再編に伴う一過性の非経常項目",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
