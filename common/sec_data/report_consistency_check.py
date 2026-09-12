@@ -151,6 +151,8 @@ REPO_ROOT    = os.path.normpath(os.path.join(SCRIPT_DIR, "../.."))
 DATA_DIR     = os.path.join(REPO_ROOT, "docs/value-monitor/tanuki_valuation/data")
 SEC_DATA_DIR = os.path.join(REPO_ROOT, "common/sec_data/data")
 EPS_DATA_DIR = os.path.join(REPO_ROOT, "docs/value-monitor/adjusted_eps_analyzer/data")
+NORMALIZED_DIR = os.path.join(REPO_ROOT, "common/sec_data/normalized")
+TTM_DIR      = os.path.join(REPO_ROOT, "common/sec_data/ttm")
 RPO_CONFIG   = os.path.join(REPO_ROOT, "config/rpo_config.json")
 SEG_CONFIG   = os.path.join(REPO_ROOT, "config/segment_config.json")
 WARN_LEDGER  = os.path.join(REPO_ROOT, "config/warn_acknowledged.json")
@@ -162,6 +164,7 @@ from common.screening.dcf_validity_checker import check_c_data_jump  # noqa: E40
 from common.sec_data import tickers as _tickers_mod  # noqa: E402
 from common.sec_data.fetcher import load_submissions, load_company_facts  # noqa: E402
 from common.sec_data.parser import _load_fixed_registry  # noqa: E402
+from common.sec_data.reader import get_quarterly_series  # noqa: E402
 from common.sec_data.utils import compute_snapshot_hash  # noqa: E402
 from common.yfinance_utils import safe_yf_ticker  # noqa: E402
 
@@ -712,6 +715,124 @@ def _check_revenue_net_income_reconciliation(
                 f"  [WARN-41 net_income yfinance突合] FY{latest_year}: "
                 f"SEC={sec_net_income:,.0f} yfinance={yf_net_income:,.0f}（乖離{dev:+.1%}）"
             )
+
+    return warn
+
+
+# WARN-47で使うフィールド対応表: (normalized側フィールド名, ttm側フィールド名)。
+# normalized側は`common/sec_data/normalized/{ticker}_quarterly_normalized.json`
+# （quarterly.py→normalizer.py生成、parser.py側とは独立だが同じ生XBRLに近い
+# 一次データから四半期系列を作る）、ttm側は`common/sec_data/ttm/
+# {ticker}_ttm_series.json`（layer3_builder.py→ttm_calculator.py生成）。
+# [[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]の2026-09-12再確認で、APP(保有銘柄)
+# FY2023年次revenueにおいてparser.py側$3,283,087,000 vs Layer3側
+# $1,841,762,000という約14.4億ドルの乖離実例（SECの遡及修正後の値を
+# Layer3側が採用、parser.py側は修正前の値を採用）が確認されたことを受け、
+# 「現在のTTMローリング窓（直近4四半期）」に限定した恒常監視として新設する。
+_WARN47_FIELD_MAP: dict[str, tuple[str, str]] = {
+    "revenue":                   ("Revenue", "revenue"),
+    "net_income":                ("NetIncome", "net_income"),
+    "gross_profit":               ("GrossProfit", "gross_profit"),
+    "operating_cash_flow":        ("OCF", "operating_cash_flow"),
+    "stock_based_compensation":   ("SBC", "stock_based_compensation"),
+    "capital_expenditure":        ("CapEx", "capital_expenditure"),
+    "operating_income":           ("OperatingIncome", "operating_income"),
+}
+
+
+def _check_ttm_parser_layer3_reconciliation(ticker: str) -> list[str]:
+    """CHECK-47（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]、2026-09-12新設）:
+    parser.py系列の一次データ（`common/sec_data/normalized/`、
+    quarterly.py→normalizer.py生成）から独立に再計算した現在のTTM値と、
+    Layer3系列の`common/sec_data/ttm/{ticker}_ttm_series.json`
+    （layer3_builder.py→ttm_calculator.py生成）の最新TTM値を、
+    revenue・net_income・gross_profit・operating_cash_flow・
+    stock_based_compensation・capital_expenditure・operating_incomeの
+    7フィールドで突合する。
+
+    **比較範囲を現在のTTMローリング窓のみに限定する**設計判断:
+    過去の陳腐化した年度まで遡って突合すると、annual側個別修正の
+    Layer3側への未移植（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]で既知・
+    大量に存在）を無差別に検知してしまい、実際にFCF計算へ影響する
+    「現在」の乖離との区別がつかなくなる。現在のTTM窓（直近4四半期）
+    のみに絞ることで、実際にDCF/runway計算へ影響する範囲だけを検知する。
+
+    **同一期間であることの確認**: normalized側の直近4四半期の末尾end日付が
+    ttm側のttm_endと一致しない場合（四半期数の遅延等で窓がずれている場合）
+    は誤検知を避けるためスキップする。ttm側がquarters_used<4・missing>0の
+    場合（四半期データ不足）も同様にスキップする。
+
+    **許容誤差0.1%はCHECK-46（GP-COGS不整合）と同水準を踏襲**した
+    （タグ選定・tie-break方式の違いによる乖離は通常0.1%を大幅に超えるため、
+    丸め誤差との分離に十分な水準と判断）。
+
+    自動修正なし・検知のみ（WARNは「バグ確定」ではなく「要確認」の
+    シグナル、既存WARN群と同じ運用）。
+    """
+    warn: list[str] = []
+    norm_path = os.path.join(NORMALIZED_DIR, f"{ticker}_quarterly_normalized.json")
+    ttm_path = os.path.join(TTM_DIR, f"{ticker}_ttm_series.json")
+    try:
+        with open(norm_path, encoding="utf-8") as f:
+            normalized47 = json.load(f)
+    except Exception:
+        return warn
+    try:
+        with open(ttm_path, encoding="utf-8") as f:
+            ttm47 = json.load(f)
+    except Exception:
+        return warn
+
+    series47 = ttm47.get("series") or []
+    if not series47:
+        return warn
+    latest47 = series47[0]
+    ttm_end47 = latest47.get("ttm_end")
+    flow47 = latest47.get("flow", {}) or {}
+
+    _TOLERANCE_PCT_47 = 0.001
+    _mismatches47: list[tuple[str, float, float, float]] = []
+    for _field47, (_norm_name47, _ttm_name47) in _WARN47_FIELD_MAP.items():
+        _q47 = get_quarterly_series(normalized47, _norm_name47)
+        if len(_q47) < 4:
+            continue
+        _last4_47 = _q47[-4:]
+        if _last4_47[-1].get("end") != ttm_end47:
+            # 窓がずれている（片方が未更新等）→ 同一期間比較にならないためスキップ
+            continue
+        if any(e.get("val") is None for e in _last4_47):
+            continue
+        _parser_val47 = sum(e["val"] for e in _last4_47)
+
+        _ttm_entry47 = flow47.get(_ttm_name47)
+        if not _ttm_entry47:
+            continue
+        if _ttm_entry47.get("missing", 0) or _ttm_entry47.get("quarters_used") != 4:
+            continue
+        _ttm_val47 = _ttm_entry47.get("val")
+        if _ttm_val47 is None:
+            continue
+
+        _denom47 = abs(_parser_val47) if _parser_val47 else 0
+        if _denom47 == 0:
+            continue
+        _rel47 = abs(_parser_val47 - _ttm_val47) / _denom47
+        if _rel47 > _TOLERANCE_PCT_47:
+            _mismatches47.append((_field47, _parser_val47, _ttm_val47, _rel47))
+
+    if _mismatches47:
+        _fields_str47 = ", ".join(
+            f"{fld}({rel*100:.1f}%)" for fld, _, _, rel in _mismatches47
+        )
+        warn.append(
+            f"  [WARN-47 parser⇔Layer3 TTM乖離] {len(_mismatches47)}件"
+            f" (対象: {_fields_str47})"
+            f" → common/sec_data/normalized側（parser.py系列一次データから"
+            f"再計算したTTM値）とttm/側（Layer3系列）で現在のTTM窓の値が"
+            f"不一致（許容誤差{_TOLERANCE_PCT_47*100:.1f}%超）。SEC遡及修正時の"
+            f"tie-break方式の違い等により2パイプラインが異なる値を選択して"
+            f"いる可能性（自動修正なし、[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]参照）"
+        )
 
     return warn
 
@@ -1535,6 +1656,12 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False) ->
     # EPIC-1]]ゲート1拡張、2026-09-03新設）。CHECK-35と同様、
     # common/sec_data/側の検証でありreport.txtに依存しない。
     warn.extend(_check_revenue_net_income_reconciliation(ticker, include_yfinance))
+
+    # CHECK-47: parser.py系一次データ（normalized/）から再計算したTTM値と
+    # Layer3系（ttm/）のTTM値の突合（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]、
+    # 2026-09-12新設）。CHECK-31/35/41と同様、common/sec_data/側の検証で
+    # ありreport.txtに依存しない。
+    warn.extend(_check_ttm_parser_layer3_reconciliation(ticker))
 
     text = _read_report(ticker)
     if text is None:

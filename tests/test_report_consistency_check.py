@@ -1056,3 +1056,202 @@ class TestCheck46GrossProfitCogsConsistency:
         assert len(w46) == 1  # 1銘柄1行に集約される
         assert "2件" in w46[0]
         assert "2019" in w46[0] and "2020" in w46[0]
+
+
+class TestCheck47TtmParserLayer3Reconciliation:
+    """CHECK-47（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]、2026-09-12新設）が
+    normalized/（parser.py系一次データ）から再計算した現在のTTM値と
+    ttm/（Layer3系）の最新TTM値を突合し、APP実例
+    （FY2023 revenue: parser.py側$3,283,087,000 vs Layer3側
+    $1,841,762,000、約14.4億ドル＝rev比43.9%の乖離）のような
+    現在のTTM窓内の乖離を許容誤差0.1%で検知することを確認する"""
+
+    def _write_normalized(self, tmp_path, ticker: str, field: str, entries: list) -> None:
+        norm_dir = tmp_path / "normalized"
+        norm_dir.mkdir(parents=True, exist_ok=True)
+        data = {"fields": {field: entries}}
+        (norm_dir / f"{ticker}_quarterly_normalized.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+
+    def _write_ttm(self, tmp_path, ticker: str, ttm_end: str, flow: dict) -> None:
+        ttm_dir = tmp_path / "ttm"
+        ttm_dir.mkdir(parents=True, exist_ok=True)
+        data = {"ticker": ticker, "series": [{"ttm_end": ttm_end, "flow": flow}]}
+        (ttm_dir / f"{ticker}_ttm_series.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+
+    @staticmethod
+    def _q(start, end, val):
+        return {"start": start, "end": end, "val": val, "is_annual": False, "is_ytd": False}
+
+    def _setup_dirs(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(rcc, "NORMALIZED_DIR", str(tmp_path / "normalized"))
+        monkeypatch.setattr(rcc, "TTM_DIR", str(tmp_path / "ttm"))
+
+    def test_warn_47_fires_on_appstyle_divergence(self, tmp_path, monkeypatch):
+        """APP実例相当: normalized側（parser.py系）の直近4四半期revenue合計と
+        ttm/側（Layer3系）のTTM revenue値が乖離（rev比43.9%相当）している
+        場合に発火する"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 700000000),
+            self._q("2024-07-01", "2024-09-30", 750000000),
+            self._q("2024-10-01", "2024-12-31", 900000000),
+            self._q("2025-01-01", "2025-03-31", 933087000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 1841762000, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert any("WARN-47" in w and "revenue" in w for w in warn)
+
+    def test_warn_47_not_fired_when_values_match(self, tmp_path, monkeypatch):
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 100000000),
+            self._q("2024-07-01", "2024-09-30", 100000000),
+            self._q("2024-10-01", "2024-12-31", 100000000),
+            self._q("2025-01-01", "2025-03-31", 100000000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 400000000, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert not any("WARN-47" in w for w in warn)
+
+    def test_warn_47_not_fired_within_tolerance(self, tmp_path, monkeypatch):
+        """許容誤差0.1%以下の丸め誤差では発火しない"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 100000000),
+            self._q("2024-07-01", "2024-09-30", 100000000),
+            self._q("2024-10-01", "2024-12-31", 100000000),
+            self._q("2025-01-01", "2025-03-31", 100000000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            # 差300=rev比0.000075%
+            "revenue": {"val": 400000300, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert not any("WARN-47" in w for w in warn)
+
+    def test_warn_47_fires_just_above_tolerance_boundary(self, tmp_path, monkeypatch):
+        """許容誤差0.1%をわずかに超える乖離（rev比0.11%）では発火する
+        （境界値の回帰確認）"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 250000),
+            self._q("2024-07-01", "2024-09-30", 250000),
+            self._q("2024-10-01", "2024-12-31", 250000),
+            self._q("2025-01-01", "2025-03-31", 250000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            # parser合計1,000,000に対し乖離1,100=0.11%
+            "revenue": {"val": 998900, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert any("WARN-47" in w for w in warn)
+
+    def test_warn_47_skips_when_window_misaligned(self, tmp_path, monkeypatch):
+        """normalized側直近4四半期の末尾end日付がttm_endと一致しない
+        （どちらかが未更新で窓がずれている）場合は誤検知を避けスキップする"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 100000000),
+            self._q("2024-07-01", "2024-09-30", 100000000),
+            self._q("2024-10-01", "2024-12-31", 100000000),
+            self._q("2025-01-01", "2025-03-31", 100000000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2024-12-31", {  # normalized側より1四半期古い
+            "revenue": {"val": 999999999, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert not any("WARN-47" in w for w in warn)
+
+    def test_warn_47_skips_when_ttm_side_has_missing_quarters(self, tmp_path, monkeypatch):
+        """ttm/側がquarters_used<4・missing>0（四半期データ不足）の場合は
+        比較対象外としてスキップする"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 100000000),
+            self._q("2024-07-01", "2024-09-30", 100000000),
+            self._q("2024-10-01", "2024-12-31", 100000000),
+            self._q("2025-01-01", "2025-03-31", 100000000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 999999999, "quarters_used": 3, "missing": 1},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert not any("WARN-47" in w for w in warn)
+
+    def test_warn_47_skips_when_fewer_than_4_quarters_available(self, tmp_path, monkeypatch):
+        """normalized側に4四半期分のデータがない場合はTTM再計算不能として
+        スキップする"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-10-01", "2024-12-31", 100000000),
+            self._q("2025-01-01", "2025-03-31", 100000000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 999999999, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert not any("WARN-47" in w for w in warn)
+
+    def test_warn_47_aggregates_multiple_fields(self, tmp_path, monkeypatch):
+        """複数フィールドで乖離がある場合、1銘柄1行に集約してフィールド名を
+        列挙する"""
+        norm_dir = tmp_path / "normalized"
+        norm_dir.mkdir(parents=True, exist_ok=True)
+        data = {"fields": {
+            "Revenue": [
+                self._q("2024-04-01", "2024-06-30", 100000000),
+                self._q("2024-07-01", "2024-09-30", 100000000),
+                self._q("2024-10-01", "2024-12-31", 100000000),
+                self._q("2025-01-01", "2025-03-31", 100000000),
+            ],
+            "NetIncome": [
+                self._q("2024-04-01", "2024-06-30", 10000000),
+                self._q("2024-07-01", "2024-09-30", 10000000),
+                self._q("2024-10-01", "2024-12-31", 10000000),
+                self._q("2025-01-01", "2025-03-31", 10000000),
+            ],
+        }}
+        (norm_dir / "TESTCO_quarterly_normalized.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 500000000, "quarters_used": 4, "missing": 0},  # 25%乖離
+            "net_income": {"val": 60000000, "quarters_used": 4, "missing": 0},  # 50%乖離
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        w47 = [w for w in warn if "WARN-47" in w]
+        assert len(w47) == 1  # 1銘柄1行に集約される
+        assert "2件" in w47[0]
+        assert "revenue" in w47[0] and "net_income" in w47[0]
+
+    def test_warn_47_missing_files_returns_empty(self, tmp_path, monkeypatch):
+        """normalized/またはttm/のファイル自体が存在しない場合は
+        比較不能として空リストを返す（例外を出さない）"""
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("NOFILE")
+        assert warn == []
+
+    def test_warn_47_not_included_in_ng(self, tmp_path, monkeypatch):
+        """WARN-47はNGへ格上げされない（既存WARN群と同じ非ブロッキング運用）"""
+        self._write_normalized(tmp_path, "TESTCO", "Revenue", [
+            self._q("2024-04-01", "2024-06-30", 700000000),
+            self._q("2024-07-01", "2024-09-30", 750000000),
+            self._q("2024-10-01", "2024-12-31", 900000000),
+            self._q("2025-01-01", "2025-03-31", 933087000),
+        ])
+        self._write_ttm(tmp_path, "TESTCO", "2025-03-31", {
+            "revenue": {"val": 1841762000, "quarters_used": 4, "missing": 0},
+        })
+        self._setup_dirs(tmp_path, monkeypatch)
+        warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
+        assert any("WARN-47" in w for w in warn)
+        assert isinstance(warn, list)  # ng相当のリストではなくwarnのみを返す設計
