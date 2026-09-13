@@ -3164,6 +3164,31 @@ UNDERCOUNT-1]]`・`[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`・
 `[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`等と合わせて着手検討）。
 上記「修正案」を踏まえ、対応方針は事実上確定済み。
 
+##### FTSDケース分の実装完了（2026-09-13、コミット`79169b583e`）
+上記「修正案」1〜3を全て実装した:
+1. `05_main.py::update_liquidity_csv()`のフォールバック先を
+   `"FTSD"`→`"WDTGAL"`に変更、コードコメントも実態に合わせて書き換え
+2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
+   （`INPUT-A-050`、`category: "liquidity"`）。既存`FTSD`エントリは
+   削除せずnote追記のみで残置
+3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`（`INPUT-A-049`）
+   記載に無効系列だった旨の注記を追加、`WDTGAL`（`INPUT-A-050`）を
+   新規行として追加。両ファイルの機械的網羅性証明を実行し67件・
+   差分0件を再確認済み
+
+`common.macro_data.fetcher.fetch_series("WDTGAL")`を実FRED_API_KEYで
+直接呼び出し、1239件（2026-09-09まで）の実データが正常取得できることを
+確認した（`fred_latest()`はローカルキャッシュ読み取りのみでFREDへ
+直接アクセスしないため、疎通確認には`fetch_series()`を使用した）。
+pytest 1236件成功、`report_consistency_check.py --fail-on-ng` NG=0・
+ゲート通過。
+
+**本エントリのクローズは行わない**: 本体（`violations_log.json`の
+`fetch_status`可視化・`fetch_all_series()`の系列単位try/except）は
+別スコープのため今回は対応していない。FTSDケース分（機能しない
+フォールバックの解消）のみ対応完了、本体は引き続きオープンのまま
+残す。
+
 ---
 
 （[[MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1]]は2026-09-13、Wikipedia
