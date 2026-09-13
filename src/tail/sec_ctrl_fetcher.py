@@ -83,14 +83,17 @@ _RE_EFFECTIVE = re.compile(
 # Grok 翻訳
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _translate_item4(text: str) -> Optional[str]:
-    """Item4 英文を Grok で日本語訳する。失敗時は None を返す。"""
+def _translate_excerpt(text: str, item_description: str) -> Optional[str]:
+    """SEC filing抜粋を Grok で日本語訳する（[[TAIL-SEC-ITEMS-1]]、
+    2026-09-13に旧`_translate_item4()`を項目非依存へ汎用化。
+    `item_description`に翻訳対象セクションの説明文を渡す）。
+    失敗時は None を返す。"""
     if not XAI_API_KEY:
         return None
     prompt = (
-        "以下はSEC 10-Q の Item 4「Controls and Procedures」の英文です。"
-        "内部統制の有効性・マテリアルウィークネス・重要な欠陥の有無に関する部分を中心に、"
-        "正確かつ簡潔な日本語に翻訳してください。翻訳文のみを出力し、説明や前置きは不要です。\n\n"
+        f"以下はSECの{item_description}の英文です。"
+        "重要な内容を中心に、正確かつ簡潔な日本語に翻訳してください。"
+        "翻訳文のみを出力し、説明や前置きは不要です。\n\n"
         f"{text}"
     )
     headers = {
@@ -129,7 +132,20 @@ def _edgar_get(url: str, timeout: int = 60) -> Optional[requests.Response]:
         return None
 
 
-def _get_recent_10q(cik: str, count: int = 1) -> List[Dict[str, Any]]:
+def _get_recent_filings(cik: str, form: str = "10-Q", count: int = 1,
+                         after_date: Optional[str] = None) -> List[Dict[str, Any]]:
+    """指定formのfiling一覧を直近から順に取得する（[[TAIL-SEC-ITEMS-1]]、
+    2026-09-13に旧`_get_recent_10q()`をform引数化して汎用化。呼び出し元は
+    `fetch_ctrl()`のみで従来通り`form="10-Q"`指定のため挙動は無変更）。
+
+    Args:
+        form: EDGAR上のform種別（"10-Q"・"10-K"等、大文字小文字は無視）
+        count: 取得件数上限
+        after_date: 'YYYY-MM-DD'形式。指定時、report_dateがこの日付
+            より新しい（strictly greater than）filingのみを対象にする
+            （直近10-Kのreport_date以降の10-Qのみに絞り込む用途、
+            前年度分の古い10-Qを二重処理しないため）
+    """
     cik_int = int(cik.lstrip("0") or "0")
     url  = f"{EDGAR_DATA}/submissions/CIK{cik_int:010d}.json"
     resp = _edgar_get(url)
@@ -144,17 +160,22 @@ def _get_recent_10q(cik: str, count: int = 1) -> List[Dict[str, Any]]:
     reports = recent.get("reportDate", [])
     pdocs  = recent.get("primaryDocument", [])
 
+    form_upper = form.strip().upper()
     result: List[Dict[str, Any]] = []
-    for i, form in enumerate(forms):
-        if form.strip().upper() == "10-Q":
-            result.append({
-                "accession":      accns[i]  if i < len(accns)  else "",
-                "filing_date":    dates[i]  if i < len(dates)  else "",
-                "report_date":    reports[i] if i < len(reports) else "",
-                "primary_document": pdocs[i] if i < len(pdocs) else "",
-            })
-            if len(result) >= count:
-                break
+    for i, f in enumerate(forms):
+        if f.strip().upper() != form_upper:
+            continue
+        report_date = reports[i] if i < len(reports) else ""
+        if after_date and not (report_date and report_date > after_date):
+            continue
+        result.append({
+            "accession":      accns[i]  if i < len(accns)  else "",
+            "filing_date":    dates[i]  if i < len(dates)  else "",
+            "report_date":    report_date,
+            "primary_document": pdocs[i] if i < len(pdocs) else "",
+        })
+        if len(result) >= count:
+            break
     return result
 
 
@@ -265,7 +286,7 @@ def _analyze_ctrl_text(item4_text: str) -> Dict[str, Any]:
 
 def fetch_ctrl(ticker: str, cik: str) -> Optional[Dict[str, Any]]:
     print(f"\n[{ticker}] CIK={cik}")
-    filings = _get_recent_10q(cik, count=1)
+    filings = _get_recent_filings(cik, form="10-Q", count=1)
     if not filings:
         print(f"  [{ticker}] 10-Q 未発見")
         return None
@@ -308,7 +329,7 @@ def fetch_ctrl(ticker: str, cik: str) -> Optional[Dict[str, Any]]:
 
     excerpt = item4_text[:2000]
     print(f"  [{ticker}] Grok翻訳中...")
-    excerpt_ja = _translate_item4(excerpt)
+    excerpt_ja = _translate_excerpt(excerpt, "10-Q の Item 4「Controls and Procedures」")
     if excerpt_ja:
         print(f"  [{ticker}] 翻訳完了 ({len(excerpt_ja)}文字)")
     else:
