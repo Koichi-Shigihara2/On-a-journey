@@ -4,6 +4,88 @@
 
 ## 2026-09-13（完了）
 
+### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了
+**状態:** ✅実装完了（7/7件、CHECK-34対象全ファイル対応済み）
+**優先度:** 低 → 完了
+**分類:** データ品質 / 監視・検知
+**登録日:** 2026-08-15
+**完了日（部分、4/7件）:** 2026-08-16
+**完了日（全件、7/7件）:** 2026-09-13
+**発見:** `[[FCFCONFIG-MISSING-DETECTION-WEAK-1]]`実装中の観察事項
+
+#### 内容（残り3件、登録時点の記載を再掲）
+2026-08-16の部分対応（詳細は本ファイル2026-08-16節の
+`### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（部分対応）`エントリ参照）で
+未実装のまま残されていた3件（実質4ファイル）:
+
+| ファイル | ローダー | ファイル不存在時のログ | フォールバック値の性質 |
+|---|---|---|---|
+| `config/prompts.yaml` | `ai_analyzer.py::load_prompt()` | `Warning:`あり | もっともらしい偽装データ（`DEFAULT_PROMPT`定数） |
+| `config/maturity_config.json` | `maturity_config.py::_ensure_loaded()` | `[ERROR]`あり | デフォルトプロファイルのみ（銘柄別設定は全て失われる） |
+| `config/segment_config.json`・`growth_options_config.json` | `segment_config.py::_load_json()` | `[ERROR]`あり | 空辞書 |
+
+#### STEP1調査（2026-09-13、読み取りのみ）
+実装着手前に、3ファイルのパス解決ロジックの現状とCHECK-34レジストリの
+インターフェースを確認した:
+- `ai_analyzer.py::load_prompt()`: パス解決は未切り出し。`PROMPTS_FILE`は
+  動的探索のないモジュールレベル定数のため、既存4件より単純
+- `maturity_config.py::_ensure_loaded()`・`segment_config.py::
+  _load_json()`: パス探索自体は`_find_config_dir()`という汎用ヘルパーに
+  既に分離済みだが、ファイル別の`resolve_*_path()`は未存在。
+  `segment_config.py`は2ファイル（`segment_config.json`・
+  `growth_options_config.json`）を扱うため関数も2つ必要
+- レジストリのインターフェース（`{label, import_style, module_dir,
+  module, func}`、`func`は引数なしで`Optional[str]`を返す規約）を
+  確認し、既存4件と同型の機械的パターンで対応可能と判断
+  （`import_style`は`src.value.tanuki_valuation`配下が`"flat"`
+  〈`__init__.py`の`.wacc`相対import失敗を実際に確認〉、
+  `src.value.adjusted_eps_analyzer`配下が`"package"`〈`__init__.py`が
+  空で相対import問題なしと確認〉）
+
+#### STEP2実装（2026-09-13）
+1. `ai_analyzer.py`に`resolve_prompts_path()`新設（typing importに
+   `Optional`追加）
+2. `maturity_config.py`に`resolve_maturity_config_path()`新設
+   （既存`_find_config_dir()`を呼ぶだけの薄いラッパー）
+3. `segment_config.py`に`resolve_segment_config_path()`・
+   `resolve_growth_options_config_path()`の2関数新設（同一
+   `_find_config_dir()`を共用、ファイル名のみ異なる）
+4. `report_consistency_check.py`の`_CONFIG_LOADER_REGISTRY`へ上記4関数を
+   4エントリ追記（`maturity_config`/`segment_config`は`"flat"`、
+   `ai_analyzer`は`"package"`）
+
+**フォールバック挙動は無変更**: 新設関数はいずれも既存のパス解決
+ロジックを呼ぶだけの純粋関数で、`_ensure_loaded()`/`load_prompt()`/
+`_load_json()`本体は一切変更していないことをgit diffで確認済み。
+`maturity_config.json`・`segment_config.json`はWACC/DCF計算コアに
+直結するが、今回の変更はパス解決の検知機構追加のみでロード処理・
+フォールバック値には触れていないため、WACC/DCF計算結果への影響は
+ゼロと確定（依頼書・STEP1報告の判断通り、全銘柄再生成・before/after
+突合は不要と判断した）。
+
+#### 検証結果
+- 新設4関数がそれぞれ正しい既存パスを返すことを実行確認
+- fail-before/pass-after方式: 対象4ファイルを一時退避した状態で
+  CHECK-34が新規4エントリ分のNG-34を正しく検知（4件）、復元後に
+  NG=0へ復帰することを実測確認。退避・復元中はコミットせず、各確認後に
+  `git status --short`のクリーンさを確認してから次に進んだ
+- CHECK-34全体（既存4件＋新規4件、計8レジストリエントリ）が正常状態で
+  NG=0であることを確認
+- `pytest`: 1231 passed（新規failure0件）
+- `common/sec_data/audit.py`: 正常89・警告10（既存WARNのみ、本タスクと
+  無関係）
+- `common/sec_data/report_consistency_check.py --fail-on-ng`: NG=0・
+  ゲート通過（exit 0）
+
+#### 一般化した設計原則
+`SYSTEM_MAP.md`「config/読み込み失敗の横断検知（CHECK-32〜34の
+一般化原則）」に記録済みのレジストリパターンを踏襲。これで
+CHECK-34対象は全7ファイル・8レジストリエントリとなり、
+`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`は当初登録した7ファイル全件の
+対応が完了した。
+
+---
+
 ### ✅ [MARKETDATA-VIX9D-DATA-GAP-1] ^VIX9Dのyfinanceデータに約1ヶ月の欠落期間（2026-07-17〜08-10）が存在する — 再発なし・実害ゼロを再確認しクローズ
 **状態:** ✅記録のみ・実装なし（クローズ）
 **優先度:** 中 → 完了
@@ -14152,8 +14234,9 @@ SOUN/CRWVは全て`layer2_complete: True`・`missing_kpis: []`を確認。
 ---
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（部分対応） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在
-**状態:** 部分対応完了（4/7件）。残り3件はBACKLOG.mdに`[[CONFIG-LOAD-
-SILENT-FALLBACK-1]]`として残存（着手条件なし）
+**状態:** 部分対応完了（4/7件）。**残り3件は2026-09-13に実装完了、
+全件対応済み（本ファイル「2026-09-13（完了）」節の
+`### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了）`エントリ参照）**
 **優先度:** 低〜中
 **分類:** データ品質 / 監視・検知
 **登録日:** 2026-08-15
@@ -14197,8 +14280,10 @@ tanuki_valuation`配下、`__init__.py`の`.wacc`import失敗を回避）・
 使用のためフルパッケージimportが必要）の2種類をレジストリで使い分けた。
 
 **未実装3件**（`prompts.yaml`・`maturity_config.json`・
-`segment_config.json`/`growth_options_config.json`）は着手条件なしの
-まま`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`としてBACKLOG.mdに残存
+`segment_config.json`/`growth_options_config.json`）は登録当時
+着手条件なしのまま`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`としてBACKLOG.mdに
+残存していたが、2026-09-13に全件実装完了（本ファイル「2026-09-13
+（完了）」節参照）。以下は登録当時（2026-08-16）の判断根拠
 （理由: 既に`[ERROR]`/`Warning`ログがあり相対的に緊急性が低く、
 `maturity_config.json`/`segment_config.json`はWACC/DCF計算コアに
 直結し変更影響の検証コストが高いため）。

@@ -3738,41 +3738,11 @@ BACKLOG_DONE.md「2026-08-15（完了）」参照）
 
 ---
 
-### [CONFIG-LOAD-SILENT-FALLBACK-1] config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在（残り3件）
-**優先度:** 低
-**分類:** データ品質 / 監視・検知
-**登録日:** 2026-08-15
-**発見:** `[[FCFCONFIG-MISSING-DETECTION-WEAK-1]]`実装中の観察事項
-
-#### 内容（部分対応済み、2026-08-16）
-当初7ファイルを対象に登録したが、悪質度「完全サイレント（ログ出力
-なし）」の4件（`rpo_config.json`・`beta_config.json`・
-`split_history.yaml`・統合対象の`fcf_conversion_config.json`）は
-CHECK-34として実装完了（詳細はBACKLOG_DONE.md参照）。
-
-**残り3件は未実装のまま本項目に残す**:
-
-| ファイル | ローダー | ファイル不存在時のログ | フォールバック値の性質 |
-|---|---|---|---|
-| `config/prompts.yaml` | `ai_analyzer.py::load_prompt()` | `Warning:`あり | もっともらしい偽装データ（`DEFAULT_PROMPT`定数） |
-| `config/maturity_config.json` | `maturity_config.py::_ensure_loaded()` | `[ERROR]`あり | デフォルトプロファイルのみ（銘柄別設定は全て失われる） |
-| `config/segment_config.json`・`growth_options_config.json` | `segment_config.py::_load_json()` | `[ERROR]`あり | 空辞書 |
-
-いずれも既に`[ERROR]`/`Warning`ログが出ており相対的に緊急性が低い。
-特に`maturity_config.json`・`segment_config.json`はWACC/DCF計算コアに
-直結し、変更時は全銘柄再生成による影響確認が必須になるため対応
-コストが高い。
-
-#### 対応方針
-CHECK-34で確立したレジストリテーブル方式（`SYSTEM_MAP.md`
-「config/読み込み失敗の横断検知」参照）を踏襲する。対象モジュールに
-`resolve_*_path()`を切り出し、`report_consistency_check.py`の
-`_CONFIG_LOADER_REGISTRY`に1エントリずつ追記すれば、汎用チェック関数
-`_check_config_loaders_resolvable()`がそのまま対応する（新規CHECK
-番号の採番は不要、CHECK-34のテーブルにエントリを追加するのみ）。
-
-#### 着手条件
-なし
+（[[CONFIG-LOAD-SILENT-FALLBACK-1]]は2026-09-13、残り3件
+〈prompts.yaml・maturity_config.json・segment_config.json/
+growth_options_config.json〉をCHECK-34へ追加実装完了。CHECK-34対象
+7ファイル全件対応済みでクローズ、BACKLOG_DONE.md「2026-09-13（完了）」
+の更新済みエントリ参照）
 
 ---
 
