@@ -205,6 +205,14 @@
     "obs_to_release_lag": null,
     "category": "liquidity",
     "consumers": ["05_main.py::update_liquidity_csv"],
-    "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。WTREGENのフォールバック専用系列（[[MACRODATA-FTSD-MISSING-FROM-INVENTORY-1]]で追加）"
+    "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。WTREGENのフォールバック専用系列（[[MACRODATA-FTSD-MISSING-FROM-INVENTORY-1]]で追加）。2026-09-13追記: FRED API上に実在しない無効な系列コードと判明（[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]FTSDケース）、05_main.py側のフォールバック先はWDTGALへ置換済み。本エントリは経緯の記録として残置（fetcher.pyのfetch_all_seriesは引き続きFTSDの取得を試みるが常に失敗しupdated=0で終わるのみで実害はない）"
+  },
+  "WDTGAL": {
+    "input_id": "INPUT-A-050",
+    "fred_release_id": null,
+    "obs_to_release_lag": null,
+    "category": "liquidity",
+    "consumers": ["05_main.py::update_liquidity_csv (WTREGENフォールバック)"],
+    "note": "[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]FTSDケース対応（2026-09-13）でFTSDの置換先として追加。Liabilities and Capital: Deposits with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General Account: Wednesday Level。WTREGEN（Week Average）と同一カテゴリ・同一期間・同一単位（Millions USD、週次）で集計方法のみ異なる（週平均 vs 水曜時点値）"
   }
 }

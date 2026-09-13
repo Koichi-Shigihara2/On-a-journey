@@ -1,6 +1,12 @@
 # INPUT_DATA_AS_IS.md — 一次データ層の現状（AS-IS）
 
 作成日: 2026-07-23
+更新日: 2026-09-13（`[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`
+FTSDケース対応。`FTSD`（`INPUT-A-049`）がFRED API上に実在しない無効な
+系列コードと判明したため、05_main.pyのフォールバック先を`WDTGAL`
+（`INPUT-A-050`として新規採番）へ置換。1-E節のFRED表を更新、下記
+「機械的網羅性証明」の対象は67件・差分0件へ変化。詳細はBACKLOG_DONE.md
+「2026-09-13（完了）」参照）
 更新日: 2026-08-12（`common/macro_data/`実装設計確定に伴い、1-E節へ
 `FTSD`（`INPUT-A-049`）を追加。機械的網羅性証明を再実行した結果、
 `INPUT-A-048`（税務・一過性項目タグ群52種）が`INPUT_DATA_TOBE.md`側
@@ -151,13 +157,14 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-C-010` | `src/value/tanuki_valuation/fcf_conversion_config.json` | Damodaran業種別FCF変換率・ticker override | 記載済み（当初考慮漏れ→追加済み、`config/`外に配置されている点も特記）。**【2026-08-15追記】`[[FCFCONFIG-LOCATION-1]]`実装完了、`config/fcf_conversion_config.json`へ移動済み** |
 | `INPUT-C-009` | `docs/portfolio/tail/data/tail_kpi_map.json` | TANUKI TAIL KPI設定（AI提案＋人手確定） | 記載済み（ただし`config/`ではなく`docs/`配下、下記2-D参照）。**【2026-08-15追記】`[[TAILKPI-CONFIG-LOCATION-1]]`実装完了、`config/tail_kpi_map.json`へ移動済み** |
 
-### 1-E. ID対応表（`INPUT_DATA_TOBE.md`分類A/B/C全66件との対応）
+### 1-E. ID対応表（`INPUT_DATA_TOBE.md`分類A/B/C全67件との対応）
 
-`INPUT_DATA_TOBE.md`が付番した分類A（一次データ本体、49件）・分類B
-（取得前提条件、3件）・分類C（導出データの入力、14件）の全IDについて、
-現状（AS-IS）のどの取得経路・保持場所が対応するかを確認した。
+`INPUT_DATA_TOBE.md`が付番した分類A（一次データ本体、50件。2026-09-13
+追加の`INPUT-A-050`＝`WDTGAL`含む）・分類B（取得前提条件、3件）・
+分類C（導出データの入力、14件）の全IDについて、現状（AS-IS）のどの
+取得経路・保持場所が対応するかを確認した。
 
-#### 分類A: 一次データ本体（49件）— SEC EDGAR（`INPUT-A-001`〜`018`）
+#### 分類A: 一次データ本体（50件）— SEC EDGAR（`INPUT-A-001`〜`018`）
 
 | ID | 現状の取得経路 | 確認状況 |
 |---|---|---|
@@ -171,7 +178,7 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-A-018`（直近提出日・提出書類一覧） | 経路C2（`edgar_rss_monitor.py`）・経路H（CIKルックアップ）が使用 | 確認済み |
 | `INPUT-A-048`（税務・一過性項目・銀行業向け詳細タグ群52種） | 経路B（EPS Analyzer`extract_key_facts.py`）が独自にSEC EDGAR company_facts APIから取得。`common/sec_data/data/{TICKER}/company_facts.json`（経路A、既存）に全量含まれているため新規API取得は不要 | 確認済み（`INPUT_DATA_TOBE.md`には2026-07-24付で追加済みだったが本ファイルへの反映漏れがあり、2026-08-12の機械的網羅性証明再実行で発覚・今回追加） |
 
-#### 分類A: 一次データ本体（49件）— yfinance（`INPUT-A-019`〜`023`）
+#### 分類A: 一次データ本体（50件）— yfinance（`INPUT-A-019`〜`023`）
 
 | ID | 現状の取得経路 | 確認状況 |
 |---|---|---|
@@ -181,7 +188,7 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-A-022`（指数・ETF・商品） | Market Pulse(`collect_and_send.py`) | 確認済み（`^GSPC`は内部4重取得） |
 | `INPUT-A-023`（S&P500構成銘柄一括） | Market Pulse(`breadth_calculator.py`) | 確認済み |
 
-#### 分類A: 一次データ本体（49件）— FRED（`INPUT-A-024`〜`047`）
+#### 分類A: 一次データ本体（50件）— FRED（`INPUT-A-024`〜`047`）
 
 | ID | 系列コード | 現状の取得経路 |
 |---|---|---|
@@ -209,13 +216,15 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-A-045` | `M2SL` | MACRO PULSE |
 | `INPUT-A-046` | `VXNCLS` | Market Pulse |
 | `INPUT-A-047` | `DGS3MO` | Market Pulse |
-| `INPUT-A-049` | `FTSD` | MACRO PULSE（`05_main.py::update_liquidity_csv()`、`WTREGEN`フォールバック時のみ） |
+| `INPUT-A-049` | `FTSD`（**2026-09-13判明: FRED API上に実在しない無効な系列コード**、`WDTGAL`へ置換済み） | MACRO PULSE（`05_main.py::update_liquidity_csv()`、`WTREGEN`フォールバック時のみ。現行実装は`WDTGAL`を参照、本行は経緯記録として残置） |
+| `INPUT-A-050` | `WDTGAL` | MACRO PULSE（`05_main.py::update_liquidity_csv()`、`WTREGEN`フォールバック時のみ。`FTSD`置換先、2026-09-13追加） |
 
-全24系列＋`FTSD`（`INPUT-A-049`）とも現状いずれかのサブシステムから
-確認済み。`DGS10`（risk_free_rate用、`INPUT_DATA_TOBE.md`が分類Aへの
-新規追加候補〈未採番〉とした系列）は現状いずれのサブシステムからも
-未取得——これは分類A49件のIDには含まれないため、機械的網羅性証明
-（両ファイルのID集合一致）の対象外であり、証明結果には影響しない。
+全24系列＋`FTSD`（`INPUT-A-049`）・`WDTGAL`（`INPUT-A-050`）とも現状
+いずれかのサブシステムから確認済み。`DGS10`（risk_free_rate用、
+`INPUT_DATA_TOBE.md`が分類Aへの新規追加候補〈未採番〉とした系列）は
+現状いずれのサブシステムからも未取得——これは分類A50件のIDには
+含まれないため、機械的網羅性証明（両ファイルのID集合一致）の対象外で
+あり、証明結果には影響しない。
 
 #### 分類B: 取得前提条件（3件）
 

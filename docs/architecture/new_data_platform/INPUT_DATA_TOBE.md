@@ -56,10 +56,10 @@ FIELD_DEFINITIONS.md499項目の分解から導かれた項目には、性質の
 
 | 分類 | 件数 | ID範囲 |
 |---|---|---|
-| A. 一次データ本体 | **49件** | `INPUT-A-001`〜`INPUT-A-049` |
+| A. 一次データ本体 | **50件** | `INPUT-A-001`〜`INPUT-A-050`（2026-09-13追加の`INPUT-A-050`＝`WDTGAL`含む） |
 | B. 取得前提条件 | **3件** | `INPUT-B-001`〜`INPUT-B-003` |
 | C. 導出データの入力 | **14件** | `INPUT-C-001`〜`INPUT-C-014` |
-| **合計** | **66件** | — |
+| **合計** | **67件** | — |
 
 **判定に迷った項目の分類根拠（実コード確認済み）**:
 - `config/split_history.yaml`: `src/value/adjusted_eps_analyzer/pipeline.py`
@@ -178,7 +178,8 @@ Market Pulseの`collect_and_send.py`/`backfill_tech_pulse.py`）を直接確認�
 | INPUT-A-045 | `M2SL` | M2マネーサプライ | 流動性カード表示 |
 | INPUT-A-046 | `VXNCLS` | ナスダック版VIX(VXN) | Tech Pulse divergence計算 |
 | INPUT-A-047 | `DGS3MO` | 3ヶ月国債利回り | asset_flow短期金利(yfinance `^IRX`の構造的フォールバック先) |
-| INPUT-A-049 | `FTSD` | 財務省一般勘定(TGA)残高、`WTREGEN`のフォールバック専用系列 | NET LIQUIDITY計算（`05_main.py::update_liquidity_csv()`、`WTREGEN`取得失敗時のみ使用） |
+| INPUT-A-049 | `FTSD`（**2026-09-13判明: FRED API上に実在しない無効な系列コード**、`WDTGAL`へ置換済み。経緯記録として残置） | 財務省一般勘定(TGA)残高、`WTREGEN`のフォールバック専用系列（旧設計、実際には常に取得失敗していた） | NET LIQUIDITY計算（`05_main.py::update_liquidity_csv()`、`WTREGEN`取得失敗時のみ使用。現行実装は`WDTGAL`を参照） |
+| INPUT-A-050 | `WDTGAL` | 財務省一般勘定(TGA)残高〈Wednesday Level〉、`WTREGEN`のフォールバック専用系列（`FTSD`置換先） | NET LIQUIDITY計算（`05_main.py::update_liquidity_csv()`、`WTREGEN`取得失敗時のみ使用） |
 
 **設計上の指摘**: `TANUKI VALUATION`の`risk_free_rate`（DCF計算のCAPM構成
 要素、現状は`0.043`のハードコード定数）は、本来であればこのFRED系列層

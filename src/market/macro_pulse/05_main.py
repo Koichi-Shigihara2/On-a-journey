@@ -2043,14 +2043,18 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     fed_val, _ = fred_latest("WALCL")
     # HYスプレッド (BAMLH0A0HYM2): 日次, %
     hy_val,  _ = fred_latest("BAMLH0A0HYM2")
-    # TGA (WTREGEN): 週次, Millions USD — 代替: FTSD
-    # （FTSDはFRED上に系列が実在しないため常に取得失敗する既知の問題、
-    # [[MACRODATA-FTSD-SERIES-ID-INVALID-1]]参照。旧実装でも同様に
-    # 機能していなかったフォールバックのため、今回の切替による回帰では
-    # ない。フォールバック構造自体は変更せず維持する）
+    # TGA (WTREGEN): 週次, Millions USD — 代替: WDTGAL
+    # （旧代替先"FTSD"はFRED上に系列が実在せず常に取得失敗する無効な
+    # 系列コードだったと判明（[[MACRODATA-FETCH-FAILURE-VISIBILITY-
+    # GAP-1]]FTSDケース、2026-08-13事実確認）。"WDTGAL"（Liabilities
+    # and Capital: Deposits with F.R. Banks, Other Than Reserve
+    # Balances: U.S. Treasury, General Account: Wednesday Level）へ
+    # 2026-09-13に置換。WTREGEN（Week Average）と同一カテゴリ・同一
+    # 期間・同一単位（Millions USD、週次）で集計方法のみ異なる（週平均
+    # vs 水曜時点値）、実務上意味のあるフォールバック先と確認済み）
     tga_val, _ = fred_latest("WTREGEN")
     if tga_val is None:
-        tga_val, _ = fred_latest("FTSD")
+        tga_val, _ = fred_latest("WDTGAL")
     # RRP (RRPONTSYD): 日次, Billions USD → × 1000 で Millions に統一
     rrp_b,   _ = fred_latest("RRPONTSYD")
     rrp_val    = round(rrp_b * 1000, 4) if rrp_b is not None else None   # Millions USD
