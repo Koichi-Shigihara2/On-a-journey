@@ -2694,6 +2694,52 @@ Gate2/`test_contracts.py`）のみが明確に機械検査下にある。
 `[[TEST-STALE-IV-1]]`修正の一環として完了（5→100銘柄）。3〜6は
 未実装のまま。着手要否・優先順位はユーザー判断とする。
 
+**Step 3項目3・4の再確認（2026-09-13、記録のみ・実装せず）**: 上記
+Step 3の3（`growth.py`のFCFSeriesアクセサ採用確認）・4
+（FIELD_DEFINITIONS.md記録済み6件の個別修正）について、本文が実態に
+追随更新されていない（テキストドリフト）ことを実コード・
+BACKLOG_DONE.mdの完了記録で確認した。
+
+- **項目3（FCFSeriesアクセサ）は既に解消済み**: `growth.py`
+  205-206行目で`series.oldest`/`series.newest`を実際に使用している
+  ことを実コードで確認済み（GROWTH-CAGR-SIGN-1修正時に採用済み）
+- **項目4（FIELD_DEFINITIONS.md記録済み6件）も全件解消済み**:
+  1. MACRO PULSE RECESSION RISK SCORE「25 vs 30」境界不一致:
+     `src/market/macro_pulse/05_main.py`1512行目付近の実スコア計算
+     （`if score < 30:`）と、`docs/market-monitor/macro-pulse/
+     index.html`のゲージ判定（1223-1226行目）・凡例表（627-630行目）・
+     チャート帯（1737-1740行目）を実コードで確認したところ、全箇所が
+     30/52/70で一致していた。25という境界値は現行コードのどこにも
+     存在しない
+  2. STONKS SILO DeficitQuality 65/35 vs 70/45不一致:
+     `[[STONKS-PILLAR-THRESHOLD-MISMATCH-1]]`（`dq.score`専用の
+     `deficitColor()`新設）で解消済みと`docs/value-monitor/
+     stonks-silo/index.html`の実装で確認
+  3. HypeCore substage二重実装: `[[HYPECORE-REALSTRONG-DUAL-IMPL-1]]`
+     がBACKLOG_DONE.mdに`### ✅`ヘッダーで存在し完了済みと確認
+  4. 10Y-2Yスプレッド閾値3セット不一致: `[[V0-V0RM-CONFUSION-
+     RISK-1]]`クラスタのバッチA対応がBACKLOG_DONE.mdに`### ✅`
+     ヘッダーで存在し、「意図的な設計」と判断しコードコメントに
+     明記する形で解消済みと確認
+  5. DCF_Reliability Policy A/B「非LOW」語彙不一致:
+     `[[POLICY-AB-TREND-BLIND-1]]`がBACKLOG_DONE.mdに`### ✅`
+     ヘッダーで存在し実装完了済みと確認
+
+以上により、**Step 3提案リストの1〜4は全件対応済み**（1・2は
+2026-08-20に実装完了、3・4は本追記で「既に別タスクで解消済み」と
+確認）。**残る未実装は5・6の2点のみ**:
+- 5（JS埋め込み閾値とPython計算式の横断突合機構の新設）:
+  技術的難度が高く自動化困難、エピック自身が当初から見送り推奨と
+  記載済み
+- 6（規則3〈誤称禁止〉の汎用機械検査）: 自然言語理解を要するため
+  一般解なし、機械化困難につき対象外と当初から記載済み
+
+いずれも新規実装は見送り推奨、着手判断は保留のまま。本追記により
+`[[QUALITY-GATES-EPIC-1]]`（唯一の最高優先度）は「実装可能な具体的
+対応は出し切った」状態であることが分かる。優先度・クローズ判断
+（据え置き継続 or 何らかの形でのクローズ）はユーザー判断待ちとし、
+本タスクでは変更しない。
+
 #### Phase 4 追加調査（2026-08-20⑤）: validation.overallの実測＋検知への接続
 
 上記「Step 0-2」で「`validation.overall`が集約されず沈黙している」
