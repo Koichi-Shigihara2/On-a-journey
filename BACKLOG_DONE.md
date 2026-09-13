@@ -190,6 +190,80 @@ raw wikitextを直接取得して3銘柄を個別に確認した結果、**登�
 
 ---
 
+### ✅ [MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1] CSCICP03USM665S・USALOLITONOSTSAMが現行INDICATOR_CONFIGから削除済みにも関わらず、05_indicator_schedule.csvの既存scheduled行がfred_id空文字列のまま処理され、actualが埋まらない静かなデータ欠落を起こす可能性 — 残存7行を削除し解消
+**状態:** ✅実装完了（軽微な実装＋クローズ）
+**優先度:** 低〜中 → 完了
+**分類:** バグ疑い（サイレント欠落）
+**登録日:** 2026-08-12
+**完了日:** 2026-09-13
+**発見:** `common/macro_data/`新設事前調査・FRED消費者洗い出し
+（チャット記録、2026-08-12）
+
+#### 内容（登録時点）
+`CSCICP03USM665S`（CB Consumer Confidence）・`USALOLITONOSTSAM`
+（Conference Board LEI）は`05_import_history.py`固有の旧
+`FRED_INDICATORS`辞書にのみ存在し、現行`05_main.py`の
+`INDICATOR_CONFIG`（12系列）には**含まれていない**（実コード確認済み）。
+にもかかわらず、`docs/market-monitor/macro-pulse/data/
+05_indicator_schedule.csv`には両指標の`scheduled`行が現存していた。
+`fred_release_dates()`は`INDICATOR_CONFIG.items()`のみを走査するため
+新規`scheduled`行が今後生成されることはないが、既存の残存`scheduled`行は
+`main()`の処理対象になり`fred_id`が空文字列となるため、例外は発生しない
+まま`actual`欄が空欄の行だけが`05_events.csv`に生成される静かな欠落が
+起こりうると登録時点で判断した。
+
+#### 実データ確認（2026-09-13）
+- `05_indicator_schedule.csv`に該当7行が現存することを確認
+  （CB Consumer Confidence×2: 2026-03-31・2026-04-28、Conference
+  Board LEI×5: 2026-04-13・05-11・06-08・07-13・08-10、いずれも
+  過去日）
+- `05_events.csv`側にも同一の7エントリが`actual`欄空欄のまま既に
+  生成されていることを確認（例:
+  `cb_lei_2026-08-10,Conference Board LEI,2026-08-10,,,,,...`）
+- 2026-08-10分（Conference Board LEI）は`index.html`の直近90日
+  イベント一覧に表示は継続しているが、`—`表示のみでクラッシュ等の
+  実害はなし（~2026-11月頃に90日窓から自然に外れる見込み）
+- 両指標とも現行`INDICATOR_CONFIG`（12系列）・RECESSION RISK SCORE
+  8指標のいずれにも含まれておらず、スコア計算自体への影響はゼロ
+- 全7件が過去日のため、今後新規の`scheduled`行が生成されることはない
+
+#### 安全性の追加検証（実装前）
+削除の安全性を実コードで検証した:
+- `update_schedule()`の新規行生成ロジック（`fred_release_dates()`・
+  `michigan_release_dates()`・`building_permit_release_dates()`・
+  `michigan_consumer_sentiment_release_dates()`）はいずれもこの2指標を
+  対象にしておらず、削除後も再生成されない
+- `main()`のscheduled行処理（`schedule[schedule["release_date"] ==
+  date_str]`）は実行日と完全一致する行のみを対象にするため、全7行が
+  過去日である以上、今後二度とマッチしない
+- `_duplicate_risk_indicators()`が参照する`_MONTHLY_REFRESH_SET`にも
+  この2指標名は含まれておらず、削除による影響なし
+- コードベース全体（`src/`・`common/`）を`CSCICP03USM665S`・
+  `USALOLITONOSTSAM`・両指標名でgrepしても、schedule.csv内の該当7行
+  以外に一切参照がないことを確認
+
+#### 実装内容
+`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv`から
+該当7行（CB Consumer Confidence×2・Conference Board LEI×5）をEdit
+toolでのテキストベース部分削除（丸ごと書き直しではなく該当行のみ削除）
+により除去した。`05_events.csv`側の既存7行（過去の記録）は依頼書の
+方針通り削除・編集していない（履歴データの改変は行わず、自然に90日窓
+から外れるのを待つ）。
+
+#### 検証結果
+- 削除後、`grep -c`で該当2系列の行が0件になったことを確認
+  （87行→79行）
+- `05_main.py::load_schedule()`を実際に呼び出し、正常にパースでき
+  両指標が消滅していることを実行確認
+- `_duplicate_risk_indicators()`を実行し正常動作を確認（返り値に影響
+  する変化なし）
+- `05_events.csv`は無変更（`git diff --stat`で確認）
+- `pytest`: 1231 passed（macro/schedule関連69件含め新規failure0件）
+- `git status --short`: 変更ファイルは`05_indicator_schedule.csv`
+  1件のみと確認
+
+---
+
 ## 2026-09-12（完了）
 
 ### ✅ [MA-INTEGRATION-TAG-GAP-1] adjustment_items.jsonのma_integration項目がXBRLタグ不足、境界近傍銘柄の「跳ね返り」を招く二値ゲート設計 — 連続スケーリング化＋未登録2タグ追加で根治的に解消

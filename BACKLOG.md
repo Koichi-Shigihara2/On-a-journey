@@ -5887,45 +5887,9 @@ ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこ
 
 ---
 
-### [MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1] CSCICP03USM665S・USALOLITONOSTSAMが現行INDICATOR_CONFIGから削除済みにも関わらず、05_indicator_schedule.csvの既存scheduled行がfred_id空文字列のまま処理され、actualが埋まらない静かなデータ欠落を起こす可能性
-**優先度:** 低〜中（実害の有無・範囲が未確認）
-**分類:** バグ疑い（サイレント欠落）
-**登録日:** 2026-08-12
-**発見:** `common/macro_data/`新設事前調査・FRED消費者洗い出し
-（チャット記録、2026-08-12）
-
-#### 内容
-`CSCICP03USM665S`（CB Consumer Confidence）・`USALOLITONOSTSAM`
-（Conference Board LEI）は`05_import_history.py`固有の旧
-`FRED_INDICATORS`辞書にのみ存在し、現行`05_main.py`の
-`INDICATOR_CONFIG`（12系列）には**含まれていない**（実コード確認済み）。
-にもかかわらず、`docs/market-monitor/macro-pulse/data/
-05_indicator_schedule.csv`には両指標の`scheduled`行が現存する
-（実データ確認済み、例:
-`Conference Board LEI,2026-06-08,USALOLITONOSTSAM,FRED,,,scheduled`）。
-
-`fred_release_dates()`（458-498行）は`INDICATOR_CONFIG.items()`のみを
-走査するため、この2系列の**新規**`scheduled`行が今後生成されることは
-ない。しかし**既存の残存`scheduled`行**は`main()`の`for sched in
-scheduled:`ループ（2196-2216行）で処理対象になり、`fetch_event_row()`
-内で`cfg = INDICATOR_CONFIG.get(indicator, {})`が空dictを返すため
-`fred_id`が空文字列となり、`if fred and fred_id and actual_val is
-None:`（921行）の条件が成立せずFRED取得がスキップされる。**例外は
-発生しないが、`actual`欄が空欄のまま行だけが`05_events.csv`に
-生成される**静かな欠落が起こりうる。
-
-#### 対応方針（未定・実データ確認が必要）
-- `05_events.csv`・`05_indicator_schedule.csv`の実データを確認し、
-  この2指標の`scheduled`行が既に処理済み（過去日、`actual`空欄のまま
-  残存）か、まだ未来日で残存しているかを確認する
-- 既に空欄行が生成されている場合は実害の範囲（何件か）を確認する
-- 対応要否の判断: ①`05_indicator_schedule.csv`から該当2系列の
-  残存`scheduled`行を削除する、②`INDICATOR_CONFIG`に復活させる
-  （意図的に除外されたのか要確認）、のいずれかを実データ確認後に判断
-
-#### 着手条件
-実際に`05_events.csv`等でこの欠落が発生しているか（scheduled行の
-残存有無）を実データで確認してから対応要否を判断する。
+（[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]は2026-09-13、
+`05_indicator_schedule.csv`から該当7行を削除し実装完了、
+BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
 ---
 
