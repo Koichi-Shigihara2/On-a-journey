@@ -10,7 +10,7 @@ import json
 import os
 import yaml
 import requests
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 # プロジェクトルートを取得（ai_analyzer.py の場所から3階層上）
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +40,18 @@ Adjusted EPS: {adjusted_eps}
   ]
 }}
 """
+
+def resolve_prompts_path() -> Optional[str]:
+    """config/prompts.yamlのパス解決ロジック（report_consistency_check.pyの
+    設定ファイル読み込み横断チェックと共用するため、2026-09-13に
+    load_prompt()から切り出した。[[CONFIG-LOAD-SILENT-FALLBACK-1]]、
+    resolve_split_history_path()等と同型パターン）。
+
+    Returns:
+        解決できたパス（存在確認済み）、解決できなければNone
+    """
+    return PROMPTS_FILE if os.path.exists(PROMPTS_FILE) else None
+
 
 def load_prompt() -> str:
     """config/prompts.yaml から分析プロンプトを読み込む"""

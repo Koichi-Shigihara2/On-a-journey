@@ -267,7 +267,9 @@ def _check_discover_config_sync() -> list[str]:
 
 
 # CHECK-34: config/設定ファイル読み込みの横断解決チェック用レジストリ
-# （[[CONFIG-LOAD-SILENT-FALLBACK-1]]）。CHECK-32/33で確立した
+# （[[CONFIG-LOAD-SILENT-FALLBACK-1]]、2026-09-13に残り3件〈prompts.yaml・
+# maturity_config.json・segment_config.json/growth_options_config.json〉
+# 追加で対象7ファイル全件が登録済み・完了）。CHECK-32/33で確立した
 # 「代理の検証（チェッカー独自のos.path.exists()）ではなく、本番コードの
 # 解決ロジックそのものを呼び出して検証する」原則を、個別チェック関数を
 # ファイル数分作るのではなく1つの汎用関数+データテーブルへ一般化した
@@ -310,6 +312,34 @@ _CONFIG_LOADER_REGISTRY = [
         "module_dir": None,
         "module": "src.value.adjusted_eps_analyzer.pipeline",
         "func": "resolve_split_history_path",
+    },
+    {
+        "label": "config/prompts.yaml",
+        "import_style": "package",
+        "module_dir": None,
+        "module": "src.value.adjusted_eps_analyzer.ai_analyzer",
+        "func": "resolve_prompts_path",
+    },
+    {
+        "label": "config/maturity_config.json",
+        "import_style": "flat",
+        "module_dir": os.path.join(REPO_ROOT, "src", "value", "tanuki_valuation"),
+        "module": "maturity_config",
+        "func": "resolve_maturity_config_path",
+    },
+    {
+        "label": "config/segment_config.json",
+        "import_style": "flat",
+        "module_dir": os.path.join(REPO_ROOT, "src", "value", "tanuki_valuation"),
+        "module": "segment_config",
+        "func": "resolve_segment_config_path",
+    },
+    {
+        "label": "config/growth_options_config.json",
+        "import_style": "flat",
+        "module_dir": os.path.join(REPO_ROOT, "src", "value", "tanuki_valuation"),
+        "module": "segment_config",
+        "func": "resolve_growth_options_config_path",
     },
 ]
 

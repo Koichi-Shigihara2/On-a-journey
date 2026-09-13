@@ -152,6 +152,23 @@ _DEFAULT_PROFILE: Dict[str, Any] = {
 _MATURITY_CONFIG: Dict[str, Any] = {}
 
 
+def resolve_maturity_config_path() -> Optional[str]:
+    """maturity_config.jsonのパス解決ロジック（report_consistency_check.pyの
+    設定ファイル読み込み横断チェックと共用するため、2026-09-13に
+    _ensure_loaded()から切り出した。[[CONFIG-LOAD-SILENT-FALLBACK-1]]、
+    data_fetcher.py::resolve_beta_config_path()と同型パターン）。
+
+    Returns:
+        解決できたパス（存在確認済み）、解決できなければNone
+    """
+    try:
+        config_dir = _find_config_dir()
+    except FileNotFoundError:
+        return None
+    path = os.path.join(config_dir, "maturity_config.json")
+    return path if os.path.exists(path) else None
+
+
 def _ensure_loaded() -> None:
     """設定が未ロードなら読み込む（遅延初期化）"""
     global _MATURITY_CONFIG

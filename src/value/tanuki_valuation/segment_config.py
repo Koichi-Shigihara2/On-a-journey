@@ -53,6 +53,38 @@ def _find_config_dir() -> str:
     )
 
 
+def resolve_segment_config_path() -> Optional[str]:
+    """segment_config.jsonのパス解決ロジック（report_consistency_check.pyの
+    設定ファイル読み込み横断チェックと共用するため、2026-09-13に
+    _load_json()から切り出した。[[CONFIG-LOAD-SILENT-FALLBACK-1]]、
+    maturity_config.py::resolve_maturity_config_path()と同型パターン）。
+
+    Returns:
+        解決できたパス（存在確認済み）、解決できなければNone
+    """
+    try:
+        config_dir = _find_config_dir()
+    except FileNotFoundError:
+        return None
+    path = os.path.join(config_dir, "segment_config.json")
+    return path if os.path.exists(path) else None
+
+
+def resolve_growth_options_config_path() -> Optional[str]:
+    """growth_options_config.jsonのパス解決ロジック（同上、
+    resolve_segment_config_path()と対になる関数）。
+
+    Returns:
+        解決できたパス（存在確認済み）、解決できなければNone
+    """
+    try:
+        config_dir = _find_config_dir()
+    except FileNotFoundError:
+        return None
+    path = os.path.join(config_dir, "growth_options_config.json")
+    return path if os.path.exists(path) else None
+
+
 def _load_json(filename: str) -> Dict[str, Any]:
     """JSONファイルを読み込む"""
     try:
