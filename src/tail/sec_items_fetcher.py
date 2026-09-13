@@ -80,7 +80,16 @@ _translate_excerpt  = _ctrl._translate_excerpt
 # そのパターンの最終出現位置より後ろのみを検索範囲にする
 # （STEP1調査でPart I/IIの同一Item番号衝突が実データで確認されたため）。
 
-_PART2_RE = re.compile(r"(?i)part\s+ii\b")
+# [[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで発見・修正: 単純な`part\s+ii\b`は
+# 文書末尾の証明書・脚注等にある「Part II, Item 5. Other Information」等の
+# 他filingへのクロスリファレンスにも一致してしまい、`matches[-1]`（最終
+# 出現位置）がそのクロスリファレンス位置になり本来のPart II区切りより
+# 後ろに来てしまう実例（PLTR 2026-03-31 10-Qで発生、risk_factors・
+# legal_proceedingsの抽出が失敗）を確認した。実際のPart II区切り見出しは
+# 目次・本文とも必ず"OTHER INFORMATION"が直後（記号・空白のみを挟んで）に
+# 続くのに対し、クロスリファレンスは"Part II, Item N. ..."のように
+# 番号付きItem名を挟むため、この一致パターンで区別できる。
+_PART2_RE = re.compile(r"(?i)part\s+ii[\.\-\s]{1,5}other\s+information")
 
 ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
     "risk_factors": {
@@ -373,6 +382,16 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 def _save_result(result: Dict[str, Any]) -> None:
+    """period別ファイル・latest.json・index.jsonへ保存する。
+
+    [[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで発見・修正: `fetch_quarterly_
+    updates()`はEDGARの返却順（新しい順）で複数四半期分をまとめて返す
+    ため、単純にループ内で毎回latest.jsonを上書きすると、最後に処理した
+    （＝最も古い）期間がlatest.jsonに残ってしまう回帰があった（PLTR/SOFI
+    両方で実際に発生: 2026Q2の後に2026Q1を保存した結果latest.jsonが
+    2026Q1のままになっていた）。既存latest.jsonの`report_date`と比較し、
+    新しい方のみを採用する。
+    """
     item_key   = result["item_key"]
     ticker     = result["ticker"]
     period     = result["period"]
@@ -383,8 +402,22 @@ def _save_result(result: Dict[str, Any]) -> None:
     latest_path = os.path.join(item_dir, "latest.json")
     index_path  = os.path.join(item_dir, "index.json")
 
-    for path in (period_path, latest_path):
-        with open(path, "w", encoding="utf-8") as f:
+    with open(period_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+
+    should_write_latest = True
+    if os.path.exists(latest_path):
+        try:
+            with open(latest_path, encoding="utf-8") as f:
+                existing_latest = json.load(f)
+            existing_report_date = existing_latest.get("report_date") or ""
+            new_report_date = result.get("report_date") or ""
+            if existing_report_date and new_report_date and new_report_date < existing_report_date:
+                should_write_latest = False
+        except Exception:
+            should_write_latest = True
+    if should_write_latest:
+        with open(latest_path, "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=2)
 
     existing_periods: List[str] = []

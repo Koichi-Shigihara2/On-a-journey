@@ -101,6 +101,35 @@ class TestExtractItemSection:
         assert "Revenue increased" in seg
         assert "Unregistered Sales" not in seg
 
+    def test_restrict_after_re_ignores_trailing_cross_reference_false_positive(self):
+        """[[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで発見した回帰:
+        単純な`part\\s+ii\\b`だと文末の証明書等にある「Part II, Item 5.
+        Other Information」のようなクロスリファレンスにも一致し、
+        `matches[-1]`が本来のPart II区切りより後ろになってしまい抽出が
+        失敗する（PLTR 2026-03-31 10-Qで実際に発生）。
+        `PART_II_DIVIDER_RE`（"OTHER INFORMATION"が直後に続く場合のみ
+        一致）でこれを回避できることを確認する。"""
+        part1 = "Item 1. Financial Statements\n" + "a" * 100
+        real_divider = "\nPART II - OTHER INFORMATION\n"
+        real_body = "Item 1. Legal Proceedings\nWe face claims. " + "b" * 200
+        boundary = "Item 1A. Risk Factors\n..."
+        trailing_ref = (
+            "\nExhibit 31.1 Certification\nas discussed in "
+            "Part II, Item 5. Other Information of our prior Quarterly Report.\n"
+        )
+        text = part1 + real_divider + real_body + boundary + trailing_ref
+
+        item_re = re.compile(r"(?i)item\s+1[\.\s](?!a)")
+        next_res = [re.compile(r"(?i)item\s+1a[\.\s]")]
+        anchor_re = re.compile(r"(?i)legal\s+proceedings")
+
+        start, seg = sif.extract_item_section(
+            text, item_re, next_res, anchor_re,
+            restrict_after_re=sif._PART2_RE,
+        )
+        assert start == text.index("Item 1. Legal Proceedings")
+        assert "We face claims" in seg
+
     def test_max_chars_truncates_segment(self):
         real = "ITEM 1A. RISK FACTORS\n" + "z" * 100
         text = real
@@ -168,9 +197,36 @@ class TestSaveResult:
         with open(index_path, encoding="utf-8") as f:
             periods = json.load(f)["periods"]
         assert set(periods) == {"2025FY", "2026Q1"}
-        # latest.jsonは最後に保存した呼び出し（2026Q1）の内容
+        # report_date未設定の場合は比較不能なため、従来通り最後の呼び出し
+        # （2026Q1）の内容がlatest.jsonに残る（フォールバック挙動）
         with open(os.path.join(str(tmp_path), "mda", "TEST", "latest.json"), encoding="utf-8") as f:
             assert json.load(f)["period"] == "2026Q1"
+
+    def test_latest_json_keeps_most_recent_report_date_regardless_of_call_order(
+        self, tmp_path, monkeypatch
+    ):
+        """[[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで発見した回帰:
+        `fetch_quarterly_updates()`はEDGARの返却順（新しい順）で複数
+        四半期分を返すため、ループ内でperiodを新しい順（Q2→Q1）に保存
+        すると、単純な「最後の呼び出しがlatest」ロジックではQ1（古い方）
+        がlatest.jsonに残ってしまっていた（PLTR/SOFI両方で実際に発生）。
+        report_dateを比較して新しい方のみ採用することを確認する。"""
+        monkeypatch.setattr(sif, "DATA_DIR", str(tmp_path))
+        # 新しい順（EDGARの返却順どおり）に保存する
+        sif._save_result({
+            "ticker": "TEST", "item_key": "risk_factors", "period": "2026Q2",
+            "report_date": "2026-06-30",
+        })
+        sif._save_result({
+            "ticker": "TEST", "item_key": "risk_factors", "period": "2026Q1",
+            "report_date": "2026-03-31",
+        })
+
+        latest_path = os.path.join(str(tmp_path), "risk_factors", "TEST", "latest.json")
+        with open(latest_path, encoding="utf-8") as f:
+            latest = json.load(f)
+        assert latest["period"] == "2026Q2"
+        assert latest["report_date"] == "2026-06-30"
 
 
 class TestReportDateConversion:
