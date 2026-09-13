@@ -3014,45 +3014,9 @@ None値系警告）以外に新規の異常なし。
 
 ## 優先度：高（早急に対応）
 
-### [MACRODATA-FULL-HISTORY-DAILY-REFETCH-1] fetch_series()/fetch_all_series()がstart未指定時に常に全期間履歴を再取得する設計になっている（日次cronが非効率）
-**優先度:** 低〜中（実害は限定的〈FRED APIへの負荷・実行時間増加のみ、
-upsert設計のため正確性への影響はない〉が、`common/market_data/`が
-確立した「日次は直近のみ・全期間取得は一過性の別関数」という設計
-パターンから逸脱している）
-**分類:** 設計改善 / 効率性
-**登録日:** 2026-08-12
-**発見:** `common/macro_data/`定期取得ワークフロー新設・動作確認
-（`fetch_all_series()`の実FRED_API_KEYによるローカル実行、チャット
-記録、2026-08-12）
-
-#### 内容
-`common/macro_data/fetcher.py::fetch_series(series_id, start=None)`は
-`start`未指定時、`observation_start`パラメータをFRED APIへ渡さない
-ため、系列の提供開始日（系列によっては1940〜1970年代）からの**全期間
-履歴**を毎回取得する。`.github/workflows/Macro_Data_Update.yml`
-（毎日UTC10:00実行、`python common/macro_data/fetcher.py`を`start`
-指定なしで呼び出す）はこの関数を経由するため、**日次cronが実行の
-たびに25系列全件・合計約9.5万レコード（初回実測、18MB）を毎回
-再取得する**設計になっている。
-
-これは`common/market_data/fetcher.py`が確立した設計パターン
-（`fetch_daily_prices()`＝日次cronは直近数日分のみ取得・
-`backfill_daily_prices(period/start)`＝全期間取得は定期cronに
-組み込まない一過性の別関数）から逸脱している。`update_series()`は
-日付単位のupsertのため正確性への実害はないが、FRED APIへの負荷・
-GitHub Actions実行時間・git差分サイズが日次cronとしては不必要に
-大きい。
-
-#### 対応方針（未定）
-- `fetcher.py`のCLIへ`--start`引数を追加し、`Macro_Data_Update.yml`の
-  日次cron呼び出し側は直近数日〜数週間分のみを指定する
-  （`common/market_data/`の`fetch_daily_prices()`相当の設計に揃える）
-- 初回の全期間投入は今回実施済みのため、以降は「直近分のみ日次取得・
-  全期間再取得が必要な場合のみ手動で`--start`省略実行」という運用に
-  切替える
-
-#### 着手条件
-なし。次回`common/macro_data/`関連作業時に対応要否を判断する。
+（[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]は2026-09-13実装完了、
+日次cronの取得範囲を直近400日に限定、BACKLOG_DONE.md「2026-09-13
+（完了）」参照）
 
 ---
 

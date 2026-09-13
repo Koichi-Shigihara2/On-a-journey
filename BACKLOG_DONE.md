@@ -264,6 +264,90 @@ toolでのテキストベース部分削除（丸ごと書き直しではなく�
 
 ---
 
+### ✅ [MACRODATA-FULL-HISTORY-DAILY-REFETCH-1] fetch_series()/fetch_all_series()がstart未指定時に常に全期間履歴を再取得する設計になっている（日次cronが非効率） — CLI --start追加＋日次cronを直近400日に限定して解消
+**状態:** ✅実装完了
+**優先度:** 低〜中 → 完了
+**分類:** 設計改善 / 効率性
+**登録日:** 2026-08-12
+**完了日:** 2026-09-13
+**発見:** `common/macro_data/`定期取得ワークフロー新設・動作確認
+（`fetch_all_series()`の実FRED_API_KEYによるローカル実行、チャット
+記録、2026-08-12）
+
+#### 内容（登録時点）
+`common/macro_data/fetcher.py::fetch_series(series_id, start=None)`は
+`start`未指定時、`observation_start`パラメータをFRED APIへ渡さない
+ため、系列の提供開始日（系列によっては1940〜1970年代）からの**全期間
+履歴**を毎回取得する。`.github/workflows/Macro_Data_Update.yml`
+（毎日UTC10:00実行、`python common/macro_data/fetcher.py`を`start`
+指定なしで呼び出す）はこの関数を経由するため、**日次cronが実行の
+たびに25系列全件・合計約9.5万レコード（初回実測、18MB）を毎回
+再取得する**設計になっていた。`update_series()`自体は`start`引数を
+既に持ちfetch_series()へ正しく伝播する設計ができていたが、
+`fetch_all_series()`とCLI（`__main__`）の間の配線だけが欠けていた。
+
+これは`common/market_data/fetcher.py`が確立した設計パターン
+（`fetch_daily_prices()`＝日次cronは直近数日分のみ取得・
+`backfill_daily_prices(period/start)`＝全期間取得は定期cronに
+組み込まない一過性の別関数）から逸脱していた。`update_series()`は
+日付単位のupsertのため正確性への実害はないが、FRED APIへの負荷・
+GitHub Actions実行時間・git差分サイズが日次cronとしては不必要に
+大きかった。
+
+#### 400日の妥当性確認（実装前、2026-09-13）
+対象25系列（`series_meta.json`）のcategoryを精査した:
+monthly_indicator 9・liquidity 6・rate_expectation 4・daily_indicator
+3・market_pulse 2・ticker_display 1。GDP等の深い遡及改定系列（BEAの
+5年周期包括改定等）は対象に含まれておらず、年次改定リスクがある
+系列はmonthly_indicatorカテゴリのPAYEMS（雇用統計、毎年2月の年次
+ベンチマーク改定が通常直近12ヶ月程度を対象）・CFNAI・PERMIT・
+SAHMCURRENTの4系列にほぼ限定されると確認した。400日（約13.2ヶ月）は
+日次cronが毎日ローリングする設計と組み合わさるため、これらの年次
+改定を十分にカバーできると判断（懸念なし、依頼書の想定通り実装）。
+
+#### 実装内容
+1. `fetcher.py::fetch_all_series()`に`start`引数を追加し、
+   `update_series(series_id, start=start, base_dir=base)`へ伝播
+2. `__main__`ブロックに`argparse`で`--start`オプション（省略可、
+   `YYYY-MM-DD`形式）を追加し、`fetch_all_series(series_ids=
+   target_series, start=args.start)`へ渡す
+3. `.github/workflows/Macro_Data_Update.yml`のRun fetch_all_series
+   ステップを3分岐に変更:
+   - `series_ids`指定あり（workflow_dispatch）→ 従来通り全期間取得
+   - `github.event_name == "schedule"`（日次cron）→
+     `--start $(date -d '400 days ago' +%Y-%m-%d)`を追加
+   - それ以外（`series_ids`空欄のworkflow_dispatch手動実行）→
+     従来通り全期間取得のまま維持
+
+**設計上の訂正（依頼書からの逸脱、実装前にAskUserQuestionで確認）**:
+依頼書は「`series_ids`の有無」のみで分岐する想定だったが、その場合
+`series_ids`空欄のworkflow_dispatch手動実行も日次cronと同じ`--start`
+分岐に入ってしまい、依頼書が意図する「手動での全期間再取得手段を
+残す」目的が`series_ids`空欄の手動実行では達成されないと判明した
+（現状の`else`分岐は「日次cron」と「`series_ids`空欄の手動実行」の
+両方が通る共通の分岐だったため）。`github.event_name`で分岐する方式
+（`schedule`のみ`--start`）への変更を提示し承認を得た上で採用、
+workflow_dispatchは`series_ids`指定の有無に関わらず常に全期間取得の
+ままとした。
+
+#### 検証結果
+- 新規回帰テスト5件追加（`TestStartParamPropagation`、
+  `update_series()`・`fetch_all_series()`両方で`start`引数がFRED API
+  の`observation_start`へ正しく伝播すること・省略時は従来通り
+  `observation_start`自体を渡さないこと・既存の重複日付upsert動作が
+  非破壊のままであることをモックで確認）
+- `common/macro_data/fetcher.py --help`でCLI引数定義を確認、
+  `series_ids`＋`--start`同時指定時のargparse組み合わせ動作も確認
+- workflow YAMLの構文検証（`yaml.safe_load()`）・シェルスクリプト
+  部分の`bash -n`構文検証・`date -d '400 days ago'`計算の実行確認
+- `pytest`: 1236 passed（新規5件含む、新規failure0件）
+- `common/sec_data/audit.py`: 正常89・警告10（既存WARNのみ、本タスク
+  と無関係）
+- `common/sec_data/report_consistency_check.py --fail-on-ng`: NG=0・
+  ゲート通過（exit 0）
+
+---
+
 ## 2026-09-12（完了）
 
 ### ✅ [MA-INTEGRATION-TAG-GAP-1] adjustment_items.jsonのma_integration項目がXBRLタグ不足、境界近傍銘柄の「跳ね返り」を招く二値ゲート設計 — 連続スケーリング化＋未登録2タグ追加で根治的に解消
