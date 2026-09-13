@@ -348,6 +348,97 @@ workflow_dispatchは`series_ids`指定の有無に関わらず常に全期間取
 
 ---
 
+### ✅ [TAIL-SEC-ITEMS-1] TANUKI TAIL SEC項目の保存拡張（Item 1/1A/3/7） — Item1A/3/7をTANUKI TAIL全10銘柄へ展開完了
+**状態:** ✅実装・全銘柄展開完了（APGEのみrisk_factors/mdaに既知のギャップあり、別途新規登録）
+**優先度:** 中 → 完了
+**分類:** 機能追加 / TANUKI TAIL
+**登録日:** 2026-06-27
+**完了日:** 2026-09-13
+
+#### 問題（登録時点）
+現在はItem 4（内部統制）のみ保存・表示している。
+以下の項目もItem 4と同様にEDGARから取得・保存・表示したい：
+- Item 1: Business（事業概要）
+- Item 1A: Risk Factors（リスク要因）
+- Item 3: Legal Proceedings（法的手続き）
+- Item 7: Management's Discussion and Analysis（MD&A）
+
+#### 対応方針（登録時点）
+sec_ctrl_fetcher.pyを拡張するか別スクリプトを作成するか設計判断が必要。
+TAIL-CTRL-TRANS-1（2026-06-27完了）の構造を踏襲する。
+
+#### STEP1調査（2026-09-13、読み取りのみ）
+対象をItem 1A（Risk Factors）・Item 3（Legal Proceedings）・Item 7
+（MD&A）の3項目に確定（Item 1「Business」は対象外）。PLTR/SOFI/CELHの
+実filingを直接取得し、目次(TOC)・本文中の相互参照によるItemマーカー
+誤検知が実データで多数確認された（既存Item4と異なり単純な最長一致では
+不十分）。TOC特有のパターン（見出し直後にページ番号→次項目マーカー）・
+Part I/IIの同一Item番号衝突（10-QのItem 1=Financial Statements vs
+Legal Proceedings等）・「重要な変更なし」文言の3パターン（CELH型・
+SOFI型・PLTR型〈全文再掲〉）を実データで確認・報告した。
+
+#### STEP2-A実装
+- `src/tail/sec_ctrl_fetcher.py`: `_get_recent_10q()`を`_get_recent_
+  filings(cik, form, count, after_date)`へform引数化して汎用化、
+  `_translate_item4()`を`_translate_excerpt(text, item_description,
+  timeout)`へ項目非依存化（既存Item4呼び出しは無変更で動作確認済み）
+- `src/tail/sec_items_fetcher.py`（新設）: TOC誤検知除外・Part II境界
+  限定を組み込んだ汎用境界抽出関数、正規表現ベースの「変更なし」検知
+  （CELH/SOFI型のみ検知、PLTR型〈文言なし全文再掲〉は`changed:
+  "unknown"`として明示）、既存`ctrl/`と同型の保存構造
+  （`{item_key}/{TICKER}/{FY}FY.json`・`{YYYY}Q{N}.json`）
+
+#### STEP2-Bパイロット（PLTR/SOFI）
+実行中に2件のバグを発見・修正:
+1. PART II境界判定の誤検知: 文書末尾の証明書等にある他filingへの
+   クロスリファレンス（"Part II, Item 5. Other Information"等）が
+   `part\s+ii\b`に誤マッチし境界特定に失敗（PLTR 2026-03-31 10-Qで
+   実際に発生）。"OTHER INFORMATION"が直後に続く場合のみ一致するよう
+   正規表現を厳密化して解消
+2. latest.json上書き順序バグ: EDGARが新しい順で複数四半期を返すため、
+   単純な「最後の呼び出しがlatest」ロジックだと古い期間が残ってしまう
+   回帰をPLTR・SOFI両方で確認。report_date比較で新しい方のみ採用する
+   よう修正
+
+MD&A翻訳のGrokタイムアウトを60秒→120秒に延長（PLTR MD&Aの2四半期分が
+60秒では複数回タイムアウトした実測を踏まえた対応、他2項目・既存Item4は
+60秒のまま）。テスト23件追加。
+
+#### 全銘柄展開（2026-09-13、残り8銘柄）
+TANUKI TAIL全10ポジション中、PLTR/SOFI（パイロット済み）を除く8銘柄
+（TSLA/CELH/APP/NVDA/ADBE/SOUN/CRWV/APGE）へ展開実行。
+
+- **7銘柄（TSLA/CELH/APP/NVDA/ADBE/SOUN/CRWV）は3項目とも完全成功**
+  （各`annual_ok=3・quarterly_ok=6・ng=0`）
+- **APGEのみrisk_factors・mdaの2項目が抽出失敗**（10-K本文の見出し
+  テキスト自体に単語内スペース混入`"Item 1  A."`・`"Discussio  n"`が
+  あり現行正規表現が不一致、legal_proceedingsは成功）。無断で正規表現を
+  修正せず報告した上で、`[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`として
+  別途新規登録（本エントリのクローズ判断はKoichiさんの承認取得済み）
+- 保存ファイル数: risk_factors 45・legal_proceedings 50・mda 45
+  （計140、内訳は上記の成功/失敗パターンと完全に整合）を確認済み
+
+**Grok API実測コスト（全体、PLTR/SOFIパイロット14回＋残り8銘柄66回）**:
+- 呼び出し成功: 80回、失敗: 2回（PLTR mdaの2四半期分、タイムアウト、
+  パイロット時点。全銘柄展開時は0失敗）
+- token合計: prompt 41,447・completion 24,330・total 112,160
+- `cost_in_usd_ticks`合計: 2,151,512,500（tick→USD換算率がコード内に
+  未文書化のため、`[[GROK-MODEL-PRICE-1]]`の過去実績を踏まえドル金額の
+  断定は避け、xAI Console実費用確認をKoichiさんへ委ねた）
+
+#### 検証結果
+- pytest 1259件成功（新規テスト計23件含む）
+- `report_consistency_check.py --fail-on-ng`: NG=0・ゲート通過
+- 保存JSON内容を複数銘柄でサンプル確認（`changed`フィールドの3状態
+  〈False/"unknown"/None〉・日本語訳の品質とも設計通り）
+
+#### クローズ判断
+7/8銘柄（PLTR/SOFI含め9/10銘柄）が完全成功、APGEの既知ギャップは
+別エントリへ切り出し済みのため、Koichiさんの承認を得て本エントリを
+クローズする。
+
+---
+
 ## 2026-09-12（完了）
 
 ### ✅ [MA-INTEGRATION-TAG-GAP-1] adjustment_items.jsonのma_integration項目がXBRLタグ不足、境界近傍銘柄の「跳ね返り」を招く二値ゲート設計 — 連続スケーリング化＋未登録2タグ追加で根治的に解消

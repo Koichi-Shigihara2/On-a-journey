@@ -5528,57 +5528,58 @@ SYSTEM_MAP.md「AutoTrade/OpenD運用前提」参照）。
 
 ---
 
-### [TAIL-SEC-ITEMS-1] TANUKI TAIL SEC項目の保存拡張（Item 1/1A/3/7）
+（[[TAIL-SEC-ITEMS-1]]は2026-09-13、TANUKI TAIL全10銘柄への展開完了
+（うちAPGEはrisk_factors/mdaの2項目のみ既知のギャップあり、
+[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]として別途新規登録）によりクローズ、
+BACKLOG_DONE.md「2026-09-13（完了）」参照）
+
+---
+
+### [TAIL-SEC-ITEMS-APGE-WHITESPACE-1] APGEの10-K本文で見出しテキスト自体に単語内スペースが混入しItem境界抽出が失敗する
 **優先度:** 中
-**分類:** 機能追加 / TANUKI TAIL
-**登録日:** 2026-06-27
+**分類:** バグ / TANUKI TAIL / SEC filingパース
+**登録日:** 2026-09-13
+**発見:** `[[TAIL-SEC-ITEMS-1]]`全銘柄展開実行時（APGE、チャット記録）
 
-#### 問題
-現在はItem 4（内部統制）のみ保存・表示している。
-以下の項目もItem 4と同様にEDGARから取得・保存・表示したい：
-- Item 1: Business（事業概要）
-- Item 1A: Risk Factors（リスク要因）
-- Item 3: Legal Proceedings（法的手続き）
-- Item 7: Management's Discussion and Analysis（MD&A）
+#### 内容
+`sec_items_fetcher.py`をAPGE（Apogee Therapeutics）へ適用したところ、
+10-K（accn `0001974640-26-000002`）の`risk_factors`（Item 1A）・
+`mda`（Item 7）の2項目が抽出失敗した（`legal_proceedings`〈Item 3〉は
+成功）。原因を実データで特定済み: APGEの10-K本文の見出しテキスト自体に
+**単語内へのスペース混入**がある。
 
-#### 対応方針
-sec_ctrl_fetcher.pyを拡張するか別スクリプトを作成するか設計判断が必要。
-TAIL-CTRL-TRANS-1（2026-06-27完了）の構造を踏襲する。
+- Item 1A見出し: `"Item 1  A. Risk Factors"`（"1"と"A"の間に半角
+  スペース2個）。現行正規表現`item\s+1a[\.\s]`は"1a"を連続トークンと
+  仮定しているため不一致
+- Item 7見出し: `"Item 7. Management s Discussio  n and Analysis..."`
+  （"Discussion"の"o"と"n"の間にスペース2個、"Discussio  n"という
+  単語内分断）。アンカー正規表現
+  `management.{0,3}s\s+discussion\s+and\s+analysis`が"discussion"を
+  連続トークンと仮定しているため不一致
 
-#### 進捗（2026-09-13、実装・パイロット完了・全銘柄展開は保留中）
-STEP1（設計調査）→STEP2-A（実装）→STEP2-B（PLTR/SOFIパイロット実行）
-まで完了。対象はItem 1A（Risk Factors）・Item 3（Legal Proceedings）・
-Item 7（MD&A）の3項目（Item 1「Business」は対象外と確定）。
+なお目次（TOC）部分では同じ箇所が`"1A. Risk Factors"`と正常表記されて
+おり、本文見出し側のみにこの分断が生じている（同一文書内でTOCと本文の
+HTMLマークアップ構造が異なることに起因すると推定、根本原因〈inline
+タグの分割等〉の特定は未実施）。他9銘柄（PLTR/SOFI/TSLA/CELH/APP/
+NVDA/ADBE/SOUN/CRWV）ではこの種の単語内スペース混入は確認されていない
+（APGE固有、または類似の稀な事例の可能性）。
 
-- `src/tail/sec_ctrl_fetcher.py`: `_get_recent_10q()`を`_get_recent_
-  filings(cik, form, count, after_date)`へform引数化して汎用化、
-  `_translate_item4()`を`_translate_excerpt(text, item_description,
-  timeout)`へ項目非依存化（既存Item4呼び出しは無変更で動作確認済み）
-- `src/tail/sec_items_fetcher.py`（新設）: TOC誤検知除外・Part II境界
-  限定を組み込んだ汎用境界抽出関数、正規表現ベースの「変更なし」検知
-  （CELH/SOFI型のみ検知、PLTR型〈文言なし全文再掲〉は`changed:
-  "unknown"`として明示）、既存`ctrl/`と同型の保存構造
-  （`{item_key}/{TICKER}/{FY}FY.json`・`{YYYY}Q{N}.json`）
-- PLTR/SOFIパイロット実行で2件のバグを発見・修正済み（PART II境界の
-  クロスリファレンス誤検知・latest.json上書き順序バグ）。MD&A翻訳の
-  Grokタイムアウトを60秒→120秒に延長（PLTR MD&Aの2四半期分が60秒では
-  複数回タイムアウトした実測を踏まえた対応、他2項目・既存Item4は
-  60秒のまま）
-- テスト23件追加（`tests/test_tail_sec_items_fetcher.py`）、
-  pytest全体1259件成功、`report_consistency_check.py --fail-on-ng`
-  NG=0
+#### 対応方針（未定・実装前に設計判断が必要）
+- 案A: `extract_item_section()`の`item_re`/`anchor_re`適用前に、
+  対象テキストの連続する複数スペース（`\s{2,}`等）を単一スペースへ
+  正規化する前処理を追加する。ただし既存9銘柄・既存Item4パイプライン
+  への影響がないか全銘柄再検証が必要（意図しない副作用のリスク: 元々
+  複数スペースが情報を持つ稀なケースがないか等）
+- 案B: APGE個別のfallback正規表現（`1\s+a`のように空白許容パターン）を
+  `ITEM_CONFIGS`に追加する対症療法。汎用性は低いが既存9銘柄への影響
+  ゼロで確実
+- 実害範囲: APGEの`risk_factors`・`mda`が現状データ欠落のまま
+  （`legal_proceedings`は正常）。非保有銘柄（TANUKI TAIL対象だが
+  ポートフォリオ保有かは別途確認要）
 
-**残タスク（未実施、判断待ち）**:
-- 全10銘柄（TANUKI TAIL全ポジション）への展開は未実施。PLTR/SOFI
-  2銘柄のパイロットデータのみ`docs/portfolio/tail/data/
-  {risk_factors,legal_proceedings,mda}/`に保存済み
-- Grok API実測コスト（パイロット14回成功・2回失敗、
-  `cost_in_usd_ticks`合計380,412,000）の実際のドル換算・xAI Console
-  上の実費用確認が未完了。tick→USD換算率がコード内に文書化されて
-  おらず、`[[GROK-MODEL-PRICE-1]]`の過去実績（コード側想定とxAI
-  Console実請求が食い違った実例）を踏まえ、**KoichiさんによるxAI
-  Console実費用確認を待ってから全銘柄展開の可否を判断する**
-- 本エントリは上記理由によりクローズせず、オープンのまま残す
+#### 着手条件
+なし。次回`[[TAIL-SEC-ITEMS-1]]`関連作業時、または低優先度課題群
+まとめ対応時に着手検討。
 
 ---
 
