@@ -3247,44 +3247,9 @@ UNDERCOUNT-1]]`・`[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`・
 
 ---
 
-### [MARKETDATA-VIX9D-DATA-GAP-1] ^VIX9Dのyfinanceデータに約1ヶ月の欠落期間（2026-07-17〜08-10）が存在する
-**優先度:** 中（`collect_and_send.py`のsentiment_score算出
-〈vix_level補正〉・VIX9D対VIX比較の直接入力のため、`[[MARKETDATA-
-CWAN-FROZEN-DATA-SUSPECT-1]]`より実害の潜在範囲が広い。ただし現時点の
-実測ではsentiment_scoreへの影響はゼロと確認済み、詳細は「内容」参照）
-**分類:** データ品質疑い / 外部データソース側の異常疑い
-**登録日:** 2026-08-11
-**発見:** `[[MARKETDATA-LAYER-CONSTRUCTION-1]]`着手順序4-6
-（`collect_and_send.py`切替）のStep3検証中（チャット記録、2026-08-11）
-
-#### 内容
-`common/market_data/daily/^VIX9D.json`（`period="1y"`バックフィル済み）
-を確認したところ、2026-07-17を最後に次のレコードが2026-08-10まで
-存在しない（約1ヶ月分の欠落）。**yfinance側の問題であることを実測で
-確認済み**: `yf.Ticker("^VIX9D").history(period="1mo")`を実行しても
-Yahoo Finance自体が2026-07-13〜07-17の5件しか返さず、`period="5d"`では
-2026-08-10の1件のみしか返らない。取得コード側の不具合ではなくデータ
-ソース側の欠落（`[[MP-IRX-FRED-1]]`の教訓通り、一次情報〈yfinance直接
-呼び出し〉で切り分け済み）。
-
-実害範囲: `collect_and_send.py::get_realtime_data()`のVIX9D関連2出力
-（メイン指標表示・VIX9D対VIX比較）と`compute_sentiment()`の
-`vix_level`サブスコア補正（VIX9D逆転時-0.05）が、直近2営業日の実データ
-不足により中立デフォルト（None・補正なし）にフォールバックする。
-2026-08-11時点の実測比較では、`compute_sentiment()`の`vix_level`
-サブスコアは切替前後（yfinance直接呼び出し版・market_data版）で完全
-一致しており、両者ともVIX9D欠落の影響を同一に受けている（本切替による
-新規劣化ではない）ことを確認済み。
-
-#### 対応方針（未定）
-- 単発の事象か、繰り返し発生するかを次回日次バッチ実行時に再確認する
-- yfinance側でVIX9Dのデータ提供が回復するかを継続監視する
-- 実害が拡大した場合（sentiment_scoreの結果自体に有意な影響が出る場合）
-  のみ優先度を上げ、代替データソース（CBOE公式等）への切替を検討する
-
-#### 着手条件
-なし。優先度中だが実害は現時点でゼロと確認済みのため、次回同種事象の
-再確認時に着手判断する。
+（[[MARKETDATA-VIX9D-DATA-GAP-1]]は2026-09-13、2026-08-10復旧以降
+2026-09-11まで約1ヶ月間欠落なく正常収集が継続していることを実データで
+再確認しクローズ、BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
 ---
 
