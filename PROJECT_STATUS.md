@@ -527,6 +527,52 @@
   コード・データには変更なし。現存BACKLOG.md総数は機械カウントで
   **54件**（57件からクローズ5件・新規登録1件で3件減）。
 
+- **2026-09-13**（複数の指示書を順次実施、9件完了・全てpush済み）:
+  1. `[[QUALITY-GATES-EPIC-1]]`Phase4棚卸しのテキストドリフト是正
+     （記録のみ、本体は最高優先度のままクローズせず）: Step 3提案項目
+     3・4が既に別タスクで解消済みだったことを確認・追記
+  2. `[[CONFIG-LOAD-SILENT-FALLBACK-1]]`クローズ（コミット
+     `0b1b60ffd6`・`cdb4722bf9`）: 残り3件（prompts.yaml・
+     maturity_config.json・segment_config.json/growth_options_
+     config.json）にCHECK-34の`resolve_*_path()`パターンを適用、
+     対象7ファイル全件対応完了。既知だったBACKLOG.md/BACKLOG_DONE.md
+     間のID重複も解消
+  3. `[[MARKETDATA-VIX9D-DATA-GAP-1]]`クローズ（コミット
+     `8a1878a5a0`、記録のみ）: 実データで再発なし・実害ゼロと確定
+  4. `[[MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1]]`クローズ（コミット
+     `0d6cd5f019`、診断訂正のみ）: Wikipedia実ページを直接検証し、
+     登録時の「不正銘柄コード混入」診断自体が誤りと確定
+     （FDXF/HONA/Qはいずれも実在するスピンオフ銘柄）
+  5. `[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`実装完了
+     （コミット`c1472e3e6c`）: `05_indicator_schedule.csv`の残存
+     scheduled行7件を、安全性を実コードで検証した上で削除
+  6. `[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`実装完了（コミット
+     `5c9b106415`・`d2f9c67fef`）: `fetcher.py`に`--start`引数を追加し
+     日次cronを直近400日に限定。依頼書の分岐設計の食い違いを発見し
+     `github.event_name`分岐へ変更（AskUserQuestionで確認済み）
+  7. `[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`FTSDケース分実装
+     完了（コミット`79169b583e`・`f592ed37a8`、本体は記録のみで
+     オープンのまま）: 無効なFRED系列コード`FTSD`を`WDTGAL`へ置換、
+     実FRED_API_KEYで実在・取得可能なことを直接検証
+  8. `[[TAIL-SEC-ITEMS-1]]`クローズ（コミット`4c2341cb5e`〜
+     `f5003d4b2f`計6件、TANUKI TAIL全10銘柄へ展開完了）: Item 1A/3/7
+     の取得基盤を新設しSTEP1〜STEP2実装→PLTR/SOFIパイロット→残り8
+     銘柄展開の順で完了。パイロット中に2件のバグ（PART II境界の
+     クロスリファレンス誤検知・latest.json上書き順序）を発見・修正。
+     APGEのみ10-K本文見出しテキスト自体への単語内スペース混入で
+     risk_factors/mdaが抽出失敗し、新規`[[TAIL-SEC-ITEMS-APGE-
+     WHITESPACE-1]]`として登録（9/10銘柄完全成功、承認を得てクローズ）
+
+  **セキュリティ上の注意（未対応）**: 検証作業でのシェルコマンド
+  誤操作により`FRED_API_KEY`の値の一部がツール出力へ一時露出する
+  事故が発生した。ローテーション（再発行）は未対応のまま次セッションへ
+  持ち越し。
+
+  詳細はBACKLOG_DONE.md「2026-09-13（完了）」節・`CLAUDE_CODE_START.md`
+  該当ブロック参照。新DB構築プロジェクトのコード・データには変更なし。
+  現存BACKLOG.md総数は機械カウントで**49件**（54件からクローズ6件・
+  新規登録1件で5件減）。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。

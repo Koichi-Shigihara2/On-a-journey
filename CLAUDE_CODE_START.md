@@ -12,16 +12,26 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-12時点）**: `BACKLOG.md`アクティブ件数
-**54件**（本日のセッションで6件完了〈クローズ5件＋据え置き更新1件〉・
-新規登録1件により、前回57件から3件減）。BACKLOG.md/BACKLOG_DONE.md間の
-ID重複は既知の1件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、段階的完了の
-意図的分割）のみで新規重複・移設漏れは0件（本セッションで機械確認済み）。
-最高/高優先度の未着手は現在**最高1件（`[[QUALITY-GATES-EPIC-1]]`）のみ、
-高は0件**（本セッションで全54件の優先度フィールドを機械確認した結果、
-過去の引き継ぎメモにあった「高9件」は各エントリが個別調査で中〜低へ
-既に引き下げ済みだった記載漏れ〈追随更新されていなかった〉と判明、
-本更新で是正）。詳細は下記の2026-09-12ブロック参照。
+**現在の到達点（2026-09-13時点）**: `BACKLOG.md`アクティブ件数
+**49件**（本日のセッションで9件完了〈クローズ6件＋記載更新のみ2件
+〈QUALITY-GATES-EPIC-1・MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1、
+いずれも本体は意図的に非クローズ〉＋据え置き〉・新規登録1件により、
+前回54件から5件減）。BACKLOG.md/BACKLOG_DONE.md間のID重複は
+**0件**（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`を本日クローズしたことで
+既知だった唯一の重複が解消）、新規重複・移設漏れも0件（本セッションで
+機械確認済み）。詳細は下記の2026-09-13ブロック参照。
+
+**本日発見した未対応の構造的ずれ（要注意、次セッション申し送り）**:
+`## 優先度：高`セクション見出し配下に、個別`**優先度:**`フィールドが
+実際には「中」「低」に引き下げ済みの4エントリ
+（`[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`・
+`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
+`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[SPAC-SHELL-MAINTAINED-
+FIELDS-FREEZE-CONSIDERATION-1]]`）が物理的に取り残されている
+（セクション移動を伴わないフィールド値のみの引き下げが過去に発生した
+ため）。過去セッションの「高は0件」という報告はフィールド値ベースの
+機械確認としては正しいが、セクション配置とは食い違っている。今回は
+スコープ外のため実際の移動は行わず記録のみ。
 
 **直近の重要な教訓**:
 1. **無許可着手の禁止** — 実装は依頼者の明示的な承認を得てから着手し、
@@ -37,6 +47,103 @@ ID重複は既知の1件（`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`、段階的完了
 3. その他の個別教訓（コミットメッセージのバッククォート事故・
    BACKLOG ID使用前のgrep確認・JSON部分編集の優先等）は各セッション
    ブロック・`CHAT_RULES.md`に事例番号付きで記録されている。
+
+---
+
+最終更新: 2026-09-13（**セッション終了時ブラッシュアップ・本日9件の
+指示書サマリー**。全てpush済み）:
+
+1. `[[QUALITY-GATES-EPIC-1]]`Phase 4棚卸しのテキストドリフト是正
+   （記録のみ、本体は最高優先度のままクローズせず）: Step 3提案項目
+   3・4（`growth.py`のFCFSeriesアクセサ採用・FIELD_DEFINITIONS.md
+   記録済み6件）が実際には既に別タスクで解消済みだったことを実コード・
+   `BACKLOG_DONE.md`の完了記録で確認し追記。残る未実装はJS↔Python
+   横断突合機構（高コスト）・誤称禁止の汎用機械検査（機械化困難）の
+   2点のみと明記
+2. `[[CONFIG-LOAD-SILENT-FALLBACK-1]]`クローズ（実装完了）:
+   残り3件（`prompts.yaml`・`maturity_config.json`・
+   `segment_config.json`/`growth_options_config.json`）にCHECK-34の
+   `resolve_*_path()`パターンを適用、対象7ファイル全件対応完了。
+   これにより既知だったBACKLOG.md/BACKLOG_DONE.md間のID重複
+   （唯一の既知重複だった）も解消
+3. `[[MARKETDATA-VIX9D-DATA-GAP-1]]`クローズ（記録のみ）: 実データで
+   2026-08-10復旧以降欠落なく継続していることを再確認、再発なし・
+   実害ゼロと確定
+4. `[[MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1]]`クローズ（診断訂正の
+   み）: Wikipedia実ページ（raw wikitext含む）を直接検証した結果、
+   登録時の「不正銘柄コード混入」という診断自体が誤りで、
+   FDXF/HONA/Qはいずれも実在するスピンオフ銘柄と確定
+5. `[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`実装完了:
+   `05_indicator_schedule.csv`の残存scheduled行7件を削除。削除前に
+   `update_schedule()`・`main()`の日付照合ロジック・
+   `_duplicate_risk_indicators()`への影響を実コードで確認した上で実施
+6. `[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`実装完了: `fetcher.py`
+   に`--start`引数を追加し日次cronを直近400日に限定。依頼書は
+   「series_ids有無」で分岐する設計だったが、それだと`series_ids`
+   空欄の手動実行も制限されてしまう食い違いを発見し、
+   `github.event_name`分岐へAskUserQuestionで確認の上変更
+7. `[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`FTSDケース分実装
+   完了（本体は記録のみでオープンのまま）: 無効なFRED系列コード
+   `FTSD`を正しい代替`WDTGAL`へ置換。実FRED_API_KEYで`WDTGAL`が
+   実在・取得可能なことを直接検証
+8. `[[TAIL-SEC-ITEMS-1]]`クローズ（TANUKI TAIL全10銘柄へ展開完了）:
+   Item 1A（Risk Factors）・Item 3（Legal Proceedings）・Item 7
+   （MD&A）の取得基盤を新設しSTEP1調査→STEP2実装→PLTR/SOFIパイロット
+   →残り8銘柄展開の順で完了。パイロット中に2件のバグ（PART II境界の
+   クロスリファレンス誤検知・latest.json上書き順序）を発見・修正。
+   APGEのみ10-K本文の見出しテキスト自体への単語内スペース混入
+   （"Item 1  A."等）でrisk_factors/mdaが抽出失敗し、無断で正規表現を
+   修正せず新規`[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`として登録
+   （9/10銘柄は完全成功、AskUserQuestionでKoichiさんの承認を得て
+   本エントリはクローズ）
+
+**セキュリティ上の注意（要フォローアップ）**: 本セッション中、
+検証作業でのシェルコマンド誤操作により`FRED_API_KEY`環境変数の値の
+一部がツール出力へ一時的に露出する事故が発生した（実FRED API
+呼び出しへの影響はなし）。**FRED_API_KEYのローテーション（再発行）は
+未対応のまま**。次セッション以降、Koichiさんの判断でローテーション
+要否を検討すること。
+
+**次セッションの着手候補**:
+- `[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`（APGEの10-K本文見出し単語内
+  スペース混入によるItem境界抽出失敗、案A〈汎用的な空白正規化、全銘柄
+  再検証要〉・案B〈APGE個別fallback〉を提示済み、実装未着手）
+- `FRED_API_KEY`のローテーション要否判断（上記セキュリティ注意参照）
+- 本日発見した`## 優先度：高`セクション見出しと個別`優先度:`フィールド
+  の不一致4件（上記「引き継ぎサマリー」参照）の是正（セクション移動、
+  未実施）
+- `[[TAIL-SEC-ITEMS-1]]`本体は全銘柄展開まで完了したため、Grok
+  API実測コスト（本日累計`cost_in_usd_ticks`2,151,512,500）の
+  実際のドル換算をxAI Console上で確認すること（`[[GROK-MODEL-
+  PRICE-1]]`と同様、コード側の想定とConsole実請求が食い違う可能性を
+  踏まえた確認）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本日クローズした6件
+  （`CONFIG-LOAD-SILENT-FALLBACK-1`・`MARKETDATA-VIX9D-DATA-GAP-1`・
+  `MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1`・`MACRODATA-SCHEDULED-
+  SILENT-GAP-CSCICP-USALOL-1`・`MACRODATA-FULL-HISTORY-DAILY-
+  REFETCH-1`・`TAIL-SEC-ITEMS-1`）全件が`### ✅ [ID]`パターンで
+  `BACKLOG_DONE.md`に存在し、`BACKLOG.md`側にアクティブヘッダーとして
+  残存していないことを`grep`で機械確認（該当0件、移設漏れなし）。
+  `QUALITY-GATES-EPIC-1`・`MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1`
+  （いずれも本体は意図的に非クローズ）・新規登録の
+  `TAIL-SEC-ITEMS-APGE-WHITESPACE-1`は`BACKLOG.md`にアクティブ
+  ヘッダーとして意図通り残存
+- ID重複チェック: `BACKLOG.md`・`BACKLOG_DONE.md`間でヘッダーIDが
+  重複するものは**0件**（`CONFIG-LOAD-SILENT-FALLBACK-1`の解消により
+  既知の重複が消滅）。`BACKLOG.md`内部でのヘッダーID重複も0件
+- 過去セッション分の移設漏れ再チェック: `grep -n "^### ✅ \["
+  BACKLOG.md`で0件（`### ✅`パターンの見出しが`BACKLOG.md`側に一件も
+  残存していないことを確認、過去分含め移設漏れなし）
+- git status: クリーン（未コミット変更・未追跡ファイルなし）。
+  scratchpadの一時ファイル（パイロット実行ログ・ドライバスクリプト
+  計3件）も確認・削除した
+- BACKLOG.mdアクティブ件数: 機械カウントで**49件**（前回2026-09-12
+  時点の54件から、本日のクローズ6件・新規登録1件により5件減）
+
+詳細は各BACKLOGエントリ・`BACKLOG_DONE.md`「2026-09-13（完了）」節・
+`PROJECT_STATUS.md`参照。
 
 ---
 
