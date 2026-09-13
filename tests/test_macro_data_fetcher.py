@@ -238,6 +238,80 @@ class TestViolationsLog:
         assert "SERIES_B" in log
 
 
+class TestStartParamPropagation:
+    """[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]: update_series()・
+    fetch_all_series()のstart引数がfetch_series()経由でFRED APIの
+    observation_startへ正しく伝播することを確認する（日次cronが
+    毎回全期間取得してしまう問題への対応）。"""
+
+    def test_update_series_start_reaches_fred_call(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+
+        fetcher.update_series("TESTSERIES", start="2025-08-10", base_dir=base)
+        assert fake.call_kwargs[0] == {"observation_start": "2025-08-10"}
+
+    def test_update_series_no_start_omits_observation_start(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+
+        fetcher.update_series("TESTSERIES", base_dir=base)
+        assert fake.call_kwargs[0] == {}
+
+    def test_fetch_all_series_start_reaches_every_series(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        os.makedirs(base, exist_ok=True)
+        with open(os.path.join(base, "series_meta.json"), "w", encoding="utf-8") as f:
+            json.dump({"SERIES_A": {}, "SERIES_B": {}}, f)
+
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+
+        fetcher.fetch_all_series(base_dir=base, start="2025-08-10")
+        assert fake.calls == 2
+        assert all(kw == {"observation_start": "2025-08-10"} for kw in fake.call_kwargs)
+
+    def test_fetch_all_series_no_start_omits_observation_start_for_every_series(
+        self, tmp_path, monkeypatch
+    ):
+        base = str(tmp_path)
+        os.makedirs(base, exist_ok=True)
+        with open(os.path.join(base, "series_meta.json"), "w", encoding="utf-8") as f:
+            json.dump({"SERIES_A": {}, "SERIES_B": {}}, f)
+
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+
+        fetcher.fetch_all_series(base_dir=base)
+        assert fake.calls == 2
+        assert all(kw == {} for kw in fake.call_kwargs)
+
+    def test_fetch_all_series_start_does_not_affect_existing_records_overlap(
+        self, tmp_path, monkeypatch
+    ):
+        """既存動作の非破壊確認: startありの呼び出しでも既存series/*.jsonの
+        重複日付は従来通りupsert（新しい取得値で上書き）されること。"""
+        base = str(tmp_path)
+        os.makedirs(base, exist_ok=True)
+        with open(os.path.join(base, "series_meta.json"), "w", encoding="utf-8") as f:
+            json.dump({"TESTSERIES": {}}, f)
+
+        fake = _FakeFred(series=_series([("2026-01-01", 4.1), ("2026-02-01", 4.2)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+        fetcher.fetch_all_series(base_dir=base)
+
+        fake.series = _series([("2026-02-01", 4.25), ("2026-03-01", 4.3)])
+        fetcher.fetch_all_series(base_dir=base, start="2026-02-01")
+
+        path = os.path.join(base, "series", "TESTSERIES.json")
+        with open(path, encoding="utf-8") as f:
+            payload = json.load(f)
+        records = {r["as_of"]: r["value"] for r in payload["records"]}
+        assert records == {"2026-01-01": 4.1, "2026-02-01": 4.25, "2026-03-01": 4.3}
+
+
 class TestFetchAllSeries:
     def test_defaults_to_series_meta_keys(self, tmp_path, monkeypatch):
         base = str(tmp_path)

@@ -286,11 +286,19 @@ def update_series(series_id: str, start: Optional[str] = None,
 
 
 def fetch_all_series(series_ids: Optional[List[str]] = None,
-                      base_dir: Optional[str] = None) -> List[Dict[str, Any]]:
+                      base_dir: Optional[str] = None,
+                      start: Optional[str] = None) -> List[Dict[str, Any]]:
     """series_meta.jsonの全系列（またはseries_ids指定分）に対し
     update_series()を順次実行するバッチ関数。`.github/workflows/
     Macro_Data_Update.yml`（定期実行cron・workflow_dispatch）から、
     本ファイル末尾の`__main__`ブロック経由で呼び出される。
+
+    Args:
+        start: 'YYYY-MM-DD'形式の取得開始日（省略時はFREDのデフォルト
+            全期間、update_series()経由でfetch_series()へそのまま伝播）。
+            [[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]: 日次cronが
+            毎回FRED観測開始日（系列によっては1940〜1970年代）からの
+            全期間を取得してしまう問題への対応で追加した。
 
     Returns:
         各系列のupdate_series()結果のリスト。
@@ -301,7 +309,7 @@ def fetch_all_series(series_ids: Optional[List[str]] = None,
 
     results = []
     for series_id in targets:
-        results.append(update_series(series_id, base_dir=base))
+        results.append(update_series(series_id, start=start, base_dir=base))
     return results
 
 
@@ -314,6 +322,12 @@ if __name__ == "__main__":
         help="対象FRED系列コード（省略時はseries_meta.json全系列、"
              "common/market_data/fetcher.pyのsymbols引数と同じパターン）",
     )
+    arg_parser.add_argument(
+        "--start", default=None,
+        help="取得開始日（YYYY-MM-DD形式、省略時はFREDのデフォルト全期間）。"
+             "[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]: 日次cronから"
+             "直近日数分のみに絞って呼び出す用途を想定。",
+    )
     args = arg_parser.parse_args()
 
     target_series = args.series_ids if args.series_ids else None
@@ -321,8 +335,10 @@ if __name__ == "__main__":
         print(f"対象系列数: {len(target_series)}")
     else:
         print("対象系列数: series_meta.json全系列")
+    if args.start:
+        print(f"取得開始日: {args.start}")
 
-    all_results = fetch_all_series(series_ids=target_series)
+    all_results = fetch_all_series(series_ids=target_series, start=args.start)
     total_warnings = sum(len(r["warnings"]) for r in all_results)
     total_updated = sum(r["updated"] for r in all_results)
     print(

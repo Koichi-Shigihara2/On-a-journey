@@ -45,6 +45,14 @@ jobs:
           if [ -n "${{ github.event.inputs.series_ids }}" ]; then
             SERIES=$(echo "${{ github.event.inputs.series_ids }}" | tr ',' ' ')
             python common/macro_data/fetcher.py $SERIES
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            # [[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]: 日次cronのみ直近
+            # 400日分に絞る（FRED観測開始日からの全期間取得を避ける）。
+            # workflow_dispatch（series_ids空欄の手動実行含む）はここを
+            # 通らず常に全期間取得のまま＝手動での全期間再取得手段として残す。
+            START_DATE=$(date -d '400 days ago' +%Y-%m-%d)
+            echo "取得開始日: ${START_DATE}（直近400日、日次cron）"
+            python common/macro_data/fetcher.py --start "$START_DATE"
           else
             python common/macro_data/fetcher.py
           fi
