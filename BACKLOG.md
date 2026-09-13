@@ -5545,6 +5545,41 @@ SYSTEM_MAP.md「AutoTrade/OpenD運用前提」参照）。
 sec_ctrl_fetcher.pyを拡張するか別スクリプトを作成するか設計判断が必要。
 TAIL-CTRL-TRANS-1（2026-06-27完了）の構造を踏襲する。
 
+#### 進捗（2026-09-13、実装・パイロット完了・全銘柄展開は保留中）
+STEP1（設計調査）→STEP2-A（実装）→STEP2-B（PLTR/SOFIパイロット実行）
+まで完了。対象はItem 1A（Risk Factors）・Item 3（Legal Proceedings）・
+Item 7（MD&A）の3項目（Item 1「Business」は対象外と確定）。
+
+- `src/tail/sec_ctrl_fetcher.py`: `_get_recent_10q()`を`_get_recent_
+  filings(cik, form, count, after_date)`へform引数化して汎用化、
+  `_translate_item4()`を`_translate_excerpt(text, item_description,
+  timeout)`へ項目非依存化（既存Item4呼び出しは無変更で動作確認済み）
+- `src/tail/sec_items_fetcher.py`（新設）: TOC誤検知除外・Part II境界
+  限定を組み込んだ汎用境界抽出関数、正規表現ベースの「変更なし」検知
+  （CELH/SOFI型のみ検知、PLTR型〈文言なし全文再掲〉は`changed:
+  "unknown"`として明示）、既存`ctrl/`と同型の保存構造
+  （`{item_key}/{TICKER}/{FY}FY.json`・`{YYYY}Q{N}.json`）
+- PLTR/SOFIパイロット実行で2件のバグを発見・修正済み（PART II境界の
+  クロスリファレンス誤検知・latest.json上書き順序バグ）。MD&A翻訳の
+  Grokタイムアウトを60秒→120秒に延長（PLTR MD&Aの2四半期分が60秒では
+  複数回タイムアウトした実測を踏まえた対応、他2項目・既存Item4は
+  60秒のまま）
+- テスト23件追加（`tests/test_tail_sec_items_fetcher.py`）、
+  pytest全体1259件成功、`report_consistency_check.py --fail-on-ng`
+  NG=0
+
+**残タスク（未実施、判断待ち）**:
+- 全10銘柄（TANUKI TAIL全ポジション）への展開は未実施。PLTR/SOFI
+  2銘柄のパイロットデータのみ`docs/portfolio/tail/data/
+  {risk_factors,legal_proceedings,mda}/`に保存済み
+- Grok API実測コスト（パイロット14回成功・2回失敗、
+  `cost_in_usd_ticks`合計380,412,000）の実際のドル換算・xAI Console
+  上の実費用確認が未完了。tick→USD換算率がコード内に文書化されて
+  おらず、`[[GROK-MODEL-PRICE-1]]`の過去実績（コード側想定とxAI
+  Console実請求が食い違った実例）を踏まえ、**KoichiさんによるxAI
+  Console実費用確認を待ってから全銘柄展開の可否を判断する**
+- 本エントリは上記理由によりクローズせず、オープンのまま残す
+
 ---
 
 ### [EPS-1] アナリスト予想EPS四半期値の取得

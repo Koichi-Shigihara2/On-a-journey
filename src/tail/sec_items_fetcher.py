@@ -106,6 +106,7 @@ ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
         ),
         "translate_desc_annual":    "10-K の Item 1A「Risk Factors」",
         "translate_desc_quarterly": "10-Q Part II Item 1A「Risk Factors」の期中更新",
+        "translate_timeout": 60,
     },
     "legal_proceedings": {
         "label_ja": "Item 3「Legal Proceedings」",
@@ -119,6 +120,7 @@ ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
         "no_change_re": None,  # Item3は「変更なし」という枠組み自体が該当しない（STEP1確認済み）
         "translate_desc_annual":    "10-K の Item 3「Legal Proceedings」",
         "translate_desc_quarterly": "10-Q Part II Item 1「Legal Proceedings」の期中更新",
+        "translate_timeout": 60,
     },
     "mda": {
         "label_ja": "Item 7「MD&A」",
@@ -132,6 +134,12 @@ ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
         "no_change_re": None,
         "translate_desc_annual":    "10-K の Item 7「Management's Discussion and Analysis」",
         "translate_desc_quarterly": "10-Q Part I Item 2「Management's Discussion and Analysis」の期中更新",
+        # [[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで、MD&Aは抜粋が長く
+        # 応答生成に時間がかかりやすいため60秒では複数回タイムアウト
+        # する実例（PLTR 2四半期分、3回リトライ後も全て失敗）を確認した。
+        # リトライ回数（GROK_MODELSの3回）は変更せず、1回あたりの
+        # タイムアウトのみ120秒へ延長する。
+        "translate_timeout": 120,
     },
 }
 
@@ -295,7 +303,9 @@ def fetch_annual(ticker: str, cik: str, item_key: str) -> Optional[Dict[str, Any
     print(f"  [{ticker}/{item_key}] 10-K 抽出: {len(section_text)}文字 (start={start})")
 
     excerpt = section_text[:2000]
-    excerpt_ja = _translate_excerpt(excerpt, cfg["translate_desc_annual"])
+    excerpt_ja = _translate_excerpt(
+        excerpt, cfg["translate_desc_annual"], timeout=cfg.get("translate_timeout", 60),
+    )
 
     return {
         "ticker":        ticker.upper(),
@@ -357,7 +367,9 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
             # （実際に変更ありか、単に文言を使わない開示方式かは区別不能）
 
         excerpt = section_text[:2000]
-        excerpt_ja = _translate_excerpt(excerpt, cfg["translate_desc_quarterly"])
+        excerpt_ja = _translate_excerpt(
+            excerpt, cfg["translate_desc_quarterly"], timeout=cfg.get("translate_timeout", 60),
+        )
 
         results.append({
             "ticker":        ticker.upper(),

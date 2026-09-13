@@ -83,10 +83,18 @@ _RE_EFFECTIVE = re.compile(
 # Grok 翻訳
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _translate_excerpt(text: str, item_description: str) -> Optional[str]:
+def _translate_excerpt(text: str, item_description: str, timeout: int = 60) -> Optional[str]:
     """SEC filing抜粋を Grok で日本語訳する（[[TAIL-SEC-ITEMS-1]]、
     2026-09-13に旧`_translate_item4()`を項目非依存へ汎用化。
     `item_description`に翻訳対象セクションの説明文を渡す）。
+
+    Args:
+        timeout: Grok API呼び出しのタイムアウト秒数（デフォルト60秒）。
+            MD&A（Item7）は抜粋が長く応答生成に時間がかかりやすく、
+            STEP2-Bパイロットで60秒では複数回タイムアウトする実例を
+            確認したため、呼び出し元（sec_items_fetcher.py）はmda項目
+            のみ120秒を指定する。
+
     失敗時は None を返す。"""
     if not XAI_API_KEY:
         return None
@@ -108,7 +116,7 @@ def _translate_excerpt(text: str, item_description: str) -> Optional[str]:
     for model in GROK_MODELS:
         try:
             payload["model"] = model
-            resp = requests.post(GROK_URL, headers=headers, json=payload, timeout=60)
+            resp = requests.post(GROK_URL, headers=headers, json=payload, timeout=timeout)
             resp.raise_for_status()
             data = resp.json()
             return data["choices"][0]["message"]["content"].strip()
