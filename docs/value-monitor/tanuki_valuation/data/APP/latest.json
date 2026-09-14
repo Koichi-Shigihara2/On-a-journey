@@ -1,51 +1,51 @@
 {
   "intrinsic_value_pt": 220522716576.32535,
-  "intrinsic_value_per_share": 2372.409207450725,
-  "intrinsic_value_beta": 657.58,
-  "upside_percent_beta": 103.0,
-  "intrinsic_value_rf": 27501.34,
-  "upside_percent_rf": 8389.1,
+  "intrinsic_value_per_share": 2363.306272912683,
+  "intrinsic_value_beta": 655.06,
+  "upside_percent_beta": 102.2,
+  "intrinsic_value_rf": 27395.82,
+  "upside_percent_rf": 8356.5,
   "v0": 220167657810.81207,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "v0_adjusted": 220167657810.81207,
   "alpha": 1.0,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 3439.99,
-    "2年後": 4987.99,
-    "3年後": 7232.59,
-    "4年後": 10487.25,
-    "5年後": 15206.52
+    "1年後": 3426.8,
+    "2年後": 4968.86,
+    "3年後": 7204.85,
+    "4年後": 10447.03,
+    "5年後": 15148.19
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 3439.99,
+      "future_value": 3426.8,
       "value_growth_pct": 45.0,
-      "expected_return_pct": 961.9
+      "expected_return_pct": 957.8
     },
     "2年後": {
-      "future_value": 4987.99,
-      "value_growth_pct": 110.2,
-      "expected_return_pct": 1439.7
+      "future_value": 4968.86,
+      "value_growth_pct": 110.3,
+      "expected_return_pct": 1433.8
     },
     "3年後": {
-      "future_value": 7232.59,
+      "future_value": 7204.85,
       "value_growth_pct": 204.9,
-      "expected_return_pct": 2132.6
+      "expected_return_pct": 2124.0
     },
     "4年後": {
-      "future_value": 10487.25,
+      "future_value": 10447.03,
       "value_growth_pct": 342.1,
-      "expected_return_pct": 3137.2
+      "expected_return_pct": 3124.8
     },
     "5年後": {
-      "future_value": 15206.52,
+      "future_value": 15148.19,
       "value_growth_pct": 541.0,
-      "expected_return_pct": 4593.9
+      "expected_return_pct": 4575.9
     }
   },
-  "upside_percent": 632.3,
-  "calculation_date": "2026-09-14T00:12:04+09:00",
+  "upside_percent": 629.5,
+  "calculation_date": "2026-09-14T18:31:12+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -63,19 +63,19 @@
   "sensitivity": {
     "matrix": [
       [
-        927.95,
-        2974.2,
-        9382.22
+        924.39,
+        2962.78,
+        9346.22
       ],
       [
-        763.74,
-        2372.41,
-        7229.4
+        760.81,
+        2363.31,
+        7201.66
       ],
       [
-        644.3,
-        1940.91,
-        5716.54
+        641.82,
+        1933.46,
+        5694.6
       ]
     ],
     "wacc_values": [
@@ -106,15 +106,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.315,
-      "intrinsic_value_per_share": 1027.13
+      "intrinsic_value_per_share": 1023.19
     },
     "base": {
       "growth_rate": 0.45,
-      "intrinsic_value_per_share": 2372.41
+      "intrinsic_value_per_share": 2363.31
     },
     "bull": {
       "growth_rate": 0.54,
-      "intrinsic_value_per_share": 4003.33
+      "intrinsic_value_per_share": 3987.97
     }
   },
   "growth_options": {
@@ -368,7 +368,7 @@
     "long_term_debt": 3515072000.0,
     "short_term_debt": 0.0,
     "net_cash": -461766000.0,
-    "net_cash_per_share": -1.3798454537592069,
+    "net_cash_per_share": -1.3745509865152186,
     "fiscal_year": 2025,
     "applied": true,
     "sector_guard": "none",
@@ -399,19 +399,19 @@
     "bear": {
       "growth_rate": 0.315,
       "rice": 4.736,
-      "rice_per_ratio": 0.1922,
+      "rice_per_ratio": 0.1903,
       "rice_adj": 77.113
     },
     "base": {
       "growth_rate": 0.45,
       "rice": 6.765,
-      "rice_per_ratio": 0.2746,
+      "rice_per_ratio": 0.2719,
       "rice_adj": 110.161
     },
     "bull": {
       "growth_rate": 0.54,
       "rice": 8.118,
-      "rice_per_ratio": 0.3295,
+      "rice_per_ratio": 0.3263,
       "rice_adj": 132.193
     }
   },
@@ -432,7 +432,7 @@
       412773000,
       361851000
     ],
-    "diluted_shares": 334650521,
+    "diluted_shares": 335939521,
     "roe_10yr_avg": 0.35984140285898175,
     "roe_years_used": 5,
     "roe_outlier_adj": true,
@@ -468,16 +468,16 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 355058765.51327366,
     "alpha_uncapped": 1.5113338920077233,
-    "per": 24.639507,
+    "per": 24.88172,
     "per_is_forward": false,
     "per_adjusted": 23.32,
-    "peg": 0.6764,
-    "ps": 15.708541,
-    "ev_ebitda": 19.896,
+    "peg": 0.702,
+    "ps": 15.936299,
+    "ev_ebitda": 20.107,
     "ma200": 481.8337757873535,
     "forward_eps": 20.97679,
-    "analyst_target_median": 515.0,
-    "analyst_target_mean": 514.4839,
+    "analyst_target_median": 510.0,
+    "analyst_target_mean": 508.3871,
     "analyst_target_low": 325.0,
     "analyst_target_high": 790.0,
     "analyst_count": 31,
@@ -488,9 +488,9 @@
     "insider_sell_count": 36,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-08-21",
-    "analyst_vs_iv": -78.3,
-    "max_eps": 13.8066,
-    "max_eps_per": 23.5,
+    "analyst_vs_iv": -78.4,
+    "max_eps": 13.7536,
+    "max_eps_per": 23.6,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
@@ -499,7 +499,7 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $794.03B + RPO $0.00B + GO $0.36B) / 0.335B + BS $-1.38/株 = $2372.41 (差異0.00%、α=1.000は参考値・P_t未乗算)"
+        "detail": "(V₀ $794.03B + RPO $0.00B + GO $0.36B) / 0.336B + BS $-1.37/株 = $2363.31 (差異0.00%、α=1.000は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
@@ -519,7 +519,7 @@
   },
   "tanuki_score": "BUY",
   "funda_score": 100,
-  "score_comment": "割安圏(632%)で買い余地大、FCF黒字、売上成長加速",
+  "score_comment": "割安圏(630%)で買い余地大、FCF黒字、売上成長加速",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -585,7 +585,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 2452467000
   },
-  "net_current_assets_ratio": 0.0382,
+  "net_current_assets_ratio": 0.038,
   "dupont": {
     "ni_ttm": 4409952000,
     "revenue_ttm": 6829124000,

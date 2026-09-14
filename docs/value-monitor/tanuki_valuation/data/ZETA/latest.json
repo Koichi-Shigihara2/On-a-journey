@@ -1,51 +1,51 @@
 {
   "intrinsic_value_pt": 4792880296.294775,
-  "intrinsic_value_per_share": 27.718960975309106,
-  "intrinsic_value_beta": 19.54,
-  "upside_percent_beta": -35.2,
-  "intrinsic_value_rf": 241.15,
-  "upside_percent_rf": 699.1,
+  "intrinsic_value_per_share": 27.91423705864004,
+  "intrinsic_value_beta": 19.68,
+  "upside_percent_beta": -34.8,
+  "intrinsic_value_rf": 242.85,
+  "upside_percent_rf": 704.7,
   "v0": 4792880296.294775,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "v0_adjusted": 4792880296.294775,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 35.9,
-    "2年後": 46.49,
-    "3年後": 60.21,
-    "4年後": 77.97,
-    "5年後": 100.97
+    "1年後": 36.14,
+    "2年後": 46.81,
+    "3年後": 60.62,
+    "4年後": 78.5,
+    "5年後": 101.66
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 35.9,
+      "future_value": 36.14,
       "value_growth_pct": 29.5,
-      "expected_return_pct": 19.0
+      "expected_return_pct": 19.7
     },
     "2年後": {
-      "future_value": 46.49,
+      "future_value": 46.81,
       "value_growth_pct": 67.7,
-      "expected_return_pct": 54.0
+      "expected_return_pct": 55.1
     },
     "3年後": {
-      "future_value": 60.21,
+      "future_value": 60.62,
       "value_growth_pct": 117.2,
-      "expected_return_pct": 99.5
+      "expected_return_pct": 100.9
     },
     "4年後": {
-      "future_value": 77.97,
+      "future_value": 78.5,
       "value_growth_pct": 181.3,
-      "expected_return_pct": 158.3
+      "expected_return_pct": 160.1
     },
     "5年後": {
-      "future_value": 100.97,
+      "future_value": 101.66,
       "value_growth_pct": 264.2,
-      "expected_return_pct": 234.6
+      "expected_return_pct": 236.8
     }
   },
-  "upside_percent": -8.2,
-  "calculation_date": "2026-09-14T00:14:27+09:00",
+  "upside_percent": -7.5,
+  "calculation_date": "2026-09-14T18:33:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -63,19 +63,19 @@
   "sensitivity": {
     "matrix": [
       [
-        22.46,
-        33.12,
-        48.17
+        22.62,
+        33.36,
+        48.51
       ],
       [
-        18.99,
-        27.72,
-        39.82
+        19.12,
+        27.91,
+        40.1
       ],
       [
-        16.44,
-        23.77,
-        33.74
+        16.56,
+        23.94,
+        33.98
       ]
     ],
     "wacc_values": [
@@ -106,15 +106,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.207,
-      "intrinsic_value_per_share": 20.06
+      "intrinsic_value_per_share": 20.21
     },
     "base": {
       "growth_rate": 0.295,
-      "intrinsic_value_per_share": 27.72
+      "intrinsic_value_per_share": 27.91
     },
     "bull": {
       "growth_rate": 0.354,
-      "intrinsic_value_per_share": 34.07
+      "intrinsic_value_per_share": 34.31
     }
   },
   "growth_options": {
@@ -258,7 +258,7 @@
     "long_term_debt": 197481000.0,
     "short_term_debt": 0.0,
     "net_cash": 112471000.0,
-    "net_cash_per_share": 0.44806734678783644,
+    "net_cash_per_share": 0.4512239166400453,
     "fiscal_year": 2025,
     "applied": true,
     "sector_guard": "none",
@@ -301,7 +301,7 @@
       81468000,
       63698000
     ],
-    "diluted_shares": 251013605,
+    "diluted_shares": 249257621,
     "roe_10yr_avg": -0.508450199181475,
     "roe_years_used": 5,
     "roe_outlier_adj": true,
@@ -357,8 +357,8 @@
     "insider_sell_count": 0,
     "insider_net_direction": "中立",
     "insider_latest_date": "2026-08-14",
-    "max_eps": 0.6998,
-    "max_eps_per": 43.1,
+    "max_eps": 0.7047,
+    "max_eps_per": 42.8,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
@@ -367,7 +367,7 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $6.85B + RPO $0.00B + GO $0.00B) / 0.251B + BS $+0.45/株 = $27.72 (差異0.00%、α=0.000は参考値・P_t未乗算)"
+        "detail": "(V₀ $6.85B + RPO $0.00B + GO $0.00B) / 0.249B + BS $+0.45/株 = $27.91 (差異0.00%、α=0.000は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
@@ -453,7 +453,7 @@
     "shares_yr_now_label": "2025",
     "shares_yr_3ago_label": "2022"
   },
-  "net_current_assets_ratio": 0.0519,
+  "net_current_assets_ratio": 0.0523,
   "dupont": {
     "ni_ttm": -2169000,
     "revenue_ttm": 1570877000,

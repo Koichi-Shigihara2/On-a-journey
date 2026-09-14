@@ -1,17 +1,17 @@
 CPRT INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-14T00:14:59+09:00
+Generated: 2026-09-14T18:33:52+09:00
 Price: $29.95
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: HOLD
+Classification: WATCH
 Funda_Score: 70/100
 Timing_Score (components):
-  Deviation_Rate: -3.8%
+  Deviation_Rate: +0.1%
   MA200_Deviation: -12.6%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $41 median ($25-$55) | 10 analysts | vs IV: +42.2%
-Comment: フェアバリュー近辺、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $40 median ($25-$55) | 10 analysts | vs IV: +31.7%
+Comment: 若干割安(0%)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -30,10 +30,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
-Quadrant: 左下
-Label: 割高×低効率
+Quadrant: 右下
+Label: 割安×低効率
 Key_Metric_Y: RICE = 0.801
-Deviation_Rate: -3.8%
+Deviation_Rate: +0.1%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,22 +58,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $29.95
-Intrinsic_Value_BASE: $28.83
-Deviation_BASE: -3.7%
+Intrinsic_Value_BASE: $29.99
+Deviation_BASE: +0.1%
 Growth_Rate_Original: 15.5% (TTM実績)
 Growth_Rate_Adjusted: 12.6% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=8.8%, IV=$23.46 （推奨値ベース）
-BASE: Growth=12.6%, IV=$28.83 （推奨値ベース）
-BULL: Growth=15.1%, IV=$33.01 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $32.45 (+8.3%) / 3年後: $41.11 (+37.3%) / 5年後: $52.09 (+73.9%)
-  5yr_Annualized_Return: +11.7%/yr
+BEAR: Growth=8.8%, IV=$24.41 （推奨値ベース）
+BASE: Growth=12.6%, IV=$29.99 （推奨値ベース）
+BULL: Growth=15.1%, IV=$34.35 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $33.76 (+12.7%) / 3年後: $42.77 (+42.8%) / 5年後: $54.19 (+80.9%)
+  5yr_Annualized_Return: +12.6%/yr
 TTM_YoY_Growth: 1.0%
 (DCF Base vs TTM actual: +11.6pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.13%
-  参考①β込みWACC_IV: $28.25 (Deviation: -5.7%)
-  参考②Rf理論上限_IV: $167.04 (Deviation: +457.7%)
+  参考①β込みWACC_IV: $29.40 (Deviation: -1.8%)
+  参考②Rf理論上限_IV: $173.81 (Deviation: +480.3%)
 Terminal_Growth_Rate: 3.0%
 Beta: 1.023
 FCF_TTM_End: 2026-04-30 (FCF/RICE算出に用いたTTM期末日)
@@ -95,13 +95,13 @@ Alpha_Premium: 0.7000 (HypeCore expectation premium; Rm basis) [CAPPED: セク�
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $27.77B (= v0 + RPO_PV + GO_PV)
-Shares_Used: 963.3M (source: yf_implied)
-→ Intrinsic_Value: $28.83 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 925.8M (source: yf_implied)
+→ Intrinsic_Value: $29.99 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  4yr  7yr  10yr
-  9.0%       $27.55  $34.03  $41.17
-  10.0%       $23.52  $28.83  $34.51
-  11.0%       $20.50  $24.94  $29.57
+  9.0%       $28.66  $35.41  $42.84
+  10.0%       $24.47  $29.99  $35.91
+  11.0%       $21.33  $25.95  $30.76
 Financial_Health:
   Net_Debt: $+0.02B (negative=net cash)
   Total_Debt: $0.02B  Cash: $0.00B
@@ -109,7 +109,8 @@ Financial_Health:
   SBC_TTM: $38M
   Dilution_3yr_Annual: +0.45%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
-  Next_Earnings_Date: 2026-09-11
+  ⚠️ 期中に大規模な株式買戻しの可能性（-5.3%乖離: yf=926M vs SEC=978M）
+  Next_Earnings_Date: 2026-11-20
   DuPont_ROE: 純利益率33.5% × 資産回転率0.48x × 財務レバレッジ1.10x = ROE17.7%
 FCF_History:
   2021: $0.53B (FCF_Margin: 19.6%)
@@ -259,13 +260,13 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 20.9x
+  Market_PER_GAAP: 19.3x
   Adjusted_EPS_PER: 18.3x (TTM調整後EPS: $1.6377)
-  Delta: -2.7x (cheaper on adjusted basis)
+  Delta: -1.0x (cheaper on adjusted basis)
 Forward_Estimates:
-  Next_Earnings_Date: 2026-09-11
+  Next_Earnings_Date: 2026-11-20
   Next_Quarter_EPS: N/A (no analyst estimates in data)
-  Next_FY_EPS: $1.68 (yfinance forward EPS)
+  Next_FY_EPS: $1.80 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -287,10 +288,10 @@ Phase_History (recent 6 months):
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 20.9x
-  PEG: 4.03
-  PS:  7.0x
-  EV_EBITDA: 13.8x
+  PER: 19.3x
+  PEG: 3.61
+  PS:  5.9x
+  EV_EBITDA: 12.4x
   PEG_Signal: 割高水準（成長率対比でPEG>2.0）
   PS_Signal: 適正水準
 Definition:
@@ -310,9 +311,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 5.61%  (ForwardEPS $1.68 / Price $29.95)
+  Forward_Earnings_Yield: 6.02%  (ForwardEPS $1.80 / Price $29.95)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: 1.31%
+  ERP: 1.72%
   ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -336,11 +337,11 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 6.1%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $41 median ($25-$55) | 10 analysts | vs IV: +42.2%
+Analyst_Consensus: Buy | Target: $40 median ($25-$55) | 10 analysts | vs IV: +31.7%
 Insider_Activity: Sell優勢 | 買い0件 / 売り2件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 1.0%
-Next_Earnings_Date: 2026-09-11
+Next_Earnings_Date: 2026-11-20
 Breakeven_Estimate: 黒字化：達成済み
 Definition:
 
