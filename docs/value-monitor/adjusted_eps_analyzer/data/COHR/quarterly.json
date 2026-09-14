@@ -1,6 +1,6 @@
 {
   "ticker": "COHR",
-  "last_updated": "2026-09-12T16:23:41.695301",
+  "last_updated": "2026-09-14T09:49:35.383980",
   "quarters": [
     {
       "gaap_eps": 1.2310440305649812,
@@ -75,30 +75,9 @@
       "tax_expense": 60849000.0,
       "pretax_income": 301379000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の合計影響は大きく、Adjusted EPSがGAAP EPSを約48%上回る水準です。SBCと無形資産償却は恒常的な性質が強く、M&A統合・リストラは一過性ですが、全体として調整の妥当性に留意が必要です。市場がGAAP EPSで判断する場合、企業の実力（特に買収後のキャッシュ生成力）が過小評価されている可能性がありますが、恒常的項目の加算による過大評価リスクも存在します。投資家はSBCの希薄化効果や買収統合の継続性を注視し、調整依存のEPSを過信しない慎重な判断が求められます。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、経済的コスト（希薄化効果）として継続的に考慮すべき",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aによるもので定期的に発生する非現金費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、事業統合完了後に収束する可能性が高い",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用で、特定の再編イベントに紐づく非経常項目",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

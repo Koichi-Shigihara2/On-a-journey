@@ -1,6 +1,6 @@
 {
   "ticker": "HQY",
-  "last_updated": "2026-09-12T16:27:29.382837",
+  "last_updated": "2026-09-14T09:53:39.208001",
   "quarters": [
     {
       "gaap_eps": 0.781345966148499,
@@ -62,25 +62,9 @@
       "tax_expense": 22221000.0,
       "pretax_income": 87865000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBCと無形資産償却は恒常的に発生する非現金項目（それぞれ約2220万、4150万USD）であり、調整後EPSをGAAPの0.78から1.36へ大幅に引き上げている。これにより市場がGAAP EPSのみで判断する場合、非現金費用が企業の実力（特にキャッシュ生成力）を過小表示し、過小評価のリスクが生じやすい。一方、SBCは実質的な希薄化コスト、償却も買収の経済的影響を反映するため、調整を過度に信頼すると過大評価リスクもある。M&A統合費用は一過性だが影響は小さい。投資家はフリーキャッシュフローと株式希薄化を重点的に検証すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、従業員報酬として毎期発生する恒常的な運用コストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で定期的に発生する非現金費用であり、恒常的な性質を持つ。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "M&A統合費用は特定の買収イベントに伴う一過性の統合コストである。",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

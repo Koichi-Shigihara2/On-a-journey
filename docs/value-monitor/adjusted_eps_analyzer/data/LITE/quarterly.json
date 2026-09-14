@@ -1,6 +1,6 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-09-12T16:24:53.572489",
+  "last_updated": "2026-09-14T09:50:48.271990",
   "quarters": [
     {
       "gaap_eps": -96.00134048257372,
@@ -75,30 +75,9 @@
       "tax_expense": -237700000.0,
       "pretax_income": -7399400000.0,
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目の大部分を占めるSBCと無形資産償却は恒常的な非現金コストであり、リストラや異常貸倒引当は一過性。市場がGAAP EPS(-96)で判断する場合、非現金・一時項目の影響で企業の実力(特にキャッシュ生成力)が過小評価されやすく、株価が実力以下に抑えられる可能性がある。ただしSBCの希薄化効果や償却の継続性を考慮すると、調整後EPS(-95)を過信すれば過大評価リスクも生じる。投資家は各項目の再発可能性を個別に監視し、コア事業の持続性を重視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが継続的に発生する恒常的コストであり、調整の正当性は限定的",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は複数年にわたる恒常的費用で、買収が繰り返される限り継続する",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響の異常変動分であり、非経常的とみなせる",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用で、リストラが完了すれば再発しない可能性が高い",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

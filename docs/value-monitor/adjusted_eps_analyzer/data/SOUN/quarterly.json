@@ -1,6 +1,6 @@
 {
   "ticker": "SOUN",
-  "last_updated": "2026-09-12T16:26:12.811411",
+  "last_updated": "2026-09-14T09:52:05.141238",
   "quarters": [
     {
       "gaap_eps": -0.09761119639200823,
@@ -66,16 +66,16 @@
       },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "調整項目はSBC（株式報酬費用）と無形資産償却費であり、どちらも非現金ではあるが恒常的に発生するコスト（特にSBCは成長AI企業で継続的な報酬形態）であるため、調整により損失が半分近く改善され実力が過度に良く見える可能性が高い。市場がGAAP EPS（-0.0976）で判断する場合、企業の実力が見えにくくなり過小評価のリスクがある一方、SBCの株式希薄化効果を無視した調整は過大評価のリスクも孕む。投資家は調整後EPSだけでなく、フリーキャッシュフローや発行済株式数の増加を注視し、持続可能性を評価すべき。",
+        "comment": "調整項目であるSBCと無形資産償却費はともに恒常的に発生する非現金費用であり、一過性とは言い難い。特にSBCは成長企業で継続的に計上され株主希薄化を伴う実質コスト、無形資産償却も買収後の定期費用です。市場がGAAP EPS（-0.0976）で判断する場合、Adjusted EPS（-0.042）に比べて実力が過小評価される可能性がありますが、恒常的項目の加算戻しは過大調整のリスクが高く、投資家は調整後数字の信頼性や将来の希薄化・キャッシュフローへの影響を慎重に検証すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、テック企業では毎期発生する恒常的なコストである。",
+            "snippet": "株式報酬費用は非現金費用として調整されているが、テック企業では毎期発生する恒常的コストであり、株主希薄化の実質的影響を伴う",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の償却として加算されているが、定期的に計上される恒常的な項目である。",
+            "snippet": "無形資産償却費は買収関連無形資産の償却として調整されているが、償却期間中は恒常的に発生する定期費用であり一過性ではない",
             "confidence": 0.2
           }
         ]
@@ -317,9 +317,17 @@
       "tax_expense": 457000.0,
       "pretax_income": -108814000.0,
       "special_flags": [
+        "EPS_DISCREPANCY",
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.2654125635009596,
+          "official_eps": -0.03,
+          "eps_diff_pct": 784.7,
+          "note": "XBRLと公式発表のGAAP EPSに785%の差異があります。公式EPS: $-0.03, XBRL計算EPS: $-0.27。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        },
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
           "detected_items": [
@@ -455,9 +463,17 @@
       "tax_expense": 819000.0,
       "pretax_income": 130751000.0,
       "special_flags": [
+        "EPS_DISCREPANCY",
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": 0.3137268499171406,
+          "official_eps": -0.06,
+          "eps_diff_pct": 622.9,
+          "note": "XBRLと公式発表のGAAP EPSに623%の差異があります。公式EPS: $-0.06, XBRL計算EPS: $0.31。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        },
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
           "detected_items": [
@@ -540,9 +556,17 @@
       "tax_expense": -9247000.0,
       "pretax_income": -267846000.0,
       "special_flags": [
+        "EPS_DISCREPANCY",
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.7640401623843941,
+          "official_eps": -0.05,
+          "eps_diff_pct": 1428.1,
+          "note": "XBRLと公式発表のGAAP EPSに1428%の差異があります。公式EPS: $-0.05, XBRL計算EPS: $-0.76。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        },
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
           "detected_items": [
@@ -610,7 +634,19 @@
       "fiscal_year": 2024,
       "quarter": 3,
       "tax_expense": -10491000.0,
-      "pretax_income": -32242000.0
+      "pretax_income": -32242000.0,
+      "special_flags": [
+        "EPS_DISCREPANCY"
+      ],
+      "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.06035476224574568,
+          "official_eps": -0.04,
+          "eps_diff_pct": 50.9,
+          "note": "XBRLと公式発表のGAAP EPSに51%の差異があります。公式EPS: $-0.04, XBRL計算EPS: $-0.06。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        }
+      }
     },
     {
       "gaap_eps": -0.11247304829697928,
@@ -663,7 +699,19 @@
       "fiscal_year": 2024,
       "quarter": 2,
       "tax_expense": 638000.0,
-      "pretax_income": -36684000.0
+      "pretax_income": -36684000.0,
+      "special_flags": [
+        "EPS_DISCREPANCY"
+      ],
+      "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.11247304829697928,
+          "official_eps": -0.04,
+          "eps_diff_pct": 181.2,
+          "note": "XBRLと公式発表のGAAP EPSに181%の差異があります。公式EPS: $-0.04, XBRL計算EPS: $-0.11。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        }
+      }
     },
     {
       "gaap_eps": -0.11517584201002218,
@@ -716,7 +764,19 @@
       "fiscal_year": 2024,
       "quarter": 1,
       "tax_expense": 295000.0,
-      "pretax_income": -32714000.0
+      "pretax_income": -32714000.0,
+      "special_flags": [
+        "EPS_DISCREPANCY"
+      ],
+      "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.11517584201002218,
+          "official_eps": -0.07,
+          "eps_diff_pct": 64.5,
+          "note": "XBRLと公式発表のGAAP EPSに65%の差異があります。公式EPS: $-0.07, XBRL計算EPS: $-0.12。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        }
+      }
     },
     {
       "gaap_eps": -0.0891501474643498,
@@ -769,7 +829,19 @@
       "fiscal_year": 2023,
       "quarter": 4,
       "tax_expense": 3914000.0,
-      "pretax_income": -16525000.0
+      "pretax_income": -16525000.0,
+      "special_flags": [
+        "EPS_DISCREPANCY"
+      ],
+      "special_notes": {
+        "eps_discrepancy": {
+          "flag": "EPS_DISCREPANCY",
+          "xbrl_eps": -0.0891501474643498,
+          "official_eps": -0.07,
+          "eps_diff_pct": 27.4,
+          "note": "XBRLと公式発表のGAAP EPSに27%の差異があります。公式EPS: $-0.07, XBRL計算EPS: $-0.09。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
+        }
+      }
     },
     {
       "gaap_eps": -0.08345099881470411,
