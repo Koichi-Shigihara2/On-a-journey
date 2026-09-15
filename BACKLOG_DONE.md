@@ -2,6 +2,134 @@
 
 ---
 
+## 2026-09-16（完了）
+
+### ✅ [TAIL-SEC-ITEMS-APGE-WHITESPACE-1] APGEの10-K本文で見出しテキスト自体に単語内スペースが混入しItem境界抽出が失敗する — 方針Y（語彙限定の汎用\s?許容ヘルパー）で実装完了
+**状態:** ✅実装完了（コミット`9ddac8222b`コード変更・`0f4b8c3557`データ再生成）
+**優先度:** 中 → 完了
+**分類:** バグ / TANUKI TAIL / SEC filingパース
+**登録日:** 2026-09-13
+**完了日:** 2026-09-16
+**発見:** `[[TAIL-SEC-ITEMS-1]]`全銘柄展開実行時（APGE、チャット記録）
+
+#### 内容（登録時点の記載を再掲）
+`sec_items_fetcher.py`をAPGE（Apogee Therapeutics）へ適用したところ、
+10-K（accn `0001974640-26-000002`）の`risk_factors`（Item 1A）・
+`mda`（Item 7）の2項目が抽出失敗した（`legal_proceedings`〈Item 3〉は
+成功）。原因を実データで特定済み: APGEの10-K本文の見出しテキスト自体に
+**単語内へのスペース混入**がある。
+
+- Item 1A見出し: `"Item 1  A. Risk Factors"`（"1"と"A"の間に半角
+  スペース2個）。現行正規表現`item\s+1a[\.\s]`は"1a"を連続トークンと
+  仮定しているため不一致
+- Item 7見出し: `"Item 7. Management s Discussio  n and Analysis..."`
+  （"Discussion"の"o"と"n"の間にスペース2個、"Discussio  n"という
+  単語内分断）。アンカー正規表現
+  `management.{0,3}s\s+discussion\s+and\s+analysis`が"discussion"を
+  連続トークンと仮定しているため不一致
+
+なお目次（TOC）部分では同じ箇所が`"1A. Risk Factors"`と正常表記されて
+おり、本文見出し側のみにこの分断が生じている。他9銘柄（PLTR/SOFI/TSLA/
+CELH/APP/NVDA/ADBE/SOUN/CRWV）ではこの種の単語内スペース混入は登録時点
+で確認されていなかった。
+
+#### STEP1調査（読み取り専用）
+`extract_item_section()`・`_looks_like_toc_entry()`の`.start()`/`.end()`
+がslicing・TOC判定・戻り値算出まで一貫して元テキストのインデックスとして
+使われていることを確認。既存9銘柄の保存済みexcerptを機械grepしたところ、
+`\s{2,}`自体はADBE等のマッチ位置直後（トークン間、例:
+`"ITEM 7.  MANAGEMENT S DISCU"`）に既に存在していたが、いずれも既存
+`\s+`が許容する語間の空白であり、単語内分断ではなかった。
+
+BACKLOG登録時点の案A（`\s{2,}`を単一スペースへ圧縮する正規化のみ）を
+実際にコードで検証したところ、**単独では実際のAPGEバグを解消できない**
+ことが判明した: 圧縮後も分断箇所には必ず1個のスペースが残るが、当時の
+`item_re`（"1a"）・`anchor_re`（"discussion"）はゼロ幅の連続トークンを
+要求しており、1個の残存スペースでも不一致のままだった（`extract_
+item_section`を実データに適用しマッチ0件を実機で確認）。
+
+#### 案A'（第1段階、2026-09-16、後に方針Yへ置き換え）
+Koichiさんの承認を得て、正規化ヘルパー（連続空白\s{2,}→1個、改行保持、
+正規化後インデックス→元テキストインデックスのオフセット保持マッピング
+配列）を新設し、`risk_factors`の`item_re`の"1a"部分のみ`1\s?a`へ、
+`mda`の`anchor_re`の"discussion"部分のみ文字間\s?許容へ、個別にピン
+ポイント修正する案A'を実装。既存9銘柄81ファイル・APGE
+legal_proceedings全期間で完全無差分、APGEの10-K risk_factors/mdaが
+新規成功することを確認した。
+
+#### 案A'実装後の追加調査で発覆した問題（無断で拡張せず報告・再調査）
+案A'実装直後、APGEの10-Q（2026Q1・2026Q2）でrisk_factors/mdaが
+引き続き失敗することが判明。原因調査の結果、単語内スペース混入は
+"1a"・"discussion"に限定されず、**分断位置も単語ごとに固定でない**
+ことが実データで判明した:
+- 同一10-K内で"Item"自体が3通りの異なる位置で分断
+  （`Ite  m`〈Item 1C〉・`It  em`〈Item 6〉・`I  tem`〈Item 9A〉）
+- "PART"が2通り（`PAR  T`〈Part II〉・`PA  RT`〈Part III〉）
+- 10-Q（2026Q1・2026Q2で同一パターン）: "Risk"→`R  isk`
+  （risk_factors四半期分の失敗原因）・"Management"→`Manag  ement`
+  （mda四半期分の失敗原因）・"Legal"→`L  egal`（legal_proceedingsは
+  本文中の別箇所の正常表記に偶然救われて成功していた）・
+  "OTHER"→`OTH  ER`（`_PART2_RE`が参照する実本文Part II境界見出し
+  自体が分断されており、TOC側フォールバックに偶然救われていた）
+
+既存9銘柄の保存済み全108ファイルを同条件で機械スキャンし、対象語彙の
+真の単語内分断は0件（APGE固有のまま）と再確認した。
+
+#### 採用した設計（方針Y、2026-09-16、最終実装）
+個別パッチの積み増し（案A'の延長）は「同じ単語でも分断位置が変わる」
+「新しい単語が都度発見される」という2点から際限のないいたちごっこに
+なると判断し、Koichiさんの承認を得て以下の汎用設計（方針Y）へ置き
+換えた（案A'の個別\s?パッチは残さず完全に置き換え）:
+
+1. `_normalize_ws_view()`: 連続する半角スペース/タブ（2個以上）のみを
+   1個へ圧縮した正規化ビューと、正規化後インデックス→元テキスト
+   インデックスのオフセット保持マッピング配列を生成（改行は圧縮対象
+   外、`_TOC_PAGENUM_RE`等の改行依存判定を保持）
+2. `_fw(word)`: 見出し語・アンカー語1単語を、文字間に任意で`\s?`を
+   挟んだ正規表現パターン文字列へ変換する汎用ヘルパー。正規化後は
+   単語内混入が必ず最大1個の空白に収束するため`\s?`（0または1）で
+   分断位置に依存せず吸収できる
+3. `ITEM_CONFIGS`の`item_re`/`anchor_re`/`next_res`/
+   `restrict_after_re`（`_PART2_RE`含む）の生成箇所を全て`_fw()`経由に
+   統一。対象はこれら4種の正規表現が参照する見出し語・アンカー語
+   （item/1a/1b/2/3/4/7/7a/8/risk/factors/legal/proceedings/
+   management/discussion/and/analysis/part/ii/other/information）に
+   限定し、本文中の任意の単語を無差別に緩めるものではない
+4. マッチングは正規化ビューに対して行い、候補選定（TOC判定・next_res
+   探索・anchor判定）も一貫して正規化ビューのインデックスで行い、
+   採用確定後の最後（開始位置・スライス境界）でのみ元テキストの
+   インデックスへ変換する。返すテキストは元テキストそのもの
+   （正規化はマッチング専用、元テキストの内容・改行・書式は無変更）
+
+#### 検証結果
+- 既存9銘柄の保存済み全期間ファイル（81件、risk_factors/
+  legal_proceedings/mda×annual+quarterly）を実データで再取得し、
+  修正前後で候補件数（item_re候補数）・抽出excerptとも完全一致
+  （差分0件）
+- APGEのlegal_proceedings（既存成功分、10-K・10-Q全期間）も完全無差分
+  （"Legal"分断による偶然成功だった箇所も、方針Yでは正規の一致に
+  よる成功へ変わったことを確認）
+- APGEの10-K（risk_factors・mda）・10-Q 2026Q1/2026Q2
+  （risk_factors・mda）が新たに正常抽出されることを実データで確認
+- `git stash`で方針Y実装前（案A'のみ）に戻すと、10-Qのrisk_factors/
+  mdaが実際に失敗することを確認済み
+- 回帰テスト新設（`TestNormalizeWsView`・`TestFuzzyWord`・
+  `TestApgeWhitespaceSplitRegression`、計17件。オフセット変換の単体
+  テスト・`_fw()`生成パターンの単体テスト・APGE実例〈Item/PART/Risk/
+  Management/Legal/OTHER分断〉の回帰テストを含む）
+- pytest 1277件全パス、`audit.py`exit 0（既存無関係WARNのみ）、
+  `report_consistency_check.py --fail-on-ng` NG=0
+- データ再生成: APGEの`risk_factors`・`mda`を10-K（2025FY）・10-Q
+  （2026Q1・2026Q2）分新規保存（コミット`0f4b8c3557`）。
+  `legal_proceedings`は無差分のため再生成対象外（未変更）
+
+#### コミット
+- `9ddac8222b`: コード変更（`_normalize_ws_view()`・`_fw()`新設、
+  `ITEM_CONFIGS`統一、回帰テスト17件追加）
+- `0f4b8c3557`: データ再生成（APGE risk_factors・mda新規保存10ファイル）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了

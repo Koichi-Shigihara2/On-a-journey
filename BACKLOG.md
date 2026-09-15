@@ -5531,55 +5531,9 @@ SYSTEM_MAP.md「AutoTrade/OpenD運用前提」参照）。
 （[[TAIL-SEC-ITEMS-1]]は2026-09-13、TANUKI TAIL全10銘柄への展開完了
 （うちAPGEはrisk_factors/mdaの2項目のみ既知のギャップあり、
 [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]として別途新規登録）によりクローズ、
-BACKLOG_DONE.md「2026-09-13（完了）」参照）
-
----
-
-### [TAIL-SEC-ITEMS-APGE-WHITESPACE-1] APGEの10-K本文で見出しテキスト自体に単語内スペースが混入しItem境界抽出が失敗する
-**優先度:** 中
-**分類:** バグ / TANUKI TAIL / SEC filingパース
-**登録日:** 2026-09-13
-**発見:** `[[TAIL-SEC-ITEMS-1]]`全銘柄展開実行時（APGE、チャット記録）
-
-#### 内容
-`sec_items_fetcher.py`をAPGE（Apogee Therapeutics）へ適用したところ、
-10-K（accn `0001974640-26-000002`）の`risk_factors`（Item 1A）・
-`mda`（Item 7）の2項目が抽出失敗した（`legal_proceedings`〈Item 3〉は
-成功）。原因を実データで特定済み: APGEの10-K本文の見出しテキスト自体に
-**単語内へのスペース混入**がある。
-
-- Item 1A見出し: `"Item 1  A. Risk Factors"`（"1"と"A"の間に半角
-  スペース2個）。現行正規表現`item\s+1a[\.\s]`は"1a"を連続トークンと
-  仮定しているため不一致
-- Item 7見出し: `"Item 7. Management s Discussio  n and Analysis..."`
-  （"Discussion"の"o"と"n"の間にスペース2個、"Discussio  n"という
-  単語内分断）。アンカー正規表現
-  `management.{0,3}s\s+discussion\s+and\s+analysis`が"discussion"を
-  連続トークンと仮定しているため不一致
-
-なお目次（TOC）部分では同じ箇所が`"1A. Risk Factors"`と正常表記されて
-おり、本文見出し側のみにこの分断が生じている（同一文書内でTOCと本文の
-HTMLマークアップ構造が異なることに起因すると推定、根本原因〈inline
-タグの分割等〉の特定は未実施）。他9銘柄（PLTR/SOFI/TSLA/CELH/APP/
-NVDA/ADBE/SOUN/CRWV）ではこの種の単語内スペース混入は確認されていない
-（APGE固有、または類似の稀な事例の可能性）。
-
-#### 対応方針（未定・実装前に設計判断が必要）
-- 案A: `extract_item_section()`の`item_re`/`anchor_re`適用前に、
-  対象テキストの連続する複数スペース（`\s{2,}`等）を単一スペースへ
-  正規化する前処理を追加する。ただし既存9銘柄・既存Item4パイプライン
-  への影響がないか全銘柄再検証が必要（意図しない副作用のリスク: 元々
-  複数スペースが情報を持つ稀なケースがないか等）
-- 案B: APGE個別のfallback正規表現（`1\s+a`のように空白許容パターン）を
-  `ITEM_CONFIGS`に追加する対症療法。汎用性は低いが既存9銘柄への影響
-  ゼロで確実
-- 実害範囲: APGEの`risk_factors`・`mda`が現状データ欠落のまま
-  （`legal_proceedings`は正常）。非保有銘柄（TANUKI TAIL対象だが
-  ポートフォリオ保有かは別途確認要）
-
-#### 着手条件
-なし。次回`[[TAIL-SEC-ITEMS-1]]`関連作業時、または低優先度課題群
-まとめ対応時に着手検討。
+BACKLOG_DONE.md「2026-09-13（完了）」参照。TAIL-SEC-ITEMS-APGE-
+WHITESPACE-1自体も2026-09-16に方針Y実装で解消済み、
+BACKLOG_DONE.md「2026-09-16（完了）」参照）
 
 ---
 
