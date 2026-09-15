@@ -417,6 +417,11 @@ def check_growth_sanity(
 
     # calculator/growth.py:calculate_fcf_cagr() の growth_floor と同値。
     # Stage 1（候補閾値緩和の判定）・floor_hit算出の両方で参照する
+    # [[TANUKI-VALUATION-MISC-GAPS-1]]⑦（2026-09-16追記）: この0.15は
+    # growth.py側のgrowth_floorとは別変数として本ファイルに独立
+    # ハードコードされており、一方だけ変更すると値がずれる二重管理状態
+    # にある（今回は明示のみで統合はしない）。値自体の根拠は
+    # growth.py::calculate_fcf_cagr()の引数定義部コメント参照。
     _FCF_CAGR_FLOOR = 0.15
 
     # --- Damodaran ベンチマーク取得 ---
@@ -605,7 +610,9 @@ def check_growth_sanity(
             )
 
     # ── GROWTH-FLOOR-VERDICT-1: fcf_cagr floor値張り付き検知 ──
-    # calculator/growth.py:calculate_fcf_cagr() の growth_floor（0.15）と同値。
+    # calculator/growth.py:calculate_fcf_cagr() の growth_floor（0.15）と同値
+    # （[[TANUKI-VALUATION-MISC-GAPS-1]]⑦: 関数冒頭_FCF_CAGR_FLOORと同じく
+    # growth.py側とは独立ハードコードの二重管理、根拠は同関数コメント参照）。
     # 本関数はpipeline.py内でrecommended_gによるDCF再計算（override）の"前"に
     # 呼ばれるため、growth_source/phase1_growthは常にoverride適用前の値になる
     # （JNJ等、override成功後にsegment_weightedへ差し替わる銘柄は事前状態では

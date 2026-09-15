@@ -55,16 +55,23 @@ def calculate_wacc(
     beta: Optional[float] = None,
     sector: Optional[str] = None,
     risk_free_rate: float = 0.043,
+    # [[TANUKI-VALUATION-MISC-GAPS-1]]⑦（2026-09-16追記）: market_return
+    # （CAPMのRm）のデフォルト10%は、S&P500の長期（数十年単位）名目平均
+    # リターンが概ね年率10%前後で推移してきたという、ファイナンス実務で
+    # 広く使われる経験則的ベンチマークに基づく値。本コードベース独自の
+    # 実測・再校正は行っておらず、数値自体の妥当性を裏付ける記録は
+    # コード内・BACKLOGいずれにも存在しない（STEP1調査で確認済み）。
     market_return: float = 0.10,
 ) -> WACCResult:
     """
     CAPMに基づくWACC計算
-    
+
     Args:
         beta: yfinanceから取得したβ（None可）
         sector: セクター名（βがNoneの場合のフォールバック用）
         risk_free_rate: リスクフリーレート（デフォルト: 4.3% = 10年国債利回り）
-        market_return: 市場期待リターン（デフォルト: 10%）
+        market_return: 市場期待リターン（デフォルト: 10%、根拠は引数定義部の
+            コメント参照）
     
     Returns:
         WACCResult: WACC計算結果

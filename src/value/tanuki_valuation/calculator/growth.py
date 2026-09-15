@@ -145,6 +145,17 @@ def _filter_positive_with_dates(
 def calculate_fcf_cagr(
     fcf_list: List[float],
     min_periods: int = 2,
+    # [[TANUKI-VALUATION-MISC-GAPS-1]]⑦（2026-09-16追記）: growth_floor/
+    # growth_capは外部ベンチマークに基づく値ではなく、DCF高成長期間の
+    # 成長率入力として妥当なレンジに収めるための内部キャリブレーション値。
+    # - floor=15%: 直近実績CAGRが低い（横ばい・微減含む）銘柄でも、
+    #   高成長フェーズの成長率としてあまりに保守的な値をそのまま採用
+    #   しないための下限
+    # - cap=50%: 一時的な急成長（低ベース効果・M&A等）をそのまま
+    #   複数年複利適用すると非現実的な将来価値になるのを防ぐ上限
+    # 数値自体（15%/50%）の妥当性を裏付ける外部データ・感度分析記録は
+    # 現時点でコード内・BACKLOGいずれにも存在しない（STEP1調査で確認済み、
+    # 数値自体の再検証は別途の検討課題）。
     growth_floor: float = 0.15,
     growth_cap: float = 0.50,
     fcf_dates: Optional[List[Any]] = None
@@ -156,8 +167,8 @@ def calculate_fcf_cagr(
         fcf_list: FCFリスト（新しい順、fcf_list[0]が直近。adjustments.py等
             本コードベース全体の規約に合わせる）
         min_periods: 最低期間
-        growth_floor: 成長率下限
-        growth_cap: 成長率上限
+        growth_floor: 成長率下限（根拠は引数定義部のコメント参照）
+        growth_cap: 成長率上限（根拠は引数定義部のコメント参照）
         fcf_dates: fcf_listと対応する日付（TTM経路はttm_end文字列、年次
             経路は会計年度int）。[[GATE2-READER-FCFLIST-1]]/
             [[GROWTH-FCFSERIES-ACCESSOR-ADOPT-1]]対応。渡された場合のみ
