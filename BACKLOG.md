@@ -6167,52 +6167,47 @@ DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテ
 
 ---
 
-### [TANUKI-VALUATION-MISC-GAPS-1] TANUKI VALUATIONの軽微な構造的ギャップまとめ（PERフォールバック欠如・EV/EBITDA負値格納・net_debt符号エイリアス・v0_adjusted死フィールド・Runway cash算出相違・mature_profit S&M欠落・根拠不明な定数・セグメントKPIテーブル機能撤去済み）
+### [TANUKI-VALUATION-MISC-GAPS-1] TANUKI VALUATIONの軽微な構造的ギャップまとめ（残り: net_debt符号エイリアス・Runway cash算出相違の2件のみ、他6件は対応済み/撤去済み）
 **優先度:** 低
 **分類:** データ品質 / TANUKI VALUATION
 **登録日:** 2026-07-23
+**更新日:** 2026-09-16（①②④⑥⑦対応、詳細下記）
 **発見:** `FIELD_DEFINITIONS.md`フェーズ3・4・6
 
-#### 内容
-①PS/PEG/EV-EBITDAはTANUKIデータ欠落時にHypeCore自身の`poc.json`へ
-フォールバックするが、PERだけはTANUKIの`comps.per`のみを参照しフォール
-バックしない（`detail.html:550`）。②`hypecore.py:130`は負のEV/EBITDAを
-そのまま格納する設計（現状UIガードで実害なしだが将来別画面追加時に
-誤表示リスク）。③`net_debt = -net_cash`という単純な符号反転が「正=
-ネットキャッシュ」「正=純負債」という2つの概念を並存させており、
-横断参照コードで符号取り違えリスクがある。④`v0_adjusted`（AS-IS-008）は
-`v0_adjusted = v0`という代入のみで実質的な死フィールド（コメント自体が
-後方互換用と明記）。⑤Runway概念がTANUKI（`SECReader.get_net_cash()`
-経由、セクターガードあり）とSTONKS SILO（`annual_{yr}.json`の`bs`単純
-合算のみ）でcash算出経路が異なる。⑥`research_and_development`・
-`selling_and_marketing`がSEC非開示の場合`or 0`で「支出ゼロ」として
-足し戻され、`mature_profit`が実態より低く算出される。⑦`growth_floor
-(15%)`・`growth_cap(50%)`・`market_return(10%)`の根拠がコード内に一切
-記載されていない。⑧（2026-08-26発見、2026-08-27機能撤去済み）
-`kpi_fetcher.py::build_kpi_data()`（セグメント別KPIデータを構築、
-stock.htmlの`renderSegmentKpiTable()`が`d.kpi_data`として参照する
-想定）が本番パイプラインから呼び出されておらず「セグメントKPI
-テーブル」が恒久的に非表示だった問題。2026-08-27に配線を追加した
-ところ（コミット`0450abe77`）、配線後も全銘柄で`kpi_data=None`のまま
-であることが判明し（`[[KPI-FETCHER-SEGMENT-SOURCE-ORPHANED-1]]`調査）、
-さらにKoichiさんとの対話で**機能の前提自体が誤りだった**ことが判明した
-——当初「KPI＝XBRLの正式な会計セグメントデータ」を前提に設計されて
-いたが、本来のKPIイメージ（例: SOFIの総会員数・クロスバイ率・NIM等）は
-決算資料の文章に企業ごと個別の形式で開示される経営指標であり、XBRLの
-会計セグメントとは全く別物だった。Koichiさんの判断により、この機能は
-一から作り直す前提で誤った実装（残骸）を撤去した（`kpi_fetcher.py`・
-`kpi_config.py`・`common/sec_data/segment_fetcher.py`削除、
-`pipeline.py`の配線削除、`stock.html`の表示コード削除。新機能の着手は
-見送り中、詳細は`[[KPI-FETCHER-SEGMENT-SOURCE-ORPHANED-1]]`
-〈BACKLOG_DONE.md〉・`[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-
-IDEA-1]]`参照）。
+#### 内容（更新: ①②④⑥⑦は対応済み、③⑤のみアクティブ）
+①〜⑧の由来・詳細は要約せず全文`BACKLOG_DONE.md`「2026-09-16（完了）」
+の`[[TANUKI-VALUATION-MISC-GAPS-1]]①②④⑥⑦一括対応`に保持している。
+以下、現時点の状態のみ記す。
+
+- **①PERフォールバック欠如 → 対応済み（2026-09-16）**: `detail.html`
+  のPERにpoc.json（`lat.forward_pe`）へのフォールバックを追加（コミット
+  `1e465ea536`）。trailing_pe側の完全対応は`[[HYPECORE-POC-TRAILING-
+  PE-MISSING-1]]`として別途登録（未実装）
+- **②EV/EBITDA負値格納 → 対応済み（2026-09-16）**: `hypecore.py`側で
+  格納時点でNone化（コミット`1e39bd15ab`）、該当21銘柄のpoc.json再生成
+  （コミット`4fc2d73814`）
+- **③net_debt符号エイリアス → 未対応（アクティブ）**: 全参照箇所の
+  影響範囲確認が別途必要なため今回スコープ外
+- **④v0_adjusted死フィールド → 対応済み（2026-09-16）**: 参照箇所0件を
+  確認の上削除（コミット`1485b4ea5f`）
+- **⑤Runway cash算出経路相違 → 未対応（アクティブ）**: Koichiさんの
+  設計判断待ちのため今回スコープ外
+- **⑥mature_profitのR&D/S&M `or 0`扱い → クローズ（陳腐化、
+  2026-09-16）**: `mature_profit`という識別子自体が現行コード・git
+  全履歴に存在せず、登録時の記述が指していたと推定される
+  `parser.py::_backfill_operating_income()`の`or 0`パターンは
+  `[[OPERATING-INCOME-EXTRACTION-GAP-1]]`（2026-08-16完了）で既に
+  `is not None`ベースへ根本修正済みと判明。実装不要と判断しクローズ
+- **⑦根拠不明な定数 → 対応済み（2026-09-16）**: `growth_floor`・
+  `growth_cap`・`market_return`へ根拠コメントを追記（数値は無変更、
+  コミット`3e50e62646`）
+- **⑧セグメントKPIテーブル機能 → 撤去済み（2026-08-27）**: 誤った
+  前提の実装を撤去済み。再設計する場合は`[[SEGMENT-KPI-NARRATIVE-
+  EXTRACTION-FUTURE-IDEA-1]]`参照
 
 #### 対応方針
-①〜⑦は影響が限定的なため、他の関連タスク（[[RISK-FREE-RATE-
-HARDCODE-1]]等）着手時に合わせて解消することを推奨する。⑧は誤った
-前提の実装を撤去済み。再設計する場合は`[[SEGMENT-KPI-NARRATIVE-
-EXTRACTION-FUTURE-IDEA-1]]`を起点に、着手タイミングをKoichiさんが
-判断する。
+残る③・⑤のみアクティブな課題として扱う。③は全参照箇所の影響範囲
+確認、⑤はKoichiさんの設計判断が必要。
 
 #### 着手条件
 なし
@@ -9150,3 +9145,36 @@ Stage 1/2の「積極的な値の検証」基準にそのまま当てはめて�
 
 #### 着手条件
 なし（Stage 2/3の主要スコープ外、優先度低のため急ぎ着手しない）。
+
+---
+
+### [HYPECORE-POC-TRAILING-PE-MISSING-1] HypeCore poc.jsonがtrailing_peを保持せずforward_peのみのため、PERフォールバックがforward側限定になっている
+**優先度:** 低
+**分類:** データ品質 / HypeCore
+**登録日:** 2026-09-16
+**発見:** `[[TANUKI-VALUATION-MISC-GAPS-1]]`①対応中のSTEP1調査
+
+#### 内容
+`src/value/hypecore/hypecore.py::fetch_info_snapshot()`は
+`trailing_pe`（`attrs.get("trailing_pe")`）を取得しているが、月次記録
+組み立て`_build_month_record()`の`.info`現時点値セットループ
+（`compute_scores()`内、`for key in ["forward_pe", "peg_ratio", ...]`）
+に`"trailing_pe"`が含まれておらず、`poc.json`には`forward_pe`のみが
+永続化される（`trailing_pe`は取得されているのに破棄される）。
+
+TANUKI VALUATION側の`comps.per`は`trailing_pe or forward_pe`
+（`per_is_forward`フラグ付き）という設計だが、HypeCore側は
+`forward_pe`しか持たないため、`detail.html`のPERフォールバック
+（`[[TANUKI-VALUATION-MISC-GAPS-1]]①`、コミット`1e465ea536`で実装済み）
+は forward PEのみを回復でき、trailing PEが取得できる銘柄でも
+trailing側は救えない。
+
+#### 対応方針（未定・実装前に設計判断が必要）
+`hypecore.py`の`.info`現時点値セットループへ`"trailing_pe"`を追加し
+`_build_month_record()`でも出力するよう変更した上で、`detail.html`側も
+TANUKIと同型の「trailing優先・なければforward」＋`per_is_forward`
+判定ロジックへ揃える。バックエンド変更（全HypeCore銘柄のpoc.json
+再生成を伴う）が必要なため、着手時は影響範囲を事前確認すること。
+
+#### 着手条件
+なし

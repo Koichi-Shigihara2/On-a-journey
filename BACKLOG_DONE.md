@@ -130,6 +130,106 @@ legal_proceedings全期間で完全無差分、APGEの10-K risk_factors/mdaが
 
 ---
 
+### ✅ [TANUKI-VALUATION-MISC-GAPS-1]①②④⑥⑦一括対応 — 機械的に対応できる5件を実装、残りは③⑤のみアクティブ
+**状態:** ①②④⑦実装完了・⑥クローズ（陳腐化）。本体エントリ自体は
+③⑤が残るためクローズせず、内容を更新のうえBACKLOG.mdに残置
+**優先度:** 低（各項目とも影響限定的と確認済み）
+**分類:** データ品質 / TANUKI VALUATION / HypeCore
+**登録日:** 2026-07-23（本体）
+**完了日:** 2026-09-16（①②④⑥⑦分）
+**発見:** `FIELD_DEFINITIONS.md`フェーズ3・4・6
+
+#### STEP1調査で判明した各項目の詳細（実装前に確認・報告済み）
+
+**①PERフォールバック欠如**: `detail.html:559`（`renderValMultiples()`）
+の`per`がPEG/PS/EV-EBITDAと異なりpoc.jsonへのフォールバックを持たな
+かった。poc.json側は`forward_pe`のみ永続化（`hypecore.py::
+_build_month_record()`が`trailing_pe`を出力しない設計、`fetch_info_
+snapshot()`は取得しているのに`compute_scores()`の`.info`現時点値
+セットループのキー一覧に`trailing_pe`が含まれておらず破棄される）と
+判明。単純な1行フォールバック追加では forward側しか救えないため、
+案(a)最小修正（forward_peのみフォールバック）と案(b)完全対応
+（hypecore.py側にtrailing_pe追加出力＋trailing優先ロジック）の2案を
+提示し、Koichiさんの承認で案(a)を採用した。
+
+**②EV/EBITDA負値格納**: `hypecore.py:238`・`:1019`（旧行番号）が負の
+EV/EBITDAをコメント「負値も格納（UIで変換）」のまま格納する設計。
+消費者を全文grepしたところ`detail.html`の1箇所のみで、既に
+`(evEbRaw>0)?evEbRaw:null`で正しく除外されていたため「実害なし」の
+BACKLOG記載は正確と確認。実データを全走査したところ21銘柄
+（ASTS/BBAI/ESTC/FROG/GTLB/IONQ/IOT/JOBY/KULR/NET/ONDS/QBTS/RBRK/
+RCAT/RDW/RKLB/RXRX/S/SOUN/SPIR/ZS）が実際に負値を格納中と確認、格納
+時点でNone化しても表示結果は不変（既存UIガードと同じ結果）と検証済み
+の上で実装した。
+
+**③net_debt符号エイリアス**: 全参照箇所の影響範囲確認が別途必要な
+ため今回スコープ外（据え置き、③としてBACKLOG.mdにアクティブのまま
+残置）。
+
+**④v0_adjusted死フィールド**: `adjustments.py:716`の`v0_adjusted = v0`
+（代入のみ）を全リポジトリgrepし、`core_calculator.py`以外に参照
+箇所0件・もう一方の呼び出し元（旧640行目）が既に`_`で戻り値を破棄
+していることを確認。影響範囲ゼロと判断し実装した。
+
+**⑤Runway cash算出経路相違**: Koichiさんの設計判断待ちのため今回
+スコープ外（据え置き、⑤としてBACKLOG.mdにアクティブのまま残置）。
+
+**⑥mature_profitのR&D/S&M `or 0`扱い**: `mature_profit`という識別子
+自体が現行コード・git全履歴（`git log --all -S`）に一度も存在しない
+ことを確認。`research_and_development`/`selling_and_marketing`を
+参照する4ファイル（`adjustments.py`・`rice.py`・`data_fetcher.py`・
+`pipeline.py`）はいずれも既に`is not None`ベースの明示的なNone処理
+（`rice.py`は欠損年度への警告出力も既存）で、単純な`or 0`ゼロ化は
+現状のコードに存在しない。登録時点の記述が指していたと推定される
+`parser.py::_backfill_operating_income()`（GP法:
+`gross_profit - research_and_development - (SGA or S&M)`で
+operating_incomeを再構成）は、`[[OPERATING-INCOME-EXTRACTION-
+GAP-1]]`（2026-08-16完了）で「`(oi or 0)`によるゼロ化を経て真の
+黒字企業が『赤字』と誤判定されていた」という同根の問題を既に
+`is not None`ベースへ根本修正済みと確認。陳腐化と判断しクローズした
+（実装なし）。
+
+**⑦根拠不明な定数**: `growth_floor(15%)`・`growth_cap(50%)`
+（`calculator/growth.py:148-149`）・`market_return(10%)`
+（`calculator/wacc.py:58`）とも、値の定義説明のみで数値自体の根拠を
+示すコメントが一切ないことを確認（BACKLOG記載の通り）。副次発見として
+`growth_sanity.py:420,613`に`_FCF_CAGR_FLOOR=0.15`が独立ハードコード
+（growth.py側とは別変数の二重管理）されていることも判明。
+
+#### 実装内容・検証結果
+
+- **①**: `detail.html`の`per`に`?? lat.forward_pe`を追加。フォール
+  バック時は必ずforward PEのため`perIsFwd`もtrueへ切替、既存の"Fwd"
+  ラベル表示ロジックで区別できるようにした（新規UI要素は追加せず）
+- **②**: `hypecore.py`に`_positive_or_none()`ヘルパーを新設し
+  `fetch_info_snapshot()`・`_build_month_record()`の両方へ適用。
+  該当21銘柄のpoc.jsonを再生成し、全件`ev_ebitda`がnullへ更新された
+  ことを確認
+- **④**: `calculate_intrinsic_value()`の戻り値をfloat単体へ変更、
+  `core_calculator.py`の2呼び出し元・出力dictキーも削除。削除後、
+  リポジトリ全体で`v0_adjusted`の参照が0件であることを再確認
+- **⑦**: `growth.py`・`wacc.py`・`growth_sanity.py`へ根拠コメントを
+  追記（S&P500長期平均リターン等、ファイナンス実務の経験則に基づく
+  旨と、数値自体を裏付ける外部データ・感度分析記録が存在しない旨を
+  明記）。diffがコメント・docstringのみであることを確認
+
+**検証（全項目共通）**: pytest 1277件全パス、`audit.py`exit 0（既存
+無関係WARNのみ）、`report_consistency_check.py --fail-on-ng` NG=0
+（既存基準値と一致）。
+
+**新規登録**: ①の案(b)（trailing_pe完全対応）は
+`[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`として別途BACKLOG登録（未実装、
+着手条件なし）。
+
+#### コミット
+- `1e465ea536`: ①PERフォールバック追加（detail.html）
+- `1e39bd15ab`: ②EV/EBITDA負値None化実装（hypecore.py）
+- `4fc2d73814`: ②データ再生成（該当21銘柄poc.json）
+- `1485b4ea5f`: ④v0_adjusted削除（adjustments.py・core_calculator.py）
+- `3e50e62646`: ⑦根拠コメント追記（growth.py・wacc.py・growth_sanity.py）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了
