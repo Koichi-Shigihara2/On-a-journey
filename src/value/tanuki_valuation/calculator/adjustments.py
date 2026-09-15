@@ -708,14 +708,13 @@ def calculate_intrinsic_value(
     rpo_pv: float,
     alpha: float,
     growth_option_pv: float = 0.0
-) -> Tuple[float, float]:
+) -> float:
     """本質的価値（P_t）計算
     P_t = V0 × (1 + α) + rpo_pv + growth_option_pv
     rpo_pvはαの外に出すことで成長プレミアムの二重適用を防ぐ（v9.0修正）
     """
-    v0_adjusted = v0  # RPO加算前（後方互換のため戻り値として維持）
     intrinsic_value_pt = v0 * (1 + alpha) + rpo_pv + growth_option_pv
-    return v0_adjusted, intrinsic_value_pt
+    return intrinsic_value_pt
 
 
 def calculate_per_share_value(

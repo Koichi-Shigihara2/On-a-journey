@@ -580,7 +580,7 @@ class KoichiValuationCalculator:
 
         # ── STEP 10: 本質的価値（P_t）算出 ──
         # ALPHA-REDESIGN-1: alpha乗算廃止（alpha=0.0）。alphaは参考値として保持
-        v0_adjusted, intrinsic_value_pt = calculate_intrinsic_value(
+        intrinsic_value_pt = calculate_intrinsic_value(
             v0=v0, rpo_pv=rpo_pv, alpha=0.0,
             growth_option_pv=growth_option_pv
         )
@@ -637,7 +637,7 @@ class KoichiValuationCalculator:
                     high_growth_years=_moat_phase1_years,  # ALPHA-REDESIGN-1
                     terminal_growth=terminal_growth,
                 )
-            _, _ivpt = calculate_intrinsic_value(
+            _ivpt = calculate_intrinsic_value(
                 v0=_res.v0, rpo_pv=rpo_pv, alpha=0.0,  # ALPHA-REDESIGN-1: alpha廃止
                 growth_option_pv=growth_option_pv
             )
@@ -841,7 +841,6 @@ class KoichiValuationCalculator:
             "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。"
                        "メインの理論株価計算根拠はdcf_components.v0_rm"
                        "（market_return 10%固定・βなし）を参照すること。",
-            "v0_adjusted": float(v0_adjusted),
             "alpha": float(alpha),
             "alpha_was_capped": alpha_result.was_capped,
             "future_values": future_values,
