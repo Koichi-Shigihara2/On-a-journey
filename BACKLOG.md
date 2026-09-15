@@ -6181,15 +6181,15 @@ DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテ
 
 - **①PERフォールバック欠如 → 対応済み（2026-09-16）**: `detail.html`
   のPERにpoc.json（`lat.forward_pe`）へのフォールバックを追加（コミット
-  `1e465ea536`）。trailing_pe側の完全対応は`[[HYPECORE-POC-TRAILING-
+  `bb7edaec50`）。trailing_pe側の完全対応は`[[HYPECORE-POC-TRAILING-
   PE-MISSING-1]]`として別途登録（未実装）
 - **②EV/EBITDA負値格納 → 対応済み（2026-09-16）**: `hypecore.py`側で
-  格納時点でNone化（コミット`1e39bd15ab`）、該当21銘柄のpoc.json再生成
-  （コミット`4fc2d73814`）
+  格納時点でNone化（コミット`c7b221d0ae`）、該当21銘柄のpoc.json再生成
+  （コミット`ee3ba7854c`）
 - **③net_debt符号エイリアス → 未対応（アクティブ）**: 全参照箇所の
   影響範囲確認が別途必要なため今回スコープ外
 - **④v0_adjusted死フィールド → 対応済み（2026-09-16）**: 参照箇所0件を
-  確認の上削除（コミット`1485b4ea5f`）
+  確認の上削除（コミット`a897399595`）
 - **⑤Runway cash算出経路相違 → 未対応（アクティブ）**: Koichiさんの
   設計判断待ちのため今回スコープ外
 - **⑥mature_profitのR&D/S&M `or 0`扱い → クローズ（陳腐化、
@@ -6200,7 +6200,7 @@ DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテ
   `is not None`ベースへ根本修正済みと判明。実装不要と判断しクローズ
 - **⑦根拠不明な定数 → 対応済み（2026-09-16）**: `growth_floor`・
   `growth_cap`・`market_return`へ根拠コメントを追記（数値は無変更、
-  コミット`3e50e62646`）
+  コミット`a561a673fa`）
 - **⑧セグメントKPIテーブル機能 → 撤去済み（2026-08-27）**: 誤った
   前提の実装を撤去済み。再設計する場合は`[[SEGMENT-KPI-NARRATIVE-
   EXTRACTION-FUTURE-IDEA-1]]`参照
@@ -9165,7 +9165,7 @@ Stage 1/2の「積極的な値の検証」基準にそのまま当てはめて�
 TANUKI VALUATION側の`comps.per`は`trailing_pe or forward_pe`
 （`per_is_forward`フラグ付き）という設計だが、HypeCore側は
 `forward_pe`しか持たないため、`detail.html`のPERフォールバック
-（`[[TANUKI-VALUATION-MISC-GAPS-1]]①`、コミット`1e465ea536`で実装済み）
+（`[[TANUKI-VALUATION-MISC-GAPS-1]]①`、コミット`bb7edaec50`で実装済み）
 は forward PEのみを回復でき、trailing PEが取得できる銘柄でも
 trailing側は救えない。
 
