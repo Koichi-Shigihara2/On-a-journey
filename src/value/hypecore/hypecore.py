@@ -118,6 +118,18 @@ def z_score_series(s: pd.Series, window: int = 24) -> pd.Series:
     return (s - roll_mean) / (roll_std + 1e-9)
 
 
+def _positive_or_none(v):
+    """[[TANUKI-VALUATION-MISC-GAPS-1]]②（2026-09-16）: EV/EBITDAは
+    EBITDA<0の場合、比率自体が意味をなさない（分母が負）。従来は負値も
+    そのまま格納し表示側（detail.html）でのみフィルタしていたが、格納
+    時点でNone化する（消費者側で個別にガードしなくても安全な値になる）。
+    """
+    try:
+        return float(v) if v is not None and float(v) > 0 else None
+    except (TypeError, ValueError):
+        return None
+
+
 # ── データ取得 ────────────────────────────────────────────
 
 def fetch_price_data(ticker: str, start: str = "2021-01-01") -> pd.DataFrame:
@@ -235,7 +247,7 @@ def fetch_info_snapshot(ticker: str) -> dict:
         "volume_vs_avg":      cur_vol / avg_vol if avg_vol else None,
         "market_cap":         attrs.get("market_cap"),
         "shares":             attrs.get("shares_outstanding"),
-        "ev_ebitda":          attrs.get("ev_to_ebitda"),  # 負値も格納（UIで変換）
+        "ev_ebitda":          _positive_or_none(attrs.get("ev_to_ebitda")),
     }
 
 
@@ -1016,7 +1028,10 @@ def _build_month_record(idx, row) -> dict:
         "momentum_score":     safe(row.get("momentum_score")),
         # IV
         "price_iv_ratio":     safe(row.get("price_iv_ratio")),
-        "ev_ebitda":          safe(row.get("ev_ebitda")),   # 負値も格納（UIで変換）
+        # [[TANUKI-VALUATION-MISC-GAPS-1]]②: 上流のfetch_info_snapshot()で
+        # 既にNone化済みだが、_build_month_record()単独でも安全な値になる
+        # よう二重に適用する（防御的、rowの供給元が将来変わっても安全）。
+        "ev_ebitda":          safe(_positive_or_none(row.get("ev_ebitda"))),
         # 低ベース効果: 前年rev_yoy<-10% かつ 今年rev_yoy>50%
         "low_base_effect":    bool(row.get("low_base_effect", False)),
     }
