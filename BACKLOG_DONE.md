@@ -222,11 +222,11 @@ GAP-1]]`（2026-08-16完了）で「`(oi or 0)`によるゼロ化を経て真の
 着手条件なし）。
 
 #### コミット
-- `1e465ea536`: ①PERフォールバック追加（detail.html）
-- `1e39bd15ab`: ②EV/EBITDA負値None化実装（hypecore.py）
-- `4fc2d73814`: ②データ再生成（該当21銘柄poc.json）
-- `1485b4ea5f`: ④v0_adjusted削除（adjustments.py・core_calculator.py）
-- `3e50e62646`: ⑦根拠コメント追記（growth.py・wacc.py・growth_sanity.py）
+- `bb7edaec50`: ①PERフォールバック追加（detail.html）
+- `c7b221d0ae`: ②EV/EBITDA負値None化実装（hypecore.py）
+- `ee3ba7854c`: ②データ再生成（該当21銘柄poc.json）
+- `a897399595`: ④v0_adjusted削除（adjustments.py・core_calculator.py）
+- `a561a673fa`: ⑦根拠コメント追記（growth.py・wacc.py・growth_sanity.py）
 
 ---
 
