@@ -3020,177 +3020,6 @@ None値系警告）以外に新規の異常なし。
 
 ---
 
-### [MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1] 系列単位の取得失敗がviolations_log.jsonで「正常」と区別できない
-**優先度:** 中（実害は現時点でFTSD1件のみ確認済みだが、今後同様の
-失敗〈系列ID変更・FRED側仕様変更等〉が起きても気づけない構造的リスク）
-**分類:** 設計上のギャップ / 可視性欠如
-**登録日:** 2026-08-15
-**発見:** `common/macro_data/`更新実行実績・データ鮮度の確認調査
-（チャット記録、2026-08-15）
-**統合について（2026-09-05）**: `MACRODATA-FTSD-SERIES-ID-INVALID-1`
-（FRED系列コード「FTSD」がFRED API上に実在しない具体事例）を本エントリへ
-統合した。両者は「一般的な欠陥（取得失敗が可視化されない設計）」と
-「その欠陥が実際に表面化した具体例（FTSD系列コード誤り）」という直接の
-親子関係にあるため、可視性欠如を扱う本エントリを主エントリとして残し、
-FTSDケースの内容は要約せず全文そのまま下記「具体事例（FTSDケース）」に
-保持する。`MACRODATA-FTSD-SERIES-ID-INVALID-1`はBACKLOG.mdから削除済み。
-`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`は別論点のため統合対象外。
-
-#### 内容
-`fetch_series()`は失敗時に例外を投げずNoneを返す設計（print()ログの
-みでリポジトリには残らない）。`update_series()`はNone時に
-`{"updated": 0, "warnings": []}`を返し`violations_log.json`へ書き込む
-が、この構造は正常に0件警告だった健全な系列と区別がつかない。
-FTSDエントリ（`{"checked_at": ..., "warnings": []}`）が実例（詳細は
-下記「具体事例（FTSDケース）」参照）。`series/{ID}.json`ファイルが
-存在しないことに能動的に気づかない限り、取得失敗を発見できない。
-
-加えて、`fetch_all_series()`のforループには系列単位のtry/exceptが
-なく、予期しない例外（ディスクエラー等）が発生した場合、その系列
-以降の全系列が未処理のままバッチ全体が中断する構造的リスクも
-あわせて確認された（今回の3日間の実行では未発生）。
-
-#### 対応方針（未定）
-- `violations_log.json`に「fetch自体の成否」を示すフィールド
-  （例: `fetch_status: "success"/"failed"/"skipped"`）を追加する
-- `fetch_all_series()`のforループに系列単位のtry/exceptを追加し、
-  1系列の失敗が他系列の処理を止めないようにする
-- 週次等の定期監視（`audit.py`型の診断ツール）で
-  `series_meta.json`の全系列と`series/`ディレクトリの実ファイルを
-  突合し、欠落を検知する仕組みを追加する
-
-#### 着手条件
-なし。対応方針の具体化から。
-
-#### 具体事例（FTSDケース、統合元[MACRODATA-FTSD-SERIES-ID-INVALID-1]）
-以下は独立BACKLOGエントリだった`[MACRODATA-FTSD-SERIES-ID-INVALID-1]
-FRED系列コード「FTSD」がFRED API上に実在しない（05_main.pyのWTREGEN
-フォールバックが機能しない可能性）`の全文をそのまま転記したもの。
-
-**優先度:** 中で据え置き（2026-08-13事実確認の結果、実害は極めて稀と
-確認できたため引き上げ不要と判断。ただし機能しないフォールバックを
-放置すべきではないため記録は残す。詳細は下記「追記」参照）
-**分類:** バグ疑い / データソース側の系列コード誤り
-**登録日:** 2026-08-12
-**更新日:** 2026-08-13（事実確認調査完了。原因特定・実害実績確認・
-修正案提示。詳細は下記「追記」参照。実装コード変更なし）
-**発見:** `common/macro_data/`定期取得ワークフロー新設・動作確認
-（`fetch_all_series()`の実FRED_API_KEYによるローカル実行、チャット
-記録、2026-08-12）
-
-##### 内容
-`common/macro_data/fetcher.py::fetch_series("FTSD")`を実行したところ、
-fredapi経由・`curl`による直接FRED REST API呼び出し
-（`https://api.stlouisfed.org/fred/series?series_id=FTSD&api_key=...`）
-の両方で`{"error_code":400,"error_message":"Bad Request.  The series
-does not exist."}`が返り、**`FTSD`はFRED上に実在しない系列コードで
-あることを確認した**（ネットワーク一時障害やfredapiライブラリ側の
-問題ではなく、系列コード自体が無効）。
-
-`05_main.py::update_liquidity_csv()`は`WTREGEN`（TGA残高）取得失敗時に
-`FTSD`へフォールバックする実装になっている（1959-1960行:
-`if tga_val is None: tga_val, _ = fred_latest(fred, "FTSD",
-target_date, lookback=21)`）が、このフォールバックが実際に発動しても
-`FTSD`自体が無効な系列コードのため取得は失敗し、TGA値は結局取得
-できないままになると推定される。`FTSD`は
-`[[MACRODATA-FTSD-MISSING-FROM-INVENTORY-1]]`（`INPUT_DATA_TOBE.md`の
-24系列台帳への追加漏れ、`INPUT-A-049`として2026-08-12に対応済み）で
-台帳に追加した系列だが、台帳追加時点では実際にFRED上に存在するかの
-検証は行っていなかった。
-
-##### 追記（2026-08-13、事実確認調査完了、記録のみ・実装なし）
-
-**原因特定**: `FTSD`は2026-05-08のコミット`8561125f3`（`Co-Authored-By:
-Claude Sonnet 4.6`、NET LIQUIDITY計算のためWTREGEN/RRPONTSYD取得を
-追加した際にフォールバック先として導入）で、実在確認なしに導入されて
-いたことをコミット履歴で確認した。コミットメッセージ・コードいずれにも
-典拠の記載はない。
-
-**正しい代替系列の特定**: FRED検索API（`search_text=treasury general
-account`）で調査した結果、`WDTGAL`（Liabilities and Capital: Deposits
-with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General
-Account: **Wednesday Level**）が有力な代替候補と判明。`WTREGEN`
-（**Week Average**）と同一カテゴリ・同一期間（2002-12-18〜2026-08-05、
-現在も更新中）・同一単位（Millions USD、週次）でありながら集計方法が
-異なる（週平均 vs 水曜時点値）ため、名目だけの重複ではなく実務上意味の
-あるフォールバックになる。なお同種の旧系列`WLTGAL`・`LDGUST`は2018年に
-DISCONTINUEDと確認済みのため候補外。`search_text=FTSD`はFRED検索でも
-0件ヒットで、類似候補すら存在しない。
-
-**実害実績の確認**: `docs/market-monitor/macro-pulse/data/
-05_liquidity.csv`（2023-01-01〜現在、1302日分）を全件確認した結果、
-`tga`列が空欄なのは**2026-05-31の1件のみ**（前日5/30・翌日6/1は正常
-取得）。この日、`WTREGEN`取得失敗→`FTSD`へフォールバック→`FTSD`も
-無効のため結局取得失敗、という実際の発火・失敗の実績を確認した。
-同日`net_liquidity`列（`=(WALCL−TGA−RRP)/1,000,000`）も算出不能で
-空欄。`stealth_signal`列はその日も"neutral"のまま記録が継続しており
-致命的な誤判定はないが、NET LIQUIDITY系列に1日分の欠測点が生じていた。
-WTREGEN自体の失敗頻度は1302日中1日（約0.08%）で極めて低頻度。
-
-**新アーキテクチャ（`[[MACRODATA-LAYER-CONSTRUCTION-1]]`切替後）での
-位置づけ**: 現行`fred_latest()`は`reader.get_latest()`を呼ぶのみで、
-旧実装が持っていた`target_date`基準・`lookback`日数ウィンドウの制約が
-廃止されている。ローカルの`series/WTREGEN.json`に一度でも値が書き込ま
-れていれば、当日の取得が一時的に失敗しても直近キャッシュ値をそのまま
-返すため、フォールバック発動条件（`reader.get_latest("WTREGEN")`が
-Noneを返す）は「`WTREGEN`系列ファイル自体が存在しない／空」という、
-旧実装よりさらに稀なケースに限定される。初回投入時点でWTREGENは25系列
-中の成功24系列に含まれており、現状ローカルにデータが存在するため、
-現行アーキテクチャ下ではこのフォールバックが発動する可能性はさらに
-低下していると評価できる。ただし「発動条件が稀になったこと」と
-「発動時に機能するか」は別問題であり、後者（`FTSD`が無効）は現在も
-未解消。
-
-**修正案（未実装、次回対応時の実装指針）**:
-1. `05_main.py::update_liquidity_csv()`のフォールバック先を
-   `"FTSD"`→`"WDTGAL"`に変更
-2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
-   （`category: "liquidity"`、`consumers: ["05_main.py::
-   update_liquidity_csv (WTREGENフォールバック候補)"]`）。追加すれば
-   `fetch_all_series()`が自動的にバッチ取得対象に含める
-3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`
-   （`INPUT-A-049`）記載を`WDTGAL`に置き換えるか、無効系列だった旨の
-   注記を追加
-
-**優先度判断**: 実害頻度は旧実装でも0.08%、新実装ではさらに稀と推定
-されるため、優先度「中」からの引き上げは不要と判断し据え置く。一方で
-「一度も機能しないフォールバックが存在し続ける」こと自体は望ましくない
-ため、記録は残す。
-
-##### 着手条件
-次回の低優先度課題群まとめ対応時（`[[MACRODATA-AS-IS-DUPLICATION-
-UNDERCOUNT-1]]`・`[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`・
-`[[MACRODATA-IMPORT-HISTORY-CONFIG-DRIFT-1]]`・
-`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`等と合わせて着手検討）。
-上記「修正案」を踏まえ、対応方針は事実上確定済み。
-
-##### FTSDケース分の実装完了（2026-09-13、コミット`79169b583e`）
-上記「修正案」1〜3を全て実装した:
-1. `05_main.py::update_liquidity_csv()`のフォールバック先を
-   `"FTSD"`→`"WDTGAL"`に変更、コードコメントも実態に合わせて書き換え
-2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
-   （`INPUT-A-050`、`category: "liquidity"`）。既存`FTSD`エントリは
-   削除せずnote追記のみで残置
-3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`（`INPUT-A-049`）
-   記載に無効系列だった旨の注記を追加、`WDTGAL`（`INPUT-A-050`）を
-   新規行として追加。両ファイルの機械的網羅性証明を実行し67件・
-   差分0件を再確認済み
-
-`common.macro_data.fetcher.fetch_series("WDTGAL")`を実FRED_API_KEYで
-直接呼び出し、1239件（2026-09-09まで）の実データが正常取得できることを
-確認した（`fred_latest()`はローカルキャッシュ読み取りのみでFREDへ
-直接アクセスしないため、疎通確認には`fetch_series()`を使用した）。
-pytest 1236件成功、`report_consistency_check.py --fail-on-ng` NG=0・
-ゲート通過。
-
-**本エントリのクローズは行わない**: 本体（`violations_log.json`の
-`fetch_status`可視化・`fetch_all_series()`の系列単位try/except）は
-別スコープのため今回は対応していない。FTSDケース分（機能しない
-フォールバックの解消）のみ対応完了、本体は引き続きオープンのまま
-残す。
-
----
-
 （[[MARKETDATA-SP500-SCRAPE-INVALID-TICKERS-1]]は2026-09-13、Wikipedia
 実ページで直接検証した結果、登録時の診断「不正銘柄コード混入」自体が
 誤りで、FDXF/HONA/Qはいずれも実在する正規のS&P500構成銘柄（親会社からの
@@ -3216,448 +3045,6 @@ pytest 1236件成功、`report_consistency_check.py --fail-on-ng` NG=0・
 CONSIDERATION-1]]`は既に本ファイルへ独立登録済みと判明し、本エントリ
 固有の残タスクが消滅したためクローズ、BACKLOG_DONE.md「2026-09-10
 （完了）」参照）
-
----
-
-### [XBRL-UNIT-SCALE-MISMATCH-DETECTION-1] 同一タグ・同一期間の値が複数filing間で10のべき乗単位で乖離する場合を検知する汎用チェックの新設提案
-**優先度:** 中
-**分類:** アーキテクチャ改善 / 新規検知チェック提案
-**登録日:** 2026-08-02
-**発見:** [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]調査から派生（chat記録）
-
-#### 内容
-同一XBRLタグ・同一unit・同一(start,end)期間について、異なるaccn
-（filing）間で値の比率が10のべき乗値（1000倍・1,000,000倍等、±2%許容）
-に近い場合、SEC提出時のスケール指定漏れ（"in thousands"欠落等）という
-業界共通のXBRLタグ付けミスの可能性が高いことが判明した。素朴な閾値
-（比≥100）のみでは72銘柄がヒットしノイズが大きすぎたが、比≒10の
-べき乗という条件を追加することで、SPAC逆合併の会計主体入替
-（[[SPAC-SHELL-BS-ENTITY-MIXING-1]]と同系統、正当な処理）等のノイズを
-排除し、18銘柄・126件まで収束することを確認した。
-
-該当銘柄・件数: COHR(26)・KO(20)・NVDA(20)・CPRT(18)・TER(12)・ONDS(5)・
-FCX(4)・HEI(4)・MO(4)・ADSK(2)・CELH(2)・TSLA(2)・ZS(2)・ASTS(1)・
-IONQ(1)・MSCI(1)・SOUN(1)・ZETA(1)。対象フィールドはWeightedAverageNumber
-OfSharesOutstandingBasic/Diluted(計98)が過半だが、CommonStockShares
-Outstanding・EPS系・Depreciation系・NetIncomeLoss系・LongTermDebt・
-DebtCurrent・Liabilities・OperatingIncomeLoss・AmortizationOfIntangible
-Assets等、幅広いフィールドに及ぶ。
-
-#### 影響
-COHR以外の該当銘柄は未トリアージ。検知＝即実害ではなく、本人データ優先
-ロジックにより既に正しい値が採用されているケース（実害なし、COHR自身の
-FY2019/2020 Q3・FY2023/2024 D&A等で確認済み）もあれば、実際に格納値が
-誤っているケース（COHR 2009-2011のshares系）もある、個別トリアージが
-必要な問題。
-
-#### 対応方針（登録時点）
-未定。既存WARN群（WARN-24等）と同型の「検知のみ・自動修正なし」枠組みで
-新設（WARN-30候補）することを推奨する。ただし既存WARN群がextracted
-（抽出済み）データを対象にするのに対し、本チェックはcompany_facts.json
-の生タグレベル（抽出前）を横断的に見る必要があり、`_parse_raw_data()`
-または`report_consistency_check.py`への新規ロジック層追加という設計に
-なる。検知後は126件を個別トリアージし、実害あり/なしを分類する運用が
-必要。
-
-#### 実装方針追記（2026-08-02、[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]
-全母集団シミュレーション結果を統合、チャット記録・読み取り・オフライン
-シミュレーションのみ）
-[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]として個別登録していた
-「`_extract_single_key()`のtie-break条件を新しいfiling優先に変更する」
-という対応方針を、本エントリに統合する（詳細は同エントリのBACKLOG_DONE.md
-移動後の記録を参照）。
-
-全母集団シミュレーションの結果、tie-break条件を単純に「新しいfiling優先」
-へ変更する広範な設計変更は不採用と確定した。31銘柄・124件で値が変化し、
-確実な改善はCOHRの2件（shares_diluted/basic）のみで、残り122件は改悪
-（VZ(2008)純利益が黒字$6,428M→赤字-$2,193Mに反転等）・改悪疑い
-（SOUN/KULRのSPAC実体混同、HON/FCX/HEIのrestatement・株式分割調整）・
-判断不能な乖離が大半だった。また、WMT(2014)でtotal_assetsが微小変動した
-結果、`_backfill_total_liabilities_via_identity()`の安全網（TL==TAの
-場合のみ発動）が完全一致条件を偶然すり抜け、[[TOTAL-LIABILITIES-
-FALLBACK-TAG-DESIGN-FLAW-1]]と同型のバグを別経路で復活させかねない
-という重大な相互作用リスクも判明した。
-
-**実装方式を確定**: 「同符号 かつ 比が10のべき乗値（±2%許容、n≥2）」
-という本エントリのガード条件に該当する場合のみ、tie-breakをより新しい
-filing優先に切り替える設計とする。この条件で124件をフィルタしたところ、
-COHRの2件（shares_diluted/basic）のみが該当し、他122件は自動的に
-除外されることを確認済み。
-
-実装前に2点の追加確認が必須:
-(a) 既存の恒等式ベース安全網（`_backfill_total_liabilities_via_
-    identity()`等）との相互作用を個別に再検証する（WMT(2014)のような
-    偶発的なすり抜けがないか）
-(b) ガード適用後も105銘柄で改めて全母集団シミュレーションを行い、
-    新規の意図しない変化がゼロであることを確認する
-
-対象は当面COHRの2件（shares_diluted/basic、2009-2011年度）に限定される
-見込み。`fact_overrides.json`での個別対応（[[COHR-SHARES-DILUTED-
-UNIT-SCALE-BUG-1]]で確定済み）と、tie-break側の恒久対応のどちらを
-採るか、または両方必要かは実装時に判断する。
-
-#### 実装前最終確認結果・実装方針確定（2026-08-02、チャット記録、読み取り・
-オフラインシミュレーションのみ）
-実装前の2点の追加確認（前項）を完了した。
-
-(a) 既存の恒等式ベース安全網との相互作用リスクはなし。
-`_backfill_total_liabilities_via_identity()`・[[CHECK29-ACCOUNTING-
-IDENTITY-DETECTION-LAYER-1]]はいずれもBS項目（total_assets/total_
-liabilities/stockholders_equity/NCI/一時的持分）のみを対象とする一方、
-ガード条件付き介入が実際に触れるのはshares項目の2フィールドのみで、
-両者が扱うフィールド集合に重なりがなく構造的に相互作用の経路が存在し
-ないことを確認した。前回懸念したWMT(2014)型のすり抜けは、ガード条件
-（比が10のべき乗、最低100倍）により正しく除外されることを確認した
-（WMTの乖離比≒1.001はガード条件を満たさないため対象外）。
-
-(b) ガード適用後の全母集団シミュレーションで、該当・変化するのはCOHRの
-2010年度shares_diluted/basicの2フィールドのみと最終確定した。他104
-銘柄・COHRの他年度（2009・2011年度含む）は完全に無変化、新規の意図
-しない波及も確認されなかった。
-
-**実装方針を確定**: [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]の
-`fact_overrides.json`個別上書き（2009-2011年度、3年度とも1回で解決）を
-実装対象とし、tie-break変更（ソースコード変更）は当面見送る。理由:
-(a)tie-break変更は2010年度1件しか解決せず、その1件もfact_overrides側
-で重複解決される（tie-break変更単独では2009・2011年度は解決しない:
-2009年度は後続filingに正しい値自体が存在せず、2011年度は本人データ
-優先ロジックにより保護されているため）、(b)現時点でCOHR以外に該当する
-実ケースがゼロと確定しており、ソースコード変更のコストに見合う実利用
-価値が現状ない。ガード条件の設計自体は妥当性・安全性が確認済みのため
-破棄せず、将来「本人データ優先ロジックでは救えず、かつ個別override
-登録が非現実的な規模の」新規ケースが発見された時点で再検討する。
-
-#### 着手条件
-[[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]のfact_overrides実装で事実上
-完結、tie-break変更部分は将来の予防的対応として保留。優先度中（業界
-共通のミスパターンとして汎用的価値が高いが、即座の実害は限定的
-〈COHR以外は未確認〉のため）。
-
----
-
-### [TTM-DATA-DRIFT-BEHIND-PIPELINE-1] common/sec_data/ttm/配下のTTM系列ファイルが2026-07-26生成のまま、以降のパイプライン修正に追従しておらず陳腐化している可能性
-**優先度:** 中（登録時「高」から引き下げ、影響実測の結果、現在進行形の
-実害はゼロと確定したため。構造的リスクは残存）
-**分類:** データ品質 / パイプライン出力の陳腐化
-**登録日:** 2026-08-02
-**発見:** [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]実装検証時（チャット記録）
-
-#### 内容
-`common/sec_data/ttm/`配下の全105銘柄のTTM系列ファイル
-（`{ticker}_ttm_series.json`）が、`git log`確認で2026-07-26生成のまま
-であることが判明した。一方、TTM系列の入力元となる抽出パイプライン
-（`common/sec_data/layer3_builder.py`・`common/sec_data/q4_implied.py`）
-は2026-07-30に、`common/sec_data/parser.py`は本セッション中の
-2026-08-02に、それぞれ別コミットで修正されている。実際にPEP銘柄で
-検証したところ、現行パイプライン（2026-08-02時点）で再生成すると
-`selling_general_and_administrative`が$34,501,000,000→$37,791,000,000
-（約9.5%）変化することを確認済み（`[[TTM-CALC-QUARTER-CONTIGUITY-
-UNCHECKED-1]]`実装作業の副産物として発見。この差分は今回実装した連続性
-チェックとは無関係で、単純にttm/ファイルが2026-07-26時点のパイプライン
-出力のまま更新されていないことに起因すると特定済み）。
-
-`.github/workflows/SEC_Data_Update.yml`を確認したところ、毎週日曜
-12:00 UTC（cron: `0 12 * * 0`）に`update.py`を実行し
-`common/sec_data/ttm/`を含む全出力を自動再生成・commit・pushする
-ワークフローが既に存在する。**このワークフローが正常に稼働していれば
-陳腐化は本来自然解消されるはずであり、なぜ2026-07-26以降ttm/が
-更新されていないのか（ワークフロー自体の失敗・無効化・直近未実行等）
-が未確認の論点として残る。**
-
-#### 影響
-未確定。PEP1銘柄のSG&Aで約9.5%の差分を確認したのみで、105銘柄全体で
-どのフィールド・どの銘柄にどの程度の乖離があるかは未調査。TTM系列は
-TANUKI VALUATIONのFCFベースDCF計算・STONKS SILOのrunway計算に直結する
-ため、陳腐化の程度次第では現在進行形のIV算出精度への実害がありうる。
-`[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]`実装時は対象18銘柄のみを
-最新化し、残り87銘柄は意図的に未対応のまま据え置いている。
-
-#### 対応方針（登録時点）
-未定。実装は行わず、まず以下の調査が必要:
-- `.github/workflows/SEC_Data_Update.yml`のGitHub Actions実行履歴を
-  確認し、2026-07-26以降に正常実行されているか・失敗しているか・
-  無効化されていないかを特定する
-- 陳腐化の実際の範囲（全105銘柄中何銘柄・どのフィールドで実質的な差分が
-  生じるか）を、現行パイプラインでの全銘柄再生成とフローズン入力比較で
-  定量化する
-- 通常の週次自動更新サイクルで自然解消される見込みか（ワークフローが
-  正常なら次回日曜実行で解消するはず）を確認する
-- 上記調査の結果次第で、手動での全105銘柄再生成が必要か、ワークフロー
-  側の修正が必要かを判断する
-
-#### 根本原因調査結果（2026-08-02、チャット記録、読み取りのみ・重大な
-構造的発見）
-GitHub Actions APIで`SEC Data Update`ワークフローの実行履歴を確認した
-結果、**ワークフロー自体は正常稼働中**と判明した（毎週日曜、直近9回超
-すべて`schedule`トリガーで`success`、無効化もされていない。`git log`上の
-`ttm/`最終更新コミット`340b8b8ae`〈author=`github-actions[bot]`〉が
-2026-07-26の実行と完全に一致）。調査時点（2026-08-02 12:32〜12:36 UTC、
-本日も日曜）では本日分の実行が未発火だったが、前週の実行もcron時刻
-（12:00 UTC）から49分遅れて開始しており、GitHub自身が公式に案内する
-「12:00〜15:00 UTC帯はscheduleトリガーの遅延が起きやすい」時間帯と
-一致するため、**単なる未発火（これから発火する見込み）であり失敗では
-ない可能性が高い**。default_branch=`kaihatsu`とワークフローの
-checkout先も一致しており、本セッションのコード変更後も
-`common.sec_data.update`のimportエラーなし・ゲート
-（`report_consistency_check.py`）もNG=0を確認済みで、本セッションの
-変更との衝突の兆候はない。
-
-**真の問題（当初想定より深刻）**: `common/sec_data/ttm/`を生成する
-`layer3_builder.py`（＋`quarterly.py`・`fact_selection.py`・
-`q4_implied.py`）は、`parser.py`（annual_YYYY.json生成）とは**完全に
-独立した別実装のパイプライン**であることを確認した。`layer3_builder.py`
-は`parser.py`のクラス・関数を一切importせず、`fact_overrides.json`も
-読み込まない。`parser.py`側の`_resolve_bs_entity_mixing()`・
-`_backfill_total_liabilities_via_identity()`・
-`_align_cost_of_revenue_to_revenue_period()`に相当する処理も存在しない。
-
-結果、本セッションで実装した以下の修正は、**ワークフローが正常実行
-されてもTTM系列には反映されない**（唯一の例外は
-[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]。これは`ttm_calculator.py`
-自体への実装のため次回実行で全105銘柄に自動反映される）:
-- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）
-- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1・2（7銘柄+SPIR）
-- [[TOTAL-LIABILITIES-FALLBACK-TAG-DESIGN-FLAW-1]]（22銘柄278件、
-  AMZN/GOOGL/MSFT/NVDA/AMD/WMT等の大型株含む）
-- [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案b（LRCX）
-- [[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]（GOOGL、`fact_overrides.json`
-  自体が未読込のため）
-- [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]（COHR、同上）
-- [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]（ELF）
-
-なお`layer3_builder.py`側は`gross_profit`逆算のみ独自に別実装済みで
-（既存の別系統バグ追跡ID`[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]`、
-annual側の`[[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]`とは別系統
-であることを確認済み）、全ての annual側修正が未移植というわけではない。
-
-**結論**: 「ワークフローを動かせば陳腐化が解消する」という単純な話では
-なく、今回実装した連続性チェック以外のannual側の修正は、たとえ
-ワークフローが毎週正常に動いても恒久的にTTM側へは反映されない
-（別途`layer3_builder.py`側への個別移植が必要）という、より根深い
-構造的問題であることが判明した。
-
-**対応方針の選択肢**:
-1. 現状維持（cron待ち）: [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]の
-   みが次回実行で全105銘柄に自動反映される。他は反映されないまま。
-2. 手動トリガー（`workflow_dispatch`）: pushを伴うため明示的承認が必要。
-3. `layer3_builder.py`側への個別移植: 範囲が大きく複数タスクへの分割が
-   必要。
-4. 影響の実測確認を先行: TANUKI VALUATION・STONKS SILOがTTM経由で
-   未移植の修正対象フィールド・銘柄をどの程度消費しているか確認し、
-   実害の大きさに応じて3の優先度を判断する。
-
-#### 対応方針（前回時点）
-④（影響の実測確認を先行）から着手する。範囲の大きい③（個別移植）に
-いきなり着手する前に、実装前に実害を確認するという原則に基づき、実際に
-どれだけの影響があるかをまず確認する。
-
-#### 影響実測結果（2026-08-02、チャット記録、読み取りのみ）
-7件の既知修正について、TANUKI VALUATION・STONKS SILOいずれも**現在
-進行形の実害は確認されなかった**。
-
-- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]・[[TOTAL-LIABILITIES-FALLBACK-
-  TAG-DESIGN-FLAW-1]]（AMZN/GOOGL/MSFT/NVDA/AMD/WMT等22銘柄278件）・
-  [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]: 対象フィールド（BS項目・
-  shares系）が構造的にTTM出力（`FLOW_FIELDS`17種のみ）に一切含まれない
-  カテゴリであり、消費経路（`get_net_cash()`・`get_diluted_shares()`）も
-  `annual_*.json`を直接参照するため無関係と確定。
-- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）・[[PL-FIELD-CROSS-ACCN-
-  PERIOD-MISMATCH-1]]（LRCX）・[[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]・
-  [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]: 対象年度が現在のTTM系列
-  anchor範囲（実測で2021〜2022年始まり）の外にあるため無関係。唯一の
-  例外RCAT(2024年度)のstock_based_compensationも、FCF計算式
-  （`_calc_fcf()`）に直接使われず、現状RCATのRICEスコア自体が「年次
-  データ不足で計算不可」のため現時点で出力に無影響。
-- STONKS SILOは独立した第3のパイプライン（`load_annual_data()`経由で
-  `annual_*.json`を直接読み込み）であり、コード全体を検索してもTTM/
-  layer3経由の参照が一切存在せず、実害はゼロと確定。
-
-**重要な留保**: これは「今回はたまたま対象年度がTTM窓の外だった」結果
-であり、2つの独立パイプラインが同期しない設計上の脆弱性自体は温存されて
-いる。将来のannual側修正が、対象年度が現在のTTM窓内である場合には同様の
-未反映リスクが顕在化しうる。
-
-#### 対応方針
-現在進行形の実害がゼロと確定したため、優先度を「高」から「中」に
-引き下げる。ただし構造的脆弱性は残存するため、以下のいずれかの対応を
-将来検討する:
-- 短期的な運用対応: annual側で新規修正を行う際は、対象年度がTTM系列の
-  anchor範囲内かどうかを都度確認し、範囲内の場合はlayer3_builder.py側
-  への個別移植も検討するというチェック項目を、今後の実装依頼テンプレート
-  に追加する
-- 長期的な構造対応: layer3_builder.pyとparser.pyの重複ロジック
-  （gross_profit逆算等）を統合する、またはannual側の修正結果をTTM側が
-  参照する設計に変更する等、パイプライン統合自体の検討（大規模な設計
-  変更のため別途独立検討が必要）
-
-#### 長期的構造対応の検討結果（2026-08-03、チャット記録、読み取りのみ）
-上記「長期的な構造対応」（パイプライン統合）の実現可能性を設計調査した。
-
-**認識の訂正**: 当初「parser.py⇔layer3_builder.pyの2パイプライン問題」
-としていたが、実際は`update.py`内で3つの独立生成パスが並存する構造
-であり（①`parser.py`→`annual_*.json`、②`quarterly.py`→`normalizer.py`
-→`normalized/*.json`、③`layer3_builder.py`→`ttm_calculator.py`→
-`ttm/*.json`）、`SEC_EDGAR_LAYER_DESIGN.md`が既に「3スキーマ併存」として
-認識済みの既知課題の一部だったと判明した。
-
-**重複ロジックの棚卸し結果**: parser.py側の安全ロジック（本人データ優先・
-BS系バックフィル・cost_of_revenue期間整合）の大半はTTM出力対象フィールド
-（FLOW_FIELDS 17種）に該当しないBS/shares系であり、構造的に「移植する
-意味自体がない」。真に問題になりうるスコープは「FLOW型フィールドに
-関わる本人データ優先判定」のみという、当初想定より狭い範囲であることが
-判明した。
-
-**経緯の確認**: `layer3_builder.py`初出は2026-07-24（既存コード非改変
-方針で新規構築）、parser.py側の安全ロジック追加は2026-08-01（本
-セッション）。設計時点で後からparser.py側にこれらのロジックが追加
-されることは想定されておらず、意図的な除外ではなく単純な時間差による
-取り残されと確定した。
-
-**選択肢の再評価**:
-- 案A（完全統合）: layer3_builder.pyがparser.pyの共通ロジックを
-  import・再利用する設計。新DB構築フェーズ相当の規模
-- 案B（部分統合）: FLOW_FIELDS関連の本人データ優先ロジックのみ
-  `fact_selection.py`へ追加。個別バグ修正1〜2件相当の規模
-- 案C（運用チェック継続）: CHAT_RULES.md追記済みの現状（parser.py修正
-  依頼作成時のTTM同期確認チェック）を維持
-
-**推奨・対応方針**: 現時点は案C（運用チェック継続）を維持し、統合作業
-（案A/B）には着手しない。根拠:
-(a) 実害が実測でゼロと確定済み
-(b) 真に問題になるスコープは当初想定より狭い（FLOW型フィールドの
-    本人データ優先判定のみ）
-(c) 3スキーマ併存自体は新DB構築プロジェクトのフェーズD（consumer切替）
-    以降で本格的に扱われる射程の既存の中長期課題であり、前倒しの
-    必然性が薄い
-(d) gross_profit逆算のように既に個別重複が許容されている先例
-    （[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]系）がある
-
-#### 再確認結果（2026-09-12、チャット記録、読み取りのみ・据え置き継続）
-直近1ヶ月の追加修正（CRM(2018) GP-COGS不整合修正
-[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]含む）を踏まえ、鮮度・実害の
-再確認を実施した。結論として「据え置き継続」（クローズしない）。
-
-**STEP1: 鮮度・cron健全性の再確認**
-`common/sec_data/ttm/`の最終コミットは2026-09-06であり、陳腐化はして
-いない。GitHub Actions API（`gh`未導入のため`curl`直接照会、
-workflow ID 258451437「SEC Data Update」）でワークフロー実行履歴を
-確認したところ、2026-08-16・2026-08-23の2回連続でscheduleトリガーの
-実行が失敗していたことが判明した。ただしこれは既に根本原因が診断済み
-（依存パッケージインストール工程の欠落）で、BACKLOG_DONE.mdの
-[[DATA-FRESHNESS-MONITORING-FUTURE-IDEA-1]]（2026-08-30完了）で
-是正済みの事象であり、同タスクでは再発検知のための監視機構
-（`common/system_health.py`の`check_j_workflow_runs()`、通称
-「Check J」）も新設されている。本セッションで`python3
-common/system_health.py`をローカル実行し確認した結果、`[J]
-CronRuns: ✅ 17件監視 / すべて正常`であり、直近2回（08-30・09-06）は
-成功していることを確認した。cron自体は現在健全。
-
-**STEP2: 直近1ヶ月の修正のLayer3/TTM側への反映状況の再確認**
-`layer3_builder.py`を確認したところ、parser.py側の
-[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a〜e（`_align_revenue_*`
-`_align_cost_of_revenue_*`・`dimension_aggregate`等の関数群）および
-本日実施したCRM修正（`_REVENUE_ALIGNMENT_CANDIDATES`・
-`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`への`SalesRevenueServicesNet`・
-`CostOfServices`追加）は、依然としてLayer3側へ移植されていないことを
-確認した。Layer3独自の候補タグ設定`config/sec_concept_definitions.json`
-を直接確認したところ、`revenue`候補リストには`SalesRevenueServicesNet`
-が同様に欠落している（parser.py側が今回修正した欠落と同一）一方、
-`cost_of_revenue`候補リストには`CostOfServices`が既に含まれており
-欠落はなかった。なお[[LAYER3-OI-RECONSTRUCTION-FALLBACK-GAP-1]]は
-Layer3側へも移植済み（コミット`b9f781c7f3`）であることを確認しており、
-移植の要否判断・実施は案件ごとに一貫していない運用実態が改めて
-確認された。
-
-**新規発見（構造的リスクの実例化）**: APP（保有銘柄）のFY2023年次
-revenueを直接比較したところ、parser.py側
-（`common/sec_data/data/APP/annual_2023.json`）は$3,283,087,000、
-Layer3側（`build_ticker_store("APP")`→`get_field_entries(store,
-"revenue")`をannual・end=2023-12-31でフィルタ）は$1,841,762,000と、
-**約14.4億ドルの乖離**を確認した（FY2024も$4,709,248,000 vs
-$3,224,058,000で同様に乖離、FY2025は$5,480,717,000で完全一致）。
-原因を`company_facts.json`の生XBRLデータで確認したところ、SECの
-`Revenues`タグ自体が同一期間（FY2023）に対し複数の異なる値を報告して
-いた（FY2023本体・FY2024の10-Kでの比較列では$3,283,087,000、FY2025の
-10-Kでの比較列では$1,841,762,000〈遡及修正後とみられる〉）。
-parser.py側とLayer3側でどちらの値を採用するかのtie-breakロジックが
-異なるため、同一の生データから異なる値を選択してしまっていることが
-直接確認された。これは本日のCRMタグ網羅漏れとは異なる、
-「企業が過去実績を遡及修正した場合、独立した2パイプラインが
-クロスチェックなしに異なる値を選択しうる」という、本チケット登録時
-から理論上の懸念とされていた構造的リスクの、初めての具体的・定量的な
-実例確認である。
-
-**STEP3: 保有9銘柄の現在のTTMローリング窓における実害再確認**
-`common/sec_data/reader.py::SECReader.get_rpo_context()`と同じ手法
-（`common/sec_data/normalized/{ticker}_quarterly_normalized.json`から
-直近4四半期を合算する`rev_ttm = sum(e["val"] for e in rev_all[-4:])`
-方式）をparser.py側の独立再計算値とみなし、`common/sec_data/ttm/
-{ticker}_ttm_series.json`の最新値（`series[0]["flow"][field]["val"]`）
-と、保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）×7指標
-（Revenue/NetIncome/GrossProfit/OCF/SBC/CapEx/OperatingIncome）の
-全63通りで突合した。結果、Revenue/NetIncome/GrossProfit/OCF/SBC/CapExの
-6指標は9銘柄全てで完全一致（乖離ゼロ）。唯一SOFIのOperatingIncomeのみ
-normalized/側が`None`（parser.py側`common/sec_data/data/SOFI/
-quarterly_*.json`の`operating_income`も直近四半期で同じく`None`である
-ことを直接確認済み）に対しLayer3/TTM側は$1,572,033,000と、Layer3側が
-より完全なデータ（自己のGP逆算バックフィル）を持っているという無害な
-差異であり、実害ではない。
-
-**総括・対応方針**: 現在のTTMローリング窓において保有銘柄への実害は
-今回も確認されなかった（STEP3）ため、優先度「中」は維持する。一方で
-APP実例により、構造的リスク自体は理論上の懸念ではなく実例のある
-現実のリスクであることが再確認された（STEP2）ため、クローズはせず
-「据え置き継続」とする。cron健全性は現状問題なし（STEP1）。今後の
-自動検知については、STEP3で用いた「parser.py側の独立再計算値と
-Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`への
-新規WARNチェックとして恒久化する（本チケットとは別コミットで対応、
-下記③参照）。
-
-#### 着手条件
-以下いずれかのトリガー条件が発生するまで保留:
-1. 今後の運用チェックでTTM anchor範囲内×FLOW型フィールドの修正が発生し
-   実害が確認された場合 → 案B（部分統合）を個別タスクとして起票
-2. 新DB構築プロジェクトのフェーズDに進む際、3スキーマ併存全体の解消を
-   検討するタイミングで本件も合わせて設計する
-3. `report_consistency_check.py`に新設したparser.py⇔Layer3/TTM突合
-   WARNが実際に発火した場合（99銘柄いずれかで乖離検知）→ 発火した
-   銘柄・フィールドを起点に実害確認・案B着手要否を判断する
-
----
-
-### [SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1] BBAI/RKLB/SOFI/VRT/ONDSグループの「維持フィールド」の凍結検討
-**優先度:** 低
-**分類:** データ品質 / 将来検討事項
-**登録日:** 2026-08-05
-**発見:** [[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 3準備調査（チャット記録）
-
-#### 内容
-[[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1でBS項目をNone化・修正した
-BBAI(2020)・RDW(2020)・RKLB(2020)・SOFI(2020)・VRT(2019)・ONDS(2017)の
-6件は、None化されたフィールド自体（current_assets/current_liabilities/
-long_term_debt/short_term_debt等）に「凍結すべき正しい値」が存在しない
-ため、現行のfixed_registry.jsonスキーマでは登録不可と確定済み
-（Stage 3調査、BACKLOG_DONE.md「2026-08-05（完了）」Stage 2エントリ
-参照）。
-
-一方、各銘柄でNone化されず**維持**されたフィールド（例: BBAIの
-total_assets/stockholders_equity/total_liabilities/cash_and_equivalents）
-は、`_resolve_bs_entity_mixing()`の数学的整合性チェック
-（current_assets<=total_assets等）を通過済みであり、「誤った値をNone化
-した」修正の裏返しとして「正しいと確認済みの値」というカテゴリに
-位置づけられる可能性がある。
-
-#### 影響
-未確定。仮に凍結対象とする場合、Stage 1/2とは異なる「除外的検証
-（誤りが混入していないことの消去法的確認）」という性質を持つため、
-Stage 1/2の「積極的な値の検証」基準にそのまま当てはめてよいか設計判断が
-必要。
-
-#### 対応方針
-未定。次回以降、余力があれば検討する将来課題。
-
-#### 着手条件
-なし（Stage 2/3の主要スコープ外、優先度低のため急ぎ着手しない）。
 
 ---
 
@@ -5869,6 +5256,583 @@ ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこ
 （[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]は2026-09-13、
 `05_indicator_schedule.csv`から該当7行を削除し実装完了、
 BACKLOG_DONE.md「2026-09-13（完了）」参照）
+
+---
+
+### [MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1] 系列単位の取得失敗がviolations_log.jsonで「正常」と区別できない
+**優先度:** 中（実害は現時点でFTSD1件のみ確認済みだが、今後同様の
+失敗〈系列ID変更・FRED側仕様変更等〉が起きても気づけない構造的リスク）
+**分類:** 設計上のギャップ / 可視性欠如
+**登録日:** 2026-08-15
+**発見:** `common/macro_data/`更新実行実績・データ鮮度の確認調査
+（チャット記録、2026-08-15）
+**統合について（2026-09-05）**: `MACRODATA-FTSD-SERIES-ID-INVALID-1`
+（FRED系列コード「FTSD」がFRED API上に実在しない具体事例）を本エントリへ
+統合した。両者は「一般的な欠陥（取得失敗が可視化されない設計）」と
+「その欠陥が実際に表面化した具体例（FTSD系列コード誤り）」という直接の
+親子関係にあるため、可視性欠如を扱う本エントリを主エントリとして残し、
+FTSDケースの内容は要約せず全文そのまま下記「具体事例（FTSDケース）」に
+保持する。`MACRODATA-FTSD-SERIES-ID-INVALID-1`はBACKLOG.mdから削除済み。
+`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`は別論点のため統合対象外。
+
+#### 内容
+`fetch_series()`は失敗時に例外を投げずNoneを返す設計（print()ログの
+みでリポジトリには残らない）。`update_series()`はNone時に
+`{"updated": 0, "warnings": []}`を返し`violations_log.json`へ書き込む
+が、この構造は正常に0件警告だった健全な系列と区別がつかない。
+FTSDエントリ（`{"checked_at": ..., "warnings": []}`）が実例（詳細は
+下記「具体事例（FTSDケース）」参照）。`series/{ID}.json`ファイルが
+存在しないことに能動的に気づかない限り、取得失敗を発見できない。
+
+加えて、`fetch_all_series()`のforループには系列単位のtry/exceptが
+なく、予期しない例外（ディスクエラー等）が発生した場合、その系列
+以降の全系列が未処理のままバッチ全体が中断する構造的リスクも
+あわせて確認された（今回の3日間の実行では未発生）。
+
+#### 対応方針（未定）
+- `violations_log.json`に「fetch自体の成否」を示すフィールド
+  （例: `fetch_status: "success"/"failed"/"skipped"`）を追加する
+- `fetch_all_series()`のforループに系列単位のtry/exceptを追加し、
+  1系列の失敗が他系列の処理を止めないようにする
+- 週次等の定期監視（`audit.py`型の診断ツール）で
+  `series_meta.json`の全系列と`series/`ディレクトリの実ファイルを
+  突合し、欠落を検知する仕組みを追加する
+
+#### 着手条件
+なし。対応方針の具体化から。
+
+#### 具体事例（FTSDケース、統合元[MACRODATA-FTSD-SERIES-ID-INVALID-1]）
+以下は独立BACKLOGエントリだった`[MACRODATA-FTSD-SERIES-ID-INVALID-1]
+FRED系列コード「FTSD」がFRED API上に実在しない（05_main.pyのWTREGEN
+フォールバックが機能しない可能性）`の全文をそのまま転記したもの。
+
+**優先度:** 中で据え置き（2026-08-13事実確認の結果、実害は極めて稀と
+確認できたため引き上げ不要と判断。ただし機能しないフォールバックを
+放置すべきではないため記録は残す。詳細は下記「追記」参照）
+**分類:** バグ疑い / データソース側の系列コード誤り
+**登録日:** 2026-08-12
+**更新日:** 2026-08-13（事実確認調査完了。原因特定・実害実績確認・
+修正案提示。詳細は下記「追記」参照。実装コード変更なし）
+**発見:** `common/macro_data/`定期取得ワークフロー新設・動作確認
+（`fetch_all_series()`の実FRED_API_KEYによるローカル実行、チャット
+記録、2026-08-12）
+
+##### 内容
+`common/macro_data/fetcher.py::fetch_series("FTSD")`を実行したところ、
+fredapi経由・`curl`による直接FRED REST API呼び出し
+（`https://api.stlouisfed.org/fred/series?series_id=FTSD&api_key=...`）
+の両方で`{"error_code":400,"error_message":"Bad Request.  The series
+does not exist."}`が返り、**`FTSD`はFRED上に実在しない系列コードで
+あることを確認した**（ネットワーク一時障害やfredapiライブラリ側の
+問題ではなく、系列コード自体が無効）。
+
+`05_main.py::update_liquidity_csv()`は`WTREGEN`（TGA残高）取得失敗時に
+`FTSD`へフォールバックする実装になっている（1959-1960行:
+`if tga_val is None: tga_val, _ = fred_latest(fred, "FTSD",
+target_date, lookback=21)`）が、このフォールバックが実際に発動しても
+`FTSD`自体が無効な系列コードのため取得は失敗し、TGA値は結局取得
+できないままになると推定される。`FTSD`は
+`[[MACRODATA-FTSD-MISSING-FROM-INVENTORY-1]]`（`INPUT_DATA_TOBE.md`の
+24系列台帳への追加漏れ、`INPUT-A-049`として2026-08-12に対応済み）で
+台帳に追加した系列だが、台帳追加時点では実際にFRED上に存在するかの
+検証は行っていなかった。
+
+##### 追記（2026-08-13、事実確認調査完了、記録のみ・実装なし）
+
+**原因特定**: `FTSD`は2026-05-08のコミット`8561125f3`（`Co-Authored-By:
+Claude Sonnet 4.6`、NET LIQUIDITY計算のためWTREGEN/RRPONTSYD取得を
+追加した際にフォールバック先として導入）で、実在確認なしに導入されて
+いたことをコミット履歴で確認した。コミットメッセージ・コードいずれにも
+典拠の記載はない。
+
+**正しい代替系列の特定**: FRED検索API（`search_text=treasury general
+account`）で調査した結果、`WDTGAL`（Liabilities and Capital: Deposits
+with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General
+Account: **Wednesday Level**）が有力な代替候補と判明。`WTREGEN`
+（**Week Average**）と同一カテゴリ・同一期間（2002-12-18〜2026-08-05、
+現在も更新中）・同一単位（Millions USD、週次）でありながら集計方法が
+異なる（週平均 vs 水曜時点値）ため、名目だけの重複ではなく実務上意味の
+あるフォールバックになる。なお同種の旧系列`WLTGAL`・`LDGUST`は2018年に
+DISCONTINUEDと確認済みのため候補外。`search_text=FTSD`はFRED検索でも
+0件ヒットで、類似候補すら存在しない。
+
+**実害実績の確認**: `docs/market-monitor/macro-pulse/data/
+05_liquidity.csv`（2023-01-01〜現在、1302日分）を全件確認した結果、
+`tga`列が空欄なのは**2026-05-31の1件のみ**（前日5/30・翌日6/1は正常
+取得）。この日、`WTREGEN`取得失敗→`FTSD`へフォールバック→`FTSD`も
+無効のため結局取得失敗、という実際の発火・失敗の実績を確認した。
+同日`net_liquidity`列（`=(WALCL−TGA−RRP)/1,000,000`）も算出不能で
+空欄。`stealth_signal`列はその日も"neutral"のまま記録が継続しており
+致命的な誤判定はないが、NET LIQUIDITY系列に1日分の欠測点が生じていた。
+WTREGEN自体の失敗頻度は1302日中1日（約0.08%）で極めて低頻度。
+
+**新アーキテクチャ（`[[MACRODATA-LAYER-CONSTRUCTION-1]]`切替後）での
+位置づけ**: 現行`fred_latest()`は`reader.get_latest()`を呼ぶのみで、
+旧実装が持っていた`target_date`基準・`lookback`日数ウィンドウの制約が
+廃止されている。ローカルの`series/WTREGEN.json`に一度でも値が書き込ま
+れていれば、当日の取得が一時的に失敗しても直近キャッシュ値をそのまま
+返すため、フォールバック発動条件（`reader.get_latest("WTREGEN")`が
+Noneを返す）は「`WTREGEN`系列ファイル自体が存在しない／空」という、
+旧実装よりさらに稀なケースに限定される。初回投入時点でWTREGENは25系列
+中の成功24系列に含まれており、現状ローカルにデータが存在するため、
+現行アーキテクチャ下ではこのフォールバックが発動する可能性はさらに
+低下していると評価できる。ただし「発動条件が稀になったこと」と
+「発動時に機能するか」は別問題であり、後者（`FTSD`が無効）は現在も
+未解消。
+
+**修正案（未実装、次回対応時の実装指針）**:
+1. `05_main.py::update_liquidity_csv()`のフォールバック先を
+   `"FTSD"`→`"WDTGAL"`に変更
+2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
+   （`category: "liquidity"`、`consumers: ["05_main.py::
+   update_liquidity_csv (WTREGENフォールバック候補)"]`）。追加すれば
+   `fetch_all_series()`が自動的にバッチ取得対象に含める
+3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`
+   （`INPUT-A-049`）記載を`WDTGAL`に置き換えるか、無効系列だった旨の
+   注記を追加
+
+**優先度判断**: 実害頻度は旧実装でも0.08%、新実装ではさらに稀と推定
+されるため、優先度「中」からの引き上げは不要と判断し据え置く。一方で
+「一度も機能しないフォールバックが存在し続ける」こと自体は望ましくない
+ため、記録は残す。
+
+##### 着手条件
+次回の低優先度課題群まとめ対応時（`[[MACRODATA-AS-IS-DUPLICATION-
+UNDERCOUNT-1]]`・`[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`・
+`[[MACRODATA-IMPORT-HISTORY-CONFIG-DRIFT-1]]`・
+`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`等と合わせて着手検討）。
+上記「修正案」を踏まえ、対応方針は事実上確定済み。
+
+##### FTSDケース分の実装完了（2026-09-13、コミット`79169b583e`）
+上記「修正案」1〜3を全て実装した:
+1. `05_main.py::update_liquidity_csv()`のフォールバック先を
+   `"FTSD"`→`"WDTGAL"`に変更、コードコメントも実態に合わせて書き換え
+2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
+   （`INPUT-A-050`、`category: "liquidity"`）。既存`FTSD`エントリは
+   削除せずnote追記のみで残置
+3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`（`INPUT-A-049`）
+   記載に無効系列だった旨の注記を追加、`WDTGAL`（`INPUT-A-050`）を
+   新規行として追加。両ファイルの機械的網羅性証明を実行し67件・
+   差分0件を再確認済み
+
+`common.macro_data.fetcher.fetch_series("WDTGAL")`を実FRED_API_KEYで
+直接呼び出し、1239件（2026-09-09まで）の実データが正常取得できることを
+確認した（`fred_latest()`はローカルキャッシュ読み取りのみでFREDへ
+直接アクセスしないため、疎通確認には`fetch_series()`を使用した）。
+pytest 1236件成功、`report_consistency_check.py --fail-on-ng` NG=0・
+ゲート通過。
+
+**本エントリのクローズは行わない**: 本体（`violations_log.json`の
+`fetch_status`可視化・`fetch_all_series()`の系列単位try/except）は
+別スコープのため今回は対応していない。FTSDケース分（機能しない
+フォールバックの解消）のみ対応完了、本体は引き続きオープンのまま
+残す。
+
+---
+
+### [XBRL-UNIT-SCALE-MISMATCH-DETECTION-1] 同一タグ・同一期間の値が複数filing間で10のべき乗単位で乖離する場合を検知する汎用チェックの新設提案
+**優先度:** 中
+**分類:** アーキテクチャ改善 / 新規検知チェック提案
+**登録日:** 2026-08-02
+**発見:** [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]調査から派生（chat記録）
+
+#### 内容
+同一XBRLタグ・同一unit・同一(start,end)期間について、異なるaccn
+（filing）間で値の比率が10のべき乗値（1000倍・1,000,000倍等、±2%許容）
+に近い場合、SEC提出時のスケール指定漏れ（"in thousands"欠落等）という
+業界共通のXBRLタグ付けミスの可能性が高いことが判明した。素朴な閾値
+（比≥100）のみでは72銘柄がヒットしノイズが大きすぎたが、比≒10の
+べき乗という条件を追加することで、SPAC逆合併の会計主体入替
+（[[SPAC-SHELL-BS-ENTITY-MIXING-1]]と同系統、正当な処理）等のノイズを
+排除し、18銘柄・126件まで収束することを確認した。
+
+該当銘柄・件数: COHR(26)・KO(20)・NVDA(20)・CPRT(18)・TER(12)・ONDS(5)・
+FCX(4)・HEI(4)・MO(4)・ADSK(2)・CELH(2)・TSLA(2)・ZS(2)・ASTS(1)・
+IONQ(1)・MSCI(1)・SOUN(1)・ZETA(1)。対象フィールドはWeightedAverageNumber
+OfSharesOutstandingBasic/Diluted(計98)が過半だが、CommonStockShares
+Outstanding・EPS系・Depreciation系・NetIncomeLoss系・LongTermDebt・
+DebtCurrent・Liabilities・OperatingIncomeLoss・AmortizationOfIntangible
+Assets等、幅広いフィールドに及ぶ。
+
+#### 影響
+COHR以外の該当銘柄は未トリアージ。検知＝即実害ではなく、本人データ優先
+ロジックにより既に正しい値が採用されているケース（実害なし、COHR自身の
+FY2019/2020 Q3・FY2023/2024 D&A等で確認済み）もあれば、実際に格納値が
+誤っているケース（COHR 2009-2011のshares系）もある、個別トリアージが
+必要な問題。
+
+#### 対応方針（登録時点）
+未定。既存WARN群（WARN-24等）と同型の「検知のみ・自動修正なし」枠組みで
+新設（WARN-30候補）することを推奨する。ただし既存WARN群がextracted
+（抽出済み）データを対象にするのに対し、本チェックはcompany_facts.json
+の生タグレベル（抽出前）を横断的に見る必要があり、`_parse_raw_data()`
+または`report_consistency_check.py`への新規ロジック層追加という設計に
+なる。検知後は126件を個別トリアージし、実害あり/なしを分類する運用が
+必要。
+
+#### 実装方針追記（2026-08-02、[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]
+全母集団シミュレーション結果を統合、チャット記録・読み取り・オフライン
+シミュレーションのみ）
+[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]として個別登録していた
+「`_extract_single_key()`のtie-break条件を新しいfiling優先に変更する」
+という対応方針を、本エントリに統合する（詳細は同エントリのBACKLOG_DONE.md
+移動後の記録を参照）。
+
+全母集団シミュレーションの結果、tie-break条件を単純に「新しいfiling優先」
+へ変更する広範な設計変更は不採用と確定した。31銘柄・124件で値が変化し、
+確実な改善はCOHRの2件（shares_diluted/basic）のみで、残り122件は改悪
+（VZ(2008)純利益が黒字$6,428M→赤字-$2,193Mに反転等）・改悪疑い
+（SOUN/KULRのSPAC実体混同、HON/FCX/HEIのrestatement・株式分割調整）・
+判断不能な乖離が大半だった。また、WMT(2014)でtotal_assetsが微小変動した
+結果、`_backfill_total_liabilities_via_identity()`の安全網（TL==TAの
+場合のみ発動）が完全一致条件を偶然すり抜け、[[TOTAL-LIABILITIES-
+FALLBACK-TAG-DESIGN-FLAW-1]]と同型のバグを別経路で復活させかねない
+という重大な相互作用リスクも判明した。
+
+**実装方式を確定**: 「同符号 かつ 比が10のべき乗値（±2%許容、n≥2）」
+という本エントリのガード条件に該当する場合のみ、tie-breakをより新しい
+filing優先に切り替える設計とする。この条件で124件をフィルタしたところ、
+COHRの2件（shares_diluted/basic）のみが該当し、他122件は自動的に
+除外されることを確認済み。
+
+実装前に2点の追加確認が必須:
+(a) 既存の恒等式ベース安全網（`_backfill_total_liabilities_via_
+    identity()`等）との相互作用を個別に再検証する（WMT(2014)のような
+    偶発的なすり抜けがないか）
+(b) ガード適用後も105銘柄で改めて全母集団シミュレーションを行い、
+    新規の意図しない変化がゼロであることを確認する
+
+対象は当面COHRの2件（shares_diluted/basic、2009-2011年度）に限定される
+見込み。`fact_overrides.json`での個別対応（[[COHR-SHARES-DILUTED-
+UNIT-SCALE-BUG-1]]で確定済み）と、tie-break側の恒久対応のどちらを
+採るか、または両方必要かは実装時に判断する。
+
+#### 実装前最終確認結果・実装方針確定（2026-08-02、チャット記録、読み取り・
+オフラインシミュレーションのみ）
+実装前の2点の追加確認（前項）を完了した。
+
+(a) 既存の恒等式ベース安全網との相互作用リスクはなし。
+`_backfill_total_liabilities_via_identity()`・[[CHECK29-ACCOUNTING-
+IDENTITY-DETECTION-LAYER-1]]はいずれもBS項目（total_assets/total_
+liabilities/stockholders_equity/NCI/一時的持分）のみを対象とする一方、
+ガード条件付き介入が実際に触れるのはshares項目の2フィールドのみで、
+両者が扱うフィールド集合に重なりがなく構造的に相互作用の経路が存在し
+ないことを確認した。前回懸念したWMT(2014)型のすり抜けは、ガード条件
+（比が10のべき乗、最低100倍）により正しく除外されることを確認した
+（WMTの乖離比≒1.001はガード条件を満たさないため対象外）。
+
+(b) ガード適用後の全母集団シミュレーションで、該当・変化するのはCOHRの
+2010年度shares_diluted/basicの2フィールドのみと最終確定した。他104
+銘柄・COHRの他年度（2009・2011年度含む）は完全に無変化、新規の意図
+しない波及も確認されなかった。
+
+**実装方針を確定**: [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]の
+`fact_overrides.json`個別上書き（2009-2011年度、3年度とも1回で解決）を
+実装対象とし、tie-break変更（ソースコード変更）は当面見送る。理由:
+(a)tie-break変更は2010年度1件しか解決せず、その1件もfact_overrides側
+で重複解決される（tie-break変更単独では2009・2011年度は解決しない:
+2009年度は後続filingに正しい値自体が存在せず、2011年度は本人データ
+優先ロジックにより保護されているため）、(b)現時点でCOHR以外に該当する
+実ケースがゼロと確定しており、ソースコード変更のコストに見合う実利用
+価値が現状ない。ガード条件の設計自体は妥当性・安全性が確認済みのため
+破棄せず、将来「本人データ優先ロジックでは救えず、かつ個別override
+登録が非現実的な規模の」新規ケースが発見された時点で再検討する。
+
+#### 着手条件
+[[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]のfact_overrides実装で事実上
+完結、tie-break変更部分は将来の予防的対応として保留。優先度中（業界
+共通のミスパターンとして汎用的価値が高いが、即座の実害は限定的
+〈COHR以外は未確認〉のため）。
+
+---
+
+### [TTM-DATA-DRIFT-BEHIND-PIPELINE-1] common/sec_data/ttm/配下のTTM系列ファイルが2026-07-26生成のまま、以降のパイプライン修正に追従しておらず陳腐化している可能性
+**優先度:** 中（登録時「高」から引き下げ、影響実測の結果、現在進行形の
+実害はゼロと確定したため。構造的リスクは残存）
+**分類:** データ品質 / パイプライン出力の陳腐化
+**登録日:** 2026-08-02
+**発見:** [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]実装検証時（チャット記録）
+
+#### 内容
+`common/sec_data/ttm/`配下の全105銘柄のTTM系列ファイル
+（`{ticker}_ttm_series.json`）が、`git log`確認で2026-07-26生成のまま
+であることが判明した。一方、TTM系列の入力元となる抽出パイプライン
+（`common/sec_data/layer3_builder.py`・`common/sec_data/q4_implied.py`）
+は2026-07-30に、`common/sec_data/parser.py`は本セッション中の
+2026-08-02に、それぞれ別コミットで修正されている。実際にPEP銘柄で
+検証したところ、現行パイプライン（2026-08-02時点）で再生成すると
+`selling_general_and_administrative`が$34,501,000,000→$37,791,000,000
+（約9.5%）変化することを確認済み（`[[TTM-CALC-QUARTER-CONTIGUITY-
+UNCHECKED-1]]`実装作業の副産物として発見。この差分は今回実装した連続性
+チェックとは無関係で、単純にttm/ファイルが2026-07-26時点のパイプライン
+出力のまま更新されていないことに起因すると特定済み）。
+
+`.github/workflows/SEC_Data_Update.yml`を確認したところ、毎週日曜
+12:00 UTC（cron: `0 12 * * 0`）に`update.py`を実行し
+`common/sec_data/ttm/`を含む全出力を自動再生成・commit・pushする
+ワークフローが既に存在する。**このワークフローが正常に稼働していれば
+陳腐化は本来自然解消されるはずであり、なぜ2026-07-26以降ttm/が
+更新されていないのか（ワークフロー自体の失敗・無効化・直近未実行等）
+が未確認の論点として残る。**
+
+#### 影響
+未確定。PEP1銘柄のSG&Aで約9.5%の差分を確認したのみで、105銘柄全体で
+どのフィールド・どの銘柄にどの程度の乖離があるかは未調査。TTM系列は
+TANUKI VALUATIONのFCFベースDCF計算・STONKS SILOのrunway計算に直結する
+ため、陳腐化の程度次第では現在進行形のIV算出精度への実害がありうる。
+`[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]`実装時は対象18銘柄のみを
+最新化し、残り87銘柄は意図的に未対応のまま据え置いている。
+
+#### 対応方針（登録時点）
+未定。実装は行わず、まず以下の調査が必要:
+- `.github/workflows/SEC_Data_Update.yml`のGitHub Actions実行履歴を
+  確認し、2026-07-26以降に正常実行されているか・失敗しているか・
+  無効化されていないかを特定する
+- 陳腐化の実際の範囲（全105銘柄中何銘柄・どのフィールドで実質的な差分が
+  生じるか）を、現行パイプラインでの全銘柄再生成とフローズン入力比較で
+  定量化する
+- 通常の週次自動更新サイクルで自然解消される見込みか（ワークフローが
+  正常なら次回日曜実行で解消するはず）を確認する
+- 上記調査の結果次第で、手動での全105銘柄再生成が必要か、ワークフロー
+  側の修正が必要かを判断する
+
+#### 根本原因調査結果（2026-08-02、チャット記録、読み取りのみ・重大な
+構造的発見）
+GitHub Actions APIで`SEC Data Update`ワークフローの実行履歴を確認した
+結果、**ワークフロー自体は正常稼働中**と判明した（毎週日曜、直近9回超
+すべて`schedule`トリガーで`success`、無効化もされていない。`git log`上の
+`ttm/`最終更新コミット`340b8b8ae`〈author=`github-actions[bot]`〉が
+2026-07-26の実行と完全に一致）。調査時点（2026-08-02 12:32〜12:36 UTC、
+本日も日曜）では本日分の実行が未発火だったが、前週の実行もcron時刻
+（12:00 UTC）から49分遅れて開始しており、GitHub自身が公式に案内する
+「12:00〜15:00 UTC帯はscheduleトリガーの遅延が起きやすい」時間帯と
+一致するため、**単なる未発火（これから発火する見込み）であり失敗では
+ない可能性が高い**。default_branch=`kaihatsu`とワークフローの
+checkout先も一致しており、本セッションのコード変更後も
+`common.sec_data.update`のimportエラーなし・ゲート
+（`report_consistency_check.py`）もNG=0を確認済みで、本セッションの
+変更との衝突の兆候はない。
+
+**真の問題（当初想定より深刻）**: `common/sec_data/ttm/`を生成する
+`layer3_builder.py`（＋`quarterly.py`・`fact_selection.py`・
+`q4_implied.py`）は、`parser.py`（annual_YYYY.json生成）とは**完全に
+独立した別実装のパイプライン**であることを確認した。`layer3_builder.py`
+は`parser.py`のクラス・関数を一切importせず、`fact_overrides.json`も
+読み込まない。`parser.py`側の`_resolve_bs_entity_mixing()`・
+`_backfill_total_liabilities_via_identity()`・
+`_align_cost_of_revenue_to_revenue_period()`に相当する処理も存在しない。
+
+結果、本セッションで実装した以下の修正は、**ワークフローが正常実行
+されてもTTM系列には反映されない**（唯一の例外は
+[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]。これは`ttm_calculator.py`
+自体への実装のため次回実行で全105銘柄に自動反映される）:
+- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）
+- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1・2（7銘柄+SPIR）
+- [[TOTAL-LIABILITIES-FALLBACK-TAG-DESIGN-FLAW-1]]（22銘柄278件、
+  AMZN/GOOGL/MSFT/NVDA/AMD/WMT等の大型株含む）
+- [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案b（LRCX）
+- [[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]（GOOGL、`fact_overrides.json`
+  自体が未読込のため）
+- [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]（COHR、同上）
+- [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]（ELF）
+
+なお`layer3_builder.py`側は`gross_profit`逆算のみ独自に別実装済みで
+（既存の別系統バグ追跡ID`[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]`、
+annual側の`[[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]`とは別系統
+であることを確認済み）、全ての annual側修正が未移植というわけではない。
+
+**結論**: 「ワークフローを動かせば陳腐化が解消する」という単純な話では
+なく、今回実装した連続性チェック以外のannual側の修正は、たとえ
+ワークフローが毎週正常に動いても恒久的にTTM側へは反映されない
+（別途`layer3_builder.py`側への個別移植が必要）という、より根深い
+構造的問題であることが判明した。
+
+**対応方針の選択肢**:
+1. 現状維持（cron待ち）: [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]の
+   みが次回実行で全105銘柄に自動反映される。他は反映されないまま。
+2. 手動トリガー（`workflow_dispatch`）: pushを伴うため明示的承認が必要。
+3. `layer3_builder.py`側への個別移植: 範囲が大きく複数タスクへの分割が
+   必要。
+4. 影響の実測確認を先行: TANUKI VALUATION・STONKS SILOがTTM経由で
+   未移植の修正対象フィールド・銘柄をどの程度消費しているか確認し、
+   実害の大きさに応じて3の優先度を判断する。
+
+#### 対応方針（前回時点）
+④（影響の実測確認を先行）から着手する。範囲の大きい③（個別移植）に
+いきなり着手する前に、実装前に実害を確認するという原則に基づき、実際に
+どれだけの影響があるかをまず確認する。
+
+#### 影響実測結果（2026-08-02、チャット記録、読み取りのみ）
+7件の既知修正について、TANUKI VALUATION・STONKS SILOいずれも**現在
+進行形の実害は確認されなかった**。
+
+- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]・[[TOTAL-LIABILITIES-FALLBACK-
+  TAG-DESIGN-FLAW-1]]（AMZN/GOOGL/MSFT/NVDA/AMD/WMT等22銘柄278件）・
+  [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]: 対象フィールド（BS項目・
+  shares系）が構造的にTTM出力（`FLOW_FIELDS`17種のみ）に一切含まれない
+  カテゴリであり、消費経路（`get_net_cash()`・`get_diluted_shares()`）も
+  `annual_*.json`を直接参照するため無関係と確定。
+- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）・[[PL-FIELD-CROSS-ACCN-
+  PERIOD-MISMATCH-1]]（LRCX）・[[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]・
+  [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]: 対象年度が現在のTTM系列
+  anchor範囲（実測で2021〜2022年始まり）の外にあるため無関係。唯一の
+  例外RCAT(2024年度)のstock_based_compensationも、FCF計算式
+  （`_calc_fcf()`）に直接使われず、現状RCATのRICEスコア自体が「年次
+  データ不足で計算不可」のため現時点で出力に無影響。
+- STONKS SILOは独立した第3のパイプライン（`load_annual_data()`経由で
+  `annual_*.json`を直接読み込み）であり、コード全体を検索してもTTM/
+  layer3経由の参照が一切存在せず、実害はゼロと確定。
+
+**重要な留保**: これは「今回はたまたま対象年度がTTM窓の外だった」結果
+であり、2つの独立パイプラインが同期しない設計上の脆弱性自体は温存されて
+いる。将来のannual側修正が、対象年度が現在のTTM窓内である場合には同様の
+未反映リスクが顕在化しうる。
+
+#### 対応方針
+現在進行形の実害がゼロと確定したため、優先度を「高」から「中」に
+引き下げる。ただし構造的脆弱性は残存するため、以下のいずれかの対応を
+将来検討する:
+- 短期的な運用対応: annual側で新規修正を行う際は、対象年度がTTM系列の
+  anchor範囲内かどうかを都度確認し、範囲内の場合はlayer3_builder.py側
+  への個別移植も検討するというチェック項目を、今後の実装依頼テンプレート
+  に追加する
+- 長期的な構造対応: layer3_builder.pyとparser.pyの重複ロジック
+  （gross_profit逆算等）を統合する、またはannual側の修正結果をTTM側が
+  参照する設計に変更する等、パイプライン統合自体の検討（大規模な設計
+  変更のため別途独立検討が必要）
+
+#### 長期的構造対応の検討結果（2026-08-03、チャット記録、読み取りのみ）
+上記「長期的な構造対応」（パイプライン統合）の実現可能性を設計調査した。
+
+**認識の訂正**: 当初「parser.py⇔layer3_builder.pyの2パイプライン問題」
+としていたが、実際は`update.py`内で3つの独立生成パスが並存する構造
+であり（①`parser.py`→`annual_*.json`、②`quarterly.py`→`normalizer.py`
+→`normalized/*.json`、③`layer3_builder.py`→`ttm_calculator.py`→
+`ttm/*.json`）、`SEC_EDGAR_LAYER_DESIGN.md`が既に「3スキーマ併存」として
+認識済みの既知課題の一部だったと判明した。
+
+**重複ロジックの棚卸し結果**: parser.py側の安全ロジック（本人データ優先・
+BS系バックフィル・cost_of_revenue期間整合）の大半はTTM出力対象フィールド
+（FLOW_FIELDS 17種）に該当しないBS/shares系であり、構造的に「移植する
+意味自体がない」。真に問題になりうるスコープは「FLOW型フィールドに
+関わる本人データ優先判定」のみという、当初想定より狭い範囲であることが
+判明した。
+
+**経緯の確認**: `layer3_builder.py`初出は2026-07-24（既存コード非改変
+方針で新規構築）、parser.py側の安全ロジック追加は2026-08-01（本
+セッション）。設計時点で後からparser.py側にこれらのロジックが追加
+されることは想定されておらず、意図的な除外ではなく単純な時間差による
+取り残されと確定した。
+
+**選択肢の再評価**:
+- 案A（完全統合）: layer3_builder.pyがparser.pyの共通ロジックを
+  import・再利用する設計。新DB構築フェーズ相当の規模
+- 案B（部分統合）: FLOW_FIELDS関連の本人データ優先ロジックのみ
+  `fact_selection.py`へ追加。個別バグ修正1〜2件相当の規模
+- 案C（運用チェック継続）: CHAT_RULES.md追記済みの現状（parser.py修正
+  依頼作成時のTTM同期確認チェック）を維持
+
+**推奨・対応方針**: 現時点は案C（運用チェック継続）を維持し、統合作業
+（案A/B）には着手しない。根拠:
+(a) 実害が実測でゼロと確定済み
+(b) 真に問題になるスコープは当初想定より狭い（FLOW型フィールドの
+    本人データ優先判定のみ）
+(c) 3スキーマ併存自体は新DB構築プロジェクトのフェーズD（consumer切替）
+    以降で本格的に扱われる射程の既存の中長期課題であり、前倒しの
+    必然性が薄い
+(d) gross_profit逆算のように既に個別重複が許容されている先例
+    （[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]系）がある
+
+#### 再確認結果（2026-09-12、チャット記録、読み取りのみ・据え置き継続）
+直近1ヶ月の追加修正（CRM(2018) GP-COGS不整合修正
+[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]含む）を踏まえ、鮮度・実害の
+再確認を実施した。結論として「据え置き継続」（クローズしない）。
+
+**STEP1: 鮮度・cron健全性の再確認**
+`common/sec_data/ttm/`の最終コミットは2026-09-06であり、陳腐化はして
+いない。GitHub Actions API（`gh`未導入のため`curl`直接照会、
+workflow ID 258451437「SEC Data Update」）でワークフロー実行履歴を
+確認したところ、2026-08-16・2026-08-23の2回連続でscheduleトリガーの
+実行が失敗していたことが判明した。ただしこれは既に根本原因が診断済み
+（依存パッケージインストール工程の欠落）で、BACKLOG_DONE.mdの
+[[DATA-FRESHNESS-MONITORING-FUTURE-IDEA-1]]（2026-08-30完了）で
+是正済みの事象であり、同タスクでは再発検知のための監視機構
+（`common/system_health.py`の`check_j_workflow_runs()`、通称
+「Check J」）も新設されている。本セッションで`python3
+common/system_health.py`をローカル実行し確認した結果、`[J]
+CronRuns: ✅ 17件監視 / すべて正常`であり、直近2回（08-30・09-06）は
+成功していることを確認した。cron自体は現在健全。
+
+**STEP2: 直近1ヶ月の修正のLayer3/TTM側への反映状況の再確認**
+`layer3_builder.py`を確認したところ、parser.py側の
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a〜e（`_align_revenue_*`
+`_align_cost_of_revenue_*`・`dimension_aggregate`等の関数群）および
+本日実施したCRM修正（`_REVENUE_ALIGNMENT_CANDIDATES`・
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`への`SalesRevenueServicesNet`・
+`CostOfServices`追加）は、依然としてLayer3側へ移植されていないことを
+確認した。Layer3独自の候補タグ設定`config/sec_concept_definitions.json`
+を直接確認したところ、`revenue`候補リストには`SalesRevenueServicesNet`
+が同様に欠落している（parser.py側が今回修正した欠落と同一）一方、
+`cost_of_revenue`候補リストには`CostOfServices`が既に含まれており
+欠落はなかった。なお[[LAYER3-OI-RECONSTRUCTION-FALLBACK-GAP-1]]は
+Layer3側へも移植済み（コミット`b9f781c7f3`）であることを確認しており、
+移植の要否判断・実施は案件ごとに一貫していない運用実態が改めて
+確認された。
+
+**新規発見（構造的リスクの実例化）**: APP（保有銘柄）のFY2023年次
+revenueを直接比較したところ、parser.py側
+（`common/sec_data/data/APP/annual_2023.json`）は$3,283,087,000、
+Layer3側（`build_ticker_store("APP")`→`get_field_entries(store,
+"revenue")`をannual・end=2023-12-31でフィルタ）は$1,841,762,000と、
+**約14.4億ドルの乖離**を確認した（FY2024も$4,709,248,000 vs
+$3,224,058,000で同様に乖離、FY2025は$5,480,717,000で完全一致）。
+原因を`company_facts.json`の生XBRLデータで確認したところ、SECの
+`Revenues`タグ自体が同一期間（FY2023）に対し複数の異なる値を報告して
+いた（FY2023本体・FY2024の10-Kでの比較列では$3,283,087,000、FY2025の
+10-Kでの比較列では$1,841,762,000〈遡及修正後とみられる〉）。
+parser.py側とLayer3側でどちらの値を採用するかのtie-breakロジックが
+異なるため、同一の生データから異なる値を選択してしまっていることが
+直接確認された。これは本日のCRMタグ網羅漏れとは異なる、
+「企業が過去実績を遡及修正した場合、独立した2パイプラインが
+クロスチェックなしに異なる値を選択しうる」という、本チケット登録時
+から理論上の懸念とされていた構造的リスクの、初めての具体的・定量的な
+実例確認である。
+
+**STEP3: 保有9銘柄の現在のTTMローリング窓における実害再確認**
+`common/sec_data/reader.py::SECReader.get_rpo_context()`と同じ手法
+（`common/sec_data/normalized/{ticker}_quarterly_normalized.json`から
+直近4四半期を合算する`rev_ttm = sum(e["val"] for e in rev_all[-4:])`
+方式）をparser.py側の独立再計算値とみなし、`common/sec_data/ttm/
+{ticker}_ttm_series.json`の最新値（`series[0]["flow"][field]["val"]`）
+と、保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）×7指標
+（Revenue/NetIncome/GrossProfit/OCF/SBC/CapEx/OperatingIncome）の
+全63通りで突合した。結果、Revenue/NetIncome/GrossProfit/OCF/SBC/CapExの
+6指標は9銘柄全てで完全一致（乖離ゼロ）。唯一SOFIのOperatingIncomeのみ
+normalized/側が`None`（parser.py側`common/sec_data/data/SOFI/
+quarterly_*.json`の`operating_income`も直近四半期で同じく`None`である
+ことを直接確認済み）に対しLayer3/TTM側は$1,572,033,000と、Layer3側が
+より完全なデータ（自己のGP逆算バックフィル）を持っているという無害な
+差異であり、実害ではない。
+
+**総括・対応方針**: 現在のTTMローリング窓において保有銘柄への実害は
+今回も確認されなかった（STEP3）ため、優先度「中」は維持する。一方で
+APP実例により、構造的リスク自体は理論上の懸念ではなく実例のある
+現実のリスクであることが再確認された（STEP2）ため、クローズはせず
+「据え置き継続」とする。cron健全性は現状問題なし（STEP1）。今後の
+自動検知については、STEP3で用いた「parser.py側の独立再計算値と
+Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`への
+新規WARNチェックとして恒久化する（本チケットとは別コミットで対応、
+下記③参照）。
+
+#### 着手条件
+以下いずれかのトリガー条件が発生するまで保留:
+1. 今後の運用チェックでTTM anchor範囲内×FLOW型フィールドの修正が発生し
+   実害が確認された場合 → 案B（部分統合）を個別タスクとして起票
+2. 新DB構築プロジェクトのフェーズDに進む際、3スキーマ併存全体の解消を
+   検討するタイミングで本件も合わせて設計する
+3. `report_consistency_check.py`に新設したparser.py⇔Layer3/TTM突合
+   WARNが実際に発火した場合（99銘柄いずれかで乖離検知）→ 発火した
+   銘柄・フィールドを起点に実害確認・案B着手要否を判断する
 
 ---
 
@@ -9150,3 +9114,39 @@ common/sec_data統合フェーズ1）の着手条件「[[CAPEX-SIGN-UNNORMALIZED
 「対応方針」「着手条件」欄に反映済み）。ただし上記[[NETCASH-DUAL-CALC-1]]・
 [[NETINCOME-DUAL-PIPELINE-1]]（優先度：高）を差し置く優先度ではないため、
 次セッションの筆頭候補自体は変更しない。
+
+---
+
+### [SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1] BBAI/RKLB/SOFI/VRT/ONDSグループの「維持フィールド」の凍結検討
+**優先度:** 低
+**分類:** データ品質 / 将来検討事項
+**登録日:** 2026-08-05
+**発見:** [[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 3準備調査（チャット記録）
+
+#### 内容
+[[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1でBS項目をNone化・修正した
+BBAI(2020)・RDW(2020)・RKLB(2020)・SOFI(2020)・VRT(2019)・ONDS(2017)の
+6件は、None化されたフィールド自体（current_assets/current_liabilities/
+long_term_debt/short_term_debt等）に「凍結すべき正しい値」が存在しない
+ため、現行のfixed_registry.jsonスキーマでは登録不可と確定済み
+（Stage 3調査、BACKLOG_DONE.md「2026-08-05（完了）」Stage 2エントリ
+参照）。
+
+一方、各銘柄でNone化されず**維持**されたフィールド（例: BBAIの
+total_assets/stockholders_equity/total_liabilities/cash_and_equivalents）
+は、`_resolve_bs_entity_mixing()`の数学的整合性チェック
+（current_assets<=total_assets等）を通過済みであり、「誤った値をNone化
+した」修正の裏返しとして「正しいと確認済みの値」というカテゴリに
+位置づけられる可能性がある。
+
+#### 影響
+未確定。仮に凍結対象とする場合、Stage 1/2とは異なる「除外的検証
+（誤りが混入していないことの消去法的確認）」という性質を持つため、
+Stage 1/2の「積極的な値の検証」基準にそのまま当てはめてよいか設計判断が
+必要。
+
+#### 対応方針
+未定。次回以降、余力があれば検討する将来課題。
+
+#### 着手条件
+なし（Stage 2/3の主要スコープ外、優先度低のため急ぎ着手しない）。
