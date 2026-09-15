@@ -291,3 +291,163 @@ class TestReportDateConversion:
     def test_report_date_to_quarter(self):
         assert sif._report_date_to_quarter("2026-06-30") == "2026Q2"
         assert sif._report_date_to_quarter("2026-03-31") == "2026Q1"
+
+
+class TestNormalizeWsView:
+    """[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] _normalize_ws_view()の
+    オフセット保持方式（正規化ビュー生成＋インデックスマッピング）の
+    単体テスト。"""
+
+    def test_compresses_runs_of_two_or_more_spaces_to_one(self):
+        norm, _ = sif._normalize_ws_view("Item 1  A. Risk")
+        assert norm == "Item 1 A. Risk"
+
+    def test_single_space_is_left_unchanged(self):
+        norm, _ = sif._normalize_ws_view("Item 1A. Risk")
+        assert norm == "Item 1A. Risk"
+
+    def test_newlines_are_not_collapsed(self):
+        """改行は圧縮対象外（_TOC_PAGENUM_RE等の改行依存判定を壊さない
+        ため）。改行の連続はそのまま保持される。"""
+        text = "Item 1A.\n\n\nRisk Factors\n12\n"
+        norm, _ = sif._normalize_ws_view(text)
+        assert norm == text
+
+    def test_tabs_are_compressed_like_spaces(self):
+        norm, _ = sif._normalize_ws_view("A\t\tB")
+        assert norm == "A B"
+
+    def test_mapping_roundtrips_to_exact_original_slice(self):
+        """正規化ビュー上の任意の開始・終了位置を元テキストインデックスへ
+        変換すると、元テキストの完全なスライス（圧縮前の連続空白を含む）
+        が復元できること（返すテキストは元テキストそのものという設計の
+        核心部分）。"""
+        text = "AB  CD   EF\nGH  \n  IJ"
+        norm, orig_pos = sif._normalize_ws_view(text)
+        assert norm == "AB CD EF\nGH \n IJ"
+        # 圧縮区間をまたぐスライス（"CD EF" -> 元は "CD   EF"）
+        s, e = norm.index("CD"), norm.index("EF") + 2
+        assert text[orig_pos[s]:orig_pos[e]] == "CD   EF"
+        # 全域スライス（センチネル込み）で元テキストと完全一致すること
+        assert text[orig_pos[0]:orig_pos[len(norm)]] == text
+
+    def test_mapping_array_length_is_normalized_length_plus_one(self):
+        text = "A  B  C"
+        norm, orig_pos = sif._normalize_ws_view(text)
+        assert len(orig_pos) == len(norm) + 1
+        assert orig_pos[-1] == len(text)
+
+
+class TestFuzzyWord:
+    """[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] 方針Y: _fw()（見出し語・
+    アンカー語を文字間\\s?許容の正規表現へ変換するヘルパー）の単体テスト。
+    """
+
+    def test_single_char_word_is_noop(self):
+        assert sif._fw("1") == "1"
+
+    def test_multi_char_word_inserts_optional_whitespace_between_chars(self):
+        assert sif._fw("1a") == r"1\s?a"
+        assert sif._fw("item") == r"i\s?t\s?e\s?m"
+
+    def test_generated_pattern_matches_contiguous_word(self):
+        pat = re.compile(r"(?i)" + sif._fw("item"))
+        assert pat.match("Item")
+
+    def test_generated_pattern_matches_single_embedded_space_anywhere(self):
+        """正規化後（連続空白は最大1個に収束）は、単語内のどの文字境界に
+        分断が生じても1個の\\s?で吸収できること（APGEで"Item"自体が
+        Ite|m・It|em・I|temと異なる位置で分断された実例に対応）。"""
+        pat = re.compile(r"(?i)" + sif._fw("item"))
+        for variant in ("Ite m", "It em", "I tem"):
+            assert pat.match(variant), variant
+
+    def test_generated_pattern_does_not_match_with_extra_character(self):
+        pat = re.compile(r"(?i)" + sif._fw("item") + r"\Z")
+        assert not pat.match("Itemx")
+
+
+class TestApgeWhitespaceSplitRegression:
+    """[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] APGE実データで確認された
+    単語内スペース混入（"Item 1  A."・"Discussio  n"・"R  isk"・
+    "Manag  ement"・"L  egal"・"OTH  ER"）に対し、extract_item_section()
+    が方針Y（正規化ビュー＋語彙限定\\s?許容の生成regex）で正常抽出できる
+    ことを確認する回帰テスト。"""
+
+    def test_risk_factors_item_re_matches_word_internal_1a_split(self):
+        text = (
+            "Item 1  A. Risk Factors\n"
+            "Investing in our common stock involves a high degree of risk. " + "x" * 200
+        )
+        cfg = sif.ITEM_CONFIGS["risk_factors"]
+        start, seg = sif.extract_item_section(
+            text, cfg["annual_item_re"], cfg["annual_next_res"], cfg["annual_anchor_re"],
+        )
+        assert start == 0
+        assert seg.startswith("Item 1  A. Risk Factors")
+
+    def test_mda_anchor_re_matches_word_internal_discussion_split(self):
+        text = (
+            "Item 7. Management s Discussio  n and Analysis of Financial Condition\n"
+            + "y" * 200
+        )
+        cfg = sif.ITEM_CONFIGS["mda"]
+        start, seg = sif.extract_item_section(
+            text, cfg["annual_item_re"], cfg["annual_next_res"], cfg["annual_anchor_re"],
+        )
+        assert start == 0
+        assert "Discussio  n" in seg
+
+    def test_risk_factors_anchor_re_matches_word_internal_risk_split(self):
+        """10-Qの"Item 1A. R  isk Factors"（"Risk"自体の分断）"""
+        text = "Item 1A. R  isk Factors\nInvesting in our stock involves risk. " + "z" * 200
+        cfg = sif.ITEM_CONFIGS["risk_factors"]
+        start, seg = sif.extract_item_section(
+            text, cfg["quarterly_item_re"], cfg["quarterly_next_res"], cfg["quarterly_anchor_re"],
+        )
+        assert start == 0
+
+    def test_mda_anchor_re_matches_word_internal_management_split(self):
+        """10-Qの"Item 2. Manag  ement s Discussion and Analysis..."
+        （"Management"自体の分断）"""
+        text = (
+            "Item 2. Manag  ement s Discussion and Analysis of Financial Condition\n"
+            + "w" * 200
+        )
+        cfg = sif.ITEM_CONFIGS["mda"]
+        start, seg = sif.extract_item_section(
+            text, cfg["quarterly_item_re"], cfg["quarterly_next_res"], cfg["quarterly_anchor_re"],
+        )
+        assert start == 0
+
+    def test_legal_proceedings_anchor_re_matches_word_internal_legal_split(self):
+        """10-Qの"Item 1. L  egal Proceedings"（"Legal"自体の分断）"""
+        text = "Item 1. L  egal Proceedings\nWe are not party to material claims. " + "v" * 200
+        cfg = sif.ITEM_CONFIGS["legal_proceedings"]
+        start, seg = sif.extract_item_section(
+            text, cfg["quarterly_item_re"], cfg["quarterly_next_res"], cfg["quarterly_anchor_re"],
+        )
+        assert start == 0
+
+    def test_part2_re_matches_word_internal_other_split(self):
+        """10-Qの実本文Part II境界"PART II - OTH  ER INFORMATION"
+        （"OTHER"自体の分断）に_PART2_REが一致すること。_PART2_REは
+        extract_item_section()内で正規化ビュー（連続空白1個圧縮）に対して
+        しか適用されないため、ここでも正規化を経由してから照合する
+        （生テキストの2個スペースのままでは\\s?〈0または1個〉が吸収
+        できないのは設計通り）。"""
+        norm, _ = sif._normalize_ws_view("PART II - OTH  ER INFORMATION")
+        assert sif._PART2_RE.search(norm)
+
+    def test_pre_fix_literal_regex_would_have_failed_on_these_splits(self):
+        """[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] 対照テスト: 修正前の
+        リテラル正規表現（\\s?許容なし）ではこれらの実例が一致しないこと
+        を確認し、上記の回帰テストが実際にバグを検知する設計になっている
+        ことを担保する。"""
+        old_item_re = re.compile(r"(?i)item\s+1a[\.\s]")
+        assert old_item_re.search("Item 1  A. Risk Factors") is None
+
+        old_anchor_re = re.compile(
+            r"(?i)management.{0,3}s\s+discussion\s+and\s+analysis"
+        )
+        assert old_anchor_re.search("Management s Discussio  n and Analysis") is None

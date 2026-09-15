@@ -80,6 +80,24 @@ _translate_excerpt  = _ctrl._translate_excerpt
 # そのパターンの最終出現位置より後ろのみを検索範囲にする
 # （STEP1調査でPart I/IIの同一Item番号衝突が実データで確認されたため）。
 
+# [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] 方針Y: 見出し語・アンカー語の
+# リテラル単語を受け取り、文字間に任意で`\s?`を挟んだ正規表現パターン
+# 文字列を生成する汎用ヘルパー。APGEの実データ調査（STEP1〜3再調査）で、
+# 単語内スペース混入は"1a"・"discussion"に限らず"Item"（同一文書内で
+# `Ite  m`/`It  em`/`I  tem`と3通りの異なる位置で発生）・"PART"・
+# "Risk"・"Management"・"Legal"・"OTHER"など、ITEM_CONFIGSが参照する
+# 見出し語・アンカー語全般に及び、しかも分断位置が単語ごとに固定でない
+# （同じ単語でも出現箇所ごとに位置が変わる）ことが判明した。個別の
+# 分断位置を都度パッチする方式（案A'）では際限のない後追い対応になる
+# ため、対象語彙を文字単位で汎用的に緩めるこのヘルパーへ統一する。
+# 対象はitem_re/anchor_re/next_res/restrict_after_reが参照する見出し語・
+# アンカー語に限定し、本文中の任意の単語を無差別に緩めるものではない。
+def _fw(word: str) -> str:
+    """見出し語・アンカー語1単語を、文字間に任意で`\\s?`を挟んだ正規表現
+    パターン文字列へ変換する（1文字語はそのまま、no-op）。"""
+    return r"\s?".join(re.escape(ch) for ch in word)
+
+
 # [[TAIL-SEC-ITEMS-1]] STEP2-Bパイロットで発見・修正: 単純な`part\s+ii\b`は
 # 文書末尾の証明書・脚注等にある「Part II, Item 5. Other Information」等の
 # 他filingへのクロスリファレンスにも一致してしまい、`matches[-1]`（最終
@@ -89,17 +107,28 @@ _translate_excerpt  = _ctrl._translate_excerpt
 # 目次・本文とも必ず"OTHER INFORMATION"が直後（記号・空白のみを挟んで）に
 # 続くのに対し、クロスリファレンスは"Part II, Item N. ..."のように
 # 番号付きItem名を挟むため、この一致パターンで区別できる。
-_PART2_RE = re.compile(r"(?i)part\s+ii[\.\-\s]{1,5}other\s+information")
+#
+# [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] APGEの10-Qでは実際の本文Part II
+# 境界見出しの"OTHER"自体が`OTH  ER`と分断されており、無印字用対応前は
+# このパターンが本文境界に一致していなかった（TOC側の一致に偶然救われて
+# いた）。_fw()経由に統一して解消。
+_PART2_RE = re.compile(
+    r"(?i)" + _fw("part") + r"\s+" + _fw("ii") + r"[\.\-\s]{1,5}"
+    + _fw("other") + r"\s+" + _fw("information")
+)
 
 ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
     "risk_factors": {
         "label_ja": "Item 1A「Risk Factors」",
-        "annual_item_re":  re.compile(r"(?i)item\s+1a[\.\s]"),
-        "annual_next_res": [re.compile(r"(?i)item\s+1b[\.\s]"), re.compile(r"(?i)item\s+2[\.\s]")],
-        "annual_anchor_re": re.compile(r"(?i)risk\s+factors"),
-        "quarterly_item_re":  re.compile(r"(?i)item\s+1a[\.\s]"),
-        "quarterly_next_res": [re.compile(r"(?i)item\s+2[\.\s]")],
-        "quarterly_anchor_re": re.compile(r"(?i)risk\s+factors"),
+        "annual_item_re":  re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("1a") + r"[\.\s]"),
+        "annual_next_res": [
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("1b") + r"[\.\s]"),
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("2") + r"[\.\s]"),
+        ],
+        "annual_anchor_re": re.compile(r"(?i)" + _fw("risk") + r"\s+" + _fw("factors")),
+        "quarterly_item_re":  re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("1a") + r"[\.\s]"),
+        "quarterly_next_res": [re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("2") + r"[\.\s]")],
+        "quarterly_anchor_re": re.compile(r"(?i)" + _fw("risk") + r"\s+" + _fw("factors")),
         "quarterly_restrict_after_re": _PART2_RE,
         "no_change_re": re.compile(
             r"(?i)no\s+material\s+changes?\s+(?:to|from|in)\s+(?:our\s+|the\s+)?risk\s+factors"
@@ -110,12 +139,14 @@ ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "legal_proceedings": {
         "label_ja": "Item 3「Legal Proceedings」",
-        "annual_item_re":  re.compile(r"(?i)item\s+3[\.\s]"),
-        "annual_next_res": [re.compile(r"(?i)item\s+4[\.\s]")],
-        "annual_anchor_re": re.compile(r"(?i)legal\s+proceedings"),
-        "quarterly_item_re":  re.compile(r"(?i)item\s+1[\.\s](?!a|b|c)"),
-        "quarterly_next_res": [re.compile(r"(?i)item\s+1a[\.\s]")],
-        "quarterly_anchor_re": re.compile(r"(?i)legal\s+proceedings"),
+        "annual_item_re":  re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("3") + r"[\.\s]"),
+        "annual_next_res": [re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("4") + r"[\.\s]")],
+        "annual_anchor_re": re.compile(r"(?i)" + _fw("legal") + r"\s+" + _fw("proceedings")),
+        "quarterly_item_re":  re.compile(
+            r"(?i)" + _fw("item") + r"\s+" + _fw("1") + r"[\.\s](?!a|b|c)"
+        ),
+        "quarterly_next_res": [re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("1a") + r"[\.\s]")],
+        "quarterly_anchor_re": re.compile(r"(?i)" + _fw("legal") + r"\s+" + _fw("proceedings")),
         "quarterly_restrict_after_re": _PART2_RE,
         "no_change_re": None,  # Item3は「変更なし」という枠組み自体が該当しない（STEP1確認済み）
         "translate_desc_annual":    "10-K の Item 3「Legal Proceedings」",
@@ -124,12 +155,26 @@ ITEM_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     "mda": {
         "label_ja": "Item 7「MD&A」",
-        "annual_item_re":  re.compile(r"(?i)item\s+7[\.\s](?!a)"),
-        "annual_next_res": [re.compile(r"(?i)item\s+7a[\.\s]"), re.compile(r"(?i)item\s+8[\.\s]")],
-        "annual_anchor_re": re.compile(r"(?i)management.{0,3}s\s+discussion\s+and\s+analysis"),
-        "quarterly_item_re":  re.compile(r"(?i)item\s+2[\.\s]"),
-        "quarterly_next_res": [re.compile(r"(?i)item\s+3[\.\s]"), re.compile(r"(?i)item\s+4[\.\s]")],
-        "quarterly_anchor_re": re.compile(r"(?i)management.{0,3}s\s+discussion\s+and\s+analysis"),
+        "annual_item_re":  re.compile(
+            r"(?i)" + _fw("item") + r"\s+" + _fw("7") + r"[\.\s](?!a)"
+        ),
+        "annual_next_res": [
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("7a") + r"[\.\s]"),
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("8") + r"[\.\s]"),
+        ],
+        "annual_anchor_re": re.compile(
+            r"(?i)" + _fw("management") + r".{0,3}s\s+" + _fw("discussion")
+            + r"\s+" + _fw("and") + r"\s+" + _fw("analysis")
+        ),
+        "quarterly_item_re":  re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("2") + r"[\.\s]"),
+        "quarterly_next_res": [
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("3") + r"[\.\s]"),
+            re.compile(r"(?i)" + _fw("item") + r"\s+" + _fw("4") + r"[\.\s]"),
+        ],
+        "quarterly_anchor_re": re.compile(
+            r"(?i)" + _fw("management") + r".{0,3}s\s+" + _fw("discussion")
+            + r"\s+" + _fw("and") + r"\s+" + _fw("analysis")
+        ),
         "quarterly_restrict_after_re": None,  # MD&AはPart I側、anchor確認のみで十分（STEP1確認済み）
         "no_change_re": None,
         "translate_desc_annual":    "10-K の Item 7「Management's Discussion and Analysis」",
@@ -152,19 +197,58 @@ ITEM_KEYS = list(ITEM_CONFIGS.keys())
 
 _TOC_PAGENUM_RE = re.compile(r"\n\s*\d{1,4}\s*\n")
 
+# [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] 見出しテキスト自体への単語内スペース
+# 混入（APGE "Item 1  A."・"Discussio  n"）対応。半角スペース/タブの連続
+# （2個以上）のみを1個へ圧縮した正規化ビューを、マッチング専用に生成する。
+# 改行は圧縮対象に含めない（_TOC_PAGENUM_RE等の改行依存判定を壊さないため）。
+# 元テキストの内容・改行・書式は一切変更せず、正規化ビューとその
+# インデックスマッピングを別途保持するのみ。
+_WS_RUN_RE = re.compile(r"[ \t]{2,}")
 
-def _looks_like_toc_entry(text: str, start: int, next_res: List[re.Pattern],
+
+def _normalize_ws_view(text: str) -> Tuple[str, List[int]]:
+    """連続する半角スペース/タブを1個へ圧縮した正規化ビューと、正規化後
+    インデックス→元テキストインデックスのマッピング配列を返す。
+
+    マッピング配列`orig_pos`は長さ`len(normalized)+1`で、`orig_pos[i]`は
+    正規化ビュー上のインデックス`i`に対応する元テキストのインデックス
+    （末尾`orig_pos[len(normalized)]`は`len(text)`のセンチネル、スライス
+    終端の変換に使う）。圧縮された1個のスペースは、その圧縮区間の元テキスト
+    上の開始位置にマッピングする。
+    """
+    norm_chars: List[str] = []
+    orig_pos: List[int] = []
+    last = 0
+    for m in _WS_RUN_RE.finditer(text):
+        for offset, ch in enumerate(text[last:m.start()]):
+            norm_chars.append(ch)
+            orig_pos.append(last + offset)
+        norm_chars.append(" ")
+        orig_pos.append(m.start())
+        last = m.end()
+    for offset, ch in enumerate(text[last:]):
+        norm_chars.append(ch)
+        orig_pos.append(last + offset)
+    orig_pos.append(len(text))
+    return "".join(norm_chars), orig_pos
+
+
+def _looks_like_toc_entry(norm_text: str, start: int, next_res: List[re.Pattern],
                            window: int = 100) -> bool:
     """目次(TOC)エントリらしいかを判定する（[[TAIL-SEC-ITEMS-1]] STEP1調査:
     `Item 1A.\\nRisk Factors\\n12\\nItem 1B.\\n...`のように、タイトル直後に
     裸のページ番号、その直後に次Itemマーカーが続くパターンが目次特有と判明）。
+
+    [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] `norm_text`は正規化ビュー、
+    `start`は正規化ビュー上のインデックス（呼び出し元`extract_item_section()`
+    と同じ座標系で統一し、変換を一箇所に集約する）。
     """
-    tail = text[start:start + window]
+    tail = norm_text[start:start + window]
     m = _TOC_PAGENUM_RE.search(tail)
     if not m:
         return False
     after = start + m.end()
-    probe = text[after:after + 60]
+    probe = norm_text[after:after + 60]
     return any(nre.match(probe) for nre in next_res)
 
 
@@ -185,33 +269,47 @@ def extract_item_section(text: str, item_re: re.Pattern, next_res: List[re.Patte
        一致する最初の候補を採用し、次の`next_res`いずれかの一致位置まで を
        本文とする（一致がなければmax_chars*3を上限とする）
 
+    [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]] `item_re`/`anchor_re`/`next_res`/
+    `restrict_after_re`のマッチングは全て`_normalize_ws_view()`が生成する
+    正規化ビュー（連続空白1個圧縮）に対して行う。位置ずれを防ぐため、
+    候補選定（TOC判定・next_res探索・anchor判定）も一貫して正規化ビューの
+    インデックスで行い、採用が確定した最後（開始位置・スライス境界）でのみ
+    元テキストのインデックスへ変換してスライス・戻り値算出を行う（返す
+    テキストは元テキストそのもの、正規化はマッチング専用）。
+
     Returns:
-        (採用した候補の開始位置 or None, 抽出テキスト（max_chars上限）)
+        (採用した候補の開始位置（元テキスト基準） or None, 抽出テキスト
+        （元テキストからのスライス、max_chars上限）)
         該当なしの場合は (None, "")
     """
+    norm_text, orig_pos = _normalize_ws_view(text)
+
     search_start = 0
     if restrict_after_re:
-        matches = list(restrict_after_re.finditer(text))
+        matches = list(restrict_after_re.finditer(norm_text))
         if matches:
             search_start = matches[-1].start()
 
-    starts = [m.start() for m in item_re.finditer(text) if m.start() >= search_start]
+    starts = [m.start() for m in item_re.finditer(norm_text) if m.start() >= search_start]
     if not starts:
         return None, ""
 
     for s in starts:
-        if _looks_like_toc_entry(text, s, next_res):
+        if _looks_like_toc_entry(norm_text, s, next_res):
             continue
         end = None
         for nre in next_res:
-            m = nre.search(text, s + 200)
+            m = nre.search(norm_text, s + 200)
             if m and (end is None or m.start() < end):
                 end = m.start()
         if end is None:
             end = s + max_chars * 3
-        segment = text[s:end]
+        end = min(end, len(norm_text))
+        segment = norm_text[s:end]
         if anchor_re.search(segment[:anchor_window]):
-            return s, segment[:max_chars]
+            orig_s = orig_pos[s]
+            orig_end = orig_pos[end]
+            return orig_s, text[orig_s:orig_end][:max_chars]
 
     return None, ""
 
