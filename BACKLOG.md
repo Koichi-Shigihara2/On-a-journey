@@ -3812,11 +3812,13 @@ Grok Web検索（条件③）・Discord通知の呼び出し回数もこれに�
 
 ---
 
-### [SCHEMA-NORMALIZED-ISSUES-1] normalized/スキーマ関連の構造的ギャップまとめ（STDebtタグ網羅性劣化・SM/SGA概念混同・LTDebt優先順序逆転・SharesBasic概念不一致・ファイル名annualデータ混在・DAフォールバック欠如）
-**優先度:** 中〜高（内訳: 中〜高1件・低5件、個別優先度は各項目参照。
-2026-08-15、①②を実害調査完了により中〜高/中→低へ引き下げ）
+### [SCHEMA-NORMALIZED-ISSUES-1] normalized/スキーマ関連の構造的ギャップまとめ（残り①②③④⑤の5件、⑥DAフォールバック欠如は対応済み）
+**優先度:** 中〜高（内訳: 中〜高1件・低4件、個別優先度は各項目参照。
+2026-08-15、①②を実害調査完了により中〜高/中→低へ引き下げ。
+2026-09-16、⑥対応済みによりアクティブ項目から除外）
 **分類:** データ品質 / normalized/スキーマ（common/sec_data統合スキーマ設計関連）
 **登録日:** 2026-07-23〜2026-07-24（統合日: 2026-08-03）
+**更新日:** 2026-09-16（⑥対応済み）
 **発見:** data/quarterly⇔normalizedフィールド網羅性比較調査・Layer2設計調査
 
 #### 内容
@@ -3940,17 +3942,26 @@ MISMATCH-1、優先度低）: `normalized/{TICKER}_quarterly_normalized.json`
 統合スキーマ設計時にファイル名から内容を誤推測する混乱要因になり
 うる。着手条件: なし。
 
-⑥ **DAフォールバック欠如**（旧SCHEMA-DA-FALLBACK-MISSING-1、優先度
-低）: `quarterly.py::FIELD_CONCEPTS`のDA（減価償却）概念はフォール
-バック候補が一切設定されておらず（単一タグ
+⑥ **DAフォールバック欠如 → 対応済み（2026-09-16）**（旧SCHEMA-DA-
+FALLBACK-MISSING-1）: `quarterly.py::FIELD_CONCEPTS`のDA（減価償却）
+概念はフォールバック候補が一切設定されておらず（単一タグ
 `DepreciationDepletionAndAmortization`のみ）、このタグを報告しない
-銘柄（LMT等、`DepreciationAndAmortization`のみ報告）で`normalized/`側
-のDAフィールドが完全に空（0エントリ）になる。①と同型のフォール
-バック欠如パターン。実質的な計算消費箇所（成長率推計、
-pipeline.py:2807）は`normalized/`ではなくannual/quarterly側
-（parser.py由来、フォールバック4候補あり）を参照しているため、現状の
-計算結果への実害はない。`normalized/`のDAはstock.htmlの単純表示にしか
-使われていないため影響は限定的。着手条件: なし。
+銘柄（LMT等）で`normalized/`側のDAフィールドが完全に空（0エントリ）に
+なっていた。実質的な計算消費箇所（成長率推計、pipeline.py:2807）は
+`normalized/`ではなくannual/quarterly側（parser.py由来、フォール
+バック4候補あり）を参照しているため計算結果への実害はなかったが、
+`normalized/`のDAはstock.htmlのCF滝グラフ「SBC・D&A比率」系列で直接
+参照されており表示欠落の実害があった。`quarterly.py::_FIELD_FALLBACKS`
+へDA用フォールバック3候補（parser.py側4候補からprimary除く残り）を
+追加し解消（コミット`4aa54d6f98`コード変更・`d37abb10eb`データ
+再生成〈normalized/全102銘柄〉）。DAが完全に空だった30銘柄のうち
+現行102銘柄に含まれる28銘柄中25銘柄が新たに非空化（24銘柄は四半期
+データも復旧、LMTのみ年次のみ）。残り3銘柄（MSFT: ticker別除外設定
+〈既存・無関係〉、AMD: primaryタグ件数僅少のため今回の発火条件
+〈完全0件〉を満たさず、WMT: 4候補タグとも直近年度の申告なし）は
+未解消のまま。既に値があった74銘柄はDAフィールドが完全無差分、
+DA以外の全フィールドも102銘柄全件で無差分と確認済み。実ブラウザ
+（Playwright）でTSLA/GOOGL/VのD&A比率系列表示を確認済み。
 
 **定量実測結果（2026-08-07、`[[STOCKHTML-LAYER3-PUBLISH-PIPELINE-
 MISSING-1]]`着手要否投資調査の一環）**: `normalized/`105銘柄全数を
@@ -3975,15 +3986,18 @@ START.md`自体の記述「`fetcher.py`・`dcf_validity_checker.py`
 （STDebt・SM）の実消費有無を個別に確認し、上記①②の結論に至った。
 
 #### 対応方針
-①〜⑥のいずれも、`common/sec_data`統合スキーマ（Layer2/Layer3）設計時に
+①〜⑤（残存分）は、`common/sec_data`統合スキーマ（Layer2/Layer3）設計時に
 `parser.py`側の定義（フォールバック網羅性・優先順序とも既に安全性検証
-済み）へ統一することで一括解消する見込み。個別の緊急対応は不要。
+済み）へ統一することで一括解消する見込み。個別の緊急対応は不要。⑥は
+消費者（stock.html）が実在し表示実害があったため、統合を待たず
+`_FIELD_FALLBACKS`への直接追加という軽量な方式で先行対応した
+（2026-09-16、コミット`4aa54d6f98`・`d37abb10eb`）。
 
 #### 着手条件
-①〜⑥いずれも個別の着手条件なし（優先度に応じて統合作業と同時対応で
+①〜⑤いずれも個別の着手条件なし（優先度に応じて統合作業と同時対応で
 可。①②は2026-08-15、実害調査完了〈実消費者ゼロ確認〉により
 「common/sec_data統合スキーマ設計の確定後」という着手条件を撤廃し
-優先度低へ格下げ済み）。
+優先度低へ格下げ済み）。⑥は対応済みのため着手条件の対象外。
 
 ---
 
