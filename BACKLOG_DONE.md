@@ -2,6 +2,98 @@
 
 ---
 
+## 2026-09-16⑤（完了）
+
+### ✅ [HYPECORE-POC-TRAILING-PE-MISSING-1] HypeCore poc.jsonがtrailing_peを保持せずforward_peのみのため、PERフォールバックがforward側限定になっている
+**優先度:** 低 → 完了
+**分類:** データ品質 / HypeCore
+**登録日:** 2026-09-16
+**完了日:** 2026-09-16
+**発見:** `[[TANUKI-VALUATION-MISC-GAPS-1]]`①対応中のSTEP1調査
+
+#### 内容（登録時点の記載を再掲）
+`src/value/hypecore/hypecore.py::fetch_info_snapshot()`は
+`trailing_pe`（`attrs.get("trailing_pe")`）を取得しているが、月次記録
+組み立て`_build_month_record()`の`.info`現時点値セットループ
+（`compute_scores()`内、`for key in ["forward_pe", "peg_ratio", ...]`）
+に`"trailing_pe"`が含まれておらず、`poc.json`には`forward_pe`のみが
+永続化される（`trailing_pe`は取得されているのに破棄される）。
+
+TANUKI VALUATION側の`comps.per`は`trailing_pe or forward_pe`
+（`per_is_forward`フラグ付き）という設計だが、HypeCore側は
+`forward_pe`しか持たないため、`detail.html`のPERフォールバック
+（`[[TANUKI-VALUATION-MISC-GAPS-1]]①`、コミット`bb7edaec50`で実装済み）
+は forward PEのみを回復でき、trailing PEが取得できる銘柄でも
+trailing側は救えない。
+
+#### 実装内容
+指示書（`instruction_2026-09-16_hypecore-trailing-pe.txt`）で対応方針・
+コード変更内容が具体的に指定されていたが、**指示書は「チャット側で
+設計・適用済み、確認のみでOK」としていたにもかかわらず、実際には
+両ファイルとも変更が一切適用されていなかった**（`git diff`差分ゼロ・
+`fetch_info_snapshot()`は元々trailing_pe取得済みだったが`.info`現時点値
+ループ・JSON出力dictいずれにも`trailing_pe`キーが存在しないことを
+`grep`で個別確認）。この相違をKoichiさんへ報告し、承認を得た上で
+指示書の設計通りClaude Codeが実装した。
+
+- `src/value/hypecore/hypecore.py`
+  - `.info`現時点値ループ（`compute_scores()`内）へ`"trailing_pe"`を追加
+  - `_build_month_record()`のJSON出力dictへ`"trailing_pe":
+    safe(row.get("trailing_pe"))`を追加
+- `docs/value-monitor/hypecore/detail.html::renderValMultiples()`
+  - `per = perFromComps ?? lat.trailing_pe ?? lat.forward_pe ?? null`
+  - `perIsFwd = perFromComps != null ? (comps?.per_is_forward ?? false)
+    : (per != null && lat.trailing_pe == null)`
+    （TANUKI側のtrailing優先・なければforward設計に統一。あわせて
+    「poc.json側はforward_peのみ保持」と説明していた旧コメントも
+    実態に合わせて更新）
+
+#### 検証
+- `python -m pytest -k hypecore -q`: 42 passed（新規追加なし、既存回帰確認のみ）
+- `python src/value/hypecore/hypecore.py --all`: 101/102銘柄成功。
+  **APGE 1件のみ失敗**（`'rev_yoy'` KeyError、財務データ0行）。
+  `git stash`で変更前のコードに戻して同一コマンドを実行し、
+  変更前から同一エラーで失敗することを確認済み（本タスクの変更とは
+  無関係の既存の問題、対応はスコープ外のまま）
+- before/after差分確認: 各銘柄とも`trailing_pe`列の新規追加（過去月は
+  `null`、直近月のみ実測値）に加え、前回コミット（2026-09-06）から
+  10日分経過した現在月の市場データ現時点値（price/forward_pe/
+  analyst系等）の自然な更新を含むことを確認。この経過日数分の
+  市場データ更新は今回のコード変更とは無関係（同一日に変更前後を
+  比較すれば差分はtrailing_pe追加のみになるはずだが、10日の
+  タイムラグがあるため厳密な「trailing_pe追加のみ」の確認はできず、
+  正直にその旨を記録する）
+- 実ブラウザ確認（Playwright、scratchpad一時スクリプト・作業後削除）:
+  PLTRの実データをベースにpage.routeで`trailing_pe`/`forward_pe`/
+  `comps.per`のみを差し替えた3パターンを検証
+  - A) `comps.per=null, trailing_pe=50.0, forward_pe=30.0`
+    → `PER 50.0x`（trailing優先、`(Fwd)`注記なし）
+  - B) `comps.per=null, trailing_pe=null, forward_pe=30.0`
+    → `FwdPE (Fwd) 30.0x`（forwardフォールバック、既存動作維持）
+  - C) `comps.per=12.3, per_is_forward=false, poc trailing_pe=999`
+    → `PER 12.3x`（TANUKI comps優先、poc.json側は無視）
+  いずれも期待通りの表示・コンソールエラー0件を確認
+- 実データでは`comps.per=null`かつ`trailing_pe`が有限値の実例は
+  ZETA（`trailing_pe=inf`、赤字による無限大）のみで、上記A/Cのような
+  典型例は実在しなかった（上記Playwright検証で代替確認した理由）
+
+#### 検証ゲート
+`python -m pytest -q`: 1328件全パス。`python common/sec_data/audit.py`:
+exit 0（既存のデータ品質警告10件のみ、NGなし、HypeCore変更とは無関係）。
+`python common/sec_data/report_consistency_check.py --fail-on-ng`:
+NG=0/WARN=121件（実装前と同一のベースライン）。
+
+#### コミット
+- `8367b8e77f`: コード変更（`hypecore.py`・`detail.html`）
+- `8c3e61afa3`: 全HypeCore銘柄poc.json再生成（101/102銘柄、APGE失敗は
+  既存の問題でスコープ外）
+- （本コミット）: BACKLOG_DONE.md移設
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-16④（完了）
 
 ### ✅ [FCF-OUTLIER-QUAL-1] 一過性費用の説明妥当性に関する定性評価の導入 — 案B（参考フィールド追加、action判定・DCF計算には未使用）で実装完了

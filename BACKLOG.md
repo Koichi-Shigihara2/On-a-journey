@@ -8433,39 +8433,6 @@ common/sec_data統合フェーズ1）の着手条件「[[CAPEX-SIGN-UNNORMALIZED
 
 ---
 
-### [HYPECORE-POC-TRAILING-PE-MISSING-1] HypeCore poc.jsonがtrailing_peを保持せずforward_peのみのため、PERフォールバックがforward側限定になっている
-**優先度:** 低
-**分類:** データ品質 / HypeCore
-**登録日:** 2026-09-16
-**発見:** `[[TANUKI-VALUATION-MISC-GAPS-1]]`①対応中のSTEP1調査
-
-#### 内容
-`src/value/hypecore/hypecore.py::fetch_info_snapshot()`は
-`trailing_pe`（`attrs.get("trailing_pe")`）を取得しているが、月次記録
-組み立て`_build_month_record()`の`.info`現時点値セットループ
-（`compute_scores()`内、`for key in ["forward_pe", "peg_ratio", ...]`）
-に`"trailing_pe"`が含まれておらず、`poc.json`には`forward_pe`のみが
-永続化される（`trailing_pe`は取得されているのに破棄される）。
-
-TANUKI VALUATION側の`comps.per`は`trailing_pe or forward_pe`
-（`per_is_forward`フラグ付き）という設計だが、HypeCore側は
-`forward_pe`しか持たないため、`detail.html`のPERフォールバック
-（`[[TANUKI-VALUATION-MISC-GAPS-1]]①`、コミット`bb7edaec50`で実装済み）
-は forward PEのみを回復でき、trailing PEが取得できる銘柄でも
-trailing側は救えない。
-
-#### 対応方針（未定・実装前に設計判断が必要）
-`hypecore.py`の`.info`現時点値セットループへ`"trailing_pe"`を追加し
-`_build_month_record()`でも出力するよう変更した上で、`detail.html`側も
-TANUKIと同型の「trailing優先・なければforward」＋`per_is_forward`
-判定ロジックへ揃える。バックエンド変更（全HypeCore銘柄のpoc.json
-再生成を伴う）が必要なため、着手時は影響範囲を事前確認すること。
-
-#### 着手条件
-なし
-
----
-
 ### [UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1] 実データ未確認の推測段階リスク3件の統合カタログ（元PARSER-MERGED-TAG-MIXING-RISK-1/SPLIT-REALTIME-GAP-REVERSE-1/DATA-JUMP-CHECK-NETINCOME-SBC-1）
 **優先度:** 低（いずれも非保有銘柄または実データ未確認の推測段階のまま
 長期未着手。個別の着手条件は変更なし）
