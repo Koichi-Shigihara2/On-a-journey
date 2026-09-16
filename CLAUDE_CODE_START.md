@@ -12,10 +12,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-16③時点）**: `BACKLOG.md`アクティブ件数
-**33件**（2026-09-16③の件数削減棚卸しで49件→33件。実害ゼロ確認済み7件を
-クローズ・STALE-SUBPORT-CLEANUP-1を実装完了でクローズ・14件を3件の統合
-カタログへ集約。詳細は下記の2026-09-16③ブロック参照）。
+**現在の到達点（2026-09-16④時点）**: `BACKLOG.md`アクティブ件数
+**26件**（本セッションで2件クローズ: `[[HYPECORE-POC-TRAILING-
+PE-MISSING-1]]`（trailing_pe追加・PERフォールバック統一）・
+`[[MARKETDATA-TRAILING-PE-STRING-INFINITY-1]]`（fetch_weekly_
+attributes()型ガード追加、ZETA trailing_pe="Infinity"のstale値も
+修正）。いずれも技術判断のみで着手可能な項目として古い順の棚卸しで
+処理。残り24件は個別または2クラスタ（FCF-CONVRATE系・SCHEMA-
+NORMALIZED-ISSUES-1残り①〜⑤）に分類済み、いずれもKoichiさんの
+設計判断待ち）。
 BACKLOG.md/BACKLOG_DONE.md間のID重複は意図的な1件
 （`[[TANUKI-VALUATION-MISC-GAPS-1]]`、部分完了エントリの意図的な
 分割・`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`と同型パターン）を除き
