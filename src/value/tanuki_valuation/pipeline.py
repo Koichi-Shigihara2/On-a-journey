@@ -26,6 +26,8 @@ from core_calculator import KoichiValuationCalculator
 from validator import validate_calculation
 from growth_sanity import check_growth_sanity, calc_fundamental_growth
 import segment_config as _seg_cfg
+# [[TANUKI-FIN-2]]: 金融機関向けFCFEエクイティDCF（参考表示専用）
+from calculator.fcfe import is_financial_institution_ticker, calculate_fcfe_valuation
 
 _SCRIPT_DIR_FOR_IMPORT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_DIR_FOR_IMPORT)))
@@ -2208,6 +2210,52 @@ class TanukiValuationPipeline:
         L.append("")
         L.append("")
 
+        # --- [3b. Equity_DCF] FCFEエクイティDCF（金融機関向け・参考情報） ---
+        # [[TANUKI-FIN-2]]: config/financial_institution_config.jsonの対象
+        # 銘柄（現状SOFIのみ）でのみ表示される。TANUKI SCORE・upside_percent・
+        # verdict等の判定ロジックはこのセクションの値を一切参照しない
+        # （latest.jsonのfcfe_valuationキーは参考表示専用として新設）。
+        _fcfe_val = (extra or {}).get("fcfe_valuation")
+        if _fcfe_val is not None:
+            L.append("[3b. Equity_DCF (FCFE方式、金融機関向け・参考情報)]")
+            L.append("注記: 本セクションはTANUKI SCORE・upside_percent・verdict等の")
+            L.append("判定には一切使用されない参考表示専用です。")
+            if _fcfe_val.get("available"):
+                _fcfe_ivps = _fcfe_val.get("intrinsic_value_per_share")
+                L.append(f"Intrinsic_Value_FCFE: ${_fcfe_ivps:,.2f}" if _fcfe_ivps else "Intrinsic_Value_FCFE: N/A")
+                if current_price and _fcfe_ivps:
+                    _fcfe_dev = (_fcfe_ivps / current_price - 1) * 100
+                    L.append(f"Deviation_FCFE: {_fcfe_dev:+.1f}%")
+                L.append(f"FCFE: ${_fcfe_val['fcfe']:,.0f}")
+                L.append(f"Net_Income_TTM: ${_fcfe_val['net_income']:,.0f}")
+                L.append(f"ROE: {_fcfe_val['roe']*100:.2f}%")
+                L.append(f"Growth_Rate: {_fcfe_val['growth_rate']*100:.1f}%")
+                L.append(f"Equity_Reinvestment_Rate: {_fcfe_val['equity_reinvestment_rate']*100:.1f}%")
+                L.append(f"Cost_of_Equity: {_fcfe_val['cost_of_equity']*100:.2f}%")
+            else:
+                _fcfe_reason_map = {
+                    "roe_not_positive": "ROEがゼロ以下のため算出不可（自己資本コスト回収不能）",
+                    "negative_or_zero_fcfe": "成長率がROEを上回るためFCFEがマイナス（内部留保だけでは"
+                                             "高成長を賄えず継続的な増資が前提と解釈される）",
+                    "cost_of_equity_below_terminal_growth": "Cost of Equityが永続成長率以下のため算出不可",
+                    "diluted_shares_unavailable": "希薄化後株式数が取得できないため算出不可",
+                }
+                _fcfe_reason = _fcfe_reason_map.get(_fcfe_val.get("reason"), _fcfe_val.get("reason", "不明"))
+                L.append(f"Intrinsic_Value_FCFE: N/A（{_fcfe_reason}）")
+                if _fcfe_val.get("equity_reinvestment_rate") is not None:
+                    L.append(f"Equity_Reinvestment_Rate: {_fcfe_val['equity_reinvestment_rate']*100:.1f}%")
+                if _fcfe_val.get("roe") is not None:
+                    L.append(f"ROE: {_fcfe_val['roe']*100:.2f}%")
+                if _fcfe_val.get("growth_rate") is not None:
+                    L.append(f"Growth_Rate: {_fcfe_val['growth_rate']*100:.1f}%")
+            L.append("Definition:")
+            L.append("FCFE = Net Income x (1 - Equity Reinvestment Rate)")
+            L.append("Equity Reinvestment Rate = Growth Rate / ROE (Damodaran方式)")
+            L.append("金融機関（銀行持株会社等）はBS構造上FCFF企業DCFが適合しにくいため、")
+            L.append("業界標準のFCFEエクイティDCFを参考表示する。")
+            L.append("")
+            L.append("")
+
         # --- [4. 成長率根拠] growth_sanity セクション ---
         has_sanity = growth_sanity is not None
         if has_sanity:
@@ -2891,6 +2939,34 @@ class TanukiValuationPipeline:
                     # ROE-DUPONT-2: Net Debt実装(net_debt_period)と同水準のトレーサビリティ
                     "dupont_bs_period": _du_period,
                 }
+
+                # [[TANUKI-FIN-2]]: 金融機関向けFCFEエクイティDCF（参考表示専用）。
+                # config/financial_institution_config.jsonの対象ティッカーのみ計算する
+                # （現状SOFIのみ）。TANUKI SCORE・upside_percent・verdict等の判定
+                # ロジックはこの結果を一切参照しない（latest.jsonへの新規トップレベル
+                # キー追加のみ、既存キーへの影響なし）。dupont（ROE）が計算できた
+                # 場合のみ実行（ROEが本FCFE計算の必須入力のため）。
+                if is_financial_institution_ticker(ticker):
+                    try:
+                        _fi_growth_rate = (valuation.get("growth") or {}).get("rate")
+                        _fi_phase1_years = (valuation.get("growth") or {}).get("phase1_years") or 5
+                        _fi_cost_of_equity = (valuation.get("wacc") or {}).get("value")
+                        _fi_diluted_shares = comps.get("diluted_shares")
+                        if (
+                            _fi_growth_rate is not None
+                            and _fi_cost_of_equity is not None
+                            and _fi_diluted_shares
+                        ):
+                            result["fcfe_valuation"] = calculate_fcfe_valuation(
+                                net_income=_ni_ttm_du,
+                                growth_rate=_fi_growth_rate,
+                                roe=result["dupont"]["roe_decomposed"],
+                                cost_of_equity=_fi_cost_of_equity,
+                                diluted_shares=_fi_diluted_shares,
+                                high_growth_years=_fi_phase1_years,
+                            )
+                    except Exception as _e_fcfe:
+                        print(f"   [{ticker}] FCFEエクイティDCF計算エラー: {_e_fcfe}")
 
                 # ROE-DUPONT-1: 単四半期NI集中チェック（一過性要因の検出・DCF_Reliability=LOWと同形式）
                 # TTM4四半期のうち最大1Qのnet_incomeがTTM合計の60%超を占める場合は信頼性LOWとする

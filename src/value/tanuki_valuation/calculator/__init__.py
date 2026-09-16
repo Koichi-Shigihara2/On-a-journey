@@ -55,6 +55,12 @@ from .rice import (
     calculate_rice, RICEResult, RICEScenario,
 )
 
+from .fcfe import (
+    is_financial_institution_ticker, calculate_equity_reinvestment_rate,
+    calculate_fcfe, calculate_fcfe_valuation,
+    resolve_financial_institution_config_path,
+)
+
 __all__ = [
     # WACC
     "calculate_wacc", "get_default_beta", "WACCResult",
@@ -87,6 +93,10 @@ __all__ = [
     # Future Values
     "calculate_future_values", "calculate_return_metrics",
     "calculate_rice", "RICEResult", "RICEScenario",
+    # FCFE Equity DCF（[[TANUKI-FIN-2]]、金融機関向け参考評価）
+    "is_financial_institution_ticker", "calculate_equity_reinvestment_rate",
+    "calculate_fcfe", "calculate_fcfe_valuation",
+    "resolve_financial_institution_config_path",
 ]
 
 __version__ = "8.0.0"

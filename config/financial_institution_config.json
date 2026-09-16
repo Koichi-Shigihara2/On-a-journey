@@ -1,0 +1,10 @@
+{
+  "_meta": {
+    "description": "金融機関銘柄（銀行持株会社等、非分類BS構造でFCFF企業DCFが適合しにくい銘柄）向けFCFEエクイティDCF（参考表示専用）の対象ティッカースイッチ。TANUKI SCORE・upside_percent・verdict等の判定ロジックには一切使用しない（[[TANUKI-FIN-2]]確定方針）。計算式・パラメータは持たせず、対象ティッカーの列挙のみを責務とする。",
+    "encoding": "UTF-8",
+    "updated_at": "2026-09-16",
+    "schema_version": "1.0"
+  },
+  "tickers": ["SOFI"],
+  "_comment_future": "JPM/GSは追加予定だがconfig/cik_lookup.csvに未登録のため現状スコープ外。両行がcik_lookup.csvへ登録された後にこのリストへ追加する。"
+}
