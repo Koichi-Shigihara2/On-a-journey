@@ -331,6 +331,17 @@ _FIELD_FALLBACKS: dict[str, tuple[str, ...]] = {
         "ContractWithCustomerLiabilityNoncurrent",
         "DeferredRevenueNoncurrent",
     ),
+    # [[SCHEMA-NORMALIZED-ISSUES-1]]⑥（2026-09-16）: DAはフォールバック
+    # 候補が一切なく、primaryタグ（DepreciationDepletionAndAmortization）
+    # を報告しない銘柄（LMT等）でnormalized/側のDAフィールドが完全に
+    # 空になっていた。parser.py側の4候補（tag_definitions.py同様の
+    # 優先順位）のうち、現在のprimary以外の残り3つをフォールバックとして
+    # 追加する。
+    "DA": (
+        "DepreciationAndAmortization",
+        "Depreciation",
+        "AmortizationOfIntangibleAssets",
+    ),
 }
 
 # FinanceLeasePmts・Buyback・OCFはprimaryのみ（fallbackなし）だったが、
