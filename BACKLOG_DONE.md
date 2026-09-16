@@ -2,6 +2,105 @@
 
 ---
 
+## 2026-09-16⑥（完了）
+
+### ✅ [MARKETDATA-TRAILING-PE-STRING-INFINITY-1] common/market_data/fetcher.pyがtrailing_pe等のyfinance数値フィールドの型を検証せず、文字列"Infinity"混入で銘柄全体のmarket_data由来フィールドがNone化する
+**優先度:** 中 → 完了
+**分類:** バグ / common/market_data / データ品質
+**登録日:** 2026-09-16
+**完了日:** 2026-09-16
+**発見:** `[[EPS-1]]`実装（Next_Quarter_EPS追加）の検証中、全99銘柄
+（tanuki=true）でTANUKI VALUATIONパイプラインを再実行した際に
+ZETAのみ`market_data attributes解析エラー`が発生していることに気づき
+原因調査した
+
+#### 内容（登録時点の記載を再掲）
+`common/market_data/fetcher.py::fetch_weekly_attributes()`は
+`info.get("trailingPE")`等のyfinance数値フィールドを型検証せずそのまま
+`attributes/{SYMBOL}.json`へ保存している。ZETAの実データで
+`trailing_pe`がyfinance側から**文字列**`"Infinity"`として返る
+（PERが定義不能な場合にYahoo側がinfinityの数値ではなく文字列を返す
+ケースがあると推測される、根本原因はyfinance/Yahoo Finance側の仕様の
+ため未確定）ことを実測確認した。
+
+この文字列値が`src/value/tanuki_valuation/data_fetcher.py::
+get_financials()`の`(_trailing_pe is None or _trailing_pe <= 0)`
+（674行目付近）で`str`と`int`の比較となり`TypeError: '<=' not
+supported between instances of 'str' and 'int'`が発生する。この関数は
+per/per_is_forward/peg/ps/ev_ebitda/ma200/forward_eps/next_quarter_eps/
+analyst_target_median/analyst_target_mean/analyst_target_low/
+analyst_target_high/analyst_count/analyst_rec_key/dividend_yield/
+payout_ratioの**全16フィールドを1つのtryブロックで処理**しており、
+例外発生時は全フィールドがexcept節で中立デフォルト（None等）に
+リセットされる設計（意図的な設計、非atomicな部分成功を避けるため）
+のため、trailing_pe単体の型異常がTANUKI VALUATION計算全体
+（PER比較・PEG・PS・EV/EBITDA・200日移動平均・Forward EPS・
+Next_Quarter_EPS・アナリスト目標株価コンセンサス）を巻き添えでNone化
+させている。
+
+#### 実装内容
+指示書（`instruction_2026-09-XX_marketdata-trailing-pe-type-guard.txt`）
+は案A（`fetch_weekly_attributes()`側の型ガード追加）を「チャット側で
+diff作成・fail-before/pass-after確認済み」としていたが、
+`[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`と同様、**実際には対象3ファイル
+いずれも変更が一切適用されていなかった**（`git diff`差分ゼロ・
+`_numeric_or_none`ヘルパー未実装・`ZETA.json`の`trailing_pe`は
+`"Infinity"`のまま、をそれぞれ個別確認）。この相違を踏まえ、直前の
+同型事案で確認済みの方針（指示書の設計通りClaude Codeが実装）に
+沿って実装した。
+
+- `common/market_data/fetcher.py`
+  - `_numeric_or_none()`ヘルパーを`_now_iso()`直後に新設。
+    bool（`isinstance(True, int) == True`の罠のためint判定より先に
+    除外）・非数値・NaNをNoneへ正規化する
+  - `fetch_weekly_attributes()`のrecord dict内、数値系27フィールド
+    （current_price/market_cap/enterprise_value/trailing_pe/forward_pe/
+    peg_ratio/price_to_sales/ev_to_ebitda/beta/dividend_yield/
+    payout_ratio/shares_outstanding/implied_shares_outstanding/
+    forward_eps/target_mean_price/target_median_price/
+    target_low_price/target_high_price/analyst_count/
+    recommendation_mean/total_debt/revenue_growth/earnings_growth/
+    gross_margins/short_pct_float/short_ratio/average_volume）全てに
+    適用（指示書は「26フィールド」としていたが実際の列挙数は27件。
+    sector/industry/country/analyst_recommendation_key（文字列）、
+    calendar/next_quarter_eps_*（既存の型安全な個別実装）は対象外の
+    指示通り除外）
+- `tests/test_market_data_fetcher.py`
+  - `TestFetchWeeklyAttributesNumericTypeGuard`クラスを新設（3件）:
+    ZETA実測値`"Infinity"`がNoneに正規化されること・bool値が数値扱い
+    されないこと・通常の数値がそのまま通ること
+- `common/market_data/attributes/ZETA.json`
+  - `"trailing_pe": "Infinity"` → `null`（コード修正だけでは次回fetch
+    までstale値が残るため一次データを一時修正）
+
+#### 検証
+- `python -m pytest tests/test_market_data_fetcher.py -q`: 75 passed
+  （既存72+新規3、想定通り）
+- `python -m pytest -q`: 1331 passed（想定通り）
+- `python common/sec_data/audit.py`: 既存WARN10銘柄のみ、変化なし
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0/WARN=121件、ベースラインと同一
+- ZETA単体で`pipeline.py`を再実行し、`latest.json`の
+  `components.per`/`per_is_forward`が事前確認値（`per=25.679209`・
+  `per_is_forward=true`）と一致することを確認。差分全体を確認した
+  ところ、登録時の記載通り9フィールド（per/peg/ps/ev_ebitda/ma200/
+  forward_eps/next_quarter_eps/analyst_target_median/analyst_count等）
+  が`null`から実測値へ回復していることを実データで確認した。
+  `git status`で他98銘柄への影響がZETA単体の再実行のみであることも
+  確認済み（tickers.jsonのタイムスタンプ更新のみ）
+
+#### コミット
+- `98880fd005`: コード変更（`fetcher.py`・テスト）
+- `0a9318d985`: ZETAのtrailing_pe stale値修正（`ZETA.json`、1件のみ）
+- `d082f13108`: ZETAのTANUKI VALUATIONデータ再生成（型ガード修正の
+  検証に伴う正当な出力、per等9フィールドの回復）
+- （本コミット）: BACKLOG_DONE.md移設
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-16⑤（完了）
 
 ### ✅ [HYPECORE-POC-TRAILING-PE-MISSING-1] HypeCore poc.jsonがtrailing_peを保持せずforward_peのみのため、PERフォールバックがforward側限定になっている
