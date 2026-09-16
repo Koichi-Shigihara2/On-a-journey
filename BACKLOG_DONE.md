@@ -84,8 +84,8 @@ exit 0（既存のデータ品質警告10件のみ、NGなし、HypeCore変更�
 NG=0/WARN=121件（実装前と同一のベースライン）。
 
 #### コミット
-- `8367b8e77f`: コード変更（`hypecore.py`・`detail.html`）
-- `8c3e61afa3`: 全HypeCore銘柄poc.json再生成（101/102銘柄、APGE失敗は
+- `1064c9bba4`: コード変更（`hypecore.py`・`detail.html`）
+- `50d2d9df94`: 全HypeCore銘柄poc.json再生成（101/102銘柄、APGE失敗は
   既存の問題でスコープ外）
 - （本コミット）: BACKLOG_DONE.md移設
 
