@@ -2,6 +2,130 @@
 
 ---
 
+## 2026-09-16④（完了）
+
+### ✅ [FCF-OUTLIER-QUAL-1] 一過性費用の説明妥当性に関する定性評価の導入 — 案B（参考フィールド追加、action判定・DCF計算には未使用）で実装完了
+**優先度:** 未定（要判断） → 完了
+**分類:** データ品質 / TANUKI VALUATION / AI活用
+**登録日:** 2026-07-11
+**完了日:** 2026-09-16
+**発見:** [[DCF-REL-SYNC-1]]（完了・BACKLOG_DONE.md参照）実装検討時
+
+#### 背景（登録時点の記載を再掲）
+`fcf_outlier.action`（`excluded`/`flagged`）は、一過性費用の金額が
+FCF乖離の一定割合（20%等）を占めるかという**金額比率のみ**で機械的に
+判定されており、その一過性費用の内容自体が乖離を実質的に説明しているか
+（例: 事業の一時的な問題か、構造的な問題の兆候か）は評価されていない。
+`transient_evidence.items`には一過性費用の個別項目（内容の記述含む）が
+既に格納されているため、これをAI（`quarterly_review_generator.py`等の
+既存の定性評価の仕組みを参考に）に評価させ、report.txtに参考情報として
+表示する設計（案B）が確定した。
+
+#### 確定した設計方針（案B、指示書で確定）
+定性評価は`transient_evidence.ai_assessment`という新規フィールドとして
+追加し、report.txtに参考情報として表示するのみでaction判定・DCF計算
+（`adjustments.py`内で`fcf_outlier_action`を参照する`skip_guard_a`等）
+には一切使用しない。AI判定の再現性は完全ではないため、DCF計算結果自体を
+非決定的にしないことが案B採用の理由（[[TANUKI-FIN-2]]（完了・
+BACKLOG_DONE.md参照）で確認したのと同種の懸念）。
+
+#### 実装状態についての正直な経緯（重要）
+本指示書を受け取った時点で、実装本体（`calculator/fcf_outlier_ai.py`・
+`tests/test_fcf_outlier_ai.py`・`core_calculator.py`/`adjustments.py`/
+`pipeline.py`/`calculator/__init__.py`の配線）は**すでに未コミットの状態で
+ワーキングツリーに存在していた**（`git log`に該当ファイルの履歴なし、
+前回セッションが同一依頼に着手し中断した跡と推定される）。内容を確認した
+ところ、設計・実装は指示書の要件（案B・grok-4.3・temperature=0.3・
+フェイルセーフnull返却等）と完全に一致していたため、書き直さず既存実装を
+検証対象として採用し、STEP3相当の全銘柄検証から本タスクを継続した。
+
+#### 実装内容
+- `calculator/fcf_outlier_ai.py`新設: `assess_transient_qualitative(ticker,
+  transient_items)`。`quarterly_review_generator.py::call_grok()`と同型
+  実装（リトライ・JSON抽出・フェイルセーフ）をモジュール間の直接import
+  ではなく複製する既存の慣習に従う。モデルは[[GROK-MODEL-PRICE-1]]
+  （完了・BACKLOG_DONE.md参照）確定済みの`grok-4.3`のみ・temperature=0.3。
+  `transient_items`が空の場合はAPI呼び出し自体を行わずNoneを返す
+- `adjustments.py::FCFOutlierResult.to_dict(ai_assessment=None)`に
+  引数追加。既存の`action`/`detected`/`rule`/`deviation_pct`等の判定
+  フィールドには一切影響しない（デフォルト`None`、`transient_evidence`
+  辞書へ追加キーとして格納するのみ）
+- `core_calculator.py`: `fcf_outlier_result.action`等の決定が完了した
+  "後"にのみAI呼び出しを行い、結果を`to_dict()`へ渡す（判定ロジック自体は
+  変更しない）
+- `pipeline.py`: report.txtの既存FCF外れ値セクション直後に
+  「一過性費用の定性評価（AI・参考情報、action判定には未使用）」を追加
+- `calculator/__init__.py`: `assess_transient_qualitative`をexport
+- `tests/test_fcf_outlier_ai.py`新設（10件）: フェイルセーフ7件
+  （空リストでAPI呼び出しスキップ・正常応答パース・API例外→None・
+  JSON解析失敗→None・不正assessment値→None・`uncertain`許容・
+  grok-4.3固定の回帰）＋`to_dict()`の`ai_assessment`引数追加が既存
+  判定フィールドに一切影響しないことの回帰テスト2件
+
+#### STEP3検証（全99銘柄、指示書記載の「69銘柄」は現行99銘柄へ増加後
+のため、より厳格に対象全件で実施）
+実装前（コミット前のHEAD）と実装後（全99銘柄`pipeline.py`再実行）の
+`latest.json`をPythonスクリプトで機械比較した結果:
+- `intrinsic_value_per_share`・`tanuki_score`・`upside_percent`・
+  `fcf_outlier.action`/`detected`/`rule`/`deviation_pct`・
+  `transient_evidence.found`/`items`/`total_transient_amount`は
+  **99銘柄全件でミスマッチ0件**（1バイトも変化なし）
+- `transient_found=True`の33銘柄（AVAV/ADSK/BBAI/FLYW/S/ZETA/QBTS/
+  CELH/RXRX/ENTG/AMD/FICO含む、指示書の例示12銘柄全て該当）で実際に
+  Grok API呼び出しが発生し、全件`assessment="transient"`という結果に
+  なった（`structural_concern`/`uncertain`は0件。理由欄自体が既に
+  「一過性の事業再編費用」「マクロ変動による一時的影響」等と明記されて
+  いるため、AIがその記述をそのまま確認する形になったと考えられる）
+- 残り66銘柄は`transient_found=False`のためAPI呼び出し自体がスキップ
+  され`ai_assessment=null`（設計通り、実データで実測確認）
+- **CELH（保有銘柄）個別確認**: `assessment="transient"`,
+  `reasoning="すべての項目がマクロ変動による一時的影響または一過性の
+  事業再編費用と明記されており、事業運営上の一時的な問題と判断される。"`
+  実際の`item_name`/`reason`（貸倒引当金繰入「マクロ変動による一時的
+  影響」・リストラ費用「一過性の事業再編費用」）と整合的な判断だった
+- 既存FAIL2件（CEG・LYFT、いずれも`validation.overall`の
+  `anomaly_detection`）は`git show HEAD`で実装前から存在していたことを
+  個別確認済み。本実装による新規回帰ではない
+- `calculation_date`タイムスタンプ・`history.json`への新規スナップショット
+  追記は通常のパイプライン実行に伴う想定内の差分（他の全再生成タスクと
+  同型）
+
+#### フェイルセーフ動作の実測確認
+単体テスト7件（空リスト・API例外・JSON解析失敗・不正assessment値の
+各ケースでNoneを返す）に加え、実データでも66/99銘柄が
+`transient_found=False`のため`assess_transient_qualitative()`の
+API呼び出し自体がスキップされ`ai_assessment=null`となることを実測確認。
+パイプライン全体が停止しないこと（99/99銘柄成功）も確認済み。
+
+#### コスト影響見積もり（推定、実測メータリングではない）
+プロンプト文字数（system 354字＋user平均約160字/2項目）から概算した
+場合、grok-4.3単価（[[GROK-MODEL-PRICE-1]]確定: 入力$1.25/M・
+出力$2.50/M）で1回あたり概算$0.0015〜0.002程度。週次実行に組み込んだ
+場合、現在の`transient_found`対象33銘柄で週あたり概算$0.05〜0.07、
+仮に将来全99銘柄が対象になったとしても週あたり概算$0.15〜0.20程度と、
+既存の他Grok呼び出し（TANUKI TAIL・adjusted_eps_analyzer等）と比べても
+軽微。[[GROK-MODEL-PRICE-1]]の教訓（コード側想定とxAI Console実請求が
+食い違う可能性）を踏まえ、この見積もりは文字数からの概算であり実測
+メータリングではない旨を明記する。厳密な確認が必要な場合はxAI Console
+側での確認をKoichiさんへ委ねる。
+
+#### 検証ゲート
+pytest 1328件全パス（新規10件含む）、`audit.py` exit 0（既存の
+データ品質警告10件のみ、NGなし）、`report_consistency_check.py
+--fail-on-ng` NG=0/WARN=121件（実装前と同一）。
+
+#### コミット
+- `9ff17b942e`: 機能追加（既存の未コミット実装をレビュー・検証した上で
+  コミット、attribution追記のためamend1回）
+- `a77285ed2d`: データ再生成（全99銘柄`latest.json`/`report.txt`/
+  `history.json`）
+- （本コミット）: BACKLOG_DONE.md移設
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-16②（完了）
 
 ### ✅ [TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1] tanuki_valuation/__init__.pyの相対importが誤っており、パッケージimport経路は常に失敗する
