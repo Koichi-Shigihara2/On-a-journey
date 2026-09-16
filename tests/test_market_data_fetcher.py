@@ -423,6 +423,48 @@ class TestFetchWeeklyAttributesCountryField:
         assert saved["country"] is None
 
 
+class TestFetchWeeklyAttributesNumericTypeGuard:
+    """[[MARKETDATA-TRAILING-PE-STRING-INFINITY-1]]: yfinance .infoが数値
+    フィールドに非数値を返すケース（ZETAのtrailingPE="Infinity"を実測確認）で
+    Noneへ正規化されることの回帰テスト。"""
+
+    def _patch_info(self, monkeypatch, info):
+        schema = TestFetchWeeklyAttributesSchema()
+        schema._patch_info(monkeypatch, info)
+
+    def test_string_infinity_is_normalized_to_none(self, tmp_path, monkeypatch):
+        """ZETA実測値: trailingPEが文字列"Infinity"として返るケース"""
+        base = str(tmp_path)
+        info = dict(TestFetchWeeklyAttributesSchema._FAKE_INFO)
+        info["trailingPE"] = "Infinity"
+        self._patch_info(monkeypatch, info)
+        fetcher.fetch_weekly_attributes(["ZETA"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "ZETA.json"), encoding="utf-8"))
+        assert saved["trailing_pe"] is None
+
+    def test_bool_is_not_treated_as_numeric(self, tmp_path, monkeypatch):
+        """isinstance(True, int) == True の罠: boolは数値として扱わずNoneにする"""
+        base = str(tmp_path)
+        info = dict(TestFetchWeeklyAttributesSchema._FAKE_INFO)
+        info["beta"] = True
+        self._patch_info(monkeypatch, info)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["beta"] is None
+
+    def test_normal_numeric_values_pass_through_unchanged(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        self._patch_info(monkeypatch, dict(TestFetchWeeklyAttributesSchema._FAKE_INFO))
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["trailing_pe"] == 20.0
+        assert saved["beta"] == 1.1
+        assert saved["market_cap"] == 1_000_000_000
+
+
 class TestFetchWeeklyAttributesCalendar:
     """[[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4（pipeline.py .calendar
     切替）で追加したcalendarフィールドの回帰テスト。.calendarをmonkeypatchし、

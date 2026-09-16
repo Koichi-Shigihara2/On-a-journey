@@ -33,6 +33,7 @@ src/value/tanuki_valuation/beta_fetcher.py がcommon.market_data.reader
 
 import io
 import json
+import math
 import os
 import sys
 import tempfile
@@ -108,6 +109,22 @@ def _resolve_base_dir(base_dir: Optional[str]) -> str:
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _numeric_or_none(value: Any) -> Optional[float]:
+    """yfinance .infoの数値フィールドをNoneへ正規化する型ガード。
+
+    ZETAの`trailingPE`が文字列"Infinity"として返るケースを実測確認済み
+    （[[MARKETDATA-TRAILING-PE-STRING-INFINITY-1]]）。boolはPythonの
+    isinstance(x, int)がTrueになる罠があるためint判定より先に除外する。
+    """
+    if isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
 
 
 def _dedupe_symbols(symbols: Optional[List[str]]) -> List[str]:
@@ -681,37 +698,37 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
         record: Dict[str, Any] = {
             "symbol": symbol,
             "fetched_at": fetched_at,
-            "current_price": info.get("currentPrice") or info.get("regularMarketPrice"),
-            "market_cap": info.get("marketCap"),
-            "enterprise_value": info.get("enterpriseValue"),
-            "trailing_pe": info.get("trailingPE"),
-            "forward_pe": info.get("forwardPE"),
-            "peg_ratio": info.get("trailingPegRatio") or info.get("pegRatio"),
-            "price_to_sales": info.get("priceToSalesTrailing12Months"),
-            "ev_to_ebitda": info.get("enterpriseToEbitda"),
-            "beta": info.get("beta"),
+            "current_price": _numeric_or_none(info.get("currentPrice") or info.get("regularMarketPrice")),
+            "market_cap": _numeric_or_none(info.get("marketCap")),
+            "enterprise_value": _numeric_or_none(info.get("enterpriseValue")),
+            "trailing_pe": _numeric_or_none(info.get("trailingPE")),
+            "forward_pe": _numeric_or_none(info.get("forwardPE")),
+            "peg_ratio": _numeric_or_none(info.get("trailingPegRatio") or info.get("pegRatio")),
+            "price_to_sales": _numeric_or_none(info.get("priceToSalesTrailing12Months")),
+            "ev_to_ebitda": _numeric_or_none(info.get("enterpriseToEbitda")),
+            "beta": _numeric_or_none(info.get("beta")),
             "sector": info.get("sector"),
             "industry": info.get("industry"),
             "country": info.get("country"),
-            "dividend_yield": info.get("trailingAnnualDividendYield"),
-            "payout_ratio": info.get("payoutRatio"),
-            "shares_outstanding": info.get("sharesOutstanding"),
-            "implied_shares_outstanding": info.get("impliedSharesOutstanding"),
-            "forward_eps": info.get("forwardEps"),
-            "target_mean_price": info.get("targetMeanPrice"),
-            "target_median_price": info.get("targetMedianPrice"),
-            "target_low_price": info.get("targetLowPrice"),
-            "target_high_price": info.get("targetHighPrice"),
-            "analyst_count": info.get("numberOfAnalystOpinions"),
+            "dividend_yield": _numeric_or_none(info.get("trailingAnnualDividendYield")),
+            "payout_ratio": _numeric_or_none(info.get("payoutRatio")),
+            "shares_outstanding": _numeric_or_none(info.get("sharesOutstanding")),
+            "implied_shares_outstanding": _numeric_or_none(info.get("impliedSharesOutstanding")),
+            "forward_eps": _numeric_or_none(info.get("forwardEps")),
+            "target_mean_price": _numeric_or_none(info.get("targetMeanPrice")),
+            "target_median_price": _numeric_or_none(info.get("targetMedianPrice")),
+            "target_low_price": _numeric_or_none(info.get("targetLowPrice")),
+            "target_high_price": _numeric_or_none(info.get("targetHighPrice")),
+            "analyst_count": _numeric_or_none(info.get("numberOfAnalystOpinions")),
             "analyst_recommendation_key": info.get("recommendationKey"),
-            "recommendation_mean": info.get("recommendationMean"),
-            "total_debt": info.get("totalDebt"),
-            "revenue_growth": info.get("revenueGrowth"),
-            "earnings_growth": info.get("earningsGrowth"),
-            "gross_margins": info.get("grossMargins"),
-            "short_pct_float": info.get("shortPercentOfFloat"),
-            "short_ratio": info.get("shortRatio"),
-            "average_volume": info.get("averageVolume") or info.get("averageVolume10days"),
+            "recommendation_mean": _numeric_or_none(info.get("recommendationMean")),
+            "total_debt": _numeric_or_none(info.get("totalDebt")),
+            "revenue_growth": _numeric_or_none(info.get("revenueGrowth")),
+            "earnings_growth": _numeric_or_none(info.get("earningsGrowth")),
+            "gross_margins": _numeric_or_none(info.get("grossMargins")),
+            "short_pct_float": _numeric_or_none(info.get("shortPercentOfFloat")),
+            "short_ratio": _numeric_or_none(info.get("shortRatio")),
+            "average_volume": _numeric_or_none(info.get("averageVolume") or info.get("averageVolume10days")),
             "calendar": calendar_dict,
             "next_quarter_eps_estimate": next_quarter_eps_estimate,
             "next_quarter_eps_date": next_quarter_eps_date,
