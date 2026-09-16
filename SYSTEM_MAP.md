@@ -2019,6 +2019,18 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
 
 ---
 
+## 既知の技術的負債（2026-09-16新設）
+
+- `src/value/tanuki_valuation/__init__.py`は`.wacc`/`.growth`等8モジュール全てで
+  相対importのパスが誤っており（実体は`calculator/`配下）、標準的なパッケージ
+  import（`import src.value.tanuki_valuation`等）は常に失敗する。本番運用・
+  既存テストスイートともスクリプト直接実行で`__init__.py`を経由しないため
+  実害は確認されていないが、将来パッケージimport経路が使われる場合は
+  ImportErrorとして顕在化するリスクがある（詳細はBACKLOG_DONE.md
+  `[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1]]`参照）。
+
+---
+
 ## 変更時の影響範囲チェックリスト
 
 | 変更ファイル | 必要な追加作業 |

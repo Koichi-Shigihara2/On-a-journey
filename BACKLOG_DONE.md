@@ -2,6 +2,308 @@
 
 ---
 
+## 2026-09-16②（完了）
+
+### ✅ [TANUKI-VALUATION-INIT-RELATIVE-IMPORT-BROKEN-1] tanuki_valuation/__init__.pyの相対importが誤っており、パッケージimport経路は常に失敗する
+**優先度:** 低（実害確認済み・パッケージimport経路が将来使われる場合の
+技術的負債として記録）
+**分類:** バグ / 技術的負債 / TANUKI VALUATION
+**登録日:** 2026-09-12
+**発見:** [[SCENARIO-BEARBULL-SIGN-FLIP-1]]対応中（デッドコード削除に
+伴う`__init__.py`の`__all__`更新作業で発見）
+
+#### 内容
+`src/value/tanuki_valuation/__init__.py`は冒頭で以下のような相対import
+を行っている:
+
+```python
+from .wacc import (
+    calculate_wacc, get_default_beta, WACCResult,
+    SECTOR_DEFAULT_BETA, DEFAULT_RISK_FREE_RATE, DEFAULT_MARKET_RETURN,
+)
+from .growth import (
+    determine_growth_rate, get_segment_growth,
+    calculate_fcf_cagr, GrowthResult,
+)
+```
+
+しかし`wacc.py`・`growth.py`は`tanuki_valuation/`直下には存在せず、
+実際は`tanuki_valuation/calculator/`配下（`calculator/wacc.py`・
+`calculator/growth.py`）にある。パッケージ直下からの相対import
+`from .wacc import ...`は誤りで、`from .calculator.wacc import ...`
+とすべきところが誤ったパスのままになっている。
+
+実際に検証したところ、`import src.value.tanuki_valuation`（または
+このパッケージの何らかのサブモジュールをPythonの通常のimport機構
+経由で読み込む操作全般）は以下のように必ず失敗する:
+
+```
+ModuleNotFoundError: No module named 'src.value.tanuki_valuation.wacc'
+```
+
+#### 実害なしと判断した根拠
+本番運用（GitHub Actions `TANUKI_VALUATION_Update.yml`）は
+`working-directory: src/value/tanuki_valuation`でカレントディレクトリを
+移動した上で`python pipeline.py`と**スクリプトとして直接実行**して
+おり、Pythonの`import`文を経由してこのパッケージ（`__init__.py`）を
+ロードする経路を一切通らない。同様に`pipeline.py`自身や`core_
+calculator.py`等の本体コードも、`sys.path.insert(0, ...)`を使って
+個々のモジュールをトップレベルスクリプトとして直接importする設計
+（本プロジェクト全体で頻出するパターン）になっており、`__init__.py`の
+内容には依存していない。
+
+このため、`tanuki_valuation/__init__.py`が常にimportエラーを起こす
+状態であっても、現行の本番運用・既存のテストスイート（`pytest tests/`
+1190件、いずれも直接モジュールimportまたは`sys.path`操作でこの
+`__init__.py`を経由していない）には一切影響していないことを実測で
+確認済み。
+
+#### 影響
+現時点では実害ゼロ。ただし将来、何らかのコード（新規スクリプト・
+外部ツール・別プロジェクトからの利用等）が`from src.value.
+tanuki_valuation import ...`や`import src.value.tanuki_valuation`
+という標準的なパッケージimportの形でこのモジュールを読み込もうとした
+場合、原因不明のImportErrorとして顕在化するリスクがある。
+
+#### 対応方針（未着手）
+`__init__.py`内の相対importを確認したところ、`.wacc`・`.growth`だけで
+なく`.dcf`・`.adjustments`・`.sensitivity`・`.scenarios`・
+`.future_values`・`.rice`の**計8モジュール全て**が同型の誤り（実体は
+`calculator/`配下にあるが、パッケージ直下からの相対importになっている）
+であることを確認済み。`from .wacc import ...`等を`from .calculator.
+wacc import ...`のように8箇所とも一括で`calculator.`プレフィックスを
+補う形で修正すれば解消すると見込まれる。現時点で実害がなく着手の
+緊急性がないため、本エントリでは調査・記録のみとし実装は行わない。
+
+#### 着手条件
+なし
+
+クローズ理由（2026-09-16、件数削減棚卸し）: 本番運用・テストスイートとも__init__.py経由のimport経路を一切通らないと実測済みで実害ゼロ。将来パッケージimportが使われる場合のリスクとしてSYSTEM_MAP.md「既知の技術的負債」節へ一文のみ残す。
+
+---
+
+
+### ✅ [FETCHER-PY-BS-FIELDS-DEAD-KEYS-1] fetcher.pyの_BS_FIELDSでtotal_debt・shares_outstanding・shares_dilutedがannual_*.jsonに実在しないキーを参照しており常にNone
+**優先度:** 低（analyzer.pyがこの4項目を参照しないため現状無害）
+**分類:** バグ（死んだコード）
+**登録日:** 2026-08-07
+**発見:** フェーズD Step2-2事前調査（チャット記録、2026-08-07）
+
+#### 内容
+実際は`long_term_debt`/`short_term_debt`が別名、shares系は`shares`
+セクション別置き。Layer3移行とは無関係の独立した既存バグ。
+
+#### 着手条件
+なし。実害が発生した時点で対応。
+
+クローズ理由（2026-09-16、件数削減棚卸し）: analyzer.pyが参照しない死んだコードで実害ゼロ確認済み。
+
+---
+
+
+### ✅ [SP500-GSPC-MULTI-FETCH-1] S&P500/^GSPCの複数取得経路（クロスシステム+Market Pulse内4重取得、外部APIコストの実害は解消済み）
+**優先度:** 低（2026-08-13、中から引き下げ。理由は下記「2026-08-13更新」参照）
+**分類:** 効率化 / 重複取得 / MACRO PULSE / Market Pulse
+**登録日:** 2026-07-23
+**更新日:** 2026-08-13（重複計算パターン棚卸し調査〈チャット記録〉で
+実コードを再確認。`collect_and_send.py`の`^GSPC`参照は現在
+`_get_sp500_ma_deviation()`内3箇所（`_md_get_ma_deviation()`×2・
+`_md_get_price_series()`×1）＋`fetch_recent_records()`呼び出し3箇所
+（主要9銘柄ブロック・NYSE Composite divergence用・大型対小型比用）の
+計6箇所に整理されているが、いずれも`common.market_data.reader`経由の
+ローカルファイル読み取りに統一済み（`[[MARKETDATA-LAYER-
+CONSTRUCTION-1]]`実装済み）。**外部API直接呼び出しは0件になっており、
+当初の実害（外部APIコストの無駄な重複）は既に消滅している。**
+一方、対応方針が挙げていた「Market Pulse内部の複数箇所を1回の取得
+結果を使い回す設計に統合する」というコードレベルの集約リファクタリング
+自体は未実施のまま（呼び出し箇所は依然として独立）。実装しても実害
+削減効果はほぼゼロ（ローカルファイル読み取りの重複コストは無視できる
+水準）で、コード整理としての価値のみのため優先度を「中」から「低」へ
+引き下げる）
+**発見:** `FIELD_DEFINITIONS.md`フェーズ1・フェーズ10（AS-IS-190/312）・`CONCEPT_PARAMETER_VARIATIONS.md`軸2概念5
+
+#### 内容
+MACRO PULSE（FRED `SP500`優先→stooqフォールバック）とMarket Pulse
+（yfinance `history()`）が完全に独立した経路でS&P500を取得しているのに
+加え、Market Pulse単体のスクリプト内だけで`^GSPC`が少なくとも4箇所
+独立にyfinance取得されている（主要9銘柄ブロック・NYSE Composite
+divergence用・大型対小型比用・`sentiment.sub_scores.sp500_ma_dev`及び
+両checklistのMA200判定用）。いずれもキャッシュ・再利用されていない。
+（登録時点＝yfinance直接呼び出し時代の記述。2026-08-13時点の実コード
+状況は上記「更新日」参照）
+
+#### 対応方針
+Market Pulse内部の複数箇所はまず1回の取得結果を使い回す設計に統合する
+（低コストで対応可能。ただし2026-08-13時点で外部APIコストの実害は
+解消済みのため、着手はコード整理目的の優先度低タスクとして扱う）。
+MACRO PULSE・Market Pulse間の統合は`INPUT_DATA_TOBE.md`のyfinance
+統合層設計に委ねる（`[[MARKETDATA-LAYER-CONSTRUCTION-1]]`で実施済み）。
+
+#### 着手条件
+なし
+
+クローズ理由（2026-09-16、件数削減棚卸し）: 外部APIコストの実害は[[MARKETDATA-LAYER-CONSTRUCTION-1]]でローカルファイル読み取りに統一済みで解消済み。残作業はコード整理のみで効果ほぼゼロ。
+
+---
+
+
+### ✅ [DEFICIT-SCORE-CEILING-95-1] STONKS SILO DEFICIT分類、赤字企業の実質上限95点
+**優先度:** 低
+**分類:** 設計上の制約 / STONKS SILO
+**登録日:** 2026-07-23
+**発見:** `FIELD_DEFINITIONS.md`フェーズ8（セッション終了時ブラッシュアップで39件起票から漏れていたものを追加起票）
+
+#### 内容
+`analyzer.py::_deficit_verdict()`の黒字状況(10pt)項目は、`is_profitable`が
+真の場合のみ10ptを付与し、赤字企業（`net_income is not None`のみが条件の
+`elif`分岐）は最大5ptしか取れない（`analyzer.py:453-457`）。売上成長40pt＋
+投資姿勢30pt＋粗利率20pt＋黒字状況10pt＝100点満点の設計だが、STONKS SILOの
+対象銘柄は原則として赤字企業（プレレベニュー/赤字拡大企業の投資適合性
+評価が目的）であるため、実質的な達成可能上限は95点になる。
+
+#### 実データでの影響確認（本追加起票時に実施）
+`docs/value-monitor/stonks-silo/data/results.json`（現行25銘柄）を確認した
+ところ、**QBTS が実際に95.0点（現行データの最高スコア）に到達しており、
+本問題が理論上の懸念ではなく現行データで実際に発生していることを確認**
+した。ただし`verdict`判定の閾値（`GOOD_DEFICIT>=65`／`WATCH>=35`／
+`BAD_DEFICIT`未満）はいずれも95点を大きく下回るため、**この5pt差が
+verdict分類（GOOD_DEFICIT/WATCH/BAD_DEFICIT）を変えることはない**。
+実害は「なぜ赤字企業は100点に到達できないのか」という数値スケールの
+解釈上の疑問に留まり、投資判断そのものへの影響は現行データでは
+確認されなかった。以上を踏まえ優先度は低のまま登録する。
+
+#### 対応方針
+黒字企業（`is_profitable=True`）は既に`verdict="PROFITABLE"`として
+score非依存の別カテゴリに分岐するため、スコア自体を100点満点で比較する
+必要があるのは実質的に赤字企業同士のみである。「赤字企業内での相対
+比較」であることを踏まえ、100点満点表記を95点満点表記に変更するか、
+現状維持のまま「黒字状況」項目の配点自体を見直すかを判断する。
+
+#### 着手条件
+なし
+
+クローズ理由（2026-09-16、件数削減棚卸し）: QBTS実測95点だがverdict分類（GOOD_DEFICIT/WATCH/BAD_DEFICIT）には無影響と確認済み。数値スケール解釈論のみで投資判断への実害なし。
+
+---
+
+
+### ✅ [STOCKHTML-LAYER3-PUBLISH-PIPELINE-MISSING-1] stock.htmlのLayer3切替は新規公開パイプライン構築が前提だが、現時点で着手しない
+**優先度:** 低（対応不要、記録のみ）
+**分類:** アーキテクチャ上のブロッカー / 着手見送り
+**登録日:** 2026-08-07
+**発見:** フェーズD Step2-5事前調査・着手要否投資調査（チャット記録、2026-08-07）
+
+#### 内容
+stock.htmlは`normalized/`を直接fetchしており、Layer3切替には
+Layer3ストアをJSON化して`docs/`配下に公開する新規パイプライン
+（GitHub Actions拡張）が必要。技術コストは低い（既存`SEC_Data_
+Update.yml`への追加ステップとして実装可能、ファイルサイズ2〜4MB
+程度、計算コストも軽微）が、以下の理由で着手を見送る：
+- 現状に緊急性のある実害はゼロ（is_ytdフィルタ漏れは実データで
+  未発現、DAフィールド欠如29%も表示のみへの影響でフォールバックも
+  堅牢）
+- CF滝グラフはページ最下部の補助的機能、2.5ヶ月間安定稼働
+- 着手すれば`[[LAYER3-FETCHER-SELECTION-PHILOSOPHY-MISMATCH-1]]`と
+  同じ「filed日最新優先 vs own-year優先」の検証課題が再発する
+  可能性がある（未検証）
+
+#### 着手条件
+なし。DAフィールド欠如が実際にユーザー影響を持つと判明した場合、
+またはstock.htmlの利用実態が変化した場合に再検討。
+
+クローズ理由（2026-09-16、件数削減棚卸し）: 本文で既に「対応不要、記録のみ」と結論済み。
+
+---
+
+
+### ✅ [LAYER3-FETCHER-SELECTION-PHILOSOPHY-MISMATCH-1] STONKS SILO fetcher.py・dcf_validity_checker.py（check_c_data_jump）の年次データがparser.py（own-year優先）を直接参照している一方、Layer3（filed日最新優先）とは選択思想が異なる
+**優先度:** 低（対応不要、記録のみ。案2〈現状維持〉採用により
+2026-08-07に高→低へ格下げ）
+**分類:** 設計判断確定（恒久的な例外扱い）
+**登録日:** 2026-08-07
+**更新日:** 2026-08-07（対応方針確定。優先度を高→低に格下げ）
+**発見:** フェーズD Step2-2事前調査（チャット記録、2026-08-07）
+
+#### 内容
+Layer3の年次エントリ選択（`_process_entries()`→`select_latest_filed()`）
+は「同一end日付の全候補中、filed日最新」を機械的に採用する設計。
+parser.py（`fetcher.py`・`dcf_validity_checker.py::check_c_data_
+jump()`が直読みする`annual_*.json`の生成元）は`is_own_data`判定・
+`_resolve_bs_entity_mixing()`等で「当年自身の10-K（own-year）」を
+優先する設計。両者は元々別目的（Layer3のこの設計は四半期のYTD
+チェーン解決・10-K/A訂正取り込みのため）で作られており、PL/CF系
+フィールド（10-Kで2〜3年比較列を持つ）でほぼ全銘柄・全年度異なる
+値を拾う。AVAV FY2022 revenueで実測検証済み（現状値445,732,000＝
+own-year10-K、Layer3選択値＝2年後の10-Kの比較列が同一期間を
+再採録したもの）。BS（残高、通常2年比較）で差分ゼロなのはこの説明と
+整合。
+
+フェーズD Step2-5事前調査（2026-08-07）で、`dcf_validity_checker.py::
+check_c_data_jump()`（`report_consistency_check.py`のWARN-21として
+本番稼働中）も同一のデータソース・同一の参照パターンで、この課題を
+同様に引き継ぐことを確認した。
+
+#### 対応方針（確定・2026-08-07）
+**案2を採用**：Layer3切替を見送り、現状維持。`fetcher.py`・
+`dcf_validity_checker.py`（`check_c_data_jump()`）は`data/
+annual_*.json`（parser.py経由）の直読みを継続する。
+
+**採用理由**：Layer3の「filed日最新優先」は、修正再表示（10-K/A等）を
+正しく反映するケースと、タグ定義変更等で不正確な値を拾うケースを
+区別できない不確実な方式である一方、parser.pyの「own-year優先」は
+一貫した基準を持つ実績のある方式。正確性の確実性を犠牲にしてまで
+統一する理由がない。
+
+3スキーマ並存のうち、この2ファイル分（`fetcher.py`・
+`dcf_validity_checker.py`の該当関数）は恒久的な例外として残る。
+
+#### 着手条件
+なし。将来、修正再表示の理由自動判定の仕組み（フェーズF/G
+「filing_text吸収」関連）が実現した場合に再検討する。
+
+クローズ理由（2026-09-16、件数削減棚卸し）: 案2（現状維持）採用済み、恒久的な設計上の例外として確定済み。
+
+---
+
+
+### ✅ [SEC-XBRL-MISSING-START-ENTRY-1] raw XBRLにstart日付が欠落した変則的なエントリが含まれる
+**優先度:** 低
+**分類:** データ品質 / SEC提出データ異常
+**登録日:** 2026-07-24
+**発見:** LAYER3-ANNUAL-QUARTERLY-COLLISION-1根本修正後の
+105銘柄回帰レポート（4回目）
+
+#### 内容
+AVAV（accession 0001104659-26-078906、2026-06-29提出の新しい
+10-K）等で、raw XBRLに`start`日付が欠落した変則的なエントリが
+含まれており、shares_dilutedで比較対象normalized/生成後に到着した
+新規提出によるデータドリフトとして3件（AVAV/ELF/ESTC）の差異と
+して検出された。
+
+#### 影響
+shares_dilutedはNO_CANDIDATE_MERGE_FIELDS（今回の変更対象外パス）
+を通るため、今回の修正とは無関係。影響範囲・実害は未調査。
+
+#### 対応方針
+未定。start欠落エントリの扱い（除外するか、end日付のみで妥当性
+判定するか）の検討が必要。
+
+#### 着手条件
+なし
+
+クローズ理由（2026-09-16、件数削減棚卸し）: 対象AVAV/ELF/ESTCはいずれも非保有銘柄（portfolio.json確認済み）。実害未調査のまま長期放置、タスク価値スクリーニング基準（非保有×推測段階×狭範囲）に該当。
+
+---
+
+---
+
+---
+
+---
+
+
+---
+
 ## 2026-09-16（完了）
 
 ### ✅ [TAIL-SEC-ITEMS-APGE-WHITESPACE-1] APGEの10-K本文で見出しテキスト自体に単語内スペースが混入しItem境界抽出が失敗する — 方針Y（語彙限定の汎用\s?許容ヘルパー）で実装完了
