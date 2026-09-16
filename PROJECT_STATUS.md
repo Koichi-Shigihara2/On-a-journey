@@ -656,7 +656,7 @@
 
 - **2026-09-16③**（BACKLOG.md件数削減棚卸し、3件の指示書を順次実施、
   全てpush済み）: 機能変更を伴わないBACKLOG.md/BACKLOG_DONE.mdの整理
-  のみを実施（コミット`fb6dbd7118`・`609b587728`・`20d20c3493`）。
+  のみを実施（コミット`e7b61a977b`・`af3c8cc46f`・`1812e49f7c`）。
   実害ゼロ確認済み7件をクローズ・`[[STALE-SUBPORT-CLEANUP-1]]`を
   README新設（B案）で実装完了・14件を新規カタログ2件＋既存
   `[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`吸収2件の計3件へ統合。

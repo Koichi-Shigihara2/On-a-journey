@@ -62,7 +62,7 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
 基づき、機能変更を伴わないBACKLOG.md/BACKLOG_DONE.mdの整理のみを実施した
 （3コミットに分割、各コミット後`git log -1 --format=%B`で内容一致を確認済み）。
 
-1. **クローズ7件**（コミット`fb6dbd7118`）: 実害ゼロ・対応不要が既に確定
+1. **クローズ7件**（コミット`e7b61a977b`）: 実害ゼロ・対応不要が既に確定
    済みと確認できた7件（`[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-
    BROKEN-1]]`・`[[FETCHER-PY-BS-FIELDS-DEAD-KEYS-1]]`・`[[SP500-GSPC-
    MULTI-FETCH-1]]`・`[[DEFICIT-SCORE-CEILING-95-1]]`・
@@ -74,7 +74,7 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    技術的負債」節を新設し一文のみ残した。
 
 2. **`[[STALE-SUBPORT-CLEANUP-1]]`実装完了・クローズ**（コミット
-   `609b587728`）: **依頼書の前提が誤りだったことが判明した**——依頼書は
+   `af3c8cc46f`）: **依頼書の前提が誤りだったことが判明した**——依頼書は
    「`INPUT_DATA_AS_IS.md`に外部AutoTrade fg_level2が`src/subport/
    fg_level2/config.json`を参照している旨の記載がある」としていたが、
    実際にこの記載が存在するのは`docs/architecture/new_data_platform/
@@ -91,7 +91,7 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    し、上記の再確認結果と削除要否はKoichiさんの判断待ちである旨を明記
    した上でクローズ。
 
-3. **カタログ統合14件**（コミット`20d20c3493`）: 新規カタログ2件を新設し
+3. **カタログ統合14件**（コミット`1812e49f7c`）: 新規カタログ2件を新設し
    既存`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`へ2件を追加吸収。
    - `[[MINOR-DESIGN-DECISION-PENDING-CATALOG-1]]`（新設・優先度中）:
      `NAMING-CONVENTIONS-APPLY-1`・`FIVE-CATEGORY-RECLASSIFY-1`・
