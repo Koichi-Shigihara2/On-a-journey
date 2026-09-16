@@ -915,7 +915,17 @@ class FCFOutlierResult:
     note: str
     deviation_pct: Optional[float] = None  # DCF-REL-SYNC-1: 5年平均からの乖離%（latest_negative型はNone）
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self, ai_assessment: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Args:
+            ai_assessment: [[FCF-OUTLIER-QUAL-1]]（案B）で追加。一過性費用の
+                内容（構造的問題の兆候か一時的な問題か）に関するAI定性評価。
+                report.txt上の参考表示専用で、action判定・DCF計算には
+                一切使用しない（呼び出し元がself.action等を決定した"後"に
+                任意で付与する情報のため、本メソッドの引数として独立させ、
+                FCFOutlierResult自体やanalyze_fcf_outlier()の判定ロジックは
+                変更しない設計）。
+        """
         return {
             "detected": self.detected,
             "rule": self.rule,
@@ -928,6 +938,7 @@ class FCFOutlierResult:
                 "source": "adjusted_eps_analyzer" if self.transient_found else None,
                 "items": self.transient_items,
                 "total_transient_amount": self.transient_total,
+                "ai_assessment": ai_assessment,
             },
             "action": self.action,
             "note": self.note,

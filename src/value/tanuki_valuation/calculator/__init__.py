@@ -61,6 +61,10 @@ from .fcfe import (
     resolve_financial_institution_config_path,
 )
 
+from .fcf_outlier_ai import (
+    assess_transient_qualitative,
+)
+
 __all__ = [
     # WACC
     "calculate_wacc", "get_default_beta", "WACCResult",
@@ -97,6 +101,8 @@ __all__ = [
     "is_financial_institution_ticker", "calculate_equity_reinvestment_rate",
     "calculate_fcfe", "calculate_fcfe_valuation",
     "resolve_financial_institution_config_path",
+    # FCF Outlier Qualitative Assessment（[[FCF-OUTLIER-QUAL-1]]、参考表示専用）
+    "assess_transient_qualitative",
 ]
 
 __version__ = "8.0.0"

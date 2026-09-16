@@ -71,6 +71,7 @@ from calculator.adjustments import (
     SoftwareSystemReclassificationResult,          # FCF-CONVRATE-DESIGN-LIMIT-1
     SOFTWARE_SYSTEM_SUBGROUP_RATES,                # FCF-CONVRATE-DESIGN-LIMIT-1
 )
+from calculator.fcf_outlier_ai import assess_transient_qualitative  # [[FCF-OUTLIER-QUAL-1]]
 
 try:
     from maturity_config import get_maturity_profile, is_three_stage, get_terminal_growth
@@ -817,6 +818,20 @@ class KoichiValuationCalculator:
             pv_high = dcf_result.pv_high_growth if dcf_result else 0.0
             pv_terminal = dcf_result.pv_terminal if dcf_result else 0.0
 
+        # ── FCF一過性費用の定性評価（AI、[[FCF-OUTLIER-QUAL-1]]案B） ──
+        # fcf_outlier_result.action等の決定（上記STEP4b）は既に完了済み。
+        # 本ブロックはreport.txt上の参考表示専用の情報を後付けで取得する
+        # だけであり、action・DCF計算（base_fcf・estimate_fcf_from_eps等、
+        # いずれも上記で計算済み）には一切影響しない。transient_found=False
+        # の場合はassess_transient_qualitative()内部でAPI呼び出し自体を
+        # 行わずNoneを返す。AI呼び出し失敗時もNoneを返しパイプラインは継続する。
+        _fcf_outlier_ai_assessment = None
+        if fcf_outlier_result.transient_found:
+            _fcf_outlier_ai_assessment = assess_transient_qualitative(
+                ticker=ticker,
+                transient_items=fcf_outlier_result.transient_items,
+            )
+
         # ── 結果返却 ──
         result = {
             "intrinsic_value_pt": float(intrinsic_value_pt),
@@ -881,7 +896,7 @@ class KoichiValuationCalculator:
             "fcf_base": fcf_base_result.to_dict(),
 
             # FCF外れ値分析結果（v7.1追加）
-            "fcf_outlier": fcf_outlier_result.to_dict(),
+            "fcf_outlier": fcf_outlier_result.to_dict(ai_assessment=_fcf_outlier_ai_assessment),
             "fcf_estimation": fcf_estimation.to_dict(),
             "software_system_reclassification": sw_sys_reclass.to_dict(),
             "software_system_provisional": {

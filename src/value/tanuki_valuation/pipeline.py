@@ -2013,6 +2013,21 @@ class TanukiValuationPipeline:
             _r6_base     = comps.get("fcf_base_used") or 0
             L.append(f"DCF_FCF_Base_Detail: ${_r6_base/1e6:,.1f}M (外れ値${_excl_val_r6/1e6:,.0f}M/FY{_excl_fy_r6}除外後{_excl_n_r6}点平均)")
             L.append(f"DCF_FCF_Base_Excluded: FY{_excl_fy_r6}=${_excl_val_r6/1e6:,.0f}M (outlier: >{_excl_thr_r6}% deviation from {_excl_n_r6}yr series)")
+        # 一過性費用の定性評価（参考、[[FCF-OUTLIER-QUAL-1]]案B）
+        # action判定・DCF計算には一切使用されない参考情報。
+        _fcf_te_r6 = _fcf_outlier_r6.get("transient_evidence") or {}
+        _fcf_ai_r6 = _fcf_te_r6.get("ai_assessment")
+        if _fcf_ai_r6:
+            _fcf_assessment_label = {
+                "transient": "一時的な問題と判断（参考）",
+                "structural_concern": "構造的な問題の兆候の可能性あり（参考）",
+                "uncertain": "判断保留・情報不足（参考）",
+            }.get(_fcf_ai_r6.get("assessment"), _fcf_ai_r6.get("assessment", "不明"))
+            L.append("一過性費用の定性評価（AI・参考情報、action判定には未使用）:")
+            L.append(f"  Assessment: {_fcf_assessment_label}")
+            _fcf_ai_reasoning = _fcf_ai_r6.get("reasoning", "")
+            if _fcf_ai_reasoning:
+                L.append(f"  Reasoning: {_fcf_ai_reasoning}")
         L.append("Financial_Health:")
         net_debt = fin_health.get("net_debt")
         total_debt = fin_health.get("total_debt")
