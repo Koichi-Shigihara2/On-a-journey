@@ -14,7 +14,12 @@ Revenue専用のハードコードから汎用化した際、Revenue呼び出し
 import json
 import os
 
-from common.screening.dcf_validity_checker import check_c_data_jump
+from common.screening.dcf_validity_checker import (
+    check_c_data_jump,
+    check_f_eps_analyzer_delta,
+    check_g_rice_efficiency,
+    check_h_analyst_vs_iv,
+)
 
 
 def _write_annual(sec_data_dir, ticker: str, year: int, section: str, field: str, value) -> None:
@@ -125,3 +130,113 @@ class TestCheckCDataJumpFieldParameterization:
         )
         assert flag is False
         assert jumps == []
+
+
+class TestCheckFEpsAnalyzerDelta:
+    """F: components.per(GAAP PER)とcomponents.per_adjusted(調整後PER)の乖離チェック
+    （[[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1）"""
+
+    def test_flags_when_delta_at_least_10x(self):
+        latest = {"components": {"per": 14.0, "per_adjusted": 3.5}}
+        flag, reason, detail = check_f_eps_analyzer_delta(latest)
+        assert flag is True
+        assert "-10.5" in reason
+        assert detail["delta"] == 3.5 - 14.0
+
+    def test_no_flag_when_delta_below_10x(self):
+        latest = {"components": {"per": 14.083194, "per_adjusted": 12.08}}
+        flag, reason, detail = check_f_eps_analyzer_delta(latest)
+        assert flag is False
+        assert reason == ""
+
+    def test_no_flag_when_per_missing(self):
+        latest = {"components": {"per_adjusted": 12.08}}
+        flag, reason, detail = check_f_eps_analyzer_delta(latest)
+        assert flag is False
+        assert detail["delta"] is None
+
+    def test_no_flag_when_per_not_positive(self):
+        latest = {"components": {"per": -5.0, "per_adjusted": 20.0}}
+        flag, reason, detail = check_f_eps_analyzer_delta(latest)
+        assert flag is False
+        assert detail["delta"] is None
+
+    def test_no_flag_when_components_missing(self):
+        flag, reason, detail = check_f_eps_analyzer_delta({})
+        assert flag is False
+        assert detail == {"per_gaap": None, "per_adjusted": None, "delta": None}
+
+
+class TestCheckGRiceEfficiency:
+    """G: rice.base.rice<1.0(低効率)チェック。TANUKI SCORE=BUYとの組み合わせも記録
+    （[[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元RICE-INTEGRATE-1）"""
+
+    def test_flags_low_efficiency_below_1(self):
+        latest = {"rice": {"base": {"rice": 0.652}, "bear": {"rice": 0.4}, "bull": {"rice": 0.9}},
+                   "tanuki_score": "HOLD"}
+        flag, reason, detail = check_g_rice_efficiency(latest)
+        assert flag is True
+        assert "0.652" in reason
+        assert detail["buy_and_low_efficiency"] is False
+
+    def test_flags_and_notes_buy_combination(self):
+        """ADBE実データ相当（RICE=0.937<1.0かつTANUKI SCORE=BUY）"""
+        latest = {"rice": {"base": {"rice": 0.937}, "bear": {"rice": 0.652}, "bull": {"rice": 1.124}},
+                   "tanuki_score": "BUY"}
+        flag, reason, detail = check_g_rice_efficiency(latest)
+        assert flag is True
+        assert detail["buy_and_low_efficiency"] is True
+        assert "BUY" in reason
+
+    def test_no_flag_when_rice_at_or_above_1(self):
+        latest = {"rice": {"base": {"rice": 1.0}}, "tanuki_score": "BUY"}
+        flag, reason, detail = check_g_rice_efficiency(latest)
+        assert flag is False
+        assert reason == ""
+
+    def test_unavailable_rice_reports_reason_without_flag(self):
+        latest = {"rice": {"available": False}, "tanuki_score": "BUY"}
+        flag, reason, detail = check_g_rice_efficiency(latest)
+        assert flag is False
+        assert reason == "RICE計算不可（Revenue/CapExデータ不足等）"
+        assert detail["rice_base"] is None
+
+    def test_no_rice_key_at_all(self):
+        flag, reason, detail = check_g_rice_efficiency({"tanuki_score": "BUY"})
+        assert flag is False
+        assert reason == "RICE計算不可（Revenue/CapExデータ不足等）"
+
+
+class TestCheckHAnalystVsIv:
+    """H: components.analyst_vs_ivの絶対値が50pt以上の乖離チェック
+    （[[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元ANALYST-VS-IV-INTEGRATE-1）"""
+
+    def test_flags_positive_divergence_as_tanuki_bearish(self):
+        """analyst_target>IVの場合、TANUKIがアナリストより弱気と判定する
+        （AAPL実データ相当: analyst_vs_iv=+166.5）"""
+        latest = {"components": {"analyst_vs_iv": 166.5, "analyst_target_median": 335.0,
+                                  "current_price": 250.0}}
+        flag, reason, detail = check_h_analyst_vs_iv(latest)
+        assert flag is True
+        assert "弱気" in reason
+        assert "+166.5" in reason
+
+    def test_flags_negative_divergence_as_tanuki_bullish(self):
+        """analyst_target<IVの場合、TANUKIがアナリストより強気と判定する
+        （NVDA実データ相当: analyst_vs_iv=-51.5）"""
+        latest = {"components": {"analyst_vs_iv": -51.5, "analyst_target_median": 315.0,
+                                  "current_price": 300.0}}
+        flag, reason, detail = check_h_analyst_vs_iv(latest)
+        assert flag is True
+        assert "強気" in reason
+
+    def test_no_flag_below_threshold(self):
+        latest = {"components": {"analyst_vs_iv": -39.6}}
+        flag, reason, detail = check_h_analyst_vs_iv(latest)
+        assert flag is False
+        assert reason == ""
+
+    def test_no_flag_when_analyst_vs_iv_missing(self):
+        flag, reason, detail = check_h_analyst_vs_iv({"components": {}})
+        assert flag is False
+        assert detail["analyst_vs_iv"] is None

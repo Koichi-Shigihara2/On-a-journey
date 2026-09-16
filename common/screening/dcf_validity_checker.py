@@ -27,6 +27,15 @@ TANUKI VALUATIONのDCF成長率前提・ROIC計算根拠が実績データと整
      - 直近期の株主資本マイナス、または投下資本が売上の15%未満(閾値は引数で調整可)
   E. HypeCore遷移確率のサンプル数
      - 現在ステージからの遷移観測数が5件未満(閾値は引数で調整可)
+  F. EPS Analyzer PER比較([[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1)
+     - components.per(GAAP PER)とcomponents.per_adjusted(調整後PER)の差が
+       ±10x以上(SBC等の影響で見かけの割安度が歪んでいる可能性)
+  G. RICE投資効率([[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元RICE-INTEGRATE-1)
+     - rice.base.rice<1.0(低効率)をフラグ。TANUKI SCORE=BUYとの組み合わせ
+       (割安だが再投資効率が低い)も記録する
+  H. アナリストコンセンサスとの乖離([[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元ANALYST-VS-IV-INTEGRATE-1)
+     - components.analyst_vs_ivの絶対値が50pt以上(TANUKIとアナリストの意見が
+       大きく割れている銘柄、方向性も記録)
 
 実行例:
     # 単一銘柄
@@ -228,6 +237,97 @@ def check_e_transition_sample(repo_root, ticker, min_transitions=5):
     return flag, reason, {"current_stage": cur_stage, "transition_count": tot, "total_months": len(monthly)}
 
 
+def check_f_eps_analyzer_delta(latest, delta_threshold=10.0):
+    """F: EPS Analyzer PER比較(GAAP PERと調整後PERの乖離、
+    [[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1参照)
+
+    components.per(GAAP基準PER)・components.per_adjusted(調整後PER)の両方が
+    存在しper>0の場合のみ判定。delta=per_adjusted-perがdelta_threshold(デフォルト
+    ±10x)以上ならSBC等の影響で見かけの割安度が歪んでいる可能性としてフラグする。
+    """
+    comp = latest.get("components") or {}
+    per = comp.get("per")
+    per_adjusted = comp.get("per_adjusted")
+
+    flag = False
+    reason = ""
+    delta = None
+    if per is not None and per_adjusted is not None and per > 0:
+        delta = per_adjusted - per
+        if abs(delta) >= delta_threshold:
+            flag = True
+            reason = (f"調整後PERとGAAP PERの差が{delta:+.1f}xと大きく、"
+                       f"SBC等の影響で見かけの割安度が歪んでいる可能性")
+
+    return flag, reason, {"per_gaap": per, "per_adjusted": per_adjusted, "delta": delta}
+
+
+def check_g_rice_efficiency(latest, low_threshold=1.0):
+    """G: RICE投資効率チェック(rice.base.rice<low_threshold(デフォルト1.0=低効率)を
+    フラグ。TANUKI SCORE=BUYとの組み合わせも記録する。[[SCREENING-SIGNAL-
+    INTEGRATION-EPIC-1]]元RICE-INTEGRATE-1参照)
+
+    rice.base.riceが存在しない銘柄(RICE Available=false、Revenue/CapExデータ
+    不足等)はflag=Falseで理由のみ記録する。
+    """
+    rice = latest.get("rice") or {}
+    base = rice.get("base") or {}
+    rice_base = base.get("rice")
+    bear = rice.get("bear") or {}
+    bull = rice.get("bull") or {}
+    tanuki_score = latest.get("tanuki_score")
+
+    flag = False
+    reason = ""
+    buy_and_low_efficiency = False
+    if rice_base is None:
+        reason = "RICE計算不可（Revenue/CapExデータ不足等）"
+    elif rice_base < low_threshold:
+        flag = True
+        buy_and_low_efficiency = tanuki_score == "BUY"
+        if buy_and_low_efficiency:
+            reason = (f"RICE={rice_base:.3f}で低効率(<{low_threshold:.1f})。"
+                       f"TANUKI SCORE=BUY(割安判定)と組み合わさり"
+                       f"「割安だが再投資効率が低い」候補")
+        else:
+            reason = f"RICE={rice_base:.3f}で低効率(<{low_threshold:.1f})"
+
+    return flag, reason, {
+        "rice_base": rice_base,
+        "rice_bear": bear.get("rice"),
+        "rice_bull": bull.get("rice"),
+        "tanuki_score": tanuki_score,
+        "buy_and_low_efficiency": buy_and_low_efficiency,
+    }
+
+
+def check_h_analyst_vs_iv(latest, threshold=50.0):
+    """H: アナリストコンセンサスとTANUKI理論株価(IV)の乖離チェック(
+    [[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元ANALYST-VS-IV-INTEGRATE-1参照)
+
+    components.analyst_vs_iv((アナリスト目標株価中央値-IV)/IV*100)が存在し
+    abs(analyst_vs_iv)>=threshold(デフォルト50pt)ならフラグする。正の値は
+    アナリスト目標がIVより高い=TANUKIがアナリストより弱気、負の値は
+    アナリスト目標がIVより低い=TANUKIがアナリストより強気であることを意味する。
+    """
+    comp = latest.get("components") or {}
+    analyst_vs_iv = comp.get("analyst_vs_iv")
+
+    flag = False
+    reason = ""
+    if analyst_vs_iv is not None and abs(analyst_vs_iv) >= threshold:
+        flag = True
+        direction = "弱気" if analyst_vs_iv > 0 else "強気"
+        reason = (f"TANUKIとアナリストの意見が大きく割れている"
+                  f"（analyst_vs_iv={analyst_vs_iv:+.1f}%、TANUKIが{direction}）")
+
+    return flag, reason, {
+        "analyst_vs_iv": analyst_vs_iv,
+        "analyst_target_median": comp.get("analyst_target_median"),
+        "current_price": comp.get("current_price"),
+    }
+
+
 def check_ticker(repo_root, ticker):
     """1銘柄についてA〜E全チェックを実行しdictで返す。latest.json不在ならNoneを返す"""
     latest_path = os.path.join(repo_root, "docs", "value-monitor", "tanuki_valuation", "data", ticker, "latest.json")
@@ -240,6 +340,9 @@ def check_ticker(repo_root, ticker):
     c_flag, c_jumps, _ = check_c_data_jump(repo_root, ticker)
     d_flag, d_reason, d_detail = check_d_invested_capital(repo_root, ticker)
     e_flag, e_reason, e_detail = check_e_transition_sample(repo_root, ticker)
+    f_flag, f_reason, f_detail = check_f_eps_analyzer_delta(latest)
+    g_flag, g_reason, g_detail = check_g_rice_efficiency(latest)
+    h_flag, h_reason, h_detail = check_h_analyst_vs_iv(latest)
 
     return {
         "ticker": ticker,
@@ -248,7 +351,10 @@ def check_ticker(repo_root, ticker):
         "C_data_jump": {"flag": c_flag, "jumps": c_jumps},
         "D_invested_capital": {"flag": d_flag, "reason": d_reason, "detail": d_detail},
         "E_transition_sample": {"flag": e_flag, "reason": e_reason, "detail": e_detail},
-        "any_flag": any([a_flag, b_flag, c_flag, d_flag, e_flag]),
+        "F_eps_analyzer_delta": {"flag": f_flag, "reason": f_reason, "detail": f_detail},
+        "G_rice_efficiency": {"flag": g_flag, "reason": g_reason, "detail": g_detail},
+        "H_analyst_vs_iv": {"flag": h_flag, "reason": h_reason, "detail": h_detail},
+        "any_flag": any([a_flag, b_flag, c_flag, d_flag, e_flag, f_flag, g_flag, h_flag]),
     }
 
 
@@ -280,7 +386,9 @@ def main():
     flagged = [r for r in results if r["any_flag"]]
     counts = {k: sum(1 for r in results if r[f"{k}_{name}"]["flag"])
               for k, name in [("A", "growth_vs_actual"), ("B", "source_label"), ("C", "data_jump"),
-                               ("D", "invested_capital"), ("E", "transition_sample")]}
+                               ("D", "invested_capital"), ("E", "transition_sample"),
+                               ("F", "eps_analyzer_delta"), ("G", "rice_efficiency"),
+                               ("H", "analyst_vs_iv")]}
 
     output = {
         "generated_at": datetime.now().isoformat(),
@@ -301,7 +409,9 @@ def main():
         print("内訳:", counts)
         for r in flagged:
             flags = [k for k, name in [("A", "growth_vs_actual"), ("B", "source_label"), ("C", "data_jump"),
-                                        ("D", "invested_capital"), ("E", "transition_sample")]
+                                        ("D", "invested_capital"), ("E", "transition_sample"),
+                                        ("F", "eps_analyzer_delta"), ("G", "rice_efficiency"),
+                                        ("H", "analyst_vs_iv")]
                       if r[f"{k}_{name}"]["flag"]]
             print(f"  {r['ticker']}: {','.join(flags)}")
 
