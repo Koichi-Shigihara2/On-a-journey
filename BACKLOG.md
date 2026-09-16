@@ -4854,38 +4854,6 @@ STONKS SILOのどちらの評価軸でも適切に評価しにくい銘柄をど
 
 ---
 
-### [STALE-SUBPORT-CLEANUP-1] src/subport/fg_level2/ 陳腐化複製の整理
-**優先度:** 低〜中
-**分類:** 保守性 / リポジトリ整理
-**登録日:** 2026-07-11
-**発見:** SYSTEM_MAP.md実態調査（2026-07-10）でAutoTrade運用実体を確認した際
-
-#### 問題
-AutoTrade（F&G Level2×TQQQ自動売買）の運用実体はリポジトリ外
-`C:\Users\shigi\AutoTrade\fg_level2\`にあり、Windowsタスクスケジューラから
-`trader.py --entry`/`--monitor`を日次実行している（signal.json/state.json/
-trade_log.jsonlが実際に日次更新される）。一方、リポジトリ内
-`src/subport/fg_level2/`は2026-05-03の開発初期に作成された同名モジュール一式
-（trader.py/signal.py/config.json等）だが、2026-05-03以降git上で更新がなく、
-内容が本番運用側と既に乖離している。`register_tasks.ps1`が`$RepoRoot`をこの
-リポジトリパスに設定しているにも関わらず、実際には使われていない（詳細は
-SYSTEM_MAP.md「AutoTrade/OpenD運用前提」参照）。
-
-#### 対応方針
-即削除はリスクがあるため、以下いずれかを判断する：
-- A案: `src/subport/fg_level2/`が本番運用（リポジトリ外）から一切参照されて
-  いないことを確認した上で削除する。削除の場合、他モジュールからの
-  import参照がないことを`grep -rn "subport.fg_level2\|subport/fg_level2"`等で
-  確認してから行うこと
-- B案: 削除せず、README等を追加して「これは非稼働の旧複製であり、
-  正は`C:\Users\shigi\AutoTrade\fg_level2\`である」と明示する
-
-#### 影響
-実害は薄い（本番運用に影響しない陳腐化コードの残存）が、将来このモジュールを
-誤って参照・変更するリスクがあるため記録する。
-
----
-
 （[[TAIL-SEC-ITEMS-1]]は2026-09-13、TANUKI TAIL全10銘柄への展開完了
 （うちAPGEはrisk_factors/mdaの2項目のみ既知のギャップあり、
 [[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]として別途新規登録）によりクローズ、

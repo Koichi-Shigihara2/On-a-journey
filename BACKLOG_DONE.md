@@ -532,6 +532,75 @@ GAP-1]]`（2026-08-16完了）で「`(oi or 0)`によるゼロ化を経て真の
 
 ---
 
+### ✅ [STALE-SUBPORT-CLEANUP-1] src/subport/fg_level2/ 陳腐化複製の整理 — B案（README新設）で対応完了
+**状態:** ✅実装完了
+**優先度:** 低〜中 → 完了
+**分類:** 保守性 / リポジトリ整理
+**登録日:** 2026-07-11
+**完了日:** 2026-09-16
+**発見:** SYSTEM_MAP.md実態調査（2026-07-10）でAutoTrade運用実体を確認した際
+
+#### 問題（登録時点の記載を再掲）
+AutoTrade（F&G Level2×TQQQ自動売買）の運用実体はリポジトリ外
+`C:\Users\shigi\AutoTrade\fg_level2\`にあり、Windowsタスクスケジューラから
+`trader.py --entry`/`--monitor`を日次実行している（signal.json/state.json/
+trade_log.jsonlが実際に日次更新される）。一方、リポジトリ内
+`src/subport/fg_level2/`は2026-05-03の開発初期に作成された同名モジュール一式
+（trader.py/signal.py/config.json等）だが、2026-05-03以降git上で更新がなく、
+内容が本番運用側と既に乖離している。`register_tasks.ps1`が`$RepoRoot`をこの
+リポジトリパスに設定しているにも関わらず、実際には使われていない（詳細は
+SYSTEM_MAP.md「AutoTrade/OpenD運用前提」参照）。
+
+#### 対応方針（登録時点の記載を再掲）
+即削除はリスクがあるため、以下いずれかを判断する：
+- A案: `src/subport/fg_level2/`が本番運用（リポジトリ外）から一切参照されて
+  いないことを確認した上で削除する。削除の場合、他モジュールからの
+  import参照がないことを`grep -rn "subport.fg_level2\|subport/fg_level2"`等で
+  確認してから行うこと
+- B案: 削除せず、README等を追加して「これは非稼働の旧複製であり、
+  正は`C:\Users\shigi\AutoTrade\fg_level2\`である」と明示する
+
+#### 影響（登録時点の記載を再掲）
+実害は薄い（本番運用に影響しない陳腐化コードの残存）が、将来このモジュールを
+誤って参照・変更するリスクがあるため記録する。
+
+#### 実装内容（2026-09-16）
+着手前に`grep -rn "fg_level2" --include="*.py" --include="*.md" --include="*.yml" --include="*.ps1" .`
+を再実行し、参照箇所を確認した。依頼書は`docs/architecture/new_data_platform/
+INPUT_DATA_AS_IS.md`に「外部AutoTrade fg_level2がsrc/subport/fg_level2/
+config.jsonを参照」という記載がある前提だったが、**この前提は誤りだった**。
+実際にこの記載が存在するのは`docs/architecture/new_data_platform/archive/
+OUTPUT_ITEMS_INVENTORY.md`（AS-IS-386、`archive/`配下の過去スナップショット）
+であり、INPUT_DATA_AS_IS.md本体には存在しない。
+
+さらに、AS-IS-386自体の記載内容（外部運用がこのディレクトリのconfig.jsonを
+参照している）についても、外部運用側`C:\Users\shigi\AutoTrade\fg_level2\
+trader.py`の実装を直接確認したところ、`CONFIG_PATH = SCRIPT_DIR / "config.json"`
+（自分自身のディレクトリ内のconfig.jsonのみを読む設計）であり、リポジトリ内の
+このconfig.jsonは一切参照していないことが判明した。両config.jsonの内容を実際に
+比較したところ、キー構成・値とも完全に別物（外部運用側は独自の
+`market_data_path`絶対パス参照を持つフラットなスキーマ、リポジトリ内版は
+`strategy`/`entry`/`exit`/`sizing`等のネスト構造）であることも確認済み。
+AS-IS-386の記載は開発初期時点のものが陳腐化して残っていたものと判断される
+（`archive/`配下のため当該ドキュメント自体は変更せず、事実誤認の記録は本
+エントリと新設READMEにのみ残した）。
+
+以上の再確認結果を踏まえると、**config.json単体の外部参照リスクは実際には
+確認されなかった**が、A案（削除）は本タスクのスコープ（ドキュメント整理）を
+超える不可逆的判断であり、依頼書が想定していなかった分岐（危険性が確認され
+なかった場合）でもあるため見送り、依頼書通りB案（削除せず現状維持）を採用
+した。`src/subport/fg_level2/README.md`を新設し、以下を明記した:
+- このディレクトリは2026-05-03の開発初期の複製であり非稼働
+- 本番運用の正はリポジトリ外`C:\Users\shigi\AutoTrade\fg_level2\`
+- config.jsonが外部運用から参照されているという当初の懸念は2026-09-16の
+  再確認で否定されたこと（根拠含む）
+- 削除自体の要否は本タスクのスコープ外とし、Koichiさんの判断待ちとしたこと
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了
