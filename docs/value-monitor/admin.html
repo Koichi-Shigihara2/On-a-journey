@@ -217,6 +217,7 @@
     <button class="tab" onclick="switchTab('settings', this)">🔧 銘柄設定</button>
     <button class="tab" onclick="switchTab('beta', this)">β 設定</button>
     <button class="tab" onclick="switchTab('fcf', this)">💰 FCF転換率</button>
+    <button class="tab" onclick="switchTab('rpo', this)">🏷️ RPO設定</button>
     <button class="tab" onclick="switchTab('workflows', this)">🚀 実行</button>
     <button class="tab" onclick="switchTab('status', this)">📊 ステータス</button>
     <button class="tab" onclick="switchTab('discover', this)">🔍 Discover設定</button>
@@ -540,6 +541,65 @@
     <h3 class="section-title">セクターデフォルト転換率</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px" id="fcfSectorDefaults"></div>
     <div class="result-msg" id="fcfResult"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Tab: RPO設定                            -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="tab-content" id="tab-rpo">
+    <div class="action-bar">
+      <button class="btn primary" id="saveRpoBtn" onclick="saveRpo()" disabled>💾 保存してコミット</button>
+      <button class="btn" id="resetRpoBtn" onclick="loadRpoTab()" disabled>↺ リセット</button>
+      <button class="btn" id="refreshRpoBtn" onclick="loadRpoTab()" disabled>🔄 再読込</button>
+    </div>
+    <p style="font-size:12px;color:var(--mut);margin-bottom:20px;line-height:1.7">
+      RPO（残存履行義務）評価額プレミアムを付与する銘柄のホワイトリスト設定。<br>
+      ホワイトリスト対象外の銘柄は業種キーワード・RPO/売上比率の自動判定でプレミアム付与要否を判定します。
+    </p>
+    <!-- 新規ティッカー追加フォーム -->
+    <div class="add-form" style="margin-bottom:20px">
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--acc);margin-bottom:12px">＋ ホワイトリストにティッカーを追加</h3>
+      <div class="form-grid" style="grid-template-columns:120px 1fr">
+        <div class="form-group">
+          <label>ティッカー</label>
+          <input type="text" class="form-input" id="newRpoTicker" placeholder="例: GOOGL"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div class="form-group">
+          <label>メモ</label>
+          <input type="text" class="form-input" id="newRpoNote" placeholder="設定理由..." autocomplete="off">
+        </div>
+      </div>
+      <button class="btn primary" onclick="addRpoRow()" style="font-size:11px">＋ 追加</button>
+    </div>
+    <h3 class="section-title">RPOプレミアム ホワイトリスト</h3>
+    <div class="table-wrap">
+      <table id="rpoTable">
+        <thead>
+          <tr>
+            <th>ティッカー</th>
+            <th>メモ</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="rpoTableBody">
+          <tr><td colspan="3" style="text-align:center;color:var(--mut);padding:24px">接続後に表示されます</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="divider"></div>
+    <h3 class="section-title">自動判定パラメータ</h3>
+    <div class="form-grid" style="grid-template-columns:1fr 220px;margin-bottom:12px">
+      <div class="form-group">
+        <label>業種キーワード（カンマ区切り）</label>
+        <input type="text" class="form-input" id="rpoIndustryKeywords" placeholder="例: software, cloud, saas" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>RPO/売上 最小比率（0〜1）</label>
+        <input type="number" class="form-input" id="rpoMinRatio" step="0.01" min="0" max="1">
+      </div>
+    </div>
+    <div class="result-msg" id="rpoResult"></div>
   </div>
 
   <!-- ═══════════════════════════════════════ -->
@@ -886,6 +946,7 @@ const MAT_PATH   = 'config/maturity_config.json';
 const KPI_PATH   = 'src/value/tanuki_valuation/kpi_config.py';
 const DATA_BASE  = 'docs/value-monitor/tanuki_valuation/data';
 const FCF_PATH   = 'config/fcf_conversion_config.json';
+const RPO_PATH   = 'config/rpo_config.json';
 const RF = 0.043;
 const RM_RF = 0.057;
 const DAMODARAN_INDUSTRIES = [
@@ -1037,6 +1098,7 @@ let tickerList = [];
 let cikMap = {}, nameMap = {}, cikRowMap = {};  // cikRowMap: ticker→{cik,name,eps_sector,stonks_silo}
 let betaConfig = null;
 let fcfConfig = null, fcfSha = null;
+let rpoConfig = null, rpoSha = null;
 let segConfig = null, goConfig = null, matConfig = null;
 
 // ── GitHub API ──
@@ -1194,12 +1256,13 @@ async function connect() {
     ['refreshBtn','fetchSecBtn','updateSelectedBtn','lookupCikBtn','addTickerBtn',
      'deleteSelectedBtn','registerTickerBtn','saveBetaBtn','resetBetaBtn','refreshBetaBtn',
      'saveFcfBtn','resetFcfBtn','refreshFcfBtn',
+     'saveRpoBtn','resetRpoBtn','refreshRpoBtn',
      'refreshStatusBtn','saveSettingsBtn','resetSettingsBtn','bulk-run-btn'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.disabled = false;
     });
     document.getElementById('settingsTicker').disabled = false;
-    await Promise.all([loadTickerTab(), loadBetaTab(), loadFcfTab(), loadConfigFiles(), loadDiscoverTab(), loadPortfolioTab(), initBulkUpdate()]);
+    await Promise.all([loadTickerTab(), loadBetaTab(), loadFcfTab(), loadRpoTab(), loadConfigFiles(), loadDiscoverTab(), loadPortfolioTab(), initBulkUpdate()]);
   } catch(e) {
     alert('接続エラー: ' + e.message);
   }
@@ -2073,6 +2136,112 @@ function renderSectorDefaults() {
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--acc);margin-top:4px">${Math.round(rate * 100)}%</div>
     </div>
   `).join('');
+}
+
+// ════════════════════════════════════
+// RPO設定タブ（[[RPO-ADMIN-1]]）
+// ════════════════════════════════════
+async function loadRpoTab() {
+  const tbody = document.getElementById('rpoTableBody');
+  tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:20px"><span class="spinner"></span>読み込み中...</td></tr>`;
+  try {
+    const { content, sha } = await fetchFile(RPO_PATH);
+    rpoConfig = JSON.parse(content); rpoSha = sha;
+    renderRpoTable();
+    document.getElementById('rpoIndustryKeywords').value = (rpoConfig.industry_keywords || []).join(', ');
+    document.getElementById('rpoMinRatio').value = rpoConfig.min_rpo_revenue_ratio ?? '';
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="3" style="color:var(--red);padding:16px">エラー: ${e.message}</td></tr>`;
+  }
+}
+
+function renderRpoTable() {
+  const tbody = document.getElementById('rpoTableBody');
+  const whitelist = rpoConfig.whitelist || {};
+  tbody.innerHTML = '';
+  for (const [ticker, cfg] of Object.entries(whitelist)) {
+    const tr = document.createElement('tr');
+    tr.dataset.ticker = ticker;
+    tr.innerHTML = `
+      <td><strong class="mono">${ticker}</strong></td>
+      <td><input type="text" class="reason-input" id="rponote-${ticker}" value="${(cfg && cfg.note) || ''}" placeholder="メモ..."></td>
+      <td><button class="btn danger" style="padding:4px 10px;font-size:11px" onclick="removeRpoRow('${ticker}')">削除</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  if (Object.keys(whitelist).length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--mut);padding:24px">ホワイトリスト登録なし</td></tr>`;
+  }
+}
+
+function removeRpoRow(ticker) {
+  if (!confirm(`${ticker} をRPOホワイトリストから削除しますか？`)) return;
+  delete rpoConfig.whitelist[ticker]; renderRpoTable();
+}
+
+function addRpoRow() {
+  const ticker = document.getElementById('newRpoTicker')?.value.trim().toUpperCase();
+  const note = document.getElementById('newRpoNote')?.value.trim() || '';
+
+  if (!ticker) { alert('ティッカーを入力してください'); return; }
+  if (!rpoConfig.whitelist) rpoConfig.whitelist = {};
+  if (rpoConfig.whitelist[ticker]) { alert(`${ticker} は既にホワイトリスト登録済みです`); return; }
+
+  rpoConfig.whitelist[ticker] = note ? { note } : {};
+
+  const tbody = document.getElementById('rpoTableBody');
+  // 「ホワイトリスト登録なし」行を消す
+  if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+
+  const tr = document.createElement('tr');
+  tr.dataset.ticker = ticker;
+  tr.innerHTML = `
+    <td><strong class="mono">${ticker}</strong></td>
+    <td><input type="text" class="reason-input" id="rponote-${ticker}" value="${note}" placeholder="メモ..."></td>
+    <td><button class="btn danger" style="padding:4px 10px;font-size:11px" onclick="removeRpoRow('${ticker}')">削除</button></td>
+  `;
+  tbody.appendChild(tr);
+
+  document.getElementById('newRpoTicker').value = '';
+  document.getElementById('newRpoNote').value = '';
+  document.getElementById('newRpoTicker').focus();
+}
+
+async function saveRpo() {
+  const rows = document.querySelectorAll('#rpoTableBody tr[data-ticker]');
+  const newWhitelist = {};
+  for (const row of rows) {
+    const ticker = row.dataset.ticker;
+    const note = document.getElementById(`rponote-${ticker}`)?.value.trim() || '';
+    newWhitelist[ticker] = note ? { note } : {};
+  }
+  rpoConfig.whitelist = newWhitelist;
+
+  const keywordsRaw = document.getElementById('rpoIndustryKeywords').value || '';
+  rpoConfig.industry_keywords = keywordsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+  const ratioRaw = parseFloat(document.getElementById('rpoMinRatio').value);
+  if (!isNaN(ratioRaw)) rpoConfig.min_rpo_revenue_ratio = ratioRaw;
+
+  // [[NAMING-CONVENTIONS.md規則8]]: config/配下の新規手動設定ファイル向け_metaスキーマ
+  if (!rpoConfig._meta) {
+    rpoConfig._meta = {
+      description: 'RPOプレミアムのホワイトリスト管理',
+      encoding: 'UTF-8',
+      schema_version: '1.0'
+    };
+  }
+  rpoConfig._meta.updated_at = new Date().toISOString().split('T')[0];
+
+  const btn = document.getElementById('saveRpoBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>保存中...';
+  try {
+    const { sha } = await fetchFile(RPO_PATH);
+    await commitFile(RPO_PATH, JSON.stringify(rpoConfig, null, 2), 'chore: update rpo_config.json', sha);
+    rpoSha = sha;
+    showResult('rpoResult', 'success', '✓ rpo_config.json を保存しました。');
+  } catch(e) { showResult('rpoResult', 'error', '保存失敗: ' + e.message); }
+  finally { btn.disabled = false; btn.innerHTML = '💾 保存してコミット'; }
 }
 
 // ════════════════════════════════════
