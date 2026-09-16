@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -62.7,
-  "calculation_date": "2026-09-16T16:52:56+09:00",
+  "calculation_date": "2026-09-16T20:30:35+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -265,7 +265,11 @@
           "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 186000000
+      "total_transient_amount": 186000000,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断できるため。"
+      }
     },
     "action": "flagged",
     "note": "FY2025 FCF($8403M)が5年平均($3918M)から114%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"

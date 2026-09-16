@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -22.0,
-  "calculation_date": "2026-09-16T16:53:22+09:00",
+  "calculation_date": "2026-09-16T20:31:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -217,7 +217,11 @@
           "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 4721000.0
+      "total_transient_amount": 4721000.0,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "すべての項目の理由が『一過性の事業再編費用』や『マクロ変動による一時的影響』と明記されており、事業運営上の一時的な問題と判断される。"
+      }
     },
     "action": "excluded",
     "note": "FY2025 FCF($-72.7M)がマイナス。一過性費用合計$5M(リストラ・事業再編関連(リストラ費用 $0M)、リストラ・事業再編関連(リストラ費用 $1M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M))による影響と判断し除外。5年平均($-39M)を採用。"

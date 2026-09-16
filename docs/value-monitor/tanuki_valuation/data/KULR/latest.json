@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 138.8,
-  "calculation_date": "2026-09-16T16:58:53+09:00",
+  "calculation_date": "2026-09-16T20:41:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -197,7 +197,11 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 2230643
+      "total_transient_amount": 2230643,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金であり、事業運営上の構造的悪化ではなく一過性の財務費用と判断される。"
+      }
     },
     "action": "excluded",
     "note": "FY2025 FCF($-46.9M)がマイナス。一過性費用合計$2M(金融関連(貸倒引当金繰入（異常変動分） $1M)、金融関連(貸倒引当金繰入（異常変動分） $1M))による影響と判断し除外。5年平均($-21M)を採用。"

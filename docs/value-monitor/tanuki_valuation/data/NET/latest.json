@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -74.7,
-  "calculation_date": "2026-09-16T16:56:40+09:00",
+  "calculation_date": "2026-09-16T20:36:52+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -217,7 +217,11 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 14989000.0
+      "total_transient_amount": 14989000.0,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、構造的な収益悪化ではなく事業運営上の一過性問題と判断される。"
+      }
     },
     "action": "flagged",
     "note": "FY2025 FCF($348M)が5年平均($206M)から69%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"

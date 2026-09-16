@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -42.9,
-  "calculation_date": "2026-09-16T16:57:17+09:00",
+  "calculation_date": "2026-09-16T20:38:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -190,7 +190,11 @@
           "reason": "一過性の在庫評価損"
         }
       ],
-      "total_transient_amount": 13645000.0
+      "total_transient_amount": 13645000.0,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "理由欄に「一過性」と明記された在庫評価損であり、事業運営上の一時的な要因と判断される。"
+      }
     },
     "action": "excluded",
     "note": "FY2025 FCF($-97.4M)がマイナス。一過性費用合計$14M(在庫・サプライチェーン関連(在庫評価損・減損 $11M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M))による影響と判断し除外。5年平均($-70M)を採用。"

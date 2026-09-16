@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -95.0,
-  "calculation_date": "2026-09-16T16:55:50+09:00",
+  "calculation_date": "2026-09-16T20:35:20+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -217,7 +217,11 @@
           "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 12000000
+      "total_transient_amount": 12000000,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "すべての項目の理由がマクロ変動や一過性の事業再編費用と明記されており、構造的な悪化を示す内容ではない。"
+      }
     },
     "action": "flagged",
     "note": "FY2026 FCF($300M)が5年平均($101M)から196%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
