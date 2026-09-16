@@ -7,7 +7,6 @@
   "upside_percent_rf": 291.7,
   "v0": 71940775992.69624,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 71940775992.69624,
   "alpha": 0.7,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -35.3,
-  "calculation_date": "2026-09-16T08:40:20+09:00",
+  "calculation_date": "2026-09-16T16:58:50+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -282,19 +281,19 @@
     "bear": {
       "growth_rate": 0.018,
       "rice": 0.09,
-      "rice_per_ratio": 0.0115,
+      "rice_per_ratio": 0.0116,
       "rice_adj": 0.261
     },
     "base": {
       "growth_rate": 0.026,
       "rice": 0.129,
-      "rice_per_ratio": 0.0166,
+      "rice_per_ratio": 0.0167,
       "rice_adj": 0.378
     },
     "bull": {
       "growth_rate": 0.032,
       "rice": 0.159,
-      "rice_per_ratio": 0.0205,
+      "rice_per_ratio": 0.0206,
       "rice_adj": 0.465
     }
   },
@@ -350,21 +349,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.226363546248248,
-    "per": 7.783077,
+    "per": 7.741248,
     "per_is_forward": false,
     "per_adjusted": 8.76,
-    "peg": 3.3074,
-    "ps": 1.685261,
-    "ev_ebitda": 10.599,
+    "peg": 3.2914,
+    "ps": 1.6942552,
+    "ev_ebitda": 10.639,
     "ma200": 229.87917152404785,
-    "forward_eps": 9.95118,
+    "forward_eps": 9.93901,
+    "next_quarter_eps": 2.17,
     "analyst_target_median": 265.0,
     "analyst_target_mean": 263.4091,
     "analyst_target_low": 186.0,
     "analyst_target_high": 303.0,
     "analyst_count": 22,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.046493225,
+    "dividend_yield": 0.04667792,
     "payout_ratio": 0.3614,
     "insider_buy_count": 0,
     "insider_sell_count": 7,
@@ -402,7 +402,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 90,
   "score_comment": "割高(-35%超)、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

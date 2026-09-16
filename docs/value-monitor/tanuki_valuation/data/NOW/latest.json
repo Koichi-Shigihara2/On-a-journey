@@ -7,7 +7,6 @@
   "upside_percent_rf": 773.7,
   "v0": 143132232930.1438,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 143132232930.1438,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -3.0,
-  "calculation_date": "2026-09-16T08:39:25+09:00",
+  "calculation_date": "2026-09-16T16:56:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -294,19 +293,19 @@
     "bear": {
       "growth_rate": 0.154,
       "rice": 0.944,
-      "rice_per_ratio": 0.0114,
+      "rice_per_ratio": 0.0106,
       "rice_adj": 8.45
     },
     "base": {
       "growth_rate": 0.22,
       "rice": 1.349,
-      "rice_per_ratio": 0.0163,
+      "rice_per_ratio": 0.0151,
       "rice_adj": 12.072
     },
     "bull": {
       "growth_rate": 0.264,
       "rice": 1.618,
-      "rice_per_ratio": 0.0195,
+      "rice_per_ratio": 0.0181,
       "rice_adj": 14.486
     }
   },
@@ -327,7 +326,7 @@
       2306000000
     ],
     "diluted_shares": 1033862000,
-    "roe_10yr_avg": -0.010608523173643702,
+    "roe_10yr_avg": -0.010608523173643698,
     "roe_years_used": 10,
     "roe_outlier_adj": true,
     "current_price": 141.89999389648438,
@@ -353,7 +352,7 @@
     "moat_fcf_margin_norm": 1.0,
     "pv_high": 34688369618.30916,
     "pv_terminal": 108443863311.83463,
-    "roe_used": -0.010608523173643702,
+    "roe_used": -0.010608523173643698,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -362,14 +361,15 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 82.831245,
+    "per": 89.24528,
     "per_is_forward": false,
     "per_adjusted": 48.43,
-    "peg": 0.9548,
-    "ps": 9.300688,
-    "ev_ebitda": 48.604,
+    "peg": 1.0256,
+    "ps": 9.958255,
+    "ev_ebitda": 51.948,
     "ma200": 117.76006004333496,
     "forward_eps": 5.00551,
+    "next_quarter_eps": 1.03,
     "analyst_target_median": 140.0,
     "analyst_target_mean": 143.84042,
     "analyst_target_low": 72.0,
@@ -415,7 +415,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 65,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

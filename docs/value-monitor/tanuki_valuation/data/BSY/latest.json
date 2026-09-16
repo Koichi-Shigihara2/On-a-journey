@@ -7,7 +7,6 @@
   "upside_percent_rf": 953.1,
   "v0": 12027570483.454643,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 12027570483.454643,
   "alpha": 0.8,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": 11.2,
-  "calculation_date": "2026-09-16T08:37:40+09:00",
+  "calculation_date": "2026-09-16T16:53:25+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -294,19 +293,19 @@
     "bear": {
       "growth_rate": 0.085,
       "rice": 0.354,
-      "rice_per_ratio": 0.0103,
+      "rice_per_ratio": 0.0101,
       "rice_adj": 9.503
     },
     "base": {
       "growth_rate": 0.122,
       "rice": 0.508,
-      "rice_per_ratio": 0.0147,
+      "rice_per_ratio": 0.0145,
       "rice_adj": 13.639
     },
     "bull": {
       "growth_rate": 0.146,
       "rice": 0.607,
-      "rice_per_ratio": 0.0177,
+      "rice_per_ratio": 0.0173,
       "rice_adj": 16.322
     }
   },
@@ -327,7 +326,7 @@
       339203000
     ],
     "diluted_shares": 302092889,
-    "roe_10yr_avg": 0.35497792458687794,
+    "roe_10yr_avg": 0.3549779245868779,
     "roe_years_used": 8,
     "roe_outlier_adj": true,
     "current_price": 31.8799991607666,
@@ -353,7 +352,7 @@
     "moat_fcf_margin_norm": 1.0,
     "pv_high": 3470164147.3914857,
     "pv_terminal": 8557406336.063158,
-    "roe_used": 0.35497792458687794,
+    "roe_used": 0.3549779245868779,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -361,22 +360,23 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 1.490907283264887,
-    "per": 34.41111,
+    "alpha_uncapped": 1.4909072832648869,
+    "per": 35.032967,
     "per_is_forward": false,
     "per_adjusted": 27.53,
-    "peg": 1.1918,
-    "ps": 5.8399434,
-    "ev_ebitda": 22.938,
+    "peg": 1.2195,
+    "ps": 6.0115395,
+    "ev_ebitda": 23.542,
     "ma200": 35.19297491073608,
-    "forward_eps": 1.57199,
+    "forward_eps": 1.57481,
+    "next_quarter_eps": 0.33,
     "analyst_target_median": 43.0,
-    "analyst_target_mean": 44.46667,
-    "analyst_target_low": 40.0,
+    "analyst_target_mean": 44.0,
+    "analyst_target_low": 37.0,
     "analyst_target_high": 59.0,
-    "analyst_count": 15,
+    "analyst_count": 16,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.009032258,
+    "dividend_yield": 0.008832808,
     "payout_ratio": 0.3111,
     "insider_buy_count": 0,
     "insider_sell_count": 0,
@@ -415,7 +415,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 70,
   "score_comment": "割安(11%)傾向、FCF黒字、売上安定成長",
-  "timing_score": 50,
+  "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -533,8 +533,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0063,
-  "forward_earnings_yield": 0.0493,
+  "erp": 0.0064,
+  "forward_earnings_yield": 0.0494,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }

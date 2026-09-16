@@ -7,7 +7,6 @@
   "upside_percent_rf": 712.1,
   "v0": 2379043230.3153586,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 2379043230.3153586,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": 52.9,
-  "calculation_date": "2026-09-16T08:40:55+09:00",
+  "calculation_date": "2026-09-16T17:00:06+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -313,19 +312,19 @@
     "bear": {
       "growth_rate": 0.229,
       "rice": 0.644,
-      "rice_per_ratio": 0.0097,
+      "rice_per_ratio": 0.0094,
       "rice_adj": 9.771
     },
     "base": {
       "growth_rate": 0.328,
       "rice": 0.923,
-      "rice_per_ratio": 0.0139,
+      "rice_per_ratio": 0.0135,
       "rice_adj": 13.995
     },
     "bull": {
       "growth_rate": 0.393,
       "rice": 1.106,
-      "rice_per_ratio": 0.0167,
+      "rice_per_ratio": 0.0162,
       "rice_adj": 16.768
     }
   },
@@ -381,14 +380,15 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 66.18519,
+    "per": 68.26923,
     "per_is_forward": false,
     "per_adjusted": 19.71,
     "peg": null,
-    "ps": 3.0470717,
-    "ev_ebitda": 29.669,
+    "ps": 3.02661,
+    "ev_ebitda": 29.438,
     "ma200": 14.8764999961853,
     "forward_eps": 1.34559,
+    "next_quarter_eps": 0.49,
     "analyst_target_median": 22.0,
     "analyst_target_mean": 21.15385,
     "analyst_target_low": 18.0,
@@ -434,7 +434,7 @@
   "tanuki_score": "BUY",
   "funda_score": 90,
   "score_comment": "割安圏(53%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

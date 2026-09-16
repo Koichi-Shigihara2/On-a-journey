@@ -7,7 +7,6 @@
   "upside_percent_rf": 78.7,
   "v0": 75851790248.28268,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 75851790248.28268,
   "alpha": 0.7,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -64.2,
-  "calculation_date": "2026-09-16T08:40:59+09:00",
+  "calculation_date": "2026-09-16T17:00:15+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -253,7 +252,7 @@
     "divergence_ratio": 0.48,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 175610190.57585305,
+    "ma_addback_detected_but_not_applied": 175610190.57585302,
     "rate_is_sector_default": true
   },
   "software_system_reclassification": {
@@ -331,19 +330,19 @@
     "bear": {
       "growth_rate": 0.075,
       "rice": 7.018,
-      "rice_per_ratio": 0.2554,
+      "rice_per_ratio": 0.28,
       "rice_adj": 15.214
     },
     "base": {
       "growth_rate": 0.107,
       "rice": 10.012,
-      "rice_per_ratio": 0.3644,
+      "rice_per_ratio": 0.3994,
       "rice_adj": 21.705
     },
     "bull": {
       "growth_rate": 0.129,
       "rice": 12.071,
-      "rice_per_ratio": 0.4393,
+      "rice_per_ratio": 0.4816,
       "rice_adj": 26.168
     }
   },
@@ -398,21 +397,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.7566291326584976,
-    "per": 27.476177,
+    "per": 25.065586,
     "per_is_forward": false,
     "per_adjusted": 24.05,
-    "peg": 1.866,
-    "ps": 6.163202,
-    "ev_ebitda": 62.926,
+    "peg": 1.7052,
+    "ps": 5.683805,
+    "ev_ebitda": 57.876,
     "ma200": 896.8396987915039,
     "forward_eps": 25.31023,
+    "next_quarter_eps": 4.18,
     "analyst_target_median": 1250.0,
     "analyst_target_mean": 1237.341,
     "analyst_target_low": 940.0,
     "analyst_target_high": 1450.0,
     "analyst_count": 33,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.001894124,
+    "dividend_yield": 0.0020005486,
     "payout_ratio": 0.0573,
     "insider_buy_count": 0,
     "insider_sell_count": 0,
@@ -451,7 +451,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 65,
   "score_comment": "割高(-64%超)、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

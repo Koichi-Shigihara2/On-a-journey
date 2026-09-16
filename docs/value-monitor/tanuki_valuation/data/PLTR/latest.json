@@ -7,7 +7,6 @@
   "upside_percent_rf": 643.8,
   "v0": 158642389484.22498,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 158642389484.22498,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -28.6,
-  "calculation_date": "2026-09-16T08:39:31+09:00",
+  "calculation_date": "2026-09-16T16:57:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -389,19 +388,19 @@
     "bear": {
       "growth_rate": 0.237,
       "rice": 4.035,
-      "rice_per_ratio": 0.0282,
+      "rice_per_ratio": 0.0274,
       "rice_adj": 41.501
     },
     "base": {
       "growth_rate": 0.338,
       "rice": 5.755,
-      "rice_per_ratio": 0.0403,
+      "rice_per_ratio": 0.039,
       "rice_adj": 59.187
     },
     "bull": {
       "growth_rate": 0.406,
       "rice": 6.913,
-      "rice_per_ratio": 0.0484,
+      "rice_per_ratio": 0.0469,
       "rice_adj": 71.094
     }
   },
@@ -457,16 +456,17 @@
     "rpo_pv": 210269348.18856528,
     "growth_option_pv": 1418519802.3163157,
     "alpha_uncapped": 0.0,
-    "per": 142.93163,
+    "per": 147.48718,
     "per_is_forward": false,
     "per_adjusted": 115.53,
-    "peg": 1.6097,
-    "ps": 65.28059,
-    "ev_ebitda": 147.514,
+    "peg": 1.6682,
+    "ps": 67.36124,
+    "ev_ebitda": 152.325,
     "ma200": 151.62012477874757,
-    "forward_eps": 2.32597,
+    "forward_eps": 2.32299,
+    "next_quarter_eps": 0.41,
     "analyst_target_median": 205.1,
-    "analyst_target_mean": 195.72963,
+    "analyst_target_mean": 196.84074,
     "analyst_target_low": 80.0,
     "analyst_target_high": 255.0,
     "analyst_count": 27,
@@ -509,7 +509,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 100,
   "score_comment": "割高(-29%超)、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

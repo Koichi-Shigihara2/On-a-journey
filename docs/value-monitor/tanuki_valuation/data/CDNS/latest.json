@@ -7,7 +7,6 @@
   "upside_percent_rf": 334.8,
   "v0": 32906448603.833794,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 32906448603.833794,
   "alpha": 0.8,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -51.8,
-  "calculation_date": "2026-09-16T08:40:04+09:00",
+  "calculation_date": "2026-09-16T16:58:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +214,7 @@
     "note": "生FCF安定(CV=0.14<0.3)かつ外れ値未検出のため推定を適用せず生FCFを採用",
     "divergence_ratio": 0.0,
     "divergence_warning": "",
-    "ma_addback_excluded": 24864279.498942316,
+    "ma_addback_excluded": 24864279.49894232,
     "ma_addback_detected_but_not_applied": 3874644.6697797403,
     "rate_is_sector_default": false
   },
@@ -294,19 +293,19 @@
     "bear": {
       "growth_rate": 0.102,
       "rice": 1.467,
-      "rice_per_ratio": 0.0256,
+      "rice_per_ratio": 0.0269,
       "rice_adj": 9.962
     },
     "base": {
       "growth_rate": 0.146,
       "rice": 2.1,
-      "rice_per_ratio": 0.0366,
+      "rice_per_ratio": 0.0385,
       "rice_adj": 14.26
     },
     "bull": {
       "growth_rate": 0.175,
       "rice": 2.517,
-      "rice_per_ratio": 0.0438,
+      "rice_per_ratio": 0.0461,
       "rice_adj": 17.092
     }
   },
@@ -362,14 +361,15 @@
     "rpo_pv": 169794369.57852727,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.1563197480099754,
-    "per": 57.41468,
+    "per": 54.573704,
     "per_is_forward": false,
     "per_adjusted": 47.41,
-    "peg": 2.1855,
-    "ps": 13.651184,
-    "ev_ebitda": 37.483,
+    "peg": 2.1318,
+    "ps": 12.944061,
+    "ev_ebitda": 35.514,
     "ma200": 326.50592514038084,
     "forward_eps": 9.54542,
+    "next_quarter_eps": 2.05,
     "analyst_target_median": 402.5,
     "analyst_target_mean": 402.11606,
     "analyst_target_low": 300.0,
@@ -415,7 +415,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 80,
   "score_comment": "割高(-52%超)、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

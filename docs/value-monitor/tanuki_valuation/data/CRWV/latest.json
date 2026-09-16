@@ -7,7 +7,6 @@
   "upside_percent_rf": 3639.8,
   "v0": 102940592878.4464,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 102940592878.4464,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": 235.9,
-  "calculation_date": "2026-09-16T08:38:19+09:00",
+  "calculation_date": "2026-09-16T16:54:26+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -264,7 +263,7 @@
     "divergence_ratio": 0.0,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 22580656.6015743,
+    "ma_addback_detected_but_not_applied": 22580656.601574305,
     "rate_is_sector_default": false
   },
   "software_system_reclassification": {
@@ -389,14 +388,15 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": -45.668682,
+    "per": -41.52725,
     "per_is_forward": false,
     "per_adjusted": null,
     "peg": null,
-    "ps": 6.466566,
-    "ev_ebitda": 25.114,
+    "ps": 5.88015,
+    "ev_ebitda": 23.939,
     "ma200": 91.97687503814697,
     "forward_eps": -1.9486,
+    "next_quarter_eps": -1.56,
     "analyst_target_median": 150.0,
     "analyst_target_mean": 144.45714,
     "analyst_target_low": 39.0,
@@ -441,7 +441,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 45,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "割安圏(236%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",

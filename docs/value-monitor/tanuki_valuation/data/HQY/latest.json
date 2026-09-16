@@ -7,7 +7,6 @@
   "upside_percent_rf": 500.0,
   "v0": 20538066016.205315,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 20538066016.205315,
   "alpha": 0.24141797720062722,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -2.7,
-  "calculation_date": "2026-09-16T08:40:34+09:00",
+  "calculation_date": "2026-09-16T16:59:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -210,7 +209,7 @@
     "divergence_ratio": 0.8,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 121615616.9389561,
+    "ma_addback_detected_but_not_applied": 121615616.93895608,
     "rate_is_sector_default": true
   },
   "software_system_reclassification": {
@@ -288,13 +287,13 @@
     "bear": {
       "growth_rate": 0.106,
       "rice": 0.713,
-      "rice_per_ratio": 0.0205,
+      "rice_per_ratio": 0.0206,
       "rice_adj": 15.565
     },
     "base": {
       "growth_rate": 0.151,
       "rice": 1.016,
-      "rice_per_ratio": 0.0292,
+      "rice_per_ratio": 0.0293,
       "rice_adj": 22.172
     },
     "bull": {
@@ -356,14 +355,15 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.24141797720062722,
-    "per": 34.750904,
+    "per": 34.715828,
     "per_is_forward": false,
     "per_adjusted": 19.66,
-    "peg": 1.4006,
-    "ps": 5.845415,
-    "ev_ebitda": 16.895,
+    "peg": 1.398,
+    "ps": 5.8605967,
+    "ev_ebitda": 16.935,
     "ma200": 89.14054981231688,
     "forward_eps": 5.50011,
+    "next_quarter_eps": 1.15,
     "analyst_target_median": 120.0,
     "analyst_target_mean": 119.0,
     "analyst_target_low": 105.0,
@@ -409,7 +409,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 70,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

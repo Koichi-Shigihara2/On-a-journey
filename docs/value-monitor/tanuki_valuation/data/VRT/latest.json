@@ -7,7 +7,6 @@
   "upside_percent_rf": 121.0,
   "v0": 16871127555.503515,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 16871127555.503515,
   "alpha": 0.7,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -62.1,
-  "calculation_date": "2026-09-16T08:39:55+09:00",
+  "calculation_date": "2026-09-16T16:57:55+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -313,19 +312,19 @@
     "bear": {
       "growth_rate": 0.133,
       "rice": 45.298,
-      "rice_per_ratio": 0.7789,
+      "rice_per_ratio": 0.8418,
       "rice_adj": 45.298
     },
     "base": {
       "growth_rate": 0.19,
       "rice": 64.712,
-      "rice_per_ratio": 1.1127,
+      "rice_per_ratio": 1.2026,
       "rice_adj": 64.712
     },
     "bull": {
       "growth_rate": 0.228,
       "rice": 77.654,
-      "rice_per_ratio": 1.3352,
+      "rice_per_ratio": 1.4431,
       "rice_adj": 77.654
     }
   },
@@ -381,21 +380,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.8469074352099573,
-    "per": 58.15837,
+    "per": 53.80963,
     "per_is_forward": false,
     "per_adjusted": 47.47,
-    "peg": 0.8668,
-    "ps": 8.62095,
-    "ev_ebitda": 37.029,
+    "peg": 0.8004,
+    "ps": 7.8680506,
+    "ev_ebitda": 33.802,
     "ma200": 260.09025024414063,
     "forward_eps": 9.12236,
+    "next_quarter_eps": 1.83,
     "analyst_target_median": 345.0,
     "analyst_target_mean": 338.15384,
     "analyst_target_low": 236.0,
     "analyst_target_high": 427.0,
     "analyst_count": 26,
     "analyst_rec_key": "strong_buy",
-    "dividend_yield": 0.00070527545,
+    "dividend_yield": 0.00073718355,
     "payout_ratio": 0.0509,
     "insider_buy_count": 0,
     "insider_sell_count": 8,
@@ -433,7 +433,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 100,
   "score_comment": "割高(-62%超)、FCF黒字、売上成長加速",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,

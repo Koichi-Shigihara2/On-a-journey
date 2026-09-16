@@ -1,5 +1,5 @@
 ONDS INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-16T08:39:30+09:00
+Generated: 2026-09-16T16:56:58+09:00
 Price: $7.24
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,10 +8,10 @@ Classification: WATCH
 Classification_Pre_Rounding: TRIM
 Funda_Score: 75/100
 Timing_Score (components):
-  Deviation_Rate: -60.7%
+  Deviation_Rate: -61.4%
   MA200_Deviation: -23.9%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $19 median ($13-$25) | 9 analysts | vs IV: +567.9%
+  Analyst_Consensus: Strong Buy | Target: $19 median ($13-$25) | 9 analysts | vs IV: +580.5%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -34,7 +34,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×N/A (OCF赤字)
 Key_Metric_Y: RICE = -5.556
-Deviation_Rate: -60.7%
+Deviation_Rate: -61.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,21 +59,21 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $7.24
-Intrinsic_Value_BASE: $2.84
-Deviation_BASE: -60.8%
+Intrinsic_Value_BASE: $2.79
+Deviation_BASE: -61.5%
 Scenarios:
-BEAR: Growth=21.0%, IV=$2.74, Deviation=-62.2%
-BASE: Growth=30.0%, IV=$2.84, Deviation=-60.8%
-BULL: Growth=36.0%, IV=$2.92, Deviation=-59.7%
-Return_Outlook(BASE): 1年後: $3.69 (-49.0%) / 3年後: $6.24 (-13.8%) / 5年後: $8.35 (+15.3%)
-  5yr_Annualized_Return: +2.9%/yr
+BEAR: Growth=21.0%, IV=$2.69, Deviation=-62.8%
+BASE: Growth=30.0%, IV=$2.79, Deviation=-61.5%
+BULL: Growth=36.0%, IV=$2.87, Deviation=-60.4%
+Return_Outlook(BASE): 1年後: $3.63 (-49.9%) / 3年後: $6.13 (-15.3%) / 5年後: $8.21 (+13.4%)
+  5yr_Annualized_Return: +2.5%/yr
 Growth_Rate_Rec: 55.9% (recommended)
 TTM_YoY_Growth: 605.3%
 (DCF Base vs TTM actual: -575.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $2.60 (Deviation: -64.2%)
-  参考②Rf理論上限_IV: $4.86 (Deviation: -32.9%)
+  参考①β込みWACC_IV: $2.55 (Deviation: -64.8%)
+  参考②Rf理論上限_IV: $4.77 (Deviation: -34.1%)
 Terminal_Growth_Rate: 3.0%
 Beta: 2.5
 Valuation_Gap_Analysis:
@@ -82,7 +82,7 @@ Valuation_Gap_Analysis:
   Gap:              -61% (市場が将来成長を先取り)
   Implied_FCF_2030: $0.19B (現在株価を正当化するために必要な5年後FCF)
   Current_FCF:      $0.01B
-  Required_Growth:  93%/yr (現在FCFから必要成長率を逆算)
+  Required_Growth:  94%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $7.05M (4yr平均 + R&D補正) [実績avg: $-70.6M]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
@@ -95,13 +95,13 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $1.63B (= v0 + RPO_PV + GO_PV + Net_Cash $1.38B)
-Shares_Used: 571.5M (source: yf_implied)
-→ Intrinsic_Value: $2.84 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 582.3M (source: yf_implied)
+→ Intrinsic_Value: $2.79 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $2.75  $2.92  $3.17
-  10.0%       $2.70  $2.84  $3.05
-  11.0%       $2.66  $2.79  $2.96
+  9.0%       $2.70  $2.87  $3.11
+  10.0%       $2.65  $2.79  $2.99
+  11.0%       $2.61  $2.74  $2.90
 Financial_Health:
   Net_Debt: $-1.38B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.66B  ST_Invest: $0.73B
@@ -262,7 +262,7 @@ PER_Comparison:
   Adjusted_EPS_PER: N/A
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-12
-  Next_Quarter_EPS: N/A (no analyst estimates in data)
+  Next_Quarter_EPS: $-0.09 (yfinance analyst estimate)
   Next_FY_EPS: $-0.02 (yfinance forward EPS)
 Definition:
 
@@ -285,12 +285,12 @@ Phase_History (recent 6 months):
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: -361.5x
+  PER: -362.0x
   PEG: N/A
-  PS:  23.7x
+  PS:  24.2x
   EV_EBITDA: N/A
   PS_Signal: 高水準（売上対比で高い期待が織り込み済み）
-  PS_AnomalyWarn: yfinance PS(23.7x) 自社計算(81.6x) 乖離0.3倍 → ステール値の可能性
+  PS_AnomalyWarn: yfinance PS(24.2x) 自社計算(83.1x) 乖離0.3倍 → ステール値の可能性
 Definition:
 
 HypeCore measures market sentiment and hype lifecycle stage
@@ -332,9 +332,9 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: yes
-Short_Interest: 40.6%
+Short_Interest: 39.9%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $19 median ($13-$25) | 9 analysts | vs IV: +567.9%
+Analyst_Consensus: Strong Buy | Target: $19 median ($13-$25) | 9 analysts | vs IV: +580.5%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: 162.1
 Revenue_Growth_YoY: 605.3%

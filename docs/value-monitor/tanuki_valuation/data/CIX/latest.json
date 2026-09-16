@@ -7,7 +7,6 @@
   "upside_percent_rf": 322.6,
   "v0": 387815952.52335775,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 387815952.52335775,
   "alpha": 0.4442505818745397,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -13.9,
-  "calculation_date": "2026-09-16T08:37:59+09:00",
+  "calculation_date": "2026-09-16T16:53:44+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -288,19 +287,19 @@
     "bear": {
       "growth_rate": 0.041,
       "rice": -0.549,
-      "rice_per_ratio": -0.0274,
+      "rice_per_ratio": -0.0255,
       "rice_adj": 0.0
     },
     "base": {
       "growth_rate": 0.059,
       "rice": -0.791,
-      "rice_per_ratio": -0.0395,
+      "rice_per_ratio": -0.0367,
       "rice_adj": 0.0
     },
     "bull": {
       "growth_rate": 0.071,
       "rice": -0.951,
-      "rice_per_ratio": -0.0475,
+      "rice_per_ratio": -0.0441,
       "rice_adj": 0.0
     }
   },
@@ -356,21 +355,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.4442505818745397,
-    "per": 20.028091,
+    "per": 21.567415,
     "per_is_forward": false,
     "per_adjusted": 21.5,
     "peg": null,
-    "ps": 2.717678,
-    "ev_ebitda": 12.991,
+    "ps": 2.923328,
+    "ev_ebitda": 14.122,
     "ma200": 25.34645007133484,
-    "forward_eps": null,
+    "forward_eps": 1.61,
+    "next_quarter_eps": null,
     "analyst_target_median": null,
     "analyst_target_mean": null,
     "analyst_target_low": null,
     "analyst_target_high": null,
     "analyst_count": null,
     "analyst_rec_key": "",
-    "dividend_yield": 0.03372681,
+    "dividend_yield": 0.031454783,
     "payout_ratio": 0.6742,
     "insider_buy_count": 0,
     "insider_sell_count": 8,
@@ -408,7 +408,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 80,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上安定成長",
-  "timing_score": 30,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -528,6 +528,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
+  "erp": -0.0011,
+  "forward_earnings_yield": 0.0419,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

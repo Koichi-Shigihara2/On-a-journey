@@ -7,7 +7,6 @@
   "upside_percent_rf": 199.8,
   "v0": 618041599690.3147,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 618041599690.3147,
   "alpha": 0.7,
   "alpha_was_capped": true,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": -53.4,
-  "calculation_date": "2026-09-16T08:40:40+09:00",
+  "calculation_date": "2026-09-16T16:59:34+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -300,13 +299,13 @@
     "base": {
       "growth_rate": 0.018,
       "rice": 0.274,
-      "rice_per_ratio": 0.0038,
+      "rice_per_ratio": 0.0037,
       "rice_adj": 3.258
     },
     "bull": {
       "growth_rate": 0.021,
       "rice": 0.32,
-      "rice_per_ratio": 0.0044,
+      "rice_per_ratio": 0.0043,
       "rice_adj": 3.801
     }
   },
@@ -362,27 +361,28 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 2.7944951626341856,
-    "per": 72.42817,
+    "per": 74.09578,
     "per_is_forward": false,
     "per_adjusted": 29.36,
-    "peg": 0.526,
-    "ps": 7.0568323,
-    "ev_ebitda": 16.862,
+    "peg": 0.5355,
+    "ps": 7.219311,
+    "ev_ebitda": 17.202,
     "ma200": 229.05354949951172,
-    "forward_eps": 16.27952,
-    "analyst_target_median": 282.0,
-    "analyst_target_mean": 277.31033,
+    "forward_eps": 16.26754,
+    "next_quarter_eps": 3.84,
+    "analyst_target_median": 283.5,
+    "analyst_target_mean": 278.60715,
     "analyst_target_low": 200.0,
     "analyst_target_high": 328.0,
-    "analyst_count": 29,
+    "analyst_count": 28,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.026784314,
+    "dividend_yield": 0.026091607,
     "payout_ratio": 1.9039999,
     "insider_buy_count": 0,
     "insider_sell_count": 1,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-08-18",
-    "analyst_vs_iv": 130.2,
+    "analyst_vs_iv": 131.4,
     "max_eps": 0.5404,
     "max_eps_per": 486.8,
     "max_eps_reliability": "MED"
@@ -415,7 +415,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 80,
   "score_comment": "割高(-53%超)、FCF黒字、売上安定成長",
-  "timing_score": 40,
+  "timing_score": 55,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -519,8 +519,8 @@
     "fcf_margin_bear_multiplier": 0.8609,
     "fcf_margin_note": "FCFマージン悪化(33.8%→29.1%) BEAR補正係数=0.861"
   },
-  "erp": 0.0189,
-  "forward_earnings_yield": 0.0619,
+  "erp": 0.0188,
+  "forward_earnings_yield": 0.0618,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

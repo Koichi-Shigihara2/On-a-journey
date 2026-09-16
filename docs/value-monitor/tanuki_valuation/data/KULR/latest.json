@@ -7,7 +7,6 @@
   "upside_percent_rf": 1173.9,
   "v0": 112743463.96922225,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "v0_adjusted": 112743463.96922225,
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
@@ -45,7 +44,7 @@
     }
   },
   "upside_percent": 138.8,
-  "calculation_date": "2026-09-16T08:40:22+09:00",
+  "calculation_date": "2026-09-16T16:58:53+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -346,10 +345,11 @@
     "per_is_forward": false,
     "per_adjusted": null,
     "peg": null,
-    "ps": 6.8431673,
+    "ps": 6.6131444,
     "ev_ebitda": null,
     "ma200": 3.124700001478195,
     "forward_eps": 0.0,
+    "next_quarter_eps": -0.08,
     "analyst_target_median": 7.0,
     "analyst_target_mean": 7.0,
     "analyst_target_low": 7.0,
@@ -395,7 +395,7 @@
   "tanuki_score": "PASS",
   "funda_score": 20,
   "score_comment": "割安圏(139%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -497,7 +497,7 @@
     "growth_model_reason": "CAGR_max=91.7%と業界平均8.5%の中間値50.1%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "実体維持・期待崩壊中",
+    "hype_substage_label": "実体軟化・期待崩壊中",
     "signals": [
       "過去実績(3yr:59.4% / 5yr:91.7%)と整合 ✅"
     ],
