@@ -12,14 +12,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-16時点）**: `BACKLOG.md`アクティブ件数
-**49件**（`[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`クローズで48件、
-新規`[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`登録で49件に）。
+**現在の到達点（2026-09-16③時点）**: `BACKLOG.md`アクティブ件数
+**33件**（2026-09-16③の件数削減棚卸しで49件→33件。実害ゼロ確認済み7件を
+クローズ・STALE-SUBPORT-CLEANUP-1を実装完了でクローズ・14件を3件の統合
+カタログへ集約。詳細は下記の2026-09-16③ブロック参照）。
 BACKLOG.md/BACKLOG_DONE.md間のID重複は意図的な1件
 （`[[TANUKI-VALUATION-MISC-GAPS-1]]`、部分完了エントリの意図的な
 分割・`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`と同型パターン）を除き
 **0件**（機械確認済み、`### ✅ [`パターンがBACKLOG.md側に残存していない
-ことも確認済み）。詳細は下記の2026-09-16②ブロック参照。
+ことも確認済み）。
 
 **構造的ずれの是正完了（2026-09-13発見、2026-09-16②で解消）**:
 `## 優先度：高`セクション見出し配下に、個別`**優先度:**`フィールドが
@@ -51,6 +52,90 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    必ず`git log`で実際のハッシュを再確認すること（2026-09-16②で
    BACKLOG.md/BACKLOG_DONE.md計11箇所の転記漏れが発生し、追加の
    2コミットで是正する事態になった教訓）。
+
+---
+
+最終更新: 2026-09-16③（**セッション終了時ブラッシュアップ・BACKLOG.md
+件数削減棚卸し指示書サマリー**。全てpush済み）:
+
+チャット側で実施した棚卸し（`grep`によるBACKLOG.md全49件の実コード照合）に
+基づき、機能変更を伴わないBACKLOG.md/BACKLOG_DONE.mdの整理のみを実施した
+（3コミットに分割、各コミット後`git log -1 --format=%B`で内容一致を確認済み）。
+
+1. **クローズ7件**（コミット`fb6dbd7118`）: 実害ゼロ・対応不要が既に確定
+   済みと確認できた7件（`[[TANUKI-VALUATION-INIT-RELATIVE-IMPORT-
+   BROKEN-1]]`・`[[FETCHER-PY-BS-FIELDS-DEAD-KEYS-1]]`・`[[SP500-GSPC-
+   MULTI-FETCH-1]]`・`[[DEFICIT-SCORE-CEILING-95-1]]`・
+   `[[STOCKHTML-LAYER3-PUBLISH-PIPELINE-MISSING-1]]`・
+   `[[LAYER3-FETCHER-SELECTION-PHILOSOPHY-MISMATCH-1]]`・
+   `[[SEC-XBRL-MISSING-START-ENTRY-1]]`）を`BACKLOG_DONE.md`
+   「2026-09-16②（完了）」へ全文移設。`[[TANUKI-VALUATION-INIT-
+   RELATIVE-IMPORT-BROKEN-1]]`については`SYSTEM_MAP.md`に「既知の
+   技術的負債」節を新設し一文のみ残した。
+
+2. **`[[STALE-SUBPORT-CLEANUP-1]]`実装完了・クローズ**（コミット
+   `609b587728`）: **依頼書の前提が誤りだったことが判明した**——依頼書は
+   「`INPUT_DATA_AS_IS.md`に外部AutoTrade fg_level2が`src/subport/
+   fg_level2/config.json`を参照している旨の記載がある」としていたが、
+   実際にこの記載が存在するのは`docs/architecture/new_data_platform/
+   archive/OUTPUT_ITEMS_INVENTORY.md`（AS-IS-386、`archive/`配下の過去
+   スナップショット）であり、`INPUT_DATA_AS_IS.md`本体には存在しない。
+   さらにAS-IS-386自体の内容も、外部運用側`C:\Users\shigi\AutoTrade\
+   fg_level2\trader.py`の実装を直接確認したところ`CONFIG_PATH =
+   SCRIPT_DIR / "config.json"`（自分のディレクトリ内のconfig.jsonのみを
+   読む設計）であり、リポジトリ内のconfig.jsonは実際には参照していない
+   ことが判明した（両ファイルの内容比較でもスキーマが完全に別物）。
+   config.json単体の外部参照リスクは確認されなかったが、A案（削除）は
+   本タスクのスコープを超える不可逆的判断のため見送り、依頼書通りB案
+   （削除せず現状維持）を採用。`src/subport/fg_level2/README.md`を新設
+   し、上記の再確認結果と削除要否はKoichiさんの判断待ちである旨を明記
+   した上でクローズ。
+
+3. **カタログ統合14件**（コミット`20d20c3493`）: 新規カタログ2件を新設し
+   既存`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`へ2件を追加吸収。
+   - `[[MINOR-DESIGN-DECISION-PENDING-CATALOG-1]]`（新設・優先度中）:
+     `NAMING-CONVENTIONS-APPLY-1`・`FIVE-CATEGORY-RECLASSIFY-1`・
+     `EPS-AI-ANALYSIS-LATEST-ONLY-1`・`SEC-SUBMISSIONS-DUAL-FETCH-1`・
+     `TAILKPI-FIELD-VALIDATION-GAP-1`の5件を①〜⑤として統合
+   - `[[UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1]]`（新設・優先度低）:
+     `PARSER-MERGED-TAG-MIXING-RISK-1`・`SPLIT-REALTIME-GAP-REVERSE-1`・
+     `DATA-JUMP-CHECK-NETINCOME-SBC-1`の3件を①〜③として統合
+   - `[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`へ⑦⑧として追加吸収:
+     `SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1`・
+     `TANUKI-ROE-2`（後者はDamodaran業種平均データソース確保が残り
+     2項目の着手条件である旨を統合時に明記）
+
+**検証ゲート**: 3コミットいずれもドキュメント変更＋README新規追加のみの
+ため、ゲート結果は無変化と確認（pytest 1277件全パス・`audit.py` exit 0・
+`report_consistency_check.py --fail-on-ng` NG=0/WARN=121件、いずれも
+本セッション開始前と同一）。
+
+**次セッションの着手候補**:
+- `[[STALE-SUBPORT-CLEANUP-1]]`で判明した「config.json単体の外部参照
+  リスクは実際には確認されなかった」ことを踏まえ、`src/subport/
+  fg_level2/`自体の削除要否（A案）をKoichiさんの判断で決めること
+  （現状はB案・README新設で現状維持のまま）
+- `[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`（trailing_pe側の完全対応、
+  未実装）
+- `[[TANUKI-VALUATION-MISC-GAPS-1]]`③⑤（net_debt符号エイリアス・
+  Runway cash算出経路統一、いずれもKoichiさんの設計判断待ち）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本日クローズした8件
+  （上記1.の7件＋`STALE-SUBPORT-CLEANUP-1`）全件が`### ✅ [ID]`パターン
+  で`BACKLOG_DONE.md`に存在し、`BACKLOG.md`側にアクティブヘッダーとして
+  残存していないことを`grep -n "^### ✅ \[" BACKLOG.md`で機械確認（該当
+  0件）。カタログ統合対象14件も全てBACKLOG.md側にヘッダーとして残存
+  していないことを個別確認済み
+- ID重複チェック: `BACKLOG.md`・`BACKLOG_DONE.md`間で重複するのは意図的
+  な1件（`[[TANUKI-VALUATION-MISC-GAPS-1]]`）のみ。`BACKLOG.md`内部での
+  ヘッダーID重複も0件
+- git status: クリーン（未コミット変更・未追跡ファイルなし）
+- BACKLOG.mdアクティブ件数: 機械カウントで**33件**（前回2026-09-16②
+  時点の49件から、本日のクローズ8件・カタログ統合による純減12件で
+  16件減）
+
+詳細はBACKLOG_DONE.md「2026-09-16②（完了）」節参照。
 
 ---
 

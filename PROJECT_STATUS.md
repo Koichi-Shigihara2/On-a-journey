@@ -654,6 +654,21 @@
   DONE.md「2026-09-16（完了）」節・`CLAUDE_CODE_START.md`該当ブロック
   参照。
 
+- **2026-09-16③**（BACKLOG.md件数削減棚卸し、3件の指示書を順次実施、
+  全てpush済み）: 機能変更を伴わないBACKLOG.md/BACKLOG_DONE.mdの整理
+  のみを実施（コミット`fb6dbd7118`・`609b587728`・`20d20c3493`）。
+  実害ゼロ確認済み7件をクローズ・`[[STALE-SUBPORT-CLEANUP-1]]`を
+  README新設（B案）で実装完了・14件を新規カタログ2件＋既存
+  `[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`吸収2件の計3件へ統合。
+  `[[STALE-SUBPORT-CLEANUP-1]]`対応中、依頼書の前提（外部AutoTrade
+  fg_level2がリポジトリ内config.jsonを参照している旨の記載が
+  `INPUT_DATA_AS_IS.md`にある）が実際には誤り（記載は`archive/
+  OUTPUT_ITEMS_INVENTORY.md`側かつ内容自体も外部運用のtrader.py実装で
+  否定された）と判明し、正確な内容へ訂正の上対応した。BACKLOG.md
+  アクティブ件数は49件→33件。新DB構築プロジェクトのコード・データには
+  変更なし。詳細はBACKLOG_DONE.md「2026-09-16②（完了）」節・
+  `CLAUDE_CODE_START.md`該当ブロック参照。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。
