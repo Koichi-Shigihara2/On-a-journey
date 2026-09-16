@@ -1067,6 +1067,169 @@ tokens消費量自体の大きさ（直近7日間684,697トークン中407.8K＝
 
 ---
 
+### ✅ [TANUKI-FIN-2] 金融機関銘柄（JPM・GS・SOFI）へのエクイティDCF並行評価対応 — SOFI向けFCFEエクイティDCF（参考表示専用）実装完了
+**優先度:** 低（設計相談は完了・実装未着手） → 完了
+**分類:** 設計課題 / TANUKI VALUATION
+**登録日:** 2026-07-06
+**完了日:** 2026-09-16
+**統合について（2026-09-05）**: TANUKI-FIN-1（金融機関向け
+バリュエーション対応・DDM等、より一般的な構想）を本エントリへ統合した。
+本エントリ（JPM/GS/SOFI向けエクイティDCF）の方が設計相談完了・具体化
+された実行可能な設計のため主エントリとして残し、TANUKI-FIN-1の内容は
+要約せず全文そのまま下記「背景（統合元TANUKI-FIN-1より）」に保持する。
+TANUKI-FIN-1はBACKLOG.mdから削除済み。
+
+#### 背景（統合元TANUKI-FIN-1より、登録時点の記載を再掲）
+以下は独立BACKLOGエントリだった`[TANUKI-FIN-1] 金融機関向け
+バリュエーション対応（DDM等）`の全文をそのまま転記したもの。
+
+**優先度:** 中
+**分類:** 設計課題 / TANUKI VALUATION
+
+##### 背景
+金融機関（銀行・保険・証券等）はFCFの概念がなじまず、TANUKI VALUATIONへの
+登録が困難。一方で保有銘柄・ウォッチ銘柄に金融株が含まれるケースがある。
+
+##### 対応方針（案）
+- DDM（配当割引モデル）を新たなバリュエーション手法として導入
+- TANUKI VALUATIONと横並びで主要データ（PER/PBR/ROE/配当利回り等）を保持できる
+  金融株専用セクションまたは別フレームワークの設計
+- 無理にFCFベースDCFに当てはめることを廃止
+
+#### 背景（登録時点の記載を再掲）
+金融機関（JPM・GS・SOFI）は負債が事業構造そのものの一部であるため、通常の
+FCFF（企業DCF）が適合しにくい。業界標準としてFCFEベースのエクイティDCFが
+適合する。Vは決済ネットワーク型で通常のFCFF DCFが適合するため対象外。
+
+**SOFI追加の経緯（2026-07-19）**: SOFI-DATA-1（銀行免許取得後にLongTermDebt
+系タグの申告を停止し合算タグへ移行した問題のLTDebt恒久修正）、および
+[[FY52WEEK-BS-STI-OVERRIDE-DESIGN-1]]のSOFI個別調査（流動/非流動を区分
+しない銀行持株会社特有の非分類BS構造であることが判明）を通じて、SOFIも
+JPM・GS同様「負債・投資有価証券が事業構造そのものの一部」という金融機関
+特有の性質を持つことが確認された。これを契機に、対象銘柄にSOFIを追加する
+意向が確定した。
+
+#### 対応方針（登録時点の記載を再掲）
+- 案（A）: 既存のFCFF（企業DCF）は維持したまま、対象銘柄（JPM・GS・SOFI）
+  について追加でFCFE（エクイティDCF）評価を並行実施し、latest.json/
+  report.txt上で両方式の結果を比較できるようにする機能拡張とする
+  （既存FCFFを置き換える「切り替え」ではなく「並行評価・比較」）
+- 判定方式: SIC code等による自動判定ではなく、対象ティッカー
+  （JPM・GS・SOFI）を設定ファイルに明記する方式を採用（対象が少数のため
+  過剰実装を避ける）
+- 今後対象銘柄が増える場合、自動判定ロジックへの切り替えを再検討する
+
+#### 関連（登録時点の記載を再掲）
+- 元TANUKI-FIN-1（金融機関向けバリュエーション対応・DDM等、上記
+  「背景（統合元TANUKI-FIN-1より）」参照）とは対象アプローチが異なる
+  （DDMではなくFCFEエクイティDCF、対象は少数ティッカーのハードコード方式）。
+  着手時にどちらの方式を採用するか、あるいは併存させるかを判断する。
+- [[FY52WEEK-BS-STI-OVERRIDE-DESIGN-1]]（SOFIのshort_term_investments
+  override設計）は、既存FCFFのNet Debt計算に引き続き使われるフィールドの
+  ため、本エントリの着手を待たず独立に進めてよい（FCFE並行評価の実装
+  時期に関わらず、既存FCFFの正確性向上に直接寄与するため）。
+  **2026-07-19実装完了（`sti_concept=OtherInvestments`、BACKLOG_DONE.md
+  参照）。既存FCFFのNet Debt計算にSOFIの正しいshort_term_investments値が
+  反映される状態になった**。
+
+#### 確定した設計方針（2026-09-16着手時）
+JPM・GSは`config/cik_lookup.csv`に未登録のため今回のスコープ外（別タスク）。
+DDM方式は不採用（SOFIが無配のため原理的に適用不可、
+`components.dividend_yield`=0.0で確認済み）。FCFE計算式・Cost of Equity
+算出ロジックは銘柄非依存の共通コードとして1つだけ実装し、対象ティッカーは
+設定ファイルでの「どの銘柄をこの共通ロジックに通すか」というスイッチとして
+のみ機能させる方針とした。
+
+#### STEP1投資調査
+SOFIの実データ（`common/sec_data/data/SOFI/annual_2025.json`）を確認した
+ところ、`operating_cash_flow`が-$37.4億という大幅マイナスであることを
+確認し、銀行免許取得後の非分類BS構造によりFCFFが原理的に破綻していること
+を裏付けた。標準的な銀行向けFCFE式`FCFE = NetIncome×(1-g/ROE)`にSOFIの
+実データ（TANUKI本体が既に算出しているgrowth.rate=22.3%・
+dupont.roe_decomposed=5.74%）を適用すると、g/ROE比率が約3.89倍となり
+FCFEが大幅マイナスになることを発見。この結果自体は「高成長率を内部留保
+だけでは賄えず継続的な増資が前提」という意味で経済的に正しいが、実装方針
+（マイナス値の扱い）についてKoichiさんに確認し、`equity_reinvestment_rate`
+出力フィールド名の指定含む指示書の続き（STEP2〜5）を受領した上で実装に
+進んだ。
+
+#### STEP2: Cost of Equityの算出
+`core_calculator.py`で`calculate_wacc()`の呼び出し箇所を確認したところ、
+同関数は実装上、負債/自己資本の加重平均を一切行わない純粋なCAPM
+（Rf+β×ERP）であり、既にCost of Equityと数学的に同一であることを確認した。
+新規のCost of Equity計算ロジックは実装せず、既存の`valuation["wacc"]
+["value"]`をそのまま再利用する設計とした。
+
+#### STEP3: FCFEエクイティDCF本体の実装
+`src/value/tanuki_valuation/calculator/fcfe.py`を新設し、以下を銘柄非依存の
+共通関数として実装した（ticker引数を一切持たない、回帰テストでシグネチャを
+検証済み）:
+- `is_financial_institution_ticker(ticker)`: config判定
+- `calculate_equity_reinvestment_rate(growth_rate, roe)`: g/ROE
+- `calculate_fcfe(net_income, equity_reinvestment_rate)`: FCFE = NI×(1-rate)
+- `calculate_fcfe_valuation(...)`: 既存の`calculate_two_stage_dcf()`を
+  `base_fcf=FCFE・wacc=cost_of_equity`として呼ぶことでDCF計算本体を再利用
+  （新規DCF数式は実装しない）。高成長期年数はTANUKI本体の
+  `growth.phase1_years`を再利用
+
+`pipeline.py::_load_extra_data()`のdupont計算成功直後にFCFE計算を追加し、
+`latest.json`へ新規トップレベルキー`fcfe_valuation`を追加した（既存キーは
+一切変更しない）。`_generate_report()`の既存FCFF DCFセクション
+（`[3. TANUKI VALUATION]`）直後に`[3b. Equity_DCF (FCFE方式、金融機関向け・
+参考情報)]`セクションを追加し、TANUKI SCORE等の判定には使わない参考表示
+専用である旨を明記した。
+
+#### STEP4: 対象銘柄の判定方式
+`config/financial_institution_config.json`を新規作成し、`tickers: ["SOFI"]`
+のみを保持（計算式・パラメータは持たせない）。`NAMING_CONVENTIONS.md`
+規則8の標準`_meta`スキーマを適用。JPM/GSは`cik_lookup.csv`登録後に追加する
+旨をコメントで明記した。
+
+#### STEP5: 検証
+- SOFI実測: `growth.rate=22.3%`が`dupont.roe_decomposed=5.74%`を大幅に
+  上回るため、`equity_reinvestment_rate≈388.5%`・`fcfe≈$-18.4億`となり
+  `fcfe_valuation.available=false`（理由: `negative_or_zero_fcfe`）。
+  report.txt上に理由付きでN/A表示され、理論株価は算出しない
+- **TANUKI SCORE・upside_percent・verdictの不変確認（最重要）**: `git diff`
+  で実装前後の`SOFI/latest.json`を比較した結果、差分は`calculation_date`
+  タイムスタンプと新規`fcfe_valuation`キー・`[3b. Equity_DCF]`セクション
+  追加のみで、`tanuki_score`（WATCH）・`upside_percent`（27.3%）を含む
+  既存フィールドは1バイトも変化していないことを確認した
+- 他98銘柄（tanuki=true）: `is_financial_institution_ticker()`の単体テスト
+  でSOFI以外全て`False`を返すことを確認済みに加え、SOFI単体でパイプライン
+  実行した際に`git status`上も他銘柄のlatest.json/report.txtが一切変更
+  されていないことを実測確認した（`fcfe_valuation`キーは生成されない）
+
+#### 検証ゲート
+pytest 1318件全パス（新規回帰テスト20件含む、fail-before/pass-after確認
+済み）・`audit.py` exit 0・`report_consistency_check.py --fail-on-ng`
+NG=0/WARN=121件（いずれも着手前と同一）。
+
+#### JPM/GS追加時に必要な作業の見積もりメモ
+1. `config/cik_lookup.csv`へJPM・GSを登録（CIK取得・`tanuki=true`設定含む、
+   既存の新規銘柄登録フローに準拠）
+2. `config/financial_institution_config.json`の`tickers`配列へ両ティッカー
+   を追加するのみ（計算ロジック側の変更は一切不要、銘柄非依存の共通コード
+   という設計が意図通り機能する）
+3. JPM/GSはSOFIと異なり配当を出している可能性が高く、`dividend_yield`が
+   正の値になるケースがある。DDM不採用の判断はSOFI固有の事情（無配）に
+   基づくものだったため、JPM/GS登録時に改めてFCFE方式の妥当性
+  （特にg/ROE比率が1を超えるかどうか）を実データで再確認することが望ましい
+4. JPM/GSは投資銀行・大手商業銀行でSOFIよりROEが高い傾向にあるため、
+   g/ROE比率が1を下回りFCFEがプラスになる（`available=true`で理論株価が
+   実際に算出される）可能性が高いと推測される（未検証、登録後に実データで
+   確認要）
+
+#### コミット
+- `5db8b3dd85`: 機能追加（calculator/fcfe.py新設・calculator/__init__.py・
+  pipeline.py・config/financial_institution_config.json新設・回帰テスト）
+- `6e2779651d`: データ再生成（SOFIのTANUKI VALUATIONデータ）
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了
