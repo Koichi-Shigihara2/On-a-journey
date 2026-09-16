@@ -4,7 +4,7 @@
   "intrinsic_value_beta": -12.63,
   "upside_percent_beta": -104.9,
   "intrinsic_value_rf": 256.46,
-  "upside_percent_rf": -1.3,
+  "upside_percent_rf": -1.2,
   "v0": 19166174388.73682,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.47061540194465834,
@@ -25,7 +25,7 @@
     "2年後": {
       "future_value": -8.7,
       "value_growth_pct": 20.2,
-      "expected_return_pct": -103.3
+      "expected_return_pct": -103.4
     },
     "3年後": {
       "future_value": -9.54,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -102.8,
-  "calculation_date": "2026-09-16T20:31:46+09:00",
+  "calculation_date": "2026-09-17T08:45:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -202,7 +202,7 @@
       "total_transient_amount": 47000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の構造的悪化を示す内容ではない。"
+        "reasoning": "全ての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
       }
     },
     "action": "flagged",
@@ -314,7 +314,7 @@
     "roe_10yr_avg": 0.11205128617729962,
     "roe_years_used": 5,
     "roe_outlier_adj": false,
-    "current_price": 259.8900146484375,
+    "current_price": 259.5299987792969,
     "latest_revenue": 25533000000.0,
     "rpo": 11855000000,
     "beta": 1.121,
@@ -348,11 +348,11 @@
     "alpha_uncapped": 0.47061540194465834,
     "per": 25.833996,
     "per_is_forward": false,
-    "per_adjusted": 31.82,
+    "per_adjusted": 31.77,
     "peg": 3.74,
     "ps": 2.944706,
     "ev_ebitda": 14.641,
-    "ma200": 294.36997535705564,
+    "ma200": 293.8721753692627,
     "forward_eps": 13.34165,
     "next_quarter_eps": 3.74,
     "analyst_target_median": 350.5,
@@ -373,7 +373,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-16",
+    "validated_at": "2026-09-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -464,7 +464,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 400000000
   },
-  "net_current_assets_ratio": 0.0644,
+  "net_current_assets_ratio": 0.0645,
   "dupont": {
     "ni_ttm": 3465000000,
     "revenue_ttm": 31270000000,
@@ -533,7 +533,7 @@
     "growth_model_reason": "CAGR_max=9.7%のため中央値モデル適用",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "底打ち兆候",
+    "hype_substage_label": "長期調整・実体強",
     "signals": [
       "業界平均Power(9.1%)の1.1倍以内 ✅",
       "過去実績(3yr:1.5% / 5yr:7.7%)と整合 ✅",
@@ -543,8 +543,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0083,
-  "forward_earnings_yield": 0.0513,
+  "erp": 0.0084,
+  "forward_earnings_yield": 0.0514,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

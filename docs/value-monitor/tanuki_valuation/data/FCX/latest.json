@@ -4,7 +4,7 @@
   "intrinsic_value_beta": 7.99,
   "upside_percent_beta": -88.5,
   "intrinsic_value_rf": 81.46,
-  "upside_percent_rf": 17.4,
+  "upside_percent_rf": 17.6,
   "v0": 16784586120.07095,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.5560093503768334,
@@ -20,7 +20,7 @@
     "1年後": {
       "future_value": 12.65,
       "value_growth_pct": 6.4,
-      "expected_return_pct": -81.8
+      "expected_return_pct": -81.7
     },
     "2年後": {
       "future_value": 13.45,
@@ -30,21 +30,21 @@
     "3年後": {
       "future_value": 14.31,
       "value_growth_pct": 20.4,
-      "expected_return_pct": -79.4
+      "expected_return_pct": -79.3
     },
     "4年後": {
       "future_value": 15.22,
       "value_growth_pct": 28.0,
-      "expected_return_pct": -78.1
+      "expected_return_pct": -78.0
     },
     "5年後": {
       "future_value": 16.18,
       "value_growth_pct": 36.1,
-      "expected_return_pct": -76.7
+      "expected_return_pct": -76.6
     }
   },
-  "upside_percent": -82.9,
-  "calculation_date": "2026-09-16T20:41:17+09:00",
+  "upside_percent": -82.8,
+  "calculation_date": "2026-09-17T08:50:39+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -92,12 +92,12 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.06359999999999999,
+      "rate": 0.0636,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.06359999999999999,
+      "weighted_growth": 0.0636,
       "fiscal_year": "FY2025",
       "source": "segment_config"
     }
@@ -200,7 +200,7 @@
     "estimated_fcf": 1319500000.0,
     "raw_fcf": 1319500000.0,
     "sector": "",
-    "note": "EPSデータなし(C:\\Users\\shigi\\Documents\\On-a-journey-git\\docs\\value-monitor\\adjusted_eps_analyzer\\data\\FCX\\annual.json)",
+    "note": "EPSデータなし(/home/runner/work/On-a-journey/On-a-journey/docs/value-monitor/adjusted_eps_analyzer/data/FCX/annual.json)",
     "divergence_ratio": 0.0,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
@@ -318,7 +318,7 @@
     "roe_10yr_avg": 0.13238317866115085,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 69.37999725341797,
+    "current_price": 69.23999786376953,
     "latest_revenue": 25915000000.0,
     "rpo": 106000000.0,
     "beta": 1.401,
@@ -329,7 +329,7 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "beta_config()",
-    "high_growth_rate_used": 0.06359999999999999,
+    "high_growth_rate_used": 0.0636,
     "high_growth_years": 5,
     "terminal_growth_used": 0.03,
     "moat_score": 0.3005,
@@ -356,7 +356,7 @@
     "peg": 4.3337,
     "ps": 3.8515112,
     "ev_ebitda": 12.353,
-    "ma200": 61.89050004959106,
+    "ma200": 62.025950031280516,
     "forward_eps": 4.14891,
     "next_quarter_eps": 0.73,
     "analyst_target_median": 75.0,
@@ -377,7 +377,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-16",
+    "validated_at": "2026-09-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -403,7 +403,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 40,
   "score_comment": "割高(-83%超)、FCF黒字、売上安定成長",
-  "timing_score": 45,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -468,7 +468,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 203000000
   },
-  "net_current_assets_ratio": 0.0734,
+  "net_current_assets_ratio": 0.0735,
   "dupont": {
     "ni_ttm": 4183000000,
     "revenue_ttm": 25868000000,
@@ -522,9 +522,9 @@
     "recommended_g": 0.08981975506745984,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=12.8%のため中央値モデル適用",
-    "hype_phase_used": 3,
-    "hype_phase_label": "陶酔期",
-    "hype_substage_label": "陶酔期入り",
+    "hype_phase_used": 4,
+    "hype_phase_label": "期待剥落期",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "業界平均Metals & Mining(8.8%)の0.7倍以内 ✅",
       "過去実績(3yr:4.4% / 5yr:12.8%)と整合 ✅",
@@ -534,8 +534,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0168,
-  "forward_earnings_yield": 0.0598,
+  "erp": 0.0169,
+  "forward_earnings_yield": 0.0599,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

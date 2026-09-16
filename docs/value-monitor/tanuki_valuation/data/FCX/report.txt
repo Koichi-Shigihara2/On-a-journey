@@ -1,15 +1,15 @@
 FCX INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-16T20:41:17+09:00
-Price: $69.38
+Generated: 2026-09-17T08:50:39+09:00
+Price: $69.24
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: HOLD
 Funda_Score: 40/100
 Timing_Score (components):
-  Deviation_Rate: -82.9%
-  MA200_Deviation: +12.1%
-  HypeCore_Phase: Phase3 (陶酔期)
+  Deviation_Rate: -82.8%
+  MA200_Deviation: +11.6%
+  HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $75 median ($30-$83) | 22 analysts | vs IV: +530.8%
 Comment: 割高(-83%超)、FCF黒字、売上安定成長
 Definition:
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×低効率
 Key_Metric_Y: RICE = 0.595
-Deviation_Rate: -82.9%
+Deviation_Rate: -82.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,29 +57,29 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $69.38
+Current_Price: $69.24
 Intrinsic_Value_BASE: $11.89
-Deviation_BASE: -82.9%
+Deviation_BASE: -82.8%
 Scenarios:
 BEAR: Growth=4.5%, IV=$10.69, Deviation=-84.6%
-BASE: Growth=6.4%, IV=$11.89, Deviation=-82.9%
+BASE: Growth=6.4%, IV=$11.89, Deviation=-82.8%
 BULL: Growth=7.6%, IV=$12.74, Deviation=-81.6%
-Return_Outlook(BASE): 1年後: $12.65 (-81.8%) / 3年後: $14.31 (-79.4%) / 5年後: $16.18 (-76.7%)
-  5yr_Annualized_Return: -25.3%/yr
+Return_Outlook(BASE): 1年後: $12.65 (-81.7%) / 3年後: $14.31 (-79.3%) / 5年後: $16.18 (-76.6%)
+  5yr_Annualized_Return: -25.2%/yr
 Growth_Rate_Rec: 9.0% (recommended)
 TTM_YoY_Growth: 0.2%
 (DCF Base vs TTM actual: +6.2pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 12.29%
   参考①β込みWACC_IV: $7.99 (Deviation: -88.5%)
-  参考②Rf理論上限_IV: $81.46 (Deviation: +17.4%)
+  参考②Rf理論上限_IV: $81.46 (Deviation: +17.6%)
 Terminal_Growth_Rate: 3.0%
 Beta: 1.401
 Valuation_Gap_Analysis:
   DCF_IV:           $12 (保守的FCFベース・現在実力値)
   Market_Price:     $69
   Gap:              -83% (市場が将来成長を先取り)
-  Implied_FCF_2030: $7.13B (現在株価を正当化するために必要な5年後FCF)
+  Implied_FCF_2030: $7.12B (現在株価を正当化するために必要な5年後FCF)
   Current_FCF:      $1.32B
   Required_Growth:  40%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -171,7 +171,7 @@ market-priced future potential.
 
 [4. 成長率根拠]
 Phase1成長率 : 6.4%
-成長モデル: セグメント加重モデル（Layer 1）  HypePhase=3
+成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
 DCF適用値:  6.4%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 9.0%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
@@ -274,16 +274,16 @@ Compare with TANUKI G scenario for cross-validation
 
 
 [7. HYPECORE]
-Current_Phase: Phase3 (陶酔期)
+Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.56
-HYPE_Signal: 陶酔期入り — 過熱が始まったばかり。まだ上昇余地がある可能性。
+HYPE_Signal: 実体維持・期待崩壊中 — 売上・EPSは強い。期待の過熱訂正が続いているが、実体が下支え。
 Phase_History (recent 6 months):
 2026-04: Phase4 (期待剥落期)
 2026-05: Phase3 (陶酔期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase3 (陶酔期)
-2026-09: Phase3 (陶酔期)
+2026-09: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 34.0x
   PEG: 4.33
@@ -308,9 +308,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 5.98%  (ForwardEPS $4.15 / Price $69.38)
+  Forward_Earnings_Yield: 5.99%  (ForwardEPS $4.15 / Price $69.24)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: 1.68%
+  ERP: 1.69%
   ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -332,7 +332,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: no
-Short_Interest: 1.8%
+Short_Interest: 2.1%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Buy | Target: $75 median ($30-$83) | 22 analysts | vs IV: +530.8%
 Insider_Activity: Sell優勢 | 買い0件 / 売り5件 | 直近90日

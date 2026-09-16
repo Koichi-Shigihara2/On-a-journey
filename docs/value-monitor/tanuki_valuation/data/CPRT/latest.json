@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 27217016778.414288,
   "intrinsic_value_per_share": 29.993842350892216,
   "intrinsic_value_beta": 29.4,
-  "upside_percent_beta": -5.3,
+  "upside_percent_beta": -4.6,
   "intrinsic_value_rf": 173.81,
-  "upside_percent_rf": 460.0,
+  "upside_percent_rf": 463.9,
   "v0": 27217016778.414288,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 33.76,
       "value_growth_pct": 12.6,
-      "expected_return_pct": 8.8
+      "expected_return_pct": 9.5
     },
     "2年後": {
       "future_value": 38.0,
       "value_growth_pct": 26.7,
-      "expected_return_pct": 22.4
+      "expected_return_pct": 23.3
     },
     "3年後": {
       "future_value": 42.77,
       "value_growth_pct": 42.6,
-      "expected_return_pct": 37.8
+      "expected_return_pct": 38.8
     },
     "4年後": {
       "future_value": 48.14,
       "value_growth_pct": 60.5,
-      "expected_return_pct": 55.1
+      "expected_return_pct": 56.2
     },
     "5年後": {
       "future_value": 54.19,
       "value_growth_pct": 80.7,
-      "expected_return_pct": 74.6
+      "expected_return_pct": 75.8
     }
   },
-  "upside_percent": -3.4,
-  "calculation_date": "2026-09-16T20:41:34+09:00",
+  "upside_percent": -2.7,
+  "calculation_date": "2026-09-17T08:50:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -226,7 +226,7 @@
       "total_transient_amount": 1295000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべてマクロ変動による一時的影響と明記されており、事業固有の構造的悪化ではなく外部要因による一過性の金融費用と判断される。"
+        "reasoning": "全項目の理由がマクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の調整と判断される。"
       }
     },
     "action": "flagged",
@@ -356,7 +356,7 @@
     "roe_10yr_avg": 0.2643977646648673,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 31.040000915527344,
+    "current_price": 30.81999969482422,
     "latest_revenue": 4646958000.0,
     "rpo": 89492000,
     "beta": 1.023,
@@ -390,11 +390,11 @@
     "alpha_uncapped": 1.1104706115924425,
     "per": 20.556292,
     "per_is_forward": false,
-    "per_adjusted": 18.95,
+    "per_adjusted": 18.82,
     "peg": 3.1218,
     "ps": 6.408006,
     "ev_ebitda": 12.961,
-    "ma200": 34.17672512054443,
+    "ma200": 34.137075119018554,
     "forward_eps": 1.80011,
     "next_quarter_eps": 0.39,
     "analyst_target_median": 39.0,
@@ -411,11 +411,11 @@
     "insider_latest_date": "2026-08-18",
     "analyst_vs_iv": 30.0,
     "max_eps": 1.7187,
-    "max_eps_per": 18.1,
+    "max_eps_per": 17.9,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-16",
+    "validated_at": "2026-09-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -507,7 +507,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 1414353000
   },
-  "net_current_assets_ratio": 0.1577,
+  "net_current_assets_ratio": 0.1588,
   "dupont": {
     "ni_ttm": 1553201000,
     "revenue_ttm": 4638867000,
@@ -543,7 +543,7 @@
     "growth_model_reason": "CAGR_max=16.1%のため中央値モデル適用",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "長期調整・実体強",
+    "hype_substage_label": "実体も崩壊中",
     "signals": [
       "業界平均Business & Consumer Services(12.6%)の1.0倍以内 ✅",
       "過去実績(3yr:9.9% / 5yr:16.1%)と整合 ✅"
@@ -552,8 +552,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.015,
-  "forward_earnings_yield": 0.058,
+  "erp": 0.0154,
+  "forward_earnings_yield": 0.0584,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }

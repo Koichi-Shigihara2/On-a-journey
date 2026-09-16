@@ -1,16 +1,16 @@
 AMZN INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-16T20:30:41+09:00
-Price: $248.42
+Generated: 2026-09-17T08:44:56+09:00
+Price: $245.96
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Classification_Pre_Rounding: HOLD
+Classification_Pre_Rounding: TRIM
 Funda_Score: 90/100
 Timing_Score (components):
-  Deviation_Rate: -50.4%
-  MA200_Deviation: +3.5%
-  HypeCore_Phase: Phase2 (期待拡大期)
+  Deviation_Rate: -49.9%
+  MA200_Deviation: +2.4%
+  HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Strong Buy | Target: $326 median ($230-$405) | 60 analysts | vs IV: +164.3%
 Comment: DCF信頼性LOW(FCF_Conversion_Rate方式・要注意フラグ)のためupside依存判定を抑制→WATCH
 Definition:
@@ -34,7 +34,7 @@ Matrix: ②収益性系
 Quadrant: 左上
 Label: 割高×高ROE
 Key_Metric_Y: ROE_avg (10yr) = 16.5%
-Deviation_Rate: -50.4%
+Deviation_Rate: -49.9%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,32 +58,25 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $248.42
+Current_Price: $245.96
 Intrinsic_Value_BASE: $123.14
-Deviation_BASE: -50.4%
+Deviation_BASE: -49.9%
 Scenarios:
-BEAR: Growth=3.3%, IV=$85.36, Deviation=-65.6%
-BASE: Growth=11.9%, IV=$123.14, Deviation=-50.4%
-BULL: Growth=14.3%, IV=$135.80, Deviation=-45.3%
-Return_Outlook(BASE): 1年後: $137.84 (-44.5%) / 3年後: $172.72 (-30.5%) / 5年後: $216.43 (-12.9%)
-  5yr_Annualized_Return: -2.7%/yr
+BEAR: Growth=3.3%, IV=$85.36, Deviation=-65.3%
+BASE: Growth=11.9%, IV=$123.14, Deviation=-49.9%
+BULL: Growth=14.3%, IV=$135.80, Deviation=-44.8%
+Return_Outlook(BASE): 1年後: $137.84 (-44.0%) / 3年後: $172.72 (-29.8%) / 5年後: $216.43 (-12.0%)
+  5yr_Annualized_Return: -2.5%/yr
 Growth_Rate_Rec: 13.0% (recommended)
 FCF_Margin_Bear_Adj: FCFマージン悪化(4.4%→1.3%) BEAR補正係数=0.400
 TTM_YoY_Growth: 15.8%
 (DCF Base vs TTM actual: -3.9pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 12.53%
-  参考①β込みWACC_IV: $85.72 (Deviation: -65.5%)
-  参考②Rf理論上限_IV: $1,097.48 (Deviation: +341.8%)
+  参考①β込みWACC_IV: $85.72 (Deviation: -65.1%)
+  参考②Rf理論上限_IV: $1,097.48 (Deviation: +346.2%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.443
-Valuation_Gap_Analysis:
-  DCF_IV:           $123 (保守的FCFベース・現在実力値)
-  Market_Price:     $248
-  Gap:              -50% (市場が将来成長を先取り)
-  Implied_FCF_2030: $168.67B (現在株価を正当化するために必要な5年後FCF)
-  Current_FCF:      $50.74B
-  Required_Growth:  27%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
 FCF_Conversion_Rate: 0.55 (Industry: Retail_General)
   [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
@@ -179,7 +172,7 @@ market-priced future potential.
 
 [4. 成長率根拠]
 Phase1成長率 : 11.9%
-成長モデル: セグメント加重モデル（Layer 1）  HypePhase=2
+成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
 DCF適用値:  11.9%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 13.0%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
@@ -266,8 +259,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 20.4x
-  Adjusted_EPS_PER: 18.1x (TTM調整後EPS: $13.7007)
-  Delta: -2.3x (cheaper on adjusted basis)
+  Adjusted_EPS_PER: 17.9x (TTM調整後EPS: $13.7007)
+  Delta: -2.5x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-30
   Next_Quarter_EPS: $1.95 (yfinance analyst estimate)
@@ -282,16 +275,16 @@ Compare with TANUKI G scenario for cross-validation
 
 
 [7. HYPECORE]
-Current_Phase: Phase2 (期待拡大期)
+Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.69
-HYPE_Signal: 期待拡大開始 — 期待と実体が噛み合い始めた段階。
+HYPE_Signal: 実体維持・期待崩壊中 — 売上・EPSは強い。期待の過熱訂正が続いているが、実体が下支え。
 Phase_History (recent 6 months):
 2026-04: Phase3 (陶酔期)
 2026-05: Phase3 (陶酔期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase3 (陶酔期)
 2026-08: Phase2 (期待拡大期)
-2026-09: Phase2 (期待拡大期)
+2026-09: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 20.4x
   PEG: 1.48
@@ -316,9 +309,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 4.19%  (ForwardEPS $10.40 / Price $248.42)
+  Forward_Earnings_Yield: 4.23%  (ForwardEPS $10.40 / Price $245.96)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: -0.11%
+  ERP: -0.07%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -340,7 +333,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: no
-Short_Interest: 1.0%
+Short_Interest: 0.9%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Strong Buy | Target: $326 median ($230-$405) | 60 analysts | vs IV: +164.3%
 Insider_Activity: Sell優勢 | 買い0件 / 売り27件 | 直近90日

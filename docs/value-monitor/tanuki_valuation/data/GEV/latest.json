@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 75851790248.28268,
   "intrinsic_value_per_share": 315.6546165317592,
   "intrinsic_value_beta": 323.57,
-  "upside_percent_beta": -63.3,
+  "upside_percent_beta": -65.0,
   "intrinsic_value_rf": 1577.38,
-  "upside_percent_rf": 78.7,
+  "upside_percent_rf": 70.5,
   "v0": 75851790248.28268,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 349.5,
       "value_growth_pct": 10.7,
-      "expected_return_pct": -60.4
+      "expected_return_pct": -62.2
     },
     "2年後": {
       "future_value": 386.97,
       "value_growth_pct": 22.6,
-      "expected_return_pct": -56.2
+      "expected_return_pct": -58.2
     },
     "3年後": {
       "future_value": 428.46,
       "value_growth_pct": 35.7,
-      "expected_return_pct": -51.5
+      "expected_return_pct": -53.7
     },
     "4年後": {
       "future_value": 474.41,
       "value_growth_pct": 50.3,
-      "expected_return_pct": -46.3
+      "expected_return_pct": -48.7
     },
     "5年後": {
       "future_value": 525.27,
       "value_growth_pct": 66.4,
-      "expected_return_pct": -40.5
+      "expected_return_pct": -43.2
     }
   },
-  "upside_percent": -64.2,
-  "calculation_date": "2026-09-16T20:43:50+09:00",
+  "upside_percent": -65.9,
+  "calculation_date": "2026-09-17T08:52:08+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -238,7 +238,7 @@
       "total_transient_amount": 194000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、構造的な悪化を示す内容はない。"
+        "reasoning": "すべての項目がマクロ変動や一過性の事業再編による一時的費用と明記されており、構造的な収益力悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
@@ -256,7 +256,7 @@
     "divergence_ratio": 0.48,
     "divergence_warning": "",
     "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 175610190.57585302,
+    "ma_addback_detected_but_not_applied": 175610190.57585305,
     "rate_is_sector_default": true
   },
   "software_system_reclassification": {
@@ -369,7 +369,7 @@
     "roe_10yr_avg": 0.1801497934901185,
     "roe_years_used": 3,
     "roe_outlier_adj": false,
-    "current_price": 882.8099975585938,
+    "current_price": 925.0900268554688,
     "latest_revenue": 38068000000.0,
     "rpo": 176284000000,
     "beta": 0.967,
@@ -403,11 +403,11 @@
     "alpha_uncapped": 0.7566291326584976,
     "per": 25.065586,
     "per_is_forward": false,
-    "per_adjusted": 24.05,
+    "per_adjusted": 25.2,
     "peg": 1.7052,
     "ps": 5.683805,
     "ev_ebitda": 57.876,
-    "ma200": 896.8396987915039,
+    "ma200": 898.5165490722658,
     "forward_eps": 25.31023,
     "next_quarter_eps": 4.18,
     "analyst_target_median": 1250.0,
@@ -424,11 +424,11 @@
     "insider_latest_date": null,
     "analyst_vs_iv": 296.0,
     "max_eps": 36.7434,
-    "max_eps_per": 24.0,
+    "max_eps_per": 25.2,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-16",
+    "validated_at": "2026-09-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -454,7 +454,7 @@
   "phase1_growth": 0.10722501118696827,
   "tanuki_score": "TRIM",
   "funda_score": 65,
-  "score_comment": "割高(-64%超)、FCF黒字、売上安定成長",
+  "score_comment": "割高(-66%超)、FCF黒字、売上安定成長",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -520,7 +520,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 5406000000
   },
-  "net_current_assets_ratio": -0.0357,
+  "net_current_assets_ratio": -0.0341,
   "dupont": {
     "ni_ttm": 9529000000,
     "revenue_ttm": 41368000000,
@@ -565,8 +565,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0143,
-  "forward_earnings_yield": 0.0287,
+  "erp": -0.0156,
+  "forward_earnings_yield": 0.0274,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }
