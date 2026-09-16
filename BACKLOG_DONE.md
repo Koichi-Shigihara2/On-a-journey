@@ -750,6 +750,93 @@ H該当=SOUN/TSLA/APP/NVDA/PLTR。pytest 1291件全パス（新規14件含む）
 
 ---
 
+### ✅ [RPO-ADMIN-1] rpo_config.jsonがadmin.htmlで編集できない — 編集UI新設・_meta付与で実装完了
+**状態:** ✅実装完了
+**優先度:** 低 → 完了
+**分類:** 管理UI漏れ / admin.html
+**発見:** 2026-06-26横断調査
+**完了日:** 2026-09-16
+
+#### 問題（登録時点の記載を再掲）
+rpo_config.json（RPOプレミアムのホワイトリスト管理）は
+report_consistency_check.py L42で参照されているが、
+admin.htmlにUI編集機能が存在しない。
+RPOプレミアムを付与・変更する際は手動JSONファイル編集が必要。
+
+**再確認（追記、2026-08-15、フェーズ3未登録11件調査）**: 編集UI欠如を
+再確認済み（`INPUT-C-004`）。加えて`rpo_config.json`は`_meta`相当の
+メタ情報（更新者・更新日時）も持たないことが判明した。管理UI追加時は
+`_meta`付与（`NAMING_CONVENTIONS.md`規則8参照）も併せて検討対象とする。
+
+#### 対応方針（登録時点の記載を再掲）
+admin.htmlにrpo_config.jsonの編集UIセクションを追加する。追加時は
+`_meta`フィールドの付与も併せて検討する（2026-08-15追記）。
+
+#### 実装内容（2026-09-16）
+`docs/value-monitor/admin.html`に新規タブ「🏷️ RPO設定」を新設した。配置は
+既存の「💰 FCF転換率」タブ（ticker→{conversion_rate,reason}のフラットな
+辞書構造・add-form＋table＋独立保存ボタンのパターン）を踏襲した。RPO
+ホワイトリスト（ticker→{note}）はセグメント成長率・DCF成熟プロファイル等
+（`tab-settings`内、銘柄選択に依存するconfig-panel）とは異なり銘柄選択非
+依存のグローバル設定であるため、`tab-settings`内へのconfig-panel追加では
+なく独立タブとした。
+
+- ホワイトリストテーブル（ティッカー・メモ・削除ボタン）＋「＋ ティッカー
+  追加」フォーム
+- `industry_keywords`（カンマ区切りテキスト入力→配列変換）・
+  `min_rpo_revenue_ratio`（数値入力）の編集欄
+- `RPO_PATH = 'config/rpo_config.json'`を新設し、既存`commitFile()`
+  パターンで保存時にコミット
+- 保存時、`NAMING_CONVENTIONS.md`規則8の標準`_meta`スキーマ
+  （`description`/`encoding`/`updated_at`/`schema_version`）を、既存
+  ファイルに`_meta`がなければ新設して付与。**規則8は`updated_by`等を
+  要求していない**（3件の統一済みファイルの実例を確認、依頼書が言及した
+  「`_meta.updated_by`等」は規則8には存在しない）ため、`updated_at`のみ
+  更新する既存の`matConfig._meta.updated_at`パターンと同型にした
+
+#### report_consistency_check.py側の読み込み確認（STEP3）
+`report_consistency_check.py::_load_rpo_whitelist()`は
+`cfg.get("whitelist", {}).keys()`、`adjustments.py::_load_rpo_config()`/
+`_get_rpo_application_rate()`は`rpo_cfg.get("whitelist", {})`・
+`rpo_cfg.get("industry_keywords", ...)`・`rpo_cfg.get("min_rpo_revenue_ratio",
+0.30)`という個別キー指定のアクセスのみで、トップレベルキー全体を列挙する
+実装ではないことをコード確認した。`_meta`という余分なトップレベルキーが
+存在しても無視できる実装であり、**コード修正は不要**と判明した。
+`_meta`付きのモックconfigを実際に`adjustments._get_rpo_application_rate()`
+へ渡して動作確認し、ホワイトリスト銘柄（via_whitelist=True）・業種キー
+ワード経由（via_whitelist=False）とも`_meta`追加前と同じ挙動を維持する
+ことを実測確認した（`tail_kpi_map.json`のような「トップレベルキー全体を
+ticker名として扱う」危険な実装ではないことも確認済み）。
+
+#### 検証
+ローカルHTTPサーバー（`python -m http.server`）経由でadmin.htmlをブラウザ
+（claude-in-chrome）で開き、実際の`config/rpo_config.json`（16銘柄）を
+注入してUI動作を確認した:
+- タブ切替・初期レンダリング: 16件のホワイトリストテーブル行・
+  `industry_keywords`（"software, cloud, saas"）・
+  `min_rpo_revenue_ratio`（0.3）とも正しく表示
+- 追加: `TEST`ティッカー追加でテーブル行・`rpoConfig.whitelist`とも
+  即座に反映、入力欄クリアも確認
+- 重複防止: 同一ティッカーの再追加が`alert`でブロックされることを確認
+- 削除: `confirm`後に行・`rpoConfig.whitelist`から削除されることを確認
+- 保存: 実際のGitHub APIコミットは実行せず（本番リポジトリへの誤コミット
+  回避のため）、`fetchFile`/`commitFile`をモックして`saveRpo()`の
+  データ収集ロジックのみ検証。既存行の編集（CRMのメモ追記）・
+  `industry_keywords`/`min_rpo_revenue_ratio`の編集がいずれも保存
+  ペイロードへ正しく反映され、`_meta`が規則8のスキーマ通り新設される
+  ことを確認した
+- ブラウザ読み込み時のconsoleエラーは0件（既存タブ・機能への副作用なし）
+
+pytest 1291件全パス・`audit.py` exit 0・
+`report_consistency_check.py --fail-on-ng` NG=0/WARN=121件
+（いずれも着手前と同一、admin.htmlはクライアント側静的ファイルのため
+既存ゲートに変化なし）。
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了

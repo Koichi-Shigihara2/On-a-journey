@@ -5898,28 +5898,6 @@ Stage 1/2の「積極的な値の検証」基準にそのまま当てはめて�
 
 ---
 
-### [RPO-ADMIN-1] rpo_config.jsonがadmin.htmlで編集できない
-**優先度:** 低
-**分類:** 管理UI漏れ / admin.html
-**発見:** 2026-06-26横断調査
-
-#### 問題
-rpo_config.json（RPOプレミアムのホワイトリスト管理）は
-report_consistency_check.py L42で参照されているが、
-admin.htmlにUI編集機能が存在しない。
-RPOプレミアムを付与・変更する際は手動JSONファイル編集が必要。
-
-**再確認（追記、2026-08-15、フェーズ3未登録11件調査）**: 編集UI欠如を
-再確認済み（`INPUT-C-004`）。加えて`rpo_config.json`は`_meta`相当の
-メタ情報（更新者・更新日時）も持たないことが判明した。管理UI追加時は
-`_meta`付与（`NAMING_CONVENTIONS.md`規則8参照）も併せて検討対象とする。
-
-#### 対応方針
-admin.htmlにrpo_config.jsonの編集UIセクションを追加する。追加時は
-`_meta`フィールドの付与も併せて検討する（2026-08-15追記）。
-
----
-
 ### [LAYER3-GA-STANDALONE-TAG-UNMAPPED-1] GeneralAndAdministrativeExpense（Selling抜きG&A単体タグ）がLayer2のどのフィールドにもマッピングされていない
 **優先度:** 低〜中（2026-07-30投資調査により中→低〜中に修正。理由は下記対応方針参照）
 **分類:** データ品質 / タグ網羅性
