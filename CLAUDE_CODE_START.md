@@ -13,22 +13,23 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `CHAT_RULES.md`に蓄積されている。
 
 **現在の到達点（2026-09-16時点）**: `BACKLOG.md`アクティブ件数
-**48件**（本日`[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`1件をクローズし、
-前回49件から1件減）。BACKLOG.md/BACKLOG_DONE.md間のID重複は
+**49件**（`[[TAIL-SEC-ITEMS-APGE-WHITESPACE-1]]`クローズで48件、
+新規`[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`登録で49件に）。
+BACKLOG.md/BACKLOG_DONE.md間のID重複は意図的な1件
+（`[[TANUKI-VALUATION-MISC-GAPS-1]]`、部分完了エントリの意図的な
+分割・`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`と同型パターン）を除き
 **0件**（機械確認済み、`### ✅ [`パターンがBACKLOG.md側に残存していない
-ことも確認済み）。詳細は下記の2026-09-16ブロック参照。
+ことも確認済み）。詳細は下記の2026-09-16②ブロック参照。
 
-**未対応の構造的ずれ（2026-09-13発見・継続未対応、次セッション申し送り）**:
+**構造的ずれの是正完了（2026-09-13発見、2026-09-16②で解消）**:
 `## 優先度：高`セクション見出し配下に、個別`**優先度:**`フィールドが
-実際には「中」「低」に引き下げ済みの4エントリ
-（`[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]`・
-`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
-`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[SPAC-SHELL-MAINTAINED-
-FIELDS-FREEZE-CONSIDERATION-1]]`）が物理的に取り残されている
-（セクション移動を伴わないフィールド値のみの引き下げが過去に発生した
-ため）。過去セッションの「高は0件」という報告はフィールド値ベースの
-機械確認としては正しいが、セクション配置とは食い違っている。2026-09-16
-セッションもスコープ外のため実際の移動は行わず記録のみ（継続未対応）。
+実際には「中」「低」に引き下げ済みの4エントリが物理的に取り残されて
+いた問題（セクション移動を伴わないフィールド値のみの引き下げが過去に
+発生したため）を、本日該当4件（`[[MACRODATA-FETCH-FAILURE-
+VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
+`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`→`## 優先度：中`、
+`[[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1]]`→
+`## 優先度：低`）を実際に移動して解消した。
 
 **直近の重要な教訓**:
 1. **無許可着手の禁止** — 実装は依頼者の明示的な承認を得てから着手し、
@@ -44,6 +45,98 @@ FIELDS-FREEZE-CONSIDERATION-1]]`）が物理的に取り残されている
 3. その他の個別教訓（コミットメッセージのバッククォート事故・
    BACKLOG ID使用前のgrep確認・JSON部分編集の優先等）は各セッション
    ブロック・`CHAT_RULES.md`に事例番号付きで記録されている。
+4. **rebase後のハッシュ再確認** — `git commit`直後の出力ハッシュを
+   BACKLOG本文へ転記した後に`git pull --rebase`を実行すると、
+   rebaseされた全コミットのハッシュが再計算される。push・報告の直前に
+   必ず`git log`で実際のハッシュを再確認すること（2026-09-16②で
+   BACKLOG.md/BACKLOG_DONE.md計11箇所の転記漏れが発生し、追加の
+   2コミットで是正する事態になった教訓）。
+
+---
+
+最終更新: 2026-09-16②（**セッション終了時ブラッシュアップ・本日6件の
+指示書サマリー**。全てpush済み）:
+
+1. `BACKLOG.md`セクション配置と優先度フィールド不一致4件の是正
+   （コミット`2bcea1347d`）: `## 優先度：高`セクションに取り残されて
+   いた個別`優先度:`フィールド「中」「低」の4エントリを、Pythonスク
+   リプト（行範囲アサーション付き抽出）で正しいセクションへ移動。
+   移動前後でアクティブ件数48件不変・4エントリの本文一字一句一致・
+   対象外エントリのセクション配置変化0件を確認
+2. `FRED_API_KEY`ローテーション件のクローズ（コミット`6fb603c254`）:
+   2026-09-13の一時露出事故について、Koichiさんの判断（露出は値の
+   一部のみ・課金権限のないキーのためリスク低）でローテーション対応
+   不要と確定。CLAUDE_CODE_START.md該当3箇所を「未対応」から
+   「クローズ済み」へ更新（経緯自体は削除せず保持）
+3. `[[TANUKI-VALUATION-MISC-GAPS-1]]`①②④⑥⑦一括対応（コミット
+   `bb7edaec50`・`c7b221d0ae`・`ee3ba7854c`・`a897399595`・
+   `a561a673fa`・`4edf51e0c0`）: ①PERにpoc.jsonフォールバック追加
+   （forward_pe限定、trailing_pe完全対応は新規`[[HYPECORE-POC-
+   TRAILING-PE-MISSING-1]]`へ分離）・②EV/EBITDA負値を格納時点で
+   None化（該当21銘柄再生成、表示結果は既存UIガードと無差分）・
+   ④v0_adjusted死フィールド削除（参照箇所0件確認済み）・⑥は
+   `mature_profit`という識別子自体が存在せず`[[OPERATING-INCOME-
+   EXTRACTION-GAP-1]]`で既に根本修正済みと判明し陳腐化クローズ・
+   ⑦根拠不明な定数へ根拠コメント追記（数値無変更）。③⑤はスコープ外
+   のままアクティブ課題として残置
+4. **コミットハッシュ誤記の発見・修正（2件、重要な教訓）**: 上記3.の
+   5コミットを作成した直後の`git commit`出力ハッシュをBACKLOG本文へ
+   転記したが、直後の`git pull --rebase`で6コミット全てのハッシュが
+   再計算され、本文中の記載が「rebase前」の誤ったハッシュのまま
+   残っていた（BACKLOG.md側コミット`364c86fa04`・BACKLOG_DONE.md側
+   コミット`441eeb5aa3`で是正）。以後、push後は必ず`git log`で
+   実際のハッシュを再確認してから報告する運用を徹底することとした
+   （上記「直近の重要な教訓」4.参照）
+5. `[[SCHEMA-NORMALIZED-ISSUES-1]]`前提再検証（調査のみ、コミット
+   なし）: `[[SECDATA-STORAGE-FRAGMENTATION-1]]`（normalized/恒久
+   存続）との矛盾有無を確認した結果、矛盾なしと確定。①〜⑥のうち
+   stock.htmlが実際に参照するのは⑥DAのみ（他5件は消費者ゼロのため
+   実害なしのまま据え置き）と判定。副次発見として
+   `report_consistency_check.py`のCHECK-47がnormalized/を直接読む
+   4番目の系統であることを発見（DAとは無関係のフィールドのため今回の
+   判定には影響なし）
+6. `[[SCHEMA-NORMALIZED-ISSUES-1]]`⑥DAフォールバック欠如の実装
+   （コミット`4aa54d6f98`コード変更・`d37abb10eb`データ再生成・
+   `18cc905f31`BACKLOG更新）: `quarterly.py::_FIELD_FALLBACKS`へDA
+   フォールバック3候補を追加。**検証で当初想定との相違を発見**:
+   対象30銘柄のうち現行102銘柄に含まれる28銘柄中25銘柄が解消した
+   一方、MSFT（既存のticker別除外設定、本タスク無関係）・AMD（primary
+   タグ件数僅少のため発火条件を満たさず）・WMT（4候補タグとも直近
+   年度の申告なし）の3銘柄は未解消と判明、正直に報告した。Playwright
+   実ブラウザでTSLA/GOOGL/Vの表示回復を確認済み
+
+**次セッションの着手候補**:
+- Grok API実測コスト（`[[TAIL-SEC-ITEMS-1]]`関連、`cost_in_usd_ticks`
+  2,151,512,500、2026-09-13累計）の実際のドル換算をxAI Console上で
+  確認すること（Koichiさん本人のアカウントアクセスが必要、複数
+  セッションにわたり対象外のまま）
+- `[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`（本日新規登録、trailing_pe
+  側の完全対応、未実装）
+- `[[TANUKI-VALUATION-MISC-GAPS-1]]`③（net_debt符号エイリアス、全
+  参照箇所の影響範囲確認が必要）・⑤（Runway cash算出経路統一、
+  Koichiさんの設計判断待ち）
+- `[[SCHEMA-NORMALIZED-ISSUES-1]]`①②③④⑤（STDebt・SM/SGA・LTDebt・
+  SharesBasic・ファイル名混在、いずれも消費者ゼロで実害なしのまま
+  優先度低で据え置き。Layer2/Layer3統合スキーマ設計時に一括解消予定）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: `grep -n "^### ✅ \["
+  BACKLOG.md`で0件（過去分含め機械確認）
+- ID重複チェック: `BACKLOG.md`・`BACKLOG_DONE.md`間で重複するのは
+  意図的な1件（`[[TANUKI-VALUATION-MISC-GAPS-1]]`、部分完了エントリの
+  分割）のみ。`BACKLOG.md`内部でのヘッダーID重複は0件
+- 本日更新・新規登録した各項目（`[[TANUKI-VALUATION-MISC-GAPS-1]]`・
+  `[[SCHEMA-NORMALIZED-ISSUES-1]]`・`[[HYPECORE-POC-TRAILING-PE-
+  MISSING-1]]`・優先度移動4件）がBACKLOG.mdにアクティブヘッダーとして
+  正しく存在することを個別確認済み
+- git status: クリーン（未コミット変更・未追跡ファイルなし）。
+  scratchpadの一時ファイル（調査スクリプト・コミットメッセージ・
+  ブラウザ確認用スクリーンショット等）も確認・削除した
+- BACKLOG.mdアクティブ件数: 機械カウントで**49件**（本日クローズ1件・
+  新規登録1件により48件からの純増減は前ブロック参照）
+
+詳細はBACKLOG_DONE.md「2026-09-16（完了）」節・`PROJECT_STATUS.md`
+参照。
 
 ---
 

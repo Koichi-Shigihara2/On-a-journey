@@ -604,6 +604,56 @@
   （BACKLOG_DONE.md移設）。新DB構築プロジェクトのコード・データには
   変更なし。詳細はBACKLOG_DONE.md「2026-09-16（完了）」節参照。
 
+- **2026-09-16②**（同日、上記に続く6件の指示書を順次実施、全てpush済み）:
+  1. `BACKLOG.md`セクション配置と優先度フィールド不一致4件の是正
+     （コミット`2bcea1347d`）: `## 優先度：高`セクションに取り残され
+     ていた4エントリ（個別`優先度:`フィールドは既に「中」「低」）を
+     正しいセクションへ移動。移動前後で本文一字一句一致・対象外
+     エントリのセクション配置変化0件を確認
+  2. `FRED_API_KEY`ローテーション件のクローズ（コミット`6fb603c254`）:
+     2026-09-13の一時露出事故はKoichiさんの判断で対応不要と確定
+  3. `[[TANUKI-VALUATION-MISC-GAPS-1]]`①②④⑥⑦一括対応（コミット
+     `bb7edaec50`・`c7b221d0ae`・`ee3ba7854c`・`a897399595`・
+     `a561a673fa`・`4edf51e0c0`）: ①PERにpoc.jsonフォールバック
+     （forward_pe限定）・②EV/EBITDA負値を格納時点でNone化（該当21
+     銘柄再生成）・④v0_adjusted死フィールド削除・⑥は
+     `[[OPERATING-INCOME-EXTRACTION-GAP-1]]`で既に根本修正済みと判明
+     し陳腐化クローズ・⑦根拠不明な定数へ根拠コメント追記。③⑤は
+     スコープ外のままアクティブ課題として残置
+  4. **コミットハッシュ誤記の発見・修正**（コミット`364c86fa04`・
+     `441eeb5aa3`）: 上記3.の5コミット作成直後のハッシュをBACKLOG
+     本文へ転記した後の`git pull --rebase`で全コミットのハッシュが
+     再計算され、本文記載が「rebase前」のまま残っていた問題を是正。
+     以後push後は必ず`git log`で実ハッシュを再確認する運用を徹底
+  5. `[[SCHEMA-NORMALIZED-ISSUES-1]]`前提再検証（調査のみ）:
+     `[[SECDATA-STORAGE-FRAGMENTATION-1]]`（normalized/恒久存続）との
+     矛盾なしと確定。①〜⑥のうちstock.htmlが実際に参照するのは⑥DAの
+     みと判定。副次発見: `report_consistency_check.py`CHECK-47が
+     normalized/を直接読む4番目の系統と判明（DAとは無関係のため
+     判定に影響なし）
+  6. `[[SCHEMA-NORMALIZED-ISSUES-1]]`⑥DAフォールバック欠如の実装
+     （コミット`4aa54d6f98`・`d37abb10eb`・`18cc905f31`）:
+     `quarterly.py::_FIELD_FALLBACKS`へDAフォールバック3候補を追加。
+     **検証で当初想定との相違を発見**: 対象30銘柄中、現行102銘柄に
+     含まれる28銘柄中25銘柄が解消した一方、MSFT（既存除外設定）・
+     AMD（primaryタグ件数僅少）・WMT（4候補とも直近年度申告なし）の
+     3銘柄は未解消と判明、正直に報告した。Playwright実ブラウザで
+     TSLA/GOOGL/Vの表示回復を確認済み
+
+  **次セッションの着手候補**:
+  - Grok API実測コストのxAI Console上でのドル換算確認（Koichiさん
+    本人のアカウントアクセスが必要、複数セッションにわたり対象外）
+  - `[[HYPECORE-POC-TRAILING-PE-MISSING-1]]`（本日新規登録、
+    trailing_pe側の完全対応、未実装）
+  - `[[TANUKI-VALUATION-MISC-GAPS-1]]`③（net_debt符号エイリアス）・
+    ⑤（Runway cash算出経路統一、設計判断待ち）
+  - `[[SCHEMA-NORMALIZED-ISSUES-1]]`①②③④⑤（消費者ゼロで実害なし、
+    優先度低のまま据え置き）
+
+  新DB構築プロジェクトのコード・データには変更なし。詳細はBACKLOG_
+  DONE.md「2026-09-16（完了）」節・`CLAUDE_CODE_START.md`該当ブロック
+  参照。
+
 ---
 
 更新日: 2026-08-15（**フェーズ3「導出データ層の管理方法検討」完了**。
