@@ -552,7 +552,7 @@ def compute_scores(ticker: str) -> pd.DataFrame:
 
     # .info現時点値を最新月にのみセット（将来は月次記録に拡張）
     today_ts = pd.Timestamp(date.today()).to_period("M").to_timestamp()
-    for key in ["forward_pe", "peg_ratio", "earnings_growth",
+    for key in ["forward_pe", "trailing_pe", "peg_ratio", "earnings_growth",
                 "recommendation_mean", "short_pct_float", "volume_vs_avg",
                 "gross_margins", "psr", "ev_ebitda"]:
         df[key] = np.nan
@@ -1001,6 +1001,7 @@ def _build_month_record(idx, row) -> dict:
         "ocf_yield_q":        safe(row.get("ocf_yield_q")),
         # バリュエーション（現時点値）
         "forward_pe":         safe(row.get("forward_pe")),
+        "trailing_pe":        safe(row.get("trailing_pe")),
         "peg_ratio":          safe(row.get("peg_ratio")),
         "psr":                safe(row.get("psr")),
         "revenue_growth_yf":  safe(row.get("revenue_growth_yf")),

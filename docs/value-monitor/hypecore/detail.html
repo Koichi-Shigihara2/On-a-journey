@@ -557,13 +557,15 @@ function renderValMultiples(lat, comps) {
 
   // 2-C: latest.json優先、なければpoc.jsonのev_ebitdaでフォールバック（正値のみ）
   // [[TANUKI-VALUATION-MISC-GAPS-1]]①: PERのみ他指標（PEG/PS/EV-EBITDA）と
-  // 異なりpoc.jsonへのフォールバックがなかったため追加。poc.json側は
-  // forward_peのみ保持（trailing_peは未出力）のため、フォールバック時は
-  // 必ずforward PEとなる（perIsFwdをtrueにし、既存の"Fwd"表示ロジック
-  // 〈trailing/forward判別〉でそのまま区別できるようにする）。
+  // 異なりpoc.jsonへのフォールバックがなかったため追加。
+  // [[HYPECORE-POC-TRAILING-PE-MISSING-1]]: poc.json側もtrailing_peを
+  // 保持するようになったため、TANUKI側と同型のtrailing優先・なければ
+  // forwardの判定に統一する。
   const perFromComps = comps?.per ?? null;
-  const per        = perFromComps ?? lat.forward_pe ?? null;
-  const perIsFwd   = perFromComps != null ? (comps?.per_is_forward ?? false) : (per != null);  // 2-D: trailing/forward判別
+  const per        = perFromComps ?? lat.trailing_pe ?? lat.forward_pe ?? null;
+  const perIsFwd   = perFromComps != null
+    ? (comps?.per_is_forward ?? false)
+    : (per != null && lat.trailing_pe == null);  // 2-D: trailing/forward判別
   const peg        = comps?.peg      ?? lat.peg_ratio ?? null;
   const ps         = comps?.ps       ?? lat.psr ?? null;
   const evEbRaw    = comps?.ev_ebitda ?? (lat.ev_ebitda != null && lat.ev_ebitda > 0 ? lat.ev_ebitda : null);
