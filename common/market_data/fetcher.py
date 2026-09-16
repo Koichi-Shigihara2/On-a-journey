@@ -642,6 +642,41 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
         except Exception as e:
             print(f"   [{symbol}] calendar取得失敗（次回決算日なしで継続）: {e}")
 
+        # [[EPS-1]]（Next_Quarter_EPS N/A問題）で追加（2026-09-16）。
+        # Ticker.quarterly_earnings（Ticker.earningsと同型）はyfinance側で
+        # 常にNoneを返す廃止済みAPIと事前確認済み（着手順序4-8前提作業2、
+        # DeprecationWarning: 'Ticker.earnings' is deprecated as not
+        # available via API）。代わりにTicker.earnings_dates（カレンダー
+        # ベースのDataFrame、未発表＝Reported EPSがNaNの行にもEPS Estimate
+        # 列がアナリストコンセンサスとして入る）を使用する。calendarと同じく
+        # .info取得の失敗とは独立した失敗として扱う（99銘柄実測で97/99が
+        # 取得成功、欠損2件はいずれもEPS Estimate自体がアナリスト網羅性
+        # 不足でNaN）。
+        #
+        # 「Reported EPSがNaN」だけでは不十分（ZETA実データで発見）:
+        # 2022-05-10行はSurprise(%)=-111.11という値が入っているにも
+        # 関わらずReported EPSはNaNという、Yahoo側の過去データ欠損行が
+        # 存在する。単純に最初のNaN行を採用すると、この4年以上前の
+        # 過去欠損行を「次回決算」と誤認する。日付が現在時刻より未来
+        # であることも条件に加えて除外する。
+        next_quarter_eps_estimate: Optional[float] = None
+        next_quarter_eps_date: Optional[str] = None
+        try:
+            edates = t.earnings_dates
+            if edates is not None and not edates.empty and "Reported EPS" in edates.columns:
+                now = pd.Timestamp.now(tz=edates.index.tz) if edates.index.tz is not None else pd.Timestamp.now()
+                future = edates[edates["Reported EPS"].isna() & (edates.index > now)].sort_index()
+                if not future.empty:
+                    next_idx = future.index[0]
+                    est = future.iloc[0].get("EPS Estimate")
+                    if est is not None and not pd.isna(est):
+                        next_quarter_eps_estimate = float(est)
+                        next_quarter_eps_date = (
+                            next_idx.isoformat()[:10] if hasattr(next_idx, "isoformat") else str(next_idx)[:10]
+                        )
+        except Exception as e:
+            print(f"   [{symbol}] earnings_dates取得失敗（次期EPS推定なしで継続）: {e}")
+
         fetched_at = _now_iso()
         record: Dict[str, Any] = {
             "symbol": symbol,
@@ -678,6 +713,8 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
             "short_ratio": info.get("shortRatio"),
             "average_volume": info.get("averageVolume") or info.get("averageVolume10days"),
             "calendar": calendar_dict,
+            "next_quarter_eps_estimate": next_quarter_eps_estimate,
+            "next_quarter_eps_date": next_quarter_eps_date,
         }
 
         record_warnings = validate_attributes_record(record)

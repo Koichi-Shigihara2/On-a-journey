@@ -237,7 +237,8 @@ class TestFetchWeeklyAttributesSchema:
         "totalDebt": 500_000_000,
     }
 
-    def _patch_info(self, monkeypatch, info, calendar=None, calendar_raises=False):
+    def _patch_info(self, monkeypatch, info, calendar=None, calendar_raises=False,
+                     earnings_dates=None, earnings_dates_raises=False):
         class _FakeTicker:
             def __init__(self, symbol):
                 pass
@@ -249,6 +250,11 @@ class TestFetchWeeklyAttributesSchema:
                 if calendar_raises:
                     raise RuntimeError("simulated calendar failure")
                 return calendar
+            @property
+            def earnings_dates(self):
+                if earnings_dates_raises:
+                    raise RuntimeError("simulated earnings_dates failure")
+                return earnings_dates
         monkeypatch.setattr(fetcher, "_USE_SAFE_YF", False)
         monkeypatch.setattr(fetcher.yf, "Ticker", _FakeTicker)
 
@@ -476,6 +482,130 @@ class TestFetchWeeklyAttributesCalendar:
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["calendar"] == {}
         assert saved["forward_pe"] == 18.0  # .info由来フィールドは正常に保存される
+
+
+class TestFetchWeeklyAttributesNextQuarterEps:
+    """[[EPS-1]]で追加したnext_quarter_eps_estimate/next_quarter_eps_dateの
+    回帰テスト。Ticker.earnings_datesをmonkeypatchし、ネットワークアクセスなしで
+    「Reported EPSがNaN（未発表）の直近行のEPS Estimate」抽出ロジックを検証する。"""
+
+    _FAKE_INFO = TestFetchWeeklyAttributesSchema._FAKE_INFO
+
+    def _patch(self, monkeypatch, earnings_dates=None, earnings_dates_raises=False):
+        schema = TestFetchWeeklyAttributesSchema()
+        schema._patch_info(monkeypatch, dict(self._FAKE_INFO),
+                            earnings_dates=earnings_dates, earnings_dates_raises=earnings_dates_raises)
+
+    @staticmethod
+    def _make_earnings_dates(rows):
+        """rows: [(date_str, eps_estimate, reported_eps), ...]（ADBE実データ相当の
+        新しい順）からyfinance実物と同型のDataFrameを構築する"""
+        idx = pd.to_datetime([r[0] for r in rows])
+        return pd.DataFrame(
+            {"EPS Estimate": [r[1] for r in rows], "Reported EPS": [r[2] for r in rows],
+             "Surprise(%)": [None] * len(rows)},
+            index=idx,
+        )
+
+    def test_next_quarter_eps_extracted_from_unreported_future_row(self, tmp_path, monkeypatch):
+        """ADBE実データ相当: 直近行がReported EPS=NaN（未発表）かつ
+        EPS Estimateが存在する場合、その値・日付が抽出されること"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([
+            ("2026-12-09", 6.33, None),
+            ("2026-09-10", 6.09, 6.13),
+            ("2026-06-11", 5.81, 5.96),
+        ])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] == 6.33
+        assert saved["next_quarter_eps_date"] == "2026-12-09"
+
+    def test_future_row_with_nan_estimate_yields_none(self, tmp_path, monkeypatch):
+        """CIX/FROG実データ相当: 未発表行は存在するがEPS Estimate自体が
+        アナリスト網羅性不足でNaNの場合、Noneのまま（例外にならない）"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([
+            ("2026-11-15", None, None),
+            ("2026-08-14", 0.05, 0.06),
+        ])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] is None
+        assert saved["next_quarter_eps_date"] is None
+
+    def test_no_unreported_future_row_yields_none(self, tmp_path, monkeypatch):
+        """全行がReported EPS確定済み（次回決算日が未定でyfinance側に
+        まだ行が生成されていない）場合もNoneのまま"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([("2026-06-11", 5.81, 5.96)])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] is None
+
+    def test_earnings_dates_none_yields_none(self, tmp_path, monkeypatch):
+        """指数等、.earnings_datesがNoneを返す銘柄でも例外にならずNoneになる"""
+        base = str(tmp_path)
+        self._patch(monkeypatch, earnings_dates=None)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] is None
+        assert saved["next_quarter_eps_date"] is None
+
+    def test_earnings_dates_fetch_failure_does_not_block_other_fields(self, tmp_path, monkeypatch):
+        """.earnings_dates呼び出しが例外を送出しても、.info由来の他フィールドの
+        保存は妨げられない（calendar取得失敗と同型の独立性）"""
+        base = str(tmp_path)
+        self._patch(monkeypatch, earnings_dates_raises=True)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] is None
+        assert saved["forward_pe"] == 18.0  # .info由来フィールドは正常に保存される
+
+    def test_nearest_unreported_row_picked_when_multiple_future_rows_exist(self, tmp_path, monkeypatch):
+        """将来行が複数存在する場合、最も近い日付の行が採用されること
+        （sort_index()による最小日付選択の回帰テスト）"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([
+            ("2027-03-10", 7.00, None),
+            ("2026-12-09", 6.33, None),
+            ("2026-09-10", 6.09, 6.13),
+        ])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] == 6.33
+        assert saved["next_quarter_eps_date"] == "2026-12-09"
+
+    def test_past_row_with_missing_reported_eps_is_not_mistaken_for_future(self, tmp_path, monkeypatch):
+        """ZETA実データで発見: 過去の決算行がYahoo側のデータ欠損で
+        Reported EPS=NaNのまま残っているケース（Surprise(%)は算出済み
+        だがReported EPS自体が欠落）。Reported EPS=NaNだけを条件にすると
+        この4年以上前の過去欠損行を「次回決算」と誤認する
+        （実際に2022-05-10のZETA実データで発生した回帰）。日付が現在時刻
+        より未来の行のみを対象とすることでこの過去欠損行を除外する。"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([
+            ("2026-11-03", 0.28, None),      # 真の次回決算（未発表）
+            ("2026-08-04", 0.19, 0.27),
+            ("2022-05-10", 0.04, None),      # 過去のデータ欠損行（誤認の原因）
+            ("2022-02-23", 0.05, 0.11),
+        ])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["next_quarter_eps_estimate"] == 0.28
+        assert saved["next_quarter_eps_date"] == "2026-11-03"
 
 
 class TestMergeDailyRecords:

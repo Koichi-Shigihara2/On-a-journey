@@ -960,6 +960,7 @@ class KoichiValuationCalculator:
                 "ev_ebitda": financials.get("ev_ebitda"),
                 "ma200": financials.get("ma200"),
                 "forward_eps": financials.get("forward_eps"),
+                "next_quarter_eps": financials.get("next_quarter_eps"),
                 "analyst_target_median": financials.get("analyst_target_median"),
                 "analyst_target_mean": financials.get("analyst_target_mean"),
                 "analyst_target_low": financials.get("analyst_target_low"),

@@ -620,6 +620,7 @@ class TanukiDataFetcher:
         ev_ebitda = None
         ma200 = None
         forward_eps = None
+        next_quarter_eps = None
         analyst_target_median = None
         analyst_target_mean = None
         analyst_target_low = None
@@ -713,6 +714,13 @@ class TanukiDataFetcher:
                     forward_eps = float(forward_eps_raw)
                     print(f"   [{ticker}] market_data forwardEps: ${forward_eps:.4f}")
 
+                # Next Quarter EPS（[[EPS-1]]、次回未発表四半期のアナリストEPS
+                # 推定値。yfinance Ticker.earnings_datesの直近未発表行由来）
+                next_quarter_eps_raw = attrs.get("next_quarter_eps_estimate")
+                if next_quarter_eps_raw is not None and isinstance(next_quarter_eps_raw, (int, float)):
+                    next_quarter_eps = float(next_quarter_eps_raw)
+                    print(f"   [{ticker}] market_data next quarter EPS estimate: ${next_quarter_eps:.4f}")
+
                 # 配当（ディビデンドトラップ判定用）
                 dividend_yield = attrs.get("dividend_yield") or 0.0
                 payout_ratio   = attrs.get("payout_ratio") or 0.0
@@ -744,6 +752,7 @@ class TanukiDataFetcher:
                 ev_ebitda = None
                 ma200 = None
                 forward_eps = None
+                next_quarter_eps = None
                 analyst_target_median = None
                 analyst_target_mean = None
                 analyst_target_low = None
@@ -856,6 +865,7 @@ class TanukiDataFetcher:
             "ev_ebitda": ev_ebitda,
             "ma200": ma200,
             "forward_eps": forward_eps,
+            "next_quarter_eps": next_quarter_eps,
             "analyst_target_median": analyst_target_median,
             "analyst_target_mean": analyst_target_mean,
             "analyst_target_low": analyst_target_low,
