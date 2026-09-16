@@ -413,13 +413,13 @@ F&G Level2×TQQQ自動売買システム（Windowsタスクスケジューラか
 `--monitor`を日次実行、moomoo OpenD経由で発注）。signal.json/state.json/trade_log.jsonlが
 日次で更新される。
 
-**リポジトリ内に陳腐化した初期複製が残存（要注意）:** `src/subport/fg_level2/`は
-2026-05-03の開発初期に作成された同名モジュール一式（trader.py/signal.py/config.json等）だが、
-2026-05-03以降git上で更新がなく、`register_tasks.ps1`が`$RepoRoot`をこのリポジトリパスに
-設定しているにも関わらず実際には使われていない（運用中のsignal.json更新は
-`C:\Users\shigi\AutoTrade\fg_level2\`側でのみ発生）。両者は既に内容が乖離しており、
-このモジュールを参照・変更する際は誤って更新対象外の複製を編集しないよう注意すること。
-削除要否は本調査のスコープ外のため対応保留（別途判断が必要）。
+**リポジトリ内の陳腐化した初期複製は削除済み（2026-09-16）:** `src/subport/fg_level2/`は
+2026-05-03の開発初期に作成された同名モジュール一式（trader.py/signal.py/config.json等）
+だったが、`register_tasks.ps1`の`$RepoRoot`設定にも関わらず本番運用（外部
+`C:\Users\shigi\AutoTrade\fg_level2\`）から実際には一切参照されていないことを
+実装レベル（外部`trader.py`のCONFIG_PATH実装・Windowsタスクスケジューラの実登録
+タスク3件の実行パス）で確認した上で削除した（`[[STALE-SUBPORT-CLEANUP-1]]`、
+詳細はBACKLOG_DONE.md「2026-09-16（完了）」参照）。
 
 **OpenD常時起動という運用前提:** AutoTrade運用のため、moomoo OpenD（ローカルゲートウェイ）は
 既に常時起動している（2026-07-10 DESIGN-16調査時に確認）。この前提により、Moomoo API Skillや

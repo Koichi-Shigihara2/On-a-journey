@@ -532,7 +532,7 @@ GAP-1]]`（2026-08-16完了）で「`(oi or 0)`によるゼロ化を経て真の
 
 ---
 
-### ✅ [STALE-SUBPORT-CLEANUP-1] src/subport/fg_level2/ 陳腐化複製の整理 — B案（README新設）で対応完了
+### ✅ [STALE-SUBPORT-CLEANUP-1] src/subport/fg_level2/ 陳腐化複製の整理 — 完全クローズ（削除完了）
 **状態:** ✅実装完了
 **優先度:** 低〜中 → 完了
 **分類:** 保守性 / リポジトリ整理
@@ -598,6 +598,24 @@ AS-IS-386の記載は開発初期時点のものが陳腐化して残ってい�
 
 #### 着手条件
 なし（完了）
+
+#### 2026-09-16追記: A案（削除）への切り替え・完全クローズ
+外部運用が自身のconfig.jsonのみを参照し本リポジトリ内ファイルを一切参照
+していないと実装確認できたため、A案（削除）へ切り替え、
+`src/subport/fg_level2/`ディレクトリ（README.md含む）を完全削除。
+ステータスをB案対応完了→A案採用・完全クローズへ更新。
+
+削除前の最終確認として`grep -rn "subport\.fg_level2\|subport/fg_level2\|
+subport import fg_level2" --include="*.py" --include="*.yml" --include="*.ps1"
+--include="*.md" .`を再実行したところ、ヒットしたのはドキュメント上の言及
+（本エントリ・`CLAUDE_CODE_START.md`・`archive/OUTPUT_ITEMS_INVENTORY.md`・
+`INPUT_DATA_AS_IS.md`・削除対象自身の`README.md`）のみで、実行コードからの
+import・パス参照は皆無だった。さらに`register_tasks.ps1`が`$RepoRoot`を
+このリポジトリパスに設定していた点についても、Windowsタスクスケジューラの
+実登録タスク3件（`FG_Level2_Entry`/`FG_Level2_Monitor`/`FG_Level2_Signal`）を
+`Get-ScheduledTask`で直接確認し、いずれも実行パスが`C:\Users\shigi\
+AutoTrade\fg_level2\`（trader.py/fg_signal.py）であり、リポジトリ内パスへの
+参照は0件であることを確認した上で削除を実施した。
 
 ---
 
