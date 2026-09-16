@@ -4650,11 +4650,6 @@ BACKLOG_DONE.md「2026-09-16（完了）」参照）
 
 ---
 
-### [EPS-1] アナリスト予想EPS四半期値の取得
-- 現状: Next_Quarter_EPSはN/A（Alpha Vantage無料枠の制約）
-- 問題: 四半期サプライズ率が計算できない
-- 改善: 有料API検討 or yfinance の quarterly_earnings 活用
-
 ### [TANUKI-FIN-2] 金融機関銘柄（JPM・GS・SOFI）へのエクイティDCF並行評価対応
 **優先度:** 低（設計相談は完了・実装未着手）
 **分類:** 設計課題 / TANUKI VALUATION
@@ -5605,6 +5600,63 @@ DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテ
 #### 着手条件
 なし（①〜⑤いずれもKoichiさんの設計判断待ち、個別項目ごとに着手可否を
 判断する）
+
+---
+
+### [MARKETDATA-TRAILING-PE-STRING-INFINITY-1] common/market_data/fetcher.pyがtrailing_pe等のyfinance数値フィールドの型を検証せず、文字列"Infinity"混入で銘柄全体のmarket_data由来フィールドがNone化する
+**優先度:** 中
+**分類:** バグ / common/market_data / データ品質
+**登録日:** 2026-09-16
+**発見:** `[[EPS-1]]`実装（Next_Quarter_EPS追加）の検証中、全99銘柄
+（tanuki=true）でTANUKI VALUATIONパイプラインを再実行した際に
+ZETAのみ`market_data attributes解析エラー`が発生していることに気づき
+原因調査した
+
+#### 内容
+`common/market_data/fetcher.py::fetch_weekly_attributes()`は
+`info.get("trailingPE")`等のyfinance数値フィールドを型検証せずそのまま
+`attributes/{SYMBOL}.json`へ保存している。ZETAの実データで
+`trailing_pe`がyfinance側から**文字列**`"Infinity"`として返る
+（PERが定義不能な場合にYahoo側がinfinityの数値ではなく文字列を返す
+ケースがあると推測される、根本原因はyfinance/Yahoo Finance側の仕様の
+ため未確定）ことを実測確認した。
+
+この文字列値が`src/value/tanuki_valuation/data_fetcher.py::
+get_financials()`の`(_trailing_pe is None or _trailing_pe <= 0)`
+（674行目付近）で`str`と`int`の比較となり`TypeError: '<=' not
+supported between instances of 'str' and 'int'`が発生する。この関数は
+per/per_is_forward/peg/ps/ev_ebitda/ma200/forward_eps/next_quarter_eps/
+analyst_target_median/analyst_target_mean/analyst_target_low/
+analyst_target_high/analyst_count/analyst_rec_key/dividend_yield/
+payout_ratioの**全16フィールドを1つのtryブロックで処理**しており、
+例外発生時は全フィールドがexcept節で中立デフォルト（None等）に
+リセットされる設計（意図的な設計、非atomicな部分成功を避けるため）
+のため、trailing_pe単体の型異常がTANUKI VALUATION計算全体
+（PER比較・PEG・PS・EV/EBITDA・200日移動平均・Forward EPS・
+Next_Quarter_EPS・アナリスト目標株価コンセンサス）を巻き添えでNone化
+させている。
+
+#### 影響
+実測でZETAのlatest.jsonを確認したところ、上記16フィールドのうち
+market_data由来の9フィールド（per/peg/ps/ev_ebitda/ma200/forward_eps/
+next_quarter_eps/analyst_target_median/analyst_count）が全てNoneに
+なっていることを確認した。report.txtのPER_Comparison・
+Forward_Estimatesセクションが軒並みN/A表示になる。全99銘柄
+（tanuki=true）中この型異常が発生したのはZETAの1件のみと確認済み
+（他98銘柄のtrailing_pe/forward_peはいずれも数値型）。
+
+#### 対応方針
+未定。候補:
+- 案A: `fetch_weekly_attributes()`側で数値フィールド抽出時に
+  `isinstance(value, (int, float))`チェックを追加し、非数値の場合は
+  Noneとして保存する（型ガードの追加、他の数値フィールドにも横展開
+  すべきか要検討）
+- 案B: `data_fetcher.py::get_financials()`側の個別比較箇所
+  （`_trailing_pe <= 0`等）に型チェックを追加する
+- いずれもZETA以外への影響がないことを全99銘柄で確認した上で実施
+
+#### 着手条件
+なし
 
 ---
 

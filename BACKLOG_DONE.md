@@ -837,6 +837,95 @@ pytest 1291件全パス・`audit.py` exit 0・
 
 ---
 
+### ✅ [EPS-1] アナリスト予想EPS四半期値の取得 — yfinance Ticker.earnings_dates経由で実装完了
+**状態:** ✅実装完了
+**優先度:** 未設定 → 完了
+**分類:** 機能追加 / EPS ANALYZER / TANUKI VALUATION
+**完了日:** 2026-09-16
+
+#### 内容（登録時点の記載を再掲）
+- 現状: Next_Quarter_EPSはN/A（Alpha Vantage無料枠の制約）
+- 問題: 四半期サプライズ率が計算できない
+- 改善: 有料API検討 or yfinance の quarterly_earnings 活用
+
+#### STEP1: yfinance側のフィージビリティ調査
+`Ticker.quarterly_earnings`（BACKLOG登録時点の改善案で名指しされていた
+API）は、`common/market_data/fetcher.py`の既存docstring
+（着手順序4-8前提作業2、2026-08-11）で「yfinance側において現行常に
+Noneを返す（DeprecationWarning: 'Ticker.earnings' is deprecated as
+not available via API）」と事前確認済みだったことが判明した。
+
+代わりに`Ticker.earnings_dates`（カレンダーベースのDataFrame、
+`EPS Estimate`/`Reported EPS`/`Surprise(%)`列を持つ）を実測調査した
+ところ、未発表（`Reported EPS`がNaN）の直近行にも`EPS Estimate`列が
+アナリストコンセンサスとして入っていることを確認した。ADBE/SOFI/TSLA
+の3銘柄で最初に確認後、tanuki=true全99銘柄で実測したところ97〜98件が
+取得成功（欠損はCIX・FROGの2件、いずれもアナリスト網羅性不足で
+EPS Estimate自体がNaN）と高い成功率を確認できたため、実装へ進んだ。
+
+既存の`common/market_data/fetcher.py::fetch_weekly_attributes()`が
+`.info`単発呼び出しとは独立した失敗として扱う`.calendar`呼び出しの
+パターン（`[[MARKETDATA-LAYER-CONSTRUCTION-1]]`着手順序4-4）に相乗り
+できると判断し、同モジュール内に実装することにした（独立実装は不要）。
+
+#### STEP2: 実装
+`common/market_data/fetcher.py::fetch_weekly_attributes()`に
+`Ticker.earnings_dates`呼び出しを追加し、
+`next_quarter_eps_estimate`・`next_quarter_eps_date`を
+`attributes/{SYMBOL}.json`へ新設。`src/value/tanuki_valuation/
+data_fetcher.py::get_financials()`→`core_calculator.py`の
+`components`辞書→`pipeline.py::_generate_report()`という、既存の
+`forward_eps`と同型のプラミングで配線し、`Next_Quarter_EPS`のハード
+コードされた"N/A"を実値優先の条件分岐へ変更した。Alpha Vantage側の
+既存コード（`ALPHA_VANTAGE_API_KEY`未設定時にスキップする分岐）は
+変更せず、将来有料化された場合に備え両経路を残した。
+
+**実装中にバグを発見・修正**: 「Reported EPSがNaN」だけを「未発表＝
+次回決算」の判定条件にしたところ、ZETAの実データで「過去の決算だが
+Yahoo側のデータ欠損でReported EPS自体がNaNのまま残る行」
+（2022-05-10、Surprise(%)は-111.11という値が算出済みなのに
+Reported EPS自体は欠落）を次回決算と誤認する不具合を発見した。日付が
+現在時刻より未来であることも条件に加えて修正し、回帰テスト
+（過去欠損行がある場合に正しく除外されること）を追加した。
+
+#### STEP3: 検証
+全99銘柄（tanuki=true）でcommon/market_data/attributesを再取得・
+TANUKI VALUATIONパイプラインを再実行し新旧比較した結果、**97/99銘柄が
+Next_Quarter_EPS N/A→実値化**した。N/Aのまま残った2銘柄:
+- CIX: アナリスト網羅性不足でEPS Estimate自体がNaN（真の欠損、対応
+  不可）
+- ZETA: 本タスクとは独立した既存バグ（`trailing_pe`がYahoo側から
+  文字列"Infinity"で返り、`data_fetcher.py::get_financials()`の
+  型未検証比較で例外が発生、market_data由来の全フィールドが中立
+  デフォルトにリセットされる）の影響と判明。新規`[[MARKETDATA-
+  TRAILING-PE-STRING-INFINITY-1]]`として別途登録（本タスクのスコープ外
+  と判断し実装せず記録のみ）
+
+四半期サプライズ率計算（登録時点の「問題」記載）が機能することも
+実測確認した: ADBEの直近既発表四半期（EPS Estimate=6.09、
+Reported EPS=6.13）にreport.txt記載の定義式
+`Surprise Rate = (Actual - Estimate) / |Estimate| x 100`を適用すると
+0.66%となり、Yahoo自身が算出したSurprise(%)＝0.71%と丸め誤差の範囲内
+（0.05pt差）で一致することを確認した。
+
+#### 検証ゲート
+pytest 1298件全パス（新規回帰テスト8件含む）・`audit.py` exit 0・
+`report_consistency_check.py --fail-on-ng` NG=0/WARN=121件（いずれも
+着手前と同一）。TANUKI VALUATIONパイプライン全99銘柄実行:
+成功99/失敗0、検証結果PASS=97/WARN=0/FAIL=2/ERROR=0（FAIL2件
+〈CEG・LYFT〉は既知のanomaly_detection事象、本タスクと無関係と確認済み）。
+
+#### コミット
+- `5c8bcfe07f`: 機能追加（common/market_data/fetcher.py・
+  data_fetcher.py・core_calculator.py・pipeline.py・回帰テスト）
+- `5432d6db96`: データ再生成（全99銘柄のcommon/market_data/attributes・
+  TANUKI VALUATIONデータ）
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-13（完了）
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（全件完了） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在 — 残り3件をCHECK-34へ追加、対象7ファイル全件対応完了
