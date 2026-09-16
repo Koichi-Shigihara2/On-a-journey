@@ -4001,80 +4001,6 @@ START.md`自体の記述「`fetcher.py`・`dcf_validity_checker.py`
 
 ---
 
-### [SEC-SUBMISSIONS-DUAL-FETCH-1] SEC EDGAR submissions APIがfetcher.pyとedgar_rss_monitor.pyで独立に重複取得されている
-**優先度:** 低〜中
-**分類:** 技術的負債 / API呼び出し重複
-**登録日:** 2026-07-23
-**発見:** annual/segment/filing_text AS-IS構造調査（フェーズ1）④
-
-#### 内容
-SEC EDGAR submissions API（`data.sec.gov/submissions/CIK{cik}.json`）
-が、`common/sec_data/fetcher.py::fetch_submissions()`（週次、全filings
-一括、`submissions.json`へキャッシュ）と`src/tail/
-edgar_rss_monitor.py::get_filing_period()`（平日毎日、特定accnのみ
-live fetch・キャッシュなし）の2箇所で独立に叩かれている。
-EPS Analyzerの独立SEC取得（前回調査⑤(A)②-3で確認済み、別課題）と
-同型のパターン。
-
-#### 影響
-API呼び出しの無駄な重複。実害としては、新規提出直後は週次キャッシュ
-に未反映なため、TAIL側がlive fetchで補っているという設計上の理由が
-ある（鮮度ギャップの解消目的）。単純な参照統合は鮮度要件を壊す
-リスクがある。
-
-#### 対応方針
-未定。edgar_rss_monitor.py側をsubmissions.json参照＋未ヒット時のみ
-live fetchにフォールバックする設計への変更が有力候補だが、鮮度
-ギャップの設計対応が別途必要。
-
-#### 着手条件
-なし
-
----
-
-### [NAMING-CONVENTIONS-APPLY-1] NAMING_CONVENTIONS.md規則1〜5の実装への適用
-**優先度:** 中
-**分類:** リファクタリング / 命名規則
-**登録日:** 2026-07-23
-**発見:** `NAMING_CONVENTIONS.md`
-
-#### 内容
-`NAMING_CONVENTIONS.md`が策定した5つの命名規則（データソース接尾辞・
-期間接尾辞・誤称禁止・provenance明示・唯一の正の参照元明示）は、策定の
-みで実装（既存フィールドのリネーム）には未反映。個別の適用例
-（[[NETCASH-DUAL-CALC-1]]の`net_cash_sec`化、[[RULE40-DEFINITION-
-MISMATCH-1]]の期間接尾辞化等）は該当タスク側で扱うが、命名規則全体の
-チェックリスト運用（新規フィールド追加時の適用）自体は独立したタスクと
-して管理する。
-
-**2026-08-15追記（実装結果との食い違い）**: `[[NETCASH-DUAL-CALC-1]]`の
-実際の実装（2026-08-13完了）は、想定していた規則1の接尾辞化
-（`net_cash`→`net_cash_sec`）を行わず、**フィールド名`net_cash`を維持
-したまま算出元のみ`SECReader.get_net_cash()`へ統一**した（STONKS
-SILOの独自算出`cash − yfinance totalDebt`を廃止）。これは規則1の趣旨
-（データソースが異なる場合に接尾辞で識別できるようにする）に照らすと
-矛盾ではない解釈も成り立つ：統一後はTANUKI VALUATION・STONKS SILOとも
-同一のデータソース（`SECReader.get_net_cash()`）を参照するようになった
-ため、「データソースが異なる場合」という規則1の適用前提自体が消滅し、
-接尾辞による識別の必要性がなくなったとも言える。一方`[[RULE40-
-DEFINITION-MISMATCH-1]]`の期間接尾辞化（`rule40_yoy_netmargin`・
-`rule40_cagr3y_opmargin`）は想定通り規則2に従って実装済み。個別適用例
-の記載は「命名規則の適用＝機械的な接尾辞付与」ではなく「適用要否は
-統一後のデータソース同一性を踏まえて都度判断する」という運用実態に
-即した表現に将来更新することが望ましい（本エントリの対応方針自体
-〈チェックリスト運用〉には影響しないため、記録として付記するのみ）。
-
-#### 対応方針
-新規フィールド追加時に`NAMING_CONVENTIONS.md`の適用チェックリストを
-参照する運用をCLAUDE_CODE_START.md等に明記する。既存フィールドの一括
-リネームは影響範囲が大きいため、個別タスク（上記関連タスク）の実装時に
-順次適用する。
-
-#### 着手条件
-なし
-
----
-
 ### [SENS-MATRIX-DUAL-IMPL-1] stock.html独自5×5感応度マトリクスとbackend 3×3の並存（一部対応済み）
 **優先度:** 中
 **分類:** 設計不整合 / TANUKI VALUATION
@@ -4137,56 +4063,6 @@ and wacc > 0 else 0.0`と明示的にゼロフロアされるのに対し、直�
 
 ---
 
-
----
-
-### [EPS-AI-ANALYSIS-LATEST-ONLY-1] EPS Analyzer ai_analysisが最新四半期のみ・過去四半期に遡及されない
-**優先度:** 中
-**分類:** 機能ギャップ / EPS Analyzer
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ8（AS-IS-270/271）
-
-#### 内容
-`pipeline.py`は`quarterly_results[0]`（最新のみ）に対して
-`analyze_adjustments()`を呼ぶため、過去四半期の調整項目についてはAIに
-よる健全性評価（health/comment/sources）が生成されない。
-
-#### 対応方針
-過去四半期についても遡及的にAI分析を生成するか、意図的な設計（コスト
-抑制目的）であることを明示するかを判断する。
-
-#### 着手条件
-なし
-
----
-
-### [FIVE-CATEGORY-RECLASSIFY-1] 5分類レベルの再判定（AS-IS-437〜441・404・057/058/060）
-**優先度:** 中
-**分類:** ドキュメント整合性 / 分類見直し
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ9・フェーズ10
-
-#### 内容
-①AS-IS-437〜441（TANUKI TAIL `tail_kpi_map.json`関連5項目）は「手動入力
-データ」（AS-IS-425〜436と同一のAI下書き＋人手承認ワークフロー）に酷似
-しているが、ステップ7の一次分類時点で「導出データ」側に区分された。
-②AS-IS-404（`last_filed`）はフェーズ1で定義した「システム設定データ
-（監視状態管理系）」と同種の性質だが「その他」に取り残されている。
-③AS-IS-057/058/060（Reverse DCF比較表のメタ情報行「場所」「用途」
-「ガード」）は実データ値ではなく「実装差異の比較分析」自体がAS-IS番号を
-持ってしまっている。いずれも`DERIVED_DATA_SUBCATEGORIES.md`の8分類内の
-再配置ではなく、より上位の5分類（一次データ／手動入力データ／移送
-データ／システム設定データ／導出データ）自体の再判定が必要。
-
-#### 対応方針
-①②は5分類を手動入力データ・システム設定データへ変更するか判断する。
-③はカタログから除外する（メタ情報であり出力データではないため）か、
-現状維持するかを判断する。`TO_BE_FINAL_LIST.md`・
-`DERIVED_DATA_SUBCATEGORIES.md`・`FIELD_DEFINITIONS.md`への反映が
-必要になる。
-
-#### 着手条件
-なし
 
 ---
 
@@ -4708,95 +4584,6 @@ Adjusted EPSが新たに算出される**ようになった。株数の引き継
 
 ---
 
-### [SPLIT-REALTIME-GAP-REVERSE-1] KULR/SPIRのリバース分割で同型の恒久固着ギャップ有無が未確認
-**優先度:** 低
-**分類:** データ品質 / EPS ANALYZER
-**登録日:** 2026-07-20
-**発見:** [[SPLIT-REALTIME-GAP-1]]（完了・BACKLOG_DONE.md参照）実装時
-
-#### 背景
-SPLIT-REALTIME-GAP-1の実装前調査で行った全101銘柄横断スキャンは、フォワード
-分割（`diluted_shares_used`が数倍に「ジャンプ」するパターン、比率>1のみ）を
-検知対象としていたため、リバース分割（比率<1、株数が「減る」パターン）を
-見落としていた。
-
-BACKLOG_DONE.md「Phase 2b-3完了（2026-07-12）」の記述で、KULR・SPIRの2銘柄が
-当時から`extract_key_facts.py`のfact選定ロジック修正の対象銘柄として言及
-されていたことを再確認し、yfinanceでKULR（2025-06-23、1-for-8）・SPIR
-（2023-08-31、1-for-8）のリバース分割が実在することを確認した。
-
-ローカルキャッシュ（`docs/value-monitor/adjusted_eps_analyzer/data/{KULR,SPIR}/
-quarterly.json`）を見ると、いずれも「高い値が数四半期続いた後、低い値へ
-ジャンプし、以後低い値が続く」というNVDA型と鏡写しのパターンが見られる
-（KULR: 2022-06-30〜2024-03-31が約104M〜142M→2024-06-30以降は約22.7M〜46.2M。
-SPIR: 2022-03-31〜2022-06-30が約139M→2022-09-30以降は約17.5M〜33.3M）。
-いずれも実際のリバース分割日より1年程度早いタイミングでジャンプしており、
-SPLIT-REALTIME-GAP-1のNVDA等と同型の「翌年以降の10-Q再掲で先に是正された
-四半期」＋「再掲機会がなく古い側の値が残存」という構造が疑われるが、
-一次情報（SEC 10-Q/8-K）での確認・`apply_split_adjustments()`が
-リバース比率（ratio<1）を正しく扱えるかのコード確認はいずれも未実施。
-
-SCCO（yfinanceに2024年以降ほぼ毎四半期`~1.005-1.01`という極小の「分割様」
-記録があるが、ローカルキャッシュのdiluted_shares_used系列はほぼ横ばい
-〜緩やかな増加のみで明確なジャンプ/ドロップなし）は、特別配当等に伴う
-yfinance側のデータ仕様上のノイズであり実分割ではないと判断、対象外。
-
-#### 対応方針（未確定）
-- KULR/SPIRそれぞれのSEC 10-Q/8-K一次情報でリバース分割日・比率を確認する
-- `apply_split_adjustments()`の閾値計算（`pre_split_threshold = post_split_avg
-  / ratio × 1.5`）がratio<1（リバース分割）でも意図通り機能するか
-  （現状の実装はratio>1のフォワード分割のみで検証されている）をコードで確認する
-- 実装するか否か・優先度はKoichiさんの次回判断待ち
-
-#### 着手条件
-なし（次回セッションで判断）
-
----
-
-### [DATA-JUMP-CHECK-NETINCOME-SBC-1] 純利益・SBCの段差型急変検知（比率方式以外の代替方式検討）
-**優先度:** 低（着手急がず）
-**分類:** アーキテクチャ / 品質管理
-**登録日:** 2026-09-06
-**発見:** [[DATA-JUMP-CHECK-GENERALIZE-1]]実装時の実データ比率分布確認
-
-#### 背景
-[[DATA-JUMP-CHECK-GENERALIZE-1]]で`check_c_data_jump()`（YoY比率が閾値以上/
-以下で発火する段差型検知）を売上総利益・CapExへ展開する際、当初は純利益・
-SBCも対象候補としていたが、実データで比率分布を確認した結果、比率方式が
-本質的に機能しないことが判明したため、この2フィールドは今回のスコープから
-除外した：
-
-- **純利益（pl.net_income）**: tanuki=true全100銘柄・直近6年のYoY比率477件中
-  53件が負値（黒字↔赤字の符号反転）。符号反転を跨ぐ比率は数学的に意味を
-  持たない（例: LITE 2025→2026: $25.9M→$-69.35億、比率-267.76倍という値
-  自体が「267倍悪化」を意味しない）。閾値方式で符号反転を捕捉しようとすると
-  「負の比率は全て閾値以下」という粗い判定にしかならず、実質的に「符号が
-  変わったかどうか」の二値判定と変わらない
-- **SBC（cf.stock_based_compensation）**: ゼロ近傍の小額から上場後の本格的な
-  株式報酬制度導入で急増するケースが頻発し、実測でZETA（2020→2021、
-  $105K→$259.16M、倍率2468.18倍）のような正当な急増が比率の上限を
-  無意味化する。SBCはスタートアップ〜上場直後の企業で「ほぼゼロから
-  始まり数年で定常化する」という成長曲線自体がありふれているため、
-  段差型検知が想定する「タグ切替による不連続 vs 正当な急変」の区別が
-  比率方式では原理的に困難
-
-#### 対応方針（未確定・次回セッション以降で判断）
-比率方式（YoY倍率）以外のアプローチを検討する必要がある。候補（いずれも
-未検証、次回セッションで実データを見ながら判断）：
-- 純利益: 符号反転自体を検知する二値チェック（「前年黒字→当年赤字」等の
-  遷移を、[[BS-FIELD-NONE-TRANSITION-DETECT-1]]（WARN-26、有値→None遷移
-  検知）と同型の「状態遷移検知」として設計する案
-- SBC: 絶対額ベースの閾値（例: 直近年のSBCが売上の一定比率を超えて
-  急増した場合のみ検知）、またはゼロ近傍を除外した上での比率方式再検討
-- いずれも「NGにするには誤検知率が高すぎる」というWARN-21/44/45と同じ
-  教訓が当てはまる可能性が高く、実装する場合もWARNレベルに留める前提で
-  設計すること
-
-#### 着手条件
-なし（優先度含め次回以降のセッションで判断。急ぎではない）
-
----
-
 ### [FLAG-THRESHOLD-DESIGN-1] tanuki/stonks_silo等4フラグの判定基準ロジック導入（第二段階）
 **優先度:** 未定
 **分類:** アーキテクチャ / 銘柄登録フロー
@@ -4867,13 +4654,6 @@ BACKLOG_DONE.md「2026-09-16（完了）」参照）
 - 現状: Next_Quarter_EPSはN/A（Alpha Vantage無料枠の制約）
 - 問題: 四半期サプライズ率が計算できない
 - 改善: 有料API検討 or yfinance の quarterly_earnings 活用
-
-### [TANUKI-ROE-2] デュポン分解 業種平均比較・潜在ROE試算
-**優先度:** 低
-**状態:** 部分完了（2026-06-26）
-- ✅ stock.htmlにDUPONT ANALYSISパネルを追加（4カード：純利益率・資産回転率・財務レバレッジ・ROE）
-- [ ] 業種平均との比較表示（Damodaranにデータなし・データソース確保が必要）
-- [ ] 潜在ROE試算（業種平均データ確保後に実装）
 
 ### [TANUKI-FIN-2] 金融機関銘柄（JPM・GS・SOFI）へのエクイティDCF並行評価対応
 **優先度:** 低（設計相談は完了・実装未着手）
@@ -5775,48 +5555,154 @@ Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`へ�
 
 ---
 
-## 優先度：低（アイデア段階）
+### [MINOR-DESIGN-DECISION-PENDING-CATALOG-1] 軽微な設計判断待ち5件の統合カタログ（元NAMING-CONVENTIONS-APPLY-1/FIVE-CATEGORY-RECLASSIFY-1/EPS-AI-ANALYSIS-LATEST-ONLY-1/SEC-SUBMISSIONS-DUAL-FETCH-1/TAILKPI-FIELD-VALIDATION-GAP-1）
+**優先度:** 中（個別の着手条件はKoichiさんの設計判断待ちのまま変更なし）
+**分類:** 設計判断待ち / 複数サブシステム横断
+**登録日:** 各サブ項目の元登録日は各①〜⑤の記載を参照。統合日: 2026-09-16
+**発見:** 2026-09-16の件数削減棚卸し（BACKLOG.md実コード照合）
 
-### [PARSER-MERGED-TAG-MIXING-RISK-1] parser.py::_extract_values_merged()が、Layer3が[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]で廃棄した危険パターン（複数タグの生エントリを先に混ぜてからYTD変換）と同型の構造を持つ疑い
-**優先度:** 低（Layer3統一方針確定により、data/系統の重要度自体が
-低下したため、中→低に格下げ）
-**分類:** バグ疑い / 構造的リスク
-**登録日:** 2026-08-06
-**発見:** `SEC_EDGAR_LAYER_DESIGN.md`との整合性確認調査（チャット記録、
-2026-08-06）
+#### 統合の経緯
+NAMING-CONVENTIONS-APPLY-1・FIVE-CATEGORY-RECLASSIFY-1・
+EPS-AI-ANALYSIS-LATEST-ONLY-1・SEC-SUBMISSIONS-DUAL-FETCH-1・
+TAILKPI-FIELD-VALIDATION-GAP-1の5件は、いずれも実害が確定的ではなく、
+対応方針の分岐（複数の選択肢のうちどれを採るか）自体がKoichiさんの設計
+判断待ちのまま長期未着手という共通点を持つため、2026-09-16に1つの
+カタログエントリへ統合した（`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`と同型の
+統合パターン）。元の5件はBACKLOG.mdから削除し、内容は要約せず全文そのまま
+以下の①〜⑤に保持する。個別の着手条件・優先度は統合前のまま変更していない。
 
-#### 内容
-`layer3_builder.py::_merge_candidate_entries()`は、候補タグごとに
-独立して`_process_entries()`→`_normalize_field_entries()`（YTD→単四半期
-変換を含む）を完了させてから、正規化済み系列同士をend_date単位で
-マージする設計になっている。これは当初の実装（生エントリを先に
-end_date単位でマージしてからYTD→単四半期変換する順序）が、異なる
-タグ由来のエントリが同一end_dateで競合した際にFYチェーン判定を
-破壊し、YTD差分計算が中間四半期を1つ読み飛ばして2四半期分を1四半期
-として誤算出するバグを引き起こした（CPRT・PEP等6銘柄・20エントリで
-実データ確認、[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]）ことを踏まえた
-意図的な設計変更。
+#### ① 元[NAMING-CONVENTIONS-APPLY-1] NAMING_CONVENTIONS.md規則1〜5の実装への適用
+**優先度:** 中
+**分類:** リファクタリング / 命名規則
+**登録日:** 2026-07-23
+**発見:** `NAMING_CONVENTIONS.md`
 
-一方、`common/sec_data/parser.py::_extract_values_merged()`
-（merge_all_tags対象フィールド向け、`SECDATA-STORAGE-FRAGMENTATION-1`
-2026-08-05実装のSA/YTD統一アルゴリズム）は、全キー（＝複数タグ）を
-早期終了せずループし、四半期の生候補`(fy, fp, start, end, val)`を
-タグ区別のないまま単一の`quarterly_candidates`リストへ蓄積してから、
-`_resolve_quarterly_values()`でまとめて解決する構造になっている。これは
-Layer3が明示的に廃棄した「生エントリを先に混ぜてから変換」という
-旧パターンと同型であり、複数タグが競合する銘柄・フィールドで同種の
-誤算出が発生する構造的リスクを持つ疑いがある。
+##### 内容
+`NAMING_CONVENTIONS.md`が策定した5つの命名規則（データソース接尾辞・
+期間接尾辞・誤称禁止・provenance明示・唯一の正の参照元明示）は、策定の
+みで実装（既存フィールドのリネーム）には未反映。個別の適用例
+（[[NETCASH-DUAL-CALC-1]]の`net_cash_sec`化、[[RULE40-DEFINITION-
+MISMATCH-1]]の期間接尾辞化等）は該当タスク側で扱うが、命名規則全体の
+チェックリスト運用（新規フィールド追加時の適用）自体は独立したタスクと
+して管理する。
 
-なお、単一タグのみを扱う`_extract_values_best_candidate()`経路は
-タグ混入の余地がないため対象外。939b8f57fコミット時の検証（全105銘柄
-再パース結果が独自シミュレーションと完全一致）は旧parser.py実装との
-内部整合性確認であり、Layer3側の値との突合ではないため、本リスクを
-検出できるものではない。実データでの影響有無は未検証。
+**2026-08-15追記（実装結果との食い違い）**: `[[NETCASH-DUAL-CALC-1]]`の
+実際の実装（2026-08-13完了）は、想定していた規則1の接尾辞化
+（`net_cash`→`net_cash_sec`）を行わず、**フィールド名`net_cash`を維持
+したまま算出元のみ`SECReader.get_net_cash()`へ統一**した（STONKS
+SILOの独自算出`cash − yfinance totalDebt`を廃止）。これは規則1の趣旨
+（データソースが異なる場合に接尾辞で識別できるようにする）に照らすと
+矛盾ではない解釈も成り立つ：統一後はTANUKI VALUATION・STONKS SILOとも
+同一のデータソース（`SECReader.get_net_cash()`）を参照するようになった
+ため、「データソースが異なる場合」という規則1の適用前提自体が消滅し、
+接尾辞による識別の必要性がなくなったとも言える。一方`[[RULE40-
+DEFINITION-MISMATCH-1]]`の期間接尾辞化（`rule40_yoy_netmargin`・
+`rule40_cagr3y_opmargin`）は想定通り規則2に従って実装済み。個別適用例
+の記載は「命名規則の適用＝機械的な接尾辞付与」ではなく「適用要否は
+統一後のデータソース同一性を踏まえて都度判断する」という運用実態に
+即した表現に将来更新することが望ましい（本エントリの対応方針自体
+〈チェックリスト運用〉には影響しないため、記録として付記するのみ）。
+
+##### 対応方針
+新規フィールド追加時に`NAMING_CONVENTIONS.md`の適用チェックリストを
+参照する運用をCLAUDE_CODE_START.md等に明記する。既存フィールドの一括
+リネームは影響範囲が大きいため、個別タスク（上記関連タスク）の実装時に
+順次適用する。
+
+#### ② 元[FIVE-CATEGORY-RECLASSIFY-1] 5分類レベルの再判定（AS-IS-437〜441・404・057/058/060）
+**優先度:** 中
+**分類:** ドキュメント整合性 / 分類見直し
+**登録日:** 2026-07-23
+**発見:** `FIELD_DEFINITIONS.md`フェーズ9・フェーズ10
+
+##### 内容
+①AS-IS-437〜441（TANUKI TAIL `tail_kpi_map.json`関連5項目）は「手動入力
+データ」（AS-IS-425〜436と同一のAI下書き＋人手承認ワークフロー）に酷似
+しているが、ステップ7の一次分類時点で「導出データ」側に区分された。
+②AS-IS-404（`last_filed`）はフェーズ1で定義した「システム設定データ
+（監視状態管理系）」と同種の性質だが「その他」に取り残されている。
+③AS-IS-057/058/060（Reverse DCF比較表のメタ情報行「場所」「用途」
+「ガード」）は実データ値ではなく「実装差異の比較分析」自体がAS-IS番号を
+持ってしまっている。いずれも`DERIVED_DATA_SUBCATEGORIES.md`の8分類内の
+再配置ではなく、より上位の5分類（一次データ／手動入力データ／移送
+データ／システム設定データ／導出データ）自体の再判定が必要。
+
+##### 対応方針
+①②は5分類を手動入力データ・システム設定データへ変更するか判断する。
+③はカタログから除外する（メタ情報であり出力データではないため）か、
+現状維持するかを判断する。`TO_BE_FINAL_LIST.md`・
+`DERIVED_DATA_SUBCATEGORIES.md`・`FIELD_DEFINITIONS.md`への反映が
+必要になる。
+
+#### ③ 元[EPS-AI-ANALYSIS-LATEST-ONLY-1] EPS Analyzer ai_analysisが最新四半期のみ・過去四半期に遡及されない
+**優先度:** 中
+**分類:** 機能ギャップ / EPS Analyzer
+**登録日:** 2026-07-23
+**発見:** `FIELD_DEFINITIONS.md`フェーズ8（AS-IS-270/271）
+
+##### 内容
+`pipeline.py`は`quarterly_results[0]`（最新のみ）に対して
+`analyze_adjustments()`を呼ぶため、過去四半期の調整項目についてはAIに
+よる健全性評価（health/comment/sources）が生成されない。
+
+##### 対応方針
+過去四半期についても遡及的にAI分析を生成するか、意図的な設計（コスト
+抑制目的）であることを明示するかを判断する。
+
+#### ④ 元[SEC-SUBMISSIONS-DUAL-FETCH-1] SEC EDGAR submissions APIがfetcher.pyとedgar_rss_monitor.pyで独立に重複取得されている
+**優先度:** 低〜中
+**分類:** 技術的負債 / API呼び出し重複
+**登録日:** 2026-07-23
+**発見:** annual/segment/filing_text AS-IS構造調査（フェーズ1）④
+
+##### 内容
+SEC EDGAR submissions API（`data.sec.gov/submissions/CIK{cik}.json`）
+が、`common/sec_data/fetcher.py::fetch_submissions()`（週次、全filings
+一括、`submissions.json`へキャッシュ）と`src/tail/
+edgar_rss_monitor.py::get_filing_period()`（平日毎日、特定accnのみ
+live fetch・キャッシュなし）の2箇所で独立に叩かれている。
+EPS Analyzerの独立SEC取得（前回調査⑤(A)②-3で確認済み、別課題）と
+同型のパターン。
+
+##### 影響
+API呼び出しの無駄な重複。実害としては、新規提出直後は週次キャッシュ
+に未反映なため、TAIL側がlive fetchで補っているという設計上の理由が
+ある（鮮度ギャップの解消目的）。単純な参照統合は鮮度要件を壊す
+リスクがある。
+
+##### 対応方針
+未定。edgar_rss_monitor.py側をsubmissions.json参照＋未ヒット時のみ
+live fetchにフォールバックする設計への変更が有力候補だが、鮮度
+ギャップの設計対応が別途必要。
+
+#### ⑤ 元[TAILKPI-FIELD-VALIDATION-GAP-1] TANUKI TAIL KPI提案確定時の個別フィールド妥当性検証未実装
+**優先度:** 低〜未定
+**分類:** データ品質 / TANUKI TAIL
+**登録日:** 2026-07-23
+**発見:** `FIELD_DEFINITIONS.md`フェーズ2（セッション終了時ブラッシュアップで39件起票から漏れていたものを追加起票）
+
+##### 内容
+TANUKI TAILのKPI提案確定フロー（AS-IS-425〜436、`kpi_proposer.py`のGrok
+提案を人間が画面で確認・編集して確定する）において、`workflow_write.py:
+149-152`は`kpis`が空リストでないことのみをチェックしており、個別
+フィールド（`warning_threshold`の数値妥当性、`xbrl_tag`の形式等）の
+検証ロジックは確認できなかった。Discoverのconfig系（[[DISCOVER-CONFIG-
+DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテナレベルの
+非空チェックは存在する）が、個別フィールドの誤入力を防ぐ仕組みがない
+点は同種のリスクである。
+
+##### 対応方針
+`warning_threshold`が数値であること・`xbrl_tag`が既知のタグ命名規則に
+従っていること等、個別フィールドレベルのバリデーションを
+`workflow_write.py`に追加することを検討する。
 
 #### 着手条件
-merge_all_tags対象フィールド一覧の洗い出し・実データでの影響有無検証
-から。ただしdata/系統の位置づけがLayer3統一に伴い補助的になったため、
-緊急性は低い。
+なし（①〜⑤いずれもKoichiさんの設計判断待ち、個別項目ごとに着手可否を
+判断する）
+
+---
+
+## 優先度：低（アイデア段階）
 
 ### [LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1] Layer3のSM/SGA概念分離に伴うNone化2件の統合（元LAYER3-ROIC-WACC-NONE-4TICKERS-1/FINTREND-SM-JOBY-NONE-1）
 **優先度:** 低（意図的な仕様、既知の`[[SCHEMA-NORMALIZED-ISSUES-1]]`②
@@ -5878,32 +5764,6 @@ SM/SGA概念混同問題（`[[SCHEMA-NORMALIZED-ISSUES-1]]`②）の根本解消
 `[[SCHEMA-NORMALIZED-ISSUES-1]]`②のSM/SGA概念混同問題の根本解消時に
 再検討。①②とも個別の着手条件は上記のとおり同一のため、統合先の
 本条件に一本化する。
-
-### [TAILKPI-FIELD-VALIDATION-GAP-1] TANUKI TAIL KPI提案確定時の個別フィールド妥当性検証未実装
-**優先度:** 低〜未定
-**分類:** データ品質 / TANUKI TAIL
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ2（セッション終了時ブラッシュアップで39件起票から漏れていたものを追加起票）
-
-#### 内容
-TANUKI TAILのKPI提案確定フロー（AS-IS-425〜436、`kpi_proposer.py`のGrok
-提案を人間が画面で確認・編集して確定する）において、`workflow_write.py:
-149-152`は`kpis`が空リストでないことのみをチェックしており、個別
-フィールド（`warning_threshold`の数値妥当性、`xbrl_tag`の形式等）の
-検証ロジックは確認できなかった。Discoverのconfig系（[[DISCOVER-CONFIG-
-DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテナレベルの
-非空チェックは存在する）が、個別フィールドの誤入力を防ぐ仕組みがない
-点は同種のリスクである。
-
-#### 対応方針
-`warning_threshold`が数値であること・`xbrl_tag`が既知のタグ命名規則に
-従っていること等、個別フィールドレベルのバリデーションを
-`workflow_write.py`に追加することを検討する。
-
-#### 着手条件
-なし
-
----
 
 ### [TANUKI-VALUATION-MISC-GAPS-1] TANUKI VALUATIONの軽微な構造的ギャップまとめ（残り: net_debt符号エイリアス・Runway cash算出相違の2件のみ、他6件は対応済み/撤去済み）
 **優先度:** 低
@@ -6005,11 +5865,11 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [FUTURE-FEATURE-IDEAS-CATALOG-1] 将来構想6件の統合カタログ（元UX-FLOW-1/MULTI-1/ARCH-1/EVAL-2/DESIGN-8-3/DESIGN-8-4）
+### [FUTURE-FEATURE-IDEAS-CATALOG-1] 将来構想8件の統合カタログ（元UX-FLOW-1/MULTI-1/ARCH-1/EVAL-2/DESIGN-8-3/DESIGN-8-4/SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1/TANUKI-ROE-2）
 **優先度:** 低（いずれも構想段階・実装未着手のアイデアメモ）
 **分類:** 将来構想 / 複数画面・複数サブシステム横断
-**登録日:** 各サブ項目の元登録日は各①〜⑥の記載を参照。統合日: 2026-09-05
-**発見:** 2026-09-05のBACKLOG横断整理
+**登録日:** 各サブ項目の元登録日は各①〜⑧の記載を参照。統合日: 2026-09-05（①〜⑥）・2026-09-16（⑦⑧追加吸収）
+**発見:** 2026-09-05のBACKLOG横断整理（⑦⑧は2026-09-16の件数削減棚卸しで追加吸収）
 
 #### 統合の経緯
 UX-FLOW-1・MULTI-1・ARCH-1・EVAL-2・DESIGN-8-3・DESIGN-8-4の6件は、いずれも
@@ -6019,6 +5879,11 @@ BACKLOG.mdから削除し、内容は要約せず全文そのまま以下の①�
 DESIGN-8-3・DESIGN-8-4については、統合時点で判明している注意点を各項目
 末尾に「注記（2026-09-05追記）」として追記した（元の構想自体は変更・
 削除していない）。
+
+2026-09-16の件数削減棚卸しで、同種の将来検討事項2件
+（SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1・TANUKI-ROE-2）を
+⑦⑧として同様に全文吸収した。元の2件もBACKLOG.mdから削除し、内容は要約せず
+全文そのまま保持する。
 
 #### ① 元[UX-FLOW-1] On a Journey標準利用フローの設計
 **優先度:** 低（思想設計タスク、実装ではなく方針検討から開始）
@@ -6081,6 +5946,46 @@ EXTREME-FEAR-1対応時、買い候補TOP10機能（TANUKI score×乖離率×fun
   risk_fetcher/Discover撤去（2026-09-01〜02）で確立した「根拠不明の
   生成をそのまま採用しない」方針と抵触するため、実装時は代替手法
   （yfinance機械的判定等）を検討すること。
+
+#### ⑦ 元[SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1] BBAI/RKLB/SOFI/VRT/ONDSグループの「維持フィールド」の凍結検討
+**優先度:** 低
+**分類:** データ品質 / 将来検討事項
+**登録日:** 2026-08-05
+**発見:** [[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 3準備調査（チャット記録）
+
+##### 内容
+[[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1でBS項目をNone化・修正した
+BBAI(2020)・RDW(2020)・RKLB(2020)・SOFI(2020)・VRT(2019)・ONDS(2017)の
+6件は、None化されたフィールド自体（current_assets/current_liabilities/
+long_term_debt/short_term_debt等）に「凍結すべき正しい値」が存在しない
+ため、現行のfixed_registry.jsonスキーマでは登録不可と確定済み
+（Stage 3調査、BACKLOG_DONE.md「2026-08-05（完了）」Stage 2エントリ
+参照）。
+
+一方、各銘柄でNone化されず**維持**されたフィールド（例: BBAIの
+total_assets/stockholders_equity/total_liabilities/cash_and_equivalents）
+は、`_resolve_bs_entity_mixing()`の数学的整合性チェック
+（current_assets<=total_assets等）を通過済みであり、「誤った値をNone化
+した」修正の裏返しとして「正しいと確認済みの値」というカテゴリに
+位置づけられる可能性がある。
+
+##### 影響
+未確定。仮に凍結対象とする場合、Stage 1/2とは異なる「除外的検証
+（誤りが混入していないことの消去法的確認）」という性質を持つため、
+Stage 1/2の「積極的な値の検証」基準にそのまま当てはめてよいか設計判断が
+必要。
+
+##### 対応方針
+未定。次回以降、余力があれば検討する将来課題。
+
+#### ⑧ 元[TANUKI-ROE-2] デュポン分解 業種平均比較・潜在ROE試算
+**優先度:** 低
+**状態:** 部分完了（2026-06-26）
+- ✅ stock.htmlにDUPONT ANALYSISパネルを追加（4カード：純利益率・資産回転率・財務レバレッジ・ROE）
+- [ ] 業種平均との比較表示（Damodaranにデータなし・データソース確保が必要）
+- [ ] 潜在ROE試算（業種平均データ確保後に実装）
+- **着手条件（2026-09-16追記、統合時に明記）**: 残り2項目（業種平均比較・
+  潜在ROE試算）の着手条件はいずれもDamodaran業種平均データソースの確保。
 
 #### 着手条件
 なし（いずれも構想段階、個別項目ごとに着手可否を判断する）
@@ -8816,42 +8721,6 @@ common/sec_data統合フェーズ1）の着手条件「[[CAPEX-SIGN-UNNORMALIZED
 
 ---
 
-### [SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1] BBAI/RKLB/SOFI/VRT/ONDSグループの「維持フィールド」の凍結検討
-**優先度:** 低
-**分類:** データ品質 / 将来検討事項
-**登録日:** 2026-08-05
-**発見:** [[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]] Stage 3準備調査（チャット記録）
-
-#### 内容
-[[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1でBS項目をNone化・修正した
-BBAI(2020)・RDW(2020)・RKLB(2020)・SOFI(2020)・VRT(2019)・ONDS(2017)の
-6件は、None化されたフィールド自体（current_assets/current_liabilities/
-long_term_debt/short_term_debt等）に「凍結すべき正しい値」が存在しない
-ため、現行のfixed_registry.jsonスキーマでは登録不可と確定済み
-（Stage 3調査、BACKLOG_DONE.md「2026-08-05（完了）」Stage 2エントリ
-参照）。
-
-一方、各銘柄でNone化されず**維持**されたフィールド（例: BBAIの
-total_assets/stockholders_equity/total_liabilities/cash_and_equivalents）
-は、`_resolve_bs_entity_mixing()`の数学的整合性チェック
-（current_assets<=total_assets等）を通過済みであり、「誤った値をNone化
-した」修正の裏返しとして「正しいと確認済みの値」というカテゴリに
-位置づけられる可能性がある。
-
-#### 影響
-未確定。仮に凍結対象とする場合、Stage 1/2とは異なる「除外的検証
-（誤りが混入していないことの消去法的確認）」という性質を持つため、
-Stage 1/2の「積極的な値の検証」基準にそのまま当てはめてよいか設計判断が
-必要。
-
-#### 対応方針
-未定。次回以降、余力があれば検討する将来課題。
-
-#### 着手条件
-なし（Stage 2/3の主要スコープ外、優先度低のため急ぎ着手しない）。
-
----
-
 ### [HYPECORE-POC-TRAILING-PE-MISSING-1] HypeCore poc.jsonがtrailing_peを保持せずforward_peのみのため、PERフォールバックがforward側限定になっている
 **優先度:** 低
 **分類:** データ品質 / HypeCore
@@ -8882,3 +8751,151 @@ TANUKIと同型の「trailing優先・なければforward」＋`per_is_forward`
 
 #### 着手条件
 なし
+
+---
+
+### [UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1] 実データ未確認の推測段階リスク3件の統合カタログ（元PARSER-MERGED-TAG-MIXING-RISK-1/SPLIT-REALTIME-GAP-REVERSE-1/DATA-JUMP-CHECK-NETINCOME-SBC-1）
+**優先度:** 低（いずれも非保有銘柄または実データ未確認の推測段階のまま
+長期未着手。個別の着手条件は変更なし）
+**分類:** 構造的リスク疑い / データ品質疑い / 複数サブシステム横断
+**登録日:** 各サブ項目の元登録日は各①〜③の記載を参照。統合日: 2026-09-16
+**発見:** 2026-09-16の件数削減棚卸し（BACKLOG.md実コード照合）
+
+#### 統合の経緯
+PARSER-MERGED-TAG-MIXING-RISK-1・SPLIT-REALTIME-GAP-REVERSE-1・
+DATA-JUMP-CHECK-NETINCOME-SBC-1の3件は、いずれも「構造的に同型の疑いが
+あるが実データでの影響有無・実害は未検証」という推測段階のまま長期未着手
+という共通点を持つため、2026-09-16に1つのカタログエントリへ統合した
+（`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`と同型の統合パターン）。元の3件は
+BACKLOG.mdから削除し、内容は要約せず全文そのまま以下の①〜③に保持する。
+個別の着手条件・優先度は統合前のまま変更していない。
+
+#### ① 元[PARSER-MERGED-TAG-MIXING-RISK-1] parser.py::_extract_values_merged()が、Layer3が[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]で廃棄した危険パターン（複数タグの生エントリを先に混ぜてからYTD変換）と同型の構造を持つ疑い
+**優先度:** 低（Layer3統一方針確定により、data/系統の重要度自体が
+低下したため、中→低に格下げ）
+**分類:** バグ疑い / 構造的リスク
+**登録日:** 2026-08-06
+**発見:** `SEC_EDGAR_LAYER_DESIGN.md`との整合性確認調査（チャット記録、
+2026-08-06）
+
+##### 内容
+`layer3_builder.py::_merge_candidate_entries()`は、候補タグごとに
+独立して`_process_entries()`→`_normalize_field_entries()`（YTD→単四半期
+変換を含む）を完了させてから、正規化済み系列同士をend_date単位で
+マージする設計になっている。これは当初の実装（生エントリを先に
+end_date単位でマージしてからYTD→単四半期変換する順序）が、異なる
+タグ由来のエントリが同一end_dateで競合した際にFYチェーン判定を
+破壊し、YTD差分計算が中間四半期を1つ読み飛ばして2四半期分を1四半期
+として誤算出するバグを引き起こした（CPRT・PEP等6銘柄・20エントリで
+実データ確認、[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]）ことを踏まえた
+意図的な設計変更。
+
+一方、`common/sec_data/parser.py::_extract_values_merged()`
+（merge_all_tags対象フィールド向け、`SECDATA-STORAGE-FRAGMENTATION-1`
+2026-08-05実装のSA/YTD統一アルゴリズム）は、全キー（＝複数タグ）を
+早期終了せずループし、四半期の生候補`(fy, fp, start, end, val)`を
+タグ区別のないまま単一の`quarterly_candidates`リストへ蓄積してから、
+`_resolve_quarterly_values()`でまとめて解決する構造になっている。これは
+Layer3が明示的に廃棄した「生エントリを先に混ぜてから変換」という
+旧パターンと同型であり、複数タグが競合する銘柄・フィールドで同種の
+誤算出が発生する構造的リスクを持つ疑いがある。
+
+なお、単一タグのみを扱う`_extract_values_best_candidate()`経路は
+タグ混入の余地がないため対象外。939b8f57fコミット時の検証（全105銘柄
+再パース結果が独自シミュレーションと完全一致）は旧parser.py実装との
+内部整合性確認であり、Layer3側の値との突合ではないため、本リスクを
+検出できるものではない。実データでの影響有無は未検証。
+
+##### 着手条件
+merge_all_tags対象フィールド一覧の洗い出し・実データでの影響有無検証
+から。ただしdata/系統の位置づけがLayer3統一に伴い補助的になったため、
+緊急性は低い。
+
+#### ② 元[SPLIT-REALTIME-GAP-REVERSE-1] KULR/SPIRのリバース分割で同型の恒久固着ギャップ有無が未確認
+**優先度:** 低
+**分類:** データ品質 / EPS ANALYZER
+**登録日:** 2026-07-20
+**発見:** [[SPLIT-REALTIME-GAP-1]]（完了・BACKLOG_DONE.md参照）実装時
+
+##### 背景
+SPLIT-REALTIME-GAP-1の実装前調査で行った全101銘柄横断スキャンは、フォワード
+分割（`diluted_shares_used`が数倍に「ジャンプ」するパターン、比率>1のみ）を
+検知対象としていたため、リバース分割（比率<1、株数が「減る」パターン）を
+見落としていた。
+
+BACKLOG_DONE.md「Phase 2b-3完了（2026-07-12）」の記述で、KULR・SPIRの2銘柄が
+当時から`extract_key_facts.py`のfact選定ロジック修正の対象銘柄として言及
+されていたことを再確認し、yfinanceでKULR（2025-06-23、1-for-8）・SPIR
+（2023-08-31、1-for-8）のリバース分割が実在することを確認した。
+
+ローカルキャッシュ（`docs/value-monitor/adjusted_eps_analyzer/data/{KULR,SPIR}/
+quarterly.json`）を見ると、いずれも「高い値が数四半期続いた後、低い値へ
+ジャンプし、以後低い値が続く」というNVDA型と鏡写しのパターンが見られる
+（KULR: 2022-06-30〜2024-03-31が約104M〜142M→2024-06-30以降は約22.7M〜46.2M。
+SPIR: 2022-03-31〜2022-06-30が約139M→2022-09-30以降は約17.5M〜33.3M）。
+いずれも実際のリバース分割日より1年程度早いタイミングでジャンプしており、
+SPLIT-REALTIME-GAP-1のNVDA等と同型の「翌年以降の10-Q再掲で先に是正された
+四半期」＋「再掲機会がなく古い側の値が残存」という構造が疑われるが、
+一次情報（SEC 10-Q/8-K）での確認・`apply_split_adjustments()`が
+リバース比率（ratio<1）を正しく扱えるかのコード確認はいずれも未実施。
+
+SCCO（yfinanceに2024年以降ほぼ毎四半期`~1.005-1.01`という極小の「分割様」
+記録があるが、ローカルキャッシュのdiluted_shares_used系列はほぼ横ばい
+〜緩やかな増加のみで明確なジャンプ/ドロップなし）は、特別配当等に伴う
+yfinance側のデータ仕様上のノイズであり実分割ではないと判断、対象外。
+
+##### 対応方針（未確定）
+- KULR/SPIRそれぞれのSEC 10-Q/8-K一次情報でリバース分割日・比率を確認する
+- `apply_split_adjustments()`の閾値計算（`pre_split_threshold = post_split_avg
+  / ratio × 1.5`）がratio<1（リバース分割）でも意図通り機能するか
+  （現状の実装はratio>1のフォワード分割のみで検証されている）をコードで確認する
+- 実装するか否か・優先度はKoichiさんの次回判断待ち
+
+##### 着手条件
+なし（次回セッションで判断）
+
+#### ③ 元[DATA-JUMP-CHECK-NETINCOME-SBC-1] 純利益・SBCの段差型急変検知（比率方式以外の代替方式検討）
+**優先度:** 低（着手急がず）
+**分類:** アーキテクチャ / 品質管理
+**登録日:** 2026-09-06
+**発見:** [[DATA-JUMP-CHECK-GENERALIZE-1]]実装時の実データ比率分布確認
+
+##### 背景
+[[DATA-JUMP-CHECK-GENERALIZE-1]]で`check_c_data_jump()`（YoY比率が閾値以上/
+以下で発火する段差型検知）を売上総利益・CapExへ展開する際、当初は純利益・
+SBCも対象候補としていたが、実データで比率分布を確認した結果、比率方式が
+本質的に機能しないことが判明したため、この2フィールドは今回のスコープから
+除外した：
+
+- **純利益（pl.net_income）**: tanuki=true全100銘柄・直近6年のYoY比率477件中
+  53件が負値（黒字↔赤字の符号反転）。符号反転を跨ぐ比率は数学的に意味を
+  持たない（例: LITE 2025→2026: $25.9M→$-69.35億、比率-267.76倍という値
+  自体が「267倍悪化」を意味しない）。閾値方式で符号反転を捕捉しようとすると
+  「負の比率は全て閾値以下」という粗い判定にしかならず、実質的に「符号が
+  変わったかどうか」の二値判定と変わらない
+- **SBC（cf.stock_based_compensation）**: ゼロ近傍の小額から上場後の本格的な
+  株式報酬制度導入で急増するケースが頻発し、実測でZETA（2020→2021、
+  $105K→$259.16M、倍率2468.18倍）のような正当な急増が比率の上限を
+  無意味化する。SBCはスタートアップ〜上場直後の企業で「ほぼゼロから
+  始まり数年で定常化する」という成長曲線自体がありふれているため、
+  段差型検知が想定する「タグ切替による不連続 vs 正当な急変」の区別が
+  比率方式では原理的に困難
+
+##### 対応方針（未確定・次回セッション以降で判断）
+比率方式（YoY倍率）以外のアプローチを検討する必要がある。候補（いずれも
+未検証、次回セッションで実データを見ながら判断）：
+- 純利益: 符号反転自体を検知する二値チェック（「前年黒字→当年赤字」等の
+  遷移を、[[BS-FIELD-NONE-TRANSITION-DETECT-1]]（WARN-26、有値→None遷移
+  検知）と同型の「状態遷移検知」として設計する案
+- SBC: 絶対額ベースの閾値（例: 直近年のSBCが売上の一定比率を超えて
+  急増した場合のみ検知）、またはゼロ近傍を除外した上での比率方式再検討
+- いずれも「NGにするには誤検知率が高すぎる」というWARN-21/44/45と同じ
+  教訓が当てはまる可能性が高く、実装する場合もWARNレベルに留める前提で
+  設計すること
+
+##### 着手条件
+なし（優先度含め次回以降のセッションで判断。急ぎではない）
+
+#### 着手条件
+なし（①〜③いずれも実データ未確認の推測段階、個別項目ごとに着手可否を
+判断する）
