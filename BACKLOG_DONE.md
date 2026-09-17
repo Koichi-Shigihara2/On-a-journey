@@ -2,6 +2,168 @@
 
 ---
 
+## 2026-09-18（完了）
+
+### ✅ [FCF-CONVRATE-LOWER-DIVERGENCE-1] dr<1側29銘柄の構造的ミスマッチをFCF-CONVRATE②可視化に統合 → ボトムアップFCF方式への根本移行で解消
+**優先度:** 未定 → 完了
+**分類:** データ品質 / TANUKI VALUATION / FCF-CONVRATE②派生
+**登録日:** 2026-07-20
+**完了日:** 2026-09-18（調査フェーズ2026-09-16〜17・実装フェーズ2026-09-17〜18）
+**発見:** [[TRUST-SUMMARY-EPIC-1]]段階2再調査・divergence_warning閾値検証
+
+#### 背景（登録時点の記載を再掲）
+`divergence_warning`はdr>=2.0のみ検知し、dr<1（過小推定）側は一切検知
+しない非対称設計になっている。既存の2.0/5.0という閾値はgit調査の結果、
+明確な根拠のない経験的な割り切り値と確認済み（導入コミット`3c12dd1b1`
+2026-04-19「Add files via upload」、根拠記載なし）。
+
+dr<1の銘柄はtanuki=true・fcf_estimation.applied=Trueの59銘柄中
+**29銘柄（49%）**と多数存在する。サンプル5銘柄（LYFT/PAYS/FLYW/CSGP/
+ZETA）を10-K等の一次情報で確認した結果、いずれも①raw_fcfの一過性な
+水増しでも③Adj_NI側の異常な過小評価（バグ）でもなく、
+**②conversion_rateの構造的ミスマッチ**（FCF-CONVRATE②と同型の性質）
+と判明した。内訳は以下の通り異なるメカニズムに分解される：
+- **決済/フロート型（LYFT/PAYS/FLYW）**: 事業モデル特有の運転資本
+  タイミング（保険準備金・顧客資金float等）がOCFを体系的に押し上げる、
+  SITM/LITEの「サイクル変動」とは別種の固定比率限界
+- **意図的な成長投資による一時圧縮（CSGP）**: AMZN/LLY等で既に確認済みの
+  「戦略的投資による収益圧縮」と同型パターン
+- **SBC比重の高い高成長企業のD&A非加算（ZETA）**:
+  [[FCF-CONVRATE-DESIGN-LIMIT-1]]既知の残課題と関連する可能性
+
+#### 対応方針（登録時点は未確定→Koichiさんが根本方針を確定）
+登録時点は「既存のFCF-CONVRATE②可視化パターンを拡張し構造的限界として
+透明化する」対症療法を想定していたが、**Koichiさんの最終判断は業種別
+固定転換率（conversion_rate）方式そのものを廃止し、CapEx・SBC・OCFの
+個別加減算によるボトムアップFCF算出へ置き換えるという根本方針**に
+確定した。目的はreport.txtで「なぜこのFCF・このIVになったか」を計算
+過程レベルで説明できるようにすること。
+
+#### STEP1: 調査フェーズ（2026-09-16〜17、実装なし）
+実データで以下を確認した（詳細はチャット記録参照）:
+- CapEx・SBC・OCF・D&Aは既にLayer2（`common/sec_data/data/{TICKER}/
+  annual_*.json`）に個別フィールドとして保存済み。`raw_fcf`は概念的に
+  既にボトムアップFCF（`parser.py`が`ocf - max(0, pure_capex)`として
+  事前算出済み）に近い
+- **中核的な新発見**: dr<1・45銘柄（登録時29銘柄から2ヶ月弱で増加）の
+  うち35銘柄（78%）はsector未分類/未収録のためdefault(0.70)への
+  機械的フォールバックだった。全99銘柄まで視野を広げると、conversion_
+  rate方式が較正済みレートで意図通り機能していたのはわずか13銘柄
+  （13%）、47銘柄（47%）はdefaultフォールバック、39銘柄（39%）は
+  adj_net_income<=0等でraw_fcfへの完全フォールバックだった
+- LYFT: CapEx標準候補4タグを一度も申告しておらず、実際は候補外の
+  `CapitalizedComputerSoftwareAdditions`のみ計上。運転資本側は保険
+  準備金（`AccruedInsuranceCurrent`、$2.07B〜$2.31B、総負債の36-40%）が
+  未抽出。PAYS/FLYWも`RestrictedCash`系タグ（顧客資金）が未抽出
+- CSGP: 既存の`capital_expenditure`フィールドだけで完全に可視化可能
+  （2024年$579Mピーク）、新規データ取得不要
+- QBTS/SOUN: OCFが5年・2年平均とも構造的に負（会計処理の問題ではなく
+  実際にキャッシュを消費している）。ボトムアップ方式でもこの事実は
+  変わらない。IOT/RBRK/Sは既に実質ボトムアップ相当の値（raw_fcfまたは
+  adj_eps_estimated経由）で機能していた
+
+#### STEP2〜8: 実装フェーズ（2026-09-17〜18）
+1. **タグ抽出拡張**（コミット`f7e75e1d26`・データ`b8cbf545b0`）:
+   LYFT限定`capex_concept`オーバーライド（`quarterly.py::
+   TICKER_RESTRICTIONS`）でCapitalizedComputerSoftwareAdditionsを
+   参照するよう配線。他21銘柄が同タグを申告しておりグローバル候補
+   リストへは追加せず（APPの既存exclude設定と干渉するリスクのため）。
+   `insurance_reserves`（LYFT）・`restricted_cash`（PAYS/FLYW）を
+   新規BSフィールドとして追加（開示専用、DCF計算には未使用）
+2. **STEP1データ配線**（コミット`13d441a802`）: `data_fetcher.py::
+   get_financials()`にcapex_list/sbc_list/ocf_list/da_list/
+   fcf_component_datesを追加。実装中に発見した回帰: `fcf_list_raw`は
+   TTM系列置換で長さが変わることがあり、年次ベースのcapex_list等とは
+   独立した`fcf_component_dates`で対応させる設計に変更
+3. **STEP2/5: 計算ロジック置き換え**（コミット`d391b1c444`）:
+   `estimate_fcf_from_eps()`→`compose_fcf_bottom_up()`。raw_fcfを
+   そのまま採用しCapEx/SBC/OCF/D&Aの内訳を保持。付随するMA統合費用
+   控除・保険/金融特別処理（全99銘柄で通過0件の死コード）・
+   Software_System_Mature/SaaS自己補正機構を丸ごと削除
+   （`beta_fetcher.py::classify_software_system_subgroup()`・新規
+   銘柄登録Step 2.5ゲートも削除）
+4. **STEP3: report.txt内訳表示**（同コミット）: FCF_Breakdown
+   （CapEx/SBC/OCF/D&A）を新設。ΔNWC汎用開示は既存データからの直接
+   算出が困難なため見送り（指示書記載の代替案採用）
+5. **STEP5: フラグ再定義に伴う重要なバグ修正**（同コミット）:
+   Policy A（revenue_floor向けWATCH丸め）のゲート条件
+   `not fcf_estimation.get("applied")`が、appliedの意味反転
+   （「conversion-rate使用」→「データ欠損フォールバック使用」）により
+   ボトムアップ移行後はほぼ常に素通りする不具合になっていたことを実装中に
+   発見・修正（`fcf_floor_applied>0`のみで判定するよう変更）。Policy Bの
+   eps_invalid判定（divergence_warning依存）も構造的に発生しなくなった
+   ため削除
+6. **STEP6: 構造的赤字銘柄フラグ**（同コミット、保守的スコープ）:
+   5年・2年平均とも実績FCFが負の銘柄（QBTS/SOUN型）を検知する
+   `structural_deficit`フラグを追加。IV/Classificationは変更せず、
+   STONKS SILOの赤字銘柄評価枠組みを参照するよう促すreport.txt注記のみ
+   （実データでQBTS/SOUN=True、RBRK/S/IOT=False を確認）
+7. **STEP7: 全99銘柄データ再生成**（コミット`462ca51c0c`）: 60銘柄で
+   IVが変化（旧conversion_rate適用銘柄と完全一致）・39銘柄は不変
+   （既存raw_fcfフォールバック銘柄と完全一致）。AMZN/GOOGL/MSFT等は
+   IV下落（過去に較正されたticker_overrideが現在のさらに拡大した
+   CapEx水準に追従できておらず実態を過大評価していたことが判明、
+   ボトムアップ方式が是正）
+
+#### 検証ゲート
+pytest 1330件全パス（新規`test_compose_fcf_bottom_up.py`8件・
+`test_fcf_bottom_up_capex_concept.py`6件・`test_fcf_component_lists.py`
+5件、conversion_rate専用の`test_divergence_sign_guard.py`・
+`test_estimate_fcf_ma_addback.py`は削除）。audit.py既存警告10銘柄のみ
+（変化なし）。report_consistency_check.py --fail-on-ng NG=0/WARN=120件
+（旧基準121〜122件から純減）。実装中に`fixed_registry.json`の
+snapshot_hash不一致（NG-31、FLYWのrestricted_cash新規フィールド追加が
+原因）を発見し、git diffでフリーズ対象フィールド無変更・新規フィールド
+追加のみであることを確認した上でhash再計算し解消。
+
+#### 着手条件
+なし（完了）
+
+---
+
+### ✅ [FCF-CONVRATE-DESIGN-LIMIT-1] SECTOR-FCF-RATE-BROKEN-1修正後もLITEの業種カテゴリ欠落・固定比率設計の限界が残存 → ボトムアップFCF方式への根本移行で解消
+**優先度:** 未定 → 完了
+**分類:** DCF信頼性判定ロジック / データ推定
+**登録日:** 2026-07-14
+**完了日:** 2026-09-18
+**発見:** [[FCF-EPS-CONVRATE-SECTOR-1]]（完了・BACKLOG_DONE.md参照）（LITE/SITM）調査時
+
+#### 内容・対応履歴（登録時点〜2026-07-15時点の記載を再掲）
+SECTOR-FCF-RATE-BROKEN-1（sector取得経路のバグ）を修正しても、
+LITEに対応するfcf_conversion_config.jsonの業種カテゴリが存在しない・
+固定比率という設計自体がサイクル変動の大きい銘柄を表現できない、の
+2点が未解消と判明。2026-07-14にキー名不一致修正（8カテゴリのキー名を
+実際のbeta_config.json sector表記に一致させるリネーム、6カテゴリが
+事実上デッドコードだったと発見）・Software_Systemグループ分割
+（Mature/SaaS、分離精度約78%）を実装完了。固定比率の構造的限界・
+EBIT(1-t)→純利益変換ロジック不在は[[TRUST-SUMMARY-EPIC-1]]へ統合済み。
+残課題は「IOT・QBTS/RBRK/S/SOUNの判定保留（Mature/SaaS判定の前提が
+成立しない常時赤字銘柄）」「前受収益比率による新規銘柄暫定判定の
+分離精度約78%」の2点のみ残置されていた。
+
+#### 完了内容（2026-09-18、[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]と同時対応）
+Koichiさんの決定により業種別固定転換率（conversion_rate）方式自体を
+廃止し、CapEx/SBC/OCFの個別加減算によるボトムアップFCFへ移行した
+（実装詳細は[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]参照）。これにより
+本エントリの残課題2件は以下の通り解消・陳腐化した:
+- **残課題4（IOT等の判定保留）**: Mature/SaaS区別自体がconversion_rate
+  方式に付随する仕組みだったため、方式廃止により区別する必要自体が
+  消滅。IOT/QBTS/RBRK/S/SOUNは全てボトムアップ方式（raw_fcf、
+  QBTS/SOUNのみstructural_deficitフラグで別途注記）で統一的に扱われる
+- **残課題5（暫定判定精度78%）**: `classify_software_system_subgroup()`
+  自体を削除したため、この精度の議論自体が対象消滅
+
+`Software_System_Mature`/`Software_System_SaaS`という sector値・
+`config/beta_config.json`上の分類自体は、WACCのβフォールバック用途
+（`calculate_wacc()`のsector参照、実際にはbeta実測値が既に大半の
+銘柄に存在するため滅多に使われない経路）としてのみ残置し、データの
+削除・移行は行っていない（副作用なし、実害なし）。
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-16⑥（完了）
 
 ### ✅ [MARKETDATA-TRAILING-PE-STRING-INFINITY-1] common/market_data/fetcher.pyがtrailing_pe等のyfinance数値フィールドの型を検証せず、文字列"Infinity"混入で銘柄全体のmarket_data由来フィールドがNone化する
