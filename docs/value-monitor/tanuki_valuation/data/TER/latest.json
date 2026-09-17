@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 11101238044.253548,
   "intrinsic_value_per_share": 123.08631835122927,
   "intrinsic_value_beta": 72.0,
-  "upside_percent_beta": -78.9,
+  "upside_percent_beta": -79.6,
   "intrinsic_value_rf": 711.2,
-  "upside_percent_rf": 108.5,
+  "upside_percent_rf": 101.4,
   "v0": 11101238044.253548,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.8,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 144.86,
       "value_growth_pct": 17.7,
-      "expected_return_pct": -57.5
+      "expected_return_pct": -59.0
     },
     "2年後": {
       "future_value": 170.48,
       "value_growth_pct": 38.5,
-      "expected_return_pct": -50.0
+      "expected_return_pct": -51.7
     },
     "3年後": {
       "future_value": 200.63,
       "value_growth_pct": 63.0,
-      "expected_return_pct": -41.2
+      "expected_return_pct": -43.2
     },
     "4年後": {
       "future_value": 236.11,
       "value_growth_pct": 91.8,
-      "expected_return_pct": -30.8
+      "expected_return_pct": -33.1
     },
     "5年後": {
       "future_value": 277.87,
       "value_growth_pct": 125.7,
-      "expected_return_pct": -18.5
+      "expected_return_pct": -21.3
     }
   },
-  "upside_percent": -63.9,
-  "calculation_date": "2026-09-18T00:31:50+09:00",
+  "upside_percent": -65.1,
+  "calculation_date": "2026-09-18T08:48:31+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 25782000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄にすべて「一過性の在庫評価損」と明記されており、事業運営上の一時的な在庫調整と判断されるため。"
+        "reasoning": "理由欄にすべて「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -337,10 +337,10 @@
       462902000
     ],
     "diluted_shares": 156340750,
-    "roe_10yr_avg": 0.2332088509327253,
+    "roe_10yr_avg": 0.23320885093272534,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 341.1499938964844,
+    "current_price": 353.1300048828125,
     "latest_revenue": 3190024000.0,
     "rpo": 130200000,
     "beta": 1.778,
@@ -363,7 +363,7 @@
     "moat_fcf_margin_norm": 0.5204,
     "pv_high": 4256002023.3245745,
     "pv_terminal": 6845236020.928973,
-    "roe_used": 0.2332088509327253,
+    "roe_used": 0.23320885093272534,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -371,14 +371,14 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 0.979477173917446,
+    "alpha_uncapped": 0.9794771739174463,
     "per": 45.224186,
     "per_is_forward": false,
-    "per_adjusted": 44.22,
+    "per_adjusted": 45.77,
     "peg": 0.6025,
     "ps": 11.657181,
     "ev_ebitda": 34.434,
-    "ma200": 323.0351990509033,
+    "ma200": 323.89139907836915,
     "forward_eps": 11.65247,
     "next_quarter_eps": 2.05,
     "analyst_target_median": 450.0,
@@ -395,7 +395,7 @@
     "insider_latest_date": "2026-09-16",
     "analyst_vs_iv": 265.6,
     "max_eps": 7.7665,
-    "max_eps_per": 43.9,
+    "max_eps_per": 45.5,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
@@ -424,7 +424,7 @@
   },
   "tanuki_score": "TRIM",
   "funda_score": 100,
-  "score_comment": "割高(-64%超)、FCF黒字、売上成長加速",
+  "score_comment": "割高(-65%超)、FCF黒字、売上成長加速",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -490,7 +490,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 501460000
   },
-  "net_current_assets_ratio": 0.0235,
+  "net_current_assets_ratio": 0.0227,
   "dupont": {
     "ni_ttm": 1150220000,
     "revenue_ttm": 4464031000,
@@ -557,8 +557,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0088,
-  "forward_earnings_yield": 0.0342,
+  "erp": -0.01,
+  "forward_earnings_yield": 0.033,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
