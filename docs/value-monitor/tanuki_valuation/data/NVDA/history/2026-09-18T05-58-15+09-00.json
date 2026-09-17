@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 240.3,
-  "calculation_date": "2026-09-18T05:59:38+09:00",
+  "calculation_date": "2026-09-18T05:58:15+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -491,11 +491,7 @@
     "insider_buy_count": 0,
     "insider_sell_count": 19,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-11",
-    "analyst_vs_iv": -56.7,
-    "max_eps": 8.2522,
-    "max_eps_per": 25.9,
-    "max_eps_reliability": "HIGH"
+    "insider_latest_date": "2026-09-11"
   },
   "validation": {
     "validated_at": "2026-09-18",
@@ -520,139 +516,5 @@
     },
     "overall": "PASS",
     "ai_comment": null
-  },
-  "tanuki_score": "BUY",
-  "funda_score": 100,
-  "score_comment": "割安圏(240%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 95,
-  "sell_reason": null,
-  "pre_rounding_score": null,
-  "pre_rounding_comment": null,
-  "rounded_by_policy": null,
-  "matrix": {
-    "matrix": "①投資効率系",
-    "quadrant": "右上",
-    "label": "割安×高効率",
-    "key_metric_y": "RICE = 31.392",
-    "qx": true,
-    "qy": true
-  },
-  "fcf_history": [
-    {
-      "year": 2022,
-      "fcf": 8132000000,
-      "fcf_margin": 30.2
-    },
-    {
-      "year": 2023,
-      "fcf": 3808000000,
-      "fcf_margin": 14.1
-    },
-    {
-      "year": 2024,
-      "fcf": 27021000000,
-      "fcf_margin": 44.4
-    },
-    {
-      "year": 2025,
-      "fcf": 60853000000,
-      "fcf_margin": 46.6
-    },
-    {
-      "year": 2026,
-      "fcf": 96676000000,
-      "fcf_margin": 44.8
-    }
-  ],
-  "financial_health": {
-    "total_debt": 33366000000.0,
-    "cash_and_equivalents": 22443000000.0,
-    "short_term_investments": 0.0,
-    "long_term_debt": 32366000000.0,
-    "short_term_debt": 1000000000.0,
-    "net_debt": 10923000000.0,
-    "sbc_ttm": 6386000000,
-    "net_debt_period": "2027Q2",
-    "cash_missing": false,
-    "sti_approximated": false,
-    "sti_residual_pct": null,
-    "sti_estimated_zero": false,
-    "sti_last_confirmed_zero_year": null,
-    "ltdebt_estimated_zero": false,
-    "ltdebt_last_confirmed_zero_year": null,
-    "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null,
-    "dilution_3yr_annual_pct": -0.74,
-    "shares_yr_now": 24514000000,
-    "shares_yr_3ago": 25070000000,
-    "shares_yr_now_label": "2026",
-    "shares_yr_3ago_label": "2023",
-    "split_adjusted": true,
-    "split_factor": 9.8895,
-    "buyback_ttm": 55315000000
-  },
-  "net_current_assets_ratio": 0.0299,
-  "dupont": {
-    "ni_ttm": 192879000000,
-    "revenue_ttm": 302969000000,
-    "total_assets": 320272000000,
-    "equity": 228984000000,
-    "net_margin": 0.6366,
-    "asset_turnover": 0.946,
-    "financial_leverage": 1.3987,
-    "roe_decomposed": 0.8423,
-    "dupont_bs_period": "2027Q2"
-  },
-  "next_earnings_date": "2026-11-18",
-  "breakeven_reason": "ACHIEVED",
-  "segments": [
-    {
-      "name": "Compute and Networking",
-      "weight": 0.9,
-      "growth": 0.35,
-      "estimated_revenue": 194344200000.0
-    },
-    {
-      "name": "Graphics",
-      "weight": 0.1,
-      "growth": 0.1,
-      "estimated_revenue": 21593800000.0
-    }
-  ],
-  "segment_configured": true,
-  "segment_ttm_applied": false,
-  "phase1_growth_original": 0.325,
-  "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.55,
-  "fcf_margin_bear_mult_applied": false,
-  "fcf_margin_note": null,
-  "growth_sanity": {
-    "verdict": "PLAUSIBLE",
-    "floor_hit": false,
-    "phase1_growth": 0.325,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
-    "damodaran_year": 2025,
-    "rev_cagr_3yr": 1.0004509499443963,
-    "rev_cagr_5yr": 0.6689858183148778,
-    "g_fundamental": 0.02061795869963134,
-    "recommended_g_median": 0.6689858183148778,
-    "recommended_g": 0.55,
-    "growth_model": "decay",
-    "growth_model_reason": "CAGR_max=100.0%と業界平均10.0%の中間値55.0%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
-    "hype_phase_used": 2,
-    "hype_phase_label": "期待拡大期",
-    "hype_substage_label": "期待拡大開始",
-    "signals": [
-      "過去実績(3yr:100.0% / 5yr:66.9%)と整合 ✅",
-      "RR×ROIC(2.1%)：再投資より還元重視型、または期待値先行 ℹ️"
-    ],
-    "warnings": [],
-    "fcf_margin_bear_multiplier": 1.0,
-    "fcf_margin_note": null
-  },
-  "erp": 0.03,
-  "forward_earnings_yield": 0.073,
-  "dilution_severity": "positive",
-  "dilution_comment": "自社株買いによる株主還元 ✅"
+  }
 }

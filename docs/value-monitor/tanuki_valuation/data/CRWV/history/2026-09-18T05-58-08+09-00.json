@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 226.2,
-  "calculation_date": "2026-09-18T05:59:31+09:00",
+  "calculation_date": "2026-09-18T05:58:08+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -397,11 +397,7 @@
     "insider_buy_count": 0,
     "insider_sell_count": 870,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-16",
-    "analyst_vs_iv": -44.8,
-    "max_eps": null,
-    "max_eps_per": null,
-    "max_eps_reliability": "LOW"
+    "insider_latest_date": "2026-09-16"
   },
   "validation": {
     "validated_at": "2026-09-18",
@@ -426,118 +422,5 @@
     },
     "overall": "PASS",
     "ai_comment": null
-  },
-  "tanuki_score": "WATCH",
-  "funda_score": 45,
-  "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 80,
-  "sell_reason": null,
-  "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "割安圏(226%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
-  "rounded_by_policy": "A",
-  "matrix": {
-    "matrix": "④キャッシュ創出力系",
-    "quadrant": "右下",
-    "label": "割安×低FCF",
-    "key_metric_y": "FCF_Margin = -140.2%",
-    "qx": true,
-    "qy": false
-  },
-  "fcf_history": [
-    {
-      "year": 2022,
-      "fcf": null,
-      "fcf_margin": null
-    },
-    {
-      "year": 2023,
-      "fcf": -1102000000,
-      "fcf_margin": -481.2
-    },
-    {
-      "year": 2024,
-      "fcf": -5899000000,
-      "fcf_margin": -308.0
-    },
-    {
-      "year": 2025,
-      "fcf": -7193000000,
-      "fcf_margin": -140.2
-    }
-  ],
-  "financial_health": {
-    "total_debt": 21373000000.0,
-    "cash_and_equivalents": 5524000000.0,
-    "short_term_investments": 15000000.0,
-    "long_term_debt": 14665000000.0,
-    "short_term_debt": 6708000000.0,
-    "net_debt": 15834000000.0,
-    "sbc_ttm": 630000000,
-    "net_debt_period": "Cash=2026Q2/Debt=FY2025",
-    "cash_missing": false,
-    "sti_approximated": false,
-    "sti_residual_pct": null,
-    "sti_estimated_zero": false,
-    "sti_last_confirmed_zero_year": null,
-    "ltdebt_estimated_zero": false,
-    "ltdebt_last_confirmed_zero_year": null,
-    "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
-  },
-  "computed_runway_months": 9.215626303350481,
-  "net_current_assets_ratio": -0.2479,
-  "dupont": {
-    "ni_ttm": -1928000000,
-    "revenue_ttm": 7590000000,
-    "total_assets": 77070000000,
-    "equity": 5024000000,
-    "net_margin": -0.254,
-    "asset_turnover": 0.0985,
-    "financial_leverage": 15.3404,
-    "roe_decomposed": -0.3838,
-    "dupont_bs_period": "2026Q2"
-  },
-  "next_earnings_date": "2026-11-12",
-  "breakeven_reason": "NO_TREND",
-  "segments": [
-    {
-      "name": "Cloud Infrastructure",
-      "weight": 1,
-      "growth": 0.65,
-      "estimated_revenue": 5131000000.0
-    }
-  ],
-  "segment_configured": true,
-  "segment_ttm_applied": false,
-  "phase1_growth_original": 0.65,
-  "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.5678757012015927,
-  "fcf_margin_bear_mult_applied": false,
-  "fcf_margin_note": null,
-  "growth_sanity": {
-    "verdict": "PLAUSIBLE",
-    "floor_hit": false,
-    "phase1_growth": 0.65,
-    "industry_benchmark": 0.4857514024031853,
-    "damodaran_industry": "Software (Internet)",
-    "damodaran_year": 2025,
-    "rev_cagr_3yr": null,
-    "rev_cagr_5yr": null,
-    "g_fundamental": null,
-    "recommended_g_median": null,
-    "recommended_g": 0.5678757012015927,
-    "growth_model": "decay",
-    "growth_model_reason": "G入力値=65.0%と業界平均48.6%の中間値56.8%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
-    "hype_phase_used": 4,
-    "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "実体維持・期待崩壊中",
-    "signals": [
-      "業界平均Software (Internet)(48.6%)の1.3倍以内 ✅"
-    ],
-    "warnings": [],
-    "fcf_margin_bear_multiplier": 1.0,
-    "fcf_margin_note": null
-  },
-  "erp": -0.0664,
-  "forward_earnings_yield": -0.0234
+  }
 }

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -12.3,
-  "calculation_date": "2026-09-18T05:59:52+09:00",
+  "calculation_date": "2026-09-18T05:58:29+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -332,11 +332,7 @@
     "insider_buy_count": 0,
     "insider_sell_count": 1,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-09",
-    "analyst_vs_iv": 130.7,
-    "max_eps": null,
-    "max_eps_per": null,
-    "max_eps_reliability": "LOW"
+    "insider_latest_date": "2026-09-09"
   },
   "validation": {
     "validated_at": "2026-09-18",
@@ -361,133 +357,5 @@
     },
     "overall": "PASS",
     "ai_comment": null
-  },
-  "tanuki_score": "WATCH",
-  "funda_score": 60,
-  "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 40,
-  "sell_reason": null,
-  "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "フェアバリュー近辺、FCFマイナス（投資フェーズ）、売上成長加速",
-  "rounded_by_policy": "A",
-  "matrix": {
-    "matrix": "④キャッシュ創出力系",
-    "quadrant": "左下",
-    "label": "割高×低FCF",
-    "key_metric_y": "FCF_Margin = -58.6%",
-    "qx": false,
-    "qy": false
-  },
-  "fcf_history": [
-    {
-      "year": 2021,
-      "fcf": -864358,
-      "fcf_margin": -4.1
-    },
-    {
-      "year": 2022,
-      "fcf": -94045000,
-      "fcf_margin": -302.1
-    },
-    {
-      "year": 2023,
-      "fcf": -68498000,
-      "fcf_margin": -149.3
-    },
-    {
-      "year": 2024,
-      "fcf": -109393000,
-      "fcf_margin": -129.2
-    },
-    {
-      "year": 2025,
-      "fcf": -98955000,
-      "fcf_margin": -58.6
-    }
-  ],
-  "financial_health": {
-    "total_debt": 0.0,
-    "cash_and_equivalents": 202776000.0,
-    "short_term_investments": 0.0,
-    "long_term_debt": 0.0,
-    "short_term_debt": 0.0,
-    "net_debt": -202776000.0,
-    "sbc_ttm": 80620000,
-    "net_debt_period": "Cash=2026Q2/Debt=FY2025",
-    "cash_missing": false,
-    "sti_approximated": false,
-    "sti_residual_pct": null,
-    "sti_estimated_zero": false,
-    "sti_last_confirmed_zero_year": null,
-    "ltdebt_estimated_zero": true,
-    "ltdebt_last_confirmed_zero_year": 2024,
-    "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2023,
-    "dilution_3yr_annual_pct": 37.56,
-    "shares_yr_now": 409456342,
-    "shares_yr_3ago": 157317695,
-    "shares_yr_now_label": "2025",
-    "shares_yr_3ago_label": "2022"
-  },
-  "computed_runway_months": 24.590086402910416,
-  "net_current_assets_ratio": 0.0783,
-  "dupont": {
-    "ni_ttm": -137059000,
-    "revenue_ttm": 203200000,
-    "total_assets": 667887000,
-    "equity": 490430000,
-    "net_margin": -0.6745,
-    "asset_turnover": 0.3042,
-    "financial_leverage": 1.3618,
-    "roe_decomposed": -0.2795,
-    "dupont_bs_period": "2026Q2",
-    "reliability": "LOW",
-    "reliability_reason": "単四半期NI集中（一過性要因の可能性）"
-  },
-  "next_earnings_date": "2026-11-06",
-  "breakeven_reason": "NO_TREND",
-  "segments": [
-    {
-      "name": "Voice AI",
-      "weight": 1,
-      "growth": 0.4,
-      "estimated_revenue": 168920000.0
-    }
-  ],
-  "segment_configured": true,
-  "segment_ttm_applied": false,
-  "phase1_growth_original": 0.4,
-  "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.48678912866797264,
-  "fcf_margin_bear_mult_applied": false,
-  "fcf_margin_note": null,
-  "growth_sanity": {
-    "verdict": "PLAUSIBLE",
-    "floor_hit": false,
-    "phase1_growth": 0.4,
-    "industry_benchmark": 0.21630769255217946,
-    "damodaran_industry": "Software (System & Application)",
-    "damodaran_year": 2025,
-    "rev_cagr_3yr": 0.7572705647837659,
-    "rev_cagr_5yr": null,
-    "g_fundamental": null,
-    "recommended_g_median": 0.48678912866797264,
-    "recommended_g": 0.48678912866797264,
-    "growth_model": "decay",
-    "growth_model_reason": "CAGR_max=75.7%と業界平均21.6%の中間値48.7%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
-    "hype_phase_used": 4,
-    "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "長期調整・実体強",
-    "signals": [
-      "業界平均Software (System & Application)(21.6%)の1.8倍 ℹ️",
-      "過去実績(3yr:75.7% / 5yr:N/A)と整合 ✅"
-    ],
-    "warnings": [],
-    "fcf_margin_bear_multiplier": 1.0,
-    "fcf_margin_note": null
-  },
-  "erp": -0.0679,
-  "forward_earnings_yield": -0.0249,
-  "dilution_severity": "severe",
-  "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
+  }
 }
