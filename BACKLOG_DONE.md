@@ -181,6 +181,117 @@ Koichiさんの決定により業種別固定転換率（conversion_rate）方�
 
 ---
 
+### ✅ [SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1] MD&A原文からのセグメント別成長見通しAI抽出（10銘柄パイロット）
+**優先度:** 保留/将来検討 → 完了（10銘柄パイロットのみ。99銘柄拡張は別タスク）
+**分類:** 新機能 / TANUKI TAIL・TANUKI VALUATION
+**登録日:** 2026-08-27
+**完了日:** 2026-09-18（調査・設計フェーズ2026-09-17〜18・パイロット実装2026-09-18）
+**発見:** `[[TANUKI-VALUATION-MISC-GAPS-1]]`⑧・`[[KPI-FETCHER-SEGMENT-SOURCE-ORPHANED-1]]`対応中の議論から
+
+#### 背景（登録時点との違い・構想の再定義）
+登録時点（2026-08-27）の構想メモは「決算資料の文章から企業固有の
+経営指標（数値KPI、例: SOFIの総会員数・NIM等）をAIが抽出する」という
+ものだった。しかし2026-09-17〜18の調査・設計フェーズで、DCF/IV計算へ
+の誤用リスク（数値がそのまま計算に混入する懸念）と、KPIの企業間
+不統一性（抽出対象の標準化コストが高い）から、**数値KPIではなく
+MD&A本文中の「セグメント別（主要事業カテゴリ別）の定性的な成長見通し
+記述」を要約する**方向へ再定義した。出力スキーマから数値フィールドを
+構造的に排除することで、DCF/IVへの誤用を設計上防いでいる
+（`[[FCF-OUTLIER-QUAL-1]]`のassessment設計と同じ哲学）。
+
+#### 調査フェーズで確定した設計
+- キーワードナビゲーション（"Segment"という単語を目印に本文中の位置を
+  特定する方式）は不採用。SOFI（該当記述が約12000〜14000文字目）・
+  NVDA（約18000〜19300文字目）・TSLA（約32000〜41000文字目、
+  "Segment"という単語自体を使わない）の3社で実データを確認した結果、
+  位置パターンに一貫性がなく、キーワード方式では取りこぼしが生じると
+  判明した
+- 代わりに、`extract_item_section()`が切り詰め前に生成する
+  `section_text`（MD&A全文、最大60000文字）をそのまま1回のAI呼び出しに
+  渡し、セグメントの特定自体もAIに任せる設計を採用。TSLAのような
+  "Segment"という語を使わない難しいケースでもAutomotive/Energy
+  Generation and Storageを正しく特定できることを実データで確認済み
+- 出力スキーマはname/trend/summary/quoteのみ（数値フィールドなし）
+- モデルは`[[GROK-MODEL-PRICE-1]]`確定済みのgrok-4.3をそのまま使用
+
+#### 実装内容（10銘柄パイロット、2026-09-18）
+1. **`src/tail/segment_growth_outlook_ai.py`新設**: `fcf_outlier_ai.py`
+   と同型パターン（grok-4.3・リトライ・JSON限定出力・フェイルセーフ
+   None）でMD&A本文からセグメント別成長見通しを抽出する
+   `extract_segment_growth_outlook(ticker, section_text)`を実装
+2. **`sec_items_fetcher.py`統合**: mda項目のみ`max_chars`を
+   20000→60000へ拡大（`extract_item_section()`の開始位置には影響しない
+   ため既存のrisk_factors/legal_proceedings/mda表示は無変更のまま）。
+   `fetch_annual()`/`fetch_quarterly_updates()`の両方で`section_text`
+   確定後に上記モジュールを呼び出し、結果を`segment_outlook`として
+   JSON出力に追加
+3. **`pipeline.py`統合（TANUKI VALUATION側）**: `_load_tail_segment_
+   outlook()`を新設し、TANUKI TAILが生成した`segment_outlook`を
+   report.txtの`FCF_Breakdown`直後に「参考情報・DCF/IV計算には未使用」
+   の明確な注記付きで表示。TANUKI TAIL非対象銘柄（データファイル自体が
+   存在しない）は自然にスキップされる（フェイルセーフ）
+4. 対象10銘柄（既存TANUKI TAILティッカーのみ、99銘柄拡張は今回対象外）:
+   ADBE/APGE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA
+
+#### 実際の出力例（2026-09-18、10銘柄の年次・四半期実データ）
+SOFI（10-Q 2026Q2、report.txt実出力）:
+```
+FCF_Breakdown（直近年）: OCF=$-3,742M / CapEx=$242M / SBC(非現金)=$262M / D&A=$234M
+セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:
+  - Lending Segment [accelerating]: 貸出originationの増加により純金利収入と
+    origination feeが拡大し、contribution profitが大幅に増加。市場からの
+    強い需要とLoan Platform Businessの好調が寄与したと述べている。
+  - Technology Platform Segment [decelerating]: 大型クライアントの
+    プラットフォーム離脱により総収益とcontribution profitが前年比で
+    大幅に減少したと指摘。enabled client accountsも減少した。
+  [本セクションはAIによる10-K MD&A原文の定性的要約であり、DCF/IV計算には
+   一切使用していません。参考情報としてお読みください。]
+```
+TSLA（10-K 2025FY、"Segment"という単語を使わない難しいケース）:
+```
+セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:
+  - Automotive & Services and Other Segment [uncertain]: 新モデル投入や
+    FSD/Robotaxi/Optimusによる長期成長を目指すが、関税・政策変更・
+    景気変動により需要とコスト構造に不確実性が高く、2025年売上は減少した。
+  - Energy Generation and Storage Segment [accelerating]: Megafactoryの
+    稼働拡大とMegapack/Powerwallの需要増により売上・利益率が向上。
+    AIインフラ向けグリッド安定化の機会を捉えつつ生産を加速させる。
+```
+（"Segment"という語を本文が使わないTSLAでも、Automotive/Energy
+Generation and Storageという2つの主要事業カテゴリを正しく特定できた。
+調査フェーズの実データ検証結果と整合）
+
+#### 検証結果
+- 単体テスト8件（`tests/test_segment_growth_outlook_ai.py`）＋配線
+  テスト4件（`tests/test_tail_sec_items_fetcher.py`のTestSegmentOutlook
+  Wiring）＋report.txt表示テスト3件（`tests/test_pipeline_logic.py`の
+  TestSegmentOutlookInReport）、計15件を新規追加。いずれも`git stash`
+  でfail-before/pass-after確認済み
+- `pytest`: 1345件全通過
+- `common/sec_data/audit.py`: 対象外（既存の未確認警告のみ、NG扱い項目なし）
+- `common/sec_data/report_consistency_check.py --fail-on-ng`: NG=0
+- 10銘柄で年次・四半期の両方を実行し、全10銘柄で成功（成功10/失敗0）。
+  TANUKI VALUATION側もAPGE（`cik_lookup.csv`でtanuki=false設定のため
+  対象外、既存仕様通り）を除く9銘柄で再計算し、report.txtへの反映を
+  実データで確認（検証PASS=9 WARN=0 FAIL=0 ERROR=0）
+- **実測コスト**: grok-4.3（入力$1.25/M・出力$2.50/M）で10銘柄×
+  年次+四半期2期分、約20セント前後（調査フェーズの見積もりと概ね一致）
+
+#### このタスクに含まれないもの（将来検討）
+- 99銘柄（TANUKI VALUATION全体）への拡張は別タスク。今回の実装は
+  拡張時にsec_items_fetcher.py/pipeline.py側の追加改修が不要な設計
+  だが、対象銘柄の追加自体（TANUKI TAIL側のティッカーリスト拡大）は
+  未実施
+- TANUKI TAIL自体の画面（detail.html）へのsegment_outlook表示は
+  今回のスコープ外（既存のrisk_factors/legal_proceedings/mda表示機能
+  には一切手を入れない方針のため、JSON出力への追加のみ）
+
+#### 着手条件
+なし（10銘柄パイロット完了。99銘柄拡張はKoichiさんが着手タイミングを
+判断する）
+
+---
+
 ## 2026-09-16⑥（完了）
 
 ### ✅ [MARKETDATA-TRAILING-PE-STRING-INFINITY-1] common/market_data/fetcher.pyがtrailing_pe等のyfinance数値フィールドの型を検証せず、文字列"Infinity"混入で銘柄全体のmarket_data由来フィールドがNone化する
