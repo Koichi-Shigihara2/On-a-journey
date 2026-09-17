@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 14.0,
-  "calculation_date": "2026-09-17T08:45:18+09:00",
+  "calculation_date": "2026-09-18T00:19:50+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -206,28 +206,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 361775414.636674,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 419610250.0,
     "raw_fcf": 419610250.0,
-    "sector": "",
-    "note": "生FCF安定(CV=0.16<0.3)かつ外れ値未検出のため推定を適用せず生FCFを採用（買収・統合関連加算$26Mを検出したが、控除するとdr<=1のため未適用）",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 26064886.942461304,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 18255000,
+    "sbc": 72576000,
+    "ocf": 538464000,
+    "da": 32768000,
+    "note": "OCF$0.54B - CapEx$0.02B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.42B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -317,6 +304,7 @@
   "components": {
     "fcf_5yr_avg": 419610250.0,
     "fcf_2yr_avg": 466122000.0,
+    "structural_deficit": false,
     "fcf_base_used": 455945583.3333333,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -327,7 +315,7 @@
       339203000
     ],
     "diluted_shares": 302092889,
-    "roe_10yr_avg": 0.35497792458687794,
+    "roe_10yr_avg": 0.3549779245868779,
     "roe_years_used": 8,
     "roe_outlier_adj": true,
     "current_price": 31.100000381469727,
@@ -353,7 +341,7 @@
     "moat_fcf_margin_norm": 1.0,
     "pv_high": 3470164147.3914857,
     "pv_terminal": 8557406336.063158,
-    "roe_used": 0.35497792458687794,
+    "roe_used": 0.3549779245868779,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -361,7 +349,7 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 1.490907283264887,
+    "alpha_uncapped": 1.4909072832648869,
     "per": 35.032967,
     "per_is_forward": false,
     "per_adjusted": 26.86,
@@ -389,7 +377,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

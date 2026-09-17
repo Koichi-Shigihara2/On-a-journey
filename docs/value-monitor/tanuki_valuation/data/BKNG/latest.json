@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 103.6,
-  "calculation_date": "2026-09-17T08:49:46+09:00",
+  "calculation_date": "2026-09-18T00:26:26+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -206,28 +206,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 0,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 8183250000.0,
     "raw_fcf": 8183250000.0,
-    "sector": "Hotel_Gaming",
-    "note": "EPSデータなし(/home/runner/work/On-a-journey/On-a-journey/docs/value-monitor/adjusted_eps_analyzer/data/BKNG/annual.json)",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Hotel_Gaming",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 322000000,
+    "sbc": 613000000,
+    "ocf": 9409000000,
+    "da": 623000000,
+    "note": "OCF$9.41B - CapEx$0.32B（直近年。5yr/2yr平均・外れ値除外後の採用値は$8.18B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -297,6 +284,7 @@
   "components": {
     "fcf_5yr_avg": 8183250000.0,
     "fcf_2yr_avg": 9389500000.0,
+    "structural_deficit": false,
     "fcf_base_used": 8183250000.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -369,7 +357,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

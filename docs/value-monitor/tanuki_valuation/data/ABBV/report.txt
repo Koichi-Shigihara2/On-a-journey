@@ -1,5 +1,5 @@
 ABBV INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:51:29+09:00
+Generated: 2026-09-18T00:28:53+09:00
 Price: $262.51
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -87,8 +87,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $19.86B
   Required_Growth:  12%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $19,861.00M (4yr平均（回復判定） + R&D補正)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $19,861.00M (4yr平均（回復判定） + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$19,030M / CapEx=$1,214M / SBC(非現金)=$955M / D&A=$762M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $103.03B (7yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $169.36B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $272.39B (= FCF_PV + TV_PV, Rm=10% enterprise value)

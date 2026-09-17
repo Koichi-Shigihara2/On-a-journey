@@ -1,5 +1,5 @@
 CON INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:53+09:00
+Generated: 2026-09-18T00:31:24+09:00
 Price: $36.37
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -85,8 +85,12 @@ Valuation_Gap_Analysis:
   Implied_FCF_2030: $0.41B (現在株価を正当化するために必要な5年後FCF)
   Current_FCF:      $0.20B
   Required_Growth:  15%/yr (現在FCFから必要成長率を逆算)
-FCF_Base: $201.91M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $201.91M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$279M / CapEx=$82M / SBC(非現金)=$10M / D&A=$76M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $0.86B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $2.26B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $3.11B (= FCF_PV + TV_PV, Rm=10% enterprise value)

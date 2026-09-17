@@ -1,5 +1,5 @@
 S INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:49:15+09:00
+Generated: 2026-09-18T00:25:38+09:00
 Price: $23.17
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -79,13 +79,13 @@ Terminal_Growth_Rate: 3.5%
 Beta: 0.772
 FCF_TTM_End: 2026-07-31 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $141.30M (直近2yr平均 + R&D補正) [実績avg: $-3.3M]
+FCF_Breakdown（直近年）: OCF=$77M / CapEx=$1M / SBC(非現金)=$298M / D&A=$55M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
-ℹ️ 買収・統合関連加算$28Mを検出したが未控除
-   [控除すると生FCFを下回る（過小推定側）と判定されたため、方向性
-    ガードにより調整済み純利益をそのまま採用しています。詳細は
-    BACKLOG_DONE.md [[FCF-EST-DIRECTION-GUARD-1]]参照。]
 DCF_FCF_PV: $1.33B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $5.44B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $6.77B (= FCF_PV + TV_PV, Rm=10% enterprise value)
@@ -102,7 +102,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $15.43  $24.99  $40.47
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断される。
+  Reasoning: すべての項目が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断されるため。
 Financial_Health:
   Net_Debt: $-0.66B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.20B  ST_Invest: $0.45B

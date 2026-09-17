@@ -1,5 +1,5 @@
 IOT INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:47:03+09:00
+Generated: 2026-09-18T00:22:39+09:00
 Price: $40.66
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,10 +7,10 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: HOLD
 Funda_Score: 90/100
 Timing_Score (components):
-  Deviation_Rate: -19.8%
+  Deviation_Rate: -19.2%
   MA200_Deviation: +20.4%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $53 median ($39-$60) | 23 analysts | vs IV: +62.6%
+  Analyst_Consensus: Buy | Target: $53 median ($39-$60) | 23 analysts | vs IV: +61.4%
 Comment: フェアバリュー近辺、FCF黒字、売上成長加速
 Definition:
 
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×中効率
 Key_Metric_Y: RICE = 1.232
-Deviation_Rate: -19.8%
+Deviation_Rate: -19.2%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,49 +58,48 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $40.66
-Intrinsic_Value_BASE: $32.59
-Deviation_BASE: -19.8%
+Intrinsic_Value_BASE: $32.84
+Deviation_BASE: -19.2%
 Growth_Rate_Original: 29.6% (TTM実績)
 Growth_Rate_Adjusted: 40.3% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=28.2%, IV=$21.79 （推奨値ベース）
-BASE: Growth=40.3%, IV=$32.59 （推奨値ベース）
-BULL: Growth=48.4%, IV=$42.11 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $45.74 (+12.5%) / 3年後: $90.07 (+121.5%) / 5年後: $177.38 (+336.3%)
-  5yr_Annualized_Return: +34.3%/yr
+BEAR: Growth=28.2%, IV=$21.95 （推奨値ベース）
+BASE: Growth=40.3%, IV=$32.84 （推奨値ベース）
+BULL: Growth=48.4%, IV=$42.43 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $46.09 (+13.4%) / 3年後: $90.76 (+123.2%) / 5年後: $178.74 (+339.6%)
+  5yr_Annualized_Return: +34.5%/yr
 TTM_YoY_Growth: 29.6%
 (DCF Base vs TTM actual: +10.7pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 11.92%
-  参考①β込みWACC_IV: $24.73 (Deviation: -39.2%)
-  参考②Rf理論上限_IV: $282.55 (Deviation: +594.9%)
+  参考①β込みWACC_IV: $24.92 (Deviation: -38.7%)
+  参考②Rf理論上限_IV: $284.77 (Deviation: +600.4%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.336
 FCF_TTM_End: 2026-05-02 (FCF/RICE算出に用いたTTM期末日)
-FCF_Conversion_Rate: 0.7 (Industry: Software - Infrastructure)
-  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
-   adjusted net income; differs from OCF→FCF conversion rate.]
-DCF_FCF_Base: $186M (= Adj_NI $266M × FCF_Conv 0.7)
-⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく
-   デフォルト値（0.7）を使用しています。分類判定には使用しません。
-DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
-DCF_FCF_PV: $3.10B (5yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $15.18B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $18.28B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+FCF_Base: $284.28M (直近2yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$236M / CapEx=$29M / SBC(非現金)=$315M / D&A=$24M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
+DCF_FCF_PV: $3.13B (5yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $15.30B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $18.43B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $19.09B (= v0 + RPO_PV + GO_PV + Net_Cash $0.80B)
+Equity_Value: $19.23B (= v0 + RPO_PV + GO_PV + Net_Cash $0.80B)
 Shares_Used: 585.6M (source: yf_implied)
-→ Intrinsic_Value: $32.59 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $32.84 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $23.16  $38.91  $65.01
-  10.0%       $19.70  $32.59  $53.59
-  11.0%       $17.16  $27.98  $45.28
+  9.0%       $23.33  $39.21  $65.51
+  10.0%       $19.84  $32.84  $54.00
+  11.0%       $17.28  $28.19  $45.63
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目の理由がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。
+  Reasoning: すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。
 Financial_Health:
   Net_Debt: $-0.80B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.22B  ST_Invest: $0.59B
@@ -335,7 +334,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 8.9%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $53 median ($39-$60) | 23 analysts | vs IV: +62.6%
+Analyst_Consensus: Buy | Target: $53 median ($39-$60) | 23 analysts | vs IV: +61.4%
 Insider_Activity: Sell優勢 | 買い0件 / 売り107件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 29.6%

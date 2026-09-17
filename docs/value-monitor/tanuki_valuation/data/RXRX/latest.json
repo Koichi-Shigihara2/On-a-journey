@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 487.8,
-  "calculation_date": "2026-09-17T08:49:02+09:00",
+  "calculation_date": "2026-09-18T00:25:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -196,7 +196,7 @@
       "total_transient_amount": 9836000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的な問題を示す内容であるため。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -204,28 +204,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": -473485668.6823981,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 5974480.0,
     "raw_fcf": 5974480.0,
-    "sector": "",
-    "note": "調整済み純利益がマイナス($-473M)（買収・統合関連加算$50Mを検出したが、控除するとdr<=1のため未適用） → 従来FCFを使用",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 50274424.14662126,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 6469000,
+    "sbc": 111223000,
+    "ocf": -371808000,
+    "da": 83701000,
+    "note": "OCF$-0.37B - CapEx$0.01B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -295,6 +282,7 @@
   "components": {
     "fcf_5yr_avg": -336057500.0,
     "fcf_2yr_avg": -368305000.0,
+    "structural_deficit": true,
     "fcf_base_used": 244131146.66666666,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -305,7 +293,7 @@
       -265457000
     ],
     "diluted_shares": 536271087,
-    "roe_10yr_avg": -0.5125061112141825,
+    "roe_10yr_avg": -0.5125061112141827,
     "roe_years_used": 5,
     "roe_outlier_adj": false,
     "current_price": 3.190000057220459,
@@ -331,7 +319,7 @@
     "moat_fcf_margin_norm": 0.0,
     "pv_high": 1293918460.2848735,
     "pv_terminal": 7685939962.59043,
-    "roe_used": -0.5125061112141825,
+    "roe_used": -0.5125061112141827,
     "fcf_floor_applied": 342031980.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -367,7 +355,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

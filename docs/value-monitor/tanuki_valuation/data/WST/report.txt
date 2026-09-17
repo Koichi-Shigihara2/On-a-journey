@@ -1,5 +1,5 @@
 WST INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:53+09:00
+Generated: 2026-09-18T00:31:22+09:00
 Price: $362.01
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -83,8 +83,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $0.38B
   Required_Growth:  35%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $384.23M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $384.23M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$755M / CapEx=$286M / SBC(非現金)=$24M / D&A=$171M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $1.74B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $4.79B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $6.54B (= FCF_PV + TV_PV, Rm=10% enterprise value)

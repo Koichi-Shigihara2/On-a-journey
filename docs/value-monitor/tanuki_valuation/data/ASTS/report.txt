@@ -1,5 +1,5 @@
 ASTS INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:45:04+09:00
+Generated: 2026-09-18T00:19:25+09:00
 Price: $59.27
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -78,7 +78,15 @@ WACC_CAPM_Reference: 18.55%
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
+⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
+   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
+    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
+    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
 FCF_Base: $-6.84M (4yr平均 + R&D補正) [実績avg: $-700.1M]
+FCF_Breakdown（直近年）: OCF=$-72M / CapEx=$1,065M / SBC(非現金)=$47M / D&A=$51M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]

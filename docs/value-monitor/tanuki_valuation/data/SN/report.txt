@@ -1,5 +1,5 @@
 SN INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:57+09:00
+Generated: 2026-09-18T00:31:30+09:00
 Price: $170.68
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -74,8 +74,12 @@ WACC_CAPM_Reference: 11.13%
   参考②Rf理論上限_IV: $2,420.46 (Deviation: +1318.1%)
 Terminal_Growth_Rate: 3.0%
 Beta: 1.198
-FCF_Base: $471.23M (直近2yr平均 + R&D補正)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $471.23M (直近2yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$634M / CapEx=$146M / SBC(非現金)=$44M / D&A=$140M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $9.59B (6yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $44.58B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $54.18B (= FCF_PV + TV_PV, Rm=10% enterprise value)

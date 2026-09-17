@@ -1,5 +1,5 @@
 AMAT INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:44:45+09:00
+Generated: 2026-09-18T00:18:54+09:00
 Price: $415.38
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -84,8 +84,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $6.16B
   Required_Growth:  27%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-07-26 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $6,164.67M (直近1yr（CAGR減少） + R&D補正)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $6,164.67M (直近1yr（CAGR減少） + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$7,958M / CapEx=$2,260M / SBC(非現金)=$668M / D&A=$435M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $44.28B (8yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $80.82B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $125.10B (= FCF_PV + TV_PV, Rm=10% enterprise value)

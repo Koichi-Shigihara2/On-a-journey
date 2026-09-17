@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -43.1,
-  "calculation_date": "2026-09-17T08:48:46+09:00",
+  "calculation_date": "2026-09-18T00:25:08+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -193,7 +193,7 @@
       "total_transient_amount": 13645000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題を示す内容のため、transientと判断。"
+        "reasoning": "理由欄に「一過性の在庫評価損」と明記されており、在庫評価に関する一時的な費用と判断されるため。"
       }
     },
     "action": "excluded",
@@ -201,28 +201,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 0,
-    "conversion_rate": 0,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 26830480.0,
     "raw_fcf": 26830480.0,
-    "sector": "Aerospace_Defense",
-    "note": "FCF外れ値除外済み（一過性費用補正適用済み）→ 二重補正防止のためフォールバック",
-    "divergence_ratio": 1.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Aerospace_Defense",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 13479000,
+    "sbc": 58990000,
+    "ocf": -177331000,
+    "da": 32639000,
+    "note": "OCF$-0.18B - CapEx$0.01B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.03B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -292,6 +279,7 @@
   "components": {
     "fcf_5yr_avg": -69849750.0,
     "fcf_2yr_avg": -124421000.0,
+    "structural_deficit": true,
     "fcf_base_used": 41242146.66666667,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -364,7 +352,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

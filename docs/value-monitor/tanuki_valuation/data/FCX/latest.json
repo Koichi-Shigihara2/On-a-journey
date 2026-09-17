@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -82.8,
-  "calculation_date": "2026-09-17T08:50:39+09:00",
+  "calculation_date": "2026-09-18T00:27:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -92,12 +92,12 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.0636,
+      "rate": 0.06359999999999999,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.0636,
+      "weighted_growth": 0.06359999999999999,
       "fiscal_year": "FY2025",
       "source": "segment_config"
     }
@@ -194,28 +194,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 0,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 1319500000.0,
     "raw_fcf": 1319500000.0,
-    "sector": "",
-    "note": "EPSデータなし(/home/runner/work/On-a-journey/On-a-journey/docs/value-monitor/adjusted_eps_analyzer/data/FCX/annual.json)",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 4494000000,
+    "sbc": 121000000,
+    "ocf": 5610000000,
+    "da": 2244000000,
+    "note": "OCF$5.61B - CapEx$4.49B（直近年。5yr/2yr平均・外れ値除外後の採用値は$1.32B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -305,6 +292,7 @@
   "components": {
     "fcf_5yr_avg": 1319500000.0,
     "fcf_2yr_avg": 1698000000.0,
+    "structural_deficit": false,
     "fcf_base_used": 1319500000.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -329,7 +317,7 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "beta_config()",
-    "high_growth_rate_used": 0.0636,
+    "high_growth_rate_used": 0.06359999999999999,
     "high_growth_years": 5,
     "terminal_growth_used": 0.03,
     "moat_score": 0.3005,
@@ -377,7 +365,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

@@ -1,5 +1,5 @@
 HON INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:50:22+09:00
+Generated: 2026-09-18T00:27:20+09:00
 Price: $207.66
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -76,8 +76,12 @@ WACC_CAPM_Reference: 9.44%
 Terminal_Growth_Rate: 2.5%
 Beta: 0.901
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $4,839.75M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $4,839.75M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$6,408M / CapEx=$986M / SBC(非現金)=$196M / D&A=$1,388M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $19.75B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $46.77B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $66.52B (= FCF_PV + TV_PV, Rm=10% enterprise value)

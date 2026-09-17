@@ -1,5 +1,5 @@
 RMBS INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:57+09:00
+Generated: 2026-09-18T00:31:31+09:00
 Price: $81.41
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,10 +7,10 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: HOLD
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -16.3%
+  Deviation_Rate: -1.3%
   MA200_Deviation: -24.5%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $160 median ($100-$180) | 7 analysts | vs IV: +134.8%
+  Analyst_Consensus: Strong Buy | Target: $160 median ($100-$180) | 7 analysts | vs IV: +99.2%
 Comment: フェアバリュー近辺、FCF黒字、売上安定成長
 Definition:
 
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×中効率
 Key_Metric_Y: RICE = 1.188
-Deviation_Rate: -16.3%
+Deviation_Rate: -1.3%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,50 +58,45 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $81.41
-Intrinsic_Value_BASE: $68.14
-Deviation_BASE: -16.3%
+Intrinsic_Value_BASE: $80.32
+Deviation_BASE: -1.3%
 Growth_Rate_Original: 18.2% (TTM実績)
 Growth_Rate_Adjusted: 15.9% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=11.1%, IV=$54.33 （推奨値ベース）
-BASE: Growth=15.9%, IV=$68.14 （推奨値ベース）
-BULL: Growth=19.1%, IV=$79.30 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $78.96 (-3.0%) / 3年後: $106.02 (+30.2%) / 5年後: $142.36 (+74.9%)
-  5yr_Annualized_Return: +11.8%/yr
+BEAR: Growth=11.1%, IV=$63.74 （推奨値ベース）
+BASE: Growth=15.9%, IV=$80.32 （推奨値ベース）
+BULL: Growth=19.1%, IV=$93.71 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $93.07 (+14.3%) / 3年後: $124.97 (+53.5%) / 5年後: $167.81 (+106.1%)
+  5yr_Annualized_Return: +15.6%/yr
 TTM_YoY_Growth: 19.1%
 (DCF Base vs TTM actual: -3.2pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 14.97%
-  参考①β込みWACC_IV: $40.53 (Deviation: -50.2%)
-  参考②Rf理論上限_IV: $367.19 (Deviation: +351.0%)
+  参考①β込みWACC_IV: $47.19 (Deviation: -42.0%)
+  参考②Rf理論上限_IV: $439.16 (Deviation: +439.4%)
 Terminal_Growth_Rate: 3.0%
 Beta: 1.872
 FCF_TTM_End: 2026-03-31 (FCF/RICE算出に用いたTTM期末日)
-FCF_Conversion_Rate: 0.7 (Industry: Semiconductors)
-  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
-   adjusted net income; differs from OCF→FCF conversion rate.]
-DCF_FCF_Base: $193M (= Adj_NI $276M × FCF_Conv 0.7)
-⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく
-   デフォルト値（0.7）を使用しています。分類判定には使用しません。
-ℹ️ 買収・統合関連加算$5Mを検出したが未控除
-   [控除すると生FCFを下回る（過小推定側）と判定されたため、方向性
-    ガードにより調整済み純利益をそのまま採用しています。詳細は
-    BACKLOG_DONE.md [[FCF-EST-DIRECTION-GUARD-1]]参照。]
-DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
-DCF_FCF_PV: $1.92B (7yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $4.69B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $6.60B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+FCF_Base: $265.51M (4yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$360M / CapEx=$27M / SBC(非現金)=$54M / D&A=$12M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
+DCF_FCF_PV: $2.30B (7yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $5.62B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $7.93B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.1397 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $7.39B (= v0 + RPO_PV + GO_PV + Net_Cash $0.79B)
+Equity_Value: $8.71B (= v0 + RPO_PV + GO_PV + Net_Cash $0.79B)
 Shares_Used: 108.5M (source: yf_implied)
-→ Intrinsic_Value: $68.14 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $80.32 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  4yr  7yr  10yr
-  9.0%       $61.51  $79.37  $100.83
-  10.0%       $53.52  $68.14  $85.23
-  11.0%       $47.54  $59.76  $73.67
+  9.0%       $72.36  $93.79  $119.53
+  10.0%       $62.78  $80.32  $100.82
+  11.0%       $55.60  $70.26  $86.95
 Financial_Health:
   Net_Debt: $-0.79B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.13B  ST_Invest: $0.65B
@@ -339,7 +334,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 7.6%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $160 median ($100-$180) | 7 analysts | vs IV: +134.8%
+Analyst_Consensus: Strong Buy | Target: $160 median ($100-$180) | 7 analysts | vs IV: +99.2%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 19.1%

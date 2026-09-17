@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 71.4,
-  "calculation_date": "2026-09-17T08:52:46+09:00",
+  "calculation_date": "2026-09-18T00:31:08+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -193,29 +193,16 @@
     "note": ""
   },
   "fcf_estimation": {
-    "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 19066881320.24771,
-    "conversion_rate": 0.7,
+    "applied": true,
+    "fallback_reason": "CapEx申告タグなし（標準候補4タグを直近5年分いずれも未申告）のため、生FCF（OCFからCapExを0として扱った値）を採用。",
+    "method": "fallback_capex_missing",
     "estimated_fcf": 37640800000.0,
     "raw_fcf": 37640800000.0,
-    "sector": "Telecom_Services",
-    "note": "生FCF安定(CV=0.03<0.3)かつ外れ値未検出のため推定を適用せず生FCFを採用（買収・統合関連加算$71Mを検出したが、控除するとdr<=1のため未適用）",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 70897213.82962155,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Telecom_Services",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": null,
+    "sbc": null,
+    "ocf": 37137000000,
+    "da": 18349000000,
+    "note": "CapExデータ欠損のためフォールバック。CapEx申告タグなし（標準候補4タグを直近5年分いずれも未申告）のため、生FCF（OCFからCapExを0として扱った値）を採用。"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -285,6 +272,7 @@
   "components": {
     "fcf_5yr_avg": 37640800000.0,
     "fcf_2yr_avg": 37024500000.0,
+    "structural_deficit": false,
     "fcf_base_used": 37640800000.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -296,7 +284,7 @@
       39539000000
     ],
     "diluted_shares": 4154775202,
-    "roe_10yr_avg": 0.3022603029903173,
+    "roe_10yr_avg": 0.30226030299031725,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
     "current_price": 49.7599983215332,
@@ -322,7 +310,7 @@
     "moat_fcf_margin_norm": 0.9137,
     "pv_high": 165213465043.02905,
     "pv_terminal": 1033280588363.1232,
-    "roe_used": 0.3022603029903173,
+    "roe_used": 0.30226030299031725,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -330,7 +318,7 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 1.2694932725593326,
+    "alpha_uncapped": 1.2694932725593324,
     "per": 13.363637,
     "per_is_forward": false,
     "per_adjusted": 11.69,
@@ -358,7 +346,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

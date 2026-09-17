@@ -1,5 +1,5 @@
 SPIR INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:49:25+09:00
+Generated: 2026-09-18T00:25:58+09:00
 Price: $11.49
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,11 +7,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: PASS
 Funda_Score: 0/100
 Timing_Score (components):
-  Deviation_Rate: +177.2%
+  Deviation_Rate: -42.5%
   MA200_Deviation: -15.3%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $22 median ($15-$24) | 4 analysts | vs IV: -30.2%
-Comment: 割安圏(177%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長停滞
+  Analyst_Consensus: Strong Buy | Target: $22 median ($15-$24) | 4 analysts | vs IV: +236.7%
+Comment: 割高(-42%超)、FCFマイナス（投資フェーズ）、売上成長停滞
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -30,10 +30,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
-Quadrant: 右下
-Label: 割安×低効率
+Quadrant: 左下
+Label: 割高×低効率
 Key_Metric_Y: RICE = 0.097
-Deviation_Rate: +177.2%
+Deviation_Rate: -42.5%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,59 +58,56 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $11.49
-Intrinsic_Value_BASE: $31.86
-Deviation_BASE: +177.3%
+Intrinsic_Value_BASE: $6.61
+Deviation_BASE: -42.5%
 Growth_Rate_Original: -33.1% (TTM実績)
 Growth_Rate_Adjusted: 16.4% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=11.5%, IV=$27.11 （推奨値ベース）
-BASE: Growth=16.4%, IV=$31.86 （推奨値ベース）
-BULL: Growth=19.7%, IV=$35.36 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $37.08 (+222.7%) / 3年後: $50.24 (+337.2%) / 5年後: $60.22 (+424.1%)
-  5yr_Annualized_Return: +39.3%/yr
+BEAR: Growth=11.5%, IV=$5.59 （推奨値ベース）
+BASE: Growth=16.4%, IV=$6.61 （推奨値ベース）
+BULL: Growth=19.7%, IV=$7.36 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $7.69 (-33.1%) / 3年後: $10.42 (-9.3%) / 5年後: $12.49 (+8.7%)
+  5yr_Annualized_Return: +1.7%/yr
 TTM_YoY_Growth: -33.1%
 (DCF Base vs TTM actual: +49.5pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.50%
-  参考①β込みWACC_IV: $13.65 (Deviation: +18.8%)
-  参考②Rf理論上限_IV: $178.47 (Deviation: +1453.2%)
+  参考①β込みWACC_IV: $2.69 (Deviation: -76.6%)
+  参考②Rf理論上限_IV: $38.14 (Deviation: +231.9%)
 Terminal_Growth_Rate: 3.0%
 Beta: 2.491
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Conversion_Rate: 0.7 (Industry: Business_Consumer_Svcs)
-  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
-   adjusted net income; differs from OCF→FCF conversion rate.]
-DCF_FCF_Base: $49M (= Adj_NI $69M × FCF_Conv 0.7)
-⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく
-   デフォルト値（0.7）を使用しています。分類判定には使用しません。
+⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
+   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
+    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
+    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
+FCF_Base: $11.73M (4yr平均 + R&D補正) [実績avg: $-69.0M]
+FCF_Breakdown（直近年）: OCF=$-60M / CapEx=$33M / SBC(非現金)=$19M / D&A=$12M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
+  [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
+   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
 ⚠️ NI/OCF乖離に注意（一過性）: 2025年4月完了の海事(maritime)事業売却に伴う非現金の売却益$154.3M（投資CF区分計上のためOCF算定上はNIから控除）が主因
 ⚠️ 減収に注意（構造的変化・継続）: 同じ海事事業売却による連結売上ベースの恒久的縮小
    [前者は一過性の会計事象、後者は今後も継続する事業規模の縮小として
     区別してください。分類判定には使用しません。詳細はBACKLOG_DONE.md
     [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]
-⚠️ 買収・統合関連加算を控除: $1M
-   [無形資産償却費・M&A統合費用等の買収由来の非現金加算がAdj_NIに
-    含まれたままだと推定FCFが過大になるため、FCF換算専用に控除して
-    います。分類判定には使用しません。詳細はBACKLOG_DONE.md
-    [[CWAN-SNPS-MA-DISTORTION-1]]参照。]
-DCF_Reliability: LOW ⚠️ (FCF_Conversion_Rate方式: 要注意フラグ検出, IV参考値)
-  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
-   fcf_outlier未解消（一過性費用で説明不可）または推定FCFが生FCFから
-   大幅乖離（eps_invalid）のため、IVは参考値扱い。]
-DCF_FCF_PV: $0.25B (4yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $1.01B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $1.26B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_FCF_PV: $0.05B (4yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $0.22B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $0.27B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $1.25B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.01B)
+Equity_Value: $0.26B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.01B)
 Shares_Used: 39.1M (source: yf_implied)
-→ Intrinsic_Value: $31.86 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $6.61 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $30.07  $37.41  $45.78
-  10.0%       $25.71  $31.86  $38.74
-  11.0%       $22.43  $27.69  $33.47
+  9.0%       $6.23  $7.80  $9.60
+  10.0%       $5.29  $6.61  $8.09
+  11.0%       $4.58  $5.71  $6.96
 Financial_Health:
   Net_Debt: $+0.01B (negative=net cash)
   Total_Debt: $0.10B  Cash: $0.04B  ST_Invest: $0.05B
@@ -343,7 +340,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 10.0%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $22 median ($15-$24) | 4 analysts | vs IV: -30.2%
+Analyst_Consensus: Strong Buy | Target: $22 median ($15-$24) | 4 analysts | vs IV: +236.7%
 Insider_Activity: Sell優勢 | 買い0件 / 売り6件 | 直近90日
 Runway_Months: 5.0
 Revenue_Growth_YoY: -33.1%

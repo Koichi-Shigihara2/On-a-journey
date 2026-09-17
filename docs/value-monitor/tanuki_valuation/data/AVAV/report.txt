@@ -1,5 +1,5 @@
 AVAV INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:45:13+09:00
+Generated: 2026-09-18T00:19:41+09:00
 Price: $156.45
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -77,7 +77,15 @@ WACC_CAPM_Reference: 12.35%
 Terminal_Growth_Rate: 3.0%
 Beta: 1.412
 FCF_TTM_End: 2026-04-30 (FCF/RICE算出に用いたTTM期末日)
+⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
+   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
+    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
+    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
 FCF_Base: $198.27M (4yr平均 + R&D補正) [実績avg: $-43.2M]
+FCF_Breakdown（直近年）: OCF=$-78M / CapEx=$63M / SBC(非現金)=$38M / D&A=$265M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
@@ -99,7 +107,7 @@ DCF_FCF_Base_Detail: $198.3M (外れ値$-141M/FY2026除外後3点平均)
 DCF_FCF_Base_Excluded: FY2026=$-141M (outlier: >60% deviation from 3yr series)
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『マクロ変動による一時的影響』や『一過性の在庫評価損』と明記されており、事業運営上の一時的な問題を示す。
+  Reasoning: 全項目の理由がマクロ変動による一時的影響や一過性の在庫評価損と明記されており、事業運営上の一時的な問題を示す。
 Financial_Health:
   Net_Debt: $+0.14B (negative=net cash)
   Total_Debt: $0.73B  Cash: $0.29B  ST_Invest: $0.30B

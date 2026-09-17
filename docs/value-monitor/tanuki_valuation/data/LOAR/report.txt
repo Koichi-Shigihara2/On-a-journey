@@ -1,17 +1,17 @@
 LOAR INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:10+09:00
+Generated: 2026-09-18T00:30:02+09:00
 Price: $64.67
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: HOLD
+Classification: WATCH
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -33.6%
+  Deviation_Rate: +1.3%
   MA200_Deviation: -4.3%
   HypeCore_Phase: Phase2 (期待拡大期)
-  Analyst_Consensus: Buy | Target: $87 median ($82-$107) | 5 analysts | vs IV: +102.6%
-Comment: 割高(-34%超)、FCF黒字、売上成長加速
+  Analyst_Consensus: Buy | Target: $87 median ($82-$107) | 5 analysts | vs IV: +32.7%
+Comment: 若干割安(1%)、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -30,10 +30,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ④キャッシュ創出力系
-Quadrant: 左上
-Label: 割高×高FCF
+Quadrant: 右上
+Label: 割安×高FCF
 Key_Metric_Y: FCF_Margin = 22.6%
-Deviation_Rate: -33.6%
+Deviation_Rate: +1.3%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,43 +58,39 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $64.67
-Intrinsic_Value_BASE: $42.94
-Deviation_BASE: -33.6%
+Intrinsic_Value_BASE: $65.54
+Deviation_BASE: +1.3%
 Scenarios:
-BEAR: Growth=35.0%, IV=$22.61, Deviation=-65.0%
-BASE: Growth=50.0%, IV=$42.94, Deviation=-33.6%
-BULL: Growth=60.0%, IV=$61.65, Deviation=-4.7%
-Return_Outlook(BASE): 1年後: $64.41 (-0.4%) / 3年後: $144.92 (+124.1%) / 5年後: $326.08 (+404.2%)
-  5yr_Annualized_Return: +38.2%/yr
+BEAR: Growth=35.0%, IV=$36.34, Deviation=-43.8%
+BASE: Growth=50.0%, IV=$65.54, Deviation=+1.3%
+BULL: Growth=60.0%, IV=$92.43, Deviation=+42.9%
+Return_Outlook(BASE): 1年後: $98.31 (+52.0%) / 3年後: $221.20 (+242.0%) / 5年後: $497.69 (+669.6%)
+  5yr_Annualized_Return: +50.4%/yr
 TTM_YoY_Growth: 29.8%
 (DCF Base vs TTM actual: +20.2pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 7.50%
-  参考①β込みWACC_IV: $75.73 (Deviation: +17.1%)
-  参考②Rf理論上限_IV: $304.54 (Deviation: +370.9%)
+  参考①β込みWACC_IV: $112.65 (Deviation: +74.2%)
+  参考②Rf理論上限_IV: $441.36 (Deviation: +582.5%)
 Terminal_Growth_Rate: 3.0%
 Beta: 0.562
-FCF_Conversion_Rate: 0.7 (Industry: Aerospace & Defense)
-  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
-   adjusted net income; differs from OCF→FCF conversion rate.]
-DCF_FCF_Base: $58M (= Adj_NI $83M × FCF_Conv 0.7)
-⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく
-   デフォルト値（0.7）を使用しています。分類判定には使用しません。
-DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
-DCF_FCF_PV: $0.81B (5yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $4.04B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $4.85B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+FCF_Base: $83.63M (直近2yr平均) [ボトムアップ: OCF-CapEx]
+⚠️ FCF内訳: CapEx申告タグなし（標準候補4タグを直近3年分いずれも未申告）のため、生FCF（OCFからCapExを0として扱った値）を採用。
+DCF_Reliability: NORMAL  (通常判定適用)
+DCF_FCF_PV: $1.17B (5yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $5.80B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $6.97B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0991 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $4.02B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.83B)
+Equity_Value: $6.14B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.83B)
 Shares_Used: 93.7M (source: yf_implied)
-→ Intrinsic_Value: $42.94 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $65.54 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $22.62  $52.76  $109.84
-  10.0%       $17.93  $42.94  $89.43
-  11.0%       $14.42  $35.60  $74.28
+  9.0%       $36.35  $79.65  $161.65
+  10.0%       $29.62  $65.54  $132.33
+  11.0%       $24.57  $55.00  $110.57
 Financial_Health:
   Net_Debt: $+0.83B (negative=net cash)
   Total_Debt: $0.95B  Cash: $0.12B
@@ -317,7 +313,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 13.9%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $87 median ($82-$107) | 5 analysts | vs IV: +102.6%
+Analyst_Consensus: Buy | Target: $87 median ($82-$107) | 5 analysts | vs IV: +32.7%
 Insider_Activity: 中立 | 買い0件 / 売り0件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 29.8%

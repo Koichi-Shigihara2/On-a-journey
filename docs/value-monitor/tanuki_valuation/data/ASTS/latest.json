@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -93.8,
-  "calculation_date": "2026-09-17T08:45:04+09:00",
+  "calculation_date": "2026-09-18T00:19:25+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -192,28 +192,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": -295443668.7620791,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 5673440.0,
     "raw_fcf": 5673440.0,
-    "sector": "Telecom_Services",
-    "note": "調整済み純利益がマイナス($-295M) → 従来FCFを使用",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Telecom_Services",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 1064741000,
+    "sbc": 47490000,
+    "ocf": -71517000,
+    "da": 51111000,
+    "note": "OCF$-0.07B - CapEx$1.06B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -283,6 +270,7 @@
   "components": {
     "fcf_5yr_avg": -700086750.0,
     "fcf_2yr_avg": -1157455500.0,
+    "structural_deficit": true,
     "fcf_base_used": -6841226.666666664,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
@@ -293,7 +281,7 @@
       -202604000
     ],
     "diluted_shares": 389167494,
-    "roe_10yr_avg": -0.3495788394646131,
+    "roe_10yr_avg": -0.34957883946461304,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
     "current_price": 59.27000045776367,
@@ -319,7 +307,7 @@
     "moat_fcf_margin_norm": 0.0,
     "pv_high": -32295254.042276576,
     "pv_terminal": -49249944.434020795,
-    "roe_used": -0.3495788394646131,
+    "roe_used": -0.34957883946461304,
     "fcf_floor_applied": 705760190.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -355,7 +343,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

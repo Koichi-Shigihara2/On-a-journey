@@ -1,5 +1,5 @@
 MSFT INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:47:56+09:00
+Generated: 2026-09-18T00:23:54+09:00
 Price: $490.30
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,11 +7,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: HOLD
 Funda_Score: 90/100
 Timing_Score (components):
-  Deviation_Rate: -5.6%
+  Deviation_Rate: -22.0%
   MA200_Deviation: +13.6%
   HypeCore_Phase: Phase3 (陶酔期)
-  Analyst_Consensus: Strong Buy | Target: $555 median ($400-$870) | 52 analysts | vs IV: +19.9%
-Comment: フェアバリュー近辺、FCF黒字、売上安定成長
+  Analyst_Consensus: Strong Buy | Target: $555 median ($400-$870) | 52 analysts | vs IV: +45.2%
+Comment: 割高(-22%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×中効率
 Key_Metric_Y: RICE = 1.417
-Deviation_Rate: -5.6%
+Deviation_Rate: -22.0%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,50 +58,46 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $490.30
-Intrinsic_Value_BASE: $462.73
-Deviation_BASE: -5.6%
+Intrinsic_Value_BASE: $382.36
+Deviation_BASE: -22.0%
 Scenarios:
-BEAR: Growth=8.2%, IV=$317.78, Deviation=-35.2%
-BASE: Growth=14.5%, IV=$462.73, Deviation=-5.6%
-BULL: Growth=17.4%, IV=$549.93, Deviation=+12.2%
-Return_Outlook(BASE): 1年後: $529.69 (+8.0%) / 3年後: $694.07 (+41.6%) / 5年後: $909.47 (+85.5%)
-  5yr_Annualized_Return: +13.2%/yr
+BEAR: Growth=8.2%, IV=$263.58, Deviation=-46.2%
+BASE: Growth=14.5%, IV=$382.36, Deviation=-22.0%
+BULL: Growth=17.4%, IV=$453.81, Deviation=-7.4%
+Return_Outlook(BASE): 1年後: $437.69 (-10.7%) / 3年後: $573.52 (+17.0%) / 5年後: $751.50 (+53.3%)
+  5yr_Annualized_Return: +8.9%/yr
 Growth_Rate_Rec: 16.1% (recommended)
 FCF_Margin_Bear_Adj: FCFマージン悪化(26.0%→21.1%) BEAR補正係数=0.811
 TTM_YoY_Growth: 17.8%
 (DCF Base vs TTM actual: -3.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.56%
-  参考①β込みWACC_IV: $421.28 (Deviation: -14.1%)
-  参考②Rf理論上限_IV: $4,312.15 (Deviation: +779.5%)
+  参考①β込みWACC_IV: $348.39 (Deviation: -28.9%)
+  参考②Rf理論上限_IV: $3,536.58 (Deviation: +621.3%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.099
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Conversion_Rate: 0.6 (Industry: Software - Infrastructure)
-  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from
-   adjusted net income; differs from OCF→FCF conversion rate.]
-DCF_FCF_Base: $85,716M (= Adj_NI $142,860M × FCF_Conv 0.6)
-⚠️ 買収・統合関連加算を控除: $3,585M
-   [無形資産償却費・M&A統合費用等の買収由来の非現金加算がAdj_NIに
-    含まれたままだと推定FCFが過大になるため、FCF換算専用に控除して
-    います。分類判定には使用しません。詳細はBACKLOG_DONE.md
-    [[CWAN-SNPS-MA-DISTORTION-1]]参照。]
-DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)
-DCF_FCF_PV: $1475.80B (Ph1=$879.81B + Ph2=$596.00B, 8yr, pre-alpha, Rm=10%)
+FCF_Base: $75,014.00M (5yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$182,935M / CapEx=$115,948M / SBC(非現金)=$12,405M / D&A=$34,300M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
+DCF_FCF_PV: $1209.28B (Ph1=$720.92B + Ph2=$488.36B, 8yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=5yr@0.0%, Phase2=5yr@8.0%
-DCF_TV_PV:  $1829.02B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $3304.82B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $1498.71B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $2707.99B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 1.0000 (HypeCore expectation premium; Rm basis) [CAPPED: セクター別上限到達]
 RPO_PV: $91.910B (Remaining Performance Obligation premium)
 Growth_Option_PV: $1.289B (optional segment premium)
-Equity_Value: $3436.03B (= v0 + RPO_PV + GO_PV + Net_Cash $38.01B)
+Equity_Value: $2839.20B (= v0 + RPO_PV + GO_PV + Net_Cash $38.01B)
 Shares_Used: 7425.5M (source: yf_implied)
-→ Intrinsic_Value: $462.73 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $382.36 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  4yr  8yr  12yr
-  9.0%       $415.92  $557.90  $730.61
-  10.0%       $350.68  $462.73  $594.14
-  11.0%       $303.02  $393.70  $496.27
+  9.0%       $344.00  $460.34  $601.85
+  10.0%       $290.54  $382.36  $490.03
+  11.0%       $251.49  $325.79  $409.83
 Financial_Health:
   Net_Debt: $-38.01B (negative=net cash)
   Total_Debt: $40.26B  Cash: $32.10B  ST_Invest: $46.17B
@@ -340,7 +336,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 1.0%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $555 median ($400-$870) | 52 analysts | vs IV: +19.9%
+Analyst_Consensus: Strong Buy | Target: $555 median ($400-$870) | 52 analysts | vs IV: +45.2%
 Insider_Activity: Sell優勢 | 買い0件 / 売り16件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 17.8%

@@ -1,5 +1,5 @@
 TDY INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:50:23+09:00
+Generated: 2026-09-18T00:27:21+09:00
 Price: $601.10
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -77,8 +77,12 @@ WACC_CAPM_Reference: 9.48%
 Terminal_Growth_Rate: 3.0%
 Beta: 0.908
 FCF_TTM_End: 2026-06-28 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $945.65M (4yr平均 + R&D補正)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $945.65M (4yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$1,191M / CapEx=$117M / SBC(非現金)=N/A / D&A=$336M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $5.24B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $16.51B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $21.75B (= FCF_PV + TV_PV, Rm=10% enterprise value)

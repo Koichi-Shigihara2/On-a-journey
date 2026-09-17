@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -71.8,
-  "calculation_date": "2026-09-17T08:52:51+09:00",
+  "calculation_date": "2026-09-18T00:31:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -194,28 +194,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": 18200540000.0,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 14617000000.0,
     "raw_fcf": 14617000000.0,
-    "sector": "Retail_General",
-    "note": "生FCF安定(CV=0.22<0.3)かつ外れ値未検出のため推定を適用せず生FCFを採用",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Retail_General",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 26642000000,
+    "sbc": 3603000000,
+    "ocf": 41565000000,
+    "da": null,
+    "note": "OCF$41.56B - CapEx$26.64B（直近年。5yr/2yr平均・外れ値除外後の採用値は$14.62B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -285,6 +272,7 @@
   "components": {
     "fcf_5yr_avg": 14617000000.0,
     "fcf_2yr_avg": 13631000000.0,
+    "structural_deficit": false,
     "fcf_base_used": 14617000000.0,
     "fcf_base_method": "avg_5yr_recovery",
     "fcf_outlier_excl_avg": null,
@@ -357,7 +345,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

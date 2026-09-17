@@ -1,5 +1,5 @@
 CRWV INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:46:15+09:00
+Generated: 2026-09-18T00:21:19+09:00
 Price: $83.35
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -76,14 +76,18 @@ WACC_CAPM_Reference: 12.00%
   参考②Rf理論上限_IV: $3,026.27 (Deviation: +3530.8%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.35
+⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
+   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
+    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
+    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
 FCF_Base: $723.98M (3yr平均 + R&D補正) [実績avg: $-4,731.3M]
+FCF_Breakdown（直近年）: OCF=$3,058M / CapEx=$10,309M / SBC(非現金)=$630M / D&A=$2,454M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
-ℹ️ 買収・統合関連加算$23Mを検出したが未控除
-   [控除すると生FCFを下回る（過小推定側）と判定されたため、方向性
-    ガードにより調整済み純利益をそのまま採用しています。詳細は
-    BACKLOG_DONE.md [[FCF-EST-DIRECTION-GUARD-1]]参照。]
 DCF_FCF_PV: $41.79B (Ph1=$14.32B + Ph2=$27.46B, 5yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@20.0%
 DCF_TV_PV:  $123.98B (terminal value present value, pre-alpha, Rm=10%)

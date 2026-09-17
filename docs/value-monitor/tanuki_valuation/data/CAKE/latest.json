@@ -1,50 +1,50 @@
 {
-  "intrinsic_value_pt": 1841007571.4011993,
-  "intrinsic_value_per_share": 28.42568336673287,
-  "intrinsic_value_beta": 28.22,
-  "upside_percent_beta": -70.9,
-  "intrinsic_value_rf": 149.27,
-  "upside_percent_rf": 53.9,
-  "v0": 1841007571.4011993,
+  "intrinsic_value_pt": 2586127291.202729,
+  "intrinsic_value_per_share": 43.48120110975319,
+  "intrinsic_value_beta": 43.2,
+  "upside_percent_beta": -55.5,
+  "intrinsic_value_rf": 213.24,
+  "upside_percent_rf": 119.8,
+  "v0": 2586127291.202729,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.6,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 29.77,
-    "2年後": 31.17,
-    "3年後": 32.63,
-    "4年後": 34.16,
-    "5年後": 35.77
+    "1年後": 45.52,
+    "2年後": 47.66,
+    "3年後": 49.9,
+    "4年後": 52.25,
+    "5年後": 54.7
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 29.77,
+      "future_value": 45.52,
       "value_growth_pct": 4.7,
-      "expected_return_pct": -69.3
+      "expected_return_pct": -53.1
     },
     "2年後": {
-      "future_value": 31.17,
+      "future_value": 47.66,
       "value_growth_pct": 9.6,
-      "expected_return_pct": -67.9
+      "expected_return_pct": -50.9
     },
     "3年後": {
-      "future_value": 32.63,
+      "future_value": 49.9,
       "value_growth_pct": 14.8,
-      "expected_return_pct": -66.4
+      "expected_return_pct": -48.6
     },
     "4年後": {
-      "future_value": 34.16,
+      "future_value": 52.25,
       "value_growth_pct": 20.2,
-      "expected_return_pct": -64.8
+      "expected_return_pct": -46.1
     },
     "5年後": {
-      "future_value": 35.77,
+      "future_value": 54.7,
       "value_growth_pct": 25.8,
-      "expected_return_pct": -63.1
+      "expected_return_pct": -43.6
     }
   },
-  "upside_percent": -70.7,
-  "calculation_date": "2026-09-17T08:45:20+09:00",
+  "upside_percent": -55.2,
+  "calculation_date": "2026-09-18T00:19:54+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -62,19 +62,19 @@
   "sensitivity": {
     "matrix": [
       [
-        32.26,
-        34.28,
-        36.07
+        48.87,
+        51.7,
+        54.22
       ],
       [
-        26.75,
-        28.43,
-        29.87
+        41.13,
+        43.48,
+        45.51
       ],
       [
-        22.54,
-        23.95,
-        25.14
+        35.21,
+        37.2,
+        38.87
       ]
     ],
     "wacc_values": [
@@ -105,15 +105,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.033,
-      "intrinsic_value_per_share": 25.93
+      "intrinsic_value_per_share": 39.98
     },
     "base": {
       "growth_rate": 0.047,
-      "intrinsic_value_per_share": 28.43
+      "intrinsic_value_per_share": 43.48
     },
     "bull": {
       "growth_rate": 0.056,
-      "intrinsic_value_per_share": 30.18
+      "intrinsic_value_per_share": 45.94
     }
   },
   "growth_options": {
@@ -135,59 +135,59 @@
     }
   },
   "dcf_components": {
-    "v0": 1841007571.4011993,
-    "pv_phase1": 607814647.5439157,
-    "pv_phase2": 303045934.662486,
-    "pv_high_growth": 910860582.2064018,
-    "pv_terminal": 930146989.1947975,
+    "v0": 2586127291.202729,
+    "pv_phase1": 853818350.5729522,
+    "pv_phase2": 425699152.08018667,
+    "pv_high_growth": 1279517502.6531389,
+    "pv_terminal": 1306609788.5495903,
     "phase1_detail": [
       {
         "year": 1,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 125780370.15354164,
+        "fcf": 176688055.5,
         "discount_factor": 1.100399,
-        "pv": 114304329.75088277
+        "pv": 160567262.8746482
       },
       {
         "year": 2,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 131692047.5507581,
+        "fcf": 184992394.10849997,
         "discount_factor": 1.2108779592009997,
-        "pv": 108757490.00969128
+        "pv": 152775424.39583886
       },
       {
         "year": 3,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 137881573.78564373,
+        "fcf": 193687036.63159946,
         "discount_factor": 1.3324488954268208,
-        "pv": 103479821.44671777
+        "pv": 145361700.02194047
       },
       {
         "year": 4,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 144362007.75356898,
+        "fcf": 202790327.35328463,
         "discount_factor": 1.4662254320787782,
-        "pv": 98458262.00742957
+        "pv": 138307741.03118202
       },
       {
         "year": 5,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 151147022.1179867,
+        "fcf": 212321472.73888898,
         "discount_factor": 1.6134329992340553,
-        "pv": 93680383.4988752
+        "pv": 131596089.10917547
       },
       {
         "year": 6,
         "phase": "phase1",
         "growth_rate": 0.047,
-        "fcf": 158250932.15753207,
+        "fcf": 222300581.95761675,
         "discount_factor": 1.7754200589241549,
-        "pv": 89134360.83031912
+        "pv": 125210133.1401671
       }
     ],
     "phase2_detail": [
@@ -195,43 +195,43 @@
         "year": 7,
         "phase": "phase2",
         "growth_rate": 0.03,
-        "fcf": 162998460.12225804,
+        "fcf": 228969599.41634527,
         "discount_factor": 1.953670457420081,
-        "pv": 83431911.20241722
+        "pv": 117199704.04768828
       },
       {
         "year": 8,
         "phase": "phase2",
         "growth_rate": 0.03,
-        "fcf": 167888413.9259258,
+        "fcf": 235838687.39883563,
         "discount_factor": 2.1498170176745997,
-        "pv": 78094280.8367599
+        "pv": 109701749.24651779
       },
       {
         "year": 9,
         "phase": "phase2",
         "growth_rate": 0.03,
-        "fcf": 172925066.34370357,
+        "fcf": 242913848.0208007,
         "discount_factor": 2.3656564964321114,
-        "pv": 73098130.09813958
+        "pv": 102683482.7402727
       },
       {
         "year": 10,
         "phase": "phase2",
         "growth_rate": 0.03,
-        "fcf": 178112818.33401468,
+        "fcf": 250201263.46142474,
         "discount_factor": 2.603166043017399,
-        "pv": 68421612.52516931
+        "pv": 96114216.04570787
       }
     ],
-    "terminal_fcf": 182565638.79236504,
-    "terminal_value": 2421327057.2867684,
+    "terminal_fcf": 256456295.04796034,
+    "terminal_value": 3401322233.0264373,
     "dcf_type": "three_stage",
-    "v0_rm": 1851020026.211882,
-    "pv_fcf_rm": 912527267.3210545,
-    "pv_tv_rm": 938492758.8908277,
-    "pv_phase1_rm": 608554789.4387337,
-    "pv_phase2_rm": 303972477.8823208
+    "v0_rm": 2600192134.302822,
+    "pv_fcf_rm": 1281858753.1334746,
+    "pv_tv_rm": 1318333381.1693475,
+    "pv_phase1_rm": 854858053.6047515,
+    "pv_phase2_rm": 427000699.5287231
   },
   "fcf_base": {
     "base_fcf": 168756500.0,
@@ -261,29 +261,16 @@
     "note": "FY2025 FCF($206M)が5年平均($110M)から87%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
-    "applied": true,
-    "method": "adj_eps_estimated",
-    "adj_net_income": 171620098.4493678,
-    "conversion_rate": 0.7,
-    "estimated_fcf": 120134068.91455744,
+    "applied": false,
+    "fallback_reason": "",
+    "method": "bottom_up",
+    "estimated_fcf": 168756500.0,
     "raw_fcf": 168756500.0,
-    "sector": "Restaurant_Dining",
-    "note": "調整済み純利益$0.17B × 転換率70%[sector(Restaurant_Dining)] = 推定FCF$0.12B（従来$0.17Bの0.7倍）",
-    "divergence_ratio": 0.71,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 0.0,
-    "rate_is_sector_default": true
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "Restaurant_Dining",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 146204000,
+    "sbc": 27234000,
+    "ocf": 301281000,
+    "da": 109031000,
+    "note": "OCF$0.30B - CapEx$0.15B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.17B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -353,7 +340,8 @@
   "components": {
     "fcf_5yr_avg": 110206000.0,
     "fcf_2yr_avg": 168756500.0,
-    "fcf_base_used": 120134068.91455744,
+    "structural_deficit": false,
+    "fcf_base_used": 168756500.0,
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
@@ -387,8 +375,8 @@
     "moat_gross_margin_norm": 0.7599,
     "moat_roic_norm": 0.2464,
     "moat_fcf_margin_norm": 0.101,
-    "pv_high": 910860582.2064018,
-    "pv_terminal": 930146989.1947975,
+    "pv_high": 1279517502.6531389,
+    "pv_terminal": 1306609788.5495903,
     "roe_used": 0.14630313403379497,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
@@ -419,22 +407,22 @@
     "insider_sell_count": 12,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-09-03",
-    "analyst_vs_iv": 230.7,
+    "analyst_vs_iv": 116.2,
     "max_eps": 4.1368,
     "max_eps_per": 23.5,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $1.85B + RPO $0.00B + GO $0.00B) / 0.050B + BS $-8.77/株 = $28.43 (差異0.00%、α=0.600は参考値・P_t未乗算)"
+        "detail": "(V₀ $2.60B + RPO $0.00B + GO $0.00B) / 0.050B + BS $-8.77/株 = $43.48 (差異0.00%、α=0.600は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "3段階: P1 $0.61B + P2 $0.30B + TV $0.93B = $1.84B (差異0.00%)"
+        "detail": "3段階: P1 $0.85B + P2 $0.43B + TV $1.31B = $2.59B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -450,7 +438,7 @@
   },
   "tanuki_score": "TRIM",
   "funda_score": 65,
-  "score_comment": "割高(-71%超)、FCF黒字、売上安定成長",
+  "score_comment": "割高(-55%超)、FCF黒字、売上安定成長",
   "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,

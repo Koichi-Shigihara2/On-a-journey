@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -8.0,
-  "calculation_date": "2026-09-17T08:49:15+09:00",
+  "calculation_date": "2026-09-18T00:25:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -219,7 +219,7 @@
       "total_transient_amount": 12265000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断される。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -227,28 +227,15 @@
   },
   "fcf_estimation": {
     "applied": false,
-    "method": "raw_fcf",
-    "adj_net_income": -152268434.94726574,
-    "conversion_rate": 0.7,
+    "fallback_reason": "",
+    "method": "bottom_up",
     "estimated_fcf": 48180500.0,
     "raw_fcf": 48180500.0,
-    "sector": "",
-    "note": "調整済み純利益がマイナス($-152M)（買収・統合関連加算$28Mを検出したが、控除するとdr<=1のため未適用） → 従来FCFを使用",
-    "divergence_ratio": 0.0,
-    "divergence_warning": "",
-    "ma_addback_excluded": 0.0,
-    "ma_addback_detected_but_not_applied": 28472725.48366661,
-    "rate_is_sector_default": false
-  },
-  "software_system_reclassification": {
-    "applicable": false,
-    "current_subgroup": "",
-    "recommended_subgroup": null,
-    "realized_ratio": null,
-    "years_used": 0,
-    "deviation_from_current": null,
-    "reclassify_recommended": false,
-    "note": "対象外"
+    "capex": 713000,
+    "sbc": 297587000,
+    "ocf": 76616000,
+    "da": 54933000,
+    "note": "OCF$0.08B - CapEx$0.00B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.05B）"
   },
   "software_system_provisional": {
     "is_provisional": false,
@@ -318,6 +305,7 @@
   "components": {
     "fcf_5yr_avg": -3278750.0,
     "fcf_2yr_avg": 48180500.0,
+    "structural_deficit": false,
     "fcf_base_used": 141304833.33333334,
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
@@ -390,7 +378,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-17",
+    "validated_at": "2026-09-18",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

@@ -1,5 +1,5 @@
 FCX INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:50:39+09:00
+Generated: 2026-09-18T00:27:47+09:00
 Price: $69.24
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -83,8 +83,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $1.32B
   Required_Growth:  40%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $1,319.50M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $1,319.50M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$5,610M / CapEx=$4,494M / SBC(非現金)=$121M / D&A=$2,244M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $5.97B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $16.41B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $22.38B (= FCF_PV + TV_PV, Rm=10% enterprise value)

@@ -1,5 +1,5 @@
 JNJ INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:52:10+09:00
+Generated: 2026-09-18T00:30:01+09:00
 Price: $267.28
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -84,8 +84,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $17.94B
   Required_Growth:  21%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-28 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $17,935.75M (4yr平均 + R&D補正)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $17,935.75M (4yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$24,530M / CapEx=$4,832M / SBC(非現金)=$1,354M / D&A=$7,503M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $94.50B (7yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $157.50B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $251.99B (= FCF_PV + TV_PV, Rm=10% enterprise value)

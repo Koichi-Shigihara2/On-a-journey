@@ -1,5 +1,5 @@
 V INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:50:41+09:00
+Generated: 2026-09-18T00:27:51+09:00
 Price: $370.93
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -77,8 +77,12 @@ WACC_CAPM_Reference: 8.60%
 Terminal_Growth_Rate: 3.0%
 Beta: 0.754
 FCF_TTM_End: 2026-03-31 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $19,897.75M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $19,897.75M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$23,059M / CapEx=$1,482M / SBC(非現金)=$897M / D&A=$1,220M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $208.38B (10yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $318.25B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $526.62B (= FCF_PV + TV_PV, Rm=10% enterprise value)

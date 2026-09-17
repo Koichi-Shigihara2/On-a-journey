@@ -1,5 +1,5 @@
 VST INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-17T08:50:35+09:00
+Generated: 2026-09-18T00:27:39+09:00
 Price: $140.39
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -86,8 +86,12 @@ Valuation_Gap_Analysis:
   Current_FCF:      $2.19B
   Required_Growth:  19%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $2,187.50M (4yr平均)
-DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)
+FCF_Base: $2,187.50M (4yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$4,070M / CapEx=$2,752M / SBC(非現金)=$113M / D&A=$1,986M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
+DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $8.33B (4yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $25.77B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $34.10B (= FCF_PV + TV_PV, Rm=10% enterprise value)
@@ -122,7 +126,7 @@ Segment_Breakdown:
   East_Nuclear: $5.3B (30%, YoY 8%)
   Retail: $4.4B (25%, YoY 5%)
   West: $0.9B (5%, YoY 4%)
-  Segment_Weighted_Growth: 7.8%
+  Segment_Weighted_Growth: 7.9%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
