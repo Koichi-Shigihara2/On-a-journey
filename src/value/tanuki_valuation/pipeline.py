@@ -92,6 +92,29 @@ FCF_TRANSIENT_ITEM_EXPLANATIONS = {
     },
 }
 
+# [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（2026-09-18、10銘柄
+# パイロット）: TANUKI TAIL（src/tail/sec_items_fetcher.py）がMD&A原文から
+# AI抽出したセグメント別成長見通し（参考情報専用、DCF/IV計算には未使用）を
+# report.txt上のFCF_Breakdown直後に表示する。TANUKI TAIL対象銘柄（現状は
+# ADBE/APGE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLAの10銘柄）以外は
+# データファイル自体が存在しないため自然にスキップされる。
+
+
+def _load_tail_segment_outlook(repo_root: str, ticker: str) -> Optional[list]:
+    """TANUKI TAILが生成したdocs/portfolio/tail/data/mda/{ticker}/latest.json
+    のsegment_outlookを読み込む。TANUKI TAIL非対象銘柄・データ未生成・
+    読み込み失敗時はNoneを返す（フェイルセーフ、report.txt生成を止めない）。"""
+    path = os.path.join(repo_root, "docs", "portfolio", "tail", "data", "mda", ticker, "latest.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        segments = data.get("segment_outlook")
+        return segments if isinstance(segments, list) and segments else None
+    except Exception:
+        return None
+
 
 # CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1: スピンオフ・カーブアウト型／破産再生型の
 # 法人再編でCIKが断絶しており、旧CIKへの接続を行わない方針が確定している銘柄。
@@ -1748,6 +1771,17 @@ class TanukiValuationPipeline:
             L.append("  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途")
             L.append("   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの")
             L.append("   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]")
+
+        # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（10銘柄パイロット、
+        # 2026-09-18）: TANUKI TAILがMD&A原文からAI抽出したセグメント別成長見通し
+        # （参考情報専用）。DCF/IV計算には一切使用しない。
+        _segment_outlook = _load_tail_segment_outlook(self.repo_root, ticker)
+        if _segment_outlook:
+            L.append("セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:")
+            for _seg in _segment_outlook:
+                L.append(f"  - {_seg.get('name', '')} [{_seg.get('trend', '')}]: {_seg.get('summary', '')}")
+            L.append("  [本セクションはAIによる10-K MD&A原文の定性的要約であり、DCF/IV計算には")
+            L.append("   一切使用していません。参考情報としてお読みください。]")
 
         if _floor_applied > 0:
             L.append("DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)")

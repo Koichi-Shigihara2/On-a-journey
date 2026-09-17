@@ -3646,3 +3646,61 @@ class TestDcfReliabilityLabelUnified:
         report = pipe._generate_report("NEWCO2", val, score_data, _minimal_extra())
         assert "DCF_Reliability: NORMAL" in report
         assert "DCF_Reliability: HIGH" not in report
+
+
+# ─────────────────────────────────────────────
+# 18. [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]] 10銘柄パイロット
+#     （2026-09-18）: TANUKI TAILがMD&A原文からAI抽出したセグメント別
+#     成長見通し（参考情報専用）が、report.txtのFCF_Breakdown直後に
+#     正しく表示されること、非対象銘柄（データファイル未生成）では
+#     表示自体が一切現れないことを確認する。
+# ─────────────────────────────────────────────
+
+class TestSegmentOutlookInReport:
+    @staticmethod
+    def _write_tail_segment_outlook(tmp_path, ticker: str, segments: list) -> None:
+        """pipe.repo_root == tmp_path のとき、pipeline._load_tail_segment_outlook()
+        が読みに来る docs/portfolio/tail/data/mda/{ticker}/latest.json を作成する"""
+        mda_dir = tmp_path / "docs" / "portfolio" / "tail" / "data" / "mda" / ticker
+        mda_dir.mkdir(parents=True, exist_ok=True)
+        (mda_dir / "latest.json").write_text(
+            json.dumps({"ticker": ticker, "segment_outlook": segments}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+    def test_segment_outlook_shown_after_fcf_breakdown_with_disclaimer(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        self._write_tail_segment_outlook(tmp_path, "SOFI", [
+            {"name": "Lending Segment", "trend": "accelerating",
+             "summary": "貸出残高の増加により純利息収入が押し上げられた。", "quote": "q1"},
+            {"name": "Technology Platform Segment", "trend": "stable",
+             "summary": "純収益・貢献利益ともに前年比14%増加。", "quote": "q2"},
+        ])
+        val = _minimal_valuation()
+        report = pipe._generate_report("SOFI", val, _minimal_score_data(), _minimal_extra())
+
+        assert "セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:" in report
+        assert "- Lending Segment [accelerating]: 貸出残高の増加により純利息収入が押し上げられた。" in report
+        assert "- Technology Platform Segment [stable]: 純収益・貢献利益ともに前年比14%増加。" in report
+        assert "DCF/IV計算には" in report and "一切使用していません" in report
+
+        # FCF_Breakdownの直後に配置されていること
+        breakdown_idx = report.index("FCF_Breakdown（直近年）")
+        segment_idx = report.index("セグメント別成長見通し")
+        reliability_idx = report.index("DCF_Reliability:")
+        assert breakdown_idx < segment_idx < reliability_idx
+
+    def test_no_segment_outlook_section_when_tail_data_missing(self, tmp_path):
+        """TANUKI TAIL対象外銘柄（データファイル自体が存在しない）ではセクション自体が現れない"""
+        pipe = _make_pipe(tmp_path)
+        val = _minimal_valuation()
+        report = pipe._generate_report("NOTAIL", val, _minimal_score_data(), _minimal_extra())
+        assert "セグメント別成長見通し" not in report
+
+    def test_empty_segment_outlook_list_shows_no_section(self, tmp_path):
+        """segment_outlookが空配列（AIが該当なしと判断）の場合もセクションを出さない"""
+        pipe = _make_pipe(tmp_path)
+        self._write_tail_segment_outlook(tmp_path, "SOFI", [])
+        val = _minimal_valuation()
+        report = pipe._generate_report("SOFI", val, _minimal_score_data(), _minimal_extra())
+        assert "セグメント別成長見通し" not in report
