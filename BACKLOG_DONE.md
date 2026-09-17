@@ -63,19 +63,19 @@ ZETA）を10-K等の一次情報で確認した結果、いずれも①raw_fcf�
   adj_eps_estimated経由）で機能していた
 
 #### STEP2〜8: 実装フェーズ（2026-09-17〜18）
-1. **タグ抽出拡張**（コミット`f7e75e1d26`・データ`b8cbf545b0`）:
+1. **タグ抽出拡張**（コミット`60603f9835`・データ`c79df1cd5d`）:
    LYFT限定`capex_concept`オーバーライド（`quarterly.py::
    TICKER_RESTRICTIONS`）でCapitalizedComputerSoftwareAdditionsを
    参照するよう配線。他21銘柄が同タグを申告しておりグローバル候補
    リストへは追加せず（APPの既存exclude設定と干渉するリスクのため）。
    `insurance_reserves`（LYFT）・`restricted_cash`（PAYS/FLYW）を
    新規BSフィールドとして追加（開示専用、DCF計算には未使用）
-2. **STEP1データ配線**（コミット`13d441a802`）: `data_fetcher.py::
+2. **STEP1データ配線**（コミット`9d97586def`）: `data_fetcher.py::
    get_financials()`にcapex_list/sbc_list/ocf_list/da_list/
    fcf_component_datesを追加。実装中に発見した回帰: `fcf_list_raw`は
    TTM系列置換で長さが変わることがあり、年次ベースのcapex_list等とは
    独立した`fcf_component_dates`で対応させる設計に変更
-3. **STEP2/5: 計算ロジック置き換え**（コミット`d391b1c444`）:
+3. **STEP2/5: 計算ロジック置き換え**（コミット`192a45116b`）:
    `estimate_fcf_from_eps()`→`compose_fcf_bottom_up()`。raw_fcfを
    そのまま採用しCapEx/SBC/OCF/D&Aの内訳を保持。付随するMA統合費用
    控除・保険/金融特別処理（全99銘柄で通過0件の死コード）・
@@ -98,12 +98,29 @@ ZETA）を10-K等の一次情報で確認した結果、いずれも①raw_fcf�
    `structural_deficit`フラグを追加。IV/Classificationは変更せず、
    STONKS SILOの赤字銘柄評価枠組みを参照するよう促すreport.txt注記のみ
    （実データでQBTS/SOUN=True、RBRK/S/IOT=False を確認）
-7. **STEP7: 全99銘柄データ再生成**（コミット`462ca51c0c`）: 60銘柄で
+7. **STEP7: 全99銘柄データ再生成**（コミット`8cf445717e`）: 60銘柄で
    IVが変化（旧conversion_rate適用銘柄と完全一致）・39銘柄は不変
    （既存raw_fcfフォールバック銘柄と完全一致）。AMZN/GOOGL/MSFT等は
    IV下落（過去に較正されたticker_overrideが現在のさらに拡大した
    CapEx水準に追従できておらず実態を過大評価していたことが判明、
    ボトムアップ方式が是正）
+
+**rebase時のデータ消失事故と是正（重要な教訓）**: 上記コミット後、
+`git pull --rebase origin/kaihatsu`を実行したところ、リモート側の
+GitHub Actions自動実行（コード変更なし、データのみの定期更新。
+2026-09-17分、旧conversion_rateコードで実行）が同じ99銘柄の
+latest.json/report.txt等を既に更新済みだったため、rebaseの3-wayマージが
+コンフリクトマーカーを一切出さずに旧スキーマ側を採用してしまい、
+STEP7で生成したボトムアップFCFデータが実質的に消失する事故が発生した
+（AAPL等で`fcf_estimation.conversion_rate`が復活・`capex`キーが消失
+していることを実データで発見）。コード側（adjustments.py等）は
+リモートが一切触れていないファイルのため正しくrebaseされていたことを
+個別確認済み。`pipeline.py`（全99銘柄）を再実行し正しいデータへ復元
+（コミット`9dd52cb31d`）。全銘柄で`fcf_estimation.capex`キーの存在・
+`conversion_rate`キーの不在を再確認済み。**教訓**: コード変更なしの
+自動データ更新ワークフローが並行稼働しているブランチでは、rebaseが
+「成功」してもデータファイルの内容が意図通りかを個別に確認すること
+（コンフリクトマーカーが出ないことは正しくマージされたことを意味しない）。
 
 #### 検証ゲート
 pytest 1330件全パス（新規`test_compose_fcf_bottom_up.py`8件・
