@@ -234,6 +234,26 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
                 "合算のため近似ではない。詳細はBACKLOG.md "
                 "[[NVDA-STI-TAG-UNIDENTIFIED-1]]参照。",
     },
+    # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行（2026-09-17）:
+    # LYFTはPaymentsToAcquirePropertyPlantAndEquipment等CAPITAL_EXPENDITURE
+    # 標準候補4タグを一度も申告していない（company_facts.json確認済み）。
+    # 実際に計上しているのはCapitalizedComputerSoftwareAdditions（ソフト
+    # ウェア資産化費用、$4〜12M/年、2022-2024年）のみ。他21銘柄
+    # （AAPL/AMZN/APP等）も同タグを申告しているため、グローバル候補
+    # リストへ追加するとAPP（既存のticker_restrictions "exclude": ["CapEx"]
+    # で意図的にCapEx除外中）等の既存挙動を破壊するリスクがある。
+    # LYFT限定のcapex_conceptオーバーライドとする（sti_concept等と同型の
+    # 設計判断。parser.py側のみ対応、quarterly.py側のTTM抽出は本タスクの
+    # スコープ外＝未対応のまま）。注: 金額自体は小さく（LYFTのOCFは
+    # $1.0B超）、この修正単体でLYFTのraw_fcfへの影響は軽微。
+    "LYFT": {
+        "capex_concept": "CapitalizedComputerSoftwareAdditions",
+        "note": "標準CapExタグ4種を一度も申告せず、ソフトウェア資産化費用"
+                "（CapitalizedComputerSoftwareAdditions）のみ計上。LYFT限定"
+                "オーバーライドとし、グローバル候補リストへは追加しない"
+                "（21銘柄が同タグを申告しており、うちAPPは既存のexclude"
+                "設定と衝突するため）。",
+    },
 }
 
 # 会計年度タイプ（将来対応用）

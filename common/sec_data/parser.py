@@ -177,6 +177,9 @@ class SECParser:
         "long_term_debt", "short_term_debt",
         "current_assets", "current_liabilities",
         "rpo",
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 決済/フロート型
+        # 事業の運転資本開示用フィールド（DCF計算には未使用）
+        "insurance_reserves", "restricted_cash",
     }
 
     # [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1で対象とするBSフィールド。
@@ -290,6 +293,22 @@ class SECParser:
         ],
         "current_liabilities": [
             "LiabilitiesCurrent",
+        ],
+
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行
+        # （2026-09-17）: 決済/フロート型事業（LYFT/PAYS/FLYW）の運転資本
+        # タイミングを可視化するための開示専用フィールド（DCF計算には
+        # 使用しない、report.txtでの参考表示のみ）。LYFTの自動車保険
+        # 準備金はcurrent_liabilities合計に埋没しており単体タグが必要。
+        "insurance_reserves": [
+            "AccruedInsuranceCurrent",
+        ],
+        # PAYS/FLYW（決済処理業）の顧客資金・エスクロー。同上、開示専用。
+        "restricted_cash": [
+            "RestrictedCash",
+            "RestrictedCashCurrent",
+            "RestrictedCashAndCashEquivalentsAtCarryingValue",
+            "RestrictedCashAndCashEquivalents",
         ],
 
         # RPO（残存履行義務）- SaaS企業向け
@@ -504,6 +523,12 @@ class SECParser:
         # いるが原価の76%相当が別のカスタムタグのため意図的に適用しない
         # （quarterly.py::TICKER_RESTRICTIONS内のJOBYコメント参照）。
         _cogs_concept_override = TICKER_RESTRICTIONS.get(ticker, {}).get("cogs_concept")
+        # 銘柄別 capex_concept オーバーライド（[[FCF-CONVRATE-LOWER-
+        # DIVERGENCE-1]]ボトムアップFCF移行、2026-09-17: LYFTは標準
+        # CAPITAL_EXPENDITURE候補4タグを一度も申告せず、ソフトウェア
+        # 資産化費用のみ計上。他21銘柄も同タグを申告しているため
+        # グローバル候補リストへは追加せずticker限定オーバーライドとする）
+        _capex_concept_override = TICKER_RESTRICTIONS.get(ticker, {}).get("capex_concept")
         # 銘柄別 cross_filing_tags オーバーライド（NVDA-STI-TAG-UNIDENTIFIED-1:
         # ANOMALY-PATTERN-CATALOG-1型C。単一タグでは捕捉できず、複数XBRL概念を
         # 指定end_date・指定form制限で直接検索し合算する必要があるケース向け。
@@ -558,6 +583,9 @@ class SECParser:
             # cash_concept が指定されている場合はそのタグのみ使用
             if field_name == "cash_and_equivalents" and _cash_concept_override:
                 xbrl_keys = [_cash_concept_override]
+            # capex_concept が指定されている場合はそのタグのみ使用
+            if field_name == "capital_expenditure" and _capex_concept_override:
+                xbrl_keys = [_capex_concept_override]
             # cogs_concept が指定されている場合は既存候補リストへ追加する
             # （置換ではない）。CPRTはFY2016-2019をCostOfGoodsAndServices
             # Sold等の既存候補タグが既に値を提供しており、cogs_concept
@@ -3236,7 +3264,8 @@ class SECParser:
         for field in ["total_assets", "stockholders_equity", "total_liabilities",
                       "cash_and_equivalents", "short_term_investments",
                       "long_term_debt", "short_term_debt",
-                      "current_assets", "current_liabilities"]:
+                      "current_assets", "current_liabilities",
+                      "insurance_reserves", "restricted_cash"]:
             _record("bs", field, extracted.get(field, {}).get(period_type, {}).get(period))
 
         # PL
