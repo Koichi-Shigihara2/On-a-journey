@@ -471,6 +471,36 @@ def _load_beta_config() -> Dict[str, Any]:
     return {}
 
 
+def build_fcf_component_lists(annual_data: list) -> tuple:
+    """[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行（2026-09-17）:
+    common.sec_data.reader.SECReader.get_annual_range()が返す年次データ
+    （新しい順）から、CapEx・SBC・OCF・D&Aを個別系列として取り出す
+    （report.txtでのFCF内訳開示用）。
+
+    get_fcf_list_with_dates()と同じフィルタ条件（free_cash_flowが存在する
+    年のみ採用）を適用し、対応する年度（annual_data[i]["period"]）と
+    1:1対応する系列を返す。値がNoneの年は該当年度にタグ自体が存在しない
+    ことを示す（0とは区別する）。
+
+    フィルタ条件がSECReader.get_fcf_list_with_dates()と完全に一致するため、
+    同じannual_dataから得たannual_fcf_dates（get_fcf_list_with_dates()の
+    第2戻り値）とインデックスが1:1対応する。
+
+    Returns:
+        (capex_list, sbc_list, ocf_list, da_list) のタプル。
+    """
+    capex_list, sbc_list, ocf_list, da_list = [], [], [], []
+    for year_data in annual_data:
+        cf = year_data.get("cf", {})
+        if cf.get("free_cash_flow") is None:
+            continue
+        capex_list.append(cf.get("capital_expenditure"))
+        sbc_list.append(cf.get("stock_based_compensation"))
+        ocf_list.append(cf.get("operating_cash_flow"))
+        da_list.append(cf.get("depreciation_and_amortization"))
+    return capex_list, sbc_list, ocf_list, da_list
+
+
 class TanukiDataFetcher:
     """
     TANUKI VALUATION 用データフェッチャー v2.3
@@ -496,6 +526,12 @@ class TanukiDataFetcher:
         fcf_list = []
         annual_fcf_dates = None
         fcf_avg = 0.0
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]: fcf_list/annual_fcf_datesと
+        # 1:1対応するCapEx/SBC/OCF/D&A系列（ボトムアップFCF内訳開示用）
+        capex_list: list = []
+        sbc_list: list = []
+        ocf_list: list = []
+        da_list: list = []
         sec_diluted = 0
         roe_avg = None
         roe_years_used = 0
@@ -521,7 +557,7 @@ class TanukiDataFetcher:
                 
                 fcf_list, annual_fcf_dates = self.sec_reader.get_fcf_list_with_dates(ticker, years=5)
                 print(f"   [{ticker}] SEC FCF list: {len(fcf_list)}年分")
-                
+
                 # ファイナンスリース除外が適用されたか確認
                 _annual = self.sec_reader.get_annual_range(ticker, 1)
                 if _annual:
@@ -529,7 +565,25 @@ class TanukiDataFetcher:
                     _fl_amt = _annual[0].get("cf", {}).get("finance_lease_payments", 0)
                     if _fl_applied:
                         print(f"   [{ticker}] ファイナンスリース除外: ${abs(_fl_amt):,.0f}をCapExから控除")
-                
+
+                # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行
+                # （2026-09-17）: CapEx・SBC・OCF・D&Aを個別系列として取得する
+                # （report.txtでのFCF内訳開示用、DCF計算のraw_fcf自体は従来通り
+                # get_fcf_list_with_dates()のfree_cash_flow系列を使う）。
+                # build_fcf_component_lists()はget_fcf_list_with_dates()と
+                # 同一フィルタのためannual_fcf_dates（直上で取得済み）と
+                # 1:1対応する。注意: 本ブロック直後の「TTM系列: FCFソース
+                # 切り替え」でfcf_list/fcf_dates_rawはTTM系列（四半期
+                # ローリング窓）に置き換わることがあり、その場合は長さ・
+                # 対応年度がannual_fcf_datesと一致しなくなる（実データで
+                # AAPL: annual 5点→TTM置換後4点、で発見）。capex_list等は
+                # 常にannual_fcf_dates（返り値dictに"fcf_component_dates"
+                # として保持）と対応させ、fcf_list_raw/fcf_dates_rawとの
+                # 1:1対応は前提としない。
+                capex_list, sbc_list, ocf_list, da_list = build_fcf_component_lists(
+                    self.sec_reader.get_annual_range(ticker, 5)
+                )
+
                 sec_diluted = self.sec_reader.get_diluted_shares(ticker)
                 if sec_diluted > 0:
                     print(f"   [{ticker}] SEC shares: {sec_diluted:,.0f}")
@@ -841,6 +895,18 @@ class TanukiDataFetcher:
             "fcf_5yr_avg": fcf_avg,
             "fcf_2yr_avg": fcf_2yr_avg,
             "fcf_list_raw": fcf_list,
+            # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行
+            # （2026-09-17）: fcf_list_rawと1:1対応するCapEx/SBC/OCF/D&A系列
+            # （report.txtでのFCF内訳開示用）。値がNoneの年は該当年度に
+            # タグ自体が存在しないことを示す（0とは区別する）。
+            "capex_list": capex_list,
+            "sbc_list": sbc_list,
+            "ocf_list": ocf_list,
+            "da_list": da_list,
+            # capex_list/sbc_list/ocf_list/da_listの各要素に対応する会計年度
+            # （新しい順）。fcf_dates_rawはTTM系列に置き換わる場合があり
+            # 対応が崩れるため、常に年次ベースの本フィールドを参照すること。
+            "fcf_component_dates": annual_fcf_dates,
             # [[GROWTH-FCFSERIES-ACCESSOR-ADOPT-1]]: fcf_list_rawと対応する日付
             # （TTM経路はttm_end文字列、年次経路は会計年度int、未取得時はNone）。
             # growth.py側でFCF CAGR算出直前の順序再検証にのみ使う。JSONへは
