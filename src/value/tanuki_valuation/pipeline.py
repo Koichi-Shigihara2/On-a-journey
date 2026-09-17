@@ -56,15 +56,6 @@ except Exception:
     _md_get_calendar = None
     HAS_MARKET_DATA = False
 
-# FCF-CONVRATE②（TRUST-SUMMARY-EPIC-1）: FCF実力推定の業種平均固定転換率
-# （fcf_conversion_config.json の sector_conversion_rates）が、業界サイクルにより
-# 年度ごとのFCFが大きく変動する銘柄を表現できない構造的限界があると原因分析で
-# 確定した銘柄の個別リスト。cv・divergence_ratio 等の閾値による自動判定は、
-# LLYがDOCNを両軸で完全に上回るなど数学的に分離不可能と判明したため採用しない。
-# 将来3件目以降を追加する場合も、業界サイクル起因かどうかの個別原因分析を経てから
-# 手動追加すること（閾値による自動追加は行わない）。
-FCF_CYCLICAL_VOLATILITY_TICKERS = {"SITM", "LITE"}
-
 # GROWTH-STRUCTURAL-MISMATCH-CANDIDATES-1（TRUST-SUMMARY-EPIC-1骨子②）:
 # growth_sanityが警告を出す銘柄のうち、ハイパーグロース事業と成熟業種平均
 # （Damodaran業種分類）との構造的なミスマッチが原因分析で確定した銘柄の
@@ -574,15 +565,19 @@ class TanukiValuationPipeline:
     @staticmethod
     def _calc_dcf_reliability_policy_b(valuation: dict) -> str:
         """
-        DCF_Reliability Policy B（FCF_Conversion_Rate方式向け、DCF-RELIABILITY-1）
+        DCF_Reliability Policy B（DCF-RELIABILITY-1）
 
         Policy A（revenue_floor適用＝FCF_Base直接方式向け）とは別軸の判定基準。
-        fcf_outlier.detected / fcf_outlier.action / eps_invalid の
-        組み合わせで LOW/NORMAL を判定する。
+        fcf_outlier.detected / fcf_outlier.action の組み合わせで LOW/NORMAL
+        を判定する。
 
-        eps_invalid は EPSアナライザー自体にreliabilityフラグが存在しないため、
-        FCF_Conversion_Rate推定値が生FCFから大きく乖離している（divergence_ratio>=2.0、
-        FCFEstimationResult.divergence_warningが非空）ことを代理指標として採用する。
+        [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 従来の
+        eps_invalid判定（FCF_Conversion_Rate推定値が生FCFから大きく乖離
+        〈FCFEstimationResult.divergence_warningが非空〉していることを
+        代理指標とした判定軸）を削除した。ボトムアップFCF移行により
+        estimated_fcf（=raw_fcf）が常に一致する設計になり、この乖離が
+        構造的に発生しなくなったため（conversion_rate方式に特有の
+        失敗モードであり、bottom_up方式では原理的に再現不可能）。
 
         TANUKI-POLICYB-FIX-1（2026-07-11修正）: 従来は
         `transient_evidence.found`（一過性費用の証拠が"存在するか"）を見ていたが、
@@ -613,21 +608,16 @@ class TanukiValuationPipeline:
         （下方乖離・継続赤字＝正当な懸念〈SOFI/XOM等〉は本除外の対象外の
         ため引き続きLOWのまま）。
 
-        判定表（更新後、上方乖離＋直近2年連続黒字の行を追加）:
-          eps_invalid=true                                            → LOW（他条件に関わらず）
-          eps_invalid=false, detected=true, action=="excluded"        → NORMAL
-          eps_invalid=false, detected=true, 上方乖離かつfcf_2yr_avg>0  → NORMAL（新設）
-          eps_invalid=false, detected=true, 上記いずれにも該当しない    → LOW
-          eps_invalid=false, detected=false                           → NORMAL
+        判定表（[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]でeps_invalid行を削除）:
+          detected=true, action=="excluded"        → NORMAL
+          detected=true, 上方乖離かつfcf_2yr_avg>0  → NORMAL（新設）
+          detected=true, 上記いずれにも該当しない    → LOW
+          detected=false                           → NORMAL
         """
         fcf_outlier = valuation.get("fcf_outlier", {}) or {}
         detected = fcf_outlier.get("detected", False)
         explained = fcf_outlier.get("action") == "excluded"
-        fcf_est = valuation.get("fcf_estimation", {}) or {}
-        eps_invalid = bool(fcf_est.get("divergence_warning"))
 
-        if eps_invalid:
-            return "LOW"
         if detected and not explained:
             # POLICY-AB-TREND-BLIND-1: 上方乖離＋直近2年連続黒字は
             # 一過性費用の有無に関わらず健全なトレンド好転とみなし、
@@ -775,22 +765,20 @@ class TanukiValuationPipeline:
         _pre_rounding_comment = comment
         _rounded_by_policy = None
 
-        # DCF_Reliability=LOW 丸め（Policy A: revenue_floor適用＝FCF_Base直接方式向け）
+        # DCF_Reliability=LOW 丸め（Policy A: revenue_floor適用向け）
         # revenue_floor適用（FCF実績マイナス）は理論株価の信頼性が低いため
         # upside依存の判定を抑制して WATCH に統一する。SELL/PASS（ファンダ劣化）は維持。
         #
-        # POLICYB-GATE-FIX-1（2026-07-11）横断調査で判明: fcf_floor_applied は
-        # fcf_estimation.applied の真偽に関わらず計算される（core_calculator.py:
-        # adjust_fcf()はraw fcfに対して先に floor 判定を行い、その後
-        # fcf_estimation.applied=True ならDCFの実際の base_fcf は
-        # conversion-rate推定値に差し替えられる＝floor値は使われない）。
-        # そのためPolicy Aは「floor値が実際にDCFで使われるケース」
-        # （= applied=False）に限定する。BROS/CEG/SOFI/SPIR等はfloor_applied>0だが
-        # applied=TrueでDCFはconversion-rate推定値を使うため、Policy Aは対象外とし
-        # Policy Bのみで判定する。
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 従来はfcf_
+        # estimation.appliedが真の場合（conversion-rate推定値がfloor値を
+        # 差し替える）Policy Aを対象外としていたが、ボトムアップFCF移行に
+        # よりraw_fcfを差し替える別方式自体が存在しなくなったため、
+        # fcf_floor_applied>0は常に「floor値が実際にDCFで使われるケース」
+        # を意味するようになった（appliedは現在「データ欠損フォールバック
+        # 使用」を示すフラグに再定義されており、floor値が使われるか否かとは
+        # 無関係）。ガード条件を削除し、floor_applied>0のみで判定する。
         _floor_applied = valuation.get("components", {}).get("fcf_floor_applied", 0) or 0
-        _fcf_estimation = valuation.get("fcf_estimation", {}) or {}
-        _policy_a_fires = _floor_applied > 0 and not _fcf_estimation.get("applied")
+        _policy_a_fires = _floor_applied > 0
         if _policy_a_fires and score not in (Classification.SELL, Classification.PASS):
             score = Classification.WATCH
             comment = "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH"
@@ -798,21 +786,12 @@ class TanukiValuationPipeline:
             _rounded_by_policy = "A"
 
         # DCF_Reliability=LOW 丸め（Policy B: fcf_outlier未解消向け、DCF-RELIABILITY-1）
-        # POLICYB-GATE-FIX-1（2026-07-11）: 従来はfcf_estimation.appliedをゲート条件にしており、
-        # applied=False（raw_fcfフォールバック方式）の銘柄でPolicy Bが評価されず、
-        # FCF実績プラス・fcf_outlier未説明フラグ（BKNG/RBRK等）が見逃されていた。
-        # _calc_dcf_reliability_policy_b()自体はappliedを参照しないため、ゲートは
-        # 「Policy Aが既に発火済みか（_policy_a_fires）」に置き換える。Policy A発火済みの
-        # 場合はPolicy Aのメッセージ（実績FCF赤字）を優先し、Policy Bで上書きしない
-        # （両者ともWATCH自体は同じだが、raw_fcf方式の銘柄に「FCF_Conversion_Rate方式」
-        # という誤ったコメントが付くのを防ぐため）。
+        # Policy A発火済みの場合はPolicy Aのメッセージ（実績FCF赤字）を優先し、
+        # Policy Bで上書きしない（両者ともWATCH自体は同じ）。
         if (not _policy_a_fires and score not in (Classification.SELL, Classification.PASS)
                 and self._calc_dcf_reliability_policy_b(valuation) == "LOW"):
             score = Classification.WATCH
-            if _fcf_estimation.get("applied"):
-                comment = "DCF信頼性LOW(FCF_Conversion_Rate方式・要注意フラグ)のためupside依存判定を抑制→WATCH"
-            else:
-                comment = "DCF信頼性LOW(FCF_Base方式・外れ値未説明)のためupside依存判定を抑制→WATCH"
+            comment = "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH"
             sell_reason = None
             _rounded_by_policy = "B"
 
@@ -1340,9 +1319,6 @@ class TanukiValuationPipeline:
                 return (iv - current_price) / current_price * 100
             return 0.0
 
-        fcf_conv = fcf_est.get("conversion_rate", "N/A")
-        fcf_industry = fcf_est.get("sector", "") or industry
-
         # --- RICE components ---
         rice_q = rice.get("q", "N/A")
         rice_cf = rice.get("cf_conversion", "N/A")
@@ -1719,181 +1695,96 @@ class TanukiValuationPipeline:
         _fcf_ttm_end = valuation.get("fcf_ttm_end")
         if _fcf_ttm_end:
             L.append(f"FCF_TTM_End: {_fcf_ttm_end} (FCF/RICE算出に用いたTTM期末日)")
-        if not fcf_est.get("applied", True):
-            # raw_fcf フォールバック: 実際のFCFベース値を表示
-            _fcf_base_used = comps.get("fcf_base_used", 0)
-            _excl_avg      = comps.get("fcf_outlier_excl_avg")
-            _rd_applied    = valuation.get("rd_capitalization", {}).get("applied", False)
-            _fcf_list_len  = len(comps.get("fcf_list_raw") or [])
-            _floor_applied = comps.get("fcf_floor_applied", 0) or 0
-            # B-1: DCF_Reliability判定（revenue floorが使われた場合はLOW）
-            _dcf_reliability = "LOW" if _floor_applied > 0 else "HIGH"
-            _desc_parts = []
-            if _excl_avg is not None:
-                _n_rem = _fcf_list_len - 1 if _fcf_list_len > 1 else 1
-                _desc_parts.append(f"外れ値除外後{_n_rem}yr平均")
-            else:
-                # B-1: 実データ年数で動的化
-                _data_n = _fcf_list_len if _fcf_list_len > 0 else 5
-                _method_label = {
-                    "recent_1yr":       "直近1yr（CAGR減少）",
-                    "recent_2yr":       f"直近2yr平均",
-                    "avg_5yr_recovery": f"{_data_n}yr平均（回復判定）",
-                    "avg_5yr":          f"{_data_n}yr平均",
-                }.get(comps.get("fcf_base_method", ""), f"{_data_n}yr平均")
-                _desc_parts.append(_method_label)
-            if _rd_applied:
-                _desc_parts.append("R&D補正")
-            # B-1: 調整前後併記（revenue floor適用時）
-            if _floor_applied > 0:
-                _fcf_raw_avg = comps.get("fcf_5yr_avg", 0) or 0
-                L.append(f"FCF_Base: ${_fcf_base_used/1e6:,.2f}M ({' + '.join(_desc_parts)}) [実績avg: ${_fcf_raw_avg/1e6:,.1f}M]")
-                L.append(f"DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)")
-                L.append("  [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
-                L.append("   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]")
-            else:
-                L.append(f"FCF_Base: ${_fcf_base_used/1e6:,.2f}M ({' + '.join(_desc_parts)})")
-                # POLICYB-GATE-FIX-1（2026-07-11）: floor未発火（FCF実績プラス）でも
-                # fcf_outlierが未説明のまま残るケース（BKNG/RBRK等）をPolicy Bで捕捉する。
-                _reliability_b_raw = self._calc_dcf_reliability_policy_b(valuation)
-                if _reliability_b_raw == "LOW":
-                    L.append("DCF_Reliability: LOW ⚠️ (FCF_Base方式: 要注意フラグ検出, IV参考値)")
-                    L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
-                    L.append("   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]")
-                    _dev_pct_polb_raw = (valuation.get("fcf_outlier") or {}).get("deviation_pct")
-                    if _dev_pct_polb_raw is not None:
-                        L.append(f"   [DCF-REL-SYNC-1: FCF実績が5年平均から{_dev_pct_polb_raw:.0f}%乖離]")
-                else:
-                    # [[DCF-RELIABILITY-LABEL-MISMATCH-1]]対応（2026-08-30）:
-                    # _calc_dcf_reliability_policy_b()は常にLOW/NORMALの
-                    # いずれかを返す一貫した関数だが、この分岐（FCF_Base方式）
-                    # だけ従来HIGHと表示しており、FCF_Conversion_Rate方式側
-                    # （下記、同じNORMAL戻り値）と表示語彙が食い違っていた。
-                    # report.txtを横断的にパースする外部ツールが「非LOW側」を
-                    # 単純な2値として扱えるよう、関数の戻り値と一致するNORMAL
-                    # に統一する。
-                    L.append("DCF_Reliability: NORMAL  (FCF実績プラス: 通常判定適用)")
-            # FCF-EST-NOTE-DISPLAY-1: 「買収・統合関連」加算の控除・検出情報を表示
-            # （生FCF安定(CV<0.3)のためこの分岐に来た銘柄は、控除自体が
-            # estimated_fcfの計算に使われない＝表示すると誤解を招くため対象外とする）
-            _fcf_note_fb = fcf_est.get("note", "") or ""
-            if not _fcf_note_fb.startswith("生FCF安定"):
-                _ma_excluded_fb = fcf_est.get("ma_addback_excluded") or 0
-                _ma_skipped_fb  = fcf_est.get("ma_addback_detected_but_not_applied") or 0
-                # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: 境界帯連続
-                # スケーリングにより両者が同時に>0（部分控除）になりうるため、
-                # elif（相互排他前提）ではなく両立を考慮した分岐にする。
-                if _ma_excluded_fb > 0 and _ma_skipped_fb > 0:
-                    L.append(f"⚠️ 買収・統合関連加算を境界帯調整で部分控除（控除${_ma_excluded_fb/1e6:,.0f}M・"
-                             f"未控除${_ma_skipped_fb/1e6:,.0f}M）後も調整済み")
-                    L.append("    純利益がマイナスのため、生FCFへフォールバックしています。詳細は")
-                    L.append("    BACKLOG_DONE.md [[MA-INTEGRATION-TAG-GAP-1]]参照。]")
-                elif _ma_excluded_fb > 0:
-                    L.append(f"⚠️ 買収・統合関連加算${_ma_excluded_fb/1e6:,.0f}Mを控除後も調整済み")
-                    L.append("    純利益がマイナスのため、生FCFへフォールバックしています。詳細は")
-                    L.append("    BACKLOG_DONE.md [[CWAN-SNPS-MA-DISTORTION-1]]参照。]")
-                elif _ma_skipped_fb > 0:
-                    L.append(f"ℹ️ 買収・統合関連加算${_ma_skipped_fb/1e6:,.0f}Mを検出したが未控除")
-                    L.append("   [控除すると生FCFを下回る（過小推定側）と判定されたため、方向性")
-                    L.append("    ガードにより調整済み純利益をそのまま採用しています。詳細は")
-                    L.append("    BACKLOG_DONE.md [[FCF-EST-DIRECTION-GUARD-1]]参照。]")
+        # ── FCF_Base・内訳開示（ボトムアップ、[[FCF-CONVRATE-LOWER-
+        # DIVERGENCE-1]]、2026-09-17: 業種別固定転換率方式を廃止）──
+        _fcf_base_used = comps.get("fcf_base_used", 0)
+        _excl_avg      = comps.get("fcf_outlier_excl_avg")
+        _rd_applied    = valuation.get("rd_capitalization", {}).get("applied", False)
+        _fcf_list_len  = len(comps.get("fcf_list_raw") or [])
+        _floor_applied = comps.get("fcf_floor_applied", 0) or 0
+        _desc_parts = []
+        if _excl_avg is not None:
+            _n_rem = _fcf_list_len - 1 if _fcf_list_len > 1 else 1
+            _desc_parts.append(f"外れ値除外後{_n_rem}yr平均")
         else:
-            L.append(f"FCF_Conversion_Rate: {fcf_conv} (Industry: {fcf_industry})")
-            L.append("  [FCF_Conv: Adj_NI × rate = estimated FCF. Conservative conversion from")
-            L.append("   adjusted net income; differs from OCF→FCF conversion rate.]")
-            _fcf_est_val = fcf_est.get("estimated_fcf") or comps.get("fcf_base_used") or 0
-            _fcf_adj_ni  = fcf_est.get("adj_net_income")
-            if _fcf_est_val > 0:
-                if _fcf_adj_ni:
-                    L.append(f"DCF_FCF_Base: ${_fcf_est_val/1e6:,.0f}M (= Adj_NI ${_fcf_adj_ni/1e6:,.0f}M × FCF_Conv {fcf_conv})")
-                else:
-                    L.append(f"DCF_FCF_Base: ${_fcf_est_val/1e6:,.0f}M")
-            # FCF-CONVRATE-DESIGN-LIMIT-1: Software_System_Mature/SaaS 自己補正チェック結果
-            _sw_reclass = valuation.get("software_system_reclassification", {}) or {}
-            if _sw_reclass.get("reclassify_recommended"):
-                L.append(f"⚠️ Software_System分類見直し推奨: 現在={_sw_reclass.get('current_subgroup')} "
-                         f"→ 推奨={_sw_reclass.get('recommended_subgroup')}")
-                L.append(f"   [{_sw_reclass.get('note', '')}]")
-            # FCF-CONVRATE-DESIGN-LIMIT-1: 新規銘柄の前受収益比率ベース暫定分類（境界近傍のみ表示）
-            _sw_provisional = valuation.get("software_system_provisional", {}) or {}
-            if _sw_provisional.get("is_provisional") and _sw_provisional.get("note"):
-                L.append(f"⚠️ 要確認: Software_System分類は暫定（{_sw_provisional.get('note')}）")
-            # FCF-CONVRATE②（TRUST-SUMMARY-EPIC-1）: 業種平均の固定転換率では
-            # 業界サイクル変動を表現できない構造的限界が原因分析で確定した銘柄のみの
-            # 個別ティッカーリスト。閾値による自動判定は数学的に不可能と判明したため
-            # 手動リストとする（自動化しない）。将来追加時も個別の原因分析を経ること。
-            if ticker in FCF_CYCLICAL_VOLATILITY_TICKERS:
-                _cyclical_dr = fcf_est.get("divergence_ratio")
-                if _cyclical_dr is not None:
-                    L.append(f"⚠️ FCF実力推定に注意（業績サイクル変動）: 直近乖離 {_cyclical_dr}倍")
-                    L.append("   [業界サイクルにより年度ごとのFCFが大きく変動するため、業種平均比率")
-                    L.append("    による推定値と実際の乖離が大きくなっています。分類判定には使用しません。]")
-            # FCF-CONVRATE①（TRUST-SUMMARY-EPIC-1）: セクターがsector_conversion_rates
-            # に未収録のため、業種別の較正済みレートではなく汎用デフォルト値（0.70）が
-            # 機械的に使われている状態を検知・明示する。②（FCF_CYCLICAL_VOLATILITY_
-            # TICKERS）と異なり固定ティッカーリストは使わず、adjustments.py側で
-            # 判定済みのrate_is_sector_defaultフラグのみで判定する。
-            if fcf_est.get("rate_is_sector_default"):
-                L.append("⚠️ FCF転換率が未検証（セクター未収録）: 業種平均比率ではなく")
-                L.append(f"   デフォルト値（{fcf_conv}）を使用しています。分類判定には使用しません。")
-            # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
-            # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている
-            # と10-K一次情報で確定した銘柄への注記。FCF_CYCLICAL_VOLATILITY_TICKERS
-            # （業界サイクル起因）とは原因が異なるため区別して表示する。
-            # Classification（BUY/WATCH等）には影響しない。
-            if ticker in FCF_TRANSIENT_ITEM_EXPLANATIONS:
-                _transient = FCF_TRANSIENT_ITEM_EXPLANATIONS[ticker]
-                if ticker == "KO":
-                    L.append("⚠️ FCF実力推定に注意（一過性項目により生FCFが押し下げ）:")
-                    for _yr in sorted(_transient.keys()):
-                        L.append(f"   [{_yr}年: {_transient[_yr]}]")
-                    L.append("   [両年度の一過性項目を除いた正常化OCFは$12.8B(2024)/$13.5B(2025)相当で")
-                    L.append("    NIの成長トレンドと整合。分類判定には使用しません。詳細はBACKLOG_DONE.md")
-                    L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
-                elif ticker == "SPIR":
-                    L.append(f"⚠️ NI/OCF乖離に注意（一過性）: {_transient['ni_ocf_divergence']}")
-                    L.append(f"⚠️ 減収に注意（構造的変化・継続）: {_transient['revenue_decline']}")
-                    L.append("   [前者は一過性の会計事象、後者は今後も継続する事業規模の縮小として")
-                    L.append("    区別してください。分類判定には使用しません。詳細はBACKLOG_DONE.md")
-                    L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
-            # FCF-EST-NOTE-DISPLAY-1: 「買収・統合関連」加算の控除・検出情報を表示
-            # （CWAN-SNPS-MA-DISTORTION-1・FCF-EST-DIRECTION-GUARD-1・
-            # FCF-EST-NET-BASIS-FIX-1で計算済みだがreport.txtに未表示だった情報）。
-            # Classification（BUY/WATCH等）には影響しない。
-            _ma_excluded = fcf_est.get("ma_addback_excluded") or 0
-            _ma_skipped  = fcf_est.get("ma_addback_detected_but_not_applied") or 0
-            # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: 境界帯連続
-            # スケーリングにより両者が同時に>0（部分控除）になりうるため、
-            # elif（相互排他前提）ではなく両立を考慮した分岐にする。
-            if _ma_excluded > 0 and _ma_skipped > 0:
-                L.append(f"⚠️ 買収・統合関連加算を境界帯調整で部分控除: 控除${_ma_excluded/1e6:,.0f}M・"
-                         f"未控除${_ma_skipped/1e6:,.0f}M")
-                L.append("   [pre_deduction_drが1.0をわずかに超える境界近傍のため、控除額の一部")
-                L.append("    のみを適用しています。分類判定には使用しません。詳細はBACKLOG_DONE.md")
-                L.append("    [[MA-INTEGRATION-TAG-GAP-1]]参照。]")
-            elif _ma_excluded > 0:
-                L.append(f"⚠️ 買収・統合関連加算を控除: ${_ma_excluded/1e6:,.0f}M")
-                L.append("   [無形資産償却費・M&A統合費用等の買収由来の非現金加算がAdj_NIに")
-                L.append("    含まれたままだと推定FCFが過大になるため、FCF換算専用に控除して")
-                L.append("    います。分類判定には使用しません。詳細はBACKLOG_DONE.md")
-                L.append("    [[CWAN-SNPS-MA-DISTORTION-1]]参照。]")
-            elif _ma_skipped > 0:
-                L.append(f"ℹ️ 買収・統合関連加算${_ma_skipped/1e6:,.0f}Mを検出したが未控除")
-                L.append("   [控除すると生FCFを下回る（過小推定側）と判定されたため、方向性")
-                L.append("    ガードにより調整済み純利益をそのまま採用しています。詳細は")
-                L.append("    BACKLOG_DONE.md [[FCF-EST-DIRECTION-GUARD-1]]参照。]")
-            # DCF-RELIABILITY-1: Policy B（FCF_Conversion_Rate方式向けDCF_Reliability）
-            _reliability_b = self._calc_dcf_reliability_policy_b(valuation)
-            if _reliability_b == "LOW":
-                L.append("DCF_Reliability: LOW ⚠️ (FCF_Conversion_Rate方式: 要注意フラグ検出, IV参考値)")
+            _data_n = _fcf_list_len if _fcf_list_len > 0 else 5
+            _method_label = {
+                "recent_1yr":       "直近1yr（CAGR減少）",
+                "recent_2yr":       "直近2yr平均",
+                "avg_5yr_recovery": f"{_data_n}yr平均（回復判定）",
+                "avg_5yr":          f"{_data_n}yr平均",
+            }.get(comps.get("fcf_base_method", ""), f"{_data_n}yr平均")
+            _desc_parts.append(_method_label)
+        if _rd_applied:
+            _desc_parts.append("R&D補正")
+
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]STEP6（2026-09-17、Koichiさん
+        # 決定3・保守的版）: 5年・2年平均とも実績FCFが負の構造的赤字銘柄
+        # （QBTS/SOUN型）は、DCF/IVをこのまま参考値として使わず、STONKS
+        # SILO側の赤字銘柄評価枠組み（discover/stonks-silo/、既に同一
+        # 銘柄群がstonks_silo=trueで分析済み）を参照するよう促す。IV自体は
+        # null化せず、Classification/Policy A・Bのロジックも変更しない
+        # （フラグと注記の追加のみ、ブラスト半径を限定する保守的スコープ）。
+        if comps.get("structural_deficit"):
+            L.append("⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。")
+            L.append("   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、")
+            L.append("    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄")
+            L.append("    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]")
+
+        if _floor_applied > 0:
+            _fcf_raw_avg = comps.get("fcf_5yr_avg", 0) or 0
+            L.append(f"FCF_Base: ${_fcf_base_used/1e6:,.2f}M ({' + '.join(_desc_parts)}) [実績avg: ${_fcf_raw_avg/1e6:,.1f}M]")
+        else:
+            L.append(f"FCF_Base: ${_fcf_base_used/1e6:,.2f}M ({' + '.join(_desc_parts)}) [ボトムアップ: OCF-CapEx]")
+
+        # STEP3: CapEx/SBC/OCF/D&A内訳開示（DCF計算には使用しない、透明性のための参考表示）
+        if fcf_est.get("applied"):
+            L.append(f"⚠️ FCF内訳: {fcf_est.get('fallback_reason', '')}")
+        else:
+            _capex, _sbc, _ocf, _da = fcf_est.get("capex"), fcf_est.get("sbc"), fcf_est.get("ocf"), fcf_est.get("da")
+            _fmt = lambda v: f"${v/1e6:,.0f}M" if v is not None else "N/A"
+            L.append(f"FCF_Breakdown（直近年）: OCF={_fmt(_ocf)} / CapEx={_fmt(_capex)} / "
+                     f"SBC(非現金)={_fmt(_sbc)} / D&A={_fmt(_da)}")
+            L.append("  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途")
+            L.append("   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの")
+            L.append("   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]")
+
+        if _floor_applied > 0:
+            L.append("DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)")
+            L.append("  [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
+            L.append("   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]")
+        else:
+            _reliability_b_raw = self._calc_dcf_reliability_policy_b(valuation)
+            if _reliability_b_raw == "LOW":
+                L.append("DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)")
                 L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
-                L.append("   fcf_outlier未解消（一過性費用で説明不可）または推定FCFが生FCFから")
-                L.append("   大幅乖離（eps_invalid）のため、IVは参考値扱い。]")
-                _dev_pct_polb = (valuation.get("fcf_outlier") or {}).get("deviation_pct")
-                if _dev_pct_polb is not None:
-                    L.append(f"   [DCF-REL-SYNC-1: FCF実績が5年平均から{_dev_pct_polb:.0f}%乖離]")
+                L.append("   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]")
+                _dev_pct_polb_raw = (valuation.get("fcf_outlier") or {}).get("deviation_pct")
+                if _dev_pct_polb_raw is not None:
+                    L.append(f"   [DCF-REL-SYNC-1: FCF実績が5年平均から{_dev_pct_polb_raw:.0f}%乖離]")
             else:
-                L.append("DCF_Reliability: NORMAL  (FCF_Conversion_Rate方式: 通常判定適用)")
+                L.append("DCF_Reliability: NORMAL  (通常判定適用)")
+
+        # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
+        # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている
+        # と10-K一次情報で確定した銘柄への注記。conversion_rate方式とは無関係の
+        # 恒久的な注記のため、ボトムアップ移行後も維持する。
+        # Classification（BUY/WATCH等）には影響しない。
+        if ticker in FCF_TRANSIENT_ITEM_EXPLANATIONS:
+            _transient = FCF_TRANSIENT_ITEM_EXPLANATIONS[ticker]
+            if ticker == "KO":
+                L.append("⚠️ FCF実力推定に注意（一過性項目により生FCFが押し下げ）:")
+                for _yr in sorted(_transient.keys()):
+                    L.append(f"   [{_yr}年: {_transient[_yr]}]")
+                L.append("   [両年度の一過性項目を除いた正常化OCFは$12.8B(2024)/$13.5B(2025)相当で")
+                L.append("    NIの成長トレンドと整合。分類判定には使用しません。詳細はBACKLOG_DONE.md")
+                L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
+            elif ticker == "SPIR":
+                L.append(f"⚠️ NI/OCF乖離に注意（一過性）: {_transient['ni_ocf_divergence']}")
+                L.append(f"⚠️ 減収に注意（構造的変化・継続）: {_transient['revenue_decline']}")
+                L.append("   [前者は一過性の会計事象、後者は今後も継続する事業規模の縮小として")
+                L.append("    区別してください。分類判定には使用しません。詳細はBACKLOG_DONE.md")
+                L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
         # REPORT-6: DCF再現性ブロック（上から足すとIVになる完全構造）
         _dcf_comps_r6 = valuation.get("dcf_components", {})
         _dcf_type_r6  = valuation.get("dcf_type", "two_stage")

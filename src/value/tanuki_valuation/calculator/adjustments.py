@@ -1359,591 +1359,159 @@ def capitalize_rd(
     )
 
 
-# ── FCF実力推定（調整済みEPS × FCF転換率）v7.2 ──────────────────────
+
+
+# ── FCF内訳分解（ボトムアップFCF、OCF-CapEx）v10.0 ────────────────────
+# [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 業種別固定転換率
+# （adj_net_income × conversion_rate）方式を廃止し、CapEx/SBC/OCFの
+# 個別開示によるボトムアップFCFへ移行した。旧方式の実測: 99銘柄中
+# 較正済みレートで意図通り機能していたのはわずか13銘柄（13%）、47銘柄
+# （47%）は業種未収録でdefault(0.70)への機械的フォールバック、39銘柄
+# （39%）はadj_net_income<=0等でraw_fcfへの完全フォールバックだった
+# （調査フェーズで実データ確認済み）。
+#
+# raw_fcf（determine_fcf_base()の出力）は既にLayer2のfree_cash_flow
+# （=OCF-CapEx、common/sec_data/parser.py内で算出）を基礎としており、
+# 概念的に「ボトムアップFCF」そのもの。したがって本設計は「新しい計算式を
+# 導入する」のではなく「adj_net_income×conversion_rateという代理変数の
+# 算出・上書きをやめ、raw_fcfをそのまま採用した上でCapEx/SBC/OCF/D&Aの
+# 内訳を開示する」ことが本質。
+#
+# 廃止した旧機構（conversion_rate方式に付随するものとして丸ごと廃止、
+# 2026-09-17指示書でKoichiさん承認済み）:
+# - estimate_fcf_from_eps()・FCFEstimationResult（本節で置き換え）
+# - MA統合費用控除ロジック（ma_addback）: Adj_NI×conversion_rate方式に
+#   特有の補正だった。OCFは実際の現金の動きのみを反映するGAAP指標のため、
+#   この歪みはボトムアップ方式では構造的に発生しない（現金支出を伴う
+#   M&A統合費用はOCFに正しく反映され、Adj_NI側の非現金add-backはそもそも
+#   OCFに現れない）。
+# - 保険/金融特別処理（Healthcare Plans/Financial Services、conversion_
+#   rate=1.0強制、use_ni_direct）: 全99銘柄の実測でこの特別処理を通過する
+#   銘柄は現在0件と確認済み（死んでいたコードパス）。
+# - Software_System_Mature/SaaS自己補正機構（SOFTWARE_SYSTEM_SUBGROUP_
+#   RATES・check_software_system_reclassification()・beta_fetcher.py::
+#   classify_software_system_subgroup()）: sector別conversion_rateの
+#   精度を上げるための仕組みであり、conversion_rate自体を廃止したため
+#   意味を失う。sector分類自体（WACCのβフォールバックに使用）は維持する。
+# - resolve_fcf_conversion_config_path()・config/fcf_conversion_
+#   config.json: 参照元（estimate_fcf_from_eps()）を削除したため不要に
+#   なった。report_consistency_check.py::_CONFIG_LOADER_REGISTRYの
+#   対応エントリも削除する。
+
 
 @dataclass
-class FCFEstimationResult:
-    """EPSベースFCF推定結果"""
-    applied: bool                  # 新方式が適用されたか
-    method: str                    # "adj_eps_estimated" or "raw_fcf"
-    adj_net_income: float          # 調整済み純利益（FCF換算に実際使用した値。CWAN-SNPS-MA-DISTORTION-1で
-                                    # 「買収・統合関連」加算を控除済みの場合はその控除後の値）
-    conversion_rate: float         # FCF転換率
-    estimated_fcf: float           # 推定FCF
-    raw_fcf: float                 # 従来のFCFベース
-    sector: str                    # セクター
-    note: str                      # 理由
-    divergence_ratio: float = 0.0  # 推定FCF / 生FCF の倍率
-    divergence_warning: str = ""   # 大幅乖離時の警告メッセージ
-    ma_addback_excluded: float = 0.0  # CWAN-SNPS-MA-DISTORTION-1: 控除した「買収・統合関連」加算額
-    ma_addback_detected_but_not_applied: float = 0.0  # FCF-EST-DIRECTION-GUARD-1: 方向性ガードにより
-                                    # 控除しなかった「買収・統合関連」加算の検出額（0円なら未検出 or 控除適用済み）
-    rate_is_sector_default: bool = False  # TRUST-SUMMARY-EPIC-1①: conversion_rateが
-                                    # sector_conversion_ratesに未収録のセクターのため、
-                                    # 'default'値（現状0.70）へフォールバックした場合True。
-                                    # ticker_override・ni_direct・sector収録済みの場合はFalse。
-                                    # conversion_rate決定前の早期リターン（config不在・EPS
-                                    # データなし等）ではフラグの意味が成立しないためFalseのまま
-                                    # （デフォルト値をそのまま使用、明示設定しない）。
+class FCFCompositionResult:
+    """ボトムアップFCF（OCF-CapEx）の内訳分解結果"""
+    applied: bool
+    # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]STEP5（2026-09-17、Koichiさん
+    # 決定4）: 「実際のCapEx/SBC/OCFデータが取得できずフォールバック値を
+    # 使った銘柄」を示すフラグとして再定義した。旧FCFEstimationResult.
+    # appliedの「conversion_rate方式が適用されたか」とは意味が反転して
+    # いる点に注意（旧: True=特殊計算を使った／新: True=データ欠損で
+    # フォールバックした）。
+    fallback_reason: str    # フォールバック理由（appliedがFalseなら空文字）
+    method: str              # "bottom_up" or "fallback_capex_missing"
+    estimated_fcf: float     # 採用FCF（=raw_fcf。ボトムアップ方式では
+                              # raw_fcfを上書きする別の推定値を持たない）
+    raw_fcf: float           # determine_fcf_base()が算出したFCFベース
+    capex: Optional[float]   # 直近年CapEx（開示専用、NoneはCapExタグ未申告）
+    sbc: Optional[float]     # 直近年SBC（開示専用。非現金項目としてOCFに
+                              # 既に加算済みのため、DCF計算には別途
+                              # 加減算しない）
+    ocf: Optional[float]     # 直近年OCF（開示専用）
+    da: Optional[float]      # 直近年D&A（開示専用）
+    note: str
 
     def to_dict(self):
         return {
             "applied": self.applied,
+            "fallback_reason": self.fallback_reason,
             "method": self.method,
-            "adj_net_income": self.adj_net_income,
-            "conversion_rate": self.conversion_rate,
             "estimated_fcf": self.estimated_fcf,
             "raw_fcf": self.raw_fcf,
-            "sector": self.sector,
-            "note": self.note,
-            "divergence_ratio": round(self.divergence_ratio, 2),
-            "divergence_warning": self.divergence_warning,
-            "ma_addback_excluded": self.ma_addback_excluded,
-            "ma_addback_detected_but_not_applied": self.ma_addback_detected_but_not_applied,
-            "rate_is_sector_default": self.rate_is_sector_default,
-        }
-
-
-# ── Software_System サブグループ自己補正 v9.3（FCF-CONVRATE-DESIGN-LIMIT-1）──
-
-SOFTWARE_SYSTEM_SUBGROUP_RATES: Dict[str, float] = {
-    "Software_System_Mature": 1.00,
-    "Software_System_SaaS": 1.61,
-}
-
-
-@dataclass
-class SoftwareSystemReclassificationResult:
-    """
-    Software_System_Mature/SaaS サブグループの自己補正チェック結果
-
-    determine_fcf_base()と同じ設計思想: config/beta_config.jsonへの書き込みは
-    一切行わず、pipeline.py実行のたびに直近実績（SEC生FCF × EPSアナライザー
-    調整済み純利益）から実測比率を再計算する純粋関数。
-    reclassify_recommended=True の場合、呼び出し側（core_calculator.py）は
-    その実行に限り recommended_subgroup のレートで conversion_rate を
-    差し替えて使用する。beta_config.json 自体の永続的な書き換えは行わない
-    （2026-07-14 実装判断: 判定が変わるたびにconfigを書き換えるとpipeline.py
-    実行ごとにgit diffが発生し、config書き換えは手動スクリプト経由のみという
-    既存アーキテクチャ規約とも整合しないため）。
-    """
-    applicable: bool
-    current_subgroup: str
-    recommended_subgroup: Optional[str]
-    realized_ratio: Optional[float]
-    years_used: int
-    deviation_from_current: Optional[float]
-    reclassify_recommended: bool
-    note: str
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "applicable": self.applicable,
-            "current_subgroup": self.current_subgroup,
-            "recommended_subgroup": self.recommended_subgroup,
-            "realized_ratio": round(self.realized_ratio, 3) if self.realized_ratio is not None else None,
-            "years_used": self.years_used,
-            "deviation_from_current": round(self.deviation_from_current, 3) if self.deviation_from_current is not None else None,
-            "reclassify_recommended": self.reclassify_recommended,
+            "capex": self.capex,
+            "sbc": self.sbc,
+            "ocf": self.ocf,
+            "da": self.da,
             "note": self.note,
         }
 
 
-def _load_sec_annual_fcf_series(ticker: str, sec_data_dir: str, max_years: int = 5) -> Dict[int, float]:
-    """common/sec_data/data/{ticker}/annual_*.json から 年度→free_cash_flow を取得（直近max_years件）"""
-    import glob
-    ticker_dir = os.path.join(sec_data_dir, ticker.upper())
-    out: Dict[int, float] = {}
-    if not os.path.isdir(ticker_dir):
-        return out
-    for path in sorted(glob.glob(os.path.join(ticker_dir, "annual_*.json")), reverse=True)[:max_years]:
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                d = json.load(f)
-        except Exception:
-            continue
-        yr = d.get("period")
-        fcf = d.get("cf", {}).get("free_cash_flow")
-        if yr is not None and fcf is not None:
-            try:
-                out[int(yr)] = float(fcf)
-            except (TypeError, ValueError):
-                continue
-    return out
-
-
-def check_software_system_reclassification(
-    ticker: str,
-    current_subgroup: str,
-    sec_data_dir: str,
-    eps_data_dir: str,
-    deviation_threshold: float = 0.30,
-    min_years: int = 1,
-) -> SoftwareSystemReclassificationResult:
-    """
-    Software_System_Mature/SaaS の実績データに基づく自己補正チェック（FCF-CONVRATE-DESIGN-LIMIT-1）
-
-    実測比率 = mean(生FCF / 調整済み純利益)（調整済み純利益がプラスの年度のみ、直近5年）
-    現在のサブグループのレートから deviation_threshold（デフォルト30%）以上乖離していれば、
-    もう一方のサブグループへの見直しを推奨する。
-
-    Args:
-        ticker: 銘柄コード
-        current_subgroup: "Software_System_Mature" または "Software_System_SaaS"
-        sec_data_dir: common/sec_data/data/ ディレクトリパス
-        eps_data_dir: EPSアナライザーの data/ ディレクトリパス
-        deviation_threshold: 乖離判定閾値（デフォルト0.30 = 30%）
-        min_years: 判定に必要な最低黒字年数（デフォルト1）
-
-    Returns:
-        SoftwareSystemReclassificationResult
-    """
-    if current_subgroup not in SOFTWARE_SYSTEM_SUBGROUP_RATES:
-        return SoftwareSystemReclassificationResult(
-            applicable=False, current_subgroup=current_subgroup,
-            recommended_subgroup=None, realized_ratio=None, years_used=0,
-            deviation_from_current=None, reclassify_recommended=False,
-            note=f"'{current_subgroup}'はSoftware_System_Mature/SaaSのいずれでもないため対象外",
-        )
-
-    eps_annual = _load_eps_annual(ticker, eps_data_dir)
-    if eps_annual is None:
-        return SoftwareSystemReclassificationResult(
-            applicable=False, current_subgroup=current_subgroup,
-            recommended_subgroup=None, realized_ratio=None, years_used=0,
-            deviation_from_current=None, reclassify_recommended=False,
-            note="EPSアナライザーデータなし（判定不可）",
-        )
-
-    fcf_series = _load_sec_annual_fcf_series(ticker, sec_data_dir)
-    ratios = []
-    for y in eps_annual.get("years", []):
-        try:
-            yr_int = int(y.get("year", 0))
-        except (ValueError, TypeError):
-            continue
-        adj_ni = y.get("adjusted_net_income")
-        if adj_ni is None or adj_ni <= 0:
-            continue
-        fcf = fcf_series.get(yr_int)
-        if fcf is None:
-            continue
-        ratios.append(fcf / adj_ni)
-
-    years_used = len(ratios)
-    if years_used < min_years:
-        return SoftwareSystemReclassificationResult(
-            applicable=False, current_subgroup=current_subgroup,
-            recommended_subgroup=None, realized_ratio=None, years_used=years_used,
-            deviation_from_current=None, reclassify_recommended=False,
-            note=f"黒字年データ{years_used}年のみ（最低{min_years}年必要）のため判定不可",
-        )
-
-    realized_ratio = sum(ratios) / years_used
-    current_rate = SOFTWARE_SYSTEM_SUBGROUP_RATES[current_subgroup]
-    deviation = (realized_ratio - current_rate) / current_rate if current_rate != 0 else 0.0
-
-    other_subgroup = next(k for k in SOFTWARE_SYSTEM_SUBGROUP_RATES if k != current_subgroup)
-    other_rate = SOFTWARE_SYSTEM_SUBGROUP_RATES[other_subgroup]
-
-    # 乖離が閾値以上 かつ もう一方のレートの方が実測値に近い場合のみ見直しを推奨する。
-    # 単純に「現在との乖離が大きい」だけで判定すると、両グループのレートより
-    # さらに外側に振れた実測値（例: SaaS想定1.61に対し実測2.21）で
-    # 「より遠いはずのMature(1.00)へ切り替え」という誤判定が起きるため、
-    # 距離比較を必須条件とする。
-    dist_current = abs(realized_ratio - current_rate)
-    dist_other = abs(realized_ratio - other_rate)
-
-    if abs(deviation) >= deviation_threshold and dist_other < dist_current:
-        recommended = other_subgroup
-        reclassify = True
-        note = (
-            f"実測比率{realized_ratio:.2f}（黒字{years_used}年平均）が現在の分類"
-            f"{current_subgroup}（{current_rate:.2f}）から{deviation*100:+.0f}%乖離し、"
-            f"{other_subgroup}（{other_rate:.2f}）の方が近い。見直しを推奨"
-        )
-    else:
-        recommended = current_subgroup
-        reclassify = False
-        note = (
-            f"実測比率{realized_ratio:.2f}（黒字{years_used}年平均）は現在の分類"
-            f"{current_subgroup}（{current_rate:.2f}）から{deviation*100:+.0f}%"
-            f"（{'許容範囲内' if abs(deviation) < deviation_threshold else 'もう一方より現分類の方が近いため据え置き'}）"
-        )
-
-    return SoftwareSystemReclassificationResult(
-        applicable=True, current_subgroup=current_subgroup,
-        recommended_subgroup=recommended, realized_ratio=realized_ratio,
-        years_used=years_used, deviation_from_current=deviation,
-        reclassify_recommended=reclassify, note=note,
-    )
-
-
-def resolve_fcf_conversion_config_path() -> Optional[str]:
-    """fcf_conversion_config.jsonの自動探索ロジック（config/へ移動済み、
-    FCFCONFIG-LOCATION-1、2026-08-15）。
-
-    estimate_fcf_from_eps()のconfig_path=None時の解決ロジックと同一。
-    report_consistency_check.pyのCHECK-33が「ファイルが存在するか」
-    ではなく「本番コードが実際に解決できるか」を検証するために、
-    2026-08-15に独立関数として切り出した
-    （[[FCFCONFIG-MISSING-DETECTION-WEAK-1]]、CHECK-32と同型の判断:
-    代理の検証ではなく本当に検証したいことを見る）。
-
-    Returns:
-        解決できたパス（存在確認済み）、解決できなければNone
-    """
-    _repo_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
-    )
-    candidates = [
-        os.path.join(_repo_root, 'config', 'fcf_conversion_config.json'),
-        'config/fcf_conversion_config.json',
-    ]
-    return next((p for p in candidates if os.path.exists(p)), None)
-
-
-# [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11、二値ゲート→連続スケーリング化）:
-# FCF-EST-DIRECTION-GUARD-1の`pre_deduction_dr > 1.0`という二値
-# （binary）ゲートは、境界のすぐ近くにいる銘柄で入力のごく小さな変化
-# （XBRLタグ追加によるAdj_NIの微増等）が出力（ma_addback控除額）を
-# 0→満額へ不連続にジャンプさせる構造的な脆さを持っていた（CSGP実測:
-# pre_dr 0.96→タグ追加後1.10前後で境界を跨いだ結果、控除後dr
-# 0.96→0.45への急変が発生）。本定数は、pre_deduction_drが1.0を超えた
-# 度合いに応じて控除額を連続的にスケールする「境界帯」の幅。
-#
-# 校正根拠（2026-09-11、実データ）: 現行のma_integration未登録2タグ
-# （BusinessCombinationAcquisitionRelatedCosts・
-# BusinessCombinationIntegrationRelatedCosts）追加を想定し、
-# common/sec_data/data/{ticker}/company_facts.jsonの実タグ値と
-# tax_adjuster.pyの実効税率（CSGPの既存調整項目で観測された21〜33%の
-# レンジ）を用いてCSGPの新pre_deduction_drを試算した結果、約1.10前後
-# （1.0+0.10前後）で境界を跨ぐと推定された。band=0.20はこの実測ベースの
-# 想定超過幅（約+0.10）に対し約2倍の余裕を持たせつつ、pre_dr 1.27
-# （DOCN/MSFT）・1.30（LLY）等、境界から明確に離れている銘柄
-# （1.0+band=1.20を上回る）は従来通り満額控除のまま据え置かれる
-# （goal①: 明確に過大推定が確定的な銘柄の判定は変えない）よう選定した。
-# CPRT(1.05)・META(1.08)のように1.0+band未満の銘柄は部分控除となり
-# 現状（満額控除）から変化するが、これは境界近傍の急変緩和という本対応
-# の意図した効果である。
-#
-# 実装時の注意: この幅は「実データでの校正結果」であり推測値のまま
-# 採用したものではないが、正確な新pre_dr（タグ追加後）はEPS Analyzer
-# パイプラインの正式な再実行（実税率・正式な抽出ロジック）でのみ厳密に
-# 確定する。本番反映前に必ず全母集団シミュレーションで検証すること。
-MA_ADDBACK_RAMP_BAND = 0.20
-
-
-def estimate_fcf_from_eps(
+def compose_fcf_bottom_up(
     ticker: str,
     raw_fcf: float,
-    diluted_shares: int,
-    sector: str,
-    eps_data_dir: str,
-    config_path: str = None,
-    fcf_outlier_action: str = "none",
-    industry: str = "",
-    fcf_cv: float = 999.0,
-    outlier_detected: bool = True,
-) -> FCFEstimationResult:
+    capex_list: List[Optional[float]],
+    sbc_list: List[Optional[float]],
+    ocf_list: List[Optional[float]],
+    da_list: List[Optional[float]],
+) -> FCFCompositionResult:
     """
-    調整済みEPS × FCF転換率 によるFCF実力推定（v7.2）
+    ボトムアップFCF（OCF-CapEx）の内訳を決定する（[[FCF-CONVRATE-LOWER-
+    DIVERGENCE-1]]、業種別固定転換率方式からの移行）。
 
-    EPSアナライザーのannual.jsonが存在する場合に適用。
-    調整済みEPSがマイナスの場合は従来FCFにフォールバック。
-    保険（Healthcare Plans）・金融（Financial Services）は
-    OCFが実態と乖離するため調整後純利益を強制採用（転換率1.0）。
+    raw_fcfは既にdetermine_fcf_base()（5yr/2yr平均・CV安定性判定）と
+    analyze_fcf_outlier()による外れ値除外を経た値であり、Layer2の
+    free_cash_flow（=OCF-CapEx）を基礎としている。本関数はraw_fcfの値
+    自体を変更しない（DCFの計算式は「OCF-CapEx」のまま）。責務は以下
+    2点のみ:
 
-    生FCFが多年度で安定（CV<0.3）かつ外れ値未検出の場合は、推定へ
-    置換せず生FCFをそのまま採用する（ticker_overrides該当銘柄は
-    個別配慮を優先し本条件の対象外）。
+    ① 直近年のCapEx/SBC/OCF/D&Aをreport.txt向けの内訳として保持する
+       （SBCは非現金項目としてOCFに既に加算済みのため、DCF計算には
+       別途加減算しない。参考表示のみ）
+    ② CapExデータが全期間にわたり欠損している銘柄（標準候補タグを
+       一度も申告していない等）を検知し、raw_fcfが実質的にOCFそのもの
+       （common/sec_data/parser.pyがCapExを暗黙的に0として扱った値）
+       であることを明示する。1年分のみの欠損（5yr平均への影響が
+       限定的）はフォールバック扱いとしない。
 
     Args:
         ticker: 銘柄コード
-        raw_fcf: 従来のFCFベース（5年平均 or 直近2年平均）
-        diluted_shares: 希薄化後株式数
-        sector: セクター（beta_config.jsonのsector値）
-        eps_data_dir: EPSアナライザーのdataディレクトリ
-        config_path: fcf_conversion_config.jsonのパス（Noneで自動探索、
-            2026-08-15よりconfig/配下）
-        fcf_outlier_action: FCF外れ値の処置（"excluded"の場合はフォールバック）
-        industry: yfinance industry文字列（業種別FCF定義切り替え用）
-        fcf_cv: determine_fcf_base()が算出したFCF変動係数（安定性判定用）
-        outlier_detected: analyze_fcf_outlier()の外れ値検出フラグ
+        raw_fcf: determine_fcf_base()が算出したFCFベース
+        capex_list, sbc_list, ocf_list, da_list: data_fetcher.py::
+            build_fcf_component_lists()が返す年次系列（新しい順）
 
     Returns:
-        FCFEstimationResult
+        FCFCompositionResult
     """
-    import json, os
+    latest_capex = capex_list[0] if capex_list else None
+    latest_sbc = sbc_list[0] if sbc_list else None
+    latest_ocf = ocf_list[0] if ocf_list else None
+    latest_da = da_list[0] if da_list else None
 
-    # ── 設定ファイルの読み込み ──
-    if config_path is None:
-        # 解決ロジックはresolve_fcf_conversion_config_path()に切り出し済み
-        # （report_consistency_check.pyのCHECK-33と共用するため、2026-08-15）
-        config_path = resolve_fcf_conversion_config_path()
+    capex_all_missing = bool(capex_list) and all(c is None for c in capex_list)
 
-    if config_path is None or not os.path.exists(config_path):
-        # config_path解決の失敗（配置ミス・移動漏れ等）は、latest.jsonの
-        # note欄に記録されるだけでは見落とされやすく、report_consistency_
-        # check.pyもこの状態を検知しない（サイレント破損リスク、
-        # [[TTM-PASCALCASE-KEY-STALE-1]]と同型）。標準出力へも明示的に
-        # WARN出力する（2026-08-15、FCFCONFIG-LOCATION-1移動後の
-        # 安全対策として追加）。
-        print(f"   ⚠️  fcf_conversion_config.json が見つかりません "
-              f"(config_path={config_path!r})。FCF推定はraw_fcfへ"
-              f"フォールバックします（ticker={ticker}）")
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=0, conversion_rate=0,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector, note="fcf_conversion_config.json が見つからない"
+    if capex_all_missing:
+        fallback_reason = (
+            f"CapEx申告タグなし（標準候補4タグを直近{len(capex_list)}年分"
+            f"いずれも未申告）のため、生FCF（OCFからCapExを0として扱った"
+            f"値）を採用。"
+        )
+        note = f"CapExデータ欠損のためフォールバック。{fallback_reason}"
+        return FCFCompositionResult(
+            applied=True,
+            fallback_reason=fallback_reason,
+            method="fallback_capex_missing",
+            estimated_fcf=raw_fcf,
+            raw_fcf=raw_fcf,
+            capex=None, sbc=latest_sbc, ocf=latest_ocf, da=latest_da,
+            note=note,
         )
 
-    # ── ガードA: FCF外れ値「excluded」の場合はフォールバック ──
-    # ただし保険・金融は常にadj_net_incomeを使うためガードAをスキップ
-    FCF_OVERRIDE_INDUSTRIES_CHECK = {"Healthcare Plans"}
-    FCF_OVERRIDE_SECTORS_CHECK    = {"Financial Services"}
-    skip_guard_a = (
-        industry in FCF_OVERRIDE_INDUSTRIES_CHECK
-        or sector in FCF_OVERRIDE_SECTORS_CHECK
-    )
-    # 既にFCF外れ値補正で一過性費用が除外済みのため二重補正を防ぐ
-    if fcf_outlier_action == "excluded" and not skip_guard_a:
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=0, conversion_rate=0,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector,
-            note="FCF外れ値除外済み（一過性費用補正適用済み）→ 二重補正防止のためフォールバック",
-            divergence_ratio=1.0, divergence_warning=""
+    if latest_ocf is not None and latest_capex is not None:
+        note = (
+            f"OCF${latest_ocf/1e9:.2f}B - CapEx${latest_capex/1e9:.2f}B"
+            f"（直近年。5yr/2yr平均・外れ値除外後の採用値は"
+            f"${raw_fcf/1e9:.2f}B）"
         )
-
-    # ── 業種別FCF定義切り替え（Phase2）──
-    # 保険・金融はOCFが実態と乖離するため、調整後純利益を直接FCFとして採用
-    FCF_OVERRIDE_INDUSTRIES = {"Healthcare Plans"}
-    FCF_OVERRIDE_SECTORS    = {"Financial Services"}
-    use_ni_direct = (
-        industry in FCF_OVERRIDE_INDUSTRIES
-        or sector in FCF_OVERRIDE_SECTORS
-    )
-
-    with open(config_path, 'r', encoding='utf-8') as f:
-        cfg = json.load(f)
-
-    # ── FCF転換率の決定 ──
-    ticker_overrides = cfg.get('ticker_overrides', {})
-    sector_rates = cfg.get('sector_conversion_rates', {})
-
-    if ticker in ticker_overrides:
-        conversion_rate = ticker_overrides[ticker]['conversion_rate']
-        rate_source = f"ticker_override({ticker_overrides[ticker]['reason'][:30]})"
-        rate_is_sector_default = False
-    elif use_ni_direct:
-        # 保険・金融は調整後純利益をそのままFCFとして使用（転換率1.0）
-        conversion_rate = 1.0
-        rate_source = f"ni_direct({industry or sector})"
-        rate_is_sector_default = False
     else:
-        # TRUST-SUMMARY-EPIC-1①: sector_conversion_ratesに実在するセクターか、
-        # 'default'値（現状0.70）へのフォールバックかを区別して検知する。
-        if sector in sector_rates:
-            conversion_rate = sector_rates[sector]
-            rate_is_sector_default = False
-        else:
-            conversion_rate = sector_rates.get('default', 0.70)
-            rate_is_sector_default = True
-        rate_source = f"sector({sector})"
+        note = f"生FCF${raw_fcf/1e9:.2f}Bをそのまま採用"
 
-    # ── EPSアナライザーから調整済みEPSを取得 ──
-    eps_file = os.path.join(eps_data_dir, ticker, 'annual.json')
-    if not os.path.exists(eps_file):
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=0, conversion_rate=conversion_rate,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector, note=f"EPSデータなし({eps_file})"
-        )
-
-    with open(eps_file, 'r', encoding='utf-8') as f:
-        eps_data = json.load(f)
-
-    # 直近年度の調整済み純利益を取得
-    years = eps_data.get('years', [])
-    if not years:
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=0, conversion_rate=conversion_rate,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector, note="EPSデータ年度なし"
-        )
-
-    # 直近年度の調整済み純利益
-    latest = years[0]
-    adj_net_income_orig = latest.get('adjusted_net_income', 0)
-
-    # CWAN-SNPS-MA-DISTORTION-1: 「買収・統合関連」カテゴリ（無形資産償却費等の
-    # 買収由来の加算）はconversion_rateが前提とする「通常時のAdj_NI→キャッシュ
-    # フロー変換関係」を歪める。M&A後の企業でadjusted_net_incomeにこの加算が
-    # 含まれたままconversion_rateを掛けると、実際のキャッシュフロー創出力を
-    # 超える推定FCFになる（CWAN divergence_ratio 2.2倍・SNPS 1.5倍等で確認）。
-    # このためFCF換算にのみ、当該カテゴリの加算分を差し引いた値を使う
-    # （EPS Analyzer側annual.jsonのadjusted_net_income自体・他の呼び出し元
-    # での参照値は変更しない。ここでの控除はこの関数のローカル計算のみに閉じる）。
-    # FCF-EST-NET-BASIS-FIX-1: adjusted_net_income自体がEPS Analyzer側で
-    # 税引後（net_amount）ベースで構築されている（tax_adjuster.py::
-    # apply_tax_adjustments()、全カテゴリの net_amount 合計を加算）ため、
-    # ここで差し引く控除額も同じ税引後基準で揃える。税引前のamountを
-    # 差し引くと税効果分（amount×tax_rate）だけ過剰に控除してしまい、
-    # dr>1の是正が行き過ぎて過小推定側に転じる系統的なバイアスがあった
-    # （CWAN実測: 0.88倍で停止していたが本来は1.15倍程度が正しい）。
-    # 該当項目かどうかの判定（正の加算＝add_back）自体は従来通りamountの
-    # 符号で行い、合算する金額のみnet_amountに切り替える（未設定時は
-    # amountへフォールバック、後方互換のため）。
-    MA_INTEGRATION_CATEGORY = "買収・統合関連"
-    ma_addback = sum(
-        adj.get("net_amount", adj.get("amount", 0))
-        for adj in latest.get("adjustments", [])
-        if adj.get("category") == MA_INTEGRATION_CATEGORY and adj.get("amount", 0) > 0
-    )
-
-    # FCF-EST-DIRECTION-GUARD-1: 控除前のAdj_NIベースで独立にdr（推定FCF÷生FCF）を
-    # 試算し、pre_deduction_dr<=1.0（控除しなくても既に生FCFを下回っている＝
-    # 過小推定側）の場合は控除を適用しない。控除後のdrをガード判定に使うと、
-    # 「控除するかどうかを、控除した結果のdrで決める」循環参照になるため、
-    # 必ず控除前（adj_net_income_orig）ベースの値を使う。
-    #
-    # [[MA-INTEGRATION-TAG-GAP-1]]対応（2026-09-11）: pre_deduction_dr>1.0の
-    # 二値ゲートを、1.0超過分をMA_ADDBACK_RAMP_BANDで正規化した連続的な
-    # 控除割合（deduction_fraction、0.0〜1.0）へ変更した。pre_deduction_dr<=1.0
-    # ならfraction=0（従来通り無条件未適用、ガードの趣旨を維持）、
-    # pre_deduction_dr>=1.0+bandならfraction=1（従来通り満額控除）、
-    # その間は線形補間する。従来の二値判定（if pre_deduction_dr > 1.0）は
-    # 数学的にband→0の極限に相当するため、既存の「明確に過大推定な銘柄は
-    # 満額控除のまま」という判定は変えず、境界近傍のみ緩和される。
-    ma_addback_applied = 0.0
-    ma_addback_skipped = 0.0
-    deduction_fraction = 0.0
-    if ma_addback > 0:
-        pre_deduction_estimated_fcf = adj_net_income_orig * conversion_rate
-        pre_deduction_dr = pre_deduction_estimated_fcf / raw_fcf if raw_fcf > 0 else 0.0
-        if pre_deduction_dr > 1.0:
-            deduction_fraction = min(1.0, (pre_deduction_dr - 1.0) / MA_ADDBACK_RAMP_BAND)
-        ma_addback_applied = ma_addback * deduction_fraction
-        ma_addback_skipped = ma_addback - ma_addback_applied
-
-    adj_net_income = adj_net_income_orig - ma_addback_applied
-
-    if ma_addback_applied > 0 and ma_addback_skipped > 0:
-        # 部分控除（境界帯内、0<fraction<1）
-        _ma_note_suffix = (
-            f"（買収・統合関連加算${ma_addback/1e6:.0f}Mの内{deduction_fraction*100:.0f}%"
-            f"（${ma_addback_applied/1e6:.0f}M）を境界帯調整で部分控除後）"
-        )
-        _ma_guard_note_suffix = ""
-    else:
-        _ma_note_suffix = (
-            f"（買収・統合関連加算${ma_addback_applied/1e6:.0f}Mを控除後）" if ma_addback_applied > 0 else ""
-        )
-        _ma_guard_note_suffix = (
-            f"（買収・統合関連加算${ma_addback_skipped/1e6:.0f}Mを検出したが、"
-            f"控除するとdr<=1のため未適用）" if ma_addback_skipped > 0 else ""
-        )
-
-    # ── フォールバック条件 ──
-    # 調整済み純利益がマイナスの場合は従来FCFを使用
-    if adj_net_income <= 0:
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=adj_net_income, conversion_rate=conversion_rate,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector,
-            note=f"調整済み純利益がマイナス(${adj_net_income/1e6:.0f}M){_ma_note_suffix}"
-                 f"{_ma_guard_note_suffix} → 従来FCFを使用",
-            ma_addback_excluded=ma_addback_applied,
-            ma_addback_detected_but_not_applied=ma_addback_skipped,
-        )
-
-    # ── スキップ条件: 生FCFが多年度で安定・外れ値未検出の場合は推定を適用しない ──
-    # ticker_overrides（AI CapEx急増等の個別配慮、6銘柄）は本条件の対象外とする。
-    # 汎用ヒューリスティックが意図的な個別レート設定を無条件で上書きしないため
-    # （2026-07-18確認: GOOGL/MSFTがCV<0.3・detected=Falseに該当するが、
-    #  ticker_overrides側の理由〈AI CapEx急増〉はCV/外れ値検知にまだ反映
-    #  されていないため、個別設定を優先する）。
-    if ticker not in ticker_overrides and fcf_cv < 0.3 and not outlier_detected:
-        return FCFEstimationResult(
-            applied=False, method="raw_fcf",
-            adj_net_income=adj_net_income, conversion_rate=conversion_rate,
-            estimated_fcf=raw_fcf, raw_fcf=raw_fcf,
-            sector=sector,
-            note=f"生FCF安定(CV={fcf_cv:.2f}<0.3)かつ外れ値未検出のため推定を適用せず"
-                 f"生FCFを採用{_ma_guard_note_suffix}",
-            ma_addback_excluded=ma_addback_applied,
-            ma_addback_detected_but_not_applied=ma_addback_skipped,
-        )
-
-    # ── FCF推定 ──
-    estimated_fcf = adj_net_income * conversion_rate
-
-    note = (
-        f"調整済み純利益${adj_net_income/1e9:.2f}B{_ma_note_suffix}{_ma_guard_note_suffix}"
-        f" × 転換率{conversion_rate:.0%}"
-        f"[{rate_source}] = 推定FCF${estimated_fcf/1e9:.2f}B"
-        f"（従来${raw_fcf/1e9:.2f}Bの{estimated_fcf/raw_fcf:.1f}倍）"
-        if raw_fcf != 0 else
-        f"調整済み純利益${adj_net_income/1e9:.2f}B{_ma_note_suffix}{_ma_guard_note_suffix}"
-        f" × 転換率{conversion_rate:.0%}"
-        f"[{rate_source}] = 推定FCF${estimated_fcf/1e9:.2f}B"
-    )
-
-    # ── 乖離率の計算と警告生成 ──
-    divergence_ratio = estimated_fcf / raw_fcf if raw_fcf > 0 else 0.0
-    divergence_warning = ""
-    # FCF-DIVERGENCE-SIGN-GUARD-1: raw_fcf>0かつestimated_fcf<0の符号反転は、
-    # divergence_ratioの絶対値が小さくても（例: -0.45）質的に致命的な乖離のため、
-    # 閾値判定（>=2.0/>=5.0）とは独立に無条件で高乖離警告扱いとする。
-    if raw_fcf > 0 and estimated_fcf < 0:
-        divergence_warning = (
-            f"FCF推定値の符号反転を検出。"
-            f"調整済み純利益${adj_net_income/1e9:.1f}B × {conversion_rate:.0%}転換率"
-            f"= 推定FCF${estimated_fcf/1e9:.1f}B（生FCF${raw_fcf/1e9:.1f}B比、符号反転）。"
-            f"成長急拡大期またはSBC過大の可能性。理論株価の信頼性に注意。"
-        )
-    # FCF-DIVERGENCE-SIGN-GUARD-1（対称ケース）: raw_fcf<=0の場合はdivergence_ratioが
-    # 無条件で0.0に丸められ閾値判定（>=2.0/>=5.0）を通過できないため、
-    # 実績FCFが赤字/ゼロにも関わらず推定FCFが黒字という不一致を独立に検知する。
-    elif raw_fcf <= 0 and estimated_fcf > 0:
-        divergence_warning = (
-            f"実績FCFが赤字/ゼロにも関わらず推定FCFが黒字。"
-            f"調整済み純利益${adj_net_income/1e9:.1f}B × {conversion_rate:.0%}転換率"
-            f"= 推定FCF${estimated_fcf/1e9:.1f}B（生FCF${raw_fcf/1e9:.1f}B比）。"
-            f"実績と推定の不一致のため理論株価の信頼性に注意。"
-        )
-    elif divergence_ratio >= 5.0:
-        divergence_warning = (
-            f"FCF推定値が生FCFの{divergence_ratio:.1f}倍。"
-            f"調整済み純利益${adj_net_income/1e9:.1f}B × {conversion_rate:.0%}転換率"
-            f"= 推定FCF${estimated_fcf/1e9:.1f}B（生FCF${raw_fcf/1e9:.1f}B比）。"
-            f"成長急拡大期またはSBC過大の可能性。理論株価の信頼性に注意。"
-        )
-    elif divergence_ratio >= 2.0:
-        divergence_warning = (
-            f"FCF推定値が生FCFの{divergence_ratio:.1f}倍。"
-            f"推定FCF${estimated_fcf/1e9:.1f}Bを採用。"
-            f"生FCF（${raw_fcf/1e9:.1f}B）との乖離を確認してください。"
-        )
-
-    return FCFEstimationResult(
-        applied=True,
-        method="adj_eps_estimated",
-        adj_net_income=adj_net_income,
-        conversion_rate=conversion_rate,
-        estimated_fcf=estimated_fcf,
+    return FCFCompositionResult(
+        applied=False,
+        fallback_reason="",
+        method="bottom_up",
+        estimated_fcf=raw_fcf,
         raw_fcf=raw_fcf,
-        sector=sector,
+        capex=latest_capex, sbc=latest_sbc, ocf=latest_ocf, da=latest_da,
         note=note,
-        divergence_ratio=round(divergence_ratio, 2),
-        divergence_warning=divergence_warning,
-        ma_addback_excluded=ma_addback_applied,
-        ma_addback_detected_but_not_applied=ma_addback_skipped,
-        rate_is_sector_default=rate_is_sector_default,
     )

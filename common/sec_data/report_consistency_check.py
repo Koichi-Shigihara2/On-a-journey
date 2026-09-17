@@ -300,13 +300,6 @@ _CONFIG_LOADER_REGISTRY = [
         "func": "resolve_beta_config_path",
     },
     {
-        "label": "config/fcf_conversion_config.json",
-        "import_style": "flat",
-        "module_dir": os.path.join(REPO_ROOT, "src", "value", "tanuki_valuation", "calculator"),
-        "module": "adjustments",
-        "func": "resolve_fcf_conversion_config_path",
-    },
-    {
         "label": "config/split_history.yaml",
         "import_style": "package",
         "module_dir": None,

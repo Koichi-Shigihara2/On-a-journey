@@ -64,12 +64,9 @@ from calculator.adjustments import (
     calculate_moat_score, MoatScoreResult,      # ALPHA-REDESIGN-1
     DEFAULT_FCF_CV_THRESHOLD,
     calculate_bs_adjustment, BSAdjustmentResult,  # v7.0追加
-    estimate_fcf_from_eps, FCFEstimationResult,   # v7.2追加
+    compose_fcf_bottom_up, FCFCompositionResult,  # v10.0: [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]
     analyze_fcf_outlier, FCFOutlierResult,        # v7.1追加
     capitalize_rd, RDCapitalizationResult,        # v8.2追加
-    check_software_system_reclassification,       # FCF-CONVRATE-DESIGN-LIMIT-1
-    SoftwareSystemReclassificationResult,          # FCF-CONVRATE-DESIGN-LIMIT-1
-    SOFTWARE_SYSTEM_SUBGROUP_RATES,                # FCF-CONVRATE-DESIGN-LIMIT-1
 )
 from calculator.fcf_outlier_ai import assess_transient_qualitative  # [[FCF-OUTLIER-QUAL-1]]
 
@@ -273,90 +270,39 @@ class KoichiValuationCalculator:
                     f" ${base_fcf/1e6:.0f}M ← 除外前${_old_base_fcf/1e6:.0f}M"
                 )
 
-        # ── STEP 4c: FCF実力推定（調整済みEPS × FCF転換率）v7.2 ──
-        # SECTOR-FCF-RATE-BROKEN-1: 独自のbeta_config.json読み込み（パス誤り）を廃止し、
-        # data_fetcher._load_beta_config()（pipeline.py::_load_beta_sector()と同じ
-        # 正しいパスを参照する既存の読み込み関数）に統一する。
-        _sector = ""
+        # ── STEP 4c: FCF内訳分解（ボトムアップ、OCF-CapEx）v10.0 ──
+        # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 業種別固定
+        # 転換率（adj_net_income×conversion_rate）方式を廃止し、raw_fcf
+        # （=base_fcf、既にOCF-CapExベース）をそのまま採用した上でCapEx/
+        # SBC/OCF/D&Aの内訳を開示する方式へ移行した。sector自体はWACCの
+        # βフォールバック（STEP 1で使用済み）以外に用途がなくなったため
+        # ここでの再取得は不要。
         _sw_provisional = False
         _sw_provisional_note = ""
         try:
             from data_fetcher import _load_beta_config
             _bcfg = _load_beta_config()
             _ticker_bcfg = _bcfg.get('overrides', {}).get(ticker, {})
-            _sector = _ticker_bcfg.get('sector', '') or ''
-            # FCF-CONVRATE-DESIGN-LIMIT-1: beta_fetcher.py::classify_software_system_subgroup()が
-            # 新規銘柄に暫定分類を付与した際のフラグ（境界近傍で要確認の場合はreport.txtに表示）
+            # 過去にbeta_fetcher.py::classify_software_system_subgroup()
+            # （conversion_rate方式廃止に伴い削除済み）が設定した銘柄が
+            # 残っていた場合のみ表示（新規に設定されることはない）
             _sw_provisional = bool(_ticker_bcfg.get('software_system_provisional', False))
             _sw_provisional_note = _ticker_bcfg.get('software_system_provisional_note', '') or ''
         except Exception:
             pass
 
-        # ガードA: FCF外れ値「excluded」の銘柄は二重補正しない
-        _fcf_outlier_action = fcf_outlier_result.action if fcf_outlier_result else "none"
-
-        fcf_estimation: FCFEstimationResult = estimate_fcf_from_eps(
+        fcf_composition: FCFCompositionResult = compose_fcf_bottom_up(
             ticker=ticker,
             raw_fcf=base_fcf,
-            diluted_shares=diluted_shares,
-            sector=_sector,
-            eps_data_dir=self.eps_data_dir,
-            fcf_outlier_action=_fcf_outlier_action,
-            industry=industry or "",
-            fcf_cv=fcf_base_result.cv,
-            outlier_detected=fcf_outlier_result.detected if fcf_outlier_result else True,
+            capex_list=financials.get("capex_list", []),
+            sbc_list=financials.get("sbc_list", []),
+            ocf_list=financials.get("ocf_list", []),
+            da_list=financials.get("da_list", []),
         )
-        if fcf_estimation.applied:
-            base_fcf = fcf_estimation.estimated_fcf
-            print(f"   [{ticker}] FCF実力推定: 調整済み純利益${fcf_estimation.adj_net_income/1e9:.2f}B"
-                  f" × {fcf_estimation.conversion_rate:.0%}"
-                  f" = ${base_fcf/1e9:.2f}B"
-                  f"（従来${fcf_estimation.raw_fcf/1e9:.2f}Bから更新）")
-            if fcf_estimation.divergence_warning:
-                print(f"   [{ticker}] ⚠ FCF乖離警告({fcf_estimation.divergence_ratio:.1f}x): "
-                      f"{fcf_estimation.divergence_warning}")
+        if fcf_composition.applied:
+            print(f"   [{ticker}] FCF内訳: フォールバック → {fcf_composition.fallback_reason}")
         else:
-            print(f"   [{ticker}] FCF実力推定: フォールバック → {fcf_estimation.note}")
-
-        # ── STEP 4c-2: Software_System_Mature/SaaS 自己補正チェック（FCF-CONVRATE-DESIGN-LIMIT-1）──
-        # determine_fcf_base()と同じ設計思想: config書き換えなし、実行のたびに実績から再判定する。
-        # 乖離30%以上の場合、この実行に限り推奨サブグループのレートでconversion_rate/estimated_fcfを
-        # 差し替えて使用する（beta_config.jsonの永続的な書き換えは行わない）。
-        sw_sys_reclass = SoftwareSystemReclassificationResult(
-            applicable=False, current_subgroup=_sector,
-            recommended_subgroup=None, realized_ratio=None, years_used=0,
-            deviation_from_current=None, reclassify_recommended=False, note="対象外"
-        )
-        if fcf_estimation.applied and _sector in SOFTWARE_SYSTEM_SUBGROUP_RATES and self.sec_data_dir:
-            try:
-                sw_sys_reclass = check_software_system_reclassification(
-                    ticker=ticker,
-                    current_subgroup=_sector,
-                    sec_data_dir=self.sec_data_dir,
-                    eps_data_dir=self.eps_data_dir,
-                )
-            except Exception as _swsys_e:
-                print(f"   [{ticker}] Software_System自己補正チェック失敗: {_swsys_e}")
-
-            if sw_sys_reclass.reclassify_recommended and sw_sys_reclass.recommended_subgroup:
-                _new_rate = SOFTWARE_SYSTEM_SUBGROUP_RATES[sw_sys_reclass.recommended_subgroup]
-                _new_estimated_fcf = fcf_estimation.adj_net_income * _new_rate
-                print(f"   [{ticker}] ⚠ Software_System分類見直し推奨"
-                      f"（現在:{sw_sys_reclass.current_subgroup}→推奨:{sw_sys_reclass.recommended_subgroup}）: "
-                      f"{sw_sys_reclass.note}")
-                base_fcf = _new_estimated_fcf
-                fcf_estimation = FCFEstimationResult(
-                    applied=True, method=fcf_estimation.method,
-                    adj_net_income=fcf_estimation.adj_net_income,
-                    conversion_rate=_new_rate,
-                    estimated_fcf=_new_estimated_fcf,
-                    raw_fcf=fcf_estimation.raw_fcf,
-                    sector=sw_sys_reclass.recommended_subgroup,
-                    note=fcf_estimation.note + f"｜自己補正により{sw_sys_reclass.recommended_subgroup}"
-                         f"（{_new_rate:.2f}）へこの実行のみ差し替え",
-                    divergence_ratio=round(_new_estimated_fcf / fcf_estimation.raw_fcf, 2) if fcf_estimation.raw_fcf else 0.0,
-                    divergence_warning=fcf_estimation.divergence_warning,
-                )
+            print(f"   [{ticker}] FCF内訳: {fcf_composition.note}")
 
         # ── STEP 4d: R&D資本化補正（v8.2追加）──
         # R&Dを費用ではなく投資として扱い、FCFの過小評価を補正する
@@ -821,7 +767,7 @@ class KoichiValuationCalculator:
         # ── FCF一過性費用の定性評価（AI、[[FCF-OUTLIER-QUAL-1]]案B） ──
         # fcf_outlier_result.action等の決定（上記STEP4b）は既に完了済み。
         # 本ブロックはreport.txt上の参考表示専用の情報を後付けで取得する
-        # だけであり、action・DCF計算（base_fcf・estimate_fcf_from_eps等、
+        # だけであり、action・DCF計算（base_fcf・compose_fcf_bottom_up等、
         # いずれも上記で計算済み）には一切影響しない。transient_found=False
         # の場合はassess_transient_qualitative()内部でAPI呼び出し自体を
         # 行わずNoneを返す。AI呼び出し失敗時もNoneを返しパイプラインは継続する。
@@ -897,8 +843,7 @@ class KoichiValuationCalculator:
 
             # FCF外れ値分析結果（v7.1追加）
             "fcf_outlier": fcf_outlier_result.to_dict(ai_assessment=_fcf_outlier_ai_assessment),
-            "fcf_estimation": fcf_estimation.to_dict(),
-            "software_system_reclassification": sw_sys_reclass.to_dict(),
+            "fcf_estimation": fcf_composition.to_dict(),
             "software_system_provisional": {
                 "is_provisional": _sw_provisional,
                 "note": _sw_provisional_note,
@@ -925,6 +870,17 @@ class KoichiValuationCalculator:
             "components": {
                 "fcf_5yr_avg": financials.get("fcf_5yr_avg"),
                 "fcf_2yr_avg": fcf_2yr_avg,
+                # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]STEP6（2026-09-17、
+                # Koichiさん決定3・保守的版）: 5年・2年平均とも実績FCFが
+                # 負（QBTS/SOUN型、会計処理の問題ではなく実際にキャッシュを
+                # 消費している構造的赤字）を検知するフラグ。IV/Classification
+                # は変更せず、report.txt上でSTONKS SILOの赤字銘柄評価
+                # 枠組みを参照するよう促す注記のみ追加する（保守的スコープ、
+                # 5yr平均のみ負・2yr平均のみ負〈S型、改善途上〉は対象外）。
+                "structural_deficit": (
+                    (financials.get("fcf_5yr_avg") or 0) <= 0
+                    and (fcf_2yr_avg or 0) <= 0
+                ),
                 "fcf_base_used": base_fcf,
                 "fcf_base_method": fcf_base_result.method,
                 "fcf_outlier_excl_avg": _fcf_outlier_excl_avg,

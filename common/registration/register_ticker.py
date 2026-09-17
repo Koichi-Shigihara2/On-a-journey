@@ -106,13 +106,9 @@ SEC_DATA_DIR = os.path.join(_REPO_ROOT, "common", "sec_data", "data")
 PYTHON = sys.executable
 TARGET_STATUSES = ("active", "candidate")
 
-# 暫定分類のプレースホルダ値そのもの（FCF-CONVRATE-DESIGN-LIMIT-1）。
-# Software_System_Mature/SaaS等、既に解決済みのサブグループ名とは異なる。
-_SOFTWARE_SYSTEM_PLACEHOLDER = "Software_System"
-
 
 class PausedForReview(Exception):
-    """Step 2.5・3.5でClaude Codeの判断待ちのため一時停止する場合に送出する。"""
+    """Step 3.5でClaude Codeの判断待ちのため一時停止する場合に送出する。"""
 
 
 # ─── cik_lookup.csv 読み取りヘルパー ────────────────────────────────────
@@ -158,45 +154,6 @@ def step2_beta(ticker: str, dry_run: bool) -> None:
     if rc != 0:
         print("  ⚠️  Step 2 は非ブロッキング（raw yfinance値のまま続行、"
               "market_data未生成の新規銘柄では正常にスキップされることがある）")
-
-
-def _get_sector(ticker: str) -> str | None:
-    if not os.path.exists(BETA_CFG):
-        return None
-    with open(BETA_CFG, encoding="utf-8") as f:
-        cfg = json.load(f)
-    return cfg.get("overrides", {}).get(ticker, {}).get("sector")
-
-
-def step2_5_software_system_gate(ticker: str) -> None:
-    """sectorが暫定カテゴリ"Software_System"のままなら一時停止する。
-
-    beta_fetcher.py --classify-software-system という既存の自動判定
-    （前受収益/売上高比率の閾値判定）は存在するが、本スクリプトは
-    これを代行呼び出ししない（依頼書の設計方針）。Claude Codeが10-K
-    本文を確認し、必要ならその参考値として上記コマンドを手動実行した
-    上で、最終的にconfig/beta_config.jsonへの書き込みを行うことを
-    前提とする。
-    """
-    sector = _get_sector(ticker)
-    if sector != _SOFTWARE_SYSTEM_PLACEHOLDER:
-        return
-    raise PausedForReview(textwrap.dedent(f"""\
-        ⏸️  Step 2.5: Software_System分類が必要です（一時停止）
-        {ticker} の sector が暫定カテゴリ "Software_System" のままです。
-
-        Claude Codeが10-Kの前受収益（Deferred Revenue）関連の記述・
-        事業内容を確認し、config/beta_config.json の
-        overrides.{ticker}.sector を Software_System_Mature または
-        Software_System_SaaS に設定してから、このコマンドを再実行して
-        ください。
-
-        （参考値としてDR/Rev比率を確認したい場合:
-          python src/value/tanuki_valuation/beta_fetcher.py {ticker} \\
-              --classify-software-system --dry-run
-          ただし最終判断は10-K原文の確認に基づきClaude Codeが行うこと。
-          このオーケストレーションスクリプトは判定を代行しません）
-    """))
 
 
 # ─── Step 3: TANUKI VALUATION パイプライン実行 ───────────────────────────
@@ -387,12 +344,6 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
     step2_beta(ticker, dry_run)
 
     if tanuki_enabled:
-        try:
-            step2_5_software_system_gate(ticker)
-        except PausedForReview as e:
-            print(str(e))
-            return False
-
         if not step3_pipeline(ticker):
             return False
 

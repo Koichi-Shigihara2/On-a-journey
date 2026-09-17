@@ -85,7 +85,7 @@ def _minimal_valuation(upside: float = 50.0) -> dict:
             "rpo_pv": 0,
             "roe_10yr_avg": None,
             "ma200": 90.0,
-            "fcf_base_used": None,
+            "fcf_base_used": 1_000_000.0,
             "latest_revenue": None,
         },
         "upside_percent": upside,
@@ -1385,14 +1385,15 @@ class TestDcfReliabilityLowRounding:
 
 class TestDcfReliabilityPolicyB:
     """
-    DCF-RELIABILITY-1: FCF_Conversion_Rate方式向けDCF_Reliability判定（Policy B）
+    DCF-RELIABILITY-1: DCF_Reliability判定（Policy B）
 
-    判定表（DCF-REL-SYNC-1 2026-07-11修正: transient_found→action=="excluded"に変更。
-    証拠が"存在するか"ではなく乖離を"金額として説明しきれているか"で判定する）:
-      eps_invalid=true                                       → LOW（最優先）
-      eps_invalid=false, detected=true,  action!="excluded"  → LOW
-      eps_invalid=false, detected=true,  action=="excluded"  → NORMAL
-      eps_invalid=false, detected=false                      → NORMAL
+    判定表（[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]2026-09-17: eps_invalid行を
+    削除。ボトムアップFCF移行によりestimated_fcf===raw_fcfが常に成立する
+    設計になり、conversion_rate方式に特有だったこの失敗モード自体が
+    構造的に発生しなくなったため）:
+      detected=true,  action!="excluded"  → LOW
+      detected=true,  action=="excluded"  → NORMAL
+      detected=false                      → NORMAL
     """
 
     @staticmethod
@@ -1403,8 +1404,7 @@ class TestDcfReliabilityPolicyB:
                 "action": "excluded" if explained else "flagged",
             },
             "fcf_estimation": {
-                "applied": True,
-                "divergence_warning": divergence_warning,
+                "applied": False,
             },
         }
 
@@ -1432,15 +1432,6 @@ class TestDcfReliabilityPolicyB:
     def test_detected_false_eps_valid_is_normal(self):
         v = self._valuation(detected=False, explained=False)
         assert TanukiValuationPipeline._calc_dcf_reliability_policy_b(v) == "NORMAL"
-
-    def test_detected_false_eps_invalid_is_low(self):
-        v = self._valuation(detected=False, explained=False, divergence_warning="乖離警告")
-        assert TanukiValuationPipeline._calc_dcf_reliability_policy_b(v) == "LOW"
-
-    def test_eps_invalid_overrides_explained_true(self):
-        """eps_invalid=true は detected×explained=true（本来NORMAL）より優先してLOWにする"""
-        v = self._valuation(detected=True, explained=True, divergence_warning="乖離警告")
-        assert TanukiValuationPipeline._calc_dcf_reliability_policy_b(v) == "LOW"
 
     def test_compute_tanuki_score_rounds_to_watch_when_policy_b_low(self, tmp_path):
         """fcf_estimation.applied=True & Policy B=LOW → WATCHに丸められる"""
@@ -1507,7 +1498,7 @@ class TestDcfReliabilityPolicyB:
         assert result["score"] == "SELL"
 
     def test_policy_b_fires_when_applied_false_and_floor_not_applied(self, tmp_path):
-        """POLICYB-GATE-FIX-1: applied=False・floor未発火でもfcf_outlier未解消ならPolicy BでWATCHに丸める（BKNG/RBRK型）"""
+        """POLICYB-GATE-FIX-1: floor未発火でもfcf_outlier未解消ならPolicy BでWATCHに丸める（BKNG/RBRK型）"""
         pipe = _make_pipe(tmp_path)
         _write_stonks_json(tmp_path, {})
         valuation = {
@@ -1515,7 +1506,7 @@ class TestDcfReliabilityPolicyB:
             "components": {"diluted_shares": None},  # fcf_floor_applied未設定 → Policy A発火なし
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
-            "fcf_estimation": {"applied": False, "divergence_warning": ""},
+            "fcf_estimation": {"applied": False},
             "fcf_outlier": {
                 "detected": True,
                 "action": "flagged",
@@ -1523,11 +1514,8 @@ class TestDcfReliabilityPolicyB:
             },
         }
         result = pipe._compute_tanuki_score("POLICYAB_EXCL", valuation)
-        # 旧仕様ではapplied=FalseのためPolicy Bがゲートで弾かれHOLDのままだったが、
-        # 修正後はfloor未発火でもPolicy Bが評価されWATCHへ丸められる
         assert result["score"] == "WATCH"
-        # raw_fcfフォールバック方式であることが分かるコメントになっている（FCF_Conversion_Rate方式と誤表示しない）
-        assert "FCF_Base方式" in result["score_comment"]
+        assert "FCF外れ値未解消" in result["score_comment"]
 
     def test_policy_a_message_not_overwritten_when_floor_already_applied(self, tmp_path):
         """POLICYB-GATE-FIX-1回帰防止: floor発火済み（Policy A発火）の場合はPolicy Bのコメントで上書きしない"""
@@ -1551,31 +1539,31 @@ class TestDcfReliabilityPolicyB:
         assert "実績FCF赤字" in result["score_comment"]
         assert "FCF_Conversion_Rate方式" not in result["score_comment"]
 
-    def test_policy_b_fires_when_applied_true_and_floor_also_applied(self, tmp_path):
-        """POLICYB-GATE-FIX-1横断調査で発見（BROS/CEG/SOFI/SPIR型）:
-        fcf_floor_applied>0でもfcf_estimation.applied=Trueの場合、実際のDCFは
-        conversion-rate推定値を使う（floor値は使われない）ため、Policy Aは
-        発火させず、Policy Bのみで判定する（「実績FCF赤字」という誤ったコメントを防ぐ）"""
+    def test_policy_a_fires_when_fallback_applied_and_floor_also_applied(self, tmp_path):
+        """[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 従来はfcf_
+        estimation.applied=True（conversion-rate推定値がfloor値を差し替える）
+        の場合Policy Aを対象外としていたが、ボトムアップFCF移行によりraw_fcfを
+        差し替える別方式自体が存在しなくなったため、fcf_floor_applied>0は
+        appliedの値に関わらず常にPolicy Aが発火する（現在のappliedは
+        「データ欠損フォールバック使用」を示すフラグに再定義されており、
+        floor値が使われるか否かとは無関係）"""
         pipe = _make_pipe(tmp_path)
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"diluted_shares": None, "fcf_floor_applied": 1},  # raw fcfはfloor対象だが
+            "components": {"diluted_shares": None, "fcf_floor_applied": 1},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
-            "fcf_estimation": {"applied": True, "divergence_warning": ""},  # 実際のDCFはconversion-rate推定値を使用
+            "fcf_estimation": {"applied": True, "fallback_reason": "CapEx申告タグなし"},
             "fcf_outlier": {
                 "detected": True,
                 "action": "flagged",
                 "transient_evidence": {"found": False},
             },
         }
-        result = pipe._compute_tanuki_score("POLICYB_FLOOR_AND_APPLIED", valuation)
+        result = pipe._compute_tanuki_score("POLICYA_FLOOR_AND_FALLBACK", valuation)
         assert result["score"] == "WATCH"
-        # Policy Aの「実績FCF赤字」（revenue_floor由来）ではなく、Policy Bの
-        # 「FCF_Conversion_Rate方式」が正しい理由付けである
-        assert "FCF_Conversion_Rate方式" in result["score_comment"]
-        assert "実績FCF赤字" not in result["score_comment"]
+        assert "実績FCF赤字" in result["score_comment"]
 
 
 class TestCalculateFcfCagrDirection:
