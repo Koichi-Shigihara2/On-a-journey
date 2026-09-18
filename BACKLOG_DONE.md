@@ -4,6 +4,89 @@
 
 ## 2026-09-18（完了）
 
+### ✅ [TANUKI-VALUATION-MISC-GAPS-1]③ net_debt符号エイリアスの影響範囲確認 — 実害なしクローズ
+**状態:** 調査完了・実害なしクローズ（実装なし）。エントリ全体ではなく
+③のみの状態更新であり、本体エントリ（⑤Runway cash算出経路相違が
+アクティブなため）はBACKLOG.mdに残置
+**優先度:** 低
+**分類:** データ品質 / TANUKI VALUATION / 調査のみ
+**登録日:** 2026-07-23（本体）
+**完了日:** 2026-09-18
+**発見:** `FIELD_DEFINITIONS.md`フェーズ4（AS-IS-045備考）
+
+#### 背景（登録時点の記載を再掲）
+`FIELD_DEFINITIONS.md`フェーズ4のAS-IS-045備考に「AS-IS-045の
+`net_debt`はAS-IS-025の`net_cash`を符号反転しただけの別名フィールド
+（`net_debt = -net_cash`）。『正=ネットキャッシュ』の概念と『正=純
+負債』の概念が同じ元データから並存しているため、report.txt・
+latest.jsonを横断的に参照するコードで符号を取り違えるリスクがある」
+という軽微な構造的ギャップが記録されていた。着手条件は「全参照箇所の
+影響範囲確認」のみで、修正の要否自体が未確定だった。
+
+#### 調査結果: 2つの独立したフィールドが正しい符号規約で一貫使用されている
+コードベース全体で`net_debt`・`net_cash`・`net_cash_per_share`を
+grep（バックエンドPython・フロントエンドHTML/JS・テスト・診断
+スクリプトの全て）した結果、以下2つの明確に異なるフィールドが存在
+することを確認した:
+
+1. **`bs_adjustment.net_cash`/`net_cash_per_share`**
+   （`common/sec_data/reader.py::get_net_cash()`が算出、
+   `calculator/adjustments.py::calculate_bs_adjustment()`経由）:
+   **正=ネットキャッシュ**規約。`core_calculator.py`・`validator.py`・
+   `calculator/scenarios.py`・`calculator/sensitivity.py`・
+   `stock.html`（2箇所）の全てで、一貫して`PT/株 + net_cash_per_share`
+   の形で**加算**されており、符号の取り違えは1件も無い
+2. **`financial_health.net_debt`**（`pipeline.py::_save_result()`が
+   `net_debt = -bs_adjustment.net_cash`で算出）: **正=純負債**規約。
+   `pipeline.py`の2箇所（Reverse DCF・Valuation Gap Analysis）で
+   一貫して`EV = MarketCap + net_debt`という標準的なEV算出式で使われて
+   おり、正しい。report.txt表示行も`Net_Debt: $+X.XXB (negative=net
+   cash)`と符号の意味を明示的に注記済み。`stock.html`（2箇所）・
+   `tanuki_score/index.html`（キャッシュトラップ検知ロジック）でも
+   `net_debt < 0 → ネットキャッシュ`という正しい条件式で分岐しており、
+   後者は`// netDebt < 0 = ネットキャッシュ; financial_health.net_debt
+   は負=現金超過`という規約を明示するコメント付きで実装されていた
+3. **既存の回帰テスト**（`tests/test_pipeline_logic.py::
+   test_ionq_net_debt_corrected`）が`net_debt = -(cash + st_investments
+   - total_debt)`という符号規約自体を既に固定化するテストとして
+   存在することも確認した
+
+調査対象（バックエンド9ファイル・フロントエンド3ファイル・テスト
+3ファイル）:
+`pipeline.py`・`core_calculator.py`・`validator.py`・
+`calculator/adjustments.py`・`calculator/scenarios.py`・
+`calculator/sensitivity.py`・`common/sec_data/reader.py`・
+`diag_iv_trace.py`・`common/sec_data/report_consistency_check.py`・
+`stock.html`・`tanuki_score/index.html`・`stonks-silo/index.html`・
+`test_pipeline_logic.py`・`test_iv_formula.py`・
+`test_core_calculator_v0_note.py`
+
+唯一の軟らかい所見: `diag_iv_trace.py`（開発者向け診断スクリプト、
+テスト対象外・ユーザー非表示）が、符号規約の異なる`net_cash`（equity
+bridge、正=現金）と`report.txt`の`Net_Debt:`行（正=負債）を同一行に
+並べて表示する箇所が1つあるが、両者を混同して計算する処理は無く、
+単に人間が目で見比べるための情報表示に過ぎないため実害なしと判断した。
+
+#### 結論
+符号混同・誤用の実例は0件。`net_debt`と`net_cash`は最初から意図的に
+逆符号の別フィールドとして設計されており、全消費者がそれぞれ正しい
+規約で一貫して使用している。FIELD_DEFINITIONS.mdが記録していた懸念は
+理論上のリスク（「並存しているため取り違えるリスクがある」）であり、
+実際のコードには具体化していなかったと確認できたため、**実装は行わず
+実害なしクローズ**とする。
+
+#### 検証結果
+コード変更なし（調査のみ）。念のため最終ゲートを実行し、ベースラインが
+健全であることを確認した: `pytest`1383件全通過・`common/sec_data/
+audit.py`exit 0（既存の無関係WARN10件のみ）・`common/sec_data/
+report_consistency_check.py --fail-on-ng` NG=0。
+
+#### 着手条件
+なし（完了。本体エントリの⑤Runway cash算出経路相違のみ引き続き
+アクティブ）
+
+---
+
 ### ✅ [SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1] セグメント別成長率のXBRL決定論的算出への置き換え（案①、方針転換）— 第1陣7銘柄実装
 **優先度:** 保留 → 完了（第1陣7銘柄。第2陣・第3陣・ADBE/CELHは
 [[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]として新規登録）
