@@ -513,7 +513,7 @@ def fetch_ticker(ticker: str, kpi_map: Dict[str, Any], out_dir: str, n_quarters:
                 print(f"    {name}: 取得失敗（Layer3、該当フィールドにデータなし）")
 
     if not xbrl_kpis:
-        return _write_layer2_output(ticker, kpi_data, out_dir)
+        return _write_layer2_output(ticker, kpi_data, out_dir, kpi_list=kpi_list)
 
     cik = get_cik(ticker)
     if not cik:
@@ -560,36 +560,60 @@ def fetch_ticker(ticker: str, kpi_map: Dict[str, Any], out_dir: str, n_quarters:
             else:
                 print(f"    {kpi_name}: 取得失敗")
 
-    return _write_layer2_output(ticker, kpi_data, out_dir)
+    return _write_layer2_output(ticker, kpi_data, out_dir, kpi_list=kpi_list)
 
 
-# [[KPI-UNIT-HARDCODE-USD-1]]: KPI名に比率・マージン・成長率を示す語を
-# 含む場合、unitを"ratio"とする（値は0〜1の小数比率として保存される
-# 前提。tail_kpi_map.jsonの実データで「率」「マージン」を含むKPI名は
-# 例外なく比率値〈貢献利益率=0.78・営業利益率=-0.234456等〉であることを
-# 全ティッカー横断で確認済み。「希薄化後EPS成長率」は現状missing_kpis
-# のまま値0件だが、KPI名の意図〈将来的にYoY成長率として実装される
-# 予定、[[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]参照〉に基づき同様に
-# ratio扱いとする——値の有無ではなく定義そのものに基づく判定のため、
-# 将来値が入るようになった時点でも再判定不要）。
-# 値の型（int/float、542-543行付近の既存ロジック）だけでは「小数の
-# ドル金額（例: EPS $0.08）」と「小数の比率（例: 0.78）」を区別できない
-# ため、判定はKPI名（定義）ベースに統一する。
+# [[KPI-UNIT-HARDCODE-USD-1]]（2026-09-18[[TAIL-KPI-UNIT-MISLABEL-1]]で
+# 前提の誤りを修正）: 当初は「KPI名に比率・マージン・成長率を示す語を
+# 含めば例外なく比率値」という前提だったが、実データ棚卸しの結果これは
+# 誤りと判明した。tail_kpi_map.jsonのKPI定義には、KPI名は「〜成長率」
+# 「〜マージン」でも実際の抽出方式（`revenue_tag`単体・`layer3_field`
+# 単体、いずれも除算を伴わない）が単なる生の絶対値（USD）取得に過ぎない
+# ものが多数存在した（例: SOFI「Technology Platform売上成長率」は
+# `revenue_tag`で生のセグメント売上USDを取得するだけで、YoY成長率の
+# 計算自体は行っていない）。値の型（int/float、542-543行付近の既存
+# ロジック）だけでも「小数のドル金額（例: EPS $0.08）」と「小数の比率
+# （例: 0.78）」は区別できないため、判定はKPI名ではなく
+# **tail_kpi_map.jsonの各KPI定義に明示された`unit`キー**を最優先で
+# 参照する方式に変更した（[[TICKER_RESTRICTIONS]]等、本コードベースで
+# 確立された「ヒューリスティックが外れるケースは明示的な個別上書きで
+# 対応する」という慣習に合わせる）。`unit`キー省略時のみ、名前ベースの
+# ヒューリスティックへフォールバックする（後方互換）。
 _RATIO_KPI_NAME_KEYWORDS = ("率", "マージン", "Margin", "Rate", "Ratio")
 
 
-def _infer_kpi_unit(kpi_name: str) -> str:
-    """KPI名から表示単位を推定する（"ratio" or "USD"）。"""
+def _infer_kpi_unit(kpi_name: str, kpi_config: Optional[Dict[str, Any]] = None) -> str:
+    """KPIの表示単位を決定する（"ratio" or "USD"）。
+
+    tail_kpi_map.jsonの`unit`キー（明示的な個別指定）を最優先とし、
+    未指定の場合のみKPI名からのヒューリスティック推定にフォールバック
+    する。
+    """
+    if kpi_config is not None:
+        explicit_unit = kpi_config.get("unit")
+        if explicit_unit:
+            return explicit_unit
     if any(kw in kpi_name for kw in _RATIO_KPI_NAME_KEYWORDS):
         return "ratio"
     return "USD"
 
 
-def _write_layer2_output(ticker: str, kpi_data: Dict[str, List[Dict[str, Any]]], out_dir: str) -> str:
+def _write_layer2_output(
+    ticker: str,
+    kpi_data: Dict[str, List[Dict[str, Any]]],
+    out_dir: str,
+    kpi_list: Optional[List[Dict[str, Any]]] = None,
+) -> str:
     """`{ticker}_layer2.json`を書き出し、状態文字列を返す。XBRL直接
     取得・Layer3経由取得の両経路が同じ`kpi_data`スキーマへ書き込んで
     いるため、出力構築ロジックは1箇所に共通化した（2026-08-19⑧）。
+
+    `kpi_list`（tail_kpi_map.jsonの当該ティッカー分の生定義）を渡すと、
+    各KPIの`unit`明示指定を`_infer_kpi_unit()`へ引き継げる
+    （[[TAIL-KPI-UNIT-MISLABEL-1]]）。Noneの場合は名前ベースの
+    フォールバック推定のみになる（後方互換）。
     """
+    kpi_config_by_name = {k["kpi_name"]: k for k in (kpi_list or [])}
     missing_kpis = [n for n, d in kpi_data.items() if not d]
     total_kpis = len(kpi_data)
     success_count = total_kpis - len(missing_kpis)
@@ -601,7 +625,7 @@ def _write_layer2_output(ticker: str, kpi_data: Dict[str, List[Dict[str, Any]]],
         "layer2_complete": layer2_complete,
         "missing_kpis":    missing_kpis,
         "kpis": {
-            n: {"unit": _infer_kpi_unit(n), "data": d}
+            n: {"unit": _infer_kpi_unit(n, kpi_config_by_name.get(n)), "data": d}
             for n, d in kpi_data.items()
         },
     }

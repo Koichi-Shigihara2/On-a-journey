@@ -51,13 +51,15 @@
       ],
       "fallback_action": "alert",
       "revenue_tag": "pltr:ContributionMargin",
-      "dimension": "us-gaap:StatementBusinessSegmentsAxis"
+      "dimension": "us-gaap:StatementBusinessSegmentsAxis",
+      "unit": "ratio"
     },
     {
       "kpi_name": "営業利益率",
       "change_risk": "medium",
       "source": "layer3",
-      "layer3_formula": "operating_income/revenue"
+      "layer3_formula": "operating_income/revenue",
+      "unit": "ratio"
     },
     {
       "kpi_name": "株式報酬費用",
@@ -78,7 +80,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:DilutedEarningsPerShare",
-      "dimension": ""
+      "dimension": "",
+      "unit": "USD"
     }
   ],
   "SOFI": [
@@ -140,7 +143,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-      "dimension": "us-gaap:StatementBusinessSegmentsAxis"
+      "dimension": "us-gaap:StatementBusinessSegmentsAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "正味貸倒率（NCO）",
@@ -155,7 +159,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:NetChargeOffs",
-      "dimension": "sofi:LoanPortfolioAxis"
+      "dimension": "sofi:LoanPortfolioAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "純金利マージン（NIM）",
@@ -170,7 +175,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:NetInterestMargin",
-      "dimension": ""
+      "dimension": "",
+      "unit": "ratio"
     },
     {
       "kpi_name": "GAAP純利益",
@@ -225,7 +231,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:GrossProfit",
-      "dimension": "us-gaap:StatementBusinessSegmentsAxis"
+      "dimension": "us-gaap:StatementBusinessSegmentsAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "エネルギー受注残高",
@@ -255,7 +262,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-      "dimension": "srt:ProductOrServiceAxis"
+      "dimension": "srt:ProductOrServiceAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "自動車売上総利益率",
@@ -270,7 +278,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:GrossProfit",
-      "dimension": "us-gaap:StatementBusinessSegmentsAxis"
+      "dimension": "us-gaap:StatementBusinessSegmentsAxis",
+      "unit": "USD"
     }
   ],
   "NVDA": [
@@ -528,7 +537,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax",
-      "dimension": "srt:ProductOrServiceAxis"
+      "dimension": "srt:ProductOrServiceAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "Licensing売上成長率",
@@ -543,7 +553,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax",
-      "dimension": "srt:ProductOrServiceAxis"
+      "dimension": "srt:ProductOrServiceAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "米国売上成長率",
@@ -558,25 +569,29 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax",
-      "dimension": "srt:StatementGeographicalAxis"
+      "dimension": "srt:StatementGeographicalAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "総売上高成長率",
       "change_risk": "medium",
       "source": "layer3",
-      "layer3_field": "revenue"
+      "layer3_field": "revenue",
+      "unit": "USD"
     },
     {
       "kpi_name": "研究開発費比率",
       "change_risk": "medium",
       "source": "layer3",
-      "layer3_field": "research_and_development"
+      "layer3_field": "research_and_development",
+      "unit": "USD"
     },
     {
       "kpi_name": "営業利益率",
       "change_risk": "medium",
       "source": "layer3",
-      "layer3_field": "operating_income"
+      "layer3_field": "operating_income",
+      "unit": "USD"
     }
   ],
   "CRWV": [
@@ -593,7 +608,8 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-      "dimension": "srt:StatementGeographicalAxis"
+      "dimension": "srt:StatementGeographicalAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "米国以外売上高成長率",
@@ -608,13 +624,15 @@
       "fallback_tags": [],
       "fallback_action": "alert",
       "revenue_tag": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
-      "dimension": "srt:StatementGeographicalAxis"
+      "dimension": "srt:StatementGeographicalAxis",
+      "unit": "USD"
     },
     {
       "kpi_name": "総売上高成長率",
       "change_risk": "medium",
       "source": "layer3",
-      "layer3_field": "revenue"
+      "layer3_field": "revenue",
+      "unit": "USD"
     },
     {
       "kpi_name": "営業利益（損失）",

@@ -4,6 +4,101 @@
 
 ## 2026-09-18（完了）
 
+### ✅ [TAIL-KPI-UNIT-MISLABEL-1] xbrl_segment_fetcher.pyのunit推定がKPI名の「率」等の文字列だけで判定しており、実際は生の絶対値(USD)を返すKPIを"ratio"と誤ラベルしていた
+**優先度:** 高（発見即日クローズ） → 完了
+**分類:** データ品質 / TANUKI TAIL / xbrl_segment_fetcher.py
+**登録日:** 2026-09-18
+**完了日:** 2026-09-18（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①実装のSTEP 0として同日中に発見・修正）
+**発見:** [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（XBRLセグメント売上からのDCF成長率決定論的算出）着手前の
+`docs/portfolio/tail/data/kpi/*_layer2.json`棚卸し中
+
+#### 背景
+`_infer_kpi_unit()`（`src/tail/xbrl_segment_fetcher.py`）は「KPI名に
+『率』『マージン』『Margin』『Rate』『Ratio』を含めば例外なく比率値」
+という前提で`unit`を決定していた（導入時コメントに「全ティッカー
+横断で確認済み」と明記）。しかし全銘柄・全KPIを実際に棚卸しした結果、
+この前提は誤りと判明した。`tail_kpi_map.json`のKPI定義には、KPI名は
+「〜成長率」「〜マージン」でも実際の抽出方式（`revenue_tag`単体や
+`layer3_field`単体、いずれも除算を伴わない）が単なる生の絶対値
+（USD）取得に過ぎないものが多数存在した——例えばSOFIの
+「Technology Platform売上成長率」は`revenue_tag`でセグメント売上の
+生USD値を取得するだけで、YoY成長率の計算自体は行っていなかった
+（[[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]がYoY計算式自体を
+"unsupported"と既に記録していたにも関わらず、unit推定側は「将来
+YoYとして実装される予定」を前提にratio扱いにしていた不整合）。
+
+棚卸しの結果、以下18件が誤ラベルの疑いで検出され、実データの値の
+大きさ（数百万〜数十億の絶対値）から15件が実際にUSD誤ラベル、
+3件（PLTR「貢献利益率（Commercial）」・PLTR「営業利益率」・SOFI
+「純金利マージン（NIM）」）は真の比率値と確認された:
+
+| ティッカー | KPI名 | 修正後unit |
+|---|---|---|
+| PLTR | 希薄化後EPS成長率 | USD（現状missing_kpisで実害なし、将来値が入る前に是正） |
+| SOFI | Technology Platform売上成長率 | USD |
+| SOFI | 正味貸倒率（NCO） | USD（現状missing_kpisで実害なし） |
+| TSLA | エネルギー事業粗利益率 | USD |
+| TSLA | サービス売上成長率 | USD |
+| TSLA | 自動車売上総利益率 | USD |
+| SOUN | Hosted Services売上成長率 | USD |
+| SOUN | Licensing売上成長率 | USD |
+| SOUN | 米国売上成長率 | USD |
+| SOUN | 総売上高成長率 | USD |
+| SOUN | 研究開発費比率 | USD |
+| SOUN | 営業利益率 | USD |
+| CRWV | 米国売上高成長率 | USD |
+| CRWV | 米国以外売上高成長率 | USD |
+| CRWV | 総売上高成長率 | USD |
+
+真の比率値と確認された3件（変更なし）:
+- PLTR「貢献利益率（Commercial）」: `revenue_tag: "pltr:ContributionMargin"`
+  （Palantir独自XBRL拡張タグ、実データ0.61〜0.78の小数比率と確認済み）
+- PLTR「営業利益率」: `layer3_formula: "operating_income/revenue"`
+  （除算ベースの真の比率計算）
+- SOFI「純金利マージン（NIM）」: `revenue_tag: "us-gaap:NetInterestMargin"`
+  （XBRL標準タグ自体がパーセント型の概念、現状missing_kpisで実害なし）
+
+#### 実際の影響範囲
+`layer2.json`の`unit`を直接参照する消費先は
+`quarterly_review_generator.py::build_kpi_table()`/`_fmt_kpi_value()`
+のみと確認済み（`_resolve_kpi_value()`の閾値判定はKPI名ベースの
+独立したYoY検知ロジックを持ち、`unit`フィールドには依存しないため
+実害なし。`tail_dcf_bridge.py`も`unit`を参照せず生値をそのまま渡す
+設計のため実害なし）。影響は市況レビューのMarkdown表（例:
+「Technology Platform売上成長率: $50.5M」が「5,051,200,000.0%」と
+表示される）に限定されており、DCF/IV計算への実害は確認時点では
+なかった。ただし[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]
+案①がこの`layer2.json`をDCF成長率算出の直接入力として使う設計のため、
+放置すればIVの入力に直結する状態だったことから優先度「高」とし、
+案①のSTEP 1着手前に修正した。
+
+#### 実装内容
+- `config/tail_kpi_map.json`: 該当18件全てに明示的な`"unit"`キー
+  （`"USD"`または`"ratio"`）を追加。名前ヒューリスティックへの
+  依存を個別KPIについては解消した
+  （本コードベース既存の`TICKER_RESTRICTIONS`等と同型の「ヒューリス
+  ティックが外れるケースは明示的な個別上書きで対応する」慣習に統一）
+- `src/tail/xbrl_segment_fetcher.py::_infer_kpi_unit()`: `kpi_config`
+  引数を追加し、`tail_kpi_map.json`の明示的な`unit`キーを最優先で
+  参照するよう変更。`unit`キー省略時のみ既存の名前ヒューリスティックへ
+  フォールバックする（後方互換、将来の新規KPI追加時に`unit`指定を
+  忘れた場合も動作は維持されるが、下記の回帰テストが検知する）
+- `_write_layer2_output()`: `kpi_list`引数を追加し、KPI名→設定の
+  マップを`_infer_kpi_unit()`へ引き継ぐ
+- `PLTR/SOFI/TSLA/SOUN/CRWV`の`_layer2.json`を実際に再取得・再生成
+  （SEC EDGAR実データ、AI呼び出しなし）し、修正後の`unit`が正しく
+  反映されることを確認
+- テスト新規11件（`tests/test_xbrl_segment_fetcher_unit_label.py`）:
+  `_infer_kpi_unit()`の優先順位5件・`_write_layer2_output()`の
+  引き継ぎ2件・`tail_kpi_map.json`自体の棚卸し結果を固定化する
+  回帰テスト3件（将来新規KPI追加時に同種の`unit`未指定を検知する）。
+  `git stash`でfail-before（9件失敗）/pass-after（10件成功）を確認
+
+#### 着手条件
+なし（完了）
+
+---
+
 ### ✅ [FCF-CONVRATE-LOWER-DIVERGENCE-1] dr<1側29銘柄の構造的ミスマッチをFCF-CONVRATE②可視化に統合 → ボトムアップFCF方式への根本移行で解消
 **優先度:** 未定 → 完了
 **分類:** データ品質 / TANUKI VALUATION / FCF-CONVRATE②派生
