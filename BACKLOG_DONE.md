@@ -2,6 +2,111 @@
 
 ---
 
+## 2026-09-19（完了）
+
+### ✅ [TANUKI-VALUATION-MISC-GAPS-1]⑤ Runway cash算出経路相違 — 意図的差異として明記＋整合性WARN追加（案①採用）。エントリ全体もクローズ
+**状態:** ⑤実装完了。①〜⑧の全8件が解消したため、本体エントリ自体も
+クローズ（BACKLOG.mdから削除）
+**優先度:** 低
+**分類:** データ品質 / TANUKI VALUATION / STONKS SILO
+**登録日:** 2026-07-23（本体）
+**完了日:** 2026-09-19
+**発見:** `FIELD_DEFINITIONS.md`フェーズ4（AS-IS-049備考）
+
+#### 背景（登録時点の記載を再掲）
+`FIELD_DEFINITIONS.md`フェーズ4に「『Runway』概念がTANUKI VALUATION
+（AS-IS-049）とSTONKS SILO（AS-IS-155）で独立実装されており、cashの
+算出経路が異なる」という軽微な構造的ギャップが記録されていた。詳細な
+乖離の実態・実害の有無は未検証だった。
+
+#### 調査結果（前段、実装前に完了・報告済み）
+実データ突合の結果、乖離は登録時の想定より大きく、原因は単一ではなく
+2つの独立した軸だった:
+- **(A) 短期投資（ST投資）を含めるか**: STONKS SILOは
+  `cash_and_equivalents + short_term_investments`、TANUKIは
+  `cash_and_equivalents`のみ
+- **(B) 四半期の最新データを反映するか**: TANUKIは
+  `SECReader.get_net_cash()`経由でBUG-NETDEBT-4対応の四半期優先
+  ロジックが働くのに対し、STONKS SILOの`_analyze_runway()`は直近年
+  `annual_{yr}.json`のみを参照し四半期を一切見ない
+
+この2軸が銘柄ごとに重なったり打ち消し合ったりするため、対象22銘柄中
+**BBAI・RDWの2銘柄でSAFE(>=24ヶ月)/DANGER(<12ヶ月)の判定が逆転**する
+ほどの乖離（最大7.9倍）が実データで確認された。ただしTANUKI
+VALUATION自身のreport.txt表示・funda_scoreペナルティ判定は既に
+STONKS SILOの値を最優先する設計（`computed_runway_months`はSTONKS
+SILO非対象銘柄向けのフォールバック専用）になっており、現状この逆転は
+実際の表示・判定には現れないことも確認済みだった。
+
+また、TANUKI側の「ST投資を含まない」という選択について、コード上に
+意図的な設計判断を示すコメントは見当たらず、Koichiさんに確認した
+結果、**意図的な判断ではなく「未検討のまま」**（他目的で取得済みの
+`cash`変数を深く検討せず流用した結果）と判明した。
+
+#### Koichiさんの確定判断
+1. 方針は**案①**（両者を統一せず、目的の異なる独立実装として設計
+   意図をコードに明記する。`[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]`
+   ②の案cと同じ考え方）を採用
+2. 「ST投資を含まない」設計は意図的ではなく「未検討のまま」として
+   記録する
+3. BBAI/RDWの実際の財務健全性の一次情報確認は今回スコープ外、
+   別タスクとして`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`をBACKLOG.mdへ
+   新規登録する
+
+#### 実装内容
+1. **設計意図のコメント明記**（コード変更なし・ドキュメントのみ）:
+   - `pipeline.py::_save_result()`の`computed_runway_months`算出
+     箇所（フォールバックRunwayブロック直前）に、STONKS SILOとの
+     相違点(A)(B)・「ST投資を含まない」設計が未検討のまま流用された
+     可能性が高いこと・両者を統一しない設計判断であることを明記
+   - `discover/stonks-silo/src/analyzer.py::_analyze_runway()`にも
+     対応するコメントを追加し、TANUKI VALUATION側との相違・統一しない
+     設計判断であることを明記
+2. **整合性チェック（WARN-48）の新設**:
+   - `common/sec_data/report_consistency_check.py`に
+     `_load_stonks_results()`（STONKS SILOのresults.json読み込み
+     キャッシュ、`_load_seg_config()`と同型パターン）と
+     `_check_runway_divergence()`（CHECK-48）を新設
+   - TANUKIの`computed_runway_months`とSTONKS SILOの`runway_months`が
+     両方算出済みで、STONKS SILO自身の`_runway_verdict()`と同じ境界
+     （SAFE>=24ヶ月／DANGER<12ヶ月）でSAFE/DANGERが完全に逆転する
+     場合のみWARN-48を発火する（片方がWATCH〈12〜24ヶ月〉の場合は
+     「逆転」とみなさず発火しない設計）
+   - NG化はしない（WARN止まり）。両者を統一しない設計判断のため、
+     逆転自体はエラーではなく「将来の早期警戒」が目的
+
+#### 検証結果
+- 新規テスト8件（`tests/test_report_consistency_check.py::
+  TestCheckRunwayDivergence`）: WARN-48が発火する2パターン
+  （BBAI型・RDW型）・発火しない6パターン（両者DANGER一致・両者SAFE
+  一致・片方WATCH・TANUKI側欠損・STONKS SILO非対象・STONKS SILO側
+  runway=None）。`git stash`で修正前コードに戻すと全8件が
+  `AttributeError`で失敗することを確認済み（fail-before/pass-after）
+- **実データ確認**: `report_consistency_check.py`を実行し、WARN-48が
+  実際にBBAI・RDWの2銘柄で発火することを確認（想定通り、他銘柄では
+  発火せず）
+- `pytest`: 1391件全通過（1383件 + 新規8件）
+- `common/sec_data/audit.py`: exit 0（既存の無関係WARN10件のみ）
+- `common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0（WARN 122件→124件、新設WARN-48がBBAI・RDWの2件で発火した分の
+  増加のみ、ゲートはPASS）
+
+#### エントリ全体のクローズについて
+`[[TANUKI-VALUATION-MISC-GAPS-1]]`の①〜⑧は以下の通り全件解消した:
+①PERフォールバック追加（2026-09-16）・②EV/EBITDA負値None化
+（2026-09-16）・③net_debt符号エイリアス実害なしクローズ
+（2026-09-18、本ファイル「2026-09-18（完了）」参照）・④v0_adjusted
+削除（2026-09-16）・⑤Runway cash算出経路相違（本エントリ、意図的
+差異として明記）・⑥mature_profit陳腐化クローズ（2026-09-16）・
+⑦根拠不明な定数へのコメント追記（2026-09-16）・⑧セグメントKPI
+テーブル機能撤去（2026-08-27）。アクティブな残課題が無くなったため、
+本体エントリ自体をBACKLOG.mdから削除しクローズする。
+
+#### 着手条件
+なし（完了）
+
+---
+
 ## 2026-09-18（完了）
 
 ### ✅ [TANUKI-VALUATION-MISC-GAPS-1]③ net_debt符号エイリアスの影響範囲確認 — 実害なしクローズ
