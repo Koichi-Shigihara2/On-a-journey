@@ -485,6 +485,27 @@ class StonksAnalyzer:
     # ------------------------------------------------------------------
 
     def _analyze_runway(self, years: list[int], records: dict) -> RunwayAnalysis:
+        # [[TANUKI-VALUATION-MISC-GAPS-1]]⑤（2026-09-19調査・Koichiさん
+        # 確認済み）: このRunway算出はTANUKI VALUATIONの
+        # `computed_runway_months`（value/tanuki_valuation/pipeline.py::
+        # _save_result()）と意図的に統一していない独立実装であり、
+        # 以下2点で算出方法が異なる:
+        #   (A) cashに短期投資（ST投資）を含む（TANUKI側は
+        #       cash_and_equivalentsのみでST投資を含まない）
+        #   (B) 直近年`annual_{yr}.json`のみを参照し、四半期データを
+        #       一切見ない（TANUKI側はSECReader.get_net_cash()経由で
+        #       直近四半期のBSデータが利用可能ならそちらを優先する）
+        # 実データでBBAI・RDWの2銘柄において、(A)(B)が重なりSAFE/DANGER
+        # の判定が逆転するほどの乖離（最大7.9倍）を確認したが、
+        # value/tanuki_valuation側のreport.txt表示・funda_scoreペナルティ
+        # 判定は本モジュールのrunway_months（STONKS SILO側）を優先する
+        # ため、この逆転は現状表示・判定には現れない。
+        # 両者は「STONKS SILOの赤字銘柄専用評価フレームワーク」「TANUKIの
+        # 保守的フォールバック」という異なる目的を持つ独立実装のため、
+        # 算出方式自体は統一しない設計判断とした（[[MARKETPULSE-MINOR-
+        # INCONSISTENCIES-1]]②の案cと同じ考え方）。統一しない代わりに、
+        # 両者が大きく食い違う場合の検知をcommon/sec_data/
+        # report_consistency_check.py（WARN-48）で別途行う。
         latest_year = years[-1]
         latest = records[latest_year]
         bs = latest["bs"]

@@ -2673,6 +2673,36 @@ class TanukiValuationPipeline:
             }
             # フォールバックRunway: stonks-siloにない銘柄でも資金枯渇リスクを検出
             # 条件: 直近四半期EPS<0, 直近年FCF<0, またはcash<$100M のいずれか
+            #
+            # [[TANUKI-VALUATION-MISC-GAPS-1]]⑤（2026-09-19調査・Koichiさん
+            # 確認済み）: この`computed_runway_months`はSTONKS SILOの
+            # `runway_months`（discover/stonks-silo/src/analyzer.py::
+            # _analyze_runway()）と意図的に統一していない独立実装であり、
+            # 以下2点で算出方法が異なる:
+            #   (A) cashに短期投資（ST投資）を含まない（上記`cash`変数は
+            #       `bs_adjustment.cash`＝cash_and_equivalentsのみ。STONKS
+            #       SILOは`cash_and_equivalents + short_term_investments`）
+            #   (B) `bs_adjustment.cash`はreader.py::get_net_cash()の
+            #       四半期優先ロジック（BUG-NETDEBT-4対応）により直近
+            #       四半期のBSデータで上書きされうる。STONKS SILOは直近
+            #       年次annual_{yr}.jsonのみを参照し四半期を一切見ない
+            # (A)は「Runwayは現金のみを厳密にカウントすべき」という意図的
+            # な設計判断ではなく、上記`financial_health`表示用に取得済みの
+            # `cash`変数をそのまま流用した結果である可能性が高い（設計時に
+            # 深く検討された形跡なし、Koichiさん確認済み）。
+            # 実データでBBAI・RDWの2銘柄において、(A)(B)が重なりSAFE/DANGER
+            # の判定が逆転するほどの乖離（最大7.9倍）を確認したが、report.txt
+            # 表示・TANUKI SCOREのfunda_scoreペナルティ判定は下記の通り
+            # STONKS SILOの値を最優先するため、現状この逆転は実際の表示・
+            # 判定には現れない（`computed_runway_months`はSTONKS SILO
+            # 非対象銘柄向けのフォールバック専用）。
+            # 両者は「TANUKIの保守的フォールバック」「STONKS SILOの赤字
+            # 銘柄専用評価フレームワーク」という異なる目的を持つ独立実装
+            # のため、算出方式自体は統一しない設計判断とした
+            # （[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]②の案cと同じ考え方）。
+            # 統一しない代わりに、両者が大きく食い違う場合の検知を
+            # common/sec_data/report_consistency_check.py（WARN-41）で
+            # 別途行う。
             _latest_fcf = fcf_history[-1]["fcf"] if fcf_history else None
             _latest_q_eps = self._load_eps_map().get(ticker, {}).get("gaap_eps")
             _needs_runway = (

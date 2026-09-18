@@ -156,6 +156,9 @@ TTM_DIR      = os.path.join(REPO_ROOT, "common/sec_data/ttm")
 RPO_CONFIG   = os.path.join(REPO_ROOT, "config/rpo_config.json")
 SEG_CONFIG   = os.path.join(REPO_ROOT, "config/segment_config.json")
 WARN_LEDGER  = os.path.join(REPO_ROOT, "config/warn_acknowledged.json")
+# WARN-48（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤）用: STONKS SILOのrunway判定
+# との突合にresults.jsonを参照する。
+STONKS_RESULTS = os.path.join(REPO_ROOT, "docs/value-monitor/stonks-silo/data/results.json")
 
 # common.screening.dcf_validity_checker（CHECK-21用）をimportするためrepo_rootを
 # sys.pathに追加する（registration_validator.pyと同一パターン）
@@ -179,6 +182,23 @@ def _load_seg_config() -> dict:
         except Exception:
             pass
     return _SEG_CFG_CACHE
+
+
+_STONKS_RESULTS_CACHE: dict = {}
+
+def _load_stonks_results() -> dict:
+    """WARN-48（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤）用。STONKS SILOの
+    results.json（tickers辞書）を読み込む。ファイル自体が存在しない・
+    パース失敗の場合は空dictを返す（フェイルセーフ、本チェック自体を
+    スキップさせる）。"""
+    global _STONKS_RESULTS_CACHE
+    if not _STONKS_RESULTS_CACHE:
+        try:
+            with open(STONKS_RESULTS, encoding="utf-8") as f:
+                _STONKS_RESULTS_CACHE = json.load(f).get("tickers", {})
+        except Exception:
+            pass
+    return _STONKS_RESULTS_CACHE
 
 
 # ─── ユーティリティ ──────────────────────────────────────────
@@ -944,6 +964,55 @@ def _check_dupont_null_validity(ticker: str, latest: dict) -> list[str]:
     return warn
 
 
+def _check_runway_divergence(ticker: str, latest: dict) -> list[str]:
+    """CHECK-48: TANUKI VALUATIONの`computed_runway_months`とSTONKS SILOの
+    `runway_months`が両方算出済みで、かつSAFE/DANGER判定が逆転するほど
+    大きく食い違う銘柄を検知する（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤、
+    2026-09-19実装）。
+
+    背景: 両者は「TANUKIの保守的フォールバック」「STONKS SILOの赤字
+    銘柄専用評価フレームワーク」という異なる目的を持つ独立実装であり、
+    (A)cashに短期投資を含むか、(B)四半期優先か年次のみか、という2軸の
+    相違を意図的に統一しない設計判断とした（pipeline.py::_save_result()
+    のcomputed_runway_months算出箇所コメント参照）。ただし実データで
+    BBAI・RDWの2銘柄でSAFE(>=24ヶ月)/DANGER(<12ヶ月)の判定自体が逆転
+    するほどの乖離（最大7.9倍）を確認しているため、統一しない代わりに
+    将来の逆転を機械的に検知するチェックとして本関数を新設する。
+
+    現状report.txt表示・TANUKI SCOREのfunda_scoreペナルティ判定は
+    STONKS SILOの値を優先するため（computed_runway_monthsはSTONKS SILO
+    非対象銘柄向けのフォールバック専用）、本チェックが発火しても実際の
+    表示・判定には影響しない。将来STONKS SILO側が一時的にNoneを返した
+    瞬間に自動フォールバックで逆の判定が表示される可能性があることへの
+    早期警戒が目的（NG化はしない、WARN止まり）。
+
+    しきい値はSTONKS SILO自身の`_runway_verdict()`と同じ境界
+    （SAFE>=24ヶ月／DANGER<12ヶ月）を流用する。
+    """
+    warn: list[str] = []
+    tanuki_runway = latest.get("computed_runway_months")
+    if not isinstance(tanuki_runway, (int, float)):
+        return warn
+
+    stonks_data = _load_stonks_results().get(ticker, {})
+    stonks_runway = (stonks_data.get("runway") or {}).get("runway_months")
+    if not isinstance(stonks_runway, (int, float)):
+        return warn
+
+    tanuki_verdict = "DANGER" if tanuki_runway < 12 else "SAFE" if tanuki_runway >= 24 else "WATCH"
+    stonks_verdict = "DANGER" if stonks_runway < 12 else "SAFE" if stonks_runway >= 24 else "WATCH"
+    if {tanuki_verdict, stonks_verdict} == {"SAFE", "DANGER"}:
+        warn.append(
+            f"  [WARN-48 Runway判定逆転] TANUKI computed_runway_months="
+            f"{tanuki_runway:.1f}ヶ月（{tanuki_verdict}） vs STONKS SILO "
+            f"runway_months={stonks_runway:.1f}ヶ月（{stonks_verdict}）"
+            f" → cash算出経路の相違（ST投資込み/四半期優先の有無）による"
+            f"判定逆転。表示にはSTONKS SILO側が優先採用される"
+            f"（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤参照）"
+        )
+    return warn
+
+
 # CHECK-36: ティッカー非依存の単発チェック用の基準件数。2026-08-16実装時点で
 # 中立フォールバック対象は2銘柄（BKNG/CPRT）。今後の推移を見て閾値は調整する。
 _MOAT_NEUTRAL_FALLBACK_BASELINE_COUNT = 4
@@ -1694,6 +1763,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False) ->
     warn.extend(_check_moat_score_neutral_fallback(ticker, latest))
     warn.extend(_check_moat_score_validity(ticker, latest))
     warn.extend(_check_dupont_null_validity(ticker, latest))
+    warn.extend(_check_runway_divergence(ticker, latest))
     parsed  = _parse_report(text)
 
     fcf_hist = parsed["fcf_history"]

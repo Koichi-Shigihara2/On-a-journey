@@ -924,6 +924,87 @@ class TestCheckDupontNullValidity:
         assert not any("WARN-43" in w for w in warn)
 
 
+class TestCheckRunwayDivergence:
+    """CHECK-48（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤、2026-09-19新設）:
+    TANUKI VALUATIONのcomputed_runway_monthsとSTONKS SILOのrunway_months
+    が両方算出済みで、SAFE(>=24ヶ月)/DANGER(<12ヶ月)の判定が逆転する
+    ほど食い違う場合にWARN-48を発火することを検証する。実データで
+    BBAI（STONKS 81.2ヶ月=SAFE vs TANUKI 10.2ヶ月=DANGER）・
+    RDW（STONKS 5.9ヶ月=DANGER vs TANUKI 35.2ヶ月=SAFE）で確認済みの
+    逆転パターンを再現する。
+    """
+
+    def test_warn_48_fires_when_stonks_safe_and_tanuki_danger(self, monkeypatch):
+        """BBAI型: STONKS SILOがSAFE、TANUKIがDANGERの逆転"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "BBAI": {"runway": {"runway_months": 81.2}}
+        })
+        latest = {"computed_runway_months": 10.2}
+        warn = rcc._check_runway_divergence("BBAI", latest)
+        assert any("WARN-48" in w for w in warn)
+
+    def test_warn_48_fires_when_stonks_danger_and_tanuki_safe(self, monkeypatch):
+        """RDW型: STONKS SILOがDANGER、TANUKIがSAFEの逆転"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "RDW": {"runway": {"runway_months": 5.9}}
+        })
+        latest = {"computed_runway_months": 35.2}
+        warn = rcc._check_runway_divergence("RDW", latest)
+        assert any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_both_danger(self, monkeypatch):
+        """両者ともDANGER（乖離はあるが判定は一致）の場合は発火しない"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "CRWV": {"runway": {"runway_months": 5.2}}
+        })
+        latest = {"computed_runway_months": 9.2}
+        warn = rcc._check_runway_divergence("CRWV", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_both_safe(self, monkeypatch):
+        """両者ともSAFE（乖離はあるが判定は一致）の場合は発火しない"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "QBTS": {"runway": {"runway_months": 140.0}}
+        })
+        latest = {"computed_runway_months": 46.9}
+        warn = rcc._check_runway_divergence("QBTS", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_one_is_watch(self, monkeypatch):
+        """一方がWATCH（12〜24ヶ月）の場合は「逆転」ではなく発火しない
+        （SAFE/DANGERの完全な逆転のみを対象とする設計）"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "TESTCO": {"runway": {"runway_months": 18.0}}
+        })
+        latest = {"computed_runway_months": 30.0}
+        warn = rcc._check_runway_divergence("TESTCO", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_tanuki_runway_missing(self, monkeypatch):
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "TESTCO": {"runway": {"runway_months": 5.0}}
+        })
+        latest = {}
+        warn = rcc._check_runway_divergence("TESTCO", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_stonks_runway_missing(self, monkeypatch):
+        """STONKS SILO非対象銘柄（またはSTONKS側runway算出不可）は
+        比較対象がないため発火しない"""
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {})
+        latest = {"computed_runway_months": 5.0}
+        warn = rcc._check_runway_divergence("TESTCO", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+    def test_no_warn_48_when_stonks_runway_is_none(self, monkeypatch):
+        monkeypatch.setattr(rcc, "_load_stonks_results", lambda: {
+            "TESTCO": {"runway": {"runway_months": None}}
+        })
+        latest = {"computed_runway_months": 5.0}
+        warn = rcc._check_runway_divergence("TESTCO", latest)
+        assert not any("WARN-48" in w for w in warn)
+
+
 class TestCheck46GrossProfitCogsConsistency:
     """CHECK-46（[[REPORT-CONSISTENCY-GROSSPROFIT-COGS-CHECK-MISSING-1]]で新設）が
     revenue-cost_of_revenue=gross_profitの算術的整合性を許容誤差0.1%で検証し、
