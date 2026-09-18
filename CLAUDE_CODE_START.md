@@ -12,20 +12,22 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-16④時点）**: `BACKLOG.md`アクティブ件数
-**26件**（本セッションで2件クローズ: `[[HYPECORE-POC-TRAILING-
-PE-MISSING-1]]`（trailing_pe追加・PERフォールバック統一）・
-`[[MARKETDATA-TRAILING-PE-STRING-INFINITY-1]]`（fetch_weekly_
-attributes()型ガード追加、ZETA trailing_pe="Infinity"のstale値も
-修正）。いずれも技術判断のみで着手可能な項目として古い順の棚卸しで
-処理。残り24件は個別または2クラスタ（FCF-CONVRATE系・SCHEMA-
-NORMALIZED-ISSUES-1残り①〜⑤）に分類済み、いずれもKoichiさんの
-設計判断待ち）。
-BACKLOG.md/BACKLOG_DONE.md間のID重複は意図的な1件
-（`[[TANUKI-VALUATION-MISC-GAPS-1]]`、部分完了エントリの意図的な
-分割・`[[CONFIG-LOAD-SILENT-FALLBACK-1]]`と同型パターン）を除き
-**0件**（機械確認済み、`### ✅ [`パターンがBACKLOG.md側に残存していない
-ことも確認済み）。
+**現在の到達点（2026-09-19時点）**: `BACKLOG.md`アクティブ件数
+**24件**（前回2026-09-16④時点26件から、`[[FCF-CONVRATE-LOWER-
+DIVERGENCE-1]]`・`[[FCF-CONVRATE-DESIGN-LIMIT-1]]`（ボトムアップFCF
+方式への根本移行で解消）・`[[TANUKI-VALUATION-MISC-GAPS-1]]`（残る
+③net_debt符号エイリアス〈実害なしクローズ〉・⑤Runway cash算出経路
+相違〈意図的差異として明記＋整合性WARN-48追加〉を解消し①〜⑧全8件
+完了、本体エントリごとクローズ）が完了。新規登録2件
+（`[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`・
+`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`、いずれも優先度低・着手条件
+なし）。詳細は`PROJECT_STATUS.md`「2026-09-18〜19」ブロック・
+`BACKLOG_DONE.md`「2026-09-18（完了）」「2026-09-19（完了）」参照。
+BACKLOG.md/BACKLOG_DONE.md間のID重複は**0件**（機械確認済み、
+`### ✅ [`パターンがBACKLOG.md側に残存していないことも確認済み。
+前回時点で唯一の意図的重複だった`[[TANUKI-VALUATION-MISC-GAPS-1]]`が
+上記の通り完全クローズしたため、現時点で意図的な例外自体が存在
+しない）。
 
 **構造的ずれの是正完了（2026-09-13発見、2026-09-16②で解消）**:
 `## 優先度：高`セクション見出し配下に、個別`**優先度:**`フィールドが
@@ -57,6 +59,85 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    必ず`git log`で実際のハッシュを再確認すること（2026-09-16②で
    BACKLOG.md/BACKLOG_DONE.md計11箇所の転記漏れが発生し、追加の
    2コミットで是正する事態になった教訓）。
+5. **rebase時のデータ消失事故（コンフリクトマーカーなしの静かな
+   上書き）** — 大きめの本番データ再生成コミットをpushする際、
+   `git pull --rebase`がGitHub Actions自動データ更新コミットと
+   コンフリクトマーカーなしで衝突し、再生成したデータ側が静かに
+   古い値へ上書きされることがある。「rebaseが成功した」という表示は
+   データが意図通りマージされたことを一切保証しない。2026-09-18の
+   セッション内で2回発生し、いずれもpost-rebaseで主要フィールドの
+   分布を実データ確認することで発見・復元した。rebase後は必ずこの
+   確認を行うこと（恒久対策の候補は`CHAT_RULES.md`「rebase時の
+   データ消失事故パターンと恒久対策の検討」参照、採用可否は
+   Koichiさんの判断待ち）。
+
+---
+
+最終更新: 2026-09-19（**セッション終了時ブラッシュアップ・
+[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]方針転換〜
+[[TANUKI-VALUATION-MISC-GAPS-1]]クローズ・サマリー**。全てpush済み）:
+
+2026-09-18〜19の2日間で完了した主な作業（詳細は`PROJECT_STATUS.md`
+「2026-09-18〜19」ブロック・`BACKLOG_DONE.md`「2026-09-18（完了）」
+「2026-09-19（完了）」参照）:
+
+1. **`[[TAIL-KPI-UNIT-MISLABEL-1]]`**（同日発見・即日クローズ）:
+   `xbrl_segment_fetcher.py::_infer_kpi_unit()`がKPI名の「率」等の
+   文字列だけでunitを判定しており、実際はUSD実額を返す15件のKPIを
+   `"ratio"`と誤ラベルしていたバグを修正。`tail_kpi_map.json`へ明示的な
+   `unit`キーを追加し、名前ヒューリスティックより優先させる設計に変更。
+
+2. **`[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]`方針転換・
+   第1陣7銘柄実装**: 前回完了済みだった「MD&A原文からAI抽出・参考表示
+   のみ」実装について、「FCFの計算過程を説明できるようにする」という
+   目的からすると参考情報では不十分との指摘を受け方針転換を検討。調査の
+   結果、MD&A原文には将来向き定量ガイダンスが存在しないと実データで
+   確認（EDGAR原文への正規表現直接プローブで将来形×数値の共起0件）した
+   ため、AI活用案自体を断念し、代わりにXBRLセグメント売上
+   （`docs/portfolio/tail/data/kpi/`）からの決定論的算出（案①、AI不
+   使用）へ最終確定。対象7銘柄（APP/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）で
+   実装し、DCF Phase1のGへ実際に採用する設計にした。
+   実地検証で単一四半期の実績YoYをそのまま採用すると、NVDA
+   （IV $727→$38,623、乖離+17,957%）等で`validate_calculation()`の
+   anomaly_detectionがFAILする重大な問題を発見。直近最大4四半期平均
+   への平滑化＋`calculate_fcf_cagr()`と同一のgrowth_floor(15%)/
+   growth_cap(50%)クリップを追加して解消し、クリップ発動時は実績値を
+   report.txt/stock.htmlで開示する透明性要件も満たした（対象7銘柄中
+   6銘柄がPASSへ回復、APPのみ乖離+1019%で僅かにFAILのまま残存——
+   旧45%→新50%への僅かな成長率上昇が既に極端だった評価〈+734%乖離〉を
+   閾値超えさせた縁の事象と判断し許容）。
+   全99銘柄regenを2回実施したが、いずれも`git pull --rebase`が
+   GitHub Actions自動コミットとコンフリクトマーカーなしで衝突し
+   データが静かに消失する事故に遭遇（post-rebaseの実データ確認で発見・
+   都度復元、詳細教訓は上記「直近の重要な教訓」5番・`CHAT_RULES.md`
+   参照）。
+
+3. **`[[TANUKI-VALUATION-MISC-GAPS-1]]`残り2件を解消しエントリ全体
+   クローズ**:
+   - **③net_debt符号エイリアス**: バックエンド9ファイル・フロント
+     エンド3ファイル・テストを全件確認した結果、符号混同の実例は0件。
+     `net_debt`（正=純負債）と`net_cash`（正=ネットキャッシュ）は
+     意図的な逆符号の別フィールドとして正しく一貫使用されており、
+     実害なしクローズと判断。
+   - **⑤Runway cash算出経路相違**: TANUKI VALUATIONの
+     `computed_runway_months`とSTONKS SILOの`runway_months`が、
+     (A)短期投資を含むか(B)四半期優先か年次のみか、の2軸で算出方法が
+     異なり、実データでBBAI・RDWの2銘柄でSAFE/DANGER判定が逆転する
+     ほどの乖離（最大7.9倍）を確認。両者は目的の異なる独立実装のため
+     統一せず（`[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]`②の案cと
+     同型判断）、設計意図をコードへ明記した上で`report_consistency_
+     check.py`にWARN-48（判定逆転検知）を新設。
+   - ①〜⑧全8件解消により本体エントリをクローズ。拡張候補・派生調査は
+     `[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`・
+     `[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`として新規登録
+     （いずれも優先度低・着手条件なし）。
+
+4. **`CHAT_RULES.md`更新**: `[[FCF-OUTLIER-QUAL-1]]`で確立済みだった
+   「AIの定性判断はDCF計算・action判定に使わない」原則が本ファイルに
+   未明文化だったこと（上記2の方針転換議論で一度原則を見失いかけた
+   一因）を是正し、原則本文・例外時の3要件（理由・追跡可能性・代替
+   手段の検討）を新規追記。rebase時のデータ消失事故パターンと
+   恒久対策候補（採用可否はKoichiさん判断待ち）も追記。
 
 ---
 

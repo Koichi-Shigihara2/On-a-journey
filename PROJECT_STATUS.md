@@ -9,6 +9,37 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-18〜19**: `[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-
+  IDEA-1]]`を前回の10銘柄パイロット（AI抽出・参考表示のみ）から方針
+  転換し、MD&A原文に将来向き定量ガイダンスが存在しないと実データで
+  確認した上で、XBRLセグメント売上からの決定論的算出（案①、AI不使用）
+  へ最終確定・第1陣7銘柄（APP/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）を実装。
+  実地検証で単一四半期の実績YoYをそのまま採用するとNVDA等で
+  `validate_calculation()`のanomaly_detection（乖離率>1000%）がFAILする
+  ことを発見し、直近最大4四半期平均への平滑化＋`calculate_fcf_cagr()`と
+  同じgrowth_floor/growth_capクリップを追加して解消（クリップ発動時は
+  report.txt/stock.htmlで実績値を開示）。前提条件として
+  `[[TAIL-KPI-UNIT-MISLABEL-1]]`（`xbrl_segment_fetcher.py`のunit推定が
+  KPI名の文字列だけで判定しUSD実額をratio誤ラベルしていたバグ、
+  同日発見・即日修正）を先行対応。全99銘柄regenを2回、いずれも
+  `git pull --rebase`がGitHub Actions自動コミットとコンフリクト
+  マーカーなしで衝突しデータが静かに消失する事故に遭遇したが、
+  post-rebaseでの実データ確認により発見・復元（教訓は
+  `CHAT_RULES.md`「rebase時のデータ消失事故パターン」参照）。続けて
+  `[[TANUKI-VALUATION-MISC-GAPS-1]]`の残り2件を解消: ③net_debt符号
+  エイリアスは全参照箇所を確認し符号混同の実例0件で実害なしクローズ、
+  ⑤Runway cash算出経路相違はTANUKI VALUATIONとSTONKS SILOでBBAI・RDW
+  の2銘柄がSAFE/DANGER判定が逆転するほど乖離することを実データで発見
+  したが、両者は目的の異なる独立実装のため統一せず設計意図を明記した
+  上で`report_consistency_check.py`にWARN-48（判定逆転検知）を新設
+  （`[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]`②の案cと同型の判断）。
+  ①〜⑧全8件解消により`[[TANUKI-VALUATION-MISC-GAPS-1]]`本体エントリを
+  クローズ。`[[FCF-OUTLIER-QUAL-1]]`で確立済みだった「AIの定性判断は
+  DCF計算・action判定に使わない」原則が`CHAT_RULES.md`に未明文化
+  だったこと（今回の方針転換議論で一度原則を見失いかけた一因）を
+  是正し、原則・例外時の3要件を新規追記。拡張候補・派生調査は
+  `[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`・
+  `[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`として新規登録
 - **2026-08-26**: Market Pulse/MACRO PULSE既知バグ6項目の稼働状況を
   実コード・実データで再検証し、全項目を解消。`[[MACRO-TRUTHY-ZERO-
   BUG-1]]`（履歴バックフィルのtruthy判定ゼロ値欠落、ゼロ金利期間
