@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 19347612600.861298,
   "intrinsic_value_per_share": 38.0875981668314,
   "intrinsic_value_beta": 18.12,
-  "upside_percent_beta": 8.3,
+  "upside_percent_beta": 6.8,
   "intrinsic_value_rf": 222.83,
-  "upside_percent_rf": 1231.9,
+  "upside_percent_rf": 1213.9,
   "v0": 19347612600.861298,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 55.83,
       "value_growth_pct": 46.6,
-      "expected_return_pct": 233.7
+      "expected_return_pct": 229.2
     },
     "2年後": {
       "future_value": 81.83,
       "value_growth_pct": 114.8,
-      "expected_return_pct": 389.1
+      "expected_return_pct": 382.5
     },
     "3年後": {
       "future_value": 119.94,
       "value_growth_pct": 214.9,
-      "expected_return_pct": 616.9
+      "expected_return_pct": 607.2
     },
     "4年後": {
       "future_value": 175.8,
       "value_growth_pct": 361.5,
-      "expected_return_pct": 950.8
+      "expected_return_pct": 936.6
     },
     "5年後": {
       "future_value": 257.68,
       "value_growth_pct": 576.5,
-      "expected_return_pct": 1440.2
+      "expected_return_pct": 1419.3
     }
   },
-  "upside_percent": 127.7,
-  "calculation_date": "2026-09-18T23:03:42+09:00",
+  "upside_percent": 124.6,
+  "calculation_date": "2026-09-19T08:32:56+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -107,11 +107,11 @@
       "segments": {
         "Lending": {
           "weight": 0.5278497057678752,
-          "growth": 0.433802132138704
+          "growth": 0.43380213213870394
         },
         "Technology Platform": {
           "weight": 0.08797113278967152,
-          "growth": -0.05909602752601733
+          "growth": -0.059096027526017336
         },
         "Financial Services": {
           "weight": 0.38417916144245334,
@@ -311,7 +311,7 @@
     "roe_10yr_avg": -0.15120344803977956,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
-    "current_price": 16.729999542236328,
+    "current_price": 16.959999084472656,
     "latest_revenue": 3613354000.0,
     "rpo": 8535000.0,
     "beta": 2.204,
@@ -345,11 +345,11 @@
     "alpha_uncapped": 0.0,
     "per": 36.31915,
     "per_is_forward": false,
-    "per_adjusted": 25.25,
+    "per_adjusted": 25.6,
     "peg": 0.6358,
     "ps": 5.1651444,
     "ev_ebitda": null,
-    "ma200": 19.576024985313417,
+    "ma200": 19.515674977302552,
     "forward_eps": 0.82759,
     "next_quarter_eps": 0.17,
     "analyst_target_median": 19.0,
@@ -366,11 +366,11 @@
     "insider_latest_date": "2026-09-16",
     "analyst_vs_iv": -50.1,
     "max_eps": 0.6955,
-    "max_eps_per": 24.1,
+    "max_eps_per": 24.4,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-18",
+    "validated_at": "2026-09-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -399,7 +399,7 @@
   "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "BUY",
-  "pre_rounding_comment": "割安圏(128%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
+  "pre_rounding_comment": "割安圏(125%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "②収益性系",
@@ -489,13 +489,13 @@
     {
       "name": "Lending",
       "weight": 0.5278497057678752,
-      "growth": 0.433802132138704,
+      "growth": 0.43380213213870394,
       "estimated_revenue": 1907307845.7351747
     },
     {
       "name": "Technology Platform",
       "weight": 0.08797113278967152,
-      "growth": -0.05909602752601733,
+      "growth": -0.059096027526017336,
       "estimated_revenue": 317870844.55009073
     },
     {
@@ -539,8 +539,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0065,
-  "forward_earnings_yield": 0.0495,
+  "erp": 0.0058,
+  "forward_earnings_yield": 0.0488,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }

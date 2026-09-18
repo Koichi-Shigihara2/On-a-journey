@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 3569538594.602374,
   "intrinsic_value_per_share": 25.737211381794495,
   "intrinsic_value_beta": 14.04,
-  "upside_percent_beta": -65.2,
+  "upside_percent_beta": -64.1,
   "intrinsic_value_rf": 119.7,
-  "upside_percent_rf": 196.7,
+  "upside_percent_rf": 205.9,
   "v0": 3569538594.602374,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 39.84,
       "value_growth_pct": 54.8,
-      "expected_return_pct": -1.2
+      "expected_return_pct": 1.8
     },
     "2年後": {
       "future_value": 61.67,
       "value_growth_pct": 139.6,
-      "expected_return_pct": 52.9
+      "expected_return_pct": 57.6
     },
     "3年後": {
       "future_value": 95.45,
       "value_growth_pct": 270.8,
-      "expected_return_pct": 136.6
+      "expected_return_pct": 143.9
     },
     "4年後": {
       "future_value": 147.74,
       "value_growth_pct": 474.0,
-      "expected_return_pct": 266.2
+      "expected_return_pct": 277.6
     },
     "5年後": {
       "future_value": 152.17,
       "value_growth_pct": 491.2,
-      "expected_return_pct": 277.2
+      "expected_return_pct": 288.9
     }
   },
-  "upside_percent": -36.2,
-  "calculation_date": "2026-09-18T23:00:04+09:00",
+  "upside_percent": -34.2,
+  "calculation_date": "2026-09-19T08:30:25+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -281,10 +281,10 @@
       -62395000
     ],
     "diluted_shares": 405135656,
-    "roe_10yr_avg": -0.3874348251894228,
+    "roe_10yr_avg": -0.3874348251894227,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
-    "current_price": 40.34000015258789,
+    "current_price": 39.130001068115234,
     "latest_revenue": 130016000.0,
     "rpo": 485000000,
     "beta": 2.5,
@@ -307,7 +307,7 @@
     "moat_fcf_margin_norm": 0.0,
     "pv_high": 1340718717.0910053,
     "pv_terminal": 2228819877.5113688,
-    "roe_used": -0.3874348251894228,
+    "roe_used": -0.3874348251894227,
     "fcf_floor_applied": 215211280.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -322,7 +322,7 @@
     "peg": null,
     "ps": 60.900036,
     "ev_ebitda": null,
-    "ma200": 43.88984998703003,
+    "ma200": 43.849899997711184,
     "forward_eps": -1.306,
     "next_quarter_eps": -0.78,
     "analyst_target_median": 67.5,
@@ -343,7 +343,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-18",
+    "validated_at": "2026-09-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -373,7 +373,7 @@
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "GROWTH_PREMIUM",
-  "pre_rounding_comment": "成長率が市場要求を上回る、割高(-36%超)、FCFマイナス（投資フェーズ）",
+  "pre_rounding_comment": "成長率が市場要求を上回る、割高(-34%超)、FCFマイナス（投資フェーズ）",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "④キャッシュ創出力系",
@@ -435,7 +435,7 @@
     "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 49.49449273040413,
-  "net_current_assets_ratio": 0.1336,
+  "net_current_assets_ratio": 0.1377,
   "dupont": {
     "ni_ttm": -1363670000,
     "revenue_ttm": 246474000,
@@ -493,8 +493,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0754,
-  "forward_earnings_yield": -0.0324,
+  "erp": -0.0764,
+  "forward_earnings_yield": -0.0334,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }
