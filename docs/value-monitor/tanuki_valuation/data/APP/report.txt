@@ -1,17 +1,17 @@
 APP INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-18T08:39:51+09:00
+Generated: 2026-09-18T22:57:07+09:00
 Price: $321.60
-Validation_Status: PASS (品質ゲート: 全チェック通過)
+Validation_Status: FAIL ⚠️ (要注意チェック: anomaly_detection)
 
 [1. TANUKI SCORE]
 Classification: BUY
 Funda_Score: 100/100
 Timing_Score (components):
-  Deviation_Rate: +747.1%
+  Deviation_Rate: +1036.6%
   MA200_Deviation: -32.6%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -82.5%
-Comment: 割安圏(747%)で買い余地大、FCF黒字、売上成長加速
+  Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -87.0%
+Comment: 割安圏(1037%)で買い余地大、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -32,8 +32,8 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 右上
 Label: 割安×高効率
-Key_Metric_Y: RICE = 6.765
-Deviation_Rate: +747.1%
+Key_Metric_Y: RICE = 7.517
+Deviation_Rate: +1036.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,21 +58,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $321.60
-Intrinsic_Value_BASE: $2,724.22
-Deviation_BASE: +747.1%
+Intrinsic_Value_BASE: $3,655.32
+Deviation_BASE: +1036.6%
 Scenarios:
-BEAR: Growth=31.5%, IV=$1,179.47, Deviation=+266.8%
-BASE: Growth=45.0%, IV=$2,724.22, Deviation=+747.1%
-BULL: Growth=54.0%, IV=$4,596.97, Deviation=+1329.4%
-Return_Outlook(BASE): 1年後: $3,950.12 (+1128.3%) / 3年後: $8,305.13 (+2482.4%) / 5年後: $17,461.53 (+5329.6%)
-  5yr_Annualized_Return: +122.3%/yr
-Growth_Rate_Rec: 24.8% (recommended  ⚠️ +20.2pt above recommended)
+BEAR: Growth=35.0%, IV=$1,474.45, Deviation=+358.5%
+BASE: Growth=50.0%, IV=$3,655.32, Deviation=+1036.6%
+BULL: Growth=60.0%, IV=$6,421.16, Deviation=+1896.6%
+Return_Outlook(BASE): 1年後: $5,482.98 (+1604.9%) / 3年後: $12,336.71 (+3736.0%) / 5年後: $27,757.59 (+8531.1%)
+  5yr_Annualized_Return: +143.9%/yr
+Growth_Rate_Rec: 24.8% (recommended  ⚠️ +25.2pt above recommended)
+Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 24.8%（実績CAGR等ベース）
+  ⚠️ 実績YoY(直近最大4四半期平均)は86.9%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
 TTM_YoY_Growth: 76.3%
-(DCF Base vs TTM actual: -31.3pt discount)
+(DCF Base vs TTM actual: -26.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.48%
-  参考①β込みWACC_IV: $755.14 (Deviation: +134.8%)
-  参考②Rf理論上限_IV: $31,579.10 (Deviation: +9719.4%)
+  参考①β込みWACC_IV: $995.19 (Deviation: +209.4%)
+  参考②Rf理論上限_IV: $42,793.35 (Deviation: +13206.4%)
 Terminal_Growth_Rate: 3.5%
 Beta: 2.488
 FCF_Base: $3,035.05M (直近2yr平均) [ボトムアップ: OCF-CapEx]
@@ -81,24 +83,24 @@ FCF_Breakdown（直近年）: OCF=$3,971M / CapEx=N/A / SBC(非現金)=$210M / D
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: NORMAL  (通常判定適用)
-DCF_FCF_PV: $291.15B (Ph1=$138.52B + Ph2=$152.64B, 9yr, pre-alpha, Rm=10%)
+DCF_FCF_PV: $381.27B (Ph1=$174.18B + Ph2=$207.09B, 9yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@12.0%
-DCF_TV_PV:  $624.13B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $915.28B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $846.80B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $1228.07B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 1.0000 (HypeCore expectation premium; Rm basis) [CAPPED: セクター別上限到達]
 RPO_PV: $0 (RPO/Revenue=0.01 < 0.3, not applied)
 Growth_Option_PV: $0.355B (optional segment premium)
-Equity_Value: $915.17B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.46B)
+Equity_Value: $1227.97B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.46B)
 Shares_Used: 335.9M (source: yf_implied)
-→ Intrinsic_Value: $2724.22 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $3655.32 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  5yr  9yr  13yr
-  9.0%       $1,065.59  $3,415.24  $10,773.40
-  10.0%       $877.04  $2,724.22  $8,301.37
-  11.0%       $739.88  $2,228.74  $6,564.19
+  9.0%       $1,256.08  $4,591.11  $16,551.89
+  10.0%       $1,032.83  $3,655.32  $12,723.25
+  11.0%       $870.46  $2,984.72  $10,035.40
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。
+  Reasoning: 両項目の理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的な費用と判断される。
 Financial_Health:
   Net_Debt: $+0.46B (negative=net cash)
   Total_Debt: $3.52B  Cash: $3.05B
@@ -117,8 +119,8 @@ FCF_History:
   2025: $3.97B (FCF_Margin: 72.5%)
   FCF_CAGR_3yr: +112.7%
 Segment_Breakdown:
-  Software Platform: $5.5B (100%, YoY 45%)
-  Segment_Weighted_Growth: 45.0%
+  Software Platform: $5.5B (100%, YoY 87%)
+  Segment_Weighted_Growth: 86.9%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -169,14 +171,14 @@ market-priced future potential.
 
 
 [4. 成長率根拠]
-Phase1成長率 : 45.0%
+Phase1成長率 : 50.0%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
-DCF適用値:  45.0%（セグメント加重平均 → DCF G として直接使用）
+DCF適用値:  50.0%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 24.8%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
 業界ベンチマーク: Software (System & Application) / 21.6% (Damodaran 2025)
 signals:
-  - 業界平均Software (System & Application)(21.6%)の2.1倍 ℹ️
+  - 業界平均Software (System & Application)(21.6%)の2.3倍 ℹ️
   - 過去実績(3yr:24.8% / 5yr:30.4%)より高め（減速想定あり） ℹ️
 Definition:
 
@@ -196,15 +198,15 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=4.736
-BASE: RICE=6.765
-BULL: RICE=8.118
+BEAR: RICE=5.262
+BASE: RICE=7.517
+BULL: RICE=9.02
 Components (BASE scenario):
-G  = 45.0%  [TANUKI forward growth rate]
+G  = 50.0%  [TANUKI forward growth rate]
 Q  = 1.224   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.6141  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 10.0000  [R&D除外・CapExのみ投資強度]
-RICE_adj = 110.161  [参考：R&D資本化想定]
+RICE_adj = 122.401  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 2.00  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 10.38  [NOPAT/InvestedCapital / 0.10]
@@ -336,7 +338,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 3.6%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -82.5%
+Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -87.0%
 Insider_Activity: Sell優勢 | 買い0件 / 売り9件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 76.3%

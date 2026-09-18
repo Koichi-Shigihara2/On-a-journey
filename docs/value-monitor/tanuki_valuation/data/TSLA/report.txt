@@ -1,5 +1,5 @@
 TSLA INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-18T08:44:31+09:00
+Generated: 2026-09-18T23:03:50+09:00
 Price: $366.20
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,11 +7,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: TRIM
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -85.5%
+  Deviation_Rate: -84.6%
   MA200_Deviation: -7.9%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $410 median ($125-$600) | 39 analysts | vs IV: +670.8%
-Comment: 割高(-86%超)、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $410 median ($125-$600) | 39 analysts | vs IV: +625.6%
+Comment: 割高(-85%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ②収益性系
 Quadrant: 左下
 Label: 割高×低ROE
 Key_Metric_Y: ROE_avg (10yr) = -0.5%
-Deviation_Rate: -85.5%
+Deviation_Rate: -84.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,27 +58,29 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $366.20
-Intrinsic_Value_BASE: $53.19
-Deviation_BASE: -85.5%
+Intrinsic_Value_BASE: $56.50
+Deviation_BASE: -84.6%
 Scenarios:
-BEAR: Growth=9.0%, IV=$47.84, Deviation=-86.9%
-BASE: Growth=12.8%, IV=$53.19, Deviation=-85.5%
-BULL: Growth=15.4%, IV=$57.06, Deviation=-84.4%
-Return_Outlook(BASE): 1年後: $60.00 (-83.6%) / 3年後: $76.34 (-79.2%) / 5年後: $89.13 (-75.7%)
-  5yr_Annualized_Return: -24.6%/yr
-Growth_Rate_Rec: 5.2% (recommended  ⚠️ +7.6pt above recommended)
+BEAR: Growth=10.5%, IV=$49.92, Deviation=-86.4%
+BASE: Growth=15.0%, IV=$56.50, Deviation=-84.6%
+BULL: Growth=18.0%, IV=$61.32, Deviation=-83.3%
+Return_Outlook(BASE): 1年後: $64.97 (-82.3%) / 3年後: $85.93 (-76.5%) / 5年後: $102.28 (-72.1%)
+  5yr_Annualized_Return: -22.5%/yr
+Growth_Rate_Rec: 5.2% (recommended  ⚠️ +9.8pt above recommended)
+Growth_Rate_Parallel: 採用値 15.0%（segment_xbrl） / 参考 5.2%（実績CAGR等ベース）
+  ⚠️ 実績YoY(直近最大4四半期平均)は10.7%だが、下限15%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
 TTM_YoY_Growth: 11.8%
-(DCF Base vs TTM actual: +1.0pt premium)
+(DCF Base vs TTM actual: +3.2pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 14.82%
-  参考①β込みWACC_IV: $33.71 (Deviation: -90.8%)
-  参考②Rf理論上限_IV: $382.01 (Deviation: +4.3%)
+  参考①β込みWACC_IV: $35.47 (Deviation: -90.3%)
+  参考②Rf理論上限_IV: $411.71 (Deviation: +12.4%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.845
 Valuation_Gap_Analysis:
-  DCF_IV:           $53 (保守的FCFベース・現在実力値)
+  DCF_IV:           $56 (保守的FCFベース・現在実力値)
   Market_Price:     $366
-  Gap:              -86% (市場が将来成長を先取り)
+  Gap:              -85% (市場が将来成長を先取り)
   Implied_FCF_2030: $88.67B (現在株価を正当化するために必要な5年後FCF)
   Current_FCF:      $7.67B
   Required_Growth:  63%/yr (現在FCFから必要成長率を逆算)
@@ -88,27 +90,22 @@ FCF_Breakdown（直近年）: OCF=$14,747M / CapEx=$8,527M / SBC(非現金)=$2,8
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:
-  - Automotive & Services and Other Segment [accelerating]: 自動車販売収益は現金納車台数の増加により3ヶ月で27%、6ヶ月で24%上昇。サービスその他収益も使用済み車両販売やFSDサブスクリプションの拡大で50%・46%増加。CybercabやRobotaxi、Optimusの新製品投入と製造能力拡大により長期成長を目指す。
-  - Energy Generation and Storage Segment [mixed]: Megapack展開増加により3ヶ月収益は13%増えたが6ヶ月では1%増に留まる。生産能力拡大と市場浸透を進める一方、販売ミックスや保証調整で粗利率が低下。AIインフラ需要による長期機会も指摘。
-  [本セクションはAIによる10-K MD&A原文の定性的要約であり、DCF/IV計算には
-   一切使用していません。参考情報としてお読みください。]
 DCF_Reliability: NORMAL  (通常判定適用)
-DCF_FCF_PV: $62.89B (Ph1=$32.66B + Ph2=$30.22B, 4yr, pre-alpha, Rm=10%)
+DCF_FCF_PV: $66.96B (Ph1=$34.31B + Ph2=$32.65B, 4yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@5.0%
-DCF_TV_PV:  $112.05B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $174.94B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $121.06B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $188.02B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0.681B (optional segment premium)
-Equity_Value: $210.09B (= v0 + RPO_PV + GO_PV + Net_Cash $34.46B)
+Equity_Value: $223.16B (= v0 + RPO_PV + GO_PV + Net_Cash $34.46B)
 Shares_Used: 3949.5M (source: yf_implied)
-→ Intrinsic_Value: $53.19 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $56.50 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $54.25  $61.55  $69.37
-  10.0%       $47.19  $53.19  $59.51
-  11.0%       $42.01  $47.07  $52.30
+  9.0%       $55.99  $65.53  $76.14
+  10.0%       $48.66  $56.50  $65.08
+  11.0%       $43.28  $49.89  $57.00
 Financial_Health:
   Net_Debt: $-34.46B (negative=net cash)
   Total_Debt: $9.06B  Cash: $15.22B  ST_Invest: $28.30B
@@ -127,10 +124,9 @@ FCF_History:
   2025: $6.32B (FCF_Margin: 6.7%)
   FCF_CAGR_3yr: -7.8%
 Segment_Breakdown:
-  Automotive: $73.0B (77%, YoY 10%)
-  Energy Generation and Storage: $10.4B (11%, YoY 30%)
-  Services and Other: $11.4B (12%, YoY 15%)
-  Segment_Weighted_Growth: 12.8%
+  Automotive & Services and Other: $83.8B (88%, YoY 11%)
+  Energy Generation and Storage: $11.0B (12%, YoY 9%)
+  Segment_Weighted_Growth: 10.7%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -181,9 +177,9 @@ market-priced future potential.
 
 
 [4. 成長率根拠]
-Phase1成長率 : 12.8%
+Phase1成長率 : 15.0%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
-DCF適用値:  12.8%（セグメント加重平均 → DCF G として直接使用）
+DCF適用値:  15.0%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 5.2%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
 業界ベンチマーク: N/A
@@ -344,7 +340,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 2.1%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $410 median ($125-$600) | 39 analysts | vs IV: +670.8%
+Analyst_Consensus: Buy | Target: $410 median ($125-$600) | 39 analysts | vs IV: +625.6%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 11.8%

@@ -1,5 +1,5 @@
 CRWV INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-18T08:41:13+09:00
+Generated: 2026-09-18T22:59:06+09:00
 Price: $79.88
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,10 +8,10 @@ Classification: WATCH
 Classification_Pre_Rounding: HOLD
 Funda_Score: 45/100
 Timing_Score (components):
-  Deviation_Rate: +240.3%
+  Deviation_Rate: +100.4%
   MA200_Deviation: -13.2%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $150 median ($39-$317) | 35 analysts | vs IV: -44.8%
+  Analyst_Consensus: Buy | Target: $150 median ($39-$317) | 35 analysts | vs IV: -6.3%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -34,7 +34,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 右下
 Label: 割安×低FCF
 Key_Metric_Y: FCF_Margin = -140.2%
-Deviation_Rate: +240.3%
+Deviation_Rate: +100.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,21 +59,20 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $79.88
-Intrinsic_Value_BASE: $271.85
-Deviation_BASE: +240.3%
+Intrinsic_Value_BASE: $160.08
+Deviation_BASE: +100.4%
 Scenarios:
-BEAR: Growth=45.5%, IV=$134.11, Deviation=+67.9%
-BASE: Growth=65.0%, IV=$271.85, Deviation=+240.3%
-BULL: Growth=78.0%, IV=$407.19, Deviation=+409.8%
-Return_Outlook(BASE): 1年後: $448.55 (+461.5%) / 3年後: $1,221.18 (+1428.8%) / 5年後: $3,324.67 (+4062.1%)
-  5yr_Annualized_Return: +110.8%/yr
-Growth_Rate_Rec: 56.8% (recommended  ⚠️ +8.2pt above recommended)
+BEAR: Growth=35.0%, IV=$84.62, Deviation=+5.9%
+BASE: Growth=50.0%, IV=$160.08, Deviation=+100.4%
+BULL: Growth=60.0%, IV=$229.87, Deviation=+187.8%
+Return_Outlook(BASE): 1年後: $240.12 (+200.6%) / 3年後: $540.27 (+576.4%) / 5年後: $1,215.61 (+1421.8%)
+  5yr_Annualized_Return: +72.4%/yr
 TTM_YoY_Growth: 167.9%
-(DCF Base vs TTM actual: -102.9pt discount)
+(DCF Base vs TTM actual: -117.9pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 12.00%
-  参考①β込みWACC_IV: $157.93 (Deviation: +97.7%)
-  参考②Rf理論上限_IV: $3,026.27 (Deviation: +3688.5%)
+  参考①β込みWACC_IV: $89.26 (Deviation: +11.7%)
+  参考②Rf理論上限_IV: $1,870.65 (Deviation: +2241.8%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.35
 ⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
@@ -88,21 +87,21 @@ FCF_Breakdown（直近年）: OCF=$3,058M / CapEx=$10,309M / SBC(非現金)=$630
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
-DCF_FCF_PV: $41.79B (Ph1=$14.32B + Ph2=$27.46B, 5yr, pre-alpha, Rm=10%)
+DCF_FCF_PV: $27.14B (Ph1=$10.09B + Ph2=$17.05B, 5yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@20.0%
-DCF_TV_PV:  $123.98B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $165.77B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $76.98B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $104.12B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $149.93B (= v0 + RPO_PV + GO_PV + Net_Cash $-15.83B)
+Equity_Value: $88.29B (= v0 + RPO_PV + GO_PV + Net_Cash $-15.83B)
 Shares_Used: 551.5M (source: yf_implied)
-→ Intrinsic_Value: $271.85 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $160.08 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $130.00  $339.97  $821.11
-  10.0%       $102.68  $271.85  $652.47
-  11.0%       $82.76  $222.46  $531.14
+  9.0%       $91.07  $202.43  $413.30
+  10.0%       $70.54  $160.08  $326.57
+  11.0%       $55.57  $129.37  $264.13
 Financial_Health:
   Net_Debt: $+15.83B (negative=net cash)
   Total_Debt: $21.37B  Cash: $5.52B  ST_Invest: $0.01B
@@ -117,8 +116,8 @@ FCF_History:
   2024: $-5.90B (FCF_Margin: -308.0%)
   2025: $-7.19B (FCF_Margin: -140.2%)
 Segment_Breakdown:
-  Cloud Infrastructure: $5.1B (100%, YoY 65%)
-  Segment_Weighted_Growth: 65.0%
+  Cloud Infrastructure: $5.1B (100%, YoY 117%)
+  Segment_Weighted_Growth: 117.1%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -169,14 +168,13 @@ market-priced future potential.
 
 
 [4. 成長率根拠]
-Phase1成長率 : 65.0%
+Phase1成長率 : 50.0%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
-DCF適用値:  65.0%（セグメント加重平均 → DCF G として直接使用）
-推奨成長率: 56.8%（Layer 2 参考値・DCF未適用）
+DCF適用値:  50.0%（セグメント加重平均 → DCF G として直接使用）
 判定         : PLAUSIBLE
 業界ベンチマーク: Software (Internet) / 48.6% (Damodaran 2025)
 signals:
-  - 業界平均Software (Internet)(48.6%)の1.3倍以内 ✅
+  - 業界平均Software (Internet)(48.6%)の1.0倍以内 ✅
 Definition:
 
 Growth Rate Methodology:
@@ -329,7 +327,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 17.8%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $150 median ($39-$317) | 35 analysts | vs IV: -44.8%
+Analyst_Consensus: Buy | Target: $150 median ($39-$317) | 35 analysts | vs IV: -6.3%
 Insider_Activity: Sell優勢 | 買い0件 / 売り878件 | 直近90日
 Runway_Months: 5.2
 Revenue_Growth_YoY: 167.9%

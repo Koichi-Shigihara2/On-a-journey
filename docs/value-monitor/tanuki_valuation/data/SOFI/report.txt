@@ -1,17 +1,17 @@
 SOFI INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-18T08:44:25+09:00
+Generated: 2026-09-18T23:03:42+09:00
 Price: $16.73
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Classification_Pre_Rounding: HOLD
+Classification_Pre_Rounding: BUY
 Funda_Score: 70/100
 Timing_Score (components):
-  Deviation_Rate: -5.3%
+  Deviation_Rate: +127.7%
   MA200_Deviation: -14.5%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Hold | Target: $19 median ($12-$30) | 22 analysts | vs IV: +19.9%
+  Analyst_Consensus: Hold | Target: $19 median ($12-$30) | 22 analysts | vs IV: -50.1%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -31,10 +31,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ②収益性系
-Quadrant: 左下
-Label: 割高×低ROE
+Quadrant: 右下
+Label: 割安×低ROE
 Key_Metric_Y: ROE_avg (6yr) = -15.1% (outlier-adjusted)
-Deviation_Rate: -5.3%
+Deviation_Rate: +127.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,21 +59,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $16.73
-Intrinsic_Value_BASE: $15.84
-Deviation_BASE: -5.3%
+Intrinsic_Value_BASE: $38.09
+Deviation_BASE: +127.7%
 Scenarios:
-BEAR: Growth=15.6%, IV=$12.50, Deviation=-25.3%
-BASE: Growth=22.3%, IV=$15.84, Deviation=-5.3%
-BULL: Growth=26.8%, IV=$18.61, Deviation=+11.2%
-Return_Outlook(BASE): 1年後: $19.37 (+15.8%) / 3年後: $28.98 (+73.2%) / 5年後: $43.34 (+159.1%)
-  5yr_Annualized_Return: +21.0%/yr
-Growth_Rate_Rec: 31.9% (recommended)
+BEAR: Growth=32.6%, IV=$23.00, Deviation=+37.5%
+BASE: Growth=46.6%, IV=$38.09, Deviation=+127.7%
+BULL: Growth=55.9%, IV=$52.84, Deviation=+215.8%
+Return_Outlook(BASE): 1年後: $55.83 (+233.7%) / 3年後: $119.94 (+616.9%) / 5年後: $257.68 (+1440.2%)
+  5yr_Annualized_Return: +72.8%/yr
+Growth_Rate_Rec: 31.9% (recommended  ⚠️ +14.6pt above recommended)
+Growth_Rate_Parallel: 採用値 46.6%（segment_xbrl） / 参考 31.9%（実績CAGR等ベース）
 TTM_YoY_Growth: 40.8%
-(DCF Base vs TTM actual: -18.5pt discount)
+(DCF Base vs TTM actual: +5.8pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 16.86%
-  参考①β込みWACC_IV: $8.97 (Deviation: -46.4%)
-  参考②Rf理論上限_IV: $78.33 (Deviation: +368.2%)
+  参考①β込みWACC_IV: $18.12 (Deviation: +8.3%)
+  参考②Rf理論上限_IV: $222.83 (Deviation: +1231.9%)
 Terminal_Growth_Rate: 3.0%
 Beta: 2.204
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -86,29 +87,23 @@ FCF_Breakdown（直近年）: OCF=$-3,742M / CapEx=$242M / SBC(非現金)=$262M 
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:
-  - Lending Segment [accelerating]: 貸出 origination の増加により純金利収入と origination fee が拡大し、contribution profit が大幅に増加。市場からの強い需要と Loan Platform Business の好調が寄与したと述べている。
-  - Technology Platform Segment [decelerating]: 大型クライアントのプラットフォーム離脱により総収益と contribution profit が前年比で大幅に減少したと指摘。enabled client accounts も減少した。
-  - Financial Services Segment [accelerating]: 預金増加による純金利収入や interchange、brokerage fee、Loan Platform Business の手数料が拡大し、contribution profit が増加。fee-based revenue の多角化が進んでいると述べている。
-  [本セクションはAIによる10-K MD&A原文の定性的要約であり、DCF/IV計算には
-   一切使用していません。参考情報としてお読みください。]
 DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
   [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
    FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
-DCF_FCF_PV: $3.96B (6yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $12.45B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $16.41B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_FCF_PV: $8.25B (6yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $36.89B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $45.14B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0 (RPO/Revenue=0.00 < 0.3, not applied)
 Growth_Option_PV: $0
-Equity_Value: $20.46B (= v0 + RPO_PV + GO_PV + Net_Cash $4.05B)
+Equity_Value: $49.19B (= v0 + RPO_PV + GO_PV + Net_Cash $4.05B)
 Shares_Used: 1291.6M (source: yf_implied)
-→ Intrinsic_Value: $15.84 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $38.09 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  6yr  9yr
-  9.0%       $12.86  $18.19  $25.71
-  10.0%       $11.44  $15.84  $21.89
-  11.0%       $10.38  $14.09  $19.05
+  9.0%       $19.55  $44.98  $106.82
+  10.0%       $17.11  $38.09  $87.72
+  11.0%       $15.28  $32.95  $73.65
 Financial_Health:
   Net_Debt: $-4.05B (negative=net cash)
   Total_Debt: $3.30B  Cash: $3.13B  ST_Invest: $4.23B
@@ -125,10 +120,10 @@ FCF_History:
   2024: $-1.27B (Financial sector: N/A)
   2025: $-3.98B (Financial sector: N/A)
 Segment_Breakdown:
-  Lending: $1.8B (49%, YoY 10%)
-  Technology Platform: $0.4B (12%, YoY 15%)
-  Financial Services: $1.4B (39%, YoY 40%)
-  Segment_Weighted_Growth: 22.3%
+  Lending: $1.9B (53%, YoY 43%)
+  Technology Platform: $0.3B (9%, YoY -6%)
+  Financial Services: $1.4B (38%, YoY 63%)
+  Segment_Weighted_Growth: 46.6%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -185,9 +180,9 @@ market-priced future potential.
 注記: 本セクションはTANUKI SCORE・upside_percent・verdict等の
 判定には一切使用されない参考表示専用です。
 Intrinsic_Value_FCFE: N/A（成長率がROEを上回るためFCFEがマイナス（内部留保だけでは高成長を賄えず継続的な増資が前提と解釈される））
-Equity_Reinvestment_Rate: 388.5%
+Equity_Reinvestment_Rate: 811.3%
 ROE: 5.74%
-Growth_Rate: 22.3%
+Growth_Rate: 46.6%
 Definition:
 FCFE = Net Income x (1 - Equity Reinvestment Rate)
 Equity Reinvestment Rate = Growth Rate / ROE (Damodaran方式)
@@ -196,9 +191,9 @@ Equity Reinvestment Rate = Growth Rate / ROE (Damodaran方式)
 
 
 [4. 成長率根拠]
-Phase1成長率 : 22.3%
+Phase1成長率 : 46.6%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
-DCF適用値:  22.3%（セグメント加重平均 → DCF G として直接使用）
+DCF適用値:  46.6%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 31.9%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
 業界ベンチマーク: N/A
@@ -359,7 +354,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 13.9%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Hold | Target: $19 median ($12-$30) | 22 analysts | vs IV: +19.9%
+Analyst_Consensus: Hold | Target: $19 median ($12-$30) | 22 analysts | vs IV: -50.1%
 Insider_Activity: Sell優勢 | 買い0件 / 売り4件 | 直近90日
 Runway_Months: 9.4
 Revenue_Growth_YoY: 40.8%

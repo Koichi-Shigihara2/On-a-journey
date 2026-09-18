@@ -108,6 +108,27 @@ Koichiさんの指示により以下2段構えの対策を追加した:
 対策後の全99銘柄regenで検証: PASS=98/FAIL=1/WARN=0/ERROR=0
 （NVDA/CRWV/TSLA/PLTR/SOFI/SOUN/APPの7銘柄中6銘柄がPASSへ回復）。
 
+**rebase時のデータ消失事故と是正（[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]
+と同種の教訓が再発）**: 上記の全99銘柄regenをコミット後、
+`git pull --rebase origin/kaihatsu`を実行したところ、リモート側の
+GitHub Actions自動実行（コード変更なし、2026-09-18分の定期更新、
+旧segment_weightedコードで実行）が同じ99銘柄のlatest.json/report.txt
+を既に更新済みだったため、rebaseの3-wayマージがコンフリクトマーカー
+を一切出さずに旧データを採用してしまい、今回の全99銘柄regen結果が
+実質的に消失した（`growth.source`の分布を確認したところ
+`segment_xbrl`が0件・全て`segment_weighted`に戻っていることを実データ
+で発見）。config/コードファイル（segment_growth_xbrl.py・
+segment_config.json・tail_kpi_map.json等）はリモートが一切触れて
+いないため正しくrebaseされていたことを個別確認済み。`pipeline.py`
+（全99銘柄）を再実行し正しいデータへ復元、`growth.source`分布
+（segment_xbrl 7銘柄・segment_weighted 90銘柄・fcf_cagr 2銘柄）と
+3ゲート（pytest/audit.py/report_consistency_check.py）を再確認した
+上でコミットし直した。**教訓（[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]の
+教訓を再確認）**: コード変更なしの自動データ更新ワークフローが並行
+稼働しているブランチでは、rebaseが「成功」してもデータファイルの
+内容が意図通りかを個別に確認すること（コンフリクトマーカーが出ない
+ことは正しくマージされたことを意味しない）。
+
 #### 残存する既知の限界（APPの検証FAIL、未解決のまま報告済み）
 クリップ後もAPPのみvalidate_calculation()のanomaly_detectionが
 FAILのまま残った（乖離率+1019%、閾値1000%をわずかに超過）。
