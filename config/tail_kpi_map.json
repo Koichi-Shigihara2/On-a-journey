@@ -329,6 +329,22 @@
       "dimension": "srt:ProductOrServiceAxis"
     },
     {
+      "kpi_name": "Graphics売上",
+      "change_risk": "medium",
+      "tag_history": [
+        {
+          "tag": "nvda:GraphicsSegmentMember",
+          "valid_from": "2010-01-01",
+          "valid_to": null
+        }
+      ],
+      "fallback_tags": [],
+      "fallback_action": "alert",
+      "revenue_tag": "us-gaap:Revenues",
+      "dimension": "us-gaap:StatementBusinessSegmentsAxis",
+      "unit": "USD"
+    },
+    {
       "kpi_name": "Research and Development Expense",
       "change_risk": "medium",
       "source": "layer3",

@@ -3,7 +3,8 @@ TANUKI VALUATION - Growth Rate Calculator
 成長率決定ロジック
 
 責務: 高成長期間の成長率を決定
-優先順位: セグメント加重成長率 > FCF CAGR > デフォルト
+優先順位: XBRLセグメント決定論的算出(segment_xbrl) > セグメント加重
+成長率(segment_weighted、手動config) > FCF CAGR > デフォルト
 """
 
 import logging
@@ -19,6 +20,25 @@ try:
 except ImportError:
     HAS_SEGMENT_CONFIG = False
     _get_segment_growth_from_config = None
+
+# [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+# segment_growth_xbrl.py（同一calculator/ディレクトリ内の兄弟モジュール）
+# からXBRLセグメント決定論的成長率を取得する。growth.py自身が
+# `python growth.py`で直接実行される場合（下記__main__参照）と
+# `from calculator import growth`でパッケージ経由import される場合の
+# 両方で解決できるよう、絶対import前に自分自身のディレクトリを
+# sys.pathへ明示的に追加する（HAS_CONTRACTS節の`common.sec_data.
+# contracts`解決パターンと同型の自己完結的sys.path解決）。
+HAS_XBRL_SEGMENT_GROWTH = False
+compute_xbrl_segment_growth = None
+try:
+    _calc_dir = os.path.dirname(os.path.abspath(__file__))
+    if _calc_dir not in sys.path:
+        sys.path.insert(0, _calc_dir)
+    from segment_growth_xbrl import compute_xbrl_segment_growth
+    HAS_XBRL_SEGMENT_GROWTH = True
+except ImportError:
+    pass
 
 # [[GROWTH-FCFSERIES-ACCESSOR-ADOPT-1]]: common/sec_data/contracts.pyの
 # FCFSeriesをFCF CAGR算出直前の順序再検証に使う。data_fetcher.py::
@@ -72,16 +92,54 @@ class GrowthResult:
 def get_segment_growth(ticker: str) -> Optional[GrowthResult]:
     """
     セグメント加重平均成長率を取得
-    
+
+    優先順位（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①、
+    2026-09-18）: XBRLセグメント決定論的算出（segment_growth_xbrl.py、
+    対応可能な場合のみ） > segment_config.jsonの手動設定（Layer 1）。
+    XBRL側は対象銘柄（現状7銘柄: APP/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）
+    かつ当該四半期のデータが揃っている場合のみ成立する
+    （`compute_xbrl_segment_growth()`はそれ以外Noneを返す）。
+    ADBE/CELH等、XBRL側が対応不可の銘柄は本関数の下側の分岐
+    （segment_config.json直接参照、既存の"segment_weighted"ラベル）へ
+    自然にフォールバックする——`set_growth_override()`経由の注入とは
+    異なり、sourceラベルを"segment_xbrl"として明示的に区別するため、
+    [[GROWTH-SOURCE-LABEL-1]]と同種の「表示ラベルと実際の根拠が
+    食い違う」問題を新たに生まない設計とした。
+
     Args:
         ticker: 銘柄コード
-    
+
     Returns:
         GrowthResult or None (設定なし/無効の場合)
     """
+    if HAS_XBRL_SEGMENT_GROWTH:
+        xbrl_result = compute_xbrl_segment_growth(ticker)
+        if xbrl_result is not None:
+            return GrowthResult(
+                rate=xbrl_result["weighted_growth"],
+                source="segment_xbrl",
+                segment_detail={
+                    "enabled": True,
+                    "weighted_growth": xbrl_result["weighted_growth"],
+                    # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]
+                    # 案①（2026-09-18、Koichiさん指示）: クリップ前後の
+                    # 両方をここまで引き継ぎ、report.txt/stock.htmlで
+                    # 「実績YoY(平滑化)はX%だが上限でクリップ」を表示
+                    # できるようにする（透明性確保）。
+                    "raw_weighted_growth": xbrl_result.get("raw_weighted_growth"),
+                    "clipped": xbrl_result.get("clipped"),
+                    "growth_floor": xbrl_result.get("growth_floor"),
+                    "growth_cap": xbrl_result.get("growth_cap"),
+                    "quarter": xbrl_result.get("quarter"),
+                    "method": xbrl_result.get("method"),
+                    "segments": xbrl_result.get("segments"),
+                    "source": "segment_xbrl",
+                },
+            )
+
     if not HAS_SEGMENT_CONFIG:
         return None
-    
+
     # segment_config.pyのget_segment_growth()を呼び出す
     config = _get_segment_growth_from_config(ticker)
     

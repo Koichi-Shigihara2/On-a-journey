@@ -55,6 +55,70 @@ def test_segment_detail_source_reflects_segment_config():
 
 
 # ─────────────────────────────────────────────
+# [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）
+# XBRLセグメント決定論的算出が手動configより優先されること、
+# 対応不可銘柄では既存の手動config経路へ正しくフォールバックすること
+# を検証する。
+# ─────────────────────────────────────────────
+
+class TestXbrlSegmentGrowthPriority:
+    def test_xbrl_result_takes_priority_over_manual_config(self):
+        """XBRL側が算出可能な場合、手動config（segment_config.json）より
+        優先され、source="segment_xbrl"になる"""
+        fake_xbrl = {
+            "segments": {"Government": {"weight": 0.5, "growth": 0.79},
+                         "Commercial": {"weight": 0.5, "growth": 1.10}},
+            "weighted_growth": 0.50,
+            "raw_weighted_growth": 0.945,
+            "clipped": True,
+            "growth_floor": 0.15,
+            "growth_cap": 0.50,
+            "quarter": "2026Q2",
+            "method": "segment_xbrl_yoy_smoothed",
+        }
+        fake_manual_config = {"enabled": True, "weighted_growth": 0.20, "source": "segment_config"}
+        with patch.object(growth_module, "HAS_XBRL_SEGMENT_GROWTH", True), \
+             patch.object(growth_module, "compute_xbrl_segment_growth", return_value=fake_xbrl), \
+             patch.object(growth_module, "_get_segment_growth_from_config", return_value=fake_manual_config), \
+             patch.object(growth_module, "HAS_SEGMENT_CONFIG", True):
+            result = growth_module.get_segment_growth("PLTR")
+
+        assert result is not None
+        assert result.source == "segment_xbrl"
+        assert result.rate == pytest.approx(0.50)  # クリップ後（DCFへ渡す値）
+        assert result.segment_detail["source"] == "segment_xbrl"
+        assert result.segment_detail["quarter"] == "2026Q2"
+        assert result.segment_detail["raw_weighted_growth"] == pytest.approx(0.945)
+        assert result.segment_detail["clipped"] is True
+
+    def test_falls_back_to_manual_config_when_xbrl_returns_none(self):
+        """XBRL側が対応不可（None）の銘柄は、既存の手動config経路
+        （source="segment_config"）へ変更なくフォールバックする"""
+        fake_manual_config = {"enabled": True, "weighted_growth": 0.12, "source": "segment_config"}
+        with patch.object(growth_module, "HAS_XBRL_SEGMENT_GROWTH", True), \
+             patch.object(growth_module, "compute_xbrl_segment_growth", return_value=None), \
+             patch.object(growth_module, "_get_segment_growth_from_config", return_value=fake_manual_config), \
+             patch.object(growth_module, "HAS_SEGMENT_CONFIG", True):
+            result = growth_module.get_segment_growth("ADBE")
+
+        assert result is not None
+        assert result.source == "segment_weighted"
+        assert result.segment_detail["source"] == "segment_config"
+
+    def test_xbrl_unavailable_module_falls_back_unchanged(self):
+        """segment_growth_xbrl.py自体がimportできない環境
+        （HAS_XBRL_SEGMENT_GROWTH=False）でも既存動作を維持する"""
+        fake_manual_config = {"enabled": True, "weighted_growth": 0.15, "source": "segment_config"}
+        with patch.object(growth_module, "HAS_XBRL_SEGMENT_GROWTH", False), \
+             patch.object(growth_module, "_get_segment_growth_from_config", return_value=fake_manual_config), \
+             patch.object(growth_module, "HAS_SEGMENT_CONFIG", True):
+            result = growth_module.get_segment_growth("SOFI")
+
+        assert result is not None
+        assert result.source == "segment_weighted"
+
+
+# ─────────────────────────────────────────────
 # [[GROWTH-FCFSERIES-ACCESSOR-ADOPT-1]]
 # calculate_fcf_cagr()/determine_growth_rate()がFCFSeriesアクセサ
 # （.newest/.oldest）を用いた順序検証を追加したことのテスト。

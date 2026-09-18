@@ -561,6 +561,106 @@ class TestRecommendedGrowth:
         assert "Growth_Rate_Adjusted: 6.1% (推奨値・中央値ベース)" in report
         assert "（推奨値ベース）" in report
 
+    def test_segment_xbrl_source_shows_parallel_reference_line(self, tmp_path):
+        """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+        growth.source=segment_xbrlの場合、採用値（XBRL）とrecommended_g
+        （実績CAGR等）を並べたGrowth_Rate_Parallel行が並行稼働の
+        参考情報として表示される（DCF計算自体には介入しない）"""
+        pipe = _make_pipe(tmp_path)
+        pipe._eps_summary_cache = {}
+
+        val = _minimal_valuation()
+        val["growth"] = {"rate": 0.9404, "source": "segment_xbrl"}
+        extra = {
+            **_minimal_extra(),
+            "segment_configured": True,
+            "segment_ttm_applied": False,
+            "phase1_growth_auto_adjusted": False,
+            "phase1_growth_original": 0.9404,
+            "recommended_g": 0.329,
+        }
+        report = pipe._generate_report("PLTR", val, _minimal_score_data(), extra)
+
+        assert "Growth_Rate_Parallel: 採用値 94.0%（segment_xbrl） / 参考 32.9%（実績CAGR等ベース）" in report
+
+    def test_clipped_segment_xbrl_shows_raw_value_disclosure(self, tmp_path):
+        """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①
+        （2026-09-18、Koichiさん指示）: growth_cap/growth_floorで
+        クリップされた場合、クリップ前の実績値（raw_weighted_growth）を
+        開示する行が表示される（NVDA実データで乖離率+17,957%の
+        anomaly_detection FAILを引き起こした事象への対処）"""
+        pipe = _make_pipe(tmp_path)
+        pipe._eps_summary_cache = {}
+
+        val = _minimal_valuation()
+        val["growth"] = {"rate": 0.50, "source": "segment_xbrl"}
+        val["growth_scenarios"] = {
+            "primary": {"rate": 0.50, "source": "segment_xbrl"},
+            "segment": {
+                "source": "segment_xbrl", "weighted_growth": 0.50,
+                "raw_weighted_growth": 0.9638, "clipped": True,
+                "growth_floor": 0.15, "growth_cap": 0.50,
+            },
+        }
+        extra = {
+            **_minimal_extra(),
+            "segment_configured": True,
+            "segment_ttm_applied": False,
+            "phase1_growth_auto_adjusted": False,
+            "phase1_growth_original": 0.50,
+            "recommended_g": 1.00,
+        }
+        report = pipe._generate_report("NVDA", val, _minimal_score_data(), extra)
+
+        assert "実績YoY(直近最大4四半期平均)は96.4%だが、上限50%でクリップして採用" in report
+
+    def test_unclipped_segment_xbrl_shows_no_disclosure_line(self, tmp_path):
+        """クリップが発動していない場合（clipped=False）は開示行を出さない"""
+        pipe = _make_pipe(tmp_path)
+        pipe._eps_summary_cache = {}
+
+        val = _minimal_valuation()
+        val["growth"] = {"rate": 0.30, "source": "segment_xbrl"}
+        val["growth_scenarios"] = {
+            "primary": {"rate": 0.30, "source": "segment_xbrl"},
+            "segment": {
+                "source": "segment_xbrl", "weighted_growth": 0.30,
+                "raw_weighted_growth": 0.30, "clipped": False,
+                "growth_floor": 0.15, "growth_cap": 0.50,
+            },
+        }
+        extra = {
+            **_minimal_extra(),
+            "segment_configured": True,
+            "segment_ttm_applied": False,
+            "phase1_growth_auto_adjusted": False,
+            "phase1_growth_original": 0.30,
+            "recommended_g": 0.25,
+        }
+        report = pipe._generate_report("SOFI", val, _minimal_score_data(), extra)
+
+        assert "でクリップして採用" not in report
+
+    def test_non_segment_xbrl_source_does_not_show_parallel_line(self, tmp_path):
+        """segment_xbrl以外のsource（例: 既存のsegment_weighted手動config）
+        では並行稼働行を追加しない（既存表示に影響を与えない）"""
+        pipe = _make_pipe(tmp_path)
+        pipe._eps_summary_cache = {}
+
+        val = _minimal_valuation()
+        val["growth"] = {"rate": 0.12, "source": "segment_weighted"}
+        extra = {
+            **_minimal_extra(),
+            "segment_configured": True,
+            "segment_ttm_applied": False,
+            "phase1_growth_auto_adjusted": False,
+            "phase1_growth_original": 0.12,
+            "recommended_g": 0.10,
+        }
+        report = pipe._generate_report("ADBE", val, _minimal_score_data(), extra)
+
+        assert "Growth_Rate_Parallel" not in report
+
 
 # ─────────────────────────────────────────────
 # 8. 高成長逓減モデル vs 中央値モデル
@@ -2109,6 +2209,72 @@ class TestSegmentConfiguredFalseForUnconfiguredTicker:
             "登録済み銘柄で segment_configured=True がセットされていない"
 
 
+class TestXbrlSegmentGrowthTakesPriorityInExtraData:
+    """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+    _load_extra_data()のsegments構築が、XBRLセグメント決定論的算出
+    （compute_xbrl_segment_growth()）を静的segment_config.jsonより
+    優先すること、対応不可銘柄では既存の静的config経路へ変更なく
+    フォールバックすることを検証する。report.txt/stock.htmlの表示と
+    実際のDCF G算出根拠を一致させるための配線。
+    """
+
+    def test_xbrl_result_used_when_available_even_if_static_config_exists(self, tmp_path, monkeypatch):
+        pipe = _make_pipe(tmp_path)
+        config_dir = tmp_path / "config"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        # 静的configには古い手書き値が残っている状態を再現
+        (config_dir / "segment_config.json").write_text(
+            json.dumps({"PLTR": {"segments": {
+                "Government": {"weight": 0.6, "growth": 0.10},
+                "Commercial": {"weight": 0.4, "growth": 0.15},
+            }}}),
+            encoding="utf-8",
+        )
+        fake_xbrl = {
+            "segments": {
+                "Government": {"weight": 0.512, "growth": 0.79},
+                "Commercial": {"weight": 0.488, "growth": 1.098},
+            },
+            "weighted_growth": 0.9404,
+            "quarter": "2026Q2",
+            "method": "segment_xbrl_yoy",
+        }
+        monkeypatch.setattr(pipeline, "compute_xbrl_segment_growth", lambda ticker, repo_root: fake_xbrl)
+
+        valuation = {"components": {"latest_revenue": 10_000_000_000}}
+        result = pipe._load_extra_data("PLTR", valuation)
+
+        assert result["segment_configured"] is True
+        assert result["segment_growth_source"] == "segment_xbrl"
+        assert result["segment_growth_quarter"] == "2026Q2"
+        gov = next(s for s in result["segments"] if s["name"] == "Government")
+        assert gov["growth"] == 0.79  # 静的configの0.10ではなくXBRL値
+        assert gov["estimated_revenue"] == 10_000_000_000 * 0.512
+
+    def test_falls_back_to_static_config_when_xbrl_unavailable(self, tmp_path, monkeypatch):
+        """XBRL対応不可（ADBE/CELH等）の銘柄は既存の静的config経路が
+        変更なく機能する"""
+        pipe = _make_pipe(tmp_path)
+        config_dir = tmp_path / "config"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (config_dir / "segment_config.json").write_text(
+            json.dumps({"ADBE": {"segments": {
+                "Digital Media": {"weight": 0.74, "growth": 0.12},
+                "Digital Experience": {"weight": 0.26, "growth": 0.10},
+            }}}),
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(pipeline, "compute_xbrl_segment_growth", lambda ticker, repo_root: None)
+
+        valuation = {"components": {"latest_revenue": 5_000_000_000}}
+        result = pipe._load_extra_data("ADBE", valuation)
+
+        assert result["segment_configured"] is True
+        assert "segment_growth_source" not in result
+        dm = next(s for s in result["segments"] if s["name"] == "Digital Media")
+        assert dm["growth"] == 0.12
+
+
 class TestLoadExtraDataNextEarningsDate:
     """[[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4: next_earnings_dateの
     取得元をyfinance直接呼び出し（.calendar）からcommon.market_data.reader
@@ -3646,61 +3812,3 @@ class TestDcfReliabilityLabelUnified:
         report = pipe._generate_report("NEWCO2", val, score_data, _minimal_extra())
         assert "DCF_Reliability: NORMAL" in report
         assert "DCF_Reliability: HIGH" not in report
-
-
-# ─────────────────────────────────────────────
-# 18. [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]] 10銘柄パイロット
-#     （2026-09-18）: TANUKI TAILがMD&A原文からAI抽出したセグメント別
-#     成長見通し（参考情報専用）が、report.txtのFCF_Breakdown直後に
-#     正しく表示されること、非対象銘柄（データファイル未生成）では
-#     表示自体が一切現れないことを確認する。
-# ─────────────────────────────────────────────
-
-class TestSegmentOutlookInReport:
-    @staticmethod
-    def _write_tail_segment_outlook(tmp_path, ticker: str, segments: list) -> None:
-        """pipe.repo_root == tmp_path のとき、pipeline._load_tail_segment_outlook()
-        が読みに来る docs/portfolio/tail/data/mda/{ticker}/latest.json を作成する"""
-        mda_dir = tmp_path / "docs" / "portfolio" / "tail" / "data" / "mda" / ticker
-        mda_dir.mkdir(parents=True, exist_ok=True)
-        (mda_dir / "latest.json").write_text(
-            json.dumps({"ticker": ticker, "segment_outlook": segments}, ensure_ascii=False),
-            encoding="utf-8",
-        )
-
-    def test_segment_outlook_shown_after_fcf_breakdown_with_disclaimer(self, tmp_path):
-        pipe = _make_pipe(tmp_path)
-        self._write_tail_segment_outlook(tmp_path, "SOFI", [
-            {"name": "Lending Segment", "trend": "accelerating",
-             "summary": "貸出残高の増加により純利息収入が押し上げられた。", "quote": "q1"},
-            {"name": "Technology Platform Segment", "trend": "stable",
-             "summary": "純収益・貢献利益ともに前年比14%増加。", "quote": "q2"},
-        ])
-        val = _minimal_valuation()
-        report = pipe._generate_report("SOFI", val, _minimal_score_data(), _minimal_extra())
-
-        assert "セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:" in report
-        assert "- Lending Segment [accelerating]: 貸出残高の増加により純利息収入が押し上げられた。" in report
-        assert "- Technology Platform Segment [stable]: 純収益・貢献利益ともに前年比14%増加。" in report
-        assert "DCF/IV計算には" in report and "一切使用していません" in report
-
-        # FCF_Breakdownの直後に配置されていること
-        breakdown_idx = report.index("FCF_Breakdown（直近年）")
-        segment_idx = report.index("セグメント別成長見通し")
-        reliability_idx = report.index("DCF_Reliability:")
-        assert breakdown_idx < segment_idx < reliability_idx
-
-    def test_no_segment_outlook_section_when_tail_data_missing(self, tmp_path):
-        """TANUKI TAIL対象外銘柄（データファイル自体が存在しない）ではセクション自体が現れない"""
-        pipe = _make_pipe(tmp_path)
-        val = _minimal_valuation()
-        report = pipe._generate_report("NOTAIL", val, _minimal_score_data(), _minimal_extra())
-        assert "セグメント別成長見通し" not in report
-
-    def test_empty_segment_outlook_list_shows_no_section(self, tmp_path):
-        """segment_outlookが空配列（AIが該当なしと判断）の場合もセクションを出さない"""
-        pipe = _make_pipe(tmp_path)
-        self._write_tail_segment_outlook(tmp_path, "SOFI", [])
-        val = _minimal_valuation()
-        report = pipe._generate_report("SOFI", val, _minimal_score_data(), _minimal_extra())
-        assert "セグメント別成長見通し" not in report

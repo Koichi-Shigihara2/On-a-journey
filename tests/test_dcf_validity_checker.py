@@ -15,6 +15,7 @@ import json
 import os
 
 from common.screening.dcf_validity_checker import (
+    check_b_source_label,
     check_c_data_jump,
     check_f_eps_analyzer_delta,
     check_g_rice_efficiency,
@@ -27,6 +28,42 @@ def _write_annual(sec_data_dir, ticker: str, year: int, section: str, field: str
     os.makedirs(ticker_dir, exist_ok=True)
     with open(os.path.join(ticker_dir, f"annual_{year}.json"), "w", encoding="utf-8") as f:
         json.dump({"period": year, section: {field: value}}, f)
+
+
+class TestCheckBSourceLabelSegmentXbrl:
+    """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+    source="segment_xbrl"はgrowth.py側で表示ラベルと実態が常に一致する
+    設計（[[GROWTH-SOURCE-LABEL-1]]と同種の食い違いを最初から作らない）
+    ため、本チェックはflag=Falseの情報行としてのみ扱うことを検証する。
+    """
+
+    def test_segment_xbrl_source_is_not_flagged_and_is_explicitly_recognized(self):
+        latest = {
+            "growth": {"rate": 0.94, "source": "segment_xbrl"},
+            "segment_configured": True,
+            "growth_scenarios": {"segment": {"source": "segment_xbrl", "weighted_growth": 0.94}},
+        }
+        flag, note, detail = check_b_source_label("/repo", latest, "PLTR")
+        assert flag is False
+        assert detail["displayed_source"] == "segment_xbrl"
+        assert detail["real_source_guess"] == "segment_xbrl"
+        # 修正前は分岐自体が無く空文字列のnoteになっていた
+        # （偶然flag=Falseになるだけで明示的な認識ではなかった）。
+        # 修正後は専用の説明的なnoteが付くことを確認する。
+        assert "XBRL" in note
+
+    def test_existing_segment_weighted_unconfigured_mismatch_still_flagged(self):
+        """既存の[[GROWTH-SOURCE-LABEL-1]]検知ロジック（segment_weighted
+        なのにsegment_configured=False）は変更なく機能する"""
+        latest = {
+            "growth": {"rate": 0.20, "source": "segment_weighted"},
+            "segment_configured": False,
+            "growth_scenarios": {"segment": {"source": "segment_config"}},
+            "growth_sanity": {"recommended_g": 0.20},
+        }
+        flag, note, detail = check_b_source_label("/repo", latest, "NEWCO")
+        assert flag is True
+        assert "recommended_g" in detail["real_source_guess"]
 
 
 class TestCheckCDataJumpRevenueBackwardCompat:

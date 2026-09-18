@@ -28,6 +28,12 @@ from growth_sanity import check_growth_sanity, calc_fundamental_growth
 import segment_config as _seg_cfg
 # [[TANUKI-FIN-2]]: 金融機関向けFCFEエクイティDCF（参考表示専用）
 from calculator.fcfe import is_financial_institution_ticker, calculate_fcfe_valuation
+# [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①: report.txt/
+# stock.htmlのセグメント別売上構成表示を、実際のDCF成長率算出
+# （calculator/growth.py::get_segment_growth()）と同じXBRL決定論的
+# 算出結果で揃える（表示と実際の計算根拠が食い違う[[GROWTH-SOURCE-
+# LABEL-1]]と同種の問題を作らないため）。
+from calculator.segment_growth_xbrl import compute_xbrl_segment_growth
 
 _SCRIPT_DIR_FOR_IMPORT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_DIR_FOR_IMPORT)))
@@ -91,30 +97,6 @@ FCF_TRANSIENT_ITEM_EXPLANATIONS = {
         "revenue_decline": "同じ海事事業売却による連結売上ベースの恒久的縮小",
     },
 }
-
-# [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（2026-09-18、10銘柄
-# パイロット）: TANUKI TAIL（src/tail/sec_items_fetcher.py）がMD&A原文から
-# AI抽出したセグメント別成長見通し（参考情報専用、DCF/IV計算には未使用）を
-# report.txt上のFCF_Breakdown直後に表示する。TANUKI TAIL対象銘柄（現状は
-# ADBE/APGE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLAの10銘柄）以外は
-# データファイル自体が存在しないため自然にスキップされる。
-
-
-def _load_tail_segment_outlook(repo_root: str, ticker: str) -> Optional[list]:
-    """TANUKI TAILが生成したdocs/portfolio/tail/data/mda/{ticker}/latest.json
-    のsegment_outlookを読み込む。TANUKI TAIL非対象銘柄・データ未生成・
-    読み込み失敗時はNoneを返す（フェイルセーフ、report.txt生成を止めない）。"""
-    path = os.path.join(repo_root, "docs", "portfolio", "tail", "data", "mda", ticker, "latest.json")
-    if not os.path.exists(path):
-        return None
-    try:
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-        segments = data.get("segment_outlook")
-        return segments if isinstance(segments, list) and segments else None
-    except Exception:
-        return None
-
 
 # CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1: スピンオフ・カーブアウト型／破産再生型の
 # 法人再編でCIKが断絶しており、旧CIKへの接続を行わない方針が確定している銘柄。
@@ -1640,6 +1622,30 @@ class TanukiValuationPipeline:
             _g_diff = (_phase1_growth_original - _recommended_g) * 100
             _warn = f"  ⚠️ +{_g_diff:.1f}pt above recommended" if _g_diff >= 5.0 else ""
             L.append(f"Growth_Rate_Rec: {_recommended_g*100:.1f}% (recommended{_warn})")
+            # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①
+            # （2026-09-18）: segment_xbrl採用銘柄向けの並行稼働値表示。
+            # DCFの実際の計算には介入せず（Cの自動ブレンド・フォール
+            # バックは行わない）、後から振り返れるよう採用値と
+            # recommended_g（実績CAGR等ベース）を並べて記録するのみ。
+            if valuation.get("growth", {}).get("source") == "segment_xbrl":
+                L.append(f"Growth_Rate_Parallel: 採用値 {_phase1_growth_original*100:.1f}%"
+                         f"（segment_xbrl） / 参考 {_recommended_g*100:.1f}%（実績CAGR等ベース）")
+                # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①
+                # （2026-09-18、Koichiさん指示）: 直近最大4四半期平均の
+                # 実績YoYがgrowth_floor(15%)/growth_cap(50%)でクリップ
+                # された場合、クリップ前の実績値も併記する（「クリップ後は
+                # 実際の四半期実績そのものではなくなる」という懸念への
+                # 透明性確保）。
+                _seg_detail_for_clip = (valuation.get("growth_scenarios") or {}).get("segment") or {}
+                if _seg_detail_for_clip.get("clipped"):
+                    _raw_g = _seg_detail_for_clip.get("raw_weighted_growth")
+                    _cap = _seg_detail_for_clip.get("growth_cap")
+                    _floor = _seg_detail_for_clip.get("growth_floor")
+                    if _raw_g is not None and _cap is not None and _floor is not None:
+                        _bound_label = f"上限{_cap*100:.0f}%" if _raw_g > _cap else f"下限{_floor*100:.0f}%"
+                        L.append(f"  ⚠️ 実績YoY(直近最大4四半期平均)は{_raw_g*100:.1f}%だが、"
+                                 f"{_bound_label}でクリップして採用（一時的な変動を複数年DCFへ"
+                                 f"そのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。")
         if _bear_mult_applied and _fcf_margin_note:
             L.append(f"FCF_Margin_Bear_Adj: {_fcf_margin_note}")
         # TTM_YoY_Growth（実績TTM YoY成長率 vs DCF BASE成長率の乖離を表示）
@@ -1771,17 +1777,6 @@ class TanukiValuationPipeline:
             L.append("  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途")
             L.append("   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの")
             L.append("   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]")
-
-        # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（10銘柄パイロット、
-        # 2026-09-18）: TANUKI TAILがMD&A原文からAI抽出したセグメント別成長見通し
-        # （参考情報専用）。DCF/IV計算には一切使用しない。
-        _segment_outlook = _load_tail_segment_outlook(self.repo_root, ticker)
-        if _segment_outlook:
-            L.append("セグメント別成長見通し（AI抽出・MD&A原文ベース、参考情報）:")
-            for _seg in _segment_outlook:
-                L.append(f"  - {_seg.get('name', '')} [{_seg.get('trend', '')}]: {_seg.get('summary', '')}")
-            L.append("  [本セクションはAIによる10-K MD&A原文の定性的要約であり、DCF/IV計算には")
-            L.append("   一切使用していません。参考情報としてお読みください。]")
 
         if _floor_applied > 0:
             L.append("DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)")
@@ -3019,7 +3014,32 @@ class TanukiValuationPipeline:
             except Exception:
                 pass
 
-        # --- segment_config ---
+        # --- XBRLセグメント決定論的算出（[[SEGMENT-KPI-NARRATIVE-
+        # EXTRACTION-FUTURE-IDEA-1]]案①、2026-09-18）---
+        # calculator/growth.py::get_segment_growth()が実際にDCF Gとして
+        # 採用するのと同じ計算結果をここでも使うことで、report.txt/
+        # stock.htmlのセグメント別売上構成表示と実際の計算根拠を一致
+        # させる。対応不可（対象外銘柄・データ欠損）の場合はNoneが返り、
+        # 既存のsegment_config.json静的値ベースの表示へフォールバックする。
+        _xbrl_seg = compute_xbrl_segment_growth(ticker, repo_root=self.repo_root)
+        if _xbrl_seg is not None and latest_revenue:
+            seg_list = [
+                {
+                    "name": name,
+                    "weight": info["weight"],
+                    "growth": info["growth"],
+                    "estimated_revenue": latest_revenue * info["weight"],
+                }
+                for name, info in _xbrl_seg["segments"].items()
+            ]
+            result["segments"] = seg_list
+            result["segment_configured"] = True
+            result["segment_ttm_applied"] = False
+            result["segment_growth_source"] = "segment_xbrl"
+            result["segment_growth_quarter"] = _xbrl_seg.get("quarter")
+            return result
+
+        # --- segment_config（静的手動設定、XBRL対応不可銘柄向けフォールバック）---
         seg_path = os.path.join(self.repo_root, "config", "segment_config.json")
         if os.path.exists(seg_path):
             try:

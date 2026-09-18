@@ -31,21 +31,17 @@
   "TSLA": {
     "enabled": true,
     "fiscal_year": "FY2025",
+    "_note": "[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）で2セグメントへ修正。実際のXBRL報告セグメント軸（us-gaap:StatementBusinessSegmentsAxis）はAutomotiveとEnergy Generation and Storageの2つのみで、Services and Otherは独立した報告セグメントとして存在しない（実データ確認済み）。通常運用時はcalculator/segment_growth_xbrl.pyのXBRL決定論的算出（segment_xbrl）がこの静的値を上書きするため、本設定はXBRL対応不可時のフォールバックとしてのみ使われる。",
     "segments": {
-      "Automotive": {
-        "weight": 0.77,
-        "growth": 0.1,
-        "note": "Vehicle sales & leasing. FSD revenue included."
+      "Automotive & Services and Other": {
+        "weight": 0.89,
+        "growth": 0.27,
+        "note": "Vehicle sales & leasing (FSD revenue included) + Supercharging/body shop/insurance/non-warranty. XBRL上は単一の報告セグメント。"
       },
       "Energy Generation and Storage": {
         "weight": 0.11,
-        "growth": 0.3,
+        "growth": 0.13,
         "note": "Powerwall, Megapack, Solar. High-growth segment."
-      },
-      "Services and Other": {
-        "weight": 0.12,
-        "growth": 0.15,
-        "note": "Supercharging, body shop, insurance, non-warranty."
       }
     }
   },

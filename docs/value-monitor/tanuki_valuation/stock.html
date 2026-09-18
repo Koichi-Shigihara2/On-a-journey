@@ -876,6 +876,9 @@ function render(d) {
   const growthScenarios = d.growth_scenarios || {};
   const growthSource = growthScenarios.primary?.source || 'fcf_cagr';
   const growthRate = growthScenarios.primary?.rate || highGrowthRate;
+  // [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+  // segment_xbrlのクリップ前後の値（透明性確保のため両方表示する）
+  const segmentDetail = growthScenarios.segment || {};
 
   const scenarioValuations = d.scenario_valuations;
   const futureVals = d.future_values || {};
@@ -923,7 +926,7 @@ function render(d) {
   // バッジ構成
   const dcfTag = dcfType === 'three_stage' ? '3段階DCF' : '2段階DCF';
   const fcfTag = fcfBaseMethod === 'recent_2yr' ? '直近2年平均' : '5年平均';
-  const segTag = growthSource === 'segment_weighted' ? 'セグメント加重' : '';
+  const segTag = growthSource === 'segment_xbrl' ? 'XBRLセグメント' : growthSource === 'segment_weighted' ? 'セグメント加重' : '';
   // [[STOCK-HTML-CLASSIFICATION-MISSING-1]]対応（2026-08-30）: TANUKI SCORE
   // Classification（BUY/WATCH/HOLD/GROWTH_PREMIUM/TRIM/SELL/PASS）。
   // アイコン・配色はtanuki_score/index.htmlのCAT_METAと同一。
@@ -1328,7 +1331,20 @@ function render(d) {
                 <div style="color:${gCol};text-align:right">+${g.toFixed(0)}%</div>
               </div>`;
             }).join('')}
-            <div style="font-size:10px;color:var(--mut);margin-top:4px">売上(推定=最新Revenue×weight) | 構成比 | 成長率シナリオ</div>
+            <div style="font-size:10px;color:var(--mut);margin-top:4px">売上(推定=最新Revenue×weight) | 構成比 | 成長率シナリオ（クリップ前・実績ベース）</div>
+            ${d.segment_growth_source === 'segment_xbrl' ? (() => {
+              const rawBlend = segmentDetail.raw_weighted_growth != null
+                ? segmentDetail.raw_weighted_growth * 100
+                : segs.reduce((sum, s) => sum + s.weight * s.growth, 0) * 100;
+              const refG = sanity?.recommended_g;
+              const clipLine = segmentDetail.clipped
+                ? ` ｜ <span style="color:#facc15">DCF採用値（クリップ後）: ${(growthRate * 100).toFixed(1)}%</span>`
+                : '';
+              return `<div style="font-size:10px;color:var(--mut);margin-top:2px">
+                加重平均（クリップ前・実績ベース${d.segment_growth_quarter ? ' ' + d.segment_growth_quarter : ''}）: ${rawBlend.toFixed(1)}%${clipLine}
+                ${refG != null ? ` ｜ 参考（全社recommended_g、実績CAGR等ベース）: ${(refG * 100).toFixed(1)}%（DCF計算には未使用）` : ''}
+              </div>`;
+            })() : ''}
           </div>
         </div>`;
       })()}
@@ -1599,7 +1615,7 @@ function render(d) {
           <div class="calc-step-header" onclick="toggleStep(this)">
             <div class="calc-step-title">
               <span class="step-num">${nextStep()}</span>
-              <span class="step-name">成長率（${growthSource === 'segment_weighted' ? 'セグメント加重' : growthSource === 'fcf_cagr' ? 'FCF CAGR' : 'デフォルト'}）</span>
+              <span class="step-name">成長率（${growthSource === 'segment_xbrl' ? 'XBRLセグメント' : growthSource === 'segment_weighted' ? 'セグメント加重' : growthSource === 'fcf_cagr' ? 'FCF CAGR' : 'デフォルト'}）</span>
             </div>
             <div style="display:flex;align-items:center;gap:16px">
               <span class="step-result">${fmtPct(growthRate)}</span>
@@ -1608,8 +1624,8 @@ function render(d) {
           </div>
           <div class="calc-step-body">
             <div class="formula-box">
-              <code>優先順位: segment_weighted &gt; fcf_cagr &gt; default(25%)</code>
-              <p class="formula-desc">セグメント別売上構成比×成長率で加重平均を算出。未定義銘柄はFCF CAGR（15〜50%クリップ）。<br>セグメント未設定銘柄は推奨成長率（rev CAGR / 業界ベンチマーク / g_fundamentalの中央値 × HypeCoreフェーズ補正の平均）をDCFに自動適用。</p>
+              <code>優先順位: segment_xbrl &gt; segment_weighted &gt; fcf_cagr &gt; default(25%)</code>
+              <p class="formula-desc">segment_xbrl（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①）はXBRLセグメント別売上の直近最大4四半期平均の実績YoYを構成比で加重平均し、fcf_cagrと同じ15〜50%でクリップした決定論的な値（対応7銘柄のみ、AI不使用）。<br>未対応銘柄はセグメント別売上構成比×手動設定成長率で加重平均（segment_weighted）。未定義銘柄はFCF CAGR（15〜50%クリップ）。<br>セグメント未設定銘柄は推奨成長率（rev CAGR / 業界ベンチマーク / g_fundamentalの中央値 × HypeCoreフェーズ補正の平均）をDCFに自動適用。</p>
               <div class="inputs-grid" style="margin-top:8px">
                 <div class="input-item"><span class="input-label">FCF CAGR 下限</span><span class="input-value">${fmtPct(d.components?.fcf_growth_floor || 0.15)}</span></div>
                 <div class="input-item"><span class="input-label">FCF CAGR 上限</span><span class="input-value">${fmtPct(d.components?.fcf_growth_cap || 0.50)}</span></div>
@@ -1622,7 +1638,15 @@ function render(d) {
               <div class="input-item"><span class="input-label">高成長率</span><span class="input-value highlight">${fmtPct(growthRate)}</span></div>
               <div class="input-item"><span class="input-label">高成長期間</span><span class="input-value">${highGrowthYears}年</span></div>
               <div class="input-item"><span class="input-label">ターミナル成長率</span><span class="input-value">${fmtPct(terminalGrowth)}</span></div>
+              ${growthSource === 'segment_xbrl' && sanity?.recommended_g != null ? `
+              <div class="input-item"><span class="input-label">参考: 実績CAGR等</span><span class="input-value">${fmtPct(sanity.recommended_g)}</span></div>` : ''}
             </div>
+            ${growthSource === 'segment_xbrl' && segmentDetail.clipped ? `
+            <div class="formula-box" style="margin-top:8px;border-color:#facc15">
+              <p class="formula-desc" style="color:#facc15">⚠️ 実績YoY(直近最大4四半期平均)は${fmtPct(segmentDetail.raw_weighted_growth)}だが、
+              ${segmentDetail.raw_weighted_growth > segmentDetail.growth_cap ? `上限${fmtPct(segmentDetail.growth_cap)}` : `下限${fmtPct(segmentDetail.growth_floor)}`}
+              でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。</p>
+            </div>` : ''}
           </div>
         </div>
 

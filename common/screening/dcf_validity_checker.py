@@ -81,7 +81,22 @@ def _load_annual(repo_root, ticker, year):
 
 
 def check_a_growth_vs_actual(latest):
-    """A: 成長率前提と実績の乖離チェック"""
+    """A: 成長率前提と実績の乖離チェック
+
+    [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）
+    STEP3で確認: source="segment_xbrl"（直近1四半期の実績YoY）は、
+    rev_cagr_3yr/5yr（3〜5年の複利平均）と時間軸が異なるため、
+    成長が加速/減速中の銘柄では10pt以上の乖離が頻発することを確認した
+    （第1陣7銘柄中5銘柄で発生、例: PLTR直近四半期+94% vs 3yr CAGR
+    +33%）。これは値の誤り・実績と無関係な仮定という意味での異常では
+    なく、単一四半期と複数年平均という異なる時間軸の比較で必然的に
+    生じる差であるため、意図的にsegment_xbrlを本チェックの対象外には
+    していない（除外するとCHECK Aの「実績と大きく乖離した成長率
+    前提」を発見する本来の目的自体を弱めてしまうため）。頻発する
+    フラグが実運用上ノイズになる場合は、閾値見直し（例:
+    source=segment_xbrlの場合のみ閾値を緩和する等）を別途検討する
+    余地がある。
+    """
     g = latest.get("growth") or {}
     rate = g.get("rate")
     source = g.get("source")
@@ -126,6 +141,19 @@ def check_b_source_label(repo_root, latest, ticker):
     flag = False
     real_source = displayed_source
     note = ""
+
+    # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①（2026-09-18）:
+    # segment_xbrl（XBRLセグメント決定論的算出）はgrowth.py::
+    # get_segment_growth()内でtop-level source・segment_detail.source
+    # 両方に一貫して"segment_xbrl"を設定するため（[[GROWTH-SOURCE-
+    # LABEL-1]]と同種の表示・実態の食い違いを最初から作らない設計）、
+    # 本チェックでは常にflag=Falseの情報行としてのみ記録する
+    # （displayed_source=real_sourceで一致、異常ではない）。
+    if source == "segment_xbrl":
+        return False, "XBRLセグメント決定論的算出（実データ由来、乖離検知の対象外）", {
+            "displayed_source": displayed_source, "segment_configured": segment_configured,
+            "real_source_guess": displayed_source,
+        }
 
     if source == "segment_weighted" and segment_configured is False:
         flag = True
