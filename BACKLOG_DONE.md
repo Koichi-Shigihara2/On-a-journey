@@ -4,6 +4,155 @@
 
 ## 2026-09-18（完了）
 
+### ✅ [SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1] セグメント別成長率のXBRL決定論的算出への置き換え（案①、方針転換）— 第1陣7銘柄実装
+**優先度:** 保留 → 完了（第1陣7銘柄。第2陣・第3陣・ADBE/CELHは
+[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]として新規登録）
+**分類:** 新機能 / TANUKI VALUATION / DCF成長率算出方式
+**登録日:** 2026-08-27（元の数値KPI抽出構想）
+**完了日:** 2026-09-18
+**発見:** 前回完了（本ファイル内、同日「MD&A原文からのセグメント別
+成長見通しAI抽出（10銘柄パイロット）」参照）の参考表示実装について、
+「FCFの計算過程を説明できるようにする」という当初目的からすると
+実際の計算に使われない参考情報では不十分との指摘を受け、方針転換
+
+#### 方針転換の経緯（重要）
+前回（同日、別エントリ参照）は「MD&A原文からAIがセグメント別成長
+見通しを定性的に抽出し、report.txtに参考表示するのみ・DCF計算には
+一切使わない」設計で完了していた。しかしKoichiさんから、CapEx/SBC/
+OCFのボトムアップFCF化と同じ論理で「セグメント別成長率も実際の
+DCF計算に使う値にすべき」という方針転換の指示があった。
+
+調査の結果（アーティファクト「セグメント成長率DCF適用調査」
+2026-09-18作成）、**MD&A原文には将来向きの定量的ガイダンスが
+存在しない**ことが判明した（EDGAR原文への正規表現直接プローブで
+確認: 将来形動詞×数値の共起が10-K/10-Qとも0件、既存抽出済みquote
+35件の分類でも数値含有quoteは全て実績・将来形含有quoteは全て定性で
+交差0件）。これにより前回設計（AI抽出値をDCF成長率に使う）は
+成立しないと結論づけ、代替案として**XBRL標準セグメント軸から取得
+した実セグメント売上（`docs/portfolio/tail/data/kpi/{ticker}_
+layer2.json`、TANUKI TAILの`xbrl_segment_fetcher.py`が生成）から
+決定論的に成長率を算出する案①**を採用した（AIは一切使わない）。
+
+#### 実装内容
+1. **STEP 0（前提条件、[[TAIL-KPI-UNIT-MISLABEL-1]]として別途記録・
+   完了済み）**: `layer2.json`の`unit`誤ラベルバグを修正（本ファイル
+   内の同日エントリ参照）
+2. **STEP 1**: 新規モジュール`calculator/segment_growth_xbrl.py`。
+   セグメント別実績YoYと売上構成比（weight）を決定論的に算出する
+   `compute_xbrl_segment_growth(ticker)`を実装。対象は7銘柄
+   （APP/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）。ADBE/CELHはconfig側と
+   XBRL側のセグメント分類軸が一致しない（例: ADBE=会計セグメント vs
+   顧客区分、CELH=地域 vs ブランド）ため対象外、既存
+   `segment_config.json`静的値を維持。TSLAは実際のXBRL報告セグメント
+   軸が2つのみ（Automotive/Energy Generation and Storage、
+   Services and Otherは独立セグメントとして存在しない）と判明した
+   ため、`segment_config.json`のTSLA設定を3セグメントから2セグメント
+   （Automotive & Services and Other / Energy Generation and
+   Storage）へ修正。NVDAの"Graphics"セグメント revenue は当初
+   `tail_kpi_map.json`に未登録だったため、実データで存在確認済みの
+   `nvda:GraphicsSegmentMember`タグを追加registered
+3. **STEP 2**: `calculator/growth.py::get_segment_growth()`に新
+   sourceラベル`segment_xbrl`を追加。優先順位はXBRL自動算出（対応可能
+   な場合）→ 既存の手動config（`segment_weighted`、対応不可銘柄）→
+   recommended_g（Layer 2）→ FCF CAGR。`set_growth_override()`経由の
+   注入だとsourceラベルが`segment_weighted`のまま偽装される
+   [[GROWTH-SOURCE-LABEL-1]]と同種の罠を回避するため、`segment_xbrl`
+   は独立したGrowthResultとして直接返す設計にした
+4. **STEP 3**: `common/screening/dcf_validity_checker.py::
+   check_b_source_label()`に`segment_xbrl`の明示的な認識を追加
+   （flag=Falseの情報行）。CHECK A（成長率と実績CAGRの乖離検知）は
+   意図的に除外しなかった——segment_xbrlは直近四半期実績ベースで
+   複数年CAGRとは時間軸が異なるため乖離自体は正常な現象であり、
+   これを除外すると「実績と乖離した成長率前提を発見する」という
+   CHECK Aの本来の目的を弱めてしまうため（第1陣7銘柄中5銘柄で
+   10pt以上の乖離が発生することを確認済み、コード内コメントに記録）
+5. **STEP 4**: 前回実装（参考表示のみ）のreport.txt表示セクション・
+   `pipeline.py::_load_tail_segment_outlook()`を削除。
+   `segment_growth_outlook_ai.py`モジュール本体と既存10銘柄の
+   `docs/portfolio/tail/data/mda/`データは削除せず維持（セグメント名
+   対応の検証コーパスとして有用、調査フェーズで確認済み）
+6. **STEP 5**: report.txt（`Growth_Rate_Parallel:`行）・stock.html
+   （Step 2成長率ブロック・セグメント別売上構成テーブル）に、
+   segment_xbrl採用値とrecommended_g（実績CAGR等ベース）を並べた
+   参考表示を追加（DCF計算自体には介入しない、並行稼働のみ）
+7. **STEP 6**: 全99銘柄で回帰確認、BACKLOG更新
+
+#### 重要な追加対応: 平滑化とクリップ（実地検証で発見・Koichiさん指示で対応）
+第1版実装（直近1四半期の実績YoYをそのまま採用）を全99銘柄regen前の
+実地検証で流したところ、**NVDA（IV $727→$38,623、乖離率+17,957%）・
+APP・CRWVでvalidate_calculation()のanomaly_detection（乖離率
+>1000%）がFAIL**した。原因は、単一四半期のブレをそのまま複数年の
+DCF Phase1へ複利適用してしまうことに加え、既存の`fcf_cagr`ソースには
+用意されている15〜50%のgrowth_floor/growth_capクリップが
+`segment_xbrl`には一切無かったこと。
+
+Koichiさんの指示により以下2段構えの対策を追加した:
+1. **入力の平滑化**: 単一四半期ではなく、直近最大4四半期分の個別YoY
+   比率の単純平均を使う（`_smoothed_growth()`）。10-Qのみを対象と
+   する`xbrl_segment_fetcher.py`の構造上、暦年決算銘柄は第4四半期
+   （10-K側にのみ含まれる）のデータが常に欠落するため、「暦年で
+   連続する4四半期」ではなく「前年同期比較が可能な、新しい方から
+   数えて最大4件の四半期」と定義した（実データでPLTR/SOFI/TSLAは
+   Q1-Q3のみ・NVDAは2四半期しか前年同期ペアがない等、暦年連続を
+   要求すると成立しないケースが常態のため）
+2. **最終防御線としてのクリップ**: 平滑化後も個別銘柄の実力次第では
+   50%を超えうる（NVDAは平滑化後も実績+96.4%）ため、
+   `calculate_fcf_cagr()`と全く同じgrowth_floor=15%/growth_cap=50%
+   を、加重平均後の最終値（DCFへ実際に渡す値）に適用する
+3. **透明性の確保**（Koichiさん追加指示）: クリップが発動した場合、
+   report.txt/stock.htmlに「実績YoY(直近最大4四半期平均)はX%だが
+   上限/下限でクリップして採用」という開示行を表示する。個別
+   セグメントの成長率自体はクリップせず実績値のまま表示する
+   （表示上「実際の実績に基づく値」であることを維持するため）
+
+対策後の全99銘柄regenで検証: PASS=98/FAIL=1/WARN=0/ERROR=0
+（NVDA/CRWV/TSLA/PLTR/SOFI/SOUN/APPの7銘柄中6銘柄がPASSへ回復）。
+
+#### 残存する既知の限界（APPの検証FAIL、未解決のまま報告済み）
+クリップ後もAPPのみvalidate_calculation()のanomaly_detectionが
+FAILのまま残った（乖離率+1019%、閾値1000%をわずかに超過）。
+クリップ前は45%（旧手動config値）→クリップ後50%（今回の実装）と
+成長率がわずか5pt上昇しただけで、元々+734%乖離していた（=既に
+極端な高評価だった）ケースが閾値を跨いだもので、クリップ機構自体の
+不備ではなく、APPが元々ハイパーグロース×高evaluationの銘柄である
+ことに起因する縁の事象と判断した。report_consistency_check.pyの
+既存WARN機構（WARN-40）が正しく検知・記録しており、NG=0ゲート自体は
+通過する。Koichiさんへ実装完了報告時に明示的に開示済み、追加対応の
+要否は今後の判断に委ねる。
+
+#### 実際の変化（全99銘柄regen、before/after）
+growth.sourceの分布: segment_weighted 90銘柄・segment_xbrl 7銘柄・
+fcf_cagr 2銘柄（変化なし）。対象7銘柄の成長率（クリップ後、DCF採用値）:
+PLTR/NVDA/CRWV/SOUN 50.0%（上限クリップ）・APP 50.0%（上限クリップ、
+検証FAIL）・SOFI 46.6%（クリップなし）・TSLA 15.0%（下限クリップ）。
+
+#### 検証結果
+- 新規テスト: `test_segment_growth_xbrl.py`20件（平滑化・クリップ・
+  weight算出・TSLA導出セグメント・フェイルセーフ）・`test_growth.py`
+  3件追加（優先順位・フォールバック）・`test_pipeline_logic.py`4件
+  追加（segments表示配線・並行稼働表示・クリップ開示行）・
+  `test_dcf_validity_checker.py`2件追加（segment_xbrl認識）。
+  全てgit stashでfail-before/pass-after確認済み
+- `pytest`: 1383件全通過
+- `common/sec_data/audit.py`: exit 0（既存の未確認警告10件のみ、
+  今回の変更と無関係）
+- `common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0（WARN-40でAPPの検証FAILを正しく記録、ゲート通過）
+
+#### このタスクに含まれないもの（[[SEGMENT-XBRL-GROWTH-EXPANSION-
+CANDIDATES-1]]として新規登録、次回以降の判断）
+- ADBE/CELH（分類軸不一致で対応不可と判明）
+- 第2陣29銘柄（Layer 1・`tail_kpi_map.json`未整備）
+- 第3陣27銘柄（Layer 2の`General`プレースホルダ）
+- `company_facts`からのセグメントメンバー自動列挙可否の調査
+  （第2陣のコスト削減に繋がる可能性、未着手）
+
+#### 着手条件
+なし（第1陣7銘柄は完了。拡張候補3件は
+[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]でKoichiさんが判断）
+
+---
+
 ### ✅ [TAIL-KPI-UNIT-MISLABEL-1] xbrl_segment_fetcher.pyのunit推定がKPI名の「率」等の文字列だけで判定しており、実際は生の絶対値(USD)を返すKPIを"ratio"と誤ラベルしていた
 **優先度:** 高（発見即日クローズ） → 完了
 **分類:** データ品質 / TANUKI TAIL / xbrl_segment_fetcher.py

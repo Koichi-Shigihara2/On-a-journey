@@ -5151,6 +5151,63 @@ DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテ
 
 ## 優先度：低（アイデア段階）
 
+### [SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1] segment_xbrl（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①）の対象銘柄拡張候補3件
+**優先度:** 低（今すぐ着手する項目ではない、Koichiさんが着手タイミングを判断する）
+**分類:** 新機能拡張候補 / TANUKI VALUATION
+**登録日:** 2026-09-18
+**発見:** [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①実装（7銘柄:
+APP/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）完了時に、対応不可・対応保留と
+判明した銘柄群の記録
+
+#### 背景
+`calculator/segment_growth_xbrl.py`は、TANUKI TAILのXBRLセグメント
+売上データ（`docs/portfolio/tail/data/kpi/{ticker}_layer2.json`）
+またはSEC EDGAR Layer3の全社売上から、セグメント別成長率を決定論的に
+算出しDCF Phase1のGとして採用する。現状7銘柄のみ対応済みで、以下3種の
+拡張候補が残っている。
+
+#### ① ADBE・CELH（分類軸不一致、対応不可と判明）
+`config/segment_config.json`のセグメント区分とXBRL/MD&A側の実際の
+開示区分が一致しない:
+- ADBE: config側は会計セグメント（Digital Media / Digital Experience）
+  だが、MD&A記述は顧客区分（Creative & Marketing Professionals /
+  Business Professionals & Consumers）
+- CELH: config側は地域（North America / International）だが、
+  XBRLはブランド（Celsius / Alani Nu / Rockstar）
+
+名寄せによる対応が原理的に成立しないため、既存のsegment_config.json
+静的値のまま維持する方針とした（今回スコープ外、対応不可）。将来
+対応する場合は、config側のセグメント定義自体を実際の開示区分に
+合わせて再設計する必要がある（TSLAの3→2セグメント修正と同種の
+作業だが、ADBE/CELHは軸そのものが違うため単純な統合では済まない）。
+
+#### ② 第2陣候補: Layer 1（手動segment_config.json設定済み）だが
+`tail_kpi_map.json`にXBRLセグメント取得設定が未整備の銘柄群（29銘柄）
+`config/segment_config.json`でLayer 1（複数セグメント設定済み、
+Generalプレースホルダでない）の38銘柄のうち、今回対応した7銘柄
+（+対応不可のADBE/CELH）を除く29銘柄が該当。これらも同様に
+`config/tail_kpi_map.json`へXBRLセグメントメンバータグを追加すれば
+同じ仕組みで対応できる可能性が高い。
+
+調査フェーズで残した未検証の論点（着手前に確認する価値がある）:
+`us-gaap:StatementBusinessSegmentsAxis`は標準ディメンションのため、
+`company_facts`からセグメントメンバーを自動列挙できる可能性がある。
+これが可能なら、29銘柄個別に手動でtail_kpi_map.jsonへ追記する
+コストを大幅に下げられる（現状は10銘柄分のみ手動キュレーション）。
+
+#### ③ 第3陣候補: Layer 2（Generalプレースホルダ）の27銘柄
+`segment_config.json`で`{"General": {...}}`単一セグメントの
+プレースホルダ状態にある27銘柄。これらを実セグメントへ昇格させる
+には、まず該当銘柄が複数の実報告セグメントを持つか自体の確認から
+必要（①②より作業規模が大きい）。
+
+#### 着手条件
+なし（優先順位含め次回以降のセッションでKoichiさんが判断する。
+②の「company_facts自動列挙可否」の調査だけでも、着手前に価値の
+検証として独立して行う余地がある）
+
+---
+
 ### [LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1] Layer3のSM/SGA概念分離に伴うNone化2件の統合（元LAYER3-ROIC-WACC-NONE-4TICKERS-1/FINTREND-SM-JOBY-NONE-1）
 **優先度:** 低（意図的な仕様、既知の`[[SCHEMA-NORMALIZED-ISSUES-1]]`②
 SM/SGA概念混同問題の帰結）
@@ -5260,8 +5317,11 @@ SM/SGA概念混同問題（`[[SCHEMA-NORMALIZED-ISSUES-1]]`②）の根本解消
 ---
 
 （[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]は数値KPI抽出構想
-から「MD&A原文のセグメント別成長見通し定性要約」へ再定義の上、
-2026-09-18に10銘柄パイロット実装完了（99銘柄拡張は別途判断）、
+→「MD&A原文のセグメント別成長見通し定性要約」（10銘柄パイロット、
+2026-09-18完了）→ MD&A原文に将来向き定量ガイダンスが存在しないと
+判明したため方針転換し、XBRLセグメント売上からの決定論的算出（案①）
+へ最終確定・第1陣7銘柄実装完了（2026-09-18）。拡張候補3件は
+[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]参照。
 BACKLOG_DONE.md「2026-09-18（完了）」参照）
 
 ---
