@@ -318,10 +318,10 @@ TANUKIの簡易版`risk_events`を廃止。
 | AS-IS-049 | 5-1. TANUKI VALUATION / computed_runway_months | computed_runway_months | 導出データ |
 | AS-IS-051 | 5-1. TANUKI VALUATION / breakeven_estimate | breakeven_estimate | 導出データ |
 | AS-IS-053 | 5-1. TANUKI VALUATION / dilution_severity / dilution_comment | dilution_severity / dilution_comment | 導出データ |
-| AS-IS-057 | 5-1. TANUKI VALUATION / 場所 | 場所 | 導出データ |
-| AS-IS-058 | 5-1. TANUKI VALUATION / 用途 | 用途 | 導出データ |
+| AS-IS-057 | 5-1. TANUKI VALUATION / 場所 | 場所 | 除外（2026-09-19、[[FIVE-CATEGORY-RECLASSIFY-1]]。メタ情報のためカタログ対象外） |
+| AS-IS-058 | 5-1. TANUKI VALUATION / 用途 | 用途 | 除外（2026-09-19、[[FIVE-CATEGORY-RECLASSIFY-1]]。メタ情報のためカタログ対象外） |
 | AS-IS-059 | 5-1. TANUKI VALUATION / terminal_growthの出所 | terminal_growthの出所 | 導出データ |
-| AS-IS-060 | 5-1. TANUKI VALUATION / ガード | ガード | 導出データ |
+| AS-IS-060 | 5-1. TANUKI VALUATION / ガード | ガード | 除外（2026-09-19、[[FIVE-CATEGORY-RECLASSIFY-1]]。メタ情報のためカタログ対象外） |
 | AS-IS-064 | 5-1. TANUKI VALUATION / 将来価値予測（シナリオ別テーブル） | 将来価値予測（シナリオ別テーブル） | 導出データ |
 | AS-IS-065 | 5-1. TANUKI VALUATION / 5年BASE年率換算リターン | 5年BASE年率換算リターン | 導出データ |
 | AS-IS-066 | 5-1. TANUKI VALUATION / 感応度分析（独自5×5マトリクス） | 感応度分析（独自5×5マトリクス） | 導出データ |
@@ -592,7 +592,7 @@ TANUKIの簡易版`risk_events`を廃止。
 | AS-IS-401 | 1-10. TANUKI TAIL / fetched_at | fetched_at | システム設定データ |
 | AS-IS-402 | 1-10. TANUKI TAIL / quarters（index.json） | quarters（index.json） | 導出データ |
 | AS-IS-403 | 1-10. TANUKI TAIL / last_accn（rss_state.json） | last_accn（rss_state.json） | システム設定データ |
-| AS-IS-404 | 1-10. TANUKI TAIL / last_filed（rss_state.json） | last_filed（rss_state.json） | 導出データ |
+| AS-IS-404 | 1-10. TANUKI TAIL / last_filed（rss_state.json） | last_filed（rss_state.json） | システム設定データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
 | AS-IS-405 | 1-10. TANUKI TAIL / no_filing_days（rss_state.json） | no_filing_days（rss_state.json） | システム設定データ |
 | AS-IS-406 | 1-10. TANUKI TAIL / ticker（review_queue.json） | ticker（review_queue.json） | 一次データ |
 | AS-IS-407 | 1-10. TANUKI TAIL / quarter（review_queue.json） | quarter（review_queue.json） | 一次データ |
@@ -622,11 +622,11 @@ TANUKIの簡易版`risk_events`を廃止。
 | AS-IS-434 | 1-10. TANUKI TAIL / proposed_kpis[].xbrl_dimension | proposed_kpis[].xbrl_dimension | 手動入力データ |
 | AS-IS-435 | 1-10. TANUKI TAIL / proposed_kpis[].xbrl_member | proposed_kpis[].xbrl_member | 手動入力データ |
 | AS-IS-436 | 1-10. TANUKI TAIL / proposed_kpis[].layer2_name | proposed_kpis[].layer2_name | 手動入力データ |
-| AS-IS-437 | 1-10. TANUKI TAIL / tail_kpi_map.json: kpi_name | tail_kpi_map.json: kpi_name | 導出データ |
-| AS-IS-438 | 1-10. TANUKI TAIL / tail_kpi_map.json: tag_history[].tag/valid_from/valid_to | tail_kpi_map.json: tag_history[].tag/valid_from/valid_to | 導出データ |
-| AS-IS-439 | 1-10. TANUKI TAIL / tail_kpi_map.json: fallback_tags | tail_kpi_map.json: fallback_tags | 導出データ |
-| AS-IS-440 | 1-10. TANUKI TAIL / tail_kpi_map.json: revenue_tag | tail_kpi_map.json: revenue_tag | 導出データ |
-| AS-IS-441 | 1-10. TANUKI TAIL / tail_kpi_map.json: dimension | tail_kpi_map.json: dimension | 導出データ |
+| AS-IS-437 | 1-10. TANUKI TAIL / tail_kpi_map.json: kpi_name | tail_kpi_map.json: kpi_name | 手動入力データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
+| AS-IS-438 | 1-10. TANUKI TAIL / tail_kpi_map.json: tag_history[].tag/valid_from/valid_to | tail_kpi_map.json: tag_history[].tag/valid_from/valid_to | 手動入力データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
+| AS-IS-439 | 1-10. TANUKI TAIL / tail_kpi_map.json: fallback_tags | tail_kpi_map.json: fallback_tags | 手動入力データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
+| AS-IS-440 | 1-10. TANUKI TAIL / tail_kpi_map.json: revenue_tag | tail_kpi_map.json: revenue_tag | 手動入力データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
+| AS-IS-441 | 1-10. TANUKI TAIL / tail_kpi_map.json: dimension | tail_kpi_map.json: dimension | 手動入力データ（2026-09-19再判定、[[FIVE-CATEGORY-RECLASSIFY-1]]） |
 | AS-IS-442 | 1-10. TANUKI TAIL / assumptions.Y1_growth / Y2_growth / Y3_growth | assumptions.Y1_growth / Y2_growth / Y3_growth | 導出データ |
 | AS-IS-443 | 1-10. TANUKI TAIL / assumptions.terminal_growth | assumptions.terminal_growth | 導出データ |
 | AS-IS-444 | 1-10. TANUKI TAIL / assumptions.operating_margin | assumptions.operating_margin | 導出データ |
@@ -1282,6 +1282,36 @@ AS-IS-283、next_earnings_dateクラスタのAS-IS-179/284）が個別にカウ�
 移動したため、515件ベース・499件ベースいずれも31→29（132/139分）→42
 （+13件分）という同一の増減幅で推移している（いずれの訂正も同一定義
 クラスタの非代表項目に該当しないため、両ベースで増減幅が一致する）。
+
+### 訂正（2026-09-19、[[FIVE-CATEGORY-RECLASSIFY-1]]）
+
+`FIELD_DEFINITIONS.md`フェーズ9で「次の判断機会に委ねる」としていた
+AS-IS-437〜441・AS-IS-404の5分類再判定、AS-IS-057/058/060のカタログ
+存置要否が確定した（詳細は`FIELD_DEFINITIONS.md`フェーズ9「判断確定
+（2026-09-19追記）」参照）:
+
+- AS-IS-437〜441（5件）: 導出データ → **手動入力データ**
+- AS-IS-404（1件）: 導出データ → **システム設定データ**
+- AS-IS-057/058/060（3件）: **カタログから除外**（実データ値を持たない
+  比較表メタ情報のため）
+
+この訂正はステップ1〜6（項目単位の重複排除・「真に必要な出力項目数」の
+算出）とは独立した5分類レベルの是正であり、AS-IS-057/058/060の除外に
+伴いステップ6確定後の母数自体も499件→**496件**（3件減）に修正される。
+ステップ1〜6自体の再計算・再検証は行っていない（057/058/060はいずれも
+元々「単独ルート項目（415件）」の一部として数えられていたメタ情報行
+であり、実データ値の重複排除ロジックには影響しないため）。
+
+**5分類 集計結果（2026-09-19訂正後、496件ベース）**:
+
+| データ性質分類 | 件数（499件ベース） | 件数（**496件ベース・2026-09-19訂正後**） |
+|---|---|---|
+| 導出データ | 392件 | **383件**（−5:437〜441、−1:404、−3:057/058/060） |
+| 手動入力データ | 44件 | **49件**（+5:437〜441） |
+| 一次データ | 42件 | **42件**（不変） |
+| システム設定データ | 15件 | **16件**（+1:404） |
+| 移送データ | 6件 | **6件**（不変） |
+| **合計** | **499件** | **496件** |
 
 ### 表示名称について（方法論上の注記）
 

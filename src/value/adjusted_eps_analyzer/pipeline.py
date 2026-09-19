@@ -702,6 +702,10 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
             latest = quarterly_results[0]
             if _pending_maturity is not None:
                 latest['maturity_monitor'] = _pending_maturity
+            # 意図的設計（EPS-AI-ANALYSIS-LATEST-ONLY-1、2026-09-19判断確定）:
+            # AI分析（health/comment/sources）は最新四半期のみに生成し、過去四半期には
+            # 遡及しない。APIコスト抑制目的。過去四半期の調整項目自体（adjustments）は
+            # quarterly.json全体に保持されるため、AI健全性評価のみが対象外。
             print(f"  [AI] Running analysis for latest quarter: {latest['filing_date']}")
             ai_result = analyze_adjustments(ticker, latest, latest.get("adjustments", []))
             try:

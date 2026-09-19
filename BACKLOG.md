@@ -2796,7 +2796,7 @@ importするだけで済むが、90日分×対象日数のループが増える�
 ---
 
 ### [JNJ-XOM-PM-FLOOR-RISK-1] JNJ・XOM・PM・CONはrecommended_g候補が最低ラインでMO型floor転落の潜在リスクあり
-**優先度:** 中
+**優先度:** 低（2026-09-19、中→低に変更。理由は下記「優先度変更」参照）
 **分類:** データ品質 / TANUKI VALUATION / 監視対象
 **登録日:** 2026-07-19
 **発見:** [[GROWTH-SANITY-CLASS-SYNC-1]]（完了・BACKLOG_DONE.md参照）floor適用対象
@@ -2888,12 +2888,24 @@ XOMは4→3件で1件のバッファを維持。CONは2026-09-04と同じ2件の
    台帳運用（個別銘柄をトリガー対象として明示登録し、登録銘柄限定で
    候補数を監視する）等、対象を絞る設計が必要
 
+#### 優先度変更（2026-09-19、中→低）
+CHECK-18（WARN-18）・CHECK-20（WARN-20）という事後検知の仕組みは
+既に存在し、対象4銘柄（JNJ/XOM/PM/CON）はいずれも保有銘柄ではない。
+加えて「候補2件以下」という状態自体は全銘柄の38.4%が該当する構造的に
+ありふれた状態であり、事前検知を独自に強化する信号価値も低いと判断
+した。これらを踏まえ、優先度を「中」から「低」へ変更する。
+
 #### 着手条件
-候補件数が実際に2件を下回った場合（`report_consistency_check.py`等での
-継続監視、またはgrowth_sanity再確認時に検知）。汎用WARN化は2026-09-19
-時点で見送り済み（上記「事前検知の新設検討」参照）のため、当面は
-`growth_model_audit.py`等での手動確認、または次回セッションでの
-定点確認継続に依存する。
+以下いずれかが発生した場合:
+- CHECK-18（WARN-18）またはCHECK-20（WARN-20）が対象4銘柄（JNJ/XOM/
+  PM/CON）のいずれかで実際に発火した場合（floor転落が現実に発生した
+  ことを意味する）
+- 再確認（`growth_model_audit.py`等での手動確認、または次回セッション
+  での定点確認）で候補件数が1件以下になった場合（着手条件を従来の
+  「2件を下回った場合」からさらに厳格化）
+
+汎用WARN化（事前検知の独自新設）は2026-09-19時点で見送り済み
+（上記「事前検知の新設検討」参照）。
 
 ---
 
@@ -3884,153 +3896,6 @@ _classify_period`・`fact_selection.py::select_latest_filed`はドキュメン�
 着手条件も上記3トリガーのいずれかが発生するまで完全に保留（トリガー
 制）となっている。能動的な着手見込みがない待機状態であるため、
 優先度を「中」から「低」へ変更する。
-
----
-
-### [MINOR-DESIGN-DECISION-PENDING-CATALOG-1] 軽微な設計判断待ち5件の統合カタログ（元NAMING-CONVENTIONS-APPLY-1/FIVE-CATEGORY-RECLASSIFY-1/EPS-AI-ANALYSIS-LATEST-ONLY-1/SEC-SUBMISSIONS-DUAL-FETCH-1/TAILKPI-FIELD-VALIDATION-GAP-1）
-**優先度:** 中（個別の着手条件はKoichiさんの設計判断待ちのまま変更なし）
-**分類:** 設計判断待ち / 複数サブシステム横断
-**登録日:** 各サブ項目の元登録日は各①〜⑤の記載を参照。統合日: 2026-09-16
-**発見:** 2026-09-16の件数削減棚卸し（BACKLOG.md実コード照合）
-
-#### 統合の経緯
-NAMING-CONVENTIONS-APPLY-1・FIVE-CATEGORY-RECLASSIFY-1・
-EPS-AI-ANALYSIS-LATEST-ONLY-1・SEC-SUBMISSIONS-DUAL-FETCH-1・
-TAILKPI-FIELD-VALIDATION-GAP-1の5件は、いずれも実害が確定的ではなく、
-対応方針の分岐（複数の選択肢のうちどれを採るか）自体がKoichiさんの設計
-判断待ちのまま長期未着手という共通点を持つため、2026-09-16に1つの
-カタログエントリへ統合した（`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`と同型の
-統合パターン）。元の5件はBACKLOG.mdから削除し、内容は要約せず全文そのまま
-以下の①〜⑤に保持する。個別の着手条件・優先度は統合前のまま変更していない。
-
-#### ① 元[NAMING-CONVENTIONS-APPLY-1] NAMING_CONVENTIONS.md規則1〜5の実装への適用
-**優先度:** 中
-**分類:** リファクタリング / 命名規則
-**登録日:** 2026-07-23
-**発見:** `NAMING_CONVENTIONS.md`
-
-##### 内容
-`NAMING_CONVENTIONS.md`が策定した5つの命名規則（データソース接尾辞・
-期間接尾辞・誤称禁止・provenance明示・唯一の正の参照元明示）は、策定の
-みで実装（既存フィールドのリネーム）には未反映。個別の適用例
-（[[NETCASH-DUAL-CALC-1]]の`net_cash_sec`化、[[RULE40-DEFINITION-
-MISMATCH-1]]の期間接尾辞化等）は該当タスク側で扱うが、命名規則全体の
-チェックリスト運用（新規フィールド追加時の適用）自体は独立したタスクと
-して管理する。
-
-**2026-08-15追記（実装結果との食い違い）**: `[[NETCASH-DUAL-CALC-1]]`の
-実際の実装（2026-08-13完了）は、想定していた規則1の接尾辞化
-（`net_cash`→`net_cash_sec`）を行わず、**フィールド名`net_cash`を維持
-したまま算出元のみ`SECReader.get_net_cash()`へ統一**した（STONKS
-SILOの独自算出`cash − yfinance totalDebt`を廃止）。これは規則1の趣旨
-（データソースが異なる場合に接尾辞で識別できるようにする）に照らすと
-矛盾ではない解釈も成り立つ：統一後はTANUKI VALUATION・STONKS SILOとも
-同一のデータソース（`SECReader.get_net_cash()`）を参照するようになった
-ため、「データソースが異なる場合」という規則1の適用前提自体が消滅し、
-接尾辞による識別の必要性がなくなったとも言える。一方`[[RULE40-
-DEFINITION-MISMATCH-1]]`の期間接尾辞化（`rule40_yoy_netmargin`・
-`rule40_cagr3y_opmargin`）は想定通り規則2に従って実装済み。個別適用例
-の記載は「命名規則の適用＝機械的な接尾辞付与」ではなく「適用要否は
-統一後のデータソース同一性を踏まえて都度判断する」という運用実態に
-即した表現に将来更新することが望ましい（本エントリの対応方針自体
-〈チェックリスト運用〉には影響しないため、記録として付記するのみ）。
-
-##### 対応方針
-新規フィールド追加時に`NAMING_CONVENTIONS.md`の適用チェックリストを
-参照する運用をCLAUDE_CODE_START.md等に明記する。既存フィールドの一括
-リネームは影響範囲が大きいため、個別タスク（上記関連タスク）の実装時に
-順次適用する。
-
-#### ② 元[FIVE-CATEGORY-RECLASSIFY-1] 5分類レベルの再判定（AS-IS-437〜441・404・057/058/060）
-**優先度:** 中
-**分類:** ドキュメント整合性 / 分類見直し
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ9・フェーズ10
-
-##### 内容
-①AS-IS-437〜441（TANUKI TAIL `tail_kpi_map.json`関連5項目）は「手動入力
-データ」（AS-IS-425〜436と同一のAI下書き＋人手承認ワークフロー）に酷似
-しているが、ステップ7の一次分類時点で「導出データ」側に区分された。
-②AS-IS-404（`last_filed`）はフェーズ1で定義した「システム設定データ
-（監視状態管理系）」と同種の性質だが「その他」に取り残されている。
-③AS-IS-057/058/060（Reverse DCF比較表のメタ情報行「場所」「用途」
-「ガード」）は実データ値ではなく「実装差異の比較分析」自体がAS-IS番号を
-持ってしまっている。いずれも`DERIVED_DATA_SUBCATEGORIES.md`の8分類内の
-再配置ではなく、より上位の5分類（一次データ／手動入力データ／移送
-データ／システム設定データ／導出データ）自体の再判定が必要。
-
-##### 対応方針
-①②は5分類を手動入力データ・システム設定データへ変更するか判断する。
-③はカタログから除外する（メタ情報であり出力データではないため）か、
-現状維持するかを判断する。`TO_BE_FINAL_LIST.md`・
-`DERIVED_DATA_SUBCATEGORIES.md`・`FIELD_DEFINITIONS.md`への反映が
-必要になる。
-
-#### ③ 元[EPS-AI-ANALYSIS-LATEST-ONLY-1] EPS Analyzer ai_analysisが最新四半期のみ・過去四半期に遡及されない
-**優先度:** 中
-**分類:** 機能ギャップ / EPS Analyzer
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ8（AS-IS-270/271）
-
-##### 内容
-`pipeline.py`は`quarterly_results[0]`（最新のみ）に対して
-`analyze_adjustments()`を呼ぶため、過去四半期の調整項目についてはAIに
-よる健全性評価（health/comment/sources）が生成されない。
-
-##### 対応方針
-過去四半期についても遡及的にAI分析を生成するか、意図的な設計（コスト
-抑制目的）であることを明示するかを判断する。
-
-#### ④ 元[SEC-SUBMISSIONS-DUAL-FETCH-1] SEC EDGAR submissions APIがfetcher.pyとedgar_rss_monitor.pyで独立に重複取得されている
-**優先度:** 低〜中
-**分類:** 技術的負債 / API呼び出し重複
-**登録日:** 2026-07-23
-**発見:** annual/segment/filing_text AS-IS構造調査（フェーズ1）④
-
-##### 内容
-SEC EDGAR submissions API（`data.sec.gov/submissions/CIK{cik}.json`）
-が、`common/sec_data/fetcher.py::fetch_submissions()`（週次、全filings
-一括、`submissions.json`へキャッシュ）と`src/tail/
-edgar_rss_monitor.py::get_filing_period()`（平日毎日、特定accnのみ
-live fetch・キャッシュなし）の2箇所で独立に叩かれている。
-EPS Analyzerの独立SEC取得（前回調査⑤(A)②-3で確認済み、別課題）と
-同型のパターン。
-
-##### 影響
-API呼び出しの無駄な重複。実害としては、新規提出直後は週次キャッシュ
-に未反映なため、TAIL側がlive fetchで補っているという設計上の理由が
-ある（鮮度ギャップの解消目的）。単純な参照統合は鮮度要件を壊す
-リスクがある。
-
-##### 対応方針
-未定。edgar_rss_monitor.py側をsubmissions.json参照＋未ヒット時のみ
-live fetchにフォールバックする設計への変更が有力候補だが、鮮度
-ギャップの設計対応が別途必要。
-
-#### ⑤ 元[TAILKPI-FIELD-VALIDATION-GAP-1] TANUKI TAIL KPI提案確定時の個別フィールド妥当性検証未実装
-**優先度:** 低〜未定
-**分類:** データ品質 / TANUKI TAIL
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ2（セッション終了時ブラッシュアップで39件起票から漏れていたものを追加起票）
-
-##### 内容
-TANUKI TAILのKPI提案確定フロー（AS-IS-425〜436、`kpi_proposer.py`のGrok
-提案を人間が画面で確認・編集して確定する）において、`workflow_write.py:
-149-152`は`kpis`が空リストでないことのみをチェックしており、個別
-フィールド（`warning_threshold`の数値妥当性、`xbrl_tag`の形式等）の
-検証ロジックは確認できなかった。Discoverのconfig系（[[DISCOVER-CONFIG-
-DUAL-MGMT-1]]、バリデーション0件）ほど深刻ではない（コンテナレベルの
-非空チェックは存在する）が、個別フィールドの誤入力を防ぐ仕組みがない
-点は同種のリスクである。
-
-##### 対応方針
-`warning_threshold`が数値であること・`xbrl_tag`が既知のタグ命名規則に
-従っていること等、個別フィールドレベルのバリデーションを
-`workflow_write.py`に追加することを検討する。
-
-#### 着手条件
-なし（①〜⑤いずれもKoichiさんの設計判断待ち、個別項目ごとに着手可否を
-判断する）
 
 ---
 

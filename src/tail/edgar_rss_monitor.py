@@ -103,7 +103,16 @@ def _fetch_rss_form(cik: str, form_type: str) -> Optional[Dict[str, str]]:
 
 
 def get_filing_period(cik: str, accn: str) -> Optional[str]:
-    """submissions API で特定 accn の reportDate (period end) を取得。"""
+    """submissions API で特定 accn の reportDate (period end) を取得。
+
+    現状維持（意図的設計、SEC-SUBMISSIONS-DUAL-FETCH-1、2026-09-19判断確定）:
+    common/sec_data/fetcher.py::fetch_submissions() が同じ submissions API を
+    週次キャッシュ（submissions.json）として取得済みだが、本関数はあえて
+    参照せず特定accnのみをlive fetchする。新規提出直後は週次キャッシュに
+    未反映のため、TANUKI TAILの遅延検知（新規filing検知後すぐにperiodを
+    確定する必要がある）を成立させるための鮮度目的。単純な参照統合は
+    この鮮度要件を壊すリスクがあるため見送り、重複APIコールは許容する。
+    """
     try:
         time.sleep(THROTTLE)
         r = requests.get(
