@@ -1305,21 +1305,21 @@ function render(d) {
             <tr>
               <td class="scenario-name bear">🐻 BEAR</td>
               <td>${fmtPct(riceBear.growth_rate)}</td>
-              <td>${riceBear.rice != null ? riceBear.rice.toFixed(1) : '—'}</td>
+              <td${riceBear.rice == null && riceBear.rice_na_reason ? ` title="${riceBear.rice_na_reason.replace(/"/g, '&quot;')}"` : ''}>${riceBear.rice != null ? riceBear.rice.toFixed(1) : 'N/A'}</td>
               <td style="color:var(--mut)">${riceBear.rice_adj != null && riceBear.rice_adj > 0 ? riceBear.rice_adj.toFixed(1) : '—'}</td>
               <td>${riceBear.rice_per_ratio != null ? riceBear.rice_per_ratio.toFixed(2) : '—'}</td>
             </tr>
             <tr class="base-row">
               <td class="scenario-name base">📊 BASE</td>
               <td>${fmtPct(riceBase.growth_rate)}</td>
-              <td>${riceBase.rice != null ? riceBase.rice.toFixed(1) : '—'}</td>
+              <td${riceBase.rice == null && riceBase.rice_na_reason ? ` title="${riceBase.rice_na_reason.replace(/"/g, '&quot;')}"` : ''}>${riceBase.rice != null ? riceBase.rice.toFixed(1) : 'N/A'}</td>
               <td style="color:var(--mut)">${riceBase.rice_adj != null && riceBase.rice_adj > 0 ? riceBase.rice_adj.toFixed(1) : '—'}</td>
               <td>${riceBase.rice_per_ratio != null ? riceBase.rice_per_ratio.toFixed(2) : '—'}</td>
             </tr>
             <tr>
               <td class="scenario-name bull">🐂 BULL</td>
               <td>${fmtPct(riceBull.growth_rate)}</td>
-              <td>${riceBull.rice != null ? riceBull.rice.toFixed(1) : '—'}</td>
+              <td${riceBull.rice == null && riceBull.rice_na_reason ? ` title="${riceBull.rice_na_reason.replace(/"/g, '&quot;')}"` : ''}>${riceBull.rice != null ? riceBull.rice.toFixed(1) : 'N/A'}</td>
               <td style="color:var(--mut)">${riceBull.rice_adj != null && riceBull.rice_adj > 0 ? riceBull.rice_adj.toFixed(1) : '—'}</td>
               <td>${riceBull.rice_per_ratio != null ? riceBull.rice_per_ratio.toFixed(2) : '—'}</td>
             </tr>

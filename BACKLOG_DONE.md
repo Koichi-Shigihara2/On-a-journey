@@ -436,6 +436,117 @@ report_consistency_check.py --fail-on-ng NG=0。
 
 ---
 
+### ✅ [RICE-ADJ-ASYMMETRIC-ZERO-1] RICEのrice_adjのみ0フロアガードがある非対称設計 — 両者とも測定不能時はNoneを返す対称設計に変更して解消
+**状態:** 実装完了・解消
+**優先度:** 中
+**分類:** バグ / TANUKI VALUATION
+**登録日:** 2026-07-23
+**完了日:** 2026-09-19
+**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-027）
+
+#### 内容
+`calculate_rice()`（`rice.py:440`）で`rice_adj_val = (...) if cf_adj > 0
+and wacc > 0 else 0.0`と明示的にゼロフロアされるのに対し、直上の
+`rice_val`（`rice.py:438`）には`cf`（本来のCF値）が負であっても同様の
+ガードがなく、そのまま計算される。CF（投資再生産効率）が構造的に負値を
+取りうる銘柄では、`rice`は符号が反転した値をそのまま返すのに`rice_adj`
+だけが0にフォールバックするという不整合が生じる。
+
+#### 対応方針
+`rice_val`にも`cf`が負の場合の同等のガードを追加するか、両者とも
+ガードなしにするかを設計判断してから実装する。
+
+#### 着手条件
+なし
+
+#### 再検証記録（2026-08-30、フェーズ1バッチB）
+`rice.py:438-440`で現在も再現することを実コードで確認した（差異なし）。
+「rice_valに0フロアを追加する」か「rice_adjのガードを外す」かで
+画面に表示される数値そのものが変わる製品判断であり、技術的な実装の
+巧拙ではなくどちらの表示仕様が正しいかというKoichiさんの判断が必要な
+ため、本ラウンドでは実装せず現状維持とした。
+
+#### 実装完了（2026-09-19、Koichiさん承認済みの方針: 両者ともNoneを返す対称設計）
+
+**着手前再確認**: `rice.py:438-440`で現状を再確認し、登録時・前回再検証時
+（2026-08-30）と差異がないことを確認した上で着手した。
+
+**実装内容**: `calculate_rice()`のシナリオ別計算ループで、`rice`は
+`cf<=0`の場合、`rice_adj`は`cf_adj<=0`または`wacc<=0`の場合、いずれも
+0.0ではなくNone（測定不能）を返すよう変更。`RICEScenario`へ
+`rice_na_reason`/`rice_adj_na_reason`（Noneのときの理由文言）を追加した。
+
+**理由文言の設計（2026-09-19仕上げ対応、実データ再検証で判明した追加
+考慮点）**: `rice`がNoneになる理由文言は、guard導入前の生値
+（g×vc_factor×q×cf）の符号で2パターンに分岐させた:
+①raw<0（qが正常でcfのみ負の通常ケース）: 旧実装でも既に負値を返し
+「N/A (OCF赤字)」固定ラベルで表示されていたため、`rice_na_reason=
+"OCF赤字"`としてその表示文言をそのまま踏襲する
+②raw>=0（qも負でcfとの符号相殺により旧実装が見かけ上プラスの値を
+返し、"低効率"等に誤分類されていたケース）: cfが負であること自体が
+原因である旨を明示する文言にする（"OCF赤字"は実態と食い違うため
+使わない）
+
+**表示側の修正（3経路すべて確認・統一）**:
+- report.txt: `pipeline.py::_generate_report()`の`[N. RICE METRICS]`
+  セクションで`rice_bear_d.get('rice', 'N/A')`のようなパターンが
+  バグだったことを発見・修正。`to_dict()`は"rice"キー自体を常に持つ
+  （値がNoneでも）ため、`.get(key, default)`の第2引数は使われずNoneが
+  そのまま返り、修正前は"BASE: RICE=None"という生のNone文字列が出力
+  されていた。`_fmt_rice()`ヘルパーを新設しrice_na_reasonを使い
+  「N/A（理由）」形式に統一した
+- MATRIX表示（`_compute_matrix_position()`→latest.jsonの`matrix`
+  フィールド→stock.htmlが直接参照）: `key_metric_y`（例:
+  "RICE = N/A (OCF赤字)"）・`rice_efficiency`（→`label`のY軸ラベルに
+  反映）とも同じrice_na_reasonベースの「N/A（理由）」形式に統一
+- stock.html「RICE RATIO」テーブル: 元々`riceBear.rice != null ? ... :
+  '—'`でNoneを安全に扱っていた（クラッシュなし）が、"—"だけでは理由が
+  分からないため、rice==nullのセルは"N/A"表示＋`rice_na_reason`を
+  `title`属性（ツールチップ）で表示する形に統一した
+
+**102銘柄before/after再検証（着手前・仕上げ後の計2回実施）**: 影響が
+あるのはCIX・ENTG・SPIR・XOMの4銘柄（いずれも`cf<=0`でrice=None化）。
+
+| 銘柄 | 旧ラベル | 新ラベル | 変化 |
+|---|---|---|---|
+| CIX | N/A (OCF赤字) | N/A (OCF赤字) | なし（文字列完全一致） |
+| ENTG | N/A (OCF赤字) | N/A (OCF赤字) | なし（文字列完全一致） |
+| XOM | N/A (OCF赤字) | N/A (OCF赤字) | なし（文字列完全一致） |
+| SPIR | 低効率 | N/A (cf=-0.070のためCFがマイナスで投資再生産効率が測定不能) | **あり（実質的な訂正）** |
+
+SPIRは旧実装ではq<0・cf<0の符号相殺によりrice_base_val=+0.097という
+見かけ上プラスの値を返し「低効率」に誤分類されていた（cf自体は負で
+本来測定不能）。他3銘柄は旧実装でも既に負値（q>0・cf<0の通常ケース）
+だったため、表示文言は一字一句変化しない。
+
+**TANUKI SCORE（最終スコア・BUY/WATCH等の分類）への影響**: 4銘柄とも
+**変化なし**を確認した。スコア計算本体（`hypecore.py`）はrice/rice_adj
+を一切参照しない設計のため構造的に無関係。MATRIX象限（①②③④、
+`qx`/`qy`フラグ）も4銘柄とも不変（`qy = rice_base_val is not None and
+rice_base_val >= 3.0`は旧実装でも新実装でも4銘柄ともFalseのまま）。
+
+**回帰テスト**: `tests/test_rice_adj_asymmetric_zero.py`（11件、
+rice.py側のNone化・理由文言の2パターン分岐を検証）・
+`tests/test_rice_report_txt_none_display.py`（5件、report.txt/MATRIX
+表示側の「N/A（理由）」統一を検証）・
+`tests/test_rice_stock_html_na_tooltip.py`（2件、stock.html側の
+N/A+tooltip表示を検証）を新設（計18件）。`git stash`で修正前コードに
+戻すと18件中16件が実際に失敗する（2件は測定可能な場合の後退互換
+テストのため元々差分なし）ことを確認した上で復元。
+
+**ゲート**: pytest全体1425件成功、audit.py exit 0、
+report_consistency_check.py --fail-on-ng NG=0。
+
+**本番データ再生成**: 別マイルストーンとして扱い、本コミットには含め
+ない（依頼書の指示通り）。影響銘柄はCIX・ENTG・SPIR・XOMの4銘柄のみ
+（コード変更時点で判明済み）、次回のデータ再生成セッションで対応する。
+
+**ドキュメント更新**: `FIELD_DEFINITIONS.md`のAS-IS-027（表本体・
+「分解の過程で新たに気づいた問題」備考）へ解消済み追記（過去記載は
+書き換えず追記のみ）。
+
+---
+
 ## 2026-09-18（完了）
 
 ### ✅ [TANUKI-VALUATION-MISC-GAPS-1]③ net_debt符号エイリアスの影響範囲確認 — 実害なしクローズ

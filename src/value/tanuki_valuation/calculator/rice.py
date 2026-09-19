@@ -38,19 +38,32 @@ from dataclasses import dataclass, field
 
 @dataclass
 class RICEScenario:
-    """シナリオ別RICE結果"""
+    """シナリオ別RICE結果
+
+    [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応（2026-09-19）: 測定不能な場合は
+    0.0で埋めずNoneとし、理由をrice_na_reason/rice_adj_na_reasonに残す。
+    rice: cf<=0（投資再生産効率が構造的に測定不能）の場合はNone。
+    rice_adj: cf_adj<=0またはwacc<=0の場合はNone。
+    """
     growth_rate: float          # G: forward成長率
-    rice: float                 # RICE値
-    rice_per_ratio: float       # RICE / PER（PERが利用可能な場合のみ）
-    rice_adj: float = 0.0       # RICE_adj: CF_adj（CapExのみ投資強度）使用版
+    rice: Optional[float]                 # RICE値（測定不能時はNone）
+    rice_per_ratio: Optional[float]       # RICE / PER（riceがNoneの場合もNone）
+    rice_adj: Optional[float] = None      # RICE_adj: CF_adj（CapExのみ投資強度）使用版（測定不能時はNone）
+    rice_na_reason: Optional[str] = None      # riceがNoneの理由（Noneでない場合のみ）
+    rice_adj_na_reason: Optional[str] = None  # rice_adjがNoneの理由（Noneでない場合のみ）
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        d: Dict[str, Any] = {
             "growth_rate": round(self.growth_rate, 4),
-            "rice": round(self.rice, 3),
-            "rice_per_ratio": round(self.rice_per_ratio, 4),
-            "rice_adj": round(self.rice_adj, 3),
+            "rice": round(self.rice, 3) if self.rice is not None else None,
+            "rice_per_ratio": round(self.rice_per_ratio, 4) if self.rice_per_ratio is not None else None,
+            "rice_adj": round(self.rice_adj, 3) if self.rice_adj is not None else None,
         }
+        if self.rice_na_reason:
+            d["rice_na_reason"] = self.rice_na_reason
+        if self.rice_adj_na_reason:
+            d["rice_adj_na_reason"] = self.rice_adj_na_reason
+        return d
 
 
 @dataclass
@@ -435,14 +448,57 @@ def calculate_rice(
             if g is None:
                 continue
 
-            rice_val = (g * vc_factor * q * cf) / wacc
-            ratio = rice_val / current_per if current_per > 0 else 0.0
-            rice_adj_val = (g * vc_factor * q * cf_adj) / wacc if cf_adj > 0 and wacc > 0 else 0.0
+            # [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応（2026-09-19）: cf<=0の場合、
+            # riceは符号反転した無意味な値を返すのではなくNone（測定不能）とする。
+            if cf > 0:
+                rice_val = (g * vc_factor * q * cf) / wacc
+                rice_na_reason = None
+            else:
+                rice_val = None
+                # 理由文言の分岐（2026-09-19仕上げ対応）: guard導入前の生値
+                # （g×vc_factor×q×cf、wacc>0固定のため符号に無関係）の符号で
+                # 2パターンに分ける。
+                # ①raw<0（qが正常でcfのみ負の通常ケース）: 旧実装でも既に
+                #   負値を返し「N/A (OCF赤字)」という固定ラベルで表示されて
+                #   いたため、その表示文言（意味論）をそのまま踏襲する
+                # ②raw>=0（qも負でcfとの符号相殺により旧実装が見かけ上
+                #   プラスの値を返していたケース、SPIR等）: cfが負である
+                #   ことそのものが測定不能の原因である旨を明示する
+                #   （「OCF赤字」ラベルは実態〈符号相殺で見えなくなっていた
+                #   問題〉と食い違うため使わない）
+                _raw_would_be = g * vc_factor * q * cf
+                if _raw_would_be < 0:
+                    rice_na_reason = "OCF赤字"
+                else:
+                    rice_na_reason = f"cf={cf:.3f}のためCFがマイナスで投資再生産効率が測定不能"
+
+            if rice_val is not None:
+                ratio = rice_val / current_per if current_per > 0 else 0.0
+            else:
+                ratio = None
+
+            # rice_adjはcf_adj<=0またはwacc<=0（wacc<=0はこのif節自体
+            # 〈scenario_valuations and wacc > 0〉で既に除外済みのため
+            # 通常到達しないが、ガード条件の意図を明示するため維持）の場合None。
+            if cf_adj > 0 and wacc > 0:
+                rice_adj_val = (g * vc_factor * q * cf_adj) / wacc
+                rice_adj_na_reason = None
+            else:
+                rice_adj_val = None
+                if cf_adj <= 0 and wacc <= 0:
+                    rice_adj_na_reason = f"cf_adj<=0 かつ wacc<=0（cf_adj={cf_adj:.3f}, wacc={wacc:.4f}）"
+                elif cf_adj <= 0:
+                    rice_adj_na_reason = f"cf_adj<=0（CapExのみ投資強度が測定不能、cf_adj={cf_adj:.3f}）"
+                else:
+                    rice_adj_na_reason = f"wacc<=0（wacc={wacc:.4f}）"
+
             scenarios[sc_name] = RICEScenario(
                 growth_rate=g,
                 rice=rice_val,
                 rice_per_ratio=ratio,
                 rice_adj=rice_adj_val,
+                rice_na_reason=rice_na_reason,
+                rice_adj_na_reason=rice_adj_na_reason,
             )
 
     # ── ノート生成（データ不足 + 異常値警告を統合） ──

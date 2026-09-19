@@ -1160,11 +1160,16 @@ class TanukiValuationPipeline:
 
         if rice_available:
             matrix = "①投資効率系"
-            key_metric_y = f"RICE = {rice_base_val:.3f}" if rice_base_val is not None else "RICE = N/A"
+            # [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応（2026-09-19仕上げ）:
+            # rice_base_valがNoneの場合、rice_na_reasonを使い「N/A（理由）」
+            # 形式で表示する（理由なしの生の"N/A"だけで終わらせない）。
+            _rice_na_reason = rice_base_data.get("rice_na_reason")
+            _rice_na_label = f"N/A ({_rice_na_reason})" if _rice_na_reason else "N/A"
+            key_metric_y = f"RICE = {rice_base_val:.3f}" if rice_base_val is not None else f"RICE = {_rice_na_label}"
             qx = upside is not None and upside >= 0
             # RICE四分類: ≥3.0=高効率, 1.0〜3.0=中効率, 0〜1.0=低効率, <0=N/A（OCF赤字）
             if rice_base_val is None:
-                rice_efficiency = "N/A"
+                rice_efficiency = _rice_na_label
             elif rice_base_val >= 3.0:
                 rice_efficiency = "高効率"
             elif rice_base_val >= 1.0:
@@ -2274,9 +2279,20 @@ class TanukiValuationPipeline:
         L.append(f"Available: {str(rice_available).lower()}")
         L.append(f"Exclusion_Reason: {excl_reason}")
         if rice_available:
-            L.append(f"BEAR: RICE={rice_bear_d.get('rice', 'N/A')}")
-            L.append(f"BASE: RICE={rice_base_data.get('rice', 'N/A')}")
-            L.append(f"BULL: RICE={rice_bull_d.get('rice', 'N/A')}")
+            # [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応（2026-09-19）: rice()が
+            # 測定不能な場合、to_dict()は"rice"キー自体をNoneで持つため
+            # .get('rice', 'N/A')はデフォルト値ではなくNoneを返す
+            # （キーが存在する限りdict.get()の第2引数は使われない）。
+            # 明示的にNoneをチェックしてN/A表示にする。
+            def _fmt_rice(_d):
+                _v = _d.get("rice")
+                if _v is None:
+                    _reason = _d.get("rice_na_reason")
+                    return f"N/A ({_reason})" if _reason else "N/A"
+                return _v
+            L.append(f"BEAR: RICE={_fmt_rice(rice_bear_d)}")
+            L.append(f"BASE: RICE={_fmt_rice(rice_base_data)}")
+            L.append(f"BULL: RICE={_fmt_rice(rice_bull_d)}")
         else:
             L.append("BEAR: RICE=N/A")
             L.append("BASE: RICE=N/A")
