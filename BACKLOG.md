@@ -4720,6 +4720,10 @@ liabilities/stockholders_equity/NCI/一時的持分）のみを対象とする�
 **発見:** [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]実装検証時（チャット記録）
 
 #### 内容
+（2026-09-19注記: 本文中の「105銘柄」は登録当時〈2026-08-02〉の
+ticker宇宙の件数。その後のAVGO/CWAN/ENB除外により現行ticker宇宙は
+102銘柄。過去記録のため本文自体は書き換えない。）
+
 `common/sec_data/ttm/`配下の全105銘柄のTTM系列ファイル
 （`{ticker}_ttm_series.json`）が、`git log`確認で2026-07-26生成のまま
 であることが判明した。一方、TTM系列の入力元となる抽出パイプライン
@@ -4989,6 +4993,52 @@ APP実例により、構造的リスク自体は理論上の懸念ではなく�
 Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`への
 新規WARNチェックとして恒久化する（本チケットとは別コミットで対応、
 下記③参照）。
+
+#### 再確認結果（2026-09-19、チャット記録、読み取りのみ・据え置き継続）
+STEP1（鮮度・cron健全性）: `common/sec_data/ttm/`の直近更新はコミット
+`1be11d715`（2026-09-14 00:09 JST、`github-actions[bot]`の週次自動更新）＋
+`c79df1cd5`（2026-09-17 21:14 JST、`[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]`
+に伴うLYFT/PAYS/FLYW3銘柄のみの手動再生成）。`gh`未導入のため
+`SEC_Data_Update`ワークフロー（cron `0 12 * * 0`＝毎週日曜21:00 JST）の
+実行成否は自動コミット`Update SEC Data - YYYY-MM-DD`の履歴突合で代替確認
+し、2026-08-16・08-23の既知障害（2026-08-30是正済み）以降は毎週正常に
+コミットが発生していることを確認した。`layer3_builder.py`/
+`ttm_calculator.py`/`parser.py`への直近の変更は2026-09-17の1件（LYFT
+CapExタグ追加）のみで、同日中に対象3銘柄が手動再生成済みであることも
+確認した。
+
+STEP2（全銘柄再生成との突合）: 現行ticker宇宙（`config.get_all()`＝102
+銘柄、`ttm/`ファイル数と完全一致）全件について、`layer3_builder.
+build_ticker_store()`＋`ttm_calculator.calc_ttm_series()`を一時
+ディレクトリ（scratchpad配下、調査後削除済み）へ再生成し、FLOW_FIELDS
+17種＋FCFを既存`ttm/`と`ttm_end`単位（anchor不一致0件）で突合した。
+**実質差分（|Δ|>1%）は102銘柄×18フィールド中0件**。唯一検出された
+1件（COHR・eps_diluted・ttm_end=2025-06-30）は5.5e-17 vs 2.08e-17という
+浮動小数点誤差ノイズ（両者とも実質ゼロ）であり実害なしと判定。
+FCF/runway系フィールドへの影響もゼロ。登録時（2026-08-02、PEP銘柄
+SG&A約9.5%乖離を確認）や前回再確認時（2026-09-12、APP FY2023 revenue
+約14.4億ドル乖離を確認）とは異なり、今回は現行パイプライン出力と
+`ttm/`が完全に同期していることを確認した（cronが直近まで正常稼働し、
+唯一のコード変更〈LYFT CapEx〉も即日手動反映されたため）。
+
+STEP3（「layer3_builderがparser.pyと独立実装」診断の再検証）: 現行
+コードでも診断は成立することを確認した。`layer3_builder.py`は
+`parser.py`を一切import せず（grep 0件）、`fact_overrides.json`参照も
+`parser.py`側のみ（`layer3_builder.py`は0件）。parser.py側の安全ロジック
+3種（`_resolve_bs_entity_mixing`・`_backfill_total_liabilities_via_
+identity`・`_align_cost_of_revenue_to_revenue_period`）も
+`layer3_builder.py`には引き続き存在しない（一方`quarterly.py::
+_classify_period`・`fact_selection.py::select_latest_filed`はドキュメント化
+済みの意図的共有のまま）。2026-09-12発見のCRM関連ギャップ
+（`config/sec_concept_definitions.json`のrevenue候補に
+`SalesRevenueServicesNet`が依然欠落、`CostOfServices`は既存のまま）も
+未変化で残存している。
+
+**総括・対応方針**: 実質差分0件（COHRの1件は測定誤差）・cron健全・
+保有銘柄含む全銘柄で実害なしという結果は、前回（2026-09-12）の
+「据え置き継続」判断を追認するもの。案C（運用チェック継続、統合作業には
+着手しない）を維持し、優先度「中」も変更しない。着手条件（下記）も
+変更なし。
 
 #### 着手条件
 以下いずれかのトリガー条件が発生するまで保留:
