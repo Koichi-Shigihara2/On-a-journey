@@ -703,6 +703,13 @@ push済み）:
   （既知のID重複対象）・`[[SCENARIO-BEARBULL-SIGN-FLIP-1]]`（以上高、
   計9件）
 
+**追記（2026-09-19）**: `[[QUALITY-GATES-EPIC-1]]`は2026-09-19に
+エピックとしてクローズした（ゲート0〜4は実装可能範囲を完了、詳細は
+BACKLOG_DONE.md該当エントリのクローズ注記参照）。上記「最高、唯一」
+の記載はクローズ前時点のものであり現在は該当しない。ゲート1の残作業
+（cash+STIのyfinance突合）は`[[CASH-STI-YFINANCE-CROSSCHECK-1]]`として
+個別調査済み（実装は見送り）。
+
 **セッション終了時ブラッシュアップの検証結果**:
 - BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本セッションでクローズした3件
   （`MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1`・`TAIL-SHARESDILUTED-Q4-
