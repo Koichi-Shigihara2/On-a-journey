@@ -2842,6 +2842,59 @@ CON 2件・GEV 2件・FLYW 3件・PAYS 3件。データ蓄積によりCAGR系候
 軽減方向にある。着手条件（候補1件以下への転落）は引き続き未発生のため
 対応不要、監視継続とする。
 
+#### 再確認結果（2026-09-19、本番`check_growth_sanity()`出力〈latest.json
+`growth_sanity`〉を実測、読み取りのみ）
+JNJ・XOM・PM・CONを本番の解決ロジックそのもの（latest.jsonに反映済みの
+`check_growth_sanity()`出力）で再確認したところ、2026-09-04からの
+「リスク軽減方向」という傾向は一部反転していた:
+
+| 銘柄 | 候補数（2026-09-19） | 候補数（2026-09-04） | 内訳（正値のみ採用） | floor_hit |
+|---|---|---|---|---|
+| JNJ | **2件** | 4件 | cagr5(+2.7%)・industry_g(+1.7%)。cagr3(-0.3%)・g_fundamental(-2.4%)は負値で除外 | False |
+| XOM | 3件 | 4件 | cagr5(+12.9%)・industry_g(+0.7%)・g_fundamental(+0.8%)。cagr3(-7.0%)は負値で除外 | False |
+| PM | **2件** | 3件 | cagr3(+8.6%)・cagr5(+7.2%)。industry_g=None、g_fundamental(-1.4%)は負値で除外 | False |
+| CON | **2件** | 2件（不変） | cagr3(+7.9%)・g_fundamental(+0.3%)。cagr5=None（2024年スピンオフ由来、継続） | False |
+
+JNJ・PMは候補数が減少し、**2026-07-19登録時点と同じ「ちょうど2件」
+（バッファ0＝あと1件失えば着手条件〈候補2件未満〉に抵触）まで後退**した。
+XOMは4→3件で1件のバッファを維持。CONは2026-09-04と同じ2件のまま
+（`rev_cagr_5yr`算出不能という元々の懸念も継続）。4銘柄とも
+`floor_hit=False`で着手条件自体は依然未成立。
+
+#### 事前検知（候補2件以下）の新設検討・実装は見送り（2026-09-19）
+1. **既存検知の確認**: `report_consistency_check.py`のCHECK-18
+   （WARN-18、G=15%デフォルト未調整）・CHECK-20（WARN-20、fcf_cagr
+   floor張り付き、GROWTH-FLOOR-VERDICT-1）はいずれも`floor_hit`後の
+   事後検知であり、「候補2件以下（あと1件で転落）」という事前検知は
+   `report_consistency_check.py`・`audit.py`・`system_health.py`いずれにも
+   存在しないことを確認した
+2. **全99銘柄の候補件数分布**（`get_tanuki_tickers()`全銘柄、latest.jsonの
+   本番`growth_sanity`出力を実測）: 0件1銘柄（LOAR）・1件6銘柄
+   （CART/CRWV/JOBY/RBRK/MO/SN）・2件31銘柄（JNJ/PM/CON/GEV/KLAC/DELL等）・
+   3件45銘柄・4件16銘柄。**候補2件以下は合計38銘柄（38.4%）**。
+   `floor_hit=True`は1銘柄（JOBY、segment_weighted経路で候補0件・
+   テンプレートデフォルト15%が未検証のまま使用中）
+3. **実装判断: 見送り**。指示の実装条件「候補2件以下が全体の15%以下」に
+   対し実測は38.4%と大幅に超過（判定基準の2.5倍超）しており、「候補2件
+   以下」を汎用WARN化すると全銘柄の1/3強で常時発火し信号として機能しない
+   （median成長率モデルはindustry_benchmark・g_fundamentalが未算出/負値の
+   銘柄が多い＝成熟企業やindustry_benchmark欠損銘柄では「2件」が構造的に
+   よくある状態であり、それ自体は異常ではないため）。指示に従い実装せず
+   停止する
+4. **対応方針**: 汎用チェックとしての新設は見送るが、本エントリの対象
+   4銘柄（JNJ/XOM/PM/CON）に限定した監視は継続する（着手条件は変更せず
+   「候補2件を下回った場合」のまま、下記参照）。将来再検討する場合は、
+   全銘柄一律のWARNではなく、`config/warn_acknowledged.json`型の
+   台帳運用（個別銘柄をトリガー対象として明示登録し、登録銘柄限定で
+   候補数を監視する）等、対象を絞る設計が必要
+
+#### 着手条件
+候補件数が実際に2件を下回った場合（`report_consistency_check.py`等での
+継続監視、またはgrowth_sanity再確認時に検知）。汎用WARN化は2026-09-19
+時点で見送り済み（上記「事前検知の新設検討」参照）のため、当面は
+`growth_model_audit.py`等での手動確認、または次回セッションでの
+定点確認継続に依存する。
+
 ---
 
 ### [EPS-UPC-PREREORG-1] Up-C構造・組織再編前四半期のAdjusted EPS計算への算入方針
