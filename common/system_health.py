@@ -50,6 +50,7 @@ _DOCS_ROOT   = os.path.join(_REPO_ROOT, "docs")
 _SS_RESULTS  = os.path.join(_DOCS_ROOT, "value-monitor", "stonks-silo", "data", "results.json")
 _WORKFLOWS_DIR = os.path.join(_REPO_ROOT, ".github", "workflows")
 _PORTFOLIO_JSON = os.path.join(_DOCS_ROOT, "portfolio", "data", "portfolio.json")
+_MACRO_DATA_VIOLATIONS_LOG = os.path.join(_REPO_ROOT, "common", "macro_data", "macro_data_violations_log.json")
 
 _STALE_DAYS  = 7   # この日数以上古いデータを「stale」と判定
 _GH_API_BASE = "https://api.github.com"
@@ -621,6 +622,36 @@ def check_k_ticker_audit() -> tuple[str, bool, str]:
     return f"{icon} {detail}", ok, detail
 
 
+# ── L. common/macro_data/ 系列単位のfetch失敗検知 ───────────────────
+# [[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）。
+# fetch_all_series()は系列単位の例外・取得失敗を内部で捕捉するため
+# ジョブ自体は常にsuccessで終わり、Check J（ワークフロー実行状況）では
+# 検知できない。common/macro_data/fetcher.py側で追加したfetch_status
+# （"ok"/"failed"）をmacro_data_violations_log.jsonから読むだけの軽量
+# チェック（新規ロジックなし）。FTSDのような「常に失敗し続ける系列」を
+# 放置しないための可視化が目的。WARNレベル（icon "⚠️"）に留め、
+# check_j_workflow_runsの判定（CRITICAL対象）には含めない。
+def check_l_macro_data() -> tuple[str, bool, str]:
+    if not os.path.exists(_MACRO_DATA_VIOLATIONS_LOG):
+        return "⚠️  macro_data_violations_log.json未作成（スキップ）", True, "log not found (skip)"
+
+    try:
+        log = json.load(open(_MACRO_DATA_VIOLATIONS_LOG, encoding="utf-8"))
+    except Exception as e:
+        return f"🔴 読み込みエラー: {e}", False, str(e)
+
+    failed = sorted(
+        series_id for series_id, entry in log.items()
+        if isinstance(entry, dict) and entry.get("fetch_status") == "failed"
+    )
+
+    ok   = not failed
+    icon = "✅" if ok else "⚠️ "
+    detail = ("全系列取得成功" if ok else
+              f"取得失敗({len(failed)}件): {', '.join(failed[:3])}{'…' if len(failed) > 3 else ''}")
+    return f"{icon} {detail}", ok, detail
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def build_one_line(run_date: str, results: dict) -> str:
     overall_ok = all(r["ok"] for r in results.values())
@@ -630,7 +661,7 @@ def build_one_line(run_date: str, results: dict) -> str:
     labels = {
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
-        "K": "TickerAudit",
+        "K": "TickerAudit", "L": "MacroData",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -665,6 +696,7 @@ def main() -> int:
     label_i, ok_i, det_i = check_i_eps()
     label_j, ok_j, det_j = check_j_workflow_runs()
     label_k, ok_k, det_k = check_k_ticker_audit()
+    label_l, ok_l, det_l = check_l_macro_data()
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -678,6 +710,7 @@ def main() -> int:
         "I": {"ok": ok_i, "short": det_i[:20]},
         "J": {"ok": ok_j, "short": det_j[:20]},
         "K": {"ok": ok_k, "short": det_k[:20]},
+        "L": {"ok": ok_l, "short": det_l[:20]},
     }
 
     overall_ok = all(r["ok"] for r in results.values())
@@ -695,6 +728,7 @@ def main() -> int:
         print(f"[I] EPS Analyzer:  {label_i}")
         print(f"[J] CronRuns:      {label_j}")
         print(f"[K] TickerAudit:   {label_k}")
+        print(f"[L] MacroData:     {label_l}")
         status_str = "✅ HEALTHY" if overall_ok else f"⚠️  WARNING（問題{n_warn}件）"
         print(f"Overall: {status_str}\n")
 

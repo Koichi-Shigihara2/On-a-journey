@@ -119,6 +119,45 @@ def _violations_log_path(base_dir: str) -> str:
 
 # ── 外部取得（唯一の窓口） ──────────────────────────────────
 
+def _fetch_series_raw(series_id: str, start: Optional[str] = None):
+    """fetch_series()の実処理本体。[[MACRODATA-FETCH-FAILURE-VISIBILITY-
+    GAP-1]]対応（2026-09-19）: update_series()がfetch_status（"ok"/
+    "failed"）とfailure_reasonを区別できるよう、(series_or_None, status,
+    reason)の3値を返す内部関数として分離した。fetch_series()自体は
+    既存の公開API（呼び出し元へ与える型を変えない）として維持する。
+
+    Returns:
+        (pandas.Series | None, "ok" | "failed", str | None)
+        status=="ok"のときraw(pandas.Series)は必ず非None（空Seriesの
+        可能性はある＝FREDが応答したが新規データなし、これはfetch自体の
+        失敗ではない）。status=="failed"のときrawは必ずNone。
+    """
+    try:
+        fred = _get_fred_client()
+    except Exception as e:
+        reason = f"FREDクライアント初期化失敗: {e}"
+        print(f"   [{series_id}] {reason}（スキップ）")
+        return None, "failed", reason
+
+    kwargs = {}
+    if start:
+        kwargs["observation_start"] = start
+
+    last_err = None
+    for attempt in range(3):
+        try:
+            return fred.get_series(series_id, **kwargs), "ok", None
+        except Exception as e:
+            last_err = e
+            print(f"   [{series_id}] FRED attempt {attempt + 1}: {e}")
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+
+    reason = f"FRED取得失敗（3回リトライ後も失敗）: {last_err}"
+    print(f"   [{series_id}] {reason}（スキップ）")
+    return None, "failed", reason
+
+
 def fetch_series(series_id: str, start: Optional[str] = None):
     """FREDから単一系列を取得する唯一の外部アクセス関数。
 
@@ -136,28 +175,8 @@ def fetch_series(series_id: str, start: Optional[str] = None):
         pandas.Series（インデックス=観測日のTimestamp、値=観測値）。
         取得失敗時はNone（例外は投げない、既存のエラー耐性方針を踏襲）。
     """
-    try:
-        fred = _get_fred_client()
-    except Exception as e:
-        print(f"   [{series_id}] FREDクライアント初期化失敗（スキップ）: {e}")
-        return None
-
-    kwargs = {}
-    if start:
-        kwargs["observation_start"] = start
-
-    last_err = None
-    for attempt in range(3):
-        try:
-            return fred.get_series(series_id, **kwargs)
-        except Exception as e:
-            last_err = e
-            print(f"   [{series_id}] FRED attempt {attempt + 1}: {e}")
-            if attempt < 2:
-                time.sleep(2 ** attempt)
-
-    print(f"   [{series_id}] FRED取得失敗（3回リトライ後も失敗、スキップ）: {last_err}")
-    return None
+    raw, _status, _reason = _fetch_series_raw(series_id, start=start)
+    return raw
 
 
 # ── 保存前検証 ────────────────────────────────────────────
@@ -196,19 +215,31 @@ def _validate_incoming_batch(incoming: List[Dict[str, Any]],
     return warnings
 
 
-def _write_violations_section(series_id: str, warnings: List[str], base_dir: str) -> None:
+def _write_violations_section(series_id: str, warnings: List[str], base_dir: str,
+                               fetch_status: str = "ok",
+                               failure_reason: Optional[str] = None) -> None:
     """macro_data_violations_log.jsonの指定系列セクションのみを更新する。
     0件でも毎回書き込む（fy_collision_log.json型の化石ファイル対策、
     common/market_data/fetcher.py::_write_violations_sectionと同じ設計。
     ただしmarket_dataは銘柄ごとに別ファイルだが、macro_dataは単一の
     共有ログファイル内を系列IDキーでセクション分割する）。
+
+    [[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+    fetch_status（"ok"/"failed"）を追加。既存フィールド（checked_at/
+    warnings）は維持。failure_reasonはfetch_status=="failed"のときのみ
+    書き込む（成功時にキー自体を増やさず、既存の正常系エントリの形を
+    変えない）。
     """
     path = _violations_log_path(base_dir)
     payload = _load_json(path, default={})
-    payload[series_id] = {
+    entry: Dict[str, Any] = {
         "checked_at": _now_jst_iso(),
         "warnings": warnings,
+        "fetch_status": fetch_status,
     }
+    if fetch_status == "failed" and failure_reason:
+        entry["failure_reason"] = failure_reason
+    payload[series_id] = entry
     _atomic_write_json(path, payload)
 
 
@@ -224,22 +255,40 @@ def update_series(series_id: str, start: Optional[str] = None,
     保存前に_validate_incoming_batch()で検証し、結果を
     macro_data_violations_log.jsonへ記録する（違反0件でも毎回書き込む）。
 
+    [[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+    戻り値・violations_logのいずれにもfetch_status（"ok"/"failed"）と
+    failure_reason（失敗時のみ）を追加した。"failed"はFRED呼び出し自体が
+    失敗した場合（APIキー未設定・3回リトライ後も失敗等）のみを指し、
+    「FREDは正常応答したが新規データが0件／全件NaN」は技術的には成功の
+    ためfetch_status="ok"のまま扱う（両者を区別しないことが本バグの
+    原因だったため、この区別自体が対応の核心）。
+
     Returns:
-        {"series_id": str, "updated": int, "warnings": List[str]}
+        {"series_id": str, "updated": int, "warnings": List[str],
+         "fetch_status": "ok" | "failed", "failure_reason": str | None}
     """
     base = base_dir if base_dir is not None else MACRO_DATA_DIR
 
-    raw = fetch_series(series_id, start=start)
-    if raw is None or len(raw) == 0:
+    raw, fetch_status, failure_reason = _fetch_series_raw(series_id, start=start)
+    if fetch_status == "failed":
+        print(f"   [{series_id}] 更新対象データなし（取得失敗、スキップ）")
+        _write_violations_section(series_id, [], base, fetch_status="failed",
+                                   failure_reason=failure_reason)
+        return {"series_id": series_id, "updated": 0, "warnings": [],
+                "fetch_status": "failed", "failure_reason": failure_reason}
+
+    if len(raw) == 0:
         print(f"   [{series_id}] 更新対象データなし（スキップ）")
-        _write_violations_section(series_id, [], base)
-        return {"series_id": series_id, "updated": 0, "warnings": []}
+        _write_violations_section(series_id, [], base, fetch_status="ok")
+        return {"series_id": series_id, "updated": 0, "warnings": [],
+                "fetch_status": "ok", "failure_reason": None}
 
     raw = raw.dropna()
     if len(raw) == 0:
         print(f"   [{series_id}] 更新対象データなし（全件NaN、スキップ）")
-        _write_violations_section(series_id, [], base)
-        return {"series_id": series_id, "updated": 0, "warnings": []}
+        _write_violations_section(series_id, [], base, fetch_status="ok")
+        return {"series_id": series_id, "updated": 0, "warnings": [],
+                "fetch_status": "ok", "failure_reason": None}
 
     incoming: List[Dict[str, Any]] = []
     for obs_date, val in raw.items():
@@ -277,12 +326,13 @@ def update_series(series_id: str, start: Optional[str] = None,
     payload["records"] = records
     _atomic_write_json(path, payload)
 
-    _write_violations_section(series_id, validation_warnings, base)
+    _write_violations_section(series_id, validation_warnings, base, fetch_status="ok")
 
     print(f"   [{series_id}] 更新完了: {updated_count}件（全{len(records)}件）"
           + (f" [WARN {len(validation_warnings)}件]" if validation_warnings else ""))
 
-    return {"series_id": series_id, "updated": updated_count, "warnings": validation_warnings}
+    return {"series_id": series_id, "updated": updated_count, "warnings": validation_warnings,
+            "fetch_status": "ok", "failure_reason": None}
 
 
 def fetch_all_series(series_ids: Optional[List[str]] = None,
@@ -302,6 +352,14 @@ def fetch_all_series(series_ids: Optional[List[str]] = None,
 
     Returns:
         各系列のupdate_series()結果のリスト。
+
+    [[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+    ループへ系列単位のtry/exceptを追加した。update_series()内部で
+    捕捉されない予期しない例外（ディスクエラー等）が1系列で発生しても、
+    その系列をfetch_status="failed"として記録するのみで残りの系列の
+    処理を継続する（登録時に確認された「1系列の例外でバッチ全体が
+    中断する構造的リスク」への対応）。ジョブ自体（本関数の戻り値・
+    `__main__`の終了コード）は従来通り失敗させない（挙動を変えない）。
     """
     base = base_dir if base_dir is not None else MACRO_DATA_DIR
     meta = _load_json(_series_meta_path(base), default={})
@@ -309,7 +367,19 @@ def fetch_all_series(series_ids: Optional[List[str]] = None,
 
     results = []
     for series_id in targets:
-        results.append(update_series(series_id, start=start, base_dir=base))
+        try:
+            result = update_series(series_id, start=start, base_dir=base)
+        except Exception as e:
+            reason = f"update_series内で予期しない例外: {type(e).__name__}: {e}"
+            print(f"   [{series_id}] {reason}（この系列のみスキップし、残りは続行）")
+            try:
+                _write_violations_section(series_id, [], base, fetch_status="failed",
+                                           failure_reason=reason)
+            except Exception as log_e:
+                print(f"   [{series_id}] violations_log書き込みにも失敗（続行）: {log_e}")
+            result = {"series_id": series_id, "updated": 0, "warnings": [],
+                      "fetch_status": "failed", "failure_reason": reason}
+        results.append(result)
     return results
 
 
@@ -341,7 +411,29 @@ if __name__ == "__main__":
     all_results = fetch_all_series(series_ids=target_series, start=args.start)
     total_warnings = sum(len(r["warnings"]) for r in all_results)
     total_updated = sum(r["updated"] for r in all_results)
+    failed_results = [r for r in all_results if r.get("fetch_status") == "failed"]
+    ok_count = len(all_results) - len(failed_results)
     print(
         f"\n完了: {len(all_results)}系列処理、"
+        f"成功{ok_count}件/失敗{len(failed_results)}件、"
         f"更新レコード合計{total_updated}件、警告合計{total_warnings}件"
     )
+    if failed_results:
+        print("失敗系列:")
+        for r in failed_results:
+            print(f"  - {r['series_id']}: {r.get('failure_reason')}")
+
+    # GitHub Actions Step Summaryへ成功N/失敗Mと失敗系列一覧を出力する
+    # （[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応、2026-09-19。
+    # common/sec_data/update.py::main()の既存GITHUB_STEP_SUMMARY書き込み
+    # パターンを踏襲）。
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        with open(summary_path, "a", encoding="utf-8") as sf:
+            sf.write("\n## Macro Data Update\n\n")
+            sf.write(f"成功: {ok_count}件 / 失敗: {len(failed_results)}件\n\n")
+            if failed_results:
+                sf.write("| 系列ID | 失敗理由 |\n|---|---|\n")
+                for r in failed_results:
+                    reason = (r.get("failure_reason") or "")[:200]
+                    sf.write(f"| {r['series_id']} | {reason} |\n")

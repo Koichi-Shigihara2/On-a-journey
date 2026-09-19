@@ -145,19 +145,152 @@ class TestUpdateSeriesUpsert:
         result = fetcher.update_series("TESTSERIES", base_dir=base)
         assert result["updated"] == 1
 
-    def test_fetch_failure_returns_zero_updated_and_writes_empty_violations(self, tmp_path, monkeypatch):
+    def test_fetch_failure_returns_zero_updated_and_marks_fetch_status_failed(self, tmp_path, monkeypatch):
+        """[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+        fetch_status追加によりresultの形が変わったため、既存の厳密等価
+        アサーションをfetch_status="failed"の明示チェックへ更新した。"""
         base = str(tmp_path)
         fake = _FakeFred(fail_times=99)
         monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
         monkeypatch.setattr(fetcher.time, "sleep", lambda s: None)
 
         result = fetcher.update_series("TESTSERIES", base_dir=base)
-        assert result == {"series_id": "TESTSERIES", "updated": 0, "warnings": []}
+        assert result["series_id"] == "TESTSERIES"
+        assert result["updated"] == 0
+        assert result["warnings"] == []
+        assert result["fetch_status"] == "failed"
+        assert result["failure_reason"] is not None
 
         log_path = os.path.join(base, "macro_data_violations_log.json")
         with open(log_path, encoding="utf-8") as f:
             log = json.load(f)
         assert log["TESTSERIES"]["warnings"] == []
+        assert log["TESTSERIES"]["fetch_status"] == "failed"
+        assert "failure_reason" in log["TESTSERIES"]
+
+
+class TestFetchStatusField:
+    """[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+    update_series()の戻り値・violations_logがfetch_status（"ok"/"failed"）
+    で「取得失敗」と「取得成功だが新規データ0件」を区別できることを検証する
+    （両者を区別しないことが本バグの原因だったため、この区別自体が対応の核心）。
+    """
+
+    def test_successful_update_has_fetch_status_ok(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+        result = fetcher.update_series("TESTSERIES", base_dir=base)
+        assert result["fetch_status"] == "ok"
+        assert result["failure_reason"] is None
+
+        log_path = os.path.join(base, "macro_data_violations_log.json")
+        with open(log_path, encoding="utf-8") as f:
+            log = json.load(f)
+        assert log["TESTSERIES"]["fetch_status"] == "ok"
+        assert "failure_reason" not in log["TESTSERIES"]
+
+    def test_empty_response_from_fred_is_ok_not_failed(self, tmp_path, monkeypatch):
+        """FREDが正常応答したが新規データ0件（空Series）の場合は
+        fetch_status="ok"のまま（取得失敗と混同しない）。"""
+        base = str(tmp_path)
+        fake = _FakeFred(series=pd.Series(dtype=float))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+        result = fetcher.update_series("TESTSERIES", base_dir=base)
+        assert result["updated"] == 0
+        assert result["fetch_status"] == "ok"
+        assert result["failure_reason"] is None
+
+    def test_all_nan_response_is_ok_not_failed(self, tmp_path, monkeypatch):
+        """FREDが応答したが全件NaN（dropna後0件）の場合も同様にfetch_status="ok"。"""
+        base = str(tmp_path)
+        s = _series([("2026-01-01", float("nan"))])
+        fake = _FakeFred(series=s)
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+        result = fetcher.update_series("TESTSERIES", base_dir=base)
+        assert result["updated"] == 0
+        assert result["fetch_status"] == "ok"
+        assert result["failure_reason"] is None
+
+    def test_missing_api_key_has_fetch_status_failed_with_reason(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        monkeypatch.delenv("FRED_API_KEY", raising=False)
+        monkeypatch.setattr(fetcher, "_FRED_CLIENT", None)
+        result = fetcher.update_series("TESTSERIES", base_dir=base)
+        assert result["fetch_status"] == "failed"
+        assert "FRED_API_KEY" in result["failure_reason"]
+
+
+class TestFetchAllSeriesFailureIsolation:
+    """[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]対応（2026-09-19）:
+    fetch_all_series()の系列単位try/exceptを検証する。1系列の失敗
+    （例外／FRED呼び出し自体の失敗）が他系列の処理を止めないこと、
+    バッチ全体（本関数の戻り値）は失敗させないことを確認する。
+    """
+
+    def test_one_series_raising_unexpected_exception_does_not_abort_others(
+        self, tmp_path, monkeypatch
+    ):
+        """update_series()内部で捕捉されない予期しない例外（ディスクエラー
+        等を想定）が1系列で発生しても、残りの系列は正常に処理されること。"""
+        base = str(tmp_path)
+        os.makedirs(base, exist_ok=True)
+        with open(os.path.join(base, "series_meta.json"), "w", encoding="utf-8") as f:
+            json.dump({"SERIES_A": {}, "SERIES_B": {}, "SERIES_C": {}}, f)
+
+        fake = _FakeFred(series=_series([("2026-01-01", 1.0)]))
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: fake)
+
+        real_update_series = fetcher.update_series
+
+        def _flaky_update_series(series_id, **kwargs):
+            if series_id == "SERIES_B":
+                raise RuntimeError("simulated disk error")
+            return real_update_series(series_id, **kwargs)
+
+        monkeypatch.setattr(fetcher, "update_series", _flaky_update_series)
+
+        results = fetcher.fetch_all_series(base_dir=base)
+        by_id = {r["series_id"]: r for r in results}
+
+        assert set(by_id.keys()) == {"SERIES_A", "SERIES_B", "SERIES_C"}
+        assert by_id["SERIES_A"]["fetch_status"] == "ok"
+        assert by_id["SERIES_C"]["fetch_status"] == "ok"
+        assert by_id["SERIES_B"]["fetch_status"] == "failed"
+        assert "simulated disk error" in by_id["SERIES_B"]["failure_reason"]
+
+        log_path = os.path.join(base, "macro_data_violations_log.json")
+        with open(log_path, encoding="utf-8") as f:
+            log = json.load(f)
+        assert log["SERIES_B"]["fetch_status"] == "failed"
+        assert "simulated disk error" in log["SERIES_B"]["failure_reason"]
+
+    def test_series_where_fred_call_fails_is_isolated_from_others(self, tmp_path, monkeypatch):
+        """fetch_series()（FRED呼び出し自体）が1系列だけ失敗（3回リトライ後も
+        失敗）しても、他系列は正常に処理されること（FTSD型のシナリオ）。"""
+        base = str(tmp_path)
+        os.makedirs(base, exist_ok=True)
+        with open(os.path.join(base, "series_meta.json"), "w", encoding="utf-8") as f:
+            json.dump({"SERIES_A": {}, "FAILING": {}, "SERIES_C": {}}, f)
+
+        class _PerSeriesFred:
+            def get_series(self, series_id, **kwargs):
+                if series_id == "FAILING":
+                    raise RuntimeError("Bad Request. The series does not exist.")
+                return _series([("2026-01-01", 1.0)])
+
+        monkeypatch.setattr(fetcher, "_get_fred_client", lambda: _PerSeriesFred())
+        monkeypatch.setattr(fetcher.time, "sleep", lambda s: None)
+
+        results = fetcher.fetch_all_series(base_dir=base)
+        by_id = {r["series_id"]: r for r in results}
+
+        assert by_id["SERIES_A"]["fetch_status"] == "ok"
+        assert by_id["SERIES_C"]["fetch_status"] == "ok"
+        assert by_id["FAILING"]["fetch_status"] == "failed"
+        assert by_id["FAILING"]["updated"] == 0
+        assert by_id["SERIES_A"]["updated"] == 1
+        assert by_id["SERIES_C"]["updated"] == 1
 
 
 class TestUpdateSeriesValidation:
