@@ -3614,38 +3614,6 @@ START.md`自体の記述「`fetcher.py`・`dcf_validity_checker.py`
 
 ---
 
-### [SENS-MATRIX-DUAL-IMPL-1] stock.html独自5×5感応度マトリクスとbackend 3×3の並存（一部対応済み）
-**優先度:** 中
-**分類:** 設計不整合 / TANUKI VALUATION
-**登録日:** 2026-07-23
-**発見:** `FIELD_DEFINITIONS.md`フェーズ6（AS-IS-066/AS-IS-014）・`OUTPUT_ITEMS_INVENTORY.md`横断的発見事項1
-**一部対応:** 2026-08-30（フェーズ1バッチA cluster 3）
-
-#### 内容
-バックエンドのAS-IS-014（`sensitivity.matrix`、3×3、DCFタイプにより
-two_stage/three_stageを切替）とは別に、stock.html上に完全に独立した
-クライアント側5×5感応度マトリクス（`calcSensIV()`）が同一ページに並存
-する。`calcSensIV()`は常に2段階DCFのみで再計算するため、three_stage DCFや
-tapering DCFを採用している銘柄では、同じページ内の2つの「感応度分析」
-セクションが異なる計算式で異なる数値を表示する。
-
-#### 2026-08-30時点の対応状況
-死コード（`const alpha = d.alpha ?? 1.0;`、宣言されているが式中で未使用）は
-`stock.html`の`calcSensIV()`から削除済み。ただし本項目の核心である
-「バックエンドAS-IS-014（3×3）とクライアント側5×5マトリクスの計算式
-二重実装」自体は未解消のまま残っている。
-
-#### 対応方針（未解消部分）
-バックエンドのAS-IS-014をそのまま表示する設計に統一するか、クライアント側
-5×5マトリクスをDCFタイプ切替に対応させるかの設計判断がKoichiさんに必要。
-判断待ちのため未着手。
-
-#### 着手条件
-Koichiさんによる設計方針決定（バックエンド表示統一 or クライアント側
-DCFタイプ対応拡張）
-
----
-
 ### [RICE-ADJ-ASYMMETRIC-ZERO-1] RICEのrice_adjのみ0フロアガードがある非対称設計
 **優先度:** 中
 **分類:** バグ / TANUKI VALUATION

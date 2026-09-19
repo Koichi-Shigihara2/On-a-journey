@@ -758,13 +758,13 @@ discover_config.json）は、バリデーションなしで直接GitHubにコミ
 | AS-IS-023 | TANUKI VALUATION | rd_capitalization.* | `capitalize_rd()` | `capitalized_rd = rd_current`（当年R&D全額を資本計上）、`amortization_current = mean(過去3年R&D、現年の3倍超は外れ値除外)`、`rd_adjustment = capitalized_rd - amortization_current`（FCFへの調整額）。適用条件: R&D/Revenue≥5%かつ過去2年以上のR&Dデータあり | R&D/Revenue（SEC EDGAR annual_*.json、カタログ対象外） | 導出データ |
 | AS-IS-024 | TANUKI VALUATION | rpo_adjustment.rpo_pv/application_rate/sector_category/rpo_incremental等 | `adjust_rpo()` | `rpo_incremental`: 前年同期RPO・Revenue成長率が判明→`max(0, rpo-rpo_yago×(1+rev_yoy))`／不明ならTTM Revenue代用→`max(0, rpo-rev_ttm×1.0)`／両方不明→0<br>`rpo_pv = rpo_incremental × application_rate × op_margin / (1+15%)^1.5年`（`op_margin≤0`ならrpo_pv=0）<br>`application_rate`: `config/rpo_config.json`のwhitelist登録済み銘柄は100%（比率ゲート免除）、保険0%、Fintech(Financial Services)50%、industry keywordでSaaS判定なら100%、セクター別テーブル参照<br>非whitelistは`rpo/rev_ttm<30%`で不適用（**rev_ttmがNoneの場合この安全弁ゲート自体がスキップされる、下記備考**） | rpo/op_margin/rpo_yago/rev_yoy/rev_ttm（SECReader経由、カタログ対象外）＋ rpo_config.json（手動設定、カタログ対象外） | 導出データ |
 | AS-IS-025 | TANUKI VALUATION | bs_adjustment.net_cash/net_cash_per_share/sector_guard | `calculate_bs_adjustment()` | `net_cash_per_share = net_cash / diluted_shares`（`diluted_shares>0`かつ`available`の場合のみ）。`net_cash`自体は`SECReader.get_net_cash()`（本タスク対象外ファイル）が算出するSEC EDGARベース値（cash+ST投資-LT債務-ST債務、セクターガード〈保険/fintech特殊処理〉・複数タグフォールバック補完あり） | SECReader.get_net_cash()（common/sec_data、カタログ対象外） | 導出データ |
-| AS-IS-027 | TANUKI VALUATION | rice.q/cf_conversion/q_years/cf_years/avg_intensity/avg_rev_growth/vc_factor/bear・base・bull | `calculate_rice()` | `RICE = (G × VC_Factor × Q × CF) / WACC`<br>`Q = mean(OCF/(NI+SBC))`直近3年（GAAP赤字年・利益ほぼゼロの年は除外、SBCは非現金費用の補正として純利益に足し戻す）<br>`CF = mean(売上成長率(t+1)/投資強度(t))`1年ラグ直近3点（投資強度=(\|CapEx\|+\|R&D\|+\|S&M\|)/Revenue、CF点は±10にクリップ）<br>`CF_adj`はCapExのみの投資強度版<br>`VC_Factor = clamp(roic_wacc_ratio, 0.3, 2.0)`（`roic_wacc_ratio`はAS-IS-026のmoat_score計算で使うROIC値と同一算出、フェーズ4既定義参照）<br>`G`=AS-IS-015の各シナリオgrowth_rate、`WACC`=market_return(10%固定)<br>`rice = (G×VC×Q×CF)/WACC`、`rice_adj = (G×VC×Q×CF_adj)/WACC`（**`cf_adj≤0`の場合のみ0.0にフォールバックする条件があり、mainのrice側には同等のcf≤0ガードがない非対称設計、下記備考RICE_adj非対称ゼロ化**） | AS-IS-015（本表）＋ SEC EDGAR annual_*.json（カタログ対象外）＋ roic_wacc_ratio（AS-IS-026関連、カタログ対象外） | 導出データ |
+| AS-IS-027 | TANUKI VALUATION | rice.q/cf_conversion/q_years/cf_years/avg_intensity/avg_rev_growth/vc_factor/bear・base・bull | `calculate_rice()` | `RICE = (G × VC_Factor × Q × CF) / WACC`<br>`Q = mean(OCF/(NI+SBC))`直近3年（GAAP赤字年・利益ほぼゼロの年は除外、SBCは非現金費用の補正として純利益に足し戻す）<br>`CF = mean(売上成長率(t+1)/投資強度(t))`1年ラグ直近3点（投資強度=(\|CapEx\|+\|R&D\|+\|S&M\|)/Revenue、CF点は±10にクリップ）<br>`CF_adj`はCapExのみの投資強度版<br>`VC_Factor = clamp(roic_wacc_ratio, 0.3, 2.0)`（`roic_wacc_ratio`はAS-IS-026のmoat_score計算で使うROIC値と同一算出、フェーズ4既定義参照）<br>`G`=AS-IS-015の各シナリオgrowth_rate、`WACC`=market_return(10%固定)<br>`rice = (G×VC×Q×CF)/WACC`、`rice_adj = (G×VC×Q×CF_adj)/WACC`（**`cf_adj≤0`の場合のみ0.0にフォールバックする条件があり、mainのrice側には同等のcf≤0ガードがない非対称設計、下記備考RICE_adj非対称ゼロ化**） | AS-IS-015（本表）＋ SEC EDGAR annual_*.json（カタログ対象外）＋ roic_wacc_ratio（AS-IS-026関連、カタログ対象外） | 導出データ **[2026-09-19追記: [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応で解消済み。`rice`/`rice_adj`とも測定不能時は0.0ではなくNoneを返す対称設計に変更（詳細は下記備考の追記参照）]** |
 | AS-IS-029 | TANUKI VALUATION | pv_high / pv_terminal（components内） | `components.pv_high`/`components.pv_terminal` | AS-IS-018の`pv_high_growth`/`pv_terminal`と完全に同一の値を`components`辞書に再格納しただけの重複フィールド | AS-IS-018（本表、完全重複） | 導出データ |
 | AS-IS-030 | TANUKI VALUATION | alpha_uncapped（components内） | `components.alpha_uncapped` | `alpha_result.alpha_uncapped = max(0.0, alpha_raw)`（AS-IS-009のcap適用前の値）。AS-IS-009の一部を再掲したもの | AS-IS-009（本表） | 導出データ |
 | AS-IS-059 | TANUKI VALUATION | terminal_growthの出所 | `get_terminal_growth()` | 優先順位: ①`maturity_config.json`のticker個別`terminal_growth`が**デフォルト3.0%と1e-5超の差**を持つ場合はそれを採用（**3.0%ちょうどを明示設定したい場合は区別できずセクター別フォールバックに流れる、下記備考**）②`growth_sanity.TICKER_INDUSTRY_OVERRIDES`経由でDamodaran業種別テーブル（長期GDP成長率+セクター構造成長プレミアム、2.0%〜3.5%）を参照③デフォルト3.0%固定 | maturity_config.json（手動設定、カタログ対象外）＋ growth_sanity.TICKER_INDUSTRY_OVERRIDES（カタログ対象外） | 導出データ |
 | AS-IS-064 | TANUKI VALUATION | 将来価値予測（シナリオ別テーブル、stock.html独自計算） | `projectFuture()` | クライアント側`projectFuture(baseVal, growthRate)`が`v×=(1+g)`を反復（`g`は高成長期間内`sc.rate`〈シナリオ別成長率、AS-IS-015〉・以降`terminalGrowth`）。**バックエンドのAS-IS-010〈future_values〉は不使用**、シナリオ数（bear/base/bullの有無）・年数（`Object.keys(futureVals).length`からの逆算）のみJSONを参照し、値自体は完全に独自再計算 | AS-IS-015（本表）＋ AS-IS-010（本表、年数構造の参照のみ） | 導出データ |
 | AS-IS-065 | TANUKI VALUATION | 5年BASE年率換算リターン（stock.html独自計算） | `annRate` | `annRate = (fv5/currentPrice)^0.2 - 1`（`fv5`=AS-IS-011の`return_metrics["5年後"].future_value`、`0.2=1/5`固定指数） | AS-IS-011（本表）＋ current_price（yfinance、カタログ対象外） | 導出データ |
-| AS-IS-066 | TANUKI VALUATION | 感応度分析（独自5×5マトリクス、stock.html独自計算） | `calcSensIV()` | クライアント側で`base_fcf`（AS-IS-019）を**常に2段階DCFのみ**で再計算する独自5×5マトリクス（WACC5値×成長率オフセット5値）。`iv=(pv+tvPv)/shares+bsps`。**バックエンドのAS-IS-014〈sensitivity.matrix、3×3、DCFタイプ切替あり〉とは別に、同一ページ内に完全に独立実装として並存**（下記備考、最重要級）。`const alpha=d.alpha??1.0`は宣言されるが式中で未使用（死コード） | AS-IS-019, AS-IS-014（本表、後者とは別実装で並存） | 導出データ |
+| AS-IS-066 | TANUKI VALUATION | 感応度分析（独自5×5マトリクス、stock.html独自計算） | `calcSensIV()` | クライアント側で`base_fcf`（AS-IS-019）を**常に2段階DCFのみ**で再計算する独自5×5マトリクス（WACC5値×成長率オフセット5値）。`iv=(pv+tvPv)/shares+bsps`。**バックエンドのAS-IS-014〈sensitivity.matrix、3×3、DCFタイプ切替あり〉とは別に、同一ページ内に完全に独立実装として並存**（下記備考、最重要級）。`const alpha=d.alpha??1.0`は宣言されるが式中で未使用（死コード） | AS-IS-019, AS-IS-014（本表、後者とは別実装で並存） | 導出データ **[2026-09-19追記: [[SENS-MATRIX-DUAL-IMPL-1]]対応でstock.htmlから`calcSensIV()`・5×5セクション自体を削除しAS-IS-014（バックエンド3×3、two_stage/three_stage/tapering全DCFタイプ対応）表示へ一本化。本行（AS-IS-066）は廃止項目として記録のみ残置]** |
 | AS-IS-067 | TANUKI VALUATION | Reverse DCF（市場vs DCF乖離分析、stock.html独自計算） | render内IIFE | 表示条件: `(base_iv-currentPrice)/currentPrice < -50%`（DCF価値が市場価格より50%超低い場合のみ）。`EV = currentPrice×diluted_shares + net_debt`（AS-IS-045、既定義・フェーズ4）<br>`fcfTerm = EV×(Rm-g_TV)/(1+g_TV)`（Rm=AS-IS-013のmarket_return、g_TV=AS-IS-059）<br>`reqGr = (fcfTerm/fcfCur)^(1/5) - 1`（fcfCur=AS-IS-019のbase_fcf） | AS-IS-045（既定義・フェーズ4）＋ AS-IS-013, AS-IS-059, AS-IS-019（本表） | 導出データ |
 | AS-IS-442 | TANUKI TAIL | assumptions.Y1_growth/Y2_growth/Y3_growth | `tail_dcf_bridge.py:generate_scenario_files()` | `review["stage2"]["scenarios"][シナリオ].revenue_growth_y1/y2/y3`（AS-IS-492、本表）をそのまま`round(値,4)`で転記 | AS-IS-492（本表） | 導出データ |
 | AS-IS-443 | TANUKI TAIL | assumptions.terminal_growth | 同上 | `review["stage2"]["scenarios"][シナリオ].terminal_growth`（AS-IS-493、本表）をそのまま転記 | AS-IS-493（本表） | 導出データ |
@@ -844,6 +844,16 @@ discover_config.json）は、バリデーションなしで直接GitHubにコミ
   なく、そのまま計算される。CF（投資再生産効率）が構造的に負値を
   取りうる銘柄では、`rice`は符号が反転した値をそのまま返すのに
   `rice_adj`だけが0にフォールバックするという不整合が生じる。
+  **[2026-09-19追記: [[RICE-ADJ-ASYMMETRIC-ZERO-1]]対応で解消済み。
+  `rice`はcf<=0の場合、`rice_adj`はcf_adj<=0またはwacc<=0の場合、
+  いずれも0.0ではなくNone（測定不能）を返す対称設計に変更し、
+  `rice_na_reason`/`rice_adj_na_reason`に理由を残すようにした。
+  102銘柄中4銘柄（CIX/ENTG/SPIR/XOM）で表示が変化（詳細は
+  BACKLOG_DONE.mdの本エントリのクローズノート参照）。合わせて
+  `pipeline.py`のreport.txt生成（`rice_bear_d.get('rice','N/A')`型の
+  パターンは値がNoneでもキー自体は存在するため`.get()`の第2引数
+  〈デフォルト値〉が効かず"RICE=None"という生のNone文字列を出力して
+  いた）も修正した】**
 - **AS-IS-007（v0）とAS-IS-001（intrinsic_value_per_share）は別々の
   WACCで計算された別の値であり、latest.jsonのトップレベル`v0`
   フィールドはメイン理論株価の直接の計算根拠ではない**: `v0`
@@ -873,6 +883,18 @@ discover_config.json）は、バリデーションなしで直接GitHubにコミ
   異なる数値を表示することになる。加えて`const alpha=d.alpha??1.0`
   という変数が宣言されているが式中では一切使用されておらず、
   ALPHA-REDESIGN-1以前の名残と思われる死コードが残存している。
+  **[2026-09-19追記: [[SENS-MATRIX-DUAL-IMPL-1]]対応で解消済み。
+  クライアント側5×5マトリクス（`calcSensIV()`）をstock.htmlから
+  完全に削除し、バックエンドAS-IS-014（3×3、two_stage/three_stage/
+  taperingいずれのDCFタイプでも同一の感応度計算式）の表示のみに
+  一本化した。5×5→3×3への粒度縮小に伴い失われた情報:
+  ①WACC軸の刻み幅（旧: 固定5点8%/9%/10%/11%/12% → 新:
+  `calculate_sensitivity_matrix()`の`wacc_values`＝基準WACC±1%の3点、
+  固定5点表示は失われる）②成長率オフセット軸自体が廃止（旧:
+  BASE成長率±2%/±5%を横軸にした5点比較 → 新: `growth_years`＝
+  Phase1高成長年数を基準に±step年ずらした3点比較で、軸の意味自体が
+  「成長率オフセット」から「高成長期間」へ変更、成長率オフセット方向の
+  感応度は感応度分析セクションからは読めなくなる）】]**
 - **AS-IS-059: `get_terminal_growth()`はticker個別設定が「デフォルト値
   3.0%ちょうど」の場合、それが意図的な明示設定か単なる未設定かを
   区別できない**: `abs(ticker_tv_g - 0.03) > 1e-5`という差分チェックの

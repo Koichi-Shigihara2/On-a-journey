@@ -1243,67 +1243,6 @@ function render(d) {
         })()}
       </div>
 
-      ${(() => {
-        if (!fcfBaseUsed || !dilutedShares) return '';
-        const rmList  = [0.08, 0.09, 0.10, 0.11, 0.12];
-        const gOffsets = [-0.05, -0.02, 0, 0.02, 0.05];
-        const baseG   = highGrowthRate;
-        const tg      = terminalGrowth;
-        const yrs     = highGrowthYears;
-        const fcb     = fcfBaseUsed;
-        const shs     = dilutedShares;
-        const bsps    = bsNetCashPerShare;
-        // [[SENS-MATRIX-DUAL-IMPL-1]]対応（2026-08-30）: 宣言されているが
-        // calcSensIV()内で一度も参照されない死コードだったため削除
-        // （5×5マトリクスとbackend 3×3の統合方針自体は製品判断が必要な
-        // ため未着手のまま。詳細はBACKLOG.md参照）。
-
-        function calcSensIV(g, r) {
-          if (r <= tg) return null;
-          let pv = 0, fcfT = fcb;
-          for (let t = 1; t <= yrs; t++) {
-            fcfT *= (1 + g);
-            pv += fcfT / Math.pow(1 + r, t);
-          }
-          const tvPv = (fcfT * (1 + tg) / (r - tg)) / Math.pow(1 + r, yrs);
-          return (pv + tvPv) / shs + bsps;
-        }
-
-        const cellStyle = 'padding:5px 8px;text-align:right;border:1px solid var(--bdr)';
-        const hStyle    = 'padding:5px 8px;text-align:center;border:1px solid var(--bdr);font-size:11px;color:var(--mut);background:rgba(255,255,255,0.03)';
-
-        let thead = '<tr><th style="' + hStyle + ';text-align:left">Rm \\ g</th>';
-        gOffsets.forEach(o => {
-          const lbl = (o === 0 ? 'BASE' : (o > 0 ? '+' : '') + (o * 100).toFixed(0) + '%');
-          thead += '<th style="' + hStyle + (o === 0 ? ';color:var(--acc)' : '') + '">' + lbl + '</th>';
-        });
-        thead += '</tr>';
-
-        let tbody = '';
-        rmList.forEach(rm => {
-          const isBaseRm = Math.abs(rm - 0.10) < 0.0001;
-          tbody += '<tr>';
-          tbody += '<td style="' + hStyle + ';text-align:right' + (isBaseRm ? ';color:var(--acc)' : '') + '">' + (rm * 100).toFixed(0) + '%</td>';
-          gOffsets.forEach(go => {
-            const iv = calcSensIV(baseG + go, rm);
-            if (iv == null) { tbody += '<td style="' + cellStyle + ';color:var(--mut)">—</td>'; return; }
-            const isBasePt = go === 0 && isBaseRm;
-            const col = iv >= currentPrice ? 'var(--green)' : 'var(--red)';
-            const extra = isBasePt ? ';outline:2px solid var(--acc);outline-offset:-2px;font-weight:700' : '';
-            tbody += '<td style="' + cellStyle + ';color:' + col + extra + '">$' + iv.toFixed(0) + '</td>';
-          });
-          tbody += '</tr>';
-        });
-
-        return '<div class="future-section" style="margin-top:16px">'
-          + '<h3 class="section-title">感応度分析（割引率 × 成長率）</h3>'
-          + '<div style="font-size:11px;color:var(--mut);margin-bottom:8px">BASE成長率: ' + (baseG * 100).toFixed(1) + '% ／ ターミナル: ' + (tg * 100).toFixed(1) + '% ／ 太枠=現在パラメータ ／ 緑=割安・赤=割高</div>'
-          + '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px">'
-          + '<thead>' + thead + '</thead>'
-          + '<tbody>' + tbody + '</tbody>'
-          + '</table></div></div>';
-      })()}
-
       <div id="growth-sanity-container"></div>
 
       ${(() => {
