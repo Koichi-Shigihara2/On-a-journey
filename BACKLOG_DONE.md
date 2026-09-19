@@ -107,6 +107,256 @@ SILO非対象銘柄向けのフォールバック専用）になっており、�
 
 ---
 
+### ✅ [MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1] 系列単位の取得失敗がviolations_log.jsonで「正常」と区別できない — fetch_status可視化＋系列単位try/except＋Check L新設＋FTSD撤去で本体対応完了
+**状態:** 本体対応（fetch_status可視化・try/except分離・Check L新設）
+実装完了。FTSDも series_meta.json から撤去したためクローズする
+**優先度:** 中（実害は現時点でFTSD1件のみ確認済みだが、今後同様の
+失敗〈系列ID変更・FRED側仕様変更等〉が起きても気づけない構造的リスク）
+**分類:** 設計上のギャップ / 可視性欠如
+**登録日:** 2026-08-15
+**完了日:** 2026-09-19
+**発見:** `common/macro_data/`更新実行実績・データ鮮度の確認調査
+（チャット記録、2026-08-15）
+**統合について（2026-09-05）**: `MACRODATA-FTSD-SERIES-ID-INVALID-1`
+（FRED系列コード「FTSD」がFRED API上に実在しない具体事例）を本エントリへ
+統合した。両者は「一般的な欠陥（取得失敗が可視化されない設計）」と
+「その欠陥が実際に表面化した具体例（FTSD系列コード誤り）」という直接の
+親子関係にあるため、可視性欠如を扱う本エントリを主エントリとして残し、
+FTSDケースの内容は要約せず全文そのまま下記「具体事例（FTSDケース）」に
+保持する。`MACRODATA-FTSD-SERIES-ID-INVALID-1`はBACKLOG.mdから削除済み。
+`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`は別論点のため統合対象外。
+
+#### 内容
+`fetch_series()`は失敗時に例外を投げずNoneを返す設計（print()ログの
+みでリポジトリには残らない）。`update_series()`はNone時に
+`{"updated": 0, "warnings": []}`を返し`violations_log.json`へ書き込む
+が、この構造は正常に0件警告だった健全な系列と区別がつかない。
+FTSDエントリ（`{"checked_at": ..., "warnings": []}`）が実例（詳細は
+下記「具体事例（FTSDケース）」参照）。`series/{ID}.json`ファイルが
+存在しないことに能動的に気づかない限り、取得失敗を発見できない。
+
+加えて、`fetch_all_series()`のforループには系列単位のtry/exceptが
+なく、予期しない例外（ディスクエラー等）が発生した場合、その系列
+以降の全系列が未処理のままバッチ全体が中断する構造的リスクも
+あわせて確認された（今回の3日間の実行では未発生）。
+
+#### 対応方針（未定）
+- `violations_log.json`に「fetch自体の成否」を示すフィールド
+  （例: `fetch_status: "success"/"failed"/"skipped"`）を追加する
+- `fetch_all_series()`のforループに系列単位のtry/exceptを追加し、
+  1系列の失敗が他系列の処理を止めないようにする
+- 週次等の定期監視（`audit.py`型の診断ツール）で
+  `series_meta.json`の全系列と`series/`ディレクトリの実ファイルを
+  突合し、欠落を検知する仕組みを追加する
+
+#### 着手条件
+なし。対応方針の具体化から。
+
+#### 具体事例（FTSDケース、統合元[MACRODATA-FTSD-SERIES-ID-INVALID-1]）
+以下は独立BACKLOGエントリだった`[MACRODATA-FTSD-SERIES-ID-INVALID-1]
+FRED系列コード「FTSD」がFRED API上に実在しない（05_main.pyのWTREGEN
+フォールバックが機能しない可能性）`の全文をそのまま転記したもの。
+
+**優先度:** 中で据え置き（2026-08-13事実確認の結果、実害は極めて稀と
+確認できたため引き上げ不要と判断。ただし機能しないフォールバックを
+放置すべきではないため記録は残す。詳細は下記「追記」参照）
+**分類:** バグ疑い / データソース側の系列コード誤り
+**登録日:** 2026-08-12
+**更新日:** 2026-08-13（事実確認調査完了。原因特定・実害実績確認・
+修正案提示。詳細は下記「追記」参照。実装コード変更なし）
+**発見:** `common/macro_data/`定期取得ワークフロー新設・動作確認
+（`fetch_all_series()`の実FRED_API_KEYによるローカル実行、チャット
+記録、2026-08-12）
+
+##### 内容
+`common/macro_data/fetcher.py::fetch_series("FTSD")`を実行したところ、
+fredapi経由・`curl`による直接FRED REST API呼び出し
+（`https://api.stlouisfed.org/fred/series?series_id=FTSD&api_key=...`）
+の両方で`{"error_code":400,"error_message":"Bad Request.  The series
+does not exist."}`が返り、**`FTSD`はFRED上に実在しない系列コードで
+あることを確認した**（ネットワーク一時障害やfredapiライブラリ側の
+問題ではなく、系列コード自体が無効）。
+
+`05_main.py::update_liquidity_csv()`は`WTREGEN`（TGA残高）取得失敗時に
+`FTSD`へフォールバックする実装になっている（1959-1960行:
+`if tga_val is None: tga_val, _ = fred_latest(fred, "FTSD",
+target_date, lookback=21)`）が、このフォールバックが実際に発動しても
+`FTSD`自体が無効な系列コードのため取得は失敗し、TGA値は結局取得
+できないままになると推定される。`FTSD`は
+`[[MACRODATA-FTSD-MISSING-FROM-INVENTORY-1]]`（`INPUT_DATA_TOBE.md`の
+24系列台帳への追加漏れ、`INPUT-A-049`として2026-08-12に対応済み）で
+台帳に追加した系列だが、台帳追加時点では実際にFRED上に存在するかの
+検証は行っていなかった。
+
+##### 追記（2026-08-13、事実確認調査完了、記録のみ・実装なし）
+
+**原因特定**: `FTSD`は2026-05-08のコミット`8561125f3`（`Co-Authored-By:
+Claude Sonnet 4.6`、NET LIQUIDITY計算のためWTREGEN/RRPONTSYD取得を
+追加した際にフォールバック先として導入）で、実在確認なしに導入されて
+いたことをコミット履歴で確認した。コミットメッセージ・コードいずれにも
+典拠の記載はない。
+
+**正しい代替系列の特定**: FRED検索API（`search_text=treasury general
+account`）で調査した結果、`WDTGAL`（Liabilities and Capital: Deposits
+with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General
+Account: **Wednesday Level**）が有力な代替候補と判明。`WTREGEN`
+（**Week Average**）と同一カテゴリ・同一期間（2002-12-18〜2026-08-05、
+現在も更新中）・同一単位（Millions USD、週次）でありながら集計方法が
+異なる（週平均 vs 水曜時点値）ため、名目だけの重複ではなく実務上意味の
+あるフォールバックになる。なお同種の旧系列`WLTGAL`・`LDGUST`は2018年に
+DISCONTINUEDと確認済みのため候補外。`search_text=FTSD`はFRED検索でも
+0件ヒットで、類似候補すら存在しない。
+
+**実害実績の確認**: `docs/market-monitor/macro-pulse/data/
+05_liquidity.csv`（2023-01-01〜現在、1302日分）を全件確認した結果、
+`tga`列が空欄なのは**2026-05-31の1件のみ**（前日5/30・翌日6/1は正常
+取得）。この日、`WTREGEN`取得失敗→`FTSD`へフォールバック→`FTSD`も
+無効のため結局取得失敗、という実際の発火・失敗の実績を確認した。
+同日`net_liquidity`列（`=(WALCL−TGA−RRP)/1,000,000`）も算出不能で
+空欄。`stealth_signal`列はその日も"neutral"のまま記録が継続しており
+致命的な誤判定はないが、NET LIQUIDITY系列に1日分の欠測点が生じていた。
+WTREGEN自体の失敗頻度は1302日中1日（約0.08%）で極めて低頻度。
+
+**新アーキテクチャ（`[[MACRODATA-LAYER-CONSTRUCTION-1]]`切替後）での
+位置づけ**: 現行`fred_latest()`は`reader.get_latest()`を呼ぶのみで、
+旧実装が持っていた`target_date`基準・`lookback`日数ウィンドウの制約が
+廃止されている。ローカルの`series/WTREGEN.json`に一度でも値が書き込ま
+れていれば、当日の取得が一時的に失敗しても直近キャッシュ値をそのまま
+返すため、フォールバック発動条件（`reader.get_latest("WTREGEN")`が
+Noneを返す）は「`WTREGEN`系列ファイル自体が存在しない／空」という、
+旧実装よりさらに稀なケースに限定される。初回投入時点でWTREGENは25系列
+中の成功24系列に含まれており、現状ローカルにデータが存在するため、
+現行アーキテクチャ下ではこのフォールバックが発動する可能性はさらに
+低下していると評価できる。ただし「発動条件が稀になったこと」と
+「発動時に機能するか」は別問題であり、後者（`FTSD`が無効）は現在も
+未解消。
+
+**修正案（未実装、次回対応時の実装指針）**:
+1. `05_main.py::update_liquidity_csv()`のフォールバック先を
+   `"FTSD"`→`"WDTGAL"`に変更
+2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
+   （`category: "liquidity"`、`consumers: ["05_main.py::
+   update_liquidity_csv (WTREGENフォールバック候補)"]`）。追加すれば
+   `fetch_all_series()`が自動的にバッチ取得対象に含める
+3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`
+   （`INPUT-A-049`）記載を`WDTGAL`に置き換えるか、無効系列だった旨の
+   注記を追加
+
+**優先度判断**: 実害頻度は旧実装でも0.08%、新実装ではさらに稀と推定
+されるため、優先度「中」からの引き上げは不要と判断し据え置く。一方で
+「一度も機能しないフォールバックが存在し続ける」こと自体は望ましくない
+ため、記録は残す。
+
+##### 着手条件
+次回の低優先度課題群まとめ対応時（`[[MACRODATA-AS-IS-DUPLICATION-
+UNDERCOUNT-1]]`・`[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]`・
+`[[MACRODATA-IMPORT-HISTORY-CONFIG-DRIFT-1]]`・
+`[[MACRODATA-FULL-HISTORY-DAILY-REFETCH-1]]`等と合わせて着手検討）。
+上記「修正案」を踏まえ、対応方針は事実上確定済み。
+
+##### FTSDケース分の実装完了（2026-09-13、コミット`79169b583e`）
+上記「修正案」1〜3を全て実装した:
+1. `05_main.py::update_liquidity_csv()`のフォールバック先を
+   `"FTSD"`→`"WDTGAL"`に変更、コードコメントも実態に合わせて書き換え
+2. `common/macro_data/series_meta.json`に`WDTGAL`エントリを新規追加
+   （`INPUT-A-050`、`category: "liquidity"`）。既存`FTSD`エントリは
+   削除せずnote追記のみで残置
+3. `INPUT_DATA_TOBE.md`/`INPUT_DATA_AS_IS.md`の`FTSD`（`INPUT-A-049`）
+   記載に無効系列だった旨の注記を追加、`WDTGAL`（`INPUT-A-050`）を
+   新規行として追加。両ファイルの機械的網羅性証明を実行し67件・
+   差分0件を再確認済み
+
+`common.macro_data.fetcher.fetch_series("WDTGAL")`を実FRED_API_KEYで
+直接呼び出し、1239件（2026-09-09まで）の実データが正常取得できることを
+確認した（`fred_latest()`はローカルキャッシュ読み取りのみでFREDへ
+直接アクセスしないため、疎通確認には`fetch_series()`を使用した）。
+pytest 1236件成功、`report_consistency_check.py --fail-on-ng` NG=0・
+ゲート通過。
+
+**本エントリのクローズは行わない**: 本体（`violations_log.json`の
+`fetch_status`可視化・`fetch_all_series()`の系列単位try/except）は
+別スコープのため今回は対応していない。FTSDケース分（機能しない
+フォールバックの解消）のみ対応完了、本体は引き続きオープンのまま
+残す。
+
+#### 本体対応の実装完了・FTSD撤去（2026-09-19）
+
+**再確認結果（実装着手前）**: 現状再検証を実施した結果、`FTSD`が
+`series_meta.json`に残置されたままであることを再確認した
+（`series/FTSD.json`は存在せず＝`fetch_all_series()`が引き続き毎回
+取得を試み常に失敗、`updated=0`で終わるのみ）。`macro_data_
+violations_log.json`のFTSDエントリ（`{"checked_at": ...,
+"warnings": []}`）が、正常に取得成功し警告0件だった健全な系列
+（例: `PAYEMS`）と構造的に完全に同一であることを実データで確認し、
+本エントリの診断がそのまま成立することを再確認した。FTSD以外に
+新規の取得失敗・空系列は見当たらなかった。`system_health.py::
+check_j_workflow_runs()`はワークフロー全体のsuccess/failureのみを
+見る設計で、系列単位の失敗は検知できないことも再確認した。
+
+**実装内容**:
+1. `common/macro_data/fetcher.py`: `update_series()`の戻り値・
+   `macro_data_violations_log.json`の各系列セクションへ`fetch_status`
+   （`"ok"`/`"failed"`）と`failure_reason`（失敗時のみ）を追加。
+   内部実装を`_fetch_series_raw()`として分離し、「FRED呼び出し自体が
+   失敗（APIキー未設定・3回リトライ後も失敗）」と「FREDは正常応答した
+   が新規データが0件／全件NaN」を区別できるようにした（既存フィールド
+   `checked_at`/`warnings`/`updated`/`warnings`は維持、後方互換）。
+2. `fetch_all_series()`のforループへ系列単位のtry/exceptを追加。
+   `update_series()`内部で捕捉されない予期しない例外が1系列で発生
+   しても、その系列のみ`fetch_status="failed"`として記録し残りの
+   系列の処理を継続する。バッチ全体（戻り値・`__main__`の終了コード）
+   は従来通り失敗させない（挙動を変えない）。
+3. `__main__`ブロックへ成功N/失敗M件数と失敗系列一覧のコンソール出力、
+   および`GITHUB_STEP_SUMMARY`への同内容のMarkdown表出力を追加
+   （`common/sec_data/update.py::main()`の既存パターンを踏襲）。
+4. `common/system_health.py`へCheck L（`check_l_macro_data()`）を新設。
+   `macro_data_violations_log.json`の`fetch_status=="failed"`エントリを
+   読むだけの軽量チェック（新規ロジックなし）。WARNレベル（icon
+   "⚠️"）に留め、CRITICAL判定（`check_j_workflow_runs`が対象）には
+   含めない。`build_one_line()`・`main()`の集計・出力へ配線。
+5. `FTSD`を`series_meta.json`から撤去（消費者ゼロをgrep確認済み、
+   直接参照は`series_meta.json`・`macro_data_violations_log.json`の
+   2ファイルのみだった）。`violations_log.json`側のFTSD残骸は手動編集
+   せず残置（`fetch_status`フィールドを持たない旧形式のまま、Check L
+   は旧形式エントリを"failed"と誤検知しないことをテストで確認済み。
+   `fetch_all_series()`が今後FTSDを対象に含めることは二度とないため
+   このエントリは事実上凍結される）。`WDTGAL`エントリのnoteへ撤去の
+   経緯を追記。
+
+**回帰テスト**: `tests/test_macro_data_fetcher.py`に7件追加・1件更新
+（fetch_status="ok"/"failed"の区別・空応答/全件NaN応答はok扱い・
+1系列の例外/FRED呼び出し失敗が他系列を止めないことを検証）、
+`tests/test_system_health_macro_data.py`を新設（5件、Check Lの検知・
+非検知・旧形式エントリの非誤検知・ログ不在時のスキップを検証）。
+`git stash`で修正前コード（fetcher.py/system_health.py/series_meta.json
+のみ）に戻すと、新規・更新した7件が実際に失敗する
+（`RuntimeError`が伝播しバッチが中断する・`KeyError: 'fetch_status'`）
+ことを確認した上で`git stash pop`で復元、モックが修正前コードと
+同じ誤りを再現していることを検証済み。
+
+**実データ確認**: 実FRED_API_KEYで`python common/macro_data/fetcher.py
+--start <400日前>`（本番`Macro_Data_Update.yml`の日次cron実行と同一
+コマンド）を実行し、FTSD撤去後の25系列が**全件`fetch_status="ok"`
+（成功25件/失敗0件）**になることを確認した。`system_health.py::
+check_l_macro_data()`もWARN 0件（"✅ 全系列取得成功"）を確認。
+あわせて`macro_data_violations_log.json`へ一時的に失敗エントリを
+注入し、Check Lが正しくWARNを検知すること（"⚠️ 取得失敗(1件):
+_INJECTED_TEST_FAILURE"）を確認した上で注入分を復元・未コミットの
+まま破棄した（本番ログへの意図しない残留なし）。`system_health.py`
+本体も`DISCORD_WEB_HOOK`を一時的に外した状態でフル実行し、新設[L]
+MacroDataが他チェック（[A]〜[K]）と並んで正常に統合されること
+（既存の無関係なWARN 3件〈[F][G][K]〉は本対応と無関係）を確認した。
+
+**ゲート**: pytest全体・`audit.py`・`report_consistency_check.py
+--fail-on-ng`いずれもNG=0（詳細は実装コミットのコミットメッセージ
+参照）。
+
+**総括**: 登録時（2026-08-15）に「未定」だった本体の対応方針（3項目）
+を全て実装し、唯一の実例だったFTSDも消費者ゼロを確認の上で撤去した。
+本エントリをクローズする。
+
+---
+
 ## 2026-09-18（完了）
 
 ### ✅ [TANUKI-VALUATION-MISC-GAPS-1]③ net_debt符号エイリアスの影響範囲確認 — 実害なしクローズ
