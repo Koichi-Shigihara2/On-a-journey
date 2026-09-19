@@ -35,6 +35,11 @@ JOURNAL_PATH  = os.path.join(DATA_DIR, "journal.json")
 JST = ZoneInfo("Asia/Tokyo")
 TICKER_RE = re.compile(r"^[A-Z0-9.\-]{1,10}$")
 
+# TAILKPI-FIELD-VALIDATION-GAP-1（2026-09-19実装）: xbrl_tagは
+# "namespace:LocalName"形式（us-gaap:Revenues、pltr:CommercialSegmentMember等、
+# 実データ調査で確認したカスタム名前空間も許容）。
+KPI_XBRL_TAG_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_\-]*:[A-Za-z][A-Za-z0-9]*$")
+
 
 def _now_iso():
     return datetime.now(JST).strftime("%Y-%m-%dT%H:%M:%S+09:00")
@@ -145,11 +150,46 @@ def register_journal(payload):
     return f"journal: {ticker} {jtype} — {date_v}（workflow_dispatch）"
 
 
+def _validate_kpi_fields(kpi, index):
+    """TAILKPI-FIELD-VALIDATION-GAP-1（2026-09-19実装）: kpis[]の個別
+    フィールド妥当性検証。
+
+    実データ調査（docs/portfolio/tail/data/positions/*_thesis.json 全件、
+    config/tail_kpi_map.json）の結果、warning_threshold は常に「120%以下」
+    「前四半期比横ばい」のような自然文字列であり数値ではないと判明したため
+    （登録時の対応方針メモにあった「数値妥当性」という想定は実データと
+    不一致だった）、ここでは「空でない文字列であること」のみを検証する。
+    xbrl_tag は auto_fetchable=False でも値を持つ実例（SOFI NCO/NIM）が
+    あり auto_fetchable との相関では検証できないため、値が存在する場合
+    のみ "namespace:LocalName" 形式を検証し、None または未設定（手動追加
+    KPIで発生）は許容する。
+    """
+    name = kpi.get("name") if isinstance(kpi, dict) else None
+    label = name or f"kpis[{index}]"
+
+    warn = kpi.get("warning_threshold")
+    if not isinstance(warn, str) or not warn.strip():
+        raise ValueError(
+            f"invalid warning_threshold for {label!r}: must be a non-empty string, got {warn!r}"
+        )
+
+    tag = kpi.get("xbrl_tag")
+    if tag is not None and (not isinstance(tag, str) or not KPI_XBRL_TAG_RE.match(tag)):
+        raise ValueError(
+            f"invalid xbrl_tag for {label!r}: must be 'namespace:LocalName' format "
+            f"(e.g. 'us-gaap:Revenues'), got {tag!r}"
+        )
+
+
 def confirm_kpis(payload):
     ticker   = _validate_ticker(payload.get("ticker"))
     selected = payload.get("kpis")
     if not selected:
         raise ValueError("kpis must be a non-empty list")
+    for i, kpi in enumerate(selected):
+        if not isinstance(kpi, dict):
+            raise ValueError(f"kpis[{i}] must be an object")
+        _validate_kpi_fields(kpi, i)
 
     thesis_path = os.path.join(POSITIONS_DIR, f"{ticker}_thesis.json")
     with open(thesis_path, encoding="utf-8") as f:
