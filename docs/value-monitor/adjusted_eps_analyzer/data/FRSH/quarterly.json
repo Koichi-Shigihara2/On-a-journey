@@ -1,6 +1,6 @@
 {
   "ticker": "FRSH",
-  "last_updated": "2026-09-14T09:53:37.512005",
+  "last_updated": "2026-09-21T09:58:43.779400",
   "quarters": [
     {
       "gaap_eps": 0.011864990402508536,
@@ -78,25 +78,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の分析では、SBCと無形資産償却は恒常的な非現金費用である一方、リストラ費用は一過性の項目です。GAAP EPSが0.012程度と極めて低いが、Adjusted EPSは0.154と大幅に改善するため、市場がGAAPベースで判断する場合に非現金・一時的費用による企業の実力（収益力）が過小評価されている可能性が高いです。投資家として注目すべきはSBCの大型継続発生による希薄化リスクと、調整依存の収益力の実態であり、過小評価の機会がある一方で過大評価リスクも伴います。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用であり毎期発生する恒常的な株式報酬コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で定期的に発生する非現金費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用として追加調整",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

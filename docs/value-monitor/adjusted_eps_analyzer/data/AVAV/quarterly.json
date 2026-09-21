@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-09-14T09:48:52.626586",
+  "last_updated": "2026-09-21T09:53:24.078839",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
@@ -88,35 +88,9 @@
       "tax_expense": -397000.0,
       "pretax_income": -5463000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "GAAP EPSが-0.10と赤字である一方、Adjusted EPSは0.96と黒字転換しており、特に無形資産償却やSBCの加回しにより企業の実力が見えにくくなっている。市場がGAAPベースで判断する場合、買収関連の非現金費用や一時的項目が実態を歪め、成長力・収益力を過小評価するリスクが高い。ただしSBCや無形資産償却は恒常的性質が強く、過大調整の可能性もあるため投資家はコア事業のキャッシュフローや希薄化効果を注視すべき。全体として実力の過小評価リスクが優勢。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用。恒常的に発生する株式報酬費用であり、調整の正当性は中程度。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。定期的に発生する非現金費用で恒常的性格が強い。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト。M&A関連でほぼ一時的と判断。",
-            "confidence": 0.8
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響。異常変動分として一過性が高い。",
-            "confidence": 0.7
-          },
-          {
-            "item": "inventory_writeoff",
-            "snippet": "一過性の在庫評価損。非経常的な書き下げとして一時的。",
-            "confidence": 0.75
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

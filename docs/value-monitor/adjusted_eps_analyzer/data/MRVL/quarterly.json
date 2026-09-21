@@ -1,6 +1,6 @@
 {
   "ticker": "MRVL",
-  "last_updated": "2026-09-14T09:50:51.603827",
+  "last_updated": "2026-09-21T09:55:26.095376",
   "quarters": [
     {
       "gaap_eps": 0.3343465045592705,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "主調整の無形資産償却費は買収に伴う恒常的な非現金費用（毎期発生）であり、リストラ費用のみが一過性。市場がGAAP EPS（0.33）で評価する場合、非現金・一過性項目により企業の実力（Adjusted EPS 0.53）が大幅に過小評価される可能性が高い。投資家は買収シナジーの持続性とキャッシュフロー生成力を注視すべきで、過小評価リスクが優勢だが、償却費の全額加算は経済的コストを無視した過大調整の懸念もある。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は定期的に発生する恒常的な非現金費用であり、真に一過性とはみなせない。",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用として非経常的であり、調整の妥当性が高い。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "SN",
-  "last_updated": "2026-09-14T09:54:51.796237",
+  "last_updated": "2026-09-21T10:00:22.992031",
   "quarters": [
     {
       "gaap_eps": 0.9173820687634169,
@@ -62,25 +62,9 @@
       "tax_expense": 33877000.0,
       "pretax_income": 163693000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整の大部分が恒常的なSBC（株式報酬）と無形資産償却であり、一過性の貸倒引当異常分は極めて小さいため、Adjusted EPSは持続可能な実力を過大に示している可能性が高い。市場がGAAP EPSで判断する場合、非現金費用によりキャッシュ生成力が見えにくくなり企業実力を過小評価するリスクがあるが、SBCは実質的な希薄化コストであるためAdjustedベースで評価すると過大評価リスクが大きい。投資家はSBCの継続発生と株式希薄化の影響を特に注視し、調整の質を慎重に判断すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用であるが、継続的に発生する株式報酬費用であり恒常的コストと考えられる",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で、買収後複数期にわたり発生する恒常的項目",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分を調整",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

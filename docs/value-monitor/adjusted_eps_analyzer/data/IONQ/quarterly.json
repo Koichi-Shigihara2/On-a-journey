@@ -1,6 +1,6 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-09-14T09:50:17.716103",
+  "last_updated": "2026-09-21T09:54:56.186187",
   "quarters": [
     {
       "gaap_eps": -5.080070633397915,
@@ -110,30 +110,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目のうちワラント公正価値変動が16億ドル超と極めて大きく、GAAP EPS(-5.08)をAdjusted EPS(-0.1)へ大幅に改善させています。SBCと無形資産償却は恒常的な非現金コストである一方、M&A統合費用は一過性です。市場がGAAP EPSのみで判断する場合、IONQのコア事業の実力(量子コンピューティングの進展)が大きく過小評価されるリスクが高く、株価に悪影響を及ぼす可能性があります。投資家はSBCの継続性とワラント変動の非経常性を注視し、過大調整による実力の過大評価リスクも考慮すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だがテック企業では恒常的に発生する株式報酬費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で毎期発生する可能性が高い恒常的非現金費用",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとして非経常的",
-            "confidence": 0.8
-          },
-          {
-            "item": "warrant_fv_change",
-            "snippet": "非現金・非経常のワラント時価評価変動でありコア事業とは無関係",
-            "confidence": 0.7
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

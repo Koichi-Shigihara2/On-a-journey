@@ -1,6 +1,6 @@
 {
   "ticker": "CRM",
-  "last_updated": "2026-09-14T09:49:35.322274",
+  "last_updated": "2026-09-21T09:54:09.789666",
   "quarters": [
     {
       "gaap_eps": 4.294762484774665,
@@ -97,25 +97,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "GAAP EPS(4.29)が投資公正価値変動の大きな非現金利益により押し上げられており、Adjusted EPS(2.77)は大幅に低いため、市場がGAAPベースで判断する場合に企業の経常的な収益力(特にSBC等の恒常コスト控除後)が歪んで見えにくくなっている。SBCは恒常的コストである一方、投資変動とリストラは一過性であり、GAAP重視は過大評価リスクを高める。投資家は調整後EPSを主眼に置き、持続可能性を検証すべきで、過小評価より過大評価のリスクが大きい。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用",
-            "confidence": 0.8
-          },
-          {
-            "item": "investment_fv_change",
-            "snippet": "非現金・非経常の投資時価評価変動",
-            "confidence": 0.9
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

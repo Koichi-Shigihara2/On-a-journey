@@ -1,6 +1,6 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-09-14T09:50:48.271990",
+  "last_updated": "2026-09-21T09:55:16.259547",
   "quarters": [
     {
       "gaap_eps": -96.00134048257372,
@@ -75,9 +75,30 @@
       "tax_expense": -237700000.0,
       "pretax_income": -7399400000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "調整項目の多くを占めるSBCと無形資産償却は恒常的な非現金費用であり、リストラや異常貸倒引当は一過性と判断される。市場がGAAP EPS(-96.00)を基準に判断する場合、非現金・一過性費用が含まれるため企業の実力(調整後-95.00)が過小評価されるリスクがある。ただし恒常的項目のadd_backが大きいため調整後EPSが実態をやや過大に示す可能性もあり、投資家は過小評価・過大評価双方のリスクを考慮しコア事業のキャッシュフローや継続的SBCの実態に注目すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用。毎期発生する恒常的な株式報酬関連コスト。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却。継続的に発生する非現金費用。",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響。異常変動分の貸倒引当金。",
+            "confidence": 0.8
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用。リストラ・事業再編関連。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

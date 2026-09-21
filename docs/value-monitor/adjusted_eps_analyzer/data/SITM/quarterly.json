@@ -1,6 +1,6 @@
 {
   "ticker": "SITM",
-  "last_updated": "2026-09-14T09:51:43.549570",
+  "last_updated": "2026-09-21T09:56:36.989039",
   "quarters": [
     {
       "gaap_eps": 0.6604583484903601,
@@ -65,20 +65,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目として無形資産償却（恒常的傾向）とM&A統合費用（一過性）が加算され、GAAP EPS 0.66からAdjusted EPS 1.19へ大幅に上方修正されています。市場がGAAP EPS基準で判断する場合、買収関連の非現金・一時的費用により企業の実力（コア収益力）が過小評価される可能性があります。ただし無形資産償却は毎期発生する恒常的コストであるため、調整後EPSを過信すると過大評価リスクも存在します。投資家は調整項目の持続可能性と買収効果の真の寄与を注視すべきです。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。これは非現金費用だが、買収が繰り返されない限り複数年にわたって発生する恒常的な調整項目である。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト。M&Aに伴う統合費用は通常一時的である。",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
