@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -42.0,
-  "calculation_date": "2026-09-19T09:44:17+09:00",
+  "calculation_date": "2026-09-21T18:38:28+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -247,35 +247,17 @@
     "stdebt_last_confirmed_zero_year": null
   },
   "rice": {
-    "available": true,
-    "q": -0.8471,
-    "cf_conversion": -0.0702,
-    "cf_adj": -0.0957,
+    "available": false,
+    "q": 0.0,
+    "cf_conversion": 0.0,
+    "cf_adj": 0.0,
     "wacc": 0.1,
-    "q_years": 1,
-    "cf_years": 3,
-    "avg_intensity": 0.7745,
-    "avg_rev_growth_lagged": -0.0654,
+    "q_years": 0,
+    "cf_years": 0,
+    "avg_intensity": 0.0,
+    "avg_rev_growth_lagged": 0.0,
     "warnings": true,
-    "note": "SBC補正済み（純利益+SBCを分母に使用） / Q: 1年のみ使用（3年要求）",
-    "bear": {
-      "growth_rate": 0.115,
-      "rice": 0.068,
-      "rice_per_ratio": 0.0,
-      "rice_adj": 0.0
-    },
-    "base": {
-      "growth_rate": 0.164,
-      "rice": 0.097,
-      "rice_per_ratio": 0.0,
-      "rice_adj": 0.0
-    },
-    "bull": {
-      "growth_rate": 0.197,
-      "rice": 0.117,
-      "rice_per_ratio": 0.0,
-      "rice_adj": 0.0
-    }
+    "note": "エラー: unsupported format string passed to NoneType.__format__"
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
@@ -330,11 +312,11 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": -29.743591,
+    "per": -29.23077,
     "per_is_forward": false,
     "per_adjusted": null,
     "peg": null,
-    "ps": 7.2740684,
+    "ps": 7.148653,
     "ev_ebitda": null,
     "ma200": 13.605699977874757,
     "forward_eps": -0.39,
@@ -344,7 +326,7 @@
     "analyst_target_low": 15.0,
     "analyst_target_high": 24.0,
     "analyst_count": 4,
-    "analyst_rec_key": "strong_buy",
+    "analyst_rec_key": "none",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
@@ -357,7 +339,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-19",
+    "validated_at": "2026-09-21",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -390,10 +372,10 @@
   "pre_rounding_comment": null,
   "rounded_by_policy": null,
   "matrix": {
-    "matrix": "①投資効率系",
+    "matrix": "④キャッシュ創出力系",
     "quadrant": "左下",
-    "label": "割高×低効率",
-    "key_metric_y": "RICE = 0.097",
+    "label": "割高×低FCF",
+    "key_metric_y": "FCF_Margin = -129.4%",
     "qx": false,
     "qy": false
   },

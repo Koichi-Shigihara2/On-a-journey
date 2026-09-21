@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -11.5,
-  "calculation_date": "2026-09-19T09:40:43+09:00",
+  "calculation_date": "2026-09-21T18:34:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -259,37 +259,17 @@
     "stdebt_last_confirmed_zero_year": null
   },
   "rice": {
-    "available": true,
-    "q": 1.0923,
-    "cf_conversion": -0.6134,
-    "cf_adj": -0.6134,
+    "available": false,
+    "q": 0.0,
+    "cf_conversion": 0.0,
+    "cf_adj": 0.0,
     "wacc": 0.1,
-    "q_years": 3,
-    "cf_years": 3,
-    "avg_intensity": 0.0132,
-    "avg_rev_growth_lagged": 0.0033,
+    "q_years": 0,
+    "cf_years": 0,
+    "avg_intensity": 0.0,
+    "avg_rev_growth_lagged": 0.0,
     "warnings": true,
-    "note": "RICE-1価値創造係数=2.00(ROIC/WACC=2.11) / R&D未取得（FYTTM@2025-06-30, TTM@2024-06-30, TTM@2023-06-30）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-06-30, TTM@2024-06-30, TTM@2023-06-30）: 投資強度が過小になる可能性 / 投資強度が低すぎる（FYTTM@2024-06-30: 0.878%）: R&D未取得の可能性。CF値が過大になる場合がある",
-    "vc_factor": 2.0,
-    "roic_wacc_ratio": 2.112,
-    "bear": {
-      "growth_rate": 0.041,
-      "rice": -0.549,
-      "rice_per_ratio": -0.0255,
-      "rice_adj": 0.0
-    },
-    "base": {
-      "growth_rate": 0.059,
-      "rice": -0.791,
-      "rice_per_ratio": -0.0367,
-      "rice_adj": 0.0
-    },
-    "bull": {
-      "growth_rate": 0.071,
-      "rice": -0.951,
-      "rice_per_ratio": -0.0441,
-      "rice_adj": 0.0
-    }
+    "note": "エラー: unsupported format string passed to NoneType.__format__"
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
@@ -344,14 +324,14 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.4442505818745397,
-    "per": 21.567415,
+    "per": 20.988764,
     "per_is_forward": false,
     "per_adjusted": 20.92,
     "peg": null,
-    "ps": 2.923328,
-    "ev_ebitda": 14.122,
+    "ps": 2.848035,
+    "ev_ebitda": 13.697,
     "ma200": 25.56935008049011,
-    "forward_eps": 1.61,
+    "forward_eps": null,
     "next_quarter_eps": null,
     "analyst_target_median": null,
     "analyst_target_mean": null,
@@ -359,7 +339,7 @@
     "analyst_target_high": null,
     "analyst_count": null,
     "analyst_rec_key": "",
-    "dividend_yield": 0.031454783,
+    "dividend_yield": 0.03178808,
     "payout_ratio": 0.6742,
     "insider_buy_count": 0,
     "insider_sell_count": 8,
@@ -370,7 +350,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-19",
+    "validated_at": "2026-09-21",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -403,10 +383,10 @@
   "pre_rounding_comment": null,
   "rounded_by_policy": null,
   "matrix": {
-    "matrix": "①投資効率系",
+    "matrix": "④キャッシュ創出力系",
     "quadrant": "左下",
-    "label": "割高×N/A (OCF赤字)",
-    "key_metric_y": "RICE = -0.791",
+    "label": "割高×低FCF",
+    "key_metric_y": "FCF_Margin = 12.1%",
     "qx": false,
     "qy": false
   },
@@ -517,8 +497,6 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0001,
-  "forward_earnings_yield": 0.0431,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

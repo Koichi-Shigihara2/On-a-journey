@@ -1,5 +1,5 @@
 ENTG INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-19T09:47:45+09:00
+Generated: 2026-09-21T18:42:09+09:00
 Price: $142.25
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -10,7 +10,7 @@ Timing_Score (components):
   Deviation_Rate: -77.0%
   MA200_Deviation: +10.3%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $170 median ($120-$215) | 11 analysts | vs IV: +419.1%
+  Analyst_Consensus: None | Target: $170 median ($120-$215) | 11 analysts | vs IV: +419.1%
 Comment: 割高(-77%超)、FCF黒字、売上安定成長
 Definition:
 
@@ -29,10 +29,10 @@ PASS: Funda<25, excluded from consideration
 
 
 [2. MATRIX POSITION]
-Matrix: ①投資効率系
+Matrix: ④キャッシュ創出力系
 Quadrant: 左下
-Label: 割高×N/A (OCF赤字)
-Key_Metric_Y: RICE = -0.128
+Label: 割高×低FCF
+Key_Metric_Y: FCF_Margin = 12.5%
 Deviation_Rate: -77.0%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -105,7 +105,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $23.61  $26.01  $28.21
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目の理由欄に「一過性」と明記されており、在庫評価損・リストラ費用ともに事業運営上の一時的な問題と判断される。
+  Reasoning: すべての項目の理由欄に「一過性の在庫評価損」または「一過性の事業再編費用」と明記されており、事業運営上の一時的な問題と判断される。
 Financial_Health:
   Net_Debt: $+3.10B (negative=net cash)
   Total_Debt: $3.46B  Cash: $0.35B  ST_Invest: $0.00B (推定ゼロ、最終確認: FY2016)
@@ -200,19 +200,17 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 
 
 [5. RICE METRICS]
-Available: true
-Exclusion_Reason: N/A
-BEAR: RICE=-0.089
-BASE: RICE=-0.128
-BULL: RICE=-0.153
+Available: false
+Exclusion_Reason: エラー: unsupported format string passed to NoneType.__format__
+BEAR: RICE=N/A
+BASE: RICE=N/A
+BULL: RICE=N/A
 Components (BASE scenario):
-G  = 6.6%  [TANUKI forward growth rate]
-Q  = 2.1447   [OCF / (NetIncome + SBC), 3yr avg]
-CF = -0.1831  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+G  = N/A
+Q  = 0.0   [OCF / (NetIncome + SBC), 3yr avg]
+CF = 0.0  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 WACC = 10.0%
-VC_Factor = 0.49  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
-ROIC_WACC_Ratio = 0.49  [NOPAT/InvestedCapital / 0.10]
-SBC_Adjusted: true
+SBC_Adjusted: false
 Definition:
 
 RICE measures reinvestment efficiency and compounding power
@@ -263,9 +261,9 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 64.2x
+  Market_PER_GAAP: 70.8x
   Adjusted_EPS_PER: 38.4x (TTM調整後EPS: $3.7032)
-  Delta: -25.8x (cheaper on adjusted basis)
+  Delta: -32.4x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-04
   Next_Quarter_EPS: $1.02 (yfinance analyst estimate)
@@ -291,10 +289,10 @@ Phase_History (recent 6 months):
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 64.2x
-  PEG: 1.12
-  PS:  5.9x
-  EV_EBITDA: 25.2x
+  PER: 70.8x
+  PEG: 1.24
+  PS:  6.5x
+  EV_EBITDA: 27.3x
   PEG_Signal: 適正水準（成長率対比でPEG 1.0〜2.0）
   PS_Signal: 適正水準
 Definition:
@@ -340,7 +338,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 6.6%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $170 median ($120-$215) | 11 analysts | vs IV: +419.1%
+Analyst_Consensus: None | Target: $170 median ($120-$215) | 11 analysts | vs IV: +419.1%
 Insider_Activity: Sell優勢 | 買い0件 / 売り3件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 3.2%

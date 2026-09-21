@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -67.8,
-  "calculation_date": "2026-09-19T09:47:34+09:00",
+  "calculation_date": "2026-09-21T18:41:58+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -247,37 +247,17 @@
     "stdebt_last_confirmed_zero_year": null
   },
   "rice": {
-    "available": true,
-    "q": 1.7097,
-    "cf_conversion": -1.2217,
-    "cf_adj": -1.2217,
+    "available": false,
+    "q": 0.0,
+    "cf_conversion": 0.0,
+    "cf_adj": 0.0,
     "wacc": 0.1,
-    "q_years": 3,
-    "cf_years": 3,
-    "avg_intensity": 0.0612,
-    "avg_rev_growth_lagged": -0.0622,
+    "q_years": 0,
+    "cf_years": 0,
+    "avg_intensity": 0.0,
+    "avg_rev_growth_lagged": 0.0,
     "warnings": true,
-    "note": "RICE-1価値創造係数=1.13(ROIC/WACC=1.13) / R&D未取得（FYTTM@2025-03-31, TTM@2024-03-31, TTM@2023-03-31）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-03-31, TTM@2024-03-31, TTM@2023-03-31）: 投資強度が過小になる可能性",
-    "vc_factor": 1.132,
-    "roic_wacc_ratio": 1.132,
-    "bear": {
-      "growth_rate": 0.006,
-      "rice": -0.142,
-      "rice_per_ratio": -0.0067,
-      "rice_adj": 0.0
-    },
-    "base": {
-      "growth_rate": 0.008,
-      "rice": -0.189,
-      "rice_per_ratio": -0.0089,
-      "rice_adj": 0.0
-    },
-    "bull": {
-      "growth_rate": 0.01,
-      "rice": -0.236,
-      "rice_per_ratio": -0.0111,
-      "rice_adj": 0.0
-    }
+    "note": "エラー: unsupported format string passed to NoneType.__format__"
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-03-31",
@@ -332,12 +312,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.4324966627201253,
-    "per": 21.244669,
+    "per": 21.047619,
     "per_is_forward": false,
     "per_adjusted": 27.64,
-    "peg": 1.4141,
-    "ps": 1.9282916,
-    "ev_ebitda": 10.815,
+    "peg": 1.4009,
+    "ps": 1.8624662,
+    "ev_ebitda": 10.465,
     "ma200": 146.9025,
     "forward_eps": 10.79067,
     "next_quarter_eps": 3.66,
@@ -347,7 +327,7 @@
     "analyst_target_high": 200.0,
     "analyst_count": 22,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.02471529,
+    "dividend_yield": 0.02498928,
     "payout_ratio": 0.5251,
     "insider_buy_count": 0,
     "insider_sell_count": 0,
@@ -359,7 +339,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-19",
+    "validated_at": "2026-09-21",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -392,10 +372,10 @@
   "pre_rounding_comment": "割高(-68%超)、FCF黒字、売上成長停滞",
   "rounded_by_policy": "B",
   "matrix": {
-    "matrix": "①投資効率系",
+    "matrix": "④キャッシュ創出力系",
     "quadrant": "左下",
-    "label": "割高×N/A (OCF赤字)",
-    "key_metric_y": "RICE = -0.189",
+    "label": "割高×低FCF",
+    "key_metric_y": "FCF_Margin = 7.1%",
     "qx": false,
     "qy": false
   },

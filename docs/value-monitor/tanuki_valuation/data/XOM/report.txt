@@ -1,5 +1,5 @@
 XOM INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-19T09:47:34+09:00
+Generated: 2026-09-21T18:41:58+09:00
 Price: $163.54
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -30,10 +30,10 @@ PASS: Funda<25, excluded from consideration
 
 
 [2. MATRIX POSITION]
-Matrix: ①投資効率系
+Matrix: ④キャッシュ創出力系
 Quadrant: 左下
-Label: 割高×N/A (OCF赤字)
-Key_Metric_Y: RICE = -0.189
+Label: 割高×低FCF
+Key_Metric_Y: FCF_Margin = 7.1%
 Deviation_Rate: -67.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -203,18 +203,16 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 
 
 [5. RICE METRICS]
-Available: true
-Exclusion_Reason: N/A
-BEAR: RICE=-0.142
-BASE: RICE=-0.189
-BULL: RICE=-0.236
+Available: false
+Exclusion_Reason: エラー: unsupported format string passed to NoneType.__format__
+BEAR: RICE=N/A
+BASE: RICE=N/A
+BULL: RICE=N/A
 Components (BASE scenario):
-G  = 0.8%  [TANUKI forward growth rate]
-Q  = 1.7097   [OCF / (NetIncome + SBC), 3yr avg]
-CF = -1.2217  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+G  = N/A
+Q  = 0.0   [OCF / (NetIncome + SBC), 3yr avg]
+CF = 0.0  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 WACC = 10.0%
-VC_Factor = 1.13  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
-ROIC_WACC_Ratio = 1.13  [NOPAT/InvestedCapital / 0.10]
 SBC_Adjusted: false
 Definition:
 
@@ -266,9 +264,9 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 21.2x
+  Market_PER_GAAP: 21.0x
   Adjusted_EPS_PER: 27.6x (TTM調整後EPS: $5.9159)
-  Delta: +6.4x (more expensive on adjusted basis)
+  Delta: +6.6x (more expensive on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-30
   Next_Quarter_EPS: $3.66 (yfinance analyst estimate)
@@ -294,10 +292,10 @@ Phase_History (recent 6 months):
 2026-08: Phase2 (期待拡大期)
 2026-09: Phase3 (陶酔期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 21.2x
-  PEG: 1.41
+  PER: 21.0x
+  PEG: 1.40
   PS:  1.9x
-  EV_EBITDA: 10.8x
+  EV_EBITDA: 10.5x
   PEG_Signal: 適正水準（成長率対比でPEG 1.0〜2.0）
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
