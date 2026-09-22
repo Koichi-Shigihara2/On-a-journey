@@ -12,22 +12,19 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-19時点）**: `BACKLOG.md`アクティブ件数
-**24件**（前回2026-09-16④時点26件から、`[[FCF-CONVRATE-LOWER-
-DIVERGENCE-1]]`・`[[FCF-CONVRATE-DESIGN-LIMIT-1]]`（ボトムアップFCF
-方式への根本移行で解消）・`[[TANUKI-VALUATION-MISC-GAPS-1]]`（残る
-③net_debt符号エイリアス〈実害なしクローズ〉・⑤Runway cash算出経路
-相違〈意図的差異として明記＋整合性WARN-48追加〉を解消し①〜⑧全8件
-完了、本体エントリごとクローズ）が完了。新規登録2件
-（`[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`・
-`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`、いずれも優先度低・着手条件
-なし）。詳細は`PROJECT_STATUS.md`「2026-09-18〜19」ブロック・
-`BACKLOG_DONE.md`「2026-09-18（完了）」「2026-09-19（完了）」参照。
+**現在の到達点（2026-09-23時点）**: `BACKLOG.md`アクティブ件数
+**22件**（機械カウント）。本日`[[EPS-UPC-PREREORG-1]]`（Up-C組織再編前
+ゼロ利益四半期の機械検知・Adjusted EPS集計除外を実装）をクローズし、
+新規登録3件（`[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`・
+`[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]`・
+`[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`、いずれも優先度
+低〜未調査・着手条件なし）。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`
+にはデータ棚卸し（HypeCoreの保持データ一覧・moat_scoreはHypeCore側では
+なくTANUKI VALUATION側の概念という前提訂正・行動経済学的要素の代理
+指標候補列挙）を追記（設計判断・実装なし）。詳細は`BACKLOG_DONE.md`
+「2026-09-23（完了）」・下記「最終更新: 2026-09-23」ブロック参照。
 BACKLOG.md/BACKLOG_DONE.md間のID重複は**0件**（機械確認済み、
-`### ✅ [`パターンがBACKLOG.md側に残存していないことも確認済み。
-前回時点で唯一の意図的重複だった`[[TANUKI-VALUATION-MISC-GAPS-1]]`が
-上記の通り完全クローズしたため、現時点で意図的な例外自体が存在
-しない）。
+`### ✅ [`パターンがBACKLOG.md側に残存していないことも確認済み）。
 
 **構造的ずれの是正完了（2026-09-13発見、2026-09-16②で解消）**:
 `## 優先度：高`セクション見出し配下に、個別`**優先度:**`フィールドが
@@ -70,6 +67,68 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    確認を行うこと（恒久対策の候補は`CHAT_RULES.md`「rebase時の
    データ消失事故パターンと恒久対策の検討」参照、採用可否は
    Koichiさんの判断待ち）。
+
+---
+
+最終更新: 2026-09-23（**セッション終了時ブラッシュアップ・本日の
+指示書サマリー**。全てpush済み）:
+
+1. **`[[EPS-UPC-PREREORG-1]]`実装完了・クローズ**（コミット
+   `da026f9b17`実装・`c2c2437e80`本番データ反映・`ef95b7b986`
+   BACKLOG_DONE.md移設）: Phase 1調査で全99銘柄・10年分の四半期実データを
+   「net_income正確に0かつrevenue>0」で機械検知した結果、ヒットは
+   BROSの2四半期のみ（2021-03-31 Q1・依頼時点で未確認だった2021-06-30
+   Q2の追加発見）。SEC EDGAR一次情報（`NetIncomeLoss=0`だが
+   `ProfitLoss`は非ゼロ）でUp-C構造のPubCo/OpCo分離会計という仮説を
+   裏付け、誤検知0件を確認。**依頼時点で「該当するはず」とされていた
+   CARTは検知されず**（`ProfitLoss`タグ自体が存在せず非支配持分の
+   連結構造を持たないため）、`[[CART-QUARTERLY-REVENUE-EXTRACTION-
+   GAP-1]]`として別原因（revenue抽出ギャップ）を分離登録。
+   `apply_upc_prereorg_filter()`新設（`[[EPS-LOAR-1]]`の
+   `SHARE_STRUCTURE_MISMATCH`と同型設計）でBROSの該当2四半期に
+   special_flagsを付与しTTM・年次集計・黒字化予測回帰から除外、
+   stock.htmlでは非表示にせず参考値である旨を3箇所で明記。全99銘柄で
+   before/after比較を実施し、変化があったのはBROSのみ（他98銘柄は
+   完全無差分）・TANUKI SCORE/IV/report.txtの最終値も変化0件を確認済み。
+   回帰テスト11件新設、`git stash`で9件が実際に失敗することを確認。
+   pytest 1447件全パス、audit.py exit 0、report_consistency_check.py
+   NG=0/WARN=121件（着手前と同一）
+2. **`[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`新規登録**
+   （コミット`b57dfd1239`、記録のみ）: `[[FIVE-CATEGORY-RECLASSIFY-1]]`
+   （2026-09-19完了）対応中に副次発見されていた
+   `DERIVED_DATA_SUBCATEGORIES.md`のクロス集計表（TANUKI TAIL行）陳腐化を
+   新規起票
+3. **`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`データ棚卸し追記**
+   （コミット`905a1fdc13`、調査のみ）: HypeCoreの保持データ（`poc.json`
+   全フィールド・週次更新・33ヶ月保持）を一覧化。**依頼時点の前提
+   「HypeCoreがmoat_scoreを保持」は誤りと判明**（moat_scoreはTANUKI
+   VALUATION側の概念）。`price_iv_ratio`が既に「価格/IV」の乖離指標
+   として存在することを確認し、ERP・Phase遷移との組み合わせ案を整理。
+   アンカリング・過剰反応・モメンタム持続/反転の代理指標候補を列挙
+   （設計・採否は次回Koichiさん判断）。副次発見として`poc.json`の
+   合成スコア（`price_iv_ratio`/`expectation_score`/
+   `fundamental_score`/`momentum_score`）がreport.txtに一切転記
+   されていないことを`[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-
+   REPORT-1]]`として分離登録（コミット`87a6c7ff6c`）
+
+**次セッションの着手候補**:
+- `[[SCHEMA-NORMALIZED-ISSUES-1]]`（Layer2/Layer3統合スキーマ設計待ち）
+- `[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`（行動経済学的要素の設計、
+  本日棚卸し済みの代理指標候補あり。Koichiさんとの設計確定待ち）
+- `[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]`（CAT/CON/ASTS等への
+  横展開調査、本格着手は未定）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本日クローズした
+  `EPS-UPC-PREREORG-1`が`### ✅ [ID]`パターンでBACKLOG_DONE.mdに存在し、
+  BACKLOG.md側にアクティブヘッダーとして残存していないことを確認
+- ID重複チェック（機械抽出）: `BACKLOG.md`内部でのヘッダーID重複
+  **0件**、`BACKLOG.md`/`BACKLOG_DONE.md`間の重複**0件**
+- git status: クリーン（未コミット変更・未追跡ファイルなし、scratchpad
+  の一時ファイルも確認・削除済み）
+- BACKLOG.mdアクティブ件数: 機械カウントで**22件**
+- 最終ゲート: pytest 1447件全パス・audit.py exit 0・
+  report_consistency_check.py --fail-on-ng NG=0/WARN=121件
 
 ---
 

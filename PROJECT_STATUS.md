@@ -9,6 +9,20 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-23**: `[[EPS-UPC-PREREORG-1]]`実装完了・クローズ
+  （Up-C構造・組織再編前ゼロ利益四半期の機械検知。全99銘柄で機械検知した
+  結果ヒットはBROS 2四半期のみ、依頼時点で該当するはずとされていた
+  CARTは非該当と判明し`[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]`
+  として原因を分離登録。`apply_upc_prereorg_filter()`でTTM・年次集計
+  から除外、stock.htmlでは参考値として明記。全99銘柄before/after比較で
+  BROS以外は完全無差分・TANUKI SCORE/IV変化0件を確認）。
+  `[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`新規登録（記録のみ）。
+  `[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`にHypeCoreデータ棚卸しを
+  追記（moat_scoreはHypeCore側ではなくTANUKI VALUATION側の概念という
+  依頼前提の訂正含む、設計・実装は次回Koichiさん判断待ちのまま）。
+  副次発見の`[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`も新規
+  登録。pytest 1447件全パス・audit.py exit 0・
+  report_consistency_check.py NG=0/WARN=121件
 - **2026-09-18〜19**: `[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-
   IDEA-1]]`を前回の10銘柄パイロット（AI抽出・参考表示のみ）から方針
   転換し、MD&A原文に将来向き定量ガイダンスが存在しないと実データで
