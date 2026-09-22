@@ -4782,6 +4782,52 @@ MSFT/NVDA/TSLA/JNJ、いずれも同一構造）:
 
 ---
 
+### [HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1] poc.jsonのHypeCore合成スコアがreport.txtに一切転記されていない
+**優先度:** 保留
+**分類:** データ品質 / HypeCore / TANUKI VALUATION / report.txt
+**登録日:** 2026-09-23
+**発見:** [[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]データ棚卸し
+（2026-09-23）で、report.txt[7. HYPECORE]の実際の生成元を実コード確認
+（`pipeline.py`1382-1421行目・2434-2530行目）した際の副次発見
+
+#### 内容
+`docs/value-monitor/hypecore/data/{ticker}_poc.json`の`monthly`配列は、
+`price_iv_ratio`（価格/IV比率）・`expectation_score`（期待系zスコア
+合成）・`fundamental_score`（財務系zスコア合成）・`momentum_score`
+（モメンタム系zスコア合成）・`substage_phase`/`substage_label`等の
+豊富な合成指標を月次33ヶ月分保持している。
+
+一方、`report.txt`の`[7. HYPECORE]`セクションは、poc.jsonの最新月から
+`stage`/`stage_label`（Current_Phase）と`substage_label`+
+`substage_watch`（HYPE_Signal）・直近6ヶ月の`stage`のみ（Phase_History）
+を転記しているだけで、上記の合成スコア系フィールド（`price_iv_ratio`・
+`expectation_score`・`fundamental_score`・`momentum_score`）は
+**report.txtに一切転記されていない**。これらはstock.html
+（`docs/value-monitor/tanuki_valuation/stock.html`ではなく
+`hypecore.html`・関連画面）が`poc.json`を直接fetchして独自に使う
+構造になっており、report.txt経由でのテキストベース参照・AI分析
+（`quarterly_review_generator.py`等のプロンプト構築）からは見えない
+状態になっている。
+
+#### 実害
+現時点で実害は未確認（report.txtを消費するAI分析・レビュー生成が
+これらの合成スコアを必要としているかどうかは未調査）。ドキュメント
+整合性というより「潜在的に有用なデータが一部消費経路から見えていない」
+というギャップの記録。
+
+#### 対応方針
+未定。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`（HypeCoreをIVと
+市場価格の乖離分析に特化させるepic）の設計が固まった際に、
+`price_iv_ratio`等をreport.txtへ追加転記するかどうかを合わせて判断する
+可能性がある。
+
+#### 着手条件
+なし（優先度保留）。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`の
+行動経済学的要素の設計がKoichiさんと確定した際に、まとめて対応するか
+どうかを判断する候補として残す。
+
+---
+
 ## システム設計の基本思想（2026-05-31）
 
 ### On-a-journeyの本質的な目的
