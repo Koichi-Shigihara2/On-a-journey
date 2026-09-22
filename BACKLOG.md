@@ -4657,6 +4657,125 @@ Rm=10%固定・Beta非考慮でセンチメントを意図的に排除）と、G
   `docs/value-monitor/hypecore/data/{ticker}_poc.json`のデータ構造）と
   stock.html/report.txtとのデータ連携経路を、詳細設計着手前に確認する
 
+#### データ棚卸し（2026-09-23、調査のみ・実装なし）
+次回Koichiさんが行動経済学的要素を設計する際の材料集めとして、既存データを
+棚卸しした（設計判断は行っていない）。
+
+##### ① HypeCoreが現在保持・計算しているデータ一覧
+`docs/value-monitor/hypecore/data/{ticker}_poc.json`（実データ確認: AAPL/
+MSFT/NVDA/TSLA/JNJ、いずれも同一構造）:
+- **トップレベル**: `ticker`・`generated`（生成日）・`generated_at`
+  （ISO timestamp）・`monthly`（月次配列）
+- **更新頻度**: `.github/workflows/HypeCore_Update.yml`は`SEC Data Update`
+  完了をトリガーとするworkflow_run連鎖（実質週1回、SEC Data Updateが
+  日曜）＋安全網の月曜4:00 UTCフォールバックcron。よって実質**週次更新**
+- **保持期間**: 実データはAAPL/MSFT/NVDA/TSLA/JNJいずれも一律
+  **33ヶ月分**（2024-01〜2026-09）。`fetch_price_data()`は
+  `common.market_data.reader.get_price_series(ticker, days=1400)`
+  （約46ヶ月相当の日次データ）を月次リサンプルした結果だが、実際の
+  観測値は33ヶ月で全銘柄一致しており、正確な差異の原因（market_data
+  daily層側の実バックフィル範囲等）は本棚卸しでは深追いしていない
+  （軽い棚卸しのスコープのため）
+- **monthlyの各月エントリのフィールド**（`hypecore.py`実装確認済み）:
+  - 価格・テクニカル系: `price`・`ma200_dev_local`・`ma200_mom`・
+    `ma50_dev`・`from_peak`・`rsi`・`volume_ratio_20d`・`vol_surge_6m`
+  - 財務系: `rev_yoy`・`ni_yoy`・`rule40_yoy_netmargin`・`ocf_yield_q`
+  - 市場評価系（yfinance `.info`由来、直近値のみで月次系列ではない
+    ため過去月はNoneが多い）: `forward_pe`・`trailing_pe`・
+    `peg_ratio`・`psr`・`revenue_growth_yf`・`earnings_growth`
+  - アナリスト系: `recommendation_mean`・`analyst_upgrade_rate`・
+    `analyst_downgrade_rate`・`sell_on_good_news`（既存フィールド名が
+    そのまま行動経済学的概念）・`buy_ratio`・`eps_surprise`・
+    `short_pct_float`
+  - Phase/Stage判定系: `stage`（1〜4の数値）・`stage_label`
+    （黎明期/期待拡大期/陶酔期/期待剥落期）・`substage_phase`・
+    `substage_label`・`substage_watch`・`substage_next`・`real_strong`
+  - **合成スコア系（既存の3軸分解、そのまま乖離分析の骨格に転用
+    可能）**: `expectation_score`（PER/PEG/PS等の期待系zスコア平均）・
+    `fundamental_score`（財務系zスコア平均）・`momentum_score`
+    （価格モメンタム系zスコア平均）
+  - **`price_iv_ratio`**: `price / iv`（`iv`はTANUKI VALUATIONの
+    `history/*.json`の`intrinsic_value_per_share`を月次ffillした
+    時系列＋`latest.json`の最新値）。**「IVと市場価格の乖離」を表す
+    フィールドは既にこれが存在する**
+  - その他: `ev_ebitda`・`low_base_effect`
+- **`moat_score`について（重要な訂正）**: 依頼時の前提「HypeCoreが
+  moat_scoreを保持」は誤りと判明。`moat_score`は
+  `src/value/tanuki_valuation/pipeline.py::_calc_moat_inputs()`/
+  `calculate_moat_score()`で計算されるTANUKI VALUATION（Funda側）の
+  概念であり、HypeCore（`hypecore.py`・`poc.json`）側には
+  `moat`を含むフィールドは1件も存在しない
+- **report.txt[7. HYPECORE]セクションの実際の内容**（`pipeline.py`
+  1382-1421行目・2434-2530行目付近で生成）は、上記poc.jsonの生データを
+  そのまま転記しているわけではなく、3系統のデータを混合表示している:
+  1. poc.json由来（最新月のみ）: `Current_Phase`（`stage`/
+     `stage_label`）・`HYPE_Signal`（`substage_label`+
+     `substage_watch`）・`Phase_History`（直近6ヶ月の`stage`のみ）
+  2. TANUKI VALUATION側`valuation.get("alpha")`由来:
+     `Alpha_Premium`（poc.jsonの値ではない）
+  3. yfinance `.info`スナップショット由来（report生成時点の現在値、
+     時系列ではない）: `Valuation_Multiples`（PER/PEG/PS/EV_EBITDA）・
+     `ERP`（`_calculate_erp()`で都度計算、`forward_eps`・
+     `current_price`・`risk_free_rate`から算出）
+  - poc.jsonが持つ`price_iv_ratio`・`expectation_score`・
+    `fundamental_score`・`momentum_score`・`substage_phase`等の
+    豊富な合成指標は、**report.txt側には一切転記されていない**
+    （stock.htmlが`poc.json`を直接fetchして独自に使っている構造、
+    `[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`登録時の「実コード
+    確認結果」節と整合）
+
+##### ② 「IVと市場価格の乖離」を既存フィールドの組み合わせのみで計算・表示する案
+新規指標を作らず既存データのみで構成する場合の材料:
+- **一次候補**: `price_iv_ratio`の時系列そのもの（`poc.json`の
+  `monthly[].price_iv_ratio`）。既に「価格/IV」という乖離度指標として
+  月次で存在するため、そのまま折れ線・トレンド表示に転用可能
+- **方向性の突合**: `price_iv_ratio`の直近トレンド（上昇＝乖離拡大）
+  と`ERP`の水準（低い/マイナス＝期待過熱、report.txt既存定義）を
+  組み合わせ、両者が同じ方向（価格上昇×ERP低下＝期待の織り込み一致）か
+  逆方向（価格上昇×ERP上昇＝債券的に見て期待は冷めているのに価格だけ
+  上昇＝説明のつかない乖離）かを機械的に判定できる
+- **Phase/Stageとの重ね合わせ**: `stage`（Phase1〜4）の遷移タイミングと
+  `price_iv_ratio`の急変タイミングを重ねることで、「どのPhaseで乖離が
+  急拡大したか」を可視化できる（既存の`Phase_History`6ヶ月分は短すぎる
+  ため、表示にはpoc.json本体の33ヶ月分を使う必要がある）
+- **既存3軸スコアとの関係**: `expectation_score`（市場評価の期待度）が
+  `price_iv_ratio`の主要な構成要素と重複する可能性が高い
+  （`hypecore.py:624-625`で`price_iv_ratio`自体が`expectation_score`の
+  z-score合成要素の1つとして既に組み込まれている）。両者を並べて
+  表示する場合は「`price_iv_ratio`は期待度指標の一部」という関係性の
+  明記が必要
+
+##### ③ 行動経済学的要素の代理指標候補（列挙のみ、採否・設計は次回判断）
+既存データの組み合わせのみで観測しうる候補（新規指標の考案はしていない）:
+
+- **アンカリング**:
+  - `from_peak`（直近高値からの下落率）: 過去の高値に対する参照点への
+    固着の代理指標候補
+  - `recommendation_mean`の月次系列の変化速度（アナリストコンセンサス
+    が価格変動に対してどれだけ遅れて追随するか）
+  - `analyst_upgrade_rate`/`analyst_downgrade_rate`の非対称性
+    （悪材料後の格下げの遅さ＝アンカリングの代理）
+
+- **過剰反応**:
+  - `sell_on_good_news`（既存フィールド名がそのまま行動経済学的概念。
+    好材料後の売り圧力＝期待の織り込み過剰の代理）
+  - `eps_surprise`と直後月の`price`変化率の組み合わせ（サプライズに
+    対する価格反応の大きさ）
+  - `vol_surge_6m`・`volume_ratio_20d`（出来高急増＝過剰反応の随伴現象）
+
+- **モメンタムの持続/反転**:
+  - `momentum_score`（既存の合成スコア、そのまま持続度の代理として
+    使える）
+  - `ma200_mom`・`ma50_dev`の符号反転タイミング
+  - `stage`（Phase）の遷移パターン（同一Phaseに留まる月数＝持続、
+    Phase3→Phase4等の急反転＝反転）。`substage_phase`（`hypecore.py`
+    確認済み: 各Phase内を「入口」「出口」の2値でさらに細分化、例
+    Phase3出口=「過熱の手前」）も遷移の細分化に使える可能性
+
+以上はいずれも「候補の列挙」であり、採否・具体的な計算式・閾値の設計は
+次回Koichiさんとの確認事項として残す（本項目自体の着手条件は下記の通り
+未変更）。
+
 #### 着手条件
 具体的な行動経済学的要素の設計内容をKoichiさんと確定してから着手する。
 今回は登録内容の拡張（コンセプト整理）のみで実装しない。
