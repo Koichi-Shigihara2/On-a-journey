@@ -4264,6 +4264,47 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 
 ---
 
+### [DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1] DERIVED_DATA_SUBCATEGORIES.mdクロス集計表（サブシステム別内訳）の陳腐化
+**優先度:** 低
+**分類:** ドキュメント整合性
+**登録日:** 2026-09-23
+**発見:** [[FIVE-CATEGORY-RECLASSIFY-1]]対応中（2026-09-19）の副次発見。
+当時は本タスクのスコープ外として`BACKLOG_DONE.md`のクローズ注記に
+記録のみされ、新規BACKLOG項目としては未登録だった
+
+#### 内容
+`docs/architecture/new_data_platform/archive/DERIVED_DATA_
+SUBCATEGORIES.md`146行目「サブシステム別内訳（クロス集計）」表の
+TANUKI TAIL行（156行目、「DCF/WACC構成要素系17件、その他15件」）が、
+フェーズ9でAS-IS-447/453/454を「その他」→「DCF/WACC構成要素系」へ
+再分類した際に詳細な分類別リストは正しく更新されたものの、この
+クロス集計サマリー表自体は当時から更新されておらず、実際の内訳
+（[[FIVE-CATEGORY-RECLASSIFY-1]]対応前時点でDCF/WACC構成要素系20件・
+その他12件）と食い違っていた。
+
+さらに[[FIVE-CATEGORY-RECLASSIFY-1]]本体でAS-IS-437〜441（TANUKI TAIL
+`tail_kpi_map.json`関連5件）が導出データ→手動入力データへ再分類された
+ため、TANUKI TAIL行の合計（71件）自体も現時点でさらに陳腐化している
+可能性がある（本登録時点では詳細再集計未実施、実際の最新内訳は次回
+着手時に確認する）。
+
+#### 実害
+このクロス集計表（`DERIVED_DATA_SUBCATEGORIES.md`）をファイル名で
+参照する`.py`スクリプト・テストは存在しないことを既存タスク
+（[[FIVE-CATEGORY-RECLASSIFY-1]]）でgrep確認済み。ドキュメント表示上の
+不整合のみで、パイプライン・テストへの実害はない。
+
+#### 対応方針
+次回このドキュメントに手を入れる機会に、詳細分類別リスト（実データ）
+から実際のサブシステム別・カテゴリ別件数を再集計し、クロス集計表
+（TANUKI TAIL行含む全サブシステム行）を実際の値に更新する。
+
+#### 着手条件
+なし（優先度低・ドキュメント整合性のみ・実害なし。次回
+`DERIVED_DATA_SUBCATEGORIES.md`に手を入れる機会があれば併せて修正）。
+
+---
+
 ## システム全体バックログ（TANUKI VALUATION以外）
 
 ### 【Stonks Silo】
