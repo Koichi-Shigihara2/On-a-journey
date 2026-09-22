@@ -1,19 +1,19 @@
 LITE INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-22T09:18:32+09:00
-Price: N/A
+Generated: 2026-09-23T08:46:04+09:00
+Price: $945.67
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 ⚠️ CIK断絶(構造的境界): 2015年8月JDS Uniphase(JDSU)の会社分割によりLumentum Holdings発足。分割以前のデータは親会社(JDSU)連結からの区分推定値であり接続していません。
 
 [1. TANUKI SCORE]
-Classification: HOLD
+Classification: TRIM
 Funda_Score: 50/100
 Timing_Score (components):
-  Deviation_Rate: +0.0%
+  Deviation_Rate: -95.6%
   MA200_Deviation: N/A
   HypeCore_Phase: Phase3 (陶酔期)
   Analyst_Consensus: Strong Buy | Target: $1168 median ($820-$1400) | 26 analysts | vs IV: +2708.8%
-Comment: フェアバリュー近辺、FCF黒字、売上成長加速
+Comment: 割高(-96%超)、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -32,10 +32,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
-Quadrant: 右下
-Label: 割安×低効率
+Quadrant: 左下
+Label: 割高×低効率
 Key_Metric_Y: RICE = 0.824
-Deviation_Rate: +0.0%
+Deviation_Rate: -95.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,22 +59,31 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: N/A
+Current_Price: $945.67
 Intrinsic_Value_BASE: $41.58
-Deviation_BASE: +0.0%
+Deviation_BASE: -95.6%
 Scenarios:
-BEAR: Growth=12.4%, IV=$34.80, Deviation=+0.0%
-BASE: Growth=17.8%, IV=$41.58, Deviation=+0.0%
-BULL: Growth=21.3%, IV=$46.62, Deviation=+0.0%
+BEAR: Growth=12.4%, IV=$34.80, Deviation=-96.3%
+BASE: Growth=17.8%, IV=$41.58, Deviation=-95.6%
+BULL: Growth=21.3%, IV=$46.62, Deviation=-95.1%
+Return_Outlook(BASE): 1年後: $48.96 (-94.8%) / 3年後: $67.90 (-92.8%) / 5年後: $82.76 (-91.2%)
+  5yr_Annualized_Return: -38.6%/yr
 Growth_Rate_Rec: 11.6% (recommended  ⚠️ +6.2pt above recommended)
 TTM_YoY_Growth: 83.2%
 (DCF Base vs TTM actual: -65.4pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 13.08%
-  参考①β込みWACC_IV: $27.34 (Deviation: +0.0%)
-  参考②Rf理論上限_IV: $358.44 (Deviation: +0.0%)
+  参考①β込みWACC_IV: $27.34 (Deviation: -97.1%)
+  参考②Rf理論上限_IV: $358.44 (Deviation: -62.1%)
 Terminal_Growth_Rate: 3.5%
 Beta: 1.541
+Valuation_Gap_Analysis:
+  DCF_IV:           $42 (保守的FCFベース・現在実力値)
+  Market_Price:     $946
+  Gap:              -96% (市場が将来成長を先取り)
+  Implied_FCF_2030: $5.33B (現在株価を正当化するために必要な5年後FCF)
+  Current_FCF:      $0.15B
+  Required_Growth:  104%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-27 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $149.57M (直近2yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
 FCF_Breakdown（直近年）: OCF=$751M / CapEx=$451M / SBC(非現金)=$170M / D&A=$129M
@@ -98,7 +107,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $28.32  $35.68  $43.95
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 全項目の理由が「一過性の事業再編費用」または「マクロ変動による一時的影響」と明記されており、構造的悪化を示す内容ではない。
+  Reasoning: すべての項目がマクロ変動や一過性の事業再編費用と明記されており、事業運営上の一時的な問題を示す。
 Financial_Health:
   Net_Debt: $+0.11B (negative=net cash)
   Total_Debt: $3.28B  Cash: $2.62B  ST_Invest: $0.55B
@@ -311,7 +320,10 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  N/A (ForwardEPS 未取得)
+  Forward_Earnings_Yield: 4.20%  (ForwardEPS $39.70 / Price $945.67)
+  Risk_Free_Rate (10Y):  4.30%
+  ERP: -0.10%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

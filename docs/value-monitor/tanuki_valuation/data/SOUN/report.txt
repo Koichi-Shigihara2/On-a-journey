@@ -1,14 +1,14 @@
 SOUN INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-22T09:20:49+09:00
-Price: N/A
+Generated: 2026-09-23T08:47:54+09:00
+Price: $6.12
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Classification_Pre_Rounding: HOLD
+Classification_Pre_Rounding: WATCH
 Funda_Score: 60/100
 Timing_Score (components):
-  Deviation_Rate: +0.0%
+  Deviation_Rate: +8.4%
   MA200_Deviation: N/A
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: None | Target: $12 median ($7-$17) | 7 analysts | vs IV: +80.9%
@@ -34,7 +34,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 右下
 Label: 割安×低FCF
 Key_Metric_Y: FCF_Margin = -58.6%
-Deviation_Rate: +0.0%
+Deviation_Rate: +8.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,13 +58,15 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: N/A
+Current_Price: $6.12
 Intrinsic_Value_BASE: $6.63
-Deviation_BASE: +0.0%
+Deviation_BASE: +8.3%
 Scenarios:
-BEAR: Growth=35.0%, IV=$4.59, Deviation=+0.0%
-BASE: Growth=50.0%, IV=$6.63, Deviation=+0.0%
-BULL: Growth=60.0%, IV=$8.37, Deviation=+0.0%
+BEAR: Growth=35.0%, IV=$4.59, Deviation=-25.0%
+BASE: Growth=50.0%, IV=$6.63, Deviation=+8.3%
+BULL: Growth=60.0%, IV=$8.37, Deviation=+36.8%
+Return_Outlook(BASE): 1年後: $9.95 (+62.6%) / 3年後: $22.38 (+265.7%) / 5年後: $34.57 (+464.9%)
+  5yr_Annualized_Return: +41.4%/yr
 Growth_Rate_Rec: 48.7% (recommended)
 Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 48.7%（実績CAGR等ベース）
   ⚠️ 実績YoY(直近最大4四半期平均)は55.9%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
@@ -72,8 +74,8 @@ TTM_YoY_Growth: 99.4%
 (DCF Base vs TTM actual: -49.4pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $2.97 (Deviation: +0.0%)
-  参考②Rf理論上限_IV: $36.39 (Deviation: +0.0%)
+  参考①β込みWACC_IV: $2.97 (Deviation: -51.5%)
+  参考②Rf理論上限_IV: $36.39 (Deviation: +494.6%)
 Terminal_Growth_Rate: 3.0%
 Beta: 2.5
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -309,7 +311,10 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  N/A (ForwardEPS 未取得)
+  Forward_Earnings_Yield: -2.41%  (ForwardEPS $-0.15 / Price $6.12)
+  Risk_Free_Rate (10Y):  4.30%
+  ERP: -6.71%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
