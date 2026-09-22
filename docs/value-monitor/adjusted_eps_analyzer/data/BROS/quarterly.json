@@ -1,6 +1,6 @@
 {
   "ticker": "BROS",
-  "last_updated": "2026-09-21T09:58:56.031076",
+  "last_updated": "2026-09-23T08:08:16.717760",
   "quarters": [
     {
       "gaap_eps": 0.2775943308722591,
@@ -733,7 +733,13 @@
       "fiscal_year": 2021,
       "quarter": 2,
       "tax_expense": 521000.0,
-      "pretax_income": 521000.0
+      "pretax_income": 521000.0,
+      "special_flags": [
+        "UPC_PREREORG_ZERO_PROFIT"
+      ],
+      "special_notes": {
+        "upc_prereorg_zero_profit": "net_income=$0（正確に0）かつrevenue=$129,208,000というUp-C構造・組織再編前特有のパターンを検知。PubCo帰属のnet_incomeが形式的に0であるため、Adjusted EPS（TTM・年次集計・黒字化予測回帰）の算出対象から除外し、当四半期単体のadjusted_eps/adjusted_net_incomeは参考値として表示"
+      }
     },
     {
       "gaap_eps": 0.0,
@@ -767,7 +773,13 @@
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 43000.0,
-      "pretax_income": 43000.0
+      "pretax_income": 43000.0,
+      "special_flags": [
+        "UPC_PREREORG_ZERO_PROFIT"
+      ],
+      "special_notes": {
+        "upc_prereorg_zero_profit": "net_income=$0（正確に0）かつrevenue=$98,785,000というUp-C構造・組織再編前特有のパターンを検知。PubCo帰属のnet_incomeが形式的に0であるため、Adjusted EPS（TTM・年次集計・黒字化予測回帰）の算出対象から除外し、当四半期単体のadjusted_eps/adjusted_net_incomeは参考値として表示"
+      }
     }
   ]
 }
