@@ -218,12 +218,14 @@ def compute_eps_breakeven(quarters_list: list, current_year: int) -> tuple:
     """
     candidates = quarters_list[:4]
     # 値が存在し・株式数構造が別物でなく（[[EPS-LOAR-1]]の
-    # SHARE_STRUCTURE_MISMATCH）・EPS絶対値が異常でない
-    # （EPS_MAGNITUDE_CAP以内）ものだけを回帰対象とする
+    # SHARE_STRUCTURE_MISMATCH）・Up-C組織再編前ゼロ利益でもなく
+    # （[[EPS-UPC-PREREORG-1]]のUPC_PREREORG_ZERO_PROFIT）・EPS絶対値が
+    # 異常でない（EPS_MAGNITUDE_CAP以内）ものだけを回帰対象とする
+    _excluded_flags = ("SHARE_STRUCTURE_MISMATCH", "UPC_PREREORG_ZERO_PROFIT")
     recent_eps = [
         q.get("adjusted_eps") for q in candidates
         if q.get("adjusted_eps") is not None
-        and "SHARE_STRUCTURE_MISMATCH" not in (q.get("special_flags") or [])
+        and not any(f in (q.get("special_flags") or []) for f in _excluded_flags)
         and abs(q.get("adjusted_eps")) <= EPS_MAGNITUDE_CAP
     ]
     if len(recent_eps) < 2:

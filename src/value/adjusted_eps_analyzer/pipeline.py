@@ -291,6 +291,12 @@ def apply_dta_adjustments(ticker: str, quarterly_results: List[Dict]) -> List[Di
 # 根本原因〈株式数が別物〉に直結する株式数基準を採用）。
 SHARE_STRUCTURE_MISMATCH_RATIO = 0.01
 
+# TTM・年次集計・summary.jsonのlatest/YoY計算から除外する special_flags。
+# [[EPS-LOAR-1]]のSHARE_STRUCTURE_MISMATCHと[[EPS-UPC-PREREORG-1]]の
+# UPC_PREREORG_ZERO_PROFITはいずれも「個別四半期は監査可能性のため残すが、
+# 集計には使わない」という同型の設計のため、除外チェックを共有する。
+ADJUSTED_EPS_AGGREGATE_EXCLUDE_FLAGS = ('SHARE_STRUCTURE_MISMATCH', 'UPC_PREREORG_ZERO_PROFIT')
+
 
 def apply_share_structure_filter(ticker: str, quarterly_results: List[Dict]) -> List[Dict]:
     """
@@ -335,6 +341,54 @@ def apply_share_structure_filter(ticker: str, quarterly_results: List[Dict]) -> 
     return quarterly_results
 
 
+def apply_upc_prereorg_filter(ticker: str, quarterly_results: List[Dict]) -> List[Dict]:
+    """
+    [[EPS-UPC-PREREORG-1]]: Up-C構造・組織再編前四半期のゼロ利益パターンを
+    検知する（BROS 2021 Q1/Q2等）。
+
+    検知条件（両方満たす場合）:
+      1. gaap_net_income が正確に0（端数なし）
+      2. revenue > 0（事業自体は実在・稼働している）
+
+    Up-C構造では、組織再編（IPO）前はSEC登録主体（PubCo）が事業会社
+    （OpCo）の経済的持分をまだ保有していないため、OpCoの実際の売上・
+    損益とは無関係にPubCo単体の帰属純利益（NetIncomeLoss）が形式的に
+    $0となる（一次情報確認済み: BROSの`ProfitLoss`タグ〈非支配持分込みの
+    連結損益〉は同四半期で実額の非ゼロ値を持つ）。この状態で調整項目
+    （SBC等）を加算すると、実態のない見かけ上プラスのAdjusted EPSが
+    算出されてしまう。
+
+    削除はせず special_flags=["UPC_PREREORG_ZERO_PROFIT"] を付与するのみ
+    （[[EPS-LOAR-1]]のSHARE_STRUCTURE_MISMATCHと同型の設計、quarterly.json
+    には数値を残し監査可能性を維持する）。calculate_ttm()・
+    aggregate_annual()・generate_summary()はこのフラグを見て、フラグ付き
+    四半期を含むTTM窓・年度・最新/YoY計算から除外する。個別四半期表示
+    （stock.html）はSHARE_STRUCTURE_MISMATCHと異なり非表示にはせず、
+    「参考値」である旨を明記した上で表示を維持する。
+    """
+    detected = []
+    for q in quarterly_results:
+        net_income = q.get('gaap_net_income', 0)
+        revenue = q.get('revenue', 0) or 0
+        if net_income == 0.0 and revenue > 0:
+            q['special_flags'] = q.get('special_flags', []) + ['UPC_PREREORG_ZERO_PROFIT']
+            q['special_notes'] = q.get('special_notes', {})
+            q['special_notes']['upc_prereorg_zero_profit'] = (
+                f"net_income=$0（正確に0）かつrevenue=${revenue:,.0f}という"
+                f"Up-C構造・組織再編前特有のパターンを検知。PubCo帰属の"
+                f"net_incomeが形式的に0であるため、Adjusted EPS（TTM・"
+                f"年次集計・黒字化予測回帰）の算出対象から除外し、当四半期"
+                f"単体のadjusted_eps/adjusted_net_incomeは参考値として表示"
+            )
+            detected.append(q['filing_date'])
+
+    if detected:
+        print(f"  [Up-C Pre-Reorg Filter] {ticker}: {len(detected)}四半期を"
+              f"Up-C組織再編前ゼロ利益パターンで検出 → {', '.join(detected)}")
+
+    return quarterly_results
+
+
 def load_cik_data() -> List[Dict]:
     cik_file = os.path.join(PROJECT_ROOT, "config", "cik_lookup.csv")
     data = []
@@ -351,10 +405,12 @@ def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]
     if end_idx < 3:
         return None
     ttm_data = quarterly_results[end_idx-3:end_idx+1]
-    # [[EPS-LOAR-1]]: 株式数構造が別物の四半期（SHARE_STRUCTURE_MISMATCH）を
-    # 1件でも含む窓はTTMとして無意味なため丸ごと除外する（部分的な差し替えは
-    # しない。IPO前後で株式数の意味自体が異なり平均しても実態を表さないため）。
-    if any('SHARE_STRUCTURE_MISMATCH' in (q.get('special_flags') or []) for q in ttm_data):
+    # [[EPS-LOAR-1]]/[[EPS-UPC-PREREORG-1]]: 株式数構造が別物
+    # （SHARE_STRUCTURE_MISMATCH）またはUp-C組織再編前ゼロ利益
+    # （UPC_PREREORG_ZERO_PROFIT）の四半期を1件でも含む窓はTTMとして
+    # 無意味なため丸ごと除外する（部分的な差し替えはしない）。
+    if any(flag in (q.get('special_flags') or [])
+           for q in ttm_data for flag in ADJUSTED_EPS_AGGREGATE_EXCLUDE_FLAGS):
         return None
     if len(ttm_data) < 4:
         return None
@@ -382,13 +438,15 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     # fiscal_year が None の場合は filing_date[:4] にフォールバックするが、
     # 非12月決算企業では Q1 等で誤グループ化が起きる可能性があるため警告を出す
     #
-    # [[EPS-LOAR-1]]: 株式数構造が別物の四半期（SHARE_STRUCTURE_MISMATCH）は
-    # 年度集計の対象から除外する。除外後4四半期に満たない年度（LOAR FY2023の
-    # 全4四半期・FY2024の1四半期が該当）は下の len(quarters) < 4 で自然に
-    # スキップされ、意味のある年度のみannual.jsonに出力される。
+    # [[EPS-LOAR-1]]/[[EPS-UPC-PREREORG-1]]: 株式数構造が別物
+    # （SHARE_STRUCTURE_MISMATCH）またはUp-C組織再編前ゼロ利益
+    # （UPC_PREREORG_ZERO_PROFIT）の四半期は年度集計の対象から除外する。
+    # 除外後4四半期に満たない年度（LOAR FY2023の全4四半期・FY2024の
+    # 1四半期、BROS FY2021の2四半期等が該当）は下の len(quarters) < 4 で
+    # 自然にスキップされ、意味のある年度のみannual.jsonに出力される。
     annual_map = {}
     for q in quarterly_results:
-        if 'SHARE_STRUCTURE_MISMATCH' in (q.get('special_flags') or []):
+        if any(flag in (q.get('special_flags') or []) for flag in ADJUSTED_EPS_AGGREGATE_EXCLUDE_FLAGS):
             continue
         fy = q.get("fiscal_year")
         if fy is not None:
@@ -442,13 +500,15 @@ def generate_summary(tickers_data: Dict[str, Dict], existing_summary_path: str =
 
     # 新しいデータで更新
     for ticker, data in tickers_data.items():
-        # [[EPS-LOAR-1]]: 株式数構造が別物の四半期はsummary.jsonの
-        # latest/YoY計算からも除外する（quarters[0]は常に真の最新四半期の
-        # ため通常は影響しないが、IPO直後で該当四半期が直近5件以内に
-        # 入るティッカーへの副作用を防ぐための防御的措置）
+        # [[EPS-LOAR-1]]/[[EPS-UPC-PREREORG-1]]: 株式数構造が別物、または
+        # Up-C組織再編前ゼロ利益の四半期はsummary.jsonのlatest/YoY計算からも
+        # 除外する（quarters[0]は常に真の最新四半期のため通常は影響しないが、
+        # IPO直後で該当四半期が直近5件以内に入るティッカーへの副作用を
+        # 防ぐための防御的措置）
         _quarters = [
             q for q in data.get("quarters", [])
-            if 'SHARE_STRUCTURE_MISMATCH' not in (q.get('special_flags') or [])
+            if not any(flag in (q.get('special_flags') or [])
+                       for flag in ADJUSTED_EPS_AGGREGATE_EXCLUDE_FLAGS)
         ]
         if _quarters:
             latest = _quarters[0]
@@ -687,6 +747,12 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
         # 公正価値変動の自動検出・調整項目化
         print(f"  [FV Auto] Running fair value auto-detection for {ticker}...")
         quarterly_results = apply_fair_value_detection(quarterly_raw, quarterly_results)
+
+        # Up-C構造・組織再編前ゼロ利益パターンの検知（[[EPS-UPC-PREREORG-1]]）
+        # TTM・年次集計より前、他のadjusted_eps更新処理（DTA・公正価値変動）
+        # より後に実行し、最終的なadjusted_eps/adjusted_net_incomeに対して
+        # フラグ付けする
+        quarterly_results = apply_upc_prereorg_filter(ticker, quarterly_results)
 
         # TTM・年次集計・AI分析
         ttm_results = []

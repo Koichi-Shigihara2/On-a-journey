@@ -798,8 +798,30 @@
       } else {
         gaapEpsEl.innerText = `$${q.gaap_eps.toFixed(4)}`;
       }
-      
-      document.getElementById('adj-eps').innerText  = `$${q.adjusted_eps.toFixed(4)}`;
+
+      // ★ [[EPS-UPC-PREREORG-1]]: Up-C構造・組織再編前ゼロ利益四半期は
+      // Adjusted EPSが実態のない参考値であることを明記する（無言で
+      // 欠落させない。SHARE_STRUCTURE_MISMATCHと異なり非表示にはしない）
+      const hasUpcPrereorg = q.special_flags && q.special_flags.includes('UPC_PREREORG_ZERO_PROFIT');
+      const upcPrereorgNote = q.special_notes && q.special_notes.upc_prereorg_zero_profit;
+      const adjEpsEl = document.getElementById('adj-eps');
+      if (hasUpcPrereorg) {
+        adjEpsEl.innerHTML = `
+          <span class="eps-warning">
+            $${q.adjusted_eps.toFixed(4)}
+            <span class="eps-tooltip">
+              <span class="eps-warning-icon">⚠️</span>
+              <span class="eps-tooltip-text">
+                <span class="eps-tooltip-label">⚠ Up-C組織再編前・参考値</span>
+                <div style="margin-top:4px;font-size:11px;color:var(--mut)">
+                  ${upcPrereorgNote || 'Up-C構造・組織再編前のためnet_incomeが形式的に0となり、Adjusted EPS計算（TTM・年次集計・黒字化予測）の対象外としています。'}
+                </div>
+              </span>
+            </span>
+          </span>`;
+      } else {
+        adjEpsEl.innerText = `$${q.adjusted_eps.toFixed(4)}`;
+      }
       const diff = q.adjusted_eps - q.gaap_eps;
       const diffEl = document.getElementById('diff');
       diffEl.innerText = `$${diff.toFixed(4)}`;
@@ -881,6 +903,13 @@
       ));
       const gaapData = sorted.map(item => type === 'quarterly' ? item.gaap_eps : item.eps);
       const adjData  = sorted.map(item => item.adjusted_eps);
+      // ★ [[EPS-UPC-PREREORG-1]]: Up-C組織再編前ゼロ利益四半期の点は
+      // 参考値である旨を視覚的に区別する（無言で欠落させない）
+      const isUpcFlagged = sorted.map(item =>
+        type === 'quarterly' && !!(item.special_flags && item.special_flags.includes('UPC_PREREORG_ZERO_PROFIT'))
+      );
+      const adjPointColor = isUpcFlagged.map(f => f ? '#f59e0b' : '#10b981');
+      const adjPointRadius = isUpcFlagged.map(f => f ? 5 : 3);
 
       chart = new Chart(ctx, {
         type: 'line',
@@ -902,7 +931,8 @@
             {
               label: 'Adjusted EPS', data: adjData,
               borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.08)',
-              tension: 0.15, pointRadius: 3,
+              pointBackgroundColor: adjPointColor, pointBorderColor: adjPointColor,
+              tension: 0.15, pointRadius: adjPointRadius,
               datalabels: {
                 align: 'bottom', offset: 4,
                 color: '#10b981', font: { family: "'Space Mono'", size: 9 },
@@ -917,7 +947,19 @@
           responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { labels: { color: '#94a3b8', font: { family: "'Space Mono'", size: 11 }, boxWidth: 14 } },
-            datalabels: { display: true }
+            datalabels: { display: true },
+            tooltip: {
+              callbacks: {
+                // ★ [[EPS-UPC-PREREORG-1]]: Up-C組織再編前ゼロ利益四半期は
+                // ツールチップで参考値である旨を明記する
+                afterLabel: (ctx) => {
+                  if (ctx.datasetIndex === 1 && isUpcFlagged[ctx.dataIndex]) {
+                    return '⚠ Up-C組織再編前・参考値（Adjusted EPS集計対象外）';
+                  }
+                  return '';
+                }
+              }
+            }
           },
           scales: {
             y: { grid: { color: 'rgba(30,40,64,.8)' }, ticks: { color: '#64748b', font: { family: "'Space Mono'", size: 11 } }, beginAtZero: false },
@@ -1038,7 +1080,23 @@
       let html = '';
       sorted.forEach(q => {
         html += `<div class="q-block">`;
-        html += `<div class="q-block-hdr">${q.filing_date}</div>`;
+        // ★ [[EPS-UPC-PREREORG-1]]: Up-C組織再編前ゼロ利益四半期は
+        // ヘッダーに注記を明記する（無言で欠落させない）
+        const isUpcPrereorg = q.special_flags && q.special_flags.includes('UPC_PREREORG_ZERO_PROFIT');
+        const upcNote = (q.special_notes && q.special_notes.upc_prereorg_zero_profit) || '';
+        if (isUpcPrereorg) {
+          html += `<div class="q-block-hdr">${q.filing_date}
+            <span class="eps-tooltip" style="margin-left:6px">
+              <span class="eps-warning-icon">⚠️ Up-C組織再編前・参考値</span>
+              <span class="eps-tooltip-text">
+                <span class="eps-tooltip-label">⚠ Adjusted EPS集計対象外</span>
+                <div style="margin-top:4px;font-size:11px;color:var(--mut)">${upcNote}</div>
+              </span>
+            </span>
+          </div>`;
+        } else {
+          html += `<div class="q-block-hdr">${q.filing_date}</div>`;
+        }
         if (q.adjustments && q.adjustments.length > 0) {
           html += `<div class="q-block-body"><table>
             <thead><tr>
