@@ -2954,6 +2954,61 @@ Adjusted EPSが新たに算出される**ようになった。株数の引き継
 
 ---
 
+### [CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1] CART（Instacart/Maplebear）2022 Q1/Q2でrevenue抽出が失敗（gaap_net_incomeは非ゼロ）
+**優先度:** 要調査（影響範囲未調査）
+**分類:** データ品質 / EPS ANALYZER / SECデータ抽出
+**登録日:** 2026-09-23
+**発見:** [[EPS-UPC-PREREORG-1]]Phase 1調査（全銘柄機械検知）で、CARTが
+Up-C形式ゼロ利益パターンには該当しないことを確認する過程での副次発見
+
+#### 内容
+`docs/value-monitor/adjusted_eps_analyzer/data/CART/quarterly.json`で
+2022-03-31・2022-06-30の2四半期のみ`revenue=0`となっている一方、
+`gaap_net_income`はそれぞれ-$82M・+$8Mと非ゼロの実額を保持している。
+SEC EDGAR一次情報（`common/sec_data/data/CART/company_facts.json`）を
+直接確認したところ、`RevenueFromContractWithCustomerExcludingAssessed
+Tax`タグに単体四半期値（2022-01-01〜2022-03-31、2022-04-01〜
+2022-06-30）のエントリ自体が存在しない（累計値2022-01-01〜2022-09-30・
+2022-01-01〜2022-12-31のみ存在）。CARTの2023年IPO後に提出された
+比較年度（10-Q/10-K）の遡及開示で、単体四半期のrevenue tagが省略されて
+いるとみられるデータ抽出ギャップであり、実際にrevenueが$0だった
+わけではない（同期間のnet_incomeは実額で存在するため、事業自体は
+稼働していた）。
+
+なお`[[EPS-UPC-PREREORG-1]]`のUp-C検知条件（net_income正確に0かつ
+revenue>0）とは無関係（CARTの`NetIncomeLoss`は対象四半期で一度も
+正確な0になっておらず、`ProfitLoss`タグ自体が存在しない＝非支配持分
+連結構造を持たないため、Up-C形式のゼロ利益パターンには該当しない）。
+
+#### 横展開の当たり（軽い確認のみ、本格調査はしていない）
+EPS Analyzer対象101銘柄全体で「revenue=0または欠損だがgaap_net_income
+は非ゼロ」の四半期を機械的に洗い出したところ、CART以外にも以下が
+ヒットした（個別の真偽判定はしていない）:
+- **APGE**（14四半期、2022-2026）: 臨床段階バイオテック（Apogee
+  Therapeutics）のため、revenue=0は抽出ギャップではなく実際に製品
+  売上が存在しない可能性が高い（要個別確認）
+- **JOBY**（2023 Q1〜Q3、2025 Q1）: eVTOL開発段階企業のため同様に
+  実際の売上ゼロの可能性がある（要個別確認）
+- **CAT・CON・ASTS**（各1〜2四半期）: いずれも通常事業を営む企業
+  （CAT=Caterpillar、CON=Con Edison等）でrevenue=0は不自然であり、
+  CARTと同種の抽出ギャップの可能性が高い（要個別確認）
+
+`audit.py`（TANUKI VALUATION側の別データパイプライン）でも過去に
+「CART/JOBY 既存 Revenue None」という警告が2026-06-13時点で既に
+認識・許容されていた記録がある（`BACKLOG_DONE.md`同日セッション参照）。
+本エントリのCART 2022 Q1/Q2ギャップと同一原因かは未確認。
+
+#### 対応方針
+未定。次回着手する場合は、まずCAT/CON/ASTS等の「通常事業を営む企業での
+revenue=0」がSECデータ抽出パイプライン共通のギャップかどうかを切り分け、
+APGE/JOBYのような「実際に売上ゼロの可能性がある企業」とは別軸で扱う。
+
+#### 着手条件
+なし（優先度未定・影響範囲未調査。次回このデータ抽出経路に触れる機会が
+あれば横展開調査から着手する）。
+
+---
+
 ### [FLAG-THRESHOLD-DESIGN-1] tanuki/stonks_silo等4フラグの判定基準ロジック導入（第二段階）
 **優先度:** 未定
 **分類:** アーキテクチャ / 銘柄登録フロー
