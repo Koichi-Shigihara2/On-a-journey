@@ -2,6 +2,133 @@
 
 ---
 
+## 2026-09-23（完了）
+
+### ✅ [EPS-UPC-PREREORG-1] Up-C構造・組織再編前四半期のAdjusted EPS計算への算入方針 — 機械検知・自動除外を実装
+**優先度:** 中
+**分類:** データ品質 / EPS ANALYZER / 設計方針
+**登録日:** 2026-07-13
+**完了日:** 2026-09-23
+**発見:** [[ASTS-SHARES-OSCILLATION-1]]恒久修正時、BROS 2021-03-31の
+復活データ妥当性確認調査
+
+#### 背景（登録時点の記載を再掲）
+BROS（Dutch Bros、Up-C構造でIPO・組織再編は2021年9月）の2021-03-31
+（Q1 2021、組織再編前）を一次情報（SEC EDGARライブ）で確認したところ、
+以下の特異なパターンが判明した：
+- **revenue**: $98,785,000（実在・妥当。FY2021通期$497,876,000から逆算した
+  四半期進捗とも整合）
+- **net_income**: 正確に`0`（端数なし）
+- **調整項目**: `ShareBasedCompensation: $14,650,000`が存在
+
+売上$98.8Mの実在企業がドル単位まで正確にゼロ利益、というのは通常の事業活動
+としては不自然であり、**Up-C構造特有の会計処理の産物**と推測される：
+組織再編（IPO）前は、SEC登録主体（PubCo）が事業会社（OpCo）の経済的持分を
+まだ保有していないため、OpCoの実際の売上・損益とは無関係に、PubCo単体の
+帰属純利益が形式的に$0となる。
+
+[[ASTS-SHARES-OSCILLATION-1]]の恒久修正（隣接四半期からの株数引き継ぎ）に
+より、この四半期の希薄化後株数が新たに埋まるようになった結果、
+`adjusted_net_income = gaap_net_income(0) + 税引後SBC加算 ≈ プラスの値`と
+なり、**PubCoの帰属利益が実質ゼロだった四半期に対して、見かけ上プラスの
+Adjusted EPSが新たに算出される**ようになった。株数の引き継ぎ自体（実データに
+基づく合理的な近似）は妥当だが、この四半期をAdjusted EPS計算にそのまま
+含めてよいかは、今回の株数バグ修正とは別軸の設計論点である。
+
+#### 対応方針（登録時点の記載、未確定だった案）
+- Up-C組織再編前かつnet_income=0（または売上に対して不自然に小さい）四半期を
+  機械的に検知し、Adjusted EPS計算から除外する、または「参考値」として
+  別枠表示するかを検討する
+- 「net_income=0だが売上は実在」というパターン自体を検知条件として使えるか
+  （閾値・誤検知率を含めて設計）
+- 他のUp-C構造銘柄（CART等、組織再編を経て上場した銘柄）で同型のケースが
+  ないか横展開確認する（[[ASTS-SHARES-OSCILLATION-1]]の新旧比較でCARTも
+  値変化が確認されている。組織再編前四半期を含むかどうかの個別確認が必要）
+
+#### Phase 1: 調査結果（2026-09-23）
+全101銘柄（EPS Analyzer対象、直近10年分の四半期実データ）で「net_income
+正確に0かつrevenue>0」を機械検知した結果、**ヒットは2件のみ、いずれも
+BROS**（2021-03-31 Q1・2021-06-30 Q2。Q2は登録時点では未確認だった
+追加発見）。誤検知は0件（revenue条件を外した「net_income=0のみ」の
+広い検索でも同一の2件のみで、抽出ギャップによる偽陰性の混入もないことを
+確認済み）。
+
+SEC EDGAR一次情報（`common/sec_data/data/BROS/company_facts.json`）を
+直接確認し、両四半期とも`NetIncomeLoss`タグ（PubCo帰属分）が正確に`0`
+である一方、`ProfitLoss`タグ（非支配持分込みの連結損益）は実額
+（Q1: -$4.82M、Q2: +$11.89M）であることを確認し、Up-C構造特有の
+PubCo/OpCo分離会計という仮説を裏付けた。
+
+**CART（登録時点で「該当するはず」とされていた既知ケース）は検知されず**:
+CARTの生SECデータを直接確認したところ、`ProfitLoss`タグ自体が存在せず
+（非支配持分の連結構造を持たない）、`NetIncomeLoss`も対象四半期で
+一度も正確な0にならないため、Up-C形式ゼロ利益パターンには該当しない
+と判明。2022 Q1/Q2のrevenue=0は組織再編パターンとは別原因（遡及比較
+10-Q内の単体四半期収益タグ欠落）と確認し、
+`[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]`として別途新規登録した。
+Koichiさんに確認の上、BROSの2四半期のみを対象にPhase 2実装を実施する
+方針で進めた。
+
+#### Phase 2: 実装内容
+`src/value/adjusted_eps_analyzer/pipeline.py`に新規関数
+`apply_upc_prereorg_filter()`を追加（`[[EPS-LOAR-1]]`の
+`apply_share_structure_filter()`/`SHARE_STRUCTURE_MISMATCH`と同型の
+設計）。検知条件に一致する四半期に`special_flags=
+["UPC_PREREORG_ZERO_PROFIT"]`を付与し、`adjusted_eps`/
+`adjusted_net_income`の数値自体は削除・null化せず維持する（監査可能性・
+既存コードパターンとの整合性を優先。`generate_summary()`の
+`SHARE_STRUCTURE_MISMATCH`向け既存防御的措置が`latest["gaap_eps"]`等を
+直接インデックスする実装だったため、null化するとこの既存コードパスを
+壊すリスクがあると判断）。
+
+集計側3箇所（`calculate_ttm()`・`aggregate_annual()`・
+`generate_summary()`）の既存`SHARE_STRUCTURE_MISMATCH`チェックを、
+共有定数`ADJUSTED_EPS_AGGREGATE_EXCLUDE_FLAGS`経由で新フラグも含む
+形へ一般化。`src/value/tanuki_valuation/pipeline.py::
+compute_eps_breakeven()`の回帰対象フィルタも同様に拡張した。
+
+表示側（`docs/value-monitor/adjusted_eps_analyzer/stock.html`）は
+`SHARE_STRUCTURE_MISMATCH`と異なり非表示にはせず、「無言で欠落させない」
+という依頼要件に従い3箇所で参考値である旨を明記した:
+`updateMetricsWithQuarter()`のAdjusted EPSツールチップ注記、
+`buildAdjHtml()`の四半期ヘッダー注記、`updateChart()`の該当データ点を
+アンバー色・大きめの点で視覚的に区別＋ホバー時のツールチップ注記。
+
+#### 回帰テスト・検証
+`tests/test_eps_upc_prereorg_filter.py`新設（11件、BROS/CARTの実データ
+〈SEC EDGAR company_facts.json確認済み〉値をモックの根拠として使用し、
+自己整合的な誤りの混入を回避）。`git stash`で実装前に戻すと11件中9件が
+実際に失敗する（残り2件は「フラグされないこと」の確認のため前後で
+真になる）ことを確認済み。pytest全体1447件全パス、`audit.py` exit 0、
+`report_consistency_check.py --fail-on-ng` NG=0/WARN=121件（本タスク
+着手前と同一件数、新規WARN0件）。
+
+全99銘柄（EPS Analyzer対象）で、既存の`quarterly.json`（DTA・公正価値
+変動調整適用後の状態）に新フラグ付けロジックのみを適用し
+`annual.json`/`ttm.json`/`summary.json`を再計算するbefore/after比較を
+実施した結果、**変化があったのはBROSのみ**（`annual.json`からFY2021
+エントリが消失〈adjusted_eps=$2.57という異常値ごと除去〉、`ttm.json`
+から2021 Q1/Q2を含む2窓が消失、`quarterly.json`の該当2四半期に
+special_flags/special_notesが追加。数値自体は無変更）。他98銘柄は
+annual/ttm/summaryとも完全無差分。
+
+TANUKI VALUATION側の消費経路（`_load_eps_annual`+
+`_find_transient_items(eps_annual, fiscal_year_of_latest)`は最新年度
+のみ参照、`compute_eps_breakeven`/`daily_pick.py::
+load_eps_annual_latest`も直近4四半期・最新年度のみ参照）を確認した結果、
+BROSの現在の最新年度（2025年）・直近四半期（2026年）はいずれも無変更の
+ため、**TANUKI SCORE・IV・report.txtを含め、全銘柄で最終スコア・分類の
+変化は0件**（BROSのreport.txt「EPS ANALYZER」セクションも直近4四半期
+のみ表示のため実際に無差分であることを直接確認済み）。この結果を踏まえ、
+Koichiさんへの停止・報告は不要と判断しそのまま本番反映した。
+
+#### 本番データ反映
+BROSの`quarterly.json`/`annual.json`/`ttm.json`/`summary.json`を上記
+ロジックで再計算・上書き保存（SEC再取得は不要、既存キャッシュ値から
+再計算可能なため実施）。
+
+---
+
 ## 2026-09-19（完了）
 
 ### ✅ [TANUKI-VALUATION-MISC-GAPS-1]⑤ Runway cash算出経路相違 — 意図的差異として明記＋整合性WARN追加（案①採用）。エントリ全体もクローズ
