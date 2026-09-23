@@ -360,10 +360,10 @@ def _neighbor_quarter_diluted_shares(
     quarters_map: Dict[Tuple[int, int], Dict[str, Any]],
     target_key: Tuple[int, int],
 ) -> float:
-    """target_key（(fiscal_year, quarter)）に時間的に最も近い他の四半期の
-    実株数（diluted_shares、0より大きい値）を返す。直前優先・見つからなければ直後。
-    どちらにも実データがない場合は0.0を返す（呼び出し元でyfinance等の
-    最終フォールバックへ委ねる）。
+    """target_key（(fiscal_year, quarter)）に暦日的に最も近い他の四半期の
+    実株数（diluted_shares、0より大きい値）を返す。同距離の場合は直前を
+    優先する。どちらにも実データがない場合は0.0を返す（呼び出し元で
+    yfinance等の最終フォールバックへ委ねる）。
 
     ASTS-SHARES-OSCILLATION-1: 株式数フォールバック④（yfinance現在株数の
     無条件代入）が「全期間タグ欠落」銘柄（Visa等）向けの設計だったにも
@@ -372,23 +372,58 @@ def _neighbor_quarter_diluted_shares(
     Q4を計算する際の「Q3の実株数を引き継ぐ」既存パターン）を一般化し、
     Q1〜Q3の欠落にも同じ考え方を適用する（本関数はフォールバック③として
     Q1〜Q3欠落にも使われる）。
+
+    [[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]段階2a: 従来は
+    (fiscal_year, quarter)のタプル順序で「直前・直後」を判定していたが、
+    決算期変更銘柄（RCAT: 2023年に12月→4月決算へ変更）ではタプル順序と
+    実際の暦日順序が一致しない区間が生じ、2018年FY10-Kの株数が
+    2022-2023年の四半期へ誤って伝播していた（[[EPS-UPC-PREREORG-1]]
+    横展開調査で発見）。period_end（'end'キー）の暦日距離で最近傍を
+    判定する方式に変更し、決算期変更の有無に関わらず正しく機能させる。
+    距離の上限は設けない（上限を設けて0.0を返すと、ASTS-SHARES-
+    OSCILLATION-1で塞いだyfinance現在株数の逆行伝播が再発しうるため。
+    採用された近傍との距離分布は横展開調査で確認済み）。
     """
-    other_keys = sorted(k for k in quarters_map.keys() if k != target_key)
-    if not other_keys:
+    target_end = quarters_map.get(target_key, {}).get('end')
+    if not target_end:
+        # target自体のend日付が不明な場合のみ、従来のタプル順序へ
+        # フォールバックする（通常到達しないパス）
+        other_keys = sorted(k for k in quarters_map.keys() if k != target_key)
+        prior_keys = [k for k in other_keys if k < target_key]
+        next_keys = [k for k in other_keys if k > target_key]
+        for k in reversed(prior_keys):
+            val = normalize_value(quarters_map[k].get('diluted_shares', {'value': 0}))
+            if val > 0:
+                return val
+        for k in next_keys:
+            val = normalize_value(quarters_map[k].get('diluted_shares', {'value': 0}))
+            if val > 0:
+                return val
         return 0.0
 
-    prior_keys = [k for k in other_keys if k < target_key]
-    next_keys = [k for k in other_keys if k > target_key]
+    target_date = datetime.strptime(target_end, '%Y-%m-%d')
+    candidates = []
+    for k, data in quarters_map.items():
+        if k == target_key:
+            continue
+        val = normalize_value(data.get('diluted_shares', {'value': 0}))
+        if val <= 0:
+            continue
+        end_str = data.get('end')
+        if not end_str:
+            continue
+        try:
+            end_date = datetime.strptime(end_str, '%Y-%m-%d')
+        except ValueError:
+            continue
+        distance = abs((end_date - target_date).days)
+        is_next = 1 if end_date > target_date else 0  # 同距離時は直前(0)を優先
+        candidates.append((distance, is_next, val))
 
-    for k in reversed(prior_keys):  # target_keyに最も近い直前から確認
-        val = normalize_value(quarters_map[k].get('diluted_shares', {'value': 0}))
-        if val > 0:
-            return val
-    for k in next_keys:  # target_keyに最も近い直後から確認
-        val = normalize_value(quarters_map[k].get('diluted_shares', {'value': 0}))
-        if val > 0:
-            return val
-    return 0.0
+    if not candidates:
+        return 0.0
+    candidates.sort(key=lambda x: (x[0], x[1]))
+    return candidates[0][2]
 
 
 # ============================================
