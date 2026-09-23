@@ -113,6 +113,83 @@ def test_select_best_candidate_ties_prefer_priority_order():
     assert source_tag is None, "primary採用時はsource_tagがNoneであるべき（provenance不要）"
 
 
+def test_build_raw_table_ltdebt_flyw_scenario_uses_fresher_tag():
+    """FLYW型（[[SCHEMA-NORMALIZED-ISSUES-1]]③派生、2026-09-23）:
+    primary(LongTermDebtNoncurrent)は件数(min_count=4)を満たすが2022年で
+    申告停止、fallback(LongTermDebt)の方が新しいデータを持つ場合、件数条件
+    だけでは_select_best_candidate()が起動されず陳腐化したprimaryの値
+    （最新end=2022-12-31、val=0）がそのまま採用されてしまっていた
+    （実データ照合済み: EDGAR原本のBS本体では2025-09-30時点のLong-term debt
+    は$15,000千、LongTermDebtタグでのみ申告されている）。
+    最新end日の新旧比較を追加し、fallbackの方が新しい場合は起動対象と
+    することで、この陳腐化ケースを検知できるようにする。
+    """
+    us_gaap = {}
+    for concept in ["NetCashProvidedByUsedInOperatingActivities", "NetIncomeLoss",
+                     "Revenues", "GrossProfit", "StockholdersEquity", "Assets"]:
+        us_gaap[concept] = {"units": {"USD": [
+            _entry("2025-01-01", "2025-12-31", 1000, "FY", form="10-K"),
+        ]}}
+    # primary: 件数(6)はmin_count(4)を満たすが2022-12-31で申告停止（陳腐化）
+    us_gaap["LongTermDebtNoncurrent"] = {"units": {"USD": [
+        _entry("2021-01-01", "2021-09-30", 25933000, "Q3"),
+        _entry("2021-01-01", "2021-12-31", 25939000, "FY", form="10-K"),
+        _entry("2022-01-01", "2022-03-31", 25939000, "Q1"),
+        _entry("2022-01-01", "2022-06-30", 25939000, "Q2"),
+        _entry("2022-01-01", "2022-09-30", 25939000, "Q3"),
+        _entry("2022-01-01", "2022-12-31", 0, "FY", form="10-K"),
+    ]}}
+    # fallback: primaryより新しいデータを持つ（実際の直近BS本体値）
+    us_gaap["LongTermDebt"] = {"units": {"USD": [
+        _entry("2021-01-01", "2021-09-30", 25933000, "Q3"),
+        _entry("2021-01-01", "2021-12-31", 25939000, "FY", form="10-K"),
+        _entry("2024-01-01", "2024-12-31", 0, "Q3"),
+        _entry("2025-01-01", "2025-03-31", 60000000, "Q1"),
+        _entry("2025-01-01", "2025-06-30", 60000000, "Q2"),
+        _entry("2025-01-01", "2025-09-30", 15000000, "Q3"),
+    ]}}
+    company_facts = {"facts": {"us-gaap": us_gaap}}
+
+    raw = build_raw_table("FLYWTEST", company_facts)
+    ltdebt = raw["fields"]["LTDebt"]
+    latest = max(ltdebt, key=lambda e: e["end"])
+    assert latest["end"] == "2025-09-30", (
+        "陳腐化したprimary(LongTermDebtNoncurrent)ではなく、"
+        f"より新しいfallback(LongTermDebt)を採用すべき: {latest}"
+    )
+    assert latest["val"] == 15000000
+
+
+def test_select_best_candidate_stale_check_does_not_break_lly_capex_count_route():
+    """LLY-CAPEX-STALE-1回帰確認: 件数不足経由（use_min）で既に起動していた
+    ケースが、新設したend日比較(stale)の追加によって壊れないこと"""
+    us_gaap = {}
+    for concept in ["NetCashProvidedByUsedInOperatingActivities", "NetIncomeLoss",
+                     "Revenues", "GrossProfit", "StockholdersEquity", "Assets"]:
+        us_gaap[concept] = {"units": {"USD": [
+            _entry("2025-01-01", "2025-12-31", 1000, "FY", form="10-K"),
+        ]}}
+    us_gaap["PaymentsToAcquireProductiveAssets"] = {"units": {"USD": [
+        _entry("2022-01-01", "2022-03-31", 365400000, "Q1"),
+        _entry("2022-01-01", "2022-06-30", 736400000, "Q2"),
+        _entry("2022-01-01", "2022-09-30", 1353600000, "Q3"),
+        _entry("2021-01-01", "2021-09-30", 1018400000, "Q3"),
+    ]}}
+    us_gaap["PaymentsToAcquireOtherPropertyPlantAndEquipment"] = {"units": {"USD": [
+        _entry("2025-01-01", "2025-03-31", 1509500000, "Q1"),
+        _entry("2025-01-01", "2025-06-30", 3206600000, "Q2"),
+        _entry("2025-01-01", "2025-09-30", 5294300000, "Q3"),
+        _entry("2026-01-01", "2026-03-31", 2326000000, "Q1"),
+    ]}}
+    company_facts = {"facts": {"us-gaap": us_gaap}}
+    raw = build_raw_table("LLYTEST2", company_facts)
+    capex = raw["fields"]["CapEx"]
+    q_only = [e for e in capex if not e.get("is_annual")]
+    latest = max(q_only, key=lambda e: e["end"])
+    assert latest["end"] == "2026-03-31"
+    assert latest["val"] == 2326000000
+
+
 def test_build_raw_table_lly_capex_uses_new_tag():
     """LLYを模した company_facts（旧タグ4件+新タグ多数）でCapExが新タグの最新値を反映すること"""
     us_gaap = {}

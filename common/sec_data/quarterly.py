@@ -279,7 +279,11 @@ FIELD_CONCEPTS: dict[str, tuple[str, str]] = {
     "NetIncome":        (TAG_CANDIDATES["NET_INCOME"][0], "USD"),
     "Cash":             (TAG_CANDIDATES["CASH_AND_EQUIVALENTS"][0], "USD"),
     "STDebt":           ("ShortTermBorrowings", "USD"),
-    "LTDebt":           ("LongTermDebt", "USD"),
+    # [[SCHEMA-NORMALIZED-ISSUES-1]]③（2026-09-23）: parser.py::XBRL_MAPPING
+    # と優先順序を統一。LongTermDebtNoncurrentを優先することで
+    # LongTermDebtCurrentとの二重計上リスクを避ける（BUG-NETDEBT-2の
+    # 設計意図と同一、251-252行目参照）。
+    "LTDebt":           ("LongTermDebtNoncurrent", "USD"),
     "DeferredRevenue":  ("DeferredRevenue", "USD"),
     "Equity":           ("StockholdersEquity", "USD"),
     "Assets":           ("Assets", "USD"),
@@ -342,9 +346,12 @@ _FIELD_FALLBACKS: dict[str, tuple[str, ...]] = {
     # AMZN等: GrossProfitタグがある場合（normalizer._calc_gross_profitで逆算済みの場合は不要）
     "GrossProfit": TAG_CANDIDATES["GROSS_PROFIT"][1:],
     "LTDebt": (
-        # CEG等: 10-QがLongTermDebt(total)を申告せずLongTermDebtNoncurrentのみ申告する場合
-        # LongTermDebt(quarterly)が0件でもLongTermDebtNoncurrentで四半期値を取得できる
-        "LongTermDebtNoncurrent",
+        # [[SCHEMA-NORMALIZED-ISSUES-1]]③（2026-09-23）: primaryを
+        # LongTermDebtNoncurrentに変更したため、fallbackはLongTermDebt
+        # （current+non-current合計値のタグ）に変更。CEG等、
+        # LongTermDebtNoncurrentを申告せずLongTermDebt(total)のみ
+        # 申告する銘柄向け。
+        "LongTermDebt",
     ),
     "RPO": (
         "RemainingPerformanceObligation",
@@ -532,7 +539,23 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
         if field_name in _FIELD_FALLBACKS:
             q_count = sum(1 for e in processed if not e.get("is_annual"))
             use_min = field_name in _FALLBACK_MIN_FIELDS and q_count < _FALLBACK_MIN
-            if not processed or use_min:
+            # [[SCHEMA-NORMALIZED-ISSUES-1]]③派生（2026-09-23、FLYW型）:
+            # primaryの件数がuse_minを満たしても、企業がそのタグの申告自体を
+            # 停止し（陳腐化）フォールバック候補の方に新しいデータがある場合、
+            # 件数条件だけでは検知できない（LLY-CAPEX-STALE-1と同根だが、
+            # そちらは「件数不足」経由でしか_select_best_candidate()を
+            # 起動しない設計だったため、件数が足りるケースを見逃していた）。
+            # primaryの最新end日よりフォールバック候補の最新end日が新しい場合も
+            # 起動対象に追加する。
+            stale = False
+            if field_name in _FALLBACK_MIN_FIELDS and processed:
+                primary_latest_end = max((e["end"] for e in processed), default="")
+                for _fb_concept in _FIELD_FALLBACKS[field_name]:
+                    _fb_raw = _get_field_units(company_facts, _fb_concept, unit)
+                    if _fb_raw and max(e["end"] for e in _fb_raw) > primary_latest_end:
+                        stale = True
+                        break
+            if not processed or use_min or stale:
                 processed, _source_tag = _select_best_candidate(
                     company_facts, unit, concept, processed,
                     _FIELD_FALLBACKS[field_name], _FALLBACK_MIN,
