@@ -18794,6 +18794,11 @@ reviews/`のファイル追加履歴を検索した結果、satellite 7銘柄は
 - `CHAT_RULES.md`事例6（方針判断を仰ぐ質問文自体の前提誤りの記録）
 - `SYSTEM_MAP.md`「TANUKI TAIL」節（確定方針を記録）
 
+**注記（2026-09-23）**: `satellite_monitor.py`自体を削除したため、本
+エントリが前提としていた監視機能（satellite_monitor.pyによる4条件監視）
+はもう存在しない。本文は歴史的記録として書き換えない
+（`[[TAIL-SATELLITE-MONITOR-CORE-APPLICABILITY-1]]`参照）。
+
 ---
 
 ### ✅ [TAIL-SATELLITE-POSITION-MONITORING-GAP-1] TAIL保有銘柄APGEが自動レビュー生成パイプラインから完全に漏れている（satellite種別＋tanuki=falseの二重要因）— 最終的に全保有ポジション監視へ方針確定・完全解消
@@ -18959,6 +18964,11 @@ UNDECIDED-1]]`で「全保有ポジションを監視対象とする」方針が
   データ、実地検証結果を含む）
 - `CHAT_RULES.md`事例6（2026-08-19②新規。本項目の方針判断が誤った
   規模認識〈1銘柄と説明→実際は7銘柄〉の上で行われたことの記録）
+
+**注記（2026-09-23）**: `satellite_monitor.py`自体を削除したため、本
+エントリが前提としていた監視機能（satellite_monitor.pyによる4条件監視）
+はもう存在しない。本文は歴史的記録として書き換えない
+（`[[TAIL-SATELLITE-MONITOR-CORE-APPLICABILITY-1]]`参照）。
 
 ---
 
@@ -36289,3 +36299,106 @@ report_consistency_check.py --fail-on-ng ともにNG=0。実際に
 再生成、対象KPI以外の5件が全件無差分であることを確認。
 
 コミット: `50b5e0d63d`（コード）・`482577a9ed`（データ）。
+
+### ✅ [TAIL-SATELLITE-MONITOR-CORE-APPLICABILITY-1] satellite_monitor.py自体を削除したため対応不要（2026-09-23）
+**優先度:** 低（現状維持でも実害はない。core側の高頻度監視が無いことは
+事実だが、四半期レビューによる評価は別途機能している）→ 対応不要と判明
+**分類:** 運用ギャップ / TAIL自動化パイプライン / 技術調査
+**登録日:** 2026-08-19④
+**発見:** `[[TAIL-SATELLITE-POSITION-MONITORING-GAP-1]]`・
+`[[TAIL-COVERAGE-POLICY-UNDECIDED-1]]`のSYSTEM_MAP.md記録時に発見した
+「core 3銘柄はsatellite_monitor.pyの対象外＝価格変動・エグジット条件・
+テーゼ否定ニュースの継続監視を一切受けていない」という非対称の技術的
+検証
+
+#### 内容
+`satellite_monitor.py`は`positions_index.json`の`type=="satellite"`を
+直接フィルタする独立システムで、4条件（①価格変動±20%、②エグジット
+条件の数値目標到達、③Grokによるテーゼ否定ニュース検知、④決算接近）を
+Discord通知する。core（PLTR/SOFI/TSLA）は対象外であり、同等の監視を
+提供する別システムは存在しない（`.github/workflows/`の全TAIL関連
+ワークフローを確認、該当なし）。4条件それぞれについて、core 3銘柄の
+実際のthesisデータに対して技術的に適用可能かを実測で判定した。
+
+#### 判定結果（4条件それぞれ）
+
+**①価格変動±20%: そのまま適用可**
+core 3銘柄はいずれも`entry_price: null`（`thesis.json`）だが、
+`monitor_ticker()`は`pos.get("entry_price") or avg_costs.get(ticker)`
+という、`portfolio.json`の加重平均取得単価へのフォールバックを既に
+実装している。このフォールバック自体はcore/satelliteのスキーマに
+依存しないため、そのまま機能する（同様のフォールバックは
+`quarterly_review_generator.py`でも既に使われている既存パターン）。
+
+**②エグジット条件の数値目標到達: 適用不可（そのままでは）**
+`_extract_numeric_exit()`（正規表現による「$XXX到達」「X倍」等の短い
+定型文からの数値抽出）を、core 3銘柄の実際の`exit_guide`テキストに
+対して実行した結果、**3銘柄とも`None`（抽出不可）を実測確認**。
+core 3銘柄の`exit_guide`は数千文字規模の構造化された長文エッセイ
+（複数の「壊れる条件」シナリオ・監視指標を段落形式で記述）であり、
+satelliteの短い`exit_condition`（例:「割安感がなくなって利が乗ったら
+売り切る」）とは形式が根本的に異なる。
+
+加えて、`monitor_ticker()`自体（376行目）が`pos.get("exit_condition",
+"（条件未設定）")`という**satellite専用のフィールド名**を直接読んで
+おり、修正なしにcoreへ適用すると`exit_cond`が常に「（条件未設定）」に
+なる——これは本セッションで3回目に発見した同型のスキーマ不整合
+（`quarterly_review_generator.py`・`kpi_proposer.py`ではsatellite側が
+「未設定」になっていたが、今度は逆方向にcore側が「未設定」になる）。
+
+代替案（実装はしない）: (i) Grokによる定性判定（`exit_guide`の長文を
+渡し、現在の決算・株価状況が「壊れる条件」に近づいているかをAIに判断
+させる、正規表現による数値抽出とは別の方式）、(ii) 将来的な数値目標
+フィールドの新設（thesisに`exit_price_target`等を追加）。
+
+**③テーゼ否定ニュース検知: 要改修**
+`_call_grok_news()`自体はstrategy_name・exit_condition文字列を
+プロンプトへ埋め込むだけの汎用的な実装で、機構的にはcoreのテキストを
+渡しても動作する。ただし②と同じ理由（`monitor_ticker()`が
+`exit_condition`という satellite専用フィールドを直接読む）で、
+修正なしでは「（条件未設定）」がプロンプトに渡ってしまう。今回新設した
+`thesis_narrative_fields()`（`src/tail/thesis_utils.py`）を
+`satellite_monitor.py`側でも使うよう改修すれば、`exit_guide`を正しく
+読めるようになり解消可能。`strategy_name`はcoreに存在しないフィールド
+のため空文字のままになるが、プロンプト自体は成立する。
+
+**④決算接近: そのまま適用可**
+`rss_state.json`にcore 3銘柄のエントリが実際に存在することを確認
+（PLTR/SOFI/TSLAとも`last_filed`等が記録済み）。`_check_earnings_
+approach()`を実際に呼び出し、3銘柄とも次回決算予想日を正しく計算
+できることを実測確認（例: PLTR推定2026-11-02・74日後、現時点では
+2週間以内の閾値に達していないため`triggered=False`）。
+
+#### 通知頻度への影響
+現状`satellite_monitor.py`は平日2回（JST 08:00・17:00）×satellite
+7銘柄＝1日あたり最大14回の`monitor_ticker()`呼び出し。core 3銘柄を
+追加した場合、1日あたり最大20回（+43%、週あたり+30回）に増加する。
+Grok Web検索（条件③）・Discord通知の呼び出し回数もこれに比例して
+増加する。
+
+#### 対応方針
+未定（本項目では技術調査の記録のみ、実装しない）。着手する場合は
+最低限②③の改修（`thesis_narrative_fields()`の`satellite_monitor.py`
+への導入、②は代替案の選定）が前提となる。
+
+#### 関連
+- `[[TAIL-SATELLITE-POSITION-MONITORING-GAP-1]]`・
+  `[[TAIL-COVERAGE-POLICY-UNDECIDED-1]]`（BACKLOG_DONE.md、逆方向の
+  同型の非対称〈satelliteがレビュー生成から漏れていた〉を発見・是正
+  した項目）
+- `SYSTEM_MAP.md`「TANUKI TAIL」節（本調査の要点を記録済み）
+
+#### 着手条件
+ユーザーに、core 3銘柄へsatellite_monitor.pyの監視を広げるべきかの
+投資方針判断を確認してから着手すること。
+
+#### 対応不要と判明（2026-09-23、指示書㉒）
+Koichiさんの承認済み判断（機能自体が「認識されていない・不要」と判明）
+により`src/tail/satellite_monitor.py`・
+`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`を完全削除した。
+本エントリが調査していた「core 3銘柄への適用可否」自体が前提を失った
+ため、対応不要としてクローズする。他モジュールからの参照・専用テスト
+ファイルは存在しないことを確認済み（`satellite_alerts.json`は
+satellite_monitor.py自身のみが読み書きする内部状態ファイル、
+`journal.json`は他モジュールも使う共有ファイルのためファイル自体は
+削除せず、satellite_monitor.py由来の書き込みが単に無くなるのみ）。
