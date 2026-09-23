@@ -437,6 +437,29 @@
         </div>
       </div>
 
+      <!-- 経営者実行力評価（参考指標、[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④、2026-09-23） -->
+      <div id="execution-metrics-panel" style="display:none;background:var(--sur);border:1px solid var(--bdr);padding:14px 16px;margin-bottom:20px">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase;margin-bottom:10px">経営者実行力評価（参考指標・単一スコア化なし）</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">売上成長加速度</div>
+            <div id="exec-growth-accel" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">—</div>
+            <div id="exec-growth-accel-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">ROICトレンド（直近4年）</div>
+            <div id="exec-roic-trend" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--txt)">—</div>
+            <div id="exec-roic-trend-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">SBC比率（直近四半期）</div>
+            <div id="exec-sbc-ratio" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">—</div>
+            <div id="exec-sbc-ratio-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--mut);margin-top:10px">3指標は単一スコアへ合成していません（恣意的な重み付けを避けるため個別提示）。DCF/IV計算には使用していません。</div>
+      </div>
+
       <!-- PER比較（Addition G） -->
       <div id="per-comparison" style="display:none;background:var(--sur);border:1px solid var(--bdr);padding:14px 16px;margin-bottom:20px">
         <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase;margin-bottom:10px">PER 比較</div>
@@ -592,10 +615,61 @@
 
         switchTab('quarterly');
         updateTanukiInfo(tanukiData);
+        renderExecutionMetrics(quarterlyData.execution_metrics);
       } catch (error) {
         console.error('Error:', error);
         showLoading(false);
         document.getElementById('error').style.display = 'block';
+      }
+    }
+
+    function renderExecutionMetrics(metrics) {
+      const panel = document.getElementById('execution-metrics-panel');
+      if (!panel) return;
+      if (!metrics) { panel.style.display = 'none'; return; }
+      panel.style.display = '';
+
+      const accel = metrics.revenue_growth_acceleration || {};
+      const accelEl = document.getElementById('exec-growth-accel');
+      const accelNoteEl = document.getElementById('exec-growth-accel-note');
+      if (accel.reason === 'ok' && accel.value != null) {
+        const v = accel.value * 100;
+        accelEl.textContent = `${v >= 0 ? '+' : ''}${v.toFixed(1)}pt`;
+        accelEl.style.color = v >= 0 ? 'var(--green)' : 'var(--red)';
+        accelNoteEl.textContent = `直近4Q平均YoY ${(accel.recent_4q_avg_yoy * 100).toFixed(1)}% − その前4Q平均YoY ${(accel.prior_4q_avg_yoy * 100).toFixed(1)}%`;
+      } else {
+        accelEl.textContent = 'N/A';
+        accelEl.style.color = 'var(--mut)';
+        accelNoteEl.textContent = '直近16四半期分のデータ不足';
+      }
+
+      const roic = metrics.roic_trend || {};
+      const roicEl = document.getElementById('exec-roic-trend');
+      const roicNoteEl = document.getElementById('exec-roic-trend-note');
+      const roicYears = (roic.years || []).slice().reverse(); // 古い順に表示
+      if (roic.reason === 'ok' && roicYears.length > 0) {
+        roicEl.textContent = roicYears.map(e =>
+          e.reason === 'ok' ? `${(e.roic_wacc_ratio * 10).toFixed(1)}%` : '—'
+        ).join(' → ');
+        roicEl.style.color = 'var(--txt)';
+        roicNoteEl.textContent = roicYears.map(e => e.year).join(' → ') + '（ROIC、WACC=10%基準）';
+      } else {
+        roicEl.textContent = 'N/A';
+        roicEl.style.color = 'var(--mut)';
+        roicNoteEl.textContent = '直近4年中3年以上で算出不能（営業赤字等）';
+      }
+
+      const sbc = metrics.sbc_ratio || {};
+      const sbcEl = document.getElementById('exec-sbc-ratio');
+      const sbcNoteEl = document.getElementById('exec-sbc-ratio-note');
+      if (sbc.reason === 'ok' && sbc.value != null) {
+        sbcEl.textContent = `${(sbc.value * 100).toFixed(1)}%`;
+        sbcEl.style.color = 'var(--txt)';
+        sbcNoteEl.textContent = sbc.period_end ? `期末: ${sbc.period_end}` : '';
+      } else {
+        sbcEl.textContent = 'N/A';
+        sbcEl.style.color = 'var(--mut)';
+        sbcNoteEl.textContent = 'SBCデータなし';
       }
     }
 

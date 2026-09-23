@@ -21,6 +21,7 @@ from .sector_classifier_v2 import SectorClassifierV2
 from .company_metadata import get_company_metadata
 from .maturity_monitor import MaturityMonitor
 from .fair_value_detector import apply_fair_value_detection
+from .execution_metrics import calc_execution_metrics
 
 # プロジェクトルートを取得（pipeline.py の場所から3階層上）
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -780,6 +781,10 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
                 print(f"  [AI] Failed to parse AI result: {e}")
                 latest["ai_analysis"] = {"health": "Error", "comment": str(ai_result), "sources": []}
 
+        # 経営者実行力評価3指標（[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④、
+        # 2026-09-23）: 単一スコアには合成せず個別フィールドとして格納する
+        execution_metrics = calc_execution_metrics(ticker, quarterly_results, PROJECT_ROOT)
+
         # 保存
         ticker_dir = os.path.join(DATA_ROOT, ticker)
         os.makedirs(ticker_dir, exist_ok=True)
@@ -788,7 +793,8 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
             json.dump({
                 "ticker": ticker,
                 "last_updated": datetime.now().isoformat(),
-                "quarters": quarterly_results
+                "quarters": quarterly_results,
+                "execution_metrics": execution_metrics
             }, f, indent=2, ensure_ascii=False)
 
         if ttm_results:
