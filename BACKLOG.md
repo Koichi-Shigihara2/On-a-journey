@@ -4182,7 +4182,7 @@ DESIGN-15内部の見出し（目的/設計方針/レイヤー構造/着手条�
 - アイデア未固まり。設計を深める必要あり
 - 実装難易度: 高
 
-#### ④ 元[DESIGN-6] 経営者の実行力評価
+#### ④ 元[DESIGN-6] 経営者の実行力評価 → 実装完了（2026-09-23）
 - 概要: 目標の難易度 × ビート度合いで経営者を定量評価
 - 指標候補:
   売上成長の加速度
@@ -4203,6 +4203,53 @@ DESIGN-15内部の見出し（目的/設計方針/レイヤー構造/着手条�
    定義が完全には一致しない。この差分を「未達」として機械判定すると、
    実力差ではなく定義差を誤って実力差と誤認するリスクがある
 詳細は本セッション記録（指示書2026-09-23⑩の調査結果）参照。
+
+##### ④実装内容（2026-09-23完了、指示書⑫）
+3指標（売上成長加速度・ROICトレンド・SBC比率）を実装。単一スコアには
+合成せず個別フィールドとして提示する（GROWTH-1の反省を踏まえ恣意的な
+重み付けを避ける設計、STEP2調査時のKoichiさんとの検討結果）。
+
+- **売上成長加速度**: 「直近4四半期平均YoY − その前4四半期平均YoY」
+  （C方式）で確定。単純な2階差分（A方式）はSOUNの実例で確認された
+  base effect〈前年がたまたま急成長/急減速だった場合のノイズ〉に弱く
+  却下、回帰傾き（B方式）は説明コスト増に見合わないとして却下
+  （Koichiさんの判断、詳細は[[feedback_metric_design_simplicity]]
+  ローカルメモリ参照）。直近16四半期分のデータを要し、不足銘柄
+  （CRWV/SN）は推測で埋めずNoneのまま明示
+- **ROICトレンド**: `pipeline.py::_calc_roic_wacc_ratio()`を
+  `common/sec_data/roic.py::calc_roic_wacc_ratio()`へ共有モジュール化し
+  （複数年指定用に`year`パラメータを追加、TANUKI VALUATION側の既存
+  呼び出しはbefore/after無差分を確認済み）、EPS Analyzer側から
+  `common/sec_data/data/{ticker}/annual_*.json`の直近4年分を計算。
+  3年未満しか算出できない銘柄（大半が営業赤字の成長段階企業）は
+  insufficient_dataとして明示。**「データ: EPS Analyzerで近似可能」**
+  という登録時の前提はROICに関しては不正確だったと判明（EPS Analyzer
+  の`quarterly.json`にはoperating_income/BS項目が存在せず、
+  common/sec_data側のデータが必須）
+- **SBC比率**: EPS Analyzer側`adjustments`配列（`item_id=="sbc"`）を
+  採用。XBRLタグ候補がTANUKI VALUATION側（2タグ）よりEPS Analyzer側
+  （4タグ）の方が広く、こちらのほうが正確
+- 表示先はEPS Analyzer自身の`stock.html`（`quarterly.json`を既に
+  fetch済みのため配線コストゼロ）を採用。TANUKI VALUATION側の
+  `stock.html`はcross-fetchが必要になるため見送り
+- 検証: 新規回帰テスト23件（`tests/test_roic_shared_module.py`12件・
+  `tests/test_execution_metrics.py`11件、いずれもgit stashでfail-before/
+  pass-after確認済み）、pytest全体1485件パス。NVDA/PLTR/SOUNの実データ
+  で計算しPlaywright実ブラウザ確認（consoleエラー0件、SOUNのROIC
+  トレンドN/Aフォールバック含め正常描画）。TANUKI VALUATION側への影響
+  確認（NVDA実パイプライン再実行）でintrinsic_value_per_share・
+  rice.roic_wacc_ratio・funda_score・timing_score・matrixが全て
+  before/afterでビット単位一致
+- コミット: `518fc7b383`（ROIC共有モジュール化）・`c71b89b173`
+  （EPS Analyzer側3指標実装）・`d20ea80390`（全99銘柄データ反映）
+
+**「Phase 4棚卸しでROICが完全未着手6式の1つ」という前提について**:
+BACKLOG.md/BACKLOG_DONE.mdを横断検索したが該当する記録は見つからず、
+2026-08-22付近の関連記録（Gate3閾値不整合6事例）はROICと無関係だった。
+実コード確認の結果、ROIC計算（`_calc_roic_wacc_ratio()`）は元々実在し
+Moat Score計算に使われていたため、前提は誤りだったと判断する
+（訂正対象となる既存の棚卸し記録自体が見つからなかったため、他ファイル
+の修正は不要）。
 
 #### ⑤ 元[DESIGN-14] 非線形的成長の検知スコア
 - 概要: 構造変化×経営者実行力×業界変曲点の3要素で
