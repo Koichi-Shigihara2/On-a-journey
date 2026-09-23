@@ -62,6 +62,82 @@ normalized/時代は`selling_and_marketing`にSGA総額が誤混入した値（�
 
 ---
 
+### ✅ [DISCORD-NOTIFY-403-SILENT-1] urllib経由のDiscord webhook通知がUser-Agent未指定でCloudflareに403拒否され、一度も届いていなかった → 完了（2026-09-24）: 全urllib送信箇所3件にUser-Agentを付与、失敗時はHTTPステータスのみ出力、system_health.pyの表示を「未設定」「送信失敗」で区別
+**優先度:** 高（毎朝のSystem Health通知を含む監視通知が全停止していた）
+**分類:** 運用監視 / 通知
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** 2026-09-24、ローカルで`common/sec_data/audit.py`を実行した際に
+`Discord送信エラー: HTTP Error 403: Forbidden`が出力された（指示書
+2026-09-24①のゲート実行時）。Koichiさんより「通知は一度も来たことがない」
+との確認あり
+
+#### 原因（STEP 1で確定）
+同一webhookへローカルから送信して比較（webhook URLは一切出力せず実施）:
+- (a) urllib・User-Agent未指定（現行と同条件）: **HTTP 403**、本文
+  `error code: 1010`（Cloudflareのブラウザシグネチャ拒否。urllib既定の
+  `Python-urllib/x.y`が拒否対象）
+- (b) urllib・`User-Agent: On-a-journey-notifier/1.0`: **HTTP 204**（成功）
+- 参考: requests既定UA（`python-requests/2.31.0`）: HTTP 204（成功）
+
+→ webhook自体は有効で、User-Agent起因と確定。Secrets再発行は不要。
+
+#### 送信箇所の洗い出し（STEP 2）
+urllib経由（本件の対象、全件修正）:
+- `common/sec_data/audit.py::post_discord`（SEC_Data_Audit.yml、
+  `common/system_health.py`もこれをimportして使用）
+- `src/value/tanuki_valuation/score_watcher.py::post_discord`
+  （TANUKI_VALUATION_Update.yml）
+- `src/value/tanuki_valuation/beta_fetcher.py::post_discord`
+  （Beta_Config_Update.yml）
+- 参考: `common/system_health.py::_fetch_latest_workflow_run`もurllibだが
+  GitHub API宛で既にUser-Agent指定済み（Discord宛ではない）。
+  `browser_checks/`の2件はローカルサーバ疎通確認のみ
+
+requests経由（対象外、既定UAで204を確認済み）:
+- `src/market/macro_pulse/05_main.py::send_discord`
+- `src/tail/edgar_rss_monitor.py::send_discord`
+- （Discord以外のrequests.post: `src/market/market_pulse/collect_and_send.py`・
+  `src/tail/kpi_proposer.py`・`quarterly_review_generator.py`・
+  `sec_ctrl_fetcher.py`はLLM API宛）
+
+#### 修正内容（STEP 3）
+- 上記urllib 3箇所の`post_discord`に`User-Agent: On-a-journey-notifier/1.0`
+  を付与
+- 失敗時の出力を`HTTPError`は`HTTP {code}`、それ以外は例外クラス名のみに
+  変更（webhook URL〈トークン含む〉を出力しない）
+- `common/system_health.py`に`discord_notify_label()`を新設し、
+  「送信完了」「DISCORD_WEB_HOOK 未設定（スキップ）」「❌ 送信失敗」の
+  3状態で表示（従来は未設定と送信失敗を同じ「未設定またはスキップ」で
+  表示していたため403に気付けなかった）。`score_watcher.py`の同型表示
+  （失敗時も「スキップ（未設定）」と表示）も同様に区別
+- 回帰テスト`tests/test_discord_user_agent.py`（7件）: 3モジュールの
+  RequestにPython-urllib以外のUser-Agentが付与されること、HTTPError時に
+  ステータスが出力されURLが出力されないこと、system_healthの3状態表示を
+  検証。`git stash`で修正前4件失敗→修正後7件成功を確認
+
+#### 実送信確認（STEP 4）
+- ローカル: 修正後の`audit.post_discord()`で送信成功（True）、
+  `audit.py`全体実行でも「Discord通知: 送信完了」
+- Actions: gh CLIがローカルに無いため、push後にKoichiさんへ
+  System_Health.ymlのworkflow_dispatch手動実行とログ確認
+  （「Discord通知: 送信完了」）を依頼
+
+#### 影響範囲と停止期間の推定（git logより）
+- `audit.py`（SEC_Data_Audit）・`score_watcher.py`（TANUKI_VALUATION_Update
+  内のスコア変化通知）・`beta_fetcher.py`（Beta_Config_Update、月初週）:
+  いずれも2026-05-31の新設時（`f829972baa`・`e1a2525343`・`cfd393171e`）
+  から一貫してUser-Agent未指定
+- `system_health.py`（System_Health.yml、毎日JST 8:30の毎朝通知）:
+  2026-06-03の新設時（`d496eee1e0`）からaudit.pyの`post_discord`を使用
+- Koichiさんの「一度も来たことがない」という証言と合わせ、**上記4系統の
+  通知は新設時（2026-05-31〜06-03）から2026-09-24まで約4か月間、一度も
+  届いていなかった**と推定。一方、requests経由のMacro Pulse・EDGAR RSS
+  監視の通知は本件の影響を受けていない
+- 通知が失敗してもpost_discordはFalseを返すだけでワークフローは成功扱いの
+  ため、Actions上も異常として表面化していなかった
+
+---
+
 ## 2026-09-23（完了）
 
 ### ✅ [MARKETPULSE-MINOR-INCONSISTENCIES-1] Market Pulseの軽微な構造的不整合まとめ → 完了（2026-09-23）: ①〜⑤は2026-08-26完了済み、⑥はTech Pulseワークフロー自体が存在せず完全休眠のため対応見送りとしてクローズ

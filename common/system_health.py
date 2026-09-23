@@ -653,6 +653,18 @@ def check_l_macro_data() -> tuple[str, bool, str]:
 
 
 # ── Discord 1行サマリー ───────────────────────────────────────────────
+def discord_notify_label(sent: bool) -> str:
+    """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
+    表示する。[[DISCORD-NOTIFY-403-SILENT-1]]: 従来は未設定と送信失敗（403）を
+    同じ「未設定またはスキップ」で表示していたため、通知が一度も届いていない
+    ことに気付けなかった。"""
+    if sent:
+        return "Discord通知: 送信完了"
+    if not os.environ.get("DISCORD_WEB_HOOK", ""):
+        return "Discord通知: DISCORD_WEB_HOOK 未設定（スキップ）"
+    return "Discord通知: ❌ 送信失敗（HTTPステータスはstderr参照）"
+
+
 def build_one_line(run_date: str, results: dict) -> str:
     overall_ok = all(r["ok"] for r in results.values())
     globe      = "🟢" if overall_ok else "🔴"
@@ -736,10 +748,7 @@ def main() -> int:
     one_line = build_one_line(today, results)
     sent = post_discord(one_line)
     if not args.quiet:
-        if sent:
-            print("Discord通知: 送信完了")
-        else:
-            print("Discord通知: DISCORD_WEB_HOOK 未設定またはスキップ")
+        print(discord_notify_label(sent))
 
     if not overall_ok:
         # SEC content異常（A）またはcronワークフロー異常（J、実行失敗・

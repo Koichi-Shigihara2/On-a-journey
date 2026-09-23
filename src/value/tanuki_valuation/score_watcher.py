@@ -187,18 +187,29 @@ def post_discord(message: str) -> bool:
     if not webhook or not message:
         return False
     try:
+        import urllib.error
         import urllib.request
         payload = json.dumps({"content": message}).encode("utf-8")
+        # [[DISCORD-NOTIFY-403-SILENT-1]]: User-Agent未指定だとurllib既定の
+        # "Python-urllib/x.y"が付き、Discord前段のCloudflareにerror code 1010
+        # （HTTP 403）で拒否され通知が一度も届いていなかった。
         req = urllib.request.Request(
             webhook,
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "On-a-journey-notifier/1.0",
+            },
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
             return resp.status in (200, 204)
+    except urllib.error.HTTPError as e:
+        # webhook URL（トークンを含む）は出力しない
+        print(f"Discord送信エラー: HTTP {e.code}", file=sys.stderr)
+        return False
     except Exception as e:
-        print(f"Discord送信エラー: {e}", file=sys.stderr)
+        print(f"Discord送信エラー: {type(e).__name__}", file=sys.stderr)
         return False
 
 
@@ -236,8 +247,10 @@ def main():
     message = build_discord_message(ticker_changes)
     if post_discord(message):
         print("Discord通知: 送信完了")
-    else:
+    elif not os.environ.get("DISCORD_WEB_HOOK", ""):
         print("Discord通知: スキップ（DISCORD_WEB_HOOK未設定）")
+    else:
+        print("Discord通知: ❌ 送信失敗（HTTPステータスはstderr参照）")
 
     # GitHub Actions サマリー
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
