@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-09-21T09:56:22.582451",
+  "last_updated": "2026-09-23T10:08:37.756290",
   "years": [
     {
       "year": "2025",
@@ -64,16 +64,16 @@
           "tax_rate_applied": 0.10862099220375523
         }
       ],
-      "net_adjustment_total": 228612687.55362386
+      "net_adjustment_total": 228612687.55362388
     },
     {
       "year": "2024",
       "filing_date": "2024-12-31",
       "gaap_net_income": 498665000.0,
-      "adjusted_net_income": 389534531.3983643,
+      "adjusted_net_income": 393554031.3983643,
       "diluted_shares_used": 1078372000.0,
       "gaap_eps": 0.4624239130837967,
-      "adjusted_eps": 0.36122463435471647,
+      "adjusted_eps": 0.3649520122910872,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -91,9 +91,9 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -273986000.0,
-          "net_amount": -273986000.0,
-          "note": "tax_expense=-265,320,000, median_normal_tax=8,666,000"
+          "amount": -269966500.0,
+          "net_amount": -269966500.0,
+          "note": "tax_expense=-265,320,000, median_normal_tax=4,646,500"
         },
         {
           "item_id": "sbc",
@@ -135,7 +135,7 @@
           "tax_rate_applied": 0.06561883132044234
         }
       ],
-      "net_adjustment_total": -109130468.60163566
+      "net_adjustment_total": -105110968.60163568
     },
     {
       "year": "2023",
@@ -303,6 +303,109 @@
         }
       ],
       "net_adjustment_total": 301990061.0133668
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": -483937000.0,
+      "adjusted_net_income": -151830375.44001663,
+      "diluted_shares_used": 452121262.25,
+      "gaap_eps": -1.0703699215375708,
+      "adjusted_eps": -0.335817817291818,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 76722000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 75782635.878304,
+          "tax_rate_applied": 0.012243738715049166
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 72681000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 72240523.83981785,
+          "tax_rate_applied": 0.0060604031339985265
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -64405000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -64014679.736154824,
+          "tax_rate_applied": 0.0060604031339985265
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 52154000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 52129403.816387735,
+          "tax_rate_applied": 0.00047160684918254813
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 70989000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 70955521.10138337,
+          "tax_rate_applied": 0.00047160684918254813
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 37454000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 36759818.55916299,
+          "tax_rate_applied": 0.018534240423906917
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 89920000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 88253401.10108228,
+          "tax_rate_applied": 0.018534240423906917
+        }
+      ],
+      "net_adjustment_total": 332106624.5599834
     }
   ]
 }

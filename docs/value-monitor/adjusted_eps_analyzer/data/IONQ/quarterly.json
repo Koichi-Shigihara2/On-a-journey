@@ -1,6 +1,6 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-09-23T09:28:56.389849",
+  "last_updated": "2026-09-23T10:08:22.305076",
   "quarters": [
     {
       "gaap_eps": -5.080070633397915,
@@ -1163,27 +1163,99 @@
       }
     },
     {
+      "gaap_eps": -0.5918721234750884,
+      "adjusted_eps": -0.11842411889517608,
+      "gaap_net_income": -81447298.0,
+      "adjusted_net_income": -16296298.0,
+      "diluted_shares_used": 137609620.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 1819000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 1819000.0,
+          "tax_rate_applied": 0.0
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 63332000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 63332000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 65151000.0,
+      "filing_date": "2021-12-31",
+      "form": "10-K",
+      "sector": "Technology",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing",
+        "fx_gains_losses",
+        "derivative_gains_losses",
+        "tax_one_time"
+      ],
+      "revenue": 1648000.0,
+      "diluted_shares": 137609620.0,
+      "period_end": "2021-12-31",
+      "fiscal_year": 2021,
+      "quarter": 4,
+      "tax_expense": 0,
+      "pretax_income": -81447298.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "detected_items": [
+            {
+              "item_name": "ワラント公正価値変動損益",
+              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
+              "xbrl_value": 63332000,
+              "adjustment_amount": 63332000,
+              "net_amount": 63332000.0
+            }
+          ],
+          "condition1": "前年同期データなし（条件1スキップ）",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
+        }
+      }
+    },
+    {
       "gaap_eps": -0.12255664351904076,
-      "adjusted_eps": -0.104970374599219,
+      "adjusted_eps": -0.10551761351893058,
       "gaap_net_income": -14781000.0,
-      "adjusted_net_income": -12660000.0,
+      "adjusted_net_income": -12726000.0,
       "diluted_shares_used": 120605457.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 2121000,
+          "amount": 2055000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 2121000.0,
+          "net_amount": 2055000.0,
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 2121000.0,
+      "net_adjustment_total": 2055000.0,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -1201,6 +1273,126 @@
       "quarter": 3,
       "tax_expense": 0,
       "pretax_income": -14781000.0
+    },
+    {
+      "gaap_eps": -0.06649897232268506,
+      "adjusted_eps": -0.046013264491627875,
+      "gaap_net_income": -7930260.0,
+      "adjusted_net_income": -5487260.0,
+      "diluted_shares_used": 119253873.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2443000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2443000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 2443000.0,
+      "filing_date": "2021-06-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing",
+        "fx_gains_losses",
+        "derivative_gains_losses",
+        "tax_one_time"
+      ],
+      "revenue": 93000.0,
+      "diluted_shares": 119253873.0,
+      "period_end": "2021-06-30",
+      "fiscal_year": 2021,
+      "quarter": 2,
+      "tax_expense": 0,
+      "pretax_income": -7930260.0
+    },
+    {
+      "gaap_eps": -0.017001057902748366,
+      "adjusted_eps": -0.005001447625939998,
+      "gaap_net_income": -2027442.0,
+      "adjusted_net_income": -596442.0,
+      "diluted_shares_used": 119253873.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 1431000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 1431000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 1431000.0,
+      "filing_date": "2021-03-31",
+      "form": "10-Q",
+      "sector": "Technology",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing",
+        "fx_gains_losses",
+        "derivative_gains_losses",
+        "tax_one_time"
+      ],
+      "revenue": 125000.0,
+      "diluted_shares": 119253873.0,
+      "period_end": "2021-03-31",
+      "fiscal_year": 2021,
+      "quarter": 1,
+      "tax_expense": 0,
+      "pretax_income": -2027442.0
+    },
+    {
+      "gaap_eps": -0.029894207293376544,
+      "adjusted_eps": -0.027789453848597438,
+      "gaap_net_income": -3565000.0,
+      "adjusted_net_income": -3314000.0,
+      "diluted_shares_used": 119253873.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 251000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "category": "株式報酬関連",
+          "net_amount": 251000.0,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 251000.0,
+      "filing_date": "2020-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing",
+        "fx_gains_losses",
+        "derivative_gains_losses",
+        "tax_one_time"
+      ],
+      "revenue": 0.0,
+      "diluted_shares": 119253873.0,
+      "period_end": "2020-09-30",
+      "fiscal_year": 2020,
+      "quarter": 3,
+      "tax_expense": 0,
+      "pretax_income": -3565000.0
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "ticker": "FLYW",
-  "last_updated": "2026-09-21T09:59:21.377618",
+  "last_updated": "2026-09-23T10:08:16.385907",
   "years": [
     {
       "year": "2025",
@@ -381,10 +381,10 @@
       "year": "2023",
       "filing_date": "2023-12-31",
       "gaap_net_income": -8566000.0,
-      "adjusted_net_income": 40366020.78485221,
+      "adjusted_net_income": 40366020.7848522,
       "diluted_shares_used": 115307409.0,
       "gaap_eps": -0.07428837465249089,
-      "adjusted_eps": 0.3500730884071136,
+      "adjusted_eps": 0.35007308840711354,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -543,16 +543,16 @@
           "tax_rate_applied": 0.12767911818738517
         }
       ],
-      "net_adjustment_total": 48932020.78485221
+      "net_adjustment_total": 48932020.7848522
     },
     {
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": -39347000.0,
-      "adjusted_net_income": -9732212.492829539,
+      "adjusted_net_income": -9732212.492829535,
       "diluted_shares_used": 107506955.0,
       "gaap_eps": -0.36599492563062547,
-      "adjusted_eps": -0.09052635239115031,
+      "adjusted_eps": -0.09052635239115028,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -737,7 +737,175 @@
           "tax_rate_applied": 0.05181884133070785
         }
       ],
-      "net_adjustment_total": 29614787.50717046
+      "net_adjustment_total": 29614787.507170465
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": -28085000.0,
+      "adjusted_net_income": -4010251.7732592598,
+      "diluted_shares_used": 73651921.25,
+      "gaap_eps": -0.3813206705724598,
+      "adjusted_eps": -0.054448705548998284,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 3390000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2588112.4630055903,
+          "tax_rate_applied": 0.2365449961635427
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1297873.5065219775,
+          "tax_rate_applied": 0.2365449961635427
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 75000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 57259.1252877343,
+          "tax_rate_applied": 0.2365449961635427
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2778000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2685041.7794970986,
+          "tax_rate_applied": 0.033462282398452614
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1643114.1199226305,
+          "tax_rate_applied": 0.033462282398452614
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 10000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 9665.377176015474,
+          "tax_rate_applied": 0.033462282398452614
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2396000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2359402.450623846,
+          "tax_rate_applied": 0.015274436300565098
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1674033.4582890393,
+          "tax_rate_applied": 0.015274436300565098
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": -26000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": -25602.864656185306,
+          "tax_rate_applied": 0.015274436300565098
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 10364000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 10120011.356914705,
+          "tax_rate_applied": 0.023541937773571515
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1562332.8995622855,
+          "tax_rate_applied": 0.023541937773571515
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 106000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 103504.55459600143,
+          "tax_rate_applied": 0.023541937773571515
+        }
+      ],
+      "net_adjustment_total": 24074748.22674074
     }
   ]
 }

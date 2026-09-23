@@ -1,6 +1,6 @@
 {
   "ticker": "TASK",
-  "last_updated": "2026-09-21T09:58:58.035562",
+  "last_updated": "2026-09-23T10:08:39.224326",
   "quarters": [
     {
       "gaap_eps": 0.23751357954078847,
@@ -746,9 +746,9 @@
     },
     {
       "gaap_eps": 0.10317718415594786,
-      "adjusted_eps": 0.24935516588599185,
+      "adjusted_eps": 0.22191072969636266,
       "gaap_net_income": 10132000.0,
-      "adjusted_net_income": 24486678.53678023,
+      "adjusted_net_income": 21791634.76573646,
       "diluted_shares_used": 98200005.0,
       "adjustments": [
         {
@@ -776,22 +776,9 @@
           "category": "買収・統合関連",
           "net_amount": 2963333.9040118703,
           "tax_rate_applied": 0.42178850653426925
-        },
-        {
-          "item_id": "derivative_fv_change",
-          "item_name": "デリバティブ公正価値変動損益",
-          "amount": 4661000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常のデリバティブ時価評価変動",
-          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
-          "category": "公正価値変動関連",
-          "net_amount": 2695043.771043771,
-          "tax_rate_applied": 0.42178850653426925
         }
       ],
-      "net_adjustment_total": 14354678.53678023,
+      "net_adjustment_total": 11659634.76573646,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": null,
@@ -802,26 +789,7 @@
       "fiscal_year": 2023,
       "quarter": 2,
       "tax_expense": 7391000.0,
-      "pretax_income": 17523000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
-              "xbrl_value": -4661000.0,
-              "adjustment_amount": 4661000.0,
-              "net_amount": 2695043.771043771
-            }
-          ],
-          "condition1": "前年同期データなし（条件1スキップ）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
-        }
-      }
+      "pretax_income": 17523000.0
     },
     {
       "gaap_eps": 0.09419274533993303,
@@ -897,16 +865,108 @@
               "net_amount": -3892558.7285178965
             }
           ],
-          "condition1": "前年同期データなし（条件1スキップ）",
+          "condition1": "純利益変動18% / 売上変動2% = 9.8倍（閾値5倍）",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
+        }
+      }
+    },
+    {
+      "gaap_eps": 0.15342604540547422,
+      "adjusted_eps": 0.16603793533531744,
+      "gaap_net_income": 15742000.0,
+      "adjusted_net_income": 17036020.0,
+      "diluted_shares_used": 102603179.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 14215000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 11229850.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 5117000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4042430.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 417000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 329430.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -18111000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": -14307690.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 1294020.0,
+      "filing_date": "2022-12-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 242220000.0,
+      "diluted_shares": 102603179.0,
+      "period_end": "2022-12-31",
+      "fiscal_year": 2022,
+      "quarter": 4,
+      "tax_expense": 24111000.0,
+      "pretax_income": 39853000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "detected_items": [
+            {
+              "item_name": "デリバティブ公正価値変動損益",
+              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
+              "xbrl_value": 18111000,
+              "adjustment_amount": -18111000,
+              "net_amount": -14307690.0
+            }
+          ],
+          "condition1": "FV変動が純利益の115%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
       }
     },
     {
       "gaap_eps": 0.052639111656660964,
-      "adjusted_eps": 0.17379433700638183,
+      "adjusted_eps": 0.210573500334524,
       "gaap_net_income": 5365000.0,
-      "adjusted_net_income": 17713190.60475162,
+      "adjusted_net_income": 21461738.120950323,
       "diluted_shares_used": 101920413.0,
       "adjustments": [
         {
@@ -917,7 +977,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 9400916.846652268,
           "tax_rate_applied": 0.42062634989200864
@@ -934,9 +994,35 @@
           "category": "買収・統合関連",
           "net_amount": 2947273.758099352,
           "tax_rate_applied": 0.42062634989200864
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 400000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 231749.46004319654,
+          "tax_rate_applied": 0.42062634989200864
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 6070000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": 3516798.0561555075,
+          "tax_rate_applied": 0.42062634989200864
         }
       ],
-      "net_adjustment_total": 12348190.60475162,
+      "net_adjustment_total": 16096738.120950323,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
@@ -947,7 +1033,553 @@
       "fiscal_year": 2022,
       "quarter": 3,
       "tax_expense": 3895000.0,
-      "pretax_income": 9260000.0
+      "pretax_income": 9260000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "detected_items": [
+            {
+              "item_name": "デリバティブ公正価値変動損益",
+              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
+              "xbrl_value": -6070000,
+              "adjustment_amount": 6070000,
+              "net_amount": 3516798.0561555075
+            }
+          ],
+          "condition1": "FV変動が純利益の113%占有（超高materiality → 条件1スキップ）",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
+        }
+      }
+    },
+    {
+      "gaap_eps": 0.07490997089220867,
+      "adjusted_eps": 0.3123926329027105,
+      "gaap_net_income": 7729000.0,
+      "adjusted_net_income": 32231792.79003268,
+      "diluted_shares_used": 103177186.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 18933000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 14944154.105392158,
+          "tax_rate_applied": 0.21068218954248366
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4967000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 3920541.564542484,
+          "tax_rate_applied": 0.21068218954248366
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 450000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 355193.01470588235,
+          "tax_rate_applied": 0.21068218954248366
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 6693000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": 5282904.105392157,
+          "tax_rate_applied": 0.21068218954248366
+        }
+      ],
+      "net_adjustment_total": 24502792.79003268,
+      "filing_date": "2022-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 246459000.0,
+      "diluted_shares": 103177186.0,
+      "period_end": "2022-06-30",
+      "fiscal_year": 2022,
+      "quarter": 2,
+      "tax_expense": 2063000.0,
+      "pretax_income": 9792000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "detected_items": [
+            {
+              "item_name": "デリバティブ公正価値変動損益",
+              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
+              "xbrl_value": -6693000.0,
+              "adjustment_amount": 6693000.0,
+              "net_amount": 5282904.105392157
+            }
+          ],
+          "condition1": "FV変動が純利益の87%占有（超高materiality → 条件1スキップ）",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
+        }
+      }
+    },
+    {
+      "gaap_eps": 0.11127328621131517,
+      "adjusted_eps": 0.2654171563498458,
+      "gaap_net_income": 11586000.0,
+      "adjusted_net_income": 27635772.05430471,
+      "diluted_shares_used": 104122026.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 19605000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 12690291.63640427,
+          "tax_rate_applied": 0.35270126822727527
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4711000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 3049424.3253813065,
+          "tax_rate_applied": 0.35270126822727527
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 479000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 310056.09251913516,
+          "tax_rate_applied": 0.35270126822727527
+        }
+      ],
+      "net_adjustment_total": 16049772.054304712,
+      "filing_date": "2022-03-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 239680000.0,
+      "diluted_shares": 104122026.0,
+      "period_end": "2022-03-31",
+      "fiscal_year": 2022,
+      "quarter": 1,
+      "tax_expense": 6313000.0,
+      "pretax_income": 17899000.0
+    },
+    {
+      "gaap_eps": 0.20142960608385319,
+      "adjusted_eps": 0.4409060188840155,
+      "gaap_net_income": 19102000.0,
+      "adjusted_net_income": 41812059.986933544,
+      "diluted_shares_used": 94832137.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 21175000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 18326429.886559363,
+          "tax_rate_applied": 0.13452515293698403
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4712000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4078117.4793609316,
+          "tax_rate_applied": 0.13452515293698403
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 353000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 305512.6210132447,
+          "tax_rate_applied": 0.13452515293698403
+        }
+      ],
+      "net_adjustment_total": 22710059.98693354,
+      "filing_date": "2021-12-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 226757000.0,
+      "diluted_shares": 94832137.0,
+      "period_end": "2021-12-31",
+      "fiscal_year": 2021,
+      "quarter": 4,
+      "tax_expense": -2265000.0,
+      "pretax_income": 16837000.0
+    },
+    {
+      "gaap_eps": 0.10633669173959014,
+      "adjusted_eps": 0.2998899508388712,
+      "gaap_net_income": 11636000.0,
+      "adjusted_net_income": 32815761.059283778,
+      "diluted_shares_used": 109426011.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 19243000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 16845587.421005115,
+          "tax_rate_applied": 0.124586217273548
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4711000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4124074.3304243153,
+          "tax_rate_applied": 0.124586217273548
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 240000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 210099.30785434847,
+          "tax_rate_applied": 0.124586217273548
+        }
+      ],
+      "net_adjustment_total": 21179761.059283778,
+      "filing_date": "2021-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 201053000.0,
+      "diluted_shares": 109426011.0,
+      "period_end": "2021-09-30",
+      "fiscal_year": 2021,
+      "quarter": 3,
+      "tax_expense": 1656000.0,
+      "pretax_income": 13292000.0
+    },
+    {
+      "gaap_eps": -1.1396929562203233,
+      "adjusted_eps": -1.0315682657304,
+      "gaap_net_income": -105943000.0,
+      "adjusted_net_income": -95891999.84065579,
+      "diluted_shares_used": 92957493.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 5771000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 5412365.579880137,
+          "tax_rate_applied": 0.062144241919920684
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4712000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4419176.332073334,
+          "tax_rate_applied": 0.062144241919920684
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 234000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 219458.24739073854,
+          "tax_rate_applied": 0.062144241919920684
+        }
+      ],
+      "net_adjustment_total": 10051000.15934421,
+      "filing_date": "2021-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 180022000.0,
+      "diluted_shares": 92957493.0,
+      "period_end": "2021-06-30",
+      "fiscal_year": 2021,
+      "quarter": 2,
+      "tax_expense": -7020000.0,
+      "pretax_income": -112963000.0
+    },
+    {
+      "gaap_eps": 0.17993826265557786,
+      "adjusted_eps": 0.22426373022791524,
+      "gaap_net_income": 16507000.0,
+      "adjusted_net_income": 20573286.305192865,
+      "diluted_shares_used": 91737020.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4712000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 3876257.5500847204,
+          "tax_rate_applied": 0.1773646965015449
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 231000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 190028.75510814312,
+          "tax_rate_applied": 0.1773646965015449
+        }
+      ],
+      "net_adjustment_total": 4066286.3051928636,
+      "filing_date": "2021-03-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 152871000.0,
+      "diluted_shares": 91737020.0,
+      "period_end": "2021-03-31",
+      "fiscal_year": 2021,
+      "quarter": 1,
+      "tax_expense": 3559000.0,
+      "pretax_income": 20066000.0
+    },
+    {
+      "gaap_eps": 0.147748422610632,
+      "adjusted_eps": 0.17743677886046463,
+      "gaap_net_income": 13554000.0,
+      "adjusted_net_income": 16277521.331058022,
+      "diluted_shares_used": 91737020.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4712000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 2724677.815699659,
+          "tax_rate_applied": 0.42175767918088736
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": -2000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": -1156.4846416382252,
+          "tax_rate_applied": 0.42175767918088736
+        }
+      ],
+      "net_adjustment_total": 2723521.3310580207,
+      "filing_date": "2020-12-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 138792000.0,
+      "diluted_shares": 91737020.0,
+      "period_end": "2020-12-31",
+      "fiscal_year": 2020,
+      "quarter": 4,
+      "tax_expense": 9886000.0,
+      "pretax_income": 23440000.0
+    },
+    {
+      "gaap_eps": 0.12487870218587872,
+      "adjusted_eps": 0.1751419344565573,
+      "gaap_net_income": 11456000.0,
+      "adjusted_net_income": 16066999.144079886,
+      "diluted_shares_used": 91737020.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4711000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 3849444.7931526387,
+          "tax_rate_applied": 0.18288159771754636
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 932000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 761554.3509272467,
+          "tax_rate_applied": 0.18288159771754636
+        }
+      ],
+      "net_adjustment_total": 4610999.144079885,
+      "filing_date": "2020-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 122425000.0,
+      "diluted_shares": 91737020.0,
+      "period_end": "2020-09-30",
+      "fiscal_year": 2020,
+      "quarter": 3,
+      "tax_expense": 2564000.0,
+      "pretax_income": 14020000.0
+    },
+    {
+      "gaap_eps": 0.08729300341345293,
+      "adjusted_eps": 0.12997481643453732,
+      "gaap_net_income": 8008000.0,
+      "adjusted_net_income": 11923502.33475148,
+      "diluted_shares_used": 91737020.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 4712000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 3915502.3347514784,
+          "tax_rate_applied": 0.1690360070561378
+        }
+      ],
+      "net_adjustment_total": 3915502.3347514784,
+      "filing_date": "2020-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 114400000.0,
+      "diluted_shares": 91737020.0,
+      "period_end": "2020-06-30",
+      "fiscal_year": 2020,
+      "quarter": 2,
+      "tax_expense": 1629000.0,
+      "pretax_income": 9637000.0
+    },
+    {
+      "gaap_eps": 0.01651459792349915,
+      "adjusted_eps": 0.01651459792349915,
+      "gaap_net_income": 1515000.0,
+      "adjusted_net_income": 1515000.0,
+      "diluted_shares_used": 91737020.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
+      "filing_date": "2020-03-31",
+      "form": "10-Q",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 0.0,
+      "diluted_shares": 91737020.0,
+      "period_end": "2020-03-31",
+      "fiscal_year": 2020,
+      "quarter": 1,
+      "tax_expense": 0,
+      "pretax_income": 0
     }
   ]
 }

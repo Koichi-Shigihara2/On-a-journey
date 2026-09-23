@@ -1,6 +1,6 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-09-21T09:55:50.692793",
+  "last_updated": "2026-09-23T10:08:31.092824",
   "years": [
     {
       "year": "2025",
@@ -73,6 +73,125 @@
       "diluted_shares_used": 51360762.0,
       "gaap_eps": -0.8731348650940965,
       "adjusted_eps": -0.8731348650940965,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2022",
+      "filing_date": "2022-12-31",
+      "gaap_net_income": -73241805.0,
+      "adjusted_net_income": -73241805.0,
+      "diluted_shares_used": 42015571.0,
+      "gaap_eps": -1.7432062270437787,
+      "adjusted_eps": -1.7432062270437787,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": -15023842.0,
+      "adjusted_net_income": -15023842.0,
+      "diluted_shares_used": 32145356.0,
+      "gaap_eps": -0.4673720832334226,
+      "adjusted_eps": -0.4673720832334226,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2020",
+      "filing_date": "2020-12-31",
+      "gaap_net_income": -13477880.0,
+      "adjusted_net_income": -13477880.0,
+      "diluted_shares_used": 57821417.5,
+      "gaap_eps": -0.2330949427173763,
+      "adjusted_eps": -0.2330949427173763,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2019",
+      "filing_date": "2019-12-31",
+      "gaap_net_income": -19390132.0,
+      "adjusted_net_income": -19390132.0,
+      "diluted_shares_used": 50887702.0,
+      "gaap_eps": -0.3810376817565863,
+      "adjusted_eps": -0.3810376817565863,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2018",
+      "filing_date": "2018-12-31",
+      "gaap_net_income": -12096864.0,
+      "adjusted_net_income": -12855963.15,
+      "diluted_shares_used": 50887702.0,
+      "gaap_eps": -0.23771684561429007,
+      "adjusted_eps": -0.2526339890529936,
+      "adjustments": [
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -1928873,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -1523809.6700000002,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 1845031.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 1457574.49,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": -7914,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": -6252.06,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -869129,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -686611.91,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": -759099.1500000003
+    },
+    {
+      "year": "2017",
+      "filing_date": "2017-12-31",
+      "gaap_net_income": -44663.0,
+      "adjusted_net_income": -44663.0,
+      "diluted_shares_used": 50887702.0,
+      "gaap_eps": -0.0008776776754430766,
+      "adjusted_eps": -0.0008776776754430766,
       "adjustments": [],
       "net_adjustment_total": 0.0
     }

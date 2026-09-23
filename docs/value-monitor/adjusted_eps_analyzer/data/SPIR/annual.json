@@ -1,6 +1,6 @@
 {
   "ticker": "SPIR",
-  "last_updated": "2026-09-21T09:56:42.343779",
+  "last_updated": "2026-09-23T10:08:38.689189",
   "years": [
     {
       "year": "2025",
@@ -419,10 +419,10 @@
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": -89411000.0,
-      "adjusted_net_income": -77334662.37361577,
+      "adjusted_net_income": -71594365.1943008,
       "diluted_shares_used": 78484952.75,
       "gaap_eps": -1.1392120000989616,
-      "adjusted_eps": -0.9853438100415467,
+      "adjusted_eps": -0.912204985614912,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -527,22 +527,177 @@
           "category": "買収・統合関連",
           "net_amount": 1719629.729124692,
           "tax_rate_applied": 0.016230132079695547
+        }
+      ],
+      "net_adjustment_total": 17816634.805699207
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": -19312000.0,
+      "adjusted_net_income": -5462726.011114532,
+      "diluted_shares_used": 41469545.5,
+      "gaap_eps": -0.46569114194897554,
+      "adjusted_eps": -0.13172862025011903,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 5034000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 4928563.334071954,
+          "tax_rate_applied": 0.02094490781248433
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 598000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 585474.9451281343,
+          "tax_rate_applied": 0.02094490781248433
         },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
-          "amount": -5835000,
+          "amount": -21929000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": -5740297.179314977,
-          "tax_rate_applied": 0.016230132079695547
+          "net_amount": -21469699.11658003,
+          "tax_rate_applied": 0.02094490781248433
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2099000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2081590.3120374938,
+          "tax_rate_applied": 0.008294277257030094
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 21000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 20825.820177602367,
+          "tax_rate_applied": 0.008294277257030094
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 15663000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 15533086.735323137,
+          "tax_rate_applied": 0.008294277257030094
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 1994000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 1808197.0370815822,
+          "tax_rate_applied": 0.09318102453280731
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 22000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 19950.01746027824,
+          "tax_rate_applied": 0.09318102453280731
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 2634000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 2388561.181380586,
+          "tax_rate_applied": 0.09318102453280731
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2507000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2339255.939583652,
+          "tax_rate_applied": 0.06691027539543194
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 25000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 23327.2431151142,
+          "tax_rate_applied": 0.06691027539543194
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 5991000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 5590140.540105967,
+          "tax_rate_applied": 0.06691027539543194
         }
       ],
-      "net_adjustment_total": 12076337.626384232
+      "net_adjustment_total": 13849273.988885468
     }
   ]
 }

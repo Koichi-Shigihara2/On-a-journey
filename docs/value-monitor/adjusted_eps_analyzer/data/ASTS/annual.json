@@ -1,6 +1,6 @@
 {
   "ticker": "ASTS",
-  "last_updated": "2026-09-23T09:55:17.626913",
+  "last_updated": "2026-09-23T10:08:04.906130",
   "years": [
     {
       "year": "2025",
@@ -374,6 +374,122 @@
         }
       ],
       "net_adjustment_total": -8838862.683698412
+    },
+    {
+      "year": "2020",
+      "filing_date": "2020-12-31",
+      "gaap_net_income": 191177.0,
+      "adjusted_net_income": 28615249.627368867,
+      "diluted_shares_used": 51839841.0,
+      "gaap_eps": 0.0036878392431797776,
+      "adjusted_eps": 0.5519933910940982,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": -126000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": -71421.47673080086,
+          "tax_rate_applied": 0.4331628830888821
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 51000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 28908.692962467016,
+          "tax_rate_applied": 0.4331628830888821
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 59077000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 33487036.355758116,
+          "tax_rate_applied": 0.4331628830888821
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 241000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 190388.02864400213,
+          "tax_rate_applied": 0.21000817990040613
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 78999.18200995939,
+          "tax_rate_applied": 0.21000817990040613
+        },
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 129000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "category": "株式報酬関連",
+          "net_amount": 101911.03916830057,
+          "tax_rate_applied": 0.20999194443177846
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 79000.80555682215,
+          "tax_rate_applied": 0.20999194443177846
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -6925000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -5470750.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 28424072.627368867
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "ticker": "RKLB",
-  "last_updated": "2026-09-21T09:56:02.528543",
+  "last_updated": "2026-09-23T10:08:34.695020",
   "years": [
     {
       "year": "2025",
@@ -32,6 +32,79 @@
       "diluted_shares_used": 480434424.75,
       "gaap_eps": -0.3800123192566875,
       "adjusted_eps": -0.3800123192566875,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2022",
+      "filing_date": "2022-12-31",
+      "gaap_net_income": -135944000.0,
+      "adjusted_net_income": -135944000.0,
+      "diluted_shares_used": 464299526.0,
+      "gaap_eps": -0.2927937514198539,
+      "adjusted_eps": -0.2927937514198539,
+      "adjustments": [],
+      "net_adjustment_total": 0.0
+    },
+    {
+      "year": "2021",
+      "filing_date": "2021-12-31",
+      "gaap_net_income": -117320000.0,
+      "adjusted_net_income": -107630650.0,
+      "diluted_shares_used": 148134441.5,
+      "gaap_eps": -0.7919832741935304,
+      "adjusted_eps": -0.7265741100458397,
+      "adjustments": [
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -24130000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -19062700.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 33947000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 26818130.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 2448000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 1933920.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 9689350.0
+    },
+    {
+      "year": "2020",
+      "filing_date": "2020-12-31",
+      "gaap_net_income": -55005000.0,
+      "adjusted_net_income": -55005000.0,
+      "diluted_shares_used": 75414888.0,
+      "gaap_eps": -0.7293652680356696,
+      "adjusted_eps": -0.7293652680356696,
       "adjustments": [],
       "net_adjustment_total": 0.0
     }
