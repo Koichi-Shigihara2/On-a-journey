@@ -454,5 +454,44 @@
       "tax_expense": 0,
       "pretax_income": 0
     }
-  ]
+  ],
+  "execution_metrics": {
+    "revenue_growth_acceleration": {
+      "value": 0.06379266876298308,
+      "reason": "ok",
+      "method": "avg4q_yoy_diff",
+      "recent_4q_avg_yoy": 0.14168877727142112,
+      "prior_4q_avg_yoy": 0.07789610850843805
+    },
+    "roic_trend": {
+      "years": [
+        {
+          "year": 2025,
+          "roic_wacc_ratio": 1.3976944322902376,
+          "reason": "ok"
+        },
+        {
+          "year": 2024,
+          "roic_wacc_ratio": 1.5321292253023684,
+          "reason": "ok"
+        },
+        {
+          "year": 2023,
+          "roic_wacc_ratio": null,
+          "reason": "missing_equity_data"
+        },
+        {
+          "year": 2022,
+          "roic_wacc_ratio": null,
+          "reason": "missing_equity_data"
+        }
+      ],
+      "reason": "insufficient_data"
+    },
+    "sbc_ratio": {
+      "value": null,
+      "reason": "no_sbc_data",
+      "period_end": "2026-06-30"
+    }
+  }
 }
