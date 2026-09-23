@@ -47,6 +47,7 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     get_quarterly_series,
     WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
+from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④共有モジュール化
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
 # 次回決算日取得（yf.Ticker(ticker).calendar直接呼び出し）を
@@ -3289,101 +3290,20 @@ class TanukiValuationPipeline:
     def _calc_roic_wacc_ratio(self, ticker: str, wacc_rm: float = 0.10) -> tuple:
         """最新年次データから ROIC/WACC_Rm を計算（RICE-1 価値創造係数）
 
-        ROIC = NOPAT / Invested_Capital
-        NOPAT = Operating_Income × (1 - 21%)（実効税率固定）
-        Invested_Capital = Equity + Net_Debt（総資本 - 現金）
-        戻り値: (ROIC/wacc_rm または None, 理由コード)
-        （例: ROIC=15%・WACC=10% → (1.5, "ok")）
-
-        [[MOAT-SCORE-PARTIAL-NULL-1]]: 理由コードはcalculate_moat_score()が
-        Noneの原因別に扱い（真の赤字は算入、それ以外は除外）を判定するために
-        使う。RICE-1側（vc_factor）は理由コードを見ず、値がNoneかどうかのみで
-        判定するため、本変更による既存挙動への影響はない。
-
-        理由コード一覧:
-          "ok"                      - 正常算出
-          "reported_negative_oi"    - operating_incomeは取得できたがNOPAT<=0（真の赤字）
-          "no_operating_income"     - operating_income自体が取得不能（標準タグ・
-                                       parser.py再構成〈[[OPERATING-INCOME-
-                                       EXTRACTION-GAP-1]]〉・TTMフォールバック
-                                       いずれも失敗。2026-08-16時点で該当0件だが
-                                       将来発生しうる真の欠損）
-          "missing_equity_data"/"missing_cash_data" - BS項目欠損
-          "negative_invested_capital" - 投下資本が非正（自社株買い等で自己資本が
-                                       大幅マイナスの銘柄。実際に赤字なのではなく
-                                       測定不能なだけ）
-          "roic_non_positive"       - ROICが0以下（invested_capital算出後の異常値）
-          "roic_diverged_over10"    - ROICが1000%以上（測定アーティファクトの
-                                       疑い。2026-08-16時点で該当0件、未検証）
-          "no_sec_dir"/"no_annual_data"/"exception" - データ自体が存在しない
+        [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④（2026-09-23）:
+        計算本体は`common.sec_data.roic.calc_roic_wacc_ratio()`へ切り出し、
+        EPS Analyzer側（ROICトレンド指標）と共有した。TANUKI VALUATION側の
+        既存動作（Layer3ベースのTTM営業利益フォールバック・LTDebtフォール
+        バックの利用）は変更していない。理由コード一覧・計算式の詳細は
+        共有モジュールのdocstring参照。
         """
-        sec_dir = os.path.join(self.repo_root, "common", "sec_data", "data", ticker)
-        if not os.path.exists(sec_dir):
-            return None, "no_sec_dir"
-        years = sorted([
-            int(fn[7:11]) for fn in os.listdir(sec_dir)
-            if fn.startswith("annual_") and fn.endswith(".json") and fn[7:11].isdigit()
-        ])
-        if not years:
-            return None, "no_annual_data"
-        try:
-            with open(os.path.join(sec_dir, f"annual_{years[-1]}.json"), encoding="utf-8") as f:
-                ann = json.load(f)
-            pl = ann.get("pl", {})
-            bs = ann.get("bs", {})
-            # [[OPERATING-INCOME-EXTRACTION-GAP-1]]: `or 0`によるNone→0
-            # のすり替えは、真の欠損（未報告）と真の赤字（NOPAT<=0）を
-            # 区別できなくしていた。`parser.py::_backfill_operating_income()`
-            # がGP-R&D-SGA法・pretax調整法で既にannual_YYYY.json側を
-            # 補完しているため、ここでNoneになるのは両方式とも失敗した
-            # 真の欠損のみ。`_estimate_ttm_operating_income()`は追加の
-            # 安全網として維持する（selling_and_marketing欠落50銘柄では
-            # 依然失敗しうるが、削除は別作業とする）。
-            oi = pl.get("operating_income")
-            if oi is None:
-                # OperatingIncomeLossタグを近年報告していない銘柄向けフォールバック
-                # （XBRL-TAG-KLAC-1: KLACはFY2015 10-K以降、年次OperatingIncomeLossの
-                #  タグ付けを行っておらず、pl.operating_incomeが恒常的にNoneになる。
-                #  直近4四半期のGrossProfit-RD-SMからTTM営業利益を代替算出する）
-                oi = self._estimate_ttm_operating_income(ticker)
-            if oi is None:
-                return None, "no_operating_income"
-            nopat = oi * (1 - 0.21)
-            if nopat <= 0:
-                # ここに到達する時点でoiはNoneではない（真に報告/再構成された
-                # 値）ため、赤字と判定してよい（[[MOAT-SCORE-PARTIAL-NULL-1]]
-                # のroic_reason="reported_negative_oi"に対応）。
-                return None, "reported_negative_oi"
-            # FY52WEEK-BS-NULL-SILENT-1 Phase A: stockholders_equity/
-            # cash_and_equivalentsはNone率がほぼ0-4%（全105銘柄実測）で、
-            # Noneはほぼ確実にデータ異常のシグナル。従来は`or 0`で暗黙に
-            # ゼロ化してinvested_capitalを算出し続けていたが、DuPont分解
-            # と同じ「除外」方針に倣いNoneを返す（既存のinvested_capital<=0
-            # →None→VC_Factor=1.0フォールバック安全弁はそのまま維持）。
-            # long_term_debt/short_term_debtは真のゼロとの判別困難のため
-            # 対象外（Phase B/C、従来通り`or 0`を維持）。
-            _equity_se = bs.get("stockholders_equity")
-            _equity_te = bs.get("total_equity")
-            _cash_raw = bs.get("cash_and_equivalents")
-            if _equity_se is None and _equity_te is None:
-                return None, "missing_equity_data"
-            if _cash_raw is None:
-                return None, "missing_cash_data"
-            equity = _equity_se or _equity_te or 0
-            lt_debt = bs.get("long_term_debt") or self._get_lt_debt_fallback(ticker)
-            st_debt = bs.get("short_term_debt") or 0
-            cash = _cash_raw
-            invested_capital = equity + lt_debt + st_debt - cash
-            if invested_capital <= 0:
-                return None, "negative_invested_capital"
-            roic = nopat / invested_capital
-            if roic <= 0:
-                return None, "roic_non_positive"
-            if roic >= 10.0:
-                return None, "roic_diverged_over10"
-            return roic / wacc_rm, "ok"
-        except Exception:
-            return None, "exception"
+        return calc_roic_wacc_ratio(
+            ticker,
+            self.repo_root,
+            wacc_rm=wacc_rm,
+            estimate_ttm_operating_income_fn=self._estimate_ttm_operating_income,
+            get_lt_debt_fallback_fn=self._get_lt_debt_fallback,
+        )
 
     def _estimate_ttm_operating_income(self, ticker: str) -> float | None:
         """OperatingIncomeLossタグが欠落している銘柄向けTTM営業利益フォールバック
