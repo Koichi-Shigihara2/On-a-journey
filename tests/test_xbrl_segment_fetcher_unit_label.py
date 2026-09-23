@@ -108,7 +108,6 @@ class TestTailKpiMapConfigConsistency:
         """発見済みの誤ラベル18件が正しくUSDへ修正されていることを確認する"""
         cfg = self._load_config()
         expected_usd = {
-            ("PLTR", "希薄化後EPS成長率"),
             ("SOFI", "Technology Platform売上成長率"),
             ("SOFI", "正味貸倒率（NCO）"),
             ("TSLA", "エネルギー事業粗利益率"),
@@ -134,6 +133,10 @@ class TestTailKpiMapConfigConsistency:
         expected_ratio = {
             ("PLTR", "貢献利益率（Commercial）"),
             ("PLTR", "営業利益率"),
+            # [[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]（2026-09-23）:
+            # yoy(eps_diluted)によるLayer3実装化に伴い、旧来の生EPS値
+            # 単体取得（unit=USD、実質非機能）から真の成長率計算へ変更。
+            ("PLTR", "希薄化後EPS成長率"),
             ("SOFI", "純金利マージン（NIM）"),
         }
         for ticker, name in expected_ratio:

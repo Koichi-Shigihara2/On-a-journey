@@ -70,18 +70,9 @@
     {
       "kpi_name": "希薄化後EPS成長率",
       "change_risk": "medium",
-      "tag_history": [
-        {
-          "tag": "",
-          "valid_from": "2019-01-01",
-          "valid_to": null
-        }
-      ],
-      "fallback_tags": [],
-      "fallback_action": "alert",
-      "revenue_tag": "us-gaap:DilutedEarningsPerShare",
-      "dimension": "",
-      "unit": "USD"
+      "source": "layer3",
+      "layer3_formula": "yoy(eps_diluted)",
+      "unit": "ratio"
     }
   ],
   "SOFI": [

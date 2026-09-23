@@ -406,14 +406,23 @@ def fetch_layer3_kpis(ticker: str, kpi_list: List[Dict[str, Any]]) -> Dict[str, 
     変えなくて済むように、2026-08-19⑧、[[TAIL-XBRL-SEGMENT-FETCHER-
     NONDIMENSIONED-GAP-1]]対応）。
 
-    `layer3_field`（単一フィールド直接参照）と`layer3_formula`
-    （`"field_a/field_b"`形式の除算のみ対応。それ以外の演算子・複数演算
-    には対応しない）の両方を扱う。
+    `layer3_field`（単一フィールド直接参照）と`layer3_formula`の両方を
+    扱う。`layer3_formula`は2構文に対応する:
+    - `"field_a/field_b"`: 同一四半期内の2フィールドの除算
+    - `"yoy(field_name)"`（[[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]、
+      2026-09-23追加）: 同一フィールドの前年同期比
+      `(今期値-前年同期値)/|前年同期値|`。それ以外の演算子・複数演算・
+      入れ子には対応しない。前年同期は配列上の「4件前」ではなくend日が
+      350〜380日前（365日に最も近いもの）のエントリを探して特定する
+      （PLTRのeps_diluted実データに1四半期分の欠測があり、単純な
+      「4件前」だと欠測以降の四半期で前年同期が1四半期分ズレることを
+      確認したため）。
 
-    **分母が0またはNoneの四半期は、その四半期のエントリ自体を作らず
-    スキップする**（falsy-zeroを作らない・0除算例外も出さない。
-    Layer3の`val`は元々`None`でも構造的に`0`になりうるため、`val==0`と
-    `val is None`の両方を明示的に弾く）。
+    **分母（除算のnum/den、yoyの前年同期値）が0またはNoneの四半期は、
+    その四半期のエントリ自体を作らずスキップする**（falsy-zeroを
+    作らない・0除算例外も出さない。Layer3の`val`は元々`None`でも
+    構造的に`0`になりうるため、`val==0`と`val is None`の両方を
+    明示的に弾く）。
     """
     store = build_ticker_store(ticker)
     if store is None:
@@ -435,6 +444,48 @@ def fetch_layer3_kpis(ticker: str, kpi_list: List[Dict[str, Any]]) -> Dict[str, 
                     "quarter": quarter_label(e["end"]),
                     "value":   val,
                     "filed":   e.get("filed", ""),
+                })
+        elif formula and formula.startswith("yoy(") and formula.endswith(")"):
+            # [[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]（2026-09-23実装）:
+            # "yoy(field_name)"形式。同一フィールドの前年同期比
+            # (今期値-前年同期値)/|前年同期値| を計算する。"/"分岐と
+            # 誤ってマッチしないよう"yoy("プレフィックスを先にチェックする。
+            #
+            # 前年同期の特定は単純な「配列で4件前」ではなく、end日が
+            # 350〜380日前（365日を中心に±15日のtolerance）のエントリを
+            # 探す方式にする。PLTRの実データ検証で、`eps_diluted`系列に
+            # 1四半期分の欠測（2021-12-31相当が存在しない）があり、単純な
+            # 「4件前」だと欠測以降の全四半期で前年同期がずれる（1四半期分
+            # 古いものを誤って前年同期とみなす）ことを実際に確認したため。
+            # 該当ウィンドウ内に複数候補がある場合は365日に最も近いものを
+            # 採用する。ウィンドウ内に候補がない場合はその四半期をスキップ
+            # する（推測で埋めない）。
+            yoy_field = formula[len("yoy("):-1].strip()
+            series = sorted(get_quarterly_series(store, yoy_field), key=lambda e: e["end"])
+            for cur_e in series:
+                cur_end = date.fromisoformat(cur_e["end"][:10])
+                prior_e = None
+                best_diff = None
+                for cand_e in series:
+                    if cand_e is cur_e:
+                        continue
+                    cand_end = date.fromisoformat(cand_e["end"][:10])
+                    days = (cur_end - cand_end).days
+                    if 350 <= days <= 380:
+                        diff = abs(days - 365)
+                        if best_diff is None or diff < best_diff:
+                            best_diff = diff
+                            prior_e = cand_e
+                if prior_e is None:
+                    continue  # 前年同期に該当するエントリなし → スキップ
+                cur_val = cur_e.get("val")
+                prior_val = prior_e.get("val")
+                if cur_val is None or prior_val is None or prior_val == 0:
+                    continue  # 前年同期が0/None → その四半期はスキップ（falsy-zeroを作らない）
+                entries.append({
+                    "quarter": quarter_label(cur_e["end"]),
+                    "value":   round((cur_val - prior_val) / abs(prior_val), 6),
+                    "filed":   cur_e.get("filed", ""),
                 })
         elif formula and "/" in formula:
             num_field, den_field = [s.strip() for s in formula.split("/", 1)]
