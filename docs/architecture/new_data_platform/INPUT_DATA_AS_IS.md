@@ -388,7 +388,7 @@ MACRO PULSE側はFRED専用のCSV群を持つのに対し、Market Pulse側はFR
 | `Beta_Config_Update.yml` | 毎月第1日曜 23:00 | 月初週月曜8:00 | yfinance（β、月次） |
 | `TANUKI_Score_Update.yml` | TANUKI VALUATION完了後（`workflow_run`）＋土日23:30独立実行 | — | 各サブシステムの成果物を集約 |
 | `TANUKI_TAIL_Position_Write.yml` | なし（workflow_dispatchのみ） | — | 手動 |
-| `TANUKI_TAIL_Satellite_Monitor.yml` | 平日(月-木)23:00＋平日08:00 | — | 補助監視 |
+| `TANUKI_TAIL_Satellite_Monitor.yml`（**2026-09-23削除済み**、以下は削除前の記録） | 平日(月-木)23:00＋平日08:00 | — | 補助監視 |
 | `Score_Verifier.yml` | 毎日00:00 | 毎日9:00 | yfinance再取得（検証用） |
 | `System_Health.yml` | 毎日23:30 | 毎日8:30 | ワークフロー依存関係チェック（`workflow_dependencies.json`参照） |
 | `SEC_Data_Audit.yml` | なし（`workflow_run`トリガー、SEC_Data_Update完了後） | — | 監査 |

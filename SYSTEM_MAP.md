@@ -1693,6 +1693,12 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　既知の在庫として一律NG化しない）。
 
 　　**`satellite_monitor.py`との役割分担（2026-08-19③調査・記録）**:
+　　**2026-09-23削除済み**——`satellite_monitor.py`・
+　　`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`は
+　　Koichiさんの承認済み判断（機能自体が「認識されていない・不要」と
+　　判明）により完全削除した（`[[TAIL-SATELLITE-MONITOR-CORE-
+　　APPLICABILITY-1]]`参照、BACKLOG_DONE.md）。以下は削除前の設計・
+　　調査記録として歴史的に保持する。
 　　`satellite_monitor.py`は`edgar_rss_monitor.py`/
 　　`quarterly_review_generator.py`とは独立した別システムで、
 　　`positions_index.json`の`type=="satellite"`を**直接**フィルタする
