@@ -2704,39 +2704,6 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [LAYER3-MOAT-ROIC-4TICKERS-NONE-1] COHR/LLY/JNJ/KLACのROIC-WACC比率・Moat ScoreがLayer3切替以降None（中立フォールバック0.5）のまま
-**優先度:** 中（Moat Scoreの精度に直結する4銘柄、投資判断への影響は個別確認が必要）
-**分類:** データ品質 / Layer3統合スキーマ / Moat Score
-**登録日:** 2026-09-23
-**発見:** 旧`[[LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1]]`①（元
-LAYER3-ROIC-WACC-NONE-4TICKERS-1、2026-08-06発見）の待機先タスク
-`[[SCHEMA-NORMALIZED-ISSUES-1]]`②が2026-09-23に「実害調査完了によりコメント
-対応のみでクローズ」（コード修正なし）となり、着手条件（SM/SGA概念混同問題の
-根本解消）が永久に満たされないまま終了したため、実在する問題として分割・
-再起票
-
-#### 内容
-`common/sec_data/roic.py`経由の`_estimate_ttm_operating_income()`
-（GrossProfit/RD/SMの3フィールド共通end日intersection方式）が、Layer3切替後
-COHR/LLY/JNJ/KLACの4銘柄でintersection 0件→Noneを返すようになり、
-ROIC-WACC比率・Moat ROICが中立フォールバック（0.5）表示のまま固定されている。
-normalized/時代は`selling_and_marketing`にSGA総額が誤混入した値（不正確だが
-非None）でROIC-WACC比率を計算していたが、Layer3切替でSM/SGAが正しく分離された
-結果、この4銘柄はSM単体タグが取得できず共通end日のintersectionが空集合になる
-という副作用が生じた。
-
-#### 対応方針候補（実装せず記載のみ）
-(a) SM欠落時はGrossProfit-RDのみで近似計算するフォールバックを追加する
-(b) 従来のSGA総額へのフォールバックを復元する（ただしSM/SGA概念混同を
-再導入するリスクあり、`[[SCHEMA-NORMALIZED-ISSUES-1]]`②が本来解消しようと
-していた問題そのものに逆戻りする）
-(c) 現状維持（Noneのまま安全に扱う。ただし実質的にMoat Score精度を落とす）
-
-#### 着手条件
-なし（技術判断で進行可能）
-
----
-
 ### [FUTURE-FEATURE-IDEAS-CATALOG-1] 将来構想8件の統合カタログ（元UX-FLOW-1/MULTI-1/ARCH-1/EVAL-2/DESIGN-8-3/DESIGN-8-4/SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1/TANUKI-ROE-2）
 **優先度:** 低（いずれも構想段階・実装未着手のアイデアメモ）
 **分類:** 将来構想 / 複数画面・複数サブシステム横断
@@ -5193,10 +5160,10 @@ MISMATCH-DETECTION-1]]へガード条件付き介入として統合したため�
    [[PARSER-MERGED-TAG-MIXING-RISK-1]]・[[LAYER3-ANNUAL-
    MISCLASSIFICATION-NOW-RMBS-1]]・[[LAYER3-ANNUAL-MISCLASSIFICATION-
    MINOR-5TICKERS-1]]・[[LAYER3-SNPS-STALE-TAG-PRIORITY-1]]・
-   [[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]（2026-09-23、旧LAYER3-SM-SGA-
-   SEPARATION-NONE-FALLOUT-1①〈COHR/LLY/JNJ/KLAC〉から分割・再起票。
-   ②〈JOBY〉は影響ゼロ確認済みのため対応不要でクローズ、
-   BACKLOG_DONE.md参照）
+   ~~[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]~~（2026-09-24陳腐化クローズ。
+   4銘柄とも年次operating_incomeが存在しroic.pyは年次OIを優先するため
+   TTM推定フォールバックは発火しておらず、ROIC-WACC比率・Moat Scoreは
+   実測値で算出済み。BACKLOG_DONE.md「2026-09-24（完了）」参照）
 10. 以下、2026-08-03時点リストから変更なし（上記の旧①〜⑭のうち
    Stage系を除く未完了分）: [[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]・
    [[PARSER-STOCKHOLDERS-EQUITY-CROSS-YEAR-MISSELECT-1]]・

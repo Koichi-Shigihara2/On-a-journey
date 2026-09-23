@@ -12,8 +12,12 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-23夜間ブラッシュアップ時点）**: `BACKLOG.md`
-アクティブ件数**12件**（機械カウント、`grep -c "^### \["`）。本日1日で
+**現在の到達点（2026-09-24①時点）**: `BACKLOG.md`
+アクティブ件数**11件**（機械カウント、`grep -c "^### \["`）。2026-09-24①で
+`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`を陳腐化クローズ（4銘柄とも年次
+operating_incomeが存在しroic.pyは年次OIを優先、ROIC-WACC比率・Moat Scoreは
+実測値で算出済みと判明。コード変更なし、BACKLOG_DONE.md「2026-09-24（完了）」
+参照）し12件→11件。以下は2026-09-23夜間ブラッシュアップ時点の記載: 同日1日で
 22件→12件まで削減した（下記「最終更新: 2026-09-23（セッション終了時
 ブラッシュアップ②）」ブロックに詳細）。クローズ11件・新規登録1件
 （`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`、優先度中・着手条件なし
@@ -126,8 +130,8 @@ BACKLOG.mdアクティブ件数は本ブロック開始時点22件→終了時�
 
 **次セッションの着手候補（残存12件のうち技術判断のみで着手可能なもの、
 優先順。詳細は下記「BACKLOG優先順位の目安」参照）**:
-- `[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`（優先度中。COHR/LLY/JNJ/KLACの
-  ROIC-WACC比率・Moat ScoreがNone化、対応方針候補a/b/c提示済み）
+- ~~`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`~~（2026-09-24陳腐化クローズ済み、
+  着手不要）
 - `[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`（優先度低。
   ドキュメント修正のみ）
 - `[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`②のみ（company_facts
@@ -2932,10 +2936,8 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 「順次着手」「着手条件あり」を全面更新した）
 
 ### 順次着手（技術判断のみで着手可能、優先順）
-- LAYER3-MOAT-ROIC-4TICKERS-NONE-1（優先度中。COHR/LLY/JNJ/KLACの
-  ROIC-WACC比率・Moat ScoreがLayer3切替以降None〈中立フォールバック0.5〉
-  のまま。対応方針候補a〈GrossProfit-RD近似フォールバック〉/b〈SGA総額
-  復元、概念混同リスクあり〉/c〈現状維持〉を提示済み。着手条件: なし）
+- ~~LAYER3-MOAT-ROIC-4TICKERS-NONE-1~~（2026-09-24陳腐化クローズ済み。
+  年次OIが4銘柄とも存在し実測値で算出済みと判明、BACKLOG_DONE.md参照）
 - DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1（優先度低。
   DERIVED_DATA_SUBCATEGORIES.mdクロス集計表〈サブシステム別内訳〉の
   陳腐化、ドキュメント修正のみ・実害なし。着手条件: なし）

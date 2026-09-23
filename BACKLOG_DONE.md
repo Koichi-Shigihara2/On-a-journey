@@ -2,6 +2,66 @@
 
 ---
 
+## 2026-09-24（完了）
+
+### ✅ [LAYER3-MOAT-ROIC-4TICKERS-NONE-1] COHR/LLY/JNJ/KLACのROIC-WACC比率・Moat ScoreがLayer3切替以降None（中立フォールバック0.5）のまま → 陳腐化クローズ（2026-09-24）: 年次operating_incomeが4銘柄とも存在し、roic.pyは年次OIを優先するためTTM推定フォールバックは発火していない。ROIC-WACC比率・Moat Scoreは実測値で算出済み（COHR 0.511 / LLY 3.798 / JNJ 1.826 / KLAC 4.223）。登録時の前提が陳腐化
+**優先度:** 中（Moat Scoreの精度に直結する4銘柄、投資判断への影響は個別確認が必要）
+**分類:** データ品質 / Layer3統合スキーマ / Moat Score
+**登録日:** 2026-09-23
+**発見:** 旧`[[LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1]]`①（元
+LAYER3-ROIC-WACC-NONE-4TICKERS-1、2026-08-06発見）の待機先タスク
+`[[SCHEMA-NORMALIZED-ISSUES-1]]`②が2026-09-23に「実害調査完了によりコメント
+対応のみでクローズ」（コード修正なし）となり、着手条件（SM/SGA概念混同問題の
+根本解消）が永久に満たされないまま終了したため、実在する問題として分割・
+再起票
+
+#### 内容
+`common/sec_data/roic.py`経由の`_estimate_ttm_operating_income()`
+（GrossProfit/RD/SMの3フィールド共通end日intersection方式）が、Layer3切替後
+COHR/LLY/JNJ/KLACの4銘柄でintersection 0件→Noneを返すようになり、
+ROIC-WACC比率・Moat ROICが中立フォールバック（0.5）表示のまま固定されている。
+normalized/時代は`selling_and_marketing`にSGA総額が誤混入した値（不正確だが
+非None）でROIC-WACC比率を計算していたが、Layer3切替でSM/SGAが正しく分離された
+結果、この4銘柄はSM単体タグが取得できず共通end日のintersectionが空集合になる
+という副作用が生じた。
+
+#### 対応方針候補（実装せず記載のみ）
+(a) SM欠落時はGrossProfit-RDのみで近似計算するフォールバックを追加する
+(b) 従来のSGA総額へのフォールバックを復元する（ただしSM/SGA概念混同を
+再導入するリスクあり、`[[SCHEMA-NORMALIZED-ISSUES-1]]`②が本来解消しようと
+していた問題そのものに逆戻りする）
+(c) 現状維持（Noneのまま安全に扱う。ただし実質的にMoat Score精度を落とす）
+
+#### 着手条件
+なし（技術判断で進行可能）
+
+#### 2026-09-24 再検証・陳腐化クローズ（コード変更なし）
+着手前にローカルの実データ・実コードで前提を再検証した結果、登録時の前提
+（4銘柄でROIC-WACC比率・Moat ScoreがNone〈中立フォールバック0.5〉）は
+既に成立していないと判明した。
+
+- `docs/value-monitor/tanuki_valuation/data/{COHR,LLY,JNJ,KLAC}/latest.json`:
+  `rice.roic_wacc_ratio`は4銘柄とも非None（COHR 0.511 / LLY 3.798 /
+  JNJ 1.826 / KLAC 4.223）、`components.moat_score_source`は4銘柄とも
+  `"measured"`
+- `common/sec_data/data/{COHR,LLY,JNJ,KLAC}/annual_2025.json`:
+  `pl.operating_income`は4銘柄とも非None（COHR 374,866,000 / LLY
+  29,696,000,000 / JNJ 25,368,000,000 / KLAC 5,006,527,000）
+- `common/sec_data/roic.py` L95付近: `oi = pl.get("operating_income")`で
+  年次OIを優先し、`None`の場合のみ`estimate_ttm_operating_income_fn`
+  （`_estimate_ttm_operating_income()`）へフォールバックする構造。4銘柄とも
+  年次OIが存在するため、GrossProfit/RD/SMのintersection方式によるTTM推定は
+  発火しておらず、本エントリが問題視した経路は現在使われていない
+
+**COHRの`components.moat_roic_norm=0.0`について**: 欠損・フォールバックでは
+なく、ROIC-WACC比率0.511（ROICがWACCを下回る低ROIC）の正当な測定結果で
+ある（`moat_score_source="measured"`）。正規化で下限0.0にクリップされて
+いるだけで、データ品質上の問題ではない。
+
+対応方針候補(a)/(b)/(c)はいずれも不要。コード変更なし。
+
+---
+
 ## 2026-09-23（完了）
 
 ### ✅ [MARKETPULSE-MINOR-INCONSISTENCIES-1] Market Pulseの軽微な構造的不整合まとめ → 完了（2026-09-23）: ①〜⑤は2026-08-26完了済み、⑥はTech Pulseワークフロー自体が存在せず完全休眠のため対応見送りとしてクローズ
