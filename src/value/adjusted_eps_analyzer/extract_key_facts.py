@@ -229,14 +229,18 @@ def fetch_company_facts(cik: str) -> Dict:
         print(f"Error fetching company facts: {e}")
         return {}
 
-def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: Optional[str] = None, limit: int = 40) -> List[Dict]:
+def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: Optional[str] = None, limit: int = 40, min_end_date: Optional[str] = None) -> List[Dict]:
     """
     Company Factsから特定タグの時系列データを抽出
     Args:
         facts_data: Company Facts APIのレスポンス
         us_gaap_tag: タグ名（例: 'NetIncomeLoss' または 'us-gaap:NetIncomeLoss'）
         form_type: フォーム種類（'10-Q', '10-K'）でフィルタする場合は指定
-        limit: 取得する最大件数
+        limit: 取得する最大件数（min_end_date指定時は日付フィルタ後の
+            件数に対する安全弁として働く。単独では実効カバー期間を
+            保証しない、[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]参照）
+        min_end_date: 指定時、この日付（YYYY-MM-DD）以降のend日付のみを
+            対象とする。件数ベースのlimitより先に適用する
     Returns:
         List[Dict]: 各期のデータ
     """
@@ -276,6 +280,8 @@ def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: Opti
     
     # 日付でソート（新しい順）
     results.sort(key=lambda x: x['end'], reverse=True)
+    if min_end_date is not None:
+        results = [r for r in results if r['end'] >= min_end_date]
     return results[:limit]
 
 def get_diluted_shares_from_facts(facts_data: Dict, form_type: Optional[str] = None, limit: int = 40) -> List[Dict]:
@@ -454,10 +460,24 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         print(f"Required XBRL tags: {required_tags}")
         
         # タグごとにデータを抽出し、マップに保存
+        # [[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]: 比較年度の再掲に
+        # よりタグごとの重複件数密度が大きく異なる（例: CATのRevenuesは
+        # 345件・NetIncomeLossは58件）。件数ベースのlimit=years*6のみ
+        # では重複が多いタグだけ実効カバー期間が短くなり、古い四半期が
+        # 丸ごと欠落する（CAT 2021 Q2/Q3のrevenue消失の根本原因、
+        # net_incomeは重複が少なく偶然影響を受けなかった）。日付ベースの
+        # 下限を明示的に併用し、実効カバー期間をタグ間で揃える
+        # （limitは日付フィルタ後の安全弁として残す）。窓は
+        # 「years×365.25日」ちょうど（余剰バッファなし、2026-09-23の
+        # 横展開調査で全99銘柄before/afterした結果、四半期境界での
+        # 取りこぼしは確認されなかったため追加調整は行っていない）。
+        _min_end_date = (datetime.now() - timedelta(days=int(years * 365.25))).strftime('%Y-%m-%d')
         tag_data_map = {}  # tag -> list of items
         for tag in required_tags:
             # 10-Qと10-Kの両方を取得（後でフィルタする）
-            items = extract_value_from_facts(facts, tag, form_type=None, limit=years*6)  # 多めに取得
+            items = extract_value_from_facts(
+                facts, tag, form_type=None, limit=years*40, min_end_date=_min_end_date
+            )  # 多めに取得
             tag_data_map[tag] = items
             print(f"Extracted {len(items)} items for {tag}")
         

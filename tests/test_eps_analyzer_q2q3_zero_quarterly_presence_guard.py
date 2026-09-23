@@ -32,12 +32,20 @@ YTD_6m経由の差分（申告値同士の差分のためガード不要）は�
 
 import os
 import sys
+from datetime import datetime, timedelta
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
 import src.value.adjusted_eps_analyzer.extract_key_facts as ekf  # noqa: E402
+
+# [[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]段階2で日付ベースの
+# min_end_date窓（years×365.25日ちょうど、バッファなし）を導入したため、
+# 固定の過去年（"2021"等）をフィクスチャに使うとテスト実行時点によって
+# 窓の外に出てしまう。テスト実行時から2年前を基準年とし、以降も
+# 十分な余裕（years=5指定に対し2年前）を持たせる。
+_FY = (datetime.now() - timedelta(days=2 * 365)).year
 
 
 def _units(*items, unit="USD"):
@@ -62,16 +70,16 @@ def _base_net_income_and_shares():
     return {
         "NetIncomeLoss": {
             "units": _units(
-                _fact("2021-01-01", "2021-03-31", -2_000_000, "2021-05-15"),
-                _fact("2021-04-01", "2021-06-30", -8_000_000, "2021-08-15"),
-                _fact("2021-07-01", "2021-09-30", -15_000_000, "2021-11-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-03-31", -2_000_000, f"{_FY}-05-15"),
+                _fact(f"{_FY}-04-01", f"{_FY}-06-30", -8_000_000, f"{_FY}-08-15"),
+                _fact(f"{_FY}-07-01", f"{_FY}-09-30", -15_000_000, f"{_FY}-11-15"),
             )
         },
         "WeightedAverageNumberOfDilutedSharesOutstanding": {
             "units": _units(
-                _fact("2021-01-01", "2021-03-31", 119_000_000, "2021-05-15"),
-                _fact("2021-04-01", "2021-06-30", 119_000_000, "2021-08-15"),
-                _fact("2021-07-01", "2021-09-30", 120_000_000, "2021-11-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-03-31", 119_000_000, f"{_FY}-05-15"),
+                _fact(f"{_FY}-04-01", f"{_FY}-06-30", 119_000_000, f"{_FY}-08-15"),
+                _fact(f"{_FY}-07-01", f"{_FY}-09-30", 120_000_000, f"{_FY}-11-15"),
                 unit="shares",
             )
         },
@@ -87,13 +95,13 @@ class TestSkipQ3WhenNeitherQ1NorQ2HasTheTag:
         # IONQ相当: Q1・Q2単体の申告は一切なく、9ヶ月累計のみ存在
         us_gaap["Revenues"] = {
             "units": _units(
-                _fact("2021-01-01", "2021-09-30", 1_070_000_000, "2021-11-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-09-30", 1_070_000_000, f"{_FY}-11-15"),
             )
         }
         _patch_common(monkeypatch, {"facts": {"us-gaap": us_gaap}})
 
         quarters = ekf.extract_quarterly_facts("TESTCO", years=5)
-        q3 = next(q for q in quarters if q["end"] == "2021-09-30" and q.get("quarter") == 3)
+        q3 = next(q for q in quarters if q["end"] == f"{_FY}-09-30" and q.get("quarter") == 3)
 
         assert "us-gaap:Revenues" not in q3, (
             "Q1・Q2にこのタグの申告が皆無の場合、YTD_9m全額がQ3単体として"
@@ -106,14 +114,14 @@ class TestSkipQ3WhenNeitherQ1NorQ2HasTheTag:
         us_gaap = _base_net_income_and_shares()
         us_gaap["Revenues"] = {
             "units": _units(
-                _fact("2021-01-01", "2021-03-31", 100_000_000, "2021-05-15"),
-                _fact("2021-01-01", "2021-09-30", 1_070_000_000, "2021-11-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-03-31", 100_000_000, f"{_FY}-05-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-09-30", 1_070_000_000, f"{_FY}-11-15"),
             )
         }
         _patch_common(monkeypatch, {"facts": {"us-gaap": us_gaap}})
 
         quarters = ekf.extract_quarterly_facts("TESTCO", years=5)
-        q3 = next(q for q in quarters if q["end"] == "2021-09-30" and q.get("quarter") == 3)
+        q3 = next(q for q in quarters if q["end"] == f"{_FY}-09-30" and q.get("quarter") == 3)
 
         # 1,070,000,000 - 100,000,000 - 0(Q2未申告) = 970,000,000
         assert q3["us-gaap:Revenues"]["value"] == 970_000_000
@@ -127,13 +135,13 @@ class TestSkipQ2WhenQ1HasNoTheTag:
         us_gaap = _base_net_income_and_shares()
         us_gaap["Revenues"] = {
             "units": _units(
-                _fact("2021-01-01", "2021-06-30", 500_000_000, "2021-08-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-06-30", 500_000_000, f"{_FY}-08-15"),
             )
         }
         _patch_common(monkeypatch, {"facts": {"us-gaap": us_gaap}})
 
         quarters = ekf.extract_quarterly_facts("TESTCO", years=5)
-        q2 = next(q for q in quarters if q["end"] == "2021-06-30" and q.get("quarter") == 2)
+        q2 = next(q for q in quarters if q["end"] == f"{_FY}-06-30" and q.get("quarter") == 2)
 
         assert "us-gaap:Revenues" not in q2
 
@@ -146,14 +154,14 @@ class TestYtd6mSubtractionUnaffectedByGuard:
         us_gaap = _base_net_income_and_shares()
         us_gaap["Revenues"] = {
             "units": _units(
-                _fact("2021-01-01", "2021-06-30", 500_000_000, "2021-08-15"),
-                _fact("2021-01-01", "2021-09-30", 800_000_000, "2021-11-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-06-30", 500_000_000, f"{_FY}-08-15"),
+                _fact(f"{_FY}-01-01", f"{_FY}-09-30", 800_000_000, f"{_FY}-11-15"),
             )
         }
         _patch_common(monkeypatch, {"facts": {"us-gaap": us_gaap}})
 
         quarters = ekf.extract_quarterly_facts("TESTCO", years=5)
-        q3 = next(q for q in quarters if q["end"] == "2021-09-30" and q.get("quarter") == 3)
+        q3 = next(q for q in quarters if q["end"] == f"{_FY}-09-30" and q.get("quarter") == 3)
 
         # 800,000,000 - 500,000,000 = 300,000,000（申告値同士の差分、ガード対象外）
         assert q3["us-gaap:Revenues"]["value"] == 300_000_000
