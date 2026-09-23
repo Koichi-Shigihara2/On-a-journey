@@ -1,6 +1,6 @@
 {
   "ticker": "CART",
-  "last_updated": "2026-09-21T09:53:39.458161",
+  "last_updated": "2026-09-23T09:28:55.016226",
   "years": [
     {
       "year": "2025",
@@ -116,7 +116,7 @@
           "tax_rate_applied": 0.14516129032258066
         }
       ],
-      "net_adjustment_total": 297923495.2972155
+      "net_adjustment_total": 297923495.29721546
     },
     {
       "year": "2024",
@@ -245,7 +245,7 @@
           "tax_rate_applied": 0.21212121212121213
         }
       ],
-      "net_adjustment_total": 263670407.78151888
+      "net_adjustment_total": 263670407.7815189
     },
     {
       "year": "2023",
@@ -374,10 +374,10 @@
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": 428000000.0,
-      "adjusted_net_income": 62772727.27272725,
+      "adjusted_net_income": 44590909.090909064,
       "diluted_shares_used": 79377500.0,
       "gaap_eps": 5.391956158861138,
-      "adjusted_eps": 0.7908126014642343,
+      "adjusted_eps": 0.561757539490524,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -415,31 +415,18 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 23000000.0,
+          "amount": 10000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
-          "net_amount": 20909090.90909091,
-          "tax_rate_applied": 0.09090909090909091
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 7000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 6363636.363636363,
+          "net_amount": 9090909.09090909,
           "tax_rate_applied": 0.09090909090909091
         }
       ],
-      "net_adjustment_total": -365227272.72727275
+      "net_adjustment_total": -383409090.90909094
     }
   ]
 }

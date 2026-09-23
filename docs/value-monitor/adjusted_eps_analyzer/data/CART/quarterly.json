@@ -1,6 +1,6 @@
 {
   "ticker": "CART",
-  "last_updated": "2026-09-21T09:53:39.456913",
+  "last_updated": "2026-09-23T09:28:55.016988",
   "quarters": [
     {
       "gaap_eps": 0.445899532006347,
@@ -736,39 +736,26 @@
     },
     {
       "gaap_eps": 0.49993056519927787,
-      "adjusted_eps": 0.8786658418653975,
+      "adjusted_eps": 0.6261756574213178,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": 63272727.27272727,
+      "adjusted_net_income": 45090909.09090909,
       "diluted_shares_used": 72010000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 23000000.0,
+          "amount": 10000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
-          "net_amount": 20909090.90909091,
-          "tax_rate_applied": 0.09090909090909091
-        },
-        {
-          "item_id": "loan_loss_provision_abnormal",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 7000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "マクロ変動による一時的影響",
-          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
-          "category": "金融関連",
-          "net_amount": 6363636.363636363,
+          "net_amount": 9090909.09090909,
           "tax_rate_applied": 0.09090909090909091
         }
       ],
-      "net_adjustment_total": 27272727.272727273,
+      "net_adjustment_total": 9090909.09090909,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,

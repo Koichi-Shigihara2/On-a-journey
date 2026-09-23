@@ -1,6 +1,6 @@
 {
   "ticker": "LOAR",
-  "last_updated": "2026-09-21T09:59:19.864644",
+  "last_updated": "2026-09-23T09:28:57.826912",
   "quarters": [
     {
       "gaap_eps": 0.17527035939740998,
@@ -267,9 +267,9 @@
     },
     {
       "gaap_eps": 0.08562112010040115,
-      "adjusted_eps": 0.09875770055387947,
+      "adjusted_eps": 0.12353571118553892,
       "gaap_net_income": 7641000.0,
-      "adjusted_net_income": 8813334.712829312,
+      "adjusted_net_income": 11024573.937619865,
       "diluted_shares_used": 89242000.0,
       "adjustments": [
         {
@@ -284,22 +284,9 @@
           "category": "株式報酬関連",
           "net_amount": 3383573.937619865,
           "tax_rate_applied": 0.22872716261229434
-        },
-        {
-          "item_id": "contingent_consideration_fv",
-          "item_name": "偶発対価公正価値変動損益",
-          "amount": -2867000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常の買収偶発対価時価変動",
-          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-          "category": "公正価値変動関連",
-          "net_amount": -2211239.224790552,
-          "tax_rate_applied": 0.22872716261229434
         }
       ],
-      "net_adjustment_total": 1172334.7128293128,
+      "net_adjustment_total": 3383573.937619865,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": null,
@@ -310,26 +297,7 @@
       "fiscal_year": 2024,
       "quarter": 2,
       "tax_expense": 2266000.0,
-      "pretax_income": 9907000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": -2867000.0,
-              "adjustment_amount": -2867000.0,
-              "net_amount": -2211239.224790552
-            }
-          ],
-          "condition1": "純利益変動1126% / 売上変動31% = 36.2倍（閾値5倍）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
-        }
-      }
+      "pretax_income": 9907000.0
     },
     {
       "gaap_eps": 11.02450980392157,
