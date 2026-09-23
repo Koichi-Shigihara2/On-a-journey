@@ -278,6 +278,13 @@ FIELD_CONCEPTS: dict[str, tuple[str, str]] = {
     "OperatingIncome":  ("OperatingIncomeLoss", "USD"),
     "NetIncome":        (TAG_CANDIDATES["NET_INCOME"][0], "USD"),
     "Cash":             (TAG_CANDIDATES["CASH_AND_EQUIVALENTS"][0], "USD"),
+    # [[SCHEMA-NORMALIZED-ISSUES-1]]①（2026-09-23、罠防止コメント）:
+    # このSTDebtは単一タグ・フォールバックなしのためparser.py側の
+    # short_term_debt（9タグ候補＋フォールバック）に比べ網羅性が著しく
+    # 劣化している（実測: AAPL 33/51件・XOM 51/51件・V 30/51件が
+    # normalized側で0件）。実消費者ゼロを確認済みだが、新規にこの
+    # フィールドを参照するコードを書く場合はdata/annual_*.json層
+    # （parser.py::XBRL_MAPPING）のshort_term_debtを使うこと。
     "STDebt":           ("ShortTermBorrowings", "USD"),
     # [[SCHEMA-NORMALIZED-ISSUES-1]]③（2026-09-23）: parser.py::XBRL_MAPPING
     # と優先順序を統一。LongTermDebtNoncurrentを優先することで
@@ -287,10 +294,27 @@ FIELD_CONCEPTS: dict[str, tuple[str, str]] = {
     "DeferredRevenue":  ("DeferredRevenue", "USD"),
     "Equity":           ("StockholdersEquity", "USD"),
     "Assets":           ("Assets", "USD"),
+    # [[SCHEMA-NORMALIZED-ISSUES-1]]④（2026-09-23、罠防止コメント）:
+    # このSharesBasicはBS項目（期末時点の発行済株式数）だが、parser.py
+    # 側のshares_basicはPL項目（WeightedAverageNumberOfShares
+    # OutstandingBasic、期中加重平均株式数）であり、単なる優先順序差
+    # ではなく意味的に異なる財務概念。実消費者ゼロを確認済みだが、
+    # 新規にこのフィールドを参照するコードを書く場合はdata/annual_*.json
+    # 層（parser.py::XBRL_MAPPING）のshares_basicを使うこと。
     "SharesBasic":      ("CommonStockSharesOutstanding", "shares"),
     "SharesDiluted":    ("WeightedAverageNumberOfDilutedSharesOutstanding", "shares"),
     # R&D / 販売・マーケティング費（RICE計算用）
     "RD":               (TAG_CANDIDATES["RESEARCH_AND_DEVELOPMENT"][0], "USD"),
+    # [[SCHEMA-NORMALIZED-ISSUES-1]]②（2026-09-23、罠防止コメント）:
+    # このSMは単一フィールドだが、S&M単体タグ未申告銘柄
+    # （JOBY/NVDA/CIX/ELF/KO等）では_FIELD_FALLBACKS["SM"]経由で
+    # SGA総額へ静かにフォールバックする（334-341行目参照）。同じSM値が
+    # 銘柄によって「純S&M費用」と「SGA総額」という異なる意味を持ちうるが
+    # フィールド名からは判別できない。parser.py側はselling_and_marketing
+    # とselling_general_and_administrativeを別フィールドとして両方保持
+    # している。実消費者ゼロを確認済みだが、新規にこのフィールドを
+    # 参照するコードを書く場合はdata/annual_*.json層のこの2フィールドを
+    # 使うこと。
     "SM":               ("SellingAndMarketingExpense", "USD"),
     # RPO: 残存履行義務（SaaS/クラウド企業向けストック値）
     "RPO":              ("RevenueRemainingPerformanceObligation", "USD"),
@@ -383,6 +407,13 @@ _ANNUAL_YEARS = 6
 def build_raw_table(ticker: str, company_facts: dict) -> dict:
     """
     company_facts から全フィールドの四半期Raw Tableを抽出。
+
+    [[SCHEMA-NORMALIZED-ISSUES-1]]⑤（2026-09-23、罠防止コメント）:
+    出力先ファイル名は`normalized/{TICKER}_quarterly_normalized.json`
+    と"quarterly"を冠しているが、各フィールドのエントリには
+    `is_annual: true`の年次データも同一リストに混在保持している
+    （company_factsの10-K由来エントリをそのまま格納するため）。
+    ファイル名から「四半期データのみ」と誤推測しないこと。
 
     戻り値構造:
     {

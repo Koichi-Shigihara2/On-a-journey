@@ -975,6 +975,13 @@ SEC EDGAR
 │    **フェーズE（`normalized/`完全廃止）は上記3系統が存続する限り
 │    着手不可**と判定（詳細はBACKLOG.md`[[SECDATA-STORAGE-
 │    FRAGMENTATION-1]]`参照）。
+│    **罠防止（[[SCHEMA-NORMALIZED-ISSUES-1]]⑤、2026-09-23）**:
+│    `normalized/{TICKER}_quarterly_normalized.json`はファイル名に
+│    "quarterly"と明記されているが、実際は`is_annual: true`エントリ
+│    としてannualデータも同一ファイル内に混在保持している
+│    （`quarterly.py::build_raw_table()`が四半期・年次両方を同一
+│    fieldsに格納するため）。ファイル名から「四半期データのみ」と
+│    誤推測しないこと。
 │    **追記（DOCS-SECDATA-NORMALIZED-DIR-STALE-1 2026-07-30実装完了、
 │    コミット5ee157c6b）**: GitHub Pages公開フロントエンド（stock.html）向け
 │    公開コピー`docs/common/sec_data/normalized/`が2026-05-23以降同期
