@@ -12,17 +12,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-23時点）**: `BACKLOG.md`アクティブ件数
-**22件**（機械カウント）。本日`[[EPS-UPC-PREREORG-1]]`（Up-C組織再編前
-ゼロ利益四半期の機械検知・Adjusted EPS集計除外を実装）をクローズし、
-新規登録3件（`[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`・
-`[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]`・
-`[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`、いずれも優先度
-低〜未調査・着手条件なし）。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`
-にはデータ棚卸し（HypeCoreの保持データ一覧・moat_scoreはHypeCore側では
-なくTANUKI VALUATION側の概念という前提訂正・行動経済学的要素の代理
-指標候補列挙）を追記（設計判断・実装なし）。詳細は`BACKLOG_DONE.md`
-「2026-09-23（完了）」・下記「最終更新: 2026-09-23」ブロック参照。
+**現在の到達点（2026-09-23夜間ブラッシュアップ時点）**: `BACKLOG.md`
+アクティブ件数**12件**（機械カウント、`grep -c "^### \["`）。本日1日で
+22件→12件まで削減した（下記「最終更新: 2026-09-23（セッション終了時
+ブラッシュアップ②）」ブロックに詳細）。クローズ11件・新規登録1件
+（`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`、優先度中・着手条件なし
+〈技術判断で進行可能〉）。`BACKLOG_PRIORITY_ROADMAP.md`（2026-08-30
+時点・181件前提）は陳腐化しているため参照しないこと。詳細は
+`BACKLOG_DONE.md`「2026-09-23（完了）」・下記2ブロック（①午前の
+セッション終了時ブラッシュアップ、②夜間の追加ブラッシュアップ）参照。
 BACKLOG.md/BACKLOG_DONE.md間のID重複は**0件**（機械確認済み、
 `### ✅ [`パターンがBACKLOG.md側に残存していないことも確認済み）。
 
@@ -67,6 +65,82 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    確認を行うこと（恒久対策の候補は`CHAT_RULES.md`「rebase時の
    データ消失事故パターンと恒久対策の検討」参照、採用可否は
    Koichiさんの判断待ち）。
+
+---
+
+最終更新: 2026-09-23（**セッション終了時ブラッシュアップ②・夜間の
+指示書⑤〜㉖サマリー**。全てpush済み）:
+
+1. **`[[SCHEMA-NORMALIZED-ISSUES-1]]`③LTDebt優先順序修正・クローズ**
+   （コミット`f07ae45935`実装・`cd90832c2e`全102銘柄normalized/再生成・
+   `e38731b3bf`①②④⑤へ罠防止コメント追加しクローズ）: parser.py側と
+   優先順序を統一しタグ陳腐化検知を強化。実装過程でFLYW/SPIRの
+   `_select_best_candidate()`タグ陳腐化判定バグを発見・修正
+2. **`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`①実装完了・クローズ**
+   （コミット`30a44408d1`実装・`c88d891a2d`BACKLOG_DONE.md移設）:
+   stock.htmlへprice_iv_ratio時系列チャート（Plotly、単点軸バグ修正込み）・
+   ERP表示・シグナル整合性判定を追加
+3. **`[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]`③④実装、①②⑤⑥削除で
+   クローズ**（コミット`518fc7b383`ROIC共有モジュール化・`c71b89b173`/
+   `d20ea80390`EPS Analyzer経営者実行力評価3指標・`a3d7dce1bf`④記録・
+   `f6c674c1c9`/`c2b01a4cf3`③流動性期待（金利感応度チェック）・
+   `08461490cb`③記録・`432d08edf5`①保留記録・`a0d91b1a24`①②⑤⑥削除で
+   クローズ）: `common/sec_data/roic.py`共有モジュール新設（TANUKI
+   VALUATION・EPS Analyzer両方で使用）。`_calc_required_growth()`に
+   `discount_rate_override`パラメータ追加、Rf基準金利感応度を全99銘柄へ
+   追加。ガイダンス達成率・Market Pulseセンチメント相関等は実データ検証
+   の結果不採用と判明し削除
+4. **`[[LRCX-CAT-DELL-STI-TAG-CANDIDATE-GAP-1]]`対応不要と判明しクローズ**
+   （コミット`a1ff3956c1`、記録のみ）: 10-K原本確認でCAT/DELLはSTI科目
+   自体が存在せず、LRCXは候補タグとBS「Investments」線が93倍乖離する
+   偽陽性と判明。実装せず停止
+5. **`[[TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1]]`実装完了・クローズ**
+   （コミット`50b5e0d63d`実装・`482577a9ed`PLTR再生成・`a7f668b41c`
+   BACKLOG_DONE.md移設）: `layer3_formula`へ`yoy()`構文を追加。当初の
+   配列インデックス方式はPLTRの実データ欠損四半期で誤算出することが
+   判明し、暦日距離マッチング方式へ設計変更して解消
+6. **satellite_monitor.py機能の完全削除**（コミット`ed2739d9bb`削除・
+   `d99df75cfa`BACKLOG整理、Koichiさん承認済み）:
+   `src/tail/satellite_monitor.py`・対応するGitHub Actionsワークフローを
+   削除。`[[TAIL-SATELLITE-MONITOR-CORE-APPLICABILITY-1]]`はこれにより
+   対応不要と判明しクローズ
+7. **`[[CON-SM-MISSING-RICE-OVERSTATEMENT-1]]`新規登録・クローズ**
+   （コミット`bbec48680a`、記録のみ）: CONの10-K原本にSelling/Marketing
+   科目が分離開示されておらずparser.py修正では解決不可能と判明。RICE
+   数値の過大評価は確認したがtanuki_score主判定には影響しないため現状
+   維持でクローズ。ASTS/RXRXも将来同型リスクを抱える旨を記録
+8. **トリガー死亡3件クローズ＋`[[LAYER3-SM-SGA-SEPARATION-NONE-
+   FALLOUT-1]]`分割・再起票**（コミット`75418b8280`）:
+   `[[ANOMALY-PATTERN-CATALOG-1]]`（値ベース検知2試行とも失敗）・
+   `[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`（唯一の実例COHRは
+   fact_overrides.jsonで個別解決済み）・
+   `[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]`（①〜⑤完了・⑥休眠確認済み）
+   をクローズ。`[[LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1]]`は待機先
+   `[[SCHEMA-NORMALIZED-ISSUES-1]]`②がコメント対応のみで解決しないまま
+   終了したため、①COHR/LLY/JNJ/KLACのROIC-WACC None化を新規
+   `[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`へ分割・再起票、②JOBYは影響
+   ゼロ確認済みのため対応不要でクローズ
+
+BACKLOG.mdアクティブ件数は本ブロック開始時点22件→終了時点12件。全項目
+`git pull --rebase`後の実ハッシュで転記済み、push済み。
+
+**次セッションの着手候補（残存12件のうち技術判断のみで着手可能なもの、
+優先順。詳細は下記「BACKLOG優先順位の目安」参照）**:
+- `[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`（優先度中。COHR/LLY/JNJ/KLACの
+  ROIC-WACC比率・Moat ScoreがNone化、対応方針候補a/b/c提示済み）
+- `[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`（優先度低。
+  ドキュメント修正のみ）
+- `[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`②のみ（company_facts
+  自動列挙可否の調査部分、独立して実施可能）
+
+**セッション終了時ブラッシュアップの検証結果（②夜間）**:
+- BACKLOG.md/BACKLOG_DONE.md移設漏れ: 本日クローズした11件全て
+  `### ✅ [ID]`パターンでBACKLOG_DONE.mdに存在し、BACKLOG.md側に
+  アクティブヘッダーとして残存していないことを機械確認
+- `grep -n "^### ✅ \[" BACKLOG.md`: 0件
+- `grep -c "^### \[" BACKLOG.md`: 12件
+- 本日の変更（satellite_monitor削除・roic.py共有モジュール化・CATの
+  抽出バグ修正等）を前提とする陳腐化記載を残存12件全件で確認、該当なし
 
 ---
 
@@ -2842,18 +2916,51 @@ TSCORE-TRAP-1・SEC-CTRL-1の4件はいずれも2026-06-24〜07-19の間に完�
 
 （2026-08-30追記: BACKLOG.md未完了項目181件全件の陳腐化・ニーズ・課題
 認識検証＋開発合理性による分類・重要性判断・着手手順の提案が完了し、
-`BACKLOG_PRIORITY_ROADMAP.md`に記録した。次の作業候補はまず同ファイルの
-「フェーズ1: 最優先グループ」10件を参照すること。本欄・BACKLOG.md本体の
-記載が優先し、`BACKLOG_PRIORITY_ROADMAP.md`はフェーズ1消化時・大きな
-BACKLOG変動時に更新する）
+`BACKLOG_PRIORITY_ROADMAP.md`に記録した。**2026-09-23時点で181件は12件へ
+大幅減少しており、同ファイルは陳腐化しているため参照しないこと**（大幅な
+BACKLOG変動があったが同ファイルは未更新のまま）。
 
-### 順次着手（優先度中・難易度中〜高）
-- TANUKI-FIN-1: 金融株DDM対応
+2026-09-23セッション終了時ブラッシュアップで11件クローズ
+（CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1・SCHEMA-NORMALIZED-ISSUES-1・
+HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1・LRCX-CAT-DELL-STI-TAG-CANDIDATE-
+GAP-1・TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1・TAIL-SATELLITE-MONITOR-
+CORE-APPLICABILITY-1・CON-SM-MISSING-RICE-OVERSTATEMENT-1・
+ANOMALY-PATTERN-CATALOG-1・XBRL-UNIT-SCALE-MISMATCH-DETECTION-1・
+MARKETPULSE-MINOR-INCONSISTENCIES-1・LAYER3-SM-SGA-SEPARATION-NONE-
+FALLOUT-1）・新規1件登録（LAYER3-MOAT-ROIC-4TICKERS-NONE-1）を経て、
+BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。下記
+「順次着手」「着手条件あり」を全面更新した）
 
-### 着手条件あり
-- DESIGN-15: 期待と理論価格の整理（DESIGN-4・5の設計確定後）
-- Moomoo API Skill移行（signal.jsonバックテスト実施後）
-- Moomoo API系4件（クォータ回復後）
+### 順次着手（技術判断のみで着手可能、優先順）
+- LAYER3-MOAT-ROIC-4TICKERS-NONE-1（優先度中。COHR/LLY/JNJ/KLACの
+  ROIC-WACC比率・Moat ScoreがLayer3切替以降None〈中立フォールバック0.5〉
+  のまま。対応方針候補a〈GrossProfit-RD近似フォールバック〉/b〈SGA総額
+  復元、概念混同リスクあり〉/c〈現状維持〉を提示済み。着手条件: なし）
+- DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1（優先度低。
+  DERIVED_DATA_SUBCATEGORIES.mdクロス集計表〈サブシステム別内訳〉の
+  陳腐化、ドキュメント修正のみ・実害なし。着手条件: なし）
+- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1の②のみ（優先度低。
+  segment_xbrl拡張候補3件のうち「company_facts自動列挙可否」の調査部分
+  だけは、着手前の価値検証として独立して実施可能。①③本体はKoichiさん
+  判断待ち）
+
+### 着手条件あり（Koichiさんの判断・外部トリガー待ち）
+- FLAG-THRESHOLD-DESIGN-1: フラグ判定基準案の確認・確定後
+- BBAI-RDW-RUNWAY-VERIFICATION-1: Koichiさんが着手タイミングを判断
+- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（①③本体）: Koichiさんが
+  優先順位・着手タイミングを判断
+- HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1:
+  STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1の行動経済学的要素の設計が
+  Koichiさんと確定した際にまとめて判断
+- FUTURE-FEATURE-IDEAS-CATALOG-1: 構想段階の8件、個別項目ごとに
+  Koichiさんが着手可否を判断
+- UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1: ①〜③いずれも実データ未確認の
+  推測段階、次回セッション以降でKoichiさんが判断
+- JNJ-XOM-PM-FLOOR-RISK-1・TTM-DATA-DRIFT-BEHIND-PIPELINE-1・
+  LAYER3-GA-STANDALONE-TAG-UNMAPPED-1・LAYER3-ANNUAL-CLASSIFICATION-
+  DROPS-DATA-1: いずれも特定トリガー条件（候補件数低下・実害顕在化・
+  新機能での実消費計画等）が発生するまで監視・保留（詳細は各エントリ
+  「着手条件」参照）
 
 ---
 
