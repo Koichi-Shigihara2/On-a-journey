@@ -4,6 +4,87 @@
 
 ## 2026-09-23（完了）
 
+### ✅ [CON-SM-MISSING-RICE-OVERSTATEMENT-1] CON selling_and_marketing欠落によるRICE指標過大評価 — 対応不可と判明、記録のみでクローズ
+**優先度:** 低（実害は表示上の指標精度のみ、tanuki_score主判定には影響なし）
+**分類:** データ品質 / TANUKI VALUATION / RICE
+**状態:** ✅クローズ（対応不可と判明、現状維持）
+**登録日:** 2026-09-23
+**完了日:** 2026-09-23
+**発見:** CON（Concentra Group Holdings）のRICE計算で`avg_intensity`が
+低く出ている点の調査依頼
+
+#### 内容
+`common/sec_data/parser.py::XBRL_MAPPING`のSM候補5タグ
+（`MarketingAndAdvertisingExpense`/`SellingAndMarketingExpense`/
+`MarketingExpense`/`AdvertisingExpense`/
+`SellingGeneralAndAdministrativeExpense`）は、CONの`company_facts.json`
+に**1件も存在しない**。10-K原本（CIK `0002014596`、FY2025 10-K
+accession `0002014596-26-000029`、R5.htm 連結損益計算書）で確認した
+ところ、CONは損益計算書上でSelling/Marketingを独立科目として
+開示しておらず、"General and administrative (excl. D&A)"
+（FY2025=$203,305K/FY2024=$156,318K/FY2023=$151,999K）に統合済み。
+**抽出漏れ（parser.pyのタグ不足）ではなく、企業側が原本レベルで
+分離開示していない構造的欠落**であり、追加すべき候補タグ自体が
+存在しない。
+
+`src/value/tanuki_valuation/calculator/rice.py::_calc_cf_lagged()`は
+SM欠損時に`abs(sm_t) if sm_t is not None else 0.0`で暗黙的に0扱い
+するため、投資強度（`intensity_t`）を過小評価し、結果として
+`cf_point`/RICEスコアを過大評価する一方向バイアスを持つ（既存の
+`sm_missing_years`警告で`note`欄には既に明示されている）。
+
+#### 実害の定量化（試算）
+CONの実際の`rice`フィールド（`latest.json`）: `avg_intensity=0.0363`
+（CapExのみ／Revenue、TTM@2025-06-30）、`cf_conversion=3.8638`、
+`vc_factor=1.398`(ROIC/WACC)、`rice_base=3.589`（現在「高効率」判定、
+閾値≥3.0）。G&A比率（9.4%、FY2025）を上限プロキシとして投資強度に
+加算する極端な試算では、投資強度が最大約0.130まで上昇し、`cf_point`は
+約1.08（▲72%）、RICE(base)は約1.0（「高効率」→「中効率/低効率」
+境界へ格下げ）まで低下しうる。ただしCONの業態（産業医療・urgent care、
+広告宣伝依存度が低い）を踏まえると、実際の影響幅はこの上限より
+小さいと推定される。
+
+**`tanuki_score`（TRIM）への影響はゼロ**：
+`pipeline.py::_compute_tanuki_score()`はfunda（rev_yoy/
+rule40_yoy_netmargin/eps_yoy/fcf_base）・runway・希薄化率・timingのみで
+算出しており、`rice`/`vc_factor`/`cf_conversion`は一切参照しない
+（RICEはMatrix①のY軸表示・report.txtの独立セクションとしてのみ
+機能する、構造的に分離した指標）。実害はRICE数値・「高効率」ラベル・
+Matrix①上の視覚的位置づけの過大表示に限定される。
+
+#### 横展開確認（ASTS/RXRX）
+依頼書は「APGE/ASTS/ENB/RXRXがrice.available=False」としていたが、
+前提を訂正する必要がある：
+- **APGE**: `rice.available=False`ではなくTANUKI VALUATION対象外
+  （`cik_lookup.csv`で`tanuki=false`、臨床段階バイオで評価枠組み
+  非適合のため意図的除外、`latest.json`自体が存在しない）
+- **ENB**: システムに存在しない（2026-07-11、コミット`62aa662102`で
+  IFRS/40-F提出のカナダ企業として孤立登録を抹消済み）
+- **ASTS・RXRX**: 記載どおり実在し`rice.available=False`
+  （理由：`Q計算不可（OCF/純利益データなし）`）。両銘柄とも
+  `annual_*.json`全期間で`selling_and_marketing=None`、CONと同一の
+  欠落パターンを確認。将来Qゲートを通過し`rice.available=True`に
+  なった場合、同型の過大評価バイアスが発生する設計上のリスクは
+  実在する（現時点は`rice.available=False`のため実害ゼロ）。ただし
+  両銘柄はR&D・CapExが投資強度の大半を占める業態（宇宙通信/創薬AI）
+  であり、CONのようにG&Aが唯一の非COGS費用という構造とは異なるため、
+  発生した場合の相対的な歪みはCONより小さいと推定される（未検証）。
+
+#### 対応方針（現状維持でクローズ）
+CONの10-K原本に該当科目が存在しない以上、parser.py修正では解決
+不可能（対応コストの見積もり自体が意味をなさない）。唯一考えられる
+対応（G&Aの一部をSMプロキシとして按分計上する設計変更）は、実データに
+基づかない恣意的な仮定を追加することになり、[[feedback_metric_design_
+simplicity]]で確立済みの「データにない値を推測で作らず、測定不能な
+場合はNoneのまま明示する」方針に反するため不採用。既存の
+`sm_missing_years`警告表示（note欄）による透明性確保のみで現状維持と
+する。
+
+**着手条件:** なし（CONの10-K原本にSelling/Marketing相当科目が新たに
+分離開示された場合のみ再検討）
+
+---
+
 ### ✅ [CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1] CART（Instacart/Maplebear）2022 Q1/Q2でrevenue抽出が失敗 — 段階1（Q2/Q3 YTD補完ループ修正）・段階2a（近傍探索の暦日距離化）・段階2b（日付ベース修正）を実装完了、CATの抽出バグを根本修正
 **優先度:** 中（登録時は低。実装過程で発見した2件のバグ〈Q2/Q3 YTD補完ループ・近傍探索タプル順序〉の実質的な影響範囲を踏まえ、クローズ時に中へ訂正）
 **分類:** データ品質 / EPS ANALYZER / SECデータ抽出
