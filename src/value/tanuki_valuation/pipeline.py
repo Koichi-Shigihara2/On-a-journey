@@ -58,9 +58,11 @@ from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-
 # _REPO_ROOT_FOR_IMPORTで解決済み）。
 try:
     from common.market_data.reader import get_calendar as _md_get_calendar
+    from common.market_data.reader import get_latest_price as _md_get_latest_price
     HAS_MARKET_DATA = True
 except Exception:
     _md_get_calendar = None
+    _md_get_latest_price = None
     HAS_MARKET_DATA = False
 
 # GROWTH-STRUCTURAL-MISMATCH-CANDIDATES-1（TRUST-SUMMARY-EPIC-1骨子②）:
@@ -543,7 +545,8 @@ class TanukiValuationPipeline:
         return s
 
     @staticmethod
-    def _calc_required_growth(valuation: dict, tv_g: float = 0.03) -> float | None:
+    def _calc_required_growth(valuation: dict, tv_g: float = 0.03,
+                               discount_rate_override: float | None = None) -> float | None:
         """
         逆DCF: 現在株価を正当化する必要成長率（5年CAGR）を計算（DCF-2）
 
@@ -551,6 +554,13 @@ class TanukiValuationPipeline:
         必要CAGR = (FCF_5 / FCF_0)^(1/5) - 1 を返す。
         tv_g: セクター別ターミナル成長率（WACC-1）。デフォルト 3.0%。
         データ不足や非正値の場合は None を返す。
+
+        discount_rate_override: [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]
+        ③流動性期待（2026-09-23）。指定時は割引率にvaluation内のmarket_return
+        （Rm=10%固定、主計算用）ではなくこの値を使う。主計算（intrinsic_
+        value_per_share等）は本メソッドの結果を一切参照しないため、この
+        引数追加は既存挙動に影響しない（既存呼び出しはNoneのまま＝従来通り
+        market_returnを使用）。
         """
         comps        = valuation.get("components", {})
         price        = comps.get("current_price") or 0
@@ -558,7 +568,10 @@ class TanukiValuationPipeline:
         fcf_base     = comps.get("fcf_base_used") or 0
         net_debt     = (valuation.get("financial_health", {}).get("net_debt") or 0)
         wacc_data    = valuation.get("wacc", {})
-        wacc         = wacc_data.get("market_return", 0.10) if isinstance(wacc_data, dict) else 0.10
+        if discount_rate_override is not None:
+            wacc = discount_rate_override
+        else:
+            wacc = wacc_data.get("market_return", 0.10) if isinstance(wacc_data, dict) else 0.10
 
         if not (price > 0 and shares > 0 and fcf_base > 0 and wacc > tv_g):
             return None
@@ -997,6 +1010,38 @@ class TanukiValuationPipeline:
         valuation_enriched = {**valuation, **extra}
         valuation_enriched["growth_sanity"] = _growth_sanity
         score_data = self._compute_tanuki_score(ticker, valuation_enriched)
+
+        # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]③流動性期待（2026-09-23）:
+        # 主計算（intrinsic_value_per_share・funda_score・tanuki_score・
+        # matrix等）には一切使わない参考表示専用フィールド。「参考②Rf理論
+        # 上限_IV」と同じ立ち位置。基準Rfは既存のwacc.risk_free_rate
+        # （常に4.3%固定、主計算が前提とする値と同一）、現在Rfは
+        # common/market_data/daily/^TNX.jsonの最新値（10年国債利回り）。
+        # 金利感応度の目安であり、Rm=10%基準の主計算の必要成長率とは
+        # 異なる割引率体系のため単純比較・加算はしない（指示書⑮調査で
+        # 判明: Rf基準はマイナス値になりうる。詳細は本セッション記録参照）。
+        try:
+            from maturity_config import get_terminal_growth as _get_tv_g_liq
+            _tv_g_liq = _get_tv_g_liq(ticker)
+        except Exception:
+            _tv_g_liq = 0.03
+        _rf_base_liq = (valuation.get("wacc", {}) or {}).get("risk_free_rate", 0.043)
+        valuation["required_growth_rf_base"] = self._calc_required_growth(
+            valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_base_liq,
+        )
+        _rf_live_liq = None
+        if HAS_MARKET_DATA and _md_get_latest_price is not None:
+            try:
+                _tnx_latest = _md_get_latest_price("^TNX")
+                if _tnx_latest and _tnx_latest.get("close") is not None:
+                    _rf_live_liq = _tnx_latest["close"] / 100.0
+            except Exception:
+                _rf_live_liq = None
+        valuation["risk_free_rate_live"] = _rf_live_liq
+        valuation["required_growth_rf_live"] = (
+            self._calc_required_growth(valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_live_liq)
+            if _rf_live_liq is not None else None
+        )
 
         latest_data = {k: v for k, v in valuation.items() if k != "calculation_steps"}
         latest_data["tanuki_score"]  = score_data.get("score")
@@ -1701,6 +1746,22 @@ class TanukiValuationPipeline:
         if _ivps_rf:
             L.append(f"  参考②Rf理論上限_IV: ${_ivps_rf:,.2f} (Deviation: {_upside_rf:+.1f}%)"
                       if _upside_rf is not None else f"  参考②Rf理論上限_IV: ${_ivps_rf:,.2f}")
+        # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]③流動性期待（2026-09-23）:
+        # 参考表示専用。主計算・投資判断には使わない（Rm=10%基準の必要成長率
+        # とは別の割引率体系のため単純比較不可）。
+        _req_g_rf_base = valuation.get("required_growth_rf_base")
+        _req_g_rf_live = valuation.get("required_growth_rf_live")
+        _rf_live_val = valuation.get("risk_free_rate_live")
+        if _req_g_rf_base is not None and _req_g_rf_live is not None and _rf_live_val is not None:
+            _rf_base_val = (valuation.get("wacc", {}) or {}).get("risk_free_rate", 0.043)
+            _delta_pt = (_req_g_rf_live - _req_g_rf_base) * 100
+            L.append(
+                f"  金利感応度チェック: 10年国債利回りが基準{_rf_base_val*100:.2f}%→"
+                f"現在{_rf_live_val*100:.2f}%に変化すると、Rf基準の必要成長率は"
+                f"{_req_g_rf_base*100:+.1f}%→{_req_g_rf_live*100:+.1f}%（{_delta_pt:+.1f}pt、"
+                f"金利環境のみに起因し企業側の材料変化ではない。参考②と同じ"
+                f"割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）"
+            )
         terminal_g_used = comps.get("terminal_growth_used")
         terminal_g_pct = terminal_g_used * 100 if isinstance(terminal_g_used, (int, float)) else None
         L.append(f"Terminal_Growth_Rate: {terminal_g_pct:.1f}%" if terminal_g_pct is not None else "Terminal_Growth_Rate: N/A")

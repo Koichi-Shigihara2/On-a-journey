@@ -2284,6 +2284,26 @@ function render(d) {
         '<div style="' + subStyle + '">メインとの差 $' + fmt(ivpsRf - ivps) + ' = リスクプレミアム全体</div>' +
         '</div>';
     }
+    // [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]③流動性期待（2026-09-23）:
+    // 参考表示専用。主計算（メイン理論株価・funda_score・tanuki_score）
+    // には使用しない。Rm=10%基準の必要成長率とは別の割引率体系のため
+    // 単純比較不可（金利環境のみに起因する感応度の目安）。
+    const reqGRfBase = d.required_growth_rf_base;
+    const reqGRfLive = d.required_growth_rf_live;
+    const rfLiveVal = d.risk_free_rate_live;
+    if (reqGRfBase != null && reqGRfLive != null && rfLiveVal != null) {
+      const rfBaseValPct = ((d.wacc?.risk_free_rate ?? 0.043) * 100).toFixed(2);
+      const rfLiveValPct = (rfLiveVal * 100).toFixed(2);
+      const deltaPt = (reqGRfLive - reqGRfBase) * 100;
+      const deltaSign = deltaPt >= 0 ? '+' : '';
+      html +=
+        '<div style="' + boxStyle + '">' +
+        '<div style="' + lblStyle + '">金利感応度チェック（参考）</div>' +
+        '<div style="' + subStyle + '">10年国債利回り 基準' + rfBaseValPct + '% → 現在' + rfLiveValPct + '%</div>' +
+        '<div style="' + valStyle + '">Rf基準必要成長率: ' + (reqGRfBase*100>=0?'+':'') + (reqGRfBase*100).toFixed(1) + '% → ' + (reqGRfLive*100>=0?'+':'') + (reqGRfLive*100).toFixed(1) + '%（' + deltaSign + deltaPt.toFixed(1) + 'pt）</div>' +
+        '<div style="' + subStyle + '">金利環境のみに起因し企業側の材料変化ではない。Rm=10%基準の主計算とは別の割引率体系のため単純比較不可</div>' +
+        '</div>';
+    }
     rfBlock.innerHTML = html;
   }
 

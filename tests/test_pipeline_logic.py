@@ -1243,6 +1243,31 @@ class TestTerminalGrowthBySector:
         # → 必要成長率は低下する
         assert req_35 < req_30, "tv_g=3.5% のとき required_growth は tv_g=3.0% より低いはず"
 
+    def test_calc_required_growth_discount_rate_override(self, tmp_path):
+        """[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]③流動性期待:
+        discount_rate_overrideを指定すると、valuation内のmarket_return
+        （Rm=10%固定）ではなく指定値が割引率として使われる。
+        既存呼び出し（override未指定）はmarket_returnを使う従来動作のまま。"""
+        pipe = _make_pipe(tmp_path)
+        val = {
+            "components": {
+                "current_price": 100.0,
+                "diluted_shares": 1_000_000_000,
+                "fcf_base_used": 5_000_000_000,
+            },
+            "financial_health": {"net_debt": 0},
+            "wacc": {"value": 0.10, "market_return": 0.10, "risk_free_rate": 0.043},
+        }
+        req_default = pipe._calc_required_growth(val, tv_g=0.030)
+        req_rf_override = pipe._calc_required_growth(val, tv_g=0.030, discount_rate_override=0.043)
+        assert req_default is not None and req_rf_override is not None
+        # overrideなし = market_return(10%)基準、overrideあり = 4.3%基準
+        # 割引率が低いほどrequired_fcf5が小さくなり必要成長率も下がる
+        assert req_rf_override < req_default
+        # overrideをNoneで明示しても従来通りmarket_returnが使われる（後方互換）
+        req_explicit_none = pipe._calc_required_growth(val, tv_g=0.030, discount_rate_override=None)
+        assert req_explicit_none == req_default
+
 
 # ─────────────────────────────────────────────────────────────────
 # safe_yf_utils テスト
