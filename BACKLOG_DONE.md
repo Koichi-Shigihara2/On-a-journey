@@ -36079,3 +36079,153 @@ Moat Score計算に使われていたため、前提は誤りだったと判断�
 #### 着手条件
 なし（③流動性期待・④経営者実行力評価は実装完了。①②⑤⑥は削除済みで
 残作業なし）
+
+### ✅ [LRCX-CAT-DELL-STI-TAG-CANDIDATE-GAP-1] 対応不要と判明（10-K原本確認で候補タグ偽陽性と判定、2026-09-23）
+**優先度:** 低（IV影響を試算した結果いずれも軽微〈+0.15%〜+3.2%〉のため）→ 対応不要と判明しクローズ
+**分類:** データ品質 / XBRL タグ候補漏れ / TANUKI VALUATION
+**登録日:** 2026-09-19
+**発見:** [[ANOMALY-PATTERN-CATALOG-1]]Phase 2の値履歴ベース検知試行
+（`anomaly_pattern_check.py`、未commit・調査後削除）で$200M以上11件・
+$10-200M上位5件の計16件を個別精査した結果の3件（真陽性）
+
+#### 内容
+`short_term_investments`のXBRL_MAPPING標準候補群がKLAC/TER/V/SOFIと
+同様の理由（候補タグが銘柄固有の申告慣行と一致しない）で機能しない
+3銘柄。他13件（$10M以上のWARN対象）と異なり、いずれも
+`company_facts.json`を横断検索すると**実際には現在も継続的に数億〜
+数十億ドル規模の値が別タグの下に存在する**ことを確認した（[[ANOMALY-
+PATTERN-CATALOG-1]]の型A：候補集合＋freshness収束型に該当。KLAC/TER/V
+〈[[FY52WEEK-BS-STI-OVERRIDE-DESIGN-1]]〉と同型のticker別override
+未整備）。
+
+- **LRCX**: 標準候補（`ShortTermInvestments`等）は2016年以降申告停止
+  済みでNone。`AvailableForSaleSecuritiesDebtMaturitiesWithinOneYear
+  FairValue`（満期別内訳、AFS証券の1年以内満期分）にFY2023時点で
+  $3,488,721,000の継続的な値を確認（cash_and_equivalents単体
+  〈$5.8-6.4B、2024-2026〉とは別建て）。ただし当該タグはFY2023までしか
+  申告確認できておらず、より新しい年度の一次情報確認は未実施
+- **CAT**: 標準候補は2019年以降申告停止済みでNone。`AvailableForSale
+  SecuritiesDebtSecurities`（バレ・総額とみられる）にFY2025時点で
+  $3,549,000,000、より限定的な`...WithinOneYearFairValue`（当年度分
+  のみ）で$748,000,000を確認。総額版か当年度分版かで金額差が大きく
+  （約4.7倍）、どちらが真の「short_term_investments」概念と一致する
+  かは10-K原文（BS本体の科目行）での確認が必要
+- **DELL**: 標準候補は2019年以降申告停止済みでNone。`AvailableForSale
+  SecuritiesDebtSecurities`にFY2026時点で$77,000,000、
+  `AvailableForSaleDebtSecuritiesAmortizedCostBasis`で$119,000,000を
+  確認。旧ピーク（2018年$2,187,000,000）から大幅に縮小しているが、
+  ゼロではなく継続的な残存ポジションがある
+
+#### Net Debt / IVへの影響試算（2026-09-19、本番データは変更せず机上計算のみ・実装なし）
+現行の`reader.py::get_net_cash()`は`short_term_investments`がNoneの
+場合`or 0`で0円扱いのまま計算しているため（[[BS-FIELD-FADEOUT-
+NONZERO-LAST-VALUE-1]]がCSGP/KULR/RCATについて確認したのと同型の
+未対応ギャップ、当該エントリは「メタデータの安全性」のみを検証して
+クローズ済みで数値計算自体は未対応）、以下の通り試算した
+（`bs_adjustment.net_cash`/`intrinsic_value_per_share`は現行latest.json
+の実測値、STI追加分は上記の候補値を採用）:
+
+| 銘柄 | 現行net_cash | STI追加候補 | 追加後net_cash | 1株あたり増分 | 現行IV | 補正後IV（試算） | 変化率 |
+|---|---|---|---|---|---|---|---|
+| LRCX | $1,016,457,000 | +$3,488,721,000 | $4,505,178,000 | +$2.79 | $86.79 | ~$89.58 | **+3.2%** |
+| CAT（保守的推定・当年度分） | -$29,497,000,000 | +$748,000,000 | -$28,749,000,000 | +$1.63 | $275.98 | ~$277.61 | **+0.6%** |
+| CAT（総額推定・上限） | -$29,497,000,000 | +$3,549,000,000 | -$25,948,000,000 | +$7.72 | $275.98 | ~$283.70 | **+2.8%** |
+| DELL | -$19,583,000,000 | +$119,000,000 | -$19,464,000,000 | +$0.19 | $125.79 | ~$125.98 | **+0.15%** |
+
+3銘柄ともIV変化率は軽微（+0.15%〜+3.2%）で、現在の株価に対する
+upside/downside判定（いずれも現在の理論株価が現在株価を大きく下回る
+方向）を左右しない。優先度を低とした根拠。
+
+#### 対応方針（未定・実装なし）
+[[FY52WEEK-BS-STI-OVERRIDE-DESIGN-1]]と同型の対応（一次情報〈10-K
+原本〉でBS本体の該当科目行と一致するXBRLタグを個別特定し、
+TICKER_RESTRICTIONSへticker別sti_concept overrideを登録）が想定される
+選択肢。ただしCATは総額版/当年度分版のどちらが正しい概念かの確認が
+必要、DELLは金額が小さく優先度が低い。IV影響が軽微なため緊急性は
+低いと判断し、対応要否はKoichiさんの判断待ち。
+
+#### 追記（2026-09-19、[[CASH-STI-YFINANCE-CROSSCHECK-1]]調査時の副次発見）
+yfinance balance_sheetの"Cash Cash Equivalents And Short Term
+Investments"を3銘柄で確認したところ、**いずれもSEC側cash_and_
+equivalents単体の値と完全一致**（STI寄与ゼロ）だった。すなわち
+yfinance側も本エントリで確認した候補タグの値を認識していない
+（SEC抽出・yfinance集計の双方が同一の盲点を共有している）。これは
+本エントリの「実際には値が存在する」という判定を弱めるものではない
+（候補タグの値自体はcompany_facts.jsonの一次データとして確認済み）
+が、候補タグが本当に「current」概念と一致するか（非流動分を含んで
+いないか等）は外部ソースからの追加検証が得られなかったことを意味する
+ため、10-K原文での個別確認の必要性がより高まったと判断する。対応
+方針・優先度は変更しない。
+
+#### 追記（2026-09-19、分類の再評価）
+上記のyfinance突合結果（LRCX/CAT/DELLはyfinance合算値もSEC側
+cash_and_equivalents単体と完全一致）は、当初[[ANOMALY-PATTERN-
+CATALOG-1]]Phase 2の個別精査で付与した分類「真陽性」を再検証する材料
+となる。この一致には2通りの解釈が成立し、現時点でどちらかを確定させる
+追加証拠がないため、分類を**「真陽性」から「未確定」へ変更**する:
+
+(a) SEC側・yfinance側の双方が同一のXBRLタグ抽出上の盲点を共有して
+    おり、実際には別タグ配下に真の値（本エントリで確認した候補タグの
+    値）が存在する（＝当初想定通りの真陽性）
+(b) BS本体上にそもそも独立したshort_term_investments行が存在せず、
+    候補タグの値は連結BS上でcash_and_equivalents等の別科目に含まれて
+    計上されている（＝偽陽性。候補タグの値を単純加算するとNet Debtの
+    二重計上になる）
+
+(a)/(b)いずれであるかは、company_facts.jsonの候補タグ値だけでは判別
+できず、**10-K原本のBS本体（Consolidated Balance Sheets）で独立した
+short_term_investments行の有無を直接確認する**以外に切り分け方法が
+ない。上記「Net Debt / IVへの影響試算」節のIV変化率（LRCX +3.2%等）は
+**(a)が正しい場合の上限値**であり、(b)の場合は影響ゼロ（試算自体が
+無効）である旨をここに明記する。
+
+優先度「低」は変更しない（(a)の場合でもIV影響は軽微〈+0.15%〜+3.2%〉
+であるため）。
+
+#### 着手条件
+なし（優先度低のため急ぎではない。着手する場合は一次情報での
+タグ確定調査から、まず10-K原本のBS本体で独立したSTI行の有無を確認
+することを最初のステップとする。上記IV試算はあくまで(a)の場合の
+上限値であり、着手判断の根拠として単独で用いない）。
+[[CASH-STI-YFINANCE-CROSSCHECK-1]]の調査結果（完了・BACKLOG_DONE.md
+参照。yfinance側もこの3銘柄を検知できない）により、外部ソース突合に
+よる優先順位付けは使えないことが判明したため、着手判断は一次情報確認の
+コスト対効果に基づきKoichiさんが行うこと。
+
+#### 10-K原本確認の結果、対応不要と判明（2026-09-23）
+着手条件に従い一次情報（10-K原本のBS本体）で独立したSTI行の有無を
+確認したところ、3銘柄いずれも「候補タグ＝真のshort_term_investments」
+という当初の前提（(a)）が成立せず、**(b)（偽陽性）**であることが
+判明した:
+
+- **CAT**（FY2025 10-K、accession 0000018230-26-000008、R5.htm）:
+  連結BS本体に short-term investments 相当の独立科目行が存在しない。
+  流動資産はCash and cash equivalents / Receivables(trade/finance) /
+  Prepaid expenses / Inventoriesのみで、候補タグ（`AvailableForSale
+  SecuritiesDebtSecurities`=$3,549M、`...WithinOneYearFairValue`=
+  $748M）はどちらも一致する科目がない
+- **LRCX**（FY2023 10-K、accession 0000707549-23-000102、R5.htm）:
+  連結BSに「Investments」科目は実在するが金額は$37,641千（約$37.6M）。
+  候補タグ`AvailableForSaleSecuritiesDebtMaturitiesWithinOneYear
+  FairValue`は同一filing・同一期末日（2023-06-25）で$3,488,721,000
+  （約93倍）——BS本体の「Investments」科目とは別文脈（注記開示等）の
+  値であり、一致しない
+- **DELL**（FY2026 10-K、accession 0001571996-26-000008、R3.htm）:
+  連結BSに short-term investments 相当の独立科目行が存在しない。
+  流動資産はCash and cash equivalents / Accounts receivable /
+  Short-term financing receivables / Inventories / Other current
+  assetsのみで、候補タグ（`AvailableForSaleSecuritiesDebtSecurities`=
+  $77M）と一致する科目がない
+
+**結論**: 3銘柄ともTICKER_RESTRICTIONSへのoverride登録は行わない。
+行った場合、実態のない（またはBS本体の他科目に既に含まれている）
+金額をnet_cash/IVへ二重計上・過大計上する、当初の「取りこぼし」より
+実害の大きいバグを新規に作り込むことになる。
+
+**IV影響試算表（LRCX +3.2%・CAT +0.6〜2.8%・DELL +0.15%）は無効**:
+「候補タグ＝真のSTI」という誤った前提に基づく机上計算だったため、
+参考値としても使用しないこと。
+
+コード変更・データ変更は一切行っていない（調査のみ、[[BS-FIELD-
+FADEOUT-NONZERO-LAST-VALUE-1]]が指摘したNone→0扱いの汎用ギャップも
+本件とは無関係のため未対応のまま）。
