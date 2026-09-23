@@ -2049,39 +2049,6 @@ XOM: $41.871B `reconstructed_pretax`）。実装（Layer3側への再構成移�
 ---
 
 
-### [TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1] layer3_formulaが除算のみ対応で、YoY成長率など系列比較を表現できない
-**優先度:** 低（着手条件なし。現状ブロックしているのはPLTR「希薄化後
-EPS成長率」1件のみで、実害は限定的）
-**分類:** 機能不足 / TAIL自動化パイプライン
-**登録日:** 2026-08-20
-**発見:** `[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`Step 4
-（core 3銘柄へのLayer3適用）でPLTR「希薄化後EPS成長率」をLayer3経由
-へ振り替えられるか判定中に発見。
-
-#### 内容
-`src/tail/xbrl_segment_fetcher.py::fetch_layer3_kpis()`の
-`layer3_formula`は`"field_a/field_b"`形式の**同一四半期内の2フィールド
-の除算のみ**対応する（439-454行目）。「希薄化後EPS成長率」のような
-「同一フィールドの前年同期比（YoY）」を表現する構文が存在しない
-（`eps_diluted`という1フィールドの時系列上で`(今期値-前年同期値)/
-前年同期値`を計算する必要があり、除算専用の現行パーサーでは表現
-不可能）。
-
-`layer3_field`を`eps_diluted`に設定して直接値を渡す代替も検討したが、
-それは希薄化後EPSの**水準**であって**成長率**ではなく、KPIの
-`warning_threshold`（成長率ベースの閾値）と意味が合わなくなるため
-採用しなかった。
-
-#### 着手条件
-着手条件なし。同型の「系列に対する前年同期比・前期比」を必要とする
-KPIが他にも将来登録される可能性があるため、個別対応ではなく
-`layer3_formula`のミニ構文自体を拡張する（例:
-`"yoy(eps_diluted)"`のような関数呼び出し記法）方が汎用的だが、
-現時点で対象は1件のみのため優先度は低いまま。対象KPIが増えた場合に
-再評価すること。
-
----
-
 ### [TAIL-SATELLITE-MONITOR-CORE-APPLICABILITY-1] satellite_monitor.pyの4条件をcore 3銘柄へ適用できるかの技術調査（調査のみ、実装なし）
 **優先度:** 低（現状維持でも実害はない。core側の高頻度監視が無いことは
 事実だが、四半期レビューによる評価は別途機能している）

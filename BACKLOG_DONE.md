@@ -36229,3 +36229,63 @@ short_term_investments行の有無を直接確認する**以外に切り分け�
 コード変更・データ変更は一切行っていない（調査のみ、[[BS-FIELD-
 FADEOUT-NONZERO-LAST-VALUE-1]]が指摘したNone→0扱いの汎用ギャップも
 本件とは無関係のため未対応のまま）。
+
+### ✅ [TAIL-LAYER3-FORMULA-YOY-UNSUPPORTED-1] layer3_formulaにyoy()構文を追加、PLTR希薄化後EPS成長率へ適用完了（2026-09-23）
+**優先度:** 低（着手条件なし。現状ブロックしているのはPLTR「希薄化後
+EPS成長率」1件のみで、実害は限定的）→ 実装完了
+**分類:** 機能不足 / TAIL自動化パイプライン
+**登録日:** 2026-08-20
+**発見:** `[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]`Step 4
+（core 3銘柄へのLayer3適用）でPLTR「希薄化後EPS成長率」をLayer3経由
+へ振り替えられるか判定中に発見。
+
+#### 内容
+`src/tail/xbrl_segment_fetcher.py::fetch_layer3_kpis()`の
+`layer3_formula`は`"field_a/field_b"`形式の**同一四半期内の2フィールド
+の除算のみ**対応する（439-454行目）。「希薄化後EPS成長率」のような
+「同一フィールドの前年同期比（YoY）」を表現する構文が存在しない
+（`eps_diluted`という1フィールドの時系列上で`(今期値-前年同期値)/
+前年同期値`を計算する必要があり、除算専用の現行パーサーでは表現
+不可能）。
+
+`layer3_field`を`eps_diluted`に設定して直接値を渡す代替も検討したが、
+それは希薄化後EPSの**水準**であって**成長率**ではなく、KPIの
+`warning_threshold`（成長率ベースの閾値）と意味が合わなくなるため
+採用しなかった。
+
+#### 着手条件
+着手条件なし。同型の「系列に対する前年同期比・前期比」を必要とする
+KPIが他にも将来登録される可能性があるため、個別対応ではなく
+`layer3_formula`のミニ構文自体を拡張する（例:
+`"yoy(eps_diluted)"`のような関数呼び出し記法）方が汎用的だが、
+現時点で対象は1件のみのため優先度は低いまま。対象KPIが増えた場合に
+再評価すること。
+
+#### 実装完了（2026-09-23）
+`fetch_layer3_kpis()`に`"yoy(field_name)"`構文を追加（既存の
+`"field_a/field_b"`除算分岐とは別のelif、`"yoy("`プレフィックスを
+先にチェック）。PLTR「希薄化後EPS成長率」の`layer3_formula`を
+`"yoy(eps_diluted)"`に設定した（従来は空タグ`""`で実質非機能・
+`unit=USD`だったものを、真の成長率計算・`unit=ratio`へ修正）。
+
+**当初計画からの修正点**: 前年同期の特定を当初想定の「配列で4件前」
+（単純インデックス）で実装したところ、PLTRの`eps_diluted`実データに
+1四半期分の欠測（2021-12-31相当が存在しない）があり、欠測以降の
+全四半期で前年同期が1四半期分ズレる（手計算と不一致）ことを発見。
+end日が350〜380日前（365日に最も近いもの）を探すカレンダー一致方式に
+変更し、手計算と一致することを確認した上で実装を確定した。
+
+**検証**: 回帰テスト7件追加（正常系・前年同期None/0スキップ・データ
+不足時の空返却・欠測ギャップでのカレンダー一致確認・既存の除算構文が
+無影響であることの確認、`tests/test_layer3_formula_yoy.py`）、
+git stashでfail-before/pass-after確認済み。既存の唯一の除算形式
+layer3 KPI（PLTR「営業利益率」）を変更前後で計算し19四半期全て
+ビット単位一致。既存のunit-labelテスト（`tests/test_
+xbrl_segment_fetcher_unit_label.py`）もこの意味論変更に合わせ期待値を
+`expected_usd`→`expected_ratio`へ更新（KPIの実際の計算内容が変わった
+ための正当な更新）。pytest全体1492件パス、audit.py・
+report_consistency_check.py --fail-on-ng ともにNG=0。実際に
+`xbrl_segment_fetcher.py --ticker PLTR`を実行しPLTR_layer2.jsonを
+再生成、対象KPI以外の5件が全件無差分であることを確認。
+
+コミット: `50b5e0d63d`（コード）・`482577a9ed`（データ）。
