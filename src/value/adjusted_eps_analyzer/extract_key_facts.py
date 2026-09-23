@@ -903,20 +903,40 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
                             break
                 if ytd_6m_val is None and ytd_9m_val is None:
                     continue
+                q1_present = adj_tag in q1_data
                 q1_val = normalize_value(q1_data.get(adj_tag))
                 # Q2: 欠落かつ YTD_6m 存在 → Q2 = YTD_6m - Q1
-                if adj_tag not in q2_data and ytd_6m_val is not None:
+                # [[EPS-LITE-ANNUAL-AS-QUARTERLY-1]]と同型のバグ（Q4専用
+                # ループに対する兄弟ループ）: Q1がこのタグを一件も申告して
+                # いない場合、「未申告（キー自体が無い）」と「申告はあるが
+                # 実際に0円」を区別できずq1_val=0とみなしてしまい、
+                # YTD_6m全額を丸ごとQ2単体として誤って書き込んでいた
+                # （[[CART-QUARTERLY-REVENUE-EXTRACTION-GAP-1]]横展開調査で
+                # IONQのrevenueタグにて実例確認）。Q1にこのタグの申告が
+                # 1件も無い場合はQ2への書き込み自体をスキップする。
+                if adj_tag not in q2_data and ytd_6m_val is not None and q1_present:
                     q2_val = ytd_6m_val - q1_val
                     if abs(q2_val) > 0.01:
                         q2_data[adj_tag] = {'value': q2_val, 'unit': 'USD'}
                         print(f"  [YTD6m] {adj_tag} Q2 FY{fiscal_year}: {q2_val:,.0f} (ytd6m={ytd_6m_val:,.0f}, q1={q1_val:,.0f})")
+                elif adj_tag not in q2_data and ytd_6m_val is not None and not q1_present:
+                    print(f"  [SKIP] {adj_tag} Q2 FY{fiscal_year}: Q1にこのタグの申告が"
+                          f"存在しないためスキップ (ytd6m={ytd_6m_val:,.0f})")
                 # Q3: 欠落かつ YTD_9m 存在 → Q3 = YTD_9m - YTD_6m (YTD_6m不在時は - Q1 - Q2)
+                # YTD_6m経由の減算はどちらも実申告値同士の差分のためガード不要。
+                # Q1-2直接減算のフォールバックのみ、Q4ループと同じ「Q1・Q2の
+                # いずれかにこのタグの申告が1件も無ければスキップ」ガードを適用。
                 if adj_tag not in q3_data and ytd_9m_val is not None:
+                    q2_present = adj_tag in q2_data
                     q2_val_now = normalize_value(q2_data.get(adj_tag))
                     if ytd_6m_val is not None:
                         q3_val = ytd_9m_val - ytd_6m_val
-                    else:
+                    elif q1_present or q2_present:
                         q3_val = ytd_9m_val - q1_val - q2_val_now
+                    else:
+                        print(f"  [SKIP] {adj_tag} Q3 FY{fiscal_year}: Q1・Q2いずれにも"
+                              f"このタグの申告が存在しないためスキップ (ytd9m={ytd_9m_val:,.0f})")
+                        continue
                     if abs(q3_val) > 0.01:
                         q3_data[adj_tag] = {'value': q3_val, 'unit': 'USD'}
                         print(f"  [YTD9m] {adj_tag} Q3 FY{fiscal_year}: {q3_val:,.0f} (ytd9m={ytd_9m_val:,.0f})")
