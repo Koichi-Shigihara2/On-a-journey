@@ -4,6 +4,905 @@
 
 ## 2026-09-23（完了）
 
+### ✅ [MARKETPULSE-MINOR-INCONSISTENCIES-1] Market Pulseの軽微な構造的不整合まとめ → 完了（2026-09-23）: ①〜⑤は2026-08-26完了済み、⑥はTech Pulseワークフロー自体が存在せず完全休眠のため対応見送りとしてクローズ
+**優先度:** 中→低（①②③④⑤は2026-08-26完了。⑥は再確認の結果、現状ライブ
+データに実害なし〈休眠状態〉と判明したため優先度を低へ引き下げ）
+**分類:** データ品質 / Market Pulse
+**登録日:** 2026-07-23
+**発見:** `FIELD_DEFINITIONS.md`フェーズ10
+
+#### 内容
+①Hindenburg Omen判定が実測`total_stocks`（503件）ではなく固定値500を
+ハードコード。②`credit.stock`（^GSPC指数）と`credit.bond`の株式側判定
+（SPY ETF）が同一の`credit`ブロック内で異なる原資産を参照。
+`credit.credit`（HYG/LQD各ETFのchange_percent差分）とAS-IS-328（HYG対
+LQD比、比率そのものの変化）も独立した別計算経路。③`market_data.csv`は
+`CSV_COLUMNS`に列挙されていないフィールド（NASDAQ本体・全volume_ratio・
+tech_pulse/asset_flow/credit/両checklist/fear_greed/comments_history）を
+無条件に欠落させる。④`sentiment.breadth`は`breadth_data.json`の単純な
+パススルーだが`unchanged`/`ad_ratio_1d`/`total_stocks`/`rsp_return_1d`/
+`spy_return_1d`がパススルー対象から漏れている。⑤CNN（`fear_greed`
+パッケージ）とfeargreedchart.comという2つの異なるF&G情報源が一部の
+フォールバック・後方互換コードで区別なく代替される。⑥`backfill_tech_
+pulse.py`のTech Pulseスコア計算式（固定レンジ加算方式）が現行
+`collect_and_send.py`（90日パーセンタイル方式）と全く異なり、過去の
+バックフィル値と最近の値は単純比較できない。
+
+#### 対応方針
+①実測`total_stocks`を使うよう修正②原資産を統一するか意図的差異である
+旨を明示③CSV出力対象フィールドを見直すか、CSVとJSONの非互換性を明示
+④パススルー対象フィールドを追加⑤2つのF&G情報源を明確に区別する
+⑥バックフィル済みデータの再計算要否を判断する。優先順位を付けて
+順次対応する。
+
+#### 2026-08-26 再検証（実コード・実データで6件全て再確認、対応方針の実施はまだ）
+BACKLOG記載の前提を着手時に再検証する原則に従い、`collect_and_send.py`
+（実装は`src/market/market_pulse/collect_and_send.py`、登録時から行番号は
+シフトしているが該当箇所は現存）を1件ずつ実コード確認した。**6件とも
+未解消のまま現存**、優先度「中」は妥当と判断した。
+
+- **①Hindenburg固定値500**: `collect_and_send.py:1659`
+  `hindenburg_active = bool(nh >= 500 * 0.022 and nl >= 500 * 0.022)`が
+  現存。一方`breadth_data.json`最新エントリには`"total_stocks": 501`が
+  既に存在しており（`_load_latest_breadth()`で読み込み済み）、実測値を
+  使わず固定値500のままなことを確認
+- **②credit原資産不整合**: `collect_and_send.py:1436`の`credit_stock`は
+  `structured_data.get("S&P500")`（`^GSPC`指数）を参照する一方、
+  `collect_and_send.py:1444`の`credit_bond`判定は
+  `asset_flow_data.get("equity")`（SPY ETF、コメント「SPY(equity)下落」）
+  を参照しており、同一`credit`ブロック内で異なる原資産が現存
+- **③CSV列欠落**: `collect_and_send.py:1535`の
+  `csv.DictWriter(f, fieldnames=CSV_COLUMNS, extrasaction='ignore')`が
+  `row`のうち`CSV_COLUMNS`外のキーを無条件に無視する構造は不変。`row`は
+  `structured_data`＋`sentiment_score`/`label`/`summary`のみから構築され、
+  `tech_pulse_data`/`asset_flow_data`/`credit_data`/両checklist/
+  `fear_greed_data`/`comments_history`はCSV化のロジック自体に一切
+  含まれておらず欠落が現存（JSON`market_data.json`側には保存されている）
+- **④breadthパススルー漏れ**: `collect_and_send.py:323-337`の
+  `breadth_summary`は`breadth`（`breadth_data.json`最新エントリ、実際に
+  `unchanged`/`ad_ratio_1d`/`total_stocks`/`rsp_return_1d`/
+  `spy_return_1d`を含むことを実データで確認済み）から特定フィールドのみ
+  ホワイトリスト方式でコピーしており、この5フィールドは現在も
+  コピー対象に含まれず欠落が現存
+- **✅⑤F&G情報源混同**（2026-08-26③修正完了、下記参照）: 旧実装は
+  `_load_div_history()`のフォールバック（`divergence.value`未記録の
+  旧エントリ向け）が`tech_pulse.components.fg_score`（feargreedchart.com
+  由来）を参照しており、docstringの「CNN F&Gベースで一貫性が保たれる」
+  という主張と矛盾していた。`(entry.get("fear_greed") or
+  {}).get("score")`（CNN）を参照するよう修正済み
+- **⑥Tech Pulseバックフィル式相違**: `backfill_tech_pulse.py:121-130`
+  の`_calc_score()`（docstring「固定範囲方式 Tech Pulse スコア
+  （バックフィル専用）」、加算方式）と`collect_and_send.py:711-729`の
+  `calc_tech_pulse_score()`（`scipy.stats.percentileofscore`による
+  90日パーセンタイル方式）が別計算式のまま現存を確認。同スクリプトは
+  GitHub Actionsワークフローに未登録（`grep -rln backfill_tech_pulse
+  .github/workflows/`で0件）で手動実行専用のため、既にバックフィル
+  済みの過去データのみに影響が限定される（新規の日次汚染は発生しない）
+
+**横断点検（Market Pulseのcron依存関係）**: `Market_Pulse_Update.yml`は
+単一cron（`35 21 * * 1-5`、月〜金）・単一ジョブ内で
+`breadth_calculator.py`→`collect_and_send.py`を順次実行する構造のため、
+TANUKI VALUATIONで past発見された`[[TANUKI-VALUATION-PRICE-SCHEDULE-
+LAG-1]]`のようなワークフロー間タイミング競合のリスクは構造上存在しない
+ことを確認した（他ワークフローからの`workflow_run`依存もなし、単独で
+完結）。他に構造的な新規問題は発見しなかった。
+
+#### 2026-08-26② ⑤F&G情報源混同の追加調査（調査のみ・実装なし。
+前回判定の訂正を含む）
+
+MACRO-TRUTHY-ZERO-BUG-1対応完了を受け、優先順位に従い次に着手した
+本項目の詳細調査で、**前回（2026-08-26①）の実害判定に誤りがあった
+ことが判明したため訂正する**。
+
+**発生メカニズムの再確認**（実コード引用、行番号は現状に一致）:
+- 「今日」の値: `collect_and_send.py:1621-1628`
+  `fg_cnn_score = (fear_greed_data or {}).get("score")` →
+  `div_value = round(float(tp_score) - float(fg_cnn_score), 1) if
+  fg_cnn_score is not None else None`（CNN由来）
+- 過去データ再構築のフォールバック: `collect_and_send.py:667-675`
+  `divergence.value`が欠損している場合、
+  `tech_pulse.components.fg_score`（`fg_score_tech`、
+  feargreedchart.com由来）で代替計算する
+- **由来の経緯（`git log`で確認）**: 2026-06-14に2コミットが同日連続で
+  入っている。`886654a97`（14:05、当時は「今日の値」もfeargreedchart.com
+  由来だったため両者をfeargreedchart.comに揃えた）→`39be125a6`
+  （15:55、90分後。「今日の値」をCNN由来へ切替、docstringも
+  「CNN F&Gベースで一貫性が保たれる」と書き換えたが、**フォールバック
+  側の参照先修正が漏れた**）。設計上の不整合自体はこの時点から現存
+
+**実害の再定量化（訂正）**: `_load_div_history()`のロジックを実データ
+（`market_data.json`全131件）に対して直接シミュレートした結果:
+- 90日ウィンドウ内の`div_hist`（実際にZスコア計算に使われる系列）:
+  長さ80件、**全80件が`divergence.value`（CNN由来）から取得**、
+  feargreedchart.comフォールバックからの取得は**0件**
+- `divergence.value`欠損の10件（2026-05-28〜06-07）は、前回「フォール
+  バックが発火している」と誤認したが、実際には`tech_pulse`ブロック
+  自体（`score`含む）が丸ごと`null`（Tech Pulse機能導入以前の旧
+  スキーマ時代のエントリ）であり、フォールバック条件`tp_s is not
+  None and fg_s is not None`を満たさず**完全にスキップされている**
+  （Zスコア計算に一切寄与しない）
+- 全131件の履歴を通じて、このフォールバックが実際に発火した
+  （＝`divergence.value`欠損かつ`tp_s`・`fg_s`とも取得できた）事例は
+  **ゼロ件**
+- **前回判定「潜在バグではなく現在進行形で発火中」は誤りであり撤回する。
+  正しくは「コード上の設計不整合は現存するが、現在の実データでは
+  一度も発火したことがない（潜在的リスクに留まる）」**
+
+**潜在リスクとしての性質**: `calc_tech_pulse_score()`はCNNの成否と
+無関係にscipy/QQQ/VXNデータのみから算出されるため、理論上は「CNN取得
+が失敗しTech Pulse計算だけ成功する日」が発生すればフォールバックが
+発火しうる。ただし実データ131件中この組み合わせは一度も発生していない
+ことを確認済み。加えて、`divergence.value`欠損10件は2026-09-05頃には
+90日ウィンドウから自然に外れるため、現行データに起因する発火条件は
+今後さらに希少化する（コード自体の設計不整合は残存するため優先度は
+維持するが、緊急性は低い）。
+
+**下流への伝播**: 現状ゼロ（`div_hist`が100%CNN一貫のため、
+`div_zscore`・`tp_signal`とも汚染なし）。
+
+**修正方式の選択肢（実装はまだしない）**:
+- 案A（推奨）: フォールバックの参照先を`components.fg_score`
+  （feargreedchart.com）から`(entry.get("fear_greed") or
+  {}).get("score")`（CNN）へ差し替える。docstringが既に主張している
+  内容を実際に真にする1行修正。実装規模: 小（1行＋docstring調整＋
+  テスト1件追加）
+- 案B: フォールバック自体を廃止し、`divergence.value`欠損日は単純に
+  スキップする。CNN取得失敗日は案Aでも`fear_greed.score`がNoneのため
+  結局値が取れず、実質的な結果は案Aとほぼ同じ。実装規模: 小
+  （コード削減のみ）
+- 案C: 欠損日を前日値でforward-fillする。データ完全性は上がるが
+  Zスコアの分散を人為的に縮小させる副作用があり非推奨。実装規模: 中
+
+**横断確認**: `collect_and_send.py`全体を"CNN"/"feargreedchart"で
+確認した結果、同種の「複数情報源の無区別混在」はこの1箇所のみ。
+隣接する既知課題（②credit.stock/bondの原資産不一致）は既存カタログ
+済みで別種の問題であり、新規の類似箇所は発見しなかった。
+
+#### 2026-08-26③ ⑤F&G情報源混同の実装完了（案A採用）
+
+**修正内容**（`src/market/market_pulse/collect_and_send.py:667-679`）:
+`_load_div_history()`のフォールバックの参照先を
+`(entry.get("tech_pulse") or {}).get("components", {}).get("fg_score")`
+（feargreedchart.com由来）から`(entry.get("fear_greed") or
+{}).get("score")`（CNN由来、当日の`div_value`算出と同一ソース）へ
+差し替え。docstringも「どちらの経路もCNN F&Gベースで一貫性が保たれる」
+へ修正し、実態と一致させた。
+
+**追加テスト**（`tests/test_collect_and_send_market_data_switch.py::
+TestLoadDivHistory`、4件）:
+- `test_uses_stored_divergence_value_when_present`: `divergence.value`
+  存在時はそのまま使う（既存挙動の回帰確認）
+- `test_fallback_uses_cnn_score_not_feargreedchart_score`:
+  `divergence.value`欠損時、CNN score=30・feargreedchart.com
+  score=57という意図的に大きく異なる値を与え、結果が
+  `72-30=42.0`（CNN）であり`72-57=15.0`（feargreedchart.com）では
+  ないことを検証。**修正前のコードに対して実行すると`[15.0]`を返し
+  失敗することを確認済み**（`git stash`で一時的に修正前へ戻して
+  実行、regression testとして機能することを確認した上で修正を復元）
+- `test_entry_missing_both_scores_is_skipped`: `tech_pulse`ブロック
+  自体が丸ごと`null`のエントリ（旧スキーマ）は完全にスキップされる
+  ことを検証（2026-08-26②で確認した実データの挙動を固定化）
+- `test_entry_outside_window_excluded`: window日数外のエントリが
+  除外されることを検証
+
+**影響確認**: 修正後、本番`market_data.json`（131件）に対して
+`_load_div_history(window=90)`を実行した結果、`div_hist`は修正前と
+同じ**80件**（全件CNN由来の`divergence.value`から取得、フォール
+バック発火は0件）で完全に一致することを確認した。2026-08-26②で
+確認済みの通り、現行データではフォールバックが一度も発火していない
+ため、この修正による既存の表示・スコアへの影響はない（想定通り）。
+
+**検証ゲート結果**（全て通過）:
+- `pytest tests/`: **909 passed, 0 failed**（新規4件含む、既存905件
+  無変化）
+- `python common/sec_data/audit.py`: 🟢正常95銘柄/🟡警告5銘柄
+  （既存WARN、Market Pulse非対象で無変化）
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0件/WARN=96件（既存WARN、Market Pulse非対象で無変化）
+- Market Pulse専用の検証スクリプトは存在しない（`find`で確認済み、
+  MACRO PULSEの`05_audit.py`に相当するものはなし）
+
+#### 元の着手条件（2026-08-26①登録時点のもの、下記②で①③④実装完了）
+①②③④⑥は引き続き未着手（優先順位は次回Koichiさんと相談）
+
+---
+
+#### 2026-08-26② ①③④の実装完了・②の再確認結果（実装待機）
+
+`[[MACRO-TRUTHY-ZERO-BUG-1]]`・`[[HOLLOW-RALLY-DEAD-1]]`対応完了を受け、
+優先度順に①③④⑤の残り4件（⑤は既に完了済み）のうち①③④に着手した。
+②は再確認の結果、原資産の選び方に設計判断が絡むため実装せず報告に
+とどめる（Koichiさんの指示通り）。
+
+##### ①Hindenburg固定値500の修正（実装完了）
+`collect_and_send.py:1665`付近の`hindenburg_active = bool(nh >= 500 *
+0.022 and nl >= 500 * 0.022)`を、`breadth_data.json`の実測
+`total_stocks`を参照する形に修正した。テスト容易化のため、`__main__`
+ブロック内にインラインで書かれていた計算ロジックを`calc_hindenburg_
+active(breadth)`という独立関数へ切り出した（既存の`_get_tp_signal()`
+等と同じ設計パターン）。
+
+**実データでの出力差分確認**: `breadth_data.json`（93件）に対し修正前後
+のロジックを実行して突合した結果、**4件で判定が変化**（いずれも
+`nl=11`ちょうどの境界事例、`total_stocks=503`のため新閾値
+11.066>11となり、旧ロジックの誤った「シグナル発生」判定〈True〉から
+正しい「シグナルなし」〈False〉へ訂正された）: 2026-04-02・
+2026-04-23・2026-07-20・2026-07-22。**旧ロジックはTAKE PROFIT
+チェックリストのヒンデンブルグ・オーメン項目でこれら4日間、誤って
+「シグナル発生」を計上していたことが判明した**（実害の確定）。
+
+##### ③CSV書き出しフィールド欠落の修正（実装完了）
+`CSV_COLUMNS`と実際の`structured_data`の全キー・サブキーを実データ
+（`market_data.json`最新エントリ）で突合し、欠落フィールドを網羅的に
+特定した。当初のBACKLOG記載「NASDAQ本体・全volume_ratio」に加え、
+再確認で`NYSE Composite_divergence_vs_sp`（既存コードで計算済みだが
+CSV_COLUMNS未登録）も同型の欠落として新たに発見し、合わせて追加した:
+`NASDAQ_value`/`_change`/`_change_percent`/`_volume_ratio`、
+`VIX指数_volume_ratio`、`米10年債_volume_ratio`、`ドル円_volume_ratio`、
+`S&P500_volume_ratio`、`WTI原油_volume_ratio`、`金（GOLD）_volume_
+ratio`、`HYG（ハイイールド債ETF）_volume_ratio`、`LQD（投資適格債
+ETF）_volume_ratio`、`NYSE Composite_divergence_vs_sp`（計13列追加）。
+
+**tech_pulse/asset_flow/credit/両checklist/fear_greed/comments_
+historyは今回のスコープから意図的に除外した**: これらはネスト
+した辞書・リスト構造（例: `checks`が複数チェック項目のリスト、
+`comments_history`が無制限に伸びる履歴リスト）であり、フラットな
+CSV列として機械的に単純追加できる性質のものではなく、どのサブ
+フィールドをどう平坦化するかという設計判断が別途必要なため
+（②と同種の「単純な修正で済まない」ケースと判断し、対応不要——
+JSON側〈`market_data.json`〉に完全な形で既に保存されているため、CSVは
+元々フラットな時系列比較用の補助出力という位置づけで割り切ることも
+妥当と考える）。
+
+**実データでの動作確認**: 実際に`save_data_to_json_and_csv()`を
+一時ディレクトリに対して実行し、新規13列が正しく書き込まれること、
+既存列（`VIX指数_value`等）に変化がないこと、および**既存の
+`market_data.csv`（旧ヘッダー）から新ヘッダーへの自動マイグレーション
+機構（`CSVヘッダー整合チェック`）が、既存行のデータを保持したまま
+新列を空欄で追加することを実際に確認した**（本番`market_data.csv`は
+次回実行時に自動的に安全移行される）。
+
+##### ④breadth_summaryホワイトリスト欠落の修正（実装完了）
+`compute_sentiment()`内の`breadth_summary`辞書に、パススルー対象から
+漏れていた5フィールド（`unchanged`/`ad_ratio_1d`/`total_stocks`/
+`rsp_return_1d`/`spy_return_1d`）を追加した。実データを模したダミー
+`breadth`辞書で`compute_sentiment()`を実行し、5フィールド全てが
+正しく`breadth_summary`へ反映されること、既存フィールドに変化が
+ないことを確認した。
+
+##### テスト追加（`tests/test_collect_and_send_market_data_switch.py`、8件）
+- `TestCalcHindenburgActive`（4件）: `None`/空dict入力・`total_stocks`
+  実測値使用時の境界ケース再現（`nl=11`かつ`total_stocks=503`で
+  不発火）・実際に発火するケース・`total_stocks`欠損時の500
+  フォールバックを検証
+- `TestBreadthSummaryFields`（2件）: 5フィールドのパススルー確認・
+  `breadth=None`時の既存挙動（`breadth_summary=None`）の非破壊確認
+- `TestSaveDataCsvFields`（2件）: NASDAQ・volume_ratio系フィールドの
+  CSV書き込み確認・旧ヘッダーCSVからの無損失マイグレーション確認
+
+8件中7件は修正前コード（`git stash`で一時的に戻して実行）に対して
+実際に失敗する（`KeyError`等）ことを確認済み（残り1件
+`test_none_breadth_yields_none_summary`は変更のない既存挙動の確認
+のため、修正前後どちらでもPASSして正しい）。
+
+##### 検証ゲート結果（全て通過）
+- `pytest tests/`: **920 passed, 0 failed**（新規8件含む、既存912件
+  無変化）
+- `python common/sec_data/audit.py`: 🟢正常95銘柄/🟡警告5銘柄
+  （既存WARN、Market Pulse非対象で無変化）
+- `python common/sec_data/report_consistency_check.py --fail-on-ng`:
+  NG=0件/WARN=96件（既存WARN、Market Pulse非対象で無変化）
+- Market Pulse専用の検証スクリプトは存在しない（前回確認済み）
+
+##### ②credit原資産不一致の再確認結果（実装は行わず報告のみ）
+
+**正確な使用箇所の再確認**:
+- `credit_stock`（`collect_and_send.py:1471,1475`）:
+  `structured_data["S&P500"]["change_percent"]`——`get_realtime_data()`
+  の`main_tickers`ループで`^GSPC`（S&P500**指数**そのもの）から取得
+- `credit_bond`（同1479-1487）:
+  `asset_flow_data["equity"]["change_pct"]`——**別関数**
+  `collect_asset_flow()`（SHV/DGS3MO/GLD/TLT/LQD/HYG/SPYの7資産クラス
+  を「安全→リスク」順で並べた「資産クラス間資金フロービジュアライザー」
+  専用のデータ収集）で`SPY`（S&P500**ETF**）から取得。TLT（債券）との
+  「質への逃避」比較に使われる
+
+**問題の性質の切り分け**: 「同一credit カテゴリ内での無区別な混在」
+というより、**目的の異なる2つの独立した計算経路**であることを確認
+した。`credit_stock`は「市場全体の今日の方向性」を測る単純な指標
+（指数の正確な値が適切）、`credit_bond`は「資金が株式から債券へ
+逃避しているか」という**資金フロー**概念（実際に売買可能なETF＝
+SPY/TLTの比較が必須、指数自体には資金は流出入しない）。この観点では
+両者とも個別に見れば合理的な設計選択でありうる。
+
+ただし実データで検証した結果、**単なる理論上の懸念ではなく、実際に
+無視できない乖離が周期的に発生していることを確認した**:
+- 直近90日の日次サンプルで`|^GSPC変化率 - SPY変化率|`の中央値は
+  0.029pt・平均0.068ptと小さいが、**最大0.673pt**（2026-06-27〜29の
+  3日間連続）を観測した
+- この3日間はSPYの`change_pct=-0.723%`に対し`^GSPC`の`change_percent`
+  は`-0.05%`とほぼ横ばい——SPYの四半期分配落ち（ex-dividend、SPYは
+  四半期分配のETFで分配日に価格が理論分配額だけ機械的に下落するが
+  指数自体はこの影響を受けない）が原因と推定される
+- 今回の3日間はTLT側の条件（`>0.3%`）が`0.011%`で不成立だったため
+  `credit_bond`の最終判定自体は変わらなかったが、**この乖離幅
+  （0.673pt）は`credit_bond`が使う閾値`-0.5%`より大きく、TLT側条件が
+  同時に成立する別の局面では、原資産の選択（^GSPC vs SPY）が
+  `credit_bond`の最終判定を実際に左右しうる**ことを確認した
+
+**修正の選択肢**:
+- 案a: `credit_stock`もSPY（`asset_flow_data.equity`）に統一する。
+  長所: `credit_data`内で完全に同一instrument系列に統一され概念的に
+  一貫。短所: `asset_flow_data`は`collect_asset_flow()`という別関数の
+  取得失敗に連動して`credit_stock`まで巻き込まれ判定不能になる
+  （現状は`structured_data`の`S&P500`から独立して取得できるため
+  この結合リスクがない）。四半期分配落ちの影響を毎回受ける。
+  実装規模: 小
+- 案b: `credit_bond`も`^GSPC`（`structured_data.S&P500`）に統一する。
+  長所: 同上の一貫性。短所: 「資金の質への逃避」という資金フロー
+  概念上、指数自体には資金流出入という概念が存在しないため、TLTとの
+  比較対象として指数を使う設計的な妥当性が薄れる（`collect_asset_
+  flow()`の設計意図・7資産クラスの並びとも整合しなくなる）。
+  実装規模: 小
+- 案c（暫定推奨、判断根拠は要相談）: 現状維持（意図的差異として
+  容認）とし、コード上のコメントで設計意図（`credit_stock`=指数の
+  正確な日次方向性、`credit_bond`=資金フロー概念で実際の売買可能
+  ファンドが必須）を明記する。長所: 各指標の目的に応じた合理的な
+  instrument選択を維持でき、独立取得による耐障害性も保たれる。
+  短所: 四半期分配落ち時の乖離（最大0.673pt確認済み）が将来
+  `credit_bond`の判定を左右する潜在リスクは残る（発生頻度は
+  四半期に数日程度と推定、影響はTLT側条件が同時境界に来た場合のみ）。
+  実装規模: 極小（コメント追記のみ）
+
+②についてはKoichiさんのご判断を仰いでから着手する。
+
+##### 2026-08-26③ ②の対応完了（案c採用、コメント追記のみ）
+Koichiさんの判断により**案c（現状維持・意図的差異として容認）**を採用。
+`collect_and_send.py`の`credit_stock`・`credit_bond`それぞれの計算箇所に
+以下をコードコメントとして明記した（ロジック自体は一切変更していない）:
+- なぜ異なるinstrument（`credit_stock`=^GSPC指数、`credit_bond`=SPY ETF）
+  を使うのか（前者は市場全体の日次方向性を測る単純指標のため指数が適切、
+  後者は資金フロー概念のため実際に売買可能なファンドが必須）
+- 統一案（②案a/b）をそれぞれ見送った理由（案a: 結合による耐障害性
+  低下、案b: 資金フロー概念との不整合）
+- 残存リスク（SPYの四半期分配落ち時に^GSPCとSPYで最大0.673pt〈実測
+  済み〉の乖離が生じ、`credit_bond`の閾値`-0.5%`を上回るためTLT側
+  条件が同時に境界へ来る局面で判定を左右しうること）
+
+**検証**: コメント追記のみでロジック変更がないことを`git diff`で
+追加・削除行が全てコメント行（`#`始まり）または空行のみであることを
+確認した上で、`pytest tests/`: **920 passed, 0 failed**（変化なし、
+想定通り）を確認した。
+
+##### 2026-08-26④ ⑥の再確認結果（調査のみ・実装なし、優先度低のまま据え置き）
+
+`[[MACRO-TRUTHY-ZERO-BUG-1]]`・`[[HOLLOW-RALLY-DEAD-1]]`・②③④の対応
+完了を受け、最後に残った⑥（`backfill_tech_pulse.py`のTech Pulseスコア
+計算式が現行`collect_and_send.py`と異なる件）を再確認した。
+
+**ワークフロー登録予定の有無**: `.github/workflows/`配下に
+`backfill_tech_pulse.py`への参照は**0件**（`grep -rln`で確認）。
+`SYSTEM_MAP.md`/`PROJECT_STATUS.md`/`INPUT_DATA_TOBE.md`の本スクリプト
+言及箇所は全て2026-08-12〜13の「新DB構築プロジェクト」（yfinance/FRED
+統合層への配線切替）に関するもののみで、将来ワークフロー化する計画を
+示唆する記述は見当たらなかった。git履歴上、直近の変更は2026-08-13
+（配線切替のみ）、スコア計算式自体の最終変更は2026-05-21（3ヶ月以上
+前）。新DB構築プロジェクト自体は2026-08-13付けで「本線タスク完了」
+としてクローズ済み。今後もワークフロー未登録・手動専用のままである
+可能性が高いと判断する。
+
+**新たな発見（実データ確認）**: `market_data.json`を確認したところ、
+`tech_pulse`が入っている80件は全て2026-06-08〜2026-08-26の連続した
+期間で、いずれも`divergence.value`が同時に存在する（＝ライブ収集＝
+現行パーセンタイル方式で書かれたエントリの特徴、⑤調査で確認済みの
+パターン）と一致していた。**現在のライブデータには、旧・固定レンジ
+方式（バックフィル）で書かれたスコアは1件も存在しない**——
+`tech_pulse`が空欄のまま残っている51件（2026-04-04〜06-07）は、
+バックフィルが一度も実行されないまま放置されている状態である。
+
+**結論**: 「新旧の値が混在して単純比較できない」という実害は、
+**バックフィルが実際に実行されるまでは発生しない**（現状は完全に
+休眠状態）。実害が顕在化するのは、将来誰かが`backfill_tech_pulse.py`
+を実行してこの51件の空欄を埋めた場合のみ。
+
+**実装規模感の見積もり**: 式を揃えるには`calc_tech_pulse_score()`
+（90日パーセンタイル方式）が必要とする「対象日を含む直近90日分の
+`qqq_vs_ma125`/`vxn_vs_ma50`/`qqq_vs_spy_20d`のローリング履歴」を、
+バックフィル対象の各日について新たに構築する必要がある（現状は対象日
+1点のみ計算）。既存の`_qqq_components()`/`_vxn_components()`はそのまま
+再利用可能、`collect_and_send.py`から`calc_tech_pulse_score`を追加
+importするだけで済むが、90日分×対象日数のループが増える。
+**実装規模: 中規模**（既存ヘルパーの再利用は可能だが、ローリング履歴
+構築ロジックの新規実装が必要、目安30〜50行程度）。追加の考慮点として、
+既にバックフィル済みのエントリと新規ライブ収集エントリを区別する
+マーカーが現状存在しないため、「過去にバックフィルされた分を新方式で
+再計算する」対応は別途識別方法の検討が必要（ただし上記の通り現状は
+該当エントリが0件のため、今この時点では再計算対象自体が存在しない）。
+
+**Koichiさんの判断（2026-08-26）**: 上記結論に同意、優先度「低」のまま
+据え置き。今回は実装しない。
+
+#### 着手条件
+①②③④⑤は完了。⑥は引き続き未着手のまま、優先度低で据え置き
+（休眠状態のため緊急性なし。着手判断は次回相談）。
+
+---
+
+### ✅ [ANOMALY-PATTERN-CATALOG-1] 異常データパターンのカタログ化・新規登録時照合の仕組み → 対応見送り（2026-09-23）: 値ベース検知2試行とも失敗、トリガー消滅のためクローズ
+**優先度:** 低（2026-09-19、中→低に変更。理由は下記「優先度変更」参照）
+**分類:** アーキテクチャ / データ品質ゲート / 銘柄登録フロー
+**登録日:** 2026-07-19
+**発見:** [[FY52WEEK-BS-STI-OVERRIDE-DESIGN-1]]（完了・BACKLOG_DONE.md参照。
+KLAC/TER/V/SOFI）の対応中の議論
+
+#### 背景
+XBRLタグ選定等で銘柄固有の異常が見つかるたび、都度ゼロから個別調査
+する非効率を解消するため、異常パターンを「型」として整理・蓄積し、
+新規銘柄登録時（または既存銘柄で新たな異常が疑われた時）に既知の
+型と照合してから対応判断する運用を導入する。
+
+**2026-07-15の関連決定との関係（重要・要参照）**：
+PREFLIGHT-CHECK-1で一度、ARCH-DATA-1と共有する汎用パターン判定
+カタログ構想を検討したが、「登録前段階の統計的推測（SIC・社名等）
+だけでは、実際にどのタグが正しいかの確定判定はできない」との理由で
+見送られた経緯がある（本エントリ直前の「設計メモ追記（2026-07-15・
+ARCH-DATA-1残課題③調査結果を反映）」参照）。本タスクはこれを覆すもの
+ではなく、**照合のタイミングを「登録前」ではなく「登録後・実データ
+取得後」に置く**点で異なる。2026-07-15の決定が「登録前の統計的推測は
+時期尚早」としつつ、revenue系タグ競合を「Step1完了後の実データ検知」
+（`revenue_tag_conflict_check.py`）へ統合する方針を既に採用していた
+ことと同じ考え方を、short_term_investments等の他フィールドにも
+一般化するのが本タスクの位置づけ。
+
+#### 初期カタログ（今回確定した型）
+**型A：候補集合＋freshness収束型**
+- 症状: 正しいXBRLタグが他銘柄でも広く使われる汎用タグで、上限
+  チェック等の値ベース検証だけでは誤タグの混入を検知できない
+- 根本原因: 汎用タグ自体は銘柄非依存で存在するが、どのタグが
+  「その銘柄にとって正しいか」は銘柄固有の申告慣行に依存する
+- 対応方法: TICKER_RESTRICTIONSにticker別の候補タグ（単一または
+  複数）を登録し、既存の`_extract_values_best_candidate()`の
+  freshnessスコアで自動選定させる。グローバル候補リストへは
+  追加しない
+- 実例: KLAC/TER/V/SOFI（short_term_investments、2026-07-19実装）
+
+**型B：非分類BS・近似値許容型（予約・実例なし）**
+- 症状: BS構造自体が流動/非流動を区分しない等、単一タグでは
+  真の値を表現できない
+- 根本原因: 会計上の科目構造そのものの制約
+- 対応方法: 近似値を採用しつつreport.txt/latest.json上で残差・
+  不確実性を明示する
+- 実例: なし（SOFIで型B該当を想定したが、調査の結果OtherInvestments
+  タグで完全一致し型Aに収束したため、2026-07-19時点で実例なし。
+  将来型B該当銘柄が見つかった場合の受け皿として型定義のみ残す）
+
+**型C：資産クラス変化・当年度未タグ化型**
+- 症状: BS計上額の構成が、単発の企業イベント（保有先の非上場
+  投資先が新規上場する等）により当年度から質的に変化する。
+  従来使用していた候補タグの申告自体も同時に停止する。新たに
+  混入した資産クラスは、その変化が発生した当年度の10-K自体では
+  対応するXBRL概念が明確にタグ付けされておらず、後続の四半期
+  報告（10-Q）の比較年度開示で初めて該当タグが登場することがある
+- 根本原因: (a) 一時的・単発的な企業イベント（投資先のIPO等に
+  よる会計分類の切替）、(b) filer側のXBRLタグ付けが、その年の
+  10-K提出時点では新資産クラスに対応する概念を採用しておらず、
+  翌四半期以降に整備される、という2つの要因が重なったもの。
+  型A（銘柄固有の恒常的な申告慣行の違い）・型B（BS構造自体の
+  恒常的制約）と異なり、恒常的な性質ではなく一過性の移行期
+  特有の欠損である可能性が高い
+- 対応方法: 単一タグでの完全解消は不可能なことが多い。選択肢は
+  以下3つ（優先順位はケースバイケースで判断）：
+  ① 複数タグの合算による近似値を採用し、型Bと同様に残差を明示する
+  ② 翌年度の10-K提出後、filer側のタグ付けが整備され単一/合算
+     タグで正確に捕捉できるようになったか再確認する（型Aへ
+     収束する可能性がある）
+  ③ 当面はNoneのまま許容し、Net Debt計算等の下流への影響を
+     個別確認する
+- 実例: NVDA（short_term_investments、2026-07-19発見・2026-07-20
+  対応方針①〈候補タグ合算の近似値〉採用・cross_filing_tags機構で
+  実装完了。詳細はBACKLOG_DONE.md「NVDA-STI-TAG-UNIDENTIFIED-1」参照）
+
+**型D：次元分解開示専用型（company_facts一括APIが構造的に返せない）
+（2026-09-10追加）**
+- 症状: 正しい値が10-K原文には確実に存在し、金額まで厳密に特定できて
+  いるにもかかわらず、SECのcompanyfacts一括API（`company_facts.json`）
+  を全namespace・全accn・全期間で横断検索しても**該当する値が一件も
+  存在しない**
+- 根本原因: XBRLの基底タグ（例:
+  `TemporaryEquityCarryingAmountAttributableToParent`）が
+  `StatementClassOfStockAxis`等のディメンションで次元分解された文脈
+  でのみ開示され、非次元（デフォルトコンテキスト）版の事実が提出企業
+  側でそもそも作成されていない。加えて発行体固有の名前空間
+  （例: `cart:SeriesARedeemableConvertiblePreferredStockMember`）による
+  開示や、初期XBRL移行期（2008〜2010年頃、義務化直後）の未タグ付けも
+  同根の構造的欠落として現れる。SECのcompanyfacts一括APIは次元付き
+  （dimensionally-qualified）事実を返さない設計上の制約を持つため、
+  `parser.py`が参照する`us_gaap`辞書には対象タグの値自体が現れない
+- 型A・型B・型Cとの違い: 型A（候補タグは存在するが優先順位の問題）・
+  型C（一時的にタグが未整備なだけで翌四半期以降に登場しうる）とは
+  異なり、型Dは**該当する非次元タグの事実自体が構造的に存在しない**
+  （翌四半期を待っても解消しない）。型Bとも異なり、BS構造自体の科目
+  制約ではなく、XBRL開示方式（次元分解 or 発行体固有名前空間）に
+  起因する
+- 対応方法（2026-09-10実装完了。BS恒等式チェック・PLフロー項目
+  〈cost_of_revenue〉の両方に適用済み）:
+  `common/sec_data/dimension_aggregate_fetcher.py`を新設した。
+  当初検討していた(a) XBRLインスタンス文書を直接パースする経路を
+  採用（(b)の「10-K原文の実測値を`fact_overrides.json`へハードコード」
+  案は不採用のまま——(a)は個別filingの生XBRLタグから機械的に抽出・
+  合算するため「タグ由来のない生の数値の直接注入」には当たらず、
+  設計哲学と衝突しない）。当初instant（BS項目）のみ対応していたが、
+  duration契約（PLフロー項目）にも対応するよう拡張し、`_bs_identity_
+  extra_components()`（BS恒等式チェックのextra_components）・
+  `_apply_dimension_aggregate_field_overrides()`（annual[field][year]
+  の直接補完、cost_of_revenue向けに新設）の2経路から`dimension_
+  aggregate_registry.json`（事前検証済みの結果をキャッシュ、
+  パイプライン実行時のライブ取得はしない設計）を参照する形で統合済み。
+  当初「cost_of_revenue等DCF計算に直接使われるフィールドへの適用は
+  実害リスクが格段に大きい」として別エントリ（`[[LAYER3-COGS-
+  DIMENSION-RECOVERY-CDNS-INTU-1]]`）に切り出していたが、実装時の
+  消費経路の全数調査で**TANUKI VALUATIONのDCF計算は実際にはこの
+  フィールドを一切消費していない**（Moat Score/TTMはLayer3という
+  別パイプライン経由でありCDNS/INTUのLayer3側は元々空、`SECReader`に
+  対応アクセサも存在しない）と判明し、想定していたリスクは実在しな
+  かった。詳細はBACKLOG_DONE.md「2026-09-10（完了）」
+  `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`参照
+- 実例（BS恒等式チェック用、5件）: PLTR(2019、$2,127,231,000)・
+  CART(2023-2025、Series A優先株式、年度ごとに$177M〜$195M）・
+  V(2008、$1,136,000,000)・CELH(2025、$1,759,975,000)・
+  ASTS(2019、$218,519,748)。いずれも`[[CHECK29-UNRESOLVED-23-MIXED-
+  CAUSES-1]]`の個別調査（2026-09-09）で10-K原文により金額まで厳密に
+  特定済みだった値を、2026-09-10に`dimension_aggregate_fetcher.py`で
+  機械的に再現・検証し**全件解消済み**（BKNG2011/2012は公正価値基準
+  タグのみのgenuineな対応不能ケースのため型D対象外のまま。詳細は
+  BACKLOG_DONE.md「2026-09-09⑬」追記・「2026-09-10（完了）」参照）
+- 実例（PLフロー項目用、2件）: CDNS(FY2025、cost_of_revenue
+  $722,249,000、`srt:ProductOrServiceAxis`でProduct/Service区分）・
+  INTU(FY2025、$3,692,000,000、同軸）。10-K原文の「Total costs and
+  expenses」から明示開示項目の合計を差し引いた残差と厳密一致する
+  独立検算で裏付け済み。詳細はBACKLOG_DONE.md「2026-09-10（完了）」
+  `[[LAYER3-COGS-DIMENSION-RECOVERY-CDNS-INTU-1]]`参照
+
+#### 対応方針（設計・未着手）
+- REGISTER-FLOW-REDESIGN-1・PREFLIGHT-CHECK-1（完了・BACKLOG_DONE.md
+  参照。2026-09-05実装。ただし実装場所は`common/registration/
+  preflight_check.py`として独立しており、本タスクとコードを共有する
+  形にはなっていない）と統合的に設計する（別々に実装しない）
+- 照合タイミングはStep1（SECデータ取得）完了後とし、
+  `revenue_tag_conflict_check.py`（ARCH-DATA-1残課題③で実装済み）と
+  同様の位置に配線することを想定
+- REGISTER-FLOW-REDESIGN-1の対応方針2（status=provisioning導入、
+  未着手）と組み合わせ、カタログ照合を通過するまでactiveへ
+  昇格しない設計との統合要否を検討する
+- 自動適用は既知パターンと完全一致した場合のみとし、非該当の
+  場合は個別調査へ回す（自動停止はしない、判断材料の提示に留める
+  というPREFLIGHT-CHECK-1の原則を踏襲）
+
+#### Phase 1調査結果（2026-09-19、読み取りのみ）: カバー状況表
+
+| 型 | 症状 | 既存検知の有無・場所 | 未カバー部分 |
+|---|---|---|---|
+| A（候補集合＋freshness収束型） | 汎用タグの誤採用、`_extract_values_best_candidate()`は値の妥当性を比較しない | `revenue_tag_conflict_check.py`は`MERGE_ALL_TAGS_FIELDS`（revenue/S&M/D&A）のみ対象、`short_term_investments`等は構造的対象外。CHECK-25（WARN-25）も`_BS_NULL_CHECK_FIELDS`から明示除外済み | 未カバー（値レベルの妥当性検証が皆無） |
+| B（非分類BS・近似値許容型） | 予約のみ、実例なし | ― | 対象外（実装不要） |
+| C（資産クラス変化・当年度未タグ化型） | 候補タグの申告停止＋新資産クラス出現 | CHECK-26（WARN-26）が直近2ファイル間の値→None遷移を検知、CHECK-27が`cross_filing_tags`適用済み銘柄の残差率を監視 | 部分カバー。CHECK-26は直近2ファイル比較に限定され、**数年前に発生した遷移は検知できない**（実データで確認） |
+| D（次元分解専用型） | company_facts一括APIに事実が存在しない | CHECK-29（WARN-29）＋`dimension_aggregate_fetcher.py` | カバー済み（対応完了、二重警告なしも確認済み） |
+
+型A・C実例5件（KLAC/TER/V/SOFI/NVDA、short_term_investments）を実データで
+検証した結果、**5件とも既存の全検知機構で気づけない**ことを確認した
+（KLAC/TER/V: 標準候補タグの申告停止が数年前でCHECK-26の検知範囲外、
+SOFI: 標準候補が最初から一致せず真のゼロとの判別不能、NVDA: 値は存在
+するが24%過小評価されNone化しないためWARN-26の対象外）。
+
+#### Phase 2試行結果（2026-09-19、値履歴ベースの検知案1は試行の結果見送り）
+CHECK-26の死角（直近2ファイルのみ比較）を埋める形で、annual_*.json
+全履歴を走査し「過去に非ゼロ値があったが直近年度でNoneになっている」
+パターンを検知する`anomaly_pattern_check.py`を試作し（未commit、本確認
+終了後に削除済み）、全99銘柄・`short_term_investments`/`long_term_debt`/
+`short_term_debt`で実行した。
+
+- 既知実例5件のうち、**設計上検知しうるのはKLAC/TER/Vの3件のみ**
+  （いずれもCHECK-26の検知範囲〈直近2ファイル〉より前に遷移が発生した
+  ケースで、本検知案が埋めようとした死角に正確に合致する。ただし
+  実データでは既に`sti_concept`override適用済みでNoneが解消済みのため、
+  現状の全銘柄スキャンではこの3件は当然ながら再検知されない＝新規
+  ヒットなし。過去に遡って壊れていた時点のデータで動作確認したもの
+  ではない点に留意）。SOFI〈全期間None、真のゼロとの判別不能〉・
+  NVDA〈None化せず過小評価のみ、遷移シグネチャ自体が発生しない〉の
+  2件は設計上恒久的に検知不能
+- 全99銘柄で33件（33銘柄）・40件（フィールド単位）がWARN。value=0→None
+  遷移（真のゼロ確定後にタグ省略される良性パターン）は誤検知として
+  除外済みだが、それでも「真のゼロで妥当」なケース（負債完済・転換社債
+  償還・満期構成上の一時的ゼロ等）が大半を占め、$200M以上11件＋
+  $10-200M上位5件の計16件を個別精査した結果、真陽性はLRCX/CAT/DELLの
+  3件のみ（詳細は下記新規登録エントリ参照）、13件は正当または判定不能
+  だった
+- 真偽の切り分けには10-K原文・XBRL全タグ横断照合等の**別ソース突合**が
+  必須で、annual_*.json単体の値履歴スキャンだけでは判断材料として
+  不十分（精度が低すぎる）と判明したため、案1（値履歴ベースの検知）は
+  この設計のままでの実装を見送る
+
+#### 着手条件（2026-09-19更新）
+値履歴スキャン単体（案1）に続き、yfinance balance_sheetとの突合
+（[[CASH-STI-YFINANCE-CROSSCHECK-1]]、完了・BACKLOG_DONE.md参照。
+多ソース突合の具体的な一案）も既知実例に対して機能しないことが判明した
+（LRCX/CAT/DELLはyfinance側も同一の値を欠落しており、cash+STI合算では
+検知不能）。二つの独立した試行がいずれも「値ベースの機械的検知」という
+共通アプローチの限界に突き当たったため、着手条件を「新CHECKの検知結果を
+起点に個別対応・設計」ではなく、**新CHECKの検知結果を起点とした設計
+そのものを見送り、型A/C該当銘柄は個別の一次情報調査（10-K原文確認）に
+依存する運用を当面継続する**方向へ修正する。QUALITY-GATES-EPIC-1は
+2026-09-19にクローズ済み（BACKLOG_DONE.md参照）のため、本エントリの
+着手条件を同エピックへ紐付けない。将来、XBRLインスタンス文書の
+直接パース等、値ベースでない別アプローチ（`dimension_aggregate_
+fetcher.py`型D対応と同系統の手法）が検討される場合は、その時点で
+改めて統合要否を判断する。
+
+#### 優先度変更（2026-09-19、中→低）
+値ベース検知の独立した2つの試行（案1の値履歴スキャン、
+[[CASH-STI-YFINANCE-CROSSCHECK-1]]のyfinance突合）がいずれも既知実例を
+検出できず見送りとなり、上記着手条件が「新CHECKの検知結果を起点とした
+個別対応」から「当面は個別調査運用を継続」へ後退した。着手を正当化する
+具体的な足がかり（検知ロジックの実装可能性）が現時点で存在しないため、
+優先度「中」を維持する根拠がなくなったと判断し「低」へ変更する。
+
+---
+
+### ✅ [XBRL-UNIT-SCALE-MISMATCH-DETECTION-1] 同一タグ・同一期間の値が複数filing間で10のべき乗単位で乖離する場合を検知する汎用チェックの新設提案 → 対応見送り（2026-09-23）: 唯一の実例COHRはfact_overrides.jsonで個別解決済み、汎用検知レイヤーの新設価値なしと判断しクローズ
+**優先度:** 中
+**分類:** アーキテクチャ改善 / 新規検知チェック提案
+**登録日:** 2026-08-02
+**発見:** [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]調査から派生（chat記録）
+
+#### 内容
+同一XBRLタグ・同一unit・同一(start,end)期間について、異なるaccn
+（filing）間で値の比率が10のべき乗値（1000倍・1,000,000倍等、±2%許容）
+に近い場合、SEC提出時のスケール指定漏れ（"in thousands"欠落等）という
+業界共通のXBRLタグ付けミスの可能性が高いことが判明した。素朴な閾値
+（比≥100）のみでは72銘柄がヒットしノイズが大きすぎたが、比≒10の
+べき乗という条件を追加することで、SPAC逆合併の会計主体入替
+（[[SPAC-SHELL-BS-ENTITY-MIXING-1]]と同系統、正当な処理）等のノイズを
+排除し、18銘柄・126件まで収束することを確認した。
+
+該当銘柄・件数: COHR(26)・KO(20)・NVDA(20)・CPRT(18)・TER(12)・ONDS(5)・
+FCX(4)・HEI(4)・MO(4)・ADSK(2)・CELH(2)・TSLA(2)・ZS(2)・ASTS(1)・
+IONQ(1)・MSCI(1)・SOUN(1)・ZETA(1)。対象フィールドはWeightedAverageNumber
+OfSharesOutstandingBasic/Diluted(計98)が過半だが、CommonStockShares
+Outstanding・EPS系・Depreciation系・NetIncomeLoss系・LongTermDebt・
+DebtCurrent・Liabilities・OperatingIncomeLoss・AmortizationOfIntangible
+Assets等、幅広いフィールドに及ぶ。
+
+#### 影響
+COHR以外の該当銘柄は未トリアージ。検知＝即実害ではなく、本人データ優先
+ロジックにより既に正しい値が採用されているケース（実害なし、COHR自身の
+FY2019/2020 Q3・FY2023/2024 D&A等で確認済み）もあれば、実際に格納値が
+誤っているケース（COHR 2009-2011のshares系）もある、個別トリアージが
+必要な問題。
+
+#### 対応方針（登録時点）
+未定。既存WARN群（WARN-24等）と同型の「検知のみ・自動修正なし」枠組みで
+新設（WARN-30候補）することを推奨する。ただし既存WARN群がextracted
+（抽出済み）データを対象にするのに対し、本チェックはcompany_facts.json
+の生タグレベル（抽出前）を横断的に見る必要があり、`_parse_raw_data()`
+または`report_consistency_check.py`への新規ロジック層追加という設計に
+なる。検知後は126件を個別トリアージし、実害あり/なしを分類する運用が
+必要。
+
+#### 実装方針追記（2026-08-02、[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]
+全母集団シミュレーション結果を統合、チャット記録・読み取り・オフライン
+シミュレーションのみ）
+[[FIFO-TIEBREAK-OLDEST-FILING-WINS-1]]として個別登録していた
+「`_extract_single_key()`のtie-break条件を新しいfiling優先に変更する」
+という対応方針を、本エントリに統合する（詳細は同エントリのBACKLOG_DONE.md
+移動後の記録を参照）。
+
+全母集団シミュレーションの結果、tie-break条件を単純に「新しいfiling優先」
+へ変更する広範な設計変更は不採用と確定した。31銘柄・124件で値が変化し、
+確実な改善はCOHRの2件（shares_diluted/basic）のみで、残り122件は改悪
+（VZ(2008)純利益が黒字$6,428M→赤字-$2,193Mに反転等）・改悪疑い
+（SOUN/KULRのSPAC実体混同、HON/FCX/HEIのrestatement・株式分割調整）・
+判断不能な乖離が大半だった。また、WMT(2014)でtotal_assetsが微小変動した
+結果、`_backfill_total_liabilities_via_identity()`の安全網（TL==TAの
+場合のみ発動）が完全一致条件を偶然すり抜け、[[TOTAL-LIABILITIES-
+FALLBACK-TAG-DESIGN-FLAW-1]]と同型のバグを別経路で復活させかねない
+という重大な相互作用リスクも判明した。
+
+**実装方式を確定**: 「同符号 かつ 比が10のべき乗値（±2%許容、n≥2）」
+という本エントリのガード条件に該当する場合のみ、tie-breakをより新しい
+filing優先に切り替える設計とする。この条件で124件をフィルタしたところ、
+COHRの2件（shares_diluted/basic）のみが該当し、他122件は自動的に
+除外されることを確認済み。
+
+実装前に2点の追加確認が必須:
+(a) 既存の恒等式ベース安全網（`_backfill_total_liabilities_via_
+    identity()`等）との相互作用を個別に再検証する（WMT(2014)のような
+    偶発的なすり抜けがないか）
+(b) ガード適用後も105銘柄で改めて全母集団シミュレーションを行い、
+    新規の意図しない変化がゼロであることを確認する
+
+対象は当面COHRの2件（shares_diluted/basic、2009-2011年度）に限定される
+見込み。`fact_overrides.json`での個別対応（[[COHR-SHARES-DILUTED-
+UNIT-SCALE-BUG-1]]で確定済み）と、tie-break側の恒久対応のどちらを
+採るか、または両方必要かは実装時に判断する。
+
+#### 実装前最終確認結果・実装方針確定（2026-08-02、チャット記録、読み取り・
+オフラインシミュレーションのみ）
+実装前の2点の追加確認（前項）を完了した。
+
+(a) 既存の恒等式ベース安全網との相互作用リスクはなし。
+`_backfill_total_liabilities_via_identity()`・[[CHECK29-ACCOUNTING-
+IDENTITY-DETECTION-LAYER-1]]はいずれもBS項目（total_assets/total_
+liabilities/stockholders_equity/NCI/一時的持分）のみを対象とする一方、
+ガード条件付き介入が実際に触れるのはshares項目の2フィールドのみで、
+両者が扱うフィールド集合に重なりがなく構造的に相互作用の経路が存在し
+ないことを確認した。前回懸念したWMT(2014)型のすり抜けは、ガード条件
+（比が10のべき乗、最低100倍）により正しく除外されることを確認した
+（WMTの乖離比≒1.001はガード条件を満たさないため対象外）。
+
+(b) ガード適用後の全母集団シミュレーションで、該当・変化するのはCOHRの
+2010年度shares_diluted/basicの2フィールドのみと最終確定した。他104
+銘柄・COHRの他年度（2009・2011年度含む）は完全に無変化、新規の意図
+しない波及も確認されなかった。
+
+**実装方針を確定**: [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]の
+`fact_overrides.json`個別上書き（2009-2011年度、3年度とも1回で解決）を
+実装対象とし、tie-break変更（ソースコード変更）は当面見送る。理由:
+(a)tie-break変更は2010年度1件しか解決せず、その1件もfact_overrides側
+で重複解決される（tie-break変更単独では2009・2011年度は解決しない:
+2009年度は後続filingに正しい値自体が存在せず、2011年度は本人データ
+優先ロジックにより保護されているため）、(b)現時点でCOHR以外に該当する
+実ケースがゼロと確定しており、ソースコード変更のコストに見合う実利用
+価値が現状ない。ガード条件の設計自体は妥当性・安全性が確認済みのため
+破棄せず、将来「本人データ優先ロジックでは救えず、かつ個別override
+登録が非現実的な規模の」新規ケースが発見された時点で再検討する。
+
+#### 再確認結果（2026-09-19、チャット記録、読み取りのみ・据え置き継続）
+登録時の検知条件（同一タグ・同一unit・同一(start,end)、異なるaccn間で
+値の比が10のべき乗値〈n≥2〉±2%以内、同符号）を、登録時と同じ母集団
+（parser.py `XBRL_MAPPING`由来の候補タグ96種）に絞って再実行した。
+
+**ヒット件数**: カウント単位をグループ（ticker×tag×period）に揃えると
+**143件・24銘柄**（登録時126件・18銘柄）。既存18銘柄のうち15銘柄
+（COHR26・NVDA20・KO20・CPRT18・TER12・FCX4・HEI4・MO4・ADSK2・ZS2・
+TSLA2・CELH2・IONQ1・MSCI1・ZETA1）は登録時の件数と完全一致。ONDS
+（6、登録時5から+1）・SOUN（5、登録時1から+4）・ASTS（2、登録時1
+から+1）のみ微増。**新規6銘柄**: CIX(4)・RBRK(2)・LOAR(2)・AAPL(1)・
+AVAV(1)・DELL(1)が新たにヒット。純増17件は新規6銘柄分＋既存3銘柄の
+微増で説明でき、2026-08-02以降1.5ヶ月間の新規filing蓄積が主因と判断
+（検知ロジック自体の劣化ではない）。
+
+**新カテゴリ「正当」の発見（DEF 14A由来）**: 新規分のうち8件
+（SOUN×4・RBRK×2・LOAR×2）は、DEF 14A（委任状勧誘書類）のPay versus
+Performance開示がNetIncomeLoss等を千ドル単位で再タグ付けする業界
+共通の慣行によるもので、SPAC逆合併型の実体混同とは異なる第3の
+「正当」パターンと確認した。`common/sec_data/quarterly.py::
+_classify_period()`（717行目付近）が`form not in ("10-Q", "10-Q/A",
+"10-K", "10-K/A")`の場合に除外するフィルタを持つため、DEF 14A由来の
+値は**構造的にparser.py/layer3_builder.pyいずれの抽出パイプラインにも
+到達しない**ことを確認済み（実害ゼロ、機械的に除外可能）。
+
+**「実際のスケール指定漏れ」135件の実データ確認**: 直近の実運用期間
+（ONDS FY2024・2025Q1、CIX 2025Q2）を`common/sec_data/data/{ticker}/
+annual_2024.json`・`quarterly_2025Q1.json`・`quarterly_2025Q2.json`で
+確認したところ、いずれも「本人データ優先」ロジックが正しい側（元の
+大きい値）を採用済みで実害なしと確認した。
+
+**逆パターンの実例発見（1件）**: `common/sec_data/data/TER/
+quarterly_2023Q3.json`には`shares_diluted=164,050`・
+`shares_basic=153,762`という**誤スケール側（本来約1.64億株のところ
+1/1000）が「本人データ」として格納されたまま**であることを確認した。
+COHR自身の`fact_overrides.json`登録理由（「本人データ優先ロジックでは
+当初申告値〈未修正〉が採用される」）と全く同型のパターンで、「本人
+データ優先なら安全」という前提が万能ではないことの新たな実例。ただし
+`common/sec_data/data/TER/annual_2022.json`・`annual_2023.json`の
+年次値は正しいスケール（169,734,000／164,304,000等）のまま格納されて
+おり、現行の実運用ウィンドウ（2025Q3〜2026Q2相当）は2023Q3を参照
+しないため、現時点で生きた消費者は確認されなかった。
+
+**既存チェックとの重複確認**: `report_consistency_check.py`の
+WARN-21/44/45（`check_c_data_jump`、DATA-JUMP系）はextracted済み
+annual/quarterlyデータのYoY比率（固定閾値2.0/5.0/8.0倍等）を見る別
+スコープで、本チェックが対象とする「生タグレベル・cross-accn・10の
+べき乗判定」とは無関係と再確認した（重複なし）。COHR個別対応は
+`fact_overrides.json`の3年度分のみで、audit.py・report_consistency_
+check.pyのいずれにも「WARN-30」相当の汎用チェックは引き続き未実装の
+まま（登録時「未定」のまま状態変化なし）。
+
+**総括・対応方針**: 現在進行形の実害は今回も未確認（COHRは既に個別
+対応済み、TERの1件は現行ウィンドウの外）のため、優先度「中」・方針
+「未定」は据え置く。一方でDEF 14Aパターンの新規発見・「本人データ
+優先」が万能ではない2件目の実例（TER）確認という新事実は記録として
+残す。
+
+#### 着手条件
+[[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]のfact_overrides実装で事実上
+完結、tie-break変更部分は将来の予防的対応として保留。優先度中（業界
+共通のミスパターンとして汎用的価値が高いが、即座の実害は限定的
+〈COHR以外は未確認〉のため）。
+
+**2026-09-19追加**: 以下いずれかが発生した場合は再検討する:
+- TERを含む、現行ウィンドウ外の四半期値（`quarterly_YYYYQN.json`）を
+  参照する消費者（EPS Analyzer等の新規機能）が現れた場合
+- WARN新設の3設計課題（DEF 14A由来の除外・SPAC実体混同の除外・
+  「本人データ優先」で判定できない場合の正誤自動判定）のいずれかに
+  目処が立った場合
+
+#### 優先度変更（2026-09-19、中→低）
+2026-09-19再確認の結果、現行ウィンドウでの実害は確認されず、WARN新設の
+3設計課題（DEF 14A由来の除外・SPAC実体混同の除外・正誤自動判定）も
+いずれも未解決のまま。着手条件は上記「2026-09-19追加」のトリガー
+（新規消費者の出現／設計課題の目処）待ちのトリガー制であり、現時点で
+能動的に着手する根拠がないため、優先度を「中」から「低」へ変更する。
+
+---
+
+### ✅ [LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1] Layer3のSM/SGA概念分離に伴うNone化2件の統合（元LAYER3-ROIC-WACC-NONE-4TICKERS-1/FINTREND-SM-JOBY-NONE-1） → 分割・再起票（2026-09-23）: ①は待機先タスク〈SCHEMA-NORMALIZED-ISSUES-1〉が未解決のまま終了したためトリガー消滅、実在する問題として新規エントリ[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]へ分割。②は影響ゼロを本文内で確認済みのため対応不要でクローズ
+**優先度:** 低（意図的な仕様、既知の`[[SCHEMA-NORMALIZED-ISSUES-1]]`②
+SM/SGA概念混同問題の帰結）
+**分類:** 仕様変更（改善）/ ユーザー影響あり
+**登録日:** 各サブ項目とも2026-08-06・2026-08-07。統合日: 2026-09-05
+**発見:** 2026-09-05のBACKLOG横断整理
+
+#### 統合の経緯
+LAYER3-ROIC-WACC-NONE-4TICKERS-1・FINTREND-SM-JOBY-NONE-1は、いずれも
+`[[SCHEMA-NORMALIZED-ISSUES-1]]`②のSM/SGA概念分離の帰結として、
+Layer3切替後は正しい挙動としてNoneを返すようになったという同一の
+根本原因を持つため、2026-09-05に1エントリへ統合した。元の2件は
+BACKLOG.mdから削除し、内容は要約せず全文そのまま以下の①②に保持する。
+
+#### ① 元[LAYER3-ROIC-WACC-NONE-4TICKERS-1] COHR/LLY/JNJ/KLACのROIC-WACC比率・Moat ROICが、Layer3切替に伴いNone表示になった
+**優先度:** 低（意図的な仕様、既知のSM/SGA概念混同問題の帰結）
+**分類:** 仕様変更（改善）/ ユーザー影響あり
+**登録日:** 2026-08-06
+**発見:** フェーズD Step2-1実装時（チャット記録、2026-08-06）
+
+##### 内容
+normalized/時代は間違った値（SGA総額を誤混入）でROIC-WACC比率を
+計算していたが、Layer3切替後はselling_and_marketingが正しく分離
+されたため、3フィールド共通end日のintersectionが0件となりNoneを
+返すようになった。`[[SCHEMA-NORMALIZED-ISSUES-1]]`②SM/SGA概念混同
+問題の根本解消（別タスク）まで、この4銘柄はROIC-WACC比率非表示の
+まま。
+
+##### 着手条件
+SM/SGA概念混同問題の解消時に再検討。
+
+#### ② 元[FINTREND-SM-JOBY-NONE-1] financial_trend_calculator.pyのSMフィールドがJOBYでNone化する（Layer3切替時）
+**優先度:** 低（既知の`[[SCHEMA-NORMALIZED-ISSUES-1]]`②の帰結、
+`[[LAYER3-ROIC-WACC-NONE-4TICKERS-1]]`と同型・同じ判断基準を適用）
+**分類:** 仕様変更（改善）
+**登録日:** 2026-08-07
+**発見:** フェーズD Step2-2事前調査（チャット記録、2026-08-07）
+
+##### 内容
+normalized側はSGA総額へのフォールバック値を保持していたがLayer3側は
+`selling_and_marketing`のみを候補としNoneを返す。正しい方の挙動として
+受け入れる。
+
+**補足（2026-08-07、実装時に判明）**: `financial_trend_calculator.py`の
+`compute_vectors()`は`VECTOR_FIELDS`（Revenue/GrossProfit/OperatingIncome/
+RD/NetIncome/OCF/CapExの7項目）のみを処理しており、`SUB_FIELDS`
+（SM・SBC）は定義されているだけで`compute_vectors()`から一切呼び出され
+ていない未使用の定数と判明した。そのため本項目のJOBY None化は
+`_get_quarterly_entries()`単体の挙動としては真だが、**現状の
+`results.json`出力（`financial_vectors`）には実影響がゼロ**である。
+将来`SUB_FIELDS`が実際に配線された場合に初めて表面化する。
+
+##### 着手条件
+SM/SGA概念混同問題（`[[SCHEMA-NORMALIZED-ISSUES-1]]`②）の根本解消時に
+再検討。
+
+#### 着手条件（統合後、両サブ項目共通）
+`[[SCHEMA-NORMALIZED-ISSUES-1]]`②のSM/SGA概念混同問題の根本解消時に
+再検討。①②とも個別の着手条件は上記のとおり同一のため、統合先の
+本条件に一本化する。
+
+（[[TANUKI-VALUATION-MISC-GAPS-1]]は①〜⑧の全8件が解消（対応済み/
+撤去済み/実害なしクローズ/意図的差異として明記）したため、
+2026-09-19にエントリ全体をクローズ。詳細はBACKLOG_DONE.md
+「2026-09-19（完了）」参照）
+
+---
+
 ### ✅ [CON-SM-MISSING-RICE-OVERSTATEMENT-1] CON selling_and_marketing欠落によるRICE指標過大評価 — 対応不可と判明、記録のみでクローズ
 **優先度:** 低（実害は表示上の指標精度のみ、tanuki_score主判定には影響なし）
 **分類:** データ品質 / TANUKI VALUATION / RICE
