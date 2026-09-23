@@ -639,6 +639,112 @@ async function loadAndRenderHypeSignal() {
     '</div>' + expLine;
 }
 
+// ERP水準の判定（report.txt既存定義と同一の4段階、pipeline.py:2512-2519参照）
+function erpSignalLabel(erp) {
+  if (erp == null) return { label: 'N/A', color: 'var(--mut)' };
+  if (erp >= 0.04) return { label: '期待冷却圏（成長期待が市場に織り込まれていない）', color: 'var(--green)' };
+  if (erp >= 0.02) return { label: '期待中立〜やや冷却（成長期待は限定的）', color: 'var(--mut)' };
+  if (erp >= 0.0)  return { label: '期待やや過熱（成長期待が株価に織り込まれ始めている）', color: 'var(--yellow)' };
+  return { label: '期待過熱圏（市場が将来成長を過度に先取りしている）', color: 'var(--red)' };
+}
+
+// price_iv_ratio推移 × ERP水準 の方向性突合（単純なif/elseのみ、複雑な採点はしない）
+// [[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]の「方向性の突合」案を踏襲。
+// ERPは現在値のみ（月次系列ではない）のため、比較対象は「price_iv_ratioの
+// 推移方向」×「ERPの現在の水準（過熱寄り/冷却寄り、閾値2%で二分）」。
+function judgeSignalConsistency(pivTrend, erp) {
+  if (pivTrend == null) return { text: 'データ不足のため判定不可（price_iv_ratioの推移データが2点未満）', color: 'var(--mut)' };
+  if (erp == null) return { text: 'データ不足のため判定不可（ERP未取得）', color: 'var(--mut)' };
+  if (pivTrend === 0) return { text: '横ばいのため明確な方向性なし', color: 'var(--mut)' };
+  const erpHot = erp < 0.02; // 期待過熱圏＋期待やや過熱を「過熱寄り」として統合
+  const pivUp = pivTrend > 0;
+  if (pivUp && erpHot) return { text: '一致: price/IV上昇とERP低位（期待過熱寄り）が同じ方向を示す', color: 'var(--green)' };
+  if (!pivUp && !erpHot) return { text: '一致: price/IV低下とERP高位（期待中立〜冷却寄り）が同じ方向を示す', color: 'var(--green)' };
+  if (pivUp && !erpHot) return { text: '説明のつかない乖離: price/IVは上昇しているが、ERPは期待過熱を示していない', color: 'var(--yellow)' };
+  return { text: '説明のつかない乖離: price/IVは低下しているが、ERPは依然期待過熱圏', color: 'var(--yellow)' };
+}
+
+async function loadAndRenderSignalConsistency() {
+  const section = document.getElementById('signal-consistency-section');
+  const body = document.getElementById('signal-consistency-body');
+  if (!section || !body) return;
+  const d = globalData;
+  const erp = d?.erp ?? null;
+
+  let monthly = [];
+  try {
+    const pocRes = await fetch(`../../value-monitor/hypecore/data/${ticker}_poc.json`, { cache: 'no-cache' });
+    if (pocRes.ok) {
+      const poc = await pocRes.json();
+      monthly = poc.monthly || [];
+    }
+  } catch (e) { /* poc.json未存在は無視、N/A表示にフォールバック */ }
+
+  section.style.display = '';
+
+  const pivPoints = monthly.filter(m => m.price_iv_ratio != null && m.month != null);
+  const hasPiv = pivPoints.length > 0;
+  const pivTrend = pivPoints.length >= 2
+    ? pivPoints[pivPoints.length - 1].price_iv_ratio - pivPoints[0].price_iv_ratio
+    : null;
+
+  const erpInfo = erpSignalLabel(erp);
+  const erpText = erp != null ? `${erp >= 0 ? '+' : ''}${(erp * 100).toFixed(2)}%` : 'N/A';
+  const verdict = judgeSignalConsistency(pivTrend, erp);
+
+  let html = '';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">';
+  html += '<div><div style="font-size:11px;color:var(--mut);margin-bottom:4px">ERP（株式リスクプレミアム、現在値）</div>';
+  html += `<div style="font-family:var(--mono);font-size:20px;font-weight:700;color:${erpInfo.color}">${erpText}</div>`;
+  html += `<div style="font-size:11px;color:${erpInfo.color};margin-top:2px">${erpInfo.label}</div></div>`;
+  html += '<div><div style="font-size:11px;color:var(--mut);margin-bottom:4px">price/IV 推移（表示期間中）</div>';
+  html += `<div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">${hasPiv ? pivPoints[pivPoints.length - 1].price_iv_ratio.toFixed(3) + 'x' : 'N/A'}</div>`;
+  html += `<div style="font-size:11px;color:var(--mut);margin-top:2px">${pivTrend != null ? (pivTrend >= 0 ? '+' : '') + pivTrend.toFixed(3) + '（期間内変化）' : 'データ不足（1点のみ、または未取得）'}</div></div>`;
+  html += '</div>';
+  html += `<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--bdr);border-radius:6px;font-size:12px;color:${verdict.color};margin-bottom:12px">${verdict.text}</div>`;
+
+  if (hasPiv) {
+    html += '<div id="signal-consistency-chart" style="width:100%;height:260px"></div>';
+    html += '<div style="font-size:10px;color:var(--mut);margin-top:6px">表示期間: history記録開始以降（' + pivPoints[0].month + '〜' + pivPoints[pivPoints.length - 1].month + '、' + pivPoints.length + 'ヶ月分。poc.json自体は33ヶ月保持するがprice_iv_ratioはTANUKI VALUATIONのhistory記録が蓄積された期間のみ算出可能）</div>';
+  } else {
+    html += '<div style="font-size:12px;color:var(--mut)">price_iv_ratioの時系列データがまだありません（history記録の蓄積待ち、またはpoc.json未生成）</div>';
+  }
+  body.innerHTML = html;
+
+  if (hasPiv) {
+    const x = pivPoints.map(m => m.month);
+    const y = pivPoints.map(m => m.price_iv_ratio);
+    const stageLabels = pivPoints.map(m => `Phase${m.stage ?? '?'}: ${m.stage_label ?? '—'}`);
+    const shapes = [];
+    const annotations = [];
+    for (let i = 1; i < pivPoints.length; i++) {
+      if (pivPoints[i].stage !== pivPoints[i - 1].stage) {
+        shapes.push({
+          type: 'line', x0: x[i], x1: x[i], y0: 0, y1: 1, yref: 'paper',
+          line: { color: '#475569', width: 1, dash: 'dot' },
+        });
+        annotations.push({
+          x: x[i], y: 1, yref: 'paper', showarrow: false, yanchor: 'bottom',
+          text: pivPoints[i].stage_label || '', font: { size: 9, color: '#94a3b8' },
+        });
+      }
+    }
+    Plotly.newPlot('signal-consistency-chart', [{
+      x, y, mode: 'lines+markers', name: 'price / IV',
+      line: { color: '#c4d0ff', width: 2 }, marker: { size: 5 },
+      text: stageLabels, hovertemplate: '%{x}<br>price/IV=%{y:.3f}x<br>%{text}<extra></extra>',
+    }], {
+      paper_bgcolor: '#111520', plot_bgcolor: '#111520',
+      font: { family: 'Space Mono', color: '#94a3b8', size: 11 },
+      margin: { t: 30, b: 40, l: 50, r: 20 },
+      xaxis: { gridcolor: '#1e2840', type: 'category' },
+      yaxis: { gridcolor: '#1e2840', tickformat: '.2f', ticksuffix: 'x' },
+      shapes, annotations,
+      hovermode: 'closest',
+    }, { displayModeBar: false, responsive: true });
+  }
+}
+
 async function loadData() {
   try {
     const response = await fetch(`data/${ticker}/latest.json`, { cache: 'no-cache' });
@@ -657,6 +763,7 @@ async function loadData() {
       }
     } catch (e) { /* history.json未存在は無視 */ }
     loadAndRenderHypeHistory();
+    loadAndRenderSignalConsistency();
   } catch (error) {
     document.getElementById('app').innerHTML = `
       <header>
@@ -1433,6 +1540,12 @@ function render(d) {
         <span id="hype-history-label" style="font-size:14px;font-weight:700;color:var(--txt);font-family:var(--mono);letter-spacing:.04em">▶ HYPECOREフェーズ履歴</span>
       </div>
       <div id="hype-history-body" style="display:none;margin-top:4px"></div>
+    </div>
+
+    <!-- シグナル整合性チェック（[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]、2026-09-23） -->
+    <div class="chart-container" id="signal-consistency-section" style="margin-top:24px;display:none">
+      <h2 class="section-title">シグナル整合性チェック</h2>
+      <div id="signal-consistency-body"></div>
     </div>
 
     <!-- 統合レポート（AI用）ボタン -->
