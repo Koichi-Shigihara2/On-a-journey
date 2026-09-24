@@ -806,6 +806,27 @@ _WARN47_FIELD_MAP: dict[str, tuple[str, str]] = {
 }
 
 
+def _is_contiguous_four_quarters(entries: list) -> bool:
+    """entries（end昇順の4四半期）が途切れなく連続しているか。
+
+    各四半期のstartが直前の四半期のend翌日と一致すること（52/53週決算の
+    ずれを考慮し±7日を許容）、かつ4四半期の合計が約1年（350〜380日）で
+    あることを確認する。start/endを持たないエントリがあればFalse。
+    """
+    from datetime import date as _date, timedelta as _td
+    try:
+        spans = [(_date.fromisoformat(e["start"]), _date.fromisoformat(e["end"])) for e in entries]
+    except (KeyError, TypeError, ValueError):
+        return False
+    if len(spans) != 4:
+        return False
+    for (_, prev_end), (next_start, _) in zip(spans, spans[1:]):
+        if abs((next_start - (prev_end + _td(days=1))).days) > 7:
+            return False
+    total = (spans[-1][1] - spans[0][0]).days + 1
+    return 350 <= total <= 380
+
+
 def _check_ttm_parser_layer3_reconciliation(ticker: str) -> list[str]:
     """CHECK-47（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]、2026-09-12新設）:
     parser.py系列の一次データ（`common/sec_data/normalized/`、
@@ -825,7 +846,9 @@ def _check_ttm_parser_layer3_reconciliation(ticker: str) -> list[str]:
 
     **同一期間であることの確認**: normalized側の直近4四半期の末尾end日付が
     ttm側のttm_endと一致しない場合（四半期数の遅延等で窓がずれている場合）
-    は誤検知を避けるためスキップする。ttm側がquarters_used<4・missing>0の
+    は誤検知を避けるためスキップする。末尾4件が連続した4四半期でない場合
+    （途中の四半期が欠落し、4件の単純合計が1年分にならない場合）も同様に
+    スキップする（2026-09-24追加、[[CHECK47-NONCONTIGUOUS-WINDOW-1]]）。ttm側がquarters_used<4・missing>0の
     場合（四半期データ不足）も同様にスキップする。
 
     **許容誤差0.1%はCHECK-46（GP-COGS不整合）と同水準を踏襲**した
@@ -865,6 +888,12 @@ def _check_ttm_parser_layer3_reconciliation(ticker: str) -> list[str]:
         _last4_47 = _q47[-4:]
         if _last4_47[-1].get("end") != ttm_end47:
             # 窓がずれている（片方が未更新等）→ 同一期間比較にならないためスキップ
+            continue
+        if not _is_contiguous_four_quarters(_last4_47):
+            # normalized側の末尾4件が連続した4四半期でない（10-K由来のQ4が
+            # normalized/に無い等で途中の四半期が欠落）→ TTMと同一期間の比較に
+            # ならないためスキップ（[[CHECK47-NONCONTIGUOUS-WINDOW-1]]、
+            # BKNG・FCX・RCATの誤検知の原因）
             continue
         if any(e.get("val") is None for e in _last4_47):
             continue
