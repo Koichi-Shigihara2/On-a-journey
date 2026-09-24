@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 8979858422.875303,
   "intrinsic_value_per_share": 18.752031013413735,
   "intrinsic_value_beta": 17.74,
-  "upside_percent_beta": 337.9,
+  "upside_percent_beta": 379.4,
   "intrinsic_value_rf": 100.55,
-  "upside_percent_rf": 2382.7,
+  "upside_percent_rf": 2617.6,
   "v0": 8979858422.875303,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 27.18,
       "value_growth_pct": 45.0,
-      "expected_return_pct": 571.1
+      "expected_return_pct": 634.6
     },
     "2年後": {
       "future_value": 39.4,
       "value_growth_pct": 110.1,
-      "expected_return_pct": 872.8
+      "expected_return_pct": 964.9
     },
     "3年後": {
       "future_value": 57.11,
       "value_growth_pct": 204.6,
-      "expected_return_pct": 1310.1
+      "expected_return_pct": 1443.5
     },
     "4年後": {
       "future_value": 58.82,
       "value_growth_pct": 213.7,
-      "expected_return_pct": 1352.3
+      "expected_return_pct": 1489.7
     },
     "5年後": {
       "future_value": 60.59,
       "value_growth_pct": 223.1,
-      "expected_return_pct": 1396.0
+      "expected_return_pct": 1537.6
     }
   },
-  "upside_percent": 363.0,
-  "calculation_date": "2026-09-23T08:47:33+09:00",
+  "upside_percent": 406.8,
+  "calculation_date": "2026-09-24T08:55:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -185,18 +185,12 @@
           "item_name": "リストラ費用",
           "amount": 73000,
           "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 8443000.0,
-          "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 9836000.0,
+      "total_transient_amount": 1393000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "両項目の理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -296,7 +290,7 @@
     "roe_10yr_avg": -0.5125061112141825,
     "roe_years_used": 5,
     "roe_outlier_adj": false,
-    "current_price": 4.050000190734863,
+    "current_price": 3.700000047683716,
     "latest_revenue": 74681000.0,
     "rpo": 112818000,
     "beta": 1.071,
@@ -355,7 +349,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-23",
+    "validated_at": "2026-09-24",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -379,13 +373,16 @@
     "ai_comment": null
   },
   "phase1_growth": 0.44955792713423254,
+  "required_growth_rf_base": -0.3658181482012114,
+  "risk_free_rate_live": 0.051139998435974124,
+  "required_growth_rf_live": -0.30104996737232237,
   "tanuki_score": "WATCH",
   "funda_score": 35,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "割安圏(363%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長停滞",
+  "pre_rounding_comment": "割安圏(407%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長停滞",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "④キャッシュ創出力系",
@@ -447,7 +444,7 @@
     "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 17.61176736380067,
-  "net_current_assets_ratio": 0.2227,
+  "net_current_assets_ratio": 0.2437,
   "dupont": {
     "ni_ttm": -518884000,
     "revenue_ttm": 54855000,
@@ -501,11 +498,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.2639,
-  "forward_earnings_yield": -0.2209,
+  "erp": -0.2848,
+  "forward_earnings_yield": -0.2418,
   "dilution_severity": "severe",
-  "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大",
-  "required_growth_rf_base": -0.3894979562672892,
-  "risk_free_rate_live": 0.04967999935150146,
-  "required_growth_rf_live": -0.33670997271133307
+  "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }

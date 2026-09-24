@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 4406211777.794029,
   "intrinsic_value_per_share": 41.59648289215105,
   "intrinsic_value_beta": 18.54,
-  "upside_percent_beta": -94.0,
+  "upside_percent_beta": -93.8,
   "intrinsic_value_rf": 376.94,
-  "upside_percent_rf": 21.4,
+  "upside_percent_rf": 25.4,
   "v0": 4406211777.794029,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.17100861622311322,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 47.95,
       "value_growth_pct": 15.3,
-      "expected_return_pct": -84.6
+      "expected_return_pct": -84.0
     },
     "2年後": {
       "future_value": 55.27,
       "value_growth_pct": 32.9,
-      "expected_return_pct": -82.2
+      "expected_return_pct": -81.6
     },
     "3年後": {
       "future_value": 63.7,
       "value_growth_pct": 53.1,
-      "expected_return_pct": -79.5
+      "expected_return_pct": -78.8
     },
     "4年後": {
       "future_value": 73.42,
       "value_growth_pct": 76.5,
-      "expected_return_pct": -76.3
+      "expected_return_pct": -75.6
     },
     "5年後": {
       "future_value": 75.99,
       "value_growth_pct": 82.7,
-      "expected_return_pct": -75.5
+      "expected_return_pct": -74.7
     }
   },
-  "upside_percent": -86.6,
-  "calculation_date": "2026-09-23T08:44:42+09:00",
+  "upside_percent": -86.2,
+  "calculation_date": "2026-09-24T08:52:53+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -208,7 +208,7 @@
       "total_transient_amount": 63390000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "excluded",
@@ -329,7 +329,7 @@
     "roe_10yr_avg": 0.04071633719597934,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 310.3900146484375,
+    "current_price": 300.6000061035156,
     "latest_revenue": 7118181000.0,
     "rpo": 15000000,
     "beta": 2.107,
@@ -363,7 +363,7 @@
     "alpha_uncapped": 0.17100861622311322,
     "per": 76.842606,
     "per_is_forward": false,
-    "per_adjusted": 44.3,
+    "per_adjusted": 42.9,
     "peg": 0.92,
     "ps": 8.731068,
     "ev_ebitda": 44.995,
@@ -384,11 +384,11 @@
     "insider_latest_date": "2026-09-15",
     "analyst_vs_iv": 909.7,
     "max_eps": 5.0628,
-    "max_eps_per": 61.3,
+    "max_eps_per": 59.4,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-23",
+    "validated_at": "2026-09-24",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -411,13 +411,16 @@
     "overall": "PASS",
     "ai_comment": null
   },
+  "required_growth_rf_base": 0.038596051231064576,
+  "risk_free_rate_live": 0.051139998435974124,
+  "required_growth_rf_live": 0.1951140919499743,
   "tanuki_score": "WATCH",
   "funda_score": 90,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": "TRIM",
-  "pre_rounding_comment": "割高(-87%超)、FCFマイナス（投資フェーズ）、売上成長加速",
+  "pre_rounding_comment": "割高(-86%超)、FCFマイナス（投資フェーズ）、売上成長加速",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "①投資効率系",
@@ -479,7 +482,7 @@
     "shares_yr_3ago_label": "2023"
   },
   "computed_runway_months": 18.7110524156876,
-  "net_current_assets_ratio": 0.0713,
+  "net_current_assets_ratio": 0.0736,
   "dupont": {
     "ni_ttm": 804998000,
     "revenue_ttm": 7118181000,
@@ -545,11 +548,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.002,
-  "forward_earnings_yield": 0.045,
+  "erp": 0.0034,
+  "forward_earnings_yield": 0.0464,
   "dilution_severity": "high",
-  "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認",
-  "required_growth_rf_base": 0.04793018601162946,
-  "risk_free_rate_live": 0.04967999935150146,
-  "required_growth_rf_live": 0.18320381266757413
+  "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }

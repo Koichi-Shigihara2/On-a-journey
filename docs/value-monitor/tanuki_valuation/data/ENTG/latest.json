@@ -4,7 +4,7 @@
   "intrinsic_value_beta": 20.42,
   "upside_percent_beta": -86.5,
   "intrinsic_value_rf": 269.82,
-  "upside_percent_rf": 78.6,
+  "upside_percent_rf": 78.8,
   "v0": 6222322424.773972,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.571021926482962,
@@ -30,12 +30,12 @@
     "3年後": {
       "future_value": 39.63,
       "value_growth_pct": 21.0,
-      "expected_return_pct": -73.8
+      "expected_return_pct": -73.7
     },
     "4年後": {
       "future_value": 42.23,
       "value_growth_pct": 28.9,
-      "expected_return_pct": -72.1
+      "expected_return_pct": -72.0
     },
     "5年後": {
       "future_value": 45.0,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -78.3,
-  "calculation_date": "2026-09-23T08:51:28+09:00",
+  "calculation_date": "2026-09-24T08:59:50+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -238,7 +238,7 @@
       "total_transient_amount": 68300000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が在庫評価損・リストラ費用で、理由欄に「一過性」と明記されており、事業運営上の一時的な問題を示す典型的な非経常項目と判断される。"
+        "reasoning": "すべての項目の理由欄に「一過性の在庫評価損」または「一過性の事業再編費用」と明記されており、性質上、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -338,7 +338,7 @@
     "roe_10yr_avg": 0.1359576015435624,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 151.11000061035156,
+    "current_price": 150.92999267578125,
     "latest_revenue": 3196600000.0,
     "rpo": 49900000.0,
     "beta": 1.364,
@@ -372,7 +372,7 @@
     "alpha_uncapped": 0.571021926482962,
     "per": 70.77114,
     "per_is_forward": false,
-    "per_adjusted": 40.81,
+    "per_adjusted": 40.76,
     "peg": 1.2387,
     "ps": 6.534921,
     "ev_ebitda": 27.268,
@@ -393,11 +393,11 @@
     "insider_latest_date": "2026-08-19",
     "analyst_vs_iv": 419.1,
     "max_eps": 2.4529,
-    "max_eps_per": 61.6,
+    "max_eps_per": 61.5,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-23",
+    "validated_at": "2026-09-24",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -420,6 +420,9 @@
     "overall": "PASS",
     "ai_comment": null
   },
+  "required_growth_rf_base": -0.09290547380867153,
+  "risk_free_rate_live": 0.051139998435974124,
+  "required_growth_rf_live": -0.00026507084757299015,
   "tanuki_score": "TRIM",
   "funda_score": 55,
   "score_comment": "割高(-78%超)、FCF黒字、売上安定成長",
@@ -488,7 +491,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 0
   },
-  "net_current_assets_ratio": 0.0519,
+  "net_current_assets_ratio": 0.052,
   "dupont": {
     "ni_ttm": 305500000,
     "revenue_ttm": 3326100000,
@@ -551,8 +554,5 @@
   "erp": -0.0098,
   "forward_earnings_yield": 0.0332,
   "dilution_severity": "low",
-  "dilution_comment": "許容範囲内 ✅",
-  "required_growth_rf_base": -0.06952111042171016,
-  "risk_free_rate_live": 0.04967999935150146,
-  "required_growth_rf_live": 0.010934155578558702
+  "dilution_comment": "許容範囲内 ✅"
 }

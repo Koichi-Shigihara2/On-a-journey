@@ -1,17 +1,17 @@
 BBAI INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-23T08:44:14+09:00
-Price: $2.89
+Generated: 2026-09-24T08:52:22+09:00
+Price: $2.84
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: SELL
 Funda_Score: 25/100
 Timing_Score (components):
-  Deviation_Rate: -23.9%
+  Deviation_Rate: -22.6%
   MA200_Deviation: N/A
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: None | Target: $4 median ($4-$4) | 2 analysts | vs IV: +81.9%
-Comment: 割高(-24%超)、FCFマイナス（投資フェーズ）、売上成長停滞
+Comment: 割高(-23%超)、FCFマイナス（投資フェーズ）、売上成長停滞
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 左下
 Label: 割高×低FCF
 Key_Metric_Y: FCF_Margin = -33.3%
-Deviation_Rate: -23.9%
+Deviation_Rate: -22.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,22 +57,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $2.89
+Current_Price: $2.84
 Intrinsic_Value_BASE: $2.20
-Deviation_BASE: -23.9%
+Deviation_BASE: -22.5%
 Scenarios:
-BEAR: Growth=20.3%, IV=$1.84, Deviation=-36.3%
-BASE: Growth=29.0%, IV=$2.20, Deviation=-23.9%
-BULL: Growth=34.8%, IV=$2.48, Deviation=-14.2%
-Return_Outlook(BASE): 1年後: $2.84 (-1.7%) / 3年後: $4.72 (+63.3%) / 5年後: $6.28 (+117.3%)
-  5yr_Annualized_Return: +16.8%/yr
+BEAR: Growth=20.3%, IV=$1.84, Deviation=-35.2%
+BASE: Growth=29.0%, IV=$2.20, Deviation=-22.5%
+BULL: Growth=34.8%, IV=$2.48, Deviation=-12.7%
+Return_Outlook(BASE): 1年後: $2.84 (+0.0%) / 3年後: $4.72 (+66.2%) / 5年後: $6.28 (+121.1%)
+  5yr_Annualized_Return: +17.2%/yr
 Growth_Rate_Rec: 11.7% (recommended  ⚠️ +17.3pt above recommended)
 TTM_YoY_Growth: -19.3%
 (DCF Base vs TTM actual: +48.3pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $1.29 (Deviation: -55.3%)
-  参考②Rf理論上限_IV: $9.53 (Deviation: +229.9%)
+  参考①β込みWACC_IV: $1.29 (Deviation: -54.6%)
+  参考②Rf理論上限_IV: $9.53 (Deviation: +235.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.11%に変化すると、Rf基準の必要成長率は-5.0%→+4.7%（+9.7pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 2.5
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -106,7 +107,7 @@ DCF_FCF_Base_Detail: $22.2M (外れ値$-73M/FY2025除外後3点平均)
 DCF_FCF_Base_Excluded: FY2025=$-73M (outlier: >60% deviation from 3yr series)
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目の理由が『一過性の事業再編費用』または『マクロ変動による一時的影響』と明記されており、事業運営上の一時的な問題と判断される。
+  Reasoning: すべての項目の理由欄に「一過性の事業再編費用」や「マクロ変動による一時的影響」と明記されており、事業運営上の一時的費用と判断される。
 Financial_Health:
   Net_Debt: $-0.30B (negative=net cash)
   Total_Debt: $0.02B  Cash: $0.04B  ST_Invest: $0.28B
@@ -313,9 +314,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: -6.92%  (ForwardEPS $-0.20 / Price $2.89)
+  Forward_Earnings_Yield: -7.04%  (ForwardEPS $-0.20 / Price $2.84)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: -11.22%
+  ERP: -11.34%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
