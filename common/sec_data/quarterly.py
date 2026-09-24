@@ -11,7 +11,9 @@ import logging
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
-from .tag_definitions import TAG_CANDIDATES
+from .tag_definitions import (
+    TAG_CANDIDATES, NET_INCOME_CANDIDATES, with_derived_net_income,
+)
 from .utils import quarters_in_trailing_window
 from .fact_selection import select_latest_filed
 
@@ -276,7 +278,9 @@ FIELD_CONCEPTS: dict[str, tuple[str, str]] = {
     "Revenue":          ("Revenues", "USD"),
     "GrossProfit":      (TAG_CANDIDATES["GROSS_PROFIT"][0], "USD"),
     "OperatingIncome":  ("OperatingIncomeLoss", "USD"),
-    "NetIncome":        (TAG_CANDIDATES["NET_INCOME"][0], "USD"),
+    # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: 3系統共通のNET_INCOME_CANDIDATES
+    # （連結系タグをNCI控除後の派生概念に差し替えたもの）を使う
+    "NetIncome":        (NET_INCOME_CANDIDATES[0], "USD"),
     "Cash":             (TAG_CANDIDATES["CASH_AND_EQUIVALENTS"][0], "USD"),
     # [[SCHEMA-NORMALIZED-ISSUES-1]]①（2026-09-23、罠防止コメント）:
     # このSTDebtは単一タグ・フォールバックなしのためparser.py側の
@@ -352,7 +356,8 @@ _REVENUE_FALLBACKS = (
 _FIELD_FALLBACKS: dict[str, tuple[str, ...]] = {
     # AVGO: NetIncomeLossの四半期データが2019以前で途絶えているため ProfitLoss を使用
     # BKNG/AVAV: NetIncomeLoss自体が未申告のため以下をフォールバック
-    "NetIncome": TAG_CANDIDATES["NET_INCOME"][1:],
+    # （ProfitLoss等はNCI控除後の派生概念、[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]）
+    "NetIncome": NET_INCOME_CANDIDATES[1:],
     "CapEx": TAG_CANDIDATES["CAPITAL_EXPENDITURE"][1:],
     "RD": TAG_CANDIDATES["RESEARCH_AND_DEVELOPMENT"][1:],
     "SM": (
@@ -444,6 +449,8 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
     ticker = ticker.upper()
     restrictions = TICKER_RESTRICTIONS.get(ticker, {})
     excluded = set(restrictions.get("exclude", []))
+    # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: NetIncome用の派生概念を追加
+    company_facts = with_derived_net_income(company_facts)
 
     fields: dict[str, list] = {}
 

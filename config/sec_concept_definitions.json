@@ -97,14 +97,7 @@
     "net_income": {
       "category": "flow",
       "unit": "USD",
-      "candidates": [
-        "NetIncomeLoss",
-        "ProfitLoss",
-        "NetIncomeLossAvailableToCommonStockholdersBasic",
-        "NetIncomeLossAvailableToCommonStockholders",
-        "NetIncomeLossAttributableToParent",
-        "IncomeLossFromContinuingOperations"
-      ]
+      "candidates_source": "common/sec_data/tag_definitions.py::NET_INCOME_CANDIDATES（parser.py・quarterly.pyと共通。ProfitLoss等の連結系タグは同じ期間・同じaccnのNCIを差し引いた派生概念に差し替え）をlayer3_builder.load_concept_definitions()が候補として補う（[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]、2026-09-24にJSON側の候補リストを廃止）"
     },
     "cash_and_equivalents": {
       "category": "stock",

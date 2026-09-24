@@ -63,6 +63,7 @@ from datetime import date, datetime, timedelta
 from .quarterly import _classify_period, _process_entries
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
 from .q4_implied import build_q4_implied_entries
+from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income
 
 logger = logging.getLogger(__name__)
 
@@ -199,9 +200,19 @@ def load_company_facts(ticker: str) -> dict | None:
 
 
 def load_concept_definitions() -> dict:
-    """Layer2: config/sec_concept_definitions.json を読み込む。"""
+    """Layer2: config/sec_concept_definitions.json を読み込む。
+
+    [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_incomeの候補リストはJSONから
+    廃止し（`candidates_source`のみ保持）、tag_definitions.pyの
+    NET_INCOME_CANDIDATES（parser.py・quarterly.pyと共通、連結系タグは
+    NCI控除後の派生概念）を補う。
+    """
     with open(CONFIG_PATH, encoding="utf-8") as f:
-        return json.load(f)
+        defs = json.load(f)
+    ni = defs.get("fields", {}).get("net_income")
+    if ni is not None:
+        ni["candidates"] = list(NET_INCOME_CANDIDATES)
+    return defs
 
 
 # ---------------------------------------------------------------------------
@@ -1184,6 +1195,8 @@ def build_ticker_store(ticker: str) -> dict | None:
     company_facts = load_company_facts(ticker)
     if company_facts is None:
         return None
+    # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_income用の派生概念を追加
+    company_facts = with_derived_net_income(company_facts)
 
     concept_defs = load_concept_definitions()
     fields_def = concept_defs.get("fields", {})

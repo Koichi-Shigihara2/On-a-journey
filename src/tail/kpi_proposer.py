@@ -519,9 +519,15 @@ def _load_layer3_tag_to_field_index() -> Dict[str, str]:
     except Exception:
         return {}
 
+    from common.sec_data.tag_definitions import NET_INCOME_SOURCE_TAGS
+
     index: Dict[str, str] = {}
     for field_name, field_def in defs.get("fields", {}).items():
-        for tag in field_def.get("candidates", []):
+        # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_incomeはJSONの候補
+        # リストを廃止し、tag_definitions.pyの共通定義を唯一の正とする
+        tags = (NET_INCOME_SOURCE_TAGS if field_name == "net_income"
+                else field_def.get("candidates", []))
+        for tag in tags:
             tag_local = tag.split(":")[-1]
             # 複数フィールドが同じタグ名を候補にしている場合は先勝ち
             # （sec_concept_definitions.json内での定義順を尊重する）

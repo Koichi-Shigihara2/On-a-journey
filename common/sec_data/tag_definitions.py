@@ -112,3 +112,118 @@ TAG_CANDIDATES: dict[str, tuple[str, ...]] = {
         "NetCashProvidedByUsedInOperatingActivities",
     ),
 }
+
+
+# ---------------------------------------------------------------------------
+# net_income: 親会社帰属を正とする共通ルール
+# （[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]、2026-09-24）
+# ---------------------------------------------------------------------------
+# 従来はTAG_CANDIDATES["NET_INCOME"]の2番目にProfitLoss（非支配持分〈NCI〉
+# 込みの連結純利益）があり、親会社帰属タグが無い期間にNCI込みの値を採用して
+# いた（FCXでは親会社帰属2,204Mに対し連結4,152M〈FY2025、10-K R3で確認〉）。
+#
+# 対応: 候補の優先順位と各系統の選定アルゴリズム（年度単位の選定／系列
+# 丸ごとの置換／タグ単位正規化後の期間マージ）は変えず、NCIを含みうる
+# 連結系タグ（NET_INCOME_CONSOLIDATED_TAGS）だけを「同じ期間・同じaccnの
+# NCIを差し引いた派生概念」に置き換える。これによりどの候補が選ばれても
+# 値は親会社帰属になり、NCIのない銘柄の挙動は変わらない。
+# （検討した別案: ①候補順の入れ替え→quarterly.pyの系列丸ごと置換で
+# AVAVの直近6四半期が欠落、②全候補を期間単位で1概念に統合→Layer3の
+# タグ単位フォールバックが効かなくなりDDOGの2024Q4〈NetIncomeLossに1か月
+# スタブあり〉が消失。いずれも回帰のため不採用）
+#
+# 派生概念の値（ProfitLoss等の各ファクトについて、期間×accnごと）:
+#   - 同じ期間・同じaccnに親会社帰属タグ（NET_INCOME_PARENT_TAGS）の値が
+#     ある → その値（提出者自身が報告した親会社帰属額。FCXのFY2021 10-Kは
+#     NCIを符号逆〈-1,059M〉でタグ付けしており、機械的な控除では誤るため）
+#   - 同じ期間・同じaccnにNCI（NET_INCOME_NCI_TAG）がある → 差し引いた値
+#   - そのaccnにNCIの申告が1件も無い（NCIのない企業・提出書類）→ そのまま
+#   - そのaccnにNCIの申告はあるが当該期間の値が無い → 推測で埋めず除外
+#
+# parser.py（annual/quarterly JSON）・quarterly.py（normalized/）・
+# layer3_builder.py（Layer3/ttm/）はNET_INCOME_CANDIDATESを唯一の候補定義
+# として参照し、company_factsを読んだ直後にwith_derived_net_income()で
+# 派生概念を追加する。EPS Analyzer（extract_key_facts.py）は本ルールの
+# 対象外で、引き続きTAG_CANDIDATES["NET_INCOME"]を独自ロジックで使う。
+NET_INCOME_NCI_TAG = "NetIncomeLossAttributableToNoncontrollingInterest"
+# 親会社帰属を直接表すタグ（TAG_CANDIDATES["NET_INCOME"]の優先順）
+NET_INCOME_PARENT_TAGS: tuple[str, ...] = (
+    "NetIncomeLoss",
+    "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "NetIncomeLossAvailableToCommonStockholders",
+    "NetIncomeLossAttributableToParent",
+)
+# 連結系タグ → NCI控除後の派生概念名（us-gaapに実在しない名前。呼び出し元が
+# company_factsのコピーへ追加するだけで、ファイル・他の読み手には現れない）
+NET_INCOME_CONSOLIDATED_TAGS: dict[str, str] = {
+    "ProfitLoss": "ProfitLossAttributableToParentDerived",
+    "IncomeLossFromContinuingOperations": "IncomeLossFromContinuingOperationsAttributableToParentDerived",
+}
+# 3系統共通のnet_income候補（優先順位順）。TAG_CANDIDATES["NET_INCOME"]と
+# 同じ順序で、連結系タグだけを派生概念に差し替えたもの
+NET_INCOME_CANDIDATES: tuple[str, ...] = tuple(
+    NET_INCOME_CONSOLIDATED_TAGS.get(tag, tag) for tag in TAG_CANDIDATES["NET_INCOME"]
+)
+# 派生概念の元になる生のXBRLタグ（kpi_proposer等のタグ→フィールド対応用）
+NET_INCOME_SOURCE_TAGS: tuple[str, ...] = TAG_CANDIDATES["NET_INCOME"]
+
+
+def derive_nci_adjusted_facts(us_gaap: dict, tag: str, unit: str = "USD") -> list:
+    """連結系タグtagのファクトを、上記ルールでNCI控除後の値に変換して返す。
+
+    各ファクトは元ファクトの写し（start/end/accn/fy/fp/form/filed/frame等を
+    保持）で、valのみ置き換わる。期間を持たない（instant）ファクトは対象外。
+    """
+    def units(t):
+        try:
+            return us_gaap[t]["units"][unit] or []
+        except (KeyError, TypeError):
+            return []
+
+    parent_by_key: dict = {}
+    for ptag in NET_INCOME_PARENT_TAGS:
+        for f in units(ptag):
+            if f.get("start") and f.get("val") is not None:
+                parent_by_key.setdefault((f["start"], f["end"], f.get("accn")), f["val"])
+
+    nci_by_key: dict = {}
+    nci_accns: set = set()
+    for f in units(NET_INCOME_NCI_TAG):
+        if not f.get("start") or f.get("val") is None:
+            continue
+        nci_accns.add(f.get("accn"))
+        nci_by_key.setdefault((f["start"], f["end"], f.get("accn")), f["val"])
+
+    out = []
+    for f in units(tag):
+        if not f.get("start") or f.get("val") is None:
+            continue
+        key = (f["start"], f["end"], f.get("accn"))
+        if key in parent_by_key:
+            out.append({**f, "val": parent_by_key[key]})
+        elif key in nci_by_key:
+            out.append({**f, "val": f["val"] - nci_by_key[key]})
+        elif f.get("accn") in nci_accns:
+            continue  # NCIの申告がある提出書類で当該期間のNCIが無い → 推測しない
+        else:
+            out.append(dict(f))
+    return out
+
+
+def with_derived_net_income(company_facts: dict) -> dict:
+    """company_factsのコピーを返し、us-gaapにNCI控除後の派生概念を追加する。
+
+    元のcompany_facts（ファイルから読んだdict）は変更しない。
+    """
+    if not isinstance(company_facts, dict):
+        return company_facts
+    facts = company_facts.get("facts") or {}
+    us_gaap = facts.get("us-gaap") or {}
+    new_us_gaap = dict(us_gaap)
+    for tag, derived in NET_INCOME_CONSOLIDATED_TAGS.items():
+        if tag in us_gaap:
+            new_us_gaap[derived] = {
+                "label": f"{tag} attributable to parent (derived, NCI deducted)",
+                "units": {"USD": derive_nci_adjusted_facts(us_gaap, tag)},
+            }
+    return {**company_facts, "facts": {**facts, "us-gaap": new_us_gaap}}

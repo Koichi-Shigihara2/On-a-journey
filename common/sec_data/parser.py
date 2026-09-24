@@ -11,7 +11,9 @@ from typing import Optional, Dict, Any, List
 from .config import get_ticker_info
 from .quarterly import TICKER_RESTRICTIONS, _classify_period
 from .normalizer import _ytd_to_quarterly
-from .tag_definitions import TAG_CANDIDATES
+from .tag_definitions import (
+    TAG_CANDIDATES, NET_INCOME_CANDIDATES, with_derived_net_income,
+)
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
     detect_fiscal_anchor_clusters, _day_of_year, FIXED_REGISTRY_CATEGORIES,
@@ -339,9 +341,12 @@ class SECParser:
             "TotalRevenue",
             "RevenuesNetOfInterestExpense",  # 銀行向け（SOFI等）
         ],
-        # net_income・gross_profitはtag_definitions.pyのTAG_CANDIDATESから取得する
-        # （LLY-CAPEX-STALE-1 Phase 2a・quarterly.py/parser.pyのタグリスト統合）
-        "net_income": list(TAG_CANDIDATES["NET_INCOME"]),
+        # gross_profitはtag_definitions.pyのTAG_CANDIDATESから取得する
+        # （LLY-CAPEX-STALE-1 Phase 2a・quarterly.py/parser.pyのタグリスト統合）。
+        # net_incomeは3系統共通のNET_INCOME_CANDIDATES（連結系タグをNCI控除後の
+        # 派生概念に差し替えたもの）を使う（[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]、
+        # 派生概念は_parse_raw_data()冒頭でwith_derived_net_income()が追加する）
+        "net_income": list(NET_INCOME_CANDIDATES),
         "gross_profit": list(TAG_CANDIDATES["GROSS_PROFIT"]),
         "cost_of_revenue": [
             "CostOfRevenue",
@@ -483,6 +488,8 @@ class SECParser:
     def _parse_raw_data(self, ticker: str, raw_data: dict, accn_reportdate: Optional[Dict[str, str]] = None,
                          former_names: Optional[list] = None) -> Dict[str, Any]:
         """生データをパース"""
+        # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_income用の派生概念を追加
+        raw_data = with_derived_net_income(raw_data)
         result = {
             "ticker": ticker,
             "cik": raw_data.get("cik", ""),
