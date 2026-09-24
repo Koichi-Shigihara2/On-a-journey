@@ -138,6 +138,162 @@ requests経由（対象外、既定UAで204を確認済み）:
 
 ---
 
+### ✅ [CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1] CHECK-31（fixed_registry不整合）がファイル全体ハッシュで比較しており、parser.pyへの新フィールド追加だけで凍結年度が全てNG化しSEC_Data_Updateを停止させていた → 完了（2026-09-24）: fields_snapshot対象フィールドの値・provenanceのみのハッシュ（fields_snapshot_hash）で比較する方式へ変更
+**優先度:** 高（週次SEC_Data_Updateが2026-09-20から停止、次回09-27も失敗確定だった）
+**分類:** データ品質ゲート / SEC Data / フィックス機構
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** 2026-09-24指示書③の原因調査。SEC_Data_Update run 35518006804
+（2026-09-20 14:56 UTC、schedule）が`Consistency Check Gate`ステップで失敗
+（依存インストール・update.pyは成功）。Actionsログは認証なしでは取得不可
+（403）のため、worktreeでCIと同条件（update.py → `--fail-on-ng --quiet
+--include-yfinance-checks`）を再現しNG=136件（全件NG-31、22銘柄）を確認
+
+#### 原因
+- `60603f9835`（2026-09-17、[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]）で
+  `bs.restricted_cash`・`bs.insurance_reserves`がXBRL抽出対象に追加された。
+  ローカルでは全銘柄再生成を行わなかったためローカルゲートでは顕在化せず、
+  CIの週次update.pyで初めて全銘柄に反映された
+- NG136件を差分分析した結果、変化は`bs.restricted_cash`追加136件・
+  `bs.insurance_reserves`追加2件と、それに伴う`bs_provenance`へのエントリ
+  追加のみ。**既存フィールドの値の変化は0件**
+- 凍結機構（一次防御、`parser.py::_apply_fixed_registry_freeze()`）は
+  「fields_snapshotに無い新規フィールドは通す」差分適用方式で設計されて
+  いる一方、CHECK-31（二次防御）はannual_{year}.json全体の
+  `snapshot_hash`で比較していたため、両者の保護範囲が食い違っていた。
+  フィールドを1つ追加するたびに凍結年度が全てNG化する構造
+- 8/16・8/23の同ステップ失敗（0〜4秒で終了）は、`3637139f20`（8/30、
+  requirements.txt一括インストール化）で解消済みの依存不足と推定
+  （ログ未確認）。9/20の失敗とは別原因
+
+#### 修正内容
+- `common/sec_data/utils.py`: `compute_fields_snapshot_hash(data, fields)`を
+  新設。fields_snapshotの各フィールドについて、凍結機構と同じ探索順
+  （`FIXED_REGISTRY_CATEGORIES`=bs/pl/cf/shares/other、parser.pyと単一定義を
+  共有）で最初に見つかったカテゴリ・値・`{category}_provenance`の該当
+  エントリのみをハッシュ化（欠落は`category=None`として不一致になる）
+- `report_consistency_check.py::_check_fixed_registry_integrity()`:
+  比較対象を`fields_snapshot_hash`へ変更。`fields_snapshot`/
+  `fields_snapshot_hash`が未記録のエントリは黙ってPASSさせずNG
+- `fixed_registry.json`: 全423エントリ（42銘柄）へ`fields_snapshot_hash`を
+  追加（423行追加・削除0行）。**追加前に全423エントリで既存の
+  `snapshot_hash`（ファイル全体）が現データと一致することを検証**し、
+  一致したものだけから算出（＝フィックス時点と同一内容からの算出である
+  ことを保証、1件でも不一致なら中止する移行スクリプト）。旧
+  `snapshot_hash`は記録として残す（比較には不使用）
+- 事前確認: 既存423エントリ全てに空でないfields_snapshotが存在（欠落0件）
+
+#### 今後の再フィックス時の注意
+手動で再フィックス（refreshed_at_N）する際は、`snapshot_hash`に加えて
+`fields_snapshot_hash`（`compute_fields_snapshot_hash(annual_data,
+fields_snapshot)`）も更新すること。未更新の場合はCHECK-31がNGで検知する。
+
+#### 検証
+- 回帰テスト`tests/test_check31_fields_snapshot_hash.py`（11件）:
+  (1)凍結年度への新フィールド追加→NGなし (2)凍結済みフィールドの値変更・
+  None化・provenance変更・欠落・カテゴリ移動→必ずNG (3)fields_snapshot外の
+  既存フィールド変更→NGなし（凍結機構も保護しない範囲） (4)
+  fields_snapshot_hash未記録・fields_snapshot空→NG (5)実registry全件に
+  fields_snapshot_hashあり。旧実装では(1)(3)(4)(5)の5件が失敗、
+  (2)の凍結フィールド変更NGは旧実装でも成功（保護が弱まっていない
+  ことの確認）→新実装で11件全て成功
+- CIと同条件（worktreeでupdate.py全102銘柄 → `--include-yfinance-checks`
+  付きゲート）: 修正前NG=136件 → 修正後**NG=0件**（WARN=320件、修正前と同数）
+
+---
+
+### ✅ [HYPECORE-CI-SILENT-FAILURE-1] HypeCore_Update（およびSystem_Health）がpyyaml未インストールでcommon.market_data層のimportに黙って失敗し、2026-08-11以降poc.jsonをCIで一度も更新していなかった → 完了（2026-09-24）: 両ワークフローをrequirements.txt一括方式へ、hypecore.pyは全面失敗時exit 1化、_safe_roundの文字列Inf素通しを修正
+**優先度:** 高（HypeCoreがCI上で約6週間実質停止、TANUKI VALUATIONのTiming・Stage判定の入力が陳腐化）
+**分類:** 運用 / GitHub Actions / HypeCore / system_health
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** 2026-09-24指示書③の原因調査
+
+#### 原因
+- `HypeCore_Update.yml`は`pip install requests yfinance numpy pandas`のみで
+  `pyyaml`が無く、`common/market_data/fetcher.py`（`d8343b90ea`、2026-08-10
+  新設）の`import yaml`で`common.market_data`のimportが失敗。
+  hypecore.pyは`HAS_MARKET_DATA=False`で継続し、`09d2151fd4`（2026-08-11、
+  reader経由への切替）以降は全銘柄が「株価データ取得失敗」になっていた
+  （CIと同じ4パッケージのvenvで再現確認）
+- それでもexit 0で終了し、`_save_tickers_index()`が`tickers.json`の
+  `updated_at`だけを書き換えてコミットしていた（9/21実行は
+  「Run HypeCore Pipeline」ステップが1秒未満）。bot名義でpoc.jsonが
+  更新されたのは**2026-08-09が最後**。「最終成功9/16」と見えていたのは
+  Koichiさんのローカル手動再生成（`ee3ba7854c`・`50d2d9df94`）の日付
+- 9/20はSEC_Data_Update失敗（[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]）
+  によりworkflow_run連鎖が`if`条件でskipped、9/21のフォールバックcronは
+  起動したが上記原因で空振り。SEC停止とは別原因
+- **ZETA trailing_pe=Infinity**: 2026-08-11のMarket Data Weekly
+  （`7dee0f058b`）で`attributes/ZETA.json`にyfinanceの文字列`"Infinity"`が
+  格納され、`hypecore.py::_safe_round()`が変換前に`isinstance(v, float)`で
+  NaN/Inf判定していたため`float("Infinity")`=infが素通りし、9/16 22:11の
+  手動再生成（`50d2d9df94`）でpoc.jsonへ混入。attributes側は9/16 23:11〜
+  23:12（`98880fd005`・`0a9318d985`）で修正済みだったが、CI停止のため
+  poc.jsonは未再生成のままだった
+
+#### 横断確認（requirements.txtを使わず個別pip installしているワークフロー）
+CIと同じパッケージのみのvenvで各スクリプトをmain非実行でimportし、
+import hookで見つからなかったモジュールをフル環境と比較:
+| ワークフロー | install | 判定 |
+|---|---|---|
+| HypeCore_Update | requests yfinance numpy pandas | **yaml不足（本件）** |
+| System_Health | yfinance requests | **yaml不足**: `audit.py`の`HAS_MARKET_DATA=False`となり、β乖離チェック・カナダ企業判定が2026-08-11（`be48054cc8`）以降黙ってスキップされていた（3例目） |
+| TANUKI_Score_Update | requests | daily_pick.py・snapshot.py 不足なし |
+| TANUKI_TAIL_KPI_Update / RSS_Monitor | requests | xbrl_segment_fetcher・edgar_rss_monitor・prediction_tracker・quarterly_review_generator・tail_dcf_bridge・text_kpi_extractor 不足なし |
+| TANUKI_TAIL_SEC_Ctrl | requests | sec_ctrl_fetcher 不足なし |
+| TANUKI_TAIL_Position_Write | （なし） | workflow_write 不足なし |
+| TANUKI_CIK_Lookup / TANUKI_Segment_AI | requests | heredocインラインはcsv/json/os/re/requestsのみ |
+（simplejson・backportsはrequestsの任意import、tzdataはWindows固有でubuntuでは
+OSのzoneinfoを使うため、いずれも実害なしと判定）
+
+#### 修正内容
+- `HypeCore_Update.yml`・`System_Health.yml`: `pip install -r requirements.txt`
+  へ変更（SEC_Data_Update.ymlの`3637139f20`と同型）
+- `hypecore.py`: `_fatal_reason()`を新設。(1)`HAS_MARKET_DATA=False`
+  （import失敗理由を表示）なら処理前に、(2)失敗率が`_MAX_FAILURE_RATIO`=20%
+  超（102銘柄なら21銘柄以上）なら`_save_tickers_index()`の前にexit 1。
+  数銘柄の通常の取得失敗（例: 既知のAPGE `'rev_yoy'` KeyError 1件）では
+  落とさない。exit 1はスクリプト内＝Commitステップより前で発生するため、
+  updated_atだけのコミットも止まる
+- `_safe_round()`: float変換後にNaN/Inf判定するよう修正（文字列
+  "Infinity"/"NaN"もnull化）
+
+#### 検証
+- 回帰テスト`tests/test_hypecore_ci_silent_failure.py`（19件）: 修正前12件
+  失敗→修正後19件成功（`git stash`で確認）
+- pyyaml無しのvenv（CIの旧install条件）で修正後の`hypecore.py --all`:
+  `[FATAL] ... No module named 'yaml'`でexit 1、docs/配下の変更なし
+- フル環境の`--all`: 101/102成功（APGEのみ既知の失敗、BACKLOG_DONE.md
+  2026-09-16記載と同一）、全poc.jsonでInfinity/NaN混入0件、ZETA
+  trailing_pe=null
+- **before/after比較**（worktreeで同条件: XAI_API_KEY無しでpipeline →
+  hypecore --all → pipeline。beforeのpoc.jsonは9/16手動再生成版のため、
+  実データ差は約8日分）: 101銘柄中、HypeCoreステージ変化12銘柄・
+  timing_score変化12銘柄・substage変化25銘柄、**tanuki_score変化は
+  ABBV 1銘柄（HOLD→TRIM）のみ**。分類が変わった銘柄:
+  - ABBV: S2期待拡大期→S3陶酔期、timing 40→30、tanuki_score HOLD→TRIM
+  - ALAB: S4期待剥落期→S3陶酔期（ピークアウト兆候）、timing 25→30
+  - CART: S2期待拡大期→S4期待剥落期、timing 80→65
+  - DDOG: S4→S3（ピークアウト兆候）、timing 65→70
+  - DOCN: S4→S3（ピークアウト兆候）、timing 25→30
+  - ELF: S4→S3（陶酔期入り）、timing 65→70
+  - FCX: S4→S2期待拡大期、timing 25→40
+  - FRSH: S3陶酔期→S4（底打ち兆候）、timing 70→65
+  - META: S4→S3（陶酔期入り）、timing 35→40
+  - PLTR: S4（底打ち兆候）→S3（陶酔期入り）、timing 65→70
+  - VZ: S3→S2期待拡大期、timing 70→80
+  - XOM: S3→S2期待拡大期、timing 30→40
+  （本番データはworktreeの結果をコミットせず、bot名義のCI実行で反映する）
+- Actions実地確認: gh CLIが無いため、push後にKoichiさんへ
+  SEC_Data_Update→HypeCore_Updateの順のworkflow_dispatch実行と、bot名義の
+  poc.json更新・ZETA trailing_pe=nullの確認を依頼
+
+#### 残課題
+system_health [G]がpoc.jsonのgenerated_at最大値だけで鮮度判定し、手動再生成で
+CI停止が隠れる点は未修正のため`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`
+としてBACKLOG.mdへ新規登録
+
+---
+
 ## 2026-09-23（完了）
 
 ### ✅ [MARKETPULSE-MINOR-INCONSISTENCIES-1] Market Pulseの軽微な構造的不整合まとめ → 完了（2026-09-23）: ①〜⑤は2026-08-26完了済み、⑥はTech Pulseワークフロー自体が存在せず完全休眠のため対応見送りとしてクローズ

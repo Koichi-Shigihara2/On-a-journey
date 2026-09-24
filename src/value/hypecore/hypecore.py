@@ -51,6 +51,9 @@ _md_get_attributes = None
 _md_get_analyst_events = None
 _md_get_earnings_history = None
 _md_get_recommendations_history = None
+# [[HYPECORE-CI-SILENT-FAILURE-1]]: import失敗理由を保持し、__main__で
+# 致命扱い（exit 1）にする際に表示する
+_MARKET_DATA_IMPORT_ERROR = None
 
 try:
     from common.market_data.reader import get_price_series as _md_get_price_series  # noqa: E402
@@ -60,8 +63,8 @@ try:
     from common.market_data.reader import get_earnings_history as _md_get_earnings_history  # noqa: E402
     from common.market_data.reader import get_recommendations_history as _md_get_recommendations_history  # noqa: E402
     HAS_MARKET_DATA = True
-except Exception:
-    pass
+except Exception as _e:
+    _MARKET_DATA_IMPORT_ERROR = f"{type(_e).__name__}: {_e}"
 
 if not HAS_MARKET_DATA:
     try:
@@ -75,8 +78,8 @@ if not HAS_MARKET_DATA:
         from common.market_data.reader import get_earnings_history as _md_get_earnings_history
         from common.market_data.reader import get_recommendations_history as _md_get_recommendations_history
         HAS_MARKET_DATA = True
-    except Exception:
-        pass
+    except Exception as _e:
+        _MARKET_DATA_IMPORT_ERROR = f"{type(_e).__name__}: {_e}"
 
 # PascalCase（本ファイル内の既存呼び出し表記）→ SEC EDGAR Layer3の
 # snake_caseフィールド名の対応表（フェーズD Step2-4対応）。
@@ -963,11 +966,20 @@ def detect_substage(row: pd.Series, stage: int, stage_months: int) -> dict:
             next="出来高を伴う株価反発・新しい物語（製品・契約・提携）の出現を待つ。")
 
 def _safe_round(v):
-    """floatに丸めてJSON出力可能な値へ変換（NaN/Inf/Noneはnullにする）"""
+    """floatに丸めてJSON出力可能な値へ変換（NaN/Inf/Noneはnullにする）
+
+    NaN/Inf判定はfloat変換後に行う（[[HYPECORE-CI-SILENT-FAILURE-1]]:
+    変換前にisinstance(v, float)で判定していたため、yfinance由来の文字列
+    "Infinity"がfloat("Infinity")=infとして素通りし、ZETA_poc.jsonの
+    trailing_peに非標準JSONのInfinityが混入した）。
+    """
+    if v is None:
+        return None
     try:
-        return None if (v is None or (isinstance(v, float) and (np.isnan(v) or np.isinf(v)))) else round(float(v), 3)
+        f = float(v)
     except Exception:
         return None
+    return None if (np.isnan(f) or np.isinf(f)) else round(f, 3)
 
 
 def _build_month_record(idx, row) -> dict:
@@ -1143,6 +1155,32 @@ def _filter_hypecore_tickers(target, hypecore_tickers):
     return [t for t in target if t.upper() in hypecore_set]
 
 
+# [[HYPECORE-CI-SILENT-FAILURE-1]]: 失敗率がこれを超えたらexit 1。数銘柄の
+# 通常のyfinance/データ欠損による失敗では落とさず、構造的な全面失敗のみを
+# 検知する水準（全102銘柄なら21銘柄以上の失敗で発火）。
+_MAX_FAILURE_RATIO = 0.2
+
+
+def _fatal_reason(has_market_data: bool, n_tickers: int = 0, n_failed: int = 0,
+                  max_ratio: float = _MAX_FAILURE_RATIO):
+    """バッチ実行を致命的失敗（exit 1）とすべき理由を返す。問題なければNone。
+
+    [[HYPECORE-CI-SILENT-FAILURE-1]]: market_data層が使えないと全銘柄が
+    「株価データ取得失敗」になるにもかかわらずexit 0で終了し、CIは
+    tickers.jsonのupdated_atだけをコミットし続けていた（2026-08-11〜09-21、
+    HypeCore_Update.ymlのpyyaml未インストールが原因）。exit 1はCommit
+    ステップより前（本スクリプト内）で発生するため、以降のコミットも止まる。
+    """
+    if not has_market_data:
+        return (f"common.market_data.reader をimportできません"
+                f"（{_MARKET_DATA_IMPORT_ERROR}）。全銘柄の株価・属性データが"
+                f"取得できないため処理を中止します")
+    if n_tickers and n_failed / n_tickers > max_ratio:
+        return (f"失敗率 {n_failed}/{n_tickers} が閾値 {max_ratio:.0%} を"
+                f"超えました")
+    return None
+
+
 def _save_tickers_index(docs_dir) -> None:
     """docs/value-monitor/hypecore/data/tickers.json を実データ基準で再生成する
 
@@ -1206,6 +1244,11 @@ if __name__ == "__main__":
         ]
         REGISTRABLE_TICKERS = ALL_TICKERS
 
+    _fatal = _fatal_reason(HAS_MARKET_DATA)
+    if _fatal:
+        print(f"[FATAL] {_fatal}")
+        sys.exit(1)
+
     args = sys.argv[1:]
     if not args:
         tickers = ["PLTR"]
@@ -1236,5 +1279,11 @@ if __name__ == "__main__":
         print(f"失敗銘柄: {', '.join(failed)}")
     if success:
         print(f"成功銘柄: {', '.join(success)}")
+
+    _fatal = _fatal_reason(HAS_MARKET_DATA, len(tickers), len(failed))
+    if _fatal:
+        # tickers.jsonのupdated_atも更新しない（成功したように見せない）
+        print(f"[FATAL] {_fatal}")
+        sys.exit(1)
 
     _save_tickers_index(_DOCS_DIR)

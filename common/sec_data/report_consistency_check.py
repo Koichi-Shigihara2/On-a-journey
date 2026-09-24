@@ -129,6 +129,15 @@ report_consistency_check.py
                               関わらず常に実行する（common/sec_data/側の
                               検証でありTANUKI VALUATION出力に依存しない）。
                               自動修正なし、検知のみ）
+                              2026-09-24に比較対象をファイル全体の
+                              snapshot_hashから、fields_snapshotの各
+                              フィールドの値・provenanceのみの
+                              fields_snapshot_hashへ変更（[[CHECK31-WHOLE-
+                              FILE-HASH-VS-DIFF-FREEZE-1]]。凍結機構が差分
+                              適用方式で通す新規フィールドの追加だけで
+                              凍結年度が全てNG化し、SEC_Data_Updateを停止
+                              させていたため）。fields_snapshot/
+                              fields_snapshot_hash未記録のエントリはNG
 
 WARN台帳（QUALITY-GATES-EPIC-1 Phase 1・2026-07-12新設）:
   config/warn_acknowledged.json に (CHECK番号, ticker) の組み合わせを事前登録すると
@@ -168,7 +177,7 @@ from common.sec_data import tickers as _tickers_mod  # noqa: E402
 from common.sec_data.fetcher import load_submissions, load_company_facts  # noqa: E402
 from common.sec_data.parser import _load_fixed_registry  # noqa: E402
 from common.sec_data.reader import get_quarterly_series  # noqa: E402
-from common.sec_data.utils import compute_snapshot_hash  # noqa: E402
+from common.sec_data.utils import compute_fields_snapshot_hash  # noqa: E402
 from common.yfinance_utils import safe_yf_ticker  # noqa: E402
 
 _SEG_CFG_CACHE: dict = {}
@@ -397,10 +406,16 @@ def _check_config_loaders_resolvable() -> list[str]:
 
 def _check_fixed_registry_integrity(ticker: str) -> list[str]:
     """CHECK-31: fixed_registry.json登録済みのticker×年度について、
-    annual_{year}.jsonの現在のsnapshot_hashがregistry記録時のものと
-    一致するかを検証する（[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]の
-    二次防御・CI検知）。NGメッセージのリストを返す（登録なし・全一致の
-    場合は空リスト）。
+    annual_{year}.jsonのfields_snapshot対象フィールド（値・provenance）の
+    ハッシュがregistry記録時のfields_snapshot_hashと一致するかを検証する
+    （[[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]の二次防御・CI検知）。
+    NGメッセージのリストを返す（登録なし・全一致の場合は空リスト）。
+
+    [[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]: 一次防御（parser.py::
+    _apply_fixed_registry_freeze()）が保護するのはfields_snapshotの
+    フィールドのみで、新規追加フィールドは差分適用方式で通す設計のため、
+    二次防御も同じ範囲だけを比較する（旧方式のファイル全体ハッシュ
+    snapshot_hashは記録として残すが比較には使わない）。
     """
     registry = _load_fixed_registry().get(ticker, {})
     if not registry:
@@ -409,7 +424,15 @@ def _check_fixed_registry_integrity(ticker: str) -> list[str]:
     ng: list[str] = []
     for year_str, entry in sorted(registry.items()):
         path = os.path.join(SEC_DATA_DIR, ticker, f"annual_{year_str}.json")
-        expected_hash = entry.get("snapshot_hash")
+        fields = entry.get("fields_snapshot") or []
+        expected_hash = entry.get("fields_snapshot_hash")
+        if not fields or not expected_hash:
+            # 比較対象が無いエントリを黙ってPASSさせない
+            ng.append(
+                f"  [NG-31 fixed_registry不整合] {year_str}: fields_snapshot/"
+                f"fields_snapshot_hashが未記録（保護範囲を検証できない）"
+            )
+            continue
         if not os.path.exists(path):
             ng.append(
                 f"  [NG-31 fixed_registry不整合] {year_str}: fixed登録済みだが"
@@ -425,10 +448,10 @@ def _check_fixed_registry_integrity(ticker: str) -> list[str]:
                 f"読み込みエラー ({e})"
             )
             continue
-        current_hash = compute_snapshot_hash(current_data)
+        current_hash = compute_fields_snapshot_hash(current_data, fields)
         if current_hash != expected_hash:
             ng.append(
-                f"  [NG-31 fixed_registry不整合] {year_str}: snapshot_hash不一致 "
+                f"  [NG-31 fixed_registry不整合] {year_str}: fields_snapshot_hash不一致 "
                 f"(registry={str(expected_hash)[:19]}..., current={current_hash[:19]}...) "
                 f"→ fixed年度の値が意図せず変更された可能性（自動修正なし）"
             )

@@ -14,7 +14,7 @@ from .normalizer import _ytd_to_quarterly
 from .tag_definitions import TAG_CANDIDATES
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
-    detect_fiscal_anchor_clusters, _day_of_year,
+    detect_fiscal_anchor_clusters, _day_of_year, FIXED_REGISTRY_CATEGORIES,
 )
 from .fetcher import load_submissions, load_former_names
 from .dimension_aggregate_fetcher import (
@@ -3861,7 +3861,8 @@ class SECParser:
                 "source_citation": entry.get("source_citation"),
             }
 
-    _FIXED_REGISTRY_CATEGORIES = ("bs", "pl", "cf", "shares", "other")
+    # CHECK-31（compute_fields_snapshot_hash）と探索順を共有する単一定義
+    _FIXED_REGISTRY_CATEGORIES = FIXED_REGISTRY_CATEGORIES
 
     def _apply_fixed_registry_freeze(self, ticker: str, result: Dict[str, Any]) -> None:
         """fixed_registry.json登録済みのticker×年度について、

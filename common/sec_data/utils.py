@@ -25,6 +25,41 @@ def compute_snapshot_hash(data: Dict[str, Any]) -> str:
     return "sha256:" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+# parser.py::_apply_fixed_registry_freeze()がfields_snapshotの各フィールドを
+# 探索するカテゴリ順（同メソッドとCHECK-31で共有する単一定義）。
+FIXED_REGISTRY_CATEGORIES = ("bs", "pl", "cf", "shares", "other")
+
+
+def compute_fields_snapshot_hash(data: Dict[str, Any], fields: Sequence[str]) -> str:
+    """fixed_registry.jsonの`fields_snapshot_hash`算出方式
+    （[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]）。
+
+    凍結機構（parser.py::_apply_fixed_registry_freeze()）が強制復元する
+    範囲＝fields_snapshotの各フィールドについて、最初に見つかったカテゴリ・
+    値・`{category}_provenance`の該当エントリのみをハッシュ化する。
+    凍結機構は差分適用方式でfields_snapshot外の新規フィールドを通す設計の
+    ため、ファイル全体のハッシュ（compute_snapshot_hash）で比較すると
+    parser.pyへフィールドを追加しただけで凍結年度が全てNG化していた。
+    フィールドが見つからない場合は`category=None`として含める（欠落も
+    ハッシュ不一致として検知される）。
+    """
+    picked = {}
+    for field in sorted(set(fields)):
+        rec = {"category": None, "value": None, "provenance": None}
+        for category in FIXED_REGISTRY_CATEGORIES:
+            cat = data.get(category) or {}
+            if field in cat:
+                rec = {
+                    "category": category,
+                    "value": cat[field],
+                    "provenance": (data.get(f"{category}_provenance") or {}).get(field),
+                }
+                break
+        picked[field] = rec
+    canonical = json.dumps(picked, sort_keys=True, ensure_ascii=False)
+    return "sha256:" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def quarters_in_trailing_window(
     quarters: Sequence[Tuple[str, Any]],
     fy_end: str,

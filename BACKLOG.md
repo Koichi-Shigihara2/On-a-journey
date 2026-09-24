@@ -2245,6 +2245,41 @@ BACKLOG_DONE.md「2026-09-16（完了）」参照）
 `05_indicator_schedule.csv`から該当7行を削除し実装完了、
 BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
+### [SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1] system_health [G]がpoc.jsonのgenerated_at最大値だけで鮮度判定しており、手動再生成でCI停止が隠れる
+**優先度:** 中（HypeCoreのCIが2026-08-11〜09-21の約6週間実質停止していたのを検知できなかった）
+**分類:** 運用監視 / system_health / HypeCore
+**登録日:** 2026-09-24
+**発見:** 2026-09-24指示書④（[[HYPECORE-CI-SILENT-FAILURE-1]]の反映確認時）
+
+#### 内容
+`common/system_health.py::check_g_hypecore()`は全`*_poc.json`の
+`generated_at`の**最大値**が14日以内ならOKと判定する。そのため
+(1) ローカルでの手動再生成（2026-09-16の`ee3ba7854c`・`50d2d9df94`）で
+全銘柄のgenerated_atが更新されると、CIが止まっていても「最終更新9/16」と
+表示され正常に見える（9/30頃まで警告が出ない状態だった）
+(2) bot名義のコミットかどうかを区別しない
+(3) [J] CronRunsはworkflowの実行結果（conclusion）を見るが、HypeCoreは
+全銘柄失敗でもexit 0だったため「success」として素通りしていた
+（(3)は[[HYPECORE-CI-SILENT-FAILURE-1]]で全面失敗時exit 1化により解消済み）。
+
+#### 対応方針候補（未実装）
+(a) generated_atの最大値ではなく最小値・中央値、または一定割合以上の銘柄が
+閾値内かで判定する（一部銘柄だけ更新が止まるケースも検知できる）
+(b) `git log --author=github-actions -- docs/value-monitor/hypecore/data/*_poc.json`
+の最終日時で「CIによる更新」の鮮度を別途判定する
+(c) (1)(2)は[[HYPECORE-CI-SILENT-FAILURE-1]]のexit 1化で[J]側から検知
+できるようになったため現状維持とする
+
+#### 付随して見つかった軽微な問題（同一ワークフロー）
+`HypeCore_Update.yml`の`Summary`ステップは`monthly_data`・
+`lifecycle_label`・`recommendation`キーを参照しているが、poc.jsonの実際の
+キーは`monthly`で、月次レコードに`lifecycle_label`・`recommendation`は
+存在しない。そのためGitHub Actionsのサマリー表は常に空になっている
+（データには影響なし）。
+
+#### 着手条件
+なし（技術判断で進行可能）
+
 ---
 
 ### [TTM-DATA-DRIFT-BEHIND-PIPELINE-1] common/sec_data/ttm/配下のTTM系列ファイルが2026-07-26生成のまま、以降のパイプライン修正に追従しておらず陳腐化している可能性

@@ -12,8 +12,11 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24①時点）**: `BACKLOG.md`
-アクティブ件数**11件**（機械カウント、`grep -c "^### \["`）。2026-09-24①で
+**現在の到達点（2026-09-24④時点）**: `BACKLOG.md`
+アクティブ件数**12件**（機械カウント、`grep -c "^### \["`）。2026-09-24②〜④で
+Discord通知403・SEC_Data_Update停止（CHECK-31）・HypeCore CI空振りを修正し
+`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`を新規登録（11件→12件、
+詳細はBACKLOG_DONE.md「2026-09-24（完了）」）。2026-09-24①で
 `[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`を陳腐化クローズ（4銘柄とも年次
 operating_incomeが存在しroic.pyは年次OIを優先、ROIC-WACC比率・Moat Scoreは
 実測値で算出済みと判明。コード変更なし、BACKLOG_DONE.md「2026-09-24（完了）」

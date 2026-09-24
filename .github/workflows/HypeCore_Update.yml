@@ -40,7 +40,12 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install requests yfinance numpy pandas
+        # [[HYPECORE-CI-SILENT-FAILURE-1]]: 個別指定ではpyyaml等が欠け、
+        # common.market_data層のimportが黙って失敗していた（2026-08-11〜）。
+        # SEC_Data_Update.yml（3637139f20）と同じrequirements.txt一括方式に統一。
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run HypeCore Pipeline
         run: |
