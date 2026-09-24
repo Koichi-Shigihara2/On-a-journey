@@ -2433,9 +2433,68 @@ _classify_period`・`fact_selection.py::select_latest_filed`はドキュメン�
 CIと同条件の再生成後、WARN-47は0件。本エントリの構造的リスク（layer3_builder.pyが
 parser.pyと独立実装であること）自体は残るため、エントリは引き続きトリガー制で保留する。
 
+#### missing>0（4四半期未満）のTTMの消費側の扱い（2026-09-24、指示書⑦、調査のみ・実害なし）
+`common/sec_data/ttm/*_ttm_series.json`の消費者は、TANUKI VALUATION
+（`data_fetcher.py`・`pipeline.py`）と検証系（`audit.py`・`registration_validator.py`・
+`report_consistency_check.py`）のみ。HypeCore・TAIL（tail_dcf_bridge等）はLayer3の
+四半期系列を直接読み自前で集計、EPS Analyzerは独自のTTM計算、STONKS SILOは
+ttm/を参照しない。
+- `data_fetcher.py`: FCF系列（`TTMReader._filtered_fcf`）はOCF・CapExのいずれかが
+  quarters_used<4の期間を除外、RICE用（`build_rice_annual_shape`）はOCF・CapEx・
+  revenue・net_incomeのいずれかが不完全な行を除外（SBCのみ部分値をNone化して行は維持）
+  → (a) 除外
+- `pipeline.py`のDuPont分解（net_income・revenue・buyback）とセグメントのTTM売上
+  フォールバック（revenue）: `series[0]`（最新アンカー）のみ参照し、quarters_usedを
+  見ない → 最新アンカーについては(b)、それ以前のアンカーは(c) 参照しない
+- 実測（本番データ）: missing>0のエントリは全銘柄で1,390件、うち1,182件（85%）が
+  最古アンカー（index 4、四半期粒度データ取得開始前の境界期間）。(b)経路
+  （最新アンカーのnet_income・revenue・buyback）に該当するのはbuybackの5件のみ
+  （CPRT 1,414M〈1四半期〉・S 49.2M〈2四半期〉・JOBY 85K〈3四半期〉・CIX 0・KULR 0）。
+  net_income・revenueの該当は0件
+- buybackの消費者は`financial_health.buyback_ttm`→TANUKI SCORE画面のキャッシュトラップ
+  判定のみで、`buybackTtm === 0`（還元ゼロか）の真偽しか使わない。部分合計>0の
+  CPRT・S・JOBYは「自社株買いあり」で正しい。CIXは配当利回り3.2%のため判定に
+  影響せず、KULRは部分合計0を除外（null）しても判定ロジックがnullを還元なしと
+  同じに扱うため結果は同じ → 判定への実害なし
+- BROS・CEG（[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]でスタブ期間を除外した結果、
+  最古アンカー2022-06-30のnet_incomeがquarters_used=3の部分TTMになる）: 最古アンカーは
+  pipeline.pyが参照せず、data_fetcher.pyのRICE変換はnet_income不完全の行を除外する
+  （修正前もval=Noneで除外されていた）ため、成長率・YoY・CAGR・RICEへの混入はない
+- LYFTのTTM capital_expenditure・FCF=None（[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]、
+  上書き先タグが10-K年次のみの申告）: FCFは`_select_fcf_source()`で年次実績へ、RICEは
+  `build_rice_annual_shape()`が空になり`get_annual_range()`の年次実績へフォールバック
+  （latest.jsonの`fcf_source`・`rice_data_source`はいずれも`annual_fallback`）。
+  IV（64.87）・RICE（base rice 1.709）・tanuki_score（HOLD）は算出されており、
+  欠落する指標はない
+
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1] registration_validator.pyのP2-A（年次売上とTTM売上の乖離チェック）がPascalCaseの旧キー"Revenue"を読んでおり、2026-07-25以降一度も判定していない
+**優先度:** 低（同種の売上異常はCHECK-35/41〈yfinance突合〉等でも検知できるが、登録時ゲートの1項目が無言で無効化されている）
+**分類:** データ品質ゲート / 新規銘柄登録 / 旧キーの取り残し
+**登録日:** 2026-09-24
+**発見:** 指示書2026-09-24⑦（TTM欠損の消費側調査）の副次発見
+
+#### 内容
+`common/sec_data/registration_validator.py::_ttm_revenue()`は
+`series[0]["flow"]["Revenue"]`を読むが、ttm_calculator.pyのフェーズC移行
+（2026-07-25、snake_case化）以降のキーは`revenue`。そのため常にNoneを返し
+（AAPLで実測）、`check_p2_data_quality()`のP2-A（`latest_revenue`とTTM売上の比が
+3倍以上でNG・1.5倍以上でWARN）は`if annual_rev and ttm_rev:`で常にスキップされている。
+[[TTM-PASCALCASE-KEY-STALE-1]]（audit.py・data_fetcher.py等の同型問題、対応済み）の
+取り残し。
+
+#### 対応方針（未実装）
+`.get("Revenue")`を`.get("revenue")`へ修正し、修正前に全銘柄でP2-Aを実行して
+新たにNG/WARNが出る銘柄がないか確認する（長期間無効だったため、有効化した瞬間に
+既存銘柄で発火する可能性がある）。
+
+#### 着手条件
+なし（技術判断で進行可能）
+
+---
 
 ### [BBAI-RDW-RUNWAY-VERIFICATION-1] BBAI・RDWの実際の財務健全性の一次情報確認
 **優先度:** 低
