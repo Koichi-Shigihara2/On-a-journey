@@ -9,6 +9,26 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-24**: 監視・ゲートの「黙った失敗」の修正と、net_incomeの
+  NCI取り違えの修正が中心（BACKLOG_DONE.md「2026-09-24（完了）」に13件）。
+  ①Discord通知がurllibの403で約4か月届いていなかった問題を修正
+  （`[[DISCORD-NOTIFY-403-SILENT-1]]`）。②SEC_Data_Updateが9/20から停止
+  （CHECK-31がファイル全体ハッシュで比較し新フィールド追加で凍結年度136件がNG、
+  `[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]`）とHypeCoreのCI空振り
+  （pyyaml欠落で8/11以降poc.json未更新、`[[HYPECORE-CI-SILENT-FAILURE-1]]`）を修正し、
+  workflow_dispatchでbot更新を確認。③FCXのnet_incomeが3系統とも非支配持分込みの
+  連結純利益（FY2025 4,152M、親会社帰属は2,204M）だったため、連結系タグを
+  NCI控除後の派生概念に差し替え3系統共通の候補定義に一本化
+  （`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`、FCXのROE 13.2%→7.1%）。
+  あわせてCHECK-47の連続性チェック（`[[CHECK47-NONCONTIGUOUS-WINDOW-1]]`）と
+  Layer3の上書き設定のTICKER_RESTRICTIONS一本化
+  （`[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]`）。④registration_validatorのP2-Aを
+  廃止し、新規登録フローにStep 7.5（CHECK-35/41/47、登録時のみCHECK-41 revenue
+  ±30%超でNG）を追加（`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`）。
+  CHAT_RULES.mdに事例19（失敗を握りつぶす処理は監視そのものを無効化する）を追記。
+  アクティブBACKLOG 12件→8件。pytest 1596件全パス・audit.py 🔴0件・
+  report_consistency_check.py NG=0。**次回確認**: 9/27（日）のSEC_Data_Update後に
+  FCX net_incomeの本番反映（annual_2025=2,204M・TTM=2,945M前後、ROE 7.1%）を確認
 - **2026-09-23**: `[[EPS-UPC-PREREORG-1]]`実装完了・クローズ
   （Up-C構造・組織再編前ゼロ利益四半期の機械検知。全99銘柄で機械検知した
   結果ヒットはBROS 2四半期のみ、依頼時点で該当するはずとされていた

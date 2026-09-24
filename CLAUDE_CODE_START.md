@@ -12,7 +12,7 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24⑨時点）**: `BACKLOG.md`
+**現在の到達点（2026-09-24セッション終了時ブラッシュアップ時点）**: `BACKLOG.md`
 アクティブ件数**8件**（2026-09-24⑨で`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`をP2-A廃止で完了。2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
 陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
 `[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`・
@@ -79,6 +79,67 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    確認を行うこと（恒久対策の候補は`CHAT_RULES.md`「rebase時の
    データ消失事故パターンと恒久対策の検討」参照、採用可否は
    Koichiさんの判断待ち）。
+
+---
+
+最終更新: 2026-09-24（**セッション終了時ブラッシュアップ・本日の
+指示書①〜⑩サマリー**。全てpush済み）:
+
+1. **`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`陳腐化クローズ**（記録のみ）:
+   4銘柄とも年次operating_incomeがあり、ROIC-WACC・Moatは実測値で算出済み
+2. **`[[DISCORD-NOTIFY-403-SILENT-1]]`**: urllib送信3箇所がUser-Agent未指定で
+   Cloudflareに403拒否され、通知が新設時から一度も届いていなかった。UA付与・
+   失敗時のHTTPステータス表示・system_healthの「未設定/送信失敗」区別
+3. **`[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]`・
+   `[[HYPECORE-CI-SILENT-FAILURE-1]]`**: SEC_Data_Update停止（9/20〜）の原因は
+   CHECK-31のファイル全体ハッシュ比較（新フィールド追加で凍結年度136件NG）。
+   fields_snapshot限定ハッシュへ変更し、fixed_registry全423件へ
+   `fields_snapshot_hash`を追加。HypeCore_Update・System_Healthはpyyaml欠落で
+   market_data層のimportに黙って失敗（8/11〜）→requirements.txt化、全面失敗時
+   exit 1、ZETAのtrailing_pe Inf修正。Koichiさんのworkflow_dispatchでbot更新を確認
+4. **BACKLOG陳腐化6件の再確認**: 4件クローズ・2件見送り
+   （TTM-DATA-DRIFT〈CHECK-47発火〉・LAYER3-GA〈統合先の記録不一致〉）
+5. **`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`・
+   `[[CHECK47-NONCONTIGUOUS-WINDOW-1]]`・`[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]`**:
+   CHECK-47のFCX発火から、net_incomeが3系統とも非支配持分込みの`ProfitLoss`を
+   優先していたと判明（FCX FY2025 4,152M vs 親会社帰属2,204M）。連結系タグを
+   NCI控除後の派生概念に差し替え`NET_INCOME_CANDIDATES`に一本化（候補順入れ替え・
+   1概念統合の2案はAVAV・DDOGで回帰したため不採用）。CHECK-47は連続4四半期のみ
+   比較、Layer3の上書き設定はTICKER_RESTRICTIONSを直接参照
+6. **TTM欠損の消費側調査**（実害なし、TTM-DATA-DRIFTへ根拠を追記）と
+   **`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`**（P2-Aの旧キー参照を
+   修正、旧キー検出テストを追加）
+7. **`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`**: P2-Aは期末の異なる
+   期間を比べて急成長銘柄をNGにしていた。同一期間比較はttmアンカー一致6/99・
+   四半期合計は逆算Q4で97/100が構造的に一致のため機能せず、P2-Aを廃止。
+   登録フローにStep 7.5（report_consistency_check `--include-provisioning`、
+   CHECK-35/41/47）を追加し、登録時のみCHECK-41 revenue ±30%超をNG化
+   （active全99銘柄の最大乖離はMO 15.6%〈物品税の定義差〉）
+
+**教訓**: CHAT_RULES.md「事例19」を追記（失敗を「成功」「未設定」「0件」として
+返す処理は監視そのものを無効化する。本日同型5件）。
+
+BACKLOG.mdアクティブ件数は本日開始時点12件→終了時点8件（12＋新規登録3−
+BACKLOG.mdからのクローズ7＝8。新規登録3件はいずれも同日中に完了。BACKLOG_DONE.md
+「2026-09-24（完了）」の13件は、BACKLOG.mdからの移設7件と、登録と同日に完了し
+直接記録した6件）。
+
+**次セッションの着手候補**:
+- **9/27（日）のSEC_Data_Update後に、FCX net_incomeの本番反映を確認**
+  （bot名義のコミットで`annual_2025.json`のnet_income=2,204,000,000、
+  ttm/の最新net_incomeが2,945M前後、TANUKIのroe_used≈7.1%・マトリクス
+  「割高×中効率」、HypeCoreのfundamental_score≈-0.43）。あわせてSCCO・CATの
+  小幅な訂正、BROS・CEGの最古アンカーの部分TTM化も確認
+- `[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]`（統合先の前提が崩れたため、単独で
+  対応要否を再判断）
+
+**セッション終了時ブラッシュアップの検証結果**:
+- `grep -n "^### ✅ \[" BACKLOG.md`: 0件、`grep -c "^### \["`: 8件
+- 本日クローズ13件はすべてBACKLOG_DONE.md「2026-09-24（完了）」に存在し、
+  BACKLOG.md側に残存なし。アクティブとDONEのID重複0件。DONE内の同一ID複数見出し
+  13件は過去の小項目・ステージ別の部分クローズ記録（意図的）
+- worktreeは本体のみ。本日作成の一時ファイル（$TEMP直下の確認用出力・
+  scratchpadのvenv）は削除済み。git stashの16件は過去セッションのもので未変更
 
 ---
 
