@@ -60,9 +60,9 @@ import os
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
-from .quarterly import _classify_period, _process_entries
+from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
-from .q4_implied import build_q4_implied_entries
+from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income
 
 logger = logging.getLogger(__name__)
@@ -216,32 +216,52 @@ def load_concept_definitions() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# ticker_overrides（quarterly.py::TICKER_RESTRICTIONS移行、
-# [[SOFI-TICKER-RESTRICTIONS-NOT-MIGRATED-1]]対応）
+# 銘柄別の上書き設定（quarterly.py::TICKER_RESTRICTIONSが唯一の正）
 # ---------------------------------------------------------------------------
+# [[TICKER-OVERRIDES-SINGLE-SOURCE-1]]（2026-09-24）: 従来はconfig/
+# sec_concept_definitions.jsonのticker_overridesへ2026-07-24に一度だけ移行した
+# 写しを読んでいたため、以降にTICKER_RESTRICTIONSへ追加されたCPRT/HEI
+# （cash_concept）・CPRT/CEG/JOBY（cogs_concept）・LYFT（capex_concept）が
+# Layer3に反映されず、ttm/でLYFTのcapital_expenditure・FCF、CPRT/CEG/JOBYの
+# gross_profitがNoneになっていた。parser.py・quarterly.pyと同じ
+# TICKER_RESTRICTIONSを直接読み、各キーの扱いもparser.pyに揃える。
+
+# TICKER_RESTRICTIONSのキー → (Layer3フィールド名, 適用方法)。
+# 適用方法はparser.py::_parse_raw_data()と同じ: override_concept=その1タグに
+# 置き換え、append_concept=既存候補の末尾へ追加（cogs_conceptのみ。全置換すると
+# 既存候補が値を持つ過去年度が欠損する回帰があるため）
+_TICKER_CONCEPT_OVERRIDE_KEYS: dict[str, tuple[str, str]] = {
+    "revenue_concept": ("revenue", "override_concept"),
+    "ltdebt_concept": ("long_term_debt", "override_concept"),
+    "sti_concept": ("short_term_investments", "override_concept"),
+    "cash_concept": ("cash_and_equivalents", "override_concept"),
+    "capex_concept": ("capital_expenditure", "override_concept"),
+    "cogs_concept": ("cost_of_revenue", "append_concept"),
+}
+# TICKER_RESTRICTIONSのexclude（quarterly.pyのPascalCase名）→ Layer3フィールド名
+_PASCAL_TO_SNAKE = {v: k for k, v in _SNAKE_TO_PASCAL.items()}
+
 
 def _get_ticker_field_override(concept_defs: dict, ticker: str, field_name: str) -> dict | None:
     """
-    config/sec_concept_definitions.jsonのticker_overridesから、指定
-    ticker・field_nameに対応する単純除外/概念差し替え設定を取り出す。
+    quarterly.py::TICKER_RESTRICTIONSから、指定ticker・field_nameに対応する
+    除外/概念差し替え/概念追加の設定を1件返す（該当なしの場合はNone）。
 
-    ticker_overridesは銘柄によって以下2形式のいずれかを取る:
-    - 単一フィールド（field/action/override_concept/noteを直接持つ）
-    - 複数フィールド（overrides: [{field/action/...}, ...]のリスト）
-    どちらの形式でも、指定field_nameに一致するエントリを1件返す
-    （該当なしの場合はNone）。cross_filing_tags・注記専用エントリ
-    （GOOGLのnoteのみ等）はこの関数の対象外
-    （cross_filing_tagsは_apply_cross_filing_tags()参照）。
+    戻り値は{"field", "action", "override_concept"}形式で、actionは
+    "exclude"・"override_concept"・"append_concept"のいずれか。
+    cross_filing_tags・注記専用キー（GOOGLのapproximate等）はこの関数の
+    対象外（cross_filing_tagsは_apply_cross_filing_tags()参照）。
+    concept_defsは呼び出し互換のため受け取るが参照しない。
     """
-    ticker_config = concept_defs.get("ticker_overrides", {}).get(ticker.upper())
-    if not ticker_config:
+    restrictions = TICKER_RESTRICTIONS.get(ticker.upper(), {})
+    if not restrictions:
         return None
-    override_list = ticker_config.get("overrides")
-    if override_list is None:
-        override_list = [ticker_config] if "field" in ticker_config else []
-    for override in override_list:
-        if override.get("field") == field_name:
-            return override
+    excluded = {_PASCAL_TO_SNAKE.get(f, f) for f in restrictions.get("exclude", [])}
+    if field_name in excluded:
+        return {"field": field_name, "action": "exclude"}
+    for key, (target_field, action) in _TICKER_CONCEPT_OVERRIDE_KEYS.items():
+        if target_field == field_name and restrictions.get(key):
+            return {"field": field_name, "action": action, "override_concept": restrictions[key]}
     return None
 
 
@@ -264,7 +284,8 @@ def _apply_cross_filing_tags(
     _merge_normalized_by_priority()の再マージや優先順位判定の対象には
     ならない）。
     """
-    ticker_config = concept_defs.get("ticker_overrides", {}).get(ticker.upper())
+    # [[TICKER-OVERRIDES-SINGLE-SOURCE-1]]: TICKER_RESTRICTIONSを直接読む
+    ticker_config = TICKER_RESTRICTIONS.get(ticker.upper(), {})
     if not ticker_config:
         return []
     rules = ticker_config.get("cross_filing_tags", {}).get(field_name)
@@ -1219,6 +1240,16 @@ def build_ticker_store(ticker: str) -> dict | None:
             # 固定」を実現する）。
             override_field_def = dict(field_def)
             override_field_def["candidates"] = [override["override_concept"]]
+            raw_entries, source_tag = extract_field_raw_entries(
+                company_facts, override_field_def, field_name, ticker,
+            )
+        elif override and override.get("action") == "append_concept":
+            # 既存候補の末尾へ銘柄固有タグを追加する（parser.pyのcogs_conceptと
+            # 同じ扱い、[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]）
+            override_field_def = dict(field_def)
+            override_field_def["candidates"] = (
+                list(field_def.get("candidates", [])) + [override["override_concept"]]
+            )
             raw_entries, source_tag = extract_field_raw_entries(
                 company_facts, override_field_def, field_name, ticker,
             )

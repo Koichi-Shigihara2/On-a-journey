@@ -2420,6 +2420,19 @@ _classify_period`・`fact_selection.py::select_latest_filed`はドキュメン�
   BKNG・FCXの2件は未確認のため、着手条件3に従い発火銘柄・フィールドを
   起点とした実害確認が次のステップとなる（本日は記録のみ）
 
+#### 着手条件3の実害確認と対応（2026-09-24、指示書⑥・同補足）
+2026-09-24に発火したWARN-47 3件を調査した:
+- BKNG SBC（2.2%）・RCAT SBC（8.2%）: normalized/側の末尾4件が連続した4四半期でない
+  （10-K由来のQ4欠落）ことによるCHECK-47の誤検知で実害なし。
+  [[CHECK47-NONCONTIGUOUS-WINDOW-1]]で連続性チェックを追加し解消
+- FCX net_income（39.9%）: 実害あり。3系統とも非支配持分込みの`ProfitLoss`を
+  親会社帰属タグより優先していた（FY2025 連結4,152M vs 親会社帰属2,204M）。
+  [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]で3系統共通の候補定義に一本化し解消
+- 横断確認で見つかったLayer3の上書き設定の写しの陳腐化（CPRT/CEG/JOBYのTTM
+  gross_profit None等）は[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]で解消
+CIと同条件の再生成後、WARN-47は0件。本エントリの構造的リスク（layer3_builder.pyが
+parser.pyと独立実装であること）自体は残るため、エントリは引き続きトリガー制で保留する。
+
 ---
 
 ## 優先度：低（アイデア段階）

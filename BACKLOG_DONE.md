@@ -4,6 +4,156 @@
 
 ## 2026-09-24（完了）
 
+### ✅ [NET-INCOME-NCI-PARENT-ATTRIBUTION-1] net_incomeが親会社帰属タグの無い期間にNCI込みの連結純利益（ProfitLoss）を採用しており、FCXで約1.9倍に過大計上されていた → 完了（2026-09-24）: 連結系タグをNCI控除後の派生概念に差し替え、3系統共通の候補定義NET_INCOME_CANDIDATESに一本化
+**優先度:** 高（FCXのROE・EPS・DuPont・純利益率が約1.9倍、マトリクス分類に影響）
+**分類:** データ品質 / SEC Data / 3系統（parser・normalized・Layer3/TTM）共通
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** [[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]着手条件3（CHECK-47発火）の実害確認
+（指示書2026-09-24⑥）。FCX net_incomeのWARN-47（39.9%）の調査で判明
+
+#### 原因
+- `TAG_CANDIDATES["NET_INCOME"]`の2番目が`ProfitLoss`（非支配持分〈NCI〉込みの
+  連結純利益）で、親会社帰属タグ（`NetIncomeLossAvailableToCommonStockholdersBasic`
+  等）より優先されていた。FCXは2025年開示まで親会社帰属を
+  `NetIncomeLossAvailableToCommonStockholdersBasic`でタグ付けし、`NetIncomeLoss`は
+  2026-08の10-Qで初出のため、`ProfitLoss`が採用されていた
+- FCX FY2025の10-K R3（Consolidated Statements of Operations）で確認:
+  Net income 4,152M（`ProfitLoss`）／NCI (1,948M)／Net income attributable to
+  common stockholders **2,204M**。parserのannual_2025.jsonは4,152Mを保持していた
+- 3系統とも同じ候補リストだが、選定アルゴリズムが異なる（parser: 年度単位の選定＋
+  本人データ補完／quarterly.py: 系列丸ごとの1タグ置換〈`_select_best_candidate`〉／
+  Layer3: タグ単位正規化後の期間マージ）。そのためLayer3/TTMは親会社帰属と連結の
+  混在（FCX TTM 4,183M、正しくは2,945M）、normalizedは親会社帰属だが四半期欠落と、
+  系統ごとに異なる誤りになっていた
+
+#### 修正内容（コミット①）
+- `common/sec_data/tag_definitions.py`: `NET_INCOME_CANDIDATES`（3系統共通の唯一の
+  候補定義）・`with_derived_net_income()`・`derive_nci_adjusted_facts()`を新設。
+  候補の優先順位と各系統の選定アルゴリズムは変えず、連結系タグ（`ProfitLoss`・
+  `IncomeLossFromContinuingOperations`）だけを「NCI控除後の派生概念」に差し替え。
+  派生概念の値（期間×accnごと）:
+  1. 同じ期間・同じaccnに親会社帰属タグの値がある → その値（FCXのFY2021 10-Kは
+     NCIを符号逆〈-1,059M〉でタグ付けしており、機械的な控除では6,424Mと誤るため。
+     同accnの親会社帰属は4,306M）
+  2. 同じ期間・同じaccnにNCIがある → 差し引いた値
+  3. そのaccnにNCIの申告が1件も無い → そのまま（NCIのない企業）
+  4. そのaccnにNCIの申告はあるが当該期間の値が無い → 推測で埋めず除外
+- `parser.py`・`quarterly.py`・`layer3_builder.py`: company_facts読込直後に派生概念を
+  追加（元のdict・ファイルは変更しない。kpi_proposer等の他の読み手には現れない）し、
+  `NET_INCOME_CANDIDATES`を参照
+- `config/sec_concept_definitions.json`: net_incomeの候補リストを廃止
+  （`candidates_source`のみ。`load_concept_definitions()`が共通定義を補う）。
+  `kpi_proposer.py`のタグ→フィールド対応も共通定義（`NET_INCOME_SOURCE_TAGS`）を参照
+- EPS Analyzer（`extract_key_facts.py`）は3系統の対象外で、従来どおり
+  `TAG_CANDIDATES["NET_INCOME"]`を独自ロジックで使う（FCXはEPS Analyzer対象外）
+
+#### 不採用とした別案（worktreeで試行、いずれも回帰）
+- 候補順の入れ替え（ProfitLossを親会社帰属タグの後ろへ）: quarterly.pyの系列丸ごと
+  置換でAVAV（NCIなし、2024年以降の四半期はProfitLossのみ申告）の直近6四半期
+  （2024-07-27〜2026-01-31）が欠落
+- 全候補を期間単位で1概念に統合: Layer3のタグ単位フォールバックが効かなくなり、
+  DDOGの2024Q4（`NetIncomeLoss`に10-K FY扱いの1か月スタブ-0.6Mあり）が消失し
+  TTM 2025-06-30がNone化
+
+#### 全銘柄before/after（3系統、ローカルcompany_factsから再生成して比較）
+変化は10銘柄。親会社帰属タグが存在する期間はすべて「修正後＝親会社帰属の生の値」
+（不一致0件、修正前の方が一致していたケース0件）:
+- FCX・SCCO・CAT（NCIの意図した訂正）: FCX FY2025 4,152→2,204M、TTM 4,183→2,945M。
+  SCCO +0.3%・CAT -0.03%程度。Q4逆算値もFCX 4件・CAT 3件・AVAV 1件が
+  「親会社帰属FY−親会社帰属9M」と一致（SCCO 2件は3四半期合算方式による0.1Mの丸め差）
+- ASTS 2021・AVAV 2017〜2023・BKNG 2011〜2013・MO 2012・TDY 2010（parser年次13件）:
+  いずれも過去に小さなNCIがあった年度で、修正前はProfitLoss値、修正後は親会社帰属FY値
+- BROS（2021-09-17〜12-31）・CEG（2022-01-01〜01-31）のスタブ期間: NCIの申告がある
+  提出書類で当該期間のNCIが無いためルール4で除外。その結果、両銘柄のTTM最古アンカー
+  （2022-06-30）が`quarters_used=3, missing=1`の部分TTMとして算出される（欠落は明示、
+  推測で埋めていない。ttm_calculatorの既存の部分TTM扱い）
+- **AVAVの直近6四半期は保たれている**（変化は2021〜2022年の小NCI期のみ）
+- 凍結年度: net_incomeを凍結している27銘柄の凍結年度で、凍結処理を外して再計算しても
+  値が変わるものは0件 → fixed_registryの更新は不要（CHECK-31も緩めていない）
+
+#### 下流への影響（FCX、worktreeでCIと同条件に再生成して試算）
+| 指標 | 修正前 | 修正後 |
+|---|---|---|
+| ROE 10年平均（roe_used） | 13.2% | 7.1% |
+| max_eps | 2.997 | 2.135 |
+| DuPont 純利益率 | 16.2% | 11.4% |
+| DuPont ROE | 20.8% | 14.7% |
+| RICE/PER | 0.017 | 0.031 |
+| マトリクス | 割高×低効率 | 割高×中効率 |
+| IV・tanuki_score・timing_score | 11.89・HOLD・40 | 変化なし（IVはFCFベース） |
+| HypeCore ni_yoy・rule40_yoy_netmargin（2026-09） | 27.461・14.185 | 変化なし（直近の2026Q2・2025Q2は修正前から親会社帰属） |
+| HypeCore fundamental_score | -0.446 | -0.43（過去月のni_yoyが変化: 2025-11 0.9→28.1%、2026-02 -21.6→48.2%、2026-05 74.9→150.3%） |
+本番データはworktreeの結果をコミットせず、botの定期実行で反映する。
+
+#### 検証
+- 回帰テスト`tests/test_net_income_parent_attribution.py`（14件）: FCX型・AVAV型・
+  親会社帰属タグなし＋NCIあり型・NCI符号逆型の4パターン×3系統＋候補定義の一致。
+  修正前10件失敗（AVAV型3件は修正前も成功＝並べ替え案の回帰を防ぐガード）→修正後14件成功
+- CIと同条件（worktreeでupdate.py全102銘柄→`--include-yfinance-checks`付きゲート、
+  ①②③適用後）: NG=0件・WARN-47=0件
+
+---
+
+### ✅ [CHECK47-NONCONTIGUOUS-WINDOW-1] CHECK-47がnormalized/側の末尾4件を単純合計しており、途中の四半期が欠落した銘柄で1年分にならない値をTTMと比較して誤検知していた → 完了（2026-09-24）: 連続した4四半期のときのみ比較
+**優先度:** 中
+**分類:** データ品質ゲート / CHECK-47
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** 指示書2026-09-24⑥の調査。BKNG stock_based_compensation（2.2%）の
+WARN-47は、normalized/に10-K由来の2025Q4（167M）が無く、末尾4件（2025Q2・Q3・
+2026Q1・Q2＝588M）をTTM（601M）と比べていたことによる。共通四半期の値は両側で
+完全一致。RCAT（8.2%、warn_acknowledged.jsonで確認済みとしていた件）も同型
+
+#### 修正内容（コミット②）
+- `report_consistency_check.py::_is_contiguous_four_quarters()`を新設。各四半期の
+  startが直前のend翌日と一致（52/53週決算を考慮し±7日）かつ合計350〜380日の
+  場合のみCHECK-47の比較を行う
+- 回帰テスト`tests/test_check47_contiguous_window.py`（6件、修正前4件失敗）:
+  連続しない4件はスキップ、連続した4四半期の乖離は従来どおりWARN（検知力を落とさない）
+- 現データでWARN-47は3件（BKNG・FCX・RCAT）→0件、全体WARN 122→119件。
+  `config/warn_acknowledged.json`のRCATのWARN-47確認済みエントリは発火しなく
+  なったため参照されない状態になる（削除はしていない）
+
+---
+
+### ✅ [TICKER-OVERRIDES-SINGLE-SOURCE-1] Layer3の銘柄別上書き設定がJSONの写し（2026-07-24移行時点）のままで、以降にTICKER_RESTRICTIONSへ追加された5銘柄の設定が反映されていなかった → 完了（2026-09-24）: Layer3もTICKER_RESTRICTIONSを直接読むよう一本化
+**優先度:** 中
+**分類:** データ品質 / Layer3 / 設定の二重管理
+**登録日:** 2026-09-24（登録と同日に完了）
+**発見:** 指示書2026-09-24⑥の横断確認（WARN-47対象フィールドのタグ定義比較）
+
+#### 内容
+parser.py・quarterly.pyは`quarterly.py::TICKER_RESTRICTIONS`を参照するが、
+layer3_builder.pyは`config/sec_concept_definitions.json::ticker_overrides`
+（2026-07-24に9銘柄分を一度だけ移行した写し）を参照していた。移行以降に追加された
+CPRT/HEI（`cash_concept`）・CPRT/CEG/JOBY（`cogs_concept`）・LYFT（`capex_concept`）が
+Layer3に反映されず、ttm/でCPRT/CEG/JOBYの`gross_profit`がNoneになっていた。
+
+#### 修正内容（コミット③）
+- `layer3_builder.py::_get_ticker_field_override()`・`_apply_cross_filing_tags()`が
+  `TICKER_RESTRICTIONS`を直接読む。各キーの扱いはparser.pyと同一:
+  revenue/ltdebt/sti/cash/capex_concept=その1タグに置換、cogs_concept=既存候補の
+  末尾へ追加（`append_concept`、全置換すると過去年度が欠損する回帰があるため）、
+  exclude=PascalCase名をLayer3フィールド名へ変換して除外
+- `config/sec_concept_definitions.json`: `ticker_overrides`・
+  `_ticker_restrictions_migration_status`を削除し`_ticker_overrides_source`の注記のみ
+- 回帰テスト`tests/test_layer3_ticker_overrides_single_source.py`（15件、修正前14件失敗）:
+  TICKER_RESTRICTIONSの全`*_concept`・excludeがLayer3に届くことを網羅検証
+  （今後キーを追加してLayer3側の対応表を更新し忘れると失敗する）
+
+#### 結果（全102銘柄×全フィールドのLayer3ストアを②時点と比較）
+変化は意図した4銘柄のみ（他の98銘柄は全フィールド不変）:
+- CPRT/CEG/JOBY: `cost_of_revenue`・`gross_profit`が変化し、TTMの`gross_profit`が
+  None→値あり（CPRT 4,039M〈売上4,639M〉・CEG 13,730M〈同31,270M〉・JOBY 39.9M〈同116.3M〉）
+- LYFT: `capital_expenditure`に年次エントリが入るようになった。**ただしTTMの
+  `capital_expenditure`・FCFはNoneのまま**。上書き先の
+  `CapitalizedComputerSoftwareAdditions`は10-K（年次）にしか申告されておらず
+  四半期ファクトが1件も無いため、4四半期合算のTTMは元データの制約で算出できない
+  （年次値からの推測によるTTM生成はしていない）
+- CPRT/HEIの`cash_concept`はLayer3の値を変えなかった（Layer3は元から正しいタグを
+  採用していた）
+
+---
+
 ### ✅ [SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1] system_health [G]がpoc.jsonのgenerated_at最大値だけで鮮度判定しており、手動再生成でCI停止が隠れる → 対応不要でクローズ（2026-09-24）: [[HYPECORE-CI-SILENT-FAILURE-1]]のexit 1化により、HypeCore全面失敗は[J] CronRunsのfailure検知（CRITICAL）で捕捉されるようになったため、[G]側の判定方式変更は不要（案c）
 **優先度:** 中（HypeCoreのCIが2026-08-11〜09-21の約6週間実質停止していたのを検知できなかった）
 **分類:** 運用監視 / system_health / HypeCore
