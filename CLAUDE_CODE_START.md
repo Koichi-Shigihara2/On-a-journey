@@ -12,8 +12,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24④時点）**: `BACKLOG.md`
-アクティブ件数**12件**（機械カウント、`grep -c "^### \["`）。2026-09-24②〜④で
+**現在の到達点（2026-09-24⑤時点）**: `BACKLOG.md`
+アクティブ件数**8件**（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
+陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
+`[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`・
+`[[LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1]]`・
+`[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`）をクローズ（12件→8件）。
+`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（CHECK-47がBKNG/FCXで未確認発火）・
+`[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]`（統合先の完了記録がG&A単体タグを
+扱っていない）は前提不一致でクローズ見送り。2026-09-24②〜④で
 Discord通知403・SEC_Data_Update停止（CHECK-31）・HypeCore CI空振りを修正し
 `[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`を新規登録（11件→12件、
 詳細はBACKLOG_DONE.md「2026-09-24（完了）」）。2026-09-24①で
@@ -135,8 +142,11 @@ BACKLOG.mdアクティブ件数は本ブロック開始時点22件→終了時�
 優先順。詳細は下記「BACKLOG優先順位の目安」参照）**:
 - ~~`[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]`~~（2026-09-24陳腐化クローズ済み、
   着手不要）
-- `[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`（優先度低。
-  ドキュメント修正のみ）
+- ~~`[[DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1]]`~~（2026-09-24完了、
+  クロス集計表を再集計・更新済み）
+- `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`の着手条件3（CHECK-47発火）対応:
+  BKNG stock_based_compensation（2.2%）・FCX net_income（39.9%）の
+  未確認WARN-47について実害確認（2026-09-24発火確認）
 - `[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`②のみ（company_facts
   自動列挙可否の調査部分、独立して実施可能）
 
@@ -2941,9 +2951,8 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 ### 順次着手（技術判断のみで着手可能、優先順）
 - ~~LAYER3-MOAT-ROIC-4TICKERS-NONE-1~~（2026-09-24陳腐化クローズ済み。
   年次OIが4銘柄とも存在し実測値で算出済みと判明、BACKLOG_DONE.md参照）
-- DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1（優先度低。
-  DERIVED_DATA_SUBCATEGORIES.mdクロス集計表〈サブシステム別内訳〉の
-  陳腐化、ドキュメント修正のみ・実害なし。着手条件: なし）
+- ~~DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1~~（2026-09-24完了、
+  BACKLOG_DONE.md参照）
 - SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1の②のみ（優先度低。
   segment_xbrl拡張候補3件のうち「company_facts自動列挙可否」の調査部分
   だけは、着手前の価値検証として独立して実施可能。①③本体はKoichiさん
@@ -2954,18 +2963,17 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 - BBAI-RDW-RUNWAY-VERIFICATION-1: Koichiさんが着手タイミングを判断
 - SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（①③本体）: Koichiさんが
   優先順位・着手タイミングを判断
-- HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1:
-  STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1の行動経済学的要素の設計が
-  Koichiさんと確定した際にまとめて判断
+- ~~HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1~~（2026-09-24、親エピック
+  完了・report.txt消費側に必要なしと確認しクローズ）
 - FUTURE-FEATURE-IDEAS-CATALOG-1: 構想段階の8件、個別項目ごとに
   Koichiさんが着手可否を判断
 - UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1: ①〜③いずれも実データ未確認の
   推測段階、次回セッション以降でKoichiさんが判断
 - JNJ-XOM-PM-FLOOR-RISK-1・TTM-DATA-DRIFT-BEHIND-PIPELINE-1・
-  LAYER3-GA-STANDALONE-TAG-UNMAPPED-1・LAYER3-ANNUAL-CLASSIFICATION-
-  DROPS-DATA-1: いずれも特定トリガー条件（候補件数低下・実害顕在化・
+  LAYER3-GA-STANDALONE-TAG-UNMAPPED-1: いずれも特定トリガー条件（候補件数低下・実害顕在化・
   新機能での実消費計画等）が発生するまで監視・保留（詳細は各エントリ
-  「着手条件」参照）
+  「着手条件」参照。LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1は2026-09-24
+  クローズ。TTM-DATA-DRIFTは2026-09-24にCHECK-47発火で着手条件3が成立）
 
 ---
 

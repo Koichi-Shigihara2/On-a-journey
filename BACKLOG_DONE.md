@@ -4,6 +4,390 @@
 
 ## 2026-09-24（完了）
 
+### ✅ [SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1] system_health [G]がpoc.jsonのgenerated_at最大値だけで鮮度判定しており、手動再生成でCI停止が隠れる → 対応不要でクローズ（2026-09-24）: [[HYPECORE-CI-SILENT-FAILURE-1]]のexit 1化により、HypeCore全面失敗は[J] CronRunsのfailure検知（CRITICAL）で捕捉されるようになったため、[G]側の判定方式変更は不要（案c）
+**優先度:** 中（HypeCoreのCIが2026-08-11〜09-21の約6週間実質停止していたのを検知できなかった）
+**分類:** 運用監視 / system_health / HypeCore
+**登録日:** 2026-09-24
+**発見:** 2026-09-24指示書④（[[HYPECORE-CI-SILENT-FAILURE-1]]の反映確認時）
+
+#### 内容
+`common/system_health.py::check_g_hypecore()`は全`*_poc.json`の
+`generated_at`の**最大値**が14日以内ならOKと判定する。そのため
+(1) ローカルでの手動再生成（2026-09-16の`ee3ba7854c`・`50d2d9df94`）で
+全銘柄のgenerated_atが更新されると、CIが止まっていても「最終更新9/16」と
+表示され正常に見える（9/30頃まで警告が出ない状態だった）
+(2) bot名義のコミットかどうかを区別しない
+(3) [J] CronRunsはworkflowの実行結果（conclusion）を見るが、HypeCoreは
+全銘柄失敗でもexit 0だったため「success」として素通りしていた
+（(3)は[[HYPECORE-CI-SILENT-FAILURE-1]]で全面失敗時exit 1化により解消済み）。
+
+#### 対応方針候補（未実装）
+(a) generated_atの最大値ではなく最小値・中央値、または一定割合以上の銘柄が
+閾値内かで判定する（一部銘柄だけ更新が止まるケースも検知できる）
+(b) `git log --author=github-actions -- docs/value-monitor/hypecore/data/*_poc.json`
+の最終日時で「CIによる更新」の鮮度を別途判定する
+(c) (1)(2)は[[HYPECORE-CI-SILENT-FAILURE-1]]のexit 1化で[J]側から検知
+できるようになったため現状維持とする
+
+#### 付随して見つかった軽微な問題（同一ワークフロー）
+`HypeCore_Update.yml`の`Summary`ステップは`monthly_data`・
+`lifecycle_label`・`recommendation`キーを参照しているが、poc.jsonの実際の
+キーは`monthly`で、月次レコードに`lifecycle_label`・`recommendation`は
+存在しない。そのためGitHub Actionsのサマリー表は常に空になっている
+（データには影響なし）。
+
+#### 着手条件
+なし（技術判断で進行可能）
+
+#### 2026-09-24 クローズ（案cを採用、コード確認済み）
+[[HYPECORE-CI-SILENT-FAILURE-1]]（コミット`f702703499`）で、hypecore.pyは
+market_data層がimportできない場合・失敗率20%超の場合にexit 1で終了する
+ようになった。これが[J]のfailure検知につながることをコードで確認した:
+- `common/system_health.py::_discover_cron_workflows()`は`.github/workflows/`
+  配下からcron定義を持つワークフローを列挙する。`HypeCore_Update.yml`は
+  フォールバックcron（`0 4 * * 1`）を持つため監視対象に含まれる
+- `check_j_workflow_runs()`は各ワークフローの直近完了runの`conclusion`が
+  `success`/`skipped`以外なら`failed`へ入れ、`ok_j=False`となる。
+  `main()`は`not ok_a or not ok_j`で**exit 2（CRITICAL）**を返す
+- 従来は全銘柄失敗でもexit 0（`conclusion=success`）だったため[J]を
+  素通りしていたが、今後は同型の全面失敗が`failure`として[J]に現れる
+
+[G]の「generated_at最大値」判定で手動再生成がCI停止を隠す点自体は残るが、
+CI停止の主経路（全面失敗）は[J]で検知できるため、[G]の判定方式変更
+（案a/b）は行わない。付記していた`HypeCore_Update.yml`の`Summary`ステップの
+キー誤りは、`monthly_data`→`monthly`の1行修正を同コミットで実施した
+（Stage/Phase列が表示されるようになる。LC/Rec列は元となる
+`lifecycle_label`/`recommendation`キーがpoc.jsonに存在しないため`--`表示のまま）。
+
+---
+
+### ✅ [HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1] poc.jsonのHypeCore合成スコアがreport.txtに一切転記されていない → 対応不要でクローズ（2026-09-24）: 着手判断の起点だった親エピック2件（STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1・HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1）がいずれも完了済みで、report.txtの消費側に合成スコアを必要とするものは無いと確認
+**優先度:** 保留
+**分類:** データ品質 / HypeCore / TANUKI VALUATION / report.txt
+**登録日:** 2026-09-23
+**発見:** [[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]データ棚卸し
+（2026-09-23）で、report.txt[7. HYPECORE]の実際の生成元を実コード確認
+（`pipeline.py`1382-1421行目・2434-2530行目）した際の副次発見
+
+#### 内容
+`docs/value-monitor/hypecore/data/{ticker}_poc.json`の`monthly`配列は、
+`price_iv_ratio`（価格/IV比率）・`expectation_score`（期待系zスコア
+合成）・`fundamental_score`（財務系zスコア合成）・`momentum_score`
+（モメンタム系zスコア合成）・`substage_phase`/`substage_label`等の
+豊富な合成指標を月次33ヶ月分保持している。
+
+一方、`report.txt`の`[7. HYPECORE]`セクションは、poc.jsonの最新月から
+`stage`/`stage_label`（Current_Phase）と`substage_label`+
+`substage_watch`（HYPE_Signal）・直近6ヶ月の`stage`のみ（Phase_History）
+を転記しているだけで、上記の合成スコア系フィールド（`price_iv_ratio`・
+`expectation_score`・`fundamental_score`・`momentum_score`）は
+**report.txtに一切転記されていない**。これらはstock.html
+（`docs/value-monitor/tanuki_valuation/stock.html`ではなく
+`hypecore.html`・関連画面）が`poc.json`を直接fetchして独自に使う
+構造になっており、report.txt経由でのテキストベース参照・AI分析
+（`quarterly_review_generator.py`等のプロンプト構築）からは見えない
+状態になっている。
+
+#### 実害
+現時点で実害は未確認（report.txtを消費するAI分析・レビュー生成が
+これらの合成スコアを必要としているかどうかは未調査）。ドキュメント
+整合性というより「潜在的に有用なデータが一部消費経路から見えていない」
+というギャップの記録。
+
+#### 対応方針
+未定。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`（HypeCoreをIVと
+市場価格の乖離分析に特化させるepic）の設計が固まった際に、
+`price_iv_ratio`等をreport.txtへ追加転記するかどうかを合わせて判断する
+可能性がある。
+
+#### 着手条件
+なし（優先度保留）。`[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`の
+行動経済学的要素の設計がKoichiさんと確定した際に、まとめて対応するか
+どうかを判断する候補として残す。
+
+#### 2026-09-24 クローズ（前提再確認済み）
+- 親エピック: `[[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]`（2026-09-23
+  ①実装完了）・`[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]`（2026-09-23
+  ③④実装・①②⑤⑥削除でクローズ）とも`BACKLOG_DONE.md`で`### ✅`を確認
+- report.txtを実際に読むコード（`grep`で`report.txt`をopen/joinする箇所）は
+  `pipeline.py`（生成側）・`diag_iv_trace.py`（診断）・
+  `report_consistency_check.py`（整合性検証）・
+  `common/screening/report_txt_parser.py`のみ。
+  `report_txt_parser.py`は合成スコアを抽出しておらず、テスト以外からの
+  呼び出しも無い
+- 本文が懸念していた`quarterly_review_generator.py`はreport.txtを
+  読まない（`report`参照0件）
+- 合成スコア（`expectation_score`/`fundamental_score`/`momentum_score`）を
+  AIプロンプトに使う唯一の消費者`src/value/tanuki_score/daily_pick.py`は
+  poc.jsonを直接読んでおり（`load_json(HYPE_DATA / f"{ticker}_poc.json")`）、
+  report.txt経由の転記を必要としない
+
+以上より、report.txtへの追加転記の必要は無い。コード変更なし。
+
+---
+
+### ✅ [LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1] Layer3の年次期間分類が実在するデータを取りこぼしている（年次側は調査完了・実質解消／四半期側は限定的な残課題あり） → 対応不要でクローズ（2026-09-24）: 年次側は確認された欠陥0件。四半期側の残課題4件（ALAB/CRWV/CWAN buyback・FICO finance_lease_payments）は、現行データで消費フィールドへの影響が無いことを確認
+**優先度:** 低（2026-08-19②の範囲実測により、当初の仮説は大半が誤りと
+判明。年次側は確認された未解決の欠陥が0件、四半期側も確認された欠陥は
+4件でいずれもTAIL非消費フィールド）
+**分類:** 調査完了 / データ品質 / SEC EDGAR / Layer3統合スキーマ
+**登録日:** 2026-08-19
+**更新日:** 2026-08-19③（`CELH stock_based_compensation`のgap=1を
+個別調査。原因未特定のまま記録、TAIL実消費への影響なしを確認）
+（2026-08-19②：全105銘柄相当・32フィールドの範囲実測を実施。
+年次側の仮説はほぼ全否定、四半期側も実測。詳細は本文参照）
+**発見:** `[[OI-RECONSTRUCTION-MISSING-OPEX-LINES-1]]`実測調査（Step 3、
+Layer3側の営業利益再構成の実態確認）
+
+#### 内容（登録時点、2026-08-19①）
+`layer3_builder.py::build_ticker_store()`を全tanuki銘柄（100件）で
+実行した結果、JNJ・KLAC・LLY・XOMの4銘柄で`operating_income`（年次）の
+エントリが0件だった。JNJの`company_facts.json`には`OperatingIncomeLoss`
+のFY 10-Kエントリが12件存在することを確認し、「Layer3独自の期間分類が
+実在するデータを拾えていない可能性」という仮説のもとで登録した。
+
+#### 年次側 範囲実測結果（2026-08-19②）——仮説は大半が否定された
+100銘柄×32フィールド＝3,200行を本番の`_classify_period()`・
+`build_ticker_store()`をimportして実測（自前の判定ロジック再実装なし）。
+
+| 状態 | 件数 |
+|---|---|
+| (a) 元データなし | 1,820 |
+| (b) 正常 | 13 |
+| (b) 部分取りこぼし | 1,335 |
+| (c) 完全取りこぼし | 32 |
+
+- (c) 32件のうち**30件は`_ANNUAL_YEARS=6`保持窓で完全に説明可能**
+  （タグ報告終了が6年より前）。JNJ・KLAC・LLY・XOMの`operating_income`
+  もこれに該当——**「期間分類のバグ」ではなく「6年保持窓の意図した
+  挙動＋タグ報告打ち切りが古い」の組み合わせ**だった（JNJの最新
+  `OperatingIncomeLoss`エントリ〈`end=2014-12-28`〉を1条件ずつ評価し、
+  `_classify_period()`自体は`is_annual=True`と正しく分類、
+  `_process_entries()`の`end>=cutoff_a`保持窓チェックのみで除外される
+  ことを実際に確認済み）
+- 残り2件（`APP capital_expenditure`・`MSFT depreciation_and_
+  amortization`）は当初「6年窓内に生データがあるのにLayer3が0件＝真の
+  異常」と報告したが、**これも誤りだった**。`config/sec_concept_
+  definitions.json`の`ticker_overrides`にAPP/MSFTそれぞれ`action:
+  "exclude"`の設定が存在し、**意図的な除外設定**だった（旧
+  `quarterly.py::TICKER_RESTRICTIONS`からの移行済み設定）。当初の実測
+  スクリプトが`ticker_overrides`を参照していなかったための誤検知
+- (b)部分取りこぼしのうち保持窓で説明できない14件は**全てBBAI**
+  （11フィールドで一律`raw_within_6yr=11→l3_count=7`）だったため、
+  当初「銘柄固有の構造的異常、原因未特定」と報告したが、**これも誤り**
+  だった。`[[LAYER3-ANNUAL-MISCLASSIFICATION-BBAI-1]]`
+  （2026-08-06完了・BACKLOG_DONE.md参照）が`_reclassify_misannotated_
+  fy_entries()`をBBAI限定（`_ANNUAL_MISCLASSIFICATION_FIX_TICKERS =
+  frozenset({"BBAI"})`）で既に実装済みであり、中間期のYTD比較開示が
+  誤ってis_annual=Trueに混入する既知パターンを正しく除外した**結果**
+  だった。当初の実測スクリプトはこの後処理を呼び出しておらず
+  `_classify_period()`単体の結果と比較したための誤検知
+
+**訂正の結論**: 年次側は`ticker_overrides`未考慮・既存修正の後処理
+未再現という**2つの計測方法の誤り**により偽陽性を報告していた。
+これらを補正した結果、**年次側で確認された未解決の取りこぼしは0件**。
+`SEC_EDGAR_LAYER_DESIGN.md`のフォールバック不在に関する記載なしという
+指摘自体は事実として残るが、期間分類ロジックそのものに未知の欠陥は
+確認されなかった。
+
+#### 四半期側 範囲実測結果（2026-08-19②、新規）
+TAILの実消費経路（`get_quarterly_series`/`get_latest_quarterly`）は
+四半期データを読むため、年次側だけでの「実害ゼロ」は消費経路を測らず
+安全宣言することになるとの指摘を受け、四半期側も同一100銘柄×32
+フィールドで実測した（`_QUARTERLY_YEARS=5`、末尾のend日ベースで
+Layer3側の最終エントリ集合と比較）。
+
+| 状態 | 件数 |
+|---|---|
+| (a) 元データなし | 881 |
+| (b) 正常 | 2,189 |
+| (b) 部分取りこぼし | 41 |
+| (c) 完全取りこぼし | 89 |
+
+- (c) 89件のうち83件は5年保持窓で説明可能。残り6件のうち2件
+  （`APP capital_expenditure`・`MSFT depreciation_and_amortization`）
+  は年次側と同じ`ticker_overrides`除外設定で説明できる。
+  **残る4件が現時点で唯一の確認された欠陥**:
+  `ALAB buyback`・`CRWV buyback`・`CWAN buyback`・
+  `FICO finance_lease_payments`（5年窓内に生データがあるのにLayer3が
+  0件、`ticker_overrides`にも該当なし、原因未特定）
+- 「Layer3の実エントリ末尾end日が、5年窓内の生データend日集合と
+  一致しない」という粗い指標（`genuine_gap`）では442件が該当したが、
+  **この数値は信頼性が低いと判断し、確定した欠陥件数としては扱わない**。
+  理由: 同じ粗い指標で年次側は当初32件・14件（BBAI）を「真の異常」と
+  誤検知しており、四半期側でも`_merge_candidate_entries()`の候補間
+  優先度マージ・`_is_plausible_standalone_quarter`等のプルーニングを
+  本実測では再現できていないため、同型の誤検知が442件の大半を占めて
+  いる可能性が高い。442件を欠陥として扱う前に、これらの内部ロジックを
+  踏まえた再測定が必要（本項目のスコープ外、着手時に再実施すること）
+
+#### 実害判定（TAIL消費経路そのものを実測、2026-08-19②）
+TAILが実際に消費する5フィールド（revenue/operating_income/
+stock_based_compensation/net_income/shares_diluted）×保有10銘柄
+（ADBE/APGE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）の50セルを
+四半期データで個別確認した。
+
+- **APGEは`get_tanuki_tickers()`に含まれておらず**（tanuki=false）、
+  当初の100銘柄スキャンから漏れていた。`build_ticker_store('APGE')`を
+  個別実行し確認
+- 欠落2件: `APGE revenue`（0件）・`SOFI operating_income`（0件）。
+  **いずれも(a)元データなし**——APGEはcompany_facts.jsonにrevenue系
+  タグが1件も存在しない（臨床段階バイオ、実際に無収益と推測）。SOFIが
+  `OperatingIncomeLoss`を報告しないことは`[[OPERATING-INCOME-
+  EXTRACTION-GAP-1]]`で既に確認済みの事実と整合。**取りこぼし(c)では
+  ない**
+- `CELH stock_based_compensation`のgap=1は2026-08-19③で追加調査した。
+  欠落しているend日は**`2021-09-30`（1件のみ）**——CELHの生データでは
+  この期がQ3 2021のYTD開示（10-Q、`is_ytd=True`）だが、`_ytd_to_
+  quarterly()`が単一四半期額へ差分するために必要なQ1/Q2 2021の同一
+  YTDチェーン先行エントリが、`_QUARTERLY_YEARS=5`の保持窓カットオフ
+  （実測時点基準で`cutoff_q≈2021-08-20`）の外側にあるため存在しない。
+  結果としてこのYTDエントリは差分元を持たない「孤立エントリ」となり、
+  `_ytd_to_quarterly()`内で`unresolved`リストへ追加される経路を通る
+  （`_normalize_field_entries()`が`all_quarterly.extend(unresolved)`で
+  再結合する箇所まではコード追跡で確認）。**ただし、この`unresolved`
+  エントリが最終的に`build_ticker_store()`の出力へ現れない具体的な
+  分岐点までは特定できなかった**——推測で断定せず「原因未特定」として
+  記録する。実害は`get_latest_quarterly(store, 'stock_based_
+  compensation')`で個別確認済みで、TAILが実際に消費する最新エントリは
+  `end=2026-03-31, val=7,626,000`であり、2021-09-30の欠落はTAILの
+  `sbc_quarterly`出力に**影響しない**（優先度低のまま据え置き、対応
+  不要）
+- 残り48セルは全て正常一致
+
+**消費側の欠損時挙動（i/ii/iii判定）**: `tail_dcf_bridge.py`・
+`quarterly_review_generator.py`とも
+```python
+if rev and oi and rev.get("val"):
+    result["operating_margin"] = round(oi["val"] / rev["val"], 4)
+if sbc:
+    result["sbc_quarterly"] = sbc["val"]
+if ni and sd and sd.get("val"):
+    result["eps_diluted"] = round(ni["val"] / sd["val"], 4)
+```
+**(ii) 欠損として明示的に除外される**（対応するresultキー自体が
+出力されない、クラッシュなし）。**(iii)の0/既定値への暗黙置換は
+確認されなかった**。ただし`rev.get("val")`・`sd.get("val")`は
+truthy評価されており、収益・希薄化株式数が正当に`0`となる四半期が
+将来発生した場合、そこだけ`operating_margin`/`eps_diluted`が欠損扱い
+される軽微なfalsy-zeroリスクが理論上残る（実データでは現状該当なし、
+優先度低）。
+
+#### parser.py↔Layer3の2経路乖離（2026-08-19②、事実の登録のみ）
+`[[OPERATING-INCOME-EXTRACTION-GAP-1]]`本線1でparser.py側に
+`operating_income`のGP法/pretax法再構成を実装したが、`layer3_builder.py`
+側には同等のフォールバックがない。同一`company_facts.json`から同一概念
+を取る2経路のうち、片方だけ再構成されている非対称な状態。
+
+実数（100銘柄）: **Layer3年次`operating_income`が0件の4銘柄
+（JNJ・KLAC・LLY・XOM）は、4/4ともparser.py側の`annual_YYYY.json`には
+`operating_income`が入っている**（JNJ: $25.596B `reconstructed_gp`・
+KLAC: $5.014B `reconstructed_gp`・LLY: $29.696B `reconstructed_gp`・
+XOM: $41.871B `reconstructed_pretax`）。実装（Layer3側への再構成移植）
+は別途判断、本項目では事実の登録のみ。
+
+#### 対応方針
+- 四半期側の4件（ALAB/CRWV/CWAN buyback、FICO finance_lease_payments）
+  は原因未特定のまま優先度低で保留可（TAIL非消費フィールドのため実害
+  なし）
+- 442件の粗いgenuine_gap指標は、`_merge_candidate_entries()`内部の
+  候補優先度マージ・プルーニングロジックを実測に組み込んだ上での
+  再測定が必要（未着手）
+- parser.py↔Layer3の2経路乖離への対応要否は別途判断
+
+#### 関連
+- `[[OI-RECONSTRUCTION-MISSING-OPEX-LINES-1]]`（本問題の発見元、
+  GP法/pretax法フォールバック不在の課題とは別種）
+- `[[OPERATING-INCOME-EXTRACTION-GAP-1]]`（BACKLOG_DONE.md、parser.py側
+  の再構成実装元。Layer3側との2経路乖離の一方の当事者）
+- `[[LAYER3-ANNUAL-MISCLASSIFICATION-BBAI-1]]`（BACKLOG_DONE.md、
+  2026-08-19②の実測でBBAIパターンの真因と判明した既存完了項目）
+- `[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]`（BACKLOG_DONE.md、Layer3の
+  別の既知問題〈古いタグ優先バグ〉。本問題とは異なる原因）
+
+#### 着手条件
+なし（優先度低のため急ぎ不要）
+
+#### 2026-09-24 クローズ（前提再確認済み、本文の理由付けを訂正）
+本文「対応方針」は四半期側4件を「TAIL非消費フィールドのため実害なし」と
+していたが、再確認の結果、**両フィールドともLayer3/TTM経由で
+TANUKI VALUATIONが消費している**ことが判明した（理由付けの誤り）:
+- `buyback`: `ttm_calculator.py::FLOW_FIELDS`に含まれ、
+  `pipeline.py`（2937行目付近）が`ttm/`の最新`flow.buyback`を
+  `financial_health.buyback_ttm`（キャッシュトラップ検出用）へ転記
+- `finance_lease_payments`: 同じくFLOW_FIELDSに含まれ、
+  `ttm_calculator.py`（338行目付近）の`_calc_fcf()`でFCF算出に使用
+
+そのうえで現行データ（2026-09-24のSEC Data Update後）で実影響を確認した:
+- ALAB/CRWV `buyback`: `ttm/`の直近2期は`None`だが、parser.py側の
+  `quarterly_*.json`直近8四半期（CRWVは5四半期）にも`buyback`が存在しない。
+  TTM窓内に実データが無いことと一致しており、取りこぼしではない
+  （欠落は5年窓内の古い期のみ）。`buyback_ttm`は正しく未設定
+- CWAN: 2026-09-06に登録抹消済み（`common/sec_data/data/CWAN`なし）で対象外
+- FICO `finance_lease_payments`: Layer3の`ttm/`に値あり（2026-06-30:
+  179,000、quarters_used=2）で、登録時の「Layer3が0件」は現行データでは
+  再現しない。FCFへの寄与も$0.18M規模で実質影響なし
+- 粗い`genuine_gap`指標442件は本文自身が「信頼性が低く欠陥件数として
+  扱わない」としており、確定欠陥ではない
+
+parser.py↔Layer3のoperating_income 2経路乖離（JNJ/KLAC/LLY/XOM）は、
+ROIC算出がparser.py側の年次OIを優先するため影響が無いことを
+[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]（2026-09-24）で確認済み。コード変更なし。
+
+---
+
+### ✅ [DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1] DERIVED_DATA_SUBCATEGORIES.mdクロス集計表（サブシステム別内訳）の陳腐化 → 完了（2026-09-24）: クロス集計表を明細一覧（383件）から機械再集計し、TANUKI VALUATION・TANUKI TAIL・HypeCoreの3行を更新
+**優先度:** 低
+**分類:** ドキュメント整合性
+**登録日:** 2026-09-23
+**発見:** [[FIVE-CATEGORY-RECLASSIFY-1]]対応中（2026-09-19）の副次発見。
+当時は本タスクのスコープ外として`BACKLOG_DONE.md`のクローズ注記に
+記録のみされ、新規BACKLOG項目としては未登録だった
+
+#### 内容
+`docs/architecture/new_data_platform/archive/DERIVED_DATA_
+SUBCATEGORIES.md`146行目「サブシステム別内訳（クロス集計）」表の
+TANUKI TAIL行（156行目、「DCF/WACC構成要素系17件、その他15件」）が、
+フェーズ9でAS-IS-447/453/454を「その他」→「DCF/WACC構成要素系」へ
+再分類した際に詳細な分類別リストは正しく更新されたものの、この
+クロス集計サマリー表自体は当時から更新されておらず、実際の内訳
+（[[FIVE-CATEGORY-RECLASSIFY-1]]対応前時点でDCF/WACC構成要素系20件・
+その他12件）と食い違っていた。
+
+さらに[[FIVE-CATEGORY-RECLASSIFY-1]]本体でAS-IS-437〜441（TANUKI TAIL
+`tail_kpi_map.json`関連5件）が導出データ→手動入力データへ再分類された
+ため、TANUKI TAIL行の合計（71件）自体も現時点でさらに陳腐化している
+可能性がある（本登録時点では詳細再集計未実施、実際の最新内訳は次回
+着手時に確認する）。
+
+#### 実害
+このクロス集計表（`DERIVED_DATA_SUBCATEGORIES.md`）をファイル名で
+参照する`.py`スクリプト・テストは存在しないことを既存タスク
+（[[FIVE-CATEGORY-RECLASSIFY-1]]）でgrep確認済み。ドキュメント表示上の
+不整合のみで、パイプライン・テストへの実害はない。
+
+#### 対応方針
+次回このドキュメントに手を入れる機会に、詳細分類別リスト（実データ）
+から実際のサブシステム別・カテゴリ別件数を再集計し、クロス集計表
+（TANUKI TAIL行含む全サブシステム行）を実際の値に更新する。
+
+#### 着手条件
+なし（優先度低・ドキュメント整合性のみ・実害なし。次回
+`DERIVED_DATA_SUBCATEGORIES.md`に手を入れる機会があれば併せて修正）。
+
+#### 2026-09-24 対応完了
+`docs/architecture/new_data_platform/archive/DERIVED_DATA_SUBCATEGORIES.md`の
+「サブカテゴリ別 明細一覧」全392行から、2026-09-19訂正2で導出データの
+母数から離脱した9件（AS-IS-437〜441・404・057・058・060。明細一覧には
+記録として残置されている）を除いた383件を機械集計し、クロス集計表を更新した。
+カテゴリ別合計は「サブ分類 集計結果」表（383件）と完全一致。変更は3行:
+- TANUKI VALUATION: 68→65件（AS-IS-057/058/060除外で「その他」6→3件）
+- TANUKI TAIL: 71→65件（DCF/WACC構成要素系17→20件、その他15→6件）
+- HypeCore: 29→36件（件数表記の誤り。内訳合計は従前から36件）
+10行の合計は383件。表の直後に再集計の注記を追加。ドキュメントのみの変更。
+
+---
+
 ### ✅ [LAYER3-MOAT-ROIC-4TICKERS-NONE-1] COHR/LLY/JNJ/KLACのROIC-WACC比率・Moat ScoreがLayer3切替以降None（中立フォールバック0.5）のまま → 陳腐化クローズ（2026-09-24）: 年次operating_incomeが4銘柄とも存在し、roic.pyは年次OIを優先するためTTM推定フォールバックは発火していない。ROIC-WACC比率・Moat Scoreは実測値で算出済み（COHR 0.511 / LLY 3.798 / JNJ 1.826 / KLAC 4.223）。登録時の前提が陳腐化
 **優先度:** 中（Moat Scoreの精度に直結する4銘柄、投資判断への影響は個別確認が必要）
 **分類:** データ品質 / Layer3統合スキーマ / Moat Score
@@ -283,9 +667,12 @@ OSのzoneinfoを使うため、いずれも実害なしと判定）
   - VZ: S3→S2期待拡大期、timing 70→80
   - XOM: S3→S2期待拡大期、timing 30→40
   （本番データはworktreeの結果をコミットせず、bot名義のCI実行で反映する）
-- Actions実地確認: gh CLIが無いため、push後にKoichiさんへ
-  SEC_Data_Update→HypeCore_Updateの順のworkflow_dispatch実行と、bot名義の
-  poc.json更新・ZETA trailing_pe=nullの確認を依頼
+- **Actions実地確認（2026-09-24、Koichiさんによるworkflow_dispatch後）**:
+  SEC_Data_Update（2026-09-24 10:04 UTC、workflow_dispatch）=success →
+  HypeCore_Update（10:06 UTC、workflow_run連鎖）=success。bot名義コミット
+  `569acf66bf`（Update SEC Data）・`7f8f6ded44`（Update HypeCore、poc.json
+  101件＋tickers.jsonの102ファイル更新）を確認。ZETA最新月（2026-09）の
+  `trailing_pe`=null、全poc.jsonでInfinity/NaN混入0件
 
 #### 残課題
 system_health [G]がpoc.jsonのgenerated_at最大値だけで鮮度判定し、手動再生成で

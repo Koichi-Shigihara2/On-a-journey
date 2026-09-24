@@ -89,7 +89,7 @@ jobs:
               try:
                   with open(f) as fp:
                       d = json.load(fp)
-                  months = d.get("monthly_data", [])
+                  months = d.get("monthly", [])
                   if not months:
                       continue
                   latest = months[-1]
