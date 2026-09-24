@@ -2544,6 +2544,17 @@ def parse_args():
             "[[QUALITY-GATES-EPIC-1]]）"
         ),
     )
+    parser.add_argument(
+        "--include-provisioning",
+        action="store_true",
+        help=(
+            "status=provisioning（登録処理中）の銘柄も対象に含める（省略時は"
+            "従来どおりactiveなtanuki銘柄のみ）。新規銘柄登録フロー"
+            "（common/registration/register_ticker.py、昇格判定Step 8の直前）"
+            "から--tickerと併用する想定（[[REGISTRATION-VALIDATOR-P2A-"
+            "PERIOD-MISMATCH-1]]、2026-09-24新設）"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -2564,13 +2575,39 @@ def run_checks(args=None) -> tuple[int, int]:
     # tanuki=false化済みだがreport.txtが残存する銘柄（ZS・RKLB等）が
     # スキャン対象に混入していた（ZS-TICKERS-LEAK-1参照）。
     # tickers.get_tanuki_tickers()との積集合に限定する。
+    # --include-provisioning（新規銘柄登録フロー用）: status=provisioningも含める。
+    # retiredは引き続き除外する（get_registrable_tickers()）。
+    include_provisioning = getattr(args, "include_provisioning", False)
+    base_tickers = (
+        _tickers_mod.get_registrable_tickers("tanuki") if include_provisioning
+        else _tickers_mod.get_tanuki_tickers()
+    )
     all_tickers = sorted([
-        t for t in _tickers_mod.get_tanuki_tickers()
+        t for t in base_tickers
         if os.path.exists(os.path.join(DATA_DIR, t, "report.txt"))
     ])
 
     if ticker_filter:
         tickers = [t for t in all_tickers if t in ticker_filter]
+        excluded = sorted(ticker_filter - set(tickers))
+        if excluded:
+            # 指定銘柄が対象外になった理由を明示する（黙って対象0件で
+            # 「NG=0・ゲート通過」とならないようにするため）
+            base_set = set(base_tickers)
+            reasons = []
+            for t in excluded:
+                if t not in base_set:
+                    reasons.append(
+                        f"{t}: tanuki対象外、またはstatusがretired"
+                        + ("" if include_provisioning else "/provisioning（--include-provisioningで対象化）")
+                    )
+                else:
+                    reasons.append(f"{t}: report.txtが存在しない")
+            print("⚠️  --tickerで指定した銘柄のうち対象外: " + " / ".join(reasons))
+        if not tickers:
+            print("❌ --tickerで指定した銘柄が1件も対象にならなかったため、"
+                  "チェックを実行せずexit(2)で終了します")
+            sys.exit(2)
     else:
         tickers = all_tickers
 

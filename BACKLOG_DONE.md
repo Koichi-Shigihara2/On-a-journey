@@ -4,6 +4,90 @@
 
 ## 2026-09-24（完了）
 
+### ✅ [REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1] registration_validator.pyのP2-Aが期末の異なる年次売上とTTM売上を比較しており、急成長銘柄を「SEC parserバグ疑い」と誤判定する → 廃止で完了（2026-09-24）: P2-Aを削除し、年次売上の同一期間チェックは新規登録フローStep 7.5（report_consistency_check.pyのCHECK-35/41/47等をprovisioning中の銘柄に実行）へ移管
+**優先度:** 低（効くのは新規銘柄登録時のみ。既存銘柄の処理には影響しない）
+**分類:** データ品質ゲート / 新規銘柄登録
+**登録日:** 2026-09-24
+**発見:** [[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]の修正前試行（指示書⑧ STEP 2）
+
+#### 内容
+P2-Aは`latest.json`の`components.latest_revenue`（最新の年次売上、例: FY2025＝
+2025-12期末）と、`ttm/`の`series[0]`（最新TTM、例: 2026-06期末）の売上の比が
+3倍以上でNG（非金融は「SEC parserバグ疑い」）、1.5倍以上でWARNとする。期末が半年ずれた
+期間同士の比較のため、急成長銘柄では実データが正しくても発火する。
+2026-09-24の全銘柄試行で5銘柄が発火し、5件とも実データは正しい（Layer3の四半期合計＝
+年次売上、差は半年間の成長）: ONDS 3.43倍（NG）・JOBY 2.18倍・IONQ 1.90倍・
+RCAT 1.76倍・ASTS 1.63倍（WARN）。ONDSは新規登録であればStep 8で昇格が止まる。
+
+#### 修正案（未実装）
+- 案1（推奨）: 同一期間で比較する。年次売上と、その会計年度末に終わる4四半期の
+  Layer3売上合計（または同じ期末のTTMアンカー）を比べ、乖離（例: 5%超）をNG。
+  パーサーの取り違え・単位誤り等の本来の検知対象はこれで捉えられ、成長では発火しない
+- 案2: 現行の比較は残し、TTM期末が年次期末より90日以上新しい場合はNGにせずWARN
+  （「高成長: TTM反映推奨」）に留める。実装は軽いが、期末ずれがある限り本来の
+  パーサーバグもWARNに埋もれる
+- 案3: 閾値の引き上げ（3倍→5倍等）。急成長の度合い次第で再発するため非推奨
+
+#### 着手条件
+なし（技術判断で進行可能）。次に急成長銘柄を新規登録する前に対応するのが望ましい
+
+#### 2026-09-24 対応完了（指示書⑨・同補足、案1検討→廃止）
+**経緯**:
+1. 案1（同一期間比較）をttm系列のアンカーで実装しようとしたが、アンカーは最新四半期
+   から1年刻みのため、年次の期末（±7日）と一致するアンカーがあるのは99銘柄中6銘柄
+   のみ（93銘柄が毎回判定スキップ）と判明し、実装前に停止
+2. 代替としてLayer3の四半期から「会計年度末に終わる連続4四半期」の合計を取る方式を
+   測定したところ、100/101銘柄で合計は取れたが、**97/100銘柄でQ4が年次からの逆算
+   （`is_implied: True`、年次−9か月累計）**のため合計が構造的に年次と一致し、比較
+   として機能しないと判明（逆算を含まない3銘柄〈ELF・HON・ABBV〉も10-K記載の
+   四半期値で、比率はいずれも1.0000）→ 停止しP2-A自体の存在意義を再検討
+3. 年次売上の取り違え・単位誤り等（P2-Aの本来の検知対象）は、report_consistency_
+   check.pyのCHECK-35/41/47が同一期間どうしで突合している。ただし登録フロー
+   （register_ticker.py Step 1〜8）ではreport_consistency_checkが呼ばれておらず、
+   またreport_consistency_checkは`get_tanuki_tickers()`（provisioning除外）が対象の
+   ため、新規銘柄は昇格後のCI（CHECK-47は日次のTANUKI_VALUATION_Update、CHECK-35/41は
+   週次のSEC_Data_Update）でしか検証されないことを確認 → 登録フローへの組み込みを
+   先に行ってからP2-Aを廃止
+
+**修正内容**:
+- `report_consistency_check.py`: `--include-provisioning`を新設（`get_registrable_
+  tickers("tanuki")`＝retiredのみ除外）。`--ticker`の既存の意味は変えない。
+  `--ticker`で指定した銘柄が対象から外れた場合は理由（tanuki対象外/provisioning/
+  report.txtなし）を表示し、**対象0件ならexit(2)**（黙って「NG=0・ゲート通過」に
+  しない）
+- `register_ticker.py`: Step 8の前にStep 7.5
+  （`report_consistency_check.py --ticker <T> --include-provisioning
+  --include-yfinance-checks --fail-on-ng`）を追加。exit 1（NG）・exit 2（対象0件）なら
+  昇格を止める。tanuki=falseの銘柄は対象外のためスキップ
+- **yfinance取得失敗時の扱い: WARNで通す（昇格は止めない）**。外部サービスの一時障害で
+  登録を止めないため。CHECK-47（SEC内部の2系統突合）・CHECK-31等はyfinanceに依存せず
+  実行される。CHECK-41のrevenue突合行が出力に無い場合は「CHECK-41のrevenue yfinance
+  突合が実行されませんでした（yfinance取得失敗、または年次期末日と一致する列なし）」と
+  明示表示する
+- `registration_validator.py`: P2-Aと専用の`_ttm_revenue()`を削除し、代替
+  （Step 7.5のCHECK-41・35・47）と廃止の経緯をコメントで明記
+
+**注意（止める力の変化）**: CHECK-35/41/47はいずれもWARN専用（情報提供）でNGにならない。
+そのため売上の乖離だけを理由に昇格が止まることは無くなった（旧P2-Aは3倍以上でNG）。
+Step 7.5で止まるのは、CHECK-31（凍結年度の不整合）等の既存NGと、対象0件の場合。
+
+**確認**:
+- 既存銘柄（ONDS・AAPL）をworktree上でprovisioningに見立てて実行: フラグなしでは
+  対象外→exit 2、`--include-provisioning`付きでCHECK-31・35・41・47の4関数が各1回
+  実行され（呼び出し回数を計測）、NG=0。ONDS（旧P2-Aで3.43倍のNG）もNGにならず
+  CHECK-41 revenueはSEC=yfinance=50,731,000（乖離+0.0%）
+- 実行中に不具合を1件発見・修正: 台帳注記付きのWARN行（`[🆕未確認 WARN-41 ...`）を
+  判定文字列`[WARN-41 revenue ...]`が拾えず「実行されませんでした」と誤表示していた
+  ため、括弧を含めない照合に変更
+- registration_validator.py全銘柄: 修正前NG=9/WARN=8 → P2-A有効化時NG=10/WARN=12 →
+  廃止後NG=9/WARN=8（P2-A分のみ消滅、既存NG 9件は本件と無関係）
+- 回帰テスト`tests/test_registration_consistency_gate.py`（12件、修正前10件失敗。
+  通った2件は「active銘柄に対する--tickerの意味が不変」のガード）。
+  `tests/test_ttm_flow_key_names.py`のP2-A前提のテストは「廃止されたこと」の確認に
+  置換（旧キー参照の検出テストは維持）
+
+---
+
 ### ✅ [REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1] registration_validator.pyのP2-A（年次売上とTTM売上の乖離チェック）がPascalCaseの旧キー"Revenue"を読んでおり、2026-07-25以降一度も判定していない → 完了（2026-09-24）: snake_caseの"revenue"へ修正し、ttm/のflowに対する旧PascalCaseキー参照をテストで検出する仕組みを追加
 **優先度:** 低（同種の売上異常はCHECK-35/41〈yfinance突合〉等でも検知できるが、登録時ゲートの1項目が無言で無効化されている）
 **分類:** データ品質ゲート / 新規銘柄登録 / 旧キーの取り残し

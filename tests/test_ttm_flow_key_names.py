@@ -7,8 +7,7 @@ snake_case（"revenue"・"net_income"等）に変わったが、registration_val
 P2-A（年次売上とTTM売上の乖離チェック）は旧PascalCaseキー"Revenue"を読み続け、
 常にNoneで無言のままスキップされていた（[[TTM-PASCALCASE-KEY-STALE-1]]の取り残し）。
 
-- 本番のttmファイル（common/sec_data/ttm/）をそのままフィクスチャに使い、
-  P2-Aが実際に値を読んで判定することを検証する
+- （P2-A自体は2026-09-24に廃止。[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]）
 - 再発防止: ttm/を読む全ソースとテストのモックから、flowに対する旧PascalCase
   キー参照を検出する（CHAT_RULES.md事例15: モックがバグと同じ誤りを再現して
   いると検知できないため、テスト側も検査対象に含める）
@@ -41,44 +40,11 @@ def _real_series0(ticker):
         return json.load(f)["series"][0]
 
 
-@pytest.mark.parametrize("ticker", ["AAPL", "ONDS"])
-def test_ttm_revenue_reads_production_file(ticker):
-    expected = _real_series0(ticker)["flow"]["revenue"]["val"]
-    assert expected is not None
-    assert rv._ttm_revenue(ticker) == expected
-
-
-def _run_p2(tmp_path, monkeypatch, ticker, latest_revenue):
-    ttm_dir = tmp_path / "ttm"
-    tanuki_dir = tmp_path / "tanuki" / ticker
-    ttm_dir.mkdir()
-    tanuki_dir.mkdir(parents=True)
-    # 本番ファイルをそのままフィクスチャとして複製（形式を再現しない）
-    shutil.copy(os.path.join(_REAL_TTM_DIR, f"{ticker}_ttm_series.json"), ttm_dir)
-    (tanuki_dir / "latest.json").write_text(json.dumps(
-        {"components": {"latest_revenue": latest_revenue, "sector": "Technology"}}), encoding="utf-8")
-    monkeypatch.setattr(rv, "TTM_DIR", str(ttm_dir))
-    monkeypatch.setattr(rv, "TANUKI_DIR", str(tmp_path / "tanuki"))
-    monkeypatch.setattr(rv, "SEC_DATA_DIR", str(tmp_path / "sec"))  # P2-B以降は対象外にする
-    issues = rv.Issues()
-    rv.check_p2_data_quality(ticker, issues)
-    return [(s, c) for s, c, _ in issues.all() if c == "P2-A-RevTTM"]
-
-
-def test_p2a_fires_on_revenue_divergence(tmp_path, monkeypatch):
-    ttm_rev = _real_series0("AAPL")["flow"]["revenue"]["val"]
-    # 年次売上をTTMの1/2にするとWARN（1.5倍以上）、1/4にするとNG（3倍以上）
-    assert _run_p2(tmp_path, monkeypatch, "AAPL", ttm_rev / 2) == [("WARN", "P2-A-RevTTM")]
-
-
-def test_p2a_ng_on_large_divergence(tmp_path, monkeypatch):
-    ttm_rev = _real_series0("AAPL")["flow"]["revenue"]["val"]
-    assert _run_p2(tmp_path, monkeypatch, "AAPL", ttm_rev / 4) == [("NG", "P2-A-RevTTM")]
-
-
-def test_p2a_silent_when_consistent(tmp_path, monkeypatch):
-    ttm_rev = _real_series0("AAPL")["flow"]["revenue"]["val"]
-    assert _run_p2(tmp_path, monkeypatch, "AAPL", ttm_rev) == []
+def test_p2a_removed():
+    """旧P2-A（_ttm_revenue()を使う年次売上とTTM売上の比較）は2026-09-24に廃止
+    （[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]）。代替は新規登録フロー
+    Step 7.5のCHECK-35/41/47（tests/test_registration_consistency_gate.py）"""
+    assert not hasattr(rv, "_ttm_revenue")
 
 
 # ── 再発防止: flowに対する旧PascalCaseキー参照の検出 ─────────────────────

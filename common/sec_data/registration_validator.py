@@ -17,7 +17,8 @@ Usage:
 
 チェック項目:
     P1. 7ステップ登録完全性 (SEC/Beta/Valuation/HypeCore/Discover/Monitor)
-    P2. データ品質・鮮度 (latest_revenue TTM乖離、旧XBRL形式、TTM陳腐化)
+    P2. データ品質・鮮度 (旧XBRL形式、TTM陳腐化。旧P2-A〈latest_revenue TTM乖離〉は
+        2026-09-24廃止、register_ticker.py Step 7.5のCHECK-35/41/47が代替)
     P3. segment_config 整合性 (fiscal_year鮮度、weight合計、growth率)
     P4. Config 孤立エントリ (discover_config/cik_lookup の非監視残存)
     P5. 自動更新ワークフロー カバレッジ
@@ -99,20 +100,6 @@ def _ttm_end(ticker: str) -> Optional[str]:
     if d and d.get("series"):
         return d["series"][0].get("ttm_end")
     return None
-
-
-def _ttm_revenue(ticker: str) -> Optional[float]:
-    path = os.path.join(TTM_DIR, f"{ticker}_ttm_series.json")
-    d = _load_json(path)
-    if not d or not d.get("series"):
-        return None
-    # [[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]: flowキーはttm_calculator.py
-    # フェーズC移行（2026-07-25）以降snake_case。旧"Revenue"のままだったため常にNoneで
-    # P2-Aが無言でスキップされていた（tests/test_ttm_flow_key_names.pyで旧キーを検出）
-    rv = d["series"][0].get("flow", {}).get("revenue")
-    if isinstance(rv, dict):
-        return rv.get("val")
-    return rv
 
 
 def _latest_json(ticker: str) -> Optional[dict]:
@@ -208,28 +195,22 @@ def check_p1_registration_completeness(ticker: str, issues: Issues,
 def check_p2_data_quality(ticker: str, issues: Issues) -> None:
 
     lj = _latest_json(ticker)
-    comps = (lj or {}).get("components", {})
 
-    # ── A: latest_revenue TTM 乖離 ───────────────────────────────────
-    annual_rev = comps.get("latest_revenue") or 0
-    ttm_rev = _ttm_revenue(ticker)
-    sector = comps.get("sector", "")
-
-    if annual_rev and ttm_rev:
-        ratio = ttm_rev / annual_rev
-        # 金融セクターは revenue 定義が異なるため特別扱い
-        fin_sectors = {"Financial Services", "Financial", "Banks", "Insurance"}
-        is_financial = any(fs.lower() in (sector or "").lower() for fs in fin_sectors)
-
-        if ratio >= 3.0:
-            sev = "WARN" if is_financial else "NG"
-            issues.ng("P2-A-RevTTM", f"{ticker}: latest_revenue=${annual_rev/1e9:.2f}B <<"
-                      f" TTM=${ttm_rev/1e9:.2f}B (ratio={ratio:.1f}x) "
-                      f"{'[金融セクター: revenue定義差の可能性]' if is_financial else '[SEC parserバグ疑い]'}")
-        elif ratio >= 1.5:
-            issues.warn("P2-A-RevTTM", f"{ticker}: latest_revenue(annual)=${annual_rev/1e9:.2f}B"
-                        f" < TTM=${ttm_rev/1e9:.2f}B (ratio={ratio:.1f}x) "
-                        f"[高成長: TTM反映推奨]")
+    # ── A: （廃止）latest_revenue TTM 乖離 ──────────────────────────
+    # [[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]（2026-09-24廃止）:
+    # 旧P2-Aは年次売上（例: 2025-12期末）と最新TTM（例: 2026-06期末）という
+    # 期末の異なる期間を比べており、急成長銘柄（ONDS等）を「SEC parserバグ疑い」
+    # とNG判定していた。同一期間の比較へ直す案（会計年度末に終わる4四半期の
+    # 合計と比較）も検討したが、Layer3の四半期Q4は97/100銘柄で年次からの逆算
+    # （is_implied）のため合計が構造的に年次と一致し、比較として機能しなかった。
+    # 年次売上の同一期間チェックは、新規登録フローのStep 7.5
+    # （common/registration/register_ticker.py::step7_5_consistency_check）で
+    # report_consistency_check.py --ticker <T> --include-provisioning
+    # --include-yfinance-checks --fail-on-ng として実行される以下が担う:
+    #   - CHECK-41: 年次revenue/net_incomeをyfinanceの同じ期末日の列と突合
+    #   - CHECK-35: 再構成したoperating_incomeをyfinanceと突合
+    #   - CHECK-47: parser系（normalized/）とLayer3系（ttm/）の同一4四半期TTMを突合
+    # いずれもWARN（情報提供）で、売上乖離のみを理由に昇格は止めない。
 
     # ── B: 旧XBRL形式 (net_income=None in recent years 2022+) ────────
     annual_files = _annual_files(ticker)
@@ -536,7 +517,6 @@ def _print_report(issues: Issues, n_tickers: int, summary_only: bool) -> None:
         "P1-Step5b-EPS":     "P1-Step5b EPS Analyzer なし",
         "P1-Step6-Discover": "P1-Step6  Discover 未登録",
         "P1-Step7-Monitor":  "P1-Step7  monitor_tickers 未登録",
-        "P2-A-RevTTM":       "P2-A  latest_revenue TTM乖離",
         "P2-B-XBRL":         "P2-B  旧XBRL (net_income=None)",
         "P2-C-AnnualStale":  "P2-C  年次データ陳腐化",
         "P2-D-TTMStale":     "P2-D  TTM陳腐化(>6ヶ月)",

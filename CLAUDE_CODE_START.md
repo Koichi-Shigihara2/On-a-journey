@@ -12,8 +12,8 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24⑧時点）**: `BACKLOG.md`
-アクティブ件数**9件**（2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
+**現在の到達点（2026-09-24⑨時点）**: `BACKLOG.md`
+アクティブ件数**8件**（2026-09-24⑨で`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`をP2-A廃止で完了。2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
 陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
 `[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`・
 `[[LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1]]`・
@@ -3031,7 +3031,10 @@ python common/registration/register_ticker.py [TICKER] --target-status active
 このスクリプトはStep 1（SEC取得）・Step 2（β取得）・Step 3（TANUKI
 VALUATIONパイプライン実行）・Step 4（audit.py --check-beta）・Step 5
 （HypeCore、hypecore=trueのみ）・Step 5b（EPS Analyzer、eps=trueのみ）・
-Step 6（Discover登録）・Step 7（monitor_tickers.yaml追加）・Step 8
+Step 6（Discover登録）・Step 7（monitor_tickers.yaml追加）・Step 7.5
+（report_consistency_check.pyを`--ticker <T> --include-provisioning
+--include-yfinance-checks --fail-on-ng`で実行、NGまたは対象0件なら昇格を止める。
+2026-09-24追加、[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]）・Step 8
 （registration_validator.pyでNG=0を確認し、NG=0ならstatusを
 `--target-status`の値へ昇格）を自動連続実行する。各ステップはべき等
 （再実行しても安全）なので、失敗・一時停止したら原因に対処した上で

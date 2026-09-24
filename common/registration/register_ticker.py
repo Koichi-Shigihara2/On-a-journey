@@ -298,6 +298,56 @@ def step7_monitor_register(ticker: str, dry_run: bool) -> None:
     print(f"  {ticker} を monitor_tickers.yaml に追加しました")
 
 
+# ─── Step 7.5: 同一期間の整合性チェック（昇格前ゲート） ─────────────────
+# [[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]（2026-09-24）:
+# registration_validator.pyのP2-A（年次売上とTTM売上の比較）は期末の異なる
+# 期間を比べていたため廃止した。代わりに、同一期間どうしを突合する
+# report_consistency_check.pyのCHECK-35（operating_income再構成×yfinance）・
+# CHECK-41（revenue/net_income×yfinance、年次期末日が一致する列）・
+# CHECK-47（parser系⇔Layer3系のTTM、連続した同一4四半期）等を、
+# provisioning中の当該銘柄に対して昇格判定の前に実行する。
+#
+# 判定: report_consistency_checkのNG（--fail-on-ng、exit 1）または対象0件
+# （exit 2）なら昇格を止める。CHECK-35/41/47自体はWARN専用（NGにならない）
+# のため、売上乖離はWARNとして表示されるのみで昇格は止めない。
+# yfinance取得失敗で CHECK-41 revenue突合が実行できなかった場合も昇格は
+# 止めず（外部サービスの一時障害で登録を止めないため。CHECK-47〈SEC内部の
+# 2系統突合〉・CHECK-31等はyfinanceに依存せず実行される）、その旨を
+# 明示的に表示する。
+# WARN行の先頭には台帳の注記（"🆕未確認 "等）が入りうるため、括弧を含めず照合する
+_CHECK41_REVENUE_MARK = "WARN-41 revenue yfinance突合"
+
+
+def step7_5_consistency_check(ticker: str, row: dict) -> bool:
+    label = "Step 7.5: 同一期間の整合性チェック（CHECK-35/41/47等）"
+    if not _flag(row, "tanuki"):
+        print(f"\n--- {label} ---")
+        print("  スキップ（tanuki=false: report_consistency_check.pyの対象外）")
+        return True
+    cmd = [PYTHON, "common/sec_data/report_consistency_check.py",
+           "--ticker", ticker, "--include-provisioning",
+           "--include-yfinance-checks", "--fail-on-ng"]
+    print(f"\n--- {label} ---")
+    print("  $ " + " ".join(cmd))
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+    result = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True,
+                            text=True, encoding="utf-8", errors="replace", env=env)
+    out = (result.stdout or "") + (result.stderr or "")
+    print(out, end="" if out.endswith("\n") else "\n")
+    if result.returncode == 2:
+        print(f"  ❌ Step 7.5: {ticker}がチェック対象にならなかったため昇格を止めます"
+              "（report.txt未生成等。上記の理由を確認すること）")
+        return False
+    if result.returncode != 0:
+        print(f"  ❌ Step 7.5: 整合性チェックでNGが検出されたため昇格を止めます（exit={result.returncode}）")
+        return False
+    if _CHECK41_REVENUE_MARK not in out:
+        print("  ⚠️  Step 7.5: CHECK-41のrevenue yfinance突合が実行されませんでした"
+              "（yfinance取得失敗、または年次期末日と一致する列なし）。"
+              "昇格は止めずに続行します（CHECK-47等のSEC内部突合は実行済み）")
+    return True
+
+
 # ─── Step 8: 登録パイプライン健全性チェック＋昇格 ────────────────────────
 
 def step8_validate_and_promote(ticker: str, target_status: str, dry_run: bool) -> bool:
@@ -370,7 +420,11 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
     step6_discover_register(ticker, dry_run)
     step7_monitor_register(ticker, dry_run)
 
-    ok = step8_validate_and_promote(ticker, target_status, dry_run)
+    ok = step7_5_consistency_check(ticker, row)
+    if ok:
+        ok = step8_validate_and_promote(ticker, target_status, dry_run)
+    else:
+        print("\n--- Step 8: スキップ（Step 7.5で昇格を止めたため） ---")
 
     print(f"\n{'─' * 60}")
     if ok:
