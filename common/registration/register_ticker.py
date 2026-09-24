@@ -308,8 +308,10 @@ def step7_monitor_register(ticker: str, dry_run: bool) -> None:
 # provisioning中の当該銘柄に対して昇格判定の前に実行する。
 #
 # 判定: report_consistency_checkのNG（--fail-on-ng、exit 1）または対象0件
-# （exit 2）なら昇格を止める。CHECK-35/41/47自体はWARN専用（NGにならない）
-# のため、売上乖離はWARNとして表示されるのみで昇格は止めない。
+# （exit 2）なら昇格を止める。CHECK-35/47はWARN専用。CHECK-41のrevenueは
+# --include-provisioning指定時（本ステップ）のみ、yfinanceとの|乖離|が
+# REGISTRATION_REVENUE_NG_THRESHOLD（30%）を超えるとNG（NG-41）になり昇格を
+# 止める（単位誤り・別年度混入等。日次・週次のCIではWARNのまま）。
 # yfinance取得失敗で CHECK-41 revenue突合が実行できなかった場合も昇格は
 # 止めず（外部サービスの一時障害で登録を止めないため。CHECK-47〈SEC内部の
 # 2系統突合〉・CHECK-31等はyfinanceに依存せず実行される）、その旨を

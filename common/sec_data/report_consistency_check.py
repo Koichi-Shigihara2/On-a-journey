@@ -710,8 +710,19 @@ def _check_operating_income_reconstruction_scope(tickers: list[str]) -> list[str
     return []
 
 
+# 新規銘柄登録モード（--include-provisioning）でのみ適用する、CHECK-41 revenue
+# 乖離のNG閾値（[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]、2026-09-24）。
+# active全99銘柄の実測（2026-09-24）: |乖離|の最大15.6%（MO、yfinanceが物品税控除後の
+# 純額）・次点2.6%（XOM、SECのRevenuesがその他収益込み）で、いずれも定義差による
+# 恒常的な差。p95以下はすべて0.0%。30%は既存最大値の約2倍の余裕を持ちつつ、単位誤り
+# （10倍=+900%、1/10=-90%）を確実に捕らえる。別年度の混入は前年比の変化が30%を
+# 超える場合のみ捕らえる（低成長企業の年度ずれは検知できない、閾値方式の限界）。
+REGISTRATION_REVENUE_NG_THRESHOLD = 0.30
+
+
 def _check_revenue_net_income_reconciliation(
-    ticker: str, include_yfinance: bool = False
+    ticker: str, include_yfinance: bool = False,
+    registration_mode: bool = False, ng_out: Optional[list] = None,
 ) -> list[str]:
     """CHECK-41（[[QUALITY-GATES-EPIC-1]]ゲート1拡張、2026-09-03新設）:
     `pl.revenue`（売上高）・`pl.net_income`（純利益）をyfinance
@@ -733,6 +744,14 @@ def _check_revenue_net_income_reconciliation(
     調整法〉を経ないため、当初はoperating_income〈p95=81%〉より狭い
     分布になると予想されたが、これは実装後の全105銘柄実測で検証し
     `[[QUALITY-GATES-EPIC-1]]`に記録する）。
+
+    **例外: 新規銘柄登録モード（`registration_mode=True`、
+    `--include-provisioning`指定時）のみ、revenueの|乖離|が
+    `REGISTRATION_REVENUE_NG_THRESHOLD`（30%）を超えたらNGとして`ng_out`へ
+    追加する**（2026-09-24、昇格前に単位誤り等を止めるため）。日次・週次の
+    CI（registration_mode=False）では従来どおりWARNのみで挙動は変えない。
+    yfinanceが取得できない場合は判定せず、NGにもWARNにもしない（登録フロー側
+    〈register_ticker.py Step 7.5〉が未実行を明示する）。
 
     **`include_yfinance`（`--include-yfinance-checks`フラグ）が
     `False`（デフォルト）の場合は何もせず空リストを返す**——本チェック
@@ -772,6 +791,13 @@ def _check_revenue_net_income_reconciliation(
                 f"  [WARN-41 revenue yfinance突合] FY{latest_year}: "
                 f"SEC={sec_revenue:,.0f} yfinance={yf_revenue:,.0f}（乖離{dev:+.1%}）"
             )
+            if registration_mode and ng_out is not None and abs(dev) > REGISTRATION_REVENUE_NG_THRESHOLD:
+                ng_out.append(
+                    f"  [NG-41 revenue yfinance大幅乖離（登録時ゲート）] FY{latest_year}: "
+                    f"SEC={sec_revenue:,.0f} yfinance={yf_revenue:,.0f}（乖離{dev:+.1%}、"
+                    f"閾値±{REGISTRATION_REVENUE_NG_THRESHOLD:.0%}）→ 単位誤り・別年度混入・"
+                    f"タグ取り違えの疑い。原因を確認するまで昇格しない"
+                )
 
     if sec_net_income is not None:
         yf_net_income = _get_yf_financial_value(ticker, target_end, "Net Income")
@@ -1775,7 +1801,8 @@ def _parse_report(text: str) -> dict:
 
 # ─── チェック本体 ─────────────────────────────────────────────
 
-def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False) -> tuple[list, list]:
+def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
+                 registration_mode: bool = False) -> tuple[list, list]:
     """
     Returns (issues_ng, issues_warn)
     各要素は表示用文字列。
@@ -1799,7 +1826,10 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False) ->
     # CHECK-41: revenue/net_incomeのyfinance突合（[[QUALITY-GATES-
     # EPIC-1]]ゲート1拡張、2026-09-03新設）。CHECK-35と同様、
     # common/sec_data/側の検証でありreport.txtに依存しない。
-    warn.extend(_check_revenue_net_income_reconciliation(ticker, include_yfinance))
+    # registration_mode（--include-provisioning）時のみrevenue大幅乖離をNG化
+    warn.extend(_check_revenue_net_income_reconciliation(
+        ticker, include_yfinance, registration_mode=registration_mode, ng_out=ng,
+    ))
 
     # CHECK-47: parser.py系一次データ（normalized/）から再計算したTTM値と
     # Layer3系（ttm/）のTTM値の突合（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]、
@@ -2620,7 +2650,8 @@ def run_checks(args=None) -> tuple[int, int]:
     flagged: list[tuple[str, list, list]] = []
 
     for ticker in tickers:
-        ng, warn = check_ticker(ticker, whitelist, include_yfinance)
+        ng, warn = check_ticker(ticker, whitelist, include_yfinance,
+                                registration_mode=include_provisioning)
         annotated_warn = []
         for w in warn:
             msg, is_new = annotate_warn(ticker, w, warn_ledger)

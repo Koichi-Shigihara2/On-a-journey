@@ -210,7 +210,10 @@ def check_p2_data_quality(ticker: str, issues: Issues) -> None:
     #   - CHECK-41: 年次revenue/net_incomeをyfinanceの同じ期末日の列と突合
     #   - CHECK-35: 再構成したoperating_incomeをyfinanceと突合
     #   - CHECK-47: parser系（normalized/）とLayer3系（ttm/）の同一4四半期TTMを突合
-    # いずれもWARN（情報提供）で、売上乖離のみを理由に昇格は止めない。
+    # CHECK-35/47はWARN（情報提供）。CHECK-41のrevenueは登録時（Step 7.5の
+    # --include-provisioning）のみ、yfinanceとの|乖離|が30%超でNG（NG-41）として
+    # 昇格を止める（2026-09-24、report_consistency_check.py::
+    # REGISTRATION_REVENUE_NG_THRESHOLD）。
 
     # ── B: 旧XBRL形式 (net_income=None in recent years 2022+) ────────
     annual_files = _annual_files(ticker)

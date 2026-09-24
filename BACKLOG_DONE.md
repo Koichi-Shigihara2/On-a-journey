@@ -86,6 +86,41 @@ Step 7.5で止まるのは、CHECK-31（凍結年度の不整合）等の既存N
   `tests/test_ttm_flow_key_names.py`のP2-A前提のテストは「廃止されたこと」の確認に
   置換（旧キー参照の検出テストは維持）
 
+#### 追補（2026-09-24、指示書⑩）: 登録時ゲートでCHECK-41 revenueの大幅乖離をNG化
+上記「注意（止める力の変化）」への対応。`report_consistency_check.py`の
+`--include-provisioning`指定時（登録モード＝register_ticker.py Step 7.5）のみ、
+CHECK-41のrevenueのyfinance乖離が閾値を超えたらNG（`NG-41 revenue yfinance大幅乖離
+（登録時ゲート）`）にして昇格を止める。日次・週次のCI（登録モードでない）では従来どおり
+WARNのみで挙動は変えていない。yfinanceが取得できない場合は判定せず（NGにもWARNにも
+しない）、Step 7.5が「CHECK-41のrevenue yfinance突合が実行されませんでした」と明示して
+通す（前回決定どおり）。
+
+**閾値の決め方（active全99銘柄のCHECK-41 revenue乖離率、2026-09-24実測）**:
+| 指標 | 値 |
+|---|---|
+| 最大 | 15.6%（MO: yfinanceのTotal Revenueは物品税控除後の純額、SECは総額） |
+| 2番目 | 2.6%（XOM: SECの`Revenues`がその他収益込み） |
+| 3番目 | 0.6%（RXRX） |
+| p99 | 15.6% |
+| p95・中央値 | 0.0% |
+| |乖離|≥1% / ≥5% / ≥20% | 2件 / 1件 / 0件 |
+MO・XOMはいずれも定義差による恒常的な差。**採用した閾値は±30%**
+（`REGISTRATION_REVENUE_NG_THRESHOLD = 0.30`）: 既存最大値15.6%の約2倍の余裕を
+持ち、既存銘柄は1件もNGにならない。単位誤り（10倍＝+900%、1/10＝-90%、1000倍）は
+確実に捕らえる。**別年度の混入は前年比の変化が30%を超える場合のみ捕らえ、低成長企業の
+年度ずれは検知できない**（閾値方式の限界）。
+
+**確認**:
+- 登録モードで全active銘柄を実行: CHECK-41 revenue突合99件がすべて実行され、NG-41は
+  0件（NG=0・ゲート通過）。通常モードの結果も不変（NG=0）
+- 回帰テスト`tests/test_check41_registration_ng.py`（10件、修正前9件失敗。通った1件は
+  非登録モードでregistration_mode=Falseが渡ることのガード）: 単位誤り型（1000倍）が
+  登録モードでNG、ONDS型（同一期間でSEC=yfinance=50,731,000）はNGにならない、
+  境界（+30.0%ちょうどはNGにしない・±31%はNG・MO相当15.6%はNGにしない）、
+  非登録モードでは1000倍でもWARNのまま、yfinance取得不可はNGにもWARNにもしない
+- `tests/test_report_consistency_check.py`のcheck_tickerモック2件を新しい引数
+  （registration_mode）を受け取れる形に更新
+
 ---
 
 ### ✅ [REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1] registration_validator.pyのP2-A（年次売上とTTM売上の乖離チェック）がPascalCaseの旧キー"Revenue"を読んでおり、2026-07-25以降一度も判定していない → 完了（2026-09-24）: snake_caseの"revenue"へ修正し、ttm/のflowに対する旧PascalCaseキー参照をテストで検出する仕組みを追加
