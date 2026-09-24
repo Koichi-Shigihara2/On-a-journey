@@ -2471,28 +2471,32 @@ ttm/を参照しない。
 
 ## 優先度：低（アイデア段階）
 
-### [REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1] registration_validator.pyのP2-A（年次売上とTTM売上の乖離チェック）がPascalCaseの旧キー"Revenue"を読んでおり、2026-07-25以降一度も判定していない
-**優先度:** 低（同種の売上異常はCHECK-35/41〈yfinance突合〉等でも検知できるが、登録時ゲートの1項目が無言で無効化されている）
-**分類:** データ品質ゲート / 新規銘柄登録 / 旧キーの取り残し
+### [REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1] registration_validator.pyのP2-Aが期末の異なる年次売上とTTM売上を比較しており、急成長銘柄を「SEC parserバグ疑い」と誤判定する
+**優先度:** 低（効くのは新規銘柄登録時のみ。既存銘柄の処理には影響しない）
+**分類:** データ品質ゲート / 新規銘柄登録
 **登録日:** 2026-09-24
-**発見:** 指示書2026-09-24⑦（TTM欠損の消費側調査）の副次発見
+**発見:** [[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]の修正前試行（指示書⑧ STEP 2）
 
 #### 内容
-`common/sec_data/registration_validator.py::_ttm_revenue()`は
-`series[0]["flow"]["Revenue"]`を読むが、ttm_calculator.pyのフェーズC移行
-（2026-07-25、snake_case化）以降のキーは`revenue`。そのため常にNoneを返し
-（AAPLで実測）、`check_p2_data_quality()`のP2-A（`latest_revenue`とTTM売上の比が
-3倍以上でNG・1.5倍以上でWARN）は`if annual_rev and ttm_rev:`で常にスキップされている。
-[[TTM-PASCALCASE-KEY-STALE-1]]（audit.py・data_fetcher.py等の同型問題、対応済み）の
-取り残し。
+P2-Aは`latest.json`の`components.latest_revenue`（最新の年次売上、例: FY2025＝
+2025-12期末）と、`ttm/`の`series[0]`（最新TTM、例: 2026-06期末）の売上の比が
+3倍以上でNG（非金融は「SEC parserバグ疑い」）、1.5倍以上でWARNとする。期末が半年ずれた
+期間同士の比較のため、急成長銘柄では実データが正しくても発火する。
+2026-09-24の全銘柄試行で5銘柄が発火し、5件とも実データは正しい（Layer3の四半期合計＝
+年次売上、差は半年間の成長）: ONDS 3.43倍（NG）・JOBY 2.18倍・IONQ 1.90倍・
+RCAT 1.76倍・ASTS 1.63倍（WARN）。ONDSは新規登録であればStep 8で昇格が止まる。
 
-#### 対応方針（未実装）
-`.get("Revenue")`を`.get("revenue")`へ修正し、修正前に全銘柄でP2-Aを実行して
-新たにNG/WARNが出る銘柄がないか確認する（長期間無効だったため、有効化した瞬間に
-既存銘柄で発火する可能性がある）。
+#### 修正案（未実装）
+- 案1（推奨）: 同一期間で比較する。年次売上と、その会計年度末に終わる4四半期の
+  Layer3売上合計（または同じ期末のTTMアンカー）を比べ、乖離（例: 5%超）をNG。
+  パーサーの取り違え・単位誤り等の本来の検知対象はこれで捉えられ、成長では発火しない
+- 案2: 現行の比較は残し、TTM期末が年次期末より90日以上新しい場合はNGにせずWARN
+  （「高成長: TTM反映推奨」）に留める。実装は軽いが、期末ずれがある限り本来の
+  パーサーバグもWARNに埋もれる
+- 案3: 閾値の引き上げ（3倍→5倍等）。急成長の度合い次第で再発するため非推奨
 
 #### 着手条件
-なし（技術判断で進行可能）
+なし（技術判断で進行可能）。次に急成長銘柄を新規登録する前に対応するのが望ましい
 
 ---
 

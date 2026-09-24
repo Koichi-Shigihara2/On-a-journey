@@ -12,8 +12,8 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24⑦時点）**: `BACKLOG.md`
-アクティブ件数**9件**（2026-09-24⑦で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
+**現在の到達点（2026-09-24⑧時点）**: `BACKLOG.md`
+アクティブ件数**9件**（2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
 陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
 `[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`・
 `[[LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1]]`・

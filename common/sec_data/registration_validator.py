@@ -106,7 +106,10 @@ def _ttm_revenue(ticker: str) -> Optional[float]:
     d = _load_json(path)
     if not d or not d.get("series"):
         return None
-    rv = d["series"][0].get("flow", {}).get("Revenue")
+    # [[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]: flowキーはttm_calculator.py
+    # フェーズC移行（2026-07-25）以降snake_case。旧"Revenue"のままだったため常にNoneで
+    # P2-Aが無言でスキップされていた（tests/test_ttm_flow_key_names.pyで旧キーを検出）
+    rv = d["series"][0].get("flow", {}).get("revenue")
     if isinstance(rv, dict):
         return rv.get("val")
     return rv

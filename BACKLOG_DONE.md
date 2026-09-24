@@ -4,6 +4,69 @@
 
 ## 2026-09-24（完了）
 
+### ✅ [REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1] registration_validator.pyのP2-A（年次売上とTTM売上の乖離チェック）がPascalCaseの旧キー"Revenue"を読んでおり、2026-07-25以降一度も判定していない → 完了（2026-09-24）: snake_caseの"revenue"へ修正し、ttm/のflowに対する旧PascalCaseキー参照をテストで検出する仕組みを追加
+**優先度:** 低（同種の売上異常はCHECK-35/41〈yfinance突合〉等でも検知できるが、登録時ゲートの1項目が無言で無効化されている）
+**分類:** データ品質ゲート / 新規銘柄登録 / 旧キーの取り残し
+**登録日:** 2026-09-24
+**発見:** 指示書2026-09-24⑦（TTM欠損の消費側調査）の副次発見
+
+#### 内容
+`common/sec_data/registration_validator.py::_ttm_revenue()`は
+`series[0]["flow"]["Revenue"]`を読むが、ttm_calculator.pyのフェーズC移行
+（2026-07-25、snake_case化）以降のキーは`revenue`。そのため常にNoneを返し
+（AAPLで実測）、`check_p2_data_quality()`のP2-A（`latest_revenue`とTTM売上の比が
+3倍以上でNG・1.5倍以上でWARN）は`if annual_rev and ttm_rev:`で常にスキップされている。
+[[TTM-PASCALCASE-KEY-STALE-1]]（audit.py・data_fetcher.py等の同型問題、対応済み）の
+取り残し。
+
+#### 対応方針（未実装）
+`.get("Revenue")`を`.get("revenue")`へ修正し、修正前に全銘柄でP2-Aを実行して
+新たにNG/WARNが出る銘柄がないか確認する（長期間無効だったため、有効化した瞬間に
+既存銘柄で発火する可能性がある）。
+
+#### 着手条件
+なし（技術判断で進行可能）
+
+#### 2026-09-24 対応完了（指示書⑧）
+**STEP 1 横断洗い出し**: ttm/*_ttm_series.jsonを読むコード（本体: data_fetcher.py・
+pipeline.py・calculator/growth.py、検証系: audit.py・registration_validator.py・
+report_consistency_check.py、生成側: ttm_calculator.py・update.py、テスト4ファイル）の
+flowに対するキー参照を全件確認した。旧PascalCaseキーの参照は
+`registration_validator.py::_ttm_revenue()`の`"Revenue"`の**1件のみ**（実データで常に
+None、AAPLで確認）。`"FCF"`はttm_calculator.pyが現在もこの名前で書き出す正規キー。
+`report_consistency_check.py`の`_WARN47_FIELD_MAP`・test_gate2のPascalCase名は
+normalized/側のフィールド名で正しい。フロントエンド（docs/配下のJS）にttm/を読む箇所は
+無い。テストのモックデータ（test_pipeline_logic.py・test_report_consistency_check.py・
+test_ttm_calculator.py・test_check47_contiguous_window.py）はいずれもsnake_caseで、
+旧キーを再現しているモックは無かった。ただしP2-Aのテスト自体が存在しなかった。
+
+**STEP 2 修正前の試行**: 正しいキーでP2-Aを全銘柄に実行し、98銘柄中5銘柄が発火
+（NG: ONDS 3.43倍／WARN: JOBY 2.18倍・IONQ 1.90倍・RCAT 1.76倍・ASTS 1.63倍）。
+5銘柄ともLayer3の四半期売上の合計がFY2025の年次売上と一致し（例: ONDS 4.2+6.3+10.1+
+30.1=50.7M）、TTM（2025Q3〜2026Q2）との差はFY2025期末から半年間の実際の急成長に
+よるもの。**本物のデータ異常は0件、5件ともチェック側の問題**（期末の異なる期間を
+比較しているため）。修正案は[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]として
+新規登録した。
+
+**STEP 3 修正**:
+- `_ttm_revenue()`の`.get("Revenue")`→`.get("revenue")`
+- 回帰テスト`tests/test_ttm_flow_key_names.py`（14件、修正前5件失敗）: 本番の
+  ttm/ファイル（AAPL・ONDS）をそのままフィクスチャに使い`_ttm_revenue()`とP2-Aの
+  WARN/NG/無発火を検証
+- 再発防止（テストで検出する方式を選択。ttm読み取りを1つのアクセサに寄せる案は
+  消費者6ファイルの改修が必要で重いため）: ttm/を読む全ソース（common/・src/）と
+  tests/から、flowに対する旧PascalCaseキー参照（`.get("Revenue")`・`["OCF"]`・
+  モックの`"flow": {"NetIncome": ...}`等）を検出するテスト。検出パターン自体の
+  正例・負例テストも同梱
+
+**有効化による影響**: registration_validator.pyのNGが効くのは新規銘柄登録フロー
+（`common/registration/register_ticker.py`のStep 8、NG=0で`active`へ昇格）のみで、
+既存銘柄の日次・週次処理には影響しない（system_health.pyはP4のみ使用）。全銘柄実行の
+合計は修正前NG=9/WARN=8→修正後NG=10/WARN=12で、増分はP2-Aの5件のみ。ONDS型の
+急成長銘柄は、P2-Aのロジック修正までは新規登録時にNGになる点に注意
+
+---
+
 ### ✅ [NET-INCOME-NCI-PARENT-ATTRIBUTION-1] net_incomeが親会社帰属タグの無い期間にNCI込みの連結純利益（ProfitLoss）を採用しており、FCXで約1.9倍に過大計上されていた → 完了（2026-09-24）: 連結系タグをNCI控除後の派生概念に差し替え、3系統共通の候補定義NET_INCOME_CANDIDATESに一本化
 **優先度:** 高（FCXのROE・EPS・DuPont・純利益率が約1.9倍、マトリクス分類に影響）
 **分類:** データ品質 / SEC Data / 3系統（parser・normalized・Layer3/TTM）共通
