@@ -1,0 +1,11 @@
+{
+  "_comment": "[[FLAG-THRESHOLD-DESIGN-1]]案C（2026-09-25採用）: cik_lookup.csvのstonks_siloフラグの機械判定基準。TTM営業利益<0 または TTM売上=0（プレレベニュー）→ stonks_silo=true。判定ロジックはcommon/sec_data/stonks_flag_rule.py::judge_stonks_silo()（report_consistency_check.py CHECK-51とregistration_validator.py P7の共通関数）。excludedは案Cの適用外（判定しない）、known_undeterminableは営業利益・売上が取れず判定不能となる既知銘柄の理由注記（判定不能自体はデータから機械的に決まり、本リストは表示用の説明のみ）。",
+  "excluded": {
+    "SOFI": "金融機関（銀行持株会社）。営業利益・FCFが貸出実行・預金の動きに左右され、赤字企業の資金繰り評価（STONKS SILOのrunway）の枠組み自体が適合しないため案Cの適用外"
+  },
+  "known_undeterminable": {
+    "ASTS": "営業利益がLayer3・TTMとも未取得（OperatingIncomeLossの再構成でpretax調整法が未実装）",
+    "XOM": "営業利益行を開示しておらずLayer3・TTMとも未取得（pretax調整法が未実装）",
+    "SN": "20-F→10-K移行期の四半期（2025年Q3・Q4）が欠損しTTMを構成できない"
+  }
+}

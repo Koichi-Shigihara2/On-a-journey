@@ -4,6 +4,119 @@
 
 ## 2026-09-25（完了）
 
+### ✅ [FLAG-THRESHOLD-DESIGN-1] tanuki/stonks_silo等4フラグの判定基準ロジック導入（第二段階） → 完了（2026-09-25）: stonks_siloに案C（TTM営業利益<0 または TTM売上=0）を採用、CHECK-51・登録フローP7で機械判定、フラグ6件是正。tanuki/eps/hypecoreは具体的な逸脱事例がないためエントリごとクローズ
+**優先度:** 未定
+**分類:** アーキテクチャ / 銘柄登録フロー
+**登録日:** 2026-07-12
+**発見:** [[ZS-TICKERS-LEAK-1]]（完了・本ファイル上部参照）の消費者統一（第一段階）に伴う調査時
+
+#### 背景
+一連の調査（フラグ判定ロジック確認・基準設計材料収集）の結果、`cik_lookup.csv`の
+4フラグ（tanuki/stonks_silo/eps/hypecore）は**完全手動設定**であり、財務指標等に
+基づく自動判定は一切存在しないことが確認された。暗黙の基準（赤字→stonks_silo=true）は
+概ね成立するが、以下の逸脱事例が判明している：
+
+- **ESTC・LITE**: 黒字転換後もstonks_silo=trueのまま残留（直近1年基準では不一致）
+- **GTLB**: 直近5年間**一度も黒字化していない**にもかかわらずstonks_silo=false
+  （既知8件の逸脱事例には含まれていなかった新規発見。明示的な除外理由の記録もなし）
+- **APGE**: 売上ゼロのプレレベニュー企業。「赤字」という1軸だけでは判定基準として
+  不十分であることを示す事例（「売上の有無」も判定軸に含める必要）
+
+#### 対応方針（未確定・基準案をKoichiさんに複数提示して確認後に実装）
+- 直近5年中N年以上赤字継続→stonks_silo=true、といった機械判定可能な基準の導入
+  （Nの値・判定ウィンドウは要確認）
+- プレレベニュー企業・金融機関・IFRS企業・特殊株式構造企業等、「赤字」以外の
+  軸での評価枠組み非適合パターンの明文化
+- GTLB・ESTC・LITEの現行フラグ設定の是正（基準確定後に個別対応）
+- フラグ再判定のトリガー（新規登録時のみか、定期棚卸しか）の設計
+- tanuki=trueとstonks_silo=trueの併用は意図的な設計（SYSTEM_MAP.mdに明記の
+  TANUKI VALUATION↔STONKS SILO runway参照依存）であり、「赤字企業は両方trueに
+  する」という運用を基準に組み込む余地がある
+
+#### 議論の要旨（2026-07-14追記・タスクの本質的なゴールの整理）
+本日の一連の調査（DCF計算可否ロジック確認・Policy A/B判定ロジックの網羅調査・
+AVAV/RDW/LITE/SITM個別調査）を経て、本タスクの本質的なゴールは
+「stonks_silo判定基準を確定させること」単体ではなく、**「TANUKI VALUATION・
+STONKS SILOのどちらの評価軸でも適切に評価しにくい銘柄をどう判定・振り分ける
+か」**という、より広い問いであると整理された。
+
+根拠：
+- GTLB/ESTC/LITEの逸脱事例は、既存のDCF_Reliability判定（Policy A/B）を
+  そのまま機械基準に転用しても再現できないことが判明した（[[POLICY-AB-
+  TREND-BLIND-1]]で確認したPolicy Bの設計限界が一因）
+- APGE（プレレベニュー）のような「赤字」以外の軸で評価不適合になる
+  パターンが存在し、stonks_silo単独の基準では収まらない
+- LITE/SITMの調査で判明したFCF推定ロジックの限界（[[SECTOR-FCF-RATE-
+  BROKEN-1]]・[[FCF-CONVRATE-DESIGN-LIMIT-1]]）も、根本的には「TANUKI
+  VALUATIONのDCFフレームワークが不得意とする事業特性の銘柄をどう扱うか」
+  という同根の問題
+
+**注意：上記は議論の要旨・方向性の整理であり、基準案の具体的な数値
+（N年赤字継続のN等）やフラグ再判定の実装方針は本日時点でも未確定のまま。**
+上記「対応方針（未確定）」の内容と矛盾するものではなく、着手時に
+判断材料として踏まえるべき文脈を追記したもの。
+
+#### 着手条件
+なし（基準案の確認・確定後に着手）
+
+#### 優先度変更（2026-09-19、未定→低）
+登録（2026-07-12）から2ヶ月以上「未定」のまま基準案が確定せず、着手
+トリガーはKoichiさんによる基準案確定を待つ状態が継続している。能動的な
+着手見込みがない待機状態であるため、優先度を「未定」から「低」へ変更
+する。
+
+#### 2026-09-25 対応完了（指示書⑩〜⑫）
+**試算（全登録102銘柄、TTMはcommon/sec_data/ttm/の最新値、反転回数はLayer3四半期の
+連続4四半期合計で直近8四半期）**:
+| 案 | 基準 | 現行フラグとの不一致 | 直近8四半期の反転（1回以上） |
+|---|---|---|---|
+| 案A | TTM純利益<0 or TTM FCF<0 or TTM売上=0 | 9件（false→true: AMZN・COHR・GTLB・SOFI・SPIR・APGE／true→false: ESTC・IOT・SITM）、判定不能SN | 18銘柄（2回: COHR・ESTC・GTLB・KO・LITE・PAYS・FLYW） |
+| 案B N=2 | 直近5年の年次純利益2年以上赤字 or 売上0 | 19件（全てfalse→true） | （年次基準のため対象外） |
+| 案B N=3 | 同3年以上 | 9件（全てfalse→true: ALAB・GTLB・MRVL・SOFI・SPIR・FRSH・FLYW・LYFT・APGE） | 同上 |
+| 案B N=4 | 同4年以上 | 10件（false→true 5・true→false 5: AVAV・CRWV・ESTC・LITE・SITM） | 同上 |
+| **案C（採用）** | **TTM営業利益<0 or TTM売上=0** | **6件（false→true: APGE・GTLB・LYFT・SPIR／true→false: LITE・ZETA）** | **11銘柄（2回: CSGP・DDOG・LYFT）** |
+
+**案Cの採用理由**:
+- 純利益は営業外損益で符号が営業損益と逆転する銘柄が多い（ESTC・IOT・SITM〈営業赤字・純利益黒字〉、
+  ONDS、LYFT〈一過性利益約$2.75B〉、LITE〈営業黒字・純利益−$6.94B〉）。案A・案Bはこの歪みをそのまま受ける
+- FCFは大型設備投資で一時的にマイナスになる黒字企業（AMZN・COHR）を誤検知する（案A）
+- 年次基準（案B）はNで結果が大きく変わり、上場後の年数が短い銘柄（CRWV 4年・LOAR 3年等）でNを満たしにくい
+- 案Cは現行フラグとの不一致が最少（6件）で、判定の反転も少ない
+- 必須確認4銘柄: GTLB（TTM営業利益−$51.6M、年次5年連続赤字）→true、ESTC（TTM営業利益−$0.05B）→true維持、
+  LITE（TTM営業利益+$524.8M）→false、APGE（プレレベニュー）→true
+
+**適用外・判定不能**（`config/stonks_flag_rule.json`）:
+- 適用外: SOFI（金融機関。貸出実行が営業CFに入りFCF −$8.79B、赤字企業の資金繰り評価の枠組み自体が不適合）
+- 判定不能（現行維持・WARN対象外）: ASTS・XOM（営業利益がLayer3・TTMとも未取得、pretax調整法が未実装）、
+  SN（20-F→10-K移行期の四半期〈2025年Q3・Q4〉欠損でTTMを構成できない）
+
+**実装**:
+- `common/sec_data/stonks_flag_rule.py::judge_stonks_silo()`（共通の判定関数）と`config/stonks_flag_rule.json`
+  （適用外・判定不能注記、CHECK-34の`_CONFIG_LOADER_REGISTRY`に登録）
+- `report_consistency_check.py`: CHECK-51（WARN-51 stonks_silo判定基準不一致、NG化しない、cik_lookup全行の
+  retired/provisioning以外が対象）
+- `registration_validator.py`: P7（登録時の設定と不一致ならWARN、判定不能・適用外はINFO）
+- `config/cik_lookup.csv`: stonks_silo是正6件（APGE・GTLB・LYFT・SPIR → true、LITE・ZETA → false）
+
+**検証**:
+- 是正後のCHECK-51発火: 0件
+- STONKS SILO（4銘柄指定でローカル実行、生成物は復元）: エラーなし。runway verdict:
+  APGE SAFE（50.1ヶ月）・GTLB SAFE（CF黒字）・LYFT SAFE（CF黒字）・SPIR DANGER（11.9ヶ月）。
+  results.jsonからLITE・ZETAが外れ、他銘柄のrunway・総合判定は変化なし
+- TANUKI（GTLB・LYFT・SPIR・LITE・ZETAをHEAD worktreeと同時実行）: SCORE・funda・IVとも全銘柄不変。
+  LITE・ZETAはFCF黒字のためTANUKI側フォールバックrunway（computed_runway_months）は算出されず
+  runwayペナルティなし（営業CF LITE +$0.75B・ZETA +$0.24B、runway cash $3.17B・$0.31B）
+- 回帰テスト: `tests/test_stonks_flag_rule.py`（11件）。新コード＋是正前フラグで
+  `test_production_flags_match_plan_c`が6件のWARN-51でfail、是正後pass
+
+**残り3フラグ（tanuki/eps/hypecore）**: 本エントリの本文・関連記述に具体的な逸脱事例の記載がないため、
+新IDでの切り出しは行わずエントリごとクローズ。
+
+**注記**: APGEの`exclusion_reason`列には「売上ゼロの臨床段階バイオ、評価枠組み非適合（意図的除外）」が
+残っている（本対応ではstonks_siloのみ変更し、同列は変更していない）
+
+---
+
 ### ✅ [DCF-1b] 3段階DCFのPhase1線形逓減（g1→Phase2のg）— 完了（2026-09-25）
 **優先度:** 高（NVDA・APPのIV/株が株価の9.5倍・11.7倍）
 **分類:** TANUKI VALUATION / DCFエンジン

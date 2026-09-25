@@ -363,6 +363,15 @@ _CONFIG_LOADER_REGISTRY = [
         "module": "segment_config",
         "func": "resolve_growth_options_config_path",
     },
+    {
+        # [[FLAG-THRESHOLD-DESIGN-1]]案C（2026-09-25）: CHECK-51・
+        # registration_validator.py P7が参照する適用外・判定不能注記
+        "label": "config/stonks_flag_rule.json",
+        "import_style": "package",
+        "module_dir": None,
+        "module": "common.sec_data.stonks_flag_rule",
+        "func": "resolve_stonks_flag_rule_config_path",
+    },
 ]
 
 
@@ -1192,6 +1201,45 @@ def _check_iv_overstatement(ticker: str, latest: dict) -> list[str]:
             f"〈{g.get('source')}〉×Phase1 {g.get('phase1_years')}年）→ 成長率×期間の"
             f"組み合わせによる過大評価の可能性"
         )
+    return warn
+
+
+def _check_stonks_silo_flag_rule() -> list[str]:
+    """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
+    案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
+    （2026-09-25新設、NG化しないWARN）。
+
+    判定はcommon/sec_data/stonks_flag_rule.py::judge_stonks_silo()（新規登録時の
+    registration_validator.py P7と共通）。対象はstatusがretired/provisioning
+    以外の全銘柄（tanuki=false・candidateも含む。stonks_siloフラグはtanukiと
+    独立のため）。config/stonks_flag_rule.jsonの適用外（SOFI）と、TTMの営業
+    利益・売上が取れず判定不能な銘柄（ASTS・XOM・SN等）は対象外（現行維持）。
+    ティッカー非依存の単発チェックとしてrun_checks()から1回だけ呼ばれる。
+    """
+    from common.sec_data.stonks_flag_rule import judge_stonks_silo, load_rule_config
+    warn: list[str] = []
+    try:
+        cfg = load_rule_config()
+    except Exception as e:
+        return [f"  [WARN-51 stonks_silo判定基準] config/stonks_flag_rule.json読み込み失敗: {e}"]
+    for row in _tickers_mod.get_all_rows():
+        if (row.get("status") or "").strip().lower() in ("retired", "provisioning"):
+            continue
+        t = row["ticker"]
+        j = judge_stonks_silo(t, config=cfg)
+        if j["state"] != "judged":
+            continue
+        current = (row.get("stonks_silo") or "").strip().lower() == "true"
+        if j["expected"] != current:
+            oi = j["operating_income"]
+            rev = j["revenue"]
+            warn.append(
+                f"  [WARN-51 stonks_silo判定基準不一致] {t}: cik_lookup stonks_silo="
+                f"{str(current).lower()} だが案C判定={str(j['expected']).lower()}"
+                f"（{j['reason']}、TTM {j['ttm_end']} 営業利益"
+                f"{'N/A' if oi is None else f'${oi/1e6:,.1f}M'}・売上"
+                f"{'N/A' if rev is None else f'${rev/1e6:,.1f}M'}）→ フラグ是正を検討"
+            )
     return warn
 
 
@@ -2849,6 +2897,14 @@ def run_checks(args=None) -> tuple[int, int]:
     if dcf_validation_ng:
         flagged.append(("[GLOBAL]", dcf_validation_ng, []))
         total_ng += len(dcf_validation_ng)
+
+    # CHECK-51: ティッカー非依存の単発チェック（stonks_siloフラグと
+    # [[FLAG-THRESHOLD-DESIGN-1]]案Cの判定の不一致検知）。tanuki以外の
+    # 銘柄も対象のため、all_tickersではなくcik_lookup.csv全行を見る。
+    stonks_flag_warn = _check_stonks_silo_flag_rule()
+    if stonks_flag_warn:
+        flagged.append(("[GLOBAL]", [], stonks_flag_warn))
+        total_warn += len(stonks_flag_warn)
 
     if not flagged:
         if not quiet:
