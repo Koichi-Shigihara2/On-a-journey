@@ -176,7 +176,7 @@ from common.screening.dcf_validity_checker import check_c_data_jump  # noqa: E40
 from common.sec_data import tickers as _tickers_mod  # noqa: E402
 from common.sec_data.fetcher import load_submissions, load_company_facts  # noqa: E402
 from common.sec_data.parser import _load_fixed_registry  # noqa: E402
-from common.sec_data.reader import get_quarterly_series  # noqa: E402
+from common.sec_data.reader import get_quarterly_series, SECReader  # noqa: E402
 from common.sec_data.utils import compute_fields_snapshot_hash  # noqa: E402
 from common.yfinance_utils import safe_yf_ticker  # noqa: E402
 
@@ -1093,6 +1093,56 @@ def _check_runway_divergence(ticker: str, latest: dict) -> list[str]:
     return warn
 
 
+_SEC_READER: Optional[SECReader] = None
+
+
+def _check_sti_quarterly_missing(ticker: str) -> list[str]:
+    """CHECK-49: 直近年次のshort_term_investments>0なのに、get_net_cash()が
+    採用した最新四半期にshort_term_investmentsが存在しない（sti_quarterly_
+    missing=True、0として計算）銘柄を検知する（[[BBAI-RDW-RUNWAY-
+    VERIFICATION-1]]後続、2026-09-25実装）。
+
+    背景: get_net_cash()の四半期優先分岐は、四半期にSTIがない場合0として
+    net_cash・Runway cashを計算する（保守側）。原因は2種類ある:
+      (a) 抽出漏れ: 10-Qには流動の短期投資行があるが、タグ違い等で取れて
+          いない（NVDA 2027Q2: cross_filing_tagsの新四半期未登録で$76.9Bが
+          欠損、net_cashが約$77B過小だった）→ タグ・登録の追加で直すべき
+      (b) 10-Q非開示: 年次のSTIは10-K注記（例: Prepaid expenses and other
+          の内訳）由来で、10-QのBSには行がない（CDNS・ABBV、2026-09-25に
+          10-Q/10-K原本で確認済み）→ 対応不要
+    (a)の新規発生（特に期ごと明示登録のcross_filing_tagsの登録漏れ）を
+    早期に拾うための安全網。(b)とは機械的に区別できないためWARN止まり
+    （NG化しない）とし、確認済みの(b)はwarn_acknowledged.jsonで管理する。
+    実測ゼロ（SITM 2026Q2型、10-Qが0を明示）はsti_quarterly_missing=False
+    のため発火しない。
+
+    latest.jsonの記録値ではなくget_net_cash()を直接呼ぶ（SECデータ更新から
+    TANUKI再生成までの間も最新の状態で判定するため）。
+    """
+    global _SEC_READER
+    warn: list[str] = []
+    annual_bs, annual_period = _read_latest_annual_bs(ticker)
+    annual_sti = annual_bs.get("short_term_investments")
+    if not isinstance(annual_sti, (int, float)) or annual_sti <= 0:
+        return warn
+    try:
+        if _SEC_READER is None:
+            _SEC_READER = SECReader(data_dir=SEC_DATA_DIR)
+        nc = _SEC_READER.get_net_cash(ticker)
+    except Exception:
+        return warn
+    if nc.get("sti_quarterly_missing"):
+        warn.append(
+            f"  [WARN-49 四半期ST投資欠損] 直近年次FY{annual_period} "
+            f"short_term_investments=${annual_sti/1e6:,.1f}M だが、"
+            f"get_net_cash()が採用した四半期（{nc.get('net_debt_period')}）に"
+            f"short_term_investmentsが存在せず0として計算（net_cash・Runway cash"
+            f"が過小の可能性）→ 10-QのBSに流動の短期投資行があれば抽出漏れ"
+            f"（タグ/cross_filing_tags追加）、行がなければ10-Q非開示で対応不要"
+        )
+    return warn
+
+
 # CHECK-36: ティッカー非依存の単発チェック用の基準件数。2026-08-16実装時点で
 # 中立フォールバック対象は2銘柄（BKNG/CPRT）。今後の推移を見て閾値は調整する。
 _MOAT_NEUTRAL_FALLBACK_BASELINE_COUNT = 4
@@ -1848,6 +1898,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     warn.extend(_check_moat_score_validity(ticker, latest))
     warn.extend(_check_dupont_null_validity(ticker, latest))
     warn.extend(_check_runway_divergence(ticker, latest))
+    warn.extend(_check_sti_quarterly_missing(ticker))
     parsed  = _parse_report(text)
 
     fcf_hist = parsed["fcf_history"]

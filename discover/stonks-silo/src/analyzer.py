@@ -93,6 +93,10 @@ class RunwayAnalysis:
     verdict: str = "UNKNOWN"                  # SAFE / WATCH / DANGER / UNKNOWN
     verdict_reason: str = ""
     score: Optional[float] = None             # 0-100
+    # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続: cashに採用した四半期BSに
+    # short_term_investmentsが存在せず0として計算した場合True（実測ゼロはFalse）。
+    # report_consistency_check.py CHECK-49が参照する
+    sti_quarterly_missing: bool = False
 
 
 @dataclass
@@ -516,6 +520,9 @@ class StonksAnalyzer:
         cf = latest["cf"]
 
         cash = get_runway_cash(net_cash_data)
+        sti_quarterly_missing = bool(
+            cash is not None and net_cash_data.get("sti_quarterly_missing")
+        )
         if cash is None:
             cash = _sum_not_none(
                 bs.get("cash_and_equivalents"),
@@ -554,6 +561,7 @@ class StonksAnalyzer:
             capex_annual=capex,
             verdict=verdict,
             verdict_reason=reason,
+            sti_quarterly_missing=sti_quarterly_missing,
         )
 
     def _runway_verdict(

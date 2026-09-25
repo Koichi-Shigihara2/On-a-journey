@@ -2930,6 +2930,26 @@ class TestNvdaCrossFilingSTI:
             "(AvailableForSaleSecuritiesDebtSecurities $39,233M + EquitySecuritiesFvNi $30,237M)"
         )
 
+    def test_nvda_quarterly_2027q2_sti_is_bs_current_sum(self):
+        """NVDA quarterly_2027Q2.json（[[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続、
+        2026-09-25）: cross_filing_tagsの2027Q2登録により、10-Q BSの流動
+        「Marketable debt securities $34,143M」＋「Marketable equity securities
+        $42,783M」＝$76,926Mが入っていること（登録前はキー自体が欠損し
+        get_net_cash()で0扱い、net_cashが約$77B過小だった）"""
+        import json, os
+        q_path = os.path.join(
+            os.path.dirname(__file__), "..",
+            "common", "sec_data", "data", "NVDA", "quarterly_2027Q2.json"
+        )
+        if not os.path.exists(q_path):
+            return
+        with open(q_path, encoding="utf-8") as f:
+            q = json.load(f)
+        assert q.get("bs", {}).get("short_term_investments") == 76_926_000_000, (
+            "NVDA quarterly_2027Q2 short_term_investmentsが"
+            "DebtSecuritiesCurrent $34,143M + EquitySecuritiesFvNi $42,783Mでない"
+        )
+
     def test_nvda_latest_json_reports_quarterly_sti_not_approximated(self):
         """NVDA latest.json: BUG-NETDEBT-4の同一時点優先ロジックにより
         financial_healthは四半期の正規合算値を採用し、sti_approximatedはFalseになること

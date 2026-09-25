@@ -49,9 +49,19 @@ def get_runway_cash(net_cash_data: Optional[dict]) -> Optional[float]:
     増資（RDW: FY2025 cash $94.5M → 2026Q2 $557.0M）や、現金から短期投資
     への振替（BBAI: 2026Q2 cash $36.3M + 流動AFS $282.9M）を反映するため。
 
-    非流動AFS（満期1年超の投資有価証券）は含めない。保守側（過小評価）
-    に倒れるだけで、SAFE/DANGERの判定逆転は起きないため（BBAIは非流動
-    AFS $90.6Mを除いても流動分のみでSAFE）。
+    非流動AFS（満期1年超の投資有価証券）は含めない。非流動AFSの除外は
+    保守側（過小評価）に倒れるだけで、BBAIについてはSAFE/DANGERの判定
+    逆転は起きないことを確認済み（非流動AFS $90.6Mを除いても流動分のみで
+    SAFE）。この「逆転は起きない」は非流動AFSの除外に限った話であり、
+    流動の短期投資が四半期で欠損した場合には当てはまらない（下記）。
+
+    四半期側のshort_term_investmentsが欠損（get_net_cash()の
+    sti_quarterly_missing=True）の場合、short_term_investmentsは0として
+    合算される（cashのみのRunway）。実測ゼロ（SITM 2026Q2型、
+    sti_quarterly_missing=False）と違い、実際には流動の短期投資を保有して
+    いる可能性があるため、過小評価でDANGER/WATCHへ振れうる。呼び出し元は
+    sti_quarterly_missingを出力に記録し、report_consistency_check.pyの
+    CHECK-49（直近年次ST投資>0かつ四半期欠損）で可視化する。
 
     get_net_cash()がcashを取得できなかった場合（cash_missing=True）や
     引数がNoneの場合はNoneを返し、呼び出し元で「データ不足」として扱う。
@@ -484,6 +494,17 @@ class SECReader:
                 "sti_residual_pct":       float  近似値採用時の実額比残差率
                                                   （例: 0.0088 = +0.88%）。
                                                   sti_approximated=Falseの場合None
+                "sti_quarterly_missing":  bool   四半期優先分岐（BUG-NETDEBT-4）で
+                                                  四半期側のBSを採用したが、その
+                                                  四半期にshort_term_investments
+                                                  自体が存在しなかった（None）場合
+                                                  True。値は従来通り0で計算する
+                                                  （保守側）が、「実測ゼロ」（SITM
+                                                  2026Q2型、10-Qが0を明示）と
+                                                  「欠損」（NVDA 2027Q2の登録漏れ・
+                                                  CDNS/ABBV型の10-Q非開示）を区別
+                                                  するためのフラグ（[[BBAI-RDW-
+                                                  RUNWAY-VERIFICATION-1]]後続）
                 "sti_estimated_zero":     bool   short_term_investmentsが最新年度
                                                   完全欠損かつ過去の直近既知値が
                                                   明示的0だったため、真のゼロと
@@ -508,6 +529,7 @@ class SECReader:
                 "sector_guard": "none", "net_debt_period": "",
                 "cash_missing": False,
                 "sti_approximated": False, "sti_residual_pct": None,
+                "sti_quarterly_missing": False,
                 "sti_estimated_zero": False, "sti_last_confirmed_zero_year": None,
                 "ltdebt_estimated_zero": False, "ltdebt_last_confirmed_zero_year": None,
                 "stdebt_estimated_zero": False, "stdebt_last_confirmed_zero_year": None,
@@ -543,6 +565,7 @@ class SECReader:
         _sti_prov = (latest.get("bs_provenance") or {}).get("short_term_investments") or {}
         sti_approximated = bool(_sti_prov.get("is_approximated"))
         sti_residual_pct = _sti_prov.get("residual_pct")
+        sti_quarterly_missing = False
 
         # FY52WEEK-BS-FADEOUT-FALLBACK-1: 最新年度が完全欠損（None）の場合、
         # 過去の直近既知値が明示的0であればそれを真のゼロとして採用する
@@ -598,7 +621,9 @@ class SECReader:
                 _q_lt      = _qbs.get("long_term_debt")
                 _q_st      = _qbs.get("short_term_debt")
                 _q_sti_raw = _qbs.get("short_term_investments")
-                _q_sti     = _q_sti_raw or 0
+                # 四半期にSTIが存在しない（None）場合も値は0で計算する（保守側）が、
+                # 実測ゼロと区別できるよう全項目統一分岐でsti_quarterly_missingを立てる
+                _q_sti     = 0 if _q_sti_raw is None else _q_sti_raw
                 _q_period  = _latest_q.get("period", "")
                 if _q_cash is not None and _q_lt is not None:
                     # LTDebtが明示的に取得できる → 全項目を同一時点で統一（最優先）
@@ -607,6 +632,7 @@ class SECReader:
                     lt_debt = float(_q_lt)
                     st_debt = float(_q_st or 0)
                     st_inv  = float(_q_sti)
+                    sti_quarterly_missing = _q_sti_raw is None
                     net_debt_period = _q_period
                     # 四半期側のSTIに切り替わったため、annual側の近似値フラグは
                     # 引き継がない（同一filing内合算・cross_filing_tagsの
@@ -694,6 +720,7 @@ class SECReader:
             "cash_missing":           cash_missing,
             "sti_approximated":       sti_approximated,
             "sti_residual_pct":       sti_residual_pct,
+            "sti_quarterly_missing":  sti_quarterly_missing,
             "sti_estimated_zero":     sti_estimated_zero,
             "sti_last_confirmed_zero_year": sti_last_confirmed_zero_year,
             "ltdebt_estimated_zero":  ltdebt_estimated_zero,

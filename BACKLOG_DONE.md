@@ -85,6 +85,78 @@
 （2026Q2）はshort_term_investmentsが未取得のため`get_net_cash()`の四半期
 分岐で0扱いになる（Runwayはキャッシュフロー黒字のためinfでverdictに影響なし）
 
+#### 2026-09-25 後続対応（指示書④⑤: 四半期ST投資の欠損区別・抽出漏れ是正）
+**上記「観察」の訂正**: SITMの2026Q2は抽出漏れではなく実測ゼロ。10-Qが
+`DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossCurrent=0`
+を明示（2026Q1は$290.2M。満期保有債券を現金化しcash $1,921Mへ）。
+
+**全銘柄調査（直近年次ST>0かつ四半期STが欠損/0）**: 4銘柄
+- **SITM**: 実測ゼロ（上記）
+- **NVDA**: 抽出漏れ。`quarterly.py`の`cross_filing_tags`（期ごと明示登録）に
+  2027Q2が未登録で`short_term_investments`が欠損し、net_cashが−$10,923Mと
+  約$77B過小だった
+- **CDNS**: 抽出漏れではない。年次$154.2Mは10-K注記「Balance Sheet
+  Components」の「Prepaid expenses and other」内訳（Short-term investments）で、
+  10-K・10-QともBS本体に行がなく、10-Q（2026Q1、accn 0000813672-26-000047）は
+  内訳自体を開示しない → 対応不要
+- **ABBV**: 10-Q（2026Q2、accn 0001551152-26-000026）のBSに短期投資行なし
+  （前期末比較列も同様）。年次$28Mは注記由来 → 対応不要
+
+**修正内容**:
+- `quarterly.py`: NVDA `cross_filing_tags`に2027Q2（end 2026-07-26）を追加。
+  構成は10-Q原本（accn 0001045810-26-000075）BSの流動「Marketable debt
+  securities $34,143M」「Marketable equity securities $42,783M」と一致する
+  `DebtSecuritiesCurrent`＋`EquitySecuritiesFvNi`（計$76,926M）。
+  **登録方式は期ごと明示登録を維持**: 2027Q1・FY2026で使った
+  `AvailableForSaleSecuritiesDebtSecurities`は満期1年超の非流動分を含むAFS
+  総額で、本期（$46,900M）はBSの流動行と一致しないことが判明。期ごとに正しい
+  構成タグが変わりうるため、全期一律適用は不採用
+- `common/sec_data/data/NVDA/quarterly_2027Q2.json`: 再パース（company_facts
+  キャッシュからオフライン）で`short_term_investments=76,926,000,000`を追加
+  （NVDA配下で変化したのは本ファイルの1行のみ）
+- `reader.py::get_net_cash()`: `_q_sti_raw or 0`を廃止し、四半期優先の全項目
+  統一分岐で四半期にSTIがない場合`sti_quarterly_missing=True`を返す（値は従来
+  通り0で計算、保守側）。`get_runway_cash()`のdocstringを更新（「判定逆転は
+  起きない」を非流動AFSの除外に限定し、四半期欠損時は過小評価で
+  DANGER/WATCHへ振れうる旨を明記）
+- `adjustments.py`（BSAdjustmentResult）・TANUKI `pipeline.py`
+  （financial_health）・STONKS SILO `analyzer.py`（RunwayAnalysis）に
+  `sti_quarterly_missing`を追加し、latest.json・results.jsonへ記録
+- `report_consistency_check.py`: CHECK-49（WARN-49 四半期ST投資欠損）を新設。
+  直近年次ST>0かつ`get_net_cash()`の`sti_quarterly_missing=True`でWARN
+  （NG化しない）。latest.jsonではなく`get_net_cash()`を直接呼ぶ
+
+**検証**:
+- `get_net_cash()`全102銘柄before/after: 値が変わったのはNVDAのみ
+  （ST投資 0 → $76,926M、net_cash −$10,923M → +$66,003M。指示書想定の
+  +$78,760M前後との差は、想定がAFS総額$46,900M〈非流動分込み〉ベースの
+  合算だったため）
+- TANUKI（同時刻にHEAD worktree／変更後で実行し株価要因を排除）:
+  NVDA IV/株 $2,131.10 → $2,134.29、upside 848.9% → 850.3%、SCORE BUY
+  （funda 100・timing 80）不変。CDNSは全項目不変（TRIM）。確認用に生成した
+  docs出力はコミットせず復元（次回定期実行で反映）
+- STONKS SILO全24銘柄: verdict・runway_months変化なし。
+  `sti_quarterly_missing=True`はRDW/RXRX/ZETA（いずれも年次STなしのため
+  WARN-49非発火）
+- WARN-49の本番発火: ABBV・CDNSの2件（いずれも10-Q非開示と原本で確認済み。
+  warn_acknowledged.jsonへの登録は未実施）
+- 回帰テスト: `tests/test_runway_cash_unify.py::TestStiQuarterlyMissing`
+  （SITM型: 実測0でmissing=False／欠損型: missing=Trueかつ値0／CHECK-49の
+  発火条件／STONKS SILOへの伝播）、`tests/test_pipeline_logic.py::
+  TestNvdaCrossFilingSTI::test_nvda_quarterly_2027q2_sti_is_bs_current_sum`。
+  変更前コードで5件fail、変更後pass
+
+**発見（未対応・本件の対象外）**:
+- NVDAの既存登録2期は非流動分を含み過大: 2027Q1 $69,470M（BS流動合計
+  $67,335M＝$37,098M+$30,237M、+$2,135M）、FY2026 $52,406M（BS $51,951M＝
+  $39,065M+$12,886M、`DebtSecuritiesCurrent`で残差0にできる）。最新期で
+  ないため現在のnet_cashには影響しない
+- `BSAdjustmentResult.to_dict()`に`cash_missing`がなく、latest.jsonの
+  `bs_adjustment`に同キーが入らない。このため`financial_health.cash_missing`
+  （FY52WEEK-BS-NULL-SILENT-1 Phase A）は本番で常にFalse、前段の
+  `computed_runway_months`のcash_missing時スキップも本番では発動しない
+  （現在cash_missing=Trueは全銘柄でCPRTのみ）
+
 ---
 
 ## 2026-09-24（完了）

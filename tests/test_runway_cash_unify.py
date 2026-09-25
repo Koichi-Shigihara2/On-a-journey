@@ -111,3 +111,72 @@ class TestStonksRunwayQuarterlyPriority:
                                        "net_income": -200_000_000}
         result = a.analyze(data, net_cash_data=_net_cash(556_967_000.0, 0.0))
         assert result.runway.verdict == "SAFE"
+
+
+# ---------------------------------------------------------------------------
+# [[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続（2026-09-25⑤）: get_net_cash()の
+# 四半期分岐で「実測ゼロ」と「欠損」を区別する（sti_quarterly_missing）
+# ---------------------------------------------------------------------------
+
+import json  # noqa: E402
+
+from common.sec_data.reader import SECReader  # noqa: E402
+import common.sec_data.report_consistency_check as rcc  # noqa: E402
+
+
+def _write_sec(tmp_path, ticker, annual_sti, q_bs):
+    d = tmp_path / ticker
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "annual_2025.json").write_text(json.dumps({
+        "period": "2025",
+        "bs": {"cash_and_equivalents": 16_800_000, "short_term_investments": annual_sti,
+               "long_term_debt": 0, "short_term_debt": 0},
+    }), encoding="utf-8")
+    (d / "quarterly_2026Q2.json").write_text(json.dumps({
+        "period": "2026Q2", "bs": q_bs,
+    }), encoding="utf-8")
+    return str(tmp_path)
+
+
+class TestStiQuarterlyMissing:
+    _Q_BASE = {"cash_and_equivalents": 1_921_141_000, "long_term_debt": 1_317_556_000,
+               "short_term_debt": 0}
+
+    def test_sitm_type_measured_zero_is_not_missing(self, tmp_path):
+        """SITM 2026Q2型: 10-Qがshort_term_investments=0を明示 → missing=False"""
+        data_dir = _write_sec(tmp_path, "SITMTEST", 791_648_000,
+                              dict(self._Q_BASE, short_term_investments=0))
+        nc = SECReader(data_dir=data_dir).get_net_cash("SITMTEST")
+        assert nc["net_debt_period"] == "2026Q2"
+        assert nc["short_term_investments"] == 0.0
+        assert nc["sti_quarterly_missing"] is False
+
+    def test_missing_type_sets_flag_but_keeps_zero_value(self, tmp_path):
+        """欠損型（CDNS/ABBV/NVDA 2027Q2修正前）: 四半期にキー自体なし →
+        値は従来通り0で計算しつつmissing=True"""
+        data_dir = _write_sec(tmp_path, "MISSTEST", 154_213_000, dict(self._Q_BASE))
+        nc = SECReader(data_dir=data_dir).get_net_cash("MISSTEST")
+        assert nc["short_term_investments"] == 0.0
+        assert nc["sti_quarterly_missing"] is True
+        assert get_runway_cash(nc) == pytest.approx(1_921_141_000.0)
+
+    def test_check49_warns_only_for_missing_with_annual_sti(self, tmp_path, monkeypatch):
+        data_dir = _write_sec(tmp_path, "MISSTEST", 154_213_000, dict(self._Q_BASE))
+        _write_sec(tmp_path, "SITMTEST", 791_648_000, dict(self._Q_BASE, short_term_investments=0))
+        _write_sec(tmp_path, "NOSTITEST", None, dict(self._Q_BASE))
+        monkeypatch.setattr(rcc, "SEC_DATA_DIR", data_dir)
+        monkeypatch.setattr(rcc, "_SEC_READER", None)
+        assert any("WARN-49" in w for w in rcc._check_sti_quarterly_missing("MISSTEST"))
+        assert rcc._check_sti_quarterly_missing("SITMTEST") == []
+        # 年次にもSTIがない銘柄は四半期欠損でも発火しない
+        assert rcc._check_sti_quarterly_missing("NOSTITEST") == []
+
+    def test_stonks_runway_records_flag(self):
+        a = _analyzer.StonksAnalyzer()
+        nc = _net_cash(557_000_000.0, 0.0)
+        nc["sti_quarterly_missing"] = True
+        ra = a._analyze_runway([2025], _records(94_467_000, None, -150_000_000, -40_810_000), nc)
+        assert ra.sti_quarterly_missing is True
+        ra0 = a._analyze_runway([2025], _records(94_467_000, None, -150_000_000, -40_810_000),
+                                _net_cash(557_000_000.0, 0.0))
+        assert ra0.sti_quarterly_missing is False

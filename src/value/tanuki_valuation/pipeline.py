@@ -2742,6 +2742,9 @@ class TanukiValuationPipeline:
                 # True・その残差率。report.txtのST_Invest行注記に使用する。
                 "sti_approximated": bs_adj.get("sti_approximated", False),
                 "sti_residual_pct": bs_adj.get("sti_residual_pct"),
+                # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続: 四半期STI欠損（0として
+                # 計算）と実測ゼロの区別。report_consistency_check.py CHECK-49が参照
+                "sti_quarterly_missing": bs_adj.get("sti_quarterly_missing", False),
                 # FY52WEEK-BS-FADEOUT-FALLBACK-1: 過去の直近既知値が明示的0
                 # だったため真のゼロと推定した場合True・その最終確認年度。
                 # report.txtの該当行に「推定ゼロ（最終確認: FY20XX）」を注記する。

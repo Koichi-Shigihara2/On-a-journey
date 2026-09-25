@@ -227,6 +227,27 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
                         {"tag": "EquitySecuritiesFvNi", "forms": ("10-Q",)},
                     ),
                 },
+                {
+                    # 2027Q2（Q2 FY2027、end 2026-07-26）: [[BBAI-RDW-RUNWAY-
+                    # VERIFICATION-1]]後続（2026-09-25）で未登録による欠損
+                    # （short_term_investments=0扱い）を発見し追加。10-Q原本
+                    # （accn 0001045810-26-000075）のBS流動資産「Marketable debt
+                    # securities $34,143M」「Marketable equity securities
+                    # $42,783M」と一致する`DebtSecuritiesCurrent`＋
+                    # `EquitySecuritiesFvNi`（計$76,926M）を採用する。
+                    # 上2期で使った`AvailableForSaleSecuritiesDebtSecurities`
+                    # （本期$46,900M）は満期1年超の非流動分を含むAFS総額で、
+                    # BSの流動行とは一致しないため使わない。期ごとに正しい構成
+                    # タグが変わりうる（本期で判明）ため、全期一律適用には
+                    # せず期ごとの明示登録を維持する。新四半期の登録漏れは
+                    # report_consistency_check.pyのCHECK-49で検知する。
+                    "period": "2027Q2",
+                    "end_date": "2026-07-26",
+                    "components": (
+                        {"tag": "DebtSecuritiesCurrent", "forms": ("10-Q",)},
+                        {"tag": "EquitySecuritiesFvNi", "forms": ("10-Q",)},
+                    ),
+                },
             ),
         },
         "note": "FY2026(FYE 2026-01-25)以降、非上場投資先の上場に伴う資産再分類で"

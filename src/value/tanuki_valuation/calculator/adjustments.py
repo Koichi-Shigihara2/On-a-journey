@@ -784,6 +784,10 @@ class BSAdjustmentResult:
     # のcross_filing_tags経由の複数タグ合算近似値である場合True・その残差率
     sti_approximated: bool = False
     sti_residual_pct: Optional[float] = None
+    # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続: 四半期優先分岐で採用した四半期に
+    # short_term_investmentsが存在しなかった（0として計算）場合True。
+    # 実測ゼロ（False）と区別する（reader.py::get_net_cash()参照）
+    sti_quarterly_missing: bool = False
     # FY52WEEK-BS-FADEOUT-FALLBACK-1: 最新年度が完全欠損（None）かつ過去の
     # 直近既知値が明示的0だった場合に真のゼロと推定した場合True・その最終
     # 確認年度。年数閾値なし。直近既知値が非ゼロの場合は適用されない
@@ -809,6 +813,7 @@ class BSAdjustmentResult:
             "net_debt_period":        self.net_debt_period,
             "sti_approximated":       self.sti_approximated,
             "sti_residual_pct":       self.sti_residual_pct,
+            "sti_quarterly_missing":  self.sti_quarterly_missing,
             "sti_estimated_zero":     self.sti_estimated_zero,
             "sti_last_confirmed_zero_year": self.sti_last_confirmed_zero_year,
             "ltdebt_estimated_zero":  self.ltdebt_estimated_zero,
@@ -855,6 +860,7 @@ def calculate_bs_adjustment(
         net_debt_period=net_cash_data.get("net_debt_period", ""),  # ARCH-DATA-1残課題①
         sti_approximated=net_cash_data.get("sti_approximated", False),  # NVDA-STI-TAG-UNIDENTIFIED-1
         sti_residual_pct=net_cash_data.get("sti_residual_pct"),
+        sti_quarterly_missing=net_cash_data.get("sti_quarterly_missing", False),
         # FY52WEEK-BS-FADEOUT-FALLBACK-1
         sti_estimated_zero=net_cash_data.get("sti_estimated_zero", False),
         sti_last_confirmed_zero_year=net_cash_data.get("sti_last_confirmed_zero_year"),
