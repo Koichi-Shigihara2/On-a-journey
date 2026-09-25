@@ -3077,7 +3077,11 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
   完了・report.txt消費側に必要なしと確認しクローズ）
 - FUTURE-FEATURE-IDEAS-CATALOG-1: 構想段階の8件、個別項目ごとに
   Koichiさんが着手可否を判断
-- UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1: ①〜③いずれも実データ未確認の
+- ~~UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1~~（2026-09-25解体: ①は仮説の型が
+  実在せずクローズ、②はSPLIT-REALTIME-GAP-REVERSE-1として完了、③は
+  DATA-JUMP-CHECK-NETINCOME-SBC-1として単独項目に戻した。新規登録:
+  PARSER-MERGED-PARTIAL-CONCEPT-TAG-1・SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1。
+  以下は旧記載）: ①〜③いずれも実データ未確認の
   推測段階、次回セッション以降でKoichiさんが判断
 - JNJ-XOM-PM-FLOOR-RISK-1・TTM-DATA-DRIFT-BEHIND-PIPELINE-1・
   LAYER3-GA-STANDALONE-TAG-UNMAPPED-1: いずれも特定トリガー条件（候補件数低下・実害顕在化・

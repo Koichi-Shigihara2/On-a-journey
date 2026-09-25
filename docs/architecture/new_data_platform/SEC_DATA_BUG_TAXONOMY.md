@@ -595,11 +595,14 @@ XBRLタグ選定・accn選定・会計年度判定・CIK照合・SEC EDGAR取得
     `apply_split_adjustments()`機構で銘柄別登録により解決（構造的に
     不可能ではなかった）。一次情報補正でCPRTの実際の分割日がyfinance
     報告日と異なると判明。
-76. **[[SPLIT-REALTIME-GAP-REVERSE-1]]** — OPEN。同型ギャップが
-    KULR/SPIRの*逆*分割（1-for-8）でも疑われる、yfinanceで両分割とも
-    実在と確認済みだが、`apply_split_adjustments()`の比率計算が
-    ratio<1（逆分割）で正しく機能するかは未検証（順分割でのみ
-    検証済み）。未対応（優先度低）。
+76. **[[SPLIT-REALTIME-GAP-REVERSE-1]]** — RESOLVED（2026-09-25）。
+    KULR/SPIRの*逆*分割（1-for-8）で同型ギャップが実在（KULR 2024-03-31
+    以前・SPIR 2021-09〜2022-06が分割前株数のまま固着）。旧
+    `apply_split_adjustments()`はratio<1で調整済みの行まで二重補正する
+    ため、判定を方向非依存化（`common/sec_data/split_adjust.py`）し、
+    KULR・SPIR・HON（1-for-2、洗い出しで追加）・BKNG（登録漏れ）を
+    split_history.yamlへ登録。TANUKIの3年希薄化率にも登録分割を適用
+    （KULR −27.82%→+44.35%/年）。
 77. **[[SPLIT-AUTO-CHECK-1]]** — DONE。EPS Analyzerの独立SEC抽出
     パイプライン（`extract_key_facts.py`、`common/sec_data/`とは
     完全に別）が、同一期間に複数のSEC fact（分割前 vs 分割後再表示値）

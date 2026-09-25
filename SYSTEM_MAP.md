@@ -1337,9 +1337,12 @@ quarterly.py・parser.py・tag_definitions.pyは一切importしていない（im
   （2019年以降無分割、SEC XBRL確認済み）、往復変動の正体は
   `_neighbor_quarter_diluted_shares()`（[[ASTS-SHARES-OSCILLATION-1]]）が
   RCAT自身の四半期単位XBRL開示欠落を埋めていただけと判明したため対象外。
-  KULR/SPIRのリバース分割（1-for-8）は同型ギャップの有無が未検証のまま
-  [[SPLIT-REALTIME-GAP-REVERSE-1]]として分離登録。詳細はBACKLOG_DONE.md
-  [[SPLIT-REALTIME-GAP-1]]参照
+  KULR/SPIRのリバース分割（1-for-8）の同型ギャップは
+  [[SPLIT-REALTIME-GAP-REVERSE-1]]（2026-09-25完了）で実在を確認し、
+  判定を方向非依存化（common/sec_data/split_adjust.py、EPS ANALYZERと
+  TANUKIの3年希薄化率で共通）してKULR・SPIR・HON（1-for-2）・BKNGを登録。
+  詳細はBACKLOG_DONE.md [[SPLIT-REALTIME-GAP-1]]・
+  [[SPLIT-REALTIME-GAP-REVERSE-1]]参照
      ↓ TTMデータ（JSON）
 【バリュエーション計算層】
 ├─ common/sec_data/reader.py::SECReader.get_net_cash()  # BS項目（Cash/ST_Invest/

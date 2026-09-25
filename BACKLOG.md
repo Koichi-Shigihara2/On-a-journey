@@ -2686,6 +2686,125 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 
 ---
 
+### [DATA-JUMP-CHECK-NETINCOME-SBC-1] 純利益・SBCの段差型急変検知（比率方式以外の代替方式検討）
+**優先度:** 低（着手急がず）
+**分類:** アーキテクチャ / 品質管理
+**登録日:** 2026-09-06
+**発見:** [[DATA-JUMP-CHECK-GENERALIZE-1]]実装時の実データ比率分布確認
+
+#### 背景
+[[DATA-JUMP-CHECK-GENERALIZE-1]]で`check_c_data_jump()`（YoY比率が閾値以上/
+以下で発火する段差型検知）を売上総利益・CapExへ展開する際、当初は純利益・
+SBCも対象候補としていたが、実データで比率分布を確認した結果、比率方式が
+本質的に機能しないことが判明したため、この2フィールドは今回のスコープから
+除外した：
+
+- **純利益（pl.net_income）**: tanuki=true全100銘柄・直近6年のYoY比率477件中
+  53件が負値（黒字↔赤字の符号反転）。符号反転を跨ぐ比率は数学的に意味を
+  持たない（例: LITE 2025→2026: $25.9M→$-69.35億、比率-267.76倍という値
+  自体が「267倍悪化」を意味しない）。閾値方式で符号反転を捕捉しようとすると
+  「負の比率は全て閾値以下」という粗い判定にしかならず、実質的に「符号が
+  変わったかどうか」の二値判定と変わらない
+- **SBC（cf.stock_based_compensation）**: ゼロ近傍の小額から上場後の本格的な
+  株式報酬制度導入で急増するケースが頻発し、実測でZETA（2020→2021、
+  $105K→$259.16M、倍率2468.18倍）のような正当な急増が比率の上限を
+  無意味化する。SBCはスタートアップ〜上場直後の企業で「ほぼゼロから
+  始まり数年で定常化する」という成長曲線自体がありふれているため、
+  段差型検知が想定する「タグ切替による不連続 vs 正当な急変」の区別が
+  比率方式では原理的に困難
+
+#### 対応方針（未確定・次回セッション以降で判断）
+比率方式（YoY倍率）以外のアプローチを検討する必要がある。候補（いずれも
+未検証、次回セッションで実データを見ながら判断）：
+- 純利益: 符号反転自体を検知する二値チェック（「前年黒字→当年赤字」等の
+  遷移を、[[BS-FIELD-NONE-TRANSITION-DETECT-1]]（WARN-26、有値→None遷移
+  検知）と同型の「状態遷移検知」として設計する案
+- SBC: 絶対額ベースの閾値（例: 直近年のSBCが売上の一定比率を超えて
+  急増した場合のみ検知）、またはゼロ近傍を除外した上での比率方式再検討
+- いずれも「NGにするには誤検知率が高すぎる」というWARN-21/44/45と同じ
+  教訓が当てはまる可能性が高く、実装する場合もWARNレベルに留める前提で
+  設計すること
+
+#### 着手条件
+なし（優先度含め次回以降のセッションで判断。急ぎではない）
+
+---
+
+### [PARSER-MERGED-PARTIAL-CONCEPT-TAG-1] parser.py::_extract_values_merged()の四半期値で、部分概念タグのSA候補が合計概念タグより優先される（D&A・S&M）
+**優先度:** 低（data/系統の四半期値に現役の消費者がいない）
+**分類:** データ品質 / parser.py（data/系統）
+**登録日:** 2026-09-25
+**発見:** [[PARSER-MERGED-TAG-MIXING-RISK-1]]の実データ検証（2026-09-25、
+BACKLOG_DONE.md参照）
+
+#### 内容
+`MERGE_ALL_TAGS_FIELDS`（revenue・selling_and_marketing・
+depreciation_and_amortization）の四半期値は、全候補タグの生エントリを
+`(fy, fp)`単位でまとめ、`_pick_quarterly_period_representative()`が単四半期
+（SA）候補を優先して代表を選ぶ。候補タグに「合計概念」と「部分概念」が
+混在しているため、合計概念のタグが10-QでYTD（累計）しか申告されない場合、
+SAを持つ部分概念のタグが代表に選ばれる。
+- **D&A（413件）**: CF計算書の合計`DepreciationDepletionAndAmortization`は
+  10-QではYTDのみのため、SAを持つ`AmortizationOfIntangibleAssets`（無形資産
+  償却のみ）が選ばれる。例: ADBE 2022Q2 data/ 101M vs Layer3 212M
+- **S&M**: CELHで`AdvertisingExpense`（広告費のみ）が選ばれる
+（2026-09-25時点、data/とLayer3の不一致483件のうち大半。「2四半期分を
+1四半期として算出」型〈Layer3が廃棄した旧パターン〉は0件）
+
+**消費者**: data/の`quarterly_*.json`を読む処理（DuPont分解・
+`get_net_cash()`・CHECK-12・EPS取得）はBS項目・EPSのみを使い、この3フィールドの
+四半期値を読む処理はない（roic.py・execution_metrics.py・dcf_validity_checker.py
+もannualのみ）。IV・TANUKI SCORE・表示には届いていない。
+
+**未検証**: 年次のD&A（annual側の抽出経路）でも同じ概念混在が起きうるかは
+未検証（年次側は候補タグの列挙順と期間長のタイブレークで決まるため、合計
+概念の年次値があれば通常は先に採用されるはず、という推測のみ）。
+
+#### 修正案（未確定）
+- 案1: 候補タグを「同じ概念の別名」と「部分概念」に分け、部分概念
+  （`Depreciation`・`AmortizationOfIntangibleAssets`・`AdvertisingExpense`）は、
+  合計概念のタグが当該期に一つもない場合だけ使う
+- 案2: data/系統の四半期値をLayer3に一本化する方針（フェーズD）に合わせ、
+  この3フィールドの四半期出力自体を廃止する
+
+#### 着手条件
+なし（消費者がいないため急がない。年次D&Aの検証か、data/系統の四半期値を
+使う消費者が現れた時点で優先度を再評価）
+
+---
+
+### [SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1] split_history.yamlへの株式分割の登録漏れを検知する仕組みがない
+**優先度:** 低
+**分類:** データ品質ゲート / EPS ANALYZER・TANUKI VALUATION
+**登録日:** 2026-09-25
+**発見:** [[SPLIT-REALTIME-GAP-REVERSE-1]]の対象洗い出し（2026-09-25）
+
+#### 内容
+株式分割の遡及補正（EPS ANALYZERの`apply_split_adjustments()`、TANUKIの
+3年希薄化率）は`config/split_history.yaml`に登録された分割にしか効かないが、
+登録は手作業で、漏れを検知する仕組みがない。実例: BKNGの25-for-1
+（2026-04-06、yfinanceのsplitsには記録あり）が2026-09-25まで未登録だった。
+また、登録されていない過去の分割（NVDA 2021年4:1・TSLA 2020年5:1など）で
+四半期株数の基準が混在している（既存のヒューリスティック検知で吸収されて
+いる範囲のみ）。
+
+#### 対応方針（未確定）
+- yfinanceのsplitsとsplit_history.yamlを突き合わせ、未登録の分割（比率が
+  1から十分離れているもの）をWARNで出すチェックを、report_consistency_check.py
+  等に追加する
+- 除外が必要なもの: 分社化に伴う株価調整のノイズ（SCCO〈~1.005〉・HON
+  〈1.032・1.061・0.9535〉）、評価対象期間より前のシェル会社時代の分割
+  （RCAT 2014・2016・2019）。HONの2026-06-29はyfinanceでは0.9535と記録
+  されているが、実際は1-for-2の株式併合（8-Kで確認）であり、yfinanceの
+  比率をそのまま登録値に使えない点にも注意
+- 登録時は8-K（Item 3.03/5.03・8.01）で分割日・比率・accnを確認する運用を
+  維持する
+
+#### 着手条件
+なし
+
+---
+
 ## システム全体バックログ（TANUKI VALUATION以外）
 
 ### 【Stonks Silo】
@@ -2875,8 +2994,9 @@ CONSTRUCTION-1]]`の未決定事項9件は2026-08-08に全件確定済みのた�
     eps_diluted計算、Q4タイミング依存の構造的リスク）
   - `[[FETCHER-PY-BS-FIELDS-DEAD-KEYS-1]]`（fetcher.pyの_BS_FIELDS
     デッドコード、Layer3移行とは無関係の既存バグ）
-  - `[[PARSER-MERGED-TAG-MIXING-RISK-1]]`（parser.py::
-    _extract_values_merged()のタグ混入リスク疑い）
+  - ~~`[[PARSER-MERGED-TAG-MIXING-RISK-1]]`~~（2026-09-25クローズ: 仮説の型は
+    実データで0件。別原因の部分概念タグ混入を`[[PARSER-MERGED-PARTIAL-CONCEPT-
+    TAG-1]]`〈優先度低〉として登録、BACKLOG_DONE.md参照）
   - `[[LAYER3-SNPS-STALE-TAG-PRIORITY-1]]`（SNPS FY2022 Revenue、
     Layer3候補タグ優先順位が修正再表示を拾えない構造的リスク）
   - `[[LAYER3-SM-SGA-SEPARATION-NONE-FALLOUT-1]]`（2026-09-05に旧
@@ -4866,7 +4986,8 @@ MISMATCH-DETECTION-1]]へガード条件付き介入として統合したため�
 8. （本線外・優先度中）[[AVGO-CIK-HISTORY-WRONG-LEGACY-CIK-1]]対応
 9. （本線外・優先度低）[[ONDS-LOAR-SHARES-SCALE-SUSPECT-1]]・
    [[RCAT-2016Q3-ORPHANED-QUARTERLY-FILE-1]]・
-   [[PARSER-MERGED-TAG-MIXING-RISK-1]]・[[LAYER3-ANNUAL-
+   ~~[[PARSER-MERGED-TAG-MIXING-RISK-1]]~~（2026-09-25クローズ、後続は
+   [[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]）・[[LAYER3-ANNUAL-
    MISCLASSIFICATION-NOW-RMBS-1]]・[[LAYER3-ANNUAL-MISCLASSIFICATION-
    MINOR-5TICKERS-1]]・[[LAYER3-SNPS-STALE-TAG-PRIORITY-1]]・
    ~~[[LAYER3-MOAT-ROIC-4TICKERS-NONE-1]]~~（2026-09-24陳腐化クローズ。
@@ -5057,151 +5178,3 @@ common/sec_data統合フェーズ1）の着手条件「[[CAPEX-SIGN-UNNORMALIZED
 「対応方針」「着手条件」欄に反映済み）。ただし上記[[NETCASH-DUAL-CALC-1]]・
 [[NETINCOME-DUAL-PIPELINE-1]]（優先度：高）を差し置く優先度ではないため、
 次セッションの筆頭候補自体は変更しない。
-
----
-
-### [UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1] 実データ未確認の推測段階リスク3件の統合カタログ（元PARSER-MERGED-TAG-MIXING-RISK-1/SPLIT-REALTIME-GAP-REVERSE-1/DATA-JUMP-CHECK-NETINCOME-SBC-1）
-**優先度:** 低（いずれも非保有銘柄または実データ未確認の推測段階のまま
-長期未着手。個別の着手条件は変更なし）
-**分類:** 構造的リスク疑い / データ品質疑い / 複数サブシステム横断
-**登録日:** 各サブ項目の元登録日は各①〜③の記載を参照。統合日: 2026-09-16
-**発見:** 2026-09-16の件数削減棚卸し（BACKLOG.md実コード照合）
-
-#### 統合の経緯
-PARSER-MERGED-TAG-MIXING-RISK-1・SPLIT-REALTIME-GAP-REVERSE-1・
-DATA-JUMP-CHECK-NETINCOME-SBC-1の3件は、いずれも「構造的に同型の疑いが
-あるが実データでの影響有無・実害は未検証」という推測段階のまま長期未着手
-という共通点を持つため、2026-09-16に1つのカタログエントリへ統合した
-（`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`と同型の統合パターン）。元の3件は
-BACKLOG.mdから削除し、内容は要約せず全文そのまま以下の①〜③に保持する。
-個別の着手条件・優先度は統合前のまま変更していない。
-
-#### ① 元[PARSER-MERGED-TAG-MIXING-RISK-1] parser.py::_extract_values_merged()が、Layer3が[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]で廃棄した危険パターン（複数タグの生エントリを先に混ぜてからYTD変換）と同型の構造を持つ疑い
-**優先度:** 低（Layer3統一方針確定により、data/系統の重要度自体が
-低下したため、中→低に格下げ）
-**分類:** バグ疑い / 構造的リスク
-**登録日:** 2026-08-06
-**発見:** `SEC_EDGAR_LAYER_DESIGN.md`との整合性確認調査（チャット記録、
-2026-08-06）
-
-##### 内容
-`layer3_builder.py::_merge_candidate_entries()`は、候補タグごとに
-独立して`_process_entries()`→`_normalize_field_entries()`（YTD→単四半期
-変換を含む）を完了させてから、正規化済み系列同士をend_date単位で
-マージする設計になっている。これは当初の実装（生エントリを先に
-end_date単位でマージしてからYTD→単四半期変換する順序）が、異なる
-タグ由来のエントリが同一end_dateで競合した際にFYチェーン判定を
-破壊し、YTD差分計算が中間四半期を1つ読み飛ばして2四半期分を1四半期
-として誤算出するバグを引き起こした（CPRT・PEP等6銘柄・20エントリで
-実データ確認、[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]）ことを踏まえた
-意図的な設計変更。
-
-一方、`common/sec_data/parser.py::_extract_values_merged()`
-（merge_all_tags対象フィールド向け、`SECDATA-STORAGE-FRAGMENTATION-1`
-2026-08-05実装のSA/YTD統一アルゴリズム）は、全キー（＝複数タグ）を
-早期終了せずループし、四半期の生候補`(fy, fp, start, end, val)`を
-タグ区別のないまま単一の`quarterly_candidates`リストへ蓄積してから、
-`_resolve_quarterly_values()`でまとめて解決する構造になっている。これは
-Layer3が明示的に廃棄した「生エントリを先に混ぜてから変換」という
-旧パターンと同型であり、複数タグが競合する銘柄・フィールドで同種の
-誤算出が発生する構造的リスクを持つ疑いがある。
-
-なお、単一タグのみを扱う`_extract_values_best_candidate()`経路は
-タグ混入の余地がないため対象外。939b8f57fコミット時の検証（全105銘柄
-再パース結果が独自シミュレーションと完全一致）は旧parser.py実装との
-内部整合性確認であり、Layer3側の値との突合ではないため、本リスクを
-検出できるものではない。実データでの影響有無は未検証。
-
-##### 着手条件
-merge_all_tags対象フィールド一覧の洗い出し・実データでの影響有無検証
-から。ただしdata/系統の位置づけがLayer3統一に伴い補助的になったため、
-緊急性は低い。
-
-#### ② 元[SPLIT-REALTIME-GAP-REVERSE-1] KULR/SPIRのリバース分割で同型の恒久固着ギャップ有無が未確認
-**優先度:** 低
-**分類:** データ品質 / EPS ANALYZER
-**登録日:** 2026-07-20
-**発見:** [[SPLIT-REALTIME-GAP-1]]（完了・BACKLOG_DONE.md参照）実装時
-
-##### 背景
-SPLIT-REALTIME-GAP-1の実装前調査で行った全101銘柄横断スキャンは、フォワード
-分割（`diluted_shares_used`が数倍に「ジャンプ」するパターン、比率>1のみ）を
-検知対象としていたため、リバース分割（比率<1、株数が「減る」パターン）を
-見落としていた。
-
-BACKLOG_DONE.md「Phase 2b-3完了（2026-07-12）」の記述で、KULR・SPIRの2銘柄が
-当時から`extract_key_facts.py`のfact選定ロジック修正の対象銘柄として言及
-されていたことを再確認し、yfinanceでKULR（2025-06-23、1-for-8）・SPIR
-（2023-08-31、1-for-8）のリバース分割が実在することを確認した。
-
-ローカルキャッシュ（`docs/value-monitor/adjusted_eps_analyzer/data/{KULR,SPIR}/
-quarterly.json`）を見ると、いずれも「高い値が数四半期続いた後、低い値へ
-ジャンプし、以後低い値が続く」というNVDA型と鏡写しのパターンが見られる
-（KULR: 2022-06-30〜2024-03-31が約104M〜142M→2024-06-30以降は約22.7M〜46.2M。
-SPIR: 2022-03-31〜2022-06-30が約139M→2022-09-30以降は約17.5M〜33.3M）。
-いずれも実際のリバース分割日より1年程度早いタイミングでジャンプしており、
-SPLIT-REALTIME-GAP-1のNVDA等と同型の「翌年以降の10-Q再掲で先に是正された
-四半期」＋「再掲機会がなく古い側の値が残存」という構造が疑われるが、
-一次情報（SEC 10-Q/8-K）での確認・`apply_split_adjustments()`が
-リバース比率（ratio<1）を正しく扱えるかのコード確認はいずれも未実施。
-
-SCCO（yfinanceに2024年以降ほぼ毎四半期`~1.005-1.01`という極小の「分割様」
-記録があるが、ローカルキャッシュのdiluted_shares_used系列はほぼ横ばい
-〜緩やかな増加のみで明確なジャンプ/ドロップなし）は、特別配当等に伴う
-yfinance側のデータ仕様上のノイズであり実分割ではないと判断、対象外。
-
-##### 対応方針（未確定）
-- KULR/SPIRそれぞれのSEC 10-Q/8-K一次情報でリバース分割日・比率を確認する
-- `apply_split_adjustments()`の閾値計算（`pre_split_threshold = post_split_avg
-  / ratio × 1.5`）がratio<1（リバース分割）でも意図通り機能するか
-  （現状の実装はratio>1のフォワード分割のみで検証されている）をコードで確認する
-- 実装するか否か・優先度はKoichiさんの次回判断待ち
-
-##### 着手条件
-なし（次回セッションで判断）
-
-#### ③ 元[DATA-JUMP-CHECK-NETINCOME-SBC-1] 純利益・SBCの段差型急変検知（比率方式以外の代替方式検討）
-**優先度:** 低（着手急がず）
-**分類:** アーキテクチャ / 品質管理
-**登録日:** 2026-09-06
-**発見:** [[DATA-JUMP-CHECK-GENERALIZE-1]]実装時の実データ比率分布確認
-
-##### 背景
-[[DATA-JUMP-CHECK-GENERALIZE-1]]で`check_c_data_jump()`（YoY比率が閾値以上/
-以下で発火する段差型検知）を売上総利益・CapExへ展開する際、当初は純利益・
-SBCも対象候補としていたが、実データで比率分布を確認した結果、比率方式が
-本質的に機能しないことが判明したため、この2フィールドは今回のスコープから
-除外した：
-
-- **純利益（pl.net_income）**: tanuki=true全100銘柄・直近6年のYoY比率477件中
-  53件が負値（黒字↔赤字の符号反転）。符号反転を跨ぐ比率は数学的に意味を
-  持たない（例: LITE 2025→2026: $25.9M→$-69.35億、比率-267.76倍という値
-  自体が「267倍悪化」を意味しない）。閾値方式で符号反転を捕捉しようとすると
-  「負の比率は全て閾値以下」という粗い判定にしかならず、実質的に「符号が
-  変わったかどうか」の二値判定と変わらない
-- **SBC（cf.stock_based_compensation）**: ゼロ近傍の小額から上場後の本格的な
-  株式報酬制度導入で急増するケースが頻発し、実測でZETA（2020→2021、
-  $105K→$259.16M、倍率2468.18倍）のような正当な急増が比率の上限を
-  無意味化する。SBCはスタートアップ〜上場直後の企業で「ほぼゼロから
-  始まり数年で定常化する」という成長曲線自体がありふれているため、
-  段差型検知が想定する「タグ切替による不連続 vs 正当な急変」の区別が
-  比率方式では原理的に困難
-
-##### 対応方針（未確定・次回セッション以降で判断）
-比率方式（YoY倍率）以外のアプローチを検討する必要がある。候補（いずれも
-未検証、次回セッションで実データを見ながら判断）：
-- 純利益: 符号反転自体を検知する二値チェック（「前年黒字→当年赤字」等の
-  遷移を、[[BS-FIELD-NONE-TRANSITION-DETECT-1]]（WARN-26、有値→None遷移
-  検知）と同型の「状態遷移検知」として設計する案
-- SBC: 絶対額ベースの閾値（例: 直近年のSBCが売上の一定比率を超えて
-  急増した場合のみ検知）、またはゼロ近傍を除外した上での比率方式再検討
-- いずれも「NGにするには誤検知率が高すぎる」というWARN-21/44/45と同じ
-  教訓が当てはまる可能性が高く、実装する場合もWARNレベルに留める前提で
-  設計すること
-
-##### 着手条件
-なし（優先度含め次回以降のセッションで判断。急ぎではない）
-
-#### 着手条件
-なし（①〜③いずれも実データ未確認の推測段階、個別項目ごとに着手可否を
-判断する）

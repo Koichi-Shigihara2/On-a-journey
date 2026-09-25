@@ -4,6 +4,224 @@
 
 ## 2026-09-25（完了）
 
+### ✅ [SPLIT-REALTIME-GAP-REVERSE-1] KULR/SPIRのリバース分割で同型の恒久固着ギャップ有無が未確認 → 完了（2026-09-25）: 実在を確認し、apply_split_adjustments()の方向非依存化・KULR/SPIR/HON（STEP 0で追加）/BKNGの登録・TANUKI希薄化率への登録分割の適用で解消
+**優先度:** 低
+**分類:** データ品質 / EPS ANALYZER
+**登録日:** 2026-07-20
+**発見:** [[SPLIT-REALTIME-GAP-1]]（完了・BACKLOG_DONE.md参照）実装時
+
+#### 背景
+SPLIT-REALTIME-GAP-1の実装前調査で行った全101銘柄横断スキャンは、フォワード
+分割（`diluted_shares_used`が数倍に「ジャンプ」するパターン、比率>1のみ）を
+検知対象としていたため、リバース分割（比率<1、株数が「減る」パターン）を
+見落としていた。
+
+BACKLOG_DONE.md「Phase 2b-3完了（2026-07-12）」の記述で、KULR・SPIRの2銘柄が
+当時から`extract_key_facts.py`のfact選定ロジック修正の対象銘柄として言及
+されていたことを再確認し、yfinanceでKULR（2025-06-23、1-for-8）・SPIR
+（2023-08-31、1-for-8）のリバース分割が実在することを確認した。
+
+ローカルキャッシュ（`docs/value-monitor/adjusted_eps_analyzer/data/{KULR,SPIR}/
+quarterly.json`）を見ると、いずれも「高い値が数四半期続いた後、低い値へ
+ジャンプし、以後低い値が続く」というNVDA型と鏡写しのパターンが見られる
+（KULR: 2022-06-30〜2024-03-31が約104M〜142M→2024-06-30以降は約22.7M〜46.2M。
+SPIR: 2022-03-31〜2022-06-30が約139M→2022-09-30以降は約17.5M〜33.3M）。
+いずれも実際のリバース分割日より1年程度早いタイミングでジャンプしており、
+SPLIT-REALTIME-GAP-1のNVDA等と同型の「翌年以降の10-Q再掲で先に是正された
+四半期」＋「再掲機会がなく古い側の値が残存」という構造が疑われるが、
+一次情報（SEC 10-Q/8-K）での確認・`apply_split_adjustments()`が
+リバース比率（ratio<1）を正しく扱えるかのコード確認はいずれも未実施。
+
+SCCO（yfinanceに2024年以降ほぼ毎四半期`~1.005-1.01`という極小の「分割様」
+記録があるが、ローカルキャッシュのdiluted_shares_used系列はほぼ横ばい
+〜緩やかな増加のみで明確なジャンプ/ドロップなし）は、特別配当等に伴う
+yfinance側のデータ仕様上のノイズであり実分割ではないと判断、対象外。
+
+#### 対応方針（未確定）
+- KULR/SPIRそれぞれのSEC 10-Q/8-K一次情報でリバース分割日・比率を確認する
+- `apply_split_adjustments()`の閾値計算（`pre_split_threshold = post_split_avg
+  / ratio × 1.5`）がratio<1（リバース分割）でも意図通り機能するか
+  （現状の実装はratio>1のフォワード分割のみで検証されている）をコードで確認する
+- 実装するか否か・優先度はKoichiさんの次回判断待ち
+
+#### 着手条件
+なし（次回セッションで判断）
+
+#### 2026-09-25 対応完了（指示書⑭⑮、元[[UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1]]②）
+**一次情報（SEC 8-K Item 3.03/5.03）**:
+- KULR: 1-for-8、2025-06-23効力発生（accn 0001104659-25-063716）
+- SPIR: 1-for-8、2023-08-31効力発生（accn 0000950170-23-045434）
+- **HON（STEP 0で追加）**: 1-for-2、2026-06-29効力発生（accn 0000773840-26-000084、
+  Aerospace分離と同時）。10-Q XBRLの`StockholdersEquityNoteStockSplitConversionRatio1`=0.5
+  でも確認。yfinanceのsplitsは0.9535（分社化の株価調整と混在）で比率として使えない
+- 対象の洗い出し: yfinanceのsplits（全102銘柄）で比率<0.99はKULR・SPIR・HON・RCAT
+  （2014・2016・2019）。全銘柄の2016年以降の8-K（Item 3.03と5.03を両方含む53件）の本文を
+  「reverse stock split」で確認し、追加はなし。RCATは逆さ合併前のシェル会社時代のため
+  [[SPLIT-REALTIME-GAP-1]]の判断どおり対象外
+
+**確認した固着（10-Q原本の遡及修正値との突合）**:
+- KULR: 2024-06-30以降は分割後の10-Qが比較期間として修正済み（例: 181.47M→22.68M）、
+  2024-03-31以前は分割前のまま（2021-06〜2024-03で92〜142M）
+- SPIR: 2022-09-30以降は修正済み、2021-09-30〜2022-06-30が分割前のまま（62〜140M）
+- 該当四半期のEPSは絶対値で1/8に過小。TANUKIではKULRの3年希薄化率が、年次株数
+  （FY2023以前は分割前）と分割検知の確認用四半期中央値の両方で基準が混在し、
+  −27.82%/年（「自社株買いによる株主還元 ✅」）と誤判定されていた
+
+**旧`apply_split_adjustments()`の問題**: 固定閾値（分割後平均÷ratio×1.5）はratio<1で
+分割前の全行を補正し、調整済みの行を二重補正する（KULR 2024-06-30: 22.68M→2.84M、
+SPIR 2022-09-30: 17.49M→2.19M）。KULR・SPIRが未登録だったため実害は未発生だった
+
+**修正内容**（commit `91c2528859`・`ac8f666ae7`）:
+- `common/sec_data/split_adjust.py`（新規）: 方向非依存の判定。未調整の値は基準に対する
+  比が1/ratio、調整済みは1に近い（対数上で近い方、境界=基準÷√ratio）。基準は分割後平均と
+  隣接四半期（分割日から過去へたどり直前に判定した行の補正後の値）の2種類を併用し、
+  どちらか一方で未調整なら補正。前者だけでは分割前後の増資でKULRの未調整行を取りこぼし
+  （分割後平均42M、境界119Mに対し未調整の2021〜2023年は92〜118M）、後者だけでは未登録の
+  過去の分割（NVDA 2021年4:1・TSLA 2020年5:1）で別基準の行が混ざると判定を誤る
+- EPS ANALYZER `apply_split_adjustments()`: 共通判定を使用。既存forward 8銘柄
+  （NOW・NVDA・CPRT・WMT・LRCX・CELH・KLAC・TSLA）の判定結果は旧実装と完全一致
+- TANUKI `pipeline.py`: 3年希薄化率の計算前に、split_history.yamlの登録済み分割を
+  Layer3の年次・四半期（分割検知の確認用中央値）の株数へ適用。Layer3自体は変更せず
+  （TAIL等の他の消費者への影響を避けるため）、既存の前年比2.5倍のヒューリスティック
+  検知は未登録分割の安全網として維持
+- `config/split_history.yaml`: KULR・SPIR・HON（commit `91c2528859`）、BKNG
+  25-for-1（2026-04-06、accn 0000950157-26-000465、commit `ac8f666ae7`、登録漏れだった）
+
+**検証**:
+- EPS再生成（外部AI呼び出しなし、生成物は復元）: KULR 26行（2017-12〜2024-03）・
+  SPIR 4行（2021-09〜2022-06）・HON 37行（2016-09〜2026-03、2025-06-30は分割後の10-Qで
+  修正済みのため補正せず）がすべて当初値×ratioと一致、それ以外の行は不変
+- TANUKI全99銘柄（HEAD worktreeと同時実行、株価同一）:
+  - KULR: 3年希薄化率 −27.82% → +44.35%/年（positive→severe）、funda 20→0、SCOREはPASSのまま
+  - **KLAC: −1.04% → −2.01%/年、NOW: +0.60% → +0.94%/年**（深刻度・funda・SCOREは不変）。
+    旧ロジックは分割検知時に年次株数の前年比そのもの（推定比率: KLAC 9.71倍・NOW 5.05倍）を
+    分割比率に使い、その年の実際の株数増減を分割に吸収していた。登録比率（10倍・5倍）を
+    使う新ロジックの値が正しい（KLAC: FY2023 140.24M×10→FY2026 1,319.6M、NOW: FY2022
+    203.53M×5→FY2025 1,046.7M で検算）。Koichiさん判断で受け入れ（指示書⑮続き・選択肢1）
+  - SPIR（+22.26%、high）・HON（−2.01%、TRIM）は不変
+  - BKNG登録後の全銘柄比較: 差分0件。BKNGは3年希薄化率None・funda 55・SCORE BUY・
+    moatはneutral_fallbackで不変（年次株数が全て分割前〈FY2025 32.64M〉でyfinance株数
+    751Mとの乖離が10倍超のため算出スキップ中、分割後の年次〈FY2026〉が揃うまで効果なし。
+    eps=falseでEPS ANALYZERは対象外）
+- 回帰テスト: `tests/test_split_adjust.py`（10件）。パイプラインとyamlをgit stashした
+  状態で4件fail、復元後pass
+
+#### 残課題（本対応の対象外）
+- **CIX（2021-03-03）・SOUN（2023-01-24）の8-K**: 対象洗い出しでItem 3.03/5.03を含む
+  8-Kとして抽出したが、SEC側の一時エラー（503）で本文を確認できていない
+  （両社ともyfinanceのsplitsには分割の記録なし）
+- **KULR 2017-12〜2021-03の「90.08M一定」の行**: 分割前基準の値として今回補正済み
+  （11.26M）。ただし13四半期にわたり同じ値が続いており、値が埋められている疑い
+  （[[ASTS-SHARES-OSCILLATION-1]]の隣接四半期からの引き継ぎ等）自体は未解消
+- **SPIR 2021-06-30以前**（17.61〜18.64M）: SPAC合併（2021-08）前の実体の株数の疑いがあり、
+  補正対象外のまま（判定上も調整済み扱い）
+- KULR 2016-09〜2017-09の極小値（0.60〜1.72M）は逆さ合併前の実体とみられ未補正のまま
+- split_history.yamlの登録漏れ検知は[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]として
+  新規登録（BKNGが見逃されていた実例）
+
+---
+
+### ✅ [PARSER-MERGED-TAG-MIXING-RISK-1] parser.py::_extract_values_merged()が、Layer3が[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]で廃棄した危険パターン（複数タグの生エントリを先に混ぜてからYTD変換）と同型の構造を持つ疑い → クローズ（2026-09-25）: 仮説の型（2四半期分を1四半期として算出）は実データで0件。別原因の部分概念タグ混入を[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]として分離登録
+**優先度:** 低（Layer3統一方針確定により、data/系統の重要度自体が
+低下したため、中→低に格下げ）
+**分類:** バグ疑い / 構造的リスク
+**登録日:** 2026-08-06
+**発見:** `SEC_EDGAR_LAYER_DESIGN.md`との整合性確認調査（チャット記録、
+2026-08-06）
+
+#### 内容
+`layer3_builder.py::_merge_candidate_entries()`は、候補タグごとに
+独立して`_process_entries()`→`_normalize_field_entries()`（YTD→単四半期
+変換を含む）を完了させてから、正規化済み系列同士をend_date単位で
+マージする設計になっている。これは当初の実装（生エントリを先に
+end_date単位でマージしてからYTD→単四半期変換する順序）が、異なる
+タグ由来のエントリが同一end_dateで競合した際にFYチェーン判定を
+破壊し、YTD差分計算が中間四半期を1つ読み飛ばして2四半期分を1四半期
+として誤算出するバグを引き起こした（CPRT・PEP等6銘柄・20エントリで
+実データ確認、[[LAYER3-FALLBACK-STALE-TAG-PRIORITY-1]]）ことを踏まえた
+意図的な設計変更。
+
+一方、`common/sec_data/parser.py::_extract_values_merged()`
+（merge_all_tags対象フィールド向け、`SECDATA-STORAGE-FRAGMENTATION-1`
+2026-08-05実装のSA/YTD統一アルゴリズム）は、全キー（＝複数タグ）を
+早期終了せずループし、四半期の生候補`(fy, fp, start, end, val)`を
+タグ区別のないまま単一の`quarterly_candidates`リストへ蓄積してから、
+`_resolve_quarterly_values()`でまとめて解決する構造になっている。これは
+Layer3が明示的に廃棄した「生エントリを先に混ぜてから変換」という
+旧パターンと同型であり、複数タグが競合する銘柄・フィールドで同種の
+誤算出が発生する構造的リスクを持つ疑いがある。
+
+なお、単一タグのみを扱う`_extract_values_best_candidate()`経路は
+タグ混入の余地がないため対象外。939b8f57fコミット時の検証（全105銘柄
+再パース結果が独自シミュレーションと完全一致）は旧parser.py実装との
+内部整合性確認であり、Layer3側の値との突合ではないため、本リスクを
+検出できるものではない。実データでの影響有無は未検証。
+
+#### 着手条件
+merge_all_tags対象フィールド一覧の洗い出し・実データでの影響有無検証
+から。ただしdata/系統の位置づけがLayer3統一に伴い補助的になったため、
+緊急性は低い。
+
+#### 2026-09-25 クローズ（指示書⑭⑮、元[[UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1]]①）
+**結論**: 仮説の型は実在せず。構造（全タグの候補を`(fy, fp)`単位でまとめてから
+YTD→単四半期へ変換）はLayer3が廃棄した旧パターンと同型だが、実データでその誤り
+（2四半期分を1四半期として算出）は0件。別原因の不一致は実在するが消費者がいない。
+
+**実データ検証（全銘柄・merge_all_tags対象3フィールド）**:
+- 対象フィールドと候補タグ: revenue（Revenues・RevenueFromContractWithCustomer
+  ExcludingAssessedTax・…IncludingAssessedTax・RevenueFromContractWithCustomer・
+  SalesRevenueNet・TotalRevenue・RevenuesNetOfInterestExpense）、selling_and_marketing
+  （MarketingAndAdvertisingExpense・SellingAndMarketingExpense・MarketingExpense・
+  AdvertisingExpense）、depreciation_and_amortization（DepreciationAndAmortization・
+  DepreciationDepletionAndAmortization・Depreciation・AmortizationOfIntangibleAssets）。
+  IONQ・SOFIのrevenueは`revenue_concept`指定のためmerge対象外
+- 同一`(fy, fp, end)`に複数タグの候補がある競合: 5,001件（92銘柄）、うち値が異なる
+  4,862件（D&A 4,142・revenue 582・S&M 138）
+- data/の四半期値7,797件をLayer3（`_merge_candidate_entries`経路）と期末日で突合:
+  不一致483件、うち「2四半期分を1四半期として算出」型は0件
+- 不一致の主因は別原因: SAを持つ部分概念タグが、YTDしかない合計概念タグより代表に
+  選ばれる（D&A 413件〈例: ADBE 2022Q2 data/ 101M vs Layer3 212M〉、S&M〈CELHの
+  AdvertisingExpense〉）。APPのrevenue・S&Mは非継続事業の遡及修正の反映有無の違いと
+  推定（未確認）
+- 現役の消費者: data/の`quarterly_*.json`を読む処理（DuPont分解・`get_net_cash()`・
+  CHECK-12・EPS取得）はBS項目・EPSのみで、この3フィールドの四半期値を読む処理はない。
+  IV・TANUKI SCORE・表示には届いていない
+
+**後続**: 部分概念タグの混入（年次D&Aの未検証を含む）を
+[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]（優先度低、修正案2案）として新規登録
+
+---
+
+### ✅ [UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1] 実データ未確認の推測段階リスク3件の統合カタログ（元PARSER-MERGED-TAG-MIXING-RISK-1/SPLIT-REALTIME-GAP-REVERSE-1/DATA-JUMP-CHECK-NETINCOME-SBC-1） → 解体（2026-09-25）: ①②を完了・クローズ、③を単独項目に戻す
+**優先度:** 低（いずれも非保有銘柄または実データ未確認の推測段階のまま
+長期未着手。個別の着手条件は変更なし）
+**分類:** 構造的リスク疑い / データ品質疑い / 複数サブシステム横断
+**登録日:** 各サブ項目の元登録日は各①〜③の記載を参照。統合日: 2026-09-16
+**発見:** 2026-09-16の件数削減棚卸し（BACKLOG.md実コード照合）
+
+#### 統合の経緯
+PARSER-MERGED-TAG-MIXING-RISK-1・SPLIT-REALTIME-GAP-REVERSE-1・
+DATA-JUMP-CHECK-NETINCOME-SBC-1の3件は、いずれも「構造的に同型の疑いが
+あるが実データでの影響有無・実害は未検証」という推測段階のまま長期未着手
+という共通点を持つため、2026-09-16に1つのカタログエントリへ統合した
+（`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`と同型の統合パターン）。元の3件は
+BACKLOG.mdから削除し、内容は要約せず全文そのまま以下の①〜③に保持する。
+個別の着手条件・優先度は統合前のまま変更していない。
+
+#### 着手条件
+なし（①〜③いずれも実データ未確認の推測段階、個別項目ごとに着手可否を
+判断する）
+
+#### 2026-09-25 解体（指示書⑮）
+①②を実データで検証した結果により、カタログを解体した:
+- ① [[PARSER-MERGED-TAG-MIXING-RISK-1]]: 仮説の型は実在せずクローズ（本ファイル同日エントリ）。
+  別原因は[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]として新規登録
+- ② [[SPLIT-REALTIME-GAP-REVERSE-1]]: 実在を確認し完了（本ファイル同日エントリ）
+- ③ [[DATA-JUMP-CHECK-NETINCOME-SBC-1]]: 未着手のため、本文そのままで単独項目として
+  BACKLOG.md（優先度：低）に戻した
+
+---
+
 ### ✅ [FLAG-THRESHOLD-DESIGN-1] tanuki/stonks_silo等4フラグの判定基準ロジック導入（第二段階） → 完了（2026-09-25）: stonks_siloに案C（TTM営業利益<0 または TTM売上=0）を採用、CHECK-51・登録フローP7で機械判定、フラグ6件是正。tanuki/eps/hypecoreは具体的な逸脱事例がないためエントリごとクローズ
 **優先度:** 未定
 **分類:** アーキテクチャ / 銘柄登録フロー
