@@ -12,8 +12,11 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-24セッション終了時ブラッシュアップ時点）**: `BACKLOG.md`
-アクティブ件数**8件**（2026-09-24⑨で`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`をP2-A廃止で完了。2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
+**現在の到達点（2026-09-25セッション終了時ブラッシュアップ時点）**: `BACKLOG.md`
+アクティブ件数**6件**（2026-09-25に`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`・
+`[[FLAG-THRESHOLD-DESIGN-1]]`を完了、`[[DCF-1b]]`は完了として直接記載。
+詳細は下記「最終更新: 2026-09-25」ブロック。以下は2026-09-24時点の記載: 8件
+（2026-09-24⑨で`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`をP2-A廃止で完了。2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
 陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
 `[[HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1]]`・
 `[[LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1]]`・
@@ -79,6 +82,48 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    確認を行うこと（恒久対策の候補は`CHAT_RULES.md`「rebase時の
    データ消失事故パターンと恒久対策の検討」参照、採用可否は
    Koichiさんの判断待ち）。
+6. **過去の設計判断の前提は後続の変更で黙って崩れる** — 「適用外」
+   「統一しない」等の判断は、関連機能を変えたときに根拠を参照元
+   （BACKLOG_DONE.md・コードコメント）で読み返して再確認する
+   （`CHAT_RULES.md`事例20。DCF-1の3段階DCF適用外がALPHA-REDESIGN-1で
+   失効しNVDA・APPのIVが株価の約10倍に、Runway「統一しない」判断が
+   RDWの誤DANGERを放置、の2件）。
+
+---
+
+最終更新: 2026-09-25（**セッション終了時ブラッシュアップ・本日の
+指示書①〜⑬サマリー**。全てpush済み）:
+
+1. **git stash棚卸し・全削除**（①②）: 16件すべて取り込み済みか陳腐化と
+   確認し、SHAを退避してから`git stash clear`、ローカルをorigin/kaihatsuへ同期
+2. **`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`完了**（③）: 一次情報（10-Q）で
+   BBAI・RDWとも実態SAFE。`reader.py::get_runway_cash()`で四半期優先＋ST投資
+   込みのRunway cashをSTONKS SILO・TANUKIで共通化（RDW DANGER→SAFE）
+3. **四半期ST投資の欠損区別と抽出漏れ是正**（④〜⑥）: `get_net_cash()`に
+   `sti_quarterly_missing`、CHECK-49新設（ABBV・CDNSは10-Q非開示で確認済み
+   登録）。NVDAの`cross_filing_tags`に2027Q2追加・既存2期もBS一致タグへ是正
+   （net_cash −$10.9B→+$66.0B）。`BSAdjustmentResult`の`cash_missing`伝播漏れ
+   修正（CPRT）
+4. **NVDA・APPのIV桁異常**（⑥〜⑨）: 株式分割ではなく「成長率50%×Moat連動
+   Phase1 9年」が原因。segment_xbrl遅延フォールバックとCHECK-50（IV過大WARN）
+   を追加し、`[[DCF-1b]]`で3段階DCFのPhase1を線形逓減（NVDA IV/株
+   $2,134→$734、APP $3,655→$1,153。SCORE変化: PLTR BUY→TRIM、CELH BUY→HOLD、
+   MSFT HOLD→TRIM）。途中でNVDAのsegment_xbrlを「3四半期遅れ」と誤報告
+   （layer2は暦年ラベル）し、⑧で訂正
+5. **`[[FLAG-THRESHOLD-DESIGN-1]]`完了**（⑩〜⑫）: 案A/B/Cを全102銘柄で試算し、
+   不一致最少の案C（TTM営業利益<0 または TTM売上=0）を採用。
+   `stonks_flag_rule.py`・CHECK-51・登録フローP7を新設し、フラグ6件是正
+   （APGE・GTLB・LYFT・SPIR→true、LITE・ZETA→false）。APGEのexclusion_reasonも
+   整合させた（⑬）
+6. **CHAT_RULES.md事例20追記**（⑬）: 過去の設計判断の前提が後続の変更で崩れる
+
+**次回確認（外部トリガー待ち）**:
+- 9/27（日）のSEC_Data_Update後: FCX net_incomeの本番反映（2026-09-24からの
+  持ち越し。annual_2025=2,204M・TTM=2,945M前後、ROE 7.1%）
+- 次回TANUKI_VALUATION_Update後: PLTR・CELH・MSFTのSCORE変化（DCF-1b）、
+  WARN-50がNVDA 1件・WARN-48が0件になっていること
+- 次回Stonks_Silo_Update後: 対象銘柄の入れ替え（APGE・GTLB・LYFT・SPIR追加、
+  LITE・ZETA除外）とRDWのSAFE表示
 
 ---
 
@@ -3020,8 +3065,12 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
   判断待ち）
 
 ### 着手条件あり（Koichiさんの判断・外部トリガー待ち）
-- FLAG-THRESHOLD-DESIGN-1: フラグ判定基準案の確認・確定後
-- BBAI-RDW-RUNWAY-VERIFICATION-1: Koichiさんが着手タイミングを判断
+- ~~FLAG-THRESHOLD-DESIGN-1~~（2026-09-25完了。stonks_siloに案C〈TTM営業利益<0
+  または TTM売上=0〉を採用しCHECK-51・登録フローP7で機械判定、フラグ6件是正。
+  BACKLOG_DONE.md参照）
+- ~~BBAI-RDW-RUNWAY-VERIFICATION-1~~（2026-09-25完了。一次情報で両銘柄とも
+  実態SAFEと確認し、Runway cashを四半期優先＋ST投資込みの共通関数に統一。
+  BACKLOG_DONE.md参照）
 - SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（①③本体）: Koichiさんが
   優先順位・着手タイミングを判断
 - ~~HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1~~（2026-09-24、親エピック

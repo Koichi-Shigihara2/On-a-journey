@@ -9,6 +9,22 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-25**: Runway・net_cash・IVの算出経路の是正と、stonks_siloフラグの
+  機械判定基準の導入が中心（BACKLOG_DONE.md「2026-09-25（完了）」）。
+  ①git stash 16件を棚卸しし全削除（全件取り込み済みか陳腐化）。
+  ②`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`: Runway cashを四半期優先＋ST投資込みの
+  共通関数に統一（RDW DANGER→SAFE）。③四半期ST投資の欠損と実測ゼロを区別
+  （CHECK-49）、NVDAのcross_filing_tagsの登録漏れ・過大計上を是正（net_cash
+  −$10.9B→+$66.0B）、cash_missingの伝播漏れを修正。④NVDA・APPのIV/株が株価の
+  約10倍だった原因（成長率50%×Phase1 9年）を特定し、CHECK-50と`[[DCF-1b]]`
+  （3段階DCFのPhase1線形逓減）で是正。⑤`[[FLAG-THRESHOLD-DESIGN-1]]`:
+  案C（TTM営業利益<0 または TTM売上=0）を採用しCHECK-51・登録フローP7を新設、
+  フラグ6件是正。CHAT_RULES.mdに事例20（過去の設計判断の前提は後続の変更で
+  黙って崩れる）を追記。アクティブBACKLOG 8件→6件。pytest 1640件全パス・
+  audit.py exit 0・report_consistency_check.py NG=0。**次回確認**: 9/27の
+  SEC_Data_Update後にFCX net_income反映、次回TANUKI_VALUATION_Update後に
+  PLTR・CELH・MSFTのSCOREとWARN-50（NVDA 1件）・WARN-48（0件）、次回
+  Stonks_Silo_Update後に対象銘柄の入れ替え
 - **2026-09-24**: 監視・ゲートの「黙った失敗」の修正と、net_incomeの
   NCI取り違えの修正が中心（BACKLOG_DONE.md「2026-09-24（完了）」に13件）。
   ①Discord通知がurllibの403で約4か月届いていなかった問題を修正
