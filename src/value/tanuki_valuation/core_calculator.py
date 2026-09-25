@@ -388,7 +388,8 @@ class KoichiValuationCalculator:
             except Exception:
                 pass
 
-            print(f"   [{ticker}] DCF: 3段階  P1={phase1_years}yr@{phase1_growth:.1%}  P2={phase2_years}yr@{phase2_growth:.1%}  TV={terminal_growth:.1%}")
+            # [[DCF-1b]]: Phase1はphase1_growth→phase2_growthへ線形逓減（calculator/dcf.py参照）
+            print(f"   [{ticker}] DCF: 3段階  P1={phase1_years}yr@{phase1_growth:.1%}→{phase2_growth:.1%}(逓減)  P2={phase2_years}yr@{phase2_growth:.1%}  TV={terminal_growth:.1%}")
 
             three_stage_result = calculate_three_stage_dcf(
                 base_fcf=base_fcf,

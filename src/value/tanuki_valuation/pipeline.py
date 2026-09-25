@@ -1929,6 +1929,17 @@ class TanukiValuationPipeline:
                     f"Maturity_Profile: Phase1={_mp_p1['years']}yr@{(_mp_p1.get('growth') or 0)*100:.1f}%, "
                     f"Phase2={_mp_p2['years']}yr@{(_mp_p2.get('growth') or 0)*100:.1f}%"
                 )
+        # [[DCF-1b]]（2026-09-25）: 3段階DCFのPhase1は初年度g→Phase2のgへ
+        # 線形逓減する。実際に使った各年の成長率（dcf_components.
+        # phase1_growth_path）を明示する（Maturity_Profile行のPhase1年数・
+        # 成長率はconfig上の値で、実際のPhase1年数はMoat Score連動）
+        _p1_path_r6 = _dcf_comps_r6.get("phase1_growth_path") or []
+        if _dcf_type_r6 == "three_stage" and _dcf_comps_r6.get("phase1_tapered") and _p1_path_r6:
+            L.append(
+                f"DCF_Phase1_Taper: {_p1_path_r6[0]*100:.1f}% → {_p1_path_r6[-1]*100:.1f}% "
+                f"({len(_p1_path_r6)}yr linear taper to Phase2 growth, DCF-1b; "
+                f"path={', '.join(f'{g*100:.1f}%' for g in _p1_path_r6)})"
+            )
 
         # TV_PV 行
         _pv_tv_show = _pv_tv_rm if _pv_tv_rm is not None else (_dcf_comps_r6.get("pv_terminal") or comps.get("pv_terminal") or 0)

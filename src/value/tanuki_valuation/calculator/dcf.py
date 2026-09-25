@@ -51,6 +51,10 @@ class ThreeStageDCFResult:
     phase2_detail: List[Dict[str, float]]  # Phase2 年別詳細
     terminal_fcf: float
     terminal_value: float
+    # [[DCF-1b]]（2026-09-25）: Phase1をPhase1初年度g→Phase2のgへ線形逓減
+    # させたか（provenance）。phase1_growth_pathはPhase1各年の成長率
+    phase1_tapered: bool = False
+    phase1_growth_path: List[float] = field(default_factory=list)
     # 2段階との比較用（後方互換）
     pv_high_growth: float = field(init=False)
 
@@ -69,8 +73,19 @@ class ThreeStageDCFResult:
             "phase2_detail": self.phase2_detail,
             "terminal_fcf": self.terminal_fcf,
             "terminal_value": self.terminal_value,
+            "phase1_tapered": self.phase1_tapered,
+            "phase1_growth_path": self.phase1_growth_path,
             "dcf_type": "three_stage"
         }
+
+
+def _linear_taper_rate(g_start: float, g_end: float, t: int, n_years: int) -> float:
+    """Phase内の線形逓減成長率（t=0でg_start、t=n_years-1でg_end）。
+    calculate_tapering_dcf()（DCF-1）とcalculate_three_stage_dcf()の
+    Phase1（DCF-1b）で共有する単一の補間式。n_years==1ならg_start。"""
+    if n_years == 1:
+        return g_start
+    return g_start + (g_end - g_start) * t / (n_years - 1)
 
 
 # ========================================
@@ -173,17 +188,32 @@ def calculate_three_stage_dcf(
         ThreeStageDCFResult
 
     計算式:
-        Phase1: t=1..n1  FCF × (1+g1)^t / (1+WACC)^t
+        Phase1: t=1..n1  g(t) = g1 + (g2 - g1) × (t-1)/(n1-1)（線形逓減、[[DCF-1b]]）
+                         FCF_t = FCF_{t-1} × (1+g(t)),  PV = FCF_t / (1+WACC)^t
         Phase2: t=n1+1..n1+n2  FCF × (1+g2)^(t-n1) / (1+WACC)^t
         Terminal: FCF_last × (1+g_t) / (WACC - g_t) / (1+WACC)^(n1+n2)
+
+    [[DCF-1b]]（2026-09-25）: Phase1はg1固定ではなく、Phase1初年度g1から
+    Phase2のg2へ線形逓減させる（calculate_tapering_dcf()と同一の補間式
+    _linear_taper_rate()を共有）。[[DCF-1]]（2026-05-31）は3段階DCFを
+    「Phase2で成長減速を既に表現済み」として逓減の適用外としたが、当時の
+    Phase1は5年固定だった。ALPHA-REDESIGN-1（2026-06-26）でPhase1年数が
+    Moat Score連動（3+round(moat×7)、最大10年）となり、segment_xbrl
+    （2026-09-18）の成長率が上限50%に張り付く銘柄では「50%×9年」の複利で
+    Phase1終了時FCFが基準の約38倍（NVDA・APP、IV/株÷株価 9.5倍・11.7倍）に
+    達し、Phase2だけでは減速を表現できなくなっていたため逓減を導入した。
+    n1=1の場合はg1のみ（逓減なし）。
     """
-    # ── Phase1: 高成長期 ──
+    # ── Phase1: 高成長期（g1→g2へ線形逓減、DCF-1b）──
     current_fcf = base_fcf
     pv_phase1 = 0.0
     phase1_detail = []
+    phase1_growth_path = []
 
     for t in range(phase1_years):
-        current_fcf *= (1 + phase1_growth_rate)
+        g_t = _linear_taper_rate(phase1_growth_rate, phase2_growth_rate, t, phase1_years)
+        phase1_growth_path.append(g_t)
+        current_fcf *= (1 + g_t)
         discount_factor = (1 + wacc) ** (t + 1)
         pv_year = current_fcf / discount_factor
         pv_phase1 += pv_year
@@ -191,7 +221,7 @@ def calculate_three_stage_dcf(
         phase1_detail.append({
             "year": t + 1,
             "phase": "phase1",
-            "growth_rate": phase1_growth_rate,
+            "growth_rate": g_t,
             "fcf": current_fcf,
             "discount_factor": discount_factor,
             "pv": pv_year
@@ -239,7 +269,9 @@ def calculate_three_stage_dcf(
         phase1_detail=phase1_detail,
         phase2_detail=phase2_detail,
         terminal_fcf=terminal_fcf,
-        terminal_value=terminal_value
+        terminal_value=terminal_value,
+        phase1_tapered=phase1_years > 1 and phase1_growth_rate != phase2_growth_rate,
+        phase1_growth_path=phase1_growth_path,
     )
 
 
@@ -311,10 +343,7 @@ def calculate_tapering_dcf(
 
     for t in range(high_growth_years):
         # 線形補間: t=0でg_start、t=N-1でg_end
-        if high_growth_years == 1:
-            g_t = g_start
-        else:
-            g_t = g_start + (g_end - g_start) * t / (high_growth_years - 1)
+        g_t = _linear_taper_rate(g_start, g_end, t, high_growth_years)
 
         current_fcf *= (1 + g_t)
         discount_factor = (1 + wacc) ** (t + 1)

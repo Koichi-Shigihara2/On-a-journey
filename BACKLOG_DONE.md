@@ -4,6 +4,60 @@
 
 ## 2026-09-25（完了）
 
+### ✅ [DCF-1b] 3段階DCFのPhase1線形逓減（g1→Phase2のg）— 完了（2026-09-25）
+**優先度:** 高（NVDA・APPのIV/株が株価の9.5倍・11.7倍）
+**分類:** TANUKI VALUATION / DCFエンジン
+**登録日・完了日:** 2026-09-25（BACKLOG.md経由せず完了として直接記載、Koichiさん指示）
+**発見:** [[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続の「NVDA IV桁異常」調査（同エントリの
+「関連調査・安全網」参照）
+
+#### 経緯（[[DCF-1]]の適用外根拠が崩れた理由）
+[[DCF-1]]（2026-05-31）は線形逓減DCFを導入した際、3段階DCF銘柄（NVDA等）を
+「Phase2で成長減速を既に表現済み」として適用外とし、segment_configured銘柄への
+対応を「DCF-1bとして別途検討」とした。当時の3段階DCFのPhase1は5年固定だった。
+その後、ALPHA-REDESIGN-1（2026-06-26）でPhase1年数がMoat Score連動
+（`3+round(moat×7)`、最大10年）となり、さらにsegment_xbrl（2026-09-18）の
+成長率が上限50%に張り付く銘柄では「50%×9年」の固定成長複利でPhase1終了時FCFが
+基準の38.4倍（NVDA・APP）に達し、Phase2だけでは減速を表現できなくなっていた
+（NVDA: DCF最終年FCFが直近売上の38.8倍、IV/株$2,134.29 vs 株価$224.58）。
+
+#### 実装内容
+- `calculator/dcf.py::calculate_three_stage_dcf()`: Phase1の成長率を
+  `g(t) = g1 + (g2−g1)×(t−1)/(n1−1)`でPhase1初年度g1からPhase2のg2へ線形逓減
+  （n1=1ならg1のみ）。補間式は`_linear_taper_rate()`として`calculate_tapering_dcf()`
+  （DCF-1）と共有。新規定数なし
+- provenance: `ThreeStageDCFResult`に`phase1_tapered`・`phase1_growth_path`を追加し、
+  latest.jsonの`dcf_components`へ出力（`phase1_detail[].growth_rate`も各年の値）
+- report.txt: `DCF_Phase1_Taper:`行（例: `50.0% → 15.0% (9yr linear taper to Phase2
+  growth, DCF-1b; path=50.0%, 45.6%, …, 15.0%)`）を`Maturity_Profile`行の直後に追加
+- 呼び出し元（core_calculatorのメイン/β込み/Rm/Rf、scenarios.pyのBEAR/BULL、
+  sensitivity.pyの感度表）はすべて同関数を経由するため一括で逓減が適用される
+
+#### 検証（全99銘柄、同一データでHEAD worktreeと同時実行、株価同一）
+- 3段階DCF以外の89銘柄: IV/株・SCOREとも変化なし
+- 3段階DCFの10銘柄: IV/株・SCOREとも事前試算（⑧STEP B）と完全一致
+  | 銘柄 | IV/株 before → after | IV/株÷株価 after | SCORE |
+  |---|---|---|---|
+  | APP | $3,655.32 → $1,152.94 | 3.69 | BUY維持 |
+  | NVDA | $2,134.29 → $733.64 | 3.27 | BUY維持 |
+  | PLTR | $286.15 → $126.59 | 0.66 | BUY → TRIM |
+  | CRWV | $160.08 → $84.27 | 0.94 | WATCH維持 |
+  | AMD | $239.18 → $183.01 | 0.29 | TRIM維持 |
+  | CELH | $35.40 → $28.11 | 0.99 | BUY → HOLD |
+  | MSFT | $382.36 → $318.84 | 0.64 | HOLD → TRIM |
+  | TSLA | $56.50 → $49.46 | 0.13 | TRIM維持 |
+  | AMZN | $39.30 → $36.30 | 0.15 | WATCH維持 |
+  | CAKE | $43.48 → $41.51 | 0.40 | TRIM維持 |
+- WARN-50（after）: NVDAのみ（DCF最終年FCF $2,654.8B ÷ 直近売上 $215.9B = 12.3倍、
+  IV/株÷株価は3.27倍で解消）。APP・PLTRは解消。acknowledged登録はしない
+- 回帰テスト: `tests/test_dcf_phase1_taper.py`（NVDA型の逓減パスとPhase1終了時
+  FCF倍率12.18倍／DCF-1のcalculate_tapering_dcf()とPhase1一致／Phase2接続／
+  provenance／n1=1・g1=g2は非逓減／report.txt行）。変更前コードで6件fail・変更後pass
+- 本番データ（latest.json・report.txt）は再生成していない（次回の
+  TANUKI_VALUATION_Updateで反映）
+
+---
+
 ### ✅ [BBAI-RDW-RUNWAY-VERIFICATION-1] BBAI・RDWの実際の財務健全性の一次情報確認 → 完了（2026-09-25）: 一次情報で両銘柄とも実態SAFEと確認。STONKS SILOのRDW DANGERは年次cashのみ参照による誤判定のため、Runway cashを四半期優先＋ST投資込みの共通関数に統一
 **優先度:** 低
 **分類:** 個別銘柄調査 / TANUKI VALUATION / STONKS SILO
@@ -35961,6 +36015,7 @@ Cash表示値とNet Debt計算値の参照タイミング・定義が不整合�
   segment_configured=True の銘柄（NVDA/META/GOOGL等）→ 手動設定済みのため再計算ブロック非実行
   maturity_config で three_stage DCF の銘柄（NVDA等）→ Phase2で成長減速を既に表現済み
   将来: segment_configured 銘柄への逓減対応は DCF-1b として別途検討
+  → 2026-09-25 [[DCF-1b]]で3段階DCFのPhase1逓減として完了（本項の3段階DCF適用外の根拠はALPHA-REDESIGN-1で失効）
 
 ### ✅ [DCF-2] 高成長銘柄向け GROWTH_PREMIUM カテゴリ追加（2026-05-31 完了）
 - 概要: 通常TRIM条件（upside<-30%・funda≥50・phase≥3）でも
