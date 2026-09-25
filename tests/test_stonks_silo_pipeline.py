@@ -172,7 +172,9 @@ class TestRunNetCashSwitch:
         monkeypatch.setattr(sp, "load_annual_data", lambda ticker, years=5: data)
         monkeypatch.setattr(
             sp.StonksAnalyzer, "analyze",
-            lambda self, d: _make_analysis(overall_score, overall_verdict),
+            # run()はget_net_cash()の返却値をanalyze(net_cash_data=...)へ渡す
+            # （[[BBAI-RDW-RUNWAY-VERIFICATION-1]]）
+            lambda self, d, net_cash_data=None: _make_analysis(overall_score, overall_verdict),
         )
         monkeypatch.setattr(
             sp, "fetch_valuation",
@@ -258,7 +260,9 @@ class TestRunNetIncomeFyRename:
         monkeypatch.setattr(sp, "load_annual_data", lambda ticker, years=5: data)
         monkeypatch.setattr(
             sp.StonksAnalyzer, "analyze",
-            lambda self, d: _make_analysis(overall_score, overall_verdict),
+            # run()はget_net_cash()の返却値をanalyze(net_cash_data=...)へ渡す
+            # （[[BBAI-RDW-RUNWAY-VERIFICATION-1]]）
+            lambda self, d, net_cash_data=None: _make_analysis(overall_score, overall_verdict),
         )
         monkeypatch.setattr(
             sp, "fetch_valuation",

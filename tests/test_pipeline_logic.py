@@ -423,6 +423,66 @@ class TestRunwayFallback:
         assert result["score"] == "PASS"
 
 
+class TestComputedRunwayIncludesShortTermInvestments:
+    """[[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: computed_runway_monthsの
+    cashがreader.py::get_runway_cash()（四半期優先cash + short_term_investments）
+    で算出されることの回帰テスト。
+
+    BBAI型: 2026Q2時点でcash $36.278M・流動AFS $282.913M。旧実装はcashのみで
+    算出しており約10ヶ月（DANGER）となっていたが、実態（ST投資込み）はSAFE。
+    """
+
+    @staticmethod
+    def _write_annual(tmp_path, ticker, fcf, cash):
+        d = tmp_path / "common" / "sec_data" / "data" / ticker
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "annual_2025.json").write_text(json.dumps({
+            "period": "2025",
+            "pl": {"revenue": 130_000_000},
+            "cf": {"free_cash_flow": fcf},
+            "bs": {"cash_and_equivalents": cash},
+        }), encoding="utf-8")
+
+    def test_bbai_type_short_term_investments_added(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        fcf = -42_476_000  # 月次バーン 約$3.54M
+        self._write_annual(tmp_path, "BBAITEST", fcf=fcf, cash=87_126_000)
+        valuation = {
+            "components": {"latest_revenue": 130_000_000},
+            "bs_adjustment": {
+                "cash": 36_278_000.0,
+                "short_term_investments": 282_913_000.0,
+                "long_term_debt": 0.0, "short_term_debt": 0.0,
+                "net_cash": 319_191_000.0, "available": True,
+                "cash_missing": False, "net_debt_period": "2026Q2",
+            },
+        }
+        result = pipe._load_extra_data("BBAITEST", valuation)
+
+        expected = (36_278_000 + 282_913_000) / (abs(fcf) / 12)
+        assert result["computed_runway_months"] == pytest.approx(expected)
+        assert result["computed_runway_months"] >= 24, (
+            "ST投資を含めたcashでSAFE（>=24ヶ月）になっていない"
+            "（旧実装: cash_and_equivalentsのみで約10ヶ月=DANGER）"
+        )
+
+    def test_cash_missing_does_not_produce_zero_runway(self, tmp_path):
+        """cashを取得できない（cash_missing=True）場合、0ヶ月のDANGERを
+        捏造せずcomputed_runway_monthsを算出しない"""
+        pipe = _make_pipe(tmp_path)
+        self._write_annual(tmp_path, "NOCASH", fcf=-10_000_000, cash=None)
+        valuation = {
+            "components": {"latest_revenue": 130_000_000},
+            "bs_adjustment": {
+                "cash": 0.0, "short_term_investments": 0.0,
+                "long_term_debt": 0.0, "short_term_debt": 0.0,
+                "net_cash": 0.0, "available": False, "cash_missing": True,
+            },
+        }
+        result = pipe._load_extra_data("NOCASH", valuation)
+        assert "computed_runway_months" not in result
+
+
 # ─────────────────────────────────────────────
 # 6. growth_sanity
 #    check_growth_sanity の判定ロジックを、Damodaran データをモックして検証

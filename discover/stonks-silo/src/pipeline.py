@@ -108,7 +108,14 @@ def run(tickers: list[str] | None = None) -> dict:
     for ticker in target:
         try:
             data = load_annual_data(ticker, years=_YEARS)
-            analysis = analyzer.analyze(data)
+            val = fetch_valuation(ticker)
+            # [[NETCASH-DUAL-CALC-1]]: 独自計算（cash+STI - yfinance totalDebt）を廃止し、
+            # TANUKI VALUATIONと同じSECReader.get_net_cash()（SEC XBRL・四半期
+            # フォールバック・セクターガードあり）に統一（2026-08-13）。
+            # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]: Runwayのcashも同じ返却値から
+            # 四半期優先で算出するため、analyze()より前に取得して渡す。
+            net_cash_data = sec_reader.get_net_cash(ticker, sector=val["sector"], industry=val["industry"])
+            analysis = analyzer.analyze(data, net_cash_data=net_cash_data)
             result = _to_dict(analysis)
             # [[NETINCOME-DUAL-PIPELINE-1]]: 出力表示用フィールドをnet_income_fy
             # へ改名（単年度決算であることの明示、NAMING_CONVENTIONS.md規則2）。
@@ -123,7 +130,6 @@ def run(tickers: list[str] | None = None) -> dict:
                 for yr, rec in data["records"].items()
             }
 
-            val = fetch_valuation(ticker)
             latest_rev = None
             for yr in reversed(data["years"]):
                 r = data["records"][yr]["pl"].get("revenue_sanitized")
@@ -135,10 +141,6 @@ def run(tickers: list[str] | None = None) -> dict:
             ev_sales = val["enterprise_value"] / latest_rev if val["enterprise_value"] and latest_rev else None
 
             total_debt = val["total_debt"] or 0
-            # [[NETCASH-DUAL-CALC-1]]: 独自計算（cash+STI - yfinance totalDebt）を廃止し、
-            # TANUKI VALUATIONと同じSECReader.get_net_cash()（SEC XBRL・四半期
-            # フォールバック・セクターガードあり）に統一（2026-08-13）。
-            net_cash_data = sec_reader.get_net_cash(ticker, sector=val["sector"], industry=val["industry"])
             net_cash = net_cash_data["net_cash"] if net_cash_data.get("available") else None
 
             result["valuation"] = {

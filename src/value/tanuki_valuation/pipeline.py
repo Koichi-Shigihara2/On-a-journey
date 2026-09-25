@@ -48,6 +48,7 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
 from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④共有モジュール化
+from common.sec_data.reader import get_runway_cash  # [[BBAI-RDW-RUNWAY-VERIFICATION-1]] STONKS SILOとRunway cashを共通化
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
 # 次回決算日取得（yf.Ticker(ticker).calendar直接呼び出し）を
@@ -2754,35 +2755,27 @@ class TanukiValuationPipeline:
             # フォールバックRunway: stonks-siloにない銘柄でも資金枯渇リスクを検出
             # 条件: 直近四半期EPS<0, 直近年FCF<0, またはcash<$100M のいずれか
             #
-            # [[TANUKI-VALUATION-MISC-GAPS-1]]⑤（2026-09-19調査・Koichiさん
-            # 確認済み）: この`computed_runway_months`はSTONKS SILOの
+            # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: Runwayのcashは
+            # common/sec_data/reader.py::get_runway_cash()でSTONKS SILOの
             # `runway_months`（discover/stonks-silo/src/analyzer.py::
-            # _analyze_runway()）と意図的に統一していない独立実装であり、
-            # 以下2点で算出方法が異なる:
-            #   (A) cashに短期投資（ST投資）を含まない（上記`cash`変数は
-            #       `bs_adjustment.cash`＝cash_and_equivalentsのみ。STONKS
-            #       SILOは`cash_and_equivalents + short_term_investments`）
-            #   (B) `bs_adjustment.cash`はreader.py::get_net_cash()の
-            #       四半期優先ロジック（BUG-NETDEBT-4対応）により直近
-            #       四半期のBSデータで上書きされうる。STONKS SILOは直近
-            #       年次annual_{yr}.jsonのみを参照し四半期を一切見ない
-            # (A)は「Runwayは現金のみを厳密にカウントすべき」という意図的
-            # な設計判断ではなく、上記`financial_health`表示用に取得済みの
-            # `cash`変数をそのまま流用した結果である可能性が高い（設計時に
-            # 深く検討された形跡なし、Koichiさん確認済み）。
-            # 実データでBBAI・RDWの2銘柄において、(A)(B)が重なりSAFE/DANGER
-            # の判定が逆転するほどの乖離（最大7.9倍）を確認したが、report.txt
-            # 表示・TANUKI SCOREのfunda_scoreペナルティ判定は下記の通り
-            # STONKS SILOの値を最優先するため、現状この逆転は実際の表示・
-            # 判定には現れない（`computed_runway_months`はSTONKS SILO
-            # 非対象銘柄向けのフォールバック専用）。
-            # 両者は「TANUKIの保守的フォールバック」「STONKS SILOの赤字
-            # 銘柄専用評価フレームワーク」という異なる目的を持つ独立実装
-            # のため、算出方式自体は統一しない設計判断とした
-            # （[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]②の案cと同じ考え方）。
-            # 統一しない代わりに、両者が大きく食い違う場合の検知を
-            # common/sec_data/report_consistency_check.py（WARN-41）で
-            # 別途行う。
+            # _analyze_runway()）と共通化した。get_net_cash()（bs_adjustment）の
+            # 四半期優先ロジックで確定したcash_and_equivalents +
+            # short_term_investments（非流動AFSは含めない、保守側）。
+            # 経緯: 2026-09-19（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤）時点では
+            # (A)TANUKIはST投資を含まない・(B)STONKS SILOは直近年次のみで
+            # 四半期を見ない、という相違を「目的の異なる独立実装」として
+            # 統一しない判断をしていた。しかし一次情報（10-Q、2026-06-30時点）
+            # で、RDWは年次決算後のH1増資$566.2Mによりcash $557.0M（H1 FCF
+            # -$48.0M）と実態SAFEで、STONKS SILOの年次cash $94.5Mに基づく
+            # DANGER判定が誤り、BBAIはcash $36.3M + 流動AFS $282.9Mで実態SAFE
+            # （TANUKIのcashのみ算出は過小評価）と確認したため、四半期優先
+            # ＋ST投資込みの1経路に統一した。
+            # 表示・funda_scoreペナルティ判定は引き続きSTONKS SILOの値を優先
+            # し、本値はSTONKS SILO非対象銘柄向けのフォールバック。burn側
+            # （直近年次FCF）の相違は残るため、判定逆転の検知は
+            # report_consistency_check.py（WARN-48）で継続する。
+            # 下記の発動条件`cash < 100_000_000`はcash_and_equivalentsのみの
+            # 従来判定を維持している（本件の対象外）。
             _latest_fcf = fcf_history[-1]["fcf"] if fcf_history else None
             _latest_q_eps = self._load_eps_map().get(ticker, {}).get("gaap_eps")
             _needs_runway = (
@@ -2790,10 +2783,12 @@ class TanukiValuationPipeline:
                 or (_latest_fcf is not None and _latest_fcf < 0)
                 or cash < 100_000_000
             )
-            if _needs_runway and _latest_fcf is not None and _latest_fcf < 0:
+            _runway_cash = get_runway_cash(bs_adj)
+            if (_needs_runway and _runway_cash is not None
+                    and _latest_fcf is not None and _latest_fcf < 0):
                 _monthly_burn = abs(_latest_fcf) / 12
                 if _monthly_burn > 0:
-                    result["computed_runway_months"] = cash / _monthly_burn
+                    result["computed_runway_months"] = _runway_cash / _monthly_burn
 
         # 希薄化率: 株式分割調整済みのLayer3 shares_diluted年次データを使用
         # （フェーズD Step2-1、normalized/からLayer3へ切替）

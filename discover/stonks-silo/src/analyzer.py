@@ -17,8 +17,16 @@ Stonks Silo Analyzer
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
+
+# discover/stonks-silo/src/ → repo root は3階層上（financial_trend_calculator.pyと同型）
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+from common.sec_data.reader import get_runway_cash  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -149,16 +157,19 @@ class StonksAnalysis:
 
 class StonksAnalyzer:
 
-    def analyze(self, data: dict) -> StonksAnalysis:
+    def analyze(self, data: dict, net_cash_data: Optional[dict] = None) -> StonksAnalysis:
         """
         fetcher.load_annual_data() の戻り値を受け取り、StonksAnalysis を返す。
+
+        net_cash_data: SECReader.get_net_cash()の返却値。渡された場合、
+        Runwayのcashは四半期優先の値を使う（_analyze_runway()参照）。
         """
         ticker = data["ticker"]
         years = data["years"]
         records = data["records"]
 
         dq = self._analyze_deficit_quality(years, records)
-        ra = self._analyze_runway(years, records)
+        ra = self._analyze_runway(years, records, net_cash_data)
         pp = self._analyze_profitability_path(years, records)
         dq.deficit_fixed_risk = self._calc_deficit_fixed_risk(dq, pp)
 
@@ -484,37 +495,32 @@ class StonksAnalyzer:
     # ② 生存能力（Runway）
     # ------------------------------------------------------------------
 
-    def _analyze_runway(self, years: list[int], records: dict) -> RunwayAnalysis:
-        # [[TANUKI-VALUATION-MISC-GAPS-1]]⑤（2026-09-19調査・Koichiさん
-        # 確認済み）: このRunway算出はTANUKI VALUATIONの
-        # `computed_runway_months`（value/tanuki_valuation/pipeline.py::
-        # _save_result()）と意図的に統一していない独立実装であり、
-        # 以下2点で算出方法が異なる:
-        #   (A) cashに短期投資（ST投資）を含む（TANUKI側は
-        #       cash_and_equivalentsのみでST投資を含まない）
-        #   (B) 直近年`annual_{yr}.json`のみを参照し、四半期データを
-        #       一切見ない（TANUKI側はSECReader.get_net_cash()経由で
-        #       直近四半期のBSデータが利用可能ならそちらを優先する）
-        # 実データでBBAI・RDWの2銘柄において、(A)(B)が重なりSAFE/DANGER
-        # の判定が逆転するほどの乖離（最大7.9倍）を確認したが、
-        # value/tanuki_valuation側のreport.txt表示・funda_scoreペナルティ
-        # 判定は本モジュールのrunway_months（STONKS SILO側）を優先する
-        # ため、この逆転は現状表示・判定には現れない。
-        # 両者は「STONKS SILOの赤字銘柄専用評価フレームワーク」「TANUKIの
-        # 保守的フォールバック」という異なる目的を持つ独立実装のため、
-        # 算出方式自体は統一しない設計判断とした（[[MARKETPULSE-MINOR-
-        # INCONSISTENCIES-1]]②の案cと同じ考え方）。統一しない代わりに、
-        # 両者が大きく食い違う場合の検知をcommon/sec_data/
-        # report_consistency_check.py（WARN-48）で別途行う。
+    def _analyze_runway(
+        self, years: list[int], records: dict, net_cash_data: Optional[dict] = None
+    ) -> RunwayAnalysis:
+        # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: cashは
+        # common/sec_data/reader.py::get_runway_cash()（TANUKI VALUATIONの
+        # computed_runway_monthsと共通）で算出する。get_net_cash()の四半期
+        # 優先ロジックで確定したcash_and_equivalents + short_term_investments。
+        # 2026-09-19時点では直近年次annual_{yr}.jsonのみを参照し「TANUKIとは
+        # 統一しない」としていたが、一次情報（10-Q、2026-06-30時点）で
+        # RDWは年次決算後のH1増資$566.2Mによりcash $557.0M（H1 FCF -$48.0M）
+        # と実態SAFEであり、年次cash $94.5Mで算出したDANGER判定が誤りと
+        # 確認したため四半期優先へ切り替えた。
+        # 非流動AFS（満期1年超）は含めない（get_runway_cash()参照）。
+        # net_cash_dataがない（単体呼び出し等）かcashを取得できなかった
+        # 場合のみ、従来通り直近年次のBSにフォールバックする。
         latest_year = years[-1]
         latest = records[latest_year]
         bs = latest["bs"]
         cf = latest["cf"]
 
-        cash = _sum_not_none(
-            bs.get("cash_and_equivalents"),
-            bs.get("short_term_investments"),
-        )
+        cash = get_runway_cash(net_cash_data)
+        if cash is None:
+            cash = _sum_not_none(
+                bs.get("cash_and_equivalents"),
+                bs.get("short_term_investments"),
+            )
         ocf = cf.get("operating_cash_flow")
         capex = cf.get("capital_expenditure")
 

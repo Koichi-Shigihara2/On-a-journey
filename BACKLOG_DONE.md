@@ -2,6 +2,91 @@
 
 ---
 
+## 2026-09-25（完了）
+
+### ✅ [BBAI-RDW-RUNWAY-VERIFICATION-1] BBAI・RDWの実際の財務健全性の一次情報確認 → 完了（2026-09-25）: 一次情報で両銘柄とも実態SAFEと確認。STONKS SILOのRDW DANGERは年次cashのみ参照による誤判定のため、Runway cashを四半期優先＋ST投資込みの共通関数に統一
+**優先度:** 低
+**分類:** 個別銘柄調査 / TANUKI VALUATION / STONKS SILO
+**登録日:** 2026-09-19
+**発見:** `[[TANUKI-VALUATION-MISC-GAPS-1]]`⑤（完了・BACKLOG_DONE.md
+「2026-09-19（完了）」参照）のRunway算出経路相違調査で、BBAI・RDWの
+2銘柄がSAFE/DANGER判定が逆転するほどの乖離を示すことが判明した際に、
+「どちらのロジックが正しいか」ではなく「実際にどちらの財務状態に
+近いか」の一次情報確認が必要と判断されたため
+
+#### 内容
+- **BBAI**: 直近四半期時点で現金$36.3M・ST投資$282.9M（年次決算時点は
+  現金$87.1M・ST投資$200.5M）。現金からST投資への資金の振り替えが
+  発生したとみられるが、10-Q等の一次情報でその実態（満期・流動性・
+  目的）を確認していない
+- **RDW**: 直近年次決算（現金$94.5M）から直近四半期（現金$557.0M）の
+  間に大幅な現金増加が発生している。大型の資金調達・売却等が発生した
+  と推測されるが、10-Q等の一次情報で確認していない
+
+#### 対応方針（未定）
+10-K/10-Qの現金・短期投資の内訳注記、直近のプレスリリース・8-K等を
+確認し、両銘柄の実際の資金繰り状況（本当にBBAIはSTONKS SILOが示す
+ほど安全か、RDWは本当にSTONKS SILOが示すほど危険か）を一次情報で
+判断する。
+
+#### 着手条件
+なし（Koichiさんが着手タイミングを判断する）
+
+#### 2026-09-25 対応完了（指示書③）
+**一次情報（10-Q、2026-06-30時点）**:
+- **BBAI**: cash $36.278M + 流動AFS（売却可能有価証券・流動）$282.913M
+  （別途非流動AFS $90.612M）、H1営業CF -$40.2M → 実態SAFE。年次決算後の
+  現金→短期投資の振り替えで、流動性のある資産として保有されている
+- **RDW**: cash $557.0M（H1の増資$566.2Mによる）、H1 FCF -$48.0M → 実態SAFE。
+  STONKS SILOのDANGER判定（直近年次FY2025のcash $94.5Mのみで算出、5.9ヶ月）は誤り
+
+**修正内容**:
+- `common/sec_data/reader.py`: `get_runway_cash(net_cash_data)`を新設。
+  `SECReader.get_net_cash()`の返却値（四半期優先ロジック、BUG-NETDEBT-4）から
+  cash_and_equivalents + short_term_investmentsを返す。cash_missing時はNone。
+  非流動AFSは含めない（保守側の過小評価で判定逆転は起きないため、docstringに明記）
+- `discover/stonks-silo/src/analyzer.py`: `analyze()`/`_analyze_runway()`に
+  `net_cash_data`引数を追加し、cashを`get_runway_cash()`で算出（直近年次のみ→
+  四半期優先）。net_cash_data未指定・cash取得不可の場合のみ従来の年次BSへ
+  フォールバック
+- `discover/stonks-silo/src/pipeline.py`: `get_net_cash()`の呼び出しを
+  `analyze()`の前へ移動し、返却値を`analyze(net_cash_data=...)`へ渡す
+  （net_cash表示用の既存呼び出しをそのまま再利用、呼び出し回数は不変）
+- `src/value/tanuki_valuation/pipeline.py`: `computed_runway_months`のcashを
+  `get_runway_cash(bs_adjustment)`に変更（ST投資を加算）。cash_missing時は
+  0ヶ月を算出せずキー自体を出さない。発動条件`cash < 100_000_000`は従来通り
+  cash_and_equivalentsのみ（本件の対象外）
+- 2026-09-19（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤）に追記した「統一しない」
+  旨のコメント（analyzer.py・pipeline.py・report_consistency_check.py
+  CHECK-48のdocstring/メッセージ）を本件の経緯に書き換え。WARN-48は
+  burn側（TANUKI=直近年次FCF／STONKS SILO=直近年次OCF-|CapEx|）の相違の
+  逆転検知として継続
+
+**検証（STONKS SILO全24銘柄のbefore/after、コードのみ差し替えて同一データで算出）**:
+- verdictが変わったのはRDWのみ（5.94ヶ月 DANGER → 35.03ヶ月 SAFE）。
+  BBAIはSAFE維持（81.25 → 90.18ヶ月）。他22銘柄はverdict不変
+  （runway_monthsは四半期cashへの切替で増減: 例 JOBY 29.97→48.18、
+  QBTS 139.94→86.42、CRWV 5.23→9.17〈DANGER維持〉）
+- WARN-48: TANUKI側を同じcashで再計算したシミュレーションで2件
+  （BBAI・RDW）→ 0件。本番のresults.json・latest.jsonは次回の定期
+  パイプライン実行で再生成されるまで旧値のため、それまではWARN-48が
+  2件表示され続ける
+- 回帰テスト: `tests/test_runway_cash_unify.py`（get_runway_cash単体／
+  RDW型: 年次後の増資を四半期で反映してSAFE／BBAI型: 四半期cash+ST投資／
+  net_cash_data未指定時の年次フォールバック／analyze()の引数伝播）、
+  `tests/test_pipeline_logic.py::TestComputedRunwayIncludesShortTermInvestments`
+  （BBAI型: ST投資込みで90.2ヶ月／cash_missing時にcomputed_runway_monthsを
+  出さない）。変更前コード（HEADのworktree）でfail（BBAI型は10.25ヶ月、
+  cash_missing時は0.0ヶ月を出力）、変更後でpassを確認
+- `tests/test_stonks_silo_pipeline.py`: `analyze`のモックを
+  `net_cash_data`引数を受ける形に更新
+
+**観察（本件の対象外）**: SITMは年次にST投資$791.6Mがあるが、四半期
+（2026Q2）はshort_term_investmentsが未取得のため`get_net_cash()`の四半期
+分岐で0扱いになる（Runwayはキャッシュフロー黒字のためinfでverdictに影響なし）
+
+---
+
 ## 2026-09-24（完了）
 
 ### ✅ [REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1] registration_validator.pyのP2-Aが期末の異なる年次売上とTTM売上を比較しており、急成長銘柄を「SEC parserバグ疑い」と誤判定する → 廃止で完了（2026-09-24）: P2-Aを削除し、年次売上の同一期間チェックは新規登録フローStep 7.5（report_consistency_check.pyのCHECK-35/41/47等をprovisioning中の銘柄に実行）へ移管

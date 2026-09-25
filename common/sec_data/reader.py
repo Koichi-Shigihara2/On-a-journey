@@ -33,6 +33,36 @@ def get_latest_quarterly(normalized: dict, field_name: str) -> Optional[dict]:
     return series[-1] if series else None
 
 
+# =========================================
+# Runway算出用cash の共通窓口
+# [[BBAI-RDW-RUNWAY-VERIFICATION-1]]: STONKS SILO（analyzer.py::
+# _analyze_runway()）とTANUKI VALUATION（pipeline.py::
+# computed_runway_months）が各自でcashを組み立てていたのを本関数へ集約
+# =========================================
+
+def get_runway_cash(net_cash_data: Optional[dict]) -> Optional[float]:
+    """Runway算出用のcash（cash_and_equivalents + short_term_investments）を返す。
+
+    SECReader.get_net_cash()の返却値をそのまま受け取り、その四半期優先
+    ロジック（BUG-NETDEBT-4: 直近quarterly_*.jsonのBSが取れればそちらを
+    優先）で確定したcash・short_term_investmentsを合算する。年次決算後の
+    増資（RDW: FY2025 cash $94.5M → 2026Q2 $557.0M）や、現金から短期投資
+    への振替（BBAI: 2026Q2 cash $36.3M + 流動AFS $282.9M）を反映するため。
+
+    非流動AFS（満期1年超の投資有価証券）は含めない。保守側（過小評価）
+    に倒れるだけで、SAFE/DANGERの判定逆転は起きないため（BBAIは非流動
+    AFS $90.6Mを除いても流動分のみでSAFE）。
+
+    get_net_cash()がcashを取得できなかった場合（cash_missing=True）や
+    引数がNoneの場合はNoneを返し、呼び出し元で「データ不足」として扱う。
+    """
+    if not net_cash_data or net_cash_data.get("cash_missing"):
+        return None
+    return float(net_cash_data.get("cash") or 0.0) + float(
+        net_cash_data.get("short_term_investments") or 0.0
+    )
+
+
 class SECReader:
     """SECデータ読み取りインターフェース"""
     

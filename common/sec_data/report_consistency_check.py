@@ -1048,14 +1048,15 @@ def _check_runway_divergence(ticker: str, latest: dict) -> list[str]:
     大きく食い違う銘柄を検知する（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤、
     2026-09-19実装）。
 
-    背景: 両者は「TANUKIの保守的フォールバック」「STONKS SILOの赤字
-    銘柄専用評価フレームワーク」という異なる目的を持つ独立実装であり、
-    (A)cashに短期投資を含むか、(B)四半期優先か年次のみか、という2軸の
-    相違を意図的に統一しない設計判断とした（pipeline.py::_save_result()
-    のcomputed_runway_months算出箇所コメント参照）。ただし実データで
-    BBAI・RDWの2銘柄でSAFE(>=24ヶ月)/DANGER(<12ヶ月)の判定自体が逆転
-    するほどの乖離（最大7.9倍）を確認しているため、統一しない代わりに
-    将来の逆転を機械的に検知するチェックとして本関数を新設する。
+    背景: 2026-09-19の実装時点では、(A)cashに短期投資を含むか、
+    (B)四半期優先か年次のみか、という2軸の相違を統一しない判断とし、
+    BBAI・RDWでSAFE(>=24ヶ月)/DANGER(<12ヶ月)の判定逆転（最大7.9倍）を
+    確認していたため、その検知として本関数を新設した。
+    [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）で一次情報により
+    STONKS SILO側（年次cashのみ）のRDW DANGER判定が誤りと確認し、cash
+    算出をreader.py::get_runway_cash()（四半期優先・ST投資込み）へ統一
+    した。以後の残る相違はburn側（TANUKI=直近年次FCF、STONKS SILO=
+    直近年次OCF-|CapEx|）のみで、本チェックはその逆転検知として継続する。
 
     現状report.txt表示・TANUKI SCOREのfunda_scoreペナルティ判定は
     STONKS SILOの値を優先するため（computed_runway_monthsはSTONKS SILO
@@ -1084,9 +1085,10 @@ def _check_runway_divergence(ticker: str, latest: dict) -> list[str]:
             f"  [WARN-48 Runway判定逆転] TANUKI computed_runway_months="
             f"{tanuki_runway:.1f}ヶ月（{tanuki_verdict}） vs STONKS SILO "
             f"runway_months={stonks_runway:.1f}ヶ月（{stonks_verdict}）"
-            f" → cash算出経路の相違（ST投資込み/四半期優先の有無）による"
-            f"判定逆転。表示にはSTONKS SILO側が優先採用される"
-            f"（[[TANUKI-VALUATION-MISC-GAPS-1]]⑤参照）"
+            f" → cashは共通化済み（get_runway_cash()）のため、burn算出の"
+            f"相違またはデータ更新タイミングのずれによる判定逆転。表示には"
+            f"STONKS SILO側が優先採用される"
+            f"（[[BBAI-RDW-RUNWAY-VERIFICATION-1]]参照）"
         )
     return warn
 
