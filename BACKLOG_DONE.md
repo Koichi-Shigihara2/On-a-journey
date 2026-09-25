@@ -178,6 +178,54 @@
   （2件）・`TestNvdaCrossFilingSTI`（FY2026・2027Q1の期待値をBS一致値へ更新）・
   `TestWarn49AcknowledgedLedger`。変更前コードで5件fail、変更後pass
 
+#### 2026-09-25 関連調査・安全網（指示書⑥STEP2・⑦・⑧: NVDA/APPのIV桁異常）
+**原因（⑥STEP2）**: 株式分割ではない（株数24,147M・FCF・net_cashとも分割後基準
+で整合）。segment_xbrlの成長率（加重96.4%→上限50%でクリップ）×Moat Score連動
+Phase1（`3+round(moat×7)`=9年、NVDA moat 0.8917）の組み合わせで、Phase1終了時
+FCFが基準の38.4倍、DCF最終年（14年目）FCFが直近売上の38.8倍に達し、IV/株
+$2,131（株価$224.58の9.5倍）となっていた。APPも同型（11.7倍）。
+**訂正**: ⑥・⑦の報告で「NVDAのsegment_xbrl基準四半期2026Q3は最新2027Q2から
+3四半期遅れ」としたのは誤り。layer2.jsonのquarterは暦年ラベル（NVDAの"2026Q3"は
+2026-07-26期末、filed 2026-08-26）で、会計年度ラベルのquarterly_2027Q2.jsonと
+同一四半期。7銘柄とも遅延0。
+
+**⑦ STEP 0（停止）**: growth_sanityのgrowth_model="decay"推奨がNVDA/APPのDCFに
+反映されないのは、[[DCF-1]]（2026-05-31）の完了記録に明記された意図的な設計
+（segment_configured=True銘柄は「手動設定済み」、3段階DCF銘柄は「Phase2で減速
+表現済み」として適用外、将来はDCF-1bとして検討）。ただしその後のALPHA-
+REDESIGN-1（2026-06-26、Phase1年数をmoat連動で最大10年に）とsegment_xbrl
+（2026-09-18、自動算出）で両前提は崩れている。またAPPはgrowth_model=median、
+NVDAはindustry_benchmark=Noneのため、decay経路を配線しても両銘柄には効かない。
+
+**⑧ STEP A（実装）**:
+- `calculator/segment_growth_xbrl.py`: `get_xbrl_segment_status()`を新設。基準
+  四半期がSEC EDGAR Layer3全社売上の最新四半期（ともに暦年ラベル）から2四半期
+  以上遅れている場合`compute_xbrl_segment_growth()`はNoneを返し、DCF・表示とも
+  次順位のsegment_config.jsonへフォールバック
+- `pipeline.py::_load_extra_data()`: `segment_xbrl_status`（segment_quarter・
+  reference_quarter・lag_quarters・fallback）をlatest.jsonへ記録（実際に使った
+  成長率ソースはgrowth.source）
+- `report_consistency_check.py`: CHECK-50（WARN-50 IV過大の疑い）を新設。
+  IV/株÷株価>5、またはDCF明示予測の最終年FCF÷直近売上>10で発火（NG化しない）。
+  本番発火はAPP（11.7倍・最終年FCF/売上33.5倍）・NVDA（9.5倍・38.8倍）・PLTR
+  （最終年FCF/売上20.4倍）の3件（未確認のまま）
+- 検証: 全99銘柄をHEAD worktreeと同時実行で比較し、recommended_g・growth_model・
+  Phase1年数・IV/株・SCOREとも変化なし（現データでは遅延銘柄がないため）。
+  回帰テスト: `TestXbrlSegmentStaleness`（3件）・`TestXbrlSegmentGrowthTakes
+  PriorityInExtraData`（遅延フォールバック1件追加・既存2件をget_xbrl_segment_
+  status差し替えに更新）・`TestCheck50IvOverstatement`（5件）。既存の
+  `TestComputeMultiSegment`は参照四半期を実データに依存させないよう固定
+
+**⑧ STEP B（試算のみ・未実装）**: 3段階DCFのPhase1をg1→Phase2のgへ線形逓減
+（既存`calculate_tapering_dcf()`の補間式を流用）させ、実パイプラインを
+worktreeで実行した結果（3段階DCF全10銘柄、株価同一）:
+- IV/株変化率: 中央値−22.0%、最大−68.5%（APP）、最小−4.5%（CAKE）
+- APP $3,655.32→$1,152.94（IV/株÷株価 11.70→3.69、Phase1終了時FCF倍率
+  38.4x→10.9x、最終年FCF÷売上 9.5）、NVDA $2,134.29→$733.64（9.50→3.27、
+  38.4x→12.2x、最終年FCF÷売上 12.3〈WARN-50は引き続き発火〉）。SCOREはBUY維持
+- SCORE変化: PLTR BUY→TRIM、CELH BUY→HOLD、MSFT HOLD→TRIM の3銘柄
+- 逓減後にIV/株÷株価>5の銘柄はなし
+
 ---
 
 ## 2026-09-24（完了）

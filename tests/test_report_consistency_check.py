@@ -1336,3 +1336,39 @@ class TestCheck47TtmParserLayer3Reconciliation:
         warn = rcc._check_ttm_parser_layer3_reconciliation("TESTCO")
         assert any("WARN-47" in w for w in warn)
         assert isinstance(warn, list)  # ng相当のリストではなくwarnのみを返す設計
+
+
+class TestCheck50IvOverstatement:
+    """CHECK-50（2026-09-25）: IV/株 ÷ 株価 > 5、またはDCF最終年FCF ÷ 直近売上
+    > 10 でWARN-50。NVDA（9.5倍・最終年FCF/売上38.8倍）・APP（11.7倍）型"""
+
+    @staticmethod
+    def _latest(iv, price, final_fcf, rev, detail_key="phase2_detail"):
+        return {
+            "intrinsic_value_per_share": iv,
+            "components": {"current_price": price, "latest_revenue": rev},
+            "dcf_components": {detail_key: [{"year": 13, "fcf": final_fcf / 2}, {"year": 14, "fcf": final_fcf}]},
+            "growth": {"rate": 0.5, "source": "segment_xbrl", "phase1_years": 9},
+        }
+
+    def test_nvda_type_fires_on_both_conditions(self):
+        w = rcc._check_iv_overstatement("NVDA", self._latest(2131.10, 224.58, 8_379.4e9, 215.9e9))
+        assert len(w) == 1 and "WARN-50" in w[0]
+        assert "9.5倍" in w[0] and "38.8倍" in w[0]
+
+    def test_fires_on_final_fcf_ratio_only(self):
+        """PLTR型: IV/株÷株価は5倍以内でも最終年FCF÷売上>10なら発火"""
+        w = rcc._check_iv_overstatement("PLTR", self._latest(286.15, 192.59, 91.7e9, 4.5e9))
+        assert len(w) == 1 and "20.4倍" in w[0]
+
+    def test_two_stage_uses_high_growth_detail(self):
+        w = rcc._check_iv_overstatement("X", self._latest(10, 100, 12e9, 1e9, detail_key="high_growth_detail"))
+        assert len(w) == 1
+
+    def test_no_warn_within_thresholds(self):
+        assert rcc._check_iv_overstatement("MSFT", self._latest(382.36, 497.93, 900e9, 280e9)) == []
+        assert rcc._check_iv_overstatement("X", self._latest(500, 100, 10e9, 1e9)) == []  # ちょうど5倍・10倍は発火しない
+
+    def test_missing_fields_are_skipped(self):
+        assert rcc._check_iv_overstatement("X", {}) == []
+        assert rcc._check_iv_overstatement("X", {"intrinsic_value_per_share": 100, "components": {}}) == []

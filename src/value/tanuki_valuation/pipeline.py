@@ -33,7 +33,7 @@ from calculator.fcfe import is_financial_institution_ticker, calculate_fcfe_valu
 # （calculator/growth.py::get_segment_growth()）と同じXBRL決定論的
 # 算出結果で揃える（表示と実際の計算根拠が食い違う[[GROWTH-SOURCE-
 # LABEL-1]]と同種の問題を作らないため）。
-from calculator.segment_growth_xbrl import compute_xbrl_segment_growth
+from calculator.segment_growth_xbrl import compute_xbrl_segment_growth, get_xbrl_segment_status
 
 _SCRIPT_DIR_FOR_IMPORT = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_DIR_FOR_IMPORT)))
@@ -3129,7 +3129,20 @@ class TanukiValuationPipeline:
         # stock.htmlのセグメント別売上構成表示と実際の計算根拠を一致
         # させる。対応不可（対象外銘柄・データ欠損）の場合はNoneが返り、
         # 既存のsegment_config.json静的値ベースの表示へフォールバックする。
-        _xbrl_seg = compute_xbrl_segment_growth(ticker, repo_root=self.repo_root)
+        # 2026-09-25: 基準四半期がLayer3全社売上の最新四半期から2四半期以上
+        # 遅れている場合、compute_xbrl_segment_growth()はNoneを返し（DCF側の
+        # calculator/growth.py::get_segment_growth()も同じ）、下のsegment_config
+        # へフォールバックする。その理由（遅延四半期数）をlatest.jsonに残す。
+        # 実際にDCFへ使われた成長率ソースはvaluation.growth.sourceに記録される。
+        _xbrl_status = get_xbrl_segment_status(ticker, repo_root=self.repo_root)
+        if _xbrl_status is not None:
+            result["segment_xbrl_status"] = {
+                "segment_quarter": _xbrl_status["quarter"],
+                "reference_quarter": _xbrl_status["reference_quarter"],
+                "lag_quarters": _xbrl_status["lag_quarters"],
+                "fallback": _xbrl_status["stale"],
+            }
+        _xbrl_seg = None if (_xbrl_status is None or _xbrl_status["stale"]) else _xbrl_status["result"]
         if _xbrl_seg is not None and latest_revenue:
             seg_list = [
                 {

@@ -1143,6 +1143,58 @@ def _check_sti_quarterly_missing(ticker: str) -> list[str]:
     return warn
 
 
+# CHECK-50のしきい値（2026-09-25、Koichiさん指示）
+_IV_PRICE_RATIO_WARN = 5.0
+_FINAL_FCF_REVENUE_RATIO_WARN = 10.0
+
+
+def _check_iv_overstatement(ticker: str, latest: dict) -> list[str]:
+    """CHECK-50: IV/株 ÷ 株価 > 5、またはDCF明示予測の最終年FCF ÷ 直近売上
+    > 10 の銘柄を検知する（2026-09-25新設、NG化しないWARN）。
+
+    背景: NVDA（IV/株 $2,131 vs 株価 $224.58、9.5倍）・APP（11.7倍）で、
+    segment_xbrlの成長率（上限50%に張り付き）× Moat Score連動のPhase1
+    9年の組み合わせにより、Phase1終了時FCFが基準の約38倍、最終年FCFが
+    直近売上の約39倍に達しIVが桁違いに膨らんでいた。株式分割・株数の
+    基準ずれではない（分割後基準で整合）ことを確認済み。原因（成長率×
+    期間の上限設計）の是正方針が決まるまでの可視化用安全網。
+
+    最終年FCFはdcf_componentsの明示予測期間の最後の年（3段階DCFは
+    phase2_detail、2段階/逓減DCFはhigh_growth_detailの末尾）。
+    """
+    warn: list[str] = []
+    if not latest:
+        return warn
+    comps = latest.get("components") or {}
+    iv = latest.get("intrinsic_value_per_share")
+    price = comps.get("current_price")
+    reasons = []
+    if isinstance(iv, (int, float)) and isinstance(price, (int, float)) and price > 0:
+        ratio = iv / price
+        if ratio > _IV_PRICE_RATIO_WARN:
+            reasons.append(f"IV/株 ${iv:,.2f} ÷ 株価 ${price:,.2f} = {ratio:.1f}倍")
+    dc = latest.get("dcf_components") or {}
+    detail = dc.get("phase2_detail") or dc.get("high_growth_detail") or dc.get("phase1_detail") or []
+    rev = comps.get("latest_revenue")
+    if detail and isinstance(rev, (int, float)) and rev > 0:
+        final_fcf = (detail[-1] or {}).get("fcf")
+        if isinstance(final_fcf, (int, float)):
+            fr = final_fcf / rev
+            if fr > _FINAL_FCF_REVENUE_RATIO_WARN:
+                reasons.append(
+                    f"DCF最終年（{(detail[-1] or {}).get('year')}年目）FCF ${final_fcf/1e9:,.1f}B ÷ "
+                    f"直近売上 ${rev/1e9:,.1f}B = {fr:.1f}倍"
+                )
+    if reasons:
+        g = latest.get("growth") or {}
+        warn.append(
+            f"  [WARN-50 IV過大の疑い] {' / '.join(reasons)}（成長率{(g.get('rate') or 0)*100:.1f}%"
+            f"〈{g.get('source')}〉×Phase1 {g.get('phase1_years')}年）→ 成長率×期間の"
+            f"組み合わせによる過大評価の可能性"
+        )
+    return warn
+
+
 # CHECK-36: ティッカー非依存の単発チェック用の基準件数。2026-08-16実装時点で
 # 中立フォールバック対象は2銘柄（BKNG/CPRT）。今後の推移を見て閾値は調整する。
 _MOAT_NEUTRAL_FALLBACK_BASELINE_COUNT = 4
@@ -1899,6 +1951,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     warn.extend(_check_dupont_null_validity(ticker, latest))
     warn.extend(_check_runway_divergence(ticker, latest))
     warn.extend(_check_sti_quarterly_missing(ticker))
+    warn.extend(_check_iv_overstatement(ticker, latest))
     parsed  = _parse_report(text)
 
     fcf_hist = parsed["fcf_history"]

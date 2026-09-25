@@ -130,10 +130,25 @@ _MIN_YOY_PERIODS = 2
 # weight算出（直近実績の売上構成比）に使う四半期件数の上限。
 _MAX_WEIGHT_QUARTERS = 4
 
+# 基準四半期の遅延許容（2026-09-25、Koichiさん指示）: segment_xbrlの基準
+# 四半期（layer2.jsonのセグメント系列の最新共通四半期）がSEC EDGAR Layer3の
+# 全社売上の最新四半期からこの四半期数以上遅れている場合、古い成長率を
+# DCFへ使わず呼び出し元の次順位ソース（segment_config.json）へフォール
+# バックする。比較は両者とも暦年ラベル（_quarter_label()、end日の暦月から
+# 算出）で行う。layer2.jsonのquarterも暦年ラベル（例: NVDAの"2026Q3"は
+# 2026-07-26期末＝会計年度2027Q2、filed 2026-08-26）であり、common/sec_data/
+# data/のquarterly_{fy}{fp}.json（会計年度ラベル）とは直接比較できない。
+_STALE_LAG_QUARTERS = 2
+
 
 def _quarter_label(end: str) -> str:
     d = date.fromisoformat(end[:10])
     return f"{d.year}Q{(d.month - 1) // 3 + 1}"
+
+
+def _quarter_index(quarter: str) -> int:
+    """"2026Q3" → 2026*4+3（四半期差の算出用）"""
+    return int(quarter[:4]) * 4 + int(quarter[5:])
 
 
 def _prev_year_quarter(quarter: str) -> str:
@@ -321,11 +336,50 @@ def compute_xbrl_segment_growth(ticker: str, repo_root: str = _REPO_ROOT) -> Opt
          "quarter": "2026Q2", "method": str}
         または対応不可の場合はNone
     """
+    status = get_xbrl_segment_status(ticker, repo_root=repo_root)
+    if status is None or status["stale"]:
+        return None
+    return status["result"]
+
+
+def get_xbrl_segment_status(ticker: str, repo_root: str = _REPO_ROOT) -> Optional[Dict[str, Any]]:
+    """segment_xbrlの算出結果と基準四半期の遅延状況を返す。
+
+    Returns:
+        {"result": compute_xbrl_segment_growth()相当のdict,
+         "quarter": 基準四半期（暦年ラベル）,
+         "reference_quarter": Layer3全社売上の最新四半期（暦年ラベル、
+                              取得できなければNone）,
+         "lag_quarters": int（reference_quarterがNoneなら0）,
+         "stale": lag_quarters >= _STALE_LAG_QUARTERS}
+        対象外銘柄・データ欠損の場合はNone。
+    compute_xbrl_segment_growth()はstale=Trueの場合Noneを返し、呼び出し元は
+    次順位ソースへフォールバックする。本関数はその理由（遅延四半期数）を
+    latest.jsonへ記録するための窓口（pipeline.py::_load_extra_data()）。
+    """
     try:
         if ticker in _SINGLE_SEGMENT_TICKERS:
-            return _compute_single_segment(ticker)
-        if ticker in _SEGMENT_KPI_ALIASES:
-            return _compute_multi_segment(repo_root, ticker)
-        return None
+            result = _compute_single_segment(ticker)
+        elif ticker in _SEGMENT_KPI_ALIASES:
+            result = _compute_multi_segment(repo_root, ticker)
+        else:
+            return None
     except Exception:
         return None
+    if result is None:
+        return None
+    try:
+        total = _total_revenue_series(ticker)
+    except Exception:
+        total = {}
+    reference_quarter = max(total) if total else None
+    lag = 0
+    if reference_quarter and result.get("quarter"):
+        lag = max(0, _quarter_index(reference_quarter) - _quarter_index(result["quarter"]))
+    return {
+        "result": result,
+        "quarter": result.get("quarter"),
+        "reference_quarter": reference_quarter,
+        "lag_quarters": lag,
+        "stale": lag >= _STALE_LAG_QUARTERS,
+    }

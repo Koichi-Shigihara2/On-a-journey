@@ -23,6 +23,8 @@ import json
 import os
 import sys
 
+import pytest
+
 _CALC_DIR = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "src", "value", "tanuki_valuation", "calculator")
 )
@@ -100,6 +102,12 @@ class TestClipping:
 
 
 class TestComputeMultiSegment:
+    @pytest.fixture(autouse=True)
+    def _no_layer3_reference(self, monkeypatch):
+        """遅延判定の参照四半期（Layer3全社売上）を実データに依存させない
+        （参照なし=遅延0扱い）。PLTRはTSLAと違い算出自体にLayer3を使わない"""
+        monkeypatch.setattr(sgx, "_total_revenue_series", lambda ticker: {})
+
     def test_weighted_growth_and_weight_sum_to_one(self, tmp_path):
         """2セグメント銘柄（PLTR型）: weight合計=1.0、raw_weighted_growth
         がΣ(weight×smoothed_growth)と一致する（クリップ前）"""
@@ -259,3 +267,39 @@ class TestRecentWeightBases:
         bases = sgx._recent_weight_bases(series_map)
         assert bases["a"] == 20
         assert bases["b"] == 10
+
+
+class TestXbrlSegmentStaleness:
+    """2026-09-25: 基準四半期がLayer3全社売上の最新四半期から2四半期以上
+    遅れている場合、compute_xbrl_segment_growth()はNone（次順位ソースへ
+    フォールバック）を返し、get_xbrl_segment_status()は遅延四半期数を返す。
+    比較は両者とも暦年ラベル（NVDAのlayer2 "2026Q3"は2026-07-26期末）"""
+
+    _PLTR_SERIES = {
+        "Government売上": [("2025Q4", 900), ("2024Q4", 600), ("2025Q3", 850), ("2024Q3", 700)],
+        "Commercial売上": [("2025Q4", 800), ("2024Q4", 500), ("2025Q3", 750), ("2024Q3", 600)],
+    }
+
+    def _write(self, tmp_path):
+        _write_layer2(tmp_path, "PLTR", {k: _series(v) for k, v in self._PLTR_SERIES.items()})
+
+    def test_two_quarter_lag_is_stale_and_falls_back(self, tmp_path, monkeypatch):
+        self._write(tmp_path)
+        monkeypatch.setattr(sgx, "_total_revenue_series", lambda ticker: {"2026Q2": 1, "2026Q1": 1})
+        status = sgx.get_xbrl_segment_status("PLTR", repo_root=str(tmp_path))
+        assert status["quarter"] == "2025Q4"
+        assert status["reference_quarter"] == "2026Q2"
+        assert status["lag_quarters"] == 2
+        assert status["stale"] is True
+        assert sgx.compute_xbrl_segment_growth("PLTR", repo_root=str(tmp_path)) is None
+
+    def test_one_quarter_lag_is_still_used(self, tmp_path, monkeypatch):
+        self._write(tmp_path)
+        monkeypatch.setattr(sgx, "_total_revenue_series", lambda ticker: {"2026Q1": 1})
+        status = sgx.get_xbrl_segment_status("PLTR", repo_root=str(tmp_path))
+        assert status["lag_quarters"] == 1
+        assert status["stale"] is False
+        assert sgx.compute_xbrl_segment_growth("PLTR", repo_root=str(tmp_path)) is not None
+
+    def test_quarter_index_crosses_year_boundary(self):
+        assert sgx._quarter_index("2026Q1") - sgx._quarter_index("2025Q4") == 1

@@ -2362,7 +2362,11 @@ class TestXbrlSegmentGrowthTakesPriorityInExtraData:
             "quarter": "2026Q2",
             "method": "segment_xbrl_yoy",
         }
-        monkeypatch.setattr(pipeline, "compute_xbrl_segment_growth", lambda ticker, repo_root: fake_xbrl)
+        # 2026-09-25: _load_extra_data()は遅延判定込みのget_xbrl_segment_status()経由
+        monkeypatch.setattr(pipeline, "get_xbrl_segment_status", lambda ticker, repo_root: {
+            "result": fake_xbrl, "quarter": "2026Q2", "reference_quarter": "2026Q2",
+            "lag_quarters": 0, "stale": False,
+        })
 
         valuation = {"components": {"latest_revenue": 10_000_000_000}}
         result = pipe._load_extra_data("PLTR", valuation)
@@ -2387,7 +2391,7 @@ class TestXbrlSegmentGrowthTakesPriorityInExtraData:
             }}}),
             encoding="utf-8",
         )
-        monkeypatch.setattr(pipeline, "compute_xbrl_segment_growth", lambda ticker, repo_root: None)
+        monkeypatch.setattr(pipeline, "get_xbrl_segment_status", lambda ticker, repo_root: None)
 
         valuation = {"components": {"latest_revenue": 5_000_000_000}}
         result = pipe._load_extra_data("ADBE", valuation)
@@ -2396,6 +2400,38 @@ class TestXbrlSegmentGrowthTakesPriorityInExtraData:
         assert "segment_growth_source" not in result
         dm = next(s for s in result["segments"] if s["name"] == "Digital Media")
         assert dm["growth"] == 0.12
+
+    def test_stale_xbrl_falls_back_to_static_config_with_provenance(self, tmp_path, monkeypatch):
+        """2026-09-25: segment_xbrlの基準四半期がLayer3最新四半期から2四半期
+        以上遅れている場合、静的configへフォールバックし、遅延四半期数を
+        segment_xbrl_statusとしてlatest.jsonへ記録する"""
+        pipe = _make_pipe(tmp_path)
+        config_dir = tmp_path / "config"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (config_dir / "segment_config.json").write_text(
+            json.dumps({"PLTR": {"segments": {
+                "Government": {"weight": 0.55, "growth": 0.10},
+                "Commercial": {"weight": 0.45, "growth": 0.20},
+            }}}),
+            encoding="utf-8",
+        )
+        stale_xbrl = {"segments": {"Government": {"weight": 0.5, "growth": 0.9},
+                                   "Commercial": {"weight": 0.5, "growth": 1.1}},
+                      "weighted_growth": 0.5, "quarter": "2025Q4", "method": "segment_xbrl_yoy"}
+        monkeypatch.setattr(pipeline, "get_xbrl_segment_status", lambda ticker, repo_root: {
+            "result": stale_xbrl, "quarter": "2025Q4", "reference_quarter": "2026Q2",
+            "lag_quarters": 2, "stale": True,
+        })
+        valuation = {"components": {"latest_revenue": 10_000_000_000}}
+        result = pipe._load_extra_data("PLTR", valuation)
+
+        assert "segment_growth_source" not in result
+        gov = next(s for s in result["segments"] if s["name"] == "Government")
+        assert gov["growth"] == 0.10
+        assert result["segment_xbrl_status"] == {
+            "segment_quarter": "2025Q4", "reference_quarter": "2026Q2",
+            "lag_quarters": 2, "fallback": True,
+        }
 
 
 class TestLoadExtraDataNextEarningsDate:
