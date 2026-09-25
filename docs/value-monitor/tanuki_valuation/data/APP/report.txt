@@ -1,17 +1,17 @@
 APP INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-24T19:10:58+09:00
-Price: $315.25
+Generated: 2026-09-25T08:59:36+09:00
+Price: $312.47
 Validation_Status: FAIL ⚠️ (要注意チェック: anomaly_detection)
 
 [1. TANUKI SCORE]
 Classification: BUY
 Funda_Score: 100/100
 Timing_Score (components):
-  Deviation_Rate: +1059.5%
+  Deviation_Rate: +1069.8%
   MA200_Deviation: N/A
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -87.0%
-Comment: 割安圏(1060%)で買い余地大、FCF黒字、売上成長加速
+Comment: 割安圏(1070%)で買い余地大、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 右上
 Label: 割安×高効率
 Key_Metric_Y: RICE = 7.517
-Deviation_Rate: +1059.5%
+Deviation_Rate: +1069.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,15 +57,15 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $315.25
+Current_Price: $312.47
 Intrinsic_Value_BASE: $3,655.32
-Deviation_BASE: +1059.5%
+Deviation_BASE: +1069.8%
 Scenarios:
-BEAR: Growth=35.0%, IV=$1,474.45, Deviation=+367.7%
-BASE: Growth=50.0%, IV=$3,655.32, Deviation=+1059.5%
-BULL: Growth=60.0%, IV=$6,421.16, Deviation=+1936.8%
-Return_Outlook(BASE): 1年後: $5,482.98 (+1639.2%) / 3年後: $12,336.71 (+3813.3%) / 5年後: $27,757.59 (+8704.9%)
-  5yr_Annualized_Return: +144.9%/yr
+BEAR: Growth=35.0%, IV=$1,474.45, Deviation=+371.9%
+BASE: Growth=50.0%, IV=$3,655.32, Deviation=+1069.8%
+BULL: Growth=60.0%, IV=$6,421.16, Deviation=+1955.0%
+Return_Outlook(BASE): 1年後: $5,482.98 (+1654.7%) / 3年後: $12,336.71 (+3848.1%) / 5年後: $27,757.59 (+8783.3%)
+  5yr_Annualized_Return: +145.3%/yr
 Growth_Rate_Rec: 24.8% (recommended  ⚠️ +25.2pt above recommended)
 Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 24.8%（実績CAGR等ベース）
   ⚠️ 実績YoY(直近最大4四半期平均)は86.9%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
@@ -73,9 +73,9 @@ TTM_YoY_Growth: 76.3%
 (DCF Base vs TTM actual: -26.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.48%
-  参考①β込みWACC_IV: $995.19 (Deviation: +215.7%)
-  参考②Rf理論上限_IV: $42,793.35 (Deviation: +13474.4%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.11%に変化すると、Rf基準の必要成長率は-23.1%→-11.5%（+11.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $995.19 (Deviation: +218.5%)
+  参考②Rf理論上限_IV: $42,793.35 (Deviation: +13595.2%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.16%に変化すると、Rf基準の必要成長率は-23.2%→-11.1%（+12.1pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.488
 FCF_Base: $3,035.05M (直近2yr平均) [ボトムアップ: OCF-CapEx]
@@ -101,7 +101,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $870.46  $2,984.72  $10,035.40
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 両項目とも理由に「一過性の事業再編費用」と明記されており、事業運営上の一時的な調整と判断される。
+  Reasoning: 理由欄に「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断されるため。
 Financial_Health:
   Net_Debt: $+0.46B (negative=net cash)
   Total_Debt: $3.52B  Cash: $3.05B
@@ -263,8 +263,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 23.7x
-  Adjusted_EPS_PER: 22.7x (TTM調整後EPS: $13.8916)
-  Delta: -1.0x (cheaper on adjusted basis)
+  Adjusted_EPS_PER: 22.5x (TTM調整後EPS: $13.8916)
+  Delta: -1.2x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-05
   Next_Quarter_EPS: $4.03 (yfinance analyst estimate)
@@ -313,9 +313,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 6.65%  (ForwardEPS $20.98 / Price $315.25)
+  Forward_Earnings_Yield: 6.71%  (ForwardEPS $20.98 / Price $312.47)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: 2.35%
+  ERP: 2.41%
   ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -340,7 +340,7 @@ Short_Report_Target: no
 Short_Interest: 3.6%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Buy | Target: $476 median ($325-$790) | 31 analysts | vs IV: -87.0%
-Insider_Activity: N/A
+Insider_Activity: Sell優勢 | 買い0件 / 売り9件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 76.3%
 Next_Earnings_Date: 2026-11-05

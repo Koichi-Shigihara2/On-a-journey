@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 13787386464.554882,
   "intrinsic_value_per_share": 32.84084805794318,
   "intrinsic_value_beta": 24.92,
-  "upside_percent_beta": -36.2,
+  "upside_percent_beta": -36.6,
   "intrinsic_value_rf": 284.77,
-  "upside_percent_rf": 628.7,
+  "upside_percent_rf": 624.2,
   "v0": 13787386464.554882,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 46.09,
       "value_growth_pct": 40.3,
-      "expected_return_pct": 17.9
+      "expected_return_pct": 17.2
     },
     "2年後": {
       "future_value": 64.67,
       "value_growth_pct": 96.9,
-      "expected_return_pct": 65.5
+      "expected_return_pct": 64.5
     },
     "3年後": {
       "future_value": 90.76,
       "value_growth_pct": 176.4,
-      "expected_return_pct": 132.2
+      "expected_return_pct": 130.8
     },
     "4年後": {
       "future_value": 127.37,
       "value_growth_pct": 287.9,
-      "expected_return_pct": 225.9
+      "expected_return_pct": 223.9
     },
     "5年後": {
       "future_value": 178.74,
       "value_growth_pct": 444.3,
-      "expected_return_pct": 357.4
+      "expected_return_pct": 354.6
     }
   },
-  "upside_percent": -16.0,
-  "calculation_date": "2026-09-24T19:11:46+09:00",
+  "upside_percent": -16.5,
+  "calculation_date": "2026-09-25T09:02:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 13300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一時的な貸倒引当金の増加に該当する。"
       }
     },
     "action": "flagged",
@@ -332,7 +332,7 @@
     "roe_10yr_avg": -0.2174748582925125,
     "roe_years_used": 5,
     "roe_outlier_adj": false,
-    "current_price": 39.08000183105469,
+    "current_price": 39.31999969482422,
     "latest_revenue": 1618635000.0,
     "rpo": 3988500000,
     "beta": 1.336,
@@ -366,7 +366,7 @@
     "alpha_uncapped": 0.0,
     "per": 263.66666,
     "per_is_forward": false,
-    "per_adjusted": 59.44,
+    "per_adjusted": 59.81,
     "peg": null,
     "ps": 12.535877,
     "ev_ebitda": 713.098,
@@ -381,17 +381,17 @@
     "analyst_rec_key": "buy",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
-    "insider_buy_count": null,
-    "insider_sell_count": null,
-    "insider_net_direction": null,
-    "insider_latest_date": null,
+    "insider_buy_count": 0,
+    "insider_sell_count": 110,
+    "insider_net_direction": "Sell優勢",
+    "insider_latest_date": "2026-09-21",
     "analyst_vs_iv": 61.4,
     "max_eps": 0.6361,
-    "max_eps_per": 61.4,
+    "max_eps_per": 61.8,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-24",
+    "validated_at": "2026-09-25",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -415,9 +415,9 @@
     "ai_comment": null
   },
   "phase1_growth": 0.4033503850664405,
-  "required_growth_rf_base": -0.0905187738185691,
-  "risk_free_rate_live": 0.051139998435974124,
-  "required_growth_rf_live": 0.046541461894650915,
+  "required_growth_rf_base": -0.08940444769583167,
+  "risk_free_rate_live": 0.05161999702453613,
+  "required_growth_rf_live": 0.053983265957954885,
   "tanuki_score": "HOLD",
   "funda_score": 90,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
@@ -486,7 +486,7 @@
     "shares_yr_3ago_label": "2023",
     "buyback_ttm": 0
   },
-  "net_current_assets_ratio": 0.0247,
+  "net_current_assets_ratio": 0.0246,
   "dupont": {
     "ni_ttm": 57512000,
     "revenue_ttm": 1730595000,
@@ -541,8 +541,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0187,
-  "forward_earnings_yield": 0.0243,
+  "erp": -0.0189,
+  "forward_earnings_yield": 0.0241,
   "dilution_severity": "medium",
   "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }
