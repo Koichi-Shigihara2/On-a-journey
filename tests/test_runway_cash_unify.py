@@ -180,3 +180,15 @@ class TestStiQuarterlyMissing:
         ra0 = a._analyze_runway([2025], _records(94_467_000, None, -150_000_000, -40_810_000),
                                 _net_cash(557_000_000.0, 0.0))
         assert ra0.sti_quarterly_missing is False
+
+
+class TestWarn49AcknowledgedLedger:
+    """2026-09-25⑥: WARN-49のABBV・CDNS（10-Q原本にBS開示なしを確認済み）が
+    warn_acknowledged.jsonに登録されていること"""
+
+    def test_abbv_cdns_registered(self):
+        with open(os.path.join(_REPO_ROOT, "config", "warn_acknowledged.json"), encoding="utf-8") as f:
+            ledger = json.load(f)
+        acked = {(a["check"], a["ticker"]) for a in ledger["acknowledged"]}
+        assert ("WARN-49", "ABBV") in acked
+        assert ("WARN-49", "CDNS") in acked

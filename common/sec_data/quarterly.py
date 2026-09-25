@@ -194,36 +194,43 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
         "cross_filing_tags": {
             "short_term_investments": (
                 {
-                    # FY2026（FYE 2026-01-25）annual: 債券部分
-                    # AvailableForSaleSecuritiesDebtSecurities（$39,520M、当該
-                    # 10-K本体〈form=10-K, filed 2026-02-25〉に申告あり）＋
-                    # 株式部分EquitySecuritiesFvNi（$12,886M）を合算する。
-                    # EquitySecuritiesFvNiは当該10-K本体には一切申告されておらず、
-                    # 後続10-Q（2026-05-20提出、Q1 FY2027、form=10-Q）が比較年度の
-                    # 期末値として遡及開示した際に初めて登場する（=真のクロス
-                    # filing参照が必要なケース）。合算値$52,406Mは一次情報で確認
-                    # 済みの実額$51,951M比+0.88%（$455M）の近似値。詳細は
-                    # BACKLOG.md [[NVDA-STI-TAG-UNIDENTIFIED-1]]参照。
+                    # FY2026（FYE 2026-01-25）annual: 10-K本体BSの流動資産
+                    # 「Marketable securities $51,951M」は単一のus-gaapタグで
+                    # companyfactsに現れない。後続10-Q（Q1 FY2027 accn
+                    # 0001045810-26-000052／Q2 accn -000075）が比較年度末値として
+                    # 開示した`DebtSecuritiesCurrent`（$39,065M）＋
+                    # `EquitySecuritiesFvNi`（$12,886M）の合算が10-K BSの
+                    # $51,951Mと完全一致するため、両タグをform=10-Qで参照する
+                    # （=真のクロスfiling参照）。
+                    # 2026-07-19の初回登録（[[NVDA-STI-TAG-UNIDENTIFIED-1]]）は
+                    # 債券部分に`AvailableForSaleSecuritiesDebtSecurities`
+                    # （$39,520M、満期1年超の非流動分を含むAFS総額）を使っており
+                    # $52,406M（+0.88%）の近似値だった。2026-09-25（[[BBAI-RDW-
+                    # RUNWAY-VERIFICATION-1]]後続）に流動分のみのタグへ是正し
+                    # 残差0となったため、approx_residual_pctは登録しない。
                     "period": 2026,
                     "end_date": "2026-01-25",
                     "components": (
-                        {"tag": "AvailableForSaleSecuritiesDebtSecurities", "forms": ("10-K", "10-K/A")},
+                        {"tag": "DebtSecuritiesCurrent", "forms": ("10-Q",)},
                         {"tag": "EquitySecuritiesFvNi", "forms": ("10-Q",)},
                     ),
-                    "approx_residual_pct": 0.0088,
                 },
                 {
                     # 2027Q1（Q1 FY2027、end 2026-04-26）: 両タグとも当該10-Q
-                    # 自身（form=10-Q, fy=2027, fp=Q1）のown dataであり、annualの
-                    # ようなクロスfiling参照は不要。ただし既存の_extract_values_
-                    # best_candidate()は複数タグを同時に合算する機構を持たない
-                    # （freshness最良の1タグのみを採用する設計）ため、本テーブルの
-                    # 同一の合算ロジックを転用する。近似値ではなく厳密な合算値
-                    # （residual表示は不要）。
+                    # 自身（accn 0001045810-26-000052、form=10-Q）のown data。
+                    # 既存の_extract_values_best_candidate()は複数タグを同時に
+                    # 合算する機構を持たない（freshness最良の1タグのみを採用する
+                    # 設計）ため、本テーブルの同一の合算ロジックを転用する。
+                    # 10-Q BSの流動「Marketable debt securities $37,098M」
+                    # 「Marketable equity securities $30,237M」（計$67,335M）と
+                    # 一致する`DebtSecuritiesCurrent`＋`EquitySecuritiesFvNi`を
+                    # 使う（2026-09-25是正。初回登録のAvailableForSaleSecurities
+                    # DebtSecurities $39,233Mは非流動分を含み$69,470Mと+$2,135M
+                    # 過大だった）。
                     "period": "2027Q1",
                     "end_date": "2026-04-26",
                     "components": (
-                        {"tag": "AvailableForSaleSecuritiesDebtSecurities", "forms": ("10-Q",)},
+                        {"tag": "DebtSecuritiesCurrent", "forms": ("10-Q",)},
                         {"tag": "EquitySecuritiesFvNi", "forms": ("10-Q",)},
                     ),
                 },
@@ -235,11 +242,11 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
                     # securities $34,143M」「Marketable equity securities
                     # $42,783M」と一致する`DebtSecuritiesCurrent`＋
                     # `EquitySecuritiesFvNi`（計$76,926M）を採用する。
-                    # 上2期で使った`AvailableForSaleSecuritiesDebtSecurities`
-                    # （本期$46,900M）は満期1年超の非流動分を含むAFS総額で、
-                    # BSの流動行とは一致しないため使わない。期ごとに正しい構成
-                    # タグが変わりうる（本期で判明）ため、全期一律適用には
-                    # せず期ごとの明示登録を維持する。新四半期の登録漏れは
+                    # `AvailableForSaleSecuritiesDebtSecurities`（本期$46,900M）
+                    # は満期1年超の非流動分を含むAFS総額で、BSの流動行とは一致
+                    # しないため使わない（本期で判明し、上2期も同構成へ是正）。
+                    # タグ構成は将来の期で再び変わりうるため、全期一律適用には
+                    # せず期ごとの明示登録（BS原本との照合付き）を維持する。新四半期の登録漏れは
                     # report_consistency_check.pyのCHECK-49で検知する。
                     "period": "2027Q2",
                     "end_date": "2026-07-26",
@@ -252,10 +259,10 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
         },
         "note": "FY2026(FYE 2026-01-25)以降、非上場投資先の上場に伴う資産再分類で"
                 "short_term_investmentsが単一タグで捕捉不可（型C）。cross_filing_tags"
-                "で2タグを合算する。annual FY2026は他filing参照を要する近似値"
-                "（+0.88%残差、report.txtに明記）、quarterly 2027Q1は同一filing内"
-                "合算のため近似ではない。詳細はBACKLOG.md "
-                "[[NVDA-STI-TAG-UNIDENTIFIED-1]]参照。",
+                "でDebtSecuritiesCurrent+EquitySecuritiesFvNiを合算する（各期BS原本の"
+                "流動Marketable securitiesと一致確認済み）。annual FY2026は後続10-Qの"
+                "比較年度値を参照するクロスfiling参照。詳細はBACKLOG_DONE.md "
+                "[[NVDA-STI-TAG-UNIDENTIFIED-1]]・[[BBAI-RDW-RUNWAY-VERIFICATION-1]]参照。",
     },
     # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行（2026-09-17）:
     # LYFTはPaymentsToAcquirePropertyPlantAndEquipment等CAPITAL_EXPENDITURE

@@ -294,6 +294,18 @@
       "ticker": "RCAT",
       "acknowledged_date": "2026-09-13",
       "comment": "CHECK-47（parser⇔Layer3 TTM乖離）初回実行WARN。対象フィールド: stock_based_compensation。normalized/RCAT_quarterly_normalized.jsonのSBC系列で2025-12-31四半期が欠落（RCATの会計年度末変更に伴う移行期のスタブと推測、原因の深掘りは対象外）。一方、本番ttm/RCAT_ttm_series.jsonの実出力（2026-06-30時点$16,787,000、quarters_used=4、missing=0）はLayer3独自の四半期選定ロジックにより完全値で、実害なしと確認済み。RCATは非保有銘柄。CHECK-47の突合方式（末尾4件単純合算）が本番ロジックと異なるために生じた見かけ上の乖離であり、[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]の構造的リスク（tie-break不一致）とは別種の原因。"
+    },
+    {
+      "check": "WARN-49",
+      "ticker": "ABBV",
+      "acknowledged_date": "2026-09-25",
+      "comment": "四半期ST投資欠損。10-Q原本（2026Q2、accn 0001551152-26-000026）のBSに短期投資行なし（前期末比較列も同様）を確認済み。年次FY2025の$28Mは注記由来で10-Qは非開示のため対応不要（[[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続）。"
+    },
+    {
+      "check": "WARN-49",
+      "ticker": "CDNS",
+      "acknowledged_date": "2026-09-25",
+      "comment": "四半期ST投資欠損。年次FY2025の$154.2Mは10-K注記「Balance Sheet Components」のPrepaid expenses and other内訳。10-K・10-Q（2026Q1、accn 0000813672-26-000047）ともBS本体に短期投資行がなく、10-Qは内訳自体を非開示と原本で確認済みのため対応不要（[[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続）。"
     }
   ]
 }

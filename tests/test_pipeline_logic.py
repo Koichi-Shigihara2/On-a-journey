@@ -423,6 +423,44 @@ class TestRunwayFallback:
         assert result["score"] == "PASS"
 
 
+class TestBsAdjustmentCashMissingPropagation:
+    """[[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続（2026-09-25⑥）:
+    BSAdjustmentResult.to_dict()にcash_missingが含まれず、本番の
+    financial_health.cash_missingが常にFalse・computed_runway_monthsの
+    cash欠損スキップが発動しなかった問題の回帰テスト（CPRT型）"""
+
+    def test_to_dict_carries_cash_missing(self):
+        from calculator.adjustments import calculate_bs_adjustment
+        nc = {"cash": 0.0, "short_term_investments": 0.0, "long_term_debt": 22_000_000.0,
+              "short_term_debt": 0.0, "net_cash": -22_000_000.0, "available": False,
+              "cash_missing": True, "fiscal_year": 2025}
+        d = calculate_bs_adjustment(nc, diluted_shares=970_000_000).to_dict()
+        assert d.get("cash_missing") is True
+
+    def test_cprt_type_financial_health_flag_and_no_runway(self, tmp_path):
+        """cash欠損かつFCFマイナスでも0ヶ月のrunwayを捏造せず、
+        financial_health.cash_missing=Trueを出す（実データ経路:
+        calculate_bs_adjustment().to_dict()をbs_adjustmentに使う）"""
+        from calculator.adjustments import calculate_bs_adjustment
+        pipe = _make_pipe(tmp_path)
+        d = tmp_path / "common" / "sec_data" / "data" / "CPRTTEST"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "annual_2025.json").write_text(json.dumps({
+            "period": "2025", "pl": {"revenue": 4_600_000_000},
+            "cf": {"free_cash_flow": -10_000_000}, "bs": {},
+        }), encoding="utf-8")
+        nc = {"cash": 0.0, "short_term_investments": 0.0, "long_term_debt": 0.0,
+              "short_term_debt": 0.0, "net_cash": 0.0, "available": False,
+              "cash_missing": True, "fiscal_year": 2025}
+        valuation = {
+            "components": {"latest_revenue": 4_600_000_000},
+            "bs_adjustment": calculate_bs_adjustment(nc, diluted_shares=970_000_000).to_dict(),
+        }
+        result = pipe._load_extra_data("CPRTTEST", valuation)
+        assert result["financial_health"]["cash_missing"] is True
+        assert "computed_runway_months" not in result
+
+
 class TestComputedRunwayIncludesShortTermInvestments:
     """[[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: computed_runway_monthsの
     cashがreader.py::get_runway_cash()（四半期優先cash + short_term_investments）
@@ -2885,7 +2923,9 @@ class TestNvdaCrossFilingSTI:
     正しく合算していること・近似値フラグが期待通り伝播することを確認する"""
 
     def test_nvda_annual_2026_sti_is_cross_filing_sum(self):
-        """NVDA annual_2026.json: bs.short_term_investments が合算近似値$52,406Mであること"""
+        """NVDA annual_2026.json: bs.short_term_investments が10-K BS「Marketable
+        securities $51,951M」と一致する合算値であること（2026-09-25是正:
+        初回登録はAFS総額〈非流動分込み〉で$52,406M・+0.88%の近似値だった）"""
         import json, os
         ann_path = os.path.join(
             os.path.dirname(__file__), "..",
@@ -2896,25 +2936,23 @@ class TestNvdaCrossFilingSTI:
         with open(ann_path, encoding="utf-8") as f:
             ann = json.load(f)
         sti = ann.get("bs", {}).get("short_term_investments")
-        assert sti == 52_406_000_000, (
-            f"NVDA annual_2026 short_term_investments={sti} != $52,406M "
-            "(AvailableForSaleSecuritiesDebtSecurities $39,520M + EquitySecuritiesFvNi $12,886M)"
+        assert sti == 51_951_000_000, (
+            f"NVDA annual_2026 short_term_investments={sti} != $51,951M "
+            "(DebtSecuritiesCurrent $39,065M + EquitySecuritiesFvNi $12,886M)"
         )
         prov = ann.get("bs_provenance", {}).get("short_term_investments", {})
-        assert prov.get("is_approximated") is True, (
-            "NVDA annual_2026 short_term_investmentsはcross_filing_tags近似値のため"
-            "bs_provenance.is_approximated=Trueが必須"
+        assert prov.get("is_approximated") is False, (
+            "10-K BSと完全一致する合算値のためis_approximated=False"
         )
-        assert prov.get("residual_pct") == pytest.approx(0.0088, abs=1e-4), (
-            f"NVDA annual_2026 residual_pct={prov.get('residual_pct')} != 0.0088(+0.88%)"
-        )
+        assert prov.get("residual_pct") is None
         assert set(prov.get("combined_tags", [])) == {
-            "AvailableForSaleSecuritiesDebtSecurities", "EquitySecuritiesFvNi",
+            "DebtSecuritiesCurrent", "EquitySecuritiesFvNi",
         }
 
     def test_nvda_quarterly_2027q1_sti_is_exact_sum(self):
-        """NVDA quarterly_2027Q1.json: bs.short_term_investments が同一10-Q内
-        合算の正規値$69,470M（近似ではない）であること"""
+        """NVDA quarterly_2027Q1.json: bs.short_term_investments が10-Q BSの流動
+        Marketable debt $37,098M + equity $30,237M = $67,335Mであること
+        （2026-09-25是正: 初回登録はAFS総額で$69,470M、+$2,135M過大だった）"""
         import json, os
         q_path = os.path.join(
             os.path.dirname(__file__), "..",
@@ -2925,9 +2963,9 @@ class TestNvdaCrossFilingSTI:
         with open(q_path, encoding="utf-8") as f:
             q = json.load(f)
         sti = q.get("bs", {}).get("short_term_investments")
-        assert sti == 69_470_000_000, (
-            f"NVDA quarterly_2027Q1 short_term_investments={sti} != $69,470M "
-            "(AvailableForSaleSecuritiesDebtSecurities $39,233M + EquitySecuritiesFvNi $30,237M)"
+        assert sti == 67_335_000_000, (
+            f"NVDA quarterly_2027Q1 short_term_investments={sti} != $67,335M "
+            "(DebtSecuritiesCurrent $37,098M + EquitySecuritiesFvNi $30,237M)"
         )
 
     def test_nvda_quarterly_2027q2_sti_is_bs_current_sum(self):

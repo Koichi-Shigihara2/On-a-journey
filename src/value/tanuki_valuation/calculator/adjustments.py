@@ -780,6 +780,12 @@ class BSAdjustmentResult:
     applied: bool                  # 補正適用フラグ
     sector_guard: str = "none"     # v8.1: 適用したセクターガード名
     net_debt_period: str = ""      # ARCH-DATA-1残課題①: 実際にBS項目を取得した時点のラベル
+    # FY52WEEK-BS-NULL-SILENT-1 Phase A: get_net_cash()がannual・四半期のいずれ
+    # からもcash_and_equivalentsを取得できなかった場合True。2026-09-25まで
+    # to_dict()に含まれておらず、pipeline.pyのfinancial_health.cash_missing・
+    # computed_runway_monthsのcash欠損スキップ（get_runway_cash()）が本番で
+    # 一度も発動していなかった（[[BBAI-RDW-RUNWAY-VERIFICATION-1]]後続で発見）
+    cash_missing: bool = False
     # NVDA-STI-TAG-UNIDENTIFIED-1: short_term_investmentsがticker_restrictions
     # のcross_filing_tags経由の複数タグ合算近似値である場合True・その残差率
     sti_approximated: bool = False
@@ -811,6 +817,7 @@ class BSAdjustmentResult:
             "applied":                self.applied,
             "sector_guard":           self.sector_guard,
             "net_debt_period":        self.net_debt_period,
+            "cash_missing":           self.cash_missing,
             "sti_approximated":       self.sti_approximated,
             "sti_residual_pct":       self.sti_residual_pct,
             "sti_quarterly_missing":  self.sti_quarterly_missing,
@@ -858,6 +865,7 @@ def calculate_bs_adjustment(
         applied=available and net_cash != 0.0,
         sector_guard=net_cash_data.get("sector_guard", "none"),  # v8.1
         net_debt_period=net_cash_data.get("net_debt_period", ""),  # ARCH-DATA-1残課題①
+        cash_missing=net_cash_data.get("cash_missing", False),  # FY52WEEK-BS-NULL-SILENT-1 Phase A
         sti_approximated=net_cash_data.get("sti_approximated", False),  # NVDA-STI-TAG-UNIDENTIFIED-1
         sti_residual_pct=net_cash_data.get("sti_residual_pct"),
         sti_quarterly_missing=net_cash_data.get("sti_quarterly_missing", False),

@@ -157,6 +157,27 @@
   `computed_runway_months`のcash_missing時スキップも本番では発動しない
   （現在cash_missing=Trueは全銘柄でCPRTのみ）
 
+#### 2026-09-25 追補（指示書⑥）
+- **WARN-49 ABBV・CDNS**: `config/warn_acknowledged.json`に登録（10-Q原本に
+  BS開示なしを確認済み）。未確認WARN 60件 → 58件
+- **NVDA既存2期の是正**: `cross_filing_tags`のFY2026・2027Q1を
+  `DebtSecuritiesCurrent`＋`EquitySecuritiesFvNi`（form=10-Q）へ変更し、各期
+  BS原本と一致を確認。FY2026 $52,406M → $51,951M（10-K accn
+  0001045810-26-000021 BS「Marketable securities $51,951M」、両タグとも後続
+  10-Qの比較年度値でのみ申告のためクロスfiling参照。残差0のため
+  `approx_residual_pct`を外しis_approximated=False）、2027Q1 $69,470M →
+  $67,335M（10-Q BS debt $37,098M + equity $30,237M）。最新期でないため
+  net_cash（2027Q2基準 +$66,003M）・IV/株 $2,134.29・SCORE BUYは不変
+- **cash_missing伝播**: `BSAdjustmentResult`に`cash_missing`を追加し`to_dict()`
+  へ出力。CPRTでlatest.jsonの`bs_adjustment.cash_missing`・
+  `financial_health.cash_missing`がTrueになることを確認（runwayは修正前後とも
+  FCF黒字のため非出力、net_cash −$22M・IV/株 $32.29・SCORE WATCHは不変）
+- **検証**: `get_net_cash()`全102銘柄・STONKS SILO全24銘柄のrunwayとも変化
+  なし。TANUKIはNVDA・CPRTをHEAD worktreeと同時実行で比較（確認用docs出力は
+  コミットせず復元）。回帰テスト: `TestBsAdjustmentCashMissingPropagation`
+  （2件）・`TestNvdaCrossFilingSTI`（FY2026・2027Q1の期待値をBS一致値へ更新）・
+  `TestWarn49AcknowledgedLedger`。変更前コードで5件fail、変更後pass
+
 ---
 
 ## 2026-09-24（完了）
