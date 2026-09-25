@@ -20,11 +20,20 @@
   （3段階DCFのPhase1線形逓減）で是正。⑤`[[FLAG-THRESHOLD-DESIGN-1]]`:
   案C（TTM営業利益<0 または TTM売上=0）を採用しCHECK-51・登録フローP7を新設、
   フラグ6件是正。CHAT_RULES.mdに事例20（過去の設計判断の前提は後続の変更で
-  黙って崩れる）を追記。アクティブBACKLOG 8件→6件。pytest 1640件全パス・
-  audit.py exit 0・report_consistency_check.py NG=0。**次回確認**: 9/27の
+  黙って崩れる）を追記。⑥（⑭〜⑯）`[[UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1]]`
+  の①②を実データで検証しカタログを解体: ①タグ混入は仮説の型が0件でクローズ
+  （別原因の部分概念タグ混入を`[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]`で登録）、
+  ②`[[SPLIT-REALTIME-GAP-REVERSE-1]]`はリバース分割の判定を方向非依存化し
+  KULR・SPIR・HON・BKNGを登録して完了（KULRの希薄化率 −27.82%→+44.35%/年、
+  funda 20→0。KLAC・NOWは推定比率→登録比率で小幅是正）、③は単独項目に戻した。
+  `[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]`を新規登録。CHAT_RULES.mdに
+  事例21（登録で既存関数が未検証ケースで動き出す）と事例17の逆方向の実例を追記。
+  アクティブBACKLOG 8件→6件→8件。pytest 1650件全パス・audit.py exit 0・
+  report_consistency_check.py NG=0。**次回確認**: 9/27の
   SEC_Data_Update後にFCX net_income反映、次回TANUKI_VALUATION_Update後に
-  PLTR・CELH・MSFTのSCOREとWARN-50（NVDA 1件）・WARN-48（0件）、次回
-  Stonks_Silo_Update後に対象銘柄の入れ替え
+  PLTR・CELH・MSFTのSCOREとWARN-50（NVDA 1件）・WARN-48（0件）、KULRの
+  希薄化率+44.35%（severe）・funda 0、次回Stonks_Silo_Update後に対象銘柄の
+  入れ替えとRDW
 - **2026-09-24**: 監視・ゲートの「黙った失敗」の修正と、net_incomeの
   NCI取り違えの修正が中心（BACKLOG_DONE.md「2026-09-24（完了）」に13件）。
   ①Discord通知がurllibの403で約4か月届いていなかった問題を修正

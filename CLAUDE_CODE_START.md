@@ -12,9 +12,15 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-25セッション終了時ブラッシュアップ時点）**: `BACKLOG.md`
-アクティブ件数**6件**（2026-09-25に`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`・
-`[[FLAG-THRESHOLD-DESIGN-1]]`を完了、`[[DCF-1b]]`は完了として直接記載。
+**現在の到達点（2026-09-25セッション終了時ブラッシュアップ⑯時点）**: `BACKLOG.md`
+アクティブ件数**8件**（機械カウント、`grep -c "^### \["`）。2026-09-25に
+`[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`・`[[FLAG-THRESHOLD-DESIGN-1]]`を完了、
+`[[DCF-1b]]`は完了として直接記載（ここまでで6件）。⑭⑮で
+`[[UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1]]`を解体し、
+`[[SPLIT-REALTIME-GAP-REVERSE-1]]`を完了・`[[PARSER-MERGED-TAG-MIXING-RISK-1]]`を
+クローズ、`[[DATA-JUMP-CHECK-NETINCOME-SBC-1]]`を単独項目に戻し、
+`[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]`・`[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]`を
+新規登録（6件→8件）。BACKLOG.md/BACKLOG_DONE.md間のID重複0件。
 詳細は下記「最終更新: 2026-09-25」ブロック。以下は2026-09-24時点の記載: 8件
 （2026-09-24⑨で`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`をP2-A廃止で完了。2026-09-24⑧で`[[REGISTRATION-VALIDATOR-TTM-REVENUE-KEY-STALE-1]]`〈⑦で登録〉を完了し、`[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]`を新規登録。⑥で`[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]`等3件を登録・完了）（機械カウント、`grep -c "^### \["`）。2026-09-24⑤で
 陳腐化候補6件のうち4件（`[[SYSTEM-HEALTH-HYPECORE-FRESHNESS-MASKED-1]]`・
@@ -88,6 +94,10 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    （`CHAT_RULES.md`事例20。DCF-1の3段階DCF適用外がALPHA-REDESIGN-1で
    失効しNVDA・APPのIVが株価の約10倍に、Runway「統一しない」判断が
    RDWの誤DANGERを放置、の2件）。
+7. **登録・設定の有効化は、読む関数の検証が先** — split_history.yaml等を登録すると
+   既存関数が未検証のケースで動き出す。先に実データで試算し、扱えなければ関数を
+   直してから登録する。他の消費者の既存結果が変わらないかも全件で確認する
+   （`CHAT_RULES.md`事例21。リバース分割の二重補正リスク、KLAC・NOWの差分検出）。
 
 ---
 
@@ -116,6 +126,21 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    （APGE・GTLB・LYFT・SPIR→true、LITE・ZETA→false）。APGEのexclusion_reasonも
    整合させた（⑬）
 6. **CHAT_RULES.md事例20追記**（⑬）: 過去の設計判断の前提が後続の変更で崩れる
+7. **カタログ①②の実データ検証**（⑭）: ①`_extract_values_merged()`のタグ混入は
+   仮説の型（2四半期分を1四半期として算出）が0件で、別原因（部分概念タグのSA優先、
+   D&A 413件・S&M、消費者なし）が実在。②KULR・SPIRのリバース分割固着が実在し、
+   旧`apply_split_adjustments()`はratio<1で二重補正すること、KULRのTANUKI希薄化率が
+   −27.82%（自社株買い扱い）と誤判定されていることを確認
+8. **`[[SPLIT-REALTIME-GAP-REVERSE-1]]`完了**（⑮、commit `45c3458eeb`・`5e2378aff3`）:
+   判定を方向非依存化した`common/sec_data/split_adjust.py`をEPS ANALYZERとTANUKIの
+   3年希薄化率で共通使用。KULR・SPIR・HON（1-for-2、洗い出しで追加）・BKNG
+   （25-for-1、登録漏れ）を登録。KULRの希薄化率 −27.82%→+44.35%/年（severe）・
+   funda 20→0（SCOREはPASSのまま）。KLAC −1.04%→−2.01%・NOW +0.60%→+0.94%は、
+   旧ロジックが推定比率（前年比そのもの）を使っていたことの是正（Koichiさん承認）
+9. **BACKLOG整理**（⑮）: カタログを解体（上記「現在の到達点」参照）。
+   rebaseでハッシュが変わったため完了記録のハッシュを確定値へ置換（`6c03da7dcd`）
+10. **CHAT_RULES.md**（⑯）: 事例21（登録・設定を有効にすると未検証のケースで既存の
+    関数が動き出す）を追加、事例17に逆方向の実例（仮説否定＝問題なしとしない）を1行追加
 
 **次回確認（外部トリガー待ち）**:
 - 9/27（日）のSEC_Data_Update後: FCX net_incomeの本番反映（2026-09-24からの
@@ -124,6 +149,8 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
   WARN-50がNVDA 1件・WARN-48が0件になっていること
 - 次回Stonks_Silo_Update後: 対象銘柄の入れ替え（APGE・GTLB・LYFT・SPIR追加、
   LITE・ZETA除外）とRDWのSAFE表示
+- 次回TANUKI_VALUATION_Update後: KULRの本番latest.jsonで3年希薄化率+44.35%/年
+  （dilution_severity=severe）・funda 0が反映されていること（⑮の修正、SCOREはPASSのまま）
 
 ---
 
