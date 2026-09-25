@@ -40,3 +40,15 @@ splits:
     - date: "2022-08-25"
       ratio: 3
       notes: "Tesla 3-for-1株式分割（2022年8月25日効力発生）。2021-06-30の1四半期が恒久固着していた既知ギャップあり（SPLIT-REALTIME-GAP-1参照、追加登録2026-07-20）"
+  KULR:
+    - date: "2025-06-23"
+      ratio: 0.125
+      notes: "KULR Technology Group 1-for-8株式併合（リバース分割、2025年6月23日効力発生）。SEC 8-K Item 3.03/5.03（accn 0001104659-25-063716）で確認済み。2017-12-31〜2024-03-31の四半期が分割前株数のまま恒久固着（2024-06-30以降は分割後の10-Qが比較期間として遡及修正済み）。ratio<1の判定はapply_split_adjustments()の方向非依存ロジックで行う（SPLIT-REALTIME-GAP-REVERSE-1、2026-09-25）"
+  SPIR:
+    - date: "2023-08-31"
+      ratio: 0.125
+      notes: "Spire Global 1-for-8株式併合（リバース分割、2023年8月31日効力発生）。SEC 8-K Item 3.03/5.03（accn 0000950170-23-045434）で確認済み。2021-09-30〜2022-06-30の四半期が分割前株数のまま恒久固着（2022-09-30以降は遡及修正済み）。2021-06-30以前はSPAC合併前の実体の株数の疑いがあり補正対象外（SPLIT-REALTIME-GAP-REVERSE-1、2026-09-25）"
+  HON:
+    - date: "2026-06-29"
+      ratio: 0.5
+      notes: "Honeywell 1-for-2株式併合（リバース分割、2026年6月29日効力発生、Aerospace分離と同時）。SEC 8-K Item 3.03/5.03（accn 0000773840-26-000084）・10-Q XBRL StockholdersEquityNoteStockSplitConversionRatio1=0.5で確認済み。yfinanceのsplits（0.9535）は分社化の株価調整と混ざった値のため不使用。2025-06-30は分割後の10-Qで遡及修正済み（SPLIT-REALTIME-GAP-REVERSE-1のSTEP 0で追加、2026-09-25）"

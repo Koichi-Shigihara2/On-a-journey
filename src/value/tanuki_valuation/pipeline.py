@@ -49,6 +49,7 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
 )
 from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④共有モジュール化
 from common.sec_data.reader import get_runway_cash  # [[BBAI-RDW-RUNWAY-VERIFICATION-1]] STONKS SILOとRunway cashを共通化
+from common.sec_data.split_adjust import load_split_history, adjust_share_points  # [[SPLIT-REALTIME-GAP-REVERSE-1]]
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
 # 次回決算日取得（yf.Ticker(ticker).calendar直接呼び出し）を
@@ -2861,7 +2862,26 @@ class TanukiValuationPipeline:
                         if e.get("val")
                     ]
 
-                    raw_vals = [e["val"] for e in annual_shares]
+                    # [[SPLIT-REALTIME-GAP-REVERSE-1]]（2026-09-25）: config/
+                    # split_history.yaml（正の情報源）に登録済みの分割は、下の
+                    # ヒューリスティック検知より前に、年次・四半期の株数へ適用する
+                    # （判定はEPS ANALYZERと共通のcommon/sec_data/split_adjust.py）。
+                    # Layer3の株数は、分割後の10-Qが比較期間として再掲しなかった
+                    # 期が分割前基準のまま残るため、年次（KULRはFY2023以前が分割前）
+                    # と、分割検知の確認用中央値に使う四半期（2024-03は分割前・
+                    # 2024-06以降は分割後）の両方で基準が混在していた。KULRは
+                    # 1-for-8の株式併合が「実際の株数減少」と扱われ、3年希薄化率が
+                    # −27.82%/年（自社株買い扱い）と算出されていた。
+                    # 下のヒューリスティック検知は未登録の分割の安全網として残す。
+                    _reg_splits = load_split_history().get(ticker, [])
+                    if _reg_splits:
+                        raw_vals = adjust_share_points(
+                            [(e["end"][:10], e["val"]) for e in annual_shares], _reg_splits)
+                        _q_adj_vals = adjust_share_points(
+                            [(e["end"][:10], e["val"]) for e in q_entries_all], _reg_splits)
+                        q_entries_all = [dict(e, val=v) for e, v in zip(q_entries_all, _q_adj_vals)]
+                    else:
+                        raw_vals = [e["val"] for e in annual_shares]
                     adj_vals = list(raw_vals)
                     split_factor = 1.0
                     for i in range(len(raw_vals) - 1, 0, -1):

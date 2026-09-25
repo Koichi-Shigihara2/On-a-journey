@@ -31,6 +31,7 @@ print("DEBUG: PROJECT_ROOT =", PROJECT_ROOT)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 from common.sec_data.tickers import get_eps_tickers, get_registrable_tickers
+from common.sec_data.split_adjust import unadjusted_indices  # noqa: E402
 
 # ============================================
 # Alpha Vantage API 差分検知機能
@@ -178,34 +179,33 @@ def apply_split_adjustments(ticker: str, quarterly_results: List[Dict], split_hi
     for split in splits:
         split_date = split['date']
         ratio = float(split['ratio'])
+        if ratio <= 0 or ratio == 1.0:
+            continue
 
-        # 分割後四半期の平均株数（閾値計算に使用）
-        post_split_shares = [
-            q.get('diluted_shares_used', 0)
-            for q in quarterly_results
-            if q.get('period_end', q.get('filing_date', '')) >= split_date
-            and q.get('diluted_shares_used', 0) > 0
-        ]
-        if not post_split_shares:
+        def _period_end(q):
+            return q.get('period_end', q.get('filing_date', ''))
+
+        # 分割日に最も近い分割後四半期を基準の起点にする
+        post_rows = sorted(
+            [q for q in quarterly_results
+             if _period_end(q) >= split_date and q.get('diluted_shares_used', 0) > 0],
+            key=_period_end,
+        )
+        if not post_rows:
             print(f"  [SPLIT] {ticker}: 分割後データなし, スキップ (split_date={split_date})")
             continue
 
-        post_split_avg = sum(post_split_shares) / len(post_split_shares)
-        # 1.5倍の余裕: 比較期間から取得済みで既に補正されている四半期を誤補正しない
-        pre_split_threshold = post_split_avg / ratio * 1.5
-
+        # 「未調整か」の判定は common/sec_data/split_adjust.py::unadjusted_indices()
+        # （方向非依存。TANUKI VALUATIONの希薄化率計算と共通、
+        # [[SPLIT-REALTIME-GAP-REVERSE-1]]、2026-09-25）
         print(f"  [SPLIT] {ticker}: date={split_date}, ratio={ratio}x, "
-              f"post_avg={post_split_avg:,.0f}, threshold<{pre_split_threshold:,.0f}")
-
+              f"分割後{len(post_rows)}四半期を基準に判定（境界=基準÷√ratio）")
+        points = [(_period_end(q), q.get('diluted_shares_used', 0) or 0) for q in quarterly_results]
+        targets = unadjusted_indices(points, split_date, ratio)
         adjusted_count = 0
-        for q in quarterly_results:
-            period_end = q.get('period_end', q.get('filing_date', ''))
-            if period_end >= split_date:
-                continue
+        for idx in targets:
+            q = quarterly_results[idx]
             shares = q.get('diluted_shares_used', 0)
-            if shares <= 0 or shares > pre_split_threshold:
-                continue  # すでに分割後株数に補正済みの四半期はスキップ
-
             q['diluted_shares_used'] = shares * ratio
             q['diluted_shares'] = q.get('diluted_shares', shares) * ratio
             q['gaap_eps'] = q.get('gaap_eps', 0) / ratio
