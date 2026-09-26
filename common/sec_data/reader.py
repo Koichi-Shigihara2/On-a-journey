@@ -40,6 +40,30 @@ def get_latest_quarterly(normalized: dict, field_name: str) -> Optional[dict]:
 # computed_runway_months）が各自でcashを組み立てていたのを本関数へ集約
 # =========================================
 
+def get_ttm_revenue(ticker: str, store: Optional[dict] = None) -> Optional[dict]:
+    """直近4四半期（TTM）の売上を{"val", "ttm_end"}で返す。4四半期がそろわない場合はNone。
+
+    2026-09-26（指示書㉑ STEP C）: 社内のPS比率（TANUKIのreport.txt・stock.htmlのPSR・
+    report_consistency_check.pyのWARN-10・Stonks SiloのPSR/EV-Sales、いずれも表示・診断用）は
+    最新年度の売上を分母にしており、急成長企業では実態より大幅に高くなっていた（ONDS: 年次
+    $50.7Mで87.7倍、TTM $174.1Mなら約25倍）。common/sec_data/ttm/のファイルは更新が止まっている
+    ため（TTM-DATA-DRIFT-BEHIND-PIPELINE-1）、Layer3ストアからその場で計算する。
+    """
+    from .layer3_builder import build_ticker_store
+    from .ttm_calculator import calc_ttm_series
+    try:
+        st = store if store is not None else build_ticker_store(ticker)
+        series = calc_ttm_series(ticker, st, n_periods=1)
+    except Exception:
+        return None
+    if not series:
+        return None
+    rev = (series[0].get("flow") or {}).get("revenue") or {}
+    if rev.get("val") is None or rev.get("quarters_used") != 4 or rev.get("missing"):
+        return None
+    return {"val": rev["val"], "ttm_end": series[0].get("ttm_end")}
+
+
 def get_runway_cash(net_cash_data: Optional[dict]) -> Optional[float]:
     """Runway算出用のcash（cash_and_equivalents + short_term_investments）を返す。
 

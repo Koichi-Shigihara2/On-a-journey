@@ -2430,7 +2430,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     ps_yf   = comp.get("ps")
     price   = comp.get("current_price") or 0
     shares  = comp.get("diluted_shares") or 0
-    rev     = comp.get("latest_revenue") or 0
+    rev     = comp.get("revenue_ttm") or comp.get("latest_revenue") or 0  # TTM優先（2026-09-26、指示書㉑ STEP C）
     sector  = (comp.get("sector") or "").lower()
     is_fin  = "financial" in sector or "bank" in sector
     if ps_yf is not None and price and shares and rev and not is_fin:

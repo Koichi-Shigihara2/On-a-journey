@@ -49,6 +49,7 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
 )
 from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④共有モジュール化
 from common.sec_data.reader import get_runway_cash  # [[BBAI-RDW-RUNWAY-VERIFICATION-1]] STONKS SILOとRunway cashを共通化
+from common.sec_data.reader import get_ttm_revenue  # 指示書㉑ STEP C: PS比率（表示用）の分母をTTM売上に
 from common.sec_data.split_adjust import load_split_history, adjust_share_points  # [[SPLIT-REALTIME-GAP-REVERSE-1]]
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
@@ -1055,6 +1056,14 @@ class TanukiValuationPipeline:
             self._calc_required_growth(valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_live_liq)
             if _rf_live_liq is not None else None
         )
+
+        # 2026-09-26（指示書㉑ STEP C）: PS比率の表示・診断用にTTM売上を記録する
+        # （判定・スコアには使わない。取れない場合はNoneで、表示側は年次売上に戻す）。
+        # recommended_gの再計算でvaluationが差し替わるため、latest.json・report.txtの直前で入れる
+        _ttm_rev = get_ttm_revenue(ticker, self._get_layer3_store(ticker))
+        _comps_ttm = valuation.setdefault("components", {})
+        _comps_ttm["revenue_ttm"] = _ttm_rev["val"] if _ttm_rev else None
+        _comps_ttm["revenue_ttm_end"] = _ttm_rev["ttm_end"] if _ttm_rev else None
 
         latest_data = {k: v for k, v in valuation.items() if k != "calculation_steps"}
         latest_data["tanuki_score"]  = score_data.get("score")
@@ -2557,7 +2566,7 @@ class TanukiValuationPipeline:
                 L.append("  PS_Signal: 適正水準")
             # A-6: yfinance PS と自社計算値の乖離検出（ステール値の可能性）
             _ps_shares = comps.get("diluted_shares") or comps.get("implied_shares") or 0
-            _ps_rev    = comps.get("latest_revenue") or 0
+            _ps_rev    = comps.get("revenue_ttm") or comps.get("latest_revenue") or 0  # TTM優先（2026-09-26）
             _is_fin    = "financial" in (sector or "").lower() or "bank" in (sector or "").lower()
             if current_price and _ps_shares and _ps_rev and not _is_fin:
                 _ps_calc = (current_price * _ps_shares) / _ps_rev

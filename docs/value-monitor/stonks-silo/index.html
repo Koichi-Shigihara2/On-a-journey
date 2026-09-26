@@ -1024,7 +1024,7 @@ function buildDetail(ticker, d) {
     const parts = [];
     if (v.market_cap) parts.push('MC ' + fmtB(v.market_cap));
     if (v.current_price != null) parts.push('$' + v.current_price.toFixed(2));
-    if (v.psr != null) parts.push('PSR ' + v.psr + 'x');
+    if (v.psr != null) parts.push('PSR ' + v.psr + 'x' + (v.sales_basis ? '（売上: ' + v.sales_basis + '）' : ''));  // 分母の基準（2026-09-26）
     if (v.ev_sales != null) parts.push('EV/S ' + v.ev_sales + 'x');
     if (v.net_cash != null) parts.push('NC ' + fmtB(v.net_cash));
     return parts.join('　');

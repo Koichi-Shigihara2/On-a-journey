@@ -232,3 +232,26 @@ class TestDailyPickPackagePrice:
         pkg = dp.build_data_package(self._stock(), {})
         assert "current_price" not in pkg["tanuki"]
         assert '"current_price": null' not in json.dumps(pkg)
+
+
+class TestGetTtmRevenue:
+    """指示書㉑ STEP C（2026-09-26）: 社内PS比率（表示用）の分母に使うTTM売上"""
+
+    def _patch(self, monkeypatch, series):
+        import common.sec_data.ttm_calculator as tc
+        monkeypatch.setattr(tc, "calc_ttm_series", lambda t, store, n_periods=1: series)
+
+    def test_four_quarters_returns_value_and_end(self, monkeypatch):
+        from common.sec_data.reader import get_ttm_revenue
+        self._patch(monkeypatch, [{"ttm_end": "2026-06-30", "flow": {"revenue": {"val": 174104000, "quarters_used": 4, "missing": 0}}}])
+        assert get_ttm_revenue("ONDS", store={}) == {"val": 174104000, "ttm_end": "2026-06-30"}
+
+    def test_incomplete_quarters_returns_none(self, monkeypatch):
+        from common.sec_data.reader import get_ttm_revenue
+        self._patch(monkeypatch, [{"ttm_end": "2026-06-30", "flow": {"revenue": {"val": 90000000, "quarters_used": 3, "missing": 1}}}])
+        assert get_ttm_revenue("X", store={}) is None
+
+    def test_no_series_returns_none(self, monkeypatch):
+        from common.sec_data.reader import get_ttm_revenue
+        self._patch(monkeypatch, [])
+        assert get_ttm_revenue("X", store={}) is None

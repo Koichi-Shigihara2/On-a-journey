@@ -996,7 +996,10 @@ function render(d) {
   // フェアPER / PEG / PSR
   const perCurrent   = d.components?.per || null;
   const perAdjusted  = d.components?.per_adjusted || null;
-  const latestRevenue = d.components?.latest_revenue || 0;
+  // PSRの分母は直近4四半期（TTM）の売上。取れない場合のみ最新年度の売上（2026-09-26、指示書㉑ STEP C）
+  const ttmRevenue = d.components?.revenue_ttm || 0;
+  const latestRevenue = ttmRevenue || d.components?.latest_revenue || 0;
+  const psrBasis = ttmRevenue ? `TTM ${d.components?.revenue_ttm_end || ''}` : '最新年度';
   const dilutedSharesVal = d.components?.diluted_shares || 0;
   // フェアPER: 調整後EPSが取れる場合は調整後PERベース、なければGAAP PERベース
   const perForCalc   = perAdjusted || perCurrent;
@@ -1227,6 +1230,7 @@ function render(d) {
           </div>
           <div style="font-size:12px;color:var(--mut);margin-top:6px">
             時価総額: <span style="font-family:var(--mono);color:var(--txt)">${fmtB(marketCap)}</span>
+            <span style="font-size:11px">（売上: ${psrBasis}）</span>
           </div>
           <div style="font-size:11px;color:var(--mut);margin-top:4px;line-height:1.5">
             テック系目安: 5〜15倍

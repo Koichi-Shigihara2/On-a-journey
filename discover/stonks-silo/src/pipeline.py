@@ -26,7 +26,7 @@ from analyzer import StonksAnalyzer
 from valuation_fetcher import fetch_valuation
 from financial_trend_calculator import compute_vectors, load_all_normalized
 from common.sec_data import tickers
-from common.sec_data.reader import SECReader
+from common.sec_data.reader import SECReader, get_ttm_revenue
 
 
 _OUTPUT_DIR = _REPO_ROOT / "docs" / "value-monitor" / "stonks-silo" / "data"
@@ -137,8 +137,13 @@ def run(tickers: list[str] | None = None) -> dict:
                     latest_rev = r
                     break
 
-            psr = val["market_cap"] / latest_rev if val["market_cap"] and latest_rev else None
-            ev_sales = val["enterprise_value"] / latest_rev if val["enterprise_value"] and latest_rev else None
+            # 2026-09-26（指示書㉑ STEP C）: PSR・EV/Salesの分母は直近4四半期（TTM）の売上を優先し、
+            # 取れない場合のみ最新年度の売上を使う（いずれも表示用。verdict・scoreには使わない）
+            _ttm_rev = get_ttm_revenue(ticker)
+            sales_denom = _ttm_rev["val"] if _ttm_rev else latest_rev
+            sales_basis = f"TTM {_ttm_rev['ttm_end']}" if _ttm_rev else "最新年度"
+            psr = val["market_cap"] / sales_denom if val["market_cap"] and sales_denom else None
+            ev_sales = val["enterprise_value"] / sales_denom if val["enterprise_value"] and sales_denom else None
 
             total_debt = val["total_debt"] or 0
             net_cash = net_cash_data["net_cash"] if net_cash_data.get("available") else None
@@ -150,6 +155,7 @@ def run(tickers: list[str] | None = None) -> dict:
                 "total_debt":       val["total_debt"],
                 "psr":              round(psr, 1) if psr else None,
                 "ev_sales":         round(ev_sales, 1) if ev_sales else None,
+                "sales_basis":      sales_basis,
                 "net_cash":         net_cash,
                 "fetched_at":       val["fetched_at"],
                 "error":            val["error"],
