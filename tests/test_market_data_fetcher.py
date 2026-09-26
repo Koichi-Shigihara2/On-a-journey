@@ -770,7 +770,9 @@ class TestBackfillDailyPrices:
 
     def test_validation_warnings_are_embedded_per_record(self, tmp_path, monkeypatch):
         base = str(tmp_path)
-        bad_bar = self._make_bar("2026-08-10", close=-1.0)  # close<=0で検証失敗させる
+        # 出来高0で検証失敗させる（終値<=0の足は2026-09-26以降保存しないため、
+        # 終値は有効なまま別の項目で警告を出す。MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
+        bad_bar = dict(self._make_bar("2026-08-10"), volume=0)
         self._patch_history(monkeypatch, {"AAPL": [bad_bar]})
 
         fetcher.backfill_daily_prices(["AAPL"], period="1y", base_dir=base)

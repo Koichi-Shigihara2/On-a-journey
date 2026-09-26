@@ -119,16 +119,19 @@ def select_ticker(stocks, history, today_str):
     eligible = [s for s in stocks if s["category"] in ELIGIBLE_CATEGORIES]
     if not eligible:
         print("[daily_pick] 警告: BUY/WATCH/GROWTH_PREMIUM/HOLDが0件のため全銘柄を候補にフォールバック")
-        eligible = stocks
+        # 株価欠損による判定不能（UNDETERMINED）は候補にしない（2026-09-26）
+        eligible = [s for s in stocks if s["category"] != "UNDETERMINED"]
 
     # 優先①: 前日の全分類と比較
     if history:
-        yesterday = history[0]
+        # 価格欠損で無効と印を付けた日（invalid、2026-09-26）は比較の基準にしない
+        yesterday = next((h for h in history if not h.get("invalid")), {})
         prev_cats = yesterday.get("all_categories", {})
         if prev_cats:
             changed = [
                 s for s in eligible
-                if prev_cats.get(s["ticker"]) and prev_cats[s["ticker"]] != s["category"]
+                if prev_cats.get(s["ticker"]) and prev_cats[s["ticker"]] != "UNDETERMINED"
+                and prev_cats[s["ticker"]] != s["category"]
             ]
             if changed:
                 # カテゴリ重要度（BUY → WATCH → GROWTH_PREMIUM → HOLD の順で優先）

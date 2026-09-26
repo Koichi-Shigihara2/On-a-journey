@@ -178,7 +178,7 @@ class KoichiValuationCalculator:
         # [[GROWTH-FCFSERIES-ACCESSOR-ADOPT-1]]: fcf_list_rawの順序検証用日付
         # （未取得時はNone。determine_growth_rate()側で検証可否を判定する）
         fcf_dates_raw  = financials.get("fcf_dates_raw")
-        current_price  = financials.get("current_price", 0.0)
+        current_price  = financials.get("current_price")  # None=有効な終値なし（upside等は計算不能）
         ticker         = financials.get("eps_data", {}).get("ticker", "Unknown")
         rpo            = financials.get("rpo", 0.0)
         beta           = financials.get("beta")
@@ -787,10 +787,10 @@ class KoichiValuationCalculator:
             # メイン: Rmβなし（10%）→ intrinsic_value_per_share
             # 参考①: β込みWACC
             "intrinsic_value_beta": round(float(intrinsic_value_per_share_beta), 2),
-            "upside_percent_beta": round(calculate_upside(intrinsic_value_per_share_beta, current_price), 1),
+            "upside_percent_beta": _round_or_none(calculate_upside(intrinsic_value_per_share_beta, current_price), 1),
             # 参考②: Rf（リスクゼロ理論上限）
             "intrinsic_value_rf": round(float(_ivps_rf), 2),
-            "upside_percent_rf": round(_upside_rf, 1),
+            "upside_percent_rf": _round_or_none(_upside_rf, 1),
             "v0": float(v0),
             # [[V0-V0RM-CONFUSION-RISK-1]]対応（2026-08-30）: v0はβ込み
             # CAPM WACCベースのDCF結果（intrinsic_value_betaの計算根拠、
@@ -807,7 +807,7 @@ class KoichiValuationCalculator:
             "alpha_was_capped": alpha_result.was_capped,
             "future_values": future_values,
             "return_metrics": _return_metrics,
-            "upside_percent": round(upside_percent, 1),
+            "upside_percent": _round_or_none(upside_percent, 1),
             "calculation_date": datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%dT%H:%M:%S+09:00"),
             "formula": f"Koichi式 v{self.VERSION}（動的WACC + {dcf_type} DCF + FCFベース自動判定 + 成長オプション）",
             "dcf_type": dcf_type,
@@ -924,7 +924,7 @@ class KoichiValuationCalculator:
                 "per_is_forward": financials.get("per_is_forward", False),
                 "per_adjusted": _calc_adjusted_per(
                     ticker=ticker,
-                    current_price=financials.get("current_price", 0),
+                    current_price=financials.get("current_price"),
                     eps_data_dir=self.eps_data_dir,
                 ),
                 "peg": financials.get("peg"),
@@ -951,6 +951,11 @@ class KoichiValuationCalculator:
         return result
 
 
+def _round_or_none(v, n):
+    """Noneはそのまま返す（株価欠損時のupside等、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）。"""
+    return None if v is None else round(v, n)
+
+
 def _calc_adjusted_per(
     ticker: str,
     current_price: float,
@@ -966,7 +971,7 @@ def _calc_adjusted_per(
         調整後PER（float）またはNone（データなし・EPS<=0・4Q未満の場合）
     """
     import os, json as _json
-    if not eps_data_dir or current_price <= 0:
+    if not eps_data_dir or current_price is None or current_price <= 0:
         return None
     q_file = os.path.join(eps_data_dir, ticker.upper(), "quarterly.json")
     if not os.path.exists(q_file):

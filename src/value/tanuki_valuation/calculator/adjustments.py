@@ -729,11 +729,15 @@ def calculate_per_share_value(
 
 def calculate_upside(
     intrinsic_value_per_share: float,
-    current_price: float
-) -> float:
-    """乖離率計算"""
-    if current_price <= 0:
-        return 0.0
+    current_price: Optional[float]
+) -> Optional[float]:
+    """乖離率計算。株価が無い（None・0以下）場合はNone（計算不能）を返す。
+
+    [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 以前は0.0を返して
+    いたため、株価欠損が「乖離0%」として分類・timingに流れていた。
+    """
+    if current_price is None or current_price <= 0:
+        return None
     return ((intrinsic_value_per_share / current_price) - 1) * 100
 
 

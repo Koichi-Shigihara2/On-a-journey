@@ -663,7 +663,10 @@ class TanukiDataFetcher:
         # 高くなる）。
         yf_implied = 0
         yf_outstanding = 0
-        current_price = 0.0
+        # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 価格が取れない
+        # 場合に0.0を入れない。0.0のまま計算を続けるとupside=0・timing・分類が
+        # 中立値で埋まり、2026-09-22に99銘柄・09-26に78銘柄の分類が誤って変わった。
+        current_price = None
         beta = None
         sector = "default"
         industry = ""       # v8.1: 保険判定精度向上のためindustryも取得
@@ -689,7 +692,7 @@ class TanukiDataFetcher:
             current_price = float(latest_price["close"])
             print(f"   [{ticker}] market_data price (daily/ {latest_price.get('date')}): ${current_price:.2f}")
         else:
-            print(f"   [{ticker}] market_data daily/未取得（current_price=0.0で継続）")
+            print(f"   [{ticker}] market_data daily/に有効な終値が無い（current_price=None、upside・timing・分類は判定不能）")
 
         attrs = _md_get_attributes(ticker) if HAS_MARKET_DATA else None
         if attrs is not None:
@@ -758,7 +761,7 @@ class TanukiDataFetcher:
                 # get_ma_deviation()の計算結果を形だけ元に戻しているだけ）。
                 if HAS_MARKET_DATA:
                     ma200_dev = _md_get_ma_deviation(ticker, window=200)
-                    if ma200_dev is not None and current_price > 0:
+                    if ma200_dev is not None and current_price is not None and current_price > 0:
                         ma200 = current_price / (1 + ma200_dev / 100.0)
                         print(f"   [{ticker}] market_data 200MA(dev={ma200_dev:+.1f}%より逆算): ${ma200:.2f}")
 
@@ -858,7 +861,7 @@ class TanukiDataFetcher:
         print(f"       FCF 2yr Avg: ${fcf_2yr_avg:,.0f}")
         print(f"       Diluted Shares: {final_shares:,.0f} ({shares_source})")
         print(f"       ROE avg: {f'{roe_avg:.1%}' if roe_avg is not None else 'N/A (負債超過)'}")
-        print(f"       Current Price: ${current_price:.2f}")
+        print(f"       Current Price: " + (f"${current_price:.2f}" if current_price is not None else "N/A（有効な終値なし）"))
         print(f"       Revenue: ${revenue:,.0f}")
         print(f"       Beta: {final_beta:.2f} ({beta_source})")
         if rpo > 0:

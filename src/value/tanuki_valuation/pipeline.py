@@ -398,13 +398,13 @@ class TanukiValuationPipeline:
                 success_count += 1
                 
                 per_share = valuation.get("intrinsic_value_per_share", 0)
-                current = financials.get("current_price", 0)
-                upside = valuation.get("upside_percent", 0)
+                current = financials.get("current_price")
+                upside = valuation.get("upside_percent")
                 
                 print(f"✅ {ticker} 完了:")
                 print(f"   理論株価: ${per_share:,.2f}")
-                print(f"   現在株価: ${current:,.2f}")
-                print(f"   乖離率: {upside:+.1f}%")
+                print(f"   現在株価: " + (f"${current:,.2f}" if current is not None else "N/A（有効な終値なし）"))
+                print(f"   乖離率: " + (f"{upside:+.1f}%" if upside is not None else "判定不能"))
 
             except Exception as e:
                 print(f"❌ {ticker} 例外発生: {e}")
@@ -726,7 +726,12 @@ class TanukiValuationPipeline:
                 funda = max(0, funda - 15)
 
         # classify (JS移植。BUY判定はJS同様 upside>20% かつ timing>=50 をゲートとする。ARCH-SCORE-SYNC-1）
-        timing = self._calc_timing(upside, self._load_live_fg(), stage)
+        # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 株価（有効な終値）が
+        # 無い場合はupside・timing・分類を計算不能とし、中立値で埋めない。
+        # 分類は前回値を維持せずUNDETERMINED（判定不能）と明示する。
+        _price_cls = (valuation.get("components") or {}).get("current_price")
+        price_missing = _price_cls is None or _price_cls <= 0
+        timing = None if price_missing else self._calc_timing(upside, self._load_live_fg(), stage)
 
         fcf_est = valuation.get("fcf_estimation", {}).get("estimated_fcf")
         sell_funda = (
@@ -743,7 +748,9 @@ class TanukiValuationPipeline:
             and funda < 50
         )
         sell_reason = None
-        if funda < 25:
+        if price_missing:
+            score = Classification.UNDETERMINED
+        elif funda < 25:
             score = Classification.PASS
         elif sell_funda or sell_tech:
             score = Classification.SELL
@@ -778,7 +785,11 @@ class TanukiValuationPipeline:
         else:
             score = Classification.HOLD
 
-        comment = self._generate_score_comment(score, upside, rev_yoy, rule40_yoy_netmargin, fcf_base, funda, fcf_latest)
+        comment = (
+            "株価（有効な終値）が取れないため判定不能"
+            if price_missing else
+            self._generate_score_comment(score, upside, rev_yoy, rule40_yoy_netmargin, fcf_base, funda, fcf_latest)
+        )
 
         # FCF-OUTLIER-PREROUNDING-LOSS-1: Policy A/B丸め処理は score/comment を
         # 単純に上書きし、丸め前の分類（元々BUY/TRIM/HOLD等のどれだったか）を
@@ -802,7 +813,7 @@ class TanukiValuationPipeline:
         # 無関係）。ガード条件を削除し、floor_applied>0のみで判定する。
         _floor_applied = valuation.get("components", {}).get("fcf_floor_applied", 0) or 0
         _policy_a_fires = _floor_applied > 0
-        if _policy_a_fires and score not in (Classification.SELL, Classification.PASS):
+        if _policy_a_fires and score not in (Classification.SELL, Classification.PASS, Classification.UNDETERMINED):
             score = Classification.WATCH
             comment = "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH"
             sell_reason = None
@@ -811,7 +822,7 @@ class TanukiValuationPipeline:
         # DCF_Reliability=LOW 丸め（Policy B: fcf_outlier未解消向け、DCF-RELIABILITY-1）
         # Policy A発火済みの場合はPolicy Aのメッセージ（実績FCF赤字）を優先し、
         # Policy Bで上書きしない（両者ともWATCH自体は同じ）。
-        if (not _policy_a_fires and score not in (Classification.SELL, Classification.PASS)
+        if (not _policy_a_fires and score not in (Classification.SELL, Classification.PASS, Classification.UNDETERMINED)
                 and self._calc_dcf_reliability_policy_b(valuation) == "LOW"):
             score = Classification.WATCH
             comment = "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH"

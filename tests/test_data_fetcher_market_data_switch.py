@@ -68,19 +68,20 @@ class TestPriceFromMarketData:
         result = fetcher.get_financials("XYZ")
         assert result["current_price"] == 250.5
 
-    def test_missing_daily_data_falls_back_to_zero(self, fetcher, monkeypatch):
-        """daily/未取得（reader.get_latest_price()がNone）の場合、
-        current_price=0.0の中立デフォルトに倒れる（例外にならない）"""
+    def test_missing_daily_data_gives_none_not_zero(self, fetcher, monkeypatch):
+        """daily/に有効な終値が無い（reader.get_latest_price()がNone）場合、
+        current_price=Noneのまま返す（例外にならない）。0.0を入れるとupside=0・
+        分類が中立値で埋まるため（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1、2026-09-26）"""
         _patch_market_data(monkeypatch, latest_price=None, attrs=_FULL_ATTRS)
         result = fetcher.get_financials("XYZ")
-        assert result["current_price"] == 0.0
+        assert result["current_price"] is None
 
     def test_market_data_unavailable_entirely(self, fetcher, monkeypatch):
         """HAS_MARKET_DATA=False（import失敗相当）でも例外を出さず
         中立デフォルトで継続する"""
         monkeypatch.setattr(df, "HAS_MARKET_DATA", False)
         result = fetcher.get_financials("XYZ")
-        assert result["current_price"] == 0.0
+        assert result["current_price"] is None  # 2026-09-26: 0.0ではなくNone
         assert result["beta"] is not None  # _determine_beta()のフォールバックで何らかの値になる
 
 

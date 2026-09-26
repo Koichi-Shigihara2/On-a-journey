@@ -1594,3 +1594,24 @@ class TestCheck55AnnualDaPartialConcept:
 
     def test_missing_files_silent(self, tmp_path):
         assert rcc._check_annual_da_partial_concept("NONE", sec_dir=str(tmp_path)) == []
+
+
+class TestCheck56CurrentPriceMissing:
+    """NG-56: tanuki銘柄のlatest.jsonでcurrent_priceが0/Noneならゲートで止める
+    （MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1、2026-09-26）"""
+
+    def test_zero_price_is_ng(self):
+        ng = rcc._check_current_price_missing("ADBE", {"components": {"current_price": 0.0},
+                                                        "tanuki_score": "HOLD", "upside_percent": 0.0})
+        assert len(ng) == 1 and "[NG-56" in ng[0]
+
+    def test_none_price_is_ng(self):
+        ng = rcc._check_current_price_missing("ADBE", {"components": {"current_price": None},
+                                                        "tanuki_score": "UNDETERMINED"})
+        assert len(ng) == 1
+
+    def test_valid_price_passes(self):
+        assert rcc._check_current_price_missing("ADBE", {"components": {"current_price": 238.93}}) == []
+
+    def test_missing_latest_is_skipped(self):
+        assert rcc._check_current_price_missing("ADBE", {}) == []

@@ -71,13 +71,24 @@ def _load_daily_payload(symbol: str, base_dir: str) -> Dict[str, Any]:
 
 # ── 日次価格層 ────────────────────────────────────────────
 
+def _has_valid_close(record: Dict[str, Any]) -> bool:
+    close = record.get("close")
+    return isinstance(close, (int, float)) and close == close and close > 0
+
+
 def get_latest_price(symbol: str, base_dir: Optional[str] = None) -> Optional[Dict[str, Any]]:
-    """daily/{SYMBOL}.jsonの最新1件（date/open/high/low/close/volume/
-    _validation_warnings）を返す。データが存在しない場合はNoneを返す。
+    """daily/{SYMBOL}.jsonのうち、有効な終値を持つ最新の1件（date/open/high/low/
+    close/volume/_validation_warnings）を返す。`date`がその終値の日付。
+    有効な終値を持つ行が無い場合はNoneを返す。
+
+    [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 以前は終値の無い
+    行でも最新であれば返していたため、TANUKI VALUATIONがcurrent_price=0.0で
+    計算を続け（2026-09-22に99銘柄・09-26に78銘柄）、Stonks Siloもcurrent_price=
+    Noneになっていた。消費者は返り値の`date`で基準日を確認できる。
     """
     symbol = symbol.upper()
     base = _resolve_base_dir(base_dir)
-    records = _load_daily_payload(symbol, base).get("records", [])
+    records = [r for r in _load_daily_payload(symbol, base).get("records", []) if _has_valid_close(r)]
     if not records:
         return None
     latest = dict(sorted(records, key=lambda r: r.get("date", ""))[-1])
@@ -201,8 +212,8 @@ def get_price_on_or_after(symbol: str, date: Any, base_dir: Optional[str] = None
     records = _load_daily_payload(symbol, base).get("records", [])
     candidates = [
         r for r in records
-        if r.get("date") and target_str <= r["date"] <= window_end_str
-    ]
+        if r.get("date") and target_str <= r["date"] <= window_end_str and _has_valid_close(r)
+    ]  # 終値の無い行は飛ばして次の取引日を採る（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
     if not candidates:
         return None
 

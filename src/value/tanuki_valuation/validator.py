@@ -101,7 +101,7 @@ def build_validation_prompt(ticker: str, data: Dict[str, Any]) -> str:
     rpo_pv = c.get("rpo_pv", 0)
     growth_option_pv = c.get("growth_option_pv", 0)
     diluted_shares = c.get("diluted_shares", 0)
-    current_price = c.get("current_price", 0)
+    current_price = c.get("current_price") or 0  # None=有効な終値なし
     fcf_base_used = c.get("fcf_base_used", c.get("fcf_5yr_avg", 0))
     fcf_base_method = c.get("fcf_base_method", "avg_5yr")
     roe_avg = c.get("roe_10yr_avg") or c.get("roe_used") or 0.0
@@ -300,7 +300,7 @@ def run_basic_checks(ticker: str, data: Dict[str, Any]) -> Dict[str, Any]:
     rpo_pv = c.get("rpo_pv", 0)
     growth_option_pv = c.get("growth_option_pv", 0)
     diluted_shares = c.get("diluted_shares", 0)
-    current_price = c.get("current_price", 0)
+    current_price = c.get("current_price") or 0  # None=有効な終値なし
 
     checks = {}
 

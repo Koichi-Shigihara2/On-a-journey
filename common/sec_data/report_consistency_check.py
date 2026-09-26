@@ -8,6 +8,9 @@ report_consistency_check.py
   NG  2. DCF_Reliability欠落   FCF_Base行 or FCF_Conversion_Rate行あり & DCF_Reliability行なし
                               （Policy A: FCF_Base直接方式 / Policy B: FCF_Conversion_Rate方式、DCF-RELIABILITY-1）
   NG  3. LOW丸め未発動         DCF_Reliability=LOW & Classification が WATCH/SELL/PASS 以外
+                              （UNDETERMINED〈株価欠損で判定不能〉は対象外。NG-56で検知）
+  NG 56. 株価欠損              tanuki=true銘柄のlatest.jsonでcomponents.current_priceが0またはNone
+                              （2026-09-26、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
   NG  4. 割引率1段             Discount_Rate_Primary 行なし（旧WACC単独形式）
   NG  7. RPO条件違反           RPO_PV>0 & whitelist外 & RPO/Revenue<0.3
   NG  8. Matrix④高FCFラベル赤字 Matrix④ Label="高FCF" & 最新FCF実績マイナス
@@ -1464,6 +1467,28 @@ def _check_annual_da_partial_concept(ticker: str, sec_dir: str = SEC_DATA_DIR) -
     ]
 
 
+def _check_current_price_missing(ticker: str, latest: dict) -> list[str]:
+    """CHECK-56: TANUKI VALUATIONのlatest.jsonでcomponents.current_priceが0または
+    Noneの銘柄をNGにする（2026-09-26新設、[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]）。
+
+    背景: daily/の終値の無い行をそのまま最新価格として読み、current_price=0.0で
+    計算を続けた結果、2026-09-22に99銘柄・09-26に78銘柄のupside・timing・分類が
+    誤って変わり公開された。現在は価格が取れない場合current_price=None・
+    分類UNDETERMINED（判定不能）になるが、いずれにせよその日の結果は公開すべき
+    でないため、TANUKI_VALUATION_Update.ymlのゲート（--fail-on-ng、commit前）で
+    止める。latest.jsonが無い銘柄は対象外（他のチェックで扱う）。
+    """
+    if not latest:
+        return []
+    price = (latest.get("components") or {}).get("current_price")
+    if price is None or not isinstance(price, (int, float)) or price <= 0:
+        return [
+            f"  [NG-56 株価欠損] components.current_price={price!r}（分類={latest.get('tanuki_score')}、"
+            f"upside={latest.get('upside_percent')}）→ daily/に有効な終値が無い。この結果は公開しない"
+        ]
+    return []
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -2258,6 +2283,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
         return ng, warn
 
     latest  = _read_latest(ticker)
+    ng.extend(_check_current_price_missing(ticker, latest))
     warn.extend(_check_moat_score_neutral_fallback(ticker, latest))
     warn.extend(_check_moat_score_validity(ticker, latest))
     warn.extend(_check_dupont_null_validity(ticker, latest))
@@ -2297,7 +2323,8 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     # CHECK-3: LOW丸め未発動
     rel = parsed["dcf_reliability"]
     cls = parsed["classification"]
-    if rel == "LOW" and cls not in ("WATCH", "SELL", "PASS", None):
+    # UNDETERMINED（株価欠損で判定不能）は丸めの対象外。NG-56で別途検知する
+    if rel == "LOW" and cls not in ("WATCH", "SELL", "PASS", "UNDETERMINED", None):
         ng.append(
             f"  [NG-3 LOW丸め未発動] DCF_Reliability=LOW & Classification={cls}"
         )

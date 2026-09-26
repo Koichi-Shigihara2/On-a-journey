@@ -407,4 +407,5 @@ class TestClassification:
         全て定義されていること"""
         assert {m.value for m in Classification} == {
             "BUY", "WATCH", "HOLD", "TRIM", "GROWTH_PREMIUM", "SELL", "PASS",
+            "UNDETERMINED",  # 株価欠損時の判定不能（2026-09-26）
         }

@@ -388,6 +388,7 @@ class TestRunwayFallback:
 
         # _load_extra_data が計算済みの computed_runway_months を valuation に含める想定
         valuation = {
+            "components": {"current_price": 100.0},  # 株価あり（UNDETERMINEDにしない）
             "upside_percent": 50.0,
             "fcf_base": {"base_fcf": 100.0},
             "computed_runway_months": 3.2,  # 3.2ヶ月 < 12 → ペナルティ対象
@@ -411,6 +412,7 @@ class TestRunwayFallback:
         # _load_extra_data は FCF < 0 条件で computed_runway_months を計算するため
         # ここでは計算済みの値を valuation に直接セットして _compute_tanuki_score を検証する
         valuation = {
+            "components": {"current_price": 100.0},  # 株価あり（UNDETERMINEDにしない）
             "upside_percent": 50.0,
             "fcf_base": {"base_fcf": 100.0},
             "fcf_history": [{"year": 2025, "fcf": -92_600_000, "fcf_margin": -30.0}],
@@ -1565,7 +1567,7 @@ class TestDcfReliabilityLowRounding:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,   # HOLDになる条件
-            "components": {
+            "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 1_000_000_000,  # LOW判定トリガー
                 "diluted_shares": None,
             },
@@ -1591,7 +1593,7 @@ class TestDcfReliabilityLowRounding:
         }), encoding="utf-8")
         valuation = {
             "upside_percent": 30.0,
-            "components": {
+            "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 1_000_000_000,  # LOW判定トリガー
                 "diluted_shares": None,
             },
@@ -1662,7 +1664,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,  # HOLDになる条件
-            "components": {"diluted_shares": None},
+            "components": {"current_price": 100.0, "diluted_shares": None},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": True, "divergence_warning": ""},
@@ -1681,7 +1683,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,  # HOLDになる条件（upside<=0 かつ <-30でないため）
-            "components": {"diluted_shares": None},
+            "components": {"current_price": 100.0, "diluted_shares": None},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": True, "divergence_warning": ""},
@@ -1704,7 +1706,7 @@ class TestDcfReliabilityPolicyB:
         }), encoding="utf-8")
         valuation = {
             "upside_percent": 30.0,
-            "components": {"diluted_shares": None},
+            "components": {"current_price": 100.0, "diluted_shares": None},
             "fcf_base": {"base_fcf": 1_000_000},
             "financial_health": {},
             "fcf_estimation": {
@@ -1726,7 +1728,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"diluted_shares": None},  # fcf_floor_applied未設定 → Policy A発火なし
+            "components": {"current_price": 100.0, "diluted_shares": None},  # fcf_floor_applied未設定 → Policy A発火なし
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": False},
@@ -1746,7 +1748,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"diluted_shares": None, "fcf_floor_applied": 1},
+            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": False, "divergence_warning": ""},
@@ -1774,7 +1776,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"diluted_shares": None, "fcf_floor_applied": 1},
+            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": True, "fallback_reason": "CapEx申告タグなし"},
@@ -2011,7 +2013,7 @@ class TestNewTickerIntegration:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {
+            "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 900_000_000,  # LOW判定トリガー
                 "diluted_shares": None,
             },
@@ -3991,3 +3993,57 @@ class TestDcfReliabilityLabelUnified:
         report = pipe._generate_report("NEWCO2", val, score_data, _minimal_extra())
         assert "DCF_Reliability: NORMAL" in report
         assert "DCF_Reliability: HIGH" not in report
+
+
+# ─────────────────────────────────────────────
+# MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1（2026-09-26）: 株価欠損時の判定不能
+# 旧挙動: current_price=0.0 → upside=0.0 → timing・分類が中立値で埋まり、
+# 2026-09-26にADBE/APP/CELHがBUY→HOLD、TSLAがTRIM→HOLDへ誤って変化した。
+# ─────────────────────────────────────────────
+
+class TestPriceMissingIsUndetermined:
+    def _valuation(self, price):
+        return {
+            "upside_percent": None if price is None else 150.0,
+            "components": {"current_price": price, "diluted_shares": None},
+            "fcf_base": {"base_fcf": 500_000_000},
+            "financial_health": {},
+            "fcf_estimation": {},
+        }
+
+    def test_none_price_gives_undetermined_and_no_timing(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        _write_stonks_json(tmp_path, {})
+        result = pipe._compute_tanuki_score("ADBE", self._valuation(None))
+        assert result["score"] == "UNDETERMINED"
+        assert result["timing"] is None
+        assert "判定不能" in result["score_comment"]
+        assert result["rounded_by_policy"] is None
+
+    def test_zero_price_is_also_undetermined(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        _write_stonks_json(tmp_path, {})
+        v = self._valuation(0.0)
+        v["upside_percent"] = 0.0
+        assert pipe._compute_tanuki_score("ADBE", v)["score"] == "UNDETERMINED"
+
+    def test_undetermined_is_not_rounded_to_watch_by_policy_a(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        _write_stonks_json(tmp_path, {})
+        v = self._valuation(None)
+        v["components"]["fcf_floor_applied"] = 1_000_000_000
+        assert pipe._compute_tanuki_score("BBAI", v)["score"] == "UNDETERMINED"
+
+    def test_price_present_keeps_normal_classification(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        _write_stonks_json(tmp_path, {})
+        r = pipe._compute_tanuki_score("ADBE", self._valuation(238.93))
+        assert r["score"] != "UNDETERMINED" and r["timing"] is not None
+
+
+class TestCalculateUpsideNoneWhenPriceMissing:
+    def test_none_and_zero_price_return_none(self):
+        from calculator.adjustments import calculate_upside
+        assert calculate_upside(100.0, None) is None
+        assert calculate_upside(100.0, 0.0) is None
+        assert round(calculate_upside(150.0, 100.0), 6) == 50.0

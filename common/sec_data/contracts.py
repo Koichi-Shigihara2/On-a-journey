@@ -373,6 +373,10 @@ class Classification(str, Enum):
     GROWTH_PREMIUM = "GROWTH_PREMIUM"
     SELL = "SELL"
     PASS = "PASS"
+    # 株価（有効な終値）が取れずupside・timingが計算不能な場合（2026-09-26、
+    # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]）。前回値の維持や中立値での
+    # 埋め合わせはしない。report_consistency_check.pyのNG-56で検知される。
+    UNDETERMINED = "UNDETERMINED"
 
     def __str__(self) -> str:
         return self.value

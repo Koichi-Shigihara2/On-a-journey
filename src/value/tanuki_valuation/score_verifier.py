@@ -63,6 +63,8 @@ def verify_ticker(ticker: str, data_dir: str) -> int:
 
     updated = 0
     for entry in entries:
+        if entry.get("invalid"):
+            continue  # 価格欠損で無効と印を付けた日（2026-09-26、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
         base_date = entry.get("date")
         base_price = entry.get("price_at_judgment")
         if not base_date or not base_price:

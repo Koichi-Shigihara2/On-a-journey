@@ -384,15 +384,6 @@ def _download_historical_bars(symbols: List[str], period: str = "5d",
     return results
 
 
-def _download_daily_bars(symbols: List[str]) -> Dict[str, Dict[str, Any]]:
-    """yf.download()で複数銘柄の直近日足を一括取得し、銘柄ごとの最新1営業日分
-    のOHLCVをdictで返す（_download_historical_bars(period="5d")の末尾1件を
-    取り出すラッパー）。
-    """
-    history = _download_historical_bars(symbols, period="5d")
-    return {symbol: bars[-1] for symbol, bars in history.items() if bars}
-
-
 def _merge_daily_records(existing_records: List[Dict[str, Any]],
                           new_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """日付をキーに新レコードで置き換え（同一日付は新しい方で上書き）、
@@ -421,6 +412,37 @@ def _append_daily_record(symbol: str, record: Dict[str, Any], base_dir: str) -> 
     _atomic_write_json(path, payload)
 
 
+def _has_valid_close(bar: Dict[str, Any]) -> bool:
+    """終値が数値で0より大きい足か（終値の無い未確定の足を確定値として扱わない）。"""
+    close = bar.get("close")
+    return isinstance(close, (int, float)) and not math.isnan(close) and close > 0
+
+
+def _repair_close_missing_records(symbol: str, valid_bars: List[Dict[str, Any]], base_dir: str) -> int:
+    """daily/{symbol}.jsonのうち終値の無い行を、同じ日付の終値つきの足で置き換える。
+    置き換えた件数を返す（[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]の自己修復）。"""
+    path = os.path.join(base_dir, "daily", f"{symbol}.json")
+    payload = _load_json(path, default=None)
+    if not payload or not valid_bars:
+        return 0
+    by_date = {b["date"]: b for b in valid_bars}
+    repaired = 0
+    records = []
+    for r in payload.get("records", []):
+        if not _has_valid_close(r) and r.get("date") in by_date:
+            fixed = dict(by_date[r["date"]])
+            fixed["_validation_warnings"] = validate_price_record(fixed)
+            records.append(fixed)
+            repaired += 1
+        else:
+            records.append(r)
+    if repaired:
+        payload["records"] = records
+        _atomic_write_json(path, payload)
+        print(f"   [{symbol}] 終値の無い行を{repaired}件取り直した")
+    return repaired
+
+
 def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> None:
     """日次価格層を取得・保存する。
 
@@ -437,12 +459,33 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
     if not target_symbols:
         return
 
-    bars = _download_daily_bars(target_symbols)
+    # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 直近1件だけを
+    # 無条件に保存していたため、yfinanceが終値の無い足（始値・高値・安値・途中の
+    # 出来高のみ）を返した日にそれが確定値として保存され、以後二度と取り直されな
+    # かった（2026-09-21に510銘柄・09-25に379銘柄）。5日分の足のうち終値のある
+    # 足だけを扱い、終値の無い足は保存しない（次回実行時の5日窓で取り直される）。
+    # あわせて、既存の終値の無い行が5日窓内で終値つきで取れた場合は置き換える
+    # （自己修復）。既に終値のある過去の行は上書きしない（他システムの入力を
+    # 動かさないため）。
+    history = _download_historical_bars(target_symbols, period="5d")
     for symbol in target_symbols:
-        bar = bars.get(symbol)
-        if bar is None:
+        symbol_bars = history.get(symbol) or []
+        if not symbol_bars:
             print(f"   [{symbol}] 日次データ取得失敗（スキップ）")
             continue
+        valid_bars = [b for b in symbol_bars if _has_valid_close(b)]
+        if not _has_valid_close(symbol_bars[-1]):
+            print(f"   [{symbol}] {symbol_bars[-1]['date']}の足に終値が無い（未確定のため保存せず、次回取り直す）")
+            _write_violations_section(
+                symbol, "daily_price_unconfirmed",
+                {"checked_at": _now_iso(), "date": symbol_bars[-1]["date"],
+                 "note": "終値が無い足のため保存しなかった（次回実行時に取り直す）"},
+                base_dir=base,
+            )
+        _repair_close_missing_records(symbol, valid_bars, base_dir=base)
+        if not valid_bars:
+            continue
+        bar = valid_bars[-1]
 
         record = dict(bar)
         record_warnings = validate_price_record(record)
@@ -499,7 +542,12 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
 
         new_records: List[Dict[str, Any]] = []
         dates_with_warnings: List[str] = []
+        skipped_no_close = 0
         for bar in bars:
+            if not _has_valid_close(bar):
+                # 終値の無い足は確定値として保存しない（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
+                skipped_no_close += 1
+                continue
             record = dict(bar)
             record_warnings = validate_price_record(record)
             record["_validation_warnings"] = record_warnings
@@ -520,12 +568,46 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
                 "checked_at": _now_iso(), "period": start or period,
                 "dates_fetched": len(new_records),
                 "dates_with_warnings": dates_with_warnings,
+                "skipped_no_close": skipped_no_close,
             },
             base_dir=base,
         )
         print(f"   [{symbol}] バックフィル完了: {len(new_records)}日分取得 → "
               f"累計{len(merged)}日分保存"
               + (f"（検証警告{len(dates_with_warnings)}日分）" if dates_with_warnings else ""))
+
+
+def repair_close_missing_records(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, int]:
+    """daily/の終値の無い行だけを取り直す（[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]の
+    既存行のバックフィル、手動実行専用。CLIの--repair-missing-closeフラグ経由）。
+
+    backfill_daily_prices()は取得期間の全日付を上書きするため、既に終値のある行の
+    出来高等も取得時点の値に置き換わる。本関数は終値の無い行の日付だけを対象に、
+    その最古日からyf.download(start=...)で取り直し、同じ日付の終値つきの足で
+    置き換える（終値のある行は変更しない）。取り直せなかった行はそのまま残す。
+    戻り値は{symbol: 置き換えた件数}。
+    """
+    base = _resolve_base_dir(base_dir)
+    targets: Dict[str, str] = {}
+    for symbol in _dedupe_symbols(symbols):
+        path = os.path.join(base, "daily", f"{symbol}.json")
+        payload = _load_json(path, default=None)
+        if not payload:
+            continue
+        missing = [r["date"] for r in payload.get("records", []) if r.get("date") and not _has_valid_close(r)]
+        if missing:
+            targets[symbol] = min(missing)
+    result: Dict[str, int] = {}
+    # 開始日ごとにまとめて一括取得する（銘柄ごとに取得するより呼び出し回数が少ない）
+    by_start: Dict[str, List[str]] = {}
+    for symbol, start in targets.items():
+        by_start.setdefault(start, []).append(symbol)
+    for start, group in sorted(by_start.items()):
+        history = _download_historical_bars(group, start=start)
+        for symbol in group:
+            valid = [b for b in (history.get(symbol) or []) if _has_valid_close(b)]
+            result[symbol] = _repair_close_missing_records(symbol, valid, base_dir=base)
+    return result
 
 
 # ── 週次準静的属性層 ──────────────────────────────────────
@@ -1004,7 +1086,19 @@ if __name__ == "__main__":
         help="--backfill時の取得開始日（'YYYY-MM-DD'形式、指定時は--periodより優先される。"
              "periodは相対期間〈本日から遡ってN年等〉のため固定開始日を厳密に指定できない場合に使う）",
     )
+    arg_parser.add_argument(
+        "--repair-missing-close", action="store_true",
+        help="一過性: daily/の終値の無い行だけを取り直す（銘柄省略時はdaily/の全ファイルが対象）",
+    )
     args = arg_parser.parse_args()
+
+    if args.repair_missing_close:
+        base_for_repair = _resolve_base_dir(None)
+        repair_symbols = (_dedupe_symbols(args.symbols) if args.symbols else sorted(
+            os.path.splitext(n)[0] for n in os.listdir(os.path.join(base_for_repair, "daily")) if n.endswith(".json")))
+        repaired = repair_close_missing_records(repair_symbols)
+        print(f"終値の無い行の取り直し: {sum(repaired.values())}行（{sum(1 for v in repaired.values() if v)}銘柄）")
+        sys.exit(0)
 
     symbols_arg = _dedupe_symbols(args.symbols) if args.symbols else get_default_symbol_universe()
     print(f"対象銘柄数: {len(symbols_arg)}")

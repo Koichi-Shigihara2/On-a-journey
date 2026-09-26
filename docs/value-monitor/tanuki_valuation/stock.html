@@ -82,6 +82,7 @@
     .tag.cls-TRIM { background: rgba(249,115,22,.12); color: #f97316; }
     .tag.cls-SELL { background: rgba(239,68,68,.10);  color: #ef4444; }
     .tag.cls-PASS { background: rgba(71,85,105,.10);  color: #475569; }
+    .tag.cls-UNDETERMINED { background: rgba(148,163,184,.12); color: #94a3b8; }  /* 株価欠損で判定不能（2026-09-26） */
 
     .value-display { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
     .value-box {
@@ -1045,6 +1046,7 @@ function render(d) {
     TRIM:           { icon: '🟠', label: 'TRIM' },
     SELL:           { icon: '🔴', label: 'SELL' },
     PASS:           { icon: '⬛', label: 'PASS' },
+    UNDETERMINED:   { icon: '⚪', label: '判定不能（株価なし）' },
   };
   const clsMeta = d.tanuki_score ? CLS_META[d.tanuki_score] : null;
 
@@ -2500,6 +2502,9 @@ function renderChart(dcfType, pvP1, pvP2, pvHigh, pvTv, rpoPV, goPv, alpha, v0) 
 }
 
 function renderHistoryChart(data) {
+  // 価格欠損で無効と印を付けた実行（invalid）は描かない（2026-09-26、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
+  data = data.filter(d => !d.invalid);
+  if (data.length < 2) return;
   document.getElementById('history-chart-section').style.display = '';
   const dates = data.map(d => d.date);
   const iv    = data.map(d => d.intrinsic_value_per_share);

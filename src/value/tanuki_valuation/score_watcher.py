@@ -92,6 +92,10 @@ def detect_changes(ticker: str, prev_state: dict) -> tuple[list[dict], dict]:
         return [], prev_state
 
     cur_score  = latest.get("tanuki_score")
+    # 株価欠損による判定不能（UNDETERMINED、2026-09-26）は観測なしとして扱い、
+    # 通知せず前回状態も更新しない（翌日の「UNDETERMINED→BUY」等の誤通知を防ぐ）
+    if cur_score == "UNDETERMINED":
+        return [], prev_state
     cur_funda  = latest.get("funda_score")
     cur_upside = latest.get("upside_percent")
     cur_stage, cur_label = load_hype_stage(ticker)
