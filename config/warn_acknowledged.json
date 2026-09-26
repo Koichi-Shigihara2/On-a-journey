@@ -392,12 +392,6 @@
       "comment": "daily/行の抜け。fetcher.py --repair-missing-daysで取り直しを試みたが、yfinanceに2025-04-21の行が無い（前後の04-17・04-22はある）。推測で埋めない方針のため欠損のまま（指示書⑳ STEP D-3）。"
     },
     {
-      "check": "WARN-10",
-      "ticker": "ONDS",
-      "acknowledged_date": "2026-09-26",
-      "comment": "PS異常値（yfinance 24.7倍 vs 自社計算87.7倍）。自社計算は最新年度（FY2025）の売上$50.7Mを使うが、ONDSは四半期売上が$10.1M（2025Q3）→約$30M（Q4、年次から逆算）→$50.1M（2026Q1）→$83.8M（2026Q2）と急増しており、yfinanceのTTM売上（約$174M、時価総額$4.3B÷24.7倍と一致）が実態に近い。データの誤りではなく、年次売上を使う自社計算の性質による乖離（指示書⑳ STEP F、2026-09-26）。"
-    },
-    {
       "check": "WARN-50",
       "ticker": "RXRX",
       "acknowledged_date": "2026-09-26",
