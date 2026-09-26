@@ -72,12 +72,6 @@ jobs:
             python pipeline.py
           fi
 
-      - name: Detect TANUKI SCORE changes and notify Discord
-        working-directory: src/value/tanuki_valuation
-        env:
-          DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
-        run: python score_watcher.py
-
       - name: Consistency Check Gate
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
@@ -85,6 +79,15 @@ jobs:
           else
             python common/sec_data/report_consistency_check.py --fail-on-ng --quiet
           fi
+
+      # 2026-09-26（指示書㉑）: 通知はゲート通過後に行う。以前はゲートより前にあり、ゲートが
+      # 公開を止めた日（例: 株価欠損でNG-56が出た日）もDiscordへ誤った判定変化が通知されていた。
+      # ゲートが失敗するとジョブが止まるため、この段は実行されない（.watcher_state.jsonも更新されない）。
+      - name: Detect TANUKI SCORE changes and notify Discord
+        working-directory: src/value/tanuki_valuation
+        env:
+          DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
+        run: python score_watcher.py
 
       - name: Commit and push changes
         run: |
