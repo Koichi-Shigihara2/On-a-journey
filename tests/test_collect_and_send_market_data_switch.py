@@ -417,3 +417,38 @@ class TestFetchCnnFearGreed:
             raise ConnectionError("network down")
         monkeypatch.setattr(fear_greed, "fetch", _raise)
         assert cs.fetch_cnn_fear_greed() is None
+
+
+class TestCheckDataFreshness:
+    """check_data_freshness(): daily/の最新日付が期待する終値日より古い場合にstale=True
+    （MARKETPULSE-MDD-CHECKOUT-RACE-1、2026-09-26）"""
+
+    def _patch_latest(self, monkeypatch, dates):
+        import common.market_data.reader as rd
+        monkeypatch.setattr(cs, "HAS_MARKET_DATA", True)
+        monkeypatch.setattr(rd, "get_latest_price", lambda s: {"date": dates[s], "close": 1.0} if dates.get(s) else None)
+
+    def test_fresh_after_close(self, monkeypatch):
+        from datetime import datetime, timezone
+        self._patch_latest(monkeypatch, {"^GSPC": "2026-09-25", "SPY": "2026-09-25"})
+        r = cs.check_data_freshness(datetime(2026, 9, 26, 0, 1, tzinfo=timezone.utc))
+        assert r["expected_close_date"] == "2026-09-25" and r["stale"] is False
+
+    def test_stale_when_checkout_before_daily_push(self, monkeypatch):
+        """2026-09-18（JST）型: 09-17の終値確定後なのにdaily/が09-16のまま"""
+        from datetime import datetime, timezone
+        self._patch_latest(monkeypatch, {"^GSPC": "2026-09-16", "SPY": "2026-09-16"})
+        r = cs.check_data_freshness(datetime(2026, 9, 17, 23, 37, tzinfo=timezone.utc))
+        assert r["expected_close_date"] == "2026-09-17" and r["stale"] is True
+
+    def test_before_close_expects_previous_day(self, monkeypatch):
+        from datetime import datetime, timezone
+        self._patch_latest(monkeypatch, {"^GSPC": "2026-09-24", "SPY": "2026-09-24"})
+        r = cs.check_data_freshness(datetime(2026, 9, 25, 19, 0, tzinfo=timezone.utc))
+        assert r["expected_close_date"] == "2026-09-24" and r["stale"] is False
+
+    def test_weekend_expects_friday(self, monkeypatch):
+        from datetime import datetime, timezone
+        self._patch_latest(monkeypatch, {"^GSPC": "2026-09-25", "SPY": "2026-09-25"})
+        r = cs.check_data_freshness(datetime(2026, 9, 27, 12, 0, tzinfo=timezone.utc))
+        assert r["expected_close_date"] == "2026-09-25" and r["stale"] is False

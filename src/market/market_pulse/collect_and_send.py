@@ -1448,7 +1448,41 @@ def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90
     }
 
 
-def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None):
+def check_data_freshness(now_utc=None, symbols=("^GSPC", "SPY")):
+    """daily/の最新日付が、実行時点で確定している直近の米国終値日より古くないかを返す
+    （[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]、2026-09-26）。
+
+    期待する終値日はNYSEカレンダーの取引日のうち、取引終了時刻（夏時間20:00 UTC・
+    冬時間21:00 UTC、短縮取引日は早い）が実行時刻より前の最新日。daily/の最新日付は
+    reader.get_latest_price()（有効な終値を持つ最新の行）の`date`。
+    結果はmarket_data.jsonのエントリの`data_freshness`に記録する（画面表示は未実装）。
+    """
+    now_utc = now_utc or datetime.now(timezone.utc)
+    out = {"checked_at": now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"), "expected_close_date": None,
+           "daily_latest": {}, "stale": None}
+    try:
+        import pandas_market_calendars as _mcal
+        cal = _mcal.get_calendar("NYSE")
+        sched = cal.schedule(start_date=(now_utc - timedelta(days=10)).date(), end_date=now_utc.date())
+        closed = sched[sched["market_close"] <= now_utc]
+        if len(closed):
+            out["expected_close_date"] = closed.index[-1].strftime("%Y-%m-%d")
+        if HAS_MARKET_DATA:
+            from common.market_data.reader import get_latest_price as _md_get_latest_price
+            for s in symbols:
+                p = _md_get_latest_price(s)
+                out["daily_latest"][s] = p.get("date") if p else None
+        exp = out["expected_close_date"]
+        if exp and out["daily_latest"]:
+            out["stale"] = any(d is None or d < exp for d in out["daily_latest"].values())
+    except Exception as e:
+        out["error"] = f"{type(e).__name__}: {e}"
+    if out.get("stale"):
+        print(f"[WARN] daily/の最新日付{out['daily_latest']}が期待する終値日{out['expected_close_date']}より古い")
+    return out
+
+
+def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     jst_now = datetime.now(JST)
     date_str = jst_now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
@@ -1569,6 +1603,8 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
         "summary": report_text,
         "comments_history": comments_history
     }
+    if data_freshness is not None:
+        new_entry["data_freshness"] = data_freshness
     all_data.append(new_entry)
 
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
@@ -1680,6 +1716,7 @@ if __name__ == "__main__":
         print(f"[ERROR] 必須環境変数が設定されていません: {', '.join(missing)}")
         sys.exit(1)
 
+    data_freshness = check_data_freshness()
     realtime_text, structured_data = get_realtime_data()
 
     # センチメントスコア算出（フォールバック補完前の今回実測データのみで算出。
@@ -1763,7 +1800,7 @@ if __name__ == "__main__":
     asset_flow_data = collect_asset_flow()
     asset_flow_data = _fill_fallbacks(asset_flow_data, "asset_flow", _recent_entries)
     report = analyse_market(realtime_text, "\n".join(news), sentiment_data, tech_pulse_data, asset_flow_data)
-    save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data, tp_checklist, buy_checklist)
+    save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data, tp_checklist, buy_checklist, data_freshness)
     if GMAIL_USER and GMAIL_PASSWORD:
         send_email(report, sentiment_data)
     else:

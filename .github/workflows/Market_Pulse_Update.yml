@@ -1,8 +1,20 @@
 name: Market_Pulse_Update
 
+# [[MARKETPULSE-MDD-CHECKOUT-RACE-1]]対応（2026-09-26）: collect_and_send.py・
+# breadth_calculator.pyは2026-08-11以降common/market_data/daily/（Market_Data_Daily_
+# Updateが書く）に依存しているが、独立cron（21:35 UTC）はMarket_Data_Daily_Update
+# （21:25 UTC）とcronの10分差だけに依存していた。GitHub側の遅延で両者がほぼ同時に
+# 起動し、checkoutが日次データのpushより先になった日（直近20回中3回）は画面全体が
+# 1営業日古くなっていた。TANUKI_VALUATION_Update.yml・Stonks_Silo_Update.ymlと同じ
+# 型で、Market Data Daily Updateの完了を起点にし、独立cronは低頻度の
+# フォールバックに置き換える（金曜22:50 UTC、Stonks Silo 22:40の10分後）。
 on:
+  workflow_run:
+    workflows:
+      - "Market Data Daily Update"
+    types: [completed]
   schedule:
-    - cron: "35 21 * * 1-5"  # UTC21:35=JST翌6:35頃、月〜金のみ
+    - cron: "50 22 * * 5"  # 安全網: 金曜22:50 UTC（Market_Data_Daily_Update金曜分の完了後、低頻度フォールバック）
                               # （2026-09-02: Market_Data_Daily_Update
                               # と同時刻〈21:25〉に揃えたところpush競合
                               # リスクが再発したため、元の10分差に復元。
@@ -13,6 +25,7 @@ on:
 
 jobs:
   update:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
