@@ -12,7 +12,16 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-25セッション終了時ブラッシュアップ⑯時点）**: `BACKLOG.md`
+**現在の到達点（2026-09-26 指示書⑰⑱のブラッシュアップ時点）**: `BACKLOG.md`
+アクティブ件数**1件**（`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`、9/27のSEC_Data_Update後の確認待ち。
+機械カウント、`grep -c "^### \["`）。BACKLOG.mdには実害がある、または実害の確認が必要な不具合
+だけを置く方針に変え、構想・監視メモ・消費者のいない整理項目は`IDEAS_AND_WATCH.md`（課題数に
+数えない、現在4件）へ移した（CHAT_RULES.md「BACKLOG登録基準」）。2026-09-26は、4件を移動し、
+`[[JNJ-XOM-PM-FLOOR-RISK-1]]`（CHECK-52/53）・`[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]`（CHECK-55）を
+自動検知に置き換えてクローズ、`[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]`（CHECK-54、分割27件を登録）を
+完了した（8件→1件）。BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.md間のID重複0件。
+詳細は下記「最終更新: 2026-09-26」ブロック。以下は2026-09-25時点の記載:
+**（旧）現在の到達点（2026-09-25セッション終了時ブラッシュアップ⑯時点）**: `BACKLOG.md`
 アクティブ件数**8件**（機械カウント、`grep -c "^### \["`）。2026-09-25に
 `[[BBAI-RDW-RUNWAY-VERIFICATION-1]]`・`[[FLAG-THRESHOLD-DESIGN-1]]`を完了、
 `[[DCF-1b]]`は完了として直接記載（ここまでで6件）。⑭⑮で
@@ -98,6 +107,38 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    既存関数が未検証のケースで動き出す。先に実データで試算し、扱えなければ関数を
    直してから登録する。他の消費者の既存結果が変わらないかも全件で確認する
    （`CHAT_RULES.md`事例21。リバース分割の二重補正リスク、KLAC・NOWの差分検出）。
+
+---
+
+最終更新: 2026-09-26（**指示書⑰⑱のブラッシュアップ**。全てpush済み）:
+
+1. **BACKLOGを「着手可能な不具合」だけに**（⑰ STEP 1、`e531637b8f`）: 構想・整理項目4件
+   （`[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]`・`[[FUTURE-FEATURE-IDEAS-CATALOG-1]]`・
+   `[[DATA-JUMP-CHECK-NETINCOME-SBC-1]]`・`[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]`）を
+   `IDEAS_AND_WATCH.md`へ本文そのまま移動。CHAT_RULES.mdに登録先の振り分け基準を追記
+2. **CHECK-52/53**（⑰ STEP 2、`55322d2b09`）: recommended_g候補（Noneでない数）1件以下と、
+   floor発動×raw FCF CAGR負を検知。`[[JNJ-XOM-PM-FLOOR-RISK-1]]`をクローズ。WARN台帳に任意の
+   `match`を追加（メッセージがmatchを含むときだけ確認済み、数値が変わると再発火）。CRWV・JOBY・
+   LOAR・RBRK・SN（候補数=1件）を台帳登録。WARN-53は0件（JOBYはFCF全年負でraw計算不能のため対象外、
+   扱いは別途判断）
+3. **CHECK-54**（⑰ STEP 3、`07b48ef8ca`）: yfinance splitsとsplit_history.yamlの突き合わせ
+   （`--include-yfinance-checks`時のみ）。未登録29件を検知して停止
+4. **CHECK-55**（⑱ STEP A、`6b76a72789`）: 年次D&Aで部分概念タグ採用が15件（全てFY2024以前、
+   消費者は最新年度のみ読むため未到達）。最新年度の検知に置き換え`[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]`を
+   クローズ
+5. **分割27件を登録**（⑱ STEP B〜D、`69a5b27af4`）: 一次資料（XBRL注記・8-K・10-Q/10-K）で確認。
+   DELLの2件は分割ではないため台帳登録。TANUKIの希薄化率・funda・SCORE・IVは不変、EPS ANALYZERは
+   9分割で過去四半期の基準混在が解消（二重補正0件）。次回のAdjusted_Eps_Analyzer_update後に
+   AAPL・AMZN・CPRT・CSGP・GOOGL・HEI・NVDA・TSLAの過去四半期EPS・株数の反映を確認する
+
+**次セッションへの引き継ぎ**:
+- 9/27（日）のSEC_Data_Update後に`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（FCX net_income反映等、
+  下記2026-09-25ブロック参照）を確認
+- JOBYのようにFCFが全年負でraw CAGRが計算できない銘柄をWARN-53の対象に含めるかは未判断
+
+**ブラッシュアップの検証結果**: `### ✅ [`パターンのBACKLOG.md残存0件、アクティブ1件、3ファイル間の
+ID重複0件。最終ゲート: pytest 1676件全パス・audit.py exit 0・report_consistency_check.py
+--fail-on-ng NG=0/WARN=122件（未確認56件、変更前と同じ）。
 
 ---
 

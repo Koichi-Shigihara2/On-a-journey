@@ -9,6 +9,15 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-26**: BACKLOGを「着手可能な不具合」だけにする整理（指示書⑰⑱、BACKLOG_DONE.md
+  「2026-09-26（完了）」）。構想・整理項目4件を`IDEAS_AND_WATCH.md`へ移し、監視項目2件を自動検知に
+  置き換えてクローズ（CHECK-52/53〈recommended_g候補不足・floor発動×FCF減少〉、CHECK-55〈年次D&Aの
+  部分概念タグ採用〉）。CHECK-54（split_history.yamlの登録漏れ）で未登録29件を検知し、一次資料で
+  確認した27件を登録（DELL 2件は分割ではない）。TANUKIの数値は不変、EPS ANALYZERは9分割で過去四半期の
+  基準混在を解消。WARN台帳に任意の`match`を追加。アクティブBACKLOG 8件→1件
+  （`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`のみ）。pytest 1676件全パス・audit.py exit 0・
+  report_consistency_check.py NG=0。**次回確認**: 9/27のSEC_Data_Update後にTTM-DATA-DRIFT、
+  次回Adjusted_Eps_Analyzer_update後に分割登録9件の反映
 - **2026-09-25**: Runway・net_cash・IVの算出経路の是正と、stonks_siloフラグの
   機械判定基準の導入が中心（BACKLOG_DONE.md「2026-09-25（完了）」）。
   ①git stash 16件を棚卸しし全削除（全件取り込み済みか陳腐化）。
