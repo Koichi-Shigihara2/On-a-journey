@@ -1482,7 +1482,9 @@
     "upside_percent": 0.0,
     "growth_rate": 0.0845,
     "scenario_bear": 70.21,
-    "scenario_bull": 93.9
+    "scenario_bull": 93.9,
+    "invalid": true,
+    "invalid_reason": "価格欠損による無効（common/market_data/daily/の終値が欠損した行を最新価格として読み、current_price=0で計算された実行。MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1、2026-09-26に印）"
   },
   {
     "date": "2026-09-23T08:49:02+09:00",
@@ -1545,6 +1547,17 @@
     "intrinsic_value_beta": 73.67,
     "current_price": 203.9199981689453,
     "ma200": null,
+    "upside_percent": -59.0,
+    "growth_rate": 0.0845,
+    "scenario_bear": 70.21,
+    "scenario_bull": 93.9
+  },
+  {
+    "date": "2026-09-26T11:44:17+09:00",
+    "intrinsic_value_per_share": 83.60751200554475,
+    "intrinsic_value_beta": 73.67,
+    "current_price": 203.9199981689453,
+    "ma200": 180.2323397064209,
     "upside_percent": -59.0,
     "growth_rate": 0.0845,
     "scenario_bear": 70.21,

@@ -1,17 +1,17 @@
 JNJ INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-26T10:01:51+09:00
-Price: N/A
+Generated: 2026-09-26T11:46:56+09:00
+Price: $271.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: HOLD
 Funda_Score: 55/100
 Timing_Score (components):
-  Deviation_Rate: +0.0%
-  MA200_Deviation: N/A
+  Deviation_Rate: -65.8%
+  MA200_Deviation: +12.9%
   HypeCore_Phase: Phase2 (期待拡大期)
   Analyst_Consensus: Buy | Target: $282 median ($190-$320) | 22 analysts | vs IV: +203.8%
-Comment: フェアバリュー近辺、FCF黒字、売上安定成長
+Comment: 割高(-66%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -30,10 +30,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
-Quadrant: 右下
-Label: 割安×低効率
+Quadrant: 左下
+Label: 割高×低効率
 Key_Metric_Y: RICE = 0.098
-Deviation_Rate: +0.0%
+Deviation_Rate: -65.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,23 +57,33 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: N/A
+Current_Price: $271.22
 Intrinsic_Value_BASE: $92.83
-Deviation_BASE: +0.0%
+Deviation_BASE: -65.8%
 Growth_Rate_Original: 15.2% (TTM実績)
 Growth_Rate_Adjusted: 2.2% (推奨値・中央値ベース)
 Scenarios:
 BEAR: Growth=1.5%, IV=$89.04 （推奨値ベース）
 BASE: Growth=2.2%, IV=$92.83 （推奨値ベース）
 BULL: Growth=2.6%, IV=$95.43 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $94.85 (-65.0%) / 3年後: $99.03 (-63.5%) / 5年後: $103.40 (-61.9%)
+  5yr_Annualized_Return: -17.5%/yr
 TTM_YoY_Growth: 8.1%
 (DCF Base vs TTM actual: -5.9pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 6.01%
-  参考①β込みWACC_IV: $230.20 (Deviation: +0.0%)
-  参考②Rf理論上限_IV: $547.02 (Deviation: +0.0%)
+  参考①β込みWACC_IV: $230.20 (Deviation: -15.1%)
+  参考②Rf理論上限_IV: $547.02 (Deviation: +101.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.18%に変化すると、Rf基準の必要成長率は-14.4%→-5.0%（+9.4pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 0.3
+Valuation_Gap_Analysis:
+  DCF_IV:           $93 (保守的FCFベース・現在実力値)
+  Market_Price:     $271
+  Gap:              -66% (市場が将来成長を先取り)
+  Implied_FCF_2030: $46.34B (現在株価を正当化するために必要な5年後FCF)
+  Current_FCF:      $17.94B
+  Required_Growth:  21%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-28 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $17,935.75M (4yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
 FCF_Breakdown（直近年）: OCF=$24,530M / CapEx=$4,832M / SBC(非現金)=$1,354M / D&A=$7,503M
@@ -255,7 +265,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 31.4x
-  Adjusted_EPS_PER: N/A
+  Adjusted_EPS_PER: 25.8x (TTM調整後EPS: $10.5119)
+  Delta: -5.6x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-13
   Next_Quarter_EPS: $2.45 (yfinance analyst estimate)
@@ -304,7 +315,10 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  N/A (ForwardEPS 未取得)
+  Forward_Earnings_Yield: 4.48%  (ForwardEPS $12.14 / Price $271.22)
+  Risk_Free_Rate (10Y):  4.30%
+  ERP: 0.18%
+  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
