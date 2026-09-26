@@ -2296,7 +2296,169 @@ ttm/を参照しない。
 
 ---
 
+### [MARKETPULSE-MDD-CHECKOUT-RACE-1] Market_Pulse_UpdateがMarket_Data_Daily_Updateと連鎖しておらず、checkoutが日次データのpushより先になった日は画面全体が1営業日古い
+**優先度:** 中
+**分類:** 更新タイミング / Market Pulse・GitHub Actions
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2（Market Pulseの正確性確認）
+
+#### 内容
+`Market_Pulse_Update.yml`（cron `35 21 * * 1-5`）は、`collect_and_send.py`・
+`breadth_calculator.py`が2026-08-11に`common/market_data/daily/`経由へ切り替わって以降、
+`Market_Data_Daily_Update.yml`（cron `25 21 * * 1-5`）が書くdaily/に依存している。
+しかし両者はworkflow_runで連鎖しておらず、cronの10分差だけに依存している。GitHub側の
+遅延で両者とも毎回約1.5〜3時間遅れてほぼ同時に起動するため、Market Pulseの`actions/checkout`
+（`ref: kaihatsu`）が日次データのpushより先に走る日がある。
+
+直近20回（Actions APIの各run・stepの時刻で確認）のうち3回で発生:
+checkout完了−日次データpush完了が+39秒（2026-09-16 JSTエントリ）・−15秒（09-18）・
++37秒（09-22）の回は、S&P500指数を含む全要素が1営業日前の終値のまま保存された
+（+41秒以上の回は正常）。
+
+2026-08-26の横断点検（BACKLOG_DONE.md「横断点検（Market Pulseのcron依存関係）」）の
+「ワークフロー間タイミング競合のリスクは構造上存在しない」、[[MARKET-DATA-SCHEDULE-7AM-JST-1]]
+（Market_Data_Daily_Updateを21:25 UTCへ前倒し）の「近接自体に実害なし」は、いずれもdaily/経由への切替後もこの依存を考慮していない
+（CHAT_RULES.md事例20と同型）。
+
+#### 実害
+競合した日は、画面全体（センチメントスコア・指標カード・資金フロー・ブレッス・チェックリストの入力）が
+前営業日の値のまま「更新 当日」と表示される。`market_data.json`は1日1エントリのため、
+その日の正しい値は後から補われない（翌日の前日比は正しい日同士で計算される）。
+F&Gは実行時にCNNから取るため当日の値で、他の要素と基準日がずれる。
+
+#### 着手条件
+なし（修正はしていない。原因箇所: `.github/workflows/Market_Pulse_Update.yml`の起動条件）
+
+---
+
+### [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる）
+**優先度:** 中
+**分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2・3（Market Pulseの正確性確認）
+
+#### 内容
+`common/market_data/daily/{SYMBOL}.json`に、始値・高値・安値・出来高はあるが`close: None`
+（`_validation_warnings: ["close must be > 0 (got None)"]`、`_gap: False`）の行が保存されている。
+2026-09-21は510銘柄、2026-09-25は379銘柄（S&P500構成銘柄の大半とSPY・QQQ・RSP・LQD・IVW・IVE・
+SHV・GLD・TLT等。^GSPC等の指数は正常）。出来高は通常の半分程度（SPY 09-25: 35M）で、
+取引途中の足をyfinanceが返した可能性がある。後日の実行でもこの行は上書きされず、
+2026-09-26時点でも09-21の行はcloseがNoneのまま。原因（yfinanceの返却値・取得時刻）は未特定
+（2回とも00:00 UTC以降の実行だが、2026-09-01 00:41 UTCの実行では発生していない）。
+
+`reader.get_price_series()`はこの行を`_gap`扱いにしないため、消費者はそれぞれ
+「closeがNoneの行を読み飛ばす」処理で対処している。
+
+#### 実害（Market Pulseで確認したもの）
+- 当日: closeがNoneの資産は前営業日の値で表示される（2026-09-26: 資金フロー5資産・LQD・IVW/IVEが09-24、
+  他は09-25）。基準日の混在はMARKETPULSE-BREADTH-MIXED-DATES-1・MARKETPULSE-HYG-LQD-DATE-MIX-1にも波及
+- 翌日: 前日比が2営業日分になる。2026-09-23のエントリで資金フロー株式（SPY）+1.535%（09-22対09-18）、
+  IVW +2.45%を1日分として表示（同じ日のS&P500指数カードは−0.00%）。ブレッスも09-22対09-18で計算
+- 移動平均: `get_ma_deviation()`は窓内にNoneがあるとNoneを返すため、該当銘柄の50/125/200日乖離が
+  窓から抜けるまで算出不能（SPYの50日乖離は2026-09-26時点でNone）
+
+他のdaily/消費者（TANUKI VALUATION・HypeCore・Stonks Silo等）への影響は未確認。
+
+#### 着手条件
+なし（修正はしていない。原因箇所: `common/market_data/fetcher.py`のdaily取得・保存処理）
+
+---
+
+### [MARKETPULSE-BREADTH-MIXED-DATES-1] compute_breadth()が銘柄ごとに異なる日付の前日比を合算し、最大の日付をラベルにする
+**優先度:** 中
+**分類:** 導出ロジック / Market Pulse（ブレッス）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（D-04）
+
+#### 内容
+`src/market/market_pulse/breadth_calculator.py::compute_breadth()`は、銘柄ごとに
+「直近2つの有効終値」で上昇/下落を判定し、日付ラベルは全銘柄の最大日付を採る。
+銘柄間で最新の終値日がそろっているかを確認しない。2026-09-26のエントリはラベル2026-09-25だが、
+09-25の終値があるのは133銘柄だけで、370銘柄は09-24対09-23の比較だった
+（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1のclose=None行が原因）。RSP・SPYの騰落率も09-24の値。
+
+#### 実害
+市場の広がり（ADV/DEC・AD(5d)・NH/NL・>50MA/>200MA・Equal Weight乖離・McClellan）が、
+複数日の混合を1日の値として表示する。これらはセンチメントスコア（騰落比率13.5%・NH-NL 9%・
+Equal Weight乖離10%）とHindenburg判定（TAKE PROFIT/BUYチェックリスト）の入力でもある。
+2026-09-26はS&P500指数が+0.51%の日に「▲221 ▼281」と表示された。
+
+#### 着手条件
+なし（修正はしていない）
+
+---
+
+### [MARKETPULSE-TECHPULSE-QQQ-NULL-1] Tech PulseのQQQ系2入力が2026-08-27以降毎日nullで、VXN 1入力だけで算出されている
+**優先度:** 中
+**分類:** データ欠落 / Market Pulse（Tech Pulse）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（D-05）
+
+#### 内容
+`collect_and_send.py::fetch_qqq_tech_data()`は`reader.get_ma_deviation("QQQ", window=125)`が
+Noneだと、QQQ vs SPY 20日も計算せずに両方Noneを返す。`get_ma_deviation()`は125日の窓内に
+欠損（`_gap`、またはclose=None）があるとNoneを返す。QQQはdaily/に2026-08-25の`_gap`行があり、
+その後も09-21・09-25にclose=None行がある（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）ため、
+2026-08-27のエントリから毎日null（過去にも2026-04-04〜06-07・07-15に同じ状態があった）。
+
+#### 実害
+Tech Pulseスコア（画面のゲージ）がVXNのパーセンタイル1つだけで算出され、乖離（Tech Pulse−CNN F&G）・
+Zスコア・「ハイテク先行反発/下落注意」シグナルもその値に依存する。VXN（FRED VXNCLS）は公表ラグで
+3営業日古い日があり（2026-09-24〜26の3エントリでvxn_vs_ma50が同値）、その間スコアがほぼ動かない。
+「QQQ vs SPY 20日」カードは約1か月「—」表示。VXN欠落時の上限75キャップはあるが、QQQ欠落時の
+扱いは無く、画面にも欠落は表示されない。
+
+#### 着手条件
+なし（修正はしていない）
+
+---
+
+### [MARKETPULSE-HYG-LQD-DATE-MIX-1] HYG対LQD比とクレジット判定が、日付をそろえずにHYGとLQDの直近終値を組み合わせる
+**優先度:** 中
+**分類:** 導出ロジック / Market Pulse（センチメント・クレジット判定）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2
+
+#### 内容
+`collect_and_send.py::get_realtime_data()`のHYG対LQD比は、HYG・LQDそれぞれの直近2つの
+有効終値で比を取り、日付はHYG側を記録する。両者の日付がそろっているかは確認しない。
+`save_data_to_json_and_csv()`のクレジット判定（HYG前日比−LQD前日比）、債券判定
+（TLT・SPYのasset_flow）と株判定（S&P500指数）も、それぞれ別の日付の値を組み合わせうる。
+2026-09-26のエントリ: HYGは09-25、LQDは09-24（close=None、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）、
+ラベルは09-25。
+
+#### 実害
+センチメントスコアの「クレジット」（重み10.8%、2026-09-26は100点）と、詳細カードのクレジット判定・
+Risk-Offスコアが、異なる日の値の組み合わせで算出される日がある。画面上は1日分の値として表示される。
+
+#### 着手条件
+なし（修正はしていない）
+
+---
+
 ## 優先度：低（アイデア段階）
+
+### [MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1] Market Pulseの計算式モーダルの重み表が旧版（7指標）のままで、実計算（8指標）と一致しない
+**優先度:** 低
+**分類:** 表示の正確性 / Market Pulse（静的説明）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（MP-29）
+
+#### 内容
+`docs/market-monitor/market-pulse/index.html`の計算式モーダル（`#infoModal`「計算式（7指標の加重平均）」）は
+VIX 25%・S&P vs 50MA 20%・AD Ratio 15%・HYG/LQD 12%・NH-NL 10%・Growth/Value 10%・Volume Flow 8%の7指標。
+実計算（`collect_and_send.py::compute_sentiment()`）はMP-BREADTH-2でEqual Weight乖離（10%）を追加し、
+既存7指標を×0.9に圧縮した8指標（22.5/18/13.5/10.8/9/9/7.2/10%）。画面のスコア構成指標バーは8本・新しい重みで表示している。
+同じ画面内のツールチップにも実計算と異なる説明がある（出来高圧力「20日平均出来高」比→実際は前日比、
+騰落比率「NYSE」→実際はS&P500構成銘柄。`docs/architecture/MARKET_PULSE_LOGIC_INVENTORY.md` MP-06参照）。
+
+#### 実害
+計算式の説明を読んだ利用者が、実際と異なる重み・入力でスコアを解釈する。数値そのものへの影響はない。
+
+#### 着手条件
+なし（修正はしていない）
+
+---
 
 （[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]は数値KPI抽出構想
 →「MD&A原文のセグメント別成長見通し定性要約」（10銘柄パイロット、
