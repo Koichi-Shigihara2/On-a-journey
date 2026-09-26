@@ -16,10 +16,25 @@ splits:
     - date: "2024-06-10"
       ratio: 10
       notes: "NVIDIA 10-for-1株式分割（2024年6月7日効力発生・6月10日分割調整後取引開始）。2023-04-30（FY2024 Q1）が恒久的に分割前株数のまま残存する既知ギャップあり（SPLIT-REALTIME-GAP-1参照）"
+    - date: "2007-09-11"
+      ratio: 1.5
+      notes: "NVIDIA 3-for-2株式分割（株式配当）。8-K Item 8.01（2007-08-09提出）で確認（accn 0001045810-07-000042）。yfinance比率=1.5。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2021-07-20"
+      ratio: 4
+      notes: "NVIDIA 4-for-1株式分割。10-Q（2021-08-20提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=4（accn 0001045810-21-000131）。yfinance比率=4。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
   CPRT:
     - date: "2023-08-22"
       ratio: 2
       notes: "Copart 2-for-1株式分割（2023年8月4日発表・8月14日基準日・8月21日引渡、8月22日分割調整後取引開始）。SEC 8-K（Ex-99.1、CIK0000900075）で確認済み。2022年10月の授権株式数増加（分割の前提条件）は分割そのものではないため対象外"
+    - date: "2012-03-29"
+      ratio: 2
+      notes: "Copart 2-for-1（one-for-one stock dividend、2012-03-28取引終了後に配布）。10-Q（2012-06-11提出）注記で確認（accn 0001145443-12-000801）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2017-04-11"
+      ratio: 2
+      notes: "Copart 2-for-1株式分割。8-K Item 8.01（2017-03-27提出）で確認（accn 0000900075-17-000023）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2022-11-04"
+      ratio: 2
+      notes: "Copart 2-for-1株式分割。10-Q（2022-11-18提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=2（accn 0000900075-22-000065）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
   WMT:
     - date: "2024-02-26"
       ratio: 3
@@ -40,6 +55,9 @@ splits:
     - date: "2022-08-25"
       ratio: 3
       notes: "Tesla 3-for-1株式分割（2022年8月25日効力発生）。2021-06-30の1四半期が恒久固着していた既知ギャップあり（SPLIT-REALTIME-GAP-1参照、追加登録2026-07-20）"
+    - date: "2020-08-31"
+      ratio: 5
+      notes: "Tesla 5-for-1株式分割。10-Q（2020-10-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=5（accn 0001564590-20-047486）。yfinance比率=5。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
   KULR:
     - date: "2025-06-23"
       ratio: 0.125
@@ -56,3 +74,78 @@ splits:
     - date: "2026-04-06"
       ratio: 25
       notes: "Booking Holdings 25-for-1株式分割（2026年4月2日16:01 ET効力発生・4月6日分割調整後取引開始）。SEC 8-K Item 5.03（accn 0000950157-26-000465）・2026-02-18発表の8-K Item 8.01（accn 0001075531-26-000008）で確認済み。2026-09-25まで未登録だった（yfinanceのsplitsには記録あり、登録漏れ検知の仕組みがなかった）。eps=falseのためEPS ANALYZERは対象外。TANUKIの3年希薄化率は年次株数が全て分割前（FY2025まで）でyfinance株数との乖離が10倍超のため算出スキップ中で、分割後の年次（FY2026）が揃うまで本登録の効果は出ない"
+  AAPL:
+    - date: "2014-06-09"
+      ratio: 7
+      notes: "Apple 7-for-1株式分割。10-Q（2014-07-23提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=7（accn 0001193125-14-277160）。yfinance比率=7。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2020-08-31"
+      ratio: 4
+      notes: "Apple 4-for-1株式分割。10-K（2020-10-30提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=4（accn 0000320193-20-000096）。yfinance比率=4。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  AMZN:
+    - date: "2022-06-06"
+      ratio: 20
+      notes: "Amazon 20-for-1株式分割。10-Q（2022-07-29提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=20（accn 0001018724-22-000019）。yfinance比率=20。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  COHR:
+    - date: "2011-06-27"
+      ratio: 2
+      notes: "Coherent（旧II-VI）2-for-1株式分割。10-K（2011-08-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio=2（accn 0001193125-11-233520）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  CRM:
+    - date: "2013-04-18"
+      ratio: 4
+      notes: "Salesforce 4-for-1株式分割。10-K（2014-03-05提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=4（accn 0001193125-14-084762）。yfinance比率=4。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  CSGP:
+    - date: "2021-06-28"
+      ratio: 10
+      notes: "CoStar 10-for-1株式分割。10-Q（2021-07-28提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=10（accn 0001057352-21-000082）。yfinance比率=10。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  FCX:
+    - date: "2011-02-02"
+      ratio: 2
+      notes: "Freeport-McMoRan 2-for-1株式分割。10-Q（2011-08-05提出）XBRL StockholdersEquityNoteStockSplitConversionRatio=2（accn 0000831259-11-000050）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  GOOGL:
+    - date: "2014-04-03"
+      ratio: 2
+      notes: "Google Class C株式の配当（Class A/B 1株につきClass C 1株、実質2-for-1）。10-K（2016-02-11提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=2。yfinance比率1.998は不使用（accn 0001652044-16-000012）。yfinance比率=1.998。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2022-07-18"
+      ratio: 20
+      notes: "Alphabet 20-for-1株式分割。10-Q（2022-10-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=20（accn 0001652044-22-000090）。yfinance比率=20。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  HEI:
+    - date: "2010-04-27"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2010-06-03提出）注記で確認（accn 0001133796-10-000214）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2011-04-26"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2011-05-31提出）注記で確認（accn 0001133796-11-000187）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2012-04-25"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2012-05-31提出）注記で確認（accn 0001133796-12-000115）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2013-10-23"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-K（2013-12-19提出）注記で確認（accn 0000046619-13-000017）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2017-04-19"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2017-05-25提出）注記で確認（accn 0000046619-17-000032）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2018-01-18"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2018-03-01提出）注記で確認（accn 0000046619-18-000016）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2018-06-28"
+      ratio: 1.25
+      notes: "HEICO 5-for-4株式分割（25%株式配当、両クラス）。10-Q（2018-08-31提出）注記で確認（accn 0000046619-18-000073）。yfinance比率=1.25。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  KO:
+    - date: "2012-08-13"
+      ratio: 2
+      notes: "Coca-Cola 2-for-1株式分割。10-Q（2012-07-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio=2（accn 0000021344-12-000037）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  SCCO:
+    - date: "2006-10-03"
+      ratio: 2
+      notes: "Southern Copper 2-for-1株式分割（100%株式配当）。8-K Item 8.01（2006-08-30提出）で確認（accn 0001104659-06-058297）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+    - date: "2008-07-10"
+      ratio: 3
+      notes: "Southern Copper 3-for-1株式分割（2-for-1株式配当）。8-K Item 8.01（2008-06-19提出）で確認（accn 0001104659-08-040900）。yfinance比率=3。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  V:
+    - date: "2015-03-19"
+      ratio: 4
+      notes: "Visa Class A 4-for-1株式分割（株式配当、2015-03-18支払）。8-K Item 8.01（2015-01-29提出）で確認（accn 0001193125-15-025534）。yfinance比率=4。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
+  WST:
+    - date: "2013-09-27"
+      ratio: 2
+      notes: "West Pharmaceutical 2-for-1株式分割（100%株式配当、2013-09-26配布）。8-K Item 8.01（2013-08-01提出）・Item 5.03（0000105770-13-000045）で確認（accn 0000105770-13-000038）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"

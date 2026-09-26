@@ -362,6 +362,20 @@
       "acknowledged_date": "2026-09-26",
       "match": "2019-08-01",
       "comment": "split_history未登録（yfinance 2019-08-01）。逆さ合併前のシェル会社時代の分割で評価対象外（[[SPLIT-REALTIME-GAP-1]]・[[SPLIT-REALTIME-GAP-REVERSE-1]]の判断どおり）。matchで分割日を固定しているため、RCATの他の分割は引き続き発火する（指示書⑰ STEP 3）。"
+    },
+    {
+      "check": "WARN-54",
+      "ticker": "DELL",
+      "acknowledged_date": "2026-09-26",
+      "match": "2018-12-28",
+      "comment": "split_history未登録（yfinance 2018-12-28）。一次資料で確認した結果、株式分割ではなくClass V transaction（Class V株を現金またはClass C株と交換、8-K 0001193125-18-360943）。yfinanceの比率は株価調整値のため登録対象外（指示書⑱ STEP B）。"
+    },
+    {
+      "check": "WARN-54",
+      "ticker": "DELL",
+      "acknowledged_date": "2026-09-26",
+      "match": "2021-11-02",
+      "comment": "split_history未登録（yfinance 2021-11-02）。一次資料で確認した結果、株式分割ではなくVMware株の特別株式配当によるスピンオフ（8-K 0001193125-21-315488）。yfinanceの比率は株価調整値のため登録対象外（指示書⑱ STEP B）。"
     }
   ]
 }
