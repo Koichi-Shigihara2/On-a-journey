@@ -2331,36 +2331,7 @@ F&Gは実行時にCNNから取るため当日の値で、他の要素と基準�
 
 ---
 
-### [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる）
-**優先度:** 中
-**分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）
-**登録日:** 2026-09-26
-**発見:** 指示書⑲ STEP 2・3（Market Pulseの正確性確認）
-
-#### 内容
-`common/market_data/daily/{SYMBOL}.json`に、始値・高値・安値・出来高はあるが`close: None`
-（`_validation_warnings: ["close must be > 0 (got None)"]`、`_gap: False`）の行が保存されている。
-2026-09-21は510銘柄、2026-09-25は379銘柄（S&P500構成銘柄の大半とSPY・QQQ・RSP・LQD・IVW・IVE・
-SHV・GLD・TLT等。^GSPC等の指数は正常）。出来高は通常の半分程度（SPY 09-25: 35M）で、
-取引途中の足をyfinanceが返した可能性がある。後日の実行でもこの行は上書きされず、
-2026-09-26時点でも09-21の行はcloseがNoneのまま。原因（yfinanceの返却値・取得時刻）は未特定
-（2回とも00:00 UTC以降の実行だが、2026-09-01 00:41 UTCの実行では発生していない）。
-
-`reader.get_price_series()`はこの行を`_gap`扱いにしないため、消費者はそれぞれ
-「closeがNoneの行を読み飛ばす」処理で対処している。
-
-#### 実害（Market Pulseで確認したもの）
-- 当日: closeがNoneの資産は前営業日の値で表示される（2026-09-26: 資金フロー5資産・LQD・IVW/IVEが09-24、
-  他は09-25）。基準日の混在はMARKETPULSE-BREADTH-MIXED-DATES-1・MARKETPULSE-HYG-LQD-DATE-MIX-1にも波及
-- 翌日: 前日比が2営業日分になる。2026-09-23のエントリで資金フロー株式（SPY）+1.535%（09-22対09-18）、
-  IVW +2.45%を1日分として表示（同じ日のS&P500指数カードは−0.00%）。ブレッスも09-22対09-18で計算
-- 移動平均: `get_ma_deviation()`は窓内にNoneがあるとNoneを返すため、該当銘柄の50/125/200日乖離が
-  窓から抜けるまで算出不能（SPYの50日乖離は2026-09-26時点でNone）
-
-他のdaily/消費者（TANUKI VALUATION・HypeCore・Stonks Silo等）への影響は未確認。
-
-#### 着手条件
-なし（修正はしていない。原因箇所: `common/market_data/fetcher.py`のdaily取得・保存処理）
+（[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]は2026-09-26、保存側・reader・TANUKIの修正と既存行の取り直し・再生成で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 
@@ -2437,6 +2408,27 @@ Risk-Offスコアが、異なる日の値の組み合わせで算出される日
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1] TANUKI SCORE daily pickのtanuki.current_priceが常にnull（latest.jsonのトップレベルを読んでいる）
+**優先度:** 低
+**分類:** 表示・入力データの欠落 / TANUKI SCORE daily pick
+**登録日:** 2026-09-26
+**発見:** 指示書⑳ STEP B-7（daily pickの再計算時）
+
+#### 内容
+`src/value/tanuki_score/daily_pick.py`（273-278行）は`tanuki.current_price`・`deviation_rate`を
+latest.jsonのトップレベルから読むが、current_priceは`components`の下にあり、deviation_rateは
+latest.jsonに存在しない。そのため`docs/integrated-dashboard/daily_pick.json`の
+`tanuki.current_price`・`deviation_rate`は2026-05-23の実装以来常にnull。
+
+#### 実害
+画面（tanuki_score/index.html）はこの2項目を表示しないため表示への影響はない。Grokへ渡す
+選出銘柄データに株価がnullで入る（IV・upsideは正しい値が入る）。
+
+#### 着手条件
+なし（修正はしていない）
+
+---
 
 ### [MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1] Market Pulseの計算式モーダルの重み表が旧版（7指標）のままで、実計算（8指標）と一致しない
 **優先度:** 低

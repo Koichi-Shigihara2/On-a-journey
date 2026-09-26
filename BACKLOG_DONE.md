@@ -9,6 +9,280 @@
 - `DATA-JUMP-CHECK-NETINCOME-SBC-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 - `LAYER3-GA-STANDALONE-TAG-UNMAPPED-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 
+### ✅ [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる） → 完了（2026-09-26）: 保存側・reader・TANUKIを修正し、既存行を取り直して再生成
+**優先度:** 中
+**分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2・3（Market Pulseの正確性確認）
+
+#### 内容
+`common/market_data/daily/{SYMBOL}.json`に、始値・高値・安値・出来高はあるが`close: None`
+（`_validation_warnings: ["close must be > 0 (got None)"]`、`_gap: False`）の行が保存されている。
+2026-09-21は510銘柄、2026-09-25は379銘柄（S&P500構成銘柄の大半とSPY・QQQ・RSP・LQD・IVW・IVE・
+SHV・GLD・TLT等。^GSPC等の指数は正常）。出来高は通常の半分程度（SPY 09-25: 35M）で、
+取引途中の足をyfinanceが返した可能性がある。後日の実行でもこの行は上書きされず、
+2026-09-26時点でも09-21の行はcloseがNoneのまま。原因（yfinanceの返却値・取得時刻）は未特定
+（2回とも00:00 UTC以降の実行だが、2026-09-01 00:41 UTCの実行では発生していない）。
+
+`reader.get_price_series()`はこの行を`_gap`扱いにしないため、消費者はそれぞれ
+「closeがNoneの行を読み飛ばす」処理で対処している。
+
+#### 実害（Market Pulseで確認したもの）
+- 当日: closeがNoneの資産は前営業日の値で表示される（2026-09-26: 資金フロー5資産・LQD・IVW/IVEが09-24、
+  他は09-25）。基準日の混在はMARKETPULSE-BREADTH-MIXED-DATES-1・MARKETPULSE-HYG-LQD-DATE-MIX-1にも波及
+- 翌日: 前日比が2営業日分になる。2026-09-23のエントリで資金フロー株式（SPY）+1.535%（09-22対09-18）、
+  IVW +2.45%を1日分として表示（同じ日のS&P500指数カードは−0.00%）。ブレッスも09-22対09-18で計算
+- 移動平均: `get_ma_deviation()`は窓内にNoneがあるとNoneを返すため、該当銘柄の50/125/200日乖離が
+  窓から抜けるまで算出不能（SPYの50日乖離は2026-09-26時点でNone）
+
+他のdaily/消費者（TANUKI VALUATION・HypeCore・Stonks Silo等）への影響は未確認。
+
+#### 着手条件
+なし（修正はしていない。原因箇所: `common/market_data/fetcher.py`のdaily取得・保存処理）
+
+#### 2026-09-26 完了（指示書⑳ STEP A・B）
+**根本原因（STEP A）**: yfinanceが取得時点で終値の無い足（始値・高値・安値・途中の出来高のみ）を返し、
+`fetch_daily_prices()`が5日分の足の末尾1件を無条件に保存していた（検証警告「close must be > 0」を記録するだけで
+保存は継続）。過去の行は二度と取り直さないため恒久的に残った。2回とも00:00〜00:13 UTC（米国時間外取引の終了直後）の
+実行で、同じ日付を後から取得すると終値つきで返る（一時的なyfinance側の状態）。時刻との関係は推定（09-01 00:41 UTCの
+実行では発生していない）。^N225は取得のたびに終値の無い足が保存されていた（08-12以降25件）。
+
+**daily/を読む各システムの挙動（修正前）**: TANUKI VALUATION（最新価格）は**current_price=0.0で計算を続行**、
+Stonks Siloはcurrent_price=None（2026-09-26は26銘柄中21銘柄）、HypeCore・Market Pulseは読み飛ばし、
+score_verifierはその日の検証をスキップ。TANUKIの誤りはTANUKI SCOREのdaily pick（09-22・09-26ともBBAIを
+「分類変化: SELL → WATCH」で選出）とscore_watcherのDiscord通知にも波及した。
+
+**修正（STEP B）**:
+- B-1 保存側: 終値の無い足を保存しない。既存の終値の無い行は次回の5日窓で取り直す（自己修復）。終値のある過去の行は上書きしない
+- B-2 reader: `get_latest_price()`は有効な終値を持つ最新の行（`date`が基準日）を返す。`get_price_on_or_after()`も同様
+- B-3 TANUKI: 価格が無い場合current_price=None・upside/timing=None・分類=UNDETERMINED（判定不能）。LOW丸め・
+  daily pick・score_watcherの対象外。画面3つにUNDETERMINEDの表示を追加
+- B-4 検知: NG-56（tanuki銘柄のcurrent_priceが0/None）。TANUKI_VALUATION_Update.ymlは`--fail-on-ng`のゲートを
+  commitの前に実行するため、NG-56が出た日はcommitされない（その日の誤った結果は公開されない）。ただしscore_watcher
+  （Discord通知）はゲートより前に実行される。価格欠損はUNDETERMINEDとして通知対象外にしたため、今回の型の誤通知は起きない
+- B-5 既存行: 1,004件中1,003件（563銘柄）を取り直した。終値のある行の変更0件を全ファイルで確認。HUBBの09-25は
+  yfinanceが現在も終値を返さないため残した（S&P500構成銘柄のみ、ブレッスで読み飛ばされる）
+- B-6 再生成: Market Data Daily→TANUKI VALUATION→Stonks Silo→Market Pulse→daily pickをローカルで実行
+  （メール・Discord送信はしていない）。TANUKIのcurrent_price=0は0件、NG-56 0件、分類UNDETERMINEDも0件
+- B-7 履歴: 削除せず`invalid`・`invalid_reason`を付けた（score_history 09-22の99件、history.json 255件、
+  スナップショット432件、daily pick 09-22）。09-23のdaily pick（NVDA「分類変化: HOLD→BUY」）は比較元が無効のため
+  注記を付けた。09-26のscore_history・daily pickは再生成で正しい値に置き換えた。score_watcherの基準は再生成後の値で
+  更新した（通知なし）
+
+**before/after（daily/を読む全システム）**:
+- TANUKI: 今日10:03の実行と比べ、IV・funda・成長率・dilution・recommended_gの変化0銘柄（価格由来の項目のみ変化）
+- Stonks Silo: current_priceが21銘柄で復元、verdict・score・runway・PSRの変化なし
+- HypeCore: 101銘柄とも2026-09の行のみ変化（09-21・09-25の終値が加わったため。価格・MA乖離・RSI・出来高）。8月以前の行の変化なし
+- Market Pulse: 全要素の基準日が09-25にそろった（DGS3MOのみFREDの公表ラグで09-23）。日経平均が表示されるようになった
+
+**保有9銘柄: 09-25の実行（正常時）との比較**（価格/IV/upside/分類/timing）:
+
+| 銘柄 | 09-25実行 | 再生成後 | 差の原因 |
+|---|---|---|---|
+| ADBE | 238.93 / 608.2 / +154.6% / BUY / 65 | 235.47 / 608.2 / +158.3% / BUY / 65 | 株価（09-24→09-25終値）のみ |
+| APP | 312.47 / 3655.3 / +1069.8% / BUY / 65 | 310.75 / 1152.9 / +271.0% / BUY / 65 | IVは[[DCF-1b]]（09-25夜）、株価 |
+| CELH | 28.43 / 35.4 / +24.5% / BUY / 50 | 27.99 / 28.1 / +0.4% / WATCH / 35 | IVは[[DCF-1b]]。分類はBUY→WATCH |
+| CRWV | 90.13 / 160.1 / +77.6% / WATCH / 65 | 87.59 / 84.3 / −3.8% / WATCH / 25 | IVは[[DCF-1b]]、株価 |
+| NVDA | 224.58 / 2131.1 / +848.9% / BUY / 80 | 225.07 / 733.6 / +226.0% / BUY / 80 | IVは[[DCF-1b]] |
+| PLTR | 192.59 / 286.2 / +48.6% / BUY / 70 | 189.67 / 126.6 / −33.3% / TRIM / 30 | IVは[[DCF-1b]]。分類はBUY→TRIM（09-25報告済み） |
+| SOFI | 16.80 / 38.1 / +126.7% / WATCH / 65 | 16.58 / 38.1 / +129.7% / WATCH / 65 | 株価。fundaは70→100（09-25→09-26の実行間で変化、本修正とは無関係） |
+| SOUN | 6.10 / 6.63 / +8.7% / WATCH / 35 | 6.05 / 6.63 / +9.6% / WATCH / 35 | 株価のみ |
+| TSLA | 377.94 / 56.5 / −85.0% / TRIM / 25 | 372.11 / 49.5 / −86.7% / TRIM / 25 | IVは[[DCF-1b]]、株価 |
+
+再生成前の誤った状態（09-26 10:03）から見て、09-25の状態からの実際の分類変化は3銘柄（CELH BUY→WATCH・
+MSFT HOLD→TRIM・PLTR BUY→TRIM、いずれも[[DCF-1b]]由来）。この3件はDiscordには通知していない。
+
+回帰テスト28件（stashでソースを外すと17件失敗、戻すと全件成功）。コミット: `5fff840e00`（コード）・
+`a93b42fecc`（daily/の取り直し）・`c03b3e3292`（再生成・無効印）。
+
+**STEP Aで作成した影響の一覧（修正前、TANUKI VALUATIONでcurrent_price=0になった銘柄。前回=正常時の実行、→後=誤った実行）**:
+
+```
+== 09-25データ(09-26 JST実行): current_price=0の銘柄 78/99
+   SCORE変化: 47
+   AAPL   前回 price=335.9200134277344 up=-52.5 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=159.53337480846574
+   ABBV   前回 price=265.1199951171875 up=-53.8 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=122.5037290355859
+   ADBE   前回 price=238.92999267578125 up=154.6 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=608.2031423059719
+   AMAT   前回 price=474.25 up=-66.0 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=161.02733259664316
+   AMD    前回 price=629.260009765625 up=-62.0 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=183.00844687633287
+   AMZN   前回 price=249.3800048828125 up=-84.2 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=36.29862429822758
+   APP    前回 price=312.4700012207031 up=1069.8 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=1152.944590712305
+   AVAV   前回 price=158.5500030517578 up=-45.1 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=86.96927415629395
+   BBAI   前回 price=2.799999952316284 up=-21.5 score=SELL timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=2.1989983496033836
+   BKNG   前回 price=157.41000366210938 up=121.7 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=348.9217249621296
+   BROS   前回 price=38.5099983215332 up=-45.8 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=20.88535778705097
+   BSY    前回 price=31.899999618530273 up=11.1 score=WATCH timing=50 → price=0.0 up=0.0 score=HOLD timing=35 iv=35.45076226599891
+   CART   前回 price=43.2599983215332 up=159.0 score=HOLD timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=112.04258459252802
+   CAT    前回 price=805.25 up=-65.7 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=275.98328024026074
+   CDNS   前回 price=322.0 up=-59.0 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=131.92669673427676
+   CELH   前回 price=28.43000030517578 up=24.5 score=BUY timing=50 → price=0.0 up=0.0 score=HOLD timing=35 iv=28.113252040324998
+   CIX    前回 price=36.2599983215332 up=-8.8 score=HOLD timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=33.05129999504899
+   CON    前回 price=34.619998931884766 up=-61.5 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=13.314872574517537
+   CPRT   前回 price=28.040000915527344 up=15.2 score=WATCH timing=50 → price=0.0 up=0.0 score=HOLD timing=35 iv=32.29384930143198
+   CRM    前回 price=238.22000122070312 up=80.1 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=428.9536551167514
+   CRWV   前回 price=90.12999725341797 up=77.6 score=WATCH timing=65 → price=0.0 up=0.0 score=WATCH timing=35 iv=84.27179187595922
+   DDOG   前回 price=256.9200134277344 up=28.3 score=BUY timing=55 → price=0.0 up=0.0 score=HOLD timing=40 iv=329.50742861732164
+   DELL   前回 price=536.02001953125 up=-76.5 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=125.79442403814981
+   DOCN   前回 price=141.57000732421875 up=-69.1 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=43.68342234555632
+   ELF    前回 price=100.56999969482422 up=81.0 score=BUY timing=70 → price=0.0 up=0.0 score=HOLD timing=40 iv=181.98184346941684
+   ENTG   前回 price=148.6300048828125 up=-78.0 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=32.749251241072685
+   ESTC   前回 price=91.27999877929688 up=75.1 score=BUY timing=70 → price=0.0 up=0.0 score=HOLD timing=40 iv=159.82353511126658
+   FICO   前回 price=856.47998046875 up=-24.5 score=HOLD timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=646.9490413110457
+   FROG   前回 price=94.19999694824219 up=-13.9 score=HOLD timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=81.14465303768239
+   FRSH   前回 price=12.8100004196167 up=182.7 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=36.218615957024284
+   GEV    前回 price=955.0399780273438 up=-35.5 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=616.0802750112857
+   GOOGL  前回 price=342.3599853515625 up=-45.3 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=187.1698624458336
+   GTLB   前回 price=48.619998931884766 up=110.2 score=BUY timing=70 → price=0.0 up=0.0 score=HOLD timing=40 iv=102.20392882329989
+   HEI    前回 price=306.3299865722656 up=-71.8 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=86.28890924036753
+   HQY    前回 price=88.5999984741211 up=30.1 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=115.24314730044819
+   HWM    前回 price=229.3800048828125 up=-78.9 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=48.29682924406747
+   INTU   前回 price=277.1300048828125 up=110.3 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=35 iv=582.725019155175
+   IONQ   前回 price=44.97999954223633 up=-42.8 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=25.737211381794495
+   JNJ    前回 price=270.67999267578125 up=-65.7 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=92.83249568746513
+   JOBY   前回 price=6.300000190734863 up=-2.8 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=6.125093332322109
+   KLAC   前回 price=187.11000061035156 up=-61.2 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=72.51742989688987
+   KO     前回 price=88.0999984741211 up=-84.1 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=14.016067337626207
+   KULR   前回 price=2.5 up=119.7 score=PASS timing=65 → price=0.0 up=0.0 score=PASS timing=35 iv=5.492259629747953
+   LITE   前回 price=929.0399780273438 up=-95.5 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=41.584175598204276
+   LLY    前回 price=1181.8900146484375 up=-57.0 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=508.7000925510379
+   LMT    前回 price=523.7000122070312 up=-28.5 score=HOLD timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=374.25633928536456
+   LOAR   前回 price=65.43000030517578 up=0.2 score=WATCH timing=50 → price=0.0 up=0.0 score=HOLD timing=50 iv=65.5369862129379
+   LRCX   前回 price=307.1600036621094 up=-71.7 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=86.7881599210395
+   META   前回 price=777.5900268554688 up=-4.1 score=HOLD timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=745.3344379971157
+   MO     前回 price=68.87999725341797 up=-16.1 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=57.81820568689111
+   MRVL   前回 price=258.95001220703125 up=-85.5 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=37.44015801173585
+   MSCI   前回 price=556.0800170898438 up=-15.9 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=467.74933238410836
+   MSFT   前回 price=497.92999267578125 up=-23.2 score=HOLD timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=318.8442386182769
+   NET    前回 price=358.82000732421875 up=-73.4 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=95.59094952803417
+   ONDS   前回 price=7.599999904632568 up=-63.3 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=2.7919638528349386
+   PAYS   前回 price=12.960000038146973 up=157.6 score=BUY timing=70 → price=0.0 up=0.0 score=HOLD timing=40 iv=33.3910314866957
+   PEP    前回 price=128.14999389648438 up=-57.1 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=54.97980876380842
+   PM     前回 price=191.5 up=-45.8 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=103.82635152424939
+   QBTS   前回 price=17.479999542236328 up=-80.9 score=PASS timing=25 → price=0.0 up=0.0 score=PASS timing=35 iv=3.3411150612001257
+   RCAT   前回 price=6.800000190734863 up=6.9 score=WATCH timing=35 → price=0.0 up=0.0 score=WATCH timing=35 iv=7.266005909451385
+   RDW    前回 price=11.600000381469727 up=-47.1 score=WATCH timing=25 → price=0.0 up=0.0 score=WATCH timing=35 iv=6.138895232510085
+   RMBS   前回 price=104.55000305175781 up=-23.2 score=HOLD timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=80.31837165125991
+   RXRX   前回 price=3.890000104904175 up=382.1 score=WATCH timing=65 → price=0.0 up=0.0 score=WATCH timing=35 iv=18.752031013413735
+   S      前回 price=23.979999542236328 up=-11.1 score=WATCH timing=30 → price=0.0 up=0.0 score=WATCH timing=40 iv=21.323950323128614
+   SITM   前回 price=643.239990234375 up=-84.6 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=99.2690742887833
+   SNPS   前回 price=424.9100036621094 up=-39.6 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=256.59988362402413
+   SOFI   前回 price=16.799999237060547 up=126.7 score=WATCH timing=65 → price=0.0 up=0.0 score=WATCH timing=35 iv=38.0875981668314
+   SOUN   前回 price=6.099999904632568 up=8.7 score=WATCH timing=35 → price=0.0 up=0.0 score=WATCH timing=35 iv=6.631673288931545
+   SPIR   前回 price=12.260000228881836 up=-24.5 score=PASS timing=25 → price=0.0 up=0.0 score=PASS timing=35 iv=9.260431718051107
+   TER    前回 price=387.70001220703125 up=-68.3 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=123.08631835122927
+   TSLA   前回 price=377.94000244140625 up=-85.0 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=49.45568438206979
+   V      前回 price=367.9800109863281 up=-25.0 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=275.98369238989807
+   VRT    前回 price=245.3000030517578 up=-30.1 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=171.5198593182993
+   VST    前回 price=137.94000244140625 up=-67.7 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=44.524247118202936
+   VZ     前回 price=47.31999969482422 up=80.3 score=HOLD timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=85.31166105981114
+   WMT    前回 price=107.58999633789062 up=-71.8 score=TRIM timing=25 → price=0.0 up=0.0 score=HOLD timing=35 iv=30.33735831211991
+   WST    前回 price=373.6000061035156 up=-74.3 score=TRIM timing=30 → price=0.0 up=0.0 score=HOLD timing=40 iv=96.18752418754062
+   ZETA   前回 price=29.56999969482422 up=33.9 score=BUY timing=70 → price=0.0 up=0.0 score=HOLD timing=40 iv=39.582095225206764
+== 09-21データ(09-22 JST実行): current_price=0の銘柄 99/99
+   SCORE変化: 56
+   AAPL   前回 price=336.1300048828125 up=-52.5 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=159.53337480846574
+   ABBV   前回 price=263.9599914550781 up=-53.6 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=122.5037290355859
+   ADBE   前回 price=248.9199981689453 up=144.3 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=608.2031423059719
+   ADSK   前回 price=216.9499969482422 up=65.4 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=358.8509050364288
+   ALAB   前回 price=303.25 up=-48.3 score=GROWTH_PREMIUM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=156.77002880753895
+   AMAT   前回 price=444.57000732421875 up=-63.8 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=161.02733259664316
+   AMD    前回 price=559.8200073242188 up=-57.3 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=239.18376630218484
+   AMZN   前回 price=253.7100067138672 up=-84.5 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=39.29644508055254
+   APP    前回 price=308.05999755859375 up=1086.6 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=3655.3197709145443
+   ASTS   前回 price=58.52000045776367 up=-93.7 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=3.657978606155693
+   AVAV   前回 price=159.9499969482422 up=-45.6 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=86.96927415629395
+   BBAI   前回 price=2.799999952316284 up=-21.5 score=SELL timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=2.1989983496033836
+   BKNG   前回 price=167.89999389648438 up=107.8 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=348.9217249621296
+   BROS   前回 price=40.029998779296875 up=-47.8 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=20.88535778705097
+   BSY    前回 price=32.58000183105469 up=8.8 score=WATCH timing=50 → price=0.0 up=0.0 score=HOLD timing=50 iv=35.45076226599891
+   CAKE   前回 price=96.51000213623047 up=-54.9 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=43.48120110975319
+   CART   前回 price=45.369998931884766 up=147.0 score=HOLD timing=95 → price=0.0 up=0.0 score=HOLD timing=65 iv=112.04258459252802
+   CAT    前回 price=808.989990234375 up=-65.9 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=275.98328024026074
+   CDNS   前回 price=282.8999938964844 up=-53.4 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=131.92669673427676
+   CEG    前回 price=254.7100067138672 up=-86.5 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=34.487029936111824
+   CELH   前回 price=28.020000457763672 up=26.3 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=50 iv=35.395228182785665
+   CIX    前回 price=37.36000061035156 up=-11.5 score=HOLD timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=33.05129999504899
+   COHR   前回 price=317.3599853515625 up=-86.9 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=41.59648289215105
+   CON    前回 price=35.470001220703125 up=-62.5 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=13.314872574517537
+   CPRT   前回 price=29.280000686645508 up=-2.4 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=28.57838436925768
+   CRM    前回 price=237.9199981689453 up=80.3 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=428.9536551167514
+   CRWV   前回 price=81.36000061035156 up=96.8 score=WATCH timing=80 → price=0.0 up=0.0 score=WATCH timing=50 iv=160.0789931376828
+   CSGP   前回 price=29.09000015258789 up=-63.1 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=10.739226131037919
+   DDOG   前回 price=229.9199981689453 up=43.3 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=329.50742861732164
+   DELL   前回 price=568.0599975585938 up=-77.9 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=125.79442403814981
+   DOCN   前回 price=130.13999938964844 up=-66.4 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=43.68342234555632
+   ELF    前回 price=96.44000244140625 up=88.7 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=181.98184346941684
+   ENTG   前回 price=142.25 up=-77.0 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=32.749251241072685
+   ESTC   前回 price=86.95999908447266 up=83.8 score=BUY timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=159.82353511126658
+   FCX    前回 price=71.54000091552734 up=-83.4 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=11.889504480320305
+   FICO   前回 price=949.6799926757812 up=-31.9 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=646.9490413110457
+   FLYW   前回 price=17.34000015258789 up=164.5 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=45.86207184291286
+   FROG   前回 price=92.80999755859375 up=-12.6 score=HOLD timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=81.14465303768239
+   FRSH   前回 price=12.25 up=195.7 score=BUY timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=36.218615957024284
+   GEV    前回 price=940.3300170898438 up=-34.5 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=616.0802750112857
+   GOOGL  前回 price=349.5400085449219 up=-46.5 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=187.1698624458336
+   GTLB   前回 price=49.22999954223633 up=107.6 score=BUY timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=102.20392882329989
+   HEI    前回 price=298.2200012207031 up=-71.1 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=86.28890924036753
+   HON    前回 price=206.4600067138672 up=-36.2 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=131.67247655162203
+   HQY    前回 price=95.13999938964844 up=21.1 score=BUY timing=65 → price=0.0 up=0.0 score=HOLD timing=50 iv=115.24314730044819
+   HWM    前回 price=229.6699981689453 up=-79.0 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=48.29682924406747
+   INTU   前回 price=303.19000244140625 up=92.2 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=582.725019155175
+   IONQ   前回 price=39.130001068115234 up=-34.2 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=25.737211381794495
+   IOT    前回 price=39.54999923706055 up=-17.0 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=32.84084805794318
+   JNJ    前回 price=269.989990234375 up=-65.6 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=92.83249568746513
+   JOBY   前回 price=6.119999885559082 up=-6.5 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=5.720636648213491
+   KLAC   前回 price=176.99000549316406 up=-59.0 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=72.51742989688987
+   KO     前回 price=88.25 up=-84.1 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=14.016067337626207
+   KULR   前回 price=2.369999885559082 up=131.7 score=PASS timing=80 → price=0.0 up=0.0 score=PASS timing=50 iv=5.492259629747953
+   LITE   前回 price=930.9099731445312 up=-95.5 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=41.584175598204276
+   LLY    前回 price=1152.9300537109375 up=-55.9 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=508.7000925510379
+   LMT    前回 price=533.3800048828125 up=-29.8 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=374.25633928536456
+   LOAR   前回 price=64.43000030517578 up=1.7 score=WATCH timing=65 → price=0.0 up=0.0 score=HOLD timing=65 iv=65.5369862129379
+   LRCX   前回 price=288.1099853515625 up=-69.9 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=86.7881599210395
+   LYFT   前回 price=15.100000381469727 up=329.6 score=HOLD timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=64.87004933479203
+   META   前回 price=665.75 up=12.0 score=WATCH timing=65 → price=0.0 up=0.0 score=HOLD timing=50 iv=745.3344379971157
+   MO     前回 price=69.5199966430664 up=-16.8 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=57.81820568689111
+   MRVL   前回 price=244.25 up=-84.7 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=37.44015801173585
+   MSCI   前回 price=552.8699951171875 up=-15.4 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=467.74933238410836
+   MSFT   前回 price=493.7799987792969 up=-22.6 score=HOLD timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=382.3551761505338
+   NET    前回 price=323.6000061035156 up=-70.5 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=95.59094952803417
+   NOW    前回 price=135.47000122070312 up=35.5 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=183.5284320831052
+   NVDA   前回 price=222.27000427246094 up=858.8 score=BUY timing=95 → price=0.0 up=0.0 score=HOLD timing=65 iv=2131.1031365771737
+   ONDS   前回 price=7.389999866485596 up=-62.2 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=2.7919638528349386
+   PAYS   前回 price=12.34000015258789 up=170.6 score=BUY timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=33.3910314866957
+   PEP    前回 price=129.75 up=-57.6 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=54.97980876380842
+   PLTR   前回 price=177.63999938964844 up=61.1 score=BUY timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=286.14678858330365
+   PM     前回 price=188.6199951171875 up=-45.0 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=103.82635152424939
+   QBTS   前回 price=17.110000610351562 up=-80.5 score=PASS timing=40 → price=0.0 up=0.0 score=PASS timing=50 iv=3.3411150612001257
+   RBRK   前回 price=106.70999908447266 up=-2.6 score=HOLD timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=103.88964084699319
+   RCAT   前回 price=6.75 up=7.6 score=WATCH timing=50 → price=0.0 up=0.0 score=WATCH timing=50 iv=7.266005909451385
+   RDW    前回 price=10.739999771118164 up=-42.8 score=WATCH timing=40 → price=0.0 up=0.0 score=WATCH timing=50 iv=6.138895232510085
+   RMBS   前回 price=87.5999984741211 up=-8.3 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=80.31837165125991
+   RXRX   前回 price=3.8299999237060547 up=389.6 score=WATCH timing=80 → price=0.0 up=0.0 score=WATCH timing=50 iv=18.752031013413735
+   S      前回 price=22.510000228881836 up=-5.3 score=WATCH timing=45 → price=0.0 up=0.0 score=WATCH timing=55 iv=21.323950323128614
+   SCCO   前回 price=195.6999969482422 up=-57.3 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=83.60751200554475
+   SITM   前回 price=614.27001953125 up=-83.8 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=99.2690742887833
+   SN     前回 price=165.75 up=131.2 score=HOLD timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=383.2683656225912
+   SNPS   前回 price=384.9700012207031 up=-33.3 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=256.59988362402413
+   SOFI   前回 price=16.959999084472656 up=124.6 score=WATCH timing=80 → price=0.0 up=0.0 score=WATCH timing=50 iv=38.0875981668314
+   SOUN   前回 price=5.929999828338623 up=11.8 score=WATCH timing=65 → price=0.0 up=0.0 score=WATCH timing=50 iv=6.631673288931545
+   SPIR   前回 price=11.399999618530273 up=-42.0 score=PASS timing=40 → price=0.0 up=0.0 score=PASS timing=50 iv=6.6083831943193445
+   TASK   前回 price=8.119999885559082 up=110.9 score=HOLD timing=80 → price=0.0 up=0.0 score=HOLD timing=50 iv=17.12804643160905
+   TDY    前回 price=603.4600219726562 up=-28.3 score=HOLD timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=432.8464763446002
+   TER    前回 price=371.4700012207031 up=-66.9 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=123.08631835122927
+   TSLA   前回 price=364.2699890136719 up=-84.5 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=56.50275481149476
+   V      前回 price=368.2900085449219 up=-25.1 score=HOLD timing=55 → price=0.0 up=0.0 score=HOLD timing=65 iv=275.98369238989807
+   VRT    前回 price=249.38999938964844 up=-31.2 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=171.5198593182993
+   VST    前回 price=140.6699981689453 up=-68.3 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=44.524247118202936
+   VZ     前回 price=48.09000015258789 up=77.4 score=HOLD timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=85.31166105981114
+   WMT    前回 price=106.7300033569336 up=-71.6 score=TRIM timing=40 → price=0.0 up=0.0 score=HOLD timing=50 iv=30.33735831211991
+   WST    前回 price=362.30999755859375 up=-73.5 score=TRIM timing=45 → price=0.0 up=0.0 score=HOLD timing=55 iv=96.18752418754062
+   XOM    前回 price=163.5399932861328 up=-67.8 score=WATCH timing=45 → price=0.0 up=0.0 score=WATCH timing=55 iv=52.66348132543081
+   ZETA   前回 price=30.229999542236328 up=30.9 score=BUY timing=85 → price=0.0 up=0.0 score=HOLD timing=55 iv=39.582095225206764
+```
+
+---
+
 ### ✅ [SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1] split_history.yamlへの株式分割の登録漏れを検知する仕組みがない → 完了（2026-09-26）: CHECK-54で検知し、一次資料で確認した27件を登録
 **優先度:** 低
 **分類:** データ品質ゲート / EPS ANALYZER・TANUKI VALUATION
