@@ -1464,3 +1464,65 @@ class TestCheck53FloorWithNegativeRawCagr:
         joby = [-743330000, -500696000, -400786000, -321724000]
         assert rcc._check_floor_with_negative_raw_cagr(
             "JOBY", self._latest(joby, floor_hit=True, source="segment_weighted")) == []
+
+
+class TestCheck54SplitHistoryRegistration:
+    """CHECK-54: yfinance splitsにあってsplit_history.yamlに未登録の分割をWARN
+    （[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceとローカルデータの
+    開始日は差し替えて検証する"""
+
+    @staticmethod
+    def _run(monkeypatch, splits_by_ticker, history, start=None):
+        monkeypatch.setattr(rcc, "_local_data_start", lambda t: start)
+
+        def fetch(t):
+            v = splits_by_ticker[t]
+            if isinstance(v, Exception):
+                raise v
+            return v
+        return rcc._check_split_history_registration(
+            sorted(splits_by_ticker), fetch=fetch, split_history=history)
+
+    def test_unregistered_split_fires(self, monkeypatch):
+        warns, info = self._run(monkeypatch, {"NVDA": [("2021-07-20", 4.0)]}, {})
+        assert [t for t, _ in warns] == ["NVDA"]
+        assert "[WARN-54" in warns[0][1] and "2021-07-20" in warns[0][1] and "比率=4" in warns[0][1]
+        assert info == []
+
+    def test_registered_split_within_tolerance_silent(self, monkeypatch):
+        """BKNG: yamlは2026-04-06、ずれ10日以内なら登録済み扱い（比率は比べない）"""
+        warns, _ = self._run(monkeypatch, {"BKNG": [("2026-04-02", 25.0)]},
+                             {"BKNG": [{"date": "2026-04-06", "ratio": 25}]})
+        assert warns == []
+
+    def test_date_far_from_registered_fires(self, monkeypatch):
+        warns, _ = self._run(monkeypatch, {"NVDA": [("2021-07-20", 4.0), ("2024-06-10", 10.0)]},
+                             {"NVDA": [{"date": "2024-06-10", "ratio": 10}]})
+        assert [w for _, w in warns if "2021-07-20" in w] and len(warns) == 1
+
+    def test_noise_band_ignored(self, monkeypatch):
+        """SCCO・HONの分社化調整（1.032/1.061/0.9535等）は分割として扱わない"""
+        warns, _ = self._run(monkeypatch, {"HON": [("2020-06-01", 1.032), ("2024-10-01", 1.061),
+                                                   ("2026-06-29", 0.9535)]}, {})
+        assert warns == []
+
+    def test_before_local_data_start_ignored(self, monkeypatch):
+        warns, _ = self._run(monkeypatch, {"JNJ": [("2001-06-13", 2.0)]}, {}, start="2006-01-01")
+        assert warns == []
+
+    def test_reverse_split_fires(self, monkeypatch):
+        warns, _ = self._run(monkeypatch, {"RCAT": [("2019-08-01", 0.0008)]}, {}, start="2010-01-01")
+        assert len(warns) == 1 and "0.0008" in warns[0][1]
+
+    def test_fetch_failure_is_skip_not_warn(self, monkeypatch):
+        warns, info = self._run(monkeypatch, {"AAPL": RuntimeError("rate limited")}, {})
+        assert warns == []
+        assert len(info) == 1 and "[INFO-54" in info[0] and "AAPL" in info[0]
+
+    def test_ledger_match_excludes_single_split_only(self):
+        """RCATのシェル会社時代の分割は分割日をmatchにして個別に除外する"""
+        ledger = {("WARN-54", "RCAT", "2019-08-01")}
+        _, is_new = annotate_warn("RCAT", "  [WARN-54 split_history未登録] RCAT 2019-08-01 yfinance比率=0.0008", ledger)
+        assert is_new is False
+        _, is_new = annotate_warn("RCAT", "  [WARN-54 split_history未登録] RCAT 2027-01-02 yfinance比率=0.1", ledger)
+        assert is_new is True

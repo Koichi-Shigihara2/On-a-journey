@@ -1293,6 +1293,92 @@ def _raw_fcf_cagr(latest: dict) -> Optional[float]:
     return result.cagr_detail.get("raw_cagr")
 
 
+# CHECK-54: yfinanceの分割比率がこの範囲内なら分割として扱わない
+# （SCCO〈~1.005〉・HON〈1.032・1.061・0.9535〉等、分社化・特別配当に伴う
+# 株価調整のノイズ）
+_SPLIT_RATIO_NOISE_BAND = (0.9, 1.1)
+# split_history.yamlの日付とyfinanceの日付（ex-date）のずれの許容日数
+# （BKNGは効力発生4/2・分割調整後取引開始4/6のように数日ずれうる）
+_SPLIT_DATE_TOLERANCE_DAYS = 10
+
+
+def _local_data_start(ticker: str) -> Optional[str]:
+    """銘柄のローカルデータ（SEC年次・EPS四半期）の最古の日付（YYYY-MM-DD）。
+    これより前の分割は、補正対象のデータが存在しないためCHECK-54の対象外。"""
+    starts = []
+    years = []
+    for p in glob.glob(os.path.join(SEC_DATA_DIR, ticker, "annual_*.json")):
+        m = re.search(r"annual_(\d{4})\.json$", p)
+        if m:
+            years.append(int(m.group(1)))
+    if years:
+        starts.append(f"{min(years)}-01-01")
+    ends = [q.get("period_end") for q in _read_eps_quarterly(ticker) if q.get("period_end")]
+    if ends:
+        starts.append(min(ends))
+    return min(starts) if starts else None
+
+
+def _fetch_yf_splits(ticker: str) -> list[tuple[str, float]]:
+    """yfinanceのsplitsを[(YYYY-MM-DD, ratio)]で返す（取得失敗は例外を送出）。"""
+    import yfinance as yf
+    s = yf.Ticker(ticker).splits
+    return [(d.strftime("%Y-%m-%d"), float(v)) for d, v in s.items()]
+
+
+def _check_split_history_registration(
+    tickers: list[str], fetch=_fetch_yf_splits, split_history: Optional[dict] = None
+) -> tuple[list[tuple[str, str]], list[str]]:
+    """CHECK-54: yfinanceのsplitsに記録があるのにconfig/split_history.yamlに
+    未登録の株式分割を検知する（2026-09-26新設、NG化しないWARN。
+    [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。
+
+    対象: 比率が_SPLIT_RATIO_NOISE_BANDの範囲外で、銘柄のローカルデータの
+    期間内（_local_data_start()以降）の分割。登録済みの判定は同一銘柄で
+    日付のずれが_SPLIT_DATE_TOLERANCE_DAYS日以内（比率は比べない。HONの
+    yfinance比率0.9535は実際の1-for-2と異なるため）。個別の分割を除外する
+    場合（RCATのシェル会社時代等）は、warn_acknowledged.jsonにmatchとして
+    分割日を書く。本チェックはsplit_history.yamlへの登録を行わない
+    （登録すると既存関数が動き出すため、CHAT_RULES事例21）。
+
+    --include-yfinance-checks指定時のみrun_checks()から呼ばれる（CHECK-41と
+    同じ扱い）。yfinanceの取得に失敗した銘柄はWARNにせず、スキップとして
+    info側に出す。
+
+    Returns:
+        ([(ticker, WARNメッセージ)], [スキップ等のinfoメッセージ])
+    """
+    from datetime import date as _date
+    if split_history is None:
+        from common.sec_data.split_adjust import load_split_history
+        split_history = load_split_history()
+    warns: list[tuple[str, str]] = []
+    info: list[str] = []
+    lo, hi = _SPLIT_RATIO_NOISE_BAND
+    for t in tickers:
+        try:
+            splits = fetch(t)
+        except Exception as e:
+            info.append(f"  [INFO-54 split_history照合スキップ] {t}: yfinance取得失敗（{type(e).__name__}: {e}）")
+            continue
+        start = _local_data_start(t)
+        registered = [str(s.get("date")) for s in (split_history.get(t) or [])]
+        for d, ratio in splits:
+            if lo <= ratio <= hi:
+                continue
+            if start and d < start:
+                continue
+            dd = _date.fromisoformat(d)
+            if any(abs((dd - _date.fromisoformat(r)).days) <= _SPLIT_DATE_TOLERANCE_DAYS for r in registered):
+                continue
+            warns.append((t,
+                f"  [WARN-54 split_history未登録] {t} {d} yfinance比率={ratio:g}"
+                f"（ローカルデータ開始 {start or '不明'} 以降）→ 8-Kで日付・比率を確認し"
+                f"登録要否を判断（登録は既存関数が動き出すため別作業、CHAT_RULES事例21）"
+            ))
+    return warns, info
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -2999,6 +3085,32 @@ def run_checks(args=None) -> tuple[int, int]:
     if stonks_flag_warn:
         flagged.append(("[GLOBAL]", [], stonks_flag_warn))
         total_warn += len(stonks_flag_warn)
+
+    # CHECK-54: split_history.yamlの登録漏れ（yfinance splitsと突き合わせ、
+    # [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceを使うため
+    # --include-yfinance-checks指定時のみ。tanuki以外のeps銘柄もsplit_history
+    # の消費者のため、cik_lookup.csvのtanuki/eps対象全銘柄を見る。
+    # 銘柄単位の台帳照合（match＝分割日）を行うため、annotate_warn()を通す。
+    if include_yfinance:
+        _split_tickers = sorted(
+            row["ticker"] for row in _tickers_mod.get_all_rows()
+            if (row.get("status") or "").strip().lower() not in ("retired", "provisioning")
+            and "true" in ((row.get("tanuki") or "").strip().lower(), (row.get("eps") or "").strip().lower())
+        )
+        if ticker_filter:
+            _split_tickers = [t for t in _split_tickers if t in ticker_filter]
+        split_warns, split_info = _check_split_history_registration(_split_tickers)
+        split_msgs = []
+        for _t, _w in split_warns:
+            _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+            split_msgs.append(_msg)
+            if _is_new:
+                total_warn_new += 1
+        if split_msgs:
+            flagged.append(("[GLOBAL]", [], split_msgs))
+            total_warn += len(split_msgs)
+        if split_info:
+            flagged.append(("[GLOBAL]", [], split_info))
 
     if not flagged:
         if not quiet:

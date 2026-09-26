@@ -341,6 +341,27 @@
       "acknowledged_date": "2026-09-26",
       "match": "候補数=1件",
       "comment": "recommended_g候補不足。上場後日が浅く、候補数が構造的に少ない。登録時点の候補数=1件（Noneでない候補: g_fundamental）。matchにより候補数が変わると再び未確認になる（[[JNJ-XOM-PM-FLOOR-RISK-1]]の自動検知化、指示書⑰ STEP 2）。"
+    },
+    {
+      "check": "WARN-54",
+      "ticker": "RCAT",
+      "acknowledged_date": "2026-09-26",
+      "match": "2014-07-23",
+      "comment": "split_history未登録（yfinance 2014-07-23）。逆さ合併前のシェル会社時代の分割で評価対象外（[[SPLIT-REALTIME-GAP-1]]・[[SPLIT-REALTIME-GAP-REVERSE-1]]の判断どおり）。matchで分割日を固定しているため、RCATの他の分割は引き続き発火する（指示書⑰ STEP 3）。"
+    },
+    {
+      "check": "WARN-54",
+      "ticker": "RCAT",
+      "acknowledged_date": "2026-09-26",
+      "match": "2016-11-22",
+      "comment": "split_history未登録（yfinance 2016-11-22）。逆さ合併前のシェル会社時代の分割で評価対象外（[[SPLIT-REALTIME-GAP-1]]・[[SPLIT-REALTIME-GAP-REVERSE-1]]の判断どおり）。matchで分割日を固定しているため、RCATの他の分割は引き続き発火する（指示書⑰ STEP 3）。"
+    },
+    {
+      "check": "WARN-54",
+      "ticker": "RCAT",
+      "acknowledged_date": "2026-09-26",
+      "match": "2019-08-01",
+      "comment": "split_history未登録（yfinance 2019-08-01）。逆さ合併前のシェル会社時代の分割で評価対象外（[[SPLIT-REALTIME-GAP-1]]・[[SPLIT-REALTIME-GAP-REVERSE-1]]の判断どおり）。matchで分割日を固定しているため、RCATの他の分割は引き続き発火する（指示書⑰ STEP 3）。"
     }
   ]
 }
