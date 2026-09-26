@@ -77,7 +77,7 @@ class CheckResult:
     element: str
     expected: Any
     actual: Any
-    passed: bool
+    passed: Optional[bool]  # None=判定不能（2026-09-26、MP全要素化で追加）
     note: str = ""
 
 
@@ -379,6 +379,10 @@ def run_browser_checks(report: RunReport) -> None:
             ),
         ))
 
+        # MP-01〜MP-29（Market Pulse全要素、2026-09-26追加）
+        from market_pulse_elements import run_market_pulse_element_checks
+        run_market_pulse_element_checks(page2, report.results, CheckResult)
+
         page2.close()
         browser.close()
 
@@ -388,6 +392,9 @@ def main() -> int:
     server = start_server()
     try:
         run_browser_checks(report)
+        # D-01〜D-05（導出層・データ層の独立再計算、ブラウザ不要）
+        from market_pulse_elements import run_derivation_checks
+        run_derivation_checks(report.results, CheckResult)
     finally:
         server.terminate()
         try:
@@ -399,9 +406,11 @@ def main() -> int:
     print("Market Pulse / MACRO PULSE 依存関係マップ 実ブラウザ確認結果")
     print("=" * 100)
     all_passed = True
+    counts = {"一致": 0, "不一致": 0, "判定不能": 0}
     for r in report.results:
-        status = "✅ 一致" if r.passed else "❌ 不一致"
-        if not r.passed:
+        status = "✅ 一致" if r.passed else ("➖ 判定不能" if r.passed is None else "❌ 不一致")
+        counts[status.split()[1]] += 1
+        if r.passed is False:
             all_passed = False
         print(f"\n{status}  {r.element}")
         print(f"  期待値: {r.expected}")
@@ -416,6 +425,13 @@ def main() -> int:
             print(f"⚠ {page_name}: consoleエラー{len(errs)}件検出: {errs[:3]}")
         else:
             print(f"✅ {page_name}: consoleエラー0件")
+
+    print(f"\n件数: 一致{counts['一致']} / 不一致{counts['不一致']} / 判定不能{counts['判定不能']}")
+    print("\n" + "-" * 100)
+    print("データ基準日の分類（market_data.json最新エントリ）")
+    from market_pulse_elements import classify_base_dates
+    for elem, d, cls, note in classify_base_dates():
+        print(f"  {elem:40} {d or '-':12} {cls} {note}")
 
     print("\n" + "=" * 100)
     print(f"総合結果: {'✅ 全項目一致' if all_passed else '❌ 不一致あり（詳細は上記参照）'}")

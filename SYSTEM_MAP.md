@@ -1619,6 +1619,58 @@ MACRO PULSE   ← FREDデータ / FRBステートメント
   への統合対象外と明記〈39行目コメント〉）＋各銘柄の日次価格
   （`common.market_data.reader`経由）→`breadth_data.json`
 
+### Market Pulse 全画面要素（MP-01〜MP-29、2026-09-26追加・指示書⑲）
+上記①〜⑦のうちMarket Pulseに関わる④⑥⑦に加え、Market Pulse画面
+（`docs/market-monitor/market-pulse/index.html`）の表示要素を全て洗い出した
+（表示コンポーネント単位で29要素。1要素に複数の数値を含むものは(a)欄に列挙）。
+(a)の行番号はindex.html、(b)の行番号は`src/market/market_pulse/collect_and_send.py`
+（`bc`=`breadth_calculator.py`）。生データは原則`docs/market-monitor/market-pulse/
+data/market_data.json`の最新エントリ（以下`L`）に集約され、フロントはそれを読むだけ。
+【共有】は他画面・他システムも同じ値を読む要素（MACRO PULSEは`market_data.json`を
+読まないため、MACRO PULSEとの共有要素はない。④⑥⑦は上記参照）。
+
+| ID | (a) 表示コンポーネント | (b) 導出関数 | (c) 生データソース |
+|---|---|---|---|
+| MP-01 | 更新日時 `#lastUpdated`（`init()` 1174） | `save_data_to_json_and_csv()` 1451（実行時刻） | `L.date` |
+| MP-02 | センチメントスコア `#gaugeScore`・針（`renderGauge()` 696） | `compute_sentiment()` 191（8指標の加重平均） | `L.sentiment.score` ← daily/（^VIX・^VIX9D・^GSPC・HYG・LQD・IVW・IVE）＋`breadth_data.json` |
+| MP-03 | センチメントラベル `#gaugeLabel` | `compute_sentiment()`（20/35/50/65/80区切り） | `L.sentiment.label` |
+| MP-04 | 前回比 `#gaugeDelta` | フロント計算（最新−1つ前のスコア） | `market_data.json`直近2エントリ |
+| MP-05 | シグナルバッジ `#signalBadge`（BUY/TAKE PROFIT/HOLD） | フロント計算（`L.sentiment.signal`が無い場合の簡易判定、716行） | 表示期間内のスコア系列 |
+| MP-06 | スコア構成指標バー `#subScores`（8本・重み・ツールチップ） | `compute_sentiment()`の`sub_scores` | `L.sentiment.sub_scores` |
+| MP-07 | VIX短期vs中期 `#vix9dRow` | `get_realtime_data()` 755（VIX9D/VIX比・順鞘判定） | daily/の^VIX9D・^VIX |
+| MP-08 | 市場の広がり `#breadthSummary`（ADV/DEC・AD5d・NH/NL・>50MA/>200MA・EW乖離・McClellan・警戒バッジ） | `bc::compute_breadth()` 141 → `compute_sentiment()`の`breadth_summary` | daily/のS&P500構成銘柄・RSP・SPY → `breadth_data.json`（=⑦） |
+| MP-09 | センチメント推移チャート `#oscChart`（8系列切替・既定Score/F&G） | フロント描画のみ | `market_data.json`過去エントリ |
+| MP-10 | センチメント予測ミニゲージ `#miniGaugesSection`（明日/5日後/20日後） | フロント計算（`renderMiniGauges()` 896、同ゾーン時の平均S&P500リターン×2） | `market_data.json`全エントリのスコア・S&P500 |
+| MP-11 | CNN F&Gゲージ `#fgGaugeScore`/`#fgGaugeLbl`（`renderTechPulse()` 808） | `fetch_cnn_fear_greed()` 1633（=⑥） | CNN API → `L.fear_greed`【共有: TANUKI VALUATION `pipeline.py`・TANUKI SCORE（`daily_pick.py`・画面）・Extreme Fear画面】 |
+| MP-12 | Tech Pulseゲージ `#tpGaugeScore`/`#tpGaugeLbl` | `calc_tech_pulse_score()` 728（QQQ vs MA125・VXN vs MA50・QQQ vs SPY 20日の90日パーセンタイル平均） | daily/のQQQ・SPY、FRED VXNCLS（`common/macro_data`） |
+| MP-13 | 乖離 `#tpDivVal`・シグナル `#tpDivBadge` | `main`内（TP−CNN F&G）・`_get_tp_signal()` 708 | `L.tech_pulse.divergence` |
+| MP-14 | 乖離Zスコア `#tpDivZscore`/`#tpCZscore` | `_calc_divergence_zscore()` 696（過去90件） | `market_data.json`過去エントリの乖離 |
+| MP-15 | VXN `#tpCVXN` | `fetch_vxn_from_fred()` 464 | FRED VXNCLS |
+| MP-16 | QQQ vs SPY 20日 `#tpCQQQ` | `fetch_qqq_tech_data()` 425 | daily/のQQQ・SPY |
+| MP-17 | CNN F&G vs Tech Pulse推移 `#tpChart` | フロント描画のみ | `market_data.json`過去30日 |
+| MP-18 | TAKE PROFITチェックリスト（F&G≥75で発動） | `calc_take_profit_checklist()` 1333（MA200・HYスプレッド・Hindenburg=④） | daily/の^GSPC、FRED BAMLH0A0HYM2、`breadth_data.json` |
+| MP-19 | BUYチェックリスト（F&G≤25で発動） | `calc_buy_checklist()` 1397（同上） | 同上 |
+| MP-20 | 資金フロー 今日のタイル（7資産） | `collect_asset_flow()` 1256・`fetch_fred_short_bond()` 1214 | daily/のSHV・GLD・TLT・LQD・HYG・SPY、FRED DGS3MO |
+| MP-21 | 資金フロー 直近7日グリッド（休場行つき） | フロント描画のみ | `market_data.json`過去7エントリの`asset_flow` |
+| MP-22 | 資金フロー 5日平均判定 | フロント計算（`renderAssetFlow()` 1101、リスク資産>+0.3%／安全資産>+0.05%） | 同上（過去5エントリ） |
+| MP-23 | 市場フェーズピル `#phasePills` | `extract_judgment()` 1207（AI文から「判定：晴れ/曇り/嵐」を抽出） | `market_data.json`表示期間の`judgment` |
+| MP-24 | 分析履歴タイムライン `#timeline`（日付・判定・スコア・F&G・VIX・TECH・乖離） | 上記各要素 | `market_data.json`表示期間 |
+| MP-25 | 指標6カード `#metricsRow`（S&P500・NASDAQ・10Y・USD/JPY・WTI・GOLD） | `get_realtime_data()` 755（直近2終値の前日比）・`_fill_fallbacks()` 623 | daily/の^GSPC・^IXIC・^TNX・JPY=X・CL=F・GC=F【共有: USD/JPYは`src/portfolio/snapshot.py`も読む】 |
+| MP-26 | 推移チャート `#mainChart`（VIX・S&P500等6系列） | フロント描画のみ | `market_data.json`表示期間 |
+| MP-27 | 詳細カード クレジット3判定・Risk-Offスコア・確信度 | `save_data_to_json_and_csv()` 1451（S&P500<−1%・TLT/SPY・HYG−LQDの3判定） | `L.credit` ← indicators・asset_flow |
+| MP-28 | 詳細カード AI分析本文・俳句・過去の分析 | `analyse_market()` 994（xAI Grok） | `L.summary`・`L.comments_history` |
+| MP-29 | 計算式モーダル `#infoModal`（重み表・ゾーン表） | 静的HTML（導出なし） | なし（index.html直書き） |
+
+**更新タイミング（2026-09-26確認）**: `Market_Pulse_Update.yml`（cron `35 21 * * 1-5`）は
+`breadth_calculator.py`→`collect_and_send.py`を実行し、daily/は
+`Market_Data_Daily_Update.yml`（cron `25 21 * * 1-5`）が書く。**両者はworkflow_runで
+連鎖しておらず、cronの10分差だけに依存している**。GitHub側の遅延で両者とも
+約2時間遅れてほぼ同時に起動するため、Market Pulseのcheckoutが日次データのpushより
+先になる日がある（詳細は`MARKET_PULSE_LOGIC_INVENTORY.md`・BACKLOG参照）。
+2026-08-26の横断点検（BACKLOG_DONE.md）で「ワークフロー間タイミング競合のリスクは
+構造上存在しない」としたのは、2026-08-11にdaily/経由へ切り替えた後も
+単一ワークフロー内で完結している前提で判断したもので、この前提は成り立っていない。
+
 ### 作成中に見つけた注記事項（新規BACKLOG登録は不要と判断）
 - Fear & Greedは上記の通りMarket Pulseへの一本化を確認済み（重複なし）。
   TANUKI VALUATION/TANUKI SCOREはいずれも`market_data.json`経由の
@@ -1634,7 +1686,8 @@ MACRO PULSE   ← FREDデータ / FRBステートメント
 描画値を突き合わせる再利用可能なPlaywrightスクリプトを`browser_checks/
 check_dependency_map.py`に整備した（詳細は同ディレクトリのREADME.md
 参照）。CI組み込みはスコープ外・手動実行のみ。2026-08-26初回実行では
-7要素全て一致、consoleエラー0件を確認済み。次回以降、このマップの
+7要素全て一致、consoleエラー0件を確認済み。2026-09-26に上記MP-01〜MP-29と、導出層・データ層の独立再計算
+（D-01〜D-05、`browser_checks/market_pulse_elements.py`）、要素ごとのデータ基準日の分類を追加した。次回以降、このマップの
 依存先を変更した際は本スクリプトで再確認すること。
 
 PORTFOLIO     ← 手動入力 / 証券会社API
