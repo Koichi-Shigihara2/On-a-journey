@@ -104,7 +104,7 @@ XBRLタグ選定・accn選定・会計年度判定・CIK照合・SEC EDGAR取得
     「新タグより古いタグを優先」バグがlayer3_builder.pyの独立
     フォールバックに存在（IONQ revenueで発見）。対応: 候補を個別正規化
     後end_dateでマージする方式に変更。
-13. **[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]** — OPEN。
+13. **[[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]** — OPEN（IDEAS_AND_WATCH.md へ移動、2026-09-26）。
     `GeneralAndAdministrativeExpense`（Selling抜きG&A）タグがLayer2の
     どのフィールドにも未マッピング。APGE/ASTS/CON/ENB/RXRXでSM/SGA
     両方が空。根本原因: フォールバックではなく概念そのものの候補

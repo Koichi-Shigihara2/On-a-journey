@@ -471,7 +471,7 @@ selling_general_and_administrative）は、旧ttm/データのキーを起点に
 未解決バグが存在することが判明した:
 - [[LAYER3-SGA-Q4-MISSING-1]]（Q4_IMPLIED_FIELDS等のスコープに
   未登録のためQ4が恒常的に欠落、42銘柄・171四半期）
-- [[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]（GeneralAndAdministrative
+- [[LAYER3-GA-STANDALONE-TAG-UNMAPPED-1]]（IDEAS_AND_WATCH.md へ移動）（GeneralAndAdministrative
   Expense単体タグが32フィールドいずれにも未マッピング、
   少なくとも6銘柄でSM・SGA両方が空になる）
 

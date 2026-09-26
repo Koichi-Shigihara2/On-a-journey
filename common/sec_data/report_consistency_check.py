@@ -2200,7 +2200,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     # check_c_data_jump()をsection/fieldパラメータ化し、CHECK-21（Revenue）と
     # 同じ「隣接年比の段差型検知」を売上総利益（pl.gross_profit）・
     # CapEx（cf.capital_expenditure）にも展開した。純利益・SBCは対象外
-    # （[[DATA-JUMP-CHECK-NETINCOME-SBC-1]]として別途切り出し。純利益は
+    # （[[DATA-JUMP-CHECK-NETINCOME-SBC-1]]（IDEAS_AND_WATCH.md へ移動）として別途切り出し。純利益は
     # 符号反転により比率が発散、SBCはゼロ近傍からの急増（最大2468倍）が
     # 頻発し、比率方式そのものが本質的に機能しないと実データで確認済み
     # のため）。

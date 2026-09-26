@@ -1759,6 +1759,13 @@ BACKLOG.md新規タスクとして登録し（例: 優先度「低〜未定」�
 重要度の最終判断はチャット側Claude・Koichiさんに委ねる。
 BACKLOG_DONE.mdの完了記録内への言及のみでは登録として不十分。
 
+**BACKLOG登録基準: BACKLOG.mdとIDEAS_AND_WATCH.mdの振り分け（2026-09-26追記）**:
+BACKLOG.md には、実害がある、または実害の確認が必要な不具合だけを登録する。
+構想・監視メモ・消費者のいない整理項目は IDEAS_AND_WATCH.md へ登録する。
+（上記「新規発見事象のBACKLOG.md登録徹底」の「必ず登録する」は維持し、登録先を
+この基準で振り分ける。IDEAS_AND_WATCH.md の項目は課題数に数えず、着手する時点で
+BACKLOG.md に戻す）
+
 **実装完了後の即時コミット（2026-08-11の教訓）**:
 `common/market_data/`のバックフィル機能（`backfill_daily_prices()`）を
 実装・検証完了後、「コミット前に差分を報告してください（pushはまだ

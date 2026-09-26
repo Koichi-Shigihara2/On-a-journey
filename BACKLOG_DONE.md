@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-09-26（完了）
+
+- `SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
+- `FUTURE-FEATURE-IDEAS-CATALOG-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
+- `DATA-JUMP-CHECK-NETINCOME-SBC-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
+- `LAYER3-GA-STANDALONE-TAG-UNMAPPED-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
+
+---
+
 ## 2026-09-25（完了）
 
 ### ✅ [SPLIT-REALTIME-GAP-REVERSE-1] KULR/SPIRのリバース分割で同型の恒久固着ギャップ有無が未確認 → 完了（2026-09-25）: 実在を確認し、apply_split_adjustments()の方向非依存化・KULR/SPIR/HON（STEP 0で追加）/BKNGの登録・TANUKI希薄化率への登録分割の適用で解消

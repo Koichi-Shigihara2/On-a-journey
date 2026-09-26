@@ -3086,7 +3086,7 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
   年次OIが4銘柄とも存在し実測値で算出済みと判明、BACKLOG_DONE.md参照）
 - ~~DERIVED-DATA-SUBCATEGORIES-CROSSTAB-STALE-1~~（2026-09-24完了、
   BACKLOG_DONE.md参照）
-- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1の②のみ（優先度低。
+- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（IDEAS_AND_WATCH.md へ移動）の②のみ（優先度低。
   segment_xbrl拡張候補3件のうち「company_facts自動列挙可否」の調査部分
   だけは、着手前の価値検証として独立して実施可能。①③本体はKoichiさん
   判断待ち）
@@ -3098,20 +3098,20 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 - ~~BBAI-RDW-RUNWAY-VERIFICATION-1~~（2026-09-25完了。一次情報で両銘柄とも
   実態SAFEと確認し、Runway cashを四半期優先＋ST投資込みの共通関数に統一。
   BACKLOG_DONE.md参照）
-- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（①③本体）: Koichiさんが
+- SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1（IDEAS_AND_WATCH.md へ移動）（①③本体）: Koichiさんが
   優先順位・着手タイミングを判断
 - ~~HYPECORE-POC-SYNTHESIS-FIELDS-NOT-IN-REPORT-1~~（2026-09-24、親エピック
   完了・report.txt消費側に必要なしと確認しクローズ）
-- FUTURE-FEATURE-IDEAS-CATALOG-1: 構想段階の8件、個別項目ごとに
+- FUTURE-FEATURE-IDEAS-CATALOG-1（IDEAS_AND_WATCH.md へ移動）: 構想段階の8件、個別項目ごとに
   Koichiさんが着手可否を判断
 - ~~UNCONFIRMED-RISK-INVESTIGATION-CATALOG-1~~（2026-09-25解体: ①は仮説の型が
   実在せずクローズ、②はSPLIT-REALTIME-GAP-REVERSE-1として完了、③は
-  DATA-JUMP-CHECK-NETINCOME-SBC-1として単独項目に戻した。新規登録:
+  DATA-JUMP-CHECK-NETINCOME-SBC-1として単独項目に戻した（IDEAS_AND_WATCH.md へ移動）。新規登録:
   PARSER-MERGED-PARTIAL-CONCEPT-TAG-1・SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1。
   以下は旧記載）: ①〜③いずれも実データ未確認の
   推測段階、次回セッション以降でKoichiさんが判断
 - JNJ-XOM-PM-FLOOR-RISK-1・TTM-DATA-DRIFT-BEHIND-PIPELINE-1・
-  LAYER3-GA-STANDALONE-TAG-UNMAPPED-1: いずれも特定トリガー条件（候補件数低下・実害顕在化・
+  LAYER3-GA-STANDALONE-TAG-UNMAPPED-1（IDEAS_AND_WATCH.md へ移動）: いずれも特定トリガー条件（候補件数低下・実害顕在化・
   新機能での実消費計画等）が発生するまで監視・保留（詳細は各エントリ
   「着手条件」参照。LAYER3-ANNUAL-CLASSIFICATION-DROPS-DATA-1は2026-09-24
   クローズ。TTM-DATA-DRIFTは2026-09-24にCHECK-47発火で着手条件3が成立）
