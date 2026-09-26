@@ -1372,3 +1372,95 @@ class TestCheck50IvOverstatement:
     def test_missing_fields_are_skipped(self):
         assert rcc._check_iv_overstatement("X", {}) == []
         assert rcc._check_iv_overstatement("X", {"intrinsic_value_per_share": 100, "components": {}}) == []
+
+
+class TestWarnLedgerMatch:
+    """台帳エントリの"match"指定（2026-09-26、CHECK-52用）: メッセージがmatchを
+    含むときだけ確認済みになり、数値が変わると再び未確認になること"""
+
+    def test_match_entry_loaded_as_triple(self, tmp_path):
+        p = tmp_path / "warn_acknowledged.json"
+        p.write_text(json.dumps({"acknowledged": [
+            {"check": "WARN-52", "ticker": "LOAR", "match": "候補数=1件"},
+            {"check": "WARN-10", "ticker": "ELF"},
+        ]}), encoding="utf-8")
+        assert load_warn_ledger(str(p)) == {("WARN-52", "LOAR", "候補数=1件"), ("WARN-10", "ELF")}
+
+    def test_match_acknowledged_only_when_message_contains(self):
+        ledger = {("WARN-52", "LOAR", "候補数=1件")}
+        _, is_new = annotate_warn("LOAR", "  [WARN-52 recommended_g候補不足] 候補数=1件（x）", ledger)
+        assert is_new is False
+        msg, is_new = annotate_warn("LOAR", "  [WARN-52 recommended_g候補不足] 候補数=0件（なし）", ledger)
+        assert is_new is True and "未確認" in msg
+
+    def test_match_does_not_leak_to_other_ticker(self):
+        ledger = {("WARN-52", "LOAR", "候補数=1件")}
+        _, is_new = annotate_warn("SN", "  [WARN-52 recommended_g候補不足] 候補数=1件（x）", ledger)
+        assert is_new is True
+
+
+class TestCheck52RecommendedGCandidates:
+    """CHECK-52: recommended_g候補（Noneでないもの）が1件以下でWARN
+    （[[JNJ-XOM-PM-FLOOR-RISK-1]]を自動検知に置き換え）"""
+
+    @staticmethod
+    def _latest(**vals):
+        gs = {k: None for k in rcc._REC_G_CANDIDATE_KEYS}
+        gs.update(vals)
+        return {"growth_sanity": gs}
+
+    def test_one_candidate_fires(self):
+        w = rcc._check_recommended_g_candidates("LOAR", self._latest(industry_benchmark=0.05))
+        assert len(w) == 1 and "[WARN-52" in w[0] and "候補数=1件" in w[0]
+        assert "industry_benchmark" in w[0]
+
+    def test_zero_candidates_fires(self):
+        w = rcc._check_recommended_g_candidates("X", self._latest())
+        assert len(w) == 1 and "候補数=0件" in w[0]
+
+    def test_two_candidates_silent_even_if_negative(self):
+        """負値もNoneでなければ候補として数える（指示書⑰の定義）"""
+        assert rcc._check_recommended_g_candidates(
+            "JNJ", self._latest(rev_cagr_3yr=-0.003, g_fundamental=-0.024)) == []
+
+    def test_missing_growth_sanity_silent(self):
+        assert rcc._check_recommended_g_candidates("X", {}) == []
+
+
+class TestCheck53FloorWithNegativeRawCagr:
+    """CHECK-53: floor発動中かつfloor適用前のFCF CAGRが負でWARN。rawは
+    components.fcf_list_rawからcalculate_fcf_cagr()で再計算する"""
+
+    # XOMの2026-09-26時点のfcf_list_raw（新しい順、raw CAGR=-31.5%）
+    _XOM_FCF = [18792000000, 28181000000, 32111000000, 58442000000]
+
+    @staticmethod
+    def _latest(fcf, floor_hit=False, source="fcf_cagr", rate=0.15):
+        return {
+            "growth_sanity": {"floor_hit": floor_hit},
+            "growth": {"source": source, "rate": rate},
+            "components": {"fcf_list_raw": fcf},
+        }
+
+    def test_floor_by_growth_rate_and_negative_raw_fires(self):
+        w = rcc._check_floor_with_negative_raw_cagr("XOM", self._latest(self._XOM_FCF))
+        assert len(w) == 1 and "[WARN-53" in w[0] and "-31.5%" in w[0]
+
+    def test_floor_hit_flag_and_negative_raw_fires(self):
+        w = rcc._check_floor_with_negative_raw_cagr(
+            "XOM", self._latest(self._XOM_FCF, floor_hit=True, source="segment_weighted", rate=0.02))
+        assert len(w) == 1
+
+    def test_positive_raw_silent(self):
+        assert rcc._check_floor_with_negative_raw_cagr(
+            "X", self._latest([12e9, 11e9, 10e9, 9e9])) == []
+
+    def test_no_floor_silent(self):
+        assert rcc._check_floor_with_negative_raw_cagr(
+            "XOM", self._latest(self._XOM_FCF, source="segment_weighted", rate=0.02)) == []
+
+    def test_all_negative_fcf_excluded(self):
+        """FCFが全年負でrawが計算できない銘柄（2026-09-26時点のJOBY）は対象外"""
+        joby = [-743330000, -500696000, -400786000, -321724000]
+        assert rcc._check_floor_with_negative_raw_cagr(
+            "JOBY", self._latest(joby, floor_hit=True, source="segment_weighted")) == []

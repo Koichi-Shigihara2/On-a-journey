@@ -143,6 +143,9 @@ WARN台帳（QUALITY-GATES-EPIC-1 Phase 1・2026-07-12新設）:
   config/warn_acknowledged.json に (CHECK番号, ticker) の組み合わせを事前登録すると
   「確認済み」として通常表示される。未登録のWARNは実行時に [🆕未確認 WARN-N ...] と
   強調表示される（非ブロッキング動作は維持、NG化はしない）。
+  エントリに任意の"match"（文字列）を書くと、WARNメッセージがその文字列を含む
+  場合だけ確認済みになる（2026-09-26、CHECK-52で登録時点の候補数を固定し、
+  候補数が変わったら再び未確認として発火させるために追加）。
 """
 
 import argparse
@@ -232,6 +235,11 @@ def load_warn_ledger(path: str = WARN_LEDGER) -> set[tuple[str, str]]:
     キーは (CHECK番号, ticker) のタプル。exact な message文字列ではなく
     check番号単位で確認済みとするため、同じ銘柄・同じCHECKのWARNが
     数値だけ変わって再発しても「確認済み」のまま扱われる（意図的な粗さ）。
+
+    例外として、エントリに"match"がある場合は (CHECK番号, ticker, match) の
+    3要素タプルで保持し、annotate_warn()はメッセージがmatchを含むときだけ
+    確認済みにする（2026-09-26、CHECK-52用。数値が変わったら再確認させたい
+    WARNに限って使う）。
     """
     if not os.path.exists(path):
         return set()
@@ -239,7 +247,8 @@ def load_warn_ledger(path: str = WARN_LEDGER) -> set[tuple[str, str]]:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         return {
-            (entry["check"], entry["ticker"])
+            (entry["check"], entry["ticker"], entry["match"]) if entry.get("match")
+            else (entry["check"], entry["ticker"])
             for entry in data.get("acknowledged", [])
         }
     except Exception:
@@ -1204,6 +1213,86 @@ def _check_iv_overstatement(ticker: str, latest: dict) -> list[str]:
     return warn
 
 
+# CHECK-52の対象: recommended_gの中央値に使う候補（growth_sanity.py::
+# check_growth_sanity()の_rec_candidatesの元になる4指標）
+_REC_G_CANDIDATE_KEYS = ("rev_cagr_3yr", "rev_cagr_5yr", "g_fundamental", "industry_benchmark")
+
+
+def _check_recommended_g_candidates(ticker: str, latest: dict) -> list[str]:
+    """CHECK-52: recommended_gの算出候補（rev_cagr_3yr・rev_cagr_5yr・
+    g_fundamental・industry_benchmark）のうちNoneでないものが1件以下の銘柄を
+    検知する（2026-09-26新設、NG化しないWARN）。
+
+    背景: [[JNJ-XOM-PM-FLOOR-RISK-1]]。候補が足りずrecommended_gが算出できない
+    と、MOと同じくfcf_cagrのfloor（15%）に転落しうる。手動の定点確認を
+    自動検知に置き換えた。候補数は「Noneでない数」で数える（負値は
+    growth_sanity.py側で中央値の候補から外れるが、ここでは数えている）。
+    上場後日が浅く候補数が構造的に少ない銘柄は、warn_acknowledged.jsonに
+    match="候補数=N件"付きで登録する（候補数が変わると再び未確認になる）。
+    """
+    gs = (latest or {}).get("growth_sanity")
+    if not gs:
+        return []
+    present = [k for k in _REC_G_CANDIDATE_KEYS if gs.get(k) is not None]
+    if len(present) > 1:
+        return []
+    return [
+        f"  [WARN-52 recommended_g候補不足] 候補数={len(present)}件"
+        f"（Noneでない候補: {', '.join(present) or 'なし'}）→ recommended_gが"
+        f"算出できずfcf_cagr floor(15%)に転落するおそれ（JNJ-XOM-PM-FLOOR-RISK-1）"
+    ]
+
+
+def _check_floor_with_negative_raw_cagr(ticker: str, latest: dict) -> list[str]:
+    """CHECK-53: floorが発動しているのに、floor適用前のFCF CAGR（raw）が負の
+    銘柄を検知する（2026-09-26新設、NG化しないWARN）。
+
+    背景: [[JNJ-XOM-PM-FLOOR-RISK-1]]。FCFが減っている企業に年15%成長を
+    仮定する最も危険な状態（XOM型）を、CHECK-20（floor張り付き全般）より
+    絞り込んで検知する。floor発動は growth_sanity.floor_hit、または
+    CHECK-20と同じ「growth.source=fcf_cagrかつrate=15%」のいずれか。
+    rawはlatest.jsonに保存されていないため、components.fcf_list_raw（本番の
+    成長率計算に渡した系列）からcalculate_fcf_cagr()で再計算する。FCFが
+    全年負などでrawが計算できない銘柄（2026-09-26時点ではJOBY）は対象外
+    （扱いは別途判断）。
+    """
+    if not latest:
+        return []
+    gs = latest.get("growth_sanity") or {}
+    g = latest.get("growth") or {}
+    rate = g.get("rate")
+    floor_active = bool(gs.get("floor_hit")) or (
+        g.get("source") == "fcf_cagr" and rate is not None and abs(rate - 0.15) < 0.002
+    )
+    if not floor_active:
+        return []
+    raw = _raw_fcf_cagr(latest)
+    if raw is None or raw >= 0:
+        return []
+    return [
+        f"  [WARN-53 floor発動×FCF減少] floorが発動中（growth.rate="
+        f"{(rate or 0):.1%}〈{g.get('source')}〉）だが、floor適用前のFCF CAGRは"
+        f"{raw:+.1%} → FCFが減っている企業に高成長を仮定している（JNJ-XOM-PM-FLOOR-RISK-1）"
+    ]
+
+
+def _raw_fcf_cagr(latest: dict) -> Optional[float]:
+    """components.fcf_list_rawからcalculate_fcf_cagr()でfloor適用前の
+    CAGRを再計算する。計算できない場合はNone。"""
+    comps = latest.get("components") or {}
+    fcf_list = comps.get("fcf_list_raw")
+    if not fcf_list:
+        return None
+    module_dir = os.path.join(REPO_ROOT, "src", "value", "tanuki_valuation")
+    if module_dir not in sys.path:
+        sys.path.insert(0, module_dir)
+    from calculator.growth import calculate_fcf_cagr
+    result = calculate_fcf_cagr(fcf_list, fcf_dates=comps.get("fcf_dates_raw"))
+    if result is None or not result.cagr_detail:
+        return None
+    return result.cagr_detail.get("raw_cagr")
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -1684,6 +1773,9 @@ def annotate_warn(ticker: str, message: str, ledger: set[tuple[str, str]]) -> tu
     check_id = f"WARN-{m.group(1)}"
     if (check_id, ticker) in ledger:
         return message, False
+    for key in ledger:
+        if len(key) == 3 and key[0] == check_id and key[1] == ticker and key[2] in message:
+            return message, False
     return message.replace("[WARN-", "[\U0001f195未確認 WARN-", 1), True
 
 
@@ -2000,6 +2092,8 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     warn.extend(_check_runway_divergence(ticker, latest))
     warn.extend(_check_sti_quarterly_missing(ticker))
     warn.extend(_check_iv_overstatement(ticker, latest))
+    warn.extend(_check_recommended_g_candidates(ticker, latest))
+    warn.extend(_check_floor_with_negative_raw_cagr(ticker, latest))
     parsed  = _parse_report(text)
 
     fcf_hist = parsed["fcf_history"]

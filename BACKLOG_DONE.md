@@ -9,7 +9,144 @@
 - `DATA-JUMP-CHECK-NETINCOME-SBC-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 - `LAYER3-GA-STANDALONE-TAG-UNMAPPED-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 
+### ✅ [JNJ-XOM-PM-FLOOR-RISK-1] JNJ・XOM・PM・CONはrecommended_g候補が最低ラインでMO型floor転落の潜在リスクあり → クローズ（2026-09-26）: 自動検知に置き換えた
+**優先度:** 低（2026-09-19、中→低に変更。理由は下記「優先度変更」参照）
+**分類:** データ品質 / TANUKI VALUATION / 監視対象
+**登録日:** 2026-07-19
+**発見:** [[GROWTH-SANITY-CLASS-SYNC-1]]（完了・BACKLOG_DONE.md参照）floor適用対象
+範囲確認調査
+
+#### 内容
+`segment_config.json`未登録37銘柄のうち、`recommended_g`算出候補
+（rev_cagr_3yr/5yr・g_fundamental・industry_benchmark）が**ちょうど
+2件**（1件失えば`recommended_g`算出不能＝MO型のfloor転落リスク）の
+銘柄が6件存在する: JNJ・PM・XOM・GEV・FLYW・PAYS。うちJNJ・PM・XOMは
+成熟ディフェンシブ株（GEV/FLYW/PAYSは高成長株で候補不足が偶発的、
+リスクの性質が異なる）。CONも`rev_cagr_5yr`算出不能（2024年スピンオフで
+データ不足）な近接リスク銘柄。
+
+実際のFCF生成長率（`calculate_fcf_cagr()`のraw_cagr、floor適用前）を
+実データで確認したところ、**JNJ（+3.1%）・XOM（-31.5%）はMO
+（+2.7%）と同等またはそれ以上にfloor(15%)との乖離が大きい**
+（JNJ: floor gap +11.9pt、XOM: floor gap +46.5pt、MOの+12.3ptと同等〜
+それ以上）。特にXOMはFCFが実際に大きく減少している局面（raw=-31.5%）で、
+もしfloorが発動すれば「FCFが3割減っている最中の企業に年15%成長を
+仮定する」という最も危険なミスマッチになる。
+
+#### 対応方針（未確定）
+即座の対応は不要（現時点でrecommended_g算出候補2件を維持できており
+floorには落ちていない）。ただし次回以降の決算更新でJNJ/PM/XOM/CONの
+`rev_cagr_3yr`/`5yr`のいずれかがマイナスへ転じ候補が1件以下になった
+場合、MOと同型の`TICKER_INDUSTRY_OVERRIDES`追加＋
+[[GROWTH-SANITY-CLASS-SYNC-1]]で実装した案B'（floor到達中かつ
+industry_g単独1件の場合のみ候補数閾値を緩和）が既存の実装パターンとして
+そのまま適用できる見込み。
+
+#### 着手条件
+候補件数が実際に2件を下回った場合（`report_consistency_check.py`等での
+継続監視、またはgrowth_sanity再確認時に検知）
+
+#### 定点確認（2026-09-04）
+対象7銘柄（JNJ・PM・XOM・CON・GEV・FLYW・PAYS）の`growth_sanity`実データを
+確認したところ、全銘柄で`floor_hit=False`。`recommended_g`算出候補数
+（rev_cagr_3yr/5yr・g_fundamental・industry_benchmarkのうち非None数）は
+2026-07-19登録時点（各2件）から増加していた: JNJ 4件・PM 3件・XOM 4件・
+CON 2件・GEV 2件・FLYW 3件・PAYS 3件。データ蓄積によりCAGR系候補
+（rev_cagr_3yr/5yr）が順次算出可能になったことによるもので、リスクは
+軽減方向にある。着手条件（候補1件以下への転落）は引き続き未発生のため
+対応不要、監視継続とする。
+
+#### 再確認結果（2026-09-19、本番`check_growth_sanity()`出力〈latest.json
+`growth_sanity`〉を実測、読み取りのみ）
+JNJ・XOM・PM・CONを本番の解決ロジックそのもの（latest.jsonに反映済みの
+`check_growth_sanity()`出力）で再確認したところ、2026-09-04からの
+「リスク軽減方向」という傾向は一部反転していた:
+
+| 銘柄 | 候補数（2026-09-19） | 候補数（2026-09-04） | 内訳（正値のみ採用） | floor_hit |
+|---|---|---|---|---|
+| JNJ | **2件** | 4件 | cagr5(+2.7%)・industry_g(+1.7%)。cagr3(-0.3%)・g_fundamental(-2.4%)は負値で除外 | False |
+| XOM | 3件 | 4件 | cagr5(+12.9%)・industry_g(+0.7%)・g_fundamental(+0.8%)。cagr3(-7.0%)は負値で除外 | False |
+| PM | **2件** | 3件 | cagr3(+8.6%)・cagr5(+7.2%)。industry_g=None、g_fundamental(-1.4%)は負値で除外 | False |
+| CON | **2件** | 2件（不変） | cagr3(+7.9%)・g_fundamental(+0.3%)。cagr5=None（2024年スピンオフ由来、継続） | False |
+
+JNJ・PMは候補数が減少し、**2026-07-19登録時点と同じ「ちょうど2件」
+（バッファ0＝あと1件失えば着手条件〈候補2件未満〉に抵触）まで後退**した。
+XOMは4→3件で1件のバッファを維持。CONは2026-09-04と同じ2件のまま
+（`rev_cagr_5yr`算出不能という元々の懸念も継続）。4銘柄とも
+`floor_hit=False`で着手条件自体は依然未成立。
+
+#### 事前検知（候補2件以下）の新設検討・実装は見送り（2026-09-19）
+1. **既存検知の確認**: `report_consistency_check.py`のCHECK-18
+   （WARN-18、G=15%デフォルト未調整）・CHECK-20（WARN-20、fcf_cagr
+   floor張り付き、GROWTH-FLOOR-VERDICT-1）はいずれも`floor_hit`後の
+   事後検知であり、「候補2件以下（あと1件で転落）」という事前検知は
+   `report_consistency_check.py`・`audit.py`・`system_health.py`いずれにも
+   存在しないことを確認した
+2. **全99銘柄の候補件数分布**（`get_tanuki_tickers()`全銘柄、latest.jsonの
+   本番`growth_sanity`出力を実測）: 0件1銘柄（LOAR）・1件6銘柄
+   （CART/CRWV/JOBY/RBRK/MO/SN）・2件31銘柄（JNJ/PM/CON/GEV/KLAC/DELL等）・
+   3件45銘柄・4件16銘柄。**候補2件以下は合計38銘柄（38.4%）**。
+   `floor_hit=True`は1銘柄（JOBY、segment_weighted経路で候補0件・
+   テンプレートデフォルト15%が未検証のまま使用中）
+3. **実装判断: 見送り**。指示の実装条件「候補2件以下が全体の15%以下」に
+   対し実測は38.4%と大幅に超過（判定基準の2.5倍超）しており、「候補2件
+   以下」を汎用WARN化すると全銘柄の1/3強で常時発火し信号として機能しない
+   （median成長率モデルはindustry_benchmark・g_fundamentalが未算出/負値の
+   銘柄が多い＝成熟企業やindustry_benchmark欠損銘柄では「2件」が構造的に
+   よくある状態であり、それ自体は異常ではないため）。指示に従い実装せず
+   停止する
+4. **対応方針**: 汎用チェックとしての新設は見送るが、本エントリの対象
+   4銘柄（JNJ/XOM/PM/CON）に限定した監視は継続する（着手条件は変更せず
+   「候補2件を下回った場合」のまま、下記参照）。将来再検討する場合は、
+   全銘柄一律のWARNではなく、`config/warn_acknowledged.json`型の
+   台帳運用（個別銘柄をトリガー対象として明示登録し、登録銘柄限定で
+   候補数を監視する）等、対象を絞る設計が必要
+
+#### 優先度変更（2026-09-19、中→低）
+CHECK-18（WARN-18）・CHECK-20（WARN-20）という事後検知の仕組みは
+既に存在し、対象4銘柄（JNJ/XOM/PM/CON）はいずれも保有銘柄ではない。
+加えて「候補2件以下」という状態自体は全銘柄の38.4%が該当する構造的に
+ありふれた状態であり、事前検知を独自に強化する信号価値も低いと判断
+した。これらを踏まえ、優先度を「中」から「低」へ変更する。
+
+#### 着手条件
+以下いずれかが発生した場合:
+- CHECK-18（WARN-18）またはCHECK-20（WARN-20）が対象4銘柄（JNJ/XOM/
+  PM/CON）のいずれかで実際に発火した場合（floor転落が現実に発生した
+  ことを意味する）
+- 再確認（`growth_model_audit.py`等での手動確認、または次回セッション
+  での定点確認）で候補件数が1件以下になった場合（着手条件を従来の
+  「2件を下回った場合」からさらに厳格化）
+
+汎用WARN化（事前検知の独自新設）は2026-09-19時点で見送り済み
+（上記「事前検知の新設検討」参照）。
+
+#### 2026-09-26 クローズ（指示書⑰ STEP 2）: 自動検知に置き換えた
+手動の定点確認をやめ、`report_consistency_check.py`に次の2つのWARN（NG化しない）を追加した。
+- **CHECK-52（WARN-52 recommended_g候補不足）**: tanuki=true銘柄で、recommended_gの算出候補
+  （rev_cagr_3yr・rev_cagr_5yr・g_fundamental・industry_benchmark）のうちNoneでないものが1件以下
+- **CHECK-53（WARN-53 floor発動×FCF減少）**: floorが発動している（growth_sanity.floor_hit、
+  またはCHECK-20と同じgrowth.source=fcf_cagrかつrate=15%）のに、floor適用前のFCF CAGRが負。
+  rawはlatest.jsonに保存されていないため、`components.fcf_list_raw`から`calculate_fcf_cagr()`で再計算する
+
+既存検知の確認: CHECK-18・CHECK-20はfloor発動後の事後検知で、候補数の検知はなかった（2026-09-19の確認と同じ）。
+CHECK-53はCHECK-20の対象をraw負に絞ったもの。
+
+**本番データ（2026-09-26）での結果**:
+- WARN-52: 5銘柄（CRWV・JOBY・LOAR・RBRK・SN、いずれも候補数=1件）。上場後日が浅く候補数が構造的に
+  少ないため、`config/warn_acknowledged.json`に`match: "候補数=1件"`付きで登録した。台帳に任意の
+  `match`を追加し、メッセージがその文字列を含むときだけ確認済みにする仕組みを入れたため、候補数が変わると
+  再び未確認として発火する。候補数（Noneでない数）はJNJ 4件・XOM 4件・PM 3件・CON 2件で、いずれも発火しない（CONはあと1件で発火）
+- WARN-53: 0件（停止条件に該当せず）。floor発動中の銘柄はJOBYのみで、FCFが全年負のためrawが計算できず
+  対象外（1件）。この扱いを変えるかは別途判断
+- 未確認WARNは台帳登録後56件で変更前と同じ（WARN合計117→122、増加分5件は確認済み）
+
+回帰テスト: `tests/test_report_consistency_check.py`に12件追加（台帳match 3件・CHECK-52 4件・CHECK-53 5件）。
+git stashで実装だけを外すと11件失敗・戻すと全件成功（失敗しなかった1件は「他銘柄に確認済みが漏れない」
+ことの確認で、旧実装でも成り立つ）。
+
 ---
+
 
 ## 2026-09-25（完了）
 
