@@ -12,7 +12,9 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-26 指示書⑲⑳のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**3件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）・`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`（低、daily pickのtanuki.current_priceが常にnull）。2026-09-26は⑲でMarket Pulseの正確性を確認して6件登録し、⑳で`[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]`（TANUKI VALUATIONがcurrent_price=0で計算し09-22に99銘柄・09-26に78銘柄の分類が誤って公開された件）を含む6件を完了した。BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.md間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書⑲⑳）」ブロック。
+**現在の到達点（2026-09-26 指示書㉑のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**2件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）。㉑でTANUKIのDiscord通知をゲート通過後に移し、`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`を完了、社内PS比率（表示・診断用）の分母をTTM売上に変えた。3ファイル間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書㉑）」ブロック。
+以下は指示書⑲⑳時点の記載:
+**（旧）現在の到達点（2026-09-26 指示書⑲⑳のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**3件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）・`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`（低、daily pickのtanuki.current_priceが常にnull）。2026-09-26は⑲でMarket Pulseの正確性を確認して6件登録し、⑳で`[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]`（TANUKI VALUATIONがcurrent_price=0で計算し09-22に99銘柄・09-26に78銘柄の分類が誤って公開された件）を含む6件を完了した。BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.md間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書⑲⑳）」ブロック。
 以下は同日前半（指示書⑰⑱）時点の記載:
 **（旧）現在の到達点（2026-09-26 指示書⑰⑱のブラッシュアップ時点）**: `BACKLOG.md`
 アクティブ件数**1件**（`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`、9/27のSEC_Data_Update後の確認待ち。
@@ -109,6 +111,27 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    既存関数が未検証のケースで動き出す。先に実データで試算し、扱えなければ関数を
    直してから登録する。他の消費者の既存結果が変わらないかも全件で確認する
    （`CHAT_RULES.md`事例21。リバース分割の二重補正リスク、KLAC・NOWの差分検出）。
+
+---
+
+最終更新: 2026-09-26（**指示書㉑**。全てpush済み）:
+
+1. **TANUKIのDiscord通知をゲート通過後に**（`110e9b660c`）: score_watcher.pyをreport_consistency_check.pyの
+   ゲートとcommitの間に移した（ゲートが止めた日は通知しない）。全ワークフローを確認し、ゲートを持つジョブで
+   通知が先にあるのはこの1件だけだった。回帰テスト（tests/test_workflow_notify_after_gate.py）で恒常的に確認
+2. **`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`完了**（`4834123d31`）: daily pickの株価をcomponentsから取り、
+   株価が無い場合はGrokへ渡すデータに入れない。存在しないdeviation_rateを削除
+3. **社内PS比率の分母をTTM売上に**（`8532814f91`・`fdf8c53e2a`）: 社内PS比率は4箇所（TANUKIのreport.txt・
+   stock.htmlのPSR・WARN-10・Stonks SiloのPSR/EV-Sales）で、いずれも表示・診断用（分類・スコアに使っていない）と
+   確認したうえで、`reader.get_ttm_revenue()`（Layer3からその場で計算、ttm/の古いファイルは使わない）に変えた。
+   分類・verdictの変化なし。ONDSのWARN-10が出なくなったため台帳登録を削除
+   （途中、recommended_gの再計算でvaluationが差し替わり58銘柄でTTMが消える不具合を見つけ、記録位置を直して再生成）
+
+**次セッションへの引き継ぎ**: ⑲⑳ブロックの引き継ぎ（Market_Pulse_Updateのworkflow_run起動とdata_freshness、
+HUBB 09-25の取り直し）に加え、次のTANUKI_VALUATION_Update実行で通知がゲート後に出ること
+
+**ブラッシュアップの検証結果**: `### ✅ [`のBACKLOG.md残存0件、アクティブ2件、3ファイル間のID重複0件。最終ゲート:
+pytest 1716件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0/WARN=125件（未確認56件）。
 
 ---
 

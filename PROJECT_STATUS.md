@@ -9,6 +9,7 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-26（夜、指示書㉑）**: TANUKIのDiscord通知をゲート通過後に移動、daily pickの株価キーを修正（`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`完了）、社内PS比率（表示・診断用のみと確認）の分母をTTM売上に変更（分類・verdictの変化なし）。アクティブBACKLOG 3件→2件。pytest 1716件全パス・audit.py exit 0・report_consistency_check.py NG=0。**次回確認**: 次のTANUKI_VALUATION_Updateで通知がゲート後に出ること
 - **2026-09-26（後半、指示書⑲⑳）**: Market Pulseの正確性確認と修正。daily/に終値の無い行が確定値として保存され、
   TANUKI VALUATIONがcurrent_price=0で計算していた不具合（09-22に99銘柄・09-26に78銘柄の分類が誤って公開、TANUKI SCOREの
   daily pickとDiscord通知にも波及）を修正（保存側・reader・TANUKIの判定不能・NG-56、1,003行の取り直しと再生成、誤った履歴に
