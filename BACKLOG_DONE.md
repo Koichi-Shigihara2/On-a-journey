@@ -131,6 +131,33 @@ browser_checksのMP-29を行名で対応づけた8指標の重み比較に変更
 
 ---
 
+### ✅ [DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1] TANUKI SCORE daily pickのtanuki.current_priceが常にnull（latest.jsonのトップレベルを読んでいる） → 完了（2026-09-26）: componentsの下の値を読むよう修正し、nullの価格をGrokへ渡さないようにした
+**優先度:** 低
+**分類:** 表示・入力データの欠落 / TANUKI SCORE daily pick
+**登録日:** 2026-09-26
+**発見:** 指示書⑳ STEP B-7（daily pickの再計算時）
+
+#### 内容
+`src/value/tanuki_score/daily_pick.py`（273-278行）は`tanuki.current_price`・`deviation_rate`を
+latest.jsonのトップレベルから読むが、current_priceは`components`の下にあり、deviation_rateは
+latest.jsonに存在しない。そのため`docs/integrated-dashboard/daily_pick.json`の
+`tanuki.current_price`・`deviation_rate`は2026-05-23の実装以来常にnull。
+
+#### 実害
+画面（tanuki_score/index.html）はこの2項目を表示しないため表示への影響はない。Grokへ渡す
+選出銘柄データに株価がnullで入る（IV・upsideは正しい値が入る）。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 2026-09-26 完了（指示書㉑ STEP B）
+`build_data_package()`はcurrent_priceをlatest.jsonの`components.current_price`から取る。株価が無い場合はキーごと入れず、
+Grokのプロンプト（データパッケージのJSON）にnullの価格が渡らない。latest.jsonに存在しない`deviation_rate`（常にnull）は削除した。
+当日のdaily_pick.json（ELF）は、銘柄選出とGrokの本文はそのままに、tanukiブロックのcurrent_priceだけを最新のlatest.jsonの値
+（$99.51）に置き換えた（再実行すると選出が変わりうるため）。回帰テスト2件（旧コードで2件失敗・新コードで成功）。
+
+---
+
 ### ✅ [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる） → 完了（2026-09-26）: 保存側・reader・TANUKIを修正し、既存行を取り直して再生成
 **優先度:** 中
 **分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）

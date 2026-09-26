@@ -197,3 +197,38 @@ class TestMissingTradingDays:
         out = rcc._check_daily_missing_trading_days(base_dir=base)
         assert [(s, "2026-08-25" in m or "2026-08-26" in m) for s, m in out] == [("QQQ", True), ("QQQ", True)]
         assert all("[WARN-57" in m for _, m in out)
+
+
+class TestDailyPickPackagePrice:
+    """DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1（2026-09-26）: daily pickのtanuki.current_priceは
+    latest.jsonのcomponentsから取り、株価が無い場合はGrokへ渡すパッケージに入れない"""
+
+    def _import(self):
+        path = os.path.join(_REPO_ROOT, "src", "value", "tanuki_score")
+        if path not in sys.path:
+            sys.path.insert(0, path)
+        import daily_pick
+        return daily_pick
+
+    def _stock(self):
+        return {"ticker": "ADBE", "company": "Adobe", "funda": 70, "timing": 65, "category": "BUY"}
+
+    def test_price_taken_from_components(self, monkeypatch):
+        dp = self._import()
+        monkeypatch.setattr(dp, "load_tanuki", lambda t: {"components": {"current_price": 235.47},
+                                                          "intrinsic_value_per_share": 608.2, "upside_percent": 158.3})
+        monkeypatch.setattr(dp, "load_hype", lambda t: {})
+        monkeypatch.setattr(dp, "load_eps_annual_latest", lambda t: {})
+        pkg = dp.build_data_package(self._stock(), {})
+        assert pkg["tanuki"]["current_price"] == 235.47
+        assert "deviation_rate" not in pkg["tanuki"]
+
+    def test_missing_price_not_passed_to_prompt(self, monkeypatch):
+        dp = self._import()
+        monkeypatch.setattr(dp, "load_tanuki", lambda t: {"components": {"current_price": None},
+                                                          "intrinsic_value_per_share": 608.2})
+        monkeypatch.setattr(dp, "load_hype", lambda t: {})
+        monkeypatch.setattr(dp, "load_eps_annual_latest", lambda t: {})
+        pkg = dp.build_data_package(self._stock(), {})
+        assert "current_price" not in pkg["tanuki"]
+        assert '"current_price": null' not in json.dumps(pkg)

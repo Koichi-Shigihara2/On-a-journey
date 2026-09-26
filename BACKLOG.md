@@ -2356,24 +2356,7 @@ F&Gは実行時にCNNから取るため当日の値で、他の要素と基準�
 
 ## 優先度：低（アイデア段階）
 
-### [DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1] TANUKI SCORE daily pickのtanuki.current_priceが常にnull（latest.jsonのトップレベルを読んでいる）
-**優先度:** 低
-**分類:** 表示・入力データの欠落 / TANUKI SCORE daily pick
-**登録日:** 2026-09-26
-**発見:** 指示書⑳ STEP B-7（daily pickの再計算時）
-
-#### 内容
-`src/value/tanuki_score/daily_pick.py`（273-278行）は`tanuki.current_price`・`deviation_rate`を
-latest.jsonのトップレベルから読むが、current_priceは`components`の下にあり、deviation_rateは
-latest.jsonに存在しない。そのため`docs/integrated-dashboard/daily_pick.json`の
-`tanuki.current_price`・`deviation_rate`は2026-05-23の実装以来常にnull。
-
-#### 実害
-画面（tanuki_score/index.html）はこの2項目を表示しないため表示への影響はない。Grokへ渡す
-選出銘柄データに株価がnullで入る（IV・upsideは正しい値が入る）。
-
-#### 着手条件
-なし（修正はしていない）
+（[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 

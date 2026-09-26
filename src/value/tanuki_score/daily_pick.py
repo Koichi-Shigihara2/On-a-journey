@@ -265,6 +265,18 @@ def build_data_package(stock, mkt):
     rpo_pv  = rpo_raw.get("rpo_pv") if isinstance(rpo_raw, dict) else None
 
     rice_raw = tk.get("rice")
+    # [[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]（2026-09-26）: current_priceはlatest.jsonの
+    # componentsの下にある（以前はトップレベルを読み、2026-05-23以降常にnullだった）。
+    # 株価が無い場合はキーごと入れず、Grokのプロンプトにnullの価格を渡さない。
+    # deviation_rateはlatest.jsonに存在しない項目（常にnull）のため削除した。
+    current_price = (tk.get("components") or {}).get("current_price")
+    tanuki_block = {
+        "intrinsic_value_per_share": tk.get("intrinsic_value_per_share"),
+        "current_price":             current_price,
+        "upside_percent":            tk.get("upside_percent"),
+    }
+    if current_price is None:
+        del tanuki_block["current_price"]
     return {
         "ticker":       ticker,
         "company":      stock["company"],
@@ -272,10 +284,7 @@ def build_data_package(stock, mkt):
         "timing_score": stock["timing"],
         "category":     stock["category"],
         "tanuki": {
-            "intrinsic_value_per_share": tk.get("intrinsic_value_per_share"),
-            "current_price":             tk.get("current_price"),
-            "upside_percent":            tk.get("upside_percent"),
-            "deviation_rate":            tk.get("deviation_rate"),
+            **tanuki_block,
             "fcf_base":                  fcf_base,
             "growth_rate":               tk.get("growth", {}).get("rate") if isinstance(tk.get("growth"), dict) else None,
             "growth_source":             tk.get("growth", {}).get("source") if isinstance(tk.get("growth"), dict) else None,
