@@ -2335,75 +2335,15 @@ F&Gは実行時にCNNから取るため当日の値で、他の要素と基準�
 
 ---
 
-### [MARKETPULSE-BREADTH-MIXED-DATES-1] compute_breadth()が銘柄ごとに異なる日付の前日比を合算し、最大の日付をラベルにする
-**優先度:** 中
-**分類:** 導出ロジック / Market Pulse（ブレッス）
-**登録日:** 2026-09-26
-**発見:** 指示書⑲ STEP 3（D-04）
-
-#### 内容
-`src/market/market_pulse/breadth_calculator.py::compute_breadth()`は、銘柄ごとに
-「直近2つの有効終値」で上昇/下落を判定し、日付ラベルは全銘柄の最大日付を採る。
-銘柄間で最新の終値日がそろっているかを確認しない。2026-09-26のエントリはラベル2026-09-25だが、
-09-25の終値があるのは133銘柄だけで、370銘柄は09-24対09-23の比較だった
-（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1のclose=None行が原因）。RSP・SPYの騰落率も09-24の値。
-
-#### 実害
-市場の広がり（ADV/DEC・AD(5d)・NH/NL・>50MA/>200MA・Equal Weight乖離・McClellan）が、
-複数日の混合を1日の値として表示する。これらはセンチメントスコア（騰落比率13.5%・NH-NL 9%・
-Equal Weight乖離10%）とHindenburg判定（TAKE PROFIT/BUYチェックリスト）の入力でもある。
-2026-09-26はS&P500指数が+0.51%の日に「▲221 ▼281」と表示された。
-
-#### 着手条件
-なし（修正はしていない）
+（[[MARKETPULSE-BREADTH-MIXED-DATES-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 
-### [MARKETPULSE-TECHPULSE-QQQ-NULL-1] Tech PulseのQQQ系2入力が2026-08-27以降毎日nullで、VXN 1入力だけで算出されている
-**優先度:** 中
-**分類:** データ欠落 / Market Pulse（Tech Pulse）
-**登録日:** 2026-09-26
-**発見:** 指示書⑲ STEP 3（D-05）
-
-#### 内容
-`collect_and_send.py::fetch_qqq_tech_data()`は`reader.get_ma_deviation("QQQ", window=125)`が
-Noneだと、QQQ vs SPY 20日も計算せずに両方Noneを返す。`get_ma_deviation()`は125日の窓内に
-欠損（`_gap`、またはclose=None）があるとNoneを返す。QQQはdaily/に2026-08-25の`_gap`行があり、
-その後も09-21・09-25にclose=None行がある（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）ため、
-2026-08-27のエントリから毎日null（過去にも2026-04-04〜06-07・07-15に同じ状態があった）。
-
-#### 実害
-Tech Pulseスコア（画面のゲージ）がVXNのパーセンタイル1つだけで算出され、乖離（Tech Pulse−CNN F&G）・
-Zスコア・「ハイテク先行反発/下落注意」シグナルもその値に依存する。VXN（FRED VXNCLS）は公表ラグで
-3営業日古い日があり（2026-09-24〜26の3エントリでvxn_vs_ma50が同値）、その間スコアがほぼ動かない。
-「QQQ vs SPY 20日」カードは約1か月「—」表示。VXN欠落時の上限75キャップはあるが、QQQ欠落時の
-扱いは無く、画面にも欠落は表示されない。
-
-#### 着手条件
-なし（修正はしていない）
+（[[MARKETPULSE-TECHPULSE-QQQ-NULL-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 
-### [MARKETPULSE-HYG-LQD-DATE-MIX-1] HYG対LQD比とクレジット判定が、日付をそろえずにHYGとLQDの直近終値を組み合わせる
-**優先度:** 中
-**分類:** 導出ロジック / Market Pulse（センチメント・クレジット判定）
-**登録日:** 2026-09-26
-**発見:** 指示書⑲ STEP 2
-
-#### 内容
-`collect_and_send.py::get_realtime_data()`のHYG対LQD比は、HYG・LQDそれぞれの直近2つの
-有効終値で比を取り、日付はHYG側を記録する。両者の日付がそろっているかは確認しない。
-`save_data_to_json_and_csv()`のクレジット判定（HYG前日比−LQD前日比）、債券判定
-（TLT・SPYのasset_flow）と株判定（S&P500指数）も、それぞれ別の日付の値を組み合わせうる。
-2026-09-26のエントリ: HYGは09-25、LQDは09-24（close=None、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）、
-ラベルは09-25。
-
-#### 実害
-センチメントスコアの「クレジット」（重み10.8%、2026-09-26は100点）と、詳細カードのクレジット判定・
-Risk-Offスコアが、異なる日の値の組み合わせで算出される日がある。画面上は1日分の値として表示される。
-
-#### 着手条件
-なし（修正はしていない）
+（[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 

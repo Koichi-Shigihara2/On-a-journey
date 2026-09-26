@@ -37,7 +37,7 @@ import math
 import os
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -610,6 +610,71 @@ def repair_close_missing_records(symbols: List[str], base_dir: Optional[str] = N
     return result
 
 
+# 取引所カレンダーがNYSEと異なる銘柄（休場日の行が無いのは正常）
+_NON_NYSE_CALENDARS = {"^N225": "JPX"}
+
+
+def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> List[str]:
+    """daily/{symbol}.jsonの最古〜最新の範囲で、取引日なのに行ごと無い日付を返す
+    （[[MARKETPULSE-TECHPULSE-QQQ-NULL-1]]、2026-09-26。QQQの2026-08-25のように行が
+    抜けると、reader.get_ma_deviation()が窓内の欠損でNoneを返し続ける）。
+    取引日はNYSEカレンダー（^N225はJPX）。"""
+    base = _resolve_base_dir(base_dir)
+    payload = _load_json(os.path.join(base, "daily", f"{symbol}.json"), default=None)
+    records = (payload or {}).get("records", [])
+    have = {r["date"] for r in records if r.get("date")}
+    if not have:
+        return []
+    lo, hi = min(have), max(have)
+    days = _calendar_trading_days(_NON_NYSE_CALENDARS.get(symbol, "NYSE"))
+    return [d for d in days if lo <= d <= hi and d not in have]
+
+
+_TRADING_DAYS_CACHE: Dict[str, List[str]] = {}
+
+
+def _calendar_trading_days(name: str) -> List[str]:
+    """取引所カレンダーの2000-01-01〜本日+10日の取引日（'YYYY-MM-DD'、昇順）。プロセス内でキャッシュ
+    （daily/全銘柄を走査するCHECK-57で銘柄ごとにカレンダーを計算すると遅いため）。"""
+    if name not in _TRADING_DAYS_CACHE:
+        end = (datetime.now(timezone.utc) + timedelta(days=10)).strftime("%Y-%m-%d")
+        _TRADING_DAYS_CACHE[name] = [d.strftime("%Y-%m-%d")
+                                     for d in mcal.get_calendar(name).valid_days(start_date="2000-01-01", end_date=end)]
+    return _TRADING_DAYS_CACHE[name]
+
+
+def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:
+    """行ごと抜けている取引日を実データで取り直す（推測で埋めない。手動実行専用、
+    CLIの--repair-missing-daysフラグ経由）。
+
+    抜けている日付の最古日からyf.download(start=...)で取得し、抜けている日付の
+    足のうち終値のあるものだけを追加する（既存の行は変更しない）。
+    戻り値は{symbol: {"filled": [...], "unresolved": [...]}}。
+    """
+    base = _resolve_base_dir(base_dir)
+    result: Dict[str, Dict[str, List[str]]] = {}
+    for symbol in _dedupe_symbols(symbols):
+        missing = find_missing_trading_days(symbol, base_dir=base)
+        if not missing:
+            continue
+        history = _download_historical_bars([symbol], start=min(missing))
+        by_date = {b["date"]: b for b in (history.get(symbol) or []) if _has_valid_close(b)}
+        filled = [d for d in missing if d in by_date]
+        if filled:
+            path = os.path.join(base, "daily", f"{symbol}.json")
+            payload = _load_json(path, default={"symbol": symbol, "records": []})
+            new_records = []
+            for d in filled:
+                rec = dict(by_date[d])
+                rec["_validation_warnings"] = validate_price_record(rec)
+                new_records.append(rec)
+            payload["records"] = sorted(payload.get("records", []) + new_records, key=lambda r: r.get("date", ""))
+            _atomic_write_json(path, payload)
+        result[symbol] = {"filled": filled, "unresolved": [d for d in missing if d not in by_date]}
+        print(f"   [{symbol}] 抜けていた取引日{len(missing)}日: 取得{len(filled)}日・取得できず{len(missing) - len(filled)}日")
+    return result
+
+
 # ── 週次準静的属性層 ──────────────────────────────────────
 
 def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) -> None:
@@ -1090,7 +1155,19 @@ if __name__ == "__main__":
         "--repair-missing-close", action="store_true",
         help="一過性: daily/の終値の無い行だけを取り直す（銘柄省略時はdaily/の全ファイルが対象）",
     )
+    arg_parser.add_argument(
+        "--repair-missing-days", action="store_true",
+        help="一過性: daily/で行ごと抜けている取引日を実データで取り直す（銘柄省略時はdaily/の全ファイルが対象）",
+    )
     args = arg_parser.parse_args()
+
+    if args.repair_missing_days:
+        base_for_repair = _resolve_base_dir(None)
+        repair_symbols = (_dedupe_symbols(args.symbols) if args.symbols else sorted(
+            os.path.splitext(n)[0] for n in os.listdir(os.path.join(base_for_repair, "daily")) if n.endswith(".json")))
+        res = repair_missing_trading_days(repair_symbols)
+        print(json.dumps(res, ensure_ascii=False))
+        sys.exit(0)
 
     if args.repair_missing_close:
         base_for_repair = _resolve_base_dir(None)

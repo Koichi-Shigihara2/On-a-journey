@@ -153,3 +153,47 @@ class TestDailyPickIgnoresUndetermined:
                   {"ticker": "LOAR", "company": "L", "funda": 10, "timing": 20, "category": "PASS"}]
         pick, _ = dp.select_ticker(stocks, [], "2026-09-27")
         assert pick["ticker"] != "ADBE"
+
+
+class TestMissingTradingDays:
+    """MARKETPULSE-TECHPULSE-QQQ-NULL-1（2026-09-26）: 行ごと抜けた取引日の検知と実データでの取り直し"""
+
+    def test_find_missing_trading_days_nyse(self, tmp_path):
+        base = str(tmp_path)
+        _write_daily(base, "QQQ", [_bar("2026-08-24", 1.0), _bar("2026-08-26", 1.0)])
+        assert fetcher.find_missing_trading_days("QQQ", base_dir=base) == ["2026-08-25"]
+
+    def test_n225_uses_japan_calendar(self, tmp_path):
+        """2026-09-21〜23は日本の祝日（休場）のため抜けとして扱わない"""
+        base = str(tmp_path)
+        _write_daily(base, "^N225", [_bar("2026-09-18", 1.0), _bar("2026-09-24", 1.0)])
+        assert fetcher.find_missing_trading_days("^N225", base_dir=base) == []
+
+    def test_repair_fills_only_missing_days_with_real_bars(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        _write_daily(base, "QQQ", [_bar("2026-08-24", 700.0, volume=5), _bar("2026-08-26", 702.0, volume=6)])
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: {
+            "QQQ": [_bar("2026-08-24", 1.0), _bar("2026-08-25", 701.0), _bar("2026-08-26", 1.0)]})
+        res = fetcher.repair_missing_trading_days(["QQQ"], base_dir=base)
+        recs = {r["date"]: r for r in _read_daily(base, "QQQ")}
+        assert res == {"QQQ": {"filled": ["2026-08-25"], "unresolved": []}}
+        assert recs["2026-08-25"]["close"] == 701.0
+        assert recs["2026-08-24"]["close"] == 700.0 and recs["2026-08-26"]["volume"] == 6
+
+    def test_unavailable_day_is_reported_not_guessed(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        _write_daily(base, "FISV", [_bar("2025-11-11", 64.26), _bar("2025-11-13", 64.53)])
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: {
+            "FISV": [_bar("2025-11-11", 64.26), _bar("2025-11-13", 64.53)]})
+        res = fetcher.repair_missing_trading_days(["FISV"], base_dir=base)
+        assert res == {"FISV": {"filled": [], "unresolved": ["2025-11-12"]}}
+        assert [r["date"] for r in _read_daily(base, "FISV")] == ["2025-11-11", "2025-11-13"]
+
+    def test_check57_reports_each_missing_day(self, tmp_path):
+        sys.path.insert(0, os.path.join(_REPO_ROOT, "common", "sec_data"))
+        import report_consistency_check as rcc
+        base = str(tmp_path)
+        _write_daily(base, "QQQ", [_bar("2026-08-24", 1.0), _bar("2026-08-27", 1.0)])
+        out = rcc._check_daily_missing_trading_days(base_dir=base)
+        assert [(s, "2026-08-25" in m or "2026-08-26" in m) for s, m in out] == [("QQQ", True), ("QQQ", True)]
+        assert all("[WARN-57" in m for _, m in out)

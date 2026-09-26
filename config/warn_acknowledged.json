@@ -376,6 +376,20 @@
       "acknowledged_date": "2026-09-26",
       "match": "2021-11-02",
       "comment": "split_history未登録（yfinance 2021-11-02）。一次資料で確認した結果、株式分割ではなくVMware株の特別株式配当によるスピンオフ（8-K 0001193125-21-315488）。yfinanceの比率は株価調整値のため登録対象外（指示書⑱ STEP B）。"
+    },
+    {
+      "check": "WARN-57",
+      "ticker": "FISV",
+      "acknowledged_date": "2026-09-26",
+      "match": "2025-11-12",
+      "comment": "daily/行の抜け。fetcher.py --repair-missing-daysで取り直しを試みたが、yfinanceに2025-11-12の行が無い（前後の11-11・11-13はある）。推測で埋めない方針のため欠損のまま（指示書⑳ STEP D-3）。"
+    },
+    {
+      "check": "WARN-57",
+      "ticker": "JPY=X",
+      "acknowledged_date": "2026-09-26",
+      "match": "2025-04-21",
+      "comment": "daily/行の抜け。fetcher.py --repair-missing-daysで取り直しを試みたが、yfinanceに2025-04-21の行が無い（前後の04-17・04-22はある）。推測で埋めない方針のため欠損のまま（指示書⑳ STEP D-3）。"
     }
   ]
 }

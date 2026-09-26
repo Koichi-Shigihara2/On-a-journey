@@ -344,6 +344,10 @@ def compute_sentiment(structured_data):
             "rsp_spy_divergence_20d_avg": breadth.get("rsp_spy_divergence_20d_avg"),
             "ad_line": breadth.get("ad_line"),
             "mcclellan_oscillator": breadth.get("mcclellan_oscillator"),
+            # 同じ基準日の銘柄だけで集計した結果、除外した銘柄数と5日騰落比の対象数
+            # （MARKETPULSE-BREADTH-MIXED-DATES-1、2026-09-26）
+            "stocks_excluded_date_mismatch": breadth.get("stocks_excluded_date_mismatch"),
+            "stocks_counted_5d": breadth.get("stocks_counted_5d"),
             "date": breadth.get("date"),
         }
 
@@ -752,6 +756,33 @@ def calc_tech_pulse_score(qqq_vs_ma125, vxn_vs_ma50, qqq_vs_spy_20d, history_90d
     return score
 
 
+def _aligned_pair_closes(sym_a, sym_b, days=10):
+    """2銘柄の終値がそろっている最新の共通日と、その直前の営業日（両方の終値あり）の
+    ((前日, a, b), (当日, a, b))を返す。そろわない場合はNone
+    （[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]、2026-09-26）。"""
+    if not HAS_MARKET_DATA:
+        return None
+    try:
+        series_a = _md_get_price_series(sym_a, days=days)
+        series_b = _md_get_price_series(sym_b, days=days)
+    except Exception:
+        return None
+    sa = {r["date"]: r["close"] for r in series_a
+          if not r.get("_gap") and r.get("close") is not None and not _is_nan(r["close"])}
+    sb = {r["date"]: r["close"] for r in series_b
+          if not r.get("_gap") and r.get("close") is not None and not _is_nan(r["close"])}
+    trading = sorted({r["date"] for r in series_a} | {r["date"] for r in series_b})
+    common = [d for d in trading if d in sa and d in sb]
+    if len(common) < 2:
+        return None
+    d_now = common[-1]
+    idx = trading.index(d_now)
+    if idx == 0 or trading[idx - 1] not in common:
+        return None  # 直前の営業日に両方の終値がない（2営業日分の変化になるため使わない）
+    d_prev = trading[idx - 1]
+    return (d_prev, sa[d_prev], sb[d_prev]), (d_now, sa[d_now], sb[d_now])
+
+
 def get_realtime_data():
     """表示用テキストと構造化データを返す"""
     summary = ""
@@ -940,21 +971,25 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
-        if (hyg_records[-1].get("close") is not None and hyg_records[-2].get("close") is not None
-                and lqd_records[-1].get("close") is not None and lqd_records[-2].get("close") is not None
-                and not _is_nan(hyg_records[-1]["close"]) and not _is_nan(hyg_records[-2]["close"])
-                and not _is_nan(lqd_records[-1]["close"]) and not _is_nan(lqd_records[-2]["close"])):
+        # [[MARKETPULSE-HYG-LQD-DATE-MIX-1]]（2026-09-26）: 以前はHYG・LQDそれぞれの
+        # 直近2終値で比を取り、日付はHYG側を記録していたため、片方の終値が欠けた日は
+        # 別の日の値を組み合わせていた（2026-09-26: HYGは09-25、LQDは09-24）。
+        # 両方の終値がそろっている最新の共通日と、その前の共通日（隣り合う営業日）で計算する。
+        pair = _aligned_pair_closes("HYG", "LQD")
+        if pair is not None:
             try:
-                ratio_now = hyg_records[-1]["close"] / lqd_records[-1]["close"]
-                ratio_prev = hyg_records[-2]["close"] / lqd_records[-2]["close"]
+                (d_prev, hyg_prev, lqd_prev), (d_now, hyg_now, lqd_now) = pair
+                ratio_now = hyg_now / lqd_now
+                ratio_prev = hyg_prev / lqd_prev
                 ratio_chg = ratio_now - ratio_prev
-                last_date = datetime.strptime(hyg_records[-1]["date"], "%Y-%m-%d").strftime("%m/%d")
+                last_date = datetime.strptime(d_now, "%Y-%m-%d").strftime("%m/%d")
                 direction = "HY優勢＝リスクオン" if ratio_chg > 0 else "スプレッド拡大示唆＝リスクオフ"
                 summary += f"● HYG対LQD比（クレジット代理）: {ratio_now:.4f} [{ratio_chg:+.6f}] ({last_date} 確定) → {direction}\n"
                 data["HYG対LQD比"] = {
                     "value": round(ratio_now, 4),
                     "change": round(ratio_chg, 6),
-                    "date": hyg_records[-1]["date"]
+                    "date": d_now,
+                    "prev_date": d_prev,
                 }
             except Exception as e:
                 summary += f"● HYG/LQD比率: 計算エラー ({e})\n"
@@ -1537,7 +1572,13 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
     # 連鎖的に判定不能になる結合リスクを生むため見送った）。
     credit_stock  = "リスクオフ" if sp500_chg < -1.0 else "リスクオン"
     # クレジット: HYG変化率 < LQD変化率 → スプレッド拡大 → リスクオフ
-    credit_credit = "リスクオフ" if (hyg_chg_pct - lqd_chg_pct) < 0 else "リスクオン"
+    # HYG対LQD比（共通日でそろえた比の変化）を優先する。取れない場合のみ従来の
+    # 各自の前日比の差で判定する（MARKETPULSE-HYG-LQD-DATE-MIX-1、2026-09-26）
+    _hl = structured_data.get("HYG対LQD比") or {}
+    if _hl.get("change") is not None:
+        credit_credit = "リスクオフ" if _hl["change"] < 0 else "リスクオン"
+    else:
+        credit_credit = "リスクオフ" if (hyg_chg_pct - lqd_chg_pct) < 0 else "リスクオン"
 
     # 債券: TLT(long_bond)上昇 & SPY(equity)下落 → 質への逃避 → 債券買い
     # TLTが下落（利回り上昇＝債券安）の場合は債券売り。"リスクオン/オフ"表記は誤解を招くため廃止。

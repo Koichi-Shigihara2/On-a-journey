@@ -16,6 +16,7 @@ S&P500構成銘柄を対象に、以下のブレッスデータを日次で算�
   docs/market-monitor/market-pulse/data/breadth_data.json
 """
 
+import functools
 import os
 import sys
 import json
@@ -184,13 +185,34 @@ def compute_breadth(tickers):
     n_has_50ma = n_has_200ma = 0
     valid_count = 0
     last_date = None
+    excluded_date = 0
+    n_5d = 0
 
+    # [[MARKETPULSE-BREADTH-MIXED-DATES-1]]（2026-09-26）: 以前は銘柄ごとに「直近2つの
+    # 有効終値」で上昇/下落を判定し、日付は全銘柄の最大値をラベルにしていたため、
+    # 終値の欠損がある日は異なる日付の前日比が混ざった（2026-09-26のエントリは133銘柄が
+    # 09-25、370銘柄が09-24の比較）。まず全銘柄の最新の有効終値日のうち最大の日を
+    # 基準日とし、基準日の終値があり、かつ直前の有効終値が基準日の前営業日である
+    # 銘柄だけを集計する。5日騰落比は直近6営業日がそろった銘柄だけで数える。
+    loaded = []
     for ticker in tickers:
         try:
             series = _md_get_price_series(ticker, days=260)
         except Exception as e:
             print(f"[WARN] {ticker}: 取得失敗 - {e}")
             continue
+        real = [r for r in series if not r.get("_gap") and r.get("close") is not None]
+        if real:
+            loaded.append((ticker, series))
+            if last_date is None or real[-1]["date"] > last_date:
+                last_date = real[-1]["date"]
+    if last_date is None:
+        print("[ERROR] 有効な日付が取得できませんでした")
+        return None
+    last6 = _recent_trading_days(last_date, 6)
+    prev_day = last6[-2]
+
+    for ticker, series in loaded:
 
         # NaN(欠損)が多すぎる銘柄を除外（直近5営業日で実データが3日未満、
         # 旧ロジックのrecent_nan<3条件と同義。_gapは営業日欠損プレース
@@ -204,11 +226,13 @@ def compute_breadth(tickers):
         if len(vals) < 2:
             continue
 
+        if dates[-1] != last_date or dates[-2] != prev_day:
+            excluded_date += 1
+            continue
+
         valid_count += 1
         latest = vals[-1]
         prev = vals[-2]
-        if last_date is None or dates[-1] > last_date:
-            last_date = dates[-1]
 
         # ── 日次 Advance / Decline ──
         ret1d = (latest - prev) / prev if prev else 0.0
@@ -220,10 +244,11 @@ def compute_breadth(tickers):
             unchanged += 1
 
         # ── 5日 AD Ratio (5日間の累積Advance / 累積Decline) ──
-        if len(vals) >= 6:
-            last6 = vals[-6:]
+        if len(vals) >= 6 and tuple(dates[-6:]) == last6:
+            n_5d += 1
+            last6_vals = vals[-6:]
             for i in range(1, 6):
-                r = (last6[i] - last6[i - 1]) / last6[i - 1] if last6[i - 1] else 0.0
+                r = (last6_vals[i] - last6_vals[i - 1]) / last6_vals[i - 1] if last6_vals[i - 1] else 0.0
                 if r > 0.0001:
                     adv_5d += 1
                 elif r < -0.0001:
@@ -259,11 +284,10 @@ def compute_breadth(tickers):
     print(f"[INFO] 取得完了 ({elapsed:.1f}秒)")
     print(f"[INFO] 有効銘柄数: {valid_count} / {len(tickers)}")
 
+    print(f"[INFO] 基準日{last_date}（前営業日{prev_day}）: 集計{valid_count}銘柄 / "
+          f"日付不一致で除外{excluded_date}銘柄 / 5日騰落比の対象{n_5d}銘柄")
     if valid_count < 100:
         print("[ERROR] 有効銘柄が100未満です。データ品質に問題があります。")
-        return None
-    if last_date is None:
-        print("[ERROR] 有効な日付が取得できませんでした")
         return None
 
     ad_ratio_1d = round(advances / max(declines, 1), 2)
@@ -283,6 +307,8 @@ def compute_breadth(tickers):
         "new_lows_52w": new_lows,
         "nh_nl_diff": nh_nl_diff,
         "total_stocks": valid_count,
+        "stocks_excluded_date_mismatch": excluded_date,
+        "stocks_counted_5d": n_5d,
         "pct_above_50ma": pct_above_50ma,
         "pct_above_200ma": pct_above_200ma,
     }
@@ -293,6 +319,16 @@ def compute_breadth(tickers):
           f"50MA%={pct_above_50ma} 200MA%={pct_above_200ma}")
 
     return result
+
+
+@functools.lru_cache(maxsize=64)
+def _recent_trading_days(anchor_date: str, n: int) -> list:
+    """anchor_date（'YYYY-MM-DD'、当日を含む）までの直近n営業日（NYSE）を古い順に返す。"""
+    import pandas_market_calendars as _mcal
+    anchor = datetime.strptime(anchor_date, "%Y-%m-%d").date()
+    days = _mcal.get_calendar("NYSE").valid_days(
+        start_date=(anchor - timedelta(days=n * 3 + 15)).isoformat(), end_date=anchor.isoformat())
+    return tuple(d.strftime("%Y-%m-%d") for d in days[-n:])
 
 
 def fetch_rsp_spy_divergence():
@@ -323,27 +359,23 @@ def fetch_rsp_spy_divergence():
     try:
         rsp_series = _md_get_price_series("RSP", days=25)
         spy_series = _md_get_price_series("SPY", days=25)
-        rsp_closes = [r["close"] for r in rsp_series if not r.get("_gap") and r.get("close") is not None]
-        spy_closes = [r["close"] for r in spy_series if not r.get("_gap") and r.get("close") is not None]
-        if len(rsp_closes) < 2 or len(spy_closes) < 2:
+        # 2026-09-26（MARKETPULSE-BREADTH-MIXED-DATES-1）: RSPとSPYを日付でそろえ、
+        # 隣り合う営業日同士の騰落率だけを使う（以前は各系列の末尾をそのまま
+        # 対応させており、片方の終値が欠けた日は別の日同士を比べていた）
+        rsp_map = {r["date"]: r["close"] for r in rsp_series if not r.get("_gap") and r.get("close") is not None}
+        spy_map = {r["date"]: r["close"] for r in spy_series if not r.get("_gap") and r.get("close") is not None}
+        common = sorted(set(rsp_map) & set(spy_map))
+        if len(common) < 2:
             print("[WARN] RSP/SPYの有効データが不足しています")
             return None
-
-        # RSP/SPYの実データ件数が異なる場合に備え、末尾（直近）を基準に
-        # 同じ件数へ揃える（両者とも同一バッチで取得されるため通常は
-        # 一致するが、個別の欠損に対する耐性として揃える）
-        n = min(len(rsp_closes), len(spy_closes))
-        rsp_closes = rsp_closes[-n:]
-        spy_closes = spy_closes[-n:]
-
-        rsp_returns = [
-            (rsp_closes[i] - rsp_closes[i - 1]) / rsp_closes[i - 1] * 100 if rsp_closes[i - 1] else 0.0
-            for i in range(1, n)
-        ]
-        spy_returns = [
-            (spy_closes[i] - spy_closes[i - 1]) / spy_closes[i - 1] * 100 if spy_closes[i - 1] else 0.0
-            for i in range(1, n)
-        ]
+        trading = _recent_trading_days(common[-1], 40)
+        pos = {d: i for i, d in enumerate(trading)}
+        rsp_returns, spy_returns = [], []
+        for a, b in zip(common, common[1:]):
+            if a not in pos or b not in pos or pos[b] - pos[a] != 1:
+                continue
+            rsp_returns.append((rsp_map[b] - rsp_map[a]) / rsp_map[a] * 100 if rsp_map[a] else 0.0)
+            spy_returns.append((spy_map[b] - spy_map[a]) / spy_map[a] * 100 if spy_map[a] else 0.0)
         if not rsp_returns or not spy_returns:
             print("[WARN] RSP/SPYの有効データが不足しています")
             return None

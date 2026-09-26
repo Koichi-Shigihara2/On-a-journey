@@ -452,3 +452,30 @@ class TestCheckDataFreshness:
         self._patch_latest(monkeypatch, {"^GSPC": "2026-09-25", "SPY": "2026-09-25"})
         r = cs.check_data_freshness(datetime(2026, 9, 27, 12, 0, tzinfo=timezone.utc))
         assert r["expected_close_date"] == "2026-09-25" and r["stale"] is False
+
+
+class TestAlignedPairCloses:
+    """MARKETPULSE-HYG-LQD-DATE-MIX-1（2026-09-26）: HYG対LQD比は両方の終値がそろう
+    最新の共通日と、その直前の営業日で計算する"""
+
+    @staticmethod
+    def _rows(pairs):
+        return [{"date": d, "close": c, "_gap": False} if c is not None else {"date": d, "_gap": True}
+                for d, c in pairs]
+
+    def test_missing_lqd_latest_uses_previous_common_day(self, monkeypatch):
+        """2026-09-26型: HYGは09-25あり、LQDは09-25欠損 → 09-23→09-24で計算"""
+        _patch_price_series(monkeypatch, {
+            "HYG": self._rows([("2026-09-23", 78.10), ("2026-09-24", 77.89), ("2026-09-25", 77.86)]),
+            "LQD": self._rows([("2026-09-23", 103.89), ("2026-09-24", 103.15), ("2026-09-25", None)]),
+        })
+        (d0, h0, l0), (d1, h1, l1) = cs._aligned_pair_closes("HYG", "LQD")
+        assert (d0, d1) == ("2026-09-23", "2026-09-24")
+        assert (h1, l1) == (77.89, 103.15)
+
+    def test_hole_on_previous_day_returns_none(self, monkeypatch):
+        _patch_price_series(monkeypatch, {
+            "HYG": self._rows([("2026-09-23", 78.10), ("2026-09-24", 77.89), ("2026-09-25", 77.86)]),
+            "LQD": self._rows([("2026-09-23", 103.89), ("2026-09-24", None), ("2026-09-25", 103.21)]),
+        })
+        assert cs._aligned_pair_closes("HYG", "LQD") is None

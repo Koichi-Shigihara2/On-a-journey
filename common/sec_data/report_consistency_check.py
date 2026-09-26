@@ -1489,6 +1489,33 @@ def _check_current_price_missing(ticker: str, latest: dict) -> list[str]:
     return []
 
 
+def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tuple[str, str]]:
+    """CHECK-57: common/market_data/daily/で、取引日なのに行ごと抜けている日付を検知する
+    （2026-09-26新設、NG化しないWARN。[[MARKETPULSE-TECHPULSE-QQQ-NULL-1]]）。
+
+    背景: QQQの2026-08-25の行が抜けていたため、reader.get_ma_deviation("QQQ", 125)が
+    窓内の欠損でNoneを返し続け、Tech PulseのQQQ系2入力が約1か月nullだった。
+    取り直しはfetcher.py --repair-missing-days（実データの取得のみ、推測で埋めない）。
+    取引日はNYSEカレンダー（^N225はJPX）。取り直しても取れない日（yfinance側に行が
+    無い）はwarn_acknowledged.jsonに日付をmatchにして登録する。
+    Returns: [(symbol, WARNメッセージ)]（1日1件）
+    """
+    from common.market_data.fetcher import find_missing_trading_days
+    base = base_dir or os.path.join(REPO_ROOT, "common", "market_data")
+    out: list[tuple[str, str]] = []
+    daily_dir = os.path.join(base, "daily")
+    if not os.path.isdir(daily_dir):
+        return out
+    for name in sorted(os.listdir(daily_dir)):
+        if not name.endswith(".json"):
+            continue
+        symbol = name[:-5]
+        for d in find_missing_trading_days(symbol, base_dir=base):
+            out.append((symbol, f"  [WARN-57 daily/行の抜け] {symbol} {d}: 取引日の行が無い"
+                                f" → fetcher.py --repair-missing-daysで取り直す（取れない日は台帳に登録）"))
+    return out
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -3198,6 +3225,18 @@ def run_checks(args=None) -> tuple[int, int]:
     if stonks_flag_warn:
         flagged.append(("[GLOBAL]", [], stonks_flag_warn))
         total_warn += len(stonks_flag_warn)
+
+    # CHECK-57: daily/の行の抜け（取引日なのに行が無い）。銘柄単位の台帳照合
+    # （match＝日付）を行うため、annotate_warn()を通す（CHECK-54と同じ扱い）。
+    gap_msgs = []
+    for _t, _w in _check_daily_missing_trading_days():
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        gap_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if gap_msgs:
+        flagged.append(("[GLOBAL]", [], gap_msgs))
+        total_warn += len(gap_msgs)
 
     # CHECK-54: split_history.yamlの登録漏れ（yfinance splitsと突き合わせ、
     # [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceを使うため

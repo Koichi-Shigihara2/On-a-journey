@@ -9,6 +9,100 @@
 - `DATA-JUMP-CHECK-NETINCOME-SBC-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 - `LAYER3-GA-STANDALONE-TAG-UNMAPPED-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 
+### ✅ [MARKETPULSE-BREADTH-MIXED-DATES-1] compute_breadth()が銘柄ごとに異なる日付の前日比を合算し、最大の日付をラベルにする → 完了（2026-09-26）: 同じ基準日の銘柄だけで集計するよう修正
+**優先度:** 中
+**分類:** 導出ロジック / Market Pulse（ブレッス）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（D-04）
+
+#### 内容
+`src/market/market_pulse/breadth_calculator.py::compute_breadth()`は、銘柄ごとに
+「直近2つの有効終値」で上昇/下落を判定し、日付ラベルは全銘柄の最大日付を採る。
+銘柄間で最新の終値日がそろっているかを確認しない。2026-09-26のエントリはラベル2026-09-25だが、
+09-25の終値があるのは133銘柄だけで、370銘柄は09-24対09-23の比較だった
+（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1のclose=None行が原因）。RSP・SPYの騰落率も09-24の値。
+
+#### 実害
+市場の広がり（ADV/DEC・AD(5d)・NH/NL・>50MA/>200MA・Equal Weight乖離・McClellan）が、
+複数日の混合を1日の値として表示する。これらはセンチメントスコア（騰落比率13.5%・NH-NL 9%・
+Equal Weight乖離10%）とHindenburg判定（TAKE PROFIT/BUYチェックリスト）の入力でもある。
+2026-09-26はS&P500指数が+0.51%の日に「▲221 ▼281」と表示された。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 2026-09-26 完了（指示書⑳ STEP D-1）
+`compute_breadth()`: 全銘柄の最新の有効終値日のうち最大の日を基準日とし、基準日の終値があり直前の終値が前営業日である銘柄だけを集計する。
+5日騰落比は直近6営業日がそろった銘柄だけで数える。除外した銘柄数（`stocks_excluded_date_mismatch`）と5日騰落比の対象数
+（`stocks_counted_5d`）をbreadth_data.json・market_data.jsonに記録。`fetch_rsp_spy_divergence()`もRSPとSPYを日付でそろえ、
+隣り合う営業日同士の騰落率だけを使う。再生成後（2026-09-26）: 基準日09-25で502銘柄を集計、除外1銘柄（HUBB、09-25の終値なし）。
+回帰テスト3件（旧コードで3件失敗・新コードで成功）。既存テスト14件は合成日付（d0000…）を実際の営業日に変えた。
+
+---
+
+### ✅ [MARKETPULSE-HYG-LQD-DATE-MIX-1] HYG対LQD比とクレジット判定が、日付をそろえずにHYGとLQDの直近終値を組み合わせる → 完了（2026-09-26）: 両方の終値がそろう最新の共通日で計算するよう修正
+**優先度:** 中
+**分類:** 導出ロジック / Market Pulse（センチメント・クレジット判定）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2
+
+#### 内容
+`collect_and_send.py::get_realtime_data()`のHYG対LQD比は、HYG・LQDそれぞれの直近2つの
+有効終値で比を取り、日付はHYG側を記録する。両者の日付がそろっているかは確認しない。
+`save_data_to_json_and_csv()`のクレジット判定（HYG前日比−LQD前日比）、債券判定
+（TLT・SPYのasset_flow）と株判定（S&P500指数）も、それぞれ別の日付の値を組み合わせうる。
+2026-09-26のエントリ: HYGは09-25、LQDは09-24（close=None、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）、
+ラベルは09-25。
+
+#### 実害
+センチメントスコアの「クレジット」（重み10.8%、2026-09-26は100点）と、詳細カードのクレジット判定・
+Risk-Offスコアが、異なる日の値の組み合わせで算出される日がある。画面上は1日分の値として表示される。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 2026-09-26 完了（指示書⑳ STEP D-2）
+`_aligned_pair_closes()`を追加し、HYG対LQD比は両方の終値がそろう最新の共通日と、その直前の営業日（両方の終値あり）で計算する
+（`prev_date`も記録）。直前の営業日に片方の終値が無い場合は計算しない。クレジット判定（Risk-Offスコアの1項目）はこの比の変化の符号で判定し、
+取れない場合だけ従来の前日比の差を使う。回帰テスト2件（旧コードで2件失敗・新コードで成功）。
+
+---
+
+### ✅ [MARKETPULSE-TECHPULSE-QQQ-NULL-1] Tech PulseのQQQ系2入力が2026-08-27以降毎日nullで、VXN 1入力だけで算出されている → 完了（2026-09-26）: 行ごと抜けた取引日を実データで取り直し、検知WARNを追加
+**優先度:** 中
+**分類:** データ欠落 / Market Pulse（Tech Pulse）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（D-05）
+
+#### 内容
+`collect_and_send.py::fetch_qqq_tech_data()`は`reader.get_ma_deviation("QQQ", window=125)`が
+Noneだと、QQQ vs SPY 20日も計算せずに両方Noneを返す。`get_ma_deviation()`は125日の窓内に
+欠損（`_gap`、またはclose=None）があるとNoneを返す。QQQはdaily/に2026-08-25の`_gap`行があり、
+その後も09-21・09-25にclose=None行がある（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）ため、
+2026-08-27のエントリから毎日null（過去にも2026-04-04〜06-07・07-15に同じ状態があった）。
+
+#### 実害
+Tech Pulseスコア（画面のゲージ）がVXNのパーセンタイル1つだけで算出され、乖離（Tech Pulse−CNN F&G）・
+Zスコア・「ハイテク先行反発/下落注意」シグナルもその値に依存する。VXN（FRED VXNCLS）は公表ラグで
+3営業日古い日があり（2026-09-24〜26の3エントリでvxn_vs_ma50が同値）、その間スコアがほぼ動かない。
+「QQQ vs SPY 20日」カードは約1か月「—」表示。VXN欠落時の上限75キャップはあるが、QQQ欠落時の
+扱いは無く、画面にも欠落は表示されない。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 2026-09-26 完了（指示書⑳ STEP D-3）
+MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1の取り直しでは解消しなかった（QQQの2026-08-25は終値の無い行ではなく、行ごと抜けていた）。
+`fetcher.py`に`find_missing_trading_days()`・`repair_missing_trading_days()`（CLI `--repair-missing-days`）を追加し、daily/全体で
+取引日（NYSE、^N225はJPX）の行の抜けを洗い出して実データで取り直した（推測で埋めない）。9銘柄119日の抜けのうち、^N225の90日は
+日本の祝日（JPXカレンダーで判定して対象外）、27日を取得（^VIX9D 15日・JPY=X 5日・^N225 2日・QQQ・CL=F・GC=F・KHC・PFE各1日）。
+取得できなかった2日（FISV 2025-11-12・JPY=X 2025-04-21、yfinanceに行が無い）はwarn_acknowledged.jsonに日付をmatchにして登録。
+report_consistency_check.pyにCHECK-57（WARN-57 daily/行の抜け）を追加。取り直し後、QQQのMA125乖離は6.59%、QQQ vs SPY 20日は3.21%で
+算出され、Tech Pulseの2入力がそろった。回帰テスト5件（旧コードで5件失敗・新コードで成功）。取り直した銘柄はいずれもTANUKI・
+HypeCore・Stonks Siloの登録銘柄ではなく、影響はMarket Pulseのみ。
+
+---
+
 ### ✅ [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる） → 完了（2026-09-26）: 保存側・reader・TANUKIを修正し、既存行を取り直して再生成
 **優先度:** 中
 **分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）
