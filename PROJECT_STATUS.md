@@ -9,6 +9,13 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-09-26（後半、指示書⑲⑳）**: Market Pulseの正確性確認と修正。daily/に終値の無い行が確定値として保存され、
+  TANUKI VALUATIONがcurrent_price=0で計算していた不具合（09-22に99銘柄・09-26に78銘柄の分類が誤って公開、TANUKI SCOREの
+  daily pickとDiscord通知にも波及）を修正（保存側・reader・TANUKIの判定不能・NG-56、1,003行の取り直しと再生成、誤った履歴に
+  invalid印）。Market PulseをMarket Data Dailyの完了に連鎖、ブレッスとHYG/LQDの日付混在を解消、daily/の行の抜けを取り直し
+  （CHECK-57）、短期国債タイル・F&G区分・計算式の説明を修正。アクティブBACKLOG 1件→7件→3件。pytest 1709件全パス・
+  audit.py exit 0・report_consistency_check.py NG=0。**次回確認**: 次の平日のMarket_Pulse_Updateがworkflow_run起動で
+  data_freshness.stale=false、HUBB 09-25の行の取り直し
 - **2026-09-26**: BACKLOGを「着手可能な不具合」だけにする整理（指示書⑰⑱、BACKLOG_DONE.md
   「2026-09-26（完了）」）。構想・整理項目4件を`IDEAS_AND_WATCH.md`へ移し、監視項目2件を自動検知に
   置き換えてクローズ（CHECK-52/53〈recommended_g候補不足・floor発動×FCF減少〉、CHECK-55〈年次D&Aの

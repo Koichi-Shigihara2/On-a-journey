@@ -12,7 +12,9 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-26 指示書⑰⑱のブラッシュアップ時点）**: `BACKLOG.md`
+**現在の到達点（2026-09-26 指示書⑲⑳のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**3件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）・`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`（低、daily pickのtanuki.current_priceが常にnull）。2026-09-26は⑲でMarket Pulseの正確性を確認して6件登録し、⑳で`[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]`（TANUKI VALUATIONがcurrent_price=0で計算し09-22に99銘柄・09-26に78銘柄の分類が誤って公開された件）を含む6件を完了した。BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.md間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書⑲⑳）」ブロック。
+以下は同日前半（指示書⑰⑱）時点の記載:
+**（旧）現在の到達点（2026-09-26 指示書⑰⑱のブラッシュアップ時点）**: `BACKLOG.md`
 アクティブ件数**1件**（`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`、9/27のSEC_Data_Update後の確認待ち。
 機械カウント、`grep -c "^### \["`）。BACKLOG.mdには実害がある、または実害の確認が必要な不具合
 だけを置く方針に変え、構想・監視メモ・消費者のいない整理項目は`IDEAS_AND_WATCH.md`（課題数に
@@ -107,6 +109,34 @@ VISIBILITY-GAP-1]]`・`[[XBRL-UNIT-SCALE-MISMATCH-DETECTION-1]]`・
    既存関数が未検証のケースで動き出す。先に実データで試算し、扱えなければ関数を
    直してから登録する。他の消費者の既存結果が変わらないかも全件で確認する
    （`CHAT_RULES.md`事例21。リバース分割の二重補正リスク、KLAC・NOWの差分検出）。
+
+---
+
+最終更新: 2026-09-26（**指示書⑲⑳**。全てpush済み）:
+
+1. **⑲ Market Pulseの正確性確認**（`51b70750fc`・`b66521036b`）: 29要素の依存関係マップ（SYSTEM_MAP.md）、
+   browser_checksの全要素化、`docs/architecture/MARKET_PULSE_LOGIC_INVENTORY.md`、不具合6件を登録
+2. **⑳ STEP A・B 終値なし行と価格0**（`5fff840e00`・`a93b42fecc`・`c03b3e3292`・`bc6b1b85df`）: daily/に終値の無い行が
+   確定値として保存され、TANUKI VALUATIONがcurrent_price=0で計算していた（09-22に99銘柄・09-26に78銘柄、保有のADBE・APP・CELHが
+   BUY→HOLD等）。保存側（終値の無い足を保存しない・自己修復）、reader（有効な終値の最新行）、TANUKI（価格なし→UNDETERMINED
+   〈判定不能〉、upside/timing=None）、NG-56（価格0/None）を実装し、1,003行を取り直して再生成。誤った実行の履歴には削除せず
+   invalid印を付けた。影響一覧はBACKLOG_DONE.md
+3. **⑳ STEP C 起動の連鎖**（`69ff44bd44`）: Market PulseをMarket Data Dailyの完了に連鎖、data_freshnessを記録
+4. **⑳ STEP D 日付混在**（`3705b2ca2d`・`d43ece225e`）: ブレッスは同じ基準日の銘柄だけで集計、HYG/LQDは共通日で計算、
+   daily/の行の抜けを実データで取り直し（27日、取れない2日は台帳）・CHECK-57で検知。Tech PulseのQQQ入力が復活
+5. **⑳ STEP E 表示**（`25223c8809`）: 短期国債タイル（利回り上昇＝売られた）、CNN F&Gの区分、計算式モーダル・ツールチップ、
+   tanuki_scoreのtiming空欄。browser_checks一致42/不一致0
+6. **⑳ STEP F**: ONDSのWARN-10（急成長で年次売上とTTMが乖離、実データどおり）・RXRXのWARN-50（floor由来のIV、信頼性LOWで
+   丸め済み、株価下落で閾値を超えただけ）はいずれも異常ではないため理由付きで台帳登録
+
+**次セッションへの引き継ぎ**:
+- 次の平日のMarket_Pulse_Update実行がworkflow_run起動で`data_freshness.stale=false`なら`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`をクローズ
+- 次の平日のMarket_Data_Daily_Update後、HUBBの2026-09-25の行が取り直されているか（yfinanceが終値を返すようになったか）
+- TANUKI_VALUATION_Update.ymlはscore_watcher（Discord通知）がゲートより前にある。価格欠損はUNDETERMINEDとして通知対象外にしたが、
+  他の理由でゲートが止めた日も通知は出る
+
+**ブラッシュアップの検証結果**: `### ✅ [`のBACKLOG.md残存0件、アクティブ3件、3ファイル間のID重複0件。最終ゲート:
+pytest 1709件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0/WARN=126件（未確認56件）。
 
 ---
 

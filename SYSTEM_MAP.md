@@ -1670,6 +1670,9 @@ data/market_data.json`の最新エントリ（以下`L`）に集約され、フ�
 2026-08-26の横断点検（BACKLOG_DONE.md）で「ワークフロー間タイミング競合のリスクは
 構造上存在しない」としたのは、2026-08-11にdaily/経由へ切り替えた後も
 単一ワークフロー内で完結している前提で判断したもので、この前提は成り立っていない。
+**2026-09-26に対応**（指示書⑳ STEP C）: Market_Pulse_Update.ymlはMarket Data Daily Updateの完了
+（workflow_run）を起点にし、独立cronは金曜22:50 UTCのフォールバックにした。起動時にdaily/の最新日付と
+期待する終値日を比べ、`market_data.json`のエントリの`data_freshness`に記録する。
 
 ### 作成中に見つけた注記事項（新規BACKLOG登録は不要と判断）
 - Fear & Greedは上記の通りMarket Pulseへの一本化を確認済み（重複なし）。

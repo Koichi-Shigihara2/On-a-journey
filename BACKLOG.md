@@ -2329,6 +2329,13 @@ F&Gは実行時にCNNから取るため当日の値で、他の要素と基準�
 #### 着手条件
 なし（修正はしていない。原因箇所: `.github/workflows/Market_Pulse_Update.yml`の起動条件）
 
+#### 2026-09-26 対応済み・実地確認待ち（指示書⑳ STEP C、commit `69ff44bd44`）
+`Market_Pulse_Update.yml`をworkflow_run（Market Data Daily Updateの完了・成功時）起点に変え、独立cronは金曜22:50 UTCの
+フォールバックにした。`collect_and_send.py`は起動時に期待する終値日とdaily/の最新日付（^GSPC・SPY）を比べ、エントリの
+`data_freshness`に記録する（`stale`がtrueなら古い。画面表示は未実装）。
+**確認方法**: 次の平日のMarket_Pulse_Update実行が`workflow_run`イベントで起動し、そのエントリの`data_freshness.stale`がfalse
+（`expected_close_date`とdaily_latestが一致）であることを確認できたらクローズする。
+
 ---
 
 （[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]は2026-09-26、保存側・reader・TANUKIの修正と既存行の取り直し・再生成で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）

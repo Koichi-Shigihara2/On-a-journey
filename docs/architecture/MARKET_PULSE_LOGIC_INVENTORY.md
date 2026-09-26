@@ -7,6 +7,14 @@
 各要素について、何を表すか・入力とデータ基準日・計算式・閾値と画面の文言・気になる点を書く。
 「気になる点」は観察のみで、修正案は書かない。不具合として登録したものはBACKLOG IDを付けた。
 
+**2026-09-26の修正（指示書⑳）で解消したもの**: daily/の終値の無い行（MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）・
+ブレッスの日付混在（MARKETPULSE-BREADTH-MIXED-DATES-1、同じ基準日の銘柄だけで集計）・HYG対LQD比の日付混在
+（MARKETPULSE-HYG-LQD-DATE-MIX-1）・Tech PulseのQQQ欠落（MARKETPULSE-TECHPULSE-QQQ-NULL-1、行の抜けを取り直し）・
+計算式モーダルとツールチップ（MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1）・短期国債タイルの向き（MP-20・22、利回りの上昇を
+「売られた」と表示し5日平均でも符号を反転）・CNN F&Gゲージの区分（MP-11、CNNの区分に合わせた）。起動の連鎖
+（MARKETPULSE-MDD-CHECKOUT-RACE-1）は対応済みで、次回の発火での実地確認待ち。以下の本文は2026-09-26時点の
+調査記録として残している。
+
 ---
 
 ## 0. 全体に共通すること
