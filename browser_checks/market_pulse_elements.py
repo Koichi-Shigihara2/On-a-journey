@@ -47,9 +47,28 @@ SUB_SCORE_NAMES = {
     "hyg_lqd_dir": "クレジット", "nh_nl": "NH-NL差", "growth_value": "グロース優勢",
     "distribution": "出来高圧力", "rsp_spy_divergence": "Equal Weight乖離",
 }
-# index.htmlのINFO MODAL「計算式（7指標の加重平均）」表に書かれている重み（%）
-MODAL_WEIGHTS = {"vix_level": 25, "sp500_ma_dev": 20, "ad_ratio": 15, "hyg_lqd_dir": 12,
-                 "nh_nl": 10, "growth_value": 10, "distribution": 8}
+# index.htmlのINFO MODAL「計算式」表の行名 → sub_scoresのキー（2026-09-26に8指標・新重みへ更新）
+MODAL_ROW_KEYS = {"VIX Level": "vix_level", "S&P vs 50MA": "sp500_ma_dev", "AD Ratio 5d": "ad_ratio",
+                  "HYG/LQD": "hyg_lqd_dir", "NH-NL Diff": "nh_nl", "Growth/Value": "growth_value",
+                  "Volume Flow": "distribution", "Equal Weight乖離": "rsp_spy_divergence"}
+
+
+def fg_zone_label(s: float, rating: Optional[str]) -> str:
+    """index.htmlのfgZoneLabel()（CNNのratingがあれば大文字、無ければCNNの区分）。"""
+    if rating:
+        return str(rating).upper()
+    if s <= 25: return "EXTREME FEAR"
+    if s <= 45: return "FEAR"
+    if s <= 55: return "NEUTRAL"
+    if s <= 75: return "GREED"
+    return "EXTREME GREED"
+
+
+def bought(key: str, p: Optional[float]) -> Optional[float]:
+    """index.htmlのbought(): 短期国債（利回りの変化率）は「買われた」方向の符号に反転する。"""
+    if p is None:
+        return None
+    return -p if key == "short_bond" else p
 CARD_DEFS = [("S&P500", "S&P500"), ("NASDAQ", "NASDAQ"), ("米10年債", "10Y利回"),
              ("ドル円", "USD/JPY"), ("WTI原油", "WTI原油"), ("金（GOLD）", "GOLD")]
 AF_KEYS = ["ultra_short", "short_bond", "gold", "long_bond", "ig_bond", "hy_bond", "equity"]
@@ -79,6 +98,11 @@ def js_fixed(v: float, n: int) -> str:
 def js_round(v: float) -> int:
     """Math.round（0.5は+∞方向）。"""
     return int((Decimal(float(v)) + Decimal("0.5")).to_integral_value(rounding="ROUND_FLOOR"))
+
+
+def js_num(v) -> str:
+    """JSのテンプレート文字列での数値表示（26.0→"26"、26.5→"26.5"）。"""
+    return str(int(v)) if isinstance(v, float) and v.is_integer() else str(v)
 
 
 def signed(v: float, n: int) -> str:
@@ -175,7 +199,7 @@ def expected_asset_flow_judge(entries: list) -> tuple:
     rec = with_af[-5:]
 
     def avg(keys):
-        vs = [((d.get("asset_flow") or {}).get(k) or {}).get("change_pct") for d in rec for k in keys]
+        vs = [bought(k, ((d.get("asset_flow") or {}).get(k) or {}).get("change_pct")) for d in rec for k in keys]
         vs = [v for v in vs if v is not None]
         return sum(vs) / len(vs) if vs else None
     safe, risk = avg(["ultra_short", "short_bond"]), avg(["hy_bond", "equity"])
@@ -213,6 +237,8 @@ DOM_SNAPSHOT_JS = """
     tpDivZscore: t('tpDivZscore'), tpCVXN: t('tpCVXN'), tpCQQQ: t('tpCQQQ'), tpCZscore: t('tpCZscore'),
     tpChecklist: t('tpChecklistInner'), buyChecklist: t('buyChecklistInner'),
     afTiles: [...document.querySelectorAll('.af-u-tile .af-cell-pct')].map(e => e.innerText.trim()),
+    afArrows: [...document.querySelectorAll('.af-u-tile')].map(e => { const a = e.querySelector('.af-arrow'); return a ? a.innerText.trim() : null; }),
+    afPctColors: [...document.querySelectorAll('.af-u-tile .af-cell-pct')].map(e => e.style.color),
     afCells: [...document.querySelectorAll('.af-u-cell')].map(e => e.innerText.trim()).filter(x => x !== ''),
     afJudge: document.querySelector('.af-flow-judge') ? document.querySelector('.af-flow-judge').innerText.trim() : null,
     phasePills: [...document.querySelectorAll('.phase-pill')].map(e => e.innerText.trim()),
@@ -306,9 +332,9 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     tokens = [f"▲{b.get('advances')}", f"AD(5d) {b.get('ad_ratio_5d') or '-'}", f"▼{b.get('declines')}",
               f"NH {b.get('new_highs_52w') or 0}", ("+" if nhnl >= 0 else "") + str(nhnl), f"NL {b.get('new_lows_52w') or 0}"]
     if b.get("pct_above_50ma") is not None:
-        tokens.append(f">50MA {b['pct_above_50ma']}%")
+        tokens.append(f">50MA {js_num(b['pct_above_50ma'])}%")
     if b.get("pct_above_200ma") is not None:
-        tokens.append(f">200MA {b['pct_above_200ma']}%")
+        tokens.append(f">200MA {js_num(b['pct_above_200ma'])}%")
     if b.get("rsp_spy_divergence_20d_avg") is not None:
         v = b["rsp_spy_divergence_20d_avg"]
         tokens.append(("+" if v >= 0 else "") + js_fixed(v, 2) + "pt")
@@ -347,10 +373,10 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         _res(results, cls, "MP-11 CNN F&Gゲージ（#fgGaugeScore/#fgGaugeLbl）", "—/NO DATA",
              (dom["fgGaugeScore"], dom["fgGaugeLbl"]), dom["fgGaugeScore"] == "—")
     else:
-        exp = (js_fixed(fg, 0), tp_label(fg))
+        exp = (js_fixed(fg, 0), fg_zone_label(fg, L["fear_greed"].get("rating")))
         act = (dom["fgGaugeScore"], dom["fgGaugeLbl"])
         _res(results, cls, "MP-11 CNN F&Gゲージ（#fgGaugeScore/#fgGaugeLbl）", exp, act, act == exp,
-             note=f"ラベルはindex.htmlのtpLabel()区分。CNN自身のrating={L['fear_greed'].get('rating')}")
+             note="ラベルはCNNのrating（無ければCNNの区分25/45/55/75）")
 
     # MP-12 Tech Pulseゲージ
     tps = tp.get("score")
@@ -432,6 +458,15 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         else:
             exp.append(("+" if it["change_pct"] >= 0 else "") + js_fixed(it["change_pct"], 2) + "%" + ("※" if it.get("is_fallback") else ""))
     _res(results, cls, "MP-20 資金フロー 今日のタイル（7資産）", exp, dom["afTiles"], dom["afTiles"] == exp)
+    # MP-20b 短期国債タイル: 利回りの上昇＝「売られた」（赤）、低下＝「買われた」（緑）
+    sb = af.get("short_bond") or {}
+    if sb.get("change_pct") is not None:
+        p = sb["change_pct"]
+        exp = f"利回り{'▲' if p >= 0 else '▼'}（{'買われた' if bought('short_bond', p) >= 0 else '売られた'}）"
+        act = (dom.get("afArrows") or [None, None])[1]
+        color_ok = (dom.get("afPctColors") or [None, None])[1] == ("var(--grn)" if bought("short_bond", p) >= 0 else "var(--red)")
+        _res(results, cls, "MP-20b 資金フロー 短期国債タイルの向きと色", exp, act, act == exp and color_ok,
+             note="色も「買われた/売られた」に一致するか確認")
 
     # MP-21 資金フロー 直近7日グリッド
     with_af = [d for d in entries if d.get("asset_flow") is not None]
@@ -527,10 +562,15 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         if len(row) >= 2:
             modal[row[0]] = row[1]
     actual_w = {k: round(v["weight"] * 100, 1) for k, v in s["sub_scores"].items()}
-    _res(results, cls, "MP-29 計算式モーダル（#infoModal 7指標の重み表）",
-         f"実際の重み（%）: {actual_w}", f"モーダル記載: {modal}",
-         all(abs(actual_w.get(k, -1) - w) < 0.05 for k, w in MODAL_WEIGHTS.items()) and len(actual_w) == len(MODAL_WEIGHTS),
-         layer="描画（静的説明）", note="モーダルは7指標・旧重み。実計算は8指標（rsp_spy_divergence 10%追加・既存×0.9）")
+    modal_w = {}
+    for name, key in MODAL_ROW_KEYS.items():
+        m = re.match(r"([\d.]+)%", modal.get(name, ""))
+        modal_w[key] = float(m.group(1)) if m else None
+    ok = set(modal_w) == set(actual_w) and all(
+        modal_w[k] is not None and abs(modal_w[k] - actual_w[k]) < 0.05 for k in actual_w)
+    _res(results, cls, "MP-29 計算式モーダル（#infoModal 重み表）",
+         f"実際の重み（%）: {actual_w}", f"モーダル記載: {modal_w}", ok,
+         layer="描画（静的説明）", note="行名で対応づけ、8指標の重みを比較")
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -588,25 +628,32 @@ def run_derivation_checks(results: list, cls) -> None:
     _res(results, cls, "D-03 資産フロー騰落率（asset_flow、daily/から再計算）", "全資産一致", ng or "全資産一致",
          not ng, layer="導出")
 
-    # D-04 ブレッス: 表示日付の終値が揃った銘柄数（全銘柄が同じ日付の比較か）
+    # D-04 ブレッス: 基準日の終値と前営業日の終値がそろう銘柄だけで集計されているか
+    # （2026-09-26、MARKETPULSE-BREADTH-MIXED-DATES-1修正後の仕様。ブレッスの算出後に
+    # daily/が更新されていると件数がずれるため、daily/を読んだ時点の再計算と比べる）
     b = s.get("breadth") or {}
     bd = b.get("date")
+    import pandas_market_calendars as _mcal
+    _days = _mcal.get_calendar("NYSE").valid_days(start_date=(date.fromisoformat(bd) - timedelta(days=15)).isoformat(),
+                                                  end_date=bd)
+    prev_day = _days[-2].strftime("%Y-%m-%d")
     with open(SP500_TICKERS_JSON, encoding="utf-8") as f:
         tk = json.load(f)
     tk = tk if isinstance(tk, list) else tk.get("tickers", [])
-    on_date = off_date = 0
+    same = other = 0
     for t in tk:
         rows = _real_rows(t, days=6)
         if not rows:
             continue
-        if rows[-1]["date"] == bd:
-            on_date += 1
+        if len(rows) >= 2 and rows[-1]["date"] == bd and rows[-2]["date"] == prev_day:
+            same += 1
         else:
-            off_date += 1
-    _res(results, cls, f"D-04 ブレッスの基準日（表示{bd}、全銘柄が同じ日付の前日比か）",
-         f"{len(tk)}銘柄すべて{bd}の終値", f"{bd}の終値あり{on_date}銘柄 / 前営業日以前{off_date}銘柄",
-         off_date == 0, layer="データ",
-         note="compute_breadth()は銘柄ごとに直近2つの有効終値を使い、日付は最大値を採る")
+            other += 1
+    exp = {"total_stocks": same, "stocks_excluded_date_mismatch": other}
+    act = {"total_stocks": b.get("total_stocks"), "stocks_excluded_date_mismatch": b.get("stocks_excluded_date_mismatch")}
+    _res(results, cls, f"D-04 ブレッスの基準日（{bd}と前営業日{prev_day}の終値がそろう銘柄だけで集計）",
+         exp, act, act == exp, layer="データ",
+         note="compute_breadth()は基準日と前営業日の終値がそろう銘柄だけを集計し、除外数を記録する")
 
     # D-05 Tech Pulseの構成要素（QQQ系2要素・VXN）と乖離
     c = (L.get("tech_pulse") or {}).get("components") or {}

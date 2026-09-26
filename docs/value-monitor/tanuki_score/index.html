@@ -360,7 +360,7 @@ function renderDetailTable() {
       <td><a class="tkr-a" href="${T_BASE}stock.html?ticker=${s.ticker}">${s.ticker}</a></td>
       <td><span class="cat-badge ${m.badge}">${m.icon} ${m.label}</span></td>
       <td class="sc-num ${scClass(s.funda)}">${s.funda}</td>
-      <td class="sc-num ${scClass(s.timing)}">${s.timing}</td>
+      <td class="sc-num ${scClass(s.timing)}">${s.timing ?? '—'}</td>
       <td class="num">${pct(s.revYoy)}</td>
       <td class="num"><span class="${s.rule40 == null ? 'neu' : s.rule40 > 40 ? 'pos' : s.rule40 >= 20 ? 'neu' : 'neg'}" style="font-family:var(--mono)">${s.rule40 != null ? s.rule40.toFixed(1) : '—'}</span></td>
       <td class="num">${pct(s.epsYoy)}</td>
@@ -487,7 +487,7 @@ function renderDetailTable() {
     // 計算済みの値をそのまま使う。JS側での再計算（Runway/希薄化ペナルティ・classify()・
     // DCF_Reliability=LOW丸め・sellReason判定）は廃止。
     const funda  = tk?.funda_score  ?? 0;
-    const timing = tk?.timing_score ?? 0;
+    const timing = tk?.timing_score ?? null;  // 株価欠損で計算不能のときは空欄（0で埋めない、2026-09-26）
     const cat    = tk?.tanuki_score ?? 'PASS';
     const sellReason = tk?.sell_reason ?? '';
     const matrixInfo = tk?.matrix ?? null;
@@ -590,7 +590,7 @@ function renderDetailTable() {
       ? '<span class="cat-empty">銘柄なし</span>'
       : stocks.map(s => `<a class="cat-chip" href="${T_BASE}stock.html?ticker=${s.ticker}">
           <span class="ckr">${s.ticker}</span>
-          <span class="csc">F:${s.funda} · T:${s.timing}</span>
+          <span class="csc">F:${s.funda} · T:${s.timing ?? '—'}</span>
           ${chipTag(key, s)}
           ${matrixBadge(s)}
           ${multBadge(s)}
@@ -612,7 +612,7 @@ function renderDetailTable() {
       ? '<span class="cat-empty">銘柄なし</span>'
       : stocks.map(s => `<a class="cat-chip" href="${T_BASE}stock.html?ticker=${s.ticker}">
           <span class="ckr">${s.ticker}</span>
-          <span class="csc">F:${s.funda} · T:${s.timing}</span>
+          <span class="csc">F:${s.funda} · T:${s.timing ?? '—'}</span>
           ${chipTag(key, s)}
           ${matrixBadge(s)}
           ${multBadge(s)}
@@ -720,7 +720,7 @@ function renderDetailTable() {
         </div>
         <div class="pick-reason">選出理由: ${d.selection_reason || '—'}</div>
         <div class="pick-scores">
-          <span class="pick-sc">F:${d.funda_score} · T:${d.timing_score}</span>
+          <span class="pick-sc">F:${d.funda_score} · T:${d.timing_score ?? '—'}</span>
           <span class="cat-badge ${m.badge}">${m.icon} ${m.label}</span>
         </div>
         <div class="pick-report">${sectionsHTML}</div>

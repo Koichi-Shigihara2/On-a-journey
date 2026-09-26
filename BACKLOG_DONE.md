@@ -103,6 +103,34 @@ HypeCore・Stonks Siloの登録銘柄ではなく、影響はMarket Pulseのみ�
 
 ---
 
+### ✅ [MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1] Market Pulseの計算式モーダルの重み表が旧版（7指標）のままで、実計算（8指標）と一致しない → 完了（2026-09-26）: 計算式モーダルとツールチップを実際の計算に合わせた
+**優先度:** 低
+**分類:** 表示の正確性 / Market Pulse（静的説明）
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 3（MP-29）
+
+#### 内容
+`docs/market-monitor/market-pulse/index.html`の計算式モーダル（`#infoModal`「計算式（7指標の加重平均）」）は
+VIX 25%・S&P vs 50MA 20%・AD Ratio 15%・HYG/LQD 12%・NH-NL 10%・Growth/Value 10%・Volume Flow 8%の7指標。
+実計算（`collect_and_send.py::compute_sentiment()`）はMP-BREADTH-2でEqual Weight乖離（10%）を追加し、
+既存7指標を×0.9に圧縮した8指標（22.5/18/13.5/10.8/9/9/7.2/10%）。画面のスコア構成指標バーは8本・新しい重みで表示している。
+同じ画面内のツールチップにも実計算と異なる説明がある（出来高圧力「20日平均出来高」比→実際は前日比、
+騰落比率「NYSE」→実際はS&P500構成銘柄。`docs/architecture/MARKET_PULSE_LOGIC_INVENTORY.md` MP-06参照）。
+
+#### 実害
+計算式の説明を読んだ利用者が、実際と異なる重み・入力でスコアを解釈する。数値そのものへの影響はない。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 2026-09-26 完了（指示書⑳ STEP E-3）
+計算式モーダルを8指標・実際の重み（22.5/18/13.5/10.8/9/9/7.2/10%）と実際の0点・100点の条件に更新し、取得できない指標は
+0.5（中立）で計算に入る旨を追記した。スコア構成指標のツールチップも実計算に合わせた（出来高圧力は前営業日比、騰落比率は
+S&P500構成銘柄の5日合計、VIX・S&P/50日MA・クレジット・NH-NL・グロース優勢・Equal Weight乖離の正規化範囲）。
+browser_checksのMP-29を行名で対応づけた8指標の重み比較に変更し、一致を確認した。
+
+---
+
 ### ✅ [MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1] Market_Data_Daily_Updateが終値Noneの行を保存し、再取得しないため恒久的な欠損になる（翌日の前日比が2営業日分になる） → 完了（2026-09-26）: 保存側・reader・TANUKIを修正し、既存行を取り直して再生成
 **優先度:** 中
 **分類:** データ品質 / common/market_data（Market Pulse他の消費者に波及）

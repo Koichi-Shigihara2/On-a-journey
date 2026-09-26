@@ -98,3 +98,11 @@ python browser_checks\check_dependency_map.py
   サブスコア名・ブレッス欄は大文字小文字を区別せずに比較している
 - 期間フィルタ（既定30日）はスクリプト実行時刻で計算する。日付をまたぐ直前に
   実行すると、ブラウザ側と1件ずれることがある
+
+## check_tanuki_score_undetermined.py（2026-09-26追加）
+
+TANUKI SCORE画面で、株価欠損により判定不能（`tanuki_score=UNDETERMINED`・`timing_score=null`）
+になった銘柄の表示を確認する。本番データにはその状態の銘柄が無いため、ADBEのlatest.jsonだけを
+ブラウザ側（`page.route`）で差し替える（ファイルは変更しない）。タイミング欄が「—」（0で埋めない）、
+分類カードに「判定不能」が出ること、consoleエラーが無いことを確認する。本番用の絶対パス
+（`/On-a-journey/…`、ロゴ画像）はローカル配信では404になるため除外している。

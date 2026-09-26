@@ -437,7 +437,7 @@
   <div class="sec">資産クラス間 資金フロー — 安全資産（左）からリスク資産（右）への資金移動を可視化</div>
   <div class="af-card">
     <div class="af-title" data-info="mp_fund_flow_dash">今日の資金の動き</div>
-    <div class="af-desc">各資産の当日騰落率。<span style="color:var(--grn)">緑（買われた）</span>から<span style="color:var(--red)">赤（売られた）</span>への流れで資金の向きを読む。左ほど安全資産、右ほどリスク資産。</div>
+    <div class="af-desc">各資産の当日騰落率。<span style="color:var(--grn)">緑（買われた）</span>から<span style="color:var(--red)">赤（売られた）</span>への流れで資金の向きを読む。左ほど安全資産、右ほどリスク資産。短期国債（DGS3MO）は利回りの変化率で、利回りの上昇は「売られた」（赤）として表示する。</div>
     <div id="afUnified"></div>
   </div>
   <div class="sec">市場フェーズ概要 &amp; 表示期間</div>
@@ -480,18 +480,19 @@
 <div class="modal-section">概要</div>
 Market Sentiment Indexは、米国株式市場の複数の需給・センチメント指標を加重平均して算出する独自のコンポジットスコア（0〜100）です。CNN Fear &amp; Greed Indexに類似した構造ですが、ブレッスデータやクレジット市場の状態も加味しています。
 
-<div class="modal-section">計算式（7指標の加重平均）</div>
+<div class="modal-section">計算式（8指標の加重平均）</div>
 <table>
 <tr><th>指標</th><th>Weight</th><th>0 (Fear)</th><th>100 (Greed)</th><th>ソース</th></tr>
-<tr><td>VIX Level</td><td>25%</td><td>VIX ≥ 35</td><td>VIX ≤ 12</td><td>yfinance ^VIX</td></tr>
-<tr><td>S&amp;P vs 50MA</td><td>20%</td><td>-8%以下乖離</td><td>+8%以上乖離</td><td>yfinance ^GSPC</td></tr>
-<tr><td>AD Ratio 5d</td><td>15%</td><td>0.5以下</td><td>2.0以上</td><td>S&amp;P500構成銘柄</td></tr>
-<tr><td>HYG/LQD</td><td>12%</td><td>5日比下落</td><td>5日比上昇</td><td>yfinance HYG/LQD</td></tr>
-<tr><td>NH-NL Diff</td><td>10%</td><td>-50以下</td><td>+50以上</td><td>S&amp;P500 52週高安</td></tr>
-<tr><td>Growth/Value</td><td>10%</td><td>バリュー優勢-3%</td><td>グロース優勢+3%</td><td>yfinance IVW/IVE</td></tr>
-<tr><td>Volume Flow</td><td>8%</td><td>Distribution</td><td>Accumulation</td><td>yfinance ^GSPC出来高</td></tr>
+<tr><td>VIX Level</td><td>22.5%</td><td>VIX ≥ 35</td><td>VIX ≤ 12（VIX9D＞VIXの日は−5pt）</td><td>^VIX・^VIX9D</td></tr>
+<tr><td>S&amp;P vs 50MA</td><td>18%</td><td>-8%以下乖離</td><td>+8%以上乖離</td><td>^GSPC</td></tr>
+<tr><td>AD Ratio 5d</td><td>13.5%</td><td>0.5以下</td><td>2.0以上</td><td>S&amp;P500構成銘柄</td></tr>
+<tr><td>HYG/LQD</td><td>10.8%</td><td>比が前営業日から−0.005以下</td><td>比が前営業日から+0.005以上</td><td>HYG・LQD</td></tr>
+<tr><td>NH-NL Diff</td><td>9%</td><td>-50以下</td><td>+50以上</td><td>S&amp;P500 52週高安</td></tr>
+<tr><td>Growth/Value</td><td>9%</td><td>IVW−IVEの前日比差 −3%pt</td><td>+3%pt</td><td>IVW・IVE</td></tr>
+<tr><td>Volume Flow</td><td>7.2%</td><td>出来高が前日の1.1倍超かつ−0.3%未満</td><td>出来高が前日の1.1倍超かつ+0.3%超（それ以外は50）</td><td>^GSPC出来高</td></tr>
+<tr><td>Equal Weight乖離</td><td>10%</td><td>RSP−SPY騰落率差の20日平均 −1.0pt以下</td><td>+1.0pt以上</td><td>RSP・SPY</td></tr>
 </table>
-各指標を0〜1に正規化し、加重平均を取った値を0〜100スケールに変換します。<br>
+各指標を0〜1に正規化し、加重平均を取った値を0〜100スケールに変換します。取得できなかった指標は0.5（中立）として計算に入ります。<br>
 <code>Score = (Σ indicator_score × weight) / Σ weight × 100</code>
 
 <div class="modal-section">スコアのゾーンと読み方</div>
@@ -569,6 +570,8 @@ function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt
 function sentimentColor(s){if(s<=20)return"#f43f5e";if(s<=35)return"#fb7185";if(s<=50)return"#f59e0b";if(s<=65)return"#64748b";if(s<=80)return"#22d3ee";return"#10b981"}
 function fgColor(s){if(s<=25)return"#f43f5e";if(s<=45)return"#fb7185";if(s<=55)return"#f59e0b";if(s<=75)return"#22d3ee";return"#10b981"}
 function fgLabel(s){if(s<=25)return"X-Fear";if(s<=45)return"Fear";if(s<=55)return"Neutral";if(s<=75)return"Greed";return"X-Greed"}
+// CNN F&Gゲージのラベル（CNNのratingがあればそれを大文字で、無ければCNNの区分で判定）
+function fgZoneLabel(s,rating){if(rating)return String(rating).toUpperCase();if(s<=25)return"EXTREME FEAR";if(s<=45)return"FEAR";if(s<=55)return"NEUTRAL";if(s<=75)return"GREED";return"EXTREME GREED"}
 
 // ── PERIOD ──
 function applyPeriod(){const c=new Date();c.setDate(c.getDate()-periodDays);filteredData=periodDays>=9999?[...allData]:allData.filter(d=>new Date(d.date)>=c);if(!filteredData.length)filteredData=[...allData];selectedIdx=filteredData.length-1}
@@ -721,14 +724,14 @@ function renderGauge(){
   if(filteredData.length>=2){const prev=filteredData[filteredData.length-2]?.sentiment?.score;if(prev!=null){const delta=score-prev;document.getElementById("gaugeDelta").innerHTML=`<span style="color:${delta>=0?'var(--grn)':'var(--red)'}">&#x25${delta>=0?'B2':'BC'} ${delta>0?'+':''}${delta.toFixed(1)}pt</span>`}}
   const subs=s.sub_scores||{};
   const FTIPS={
-    vix_level:{desc:'VIXが低いほど強気スコアが高い',detail:'VIX＜15→強気域　VIX15〜25→中立域　VIX＞30→恐怖域',rawFmt(r){return r!=null?`現在VIX = ${Number(r).toFixed(2)}`:null}},
-    sp500_ma_dev:{desc:'S&P500の50日移動平均からの乖離率',detail:'現在値÷50日MA−1（%）　プラスほど強気',rawFmt(r){return r!=null?`乖離率 = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
-    ad_ratio:{desc:'値上がり÷値下がり銘柄数の比率（NYSE）',detail:'1.0超=値上がり優勢（強気）　1.0未満=値下がり優勢',rawFmt(r){return r!=null?`ADV÷DEC比 = ${Number(r).toFixed(3)}`:null}},
-    hyg_lqd_dir:{desc:'HYG（高利回り債）÷LQD（投資適格債）の日次変化',detail:'上昇→スプレッド縮小（リスクオン）　下落→スプレッド拡大（リスクオフ）',rawFmt(r){return r!=null?`HYG/LQD変化 = ${r>=0?'+':''}${Number(r).toFixed(6)}`:null}},
-    nh_nl:{desc:'52週新高値数 − 新安値数（市場内部強度）',detail:'プラスが大きいほど市場全体の上昇に広がりがある',rawFmt(r){return r!=null?`NH−NL = ${r>=0?'+':''}${r}`:null}},
-    growth_value:{desc:'グロース(IVW) vs バリュー(IVE) 変化率差',detail:'プラス=グロース優位（リスク選好）　マイナス=バリュー優位（防衛的）',rawFmt(r){return r!=null?`IVW−IVE = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
-    distribution:{desc:'出来高÷20日平均出来高（分配日の検知）',detail:'出来高増×価格下落→機関投資家の売り圧力（ディストリビューション）',rawFmt(r){return r!=null&&typeof r==='object'?`出来高比 = ${(r.vol_ratio||0).toFixed(2)}倍　変化率 = ${r.chg_pct!=null?(r.chg_pct>=0?'+':'')+r.chg_pct.toFixed(2)+'%':'—'}`:r!=null?`実値 = ${r}`:null}},
-    rsp_spy_divergence:{desc:'RSP(均等加重)−SPY(時価総額加重)騰落率差の20日平均',detail:'プラス=広範な銘柄が上昇に参加（健全）　マイナス=一部の大型株のみが指数を押し上げ（二極化）',rawFmt(r){return r!=null?`RSP−SPY 20日平均 = ${r>=0?'+':''}${Number(r).toFixed(3)}pt`:null}},
+    vix_level:{desc:'VIXが低いほど強気スコアが高い',detail:'VIX 12以下→100、35以上→0の直線（VIX9DがVIXを上回る日は−5pt）',rawFmt(r){return r!=null?`現在VIX = ${Number(r).toFixed(2)}`:null}},
+    sp500_ma_dev:{desc:'S&P500の50日移動平均からの乖離率',detail:'現在値÷50日MA−1（%）。−8%以下→0、+8%以上→100の直線',rawFmt(r){return r!=null?`乖離率 = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
+    ad_ratio:{desc:'S&P500構成銘柄の値上がり÷値下がり銘柄数（直近5営業日の合計）',detail:'0.5以下→0、2.0以上→100の直線。1.0超=値上がり優勢',rawFmt(r){return r!=null?`ADV÷DEC比 = ${Number(r).toFixed(3)}`:null}},
+    hyg_lqd_dir:{desc:'HYG（高利回り債）÷LQD（投資適格債）の比の前営業日からの変化',detail:'−0.005以下→0、+0.005以上→100の直線。上昇→リスクオン　下落→リスクオフ',rawFmt(r){return r!=null?`HYG/LQD変化 = ${r>=0?'+':''}${Number(r).toFixed(6)}`:null}},
+    nh_nl:{desc:'52週新高値数 − 新安値数（S&P500構成銘柄。高値・安値の1%以内を含む）',detail:'−50以下→0、+50以上→100の直線',rawFmt(r){return r!=null?`NH−NL = ${r>=0?'+':''}${r}`:null}},
+    growth_value:{desc:'グロース(IVW) vs バリュー(IVE) 前日比の差',detail:'−3%pt以下→0、+3%pt以上→100の直線。プラス=グロース優位',rawFmt(r){return r!=null?`IVW−IVE = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
+    distribution:{desc:'S&P500の出来高÷前営業日の出来高と、前日比',detail:'出来高比>1.1かつ−0.3%未満→0（売り圧力）、出来高比>1.1かつ+0.3%超→100、それ以外→50',rawFmt(r){return r!=null&&typeof r==='object'?`出来高比 = ${(r.vol_ratio||0).toFixed(2)}倍　変化率 = ${r.chg_pct!=null?(r.chg_pct>=0?'+':'')+r.chg_pct.toFixed(2)+'%':'—'}`:r!=null?`実値 = ${r}`:null}},
+    rsp_spy_divergence:{desc:'RSP(均等加重)−SPY(時価総額加重)騰落率差の20日平均',detail:'−1.0pt以下→0、+1.0pt以上→100の直線。プラス=広範な銘柄が上昇に参加　マイナス=一部の大型株のみが押し上げ',rawFmt(r){return r!=null?`RSP−SPY 20日平均 = ${r>=0?'+':''}${Number(r).toFixed(3)}pt`:null}},
   };
   document.getElementById("subScores").innerHTML='<div style="font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--mut);margin-bottom:4px"><span data-info="mp_subscore_bar_color">スコア構成指標</span> <span style="font-size:10px">（バーにカーソルで詳細表示）</span></div>'+Object.entries(subs).map(([k,v])=>{const sc=v.score,c=sentimentColor(sc),w=v.weight!=null?Math.round(v.weight*100):null;const fi=FTIPS[k];const rs=fi?fi.rawFmt(v.raw):null;const tip=fi?`<div class="sub-tip"><div style="color:var(--acc);font-weight:700;margin-bottom:5px">${SUB_SCORE_NAMES[k]||k}<span style="color:var(--mut);font-weight:400;margin-left:8px">重み${w}%　スコア${sc.toFixed(0)}</span></div><div style="color:var(--txt)">${fi.desc}</div><div style="color:var(--mut);font-size:10px;margin-top:2px">${fi.detail}</div>${rs?`<div style="color:var(--grn);font-size:10px;margin-top:6px;border-top:1px solid var(--bdr);padding-top:5px">${rs}</div>`:''}</div>`:'';return`<div class="sub-row"><div class="sub-name">${SUB_SCORE_NAMES[k]||k}</div><div class="sub-bar-bg"><div class="sub-bar-fill" style="width:${sc}%;background:${c}"></div></div><div class="sub-val">${sc.toFixed(0)}${w!=null?`<span style="font-size:10px;color:var(--mut);margin-left:2px">(${w}%)</span>`:''}</div>${tip}</div>`}).join("");
   // VIX9D表示
@@ -813,11 +816,13 @@ function renderTechPulse(){
 
   // F&G gauge
   if(fgScore!=null){
-    const c=tpColor(fgScore);
+    // CNN自身の区分（0-25 Extreme Fear / 25-45 Fear / 45-55 Neutral / 55-75 Greed / 75-100 Extreme Greed）に合わせる。
+    // CNNのratingがあればそれを表示する（以前はセンチメント指数の区分〈20/35/50/65/80〉で、37が「CAUTION」になっていた、2026-09-26）
+    const c=fgColor(fgScore);
     document.getElementById("fgNeedle").setAttribute("transform",`rotate(${fgScore/100*180-90},90,94)`);
     document.getElementById("fgGaugeScore").textContent=fgScore.toFixed(0);
     document.getElementById("fgGaugeScore").style.color=c;
-    document.getElementById("fgGaugeLbl").textContent=tpLabel(fgScore);
+    document.getElementById("fgGaugeLbl").textContent=fgZoneLabel(fgScore,latest?.fear_greed?.rating);
     document.getElementById("fgGaugeLbl").style.color=c;
   } else {
     document.getElementById("fgGaugeScore").textContent="—";
@@ -1115,8 +1120,11 @@ function renderAssetFlow(){
   ];
   const allPcts=ASSETS.map(a=>af[a.key]?.change_pct??0);
   const maxAbs=Math.max(...allPcts.map(v=>Math.abs(v)),0.01);
-  const hc=(p,isStale)=>{if(p==null)return"var(--sur2)";if(isStale)return"var(--sur2)";const c=Math.max(-2,Math.min(2,p));return c>=0?`rgba(16,185,129,${(0.07+c/2*0.43).toFixed(2)})`:`rgba(244,63,94,${(0.07+(-c)/2*0.43).toFixed(2)})`};
-  const fc=(p,isStale)=>{if(p==null)return`<span style="color:var(--mut)">—</span>`;const col=isStale?"var(--mut)":(p>=0?"var(--grn)":"var(--red)");const mark=isStale?'<span class="stale-mark">※</span>':'';return`<span style="color:${col}">${p>=0?"+":""}${p.toFixed(2)}%${mark}</span>`};
+  // 短期国債（DGS3MO）は利回りの変化率。利回りの上昇＝債券価格の下落＝「売られた」なので、
+  // 色（緑=買われた/赤=売られた）と5日平均の判定では符号を反転する（表示する数値は利回りの変化率のまま、2026-09-26）
+  const bought=(key,p)=>p==null?null:(key==="short_bond"?-p:p);
+  const hc=(p,isStale,key)=>{if(p==null)return"var(--sur2)";if(isStale)return"var(--sur2)";const c=Math.max(-2,Math.min(2,bought(key,p)));return c>=0?`rgba(16,185,129,${(0.07+c/2*0.43).toFixed(2)})`:`rgba(244,63,94,${(0.07+(-c)/2*0.43).toFixed(2)})`};
+  const fc=(p,isStale,key)=>{if(p==null)return`<span style="color:var(--mut)">—</span>`;const col=isStale?"var(--mut)":(bought(key,p)>=0?"var(--grn)":"var(--red)");const mark=isStale?'<span class="stale-mark">※</span>':'';return`<span style="color:${col}">${p>=0?"+":""}${p.toFixed(2)}%${mark}</span>`};
 
   // ── ヘッダー行: 今日のタイル ──
   const cornerCell=`<div class="af-u-corner"></div>`;
@@ -1124,14 +1132,14 @@ function renderAssetFlow(){
     const d=af[a.key];
     if(!d||d.change_pct==null)return`<div class="af-u-tile" style="background:var(--sur2)"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker">${a.ticker}</div><div class="af-cell-pct" style="color:var(--mut)">—</div></div>`;
     const pct=d.change_pct;
-    const isPos=pct>=0;
+    const isPos=bought(a.key,pct)>=0;  // 色は「買われた/売られた」（短期国債は利回りの符号を反転）
     const isStale=!!d.is_fallback;
     const intensity=Math.min(Math.abs(pct)/maxAbs,1);
     const bg=isStale?"var(--sur2)":(isPos?`rgba(16,185,129,${0.05+intensity*0.25})`:`rgba(244,63,94,${0.05+intensity*0.25})`);
     const col=isStale?"var(--mut)":(isPos?"var(--grn)":"var(--red)");
-    const arrow=isPos?"▲":"▼";
+    const arrow=a.key==="short_bond"?`利回り${pct>=0?"▲":"▼"}（${isPos?"買われた":"売られた"}）`:(pct>=0?"▲":"▼");
     const barW=isStale?0:Math.round(intensity*100);
-    const sign=isPos?"+":"";
+    const sign=pct>=0?"+":"";
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${d.date||''}時点の値）">※</span>`:'';
     return`<div class="af-u-tile" style="background:${bg}"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker" title="${d.desc}">${a.ticker}</div><div class="af-cell-pct${isStale?' is-stale-value':''}" style="color:${col}">${sign}${pct.toFixed(2)}%${staleMark}</div><div class="af-arrow" style="color:${col}">${arrow}</div><div class="af-cell-bar"><div class="af-cell-bar-fill" style="width:${barW}%;background:${col}"></div></div></div>`;
   }).join("");
@@ -1150,14 +1158,15 @@ function renderAssetFlow(){
     const lbl=`${dt.getMonth()+1}/${String(dt.getDate()).padStart(2,'0')}`;
     const isToday=d.date===todayDate;
     const dateLbl=`<div class="af-u-date${isToday?' af-u-today':''}">${lbl}${isToday?`<span style="font-size:8px;display:block">今日</span>`:''}</div>`;
-    const cells=ASSETS.map(a=>{const item=d.asset_flow?.[a.key];const p=item?.change_pct??null;const isStale=!!item?.is_fallback;return`<div class="af-u-cell" style="background:${hc(p,isStale)}">${fc(p,isStale)}</div>`}).join("");
+    const cells=ASSETS.map(a=>{const item=d.asset_flow?.[a.key];const p=item?.change_pct??null;const isStale=!!item?.is_fallback;return`<div class="af-u-cell" style="background:${hc(p,isStale,a.key)}">${fc(p,isStale,a.key)}</div>`}).join("");
     const next=days[i+1];const gapHtml=next?weekendsBetween(d.date,next.date).map(holidayRowHtml).join(''):'';
     return dateLbl+cells+gapHtml;
   }).join("");
 
   // ── 5日平均 フッター ──
   const rec=withAf.slice(-5);
-  const avg=keys=>{const vs=rec.flatMap(d=>keys.map(k=>d.asset_flow?.[k]?.change_pct)).filter(v=>v!=null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null};
+  // 「買われた」方向の符号でそろえて平均する（短期国債は利回りの変化率の符号を反転、2026-09-26）
+  const avg=keys=>{const vs=rec.flatMap(d=>keys.map(k=>bought(k,d.asset_flow?.[k]?.change_pct??null))).filter(v=>v!=null);return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null};
   const safeAvg=avg(["ultra_short","short_bond"]);
   const riskAvg=avg(["hy_bond","equity"]);
   let jTxt,jCol;
