@@ -9,6 +9,92 @@
 - `DATA-JUMP-CHECK-NETINCOME-SBC-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 - `LAYER3-GA-STANDALONE-TAG-UNMAPPED-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
 
+### ✅ [PARSER-MERGED-PARTIAL-CONCEPT-TAG-1] parser.py::_extract_values_merged()の四半期値で、部分概念タグのSA候補が合計概念タグより優先される（D&A・S&M） → クローズ（2026-09-26）: 自動検知に置き換えた
+**優先度:** 低（data/系統の四半期値に現役の消費者がいない）
+**分類:** データ品質 / parser.py（data/系統）
+**登録日:** 2026-09-25
+**発見:** [[PARSER-MERGED-TAG-MIXING-RISK-1]]の実データ検証（2026-09-25、
+BACKLOG_DONE.md参照）
+
+#### 内容
+`MERGE_ALL_TAGS_FIELDS`（revenue・selling_and_marketing・
+depreciation_and_amortization）の四半期値は、全候補タグの生エントリを
+`(fy, fp)`単位でまとめ、`_pick_quarterly_period_representative()`が単四半期
+（SA）候補を優先して代表を選ぶ。候補タグに「合計概念」と「部分概念」が
+混在しているため、合計概念のタグが10-QでYTD（累計）しか申告されない場合、
+SAを持つ部分概念のタグが代表に選ばれる。
+- **D&A（413件）**: CF計算書の合計`DepreciationDepletionAndAmortization`は
+  10-QではYTDのみのため、SAを持つ`AmortizationOfIntangibleAssets`（無形資産
+  償却のみ）が選ばれる。例: ADBE 2022Q2 data/ 101M vs Layer3 212M
+- **S&M**: CELHで`AdvertisingExpense`（広告費のみ）が選ばれる
+（2026-09-25時点、data/とLayer3の不一致483件のうち大半。「2四半期分を
+1四半期として算出」型〈Layer3が廃棄した旧パターン〉は0件）
+
+**消費者**: data/の`quarterly_*.json`を読む処理（DuPont分解・
+`get_net_cash()`・CHECK-12・EPS取得）はBS項目・EPSのみを使い、この3フィールドの
+四半期値を読む処理はない（roic.py・execution_metrics.py・dcf_validity_checker.py
+もannualのみ）。IV・TANUKI SCORE・表示には届いていない。
+
+**未検証**: 年次のD&A（annual側の抽出経路）でも同じ概念混在が起きうるかは
+未検証（年次側は候補タグの列挙順と期間長のタイブレークで決まるため、合計
+概念の年次値があれば通常は先に採用されるはず、という推測のみ）。
+
+#### 修正案（未確定）
+- 案1: 候補タグを「同じ概念の別名」と「部分概念」に分け、部分概念
+  （`Depreciation`・`AmortizationOfIntangibleAssets`・`AdvertisingExpense`）は、
+  合計概念のタグが当該期に一つもない場合だけ使う
+- 案2: data/系統の四半期値をLayer3に一本化する方針（フェーズD）に合わせ、
+  この3フィールドの四半期出力自体を廃止する
+
+#### 着手条件
+なし（消費者がいないため急がない。年次D&Aの検証か、data/系統の四半期値を
+使う消費者が現れた時点で優先度を再評価）
+
+#### 2026-09-26 クローズ（指示書⑱ STEP A）: 年次D&Aを確認し、自動検知に置き換えた
+**年次D&Aの採用タグ（全銘柄のannual_*.json 1,290件、company_facts.jsonで値・accnが一致するタグから逆引き）**:
+DepreciationDepletionAndAmortization 662・DepreciationAndAmortization 370・Depreciation 176・
+AmortizationOfIntangibleAssets 15・同値で複数タグ一致 67・一致なし 0。
+
+**同じ期末日に合計概念タグの年次値があるのに部分概念タグが採用されていた15件**（いずれもDepreciationを採用。DDA=DepreciationDepletionAndAmortization）:
+
+| 銘柄 | 年度（期末） | 採用値（Depreciation） | 合計概念の値（タグ） | 備考 |
+|---|---|---|---|---|
+| ALAB | 2024（2024-12-31） | 3,154,000 | 3,154,000（DepreciationAndAmortization） | 同値 |
+| CELH | 2021 | 549,689 | 1,264,000（DDA） | 過小 |
+| CELH | 2022 | 1,362,000 | 1,917,000（DDA） | 過小 |
+| HON | 2023 | 659,000,000 | 1,004,000,000／1,176,000,000（DDA、提出書類で異なる） | 過小 |
+| KULR | 2020 | 15,746 | 15,746（DepreciationAndAmortization） | 同値 |
+| LMT | 2009 | 750,000,000 | 1,014,000,000（DepreciationAndAmortization） | 過小 |
+| LMT | 2010 | 749,000,000 | 1,052,000,000（DepreciationAndAmortization） | 過小 |
+| NOW | 2012 | 13,506,000 | 13,506,000（DDA） | 同値 |
+| ONDS | 2020 | 97,759 | 117,599（DepreciationAndAmortization） | 過小 |
+| ONDS | 2024 | 602,304 | 602,000（DDA） | 丸め差のみ |
+| RCAT | 2024（2024-04-30） | 568,813 | 1,423,000（DDA） | 過小 |
+| RMBS | 2022 | 26,000,000 | 9,265,000（DDA） | 合計概念の方が小さい（タグが狭い項目に使われている可能性） |
+| RMBS | 2023 | 37,700,000 | 10,144,000（DDA） | 同上 |
+| TER | 2010 | 53,497,000 | 93,516,000／99,027,000（DDA） | 過小 |
+| WST | 2010 | 68,800,000 | 73,200,000（DDA） | 過小 |
+
+合計概念の値の多くは、後年の10-Kの比較期間として申告されたもの。
+
+**消費者**（src/配下で年次D&Aを読む処理）: `pipeline.py::_calc_g_fundamental()`（g_fundamentalの
+depreciation、最新年度のannualだけを読む）と、`data_fetcher.py::build_fcf_component_lists()`→
+`adjustments.py`の`da_list[0]`（report.txtのFCF内訳表示、DCF計算には使わない、直近年のみ）。
+15件はいずれもFY2024以前で、該当銘柄の最新年度はannual_2025のため、現時点で消費者には届いていない。
+⑰ STEP 4の判定基準では停止条件（該当1件以上かつ消費者あり）に該当したため報告し、Koichiさんの
+判断で自動検知に置き換えてクローズした。
+
+**CHECK-55（WARN-55 年次D&A部分概念タグ採用、NG化しない）**: 各銘柄の最新年度annualで、
+depreciation_and_amortizationが部分概念タグ（Depreciation・AmortizationOfIntangibleAssets）から採用され、
+同じ期末日に合計概念タグの年次値があり、最も近い値との差が1%を超えるものを検知する。本番データ
+（2026-09-26）で発火0件。過去年度でもCELH 2022・HON 2023・RMBS 2023・LMT 2010は検知し、ALAB・NOW（同値）・
+ONDS 2024（丸め差）は検知しないことを実データで確認した。回帰テスト6件追加（stashで実装を外すと6件失敗、
+戻すと全件成功）。parser.pyの候補タグ定義に罠のコメントを1行追加した。
+
+四半期側（本エントリの本文）は消費者がいないため、フェーズD（Layer3への一本化）の方針に委ねる。
+
+---
+
 ### ✅ [JNJ-XOM-PM-FLOOR-RISK-1] JNJ・XOM・PM・CONはrecommended_g候補が最低ラインでMO型floor転落の潜在リスクあり → クローズ（2026-09-26）: 自動検知に置き換えた
 **優先度:** 低（2026-09-19、中→低に変更。理由は下記「優先度変更」参照）
 **分類:** データ品質 / TANUKI VALUATION / 監視対象

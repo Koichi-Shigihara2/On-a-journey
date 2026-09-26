@@ -1526,3 +1526,71 @@ class TestCheck54SplitHistoryRegistration:
         assert is_new is False
         _, is_new = annotate_warn("RCAT", "  [WARN-54 split_history未登録] RCAT 2027-01-02 yfinance比率=0.1", ledger)
         assert is_new is True
+
+
+class TestCheck55AnnualDaPartialConcept:
+    """CHECK-55: 最新年度annualのD&Aが部分概念タグから採用され、同じ期末日の
+    合計概念タグの年次値と1%超ずれる場合にWARN
+    （[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]を自動検知に置き換え）"""
+
+    @staticmethod
+    def _setup(tmp_path, ticker, annuals, facts):
+        d = tmp_path / ticker
+        d.mkdir()
+        for year, (val, accn) in annuals.items():
+            (d / f"annual_{year}.json").write_text(json.dumps({
+                "cf": {"depreciation_and_amortization": val},
+                "cf_provenance": {"depreciation_and_amortization": {"accn": accn}},
+            }), encoding="utf-8")
+        us_gaap = {tag: {"units": {"USD": entries}} for tag, entries in facts.items()}
+        (d / "company_facts.json").write_text(json.dumps({"facts": {"us-gaap": us_gaap}}), encoding="utf-8")
+        return str(tmp_path)
+
+    @staticmethod
+    def _e(val, accn, end="2025-12-31", start="2025-01-01"):
+        return {"val": val, "accn": accn, "start": start, "end": end, "form": "10-K"}
+
+    def test_partial_adopted_with_diverging_total_fires(self, tmp_path):
+        """CELH 2022型: Depreciation 1,362,000採用、DD&A 1,917,000（差29%）"""
+        sec = self._setup(tmp_path, "X", {2025: (1362000, "A1")}, {
+            "Depreciation": [self._e(1362000, "A1")],
+            "DepreciationDepletionAndAmortization": [self._e(1917000, "A2")],
+        })
+        w = rcc._check_annual_da_partial_concept("X", sec_dir=sec)
+        assert len(w) == 1 and "[WARN-55" in w[0] and "Depreciation" in w[0] and "29.0%" in w[0]
+
+    def test_total_concept_adopted_silent(self, tmp_path):
+        sec = self._setup(tmp_path, "X", {2025: (1917000, "A1")}, {
+            "Depreciation": [self._e(1362000, "A1")],
+            "DepreciationDepletionAndAmortization": [self._e(1917000, "A1")],
+        })
+        assert rcc._check_annual_da_partial_concept("X", sec_dir=sec) == []
+
+    def test_within_one_percent_silent(self, tmp_path):
+        """ONDS 2024型: 602,304 vs 602,000（丸め差）は発火しない"""
+        sec = self._setup(tmp_path, "X", {2025: (602304, "A1")}, {
+            "Depreciation": [self._e(602304, "A1")],
+            "DepreciationDepletionAndAmortization": [self._e(602000, "A2")],
+        })
+        assert rcc._check_annual_da_partial_concept("X", sec_dir=sec) == []
+
+    def test_no_total_concept_for_same_end_silent(self, tmp_path):
+        sec = self._setup(tmp_path, "X", {2025: (1362000, "A1")}, {
+            "Depreciation": [self._e(1362000, "A1")],
+            "DepreciationDepletionAndAmortization": [
+                self._e(1917000, "A2", end="2024-12-31", start="2024-01-01")],
+        })
+        assert rcc._check_annual_da_partial_concept("X", sec_dir=sec) == []
+
+    def test_only_latest_year_is_checked(self, tmp_path):
+        """STEP Aの15件（いずれもFY2024以前）は最新年度でないため対象外"""
+        sec = self._setup(tmp_path, "X", {2024: (1362000, "A1"), 2025: (2000000, "B1")}, {
+            "Depreciation": [self._e(1362000, "A1", end="2024-12-31", start="2024-01-01")],
+            "DepreciationDepletionAndAmortization": [
+                self._e(1917000, "A2", end="2024-12-31", start="2024-01-01"),
+                self._e(2000000, "B1")],
+        })
+        assert rcc._check_annual_da_partial_concept("X", sec_dir=sec) == []
+
+    def test_missing_files_silent(self, tmp_path):
+        assert rcc._check_annual_da_partial_concept("NONE", sec_dir=str(tmp_path)) == []

@@ -396,6 +396,7 @@ class SECParser:
         # DepreciationDepletionAndAmortization: 資源系企業等で使用
         # Depreciation: D&Aを分割開示する企業のDepreciation単独タグ
         # AmortizationOfIntangibleAssets: 無形資産償却を別開示する企業のフォールバック
+        # 注意: Depreciation・AmortizationOfIntangibleAssetsは部分概念。合計概念のタグがあっても部分概念が採用されうる罠がある（四半期のSA優先・年次の過去15件、PARSER-MERGED-PARTIAL-CONCEPT-TAG-1、最新年度はCHECK-55で検知）
         "depreciation_and_amortization": [
             "DepreciationAndAmortization",
             "DepreciationDepletionAndAmortization",

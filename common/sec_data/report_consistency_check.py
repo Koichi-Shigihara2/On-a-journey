@@ -1379,6 +1379,91 @@ def _check_split_history_registration(
     return warns, info
 
 
+# CHECK-55: parser.pyのdepreciation_and_amortization候補タグのうち、
+# 合計概念と部分概念（D&Aの一部しか表さない）の区別
+_DA_TOTAL_CONCEPT_TAGS = ("DepreciationAndAmortization", "DepreciationDepletionAndAmortization")
+_DA_PARTIAL_CONCEPT_TAGS = ("Depreciation", "AmortizationOfIntangibleAssets")
+_DA_PARTIAL_DIFF_THRESHOLD = 0.01
+
+
+def _check_annual_da_partial_concept(ticker: str, sec_dir: str = SEC_DATA_DIR) -> list[str]:
+    """CHECK-55: 最新年度のannualで、depreciation_and_amortizationが部分概念タグ
+    （Depreciation・AmortizationOfIntangibleAssets）から採用されているのに、
+    同じ期末日に合計概念タグ（DepreciationAndAmortization・
+    DepreciationDepletionAndAmortization）の年次値があり、差が1%を超える銘柄を
+    検知する（2026-09-26新設、NG化しないWARN。[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]
+    を自動検知に置き換え）。
+
+    年次D&Aの消費者（pipeline.py::_calc_g_fundamental()のdepreciation、
+    report.txtのFCF内訳表示）はいずれも最新年度だけを読むため、最新年度に
+    限定する。採用タグはannualに保存されていないため、company_facts.jsonで
+    値・accnが一致する年次（300日以上）エントリのタグから逆引きする。
+    合計概念の値が複数（後年の再掲等）ある場合は、最も近い値との差で判定する。
+    """
+    tdir = os.path.join(sec_dir, ticker)
+    years = []
+    for p in glob.glob(os.path.join(tdir, "annual_*.json")):
+        m = re.search(r"annual_(\d{4})\.json$", p)
+        if m:
+            years.append(int(m.group(1)))
+    cf_path = os.path.join(tdir, "company_facts.json")
+    if not years or not os.path.exists(cf_path):
+        return []
+    try:
+        with open(os.path.join(tdir, f"annual_{max(years)}.json"), encoding="utf-8") as f:
+            ann = json.load(f)
+        with open(cf_path, encoding="utf-8") as f:
+            us_gaap = (json.load(f).get("facts") or {}).get("us-gaap") or {}
+    except Exception:
+        return []
+    value = (ann.get("cf") or {}).get("depreciation_and_amortization")
+    if value is None:
+        return []
+    accn = ((ann.get("cf_provenance") or {}).get("depreciation_and_amortization") or {}).get("accn")
+
+    def _days(e):
+        try:
+            return (datetime.fromisoformat(e["end"]) - datetime.fromisoformat(e["start"])).days
+        except Exception:
+            return None
+
+    def _entries(tag):
+        units = (us_gaap.get(tag) or {}).get("units") or {}
+        return [e for es in units.values() for e in es]
+
+    def _adopted(require_accn):
+        found = {}
+        for tag in _DA_TOTAL_CONCEPT_TAGS + _DA_PARTIAL_CONCEPT_TAGS:
+            for e in _entries(tag):
+                if (e.get("val") == value and (_days(e) or 0) >= 300
+                        and (not require_accn or e.get("accn") == accn)):
+                    found[tag] = e
+                    break
+        return found
+
+    adopted = _adopted(accn is not None) or _adopted(False)
+    if not adopted or any(tag in _DA_TOTAL_CONCEPT_TAGS for tag in adopted):
+        return []
+    tag, entry = next(iter(adopted.items()))
+    end = entry.get("end")
+    totals = [
+        (t, e.get("val")) for t in _DA_TOTAL_CONCEPT_TAGS for e in _entries(t)
+        if e.get("end") == end and 330 <= (_days(e) or 0) <= 380 and e.get("val")
+    ]
+    if not totals:
+        return []
+    total_tag, total_val = min(totals, key=lambda x: abs(value - x[1]))
+    diff = abs(value - total_val) / abs(total_val)
+    if diff <= _DA_PARTIAL_DIFF_THRESHOLD:
+        return []
+    return [
+        f"  [WARN-55 年次D&A部分概念タグ採用] annual_{max(years)}（期末{end}）の"
+        f"depreciation_and_amortization={value:,.0f}は部分概念{tag}から採用、"
+        f"合計概念{total_tag}={total_val:,.0f}（差{diff:.1%}）→ g_fundamental・"
+        f"FCF内訳表示のD&Aが過小/過大の可能性（PARSER-MERGED-PARTIAL-CONCEPT-TAG-1）"
+    ]
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -2166,6 +2251,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     # 2026-09-12新設）。CHECK-31/35/41と同様、common/sec_data/側の検証で
     # ありreport.txtに依存しない。
     warn.extend(_check_ttm_parser_layer3_reconciliation(ticker))
+    warn.extend(_check_annual_da_partial_concept(ticker))
 
     text = _read_report(ticker)
     if text is None:

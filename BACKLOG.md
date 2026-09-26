@@ -2320,46 +2320,7 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [PARSER-MERGED-PARTIAL-CONCEPT-TAG-1] parser.py::_extract_values_merged()の四半期値で、部分概念タグのSA候補が合計概念タグより優先される（D&A・S&M）
-**優先度:** 低（data/系統の四半期値に現役の消費者がいない）
-**分類:** データ品質 / parser.py（data/系統）
-**登録日:** 2026-09-25
-**発見:** [[PARSER-MERGED-TAG-MIXING-RISK-1]]の実データ検証（2026-09-25、
-BACKLOG_DONE.md参照）
-
-#### 内容
-`MERGE_ALL_TAGS_FIELDS`（revenue・selling_and_marketing・
-depreciation_and_amortization）の四半期値は、全候補タグの生エントリを
-`(fy, fp)`単位でまとめ、`_pick_quarterly_period_representative()`が単四半期
-（SA）候補を優先して代表を選ぶ。候補タグに「合計概念」と「部分概念」が
-混在しているため、合計概念のタグが10-QでYTD（累計）しか申告されない場合、
-SAを持つ部分概念のタグが代表に選ばれる。
-- **D&A（413件）**: CF計算書の合計`DepreciationDepletionAndAmortization`は
-  10-QではYTDのみのため、SAを持つ`AmortizationOfIntangibleAssets`（無形資産
-  償却のみ）が選ばれる。例: ADBE 2022Q2 data/ 101M vs Layer3 212M
-- **S&M**: CELHで`AdvertisingExpense`（広告費のみ）が選ばれる
-（2026-09-25時点、data/とLayer3の不一致483件のうち大半。「2四半期分を
-1四半期として算出」型〈Layer3が廃棄した旧パターン〉は0件）
-
-**消費者**: data/の`quarterly_*.json`を読む処理（DuPont分解・
-`get_net_cash()`・CHECK-12・EPS取得）はBS項目・EPSのみを使い、この3フィールドの
-四半期値を読む処理はない（roic.py・execution_metrics.py・dcf_validity_checker.py
-もannualのみ）。IV・TANUKI SCORE・表示には届いていない。
-
-**未検証**: 年次のD&A（annual側の抽出経路）でも同じ概念混在が起きうるかは
-未検証（年次側は候補タグの列挙順と期間長のタイブレークで決まるため、合計
-概念の年次値があれば通常は先に採用されるはず、という推測のみ）。
-
-#### 修正案（未確定）
-- 案1: 候補タグを「同じ概念の別名」と「部分概念」に分け、部分概念
-  （`Depreciation`・`AmortizationOfIntangibleAssets`・`AdvertisingExpense`）は、
-  合計概念のタグが当該期に一つもない場合だけ使う
-- 案2: data/系統の四半期値をLayer3に一本化する方針（フェーズD）に合わせ、
-  この3フィールドの四半期出力自体を廃止する
-
-#### 着手条件
-なし（消費者がいないため急がない。年次D&Aの検証か、data/系統の四半期値を
-使う消費者が現れた時点で優先度を再評価）
+（[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]は2026-09-26、年次D&Aの確認後にreport_consistency_check.pyのCHECK-55による自動検知に置き換えてクローズ、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
 
