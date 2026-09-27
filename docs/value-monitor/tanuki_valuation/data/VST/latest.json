@@ -7,7 +7,7 @@
   "upside_percent_rf": 117.9,
   "v0": 26188956927.724598,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
-  "alpha": 0.31994752502071044,
+  "alpha": 0.31994752502071033,
   "alpha_was_capped": false,
   "future_values": {
     "1年後": 48.01,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -67.8,
-  "calculation_date": "2026-09-26T19:49:40+09:00",
+  "calculation_date": "2026-09-28T01:03:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -92,12 +92,12 @@
   },
   "growth_scenarios": {
     "primary": {
-      "rate": 0.07850000000000001,
+      "rate": 0.0785,
       "source": "segment_weighted"
     },
     "segment": {
       "enabled": true,
-      "weighted_growth": 0.07850000000000001,
+      "weighted_growth": 0.0785,
       "fiscal_year": "FY2025",
       "source": "segment_config"
     }
@@ -279,7 +279,7 @@
       2606000000
     ],
     "diluted_shares": 335635195,
-    "roe_10yr_avg": 0.0761779821477882,
+    "roe_10yr_avg": 0.07617798214778819,
     "roe_years_used": 9,
     "roe_outlier_adj": false,
     "current_price": 138.4600067138672,
@@ -293,7 +293,7 @@
     },
     "_shares_source": "yf_implied",
     "_beta_source": "beta_config()",
-    "high_growth_rate_used": 0.07850000000000001,
+    "high_growth_rate_used": 0.0785,
     "high_growth_years": 4,
     "terminal_growth_used": 0.02,
     "moat_score": 0.1756,
@@ -305,7 +305,7 @@
     "moat_fcf_margin_norm": 0.5268,
     "pv_high": 7906539105.190946,
     "pv_terminal": 18282417822.533653,
-    "roe_used": 0.0761779821477882,
+    "roe_used": 0.07617798214778819,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -313,7 +313,7 @@
     "bull_multiplier": 1.2,
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
-    "alpha_uncapped": 0.31994752502071044,
+    "alpha_uncapped": 0.31994752502071033,
     "per": 23.681818,
     "per_is_forward": false,
     "per_adjusted": 21.99,
@@ -343,7 +343,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-26",
+    "validated_at": "2026-09-28",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

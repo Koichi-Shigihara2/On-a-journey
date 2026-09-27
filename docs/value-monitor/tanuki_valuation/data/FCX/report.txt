@@ -1,5 +1,5 @@
 FCX INTEGRATED INVESTMENT REPORT
-Generated: 2026-09-26T19:49:49+09:00
+Generated: 2026-09-28T01:03:06+09:00
 Price: $72.31
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -31,8 +31,8 @@ PASS: Funda<25, excluded from consideration
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
 Quadrant: 左下
-Label: 割高×低効率
-Key_Metric_Y: RICE = 0.595
+Label: 割高×中効率
+Key_Metric_Y: RICE = 1.073
 Deviation_Rate: -83.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -93,7 +93,7 @@ DCF_Reliability: NORMAL  (通常判定適用)
 DCF_FCF_PV: $5.97B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $16.41B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $22.38B (= FCF_PV + TV_PV, Rm=10% enterprise value)
-Alpha_Premium: 0.5560 (HypeCore expectation premium; Rm basis)
+Alpha_Premium: 0.2964 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $17.07B (= v0 + RPO_PV + GO_PV + Net_Cash $-5.31B)
@@ -112,7 +112,7 @@ Financial_Health:
   Dilution_3yr_Annual: -0.18%/yr  自社株買いによる株主還元 ✅
   Dilution_Comment: 株式数が減少し1株あたり価値が向上している。
   Next_Earnings_Date: 2026-10-22
-  DuPont_ROE: 純利益率16.2% × 資産回転率0.43x × 財務レバレッジ2.97x = ROE20.8%
+  DuPont_ROE: 純利益率11.4% × 資産回転率0.43x × 財務レバレッジ2.97x = ROE14.6%
 FCF_History:
   2021: $5.62B (FCF_Margin: 24.6%)
   2022: $1.68B (FCF_Margin: 7.4%)
@@ -203,15 +203,15 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.418
-BASE: RICE=0.595
-BULL: RICE=0.706
+BEAR: RICE=0.754
+BASE: RICE=1.073
+BULL: RICE=1.274
 Components (BASE scenario):
 G  = 6.4%  [TANUKI forward growth rate]
-Q  = 1.5285   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 2.7573   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.304  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 0.3040  [R&D除外・CapExのみ投資強度]
-RICE_adj = 0.595  [参考：R&D資本化想定]
+RICE_adj = 1.073  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 2.00  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 2.11  [NOPAT/InvestedCapital / 0.10]
@@ -280,7 +280,7 @@ Compare with TANUKI G scenario for cross-validation
 
 [7. HYPECORE]
 Current_Phase: Phase2 (期待拡大期)
-Alpha_Premium: 0.56
+Alpha_Premium: 0.3
 HYPE_Signal: 期待拡大開始 — 期待と実体が噛み合い始めた段階。
 Phase_History (recent 6 months):
 2026-04: Phase4 (期待剥落期)
