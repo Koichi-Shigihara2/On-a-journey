@@ -1,6 +1,6 @@
 {
   "ticker": "QBTS",
-  "last_updated": "2026-09-23T10:08:33.335055",
+  "last_updated": "2026-09-27T15:59:10.054866",
   "quarters": [
     {
       "gaap_eps": -0.12951133940835932,
@@ -49,9 +49,20 @@
       "tax_expense": 8000.0,
       "pretax_income": -48020000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目のSBCと無形資産償却費は非現金費用ですが、QBTSのようなテック企業では恒常的に発生するコストです。市場がGAAP EPS（-0.13）を基準に評価する場合、Adjusted EPS（-0.09）で示される企業の実力（非現金費用の実態や将来キャッシュフロー）が過小評価される可能性があります。ただしSBCは株主希薄化を伴う実質コストであるため、調整依存は過大評価リスクも孕みます。投資家は調整の持続性、株式希薄化効果、及び実際の現金 burn rateに注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として株式報酬費用をadd_back。ただし技術企業では毎期発生する恒常的コストであり一過性とは言えない。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却をadd_back。継続的に発生する非現金費用であり恒常的性格が強い。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -968,11 +979,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -1.1630321717838177,
+      "value": -1.163032171783818,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.0939262214996798,
-      "prior_4q_avg_yoy": 1.2569583932834976
+      "recent_4q_avg_yoy": 0.09392622149967983,
+      "prior_4q_avg_yoy": 1.2569583932834978
     },
     "roic_trend": {
       "years": [

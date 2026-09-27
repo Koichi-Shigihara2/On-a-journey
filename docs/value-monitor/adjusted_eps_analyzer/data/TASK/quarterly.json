@@ -1,6 +1,6 @@
 {
   "ticker": "TASK",
-  "last_updated": "2026-09-23T10:08:39.224326",
+  "last_updated": "2026-09-27T16:01:56.197152",
   "quarters": [
     {
       "gaap_eps": 0.23751357954078847,
@@ -49,20 +49,9 @@
       "tax_expense": 7540000.0,
       "pretax_income": 29509000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却はともに恒常的な非現金費用であり、一過性とは判断しにくい。GAAP EPSで市場が評価する場合、調整後EPSが高いため企業の実力が見えにくくなり過小評価の可能性はあるが、毎期発生するコストを加回する調整は持続可能性を過大に見せかけるリスクが高い。投資家はSBCによる希薄化や将来の償却継続を考慮し、過大評価リスクに警戒すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として毎期発生する恒常的コストであり、従業員インセンティブとしてコア事業に関わる。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に計上される非現金費用で、M&A実施企業では実質的に継続的な負担となる。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 429 Client Error: Too Many Requests for url: https://api.x.ai/v1/chat/completions",
+        "sources": []
       }
     },
     {

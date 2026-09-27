@@ -1,6 +1,6 @@
 {
   "ticker": "JNJ",
-  "last_updated": "2026-09-23T10:08:22.832256",
+  "last_updated": "2026-09-27T16:03:07.249749",
   "quarters": [
     {
       "gaap_eps": 2.2679398385312077,
@@ -62,20 +62,9 @@
         }
       },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整である無形資産償却費（12億ドル）は買収関連の恒常的非現金費用であり、毎期発生する性質を持つ。一方リストラ費用（3400万ドル）は一過性が高い。調整後EPSはGAAP比約18%高く、市場がGAAP EPSで判断する場合、非現金償却等によりJN Jの実力（持続的収益力・キャッシュ生成力）が過小評価される可能性がある。ただし償却費の大部分を加算戻しするのは経済的コストを無視する過大評価リスクも伴うため、投資家は調整項目の持続可能性を精査しコア事業の真の収益性を評価すべき。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却であり、恒常的に発生する非現金費用（毎期のSBC・無形資産償却に類似）",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用であり、非経常的と判断される（リストラ費用はほぼ一過性）",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -2878,10 +2867,10 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.034235252455991724,
+      "value": 0.03423525245599171,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.08089166779730544,
+      "recent_4q_avg_yoy": 0.08089166779730543,
       "prior_4q_avg_yoy": 0.04665641534131372
     },
     "roic_trend": {

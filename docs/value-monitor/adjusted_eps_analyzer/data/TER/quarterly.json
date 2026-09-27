@@ -1,6 +1,6 @@
 {
   "ticker": "TER",
-  "last_updated": "2026-09-23T10:08:40.291010",
+  "last_updated": "2026-09-27T16:04:18.717691",
   "quarters": [
     {
       "gaap_eps": 2.375076889906337,
@@ -36,15 +36,9 @@
       "tax_expense": 66788000.0,
       "pretax_income": 441321000.0,
       "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目は買収関連無形資産償却であり、恒常的に発生する非現金費用です。市場がGAAP EPSで判断する場合、この償却費により企業の実力（特にキャッシュ生成力）がやや過小評価される可能性がありますが、調整幅は小さく（EPS影響約1.1%）、過小評価リスクは限定的です。投資家は買収戦略の持続性とフリーキャッシュフローに注目すべきで、過大評価リスクは低いものの恒常的調整の妥当性を継続確認する必要があります。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aによるもので、複数年にわたって発生する恒常的な非現金費用であり、一過性とはみなせません。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -2395,10 +2389,10 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.546248141526334,
+      "value": 0.5462481415263339,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.5978897263772672,
+      "recent_4q_avg_yoy": 0.5978897263772671,
       "prior_4q_avg_yoy": 0.051641584850933134
     },
     "roic_trend": {

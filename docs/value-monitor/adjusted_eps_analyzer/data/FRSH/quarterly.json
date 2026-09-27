@@ -1,6 +1,6 @@
 {
   "ticker": "FRSH",
-  "last_updated": "2026-09-23T10:08:17.309556",
+  "last_updated": "2026-09-27T16:02:06.814759",
   "quarters": [
     {
       "gaap_eps": 0.011864990402508536,
@@ -78,9 +78,25 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目の大部分を占めるSBC（株式報酬費用）と無形資産償却は恒常的なコストであり、リストラ費用のみが一過性に近い。GAAP EPSが0.012と極めて低い一方でAdjusted EPSが0.154と大幅に上昇するため、市場がGAAPベースで判断する場合、企業の実力（特に調整後収益力）を大きく過小評価している可能性が高い。ただしSBC加回は実質的な株主希薄化を無視する恐れがあり、過大評価リスクも伴う。投資家はSBCの継続発生額とフリーキャッシュフローへの影響を重点的に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、テック企業で継続的に発生する恒常的な運用コストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は過去のM&Aに基づく定期的な非現金費用で、毎期継続する性質を持つ。",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "リストラ費用は一過性の事業再編費用として位置づけられ、調整の妥当性が高い。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

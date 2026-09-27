@@ -1,6 +1,6 @@
 {
   "ticker": "LRCX",
-  "last_updated": "2026-09-23T10:08:26.470125",
+  "last_updated": "2026-09-27T16:04:21.840913",
   "quarters": [
     {
       "gaap_eps": 1.8057873193445098,
@@ -36,12 +36,12 @@
       "tax_expense": 997077000.0,
       "pretax_income": 3274359000.0,
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "SBCは技術企業で毎期発生する恒常的な非現金コストであり、一過性ではないため調整の継続性に注意が必要。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な数字により企業の実力（キャッシュ生成力や調整後収益性）が過小評価される可能性がある。ただしSBCは人材確保のための実質コストであり、恒常的に加回調整すると持続可能な利益を過大評価するリスクもある。投資家はEPSだけでなく希薄化影響やフリーキャッシュフローも併せて確認すべき。",
+        "health": "調整小",
+        "comment": "SBCは恒常的に発生する非現金費用であり一過性ではないため、調整の影響は限定的。GAAP EPSで市場が判断する場合、Adjusted EPSが若干高い実態が見えにくくなり企業の実力をやや過小評価するリスクがある。ただしSBCは株主希薄化を伴う実質コストのため、調整を過度に信用すると過大評価のリスクも存在。投資家はSBCの継続的水準と事業との関連性を慎重に検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが、毎期発生する恒常的な株式報酬コスト（人材獲得のための継続的支出）。調整によりAdjusted EPSがGAAPより高くなるが、真に一過性とは言えない。",
+            "snippet": "非現金費用として株式報酬費用をadd_back。SBCは毎期発生する恒常的なコストであり一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -1690,54 +1690,6 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.2864580725907384,
-      "adjusted_eps": 0.3233659423975597,
-      "gaap_net_income": 526424000.0,
-      "adjusted_net_income": 594249592.3439955,
-      "diluted_shares_used": 1837700000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 43802000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 36009994.858932994,
-          "tax_rate_applied": 0.1778915378536826
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 38700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 31815597.485062484,
-          "tax_rate_applied": 0.1778915378536826
-        }
-      ],
-      "net_adjustment_total": 67825592.34399548,
-      "filing_date": "2017-06-25",
-      "form": "10-K",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 2344907000.0,
-      "diluted_shares": 1837700000.0,
-      "period_end": "2017-06-25",
-      "fiscal_year": 2017,
-      "quarter": 4,
-      "tax_expense": 113910000.0,
-      "pretax_income": 640334000.0,
-      "split_adjusted": true
-    },
-    {
       "gaap_eps": 0.31049790917047554,
       "adjusted_eps": 0.3471139932363874,
       "gaap_net_income": 574713000.0,
@@ -1831,54 +1783,6 @@
       "quarter": 2,
       "tax_expense": 52014000.0,
       "pretax_income": 384805000.0,
-      "split_adjusted": true
-    },
-    {
-      "gaap_eps": 0.1465611581128449,
-      "adjusted_eps": 0.18525212653194081,
-      "gaap_net_income": 263835000.0,
-      "adjusted_net_income": 333485320.6190039,
-      "diluted_shares_used": 1800170000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 38595000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 34777852.69798117,
-          "tax_rate_applied": 0.09890263769967178
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 38700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 34872467.921022706,
-          "tax_rate_applied": 0.09890263769967178
-        }
-      ],
-      "net_adjustment_total": 69650320.61900388,
-      "filing_date": "2016-09-25",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 1632419000.0,
-      "diluted_shares": 1800170000.0,
-      "period_end": "2016-09-25",
-      "fiscal_year": 2017,
-      "quarter": 1,
-      "tax_expense": 28958000.0,
-      "pretax_income": 292793000.0,
       "split_adjusted": true
     }
   ],

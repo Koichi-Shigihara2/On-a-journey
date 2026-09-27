@@ -1,6 +1,6 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-09-23T10:08:22.305076",
+  "last_updated": "2026-09-27T15:58:00.614952",
   "quarters": [
     {
       "gaap_eps": -5.080070633397915,
@@ -110,9 +110,30 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "IONQの調整項目ではワラント公正価値変動の巨額(16億ドル超)加算が主因でGAAP EPS(-5.08)がAdjusted EPS(-0.1)に大幅改善されている。この項目は非現金・非経常的であり、市場がGAAP EPSで判断する場合、企業の実力(特に量子コンピューティング事業の進捗)を過小評価するリスクが高い。一方、SBCや無形資産償却は恒常的に発生する項目のため、これらを加算することで実態以上に良く見せる過大調整の懸念もある。投資家はコア事業のキャッシュバーンとSBCによる希薄化効果に特に注目すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、成長企業では毎期発生する恒常的な運用コストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金項目で、恒常的な可能性が高い。",
+            "confidence": 0.25
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は一過性の買収関連コストとして扱われ、非経常的と判断される。",
+            "confidence": 0.8
+          },
+          {
+            "item": "warrant_fv_change",
+            "snippet": "ワラント公正価値変動は非現金かつ市場変動による非経常的会計項目で、事業実力とは乖離している。",
+            "confidence": 0.85
+          }
+        ]
       }
     },
     {

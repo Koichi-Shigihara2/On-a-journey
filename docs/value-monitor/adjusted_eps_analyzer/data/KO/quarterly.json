@@ -1,6 +1,6 @@
 {
   "ticker": "KO",
-  "last_updated": "2026-09-23T10:08:24.331159",
+  "last_updated": "2026-09-27T15:57:52.998865",
   "quarters": [
     {
       "gaap_eps": 0.9095966620305981,
@@ -62,20 +62,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目のうち訴訟和解金は一過性だが、株式報酬（SBC）は恒常的な非現金コストであるため、Adjusted EPSの上昇幅は限定的（0.01程度）。市場がGAAP EPSで判断する場合、非現金費用の加算により企業の実力（特にキャッシュ創出力）がやや過小評価されている可能性がある。ただし調整総額が小さくSBCの株主希薄化効果を無視できないため、過小評価リスクは軽微。投資家はSBCの継続性と将来の訴訟発生リスクを注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用であり毎期発生する恒常的な株式報酬コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "litigation_settlement",
-            "snippet": "非経常的な訴訟関連費用として一過性の和解金",
-            "confidence": 0.85
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 429 Client Error: Too Many Requests for url: https://api.x.ai/v1/chat/completions",
+        "sources": []
       }
     },
     {
@@ -1981,10 +1970,10 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.034016148190528825,
+      "value": 0.03401614819052882,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.05234253814152535,
+      "recent_4q_avg_yoy": 0.05234253814152534,
       "prior_4q_avg_yoy": 0.018326389950996523
     },
     "roic_trend": {

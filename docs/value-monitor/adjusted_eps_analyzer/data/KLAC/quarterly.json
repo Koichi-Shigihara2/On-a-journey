@@ -1,6 +1,6 @@
 {
   "ticker": "KLAC",
-  "last_updated": "2026-09-23T10:08:23.808203",
+  "last_updated": "2026-09-27T16:04:24.304019",
   "quarters": [
     {
       "gaap_eps": 1.0329076341679846,
@@ -62,25 +62,9 @@
       "tax_expense": 775154000.0,
       "pretax_income": 2138213000.0,
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "SBCと無形資産償却は恒常的な非現金費用であり、リストラは一過性だが金額が小さいため全体の調整影響は中程度。市場がGAAP EPSで評価する場合、これら非現金・買収関連費用により企業の実力（特にキャッシュフロー生成力）が過小評価される可能性が高い。ただしSBCは実質的な報酬コストとして希薄化効果もあるため、過大評価リスクを避けるため投資家は両EPSを比較しつつSBCの継続性を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用として毎期発生する株式報酬費用であり、恒常的な調整項目。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で、定期的に発生する非現金項目。",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用。",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

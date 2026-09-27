@@ -1,6 +1,6 @@
 {
   "ticker": "HEI",
-  "last_updated": "2026-09-23T10:08:19.325004",
+  "last_updated": "2026-09-27T16:00:57.033144",
   "quarters": [
     {
       "gaap_eps": 1.6666005988574988,
@@ -36,15 +36,9 @@
       "tax_expense": 66100000.0,
       "pretax_income": 301539000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "無形資産償却費の調整は買収関連で恒常的に発生する非現金費用であり、一過性とは言い難い（複数期にわたる償却）。GAAP EPSはこれを控除しているため、市場がGAAPベースで判断する場合に企業のキャッシュ生成能力を中心とした実力を過小評価している可能性がある。ただし、買収の経済的コストを反映しないAdjusted EPS relianceは持続可能性の観点で過大評価リスクを伴う。投資家はFCFやのれん・無形資産の減損リスク、買収戦略のROIを注視すべき。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は、買収後も複数期にわたって継続的に発生する恒常的な非現金費用であり、毎期同様の償却が予想される。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -1272,11 +1266,11 @@
       "pretax_income": 68098000.0
     },
     {
-      "gaap_eps": 0.42186230331683533,
-      "adjusted_eps": 0.47703068431564544,
+      "gaap_eps": 0.33748984265346826,
+      "adjusted_eps": 0.38162454745251634,
       "gaap_net_income": 45686000.0,
       "adjusted_net_income": 51660514.98864714,
-      "diluted_shares_used": 108296000.0,
+      "diluted_shares_used": 135370000.0,
       "adjustments": [
         {
           "item_id": "amortization_intangibles",
@@ -1298,19 +1292,20 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 368657000.0,
-      "diluted_shares": 108296000.0,
+      "diluted_shares": 135370000.0,
       "period_end": "2017-04-30",
       "fiscal_year": 2017,
       "quarter": 2,
       "tax_expense": 23900000.0,
-      "pretax_income": 69586000.0
+      "pretax_income": 69586000.0,
+      "split_adjusted": true
     },
     {
-      "gaap_eps": 0.37893616036294614,
-      "adjusted_eps": 0.4393275313910457,
+      "gaap_eps": 0.3031489282903569,
+      "adjusted_eps": 0.35146202511283653,
       "gaap_net_income": 40927000.0,
       "adjusted_net_income": 47449570.02788989,
-      "diluted_shares_used": 108005000.0,
+      "diluted_shares_used": 135006250.0,
       "adjustments": [
         {
           "item_id": "amortization_intangibles",
@@ -1332,20 +1327,21 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 343432000.0,
-      "diluted_shares": 108005000.0,
+      "diluted_shares": 135006250.0,
       "period_end": "2017-01-31",
       "fiscal_year": 2017,
       "quarter": 1,
       "tax_expense": 16800000.0,
-      "pretax_income": 57727000.0
+      "pretax_income": 57727000.0,
+      "split_adjusted": true
     }
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.07103437733428378,
+      "value": 0.07103437733428375,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.2053912806282714,
+      "recent_4q_avg_yoy": 0.20539128062827136,
       "prior_4q_avg_yoy": 0.1343569032939876
     },
     "roic_trend": {

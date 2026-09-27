@@ -1,6 +1,6 @@
 {
   "ticker": "SPIR",
-  "last_updated": "2026-09-23T10:08:38.691070",
+  "last_updated": "2026-09-27T15:59:44.544401",
   "quarters": [
     {
       "gaap_eps": -0.5214510696679937,
@@ -65,17 +65,17 @@
         }
       },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却費はともに恒常的に発生する非現金費用であり、一過性とは判断しにくい。市場がGAAP EPS(-0.52)で評価する場合、非現金費用の影響で企業の実力(調整後-0.43)が過小評価される可能性がある。ただしこれらは毎期発生する運用コスト(特にSBCの希薄化効果)のため、調整を過度に信頼すると過大評価リスクが生じる。投資家はキャッシュフローや継続的な希薄化を注視すべき。",
+        "health": "調整中",
+        "comment": "調整項目はSBC（株式報酬費用）と無形資産償却費の2つで、いずれも非現金だが恒常的に発生する性質の費用です。SBCは成長企業で毎期継続する報酬コスト、無形資産償却も買収後複数期にわたるため一過性とは言えません。市場がGAAP EPS（-0.52）で判断する場合、調整後EPS（-0.43）より損失が強調され企業の実力が見えにくくなり、過小評価のリスクがあります。ただしこれらが実質的な経済コスト（希薄化効果や買収対価の反映）である点を考慮すると、調整後指標に頼ると過大評価リスクも生じます。投資家はSBCの継続性と希薄化影響、無形資産の将来キャッシュフロー寄与を注視し、両指標を併せて評価すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが恒常的な運用コストであり、毎期発生する(調整の根拠:非現金費用)",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、恒常的な従業員報酬コストであり毎期発生する可能性が高い（category: 株式報酬関連）",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり恒常的(調整の根拠:買収関連無形資産の償却)",
+            "snippet": "無形資産償却費は買収関連の非現金償却としてadd_backされているが、買収後一定期間継続して発生する恒常的性格が強い（category: 買収・統合関連）",
             "confidence": 0.2
           }
         ]
@@ -942,11 +942,11 @@
       "pretax_income": -21757000.0
     },
     {
-      "gaap_eps": -0.2896107900869423,
-      "adjusted_eps": -0.25645191518548255,
+      "gaap_eps": -2.3168863206955383,
+      "adjusted_eps": -2.0516153214838604,
       "gaap_net_income": -40455000.0,
       "adjusted_net_income": -35823120.49117421,
-      "diluted_shares_used": 139687475.0,
+      "diluted_shares_used": 17460934.375,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -987,19 +987,20 @@
         "tax_one_time"
       ],
       "revenue": 19395000.0,
-      "diluted_shares": 139687475.0,
+      "diluted_shares": 17460934.375,
       "period_end": "2022-06-30",
       "fiscal_year": 2022,
       "quarter": 2,
       "tax_expense": 62000.0,
-      "pretax_income": -40393000.0
+      "pretax_income": -40393000.0,
+      "split_adjusted": true
     },
     {
-      "gaap_eps": -0.13037558954243308,
-      "adjusted_eps": -0.10186011920718581,
+      "gaap_eps": -1.0430047163394647,
+      "adjusted_eps": -0.8148809536574865,
       "gaap_net_income": -18158000.0,
       "adjusted_net_income": -14186521.04320573,
-      "diluted_shares_used": 139274538.0,
+      "diluted_shares_used": 17409317.25,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1040,19 +1041,20 @@
         "tax_one_time"
       ],
       "revenue": 18070000.0,
-      "diluted_shares": 139274538.0,
+      "diluted_shares": 17409317.25,
       "period_end": "2022-03-31",
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": 290000.0,
-      "pretax_income": -17868000.0
+      "pretax_income": -17868000.0,
+      "split_adjusted": true
     },
     {
-      "gaap_eps": 0.37387958440639824,
-      "adjusted_eps": 0.1170994148651207,
+      "gaap_eps": 2.991036675251186,
+      "adjusted_eps": 0.9367953189209656,
       "gaap_net_income": 23231918.0,
       "adjusted_net_income": 7276257.162620056,
-      "diluted_shares_used": 62137434.0,
+      "diluted_shares_used": 7767179.25,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1106,12 +1108,13 @@
         "tax_one_time"
       ],
       "revenue": 14985000.0,
-      "diluted_shares": 62137434.0,
+      "diluted_shares": 7767179.25,
       "period_end": "2021-12-31",
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": 497000.0,
       "pretax_income": 23728918.0,
+      "split_adjusted": true,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],
@@ -1133,11 +1136,11 @@
       }
     },
     {
-      "gaap_eps": -0.48555071252091125,
-      "adjusted_eps": -0.22369538751562817,
+      "gaap_eps": -3.88440570016729,
+      "adjusted_eps": -1.7895631001250254,
       "gaap_net_income": -32701000.0,
       "adjusted_net_income": -15065497.132461768,
-      "diluted_shares_used": 67348269.0,
+      "diluted_shares_used": 8418533.625,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1191,12 +1194,13 @@
         "tax_one_time"
       ],
       "revenue": 9561000.0,
-      "diluted_shares": 67348269.0,
+      "diluted_shares": 8418533.625,
       "period_end": "2021-09-30",
       "fiscal_year": 2021,
       "quarter": 3,
       "tax_expense": 269000.0,
       "pretax_income": -32432000.0,
+      "split_adjusted": true,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],

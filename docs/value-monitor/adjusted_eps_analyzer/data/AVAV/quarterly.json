@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-09-23T10:08:05.663327",
+  "last_updated": "2026-09-27T15:56:20.564760",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
@@ -88,9 +88,35 @@
       "tax_expense": -397000.0,
       "pretax_income": -5463000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整総額は約57Mと大きく、特にamortization_intangibles(43M)が大半を占め、SBCとともに恒常的性格が強い項目であるためAdjusted EPSは持続可能な利益を過大表示している可能性が高い。GAAP EPSが赤字のため市場がこれを基準に判断する場合、非現金・買収関連費用を無視して企業の実力を過小評価するリスクがあるが、逆に過大調整により投資家が過大評価する逆のリスクも存在。投資家は無形資産償却とSBCの今後の発生見通しを検証し、コア事業のキャッシュ生成力を重視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが毎期発生する恒常的な運用コストであり、調整の正当性は限定的。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金だが買収の経済効果を反映する恒常的項目で、調整により実態が歪められる可能性が高い。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は一過性の買収統合コストであり、真に調整すべき項目。",
+            "confidence": 0.8
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "異常変動分の貸倒引当金はマクロ変動による一時的影響とされ、調整の根拠がある。",
+            "confidence": 0.7
+          },
+          {
+            "item": "inventory_writeoff",
+            "snippet": "一過性の在庫評価損であり、非経常的として調整可能。",
+            "confidence": 0.75
+          }
+        ]
       }
     },
     {

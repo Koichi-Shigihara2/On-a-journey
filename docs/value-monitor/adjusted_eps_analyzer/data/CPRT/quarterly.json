@@ -1,6 +1,6 @@
 {
   "ticker": "CPRT",
-  "last_updated": "2026-09-23T10:08:10.565241",
+  "last_updated": "2026-09-27T16:01:37.560747",
   "quarters": [
     {
       "gaap_eps": 0.4268283886844087,
@@ -50,16 +50,16 @@
       "pretax_income": 503102000.0,
       "ai_analysis": {
         "health": "調整小",
-        "comment": "SBCは恒常的な非現金費用だが調整されており、貸倒引当金の異常変動分はマクロ要因による一時的項目とされる。調整幅は全体で約1.8%と小さいため、GAAP EPSで判断していても企業の実力が見えにくくなっている程度は軽微。市場がSBC調整を過度に嫌う場合に若干の過小評価リスクがあるが、過大評価リスクは低い。投資家はSBCの継続性と希薄化効果に注目すべき。",
+        "comment": "SBCは恒常的に発生する報酬コストである一方、異常貸倒引当金はマクロ変動による一時的項目とされる。全体の調整幅は小さく(約0.0076のEPS差)、GAAP EPS使用の場合に企業の実力がやや見えにくくなる可能性はあるが、過小評価リスクは限定的。投資家はSBCの継続性と異常引当金の反転可能性に注目すべきで、過大調整の懸念は低い。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として毎期発生する株式報酬費用。恒常的なコストであり調整の正当性は限定的。",
-            "confidence": 0.25
+            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的な報酬コストである(調整項目のreason: 非現金費用、category: 株式報酬関連)",
+            "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分を調整。貸倒引当金の非経常的変動を除外するもの。",
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされ、調整により加算処理されている(調整項目のreason: マクロ変動による一時的影響)",
             "confidence": 0.75
           }
         ]
@@ -1183,11 +1183,11 @@
       "pretax_income": 441325000.0
     },
     {
-      "gaap_eps": 0.596974288949577,
-      "adjusted_eps": 0.6145494511491683,
+      "gaap_eps": 0.2984871444747885,
+      "adjusted_eps": 0.30727472557458413,
       "gaap_net_income": 286796000.0,
       "adjusted_net_income": 295239389.1232788,
-      "diluted_shares_used": 480416000.0,
+      "diluted_shares_used": 960832000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1235,7 +1235,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 733910000.0,
-      "diluted_shares": 480416000.0,
+      "diluted_shares": 960832000.0,
       "period_end": "2021-04-30",
       "fiscal_year": 2021,
       "quarter": 3,
@@ -1244,11 +1244,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.40253038122190776,
-      "adjusted_eps": 0.4201254993306324,
+      "gaap_eps": 0.20126519061095388,
+      "adjusted_eps": 0.2100627496653162,
       "gaap_net_income": 193440000.0,
       "adjusted_net_income": 201895509.95832872,
-      "diluted_shares_used": 480560000.0,
+      "diluted_shares_used": 961120000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1296,7 +1296,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 617031000.0,
-      "diluted_shares": 480560000.0,
+      "diluted_shares": 961120000.0,
       "period_end": "2021-01-31",
       "fiscal_year": 2021,
       "quarter": 2,
@@ -1305,11 +1305,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.41731605880784106,
-      "adjusted_eps": 0.4351641973600991,
+      "gaap_eps": 0.20865802940392053,
+      "adjusted_eps": 0.21758209868004955,
       "gaap_net_income": 200285000.0,
       "adjusted_net_income": 208850964.22421652,
-      "diluted_shares_used": 479936000.0,
+      "diluted_shares_used": 959872000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1357,7 +1357,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 592940000.0,
-      "diluted_shares": 479936000.0,
+      "diluted_shares": 959872000.0,
       "period_end": "2020-10-31",
       "fiscal_year": 2021,
       "quarter": 1,
@@ -1366,11 +1366,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.3468025107267364,
-      "adjusted_eps": 0.357645254489949,
+      "gaap_eps": 0.1734012553633682,
+      "adjusted_eps": 0.1788226272449745,
       "gaap_net_income": 165533000.0,
       "adjusted_net_income": 170708371.71110654,
-      "diluted_shares_used": 477312000.0,
+      "diluted_shares_used": 954624000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1418,7 +1418,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 525659000.0,
-      "diluted_shares": 477312000.0,
+      "diluted_shares": 954624000.0,
       "period_end": "2020-07-31",
       "fiscal_year": 2020,
       "quarter": 4,
@@ -1427,11 +1427,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.30907913542421966,
-      "adjusted_eps": 0.3216260079394072,
+      "gaap_eps": 0.15453956771210983,
+      "adjusted_eps": 0.1608130039697036,
       "gaap_net_income": 147487000.0,
       "adjusted_net_income": 153474141.72054222,
-      "diluted_shares_used": 477182000.0,
+      "diluted_shares_used": 954364000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1479,7 +1479,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 550360000.0,
-      "diluted_shares": 477182000.0,
+      "diluted_shares": 954364000.0,
       "period_end": "2020-04-30",
       "fiscal_year": 2020,
       "quarter": 3,
@@ -1488,11 +1488,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.35372793223466265,
-      "adjusted_eps": 0.3698728040649114,
+      "gaap_eps": 0.17686396611733132,
+      "adjusted_eps": 0.1849364020324557,
       "gaap_net_income": 168707000.0,
       "adjusted_net_income": 176407135.17071885,
-      "diluted_shares_used": 476940000.0,
+      "diluted_shares_used": 953880000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1540,7 +1540,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 575140000.0,
-      "diluted_shares": 476940000.0,
+      "diluted_shares": 953880000.0,
       "period_end": "2020-01-31",
       "fiscal_year": 2020,
       "quarter": 2,
@@ -1549,11 +1549,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.45708994309944606,
-      "adjusted_eps": 0.4733150961234994,
+      "gaap_eps": 0.22854497154972303,
+      "adjusted_eps": 0.2366575480617497,
       "gaap_net_income": 218180000.0,
       "adjusted_net_income": 225924654.94205323,
-      "diluted_shares_used": 477324000.0,
+      "diluted_shares_used": 954648000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1601,7 +1601,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 554424000.0,
-      "diluted_shares": 477324000.0,
+      "diluted_shares": 954648000.0,
       "period_end": "2019-10-31",
       "fiscal_year": 2020,
       "quarter": 1,
@@ -1610,11 +1610,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.3191808794234216,
-      "adjusted_eps": 0.3282446428970056,
+      "gaap_eps": 0.1595904397117108,
+      "adjusted_eps": 0.1641223214485028,
       "gaap_net_income": 153496000.0,
       "adjusted_net_income": 157854818.23702738,
-      "diluted_shares_used": 480906000.0,
+      "diluted_shares_used": 961812000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1662,7 +1662,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 542575000.0,
-      "diluted_shares": 480906000.0,
+      "diluted_shares": 961812000.0,
       "period_end": "2019-07-31",
       "fiscal_year": 2019,
       "quarter": 4,
@@ -1671,11 +1671,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.40510189497755283,
-      "adjusted_eps": 0.4217620971454788,
+      "gaap_eps": 0.20255094748877642,
+      "adjusted_eps": 0.2108810485727394,
       "gaap_net_income": 192741000.0,
       "adjusted_net_income": 200667657.6282645,
-      "diluted_shares_used": 475784000.0,
+      "diluted_shares_used": 951568000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1723,7 +1723,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 553116000.0,
-      "diluted_shares": 475784000.0,
+      "diluted_shares": 951568000.0,
       "period_end": "2019-04-30",
       "fiscal_year": 2019,
       "quarter": 3,
@@ -1732,11 +1732,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.2729431563201197,
-      "adjusted_eps": 0.2870017987025018,
+      "gaap_eps": 0.13647157816005984,
+      "adjusted_eps": 0.1435008993512509,
       "gaap_net_income": 131373000.0,
       "adjusted_net_income": 138139705.75148818,
-      "diluted_shares_used": 481320000.0,
+      "diluted_shares_used": 962640000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1784,7 +1784,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 484898000.0,
-      "diluted_shares": 481320000.0,
+      "diluted_shares": 962640000.0,
       "period_end": "2019-01-31",
       "fiscal_year": 2019,
       "quarter": 2,
@@ -1793,11 +1793,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.23298791794989093,
-      "adjusted_eps": 0.24715798549340018,
+      "gaap_eps": 0.11649395897494547,
+      "adjusted_eps": 0.12357899274670009,
       "gaap_net_income": 114083000.0,
       "adjusted_net_income": 121021401.91281438,
-      "diluted_shares_used": 489652000.0,
+      "diluted_shares_used": 979304000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1845,7 +1845,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 461368000.0,
-      "diluted_shares": 489652000.0,
+      "diluted_shares": 979304000.0,
       "period_end": "2018-10-31",
       "fiscal_year": 2019,
       "quarter": 1,
@@ -1854,11 +1854,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.22686737474005383,
-      "adjusted_eps": 0.24177395949180783,
+      "gaap_eps": 0.11343368737002692,
+      "adjusted_eps": 0.12088697974590391,
       "gaap_net_income": 109748000.0,
       "adjusted_net_income": 116959120.0,
-      "diluted_shares_used": 483754000.0,
+      "diluted_shares_used": 967508000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1906,7 +1906,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 449223000.0,
-      "diluted_shares": 483754000.0,
+      "diluted_shares": 967508000.0,
       "period_end": "2018-07-31",
       "fiscal_year": 2018,
       "quarter": 4,
@@ -1915,11 +1915,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.26207606190319394,
-      "adjusted_eps": 0.2768121845713349,
+      "gaap_eps": 0.13103803095159697,
+      "adjusted_eps": 0.13840609228566744,
       "gaap_net_income": 127348000.0,
       "adjusted_net_income": 134508576.72690305,
-      "diluted_shares_used": 485920000.0,
+      "diluted_shares_used": 971840000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -1967,7 +1967,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 478198000.0,
-      "diluted_shares": 485920000.0,
+      "diluted_shares": 971840000.0,
       "period_end": "2018-04-30",
       "fiscal_year": 2018,
       "quarter": 3,
@@ -1976,11 +1976,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.21390454093470335,
-      "adjusted_eps": 0.22865637390879334,
+      "gaap_eps": 0.10695227046735167,
+      "adjusted_eps": 0.11432818695439667,
       "gaap_net_income": 103256000.0,
       "adjusted_net_income": 110377004.81325272,
-      "diluted_shares_used": 482720000.0,
+      "diluted_shares_used": 965440000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2028,7 +2028,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 459106000.0,
-      "diluted_shares": 482720000.0,
+      "diluted_shares": 965440000.0,
       "period_end": "2018-01-31",
       "fiscal_year": 2018,
       "quarter": 2,
@@ -2037,11 +2037,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.1623072058829688,
-      "adjusted_eps": 0.1760406408240932,
+      "gaap_eps": 0.0811536029414844,
+      "adjusted_eps": 0.0880203204120466,
       "gaap_net_income": 77515000.0,
       "adjusted_net_income": 84073841.32605208,
-      "diluted_shares_used": 477582000.0,
+      "diluted_shares_used": 955164000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2089,7 +2089,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 419168000.0,
-      "diluted_shares": 477582000.0,
+      "diluted_shares": 955164000.0,
       "period_end": "2017-10-31",
       "fiscal_year": 2018,
       "quarter": 1,
@@ -2098,11 +2098,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.1483741809728334,
-      "adjusted_eps": 0.15955709908358218,
+      "gaap_eps": 0.0741870904864167,
+      "adjusted_eps": 0.07977854954179109,
       "gaap_net_income": 70335000.0,
       "adjusted_net_income": 75636128.13538313,
-      "diluted_shares_used": 474038000.0,
+      "diluted_shares_used": 948076000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2150,7 +2150,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 378596000.0,
-      "diluted_shares": 474038000.0,
+      "diluted_shares": 948076000.0,
       "period_end": "2017-07-31",
       "fiscal_year": 2017,
       "quarter": 4,
@@ -2159,11 +2159,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.1909165665127459,
-      "adjusted_eps": 0.19942194266032948,
+      "gaap_eps": 0.09545828325637296,
+      "adjusted_eps": 0.09971097133016474,
       "gaap_net_income": 90546000.0,
       "adjusted_net_income": 94579844.74551447,
-      "diluted_shares_used": 474270000.0,
+      "diluted_shares_used": 948540000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2211,7 +2211,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 373862000.0,
-      "diluted_shares": 474270000.0,
+      "diluted_shares": 948540000.0,
       "period_end": "2017-04-30",
       "fiscal_year": 2017,
       "quarter": 3,
@@ -2220,11 +2220,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.14021512131347946,
-      "adjusted_eps": 0.14977393796342786,
+      "gaap_eps": 0.07010756065673973,
+      "adjusted_eps": 0.07488696898171393,
       "gaap_net_income": 66066000.0,
       "adjusted_net_income": 70569884.99385609,
-      "diluted_shares_used": 471176000.0,
+      "diluted_shares_used": 942352000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2272,7 +2272,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 349532000.0,
-      "diluted_shares": 471176000.0,
+      "diluted_shares": 942352000.0,
       "period_end": "2017-01-31",
       "fiscal_year": 2017,
       "quarter": 2,
@@ -2281,11 +2281,11 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.3517862700729313,
-      "adjusted_eps": 0.36243055964468074,
+      "gaap_eps": 0.17589313503646564,
+      "adjusted_eps": 0.18121527982234037,
       "gaap_net_income": 167280000.0,
       "adjusted_net_income": 172341530.0,
-      "diluted_shares_used": 475516000.0,
+      "diluted_shares_used": 951032000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -2333,7 +2333,7 @@
       "sector": null,
       "sector_exclusions": [],
       "revenue": 345991000.0,
-      "diluted_shares": 475516000.0,
+      "diluted_shares": 951032000.0,
       "period_end": "2016-10-31",
       "fiscal_year": 2017,
       "quarter": 1,

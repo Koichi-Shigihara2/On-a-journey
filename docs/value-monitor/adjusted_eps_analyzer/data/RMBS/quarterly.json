@@ -1,6 +1,6 @@
 {
   "ticker": "RMBS",
-  "last_updated": "2026-09-23T10:08:35.186288",
+  "last_updated": "2026-09-27T16:04:01.006050",
   "quarters": [
     {
       "gaap_eps": 0.5455722046009698,
@@ -65,20 +65,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "SBCと無形資産償却はともに恒常的に発生する項目（非現金だが報酬コストや過去買収の定期的償却）であり、調整後EPSがGAAPを19%上回る要因となっている。市場がGAAP EPS中心に判断する場合、非現金費用の影響で企業の実力（キャッシュ生成力）が過小評価される可能性がある。ただし恒常的コストを加回す調整は過大評価リスクも孕むため、投資家はフリーキャッシュフローやSBCの希薄化効果を注視し、持続可能性を検証すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが毎期発生する恒常的な報酬コストであり、調整の根拠はus-gaap:ShareBasedCompensationによる。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金償却だが定期的に発生する恒常的項目であり、調整の根拠はus-gaap:AmortizationOfIntangibleAssetsによる。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

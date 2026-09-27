@@ -1,6 +1,6 @@
 {
   "ticker": "GEV",
-  "last_updated": "2026-09-21T09:59:33.137917",
+  "last_updated": "2026-09-27T16:03:00.239332",
   "quarters": [
     {
       "gaap_eps": 2.474074074074074,
@@ -36,15 +36,9 @@
       "tax_expense": 276000000.0,
       "pretax_income": 944000000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "無形資産償却費は買収に伴う非現金費用ですが、毎期規則的に発生する恒常的な項目です。市場がGAAP EPS（2.47）で判断する場合、この償却を考慮した保守的な数字により企業の実力（調整後EPS 3.09）が過小評価される可能性があります。ただし償却は過去のM&A対価を反映する経済的コストであるため、調整依存は過大評価リスクを伴います。投資家は償却スケジュール、キャッシュフロー生成力、買収戦略の持続可能性に注目すべきです。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去の買収により生じたものであり、償却期間中は毎期発生する恒常的・非現金費用である（無形資産償却は恒常的な可能性が高い項目）。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -869,10 +863,10 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.047378746842097724,
+      "value": 0.047378746842097696,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.1343868894503821,
+      "recent_4q_avg_yoy": 0.13438688945038207,
       "prior_4q_avg_yoy": 0.08700814260828438
     },
     "roic_trend": {

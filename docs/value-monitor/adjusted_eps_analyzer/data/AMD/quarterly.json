@@ -1,6 +1,6 @@
 {
   "ticker": "AMD",
-  "last_updated": "2026-09-23T10:08:03.144774",
+  "last_updated": "2026-09-27T15:55:50.091221",
   "quarters": [
     {
       "gaap_eps": 1.38456901748041,
@@ -52,12 +52,12 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBCは恒常的な運用コスト（非現金だが株式希薄化を伴う）であり一過性ではないため、調整の影響は大きい。市場がGAAP EPS（1.38）で判断する場合、Adjusted EPS（1.66）より実力が低く見え、企業の実力を過小評価するリスクがある。ただしSBCは毎期発生する実質コストのため、調整を過信すると過大評価リスクも生じる。投資家はフリーキャッシュフローと株式希薄化の影響を特に注視すべき。",
+        "health": "過大調整",
+        "comment": "SBC（株式報酬費用）は毎期発生する恒常的な非現金費用であり、株主希薄化という実質的コストを伴うため、一過性調整として扱うのは不適切です。調整によりEPSが約0.27（約20%）押し上げられていますが、市場がGAAP EPSで判断する場合に企業の真の実力（調整後収益力）が過小評価される可能性があります。ただしSBCを完全に無視した調整は過大評価リスクを高めており、投資家は希薄化影響や長期的な現金流出を考慮した総合判断が必要です。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として株式報酬費用503M USDをadd_back調整。ただしテック企業では毎期発生する恒常的コストであり一過性ではない。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、技術企業において毎期発生する恒常的運用コストであり一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -224,9 +224,9 @@
     },
     {
       "gaap_eps": 0.5349693251533743,
-      "adjusted_eps": 0.0098159509202454,
+      "adjusted_eps": 0.00705521472392638,
       "gaap_net_income": 872000000.0,
-      "adjusted_net_income": 16000000.0,
+      "adjusted_net_income": 11500000.0,
       "diluted_shares_used": 1630000000.0,
       "adjustments": [
         {
@@ -271,12 +271,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -856000000.0,
-          "net_amount": -856000000.0,
-          "note": "tax_expense=-834,000,000, median_normal_tax=22,000,000"
+          "amount": -860500000.0,
+          "net_amount": -860500000.0,
+          "note": "tax_expense=-834,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -856000000.0,
+      "net_adjustment_total": -860500000.0,
       "filing_date": "2025-06-28",
       "form": "10-Q",
       "sector": "Technology",
@@ -682,9 +682,9 @@
     },
     {
       "gaap_eps": 0.016594960049170254,
-      "adjusted_eps": -0.011063306699446834,
+      "adjusted_eps": -0.013829133374308543,
       "gaap_net_income": 27000000.0,
-      "adjusted_net_income": -18000000.0,
+      "adjusted_net_income": -22500000.0,
       "diluted_shares_used": 1627000000.0,
       "adjustments": [
         {
@@ -716,12 +716,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -45000000.0,
-          "net_amount": -45000000.0,
-          "note": "tax_expense=-23,000,000, median_normal_tax=22,000,000"
+          "amount": -49500000.0,
+          "net_amount": -49500000.0,
+          "note": "tax_expense=-23,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -45000000.0,
+      "net_adjustment_total": -49500000.0,
       "filing_date": "2023-07-01",
       "form": "10-Q",
       "sector": "Technology",
@@ -796,9 +796,9 @@
     },
     {
       "gaap_eps": 0.01336728198599618,
-      "adjusted_eps": -0.07829408020369191,
+      "adjusted_eps": -0.08115849777211967,
       "gaap_net_income": 21000000.0,
-      "adjusted_net_income": -123000000.0,
+      "adjusted_net_income": -127500000.0,
       "diluted_shares_used": 1571000000.0,
       "adjustments": [
         {
@@ -817,12 +817,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -144000000.0,
-          "net_amount": -144000000.0,
-          "note": "tax_expense=-122,000,000, median_normal_tax=22,000,000"
+          "amount": -148500000.0,
+          "net_amount": -148500000.0,
+          "note": "tax_expense=-122,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -144000000.0,
+      "net_adjustment_total": -148500000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -844,9 +844,9 @@
     },
     {
       "gaap_eps": 0.040615384615384616,
-      "adjusted_eps": -0.056,
+      "adjusted_eps": -0.05876923076923077,
       "gaap_net_income": 66000000.0,
-      "adjusted_net_income": -91000000.0,
+      "adjusted_net_income": -95500000.0,
       "diluted_shares_used": 1625000000.0,
       "adjustments": [
         {
@@ -878,12 +878,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -157000000.0,
-          "net_amount": -157000000.0,
-          "note": "tax_expense=-135,000,000, median_normal_tax=22,000,000"
+          "amount": -161500000.0,
+          "net_amount": -161500000.0,
+          "note": "tax_expense=-135,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -157000000.0,
+      "net_adjustment_total": -161500000.0,
       "filing_date": "2022-09-24",
       "form": "10-Q",
       "sector": "Technology",
@@ -1171,9 +1171,9 @@
     },
     {
       "gaap_eps": 1.475559237779619,
-      "adjusted_eps": 0.45484672742336374,
+      "adjusted_eps": 0.4511184755592378,
       "gaap_net_income": 1781000000.0,
-      "adjusted_net_income": 549000000.0,
+      "adjusted_net_income": 544500000.0,
       "diluted_shares_used": 1207000000.0,
       "adjustments": [
         {
@@ -1192,12 +1192,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -1232000000.0,
-          "net_amount": -1232000000.0,
-          "note": "tax_expense=-1,210,000,000, median_normal_tax=22,000,000"
+          "amount": -1236500000.0,
+          "net_amount": -1236500000.0,
+          "note": "tax_expense=-1,210,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -1232000000.0,
+      "net_adjustment_total": -1236500000.0,
       "filing_date": "2020-12-26",
       "form": "10-K",
       "sector": "Technology",
@@ -1459,9 +1459,9 @@
     },
     {
       "gaap_eps": 0.014625228519195612,
-      "adjusted_eps": -0.01736745886654479,
+      "adjusted_eps": -0.021480804387568556,
       "gaap_net_income": 16000000.0,
-      "adjusted_net_income": -19000000.0,
+      "adjusted_net_income": -23500000.0,
       "diluted_shares_used": 1094000000.0,
       "adjustments": [
         {
@@ -1480,12 +1480,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -35000000.0,
-          "net_amount": -35000000.0,
-          "note": "tax_expense=-13,000,000, median_normal_tax=22,000,000"
+          "amount": -39500000.0,
+          "net_amount": -39500000.0,
+          "note": "tax_expense=-13,000,000, median_normal_tax=26,500,000"
         }
       ],
-      "net_adjustment_total": -35000000.0,
+      "net_adjustment_total": -39500000.0,
       "filing_date": "2019-03-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -1824,32 +1824,6 @@
       "quarter": 1,
       "tax_expense": 5000000.0,
       "pretax_income": -68000000.0
-    },
-    {
-      "gaap_eps": -0.498159509202454,
-      "adjusted_eps": -0.498159509202454,
-      "gaap_net_income": -406000000.0,
-      "adjusted_net_income": -406000000.0,
-      "diluted_shares_used": 815000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
-      "filing_date": "2016-09-24",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 1307000000.0,
-      "diluted_shares": 815000000.0,
-      "period_end": "2016-09-24",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 4000000.0,
-      "pretax_income": -402000000.0
     }
   ],
   "execution_metrics": {
