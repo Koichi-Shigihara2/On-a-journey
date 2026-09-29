@@ -37,6 +37,7 @@ import math
 import os
 import sys
 import tempfile
+import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
@@ -443,6 +444,70 @@ def _repair_close_missing_records(symbol: str, valid_bars: List[Dict[str, Any]],
     return repaired
 
 
+# [[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]（2026-09-30、指示書㉔）: 終値の無い足が3回（09-21・09-25・09-28の足）
+# 再発した。同じ実行の中で、終値の無い銘柄だけを数分おきに取り直し、それでも取れなければ別の取得経路
+# （Ticker.history(start, end)）を試す。推測では埋めない。回数・間隔は環境変数で変えられる。
+CLOSE_RETRY_ATTEMPTS = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_ATTEMPTS", "3"))
+CLOSE_RETRY_WAIT_SEC = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_WAIT_SEC", "180"))
+
+
+def _history_bars_single(symbol: str, start: str) -> List[Dict[str, Any]]:
+    """yf.Ticker(symbol).history(start, end)で日足を取る（yf.downloadとは別の取得経路）。"""
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    try:
+        df = yf.Ticker(symbol).history(start=start, end=end, auto_adjust=False)
+    except Exception as e:
+        print(f"   [{symbol}] history(start, end)失敗: {e}")
+        return []
+    if df is None or df.empty:
+        return []
+    return [{"date": idx.strftime("%Y-%m-%d"), "open": _to_float(row.get("Open")), "high": _to_float(row.get("High")),
+             "low": _to_float(row.get("Low")), "close": _to_float(row.get("Close")), "volume": _to_int(row.get("Volume"))}
+            for idx, row in df.dropna(how="all").iterrows()]
+
+
+def _close_on(bars: List[Dict[str, Any]], day: str) -> bool:
+    return any(b.get("date") == day and _has_valid_close(b) for b in bars or [])
+
+
+def _retry_missing_closes(history: Dict[str, List[Dict[str, Any]]], attempts: Optional[int] = None,
+                          wait_sec: Optional[int] = None, sleep=time.sleep) -> Dict[str, Any]:
+    """最新の足に終値が無い銘柄だけを取り直し、取れた銘柄はhistoryを差し替える（その場で更新）。
+
+    1. yf.download(period="5d")で、終値の無い銘柄だけをwait_sec秒おきにattempts回まで取り直す
+    2. それでも取れない銘柄は、yf.Ticker().history(start, end)（別の取得経路）で同じ日の終値を探す
+    どちらも、終値の無かった日と同じ日付の足に終値がある場合だけ採用する。
+    Returns: {"initial": [...], "recovered_download": [...], "recovered_history": [...], "still_missing": [...]}
+    """
+    attempts = CLOSE_RETRY_ATTEMPTS if attempts is None else attempts
+    wait_sec = CLOSE_RETRY_WAIT_SEC if wait_sec is None else wait_sec
+    target = {s: b[-1]["date"] for s, b in history.items() if b and not _has_valid_close(b[-1])}
+    out = {"initial": sorted(target), "recovered_download": [], "recovered_history": [], "still_missing": []}
+    pending = sorted(target)
+    for i in range(attempts):
+        if not pending:
+            break
+        print(f"   終値の無い足: {len(pending)}銘柄（{wait_sec}秒後に取り直し {i + 1}/{attempts}）")
+        sleep(wait_sec)
+        again = _download_historical_bars(pending, period="5d")
+        for s in list(pending):
+            if _close_on(again.get(s), target[s]):
+                history[s] = again[s]
+                out["recovered_download"].append(s)
+                pending.remove(s)
+    for s in list(pending):
+        bars = _history_bars_single(s, start=history[s][0]["date"])
+        if _close_on(bars, target[s]):
+            history[s] = [b for b in bars if b["date"] <= target[s]]
+            out["recovered_history"].append(s)
+            pending.remove(s)
+    out["still_missing"] = pending
+    if out["initial"]:
+        print(f"   終値の取り直し: 対象{len(out['initial'])}銘柄 / download再取得で{len(out['recovered_download'])} / "
+              f"history(start, end)で{len(out['recovered_history'])} / 取れず{len(pending)}")
+    return out
+
+
 def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> None:
     """日次価格層を取得・保存する。
 
@@ -468,6 +533,13 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
     # （自己修復）。既に終値のある過去の行は上書きしない（他システムの入力を
     # 動かさないため）。
     history = _download_historical_bars(target_symbols, period="5d")
+    retry = _retry_missing_closes(history)
+    if retry["initial"]:
+        summary_path = os.path.join(base, "_daily_close_retry_log.json")
+        log = _load_json(summary_path, default=[])
+        log.append({"checked_at": _now_iso(), **{k: (len(v) if k != "still_missing" else v) for k, v in retry.items()},
+                    "initial_symbols": retry["initial"][:50]})
+        _atomic_write_json(summary_path, log[-60:])
     for symbol in target_symbols:
         symbol_bars = history.get(symbol) or []
         if not symbol_bars:
@@ -485,6 +557,17 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
         _repair_close_missing_records(symbol, valid_bars, base_dir=base)
         if not valid_bars:
             continue
+        # 5日窓のうち、daily/に行の無い日の終値つきの足を追加する（既存の行は上書きしない）。
+        # 以前は最新の足だけを保存したため、ある日の足に終値が無く翌日の実行で次の日の足が取れると、
+        # その日は行ごと抜けたままになっていた（2026-09-28）
+        path = os.path.join(base, "daily", f"{symbol}.json")
+        have = {r.get("date") for r in _load_json(path, default={}).get("records", [])}
+        for b in valid_bars[:-1]:
+            if b["date"] not in have:
+                filled = dict(b)
+                filled["_validation_warnings"] = validate_price_record(filled)
+                _append_daily_record(symbol, filled, base_dir=base)
+                print(f"   [{symbol}] 抜けていた{b['date']}の終値を追加")
         bar = valid_bars[-1]
 
         record = dict(bar)

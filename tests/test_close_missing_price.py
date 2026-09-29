@@ -255,3 +255,48 @@ class TestGetTtmRevenue:
         from common.sec_data.reader import get_ttm_revenue
         self._patch(monkeypatch, [])
         assert get_ttm_revenue("X", store={}) is None
+
+
+class TestCloseRetryInSameRun:
+    """[[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]（2026-09-30）: 同じ実行の中で終値の無い銘柄だけを取り直し、
+    それでも取れなければ別経路（Ticker.history(start, end)）を試す。推測では埋めない。"""
+
+    def test_retry_download_recovers_only_missing_symbols(self, monkeypatch):
+        calls = []
+
+        def fake(syms, period="5d", start=None):
+            calls.append(list(syms))
+            return {"AAA": [_bar("2026-09-25", 10.0), _bar("2026-09-28", 11.0)]}
+        monkeypatch.setattr(fetcher, "_download_historical_bars", fake)
+        history = {"AAA": [_bar("2026-09-25", 10.0), _bar("2026-09-28", None)],
+                   "BBB": [_bar("2026-09-25", 20.0), _bar("2026-09-28", 21.0)]}
+        slept = []
+        out = fetcher._retry_missing_closes(history, attempts=3, wait_sec=5, sleep=slept.append)
+        assert calls == [["AAA"]] and slept == [5]
+        assert out["recovered_download"] == ["AAA"] and out["still_missing"] == []
+        assert history["AAA"][-1]["close"] == 11.0
+
+    def test_history_fallback_then_still_missing(self, monkeypatch):
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: {
+            s: [_bar("2026-09-28", None)] for s in syms})
+        monkeypatch.setattr(fetcher, "_history_bars_single", lambda s, start: (
+            [_bar("2026-09-25", 10.0), _bar("2026-09-28", 12.0), _bar("2026-09-29", 13.0)] if s == "AAA" else
+            [_bar("2026-09-25", 10.0)]))
+        history = {"AAA": [_bar("2026-09-25", 10.0), _bar("2026-09-28", None)],
+                   "CCC": [_bar("2026-09-25", 30.0), _bar("2026-09-28", None)]}
+        out = fetcher._retry_missing_closes(history, attempts=2, wait_sec=0, sleep=lambda s: None)
+        assert out["recovered_history"] == ["AAA"] and out["still_missing"] == ["CCC"]
+        # 終値の無かった日（09-28）までに切り詰める。取れなかった銘柄は元のまま（推測で埋めない）
+        assert [b["date"] for b in history["AAA"]] == ["2026-09-25", "2026-09-28"]
+        assert history["CCC"][-1]["close"] is None
+
+    def test_missing_earlier_day_in_window_is_added(self, tmp_path, monkeypatch):
+        """前回09-28の足に終値が無く、次の実行で09-28・09-29が取れた場合、09-28も追加する（既存行は上書きしない）"""
+        base = str(tmp_path)
+        _write_daily(base, "SPY", [_bar("2026-09-24", 1.0), _bar("2026-09-25", 2.0)])
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: {
+            "SPY": [_bar("2026-09-24", 9.0), _bar("2026-09-25", 9.0), _bar("2026-09-28", 3.0), _bar("2026-09-29", 4.0)]})
+        fetcher.fetch_daily_prices(["SPY"], base_dir=base)
+        recs = _read_daily(base, "SPY")
+        assert [(r["date"], r["close"]) for r in recs] == [
+            ("2026-09-24", 1.0), ("2026-09-25", 2.0), ("2026-09-28", 3.0), ("2026-09-29", 4.0)]

@@ -82,6 +82,7 @@ jobs:
           git add common/market_data/daily/ || true
           git add common/market_data/*/market_data_violations_log.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
+          git add common/market_data/_daily_close_retry_log.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
