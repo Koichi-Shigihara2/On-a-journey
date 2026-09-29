@@ -190,10 +190,12 @@ def expected_signal(entries: list) -> str:
 def expected_past_outcomes(L: dict) -> list:
     """renderStage8()の表の行（MP-10の置き換え）。"""
     s8 = (L.get("stage_conclusions") or {}).get("8") or {}
-    names = {"stage1_vix": "段階1の区分×VIX水準", "stage1": "段階1の区分のみ"}
+    names = {"stage1_vix": "段階1の区分×VIX水準",
+             "stage1": "段階1の区分のみ" + ("（見出し）" if s8.get("headline_signal") == "stage1" else "")}
     hz = {1: "翌営業日", 5: "5営業日後", 20: "20営業日後"}
     rows = []
-    for key in ("stage1_vix", "stage1"):
+    order = ("stage1", "stage1_vix") if s8.get("headline_signal") == "stage1" else ("stage1_vix", "stage1")
+    for key in order:
         sg = (s8.get("signals") or {}).get(key)
         if not sg:
             continue
@@ -710,8 +712,10 @@ def run_derivation_checks(results: list, cls) -> None:
         tk = json.load(f)
     tk = tk if isinstance(tk, list) else tk.get("tickers", [])
     same = other = 0
+    # 2026-09-30: ブレッスは基準日より新しい行を基準日までに切り詰めて集計する（MARKETPULSE-BREADTH-BASE-DATE-1）。
+    # 算出後にdaily/へ新しい日の行が追加されても比べられるよう、基準日以前の行だけで判定する
     for t in tk:
-        rows = _real_rows(t, days=6)
+        rows = [r for r in _real_rows(t, days=12) if r["date"] <= bd]
         if not rows:
             continue
         if len(rows) >= 2 and rows[-1]["date"] == bd and rows[-2]["date"] == prev_day:

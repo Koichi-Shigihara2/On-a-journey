@@ -174,12 +174,23 @@ class TestStage8:
         assert o1["base_up_pct"] == pytest.approx(50.0, abs=1.0)
         assert "guide" in o1 and r["line"].startswith("5営業日後: ")
 
-    @pytest.mark.parametrize("n,diff,label", [
-        (19, 10.0, "件数不足"), (20, 5.0, "平常時より上昇が多い"), (20, -5.0, "平常時より上昇が少ない"),
-        (20, 4.9, "平常時と差なし"),
+    @pytest.mark.parametrize("n,z,label", [
+        (19, 5.0, "件数不足"), (20, 2.0, "平常時より上昇が多い"), (20, -2.0, "平常時より上昇が少ない"),
+        (20, 1.99, "平常時と差なし"), (20, -1.99, "平常時と差なし"),
     ])
-    def test_label_thresholds(self, n, diff, label):
-        assert sc.s8_label(n, diff) == label
+    def test_label_thresholds_z(self, n, z, label):
+        """指示書㉔ STEP B: |z|≥2のときだけ多い／少ない（差のptは判定に使わない）"""
+        assert sc.s8_label(n, z) == label
+
+    def test_headline_uses_stage1_only_5d(self):
+        closes, pattern = [100.0], [0.005, 0.005, -0.004, -0.004] * 60
+        for r in pattern:
+            closes.append(closes[-1] * (1 + r))
+        days, get = _series(closes, [14.0] * len(closes))
+        r = sc.stage8(get, days[-1])
+        five = next(o for o in r["signals"]["stage1"]["outcomes"] if o["horizon"] == 5)
+        assert r["headline_signal"] == "stage1" and r["label"] == five["label"]
+        assert r["line"].startswith("5営業日後: ") and "z=" in r["line"]
 
     def test_missing_as_of(self):
         assert sc.stage8(lambda *a: [], None)["line"] is None

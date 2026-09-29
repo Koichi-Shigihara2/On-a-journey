@@ -187,10 +187,10 @@ def weather_v4(s3, s4):
 # ── 段階8: 基準率との差（先読みなし） ─────────────────────────
 S8_MIN_N = 20
 S8_DIFF_PT = 5.0
-S8_Z = 1.96
+S8_Z = 2.0   # 指示書㉔ STEP B: |z|≥2のときだけ「平常時より上昇が多い／少ない」
 
 
-def s8_labels(signal, close, horizon, z_gate=False):
+def s8_labels(signal, close, horizon, rule="z"):
     """日tについて、tの時点で結果が確定している過去の日（j ≤ t−horizon）だけを使い、
     同じシグナルの日の上昇割合と、全日（条件なし）の上昇割合＝基準率との差で判定する。"""
     fwd = (close.shift(-horizon) / close - 1) * 100
@@ -212,11 +212,12 @@ def s8_labels(signal, close, horizon, z_gate=False):
         diff = (p - base) * 100
         se = np.sqrt(base * (1 - base) / n) * 100
         z = diff / se if se else 0.0
-        big = abs(diff) >= S8_DIFF_PT and (not z_gate or abs(z) >= S8_Z)
+        # rule="z"（採用、指示書㉔）: |z|≥2。rule="diff5"（参考、指示書㉓の規則）: 差±5pt以上
+        big = abs(z) >= S8_Z if rule == "z" else abs(diff) >= S8_DIFF_PT
         lab = "平常時と差なし" if not big else "平常時より上昇が多い" if diff > 0 else "平常時より上昇が少ない"
         labels.append(lab)
         if lab != "平常時と差なし":
-            sig_flags.append(abs(z) >= 1.96)
+            sig_flags.append(abs(z) >= S8_Z)
         rows.append((n, diff, z))
     ns = [r[0] for r in rows]
     return {"labels": dist(labels),
@@ -417,8 +418,8 @@ def main():
     OUT["stage8"] = {}
     for name, sig in (("段階1の区分", sig1), ("段階1×VIX水準", combo)):
         for h in (1, 5):
-            OUT["stage8"][f"{name}・{h}営業日後・差5pt"] = s8_labels(sig, C["^GSPC"], h)
-            OUT["stage8"][f"{name}・{h}営業日後・差5pt且つz1.96"] = s8_labels(sig, C["^GSPC"], h, z_gate=True)
+            OUT["stage8"][f"{name}・{h}営業日後・|z|≥2（採用）"] = s8_labels(sig, C["^GSPC"], h, rule="z")
+            OUT["stage8"][f"{name}・{h}営業日後・差±5pt（参考: 指示書㉓の規則）"] = s8_labels(sig, C["^GSPC"], h, rule="diff5")
     # 例: 最新日のシグナル（全期間の同じシグナルの日と、全日の基準率）
     OUT["stage8_example"] = {}
     for name, sig in (("段階1の区分", sig1), ("段階1×VIX水準", combo)):

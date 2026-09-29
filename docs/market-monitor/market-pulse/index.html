@@ -945,17 +945,18 @@ function renderStage8(){
   const el=document.getElementById("pastOutcomes");if(!el)return;
   const L=allData[allData.length-1];const s8=L?.stage_conclusions?.["8"];
   if(!s8?.signals){el.innerHTML='<div class="stage-note">記録なし</div>';return}
-  const NAMES={stage1_vix:"段階1の区分×VIX水準",stage1:"段階1の区分のみ"};
+  const NAMES={stage1_vix:"段階1の区分×VIX水準",stage1:"段階1の区分のみ"+(s8.headline_signal==="stage1"?"（見出し）":"")};
   const HZ={1:"翌営業日",5:"5営業日後",20:"20営業日後"};
   let rows='';
-  for(const key of ["stage1_vix","stage1"]){
+  const ORDER=s8.headline_signal==="stage1"?["stage1","stage1_vix"]:["stage1_vix","stage1"];
+  for(const key of ORDER){
     const sg=s8.signals[key];if(!sg)continue;
     for(const o of (sg.outcomes||[])){
       const enough=o.label!=="件数不足";
       rows+=`<tr><td>${NAMES[key]}</td><td>${escHtml(sg.signal||"—")}</td><td>${HZ[o.horizon]||o.horizon}</td><td class="num">${o.n}</td><td class="num">${enough?Number(o.up_pct).toFixed(1)+"%":"—"}</td><td class="num">${o.base_up_pct!=null?Number(o.base_up_pct).toFixed(1)+"%":"—"}</td><td class="num">${enough?pctS(o.diff_pt,1)+"pt":"—"}</td><td>${escHtml(o.label)}</td><td>${enough?escHtml(o.guide)+"（z="+pctS(o.z,2)+"）":"—"}</td><td class="num">${enough?pctS(o.mean_pct,3)+"%":"—"}</td></tr>`;
     }
   }
-  el.innerHTML=`<div style="overflow-x:auto"><table class="mp-table" id="pastOutcomesTable"><tr><th>シグナル</th><th>今日の区分</th><th>期間</th><th>件数</th><th>上昇割合</th><th>基準率</th><th>差</th><th>判定</th><th>目安</th><th>平均リターン</th></tr>${rows}</table></div><div class="stage-note">予測ではない。${escHtml(s8.history_from||"")}〜${escHtml(s8.as_of||"")}のS&amp;P500で、同じ区分の日が過去に何回あり、その後どうだったかを、条件のない全日の上昇割合（基準率）と比べる。差が±5pt以上で「多い／少ない」、件数20未満は件数不足。差が偶然のばらつき（標準誤差）の約2倍（|z|≥1.96）以上なら「偶然では出にくい差」。</div>`;
+  el.innerHTML=`<div style="overflow-x:auto"><table class="mp-table" id="pastOutcomesTable"><tr><th>シグナル</th><th>今日の区分</th><th>期間</th><th>件数</th><th>上昇割合</th><th>基準率</th><th>差</th><th>判定</th><th>目安</th><th>平均リターン</th></tr>${rows}</table></div><div class="stage-note">予測ではない。${escHtml(s8.history_from||"")}〜${escHtml(s8.as_of||"")}のS&amp;P500で、同じ区分の日が過去に何回あり、その後どうだったかを、条件のない全日の上昇割合（基準率）と比べる。差が偶然のばらつき（標準誤差）の2倍以上（|z|≥2）のときだけ「平常時より上昇が多い／少ない」とし、それ以外は「差なし」。件数20未満は件数不足。見出しの結論は、有意になる割合が高い「段階1の区分のみ」の5営業日後。</div>`;
 }
 
 // ── 段階8: センチメントのシグナル（MP-05、日付で直近20営業日。表示期間によらない） ──

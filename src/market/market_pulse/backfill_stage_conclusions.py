@@ -35,6 +35,8 @@ def expected_close_for(entry_iso, cal):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--recompute-stage8", action="store_true",
+                    help="全エントリの段階8（過去の実績と結論1行）を現在の規則で計算し直す（指示書㉔ STEP B）")
     args = ap.parse_args()
     import pandas_market_calendars as mcal
     cal = mcal.get_calendar("NYSE")
@@ -42,8 +44,13 @@ def main():
         data = json.load(f)
     data.sort(key=lambda e: datetime.fromisoformat(e["date"]))
     get = lambda sym, as_of, days: get_price_series_as_of(sym, as_of, days=days)  # noqa: E731
-    n_stage = n_sig = 0
+    n_stage = n_sig = n_s8 = 0
+    from stage_conclusions import stage8
     for i, e in enumerate(data):
+        if args.recompute_stage8 and "stage_conclusions" in e:
+            spx_date = ((e.get("indicators") or {}).get("S&P500") or {}).get("date")
+            e["stage_conclusions"]["8"] = stage8(get, spx_date)
+            n_s8 += 1
         if "stage_conclusions" not in e:
             exp = (e.get("data_freshness") or {}).get("expected_close_date") or expected_close_for(e["date"], cal)
             r = build_stage_conclusions(e.get("indicators") or {}, e.get("asset_flow"),
@@ -58,10 +65,10 @@ def main():
             hist = [(p["date"][:10], (p.get("sentiment") or {}).get("score")) for p in data[max(0, i - 60):i]]
             s["signal"] = cs.sentiment_signal(s["score"], hist, cs.signal_window_start(t))
             n_sig += 1
-    print(f"段階の結論を追加: {n_stage}件 / シグナルを追加: {n_sig}件（全{len(data)}件）")
+    print(f"段階の結論を追加: {n_stage}件 / シグナルを追加: {n_sig}件 / 段階8を再計算: {n_s8}件（全{len(data)}件）")
     if args.dry_run:
         return
-    with open(cs.JSON_PATH, "w", encoding="utf-8") as f:
+    with open(cs.JSON_PATH, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     cs.write_nyse_holidays()
     print("保存しました")

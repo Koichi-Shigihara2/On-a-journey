@@ -22,8 +22,11 @@ TAG_GOLD_PCT = 1.5
 S5_PT = 0.5
 # ── 段階8 ─────────────────────────────────────────────
 S8_MIN_N = 20
-S8_DIFF_PT = 5.0
-S8_Z = 1.96
+# 指示書㉔ STEP B: |z|≥2（偶然のばらつき〈標準誤差〉の約2倍）のときだけ「平常時より上昇が多い／少ない」。
+# 差（pt）は表示するが判定には使わない
+S8_Z = 2.0
+# 見出しの結論に使うシグナル（有意になる割合が高い方。5年分で段階1のみ15.9%・段階1×VIX水準2.4%、5営業日後）
+S8_HEADLINE_SIGNAL = "stage1"
 S8_HORIZONS = (1, 5, 20)
 S8_HISTORY_DAYS = 1600   # 2021-01〜の約5.5年分（daily/の全期間）
 
@@ -267,12 +270,12 @@ def _closes(get_series, symbol: str, as_of: str) -> List[Tuple[str, float]]:
             if not r.get("_gap") and _num(r.get("close")) is not None and r["close"] > 0]
 
 
-def s8_label(n: int, diff_pt: Optional[float]) -> str:
-    if n < S8_MIN_N or diff_pt is None:
+def s8_label(n: int, z: Optional[float]) -> str:
+    if n < S8_MIN_N or z is None:
         return "件数不足"
-    if diff_pt >= S8_DIFF_PT:
+    if z >= S8_Z:
         return "平常時より上昇が多い"
-    if diff_pt <= -S8_DIFF_PT:
+    if z <= -S8_Z:
         return "平常時より上昇が少ない"
     return "平常時と差なし"
 
@@ -302,7 +305,7 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
     z = diff / se if se else 0.0
     out.update({"up_pct": round(p * 100, 1), "diff_pt": round(diff, 1), "z": round(z, 2),
                 "mean_pct": round(sum(same) / n, 3), "median_pct": round(median(same), 3),
-                "label": s8_label(n, diff),
+                "label": s8_label(n, z),
                 "guide": "偶然では出にくい差" if abs(z) >= S8_Z else "偶然でも出る範囲の差"})
     return out
 
@@ -326,7 +329,8 @@ def stage8(get_series, as_of: Optional[str]) -> dict:
         today = sig[-1]
         res["signals"][name] = {"signal": today,
                                 "outcomes": [_outcome(closes, sig, today, h) for h in S8_HORIZONS] if today else []}
-    main = res["signals"]["stage1_vix"]
+    main = res["signals"][S8_HEADLINE_SIGNAL]
+    res["headline_signal"] = S8_HEADLINE_SIGNAL
     five = next((o for o in main["outcomes"] if o["horizon"] == 5), None)
     if five is None:
         res.update({"label": None, "line": None})
@@ -334,7 +338,7 @@ def stage8(get_series, as_of: Optional[str]) -> dict:
         res.update({"label": "件数不足", "line": f"5営業日後: 件数不足（{five['n']}件）"})
     else:
         res.update({"label": five["label"],
-                    "line": f"5営業日後: {five['label']}（{five['n']}件、{five['diff_pt']:+.1f}pt、{five['guide']}）"})
+                    "line": f"5営業日後: {five['label']}（{five['n']}件、{five['diff_pt']:+.1f}pt、z={five['z']:+.2f}）"})
     return res
 
 
