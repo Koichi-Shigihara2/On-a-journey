@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 401.4,
-  "calculation_date": "2026-09-28T19:55:45+09:00",
+  "calculation_date": "2026-09-29T10:12:29+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -190,7 +190,7 @@
       "total_transient_amount": 1393000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
+        "reasoning": "理由に『一過性の事業再編費用』と明記されており、事業再編に伴う典型的な一時的費用であるため、transientと判断。"
       }
     },
     "action": "flagged",
@@ -353,7 +353,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-09-28",
+    "validated_at": "2026-09-29",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -378,8 +378,8 @@
   },
   "phase1_growth": 0.44955792713423254,
   "required_growth_rf_base": -0.36445283686902097,
-  "risk_free_rate_live": 0.05184000015258789,
-  "required_growth_rf_live": -0.2949666813676448,
+  "risk_free_rate_live": 0.052400002479553225,
+  "required_growth_rf_live": -0.291387633352465,
   "tanuki_score": "WATCH",
   "funda_score": 35,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
