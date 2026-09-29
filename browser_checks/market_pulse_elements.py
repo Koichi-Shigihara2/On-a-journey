@@ -1,5 +1,11 @@
 """Market Pulse 全画面要素の実ブラウザ確認（check_dependency_map.pyから呼ばれる）
 
+2026-09-30（指示書㉓ 実装A）: 8段階の構成（左に段階0〜5・8と履歴、右に「今日の結論」）に合わせて更新。
+MP-01（米国の終値日）・MP-03（CNNの区分）・MP-05（日付で直近20営業日、段階8へ移動）・MP-10（段階8の過去の実績に
+置き換え）・MP-12/13/14（乖離を非表示）・MP-21（米国の祝日の休場行）・MP-23/24（ルールの天気）・MP-25（10年債はbp）・
+MP-27（債券の「中立」、段階3へ移動）・MP-28（「AIの見解」、段階2へ移動）と、段階ごとの結論1行・天気・data_qualityの
+項目（S-00〜S-08）を確認する。
+
 2026-09-26新設（指示書⑲ STEP 3）。SYSTEM_MAP.md「Market Pulse・MACRO PULSE
 画面要素→導出関数→生データソース 依存関係マップ」のMarket Pulse全29要素
 （MP-01〜MP-29）について、次の3層を突き合わせる。
@@ -110,12 +116,27 @@ def signed(v: float, n: int) -> str:
 
 
 def sentiment_label(s: float) -> str:
-    if s <= 20: return "EXTREME FEAR"
-    if s <= 35: return "FEAR"
-    if s <= 50: return "CAUTION"
-    if s <= 65: return "NEUTRAL"
-    if s <= 80: return "GREED"
+    """index.htmlのzoneLabel()（MP-03、CNN F&Gの区分25/45/55/75）。"""
+    if s <= 25: return "EXTREME FEAR"
+    if s <= 45: return "FEAR"
+    if s <= 55: return "NEUTRAL"
+    if s <= 75: return "GREED"
     return "EXTREME GREED"
+
+
+def weather_of(d: dict) -> str:
+    """index.htmlのweatherOf(): weatherキーがあればルール判定の天気（判定不能は「不明」）。"""
+    if d.get("weather") is not None:
+        return (d["weather"] or {}).get("label") or "不明"
+    j = d.get("judgment") or "不明"
+    return "曇り" if j == "曇" else "晴れ" if j == "晴" else j
+
+
+def phase_label(j: str) -> str:
+    return {"晴れ": "☀ 晴れ", "嵐": "⛈ 嵐", "曇り": "☁ 曇り"}.get(j, "− 不明")
+
+
+STAGE_KEYS = ["0", "1", "2", "3", "4", "5", "8"]
 
 
 def tp_label(s: float) -> str:
@@ -150,47 +171,66 @@ def fmt_md(iso: str) -> str:
 #  描画層: 表示期待値の独立算出
 # ─────────────────────────────────────────────────────────────────
 
-def expected_signal(filtered: list) -> str:
-    """renderGauge()のシグナルバッジ（JSONにsignalが無い場合のフロント簡易判定）。"""
-    latest = filtered[-1]["sentiment"]
-    if latest.get("signal"):
-        return latest["signal"]["signal"]
-    score = latest["score"]
-    if score <= 20:
+def expected_signal(entries: list) -> str:
+    """renderSignal()（MP-05）。JSONのsentiment.signal（日付で直近20営業日の判定）を表示する。"""
+    s = entries[-1]["sentiment"]
+    if s.get("signal"):
+        return s["signal"]["signal"]
+    last = datetime.fromisoformat(entries[-1]["date"])
+    recent = [d.get("sentiment", {}).get("score") for d in entries
+              if datetime.fromisoformat(d["date"]) >= last - timedelta(days=28)]
+    recent = [x for x in recent if x is not None]
+    if s["score"] <= 20:
         return "BUY"
-    if len(filtered) >= 3:
-        recent = [d.get("sentiment", {}).get("score") for d in filtered[-20:]]
-        recent = [x for x in recent if x is not None]
-        if len(recent) >= 3:
-            peak = max(recent)
-            if peak >= 70 and (peak - score) >= 5:
-                return "TAKE PROFIT"
+    if len(recent) >= 3 and max(recent) >= 70 and max(recent) - s["score"] >= 5:
+        return "TAKE PROFIT"
     return "HOLD"
 
 
-def expected_mini_gauges(entries: list, filtered: list) -> list:
-    """renderMiniGauges()の3枚（明日・5日後・20日後）の予測スコア表示。"""
-    cur = filtered[-1]["sentiment"]["score"]
-    valid = [d for d in entries if ((d.get("indicators") or {}).get("S&P500") or {}).get("value") is not None
-             and (d.get("sentiment") or {}).get("score") is not None]
-    zones = [(0, 20, "Extreme Fear"), (21, 40, "Fear"), (41, 60, "Neutral"), (61, 80, "Greed"),
-             (81, 100, "Extreme Greed")]
-    zone = next((z for z in zones if z[0] <= cur <= z[1]), zones[2])
+def expected_past_outcomes(L: dict) -> list:
+    """renderStage8()の表の行（MP-10の置き換え）。"""
+    s8 = (L.get("stage_conclusions") or {}).get("8") or {}
+    names = {"stage1_vix": "段階1の区分×VIX水準", "stage1": "段階1の区分のみ"}
+    hz = {1: "翌営業日", 5: "5営業日後", 20: "20営業日後"}
+    rows = []
+    for key in ("stage1_vix", "stage1"):
+        sg = (s8.get("signals") or {}).get(key)
+        if not sg:
+            continue
+        for o in sg.get("outcomes") or []:
+            ok = o["label"] != "件数不足"
+            sgn = lambda v, n: ("+" if v >= 0 else "") + js_fixed(v, n)
+            rows.append([names[key], sg.get("signal") or "—", hz[o["horizon"]], str(o["n"]),
+                         js_fixed(o["up_pct"], 1) + "%" if ok else "—",
+                         js_fixed(o["base_up_pct"], 1) + "%" if o.get("base_up_pct") is not None else "—",
+                         sgn(o["diff_pt"], 1) + "pt" if ok else "—", o["label"],
+                         f"{o['guide']}（z={sgn(o['z'], 2)}）" if ok else "—",
+                         sgn(o["mean_pct"], 3) + "%" if ok else "—"])
+    return rows
+
+
+def expected_holiday_rows(entries: list) -> list:
+    """renderAssetFlow()の直近7日グリッドで、エントリ間に入る「休場」行の日付（M/DD）。土日とNYSEの休場日。"""
+    path = os.path.join(os.path.dirname(MARKET_DATA_JSON), "nyse_holidays.json")
+    hol = set()
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            hol = set(json.load(f).get("holidays") or [])
+    with_af = [d for d in entries if d.get("asset_flow") is not None]
+    days = list(reversed(with_af[-7:]))
     out = []
-    for idx in (1, 5, 20):
-        rets = []
-        for i in range(len(valid) - idx):
-            s = valid[i]["sentiment"]["score"]
-            if s < zone[0] or s > zone[1]:
-                continue
-            s0 = valid[i]["indicators"]["S&P500"]["value"]
-            sn = ((valid[i + idx].get("indicators") or {}).get("S&P500") or {}).get("value")
-            if s0 and sn and s0 > 1000 and sn > 1000:
-                rets.append((sn - s0) / s0 * 100)
-        avg = sum(rets) / len(rets) if rets else None
-        pred = min(100, max(0, cur + avg * 2)) if avg is not None else cur
-        out.append({"score": js_round(pred), "n": len(rets),
-                    "ret": (("+" if avg >= 0 else "") + js_fixed(avg, 2) + "%") if avg is not None else None})
+    # JSのweekendsBetween(): 日時をブラウザの現地時刻（JST）で1日ずつ戻し、UTCの日付文字列（toISOString）を
+    # 次のエントリの日時文字列と文字列比較する。曜日は現地時刻、表示ラベルはその日付文字列から作る
+    for a, b in zip(days, days[1:]):
+        d = datetime.fromisoformat(a["date"]).astimezone(JST)
+        while True:
+            d -= timedelta(days=1)
+            iso = d.astimezone(timezone.utc).date().isoformat()
+            if iso <= b["date"]:
+                break
+            if d.weekday() >= 5 or iso in hol:
+                dd = date.fromisoformat(iso)
+                out.append(f"{dd.month}/{dd.day:02d}")
     return out
 
 
@@ -226,15 +266,23 @@ DOM_SNAPSHOT_JS = """
   const ds = ch => ch ? ch.data.datasets.map(d => ({label: d.label, raw: d._rawData || d.data})) : null;
   return {
     lastUpdated: t('lastUpdated'), gaugeScore: t('gaugeScore'), gaugeLabel: t('gaugeLabel'),
-    gaugeDelta: t('gaugeDelta'), signalBadge: t('signalBadge'), vix9dRow: t('vix9dRow'),
-    breadthSummary: t('breadthSummary'), miniGauges: t('miniGaugesSection'),
+    gaugeDelta: t('gaugeDelta'), signalBadge: t('signalBadgeText'), vix9dRow: t('vix9dRow'),
+    breadthSummary: t('breadthSummary'),
+    pastRows: document.getElementById('pastOutcomesTable') ? [...document.getElementById('pastOutcomesTable').querySelectorAll('tr')].slice(1)
+      .map(r => [...r.querySelectorAll('td')].map(td => td.innerText.trim())) : null,
+    exists: Object.fromEntries(['tpDivVal','tpDivBadge','tpDivZscore','tpCZscore','miniGaugesSection'].map(id => [id, !!document.getElementById(id)])),
+    cpWeather: t('cpWeather'),
+    cpLines: Object.fromEntries(['0','1','2','3','4','5','8'].map(k => [k, t('cpLine' + k)])),
+    stageLines: Object.fromEntries(['0','1','2','3','4','5','8'].map(k => [k, t('stageLine' + k)])),
+    stageOrder: [...document.querySelectorAll('main > section.stage')].map(s => s.id),
+    dqStatus: t('dqStatus'), dqBanner: t('dqBanner'), stage1Tags: t('stage1Tags'), stage5Table: t('stage5Table'),
+    stage3Credit: t('stage3Credit'), aiView: t('aiView'),
+    afHolidayRows: [...document.querySelectorAll('.af-u-date')].filter(e => e.innerText.includes('休場')).map(e => e.innerText.replace('休場','').trim()),
     subRows: [...document.querySelectorAll('#subScores .sub-row')].map(r => ({
       name: r.querySelector('.sub-name').innerText.trim(), val: r.querySelector('.sub-val').innerText.trim()})),
-    miniCards: [...document.querySelectorAll('.mini-gauge-card')].map(c => ({
-      score: c.querySelector('.mini-gauge-score').innerText.trim(), ret: c.querySelector('.mini-gauge-ret').innerText.trim()})),
     fgGaugeScore: t('fgGaugeScore'), fgGaugeLbl: t('fgGaugeLbl'), tpGaugeScore: t('tpGaugeScore'),
-    tpGaugeLbl: t('tpGaugeLbl'), tpDivVal: t('tpDivVal'), tpDivBadge: t('tpDivBadge'),
-    tpDivZscore: t('tpDivZscore'), tpCVXN: t('tpCVXN'), tpCQQQ: t('tpCQQQ'), tpCZscore: t('tpCZscore'),
+    tpGaugeLbl: t('tpGaugeLbl'),
+    tpCVXN: t('tpCVXN'), tpCQQQ: t('tpCQQQ'),
     tpChecklist: t('tpChecklistInner'), buyChecklist: t('buyChecklistInner'),
     afTiles: [...document.querySelectorAll('.af-u-tile .af-cell-pct')].map(e => e.innerText.trim()),
     afArrows: [...document.querySelectorAll('.af-u-tile')].map(e => { const a = e.querySelector('.af-arrow'); return a ? a.innerText.trim() : null; }),
@@ -276,16 +324,19 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     dom = page.evaluate(DOM_SNAPSHOT_JS)
 
     # MP-01 更新日時
-    exp = "更新 " + datetime.fromisoformat(L["date"]).astimezone(JST).strftime("%Y/%m/%d %H:%M") + " JST"
-    _res(results, cls, "MP-01 更新日時（#lastUpdated）", exp, dom["lastUpdated"], dom["lastUpdated"] == exp)
+    close_date = ((L.get("indicators") or {}).get("S&P500") or {}).get("date") or (L.get("data_quality") or {}).get("expected_close_date")
+    exp = (f"米国終値 {close_date} ｜ " if close_date else "") + "更新 " + datetime.fromisoformat(L["date"]).astimezone(JST).strftime("%Y/%m/%d %H:%M") + " JST"
+    _res(results, cls, "MP-01 米国の終値日と更新日時（#lastUpdated）", exp, dom["lastUpdated"], dom["lastUpdated"] == exp,
+         note="MP-01（指示書㉓）: 実行時刻ではなく米国の終値日を表示")
 
     # MP-02 センチメントスコア
     exp = js_fixed(s["score"], 0)
     _res(results, cls, "MP-02 センチメントスコア（#gaugeScore）", exp, dom["gaugeScore"], dom["gaugeScore"] == exp)
 
     # MP-03 センチメントラベル
-    _res(results, cls, "MP-03 センチメントラベル（#gaugeLabel）", s["label"], dom["gaugeLabel"],
-         dom["gaugeLabel"] == s["label"])
+    exp = sentiment_label(s["score"])
+    _res(results, cls, "MP-03 センチメントラベル（#gaugeLabel、CNNの区分25/45/55/75）", exp, dom["gaugeLabel"],
+         dom["gaugeLabel"] == exp)
 
     # MP-04 前回比
     prev = filtered[-2]["sentiment"]["score"] if len(filtered) >= 2 else None
@@ -297,8 +348,9 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         _res(results, cls, "MP-04 前回比（#gaugeDelta）", exp, dom["gaugeDelta"], dom["gaugeDelta"] == exp)
 
     # MP-05 シグナルバッジ
-    exp = expected_signal(filtered)
-    _res(results, cls, "MP-05 シグナルバッジ（#signalBadge）", exp, dom["signalBadge"], dom["signalBadge"] == exp)
+    exp = expected_signal(entries)
+    _res(results, cls, "MP-05 シグナルバッジ（段階8、#signalBadgeText）", exp, dom["signalBadge"], dom["signalBadge"] == exp,
+         note="日付で直近20営業日の判定（表示期間によらない）")
 
     # MP-06 スコア構成指標バー
     exp = [{"name": SUB_SCORE_NAMES.get(k, k), "val": f"{js_fixed(v['score'], 0)}({js_round(v['weight'] * 100)}%)"}
@@ -360,13 +412,10 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
          note="系列値を全点比較")
 
     # MP-10 センチメント予測ミニゲージ
-    exp = expected_mini_gauges(entries, filtered)
-    act = dom["miniCards"]
-    ok = len(act) == 3 and all(
-        a["score"] == str(e["score"]) and (e["ret"] is None and a["ret"] == "データ不足" or
-                                            e["ret"] is not None and a["ret"] == f"S&P500 {e['ret']} (n={e['n']})")
-        for a, e in zip(act, exp))
-    _res(results, cls, "MP-10 センチメント予測ミニゲージ（3枚）", exp, act, ok)
+    exp = expected_past_outcomes(L)
+    act = [[c.upper() for c in r] for r in (dom["pastRows"] or [])]
+    _res(results, cls, "MP-10→段階8 過去の実績（#pastOutcomesTable、基準率との差）", f"{len(exp)}行", f"{len(act)}行",
+         bool(exp) and act == [[c.upper() for c in r] for r in exp], note="全セルを比較（+1%≈+2pt換算のミニゲージを置き換え）")
 
     # MP-11 CNN F&Gゲージ
     if fg is None:
@@ -380,29 +429,15 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
 
     # MP-12 Tech Pulseゲージ
     tps = tp.get("score")
-    exp = (str(tps), tp.get("label") or tp_label(tps)) if tps is not None else ("—", "NO DATA")
+    exp = (str(tps), tp_label(tps)) if tps is not None else ("—", "NO DATA")
     act = (dom["tpGaugeScore"], dom["tpGaugeLbl"])
     _res(results, cls, "MP-12 Tech Pulseゲージ（#tpGaugeScore/#tpGaugeLbl）", exp, act, act == exp)
 
-    # MP-13 乖離
-    dv = (tp.get("divergence") or {}).get("value")
-    if dv is None and tps is not None and fg is not None:
-        dv = tps - fg
-    if dv is None:
-        _res(results, cls, "MP-13 乖離（#tpDivVal/#tpDivBadge）", "—", dom["tpDivVal"], dom["tpDivVal"] == "—")
-    else:
-        sigtxt = (tp.get("divergence") or {}).get("signal") or ""
-        badge = sigtxt if sigtxt else (f"乖離{'+' if dv > 0 else ''}{js_fixed(dv, 0)} 要注目水準" if abs(dv) >= 20 else "")
-        exp = (("+" if dv > 0 else "") + js_fixed(dv, 0), badge)
-        act = (dom["tpDivVal"], dom["tpDivBadge"])
-        _res(results, cls, "MP-13 乖離（#tpDivVal/#tpDivBadge）", exp, act,
-             act[0] == exp[0] and act[1].upper() == exp[1].upper(), note="バッジはCSSでuppercase表示")
-
-    # MP-14 乖離Zスコア
-    z = (tp.get("divergence") or {}).get("zscore")
-    exp = (f"Z: {'+' if z > 0 else ''}{js_fixed(z, 2)}σ", f"{'+' if z > 0 else ''}{js_fixed(z, 2)}σ") if z is not None else ("", "—")
-    act = (dom["tpDivZscore"], dom["tpCZscore"])
-    _res(results, cls, "MP-14 乖離Zスコア（#tpDivZscore/#tpCZscore）", exp, act, act == exp)
+    # MP-13・14 乖離・乖離Zスコア（指示書㉓: 尺度を統一するまで非表示）
+    hidden = {k: v for k, v in dom["exists"].items() if k != "miniGaugesSection"}
+    tl_div = "乖離" in (dom["tlFirst"] or "")
+    _res(results, cls, "MP-13・14 乖離・乖離Zスコアの非表示", "要素なし・タイムラインに乖離なし",
+         {"要素の有無": hidden, "タイムラインの乖離": tl_div}, not any(hidden.values()) and not tl_div)
 
     # MP-15 VXN
     vxn = (tp.get("components") or {}).get("vxn_latest")
@@ -479,6 +514,11 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     _res(results, cls, "MP-21 資金フロー 直近7日グリッド", f"{len(exp)}セル", f"{len(dom['afCells'])}セル",
          dom["afCells"] == exp, note="セル値を全件比較（休場行の空セルは除外）")
 
+    # MP-21b 休場行（土日・米国の祝日、nyse_holidays.json）
+    exp = expected_holiday_rows(entries)
+    _res(results, cls, "MP-21b 資金フロー 休場行（土日・NYSEの祝日）", exp, dom["afHolidayRows"], dom["afHolidayRows"][-len(exp):] == exp if exp else True,
+         note="エントリ間の休場行を比較（週末実行時に先頭へ入る行は除く）")
+
     # MP-22 資金フロー 5日平均判定
     j, risk, safe, n = expected_asset_flow_judge(entries)
     exp = f"直近{n}日平均: {j} リスク資産 {pct_text(risk)} / 安全資産 {pct_text(safe)}"
@@ -486,26 +526,22 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     _res(results, cls, "MP-22 資金フロー 5日平均判定", exp, act, act == exp)
 
     # MP-23 市場フェーズピル
-    cnt = {"晴れ": 0, "曇り": 0, "嵐": 0}
+    cnt = {"晴れ": 0, "曇り": 0, "嵐": 0, "不明": 0}
     for d in filtered:
-        jd = d.get("judgment") or "不明"
-        jd = "曇り" if jd == "曇" else "晴れ" if jd == "晴" else jd
-        if jd in cnt:
-            cnt[jd] += 1
-    lab = {"晴れ": "☀ 晴れ", "曇り": "☁ 曇り", "嵐": "⛈ 嵐"}
-    exp = [f"{lab[k]} {v}日" for k, v in cnt.items() if v > 0] + [f"計 {len(filtered)} 日"]
+        w = weather_of(d)
+        cnt[w if w in cnt else "不明"] += 1
+    exp = [f"{phase_label(k)} {v}日" for k, v in cnt.items() if v > 0] + [f"計 {len(filtered)} 日"]
     act = [re.sub(r"\s+", " ", x) for x in dom["phasePills"]]
-    _res(results, cls, "MP-23 市場フェーズピル（#phasePills）", exp, act, act == exp)
+    _res(results, cls, "MP-23 市場フェーズピル（#phasePills、ルールの天気）", exp, act, act == exp)
 
     # MP-24 分析履歴タイムライン（最新行）
     vix = (ind.get("VIX指数") or {}).get("value")
-    dv_tl = (tp.get("divergence") or {}).get("value")
-    if dv_tl is None and tps is not None and fg is not None:
-        dv_tl = tps - fg
-    lbl_short = {"EXTREME FEAR": "X-FEAR", "EXTREME GREED": "X-GREED"}.get(s["label"], s["label"])
-    exp = [datetime.fromisoformat(L["date"]).astimezone(JST).strftime("%Y/%m/%d"), js_fixed(s["score"], 0), lbl_short,
+    zl = sentiment_label(s["score"])
+    lbl_short = {"EXTREME FEAR": "X-FEAR", "EXTREME GREED": "X-GREED"}.get(zl, zl)
+    exp = [datetime.fromisoformat(L["date"]).astimezone(JST).strftime("%Y/%m/%d"), phase_label(weather_of(L)),
+           js_fixed(s["score"], 0), lbl_short,
            f"F&G {js_fixed(fg, 0)}" if fg is not None else None, f"VIX {js_fixed(vix, 1)}" if vix is not None else "VIX -",
-           f"TECH {tps}" if tps is not None else "TECH —", f"乖離 {('+' if dv_tl > 0 else '') + js_fixed(dv_tl, 0)}" if dv_tl is not None else "乖離 —"]
+           f"TECH {tps}" if tps is not None else "TECH —"]
     exp = [x for x in exp if x]
     act = dom["tlFirst"] or ""
     miss = [x for x in exp if x not in act]
@@ -523,9 +559,14 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         val = f"{js_round(v):,}" if v >= 1000 else js_fixed(v, 2)
         chg = it.get("change_percent")
         ctext = "-" if chg is None else ("+" if chg >= 0 else "") + js_fixed(chg, 2) + "%"
+        if key == "米10年債":   # MP-25: bp表示
+            bp = it.get("change_bp")
+            if bp is None and it.get("change") is not None:
+                bp = js_round(it["change"] * 1000) / 10
+            ctext = "-" if bp is None else ("+" if bp >= 0 else "") + js_fixed(bp, 1) + "bp"
         exp.append(f"{short}\n{val}{'※' if it.get('is_fallback') else ''}\n{ctext}")
-    _res(results, cls, "MP-25 指標6カード（#metricsRow）", exp, dom["metricCards"], dom["metricCards"] == exp,
-         note="1000以上はtoLocaleString(ja-JP, 小数0桁)")
+    _res(results, cls, "MP-25 指標6カード（段階1、#metricsRow）", exp, dom["metricCards"], dom["metricCards"] == exp,
+         note="1000以上はtoLocaleString(ja-JP, 小数0桁)。10年債はbp")
 
     # MP-26 推移チャート（既定: VIX・S&P500、filteredData）
     exp = {"VIX": [((d.get("indicators") or {}).get("VIX指数") or {}).get("value") for d in filtered],
@@ -544,17 +585,45 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         cl = "高" if conf >= 70 else "中" if conf >= 40 else "低"
         exp = [f"株 {cr.get('stock')}", f"債券 {cr.get('bond')}", f"クレジット {cr.get('credit')}",
                {"on": "RISK ON", "caution": "RISK CAUTION", "off": "RISK OFF"}[zone], f"{ro}", f"確信度 {cl} {conf}%"]
-        act = dom["detail"] or ""
+        act = dom["stage3Credit"] or ""
         miss = [x for x in exp if x not in act]
-        _res(results, cls, "MP-27 詳細カード クレジット判定・Risk-Offスコア", exp, {"欠落": miss}, not miss)
+        _res(results, cls, "MP-27 段階3 株・債券・クレジット・Risk-Offスコア（#stage3Credit）", exp, {"欠落": miss}, not miss)
     else:
-        _res(results, cls, "MP-27 詳細カード クレジット判定・Risk-Offスコア", "(スコアなし)", None, None)
+        _res(results, cls, "MP-27 段階3 株・債券・クレジット・Risk-Offスコア（#stage3Credit）", "(スコアなし)", None, None)
 
     # MP-28 詳細カード: AI分析本文
     body = re.sub(r"<[^>]+>", "", L.get("summary") or "")
     head = re.sub(r"\s+", " ", body)[:60].strip()
-    act = re.sub(r"\s+", " ", dom["detail"] or "")
-    _res(results, cls, "MP-28 詳細カード AI分析本文（summary）", head, "(先頭一致)" if head in act else act[:80], head in act)
+    act = re.sub(r"\s+", " ", dom["aiView"] or "")
+    hk = L.get("haiku")
+    ok = head in act and (hk is None or hk in (dom["aiView"] or ""))
+    _res(results, cls, "MP-28 段階2 AIの見解（#aiView、本文と俳句）", {"本文先頭": head, "俳句": hk},
+         "(一致)" if ok else act[:80], ok)
+
+    # ── 8段階の結論（S-00〜S-08）・天気・data_quality（指示書㉓ 実装A） ──
+    sc = L.get("stage_conclusions") or {}
+    dq = L.get("data_quality") or {}
+    old = set(str(x) for x in dq.get("old_stages") or [])
+    exp_lines = {k: ((sc.get(k) or {}).get("line") or "—") + ("一部前営業日" if k in old else "") for k in STAGE_KEYS}
+    act_lines = {k: (v or "").replace("\n", "") for k, v in dom["cpLines"].items()}
+    _res(results, cls, "S-panel 今日の結論パネルの結論1行（段階0・1・2・3・4・5・8）", exp_lines, act_lines, act_lines == exp_lines)
+    act_stage = {k: (v or "").replace("\n", "") for k, v in dom["stageLines"].items()}
+    _res(results, cls, "S-left 左の各段階の結論1行が右のパネルと一致", exp_lines, act_stage, act_stage == exp_lines)
+    exp = phase_label(weather_of(L))
+    _res(results, cls, "S-weather 今日の結論パネルの天気（ルールv3）", exp, dom["cpWeather"], dom["cpWeather"] == exp)
+    exp_order = ["stage0", "stage1", "stage2", "stage3", "stage4", "stage5", "stage8", "history"]
+    _res(results, cls, "S-order 段階の並び（0〜5・8・履歴。6・7は実装B）", exp_order, dom["stageOrder"], dom["stageOrder"] == exp_order)
+    _res(results, cls, "S-00 data_qualityの判定（#dqStatus）", dq.get("status"), dom["dqStatus"], dom["dqStatus"] == dq.get("status"))
+    exp_b = "" if dq.get("status") not in ("stale", "partial") else (
+        "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else "一部の値が前営業日: " + "・".join(dq.get("old_elements") or []))
+    _res(results, cls, "S-00b data_qualityの注意表示（#dqBanner）", exp_b, dom["dqBanner"], (dom["dqBanner"] or "") == exp_b)
+    tags = (sc.get("1") or {}).get("tags")
+    exp = "記録なし" if tags is None else ("該当なし" if not tags else "".join(tags))
+    _res(results, cls, "S-01 段階1の事実タグ（#stage1Tags）", exp, dom["stage1Tags"], (dom["stage1Tags"] or "").replace("\n", "") == exp)
+    gv = ((L.get("indicators") or {}).get("グロース対バリュー比") or {}).get("diff_percent")
+    exp = None if gv is None else ("+" if gv >= 0 else "") + js_fixed(gv, 2) + "pt"
+    _res(results, cls, "S-05 段階5 IVW−IVE（#stage5Table）", exp, "(含む)" if exp and exp in (dom["stage5Table"] or "") else dom["stage5Table"],
+         exp is not None and exp in (dom["stage5Table"] or ""))
 
     # MP-29 計算式モーダルの重み表と実際の重み
     modal = {}

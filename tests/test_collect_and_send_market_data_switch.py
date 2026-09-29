@@ -278,13 +278,39 @@ class TestCalcHindenburgActive:
         assert cs.calc_hindenburg_active(breadth) is False
 
     def test_fires_when_actual_threshold_exceeded(self):
-        breadth = {"new_highs_52w": 12, "new_lows_52w": 12, "total_stocks": 503}
-        assert cs.calc_hindenburg_active(breadth) is True
+        breadth = {"new_highs_52w": 12, "new_lows_52w": 12, "total_stocks": 503, "mcclellan_oscillator": -5.0}
+        assert cs.calc_hindenburg_active(breadth, sp500_up_50d=True) is True
 
     def test_missing_total_stocks_falls_back_to_500(self):
         # total_stocks欠損時は旧来の500基準にフォールバック（閾値11.0）
-        breadth = {"new_highs_52w": 11, "new_lows_52w": 11}
-        assert cs.calc_hindenburg_active(breadth) is True
+        breadth = {"new_highs_52w": 11, "new_lows_52w": 11, "mcclellan_oscillator": -5.0}
+        assert cs.calc_hindenburg_active(breadth, sp500_up_50d=True) is True
+
+
+class TestCalcHindenburgStandard:
+    """MP-18（指示書㉓）: 一般的な定義。新高値・新安値の条件に加え、上昇トレンド・McClellan負・
+    新高値≦新安値×2のすべてがそろったときだけ発生とする。条件を1つずつ外すと非発生になる"""
+
+    BASE = {"new_highs_52w": 15, "new_lows_52w": 12, "total_stocks": 503, "mcclellan_oscillator": -3.0}
+
+    def test_all_conditions_active(self):
+        h = cs.calc_hindenburg(dict(self.BASE), True)
+        assert h["active"] is True and all(h["conditions"].values())
+
+    @pytest.mark.parametrize("override,up50", [
+        ({"new_lows_52w": 5}, True),              # 新安値が2.2%未満
+        ({}, False),                              # 上昇トレンドでない
+        ({"mcclellan_oscillator": 1.0}, True),    # McClellanが正
+        ({"new_highs_52w": 30}, True),            # 新高値が新安値の2倍超
+    ])
+    def test_each_condition_off_makes_inactive(self, override, up50):
+        assert cs.calc_hindenburg(dict(self.BASE, **override), up50)["active"] is False
+
+    def test_unknown_input_is_none(self):
+        assert cs.calc_hindenburg(dict(self.BASE), None)["active"] is None
+        b = dict(self.BASE)
+        del b["mcclellan_oscillator"]
+        assert cs.calc_hindenburg(b, True)["active"] is None
 
 
 class TestBreadthSummaryFields:

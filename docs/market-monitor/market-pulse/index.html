@@ -252,6 +252,45 @@
     .unified-bars-row{display:flex;flex-wrap:wrap;gap:20px;padding:4px 0 16px;border-bottom:1px solid var(--bdr)}
     .unified-chart-row{display:flex;flex-direction:column;gap:6px}
     .tp-chart-wrap{position:relative;height:200px}
+
+    /* 8段階レイアウト（指示書㉓ 実装A）: 左に段階を縦に並べ、右に「今日の結論」を固定表示 */
+    .mp-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+    @media(max-width:1000px){.mp-layout{grid-template-columns:1fr}.conclusion-panel{position:static!important;order:-1}}
+    .stage{background:transparent;margin-bottom:26px;scroll-margin-top:12px}
+    .stage-h{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .stage-h::after{content:'';flex:1;height:1px;background:var(--bdr)}
+    .stage-no{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--acc);color:var(--acc);font-size:13px;border-radius:50%}
+    .stage-line{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--txt);margin:0 0 10px;padding:8px 12px;border-left:3px solid var(--acc);background:rgba(59,130,246,.06)}
+    .stage-note{font-size:12px;color:var(--mut);margin:6px 0 10px;line-height:1.7}
+    .sub-h{font-family:var(--mono);font-size:13px;color:var(--mut);letter-spacing:.06em;margin:14px 0 6px}
+    .conclusion-panel{position:sticky;top:12px;background:var(--sur);border:1px solid var(--bdr);padding:16px 16px 12px;max-height:calc(100vh - 24px);overflow-y:auto}
+    .cp-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--txt);letter-spacing:.08em;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+    .cp-date{font-size:11px;color:var(--mut);font-weight:400;letter-spacing:0}
+    .cp-weather{font-family:var(--mono);font-size:26px;font-weight:700;margin:10px 0 2px}
+    .cp-weather.sunny{color:var(--amb)}.cp-weather.cloudy{color:var(--mut)}.cp-weather.storm{color:var(--red)}.cp-weather.unknown{color:var(--mut)}
+    .cp-reason{font-size:12px;color:var(--mut);margin-bottom:12px}
+    .cp-lines{list-style:none;display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--bdr);padding-top:10px}
+    .cp-lines a{font-family:var(--mono);font-size:12px;color:var(--mut);text-decoration:none;display:flex;gap:6px;align-items:center}
+    .cp-lines a:hover{color:var(--acc)}
+    .cp-no{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--bdr);border-radius:50%;font-size:11px}
+    .cp-line{font-size:13px;color:var(--txt);margin:2px 0 0 24px;line-height:1.5}
+    .cp-old{font-family:var(--mono);font-size:10px;color:var(--amb);border:1px solid rgba(245,158,11,.5);padding:0 4px;margin-left:6px;white-space:nowrap}
+    .cp-foot{font-size:11px;color:var(--mut);margin-top:12px;border-top:1px solid var(--bdr);padding-top:8px;line-height:1.6}
+    .dq-banner{font-family:var(--mono);font-size:13px;padding:8px 12px;margin-bottom:14px;border:1px solid}
+    .dq-stale{color:var(--red);border-color:rgba(244,63,94,.5);background:rgba(244,63,94,.08)}
+    .dq-partial{color:var(--amb);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)}
+    .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    .fact-tag{font-family:var(--mono);font-size:12px;padding:2px 8px;border:1px solid var(--bdr);color:var(--txt);background:var(--sur)}
+    .mp-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;background:var(--sur)}
+    .mp-table th{color:var(--mut);font-weight:400;text-align:left;padding:5px 8px;border-bottom:1px solid var(--bdr);white-space:nowrap}
+    .mp-table td{padding:5px 6px;border-bottom:1px solid rgba(30,40,64,.6);white-space:nowrap}
+    .mp-table td.num{text-align:right}
+    .mp-table tr.old td{color:var(--amb)}
+    .ai-card{background:var(--sur);border:1px solid var(--bdr);padding:14px}
+    .ai-h{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--acc);letter-spacing:.08em;margin-bottom:4px}
+    .tl-dot.unknown{background:transparent;border:1px solid var(--mut)}.tl-judgment.unknown{color:var(--mut)}
+    .detail-phase-badge.unknown{border-color:var(--bdr);color:var(--mut)}
+    .pill-unknown{border-color:var(--bdr);color:var(--mut)}.pill-unknown .dot{background:transparent;border:1px solid var(--mut)}
   </style>
   <link rel="stylesheet" href="../../common/site-theme.css">
 </head>
@@ -274,9 +313,34 @@
 </header>
 <div class="last-updated" id="last-updated"></div>
 <div class="shell">
-  <div class="sec">市場センチメント指数 — 複数指標から算出した強欲・恐怖スコア（0=極度の恐怖 / 50=中立 / 100=極度の強欲）</div>
-  <!-- Sentiment: ①メーター ②バー ③グラフ の縦積み -->
-  <div class="unified-card">
+  <div id="dqBanner"></div>
+  <div class="mp-layout">
+  <main>
+    <section class="stage" id="stage0">
+      <div class="stage-h"><span class="stage-no">0</span>データ基準日</div>
+      <div class="stage-line" id="stageLine0">—</div>
+      <div id="stage0Body"></div>
+    </section>
+    <section class="stage" id="stage1">
+      <div class="stage-h"><span class="stage-no">1</span>何が起きたか</div>
+      <div class="stage-line" id="stageLine1">—</div>
+      <div class="sub-h">事実タグ（閾値で機械的に付与）</div>
+      <div class="tag-row" id="stage1Tags"></div>
+      <div class="metrics-row" id="metricsRow"></div>
+    </section>
+    <section class="stage" id="stage2">
+      <div class="stage-h"><span class="stage-no">2</span>なぜ起きたか</div>
+      <div class="stage-line" id="stageLine2">—</div>
+      <div class="stage-note">同じ日に大きく動いたものを事実として示す（因果は判定しない）。</div>
+      <div class="ai-card"><div class="ai-h">AIの見解</div><div class="stage-note" style="margin-top:0">AIへの入力は、本システムが判定した結論と数値（確定した事実）だけ。AIに数値の新規生成を禁止している。</div><div id="aiView"></div></div>
+    </section>
+    <section class="stage" id="stage3">
+      <div class="stage-h"><span class="stage-no">3</span>動きは本物か</div>
+      <div class="stage-line" id="stageLine3">—</div>
+      <div class="sub-h">株・債券・クレジット</div>
+      <div id="stage3Credit"></div>
+      <div class="sub-h">市場センチメント指数（複数指標から算出した強欲・恐怖スコア。0=極度の恐怖 / 50=中立 / 100=極度の強欲）</div>
+      <div class="unified-card">
     <!-- ① メーター -->
     <div class="unified-gauge-row">
       <div style="display:flex;flex-direction:column;align-items:center">
@@ -285,7 +349,7 @@
             <div class="gauge-title" style="margin:0;font-size:15px;color:var(--txt)">市場センチメント指数</div>
             <span class="info-btn" onclick="document.getElementById('infoModal').style.display='flex'" title="計算式・読み方">?</span>
           </div>
-          <div id="signalBadge"></div>
+          <div></div>
         </div>
         <div class="gauge-svg-wrap">
           <svg viewBox="0 0 220 126" id="gaugeSvg">
@@ -320,23 +384,9 @@
         <div class="breadth-summary" id="breadthSummary"></div>
       </div>
     </div>
-    <!-- ③ 折れ線グラフ -->
-    <div class="unified-chart-row">
-      <div class="osc-header">
-        <span class="osc-title" style="font-size:14px;color:var(--txt)">センチメントスコア推移</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <div class="chart-metric-btns" id="oscMetricBtns"></div>
-          <div class="osc-period-btns" id="oscPeriodBtns"></div>
-        </div>
       </div>
-      <div class="osc-chart-wrap" style="min-height:180px;max-height:220px"><canvas id="oscChart"></canvas></div>
-      <div class="osc-legend" id="oscLegend"></div>
-    </div>
-    <!-- ④ 予測ミニゲージ -->
-    <div id="miniGaugesSection"></div>
-  </div>
-  <div class="sec">Tech Pulse — NASDAQベース感情指数とCNN Fear &amp; Greedの比較（乖離 = NASDAQ固有の動き）</div>
-  <!-- Tech Pulse: ①メーター2つ ②関連指標バー ③折れ線グラフ の縦積み -->
+      <div class="sub-h">Tech Pulse（NASDAQベース感情指数）とCNN Fear &amp; Greed</div>
+      <div class="stage-note">乖離（Tech Pulse − CNN F&amp;G）は、2つの尺度（Tech Pulseは直近90日内の順位、CNN F&amp;Gは絶対的な水準）を揃えるまで表示しない。</div>
   <div class="unified-card">
     <!-- ① メーター2つ横並び -->
     <div class="unified-gauge-row" style="justify-content:center;gap:12px">
@@ -361,18 +411,6 @@
             <div class="tp-gauge-score" id="fgGaugeScore">—</div>
             <div class="tp-gauge-lbl" id="fgGaugeLbl" style="color:var(--mut)">LOADING</div>
           </div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px">
-        <div style="font-family:var(--mono);font-size:15px;color:var(--mut);margin-bottom:4px">乖離</div>
-        <div class="tp-div-value" id="tpDivVal" style="font-size:28px">—</div>
-        <div id="tpDivBadge" style="margin-top:4px"></div>
-        <div id="tpDivZscore" style="font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:3px;text-align:center"></div>
-        <div style="font-size:11px;color:var(--mut);margin-top:4px;text-align:center;line-height:1.6;max-width:172px">
-          乖離 = Tech Pulse − CNN F&amp;G<br>
-          ＋=NASDAQ固有の強気（NASDAQがS&amp;P500より楽観）<br>
-          −=NASDAQ固有の弱気（NASDAQがS&amp;P500より悲観）<br>
-          <span style="color:var(--amb)">±20以上で要注目</span>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center">
@@ -409,15 +447,11 @@
         <div style="font-family:var(--mono);font-size:13px;color:var(--mut);margin-bottom:4px">QQQ vs SPY 20日（NASDAQの相対強度）</div>
         <div class="metric-value" id="tpCQQQ" style="font-size:16px">—</div>
       </div>
-      <div style="min-width:160px">
-        <div style="font-family:var(--mono);font-size:13px;color:var(--mut);margin-bottom:4px">乖離Zスコア 90日（乖離の異常度）</div>
-        <div class="metric-value" id="tpCZscore" style="font-size:16px">—</div>
-      </div>
     </div>
     <!-- ③ 折れ線グラフ -->
     <div class="unified-chart-row">
       <div class="chart-header">
-        <span class="chart-title" style="font-size:15px">CNN F&amp;G vs Tech Pulse 推移<span style="font-size:14px;color:var(--mut);font-weight:400;margin-left:8px">乖離拡大 = NASDAQ固有の動き発生の予兆</span></span>
+        <span class="chart-title" style="font-size:15px">CNN F&amp;G vs Tech Pulse 推移</span>
         <div style="display:flex;gap:10px;align-items:center">
           <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>CNN F&amp;G</div>
           <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Tech Pulse</div>
@@ -426,21 +460,53 @@
       <div class="tp-chart-wrap" style="height:200px"><canvas id="tpChart"></canvas></div>
     </div>
   </div>
-  <div class="sec">📋 TAKE PROFIT チェックリスト — 極端な強欲（F&amp;G≥75）時に自動発動</div>
-  <div class="unified-card" id="tpChecklistCard" style="padding:18px 20px">
-    <div id="tpChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
-  </div>
-  <div class="sec" id="buyChecklistSec">📋 BUY チェックリスト — 極端な恐怖（F&amp;G≤25）時に自動発動</div>
-  <div class="unified-card" id="buyChecklistCard" style="padding:18px 20px">
-    <div id="buyChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
-  </div>
-  <div class="sec">資産クラス間 資金フロー — 安全資産（左）からリスク資産（右）への資金移動を可視化</div>
+    </section>
+    <section class="stage" id="stage4">
+      <div class="stage-h"><span class="stage-no">4</span>資金はどの資産へ</div>
+      <div class="stage-line" id="stageLine4">—</div>
   <div class="af-card">
     <div class="af-title" data-info="mp_fund_flow_dash">今日の資金の動き</div>
     <div class="af-desc">各資産の当日騰落率。<span style="color:var(--grn)">緑（買われた）</span>から<span style="color:var(--red)">赤（売られた）</span>への流れで資金の向きを読む。左ほど安全資産、右ほどリスク資産。短期国債（DGS3MO）は利回りの変化率で、利回りの上昇は「売られた」（赤）として表示する。</div>
     <div id="afUnified"></div>
   </div>
-  <div class="sec">市場フェーズ概要 &amp; 表示期間</div>
+    </section>
+    <section class="stage" id="stage5">
+      <div class="stage-h"><span class="stage-no">5</span>株式のどこへ</div>
+      <div class="stage-line" id="stageLine5">—</div>
+      <div id="stage5Body"></div>
+    </section>
+    <section class="stage" id="stage8">
+      <div class="stage-h"><span class="stage-no">8</span>明日どうなるか</div>
+      <div class="stage-line" id="stageLine8">—</div>
+      <div class="sub-h">センチメントのシグナル</div>
+      <div id="signalBadge"></div>
+      <div class="sub-h">同じシグナルが出た過去の日の、その後の実績</div>
+      <div id="pastOutcomes"></div>
+      <div class="sub-h">📋 TAKE PROFIT チェックリスト — 極端な強欲（F&amp;G≥75）時に自動発動</div>
+      <div class="unified-card" id="tpChecklistCard" style="padding:18px 20px">
+    <div id="tpChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
+  </div>
+      <div class="sub-h" id="buyChecklistSec">📋 BUY チェックリスト — 極端な恐怖（F&amp;G≤25）時に自動発動</div>
+      <div class="unified-card" id="buyChecklistCard" style="padding:18px 20px">
+    <div id="buyChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
+  </div>
+    </section>
+    <section class="stage" id="history">
+      <div class="stage-h">履歴</div>
+      <div class="unified-card">
+    <!-- ③ 折れ線グラフ -->
+    <div class="unified-chart-row">
+      <div class="osc-header">
+        <span class="osc-title" style="font-size:14px;color:var(--txt)">センチメントスコア推移</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <div class="chart-metric-btns" id="oscMetricBtns"></div>
+          <div class="osc-period-btns" id="oscPeriodBtns"></div>
+        </div>
+      </div>
+      <div class="osc-chart-wrap" style="min-height:180px;max-height:220px"><canvas id="oscChart"></canvas></div>
+      <div class="osc-legend" id="oscLegend"></div>
+    </div>
+      </div>
   <div class="top-bar">
     <div class="phase-pills" id="phasePills"></div>
     <div class="period-group" id="periodGroup"></div>
@@ -454,7 +520,6 @@
       <div id="timeline"></div>
     </div>
     <div class="right-col">
-      <div class="metrics-row" id="metricsRow"></div>
       <div class="chart-card">
         <div class="chart-header">
           <span class="chart-title">推移チャート（複数同時選択可）</span>
@@ -467,6 +532,10 @@
         <div id="detailInner"><div class="placeholder-msg">← 日付を選択</div></div>
       </div>
     </div>
+  </div>
+    </section>
+  </main>
+  <aside class="conclusion-panel" id="conclusionPanel"></aside>
   </div>
 </div>
 
@@ -498,27 +567,27 @@ Market Sentiment Indexは、米国株式市場の複数の需給・センチメ�
 <div class="modal-section">スコアのゾーンと読み方</div>
 <table>
 <tr><th>スコア</th><th>ラベル</th><th>色</th><th>解釈</th></tr>
-<tr><td>0 — 20</td><td>EXTREME FEAR</td><td><span class="bar-example" style="width:30px;background:#f43f5e"></span></td><td>市場パニック。歴史的に絶好の買い場</td></tr>
-<tr><td>20 — 35</td><td>FEAR</td><td><span class="bar-example" style="width:30px;background:#fb7185"></span></td><td>恐怖優勢。押し目買い検討</td></tr>
-<tr><td>35 — 50</td><td>CAUTION</td><td><span class="bar-example" style="width:30px;background:#f59e0b"></span></td><td>警戒。方向感なし</td></tr>
-<tr><td>50 — 65</td><td>NEUTRAL</td><td><span class="bar-example" style="width:30px;background:#64748b"></span></td><td>中立。通常の市場環境</td></tr>
-<tr><td>65 — 80</td><td>GREED</td><td><span class="bar-example" style="width:30px;background:#22d3ee"></span></td><td>楽観優勢。上昇トレンド</td></tr>
-<tr><td>80 — 100</td><td>EXTREME GREED</td><td><span class="bar-example" style="width:30px;background:#10b981"></span></td><td>過熱。利確検討</td></tr>
+<tr><td>0 — 25</td><td>EXTREME FEAR</td><td><span class="bar-example" style="width:30px;background:#f43f5e"></span></td><td>極度の恐怖</td></tr>
+<tr><td>25 — 45</td><td>FEAR</td><td><span class="bar-example" style="width:30px;background:#fb7185"></span></td><td>恐怖優勢</td></tr>
+<tr><td>45 — 55</td><td>NEUTRAL</td><td><span class="bar-example" style="width:30px;background:#f59e0b"></span></td><td>中立</td></tr>
+<tr><td>55 — 75</td><td>GREED</td><td><span class="bar-example" style="width:30px;background:#22d3ee"></span></td><td>楽観優勢</td></tr>
+<tr><td>75 — 100</td><td>EXTREME GREED</td><td><span class="bar-example" style="width:30px;background:#10b981"></span></td><td>極度の強欲</td></tr>
 </table>
+区分はCNN Fear &amp; Greed Indexと同じ（25／45／55／75）。
 
-<div class="modal-section">売買シグナル（バックテスト検証済み）</div>
+<div class="modal-section">シグナル</div>
 <table>
-<tr><th>シグナル</th><th>条件</th><th>バックテスト結果（2021-2026）</th></tr>
-<tr><td style="color:#10b981;font-weight:700">BUY</td><td>Score ≤ 20</td><td>7回中7回が120日後にプラス圏。平均+6.8%</td></tr>
-<tr><td style="color:#f59e0b;font-weight:700">TAKE PROFIT</td><td>直近20日ピーク ≥ 70 かつ<br>ピークから5pt以上反落</td><td>勝率100%、平均+10.9%（利確+10%以上確保後）</td></tr>
-<tr><td style="color:#64748b;font-weight:700">HOLD</td><td>上記以外</td><td>保有継続</td></tr>
+<tr><th>シグナル</th><th>条件</th></tr>
+<tr><td style="color:#10b981;font-weight:700">BUY</td><td>Score ≤ 20</td></tr>
+<tr><td style="color:#f59e0b;font-weight:700">TAKE PROFIT</td><td>直近20営業日（日付で数える。画面の表示期間によらない）のピーク ≥ 70 かつ<br>ピークから5pt以上反落</td></tr>
+<tr><td style="color:#64748b;font-weight:700">HOLD</td><td>上記以外</td></tr>
 </table>
 
 <div class="modal-section">CNN Fear &amp; Greed Indexとの違い</div>
 CNN F&amp;Gは7指標（Market Momentum, Stock Price Strength, Stock Price Breadth, Put/Call Options, Junk Bond Demand, Market Volatility, Safe Haven Demand）で構成。本スコアはS&amp;P500構成銘柄のブレッスデータ（AD Ratio, NH-NL）やクレジット市場（HYG/LQD）を直接計算しており、CNN F&amp;Gと相関しつつも独立した指標です。オシレーターで両者を比較できます。
 
 <div class="modal-section">注意事項</div>
-本指標はS&amp;P500ベースの市場全体のセンチメントを測定するものであり、個別銘柄の売買タイミングを直接示すものではありません。マクロ環境やファンダメンタルズと併用してください。過去のバックテスト結果は将来を保証しません。
+本指標はS&amp;P500ベースの市場全体のセンチメントを測定するものであり、個別銘柄の売買タイミングを直接示すものではありません。マクロ環境やファンダメンタルズと併用してください。
 
 </div>
 </div>
@@ -551,7 +620,9 @@ let activeMetrics=new Set(["VIX指数","S&P500"]);
 let chartInst=null,oscChartInst=null,oscDays=30,activeOscMetrics=new Set(["score","fg"]);
 
 // ── UTIL ──
-const phaseClass=j=>j==="晴れ"?"sunny":j==="嵐"?"storm":"cloudy";
+// 天気はルール判定（段階3・4、指示書㉓ MP-23）。weatherキーのあるエントリはその値（判定できない日は「不明」）
+const weatherOf=d=>d?.weather?(d.weather.label||"不明"):(d?.judgment||"不明");
+const phaseClass=j=>j==="晴れ"?"sunny":j==="嵐"?"storm":j==="曇り"?"cloudy":"unknown";
 const fmtDate=iso=>{
   if(!iso) return '—';
   const d=new Date(iso);
@@ -565,9 +636,14 @@ const fmtDateFull=iso=>{
   return`${jst.getFullYear()}/${String(jst.getMonth()+1).padStart(2,'0')}/${String(jst.getDate()).padStart(2,'0')}`;
 };
 const fmtChg=v=>{if(v==null)return{text:"-",cls:"flat"};const t=(v>=0?"+":"")+v.toFixed(2)+"%";return{text:t,cls:v>0.05?"up":v<-0.05?"down":"flat"}};
-const phaseLabel=j=>j==="晴れ"?"\u2600 晴れ":j==="嵐"?"\u26C8 嵐":"\u2601 曇り";
+const phaseLabel=j=>j==="晴れ"?"\u2600 晴れ":j==="嵐"?"\u26C8 嵐":j==="曇り"?"\u2601 曇り":"\u2212 不明";
+const STAGE_TITLES={0:"データ基準日",1:"何が起きたか",2:"なぜ起きたか",3:"動きは本物か",4:"資金はどの資産へ",5:"株式のどこへ",8:"明日どうなるか"};
+const STAGE_KEYS=[0,1,2,3,4,5,8];
+let HOLIDAYS=new Set();
 function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function sentimentColor(s){if(s<=20)return"#f43f5e";if(s<=35)return"#fb7185";if(s<=50)return"#f59e0b";if(s<=65)return"#64748b";if(s<=80)return"#22d3ee";return"#10b981"}
+// MP-03（指示書㉓）: センチメント指数・Tech PulseのゾーンもCNN F&Gの区分（25/45/55/75）に揃える
+function zoneLabel(s){if(s<=25)return"EXTREME FEAR";if(s<=45)return"FEAR";if(s<=55)return"NEUTRAL";if(s<=75)return"GREED";return"EXTREME GREED"}
+function sentimentColor(s){if(s<=25)return"#f43f5e";if(s<=45)return"#fb7185";if(s<=55)return"#f59e0b";if(s<=75)return"#22d3ee";return"#10b981"}
 function fgColor(s){if(s<=25)return"#f43f5e";if(s<=45)return"#fb7185";if(s<=55)return"#f59e0b";if(s<=75)return"#22d3ee";return"#10b981"}
 function fgLabel(s){if(s<=25)return"X-Fear";if(s<=45)return"Fear";if(s<=55)return"Neutral";if(s<=75)return"Greed";return"X-Greed"}
 // CNN F&Gゲージのラベル（CNNのratingがあればそれを大文字で、無ければCNNの区分で判定）
@@ -579,7 +655,7 @@ function renderPeriodGroup(){document.getElementById("periodGroup").innerHTML=PE
 function switchPeriod(d){periodDays=d;applyPeriod();renderAll()}
 
 // ── PHASE PILLS ──
-function renderPhasePills(){const c={"晴れ":0,"曇り":0,"嵐":0};filteredData.forEach(d=>{if(c[d.judgment]!=null)c[d.judgment]++});document.getElementById("phasePills").innerHTML=Object.entries(c).filter(([,v])=>v>0).map(([k,v])=>`<div class="phase-pill pill-${phaseClass(k)}"><span class="dot"></span>${phaseLabel(k)} <strong>${v}日</strong></div>`).join("")+`<div class="phase-pill pill-total">計 ${filteredData.length} 日</div>`}
+function renderPhasePills(){const c={"晴れ":0,"曇り":0,"嵐":0,"不明":0};filteredData.forEach(d=>{const w=weatherOf(d);c[c[w]!=null?w:"不明"]++});document.getElementById("phasePills").innerHTML=Object.entries(c).filter(([,v])=>v>0).map(([k,v])=>`<div class="phase-pill pill-${phaseClass(k)}"><span class="dot"></span>${phaseLabel(k)} <strong>${v}日</strong></div>`).join("")+`<div class="phase-pill pill-total">計 ${filteredData.length} 日</div>`}
 
 // ── TIMELINE (judgment + sentiment + F&G + VIX + Tech Pulse + 乖離) ──
 function renderTimeline(){
@@ -587,21 +663,18 @@ function renderTimeline(){
   const rev=[...filteredData].reverse();
   document.getElementById("timeline").innerHTML=rev.map((d,ri)=>{
     const i=filteredData.length-1-ri;
-    const pc=phaseClass(d.judgment);
+    const wj=weatherOf(d);const pc=phaseClass(wj);
     const isLast=ri===rev.length-1;
     const sent=d.sentiment;const sScore=sent?.score;const sColor=sScore!=null?sentimentColor(sScore):"var(--mut)";
-    const sLbl={"EXTREME FEAR":"X-FEAR","FEAR":"FEAR","CAUTION":"CAUTION","NEUTRAL":"NEUTRAL","GREED":"GREED","EXTREME GREED":"X-GREED"}[sent?.label]||"";
+    const sLbl=sScore!=null?({"EXTREME FEAR":"X-FEAR","EXTREME GREED":"X-GREED"}[zoneLabel(sScore)]||zoneLabel(sScore)):"";
     const fg=d.fear_greed;const fgS=fg?.score;const fgC=fgS!=null?fgColor(fgS):"var(--mut)";
     const vix=d.indicators?.["VIX指数"];
     const tp=d.tech_pulse;const tpS=tp?.score??null;const tpC=tpS!=null?tpColor(tpS):"var(--mut)";
-    const divV=tp?.divergence?.value??((tpS!=null&&fgS!=null)?tpS-fgS:null);
-    const divC=divV!=null?(divV>0?"#10b981":"#f43f5e"):"var(--mut)";
-    const divTxt=divV!=null?(divV>0?"+":"")+Number(divV).toFixed(0):"—";
     return`<div class="tl-item ${i===selectedIdx?"active":""}" onclick="selectItem(${i})">
       <div class="tl-vis"><div class="tl-dot ${pc}"></div>${!isLast?'<div class="tl-line"></div>':''}</div>
       <div class="tl-main">
         <div class="tl-date">${fmtDateFull(d.date)}</div>
-        <div class="tl-judgment ${pc}">${phaseLabel(d.judgment)}</div>
+        <div class="tl-judgment ${pc}">${phaseLabel(wj)}</div>
       </div>
       <div class="tl-right">
         <div class="tl-sent-score" style="color:${sColor}">${sScore!=null?sScore.toFixed(0):"-"}</div>
@@ -609,17 +682,17 @@ function renderTimeline(){
         ${fgS!=null?`<div class="tl-fg-row"><span class="tl-fg-badge" style="color:${fgC};border-color:${fgC}40">F&G ${fgS.toFixed(0)}</span></div>`:''}
         <div class="tl-vix-val"><span data-info="mp_vix_judgment">VIX ${(vix&&vix.value!=null)?vix.value.toFixed(1):"-"}</span></div>
         <div class="tl-fg-row">${tpS!=null?`<span class="tl-fg-badge" style="color:${tpC};border-color:${tpC}40">TECH ${tpS}</span>`:'<span class="tl-fg-badge" style="color:var(--mut);border-color:var(--bdr)">TECH —</span>'}</div>
-        <div class="tl-vix-val" style="color:${divC}"><span data-info="mp_divergence">乖離 ${divTxt}</span></div>
       </div>
     </div>`}).join("")}
 
 // ── METRICS 6 CARDS ──
 function renderMetrics(){
-  const d=filteredData[selectedIdx];
+  const d=allData[allData.length-1];
   document.getElementById("metricsRow").innerHTML=CARD_DEFS.map(cd=>{
     const ind=d?.indicators[cd.key];
     if(!ind||ind.value==null)return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value">—</div></div>`;
-    const chg=fmtChg(ind.change_percent);
+    const bp=cd.key==="米10年債"?(ind.change_bp??(ind.change!=null?Math.round(ind.change*1000)/10:null)):null;
+    const chg=cd.key==="米10年債"?(bp==null?{text:"-",cls:"flat"}:{text:(bp>=0?"+":"")+bp.toFixed(1)+"bp",cls:bp>0.5?"up":bp<-0.5?"down":"flat"}):fmtChg(ind.change_percent);
     const val=ind.value>=1000?ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0}):ind.value.toFixed(2);
     const isStale=!!ind.is_fallback;
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${ind.date||''}時点の値）">※</span>`:'';
@@ -652,11 +725,10 @@ function renderChart(){
 function renderLegend(){const a=METRIC_DEFS.filter(m=>activeMetrics.has(m.key));const n=activeMetrics.size>1?' <span style="color:var(--mut);font-size:13px">（正規化表示）</span>':'';document.getElementById("chartLegend").innerHTML=a.map(m=>`<div class="legend-item"><div class="legend-dot" style="background:${m.color}"></div>${m.label}</div>`).join("")+n}
 
 // ── DETAIL ──
-function renderDetail(){
-  const d=filteredData[selectedIdx];const pc=phaseClass(d.judgment);
+// MP-27の株・債券・クレジット（債券は「債券買い」「債券売り」「中立」）
+function creditHTML(d){
   const{stock,bond,credit}=d.credit||{};
   const hasScore=d.credit?.risk_off_score!=null;
-  let crHTML="";
   if(d.credit&&hasScore){
     const riskOffScore=d.credit.risk_off_score;
     // 3ゾーン判定（0-33: RISK ON, 34-66: RISK CAUTION, 67-100: RISK OFF）
@@ -670,11 +742,21 @@ function renderDetail(){
     else                 conf=Math.round((riskOffScore-66)/34*100);
     conf=Math.max(0,Math.min(100,conf));
     const confLabel=conf>=70?'高':conf>=40?'中':'低';
-    crHTML=`<div class="credit-row"><span class="credit-badge ${stock==='リスクオン'?'risk-on':'risk-off'}">株 ${stock}</span><span class="credit-badge ${bond==='債券売り'?'risk-on':'risk-off'}">債券 ${bond}</span><span class="credit-badge ${credit==='リスクオン'?'risk-on':'risk-off'}">クレジット ${credit}</span><span style="font-family:var(--mono);margin-left:8px;display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:${riskOffColor}">${riskOffLabel}</span><span style="font-size:14px;font-weight:700;color:${riskOffColor}">${riskOffScore}</span><span style="font-size:11px;color:var(--mut)">/ 100</span><span style="font-size:10px;color:var(--mut);border:1px solid var(--bdr);padding:1px 5px">確信度 ${confLabel} ${conf}%</span></span></div>`;
+    const bondCls=bond==='債券買い'?'risk-off':bond==='債券売り'?'risk-on':'risk-neutral';
+    return`<div class="credit-row"><span class="credit-badge ${stock==='リスクオン'?'risk-on':'risk-off'}">株 ${stock}</span><span class="credit-badge ${bondCls}">債券 ${bond}</span><span class="credit-badge ${credit==='リスクオン'?'risk-on':'risk-off'}">クレジット ${credit}</span><span style="font-family:var(--mono);margin-left:8px;display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:${riskOffColor}">${riskOffLabel}</span><span style="font-size:14px;font-weight:700;color:${riskOffColor}">${riskOffScore}</span><span style="font-size:11px;color:var(--mut)">/ 100</span><span style="font-size:10px;color:var(--mut);border:1px solid var(--bdr);padding:1px 5px">確信度 ${confLabel} ${conf}%</span></span></div>`;
   } else if(d.credit){
-    crHTML=`<div class="credit-row"><span class="credit-badge risk-neutral">株 —</span><span class="credit-badge risk-neutral">債券 —</span><span class="credit-badge risk-neutral">クレジット —</span><span style="font-family:var(--mono);margin-left:8px;font-size:12px;color:var(--mut)">Risk-Off Score: —</span></div>`;
+    return`<div class="credit-row"><span class="credit-badge risk-neutral">株 —</span><span class="credit-badge risk-neutral">債券 —</span><span class="credit-badge risk-neutral">クレジット —</span><span style="font-family:var(--mono);margin-left:8px;font-size:12px;color:var(--mut)">Risk-Off Score: —</span></div>`;
   }
-  document.getElementById("detailInner").innerHTML=`<div class="detail-header"><span class="detail-phase-badge ${pc}">${phaseLabel(d.judgment)}</span><span class="detail-title-text">${fmtDateFull(d.date)}</span></div>${crHTML}<div class="detail-body">${d.summary??"詳細なし"}</div>${d.haiku?`<div class="haiku-box">${d.haiku}</div>`:""}${buildCommentsHistory(d)}`
+  return'';
+}
+function conclusionsListHTML(d){
+  const sc=d.stage_conclusions||{};
+  const rows=STAGE_KEYS.filter(k=>sc[k]?.line).map(k=>`<div style="font-size:13px;margin:2px 0"><span style="font-family:var(--mono);color:var(--mut);margin-right:6px">${k} ${STAGE_TITLES[k]}</span>${escHtml(sc[k].line)}</div>`).join('');
+  return rows?`<div style="margin-bottom:10px">${rows}</div>`:'';
+}
+function renderDetail(){
+  const d=filteredData[selectedIdx];const wj=weatherOf(d);const pc=phaseClass(wj);
+  document.getElementById("detailInner").innerHTML=`<div class="detail-header"><span class="detail-phase-badge ${pc}">${phaseLabel(wj)}</span><span class="detail-title-text">${fmtDateFull(d.date)}</span></div>${conclusionsListHTML(d)}${creditHTML(d)}<div class="ai-h" style="margin-top:6px">AIの見解</div><div class="detail-body">${d.summary??"詳細なし"}</div>${d.haiku?`<div class="haiku-box">${escHtml(d.haiku)}</div>`:""}`
 }
 
 function buildCommentsHistory(d){
@@ -698,28 +780,14 @@ function toggleCmtHist(id){
 // ── GAUGE ──
 function renderGauge(){
   const latest=filteredData[filteredData.length-1];
-  if(!latest?.sentiment){document.getElementById("gaugeScore").textContent="—";document.getElementById("gaugeLabel").textContent="NO DATA";document.getElementById("gaugeDelta").textContent="";document.getElementById("subScores").innerHTML="";document.getElementById("breadthSummary").innerHTML="";document.getElementById("signalBadge").innerHTML="";return}
+  if(!latest?.sentiment){document.getElementById("gaugeScore").textContent="—";document.getElementById("gaugeLabel").textContent="NO DATA";document.getElementById("gaugeDelta").textContent="";document.getElementById("subScores").innerHTML="";document.getElementById("breadthSummary").innerHTML="";return}
   const s=latest.sentiment,score=s.score,color=sentimentColor(score);
   const angle=(score/100)*180-90;
   document.getElementById("gaugeNeedle").setAttribute("transform",`rotate(${angle},110,112)`);
   document.getElementById("gaugeScore").textContent=score.toFixed(0);
   document.getElementById("gaugeScore").style.color=color;
 
-  // シグナルバッジ
-  const sig=s.signal;
-  if(sig){
-    const cls=sig.signal==="BUY"?"signal-buy":sig.signal==="TAKE PROFIT"?"signal-sell":"signal-hold";
-    document.getElementById("signalBadge").innerHTML=`<div class="signal-badge ${cls}" title="${sig.reason||''}">${sig.signal}</div>`;
-  } else {
-    // JSONにsignalがない場合（過去データ）はフロントで簡易判定
-    let sigText="HOLD",sigCls="signal-hold";
-    if(score<=20){sigText="BUY";sigCls="signal-buy"}
-    else if(filteredData.length>=3){
-      const recent=filteredData.slice(-20).map(d=>d.sentiment?.score).filter(x=>x!=null);
-      if(recent.length>=3){const peak=Math.max(...recent);if(peak>=70&&(peak-score)>=5){sigText="TAKE PROFIT";sigCls="signal-sell"}}}
-    document.getElementById("signalBadge").innerHTML=`<div class="signal-badge ${sigCls}">${sigText}</div>`;
-  }
-  document.getElementById("gaugeLabel").textContent=s.label;
+  document.getElementById("gaugeLabel").textContent=zoneLabel(score);
   document.getElementById("gaugeLabel").style.color=color;
   if(filteredData.length>=2){const prev=filteredData[filteredData.length-2]?.sentiment?.score;if(prev!=null){const delta=score-prev;document.getElementById("gaugeDelta").innerHTML=`<span style="color:${delta>=0?'var(--grn)':'var(--red)'}">&#x25${delta>=0?'B2':'BC'} ${delta>0?'+':''}${delta.toFixed(1)}pt</span>`}}
   const subs=s.sub_scores||{};
@@ -728,7 +796,7 @@ function renderGauge(){
     sp500_ma_dev:{desc:'S&P500の50日移動平均からの乖離率',detail:'現在値÷50日MA−1（%）。−8%以下→0、+8%以上→100の直線',rawFmt(r){return r!=null?`乖離率 = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
     ad_ratio:{desc:'S&P500構成銘柄の値上がり÷値下がり銘柄数（直近5営業日の合計）',detail:'0.5以下→0、2.0以上→100の直線。1.0超=値上がり優勢',rawFmt(r){return r!=null?`ADV÷DEC比 = ${Number(r).toFixed(3)}`:null}},
     hyg_lqd_dir:{desc:'HYG（高利回り債）÷LQD（投資適格債）の比の前営業日からの変化',detail:'−0.005以下→0、+0.005以上→100の直線。上昇→リスクオン　下落→リスクオフ',rawFmt(r){return r!=null?`HYG/LQD変化 = ${r>=0?'+':''}${Number(r).toFixed(6)}`:null}},
-    nh_nl:{desc:'52週新高値数 − 新安値数（S&P500構成銘柄。高値・安値の1%以内を含む）',detail:'−50以下→0、+50以上→100の直線',rawFmt(r){return r!=null?`NH−NL = ${r>=0?'+':''}${r}`:null}},
+    nh_nl:{desc:'52週新高値数 − 新安値数（S&P500構成銘柄。終値が過去252営業日の最高値・最安値を実際に更新した銘柄）',detail:'−50以下→0、+50以上→100の直線',rawFmt(r){return r!=null?`NH−NL = ${r>=0?'+':''}${r}`:null}},
     growth_value:{desc:'グロース(IVW) vs バリュー(IVE) 前日比の差',detail:'−3%pt以下→0、+3%pt以上→100の直線。プラス=グロース優位',rawFmt(r){return r!=null?`IVW−IVE = ${r>=0?'+':''}${Number(r).toFixed(2)}%`:null}},
     distribution:{desc:'S&P500の出来高÷前営業日の出来高と、前日比',detail:'出来高比>1.1かつ−0.3%未満→0（売り圧力）、出来高比>1.1かつ+0.3%超→100、それ以外→50',rawFmt(r){return r!=null&&typeof r==='object'?`出来高比 = ${(r.vol_ratio||0).toFixed(2)}倍　変化率 = ${r.chg_pct!=null?(r.chg_pct>=0?'+':'')+r.chg_pct.toFixed(2)+'%':'—'}`:r!=null?`実値 = ${r}`:null}},
     rsp_spy_divergence:{desc:'RSP(均等加重)−SPY(時価総額加重)騰落率差の20日平均',detail:'−1.0pt以下→0、+1.0pt以上→100の直線。プラス=広範な銘柄が上昇に参加　マイナス=一部の大型株のみが押し上げ',rawFmt(r){return r!=null?`RSP−SPY 20日平均 = ${r>=0?'+':''}${Number(r).toFixed(3)}pt`:null}},
@@ -799,13 +867,13 @@ function renderOscChart(){
   const yC={min:(hasScore||hasFG||isMulti)?oscMin:undefined,max:(hasScore||hasFG||isMulti)?oscMax:undefined,ticks:{color:"#64748b",font:{family:"Space Mono",size:12},callback:v=>{if(v===20)return"FEAR▼";if(v===50)return"50";if(v===80)return"GREED▲";return v%10===0?v.toFixed(0):""}},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}};
   if(oscChartInst)oscChartInst.destroy();
   oscChartInst=new Chart(document.getElementById("oscChart"),{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:"#111520",borderColor:"#1e2840",borderWidth:1,titleColor:"#64748b",bodyColor:"#e2e8f0",titleFont:{family:"Space Mono",size:12},bodyFont:{family:"Space Mono",size:13},callbacks:{label:ctx=>{const ds=ctx.dataset,raw=ds._rawData?.[ctx.dataIndex],m=ds._meta;if(m?.key==="score"){const lbl=od[ctx.dataIndex]?.sentiment?.label||"";return raw!=null?` Score: ${raw.toFixed(1)} (${lbl})`:" —"}if(m?.key==="fg"){return raw!=null?` CNN F&G: ${raw.toFixed(0)}`:" —"}return raw!=null?` ${m?.label||ds.label}: ${raw.toFixed(2)}`:" —"}}}},scales:{x:{ticks:{color:"#64748b",font:{family:"Space Mono",size:12},maxTicksLimit:12},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}},y:yC}},
-    plugins:useZones?[{id:"zoneShading",beforeDraw(chart){const{ctx,chartArea:{left,right},scales:{y}}=chart;const y35=y.getPixelForValue(35),yB=y.getPixelForValue(0);ctx.fillStyle="rgba(244,63,94,.06)";ctx.fillRect(left,y35,right-left,yB-y35);const y65=y.getPixelForValue(65),yT=y.getPixelForValue(100);ctx.fillStyle="rgba(16,185,129,.06)";ctx.fillRect(left,yT,right-left,y65-yT);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(244,63,94,.3)";ctx.beginPath();ctx.moveTo(left,y35);ctx.lineTo(right,y35);ctx.stroke();ctx.strokeStyle="rgba(16,185,129,.3)";ctx.beginPath();ctx.moveTo(left,y65);ctx.lineTo(right,y65);ctx.stroke();ctx.setLineDash([])}}]:[]});
+    plugins:useZones?[{id:"zoneShading",beforeDraw(chart){const{ctx,chartArea:{left,right},scales:{y}}=chart;const y35=y.getPixelForValue(45),yB=y.getPixelForValue(0);ctx.fillStyle="rgba(244,63,94,.06)";ctx.fillRect(left,y35,right-left,yB-y35);const y65=y.getPixelForValue(55),yT=y.getPixelForValue(100);ctx.fillStyle="rgba(16,185,129,.06)";ctx.fillRect(left,yT,right-left,y65-yT);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(244,63,94,.3)";ctx.beginPath();ctx.moveTo(left,y35);ctx.lineTo(right,y35);ctx.stroke();ctx.strokeStyle="rgba(16,185,129,.3)";ctx.beginPath();ctx.moveTo(left,y65);ctx.lineTo(right,y65);ctx.stroke();ctx.setLineDash([])}}]:[]});
   const nTxt=isMulti?' <span style="color:var(--mut);font-size:12px">(Score/F&G以外は正規化)</span>':'';
   document.getElementById("oscLegend").innerHTML=aList.map(m=>`<div class="osc-legend-item"><div class="osc-legend-dot" style="background:${m.color}"></div>${m.label}</div>`).join("")+(useZones?'<div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(244,63,94,.25)"></div>Fear</div><div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(16,185,129,.25)"></div>Greed</div>':'')+nTxt}
 
 // ── TECH PULSE ──
 function tpColor(s){if(s<=20)return"#f43f5e";if(s<=40)return"#f97316";if(s<=60)return"#f59e0b";if(s<=80)return"#10b981";return"#3b82f6"}
-function tpLabel(s){if(s<=20)return"EXTREME FEAR";if(s<=35)return"FEAR";if(s<=50)return"CAUTION";if(s<=65)return"NEUTRAL";if(s<=80)return"GREED";return"EXTREME GREED"}
+function tpLabel(s){return zoneLabel(s)}
 let tpChartInst=null;
 
 function renderTechPulse(){
@@ -835,46 +903,20 @@ function renderTechPulse(){
     document.getElementById("tpNeedle").setAttribute("transform",`rotate(${tpScore/100*180-90},90,94)`);
     document.getElementById("tpGaugeScore").textContent=tpScore;
     document.getElementById("tpGaugeScore").style.color=c;
-    document.getElementById("tpGaugeLbl").textContent=tp?.label||tpLabel(tpScore);
+    document.getElementById("tpGaugeLbl").textContent=tpLabel(tpScore);
     document.getElementById("tpGaugeLbl").style.color=c;
   } else {
     document.getElementById("tpGaugeScore").textContent="—";
     document.getElementById("tpGaugeLbl").textContent="NO DATA";
   }
 
-  // 乖離（JSONにdivergenceフィールドがあれば優先、なければ計算）
-  const divEl=document.getElementById("tpDivVal");
-  const divVal=tp?.divergence?.value??((tpScore!=null&&fgScore!=null)?tpScore-fgScore:null);
-  const divZ=tp?.divergence?.zscore??null;
-  const divSig=tp?.divergence?.signal??null;
-  if(divVal!=null){
-    divEl.textContent=(divVal>0?"+":"")+Number(divVal).toFixed(0);
-    divEl.style.color=divVal>0?"#10b981":divVal<0?"#f43f5e":"var(--mut)";
-    // ±20以上で強調（フォントサイズ拡大 + アウトライン）
-    const absDiv=Math.abs(divVal);
-    divEl.style.fontSize=absDiv>=20?"36px":"28px";
-    divEl.style.textShadow=absDiv>=20?(divVal>0?"0 0 8px rgba(16,185,129,.5)":"0 0 8px rgba(244,63,94,.5)"):"";
-    let badge="";
-    if(divSig==="ハイテク先行反発シグナル")badge='<div class="tp-signal tp-signal-buy">ハイテク先行反発シグナル</div>';
-    else if(divSig==="ハイテク先行下落注意")badge='<div class="tp-signal tp-signal-sell">ハイテク先行下落注意</div>';
-    else if(absDiv>=20)badge=`<div class="tp-signal ${divVal>0?"tp-signal-buy":"tp-signal-sell"}">乖離${divVal>0?"+":""}${Number(divVal).toFixed(0)} 要注目水準</div>`;
-    document.getElementById("tpDivBadge").innerHTML=badge;
-  } else {divEl.textContent="—";document.getElementById("tpDivBadge").innerHTML=""}
-  const zsEl=document.getElementById("tpDivZscore");
-  if(zsEl){
-    if(divZ!=null){zsEl.textContent=`Z: ${divZ>0?"+":""}${Number(divZ).toFixed(2)}σ`;zsEl.style.color=Math.abs(divZ)>1.5?"#f59e0b":Math.abs(divZ)>1.0?"#94a3b8":"var(--mut)"}
-    else{zsEl.textContent=""}
-  }
-
+  // MP-12・13（指示書㉓）: 乖離（値・Zスコア・シグナル）は尺度を統一するまで表示しない
   // 3枚カード（補助指標のみ）
   const setCard=(id,val,color)=>{const el=document.getElementById(id);if(!el)return;el.textContent=val;if(color)el.style.color=color};
   const vxn=tp?.components?.vxn_latest;
   setCard("tpCVXN",vxn!=null?vxn.toFixed(1):"—",null);
   const qqq=tp?.components?.qqq_vs_spy_20d;
   setCard("tpCQQQ",qqq!=null?(qqq>=0?"+":"")+qqq.toFixed(1)+"%":"—",qqq!=null?(qqq>=0?"var(--grn)":"var(--red)"):null);
-  const zDisp=divZ!=null?(divZ>0?"+":"")+Number(divZ).toFixed(2)+"σ":"—";
-  const zColor=divZ!=null?(Math.abs(divZ)>1.5?"#f59e0b":Math.abs(divZ)>1.0?"#94a3b8":null):null;
-  setCard("tpCZscore",zDisp,zColor);
 
   renderTechPulseChart();
 }
@@ -897,57 +939,92 @@ function renderTechPulseChart(){
   tpChartInst=new Chart(document.getElementById("tpChart"),{type:"line",data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:"#111520",borderColor:"#1e2840",borderWidth:1,titleColor:"#64748b",bodyColor:"#e2e8f0",titleFont:{family:"Space Mono",size:12},bodyFont:{family:"Space Mono",size:13}}},scales:{x:{ticks:{color:"#64748b",font:{family:"Space Mono",size:12},maxTicksLimit:10},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}},y:{min:yMin,max:yMax,ticks:{color:"#64748b",font:{family:"Space Mono",size:12},callback:v=>{if(v===20)return"FEAR▼";if(v===50)return"50";if(v===80)return"GREED▲";return v.toFixed(0)}},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}}}},
   plugins:[{id:"tpZones",beforeDraw(chart){const{ctx,chartArea:{left,right},scales:{y}}=chart;if(yMin<20){const y20=y.getPixelForValue(20),yB=y.getPixelForValue(yMin);ctx.fillStyle="rgba(244,63,94,.06)";ctx.fillRect(left,y20,right-left,yB-y20);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(244,63,94,.25)";ctx.beginPath();ctx.moveTo(left,y20);ctx.lineTo(right,y20);ctx.stroke();ctx.setLineDash([])}if(yMax>80){const y80=y.getPixelForValue(80),yT=y.getPixelForValue(yMax);ctx.fillStyle="rgba(59,130,246,.06)";ctx.fillRect(left,yT,right-left,y80-yT);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(59,130,246,.25)";ctx.beginPath();ctx.moveTo(left,y80);ctx.lineTo(right,y80);ctx.stroke();ctx.setLineDash([])}const y50=y.getPixelForValue(50);if(y50>chart.chartArea.top&&y50<chart.chartArea.bottom){ctx.setLineDash([2,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(100,116,139,.3)";ctx.beginPath();ctx.moveTo(left,y50);ctx.lineTo(right,y50);ctx.stroke();ctx.setLineDash([])}}}]})}
 
-// ── BACKTEST ──
-function renderMiniGauges(){
-  const el=document.getElementById("miniGaugesSection");if(!el)return;
-  const curScore=filteredData[filteredData.length-1]?.sentiment?.score??null;
-  if(curScore==null){el.innerHTML="";return}
-  const valid=allData.filter(d=>d.indicators?.["S&P500"]?.value!=null&&d.sentiment?.score!=null);
-  if(valid.length<5){el.innerHTML="";return}
-  const ZONES=[
-    {label:"Extreme Fear",min:0,  max:20, color:"#f43f5e"},
-    {label:"Fear",        min:21, max:40, color:"#f97316"},
-    {label:"Neutral",    min:41, max:60, color:"#f59e0b"},
-    {label:"Greed",      min:61, max:80, color:"#10b981"},
-    {label:"Extreme Greed",min:81,max:100,color:"#3b82f6"},
-  ];
-  const FWD=[{label:"明日は？",idx:1},{label:"5日後は？",idx:5},{label:"20日後は？",idx:20}];
-  const curZone=ZONES.find(z=>curScore>=z.min&&curScore<=z.max)||ZONES[2];
-  function getAvgRet(idx){
-    const rets=[];
-    for(let i=0;i<valid.length-idx;i++){
-      if(valid[i].sentiment.score<curZone.min||valid[i].sentiment.score>curZone.max)continue;
-      const s0=valid[i].indicators["S&P500"].value;
-      const sN=valid[i+idx]?.indicators?.["S&P500"]?.value;
-      if(s0>1000&&sN>1000)rets.push((sN-s0)/s0*100);
+// ── 段階8: 同じシグナルが出た過去の日の、その後の実績（MP-10を置き換え、指示書㉓） ──
+function pctS(v,n){return v==null?"—":(v>=0?"+":"")+Number(v).toFixed(n)}
+function renderStage8(){
+  const el=document.getElementById("pastOutcomes");if(!el)return;
+  const L=allData[allData.length-1];const s8=L?.stage_conclusions?.["8"];
+  if(!s8?.signals){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  const NAMES={stage1_vix:"段階1の区分×VIX水準",stage1:"段階1の区分のみ"};
+  const HZ={1:"翌営業日",5:"5営業日後",20:"20営業日後"};
+  let rows='';
+  for(const key of ["stage1_vix","stage1"]){
+    const sg=s8.signals[key];if(!sg)continue;
+    for(const o of (sg.outcomes||[])){
+      const enough=o.label!=="件数不足";
+      rows+=`<tr><td>${NAMES[key]}</td><td>${escHtml(sg.signal||"—")}</td><td>${HZ[o.horizon]||o.horizon}</td><td class="num">${o.n}</td><td class="num">${enough?Number(o.up_pct).toFixed(1)+"%":"—"}</td><td class="num">${o.base_up_pct!=null?Number(o.base_up_pct).toFixed(1)+"%":"—"}</td><td class="num">${enough?pctS(o.diff_pt,1)+"pt":"—"}</td><td>${escHtml(o.label)}</td><td>${enough?escHtml(o.guide)+"（z="+pctS(o.z,2)+"）":"—"}</td><td class="num">${enough?pctS(o.mean_pct,3)+"%":"—"}</td></tr>`;
     }
-    return rets.length?{avg:rets.reduce((a,b)=>a+b,0)/rets.length,n:rets.length}:null;
   }
-  function zoneInfo(sc){return ZONES.find(z=>sc>=z.min&&sc<=z.max)||{label:"—",color:"var(--mut)"};}
-  function miniSVG(cSc,pSc,uid){
-    const cx=70,cy=72,r=56,tipR=(r*0.85).toFixed(1);
-    const cAng=((cSc/100)*180-90).toFixed(1);
-    const pAng=((pSc/100)*180-90).toFixed(1);
-    const gid=`mgG${uid}`;
-    const tipY=(cy-r*0.85).toFixed(1);
-    return`<svg viewBox="0 0 140 80"><defs><linearGradient id="${gid}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f43f5e"/><stop offset="25%" stop-color="#f59e0b"/><stop offset="50%" stop-color="#64748b"/><stop offset="75%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#10b981"/></linearGradient></defs><path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" fill="none" stroke="#1e2840" stroke-width="8" stroke-linecap="round"/><path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" fill="none" stroke="url(#${gid})" stroke-width="8" stroke-linecap="round" opacity="0.35"/><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${tipY}" stroke="${sentimentColor(cSc)}" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round" transform="rotate(${cAng},${cx},${cy})"/><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${tipY}" stroke="${sentimentColor(pSc)}" stroke-width="2.5" stroke-linecap="round" transform="rotate(${pAng},${cx},${cy})"/><circle cx="${cx}" cy="${cy}" r="3" fill="#e2e8f0"/></svg>`;
+  el.innerHTML=`<div style="overflow-x:auto"><table class="mp-table" id="pastOutcomesTable"><tr><th>シグナル</th><th>今日の区分</th><th>期間</th><th>件数</th><th>上昇割合</th><th>基準率</th><th>差</th><th>判定</th><th>目安</th><th>平均リターン</th></tr>${rows}</table></div><div class="stage-note">予測ではない。${escHtml(s8.history_from||"")}〜${escHtml(s8.as_of||"")}のS&amp;P500で、同じ区分の日が過去に何回あり、その後どうだったかを、条件のない全日の上昇割合（基準率）と比べる。差が±5pt以上で「多い／少ない」、件数20未満は件数不足。差が偶然のばらつき（標準誤差）の約2倍（|z|≥1.96）以上なら「偶然では出にくい差」。</div>`;
+}
+
+// ── 段階8: センチメントのシグナル（MP-05、日付で直近20営業日。表示期間によらない） ──
+function renderSignal(){
+  const el=document.getElementById("signalBadge");if(!el)return;
+  const L=allData[allData.length-1];const s=L?.sentiment;
+  if(!s||s.score==null){el.innerHTML='';return}
+  let sig=s.signal;
+  if(!sig){ // 記録の無いエントリ用: 最新エントリの28日前以降（約20営業日）で判定
+    const cut=new Date(L.date);cut.setDate(cut.getDate()-28);
+    const recent=allData.filter(d=>new Date(d.date)>=cut).map(d=>d.sentiment?.score).filter(x=>x!=null);
+    const peak=Math.max(...recent);
+    sig=s.score<=20?{signal:"BUY"}:(recent.length>=3&&peak>=70&&peak-s.score>=5)?{signal:"TAKE PROFIT"}:{signal:"HOLD"};
   }
-  const cards=FWD.map(({label,idx})=>{
-    const ret=getAvgRet(idx);
-    const predSc=ret?Math.min(100,Math.max(0,curScore+ret.avg*2)):curScore;
-    const delta=predSc-curScore;
-    const dStr=(delta>=0?"+":"")+delta.toFixed(1)+"pt";
-    const dColor=delta>0.5?"var(--grn)":delta<-0.5?"var(--red)":"var(--mut)";
-    const pz=zoneInfo(predSc);
-    const retStr=ret?`S&P500 ${ret.avg>=0?"+":""}${ret.avg.toFixed(2)}% (n=${ret.n})`:"データ不足";
-    return`<div class="mini-gauge-card"><div class="mini-gauge-lbl">${label}</div><div class="mini-gauge-svg-wrap">${miniSVG(curScore,predSc,idx)}<div class="mini-gauge-center"><div class="mini-gauge-score" style="color:${sentimentColor(predSc)}">${Math.round(predSc)}</div><div class="mini-gauge-zone" style="color:${pz.color}">${pz.label}</div><div class="mini-gauge-delta" style="color:${dColor}">${dStr}</div></div></div><div class="mini-gauge-ret">${retStr}</div></div>`;
-  }).join("");
-  el.innerHTML=`<div class="mini-gauges-wrap"><div class="mini-gauges-title">センチメント予測 — 現在ゾーン(${curZone.label})の過去平均リターンから推計</div><div class="mini-gauges-row">${cards}</div><div class="mini-gauge-note">点線=現在スコア(${Math.round(curScore)}) / 実線=予測スコア ／ S&amp;P500 +1% ≈ センチメント +2pt換算</div></div>`;
+  const cls=sig.signal==="BUY"?"signal-buy":sig.signal==="TAKE PROFIT"?"signal-sell":"signal-hold";
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="signal-badge ${cls}" id="signalBadgeText">${sig.signal}</div><span class="stage-note" style="margin:0">${escHtml(sig.reason||"")}${sig.window_start?`（判定期間: ${escHtml(sig.window_start)}以降の直近20営業日）`:""}</span></div>`;
+}
+
+// ── 今日の結論パネル・段階ごとの結論1行 ──
+function renderConclusions(){
+  const el=document.getElementById("conclusionPanel");if(!el)return;
+  const L=allData[allData.length-1];if(!L){el.innerHTML='';return}
+  const sc=L.stage_conclusions||{};const dq=L.data_quality||{};const old=dq.old_stages||[];
+  const w=weatherOf(L);const reason=L.weather?.reason||"";
+  const items=STAGE_KEYS.map(k=>`<li><a href="#stage${k}"><span class="cp-no">${k}</span>${STAGE_TITLES[k]}</a><div class="cp-line" id="cpLine${k}">${escHtml(sc[k]?.line||"—")}${old.includes(k)?'<span class="cp-old">一部前営業日</span>':''}</div></li>`).join('');
+  el.innerHTML=`<div class="cp-title">今日の結論<span class="cp-date">${escHtml(dq.expected_close_date||"")}${dq.expected_close_date?"の米国終値":""}</span></div><div class="cp-weather ${phaseClass(w)}" id="cpWeather">${phaseLabel(w)}</div><div class="cp-reason">${escHtml(reason)}${L.weather?.rule?`（段階3・4からルールで判定）`:""}</div><ol class="cp-lines">${items}</ol>`;
+  STAGE_KEYS.forEach(k=>{const e=document.getElementById("stageLine"+k);if(e)e.innerHTML=escHtml(sc[k]?.line||"—")+(old.includes(k)?'<span class="cp-old">一部前営業日</span>':'')});
+}
+function renderDqBanner(){
+  const el=document.getElementById("dqBanner");if(!el)return;
+  const dq=allData[allData.length-1]?.data_quality;
+  if(dq?.status==="stale")el.innerHTML='<div class="dq-banner dq-stale">前営業日のデータ（最新の終値が未反映）</div>';
+  else if(dq?.status==="partial")el.innerHTML=`<div class="dq-banner dq-partial">一部の値が前営業日: ${escHtml((dq.old_elements||[]).join("・"))}</div>`;
+  else el.innerHTML='';
+}
+function renderStage0(){
+  const el=document.getElementById("stage0Body");if(!el)return;
+  const L=allData[allData.length-1];const dq=L?.data_quality;
+  if(!dq){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  const ST={complete:"すべて最新",partial:"一部の値が前営業日",stale:"S&P500が前営業日",unknown:"判定不能"};
+  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isOld?"古い":"最新"}</td></tr>`}).join('');
+  const fr=L.data_freshness;
+  el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。</div>`;
+}
+function renderStage1Tags(){
+  const el=document.getElementById("stage1Tags");if(!el)return;
+  const tags=allData[allData.length-1]?.stage_conclusions?.["1"]?.tags;
+  el.innerHTML=tags==null?'<span class="stage-note">記録なし</span>':tags.length?tags.map(x=>`<span class="fact-tag">${escHtml(x)}</span>`).join(''):'<span class="stage-note" style="margin:0">該当なし</span>';
+}
+function renderAIView(){
+  const el=document.getElementById("aiView");if(!el)return;
+  const d=allData[allData.length-1];if(!d){el.innerHTML='';return}
+  el.innerHTML=`<div class="detail-body">${d.summary??"詳細なし"}</div>${d.haiku?`<div class="haiku-box" id="haikuBox">${escHtml(d.haiku)}</div>`:""}${buildCommentsHistory(d)}`;
+}
+function renderStage3Credit(){
+  const el=document.getElementById("stage3Credit");if(!el)return;
+  const d=allData[allData.length-1];el.innerHTML=d?creditHTML(d):'';
+}
+function renderStage5(){
+  const el=document.getElementById("stage5Body");if(!el)return;
+  const ind=allData[allData.length-1]?.indicators||{};
+  const g=ind["S&P500グロース(IVW)"],v=ind["S&P500バリュー(IVE)"],gv=ind["グロース対バリュー比"];
+  const f=x=>x?.change_percent!=null?pctS(x.change_percent,2)+"%":"—";
+  el.innerHTML=`<table class="mp-table" id="stage5Table" style="max-width:520px"><tr><th>指標</th><th>前営業日比</th><th>基準日</th></tr><tr><td>S&amp;P500グロース（IVW）</td><td class="num">${f(g)}</td><td>${escHtml(g?.date||"—")}</td></tr><tr><td>S&amp;P500バリュー（IVE）</td><td class="num">${f(v)}</td><td>${escHtml(v?.date||"—")}</td></tr><tr><td>差（IVW−IVE）</td><td class="num">${gv?.diff_percent!=null?pctS(gv.diff_percent,2)+"pt":"—"}</td><td></td></tr></table><div class="stage-note">差が+0.5pt以上で「グロース優勢」、−0.5pt以下で「バリュー優勢」、それ以外は「拮抗」。</div>`;
 }
 
 // ── SELECT / RENDER ALL ──
-function selectItem(i){selectedIdx=i;renderTimeline();renderMetrics();renderDetail()}
-const RENDER_ALL_FNS=[renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderMiniGauges,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
+function selectItem(i){selectedIdx=i;renderTimeline();renderDetail()}
+const RENDER_ALL_FNS=[renderConclusions,renderDqBanner,renderStage0,renderStage1Tags,renderAIView,renderStage3Credit,renderStage5,renderStage8,renderSignal,renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
 function renderAll(){RENDER_ALL_FNS.forEach(fn=>{try{fn()}catch(e){console.error(`[renderAll] ${fn.name} failed:`,e)}})}
 
 function renderTakeProfit(){
@@ -1148,7 +1225,7 @@ function renderAssetFlow(){
   const withAf=allData.filter(d=>d.asset_flow!=null);
   const days=[...withAf.slice(-7)].reverse();
   const todayDate=latest?.date;
-  const weekendsBetween=(hi,lo)=>{const res=[];for(let d=new Date(hi);;){d.setDate(d.getDate()-1);const iso=d.toISOString().slice(0,10);if(iso<=lo)break;const w=d.getDay();if(w===0||w===6)res.push(iso);}return res;};
+  const weekendsBetween=(hi,lo)=>{const res=[];for(let d=new Date(hi);;){d.setDate(d.getDate()-1);const iso=d.toISOString().slice(0,10);if(iso<=lo)break;const w=d.getDay();if(w===0||w===6||HOLIDAYS.has(iso))res.push(iso);}return res;};
   const holidayRowHtml=iso=>{const dt=new Date(iso);const lbl=`${dt.getMonth()+1}/${String(dt.getDate()).padStart(2,'0')}`;return`<div class="af-u-date" style="color:var(--mut);opacity:.5">${lbl}<span style="font-size:8px;display:block">休場</span></div>`+ASSETS.map(()=>`<div class="af-u-cell" style="background:var(--sur2)"></div>`).join('');};
   const nowDate=new Date();const nowDow=nowDate.getDay();
   let preWeekendHtml='';
@@ -1181,6 +1258,7 @@ function renderAssetFlow(){
 
 // ── INIT ──
 async function init(){
+  try{const hr=await fetch('./data/nyse_holidays.json');if(hr.ok){const hj=await hr.json();HOLIDAYS=new Set(hj.holidays||[])}}catch{}
   try{const resp=await fetch('./data/market_data.json');const json=await resp.json();
     if(Array.isArray(json)&&json.length>0){allData=json.map(d=>{
       const j=d.judgment||"不明";d.judgment=j==="曇"?"曇り":j==="晴"?"晴れ":j;
@@ -1193,7 +1271,9 @@ async function init(){
     try{
       const d=new Date(latestDate);
       const jst=new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(d);
-      document.getElementById('lastUpdated').textContent='更新 '+jst+' JST';
+      const L=allData[allData.length-1];
+      const closeDate=L.indicators?.["S&P500"]?.date||L.data_quality?.expected_close_date||null;
+      document.getElementById('lastUpdated').textContent=(closeDate?'米国終値 '+closeDate+' ｜ ':'')+'更新 '+jst+' JST';
       const lu=document.getElementById('last-updated');
       if(lu) lu.textContent=jst;
     }catch(e){}

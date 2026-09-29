@@ -272,17 +272,16 @@ def compute_breadth(tickers):
                     dec_5d += 1
 
         # ── 52週新高値 / 新安値 ──
-        # 直近の終値 vs 過去252営業日（≒52週）の高値/安値
+        # MP-08（指示書㉓）: 実際に更新した銘柄だけを数える。直近の終値が、それより前の
+        # 252営業日（≒52週）の終値の最高値を上回れば新高値、最安値を下回れば新安値。
+        # 以前は「52週高値の99%以上」「52週安値の101%以下」で数えており、実際の更新より多かった
+        # （5年分の平均: 新高値47.3→25.0銘柄、新安値15.5→9.7銘柄。設計書MARKET_PULSE_REDESIGN.md 7章）
         lookback = min(252, len(vals) - 1)
         if lookback >= 1:
-            window = vals[-lookback:]
-            hi = max(window)
-            lo = min(window)
-            # 新高値: 直近終値が52週高値の99%以上（ほぼ等しいか超えている）
-            if latest >= hi * 0.99:
+            window = vals[-lookback - 1:-1]
+            if latest > max(window):
                 new_highs += 1
-            # 新安値: 直近終値が52週安値の101%以下
-            if latest <= lo * 1.01:
+            if latest < min(window):
                 new_lows += 1
 
         # ── 移動平均上回り率 ──

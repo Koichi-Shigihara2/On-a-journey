@@ -162,27 +162,42 @@ def expected_breadth_summary() -> dict:
 
 
 def expected_hindenburg_active() -> tuple[Optional[bool], dict]:
-    """breadth_data.json 最新エントリから Hindenburg Omen 判定
-    （新高値・新安値がともに全銘柄数の2.2%を超えて出現）を独立に
-    再計算する。ロジックは collect_and_send.py::calc_hindenburg_active()
-    のPython再実装（同一ファイルを再度読み込むだけであり、本番コード
-    そのものをimportして呼び出す方がより厳密だが、本スクリプトは
-    フロントエンド確認が主目的のため計算式を直接複製している。
-    計算式自体の正しさはcollect_and_send.py側の既存pytestで別途担保
-    される前提）。
+    """market_data.json最新エントリの時点のHindenburg Omen判定を独立に再計算する。
+
+    2026-09-30（指示書㉓ MP-18）: collect_and_send.pyは一般的な定義（新高値・新安値がともに銘柄数の2.2%以上、
+    S&P500が50営業日前より高い、McClellan Oscillatorが負、新高値が新安値の2倍以下）で判定し、エントリに
+    `hindenburg`（条件ごとの成否）を記録する。記録のあるエントリは、breadth_data.json（そのエントリの
+    ブレッス基準日の行）とdaily/の^GSPCから4条件を再計算する。記録の無い旧エントリ（2026-09-26以前）は
+    旧定義（新高値・新安値の2.2%条件のみ）で再計算する。
     """
-    if not os.path.exists(BREADTH_DATA_JSON):
+    if not os.path.exists(BREADTH_DATA_JSON) or not os.path.exists(MARKET_DATA_JSON):
         return None, {}
     with open(BREADTH_DATA_JSON, encoding="utf-8") as f:
         data = json.load(f)
+    with open(MARKET_DATA_JSON, encoding="utf-8") as f:
+        entry = json.load(f)[-1]
     if not data:
         return None, {}
-    latest = data[-1]
+    bdate = ((entry.get("sentiment") or {}).get("breadth") or {}).get("date")
+    latest = next((r for r in data if r.get("date") == bdate), data[-1])
     nh = latest.get("new_highs_52w") or 0
     nl = latest.get("new_lows_52w") or 0
     total_stocks = latest.get("total_stocks") or 500
-    active = bool(nh >= total_stocks * 0.022 and nl >= total_stocks * 0.022)
-    return active, {"new_highs_52w": nh, "new_lows_52w": nl, "total_stocks": total_stocks}
+    both = bool(nh >= total_stocks * 0.022 and nl >= total_stocks * 0.022)
+    detail = {"new_highs_52w": nh, "new_lows_52w": nl, "total_stocks": total_stocks, "breadth_date": latest.get("date")}
+    if "hindenburg" not in entry:
+        detail["definition"] = "旧定義（2.2%条件のみ、指示書㉓以前のエントリ）"
+        return both, detail
+    sys.path.insert(0, REPO_ROOT)
+    from common.market_data.reader import get_price_series_as_of
+    spx_date = ((entry.get("indicators") or {}).get("S&P500") or {}).get("date")
+    rows = [r for r in get_price_series_as_of("^GSPC", spx_date, days=80) if not r.get("_gap") and r.get("close") is not None]
+    up50 = rows[-1]["close"] > rows[-51]["close"] if len(rows) >= 51 else None
+    mc = latest.get("mcclellan_oscillator")
+    conds = [both, up50, None if mc is None else mc < 0, nh <= 2 * nl]
+    active = False if any(c is False for c in conds) else (None if any(c is None for c in conds) else True)
+    detail.update({"definition": "一般的な定義（4条件）", "sp500_up_50d": up50, "mcclellan": mc})
+    return active, detail
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -369,7 +384,7 @@ def run_browser_checks(report: RunReport) -> None:
                    f"take_profit_checklist.hindenburg.passed={tp_hindenburg.get('passed') if tp_hindenburg else None}",
             passed=passed,
             note=(
-                "breadth_data.jsonから2.2%閾値判定を独立再計算し、ブラウザがロードした"
+                "breadth_data.jsonとdaily/からHindenburgの判定を独立再計算し、ブラウザがロードした"
                 "market_data.json由来のチェックリストデータと突合。"
                 + ("" if checklist_visible else
                    " 【注記】現在F&Gが25〜75の中立域のためチェックリストUI自体は非発動"

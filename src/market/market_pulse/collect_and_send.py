@@ -183,6 +183,17 @@ def format_line(name, records):
 # ──────────────────────────────────────────────────────
 # センチメントスコア算出（Phase 1: 5指標版）
 # ──────────────────────────────────────────────────────
+def zone_label(score):
+    """0〜100のスコアのゾーン名（MP-03・MP-12、指示書㉓）。CNN Fear & Greedの区分
+    （0-25 Extreme Fear / 25-45 Fear / 45-55 Neutral / 55-75 Greed / 75-100 Extreme Greed）に揃える。
+    以前は20/35/50/65/80で、中立点50をまたいで「CAUTION」「NEUTRAL」に分かれていた。"""
+    if score <= 25: return "EXTREME FEAR"
+    if score <= 45: return "FEAR"
+    if score <= 55: return "NEUTRAL"
+    if score <= 75: return "GREED"
+    return "EXTREME GREED"
+
+
 def clamp01(v):
     """0.0〜1.0にクランプ"""
     return max(0.0, min(1.0, v))
@@ -298,19 +309,8 @@ def compute_sentiment(structured_data):
     total_weight = sum(s["weight"] for s in sub_scores.values())
     final_score = round((total_score / total_weight) * 100, 1) if total_weight > 0 else 50.0
 
-    # ラベル判定
-    if final_score <= 20:
-        label = "EXTREME FEAR"
-    elif final_score <= 35:
-        label = "FEAR"
-    elif final_score <= 50:
-        label = "CAUTION"
-    elif final_score <= 65:
-        label = "NEUTRAL"
-    elif final_score <= 80:
-        label = "GREED"
-    else:
-        label = "EXTREME GREED"
+    # ラベル判定（MP-03、指示書㉓: CNN F&Gの区分〈25/45/55/75〉に揃える）
+    label = zone_label(final_score)
 
     # サブスコアを100点満点に変換して記録
     sub_detail = {}
@@ -721,12 +721,7 @@ def _get_tp_signal(div_value, div_zscore, fg_score):
 
 
 def _tp_label(score):
-    if score <= 20: return "EXTREME FEAR"
-    if score <= 35: return "FEAR"
-    if score <= 50: return "CAUTION"
-    if score <= 65: return "NEUTRAL"
-    if score <= 80: return "GREED"
-    return "EXTREME GREED"
+    return zone_label(score)
 
 
 def calc_tech_pulse_score(qqq_vs_ma125, vxn_vs_ma50, qqq_vs_spy_20d, history_90d):
@@ -820,6 +815,9 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
+            if name == "米10年債":
+                # MP-25（指示書㉓）: 利回りの変化はbpで表示する（^TNXは利回り〈%〉そのもの）
+                data[name]["change_bp"] = round(change * 100, 1)
         else:
             data[name] = None
 
@@ -1026,188 +1024,69 @@ def get_market_news():
     return all_entries
 
 
-def analyse_market(realtime_data, news_context, sentiment_data=None, tech_pulse_data=None, asset_flow_data=None):
-    """xAI Grok API（OpenAI互換エンドポイント）で市場分析を実行する"""
-    news_section = news_context if news_context.strip() else "（ニュース取得なし）"
+def build_ai_facts(stage_result, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data, credit_data=None):
+    """MP-28（指示書㉓）: AIに渡す「確定した事実」のJSON。各段階の結論1行・判定に使った数値・基準日だけを入れる。
+    ニュース本文やAIに推測させる材料は入れない。"""
+    def ind(k, *fields):
+        v = (structured_data or {}).get(k)
+        if not isinstance(v, dict):
+            return None
+        return {f: v.get(f) for f in ("value", "change_percent", "change_bp", "date") + fields if v.get(f) is not None}
+    st = (stage_result or {}).get("stages") or {}
+    facts = {
+        "今日の結論": {f"段階{k}": (v or {}).get("line") for k, v in sorted(st.items())},
+        "天気": (stage_result or {}).get("weather"),
+        "データ基準日": {k: v for k, v in ((stage_result or {}).get("data_quality") or {}).items() if k != "as_of"},
+        "指標": {k: ind(k) for k in ("S&P500", "NASDAQ", "VIX指数", "米10年債", "ドル円", "WTI原油", "金（GOLD）")},
+        "段階1の事実タグ": (st.get("1") or {}).get("tags"),
+        "資産の前営業日比": {k: (v or {}).get("change_pct") for k, v in (asset_flow_data or {}).items()},
+        "センチメント指数": {"score": (sentiment_data or {}).get("score"), "label": (sentiment_data or {}).get("label")},
+        "CNN_Fear_Greed": {"score": (fear_greed_data or {}).get("score"), "rating": (fear_greed_data or {}).get("rating")},
+        "Tech_Pulse": {"score": (tech_pulse_data or {}).get("score")},
+        "市場の広がり": {k: ((sentiment_data or {}).get("breadth") or {}).get(k)
+                     for k in ("date", "advances", "declines", "new_highs_52w", "new_lows_52w", "pct_above_50ma")},
+        "過去の実績（段階8）": (st.get("8") or {}).get("signals"),
+    }
+    if credit_data:
+        facts["株・債券・クレジット"] = credit_data
+    return facts
 
-    # Grokに渡すデータにtech_pulse・sentiment・asset_flowを追記
-    extended_data = realtime_data
 
-    if sentiment_data:
-        extended_data += "\n--- センチメント指数（内部構造） ---\n"
-        _s = sentiment_data.get('score', 'N/A')
-        _s_str = f"{_s:.0f}" if isinstance(_s, (int, float)) else str(_s)
-        extended_data += f"● センチメントスコア総合: {_s_str} ({sentiment_data.get('label', '')})\n"
-        subs = sentiment_data.get("sub_scores", {})
-        sub_names = {
-            "vix_level": "VIX水準",
-            "sp500_ma_dev": "S&P500/50日MA乖離",
-            "ad_ratio": "騰落比率",
-            "hyg_lqd_dir": "クレジット環境",
-            "nh_nl": "新高値vs新安値",
-            "growth_value": "グロース優勢",
-            "distribution": "出来高圧力",
-        }
-        for k, v in subs.items():
-            name = sub_names.get(k, k)
-            raw = v.get('raw', 'N/A')
-            # distributionのraw値にS&P500限定であることを明示
-            if k == "distribution" and isinstance(raw, dict):
-                raw = f"S&P500の前日比出来高比={raw.get('vol_ratio', 'N/A')}, 前日比変化率={raw.get('chg_pct', 'N/A')}%"
-            # nh_nlはNH・NL個別値を明示（差分のみでは市場の広がりが不明確）
-            elif k == "nh_nl" and isinstance(raw, (int, float)):
-                _breadth = sentiment_data.get("breadth") or {}
-                _nh = _breadth.get("new_highs_52w")
-                _nl = _breadth.get("new_lows_52w")
-                if _nh is not None and _nl is not None:
-                    raw = f"NH（新高値）={_nh}, NL（新安値）={_nl}, NH-NL差={int(raw):+d}"
-                else:
-                    raw = f"NH-NL差={int(raw):+d}"
-            extended_data += f"  {name}: スコア={v.get('score', 'N/A'):.0f} (重み={int(v.get('weight',0)*100)}%, 実値={raw})\n"
+AI_PROMPT = """あなたは市場の解説者だ。以下のJSONは、本システムが閾値で機械的に判定した「確定した事実」である。
+このJSONだけを根拠に、今日の米国市場の見解を日本語で書け。
 
-    if tech_pulse_data:
-        extended_data += "\n--- Tech Pulse（NASDAQセンチメント・乖離分析） ---\n"
-        extended_data += f"● Tech Pulseスコア: {tech_pulse_data.get('score', 'N/A')} ({tech_pulse_data.get('label', '')})\n"
-        comp = tech_pulse_data.get("components", {})
-        if comp.get("qqq_vs_ma125") is not None:
-            extended_data += f"● QQQ vs MA125乖離: {comp['qqq_vs_ma125']:+.2f}%\n"
-        if comp.get("qqq_vs_spy_20d") is not None:
-            extended_data += f"● QQQ vs SPY 20日相対強度: {comp['qqq_vs_spy_20d']:+.2f}% （プラス=NASDAQ優勢）\n"
-        if comp.get("vxn_latest") is not None:
-            extended_data += f"● VXN（NASDAQ版VIX）: {comp['vxn_latest']:.2f}\n"
-        if comp.get("vxn_vs_ma50") is not None:
-            extended_data += f"● VXN vs MA50: {comp['vxn_vs_ma50']:+.2f}%\n"
-        div = tech_pulse_data.get("divergence", {})
-        if div.get("value") is not None:
-            extended_data += f"● Tech Pulse vs CNN F&G 乖離値: {div['value']:+.1f} （プラス=NASDAQ過熱、マイナス=NASDAQ調整）\n"
-        if div.get("zscore") is not None:
-            extended_data += f"● 乖離Zスコア（90日）: {div['zscore']:+.2f}σ （正=NASDAQ優位/負=S&P500優位、±1.5σ超=異常な乖離）\n"
-        if div.get("signal"):
-            extended_data += f"● Tech Pulseシグナル: {div['signal']}\n"
+制約:
+- JSONに無い数値を書かない。数値を新たに計算・推測・丸め直ししない（引用するときはJSONの値のまま）
+- JSONに無い出来事・ニュース・発言・予定に触れない
+- 因果を断定しない（「〜が原因」「〜を受けて」は使わない）。同じ日に起きた事実として並べる
+- 将来の値動きを予測しない。売買を勧めない
+- Markdown記法は使わない。プレーンテキスト
 
-    if asset_flow_data:
-        extended_data += "\n--- 今日の資産クラス間資金フロー ---\n"
-        asset_labels = {
-            "ultra_short": "超短期国債(SHV)",
-            "short_bond": "短期国債(3ヶ月T-Bill)",
-            "gold": "金(GLD)",
-            "long_bond": "長期国債(TLT)",
-            "ig_bond": "投資適格社債(LQD)",
-            "hy_bond": "HY社債(HYG)",
-            "equity": "株式(SPY)",
-        }
-        for key, label in asset_labels.items():
-            d = asset_flow_data.get(key)
-            if d and d.get("change_pct") is not None:
-                direction = "▲買われた" if d["change_pct"] >= 0 else "▼売られた"
-                extended_data += f"● {label}: {d['change_pct']:+.2f}% {direction}\n"
-    prompt = f"""
-あなたはプロの機関投資家専属アナリストだ。米国株市場を主軸に、以下の最新数値と需給・ニュースを統合し報告せよ。
+出力形式:
+1行目から5〜8文の見解（段落1つ）。
+最後の行に「俳句：」に続けて、今日の市場を詠んだ五・七・五の俳句を1句（数値は入れない）。
 
-【全体要約】
-最初に必ず以下の形式で全体要約を書け（他の項目より前に置くこと）。
-
-全体要約で求めるのは「数値の引用」ではなく、複数の指標を横断して読んだときに初めて見えてくる「構造的な矛盾」「変化の方向性」「体感と実態の乖離」の言語化だ。以下の視点を必ず検討し、該当するものを盛り込め：
-
-視点A【全体 vs 部分の乖離】
-  センチメントスコアやF&Gが示す市場全体の水準と、Tech PulseやQQQ/SPY相対強度が示すNASDAQ固有の動きが乖離していないか。
-  例：市場全体はGREEDでも乖離Zスコアがマイナス方向なら「全体は落ち着いているのにNASDAQだけ調整が生じている」という構造を指摘せよ。
-
-視点B【水準 vs 変化の乖離】
-  絶対値（スコア65、QQQ+110%等）は高くても、Zスコアや前日比の方向が急変しているなら「水準は高いが変化の方向が転換した」という変化点を指摘せよ。
-
-視点C【ポートフォリオ体感 vs 市場実態の乖離】
-  ハイテク株保有者には総悲観に見えても、市場全体のセンチメントはそうでない場合、「あなたの株が下がっているのは市場全体の問題ではなくNASDAQ固有の調整だ」という視点を提供せよ。
-
-視点D【資金フローが示す投資家心理の違い】
-  資産クラス間資金フローを見て、「市場全体からリスクオフ（株・社債・HY債が全て売られた）」と「株から長期債に資金移動（株売り・TLT買い）」では投資家の意図が全く異なる。この違いを必ず分析・解説せよ。
-  リスクオフ全般 → 景気後退懸念・恐怖による逃避
-  株→長期債シフト → 金利低下期待・安全資産への選好（必ずしも悲観ではない）
-  株→金シフト → インフレヘッジ・ドル不信
-  株・債券ともに売られ現金化 → 本格的なリスク回避
-
-形式：
-  ▶ [市場の現在地：全体フェーズと最も重要な構造的特徴を1〜2文で。数値は根拠として使うが羅列しない]
-  ✦ [投資行動示唆：上記の構造から導かれる具体的な行動を1〜2文。買い場・様子見・利確の根拠を構造で示せ]
-
-1. 市場フェーズ判定（晴れ・曇り・嵐）
-判定：[晴れ/曇り/嵐] を冒頭に置き、根拠を続けよ（VIXとS&P500の前日比出来高比を必ず含む）。
-価格下落＋出来高増なら「嵐」の予兆として厳しく判定せよ。
-【出来高比ルール】出来高比はS&P500・NASDAQなど指数を限定して記述すること（例：「S&P500の出来高比は0.47と低水準」）。複数指数の出来高比をまとめて「0.5未満」等と一般化することは禁止。
-
-2. 金利・債券（米10年債）
-▷ [現在の利回り水準と方向]
-→ [株式バリュエーションと資金フローへの影響を1文で]
-【債券ルール】米10年債利回りが上昇している場合は「バリュエーション圧縮圧力」と「債券安（債券売り）」が同時に生じていることを明示せよ。「債券リスクオン」という表現は禁止。債券の状態は「債券買い（安全資産への逃避）」または「債券売り（利回り上昇）」で表現せよ。
-
-3. 恐怖指数・心理（VIX）
-▷ [現在のVIX水準と示す心理状態]
-→ [エントリー・エグジットタイミングの判断基準としての意味を1文で]
-
-4. 通貨の勢い（ドル円）
-▷ [現在のドル円水準と方向]
-→ [米国輸出企業・多国籍企業への影響を主軸に1文で]
-
-5. 指数・需給（S&P500、NASDAQ、NYSE騰落統計）
-※米国市場を主軸に分析せよ。日経平均は補足的な位置づけとする。
-▷ [S&P500・NASDAQの方向と出来高の特徴]
-→ [市場の内部構造（広がりか集中か）の観点から投資判断への意味を1文で]
-出来高比1.1以上かつ価格下落があればディストリビューションの疑いを指摘せよ。
-安値圏からの反発局面で出来高増加を伴う大幅上昇（+1.7%以上）はフォロースルーデイとして明示せよ。
-NYSE騰落比率が指数と逆行すれば市場内部の脆弱性を指摘せよ。
-新高値(NH)・新安値(NL)の両値を本文に明記し（例: NH=120, NL=45）、NH-NL差の拡大/縮小トレンドから市場の広がりを分析すること。
-
-6. スタイル・規模間相対パフォーマンス（グロース対バリュー比、大型対小型比）
-▷ [グロース対バリュー・大型対小型の方向（日次変化）]
-→ [リスク選好度の変化とポートフォリオ傾斜判断への意味を1文で]
-
-7. コモディティ（原油、金）
-▷ [原油・金の方向と水準]
-→ [インフレ期待とリスク回避需要の読み方を1文で]
-原油下落時は「地政学リスクの緩和」か「需要減退懸念」かを必ず区別せよ。
-
-8. クレジット・金融コンディション（HYG、LQD、HYG対LQD比）＋資金フロー分析
-▷ [HYG・LQD・比率の方向と示すクレジット環境]
-→ [信用収縮リスクの先行指標としての意味を1文で]
-以下を個別に一行ずつ明記した上で総合判定せよ：
-  株（S&P500の方向）→ リスクオン/リスクオフ
-  債券（米10年債利回りの方向）→ 債券売り（利回り上昇＝バリュエーション圧縮）/債券買い（利回り低下＝安全資産選好）
-  クレジット（HYG対LQD比の方向）→ リスクオン/リスクオフ
-資産クラス間資金フローのデータがあれば、資金の移動先（株→債券、株→金、全面逃避等）から投資家心理の具体的な意図を読み解け。
-【信用収縮ルール】「信用収縮」「HYスプレッド拡大」という表現が許可されるのは、HYGのみが下落しLQDが相対的に上昇している場合（HYG変化率 < LQD変化率、かつLQD変化率 ≥ 0）に限る。HYGとLQDが同時に下落している場合は金利上昇によるデュレーションリスクが主因であり、「金利上昇圧力」または「デュレーションリスク」と表現すること。「信用収縮」は禁止。
-
-9. Tech Pulse分析（NASDAQセンチメント・乖離）
-QQQ vs SPY相対強度・VXN・乖離Zスコアを使って以下を分析せよ：
-▷ [NASDAQはS&P500と比べて過熱しているか調整しているか]
-→ [乖離Zスコアの方向から「今起きていること」の本質を1文で]
-NASDAQハイテク株保有者の体感と市場全体の実態が乖離している場合は必ずその構造を指摘せよ。
-【乖離Zスコアの定義】乖離値 = Tech Pulseスコア − CNN F&G スコア。正（プラス）＝NASDAQが全体より強い（NASDAQ優位）、負（マイナス）＝NASDAQが全体より弱い（S&P500優位）。「ZスコアがマイナスだからNASDAQは強い」という解釈は誤りであり禁止。Zスコアがマイナスの場合は「NASDAQが相対的に弱い・調整圧力がある」と表現すること。
-
-10. 短期警戒ポイント（重要イベント）
-今後5営業日以内の米国市場に関わる具体的なイベントを列挙し、各イベントに「予想値・前回値・市場への影響シナリオ」を一行で添えよ。
-
-11. 総評・相関分析（需給面からの踏み込んだ考察）
-
-制約：
-- 出力の先頭は必ず【全体要約】から始めること。
-- 各項目（1〜11）の冒頭に関連数値を「● 指標名: 数値」形式で1行書くこと。
-- 総評では具体的なシグナルや閾値を示せ。免責的汎用表現は禁止。
-- 地政学リスクに言及する場合は具体的な地域・事象・発言者を明記せよ。
-- 出力は日本語のみ。Markdown記法（##、**等）は禁止。プレーンテキストのみ。
-- 締め文として「注意が必要」「懸念される」等の汎用表現で終えることは禁止。
-- 末尾に俳句・詩的フレーズ・文学的な一文を添えることは禁止。総評の最終文は具体的な相場シナリオで終えること。
-- センチメントスコアは整数で表記すること（小数点なし）。例: 65、72。小数（65.2）は禁止。
-- VIXは必ず小数点以下2桁で表記すること（例: 16.05、23.18）。1桁表記（16.1）は禁止。
-- Risk-Off Score算出根拠: 株（リスクオフ）=+33pt、債券買い（質への逃避）=+33pt、クレジット（リスクオフ）=+34ptの3軸合計（0/33/67/100の4段階）。レポート冒頭の全体要約でRisk-Off Scoreと現在の構成（どの軸がオン/オフか）を1行明記すること。
-- VIX9Dの変化を表現する際、上昇が+1pt未満の場合は「急騰」を使用せず「上昇加速(+Xpt)」と表現すること。急激な上昇（+3pt以上）の場合のみ「急騰」を許可する。
-- VIX9DがVIX30Dを下回りつつも上昇加速している場合は「短期安定構造（VIX9D<VIX30D）を維持しながら9Dが上昇加速している移行期」という文脈を必ず明記すること。
-
-【最新データ】:
-{extended_data}
-
-【背景ニュース】:
-{news_section}
+【確定した事実（JSON）】
+{facts}
 """
+
+
+def split_haiku(text):
+    """AIの出力から最後の「俳句：」行を取り出す。(本文, 俳句 or None)"""
+    if not text:
+        return text, None
+    lines = text.rstrip().splitlines()
+    for i in range(len(lines) - 1, -1, -1):
+        m = re.match(r"\s*俳句[：:]\s*(.+)$", lines[i])
+        if m:
+            return "\n".join(lines[:i]).rstrip(), m.group(1).strip()
+    return text, None
+
+
+def analyse_market(facts):
+    """xAI Grok API（OpenAI互換エンドポイント）で「AIの見解」を生成する（MP-28、指示書㉓）。
+    入力は確定した事実のJSON（build_ai_facts()）だけ。戻り値は(見解の本文, 俳句)。"""
+    prompt = AI_PROMPT.format(facts=json.dumps(facts, ensure_ascii=False, indent=1, default=str))
     url = "https://api.x.ai/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
@@ -1225,25 +1104,18 @@ NASDAQハイテク株保有者の体感と市場全体の実態が乖離して�
             resp = requests.post(url, headers=headers, json={
                 "model": model,
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 4096,
+                "max_tokens": 2048,
                 "temperature": 0.3,
             }, timeout=120)
             resp.raise_for_status()
             text = resp.json()["choices"][0]["message"]["content"]
             print(f"[OK] Grokモデル成功: {model}")
-            return text
+            return split_haiku(text)
         except Exception as e:
             print(f"[WARN] Grokモデル失敗 ({model}): {e}")
             last_error = e
     print("[ERROR] すべてのGrokモデルで失敗しました")
     raise last_error
-
-
-def extract_judgment(report_text):
-    # 全角・半角コロンどちらにも対応。文字列中の最初の判定を返す。
-    match = re.search(r'判定[：:]\s*(嵐|曇り|晴れ)', report_text)
-    return match.group(1) if match else "不明"
-
 
 
 def fetch_fred_short_bond(asset_def):
@@ -1343,26 +1215,62 @@ def collect_asset_flow():
             result[a["key"]] = None
     return result
 
-def calc_hindenburg_active(breadth):
-    """ヒンデンブルグ・オーメン判定（新高値・新安値が同時にNH/NL基準
-    〈全銘柄数の2.2%〉を超えて出現）。
+def calc_hindenburg(breadth, sp500_up_50d):
+    """ヒンデンブルグ・オーメンの一般的な定義（MP-18、指示書㉓）。条件ごとの成否を返す。
 
-    [[MARKETPULSE-MINOR-INCONSISTENCIES-1]]①対応: 固定値500ではなく
-    breadth_data.jsonの実測total_stocksを使う（S&P500の実際の構成銘柄数
-    は501〜503のように変動するため）。取得できない場合のみ一般的な500へ
-    フォールバックする。
+    1. 新高値・新安値がともに銘柄数の2.2%以上（新高値・新安値は実際に52週高値・安値を更新した銘柄。
+       breadth_calculator.py）
+    2. 指数が上昇トレンド（S&P500が50営業日前より高い、で近似）
+    3. McClellan Oscillatorが負
+    4. 新高値が新安値の2倍以下
+    元の定義はNYSE全銘柄だが、本システムはS&P500構成銘柄で数える。
 
-    Args:
-        breadth: _load_latest_breadth()が返す辞書、またはNone
+    [[MARKETPULSE-MINOR-INCONSISTENCIES-1]]①: 銘柄数は固定値500ではなくbreadthの実測total_stocks
+    （取得できない場合のみ500）。
+
     Returns:
-        bool（判定結果）、breadthがNone/空ならNone
+        {"active": bool|None, "conditions": {...}}。breadthがNone/空ならNone。
+        入力が欠けた条件はNoneとし、そのときactiveもNone（判定不能）
     """
     if not breadth:
         return None
     nh = breadth.get("new_highs_52w") or 0
     nl = breadth.get("new_lows_52w") or 0
     total_stocks = breadth.get("total_stocks") or 500
-    return bool(nh >= total_stocks * 0.022 and nl >= total_stocks * 0.022)
+    mc = breadth.get("mcclellan_oscillator")
+    cond = {
+        "nh_nl_both_2_2pct": bool(nh >= total_stocks * 0.022 and nl >= total_stocks * 0.022),
+        "sp500_uptrend_50d": None if sp500_up_50d is None else bool(sp500_up_50d),
+        "mcclellan_negative": None if mc is None else bool(mc < 0),
+        "nh_le_2x_nl": bool(nh <= 2 * nl),
+    }
+    if any(v is False for v in cond.values()):
+        active = False
+    elif any(v is None for v in cond.values()):
+        active = None
+    else:
+        active = True
+    return {"active": active, "conditions": cond, "new_highs": nh, "new_lows": nl, "total_stocks": total_stocks}
+
+
+def calc_hindenburg_active(breadth, sp500_up_50d=None):
+    """calc_hindenburg()のactiveだけを返す（チェックリスト用）。"""
+    h = calc_hindenburg(breadth, sp500_up_50d)
+    return None if h is None else h["active"]
+
+
+def sp500_up_vs_50d():
+    """S&P500の最新終値が50営業日前の終値より高いか（daily/）。取れなければNone。"""
+    if not HAS_MARKET_DATA:
+        return None
+    try:
+        rows = [r for r in _md_get_price_series("^GSPC", days=80) if not r.get("_gap") and r.get("close") is not None]
+        if len(rows) < 51:
+            return None
+        return rows[-1]["close"] > rows[-51]["close"]
+    except Exception as e:
+        print(f"[WARN] S&P500の50営業日比較に失敗: {e}")
+        return None
 
 
 def calc_take_profit_checklist(fg_score, above_ma200, ma200_slope, hy_is_expanding, hindenburg_active):
@@ -1406,7 +1314,7 @@ def calc_take_profit_checklist(fg_score, above_ma200, ma200_slope, hy_is_expandi
             "label": "ヒンデンブルグ・オーメン",
             "passed": not hindenburg_active,
             "point": 1 if hindenburg_active else 0,
-            "detail": "シグナル発生（52週高値・安値が同時出現）" if hindenburg_active else "シグナルなし",
+            "detail": "シグナル発生（新高値・新安値の同時出現、上昇トレンド、McClellan負、新高値≦新安値×2）" if hindenburg_active else "シグナルなし",
         })
     else:
         checks.append({"key": "hindenburg", "label": "ヒンデンブルグ・オーメン", "passed": True, "point": 0, "detail": "データ取得不可"})
@@ -1517,11 +1425,127 @@ def check_data_freshness(now_utc=None, symbols=("^GSPC", "SPY")):
     return out
 
 
-def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None):
+def calc_credit(structured_data, asset_flow_data):
+    """株・債券・クレジットの3方向の判定とRisk-Offスコア（MP-27）。"""
+    sp500_chg   = ((structured_data.get("S&P500") or {}).get("change_percent") or 0)
+    hyg_chg_pct = ((structured_data.get("HYG（ハイイールド債ETF）") or {}).get("change_percent") or 0)
+    lqd_chg_pct = ((structured_data.get("LQD（投資適格債ETF）") or {}).get("change_percent") or 0)
+
+    # credit_stock: ^GSPC（S&P500指数）ベース。ETFの分配・トラッキング
+    # 誤差を含まない、市場全体の日次方向性を測る単純な指標として指数を使う
+    # （SPY統一案〈②案a〉は asset_flow_data取得失敗時にcredit_stockまで
+    # 連鎖的に判定不能になる結合リスクを生むため見送った）。
+    credit_stock  = "リスクオフ" if sp500_chg < -1.0 else "リスクオン"
+    # クレジット: HYG変化率 < LQD変化率 → スプレッド拡大 → リスクオフ
+    # HYG対LQD比（共通日でそろえた比の変化）を優先する。取れない場合のみ従来の
+    # 各自の前日比の差で判定する（MARKETPULSE-HYG-LQD-DATE-MIX-1、2026-09-26）
+    _hl = structured_data.get("HYG対LQD比") or {}
+    if _hl.get("change") is not None:
+        credit_credit = "リスクオフ" if _hl["change"] < 0 else "リスクオン"
+    else:
+        credit_credit = "リスクオフ" if (hyg_chg_pct - lqd_chg_pct) < 0 else "リスクオン"
+
+    # 債券: TLT(long_bond)上昇 & SPY(equity)下落 → 質への逃避 → 債券買い
+    # TLTが下落（利回り上昇＝債券安）の場合は債券売り。"リスクオン/オフ"表記は誤解を招くため廃止。
+    # credit_bond: SPY（S&P500 ETF）ベース。「資金が株式から債券へ逃避
+    # しているか」という資金フロー概念のため、実際に売買可能なファンド
+    # （TLTとの比較対象としてもSPY）が必須（^GSPC統一案〈②案b〉は指数
+    # 自体に資金流出入の概念がなく、collect_asset_flow()の7資産クラス
+    # ラインナップとの整合性も失われるため見送った）。
+    # MP-27（指示書㉓）: 以前は「債券買い」以外のすべての日を「債券売り」にしていた。
+    # 「債券売り」はTLTが実際に下落した日だけにし、それ以外は「中立」にする。
+    tlt_af = ((asset_flow_data or {}).get("long_bond") or {})
+    spy_af = ((asset_flow_data or {}).get("equity")    or {})
+    tlt_af_chg = tlt_af.get("change_pct")
+    spy_af_chg = spy_af.get("change_pct")
+    credit_bond = bond_direction(tlt_af_chg, spy_af_chg)
+
+    risk_off_count = sum([
+        credit_stock  == "リスクオフ",
+        credit_bond   == "債券買い",   # 質への逃避（旧: リスクオフ）をリスクオフシグナルとして計上
+        credit_credit == "リスクオフ",
+    ])
+    risk_off_score = round(risk_off_count / 3 * 100)
+
+    credit_data = {
+        "stock":          credit_stock,
+        "bond":           credit_bond,
+        "credit":         credit_credit,
+        "risk_off_score": risk_off_score,
+    }
+    print(f"[INFO] credit: stock={credit_stock} bond={credit_bond} credit={credit_credit} → risk_off_score={risk_off_score}")
+    return credit_data
+
+
+def bond_direction(tlt_chg, spy_chg):
+    """MP-27の債券判定。TLT>+0.3%かつSPY<−0.5%→債券買い、TLT<0→債券売り、それ以外→中立。"""
+    if tlt_chg is not None and spy_chg is not None and tlt_chg > 0.3 and spy_chg < -0.5:
+        return "債券買い"
+    if tlt_chg is not None and tlt_chg < 0:
+        return "債券売り"
+    return "中立"
+
+
+def sentiment_signal(score, history, window_start):
+    """MP-05（指示書㉓）: センチメントのシグナル（BUY / TAKE PROFIT / HOLD）。
+    以前は画面の表示期間の「直近20エントリ」で判定しており、表示期間で結果が変わった。
+    日付で直近20営業日（window_start以降、JSTの実行日で比較）のエントリと今回のスコアで判定する。
+
+    Args:
+        score: 今回のスコア
+        history: [(エントリの日付'YYYY-MM-DD', スコア), ...]（今回を含まない）
+        window_start: 直近20営業日の初日'YYYY-MM-DD'
+    """
+    if score is None:
+        return None
+    recent = [s for d, s in history if d >= window_start and s is not None] + [score]
+    peak = max(recent)
+    if score <= 20:
+        sig, reason = "BUY", "スコア20以下"
+    elif len(recent) >= 3 and peak >= 70 and peak - score >= 5:
+        sig, reason = "TAKE PROFIT", f"直近20営業日のピーク{peak:.1f}から{peak - score:.1f}pt低下"
+    else:
+        sig, reason = "HOLD", "BUY・TAKE PROFITの条件に当たらない"
+    return {"signal": sig, "reason": reason, "window_start": window_start, "peak": peak, "n": len(recent)}
+
+
+def signal_window_start(now_utc, n=20):
+    """now_utc時点の直近n営業日（NYSE）の初日。"""
+    import pandas_market_calendars as _mcal
+    days = _mcal.get_calendar("NYSE").valid_days(start_date=(now_utc - timedelta(days=n * 2 + 15)).date().isoformat(),
+                                                 end_date=now_utc.date().isoformat())
+    return days[-n].strftime("%Y-%m-%d")
+
+
+def write_nyse_holidays(path=None, now_utc=None):
+    """MP-21（指示書㉓）: 資金フローの直近7日グリッドで米国の祝日にも「休場」行を入れるため、
+    前年〜翌年のNYSEの休場日（土日以外）をdata/nyse_holidays.jsonに書く。"""
+    path = path or os.path.join(DATA_DIR, "nyse_holidays.json")
+    now_utc = now_utc or datetime.now(timezone.utc)
+    try:
+        import pandas as _pd
+        import pandas_market_calendars as _mcal
+        y = now_utc.year
+        start, end = f"{y - 1}-01-01", f"{y + 1}-12-31"
+        valid = set(d.strftime("%Y-%m-%d") for d in _mcal.get_calendar("NYSE").valid_days(start_date=start, end_date=end))
+        hol = [d.strftime("%Y-%m-%d") for d in _pd.bdate_range(start, end) if d.strftime("%Y-%m-%d") not in valid]
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({"source": "pandas_market_calendars NYSE", "from": start, "to": end, "holidays": hol},
+                      f, ensure_ascii=False, indent=1)
+        return hol
+    except Exception as e:
+        print(f"[WARN] NYSE休場日の書き出しに失敗: {e}")
+        return None
+
+
+def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     jst_now = datetime.now(JST)
     date_str = jst_now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
-    judgment = extract_judgment(report_text)
+    # MP-23（指示書㉓）: 天気はAIの文章から抽出せず、段階3・4の結論からルール（v3）で判定する。
+    # 判定できない日（段階3・4の入力が欠けた日）は「不明」
+    judgment = ((stage_result or {}).get("weather") or {}).get("label") or "不明"
 
     # JSON
     if os.path.exists(JSON_PATH):
@@ -1562,53 +1586,7 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
     # 小さいため、TLT側条件が同時に境界へ来る局面ではinstrument選択が
     # credit_bondの最終判定を左右しうる（今回の実測期間ではTLT側条件が
     # 不成立だったため実際の判定は変わらなかった）。
-    sp500_chg   = ((structured_data.get("S&P500") or {}).get("change_percent") or 0)
-    hyg_chg_pct = ((structured_data.get("HYG（ハイイールド債ETF）") or {}).get("change_percent") or 0)
-    lqd_chg_pct = ((structured_data.get("LQD（投資適格債ETF）") or {}).get("change_percent") or 0)
-
-    # credit_stock: ^GSPC（S&P500指数）ベース。ETFの分配・トラッキング
-    # 誤差を含まない、市場全体の日次方向性を測る単純な指標として指数を使う
-    # （SPY統一案〈②案a〉は asset_flow_data取得失敗時にcredit_stockまで
-    # 連鎖的に判定不能になる結合リスクを生むため見送った）。
-    credit_stock  = "リスクオフ" if sp500_chg < -1.0 else "リスクオン"
-    # クレジット: HYG変化率 < LQD変化率 → スプレッド拡大 → リスクオフ
-    # HYG対LQD比（共通日でそろえた比の変化）を優先する。取れない場合のみ従来の
-    # 各自の前日比の差で判定する（MARKETPULSE-HYG-LQD-DATE-MIX-1、2026-09-26）
-    _hl = structured_data.get("HYG対LQD比") or {}
-    if _hl.get("change") is not None:
-        credit_credit = "リスクオフ" if _hl["change"] < 0 else "リスクオン"
-    else:
-        credit_credit = "リスクオフ" if (hyg_chg_pct - lqd_chg_pct) < 0 else "リスクオン"
-
-    # 債券: TLT(long_bond)上昇 & SPY(equity)下落 → 質への逃避 → 債券買い
-    # TLTが下落（利回り上昇＝債券安）の場合は債券売り。"リスクオン/オフ"表記は誤解を招くため廃止。
-    # credit_bond: SPY（S&P500 ETF）ベース。「資金が株式から債券へ逃避
-    # しているか」という資金フロー概念のため、実際に売買可能なファンド
-    # （TLTとの比較対象としてもSPY）が必須（^GSPC統一案〈②案b〉は指数
-    # 自体に資金流出入の概念がなく、collect_asset_flow()の7資産クラス
-    # ラインナップとの整合性も失われるため見送った）。
-    credit_bond = "債券売り"
-    tlt_af = ((asset_flow_data or {}).get("long_bond") or {})
-    spy_af = ((asset_flow_data or {}).get("equity")    or {})
-    tlt_af_chg = tlt_af.get("change_pct") or 0
-    spy_af_chg = spy_af.get("change_pct") or 0
-    if tlt_af_chg > 0.3 and spy_af_chg < -0.5:
-        credit_bond = "債券買い"
-
-    risk_off_count = sum([
-        credit_stock  == "リスクオフ",
-        credit_bond   == "債券買い",   # 質への逃避（旧: リスクオフ）をリスクオフシグナルとして計上
-        credit_credit == "リスクオフ",
-    ])
-    risk_off_score = round(risk_off_count / 3 * 100)
-
-    credit_data = {
-        "stock":          credit_stock,
-        "bond":           credit_bond,
-        "credit":         credit_credit,
-        "risk_off_score": risk_off_score,
-    }
-    print(f"[INFO] credit: stock={credit_stock} bond={credit_bond} credit={credit_credit} → risk_off_score={risk_off_score}")
+    credit_data = calc_credit(structured_data, asset_flow_data)
 
     # sentiment スコア範囲チェック（CSV列ズレ等による異常値混入を防ぐ）
     _sent_score = (sentiment_data or {}).get("score")
@@ -1646,6 +1624,16 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
     }
     if data_freshness is not None:
         new_entry["data_freshness"] = data_freshness
+    if stage_result is not None:
+        new_entry["stage_conclusions"] = stage_result["stages"]
+        new_entry["weather"] = stage_result["weather"]
+        new_entry["data_quality"] = stage_result["data_quality"]
+    if haiku:
+        new_entry["haiku"] = haiku
+    if ai_facts is not None:
+        new_entry["ai_facts"] = ai_facts
+    if hindenburg is not None:
+        new_entry["hindenburg"] = hindenburg
     all_data.append(new_entry)
 
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
@@ -1822,7 +1810,8 @@ if __name__ == "__main__":
     hy_spread_data = fetch_hy_spread_from_fred()
     hy_is_expanding = (hy_spread_data or {}).get("is_expanding")
     breadth_tp = _load_latest_breadth()
-    hindenburg_active = calc_hindenburg_active(breadth_tp)
+    hindenburg = calc_hindenburg(breadth_tp, sp500_up_vs_50d())
+    hindenburg_active = None if hindenburg is None else hindenburg["active"]
     tp_checklist = calc_take_profit_checklist(
         fg_cnn_score, above_ma200, ma200_slope, hy_is_expanding, hindenburg_active
     )
@@ -1835,13 +1824,36 @@ if __name__ == "__main__":
     )
     print(f"[INFO] BUY: triggered={buy_checklist['triggered']}, extreme={buy_checklist['extreme']}, points={buy_checklist['points']}, action={buy_checklist['action']}")
 
-    news = get_market_news()
-    if not news:
-        print("[WARN] ニュースなしで分析を実行します。")
     asset_flow_data = collect_asset_flow()
     asset_flow_data = _fill_fallbacks(asset_flow_data, "asset_flow", _recent_entries)
-    report = analyse_market(realtime_text, "\n".join(news), sentiment_data, tech_pulse_data, asset_flow_data)
-    save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data, tp_checklist, buy_checklist, data_freshness)
+
+    # MP-05（指示書㉓）: シグナルは日付で直近20営業日のスコアから判定し、JSONに記録する
+    _now_utc = datetime.now(timezone.utc)
+    try:
+        _hist = [(e.get("date", "")[:10], (e.get("sentiment") or {}).get("score"))
+                 for e in _load_recent_entries(JSON_PATH, limit=60)]
+        sentiment_data["signal"] = sentiment_signal(sentiment_data.get("score"), _hist, signal_window_start(_now_utc))
+    except Exception as e:
+        print(f"[WARN] シグナル判定に失敗: {e}")
+
+    # 8段階の結論・天気・data_quality（指示書㉓ 実装A）
+    from stage_conclusions import build_stage_conclusions
+    from common.market_data.reader import get_price_series_as_of as _md_series_as_of
+    stage_result = build_stage_conclusions(
+        structured_data, asset_flow_data, sentiment_data.get("breadth"), data_freshness.get("expected_close_date"),
+        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
+    print(f"[INFO] 天気: {stage_result['weather']['label']} / data_quality: {stage_result['data_quality']['status']}")
+    for _k, _v in stage_result["stages"].items():
+        print(f"  段階{_k}: {_v.get('line')}")
+    write_nyse_holidays(now_utc=_now_utc)
+
+    # MP-28（指示書㉓）: AIの入力は確定した事実のJSONだけ（ニュースは渡さない）
+    ai_facts = build_ai_facts(stage_result, structured_data, sentiment_data, fear_greed_data, tech_pulse_data,
+                              asset_flow_data, calc_credit(structured_data, asset_flow_data))
+    report, haiku = analyse_market(ai_facts)
+    save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data,
+                              tp_checklist, buy_checklist, data_freshness, stage_result=stage_result, haiku=haiku,
+                              ai_facts=ai_facts, hindenburg=hindenburg)
     if GMAIL_USER and GMAIL_PASSWORD:
         send_email(report, sentiment_data)
     else:

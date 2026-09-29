@@ -191,7 +191,7 @@ S8_Z = 1.96
 
 
 def s8_labels(signal, close, horizon, z_gate=False):
-    """日tについて、tの時点で結果が確定している過去の日（j ≤ t−horizon−1）だけを使い、
+    """日tについて、tの時点で結果が確定している過去の日（j ≤ t−horizon）だけを使い、
     同じシグナルの日の上昇割合と、全日（条件なし）の上昇割合＝基準率との差で判定する。"""
     fwd = (close.shift(-horizon) / close - 1) * 100
     up = (fwd > 0).astype(float).where(fwd.notna())
@@ -200,10 +200,10 @@ def s8_labels(signal, close, horizon, z_gate=False):
     for i in range(len(sig)):
         if i < 260 or sig[i] is None:
             continue
-        pool = up.iloc[: i - horizon]
+        pool = up.iloc[: i - horizon + 1]
         pool = pool[pool.notna()]
         base = pool.mean()
-        same = [up.iloc[j] for j in range(i - horizon) if sig[j] == sig[i] and not np.isnan(up.iloc[j])]
+        same = [up.iloc[j] for j in range(i - horizon + 1) if sig[j] == sig[i] and not np.isnan(up.iloc[j])]
         n = len(same)
         if n < S8_MIN_N:
             labels.append("件数不足")
@@ -426,8 +426,8 @@ def main():
         ex = {"date": str(C.index[-1].date()), "signal": today}
         for h in (1, 5, 20):
             fwd = (C["^GSPC"].shift(-h) / C["^GSPC"] - 1) * 100
-            same = [fwd.iloc[j] for j in range(len(sig) - 1 - h) if sig.iloc[j] == today and not np.isnan(fwd.iloc[j])]
-            allv = fwd.iloc[: len(sig) - 1 - h].dropna()
+            same = [fwd.iloc[j] for j in range(len(sig) - h) if sig.iloc[j] == today and not np.isnan(fwd.iloc[j])]
+            allv = fwd.iloc[: len(sig) - h].dropna()
             p, b = float(np.mean([x > 0 for x in same])), float((allv > 0).mean())
             ex[f"{h}d"] = {"n": len(same), "up_pct": round(p * 100, 1), "base_up_pct": round(b * 100, 1),
                            "diff_pt": round((p - b) * 100, 1), "z": round((p - b) / np.sqrt(b * (1 - b) / len(same)), 2),

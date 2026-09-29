@@ -26,6 +26,11 @@ Playwrightを使った実ブラウザ確認スクリプト置き場。
 6. Fear & Greed関連表示（Market Pulse F&Gゲージ）
 7. breadth_summary関連表示（Market Pulse 市場の広がり）
 
+Market Pulseの全要素（`market_pulse_elements.py`）は、2026-09-30（指示書㉓ 実装A）に8段階の構成へ更新した。
+MP-01〜MP-29（置き換え・非表示にしたMP-10・MP-13・MP-14は新しい表示・非表示を確認）に加え、今日の結論パネルと
+左の各段階の結論1行（S-panel・S-left）、天気（S-weather）、段階の並び（S-order）、data_quality（S-00・S-00b）、
+段階1の事実タグ（S-01）、段階5（S-05）、資金フローの休場行（MP-21b）を確認する。
+
 ### 前提
 
 ```bash
