@@ -194,7 +194,14 @@ def compute_breadth(tickers):
     # 09-25、370銘柄が09-24の比較）。まず全銘柄の最新の有効終値日のうち最大の日を
     # 基準日とし、基準日の終値があり、かつ直前の有効終値が基準日の前営業日である
     # 銘柄だけを集計する。5日騰落比は直近6営業日がそろった銘柄だけで数える。
+    #
+    # [[MARKETPULSE-BREADTH-BASE-DATE-1]]（2026-09-30）: 基準日を「全銘柄の最大日付」にしていたため、
+    # 一部の銘柄だけ新しい日の終値を持つ日（2026-09-29の日次更新: 株式は09-28の足に終値が無く
+    # 保存されず、HUBBだけ09-28の終値あり）は、その1銘柄だけが集計対象になり、有効銘柄<100で
+    # 異常終了してMarket Pulse全体が更新されなかった。基準日は「読み込んだ銘柄の半数以上が
+    # 終値を持つ最新の日」とし、それより新しい行を持つ銘柄は基準日までに切り詰めて集計する。
     loaded = []
+    close_dates = {}
     for ticker in tickers:
         try:
             series = _md_get_price_series(ticker, days=260)
@@ -204,11 +211,21 @@ def compute_breadth(tickers):
         real = [r for r in series if not r.get("_gap") and r.get("close") is not None]
         if real:
             loaded.append((ticker, series))
-            if last_date is None or real[-1]["date"] > last_date:
-                last_date = real[-1]["date"]
+            for r in real[-10:]:
+                close_dates[r["date"]] = close_dates.get(r["date"], 0) + 1
+    last_date = next((d for d in sorted(close_dates, reverse=True) if close_dates[d] * 2 >= len(loaded)), None)
     if last_date is None:
         print("[ERROR] 有効な日付が取得できませんでした")
         return None
+    ahead = 0
+    trimmed = []
+    for ticker, series in loaded:
+        if any(r["date"] > last_date and not r.get("_gap") and r.get("close") is not None for r in series):
+            ahead += 1
+        trimmed.append((ticker, [r for r in series if r["date"] <= last_date]))
+    loaded = trimmed
+    if ahead:
+        print(f"[WARN] 基準日{last_date}より新しい終値を持つ銘柄{ahead}件は基準日までで集計")
     last6 = _recent_trading_days(last_date, 6)
     prev_day = last6[-2]
 
@@ -309,6 +326,7 @@ def compute_breadth(tickers):
         "total_stocks": valid_count,
         "stocks_excluded_date_mismatch": excluded_date,
         "stocks_counted_5d": n_5d,
+        "stocks_ahead_of_base_date": ahead,
         "pct_above_50ma": pct_above_50ma,
         "pct_above_200ma": pct_above_200ma,
     }

@@ -206,6 +206,31 @@ class TestBreadthSameDateOnly:
         assert r["total_stocks"] == 120 and r["stocks_excluded_date_mismatch"] == 1
 
 
+class TestBreadthBaseDateMajority:
+    """MARKETPULSE-BREADTH-BASE-DATE-1（2026-09-30）: 一部の銘柄だけ新しい日の終値を持つ日も、
+    半数以上の銘柄がそろう日を基準日にする（2026-09-29型: HUBBだけ09-28、他は09-25）"""
+
+    def test_single_ticker_ahead_does_not_become_base_date(self, monkeypatch):
+        up = {f"U{i}": _make_series([100.0 + j for j in range(260)]) for i in range(150)}
+        ahead_anchor = "2026-09-28"
+        ahead = {"AHEAD": _make_series([100.0 + j for j in range(259)] + [50.0], anchor=ahead_anchor)}
+        _patch_price_series(monkeypatch, {**up, **ahead})
+        r = bc.compute_breadth(list(up) + ["AHEAD"])
+        assert r is not None
+        assert r["date"] == _ANCHOR
+        # AHEADは09-25までに切り詰めて集計（09-25は上昇）。09-28の下落は数えない
+        assert r["total_stocks"] == 151 and r["advances"] == 151 and r["declines"] == 0
+        assert r["stocks_ahead_of_base_date"] == 1
+
+    def test_majority_on_new_date_moves_base_date(self, monkeypatch):
+        new = {f"N{i}": _make_series([100.0 + j for j in range(260)], anchor="2026-09-28") for i in range(120)}
+        old = {f"O{i}": _make_series([100.0 + j for j in range(260)]) for i in range(50)}
+        _patch_price_series(monkeypatch, {**new, **old})
+        r = bc.compute_breadth(list(new) + list(old))
+        assert r["date"] == "2026-09-28"
+        assert r["total_stocks"] == 120 and r["stocks_excluded_date_mismatch"] == 50
+
+
 class TestRspSpyDateAligned:
     def test_missing_spy_close_does_not_pair_different_days(self, monkeypatch):
         """SPYの最新日の終値が欠けても、RSPの最新日とSPYの前日を組み合わせない"""

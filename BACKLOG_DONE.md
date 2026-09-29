@@ -2,6 +2,25 @@
 
 ---
 
+## 2026-09-30（完了）
+
+### ✅ [MARKETPULSE-BREADTH-BASE-DATE-1] compute_breadth()の基準日が「全銘柄の最大日付」のため、1銘柄だけ新しい日の終値を持つ日にMarket Pulse全体が更新されない → 完了（2026-09-30）: 半数以上の銘柄が終値を持つ最新の日を基準日にするよう修正
+**優先度:** 高
+**分類:** 更新停止 / Market Pulse（breadth_calculator.py）
+**登録日:** 2026-09-30
+**発見:** 指示書㉓ STEP 2の着手時（market_data.jsonの最新エントリが09-26のままだった）
+
+#### 内容
+2026-09-29 01:06 UTCのMarket_Pulse_Update（workflow_run起動）が「Run breadth calculator」で失敗し、collect_and_sendが
+実行されなかった。同日のMarket Data Daily Updateでは、株式の09-28の足に終値が無く保存されなかった（指示書⑳の仕様どおり、
+次回取り直し）一方、HUBBと指数・先物の一部は09-28の終値を持っていた。compute_breadth()は指示書⑳（MARKETPULSE-BREADTH-MIXED-DATES-1）
+で「全銘柄の最新日の最大値」を基準日にしていたため、基準日が09-28になり集計対象が1銘柄、有効銘柄<100で異常終了した。
+
+#### 対応
+基準日を「読み込んだ銘柄の半数以上が終値を持つ最新の日」に変更し、それより新しい終値を持つ銘柄は基準日までに切り詰めて集計する
+（件数を`stocks_ahead_of_base_date`に記録）。現在のdaily/で再現し、修正後は基準日09-25・集計503銘柄・先行1銘柄（HUBB）になることを確認。
+回帰テスト2件（1銘柄だけ先行する日／過半数が新しい日）を追加。
+
 ## 2026-09-26（完了）
 
 - `SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1` → IDEAS_AND_WATCH.md へ移動（2026-09-26、理由: 実害・消費者なし）
