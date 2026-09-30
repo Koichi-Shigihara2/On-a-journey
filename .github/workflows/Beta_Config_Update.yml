@@ -1,9 +1,10 @@
 name: Beta Config Update
 
 on:
-  # 毎月第1日曜日 JST 8:00 に実行
+  # 毎月第1日曜日 23:00 UTC（JST 月曜8:00）に実行する。cronは日付（1〜7日）で起動し、日曜かどうかはジョブの最初で判定する
+  # （cronで日付と曜日を両方指定すると「または」になり、1〜7日の毎日と毎週日曜に動いていた。[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]）
   schedule:
-    - cron: '0 23 1-7 * 0'   # UTC 23:00 Sun (JST 8:00 Mon, 月初週の日曜)
+    - cron: '0 23 1-7 * *'   # 毎月1〜7日の23:00 UTC（日曜以外は最初の段で終了）
   # 手動実行（新規銘柄登録後など）
   workflow_dispatch:
     inputs:
@@ -24,18 +25,35 @@ jobs:
   update-beta:
     runs-on: ubuntu-latest
     steps:
+      # 定時起動は日曜（UTC）の分だけ続ける。GitHubの定時起動は遅れて始まることがある（日曜23:00 UTCの起動が月曜の1時台になった例あり）
+      # ため、今の時刻から6時間引いた日付の曜日で判定する（23:00 UTCの起動が6時間以内に遅れても、予定していた日の曜日になる）
+      - name: Check first-Sunday schedule
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          elif [ "$(date -u -d '6 hours ago' +%u)" = "7" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "日曜の起動ではないため何もしない（予定日 $(date -u -d '6 hours ago' +'%Y-%m-%d %a')）"
+          fi
+
       - name: Checkout repository
+        if: steps.check.outputs.run == 'true'
         uses: actions/checkout@v4
         with:
           ref: kaihatsu
 
       - name: Setup Python
+        if: steps.check.outputs.run == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
+        if: steps.check.outputs.run == 'true'
         # [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-1: beta_fetcher.pyが
         # common.market_data.reader経由になったため、common/market_data/
         # fetcher.py（__init__.py経由で連鎖import）が要求する
@@ -46,6 +64,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Beta Config Update
+        if: steps.check.outputs.run == 'true'
         env:
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
@@ -61,7 +80,7 @@ jobs:
           fi
 
       - name: Commit and push changes
-        if: ${{ github.event.inputs.dry_run != 'true' }}
+        if: steps.check.outputs.run == 'true' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
