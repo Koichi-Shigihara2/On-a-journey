@@ -13051,13 +13051,17 @@
     },
     {
       "date": "2026-09-29",
-      "open": 23696.775390625,
-      "high": 23747.73828125,
-      "low": 23616.859375,
+      "open": 0.0,
+      "high": 0.0,
+      "low": 0.0,
       "close": 23709.595703125,
       "volume": 0,
       "_validation_warnings": [
-        "volume must be > 0 (got 0)"
+        "open must be > 0 (got 0.0)",
+        "high must be > 0 (got 0.0)",
+        "low must be > 0 (got 0.0)",
+        "volume must be > 0 (got 0)",
+        "expected high >= close >= low (got high=0.0, close=23709.595703125, low=0.0)"
       ]
     }
   ]
