@@ -90,7 +90,7 @@ Market Data Daily Updateは、何もしなかった実行・新しいデータ�
 |---|---|---|---|
 | Yahoo（yfinance）の米国の個別株・ETF | 毎日00:00 UTCに直近の日足を作り直し、00:00〜01:22〜01:26 UTC頃は直近の足の終値が欠ける（全取得経路・yfinance 1.2.0/1.7.0で同じ）。^GSPC・^VIX・先物は残る。2026-08はこの時間帯でも欠けなかった | 取得は00:00 UTCより前（2章）。欠けた足は保存しない。半数以上が欠けたら取り直さず終了 | [[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]、2026-09-29〜30に実測（22:21〜03:30 UTC） |
 | Yahooの^N225（日経平均） | 東京の引け（15:30 JST）後も翌朝まで、当日の足に終値が無い（出来高0）。00:00 UTC（東京の寄り付き）に前日の足が消え、当日の取引中の足（出来高0）に置き換わる。確定した足（出来高つき）は01:26 UTC頃に出る | 出来高0の足は暫定（`_provisional`）。確定した足が届いたら置き換える。同じ実行の中の取り直しの対象外 | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、2026-08-10以降の実行23回と2026-09-30の実測 |
-| Yahooの先物（CL=F・GC=F、実装CでES=F・NQ=F・NIY=F） | 日足はニューヨークの暦日。確定した終値は清算値で、翌日の遅い時刻まで取引中の値のまま（09-29の足は09-30 02:35 UTCでも取引中の値、09-28の足は09-29 22:26 UTCには清算値） | ニューヨークの翌日0時の24時間後までは暫定、毎晩の取得で更新 | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、2026-09-29〜30に実測 |
+| Yahooの先物（CL=F・GC=F、実装CでES=F・NQ=F・NIY=F） | 日足はニューヨークの暦日。確定した終値は清算値で、ニューヨークの暦日の終わり（翌日0時＝夏04:00・冬05:00 UTC）まで取引中の値のまま。09-29の足は09-30 04:05 UTCの取得で清算値（CL 89.38・GC 4179.70。直前の取引中の値とGCで27ドル違う）に置き換わり、以後不変。04:15 UTCから次の日の足が出る | ニューヨークの翌日0時の24時間後までは暫定（`FUTURES_FINAL_DELAY`。実測より24時間安全側）、毎晩の取得で更新。夜の取得の当日の行は必ず暫定（下記「設計上の暫定値」） | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、2026-09-29〜30に実測（09-30は23:05〜08:55 UTCに10分おき） |
 | 先物の限月の乗り換え | 連続シンボルは乗り換え日に前日比が不連続になる。夕方の取得の乗り換え日は、Yahooの過去の系列の乗り換え日より早い（CL: 09-18と09-23） | 行に限月（underlyingSymbol）を記録し、乗り換え日は同じ限月どうしで前日比を計算。できなければ判定から外す | [[MARKETDATA-FUTURES-ROLL-1]]、2026-09-30 |
 | Yahooの為替（JPY=X） | 日足はロンドンの暦日（翌0:00 Europe/London＝夏23:00・冬00:00 UTCで確定）。確定後も値が改訂されることがある | 確定前は暫定 | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、2026-09-30 |
 | Yahooのドル指数（DX-Y.NYB、実装B） | 日足はニューヨークの暦日 | ニューヨークの翌日0時までは暫定 | 2026-09-30（history_metadataで確認） |
@@ -99,6 +99,23 @@ Market Data Daily Updateは、何もしなかった実行・新しいデータ�
 | CNN Fear & Greed | Market Pulseの実行時に取得（その時点の値） | 取得時刻の値として表示 | MARKET_PULSE_LOGIC_INVENTORY.md |
 | S&P500構成銘柄のブレッス | 一部の銘柄だけ新しい日の終値を持つ日がある | 半数以上の銘柄がそろう日を基準日にする | [[MARKETPULSE-BREADTH-BASE-DATE-1]]、2026-09-30 |
 | SEC（EDGAR）の財務データ | 週1回の取得（日曜12:00 UTC） | 決算の反映は次の日曜以降 | 1章 |
+
+### 設計上の暫定値と想定外の暫定値（Market Pulseのdata_quality）
+
+daily/の行のうち、日足の確定前に保存したものには`_provisional`の印が付く（確定した足が届いたら置き換える）。Market Pulseはこれを2つに分ける。
+
+- **設計上の暫定値**: 日足の確定時刻（`common/market_data/fetcher.py`の`bar_final_at`）が、夜の取得の時点（NYSEの引け＋`CLOSE_WAIT`〈20分、
+  `daily_guard.py`〉）より後の銘柄。夜の実行の時点では構造上必ず暫定になる。data_qualityを**partialにしない**
+  （`expected_provisional_elements`に記録）。画面のカード・表には種類つきで表示する。
+  - 「暫定（清算前）」: 先物（`FUTURES_SYMBOLS`: CL=F・GC=F、実装CでES=F・NQ=F・NIY=F）。確定値は清算値
+  - 「暫定（日中）」: 日の区切りがNYSEの引けより後の銘柄（JPY=X〈ロンドンの暦日〉・DX-Y.NYB〈ニューヨークの暦日〉）
+- **想定外の暫定値**: それ以外（米国株・ETF・指数・^N225など、夜の取得の時点で確定しているはずの足）が暫定だった場合。data_qualityを
+  今までどおり**partial**にし（`provisional_elements`）、画面には「暫定」と表示する。
+
+区別は`fetcher.expected_provisional_kind(symbol, day)`が日足の区切りの定義から判定する（銘柄の一覧は持たない。先物を増やすときは
+`FUTURES_SYMBOLS`に加えるだけで「清算前」になる）。NYSEの休場日の足（為替等）は、その日の16:00（ニューヨーク時間）を引けとみなす。
+段階8の先物・ドル円の最新値（実装C、15分足）も同じ判定で種類を付ける（data_qualityの判定からは元々外している）。
+暫定の行は翌晩以降の取得で確定値に置き換わる（先物は`FUTURES_FINAL_DELAY`のため、確定の印が付くのは翌々晩の取得）。
 
 ---
 
@@ -143,3 +160,5 @@ YAMLのコメント・`config/workflow_dependencies.json`にあった経緯を�
 | 2026-09-30 | Market Data Daily | 20:17〜23:17 UTCの30分おき＋ガード（引け＋20分・そろい済み）、作り直しの時間帯は取り直さず終了、新しいデータが無い実行は自分を取り消し下流を動かさない。保険の01:47・02:17 UTC | [[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]、`001e1d028a`・`06e33c84e1` |
 | 2026-09-30 | TANUKI VALUATION | 一晩に2回動いていた（Market Data Dailyの完了と、その後のStonks Siloの完了の両方で起動）。Market Data Dailyを起動元から外し、Stonks Siloのfailureでも動く条件とconcurrencyを追加 | 指示書㉕ STEP C、`67915329a0` |
 | 2026-09-30 | config/workflow_dependencies.json | `known_issues`（「TANUKI Score（22:30）がMarket Pulse（翌8:05）より先に実行されるため前日データを参照」「HypeCore循環依存」）を削除。前者の時刻は現在の連鎖と合わない。後者（HypeCoreとTANUKIが互いのlatest.jsonを参照し、初回は前回値を使う）は、この文書の2章の週次の流れで表す | 指示書㉘ |
+| 2026-09-30 | Beta Config Update | cron `0 23 1-7 * 0`は日付と曜日がORになり「1〜7日の毎日＋毎週日曜」に起動していた。`0 23 1-7 * *`にし、最初の段で「今の時刻−6時間」の日付（UTC）が日曜の起動だけ続ける | [[BETA-CONFIG-CRON-DOM-DOW-OR-1]]、`1f73f1d215` |
+| 2026-09-30 | Market Pulse | 夜の実行の時点で構造上必ず暫定になる値（先物の清算前・為替とドル指数の日の区切り前）はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示（3章「設計上の暫定値と想定外の暫定値」） | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、feature/mp-impl-b `36309d41f3`・feature/mp-impl-c `2e45457c9b` |
