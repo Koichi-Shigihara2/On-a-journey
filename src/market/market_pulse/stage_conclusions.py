@@ -46,7 +46,13 @@ def _num(x) -> Optional[float]:
 
 def _ind(ind: dict, key: str, field: str = "change_percent") -> Optional[float]:
     v = (ind or {}).get(key)
-    return _num(v.get(field)) if isinstance(v, dict) else None
+    if not isinstance(v, dict):
+        return None
+    # [[MARKETDATA-FUTURES-ROLL-1]]: 限月乗り換え日（同じ限月で比べられなかった日）と、過去のエントリで乗り換えの
+    # 可能性がある日（roll_suspect）は、前日比による判定から外す（値はそのまま残す）
+    if field in ("change_percent", "change") and (v.get("roll_suspect") or (v.get("contract_roll") or {}).get("method") == "excluded"):
+        return None
+    return _num(v.get(field))
 
 
 def tnx_change_bp(ind: dict) -> Optional[float]:

@@ -232,3 +232,39 @@ class TestCollectHelpers:
         assert f["今日の結論"] == {"段階1": "S&P500 +0.51%（上昇）"}
         assert f["指標"]["S&P500"] == {"value": 7000.0, "change_percent": 0.51, "date": "2026-09-25"}
         assert "ニュース" not in str(f)
+
+
+class TestFuturesRoll:
+    """[[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物の限月乗り換え日は同じ限月どうしで比べ、比べられなければ判定から外す"""
+
+    def _item(self, pct):
+        return {"value": 95.47, "change": -5.58, "change_percent": pct, "date": "2026-09-18"}
+
+    def test_same_contract_change_on_roll_day(self):
+        prev = {"date": "2026-09-17", "close": 101.05, "contract": "CLV26.NYM"}
+        last = {"date": "2026-09-18", "close": 95.47, "contract": "CLX26.NYM", "contract_close": 96.08,
+                "contract_prev_date": "2026-09-17", "contract_prev_close": 97.23}
+        it = cs.apply_same_contract_change(self._item(-5.52), prev, last)
+        assert it["change_percent"] == -1.18 and it["contract_roll"]["method"] == "same_contract"
+        assert it["contract_roll"]["raw_change_percent"] == -5.52
+        assert sc.stage1({"WTI原油": it, "S&P500": {"change_percent": 0.1}})["tags"] == []
+
+    def test_excluded_when_new_contract_prev_close_missing(self):
+        prev = {"date": "2026-09-17", "close": 101.05, "contract": "CLV26.NYM"}
+        last = {"date": "2026-09-18", "close": 95.47, "contract": "CLX26.NYM"}
+        it = cs.apply_same_contract_change(self._item(-5.52), prev, last)
+        assert it["change_percent"] is None and it["contract_roll"]["method"] == "excluded"
+        assert sc.stage2({"WTI原油": it, "VIX指数": {"change_percent": 1.0}})["line"] == "同時に大きく動いたもの：なし"
+
+    def test_no_roll_keeps_normal_change(self):
+        prev = {"date": "2026-09-24", "close": 93.95, "contract": "CLX26.NYM"}
+        last = {"date": "2026-09-25", "close": 92.44, "contract": "CLX26.NYM", "contract_close": 92.41, "contract_prev_close": 94.61}
+        it = cs.apply_same_contract_change(self._item(-1.61), prev, last)
+        assert it["change_percent"] == -1.61 and "contract_roll" not in it and it["contract"] == "CLX26.NYM"
+        # 限月の記録が無い行（2026-09-30より前）は何もしない
+        assert "contract" not in cs.apply_same_contract_change(self._item(-1.0), {}, {})
+
+    def test_roll_suspect_excluded_but_value_kept(self):
+        it = dict(self._item(-5.52), roll_suspect={"etf": "USO", "diff_pt": -4.56})
+        ind = {"WTI原油": it, "S&P500": {"change_percent": 0.1}}
+        assert sc.stage1(ind)["tags"] == [] and it["change_percent"] == -5.52

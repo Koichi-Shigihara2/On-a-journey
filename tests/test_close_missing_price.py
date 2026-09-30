@@ -300,3 +300,44 @@ class TestCloseRetryInSameRun:
         recs = _read_daily(base, "SPY")
         assert [(r["date"], r["close"]) for r in recs] == [
             ("2026-09-24", 1.0), ("2026-09-25", 2.0), ("2026-09-28", 3.0), ("2026-09-29", 4.0)]
+
+
+class TestProvisionalRows:
+    """[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]（2026-09-30）: 日足の確定前に保存した行に暫定の印を付け、確定した足で置き換える"""
+
+    def test_bar_final_times(self):
+        from datetime import datetime, timezone
+        assert fetcher.bar_final_at("AAPL", "2026-09-29") == datetime(2026, 9, 29, 20, 0, tzinfo=timezone.utc)
+        assert fetcher.bar_final_at("^N225", "2026-09-29") == datetime(2026, 9, 29, 6, 30, tzinfo=timezone.utc)
+        assert fetcher.bar_final_at("JPY=X", "2026-09-29") == datetime(2026, 9, 29, 23, 0, tzinfo=timezone.utc)
+        assert fetcher.bar_final_at("JPY=X", "2026-11-02") == datetime(2026, 11, 3, 0, 0, tzinfo=timezone.utc)
+        assert fetcher.bar_final_at("CL=F", "2026-09-29") >= datetime(2026, 9, 30, 4, 0, tzinfo=timezone.utc)
+        assert fetcher.bar_final_at("AAPL", "2026-09-27") is None   # 日曜
+
+    def test_n225_volume_zero_is_provisional(self):
+        from datetime import datetime, timezone
+        late = datetime(2026, 9, 30, 12, 0, tzinfo=timezone.utc)
+        assert fetcher.is_provisional_bar("^N225", _bar("2026-09-29", 65358.4, 0), late)
+        assert not fetcher.is_provisional_bar("^N225", _bar("2026-09-29", 65209.4, 150_000_000), late)
+
+    def test_provisional_saved_then_replaced_by_final(self, tmp_path, monkeypatch):
+        from datetime import datetime, timezone
+        base = str(tmp_path)
+        _write_daily(base, "CL=F", [_bar("2026-09-25", 92.41)])
+        early = datetime(2026, 9, 29, 1, 6, tzinfo=timezone.utc)    # 09-28の足は確定前（NYの翌日0時より前）
+        rec = fetcher._mark_provisional("CL=F", _bar("2026-09-28", 93.33), early)
+        assert rec["_provisional"] is True
+        fetcher._append_daily_record("CL=F", rec, base_dir=base)
+        later = datetime(2026, 10, 1, 12, 0, tzinfo=timezone.utc)
+        n = fetcher._replace_provisional_records("CL=F", [_bar("2026-09-25", 1.0), _bar("2026-09-28", 92.60)], base, later)
+        recs = _read_daily(base, "CL=F")
+        assert n == 1
+        assert [(r["date"], r["close"], r.get("_provisional")) for r in recs] == [
+            ("2026-09-25", 92.41, None), ("2026-09-28", 92.60, None)]   # 確定済みの09-25は上書きしない
+
+    def test_n225_not_retried(self, monkeypatch):
+        calls = []
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: calls.append(syms) or {})
+        history = {"^N225": [_bar("2026-09-28", 65877.6), _bar("2026-09-29", None, 0)]}
+        out = fetcher._retry_missing_closes(history, attempts=3, wait_sec=0, sleep=lambda s: None)
+        assert out["initial"] == [] and calls == []

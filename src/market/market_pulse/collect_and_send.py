@@ -778,6 +778,31 @@ def _aligned_pair_closes(sym_a, sym_b, days=10):
     return (d_prev, sa[d_prev], sb[d_prev]), (d_now, sa[d_now], sb[d_now])
 
 
+def apply_same_contract_change(item, prev, last):
+    """[[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物（CL=F・GC=F）の限月が前の行から変わった日（乗り換え日）は、
+    新しい限月自身の前営業日の終値と比べた前日比にする（daily/の行のcontract・contract_close・contract_prev_close）。
+    新しい限月の前営業日の終値が無い場合は前日比を出さず（None）、「限月乗り換え日」として段階1・2の判定から外す。
+    推測では補わない。乗り換え日でない日と、限月の記録が無い行（2026-09-30より前）は通常の前日比のまま。"""
+    c, pc = last.get("contract"), prev.get("contract")
+    if not c:
+        return item
+    item["contract"] = c
+    if not pc or pc == c:
+        return item
+    roll = {"from": pc, "to": c, "raw_change_percent": item.get("change_percent")}
+    cc, cp = last.get("contract_close"), last.get("contract_prev_close")
+    if cc and cp:
+        roll.update({"method": "same_contract", "prev_date": last.get("contract_prev_date"), "prev_close": cp, "close": cc})
+        item["change"] = round(cc - cp, 2)
+        item["change_percent"] = round((cc - cp) / cp * 100, 2)
+    else:
+        roll["method"] = "excluded"
+        item["change"] = None
+        item["change_percent"] = None
+    item["contract_roll"] = roll
+    return item
+
+
 def get_realtime_data():
     """表示用テキストと構造化データを返す"""
     summary = ""
@@ -818,6 +843,8 @@ def get_realtime_data():
             if name == "米10年債":
                 # MP-25（指示書㉓）: 利回りの変化はbpで表示する（^TNXは利回り〈%〉そのもの）
                 data[name]["change_bp"] = round(change * 100, 1)
+            if name in ("WTI原油", "金（GOLD）"):
+                apply_same_contract_change(data[name], records[-2], records[-1])
         else:
             data[name] = None
 

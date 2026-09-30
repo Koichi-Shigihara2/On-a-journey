@@ -16,3 +16,4 @@ def _no_close_retry_network(monkeypatch):
     monkeypatch.setattr(fetcher, "CLOSE_RETRY_ATTEMPTS", 0)
     monkeypatch.setattr(fetcher, "CLOSE_RETRY_WAIT_SEC", 0)
     monkeypatch.setattr(fetcher, "_history_bars_single", lambda symbol, start: [])
+    monkeypatch.setattr(fetcher, "_futures_contract", lambda symbol: None)

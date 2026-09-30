@@ -566,6 +566,15 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
             if bp is None and it.get("change") is not None:
                 bp = js_round(it["change"] * 1000) / 10
             ctext = "-" if bp is None else ("+" if bp >= 0 else "") + js_fixed(bp, 1) + "bp"
+        # 先物の限月乗り換え（MARKETDATA-FUTURES-ROLL-1）: 比べられなかった日は「限月乗り換え日」、同じ限月で比べた日は
+        # 「同限月」、過去の乗り換えの可能性がある日は「乗換?」を前日比の後ろに表示する
+        roll = it.get("contract_roll") or {}
+        if roll.get("method") == "excluded":
+            ctext = "限月乗り換え日"
+        if roll.get("method") == "same_contract":
+            ctext += "同限月"
+        elif it.get("roll_suspect"):
+            ctext += "乗換?"
         exp.append(f"{short}\n{val}{'※' if it.get('is_fallback') else ''}\n{ctext}")
     _res(results, cls, "MP-25 指標6カード（段階1、#metricsRow）", exp, dom["metricCards"], dom["metricCards"] == exp,
          note="1000以上はtoLocaleString(ja-JP, 小数0桁)。10年債はbp")

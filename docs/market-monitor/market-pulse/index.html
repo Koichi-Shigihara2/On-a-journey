@@ -693,10 +693,15 @@ function renderMetrics(){
     if(!ind||ind.value==null)return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value">—</div></div>`;
     const bp=cd.key==="米10年債"?(ind.change_bp??(ind.change!=null?Math.round(ind.change*1000)/10:null)):null;
     const chg=cd.key==="米10年債"?(bp==null?{text:"-",cls:"flat"}:{text:(bp>=0?"+":"")+bp.toFixed(1)+"bp",cls:bp>0.5?"up":bp<-0.5?"down":"flat"}):fmtChg(ind.change_percent);
+    // 先物の限月乗り換え（MARKETDATA-FUTURES-ROLL-1）: 同じ限月で比べた日は「同限月」、比べられなかった日は「限月乗り換え日」（判定外）、
+    // 過去のエントリで乗り換えの可能性がある日は「限月乗り換えの可能性」（判定外）
+    const roll=ind.contract_roll;
+    if(roll?.method==="excluded"){chg.text="限月乗り換え日";chg.cls="flat"}
+    const rollMark=roll?.method==="same_contract"?`<span class="stale-mark" data-info-text="限月乗り換え日。${escHtml(roll.to||'')}の前営業日の終値と比べた前日比">同限月</span>`:ind.roll_suspect?`<span class="stale-mark" data-info-text="限月乗り換えの可能性がある日（同じ日のETFとの差が大きい）。前日比による判定から外している">乗換?</span>`:'';
     const val=ind.value>=1000?ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0}):ind.value.toFixed(2);
     const isStale=!!ind.is_fallback;
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${ind.date||''}時点の値）">※</span>`:'';
-    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}</div></div>`}).join("")}
+    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div></div>`}).join("")}
 
 // ── CHART BUTTONS ──
 function renderMetricBtns(){document.getElementById("metricBtns").innerHTML=METRIC_DEFS.map(m=>`<button class="metric-btn ${activeMetrics.has(m.key)?"active":""}" onclick="toggleMetric('${m.key}')" style="color:${activeMetrics.has(m.key)?m.color:'var(--mut)'};border-color:${activeMetrics.has(m.key)?m.color+'80':'var(--bdr)'}"><span class="mbdot" style="background:${m.color}"></span>${m.label}</button>`).join("")}

@@ -38,7 +38,8 @@ import os
 import sys
 import tempfile
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time as dtime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -413,6 +414,78 @@ def _append_daily_record(symbol: str, record: Dict[str, Any], base_dir: str) -> 
     _atomic_write_json(path, payload)
 
 
+def _mark_provisional(symbol: str, record: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
+    """確定前の足なら`_provisional: True`を付ける（確定した足には付けない）。"""
+    record.pop("_provisional", None)
+    if is_provisional_bar(symbol, record, now):
+        record["_provisional"] = True
+    return record
+
+
+def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], base_dir: str,
+                                 now: Optional[datetime] = None, contract: Optional[str] = None,
+                                 contract_closes: Optional[Dict[str, float]] = None) -> int:
+    """daily/の暫定の行（`_provisional`）を、同じ日付の確定した足で置き換える。置き換えた件数を返す。
+    確定した足がまだ無い日は、より新しい暫定の値で更新する（印は付けたまま）。"""
+    path = os.path.join(base_dir, "daily", f"{symbol}.json")
+    payload = _load_json(path, default=None)
+    if not payload or not valid_bars:
+        return 0
+    by_date = {b["date"]: b for b in valid_bars}
+    replaced = 0
+    changed = False
+    records = []
+    for r in payload.get("records", []):
+        b = by_date.get(r.get("date"))
+        if r.get("_provisional") and b is not None:
+            new = _mark_provisional(symbol, dict(b), now)
+            if symbol in FUTURES_SYMBOLS and r.get("contract"):
+                # 保存時と同じ限月の値で付け直す（連続シンボルの過去の足は、Yahooの乗り換え日の定義で別の限月になりうる）
+                closes = contract_closes if (contract_closes is not None and r["contract"] == contract) else \
+                    _contract_close_map(r["contract"], (datetime.strptime(r["date"], "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d"))
+                _attach_contract_fields(new, r["contract"], closes)
+            new["_validation_warnings"] = validate_price_record(new)
+            if not new.get("_provisional"):
+                replaced += 1
+            changed = changed or new != r
+            records.append(new)
+        else:
+            records.append(r)
+    if changed:
+        payload["records"] = records
+        _atomic_write_json(path, payload)
+    if replaced:
+        print(f"   [{symbol}] 暫定の行を{replaced}件、確定した日足で置き換えた")
+    return replaced
+
+
+def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optional[str] = None,
+                                     now: Optional[datetime] = None) -> Dict[str, Any]:
+    """一過性（CLIの--repair-provisional）: 確定前に保存された既存の行（rows=[{"symbol","date"}]、
+    scripts/analysis/daily_intraday_rows_scan.pyの結果）に暫定の印を付け、確定した日足で置き換える。
+    確定した日足がまだ取れない行は印を付けたまま残し、次回以降の日次取得で置き換わる。"""
+    base = _resolve_base_dir(base_dir)
+    by_sym: Dict[str, List[str]] = {}
+    for r in rows:
+        by_sym.setdefault(r["symbol"], []).append(r["date"])
+    out: Dict[str, Any] = {}
+    for sym, dates in sorted(by_sym.items()):
+        path = os.path.join(base, "daily", f"{sym}.json")
+        payload = _load_json(path, default=None)
+        if not payload:
+            continue
+        ds = set(dates)
+        for rec in payload["records"]:
+            if rec.get("date") in ds:
+                rec["_provisional"] = True
+        _atomic_write_json(path, payload)
+        bars = [b for b in (_download_historical_bars([sym], start=min(dates)).get(sym) or []) if _has_valid_close(b)]
+        n = _replace_provisional_records(sym, bars, base_dir=base, now=now)
+        left = [r["date"] for r in _load_json(path, default={}).get("records", []) if r.get("_provisional")]
+        out[sym] = {"marked": len(ds), "replaced_with_final": n, "still_provisional": left}
+    return out
+
+
 def _has_valid_close(bar: Dict[str, Any]) -> bool:
     """終値が数値で0より大きい足か（終値の無い未確定の足を確定値として扱わない）。"""
     close = bar.get("close")
@@ -451,6 +524,99 @@ CLOSE_RETRY_ATTEMPTS = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_ATTEMPTS", "3
 CLOSE_RETRY_WAIT_SEC = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_WAIT_SEC", "180"))
 
 
+# [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]（2026-09-30、指示書㉔の追加確認）: Yahooの日足が確定する前に保存された行
+# （取引時間中・清算前の値）を「暫定」として印を付け、確定した日足が届いたら置き換える。
+# 日足の確定時刻（Yahooの日足の区切り。history_metadataのexchangeTimezoneName・currentTradingPeriodで確認）:
+#   - 米国株・ETF・米国指数: NYSEの引け（短縮取引日を含む）。^VIXは15:15 CT（引け＋15分）、^TNXは14:00 CT（引け−1時間）
+#   - ^N225: 15:30 JST。ただしYahooは引け後も翌朝まで終値の無い足（出来高0）を返し、取引時間中の足も出来高0のため、
+#     出来高が0の足は確定とみなさない
+#   - JPY=X: 翌日0:00 Europe/London（Yahooの為替の日足はロンドンの暦日）
+#   - CL=F・GC=F: 翌日0:00 America/New_York（Yahooの先物の日足はニューヨークの暦日。確定した終値は清算値）
+_TZ_NY, _TZ_LDN, _TZ_TYO = ZoneInfo("America/New_York"), ZoneInfo("Europe/London"), ZoneInfo("Asia/Tokyo")
+_NYSE_CLOSE_CACHE: Dict[str, Optional[datetime]] = {}
+# 先物の清算値がYahooの日足に入るまでの遅れ。実測（2026-09-29〜30）: 09-28の足は09-29 01:06 UTCではまだ取引中の値、
+# 09-29 22:26 UTCには清算値。09-29の足は09-30 00:15 UTCでもまだ取引中の値。確定の判定は安全側に、NYの翌日0時から24時間後とする
+# （それまでは暫定として毎晩の取得で値を更新し、24時間後の取得で確定する）
+FUTURES_FINAL_DELAY = timedelta(hours=24)
+
+
+def _nyse_close_utc(day: str) -> Optional[datetime]:
+    if day not in _NYSE_CLOSE_CACHE:
+        s = get_nyse_calendar().schedule(start_date=day, end_date=day)
+        _NYSE_CLOSE_CACHE[day] = s["market_close"].iloc[0].to_pydatetime() if len(s) else None
+    return _NYSE_CLOSE_CACHE[day]
+
+
+def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
+    """Yahooの日足（symbol・day）が確定する時刻（UTC）。取引日でない場合はNone。"""
+    d = datetime.strptime(day, "%Y-%m-%d").date()
+    if symbol == "JPY=X":
+        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_LDN).astimezone(timezone.utc)
+    if symbol in ("CL=F", "GC=F"):
+        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc) + FUTURES_FINAL_DELAY
+    if symbol == "^N225":
+        return datetime.combine(d, dtime(15, 30), _TZ_TYO).astimezone(timezone.utc)
+    close = _nyse_close_utc(day)
+    if close is None:
+        return None
+    if symbol == "^VIX":
+        return close + timedelta(minutes=15)
+    if symbol == "^TNX":
+        return close - timedelta(hours=1)
+    return close
+
+
+def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:
+    """確定前の日足か（確定時刻より前に取得した足、または^N225の出来高0の足）。"""
+    now = now or datetime.now(timezone.utc)
+    if symbol == "^N225" and not bar.get("volume"):
+        return True
+    final = bar_final_at(symbol, bar["date"])
+    return final is not None and now < final
+
+
+# [[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物の連続シンボル（CL=F・GC=F）は限月の乗り換え日に前日比が不連続になる
+# （2026-09-18: 夕方の取得で10月限→11月限に切り替わり、前日比−5.52%〈同じ11月限では−1.18%〉）。
+# 取得時にYahooのunderlyingSymbol（例: CLX26.NYM）を行に記録し、その限月自身の終値・前営業日の終値も記録する
+# （contract・contract_close・contract_prev_date・contract_prev_close）。Market Pulseは同じ限月どうしで前日比を計算する。
+FUTURES_SYMBOLS = {"CL=F", "GC=F"}
+
+
+def _futures_contract(symbol: str) -> Optional[str]:
+    """先物の連続シンボルが現在指している限月（YahooのunderlyingSymbol）。取れなければNone。"""
+    try:
+        return (yf.Ticker(symbol).info or {}).get("underlyingSymbol")
+    except Exception as e:
+        print(f"   [{symbol}] 限月の取得失敗: {e}")
+        return None
+
+
+def _contract_close_map(contract: str, start: str) -> Dict[str, float]:
+    """限月（例: CLX26.NYM）自身の日足の終値 {日付: 終値}。"""
+    return {b["date"]: b["close"] for b in _history_bars_single(contract, start=start) if _has_valid_close(b)}
+
+
+def _attach_contract_fields(record: Dict[str, Any], contract: Optional[str], closes: Dict[str, float]) -> Dict[str, Any]:
+    """先物の行に限月と、その限月自身の当日・前営業日の終値を付ける（取れない値は付けない。推測で補わない）。"""
+    for k in ("contract", "contract_close", "contract_prev_date", "contract_prev_close"):
+        record.pop(k, None)
+    if not contract:
+        return record
+    record["contract"] = contract
+    d = record["date"]
+    if d in closes:
+        record["contract_close"] = closes[d]
+    prev = [x for x in sorted(closes) if x < d]
+    if prev:
+        record["contract_prev_date"] = prev[-1]
+        record["contract_prev_close"] = closes[prev[-1]]
+    return record
+
+
+# 取り直しの対象から外す銘柄: 終値の無い足が「その時刻の仕様」として返る（取り直しても取れない）
+_NO_CLOSE_EXPECTED = {"^N225"}
+
+
 def _history_bars_single(symbol: str, start: str) -> List[Dict[str, Any]]:
     """yf.Ticker(symbol).history(start, end)で日足を取る（yf.downloadとは別の取得経路）。"""
     end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
@@ -481,7 +647,8 @@ def _retry_missing_closes(history: Dict[str, List[Dict[str, Any]]], attempts: Op
     """
     attempts = CLOSE_RETRY_ATTEMPTS if attempts is None else attempts
     wait_sec = CLOSE_RETRY_WAIT_SEC if wait_sec is None else wait_sec
-    target = {s: b[-1]["date"] for s, b in history.items() if b and not _has_valid_close(b[-1])}
+    target = {s: b[-1]["date"] for s, b in history.items()
+              if b and not _has_valid_close(b[-1]) and s not in _NO_CLOSE_EXPECTED}
     out = {"initial": sorted(target), "recovered_download": [], "recovered_history": [], "still_missing": []}
     pending = sorted(target)
     for i in range(attempts):
@@ -534,6 +701,13 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
     # 動かさないため）。
     history = _download_historical_bars(target_symbols, period="5d")
     retry = _retry_missing_closes(history)
+    contracts: Dict[str, Optional[str]] = {}
+    contract_closes: Dict[str, Dict[str, float]] = {}
+    for s in target_symbols:
+        if s in FUTURES_SYMBOLS and history.get(s):
+            contracts[s] = _futures_contract(s)
+            start = (datetime.strptime(history[s][0]["date"], "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d")
+            contract_closes[s] = _contract_close_map(contracts[s], start) if contracts[s] else {}
     if retry["initial"]:
         summary_path = os.path.join(base, "_daily_close_retry_log.json")
         log = _load_json(summary_path, default=[])
@@ -555,6 +729,9 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
                 base_dir=base,
             )
         _repair_close_missing_records(symbol, valid_bars, base_dir=base)
+        # ^N225の出来高0の足は、終値があっても取引時間中の値のため確定値として扱わない（暫定の印を付けて保存）
+        _replace_provisional_records(symbol, valid_bars, base_dir=base,
+                                     contract=contracts.get(symbol), contract_closes=contract_closes.get(symbol))
         if not valid_bars:
             continue
         # 5日窓のうち、daily/に行の無い日の終値つきの足を追加する（既存の行は上書きしない）。
@@ -564,13 +741,17 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
         have = {r.get("date") for r in _load_json(path, default={}).get("records", [])}
         for b in valid_bars[:-1]:
             if b["date"] not in have:
-                filled = dict(b)
+                filled = _mark_provisional(symbol, dict(b))
+                if symbol in FUTURES_SYMBOLS:
+                    _attach_contract_fields(filled, contracts.get(symbol), contract_closes.get(symbol) or {})
                 filled["_validation_warnings"] = validate_price_record(filled)
                 _append_daily_record(symbol, filled, base_dir=base)
                 print(f"   [{symbol}] 抜けていた{b['date']}の終値を追加")
         bar = valid_bars[-1]
 
-        record = dict(bar)
+        record = _mark_provisional(symbol, dict(bar))
+        if symbol in FUTURES_SYMBOLS:
+            _attach_contract_fields(record, contracts.get(symbol), contract_closes.get(symbol) or {})
         record_warnings = validate_price_record(record)
         record["_validation_warnings"] = record_warnings
 
@@ -1239,10 +1420,20 @@ if __name__ == "__main__":
         help="一過性: daily/の終値の無い行だけを取り直す（銘柄省略時はdaily/の全ファイルが対象）",
     )
     arg_parser.add_argument(
+        "--repair-provisional", default=None, metavar="SCAN_JSON",
+        help="一過性: daily_intraday_rows_scan.pyの結果（rows）の行に暫定の印を付け、確定した日足で置き換える",
+    )
+    arg_parser.add_argument(
         "--repair-missing-days", action="store_true",
         help="一過性: daily/で行ごと抜けている取引日を実データで取り直す（銘柄省略時はdaily/の全ファイルが対象）",
     )
     args = arg_parser.parse_args()
+
+    if args.repair_provisional:
+        with open(args.repair_provisional, encoding="utf-8") as f:
+            scan_rows = json.load(f)["rows"]
+        print(json.dumps(mark_and_repair_provisional_rows(scan_rows), ensure_ascii=False, indent=1))
+        sys.exit(0)
 
     if args.repair_missing_days:
         base_for_repair = _resolve_base_dir(None)
