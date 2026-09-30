@@ -104,6 +104,9 @@ INDEX_ETF_COMMODITY_SYMBOLS: List[str] = [
     # 段階6の内訳（ドル指数）、^NDX（NASDAQ100。段階1の補足）。2021-01-01からバックフィル済み
     "^SOX", "^NDX", "DX-Y.NYB",
     "XLK", "XLF", "XLE", "XLV", "XLI", "XLY", "XLP", "XLU", "XLB", "XLRE", "XLC",
+    # Market Pulse 実装C（指示書㉗）: 段階8の先物の日足（S&P500先物・NASDAQ100先物・日経平均CME先物〈円建て〉）。
+    # 表示用の最新値は取得時刻つきで別に取る（src/market/market_pulse/futures_snapshot.py）
+    "ES=F", "NQ=F", "NIY=F",
 ]
 
 
@@ -557,7 +560,8 @@ def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
     d = datetime.strptime(day, "%Y-%m-%d").date()
     if symbol == "JPY=X":
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_LDN).astimezone(timezone.utc)
-    if symbol in ("CL=F", "GC=F"):
+    if symbol in FUTURES_SYMBOLS:
+        # 先物（CL=F・GC=F、実装CでES=F・NQ=F・NIY=Fを追加）: Yahooの日足はニューヨークの暦日、確定した終値は清算値
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc) + FUTURES_FINAL_DELAY
     if symbol == "DX-Y.NYB":
         # ドル指数（ICEの先物に基づく指数）: Yahooの日足はニューヨークの暦日（実装B、指示書㉖）
@@ -587,7 +591,7 @@ def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime]
 # （2026-09-18: 夕方の取得で10月限→11月限に切り替わり、前日比−5.52%〈同じ11月限では−1.18%〉）。
 # 取得時にYahooのunderlyingSymbol（例: CLX26.NYM）を行に記録し、その限月自身の終値・前営業日の終値も記録する
 # （contract・contract_close・contract_prev_date・contract_prev_close）。Market Pulseは同じ限月どうしで前日比を計算する。
-FUTURES_SYMBOLS = {"CL=F", "GC=F"}
+FUTURES_SYMBOLS = {"CL=F", "GC=F", "ES=F", "NQ=F", "NIY=F"}
 
 
 def _futures_contract(symbol: str) -> Optional[str]:

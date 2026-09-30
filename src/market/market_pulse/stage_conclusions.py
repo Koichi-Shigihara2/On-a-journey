@@ -271,8 +271,11 @@ def stage0(dq: dict) -> dict:
     if st == "complete":
         line = f"{exp}の終値"
     elif st == "partial":
-        line = (f"{exp}の終値（一部の値が前営業日または暫定）" if dq.get("provisional_elements")
-                else f"{exp}の終値（一部の値が前営業日）")
+        if dq.get("unavailable") and not dq.get("old_elements"):
+            line = f"{exp}の終値（一部の要素が取得できず）"
+        else:
+            line = (f"{exp}の終値（一部の値が前営業日または暫定）" if dq.get("provisional_elements")
+                    else f"{exp}の終値（一部の値が前営業日）")
     elif st == "stale":
         line = "前営業日のデータ（最新の終値が未反映）"
     else:
@@ -390,11 +393,30 @@ def stage7(wl: Optional[dict]) -> dict:
     return {"label": len(wl.get("flowing") or []), "line": stage7_line(wl), "flowing": wl.get("flowing") or []}
 
 
+# 実装C（指示書㉗）: 取得に失敗した要素 → その要素を使う段階
+IMPLC_STAGES = {"headlines": (2,), "calendar": (8,), "futures": (8,)}
+IMPLC_NAMES = {"headlines": "ニュースの見出し", "calendar": "予定", "futures": "先物・ドル円の最新値"}
+
+
 def build_stage_conclusions(ind: dict, af: Optional[dict], breadth: Optional[dict],
-                            expected_close: Optional[str], get_series=None, implb: Optional[dict] = None) -> Dict[str, Any]:
-    """implb: 実装Bの計算結果 {"semis_m7": ..., "sector_rotation": ..., "watch_list": ...}（sector_rotation.py）。"""
+                            expected_close: Optional[str], get_series=None, implb: Optional[dict] = None,
+                            implc: Optional[dict] = None) -> Dict[str, Any]:
+    """implb: 実装Bの計算結果 {"semis_m7": ..., "sector_rotation": ..., "watch_list": ...}（sector_rotation.py）。
+    implc: 実装Cの取得結果 {"headlines": ..., "calendar": ..., "futures": ...}。取得に失敗した取得元（failed）は推測で埋めず、
+    data_qualityのunavailableに列挙し、その要素を使う段階を「一部取得できず」にする（全体の判定はpartial）。"""
     implb = implb or {}
     dq = data_quality(ind, af, breadth, expected_close)
+    unavailable = []
+    for key, v in (implc or {}).items():
+        if not isinstance(v, dict):
+            continue
+        for f in v.get("failed") or []:
+            unavailable.append(f"{IMPLC_NAMES.get(key, key)}: {f}")
+        if v.get("failed"):
+            dq["old_stages"] = sorted(set(dq.get("old_stages") or []) | set(IMPLC_STAGES.get(key, ())))
+    dq["unavailable"] = unavailable
+    if unavailable and dq.get("status") == "complete":
+        dq["status"] = "partial"
     rot = implb.get("sector_rotation")
     if rot is not None and rot.get("excluded"):
         # 当日の終値が無いセクターETFは象限から外し、段階5・7は一部前営業日とする（設計書3章）
