@@ -2,9 +2,9 @@
   "intrinsic_value_pt": 30857996188.829506,
   "intrinsic_value_per_share": 112.04258459252802,
   "intrinsic_value_beta": 136.97,
-  "upside_percent_beta": 217.1,
+  "upside_percent_beta": 214.9,
   "intrinsic_value_rf": 949.24,
-  "upside_percent_rf": 2097.8,
+  "upside_percent_rf": 2082.7,
   "v0": 30857996188.829506,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 126.16,
       "value_growth_pct": 12.6,
-      "expected_return_pct": 192.1
+      "expected_return_pct": 190.1
     },
     "2年後": {
       "future_value": 142.07,
       "value_growth_pct": 26.8,
-      "expected_return_pct": 228.9
+      "expected_return_pct": 226.7
     },
     "3年後": {
       "future_value": 159.98,
       "value_growth_pct": 42.8,
-      "expected_return_pct": 270.4
+      "expected_return_pct": 267.9
     },
     "4年後": {
       "future_value": 180.14,
       "value_growth_pct": 60.8,
-      "expected_return_pct": 317.1
+      "expected_return_pct": 314.2
     },
     "5年後": {
       "future_value": 202.85,
       "value_growth_pct": 81.1,
-      "expected_return_pct": 369.7
+      "expected_return_pct": 366.4
     }
   },
-  "upside_percent": 159.4,
-  "calculation_date": "2026-09-29T10:09:21+09:00",
+  "upside_percent": 157.6,
+  "calculation_date": "2026-09-30T09:51:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -226,7 +226,7 @@
       "total_transient_amount": 15000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由がすべてマクロ変動による一時的影響と明記されており、事業の構造的問題ではなく外部要因による一過性の引当計上と判断される。"
       }
     },
     "action": "flagged",
@@ -327,7 +327,7 @@
     "roe_10yr_avg": -0.03575283332567214,
     "roe_years_used": 3,
     "roe_outlier_adj": false,
-    "current_price": 43.189998626708984,
+    "current_price": 43.4900016784668,
     "latest_revenue": 3742000000.0,
     "rpo": 211000000.0,
     "beta": 0.799,
@@ -361,11 +361,11 @@
     "alpha_uncapped": 0.0,
     "per": 23.601091,
     "per_is_forward": false,
-    "per_adjusted": 14.31,
+    "per_adjusted": 14.41,
     "peg": 1.7351,
     "ps": 2.504004,
     "ev_ebitda": 15.012,
-    "ma200": 42.62544981002808,
+    "ma200": 42.610974807739254,
     "forward_eps": 4.89699,
     "next_quarter_eps": 0.63,
     "analyst_target_median": 58.5,
@@ -384,11 +384,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": -47.8,
     "max_eps": 3.594,
-    "max_eps_per": 12.0,
+    "max_eps_per": 12.1,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-09-29",
+    "validated_at": "2026-09-30",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -411,12 +411,12 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.3943460046586589,
-  "risk_free_rate_live": 0.052400002479553225,
-  "required_growth_rf_live": -0.29251627930639224,
+  "required_growth_rf_base": -0.39350694326624414,
+  "risk_free_rate_live": 0.05255000114440918,
+  "required_growth_rf_live": -0.2903188569140167,
   "tanuki_score": "HOLD",
   "funda_score": 45,
-  "score_comment": "割安圏(159%)で買い余地大、FCF黒字、売上安定成長",
+  "score_comment": "割安圏(158%)で買い余地大、FCF黒字、売上安定成長",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -483,7 +483,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 1859000000
   },
-  "net_current_assets_ratio": 0.1188,
+  "net_current_assets_ratio": 0.118,
   "dupont": {
     "ni_ttm": 480000000,
     "revenue_ttm": 3993000000,
@@ -536,8 +536,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0704,
-  "forward_earnings_yield": 0.1134,
+  "erp": 0.0696,
+  "forward_earnings_yield": 0.1126,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }
