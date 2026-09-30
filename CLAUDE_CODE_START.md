@@ -12,7 +12,45 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
-**現在の到達点（2026-09-26 指示書㉑のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**2件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）。㉑でTANUKIのDiscord通知をゲート通過後に移し、`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`を完了、社内PS比率（表示・診断用）の分母をTTM売上に変えた。3ファイル間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書㉑）」ブロック。
+**現在の到達点（2026-09-30 指示書㉓〜㉘の時点。コンテキスト切れに備えた引き継ぎ）**: `BACKLOG.md`アクティブ件数**6件**（機械カウント）:
+`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]`（今夜の実行で確認）・`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・
+`[[MARKETDATA-FUTURES-ROLL-1]]`・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`・`[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]`（10/1〜10/4の起動で確認）。
+kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この日の変更: Market Pulse実装A（`59406c6131`）、Yahooの日足の作り直し
+（00:00〜01:26 UTC頃に個別株・ETFの終値が欠ける）への対策（同じ実行の中での取り直し・5営業日の抜け補完・暫定行の印と置き換え・先物の限月乗り換え）、
+Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
+暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
+
+**マージ待ちのブランチ（3本。順番: B → 翌晩C → 最後にupdate-schedule）**
+- `feature/mp-impl-b`（`2b57d9e1fb`、kaihatsuから分岐）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
+  TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
+  **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
+  ブランチ側の変更は黙って捨てられる。ローカルに`git config merge.ours.driver true`が要る） (2) `python src/market/market_pulse/backfill_implb.py`を
+  実行し直して`market_data.json`の既存エントリに実装Bの要素を付け直す (3) 09-29/30からマージまでに5営業日程度より多く空いたら、14銘柄を
+  `python common/market_data/fetcher.py <14銘柄> --layer daily --repair-missing-days`で埋める（5営業日以内なら夜間の取得の抜け補完で埋まる）
+  (4) 3ゲート＋browser_checks（57件一致だった）→commit→push。
+- `feature/mp-impl-c`（`1193cd5845`、Bから分岐）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
+  **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`の再実行は任意（最新エントリだけに付く。
+  翌晩の本番実行で自然に付く） (3) 空きが5営業日程度を超えたらES=F・NQ=F・NIY=Fを`--repair-missing-days`で埋める (4) 3ゲート＋browser_checks（60件一致）。
+- `feature/update-schedule`（`5255e7a348`、kaihatsuから分岐）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
+  workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
+  SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
+  （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
+
+**今夜（米国09-30の足、2026-10-01 11:37 JSTに報告予定）の確認項目**
+- Market Data Dailyの9回の起動（20:17〜23:17 UTCの7回＋01:47・02:17 UTC）それぞれの実際の開始・終了時刻・conclusion・ガードの判定（run/reason）
+- どの起動が取得したか、そのstatus（fetched / reset_window）、09-30の終値がそろったか（欠け銘柄数）、`_daily_close_retry_log.json`の取り直し記録
+- 下流: Market Pulse・Stonks Silo・TANUKI VALUATION（1回だけか）・TANUKI Scoreの実行とskippedの数、22:00 UTCまでに終わったか
+- Market Pulseのエントリのdata_quality・暫定（provisional）の要素、data_freshness.stale
+- 先物（CL=F・GC=F）・`^N225`の暫定行が確定値に置き換わったか
+
+**やり残し**
+- 実データでの確認が残るもの: 資金フローの表の米国休場日の行、限月乗り換えの処理（次の乗り換え日）、新高値の数・ヒンデンブルグ・AIの出力形式と俳句（㉔の未確認分）
+- 先物の清算値が確定する時刻は正確に測れていない（今は「NYの0時＋24時間」で確定扱い、`FUTURES_FINAL_DELAY`）
+- まだ暫定のままの行: CL=F・GC=Fの09-07、JPY=Xの08-15、`^N225`の09-29（次の取得の置き換え範囲で確定値になる予定）
+- `[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]`: 10/1〜10/3の起動が何もせず終わり、10/4（日）23:00 UTCの起動だけが実行したことを確認してクローズ。6〜8月の余分な起動によるβの変化は未調査
+- 上記3ブランチのマージ
+
+**（旧）現在の到達点（2026-09-26 指示書㉑のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**2件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）。㉑でTANUKIのDiscord通知をゲート通過後に移し、`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`を完了、社内PS比率（表示・診断用）の分母をTTM売上に変えた。3ファイル間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書㉑）」ブロック。
 以下は指示書⑲⑳時点の記載:
 **（旧）現在の到達点（2026-09-26 指示書⑲⑳のブラッシュアップ時点）**: `BACKLOG.md`アクティブ件数**3件**（機械カウント）: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`（9/27のSEC_Data_Update後の確認待ち）・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`（対応済み、次回のMarket_Pulse_Update実行での実地確認待ち）・`[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]`（低、daily pickのtanuki.current_priceが常にnull）。2026-09-26は⑲でMarket Pulseの正確性を確認して6件登録し、⑳で`[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]`（TANUKI VALUATIONがcurrent_price=0で計算し09-22に99銘柄・09-26に78銘柄の分類が誤って公開された件）を含む6件を完了した。BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.md間のID重複0件。詳細は下記「最終更新: 2026-09-26（指示書⑲⑳）」ブロック。
 以下は同日前半（指示書⑰⑱）時点の記載:
