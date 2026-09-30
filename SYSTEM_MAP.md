@@ -383,26 +383,15 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 
 ---
 
-## ワークフロー依存関係定義（config/workflow_dependencies.json）（2026-07-10追記、2026-08-22更新）
+## ワークフロー依存関係定義（config/workflow_dependencies.json）（2026-07-10追記、2026-09-30更新）
 
-GitHub Actions各ワークフロー（SEC_Data_Update → HypeCore_Update / Adjusted_EPS_Update /
-Stonks_Silo_Update → TANUKI_VALUATION_Update、Market_Data_Daily_Update → TANUKI_VALUATION_Update）の
-依存関係グラフを定義するJSON。`docs/value-monitor/admin.html`の「実行」タブが読み取り、
-一括更新ボタンの実行順序制御に使用する。ワークフローを新設・依存関係変更した場合は
-このファイルへの追記が必要（admin.html側の実行UIに反映されないと手動個別実行が必要になる）。
+**起動時刻・連鎖（workflow_run）・ガード・出力先・下流、夜間の流れ、データの確定時刻、経緯は
+`docs/architecture/UPDATE_SCHEDULE.md` を参照**（一覧は`.github/workflows/*.yml`から`scripts/gen_update_schedule.py`が生成し、
+ずれるとCHECK-58のWARN）。
 
-**（2026-08-22追記）** 上記の論理的依存関係は、以前は本JSON（admin.html手動実行用の
-メタデータ）にのみ定義され、実際のGitHub Actions自動トリガーには反映されていなかった
-（[[WORKFLOW-SEC-TANUKI-GAP-1]]・[[TANUKI-VALUATION-PRICE-SCHEDULE-LAG-1]]）。
-`HypeCore_Update.yml`・`Adjusted_Eps_Analyzer_update.yml`・`Stonks_Silo_Update.yml`・
-`TANUKI_VALUATION_Update.yml`の`on.workflow_run`トリガーとして実装し、実際のCI構成にも
-反映した（`TANUKI_Score_Update.yml`が先行して使っていたworkflow_run+conclusionチェック
-パターンに倣った。旧来の独立cronは低頻度の安全網フォールバックとしてのみ一部残存）。
-`Market_Data_Daily_Update`は本JSONに存在しなかった新規ノードとして追加登録した
-（`TANUKI_VALUATION_Update`のcurrent_price鮮度に必要な依存）。本JSON自体と実際の
-`.github/workflows/*.yml`の`on.workflow_run.workflows`設定は別々のファイルで手動同期される
-（本JSONを変更しても自動的にYAML側へは反映されない）ため、依存関係を変更する際は
-両方を更新すること。
+`config/workflow_dependencies.json`は`docs/value-monitor/admin.html`の一括更新（実行順序・表示名・tickersの渡し方）が読む。
+`depends_on`・`outputs`は同スクリプトがYAMLから生成する。`label`・`yml`・`accepts_tickers`・`input_param`・
+`bulk_update_*`・`new_ticker_order`は手作業の定義（ワークフローを新設したらここに追記する）。
 
 ---
 
@@ -1661,18 +1650,9 @@ data/market_data.json`の最新エントリ（以下`L`）に集約され、フ�
 | MP-28 | 詳細カード AI分析本文・俳句・過去の分析 | `analyse_market()` 994（xAI Grok） | `L.summary`・`L.comments_history` |
 | MP-29 | 計算式モーダル `#infoModal`（重み表・ゾーン表） | 静的HTML（導出なし） | なし（index.html直書き） |
 
-**更新タイミング（2026-09-26確認）**: `Market_Pulse_Update.yml`（cron `35 21 * * 1-5`）は
-`breadth_calculator.py`→`collect_and_send.py`を実行し、daily/は
-`Market_Data_Daily_Update.yml`（cron `25 21 * * 1-5`）が書く。**両者はworkflow_runで
-連鎖しておらず、cronの10分差だけに依存している**。GitHub側の遅延で両者とも
-約2時間遅れてほぼ同時に起動するため、Market Pulseのcheckoutが日次データのpushより
-先になる日がある（詳細は`MARKET_PULSE_LOGIC_INVENTORY.md`・BACKLOG参照）。
-2026-08-26の横断点検（BACKLOG_DONE.md）で「ワークフロー間タイミング競合のリスクは
-構造上存在しない」としたのは、2026-08-11にdaily/経由へ切り替えた後も
-単一ワークフロー内で完結している前提で判断したもので、この前提は成り立っていない。
-**2026-09-26に対応**（指示書⑳ STEP C）: Market_Pulse_Update.ymlはMarket Data Daily Updateの完了
-（workflow_run）を起点にし、独立cronは金曜22:50 UTCのフォールバックにした。起動時にdaily/の最新日付と
-期待する終値日を比べ、`market_data.json`のエントリの`data_freshness`に記録する。
+**更新タイミング**: `docs/architecture/UPDATE_SCHEDULE.md`を参照（Market Pulse UpdateはMarket Data Daily Updateの完了で起動、
+2026-09-26の経緯〈[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]〉も同文書の変更履歴）。起動時にdaily/の最新日付と期待する終値日を比べ、
+`market_data.json`のエントリの`data_freshness`・`data_quality`に記録する。
 
 ### 作成中に見つけた注記事項（新規BACKLOG登録は不要と判断）
 - Fear & Greedは上記の通りMarket Pulseへの一本化を確認済み（重複なし）。

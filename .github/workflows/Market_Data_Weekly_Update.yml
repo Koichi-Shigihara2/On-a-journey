@@ -2,9 +2,7 @@ name: Market Data Weekly Update
 
 on:
   schedule:
-    - cron: '20 13 * * 0'  # UTC 13:20 (JST 22:20) 日曜。HypeCore Update
-                            # (13:08 UTC)と近接だが完全同時刻は避けてリクエスト
-                            # 集中を分散（設計確定事項8）
+    - cron: '20 13 * * 0'  # 日曜13:20 UTC（JST 22:20）。 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
   workflow_dispatch:
     inputs:
       tickers:
