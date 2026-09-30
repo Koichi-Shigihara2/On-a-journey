@@ -136,7 +136,7 @@ def phase_label(j: str) -> str:
     return {"晴れ": "☀ 晴れ", "嵐": "⛈ 嵐", "曇り": "☁ 曇り"}.get(j, "− 不明")
 
 
-STAGE_KEYS = ["0", "1", "2", "3", "4", "5", "8"]
+STAGE_KEYS = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 
 def tp_label(s: float) -> str:
@@ -274,8 +274,13 @@ DOM_SNAPSHOT_JS = """
       .map(r => [...r.querySelectorAll('td')].map(td => td.innerText.trim())) : null,
     exists: Object.fromEntries(['tpDivVal','tpDivBadge','tpDivZscore','tpCZscore','miniGaugesSection'].map(id => [id, !!document.getElementById(id)])),
     cpWeather: t('cpWeather'),
-    cpLines: Object.fromEntries(['0','1','2','3','4','5','8'].map(k => [k, t('cpLine' + k)])),
-    stageLines: Object.fromEntries(['0','1','2','3','4','5','8'].map(k => [k, t('stageLine' + k)])),
+    cpLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('cpLine' + k)])),
+    stageLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('stageLine' + k)])),
+    tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table'].map(id => [id,
+      document.getElementById(id) ? [...document.getElementById(id).querySelectorAll('tr')].slice(id === 'm7Table' ? 0 : 1)
+        .map(r => [...r.querySelectorAll('td')].map(td => td.innerText.trim())) : null])),
+    quadDatasets: (typeof quadChartInst !== 'undefined' && quadChartInst) ? quadChartInst.data.datasets.map(d => ({label: d.label, n: d.data.length,
+      last: d.data[d.data.length - 1]})) : null,
     stageOrder: [...document.querySelectorAll('main > section.stage')].map(s => s.id),
     dqStatus: t('dqStatus'), dqBanner: t('dqBanner'), stage1Tags: t('stage1Tags'), stage5Table: t('stage5Table'),
     stage3Credit: t('stage3Credit'), aiView: t('aiView'),
@@ -576,7 +581,7 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         elif it.get("roll_suspect"):
             ctext += "乗換?"
         exp.append(f"{short}\n{val}{'※' if it.get('is_fallback') else ''}\n{ctext}")
-    _res(results, cls, "MP-25 指標6カード（段階1、#metricsRow）", exp, dom["metricCards"], dom["metricCards"] == exp,
+    _res(results, cls, "MP-25 指標6カード（段階1、#metricsRow の先頭6枚）", exp, dom["metricCards"][:6], dom["metricCards"][:6] == exp,
          note="1000以上はtoLocaleString(ja-JP, 小数0桁)。10年債はbp")
 
     # MP-26 推移チャート（既定: VIX・S&P500、filteredData）
@@ -622,8 +627,51 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     _res(results, cls, "S-left 左の各段階の結論1行が右のパネルと一致", exp_lines, act_stage, act_stage == exp_lines)
     exp = phase_label(weather_of(L))
     _res(results, cls, "S-weather 今日の結論パネルの天気（ルールv3）", exp, dom["cpWeather"], dom["cpWeather"] == exp)
-    exp_order = ["stage0", "stage1", "stage2", "stage3", "stage4", "stage5", "stage8", "history"]
-    _res(results, cls, "S-order 段階の並び（0〜5・8・履歴。6・7は実装B）", exp_order, dom["stageOrder"], dom["stageOrder"] == exp_order)
+    exp_order = ["stage0", "stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7", "stage8", "history"]
+    _res(results, cls, "S-order 段階の並び（0〜8・履歴）", exp_order, dom["stageOrder"], dom["stageOrder"] == exp_order)
+
+    # ── 実装B（指示書㉖）: 段階5のセクター4象限、段階6の半導体・M7・内訳、段階7の監視銘柄、段階1のSOX・M7のカード ──
+    rot = L.get("sector_rotation")
+    if rot:
+        secs = sorted(rot["sectors"].items(), key=lambda kv: -kv[1]["momentum"])
+        qja = {"Strong": "強い", "Improving": "強まりつつある", "Weakening": "弱まりつつある", "Weak": "弱い"}
+        exp = [[f"{s} {v['name']}", f"{v['quadrant']}（{qja[v['quadrant']]}）", js_fixed(v["ratio"], 2), js_fixed(v["momentum"], 2),
+                "—" if v["change_pct"] is None else ("+" if v["change_pct"] >= 0 else "") + js_fixed(v["change_pct"], 2) + "%"]
+               for s, v in secs]
+        act = dom["tableRows"]["sectorTableInner"]
+        _res(results, cls, "B-05 段階5 セクター4象限の表（#sectorTableInner）", f"{len(exp)}行", f"{len(act or [])}行", act == exp,
+             note="全セルを比較")
+        expq = {s: (len(v["trail"]), v["trail"][-1]["ratio"], v["trail"][-1]["momentum"]) for s, v in rot["sectors"].items()}
+        actq = {d["label"]: (d["n"], d["last"]["x"], d["last"]["y"]) for d in (dom["quadDatasets"] or [])}
+        _res(results, cls, "B-05b 段階5 セクター4象限の図（#quadChart、直近8週の軌跡）", expq, actq, actq == expq)
+    else:
+        _res(results, cls, "B-05 段階5 セクター4象限の表", "(記録なし)", None, None)
+    sm = L.get("semis_m7")
+    if sm:
+        f = lambda v: "—" if v is None else ("+" if v >= 0 else "") + js_fixed(v, 2)
+        exp = [["半導体（SOX）", f(sm["sox_pct"]) + "%", f(sm["sox_vs_sp500_pt"]) + "pt"],
+               ["M7（均等加重）", f(sm["m7_pct"]) + "%", f(sm["m7_vs_sp500_pt"]) + "pt"], ["S&P500", f(sm["sp500_pct"]) + "%", ""]]
+        act = dom["tableRows"]["semisTable"]
+        _res(results, cls, "B-06 段階6 半導体・M7の表（#semisTable）", exp, act, act == exp)
+        exp = [[f"{r['name']}（{r['symbol']}）", "—" if r["change_pct"] is None else f(r["change_pct"]) + "%", r.get("date") or "—"]
+               for r in L.get("commodity_fx") or []]
+        act = [[r[0], r[2], r[3]] for r in (dom["tableRows"]["breakdownTable"] or [])]
+        _res(results, cls, "B-06b 段階6 商品・為替の内訳（#breakdownTable）", exp, act, act == exp, note="名前・前日比・基準日を比較")
+        # 段階1のSOX・M7のカード（主要8指標）
+        cards = dom["metricCards"][-2:]
+        exp_c = [("SOX", f(sm["sox_pct"]) + "%" if sm.get("sox_pct") is not None else None),
+                 ("M7", f(sm["m7_pct"]) + "%" if sm.get("m7_pct") is not None else None)]
+        ok = all(c.startswith(lbl) and (v is None or v in c) for c, (lbl, v) in zip(cards, exp_c)) and len(dom["metricCards"]) == 8
+        _res(results, cls, "B-01 段階1 主要8指標のSOX・M7のカード", exp_c, cards, ok)
+    wl = L.get("watch_list")
+    if wl:
+        qja = {"Strong": "強い", "Improving": "強まりつつある", "Weakening": "弱まりつつある", "Weak": "弱い"}
+        exp = [[r["ticker"], "・".join(x for x in ("保有" if r["held"] else "", "TAIL" if r["tail"] else "") if x),
+                (r["sector_etf"] + " " + (r["sector_name"] or "")) if r["sector_etf"] else "—",
+                f"{r['quadrant']}（{qja[r['quadrant']]}）" if r["quadrant"] else "—", r["tanuki_score"] or "—", r["hype_phase"] or "—"]
+               for r in wl["rows"]]
+        act = dom["tableRows"]["watchTable"]
+        _res(results, cls, "B-07 段階7 監視銘柄の表（#watchTable）", f"{len(exp)}行", f"{len(act or [])}行", act == exp, note="全セルを比較")
     _res(results, cls, "S-00 data_qualityの判定（#dqStatus）", dq.get("status"), dom["dqStatus"], dom["dqStatus"] == dq.get("status"))
     exp_b = "" if dq.get("status") not in ("stale", "partial") else (
         "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else

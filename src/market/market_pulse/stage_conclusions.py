@@ -5,7 +5,8 @@ scripts/analysis/market_pulse_redesign.py（設計書の分布の再計算）と
 
 本モジュールの関数は、market_data.jsonのエントリの値（indicators・asset_flow・breadth）と
 common/market_data/daily/の終値だけを入力にする純粋な計算で、外部取得はしない。
-実装Aで出せる段階は0・1・2・3・4・5・8。段階6・7と段階5のセクター4象限は実装Bで追加する。
+実装Aで段階0・1・2・3・4・5・8、実装B（指示書㉖）で段階1のSOX・M7、段階5のセクター4象限、段階6・7を追加した。
+段階5〜7の計算そのものは sector_rotation.py（build_stage_conclusionsの`implb`引数で結果を受け取る）。
 """
 from __future__ import annotations
 
@@ -18,6 +19,8 @@ S1_BANDS = ((1.0, "大幅高"), (0.3, "上昇"), (-0.3, "小動き"), (-1.0, "�
 S2_THRESH = {"金利": 8.0, "原油": 3.0, "VIX": 10.0, "為替": 0.7}   # 金利はbp、他は%
 TAG_NASDAQ_PT = 0.5
 TAG_GOLD_PCT = 1.5
+TAG_SOX_PCT = 2.0
+TAG_M7_PT = 1.0
 # ── 段階4・5 ────────────────────────────────────────────
 S5_PT = 0.5
 # ── 段階8 ─────────────────────────────────────────────
@@ -80,7 +83,7 @@ def s1_label(spx_pct: Optional[float]) -> Optional[str]:
     return "大幅安"
 
 
-def stage1(ind: dict) -> dict:
+def stage1(ind: dict, semis: Optional[dict] = None) -> dict:
     spx = _ind(ind, "S&P500")
     nasdaq = _ind(ind, "NASDAQ")
     tags = []
@@ -105,6 +108,13 @@ def stage1(ind: dict) -> dict:
     gold = _ind(ind, "金（GOLD）")
     if gold is not None and abs(gold) >= TAG_GOLD_PCT:
         tags.append(f"金（{gold:+.2f}%）")
+    # 実装B: SOX大幅変動（±2%以上）・M7均等加重の突出（S&P500との差±1pt以上）
+    sox = _num((semis or {}).get("sox_pct"))
+    if sox is not None and abs(sox) >= TAG_SOX_PCT:
+        tags.append(f"SOX（{sox:+.2f}%）")
+    m7rel = _num((semis or {}).get("m7_vs_sp500_pt"))
+    if m7rel is not None and abs(m7rel) >= TAG_M7_PT:
+        tags.append(f"M7均等加重（S&P500比{m7rel:+.2f}pt）")
     label = s1_label(spx)
     return {"label": label, "line": None if label is None else f"S&P500 {spx:+.2f}%（{label}）",
             "tags": tags, "inputs": {"sp500_pct": spx}}
@@ -183,10 +193,14 @@ def s5_label(gv) -> Optional[str]:
     return "拮抗"
 
 
-def stage5(ind: dict) -> dict:
+def stage5(ind: dict, rotation: Optional[dict] = None) -> dict:
     gv = _ind(ind, "グロース対バリュー比", "diff_percent")
     label = s5_label(gv)
     line = None if label is None else f"{label}（IVW−IVE {gv:+.2f}pt）"
+    # 実装B: セクター4象限でStrongのセクター名を添える（設計書1章 段階5）
+    strong = ((rotation or {}).get("by_quadrant") or {}).get("Strong")
+    if line is not None and rotation is not None:
+        line += "／Strong: " + ("・".join(strong) if strong else "なし")
     return {"label": label, "line": line, "inputs": {"ivw_minus_ive_pt": gv}}
 
 
@@ -358,11 +372,42 @@ def stage8(get_series, as_of: Optional[str]) -> dict:
 #  まとめ
 # ─────────────────────────────────────────────────────────
 
+def stage6(semis: Optional[dict]) -> dict:
+    """段階6（設計書1章、正負対称の8文言）。SOX−S&P500・M7均等−S&P500。"""
+    from sector_rotation import s6_label
+    s = semis or {}
+    sox_rel, m7_rel = _num(s.get("sox_vs_sp500_pt")), _num(s.get("m7_vs_sp500_pt"))
+    label = s6_label(sox_rel, m7_rel)
+    line = None if label is None else f"{label}（SOX {sox_rel:+.2f}pt・M7 {m7_rel:+.2f}pt、S&P500比）"
+    return {"label": label, "line": line, "inputs": {"sox_vs_sp500_pt": sox_rel, "m7_vs_sp500_pt": m7_rel}}
+
+
+def stage7(wl: Optional[dict]) -> dict:
+    """段階7（設計書1章）: 資金が向かっているセクターにいる監視銘柄（上位2銘柄の名前と残りの件数）。"""
+    from sector_rotation import stage7_line
+    if not wl:
+        return {"label": None, "line": None}
+    return {"label": len(wl.get("flowing") or []), "line": stage7_line(wl), "flowing": wl.get("flowing") or []}
+
+
 def build_stage_conclusions(ind: dict, af: Optional[dict], breadth: Optional[dict],
-                            expected_close: Optional[str], get_series=None) -> Dict[str, Any]:
+                            expected_close: Optional[str], get_series=None, implb: Optional[dict] = None) -> Dict[str, Any]:
+    """implb: 実装Bの計算結果 {"semis_m7": ..., "sector_rotation": ..., "watch_list": ...}（sector_rotation.py）。"""
+    implb = implb or {}
     dq = data_quality(ind, af, breadth, expected_close)
-    st = {"0": stage0(dq), "1": stage1(ind), "2": stage2(ind), "3": stage3(ind, breadth),
-          "4": stage4(af), "5": stage5(ind)}
+    rot = implb.get("sector_rotation")
+    if rot is not None and rot.get("excluded"):
+        # 当日の終値が無いセクターETFは象限から外し、段階5・7は一部前営業日とする（設計書3章）
+        dq["old_elements"] = sorted(set(dq.get("old_elements") or []) | {"sector_rotation"})
+        dq["old_stages"] = sorted(set(dq.get("old_stages") or []) | {5, 7})
+        if dq.get("status") == "complete":
+            dq["status"] = "partial"
+    st = {"0": stage0(dq), "1": stage1(ind, implb.get("semis_m7")), "2": stage2(ind), "3": stage3(ind, breadth),
+          "4": stage4(af), "5": stage5(ind, rot)}
+    if "semis_m7" in implb:
+        st["6"] = stage6(implb.get("semis_m7"))
+    if "watch_list" in implb:
+        st["7"] = stage7(implb.get("watch_list"))
     if get_series is not None:
         spx_date = ((ind or {}).get("S&P500") or {}).get("date") if isinstance((ind or {}).get("S&P500"), dict) else None
         try:

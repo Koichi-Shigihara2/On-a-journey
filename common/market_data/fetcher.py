@@ -100,6 +100,10 @@ INDEX_ETF_COMMODITY_SYMBOLS: List[str] = [
     # SHV（超短期国債ETF）は資産フロー可視化7資産中の1つで唯一未収録
     # だったため_fetch_hist_legacy()の対象として残存していた、2026-08-13追加）
     "SHV",
+    # Market Pulse 実装B（指示書㉖、2026-09-30）: 段階1・6のSOX、段階5のセクター4象限（セクターETF11本）、
+    # 段階6の内訳（ドル指数）、^NDX（NASDAQ100。段階1の補足）。2021-01-01からバックフィル済み
+    "^SOX", "^NDX", "DX-Y.NYB",
+    "XLK", "XLF", "XLE", "XLV", "XLI", "XLY", "XLP", "XLU", "XLB", "XLRE", "XLC",
 ]
 
 
@@ -555,6 +559,9 @@ def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_LDN).astimezone(timezone.utc)
     if symbol in ("CL=F", "GC=F"):
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc) + FUTURES_FINAL_DELAY
+    if symbol == "DX-Y.NYB":
+        # ドル指数（ICEの先物に基づく指数）: Yahooの日足はニューヨークの暦日（実装B、指示書㉖）
+        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc)
     if symbol == "^N225":
         return datetime.combine(d, dtime(15, 30), _TZ_TYO).astimezone(timezone.utc)
     close = _nyse_close_utc(day)

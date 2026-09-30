@@ -1516,6 +1516,33 @@ def calc_credit(structured_data, asset_flow_data):
     return credit_data
 
 
+def compute_implb(structured_data, get_series):
+    """実装B（指示書㉖）の計算。S&P500の終値日を基準日にし、daily/のその日以前の終値だけを使う。
+    失敗した要素は入れない（段階5〜7はその要素なしで結論を出し、他の段階には影響しない）。"""
+    import sector_rotation as _sr
+    spx = structured_data.get("S&P500") or {}
+    as_of = spx.get("date")
+    out = {}
+    if not as_of:
+        return out
+    try:
+        out["sector_rotation"] = _sr.sector_rotation(get_series, as_of)
+    except Exception as e:
+        print(f"[WARN] セクター4象限の計算に失敗: {e}")
+    try:
+        out["semis_m7"] = _sr.semis_m7(get_series, as_of, spx.get("change_percent"))
+        out["commodity_fx"] = _sr.breakdown(get_series, as_of)
+    except Exception as e:
+        print(f"[WARN] 半導体・M7・内訳の計算に失敗: {e}")
+    if "sector_rotation" in out:
+        try:
+            from common.market_data.reader import get_attributes as _md_get_attributes
+            out["watch_list"] = _sr.watch_list(REPO_ROOT, out["sector_rotation"], _md_get_attributes)
+        except Exception as e:
+            print(f"[WARN] 監視銘柄の計算に失敗: {e}")
+    return out
+
+
 def bond_direction(tlt_chg, spy_chg):
     """MP-27の債券判定。TLT>+0.3%かつSPY<−0.5%→債券買い、TLT<0→債券売り、それ以外→中立。"""
     if tlt_chg is not None and spy_chg is not None and tlt_chg > 0.3 and spy_chg < -0.5:
@@ -1578,7 +1605,7 @@ def write_nyse_holidays(path=None, now_utc=None):
         return None
 
 
-def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None):
+def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None, implb=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     jst_now = datetime.now(JST)
     date_str = jst_now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
@@ -1673,6 +1700,9 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
         new_entry["ai_facts"] = ai_facts
     if hindenburg is not None:
         new_entry["hindenburg"] = hindenburg
+    for _k in ("sector_rotation", "semis_m7", "commodity_fx", "watch_list"):
+        if implb and implb.get(_k) is not None:
+            new_entry[_k] = implb[_k]
     all_data.append(new_entry)
 
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
@@ -1878,9 +1908,11 @@ if __name__ == "__main__":
     # 8段階の結論・天気・data_quality（指示書㉓ 実装A）
     from stage_conclusions import build_stage_conclusions
     from common.market_data.reader import get_price_series_as_of as _md_series_as_of
+    # 実装B（指示書㉖）: 段階5のセクター4象限・段階6の半導体とM7・商品と為替の内訳・段階7の監視銘柄
+    implb = compute_implb(structured_data, lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
     stage_result = build_stage_conclusions(
         structured_data, asset_flow_data, sentiment_data.get("breadth"), data_freshness.get("expected_close_date"),
-        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
+        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb)
     print(f"[INFO] 天気: {stage_result['weather']['label']} / data_quality: {stage_result['data_quality']['status']}")
     for _k, _v in stage_result["stages"].items():
         print(f"  段階{_k}: {_v.get('line')}")
@@ -1892,7 +1924,7 @@ if __name__ == "__main__":
     report, haiku = analyse_market(ai_facts)
     save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data,
                               tp_checklist, buy_checklist, data_freshness, stage_result=stage_result, haiku=haiku,
-                              ai_facts=ai_facts, hindenburg=hindenburg)
+                              ai_facts=ai_facts, hindenburg=hindenburg, implb=implb)
     if GMAIL_USER and GMAIL_PASSWORD:
         send_email(report, sentiment_data)
     else:
