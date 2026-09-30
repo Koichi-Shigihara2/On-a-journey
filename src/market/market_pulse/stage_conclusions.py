@@ -217,12 +217,15 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
     as_of: Dict[str, Optional[str]] = {}
     stages: Dict[str, Tuple[int, ...]] = {}
     fallback = set()
+    provisional = set()   # 指示書㉕ STEP B: 暫定の値（日足の確定前に保存された行）を含む要素はpartialにする
     for k, st in DQ_INDICATORS.items():
         v = (ind or {}).get(k)
         as_of[k] = v.get("date") if isinstance(v, dict) else None
         stages[k] = st
         if isinstance(v, dict) and v.get("is_fallback"):
             fallback.add(k)
+        if isinstance(v, dict) and v.get("provisional"):
+            provisional.add(k)
     for k, st in DQ_ASSET_FLOW.items():
         v = (af or {}).get(k)
         name = f"asset_flow.{k}"
@@ -230,14 +233,16 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
         stages[name] = st
         if isinstance(v, dict) and v.get("is_fallback"):
             fallback.add(name)
+        if isinstance(v, dict) and v.get("provisional"):
+            provisional.add(name)
     as_of["breadth"] = (breadth or {}).get("date")
     stages["breadth"] = (3,)
     out = {"expected_close_date": expected_close, "as_of": as_of, "status": "unknown",
-           "old_elements": [], "old_stages": []}
+           "old_elements": [], "old_stages": [], "provisional_elements": sorted(provisional)}
     if not expected_close or as_of.get("S&P500") is None:
         return out   # S&P500の基準日が無い（取得失敗、または基準日を記録する前の2026-06-07以前のエントリ）は判定不能
     spx = as_of.get("S&P500")
-    old = sorted(k for k, d in as_of.items() if d is None or d < expected_close or k in fallback)
+    old = sorted(k for k, d in as_of.items() if d is None or d < expected_close or k in fallback or k in provisional)
     out["old_elements"] = old
     out["old_stages"] = sorted({s for k in old for s in stages[k]})
     if spx < expected_close or "S&P500" in fallback:
@@ -252,7 +257,8 @@ def stage0(dq: dict) -> dict:
     if st == "complete":
         line = f"{exp}の終値"
     elif st == "partial":
-        line = f"{exp}の終値（一部の値が前営業日）"
+        line = (f"{exp}の終値（一部の値が前営業日または暫定）" if dq.get("provisional_elements")
+                else f"{exp}の終値（一部の値が前営業日）")
     elif st == "stale":
         line = "前営業日のデータ（最新の終値が未反映）"
     else:

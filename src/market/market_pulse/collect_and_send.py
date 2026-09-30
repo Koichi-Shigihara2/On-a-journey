@@ -778,6 +778,14 @@ def _aligned_pair_closes(sym_a, sym_b, days=10):
     return (d_prev, sa[d_prev], sb[d_prev]), (d_now, sa[d_now], sb[d_now])
 
 
+def _mark_provisional_item(item, record):
+    """daily/の行が暫定（日足の確定前に保存、`_provisional`、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）なら、
+    その値に`provisional: True`を付ける（指示書㉕ STEP B: data_qualityをpartialにする）。"""
+    if record.get("_provisional"):
+        item["provisional"] = True
+    return item
+
+
 def apply_same_contract_change(item, prev, last):
     """[[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物（CL=F・GC=F）の限月が前の行から変わった日（乗り換え日）は、
     新しい限月自身の前営業日の終値と比べた前日比にする（daily/の行のcontract・contract_close・contract_prev_close）。
@@ -840,6 +848,7 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
+            _mark_provisional_item(data[name], records[-1])
             if name == "米10年債":
                 # MP-25（指示書㉓）: 利回りの変化はbpで表示する（^TNXは利回り〈%〉そのもの）
                 data[name]["change_bp"] = round(change * 100, 1)
@@ -913,6 +922,7 @@ def get_realtime_data():
                 "change_percent": round(pct, 2),
                 "date": records[-1]["date"]
             }
+            _mark_provisional_item(data[name], records[-1])
         else:
             data[name] = None
 
@@ -996,6 +1006,7 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
+            _mark_provisional_item(data[name], records[-1])
         # [[MARKETPULSE-HYG-LQD-DATE-MIX-1]]（2026-09-26）: 以前はHYG・LQDそれぞれの
         # 直近2終値で比を取り、日付はHYG側を記録していたため、片方の終値が欠けた日は
         # 別の日の値を組み合わせていた（2026-09-26: HYGは09-25、LQDは09-24）。
@@ -1236,6 +1247,7 @@ def collect_asset_flow():
                 "change_pct": round(chg_pct, 3),
                 "date":     date_str,
             }
+            _mark_provisional_item(result[a["key"]], records[-1])
             print(f"[INFO] asset_flow {a['label']}({a['ticker']}): {chg_pct:+.2f}%")
         except Exception as e:
             print(f"[WARN] asset_flow {a['ticker']}: {e}")

@@ -626,7 +626,8 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     _res(results, cls, "S-order 段階の並び（0〜5・8・履歴。6・7は実装B）", exp_order, dom["stageOrder"], dom["stageOrder"] == exp_order)
     _res(results, cls, "S-00 data_qualityの判定（#dqStatus）", dq.get("status"), dom["dqStatus"], dom["dqStatus"] == dq.get("status"))
     exp_b = "" if dq.get("status") not in ("stale", "partial") else (
-        "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else "一部の値が前営業日: " + "・".join(dq.get("old_elements") or []))
+        "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else
+        ("一部の値が前営業日または暫定: " if dq.get("provisional_elements") else "一部の値が前営業日: ") + "・".join(dq.get("old_elements") or []))
     _res(results, cls, "S-00b data_qualityの注意表示（#dqBanner）", exp_b, dom["dqBanner"], (dom["dqBanner"] or "") == exp_b)
     tags = (sc.get("1") or {}).get("tags")
     exp = "記録なし" if tags is None else ("該当なし" if not tags else "".join(tags))

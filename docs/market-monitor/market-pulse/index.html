@@ -994,15 +994,15 @@ function renderDqBanner(){
   const el=document.getElementById("dqBanner");if(!el)return;
   const dq=allData[allData.length-1]?.data_quality;
   if(dq?.status==="stale")el.innerHTML='<div class="dq-banner dq-stale">前営業日のデータ（最新の終値が未反映）</div>';
-  else if(dq?.status==="partial")el.innerHTML=`<div class="dq-banner dq-partial">一部の値が前営業日: ${escHtml((dq.old_elements||[]).join("・"))}</div>`;
+  else if(dq?.status==="partial")el.innerHTML=`<div class="dq-banner dq-partial">${(dq.provisional_elements||[]).length?"一部の値が前営業日または暫定":"一部の値が前営業日"}: ${escHtml((dq.old_elements||[]).join("・"))}</div>`;
   else el.innerHTML='';
 }
 function renderStage0(){
   const el=document.getElementById("stage0Body");if(!el)return;
   const L=allData[allData.length-1];const dq=L?.data_quality;
   if(!dq){el.innerHTML='<div class="stage-note">記録なし</div>';return}
-  const ST={complete:"すべて最新",partial:"一部の値が前営業日",stale:"S&P500が前営業日",unknown:"判定不能"};
-  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isOld?"古い":"最新"}</td></tr>`}).join('');
+  const ST={complete:"すべて最新",partial:"一部の値が前営業日または暫定",stale:"S&P500が前営業日",unknown:"判定不能"};
+  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":"最新"}</td></tr>`}).join('');
   const fr=L.data_freshness;
   el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。</div>`;
 }

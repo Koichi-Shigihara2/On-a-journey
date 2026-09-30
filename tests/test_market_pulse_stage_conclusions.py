@@ -268,3 +268,20 @@ class TestFuturesRoll:
         it = dict(self._item(-5.52), roll_suspect={"etf": "USO", "diff_pt": -4.56})
         ind = {"WTI原油": it, "S&P500": {"change_percent": 0.1}}
         assert sc.stage1(ind)["tags"] == [] and it["change_percent"] == -5.52
+
+
+class TestProvisionalDataQuality:
+    """指示書㉕ STEP B: 暫定の値（日足の確定前に保存された行）を含む要素はdata_qualityをpartialにする"""
+
+    def test_provisional_makes_partial(self):
+        ind = {k: {"change_percent": 0.1, "date": "2026-09-29"} for k in sc.DQ_INDICATORS}
+        ind["ドル円"] = {"change_percent": -0.05, "date": "2026-09-30", "provisional": True}
+        af = {k: {"change_pct": 0.1, "date": "2026-09-29"} for k in sc.DQ_ASSET_FLOW}
+        dq = sc.data_quality(ind, af, {"date": "2026-09-29"}, "2026-09-29")
+        assert dq["status"] == "partial" and dq["provisional_elements"] == ["ドル円"] and dq["old_stages"] == [1, 2]
+        assert sc.stage0(dq)["line"] == "2026-09-29の終値（一部の値が前営業日または暫定）"
+
+    def test_collector_marks_provisional_item(self):
+        it = cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-30", "_provisional": True})
+        assert it["provisional"] is True
+        assert "provisional" not in cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-29"})
