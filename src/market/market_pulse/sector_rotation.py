@@ -213,23 +213,30 @@ def watch_tickers(repo_root: str) -> Dict[str, List[str]]:
     return {"held": held, "tail": tail, "all": sorted(set(held) | set(tail))}
 
 
-def _tanuki_score(repo_root: str, t: str) -> Optional[str]:
+def _tanuki_score(repo_root: str, t: str) -> Tuple[Optional[str], Optional[str]]:
+    """(TANUKI SCOREの分類, 計算日時)。Market Pulseより前の夜の計算結果を読むため、計算日時も返す（指示書㉗）。"""
     try:
         d = json.load(open(os.path.join(repo_root, "docs", "value-monitor", "tanuki_valuation", "data", t, "latest.json"),
                            encoding="utf-8"))
-        return d.get("tanuki_score")
+        return d.get("tanuki_score"), d.get("calculation_date")
     except Exception:
-        return None
+        return None, None
 
 
-def _hype_phase(repo_root: str, t: str) -> Optional[str]:
+def _hype_phase(repo_root: str, t: str) -> Tuple[Optional[str], Optional[str]]:
+    """(HypeCoreのPhase, 計算日時)。"""
     try:
         d = json.load(open(os.path.join(repo_root, "docs", "value-monitor", "hypecore", "data", f"{t}_poc.json"),
                            encoding="utf-8"))
         m = (d.get("monthly") or [])[-1]
-        return m.get("stage_label")
+        return m.get("stage_label"), d.get("generated_at") or d.get("generated")
     except Exception:
-        return None
+        return None, None
+
+
+def _date_range(values: List[Optional[str]]) -> Optional[List[str]]:
+    ds = sorted({v[:10] for v in values if v})
+    return [ds[0], ds[-1]] if ds else None
 
 
 def watch_list(repo_root: str, rotation: Dict[str, Any], get_attributes: Callable[[str], Optional[dict]]) -> Dict[str, Any]:
@@ -243,14 +250,20 @@ def watch_list(repo_root: str, rotation: Dict[str, Any], get_attributes: Callabl
         attr = get_attributes(t) or {}
         etf = SECTOR_MAP.get(attr.get("sector"))
         sec = sectors.get(etf) if etf else None
+        score, score_at = _tanuki_score(repo_root, t)
+        phase, phase_at = _hype_phase(repo_root, t)
         rows.append({"ticker": t, "held": t in wt["held"], "tail": t in wt["tail"], "sector": attr.get("sector"),
                      "sector_etf": etf, "sector_name": SECTOR_JA.get(etf) if etf else None,
                      "quadrant": sec["quadrant"] if sec else None, "momentum": sec["momentum"] if sec else None,
-                     "tanuki_score": _tanuki_score(repo_root, t), "hype_phase": _hype_phase(repo_root, t)})
+                     "tanuki_score": score, "tanuki_calculated_at": score_at,
+                     "hype_phase": phase, "hype_calculated_at": phase_at})
     flowing = [r for r in rows if r["quadrant"] in ("Strong", "Improving")]
     flowing.sort(key=lambda r: (-r["momentum"], r["ticker"]))
     others = sorted((r for r in rows if r not in flowing), key=lambda r: r["ticker"])
-    return {"tickers": wt, "flowing": [r["ticker"] for r in flowing], "rows": flowing + others}
+    # 表の見出しに出す計算日（TANUKI SCORE・HypeCoreはMarket Pulseより前の夜の計算結果、指示書㉗）
+    calc = {"tanuki_score": _date_range([r["tanuki_calculated_at"] for r in rows]),
+            "hype_phase": _date_range([r["hype_calculated_at"] for r in rows])}
+    return {"tickers": wt, "flowing": [r["ticker"] for r in flowing], "rows": flowing + others, "calculated": calc}
 
 
 def stage7_line(wl: Dict[str, Any]) -> str:

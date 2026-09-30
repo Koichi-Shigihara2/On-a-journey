@@ -279,6 +279,7 @@ DOM_SNAPSHOT_JS = """
     tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table'].map(id => [id,
       document.getElementById(id) ? [...document.getElementById(id).querySelectorAll('tr')].slice(id === 'm7Table' ? 0 : 1)
         .map(r => [...r.querySelectorAll('td')].map(td => td.innerText.trim())) : null])),
+    watchHeaders: document.getElementById('watchTable') ? [...document.getElementById('watchTable').querySelectorAll('th')].map(e => e.innerText.trim()) : null,
     quadDatasets: (typeof quadChartInst !== 'undefined' && quadChartInst) ? quadChartInst.data.datasets.map(d => ({label: d.label, n: d.data.length,
       last: d.data[d.data.length - 1]})) : null,
     stageOrder: [...document.querySelectorAll('main > section.stage')].map(s => s.id),
@@ -672,6 +673,12 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
                for r in wl["rows"]]
         act = dom["tableRows"]["watchTable"]
         _res(results, cls, "B-07 段階7 監視銘柄の表（#watchTable）", f"{len(exp)}行", f"{len(act or [])}行", act == exp, note="全セルを比較")
+        lab = lambda r: "（計算日: —）" if not r else f"（計算日: {r[0] if r[0] == r[1] else r[0] + '〜' + r[1]}）"
+        calc = wl.get("calculated") or {}
+        exp_h = [f"TANUKI SCORE{lab(calc.get('tanuki_score'))}", f"HypeCoreのPhase{lab(calc.get('hype_phase'))}"]
+        act_h = dom.get("watchHeaders") or []
+        _res(results, cls, "B-07b 段階7 表の見出しの計算日（TANUKI SCORE・HypeCore）", exp_h, act_h[-2:], act_h[-2:] == exp_h,
+             note="Market Pulseより前の夜の計算結果を使うため、計算日を見出しに表示する")
     _res(results, cls, "S-00 data_qualityの判定（#dqStatus）", dq.get("status"), dom["dqStatus"], dom["dqStatus"] == dq.get("status"))
     exp_b = "" if dq.get("status") not in ("stale", "partial") else (
         "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else

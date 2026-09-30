@@ -143,6 +143,7 @@
     .quad-wrap{position:relative;height:340px;background:var(--sur);border:1px solid var(--bdr);padding:8px;margin-bottom:10px}
     .q-Strong{color:var(--grn)}.q-Improving{color:var(--cyn)}.q-Weakening{color:var(--amb)}.q-Weak{color:var(--red)}
     .mp-table tr.flow td{background:rgba(16,185,129,.06)}
+    .calc-date{font-size:10px;color:var(--mut);margin-left:4px;white-space:nowrap}
     .metric-card{background:var(--sur);border:1px solid var(--bdr);padding:10px 12px}
     .metric-label{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;margin-bottom:4px}
     .metric-value{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt);line-height:1}
@@ -1037,12 +1038,14 @@ function renderStage6(){
 }
 
 // ── 段階7: 資金が向かっているセクターにいる監視銘柄（実装B） ──
+// 計算日の表示（TANUKI SCORE・HypeCoreはMarket Pulseより前の夜の計算結果。指示書㉗）
+function calcLabel(r){if(!r)return'<span class="calc-date">（計算日: —）</span>';return`<span class="calc-date">（計算日: ${escHtml(r[0]===r[1]?r[0]:r[0]+'〜'+r[1])}）</span>`}
 function renderStage7(){
   const el=document.getElementById("stage7Body");if(!el)return;
   const w=allData[allData.length-1]?.watch_list;
   if(!w){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const flow=new Set(w.flowing||[]);
-  el.innerHTML=`<table class="mp-table" id="watchTable"><tr><th>銘柄</th><th>区分</th><th>セクター</th><th>週次の位置</th><th>TANUKI SCORE</th><th>HypeCoreのPhase</th></tr>${(w.rows||[]).map(r=>`<tr class="${flow.has(r.ticker)?'flow':''}"><td>${escHtml(r.ticker)}</td><td>${[r.held?'保有':'',r.tail?'TAIL':''].filter(Boolean).join('・')}</td><td>${r.sector_etf?escHtml(r.sector_etf+' '+(r.sector_name||'')):'—'}</td><td class="${r.quadrant?'q-'+r.quadrant:''}">${r.quadrant?escHtml(r.quadrant+'（'+QJA[r.quadrant]+'）'):'—'}</td><td>${escHtml(r.tanuki_score||'—')}</td><td>${escHtml(r.hype_phase||'—')}</td></tr>`).join('')}</table>
+  el.innerHTML=`<table class="mp-table" id="watchTable"><tr><th>銘柄</th><th>区分</th><th>セクター</th><th>週次の位置</th><th>TANUKI SCORE${calcLabel(w.calculated?.tanuki_score)}</th><th>HypeCoreのPhase${calcLabel(w.calculated?.hype_phase)}</th></tr>${(w.rows||[]).map(r=>`<tr class="${flow.has(r.ticker)?'flow':''}"><td>${escHtml(r.ticker)}</td><td>${[r.held?'保有':'',r.tail?'TAIL':''].filter(Boolean).join('・')}</td><td>${r.sector_etf?escHtml(r.sector_etf+' '+(r.sector_name||'')):'—'}</td><td class="${r.quadrant?'q-'+r.quadrant:''}">${r.quadrant?escHtml(r.quadrant+'（'+QJA[r.quadrant]+'）'):'—'}</td><td>${escHtml(r.tanuki_score||'—')}</td><td>${escHtml(r.hype_phase||'—')}</td></tr>`).join('')}</table>
   <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。資金が向かっているセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
 }
 

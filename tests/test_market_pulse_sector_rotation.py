@@ -149,3 +149,23 @@ class TestStageIntegration:
         r = sc.build_stage_conclusions(ind, af, {"date": "2026-09-29"}, "2026-09-29",
                                        implb={"sector_rotation": {"excluded": ["XLE"], "sectors": {}, "by_quadrant": {}}})
         assert r["data_quality"]["status"] == "partial" and 5 in r["data_quality"]["old_stages"]
+
+
+class TestCalcDates:
+    """指示書㉗: 段階7の表の見出しに、TANUKI SCOREとHypeCoreの計算日（Market Pulseより前の夜の計算結果）を出す"""
+
+    def test_calculated_range(self, tmp_path, monkeypatch):
+        root = tmp_path
+        for t, when in (("AAA", "2026-09-29T10:00:00+09:00"), ("BBB", "2026-09-30T09:55:00+09:00")):
+            d = root / "docs" / "value-monitor" / "tanuki_valuation" / "data" / t
+            d.mkdir(parents=True)
+            (d / "latest.json").write_text(json.dumps({"tanuki_score": "BUY", "calculation_date": when}), encoding="utf-8")
+        h = root / "docs" / "value-monitor" / "hypecore" / "data"
+        h.mkdir(parents=True)
+        (h / "AAA_poc.json").write_text(json.dumps({"generated_at": "2026-09-28T19:26:53+09:00",
+                                                    "monthly": [{"stage_label": "期待剥落期"}]}), encoding="utf-8")
+        monkeypatch.setattr(sr, "watch_tickers", lambda repo: {"held": ["AAA", "BBB"], "tail": [], "all": ["AAA", "BBB"]})
+        wl = sr.watch_list(str(root), {"sectors": {}}, lambda t: {})
+        assert wl["calculated"] == {"tanuki_score": ["2026-09-29", "2026-09-30"], "hype_phase": ["2026-09-28", "2026-09-28"]}
+        row = {r["ticker"]: r for r in wl["rows"]}
+        assert row["AAA"]["hype_phase"] == "期待剥落期" and row["BBB"]["hype_calculated_at"] is None
