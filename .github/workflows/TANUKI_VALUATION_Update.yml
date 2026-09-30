@@ -12,10 +12,18 @@ name: TANUKI VALUATION Daily Update
 # 週1回のみ低頻度フォールバックcronを残す（Market_Data_Daily_Updateの
 # 金曜実行〈2026-08-29時点で21:25 UTC、旧21:40 UTC〉より確実に後になる
 # 時刻に設定し、旧cronと同じレースを再現しないようにする）。
+#
+# 指示書㉕ STEP C（2026-09-30）: 一晩に2回動いていた（09-30: 00:49と00:51 UTC）。原因は、Market Data Daily Updateの完了と、
+# その完了で動くStonks Silo Updateの完了の両方で起動していたこと。TANUKI VALUATIONはStonks Siloの結果
+# （docs/value-monitor/stonks-silo/data/results.json: runway・revenue_growth）を読むため、Market Data Dailyの直後の1回目は
+# 前夜のStonks Siloの結果で計算しており不要だった。2本が同時に動き、同じファイルへのcommit・pushとDiscord通知
+# （score_watcher、同じ.watcher_state.jsonから判定）が重なる恐れもあった。Market Data Daily Updateを起動元から外し、
+# Stonks Silo Updateの完了（Market Data Dailyの後に必ず動く）で1回だけ起動する。Stonks Siloが失敗した日も株価は
+# 更新されているため、Stonks Siloのfailureでも起動する（その場合はStonks Siloの前回の結果を使う）。
+# あわせてconcurrencyで同時実行を防ぐ（HypeCore・Adjusted EPSの完了と重なった場合は順番に動く）。
 on:
   workflow_run:
     workflows:
-      - "Market Data Daily Update"
       - "HypeCore Update"
       - "Adjusted_EPS_Data_Update"
       - "Stonks Silo Update"
@@ -29,12 +37,19 @@ on:
         required: false
         default: ''
 
+concurrency:
+  group: tanuki-valuation
+  cancel-in-progress: false
+
 env:
   TZ: Asia/Tokyo
 
 jobs:
   update-valuations:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success' ||
+      (github.event.workflow_run.name == 'Stonks Silo Update' && github.event.workflow_run.conclusion == 'failure')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
