@@ -341,3 +341,60 @@ class TestProvisionalRows:
         history = {"^N225": [_bar("2026-09-28", 65877.6), _bar("2026-09-29", None, 0)]}
         out = fetcher._retry_missing_closes(history, attempts=3, wait_sec=0, sleep=lambda s: None)
         assert out["initial"] == [] and calls == []
+
+
+class TestResetWindowSkip:
+    """指示書㉕ STEP A: 1回目の取得で半数以上の銘柄に終値が無い（Yahooの日足の作り直しの時間帯）場合は、
+    取り直さず何も保存せずに終了する。20銘柄未満の手動実行は対象外"""
+
+    def test_half_or_more_no_close_skips_without_saving(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        syms = [f"S{i}" for i in range(20)]
+        for s in syms:
+            _write_daily(base, s, [_bar("2026-09-28", 10.0)])
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda ss, period="5d", start=None: {
+            s: [_bar("2026-09-28", 10.0), _bar("2026-09-29", None if i < 10 else 11.0)] for i, s in enumerate(ss)})
+        called = []
+        monkeypatch.setattr(fetcher, "_retry_missing_closes", lambda h, **k: called.append(1))
+        out = fetcher.fetch_daily_prices(syms, base_dir=base)
+        assert out["status"] == "reset_window" and out["no_close"] == 10 and called == []
+        assert all(len(_read_daily(base, s)) == 1 for s in syms)
+
+    def test_fewer_missing_proceeds(self, tmp_path, monkeypatch):
+        base = str(tmp_path)
+        syms = [f"S{i}" for i in range(20)]
+        for s in syms:
+            _write_daily(base, s, [_bar("2026-09-28", 10.0)])
+        monkeypatch.setattr(fetcher, "_download_historical_bars", lambda ss, period="5d", start=None: {
+            s: [_bar("2026-09-28", 10.0), _bar("2026-09-29", None if i < 9 else 11.0)] for i, s in enumerate(ss)})
+        out = fetcher.fetch_daily_prices(syms, base_dir=base)
+        assert out["status"] == "fetched"
+        assert sum(len(_read_daily(base, s)) == 2 for s in syms) == 11
+
+
+class TestDailyGuard:
+    """指示書㉕ STEP A: Market Data Daily Updateの起動ガード"""
+
+    def _decide(self, iso, base):
+        from datetime import datetime
+        from common.market_data import daily_guard
+        return daily_guard.decide(datetime.fromisoformat(iso), base)
+
+    def test_before_close_plus_20min(self, tmp_path):
+        assert self._decide("2026-09-29T20:19:00+00:00", str(tmp_path))["run"] == "false"   # 夏時間: 引け20:00 UTC
+        assert self._decide("2026-11-02T21:05:00+00:00", str(tmp_path))["run"] == "false"   # 冬時間: 引け21:00 UTC
+
+    def test_holiday_and_early_close(self, tmp_path):
+        assert "休場" in self._decide("2026-12-25T21:00:00+00:00", str(tmp_path))["reason"]
+        # 感謝祭の翌日は13:00 ET（18:00 UTC）に引け。18:25 UTCには判定に進む
+        assert self._decide("2026-11-27T18:25:00+00:00", str(tmp_path))["run"] == "true"
+
+    def test_already_complete(self, tmp_path):
+        d = os.path.join(str(tmp_path), "daily")
+        for i in range(20):
+            _write_daily(str(tmp_path), f"S{i}", [_bar("2026-09-28", 1.0), _bar("2026-09-29", 1.0 if i < 19 else None)])
+        r = self._decide("2026-09-29T21:00:00+00:00", d)
+        assert r["run"] == "false" and "19/20" in r["reason"]
+        for i in range(20):
+            _write_daily(str(tmp_path), f"S{i}", [_bar("2026-09-28", 1.0), _bar("2026-09-29", 1.0 if i < 18 else None)])
+        assert self._decide("2026-09-29T21:00:00+00:00", d)["run"] == "true"   # 18/20=90% < 95%

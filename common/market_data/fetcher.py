@@ -522,6 +522,7 @@ def _repair_close_missing_records(symbol: str, valid_bars: List[Dict[str, Any]],
 # （Ticker.history(start, end)）を試す。推測では埋めない。回数・間隔は環境変数で変えられる。
 CLOSE_RETRY_ATTEMPTS = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_ATTEMPTS", "3"))
 CLOSE_RETRY_WAIT_SEC = int(os.environ.get("MARKET_DATA_CLOSE_RETRY_WAIT_SEC", "180"))
+RESET_WINDOW_MIN_SYMBOLS = 20
 
 
 # [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]（2026-09-30、指示書㉔の追加確認）: Yahooの日足が確定する前に保存された行
@@ -675,7 +676,7 @@ def _retry_missing_closes(history: Dict[str, List[Dict[str, Any]]], attempts: Op
     return out
 
 
-def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> None:
+def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Any]:
     """日次価格層を取得・保存する。
 
     yf.download()で対象銘柄を一括取得し、銘柄ごとに直近1営業日分のOHLCVを
@@ -685,11 +686,13 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
 
     本番バッチではsymbolsにget_default_symbol_universe()（S&P500構成銘柄＋
     監視銘柄＋指数/ETF/商品の和集合）を渡す想定。
+
+    戻り値: {"status": "fetched" | "reset_window" | "no_symbols", ...}（指示書㉕、ワークフローの判定用）
     """
     base = _resolve_base_dir(base_dir)
     target_symbols = _dedupe_symbols(symbols)
     if not target_symbols:
-        return
+        return {"status": "no_symbols"}
 
     # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 直近1件だけを
     # 無条件に保存していたため、yfinanceが終値の無い足（始値・高値・安値・途中の
@@ -700,6 +703,20 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
     # （自己修復）。既に終値のある過去の行は上書きしない（他システムの入力を
     # 動かさないため）。
     history = _download_historical_bars(target_symbols, period="5d")
+    # 指示書㉕ STEP A: 1回目の取得で半数以上の銘柄の最新の足に終値が無い場合は、Yahooが日足を作り直している
+    # 時間帯（実測: 00:00〜01:26 UTC頃）に入っている。取り直しても取れないため、取り直さず何も保存せずに終了する
+    with_bars = [s for s in target_symbols if history.get(s)]
+    no_close = [s for s in with_bars if not _has_valid_close(history[s][-1]) and s not in _NO_CLOSE_EXPECTED]
+    # 数銘柄だけの手動実行（workflow_dispatchのtickers指定など）は対象外（20銘柄以上の一括取得のときだけ判定する）
+    if len(with_bars) >= RESET_WINDOW_MIN_SYMBOLS and len(no_close) * 2 >= len(with_bars):
+        print(f"   終値の無い足が{len(no_close)}/{len(with_bars)}銘柄（半数以上）: Yahooの日足の作り直しの時間帯とみなし、"
+              f"取り直さず保存せずに終了")
+        summary_path = os.path.join(base, "_daily_close_retry_log.json")
+        log = _load_json(summary_path, default=[])
+        log.append({"checked_at": _now_iso(), "status": "reset_window_skipped", "no_close": len(no_close),
+                    "with_bars": len(with_bars)})
+        _atomic_write_json(summary_path, log[-60:])
+        return {"status": "reset_window", "no_close": len(no_close), "with_bars": len(with_bars)}
     retry = _retry_missing_closes(history)
     contracts: Dict[str, Optional[str]] = {}
     contract_closes: Dict[str, Dict[str, float]] = {}
@@ -763,6 +780,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> No
         )
         if record_warnings:
             print(f"   [{symbol}] 保存前検証で{len(record_warnings)}件の警告を検知（保存は継続）")
+    return {"status": "fetched", "no_close_after_retry": len(retry["still_missing"]), "with_bars": len(with_bars)}
 
 
 def backfill_daily_prices(symbols: List[str], period: str = "1y",
@@ -1420,6 +1438,10 @@ if __name__ == "__main__":
         help="一過性: daily/の終値の無い行だけを取り直す（銘柄省略時はdaily/の全ファイルが対象）",
     )
     arg_parser.add_argument(
+        "--status-file", default=None,
+        help="日次取得の結果（status: fetched / reset_window 等）をJSONで書き出す（ワークフローの判定用）",
+    )
+    arg_parser.add_argument(
         "--repair-provisional", default=None, metavar="SCAN_JSON",
         help="一過性: daily_intraday_rows_scan.pyの結果（rows）の行に暫定の印を付け、確定した日足で置き換える",
     )
@@ -1458,7 +1480,11 @@ if __name__ == "__main__":
         backfill_daily_prices(symbols_arg, period=args.period, start=args.start)
     else:
         if args.layer in ("daily", "all"):
-            fetch_daily_prices(symbols_arg)
+            daily_status = fetch_daily_prices(symbols_arg)
+            print(f"日次取得の結果: {json.dumps(daily_status, ensure_ascii=False)}")
+            if args.status_file:
+                with open(args.status_file, "w", encoding="utf-8") as f:
+                    json.dump(daily_status, f, ensure_ascii=False)
         if args.layer in ("attributes", "all"):
             fetch_weekly_attributes(symbols_arg)
         if args.layer in ("analyst", "all"):
