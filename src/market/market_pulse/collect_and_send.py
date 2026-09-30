@@ -778,11 +778,30 @@ def _aligned_pair_closes(sym_a, sym_b, days=10):
     return (d_prev, sa[d_prev], sb[d_prev]), (d_now, sa[d_now], sb[d_now])
 
 
-def _mark_provisional_item(item, record):
+def provisional_kind(symbol, record):
     """daily/の行が暫定（日足の確定前に保存、`_provisional`、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）なら、
-    その値に`provisional: True`を付ける（指示書㉕ STEP B: data_qualityをpartialにする）。"""
-    if record.get("_provisional"):
-        item["provisional"] = True
+    設計上の暫定の種類（"清算前"・"日中"）か、想定外の暫定（None）かを返す。暫定でなければFalse。
+    区別は銘柄ごとの日足の区切り（fetcher.expected_provisional_kind）から判定する。"""
+    if not record.get("_provisional"):
+        return False
+    try:
+        from common.market_data.fetcher import expected_provisional_kind
+        return expected_provisional_kind(symbol, record["date"])
+    except Exception as e:
+        print(f"[WARN] 暫定の種類の判定失敗（{symbol}）: {e}")
+        return None
+
+
+def _mark_provisional_item(item, record, symbol):
+    """暫定の値に`provisional: True`を付ける。夜の取得の時点で構造上必ず暫定になる値（先物の清算前・為替やドル指数の日の区切り前）は
+    `provisional_kind`（"清算前"・"日中"）も付け、data_qualityをpartialにしない。それ以外の暫定（本来は確定しているはずの値）は
+    `provisional_kind`を付けず、data_qualityをpartialにする（指示書㉕ STEP B、清算値の実測を受けた修正）。"""
+    kind = provisional_kind(symbol, record)
+    if kind is False:
+        return item
+    item["provisional"] = True
+    if kind:
+        item["provisional_kind"] = kind
     return item
 
 
@@ -848,7 +867,7 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
-            _mark_provisional_item(data[name], records[-1])
+            _mark_provisional_item(data[name], records[-1], ticker)
             if name == "米10年債":
                 # MP-25（指示書㉓）: 利回りの変化はbpで表示する（^TNXは利回り〈%〉そのもの）
                 data[name]["change_bp"] = round(change * 100, 1)
@@ -922,7 +941,7 @@ def get_realtime_data():
                 "change_percent": round(pct, 2),
                 "date": records[-1]["date"]
             }
-            _mark_provisional_item(data[name], records[-1])
+            _mark_provisional_item(data[name], records[-1], ticker)
         else:
             data[name] = None
 
@@ -987,7 +1006,7 @@ def get_realtime_data():
     summary += format_line("LQD（投資適格債ETF）", lqd_records)
 
     if hyg_records is not None and lqd_records is not None:
-        for records, name in [(hyg_records, "HYG（ハイイールド債ETF）"), (lqd_records, "LQD（投資適格債ETF）")]:
+        for records, name, sym in [(hyg_records, "HYG（ハイイールド債ETF）", "HYG"), (lqd_records, "LQD（投資適格債ETF）", "LQD")]:
             if (records[-1].get("close") is None or records[-2].get("close") is None
                     or _is_nan(records[-1]["close"]) or _is_nan(records[-2]["close"])):
                 data[name] = None
@@ -1006,7 +1025,7 @@ def get_realtime_data():
                 "volume_ratio": round(volume_ratio, 2) if volume_ratio is not None else None,
                 "date": records[-1]["date"]
             }
-            _mark_provisional_item(data[name], records[-1])
+            _mark_provisional_item(data[name], records[-1], sym)
         # [[MARKETPULSE-HYG-LQD-DATE-MIX-1]]（2026-09-26）: 以前はHYG・LQDそれぞれの
         # 直近2終値で比を取り、日付はHYG側を記録していたため、片方の終値が欠けた日は
         # 別の日の値を組み合わせていた（2026-09-26: HYGは09-25、LQDは09-24）。
@@ -1247,7 +1266,7 @@ def collect_asset_flow():
                 "change_pct": round(chg_pct, 3),
                 "date":     date_str,
             }
-            _mark_provisional_item(result[a["key"]], records[-1])
+            _mark_provisional_item(result[a["key"]], records[-1], a["ticker"])
             print(f"[INFO] asset_flow {a['label']}({a['ticker']}): {chg_pct:+.2f}%")
         except Exception as e:
             print(f"[WARN] asset_flow {a['ticker']}: {e}")

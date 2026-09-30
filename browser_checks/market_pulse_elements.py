@@ -276,9 +276,9 @@ DOM_SNAPSHOT_JS = """
     cpWeather: t('cpWeather'),
     cpLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('cpLine' + k)])),
     stageLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('stageLine' + k)])),
-    tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table'].map(id => [id,
+    tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table','dqTable'].map(id => [id,
       document.getElementById(id) ? [...document.getElementById(id).querySelectorAll('tr')].slice(id === 'm7Table' ? 0 : 1)
-        .map(r => [...r.querySelectorAll('td')].map(td => td.innerText.trim())) : null])),
+        .map(r => [...r.querySelectorAll('td')].map(td => (id === 'dqTable' ? td.textContent : td.innerText).trim())) : null])),
     watchHeaders: document.getElementById('watchTable') ? [...document.getElementById('watchTable').querySelectorAll('th')].map(e => e.innerText.trim()) : null,
     quadDatasets: (typeof quadChartInst !== 'undefined' && quadChartInst) ? quadChartInst.data.datasets.map(d => ({label: d.label, n: d.data.length,
       last: d.data[d.data.length - 1]})) : null,
@@ -316,6 +316,14 @@ def _res(results: list, cls, element: str, expected: Any, actual: Any, passed: O
          layer: str = "描画", note: str = "") -> None:
     results.append(cls(element=element, expected=expected, actual=actual, passed=passed,
                        note=(f"[{layer}] " + note) if note or layer else note))
+
+
+def prov_label(x) -> str:
+    """暫定の値の表示（index.htmlのprovMark）: 種類つき（清算前・日中）は「暫定（…）」、それ以外の暫定は「暫定」。
+    説明つき（data-info-text）のため、info-tooltip.jsが末尾にⓘを付ける。"""
+    if not (x or {}).get("provisional"):
+        return ""
+    return (f"暫定（{x['provisional_kind']}）" if x.get("provisional_kind") else "暫定") + "ⓘ"
 
 
 def run_market_pulse_element_checks(page, results: list, cls, now: Optional[datetime] = None) -> None:
@@ -581,7 +589,7 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
             ctext += "同限月"
         elif it.get("roll_suspect"):
             ctext += "乗換?"
-        exp.append(f"{short}\n{val}{'※' if it.get('is_fallback') else ''}\n{ctext}")
+        exp.append(f"{short}\n{val}{'※' if it.get('is_fallback') else ''}\n{ctext}" + (f"\n{prov_label(it)}" if it.get("provisional") else ""))
     _res(results, cls, "MP-25 指標6カード（段階1、#metricsRow の先頭6枚）", exp, dom["metricCards"][:6], dom["metricCards"][:6] == exp,
          note="1000以上はtoLocaleString(ja-JP, 小数0桁)。10年債はbp")
 
@@ -654,7 +662,8 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
                ["M7（均等加重）", f(sm["m7_pct"]) + "%", f(sm["m7_vs_sp500_pt"]) + "pt"], ["S&P500", f(sm["sp500_pct"]) + "%", ""]]
         act = dom["tableRows"]["semisTable"]
         _res(results, cls, "B-06 段階6 半導体・M7の表（#semisTable）", exp, act, act == exp)
-        exp = [[f"{r['name']}（{r['symbol']}）", "—" if r["change_pct"] is None else f(r["change_pct"]) + "%", r.get("date") or "—"]
+        exp = [[f"{r['name']}（{r['symbol']}）", "—" if r["change_pct"] is None else f(r["change_pct"]) + "%",
+                (r.get("date") or "—") + prov_label(r)]
                for r in L.get("commodity_fx") or []]
         act = [[r[0], r[2], r[3]] for r in (dom["tableRows"]["breakdownTable"] or [])]
         _res(results, cls, "B-06b 段階6 商品・為替の内訳（#breakdownTable）", exp, act, act == exp, note="名前・前日比・基準日を比較")
@@ -684,6 +693,15 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else
         ("一部の値が前営業日または暫定: " if dq.get("provisional_elements") else "一部の値が前営業日: ") + "・".join(dq.get("old_elements") or []))
     _res(results, cls, "S-00b data_qualityの注意表示（#dqBanner）", exp_b, dom["dqBanner"], (dom["dqBanner"] or "") == exp_b)
+    if dq.get("as_of"):
+        # 要素ごとの基準日の表: 想定外の暫定は「暫定」、夜の実行の時点で構造上必ず暫定になる値は「暫定（清算前）」「暫定（日中）」
+        # （partialの判定からは外す）
+        ep = dq.get("expected_provisional_elements") or {}
+        exp_t = [[k, v or "—", "暫定" if k in (dq.get("provisional_elements") or []) else "古い" if k in (dq.get("old_elements") or [])
+                  else f"暫定（{ep[k]}）" if k in ep else "最新"] for k, v in dq["as_of"].items()]
+        act_t = dom["tableRows"]["dqTable"]
+        _res(results, cls, "S-00c 段階0 要素ごとの基準日の表（#dqTable）", f"{len(exp_t)}行", f"{len(act_t or [])}行", act_t == exp_t,
+             note="全セルを比較。設計上の暫定（清算前・日中）はpartialにしない")
     tags = (sc.get("1") or {}).get("tags")
     exp = "記録なし" if tags is None else ("該当なし" if not tags else "".join(tags))
     _res(results, cls, "S-01 段階1の事実タグ（#stage1Tags）", exp, dom["stage1Tags"], (dom["stage1Tags"] or "").replace("\n", "") == exp)

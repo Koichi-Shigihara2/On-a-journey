@@ -152,6 +152,7 @@
     /* 取得失敗時の前回値フォールバック表示（MP-FALLBACK-DISPLAY-1）。「—」（データなし）とは別の見た目にする */
     .is-stale-value{opacity:.7}
     .stale-mark{color:var(--amb);font-size:11px;margin-left:2px;letter-spacing:0;cursor:help}
+    .metric-prov{font-size:11px;margin-top:2px}.metric-prov .stale-mark{margin-left:0}
 
     /* CHART */
     .chart-card{background:var(--sur);border:1px solid var(--bdr);padding:14px}
@@ -719,7 +720,11 @@ function renderMetrics(){
     const val=ind.value>=1000?ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0}):ind.value.toFixed(2);
     const isStale=!!ind.is_fallback;
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${ind.date||''}時点の値）">※</span>`:'';
-    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div></div>`}).join("")+semisCardsHTML(d)}
+    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div>${ind.provisional?`<div class="metric-prov">${provMark(ind)}</div>`:''}</div>`}).join("")+semisCardsHTML(d)}
+// 暫定の値（日足の確定前に保存された行）の表示。夜の実行の時点で構造上必ず暫定になる値は種類つき（先物は「暫定（清算前）」、
+// 為替・ドル指数は「暫定（日中）」）、それ以外の暫定（本来は確定しているはずの値。data_qualityはpartial）は「暫定」
+function provLabel(x){return x?.provisional?(x.provisional_kind?`暫定（${x.provisional_kind}）`:"暫定"):""}
+function provMark(x){const l=provLabel(x);if(!l)return'';const tip=x.provisional_kind?"夜の実行の時点ではまだ確定していない値（"+(x.provisional_kind==="清算前"?"先物の清算値が入る前":"為替・ドル指数の日の区切りの前")+"）。翌晩の取得で確定値に置き換わる":"本来は確定しているはずの時刻に取得したが、確定前の値だった（翌晩の取得で置き換わる）";return`<span class="stale-mark prov-mark" data-info-text="${tip}">${l}</span>`}
 // 実装B（指示書㉖）: 主要8指標のSOX・M7均等加重（7銘柄の前日比の単純平均）
 function semisCardsHTML(d){
   const s=d?.semis_m7;if(!s)return'';
@@ -1034,7 +1039,7 @@ function renderStage6(){
   <div class="stage-note">判定: SOXはS&amp;P500との差±1.0pt、M7は±0.5ptで「けん引／重し」。M7均等加重は7銘柄（${escHtml((s.m7_members?Object.keys(s.m7_members):[]).join('・'))}）の前日比の単純平均。${s.m7_missing?'M7の一部の終値が無く計算できない: '+escHtml(s.m7_missing.join('・')):''}</div>
   ${mem?`<div class="sub-h">M7の内訳</div><table class="mp-table" id="m7Table" style="max-width:300px">${mem}</table>`:''}
   <div class="sub-h">商品・為替の内訳（結論には使わない）</div>
-  <table class="mp-table" id="breakdownTable" style="max-width:560px"><tr><th></th><th>値</th><th>前日比</th><th>基準日</th></tr>${(bd||[]).map(r=>`<tr><td>${escHtml(r.name)}（${escHtml(r.symbol)}）</td><td class="num">${r.value==null?'—':Number(r.value).toLocaleString("ja-JP",{maximumFractionDigits:2})}</td><td class="num ${r.change_pct>0?'up':r.change_pct<0?'down':'flat'}">${r.change_pct==null?'—':f(r.change_pct)+'%'}</td><td>${escHtml(r.date||'—')}</td></tr>`).join('')}</table>`;
+  <table class="mp-table" id="breakdownTable" style="max-width:560px"><tr><th></th><th>値</th><th>前日比</th><th>基準日</th></tr>${(bd||[]).map(r=>`<tr><td>${escHtml(r.name)}（${escHtml(r.symbol)}）</td><td class="num">${r.value==null?'—':Number(r.value).toLocaleString("ja-JP",{maximumFractionDigits:2})}</td><td class="num ${r.change_pct>0?'up':r.change_pct<0?'down':'flat'}">${r.change_pct==null?'—':f(r.change_pct)+'%'}</td><td>${escHtml(r.date||'—')}${provMark(r)}</td></tr>`).join('')}</table>`;
 }
 
 // ── 段階7: 資金が向かっているセクターにいる監視銘柄（実装B） ──
@@ -1071,9 +1076,10 @@ function renderStage0(){
   const L=allData[allData.length-1];const dq=L?.data_quality;
   if(!dq){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const ST={complete:"すべて最新",partial:"一部の値が前営業日または暫定",stale:"S&P500が前営業日",unknown:"判定不能"};
-  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":"最新"}</td></tr>`}).join('');
+  const expProv=dq.expected_provisional_elements||{};
+  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":expProv[k]?`暫定（${escHtml(expProv[k])}）`:"最新"}</td></tr>`}).join('');
   const fr=L.data_freshness;
-  el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。</div>`;
+  el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。先物の清算前の値・為替とドル指数の日の区切り前の値は、夜の実行の時点では必ず暫定になるため判定から外す（表では「暫定（清算前）」「暫定（日中）」）。</div>`;
 }
 function renderStage1Tags(){
   const el=document.getElementById("stage1Tags");if(!el)return;
@@ -1293,7 +1299,7 @@ function renderAssetFlow(){
     const barW=isStale?0:Math.round(intensity*100);
     const sign=pct>=0?"+":"";
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${d.date||''}時点の値）">※</span>`:'';
-    return`<div class="af-u-tile" style="background:${bg}"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker" title="${d.desc}">${a.ticker}</div><div class="af-cell-pct${isStale?' is-stale-value':''}" style="color:${col}">${sign}${pct.toFixed(2)}%${staleMark}</div><div class="af-arrow" style="color:${col}">${arrow}</div><div class="af-cell-bar"><div class="af-cell-bar-fill" style="width:${barW}%;background:${col}"></div></div></div>`;
+    return`<div class="af-u-tile" style="background:${bg}"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker" title="${d.desc}">${a.ticker}</div><div class="af-cell-pct${isStale?' is-stale-value':''}" style="color:${col}">${sign}${pct.toFixed(2)}%${staleMark}${provMark(d)}</div><div class="af-arrow" style="color:${col}">${arrow}</div><div class="af-cell-bar"><div class="af-cell-bar-fill" style="width:${barW}%;background:${col}"></div></div></div>`;
   }).join("");
 
   // ── 日付行: 直近7日を降順（最新が上）+ 週末「休場」行 ──

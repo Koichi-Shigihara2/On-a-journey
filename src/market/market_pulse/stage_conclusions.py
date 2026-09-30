@@ -231,7 +231,10 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
     as_of: Dict[str, Optional[str]] = {}
     stages: Dict[str, Tuple[int, ...]] = {}
     fallback = set()
-    provisional = set()   # 指示書㉕ STEP B: 暫定の値（日足の確定前に保存された行）を含む要素はpartialにする
+    provisional = set()   # 指示書㉕ STEP B: 想定外の暫定の値（本来は確定しているはずの行）を含む要素はpartialにする
+    # 夜の取得の時点で構造上必ず暫定になる値（先物の清算前・為替やドル指数の日の区切り前。provisional_kindあり）はpartialにせず、
+    # 種類だけ記録する（清算値の実測〈2026-09-30〉を受けた修正）
+    expected_prov: Dict[str, str] = {}
     for k, st in DQ_INDICATORS.items():
         v = (ind or {}).get(k)
         as_of[k] = v.get("date") if isinstance(v, dict) else None
@@ -239,7 +242,10 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
         if isinstance(v, dict) and v.get("is_fallback"):
             fallback.add(k)
         if isinstance(v, dict) and v.get("provisional"):
-            provisional.add(k)
+            if v.get("provisional_kind"):
+                expected_prov[k] = v["provisional_kind"]
+            else:
+                provisional.add(k)
     for k, st in DQ_ASSET_FLOW.items():
         v = (af or {}).get(k)
         name = f"asset_flow.{k}"
@@ -248,11 +254,15 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
         if isinstance(v, dict) and v.get("is_fallback"):
             fallback.add(name)
         if isinstance(v, dict) and v.get("provisional"):
-            provisional.add(name)
+            if v.get("provisional_kind"):
+                expected_prov[name] = v["provisional_kind"]
+            else:
+                provisional.add(name)
     as_of["breadth"] = (breadth or {}).get("date")
     stages["breadth"] = (3,)
     out = {"expected_close_date": expected_close, "as_of": as_of, "status": "unknown",
-           "old_elements": [], "old_stages": [], "provisional_elements": sorted(provisional)}
+           "old_elements": [], "old_stages": [], "provisional_elements": sorted(provisional),
+           "expected_provisional_elements": dict(sorted(expected_prov.items()))}
     if not expected_close or as_of.get("S&P500") is None:
         return out   # S&P500の基準日が無い（取得失敗、または基準日を記録する前の2026-06-07以前のエントリ）は判定不能
     spx = as_of.get("S&P500")
