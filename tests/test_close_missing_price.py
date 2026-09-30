@@ -389,6 +389,32 @@ class TestDailyGuard:
         # 感謝祭の翌日は13:00 ET（18:00 UTC）に引け。18:25 UTCには判定に進む
         assert self._decide("2026-11-27T18:25:00+00:00", str(tmp_path))["run"] == "true"
 
+    def test_insurance_runs_use_previous_us_trading_day(self, tmp_path):
+        """保険の起動（01:47・02:17 UTC、UTCの火〜土）は、ニューヨーク時間の日付＝前日の米国の取引日で判定する"""
+        d = os.path.join(str(tmp_path), "daily")
+        for i in range(20):
+            _write_daily(str(tmp_path), f"S{i}", [_bar("2026-09-29", 1.0)])
+        # 2026-10-01（木）01:47 UTC＝09-30（水）21:47 EDT。09-30の終値が未取得なら取得する
+        r = self._decide("2026-10-01T01:47:00+00:00", d)
+        assert r["expected_date"] == "2026-09-30" and r["run"] == "true"
+        # 冬時間: 2026-11-03（火）02:17 UTC＝11-02（月）21:17 EST（引け21:00 UTC＋20分を過ぎている）
+        r = self._decide("2026-11-03T02:17:00+00:00", d)
+        assert r["expected_date"] == "2026-11-02" and r["run"] == "true"
+        # 土曜 01:47 UTC＝金曜の夜（米国）。金曜の終値を判定する
+        assert self._decide("2026-10-03T01:47:00+00:00", d)["expected_date"] == "2026-10-02"
+        # 米国の祝日の翌日（2026-11-27〈金〉02:17 UTC＝11-26〈木、感謝祭〉）は何もしない
+        r = self._decide("2026-11-27T02:17:00+00:00", d)
+        assert r["run"] == "false" and "休場" in r["reason"]
+
+    def test_insurance_runs_noop_when_evening_run_already_fetched(self, tmp_path):
+        """20:17〜23:17 UTCの起動で取得できていれば、保険の起動はガード(2)で何もせず終了する"""
+        d = os.path.join(str(tmp_path), "daily")
+        for i in range(20):
+            _write_daily(str(tmp_path), f"S{i}", [_bar("2026-09-29", 1.0), _bar("2026-09-30", 1.0)])
+        for iso in ("2026-10-01T01:47:00+00:00", "2026-10-01T02:17:00+00:00"):
+            r = self._decide(iso, d)
+            assert r["run"] == "false" and "そろっている" in r["reason"] and r["expected_date"] == "2026-09-30"
+
     def test_already_complete(self, tmp_path):
         d = os.path.join(str(tmp_path), "daily")
         for i in range(20):
