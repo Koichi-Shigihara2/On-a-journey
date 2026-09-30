@@ -587,6 +587,29 @@ def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime]
     return final is not None and now < final
 
 
+def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:
+    """夜の取得の時点で、構造上まだ確定していない日足か（設計上の暫定）。その種類を返す。
+
+    夜の取得はNYSEの引け＋CLOSE_WAIT（common/market_data/daily_guard.py）以降に行う。日足の確定時刻（bar_final_at）が
+    それより後の銘柄は、夜の取得で保存した当日の行が必ず暫定になる（先物の清算値・為替やドル指数の日の区切り）。
+      - "清算前": 先物（FUTURES_SYMBOLS。確定値は清算値）
+      - "日中": それ以外（JPY=X〈ロンドンの暦日〉・DX-Y.NYB〈ニューヨークの暦日〉など、日の区切りがNYSEの引けより後）
+      - None: 夜の取得の時点で確定しているはずの足（米国株・ETF・指数・^N225等）。これが暫定なら想定外
+    NYSEの休場日の足（為替等）は、その日の16:00（ニューヨーク時間）を引けとみなす。
+    """
+    from common.market_data.daily_guard import CLOSE_WAIT
+    final = bar_final_at(symbol, day)
+    if final is None:
+        return None
+    close = _nyse_close_utc(day)
+    if close is None:
+        d = datetime.strptime(day, "%Y-%m-%d").date()
+        close = datetime.combine(d, dtime(16, 0), _TZ_NY).astimezone(timezone.utc)
+    if final <= close + CLOSE_WAIT:
+        return None
+    return "清算前" if symbol in FUTURES_SYMBOLS else "日中"
+
+
 # [[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物の連続シンボル（CL=F・GC=F）は限月の乗り換え日に前日比が不連続になる
 # （2026-09-18: 夕方の取得で10月限→11月限に切り替わり、前日比−5.52%〈同じ11月限では−1.18%〉）。
 # 取得時にYahooのunderlyingSymbol（例: CLX26.NYM）を行に記録し、その限月自身の終値・前営業日の終値も記録する

@@ -35,6 +35,16 @@ def _default_quote(symbol: str) -> Dict[str, Any]:
             "previous_close": float(prev) if prev else None, "contract": info.get("underlyingSymbol")}
 
 
+def _provisional_kind(symbol: str, bar_time: datetime) -> Optional[str]:
+    """最新の足が属する日足がまだ確定していなければ、その種類（"清算前"・"日中"、fetcher.expected_provisional_kind）。"""
+    try:
+        from common.market_data.fetcher import expected_provisional_kind
+        return expected_provisional_kind(symbol, bar_time.astimezone(timezone.utc).strftime("%Y-%m-%d"))
+    except Exception as e:
+        print(f"[WARN] 暫定の種類の判定失敗（{symbol}）: {e}")
+        return None
+
+
 def snapshot(quote: Callable[[str], Dict[str, Any]] = _default_quote, now: Optional[datetime] = None) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     items, failed = [], []
@@ -46,6 +56,10 @@ def snapshot(quote: Callable[[str], Dict[str, Any]] = _default_quote, now: Optio
                           "change_pct": round((q["value"] / prev - 1) * 100, 2) if prev else None,
                           "bar_time_utc": q["bar_time"].astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                           "contract": q.get("contract"), "status": "ok"})
+            # 取引中の15分足の値は確定前（先物は清算前、ドル円は日の区切り前）。種類は日足の区切りの定義から判定する
+            kind = _provisional_kind(s["symbol"], q["bar_time"])
+            if kind:
+                items[-1].update(provisional=True, provisional_kind=kind)
         except Exception as ex:
             print(f"[WARN] 先物・ドル円の最新値の取得に失敗: {s['symbol']} ({type(ex).__name__}: {ex})")
             items.append({**s, "value": None, "previous_close": None, "change_pct": None, "bar_time_utc": None,

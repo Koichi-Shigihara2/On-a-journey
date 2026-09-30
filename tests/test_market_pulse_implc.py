@@ -131,6 +131,15 @@ class TestFutures:
         assert by["NIY=F"]["status"] == "取得できず" and by["NIY=F"]["value"] is None
         assert f["failed"] == ["NIY=F"] and f["status"] == "partial" and f["fetched_at"] == "2026-09-30T05:00:00Z"
 
+    def test_snapshot_marks_intraday_values_by_day_boundary(self):
+        # 取引中の15分足の値: 先物は「清算前」、ドル円は「日中」（fetcher.expected_provisional_kind、日足の区切りの定義から判定）
+        def quote(sym):
+            return {"value": 100.0, "previous_close": 99.0, "bar_time": datetime(2026, 9, 30, 4, 45, tzinfo=timezone.utc)}
+        by = {x["symbol"]: x for x in fs.snapshot(quote, now=datetime(2026, 9, 30, 5, tzinfo=timezone.utc))["items"]}
+        for sym in ("ES=F", "NQ=F", "NIY=F"):
+            assert by[sym]["provisional"] is True and by[sym]["provisional_kind"] == "清算前", sym
+        assert by["JPY=X"]["provisional_kind"] == "日中"
+
 
 class TestDataQualityAndAI:
     def _base(self):
