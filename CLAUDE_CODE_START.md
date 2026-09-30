@@ -21,17 +21,17 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
 **マージ待ちのブランチ（3本。順番: B → 翌晩C → 最後にupdate-schedule）**
-- `feature/mp-impl-b`（`2b57d9e1fb`、kaihatsuから分岐）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
+- `feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
   **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
   ブランチ側の変更は黙って捨てられる。ローカルに`git config merge.ours.driver true`が要る） (2) `python src/market/market_pulse/backfill_implb.py`を
   実行し直して`market_data.json`の既存エントリに実装Bの要素を付け直す (3) 09-29/30からマージまでに5営業日程度より多く空いたら、14銘柄を
   `python common/market_data/fetcher.py <14銘柄> --layer daily --repair-missing-days`で埋める（5営業日以内なら夜間の取得の抜け補完で埋まる）
   (4) 3ゲート＋browser_checks（57件一致だった）→commit→push。
-- `feature/mp-impl-c`（`1193cd5845`、Bから分岐）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
+- `feature/mp-impl-c`（`2e45457c9b`、Bから分岐。Bの`36309d41f3`をマージ済み、段階8の先物・ドル円にも暫定の表示）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
   **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`の再実行は任意（最新エントリだけに付く。
   翌晩の本番実行で自然に付く） (3) 空きが5営業日程度を超えたらES=F・NQ=F・NIY=Fを`--repair-missing-days`で埋める (4) 3ゲート＋browser_checks（60件一致）。
-- `feature/update-schedule`（`5255e7a348`、kaihatsuから分岐）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
+- `feature/update-schedule`（`e0e1e88cd8`、kaihatsuから分岐。3章に設計上の暫定値の扱いを追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
   workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
   SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
   （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
@@ -45,7 +45,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 
 **やり残し**
 - 実データでの確認が残るもの: 資金フローの表の米国休場日の行、限月乗り換えの処理（次の乗り換え日）、新高値の数・ヒンデンブルグ・AIの出力形式と俳句（㉔の未確認分）
-- 先物の日足の確定時刻は09-30に実測済み: NYの暦日の終わり（翌日0時、EDTで04:00 UTC）に清算値へ置き換わる。今の判定（`FUTURES_FINAL_DELAY`）と一致。夕方の取得で保存する当日の先物の行は暫定になり、翌晩に置き換わる（今夜の確認項目）
+- 先物の日足の確定時刻は09-30に実測済み: NYの暦日の終わり（翌日0時、EDTで04:00 UTC）に清算値へ置き換わる。今の判定（NYの翌日0時＋`FUTURES_FINAL_DELAY`24時間）は実測より24時間安全側（一致と書いたのは誤り）。夕方の取得の当日の先物の行は暫定、翌晩に値が清算値へ、印が外れるのは翌々晩。`FUTURES_FINAL_DELAY`を0にするかは未決
 - まだ暫定のままの行: CL=F・GC=Fの09-07、JPY=Xの08-15、`^N225`の09-29（次の取得の置き換え範囲で確定値になる予定）
 - `[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]`: 10/1〜10/3の起動が何もせず終わり、10/4（日）23:00 UTCの起動だけが実行したことを確認してクローズ。6〜8月の余分な起動によるβの変化は未調査
 - 上記3ブランチのマージ
