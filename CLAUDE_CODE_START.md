@@ -43,6 +43,27 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - Market Pulseのエントリのdata_quality・暫定（provisional）の要素、data_freshness.stale
 - 先物（CL=F・GC=F）・`^N225`の暫定行が確定値に置き換わったか
 
+**昨夜（米国2026-09-30の足）の実行の報告の要点（2026-10-01）**
+- Market Data Dailyは9回の起動時刻のうち、GitHubが実行を作ったのは2回だけ（他の7回はcancelledの記録も無い。default branchはkaihatsu）。
+  23:52:49 UTC起動（どのcronかはAPIで判別できない）がガードrun=true（09-30の終値が未取得 0/572）で取得し、23:55:07にpush（`48a729e0e2`）。
+  09-30の終値は有効573銘柄すべてそろい、取り直しの記録なし。保険の01:47は02:07に起動しガードrun=false（そろい済み 569/572）で何もせず
+  cancelled。02:17の起動は作られなかった。569/572の残り3銘柄（BLDR・TAP・TTD）は09-21で更新が止まった銘柄（S&P500の入れ替えとみられる）。
+  ガードの理由はジョブのログが認証なしで読めないため、`daily_guard.decide`をpush前後のdaily/で再現した。
+- 下流はすべて22:00 UTC（日本時間7:00）に間に合わなかった: Market Pulse 23:57:20、TANUKI VALUATION 00:08:29（1回だけ）、TANUKI Score 00:10:02。
+  02:07の起動の下流はすべてskipped（設計どおり）。
+- Stonks Silo（23:55起動）は「Commit and push changes」で失敗（23:57:16〜18）。パイプラインとゲートは成功。Market Pulseのcommit（23:57:15）の
+  pushが、Stonks Siloの`git pull --rebase`と`git push`の間に入ったため拒否されたとみられる（ログ未確認）。この夜のStonks Siloの結果は
+  保存されず、TANUKIは前夜のStonks Siloの結果を使った。
+- ^N225の09-30の行は暫定のまま（取得が確定した足の出る01:26 UTC頃より前で、保険の起動は米国の終値がそろっていたため何もしなかった）。
+- Market Pulseのエントリ（2026-10-01 08:57 JST）のdata_qualityはpartial（WTI・金・ドル円の暫定。いずれも設計上の暫定で、実装Bの統合後はcomplete扱い）。
+
+**チャット側の決定（2026-10-01）**
+1. 実装B（`feature/mp-impl-b`）を今日統合する（上記のマージ手順どおり）
+2. botがpushする全ワークフローにpushの再試行を入れる（Stonks Siloのpush失敗への対応）
+3. Market Data Dailyの20:17 UTCのcronを削除する（夏時間ではガードが必ず「引けから20分経っていない」で何もしない）
+4. 今夜と明晩の2晩、Market Data Dailyの起動（作られた実行・時刻）を記録し、その後に外部から起動する方式の案を報告する（実装はしない）
+5. ^N225の暫定値は対応不要
+
 **やり残し**
 - 実データでの確認が残るもの: 資金フローの表の米国休場日の行、限月乗り換えの処理（次の乗り換え日）、新高値の数・ヒンデンブルグ・AIの出力形式と俳句（㉔の未確認分）
 - 先物の日足の確定時刻は09-30に実測済み: NYの暦日の終わり（翌日0時、EDTで04:00 UTC）に清算値へ置き換わる。今の判定（NYの翌日0時＋`FUTURES_FINAL_DELAY`24時間）は実測より24時間安全側（一致と書いたのは誤り）。夕方の取得の当日の先物の行は暫定、翌晩に値が清算値へ、印が外れるのは翌々晩。`FUTURES_FINAL_DELAY`は+24時間を維持と決定（0にすると清算値の反映が遅れた日に誤った値が確定値として残る。+24時間の不利益は暫定の印が一晩長く残るだけ。BACKLOG [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]・UPDATE_SCHEDULE.md 3章）
