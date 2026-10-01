@@ -97,6 +97,8 @@ INDICATOR_SYMBOLS = {
 def js_fixed(v: float, n: int) -> str:
     """Number.prototype.toFixed(n)と同じ結果（2進の厳密値を四捨五入）。"""
     q = Decimal(1).scaleb(-n)
+    if float(v) == 0:
+        v = 0.0  # JSの(-0).toFixed(n)は"0.00"（符号なし）。round()で-0.0が記録される（09-30のSOX）
     s = str(Decimal(float(v)).quantize(q, rounding=ROUND_HALF_UP))
     return "0" if s in ("-0", "-0.0") and n == 0 else s
 
