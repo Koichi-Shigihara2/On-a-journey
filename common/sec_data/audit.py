@@ -13,6 +13,7 @@ SECデータ品質監査スクリプト
 
 Discord通知:
     環境変数 DISCORD_WEB_HOOK が設定されている場合に自動送信
+    （GitHub Actions上〈GITHUB_ACTIONS=true〉のときだけ。ローカル実行では送信しない）
 """
 
 import json
@@ -405,7 +406,12 @@ def main():
         beta_lines.append("\n```\npython src/value/tanuki_valuation/beta_fetcher.py\n```")
         message = message + "\n" + "\n".join(beta_lines) if message else "\n".join(beta_lines)
 
-    if post_discord(message):
+    # GitHub Actionsの外（ローカルでゲートとして実行したとき）は通知しない。
+    # GITHUB_ACTIONSはGitHubのランナーが全ジョブで"true"に設定する（SEC_Data_Audit.ymlの本番実行は常に送信される）。
+    # post_discord()自体はsystem_health.pyも使うため変えず、ここだけで判定する
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        print("\nDiscord通知: ローカル実行のため送信しない（GITHUB_ACTIONS未設定）")
+    elif post_discord(message):
         print("\nDiscord通知: 送信完了")
 
     # GitHub Actions サマリー出力

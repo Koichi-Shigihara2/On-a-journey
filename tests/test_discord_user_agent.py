@@ -82,3 +82,28 @@ def test_system_health_label_distinguishes_unset_and_failure(monkeypatch):
     failed = sh.discord_notify_label(False)
     assert "送信失敗" in failed and "未設定" not in failed
     assert "送信完了" in sh.discord_notify_label(True)
+
+
+# ローカル実行（GitHub Actionsの外）のaudit.pyはDiscordへ通知しない。
+# ゲートとして手元で実行したときに本番の通知チャンネルへ流さないため（2026-10-02）
+def _run_audit_main(monkeypatch):
+    calls = []
+    monkeypatch.setattr(sys, "argv", ["audit.py", "NVDA"])
+    monkeypatch.setattr(audit, "run_audit", lambda tickers: ([], []))
+    monkeypatch.setattr(audit, "post_discord", lambda message: calls.append(message) or True)
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
+    monkeypatch.setenv("DISCORD_WEB_HOOK", _DUMMY_WEBHOOK)
+    audit.main()
+    return calls
+
+
+def test_audit_main_skips_discord_outside_github_actions(monkeypatch, capsys):
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    assert _run_audit_main(monkeypatch) == []
+    assert "ローカル実行のため送信しない" in capsys.readouterr().out
+
+
+def test_audit_main_posts_discord_on_github_actions(monkeypatch, capsys):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    assert len(_run_audit_main(monkeypatch)) == 1
+    assert "Discord通知: 送信完了" in capsys.readouterr().out
