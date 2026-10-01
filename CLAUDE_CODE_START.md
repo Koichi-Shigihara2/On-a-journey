@@ -44,7 +44,11 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   （^N225は「終値が無い、未確定のため保存せず」）。02:07:10起動はrun=false（そろい済み 569/572）→ 自分で取り消し。前回のdaily/からの再現と一致。
   ほかに**10-01 07:49:13・08:55:27 UTCにもschedule起動が作られていた**（前回の報告に無い。その時刻のcronは無く、どのcronが遅れたものかはAPIで判別できない）。
   どちらもガードrun=false（引け〈20:00 UTC〉から20分経っていない＝NYの10-01の引け前）で取り消し、下流はすべてskipped。
-- 未確定: 01:47・02:17 UTCの保険の起動と、遅れて作られる20:47〜23:17 UTCの分。これらを含めた最終の記録は10-02の昼（03:00 UTC以降）に追記する。
+- **手動実行（workflow_dispatch、ユーザー指示）**: 23:34:42 UTC起動→23:36:58完了・success。ガードはrun=true（手動実行）。
+  日次取得の結果 status=fetched・with_bars 587・no_close_after_retry 0（00:00 UTCより前のためreset_windowにならず）。^N225の10-01は終値なしで保存せず（設計どおり）。push `d13838c3ed`。
+  下流はすべてsuccess: Stonks Silo 23:38:54（pushの失敗なし）、Market Pulse 23:39:12、TANUKI VALUATION 23:48:57（1回だけ）、TANUKI Score 23:50:07。
+  Market Pulseのエントリ（10-02 08:39 JST）はdata_quality complete（provisionalの要素なし、WTI・金・ドル円は設計上の暫定）、data_freshness.stale=false。
+- 未確定: 01:47・02:17 UTCの保険の起動と、遅れて作られる20:47〜23:17 UTCの分（いずれもガード(2)で何もせず終わるはず）。これらを含めた最終の記録は10-02の昼（03:00 UTC以降）に追記する。
 
 **マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
