@@ -4,7 +4,7 @@
   "intrinsic_value_beta": 2.3,
   "upside_percent_beta": -86.1,
   "intrinsic_value_rf": 13.04,
-  "upside_percent_rf": -21.3,
+  "upside_percent_rf": -21.2,
   "v0": 360990504.30109894,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -35,7 +35,7 @@
     "4年後": {
       "future_value": 9.65,
       "value_growth_pct": 188.9,
-      "expected_return_pct": -41.8
+      "expected_return_pct": -41.7
     },
     "5年後": {
       "future_value": 12.59,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -79.8,
-  "calculation_date": "2026-10-01T09:03:00+09:00",
+  "calculation_date": "2026-10-02T08:44:11+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 46000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が「一過性の在庫評価損」と明記され、金額も0M近辺で事業運営上の一時的な評価損に該当するため。"
+        "reasoning": "すべて「一過性の在庫評価損」と明記され、金額も0近辺で事業運営上の一時的な評価損に留まるため、構造的悪化の兆候とは判断されない。"
       }
     },
     "action": "flagged",
@@ -316,7 +316,7 @@
     "roe_10yr_avg": -0.6722089889662023,
     "roe_years_used": 3,
     "roe_outlier_adj": true,
-    "current_price": 16.56999969482422,
+    "current_price": 16.559999465942383,
     "latest_revenue": 24587000.0,
     "rpo": 40700000,
     "beta": 2.14,
@@ -354,7 +354,7 @@
     "peg": null,
     "ps": 531.93555,
     "ev_ebitda": null,
-    "ma200": 20.89174993991852,
+    "ma200": 20.84404993534088,
     "forward_eps": -0.37765,
     "next_quarter_eps": -0.09,
     "analyst_target_median": 36.0,
@@ -373,11 +373,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 977.5,
     "max_eps": 0.0597,
-    "max_eps_per": 277.6,
+    "max_eps_per": 277.4,
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-10-01",
+    "validated_at": "2026-10-02",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -401,9 +401,9 @@
     "ai_comment": null
   },
   "phase1_growth": 0.3038846624227339,
-  "required_growth_rf_base": 0.3514975118528121,
-  "risk_free_rate_live": 0.05293000221252441,
-  "required_growth_rf_live": 0.5139355925863209,
+  "required_growth_rf_base": 0.3513343428902447,
+  "risk_free_rate_live": 0.052369999885559085,
+  "required_growth_rf_live": 0.5062856545217107,
   "tanuki_score": "PASS",
   "funda_score": 10,
   "score_comment": "割高(-80%超)、FCFマイナス（投資フェーズ）、売上成長停滞",

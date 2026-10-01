@@ -4,7 +4,7 @@
   "intrinsic_value_beta": 291.68,
   "upside_percent_beta": -43.1,
   "intrinsic_value_rf": 2825.37,
-  "upside_percent_rf": 450.9,
+  "upside_percent_rf": 451.0,
   "v0": 2034671977747.6543,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 1.0,
@@ -30,12 +30,12 @@
     "3年後": {
       "future_value": 478.24,
       "value_growth_pct": 50.0,
-      "expected_return_pct": -6.8
+      "expected_return_pct": -6.7
     },
     "4年後": {
       "future_value": 547.44,
       "value_growth_pct": 71.7,
-      "expected_return_pct": 6.7
+      "expected_return_pct": 6.8
     },
     "5年後": {
       "future_value": 626.66,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -37.8,
-  "calculation_date": "2026-10-01T09:02:22+09:00",
+  "calculation_date": "2026-10-02T08:43:40+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -424,7 +424,7 @@
     "roe_10yr_avg": 0.3397244832282938,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 512.9000244140625,
+    "current_price": 512.7999877929688,
     "latest_revenue": 331839000000.0,
     "rpo": 684000000000,
     "beta": 1.099,
@@ -462,7 +462,7 @@
     "peg": 1.6173,
     "ps": 11.550311,
     "ev_ebitda": 20.0,
-    "ma200": 432.44604934692387,
+    "ma200": 432.6173992919922,
     "forward_eps": 23.67588,
     "next_quarter_eps": 4.72,
     "analyst_target_median": 575.0,
@@ -485,7 +485,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-01",
+    "validated_at": "2026-10-02",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -508,9 +508,9 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.1706197693703988,
-  "risk_free_rate_live": 0.05293000221252441,
-  "required_growth_rf_live": -0.025343125326953597,
+  "required_growth_rf_base": -0.170652124552923,
+  "risk_free_rate_live": 0.052369999885559085,
+  "required_growth_rf_live": -0.0315466580195205,
   "tanuki_score": "TRIM",
   "funda_score": 90,
   "score_comment": "割高(-38%超)、FCF黒字、売上安定成長",
