@@ -282,6 +282,6 @@ class TestProvisionalDataQuality:
         assert sc.stage0(dq)["line"] == "2026-09-29の終値（一部の値が前営業日または暫定）"
 
     def test_collector_marks_provisional_item(self):
-        it = cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-30", "_provisional": True})
+        it = cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-30", "_provisional": True}, "^GSPC")
         assert it["provisional"] is True
-        assert "provisional" not in cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-29"})
+        assert "provisional" not in cs._mark_provisional_item({"value": 1.0}, {"date": "2026-09-29"}, "^GSPC")

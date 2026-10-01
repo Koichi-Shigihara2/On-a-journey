@@ -410,6 +410,22 @@ Ratio・Momentum・象限・直近8週の軌跡）、`semis_m7`、`watch_list`�
 sector名→ETF）、監視銘柄の和集合。追加シンボルは指示書⑳のCHECK-57（行の抜け）の対象になることを確認する。daily/に追加するため、
 daily/を読む全システムの前後比較（既存シンボルに変化が無いこと）を行う
 
+**実施記録（2026-09-30、指示書㉖、ブランチ feature/mp-impl-b）**
+- 追加: `src/market/market_pulse/sector_rotation.py`（3章のセクター4象限〈RS-Ratio 13週・RS-Momentum 4週・直近8週の軌跡〉、
+  段階6の半導体〈^SOX〉とM7均等加重、商品・為替の内訳、段階7の監視銘柄）、`backfill_implb.py`、
+  `tests/test_market_pulse_sector_rotation.py`（24件）
+- daily/に14シンボル（^SOX・^NDX・DX-Y.NYB・セクターETF11本）を2021-01-04から追加（ローカルで取得、既存のファイルの変更0件）。
+  fetcher.pyの取得対象に追加（DX-Y.NYBの日足の確定はニューヨークの翌日0時）
+- 段階1: 主要8指標にSOX・M7均等加重のカードとタグ（SOX±2%・M7のS&P500比±1pt）。段階5: 結論1行にStrongのセクター名、
+  4象限の図と表（週次の位置と今日の前営業日比）。段階6: 正負対称の8文言（1章）と、SOX・M7・M7の内訳・商品と為替の表。
+  段階7: 資金が向かっているセクター（Strong・Improving）にいる監視銘柄（上位2銘柄と残りの件数）と、セクター・象限・
+  TANUKI SCORE・HypeCoreのPhaseの表（並び順は所属セクターのRS-Momentum順で、銘柄の評価は使わない）
+- 当日の終値が無いセクターETFは象限から外し、data_qualityをpartial（段階5・7）にする
+- 既存エントリ: 段階1・5・6と要素を、各エントリのS&P500の終値日以前のdaily/だけで計算して追加（106件）。段階7は
+  最新のエントリだけ（監視銘柄の過去の一覧は残っていないため）
+- 2026-06-08以降の段階6は「半導体とM7が逆方向」が21.5%（5年では6.1%）。daily/から同じ規則で計算し直して一致を確認しており、
+  計算の誤りではなく直近の相場の特徴
+
 ### 実装C: 段階2のニュースと段階8の新規要素
 
 **変更するファイル**: `src/market/market_pulse/`に`news_headlines.py`（新規、RSSの見出し・時刻・リンク）、`market_calendar.py`（新規、

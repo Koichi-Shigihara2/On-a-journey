@@ -100,6 +100,10 @@ INDEX_ETF_COMMODITY_SYMBOLS: List[str] = [
     # SHV（超短期国債ETF）は資産フロー可視化7資産中の1つで唯一未収録
     # だったため_fetch_hist_legacy()の対象として残存していた、2026-08-13追加）
     "SHV",
+    # Market Pulse 実装B（指示書㉖、2026-09-30）: 段階1・6のSOX、段階5のセクター4象限（セクターETF11本）、
+    # 段階6の内訳（ドル指数）、^NDX（NASDAQ100。段階1の補足）。2021-01-01からバックフィル済み
+    "^SOX", "^NDX", "DX-Y.NYB",
+    "XLK", "XLF", "XLE", "XLV", "XLI", "XLY", "XLP", "XLU", "XLB", "XLRE", "XLC",
 ]
 
 
@@ -553,8 +557,12 @@ def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
     d = datetime.strptime(day, "%Y-%m-%d").date()
     if symbol == "JPY=X":
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_LDN).astimezone(timezone.utc)
-    if symbol in ("CL=F", "GC=F"):
+    if symbol in FUTURES_SYMBOLS:
+        # 先物: Yahooの日足はニューヨークの暦日、確定した終値は清算値
         return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc) + FUTURES_FINAL_DELAY
+    if symbol == "DX-Y.NYB":
+        # ドル指数（ICEの先物に基づく指数）: Yahooの日足はニューヨークの暦日（実装B、指示書㉖）
+        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc)
     if symbol == "^N225":
         return datetime.combine(d, dtime(15, 30), _TZ_TYO).astimezone(timezone.utc)
     close = _nyse_close_utc(day)
@@ -574,6 +582,29 @@ def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime]
         return True
     final = bar_final_at(symbol, bar["date"])
     return final is not None and now < final
+
+
+def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:
+    """夜の取得の時点で、構造上まだ確定していない日足か（設計上の暫定）。その種類を返す。
+
+    夜の取得はNYSEの引け＋CLOSE_WAIT（common/market_data/daily_guard.py）以降に行う。日足の確定時刻（bar_final_at）が
+    それより後の銘柄は、夜の取得で保存した当日の行が必ず暫定になる（先物の清算値・為替やドル指数の日の区切り）。
+      - "清算前": 先物（FUTURES_SYMBOLS。確定値は清算値）
+      - "日中": それ以外（JPY=X〈ロンドンの暦日〉・DX-Y.NYB〈ニューヨークの暦日〉など、日の区切りがNYSEの引けより後）
+      - None: 夜の取得の時点で確定しているはずの足（米国株・ETF・指数・^N225等）。これが暫定なら想定外
+    NYSEの休場日の足（為替等）は、その日の16:00（ニューヨーク時間）を引けとみなす。
+    """
+    from common.market_data.daily_guard import CLOSE_WAIT
+    final = bar_final_at(symbol, day)
+    if final is None:
+        return None
+    close = _nyse_close_utc(day)
+    if close is None:
+        d = datetime.strptime(day, "%Y-%m-%d").date()
+        close = datetime.combine(d, dtime(16, 0), _TZ_NY).astimezone(timezone.utc)
+    if final <= close + CLOSE_WAIT:
+        return None
+    return "清算前" if symbol in FUTURES_SYMBOLS else "日中"
 
 
 # [[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物の連続シンボル（CL=F・GC=F）は限月の乗り換え日に前日比が不連続になる

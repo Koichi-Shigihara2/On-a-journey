@@ -137,8 +137,13 @@
     .right-col{display:flex;flex-direction:column;gap:12px}
 
     /* METRICS 6-CARD */
-    .metrics-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
-    @media(max-width:900px){.metrics-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    .metrics-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+    @media(max-width:1300px){.metrics-row{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    @media(max-width:600px){.metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .quad-wrap{position:relative;height:340px;background:var(--sur);border:1px solid var(--bdr);padding:8px;margin-bottom:10px}
+    .q-Strong{color:var(--grn)}.q-Improving{color:var(--cyn)}.q-Weakening{color:var(--amb)}.q-Weak{color:var(--red)}
+    .mp-table tr.flow td{background:rgba(16,185,129,.06)}
+    .calc-date{font-size:10px;color:var(--mut);margin-left:4px;white-space:nowrap}
     .metric-card{background:var(--sur);border:1px solid var(--bdr);padding:10px 12px}
     .metric-label{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;margin-bottom:4px}
     .metric-value{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt);line-height:1}
@@ -147,6 +152,7 @@
     /* 取得失敗時の前回値フォールバック表示（MP-FALLBACK-DISPLAY-1）。「—」（データなし）とは別の見た目にする */
     .is-stale-value{opacity:.7}
     .stale-mark{color:var(--amb);font-size:11px;margin-left:2px;letter-spacing:0;cursor:help}
+    .metric-prov{font-size:11px;margin-top:2px}.metric-prov .stale-mark{margin-left:0}
 
     /* CHART */
     .chart-card{background:var(--sur);border:1px solid var(--bdr);padding:14px}
@@ -474,6 +480,19 @@
       <div class="stage-h"><span class="stage-no">5</span>株式のどこへ</div>
       <div class="stage-line" id="stageLine5">—</div>
       <div id="stage5Body"></div>
+      <div class="sub-h">セクター4象限（週次の位置: RS-Ratio 13週・RS-Momentum 4週、SPY比。線は直近8週の軌跡）</div>
+      <div class="quad-wrap"><canvas id="quadChart"></canvas></div>
+      <div id="sectorTable"></div>
+    </section>
+    <section class="stage" id="stage6">
+      <div class="stage-h"><span class="stage-no">6</span>具体的に何が</div>
+      <div class="stage-line" id="stageLine6">—</div>
+      <div id="stage6Body"></div>
+    </section>
+    <section class="stage" id="stage7">
+      <div class="stage-h"><span class="stage-no">7</span>資金が向かっているセクターにいる監視銘柄</div>
+      <div class="stage-line" id="stageLine7">—</div>
+      <div id="stage7Body"></div>
     </section>
     <section class="stage" id="stage8">
       <div class="stage-h"><span class="stage-no">8</span>明日どうなるか</div>
@@ -637,8 +656,8 @@ const fmtDateFull=iso=>{
 };
 const fmtChg=v=>{if(v==null)return{text:"-",cls:"flat"};const t=(v>=0?"+":"")+v.toFixed(2)+"%";return{text:t,cls:v>0.05?"up":v<-0.05?"down":"flat"}};
 const phaseLabel=j=>j==="晴れ"?"\u2600 晴れ":j==="嵐"?"\u26C8 嵐":j==="曇り"?"\u2601 曇り":"\u2212 不明";
-const STAGE_TITLES={0:"データ基準日",1:"何が起きたか",2:"なぜ起きたか",3:"動きは本物か",4:"資金はどの資産へ",5:"株式のどこへ",8:"明日どうなるか"};
-const STAGE_KEYS=[0,1,2,3,4,5,8];
+const STAGE_TITLES={0:"データ基準日",1:"何が起きたか",2:"なぜ起きたか",3:"動きは本物か",4:"資金はどの資産へ",5:"株式のどこへ",6:"具体的に何が",7:"資金が向かっているセクターにいる監視銘柄",8:"明日どうなるか"};
+const STAGE_KEYS=[0,1,2,3,4,5,6,7,8];
 let HOLIDAYS=new Set();
 function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 // MP-03（指示書㉓）: センチメント指数・Tech PulseのゾーンもCNN F&Gの区分（25/45/55/75）に揃える
@@ -701,7 +720,18 @@ function renderMetrics(){
     const val=ind.value>=1000?ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0}):ind.value.toFixed(2);
     const isStale=!!ind.is_fallback;
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${ind.date||''}時点の値）">※</span>`:'';
-    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div></div>`}).join("")}
+    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div>${ind.provisional?`<div class="metric-prov">${provMark(ind)}</div>`:''}</div>`}).join("")+semisCardsHTML(d)}
+// 暫定の値（日足の確定前に保存された行）の表示。夜の実行の時点で構造上必ず暫定になる値は種類つき（先物は「暫定（清算前）」、
+// 為替・ドル指数は「暫定（日中）」）、それ以外の暫定（本来は確定しているはずの値。data_qualityはpartial）は「暫定」
+function provLabel(x){return x?.provisional?(x.provisional_kind?`暫定（${x.provisional_kind}）`:"暫定"):""}
+function provMark(x){const l=provLabel(x);if(!l)return'';const tip=x.provisional_kind?"夜の実行の時点ではまだ確定していない値（"+(x.provisional_kind==="清算前"?"先物の清算値が入る前":"為替・ドル指数の日の区切りの前")+"）。翌晩の取得で確定値に置き換わる":"本来は確定しているはずの時刻に取得したが、確定前の値だった（翌晩の取得で置き換わる）";return`<span class="stale-mark prov-mark" data-info-text="${tip}">${l}</span>`}
+// 実装B（指示書㉖）: 主要8指標のSOX・M7均等加重（7銘柄の前日比の単純平均）
+function semisCardsHTML(d){
+  const s=d?.semis_m7;if(!s)return'';
+  const sox=s.sox_value!=null?`<div class="metric-value">${Number(s.sox_value).toLocaleString("ja-JP",{maximumFractionDigits:0})}</div><div class="metric-chg ${fmtChg(s.sox_pct).cls}">${fmtChg(s.sox_pct).text}</div>`:'<div class="metric-value">—</div>';
+  const m7=s.m7_pct!=null?`<div class="metric-value" style="font-size:14px">均等加重</div><div class="metric-chg ${fmtChg(s.m7_pct).cls}">${fmtChg(s.m7_pct).text}</div>`:'<div class="metric-value">—</div>';
+  return`<div class="metric-card"><div class="metric-label" style="color:#f97316">SOX</div>${sox}</div><div class="metric-card"><div class="metric-label" style="color:#e879f9">M7</div>${m7}</div>`;
+}
 
 // ── CHART BUTTONS ──
 function renderMetricBtns(){document.getElementById("metricBtns").innerHTML=METRIC_DEFS.map(m=>`<button class="metric-btn ${activeMetrics.has(m.key)?"active":""}" onclick="toggleMetric('${m.key}')" style="color:${activeMetrics.has(m.key)?m.color:'var(--mut)'};border-color:${activeMetrics.has(m.key)?m.color+'80':'var(--bdr)'}"><span class="mbdot" style="background:${m.color}"></span>${m.label}</button>`).join("")}
@@ -980,6 +1010,50 @@ function renderSignal(){
   el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="signal-badge ${cls}" id="signalBadgeText">${sig.signal}</div><span class="stage-note" style="margin:0">${escHtml(sig.reason||"")}${sig.window_start?`（判定期間: ${escHtml(sig.window_start)}以降の直近20営業日）`:""}</span></div>`;
 }
 
+// ── 段階5: セクター4象限（実装B） ──
+const QJA={Strong:"強い",Improving:"強まりつつある",Weakening:"弱まりつつある",Weak:"弱い"};
+let quadChartInst=null;
+function renderSectors(){
+  const tb=document.getElementById("sectorTable");const cv=document.getElementById("quadChart");if(!tb||!cv)return;
+  const r=allData[allData.length-1]?.sector_rotation;
+  if(!r){tb.innerHTML='<div class="stage-note">記録なし</div>';if(quadChartInst){quadChartInst.destroy();quadChartInst=null}return}
+  const secs=Object.entries(r.sectors||{}).sort((a,b)=>b[1].momentum-a[1].momentum);
+  tb.innerHTML=`<table class="mp-table" id="sectorTableInner"><tr><th>セクター</th><th>週次の位置</th><th>RS-Ratio</th><th>RS-Momentum</th><th>今日の動き（前営業日比）</th></tr>${secs.map(([s,v])=>`<tr><td>${s} ${escHtml(v.name)}</td><td class="q-${v.quadrant}">${v.quadrant}（${QJA[v.quadrant]}）</td><td class="num">${Number(v.ratio).toFixed(2)}</td><td class="num">${Number(v.momentum).toFixed(2)}</td><td class="num ${v.change_pct>0?'up':v.change_pct<0?'down':'flat'}">${v.change_pct==null?'—':pctS(v.change_pct,2)+'%'}</td></tr>`).join('')}</table>${(r.excluded||[]).length?`<div class="stage-note">当日の終値が無く象限から外したセクター: ${escHtml(r.excluded.join('・'))}</div>`:''}<div class="stage-note">RS＝セクターETF÷SPY。RS-Ratio＝RS÷13週平均×100（100超＝平均より強い）、RS-Momentum＝RS-Ratio÷4週前×100（100超＝強さが増している）。週次の位置は「いまどこに資金が向いているか」の整理で、先行きの指標ではない（${escHtml(r.as_of)}時点）。</div>`;
+  const COLORS=["#3b82f6","#10b981","#f59e0b","#f43f5e","#a78bfa","#22d3ee","#f97316","#84cc16","#e879f9","#94a3b8","#facc15"];
+  const ds=secs.map(([s,v],i)=>({label:s,data:v.trail.map(p=>({x:p.ratio,y:p.momentum})),showLine:true,borderColor:COLORS[i%COLORS.length],backgroundColor:COLORS[i%COLORS.length],pointRadius:v.trail.map((_,j)=>j===v.trail.length-1?5:1.5),borderWidth:1.2,tension:.2}));
+  if(quadChartInst)quadChartInst.destroy();
+  quadChartInst=new Chart(cv,{type:"scatter",data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,animation:false,
+    plugins:{legend:{position:"right",labels:{color:"#94a3b8",font:{family:"Space Mono",size:11},boxWidth:10}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: Ratio ${c.parsed.x.toFixed(2)} / Momentum ${c.parsed.y.toFixed(2)}`}}},
+    scales:{x:{title:{display:true,text:"RS-Ratio",color:"#64748b"},ticks:{color:"#64748b"},grid:{color:"rgba(30,40,64,.5)"}},y:{title:{display:true,text:"RS-Momentum",color:"#64748b"},ticks:{color:"#64748b"},grid:{color:"rgba(30,40,64,.5)"}}}},
+    plugins:[{id:"quadLines",beforeDraw(ch){const{ctx,chartArea:a,scales:{x,y}}=ch;ctx.save();ctx.strokeStyle="rgba(148,163,184,.5)";ctx.setLineDash([4,4]);const px=x.getPixelForValue(100),py=y.getPixelForValue(100);if(px>a.left&&px<a.right){ctx.beginPath();ctx.moveTo(px,a.top);ctx.lineTo(px,a.bottom);ctx.stroke()}if(py>a.top&&py<a.bottom){ctx.beginPath();ctx.moveTo(a.left,py);ctx.lineTo(a.right,py);ctx.stroke()}ctx.setLineDash([]);ctx.fillStyle="rgba(148,163,184,.7)";ctx.font="11px Space Mono";ctx.fillText("Strong",a.right-50,a.top+14);ctx.fillText("Improving",a.left+6,a.top+14);ctx.fillText("Weak",a.left+6,a.bottom-6);ctx.fillText("Weakening",a.right-72,a.bottom-6);ctx.restore()}}]});
+}
+
+// ── 段階6: 半導体・M7・商品と為替の内訳（実装B） ──
+function renderStage6(){
+  const el=document.getElementById("stage6Body");if(!el)return;
+  const L=allData[allData.length-1];const s=L?.semis_m7;const bd=L?.commodity_fx;
+  if(!s){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  const f=v=>v==null?"—":pctS(v,2);
+  const mem=s.m7_members?Object.entries(s.m7_members).map(([t,v])=>`<tr><td>${t}</td><td class="num ${v>0?'up':v<0?'down':'flat'}">${f(v)}%</td></tr>`).join(''):'';
+  el.innerHTML=`<table class="mp-table" id="semisTable" style="max-width:560px"><tr><th></th><th>前日比</th><th>S&amp;P500との差</th></tr><tr><td>半導体（SOX）</td><td class="num">${f(s.sox_pct)}%</td><td class="num">${f(s.sox_vs_sp500_pt)}pt</td></tr><tr><td>M7（均等加重）</td><td class="num">${f(s.m7_pct)}%</td><td class="num">${f(s.m7_vs_sp500_pt)}pt</td></tr><tr><td>S&amp;P500</td><td class="num">${f(s.sp500_pct)}%</td><td></td></tr></table>
+  <div class="stage-note">判定: SOXはS&amp;P500との差±1.0pt、M7は±0.5ptで「けん引／重し」。M7均等加重は7銘柄（${escHtml((s.m7_members?Object.keys(s.m7_members):[]).join('・'))}）の前日比の単純平均。${s.m7_missing?'M7の一部の終値が無く計算できない: '+escHtml(s.m7_missing.join('・')):''}</div>
+  ${mem?`<div class="sub-h">M7の内訳</div><table class="mp-table" id="m7Table" style="max-width:300px">${mem}</table>`:''}
+  <div class="sub-h">商品・為替の内訳（結論には使わない）</div>
+  <table class="mp-table" id="breakdownTable" style="max-width:560px"><tr><th></th><th>値</th><th>前日比</th><th>基準日</th></tr>${(bd||[]).map(r=>`<tr><td>${escHtml(r.name)}（${escHtml(r.symbol)}）</td><td class="num">${r.value==null?'—':Number(r.value).toLocaleString("ja-JP",{maximumFractionDigits:2})}</td><td class="num ${r.change_pct>0?'up':r.change_pct<0?'down':'flat'}">${r.change_pct==null?'—':f(r.change_pct)+'%'}</td><td>${escHtml(r.date||'—')}${provMark(r)}</td></tr>`).join('')}</table>`;
+}
+
+// ── 段階7: 資金が向かっているセクターにいる監視銘柄（実装B） ──
+// 計算日の表示（TANUKI SCORE・HypeCoreはMarket Pulseより前の夜の計算結果。指示書㉗）
+function calcLabel(r){if(!r)return'<span class="calc-date">（計算日: —）</span>';return`<span class="calc-date">（計算日: ${escHtml(r[0]===r[1]?r[0]:r[0]+'〜'+r[1])}）</span>`}
+function renderStage7(){
+  const el=document.getElementById("stage7Body");if(!el)return;
+  const w=allData[allData.length-1]?.watch_list;
+  if(!w){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  const flow=new Set(w.flowing||[]);
+  el.innerHTML=`<table class="mp-table" id="watchTable"><tr><th>銘柄</th><th>区分</th><th>セクター</th><th>週次の位置</th><th>TANUKI SCORE${calcLabel(w.calculated?.tanuki_score)}</th><th>HypeCoreのPhase${calcLabel(w.calculated?.hype_phase)}</th></tr>${(w.rows||[]).map(r=>`<tr class="${flow.has(r.ticker)?'flow':''}"><td>${escHtml(r.ticker)}</td><td>${[r.held?'保有':'',r.tail?'TAIL':''].filter(Boolean).join('・')}</td><td>${r.sector_etf?escHtml(r.sector_etf+' '+(r.sector_name||'')):'—'}</td><td class="${r.quadrant?'q-'+r.quadrant:''}">${r.quadrant?escHtml(r.quadrant+'（'+QJA[r.quadrant]+'）'):'—'}</td><td>${escHtml(r.tanuki_score||'—')}</td><td>${escHtml(r.hype_phase||'—')}</td></tr>`).join('')}</table>
+  <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。資金が向かっているセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
+}
+
 // ── 今日の結論パネル・段階ごとの結論1行 ──
 function renderConclusions(){
   const el=document.getElementById("conclusionPanel");if(!el)return;
@@ -1002,9 +1076,10 @@ function renderStage0(){
   const L=allData[allData.length-1];const dq=L?.data_quality;
   if(!dq){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const ST={complete:"すべて最新",partial:"一部の値が前営業日または暫定",stale:"S&P500が前営業日",unknown:"判定不能"};
-  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":"最新"}</td></tr>`}).join('');
+  const expProv=dq.expected_provisional_elements||{};
+  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":expProv[k]?`暫定（${escHtml(expProv[k])}）`:"最新"}</td></tr>`}).join('');
   const fr=L.data_freshness;
-  el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。</div>`;
+  el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。先物の清算前の値・為替とドル指数の日の区切り前の値は、夜の実行の時点では必ず暫定になるため判定から外す（表では「暫定（清算前）」「暫定（日中）」）。</div>`;
 }
 function renderStage1Tags(){
   const el=document.getElementById("stage1Tags");if(!el)return;
@@ -1030,7 +1105,7 @@ function renderStage5(){
 
 // ── SELECT / RENDER ALL ──
 function selectItem(i){selectedIdx=i;renderTimeline();renderDetail()}
-const RENDER_ALL_FNS=[renderConclusions,renderDqBanner,renderStage0,renderStage1Tags,renderAIView,renderStage3Credit,renderStage5,renderStage8,renderSignal,renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
+const RENDER_ALL_FNS=[renderConclusions,renderDqBanner,renderStage0,renderStage1Tags,renderAIView,renderStage3Credit,renderStage5,renderSectors,renderStage6,renderStage7,renderStage8,renderSignal,renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
 function renderAll(){RENDER_ALL_FNS.forEach(fn=>{try{fn()}catch(e){console.error(`[renderAll] ${fn.name} failed:`,e)}})}
 
 function renderTakeProfit(){
@@ -1224,7 +1299,7 @@ function renderAssetFlow(){
     const barW=isStale?0:Math.round(intensity*100);
     const sign=pct>=0?"+":"";
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${d.date||''}時点の値）">※</span>`:'';
-    return`<div class="af-u-tile" style="background:${bg}"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker" title="${d.desc}">${a.ticker}</div><div class="af-cell-pct${isStale?' is-stale-value':''}" style="color:${col}">${sign}${pct.toFixed(2)}%${staleMark}</div><div class="af-arrow" style="color:${col}">${arrow}</div><div class="af-cell-bar"><div class="af-cell-bar-fill" style="width:${barW}%;background:${col}"></div></div></div>`;
+    return`<div class="af-u-tile" style="background:${bg}"><div class="af-cell-label">${a.label}</div><div class="af-cell-ticker" title="${d.desc}">${a.ticker}</div><div class="af-cell-pct${isStale?' is-stale-value':''}" style="color:${col}">${sign}${pct.toFixed(2)}%${staleMark}${provMark(d)}</div><div class="af-arrow" style="color:${col}">${arrow}</div><div class="af-cell-bar"><div class="af-cell-bar-fill" style="width:${barW}%;background:${col}"></div></div></div>`;
   }).join("");
 
   // ── 日付行: 直近7日を降順（最新が上）+ 週末「休場」行 ──
