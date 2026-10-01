@@ -1,6 +1,6 @@
 """Market Data Daily Updateの起動ガード（指示書㉕ STEP A、2026-09-30）。
 
-Market_Data_Daily_Update.ymlは20:17〜23:17 UTCの間に30分おきに起動する。各起動で、次の2つを判定し、
+Market_Data_Daily_Update.ymlは20:47〜23:17 UTCの間に30分おきに起動する（20:17 UTCは2026-10-01に削除）。各起動で、次の2つを判定し、
 取得が必要なときだけ run=true を出力する（GitHub Actionsの$GITHUB_OUTPUTに追記する形式）。
   (1) NYSEのその日の引けから20分経っていなければ、何もせず終了する（夏時間・冬時間・短縮取引日は
       pandas_market_calendarsのNYSEカレンダーで自動判定。休場日も何もしない）

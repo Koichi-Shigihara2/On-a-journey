@@ -407,7 +407,7 @@ class TestDailyGuard:
         assert r["run"] == "false" and "休場" in r["reason"]
 
     def test_insurance_runs_noop_when_evening_run_already_fetched(self, tmp_path):
-        """20:17〜23:17 UTCの起動で取得できていれば、保険の起動はガード(2)で何もせず終了する"""
+        """20:47〜23:17 UTCの起動で取得できていれば、保険の起動はガード(2)で何もせず終了する"""
         d = os.path.join(str(tmp_path), "daily")
         for i in range(20):
             _write_daily(str(tmp_path), f"S{i}", [_bar("2026-09-29", 1.0), _bar("2026-09-30", 1.0)])
