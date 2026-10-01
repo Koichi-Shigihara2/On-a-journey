@@ -47,6 +47,5 @@ jobs:
             echo "更新なし（30d/60d/90d いずれもまだ経過していないか取得失敗）"
           else
             git commit -m "chore: score_verifier 自動更新 $(date +'%Y-%m-%d') [skip ci]"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi

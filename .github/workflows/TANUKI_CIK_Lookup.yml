@@ -158,7 +158,6 @@ jobs:
             echo "[INFO] No changes to commit"
           else
             git commit -m "chore: CIK lookup for ${{ github.event.inputs.ticker }}"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
             echo "[DONE] Commit complete"
           fi

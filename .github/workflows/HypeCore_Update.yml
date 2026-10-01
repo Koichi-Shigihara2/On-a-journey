@@ -66,8 +66,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update HypeCore - $(date +'%Y-%m-%d %H:%M') JST"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi
 
       - name: Summary

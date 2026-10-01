@@ -110,5 +110,4 @@ jobs:
           git config merge.ours.driver true
           git add docs/market-monitor/macro-pulse/data/
           git diff --staged --quiet || git commit -m "chore: auto-update macro-pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
-          git pull --rebase origin kaihatsu
-          git push origin kaihatsu
+          bash .github/scripts/push_with_retry.sh kaihatsu

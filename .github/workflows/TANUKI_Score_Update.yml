@@ -63,5 +63,4 @@ jobs:
                   docs/portfolio/data/history.json
           git diff --staged --quiet || git commit -m \
             "chore: auto-update TANUKI SCORE daily pick $(date -u '+%Y-%m-%d %H:%M') UTC"
-          git pull --rebase origin kaihatsu
-          git push origin kaihatsu
+          bash .github/scripts/push_with_retry.sh kaihatsu

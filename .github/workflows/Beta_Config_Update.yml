@@ -90,6 +90,5 @@ jobs:
             echo "β値に変化なし"
           else
             git commit -m "chore: beta_config.json 月次自動更新 $(date +'%Y-%m-%d') [skip ci]"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi

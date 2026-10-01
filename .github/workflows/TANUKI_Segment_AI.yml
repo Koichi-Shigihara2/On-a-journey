@@ -117,6 +117,5 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: AI-generated segment config for ${{ github.event.inputs.ticker }}"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi

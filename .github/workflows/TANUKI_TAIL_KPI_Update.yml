@@ -76,6 +76,5 @@ jobs:
             echo "変更なし"
           else
             git commit -m "chore: TANUKI TAIL KPI 自動更新 $(date +'%Y-%m-%d')"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi

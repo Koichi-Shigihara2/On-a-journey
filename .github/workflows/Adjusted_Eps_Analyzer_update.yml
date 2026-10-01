@@ -98,5 +98,4 @@ jobs:
           git config merge.ours.driver true
           git add docs/value-monitor/adjusted_eps_analyzer/data/
           git commit -m "Update EPS data - $(date +'%Y-%m-%d')"
-          git pull --rebase origin kaihatsu
-          git push origin kaihatsu
+          bash .github/scripts/push_with_retry.sh kaihatsu

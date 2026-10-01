@@ -49,6 +49,5 @@ jobs:
             echo "変更なし"
           else
             git commit -m "chore: discover_config.json/theme_config.json をdocs/へ自動同期 [skip ci]"
-            git pull --rebase origin kaihatsu
-            git push origin kaihatsu
+            bash .github/scripts/push_with_retry.sh kaihatsu
           fi
