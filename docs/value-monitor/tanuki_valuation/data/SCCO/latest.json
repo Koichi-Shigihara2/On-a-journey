@@ -4,7 +4,7 @@
   "intrinsic_value_beta": 73.67,
   "upside_percent_beta": -63.6,
   "intrinsic_value_rf": 487.88,
-  "upside_percent_rf": 140.9,
+  "upside_percent_rf": 140.8,
   "v0": 62868889264.338356,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.6,
@@ -20,17 +20,17 @@
     "1年後": {
       "future_value": 90.68,
       "value_growth_pct": 8.5,
-      "expected_return_pct": -55.2
+      "expected_return_pct": -55.3
     },
     "2年後": {
       "future_value": 98.34,
       "value_growth_pct": 17.6,
-      "expected_return_pct": -51.4
+      "expected_return_pct": -51.5
     },
     "3年後": {
       "future_value": 106.65,
       "value_growth_pct": 27.6,
-      "expected_return_pct": -47.3
+      "expected_return_pct": -47.4
     },
     "4年後": {
       "future_value": 115.66,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -58.7,
-  "calculation_date": "2026-09-30T09:56:31+09:00",
+  "calculation_date": "2026-10-01T09:05:16+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -332,7 +332,7 @@
     "roe_10yr_avg": 0.2753965942574903,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 202.5500030517578,
+    "current_price": 202.63999938964844,
     "latest_revenue": 13420000000.0,
     "rpo": 0.0,
     "beta": 1.151,
@@ -366,11 +366,11 @@
     "alpha_uncapped": 1.156665695881459,
     "per": 30.572714,
     "per_is_forward": false,
-    "per_adjusted": 29.43,
+    "per_adjusted": 29.45,
     "peg": 5.41,
     "ps": 10.906006,
     "ev_ebitda": 17.52,
-    "ma200": 180.87883644104005,
+    "ma200": 181.1759477233887,
     "forward_eps": 7.27639,
     "next_quarter_eps": 1.87,
     "analyst_target_median": 164.03162,
@@ -393,7 +393,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-09-30",
+    "validated_at": "2026-10-01",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -416,9 +416,9 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.08356758775018569,
-  "risk_free_rate_live": 0.05255000114440918,
-  "required_growth_rf_live": 0.023154182788586608,
+  "required_growth_rf_base": -0.08348616498485861,
+  "risk_free_rate_live": 0.05293000221252441,
+  "required_growth_rf_live": 0.026670714343366875,
   "tanuki_score": "HOLD",
   "funda_score": 100,
   "score_comment": "割高(-59%超)、FCF黒字、売上成長加速",
