@@ -20,8 +20,19 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**マージ待ちのブランチ（3本。順番: B → 翌晩C → 最後にupdate-schedule）**
-- `feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
+**2026-10-01（日中）の作業（チャット側の決定1〜3を実施）**
+- 実装Bを統合: マージ`305adcc3fb`、統合後処理`eb6cf8d98d`。14銘柄はブランチ側で09-29まで（DX-Y.NYBのみ09-30）だったため、夜間と同じ通常の
+  日次取得（`fetcher.py <14銘柄> --layer daily`）で09-30を追加（`--repair-missing-days`は途中の抜けだけが対象で末尾は埋めない。空きは1営業日）。
+  `backfill_implb.py`で107エントリに実装Bの要素、最新に監視銘柄（既存キーの変更0）。browser_checksは`js_fixed`の-0.0の整形を直して58件一致・不一致0
+  （09-30のSOXの前日比が-0.0で、画面は「+0.00%」が正しい）。
+- botのpushの再試行: `.github/scripts/push_with_retry.sh`（pull --rebaseとpushを最大3回、15秒・30秒の間隔）。push する20本すべてを置き換え（`cc84f285fd`）。
+  `tests/test_push_with_retry.py`が直接の`git push`を禁止する。新しいワークフローでpushするときもこのスクリプトを使うこと。
+- Market Data Dailyの20:17 UTCのcronを削除（`6de1c89644`）。起動は20:47〜23:17 UTCの30分おき（6回）＋保険01:47・02:17 UTC。
+- 決定4（2晩の起動の記録）: 10-01・10-02の夜（米国10-01・10-02の足）の分を、それぞれ翌朝にGitHubの実行履歴からさかのぼって記録する
+  （予定時刻ごとに起動が作られたか・実際の起動時刻・ガードの判定・完了時刻、下流の完了時刻と22:00 UTCに間に合ったか）。2晩そろったら外部起動の案を報告（実装しない）。
+
+**マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
+- （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
   **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
   ブランチ側の変更は黙って捨てられる。ローカルに`git config merge.ours.driver true`が要る） (2) `python src/market/market_pulse/backfill_implb.py`を
@@ -34,7 +45,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - `feature/update-schedule`（`e0e1e88cd8`、kaihatsuから分岐。3章に設計上の暫定値の扱いを追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
   workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
   SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
-  （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
+  （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更、20:17 UTCのcron削除`6de1c89644`、20本のpushの置き換え`cc84f285fd`〈9本のYAMLのコメント整理と衝突しうる〉を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
 
 **今夜（米国09-30の足、2026-10-01 11:37 JSTに報告予定）の確認項目**
 - Market Data Dailyの9回の起動（20:17〜23:17 UTCの7回＋01:47・02:17 UTC）それぞれの実際の開始・終了時刻・conclusion・ガードの判定（run/reason）
