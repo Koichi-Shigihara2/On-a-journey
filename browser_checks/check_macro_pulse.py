@@ -698,19 +698,14 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
                com if com and com in txt else ("" if not com else "（見つからず）"), dc.get("date")]
         add(cid, f"{label}カード（値・変化・方向・水準・解釈・日付）", exp, act)
 
-    # MAC-18 Hollow Rally
-    sp_r = [r for r in rows if r.get("sp500", "") != ""]
-    nl_r = [r for r in rows if r.get("net_liquidity", "") != ""]
+    # MAC-18 Hollow Rally（M-2 STEP 4以降: 最新行の sp500_5d_pct・net_liq_wow_pct で判定。列が無い行では判定しない）
+    sp5 = parse_float(latest.get("sp500_5d_pct")) if latest.get("sp500_5d_pct", "") != "" else None
+    nlw = parse_float(latest.get("net_liq_wow_pct")) if latest.get("net_liq_wow_pct", "") != "" else None
     hollow = None
-    if len(sp_r) >= 6 and len(nl_r) >= 2:
-        a, b = parse_float(sp_r[-1]["sp500"]), parse_float(sp_r[max(0, len(sp_r) - 6)]["sp500"])
-        sp5 = (a - b) / abs(b) * 100
-        x, y = parse_float(nl_r[-1]["net_liquidity"]), parse_float(nl_r[-2]["net_liquidity"])
-        nlw = (x - y) / abs(y or 1) * 100
-        if sp5 > 1.0 and nlw < -0.5:
-            hollow = f"S&P500 5日 {'+' if sp5 >= 0 else ''}{js_fixed(sp5, 1)}%"
+    if sp5 is not None and nlw is not None and sp5 > 1.0 and nlw < -0.5:
+        hollow = f"S&P500 5営業日 {'+' if sp5 >= 0 else ''}{js_fixed(sp5, 1)}%"
     add("MAC-18", "Hollow Rallyバッジ", hollow is not None, dom["hollow"] is not None and (hollow or "") in (dom["hollow"] or ""),
-        note="比較は表示の有無と5日騰落率")
+        note=f"最新行 sp500_5d_pct={sp5} net_liq_wow_pct={nlw} h41_date={latest.get('h41_date') or '（列なし）'}")
 
     # MAC-19〜26 ステルス
     sig = latest.get("stealth_signal") or "neutral"
@@ -1094,8 +1089,15 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
     R.append(Result("N-06", "⑤の副題「発表日の新しい順」", "日付列は events.csv の release_date（Philly・CFNAI・Sahmは観測月の1日、Michigan・Permits・Claimsは発表予定日の枠）",
                     dom["signalsTitle"], False, "説明"))
     R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列は CFNAI（単月）。CFNAIMA3 ではない", "CFNAI MA3", False, "説明"))
-    R.append(Result("N-08", "流動性の「前週比」「N週連続減少」「週継続」", "05_liquidity.csv は実行日ごとの日次の行。Hollow RallyのNET流動性は直前の行（前日）比、連続減少・吸収の週数は行数",
-                    "前週比 / 週連続減少 / ステルス吸収N週", False, "説明"))
+    lq = m.liq[-1]
+    if lq.get("h41_date"):
+        ok = ("H.4.1 " + lq["h41_date"]) in ((dom.get("stealth") or {}).get("text") or "")
+        R.append(Result("N-08", "流動性の「前週比」「N週連続減少」「週継続」", "週の判定はH.4.1の基準日（水曜）どうし、Hollow RallyはS&P 5営業日・NET流動性前週比",
+                        f"最新行 h41_date={lq['h41_date']}、ステルスの注記にH.4.1の基準日の表示={'あり' if ok else 'なし'}", ok, "説明"))
+    else:
+        R.append(Result("N-08", "流動性の「前週比」「N週連続減少」「週継続」", "週の判定はH.4.1の基準日（水曜）どうし",
+                        "最新行に h41_date が無い（M-2 STEP 4の変更後の日次の実行で書かれる）", None, "説明",
+                        "2026-10-03までの行は日次の行で数えた値（MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1）"))
     R.append(Result("N-09", "8指標カードの「観測日」tooltip", "Michigan・Building Permits は発表予定日の枠の日付（観測日ではない）。Initial Claims は観測日だが最新週ではない",
                     [s["obs"] for s in m.live_signals()], False, "説明"))
     lead_help = {r[0]: r[2] for r in help_rows}

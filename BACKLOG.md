@@ -2582,6 +2582,8 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 （7日前・30日前）で、過去の日付を渡している。取り込み分（`updated_at`=2026-03-28/29、33,991行）を先読み除外の対象から外した場合と
 比べると、target_dateが2026-03-28より前の10日分（2026-02-27〜03-27）でスコアが変わる（除外あり50〈データなし〉／除外なし22〜27）。
 2026-09以降の日付（今後の週次の実行が渡す日付）では変わらない。
+使える行がないとき、`_compute_current_score()`がスコア50を返す。中立値が実測のスコアに見えるため、None（データなし）として
+扱うかをM-3で決める（M-2ではコードを変更しない）。
 
 ---
 
@@ -2630,6 +2632,24 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
 
 #### 着手条件
 なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 4、feature/macro-pulse-fix）
+- 週の値はH.4.1の基準日（水曜）の値。FRED系列ストアのWALCL・WTREGEN・WDTGAL・WRBWFRBLは全観測が水曜の日付、RRPONTSYDは日次
+  （水曜以前の直近の値を使う）。05_liquidity.csvは実行日ごとの日次の行に最新の水曜の値を書き写すだけで、基準日の列は無かった
+- `05_main.py::weekly_liquidity_state()`を新設し、`update_liquidity_csv()`のステルス判定・連続吸収週数・連続減少週数・
+  「吸収額>政策供給額」を、水曜の値の前週比で計算する。CSVに`h41_date`（判定に使った水曜）・`net_liq_wow_pct`（NET流動性の
+  前週比）・`sp500_5d_pct`（S&P500の5営業日リターン）の3列を追加
+- index.html: Hollow Rallyは最新行の`sp500_5d_pct`>+1.0% かつ `net_liq_wow_pct`<−0.5%で判定（列の無い過去の行では判定しない）。
+  文言を「S&P500 5営業日」「前週比、H.4.1 YYYY-MM-DD基準」に、ステルスの日付の横に判定の基準日を表示
+- 回帰テスト5件（10-02の「3週連続減少」の再現を含む。修正前5件fail→修正後pass）。既存テスト1件
+  （`TestUpdateLiquidityCsvSp500`）は`get_series`も履歴なしにモック（実データを読まないため）
+- **発火回数のbefore/after（全履歴、`scripts/analysis/macro_liquidity_weekly_before_after.py`）**: Hollow Rally 24日→164日
+  （増えた日156・消えた日16。すべてS&Pの期間〈6行→5営業日〉かNET流動性の間隔〈前日→前週〉の違いで説明できる。説明できない日なし）。
+  ステルス（日次の列がある直近100行）:「実質的にTIGHTENINGに近い状態」4日→10日、「EASING認識の見直しを推奨」36日→48日、
+  「政策EASINGの効果が限定的」0日→0日。判定の内訳 neutral50・supply46・absorb4 → supply79・absorb21。
+  afterを全履歴で数えると「EASING認識の見直し」509日/1,345日（WALCLが減る週は供給額0のため、RRPかTGAが増えるだけで出る。MM-15）。
+  2026-08-26の検証の24回はbeforeの24日と一致。発火の増加はチャット側で許容済み（2026-10-03）
+- 一覧（増えた日・消えた日、各日の日次の差と週の差）は`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`「M-2 STEP 4」
 
 ---
 

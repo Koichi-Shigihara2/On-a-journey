@@ -2620,21 +2620,17 @@ function renderLiquidityCards(rows) {
   ];
 
   // ── Hollow Rally 検知 ──
-  // 条件: NET LIQUIDITY が前週比で縮小（-0.5%以上） かつ S&P500が直近5日で上昇
+  // 条件: S&P500の5営業日リターン > +1.0% かつ NET流動性の前週比（H.4.1の基準日〈水曜〉どうし）< -0.5%
+  // [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: 以前はCSVの6行前（暦日、週末を含む）と直前の行（前日）で
+  // 比べていた。両方の値は05_main.py::weekly_liquidity_state()が最新行に書く（sp500_5d_pct・net_liq_wow_pct）。
+  // 列が無い行（この変更より前の行）では判定しない。
   let hollowRallyHtml = '';
   try {
-    const sp500Rows = rows.filter(r => r.sp500 !== undefined && r.sp500 !== '');
-    const nlRows = rows.filter(r => r.net_liquidity !== '' && r.net_liquidity !== undefined);
-    if (sp500Rows.length >= 6 && nlRows.length >= 2) {
-      const spLatest = parseFloat(sp500Rows[sp500Rows.length - 1].sp500);
-      const sp5dAgo  = parseFloat(sp500Rows[Math.max(0, sp500Rows.length - 6)].sp500);
-      const sp5dChg  = (spLatest - sp5dAgo) / Math.abs(sp5dAgo) * 100;
-      const nlLatestV = parseFloat(nlRows[nlRows.length - 1].net_liquidity);
-      const nlPrevV   = parseFloat(nlRows[nlRows.length - 2].net_liquidity);
-      const nlWkChgPct = (nlLatestV - nlPrevV) / Math.abs(nlPrevV || 1) * 100;
-      if (sp5dChg > 1.0 && nlWkChgPct < -0.5) {
-        hollowRallyHtml = `<div class="hollow-rally-badge">⚠ HOLLOW RALLY 検知 — 株価上昇（S&P500 5日 ${sp5dChg >= 0 ? '+' : ''}${sp5dChg.toFixed(1)}%）に対しFRB純流動性が縮小中（${nlWkChgPct.toFixed(2)}% 前週比）。流動性に裏付けのない上昇は持続性に疑問。</div>`;
-      }
+    const sp5dChg    = latest.sp500_5d_pct    !== undefined && latest.sp500_5d_pct    !== '' ? parseFloat(latest.sp500_5d_pct)    : null;
+    const nlWkChgPct = latest.net_liq_wow_pct !== undefined && latest.net_liq_wow_pct !== '' ? parseFloat(latest.net_liq_wow_pct) : null;
+    if (sp5dChg !== null && nlWkChgPct !== null && sp5dChg > 1.0 && nlWkChgPct < -0.5) {
+      const h41 = latest.h41_date ? `、H.4.1 ${latest.h41_date}基準` : '';
+      hollowRallyHtml = `<div class="hollow-rally-badge">⚠ HOLLOW RALLY 検知 — 株価上昇（S&P500 5営業日 ${sp5dChg >= 0 ? '+' : ''}${sp5dChg.toFixed(1)}%）に対しFRB純流動性が縮小中（${nlWkChgPct.toFixed(2)}% 前週比${h41}）。流動性に裏付けのない上昇は持続性に疑問。</div>`;
     }
   } catch(e) {}
 
@@ -2784,7 +2780,7 @@ function renderStealthCard(rows, latest) {
         <div class="stealth-metric-desc">${m.desc}</div>
       </div>`).join('')}
     </div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:2px">${latest.date}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:2px">${latest.date}${latest.h41_date ? '（LAYER 2・3と警戒アラートは H.4.1 ' + latest.h41_date + '〈水曜〉と前週の比較）' : ''}</div>
   </div>`;
 }
 

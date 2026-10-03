@@ -143,3 +143,79 @@ class TestComputeScoreKnownAsOf:
         ]
         res = main05._compute_current_score(_events(rows), date(2026, 10, 2))
         assert res["indicators"]["claims"]["value"] == 202250.0
+
+
+# ─────────────────────────────────────────────────────────────────
+#  [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: 週単位（H.4.1の水曜）の判定
+# ─────────────────────────────────────────────────────────────────
+def _weekly_series(nl_points, rrp_daily=None, sp=None):
+    """nl_points: [(水曜, WALCL, TGA, RRP_billions)]"""
+    s = {"WALCL": [], "WTREGEN": [], "WRBWFRBL": [], "RRPONTSYD": [], "SP500": sp or []}
+    for w, fed, tga, rrp in nl_points:
+        s["WALCL"].append((w, fed))
+        s["WTREGEN"].append((w, tga))
+        s["WRBWFRBL"].append((w, 2900000.0))
+        s["RRPONTSYD"].append((w, rrp))
+    for d, v in (rrp_daily or []):
+        s["RRPONTSYD"].append((d, v))
+    return s
+
+
+class TestWeeklyLiquidityState:
+    def test_daily_declines_within_one_week_are_not_counted_as_weeks(self):
+        """2026-10-02の実例: 09-30〜10-02に日次のNET流動性が3日続けて減り「3週連続減少」と出た。
+        水曜の値で比べると、NET流動性は09-23 5.770→09-30 5.783兆ドルで増えており、連続減少は0週
+        （10-01のRRPの日次の値は、週の判定には使わない）。"""
+        s = _weekly_series(
+            [("2026-09-16", 6746548.0, 877028.0, 0.576), ("2026-09-23", 6747704.0, 977084.0, 0.63),
+             ("2026-09-30", 6743031.0, 948674.0, 11.539)],
+            rrp_daily=[("2026-10-01", 0.35)])
+        st = main05.weekly_liquidity_state(s, date(2026, 10, 2))
+        assert st["h41_date"] == "2026-09-30"
+        assert st["decline_weeks"] == 0
+
+    def test_consecutive_weekly_declines_are_counted(self):
+        s = _weekly_series([("2026-09-02", 6.8e6, 8.0e5, 1.0), ("2026-09-09", 6.79e6, 8.1e5, 1.0),
+                            ("2026-09-16", 6.78e6, 8.2e5, 1.0), ("2026-09-23", 6.77e6, 8.3e5, 1.0)])
+        assert main05.weekly_liquidity_state(s, date(2026, 9, 25))["decline_weeks"] == 3
+
+    def test_absorb_vs_supply_uses_weekly_walcl_change(self):
+        """吸収額（RRP増＋TGA増）と供給額（WALCLの増加）は同じ週の間隔で比べる。"""
+        s = _weekly_series([("2026-09-16", 6.70e6, 8.0e5, 1.0), ("2026-09-23", 6.80e6, 8.5e5, 1.0)])
+        st = main05.weekly_liquidity_state(s, date(2026, 9, 25))
+        assert st["absorb_exceeds_supply"] is False  # 吸収5万 < 供給10万
+
+    def test_sp500_5d_return_uses_five_observations_back(self):
+        sp = [("2026-09-24", 100.0), ("2026-09-25", 101.0), ("2026-09-28", 102.0), ("2026-09-29", 103.0),
+              ("2026-09-30", 104.0), ("2026-10-01", 102.0)]
+        s = _weekly_series([("2026-09-23", 6.7e6, 8e5, 1.0), ("2026-09-30", 6.7e6, 8e5, 1.0)], sp=sp)
+        st = main05.weekly_liquidity_state(s, date(2026, 10, 2))
+        assert abs(st["sp500_5d_pct"] - 2.0) < 1e-9
+
+    def test_update_liquidity_csv_counts_weeks_not_rows(self, tmp_path, monkeypatch):
+        """CSVに日次で減り続ける行（3日）があっても、数えるのは水曜の値の連続減少（09-16→09-23の1週）。"""
+        liq = tmp_path / "05_liquidity.csv"
+        rows = []
+        for d, nl in [("2026-09-29", "5.77"), ("2026-09-30", "5.7698"), ("2026-10-01", "5.7592")]:
+            r = {c: "" for c in main05.LIQUIDITY_COLUMNS}
+            r.update({"date": d, "fed_balance": "6747704.0", "tga": "977084.0", "rrp": "576.0",
+                      "net_liquidity": nl, "reserve_balance": "2969922.0", "stealth_signal": "neutral",
+                      "stealth_absorb_weeks": "0", "net_liq_decline_weeks": "2", "sp500": "7650.0"})
+            rows.append(r)
+        pd.DataFrame(rows, columns=main05.LIQUIDITY_COLUMNS).to_csv(liq, index=False)
+        monkeypatch.setattr(main05, "LIQUIDITY_PATH", str(liq))
+        monkeypatch.setattr(main05, "BASE_DATA_DIR", str(tmp_path))
+        latest = {"M2SL": 23342.8, "BAMLH0A0HYM2": 3.12, "WALCL": 6747704.0, "WTREGEN": 977084.0,
+                  "RRPONTSYD": 11.539, "WRBWFRBL": 2969922.0}
+        monkeypatch.setattr(main05._md_reader, "get_latest",
+                            lambda sid: {"value": latest[sid], "as_of": "2026-10-01"} if sid in latest else None)
+        weekly = _weekly_series([("2026-09-16", 6746548.0, 877028.0, 0.576),
+                                 ("2026-09-23", 6747704.0, 977084.0, 0.63)])
+        monkeypatch.setattr(main05._md_reader, "get_series", lambda sid, **kw: [
+            {"as_of": d, "value": v} for d, v in weekly.get(sid, [])])
+        main05.update_liquidity_csv(date(2026, 10, 2), sp500_val=7651.54)
+        df = pd.read_csv(liq, dtype=str).fillna("")
+        last = df[df["date"] == "2026-10-02"].iloc[0]
+        assert last["net_liq_decline_weeks"] == "1"
+        assert "週連続減少" not in last["stealth_alert"]
+        assert last["h41_date"] == "2026-09-23"

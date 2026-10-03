@@ -2078,7 +2078,118 @@ LIQUIDITY_COLUMNS = [
     "net_liq_decline_weeks",  # NET流動性連続減少週数
     "stealth_alert",          # 警戒アラート（|区切り）
     "sp500",                  # [[HOLLOW-RALLY-DEAD-1]]: S&P500終値レベル（日次、FRED "SP500"系列）
+    # [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: 週単位の判定の基準と、Hollow Rallyの入力
+    "h41_date",               # 判定に使ったH.4.1の基準日（水曜）
+    "net_liq_wow_pct",        # NET流動性の前週比（%、H.4.1の基準日どうし）
+    "sp500_5d_pct",           # S&P500の5営業日リターン（%、FRED SP500の観測5本前と比較）
 ]
+
+_WEEKLY_LIQ_SERIES = ("WALCL", "WTREGEN", "WDTGAL", "RRPONTSYD", "WRBWFRBL", "SP500")
+
+
+def _fmt_pct(v) -> str:
+    return "" if v is None else str(round(v, 4))
+
+
+def _load_weekly_liquidity_series(asof: date) -> dict:
+    """weekly_liquidity_state()の入力。common.macro_data.readerの保存値（公開済みの値だけ）を読む。"""
+    out: dict = {}
+    if not HAS_MACRO_DATA:
+        return out
+    start = (asof - timedelta(days=120)).strftime("%Y-%m-%d")
+    for sid in _WEEKLY_LIQ_SERIES:
+        try:
+            recs = _md_reader.get_series(sid, start=start) or []
+        except Exception as e:
+            logger.warning(f"[Liquidity] {sid}: {e}")
+            recs = []
+        out[sid] = [(r["as_of"], float(r["value"])) for r in recs if r.get("value") is not None]
+    return out
+
+
+def weekly_liquidity_state(series: dict, asof: date, max_weeks: int = 9) -> dict:
+    """[[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: ステルス流動性・連続週数・Hollow Rallyの入力を、
+    H.4.1の基準日（水曜）の値で計算する。
+
+    series: {系列ID: [(as_of 'YYYY-MM-DD', 値), ...]}（WALCL・WTREGEN〈無ければWDTGAL〉・WRBWFRBLは水曜の週次、
+            RRPONTSYDは日次〈Billions〉、SP500は日次）。asof以前の値だけを使う。
+    週ごとのNET流動性（兆ドル）=（WALCL − TGA − RRP×1000）/10^6（RRPは水曜以前の直近の値）。
+    判定（以前の日次の判定と同じ規則を、前週と比べて適用）:
+      supply: RRP減少 または TGA減少、absorb: RRP増加 かつ TGA増加、それ以外で準備預金増加ならsupply
+      absorb_weeks: 直近から連続するabsorbの週数、decline_weeks: NET流動性が連続して減った週数
+      absorb_exceeds_supply: 直近の週の（RRP増＋TGA増）>0 かつ WALCLの増加を上回る
+    Hollow Rallyの入力: net_liq_wow_pct（NET流動性の前週比）、sp500_5d_pct（S&P500の5営業日リターン）
+    """
+    asof_s = asof.strftime("%Y-%m-%d")
+
+    def _known(sid):
+        return sorted((d, v) for d, v in series.get(sid, []) if d <= asof_s)
+
+    def _at_or_before(pts, d):
+        best = None
+        for dd, v in pts:
+            if dd <= d:
+                best = v
+            else:
+                break
+        return best
+
+    walcl = _known("WALCL")
+    tga_s = dict(_known("WTREGEN"))
+    tga_alt = dict(_known("WDTGAL"))
+    rsv_s = dict(_known("WRBWFRBL"))
+    rrp_s = _known("RRPONTSYD")
+    weeks = []
+    for w, fed in walcl[-max_weeks:]:
+        tga = tga_s.get(w, tga_alt.get(w))
+        rrp_b = _at_or_before(rrp_s, w)
+        if tga is None or rrp_b is None:
+            continue
+        rrp = rrp_b * 1000
+        weeks.append({"w": w, "fed": fed, "tga": tga, "rrp": rrp, "rsv": rsv_s.get(w),
+                      "nl": (fed - tga - rrp) / 1_000_000})
+
+    signals = []
+    for a, b in zip(weeks, weeks[1:]):
+        rsv_inc = a["rsv"] is not None and b["rsv"] is not None and b["rsv"] > a["rsv"]
+        if b["rrp"] < a["rrp"] or b["tga"] < a["tga"]:
+            signals.append("supply")
+        elif b["rrp"] > a["rrp"] and b["tga"] > a["tga"]:
+            signals.append("absorb")
+        elif rsv_inc:
+            signals.append("supply")
+        else:
+            signals.append("neutral")
+    absorb_weeks = 0
+    for s in reversed(signals):
+        if s != "absorb":
+            break
+        absorb_weeks += 1
+    decline_weeks = 0
+    for i in range(len(weeks) - 1, 0, -1):
+        if weeks[i]["nl"] >= weeks[i - 1]["nl"]:
+            break
+        decline_weeks += 1
+    absorb_exceeds = False
+    wow = None
+    if len(weeks) >= 2:
+        a, b = weeks[-2], weeks[-1]
+        vol = max(0, (b["rrp"] - a["rrp"]) + (b["tga"] - a["tga"]))
+        absorb_exceeds = vol > 0 and vol > max(0, b["fed"] - a["fed"])
+        if a["nl"]:
+            wow = (b["nl"] - a["nl"]) / abs(a["nl"]) * 100
+    sp = _known("SP500")
+    sp5 = (sp[-1][1] - sp[-6][1]) / abs(sp[-6][1]) * 100 if len(sp) >= 6 and sp[-6][1] else None
+    return {
+        "h41_date": weeks[-1]["w"] if weeks else None,
+        "signal": signals[-1] if signals else "neutral",
+        "absorb_weeks": absorb_weeks,
+        "decline_weeks": decline_weeks,
+        "absorb_exceeds_supply": absorb_exceeds,
+        "net_liq_wow_pct": wow,
+        "sp500_5d_pct": sp5,
+    }
+
 
 def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> None:
     """流動性指標を FRED から取得して 05_liquidity.csv に追記・更新する。
@@ -2173,67 +2284,14 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         net_liq = round((fed_val - tga_val - rrp_val) / 1_000_000, 4)
         logger.info(f"[Liquidity] net_liquidity recomputed after carry-forward: {net_liq}")
 
-    # ── ステルス流動性シグナル計算 ──
-    # RRP減少 OR TGA減少 → supply（ステルス供給）
-    # RRP増加 AND TGA増加 → absorb（ステルス吸収）
-    # reserve_balance 増加 かつ rrp/tga が neutral → supply（補助判定）
-    stealth_sig = "neutral"
-    prev_rows = df[df["date"] < date_str].sort_values("date")
-    # [[LIQUIDITY-CSV-FIRST-ROW-UNBOUNDLOCALERROR-1]]: prev_rows空時（05_liquidity.csv
-    # が存在しない・完全に空の状態からの初回実行）でも後続の「ステルス吸収額 vs FED供給額の
-    # 比較」ブロックが分岐外からprev_rrp/prev_tga/prev_rsvを無条件参照するため、
-    # if文の外側で先にNone初期化しておく（_fed_prevと同型のガード）。
-    prev_rrp = prev_tga = prev_rsv = None
-    if not prev_rows.empty:
-        prev = prev_rows.iloc[-1]
-        prev_rrp = float(prev["rrp"]) if prev.get("rrp", "") != "" else None
-        prev_tga = float(prev["tga"]) if prev.get("tga", "") != "" else None
-        prev_rsv = float(prev["reserve_balance"]) if prev.get("reserve_balance", "") != "" else None
-        rrp_dec = rrp_val is not None and prev_rrp is not None and rrp_val < prev_rrp
-        tga_dec = tga_val is not None and prev_tga is not None and tga_val < prev_tga
-        rrp_inc = rrp_val is not None and prev_rrp is not None and rrp_val > prev_rrp
-        tga_inc = tga_val is not None and prev_tga is not None and tga_val > prev_tga
-        rsv_inc = rsv_val is not None and prev_rsv is not None and rsv_val > prev_rsv
-        if rrp_dec or tga_dec:
-            stealth_sig = "supply"
-        elif rrp_inc and tga_inc:
-            stealth_sig = "absorb"
-        elif rsv_inc:
-            # 準備預金増加（rrp/tga は中立）→ 銀行流動性上昇＝補助的供給シグナル
-            stealth_sig = "supply"
-
-    # ── DESIGN-12: Layer 3 — 連続週数 & 警戒アラート計算 ──
-
-    # 連続ステルス吸収週数（現在週を含む）
-    _sig_history = list(df[df["date"] < date_str].sort_values("date").tail(7)["stealth_signal"])
-    _sig_history.append(stealth_sig)
-    _absorb_weeks = 0
-    for _s in reversed(_sig_history):
-        if _s == "absorb":
-            _absorb_weeks += 1
-        else:
-            break
-
-    # NET流動性の連続減少週数
-    _nl_rows = df[(df["date"] < date_str) & (df["net_liquidity"] != "")].sort_values("date").tail(5)
-    _nl_vals: list[float] = [float(r) for r in _nl_rows["net_liquidity"] if r != ""]
-    if net_liq is not None:
-        _nl_vals.append(net_liq)
-    _decline_weeks = 0
-    for _i in range(len(_nl_vals) - 1, 0, -1):
-        if _nl_vals[_i] < _nl_vals[_i - 1]:
-            _decline_weeks += 1
-        else:
-            break
-
-    # ステルス吸収額 vs FED供給額の比較
-    _fed_prev = float(prev_rows.iloc[-1].get("fed_balance", 0) or 0) if not prev_rows.empty else None
-    _stealth_absorb_vol  = None  # rrp増加 + tga増加 (Millions USD)
-    _fed_supply_vol      = None  # fed_balance増加 (Millions USD)
-    if (prev_rrp is not None and rrp_val is not None and
-            prev_tga is not None and tga_val is not None and _fed_prev is not None and fed_val is not None):
-        _stealth_absorb_vol = max(0, (rrp_val - prev_rrp) + (tga_val - prev_tga))
-        _fed_supply_vol     = max(0, fed_val - _fed_prev)
+    # ── ステルス流動性・連続週数・警戒アラート（週単位、H.4.1の基準日〈水曜〉の値で判定）──
+    # [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: 以前は05_liquidity.csvの直前の行（＝前日）と比べ、
+    # 行の数を「週」と数えていた（10-02の「NET流動性3週連続減少」は3日の減少だった）。
+    # WALCL・WTREGEN・WRBWFRBLは水曜の日付の週次系列、RRPONTSYDは日次（水曜以前の直近の値を使う）。
+    _wk = weekly_liquidity_state(_load_weekly_liquidity_series(target_date), target_date)
+    stealth_sig    = _wk["signal"]
+    _absorb_weeks  = _wk["absorb_weeks"]
+    _decline_weeks = _wk["decline_weeks"]
 
     # 警戒アラート文字列（|区切り）
     _alerts: list[str] = []
@@ -2241,8 +2299,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         _alerts.append(f"政策EASINGの効果が限定的（ステルス吸収{_absorb_weeks}週継続）")
     if _decline_weeks >= 3:
         _alerts.append(f"実質的にTIGHTENINGに近い状態（NET流動性{_decline_weeks}週連続減少）")
-    if (_stealth_absorb_vol is not None and _fed_supply_vol is not None
-            and _stealth_absorb_vol > 0 and _stealth_absorb_vol > _fed_supply_vol):
+    if _wk["absorb_exceeds_supply"]:
         _alerts.append("EASING認識の見直しを推奨（ステルス吸収額が政策供給額を超過）")
 
     new_row = {
@@ -2259,6 +2316,9 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         "net_liq_decline_weeks": str(_decline_weeks),
         "stealth_alert":         "|".join(_alerts),
         "sp500":                 str(sp500_val) if sp500_val is not None else "",
+        "h41_date":              _wk["h41_date"] or "",
+        "net_liq_wow_pct":       _fmt_pct(_wk["net_liq_wow_pct"]),
+        "sp500_5d_pct":          _fmt_pct(_wk["sp500_5d_pct"]),
     }
     if _alerts:
         logger.info(f"[Stealth L3] alerts={_alerts}")
@@ -2266,7 +2326,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     update_cols = ["m2", "hy_spread", "fed_balance", "tga", "rrp", "net_liquidity",
                    "reserve_balance", "stealth_signal",
                    "stealth_absorb_weeks", "net_liq_decline_weeks", "stealth_alert",
-                   "sp500"]
+                   "sp500", "h41_date", "net_liq_wow_pct", "sp500_5d_pct"]
     if date_str in df["date"].values:
         idx = df.index[df["date"] == date_str][0]
         for col in update_cols:

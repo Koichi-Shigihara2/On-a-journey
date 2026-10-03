@@ -370,6 +370,9 @@ class TestUpdateLiquidityCsvSp500:
                 return {"value": values[series_id], "as_of": "2026-01-01"}
             return None
         monkeypatch.setattr(main05._md_reader, "get_latest", _get_latest)
+        # [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]（2026-10-03）: ステルス・連続週数はget_series()の
+        # 週次の履歴から計算するようになった。実データを読まないよう、履歴なしにする
+        monkeypatch.setattr(main05._md_reader, "get_series", lambda series_id, **kw: [])
 
     def _seed_prior_row(self, liq_path):
         seed = {c: "" for c in main05.LIQUIDITY_COLUMNS}
