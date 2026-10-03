@@ -2472,7 +2472,7 @@ cronを`0 23 1-7 * *`（1〜7日の毎日）にし、ジョブの最初の段で
 
 ### [MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1] MACRO PULSEのInitial Claimsの予定表がEmpire State Manufacturing Surveyの日付になっており、最新週の値が未来日付の行に入ってスコアに使われない
 **優先度:** 中
-**状態:** 対応済み（M-2 STEP 2、feature/macro-pulse-fix）。統合後に修復スクリプト macro_claims_slot_rows_repair.py の実行（チャット側の承認後）と、次の木曜の公表後の行が観測日に置かれることの確認が残る
+**状態:** 対応済み（M-2 STEP 2、kaihatsuへ統合 7cd9bd2d12）。修復スクリプト macro_claims_slot_rows_repair.py を2026-10-03 07:12 UTCに実行済み（70793c2185、今日のスコア27→27）。次の木曜（10-08）の公表後の行が観測日に置かれることの確認が残る
 **分類:** データの取得遅れ・判定の誤り / MACRO PULSE（05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1（MACRO PULSEのデータ適切性の確認）STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`（不具合B-01）
@@ -2555,7 +2555,7 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 
 ### [MACRO-PULSE-AI-DELTA-LOOKAHEAD-1] MACRO PULSEのAIウィークリーコメンタリーの「週±」が常に0（過去時点のスコアを先読みありで計算し、月次指標の変化が1週間前にも入る）
 **優先度:** 中
-**状態:** 対応済み（M-2 STEP 5、feature/macro-pulse-fix）。統合後の最初の週次の実行で score_change_1w が前週のスナップショットとの差になること（check_macro_pulse.py D-09）の確認が残る
+**状態:** 対応済み（M-2 STEP 5、kaihatsuへ統合 7cd9bd2d12）。統合後の最初の週次の実行で score_change_1w が前週のスナップショットとの差になること（check_macro_pulse.py D-09）の確認が残る
 **分類:** 計算の誤り / MACRO PULSE（05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2（`check_macro_pulse.py` D-09）。記録: B-05
@@ -2595,7 +2595,7 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
 
 ### [MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1] MACRO PULSEの流動性モニターが日次の行を「週」として数え、「NET流動性3週連続減少」等の警告を3日の変化で出す
 **優先度:** 中
-**状態:** 対応済み（M-2 STEP 4、feature/macro-pulse-fix）。統合後の日次の実行で h41_date・net_liq_wow_pct・sp500_5d_pct が書かれ、check_macro_pulse.py の D-05・N-08 が一致することの確認が残る
+**状態:** 対応済み（M-2 STEP 4、kaihatsuへ統合 7cd9bd2d12）。統合後の日次の実行で h41_date・net_liq_wow_pct・sp500_5d_pct が書かれ、check_macro_pulse.py の D-05・N-08 が一致することの確認が残る
 **分類:** 判定の誤り / MACRO PULSE（05_main.py・index.html）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2・4（`check_macro_pulse.py` D-05・N-08）。記録: B-04
@@ -2744,7 +2744,7 @@ Market Pulse側の作業と調整のうえで直す。
 
 ### [MACRO-PULSE-CFNAI-MA3-SERIES-1] MACRO PULSEの「CFNAI MA3」は単月のCFNAIを取得している（表示・説明・閾値は3ヶ月移動平均の前提）
 **優先度:** 低
-**状態:** 対応済み（M-2 STEP 6-1、feature/macro-pulse-fix）。統合後に修復スクリプト macro_cfnai_ma3_rows_repair.py の実行（チャット側の承認後）と、Macro_Data_UpdateがCFNAIMA3を取得することの確認が残る。閾値の−0.35はM-3
+**状態:** 対応済み（M-2 STEP 6-1、kaihatsuへ統合 7cd9bd2d12）。修復スクリプト macro_cfnai_ma3_rows_repair.py（ALFREDの当時の版）を2026-10-03 07:12 UTCに実行済み（70793c2185、364件置き換え、今日のスコア27→27）。Macro_Data_UpdateがCFNAIMA3を取得することの確認が残る。閾値の−0.35はM-3
 **分類:** 系列の取り違え / MACRO PULSE（05_main.py・index.html）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 4（N-07）。記録: B-08
@@ -2782,7 +2782,7 @@ FREDには`CFNAIMA3`がある（2026-08: CFNAI −0.04、CFNAIMA3 +0.01）。単
 
 ### [MACRO-PULSE-RUN-DATE-UTC-SHIFT-1] MACRO_PULSE_Updateの日次がcronの遅れで毎回UTCの0時をまたぎ、--date $(date -u)が予定日の翌日になる
 **優先度:** 低
-**状態:** 対応済み（M-2 STEP 6-3、feature/macro-pulse-fix）。統合後の日次の実行で、05_liquidity.csvの行の日付が予定日（米国の日付）になることの確認が残る
+**状態:** 対応済み（M-2 STEP 6-3、kaihatsuへ統合 7cd9bd2d12）。統合後の日次の実行で、05_liquidity.csvの行の日付が予定日（米国の日付）になることの確認が残る
 **分類:** 更新タイミング / MACRO PULSE（MACRO_PULSE_Update.yml・05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md` 2-1
