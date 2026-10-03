@@ -2762,6 +2762,11 @@ Permits 1300〜1399（中立/CAUTION）。
 #### 着手条件
 なし（修正はしていない）
 
+#### 対応（2026-10-03、指示書M-2 STEP 6-2、feature/macro-pulse-fix）
+- `renderRecentSignals()`: 期間は既存の定義（直近90日、`cutOld`）のまま、期間外の行を出さない（二分探索の後に`dateMs < cutOldMs`の行を飛ばす）
+- 2026-10-03の画面: 24行→21行（CB Consumer Confidence・Conference Board LEI〈2024-01-01〉、Michigan Inflation 1Y〈2026-07-01〉が消える）。
+  `check_macro_pulse.py` MAC-46が不一致→一致。見出しの「過去2週間」はSTEP 7で直す
+
 ---
 
 ### [MACRO-PULSE-CFNAI-MA3-SERIES-1] MACRO PULSEの「CFNAI MA3」は単月のCFNAIを取得している（表示・説明・閾値は3ヶ月移動平均の前提）
@@ -2781,6 +2786,19 @@ FREDには`CFNAIMA3`がある（2026-08: CFNAI −0.04、CFNAIMA3 +0.01）。単
 
 #### 着手条件
 なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 6-1、feature/macro-pulse-fix）
+- `INDICATOR_CONFIG["Chicago Fed National Activity"]["fred_id"]`を`CFNAIMA3`に、`common/macro_data/series_meta.json`の`CFNAI`を
+  `CFNAIMA3`に置き換えた（Macro_Data_Updateの取得対象も変わる）。`common/macro_data/series/CFNAIMA3.json`（712件、FRED APIから取得）を追加
+- **閾値の確認**（シカゴ連銀 CFNAI のページ、2026-10-03）: −0.70は「拡大期のあとCFNAI-MA3が−0.70を下回ると後退の可能性が高まる」
+  というMA3向けの目安で合っている。**−0.35はMA3ではなくCFNAI Diffusion Indexの目安**（「拡大期はDiffusion Indexが−0.35を上回る」）。
+  スコアの「−0.35〜−0.7=中立（50点）」の境目は系列の違う目安を使っている。ヘルスバーの0/−0.7・mid −0.2も根拠の記載は無い。
+  閾値はこの指示では変えていない（M-3の設計項目）
+- **統合後の手順（承認を得てから）**: kaihatsu上で`python scripts/analysis/macro_cfnai_ma3_rows_repair.py --apply`を実行してcommitする。
+  05_events.csvのCFNAIの行368件のうち362件の値をCFNAIMA3（同じ観測月、現在の版）に置き換える（6件は同じ値。release_date・
+  updated_atは変えない）。しないと、既存の観測月の行は上書きされないため、9月分の発表（10月下旬）まで単月の値が使われる。
+  今日のスコアは27→27（CFNAI −0.04→MA3 0.01、どちらも18点）。過去の比較バー・スコア推移の点は変わりうる
+- 回帰テスト2件（修正前fail→修正後pass）
 
 ---
 
@@ -2832,6 +2850,14 @@ AIのFOMC分析は、実際とは違う指標の説明を前提に判定して�
 
 #### 着手条件
 なし（修正はしていない。cronの遅れ自体はGitHub側の事象）
+
+#### 対応（2026-10-03、指示書M-2 STEP 6-3、feature/macro-pulse-fix）
+- `05_main.py::default_target_date()`: 対象日を起動時刻の米国東部時間の日付にし、17:00より前なら直前の営業日（土日・`us_holidays()`を
+  除く）にする。`--date`省略時に使う（以前の省略時は「ローカル時刻の昨日」）
+- `MACRO_PULSE_Update.yml`: 日次・remind・update-schedule・weekly-analysisの4箇所の`--date $(date -u +%Y-%m-%d)`を外した
+- 回帰テスト5件（10-03 01:12 UTC起動→10-02、直近20回で最大の遅れ+3.7h→予定日、17:00前→前営業日、Labor Day、冬時間。修正前fail→修正後pass）
+- 週次の分析日も米国の日付になる（土曜22:11 UTCのcronが日曜に遅れても土曜）。05_weekly_analysis.csvの分析日は、これまで遅れた週は日曜
+  だった（例: 09-20・09-27）。`_score_change_vs_prev_snapshot()`は13日以内の直前の行を使うため影響しない
 
 ---
 

@@ -260,3 +260,52 @@ class TestWeeklyDeltaFromSnapshot:
         assert captured["score_1w"] == captured["score"] - 30
         saved = pd.read_csv(wa_path, dtype=str)
         assert saved[saved["analysis_date"] == "2026-09-27"].iloc[0]["score_change_1w"] == str(captured["score"] - 30)
+
+
+# ─────────────────────────────────────────────────────────────────
+#  STEP 6: CFNAI-MA3・実行の対象日
+# ─────────────────────────────────────────────────────────────────
+class TestCfnaiMa3Series:
+    def test_fetches_three_month_moving_average(self):
+        """[[MACRO-PULSE-CFNAI-MA3-SERIES-1]]: 表示・説明・閾値（−0.7）はCFNAI-MA3の前提。"""
+        assert main05.INDICATOR_CONFIG["Chicago Fed National Activity"]["fred_id"] == "CFNAIMA3"
+
+    def test_series_meta_lists_ma3(self):
+        import json
+        meta_path = pathlib.Path(__file__).resolve().parent.parent / "common" / "macro_data" / "series_meta.json"
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        assert "CFNAIMA3" in meta and "CFNAI" not in meta
+
+
+class TestDefaultTargetDate:
+    """[[MACRO-PULSE-RUN-DATE-UTC-SHIFT-1]]: 起動が遅れてUTCの0時をまたいでも、予定日（米国の日付）と一致する。"""
+
+    def _utc(self, s):
+        from datetime import datetime, timezone
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M").replace(tzinfo=timezone.utc)
+
+    def test_on_time_run_is_scheduled_day(self):
+        # 10-02 22:15 UTC = 10-02 18:15 EDT
+        assert main05.default_target_date(self._utc("2026-10-02T22:15")) == date(2026, 10, 2)
+
+    def test_delayed_run_after_utc_midnight_is_still_scheduled_day(self):
+        # 実例: 10-02 22:15 UTCのcronが10-03 01:12 UTC（10-02 21:12 EDT）に起動
+        assert main05.default_target_date(self._utc("2026-10-03T01:12")) == date(2026, 10, 2)
+        # 直近20回で最大の遅れ（+3.7h）: 09-28 22:15 → 09-29 01:58 UTC
+        assert main05.default_target_date(self._utc("2026-09-29T01:58")) == date(2026, 9, 28)
+
+    def test_before_1700_eastern_uses_previous_business_day(self):
+        # 10-02 15:00 UTC = 10-02 11:00 EDT → 10-01
+        assert main05.default_target_date(self._utc("2026-10-02T15:00")) == date(2026, 10, 1)
+        # 月曜の朝（10-05 14:00 UTC = 10:00 EDT）→ 前の金曜 10-02
+        assert main05.default_target_date(self._utc("2026-10-05T14:00")) == date(2026, 10, 2)
+
+    def test_previous_business_day_skips_holiday(self):
+        # 2026-09-08（火）10:00 EDT → 9/7はLabor Day → 9/4（金）
+        assert main05.default_target_date(self._utc("2026-09-08T14:00")) == date(2026, 9, 4)
+
+    def test_winter_time(self):
+        # 12-01 22:15 UTC = 12-01 17:15 EST → 12-01
+        assert main05.default_target_date(self._utc("2026-12-01T22:15")) == date(2026, 12, 1)
+        # 12-02 01:30 UTC = 12-01 20:30 EST → 12-01
+        assert main05.default_target_date(self._utc("2026-12-02T01:30")) == date(2026, 12, 1)

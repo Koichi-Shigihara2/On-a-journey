@@ -44,6 +44,9 @@ jobs:
           pip install -r requirements.txt
 
       # 以下、全ステップのパスを src/market/macro_pulse/ に修正
+      # [[MACRO-PULSE-RUN-DATE-UTC-SHIFT-1]]（2026-10-03）: --date $(date -u +%Y-%m-%d) を渡さない。
+      # 05_main.py が起動時刻の米国東部時間の日付（17:00より前なら直前の営業日）を対象日にする
+      # （cronが遅れてUTCの0時をまたぐと、UTCの日付は予定日の翌日になっていた）
       - name: Run daily update
         if: |
           (github.event_name == 'schedule' && github.event.schedule == '15 22 * * *') ||
@@ -54,7 +57,7 @@ jobs:
           XAI_API_KEY:      ${{ secrets.XAI_API_KEY }}
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/market/macro_pulse/05_main.py --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py
 
       - name: Send Discord reminder for manual indicators
         if: |
@@ -63,7 +66,7 @@ jobs:
         env:
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/market/macro_pulse/05_main.py --remind --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --remind
 
       - name: Fill S&P500 returns (t+1/5/10/20)
         if: |
@@ -83,7 +86,7 @@ jobs:
           XAI_API_KEY:      ${{ secrets.XAI_API_KEY }}
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          python src/market/macro_pulse/05_main.py --update-schedule --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --update-schedule
 
       - name: Generate weekly AI analysis (Saturday)
         if: |
@@ -96,7 +99,7 @@ jobs:
         run: |
           echo "Waiting 60s for Gemini API rate limit cooldown..."
           sleep 60
-          python src/market/macro_pulse/05_main.py --weekly-analysis --date $(date -u +%Y-%m-%d)
+          python src/market/macro_pulse/05_main.py --weekly-analysis
 
       - name: Recalculate surprises
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'recalc'

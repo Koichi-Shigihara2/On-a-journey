@@ -66,7 +66,7 @@ SCORE_INDS = [
     ("hy", "HY Spread", "BAMLH0A0HYM2", 15),
     ("cbcc2", "Building Permits", "PERMIT", 10),
     ("philly", "Philadelphia Fed Manufacturing", "GACDFSA066MSFRBPHI", 18),
-    ("cfnai", "Chicago Fed National Activity", "CFNAI", 12),
+    ("cfnai", "Chicago Fed National Activity", "CFNAIMA3", 12),  # 2026-10-03に単月のCFNAIから変更
     ("claims", "Initial Claims 4W MA", "IC4WSA", 10),
     ("cbcc", "Michigan Consumer Sentiment", "UMCSENT", 8),
     ("sahm", "Sahm Rule Recession Indicator", "SAHMCURRENT", 7),
@@ -1088,7 +1088,11 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
                     "90" in (dom["signalsSec"] or ""), "説明"))
     R.append(Result("N-06", "⑤の副題「発表日の新しい順」", "日付列は events.csv の release_date（Philly・CFNAI・Sahmは観測月の1日、Michigan・Permits・Claimsは発表予定日の枠）",
                     dom["signalsTitle"], False, "説明"))
-    R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列は CFNAI（単月）。CFNAIMA3 ではない", "CFNAI MA3", False, "説明"))
+    main_src = open(os.path.join(REPO_ROOT, "src", "market", "macro_pulse", "05_main.py"), encoding="utf-8").read()
+    uses_ma3 = '"fred_id": "CFNAIMA3"' in main_src
+    R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列が CFNAIMA3（05_main.pyのINDICATOR_CONFIG）",
+                    "CFNAIMA3" if uses_ma3 else "CFNAI（単月）", uses_ma3, "説明",
+                    "events.csvの既存の行は修復スクリプト（macro_cfnai_ma3_rows_repair.py）を統合後に実行するまで単月の値"))
     lq = m.liq[-1]
     if lq.get("h41_date"):
         ok = ("H.4.1 " + lq["h41_date"]) in ((dom.get("stealth") or {}).get("text") or "")

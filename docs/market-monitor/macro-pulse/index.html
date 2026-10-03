@@ -1882,6 +1882,9 @@ function renderRecentSignals() {
     let lo=0,hi=arr.length-1;
     while(lo<hi){const mid=(lo+hi)>>1;if(arr[mid].dateMs<cutOldMs)lo=mid+1;else hi=mid;}
     for(let i=lo;i<arr.length;i++){
+      // [[MACRO-PULSE-RECENT-SIGNALS-STALE-ROWS-1]]: 全行が90日より古い指標では、二分探索が配列の最後の行で止まる。
+      // 期間（直近90日）の外の行は出さない
+      if(arr[i].dateMs<cutOldMs)continue;
       if(arr[i].dateMs>todayMs)break;
       const ds=new Date(arr[i].dateMs).toISOString().slice(0,10);
       const r=DATA.find(x=>x[COL.indicator]===ind&&x[COL.date]===ds&&n(x[COL.actual])!==null);

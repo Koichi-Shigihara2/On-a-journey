@@ -248,7 +248,9 @@ INDICATOR_CONFIG = {
         "discord_remind": False,
     },
     "Chicago Fed National Activity": {
-        "fred_id": "CFNAI",
+        # [[MACRO-PULSE-CFNAI-MA3-SERIES-1]]（2026-10-03）: 表示・説明・閾値（−0.7）は3ヶ月移動平均（CFNAI-MA3）の前提。
+        # 以前は単月の"CFNAI"を取得していた
+        "fred_id": "CFNAIMA3",
         "input_method": "FRED",
         "fred_release_id": None,
         "slug": "cfnai_ma3",
@@ -2499,6 +2501,20 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
 # ─────────────────────────────────────────────────────────────────
 #  Entry Point
 # ─────────────────────────────────────────────────────────────────
+def default_target_date(now_utc: datetime) -> date:
+    """[[MACRO-PULSE-RUN-DATE-UTC-SHIFT-1]]: 実行の対象日（米国の日付）を起動時刻から決める。
+    米国東部時間の日付を使い、17:00より前なら直前の営業日（土日・us_holidays()を除く）にする。
+    以前はワークフローが`--date $(date -u +%Y-%m-%d)`を渡しており、22:15 UTCのcronが遅れてUTCの0時を
+    またぐと（直近20回すべて）予定日の翌日になっていた。"""
+    ny = now_utc.astimezone(_TZ_NY)
+    d = ny.date()
+    if ny.hour < 17:
+        d = d - timedelta(days=1)
+        while d.weekday() >= 5 or d in us_holidays(d.year):
+            d = d - timedelta(days=1)
+    return d
+
+
 def main():
     p = argparse.ArgumentParser(description="MACRO PULSE v6.0")
     p.add_argument("--test",            action="store_true")
@@ -2507,10 +2523,11 @@ def main():
     p.add_argument("--remind",          action="store_true", help="Send Discord reminders for today's manual indicators")
     p.add_argument("--fill-returns",    action="store_true", help="Backfill S&P500 t+N returns")
     p.add_argument("--weekly-analysis", action="store_true", help="Generate weekly AI commentary")
-    p.add_argument("--date", type=str, default=None, help="YYYY-MM-DD (default: yesterday)")
+    p.add_argument("--date", type=str, default=None,
+                   help="YYYY-MM-DD（省略時: 起動時刻の米国東部時間の日付。17:00より前なら直前の営業日）")
     args = p.parse_args()
     target = (datetime.strptime(args.date, "%Y-%m-%d").date()
-              if args.date else (datetime.now() - timedelta(days=1)).date())
+              if args.date else default_target_date(datetime.now(timezone.utc)))
     run(target,
         test_mode=args.test,
         do_recalc=args.recalc,
