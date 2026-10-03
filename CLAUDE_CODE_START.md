@@ -61,6 +61,9 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - `feature/mp-impl-c`（`2e45457c9b`、Bから分岐。Bの`36309d41f3`をマージ済み、段階8の先物・ドル円にも暫定の表示）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
   **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`の再実行は任意（最新エントリだけに付く。
   翌晩の本番実行で自然に付く） (3) 空きが5営業日程度を超えたらES=F・NQ=F・NIY=Fを`--repair-missing-days`で埋める (4) 3ゲート＋browser_checks（60件一致）。
+  **既知の不一致（2026-10-03 チャット側の指示）**: `browser_checks/check_dependency_map.py`の⑤Hollow Rallyだけが不一致になった場合は、
+  `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（MACRO PULSE側がHollow Rallyの判定を週単位に変えた〈M-2 STEP 4〉のに、期待値が旧ロジック〈6行前・前日比〉のまま）
+  として扱い、Cの統合の判断材料にしない。期待値の修正はMACRO PULSE側のセッションが行う（こちらでは直さない）。Hollow Rally以外の不一致は従来どおり止める。
 - `feature/update-schedule`（`e0e1e88cd8`、kaihatsuから分岐。3章に設計上の暫定値の扱いを追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
   workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
   SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
