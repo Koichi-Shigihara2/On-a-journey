@@ -1,0 +1,20 @@
+# Market Data Daily Updateの外部起動（設定手順はREADME.md）
+name = "on-a-journey-market-data-trigger"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# 公開URL（*.workers.dev）は使わない。cronだけで動く
+workers_dev = false
+
+# 実行ログ（console.log）をダッシュボードのLogsで見られるようにする
+[observability]
+enabled = true
+
+# Cron TriggersはUTC。無料プランの上限はアカウントあたり5本（2026-10-03にCloudflareのLimitsのページで確認）。ここで3本使う。
+# 曜日は数字だとCloudflareでは1=日曜になり他のcronとずれるため、MON-FRIの表記にする
+[triggers]
+crons = [
+  "25 20,21 * * MON-FRI",  # 20:25・21:25 UTC: 起動
+  "55 20 * * MON-FRI",     # 20:55 UTC: 起動
+  "50 21 * * MON-FRI",     # 21:50 UTC: 成功した実行が無ければもう一度起動して通知
+]
