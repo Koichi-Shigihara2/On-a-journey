@@ -23,6 +23,11 @@ name: Market Data Daily Update
 #
 # 同時実行: 遅延で複数の起動が重なった場合も順番に1本ずつ動かす（concurrency、待機中のものは最新1本に
 # まとめられる）。後から動いた起動は(2)で何もせず終了する。
+#
+# 外部起動（2026-10-03）: GitHubのscheduleは2026-10-01・10-02の2晩とも夜の枠では1本も起動しなかった
+# （最初の起動は00:13・23:59 UTC）。tools/external_trigger/ のCloudflare Workerが平日20:25・20:55・21:25 UTCに
+# workflow_dispatch（guard=true）で起動し、21:50 UTCに成功した実行が無ければもう一度起動する。
+# 上のscheduleは外部起動が失敗した日の保険として残す（ガード(2)により、取得済みの日は何もせず終わる）。
 # ─────────────────────────────────────────────────────────────────
 on:
   schedule:
@@ -40,6 +45,13 @@ on:
         description: 'Target tickers (comma-separated, blank for full universe: S&P500+monitor+index/ETF/commodity)'
         required: false
         default: ''
+      # 外部起動（tools/external_trigger/ のCloudflare Worker、2026-10-03）はguard=trueで呼び、scheduleと同じガードを通す。
+      # 人が手動で実行するとき（既定のfalse）は従来どおりガードを通さず取得する
+      guard:
+        description: 'Run the guard (NYSE close + 20 min / closes already saved) like scheduled runs. Leave unchecked for a manual fetch.'
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: market-data-daily
@@ -75,7 +87,7 @@ jobs:
       - name: Guard (NYSE close + 20 min / closes already saved)
         id: guard
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.guard }}" != "true" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "reason=手動実行" >> "$GITHUB_OUTPUT"
           else
@@ -95,9 +107,11 @@ jobs:
           fi
           echo "status=$(python -c "import json;print(json.load(open('/tmp/daily_status.json'))['status'])")" >> "$GITHUB_OUTPUT"
 
+      # reset_window（Yahooの作り直しの時間帯）で終わった実行はcommitしない（2026-10-03）。daily/は変わらず、
+      # _daily_close_retry_log.jsonの記録だけのcommitが「Update Market Data Daily」の件名で残っていた（10-03の2本）
       - name: Commit and push changes
         id: commit
-        if: steps.guard.outputs.run == 'true'
+        if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
