@@ -2634,6 +2634,7 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
   2026-08-26の検証の24回はbeforeの24日と一致。発火の増加はチャット側で許容済み（2026-10-03）
 - 一覧（増えた日・消えた日、各日の日次の差と週の差）は`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`「M-2 STEP 4」
 - H.4.1の週（水曜〜翌火曜）単位で数えると、Hollow Rallyが発火した週は21週→50週（対象197週。両方15・afterだけ35・beforeだけ6）
+- 発火の頻度が高い（週単位の判定で197週中50週、日数では1,345日中164日）ため、Hollow Rallyの閾値（S&P500 5営業日 +1.0%・NET流動性前週比 −0.5%）は**M-3で見直す**
 
 **他のシステムへの影響（2026-10-03、M-2レビューを受けて追記）**: TANUKI TAILの`src/tail/quarterly_review_generator.py::load_macro_context()`は、
 05_weekly_analysis.csvの最新行（score・phase・score_change_1w・score_change_1m・watchpoints・indicator_deltas）と、05_liquidity.csvの
@@ -2716,6 +2717,38 @@ net_liquidityで判定する旧ロジックを再現している。[[MACRO-PULSE
 #### 着手条件
 `check_dependency_map.py`はMarket Pulse側のセッションの作業範囲のため、こちら（指示書M-1・M-2）では変更していない。
 Market Pulse側の作業と調整のうえで直す。
+
+---
+
+### [MACRO-PULSE-REVISION-NOT-APPLIED-1] MACRO PULSEのrefresh_monthly_indicators()が既に値のある観測月の行を上書きしないため、改定値が反映されない
+**優先度:** 中
+**分類:** データの取得遅れ（改定） / MACRO PULSE（05_main.py）
+**登録日:** 2026-10-03
+**発見:** 指示書M-1 STEP 2（MM-12）・M-2のレビューで登録
+
+#### 内容
+`refresh_monthly_indicators()`は、05_events.csvに同じ観測月（または予定の枠）の行があり値が入っていれば、その行を飛ばす。
+FRED系列ストア（`common/macro_data/series/`）は取得のたびに改定値で上書きされるが、events.csvは最初に書いた値のまま残る。
+画面・週次スナップショットの「今」の値も改定前になる（例: Building Permits 2026年8月 速報1394 → 改定1403〈09-24公表〉。
+events.csvの最新行は予定の枠09-15の1394）。
+
+events.csvと系列ストアの最新観測を全指標で突き合わせた件数（2026-10-03、観測日の行だけ比較。予定の枠の日付の行は比較対象外）:
+| 指標（系列） | 観測日の行 | 値が違う行 | うち2025年以降 | 予定の枠の行（対象外） |
+|---|---|---|---|---|
+| Building Permits（PERMIT） | 366 | 73 | 14 | 7 |
+| Chicago Fed National Activity（CFNAIMA3） | 368 | 72 | 11 | 0 |
+| Initial Claims 4W MA（IC4WSA） | 1,594 | 20 | 17 | 0 |
+| Yield Curve・HY Spread・VIX・Philly Fed・Michigan Sentiment・Sahm・Michigan Inflation 1Y/5Y | 計30,998 | 0 | 0 | Michigan Sentiment 6 |
+例: Claims 09-19週 202,250→202,500、09-05週 206,000→206,250。CFNAIは2026-10-03の修復で「その行の時点に公表されていた版」に
+置き換えたため（[[MACRO-PULSE-CFNAI-MA3-SERIES-1]]）、その後の改定（例: 2026-06 −0.05→0.01）が反映されていない。
+
+#### 実害
+「今」のスコア・カード・ヘルスバーの値が改定前のまま（2026-10-03時点では、改定前後で点数の区分が変わる指標は無い）。
+一方で、過去の時点の再現（比較バー・スコア推移・週次の週差）には、最初に書いた値（当時公表されていた値）のほうが正しい。
+
+#### 着手条件
+改定値の取り込みは、先読み除外（`updated_at`、[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]）と合わせてM-3で設計する
+（改定値を別の行・別の列として持つか等）。コードは変えていない。
 
 ---
 
