@@ -2616,6 +2616,37 @@ REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会�
 
 ## 優先度：低（アイデア段階）
 
+### [MACRO-PULSE-CARD-HEALTHBAR-MISMATCH-1] MACRO PULSEの8指標カード（スコアの判定）とヘルスバー（② 各指標の現在地）の判定が、同じ値で食い違う
+**優先度:** 低
+**分類:** 判定の不一致 / MACRO PULSE（index.html）
+**登録日:** 2026-10-03
+**発見:** 指示書M-1 STEP 5（MM-08）・M-2 STEP 1で原因を特定
+
+#### 内容
+2026-10-03の画面で、Building Permits 1394K（カード「中立」・バー「CAUTION」）、CFNAI −0.04（カード「拡張」・バー「NEUTRAL」）、
+Sahm 0.00（カード「中立」・バー「BULL」）が食い違う。値の範囲を走査すると、8指標すべてに食い違う範囲がある。原因は3つ:
+1. **閾値の組が違う**: カードは`computeCurrentScore()`のステップ関数（スコアの計算そのもの）、バーは`renderL2()`の`L2_CFG`。
+   `L2_CFG`のHY 4.0/6.5・Philly 5/−5・CFNAI 0/−0.7・Claims 215K/245K・Michigan 90/65は、[[MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1]]
+   （BACKLOG_DONE.md）でカードのtooltipだけをスコアの閾値に直す前の組と同じで、バー側は変えられていない
+2. **注意と中立の境目の決め方が違う**: バーは「bearとbullの間で、(mid+bull)/2より悪ければCAUTION」。Permitsは同じbull 1500・
+   bear 1100でも、バーの境目は1400、カードの境目は1300（1300〜1399でカード「中立」・バー「CAUTION」）
+3. **カードの文言の決め方**: Sahmはカードの判定をスコア（>75 後退・>40 注意・それ以外 中立）から決めるため、最良の段（12点。他の指標の
+   「拡張」と同じ水準の点数）でも「中立」になる。Michiganは拡張の段が無い（MACRO-TOOLTIP-THRESH-LABEL-MISMATCH-1で意図的と記録）
+
+食い違う範囲（カード/バー）: YC −0.5〜−0.2（注意/BEAR）・0〜0.24（中立/CAUTION）〈YCは意図的と明記済み: MACRO-THRESHOLD-INCONSISTENCY-1〉、
+HY 3.51〜4.0（中立/BULL）・6.01〜6.49（後退/CAUTION）、Philly −10〜−5（注意/BEAR）・0〜2.4（中立/CAUTION）、
+CFNAI −0.7〜−0.36（中立/CAUTION〜BEAR）・−0.35〜−0.01（拡張/CAUTION〜NEUTRAL）、Sahm 0〜0.3（中立/BULL）、
+Claims 222.75K〜300K（中立〜注意/CAUTION〜BEAR）、Michigan 65.1〜74.9（後退/CAUTION）・85〜110（注意〜中立/NEUTRAL〜BULL）、
+Permits 1300〜1399（中立/CAUTION）。
+
+#### 実害
+同じ画面の2箇所で、同じ指標の判定が違って見える。スコアに使われるのはカード側の判定。
+
+#### 着手条件
+どちらの判定に揃えるか（バーをスコアの閾値に揃えるか、バーは別の目的の閾値として説明を付けるか）は設計の判断が要る。
+
+---
+
 ### [MACRO-PULSE-RECENT-SIGNALS-STALE-ROWS-1] MACRO PULSEの「⑤ 直近の動き」に、90日より古い行（2024-01-01のCB Consumer Confidence・LEI等）が出る
 **優先度:** 低
 **分類:** 表示の誤り / MACRO PULSE（index.html）
