@@ -51,7 +51,9 @@
 **連鎖の読み方**: 「起動元」のワークフローが完了すると起動する（workflow_run）。ほとんどのワークフローは「起動元が成功したときだけ動く」
 条件を持つため、起動元が失敗・取り消し（cancelled）・スキップになった場合、下流の実行は作られるがジョブは動かない（skipped）。
 Market Data Daily Updateは、何もしなかった実行・新しいデータを保存しなかった実行を自分で取り消し、下流を動かさない（2章）。
-金曜のcron（Market Pulse 22:50・Stonks Silo 22:40・TANUKI VALUATION 22:30 UTC）は、連鎖が動かなかった場合の安全網。
+金曜のcron（Market Pulse 22:50・Stonks Silo 22:40・TANUKI VALUATION 22:30 UTC）は2026-10-03に削除した（kaihatsu `791faa1f02`。
+GitHubの遅延で、Market Data Dailyの取得より前に前日のデータで動いていた。5章）。この3本の起点は連鎖（workflow_run）と手動実行だけ。
+Market Data Daily Updateは外部（Cloudflare Worker）からも起動する（2章「外部起動と保険の関係」。外部起動は1章の表には出ない）。
 
 ---
 
@@ -63,24 +65,48 @@ Market Data Daily Updateは、何もしなかった実行・新しいデータ�
 |---|---|---|
 | NYSEの引け | 20:00 UTC（JST 05:00） | 21:00 UTC（JST 06:00） |
 | Market Data Dailyのガードが取得を許す時刻（引け＋20分） | 20:20 UTC | 21:20 UTC |
-| 取得する最初のcron | 20:47 UTC（JST 05:47） | 21:47 UTC（JST 06:47） |
+| 取得する最初の起動 | 外部起動 20:25 UTC（JST 05:25）。scheduleでは20:47 UTC（JST 05:47） | 外部起動 21:25 UTC（JST 06:25）。scheduleでは21:47 UTC（JST 06:47） |
 | 下流 | 取得の完了で Market Pulse・Stonks Silo → Stonks Siloの完了で TANUKI VALUATION → その完了で TANUKI Score（daily pick・ポートフォリオのスナップショット） | 同左 |
 | MACRO PULSE | 22:15 UTC（JST 07:15、連鎖とは独立） | 同左 |
 | System Health | 23:30 UTC（JST 08:30） | 同左 |
 | Score Verifier | 00:00 UTC（JST 09:00） | 同左 |
 
-- **Market Data Dailyの起動**: 20:17〜23:17 UTCの30分おき（7回）と、保険の01:47・02:17 UTC（UTCの火〜土）。各起動の最初に
+- **Market Data Dailyの起動**: 外部起動（下の節）と、GitHubのschedule＝20:47〜23:17 UTCの30分おき（6回。20:17は2026-10-01に削除）と保険の01:47・02:17 UTC（UTCの火〜土）。各起動の最初に
   `common/market_data/daily_guard.py` が「NYSEのその日の引けから20分経っていない（休場日を含む）」「その日の終値が既にそろっている
   （直近に行がある銘柄の95%以上）」を判定し、どちらかなら何もしない。取得した結果、半数以上の銘柄に終値が無ければ（3章のYahooの
   作り直しの時間帯）取り直さず保存せずに終了する。いずれも最後に自分を取り消し、下流を動かさない。同時に1本だけ動く（concurrency）
 - **GitHubの遅延**: cronは混雑で遅れて起動する。旧・cron 21:25 UTCの実測（2026-09）は23:05〜01:06 UTCの起動だった
   （[[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]）。複数のcronを置くのはこのため。2026-09-30（米国）の夜の実際の起動時刻は、
   報告後にこの節に追記する
+- **2026-10-01・10-02（米国）の夜の実測**: GitHubのscheduleは夜の枠（20:47〜23:17 UTC）で2晩とも1本も起動しなかった。
+  最初の起動は00:13 UTC（10-01の分、手動実行で23:36に取得済み）・23:59 UTC（10-02の分。00:00〜01:26 UTCの作り直しに入り
+  reset_windowが2回、01:55の起動で取得）。この結果から外部起動を入れた（次の節）
 - **所要時間の例**（2026-09-30 JSTの実行、旧方式）: Market Data Daily 00:35〜00:49 UTC（取り直しの待ち9分を含む）→ Market Pulse
   00:49〜00:51 → Stonks Silo 00:49〜00:51 → TANUKI VALUATION 00:51〜01:00 → TANUKI Score 01:00
 - **週次**: SEC Data Update（日曜12:00 UTC）の完了で HypeCore・Adjusted EPS・Stonks Silo・SEC Data Audit が動き、
   HypeCore・Adjusted EPS・Stonks Siloの完了でTANUKI VALUATIONが動く。Market Data Weekly（日曜13:20 UTC）は属性・アナリスト情報
 - **その他の定時**: Macro Data（毎日10:00 UTC、FRED）、MACRO PULSEの補完（毎日13:03 UTC）、TANUKI TAILのRSS（平日08:00 UTC）など（1章）
+
+### 外部起動と保険の関係（2026-10-03）
+
+Market Data Daily Updateは、主にCloudflare Workers Cron Triggers（`tools/external_trigger/`、設定手順は同じフォルダのREADME.md）から
+`workflow_dispatch`（ref=kaihatsu、入力`guard=true`）で起動する。GitHubのscheduleは保険として残す。
+
+| 起動 | 時刻（UTC、平日） | JST | 役割 |
+|---|---|---|---|
+| 外部（Worker） | 20:25・20:55・21:25 | 05:25・05:55・06:25 | 主の起動。応答が204以外ならDiscordに通知 |
+| 外部（Worker）の確認 | 21:50 | 06:50 | その日の20:00 UTC以降に作られて成功した実行が無ければ、もう一度起動してDiscordに通知 |
+| GitHubのschedule（保険） | 20:47〜23:17の30分おき・01:47・02:17（UTCの火〜土） | 05:47〜08:17・10:47・11:17 | 外部起動が失敗した日の取得。遅延して作られることが多い（上の実測） |
+
+- **ガードは共通**: `guard=true`の起動はscheduleと同じ`daily_guard.py`を通る。夏時間は20:25、冬時間は21:25の起動で取得し、それ以外の起動
+  （引けから20分経っていない・既に取得済み）は何もせず自分を取り消す。保険のscheduleが外部起動の後に遅れて来ても、取得済みなので何もしない。
+  同時に1本だけ動く（concurrency）ため、外部起動とscheduleが重なっても二重に取得しない
+- **人の手動実行**は`guard`を付けない（既定false）。従来どおりガードを通さず取得する
+- **外部起動が失敗した日**（Cloudflareの障害・トークンの期限切れ〈HTTP 401〉など）: Workerが失敗をDiscordに通知し、21:50の確認でも
+  成功した実行が無ければ通知する。取得はGitHubのscheduleに任せる（間に合わない日は、Discordの通知を見て手動実行する）。
+  scheduleが00:00〜01:26 UTCの作り直しの時間帯に入った場合はreset_windowで終わり（commitしない）、01:47・02:17の保険か、その後の遅れた起動で取得する
+- **休場日**: WorkerはNYSEの休場日（`lib.js`の表、2026〜2028年）は何もしない。scheduleの起動はガードの「休場日」で何もしない
+- **無料プラン**: Cron Triggersはアカウントあたり5本まで、Workerは3本を使う
 
 ---
 
@@ -164,3 +190,6 @@ YAMLのコメント・`config/workflow_dependencies.json`にあった経緯を�
 | 2026-09-30 | config/workflow_dependencies.json | `known_issues`（「TANUKI Score（22:30）がMarket Pulse（翌8:05）より先に実行されるため前日データを参照」「HypeCore循環依存」）を削除。前者の時刻は現在の連鎖と合わない。後者（HypeCoreとTANUKIが互いのlatest.jsonを参照し、初回は前回値を使う）は、この文書の2章の週次の流れで表す | 指示書㉘ |
 | 2026-09-30 | Beta Config Update | cron `0 23 1-7 * 0`は日付と曜日がORになり「1〜7日の毎日＋毎週日曜」に起動していた。`0 23 1-7 * *`にし、最初の段で「今の時刻−6時間」の日付（UTC）が日曜の起動だけ続ける | [[BETA-CONFIG-CRON-DOM-DOW-OR-1]]、`1f73f1d215` |
 | 2026-09-30 | Market Pulse | 夜の実行の時点で構造上必ず暫定になる値（先物の清算前・為替とドル指数の日の区切り前）はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示（3章「設計上の暫定値と想定外の暫定値」） | [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、feature/mp-impl-b `36309d41f3`・feature/mp-impl-c `2e45457c9b` |
+| 2026-10-01 | Market Data Daily | 20:17 UTCのcronを削除（夏時間は引けから17分でガードが必ず何もせず、冬時間は引け前） | `6de1c89644` |
+| 2026-10-03 | Market Data Daily | 外部起動（Cloudflare Worker、平日20:25・20:55・21:25 UTC＋21:50の確認）を追加し、scheduleは保険に。workflow_dispatchに入力`guard`（既定false、trueでガードを通す）。reset_windowで終わった実行はcommitしない（`_daily_close_retry_log.json`だけのcommitが残っていた） | `4af62bcd1f`・`8dc0deaf0e` |
+| 2026-10-03 | Market Pulse・Stonks Silo・TANUKI VALUATION | 金曜の安全網のcron（22:50・22:40・22:30 UTC）を削除。10-03（土）01:15〜01:28 UTCに遅れて起動し、Market Data Dailyの取得（02:06）より前の前日のデータで動いた（TANUKI VALUATIONはこの夜3回） | `791faa1f02` |
