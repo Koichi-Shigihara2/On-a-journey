@@ -12,6 +12,12 @@ Market Pulse等）。毎セッション開始時は本ファイル（直近セ�
 `PROJECT_STATUS.md`更新）を実施する。詳細な運用ルール・過去の失敗事例は
 `CHAT_RULES.md`に蓄積されている。
 
+**STEP 0（作業開始時の`git fetch`）の運用ルール（2026-10-03 チャット側の指示で例外を追加）**: kaihatsuに取り込まれていない差分が次だけで、
+`git merge --ff-only`で追いつける場合は続行してよい。報告には件数とcommitの一覧（ハッシュ・件名）を書く。これ以外のcommitが1件でも含まれる場合は停止する。
+1. botの自動データ更新（作者`github-actions[bot]`）
+2. MACRO PULSE側セッションのcommit: メッセージに`M-<番号>`（例: `M-2`）を含むもの（実際の件名は「…（指示書M-2 STEP 4）」「…（M-2レビュー対応）」のように末尾に付く）
+3. 件名が`Merge origin/kaihatsu into feature/macro-pulse-`で始まるマージcommitで、それが取り込むcommitがすべて1・2のどちらかか、既にkaihatsuにあるもの
+
 **現在の到達点（2026-09-30 指示書㉓〜㉘の時点。コンテキスト切れに備えた引き継ぎ）**: `BACKLOG.md`アクティブ件数**6件**（機械カウント）:
 `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[MARKETDATA-DAILY-CLOSE-NONE-RECUR-1]]`（今夜の実行で確認）・`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・
 `[[MARKETDATA-FUTURES-ROLL-1]]`・`[[MARKETPULSE-MDD-CHECKOUT-RACE-1]]`・`[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]`（10/1〜10/4の起動で確認）。
@@ -48,7 +54,26 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   日次取得の結果 status=fetched・with_bars 587・no_close_after_retry 0（00:00 UTCより前のためreset_windowにならず）。^N225の10-01は終値なしで保存せず（設計どおり）。push `d13838c3ed`。
   下流はすべてsuccess: Stonks Silo 23:38:54（pushの失敗なし）、Market Pulse 23:39:12、TANUKI VALUATION 23:48:57（1回だけ）、TANUKI Score 23:50:07。
   Market Pulseのエントリ（10-02 08:39 JST）はdata_quality complete（provisionalの要素なし、WTI・金・ドル円は設計上の暫定）、data_freshness.stale=false。
-- 未確定: 01:47・02:17 UTCの保険の起動と、遅れて作られる20:47〜23:17 UTCの分（いずれもガード(2)で何もせず終わるはず）。これらを含めた最終の記録は10-02の昼（03:00 UTC以降）に追記する。
+- **最終（2026-10-03に記録）**: 手動実行の後にGitHubが作ったschedule起動は5本（10-02 00:13:57・00:49:21・02:12:38・07:31:48・08:30:44 UTC。
+  予定8枠〈夜6回＋保険2回〉に対して5本、どのcronかはAPIで判別できない）。ガードはログで、00:13・00:49・02:12が「2026-10-01の終値はそろっている（583/586銘柄）→ run=false」、
+  07:31・08:30が「引け（20:00 UTC）から20分経っていない→ run=false」（NYの10-02の引け前）。5本とも自分で取り消し（cancelled）、下流はすべてskipped。
+  02:12の起動は02:17より前なので、01:47の枠か夜の枠のどれかが遅れたもの（特定できない）。
+  同じ夜の他のschedule: MACRO_PULSE 22:15→01:41（+3.4時間）、Beta_Config_Update 23:00→01:50（+2.8時間）、System Health 23:30→02:20（failure）、Score Verifier 00:00→02:41。
+
+**2晩目（米国2026-10-02〈金〉の足）の起動の記録（2026-10-03に記録）**
+- 予定8枠（夜6回＋保険の10-03〈土〉01:47・02:17）に対して、GitHubが作った実行は5本。夜の枠（〜23:17 UTC）の時刻に起動したものは0本で、**22:00 UTCには間に合わなかった**。
+  - 23:59:40 起動 → ガードrun=true（2026-10-02の終値が未取得 0/583）→ **status=reset_window**（no_close 572・with_bars 587）。保存せず取り消し、下流skipped。
+  - 00:32:00 起動 → 同じくrun=true → reset_window（no_close 572）。取り消し、下流skipped。
+  - 01:55:08 起動 → run=true → status=fetched・with_bars 587・no_close_after_retry 1（HUBBの10-02は3回取り直しても終値なし、保存せず）。02:06:46完了・push `95d251995b`。
+    下流: Stonks Silo 02:08:39・Market Pulse 02:09:03・TANUKI VALUATION 02:19:21・TANUKI Score 02:20:24（すべてsuccess）。
+    Market Pulseのエントリ（10-03 11:08 JST）はdata_quality complete・provisionalなし・stale=false。
+  - 07:06:37・08:05:25 起動 → ガード「NYSE休場日（2026-10-03）→ run=false」で取り消し。
+- reset_windowの2本も、`_daily_close_retry_log.json`だけを変えるcommitをpushしていた（`b5eab2ca`・`41d9098dbf`、件名は「Update Market Data Daily」）。daily/は変わっていない。
+- 金曜の安全網のcron（TANUKI VALUATION 22:30・Stonks Silo 22:40・Market Pulse 22:50 UTC）が01:15〜01:28 UTCに遅れて起動し、10-02の終値の取得（02:06）より前に
+  10-01までのデータで実行・pushした。その結果、この夜のTANUKI VALUATIONは3回（01:15 schedule・01:26 Stonks Silo経由・02:08 Market Data経由）、TANUKI Scoreも3回動いた。
+  最終の結果は02:08以降の実行で上書きされ、Market Pulseのエントリも10-02の終値のもの1件だけ（観察のみ、対応は未判断）。
+- 2晩とも、GitHubのscheduleは夜の枠では1本も起動しなかった。最初の起動は1晩目が00:13 UTC（手動実行が無ければ取得は00:13以降）、2晩目が23:59 UTCで、
+  2晩目は00:00〜01:26 UTCのYahooの作り直しに入り、取得できたのは01:55の起動だった。外部から起動する方式の案は2026-10-03にチャットへ報告済み（実装しない）。
 
 **マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
