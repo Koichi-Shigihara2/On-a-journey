@@ -240,7 +240,7 @@ BACKLOG_DONE.mdの該当（見出し）:
 ### 2-3・2-4 画面要素ごとのデータ基準日と分類（2026-10-03 10:37 JST、表示中のデータ）
 FREDの公表時刻は`fred/series`の`last_updated`とALFREDの`realtime_start`で確認した
 （UMCSENTはALFREDの日付が、実際にAPIで取れるようになった日より約1か月前にさかのぼって付く。後述）。
-不具合の番号B-01〜B-08はSTEP 6でBACKLOG IDと対応付けた。
+不具合の番号B-01〜B-10はSTEP 6でBACKLOG IDと対応付けた。
 
 | 要素 | 表示値 | データ基準日（最終観測） | 取得可能だった最新 | 分類 | 原因 |
 |---|---|---|---|---|---|
@@ -562,3 +562,40 @@ tooltip・レーダーの3系列と実数ラベル・類似度・スライダー
 | MM-20 | ALERTの文言「過去のパターンでは3〜6ヶ月以内に景気後退が確認されやすい」の根拠（検証）の記録が見当たらない |
 | MM-21 | 予定表の算出規則が実際の発表日とずれる: Building Permitsは「第3火曜」（実際は月の12営業日目ごろ、例: 09-17〈木〉）、Michiganは速報の日付だがFREDの値は約1か月後、Philly・CFNAI・Sahmは予定表に無い |
 | MM-22 | 過去データの取り込み分に`updated_at`=取り込み日を入れたため、先読み除外（MACRO-BUG-1）と組み合わさって過去が消える（B-03）。取り込み分の「その時点で分かっていた日」の情報が無い |
+
+---
+
+## STEP 6: 記録
+
+### 不具合とBACKLOG IDの対応（2026-10-03登録、いずれも修正はしていない）
+| 記録の番号 | BACKLOG ID | 優先度 | 影響する画面要素 | 実害 |
+|---|---|---|---|---|
+| B-01 | MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1 | 中 | MAC-30〜33・38・41・43・46・47 | あり（Claimsが1〜3週古い日が95日中67日。07-18の週次スコア29〈本来27〉、07-11の見かけの急悪化サプライズ） |
+| B-02 | MACRO-PULSE-TICKER-FUTURE-ROW-1 | 中 | MAC-09・10・13 | あり（156日中72日、S&P500・前日比・LAST UPDATEが誤り。今日も前日比の符号が逆） |
+| B-03 | MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1 | 中 | MAC-42・36 | あり（スコア推移が2026-03-29以降だけ） |
+| B-04 | MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1 | 中 | MAC-18〜22 | あり（10-02・07-23に「3週連続減少」の誤警報） |
+| B-05 | MACRO-PULSE-AI-DELTA-LOOKAHEAD-1 | 中 | MAC-39（AIの入力） | あり（週±が12週すべて0、Grokへの入力も0） |
+| B-06 | MACRO-PULSE-RECENT-SIGNALS-STALE-ROWS-1 | 低 | MAC-46 | あり（古い3行の混入） |
+| B-07 | MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1 | 中 | MAC-04・08・20、AIの入力 | あり（9/16の声明が未反映、最大18日の遅れ。基準日はtooltipで分かる） |
+| B-08 | MACRO-PULSE-CFNAI-MA3-SERIES-1 | 低 | MAC-30・33・41・43 | 現在は無し（確認が必要） |
+| B-09 | MACRO-PULSE-TEXT-LOGIC-MISMATCH-1 | 低 | MAC-33・34・39・40・46・48・26 | あり（説明の誤り） |
+| B-10 | MACRO-PULSE-RUN-DATE-UTC-SHIFT-1 | 低 | MAC-26・46（予定日に結び付く行） | 限定的 |
+
+- STEP 0の既存項目（MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1・MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1）に該当する不具合は
+  見つからなかった。前者で追加した「観測日」tooltipの日付の誤り（N-09）は、完了項目への追記がBACKLOG_DONE.mdの変更になり、
+  本指示で変更してよいファイルに含まれないため、B-09の一部として登録した。
+- BACKLOG_DONE.mdとの重複は、対象コード箇所（`fred_release_id`・`updateTicker`・`renderRecentSignals`・`_compute_score_change`・
+  `update_fed_context`・`net_liq_decline_weeks`等）とキーワード（Empire・CFNAIMA3・CB消費者信頼感・土曜JST・2026-03-28等）で
+  grepし、該当なしを確認した。
+- `SYSTEM_MAP.md`の依存関係マップに「MACRO PULSE 全画面要素（MAC-01〜MAC-48）」を追加した（STEP 1）。
+- `browser_checks/check_macro_pulse.py`を新規作成した（STEP 4）。`browser_checks/README.md`は既存ファイルのため変更せず、
+  使い方はスクリプトのdocstringに書いた。
+
+### 判定不能だった項目
+| 項目 | 理由 |
+|---|---|
+| D-02 週次スナップショット（09-27=27）の入力の再現 | events.csvは後から行が追加・上書きされる（同じevent_idは最後の書き込みで置き換わる）。09-27時点の版を特定しないと当時の入力を再現できない。本日のライブ計算（27）とは一致 |
+| UMCSENTの「取得可能になった日」 | ALFREDの`realtime_start`（08-28）と、FRED APIで実際に取れるようになった日（ストアに入ったのは09-26の取得、09-10のログでは8月分なし）が食い違う。ALFREDの日付はさかのぼって付くとみて「取得元の遅れ」とした |
+| B-08の過去の実害（単月CFNAIとMA3で点数が変わった月数） | 未集計 |
+| 2026-05-23 22:07の実行で全ステップがskippedになった理由 | 当時のYAMLの条件を確認していない（20回の範囲の端で、現在の運用には関係しない） |
+| RRPの月末以外の急変（04-07・05-18・06-22・07-10・09-10）の理由 | 公式値と一致し単位・桁が前後と同じため「正当な値」としたが、急変の理由（決済日等）は確認していない |
