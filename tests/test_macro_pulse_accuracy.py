@@ -124,3 +124,22 @@ class TestComputeScoreKnownAsOf:
         assert res["indicators"]["philly"]["value"] == 47.4
         res2 = main05._compute_current_score(_events(rows), date(2026, 9, 20))
         assert res2["indicators"]["philly"]["value"] == 37.8
+
+    def test_row_written_after_utc_midnight_by_same_us_day_run_is_used(self):
+        """10-02分の日次の実行がUTCの0時をまたいで10-03T02:06Zに書いた行は、target_date=10-02（米国の日付）で使う。
+        比較は「10-02の米国東部時間23:59:59」（=10-03T03:59:59Z）とupdated_at（UTC）の時刻で行う。"""
+        rows = [
+            _event("Initial Claims 4W MA", "2026-09-19", 202250.0, "2026-09-25 00:35:10"),
+            _event("Initial Claims 4W MA", "2026-09-26", 200000.0, "2026-10-03 02:06:00"),
+        ]
+        res = main05._compute_current_score(_events(rows), date(2026, 10, 2))
+        assert res["indicators"]["claims"]["value"] == 200000.0
+
+    def test_row_written_after_us_eastern_day_end_is_not_used(self):
+        """10-03T04:30Z（米国東部時間10-03 00:30）に書いた行は、target_date=10-02では使わない。"""
+        rows = [
+            _event("Initial Claims 4W MA", "2026-09-19", 202250.0, "2026-09-25 00:35:10"),
+            _event("Initial Claims 4W MA", "2026-09-26", 200000.0, "2026-10-03 04:30:00"),
+        ]
+        res = main05._compute_current_score(_events(rows), date(2026, 10, 2))
+        assert res["indicators"]["claims"]["value"] == 202250.0

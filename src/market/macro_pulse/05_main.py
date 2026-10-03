@@ -26,6 +26,7 @@ MACRO PULSE — Economic Indicators Auto-Update  v6.0
 import os, sys, time, json, logging, argparse, traceback, re
 from datetime import datetime, timedelta, date, timezone
 from io import StringIO
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -1433,10 +1434,30 @@ def _to_ms(dt: datetime) -> float:
     """datetime → ミリ秒（1970-01-01基準）。Windowsの timestamp() バグ回避。"""
     return (dt - _EPOCH).total_seconds() * 1000
 
+_TZ_NY = ZoneInfo("America/New_York")
+
+
+def _known_cutoff_utc(target_date: date) -> datetime:
+    """target_date（米国の日付）の米国東部時間23:59:59をUTCに直した時刻（naive、UTC）。"""
+    end_ny = datetime.combine(target_date, datetime.max.time().replace(microsecond=0), tzinfo=_TZ_NY)
+    return end_ny.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _parse_updated_at_utc(v) -> datetime | None:
+    """events.csvのupdated_at（'YYYY-MM-DD HH:MM:SS'、UTC）を読む。読めなければNone（除外しない）。"""
+    s = str(v or "").strip()
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            continue
+    return None
+
+
 def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     """events.csv から target_date 時点のスコアと各指標の値を計算する"""
     target_ms = _to_ms(datetime.combine(target_date, datetime.max.time()))
-    target_str = target_date.strftime("%Y-%m-%d")
+    known_cutoff_utc = _known_cutoff_utc(target_date)
 
     # indicator -> [(date, actual)] sorted by date
     ind_data = {}
@@ -1448,9 +1469,12 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
             continue
         # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]・[[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]:
         # 行は観測日に置くため、その日までに書き込まれた（＝公開済みの）行だけを使う
-        # （index.htmlのidxLatestKnownAsOf()〈MACRO-BUG-1〉と同じ先読み除外）
-        updated_str = str(r.get("updated_at", "")).strip()
-        if updated_str[:10] and updated_str[:10] > target_str:
+        # （index.htmlのidxLatestKnownAsOf()〈MACRO-BUG-1〉と同じ考え方の先読み除外）。
+        # updated_atはGitHub Actionsの実行環境（UTC）の時刻。target_dateは米国の日付のため、
+        # 「target_dateの米国東部時間23:59:59」をUTCに直した時刻と比べる（日付の文字列では比べない。
+        # 日次の実行はUTCの0時をまたいで書くため、同じ実行で書いた行が外れてしまう）
+        updated_utc = _parse_updated_at_utc(r.get("updated_at", ""))
+        if updated_utc is not None and updated_utc > known_cutoff_utc:
             continue
         try:
             val = float(actual_str)
