@@ -569,24 +569,25 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
 
     # MAC-09〜13 ティッカー
     # 期待値は「取得済みの最新の終値とその前営業日の終値」（FRED SP500 の系列ストア）。
-    # 画面は ev.sp500_t0 の release_date 最大の行を使うため、未来日付の行があると食い違う（不具合B-02）。
+    # 2026-10-03までの画面は release_date 最大の行を使い、未来日付の行で食い違っていた（B-02、M-2 STEP 3で修正）。
     sp = [r for r in load_series("SP500") if r.get("value") is not None and ms_date_only(r["as_of"]) <= now]
     cur, prev = sp[-1]["value"], sp[-2]["value"]
     chg = cur - prev
     pct = chg / prev * 100
     sign = "+" if chg >= 0 else ""
-    screen_rows = sorted({r["release_date"][:10] for r in m.events if parse_float(r.get("sp500_t0"))})[-2:]
+    future_rows = sorted({r["release_date"][:10] for r in m.events
+                          if parse_float(r.get("sp500_t0")) and (ms_date_only(r.get("release_date", "")) or 0) > now})
     add("MAC-09", "S&P500 #tk-sp", js_locale(cur, 2, 2), dom["tk"]["sp"],
-        note=f"期待=FRED SP500 {sp[-1]['as_of']}。画面が使った行の日付={screen_rows[-1] if screen_rows else None}")
+        note=f"期待=FRED SP500 {sp[-1]['as_of']}。events.csvの未来日付の行={future_rows}（画面は使わない）")
     add("MAC-10", "S&P500 前営業日比 #tk-sp-c", f"{sign}{js_fixed(chg, 2)} ({sign}{js_fixed(pct, 2)}%)", dom["tk"]["spc"],
-        note=f"期待={sp[-2]['as_of']}→{sp[-1]['as_of']}。画面が比べた行の日付={screen_rows}")
+        note=f"期待={sp[-2]['as_of']}→{sp[-1]['as_of']}（画面はupdated_at順で値が違う直前の行と比べる）")
     yc = m.latest_val("Yield Curve 10Y-2Y", now)
     add("MAC-11", "10Y-2Y #tk-yc/#tk-yc-i",
         [("+" if yc >= 0 else "") + js_fixed(yc, 2) + "%", "INVERTED" if yc < -0.2 else "FLAT" if yc < 0.5 else "NORMAL"] if yc is not None else ["—", "—"],
         [dom["tk"]["yc"], dom["tk"]["yci"]])
     hy = m.latest_val("HY Spread", now)
     add("MAC-12", "HY #tk-hy", js_fixed(hy, 2) + "%" if hy is not None else "—", dom["tk"]["hy"])
-    # 期待値は「今日以前の行の最大日付」。画面は各指標の最後の行（未来日付の行を含む）を見る（不具合B-02）
+    # 期待値は「今日以前の行の最大日付」（2026-10-03までの画面は未来日付の行も見ていた: B-02、M-2 STEP 3で修正）
     latest_date, latest_src = "", "—"
     for ind, arr in m.index.items():
         past = [e for e in arr if e["d"] <= now]

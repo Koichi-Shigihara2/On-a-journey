@@ -1037,30 +1037,25 @@ function updateTicker() {
   const yc = idxLatestVal('Yield Curve 10Y-2Y', now);
   const hy = idxLatestVal('HY Spread', now);
 
-  // S&P 500: find latest row with sp500_t0 (scan once, cache)
-  if(!window._spCache){
-    let best=null,bestMs=0;
-    for(const r of DATA){const v=n(r[COL.sp0]);if(v){const ms=new Date(r[COL.date]).getTime();if(ms>bestMs){bestMs=ms;best=v;}}}
-    window._spCache=best;
-  }
-  const sp=window._spCache;
-  const spEl=el('tk-sp'); if(sp&&spEl)spEl.textContent=sp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // [[MACRO-PULSE-TICKER-FUTURE-ROW-1]]: sp500_t0は「その行を書いた実行の時点の最新のS&P500終値」で、
+  // 行の日付（release_date）の終値ではない。今日以前の日付の行だけを対象に、書き込み時刻（updated_at）の順に並べ、
+  // 最も新しい値を「最新」、それより前で値が違う直近の値を「前営業日」とする（週末・休場日の実行は同じ値を書くため）。
+  // 以前はrelease_date最大の行を使っており、未来日付の行（予定の枠）の古い値と符号が逆の前日比を出していた。
+  const spPts = DATA
+    .map(r => ({v: n(r[COL.sp0]), d: new Date(r[COL.date]).getTime(), u: new Date(r['updated_at']).getTime()}))
+    .filter(p => p.v !== null && !isNaN(p.d) && p.d <= now && !isNaN(p.u))
+    .sort((a, b) => a.u - b.u || a.d - b.d);
+  const sp = spPts.length ? spPts[spPts.length - 1].v : null;
+  const spEl=el('tk-sp'); if(sp!==null&&spEl)spEl.textContent=sp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 
   // S&P 500 前営業日比
   const spCEl = el('tk-sp-c');
   if(spCEl){
-    const spRows = Object.values(
-      DATA.filter(r => n(r[COL.sp0]))
-          .reduce((acc, r) => {
-            const d = r[COL.date].slice(0,10);
-            if(!acc[d] || new Date(r[COL.date])>new Date(acc[d][COL.date])) acc[d]=r;
-            return acc;
-          }, {})
-    ).map(r => ({ms: new Date(r[COL.date]).getTime(), val: n(r[COL.sp0])}))
-     .sort((a,b) => a.ms - b.ms);
-    if(spRows.length >= 2){
-      const cur  = spRows[spRows.length - 1].val;
-      const prev = spRows[spRows.length - 2].val;
+    let prevPt = null;
+    for(let i = spPts.length - 2; i >= 0; i--){ if(spPts[i].v !== sp){ prevPt = spPts[i]; break; } }
+    if(sp !== null && prevPt){
+      const cur  = sp;
+      const prev = prevPt.v;
       const chg  = cur - prev;
       const pct  = (chg / prev * 100);
       const sign = chg >= 0 ? '+' : '';
@@ -1074,12 +1069,11 @@ function updateTicker() {
   if(yc!==null){const e1=el('tk-yc');if(e1)e1.textContent=(yc>=0?'+':'')+yc.toFixed(2)+'%';const e2=el('tk-yc-i');if(e2)e2.textContent=yc<-0.2?'INVERTED':yc<0.5?'FLAT':'NORMAL';}
   if(hy!==null){const e1=el('tk-hy');if(e1)e1.textContent=hy.toFixed(2)+'%';}
 
-  // Last update
+  // Last update（[[MACRO-PULSE-TICKER-FUTURE-ROW-1]]: 今日以前の行だけを見る）
   let latestDate='',latestSrc='—';
   for(const ind in IND_INDEX){
-    const arr=IND_INDEX[ind];
-    if(arr.length){
-      const last=arr[arr.length-1];
+    const last=idxLatestAsOf(ind, now);
+    if(last){
       const ds=new Date(last.dateMs).toISOString().slice(0,10);
       if(ds>latestDate){latestDate=ds;
         const r=DATA.find(x=>x[COL.indicator]===ind&&x[COL.date]===ds);
