@@ -8,17 +8,14 @@ name: Market_Pulse_Update
 # 1営業日古くなっていた。TANUKI_VALUATION_Update.yml・Stonks_Silo_Update.ymlと同じ
 # 型で、Market Data Daily Updateの完了を起点にし、独立cronは低頻度の
 # フォールバックに置き換える（金曜22:50 UTC、Stonks Silo 22:40の10分後）。
+# 2026-10-03: 金曜のフォールバックcronを削除。GitHubのscheduleが遅れ、10-03（土）01:28 UTCにMarket Data Dailyの取得（02:06）より
+# 前に起動して前日のデータで動いた。Market Data Dailyは外部起動（tools/external_trigger/）とscheduleの保険で起動するため、
+# この完了（workflow_run）だけを起点にする。
 on:
   workflow_run:
     workflows:
       - "Market Data Daily Update"
     types: [completed]
-  schedule:
-    - cron: "50 22 * * 5"  # 安全網: 金曜22:50 UTC（Market_Data_Daily_Update金曜分の完了後、低頻度フォールバック）
-                              # （2026-09-02: Market_Data_Daily_Update
-                              # と同時刻〈21:25〉に揃えたところpush競合
-                              # リスクが再発したため、元の10分差に復元。
-                              # 7時台閲覧目標には引き続き十分な余裕あり）
   workflow_dispatch:
     branches:
       - kaihatsu

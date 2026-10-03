@@ -18,14 +18,14 @@ name: Stonks Silo Update
 # 低頻度フォールバックに置き換え）を横展開する。フォールバックは
 # TANUKI_VALUATION_Update.ymlの金曜22:30 UTCと10分ずらし金曜22:40 UTC
 # （Market_Data_Daily_Update金曜分の完了後になる時刻、衝突回避）。
+# 2026-10-03: 金曜のフォールバックcronを削除（10-03〈土〉01:24 UTCに遅れて起動し、Market Data Dailyの取得〈02:06〉より前の
+# データで動いた）。起点はSEC Data Update・Market Data Daily Updateの完了（workflow_run）と手動実行だけ。
 on:
   workflow_run:
     workflows:
       - "SEC Data Update"
       - "Market Data Daily Update"
     types: [completed]
-  schedule:
-    - cron: '40 22 * * 5'  # 安全網: 金曜22:40 UTC（Market_Data_Daily_Update金曜分の完了後、低頻度フォールバック）
   workflow_dispatch:
     inputs:
       tickers:

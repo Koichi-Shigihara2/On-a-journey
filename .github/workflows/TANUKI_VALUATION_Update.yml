@@ -21,6 +21,8 @@ name: TANUKI VALUATION Daily Update
 # Stonks Silo Updateの完了（Market Data Dailyの後に必ず動く）で1回だけ起動する。Stonks Siloが失敗した日も株価は
 # 更新されているため、Stonks Siloのfailureでも起動する（その場合はStonks Siloの前回の結果を使う）。
 # あわせてconcurrencyで同時実行を防ぐ（HypeCore・Adjusted EPSの完了と重なった場合は順番に動く）。
+# 2026-10-03: 金曜のフォールバックcron（22:30 UTC）を削除。10-03（土）01:15 UTCに遅れて起動し、Market Data Dailyの取得（02:06）
+# より前のデータで動いたうえ、Stonks Siloのフォールバックの完了でも起動し、この夜は3回動いた。起点はworkflow_runと手動実行だけ。
 on:
   workflow_run:
     workflows:
@@ -28,8 +30,6 @@ on:
       - "Adjusted_EPS_Data_Update"
       - "Stonks Silo Update"
     types: [completed]
-  schedule:
-    - cron: '30 22 * * 5'  # 安全網: 金曜22:30 UTC（Market_Data_Daily_Update金曜分の完了後）
   workflow_dispatch:
     inputs:
       tickers:
