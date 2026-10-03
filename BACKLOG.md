@@ -2609,6 +2609,21 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
 #### 着手条件
 なし（修正はしていない）
 
+#### 対応（2026-10-03、指示書M-2 STEP 5、feature/macro-pulse-fix）
+- `run_weekly_analysis()`: 週±（`score_change_1w`、Grokへの「先週比」、Discordの「先週比」）を、実際の前週の週次スナップショット
+  （`05_weekly_analysis.csv`で分析日の13日前以降の直前の行）のスコアとの差にする（`_score_change_vs_prev_snapshot()`）。
+  該当が無いときだけ`_compute_score_change(events, target_date, 7)`で計算し直す
+- 前月比・指標ごとの週差・月差（`_compute_current_score()`の7日前・30日前）は、STEP 2の先読み除外（`updated_at`）で変わる
+- 回帰テスト3件（2026-08-22の27→22を含む。修正前3件fail→修正後pass）
+- **Grokへの入力が変わる箇所**（過去のコメンタリー・`05_weekly_analysis.csv`は書き換えない）。現在のevents.csvで再計算した例:
+  | 分析日 | 先週比（記録→新） | 前月比（記録→新） | 週差が0でなくなる指標（新） |
+  |---|---|---|---|
+  | 2026-08-22 | 0→−5 | −5→−5 | Philly +6.0・Permits +76・Claims −4,000・YC −0.01 |
+  | 2026-09-05 | 0→+5 | 0→0 | Sahm −0.04・YC +0.01・HY +0.03 |
+  | 2026-09-20 | 0→0 | +5→+5 | Philly −9.6・Permits −49・Claims +1,750・YC −0.12 |
+  | 2026-09-27 | 0→0 | 0→+5 | Michigan −3.5・CFNAI +0.04・Claims −5,000・YC +0.04・HY +0.10 |
+  プロンプトの文面（「■ 先週比: {n}pt, 前月比: {n}pt」「週差: …, 月差: …」）の形は変えていない。Claimsの観測日はSTEP 2で週末日になる
+
 ---
 
 ### [MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1] MACRO PULSEの流動性モニターが日次の行を「週」として数え、「NET流動性3週連続減少」等の警告を3日の変化で出す

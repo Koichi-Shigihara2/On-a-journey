@@ -1583,6 +1583,23 @@ def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: in
         return 0
     return current['score'] - past['score']
 
+def _score_change_vs_prev_snapshot(score: int, target_date: date, wa_df: pd.DataFrame,
+                                   max_gap_days: int = 13) -> int | None:
+    """[[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]: target_dateより前で直近の週次スナップショット（target_dateの
+    max_gap_days日前以降）のスコアとの差。該当が無ければNone。"""
+    if wa_df is None or wa_df.empty:
+        return None
+    t = target_date.strftime("%Y-%m-%d")
+    lo = (target_date - timedelta(days=max_gap_days)).strftime("%Y-%m-%d")
+    prev = wa_df[(wa_df["analysis_date"] < t) & (wa_df["analysis_date"] >= lo)].sort_values("analysis_date")
+    for _, r in prev.iloc[::-1].iterrows():
+        try:
+            return int(score) - int(float(r["score"]))
+        except (ValueError, TypeError):
+            continue
+    return None
+
+
 def _get_recent_events_summary(events: pd.DataFrame, target_date: date, days: int = 7) -> list:
     """直近N日間の主要指標発表をサマリとして取得"""
     DAILY_INDS = {'Yield Curve 10Y-2Y', 'HY Spread', 'VIX', 'Michigan Inflation 5Y'}
@@ -1762,7 +1779,13 @@ def run_weekly_analysis(target_date: date):
 
     # 現在のスコアと指標状態を計算
     score_data = _compute_current_score(events, target_date)
-    score_1w = _compute_score_change(events, target_date, 7)
+    # [[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]: 週±は実際の前週の週次スナップショット（05_weekly_analysis.csvの前の行）との差。
+    # 以前は_compute_score_change(events, target_date, 7)で7日前の時点を計算し直していたが、観測日で置いた月次指標が
+    # 1週間前の時点にも入り（先読み）、直近12週すべてで0になっていた。前週のスナップショットが無いときだけ再計算する
+    # （再計算もSTEP 2以降はupdated_atで先読みを除く）
+    score_1w = _score_change_vs_prev_snapshot(score_data['score'], target_date, load_weekly_analysis())
+    if score_1w is None:
+        score_1w = _compute_score_change(events, target_date, 7)
     score_1m = _compute_score_change(events, target_date, 30)
 
     # 各指標の1週前・1ヶ月前との差分を計算

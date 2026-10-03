@@ -219,3 +219,44 @@ class TestWeeklyLiquidityState:
         assert last["net_liq_decline_weeks"] == "1"
         assert "週連続減少" not in last["stealth_alert"]
         assert last["h41_date"] == "2026-09-23"
+
+
+# ─────────────────────────────────────────────────────────────────
+#  [[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]: AIカードの週±は前週の週次スナップショットとの差
+# ─────────────────────────────────────────────────────────────────
+class TestWeeklyDeltaFromSnapshot:
+    def _wa(self, rows):
+        return pd.DataFrame([{**{c: "" for c in main05.WEEKLY_ANALYSIS_COLUMNS}, "analysis_date": d, "score": str(s)}
+                             for d, s in rows], columns=main05.WEEKLY_ANALYSIS_COLUMNS)
+
+    def test_delta_is_difference_from_previous_snapshot(self):
+        """2026-08-22の実例: 前週（08-15）のスナップショット27→22。記録された週±は0だった。"""
+        wa = self._wa([("2026-08-08", 27), ("2026-08-15", 27)])
+        assert main05._score_change_vs_prev_snapshot(22, date(2026, 8, 22), wa) == -5
+
+    def test_no_recent_snapshot_returns_none(self):
+        wa = self._wa([("2026-07-01", 27)])
+        assert main05._score_change_vs_prev_snapshot(22, date(2026, 8, 22), wa) is None
+
+    def test_run_weekly_analysis_passes_snapshot_delta_to_grok(self, tmp_path, monkeypatch):
+        """run_weekly_analysis()がGrokへ渡す先週比・CSVのscore_change_1wが、前週のスナップショットとの差になる。"""
+        wa_path = tmp_path / "05_weekly_analysis.csv"
+        self._wa([("2026-09-20", 30)]).to_csv(wa_path, index=False)
+        monkeypatch.setattr(main05, "WEEKLY_ANALYSIS_PATH", str(wa_path))
+        monkeypatch.setattr(main05, "FED_CONTEXT_PATH", str(tmp_path / "none.csv"))
+        monkeypatch.setattr(main05, "BASE_DATA_DIR", str(tmp_path))
+        ev = _events([_event("Yield Curve 10Y-2Y", "2026-09-25", 0.36, "2026-09-26 00:38:00"),
+                      _event("HY Spread", "2026-09-25", 2.93, "2026-09-26 00:38:00")])
+        monkeypatch.setattr(main05, "load_events", lambda: ev)
+        captured = {}
+
+        def fake_grok(target_date, score_data, recent_events, score_1w, score_1m, fed_context, indicator_deltas=None):
+            captured["score"] = score_data["score"]
+            captured["score_1w"] = score_1w
+            return {"summary": "", "_used_model": "test"}
+        monkeypatch.setattr(main05, "generate_weekly_analysis_with_grok", fake_grok)
+        monkeypatch.setattr(main05, "send_discord", lambda msg: None)
+        main05.run_weekly_analysis(date(2026, 9, 27))
+        assert captured["score_1w"] == captured["score"] - 30
+        saved = pd.read_csv(wa_path, dtype=str)
+        assert saved[saved["analysis_date"] == "2026-09-27"].iloc[0]["score_change_1w"] == str(captured["score"] - 30)
