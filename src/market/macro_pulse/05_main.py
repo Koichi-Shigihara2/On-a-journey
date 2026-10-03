@@ -1283,7 +1283,7 @@ FOMC Statement ({fomc_date}):
 
 Market Context:
 - Current FF Rate: {ff_current}%
-- 12-month ahead FF futures implied rate: {zq_rate}% (ZQ=F front-month corrected; DGS1 adjusted for term premium)
+- 1-year Treasury yield (FRED DGS1), used as a proxy for the expected policy rate 12 months ahead (no term-premium adjustment): {zq_rate}%
 - Market-implied rate changes in 12M: {cuts_implied:+.1f} cuts (25bp each)
 
 Respond ONLY in this exact JSON format (no markdown, no extra text):

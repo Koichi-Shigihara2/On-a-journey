@@ -691,7 +691,8 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     dom_cards = {c["label"]: c for c in dom["liqCards"]}
     for cid, label, val, chg, v, rk, com in cards:
         dc = dom_cards.get(label) or {}
-        exp = [val, chg, (v[0] + " " + v[1]) if v else None, f"過去データ内 {rk}パーセンタイル" if rk is not None else None, com, latest["date"]]
+        exp_date = "更新 " + latest["date"] + (f"（H.4.1 {latest['h41_date']}）" if label == "FRB バランスシート" and latest.get("h41_date") else "")
+        exp = [val, chg, (v[0] + " " + v[1]) if v else None, f"過去データ内 {rk}パーセンタイル" if rk is not None else None, com, exp_date]
         txt = dc.get("text") or ""
         act = [dc.get("val"), dc.get("chg"), (v[0] + " " + v[1]) if v and (v[0] + " " + v[1]) in txt else "（見つからず）" if v else None,
                (f"過去データ内 {rk}パーセンタイル" if f"過去データ内 {rk}パーセンタイル" in txt else "（見つからず）") if rk is not None else None,
@@ -729,7 +730,7 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
         add(cid, lab, [val, ch], [mm.get("val"), (mm.get("chg") or "").replace("\u00a0", " ")])
     add("MAC-26", "流動性カード・ステルスの日付", latest["date"], latest["date"] if latest["date"] in (stl.get("text") or "") else None,
         note="行の日付＝実行日（UTC）であり観測日ではない")
-    add("MAC-27", "流動性の注記", "※ M2は月次・FRBバランスシートは週次のため、値は次回発表まで変わりません。HYスプレッドは日次。", dom["liqNote"])
+    add("MAC-27", "流動性の注記", "※ カードの日付は更新日（観測日ではありません）。M2は月次（約1か月遅れで公表）、FRBバランスシート・TGA・準備預金はH.4.1の水曜時点の値（翌木曜公表）で、値は次回発表まで変わりません。HYスプレッド・RRPは日次。", dom["liqNote"])
 
     # MAC-28〜33 景気フェーズ
     sc = m.shown_score()
@@ -746,7 +747,12 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     show = bear >= 3 and sc >= 52
     add("MAC-32", "ALERT", "flex" if show else "none", dom["phase"]["alertDisplay"])
     btxt = {"bull": "拡張", "neutral": "中立", "caution": "注意", "bear": "後退シグナル"}
-    exp_sig = [[s["name"], s["val"], btxt[s["signal"]], s["lead"], s["thresh"], f"{s['weight']}%", s["obs"] or "—"] for s in sigs]
+    def obs_label(s):
+        if not s["obs"]:
+            return "—"
+        slot = s["name"] in ("Michigan Sent.", "Building Permits") and not s["obs"].endswith("-01")
+        return s["obs"] + ("（発表予定日）" if slot else "（観測日）")
+    exp_sig = [[s["name"], s["val"], btxt[s["signal"]], s["lead"], s["thresh"], f"{s['weight']}%", obs_label(s)] for s in sigs]
     act_sig = [[x["name"], x["val"], x["badge"], x["lead"], (x["tip"][0][1] if len(x["tip"]) > 0 else None),
                 (x["tip"][2][1] if len(x["tip"]) > 2 else None), (x["tip"][3][1] if len(x["tip"]) > 3 else None)] for x in dom["sigs"]]
     add("MAC-33", "8指標カード（値・判定・先行性・閾値・ウェイト・観測日）", exp_sig, act_sig)
@@ -794,7 +800,7 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     for c in dom["ai"]:
         act_ai.append([c["date"], c["score"], c["phase"]])
     add("MAC-39", "AIウィークリーコメンタリー（直近12週の日付・スコア・局面）", exp_ai, act_ai)
-    add("MAC-40", "AI欄の見出し・注記", ["AI WEEKLY COMMENTARY — 毎週日曜自動生成（GROK-3-MINI）", "※ スコアは週報生成時点の値。最新スコアはページ上部のゲージを参照。毎週土曜JST 7:11に自動更新。"],
+    add("MAC-40", "AI欄の見出し・注記", ["AI WEEKLY COMMENTARY — 毎週日曜自動生成（xAI Grok。使ったモデルは各カードの末尾に表示）", "※ スコアは週報生成時点の値。最新スコアはページ上部のゲージを参照。毎週日曜 JST 7:11（米国東部時間 土曜18:11）の予定で自動更新（GitHubの起動の遅れで数時間遅れることがあります）。"],
         [dom["aiTitle"].replace("🤖", "").strip() if dom["aiTitle"] else None, dom["aiNote"]], note="文言と実際の計算・起動の整合はN-03・N-04")
 
     # MAC-41 ヘルスバー
@@ -1083,11 +1089,12 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
     R.append(Result("N-03", "AI欄の注記「毎週土曜JST 7:11に自動更新」", "cron 11 22 * * 6（UTC土曜22:11＝JST日曜7:11）",
                     dom["aiNote"], "日曜" in (dom["aiNote"] or ""), "説明"))
     R.append(Result("N-04", "AI欄の見出し「GROK-3-MINI」", "直近の model 列: " + ", ".join(sorted({r.get('model', '') for r in m.weekly_sorted[:4]})),
-                    dom["aiTitle"], all("grok-3-mini" == (r.get("model") or "") for r in m.weekly_sorted[:1]), "説明"))
+                    dom["aiTitle"], not re.search(r"GROK-\d|grok-\d", dom["aiTitle"] or "") or any(
+                        (r.get("model") or "").upper() in (dom["aiTitle"] or "").upper() for r in m.weekly_sorted[:1]), "説明"))
     R.append(Result("N-05", "⑤の見出し「過去2週間の発表実績」", "表示範囲は過去90日（renderRecentSignals）", dom["signalsSec"],
                     "90" in (dom["signalsSec"] or ""), "説明"))
     R.append(Result("N-06", "⑤の副題「発表日の新しい順」", "日付列は events.csv の release_date（Philly・CFNAI・Sahmは観測月の1日、Michigan・Permits・Claimsは発表予定日の枠）",
-                    dom["signalsTitle"], False, "説明"))
+                    dom["signalsTitle"], "観測月の1日" in (dom["signalsTitle"] or "") and "発表予定日" in (dom["signalsTitle"] or ""), "説明"))
     main_src = open(os.path.join(REPO_ROOT, "src", "market", "macro_pulse", "05_main.py"), encoding="utf-8").read()
     uses_ma3 = '"fred_id": "CFNAIMA3"' in main_src
     R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列が CFNAIMA3（05_main.pyのINDICATOR_CONFIG）",
@@ -1103,14 +1110,18 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
                         "最新行に h41_date が無い（M-2 STEP 4の変更後の日次の実行で書かれる）", None, "説明",
                         "2026-10-03までの行は日次の行で数えた値（MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1）"))
     R.append(Result("N-09", "8指標カードの「観測日」tooltip", "Michigan・Building Permits は発表予定日の枠の日付（観測日ではない）。Initial Claims は観測日だが最新週ではない",
-                    [s["obs"] for s in m.live_signals()], False, "説明"))
+                    [x["tip"][3][1] if len(x["tip"]) > 3 else None for x in dom["sigs"]],
+                    all(len(x["tip"]) > 3 and x["tip"][3][0] == "データの日付" for x in dom["sigs"])
+                    and any("発表予定日" in (x["tip"][3][1] or "") for x in dom["sigs"] if x["name"] in ("Michigan Sent.", "Building Permits")), "説明"))
     lead_help = {r[0]: r[2] for r in help_rows}
     R.append(Result("N-10", "先行性の表記（カード vs 「? 見方」表）", "カード: Building Permits 先行3ヶ月 / 表: CB消費者信頼感 2ヶ月",
-                    lead_help, False, "説明"))
+                    lead_help, any("Building Permits" in k and v == "3ヶ月" for k, v in lead_help.items()) and not any("CB" in k for k in lead_help), "説明"))
     R.append(Result("N-11", "AI週次プロンプトのFOMC分析の前提文", "DGS1をそのまま使用（get_implied_cuts）",
-                    "「ZQ=F front-month corrected; DGS1 adjusted for term premium」（analyze_fomc_with_grok）", False, "説明"))
+                    "ZQ=Fの前提文が残っている" if "ZQ=F front-month corrected" in main_src else "DGS1そのもの（no term-premium adjustment）と記載",
+                    "ZQ=F front-month corrected" not in main_src, "説明"))
     R.append(Result("N-12", "流動性カードの日付（latest.date）", "M2・FRB・TGA・準備預金は観測日がそれより前（M2は月次・週次系列）",
-                    m.liq[-1]["date"], False, "説明"))
+                    [c.get("date") for c in dom["liqCards"]], all((c.get("date") or "").startswith("更新 ") for c in dom["liqCards"])
+                    and "観測日ではありません" in (dom["liqNote"] or ""), "説明"))
     return R
 
 

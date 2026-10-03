@@ -568,7 +568,7 @@
   <div class="liq-wrap">
     <div class="liq-title">LIQUIDITY MONITOR</div>
     <div class="liq-grid" id="liqGrid"><div class="empty"><span class="spin"></span>Loading...</div></div>
-    <div class="liq-note">※ M2は月次・FRBバランスシートは週次のため、値は次回発表まで変わりません。HYスプレッドは日次。</div>
+    <div class="liq-note">※ カードの日付は更新日（観測日ではありません）。M2は月次（約1か月遅れで公表）、FRBバランスシート・TGA・準備預金はH.4.1の水曜時点の値（翌木曜公表）で、値は次回発表まで変わりません。HYスプレッド・RRPは日次。</div>
   </div>
 
   <!-- ① 景気フェーズ判定 -->
@@ -616,9 +616,9 @@
           <tr><td style="padding:2px 4px;color:var(--txt)">長短金利差 (YC 10Y-2Y)</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">20%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">12ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">フィラデルフィア連銀製造業</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">18%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">HYスプレッド</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">15%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">シカゴ連銀全米活動指数</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">シカゴ連銀全米活動指数（3ヶ月MA）</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">12%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">新規失業保険申請</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
-          <tr><td style="padding:2px 4px;color:var(--txt)">CB消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
+          <tr><td style="padding:2px 4px;color:var(--txt)">住宅着工許可件数 (Building Permits)</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">10%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">3ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">ミシガン消費者信頼感</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">8%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">2ヶ月</td></tr>
           <tr><td style="padding:2px 4px;color:var(--txt)">サームルール不況指標</td><td style="padding:2px 4px;text-align:right;color:var(--acc)">7%</td><td style="padding:2px 4px;text-align:right;color:var(--mut)">1ヶ月</td></tr>
         </table>
@@ -669,9 +669,9 @@
 
   <!-- AI週次解説（①の直後） -->
   <div class="ai-wrap" style="margin-top:14px">
-    <div class="ai-title"><span class="ai-title-icon">🤖</span>AI WEEKLY COMMENTARY — 毎週日曜自動生成（GROK-3-MINI）</div>
+    <div class="ai-title"><span class="ai-title-icon">🤖</span>AI WEEKLY COMMENTARY — 毎週日曜自動生成（xAI Grok。使ったモデルは各カードの末尾に表示）</div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--mut);margin:4px 0 8px;padding:6px 10px;background:rgba(100,116,139,.08);border-left:2px solid var(--bdr)">
-      ※ スコアは週報生成時点の値。最新スコアはページ上部のゲージを参照。毎週土曜JST 7:11に自動更新。
+      ※ スコアは週報生成時点の値。最新スコアはページ上部のゲージを参照。毎週日曜 JST 7:11（米国東部時間 土曜18:11）の予定で自動更新（GitHubの起動の遅れで数時間遅れることがあります）。
     </div>
     <div class="ai-timeline" id="aiTimeline"><div class="ai-empty"><span class="spin"></span>Loading...</div></div>
   </div>
@@ -716,9 +716,9 @@
   </div>
 
   <!-- ⑤ 直近の動き -->
-  <div class="sec">⑤ 直近の動き（過去2週間の発表実績）</div>
+  <div class="sec">⑤ 直近の動き（直近90日の発表実績）</div>
   <div class="signals-wrap">
-    <div class="signals-title">RECENT SIGNALS — 発表日の新しい順に並べています</div>
+    <div class="signals-title">RECENT SIGNALS — 日付の新しい順。日付は、月次指標は観測月の1日、週次指標（新規失業保険申請）は週末日、NFP・ミシガン・住宅着工許可は主に発表予定日（観測月の1日の行もある）</div>
     <div id="recentSignals"><div class="empty"><span class="spin"></span>Loading...</div></div>
   </div>
 
@@ -1208,6 +1208,9 @@ signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,w
   return { score, signals };
 }
 
+// [[MACRO-PULSE-TEXT-LOGIC-MISMATCH-1]]: events.csvで発表予定日の枠の日付に置かれうる指標（月の1日以外の日付は発表予定日）
+const SLOT_DATED_SIGNALS = new Set(['Michigan Sent.', 'Building Permits']);
+
 function renderPhaseGauge() {
   const result=computeCurrentScore();
   if(!result)return;
@@ -1269,7 +1272,7 @@ function renderPhaseGauge() {
         <div class="pg-sig-tooltip-row"><span>閾値</span><span>${sg.thresh||'—'}</span></div>
         <div class="pg-sig-tooltip-row"><span>先行性</span><span>${sg.lead}</span></div>
         <div class="pg-sig-tooltip-row"><span>ウェイト</span><span>${sg.weight}%</span></div>
-        <div class="pg-sig-tooltip-row"><span>観測日</span><span>${sg.obsDate||'—'}</span></div>
+        <div class="pg-sig-tooltip-row"><span>データの日付</span><span>${sg.obsDate||'—'}${sg.obsDate?((SLOT_DATED_SIGNALS.has(sg.name)&&!sg.obsDate.endsWith('-01'))?'（発表予定日）':'（観測日）'):''}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -2615,7 +2618,7 @@ function renderLiquidityCards(rows) {
       unit:  '兆 USD',
       chg:   chgHtml(fed, fedPrev, d => (d/1000000).toFixed(3)+'兆', false),
       chgLabel: '前週比',
-      date:  latest.date,
+      date:  latest.date + (latest.h41_date ? '（H.4.1 ' + latest.h41_date + '）' : ''),
       levelBar: levelBar(fedRank, false),
       vec:   fedVec,
       comment: fedComment(fedRank, fedVec),
@@ -2665,7 +2668,7 @@ function renderLiquidityCards(rows) {
       <div class="liq-card-chg-row">${c.chg}<span class="liq-card-chg-label">${c.chgLabel}</span>${vecHtml}</div>
       ${c.levelBar}
       ${commentHtml}
-      <div class="liq-card-date">${c.date}</div>
+      <div class="liq-card-date">更新 ${c.date}</div>
     </div>
   `;}).join('') + renderStealthCard(rows, latest);
 }
@@ -2890,7 +2893,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 実態はAIウィークリーコメンタリーと同じ、週次算出の複合スコア。
     var hero   = banner('v3-hero-banner', 'COMPOSITE SCORE',
                         '景気後退リスク複合スコア',
-                        '8つの先行指標（Yield Curve / ISM / HY Spread 等）を統合したスコア。AIウィークリーコメンタリーと同一の値（週次算出）。');
+                        '8つの景気指標（長短金利差・HYスプレッド・フィラデルフィア連銀製造業 等。先行指標と一致指標を含む）を統合したスコア。AIウィークリーコメンタリーと同一の値（週次算出）。');
     var now    = banner('v3-now-banner', 'NOW',
                         '足許の状況',
                         'FED 金融政策・実勢金利・流動性。予測ではなく現時点の市場環境。');
