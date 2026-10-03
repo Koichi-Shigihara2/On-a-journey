@@ -1693,6 +1693,73 @@ check_dependency_map.py`に整備した（詳細は同ディレクトリのREADM
 （D-01〜D-05、`browser_checks/market_pulse_elements.py`）、要素ごとのデータ基準日の分類を追加した。次回以降、このマップの
 依存先を変更した際は本スクリプトで再確認すること。
 
+### MACRO PULSE 全画面要素（MAC-01〜MAC-48、2026-10-03追加・指示書M-1）
+上記①②③⑤（MACRO PULSE分）に加え、`docs/market-monitor/macro-pulse/index.html`の表示要素を表示コンポーネント単位で
+全て洗い出した（48要素。1要素に複数の数値を含むものは(a)欄に列挙。数え方はMP-01〜MP-29と同じ）。
+(a)の行番号はindex.html、(b)の行番号は`src/market/macro_pulse/05_main.py`。生データは
+`docs/market-monitor/macro-pulse/data/`の5ファイル（以下`ev`=05_events.csv、`liq`=05_liquidity.csv、
+`fed`=05_fed_context.csv、`wk`=05_weekly_analysis.csv、`sch`=05_indicator_schedule.csv）と`05_meta.json`。
+これらは`common/macro_data/series/`（FRED系列ストア、`Macro_Data_Update.yml`が日次で更新）から
+`05_main.py`が書き出す。MACRO PULSEは`common/market_data/daily/`もyfinanceも読まない（S&P500はFRED `SP500`、
+取得できない時だけstooq.com）。
+【共有】= Market Pulseと同じデータ・部品を使う要素（`BAMLH0A0HYM2`は`collect_and_send.py`も
+`common.macro_data.reader`経由で読む。`Macro_Data_Update.yml`の取得結果を両画面が使う。ナビ・tooltipは
+`docs/common/site-nav.js`・`info-tooltip.js`・`glossary.json`を共有）。
+【二重】= 同じ概念を別の経路で計算している要素。
+実ブラウザ確認は`browser_checks/check_macro_pulse.py`（MAC-01〜MAC-48・導出D-01〜D-08・説明N-01〜N-12）。
+調査結果とロジックの一覧は`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`。
+
+| ID | (a) 表示コンポーネント | (b) 導出関数 | (c) 生データソース |
+|---|---|---|---|
+| MAC-01 | ヘッダー時刻 `#ts`（`updateTs()` 806） | ブラウザの現在時刻（データではない） | — |
+| MAC-02 | 最終更新 `#last-updated`（`loadLiquidityData()` 2825・`toJST()` 2814） | `update_liquidity_csv()` 2030 が実行時刻を書く | `05_meta.json`の`generated_at` |
+| MAC-03 | 読込通知 `#notice`（`loadCSVData()` 967） | 行数の表示 | `ev`の行数 |
+| MAC-04 | REGIME `#rb-regime`・出典`#rb-regime-src`（`renderRegimeBar()` 1008） | `update_fed_context()` 1313 → `analyze_fomc_with_grok()` 1254（Grok）/`_fallback_regime()` 1243（月に1回だけ判定） | `fed`の`record_date`最新行の`regime`・`regime_source`（FOMC声明=federalreserve.gov） |
+| MAC-05 | FF RATE `#rb-ff` | `get_ff_current()` 759（DFEDTARU/DFEDTARLの中心値） | `fed.ff_current` ← FRED `DFEDTARU`・`DFEDTARL`（週1回土曜に更新） |
+| MAC-06 | 1Y EXPECTED FF `#rb-exp` | `get_implied_cuts()` 767（DGS1そのまま） | `fed.zq_rate` ← FRED `DGS1` |
+| MAC-07 | IMPLIED CUTS `#rb-cuts` | `update_fed_context()`（(FF−DGS1)/0.25） | `fed.cuts_implied` |
+| MAC-08 | FRB主眼`#rb-concern`・理由`#rb-reason`・tooltip（FOMC日付） | `analyze_fomc_with_grok()` | `fed.dominant_label`・`ai_reason`・`fomc_date` |
+| MAC-09 | S&P 500 `#tk-sp`（`updateTicker()` 1035） | `get_sp500()` 858（`run()`がイベント行の`sp500_t0`に記録） | `ev.sp500_t0`のうち`release_date`最大の行（未来日付の行も対象） ← FRED `SP500` |
+| MAC-10 | S&P 前営業日比 `#tk-sp-c` | フロント計算（日付ごとの先頭行の`sp500_t0`、最後の2日の差） | `ev.sp500_t0` |
+| MAC-11 | 10Y-2Y `#tk-yc`・INVERTED/FLAT/NORMAL `#tk-yc-i` | フロント（`idxLatestVal`、−0.2/0.5の2閾値。【二重】L2と同じ・スコアとは別閾値〈意図的〉） | `ev`の`Yield Curve 10Y-2Y` ← FRED `T10Y2Y` |
+| MAC-12 | HY SPREAD `#tk-hy` | フロント | `ev`の`HY Spread` ← FRED `BAMLH0A0HYM2`【共有】 |
+| MAC-13 | LAST UPDATE `#tk-last`・`#tk-src` | フロント（各指標の最後の行の最大日付） | `ev.release_date`・`data_source` |
+| MAC-14 | M2カード（値・前月比・方向・水準・解釈・日付）（`renderLiquidityCards()` 2468） | `update_liquidity_csv()`（保存）＋フロント（`liqPrevVal`・`pctRank`・`liqVector`） | `liq.m2` ← FRED `M2SL` |
+| MAC-15 | NET LIQUIDITYカード | `update_liquidity_csv()`（(WALCL−TGA−RRP×1000)/10^6）＋フロント | `liq.net_liquidity` ← `WALCL`・`WTREGEN`（無ければ`WDTGAL`）・`RRPONTSYD` |
+| MAC-16 | HYスプレッドカード | 同上 | `liq.hy_spread` ← FRED `BAMLH0A0HYM2`【共有】 |
+| MAC-17 | FRBバランスシートカード | 同上 | `liq.fed_balance` ← FRED `WALCL` |
+| MAC-18 | Hollow Rallyバッジ（2630-2654、関数化されていない） | フロント（S&Pの6行前比>+1% かつ NET流動性の直前行比<−0.5%） | `liq.sp500`・`liq.net_liquidity` |
+| MAC-19 | ステルス判定バッジ・LAYER 2（`renderStealthCard()` 2680） | `update_liquidity_csv()`（直前行とのRRP・TGA・準備預金の増減） | `liq.stealth_signal` |
+| MAC-20 | LAYER 1（FRB政策意図）`#stealthLayer1`（`updateStealthLayer1()` 2798） | 【二重】MAC-04と同じ値を別の読み方で取る（ファイル末尾の行。MAC-04は`record_date`で並べ替え） | `fed.regime` |
+| MAC-21 | LAYER 3（NET流動性の連続減少） | `update_liquidity_csv()`（直近の行の連続減少数） | `liq.net_liq_decline_weeks` |
+| MAC-22 | ステルス警戒アラート | `update_liquidity_csv()`（吸収4以上・減少3以上・吸収額>供給額） | `liq.stealth_alert` |
+| MAC-23 | REPO残高（RRPONTSYD）値・前週比 | フロント（`latestNonEmpty`・7日前の行との差） | `liq.rrp` ← FRED `RRPONTSYD`（Billions→Millions） |
+| MAC-24 | 準備預金（WRBWFRBL）値・前週比 | 同上 | `liq.reserve_balance` ← FRED `WRBWFRBL` |
+| MAC-25 | TGA残高（WTREGEN）値・前週比 | 同上 | `liq.tga` ← FRED `WTREGEN` |
+| MAC-26 | 流動性カード・ステルスの日付 | `liq`最新行の`date`（実行日〈UTC〉。観測日ではない） | `liq.date` |
+| MAC-27 | 流動性の注記（静的文言） | — | — |
+| MAC-28 | 局面バッジ`#pg-phase-badge`・説明`#pg-phase-sub`（`renderPhaseGauge()` 1217） | スコアの区切り 30/52/70 | MAC-30と同じ |
+| MAC-29 | トラックの塗り・マーカー | 同上 | 同上 |
+| MAC-30 | RECESSION RISK SCORE `#pg-score-num` | 【二重】`wk`最新行の`score`（`_compute_current_score()` 1418、週1回）を表示。`computeCurrentScore()` 1099（JS、同じステップ関数）は`wk`未読込時だけ | `wk.score` ← `ev`の8指標 |
+| MAC-31 | シグナル数の文 `#pg-signal-text` | `computeCurrentScore()`のsignals（ライブ計算） | `ev`の8指標 |
+| MAC-32 | ALERT `#pg-alert`（後退シグナル3以上かつスコア52以上） | 同上 | 同上 |
+| MAC-33 | 8指標カード（値・判定・先行性・tooltipの閾値・ウェイト・観測日） | `computeCurrentScore()`（ライブ計算） | `ev`の8指標（観測日=`release_date`） ← FRED 8系列 |
+| MAC-34 | 「? 見方」の指標とウェイト表・スコアの解釈（静的） | — | — |
+| MAC-35 | 比較バー 3ヶ月前・2ヶ月前・前月末・先週（`renderCompareBar()` 2172） | 【二重】`computeScoreAsOf()` 2069（過去日はlerp・`updated_at`で先読み除外）。差分の基準はMAC-30 | `ev`の8指標＋`updated_at` |
+| MAC-36 | カスタム比較（`renderCustomCmp()` 2212） | 同上 | 同上 |
+| MAC-37 | 比較バーの注記（本日=実測・過去=補間、静的） | — | — |
+| MAC-38 | MACRO SURPRISEバナー（`renderWeeklyAnalysis()` 2261） | `detect_macro_surprises()` 152（週1回、前回比の閾値） | `wk.surprise_alerts` ← `ev` |
+| MAC-39 | AIウィークリーコメンタリー（直近12週の日付・スコア・局面・週/月の差・総括・要因・注視・指標チップ・model） | `run_weekly_analysis()` 1705・`generate_weekly_analysis_with_grok()` 1560（Grok）。【二重】週/月の差は`_compute_score_change()` 1528（ステップ関数・先読み除外なし）で、比較バー（MAC-35）とは別計算 | `wk` ← `ev`・`fed` |
+| MAC-40 | AI欄の見出し・注記（静的） | — | — |
+| MAC-41 | ② 各指標の現在地（8本のヘルスバー、`renderL2()` 1287） | フロント（`L2_CFG`の独自閾値。スコアの閾値とは別〈YCは意図的と明記、他は根拠なし〉） | `ev`の8指標 |
+| MAC-42 | ③ スコア推移チャート・tooltip・NBER帯・期間ボタン（`renderScoreHistory()` 1698・`buildScoreTimeSeries()` 1665） | 本日=MAC-30、過去=`computeScoreAsOf()`（lerp、意図的設計） | `ev`の8指標＋`updated_at` |
+| MAC-43 | ④ レーダー（現在・2019-11-01・2001-09-01、`drawL3Chart()` 1545） | フロント（`l3norm`・`idxLatestVal`、先読み除外なし） | `ev`の8指標 |
+| MAC-44 | ④ 類似度2本と説明（`drawL3Chart()`） | フロント（ユークリッド距離） | 同上 |
+| MAC-45 | ④ スライダー・スナップショットのスコア（`buildL3Snapshots()` 1439） | フロント（レーダーは先読み除外なし、スコアは`computeScoreAsOf()`で除外あり） | 同上 |
+| MAC-46 | ⑤ 直近の動き（`renderRecentSignals()` 1876） | フロント（日次4指標を除く全指標の直近90日の行と前の行の差） | `ev`（8指標以外のNFP・Michigan Inflation 1Y・CB Consumer Confidence・Conference Board LEIも出る） |
+| MAC-47 | ⑥ 今後2週間の発表スケジュール（`renderSchedule()` 1984） | `update_schedule()` 548（FRED Release Calendar＋ルール算出、週1回） | `sch` |
+| MAC-48 | 上部の帯 COMPOSITE SCORE・NOW・DETAIL（2865-2993の再配置スクリプト、静的） | — | — |
+
 PORTFOLIO     ← 手動入力 / 証券会社API
 TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半期レビュー生成）
 　　内部統制評価: src/tail/sec_ctrl_fetcher.py → docs/portfolio/tail/data/ctrl/{TICKER}/{QUARTER}.json + latest.json
