@@ -2472,6 +2472,7 @@ cronを`0 23 1-7 * *`（1〜7日の毎日）にし、ジョブの最初の段で
 
 ### [MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1] MACRO PULSEのInitial Claimsの予定表がEmpire State Manufacturing Surveyの日付になっており、最新週の値が未来日付の行に入ってスコアに使われない
 **優先度:** 中
+**状態:** 対応済み（M-2 STEP 2、feature/macro-pulse-fix）。統合後に修復スクリプト macro_claims_slot_rows_repair.py の実行（チャット側の承認後）と、次の木曜の公表後の行が観測日に置かれることの確認が残る
 **分類:** データの取得遅れ・判定の誤り / MACRO PULSE（05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1（MACRO PULSEのデータ適切性の確認）STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`（不具合B-01）
@@ -2521,41 +2522,6 @@ Claims Report」（FRED API `fred/series/release`で確認）。このため`upd
 
 ---
 
-### [MACRO-PULSE-TICKER-FUTURE-ROW-1] MACRO PULSEのティッカーのS&P500・前営業日比・LAST UPDATEが未来日付の行を使い、古い終値・符号が逆の前日比・未来の日付を表示する
-**優先度:** 中
-**分類:** 表示の誤り / MACRO PULSE（index.html）
-**登録日:** 2026-10-03
-**発見:** 指示書M-1 STEP 4（`browser_checks/check_macro_pulse.py` MAC-09・10・13）。記録: B-02
-
-#### 内容
-`docs/market-monitor/macro-pulse/index.html`の`updateTicker()`は、S&P500を`05_events.csv`の`sp500_t0`のうち`release_date`が
-最大の行から取り、前営業日比は日付ごとの先頭行の最後の2日を比べ、LAST UPDATEは各指標の最後の行の最大日付を出す。
-いずれも今日より後の日付の行を除いていない。未来日付の行は[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]（Claims）と
-Building Permitsの予定の枠で生じ、`sp500_t0`には書き込み時点の値が入る。
-
-2026-10-03の画面: S&P500「7,651.54」（09-30の終値。10-15の行の値）、前営業日比「−14.91（−0.19%）」（10-02の行と10-15の行を比較。
-正しくは10-01が7,666.45で+14.91〈+0.19%〉）、LAST UPDATE「2026-10-15」。
-
-#### 実害
-未来日付の行が存在した日（その行の書き込み日〜枠の日付の前日）は、2026-05-01〜10-03の156日中72日。その間、ティッカーの
-S&P500・前営業日比・LAST UPDATEが誤っていた。
-
-#### 着手条件
-なし（修正はしていない）
-
-#### 対応（2026-10-03、指示書M-2 STEP 3、feature/macro-pulse-fix）
-- `updateTicker()`: 今日以前の日付の行だけを対象にし、書き込み時刻（`updated_at`）の順に並べて最も新しい`sp500_t0`を表示する
-  （`sp500_t0`は「その行を書いた実行の時点の最新の終値」で、行の日付の終値ではないため）。前日比は、それより前で値が違う
-  直近の行と比べる（週末・休場日の実行は同じ値を書く）。LAST UPDATEは今日以前の最大の日付（`idxLatestAsOf(ind, now)`）
-- 2026-10-03の画面: S&P500 7,651.54→7,666.45、前日比 −14.91（−0.19%）→+14.91（+0.19%）、LAST UPDATE 2026-10-15→2026-10-02
-  （`check_macro_pulse.py` MAC-09・10・13が一致）
-- 過去156日（2026-05-01〜10-03）を、各日の時点の`05_events.csv`の版（git履歴、142版）で再計算した:
-  最新値の誤り 77日→0日、前日比の誤り 133日→18日。残る18日は、前営業日の終値がどの実行の`sp500_t0`にも記録されて
-  いない日（実行が無かった・FREDの公表が2日分まとめて入った日。例: 07-29の終値7,316.15は記録が無く、08-01〜08-03の前日比は
-  07-28→07-30の2営業日分になる）。データに無い終値はティッカーでは補えないため、この修正の範囲外として残す
-
----
-
 ### [MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1] MACRO PULSEのスコア推移が2026-03-29より前を描画しない（過去データの取り込み日がupdated_atに入り、先読み除外で全行が「未取得」になる）
 **優先度:** 中
 **分類:** 表示の欠落 / MACRO PULSE（index.html・05_events.csv）
@@ -2589,6 +2555,7 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 
 ### [MACRO-PULSE-AI-DELTA-LOOKAHEAD-1] MACRO PULSEのAIウィークリーコメンタリーの「週±」が常に0（過去時点のスコアを先読みありで計算し、月次指標の変化が1週間前にも入る）
 **優先度:** 中
+**状態:** 対応済み（M-2 STEP 5、feature/macro-pulse-fix）。統合後の最初の週次の実行で score_change_1w が前週のスナップショットとの差になること（check_macro_pulse.py D-09）の確認が残る
 **分類:** 計算の誤り / MACRO PULSE（05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2（`check_macro_pulse.py` D-09）。記録: B-05
@@ -2628,6 +2595,7 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
 
 ### [MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1] MACRO PULSEの流動性モニターが日次の行を「週」として数え、「NET流動性3週連続減少」等の警告を3日の変化で出す
 **優先度:** 中
+**状態:** 対応済み（M-2 STEP 4、feature/macro-pulse-fix）。統合後の日次の実行で h41_date・net_liq_wow_pct・sp500_5d_pct が書かれ、check_macro_pulse.py の D-05・N-08 が一致することの確認が残る
 **分類:** 判定の誤り / MACRO PULSE（05_main.py・index.html）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2・4（`check_macro_pulse.py` D-05・N-08）。記録: B-04
@@ -2744,33 +2712,9 @@ Permits 1300〜1399（中立/CAUTION）。
 
 ---
 
-### [MACRO-PULSE-RECENT-SIGNALS-STALE-ROWS-1] MACRO PULSEの「⑤ 直近の動き」に、90日より古い行（2024-01-01のCB Consumer Confidence・LEI等）が出る
-**優先度:** 低
-**分類:** 表示の誤り / MACRO PULSE（index.html）
-**登録日:** 2026-10-03
-**発見:** 指示書M-1 STEP 4（`check_macro_pulse.py` MAC-46）。記録: B-06
-
-#### 内容
-`renderRecentSignals()`は指標ごとに二分探索で「90日前以降の最初の行」を探すが、全行が90日より古い指標では探索が配列の
-最後の行で止まり、その行を表示する。2026-10-03の画面ではCB Consumer Confidence（2024-01-01）・Conference Board LEI
-（2024-01-01）・Michigan Inflation 1Y（2026-07-01）の3行が余分に出ている（期待21行・画面24行）。
-
-#### 実害
-「直近の動き」に1年以上前の値が最新の変化のように並ぶ。見出しの「過去2週間」とも合わない
-（[[MACRO-PULSE-TEXT-LOGIC-MISMATCH-1]]）。
-
-#### 着手条件
-なし（修正はしていない）
-
-#### 対応（2026-10-03、指示書M-2 STEP 6-2、feature/macro-pulse-fix）
-- `renderRecentSignals()`: 期間は既存の定義（直近90日、`cutOld`）のまま、期間外の行を出さない（二分探索の後に`dateMs < cutOldMs`の行を飛ばす）
-- 2026-10-03の画面: 24行→21行（CB Consumer Confidence・Conference Board LEI〈2024-01-01〉、Michigan Inflation 1Y〈2026-07-01〉が消える）。
-  `check_macro_pulse.py` MAC-46が不一致→一致。見出しの「過去2週間」はSTEP 7で直す
-
----
-
 ### [MACRO-PULSE-CFNAI-MA3-SERIES-1] MACRO PULSEの「CFNAI MA3」は単月のCFNAIを取得している（表示・説明・閾値は3ヶ月移動平均の前提）
 **優先度:** 低
+**状態:** 対応済み（M-2 STEP 6-1、feature/macro-pulse-fix）。統合後に修復スクリプト macro_cfnai_ma3_rows_repair.py の実行（チャット側の承認後）と、Macro_Data_UpdateがCFNAIMA3を取得することの確認が残る。閾値の−0.35はM-3
 **分類:** 系列の取り違え / MACRO PULSE（05_main.py・index.html）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 4（N-07）。記録: B-08
@@ -2802,54 +2746,9 @@ FREDには`CFNAIMA3`がある（2026-08: CFNAI −0.04、CFNAIMA3 +0.01）。単
 
 ---
 
-### [MACRO-PULSE-TEXT-LOGIC-MISMATCH-1] MACRO PULSEの説明文・tooltip・注記が実際の計算と食い違っている（10箇所）
-**優先度:** 低
-**分類:** 説明と計算の不一致 / MACRO PULSE（index.html・05_main.py）
-**登録日:** 2026-10-03
-**発見:** 指示書M-1 STEP 4（`check_macro_pulse.py` N-01〜N-12）
-
-#### 内容
-| 箇所 | 画面の文言 | 実際 |
-|---|---|---|
-| 「? 見方」の表 | 「CB消費者信頼感 10%・先行2ヶ月」 | 計算にCB消費者信頼感は無い。10%はBuilding Permits（カードは先行3ヶ月） |
-| 上部の帯（COMPOSITE SCORE） | 「8つの先行指標（Yield Curve / ISM / HY Spread 等）」 | ISMは計算に無い。Sahm Rule・CFNAI等の一致〜遅行の指標も含む |
-| AI欄の注記 | 「毎週土曜JST 7:11に自動更新」 | cron `11 22 * * 6`はJST日曜7:11（見出しの「毎週日曜」とも食い違う） |
-| AI欄の見出し | 「GROK-3-MINI」 | 2026-09-12以降のmodelは`grok-4.3` |
-| ⑤の見出し | 「過去2週間の発表実績」 | 表示範囲は過去90日（[[MACRO-PULSE-RECENT-SIGNALS-STALE-ROWS-1]]の古い行も出る） |
-| ⑤の副題 | 「発表日の新しい順」 | 日付は`release_date`（Philly・CFNAI・Sahmは観測月の1日、Claimsは週末、Michigan・Permitsは予定の枠）。例: Philly 9月分は「9/1」と出るが発表は9/17 |
-| 8指標カードのtooltip「観測日」 | Michigan 08-14・Building Permits 09-15 | 予定の枠の日付で観測日ではない（観測月の1日が正しい）。MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1（完了済み）で追加した表示。完了項目への追記はBACKLOG_DONE.mdの変更になるため、本項目に含めた |
-| 流動性カード・ステルスの日付 | 行の日付（例: 10-03） | M2は8月、WALCL・TGA・準備預金は09-30の観測（観測日は出ない） |
-| FOMC分析のGrokへのプロンプト（`analyze_fomc_with_grok()`） | 「ZQ=F front-month corrected; DGS1 adjusted for term premium」 | DGS1をそのまま使う（ZQ=Fは廃止済み） |
-| 「CFNAI MA3」 | 3ヶ月移動平均 | 単月（[[MACRO-PULSE-CFNAI-MA3-SERIES-1]]） |
-
-#### 実害
-画面の説明を読んだ利用者が、計算に無い指標（CB消費者信頼感・ISM）や誤った更新曜日・表示範囲・日付の意味を前提にする。
-AIのFOMC分析は、実際とは違う指標の説明を前提に判定している。
-
-#### 着手条件
-なし（修正はしていない）
-
-#### 対応（2026-10-03、指示書M-2 STEP 7、feature/macro-pulse-fix）
-説明文を実際の計算に合わせた（計算は変えていない）。`check_macro_pulse.py` N-01〜N-12はN-08（新しい列が書かれるまで判定不能）を除き一致。
-| ID | 修正前 | 修正後 |
-|---|---|---|
-| N-01 | 「? 見方」の表「CB消費者信頼感 10%・2ヶ月」「シカゴ連銀全米活動指数」 | 「住宅着工許可件数 (Building Permits) 10%・3ヶ月」「シカゴ連銀全米活動指数（3ヶ月MA）」 |
-| N-02 | 「8つの先行指標（Yield Curve / ISM / HY Spread 等）を統合したスコア。」 | 「8つの景気指標（長短金利差・HYスプレッド・フィラデルフィア連銀製造業 等。先行指標と一致指標を含む）を統合したスコア。」 |
-| N-03 | 「毎週土曜JST 7:11に自動更新。」 | 「毎週日曜 JST 7:11（米国東部時間 土曜18:11）の予定で自動更新（GitHubの起動の遅れで数時間遅れることがあります）。」 |
-| N-04 | 「毎週日曜自動生成（GROK-3-MINI）」 | 「毎週日曜自動生成（xAI Grok。使ったモデルは各カードの末尾に表示）」 |
-| N-05 | 「⑤ 直近の動き（過去2週間の発表実績）」 | 「⑤ 直近の動き（直近90日の発表実績）」 |
-| N-06 | 「RECENT SIGNALS — 発表日の新しい順に並べています」 | 「RECENT SIGNALS — 日付の新しい順。日付は、月次指標は観測月の1日、週次指標（新規失業保険申請）は週末日、NFP・ミシガン・住宅着工許可は主に発表予定日（観測月の1日の行もある）」 |
-| N-07 | 「CFNAI MA3」（取得は単月） | 文言は変えず、取得系列をCFNAIMA3にした（STEP 6-1） |
-| N-08 | Hollow Rally「S&P500 5日」「…% 前週比」（実際は6行前・前日比）、「N週連続減少」「吸収N週」（実際は行数） | 計算を週単位にし（STEP 4）、文言を「S&P500 5営業日」「…% 前週比、H.4.1 YYYY-MM-DD基準」、ステルスの日付の横に「LAYER 2・3と警戒アラートは H.4.1 YYYY-MM-DD〈水曜〉と前週の比較」 |
-| N-09 | tooltip「観測日 2026-08-14」（Michigan・Permitsは発表予定日） | 「データの日付 2026-08-14（発表予定日）」。月の1日の日付は「（観測日）」 |
-| N-10 | 表の先行性「CB消費者信頼感 2ヶ月」（カードはBuilding Permits 先行3ヶ月） | N-01と同じ修正で「住宅着工許可件数 3ヶ月」 |
-| N-11 | FOMC分析のプロンプト「12-month ahead FF futures implied rate: …% (ZQ=F front-month corrected; DGS1 adjusted for term premium)」 | 「1-year Treasury yield (FRED DGS1), used as a proxy for the expected policy rate 12 months ahead (no term-premium adjustment): …%」 |
-| N-12 | 流動性カードの日付「2026-10-03」、注記「※ M2は月次・FRBバランスシートは週次のため、値は次回発表まで変わりません。HYスプレッドは日次。」 | カードの日付「更新 2026-10-03」（FRBカードは「（H.4.1 YYYY-MM-DD）」も）、注記「※ カードの日付は更新日（観測日ではありません）。M2は月次（約1か月遅れで公表）、FRBバランスシート・TGA・準備預金はH.4.1の水曜時点の値（翌木曜公表）で、値は次回発表まで変わりません。HYスプレッド・RRPは日次。」 |
-
----
-
 ### [MACRO-PULSE-RUN-DATE-UTC-SHIFT-1] MACRO_PULSE_Updateの日次がcronの遅れで毎回UTCの0時をまたぎ、--date $(date -u)が予定日の翌日になる
 **優先度:** 低
+**状態:** 対応済み（M-2 STEP 6-3、feature/macro-pulse-fix）。統合後の日次の実行で、05_liquidity.csvの行の日付が予定日（米国の日付）になることの確認が残る
 **分類:** 更新タイミング / MACRO PULSE（MACRO_PULSE_Update.yml・05_main.py）
 **登録日:** 2026-10-03
 **発見:** 指示書M-1 STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md` 2-1

@@ -1037,15 +1037,27 @@ def derived_checks(m: Model) -> list[Result]:
     nl = round((exp["fed_balance"] - exp["tga"] - exp["rrp"]) / 1_000_000, 4)
     R.append(Result("D-04", "NET LIQUIDITY = (WALCL − WTREGEN − RRP×1000)/10^6", nl, parse_float(latest.get("net_liquidity")),
                     abs(nl - (parse_float(latest.get("net_liquidity")) or 0)) < 1e-6, "導出"))
-    # D-05 「NET流動性N週連続減少」: 行は実行日ごとの日次。直近の行で数えた連続減少と、週次（WALCLの観測日ごと）で数えた連続減少
-    nl_rows = [(r["date"], parse_float(r["net_liquidity"])) for r in m.liq if r.get("net_liquidity", "") != ""]
-    worst = []
-    for i in range(len(nl_rows)):
-        r_ = m.liq[[x["date"] for x in m.liq].index(nl_rows[i][0])]
-        if r_.get("net_liq_decline_weeks", "") not in ("", "0"):
-            worst.append((nl_rows[i][0], r_["net_liq_decline_weeks"]))
-    R.append(Result("D-05", "「NET流動性N週連続減少」の数え方（行の間隔）", "週ごと", "実行日ごと（日次の行）", False, "導出",
-                    f"直近でN≥3になった日: {[w for w in worst if int(w[1]) >= 3][-5:]}"))
+    # D-05 「NET流動性N週連続減少」: M-2 STEP 4以降の行（h41_dateあり）は、H.4.1の水曜の値の連続減少を独立に数えて比べる
+    lq = m.liq[-1]
+    if lq.get("h41_date"):
+        w = {s: {r["as_of"]: r["value"] for r in load_series(s)} for s in ("WALCL", "WTREGEN", "RRPONTSYD")}
+        weds = sorted(d for d in w["WALCL"] if d <= lq["h41_date"])[-9:]
+        rrp_dates = sorted(w["RRPONTSYD"])
+        nlv = []
+        for d in weds:
+            rd = [x for x in rrp_dates if x <= d]
+            if d in w["WTREGEN"] and rd:
+                nlv.append((w["WALCL"][d] - w["WTREGEN"][d] - w["RRPONTSYD"][rd[-1]] * 1000) / 1e6)
+        dec = 0
+        for i in range(len(nlv) - 1, 0, -1):
+            if nlv[i] >= nlv[i - 1]:
+                break
+            dec += 1
+        R.append(Result("D-05", f"NET流動性の連続減少週数（H.4.1 {lq['h41_date']}まで）", str(dec), lq.get("net_liq_decline_weeks"),
+                        str(dec) == lq.get("net_liq_decline_weeks"), "導出"))
+    else:
+        R.append(Result("D-05", "NET流動性の連続減少週数", None, lq.get("net_liq_decline_weeks"), None, "導出",
+                        "最新行にh41_dateが無い（M-2 STEP 4の変更前の行。日次の行で数えた値）"))
     # D-06 IMPLIED CUTS = (ff − zq)/0.25
     f = sorted(m.fed, key=lambda r: r.get("record_date") or "")[-1]
     ff, zq, cu = parse_float(f.get("ff_current")), parse_float(f.get("zq_rate")), parse_float(f.get("cuts_implied"))
@@ -1057,14 +1069,17 @@ def derived_checks(m: Model) -> list[Result]:
     R.append(Result("D-07", "FF RATE・1Y EXPECTED FF vs FRED系列ストアの最新値", [round((u["value"] + l["value"]) / 2, 4), d1["value"]],
                     [ff, zq], abs(round((u["value"] + l["value"]) / 2, 4) - (ff or 0)) < 1e-9 and abs(d1["value"] - (zq or 0)) < 1e-9, "導出",
                     f"DGS1観測日={d1['as_of']}（REGIMEバーは週1回〈土曜〉更新）"))
-    # D-09 AIカードの「週±」= 直前の週次スナップショットとのスコア差（期待）vs score_change_1w（記録値）
-    ws = sorted(m.weekly, key=lambda r: r.get("analysis_date") or "")[-12:]
+    # D-09 AIカードの「週±」= 前週の週次スナップショットとの差。M-2 STEP 5（2026-10-03）より後の行だけを判定する
+    #（それより前の行は書き換えない方針。記録値は先読みで0になっていた: MACRO-PULSE-AI-DELTA-LOOKAHEAD-1）
+    ws = sorted(m.weekly, key=lambda r: r.get("analysis_date") or "")
     exp9, act9 = [], []
     for a, b in zip(ws, ws[1:]):
+        if b["analysis_date"] <= "2026-10-03":
+            continue
         exp9.append([b["analysis_date"], int(parse_float(b["score"])) - int(parse_float(a["score"]))])
         act9.append([b["analysis_date"], int(parse_float(b.get("score_change_1w") or 0) or 0)])
-    R.append(Result("D-09", "AIカードの「週±」（直前の週次スコアとの差 vs 記録値）", exp9, act9, exp9 == act9, "導出",
-                    "記録値は_compute_score_change()の再計算（release_dateだけで絞るため、観測日で置いた月次指標が1週間前にも入る）"))
+    R.append(Result("D-09", "AIカードの「週±」（直前の週次スコアとの差 vs 記録値、2026-10-04以降の行）", exp9, act9,
+                    (exp9 == act9) if exp9 else None, "導出", "" if exp9 else "2026-10-04以降の週次の行がまだ無い"))
     # D-08 未来の日付の行（release_date > 今日）
     fut = [(r["indicator"], r["release_date"], r["actual"], r["updated_at"]) for r in m.events
            if (ms_date_only(r.get("release_date", "")) or 0) > now and parse_float(r.get("actual")) is not None]
