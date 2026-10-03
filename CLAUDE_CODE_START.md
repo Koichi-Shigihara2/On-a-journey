@@ -101,10 +101,10 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   **既知の不一致（2026-10-03 チャット側の指示）**: `browser_checks/check_dependency_map.py`の⑤Hollow Rallyだけが不一致になった場合は、
   `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（MACRO PULSE側がHollow Rallyの判定を週単位に変えた〈M-2 STEP 4〉のに、期待値が旧ロジック〈6行前・前日比〉のまま）
   として扱い、Cの統合の判断材料にしない。期待値の修正はMACRO PULSE側のセッションが行う（こちらでは直さない）。Hollow Rally以外の不一致は従来どおり止める。
-- `feature/update-schedule`（`e0e1e88cd8`、kaihatsuから分岐。3章に設計上の暫定値の扱いを追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
+- `feature/update-schedule`（`4e00ee4b80`、kaihatsuから分岐。3章に設計上の暫定値の扱い、2章に外部起動と保険の関係〈2026-10-03〉を追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
   workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
   SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
-  （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更、20:17 UTCのcron削除`6de1c89644`、20本のpushの置き換え`cc84f285fd`〈9本のYAMLのコメント整理と衝突しうる〉を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
+  （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更、20:17 UTCのcron削除`6de1c89644`、20本のpushの置き換え`cc84f285fd`〈9本のYAMLのコメント整理と衝突しうる〉、金曜のcron削除`791faa1f02`〈Market Pulse・Stonks Silo・TANUKI VALUATIONのYAMLのコメントと衝突しうる〉、guard入力・reset_window`4af62bcd1f`を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
 
 **今夜（米国09-30の足、2026-10-01 11:37 JSTに報告予定）の確認項目**
 - Market Data Dailyの9回の起動（20:17〜23:17 UTCの7回＋01:47・02:17 UTC）それぞれの実際の開始・終了時刻・conclusion・ガードの判定（run/reason）
