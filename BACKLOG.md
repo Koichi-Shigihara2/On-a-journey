@@ -2633,6 +2633,14 @@ AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先�
   afterを全履歴で数えると「EASING認識の見直し」509日/1,345日（WALCLが減る週は供給額0のため、RRPかTGAが増えるだけで出る。MM-15）。
   2026-08-26の検証の24回はbeforeの24日と一致。発火の増加はチャット側で許容済み（2026-10-03）
 - 一覧（増えた日・消えた日、各日の日次の差と週の差）は`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`「M-2 STEP 4」
+- H.4.1の週（水曜〜翌火曜）単位で数えると、Hollow Rallyが発火した週は21週→50週（対象197週。両方15・afterだけ35・beforeだけ6）
+
+**他のシステムへの影響（2026-10-03、M-2レビューを受けて追記）**: TANUKI TAILの`src/tail/quarterly_review_generator.py::load_macro_context()`は、
+05_weekly_analysis.csvの最新行（score・phase・score_change_1w・score_change_1m・watchpoints・indicator_deltas）と、05_liquidity.csvの
+最新行（stealth_signal・stealth_alert）を四半期レビューの入力に使う。統合後の次回の実行から、stealth_signal・stealth_alertは週単位
+（H.4.1の水曜どうし）の判定、score_change_1wは前週のスナップショットとの差（[[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]）、
+indicator_deltasの週差・月差は先読みを除いた値に変わる。2026-10-03時点の最新行の値は変更の前後で同じ（stealth_signal=supply、
+stealth_alert=空、score_change_1w=0）。過去に生成されたレビューは書き換えない。
 
 ---
 
@@ -2689,6 +2697,28 @@ Permits 1300〜1399（中立/CAUTION）。
 
 ---
 
+### [CHECK-DEPMAP-HOLLOW-RALLY-STALE-1] browser_checks/check_dependency_map.pyのHollow Rallyの期待値が旧ロジック（6行前・前日比）のままで、M-2 STEP 4の統合後に画面との不一致が出る
+**優先度:** 中
+**分類:** 確認スクリプトの陳腐化 / browser_checks（Market Pulse・MACRO PULSE共通）
+**登録日:** 2026-10-03
+**発見:** 指示書M-2 STEP 8（修正した要素を読む他の画面・システムの確認）
+
+#### 内容
+`browser_checks/check_dependency_map.py::expected_hollow_rally_trigger()`は、05_liquidity.csvの6行前のsp500と直前の行の
+net_liquidityで判定する旧ロジックを再現している。[[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]（M-2 STEP 4）で画面の判定は
+「最新行のsp500_5d_pct>+1.0% かつ net_liq_wow_pct<−0.5%」（S&P500の5営業日リターン・H.4.1の水曜どうしのNET流動性の前週比）に
+変わったため、統合後の日次の実行で新しい列が書かれると、⑤Hollow Rallyで画面との不一致が出うる（2026-10-03時点では両方とも
+不発火で一致、58件一致）。MACRO PULSE用の確認は`browser_checks/check_macro_pulse.py`（MAC-18）が新しい判定で行っている。
+
+#### 実害
+確認スクリプトの誤検知（画面の不具合ではない）。
+
+#### 着手条件
+`check_dependency_map.py`はMarket Pulse側のセッションの作業範囲のため、こちら（指示書M-1・M-2）では変更していない。
+Market Pulse側の作業と調整のうえで直す。
+
+---
+
 ## 優先度：低（アイデア段階）
 
 ### [MACRO-PULSE-TICKER-SP500-NO-ASOF-1] MACRO PULSEのsp500_t0が値だけを持ち何日の終値かを持たないため、実行が欠けた日はティッカーの前日比が2営業日分になる
@@ -2739,10 +2769,14 @@ FREDには`CFNAIMA3`がある（2026-08: CFNAI −0.04、CFNAIMA3 +0.01）。単
   スコアの「−0.35〜−0.7=中立（50点）」の境目は系列の違う目安を使っている。ヘルスバーの0/−0.7・mid −0.2も根拠の記載は無い。
   閾値はこの指示では変えていない（M-3の設計項目）
 - **統合後の手順（承認を得てから）**: kaihatsu上で`python scripts/analysis/macro_cfnai_ma3_rows_repair.py --apply`を実行してcommitする。
-  05_events.csvのCFNAIの行368件のうち362件の値をCFNAIMA3（同じ観測月、現在の版）に置き換える（6件は同じ値。release_date・
-  updated_atは変えない）。しないと、既存の観測月の行は上書きされないため、9月分の発表（10月下旬）まで単月の値が使われる。
+  05_events.csvのCFNAIの行368件のうち364件の値を、CFNAIMA3の「その行のupdated_atの時点に公表されていた版」（ALFRED）の値に
+  置き換える（4件は同じ値、その時点で未公表の行は0件。release_date・updated_atは変えない。現在の版を使うと改定値が過去の
+  スコア推移に入るため、M-2のレビューを受けてClaimsの修復と同じ方式にした）。しないと、既存の観測月の行は上書きされないため、9月分の発表（10月下旬）まで単月の値が使われる。
   今日のスコアは27→27（CFNAI −0.04→MA3 0.01、どちらも18点）。過去の比較バー・スコア推移の点は変わりうる
 - 回帰テスト2件（修正前fail→修正後pass）
+- `common/macro_data/series/CFNAI.json`（単月）は削除せず残す。series_meta.jsonから外したため、Macro_Data_Updateは取得しなくなり、
+  更新は2026-10-03の取得分で止まる。リポジトリ全体をgrepし、このファイルと系列"CFNAI"を読むコードが無いことを確認した
+  （macro_data_violations_log.jsonの"CFNAI"の節も更新されずに残る。Check Lはfetch_statusの"ok"だけを見るため影響しない）
 
 ---
 

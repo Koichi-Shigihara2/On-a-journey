@@ -121,6 +121,15 @@ def main() -> int:
                 why.append("**説明できない**")
             p(f"| {x.date} | {fmt(x.b_sp6row)}% | {fmt(x.b_nl_prevrow, 3)}% | {fmt(x.a_sp5d)}% | {fmt(x.a_nl_wow, 3)}%（{x.h41}） | {'・'.join(why)} |")
     p(f"\n日次→週次の変更で説明できない日: {unexplained if unexplained else 'なし'}")
+    # H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火したか」で数える（2026-10-03 M-2レビュー）
+    d2 = df.copy()
+    dd = pd.to_datetime(d2.date)
+    d2["week"] = (dd - pd.to_timedelta((dd.dt.weekday - 2) % 7, unit="D")).dt.strftime("%Y-%m-%d")
+    wk = d2.groupby("week").agg(b=("b_hollow", "any"), a=("a_hollow", "any"))
+    p(f"\n#### Hollow Rally をH.4.1の週（水曜〜翌火曜）単位で数えた件数（対象 {len(wk)}週）")
+    p(f"- before（日次の判定）で発火した週: {int(wk.b.sum())}週")
+    p(f"- after（週単位の判定）で発火した週: {int(wk.a.sum())}週")
+    p(f"- 両方で発火 {int((wk.a & wk.b).sum())}週・afterだけ {int((wk.a & ~wk.b).sum())}週・beforeだけ {int((~wk.a & wk.b).sum())}週")
     text = "\n".join(lines)
     print(text)
     if args.md:
