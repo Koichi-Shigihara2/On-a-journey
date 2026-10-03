@@ -75,6 +75,18 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 2晩とも、GitHubのscheduleは夜の枠では1本も起動しなかった。最初の起動は1晩目が00:13 UTC（手動実行が無ければ取得は00:13以降）、2晩目が23:59 UTCで、
   2晩目は00:00〜01:26 UTCのYahooの作り直しに入り、取得できたのは01:55の起動だった。外部から起動する方式の案は2026-10-03にチャットへ報告済み（実装しない）。
 
+**2026-10-03 外部起動（A: Cloudflare Workers Cron Triggers）の準備（チャット側承認済み。デプロイ・トークン登録はKoichiさんが行う）**
+- `Market_Data_Daily_Update.yml`のworkflow_dispatchに入力`guard`（boolean、既定false）。guard=trueはscheduleと同じガードを通し、人の手動実行（false）は従来どおりガードなし。
+  reset_windowで終わった実行はcommitしない（`_daily_close_retry_log.json`だけのcommitが残っていた）。テスト`tests/test_market_data_daily_dispatch_guard.py`
+- `tools/external_trigger/`: Worker（`worker.js`はdefaultだけ、処理は`lib.js`）。平日20:25・20:55・21:25 UTCにworkflow_dispatch（ref=kaihatsu、guard=true）、
+  204以外はDiscord通知。21:50 UTCに「その日の20:00 UTC以降に作られて成功した実行」が無ければもう一度起動して通知（00:00〜19:59 UTCの実行は前の晩の分なので数えない）。
+  NYSEの休場日（2026〜2028年の表、`tests/test_external_trigger_worker.py`がpandas_market_calendarsと一致を確認）は何もしない。
+  cronは3本（`25 20,21`・`55 20`・`50 21`、MON-FRI）で無料プランの上限5本に収まる（CloudflareのLimitsのページで確認）。`node --test`の9件は一時的なNode（scratchpad）で実行して全件成功
+- 設定手順書`tools/external_trigger/README.md`（アカウント作成・fine-grained token〈On-a-journeyのみ・Actions: Read and writeのみ・期限1年〉・secret登録・動作確認・トークンの更新）
+- 金曜の保険のcron（Market Pulse 22:50・Stonks Silo 22:40・TANUKI VALUATION 22:30 UTC）を削除。Market Data Dailyのschedule（20:47〜23:17、01:47・02:17）は保険として残す
+- UPDATE_SCHEDULE.md（`feature/update-schedule`）に外部起動と保険の関係を追記（同ブランチのマージ時に`gen_update_schedule.py`の再実行が必要なのは従来どおり）
+- **Koichiさんの作業待ち**: Worker のデプロイ・トークン発行と登録（README.mdの1〜6）。登録後の最初の平日の朝に、20:25 UTC頃のworkflow_dispatchの実行と下流を確認する
+
 **マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
