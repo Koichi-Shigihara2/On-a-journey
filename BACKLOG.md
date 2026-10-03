@@ -2497,6 +2497,26 @@ Claims Report」（FRED API `fred/series/release`で確認）。このため`upd
 #### 着手条件
 なし（修正はしていない）
 
+#### 対応（2026-10-03、指示書M-2 STEP 2、feature/macro-pulse-fix）
+- `INDICATOR_CONFIG["Initial Claims 4W MA"]`: `fred_release_id` 321→180、`"weekly": True`を追加
+- `refresh_monthly_indicators()`: 週次の系列は予定の枠へ寄せず、観測日（週末日）の行にする
+- `_compute_current_score()`: その日までに書き込まれた行（`updated_at`の日付 <= 計算日）だけを使う。index.htmlの
+  `idxLatestKnownAsOf()`（MACRO-BUG-1）と同じ先読み除外。観測日に置いた行を、公開前の日付の計算に使わないため
+- `detect_macro_surprises()`: 前回比を取る2行の間隔が週次10日・月次45日を超える場合は比べない
+- 回帰テスト `tests/test_macro_pulse_accuracy.py`（6件。修正前は4件fail、修正後は6件pass）
+- 今日のスコア: 27→27（Claimsは09-19週 202,250 → 09-26週 200,000。どちらも215K以下で15点）
+
+**統合後の手順（必須）**: `05_events.csv`・`05_indicator_schedule.csv`は`.gitattributes`の`merge=ours`のため、データの修復は
+このブランチに含めていない。kaihatsuへ統合した直後に、kaihatsu上で
+`FRED_API_KEY=... python scripts/analysis/macro_claims_slot_rows_repair.py --apply`を実行してcommitする
+（予定の枠の行6件のうち5件を観測日〈05-16・06-27・08-01・08-29・09-26〉へ移し、観測日の行がある05-15の1件を消す。
+予定表から321由来のClaimsの行〈10-15・11-16・12-15〉を消す。値・`updated_at`は変えない）。これをしないと、残った
+未来日付の行と同じ値の観測日の行を`dedupe_new_rows()`が重複として捨てる。180の週次の予定は次のupdate-scheduleで入る。
+
+**過去の週次スナップショットは書き換えない**（`05_weekly_analysis.csv`）。本来の値の推定（他の入力が同じと仮定）:
+2026-07-18のスナップショットは29→27（07-11週214,250〈07-16公表〉を使えばClaimsが35→15点）。2026-07-11のMACRO SURPRISE
+「Initial Claims 4W MA +21,750件 急悪化」は、連続する週の比較なら当時の前週比は約+1,000件で、閾値（2万件）に届かず出なかった。
+
 ---
 
 ### [MACRO-PULSE-TICKER-FUTURE-ROW-1] MACRO PULSEのティッカーのS&P500・前営業日比・LAST UPDATEが未来日付の行を使い、古い終値・符号が逆の前日比・未来の日付を表示する

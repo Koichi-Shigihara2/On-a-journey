@@ -149,6 +149,11 @@ _SURPRISE_THRESHOLDS = {
 }
 
 
+# 前回比を取る2行の間隔の上限（日）。これを超える行同士は連続する発表ではないため比べない
+_SURPRISE_MAX_GAP_DAYS_WEEKLY = 10
+_SURPRISE_MAX_GAP_DAYS_MONTHLY = 45
+
+
 def detect_macro_surprises(events: pd.DataFrame, lookback_days: int = 60) -> list[str]:
     """
     DESIGN-13: 経済指標の前回比急変を検知してアラート文字列リストを返す。
@@ -180,7 +185,15 @@ def detect_macro_surprises(events: pd.DataFrame, lookback_days: int = 60) -> lis
         try:
             val_now  = float(rows.iloc[-1]["actual"])
             val_prev = float(rows.iloc[-2]["actual"])
+            gap_days = (datetime.strptime(rows.iloc[-1]["release_date"], "%Y-%m-%d")
+                        - datetime.strptime(rows.iloc[-2]["release_date"], "%Y-%m-%d")).days
         except (ValueError, TypeError):
+            continue
+        # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]: 連続する発表同士だけを比べる。
+        # 2026-07-11の「Initial Claims 急悪化」は5週離れた行同士の比較だった
+        max_gap = _SURPRISE_MAX_GAP_DAYS_WEEKLY if INDICATOR_CONFIG.get(ind_name, {}).get("weekly") \
+            else _SURPRISE_MAX_GAP_DAYS_MONTHLY
+        if gap_days > max_gap:
             continue
 
         delta = val_now - val_prev
@@ -258,8 +271,13 @@ INDICATOR_CONFIG = {
     "Initial Claims 4W MA": {
         "fred_id": "IC4WSA",
         "input_method": "FRED",
-        "fred_release_id": 321,
+        # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]: 321はEmpire State Manufacturing Survey
+        # （毎月15日ごろ）で、IC4WSAの公表元は180（Unemployment Insurance Weekly Claims Report）
+        "fred_release_id": 180,
         "obs_to_release_lag": 7,   # obs_date=週末, 翌木曜に発表
+        # 週次系列: refresh_monthly_indicators()で予定の枠へ寄せず、観測日（週末日）に置く。
+        # 使えるかどうかは書き込み時刻（updated_at、公開後に書かれる）で判断する
+        "weekly": True,
         "slug": "ic4wsa",
         "threshold_bull": 250000,
         "threshold_bear": 300000,
@@ -1418,6 +1436,7 @@ def _to_ms(dt: datetime) -> float:
 def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     """events.csv から target_date 時点のスコアと各指標の値を計算する"""
     target_ms = _to_ms(datetime.combine(target_date, datetime.max.time()))
+    target_str = target_date.strftime("%Y-%m-%d")
 
     # indicator -> [(date, actual)] sorted by date
     ind_data = {}
@@ -1426,6 +1445,12 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         actual_str = str(r.get("actual", "")).strip()
         date_str = str(r.get("release_date", "")).strip()
         if not ind or not actual_str or not date_str:
+            continue
+        # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]・[[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]:
+        # 行は観測日に置くため、その日までに書き込まれた（＝公開済みの）行だけを使う
+        # （index.htmlのidxLatestKnownAsOf()〈MACRO-BUG-1〉と同じ先読み除外）
+        updated_str = str(r.get("updated_at", "")).strip()
+        if updated_str[:10] and updated_str[:10] > target_str:
             continue
         try:
             val = float(actual_str)
@@ -1865,6 +1890,10 @@ def refresh_monthly_indicators(target_date: date, fin_ctx: dict,
             (schedule["release_date"] >= win_start) &
             (schedule["release_date"] <= win_end)
         ].sort_values("release_date")
+        if cfg_ind.get("weekly"):
+            # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]: 週次系列を発表予定の枠へ寄せると、
+            # 枠の日付まで「未来の行」になり今日の計算に使われない。観測日に置く
+            sched_hits = sched_hits.iloc[0:0]
 
         if not sched_hits.empty:
             found_slot = False
