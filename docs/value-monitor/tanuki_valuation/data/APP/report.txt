@@ -1,17 +1,17 @@
 APP INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T10:28:39+09:00
-Price: $281.31
+Generated: 2026-10-03T11:10:47+09:00
+Price: $268.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: BUY
 Funda_Score: 100/100
 Timing_Score (components):
-  Deviation_Rate: +309.8%
-  MA200_Deviation: -38.6%
+  Deviation_Rate: +329.9%
+  MA200_Deviation: -41.2%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $475 median ($325-$790) | 31 analysts | vs IV: -58.8%
-Comment: 割安圏(310%)で買い余地大、FCF黒字、売上成長加速
+Comment: 割安圏(330%)で買い余地大、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 右上
 Label: 割安×高効率
 Key_Metric_Y: RICE = 7.517
-Deviation_Rate: +309.8%
+Deviation_Rate: +329.9%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -57,15 +57,15 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $281.31
+Current_Price: $268.22
 Intrinsic_Value_BASE: $1,152.94
-Deviation_BASE: +309.8%
+Deviation_BASE: +329.8%
 Scenarios:
-BEAR: Growth=35.0%, IV=$710.24, Deviation=+152.5%
-BASE: Growth=50.0%, IV=$1,152.94, Deviation=+309.8%
-BULL: Growth=60.0%, IV=$1,565.06, Deviation=+456.3%
-Return_Outlook(BASE): 1年後: $1,729.41 (+514.8%) / 3年後: $3,891.17 (+1283.2%) / 5年後: $8,755.14 (+3012.3%)
-  5yr_Annualized_Return: +98.9%/yr
+BEAR: Growth=35.0%, IV=$710.24, Deviation=+164.8%
+BASE: Growth=50.0%, IV=$1,152.94, Deviation=+329.8%
+BULL: Growth=60.0%, IV=$1,565.06, Deviation=+483.5%
+Return_Outlook(BASE): 1年後: $1,729.41 (+544.8%) / 3年後: $3,891.17 (+1350.7%) / 5年後: $8,755.14 (+3164.2%)
+  5yr_Annualized_Return: +100.8%/yr
 Growth_Rate_Rec: 24.8% (recommended  ⚠️ +25.2pt above recommended)
 Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 24.8%（実績CAGR等ベース）
   ⚠️ 実績YoY(直近最大4四半期平均)は86.9%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
@@ -73,9 +73,9 @@ TTM_YoY_Growth: 76.3%
 (DCF Base vs TTM actual: -26.3pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.48%
-  参考①β込みWACC_IV: $364.39 (Deviation: +29.5%)
-  参考②Rf理論上限_IV: $12,302.77 (Deviation: +4273.4%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.24%に変化すると、Rf基準の必要成長率は-24.8%→-12.2%（+12.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $364.39 (Deviation: +35.9%)
+  参考②Rf理論上限_IV: $12,302.77 (Deviation: +4486.8%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-25.5%→-12.6%（+12.9pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.488
 FCF_Base: $3,035.05M (直近2yr平均) [ボトムアップ: OCF-CapEx]
@@ -102,7 +102,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $456.22  $957.70  $1,949.36
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 両項目とも理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断されるため。
+  Reasoning: 理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な再編費用と判断されるため。
 Financial_Health:
   Net_Debt: $+0.46B (negative=net cash)
   Total_Debt: $3.52B  Cash: $3.05B
@@ -264,8 +264,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 23.9x
-  Adjusted_EPS_PER: 20.2x (TTM調整後EPS: $13.8916)
-  Delta: -3.6x (cheaper on adjusted basis)
+  Adjusted_EPS_PER: 19.3x (TTM調整後EPS: $13.8916)
+  Delta: -4.6x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-05
   Next_Quarter_EPS: $4.03 (yfinance analyst estimate)
@@ -314,9 +314,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 7.46%  (ForwardEPS $20.98 / Price $281.31)
+  Forward_Earnings_Yield: 7.82%  (ForwardEPS $20.98 / Price $268.22)
   Risk_Free_Rate (10Y):  4.30%
-  ERP: 3.16%
+  ERP: 3.52%
   ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
