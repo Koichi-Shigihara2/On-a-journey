@@ -1069,17 +1069,18 @@ def derived_checks(m: Model) -> list[Result]:
     R.append(Result("D-07", "FF RATE・1Y EXPECTED FF vs FRED系列ストアの最新値", [round((u["value"] + l["value"]) / 2, 4), d1["value"]],
                     [ff, zq], abs(round((u["value"] + l["value"]) / 2, 4) - (ff or 0)) < 1e-9 and abs(d1["value"] - (zq or 0)) < 1e-9, "導出",
                     f"DGS1観測日={d1['as_of']}（REGIMEバーは週1回〈土曜〉更新）"))
-    # D-09 AIカードの「週±」= 前週の週次スナップショットとの差。M-2 STEP 5（2026-10-03）より後の行だけを判定する
+    # D-09 AIカードの「週±」= 前週の週次スナップショットとの差。M-2 STEP 5の修正後の行（分析日2026-10-03以降）だけを判定する
+    #（2026-10-04 M-2c: 対象日を米国の日付にしたため、修正後の最初の行は2026-10-03〈10-04 00:30 UTC起動〉）
     #（それより前の行は書き換えない方針。記録値は先読みで0になっていた: MACRO-PULSE-AI-DELTA-LOOKAHEAD-1）
     ws = sorted(m.weekly, key=lambda r: r.get("analysis_date") or "")
     exp9, act9 = [], []
     for a, b in zip(ws, ws[1:]):
-        if b["analysis_date"] <= "2026-10-03":
+        if b["analysis_date"] < "2026-10-03":
             continue
         exp9.append([b["analysis_date"], int(parse_float(b["score"])) - int(parse_float(a["score"]))])
         act9.append([b["analysis_date"], int(parse_float(b.get("score_change_1w") or 0) or 0)])
-    R.append(Result("D-09", "AIカードの「週±」（直前の週次スコアとの差 vs 記録値、2026-10-04以降の行）", exp9, act9,
-                    (exp9 == act9) if exp9 else None, "導出", "" if exp9 else "2026-10-04以降の週次の行がまだ無い"))
+    R.append(Result("D-09", "AIカードの「週±」（直前の週次スコアとの差 vs 記録値、2026-10-03以降の行）", exp9, act9,
+                    (exp9 == act9) if exp9 else None, "導出", "" if exp9 else "2026-10-03以降の週次の行がまだ無い"))
     # D-08 未来の日付の行（release_date > 今日）
     fut = [(r["indicator"], r["release_date"], r["actual"], r["updated_at"]) for r in m.events
            if (ms_date_only(r.get("release_date", "")) or 0) > now and parse_float(r.get("actual")) is not None]

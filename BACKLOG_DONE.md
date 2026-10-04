@@ -2,6 +2,177 @@
 
 ---
 
+## 2026-10-04（完了）
+
+### ✅ [MACRO-PULSE-RUN-DATE-UTC-SHIFT-1] MACRO_PULSE_Updateの日次がcronの遅れで毎回UTCの0時をまたぎ、--date $(date -u)が予定日の翌日になる — M-2で対応・本番で確認
+**優先度:** 低
+**分類:** 更新タイミング / MACRO PULSE（MACRO_PULSE_Update.yml・05_main.py）
+**登録日:** 2026-10-03
+**完了日:** 2026-10-04（指示書M-2で対応、M-2cで本番を確認）
+**発見:** 指示書M-1 STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md` 2-1
+
+#### 内容
+日次のcron `15 22 * * *`は直近20回すべて+1.9〜3.7時間遅れて翌日00:09〜01:58 UTCに起動し、
+`05_main.py --date $(date -u +%Y-%m-%d)`の日付が予定日の翌日になる。`run()`の「今日発表予定の指標」の照合
+（`schedule.release_date == date_str`）は1日先の予定と照合され、`05_liquidity.csv`の行の日付も翌日になる。
+実例: Michigan Inflation 1Yの`2026-09-25`の枠に、9/25の確報の発表（米国東部10:00）より前の09-25 00:35 UTCに、FREDにあった
+7月分（4.2）が書かれた。
+
+#### 実害
+予定日に結び付く指標（Michigan Inflation 1Y/5Y・NFP等）の行が発表前の値で作られ、流動性カードの日付が1日ずれる。
+スコアの8指標は`refresh_monthly_indicators()`経由のため、この照合のずれの影響は小さい（実害は限定的と判断）。
+
+#### 着手条件
+なし（修正はしていない。cronの遅れ自体はGitHub側の事象）
+
+#### 対応（2026-10-03、指示書M-2 STEP 6-3、feature/macro-pulse-fix）
+- `05_main.py::default_target_date()`: 対象日を起動時刻の米国東部時間の日付にし、17:00より前なら直前の営業日（土日・`us_holidays()`を
+  除く）にする。`--date`省略時に使う（以前の省略時は「ローカル時刻の昨日」）
+- `MACRO_PULSE_Update.yml`: 日次・remind・update-schedule・weekly-analysisの4箇所の`--date $(date -u +%Y-%m-%d)`を外した
+- 回帰テスト5件（10-03 01:12 UTC起動→10-02、直近20回で最大の遅れ+3.7h→予定日、17:00前→前営業日、Labor Day、冬時間。修正前fail→修正後pass）
+- 週次の分析日も米国の日付になる（土曜22:11 UTCのcronが日曜に遅れても土曜）。05_weekly_analysis.csvの分析日は、これまで遅れた週は日曜
+  だった（例: 09-20・09-27）。`_score_change_vs_prev_snapshot()`は13日以内の直前の行を使うため影響しない
+
+**本番での確認（2026-10-04、指示書M-2c）**: 10-03分の日次（10-04 00:39 UTC起動）・週次（00:30）・update-schedule（00:33）とも、UTCの0時をまたいだが対象日は2026-10-03（ログ「MACRO PULSE v6.0 | 2026-10-03」）。05_liquidity.csvの行・05_weekly_analysis.csvのanalysis_dateとも2026-10-03で重複なし。修正前の過去の行のずれは[[MACRO-PULSE-LIQUIDITY-ROW-DATE-UTC-SHIFT-1]]
+
+---
+
+### ✅ [MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1] MACRO PULSEの流動性モニターが日次の行を「週」として数え、「NET流動性3週連続減少」等の警告を3日の変化で出す — M-2で対応・本番で確認
+**優先度:** 中
+**分類:** 判定の誤り / MACRO PULSE（05_main.py・index.html）
+**登録日:** 2026-10-03
+**完了日:** 2026-10-04（指示書M-2で対応、M-2cで本番を確認）
+**発見:** 指示書M-1 STEP 2・4（`check_macro_pulse.py` D-05・N-08）。記録: B-04
+
+#### 内容
+`05_liquidity.csv`は日次の実行ごとに1行（週末も）。`update_liquidity_csv()`は直前の行と比べてステルス判定をし、
+`stealth_absorb_weeks`・`net_liq_decline_weeks`を行の数で数える。画面（`renderStealthCard()`）はそれを
+「ステルス吸収N週」「NET流動性N週連続減少」と表示し、Hollow Rally（`renderLiquidityCards()`）はNET流動性の直前の行との比を
+「前週比」、S&Pの6行前との比を「5日」（暦日）と表示する。「吸収額>政策供給額」は週次のWALCLの前日比と比べるため大半の日で
+供給額0になる。
+- 2026-10-02の画面に「実質的にTIGHTENINGに近い状態（NET流動性3週連続減少）」が出た。実際は09-30〜10-02の3日続けての減少
+  （5.77→5.7698→5.7592→5.7591兆ドル）。07-23にも同じ警告
+- 「EASING認識の見直しを推奨（ステルス吸収額が政策供給額を超過）」は直近20行で8回（REGIMEがTIGHTENINGの期間も出る）
+
+#### 実害
+週単位の流動性の悪化を意味する警告が、日々の小さな変化で出る（誤警報）。「前週比」の数字（Hollow Rally）は前日比。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 4、feature/macro-pulse-fix）
+- 週の値はH.4.1の基準日（水曜）の値。FRED系列ストアのWALCL・WTREGEN・WDTGAL・WRBWFRBLは全観測が水曜の日付、RRPONTSYDは日次
+  （水曜以前の直近の値を使う）。05_liquidity.csvは実行日ごとの日次の行に最新の水曜の値を書き写すだけで、基準日の列は無かった
+- `05_main.py::weekly_liquidity_state()`を新設し、`update_liquidity_csv()`のステルス判定・連続吸収週数・連続減少週数・
+  「吸収額>政策供給額」を、水曜の値の前週比で計算する。CSVに`h41_date`（判定に使った水曜）・`net_liq_wow_pct`（NET流動性の
+  前週比）・`sp500_5d_pct`（S&P500の5営業日リターン）の3列を追加
+- index.html: Hollow Rallyは最新行の`sp500_5d_pct`>+1.0% かつ `net_liq_wow_pct`<−0.5%で判定（列の無い過去の行では判定しない）。
+  文言を「S&P500 5営業日」「前週比、H.4.1 YYYY-MM-DD基準」に、ステルスの日付の横に判定の基準日を表示
+- 回帰テスト5件（10-02の「3週連続減少」の再現を含む。修正前5件fail→修正後pass）。既存テスト1件
+  （`TestUpdateLiquidityCsvSp500`）は`get_series`も履歴なしにモック（実データを読まないため）
+- **発火回数のbefore/after（全履歴、`scripts/analysis/macro_liquidity_weekly_before_after.py`）**: Hollow Rally 24日→164日
+  （増えた日156・消えた日16。すべてS&Pの期間〈6行→5営業日〉かNET流動性の間隔〈前日→前週〉の違いで説明できる。説明できない日なし）。
+  ステルス（日次の列がある直近100行）:「実質的にTIGHTENINGに近い状態」4日→10日、「EASING認識の見直しを推奨」36日→48日、
+  「政策EASINGの効果が限定的」0日→0日。判定の内訳 neutral50・supply46・absorb4 → supply79・absorb21。
+  afterを全履歴で数えると「EASING認識の見直し」509日/1,345日（WALCLが減る週は供給額0のため、RRPかTGAが増えるだけで出る。MM-15）。
+  2026-08-26の検証の24回はbeforeの24日と一致。発火の増加はチャット側で許容済み（2026-10-03）
+- 一覧（増えた日・消えた日、各日の日次の差と週の差）は`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`「M-2 STEP 4」
+- H.4.1の週（水曜〜翌火曜）単位で数えると、Hollow Rallyが発火した週は21週→50週（対象197週。両方15・afterだけ35・beforeだけ6）
+- 発火の頻度が高い（週単位の判定で197週中50週、日数では1,345日中164日）ため、Hollow Rallyの閾値（S&P500 5営業日 +1.0%・NET流動性前週比 −0.5%）は**M-3で見直す**
+
+**他のシステムへの影響（2026-10-03、M-2レビューを受けて追記）**: TANUKI TAILの`src/tail/quarterly_review_generator.py::load_macro_context()`は、
+05_weekly_analysis.csvの最新行（score・phase・score_change_1w・score_change_1m・watchpoints・indicator_deltas）と、05_liquidity.csvの
+最新行（stealth_signal・stealth_alert）を四半期レビューの入力に使う。統合後の次回の実行から、stealth_signal・stealth_alertは週単位
+（H.4.1の水曜どうし）の判定、score_change_1wは前週のスナップショットとの差（[[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]）、
+indicator_deltasの週差・月差は先読みを除いた値に変わる。2026-10-03時点の最新行の値は変更の前後で同じ（stealth_signal=supply、
+stealth_alert=空、score_change_1w=0）。過去に生成されたレビューは書き換えない。
+
+**本番での確認（2026-10-04、指示書M-2c）**: 10-03の行にh41_date=2026-09-30・net_liq_wow_pct=0.2194・sp500_5d_pct=−0.2672が書かれ、FRED系列ストアの水曜の値から独立に計算した値（ステルス供給・吸収0週・減少0週・警告なし）と一致。Hollow Rallyは不発火。check_macro_pulse.pyのD-05・N-08が一致。Hollow Rallyの閾値の見直しはM-3
+
+---
+
+### ✅ [MACRO-PULSE-AI-DELTA-LOOKAHEAD-1] MACRO PULSEのAIウィークリーコメンタリーの「週±」が常に0（過去時点のスコアを先読みありで計算し、月次指標の変化が1週間前にも入る） — M-2で対応・本番で確認
+**優先度:** 中
+**分類:** 計算の誤り / MACRO PULSE（05_main.py）
+**登録日:** 2026-10-03
+**完了日:** 2026-10-04（指示書M-2で対応、M-2cで本番を確認）
+**発見:** 指示書M-1 STEP 2（`check_macro_pulse.py` D-09）。記録: B-05
+
+#### 内容
+`05_main.py`の`_compute_score_change()`・`run_weekly_analysis()`の週差・月差は、`_compute_current_score(events, 過去日)`で
+`release_date <= 過去日`の行だけを使う（`updated_at`を見ない）。`release_date`は月次指標で観測月の1日（Philly・CFNAI・Sahm）
+になっているため、発表週の「1週間前」の時点にも新しい値が入り、週の変化が0になる。
+- `05_weekly_analysis.csv`の直近12週の`score_change_1w`は12週すべて0。実際の週次スコアは08-15→08-22で27→22（−5）、
+  08-30→09-05で22→27（+5）、07-18→07-25で29→27（−2）
+- 09-20の行: Philly Fedは09-17の発表で47.4→37.8だが「週差+0.00」（月差−9.60）
+
+#### 実害
+AIカードの「週→0」の表示と、Grokに渡すプロンプトの「先週比: +0pt」「週差: +0.00」が毎週誤っており、AI解説が週の変化を
+「変化なし」として書く前提になっている。月差も同じ仕組みで誤りうる。画面の比較バーの「先週比」（`computeScoreAsOf()`、
+先読み除外あり）とは別の計算（記録のMM-07）。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 5、feature/macro-pulse-fix）
+- `run_weekly_analysis()`: 週±（`score_change_1w`、Grokへの「先週比」、Discordの「先週比」）を、実際の前週の週次スナップショット
+  （`05_weekly_analysis.csv`で分析日の13日前以降の直前の行）のスコアとの差にする（`_score_change_vs_prev_snapshot()`）。
+  該当が無いときだけ`_compute_score_change(events, target_date, 7)`で計算し直す
+- 前月比・指標ごとの週差・月差（`_compute_current_score()`の7日前・30日前）は、STEP 2の先読み除外（`updated_at`）で変わる
+- 回帰テスト3件（2026-08-22の27→22を含む。修正前3件fail→修正後pass）
+- **Grokへの入力が変わる箇所**（過去のコメンタリー・`05_weekly_analysis.csv`は書き換えない）。現在のevents.csvで再計算した例:
+  | 分析日 | 先週比（記録→新） | 前月比（記録→新） | 週差が0でなくなる指標（新） |
+  |---|---|---|---|
+  | 2026-08-22 | 0→−5 | −5→−5 | Philly +6.0・Permits +76・Claims −4,000・YC −0.01 |
+  | 2026-09-05 | 0→+5 | 0→0 | Sahm −0.04・YC +0.01・HY +0.03 |
+  | 2026-09-20 | 0→0 | +5→+5 | Philly −9.6・Permits −49・Claims +1,750・YC −0.12 |
+  | 2026-09-27 | 0→0 | 0→+5 | Michigan −3.5・CFNAI +0.04・Claims −5,000・YC +0.04・HY +0.10 |
+  プロンプトの文面（「■ 先週比: {n}pt, 前月比: {n}pt」「週差: …, 月差: …」）の形は変えていない。Claimsの観測日はSTEP 2で週末日になる
+
+**本番での確認（2026-10-04、指示書M-2c）**: 本番の初回（10-03）は先週比 0 で、修正前の誤り（常に 0）と区別できない。修正の担保は回帰テスト（2026-08-22 の 27→22 の再現）。指標ごとの週差では、先読みの除外を確認した（Sahm +0.07）。check_macro_pulse.pyのD-09（2026-10-03以降の行）は一致
+
+---
+
+### ✅ [MACRO-PULSE-CFNAI-MA3-SERIES-1] MACRO PULSEの「CFNAI MA3」は単月のCFNAIを取得している（表示・説明・閾値は3ヶ月移動平均の前提） — M-2で対応・本番で確認
+**優先度:** 低
+**分類:** 系列の取り違え / MACRO PULSE（05_main.py・index.html）
+**登録日:** 2026-10-03
+**完了日:** 2026-10-04（指示書M-2で対応、M-2cで本番を確認）
+**発見:** 指示書M-1 STEP 4（N-07）。記録: B-08
+
+#### 内容
+`INDICATOR_CONFIG["Chicago Fed National Activity"]`の`fred_id`は`CFNAI`（単月）で、slugは`cfnai_ma3`。画面は「CFNAI MA3」
+「シカゴ連銀全米活動指数（3ヶ月MA）」と表示し、スコアの閾値（−0.7で後退）はシカゴ連銀がCFNAI-MA3に対して示す目安と同じ。
+FREDには`CFNAIMA3`がある（2026-08: CFNAI −0.04、CFNAIMA3 +0.01）。単月の値はMA3より振れが大きい。
+
+#### 実害
+現在は単月・MA3とも「拡張」側で、スコアは変わらない。単月の値だけが−0.35・−0.7を下回る月は、MA3より早く・頻繁に注意・後退側の
+点数になる（過去の該当月数は未集計。実害の確認が必要）。
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 6-1、feature/macro-pulse-fix）
+- `INDICATOR_CONFIG["Chicago Fed National Activity"]["fred_id"]`を`CFNAIMA3`に、`common/macro_data/series_meta.json`の`CFNAI`を
+  `CFNAIMA3`に置き換えた（Macro_Data_Updateの取得対象も変わる）。`common/macro_data/series/CFNAIMA3.json`（712件、FRED APIから取得）を追加
+- **閾値の確認**（シカゴ連銀 CFNAI のページ、2026-10-03）: −0.70は「拡大期のあとCFNAI-MA3が−0.70を下回ると後退の可能性が高まる」
+  というMA3向けの目安で合っている。**−0.35はMA3ではなくCFNAI Diffusion Indexの目安**（「拡大期はDiffusion Indexが−0.35を上回る」）。
+  スコアの「−0.35〜−0.7=中立（50点）」の境目は系列の違う目安を使っている。ヘルスバーの0/−0.7・mid −0.2も根拠の記載は無い。
+  閾値はこの指示では変えていない（M-3の設計項目）
+- **統合後の手順（承認を得てから）**: kaihatsu上で`python scripts/analysis/macro_cfnai_ma3_rows_repair.py --apply`を実行してcommitする。
+  05_events.csvのCFNAIの行368件のうち364件の値を、CFNAIMA3の「その行のupdated_atの時点に公表されていた版」（ALFRED）の値に
+  置き換える（4件は同じ値、その時点で未公表の行は0件。release_date・updated_atは変えない。現在の版を使うと改定値が過去の
+  スコア推移に入るため、M-2のレビューを受けてClaimsの修復と同じ方式にした）。しないと、既存の観測月の行は上書きされないため、9月分の発表（10月下旬）まで単月の値が使われる。
+  今日のスコアは27→27（CFNAI −0.04→MA3 0.01、どちらも18点）。過去の比較バー・スコア推移の点は変わりうる
+- 回帰テスト2件（修正前fail→修正後pass）
+- `common/macro_data/series/CFNAI.json`（単月）は削除せず残す。series_meta.jsonから外したため、Macro_Data_Updateは取得しなくなり、
+  更新は2026-10-03の取得分で止まる。リポジトリ全体をgrepし、このファイルと系列"CFNAI"を読むコードが無いことを確認した
+  （macro_data_violations_log.jsonの"CFNAI"の節も更新されずに残る。Check Lはfetch_statusの"ok"だけを見るため影響しない）
+
+**本番での確認（2026-10-04、指示書M-2c）**: Macro_Data_Update（2026-10-03 14:26 UTC）がCFNAIMA3を取得（fetch_status ok）。10-03分の日次の後もevents.csvのCFNAIの行はMA3の値のまま（単月の値での上書きなし）。閾値の−0.35（Diffusion Index向けの目安）はM-3
+
+---
+
 ## 2026-10-03（完了）
 
 ### ✅ [MACRO-PULSE-TICKER-FUTURE-ROW-1] MACRO PULSEのティッカーのS&P500・前営業日比・LAST UPDATEが未来日付の行を使い、古い終値・符号が逆の前日比・未来の日付を表示する — M-2で対応完了
