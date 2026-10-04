@@ -786,10 +786,8 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     add("MAC-32", "ALERT", "flex" if show else "none", dom["phase"]["alertDisplay"])
     btxt = {"bull": "拡張", "neutral": "中立", "caution": "注意", "bear": "後退シグナル"}
     def obs_label(s):
-        if not s["obs"]:
-            return "—"
-        slot = s["name"] in ("Michigan Sent.", "Building Permits") and not s["obs"].endswith("-01")
-        return s["obs"] + ("（発表予定日）" if slot else "（観測日）")
+        # M-3b: 行は全て観測日に置く（予定の枠の行を移した）。tooltipは常に「（観測日）」
+        return s["obs"] + "（観測日）" if s["obs"] else "—"
     exp_sig = [[s["name"], s["val"], btxt[s["signal"]], s["lead"], s["thresh"], f"{s['weight']}%", obs_label(s)] for s in sigs]
     act_sig = [[x["name"], x["val"], x["badge"], x["lead"], (x["tip"][0][1] if len(x["tip"]) > 0 else None),
                 (x["tip"][2][1] if len(x["tip"]) > 2 else None), (x["tip"][3][1] if len(x["tip"]) > 3 else None)] for x in dom["sigs"]]
@@ -865,19 +863,18 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     # MAC-42 スコア推移チャート（1年）
     def build_series(start_ms, end_ms):
         all_inds = [ind for _, ind, _, _ in SCORE_INDS]
+        # M-3b（MACRO-PULSE-CHART-DATE-TZ-1）: 点の日付は現地の暦日。データの日付は文字列のまま
+        sds, eds = local_dt(start_ms).strftime("%Y-%m-%d"), local_dt(end_ms).strftime("%Y-%m-%d")
         cds = set()
         for r in m.events:
-            dm = ms_date_only(r.get("release_date", ""))
-            if dm is None:
-                continue
-            dl = set_hours(dm, 0, 0, 0)
-            if start_ms <= dl <= end_ms and r["indicator"] in all_inds:
-                cds.add(iso_date(dl))
+            ds = (r.get("release_date") or "")[:10]
+            if ms_date_only(ds) is not None and sds <= ds <= eds and r["indicator"] in all_inds:
+                cds.add(ds)
         dcur = start_ms
         while dcur <= end_ms:
-            cds.add(iso_date(dcur))
+            cds.add(local_dt(dcur).strftime("%Y-%m-%d"))
             dcur = local_ms(local_dt(dcur) + timedelta(days=7))
-        cds.add(iso_date(end_ms))
+        cds.add(eds)
         out = []
         for ds in sorted(cds):
             tt = set_hours(ms_date_only(ds), 23, 59, 59)
@@ -900,12 +897,13 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     # 以前の期待（最古の観測の月）は先読み除外を考えていなかった
     all_hist = dom.get("historyAll") or []
     oldest = min(r["release_date"][:10] for r in m.events if ms_date_only(r.get("release_date", "")))
-    st_all = set_hours(ms_date_only(oldest), 0, 0, 0)
-    cds_all = {iso_date(set_hours(ms_date_only(r["release_date"]), 0, 0, 0)) for r in m.events
+    y0, m0, d0 = map(int, oldest.split("-"))
+    st_all = local_ms(datetime(y0, m0, d0, tzinfo=JST))
+    cds_all = {r["release_date"][:10] for r in m.events
                if ms_date_only(r.get("release_date", "")) and r["indicator"] in {ind for _, ind, _, _ in SCORE_INDS}}
     dcur = st_all
     while dcur <= today_end:
-        cds_all.add(iso_date(dcur))
+        cds_all.add(local_dt(dcur).strftime("%Y-%m-%d"))
         dcur = local_ms(local_dt(dcur) + timedelta(days=7))
     first_all = next((ds for ds in sorted(cds_all)
                       if m.score_as_of(set_hours(ms_date_only(ds), 23, 59, 59)) is not None), None)
@@ -1066,7 +1064,7 @@ def derived_checks(m: Model) -> list[Result]:
         exp.append([ind, last["as_of"], last["value"]])
         act.append([ind, iso_date(e["d"]) if e else None, m.val_at(e, now) if e else None])
     R.append(Result("D-01", "8指標: 計算に使われる最新行 vs FRED系列ストアの最新観測", exp, act, exp == act, "導出",
-                    "日付は events.csv の release_date（観測日・発表予定日が混在）。値の不一致は取り込み漏れ・改定未反映・日付の割り当て違い"))
+                    "日付は events.csv の release_date（M-3b以降は全て観測日）。値は計算日の時点の値（改定値はrevised_atの後）。不一致は取り込み漏れ・改定未反映・日付の割り当て違い"))
     # D-02 週次スナップショット（05_weekly_analysis.csv 最新行）の再計算
     if m.weekly_sorted:
         r0 = m.weekly_sorted[0]
@@ -1169,8 +1167,15 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
                         (r.get("model") or "").upper() in (dom["aiTitle"] or "").upper() for r in m.weekly_sorted[:1]), "説明"))
     R.append(Result("N-05", "⑤の見出し「過去2週間の発表実績」", "表示範囲は過去90日（renderRecentSignals）", dom["signalsSec"],
                     "90" in (dom["signalsSec"] or ""), "説明"))
-    R.append(Result("N-06", "⑤の副題「発表日の新しい順」", "日付列は events.csv の release_date（Philly・CFNAI・Sahmは観測月の1日、Michigan・Permits・Claimsは発表予定日の枠）",
-                    dom["signalsTitle"], "観測月の1日" in (dom["signalsTitle"] or "") and "発表予定日" in (dom["signalsTitle"] or ""), "説明"))
+    # M-3b: 月次6指標の行が全て観測月の1日にあること（予定の枠の行が残っていないこと）と、副題がそれを書いていること
+    monthly6 = ("Philadelphia Fed Manufacturing", "Chicago Fed National Activity", "Sahm Rule Recession Indicator",
+                "Michigan Consumer Sentiment", "Building Permits", "NFP")
+    slot_left = sorted({(r["indicator"], r["release_date"]) for r in m.events
+                        if r["indicator"] in monthly6 and parse_float(r.get("actual")) is not None
+                        and not r["release_date"].endswith("-01")})
+    R.append(Result("N-06", "⑤の副題（日付は観測日）", "月次の行は全て観測月の1日（予定の枠の日付の行が無い）。副題に「観測日」があり「発表予定日」が無い",
+                    {"副題": dom["signalsTitle"], "月の1日以外の月次の行": slot_left[:6], "件数": len(slot_left)},
+                    not slot_left and "観測日" in (dom["signalsTitle"] or "") and "発表予定日" not in (dom["signalsTitle"] or ""), "説明"))
     main_src = open(os.path.join(REPO_ROOT, "src", "market", "macro_pulse", "05_main.py"), encoding="utf-8").read()
     uses_ma3 = '"fred_id": "CFNAIMA3"' in main_src
     R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列が CFNAIMA3（05_main.pyのINDICATOR_CONFIG）",
@@ -1185,10 +1190,10 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
         R.append(Result("N-08", "流動性の「前週比」「N週連続減少」「週継続」", "週の判定はH.4.1の基準日（水曜）どうし",
                         "最新行に h41_date が無い（M-2 STEP 4の変更後の日次の実行で書かれる）", None, "説明",
                         "2026-10-03までの行は日次の行で数えた値（MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1）"))
-    R.append(Result("N-09", "8指標カードの「観測日」tooltip", "Michigan・Building Permits は発表予定日の枠の日付（観測日ではない）。Initial Claims は観測日だが最新週ではない",
+    R.append(Result("N-09", "8指標カードの「データの日付」tooltip", "全て「（観測日）」で、Michigan・Building Permitsの日付は観測月の1日（M-3b）",
                     [x["tip"][3][1] if len(x["tip"]) > 3 else None for x in dom["sigs"]],
-                    all(len(x["tip"]) > 3 and x["tip"][3][0] == "データの日付" for x in dom["sigs"])
-                    and any("発表予定日" in (x["tip"][3][1] or "") for x in dom["sigs"] if x["name"] in ("Michigan Sent.", "Building Permits")), "説明"))
+                    all(len(x["tip"]) > 3 and x["tip"][3][0] == "データの日付" and "発表予定日" not in (x["tip"][3][1] or "") for x in dom["sigs"])
+                    and all((x["tip"][3][1] or "")[:10].endswith("-01") for x in dom["sigs"] if x["name"] in ("Michigan Sent.", "Building Permits")), "説明"))
     lead_help = {r[0]: r[2] for r in help_rows}
     R.append(Result("N-10", "先行性の表記（カード vs 「? 見方」表）", "カード: Building Permits 先行3ヶ月 / 表: CB消費者信頼感 2ヶ月",
                     lead_help, any("Building Permits" in k and v == "3ヶ月" for k, v in lead_help.items()) and not any("CB" in k for k in lead_help), "説明"))

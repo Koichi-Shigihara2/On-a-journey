@@ -718,7 +718,7 @@
   <!-- ⑤ 直近の動き -->
   <div class="sec">⑤ 直近の動き（直近90日の発表実績）</div>
   <div class="signals-wrap">
-    <div class="signals-title">RECENT SIGNALS — 日付の新しい順。日付は、月次指標は観測月の1日、週次指標（新規失業保険申請）は週末日、NFP・ミシガン・住宅着工許可は主に発表予定日（観測月の1日の行もある）</div>
+    <div class="signals-title">RECENT SIGNALS — 日付の新しい順。日付は観測日（月次指標は観測月の1日、週次指標〈新規失業保険申請〉は週末日）</div>
     <div id="recentSignals"><div class="empty"><span class="spin"></span>Loading...</div></div>
   </div>
 
@@ -938,6 +938,25 @@ function nyEndOfDayUtcMs(y, m, d) {
 function endOfLocalDay(ds) {
   const [y, m, d] = ds.slice(0, 10).split('-').map(Number);
   return new Date(y, m - 1, d, 23, 59, 59, 0);
+}
+
+// [[MACRO-PULSE-CHART-DATE-TZ-1]]（M-3b STEP 3）: 現地の暦日の'YYYY-MM-DD'。toISOString()はUTCの日付のため、
+// 現地0時に使うと日本では前日、23:59:59に使うとUTCより西では翌日になっていた
+function localDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// 'YYYY-MM-DD'のその暦日の現地0時
+function startOfLocalDay(ds) {
+  const [y, m, d] = ds.slice(0, 10).split('-').map(Number);
+  return new Date(y, m - 1, d, 0, 0, 0, 0);
+}
+
+// データの最古の日付（'YYYY-MM-DD'）
+function oldestDataDateStr() {
+  let o = null;
+  for (const r of DATA) { const ds = (r[COL.date] || '').slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(ds) && (!o || ds < o)) o = ds; }
+  return o;
 }
 
 function knownBounds(asOfMs) {
@@ -1273,8 +1292,6 @@ signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,w
   return { score, signals };
 }
 
-// [[MACRO-PULSE-TEXT-LOGIC-MISMATCH-1]]: events.csvで発表予定日の枠の日付に置かれうる指標（月の1日以外の日付は発表予定日）
-const SLOT_DATED_SIGNALS = new Set(['Michigan Sent.', 'Building Permits']);
 
 function renderPhaseGauge() {
   const result=computeCurrentScore();
@@ -1338,7 +1355,7 @@ function renderPhaseGauge() {
         <div class="pg-sig-tooltip-row"><span>閾値</span><span>${sg.thresh||'—'}</span></div>
         <div class="pg-sig-tooltip-row"><span>先行性</span><span>${sg.lead}</span></div>
         <div class="pg-sig-tooltip-row"><span>ウェイト</span><span>${sg.weight}%</span></div>
-        <div class="pg-sig-tooltip-row"><span>データの日付</span><span>${sg.obsDate||'—'}${sg.obsDate?((SLOT_DATED_SIGNALS.has(sg.name)&&!sg.obsDate.endsWith('-01'))?'（発表予定日）':'（観測日）'):''}</span></div>
+        <div class="pg-sig-tooltip-row"><span>データの日付</span><span>${sg.obsDate||'—'}${sg.obsDate?'（観測日）':''}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -1503,13 +1520,11 @@ function buildL3Snapshots(){
   if(!DATA.length)return;
   const today=new Date(); today.setHours(23,59,59,0);
 
-  // データの最古日を取得してスライダー開始点とする
-  const allDates = DATA
-    .map(r=>new Date(r[COL.date]))
-    .filter(d=>!isNaN(d.getTime()));
-  const earliestData = allDates.length ? new Date(Math.min(...allDates)) : new Date(today);
-  earliestData.setHours(0,0,0,0);
-  const start = earliestData;
+  // データの最古日を取得してスライダー開始点とする（M-3b: 現地の暦日で扱う）
+  const oldestDs = oldestDataDateStr();
+  const start = oldestDs ? startOfLocalDay(oldestDs) : new Date(today);
+  if (!oldestDs) start.setHours(0,0,0,0);
+  const startDs = localDateStr(start), todayDs = localDateStr(today);
 
   // データ変化点を収集：全データ期間の発表日を集める
   const changeDates = new Set();
@@ -1518,20 +1533,20 @@ function buildL3Snapshots(){
   const monthlyInds = ['Philadelphia Fed Manufacturing','Chicago Fed National Activity',
     'Michigan Consumer Sentiment','Building Permits','Sahm Rule Recession Indicator','Initial Claims 4W MA'];
   DATA.forEach(r=>{
-    const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
-    if(d >= start && d <= today && monthlyInds.includes(r[COL.indicator].trim())){
-      changeDates.add(d.toISOString().slice(0,10));
+    const ds = (r[COL.date] || '').slice(0,10);
+    if(ds >= startDs && ds <= todayDs && monthlyInds.includes(r[COL.indicator].trim())){
+      changeDates.add(ds);
     }
   });
 
   // デイリー指標（YC/HY）は週次でサンプリング（変化が多いので間引く）
   for(let d=new Date(start); d<=today; d.setDate(d.getDate()+7)){
-    changeDates.add(new Date(d).toISOString().slice(0,10));
+    changeDates.add(localDateStr(d));
   }
 
   // 開始点と終了点は必ず含める
-  changeDates.add(start.toISOString().slice(0,10));
-  changeDates.add(today.toISOString().slice(0,10));
+  changeDates.add(startDs);
+  changeDates.add(todayDs);
 
   // ソートしてスナップショット配列を作成
   const sortedDates = [...changeDates].sort();
@@ -1734,18 +1749,20 @@ function buildScoreTimeSeries(startDate, endDate) {
     'Sahm Rule Recession Indicator'];
 
 
+  // [[MACRO-PULSE-CHART-DATE-TZ-1]]（M-3b）: 点の日付は現地の暦日。データの日付は文字列のまま使う
+  const startDs = localDateStr(startDate), endDs = localDateStr(endDate);
   DATA.forEach(r => {
-    const d = new Date(r[COL.date]); d.setHours(0,0,0,0);
-    if(d >= startDate && d <= endDate && allInds.includes(r[COL.indicator])) {
-      changeDates.add(d.toISOString().slice(0,10));
+    const ds = (r[COL.date] || '').slice(0,10);
+    if(ds >= startDs && ds <= endDs && allInds.includes(r[COL.indicator])) {
+      changeDates.add(ds);
     }
   });
 
   // 週次サンプリング補完
   for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate()+7)) {
-    changeDates.add(new Date(d).toISOString().slice(0,10));
+    changeDates.add(localDateStr(d));
   }
-  changeDates.add(endDate.toISOString().slice(0,10));
+  changeDates.add(endDs);
   
 
   const result = [...changeDates].sort().map(ds => {
@@ -1765,9 +1782,9 @@ function renderScoreHistory() {
   const today = new Date(); today.setHours(23,59,59,0);
   let startDate;
   if(SCORE_RANGE_YEARS === 0) {
-    // 全期間: データの最古日
-    const allDates = DATA.map(r => new Date(r[COL.date])).filter(d => !isNaN(d));
-    startDate = allDates.length ? new Date(Math.min(...allDates)) : new Date(today);
+    // 全期間: データの最古日（M-3b: 現地の暦日の0時）
+    const oldestDs = oldestDataDateStr();
+    startDate = oldestDs ? startOfLocalDay(oldestDs) : new Date(today);
     startDate.setHours(0,0,0,0);
   } else {
     startDate = new Date(today);
@@ -1818,7 +1835,7 @@ function renderScoreHistory() {
   // 急変緩和が目的）で算出されており、計算方式が混在している
   // （[[MACRO-COMPUTE-DUP-1]]で意図的設計と確定済み）。この違いを画面上でも
   // 判別できるよう、tooltipに算出方式の注記を追加する。
-  const todayStr = today.toISOString().slice(0,10);
+  const todayStr = localDateStr(today);
   chart.setOption({
     backgroundColor: 'transparent',
     grid: {top:24, right:20, bottom:36, left:44},
