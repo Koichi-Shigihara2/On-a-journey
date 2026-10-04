@@ -96,6 +96,12 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   GraphQLの`workersInvocationsScheduled`・`workersInvocationsAdaptive`も0件。deployから22分空けており反映の遅れでは説明しきれないが、原因は未特定。Discordの送信やコードの問題ではない
   （発火していないので送信まで進んでいない）。01:23 UTCに引数なしのdeployで3本に戻し、`TEST_NOTIFY_CRON`も消えたことをAPIで確認。テストはやり直さず、本番の初回の発火を実地テストにする（Koichiさんの決定）
 - Observabilityは有効（`wrangler.toml`の`[observability] enabled = true`、デプロイ済みの設定もlogs.enabled・persist・sampling 1をAPIで確認）
+- トークンの動作確認（README.mdの4、Koichiさんが手元から実行、チャット側承認済み）: 最初は**403**。fine-grained tokenのRepository permissionsが空だった
+  （発行時にActionsの権限が付いていなかった）ため。**Actions: Read and write**を付け直して解決。トークンの更新・再発行のときも、権限が付いていることを確かめてから登録する
+- 付け直した後の確認の実行 `37168962405`（workflow_dispatch・kaihatsu・起動者Koichi-Shigihara2、10-04 01:45:12 UTC起動→01:47:07完了）:
+  ガードは`daily_guard.py`が動いた（guard=trueの経路）うえで「NYSE休場日（2026-10-03）→ run=false」→ **cancelled**（取得・commitなし）。
+  下流4本（Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Update・TANUKI_Score_Update、01:47:09〜01:47:15 UTC作成のworkflow_run）はすべて**skipped**。README.mdの4の想定どおり。
+  Workerの`GH_DISPATCH_TOKEN`がこのトークンなら、権限の付け直しで値は変わらないので登録し直しは不要（Regenerateや別のトークンにした場合は`npx wrangler secret put GH_DISPATCH_TOKEN`で登録し直す）
 
 **火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
 夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
