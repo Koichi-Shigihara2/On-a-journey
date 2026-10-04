@@ -98,6 +98,8 @@ EVENTS_COLUMNS = [
     # [[MACRO-PULSE-REVISION-NOT-APPLIED-1]]（2026-10-04 M-3 STEP 2）: actualは初回公表の値。後からの改定値と、それを
     # 書いた時刻（UTC）。計算日の時点でrevised_atを過ぎていればrevised_actualを使う。途中の改定は持たず、最新の改定値だけを持つ近似
     "revised_actual", "revised_at",
+    # [[MACRO-PULSE-TICKER-SP500-NO-ASOF-1]]（2026-10-04 M-3 STEP 5）: sp500_t0が何日の終値か（'YYYY-MM-DD'）。分からなければ空
+    "sp500_t0_asof",
 ]
 
 SCHEDULE_COLUMNS = [
@@ -884,10 +886,15 @@ def _stooq(symbol: str, target_date: date):
         return None
 
 def get_sp500(target_date: date):
-    v, _ = fred_latest("SP500")
+    return get_sp500_with_asof(target_date)[0]
+
+
+def get_sp500_with_asof(target_date: date) -> tuple:
+    """(S&P500の最新の終値, その観測日'YYYY-MM-DD')。stooqの代替値は観測日を持たないため観測日は空。"""
+    v, d = fred_latest("SP500")
     if v:
-        return v
-    return _stooq("%5Espx", target_date)
+        return v, d.isoformat() if d else ""
+    return _stooq("%5Espx", target_date), ""
 
 # ─────────────────────────────────────────────────────────────────
 #  events.csv I/O（パス修正のみ）
@@ -1087,8 +1094,13 @@ def _load_sp500_cache(from_date: str, to_date: str) -> pd.Series:
         return pd.Series(dtype=float)
 
 def _lookup_sp500(cache: pd.Series, target_date: date):
+    return _lookup_sp500_with_asof(cache, target_date)[0]
+
+
+def _lookup_sp500_with_asof(cache: pd.Series, target_date: date) -> tuple:
+    """(target_date以前で直近の終値, その日付'YYYY-MM-DD')。無ければ(None, "")。"""
     if cache.empty:
-        return None
+        return None, ""
     td = pd.Timestamp(target_date)
     idx = cache.index
     if hasattr(idx, 'tz') and idx.tz is not None:
@@ -1096,8 +1108,8 @@ def _lookup_sp500(cache: pd.Series, target_date: date):
         cache = pd.Series(cache.values, index=idx)
     s = cache[cache.index <= td]
     if s.empty:
-        return None
-    return round(float(s.iloc[-1]), 2)
+        return None, ""
+    return round(float(s.iloc[-1]), 2), pd.Timestamp(s.index[-1]).strftime("%Y-%m-%d")
 
 def fill_returns():
     events = load_events()
@@ -1147,9 +1159,10 @@ def fill_returns():
             continue
 
         if not events.at[idx, "sp500_t0"]:
-            sp0 = _lookup_sp500(sp_cache, rd)
+            sp0, sp0_asof = _lookup_sp500_with_asof(sp_cache, rd)
             if sp0:
                 events.at[idx, "sp500_t0"] = str(sp0)
+                events.at[idx, "sp500_t0_asof"] = sp0_asof
                 updated += 1
             else:
                 skip_no_sp0 += 1
@@ -2536,9 +2549,9 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         return
 
     fin_ctx  = get_financial_context(target_date)
-    sp500_t0 = get_sp500(target_date)
+    sp500_t0, sp500_t0_asof = get_sp500_with_asof(target_date)
     logger.info(f"Financial context: {fin_ctx}")
-    logger.info(f"S&P500 t0: {sp500_t0}")
+    logger.info(f"S&P500 t0: {sp500_t0} (as of {sp500_t0_asof or '不明'})")
 
     date_str  = target_date.strftime("%Y-%m-%d")
     scheduled = schedule[schedule["release_date"] == date_str].to_dict("records")
@@ -2586,6 +2599,10 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
     new_rows.extend(
         refresh_monthly_indicators(target_date, fin_ctx, schedule, events_snapshot, sp500_t0)
     )
+    # M-3 STEP 5: この実行が書いたsp500_t0の観測日
+    for row in new_rows:
+        if sp500_t0 and row.get("sp500_t0") == str(sp500_t0):
+            row["sp500_t0_asof"] = sp500_t0_asof
     # M-3 STEP 2: 既存の行の改定値（actualは変えない）
     events = apply_revisions(events)
 

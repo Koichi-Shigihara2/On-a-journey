@@ -1057,21 +1057,41 @@ function updateTicker() {
     .map(r => ({v: n(r[COL.sp0]), d: new Date(r[COL.date]).getTime(), u: new Date(r['updated_at']).getTime()}))
     .filter(p => p.v !== null && !isNaN(p.d) && p.d <= now && !isNaN(p.u))
     .sort((a, b) => a.u - b.u || a.d - b.d);
-  const sp = spPts.length ? spPts[spPts.length - 1].v : null;
+  // [[MACRO-PULSE-TICKER-SP500-NO-ASOF-1]]（2026-10-04 M-3 STEP 5）: sp500_t0_asof（何日の終値か）がある行は、観測日ごとの終値として
+  // 使う。最新の観測日の終値を「最新」、その前の観測日の終値を「前営業日」とする。間に記録の無い平日があれば、比べた日付を出す
+  // （祝日も平日として数えるため、祝日をはさむと日付が出ることがある）。観測日のある行が無いときだけ従来の方法
+  const todayStr = new Date(now).toISOString().slice(0,10);
+  const closes = new Map();
+  for (const r of DATA) {
+    const a = (r['sp500_t0_asof'] || '').trim(), v = n(r[COL.sp0]);
+    if (a && v !== null && a <= todayStr) closes.set(a, v);
+  }
+  const asofs = [...closes.keys()].sort();
+  let sp = null, prevV = null, prevAsof = '', curAsof = '';
+  if (asofs.length) {
+    curAsof = asofs[asofs.length - 1]; sp = closes.get(curAsof);
+    if (asofs.length > 1) { prevAsof = asofs[asofs.length - 2]; prevV = closes.get(prevAsof); }
+  } else if (spPts.length) {
+    sp = spPts[spPts.length - 1].v;
+    for(let i = spPts.length - 2; i >= 0; i--){ if(spPts[i].v !== sp){ prevV = spPts[i].v; break; } }
+  }
   const spEl=el('tk-sp'); if(sp!==null&&spEl)spEl.textContent=sp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 
   // S&P 500 前営業日比
   const spCEl = el('tk-sp-c');
   if(spCEl){
-    let prevPt = null;
-    for(let i = spPts.length - 2; i >= 0; i--){ if(spPts[i].v !== sp){ prevPt = spPts[i]; break; } }
-    if(sp !== null && prevPt){
-      const cur  = sp;
-      const prev = prevPt.v;
-      const chg  = cur - prev;
-      const pct  = (chg / prev * 100);
+    if(sp !== null && prevV !== null){
+      const chg  = sp - prevV;
+      const pct  = (chg / prevV * 100);
       const sign = chg >= 0 ? '+' : '';
-      spCEl.textContent = `${sign}${chg.toFixed(2)} (${sign}${pct.toFixed(2)}%)`;
+      let skipped = 0;
+      if (prevAsof && curAsof) {
+        for (let t = Date.parse(prevAsof + 'T00:00:00Z') + 86400000; t < Date.parse(curAsof + 'T00:00:00Z'); t += 86400000) {
+          const wd = new Date(t).getUTCDay(); if (wd !== 0 && wd !== 6) skipped++;
+        }
+      }
+      spCEl.textContent = `${sign}${chg.toFixed(2)} (${sign}${pct.toFixed(2)}%)` + (skipped ? ` vs ${prevAsof.slice(5)}` : '');
+      spCEl.title = prevAsof ? `${curAsof} の終値と ${prevAsof} の終値の差` : '';
       spCEl.style.color = chg >= 0 ? 'var(--bull)' : 'var(--bear)';
     } else {
       spCEl.textContent = '—';

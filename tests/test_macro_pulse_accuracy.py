@@ -393,3 +393,26 @@ class TestScoreNoData:
         monkeypatch.setattr(main05, "load_weekly_analysis", lambda: called.append(1) or pd.DataFrame())
         main05.run_weekly_analysis(date(2019, 10, 31))
         assert called == []
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-3 STEP 5: sp500_t0の観測日（sp500_t0_asof）[[MACRO-PULSE-TICKER-SP500-NO-ASOF-1]]
+# ─────────────────────────────────────────────────────────────────
+class TestSp500Asof:
+    def test_events_columns_have_sp500_t0_asof(self):
+        assert "sp500_t0_asof" in main05.EVENTS_COLUMNS
+
+    def test_get_sp500_with_asof_returns_fred_obs_date(self, monkeypatch):
+        monkeypatch.setattr(main05, "fred_latest", lambda sid: (7722.72, date(2026, 10, 2)))
+        assert main05.get_sp500_with_asof(date(2026, 10, 3)) == (7722.72, "2026-10-02")
+        assert main05.get_sp500(date(2026, 10, 3)) == 7722.72
+
+    def test_get_sp500_with_asof_fallback_has_no_date(self, monkeypatch):
+        monkeypatch.setattr(main05, "fred_latest", lambda sid: (None, None))
+        monkeypatch.setattr(main05, "_stooq", lambda sym, d: 7700.0)
+        assert main05.get_sp500_with_asof(date(2026, 10, 3)) == (7700.0, "")
+
+    def test_lookup_sp500_with_asof_returns_close_date(self):
+        cache = pd.Series([7316.15, 7325.0], index=pd.to_datetime(["2026-07-29", "2026-07-30"]))
+        assert main05._lookup_sp500_with_asof(cache, date(2026, 8, 1)) == (7325.0, "2026-07-30")
+        assert main05._lookup_sp500(cache, date(2026, 7, 29)) == 7316.15
