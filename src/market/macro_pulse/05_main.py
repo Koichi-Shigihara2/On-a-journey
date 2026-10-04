@@ -960,6 +960,10 @@ def resolve_forecast(indicator: str, release_date_str: str, actual_val,
 # ─────────────────────────────────────────────────────────────────
 #  指標フェッチ → event row 生成（変更なし）
 # ─────────────────────────────────────────────────────────────────
+# 手入力の速報を観測月の1日へ置く指標（M-3b STEP 1-3）。Michigan Inflation 5YはFREDの値が市場の日次系列（T5YIE）で別物のため含めない
+_PRELIM_TO_OBS_MONTH = {"Michigan Consumer Sentiment", "Michigan Inflation 1Y"}
+
+
 def fetch_event_row(indicator: str, target_date: date,
                     fin_ctx: dict, schedule: pd.DataFrame,
                     events: pd.DataFrame,
@@ -986,6 +990,13 @@ def fetch_event_row(indicator: str, target_date: date,
     })
 
     actual_val = override_actual
+    if override_actual is not None and indicator in _PRELIM_TO_OBS_MONTH:
+        # [[MACRO-PULSE-SLOT-ROWS-1]]（M-3b STEP 1-3）: Michiganの速報（月の中ごろ、手入力）は、その月（観測月）の1日の行に置く。
+        # FREDのUMCSENT・MICHには速報が入らず確定値（月末）だけが入るため、確定値はFREDに入った後にapply_revisions()が
+        # revised_actualとして書く
+        obs = target_date.replace(day=1)
+        row["release_date"] = obs.strftime("%Y-%m-%d")
+        row["event_id"] = make_event_id(indicator, obs)
 
     # MACRODATA-LAYER-CONSTRUCTION-1本番消費者切替（2026-08-12）:
     # common.macro_data.reader経由（ローカルファイル読み取りのみ）に
@@ -1983,7 +1994,7 @@ def refresh_monthly_indicators(target_date: date, fin_ctx: dict,
     毎日の normal run で呼び出し、月次 FRED 指標を補完する。
     - FREDの最新観測日が events.csv に未登録または actual が空 → 新規追加
     - スケジュールに依存しないため Philly Fed / CFNAI / Sahm Rule も自動取得できる
-    - FREDのobs_dateが月初1日等になる場合、scheduleの実発表日で上書きする
+    - 行はFREDの観測日に置く（M-3b。以前はscheduleの発表予定日の枠へ寄せていた）
     """
     new_rows = []
     for ind_name in _MONTHLY_REFRESH_SET:
@@ -1996,53 +2007,16 @@ def refresh_monthly_indicators(target_date: date, fin_ctx: dict,
         if val is None or obs_date is None:
             continue
 
-        # FREDのobs_dateが月初1日等になる場合、scheduleの実発表日で上書き。
-        # obs_to_release_lag を使って「この obs_date が実際に発表される release_date」に
-        # 絞り込んだウィンドウでスケジュールを検索する。ウィンドウが広すぎると
-        # 既存スロット（前回分）を飛ばして未来スロットに誤マッピングされるため、
-        # lag ± 14 日の狭い範囲だけを見る。
+        # [[MACRO-PULSE-SLOT-ROWS-1]]（2026-10-04 指示書M-3b STEP 1）: 行は常にFREDの観測日に置く（NFPはPAYEMSの観測月の1日）。
+        # 以前はscheduleの発表予定日の枠へ寄せており、枠の日付が観測日より後のため「最新の行」として選ばれ、後から書いた値
+        # （確定値・改定値）が枠の日付の時点で使えたことになっていた。予定表はDiscordのリマインドなど予定に使う処理だけに残す
         release_date = obs_date
-        cfg_ind = INDICATOR_CONFIG.get(ind_name, {})
-        lag = cfg_ind.get("obs_to_release_lag", 35)
-        win_start = (obs_date + timedelta(days=max(1, lag - 14))).strftime("%Y-%m-%d")
-        win_end   = (obs_date + timedelta(days=lag + 14)).strftime("%Y-%m-%d")
-        sched_hits = schedule[
-            (schedule["indicator"] == ind_name) &
-            (schedule["release_date"] >= win_start) &
-            (schedule["release_date"] <= win_end)
-        ].sort_values("release_date")
-        if cfg_ind.get("weekly"):
-            # [[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]: 週次系列を発表予定の枠へ寄せると、
-            # 枠の日付まで「未来の行」になり今日の計算に使われない。観測日に置く
-            sched_hits = sched_hits.iloc[0:0]
-
-        if not sched_hits.empty:
-            found_slot = False
-            for _, srow in sched_hits.iterrows():
-                try:
-                    candidate_date = datetime.strptime(srow["release_date"], "%Y-%m-%d").date()
-                except Exception:
-                    continue
-                candidate_id = make_event_id(ind_name, candidate_date)
-                existing_c = events[events["event_id"] == candidate_id]
-                if not existing_c.empty:
-                    actual_str = str(existing_c.iloc[0].get("actual", "")).strip()
-                    if actual_str not in ("", "nan"):
-                        continue  # このスロットは既にデータあり → 次を試す
-                release_date = candidate_date
-                found_slot = True
-                logger.info(f"[monthly-refresh] {ind_name}: obs={obs_date} → sched_release={release_date}")
-                break
-            if not found_slot:
-                continue  # ウィンドウ内の全スロットに正常データあり → スキップ
-        else:
-            # スケジュールなし（またはウィンドウ外） → obs_date ベースの event_id を確認
-            event_id = make_event_id(ind_name, release_date)
-            existing = events[events["event_id"] == event_id]
-            if not existing.empty:
-                actual_str = str(existing.iloc[0].get("actual", "")).strip()
-                if actual_str not in ("", "nan"):
-                    continue  # 既に正常データあり → スキップ
+        existing = events[(events["indicator"] == ind_name) &
+                          (events["release_date"] == release_date.strftime("%Y-%m-%d"))]
+        if not existing.empty:
+            actual_str = str(existing.iloc[0].get("actual", "")).strip()
+            if actual_str not in ("", "nan"):
+                continue  # 既に正常データあり → スキップ（改定値はapply_revisions()が書く）
 
         try:
             row = fetch_event_row(ind_name, target_date, fin_ctx, schedule, events)

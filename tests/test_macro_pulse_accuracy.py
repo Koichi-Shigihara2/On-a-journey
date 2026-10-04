@@ -70,8 +70,9 @@ class TestClaimsReleaseAndPlacement:
         assert claims[0]["release_date"] == "2026-09-26"
         assert claims[0]["event_id"] == "ic4wsa_2026-09-26"
 
-    def test_monthly_indicator_still_uses_schedule_slot(self, monkeypatch):
-        """週次以外（Building Permits）は従来どおり予定の枠に置く（今回の修正の対象外）。"""
+    def test_monthly_indicator_is_placed_on_observation_date(self, monkeypatch):
+        """M-3b（[[MACRO-PULSE-SLOT-ROWS-1]]）: 月次（Building Permits）も予定の枠ではなく観測日に置く。
+        （以前のこのテストは「予定の枠に置く」ことを確かめていた）"""
         def fake_latest(series_id):
             if series_id == "PERMIT":
                 return 1403.0, date(2026, 8, 1)
@@ -83,7 +84,8 @@ class TestClaimsReleaseAndPlacement:
         ])
         rows = main05.refresh_monthly_indicators(date(2026, 9, 18), {}, schedule, _events([]), None)
         permits = [r for r in rows if r["indicator"] == "Building Permits"]
-        assert permits and permits[0]["release_date"] == "2026-09-15"
+        assert permits and permits[0]["release_date"] == "2026-08-01"
+        assert permits[0]["event_id"].endswith("_2026-08-01")
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -449,3 +451,50 @@ class TestSp500AsofRepairWindow:
         out = pd.read_csv(ev, dtype=str).fillna("").set_index("event_id")
         assert out.at["a", "sp500_t0_asof"] == ""
         assert out.at["b", "sp500_t0_asof"] == "2026-09-29"
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-3b STEP 1: 予定の枠ではなく観測日に置く [[MACRO-PULSE-SLOT-ROWS-1]]
+# ─────────────────────────────────────────────────────────────────
+class TestSlotRowsToObservationDate:
+    def _schedule(self, ind, d, fred_id):
+        return pd.DataFrame([{**{c: "" for c in main05.SCHEDULE_COLUMNS}, "indicator": ind, "release_date": d, "fred_id": fred_id}])
+
+    def test_nfp_is_placed_on_payems_observation_month(self, monkeypatch):
+        """2026-10-02の実例: 9月分（29,000）が予定の枠 2026-10-02 の行に入っていた。"""
+        monkeypatch.setattr(main05, "fred_latest", lambda s: (159044.0, date(2026, 9, 1)) if s == "PAYEMS" else (None, None))
+        monkeypatch.setattr(main05, "fred_latest_with_prev",
+                            lambda s: (159044.0, date(2026, 9, 1), 159015.0, date(2026, 8, 1)))
+        rows = main05.refresh_monthly_indicators(date(2026, 10, 2), {}, self._schedule("NFP", "2026-10-02", "PAYEMS"),
+                                                 _events([]), None)
+        nfp = [r for r in rows if r["indicator"] == "NFP"]
+        assert nfp and nfp[0]["release_date"] == "2026-09-01" and float(nfp[0]["actual"]) == 29000
+
+    def test_michigan_is_placed_on_observation_month(self, monkeypatch):
+        """2026-09-27の実例: 8月の確定値51.7が予定の枠 2026-08-14 の行に入っていた。"""
+        monkeypatch.setattr(main05, "fred_latest", lambda s: (51.7, date(2026, 8, 1)) if s == "UMCSENT" else (None, None))
+        rows = main05.refresh_monthly_indicators(date(2026, 9, 26), {},
+                                                 self._schedule("Michigan Consumer Sentiment", "2026-08-14", "UMCSENT"),
+                                                 _events([]), None)
+        mi = [r for r in rows if r["indicator"] == "Michigan Consumer Sentiment"]
+        assert mi and mi[0]["release_date"] == "2026-08-01"
+
+    def test_existing_observation_row_is_not_duplicated_into_slot(self, monkeypatch):
+        """観測日の行に値があれば、別の枠の行を作らない（以前は空いている枠を探して書いていた）。"""
+        monkeypatch.setattr(main05, "fred_latest", lambda s: (1394.0, date(2026, 8, 1)) if s == "PERMIT" else (None, None))
+        events = _events([_event("Building Permits", "2026-08-01", 1394.0)])
+        rows = main05.refresh_monthly_indicators(date(2026, 9, 18), {},
+                                                 self._schedule("Building Permits", "2026-09-15", "PERMIT"), events, None)
+        assert not [r for r in rows if r["indicator"] == "Building Permits"]
+
+    def test_manual_michigan_prelim_goes_to_observation_month(self, monkeypatch):
+        """Michiganの速報（手入力、予定表のactual）は、その月の1日の行のactualにする（確定値は後でrevised_actual）。"""
+        row = main05.fetch_event_row("Michigan Consumer Sentiment", date(2026, 10, 9), {},
+                                     pd.DataFrame(columns=main05.SCHEDULE_COLUMNS), _events([]), 55.0)
+        assert row["release_date"] == "2026-10-01" and row["actual"] == "55.0" and row["data_source"] == "manual"
+
+    def test_final_value_becomes_revised_actual(self, monkeypatch):
+        """速報55.0の行に、FREDの確定値56.1が入るとrevised_actualに書く（M-3 STEP 2の仕組み）。"""
+        monkeypatch.setattr(main05, "_store_values", lambda fid: {"2026-10-01": 56.1} if fid == "UMCSENT" else {})
+        out = main05.apply_revisions(_events([_event("Michigan Consumer Sentiment", "2026-10-01", 55.0)]))
+        assert out.iloc[0]["actual"] == "55.0" and float(out.iloc[0]["revised_actual"]) == 56.1

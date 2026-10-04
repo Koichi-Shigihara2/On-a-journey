@@ -2813,6 +2813,58 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 
 ---
 
+### [MACRO-PULSE-SLOT-ROWS-1] MACRO PULSEのNFP・Building Permits・Michiganの行が発表予定日の枠の日付に置かれ、後から書いた値が枠の日付の時点で使えたことになっている
+**優先度:** 高
+**分類:** 先読み・データの日付の割り当て / MACRO PULSE（05_main.py・05_events.csv）
+**登録日:** 2026-10-04
+**発見:** 指示書M-3b STEP 0
+
+#### 内容
+`refresh_monthly_indicators()`が、予定表（05_indicator_schedule.csv）に載っている指標（NFP・Building Permits・Michigan Consumer
+Sentiment）の行を、FREDの観測日ではなく発表予定日の枠の日付に置いていた（Claimsは[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]で修正済み）。
+05_events.csvの該当は19行（Permits 7・Michigan 6・NFP 6、2026-03〜10の実行分）。M-3 STEP 2で「予定の枠などで変えない」とした7,003行の
+うち残りの6,984行はHY Spreadの取り込み分で、観測日の行（ALFREDの版の記録が2023-10以降しか無いため照合できなかっただけで、
+系列ストアの同じ日付の値と全行一致）。
+- 枠の日付は観測日より後のため、スコアは枠の行を「最新の行」として使う（今日: Permits 09-15の1394、Michigan 08-14の51.7）
+- 枠の行の値は、書いた時点（updated_at）のFREDの最新値で、枠の日付の時点の値ではない（例: Michiganの08-14の枠には08-28公表の
+  確定値51.7〈09-27に書いた〉、NFPの04-03の枠には05-08時点の3月の改定値214,000〈04-03の初回公表は178,000〉）
+- **M-3 STEP 1の修復が、枠の行のknown_atを枠の日付（推定）にしたため、過去の日付の再計算でこれらの値が公表前に使われる**
+  （今日のスコアには影響しない）
+
+#### 着手条件
+M-3bで、コードを観測日に置く形に直し、既存の19行を観測日へ移す修復を行う。
+
+
+#### 対応（2026-10-04、指示書M-3b STEP 1、feature/macro-pulse-m3b）
+- `refresh_monthly_indicators()`: 予定の枠へ寄せる処理を外し、FREDから取る指標は全て観測日に置く（NFPはPAYEMSの観測月の1日）。
+  観測日の行に値があれば飛ばす（改定値は`apply_revisions()`が書く）。予定表はDiscordのリマインドなど予定に使う処理だけに残る。
+  `fetch_event_row()`はもともとFREDの観測日に置いており、予定日に書くのは手入力（予定表のactual）の行だけ
+- **Michiganの速報と確定（STEP 1-3）**: FREDのUMCSENT・MICHには月中の速報が入らない（ALFREDで2026年の各月とも版は1つで、
+  初回公表日は月末の確定値の日。2016年以降の128か月中117か月は版が1つ）。そのため自動で入るのは確定値で、それがactualになる。
+  速報を手入力したとき（予定表のactual）だけ、それを観測月の1日の行のactualにし（`_PRELIM_TO_OBS_MONTH`: Michigan Consumer
+  Sentiment・Michigan Inflation 1Y）、確定値はFREDに入った後に`apply_revisions()`がrevised_actualに書く
+- 回帰テスト: 以前の「月次は予定の枠に置く」テストを「観測日に置く」に書き換え、5件追加（修正前5件fail→修正後pass）
+
+---
+
+### [MACRO-PULSE-CHART-DATE-TZ-1] MACRO PULSEのスコア推移の点の日付が、日本では1日前の日付で表示される
+**優先度:** 低
+**分類:** 表示の日付のずれ / MACRO PULSE（index.html）
+**登録日:** 2026-10-04
+**発見:** 指示書M-3の統合前の確認（MAC-42cの切り分け）
+
+#### 内容
+`buildScoreTimeSeries()`は、データの日付（`new Date('YYYY-MM-DD')`＝UTCの0時）に`setHours(0,0,0,0)`（現地の0時）をかけ、
+`toISOString().slice(0,10)`（UTCの日付）で点の日付を書く。日本（UTC+9）では現地の0時がUTCの前日15時になるため、点の日付が
+データの日付の1日前になる（例: 開始日2025-10-04の0時→点の日付2025-10-03）。計算（`computeScoreAsOf(endOfLocalDay(点の日付))`）も
+その1日前の日付で行うため、表示と計算は一致しているが、発表日の点がその前日の日付・前日の時点のスコアで描かれる。
+
+#### 着手条件
+M-3b STEP 3で直す。計算に使う日付と表示する日付が同じになることを、東京とロサンゼルスの両方の時刻で確認する。
+
+---
+
+
 （[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
 
 ---
