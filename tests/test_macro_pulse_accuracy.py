@@ -416,3 +416,36 @@ class TestSp500Asof:
         cache = pd.Series([7316.15, 7325.0], index=pd.to_datetime(["2026-07-29", "2026-07-30"]))
         assert main05._lookup_sp500_with_asof(cache, date(2026, 8, 1)) == (7325.0, "2026-07-30")
         assert main05._lookup_sp500(cache, date(2026, 7, 29)) == 7316.15
+
+
+class TestSp500AsofRepairWindow:
+    """M-3 STEP 5追加: 修復スクリプトは、行の日付の0〜7日前の終値とだけ一致させる（何年も前の同じ値の終値とは一致させない）。"""
+
+    def _load(self):
+        p = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "analysis" / "macro_events_sp500_asof_repair.py"
+        spec = importlib.util.spec_from_file_location("sp500_asof_repair", p)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_does_not_match_close_from_years_ago(self, tmp_path, monkeypatch):
+        import json
+        import sys
+        mod = self._load()
+        sp = tmp_path / "SP500.json"
+        sp.write_text(json.dumps([{"as_of": "2019-06-19", "value": 2926.46},
+                                  {"as_of": "2026-09-29", "value": 6600.12}]), encoding="utf-8")
+        ev = tmp_path / "05_events.csv"
+        pd.DataFrame([
+            {"event_id": "a", "indicator": "VIX", "release_date": "2026-03-10", "sp500_t0": "2926.46",
+             "updated_at": "2026-03-28 19:30:24"},
+            {"event_id": "b", "indicator": "VIX", "release_date": "2026-09-30", "sp500_t0": "6600.12",
+             "updated_at": "2026-09-30 23:00:00"},
+        ]).to_csv(ev, index=False)
+        monkeypatch.setattr(mod, "SP500", str(sp))
+        monkeypatch.setattr(mod, "EVENTS", str(ev))
+        monkeypatch.setattr(sys, "argv", ["x", "--apply"])
+        assert mod.main() == 0
+        out = pd.read_csv(ev, dtype=str).fillna("").set_index("event_id")
+        assert out.at["a", "sp500_t0_asof"] == ""
+        assert out.at["b", "sp500_t0_asof"] == "2026-09-29"
