@@ -2770,10 +2770,8 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 
 ---
 
-## 優先度：低（アイデア段階）
-
 ### [TANUKI-BETA-BASIS-FIELDS-UNLABELED-1] latest.jsonのトップレベルintrinsic_value_ptとcomponents.pv_high・pv_terminalがβ込みWACCで割り引いた値なのに注記がなく、メインの計算根拠と紛らわしい
-**優先度:** 低
+**優先度:** 中（2026-10-04に低から変更）
 **分類:** 表示・命名 / TANUKI VALUATION（core_calculator.py・stock.html）
 **登録日:** 2026-10-04
 **発見:** Rfの読み手の棚卸し（2026-10-04、読み取り専用、HEAD `befc659b40`）
@@ -2794,8 +2792,18 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 - `validator.py`（v0の検算、β版同士で一致するためPASS）、`diag_iv_trace.py`（診断用、「uses CAPM WACC」と表示済み）
 - `pipeline.py:2007・2036`はRm版（`pv_fcf_rm`・`pv_tv_rm`）を優先し、無いときだけβ版に戻る
 
+#### 優先度を中にした理由（2026-10-04）
+ウォーターフォール図（`stock.html::renderChart()`）の棒がβ版のPV（`components.pv_high`・`pv_terminal`、3段階は`dcf_components`の
+β版のPhase1・2）で、合計の`v0`がメインの`dcf_components.v0_rm`の場合、棒の合計がV₀と一致しない。これはメインIVを説明する図の
+不整合にあたり、命名だけの問題より重い。
+
 #### 着手条件
-なし（対応は、`v0_note`と同じ形の注記の追加か、Rm版のフィールド名への置き換え。ウォーターフォール図の食い違いの確認を先に行う）
+数銘柄（2段階・3段階・逓減を各1以上）で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測する。
+一致しなければ図の修正（Rm版のPV〈`pv_fcf_rm`・`pv_tv_rm`・`pv_phase1_rm`・`pv_phase2_rm`〉への置き換え）、一致すれば
+`v0_note`と同じ形の注記の追加だけにする。
+
+
+## 優先度：低（アイデア段階）
 
 ### [MACRO-PULSE-TICKER-SP500-NO-ASOF-1] MACRO PULSEのsp500_t0が値だけを持ち何日の終値かを持たないため、実行が欠けた日はティッカーの前日比が2営業日分になる
 **優先度:** 低

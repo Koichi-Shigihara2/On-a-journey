@@ -22876,7 +22876,8 @@ SOUN/CRWVは全て`layer2_complete: True`・`missing_kpis: []`を確認。
 ## 2026-08-16（完了）
 
 ### ✅ [RISK-FREE-RATE-HARDCODE-1] risk_free_rateの常時ハードコード（0.043固定）— 調査完了・現状維持
-**状態:** 調査完了・対応不要（現状維持）
+**状態:** 調査完了・対応不要（現状維持）。**2026-10-04に参考②・ERPだけRfを^TNXの現在値に切り替えた**（β込みWACC・Ke・FCFEの
+株主資本コストは固定値0.043のまま。末尾の「2026-10-04 追記」参照、commit `bb81928103`）
 **優先度（訂正）:** 高 → **低**（2026-08-16、調査結果に基づき訂正）
 **分類:** データ品質 / TANUKI VALUATION / DCF計算
 **登録日:** 2026-07-23
@@ -22968,7 +22969,8 @@ funda_score・timing_score・dcf_components.v0_rm・rice・scenario・sensitivit
   `risk_free_rate_live_source`（"tnx" / "fallback_fixed"）。フォールバック時は`required_growth_rf_live`をNoneにして金利感応度チェックを出さない
 - 参考②: `calculate_pt(rf_reference=...)`で参考②だけを現在値で割り引き、使った値を`intrinsic_value_rf_rate`に残す。
   report.txt・stock.htmlの見出しはこのフィールドから作り、^TNXの日付（固定値なら「固定値」）を出す
-- ERP: `_calculate_erp()`の3か所（latest.jsonの`erp`・report.txt）を現在値に。report.txtのRisk_Free_Rate・ERP_Signalの行と、
+- ERP: `_calculate_erp()`の呼び出し2か所（latest.jsonの`erp`〈`_save_result()`〉・report.txt〈`_generate_report()`〉）に現在値を渡す。
+  `_calculate_erp()`自体の引数の既定値0.043は変えていない（呼び出し側が常に値を渡す）。report.txtのRisk_Free_Rate・ERP_Signalの行と、
   stock.htmlのERPの欄に、使ったRfと日付を出す
 - 金利感応度チェック: 意味（固定の基準4.30%と現在値の比較）は変えず、「現在」に^TNXの日付を出す
 
@@ -22979,7 +22981,7 @@ Rfだけを日々の金利で動かすとRm=10%固定のままERP（Rm−Rf）�
 
 **検証（2026-10-04）**: 全99銘柄を変更前（別worktreeのHEAD）と変更後で再生成して比べた（XAIのキーを外して実行）。
 (A)のフィールドとscore_historyは99銘柄すべて一致。参考①・`wacc`（Ke）・FCFEの株主資本コストも不変。変わったのは参考②・ERP・新しいフィールドと、
-report.txtの該当行だけ（それ以外のフィールドの変化0件）。ERPのラベルは24銘柄で変わった（23銘柄は過熱側へ1段、MOは冷却圏→中立〜やや冷却）。
+report.txtの該当行だけ（それ以外のフィールドの変化0件）。ERPのラベルは24銘柄で変わり、いずれも過熱側へ1段（やや過熱→過熱圏13・中立〜やや冷却→やや過熱10・冷却圏→中立〜やや冷却1〈MO〉）。
 テスト: `tests/test_pipeline_logic.py::TestLiveRiskFreeRate`（7件、フォールバック3経路・5営業日の境界・report.txtの表示）、
 `tests/test_core_calculator_rf_reference.py`（2件）。修正前のコードでは全件失敗、修正後は全件成功。再生成したデータはcommitしていない
 （次の夜間の実行で反映される）。
@@ -39727,6 +39729,9 @@ risk_free_rate、常に4.3%固定）と現在Rf（`common/market_data/daily/
 IV」と同じ立ち位置の参考表示専用フィールドとし、主計算
 （intrinsic_value_per_share・funda_score・tanuki_score・matrix等）
 には一切使用しない。
+（2026-10-04追記: 現在Rfの読み出しは`pipeline.py::_resolve_live_risk_free_rate()`に共通化し、参考②・ERPと同じ値を使う。
+^TNXの終値が5営業日より古い・取れない場合は固定値0.043に戻り、そのときは金利感応度チェックを出さない。
+「現在」の横に^TNXの日付を表示。[[RISK-FREE-RATE-HARDCODE-1]]の2026-10-04追記参照）
 
 10銘柄の実データ試算で、基準Rf(4.3%)→現在Rf(4.97%)の差分は+6.8〜
 +14.0ptと十分意味のある大きさが出た一方、Rfベースの必要成長率自体は
