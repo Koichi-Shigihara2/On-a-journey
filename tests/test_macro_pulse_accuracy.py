@@ -371,3 +371,25 @@ class TestRevisions:
         after = main05._compute_current_score(ev, date(2026, 9, 25))
         assert before["indicators"]["philly"]["value"] == 5.0
         assert after["indicators"]["philly"]["value"] == -20.0
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-3 STEP 3: 使える指標が無いときは判定不能（50にしない）
+# ─────────────────────────────────────────────────────────────────
+class TestScoreNoData:
+    def test_no_usable_rows_gives_none(self):
+        res = main05._compute_current_score(_events([]), date(2026, 10, 3))
+        assert res["score"] is None and res["phase"] == "判定不能"
+
+    def test_rows_only_known_after_target_give_none(self):
+        r = _event("Philadelphia Fed Manufacturing", "2019-10-01", 5.6, "2026-03-28 19:30:24")
+        res = main05._compute_current_score(_events([r]), date(2019, 10, 31))
+        assert res["score"] is None
+
+    def test_weekly_analysis_skips_when_none(self, monkeypatch):
+        r = _event("Philadelphia Fed Manufacturing", "2019-10-01", 5.6, "2026-03-28 19:30:24")
+        monkeypatch.setattr(main05, "load_events", lambda: _events([r]))
+        called = []
+        monkeypatch.setattr(main05, "load_weekly_analysis", lambda: called.append(1) or pd.DataFrame())
+        main05.run_weekly_analysis(date(2019, 10, 31))
+        assert called == []

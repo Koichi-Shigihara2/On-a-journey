@@ -2564,6 +2564,13 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 - 回帰テスト4件（修正前4件fail→修正後pass）
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
 
+
+#### 対応（2026-10-04、指示書M-3 STEP 3、feature/macro-pulse-m3）
+- 使える指標が1つも無い日のスコアを50（中立の値）にせず判定不能にした: `_compute_current_score()`はscore=None・phase='判定不能'、
+  `run_weekly_analysis()`はその週のスナップショットを書かずに飛ばす。index.htmlの`computeCurrentScore()`はnull、ゲージは「判定不能」「—」
+  （過去の日付の`computeScoreAsOf()`は既にnullを返す）。browser_checks/check_macro_pulse.pyの期待値の計算も同じ規則に
+- 回帰テスト3件（修正前3件fail→修正後pass）
+
 ---
 
 ### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）

@@ -1202,8 +1202,8 @@ function computeCurrentScore() {
 
 signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,weight:7,lead:'先行1ヶ月',desc:'サームルール不況指標。失業率の3ヶ月移動平均が過去12ヶ月の最低値より0.5pp以上上昇で不況シグナル。',thresh:'BULL<0.3 / BEAR≥0.5',obsDate:latestDate('Sahm Rule Recession Indicator')});
   const totalW=signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.weight:0),0);
-  const rawScore=totalW>0?signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW:50;
-  const liveScore=Math.round(rawScore);
+  // M-3 STEP 3: 使える指標が1つも無いときは50（中立の値）にせず、判定不能（null）にする
+  const liveScore=totalW>0?Math.round(signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW):null;
 
   // [[MACRO-PULSE-3M-FORECAST-SNAPSHOT-MISMATCH-1]]: 集計スコアはAI週次解説
   // 生成時（05_main.py::_compute_current_score()）にサーバー側で算出・
@@ -1229,7 +1229,8 @@ function renderPhaseGauge() {
   const { score, signals } = result;
 
   let phase,phaseClass,phaseSub,trackColor;
-  if(score<30){phase='拡張';phaseClass='phase-expand';phaseSub='景気は拡大局面';trackColor='var(--grn)';}
+  if(score===null){phase='判定不能';phaseClass='';phaseSub='使える指標のデータがありません';trackColor='transparent';}
+  else if(score<30){phase='拡張';phaseClass='phase-expand';phaseSub='景気は拡大局面';trackColor='var(--grn)';}
   else if(score<52){phase='踊り場';phaseClass='phase-plateau';phaseSub='拡張と後退の境界付近';trackColor='var(--acc)';}
   else if(score<70){phase='後退入口';phaseClass='phase-edge';phaseSub='後退局面への移行シグナル';trackColor='var(--amb)';}
   else{phase='後退';phaseClass='phase-recession';phaseSub='景気後退の可能性が高い';trackColor='var(--red)';}
@@ -1242,10 +1243,10 @@ function renderPhaseGauge() {
   const badge=el('pg-phase-badge');
   badge.textContent=phase; badge.className='pv-phase '+phaseClass;
   el('pg-phase-sub').textContent=phaseSub;
-  el('pg-track-fill').style.width=score+'%';
+  el('pg-track-fill').style.width=(score===null?0:score)+'%';
   el('pg-track-fill').style.background=trackColor;
-  el('pg-track-marker').style.left=`calc(${score}% - 1.5px)`;
-  el('pg-score-num').textContent=score;
+  el('pg-track-marker').style.left=score===null?'0':`calc(${score}% - 1.5px)`;
+  el('pg-score-num').textContent=score===null?'—':score;
   el('pg-score-num').className='ps-num '+phaseClass;
   el('pg-signal-text').textContent=signalText;
 

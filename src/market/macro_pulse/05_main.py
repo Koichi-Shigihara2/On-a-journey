@@ -1604,7 +1604,15 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         score_inputs.append({'key': key, 'score': s, 'weight': weights.get(key, 0)})
 
     total_w = sum(si['weight'] for si in score_inputs)
-    raw_score = sum(si['score'] * si['weight'] for si in score_inputs) / total_w if total_w > 0 else 50
+    # M-3 STEP 3: 使える指標が1つも無いときは50（中立の値）にせず、判定不能（None）にする
+    if total_w <= 0:
+        return {
+            'score': None,
+            'phase': '判定不能',
+            'indicators': indicators,
+            'score_inputs': score_inputs,
+        }
+    raw_score = sum(si['score'] * si['weight'] for si in score_inputs) / total_w
     score = round(raw_score)
 
     if score < 30:
@@ -1828,6 +1836,10 @@ def run_weekly_analysis(target_date: date):
 
     # 現在のスコアと指標状態を計算
     score_data = _compute_current_score(events, target_date)
+    if score_data['score'] is None:
+        # M-3 STEP 3: 使える指標が1つも無い。判定不能のスコアで週次スナップショットを書かない
+        logger.warning("No usable indicator data (score=None). Skipping weekly analysis.")
+        return
     # [[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]: 週±は実際の前週の週次スナップショット（05_weekly_analysis.csvの前の行）との差。
     # 以前は_compute_score_change(events, target_date, 7)で7日前の時点を計算し直していたが、観測日で置いた月次指標が
     # 1週間前の時点にも入り（先読み）、直近12週すべてで0になっていた。前週のスナップショットが無いときだけ再計算する

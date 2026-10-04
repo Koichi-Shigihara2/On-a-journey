@@ -324,11 +324,12 @@ class Model:
         sig.append(dict(key="sahm", name="Sahm Rule", val=lab, score=s, signal=g, weight=7, lead="先行1ヶ月", thresh="BULL<0.3 / BEAR≥0.5", obs=dates["sahm"]))
         return sig
 
-    def live_score(self) -> int:
+    def live_score(self) -> int | None:
         sig = self.live_signals()
         tw = sum(s["weight"] for s in sig if s["val"] != "—")
-        raw = sum(s["score"] * s["weight"] for s in sig if s["val"] != "—") / tw if tw else 50
-        return js_round(raw)
+        if not tw:
+            return None  # M-3 STEP 3: 使える指標が無いときは判定不能（50にしない）
+        return js_round(sum(s["score"] * s["weight"] for s in sig if s["val"] != "—") / tw)
 
     def shown_score(self) -> int:
         return self.snapshot if self.snapshot is not None else self.live_score()
