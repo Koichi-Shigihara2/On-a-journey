@@ -158,6 +158,17 @@ def _load_signal_steps() -> dict:
 
 
 STEPS: dict = {}
+# 8指標カードの tooltip「閾値の根拠」（index.html の THRESH_BASIS と同じ文言、M-4 調査）
+THRESH_BASIS = {
+    "YC 10Y-2Y": "0（逆イールド）は後退の先行として広く使われる目安（公的機関の数値の出典は未確認）。−0.5・+0.5は公的な根拠なし（M-4 調査）",
+    "HY Spread": "閾値の公的な根拠は無い（M-4 調査）",
+    "Building Permits": "閾値の公的な根拠は無い（M-4 調査）",
+    "Philly Fed Mfg": "0: 拡散指数の拡大と縮小の境目（フィラデルフィア連銀）。−10・+5は公的な根拠なし（M-4 調査）",
+    "CFNAI MA3": "−0.7: シカゴ連銀の目安（拡張の後に−0.70を下回ると後退が始まった可能性が高まる）。0: 長期のトレンド成長（シカゴ連銀）",
+    "Initial Claims": "閾値の公的な根拠は無い（M-4 調査）",
+    "Michigan Sent.": "閾値の公的な根拠は無い（M-4 調査）。最良の段は中立（拡張の段なし）",
+    "Sahm Rule": "0.5: サーム・ルールの定義（Claudia Sahm。FRED SAHMCURRENT）。0.3は公的な根拠なし（M-4 調査）",
+}
 
 
 def step_sig(steps: dict, key: str, val: float, trend: int = 0) -> tuple:
@@ -494,7 +505,8 @@ COLLECT_JS = r"""() => {
       alertMsg: T(q('#pg-alert-msg'))};
   out.sigs = qa('#pg-signals .pg-sig').map(s => ({name: T(s.querySelector('.pg-sig-name')), val: T(s.querySelector('.pg-sig-val')),
       badge: T(s.querySelector('.pg-sig-badge')), lead: T(s.querySelector('.pg-sig-lead')),
-      tip: Array.from(s.querySelectorAll('.pg-sig-tooltip-row')).map(r => Array.from(r.children).map(c => T(c)))}));
+      tip: Array.from(s.querySelectorAll('.pg-sig-tooltip-row')).map(r => Array.from(r.children).map(c => T(c))),
+      basis: T(s.querySelector('.pg-sig-tooltip-basis'))}));
   out.help = qa('#scoreHelp table')[0] ? Array.from(qa('#scoreHelp table')[0].rows).slice(1).map(r => Array.from(r.cells).map(c => T(c))) : [];
   out.cmp = ['m3','m2','m1','w1'].map(k => ({k, score: T(q('#cmp-'+k+'-score')), delta: T(q('#cmp-'+k+'-delta')), date: T(q('#cmp-'+k+'-date'))}));
   out.surprise = {display: q('#surpriseBanner') ? getComputedStyle(q('#surpriseBanner')).display : null,
@@ -811,6 +823,9 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     act_sig = [[x["name"], x["val"], x["badge"], x["lead"], (x["tip"][0][1] if len(x["tip"]) > 0 else None),
                 (x["tip"][2][1] if len(x["tip"]) > 2 else None), (x["tip"][3][1] if len(x["tip"]) > 3 else None)] for x in dom["sigs"]]
     add("MAC-33", "8指標カード（値・判定・先行性・閾値・ウェイト・観測日）", exp_sig, act_sig)
+    # 2026-10-04: 閾値の出典の有無（M-4 調査）を tooltip に出す
+    add("MAC-33b", "8指標カードの tooltip「閾値の根拠」", [[s["name"], "閾値の根拠: " + THRESH_BASIS[s["name"]]] for s in sigs],
+        [[x["name"], x.get("basis")] for x in dom["sigs"]])
     help_rows = dom["help"]
     add("MAC-34", "「? 見方」の指標とウェイト表", 8, len(help_rows), note="件数のみ（内容と計算の整合はN-01）")
 

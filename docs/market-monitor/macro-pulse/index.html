@@ -112,6 +112,7 @@
     .pg-sig-tooltip-desc{font-family:var(--sans);font-size:11px;color:var(--mut);line-height:1.6;margin-bottom:6px;}
     .pg-sig-tooltip-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:3px;}
     .pg-sig-tooltip-row span:last-child{color:var(--txt);}
+    .pg-sig-tooltip-basis{font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:5px;line-height:1.5;white-space:normal}
 
     /* phase colors */
     .phase-expand   {color:var(--grn)}
@@ -1395,6 +1396,19 @@ const SIGNAL_STEPS = {
   };
 // SIGNAL_STEPS_END
 
+// M-4 調査・2026-10-04 の判断: 閾値のパーセンタイル化（M-5 STEP 7 の試算）は採用せず、閾値の出典の有無をカードの tooltip に出す
+// （browser_checks/check_macro_pulse.py の THRESH_BASIS と同じ文言）
+const THRESH_BASIS = {
+  "YC 10Y-2Y": "0（逆イールド）は後退の先行として広く使われる目安（公的機関の数値の出典は未確認）。−0.5・+0.5は公的な根拠なし（M-4 調査）",
+  "HY Spread": "閾値の公的な根拠は無い（M-4 調査）",
+  "Building Permits": "閾値の公的な根拠は無い（M-4 調査）",
+  "Philly Fed Mfg": "0: 拡散指数の拡大と縮小の境目（フィラデルフィア連銀）。−10・+5は公的な根拠なし（M-4 調査）",
+  "CFNAI MA3": "−0.7: シカゴ連銀の目安（拡張の後に−0.70を下回ると後退が始まった可能性が高まる）。0: 長期のトレンド成長（シカゴ連銀）",
+  "Initial Claims": "閾値の公的な根拠は無い（M-4 調査）",
+  "Michigan Sent.": "閾値の公的な根拠は無い（M-4 調査）。最良の段は中立（拡張の段なし）",
+  "Sahm Rule": "0.5: サーム・ルールの定義（Claudia Sahm。FRED SAHMCURRENT）。0.3は公的な根拠なし（M-4 調査）",
+};
+
 function stepSignal(key, val, trend) {
   const d = SIGNAL_STEPS[key];
   for (const t of d.tiers) {
@@ -1585,6 +1599,7 @@ function renderPhaseGauge() {
         <div class="pg-sig-tooltip-row"><span>先行性</span><span>${sg.lead}</span></div>
         <div class="pg-sig-tooltip-row"><span>ウェイト</span><span>${sg.weight}%</span></div>
         <div class="pg-sig-tooltip-row"><span>データの日付</span><span>${sg.obsDate||'—'}${sg.obsDate?'（観測日）':''}</span></div>
+        <div class="pg-sig-tooltip-basis">閾値の根拠: ${THRESH_BASIS[sg.name]||'—'}</div>
       </div>
     </div>`;
   }).join('');

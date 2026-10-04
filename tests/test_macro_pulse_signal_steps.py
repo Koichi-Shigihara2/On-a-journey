@@ -114,3 +114,18 @@ def test_card_and_healthbar_agree_for_all_values(page):
         by_key.setdefault(k, []).append((round(v, 4), tr, c, b))
     assert not mismatch, {k: (len(xs), xs[:4]) for k, xs in by_key.items()}
     assert len(res) == len(cases) * 3
+
+
+def test_threshold_basis_tooltip_texts():
+    """2026-10-04: 閾値のパーセンタイル化は採用せず、出典の有無を tooltip に出す（M-4 調査）。"""
+    html = HTML.read_text(encoding="utf-8")
+    assert "閾値の根拠: ${THRESH_BASIS[sg.name]" in html
+    body = html.split("const THRESH_BASIS = {", 1)[1].split("};", 1)[0]
+    basis = json.loads("{" + body.strip().rstrip(",") + "}")
+    assert set(basis) == {"YC 10Y-2Y", "HY Spread", "Building Permits", "Philly Fed Mfg", "CFNAI MA3", "Initial Claims",
+                          "Michigan Sent.", "Sahm Rule"}
+    for name in ("HY Spread", "Building Permits", "Initial Claims", "Michigan Sent."):
+        assert "閾値の公的な根拠は無い（M-4 調査）" in basis[name]
+    assert "最良の段は中立（拡張の段なし）" in basis["Michigan Sent."]
+    assert "シカゴ連銀" in basis["CFNAI MA3"] and "Sahm" in basis["Sahm Rule"]
+    assert "フィラデルフィア連銀" in basis["Philly Fed Mfg"] and "逆イールド" in basis["YC 10Y-2Y"]
