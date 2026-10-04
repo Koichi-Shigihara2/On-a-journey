@@ -744,7 +744,11 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     hollow = None
     if sp5 is not None and nlw is not None and sp5 > 1.0 and nlw < -0.5:
         hollow = f"S&P500 5営業日 {'+' if sp5 >= 0 else ''}{js_fixed(sp5, 1)}%"
-    add("MAC-18", "Hollow Rallyバッジ", hollow is not None, dom["hollow"] is not None and (hollow or "") in (dom["hollow"] or ""),
+    # M-5 STEP 3: 参考情報の文言と注記
+    note18 = "検証期間は2023年以降。発火後20営業日のS&P500のリターンに、発火しなかった週と比べて明確な差は確認されていない。"
+    add("MAC-18", "Hollow Rallyバッジ（参考情報・注記）", hollow is not None,
+        dom["hollow"] is not None and (hollow or "") in (dom["hollow"] or "") and note18 in (dom["hollow"] or "")
+        and "⚠" not in (dom["hollow"] or ""),
         note=f"最新行 sp500_5d_pct={sp5} net_liq_wow_pct={nlw} h41_date={latest.get('h41_date') or '（列なし）'}")
 
     # MAC-19〜26 ステルス

@@ -555,3 +555,21 @@ class TestEasingCheckApplicability:
 
     def test_liquidity_columns_have_easing_check(self):
         assert "easing_check" in main05.LIQUIDITY_COLUMNS
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-5 STEP 3: Hollow Rally のバッジは参考情報（警告の文言・色にしない）
+# ─────────────────────────────────────────────────────────────────
+class TestHollowRallyBadgeIsInformational:
+    def _html(self):
+        return (pathlib.Path(__file__).resolve().parents[1] / "docs" / "market-monitor" / "macro-pulse" / "index.html").read_text(encoding="utf-8")
+
+    def test_badge_text_is_reference_with_note(self):
+        html = self._html()
+        assert "⚠ HOLLOW RALLY 検知" not in html and "持続性に疑問" not in html
+        assert "検証期間は2023年以降。発火後20営業日のS&P500のリターンに、発火しなかった週と比べて明確な差は確認されていない。" in html
+
+    def test_badge_is_not_warning_color(self):
+        import re
+        css = re.search(r"\.hollow-rally-badge\{[^}]*\}", self._html()).group(0)
+        assert "var(--amb)" not in css and "245,158,11" not in css and "var(--red)" not in css

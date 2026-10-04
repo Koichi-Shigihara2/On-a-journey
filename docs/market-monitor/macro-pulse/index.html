@@ -286,7 +286,8 @@
     .liq-card-chg.up{color:var(--grn)}.liq-card-chg.dn{color:var(--red)}.liq-card-chg.flat{color:var(--mut)}
     .liq-card-chg-label{font-family:var(--mono);font-size:9px;color:var(--mut)}
     .liq-card-date{font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:2px}
-    .hollow-rally-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;padding:4px 10px;border:1px solid rgba(245,158,11,.5);background:rgba(245,158,11,.08);color:var(--amb);margin-top:10px;width:100%}
+    /* M-5 STEP 3: 参考情報として出す（警告色にしない） */
+    .hollow-rally-badge{display:block;font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.04em;line-height:1.6;padding:4px 10px;border:1px solid var(--bdr);background:transparent;color:var(--mut);margin-top:10px;width:100%}
     /* ステルス流動性カード */
     .stealth-card{background:var(--sur2);border:1px solid var(--bdr);padding:14px 16px;display:flex;flex-direction:column;gap:8px;grid-column:1/-1;margin-top:4px}
     .stealth-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -2713,6 +2714,7 @@ function renderLiquidityCards(rows) {
   ];
 
   // ── Hollow Rally 検知 ──
+  const HOLLOW_RALLY_NOTE = '検証期間は2023年以降。発火後20営業日のS&P500のリターンに、発火しなかった週と比べて明確な差は確認されていない。';
   // 条件: S&P500の5営業日リターン > +1.0% かつ NET流動性の前週比（H.4.1の基準日〈水曜〉どうし）< -0.5%
   // [[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]: 以前はCSVの6行前（暦日、週末を含む）と直前の行（前日）で
   // 比べていた。両方の値は05_main.py::weekly_liquidity_state()が最新行に書く（sp500_5d_pct・net_liq_wow_pct）。
@@ -2723,7 +2725,8 @@ function renderLiquidityCards(rows) {
     const nlWkChgPct = latest.net_liq_wow_pct !== undefined && latest.net_liq_wow_pct !== '' ? parseFloat(latest.net_liq_wow_pct) : null;
     if (sp5dChg !== null && nlWkChgPct !== null && sp5dChg > 1.0 && nlWkChgPct < -0.5) {
       const h41 = latest.h41_date ? `、H.4.1 ${latest.h41_date}基準` : '';
-      hollowRallyHtml = `<div class="hollow-rally-badge">⚠ HOLLOW RALLY 検知 — 株価上昇（S&P500 5営業日 ${sp5dChg >= 0 ? '+' : ''}${sp5dChg.toFixed(1)}%）に対しFRB純流動性が縮小中（${nlWkChgPct.toFixed(2)}% 前週比${h41}）。流動性に裏付けのない上昇は持続性に疑問。</div>`;
+      // M-5 STEP 3: 判定の条件と閾値はそのまま、表示を参考情報にする（M-4 STEP 3: 発火後の S&P500 に明確な差が見られない）
+      hollowRallyHtml = `<div class="hollow-rally-badge">参考: HOLLOW RALLY の条件に該当 — S&P500 5営業日 ${sp5dChg >= 0 ? '+' : ''}${sp5dChg.toFixed(1)}% の上昇に対し、FRB純流動性は前週比 ${nlWkChgPct.toFixed(2)}%${h41}。${HOLLOW_RALLY_NOTE}</div>`;
     }
   } catch(e) {}
 
