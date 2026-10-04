@@ -309,3 +309,32 @@ class TestDefaultTargetDate:
         assert main05.default_target_date(self._utc("2026-12-01T22:15")) == date(2026, 12, 1)
         # 12-02 01:30 UTC = 12-01 20:30 EST → 12-01
         assert main05.default_target_date(self._utc("2026-12-02T01:30")) == date(2026, 12, 1)
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-3 STEP 1: 公開時点の列（known_at）[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]
+# ─────────────────────────────────────────────────────────────────
+class TestKnownAt:
+    def test_events_columns_have_known_at(self):
+        assert "known_at" in main05.EVENTS_COLUMNS and "known_at_source" in main05.EVENTS_COLUMNS
+
+    def test_fetch_event_row_writes_known_at(self, monkeypatch):
+        monkeypatch.setattr(main05, "fred_latest", lambda sid: (0.45, date(2026, 10, 2)))
+        row = main05.fetch_event_row("Yield Curve 10Y-2Y", date(2026, 10, 2), {}, pd.DataFrame(columns=main05.SCHEDULE_COLUMNS), _events([]))
+        assert row["known_at_source"] == "written"
+        assert row["known_at"].endswith("Z") and len(row["known_at"]) == 20
+
+    def test_rewriting_same_event_keeps_first_known_at(self):
+        """日次の指標で最新の観測が変わらない日に同じevent_idを書き直しても、最初のknown_atを残す。"""
+        old = _event("Yield Curve 10Y-2Y", "2026-10-01", 0.46, "2026-10-03 01:14:00")
+        old["known_at"], old["known_at_source"] = "2026-10-02T21:04:00Z", "alfred"
+        new = dict(old, updated_at="2026-10-04 00:41:00", known_at="2026-10-04T00:41:00Z", known_at_source="written")
+        kept = main05._keep_first_known_at([new], _events([old]))
+        assert kept[0]["known_at"] == "2026-10-02T21:04:00Z" and kept[0]["known_at_source"] == "alfred"
+
+    def test_compute_score_uses_known_at_not_updated_at(self):
+        """取り込み分の行（updated_at=2026-03-28）でも、known_at（当時の公表時刻）が計算日以前なら使う。"""
+        r = _event("Philadelphia Fed Manufacturing", "2019-10-01", 5.6, "2026-03-28 19:30:24")
+        r["known_at"], r["known_at_source"] = "2019-10-17T12:30:00Z", "estimated"
+        res = main05._compute_current_score(_events([r]), date(2019, 10, 31))
+        assert res["indicators"]["philly"]["value"] == 5.6

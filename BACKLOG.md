@@ -2551,6 +2551,19 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 使える行がないとき、`_compute_current_score()`がスコア50を返す。中立値が実測のスコアに見えるため、None（データなし）として
 扱うかをM-3で決める（M-2ではコードを変更しない）。
 
+
+#### 対応（2026-10-04、指示書M-3 STEP 1、feature/macro-pulse-m3）
+- 05_events.csvに`known_at`（その値が使えるようになった時刻、UTC 'YYYY-MM-DDTHH:MM:SSZ'）と`known_at_source`
+  （written / alfred / estimated）を追加。updated_atは変えない。新しく書く行は書いた時刻・written。同じevent_idを書き直すときは最初のknown_atを残す
+- 先読み除外を`known_at`に変更（`_compute_current_score()`・index.htmlの`buildIndex()`。known_atが無い行は従来どおりupdated_at）
+- 修復スクリプト`scripts/analysis/macro_events_known_at_repair.py`（ALFREDの取得は`macro_alfred_lib.py`、12系列・約30秒、
+  FRED APIの制限内）。確認モード: alfred 13,601行・estimated 20,788行（ALFREDの記録の始まりより前の観測、CB・LEI、予定の枠の日付の行）・
+  written 10行（updated_atのほうが早い行）。今日のスコア27→27。過去の日付のスコアが計算できるようになる（例: 2001-08-31 57・2019-10-31 27）
+- **STEP 1-5: 取り込み分の行のactualは、改定のある指標ではほぼ改定後の値**（ALFREDに初回公表がある行で: 改定後の値1,796・
+  初回の値4・改定なし〈初回=最新〉11,314・どちらとも違う108〈Permits 70・CFNAI 35〈M-2の修復で当時の版に置き換えた行〉・Claims 3〉）
+- 回帰テスト4件（修正前4件fail→修正後pass）
+- 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
+
 ---
 
 ### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）

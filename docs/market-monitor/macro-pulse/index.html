@@ -886,8 +886,11 @@ function buildIndex() {
     const ind = r[COL.indicator];
     const dMs = new Date(r[COL.date]).getTime();
     if (isNaN(dMs)) continue;
+    // [[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]（2026-10-04 M-3）: その値が使えるようになった時刻はknown_at
+    // （UTC、'YYYY-MM-DDTHH:MM:SSZ'）。無い行だけ従来どおりupdated_atを使う
+    const kMsRaw = r['known_at'] ? new Date(r['known_at']).getTime() : NaN;
     const uMsRaw = new Date(r['updated_at']).getTime();
-    const uMs = isNaN(uMsRaw) ? dMs : uMsRaw;
+    const uMs = !isNaN(kMsRaw) ? kMsRaw : (isNaN(uMsRaw) ? dMs : uMsRaw);
     if (!IND_INDEX[ind]) IND_INDEX[ind] = [];
     IND_INDEX[ind].push({dateMs: dMs, actual: v, updatedMs: uMs});
   }

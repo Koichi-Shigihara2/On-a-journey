@@ -91,6 +91,10 @@ EVENTS_COLUMNS = [
     "sp500_t0", "sp500_t1", "sp500_t5", "sp500_t10", "sp500_t20",
     "ret_t1", "ret_t5", "ret_t10", "ret_t20",
     "forecast_source", "data_source", "analysis", "updated_at",
+    # [[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]（2026-10-04 M-3）: その値が公開されて使えるようになった時刻（UTC、
+    # 'YYYY-MM-DDTHH:MM:SSZ'）と、その根拠（written=実行が書いた時刻 / alfred=ALFREDの初回公表日 / estimated=公表の遅れから推定）。
+    # 先読み除外はupdated_at（最後に書き直した時刻）ではなくこれを使う
+    "known_at", "known_at_source",
 ]
 
 SCHEDULE_COLUMNS = [
@@ -967,6 +971,8 @@ def fetch_event_row(indicator: str, target_date: date,
         "vix":         _fmt(fin_ctx.get("vix")),
         "cuts_implied": _fmt(fin_ctx.get("cuts_implied")),
         "updated_at":  datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "known_at":    _utc_now_str(),
+        "known_at_source": "written",
     })
 
     actual_val = override_actual
@@ -1006,6 +1012,27 @@ def fetch_event_row(indicator: str, target_date: date,
                            ("manual" if override_actual is not None else "N/A")
 
     return row
+
+def _utc_now_str() -> str:
+    """known_atの書式（UTC、'YYYY-MM-DDTHH:MM:SSZ'）で現在時刻を返す。"""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _keep_first_known_at(new_rows: list, events: pd.DataFrame) -> list:
+    """[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]: 同じevent_idの行を書き直すとき（日次の指標で最新の観測が
+    変わらない日など）、既存の行のknown_at・known_at_sourceを残す。後の実行の時刻で上書きすると、その値が
+    使えるようになった時刻を遅く記録してしまうため。既存の行のknown_atが空なら新しい値を使う。"""
+    if events is None or events.empty or "known_at" not in events.columns:
+        return new_rows
+    known = {}
+    for _, r in events[events["known_at"].astype(str).str.strip() != ""].iterrows():
+        known[r["event_id"]] = (r["known_at"], r.get("known_at_source", ""))
+    for row in new_rows:
+        prev = known.get(row.get("event_id"))
+        if prev and prev[0] and (not row.get("known_at") or prev[0] <= row["known_at"]):
+            row["known_at"], row["known_at_source"] = prev
+    return new_rows
+
 
 def _fmt(v) -> str:
     if v is None or v == "" :
@@ -1456,6 +1483,17 @@ def _parse_updated_at_utc(v) -> datetime | None:
     return None
 
 
+def _parse_known_at_utc(v) -> datetime | None:
+    """known_at（'YYYY-MM-DDTHH:MM:SSZ'、UTC）を読む（naive、UTC）。読めなければNone。"""
+    s = str(v or "").strip()
+    if not s:
+        return None
+    try:
+        return datetime.strptime(s.rstrip("Z"), "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        return None
+
+
 def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     """events.csv から target_date 時点のスコアと各指標の値を計算する"""
     target_ms = _to_ms(datetime.combine(target_date, datetime.max.time()))
@@ -1475,8 +1513,9 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         # updated_atはGitHub Actionsの実行環境（UTC）の時刻。target_dateは米国の日付のため、
         # 「target_dateの米国東部時間23:59:59」をUTCに直した時刻と比べる（日付の文字列では比べない。
         # 日次の実行はUTCの0時をまたいで書くため、同じ実行で書いた行が外れてしまう）
-        updated_utc = _parse_updated_at_utc(r.get("updated_at", ""))
-        if updated_utc is not None and updated_utc > known_cutoff_utc:
+        # M-3: known_at（その値が使えるようになった時刻）があればそれを使う。無ければ従来どおりupdated_at
+        known_utc = _parse_known_at_utc(r.get("known_at", "")) or _parse_updated_at_utc(r.get("updated_at", ""))
+        if known_utc is not None and known_utc > known_cutoff_utc:
             continue
         try:
             val = float(actual_str)
@@ -2485,6 +2524,7 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         logger.info("No rows to add after dedup.")
         return
 
+    new_rows = _keep_first_known_at(new_rows, events)
     new_df = pd.DataFrame(new_rows, columns=EVENTS_COLUMNS)
     key_new = set(new_df["event_id"])
     existing_filtered = events[~events["event_id"].isin(key_new)]
