@@ -247,8 +247,10 @@ class TestWeeklyDeltaFromSnapshot:
         monkeypatch.setattr(main05, "WEEKLY_ANALYSIS_PATH", str(wa_path))
         monkeypatch.setattr(main05, "FED_CONTEXT_PATH", str(tmp_path / "none.csv"))
         monkeypatch.setattr(main05, "BASE_DATA_DIR", str(tmp_path))
+        # M-5 STEP 1: 使える指標の重みが50%以上要るため Philly（18%）を加えて53%にする
         ev = _events([_event("Yield Curve 10Y-2Y", "2026-09-25", 0.36, "2026-09-26 00:38:00"),
-                      _event("HY Spread", "2026-09-25", 2.93, "2026-09-26 00:38:00")])
+                      _event("HY Spread", "2026-09-25", 2.93, "2026-09-26 00:38:00"),
+                      _event("Philadelphia Fed Manufacturing", "2026-09-01", 10.0, "2026-09-18 00:38:00")])
         monkeypatch.setattr(main05, "load_events", lambda: ev)
         captured = {}
 
@@ -381,7 +383,8 @@ class TestRevisions:
 class TestScoreNoData:
     def test_no_usable_rows_gives_none(self):
         res = main05._compute_current_score(_events([]), date(2026, 10, 3))
-        assert res["score"] is None and res["phase"] == "判定不能"
+        # M-5 STEP 1で「判定不能」→「データ不足」（使える指標の重みが50%未満の日を含めて同じ扱い）
+        assert res["score"] is None and res["phase"] == "データ不足"
 
     def test_rows_only_known_after_target_give_none(self):
         r = _event("Philadelphia Fed Manufacturing", "2019-10-01", 5.6, "2026-03-28 19:30:24")
@@ -498,3 +501,31 @@ class TestSlotRowsToObservationDate:
         monkeypatch.setattr(main05, "_store_values", lambda fid: {"2026-10-01": 56.1} if fid == "UMCSENT" else {})
         out = main05.apply_revisions(_events([_event("Michigan Consumer Sentiment", "2026-10-01", 55.0)]))
         assert out.iloc[0]["actual"] == "55.0" and float(out.iloc[0]["revised_actual"]) == 56.1
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-5 STEP 1: 使える指標の重みが50%未満の日はスコアを出さない
+# ─────────────────────────────────────────────────────────────────
+class TestScoreMinWeight:
+    def _known(self, ind, d, v):
+        r = _event(ind, d, v, "2026-03-28 19:30:24")
+        r["known_at"], r["known_at_source"] = f"{d}T12:30:00Z", "alfred"
+        return r
+
+    def test_only_sahm_gives_data_shortage(self):
+        """1996年より前はSahm Rule（重み7）だけでスコアが決まり、88で高止まりしていた（M-4 STEP 1）。"""
+        res = main05._compute_current_score(_events([self._known("Sahm Rule Recession Indicator", "1991-04-01", 0.8)]),
+                                            date(1991, 6, 1))
+        assert res["score"] is None and res["phase"] == "データ不足" and res["weight_total"] == 7
+
+    def test_weight_53_gives_score(self):
+        rows = [self._known("Yield Curve 10Y-2Y", "2026-09-01", 0.4), self._known("HY Spread", "2026-09-01", 3.2),
+                self._known("Philadelphia Fed Manufacturing", "2026-08-01", 10.0)]
+        res = main05._compute_current_score(_events(rows), date(2026, 9, 30))
+        assert res["weight_total"] == 53 and res["score"] is not None
+
+    def test_js_threshold_matches_python(self):
+        html = (pathlib.Path(__file__).resolve().parents[1] / "docs" / "market-monitor" / "macro-pulse" / "index.html").read_text(encoding="utf-8")
+        import re
+        m = re.search(r"const SCORE_MIN_WEIGHT = (\d+);", html)
+        assert m and int(m.group(1)) == main05.SCORE_MIN_WEIGHT == 50

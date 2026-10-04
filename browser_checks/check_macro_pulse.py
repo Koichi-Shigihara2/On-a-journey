@@ -147,6 +147,7 @@ def ms_local(s: str) -> Optional[int]:
     return None
 
 
+SCORE_MIN_WEIGHT = 50  # M-5 STEP 1（05_main.py・index.html と同じ値）
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)  # Windowsのfromtimestampは1970年より前を扱えない
 NY = ZoneInfo("America/New_York")
 
@@ -357,8 +358,8 @@ class Model:
     def live_score(self) -> int | None:
         sig = self.live_signals()
         tw = sum(s["weight"] for s in sig if s["val"] != "—")
-        if not tw:
-            return None  # M-3 STEP 3: 使える指標が無いときは判定不能（50にしない）
+        if tw < SCORE_MIN_WEIGHT:
+            return None  # M-3 STEP 3・M-5 STEP 1: 使える指標の重みが50%未満ならスコアを出さない
         return js_round(sum(s["score"] * s["weight"] for s in sig if s["val"] != "—") / tw)
 
     def shown_score(self) -> int:
@@ -424,8 +425,8 @@ class Model:
 
         sigs = [calc(k, self.latest_known(ind, t)) for k, ind, _, _ in SCORE_INDS]
         tw = sum(w for _, w in sigs)
-        if not tw:
-            return None
+        if tw < SCORE_MIN_WEIGHT:
+            return None  # M-5 STEP 1
         return js_round(sum(s * w for s, w in sigs) / tw)
 
     def latest_data_date_before(self, t: int) -> Optional[str]:
@@ -781,7 +782,9 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     bear = len([s for s in sigs if s["signal"] == "bear" and s["val"] != "—"])
     cau = len([s for s in sigs if s["signal"] == "caution" and s["val"] != "—"])
     cnt = len([s for s in sigs if s["val"] != "—"])
-    add("MAC-31", "シグナル数の文", f"{cnt}指標中: 後退シグナル {bear}個 / 注意 {cau}個", dom["phase"]["sigText"])
+    tw_now = sum(s["weight"] for s in sigs if s["val"] != "—")
+    add("MAC-31", "シグナル数の文（使える指標の重み）", f"{cnt}指標中: 後退シグナル {bear}個 / 注意 {cau}個（使える指標の重み {tw_now}%）",
+        dom["phase"]["sigText"])
     show = bear >= 3 and sc >= 52
     add("MAC-32", "ALERT", "flex" if show else "none", dom["phase"]["alertDisplay"])
     btxt = {"bull": "拡張", "neutral": "中立", "caution": "注意", "bear": "後退シグナル"}

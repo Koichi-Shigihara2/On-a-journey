@@ -1174,6 +1174,9 @@ function updateTicker() {
 // ═══════════════════════════════════════════════════════
 // MACRO-COMPUTE-DUP-1: 「現在」のスコア計算をrenderPhaseGaugeから分離。
 // computeScoreAsOf()がasOf=現在を指すときに同一ロジックを再利用するための共通関数。
+// M-5 STEP 1: スコアを出すのに要る、使える指標の重みの合計（%）。05_main.py の SCORE_MIN_WEIGHT と同じ値
+const SCORE_MIN_WEIGHT = 50;
+
 function computeCurrentScore() {
   if(!DATA.length)return null;
   const now=Date.now();
@@ -1274,8 +1277,8 @@ function computeCurrentScore() {
 
 signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,weight:7,lead:'先行1ヶ月',desc:'サームルール不況指標。失業率の3ヶ月移動平均が過去12ヶ月の最低値より0.5pp以上上昇で不況シグナル。',thresh:'BULL<0.3 / BEAR≥0.5',obsDate:latestDate('Sahm Rule Recession Indicator')});
   const totalW=signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.weight:0),0);
-  // M-3 STEP 3: 使える指標が1つも無いときは50（中立の値）にせず、判定不能（null）にする
-  const liveScore=totalW>0?Math.round(signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW):null;
+  // M-3 STEP 3・M-5 STEP 1: 使える指標の重みの合計（8指標で100）が SCORE_MIN_WEIGHT 未満ならスコアを出さない（null）
+  const liveScore=totalW>=SCORE_MIN_WEIGHT?Math.round(signals.reduce((s,sg)=>s+(sg.val!=='—'?sg.score*sg.weight:0),0)/totalW):null;
 
   // [[MACRO-PULSE-3M-FORECAST-SNAPSHOT-MISMATCH-1]]: 集計スコアはAI週次解説
   // 生成時（05_main.py::_compute_current_score()）にサーバー側で算出・
@@ -1289,17 +1292,17 @@ signals.push({name:'Sahm Rule',val:sahmLabel,score:sahmScore,signal:sahmSignal,w
   // AIコメンタリーが表現しない粒度のためライブ計算のまま維持する。
   const score=WEEKLY_SNAPSHOT?WEEKLY_SNAPSHOT.score:liveScore;
 
-  return { score, signals };
+  return { score, signals, weightTotal: totalW };
 }
 
 
 function renderPhaseGauge() {
   const result=computeCurrentScore();
   if(!result)return;
-  const { score, signals } = result;
+  const { score, signals, weightTotal } = result;
 
   let phase,phaseClass,phaseSub,trackColor;
-  if(score===null){phase='判定不能';phaseClass='';phaseSub='使える指標のデータがありません';trackColor='transparent';}
+  if(score===null){phase='データ不足';phaseClass='';phaseSub=`データ不足（使える指標の重み ${weightTotal}%）`;trackColor='transparent';}
   else if(score<30){phase='拡張';phaseClass='phase-expand';phaseSub='景気は拡大局面';trackColor='var(--grn)';}
   else if(score<52){phase='踊り場';phaseClass='phase-plateau';phaseSub='拡張と後退の境界付近';trackColor='var(--acc)';}
   else if(score<70){phase='後退入口';phaseClass='phase-edge';phaseSub='後退局面への移行シグナル';trackColor='var(--amb)';}
@@ -1308,7 +1311,8 @@ function renderPhaseGauge() {
   const bearCount=signals.filter(s=>s.signal==='bear'&&s.val!=='—').length;
   const cautionCount=signals.filter(s=>s.signal==='caution'&&s.val!=='—').length;
   const dataCount=signals.filter(s=>s.val!=='—').length;
-  const signalText=dataCount>0?`${dataCount}指標中: 後退シグナル ${bearCount}個 / 注意 ${cautionCount}個`:'データ取得中...';
+  // M-5 STEP 1: 今日使える指標の重みの合計も出す
+  const signalText=dataCount>0?`${dataCount}指標中: 後退シグナル ${bearCount}個 / 注意 ${cautionCount}個（使える指標の重み ${weightTotal}%）`:'データ取得中...';
 
   const badge=el('pg-phase-badge');
   badge.textContent=phase; badge.className='pv-phase '+phaseClass;
@@ -2233,7 +2237,7 @@ function computeScoreAsOf(asOf) {
   ];
 
   const totalW = sigs.reduce((s,sg)=>s+sg.w, 0);
-  if(!totalW) return null;
+  if(totalW < SCORE_MIN_WEIGHT) return null;  // M-5 STEP 1: 使える指標の重みが足りない日は点を出さない
   return Math.round(sigs.reduce((s,sg)=>s+sg.score*sg.w, 0) / totalW);
 }
 

@@ -1521,6 +1521,10 @@ def _parse_known_at_utc(v) -> datetime | None:
         return None
 
 
+# M-5 STEP 1: スコアを出すのに要る、使える指標の重みの合計（%）。index.html の SCORE_MIN_WEIGHT と同じ値
+SCORE_MIN_WEIGHT = 50
+
+
 def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     """events.csv から target_date 時点のスコアと各指標の値を計算する"""
     target_ms = _to_ms(datetime.combine(target_date, datetime.max.time()))
@@ -1628,13 +1632,15 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         score_inputs.append({'key': key, 'score': s, 'weight': weights.get(key, 0)})
 
     total_w = sum(si['weight'] for si in score_inputs)
-    # M-3 STEP 3: 使える指標が1つも無いときは50（中立の値）にせず、判定不能（None）にする
-    if total_w <= 0:
+    # M-3 STEP 3・M-5 STEP 1: 使える指標の重みの合計（8指標で100）が SCORE_MIN_WEIGHT 未満の日はスコアを出さない（None）。
+    # 1996年より前はSahm Rule（重み7）だけでスコアが決まり、後退の後に88で高止まりしていた（M-4 STEP 1）
+    if total_w < SCORE_MIN_WEIGHT:
         return {
             'score': None,
-            'phase': '判定不能',
+            'phase': 'データ不足',
             'indicators': indicators,
             'score_inputs': score_inputs,
+            'weight_total': total_w,
         }
     raw_score = sum(si['score'] * si['weight'] for si in score_inputs) / total_w
     score = round(raw_score)
@@ -1653,6 +1659,7 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         'phase': phase,
         'indicators': indicators,
         'score_inputs': score_inputs,
+        'weight_total': total_w,
     }
 
 def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:
@@ -1861,7 +1868,7 @@ def run_weekly_analysis(target_date: date):
     # 現在のスコアと指標状態を計算
     score_data = _compute_current_score(events, target_date)
     if score_data['score'] is None:
-        # M-3 STEP 3: 使える指標が1つも無い。判定不能のスコアで週次スナップショットを書かない
+        # M-3 STEP 3・M-5 STEP 1: 使える指標の重みが足りない。データ不足のスコアで週次スナップショットを書かない
         logger.warning("No usable indicator data (score=None). Skipping weekly analysis.")
         return
     # [[MACRO-PULSE-AI-DELTA-LOOKAHEAD-1]]: 週±は実際の前週の週次スナップショット（05_weekly_analysis.csvの前の行）との差。
