@@ -2217,6 +2217,9 @@ LIQUIDITY_COLUMNS = [
     # M-5 STEP 2: EASING関連の警戒（政策EASINGの効果が限定的・EASING認識の見直しを推奨）を判定したか。
     # 「判定」＝直近の週のWALCLが前週から増えた、「適用外」＝増えていない（供給が無い週は判定しない）、空＝週のデータ不足
     "easing_check",
+    # M-5 STEP 4: M2の位置は名目の水準の順位（2023年以降の行の中）ではなく、前年比の1959年以降（前年比は1960-01〜）の分布の中の位置
+    "m2_yoy_pct",             # M2（M2SL）の最新の観測月の前年比（%）
+    "m2_yoy_pctile",          # その前年比が、1960-01以降の各月の前年比の何パーセンタイルか（以下の割合、0〜100の整数）
 ]
 
 _WEEKLY_LIQ_SERIES = ("WALCL", "WTREGEN", "WDTGAL", "RRPONTSYD", "WRBWFRBL", "SP500")
@@ -2329,6 +2332,23 @@ def weekly_liquidity_state(series: dict, asof: date, max_weeks: int = 9) -> dict
     }
 
 
+def m2_yoy_position(m2_series: list) -> tuple:
+    """M-5 STEP 4: [(as_of, 値)]（M2SL、月次）から、最新の観測月の前年比（%）と、各月の前年比の分布（前年同月がある月、
+    1960-01〜）の中で今の前年比以下の月の割合（パーセンタイル、index.html の pctRank() と同じ「以下」の数え方、四捨五入）。
+    計算できなければ (None, None)。"""
+    pts = {d: v for d, v in m2_series if v is not None}
+    yoy = []
+    for d in sorted(pts):
+        prev = f"{int(d[:4]) - 1}{d[4:]}"
+        if prev in pts and pts[prev]:
+            yoy.append((d, (pts[d] / pts[prev] - 1) * 100))
+    if not yoy:
+        return None, None
+    cur = yoy[-1][1]
+    pctile = round(sum(1 for _, v in yoy if v <= cur) / len(yoy) * 100)
+    return round(cur, 4), pctile
+
+
 def _liquidity_alerts(wk: dict) -> tuple[list, str]:
     """weekly_liquidity_state() の結果から、ステルスの警戒アラート（リスト）と easing_check（判定／適用外／空）を作る。
     M-5 STEP 2: EASING関連の2つ（政策EASINGの効果が限定的・EASING認識の見直しを推奨）は、直近の週のWALCLが前週から
@@ -2357,6 +2377,15 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     """
     # M2マネーサプライ: 月次, Billions USD
     m2_val,  _ = fred_latest("M2SL")
+    # M-5 STEP 4: 前年比とその位置（系列ストアのM2SL全体から）
+    m2_yoy, m2_yoy_pctile = None, None
+    if HAS_MACRO_DATA:
+        try:
+            _m2_all = [(r["as_of"], float(r["value"])) for r in (_md_reader.get_series("M2SL") or [])
+                       if r.get("value") is not None]
+            m2_yoy, m2_yoy_pctile = m2_yoy_position(_m2_all)
+        except Exception as e:
+            logger.warning(f"[Liquidity] M2 YoY: {e}")
     # FRBバランスシート (WALCL): 週次, Millions USD
     fed_val, _ = fred_latest("WALCL")
     # HYスプレッド (BAMLH0A0HYM2): 日次, %
@@ -2468,6 +2497,8 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         "net_liq_wow_pct":       _fmt_pct(_wk["net_liq_wow_pct"]),
         "sp500_5d_pct":          _fmt_pct(_wk["sp500_5d_pct"]),
         "easing_check":          _easing_check,
+        "m2_yoy_pct":            _fmt_pct(m2_yoy),
+        "m2_yoy_pctile":         "" if m2_yoy_pctile is None else str(m2_yoy_pctile),
     }
     if _alerts:
         logger.info(f"[Stealth L3] alerts={_alerts}")

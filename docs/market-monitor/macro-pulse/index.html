@@ -2590,7 +2590,6 @@ function renderLiquidityCards(rows) {
   }
 
   // 過去90日の最大・最小で水準判定
-  const m2History   = rows.map(r => r.m2            !== '' ? parseFloat(r.m2)            : null).filter(v => v !== null);
   const nlHistory   = rows.map(r => r.net_liquidity !== '' ? parseFloat(r.net_liquidity) : null).filter(v => v !== null);
   const fedHistory  = rows.map(r => r.fed_balance   !== '' ? parseFloat(r.fed_balance)   : null).filter(v => v !== null);
   const hyHistory   = rows.map(r => r.hy_spread     !== '' ? parseFloat(r.hy_spread)     : null).filter(v => v !== null);
@@ -2602,7 +2601,10 @@ function renderLiquidityCards(rows) {
     return Math.round(below / sorted.length * 100);
   }
 
-  const m2Rank  = pctRank(m2History,  m2);
+  // M-5 STEP 4: M2の位置は、名目の水準の順位（2023年以降の行の中では名目の増加だけで上位に張り付く）ではなく、
+  // 前年比の1959年以降（前年比は1960-01〜）の分布の中の位置。05_main.py::m2_yoy_position()が最新行に書く
+  const m2YoyPct = latest.m2_yoy_pct !== undefined && latest.m2_yoy_pct !== '' ? parseFloat(latest.m2_yoy_pct) : null;
+  const m2Rank   = latest.m2_yoy_pctile !== undefined && latest.m2_yoy_pctile !== '' ? parseInt(latest.m2_yoy_pctile) : null;
   const nlRank  = pctRank(nlHistory,  netLiq);
   const fedRank = pctRank(fedHistory, fed);
   const hyRank  = pctRank(hyHistory,  parseFloat(latest.hy_spread || 0));
@@ -2618,13 +2620,14 @@ function renderLiquidityCards(rows) {
   }
 
   // 解釈コメント
+  // M-5 STEP 4: rank は前年比の位置（1959年以降の分布）、vec は前月比の向き
   function m2Comment(rank, vec) {
     if (rank === null) return '';
-    if (rank >= 70 && vec && vec.cls === 'up')   return '流動性豊富・拡大中 → 株式に追い風';
-    if (rank >= 70 && vec && vec.cls === 'flat') return '流動性豊富・横ばい → 中立';
-    if (rank <= 30 && vec && vec.cls === 'dn')   return '流動性タイト・縮小中 → 株式に逆風';
-    if (rank <= 30)                               return '流動性タイト → やや逆風';
-    return '流動性は中程度';
+    if (rank >= 70 && vec && vec.cls === 'up')   return 'M2の伸びは過去の上位・増加中 → 株式に追い風';
+    if (rank >= 70)                               return 'M2の伸びは過去の上位';
+    if (rank <= 30 && vec && vec.cls === 'dn')   return 'M2の伸びは過去の下位・減少中 → 株式に逆風';
+    if (rank <= 30)                               return 'M2の伸びは過去の下位 → やや逆風';
+    return 'M2の伸びは過去の中程度';
   }
   function nlComment(rank, vec) {
     if (rank === null) return '';
@@ -2655,7 +2658,7 @@ function renderLiquidityCards(rows) {
   const fedVec = liqVector(fed,    fedPrev);
   const hyVec  = liqVector(hyVal,  hyPrev);
 
-  function levelBar(rank, inverse) {
+  function levelBar(rank, inverse, label) {
     if (rank === null) return '';
     const r = inverse ? 100 - rank : rank;
     const pct = Math.max(2, Math.min(98, r));
@@ -2663,7 +2666,7 @@ function renderLiquidityCards(rows) {
     return '<div style="position:relative;height:4px;background:var(--sur2);border-radius:2px;margin:6px 0 4px;">'
       + '<div style="position:absolute;left:0;top:0;height:4px;width:' + pct + '%;background:' + col + ';border-radius:2px;transition:width .4s"></div>'
       + '</div>'
-      + '<div style="font-family:var(--mono);font-size:9px;color:var(--mut)">過去データ内 ' + rank + 'パーセンタイル</div>';
+      + '<div style="font-family:var(--mono);font-size:9px;color:var(--mut)">' + (label || ('過去データ内 ' + rank + 'パーセンタイル')) + '</div>';
   }
 
   const cards = [
@@ -2674,7 +2677,9 @@ function renderLiquidityCards(rows) {
       chg:   chgHtml(m2, m2Prev, d => (d/Math.abs(m2Prev||1)*100).toFixed(2)+'%', false),
       chgLabel: '前月比',
       date:  latest.date,
-      levelBar: levelBar(m2Rank, false),
+      // M-5 STEP 4: 名目の水準は値だけを出し、バーと解釈は前年比の位置で決める
+      levelBar: levelBar(m2Rank, false, m2YoyPct === null ? null :
+        `前年比 ${m2YoyPct >= 0 ? '+' : ''}${m2YoyPct.toFixed(1)}%（1959年以降の前年比の分布内 ${m2Rank}パーセンタイル）`),
       vec:   m2Vec,
       comment: m2Comment(m2Rank, m2Vec),
     },

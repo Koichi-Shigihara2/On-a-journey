@@ -573,3 +573,29 @@ class TestHollowRallyBadgeIsInformational:
         import re
         css = re.search(r"\.hollow-rally-badge\{[^}]*\}", self._html()).group(0)
         assert "var(--amb)" not in css and "245,158,11" not in css and "var(--red)" not in css
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-5 STEP 4: M2の位置は前年比の1959年以降の分布の中の位置
+# ─────────────────────────────────────────────────────────────────
+class TestM2YoyPosition:
+    def test_yoy_and_percentile(self):
+        # 3年分: 前年比は 2001年の各月 +10%、2002年の各月 +5%（最新は2002-12の+5%）
+        s = [(f"2000-{m:02d}-01", 100.0) for m in range(1, 13)]
+        s += [(f"2001-{m:02d}-01", 110.0) for m in range(1, 13)]
+        s += [(f"2002-{m:02d}-01", 115.5) for m in range(1, 13)]
+        yoy, pct = main05.m2_yoy_position(s)
+        assert abs(yoy - 5.0) < 1e-9
+        assert pct == 50  # 24か月のうち、+5%以下は12か月
+
+    def test_level_at_record_high_is_not_top_percentile(self):
+        """2026-10の実例: 名目の水準は過去最大（2023年以降の行の中で100）だが、前年比 +5.7% は1960年以降の分布で36。"""
+        s = [(f"{y}-{m:02d}-01", 100.0 * (1.08 ** (y - 2000 + m / 12))) for y in range(2000, 2010) for m in range(1, 13)]
+        s += [(f"2010-{m:02d}-01", s[-1][1] * (1.02 ** (m / 12))) for m in range(1, 13)]
+        yoy, pct = main05.m2_yoy_position(s)
+        assert yoy < 8 and pct < 20
+
+    def test_columns_and_page_use_yoy_pctile(self):
+        assert "m2_yoy_pct" in main05.LIQUIDITY_COLUMNS and "m2_yoy_pctile" in main05.LIQUIDITY_COLUMNS
+        html = (pathlib.Path(__file__).resolve().parents[1] / "docs" / "market-monitor" / "macro-pulse" / "index.html").read_text(encoding="utf-8")
+        assert "pctRank(m2History" not in html and "latest.m2_yoy_pctile" in html

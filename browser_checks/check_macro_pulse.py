@@ -682,16 +682,19 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     m2p, fedp, nlp = prevv("m2", 28), prevv("fed_balance", 7), prevv("net_liquidity", 7)
     hyv = parse_float(latest["hy_spread"]) if latest.get("hy_spread", "") != "" else None
     hyp = prevv("hy_spread", 7)
-    m2r, nlr, fedr = rank(hist("m2"), m2), rank(hist("net_liquidity"), nl), rank(hist("fed_balance"), fedb)
+    # M-5 STEP 4: M2の位置は最新行の m2_yoy_pctile（前年比の1959年以降の分布の中の位置）
+    m2r = int(latest["m2_yoy_pctile"]) if latest.get("m2_yoy_pctile", "") != "" else None
+    m2yoy = parse_float(latest["m2_yoy_pct"]) if latest.get("m2_yoy_pct", "") != "" else None
+    nlr, fedr = rank(hist("net_liquidity"), nl), rank(hist("fed_balance"), fedb)
     hyr = rank(hist("hy_spread"), parse_float(latest.get("hy_spread") or 0))
 
     def m2c(rk, v):
         if rk is None: return ""
-        if rk >= 70 and v and v[2] == "up": return "流動性豊富・拡大中 → 株式に追い風"
-        if rk >= 70 and v and v[2] == "flat": return "流動性豊富・横ばい → 中立"
-        if rk <= 30 and v and v[2] == "dn": return "流動性タイト・縮小中 → 株式に逆風"
-        if rk <= 30: return "流動性タイト → やや逆風"
-        return "流動性は中程度"
+        if rk >= 70 and v and v[2] == "up": return "M2の伸びは過去の上位・増加中 → 株式に追い風"
+        if rk >= 70: return "M2の伸びは過去の上位"
+        if rk <= 30 and v and v[2] == "dn": return "M2の伸びは過去の下位・減少中 → 株式に逆風"
+        if rk <= 30: return "M2の伸びは過去の下位 → やや逆風"
+        return "M2の伸びは過去の中程度"
 
     def nlc(rk, v):
         if rk is None: return ""
@@ -731,10 +734,13 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     for cid, label, val, chg, v, rk, com in cards:
         dc = dom_cards.get(label) or {}
         exp_date = "更新 " + latest["date"] + (f"（H.4.1 {latest['h41_date']}）" if label == "FRB バランスシート" and latest.get("h41_date") else "")
-        exp = [val, chg, (v[0] + " " + v[1]) if v else None, f"過去データ内 {rk}パーセンタイル" if rk is not None else None, com, exp_date]
+        lv = (f"前年比 {'+' if m2yoy >= 0 else ''}{js_fixed(m2yoy, 1)}%（1959年以降の前年比の分布内 {rk}パーセンタイル）"
+              if cid == "MAC-14" and m2yoy is not None and rk is not None else
+              f"過去データ内 {rk}パーセンタイル" if rk is not None and cid != "MAC-14" else None)
+        exp = [val, chg, (v[0] + " " + v[1]) if v else None, lv, com, exp_date]
         txt = dc.get("text") or ""
         act = [dc.get("val"), dc.get("chg"), (v[0] + " " + v[1]) if v and (v[0] + " " + v[1]) in txt else "（見つからず）" if v else None,
-               (f"過去データ内 {rk}パーセンタイル" if f"過去データ内 {rk}パーセンタイル" in txt else "（見つからず）") if rk is not None else None,
+               (lv if lv in txt else "（見つからず）") if lv is not None else None,
                com if com and com in txt else ("" if not com else "（見つからず）"), dc.get("date")]
         add(cid, f"{label}カード（値・変化・方向・水準・解釈・日付）", exp, act)
 
