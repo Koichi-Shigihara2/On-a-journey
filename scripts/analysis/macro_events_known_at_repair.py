@@ -9,6 +9,10 @@
   3. updated_at（UTC）のほうが早い行は updated_at → source=written
 既に known_at がある行（M-3以降の実行が書いた行）は変えない。
 
+注意: known_at の時刻（米国東部時間 08:30）は便宜上の値で、日次の系列（T10Y2Y・HY・VIX など）では実際の公表より早い
+（ALFREDの初回公表日はほぼ観測日の当日で、値はその日の取引終了後に出る）。日単位の締め（計算日の米国東部時間 23:59:59）で
+使う限り結果は変わらない。時刻単位で使う場合は見直す。
+
 あわせて、取り込み分（updated_at=2026-03-28/29）の行の actual が初回公表の値か改定後の値かを数えて表示する（M-3 STEP 1-5）。
 
 05_events.csv は .gitattributes の merge=ours のため、kaihatsu へ統合した後に kaihatsu 上で実行して commit する。

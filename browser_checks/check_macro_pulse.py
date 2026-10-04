@@ -550,6 +550,12 @@ def collect(now_ms: int) -> tuple[dict, list, dict]:
             page.evaluate("() => setScoreRange(0)")
             page.wait_for_timeout(500)
             dom["historyAll"] = page.evaluate("() => { const s = echarts.getInstanceByDom(document.getElementById('scoreHistoryChart')).getOption().series; return s[s.length-1].data.map(p => p.value); }")
+            # M-3: 3年・5年の先頭の点と点数
+            dom["historyRanges"] = {}
+            for yrs in (3, 5):
+                page.evaluate(f"() => setScoreRange({yrs})")
+                page.wait_for_timeout(300)
+                dom["historyRanges"][yrs] = page.evaluate("() => { const s = echarts.getInstanceByDom(document.getElementById('scoreHistoryChart')).getOption().series; const d = s[s.length-1].data.map(p => p.value); return [d.length ? d[0] : null, d.length]; }")
             page.evaluate("() => setScoreRange(1)")
             extra = {}
             page.fill("#cmpDateInput", "2026-06-30")
@@ -889,12 +895,34 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     act_hist = [list(x) for x in dom.get("history") or []]
     add("MAC-42", "③ スコア推移（1年、全点）", exp_hist, act_hist,
         note=f"期待{len(exp_hist)}点（先頭{exp_hist[0] if exp_hist else None}）・実際{len(act_hist)}点（先頭{act_hist[0] if act_hist else None}）")
-    # 「全期間」の先頭: 期待はデータの最古の観測日の週（events.csvの最古の行）。画面は先読み除外が過去の取り込み分も
-    # 「未取得」と扱うため、取り込み日（2026-03-28/29）より前が描画されない（不具合B-03）
+    # 「全期間」の先頭（M-3で期待を変更）: 画面の開始日はevents.csvの最古の行の日付（値の有無を問わない）。点は
+    # computeScoreAsOf()がnullでない日だけ残るため、先頭は「8指標のどれかが公表済み（known_at）になった後の最初の点」。
+    # 以前の期待（最古の観測の月）は先読み除外を考えていなかった
     all_hist = dom.get("historyAll") or []
-    oldest = min(r["release_date"] for r in m.events if parse_float(r.get("actual")) is not None and ms_date_only(r.get("release_date", "")))
-    add("MAC-42c", "③ スコア推移「全期間」の先頭の日付", f"{oldest[:7]}（最古の観測の月）", (all_hist[0][0][:7] if all_hist else None),
-        note=f"全期間の点数={len(all_hist)}")
+    oldest = min(r["release_date"][:10] for r in m.events if ms_date_only(r.get("release_date", "")))
+    st_all = set_hours(ms_date_only(oldest), 0, 0, 0)
+    cds_all = {iso_date(set_hours(ms_date_only(r["release_date"]), 0, 0, 0)) for r in m.events
+               if ms_date_only(r.get("release_date", "")) and r["indicator"] in {ind for _, ind, _, _ in SCORE_INDS}}
+    dcur = st_all
+    while dcur <= today_end:
+        cds_all.add(iso_date(dcur))
+        dcur = local_ms(local_dt(dcur) + timedelta(days=7))
+    first_all = next((ds for ds in sorted(cds_all)
+                      if m.score_as_of(set_hours(ms_date_only(ds), 23, 59, 59)) is not None), None)
+    add("MAC-42c", "③ スコア推移「全期間」の先頭の日付", first_all, (all_hist[0][0] if all_hist else None),
+        note=f"開始日={oldest}（events.csvの最古の行）・全期間の点数={len(all_hist)}")
+    # M-3: 3年・5年の先頭の点（期待は1年と同じ作り方で、開始日だけを変える）
+    exp_r, act_r = [], []
+    for yrs in (3, 5):
+        try:
+            sty = td0.replace(year=td0.year - yrs, hour=0, minute=0, second=0)
+        except ValueError:
+            sty = td0.replace(year=td0.year - yrs, day=28, hour=0, minute=0, second=0)
+        ser = build_series(local_ms(sty), today_end)
+        exp_r.append([f"{yrs}年", ser[0] if ser else None, len(ser)])
+        a = (dom.get("historyRanges") or {}).get(yrs) or [None, None]
+        act_r.append([f"{yrs}年", list(a[0]) if a[0] else None, a[1]])
+    add("MAC-42d", "③ スコア推移「3年・5年」の先頭の点と点数", exp_r, act_r)
     tip_last = dom.get("historyTipLast") or ""
     add("MAC-42b", "③ tooltip（本日の点は実測値の注記）", True, "本日の実測値" in tip_last, note=re.sub("<[^>]+>", " ", tip_last)[:120])
 
