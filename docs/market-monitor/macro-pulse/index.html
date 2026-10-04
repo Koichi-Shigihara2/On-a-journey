@@ -2835,6 +2835,10 @@ function renderStealthCard(rows, latest) {
         ).join('')
       + `</div>`
     : '';
+  // M-5 STEP 2: WALCLが前週から増えていない週は、EASING関連の2つ（政策EASINGの効果が限定的・EASING認識の見直しを推奨）を判定しない
+  const easingNaHtml = (latest.easing_check || '') === '適用外'
+    ? `<div style="margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--mut);line-height:1.6">EASING関連の判定（効果が限定的・認識の見直し）: 適用外 — FRBバランスシート（WALCL）が前週から増えていない週は判定しない</div>`
+    : '';
 
   return `<div class="stealth-card">
     <div class="stealth-header">
@@ -2862,6 +2866,7 @@ function renderStealthCard(rows, latest) {
     </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--mut);line-height:1.5">${sigDesc}</div>
     ${alertHtml}
+    ${easingNaHtml}
     <div class="stealth-metrics">
       ${metrics.map(m => `<div class="stealth-metric">
         <div class="stealth-metric-label">${m.label}</div>

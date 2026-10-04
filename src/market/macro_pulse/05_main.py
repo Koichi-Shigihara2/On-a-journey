@@ -2214,6 +2214,9 @@ LIQUIDITY_COLUMNS = [
     "h41_date",               # 判定に使ったH.4.1の基準日（水曜）
     "net_liq_wow_pct",        # NET流動性の前週比（%、H.4.1の基準日どうし）
     "sp500_5d_pct",           # S&P500の5営業日リターン（%、FRED SP500の観測5本前と比較）
+    # M-5 STEP 2: EASING関連の警戒（政策EASINGの効果が限定的・EASING認識の見直しを推奨）を判定したか。
+    # 「判定」＝直近の週のWALCLが前週から増えた、「適用外」＝増えていない（供給が無い週は判定しない）、空＝週のデータ不足
+    "easing_check",
 ]
 
 _WEEKLY_LIQ_SERIES = ("WALCL", "WTREGEN", "WDTGAL", "RRPONTSYD", "WRBWFRBL", "SP500")
@@ -2304,8 +2307,10 @@ def weekly_liquidity_state(series: dict, asof: date, max_weeks: int = 9) -> dict
         decline_weeks += 1
     absorb_exceeds = False
     wow = None
+    walcl_increased = None
     if len(weeks) >= 2:
         a, b = weeks[-2], weeks[-1]
+        walcl_increased = b["fed"] > a["fed"]
         vol = max(0, (b["rrp"] - a["rrp"]) + (b["tga"] - a["tga"]))
         absorb_exceeds = vol > 0 and vol > max(0, b["fed"] - a["fed"])
         if a["nl"]:
@@ -2318,9 +2323,26 @@ def weekly_liquidity_state(series: dict, asof: date, max_weeks: int = 9) -> dict
         "absorb_weeks": absorb_weeks,
         "decline_weeks": decline_weeks,
         "absorb_exceeds_supply": absorb_exceeds,
+        "walcl_increased": walcl_increased,
         "net_liq_wow_pct": wow,
         "sp500_5d_pct": sp5,
     }
+
+
+def _liquidity_alerts(wk: dict) -> tuple[list, str]:
+    """weekly_liquidity_state() の結果から、ステルスの警戒アラート（リスト）と easing_check（判定／適用外／空）を作る。
+    M-5 STEP 2: EASING関連の2つ（政策EASINGの効果が限定的・EASING認識の見直しを推奨）は、直近の週のWALCLが前週から
+    増えた（政策の供給があった）週だけ判定する。増えていない週は供給額を0として扱うことになり、RRPかTGAが少しでも
+    増えれば出ていた（全履歴の509日中341日、M-4 STEP 3）。"""
+    easing_check = "" if wk.get("walcl_increased") is None else ("判定" if wk["walcl_increased"] else "適用外")
+    alerts: list[str] = []
+    if easing_check == "判定" and wk["absorb_weeks"] >= 4:
+        alerts.append(f"政策EASINGの効果が限定的（ステルス吸収{wk['absorb_weeks']}週継続）")
+    if wk["decline_weeks"] >= 3:
+        alerts.append(f"実質的にTIGHTENINGに近い状態（NET流動性{wk['decline_weeks']}週連続減少）")
+    if easing_check == "判定" and wk["absorb_exceeds_supply"]:
+        alerts.append("EASING認識の見直しを推奨（ステルス吸収額が政策供給額を超過）")
+    return alerts, easing_check
 
 
 def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> None:
@@ -2426,13 +2448,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     _decline_weeks = _wk["decline_weeks"]
 
     # 警戒アラート文字列（|区切り）
-    _alerts: list[str] = []
-    if _absorb_weeks >= 4:
-        _alerts.append(f"政策EASINGの効果が限定的（ステルス吸収{_absorb_weeks}週継続）")
-    if _decline_weeks >= 3:
-        _alerts.append(f"実質的にTIGHTENINGに近い状態（NET流動性{_decline_weeks}週連続減少）")
-    if _wk["absorb_exceeds_supply"]:
-        _alerts.append("EASING認識の見直しを推奨（ステルス吸収額が政策供給額を超過）")
+    _alerts, _easing_check = _liquidity_alerts(_wk)
 
     new_row = {
         "date":             date_str,
@@ -2451,6 +2467,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         "h41_date":              _wk["h41_date"] or "",
         "net_liq_wow_pct":       _fmt_pct(_wk["net_liq_wow_pct"]),
         "sp500_5d_pct":          _fmt_pct(_wk["sp500_5d_pct"]),
+        "easing_check":          _easing_check,
     }
     if _alerts:
         logger.info(f"[Stealth L3] alerts={_alerts}")

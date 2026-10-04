@@ -529,3 +529,29 @@ class TestScoreMinWeight:
         import re
         m = re.search(r"const SCORE_MIN_WEIGHT = (\d+);", html)
         assert m and int(m.group(1)) == main05.SCORE_MIN_WEIGHT == 50
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-5 STEP 2: WALCLが前週から増えていない週は、EASING関連の2つを判定しない（適用外）
+# ─────────────────────────────────────────────────────────────────
+class TestEasingCheckApplicability:
+    def _alerts(self, weeks):
+        st = main05.weekly_liquidity_state(_weekly_series(weeks), date(2026, 9, 25))
+        if hasattr(main05, "_liquidity_alerts"):
+            return st, main05._liquidity_alerts(st)
+        return st, (None, None)
+
+    def test_walcl_decline_week_is_not_applicable(self):
+        """QTの週（WALCLが減る）にTGAが増えただけで「EASING認識の見直しを推奨」が出ていた（全履歴509日中341日）。"""
+        st, (alerts, check) = self._alerts([("2026-09-16", 6.80e6, 8.0e5, 1.0), ("2026-09-23", 6.79e6, 8.2e5, 1.0)])
+        assert st.get("walcl_increased") is False
+        assert check == "適用外"
+        assert not [a for a in alerts if "EASING" in a]
+
+    def test_walcl_increase_week_is_judged(self):
+        st, (alerts, check) = self._alerts([("2026-09-16", 6.70e6, 8.0e5, 1.0), ("2026-09-23", 6.71e6, 8.5e5, 1.0)])
+        assert st.get("walcl_increased") is True and check == "判定"
+        assert [a for a in alerts if "EASING認識の見直しを推奨" in a]  # 吸収5万 > 供給1万
+
+    def test_liquidity_columns_have_easing_check(self):
+        assert "easing_check" in main05.LIQUIDITY_COLUMNS
