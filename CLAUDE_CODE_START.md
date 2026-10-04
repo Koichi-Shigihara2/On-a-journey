@@ -85,7 +85,34 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 設定手順書`tools/external_trigger/README.md`（アカウント作成・fine-grained token〈On-a-journeyのみ・Actions: Read and writeのみ・期限1年〉・secret登録・動作確認・トークンの更新）
 - 金曜の保険のcron（Market Pulse 22:50・Stonks Silo 22:40・TANUKI VALUATION 22:30 UTC）を削除。Market Data Dailyのschedule（20:47〜23:17、01:47・02:17）は保険として残す
 - UPDATE_SCHEDULE.md（`feature/update-schedule`）に外部起動と保険の関係を追記（同ブランチのマージ時に`gen_update_schedule.py`の再実行が必要なのは従来どおり）
-- **Koichiさんの作業待ち**: Worker のデプロイ・トークン発行と登録（README.mdの1〜6）。登録後の最初の平日の朝に、20:25 UTC頃のworkflow_dispatchの実行と下流を確認する
+- （2026-10-04に完了）Worker のデプロイ・トークン発行と登録（README.mdの1〜6）。下の「2026-10-04 外部起動のデプロイ」を参照
+
+**2026-10-04 外部起動のデプロイとテスト通知の結果**
+- デプロイ: Worker `on-a-journey-market-data-trigger`（Cloudflareのアカウント`5ca20ead692842b8ebb804b1f629f4e0`）。wrangler loginとdeployはClaude Code、secret（`GH_DISPATCH_TOKEN`・`DISCORD_WEB_HOOK`）の登録はKoichiさん。
+  最初のdeployは「workers.dev subdomainが無い」（code 10063）でcronだけ失敗し、ダッシュボードのWorkersを一度開いて作成してから再deployで3本登録。workers.devの公開URLは無効のまま
+- `28c56d5554`: secretの前後の空白・改行・BOM・ゼロ幅文字を取り除いて使う（`lib.js`の`secret()`。DISCORD_WEB_HOOKの入力時に見えない文字が入った可能性があったため）、
+  テスト通知の仕組み（一時的なcronが`TEST_NOTIFY_CRON`〈deploy --var〉と一致したときだけ通知を1件送る`handleCron()`）、Discord送信のHTTPステータスをログに出す。`node --test` 14件
+- テスト通知（10-04 01:15 UTC、`15 1 * * *`を00:52:59 UTCにdeploy）は**cronが発火せず届かなかった**。ダッシュボードのPast Cron Events・Observabilityとも01:15前後のイベント0件、
+  GraphQLの`workersInvocationsScheduled`・`workersInvocationsAdaptive`も0件。deployから22分空けており反映の遅れでは説明しきれないが、原因は未特定。Discordの送信やコードの問題ではない
+  （発火していないので送信まで進んでいない）。01:23 UTCに引数なしのdeployで3本に戻し、`TEST_NOTIFY_CRON`も消えたことをAPIで確認。テストはやり直さず、本番の初回の発火を実地テストにする（Koichiさんの決定）
+- Observabilityは有効（`wrangler.toml`の`[observability] enabled = true`、デプロイ済みの設定もlogs.enabled・persist・sampling 1をAPIで確認）
+
+**火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
+夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
+1. Cloudflare側: 20:25・20:55・21:25・21:50 UTCのcronが発火したか
+   - ダッシュボード → Workers & Pages → `on-a-journey-market-data-trigger` → Observability（Events/Logs）で、各時刻の`workflow_dispatch → HTTP 204`（21:50は`成功した実行あり（n本）`）を確認。
+     Settings → Trigger Events の Past Cron Events にも4行あるか
+   - Claude CodeからはGraphQLの`workersInvocationsScheduled`（`npx wrangler whoami`でOAuthトークンを更新してから`~/AppData/Roaming/xdg.config/.wrangler/config/default.toml`の`oauth_token`で問い合わせ）でも確認できる。
+     ObservabilityのログAPIはwranglerのOAuthの権限では読めない（Authentication error）ので、ログの中身はダッシュボードで見る
+   - **20:25に発火していなければ**、10-04のテスト通知と同じ「Cloudflareのcronが発火しない」問題。GitHubのschedule（保険）で取得されたかを記録し、チャットに報告して対処を相談する
+2. GitHub側: workflow_dispatchの実行が作られたか
+   - `gh run list --workflow Market_Data_Daily_Update.yml --branch kaihatsu --limit 20 --json databaseId,event,createdAt,updatedAt,status,conclusion`
+     で10-05 20:00 UTC以降の実行を一覧。event=workflow_dispatchが20:25・20:55・21:25 UTC頃に各1本（21:50の再起動は無い想定）。scheduleの起動も混ざるので区別して記録
+   - ガードの判定: `gh run view <ID> --log | grep -F "[guard]"`。20:25はrun=true→取得（status=fetched・with_bars・no_close_after_retry）、20:55・21:25は「終値はそろっている」でrun=false→cancelled
+   - 下流の完了時刻: `gh run list --limit 40 --json workflowName,event,createdAt,updatedAt,conclusion`でMarket Pulse・Stonks Silo・TANUKI VALUATION・TANUKI Scoreの完了時刻を確認し、
+     **22:00 UTCに間に合ったか**を記録（1晩目・2晩目の記録と同じ形式）
+3. Discord: 外部起動の通知は**失敗時だけ**送る設計（起動の応答が204以外、または21:50に成功した実行が無いとき）。全部うまくいけば通知は**0件**が正しい。
+   通知があればその本文（HTTPのコード・時刻）を記録する。通知が無いことも「確認した」と記録する（Discordへの送信経路そのものは未検証のまま。10-04のテスト通知は発火せず）
 
 **マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
