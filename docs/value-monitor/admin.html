@@ -1240,7 +1240,8 @@ function buildCsv(rows) {
     rows.map(r => `${q(r.ticker)},${q(r.cik)},${q(r.name||'')},${q(r.eps_sector||'')},${q(r.stonks_silo||'false')},${q(r.tanuki||'true')},${q(r.eps||'true')},${q(r.hypecore||'true')}`).join('\n') + '\n';
 }
 function calcWacc(beta) {
-  return (RF + beta * RM_RF * 100).toFixed(2) + '%';
+  // RF・RM_RFは小数（0.043・0.057）。両方を%に直してから足す（2026-10-04、旧式はRfだけ小数のままでβ=1.0が5.74%になっていた）
+  return ((RF + beta * RM_RF) * 100).toFixed(2) + '%';
 }
 
 // ── 接続 ──

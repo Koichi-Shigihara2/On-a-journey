@@ -22953,6 +22953,41 @@ SOUN/CRWVは全て`layer2_complete: True`・`missing_kpis: []`を確認。
 `[[CONFIG-LOAD-SILENT-FALLBACK-1]]`調査時の「フェーズ3未登録9件は
 調査完了・現状維持が妥当」という判断パターンを踏襲。
 
+#### 2026-10-04 追記: 参考②・ERPだけRfを現在値（^TNX）に切り替え。β込みWACCは意図的に固定のまま
+**経緯**: 2026-10-04の読み取り調査（HEAD `befc659b40`）でRfの読み手を棚卸しし、Rfを4.3%→5.28%に変えて5銘柄
+（RXRX・NVDA・SOFI・MSFT・ALAB）を計算し直した。メイン判定系（intrinsic_value_per_share・upside_percent・tanuki_score・
+funda_score・timing_score・dcf_components.v0_rm・rice・scenario・sensitivity・growth_sanity・score_history）は完全に一致し、
+上の「メインIVには影響しない」という判断は今も正しいと確認した。一方で、固定の4.3%は実勢（^TNX 5.277%、2026-10-02）より約1pt低く、
+参考②（Rf理論上限）を過大に、ERPの過熱度を過小に見せていた（例: RXRXの参考② $100.55、現在値なら$57.42）。
+`config/beta_config.json`にrisk_free_rateのキーは無く、Rfの出どころは`calculator/wacc.py`の既定値だけ（指示書の前提とは異なっていた）。
+
+**変更（参考表示だけ）**:
+- `pipeline.py::_resolve_live_risk_free_rate()`: ^TNXの最新の有効な終値/100をRfの現在値にする。終値の日付の翌日から今日（NY）までの
+  NYSE営業日が5日を超えたら古いとして使わない。取れない・古い・読み出しエラーのときは0.043にフォールバックする。1回の実行で1回だけ取得
+  （`TanukiValuationPipeline._live_rf()`）。latest.jsonに`risk_free_rate_live`（使った値）・`risk_free_rate_live_date`・
+  `risk_free_rate_live_source`（"tnx" / "fallback_fixed"）。フォールバック時は`required_growth_rf_live`をNoneにして金利感応度チェックを出さない
+- 参考②: `calculate_pt(rf_reference=...)`で参考②だけを現在値で割り引き、使った値を`intrinsic_value_rf_rate`に残す。
+  report.txt・stock.htmlの見出しはこのフィールドから作り、^TNXの日付（固定値なら「固定値」）を出す
+- ERP: `_calculate_erp()`の3か所（latest.jsonの`erp`・report.txt）を現在値に。report.txtのRisk_Free_Rate・ERP_Signalの行と、
+  stock.htmlのERPの欄に、使ったRfと日付を出す
+- 金利感応度チェック: 意味（固定の基準4.30%と現在値の比較）は変えず、「現在」に^TNXの日付を出す
+
+**β込みWACC（参考①）・Ke・FCFEの株主資本コストを固定のままにした理由**: (1) この3つは`wacc.value`の1つの値から出ており、
+Rfだけを日々の金利で動かすとRm=10%固定のままERP（Rm−Rf）が縮み、β>1の銘柄でRfが上がるとWACCが下がる符号の反転（上記）が
+日々の値動きとして表に出る。(2) 金利感応度チェックは「固定の基準Rf」と現在値の比較なので、基準まで現在値にすると差が常に0になり意味を失う
+（2026-10-04の検証で確認）。(3) 参考②とERPは「今の金利でどう見えるか」を見る欄で、現在値で計算するのが目的に合う。
+
+**検証（2026-10-04）**: 全99銘柄を変更前（別worktreeのHEAD）と変更後で再生成して比べた（XAIのキーを外して実行）。
+(A)のフィールドとscore_historyは99銘柄すべて一致。参考①・`wacc`（Ke）・FCFEの株主資本コストも不変。変わったのは参考②・ERP・新しいフィールドと、
+report.txtの該当行だけ（それ以外のフィールドの変化0件）。ERPのラベルは24銘柄で変わった（23銘柄は過熱側へ1段、MOは冷却圏→中立〜やや冷却）。
+テスト: `tests/test_pipeline_logic.py::TestLiveRiskFreeRate`（7件、フォールバック3経路・5営業日の境界・report.txtの表示）、
+`tests/test_core_calculator_rf_reference.py`（2件）。修正前のコードでは全件失敗、修正後は全件成功。再生成したデータはcommitしていない
+（次の夜間の実行で反映される）。
+
+**同時に直したもの**: `docs/value-monitor/admin.html`の`calcWacc()`がRf（小数）とβ×ERP（%）を単位をそろえずに足しており、
+β=1.0で5.74%と表示していた（正しくは10.00%）。テスト`tests/test_admin_calc_wacc.py`。
+**新規登録**: [[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]（intrinsic_value_pt・components.pv_high/pv_terminalがβ込みWACC基準なのに注記がない）。
+
 ---
 
 ### ✅ [CONFIG-LOAD-SILENT-FALLBACK-1]（部分対応） config/設定ファイル読み込み失敗時のサイレントフォールバックが複数箇所に存在
