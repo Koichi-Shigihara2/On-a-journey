@@ -2591,6 +2591,10 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
 - browser_checks/check_macro_pulse.pyの期待値の計算も同じ規則（known_at・改定値・米国東部の締め）に。今のデータ・修復後のデータとも
   一致68・不一致2（MAC-42c・D-01、M-2cから既知）・判定不能1（D-02）、consoleエラー0件
 
+#### 状態（2026-10-04）
+**統合・修復済み、本番の確認待ち。** M-3 STEP 1・3・6（known_at、スコアの判定不能、画面の締め）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
 ---
 
 ### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
@@ -2713,6 +2717,10 @@ events.csvと系列ストアの最新観測を全指標で突き合わせた件�
 - 回帰テスト4件（修正前4件fail→修正後pass）
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
 
+#### 状態（2026-10-04）
+**統合・修復済み、本番の確認待ち。** M-3 STEP 2（初回公表の値と改定値）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
 ---
 
 ### [MACRO-PULSE-LIQUIDITY-ROW-DATE-UTC-SHIFT-1] 05_liquidity.csvの過去の行の日付が、実行の米国の日付より1日後になっている（2026-08-27〜10-02の33行など）
@@ -2756,6 +2764,10 @@ events.csvと系列ストアの最新観測を全指標で突き合わせた件�
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）。実行後に`macro_liquidity_weekly_before_after.py`で
   M-2 STEP 4のbefore/afterの一覧を作り直す
 
+#### 状態（2026-10-04）
+**統合・修復済み、本番の確認待ち。** M-3 STEP 4（33行を1日前へ移した。Hollow Rallyの週単位の件数は197週中50週のまま）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
 ---
 
 ## 優先度：低（アイデア段階）
@@ -2794,6 +2806,10 @@ events.csvと系列ストアの最新観測を全指標で突き合わせた件�
   10-02の終値7,722.72・10-01比+56.27。07-29の終値はどの行にも無いため、07-30の時点では「vs 07-28」と出る
 - 回帰テスト4件（修正前4件fail→修正後pass）＋修復スクリプトの7日以内の条件1件（修正前は2019-06-19を当てはめてfail→修正後pass）
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
+
+#### 状態（2026-10-04）
+**統合・修復済み、本番の確認待ち。** M-3 STEP 5（sp500_t0_asof、1,872行に観測日）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
 
 ---
 
