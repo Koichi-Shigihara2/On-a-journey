@@ -2421,11 +2421,11 @@ function computeScoreAsOf(asOf) {
         if(val<=10)   return {score:lerp(val,0,55,10,15),w:18};
         return {score:12,w:18};
       case 'cfnai':
-        // M-5 STEP 6: 段（SIGNAL_STEPS）の中立と拡張の境目を 0 に変えたのに合わせ、0 を中立（50点）の点にする。
-        // CFNAI は 0 が長期のトレンド成長。+0.2（シカゴ連銀の「後退の後に +0.20 を上回ると後退が終わった可能性」の目安）で拡張（18点）
+        // M-5 STEP 6: 段（SIGNAL_STEPS）の中立と拡張の境目を 0 に変えたのに合わせ、折れ点を段の区切りに揃える:
+        // −0.7（後退シグナルの段の境目）→82、−0.35（中立の段〈−0.7〜0〉の中央）→50、0（拡張の段の境目）→18。0以上は段と同じ18
         if(val<=-0.7)  return {score:82,w:12};
-        if(val<=0.0)   return {score:lerp(val,-0.7,82,0.0,50),w:12};
-        if(val<=0.2)   return {score:lerp(val,0.0,50,0.2,18),w:12};
+        if(val<=-0.35) return {score:lerp(val,-0.7,82,-0.35,50),w:12};
+        if(val<=0.0)   return {score:lerp(val,-0.35,50,0.0,18),w:12};
         return {score:18,w:12};
       case 'claims':
         if(val<=180000) return {score:10,w:10};

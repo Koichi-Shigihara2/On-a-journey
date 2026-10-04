@@ -408,8 +408,8 @@ class Model:
                 return (12, 18)
             if k == "cfnai":
                 if v <= -0.7: return (82, 12)
-                if v <= 0.0: return (lerp(v, -0.7, 82, 0.0, 50), 12)  # M-5 STEP 6
-                if v <= 0.2: return (lerp(v, 0.0, 50, 0.2, 18), 12)
+                if v <= -0.35: return (lerp(v, -0.7, 82, -0.35, 50), 12)  # M-5 STEP 6
+                if v <= 0.0: return (lerp(v, -0.35, 50, 0.0, 18), 12)
                 return (18, 12)
             if k == "claims":
                 if v <= 180000: return (10, 10)
