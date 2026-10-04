@@ -101,7 +101,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 付け直した後の確認の実行 `37168962405`（workflow_dispatch・kaihatsu・起動者Koichi-Shigihara2、10-04 01:45:12 UTC起動→01:47:07完了）:
   ガードは`daily_guard.py`が動いた（guard=trueの経路）うえで「NYSE休場日（2026-10-03）→ run=false」→ **cancelled**（取得・commitなし）。
   下流4本（Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Update・TANUKI_Score_Update、01:47:09〜01:47:15 UTC作成のworkflow_run）はすべて**skipped**。README.mdの4の想定どおり。
-  Workerの`GH_DISPATCH_TOKEN`がこのトークンなら、権限の付け直しで値は変わらないので登録し直しは不要（Regenerateや別のトークンにした場合は`npx wrangler secret put GH_DISPATCH_TOKEN`で登録し直す）
+  トークンはRegenerate・新規発行をしておらず権限を付け直しただけで、値は変わっていない。Workerの`GH_DISPATCH_TOKEN`は同じトークンのため**登録し直し不要と確定**（Koichiさんが確認）
 
 **火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
 夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
