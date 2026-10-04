@@ -1182,6 +1182,8 @@ const SCORE_MIN_WEIGHT = 50;
 // ヘルスバーの判定・目盛り（renderL2()）をどちらもここから作る。05_main.py の SIGNAL_STEPS と同じ内容（tests で一致を確かめる）。
 // tiers は悪い段から順に判定し、どれにも当たらなければ else。cmp: "<"＝値が小さいほど悪い指標、">"・">="＝大きいほど悪い指標。
 // trend: 直近3点の向きが dir と同じなら score に add を足し、signal を置き換える（Philly・Claims）
+// CFNAI（cfnai）: 中立と拡張の境目は 0（CFNAI は 0 が長期のトレンド成長〈シカゴ連銀〉。M-5 STEP 6 で −0.35 から変更）。
+// −0.7 はシカゴ連銀の「拡張の後に −0.70 を下回ると後退が始まった可能性が高まる」の目安
 // SIGNAL_STEPS_BEGIN
 const SIGNAL_STEPS = {
     "yc": {
@@ -1303,7 +1305,7 @@ const SIGNAL_STEPS = {
         },
         {
           "cmp": "<",
-          "x": -0.35,
+          "x": 0,
           "score": 50,
           "signal": "neutral"
         }
@@ -1476,7 +1478,7 @@ function computeCurrentScore() {
   let cfnaiScore=50,cfnaiSignal='neutral',cfnaiLabel='—';
   if(cfnai!==null){cfnaiLabel=cfnai.toFixed(2);
     ({score:cfnaiScore, signal:cfnaiSignal}=stepSignal('cfnai', cfnai));}
-  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥-0.35 / BEAR<-0.7',obsDate:latestDate('Chicago Fed National Activity')});
+  signals.push({name:'CFNAI MA3',val:cfnaiLabel,score:cfnaiScore,signal:cfnaiSignal,weight:12,lead:'先行1ヶ月',desc:'シカゴ連銀全米活動指数（3ヶ月MA）。85の経済指標を統合した総合景気指数。',thresh:'BULL≥0 / BEAR<-0.7',obsDate:latestDate('Chicago Fed National Activity')});
 
   let clScore=50,clSignal='neutral',clLabel='—';
   if(claims!==null){clLabel=(claims/1000).toFixed(0)+'K';const t=trend3('Initial Claims 4W MA');
@@ -2419,9 +2421,11 @@ function computeScoreAsOf(asOf) {
         if(val<=10)   return {score:lerp(val,0,55,10,15),w:18};
         return {score:12,w:18};
       case 'cfnai':
+        // M-5 STEP 6: 段（SIGNAL_STEPS）の中立と拡張の境目を 0 に変えたのに合わせ、0 を中立（50点）の点にする。
+        // CFNAI は 0 が長期のトレンド成長。+0.2（シカゴ連銀の「後退の後に +0.20 を上回ると後退が終わった可能性」の目安）で拡張（18点）
         if(val<=-0.7)  return {score:82,w:12};
-        if(val<=-0.35) return {score:lerp(val,-0.7,82,-0.35,50),w:12};
-        if(val<=0.0)   return {score:lerp(val,-0.35,50,0.0,30),w:12};
+        if(val<=0.0)   return {score:lerp(val,-0.7,82,0.0,50),w:12};
+        if(val<=0.2)   return {score:lerp(val,0.0,50,0.2,18),w:12};
         return {score:18,w:12};
       case 'claims':
         if(val<=180000) return {score:10,w:10};

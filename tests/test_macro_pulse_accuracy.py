@@ -599,3 +599,20 @@ class TestM2YoyPosition:
         assert "m2_yoy_pct" in main05.LIQUIDITY_COLUMNS and "m2_yoy_pctile" in main05.LIQUIDITY_COLUMNS
         html = (pathlib.Path(__file__).resolve().parents[1] / "docs" / "market-monitor" / "macro-pulse" / "index.html").read_text(encoding="utf-8")
         assert "pctRank(m2History" not in html and "latest.m2_yoy_pctile" in html
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-5 STEP 6: CFNAI の中立と拡張の境目は 0（−0.7 はそのまま）
+# ─────────────────────────────────────────────────────────────────
+class TestCfnaiBoundary:
+    def test_between_minus035_and_zero_is_neutral(self):
+        """CFNAI は 0 が長期のトレンド成長。−0.35〜0 は以前「拡張」（18点）だった。"""
+        steps = getattr(main05, "SIGNAL_STEPS", None)
+        assert steps is not None
+        assert main05._step_signal("cfnai", -0.1) == (50, "neutral")
+        assert main05._step_signal("cfnai", 0.0) == (18, "bull")
+        assert main05._step_signal("cfnai", -0.71) == (82, "bear")
+
+    def test_card_thresh_text(self):
+        html = (pathlib.Path(__file__).resolve().parents[1] / "docs" / "market-monitor" / "macro-pulse" / "index.html").read_text(encoding="utf-8")
+        assert "thresh:'BULL≥0 / BEAR<-0.7'" in html and "BULL≥-0.35" not in html

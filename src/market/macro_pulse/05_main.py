@@ -1546,8 +1546,10 @@ SIGNAL_STEPS = {
                           "trend": {"dir": -1, "add": 10, "signal": "bear"}},
                          {"cmp": "<", "x": 5, "score": 35, "signal": "neutral"}],
                "else": {"score": 12, "signal": "bull"}},
+    # M-5 STEP 6: 中立と拡張の境目は 0（CFNAI は 0 が長期のトレンド成長〈シカゴ連銀〉。以前は −0.35）。
+    # −0.7 はシカゴ連銀の「拡張の後に −0.70 を下回ると後退が始まった可能性が高まる」の目安
     "cfnai": {"tiers": [{"cmp": "<", "x": -0.7, "score": 82, "signal": "bear"},
-                        {"cmp": "<", "x": -0.35, "score": 50, "signal": "neutral"}],
+                        {"cmp": "<", "x": 0, "score": 50, "signal": "neutral"}],
               "else": {"score": 18, "signal": "bull"}},
     "claims": {"tiers": [{"cmp": ">", "x": 300000, "score": 85, "signal": "bear"},
                          {"cmp": ">", "x": 250000, "score": 60, "signal": "caution",

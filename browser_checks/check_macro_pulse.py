@@ -340,7 +340,7 @@ class Model:
         if cf is not None:
             lab = js_fixed(cf, 2)
             s, g = step_sig(STEPS, "cfnai", cf)
-        sig.append(dict(key="cfnai", name="CFNAI MA3", val=lab, score=s, signal=g, weight=12, lead="先行1ヶ月", thresh="BULL≥-0.35 / BEAR<-0.7", obs=dates["cfnai"]))
+        sig.append(dict(key="cfnai", name="CFNAI MA3", val=lab, score=s, signal=g, weight=12, lead="先行1ヶ月", thresh="BULL≥0 / BEAR<-0.7", obs=dates["cfnai"]))
         cl = v["claims"]
         s, g, lab = 50, "neutral", "—"
         if cl is not None:
@@ -408,8 +408,8 @@ class Model:
                 return (12, 18)
             if k == "cfnai":
                 if v <= -0.7: return (82, 12)
-                if v <= -0.35: return (lerp(v, -0.7, 82, -0.35, 50), 12)
-                if v <= 0.0: return (lerp(v, -0.35, 50, 0.0, 30), 12)
+                if v <= 0.0: return (lerp(v, -0.7, 82, 0.0, 50), 12)  # M-5 STEP 6
+                if v <= 0.2: return (lerp(v, 0.0, 50, 0.2, 18), 12)
                 return (18, 12)
             if k == "claims":
                 if v <= 180000: return (10, 10)
