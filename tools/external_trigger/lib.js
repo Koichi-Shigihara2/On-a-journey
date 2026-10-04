@@ -34,9 +34,16 @@ export const NYSE_HOLIDAYS = {
 
 const API = "https://api.github.com";
 
+// secretの値。wrangler secret putで貼り付けたときに前後へ入った空白・改行・BOM・ゼロ幅文字を取り除く（未登録なら""）
+export function secret(env, name) {
+  const v = env && env[name];
+  if (typeof v !== "string") return "";
+  return v.replace(/^[\s\u200B-\u200D\u2060\uFEFF]+|[\s\u200B-\u200D\u2060\uFEFF]+$/g, "");
+}
+
 function ghHeaders(env) {
   return {
-    Authorization: `Bearer ${env.GH_DISPATCH_TOKEN}`,
+    Authorization: `Bearer ${secret(env, "GH_DISPATCH_TOKEN")}`,
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
     "User-Agent": "On-a-journey-external-trigger/1.0", // GitHub APIはUser-Agentが無いと拒否する
@@ -83,17 +90,20 @@ export async function successfulRunsSinceClose(env, fetchFn, date) {
 
 export async function notify(env, fetchFn, text) {
   const content = `[Market Data Daily 外部起動] ${text}`;
-  if (!env.DISCORD_WEB_HOOK) {
+  const hook = secret(env, "DISCORD_WEB_HOOK");
+  if (!hook) {
     console.log(`(DISCORD_WEB_HOOK未登録) ${content}`);
     return false;
   }
   try {
-    const res = await fetchFn(env.DISCORD_WEB_HOOK, {
+    const res = await fetchFn(hook, {
       method: "POST",
       headers: { "Content-Type": "application/json", "User-Agent": "On-a-journey-notifier/1.0" },
       body: JSON.stringify({ content }),
     });
-    return res.status === 200 || res.status === 204;
+    const ok = res.status === 200 || res.status === 204;
+    console.log(`Discord送信 → HTTP ${res.status}`);
+    return ok;
   } catch (e) {
     console.log(`Discord送信エラー: ${e && e.name}`); // webhook URL（トークンを含む）は出さない
     return false;
@@ -138,4 +148,16 @@ export async function handleScheduled(date, env, fetchFn) {
     : `${day} ${AFTER_CLOSE_UTC.slice(0, 5)} UTC以降に成功した実行が無い`;
   await notify(env, fetchFn, `21:50 UTCの確認: ${why}。もう一度起動した → HTTP ${status}${status === 204 ? "" : dispatchFailureHint(status)}${yearNote}`);
   return { action: "deadline_redispatch", status, count: check.count };
+}
+
+// テスト通知（README.mdの「Discordへのテスト通知」）。一時的に足したcronがTEST_NOTIFY_CRON（deploy --varで渡す）と
+// 一致したときだけ、起動・確認はせずにDiscordへ1件送る。普段はTEST_NOTIFY_CRONが無いので常にhandleScheduledへ進む
+export async function handleCron(cron, date, env, fetchFn) {
+  const testCron = secret(env, "TEST_NOTIFY_CRON");
+  if (testCron && cron === testCron) {
+    const sent = await notify(env, fetchFn, `テスト通知（${date.toISOString()}）。この通知が届けばDISCORD_WEB_HOOKは正しく登録されている`);
+    console.log(`テスト通知: ${sent ? "送信できた" : "送信できなかった"}`);
+    return { action: "test_notify", sent };
+  }
+  return handleScheduled(date, env, fetchFn);
 }

@@ -101,6 +101,28 @@ npx wrangler secret put DISCORD_WEB_HOOK     # DiscordのwebhookのURL（GitHub�
 4. 失敗時の通知の確認（任意）: 一時的に`npx wrangler secret put GH_DISPATCH_TOKEN`で誤った値を入れると、次の起動時刻に
    「起動に失敗: HTTP 401」がDiscordに届きます。確認後は正しいトークンに戻してください
 
+### Discordへのテスト通知（デプロイ済みのsecretで1件送る）
+
+Workerは公開URLを持たないため、一時的に4本目のcronを足してデプロイし、その時刻にテスト通知を1件だけ送ります。
+cronが`TEST_NOTIFY_CRON`と一致したときは、起動・確認をせずに通知だけを送ります（`lib.js`の`handleCron`）。
+4本目を足しても、無料プランの上限（5本）の内に収まります。
+
+```powershell
+cd C:\Users\shigi\Documents\On-a-journey-git\tools\external_trigger
+# 例: 01:40 UTC（日本時間10:40）に送る。cronの反映には最大15分ほどかかるので、20分以上先の時刻にする
+$T = "40 1 * * *"
+npx wrangler deploy --schedules "25 20,21 * * MON-FRI" --schedules "55 20 * * MON-FRI" --schedules "50 21 * * MON-FRI" --schedules $T --var "TEST_NOTIFY_CRON:$T"
+```
+
+- その時刻に、Discordに「[Market Data Daily 外部起動] テスト通知（…）」が届けばOKです
+- Workerのログ（ダッシュボードのObservability、または`npx wrangler tail`）には`Discord送信 → HTTP 204`と出ます。
+  `HTTP 401`・`404`はwebhookのURLの誤りなので、`npx wrangler secret put DISCORD_WEB_HOOK`で登録し直します
+- 確かめたら、すぐに元に戻します。`npx wrangler deploy`を引数なしで実行すると、cronは`wrangler.toml`の3本に戻り、
+  `TEST_NOTIFY_CRON`も消えます。戻さないと、毎日その時刻にテスト通知が届きます
+
+secretの値は、前後の空白・改行・BOM・ゼロ幅文字を取り除いてから使います（`lib.js`の`secret`）。
+貼り付けのときに前後へ入った見えない文字は、登録し直さなくても問題になりません。
+
 手元でcronの処理を1回だけ試す場合（実際にworkflow_dispatchを呼びます。guard=trueなので取得済みなら何もしません）:
 
 ```powershell

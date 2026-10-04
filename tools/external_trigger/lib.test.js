@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { handleScheduled, isHoliday, successfulRunsSinceClose } from "./lib.js";
+import { handleCron, handleScheduled, isHoliday, secret, successfulRunsSinceClose } from "./lib.js";
 
 const ENV = { GH_DISPATCH_TOKEN: "dummy-token", DISCORD_WEB_HOOK: "https://discord.invalid/api/webhooks/0/x" };
 
@@ -103,4 +103,48 @@ test("DISCORD_WEB_HOOKが未登録でも落ちない", async () => {
   const r = await handleScheduled(new Date("2026-10-05T20:25:00Z"), { GH_DISPATCH_TOKEN: "t" }, f);
   assert.equal(r.status, 500);
   assert.equal(f.discord().length, 0);
+});
+
+
+test("secretの値の前後の空白・改行・BOM・ゼロ幅文字を取り除く（中の文字はそのまま）", () => {
+  assert.equal(secret({ X: "  abc\r\n" }, "X"), "abc");
+  assert.equal(secret({ X: "\uFEFF\u200Bhttps://x/a b\t\n\u00A0" }, "X"), "https://x/a b");
+  assert.equal(secret({ X: " \n " }, "X"), "");
+  assert.equal(secret({}, "X"), "");
+  assert.equal(secret(undefined, "X"), "");
+});
+
+test("前後に改行・空白が入ったsecretでも、トークン・webhook URLは取り除いた値で使う", async () => {
+  const f = fakeFetch({ dispatchStatus: 401 });
+  const env = { GH_DISPATCH_TOKEN: " dummy-token\r\n", DISCORD_WEB_HOOK: "\n https://discord.invalid/api/webhooks/0/x \r\n" };
+  await handleScheduled(new Date("2026-10-05T20:25:00Z"), env, f);
+  assert.equal(f.dispatches()[0].init.headers.Authorization, "Bearer dummy-token");
+  assert.equal(f.discord().length, 1);
+  assert.equal(f.discord()[0].url, "https://discord.invalid/api/webhooks/0/x");
+});
+
+test("空白・改行だけのDISCORD_WEB_HOOKは未登録として扱い、送らない", async () => {
+  const f = fakeFetch({ dispatchStatus: 500 });
+  await handleScheduled(new Date("2026-10-05T20:25:00Z"), { GH_DISPATCH_TOKEN: "t", DISCORD_WEB_HOOK: " \r\n" }, f);
+  assert.equal(f.discord().length, 0);
+});
+
+test("TEST_NOTIFY_CRONと一致するcronはDiscordにテスト通知を1件送るだけで、起動・確認はしない", async () => {
+  const f = fakeFetch();
+  const env = { ...ENV, TEST_NOTIFY_CRON: "40 1 * * *" };
+  const r = await handleCron("40 1 * * *", new Date("2026-10-05T21:50:00Z"), env, f);
+  assert.deepEqual(r, { action: "test_notify", sent: true });
+  assert.equal(f.calls.length, 1);
+  assert.equal(f.discord().length, 1);
+  assert.match(JSON.parse(f.discord()[0].init.body).content, /テスト通知/);
+});
+
+test("通常のcron・TEST_NOTIFY_CRONが無いときは今までどおりの処理をする", async () => {
+  const f1 = fakeFetch();
+  const r1 = await handleCron("25 20,21 * * MON-FRI", new Date("2026-10-05T20:25:00Z"), { ...ENV, TEST_NOTIFY_CRON: "40 1 * * *" }, f1);
+  assert.equal(r1.action, "dispatch");
+  assert.equal(f1.discord().length, 0);
+  const f2 = fakeFetch();
+  const r2 = await handleCron("40 1 * * *", new Date("2026-10-05T20:25:00Z"), ENV, f2);
+  assert.equal(r2.action, "dispatch");
 });
