@@ -889,7 +889,9 @@ function buildIndex() {
     // [[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]（2026-10-04 M-3）: その値が使えるようになった時刻はknown_at
     // （UTC、'YYYY-MM-DDTHH:MM:SSZ'）。無い行だけ従来どおりupdated_atを使う
     const kMsRaw = r['known_at'] ? new Date(r['known_at']).getTime() : NaN;
-    const uMsRaw = new Date(r['updated_at']).getTime();
+    // M-3 STEP 6: updated_atはUTC（'YYYY-MM-DD HH:MM:SS'）。そのままnew Date()に渡すとブラウザの現地時刻として読まれる
+    const uStr = (r['updated_at'] || '').trim();
+    const uMsRaw = uStr ? new Date(uStr.replace(' ', 'T') + 'Z').getTime() : NaN;
     const uMs = !isNaN(kMsRaw) ? kMsRaw : (isNaN(uMsRaw) ? dMs : uMsRaw);
     if (!IND_INDEX[ind]) IND_INDEX[ind] = [];
     // [[MACRO-PULSE-REVISION-NOT-APPLIED-1]]（M-3 STEP 2）: actualは初回公表の値。改定値（revised_actual）と、それを書いた時刻
@@ -914,16 +916,47 @@ function valueAt(e, targetMs) {
   return (e.rev !== null && e.revMs !== null && e.revMs <= targetMs) ? e.rev : e.actual;
 }
 
+// M-3 STEP 6: 過去の日付の計算の締め時刻を05_main.pyの_known_cutoff_utc()と揃える。呼び出し元はその日の
+// ブラウザの現地時刻23:59:59を渡す（日本ならUTC 14:59:59で、米国東部の締めより13時間早かった）。渡された時刻の
+// 現地の暦日を計算日とし、観測日はその日以前（dayMs＝その日のUTC 0時）、公開時点（known_at）・改定の時刻は
+// その日の米国東部時間23:59:59（UTC）以前を使う
+function nyEndOfDayUtcMs(y, m, d) {
+  const fmt = new Intl.DateTimeFormat('en-US', {timeZone: 'America/New_York', hourCycle: 'h23',
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'});
+  const wall = Date.UTC(y, m, d, 23, 59, 59);
+  let utc = wall;
+  for (let i = 0; i < 2; i++) {
+    const p = Object.fromEntries(fmt.formatToParts(new Date(utc)).map(x => [x.type, x.value]));
+    const shown = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+    utc += wall - shown;
+  }
+  return utc;
+}
+
+// M-3 STEP 6: 'YYYY-MM-DD'のその暦日の現地23:59:59。new Date('YYYY-MM-DD')はUTCの0時として読まれるため、
+// そこへsetHours(23,59,59)をかけると、UTCより西のタイムゾーンでは前日になっていた
+function endOfLocalDay(ds) {
+  const [y, m, d] = ds.slice(0, 10).split('-').map(Number);
+  return new Date(y, m - 1, d, 23, 59, 59, 0);
+}
+
+function knownBounds(asOfMs) {
+  const t = new Date(asOfMs);
+  const y = t.getFullYear(), m = t.getMonth(), d = t.getDate();
+  return { dayMs: Date.UTC(y, m, d), cutoffMs: nyEndOfDayUtcMs(y, m, d) };
+}
+
 function idxLatestKnownAsOf(ind, targetMs) {
   const arr = IND_INDEX[ind];
   if (!arr || !arr.length) return null;
+  const { dayMs, cutoffMs } = knownBounds(targetMs);
   let best = null;
   for (const e of arr) {
-    if (e.dateMs <= targetMs && e.updatedMs <= targetMs) {
+    if (e.dateMs <= dayMs && e.updatedMs <= cutoffMs) {
       if (!best || e.dateMs > best.dateMs) best = e;
     }
   }
-  return best ? valueAt(best, targetMs) : null;
+  return best ? valueAt(best, cutoffMs) : null;
 }
 
 // binary search: find latest entry with dateMs <= targetMs
@@ -1503,7 +1536,7 @@ function buildL3Snapshots(){
   // ソートしてスナップショット配列を作成
   const sortedDates = [...changeDates].sort();
   const snaps = sortedDates.map(ds=>{
-    const d = new Date(ds); d.setHours(23,59,59,0);
+    const d = endOfLocalDay(ds);
     return {
       date: d,
       dateStr: ds,
@@ -1716,7 +1749,7 @@ function buildScoreTimeSeries(startDate, endDate) {
   
 
   const result = [...changeDates].sort().map(ds => {
-    const d = new Date(ds); d.setHours(23,59,59,0);
+    const d = endOfLocalDay(ds);
     const score = computeScoreAsOf(d);
     return [ds, score];
   }).filter(p => p[1] !== null);
@@ -2191,12 +2224,12 @@ function computeScoreAsOf(asOf) {
 // MACRO-BUG-1: updatedMs<=asOfMsも要求し、後日バックフィルされたデータの
 // release_dateだけで「参照日」が先読みされないようにする
 function latestDataDateBefore(asOf) {
-  const asOfMs = new Date(asOf).getTime();
+  const { dayMs, cutoffMs } = knownBounds(new Date(asOf).getTime());  // M-3 STEP 6: idxLatestKnownAsOf()と同じ締め
   let bestMs=0;
   for(const ind in IND_INDEX){
     const arr=IND_INDEX[ind];
     for(const e of arr){
-      if(e.dateMs<=asOfMs && e.updatedMs<=asOfMs && e.dateMs>bestMs) bestMs=e.dateMs;
+      if(e.dateMs<=dayMs && e.updatedMs<=cutoffMs && e.dateMs>bestMs) bestMs=e.dateMs;
     }
   }
   return bestMs?new Date(bestMs).toISOString().slice(0,10):null;
@@ -2246,7 +2279,7 @@ function renderCustomCmp() {
   const dateStr = el('cmpDateInput').value;
   if(!dateStr) return;
   const currentScore = parseInt(el('pg-score-num').textContent||'0');
-  const asOf = new Date(dateStr); asOf.setHours(23,59,59,0);
+  const asOf = endOfLocalDay(dateStr);
   const score = computeScoreAsOf(asOf);
   const refDate = latestDataDateBefore(asOf);
   const scoreEl = el('cmp-custom-score');

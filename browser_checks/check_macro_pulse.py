@@ -46,6 +46,7 @@ import time
 import urllib.request
 from dataclasses import dataclass, asdict
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Optional
 
@@ -147,6 +148,26 @@ def ms_local(s: str) -> Optional[int]:
 
 
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)  # Windowsのfromtimestampは1970年より前を扱えない
+NY = ZoneInfo("America/New_York")
+
+
+def ms_utc(s: str) -> Optional[int]:
+    """known_at（'YYYY-MM-DDTHH:MM:SSZ'）・updated_at（'YYYY-MM-DD HH:MM:SS'）をUTCとして読む（M-3 STEP 1・6）。"""
+    s = (s or "").strip().rstrip("Z")
+    for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"):
+        try:
+            return int(datetime.strptime(s, fmt).replace(tzinfo=timezone.utc).timestamp() * 1000)
+        except Exception:
+            pass
+    return None
+
+
+def known_bounds(t: int) -> tuple[int, int]:
+    """index.htmlのknownBounds()（M-3 STEP 6）: tの現地（JST）の暦日のUTC 0時と、その日の米国東部時間23:59:59（UTC）。"""
+    d = (EPOCH + timedelta(milliseconds=t)).astimezone(JST).date()
+    day = int(datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() * 1000)
+    cut = int(datetime(d.year, d.month, d.day, 23, 59, 59, tzinfo=NY).timestamp() * 1000)
+    return day, cut
 
 
 def iso_date(ms: int) -> str:
@@ -216,8 +237,11 @@ class Model:
             d = ms_date_only(r.get("release_date", ""))
             if d is None:
                 continue
-            u = ms_local(r.get("updated_at", ""))
-            idx.setdefault(r["indicator"], []).append({"d": d, "v": v, "u": u if u is not None else d})
+            # M-3: 公開時点はknown_at（無ければupdated_at、どちらもUTC）。改定値はrevised_atの時点から
+            u = ms_utc(r.get("known_at", "")) or ms_utc(r.get("updated_at", ""))
+            rv = parse_float(r.get("revised_actual"))
+            idx.setdefault(r["indicator"], []).append({"d": d, "v": v, "u": u if u is not None else d,
+                                                       "rv": rv, "rt": ms_utc(r.get("revised_at", ""))})
         for k in idx:
             idx[k].sort(key=lambda e: e["d"])
         return idx
@@ -227,24 +251,30 @@ class Model:
         cand = [i for i, e in enumerate(arr) if e["d"] <= t]
         return arr[cand[-1]] if cand else None
 
+    @staticmethod
+    def val_at(e: dict, t: int) -> float:
+        """index.htmlのvalueAt()（M-3 STEP 2）: tの時点で改定値が書かれていれば改定値。"""
+        return e["rv"] if e.get("rv") is not None and e.get("rt") is not None and e["rt"] <= t else e["v"]
+
     def latest_val(self, ind: str, t: int) -> Optional[float]:
         e = self.latest_entry(ind, t)
-        return e["v"] if e else None
+        return self.val_at(e, t) if e else None
 
     def latest_known(self, ind: str, t: int) -> Optional[float]:
+        day, cut = known_bounds(t)
         best = None
         for e in self.index.get(ind) or []:
-            if e["d"] <= t and e["u"] <= t:
+            if e["d"] <= day and e["u"] <= cut:
                 if best is None or e["d"] > best["d"]:
                     best = e
-        return best["v"] if best else None
+        return self.val_at(best, cut) if best else None
 
     def trend3(self, ind: str) -> int:
         arr = self.index.get(ind) or []
         if len(arr) < 2:
             return 0
         last3 = arr[-3:]
-        diffs = [last3[i]["v"] - last3[i - 1]["v"] for i in range(len(last3) - 1, 0, -1)]
+        diffs = [self.val_at(last3[i], self.now) - self.val_at(last3[i - 1], self.now) for i in range(len(last3) - 1, 0, -1)]
         avg = sum(diffs) / len(diffs)
         return 1 if avg > 0 else -1 if avg < 0 else 0
 
@@ -399,10 +429,11 @@ class Model:
         return js_round(sum(s * w for s, w in sigs) / tw)
 
     def latest_data_date_before(self, t: int) -> Optional[str]:
+        day, cut = known_bounds(t)
         best = 0
         for arr in self.index.values():
             for e in arr:
-                if e["d"] <= t and e["u"] <= t and e["d"] > best:
+                if e["d"] <= day and e["u"] <= cut and e["d"] > best:
                     best = e["d"]
         return iso_date(best) if best else None
 
@@ -581,7 +612,7 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     add("MAC-09", "S&P500 #tk-sp", js_locale(cur, 2, 2), dom["tk"]["sp"],
         note=f"期待=FRED SP500 {sp[-1]['as_of']}。events.csvの未来日付の行={future_rows}（画面は使わない）")
     add("MAC-10", "S&P500 前営業日比 #tk-sp-c", f"{sign}{js_fixed(chg, 2)} ({sign}{js_fixed(pct, 2)}%)", dom["tk"]["spc"],
-        note=f"期待={sp[-2]['as_of']}→{sp[-1]['as_of']}（画面はupdated_at順で値が違う直前の行と比べる）")
+        note=f"期待={sp[-2]['as_of']}→{sp[-1]['as_of']}（画面はsp500_t0_asofの観測日順。観測日のある行が無ければupdated_at順で値が違う直前の行）")
     yc = m.latest_val("Yield Curve 10Y-2Y", now)
     add("MAC-11", "10Y-2Y #tk-yc/#tk-yc-i",
         [("+" if yc >= 0 else "") + js_fixed(yc, 2) + "%", "INVERTED" if yc < -0.2 else "FLAT" if yc < 0.5 else "NORMAL"] if yc is not None else ["—", "—"],
@@ -947,7 +978,7 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
             ds = iso_date(e["d"])
             rr = next((x for x in m.events if x["indicator"] == ind and x["release_date"] == ds and parse_float(x.get("actual")) is not None), None)
             if rr:
-                rec.append((e["d"], ind, e["v"], arr[i - 1]["v"] if i > 0 else None, ds))
+                rec.append((e["d"], ind, m.val_at(e, now), m.val_at(arr[i - 1], now) if i > 0 else None, ds))
     rec.sort(key=lambda x: -x[0])
     bull_up = {"Philadelphia Fed Manufacturing", "Chicago Fed National Activity", "Michigan Consumer Sentiment", "Building Permits", "Conference Board LEI", "NFP"}
     bull_dn = {"Sahm Rule Recession Indicator", "Initial Claims 4W MA", "Initial Claims", "HY Spread"}
@@ -1005,7 +1036,7 @@ def derived_checks(m: Model) -> list[Result]:
         last = store[sid][-1]
         e = m.latest_entry(ind, now)
         exp.append([ind, last["as_of"], last["value"]])
-        act.append([ind, iso_date(e["d"]) if e else None, e["v"] if e else None])
+        act.append([ind, iso_date(e["d"]) if e else None, m.val_at(e, now) if e else None])
     R.append(Result("D-01", "8指標: 計算に使われる最新行 vs FRED系列ストアの最新観測", exp, act, exp == act, "導出",
                     "日付は events.csv の release_date（観測日・発表予定日が混在）。値の不一致は取り込み漏れ・改定未反映・日付の割り当て違い"))
     # D-02 週次スナップショット（05_weekly_analysis.csv 最新行）の再計算

@@ -2505,6 +2505,7 @@ Claims Report」（FRED API `fred/series/release`で確認）。このため`upd
   23:59:59をUTCに直した時刻」と時刻で比べる（日付の文字列では比べない。日次の実行はUTCの0時をまたいで書くため）。index.htmlの
   `idxLatestKnownAsOf()`（MACRO-BUG-1）と同じ考え方の先読み除外。観測日に置いた行を、公開前の日付の計算に使わないため。
   ただしindex.html側は基準が違う（updated_atをブラウザのローカル時刻として読み、日の終わりもローカル時刻）。揃えるかはM-3で扱う
+  → M-3 STEP 6で揃えた（[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]の「対応（M-3 STEP 6）」）
 - `detect_macro_surprises()`: 前回比を取る2行の間隔が週次10日・月次45日を超える場合は比べない
 - 回帰テスト `tests/test_macro_pulse_accuracy.py`（6件。修正前は4件fail、修正後は6件pass。時刻での比較の2件を追加し8件、追加分は修正前1件fail）
 - 今日のスコア: 27→27（Claimsは09-19週 202,250 → 09-26週 200,000。どちらも215K以下で15点）
@@ -2570,6 +2571,24 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
   `run_weekly_analysis()`はその週のスナップショットを書かずに飛ばす。index.htmlの`computeCurrentScore()`はnull、ゲージは「判定不能」「—」
   （過去の日付の`computeScoreAsOf()`は既にnullを返す）。browser_checks/check_macro_pulse.pyの期待値の計算も同じ規則に
 - 回帰テスト3件（修正前3件fail→修正後pass）
+
+
+#### 対応（2026-10-04、指示書M-3 STEP 6、feature/macro-pulse-m3）
+- index.htmlの過去の日付の先読み除外の締めを05_main.pyと揃えた: `idxLatestKnownAsOf()`・`latestDataDateBefore()`は、渡された時刻の
+  現地の暦日を計算日とし、観測日はその日以前、公開時点（known_at）と改定（revised_at）はその日の米国東部時間23:59:59（UTC、
+  `nyEndOfDayUtcMs()`）以前を使う。以前はブラウザの現地時刻の23:59:59（日本ならUTC 14:59:59で、米国東部の締めより13時間早い）
+- updated_at（known_atの無い行の代わり）をUTCとして読む（以前は`new Date('YYYY-MM-DD HH:MM:SS')`でブラウザの現地時刻として読んでいた）
+- 呼び出し元（スライダー・スコア推移・任意日付の比較）が`new Date('YYYY-MM-DD')`（UTCの0時）に現地時刻で`setHours(23,59,59)`をかけて
+  いたため、UTCより西のタイムゾーンでは前日の計算になっていた → `endOfLocalDay()`（その暦日の現地23:59:59）に
+- 確認（4つの修復を手元で試しに適用したデータ、ブラウザで`latestActualAsOf()`とPythonの`_compute_current_score()`の選ぶ値を8指標で比較）:
+  2026-07-01〜10-03の隔日と過去の6日（54日×8＝432件）: 東京 修正前0件→修正後0件、ロサンゼルス 修正前59件→修正後0件の不一致。
+  2026-03-29〜10-03の毎日（189日×8＝1,512件）の東京: 修正前0件→修正後0件
+- 締め時刻（ブラウザで直接）: 計算日2026-10-03の締めは修正後 東京・ロサンゼルスとも2026-10-04T03:59:59Z（Pythonと同じ。冬時間は04:59:59Z）。
+  修正前は東京2026-10-03T14:59:59Z、ロサンゼルス2026-10-03T06:59:59Z（前日扱い）
+- 今のデータでは東京の締めの違いは結果に出ない（修復後のknown_atはほぼ公表日の米国東部時間08:30で、日本の締めより前）。効くのは、
+  これから日次の実行が書く行（known_at・revised_atがUTC 22時台〜翌1時台）
+- browser_checks/check_macro_pulse.pyの期待値の計算も同じ規則（known_at・改定値・米国東部の締め）に。今のデータ・修復後のデータとも
+  一致68・不一致2（MAC-42c・D-01、M-2cから既知）・判定不能1（D-02）、consoleエラー0件
 
 ---
 
