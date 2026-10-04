@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 28.113252040324998,
   "intrinsic_value_beta": 29.93,
   "upside_percent_beta": 11.9,
-  "intrinsic_value_rf": 124.16,
-  "upside_percent_rf": 364.2,
+  "intrinsic_value_rf": 79.59,
+  "upside_percent_rf": 197.5,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 7616563449.429808,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": 5.1,
-  "calculation_date": "2026-10-03T11:11:28+09:00",
+  "calculation_date": "2026-10-05T01:08:01+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -302,7 +303,7 @@
       "total_transient_amount": 340364000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "全項目の理由がマクロ変動や一過性の事業再編と明記されており、構造的悪化を示す内容は含まれないため。"
+        "reasoning": "すべての項目がマクロ変動や一過性の事業再編による一時的費用と明記されており、構造的な悪化を示す兆候はない。"
       }
     },
     "action": "flagged",
@@ -465,7 +466,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -490,6 +491,8 @@
   },
   "required_growth_rf_base": -0.18806984907361524,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.11451880487594557,
   "tanuki_score": "WATCH",
   "funda_score": 90,
@@ -624,7 +627,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0217,
+  "erp": 0.0119,
   "forward_earnings_yield": 0.0647,
   "dilution_severity": "medium",
   "dilution_comment": "やや高い希薄化 ℹ️ 要注意"

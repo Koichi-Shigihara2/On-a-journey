@@ -1,5 +1,5 @@
 FRSH INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:16:58+09:00
+Generated: 2026-10-05T01:13:11+09:00
 Price: $12.78
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 15.6%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 9.40%
   参考①β込みWACC_IV: $39.76 (Deviation: +211.1%)
-  参考②Rf理論上限_IV: $202.45 (Deviation: +1484.2%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-28.8%→-20.4%（+8.4pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $114.66 (Deviation: +797.2%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-28.8%→-20.4%（+8.4pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 0.894
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $21.37  $31.55  $45.49
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。
+  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、リストラに伴う一時的な費用と判断される。
 Financial_Health:
   Net_Debt: $-0.66B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.49B  ST_Invest: $0.17B
@@ -312,9 +312,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 6.49%  (ForwardEPS $0.83 / Price $12.78)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 2.19%
-  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 1.21%
+  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
@@ -338,7 +338,7 @@ Short_Report_Target: no
 Short_Interest: 9.6%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Buy | Target: $14 median ($10-$25) | 14 analysts | vs IV: -60.0%
-Insider_Activity: Sell優勢 | 買い0件 / 売り2件 | 直近90日
+Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 15.6%
 Next_Earnings_Date: 2026-11-04

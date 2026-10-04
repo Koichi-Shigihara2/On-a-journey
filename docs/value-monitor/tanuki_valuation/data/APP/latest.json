@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 1152.944590712305,
   "intrinsic_value_beta": 364.39,
   "upside_percent_beta": 35.9,
-  "intrinsic_value_rf": 12302.77,
-  "upside_percent_rf": 4486.8,
+  "intrinsic_value_rf": 5265.09,
+  "upside_percent_rf": 1863.0,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 122521141365.41942,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 1.0,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": 329.9,
-  "calculation_date": "2026-10-03T11:10:47+09:00",
+  "calculation_date": "2026-10-05T01:07:24+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -329,7 +330,7 @@
       "total_transient_amount": 11000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な再編費用と判断されるため。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -513,7 +514,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -538,6 +539,8 @@
   },
   "required_growth_rf_base": -0.2550156704582188,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.12609017218013263,
   "tanuki_score": "BUY",
   "funda_score": 100,
@@ -670,7 +673,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0352,
+  "erp": 0.0255,
   "forward_earnings_yield": 0.0782,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"

@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 39.91182195970269,
   "intrinsic_value_beta": 30.16,
   "upside_percent_beta": -88.3,
-  "intrinsic_value_rf": 517.41,
-  "upside_percent_rf": 100.9,
+  "intrinsic_value_rf": 265.73,
+  "upside_percent_rf": 3.2,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 34327137676.51635,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.47061540194465834,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": -84.5,
-  "calculation_date": "2026-10-03T11:11:20+09:00",
+  "calculation_date": "2026-10-05T01:07:53+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -208,7 +209,7 @@
       "total_transient_amount": 47000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、構造的な収益悪化の兆候とは判断されない。"
       }
     },
     "action": "flagged",
@@ -371,7 +372,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -396,6 +397,8 @@
   },
   "required_growth_rf_base": -0.10831601073692865,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.0025413464285967136,
   "tanuki_score": "WATCH",
   "funda_score": 65,
@@ -545,7 +548,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0087,
+  "erp": -0.001,
   "forward_earnings_yield": 0.0517,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"

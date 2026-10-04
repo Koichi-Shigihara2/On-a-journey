@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 94.81895729571184,
   "intrinsic_value_beta": 53.39,
   "upside_percent_beta": -84.6,
-  "intrinsic_value_rf": 543.62,
-  "upside_percent_rf": 56.4,
+  "intrinsic_value_rf": 306.63,
+  "upside_percent_rf": -11.8,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 65800199459.23593,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.8,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": -72.7,
-  "calculation_date": "2026-10-03T11:18:56+09:00",
+  "calculation_date": "2026-10-05T01:15:06+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -376,7 +377,7 @@
     "dividend_yield": 0.0033858574,
     "payout_ratio": 0.18059999,
     "insider_buy_count": 0,
-    "insider_sell_count": 9,
+    "insider_sell_count": 8,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-09-10",
     "revenue_ttm": 23232690000,
@@ -387,7 +388,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -413,6 +414,8 @@
   "phase1_growth": 0.09696783854733271,
   "required_growth_rf_base": 0.007898392471616944,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.12745881455422037,
   "tanuki_score": "TRIM",
   "funda_score": 100,
@@ -528,7 +531,7 @@
     "fcf_margin_bear_multiplier": 0.7834,
     "fcf_margin_note": "FCFマージン悪化(26.9%→21.1%) BEAR補正係数=0.783"
   },
-  "erp": -0.0092,
+  "erp": -0.019,
   "forward_earnings_yield": 0.0338,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"

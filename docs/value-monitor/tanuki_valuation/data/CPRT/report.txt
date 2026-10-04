@@ -1,5 +1,5 @@
 CPRT INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:16:20+09:00
+Generated: 2026-10-05T01:12:38+09:00
 Price: $27.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 1.0%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.13%
   参考①β込みWACC_IV: $31.63 (Deviation: +16.2%)
-  参考②Rf理論上限_IV: $195.44 (Deviation: +618.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-21.4%→-12.1%（+9.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $109.14 (Deviation: +301.0%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-21.4%→-12.1%（+9.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 1.023
 FCF_TTM_End: 2026-04-30 (FCF/RICE算出に用いたTTM期末日)
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $21.77  $27.76  $34.10
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: マクロ変動による一時的影響と明記された貸倒引当金の変動であり、事業運営上の一過性要因と判断される。
+  Reasoning: すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営上の一時的な調整と判断される。
 Financial_Health:
   Net_Debt: $+0.02B (negative=net cash)
   Total_Debt: $0.02B  Cash: $0.00B
@@ -311,9 +311,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 6.50%  (ForwardEPS $1.77 / Price $27.22)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 2.20%
-  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 1.23%
+  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
