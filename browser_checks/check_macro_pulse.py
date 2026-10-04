@@ -148,6 +148,29 @@ def ms_local(s: str) -> Optional[int]:
 
 
 SCORE_MIN_WEIGHT = 50  # M-5 STEP 1（05_main.py・index.html と同じ値）
+
+
+def _load_signal_steps() -> dict:
+    """M-5 STEP 5: index.html の SIGNAL_STEPS（カード・ヘルスバー・スコアの段の定義、JSON）を読む。"""
+    html = open(os.path.join(REPO_ROOT, "docs", "market-monitor", "macro-pulse", "index.html"), encoding="utf-8").read()
+    body = html.split("// SIGNAL_STEPS_BEGIN", 1)[1].split("// SIGNAL_STEPS_END", 1)[0]
+    return json.loads(body.split("=", 1)[1].strip().rstrip(";"))
+
+
+STEPS: dict = {}
+
+
+def step_sig(steps: dict, key: str, val: float, trend: int = 0) -> tuple:
+    """index.html の stepSignal()。(点数, 段の名前)。"""
+    d = steps[key]
+    for t_ in d["tiers"]:
+        hit = val < t_["x"] if t_["cmp"] == "<" else val > t_["x"] if t_["cmp"] == ">" else val >= t_["x"]
+        if hit:
+            tr = t_.get("trend")
+            if tr and trend == tr["dir"]:
+                return t_["score"] + tr["add"], tr["signal"]
+            return t_["score"], t_["signal"]
+    return d["else"]["score"], d["else"]["signal"]
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)  # Windowsのfromtimestampは1970年より前を扱えない
 NY = ZoneInfo("America/New_York")
 
@@ -292,66 +315,49 @@ class Model:
         s, g, lab = 50, "neutral", "—"
         if yc is not None:
             lab = ("+" if yc >= 0 else "") + js_fixed(yc, 2) + "%"
-            s, g = (90, "bear") if yc < -0.5 else (70, "caution") if yc < 0 else (40, "neutral") if yc < 0.5 else (15, "bull")
+            s, g = step_sig(STEPS, "yc", yc)
         sig.append(dict(key="yc", name="YC 10Y-2Y", val=lab, score=s, signal=g, weight=20, lead="先行12ヶ月", thresh="BULL≥+0.5% / BEAR<-0.5%", obs=dates["yc"]))
         hy = v["hy"]
         s, g, lab = 50, "neutral", "—"
         if hy is not None:
             lab = js_fixed(hy, 2) + "%"
-            s, g = (90, "bear") if hy > 6 else (70, "caution") if hy > 4.5 else (40, "neutral") if hy > 3.5 else (15, "bull")
+            s, g = step_sig(STEPS, "hy", hy)
         sig.append(dict(key="hy", name="HY Spread", val=lab, score=s, signal=g, weight=15, lead="先行2ヶ月", thresh="BULL≤3.5% / BEAR>6.0%", obs=dates["hy"]))
         bp = v["cbcc2"]
         s, g, lab = 50, "neutral", "—"
         if bp is not None:
             lab = js_fixed(bp, 0) + "K"
-            s, g = (15, "bull") if bp >= 1500 else (35, "neutral") if bp >= 1300 else (60, "caution") if bp >= 1100 else (85, "bear")
+            s, g = step_sig(STEPS, "cbcc2", bp)
         sig.append(dict(key="cbcc2", name="Building Permits", val=lab, score=s, signal=g, weight=10, lead="先行3ヶ月", thresh="BULL≥1500K / BEAR≤1100K", obs=dates["cbcc2"]))
         ph = v["philly"]
         s, g, lab = 50, "neutral", "—"
         if ph is not None:
             lab = js_fixed(ph, 1)
-            t3 = self.trend3("Philadelphia Fed Manufacturing")
-            if ph < -10:
-                s, g = 88, "bear"
-            elif ph < 0:
-                s, g = 65 + (10 if t3 < 0 else 0), ("bear" if t3 < 0 else "caution")
-            elif ph < 5:
-                s, g = 35, "neutral"
-            else:
-                s, g = 12, "bull"
+            s, g = step_sig(STEPS, "philly", ph, self.trend3("Philadelphia Fed Manufacturing"))
         sig.append(dict(key="philly", name="Philly Fed Mfg", val=lab, score=s, signal=g, weight=18, lead="先行3ヶ月", thresh="BULL≥+5 / BEAR<-10", obs=dates["philly"]))
         cf = v["cfnai"]
         s, g, lab = 50, "neutral", "—"
         if cf is not None:
             lab = js_fixed(cf, 2)
-            s, g = (82, "bear") if cf < -0.7 else (50, "neutral") if cf < -0.35 else (18, "bull")
+            s, g = step_sig(STEPS, "cfnai", cf)
         sig.append(dict(key="cfnai", name="CFNAI MA3", val=lab, score=s, signal=g, weight=12, lead="先行1ヶ月", thresh="BULL≥-0.35 / BEAR<-0.7", obs=dates["cfnai"]))
         cl = v["claims"]
         s, g, lab = 50, "neutral", "—"
         if cl is not None:
             lab = js_fixed(cl / 1000, 0) + "K"
-            t3 = self.trend3("Initial Claims 4W MA")
-            if cl > 300000:
-                s, g = 85, "bear"
-            elif cl > 250000:
-                s, g = 60 + (10 if t3 > 0 else 0), ("bear" if t3 > 0 else "caution")
-            elif cl > 215000:
-                s, g = 35, "neutral"
-            else:
-                s, g = 15, "bull"
+            s, g = step_sig(STEPS, "claims", cl, self.trend3("Initial Claims 4W MA"))
         sig.append(dict(key="claims", name="Initial Claims", val=lab, score=s, signal=g, weight=10, lead="先行1ヶ月", thresh="BULL≤215K / BEAR>300K", obs=dates["claims"]))
         mi = v["cbcc"]
         s, g, lab = 50, "neutral", "—"
         if mi is not None:
             lab = js_fixed(mi, 1)
-            s, g = (82, "bear") if mi < 60 else (72, "bear") if mi < 75 else (60, "caution") if mi < 90 else (30, "neutral")
+            s, g = step_sig(STEPS, "cbcc", mi)
         sig.append(dict(key="cbcc", name="Michigan Sent.", val=lab, score=s, signal=g, weight=8, lead="先行2ヶ月", thresh="NEUTRAL≥90 / BEAR<60", obs=dates["cbcc"]))
         sa = v["sahm"]
         s, g, lab = 50, "neutral", "—"
         if sa is not None:
             lab = js_fixed(sa, 2)
-            s = 88 if sa >= 0.5 else 50 if sa >= 0.3 else 12
-            g = "bear" if s > 75 else "caution" if s > 40 else "neutral"
+            s, g = step_sig(STEPS, "sahm", sa)
         sig.append(dict(key="sahm", name="Sahm Rule", val=lab, score=s, signal=g, weight=7, lead="先行1ヶ月", thresh="BULL<0.3 / BEAR≥0.5", obs=dates["sahm"]))
         return sig
 
@@ -852,25 +858,21 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     add("MAC-40", "AI欄の見出し・注記", ["AI WEEKLY COMMENTARY — 毎週日曜自動生成（xAI Grok。使ったモデルは各カードの末尾に表示）", "※ スコアは週報生成時点の値。最新スコアはページ上部のゲージを参照。毎週日曜 JST 7:11（米国東部時間 土曜18:11）の予定で自動更新（GitHubの起動の遅れで数時間遅れることがあります）。"],
         [dom["aiTitle"].replace("🤖", "").strip() if dom["aiTitle"] else None, dom["aiNote"]], note="文言と実際の計算・起動の整合はN-03・N-04")
 
-    # MAC-41 ヘルスバー
-    cfg = [("YC 10Y-2Y", "Yield Curve 10Y-2Y", 0, 0.5, -0.2, "right", lambda v: ("+" if v >= 0 else "") + js_fixed(v, 2) + "%"),
-           ("HY Spread", "HY Spread", 5.0, 4.0, 6.5, "left", lambda v: js_fixed(v, 2) + "%"),
-           ("Philly Fed Mfg", "Philadelphia Fed Manufacturing", 0, 5, -5, "right", lambda v: js_fixed(v, 1)),
-           ("CFNAI MA3", "Chicago Fed National Activity", -0.2, 0, -0.7, "right", lambda v: js_fixed(v, 2)),
-           ("Sahm Rule", "Sahm Rule Recession Indicator", 0.3, 0.3, 0.5, "left", lambda v: js_fixed(v, 2)),
-           ("Initial Claims 4WMA", "Initial Claims 4W MA", 230000, 215000, 245000, "left", lambda v: js_fixed(v / 1000, 1) + "K"),
-           ("Michigan Sentiment", "Michigan Consumer Sentiment", 80, 90, 65, "right", lambda v: js_fixed(v, 1)),
-           ("Building Permits", "Building Permits", 1300, 1500, 1100, "right", lambda v: js_fixed(v, 0) + "K")]
+    # MAC-41 ヘルスバー（M-5 STEP 5: 判定はカードと同じ SIGNAL_STEPS の段・トレンド補正）
+    cfg = [("YC 10Y-2Y", "Yield Curve 10Y-2Y", "yc", lambda v: ("+" if v >= 0 else "") + js_fixed(v, 2) + "%"),
+           ("HY Spread", "HY Spread", "hy", lambda v: js_fixed(v, 2) + "%"),
+           ("Philly Fed Mfg", "Philadelphia Fed Manufacturing", "philly", lambda v: js_fixed(v, 1)),
+           ("CFNAI MA3", "Chicago Fed National Activity", "cfnai", lambda v: js_fixed(v, 2)),
+           ("Sahm Rule", "Sahm Rule Recession Indicator", "sahm", lambda v: js_fixed(v, 2)),
+           ("Initial Claims 4WMA", "Initial Claims 4W MA", "claims", lambda v: js_fixed(v / 1000, 1) + "K"),
+           ("Michigan Sentiment", "Michigan Consumer Sentiment", "cbcc", lambda v: js_fixed(v, 1)),
+           ("Building Permits", "Building Permits", "cbcc2", lambda v: js_fixed(v, 0) + "K")]
     exp_l2 = []
-    for lab, key, mid, bull, bear_, dr, fmt in cfg:
+    for lab, key, stp, fmt in cfg:
         v = m.latest_val(key, now)
         if v is None:
             exp_l2.append([lab, "—", None]); continue
-        if dr == "right":
-            sg = "BULL" if v >= bull else "BEAR" if v <= bear_ else "CAUTION" if v < (mid + bull) / 2 else "NEUTRAL"
-        else:
-            sg = "BULL" if v <= bull else "BEAR" if v >= bear_ else "CAUTION" if v > (mid + bull) / 2 else "NEUTRAL"
-        exp_l2.append([lab, fmt(v), sg])
+        exp_l2.append([lab, fmt(v), step_sig(STEPS, stp, v, m.trend3(key))[1].upper()])
     add("MAC-41", "② 各指標の現在地（8本の値・判定）", exp_l2, [[x["name"], x["val"], x["sig"]] for x in dom["l2"]])
 
     # MAC-42 スコア推移チャート（1年）
@@ -1223,6 +1225,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", default=None)
     args = ap.parse_args()
+    STEPS.update(_load_signal_steps())  # M-5 STEP 5
     now_ms = int(time.time() * 1000)
     m = Model(now_ms)
     dom, logs, extra = collect(now_ms)

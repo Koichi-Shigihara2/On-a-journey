@@ -1524,6 +1524,62 @@ def _parse_known_at_utc(v) -> datetime | None:
 # M-5 STEP 1: スコアを出すのに要る、使える指標の重みの合計（%）。index.html の SCORE_MIN_WEIGHT と同じ値
 SCORE_MIN_WEIGHT = 50
 
+# [[MACRO-PULSE-CARD-HEALTHBAR-MISMATCH-1]]（M-5 STEP 5）: 8指標のスコアの段の定義。index.html の SIGNAL_STEPS（カード・ヘルスバー・
+# スコアの段を全てここから作る）と同じ内容で、tests/test_macro_pulse_accuracy.py が一致を確かめる。
+# tiers は悪い段から順に判定し、どれにも当たらなければ else。cmp: "<"＝値が小さいほど悪い指標、">"・">="＝大きいほど悪い指標。
+# trend: 直近3点の向き（trend3）が dir と同じなら score に add を足し、signal を置き換える
+SIGNAL_STEPS = {
+    "yc": {"tiers": [{"cmp": "<", "x": -0.5, "score": 90, "signal": "bear"},
+                     {"cmp": "<", "x": 0, "score": 70, "signal": "caution"},
+                     {"cmp": "<", "x": 0.5, "score": 40, "signal": "neutral"}],
+           "else": {"score": 15, "signal": "bull"}},
+    "hy": {"tiers": [{"cmp": ">", "x": 6, "score": 90, "signal": "bear"},
+                     {"cmp": ">", "x": 4.5, "score": 70, "signal": "caution"},
+                     {"cmp": ">", "x": 3.5, "score": 40, "signal": "neutral"}],
+           "else": {"score": 15, "signal": "bull"}},
+    "cbcc2": {"tiers": [{"cmp": "<", "x": 1100, "score": 85, "signal": "bear"},
+                        {"cmp": "<", "x": 1300, "score": 60, "signal": "caution"},
+                        {"cmp": "<", "x": 1500, "score": 35, "signal": "neutral"}],
+              "else": {"score": 15, "signal": "bull"}},
+    "philly": {"tiers": [{"cmp": "<", "x": -10, "score": 88, "signal": "bear"},
+                         {"cmp": "<", "x": 0, "score": 65, "signal": "caution",
+                          "trend": {"dir": -1, "add": 10, "signal": "bear"}},
+                         {"cmp": "<", "x": 5, "score": 35, "signal": "neutral"}],
+               "else": {"score": 12, "signal": "bull"}},
+    "cfnai": {"tiers": [{"cmp": "<", "x": -0.7, "score": 82, "signal": "bear"},
+                        {"cmp": "<", "x": -0.35, "score": 50, "signal": "neutral"}],
+              "else": {"score": 18, "signal": "bull"}},
+    "claims": {"tiers": [{"cmp": ">", "x": 300000, "score": 85, "signal": "bear"},
+                         {"cmp": ">", "x": 250000, "score": 60, "signal": "caution",
+                          "trend": {"dir": 1, "add": 10, "signal": "bear"}},
+                         {"cmp": ">", "x": 215000, "score": 35, "signal": "neutral"}],
+               "else": {"score": 15, "signal": "bull"}},
+    "cbcc": {"tiers": [{"cmp": "<", "x": 60, "score": 82, "signal": "bear"},
+                       {"cmp": "<", "x": 75, "score": 72, "signal": "bear"},
+                       {"cmp": "<", "x": 90, "score": 60, "signal": "caution"}],
+             "else": {"score": 30, "signal": "neutral"}},
+    "sahm": {"tiers": [{"cmp": ">=", "x": 0.5, "score": 88, "signal": "bear"},
+                       {"cmp": ">=", "x": 0.3, "score": 50, "signal": "caution"}],
+             "else": {"score": 12, "signal": "bull"}},
+}
+
+
+def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:
+    """SIGNAL_STEPS で (点数, 段の名前〈bull/neutral/caution/bear〉)。index.html の stepSignal() と同じ。"""
+    d = SIGNAL_STEPS[key]
+    for t in d["tiers"]:
+        hit = val < t["x"] if t["cmp"] == "<" else val > t["x"] if t["cmp"] == ">" else val >= t["x"]
+        if hit:
+            tr = t.get("trend")
+            if tr and trend_dir == tr["dir"]:
+                return t["score"] + tr["add"], tr["signal"]
+            return t["score"], t["signal"]
+    return d["else"]["score"], d["else"]["signal"]
+
+
+def _step_score(key: str, val: float, trend_dir: int = 0) -> int:
+    return _step_signal(key, val, trend_dir)[0]
+
 
 def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     """events.csv から target_date 時点のスコアと各指標の値を計算する"""
@@ -1608,26 +1664,9 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         if val is None:
             continue
 
-        # スコア計算（renderPhaseGaugeと同一ロジック。MACRO-BUG-1: philly/claimsの
-        # トレンド補正±10ptが欠落していたため追加し、JSと完全一致させた）
-        if key == 'yc':
-            s = 90 if val < -0.5 else 70 if val < 0 else 40 if val < 0.5 else 15
-        elif key == 'hy':
-            s = 90 if val > 6 else 70 if val > 4.5 else 40 if val > 3.5 else 15
-        elif key == 'cbcc2':
-            s = 15 if val >= 1500 else 35 if val >= 1300 else 60 if val >= 1100 else 85
-        elif key == 'philly':
-            s = 88 if val < -10 else (65 + (10 if trend_dir < 0 else 0)) if val < 0 else 35 if val < 5 else 12
-        elif key == 'cfnai':
-            s = 82 if val < -0.7 else 50 if val < -0.35 else 18
-        elif key == 'claims':
-            s = 85 if val > 300000 else (60 + (10 if trend_dir > 0 else 0)) if val > 250000 else 35 if val > 215000 else 15
-        elif key == 'cbcc':
-            s = 82 if val < 60 else 72 if val < 75 else 60 if val < 90 else 30
-        elif key == 'sahm':
-            s = 88 if val >= 0.5 else 50 if val >= 0.3 else 12
-        else:
-            s = 50
+        # スコア計算（index.html の computeCurrentScore()・ヘルスバーと同じ段の表 SIGNAL_STEPS。MACRO-BUG-1 の
+        # philly/claims のトレンド補正±10pt も表の trend に入っている）
+        s = _step_score(key, val, trend_dir)
 
         score_inputs.append({'key': key, 'score': s, 'weight': weights.get(key, 0)})
 

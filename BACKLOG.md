@@ -2648,6 +2648,19 @@ Permits 1300〜1399（中立/CAUTION）。
 どちらの判定に揃えるか（バーをスコアの閾値に揃えるか、バーは別の目的の閾値として説明を付けるか）は設計の判断が要る。
 指示書M-2では直さず、M-3の設計項目として扱う（揃える側の判断が要るため）。
 
+
+#### 対応（2026-10-04、指示書M-5 STEP 5、feature/macro-pulse-m5）
+- index.html に段の定義 `SIGNAL_STEPS`（JSON）を1か所置き、カード（`computeCurrentScore()`の点数・文言）とヘルスバー（`renderL2()`の
+  判定・bull/mid/bearの目盛り）をどちらもそこから作る（`stepSignal()`・`stepMarkers()`）。Philly・Claimsの直近3点の向きによる補正も
+  両方で同じ（`trendDir3()`）。ヘルスバー独自の閾値（HY 4.0/6.5、Philly ±5 など）と「(mid+bull)/2より悪ければCAUTION」の規則は廃止。
+  YCのヘルスバーもスコアの段に揃えた（tickerのINVERTED/FLAT/NORMALは −0.2/0.5 のまま）
+- Sahm Ruleのカードの文言も段で決める（≥0.5 後退シグナル・≥0.3 注意・それ未満 拡張。以前は点数から決めて最良の段でも「中立」）
+- 05_main.py: 同じ内容の `SIGNAL_STEPS` と `_step_score()`（点数は以前のif/elifと360,090通りの値・向きで全て一致）。
+  tests/test_macro_pulse_signal_steps.py が Python と JS の表の一致を確かめる
+- 実ブラウザで8指標の値（範囲を60等分＋各境目の前後）と向き（−1・0・1）を動かし、描かれたカードとヘルスバーの判定を比較:
+  **修正前 1,629通り中372通りで食い違い（8指標すべて）→ 修正後 0通り**
+- Michiganは段の定義のまま「拡張」の段が無い（最良は30点の中立。ヘルスバーの最良もNEUTRAL）
+
 ---
 
 ### [CHECK-DEPMAP-HOLLOW-RALLY-STALE-1] browser_checks/check_dependency_map.pyのHollow Rallyの期待値が旧ロジック（6行前・前日比）のままで、M-2 STEP 4の統合後に画面との不一致が出る
