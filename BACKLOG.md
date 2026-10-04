@@ -2671,6 +2671,21 @@ events.csvと系列ストアの最新観測を全指標で突き合わせた件�
 改定値の取り込みは、先読み除外（`updated_at`、[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]）と合わせてM-3で設計する
 （改定値を別の行・別の列として持つか等）。コードは変えていない。
 
+
+#### 対応（2026-10-04、指示書M-3 STEP 2、feature/macro-pulse-m3）
+- 05_events.csvに`revised_actual`（後からの改定値）と`revised_at`（それを書いた時刻、UTC）を追加。`actual`は初回公表の値として変えない
+- 日次の実行で`apply_revisions()`: 観測日に置かれた既存の行について、FRED系列ストアの値が今の値（revised_actual、無ければactual）と
+  違えばrevised_actual・revised_atを書く（NFPはPAYEMSの水準から前月比）。予定の枠の日付の行は対象外
+- 計算: `_compute_current_score()`・index.htmlの`valueAt()`は、計算日の時点でrevised_atを過ぎていれば改定値、そうでなければ初回公表の値
+  （直近の発表・3点の傾きも同じ）
+- **近似**: 途中の改定（初回と最新の間の版）は持たず、最新の改定値だけを持つ。過去のある日の値は「最新の版の公表日より前なら初回、後なら最新」
+- 修復スクリプト`scripts/analysis/macro_events_revision_repair.py`（STEP 1の修復の後に実行）: ALFREDで初回公表の値が分かる行はactualを
+  初回公表の値に、最新の版と違う行はrevised_actual・revised_at（最新の版の公表日の米国東部時間08:30）を設定。確認モード:
+  actualを初回公表の値に変更1,911行・revised_actualを設定1,968行・初回公表が不明で変えない13,111行・予定の枠などで変えない7,003行・
+  FREDに無い指標674行。STEP 1と続けて適用した後の今日のスコア27→27
+- 回帰テスト4件（修正前4件fail→修正後pass）
+- 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
+
 ---
 
 ### [MACRO-PULSE-LIQUIDITY-ROW-DATE-UTC-SHIFT-1] 05_liquidity.csvの過去の行の日付が、実行の米国の日付より1日後になっている（2026-08-27〜10-02の33行など）

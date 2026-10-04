@@ -338,3 +338,36 @@ class TestKnownAt:
         r["known_at"], r["known_at_source"] = "2019-10-17T12:30:00Z", "estimated"
         res = main05._compute_current_score(_events([r]), date(2019, 10, 31))
         assert res["indicators"]["philly"]["value"] == 5.6
+
+
+# ─────────────────────────────────────────────────────────────────
+#  M-3 STEP 2: 改定値（revised_actual・revised_at）[[MACRO-PULSE-REVISION-NOT-APPLIED-1]]
+# ─────────────────────────────────────────────────────────────────
+class TestRevisions:
+    def test_events_columns_have_revised(self):
+        assert "revised_actual" in main05.EVENTS_COLUMNS and "revised_at" in main05.EVENTS_COLUMNS
+
+    def test_apply_revisions_keeps_actual_and_writes_revised(self, monkeypatch):
+        store = {"PERMIT": {"2026-07-01": 1400.0, "2026-08-01": 1394.0}}
+        monkeypatch.setattr(main05, "_store_values", lambda fid: store.get(fid, {}))
+        ev = _events([_event("Building Permits", "2026-07-01", 1362.0), _event("Building Permits", "2026-08-01", 1394.0)])
+        out = main05.apply_revisions(ev)
+        r = out.set_index("release_date")
+        assert r.at["2026-07-01", "actual"] == "1362.0"
+        assert float(r.at["2026-07-01", "revised_actual"]) == 1400.0 and r.at["2026-07-01", "revised_at"].endswith("Z")
+        assert r.at["2026-08-01", "revised_actual"] == ""
+
+    def test_apply_revisions_nfp_uses_month_over_month(self, monkeypatch):
+        store = {"PAYEMS": {"2026-07-01": 159000.0, "2026-08-01": 159015.0}}
+        monkeypatch.setattr(main05, "_store_values", lambda fid: store.get(fid, {}))
+        out = main05.apply_revisions(_events([_event("NFP", "2026-08-01", 22000)]))
+        assert float(out.iloc[0]["revised_actual"]) == 15000
+
+    def test_compute_score_uses_revised_only_after_revised_at(self):
+        r = _event("Philadelphia Fed Manufacturing", "2026-08-01", 5.0, "2026-08-21 22:00:00")
+        r["revised_actual"], r["revised_at"] = "-20.0", "2026-09-20T12:30:00Z"
+        ev = _events([r])
+        before = main05._compute_current_score(ev, date(2026, 9, 1))
+        after = main05._compute_current_score(ev, date(2026, 9, 25))
+        assert before["indicators"]["philly"]["value"] == 5.0
+        assert after["indicators"]["philly"]["value"] == -20.0

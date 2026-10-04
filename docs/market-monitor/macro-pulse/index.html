@@ -892,7 +892,10 @@ function buildIndex() {
     const uMsRaw = new Date(r['updated_at']).getTime();
     const uMs = !isNaN(kMsRaw) ? kMsRaw : (isNaN(uMsRaw) ? dMs : uMsRaw);
     if (!IND_INDEX[ind]) IND_INDEX[ind] = [];
-    IND_INDEX[ind].push({dateMs: dMs, actual: v, updatedMs: uMs});
+    // [[MACRO-PULSE-REVISION-NOT-APPLIED-1]]（M-3 STEP 2）: actualは初回公表の値。改定値（revised_actual）と、それを書いた時刻
+    const rv = n(r['revised_actual']);
+    const rMs = r['revised_at'] ? new Date(r['revised_at']).getTime() : NaN;
+    IND_INDEX[ind].push({dateMs: dMs, actual: v, updatedMs: uMs, rev: rv, revMs: isNaN(rMs) ? null : rMs});
   }
   // sort ascending by date
   for (const ind in IND_INDEX) {
@@ -905,6 +908,12 @@ function buildIndex() {
 // 過去時点の表示に先読み混入する（look-ahead bias）ことを防ぐ。
 // renderPhaseGauge()等の「現在時点」表示は引き続きidxLatestAsOf()を使う
 // （「今」は最新の改訂後データを見せるのが正しいため対象外）。
+// M-3 STEP 2: targetMsの時点で改定値が書かれていれば改定値、そうでなければ初回公表の値
+function valueAt(e, targetMs) {
+  if (!e) return null;
+  return (e.rev !== null && e.revMs !== null && e.revMs <= targetMs) ? e.rev : e.actual;
+}
+
 function idxLatestKnownAsOf(ind, targetMs) {
   const arr = IND_INDEX[ind];
   if (!arr || !arr.length) return null;
@@ -914,7 +923,7 @@ function idxLatestKnownAsOf(ind, targetMs) {
       if (!best || e.dateMs > best.dateMs) best = e;
     }
   }
-  return best ? best.actual : null;
+  return best ? valueAt(best, targetMs) : null;
 }
 
 // binary search: find latest entry with dateMs <= targetMs
@@ -940,7 +949,7 @@ function idxLatestAsOf(ind, targetMs) {
 // （[[MACRO-PULSE-STALENESS-DISCLOSURE-GAP-1]]対応で追加）
 function idxLatestVal(ind, targetMs) {
   const e = idxLatestAsOf(ind, targetMs);
-  return e ? e.actual : null;
+  return e ? valueAt(e, targetMs) : null;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1109,7 +1118,7 @@ function computeCurrentScore() {
     const last3=arr.slice(-3);
     if(last3.length<2)return 0;
     const diffs=[];
-    for(let i=last3.length-1;i>0;i--)diffs.push(last3[i].actual-last3[i-1].actual);
+    for(let i=last3.length-1;i>0;i--)diffs.push(valueAt(last3[i],now)-valueAt(last3[i-1],now));
     const avg=diffs.reduce((s,v)=>s+v,0)/diffs.length;
     return avg>0?1:avg<0?-1:0;
   };
@@ -1896,7 +1905,7 @@ function renderRecentSignals() {
       const r=DATA.find(x=>x[COL.indicator]===ind&&x[COL.date]===ds&&n(x[COL.actual])!==null);
       if(r){
         const prevEntry = i > 0 ? arr[i-1] : null;
-        recent.push({row:r, prevVal: prevEntry ? prevEntry.actual : null});
+        recent.push({row:r, val: valueAt(arr[i], Date.now()), prevVal: prevEntry ? valueAt(prevEntry, Date.now()) : null});
       }
     }
   }
@@ -1923,8 +1932,8 @@ function renderRecentSignals() {
     'HY Spread',
   ]);
 
-  const rows_html=sorted.map(({row:r, prevVal})=>{
-    const actual=n(r[COL.actual]);
+  const rows_html=sorted.map(({row:r, val, prevVal})=>{
+    const actual=val;
     const d=new Date(r[COL.date]);
     const dstr=d.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'});
     const indName=r[COL.indicator];

@@ -95,6 +95,9 @@ EVENTS_COLUMNS = [
     # 'YYYY-MM-DDTHH:MM:SSZ'）と、その根拠（written=実行が書いた時刻 / alfred=ALFREDの初回公表日 / estimated=公表の遅れから推定）。
     # 先読み除外はupdated_at（最後に書き直した時刻）ではなくこれを使う
     "known_at", "known_at_source",
+    # [[MACRO-PULSE-REVISION-NOT-APPLIED-1]]（2026-10-04 M-3 STEP 2）: actualは初回公表の値。後からの改定値と、それを
+    # 書いた時刻（UTC）。計算日の時点でrevised_atを過ぎていればrevised_actualを使う。途中の改定は持たず、最新の改定値だけを持つ近似
+    "revised_actual", "revised_at",
 ]
 
 SCHEDULE_COLUMNS = [
@@ -1519,6 +1522,11 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
             continue
         try:
             val = float(actual_str)
+            # M-3 STEP 2: 計算日の時点で改定値が書かれていれば改定値を使う
+            rev_str = str(r.get("revised_actual", "")).strip()
+            rev_at = _parse_known_at_utc(r.get("revised_at", ""))
+            if rev_str and rev_at is not None and rev_at <= known_cutoff_utc:
+                val = float(rev_str)
             d = datetime.strptime(date_str, "%Y-%m-%d")
             d_ms = _to_ms(d)
             if d_ms > target_ms:
@@ -2026,6 +2034,60 @@ def refresh_monthly_indicators(target_date: date, fin_ctx: dict,
         logger.info(f"[monthly-refresh] {len(new_rows)} indicators refreshed.")
     return new_rows
 
+def _store_values(fred_id: str) -> dict:
+    """FRED系列ストアの全観測 {観測日: 値}。"""
+    if not HAS_MACRO_DATA:
+        return {}
+    try:
+        recs = _md_reader.get_series(fred_id) or []
+    except Exception as e:
+        logger.warning(f"[revisions] {fred_id}: {e}")
+        return {}
+    return {r["as_of"]: float(r["value"]) for r in recs if r.get("value") is not None}
+
+
+def apply_revisions(events: pd.DataFrame) -> pd.DataFrame:
+    """[[MACRO-PULSE-REVISION-NOT-APPLIED-1]]（2026-10-04 M-3 STEP 2）: refresh_monthly_indicators()は既に値のある
+    観測の行を飛ばすため、改定値が入らなかった。観測日に置かれた既存の行について、FRED系列ストア（取得のたびに改定値で
+    上書きされる）の値が、その行の今の値（revised_actual、無ければactual）と違えば、actualは変えずにrevised_actualと
+    revised_at（書いた時刻）を書く。NFPはPAYEMSの水準から前月比を作って比べる。予定の枠の日付の行（観測日に置かれて
+    いない行）は対象外。途中の改定は持たず、最新の改定値だけを持つ近似。"""
+    if events is None or events.empty:
+        return events
+    for c in ("revised_actual", "revised_at"):
+        if c not in events.columns:
+            events[c] = ""
+    now = _utc_now_str()
+    changed = 0
+    for ind, cfg in INDICATOR_CONFIG.items():
+        fred_id = cfg.get("fred_id", "")
+        if not fred_id:
+            continue
+        store = _store_values(fred_id)
+        if not store:
+            continue
+        if ind == "NFP":
+            ds = sorted(store)
+            store = {d: round((store[d] - store[p]) * 1000) for p, d in zip(ds, ds[1:])}
+        rows = events[(events["indicator"] == ind) & (events["actual"].astype(str).str.strip() != "")]
+        for idx, r in rows.iterrows():
+            v = store.get(r["release_date"])
+            if v is None:
+                continue
+            cur = str(r.get("revised_actual", "")).strip() or str(r["actual"]).strip()
+            try:
+                if abs(float(cur) - float(v)) < 1e-9:
+                    continue
+            except ValueError:
+                continue
+            events.at[idx, "revised_actual"] = _fmt(v)
+            events.at[idx, "revised_at"] = now
+            changed += 1
+    if changed:
+        logger.info(f"[revisions] 改定値を書いた行: {changed}")
+    return events
+
+
 def _duplicate_risk_indicators(schedule: pd.DataFrame) -> set:
     """
     MACRO-NFP-1: run()内でscheduledループとrefresh_monthly_indicators()の
@@ -2512,6 +2574,8 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
     new_rows.extend(
         refresh_monthly_indicators(target_date, fin_ctx, schedule, events_snapshot, sp500_t0)
     )
+    # M-3 STEP 2: 既存の行の改定値（actualは変えない）
+    events = apply_revisions(events)
 
     if not new_rows:
         logger.info("No rows to add.")
