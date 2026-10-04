@@ -1,6 +1,6 @@
 {
   "ticker": "SN",
-  "last_updated": "2026-09-27T16:03:53.945097",
+  "last_updated": "2026-10-04T16:12:43.946073",
   "quarters": [
     {
       "gaap_eps": 0.9173820687634169,
@@ -62,9 +62,25 @@
       "tax_expense": 33877000.0,
       "pretax_income": 163693000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整の大部分を占めるsbc（株式報酬費用）とamortization_intangibles（無形資産償却）は恒常的に発生する非現金項目であり、一過性とは言い難い。これによりAdjusted EPSはGAAP EPSを約33%上回る水準となっている。市場がGAAP EPSのみで判断する場合、非現金費用の影響で企業のキャッシュ生成力や実力を過小評価する可能性があるが、SBCによる株式希薄化や償却の経済的実態を無視した過大調整は、逆に企業価値の過大評価リスクを招く。loan_loss_provision_abnormalは一時的と判断されるが影響は小さい。投資家は調整後のEPSだけでなく、希薄化調整後株数やフリーキャッシュフローを総合的に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は、買収後も複数期にわたって発生する非現金費用であり、恒常的性格が強い。",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響とされ、異常変動分のみを調整対象としている。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "SITM",
-  "last_updated": "2026-09-27T15:59:39.092006",
+  "last_updated": "2026-10-04T16:09:34.052513",
   "quarters": [
     {
       "gaap_eps": 0.6604583484903601,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目のうち無形資産償却は恒常的な非現金費用、M&A統合費用は一過性と判断。市場がGAAP EPS(0.66)で評価する場合、調整後EPS(1.19)との大きな乖離により企業の実力が見えにくくなっており、過小評価の可能性が高い。ただし償却費は今後も継続発生が見込まれるため、調整EPSを過度に信頼すると将来的な過大評価リスクもある。投資家は償却の残存期間と今後の買収戦略を注視すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コスト",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

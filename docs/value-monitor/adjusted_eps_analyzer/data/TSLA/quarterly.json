@@ -1,6 +1,6 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-09-27T15:59:57.961923",
+  "last_updated": "2026-10-04T16:09:49.385621",
   "quarters": [
     {
       "gaap_eps": 0.31468926553672316,
@@ -50,11 +50,11 @@
       },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "SBC（株式報酬費用）はテスラのような成長企業で毎期発生する恒常的なコストであり、一過性とは言えません。GAAP EPS 0.31に対しAdjusted EPS 0.59と大幅に加算調整されており、市場がGAAP EPSで判断する場合に企業の実力（非現金費用を除いた収益力）が過小評価される可能性があります。ただしSBCは実質的な報酬コストであり株式希薄化を伴うため、調整を過信すると過大評価リスクが生じます。投資家はSBCの規模推移、希薄化効果、キャッシュフロー実態を注視すべきです。",
+        "comment": "SBCは恒常的なコスト（毎期発生する非現金費用だが株主希薄化の実質的負担を伴う）であるため、この大規模調整によりAdjusted EPSがGAAPの約2倍近くに inflated されており、企業の実力を過大に見せかけるリスクが高い。市場がGAAP EPSで判断する場合、保守的な実力評価となり過小評価の可能性は限定的だが、SBCを完全に無視した調整後数値に依存すると持続可能性を見誤る過大評価リスクがある。投資家は調整後EPSだけでなく、希薄化影響や将来のSBCトレンドを総合的に監視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、成長企業では恒常的に発生する報酬コストであり一過性ではない",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされるが、テスラのようなテック企業では継続的に発生する恒常的コストであり一過性ではない",
             "confidence": 0.2
           }
         ]
@@ -1496,44 +1496,6 @@
       "quarter": 1,
       "tax_expense": 25278000.0,
       "pretax_income": -304999000.0,
-      "split_adjusted": true
-    },
-    {
-      "gaap_eps": 0.009293869011586537,
-      "adjusted_eps": 0.03702373182537126,
-      "gaap_net_income": 21878000.0,
-      "adjusted_net_income": 87154790.31021959,
-      "diluted_shares_used": 2354025000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 89543000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 65276790.310219586,
-          "tax_rate_applied": 0.2710006331011962
-        }
-      ],
-      "net_adjustment_total": 65276790.310219586,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
-      "revenue": 2298436000.0,
-      "diluted_shares": 2354025000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 8133000.0,
-      "pretax_income": 30011000.0,
       "split_adjusted": true
     }
   ],

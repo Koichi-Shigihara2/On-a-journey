@@ -1,6 +1,6 @@
 {
   "ticker": "JNJ",
-  "last_updated": "2026-09-27T16:03:07.249749",
+  "last_updated": "2026-10-04T16:12:05.904258",
   "quarters": [
     {
       "gaap_eps": 2.2679398385312077,
@@ -62,9 +62,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "この調整では、無形資産償却費12億ドル（買収関連で恒常発生の可能性が高い）とリストラ費用3400万ドル（一過性）が加算され、Adjusted EPSがGAAP EPSを約18%上回る。無形資産償却は非現金だが毎期発生しやすい恒常的項目のため調整の正当性に留意が必要。一方リストラは非経常的。市場がGAAP EPSで判断する場合、企業の実力が見えにくく過小評価の可能性があるが、恒常的償却を除外した調整EPSへの過度依存は過大評価リスクも孕む。投資家は買収による無形資産の償却継続性とリストラの頻度を注視すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却であり、恒常的に発生する非現金費用（毎期の償却として継続しやすい）",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用であり、非経常的と判断されるリストラ関連",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
@@ -2826,43 +2837,6 @@
       "quarter": 1,
       "tax_expense": 1153000000.0,
       "pretax_income": 5575000000.0
-    },
-    {
-      "gaap_eps": 1.5337114956559201,
-      "adjusted_eps": 1.5517175764608184,
-      "gaap_net_income": 4272000000.0,
-      "adjusted_net_income": 4322154137.473964,
-      "diluted_shares_used": 2785400000.0,
-      "adjustments": [
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 62000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 50154137.47396327,
-          "tax_rate_applied": 0.19106229880704412
-        }
-      ],
-      "net_adjustment_total": 50154137.47396327,
-      "filing_date": "2016-10-02",
-      "form": "10-Q",
-      "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
-      "revenue": 0.0,
-      "diluted_shares": 2785400000.0,
-      "period_end": "2016-10-02",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 1009000000.0,
-      "pretax_income": 5281000000.0
     }
   ],
   "execution_metrics": {

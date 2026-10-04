@@ -1,7 +1,70 @@
 {
   "ticker": "CPRT",
-  "last_updated": "2026-09-27T16:01:37.560747",
+  "last_updated": "2026-10-04T16:11:03.888601",
   "quarters": [
+    {
+      "gaap_eps": 0.3421848546286813,
+      "adjusted_eps": 0.35355360240787576,
+      "gaap_net_income": 327423000.0,
+      "adjusted_net_income": 338301300.0,
+      "diluted_shares_used": 956860000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 9805000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 7745950.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3965000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 3132350.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 10878300.0,
+      "filing_date": "2026-07-31",
+      "form": "10-K",
+      "sector": null,
+      "sector_exclusions": [],
+      "revenue": 1152439000.0,
+      "diluted_shares": 956860000.0,
+      "period_end": "2026-07-31",
+      "fiscal_year": 2026,
+      "quarter": 4,
+      "tax_expense": 354580000.0,
+      "pretax_income": 682003000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "調整項目のうちSBCは恒常的な非現金費用であり、毎期発生する性質から調整の正当性は限定的。一方、異常貸倒引当金はマクロ要因による一時的変動と位置づけられる。全体の調整幅はEPSで約3%と小さく、市場がGAAP EPSで判断する場合でも企業の実力は大きく歪んで見えにくい。ただしSBC加算によりAdjusted EPSが上方修正されているため、GAAPベースでは若干の実力過小評価リスクが存在。投資家はSBCの継続性と株式希薄化効果、貸倒引当金の異常性の持続可能性に注目すべきであり、過大評価を避けるため非GAAP依存を過度に信用しないことが重要。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが恒常的に発生する報酬コストであり、調整の妥当性は限定的（confidence低め）",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされ、加算調整の根拠がある",
+            "confidence": 0.65
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.4268283886844087,
       "adjusted_eps": 0.4344588384298432,
@@ -47,23 +110,7 @@
       "fiscal_year": 2026,
       "quarter": 3,
       "tax_expense": 100701000.0,
-      "pretax_income": 503102000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "SBCは恒常的に発生する報酬コストである一方、異常貸倒引当金はマクロ変動による一時的項目とされる。全体の調整幅は小さく(約0.0076のEPS差)、GAAP EPS使用の場合に企業の実力がやや見えにくくなる可能性はあるが、過小評価リスクは限定的。投資家はSBCの継続性と異常引当金の反転可能性に注目すべきで、過大調整の懸念は低い。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的な報酬コストである(調整項目のreason: 非現金費用、category: 株式報酬関連)",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされ、調整により加算処理されている(調整項目のreason: マクロ変動による一時的影響)",
-            "confidence": 0.75
-          }
-        ]
-      }
+      "pretax_income": 503102000.0
     },
     {
       "gaap_eps": 0.35969229475463266,
@@ -2344,11 +2391,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.09149325646756032,
+      "value": -0.09376123622746643,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.011188236993004341,
-      "prior_4q_avg_yoy": 0.10268149346056465
+      "recent_4q_avg_yoy": 0.00414443053334959,
+      "prior_4q_avg_yoy": 0.09790566676081602
     },
     "roic_trend": {
       "years": [
@@ -2376,9 +2423,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.007649551438645957,
+      "value": 0.00850804250810672,
       "reason": "ok",
-      "period_end": "2026-04-30"
+      "period_end": "2026-07-31"
     }
   }
 }

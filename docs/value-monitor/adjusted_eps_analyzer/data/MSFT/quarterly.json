@@ -1,6 +1,6 @@
 {
   "ticker": "MSFT",
-  "last_updated": "2026-09-27T15:58:27.949215",
+  "last_updated": "2026-10-04T16:08:31.736938",
   "quarters": [
     {
       "gaap_eps": 4.7988729370723195,
@@ -66,16 +66,16 @@
       },
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目はSBCと無形資産償却費の双方が恒常的な性質を持つため、調整幅は中程度です。市場がGAAP EPS（4.80）で判断する場合、非現金ではあるものの継続的なこれらの費用によりMSFTの実質的な収益力が見えにくくなっており、企業の実力を過小評価するリスクがあります。ただしSBCは株主希薄化を伴う実質コスト、無形資産償却も買収の経済的対価であるため、Adjusted EPS（5.09）を過度に信用すると過大評価のリスクも存在します。投資家はキャッシュフローや継続的な希薄化効果を注視すべきです。",
+        "comment": "調整項目のSBCと無形資産償却費はいずれも恒常的に発生する項目（SBCは毎期の従業員報酬、無形資産償却は買収後の継続的非現金費用）であり、一過性とは言えません。市場がGAAP EPS（4.80）を基準に判断する場合、非現金費用を控除した実質的な収益力が見えにくくなり、企業の実力を過小評価する可能性があります。ただしSBCは株式希薄化という実質的コストを伴うため、Adjusted EPS（5.09）を過信すると過大評価リスクもあります。投資家はキャッシュフロー生成力と希薄化影響を総合的に評価すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、Microsoftのようなテック企業では毎期発生する恒常的な従業員報酬コストであり一過性ではない。",
+            "snippet": "株式報酬費用は非現金費用として毎期継続的に発生する恒常的なコストであり、従業員インセンティブとしてコア事業に関連する。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の継続的な償却であり、恒常的に発生する費用で一過性とは言えない。",
+            "snippet": "無形資産償却費は過去の買収関連で定期的に発生する非現金費用であり、恒常的な調整項目に該当する。",
             "confidence": 0.2
           }
         ]
@@ -1937,72 +1937,6 @@
       "pretax_income": 7984000000.0
     },
     {
-      "gaap_eps": 0.83158835546476,
-      "adjusted_eps": 1.0104319613515416,
-      "gaap_net_income": 6513000000.0,
-      "adjusted_net_income": 7913703121.305273,
-      "diluted_shares_used": 7832000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 913000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 703046701.3478364,
-          "tax_rate_applied": 0.22995980137148261
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 600000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 462024119.17711043,
-          "tax_rate_applied": 0.22995980137148261
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 306000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 235632300.7803263,
-          "tax_rate_applied": 0.22995980137148261
-        }
-      ],
-      "net_adjustment_total": 1400703121.305273,
-      "filing_date": "2017-06-30",
-      "form": "10-K",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 23317000000.0,
-      "diluted_shares": 7832000000.0,
-      "period_end": "2017-06-30",
-      "fiscal_year": 2017,
-      "quarter": 4,
-      "tax_expense": 1945000000.0,
-      "pretax_income": 8458000000.0
-    },
-    {
       "gaap_eps": 0.6144886727249456,
       "adjusted_eps": 0.7528421061376616,
       "gaap_net_income": 4801000000.0,
@@ -2107,59 +2041,6 @@
       "quarter": 2,
       "tax_expense": 1755000000.0,
       "pretax_income": 6955000000.0
-    },
-    {
-      "gaap_eps": 0.595479939055358,
-      "adjusted_eps": 0.6888226918953175,
-      "gaap_net_income": 4690000000.0,
-      "adjusted_net_income": 5425167521.367521,
-      "diluted_shares_used": 7876000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 703000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 563601709.4017094,
-          "tax_rate_applied": 0.19829059829059828
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 214000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 171565811.96581197,
-          "tax_rate_applied": 0.19829059829059828
-        }
-      ],
-      "net_adjustment_total": 735167521.3675214,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 21928000000.0,
-      "diluted_shares": 7876000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2017,
-      "quarter": 1,
-      "tax_expense": 1160000000.0,
-      "pretax_income": 5850000000.0
     }
   ],
   "execution_metrics": {

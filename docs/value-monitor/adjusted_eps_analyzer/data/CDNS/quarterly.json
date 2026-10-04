@@ -1,6 +1,6 @@
 {
   "ticker": "CDNS",
-  "last_updated": "2026-09-27T16:00:34.657312",
+  "last_updated": "2026-10-04T16:10:20.932794",
   "quarters": [
     {
       "gaap_eps": 1.2262672390172618,
@@ -79,21 +79,21 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "主な調整はSBC（恒常的・非現金）と無形資産償却（継続的買収関連）であり、リストラは極少額の一過性項目。GAAP EPSに対しAdjusted EPSが約37%高いため、市場がGAAPのみで判断する場合に企業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただしSBCは実質的な報酬コストであり、調整を過信すると過大評価リスクもある。投資家は非GAAPに加え株式希薄化や継続的買収戦略を注視すべき。",
+        "comment": "主な調整はSBC（恒常的・非現金）と無形資産償却（継続的）で、リストラは金額的に無視できる一過性項目です。市場がGAAP EPS（1.23）で判断する場合、非現金費用の影響で企業の実力（調整後EPS 1.68）が過小評価されている可能性があります。ただしSBCは株主希薄化を伴う実質コストのため、調整後EPSを過信すると過大評価リスクが生じます。投資家はキャッシュフローと希薄化効果を慎重に検証すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用はテック企業で毎期発生する恒常的な非現金コストであり、一過性とは言えない。",
+            "snippet": "非現金費用として毎期発生する株式報酬費用（恒常的コスト）",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却は買収後の継続的な非現金費用で、恒常的な調整項目に該当する。",
+            "snippet": "買収関連無形資産の償却で継続的に発生する非現金費用",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編関連だが、金額が-5000USDと極めて小さく影響は限定的。",
+            "snippet": "一過性の事業再編費用だが金額は極めて僅少",
             "confidence": 0.8
           }
         ]
@@ -2950,72 +2950,6 @@
       "quarter": 1,
       "tax_expense": 5923000.0,
       "pretax_income": 74182000.0
-    },
-    {
-      "gaap_eps": 0.22510635781447302,
-      "adjusted_eps": 0.3413166896199911,
-      "gaap_net_income": 64712000.0,
-      "adjusted_net_income": 98119332.7151277,
-      "diluted_shares_used": 287473000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 29998000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 29485499.787819255,
-          "tax_rate_applied": 0.017084479371316307
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 3889000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3822558.459724951,
-          "tax_rate_applied": 0.017084479371316307
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 101000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 99274.46758349705,
-          "tax_rate_applied": 0.017084479371316307
-        }
-      ],
-      "net_adjustment_total": 33407332.715127703,
-      "filing_date": "2016-10-01",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 446220000.0,
-      "diluted_shares": 287473000.0,
-      "period_end": "2016-10-01",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": -1087000.0,
-      "pretax_income": 63625000.0
     }
   ],
   "execution_metrics": {

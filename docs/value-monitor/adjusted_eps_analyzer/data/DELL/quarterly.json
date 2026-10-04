@@ -1,6 +1,6 @@
 {
   "ticker": "DELL",
-  "last_updated": "2026-09-27T16:02:37.131790",
+  "last_updated": "2026-10-04T16:11:47.177803",
   "quarters": [
     {
       "gaap_eps": 6.338957055214724,
@@ -36,9 +36,15 @@
       "tax_expense": 998000000.0,
       "pretax_income": 5131000000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "無形資産償却費は買収後の複数期にわたる恒常的な非現金費用であり、GAAP EPSを市場が基準とする場合、DELLの実質的なキャッシュ生成能力が過小評価されやすい。調整後EPSは約2%高い水準を示すが、償却が継続的に発生するため投資家は真の経済的コストを考慮する必要がある。過小評価リスクはあるが、調整依存が強まると過大評価の可能性も否定できない。FCFや買収戦略の持続可能性に注目すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は、M&A実行後に複数会計期間にわたって発生する非現金費用であり、事業継続に伴い恒常的に計上される性質を持つ。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "TER",
-  "last_updated": "2026-09-27T16:04:18.717691",
+  "last_updated": "2026-10-04T16:12:51.347895",
   "quarters": [
     {
       "gaap_eps": 2.375076889906337,
@@ -36,9 +36,15 @@
       "tax_expense": 66788000.0,
       "pretax_income": 441321000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整小",
+        "comment": "調整項目は買収関連無形資産の償却費で、恒常的に発生する非現金費用であるため一過性ではなく毎期続く性質を持ちます。市場がGAAP EPS（2.375）で判断する場合、非GAAP調整後のEPS（2.402）がやや高い実力を示唆しますが、償却が過去買収の経済的コストを反映するため企業の実力が過小評価されている可能性は限定的です。投資家は過小評価リスクより、償却の残存期間や将来キャッシュフローへの影響を注視すべきで、過大調整のリスクもあります。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金だが恒常的に発生する費用であり、毎期の業績に影響を与えるため調整の正当性は限定的。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -2351,40 +2357,6 @@
       "quarter": 1,
       "tax_expense": 6795000.0,
       "pretax_income": 92016000.0
-    },
-    {
-      "gaap_eps": 0.312824561489538,
-      "adjusted_eps": 0.3515738637763362,
-      "gaap_net_income": 63794000.0,
-      "adjusted_net_income": 71696106.46604447,
-      "diluted_shares_used": 203929000.0,
-      "adjustments": [
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 8487000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 7902106.46604447,
-          "tax_rate_applied": 0.06891640555620716
-        }
-      ],
-      "net_adjustment_total": 7902106.46604447,
-      "filing_date": "2016-10-02",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 410475000.0,
-      "diluted_shares": 203929000.0,
-      "period_end": "2016-10-02",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": -4113000.0,
-      "pretax_income": 59681000.0
     }
   ],
   "execution_metrics": {

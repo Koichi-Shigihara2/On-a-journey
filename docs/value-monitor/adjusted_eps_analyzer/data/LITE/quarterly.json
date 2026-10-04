@@ -1,6 +1,6 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-09-27T15:58:20.917259",
+  "last_updated": "2026-10-04T16:08:23.852282",
   "quarters": [
     {
       "gaap_eps": -96.00134048257372,
@@ -75,27 +75,27 @@
       "tax_expense": -237700000.0,
       "pretax_income": -7399400000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "主要調整項目のSBC（40.8M）と無形資産償却（33.5M）は恒常的な運用コストであり、リストラや異常貸倒引当は一過性。調整後EPS（-95）はGAAP EPS（-96）より若干マシだが、市場がGAAPで判断する場合、非現金・買収関連の恒常費用を考慮せず企業の実力（調整後ベースの損失縮小効果）が過小評価される可能性がある。ただしSBC等の実質コストを無視した過大調整リスクもあり、投資家は持続可能性とコア収益性を注視すべき。全体として過小評価リスクがやや優勢。",
+        "health": "調整小",
+        "comment": "調整項目の分析から、SBCと無形資産償却は恒常的なコスト（非現金だが継続発生）である一方、異常貸倒引当とリストラ費用は一過性と判断される。GAAP EPS（-96.00）がAdjusted EPS（-95.00）より悪化しているため、市場がGAAPベースで判断する場合に企業の実力（調整後損失の縮小傾向）が過小評価される可能性がある。ただし調整幅が全体損失に対して相対的に小さい（約1%改善）ため影響は限定的。投資家はSBCの希薄化効果や償却の持続性を注視すべきであり、恒常項目の過度なadd_backによる過大評価リスクと、GAAP重視市場での過小評価リスクの両方を考慮する必要がある。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用である株式報酬費用を毎期発生する恒常的コストとして加算調整。SBCは事業運営に不可欠な報酬形態。",
+            "snippet": "株式報酬費用は非現金費用だが毎期発生する恒常的コストであり、調整の正当性は限定的。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は買収後複数期にわたり発生する恒常的費用であり、調整で加算されている。",
+            "snippet": "買収関連無形資産の償却は非現金だが継続的に発生する恒常的項目で、買収の経済効果を反映。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響の異常貸倒引当金繰入分であり、真に一過性の調整項目。",
+            "snippet": "マクロ変動による一時的な異常貸倒引当金繰入であり、真に一過性の調整項目。",
             "confidence": 0.8
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用であるリストラ費用を調整で加算しており、ほぼ一過性とみなせる。",
+            "snippet": "一過性の事業再編リストラ費用で、調整によりコア実力が見えやすくなる。",
             "confidence": 0.8
           }
         ]
@@ -296,9 +296,9 @@
     },
     {
       "gaap_eps": 3.064655172413793,
-      "adjusted_eps": 0.005747126436781609,
+      "adjusted_eps": 0.023706896551724137,
       "gaap_net_income": 213300000.0,
-      "adjusted_net_income": 400000.0,
+      "adjusted_net_income": 1650000.0,
       "diluted_shares_used": 69600000.0,
       "adjustments": [
         {
@@ -343,12 +343,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -212900000.0,
-          "net_amount": -212900000.0,
-          "note": "tax_expense=-198,000,000, median_normal_tax=14,900,000"
+          "amount": -211650000.0,
+          "net_amount": -211650000.0,
+          "note": "tax_expense=-198,000,000, median_normal_tax=13,650,000"
         }
       ],
-      "net_adjustment_total": -212900000.0,
+      "net_adjustment_total": -211650000.0,
       "filing_date": "2025-06-28",
       "form": "10-K",
       "sector": null,
@@ -2016,9 +2016,9 @@
     },
     {
       "gaap_eps": 0.5292259083728278,
-      "adjusted_eps": -1.5813586097946288,
+      "adjusted_eps": -1.561611374407583,
       "gaap_net_income": 33500000.0,
-      "adjusted_net_income": -100100000.0,
+      "adjusted_net_income": -98850000.0,
       "diluted_shares_used": 63300000.0,
       "adjustments": [
         {
@@ -2063,12 +2063,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -133600000.0,
-          "net_amount": -133600000.0,
-          "note": "tax_expense=-118,700,000, median_normal_tax=14,900,000"
+          "amount": -132350000.0,
+          "net_amount": -132350000.0,
+          "note": "tax_expense=-118,700,000, median_normal_tax=13,650,000"
         }
       ],
-      "net_adjustment_total": -133600000.0,
+      "net_adjustment_total": -132350000.0,
       "filing_date": "2018-06-30",
       "form": "10-K",
       "sector": null,
@@ -2321,98 +2321,6 @@
               "net_amount": -3318000.0
             }
           ],
-          "condition1": "純利益変動309% / 売上変動6% = 53.5倍（閾値5倍）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
-        }
-      }
-    },
-    {
-      "gaap_eps": -0.905940594059406,
-      "adjusted_eps": -0.37014851485148514,
-      "gaap_net_income": -54900000.0,
-      "adjusted_net_income": -22431000.0,
-      "diluted_shares_used": 60600000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 8000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 6320000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1106000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 2000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 1580000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "derivative_fv_change",
-          "item_name": "デリバティブ公正価値変動損益",
-          "amount": 29700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常のデリバティブ時価評価変動",
-          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
-          "category": "公正価値変動関連",
-          "net_amount": 23463000.0,
-          "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 32469000.0,
-      "filing_date": "2017-07-01",
-      "form": "10-K",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 222700000.0,
-      "diluted_shares": 60600000.0,
-      "period_end": "2017-07-01",
-      "fiscal_year": 2017,
-      "quarter": 4,
-      "tax_expense": 42700000.0,
-      "pretax_income": -12200000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
-              "xbrl_value": -29700000,
-              "adjustment_amount": 29700000,
-              "net_amount": 23463000.0
-            }
-          ],
           "condition1": "前年同期データなし（条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
@@ -2420,22 +2328,22 @@
     },
     {
       "gaap_eps": -0.9180327868852459,
-      "adjusted_eps": -0.07635504356815837,
+      "adjusted_eps": -0.0751439964554719,
       "gaap_net_income": -56000000.0,
-      "adjusted_net_income": -4657657.657657661,
+      "adjusted_net_income": -4583783.783783786,
       "diluted_shares_used": 61000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 8000000,
+          "amount": 8100000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
-          "net_amount": 5909909.90990991,
+          "net_amount": 5983783.783783784,
           "tax_rate_applied": 0.26126126126126126
         },
         {
@@ -2478,7 +2386,7 @@
           "tax_rate_applied": 0.26126126126126126
         }
       ],
-      "net_adjustment_total": 51342342.34234234,
+      "net_adjustment_total": 51416216.216216214,
       "filing_date": "2017-04-01",
       "form": "10-Q",
       "sector": null,
@@ -2512,22 +2420,22 @@
     },
     {
       "gaap_eps": 0.18819776714513556,
-      "adjusted_eps": 0.29333618454465266,
+      "adjusted_eps": 0.2943875687186478,
       "gaap_net_income": 11800000.0,
-      "adjusted_net_income": 18392178.77094972,
+      "adjusted_net_income": 18458100.55865922,
       "diluted_shares_used": 62700000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 9000000.0,
+          "amount": 9100000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
-          "net_amount": 5932960.893854749,
+          "net_amount": 5998882.681564246,
           "tax_rate_applied": 0.3407821229050279
         },
         {
@@ -2570,7 +2478,7 @@
           "tax_rate_applied": 0.3407821229050279
         }
       ],
-      "net_adjustment_total": 6592178.770949721,
+      "net_adjustment_total": 6658100.558659218,
       "filing_date": "2016-12-31",
       "form": "10-Q",
       "sector": null,
@@ -2598,98 +2506,6 @@
             }
           ],
           "condition1": "前年同期データなし（条件1スキップ）",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
-        }
-      }
-    },
-    {
-      "gaap_eps": -0.05676126878130217,
-      "adjusted_eps": 0.2927686495035586,
-      "gaap_net_income": -3400000.0,
-      "adjusted_net_income": 17536842.10526316,
-      "diluted_shares_used": 59900000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 7700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4592982.4561403515,
-          "tax_rate_applied": 0.40350877192982454
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1073684.210526316,
-          "tax_rate_applied": 0.40350877192982454
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 2900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 1729824.561403509,
-          "tax_rate_applied": 0.40350877192982454
-        },
-        {
-          "item_id": "derivative_fv_change",
-          "item_name": "デリバティブ公正価値変動損益",
-          "amount": 22700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金・非経常のデリバティブ時価評価変動",
-          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
-          "category": "公正価値変動関連",
-          "net_amount": 13540350.877192983,
-          "tax_rate_applied": 0.40350877192982454
-        }
-      ],
-      "net_adjustment_total": 20936842.10526316,
-      "filing_date": "2016-10-01",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 258100000.0,
-      "diluted_shares": 59900000.0,
-      "period_end": "2016-10-01",
-      "fiscal_year": 2017,
-      "quarter": 1,
-      "tax_expense": -2300000.0,
-      "pretax_income": -5700000.0,
-      "special_flags": [
-        "FAIR_VALUE_ADJUSTED"
-      ],
-      "special_notes": {
-        "fair_value_auto_detect": {
-          "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:UnrealizedGainLossOnDerivatives",
-              "xbrl_value": -22700000,
-              "adjustment_amount": 22700000,
-              "net_amount": 13540350.877192983
-            }
-          ],
-          "condition1": "FV変動が純利益の668%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
       }

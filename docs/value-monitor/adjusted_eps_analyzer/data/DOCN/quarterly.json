@@ -1,6 +1,6 @@
 {
   "ticker": "DOCN",
-  "last_updated": "2026-09-27T16:02:07.909502",
+  "last_updated": "2026-10-04T16:11:21.149781",
   "quarters": [
     {
       "gaap_eps": 0.2800281316180422,
@@ -52,9 +52,15 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目はSBC（株式報酬費用）であり、恒常的に毎期発生するコストのため一過性とは判断しにくい。GAAP EPSはSBCを費用計上しているため企業の実力（キャッシュ生成力）が低く見え、市場がGAAPベースで判断する場合にDOCNの実力を過小評価している可能性がある。ただしSBCは従業員報酬の本質的コストであり、株式希薄化を伴うためAdjusted EPSを過信すると過大評価リスクもある。投資家は非GAAP利益に加え、希薄化後株式数やフリーキャッシュフローを注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として株式報酬費用32724000 USDをadd_backしており、Adjusted EPSを押し上げているが、テック企業では恒常的に発生する報酬コストである。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

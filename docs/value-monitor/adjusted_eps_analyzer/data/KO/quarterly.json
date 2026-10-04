@@ -1,6 +1,6 @@
 {
   "ticker": "KO",
-  "last_updated": "2026-09-27T15:57:52.998865",
+  "last_updated": "2026-10-04T16:07:57.361387",
   "quarters": [
     {
       "gaap_eps": 0.9095966620305981,
@@ -62,9 +62,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 429 Client Error: Too Many Requests for url: https://api.x.ai/v1/chat/completions",
-        "sources": []
+        "health": "調整小",
+        "comment": "SBCは恒常的に発生する非現金費用であるため調整の正当性は低いが、訴訟和解は明確に一過性。全体として調整幅が小さくGAAP EPSとAdjusted EPSの差は1%程度に留まるため、市場がGAAPで判断していても企業の実力が見えにくくなっている可能性は低い。過小評価リスクは限定的だが、SBCの継続的な影響を投資家は注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する恒常的な株式報酬費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "litigation_settlement",
+            "snippet": "非経常的な訴訟関連費用として一過性の調整項目",
+            "confidence": 1.0
+          }
+        ]
       }
     },
     {
@@ -1929,43 +1940,6 @@
       "special_notes": {
         "share_structure_mismatch": "diluted_shares=4,334,000 は直近四半期(2026-04-03, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
       }
-    },
-    {
-      "gaap_eps": 0.23968835930339139,
-      "adjusted_eps": 0.24120324359674147,
-      "gaap_net_income": 1046000000.0,
-      "adjusted_net_income": 1052610955.0561798,
-      "diluted_shares_used": 4364000000.0,
-      "adjustments": [
-        {
-          "item_id": "litigation_settlement",
-          "item_name": "訴訟和解金・罰金",
-          "amount": 9000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非経常的な訴訟関連費用",
-          "extracted_from": "us-gaap:LitigationSettlementExpense",
-          "category": "訴訟・罰金関連",
-          "net_amount": 6610955.056179775,
-          "tax_rate_applied": 0.2654494382022472
-        }
-      ],
-      "net_adjustment_total": 6610955.056179775,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
-      "revenue": 0.0,
-      "diluted_shares": 4364000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 378000000.0,
-      "pretax_income": 1424000000.0
     }
   ],
   "execution_metrics": {

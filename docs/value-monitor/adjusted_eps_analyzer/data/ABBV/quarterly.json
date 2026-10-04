@@ -1,6 +1,6 @@
 {
   "ticker": "ABBV",
-  "last_updated": "2026-09-27T16:02:26.641650",
+  "last_updated": "2026-10-04T16:11:38.938716",
   "quarters": [
     {
       "gaap_eps": 2.0400903444381706,
@@ -62,9 +62,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "SBCと無形資産償却の両調整項目は恒常的な非現金費用であり、一過性ではない。GAAP EPS（2.04）を基準に市場が判断する場合、AbbVieの真の現金創出力や事業実力が大幅に過小評価される可能性が高い（調整後EPSは約44%高い2.93）。ただしSBCは株主希薄化を伴い、無形資産償却も買収資産の経済的減価を反映するため、調整依存は過大評価リスクを招く。投資家は調整の持続性とFCFを注視し、バランス評価すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、調整により実力が見えにくくなる典型例（confidence低）。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は複数年にわたる恒常的会計費用で、製薬企業では定期的に発生（非一過性）。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -1599,9 +1610,9 @@
     },
     {
       "gaap_eps": 0.021518230723251645,
-      "adjusted_eps": 1.2553795576808129,
+      "adjusted_eps": 1.2619545726240287,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": 2100250000.0,
+      "adjusted_net_income": 2111250000.0,
       "diluted_shares_used": 1673000000.0,
       "adjustments": [
         {
@@ -1633,9 +1644,9 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -1629000000.0,
-          "net_amount": -1629000000.0,
-          "note": "tax_expense=-1,224,000,000, median_normal_tax=405,000,000"
+          "amount": -1618000000.0,
+          "net_amount": -1618000000.0,
+          "note": "tax_expense=-1,224,000,000, median_normal_tax=394,000,000"
         },
         {
           "item_id": "contingent_consideration_fv",
@@ -1651,7 +1662,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 2064250000.0,
+      "net_adjustment_total": 2075250000.0,
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
@@ -2721,69 +2732,6 @@
       "quarter": 1,
       "tax_expense": 375000000.0,
       "pretax_income": 2086000000.0
-    },
-    {
-      "gaap_eps": 0.974390243902439,
-      "adjusted_eps": 1.10018044420762,
-      "gaap_net_income": 1598000000.0,
-      "adjusted_net_income": 1804295928.5004966,
-      "diluted_shares_used": 1640000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 47000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 37291956.30585899,
-          "tax_rate_applied": 0.20655412115193644
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 208000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 165036742.80039722,
-          "tax_rate_applied": 0.20655412115193644
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 5000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 3967229.394240318,
-          "tax_rate_applied": 0.20655412115193644
-        }
-      ],
-      "net_adjustment_total": 206295928.50049654,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
-      "revenue": 6432000000.0,
-      "diluted_shares": 1640000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 416000000.0,
-      "pretax_income": 2014000000.0
     }
   ],
   "execution_metrics": {

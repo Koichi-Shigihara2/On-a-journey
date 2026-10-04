@@ -1,6 +1,6 @@
 {
   "ticker": "META",
-  "last_updated": "2026-09-27T15:58:17.707226",
+  "last_updated": "2026-10-04T16:08:14.084638",
   "quarters": [
     {
       "gaap_eps": 6.176149649259548,
@@ -53,11 +53,11 @@
       },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "調整項目の株式報酬費用（SBC）は恒常的なコストであり、毎期発生する非現金費用です。GAAP EPSはこれを控除するため市場がGAAPベースで判断する場合、Metaの現金生成力や事業実力が過小評価されやすく、株価にネガティブに作用する可能性があります。ただしSBCは株式希薄化を伴う実質コストであるため、Adjusted EPSを過度に信用すると企業実力を過大評価するリスクもあります。投資家は希薄化調整後EPSやFCFを併せて確認すべきです。",
+        "comment": "SBCは恒常的なコスト（毎期発生する株式報酬）であり一過性ではないため、この調整でAdjusted EPSがGAAPの約1.4倍に跳ね上がっている。市場がGAAP EPSで判断する場合、METAの実力（キャッシュ生成力）が過小評価される可能性はあるが、SBCは株式希薄化を伴う実質コストのため調整を過大視するリスクが高い。投資家は調整後EPSだけでなく、希薄化後シェア数やFCFを重視すべき。過小評価リスクはあるものの、過大評価リスクも無視できない。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として加算調整。ただしテック企業では毎期発生する恒常的な運用コストであり一過性ではない。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、株式報酬関連の費用は毎期継続的に発生する恒常的なコストである。",
             "confidence": 0.2
           }
         ]
@@ -1984,59 +1984,6 @@
       "quarter": 1,
       "tax_expense": 344000000.0,
       "pretax_income": 3408000000.0
-    },
-    {
-      "gaap_eps": 0.8116683725690891,
-      "adjusted_eps": 1.0953069430930609,
-      "gaap_net_income": 2379000000.0,
-      "adjusted_net_income": 3210344650.2057614,
-      "diluted_shares_used": 2931000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 824000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 672255144.0329218,
-          "tax_rate_applied": 0.18415637860082304
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 195000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 159089506.17283952,
-          "tax_rate_applied": 0.18415637860082304
-        }
-      ],
-      "net_adjustment_total": 831344650.2057613,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 7011000000.0,
-      "diluted_shares": 2931000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 537000000.0,
-      "pretax_income": 2916000000.0
     }
   ],
   "execution_metrics": {

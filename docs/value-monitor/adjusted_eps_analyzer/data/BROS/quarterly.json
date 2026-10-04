@@ -1,6 +1,6 @@
 {
   "ticker": "BROS",
-  "last_updated": "2026-09-27T16:02:00.674197",
+  "last_updated": "2026-10-04T16:11:37.906808",
   "quarters": [
     {
       "gaap_eps": 0.2775943308722591,
@@ -36,9 +36,15 @@
       "tax_expense": 12623000.0,
       "pretax_income": 50033000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 429 Client Error: Too Many Requests for url: https://api.x.ai/v1/chat/completions",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整項目は恒常的な株式報酬費用(SBC)であり、非現金ながら株主希薄化等の実質コストを伴うため、調整によりAdjusted EPSを約14%押し上げ実力を過大表示している可能性が高い。市場がGAAP EPSで判断する場合、保守的な評価となり企業の実力が見えにくくなるというより、むしろ過大評価リスクを避けていると言える。投資家はSBCの継続性・規模を監視し、希薄化影響を加味した実質的な1株当たり価値を評価すべきであり、過大調整による過大評価リスクに注意。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する恒常的なコストであり、非現金費用として加算調整されているが、経済的実態を反映しない可能性がある(基準:0.2)",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

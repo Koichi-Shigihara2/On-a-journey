@@ -1,6 +1,6 @@
 {
   "ticker": "MO",
-  "last_updated": "2026-09-27T16:02:59.982058",
+  "last_updated": "2026-10-04T16:12:07.418667",
   "quarters": [
     {
       "gaap_eps": 1.3760479041916167,
@@ -37,11 +37,11 @@
       "pretax_income": 2929000000.0,
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目は買収関連無形資産の償却であり、恒常的に毎期発生する非現金費用（一過性ではない）です。GAAP EPSとAdjusted EPSの差が約0.01と極めて小さいため、市場がGAAPベースで判断していても企業の実力が見えにくくなっている可能性は低く、過小評価リスクは限定的です。投資家は非現金償却を加味したキャッシュフロー持続性を注視すべきですが、調整が実態を大きく歪めている兆候はありません。",
+        "comment": "調整項目は買収関連無形資産の償却費であり、毎期継続的に発生する恒常的な非現金費用です。GAAP EPS(1.376)とAdjusted EPS(1.387)の差は僅か(約0.8%)で、市場がGAAPベースで判断していても企業の実力が見えにくくなる程度は小さく、過小評価リスクは限定的です。投資家は調整後ベースでの収益性とキャッシュフロー持続力を注視すべきですが、償却が長期的に続く場合の評価には注意が必要です。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。これはM&Aで認識した無形資産を一定期間にわたり償却する恒常的な費用であり、非現金ではあるが毎期継続的に発生する。",
+            "snippet": "買収関連無形資産の償却。これは恒常的に毎期計上される非現金費用であり、一過性項目ではない(調整項目のreasonおよびcategoryに基づく)。",
             "confidence": 0.2
           }
         ]
@@ -1399,40 +1399,6 @@
       "quarter": 1,
       "tax_expense": 689000000.0,
       "pretax_income": 2090000000.0
-    },
-    {
-      "gaap_eps": 0.568974492451848,
-      "adjusted_eps": 0.5709523875588648,
-      "gaap_net_income": 1093000000.0,
-      "adjusted_net_income": 1096799536.5005794,
-      "diluted_shares_used": 1921000000.0,
-      "adjustments": [
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 3799536.5005793744,
-          "tax_rate_applied": 0.3667439165701043
-        }
-      ],
-      "net_adjustment_total": 3799536.5005793744,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 6905000000.0,
-      "diluted_shares": 1921000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 633000000.0,
-      "pretax_income": 1726000000.0
     }
   ],
   "execution_metrics": {

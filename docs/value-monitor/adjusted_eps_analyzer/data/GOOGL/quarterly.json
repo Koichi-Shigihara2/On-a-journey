@@ -1,6 +1,6 @@
 {
   "ticker": "GOOGL",
-  "last_updated": "2026-09-27T15:57:38.378232",
+  "last_updated": "2026-10-04T16:07:40.171853",
   "quarters": [
     {
       "gaap_eps": 9.11471281176375,
@@ -66,17 +66,17 @@
       },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "SBC（8B USD）と無形資産償却（0.367B USD）の調整によりAdjusted EPSがGAAP EPSを上回るが、SBCはGoogleの事業運営上恒常的な報酬コストであり真に一過性とは言えない。市場がGAAP EPS基準で評価する場合、非現金調整後の実力が過大に見えにくくなり保守的な過小評価リスクが生じる。ただしSBCの大部分を加算する調整は経済的実態を歪め、投資家は調整後EPSを過信した過大評価リスクに留意すべき。投資家として注目すべきはSBCの希薄化効果と今後の買収戦略。",
+        "comment": "SBC（80億ドル規模）と無形資産償却はともに恒常的なコストであり、一過性調整とは言えない。市場がGAAP EPSで評価する場合、非現金費用によりGOOGLの実力（特にキャッシュ創出力）が過小評価される可能性はあるが、SBCは実質的な株主希薄化を伴うためAdjusted EPSは実力を過大に示しており、過大評価リスクの方が大きい。投資家はSBCの継続性と希薄化効果を考慮した分析が必要。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、テック企業で毎期継続的に発生する恒常的な運用コストであり一過性調整の妥当性は低い",
+            "snippet": "株式報酬費用は毎期継続的に発生する恒常的な従業員報酬コストであり、非現金ながら株主希薄化を伴う。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収後の定期的な非現金償却であり、恒常的な性格が強く一過性とは判断しにくい",
-            "confidence": 0.25
+            "snippet": "無形資産償却費は買収関連無形資産に対する定期的な償却であり、恒常的に発生する費用。",
+            "confidence": 0.2
           }
         ]
       }
@@ -1663,47 +1663,6 @@
       "quarter": 1,
       "tax_expense": 1393000000.0,
       "pretax_income": 6819000000.0,
-      "split_adjusted": true
-    },
-    {
-      "gaap_eps": 0.3625,
-      "adjusted_eps": 0.4740384615384616,
-      "gaap_net_income": 5061000000.0,
-      "adjusted_net_income": 6618230769.230769,
-      "diluted_shares_used": 13961379310.344828,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1860000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1557230769.2307694,
-          "tax_rate_applied": 0.16277915632754342
-        }
-      ],
-      "net_adjustment_total": 1557230769.2307694,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 22451000000.0,
-      "diluted_shares": 13961379310.344828,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 984000000.0,
-      "pretax_income": 6045000000.0,
       "split_adjusted": true
     }
   ],

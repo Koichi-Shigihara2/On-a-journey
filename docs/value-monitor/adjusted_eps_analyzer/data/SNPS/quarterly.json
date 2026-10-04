@@ -1,6 +1,6 @@
 {
   "ticker": "SNPS",
-  "last_updated": "2026-09-27T16:03:30.668170",
+  "last_updated": "2026-10-04T16:12:22.897361",
   "quarters": [
     {
       "gaap_eps": 2.837993126004191,
@@ -104,9 +104,35 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目の大部分をSBC（恒常的非現金費用）と無形資産償却（買収後継続発生）が占めており、一過性のM&A統合・リストラ・異常貸倒引当は小規模。市場がGAAP EPS（2.84）のみで判断する場合、これら非現金・買収関連費用により企業の実力（Adjusted EPS 4.49）が大きく過小評価される可能性が高い。投資家はSBCや償却を加味したコア収益力に注目すべきだが、恒常的項目の調整依存が高いため過大評価リスクもあり、持続的な事業成長とフリーキャッシュフローを検証する必要がある。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する株式報酬費用であり、技術企業では恒常的な運用コスト。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で、買収後も複数年にわたり継続的に発生する恒常的項目。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストであり、非経常的なM&A関連費用。",
+            "confidence": 0.8
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として位置づけられた異常貸倒引当金繰入。",
+            "confidence": 0.75
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用で、リストラ関連の非経常的コスト。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

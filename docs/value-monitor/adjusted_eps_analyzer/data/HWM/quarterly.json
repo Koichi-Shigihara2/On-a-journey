@@ -1,6 +1,6 @@
 {
   "ticker": "HWM",
-  "last_updated": "2026-09-27T16:01:04.184643",
+  "last_updated": "2026-10-04T16:10:40.789453",
   "quarters": [
     {
       "gaap_eps": 1.328358208955224,
@@ -50,7 +50,7 @@
       },
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目は一過性の税効果（法人税率変更や過年度修正等）であり、恒常的コストではなく非経常的。GAAP EPSが1.33でAdjusted EPSが1.28とGAAPの方が高いため、この一時的税務メリットにより市場がGAAP EPSで判断する場合、企業の持続的な実力（コア収益力）が過大に見え、持続可能性が見えにくくなっている。結果として過大評価リスクがあり、過小評価の可能性は低い。投資家は調整後EPSを基に持続的利益を評価し、今後の税務変動リスクに注意すべき。",
+        "comment": "調整項目は法人税率変更・過年度税額戻し等の一過性税効果であり、恒常的コストではなく明確に一過性です。GAAP EPS（1.328）がAdjusted EPS（1.279）を上回っているため、市場がGAAP EPSのみで判断する場合、一過性の税メリットにより企業の実力（経常的な収益力）が過大に映り、過大評価リスクが生じています。逆にこの調整により市場が実力を過小評価している可能性は低く、投資家は調整後EPSを基に真の収益力を確認し、一過性税項目の影響を排除して評価する必要があります。",
         "sources": [
           {
             "item": "tax_one_time",
@@ -990,9 +990,9 @@
     },
     {
       "gaap_eps": 0.08200455580865604,
-      "adjusted_eps": -0.1845102505694761,
+      "adjusted_eps": -0.1867881548974943,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": -81000000.0,
+      "adjusted_net_income": -82000000.0,
       "diluted_shares_used": 439000000.0,
       "adjustments": [
         {
@@ -1024,12 +1024,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -117000000.0,
-          "net_amount": -117000000.0,
-          "note": "tax_expense=-48,000,000, median_normal_tax=69,000,000"
+          "amount": -118000000.0,
+          "net_amount": -118000000.0,
+          "note": "tax_expense=-48,000,000, median_normal_tax=70,000,000"
         }
       ],
-      "net_adjustment_total": -117000000.0,
+      "net_adjustment_total": -118000000.0,
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -1615,43 +1615,6 @@
       "quarter": 1,
       "tax_expense": 162000000.0,
       "pretax_income": 484000000.0
-    },
-    {
-      "gaap_eps": 0.36644591611479027,
-      "adjusted_eps": 0.37139788795417933,
-      "gaap_net_income": 166000000.0,
-      "adjusted_net_income": 168243243.24324325,
-      "diluted_shares_used": 453000000.0,
-      "adjustments": [
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 3000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 2243243.243243243,
-          "tax_rate_applied": 0.25225225225225223
-        }
-      ],
-      "net_adjustment_total": 2243243.243243243,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "宇宙・航空",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
-      "revenue": 0.0,
-      "diluted_shares": 453000000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 56000000.0,
-      "pretax_income": 222000000.0
     }
   ],
   "execution_metrics": {

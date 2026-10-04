@@ -1,6 +1,6 @@
 {
   "ticker": "HEI",
-  "last_updated": "2026-09-27T16:00:57.033144",
+  "last_updated": "2026-10-04T16:10:28.719503",
   "quarters": [
     {
       "gaap_eps": 1.6666005988574988,
@@ -36,9 +36,15 @@
       "tax_expense": 66100000.0,
       "pretax_income": 301539000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "無形資産償却費は買収に伴う恒常的な非現金費用であり、一過性ではなく継続的に発生する項目です（SBCと同様の性質）。市場がGAAP EPS（1.67）で判断する場合、この償却によりEPSが圧縮され、企業のキャッシュ生成力や実力を過小評価している可能性があります。ただし買収が事業成長の中心である場合、償却は今後も続くためAdjusted EPS（1.91）をそのまま信用すると過大評価リスクが生じます。投資家は買収戦略の持続性と償却スケジュールを注視し、経済的実態を慎重に評価すべきです。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は、M&Aで認識した無形資産を複数年にわたり償却する恒常的項目であり、非経常的とは言えない（category:買収・統合関連、reason:買収関連無形資産の償却）。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

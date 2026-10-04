@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-09-27T15:56:56.953487",
+  "last_updated": "2026-10-04T16:06:46.249506",
   "quarters": [
     {
       "gaap_eps": 0.21520396367924713,
@@ -75,16 +75,16 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "リストラ費用は一過性の項目だが、無形資産償却は買収に伴う恒常的なコストである。調整によりAdjusted EPSがGAAP EPSの2倍超となっており、市場がGAAPベースで判断する場合、CELHの一時的費用による実力の過小評価リスクが高い。ただし恒常的償却を加算しているため過大調整の側面もあり、投資家はリストラの非再発性と償却の継続影響を注視すべき。全体として過小評価リスクが目立つ。",
+        "comment": "リストラ費用が大半を占める調整によりGAAP EPS 0.215からAdjusted EPS 0.484へ大幅増。市場がGAAPベースで判断する場合、企業の実力（特にリストラ完了後の収益力）が過小評価される可能性が高い。ただし無形資産償却は恒常的性格が強く、過大調整リスクもあり投資家は今後の業績持続性とリストラの真の影響を注視すべき。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。これは複数期にわたって発生する恒常的なコストであり、非経常的とは言えない。",
+            "snippet": "買収関連無形資産の償却は非現金費用だが、過去の買収によるもので毎期発生する可能性が高い恒常的調整。",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用。リストラ費用は通常非経常的で一時的な負担である。",
+            "snippet": "一過性の事業再編費用としてリストラ費用は典型的には非経常的で調整対象として適切。",
             "confidence": 0.8
           }
         ]
@@ -2544,42 +2544,6 @@
           "official_eps": -0.05,
           "eps_diff_pct": 70.0,
           "note": "XBRLと公式発表のGAAP EPSに70%の差異があります。公式EPS: $-0.05, XBRL計算EPS: $-0.02。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
-        }
-      }
-    },
-    {
-      "gaap_eps": 8.577634049389912e-05,
-      "adjusted_eps": 8.577634049389912e-05,
-      "gaap_net_income": 9950.0,
-      "adjusted_net_income": 9950.0,
-      "diluted_shares_used": 115999353.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
-      "revenue": 0.0,
-      "diluted_shares": 115999353.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 0,
-      "pretax_income": 0,
-      "split_adjusted": true,
-      "special_flags": [
-        "EPS_DISCREPANCY"
-      ],
-      "special_notes": {
-        "eps_discrepancy": {
-          "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 8.577634049389912e-05,
-          "official_eps": -0.0024,
-          "eps_diff_pct": 103.6,
-          "note": "XBRLと公式発表のGAAP EPSに104%の差異があります。公式EPS: $-0.00, XBRL計算EPS: $0.00。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
         }
       }
     }
