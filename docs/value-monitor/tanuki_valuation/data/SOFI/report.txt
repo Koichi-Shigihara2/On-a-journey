@@ -1,5 +1,5 @@
 SOFI INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:14:57+09:00
+Generated: 2026-10-05T01:21:44+09:00
 Price: $15.77
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -74,8 +74,8 @@ TTM_YoY_Growth: 40.8%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 16.86%
   参考①β込みWACC_IV: $18.12 (Deviation: +14.9%)
-  参考②Rf理論上限_IV: $222.83 (Deviation: +1313.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-10.5%→+0.1%（+10.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $125.12 (Deviation: +693.4%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-10.5%→+0.1%（+10.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 2.204
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -299,12 +299,12 @@ Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.0
 HYPE_Signal: 実体維持・期待崩壊中 — 売上・EPSは強い。期待の過熱訂正が続いているが、実体が下支え。
 Phase_History (recent 6 months):
-2026-04: Phase4 (期待剥落期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase2 (期待拡大期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
+2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 33.8x
   PEG: 0.60
@@ -330,9 +330,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 5.23%  (ForwardEPS $0.82 / Price $15.77)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 0.93%
-  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: -0.05%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

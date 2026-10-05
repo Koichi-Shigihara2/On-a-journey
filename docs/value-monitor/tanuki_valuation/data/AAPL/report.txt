@@ -1,15 +1,15 @@
 AAPL INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:10:29+09:00
+Generated: 2026-10-05T01:17:11+09:00
 Price: $333.69
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: TRIM
+Classification: HOLD
 Funda_Score: 90/100
 Timing_Score (components):
   Deviation_Rate: -52.2%
   MA200_Deviation: +15.4%
-  HypeCore_Phase: Phase3 (陶酔期)
+  HypeCore_Phase: Phase2 (期待拡大期)
   Analyst_Consensus: Buy | Target: $340 median ($215-$405) | 39 analysts | vs IV: +113.1%
 Comment: 割高(-52%超)、FCF黒字、売上安定成長
 Definition:
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 14.2%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.49%
   参考①β込みWACC_IV: $147.76 (Deviation: -55.7%)
-  参考②Rf理論上限_IV: $1,365.34 (Deviation: +309.2%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-20.0%→-6.2%（+13.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $608.70 (Deviation: +82.4%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-20.0%→-6.2%（+13.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 1.086
 Valuation_Gap_Analysis:
@@ -179,7 +179,7 @@ market-priced future potential.
 
 [4. 成長率根拠]
 Phase1成長率 : 7.5%
-成長モデル: セグメント加重モデル（Layer 1）  HypePhase=3
+成長モデル: セグメント加重モデル（Layer 1）  HypePhase=2
 DCF適用値:  7.5%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 5.2%（Layer 2 参考値・DCF未適用）
 判定         : PLAUSIBLE
@@ -286,16 +286,16 @@ Compare with TANUKI G scenario for cross-validation
 
 
 [7. HYPECORE]
-Current_Phase: Phase3 (陶酔期)
+Current_Phase: Phase2 (期待拡大期)
 Alpha_Premium: 1.0
-HYPE_Signal: 陶酔期入り — 過熱が始まったばかり。まだ上昇余地がある可能性。
+HYPE_Signal: 期待拡大開始 — 期待と実体が噛み合い始めた段階。
 Phase_History (recent 6 months):
-2026-04: Phase2 (期待拡大期)
 2026-05: Phase3 (陶酔期)
 2026-06: Phase2 (期待拡大期)
 2026-07: Phase2 (期待拡大期)
 2026-08: Phase2 (期待拡大期)
 2026-09: Phase3 (陶酔期)
+2026-10: Phase2 (期待拡大期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 39.1x
   PEG: 2.71
@@ -321,9 +321,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 2.87%  (ForwardEPS $9.59 / Price $333.69)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: -1.43%
-  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: -2.40%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

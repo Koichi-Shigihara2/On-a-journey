@@ -163,8 +163,14 @@ class KoichiValuationCalculator:
         self.eps_data_dir = eps_data_dir
         self.sec_data_dir = sec_data_dir  # v7.1: EPSアナライザーdataディレクトリ
 
-    def calculate_pt(self, financials: Dict[str, Any], tapering_g_end: float | None = None, bear_multiplier: float = 0.7) -> Dict[str, Any]:
-        """メイン計算関数。tapering_g_end が設定された場合は線形逓減DCFを適用（DCF-1）"""
+    def calculate_pt(self, financials: Dict[str, Any], tapering_g_end: float | None = None, bear_multiplier: float = 0.7,
+                     rf_reference: float | None = None) -> Dict[str, Any]:
+        """メイン計算関数。tapering_g_end が設定された場合は線形逓減DCFを適用（DCF-1）
+
+        rf_reference: 参考②（Rf理論上限）の割引率に使うRf（2026-10-04、
+        pipeline.pyが^TNXの現在値を渡す）。Noneなら従来どおりWACC計算の
+        固定Rf（0.043）。メイン・参考①（β込みWACC）には影響しない。
+        """
 
         # ── データ抽出 ──
         fcf_avg        = financials.get("fcf_5yr_avg", 0.0)
@@ -633,8 +639,9 @@ class KoichiValuationCalculator:
         _ivps_rm_no_beta = intrinsic_value_per_share
         _upside_rm_no_beta = upside_percent
 
-        # ③ Rf（リスクゼロ）で計算
-        _ivps_rf = _calc_ivps_with_wacc(_rf)
+        # ③ Rf（リスクゼロ）で計算。Rfはpipelineから渡された現在値（無ければ固定値）
+        _rf_ref = rf_reference if rf_reference is not None else _rf
+        _ivps_rf = _calc_ivps_with_wacc(_rf_ref)
         _upside_rf = calculate_upside(
             intrinsic_value_per_share=_ivps_rf,
             current_price=current_price
@@ -791,6 +798,7 @@ class KoichiValuationCalculator:
             # 参考②: Rf（リスクゼロ理論上限）
             "intrinsic_value_rf": round(float(_ivps_rf), 2),
             "upside_percent_rf": _round_or_none(_upside_rf, 1),
+            "intrinsic_value_rf_rate": _rf_ref,  # 参考②で実際に使ったRf
             "v0": float(v0),
             # [[V0-V0RM-CONFUSION-RISK-1]]対応（2026-08-30）: v0はβ込み
             # CAPM WACCベースのDCF結果（intrinsic_value_betaの計算根拠、

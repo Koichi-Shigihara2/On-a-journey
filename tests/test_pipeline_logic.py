@@ -4047,3 +4047,81 @@ class TestCalculateUpsideNoneWhenPriceMissing:
         assert calculate_upside(100.0, None) is None
         assert calculate_upside(100.0, 0.0) is None
         assert round(calculate_upside(150.0, 100.0), 6) == 50.0
+
+
+# ─────────────────────────────────────────────────────────────────
+# 2026-10-04: Rfの現在値（^TNX）— 参考②・ERP・金利感応度で共通に使う
+# ─────────────────────────────────────────────────────────────────
+import datetime as _dt_rf  # noqa: E402
+
+
+def _fake_tnx(close=5.277, date="2026-10-02"):
+    def _get(symbol):
+        assert symbol == "^TNX"
+        return {"date": date, "close": close}
+    return _get
+
+
+class TestLiveRiskFreeRate:
+    def test_fresh_tnx_is_used(self):
+        r = pipeline._resolve_live_risk_free_rate(
+            get_latest_price=_fake_tnx(), today=_dt_rf.date(2026, 10, 4))
+        assert r["source"] == "tnx"
+        assert r["rate"] == pytest.approx(0.05277)
+        assert r["date"] == "2026-10-02"
+
+    def test_five_trading_days_old_is_still_used(self):
+        # 10-02（金）の翌日から10-09（金）までのNYSE営業日は5日 → まだ使う
+        r = pipeline._resolve_live_risk_free_rate(
+            get_latest_price=_fake_tnx(), today=_dt_rf.date(2026, 10, 9))
+        assert r["source"] == "tnx"
+
+    def test_stale_tnx_falls_back_to_fixed(self):
+        # 10-12（月、NYSEは営業）で6営業日 → 古いので固定値
+        r = pipeline._resolve_live_risk_free_rate(
+            get_latest_price=_fake_tnx(), today=_dt_rf.date(2026, 10, 12))
+        assert r["source"] == "fallback_fixed"
+        assert r["rate"] == 0.043
+        assert r["date"] is None
+        assert r["reason"] == "stale(2026-10-02)"
+
+    def test_unavailable_tnx_falls_back_to_fixed(self):
+        r = pipeline._resolve_live_risk_free_rate(
+            get_latest_price=lambda s: None, today=_dt_rf.date(2026, 10, 4))
+        assert (r["source"], r["rate"], r["date"]) == ("fallback_fixed", 0.043, None)
+
+    def test_reader_error_falls_back_to_fixed(self):
+        def _boom(symbol):
+            raise OSError("read error")
+        r = pipeline._resolve_live_risk_free_rate(
+            get_latest_price=_boom, today=_dt_rf.date(2026, 10, 4))
+        assert (r["source"], r["rate"]) == ("fallback_fixed", 0.043)
+        assert r["reason"].startswith("error:")
+
+    def _report(self, tmp_path, rf_live):
+        pipe = _make_pipe(tmp_path)
+        pipe._rf_live_cache = rf_live
+        val = _minimal_valuation(upside=30.0)
+        val["components"]["forward_eps"] = 6.0   # 益利回り 6%
+        val["wacc"] = {"value": 0.10, "market_return": 0.10, "risk_free_rate": 0.043}
+        val["intrinsic_value_rf"] = 500.0
+        val["upside_percent_rf"] = 400.0
+        val["intrinsic_value_rf_rate"] = rf_live["rate"]
+        val["risk_free_rate_live"] = rf_live["rate"]
+        val["risk_free_rate_live_date"] = rf_live["date"]
+        val["risk_free_rate_live_source"] = rf_live["source"]
+        return pipe._generate_report("TEST", val, _minimal_score_data(), _minimal_extra())
+
+    def test_report_erp_uses_live_rf_with_date(self, tmp_path):
+        report = self._report(tmp_path, {"rate": 0.0528, "date": "2026-10-02",
+                                         "source": "tnx", "reason": None})
+        assert "Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)" in report
+        assert "ERP: 0.72%" in report   # 6.00% - 5.28%（固定4.3%なら1.70%）
+        assert "ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）  [Rf 5.28%, ^TNX 2026-10-02]" in report
+        assert "参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $500.00" in report
+
+    def test_report_marks_fixed_fallback(self, tmp_path):
+        report = self._report(tmp_path, {"rate": 0.043, "date": None,
+                                         "source": "fallback_fixed", "reason": "unavailable"})
+        assert "Risk_Free_Rate (10Y):  4.30%  (固定値、^TNXの現在値が使えないため)" in report
+        assert "参考②Rf理論上限_IV（Rf 4.30%、固定値）: $500.00" in report

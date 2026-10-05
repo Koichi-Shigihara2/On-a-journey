@@ -1,5 +1,5 @@
 INTU INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:15:50+09:00
+Generated: 2026-10-05T01:22:36+09:00
 Price: $281.08
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -72,8 +72,8 @@ TTM_YoY_Growth: 15.1%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 9.86%
   参考①β込みWACC_IV: $595.90 (Deviation: +112.0%)
-  参考②Rf理論上限_IV: $4,978.10 (Deviation: +1671.1%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-37.7%→-26.9%（+10.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $2,220.17 (Deviation: +689.9%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-37.7%→-26.9%（+10.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 0.976
 FCF_TTM_End: 2026-04-30 (FCF/RICE算出に用いたTTM期末日)
@@ -99,7 +99,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $409.56  $501.14  $597.18
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目が「一過性の事業再編費用」と明記されており、リストラに伴う一時的な支出と判断されるため、構造的な収益力悪化の兆候とは言えない。
+  Reasoning: 理由欄にすべて『一過性の事業再編費用』と明記されており、事業再編に伴う一時的な費用と判断されるため。
 Financial_Health:
   Net_Debt: $-0.62B (negative=net cash)
   Total_Debt: $6.16B  Cash: $4.68B  ST_Invest: $2.10B
@@ -283,14 +283,14 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.8
-HYPE_Signal: 長期調整・実体強 — S4が14ヶ月継続。売上+15.1%・純利益+8.7%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
+HYPE_Signal: 長期調整・実体強 — S4が15ヶ月継続。売上+15.1%・純利益+8.7%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
 Phase_History (recent 6 months):
-2026-04: Phase4 (期待剥落期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
+2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 16.8x
   PEG: 0.93
@@ -316,9 +316,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 9.63%  (ForwardEPS $27.08 / Price $281.08)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 5.33%
-  ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 4.36%
+  ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

@@ -1,5 +1,5 @@
 TASK INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:16:58+09:00
+Generated: 2026-10-05T01:23:43+09:00
 Price: $8.06
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 11.4%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 15.26%
   参考①β込みWACC_IV: $8.13 (Deviation: +0.9%)
-  参考②Rf理論上限_IV: $109.51 (Deviation: +1258.7%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-38.2%→-30.9%（+7.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $60.81 (Deviation: +654.5%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-38.2%→-30.9%（+7.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 1.923
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -276,14 +276,14 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.31
-HYPE_Signal: 長期調整・実体強 — S4が12ヶ月継続。売上+11.4%・純利益+9.6%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
+HYPE_Signal: 長期調整・実体強 — S4が13ヶ月継続。売上+11.4%・純利益+9.6%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
 Phase_History (recent 6 months):
-2026-04: Phase4 (期待剥落期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
+2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 7.1x
   PEG: N/A
@@ -308,9 +308,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 18.38%  (ForwardEPS $1.48 / Price $8.06)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 14.08%
-  ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 13.10%
+  ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

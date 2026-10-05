@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 65.5369862129379,
   "intrinsic_value_beta": 112.65,
   "upside_percent_beta": 82.5,
-  "intrinsic_value_rf": 441.36,
-  "upside_percent_rf": 615.1,
+  "intrinsic_value_rf": 242.85,
+  "upside_percent_rf": 293.5,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 11381238542.33203,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.09912033451913904,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": 6.2,
-  "calculation_date": "2026-10-03T11:17:48+09:00",
+  "calculation_date": "2026-10-05T01:24:34+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -343,7 +344,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -368,11 +369,13 @@
   },
   "required_growth_rf_base": -0.02685871986628474,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.08857869234495519,
   "tanuki_score": "WATCH",
   "funda_score": 65,
   "score_comment": "若干割安(6%)、FCF黒字、売上成長加速",
-  "timing_score": 50,
+  "timing_score": 35,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -456,9 +459,9 @@
     "recommended_g": null,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=50.0%のため中央値モデル適用",
-    "hype_phase_used": 2,
-    "hype_phase_label": "期待拡大期",
-    "hype_substage_label": "期待拡大開始",
+    "hype_phase_used": 4,
+    "hype_phase_label": "期待剥落期",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "ベンチマークデータ不足のため自動検証スキップ ℹ️"
     ],
@@ -466,6 +469,6 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0168,
+  "erp": -0.0266,
   "forward_earnings_yield": 0.0262
 }

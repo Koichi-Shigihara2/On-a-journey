@@ -1,6 +1,6 @@
 {
   "ticker": "KULR",
-  "last_updated": "2026-09-27T16:01:24.742514",
+  "last_updated": "2026-10-04T16:10:48.290185",
   "quarters": [
     {
       "gaap_eps": -0.4744941954475474,
@@ -50,17 +50,17 @@
       "pretax_income": 0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "SBCは恒常的なコストであるため調整により損失を過少表示する可能性があり、貸倒引当異常分はマクロ要因による一時的項目として妥当。市場がGAAP EPS(-0.47)で判断する場合、企業の実力(調整後-0.44)がやや見えにくくなっており、過小評価の可能性はあるが、SBCの継続性と希薄化を考慮すると過大評価リスクも同等に存在。投資家はSBCの今後の発生傾向と異常貸倒の反復性を注視すべき。",
+        "comment": "SBCは成長企業で毎期発生する恒常的な非現金コストである一方、異常貸倒引当はマクロ変動による一時的項目と判断される。市場がGAAP EPSで評価する場合、非現金費用や異常変動の影響で損失が強調され企業の実力が過小評価される可能性がある。ただしSBC調整によりAdjusted EPSが実態より良く見える過大評価リスクもあり、投資家はSBCの継続性と貸倒引当の異常性の持続可能性を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが恒常的に発生する株式報酬費用であり、毎期繰り返される可能性が高い",
+            "snippet": "非現金費用として毎期発生する株式報酬関連の恒常的コストであり、調整の正当性は限定的。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響のため異常変動分として加算戻しが適切と考えられる",
-            "confidence": 0.75
+            "snippet": "マクロ変動による一時的影響として位置づけられる異常変動分の貸倒引当金で、金融関連の一過性項目。",
+            "confidence": 0.65
           }
         ]
       }
@@ -1413,26 +1413,6 @@
       "quarter": 1,
       "tax_expense": 200.0,
       "pretax_income": -152297.0
-    },
-    {
-      "gaap_eps": -0.0020341303831081163,
-      "adjusted_eps": -0.0020341303831081163,
-      "gaap_net_income": -3500.0,
-      "adjusted_net_income": -3500.0,
-      "diluted_shares_used": 1720637.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 0.0,
-      "diluted_shares": 1720637.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 200.0,
-      "pretax_income": -3300.0
     }
   ],
   "execution_metrics": {

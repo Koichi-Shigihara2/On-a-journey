@@ -1,6 +1,6 @@
 {
   "ticker": "ENTG",
-  "last_updated": "2026-09-27T16:04:07.195708",
+  "last_updated": "2026-10-04T16:12:51.691306",
   "quarters": [
     {
       "gaap_eps": 0.609375,
@@ -49,9 +49,20 @@
       "tax_expense": 16500000.0,
       "pretax_income": 110100000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整項目の大部分を占める無形資産償却費は買収に伴う恒常的な非現金費用であり、リストラ費用は一過性だが金額が小さいため、Adjusted EPSは実力値を過大に示している可能性が高い。市場がGAAP EPSで判断する場合、企業の現金生成能力や事業実力が過小評価されやすく株価に反映されていないリスクがある一方、償却費の経済的コストを無視した調整は過大評価を招く恐れもある。投資家は調整項目の継続性と今後の買収戦略の影響を慎重に検証すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は毎期継続的に発生する恒常的費用であり、調整により実力EPSを大幅に引き上げている。",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用としてリストラ費用はほぼ非経常的と判断され、調整は比較的妥当。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
@@ -2338,40 +2349,6 @@
       "quarter": 1,
       "tax_expense": 9111000.0,
       "pretax_income": 41625000.0
-    },
-    {
-      "gaap_eps": 0.15404322222456185,
-      "adjusted_eps": 0.21933251315196575,
-      "gaap_net_income": 21947000.0,
-      "adjusted_net_income": 31248961.146300018,
-      "diluted_shares_used": 142473000.0,
-      "adjustments": [
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 10974000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 9301961.146300016,
-          "tax_rate_applied": 0.15236366445234048
-        }
-      ],
-      "net_adjustment_total": 9301961.146300016,
-      "filing_date": "2016-10-01",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 296692000.0,
-      "diluted_shares": 142473000.0,
-      "period_end": "2016-10-01",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 3945000.0,
-      "pretax_income": 25892000.0
     }
   ],
   "execution_metrics": {

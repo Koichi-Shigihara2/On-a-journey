@@ -1,6 +1,6 @@
 {
   "ticker": "KLAC",
-  "last_updated": "2026-09-27T16:04:24.304019",
+  "last_updated": "2026-10-04T16:13:05.094937",
   "quarters": [
     {
       "gaap_eps": 1.0329076341679846,
@@ -62,9 +62,25 @@
       "tax_expense": 775154000.0,
       "pretax_income": 2138213000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目の大部分を占めるSBCと無形資産償却は恒常的な非現金費用であり、リストラのみが一過性です。市場がGAAP EPS（1.03）で判断する場合、非GAAP調整後EPS（1.09）の企業実力が見えにくくなり、過小評価の可能性があります。ただしSBCは株主希薄化を伴う実質コスト、無形資産償却も経済的負担を反映するため、調整依存で過大評価リスクもあります。投資家は調整項目の持続性とキャッシュフローへの影響を注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だがテック企業では毎期発生する恒常的な運用コストであり、調整の正当性は限定的",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連で複数年にわたり発生する恒常的項目であり、真に一過性とは言えない",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "リストラ費用は一過性の事業再編費用であり、調整として妥当性が高い",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {
@@ -2123,58 +2139,10 @@
       "split_adjusted": true
     },
     {
-      "gaap_eps": 0.16266216241959347,
-      "adjusted_eps": 0.1675695097298013,
-      "gaap_net_income": 256162000.0,
-      "adjusted_net_income": 263890139.6175884,
-      "diluted_shares_used": 1574810000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14485000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7371886.885793074,
-          "tax_rate_applied": 0.4910675260066914
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 356252.731795316,
-          "tax_rate_applied": 0.4910675260066914
-        }
-      ],
-      "net_adjustment_total": 7728139.61758839,
-      "filing_date": "2017-06-30",
-      "form": "10-K",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 938647000.0,
-      "diluted_shares": 1574810000.0,
-      "period_end": "2017-06-30",
-      "fiscal_year": 2017,
-      "quarter": 4,
-      "tax_expense": 247170000.0,
-      "pretax_income": 503332000.0,
-      "split_adjusted": true
-    },
-    {
       "gaap_eps": 0.16074068439136333,
-      "adjusted_eps": 0.16614791420447783,
+      "adjusted_eps": 0.1673063185049774,
       "gaap_net_income": 253562000.0,
-      "adjusted_net_income": 262091688.7409956,
+      "adjusted_net_income": 263919025.18886164,
       "diluted_shares_used": 1577460000.0,
       "adjustments": [
         {
@@ -2185,7 +2153,7 @@
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 9959778.134977706,
           "tax_rate_applied": 0.20550589223215487
@@ -2202,22 +2170,9 @@
           "category": "買収・統合関連",
           "net_amount": 397247.0538839226,
           "tax_rate_applied": 0.20550589223215487
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": -2300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": -1827336.4478660438,
-          "tax_rate_applied": 0.20550589223215487
         }
       ],
-      "net_adjustment_total": 8529688.740995586,
+      "net_adjustment_total": 10357025.188861629,
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": null,
@@ -2233,20 +2188,20 @@
     },
     {
       "gaap_eps": 0.15163343367934676,
-      "adjusted_eps": 0.15753579393245865,
+      "adjusted_eps": 0.15802996341111838,
       "gaap_net_income": 238251000.0,
-      "adjusted_net_income": 247524965.50049698,
+      "adjusted_net_income": 248301419.41045153,
       "diluted_shares_used": 1571230000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 12444000.0,
+          "amount": 12444000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
           "category": "株式報酬関連",
           "net_amount": 9662192.455474263,
           "tax_rate_applied": 0.2235460900454627
@@ -2263,22 +2218,9 @@
           "category": "買収・統合関連",
           "net_amount": 388226.95497726864,
           "tax_rate_applied": 0.2235460900454627
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": -1000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": -776453.9099545373,
-          "tax_rate_applied": 0.2235460900454627
         }
       ],
-      "net_adjustment_total": 9273965.500496995,
+      "net_adjustment_total": 10050419.410451531,
       "filing_date": "2016-12-31",
       "form": "10-Q",
       "sector": null,
@@ -2290,67 +2232,6 @@
       "quarter": 2,
       "tax_expense": 68594000.0,
       "pretax_income": 306845000.0,
-      "split_adjusted": true
-    },
-    {
-      "gaap_eps": 0.11342495589761878,
-      "adjusted_eps": 0.1322481289855154,
-      "gaap_net_income": 178101000.0,
-      "adjusted_net_income": 207657334.61434615,
-      "diluted_shares_used": 1570210000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11478000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 9199186.742867429,
-          "tax_rate_applied": 0.19853748537485374
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1041901.2690126902,
-          "tax_rate_applied": 0.19853748537485374
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 24100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 19315246.602466024,
-          "tax_rate_applied": 0.19853748537485374
-        }
-      ],
-      "net_adjustment_total": 29556334.614346143,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 750673000.0,
-      "diluted_shares": 1570210000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2017,
-      "quarter": 1,
-      "tax_expense": 44119000.0,
-      "pretax_income": 222220000.0,
       "split_adjusted": true
     }
   ],

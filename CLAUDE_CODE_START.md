@@ -103,6 +103,21 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   下流4本（Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Update・TANUKI_Score_Update、01:47:09〜01:47:15 UTC作成のworkflow_run）はすべて**skipped**。README.mdの4の想定どおり。
   トークンはRegenerate・新規発行をしておらず権限を付け直しただけで、値は変わっていない。Workerの`GH_DISPATCH_TOKEN`は同じトークンのため**登録し直し不要と確定**（Koichiさんが確認）
 
+**2026-10-04 Rf（無リスク金利）の再点検と、参考②・ERPの現在値への切り替え（`bb81928103`）**
+- 読み取り調査（HEAD `befc659b40`）: Rfの読み手を全部洗い出し、Rfを4.3%→5.28%に変えて5銘柄（RXRX・NVDA・SOFI・MSFT・ALAB）を計算し直した。
+  **メイン判定系(A)は不変**（Rm=10%だけを使う。`[[RISK-FREE-RATE-HARDCODE-1]]`の2026-08-16の判断は今も正しい）。Rfが効くのは参考①（β込みWACC）・
+  参考②・ERP・FCFEの株主資本コスト・金利感応度チェックだけ。`config/beta_config.json`にrisk_free_rateのキーは無く、出どころは`calculator/wacc.py`の既定値0.043だけ
+- `bb81928103`: 参考②（Rf理論上限）とERPだけを^TNXの現在値に切り替え（`pipeline.py::_resolve_live_risk_free_rate()`、終値が5営業日より古い・取れないときは
+  0.043に戻し`risk_free_rate_live_source="fallback_fixed"`）。latest.jsonに`risk_free_rate_live_date`・`risk_free_rate_live_source`・`intrinsic_value_rf_rate`。
+  report.txt・stock.htmlに使ったRfと^TNXの日付を表示。β込みWACC・Ke・FCFEの株主資本コストは固定のまま（理由はBACKLOG_DONE.mdの同項目の2026-10-04追記）。
+  admin.htmlの`calcWacc()`の単位の誤り（β=1.0で5.74%→10.00%）も修正
+- 検証: 全99銘柄を変更前後で再生成し、(A)・参考①・Ke・FCFEの株主資本コストは全銘柄一致。ERPのラベルは24銘柄で1段ずつ過熱側に変化、RXRXの参考②は$100.55→$57.42。
+  **再生成したデータはcommitしていない**（日曜の日付の履歴を作らないため）。サイトへの反映は次の夜間のTANUKI VALUATIONの実行から
+- ブラッシュアップ: `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`を新規登録し、優先度を中にした（ウォーターフォール図の棒がβ版のPVで、合計のV₀がメインのv0_rmだと
+  一致しない疑い）。CHAT_RULES.mdに事例22（判定に影響しないことは、表示が正しいことを意味しない）。BACKLOG.mdのアクティブは15件（機械カウント、MACRO PULSE側の登録を含む）
+- 次の候補: (1) JST火曜朝に、サイトへ反映されたことを確認する（下の確認手順の4） (2) `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害の確認
+  （数銘柄で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測）
+
 **火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
 夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
 1. Cloudflare側: 20:25・20:55・21:25・21:50 UTCのcronが発火したか
@@ -119,6 +134,9 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
      **22:00 UTCに間に合ったか**を記録（1晩目・2晩目の記録と同じ形式）
 3. Discord: 外部起動の通知は**失敗時だけ**送る設計（起動の応答が204以外、または21:50に成功した実行が無いとき）。全部うまくいけば通知は**0件**が正しい。
    通知があればその本文（HTTPのコード・時刻）を記録する。通知が無いことも「確認した」と記録する（Discordへの送信経路そのものは未検証のまま。10-04のテスト通知は発火せず）
+4. Rfの現在値化（`bb81928103`）の反映: 夜間のTANUKI VALUATIONの実行後、latest.json（例: RXRX）に`risk_free_rate_live_source="tnx"`・
+   `risk_free_rate_live_date`（10-05の足）・`intrinsic_value_rf_rate`があること、report.txtのERP_Signalの行に`[Rf x.xx%, ^TNX 日付]`が付いていること、
+   stock.htmlの参考②の見出しに「（x.xx%、^TNX 日付）」が出ていること。`fallback_fixed`になっていたら、^TNXの日足が更新されていない（Market Data Dailyを確認）
 
 **マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに

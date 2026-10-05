@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 156.77002880753895,
   "intrinsic_value_beta": 65.16,
   "upside_percent_beta": -81.4,
-  "intrinsic_value_rf": 1331.06,
-  "upside_percent_rf": 279.9,
+  "intrinsic_value_rf": 594.01,
+  "upside_percent_rf": 69.6,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 10050798083.53238,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.15589119704080995,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": -55.3,
-  "calculation_date": "2026-10-03T11:10:30+09:00",
+  "calculation_date": "2026-10-05T01:17:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -369,7 +370,7 @@
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
-    "insider_sell_count": 173,
+    "insider_sell_count": 99,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-09-03",
     "revenue_ttm": 1201919000,
@@ -380,7 +381,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -406,6 +407,8 @@
   "phase1_growth": 0.5480362628467157,
   "required_growth_rf_base": 0.017123174495952798,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.19314447706849935,
   "tanuki_score": "GROWTH_PREMIUM",
   "funda_score": 75,
@@ -520,7 +523,7 @@
     "growth_model_reason": "CAGR_max=100.0%と業界平均9.6%の中間値54.8%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 3,
     "hype_phase_label": "陶酔期",
-    "hype_substage_label": "ピークアウト兆候",
+    "hype_substage_label": "陶酔期入り",
     "signals": [
       "過去実績(3yr:120.2% / 5yr:N/A)と整合 ✅",
       "RR×ROIC(2.6%)：再投資より還元重視型、または期待値先行 ℹ️"
@@ -531,7 +534,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0248,
+  "erp": -0.0345,
   "forward_earnings_yield": 0.0182,
   "dilution_severity": "critical",
   "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"

@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 432.8464763446002,
   "intrinsic_value_beta": 472.67,
   "upside_percent_beta": -23.4,
-  "intrinsic_value_rf": 2599.05,
-  "upside_percent_rf": 321.1,
+  "intrinsic_value_rf": 1456.63,
+  "upside_percent_rf": 136.0,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 23597613817.224464,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.4551818157978871,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": -29.9,
-  "calculation_date": "2026-10-03T11:15:56+09:00",
+  "calculation_date": "2026-10-05T01:22:42+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -369,7 +370,7 @@
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -395,6 +396,8 @@
   "phase1_growth": 0.13823641959190958,
   "required_growth_rf_base": -0.1751467738972604,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.07729980776885881,
   "tanuki_score": "HOLD",
   "funda_score": 70,
@@ -509,7 +512,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0004,
+  "erp": -0.0094,
   "forward_earnings_yield": 0.0434,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"

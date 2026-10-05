@@ -1,5 +1,5 @@
 S INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:14:50+09:00
+Generated: 2026-10-05T01:21:37+09:00
 Price: $25.06
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -74,8 +74,8 @@ TTM_YoY_Growth: 21.9%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 8.70%
   参考①β込みWACC_IV: $26.58 (Deviation: +6.1%)
-  参考②Rf理論上限_IV: $172.16 (Deviation: +587.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-13.8%→+1.2%（+14.9pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $77.51 (Deviation: +209.3%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-13.8%→+1.2%（+14.9pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 0.772
 FCF_TTM_End: 2026-07-31 (FCF/RICE算出に用いたTTM期末日)
@@ -103,7 +103,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $15.43  $24.99  $40.47
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目が一過性の事業再編費用として明記されており、事業運営上の一時的なリストラ関連費用であるため。
+  Reasoning: 理由欄に「一過性の事業再編費用」と明記されており、すべてリストラ関連の一時的費用として性質が一過性と判断されるため。
 Financial_Health:
   Net_Debt: $-0.66B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.20B  ST_Invest: $0.45B
@@ -282,12 +282,12 @@ Current_Phase: Phase3 (陶酔期)
 Alpha_Premium: 0.0
 HYPE_Signal: 陶酔期入り — 過熱が始まったばかり。まだ上昇余地がある可能性。
 Phase_History (recent 6 months):
-2026-04: Phase4 (期待剥落期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase3 (陶酔期)
 2026-09: Phase3 (陶酔期)
+2026-10: Phase3 (陶酔期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 48.5x
   PEG: N/A
@@ -312,9 +312,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 1.84%  (ForwardEPS $0.46 / Price $25.06)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: -2.46%
-  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: -3.43%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
@@ -338,7 +338,7 @@ Short_Report_Target: yes
 Short_Interest: 6.0%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Buy | Target: $25 median ($18-$28) | 30 analysts | vs IV: +17.2%
-Insider_Activity: Sell優勢 | 買い0件 / 売り17件 | 直近90日
+Insider_Activity: Sell優勢 | 買い0件 / 売り14件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 21.9%
 Next_Earnings_Date: 2026-08-28

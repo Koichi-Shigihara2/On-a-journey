@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 41.584175598204276,
   "intrinsic_value_beta": 27.34,
   "upside_percent_beta": -97.5,
-  "intrinsic_value_rf": 358.44,
-  "upside_percent_rf": -67.0,
+  "intrinsic_value_rf": 159.71,
+  "upside_percent_rf": -85.3,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 2562200171.3239384,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": -96.2,
-  "calculation_date": "2026-10-03T11:13:02+09:00",
+  "calculation_date": "2026-10-05T01:19:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -162,11 +163,11 @@
   "fcf_base": {
     "base_fcf": 97700000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 101300000.0,
+    "fcf_5yr_avg": 34600000.0,
     "fcf_2yr_avg": 97700000.0,
-    "cv": 2.205,
+    "cv": 5.549,
     "cv_threshold": 0.5,
-    "ratio": 2.205,
+    "ratio": 5.549,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -175,7 +176,7 @@
     "fiscal_year": 2026,
     "fcf_value": 300100000,
     "threshold_pct": 0.6,
-    "deviation_pct": 196.248766041461,
+    "deviation_pct": 767.3410404624278,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -220,11 +221,11 @@
       "total_transient_amount": 12000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が一過性のリストラ費用またはマクロ変動による一時的影響と明記されており、構造的な悪化を示す内容ではない。"
+        "reasoning": "すべての項目が『一過性の事業再編費用』または『マクロ変動による一時的影響』と明記されており、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "flagged",
-    "note": "FY2026 FCF($300M)が5年平均($101M)から196%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2026 FCF($300M)が5年平均($35M)から767%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -323,10 +324,10 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-27",
-  "fcf_ttm_periods": 5,
+  "fcf_ttm_periods": 4,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 101300000.0,
+    "fcf_5yr_avg": 34600000.0,
     "fcf_2yr_avg": 97700000.0,
     "structural_deficit": false,
     "fcf_base_used": 149566666.6666667,
@@ -336,8 +337,7 @@
       300100000,
       -104700000,
       -108300000,
-      51300000,
-      368100000
+      51300000
     ],
     "diluted_shares": 89700000,
     "roe_10yr_avg": -0.09822418164309851,
@@ -404,7 +404,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -429,6 +429,8 @@
   },
   "required_growth_rf_base": 0.38146860774683544,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.6205428023931083,
   "tanuki_score": "TRIM",
   "funda_score": 50,
@@ -561,7 +563,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0112,
+  "erp": -0.021,
   "forward_earnings_yield": 0.0318,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"

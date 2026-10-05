@@ -1,5 +1,5 @@
 FICO INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:16:33+09:00
+Generated: 2026-10-05T01:23:19+09:00
 Price: $661.25
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 24.1%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 11.83%
   参考①β込みWACC_IV: $438.93 (Deviation: -33.6%)
-  参考②Rf理論上限_IV: $5,193.87 (Deviation: +685.5%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-24.3%→-15.3%（+9.0pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $2,787.26 (Deviation: +321.5%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-24.3%→-15.3%（+9.0pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 1.321
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $352.65  $521.09  $689.75
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由にマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。
+  Reasoning: 理由がすべてマクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の費用と判断される。
 Financial_Health:
   Net_Debt: $+5.33B (negative=net cash)
   Total_Debt: $5.58B  Cash: $0.25B
@@ -279,14 +279,14 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.8
-HYPE_Signal: 実体維持・期待崩壊中 — 売上・EPSは強い。期待の過熱訂正が続いているが、実体が下支え。
+HYPE_Signal: 長期調整・実体強 — S4が6ヶ月継続。売上+24.1%・純利益+30.5%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
 Phase_History (recent 6 months):
-2026-04: Phase2 (期待拡大期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
+2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 25.0x
   PEG: 0.70
@@ -312,9 +312,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 8.02%  (ForwardEPS $53.01 / Price $661.25)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 3.72%
-  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 2.74%
+  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

@@ -1,6 +1,6 @@
 {
   "ticker": "TASK",
-  "last_updated": "2026-09-27T16:01:56.197152",
+  "last_updated": "2026-10-04T16:11:29.669531",
   "quarters": [
     {
       "gaap_eps": 0.23751357954078847,
@@ -49,9 +49,20 @@
       "tax_expense": 7540000.0,
       "pretax_income": 29509000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: 429 Client Error: Too Many Requests for url: https://api.x.ai/v1/chat/completions",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目はSBCと無形資産償却費の両方とも恒常的に発生する非現金費用であり、Adjusted EPSがGAAP EPSを約30%上回る大きな調整となっている。市場がGAAP EPSのみで判断する場合、企業の真のキャッシュ生成能力や事業実力が過小評価され、株価が割安になる可能性がある。ただしSBCは株主希薄化を伴う実質コスト、無形資産償却も買収の経済的対価を反映するため、Adjustedベースで過大評価するリスクもある。投資家はフリーキャッシュフローや継続的なSBC規模を慎重に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、企業が従業員に継続的に付与する恒常的な運用コストであり一過性ではない",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連の会計処理によるもので、一定期間にわたり毎期発生する恒常的な非現金費用である",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

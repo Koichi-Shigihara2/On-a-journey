@@ -1,6 +1,6 @@
 {
   "ticker": "RMBS",
-  "last_updated": "2026-09-27T16:04:01.006050",
+  "last_updated": "2026-10-04T16:12:44.087070",
   "quarters": [
     {
       "gaap_eps": 0.5455722046009698,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "調整項目のSBCと無形資産償却費はともに恒常的に発生する費用であり、一過性ではない。GAAP EPSにはこれらの実質コストが反映されており、市場がGAAPベースで判断する場合に企業の実力（キャッシュ生成力）が過小評価される可能性がある。ただしSBCの希薄化効果や買収無形資産の経済的減価を無視した調整は企業実力を過大に見せかけるリスクもあり、投資家は調整後の持続可能性と真の経済コストに注目すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、毎期発生する恒常的な報酬コストであり、実質的な経済的負担を伴う。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金だが定期的に発生する恒常的費用であり、買収の経済的影響を反映するため一過性とはみなせない。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
@@ -496,9 +507,9 @@
     },
     {
       "gaap_eps": 0.5279603928252576,
-      "adjusted_eps": -0.8342757171586,
+      "adjusted_eps": -0.8348077807537267,
       "gaap_net_income": 58545000.0,
-      "adjusted_net_income": -92512000.0,
+      "adjusted_net_income": -92571000.0,
       "diluted_shares_used": 110889000.0,
       "adjustments": [
         {
@@ -543,12 +554,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -151057000.0,
-          "net_amount": -151057000.0,
-          "note": "tax_expense=-146,744,000, median_normal_tax=4,313,000"
+          "amount": -151116000.0,
+          "net_amount": -151116000.0,
+          "note": "tax_expense=-146,744,000, median_normal_tax=4,372,000"
         }
       ],
-      "net_adjustment_total": -151057000.0,
+      "net_adjustment_total": -151116000.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -636,9 +647,9 @@
     },
     {
       "gaap_eps": 1.5132480891748281,
-      "adjusted_eps": 0.08281287802080627,
+      "adjusted_eps": 0.08228420892285912,
       "gaap_net_income": 168880000.0,
-      "adjusted_net_income": 9242000.0,
+      "adjusted_net_income": 9183000.0,
       "diluted_shares_used": 111601000.0,
       "adjustments": [
         {
@@ -683,12 +694,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -159638000.0,
-          "net_amount": -159638000.0,
-          "note": "tax_expense=-155,325,000, median_normal_tax=4,313,000"
+          "amount": -159697000.0,
+          "net_amount": -159697000.0,
+          "note": "tax_expense=-155,325,000, median_normal_tax=4,372,000"
         }
       ],
-      "net_adjustment_total": -159638000.0,
+      "net_adjustment_total": -159697000.0,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -2298,46 +2309,6 @@
       "quarter": 1,
       "tax_expense": 7376000.0,
       "pretax_income": 10382000.0
-    },
-    {
-      "gaap_eps": 0.03966655821601611,
-      "adjusted_eps": 0.08582729909489395,
-      "gaap_net_income": 4511000.0,
-      "adjusted_net_income": 9760537.934968624,
-      "diluted_shares_used": 113723000.0,
-      "adjustments": [
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 10200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 5249537.934968625,
-          "tax_rate_applied": 0.4853394181403309
-        }
-      ],
-      "net_adjustment_total": 5249537.934968625,
-      "filing_date": "2016-09-30",
-      "form": "10-Q",
-      "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
-      "revenue": 89855000.0,
-      "diluted_shares": 113723000.0,
-      "period_end": "2016-09-30",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 4254000.0,
-      "pretax_income": 8765000.0
     }
   ],
   "execution_metrics": {

@@ -2783,6 +2783,39 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 
 ---
 
+### [TANUKI-BETA-BASIS-FIELDS-UNLABELED-1] latest.jsonのトップレベルintrinsic_value_ptとcomponents.pv_high・pv_terminalがβ込みWACCで割り引いた値なのに注記がなく、メインの計算根拠と紛らわしい
+**優先度:** 中（2026-10-04に低から変更）
+**分類:** 表示・命名 / TANUKI VALUATION（core_calculator.py・stock.html）
+**登録日:** 2026-10-04
+**発見:** Rfの読み手の棚卸し（2026-10-04、読み取り専用、HEAD `befc659b40`）
+
+#### 内容
+`core_calculator.py::calculate_pt()`の戻り値のうち、次の3つはβ込みCAPM WACC（参考①、`wacc.value`）で割り引いたDCFの値で、
+メインの理論株価（Rm=10%固定・βなし、根拠は`dcf_components.v0_rm`・`pv_fcf_rm`・`pv_tv_rm`）の根拠ではない。
+- トップレベルの`intrinsic_value_pt`（= `v0` + RPO + 成長オプション、`intrinsic_value_beta`の計算根拠）
+- `components.pv_high`・`components.pv_terminal`（`dcf_result`／`three_stage_result`の値）
+
+トップレベルの`v0`には[[V0-V0RM-CONFUSION-RISK-1]]で`v0_note`を付けたが、上の3つには付いていない。Rfを4.3%→5.28%に変えた検証
+（2026-10-04）で、この3つは参考①と一緒に変わり、メインの値は変わらないことを確認した。
+
+#### 実害
+判定（intrinsic_value_per_share・upside_percent・tanuki_score等）への影響はない。読み手は次のとおりで、表示の食い違いが無いかは未確認。
+- `stock.html:820-821`（`components.pv_high`・`pv_terminal`）: 2段階DCFの「高成長期PV」「ターミナルPV」と、ウォーターフォール図（`renderChart()`）の
+  PVの棒。同じ図の`v0`は`dcf_components.v0_rm || d.v0`（メイン）で、PVの棒の合計（β版）と食い違う可能性がある（要確認）
+- `validator.py`（v0の検算、β版同士で一致するためPASS）、`diag_iv_trace.py`（診断用、「uses CAPM WACC」と表示済み）
+- `pipeline.py:2007・2036`はRm版（`pv_fcf_rm`・`pv_tv_rm`）を優先し、無いときだけβ版に戻る
+
+#### 優先度を中にした理由（2026-10-04）
+ウォーターフォール図（`stock.html::renderChart()`）の棒がβ版のPV（`components.pv_high`・`pv_terminal`、3段階は`dcf_components`の
+β版のPhase1・2）で、合計の`v0`がメインの`dcf_components.v0_rm`の場合、棒の合計がV₀と一致しない。これはメインIVを説明する図の
+不整合にあたり、命名だけの問題より重い。
+
+#### 着手条件
+数銘柄（2段階・3段階・逓減を各1以上）で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測する。
+一致しなければ図の修正（Rm版のPV〈`pv_fcf_rm`・`pv_tv_rm`・`pv_phase1_rm`・`pv_phase2_rm`〉への置き換え）、一致すれば
+`v0_note`と同じ形の注記の追加だけにする。
+
+
 ## 優先度：低（アイデア段階）
 
 ### [MACRO-PULSE-TICKER-SP500-NO-ASOF-1] MACRO PULSEのsp500_t0が値だけを持ち何日の終値かを持たないため、実行が欠けた日はティッカーの前日比が2営業日分になる

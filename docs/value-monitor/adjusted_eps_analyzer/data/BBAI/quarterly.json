@@ -1,6 +1,6 @@
 {
   "ticker": "BBAI",
-  "last_updated": "2026-09-27T15:56:37.387654",
+  "last_updated": "2026-10-04T16:06:38.720807",
   "quarters": [
     {
       "gaap_eps": -0.053742286370096475,
@@ -91,30 +91,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目のSBCと無形資産償却は恒常的な非現金コストである一方、M&A統合費用とリストラ費用は一過性であるため、Adjusted EPSはGAAP EPSの約半分の損失水準に改善している。市場がGAAP EPS中心に判断する場合、非現金恒常費用の影響で企業の実力（コアオペレーションの収益力やキャッシュ生成力）が過小評価されやすく、銘柄の実力を過小評価している可能性がある。投資家はSBCの継続性と買収効果の持続を確認し、恒常的調整の大きさから過大評価リスクにも留意すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用であり恒常的",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コスト",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

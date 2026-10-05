@@ -1,6 +1,6 @@
 {
   "ticker": "TDY",
-  "last_updated": "2026-09-27T16:01:09.041915",
+  "last_updated": "2026-10-04T16:10:46.930000",
   "quarters": [
     {
       "gaap_eps": 5.366737739872068,
@@ -50,16 +50,16 @@
       "pretax_income": 321300000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目であるSBCと無形資産償却費はともに恒常的な性質が強く、SBCは毎年発生する報酬コスト、無形資産償却は買収後複数年にわたる定期費用です。市場がGAAP EPS（5.37）で判断する場合、非現金・買収関連費用を控除した後の実績のみを見て企業の実力（特にキャッシュ生成力や買収シナジー後の収益力）を過小評価している可能性があります。ただしこれらを加算したAdjusted EPS（6.53）は約22%上昇しており、持続可能性を過大に見せるリスクあり。投資家はSBCによる希薄化効果や償却が終了するまでの期間を注視すべきで、過小評価の可能性がある一方、過大調整による将来的な業績下方修正リスクも存在します。",
+        "comment": "調整項目はSBCと無形資産償却費で、両者とも恒常的に発生する非現金費用です。SBCは報酬として毎期計上されるコスト、無形資産償却は買収後の定期的な償却であり、一過性とは言えません。これによりAdjusted EPSがGAAPを約22%上回っています。市場がGAAP EPS中心に評価する場合、非現金費用の影響で企業のキャッシュ生成力等の実力が過小評価されている可能性がありますが、これらは経済的コスト（希薄化等）を反映するため、Adjusted使用時は過大評価リスクに留意すべきです。投資家は調整の持続性と買収戦略の実態を注視する必要があります。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として毎期発生する恒常的な運用コストであり、経済的実態として従業員インセンティブの対価となるため一過性とは言えない。",
+            "snippet": "非現金費用。毎期発生する株式報酬関連の恒常的コスト",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却はM&A実行後の複数会計期間にわたって継続する定期的な非現金費用であり、恒常的な調整項目に該当する。",
+            "snippet": "買収関連無形資産の償却。定期的に発生する恒常的費用",
             "confidence": 0.2
           }
         ]
@@ -1528,53 +1528,6 @@
       "quarter": 1,
       "tax_expense": 10100000.0,
       "pretax_income": 40600000.0
-    },
-    {
-      "gaap_eps": 1.4606741573033708,
-      "adjusted_eps": 1.591760299625468,
-      "gaap_net_income": 52000000.0,
-      "adjusted_net_income": 56666666.666666664,
-      "diluted_shares_used": 35600000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 2500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 2083333.3333333335,
-          "tax_rate_applied": 0.16666666666666666
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 3100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 2583333.3333333335,
-          "tax_rate_applied": 0.16666666666666666
-        }
-      ],
-      "net_adjustment_total": 4666666.666666667,
-      "filing_date": "2016-10-02",
-      "form": "10-Q",
-      "sector": null,
-      "sector_exclusions": [],
-      "revenue": 526800000.0,
-      "diluted_shares": 35600000.0,
-      "period_end": "2016-10-02",
-      "fiscal_year": 2016,
-      "quarter": 3,
-      "tax_expense": 10400000.0,
-      "pretax_income": 62400000.0
     }
   ],
   "execution_metrics": {

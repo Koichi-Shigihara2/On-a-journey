@@ -697,7 +697,14 @@ async function loadAndRenderSignalConsistency() {
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">';
   html += '<div><div style="font-size:11px;color:var(--mut);margin-bottom:4px">ERP（株式リスクプレミアム、現在値）</div>';
   html += `<div style="font-family:var(--mono);font-size:20px;font-weight:700;color:${erpInfo.color}">${erpText}</div>`;
-  html += `<div style="font-size:11px;color:${erpInfo.color};margin-top:2px">${erpInfo.label}</div></div>`;
+  html += `<div style="font-size:11px;color:${erpInfo.color};margin-top:2px">${erpInfo.label}</div>`;
+  // 2026-10-04: ERPのRfは現在値（^TNX）。使ったRfと日付を併記する（旧データは表示しない）
+  if (erp != null && d?.risk_free_rate_live_source) {
+    const erpRfSrc = d.risk_free_rate_live_source === 'tnx' && d.risk_free_rate_live_date
+      ? '^TNX ' + d.risk_free_rate_live_date : '固定値';
+    html += `<div style="font-size:10px;color:var(--mut);margin-top:2px">Rf ${(d.risk_free_rate_live * 100).toFixed(2)}%（${erpRfSrc}）</div>`;
+  }
+  html += '</div>';
   html += '<div><div style="font-size:11px;color:var(--mut);margin-bottom:4px">price/IV 推移（表示期間中）</div>';
   html += `<div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">${hasPiv ? pivPoints[pivPoints.length - 1].price_iv_ratio.toFixed(3) + 'x' : 'N/A'}</div>`;
   html += `<div style="font-size:11px;color:var(--mut);margin-top:2px">${pivTrend != null ? (pivTrend >= 0 ? '+' : '') + pivTrend.toFixed(3) + '（期間内変化）' : 'データ不足（1点のみ、または未取得）'}</div></div>`;
@@ -2265,7 +2272,13 @@ function render(d) {
   const subStyle = 'font-size:10px;color:var(--mut);margin-top:2px';
   const valStyle = 'font-family:var(--mono);font-size:16px;font-weight:700;color:var(--txt)';
   const rmPct = ((d.wacc?.market_return || 0.10) * 100).toFixed(1);
-  const rfPct = ((d.wacc?.risk_free_rate || 0.043) * 100).toFixed(1);
+  // 2026-10-04: 参考②のRfは現在値（^TNX）。latest.jsonのintrinsic_value_rf_rateから見出しを作る
+  // （旧データでフィールドが無い場合は従来のWACC計算の固定Rf）
+  const rfRefRate = d.intrinsic_value_rf_rate ?? d.wacc?.risk_free_rate ?? 0.043;
+  const rfPct = (rfRefRate * 100).toFixed(2);
+  const rfRefSrc = d.intrinsic_value_rf_rate == null ? ''
+    : (d.risk_free_rate_live_source === 'tnx' && d.risk_free_rate_live_date
+        ? '、^TNX ' + d.risk_free_rate_live_date : '、固定値');
   const waccPct = ((d.wacc?.value || 0) * 100).toFixed(2);
 
   // 左カード: 参考①β込みWACC・参考②Rfを表示
@@ -2285,7 +2298,7 @@ function render(d) {
     if (ivpsRf > 0) {
       html +=
         '<div style="' + boxStyle + '">' +
-        '<div style="' + lblStyle + '">参考② Rf理論上限（' + rfPct + '%）</div>' +
+        '<div style="' + lblStyle + '">参考② Rf理論上限（' + rfPct + '%' + rfRefSrc + '）</div>' +
         '<div style="' + valStyle + '">$' + fmt(ivpsRf) + '</div>' +
         '<div style="' + subStyle + '">メインとの差 $' + fmt(ivpsRf - ivps) + ' = リスクプレミアム全体</div>' +
         '</div>';
@@ -2300,12 +2313,13 @@ function render(d) {
     if (reqGRfBase != null && reqGRfLive != null && rfLiveVal != null) {
       const rfBaseValPct = ((d.wacc?.risk_free_rate ?? 0.043) * 100).toFixed(2);
       const rfLiveValPct = (rfLiveVal * 100).toFixed(2);
+      const rfLiveDate = d.risk_free_rate_live_date ? '（^TNX ' + d.risk_free_rate_live_date + '）' : '';
       const deltaPt = (reqGRfLive - reqGRfBase) * 100;
       const deltaSign = deltaPt >= 0 ? '+' : '';
       html +=
         '<div style="' + boxStyle + '">' +
         '<div style="' + lblStyle + '">金利感応度チェック（参考）</div>' +
-        '<div style="' + subStyle + '">10年国債利回り 基準' + rfBaseValPct + '% → 現在' + rfLiveValPct + '%</div>' +
+        '<div style="' + subStyle + '">10年国債利回り 基準' + rfBaseValPct + '% → 現在' + rfLiveValPct + '%' + rfLiveDate + '</div>' +
         '<div style="' + valStyle + '">Rf基準必要成長率: ' + (reqGRfBase*100>=0?'+':'') + (reqGRfBase*100).toFixed(1) + '% → ' + (reqGRfLive*100>=0?'+':'') + (reqGRfLive*100).toFixed(1) + '%（' + deltaSign + deltaPt.toFixed(1) + 'pt）</div>' +
         '<div style="' + subStyle + '">金利環境のみに起因し企業側の材料変化ではない。Rm=10%基準の主計算とは別の割引率体系のため単純比較不可</div>' +
         '</div>';

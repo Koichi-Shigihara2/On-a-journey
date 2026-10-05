@@ -1,6 +1,6 @@
 {
   "ticker": "GEV",
-  "last_updated": "2026-09-27T16:03:00.239332",
+  "last_updated": "2026-10-04T16:12:03.070878",
   "quarters": [
     {
       "gaap_eps": 2.474074074074074,
@@ -36,9 +36,15 @@
       "tax_expense": 276000000.0,
       "pretax_income": 944000000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "無形資産償却費は買収関連の非現金費用だが、複数年にわたり毎期発生する恒常的な項目であるため、調整によりAdjusted EPSが約25%押し上げられている。市場がGAAP EPSで判断する場合、企業の現金生成力や買収シナジーの実力を過小評価する可能性がある。ただし償却は経済的コストを反映する面もあり、調整を過度に信用すると過大評価リスクが生じる。投資家は償却残高の推移と今後のM&A戦略を注視すべき。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は過去のM&Aによる非現金費用で、定期的・継続的に発生するため恒常的な調整項目に該当する（confidence基準: 0.2）。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

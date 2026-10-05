@@ -1,11 +1,11 @@
 CPRT INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-03T11:16:20+09:00
+Generated: 2026-10-05T01:23:07+09:00
 Price: $27.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Funda_Score: 70/100
+Funda_Score: 55/100
 Timing_Score (components):
   Deviation_Rate: +18.6%
   MA200_Deviation: -18.7%
@@ -73,8 +73,8 @@ TTM_YoY_Growth: 1.0%
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.13%
   参考①β込みWACC_IV: $31.63 (Deviation: +16.2%)
-  参考②Rf理論上限_IV: $195.44 (Deviation: +618.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%に変化すると、Rf基準の必要成長率は-21.4%→-12.1%（+9.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じ割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考②Rf理論上限_IV（Rf 5.28%、^TNX 2026-10-02）: $109.14 (Deviation: +301.0%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.28%（^TNX 2026-10-02）に変化すると、Rf基準の必要成長率は-21.4%→-12.1%（+9.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 1.023
 FCF_TTM_End: 2026-04-30 (FCF/RICE算出に用いたTTM期末日)
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $21.77  $27.76  $34.10
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: マクロ変動による一時的影響と明記された貸倒引当金の変動であり、事業運営上の一過性要因と判断される。
+  Reasoning: すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営上の恒常的な信用リスク悪化ではなく、外部環境による一過性の調整と判断できる。
 Financial_Health:
   Net_Debt: $+0.02B (negative=net cash)
   Total_Debt: $0.02B  Cash: $0.00B
@@ -237,15 +237,15 @@ for unconfigured segments.
 
 
 [6. EPS ANALYZER]
-Latest_Adjusted_EPS: $0.4345 (直近四半期値)
-Latest_GAAP_EPS: $0.4268
-Adjustment_Delta: $0.0076 (sbc/loan_loss_provision_abnormal)
-YoY_Growth: 2.1%
+Latest_Adjusted_EPS: $0.3536 (直近四半期値)
+Latest_GAAP_EPS: $0.3422
+Adjustment_Delta: $0.0114 (sbc/loan_loss_provision_abnormal)
+YoY_Growth: -14.3%
 Recent Surprises (Adjusted EPS):
+  2026 Q4: Actual=$0.3536 vs Est=N/A -> N/A%
   2026 Q3: Actual=$0.4345 vs Est=N/A -> N/A%
   2026 Q2: Actual=$0.3681 vs Est=N/A -> N/A%
   2026 Q1: Actual=$0.4227 vs Est=N/A -> N/A%
-  2025 Q4: Actual=$0.4124 vs Est=N/A -> N/A%
 Definition:
 
 EPS_Source: SEC EDGAR XBRL (EPS Basic/Diluted tags). May differ from
@@ -260,8 +260,8 @@ Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 17.8x
-  Adjusted_EPS_PER: 16.6x (TTM調整後EPS: $1.6377)
-  Delta: -1.2x (cheaper on adjusted basis)
+  Adjusted_EPS_PER: 17.2x (TTM調整後EPS: $1.5789)
+  Delta: -0.6x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-20
   Next_Quarter_EPS: $0.40 (yfinance analyst estimate)
@@ -278,14 +278,14 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.7
-HYPE_Signal: 売上低迷・EPS改善中 — 売上は低迷だがEPS前年比+2%で改善中。実体回復の兆しを慎重に見極める局面。
+HYPE_Signal: 実体も崩壊中 — 売上・EPSの悪化も確認される本格的な下落局面。
 Phase_History (recent 6 months):
-2026-04: Phase4 (期待剥落期)
 2026-05: Phase4 (期待剥落期)
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
 2026-08: Phase4 (期待剥落期)
 2026-09: Phase4 (期待剥落期)
+2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
   PER: 17.8x
   PEG: 2.83
@@ -311,9 +311,9 @@ HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
   Forward_Earnings_Yield: 6.50%  (ForwardEPS $1.77 / Price $27.22)
-  Risk_Free_Rate (10Y):  4.30%
-  ERP: 2.20%
-  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）
+  Risk_Free_Rate (10Y):  5.28%  (^TNX 2026-10-02)
+  ERP: 1.23%
+  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）  [Rf 5.28%, ^TNX 2026-10-02]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)

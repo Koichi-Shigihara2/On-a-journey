@@ -62,10 +62,12 @@ from common.sec_data.split_adjust import load_split_history, adjust_share_points
 try:
     from common.market_data.reader import get_calendar as _md_get_calendar
     from common.market_data.reader import get_latest_price as _md_get_latest_price
+    from common.market_data.fetcher import get_nyse_calendar as _md_get_nyse_calendar
     HAS_MARKET_DATA = True
 except Exception:
     _md_get_calendar = None
     _md_get_latest_price = None
+    _md_get_nyse_calendar = None
     HAS_MARKET_DATA = False
 
 # GROWTH-STRUCTURAL-MISMATCH-CANDIDATES-1（TRUST-SUMMARY-EPIC-1骨子②）:
@@ -186,6 +188,53 @@ def _calculate_erp(forward_eps, current_price, risk_free_rate: float = 0.043) ->
     return earnings_yield, erp
 
 
+# 2026-10-04: 参考②（Rf理論上限）・ERPに使うRfの現在値（10年国債利回り、^TNX）。
+# β込みWACC（参考①）・Ke・FCFEの株主資本コストは従来どおり固定値
+# （calculator/wacc.pyの0.043）のまま。理由はBACKLOG_DONE.md
+# [[RISK-FREE-RATE-HARDCODE-1]]の2026-10-04追記を参照。
+RF_FALLBACK_FIXED = 0.043
+RF_LIVE_MAX_STALE_TRADING_DAYS = 5
+
+
+def _resolve_live_risk_free_rate(get_latest_price=None, calendar=None, today=None) -> dict:
+    """^TNXの最新の有効な終値からRfの現在値を返す。
+
+    返り値: {"rate", "date", "source", "reason"}
+      - 使えた場合: source="tnx"、rateは終値/100、dateはその終値の日付
+      - 取れない・古い場合: rate=RF_FALLBACK_FIXED、source="fallback_fixed"、
+        date=None、reasonに"unavailable" / "stale(<日付>)" / "error: ..."
+    古さ: 終値の日付の翌日から今日（NY）までのNYSE営業日が
+    RF_LIVE_MAX_STALE_TRADING_DAYSを超えたら使わない。
+    """
+    def _fallback(reason):
+        return {"rate": RF_FALLBACK_FIXED, "date": None,
+                "source": "fallback_fixed", "reason": reason}
+
+    get_latest_price = get_latest_price or _md_get_latest_price
+    if get_latest_price is None:
+        return _fallback("unavailable")
+    try:
+        latest = get_latest_price("^TNX")
+        if not latest or latest.get("close") is None or not latest.get("date"):
+            return _fallback("unavailable")
+        close_date = str(latest["date"])[:10]
+        if today is None:
+            from zoneinfo import ZoneInfo
+            today = datetime.now(ZoneInfo("America/New_York")).date()
+        today_str = today.isoformat() if hasattr(today, "isoformat") else str(today)
+        cal = calendar or (_md_get_nyse_calendar() if _md_get_nyse_calendar else None)
+        if cal is None:
+            return _fallback("unavailable")
+        start = (date.fromisoformat(close_date) + timedelta(days=1)).isoformat()
+        elapsed = len(cal.valid_days(start_date=start, end_date=today_str)) if start <= today_str else 0
+        if elapsed > RF_LIVE_MAX_STALE_TRADING_DAYS:
+            return _fallback(f"stale({close_date})")
+        return {"rate": float(latest["close"]) / 100.0, "date": close_date,
+                "source": "tnx", "reason": None}
+    except Exception as e:
+        return _fallback(f"error: {e}")
+
+
 # [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]（2026-09-05）: STONKS SILO
 # （discover/stonks-silo/src/analyzer.py::_margin_breakeven()）が持つ
 # 安全策一式（理由コード・傾き上限・異常値除外）をこちら側にも追加し、
@@ -293,6 +342,9 @@ class TanukiValuationPipeline:
         os.makedirs(self.output_dir, exist_ok=True)
         print(f"   出力先: {self.output_dir}")
 
+        # Rfの現在値（参考②・ERP・金利感応度用）。実行内で全銘柄同じ値を使う
+        self._rf_live_cache: Optional[dict] = None
+
         # フェーズD Step2-1: Layer3ストアのticker単位キャッシュ。
         # 希薄化率・TTM信頼性判定・LTDebtフォールバック（2箇所）・
         # _estimate_ttm_operating_income()・_calc_moat_inputs()の
@@ -357,7 +409,7 @@ class TanukiValuationPipeline:
                 _moat_inputs = self._calc_moat_inputs(ticker, roic=_roic_val, roic_reason=_roic_reason)
                 financials.update(_moat_inputs)
 
-                valuation = self.calculator.calculate_pt(financials)
+                valuation = self.calculator.calculate_pt(financials, rf_reference=self._live_rf()["rate"])
 
                 if "error" in valuation:
                     print(f"❌ {ticker} 計算エラー: {valuation['error']}")
@@ -546,6 +598,17 @@ class TanukiValuationPipeline:
             elif stage == 3:
                 s += 5
         return s
+
+    def _live_rf(self) -> dict:
+        """_resolve_live_risk_free_rate()の結果（実行内で1回だけ取得する）。"""
+        if self._rf_live_cache is None:
+            self._rf_live_cache = _resolve_live_risk_free_rate()
+            _r = self._rf_live_cache
+            if _r["source"] == "tnx":
+                print(f"   Rf現在値: {_r['rate']*100:.2f}%（^TNX {_r['date']}）")
+            else:
+                print(f"   [WARN] Rf現在値が使えないため固定値{_r['rate']*100:.2f}%を使用（{_r['reason']}）")
+        return self._rf_live_cache
 
     @staticmethod
     def _calc_required_growth(valuation: dict, tv_g: float = 0.03,
@@ -926,7 +989,9 @@ class TanukiValuationPipeline:
         if _is_seg_unconfigured and _recommended_g is not None and financials is not None:
             try:
                 _seg_cfg.set_growth_override(ticker, _recommended_g)
-                _valuation_adj = self.calculator.calculate_pt(financials, tapering_g_end=_tapering_g_end)
+                _valuation_adj = self.calculator.calculate_pt(
+                    financials, tapering_g_end=_tapering_g_end, rf_reference=self._live_rf()["rate"],
+                )
                 if "error" not in _valuation_adj:
                     # VALIDATOR-IVPS-MISMATCH-1: valuationを新スナップショットに差し替える
                     # 場合、旧スナップショット（line 127由来）に対するvalidate_calculation()の
@@ -1043,18 +1108,15 @@ class TanukiValuationPipeline:
         valuation["required_growth_rf_base"] = self._calc_required_growth(
             valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_base_liq,
         )
-        _rf_live_liq = None
-        if HAS_MARKET_DATA and _md_get_latest_price is not None:
-            try:
-                _tnx_latest = _md_get_latest_price("^TNX")
-                if _tnx_latest and _tnx_latest.get("close") is not None:
-                    _rf_live_liq = _tnx_latest["close"] / 100.0
-            except Exception:
-                _rf_live_liq = None
-        valuation["risk_free_rate_live"] = _rf_live_liq
+        # 2026-10-04: ^TNXの読み出しは_resolve_live_risk_free_rate()に共通化（参考②・ERPと同じ値）。
+        # 固定値へのフォールバック時は「基準→現在」の比較にならないため必要成長率（現在）はNone。
+        _rf_live = self._live_rf()
+        valuation["risk_free_rate_live"] = _rf_live["rate"]
+        valuation["risk_free_rate_live_date"] = _rf_live["date"]
+        valuation["risk_free_rate_live_source"] = _rf_live["source"]
         valuation["required_growth_rf_live"] = (
-            self._calc_required_growth(valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_live_liq)
-            if _rf_live_liq is not None else None
+            self._calc_required_growth(valuation, tv_g=_tv_g_liq, discount_rate_override=_rf_live["rate"])
+            if _rf_live["source"] == "tnx" else None
         )
 
         # 2026-09-26（指示書㉑ STEP C）: PS比率の表示・診断用にTTM売上を記録する
@@ -1157,7 +1219,8 @@ class TanukiValuationPipeline:
         _fwd_eps_ld = _comps_ld.get("forward_eps")
         _cp_ld = _comps_ld.get("current_price") or 0
         _wacc_ld = latest_data.get("wacc", {})
-        _rf_ld = _wacc_ld.get("risk_free_rate", 0.043) if isinstance(_wacc_ld, dict) else 0.043
+        # 2026-10-04: RfはWACCの固定値ではなく現在値（^TNX、取れなければ固定値）
+        _rf_ld = self._live_rf()["rate"]
         _ey_ld, _erp_ld = _calculate_erp(_fwd_eps_ld, _cp_ld, _rf_ld)
         if _erp_ld is not None:
             latest_data["erp"] = round(_erp_ld, 4)
@@ -1766,8 +1829,15 @@ class TanukiValuationPipeline:
         _ivps_rf = valuation.get("intrinsic_value_rf")
         _upside_rf = valuation.get("upside_percent_rf")
         if _ivps_rf:
-            L.append(f"  参考②Rf理論上限_IV: ${_ivps_rf:,.2f} (Deviation: {_upside_rf:+.1f}%)"
-                      if _upside_rf is not None else f"  参考②Rf理論上限_IV: ${_ivps_rf:,.2f}")
+            # 2026-10-04: 参考②のRfは現在値（^TNX）。見出しに実際に使ったRfと日付を出す
+            _rf_ref_val = valuation.get("intrinsic_value_rf_rate")
+            _rf_ref_lbl = ""
+            if isinstance(_rf_ref_val, (int, float)):
+                _rf_ref_lbl = (f"（Rf {_rf_ref_val*100:.2f}%、^TNX {valuation.get('risk_free_rate_live_date')}）"
+                               if valuation.get("risk_free_rate_live_source") == "tnx"
+                               else f"（Rf {_rf_ref_val*100:.2f}%、固定値）")
+            L.append(f"  参考②Rf理論上限_IV{_rf_ref_lbl}: ${_ivps_rf:,.2f} (Deviation: {_upside_rf:+.1f}%)"
+                      if _upside_rf is not None else f"  参考②Rf理論上限_IV{_rf_ref_lbl}: ${_ivps_rf:,.2f}")
         # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]③流動性期待（2026-09-23）:
         # 参考表示専用。主計算・投資判断には使わない（Rm=10%基準の必要成長率
         # とは別の割引率体系のため単純比較不可）。
@@ -1779,10 +1849,10 @@ class TanukiValuationPipeline:
             _delta_pt = (_req_g_rf_live - _req_g_rf_base) * 100
             L.append(
                 f"  金利感応度チェック: 10年国債利回りが基準{_rf_base_val*100:.2f}%→"
-                f"現在{_rf_live_val*100:.2f}%に変化すると、Rf基準の必要成長率は"
+                f"現在{_rf_live_val*100:.2f}%（^TNX {valuation.get('risk_free_rate_live_date')}）に変化すると、Rf基準の必要成長率は"
                 f"{_req_g_rf_base*100:+.1f}%→{_req_g_rf_live*100:+.1f}%（{_delta_pt:+.1f}pt、"
                 f"金利環境のみに起因し企業側の材料変化ではない。参考②と同じ"
-                f"割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）"
+                f"Rf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）"
             )
         terminal_g_used = comps.get("terminal_growth_used")
         terminal_g_pct = terminal_g_used * 100 if isinstance(terminal_g_used, (int, float)) else None
@@ -2597,21 +2667,26 @@ class TanukiValuationPipeline:
         # ── DESIGN-1: ERP（株式リスクプレミアム）参考表示 ──
         # [[ERP-DUAL-CALC-1]]: 計算式は_calculate_erp()に統合済み（_save_result()と共通）
         _fwd_eps_erp = comps.get("forward_eps")
-        _rf_erp = wacc_data.get("risk_free_rate", 0.043) if isinstance(wacc_data, dict) else 0.043
+        # 2026-10-04: RfはWACCの固定値ではなく現在値（^TNX、取れなければ固定値）
+        _rf_info_erp = self._live_rf()
+        _rf_erp = _rf_info_erp["rate"]
+        _rf_src_erp = (f"^TNX {_rf_info_erp['date']}" if _rf_info_erp["source"] == "tnx"
+                       else "固定値、^TNXの現在値が使えないため")
         _ey, _erp = _calculate_erp(_fwd_eps_erp, current_price, _rf_erp)
         L.append("ERP (Equity Risk Premium, 参考表示):")
         if _erp is not None:
             L.append(f"  Forward_Earnings_Yield: {_ey*100:.2f}%  (ForwardEPS ${_fwd_eps_erp:.2f} / Price ${current_price:,.2f})")
-            L.append(f"  Risk_Free_Rate (10Y):  {_rf_erp*100:.2f}%")
+            L.append(f"  Risk_Free_Rate (10Y):  {_rf_erp*100:.2f}%  ({_rf_src_erp})")
             L.append(f"  ERP: {_erp*100:.2f}%")
             if _erp >= 0.04:
-                L.append("  ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）")
+                _erp_sig = "期待冷却圏（成長期待が市場に織り込まれていない）"
             elif _erp >= 0.02:
-                L.append("  ERP_Signal: 期待中立〜やや冷却（成長期待は限定的）")
+                _erp_sig = "期待中立〜やや冷却（成長期待は限定的）"
             elif _erp >= 0.0:
-                L.append("  ERP_Signal: 期待やや過熱（成長期待が株価に織り込まれ始めている）")
+                _erp_sig = "期待やや過熱（成長期待が株価に織り込まれ始めている）"
             else:
-                L.append("  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）")
+                _erp_sig = "期待過熱圏（市場が将来成長を過度に先取りしている）"
+            L.append(f"  ERP_Signal: {_erp_sig}  [Rf {_rf_erp*100:.2f}%, {_rf_src_erp}]")
         else:
             L.append("  N/A (ForwardEPS 未取得)")
 

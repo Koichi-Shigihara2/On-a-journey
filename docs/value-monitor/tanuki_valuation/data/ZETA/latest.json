@@ -3,8 +3,9 @@
   "intrinsic_value_per_share": 39.582095225206764,
   "intrinsic_value_beta": 27.85,
   "upside_percent_beta": -14.7,
-  "intrinsic_value_rf": 345.84,
-  "upside_percent_rf": 959.9,
+  "intrinsic_value_rf": 153.62,
+  "upside_percent_rf": 370.8,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 6829169876.660435,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -44,7 +45,7 @@
     }
   },
   "upside_percent": 21.3,
-  "calculation_date": "2026-10-03T11:15:18+09:00",
+  "calculation_date": "2026-10-05T01:22:05+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -196,7 +197,7 @@
       "total_transient_amount": 3152000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、構造的悪化ではなく事業運営上の一時的費用と判断される。"
+        "reasoning": "一過性の事業再編費用と明記されており、通常の事業運営上の一時的な問題として扱われるため。"
       }
     },
     "action": "flagged",
@@ -359,7 +360,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-03",
+    "validated_at": "2026-10-05",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -385,6 +386,8 @@
   "phase1_growth": 0.295033704378849,
   "required_growth_rf_base": -0.22140793622003951,
   "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-02",
+  "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.08666635066221173,
   "tanuki_score": "BUY",
   "funda_score": 90,
@@ -501,7 +504,7 @@
     "growth_model_reason": "CAGR_max=35.9%のため中央値モデル適用",
     "hype_phase_used": 3,
     "hype_phase_label": "陶酔期",
-    "hype_substage_label": "過熱感に陰り",
+    "hype_substage_label": "過熱継続",
     "signals": [
       "過去実績(3yr:30.2% / 5yr:28.8%)と整合 ✅"
     ],
@@ -509,7 +512,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.006,
+  "erp": -0.0157,
   "forward_earnings_yield": 0.037,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
