@@ -2592,8 +2592,21 @@ M-2 STEP 2で`05_main.py::_compute_current_score()`にも同じ考え方の先�
   一致68・不一致2（MAC-42c・D-01、M-2cから既知）・判定不能1（D-02）、consoleエラー0件
 
 #### 状態（2026-10-04）
-**統合・修復済み、本番の確認待ち。** M-3 STEP 1・3・6（known_at、スコアの判定不能、画面の締め）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+**統合・修復済み、本番の確認待ち（新しい行の known_at・sp500_t0_asof は 2026-10-05 22:15 UTC の実行で確認）。** M-3 STEP 1・3・6（known_at、スコアの判定不能、画面の締め）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
 sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
+#### 本番の確認（2026-10-05、2026-10-04分の日次の実行）
+- 実行: run 37249450468（予定 22:15 UTC → 起動 10-05 00:56:42・完了 00:58:39 UTC、success、対象日 2026-10-04、push `e2d0261c15`）。M-3の修復後の最初の実行
+- **新しい行は0件**（行数34,399のまま。FRED系列ストアの最新観測が VIX・HY 10-01、YC 10-02 で、どれも既に行があった）。
+  新しい行の`known_at`（written）・`sp500_t0_asof`は確かめられていない → 2026-10-05 22:15 UTC の実行で確認する
+- 確かめられたこと:
+  - 観測日の取得: ログ`S&P500 t0: 7722.72 (as of 2026-10-02)`
+  - 同じ行を書き直したときに最初の known_at を残すこと: hy_spread・vix の 10-01、yc_10y2y の 10-02 の3行は値が同じまま updated_at だけが変わり、
+    known_at（alfred）・sp500_t0_asof は修復時のまま
+  - 修復済みの行の上書きなし: 修復の commit `547e7fca31` と全34,399行・全列を比べ、変わったのは上の3行の updated_at だけ
+- `apply_revisions()`が書いた行: 無し（revised_at のある行は修復時の1,968行のまま）
+- 05_liquidity.csv: 2026-10-04 の行を追加（日付は米国の日付どおり。10-02 の行が無いのは修復で移した結果どおり）
+- check_macro_pulse.py 一致70・不一致1（D-01、M-3b の予定の枠の行の修復前で既知）・判定不能1（D-02）、check_dependency_map.py 全項目一致
 
 ---
 
@@ -2660,6 +2673,14 @@ Permits 1300〜1399（中立/CAUTION）。
 - 実ブラウザで8指標の値（範囲を60等分＋各境目の前後）と向き（−1・0・1）を動かし、描かれたカードとヘルスバーの判定を比較:
   **修正前 1,629通り中372通りで食い違い（8指標すべて）→ 修正後 0通り**
 - Michiganは段の定義のまま「拡張」の段が無い（最良は30点の中立。ヘルスバーの最良もNEUTRAL）
+
+
+#### 状態（2026-10-05）
+**統合・修復済み、本番の確認待ち。** feature/macro-pulse-m5（M-3b を含む）を kaihatsu へ統合（マージ `f62485feaf`）し、kaihatsu で
+`macro_events_slot_rows_repair.py --apply`（移す7行・消す12行、34,399→34,387行、event_id・(指標,日付)の重複0）と
+`macro_liquidity_m2_yoy_repair.py --apply`（2026-09-23〜10-04 の11行に m2_yoy_pct・m2_yoy_pctile。最新 +5.66%・36パーセンタイル）を実行し、
+コードと同じ push で入れた。今日のスコア 27→27（計算日 10-02〜10-05）。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
+check_dependency_map.py 一致58・不一致0。確認の対象: 本番の画面で、8指標のカードとヘルスバーの判定が一致すること（2026-10-05 22:15 UTC の実行の後のデータで）
 
 ---
 
@@ -2731,8 +2752,21 @@ events.csvと系列ストアの最新観測を全指標で突き合わせた件�
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
 
 #### 状態（2026-10-04）
-**統合・修復済み、本番の確認待ち。** M-3 STEP 2（初回公表の値と改定値）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+**統合・修復済み、本番の確認待ち（新しい行の known_at・sp500_t0_asof は 2026-10-05 22:15 UTC の実行で確認）。** M-3 STEP 2（初回公表の値と改定値）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
 sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
+#### 本番の確認（2026-10-05、2026-10-04分の日次の実行）
+- 実行: run 37249450468（予定 22:15 UTC → 起動 10-05 00:56:42・完了 00:58:39 UTC、success、対象日 2026-10-04、push `e2d0261c15`）。M-3の修復後の最初の実行
+- **新しい行は0件**（行数34,399のまま。FRED系列ストアの最新観測が VIX・HY 10-01、YC 10-02 で、どれも既に行があった）。
+  新しい行の`known_at`（written）・`sp500_t0_asof`は確かめられていない → 2026-10-05 22:15 UTC の実行で確認する
+- 確かめられたこと:
+  - 観測日の取得: ログ`S&P500 t0: 7722.72 (as of 2026-10-02)`
+  - 同じ行を書き直したときに最初の known_at を残すこと: hy_spread・vix の 10-01、yc_10y2y の 10-02 の3行は値が同じまま updated_at だけが変わり、
+    known_at（alfred）・sp500_t0_asof は修復時のまま
+  - 修復済みの行の上書きなし: 修復の commit `547e7fca31` と全34,399行・全列を比べ、変わったのは上の3行の updated_at だけ
+- `apply_revisions()`が書いた行: 無し（revised_at のある行は修復時の1,968行のまま）
+- 05_liquidity.csv: 2026-10-04 の行を追加（日付は米国の日付どおり。10-02 の行が無いのは修復で移した結果どおり）
+- check_macro_pulse.py 一致70・不一致1（D-01、M-3b の予定の枠の行の修復前で既知）・判定不能1（D-02）、check_dependency_map.py 全項目一致
 
 ---
 
@@ -2778,8 +2812,21 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
   M-2 STEP 4のbefore/afterの一覧を作り直す
 
 #### 状態（2026-10-04）
-**統合・修復済み、本番の確認待ち。** M-3 STEP 4（33行を1日前へ移した。Hollow Rallyの週単位の件数は197週中50週のまま）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+**統合・修復済み、本番の確認待ち（新しい行の known_at・sp500_t0_asof は 2026-10-05 22:15 UTC の実行で確認）。** M-3 STEP 4（33行を1日前へ移した。Hollow Rallyの週単位の件数は197週中50週のまま）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
 sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
+#### 本番の確認（2026-10-05、2026-10-04分の日次の実行）
+- 実行: run 37249450468（予定 22:15 UTC → 起動 10-05 00:56:42・完了 00:58:39 UTC、success、対象日 2026-10-04、push `e2d0261c15`）。M-3の修復後の最初の実行
+- **新しい行は0件**（行数34,399のまま。FRED系列ストアの最新観測が VIX・HY 10-01、YC 10-02 で、どれも既に行があった）。
+  新しい行の`known_at`（written）・`sp500_t0_asof`は確かめられていない → 2026-10-05 22:15 UTC の実行で確認する
+- 確かめられたこと:
+  - 観測日の取得: ログ`S&P500 t0: 7722.72 (as of 2026-10-02)`
+  - 同じ行を書き直したときに最初の known_at を残すこと: hy_spread・vix の 10-01、yc_10y2y の 10-02 の3行は値が同じまま updated_at だけが変わり、
+    known_at（alfred）・sp500_t0_asof は修復時のまま
+  - 修復済みの行の上書きなし: 修復の commit `547e7fca31` と全34,399行・全列を比べ、変わったのは上の3行の updated_at だけ
+- `apply_revisions()`が書いた行: 無し（revised_at のある行は修復時の1,968行のまま）
+- 05_liquidity.csv: 2026-10-04 の行を追加（日付は米国の日付どおり。10-02 の行が無いのは修復で移した結果どおり）
+- check_macro_pulse.py 一致70・不一致1（D-01、M-3b の予定の枠の行の修復前で既知）・判定不能1（D-02）、check_dependency_map.py 全項目一致
 
 ---
 
@@ -2854,8 +2901,21 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 - 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
 
 #### 状態（2026-10-04）
-**統合・修復済み、本番の確認待ち。** M-3 STEP 5（sp500_t0_asof、1,872行に観測日）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+**統合・修復済み、本番の確認待ち（新しい行の known_at・sp500_t0_asof は 2026-10-05 22:15 UTC の実行で確認）。** M-3 STEP 5（sp500_t0_asof、1,872行に観測日）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
 sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
+#### 本番の確認（2026-10-05、2026-10-04分の日次の実行）
+- 実行: run 37249450468（予定 22:15 UTC → 起動 10-05 00:56:42・完了 00:58:39 UTC、success、対象日 2026-10-04、push `e2d0261c15`）。M-3の修復後の最初の実行
+- **新しい行は0件**（行数34,399のまま。FRED系列ストアの最新観測が VIX・HY 10-01、YC 10-02 で、どれも既に行があった）。
+  新しい行の`known_at`（written）・`sp500_t0_asof`は確かめられていない → 2026-10-05 22:15 UTC の実行で確認する
+- 確かめられたこと:
+  - 観測日の取得: ログ`S&P500 t0: 7722.72 (as of 2026-10-02)`
+  - 同じ行を書き直したときに最初の known_at を残すこと: hy_spread・vix の 10-01、yc_10y2y の 10-02 の3行は値が同じまま updated_at だけが変わり、
+    known_at（alfred）・sp500_t0_asof は修復時のまま
+  - 修復済みの行の上書きなし: 修復の commit `547e7fca31` と全34,399行・全列を比べ、変わったのは上の3行の updated_at だけ
+- `apply_revisions()`が書いた行: 無し（revised_at のある行は修復時の1,968行のまま）
+- 05_liquidity.csv: 2026-10-04 の行を追加（日付は米国の日付どおり。10-02 の行が無いのは修復で移した結果どおり）
+- check_macro_pulse.py 一致70・不一致1（D-01、M-3b の予定の枠の行の修復前で既知）・判定不能1（D-02）、check_dependency_map.py 全項目一致
 
 ---
 
@@ -2928,6 +2988,14 @@ M-3bで、コードを観測日に置く形に直し、既存の19行を観測�
   全体 一致71・不一致0・判定不能1（D-02）、consoleエラー0。修復前のデータ（今のkaihatsu）では D-01・N-06・N-09 が不一致（枠の行の残りを検出）
 - **統合の注意**: tooltipは常に「（観測日）」と出すため、コードと枠の行の修復（`macro_events_slot_rows_repair.py --apply`）は同時に当てる
 
+
+#### 状態（2026-10-05）
+**統合・修復済み、本番の確認待ち。** feature/macro-pulse-m5（M-3b を含む）を kaihatsu へ統合（マージ `f62485feaf`）し、kaihatsu で
+`macro_events_slot_rows_repair.py --apply`（移す7行・消す12行、34,399→34,387行、event_id・(指標,日付)の重複0）と
+`macro_liquidity_m2_yoy_repair.py --apply`（2026-09-23〜10-04 の11行に m2_yoy_pct・m2_yoy_pctile。最新 +5.66%・36パーセンタイル）を実行し、
+コードと同じ push で入れた。今日のスコア 27→27（計算日 10-02〜10-05）。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
+check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:15 UTC の日次の実行で、新しく書く行が観測日に置かれること（予定の枠の日付に置かれないこと）
+
 ---
 
 ### [MACRO-PULSE-CHART-DATE-TZ-1] MACRO PULSEのスコア推移の点の日付が、日本では1日前の日付で表示される
@@ -2959,10 +3027,19 @@ M-3b STEP 3で直す。計算に使う日付と表示する日付が同じにな
   | 修正後 ロサンゼルス | 0 | 2025-10-03 | 2026-10-03 | 0 |
   修正後は東京・ロサンゼルスとも、点の日付＝計算に使う日付＝データの日付（現地の暦日）
 
+
+#### 状態（2026-10-05）
+**統合・修復済み、本番の確認待ち。** feature/macro-pulse-m5（M-3b を含む）を kaihatsu へ統合（マージ `f62485feaf`）し、kaihatsu で
+`macro_events_slot_rows_repair.py --apply`（移す7行・消す12行、34,399→34,387行、event_id・(指標,日付)の重複0）と
+`macro_liquidity_m2_yoy_repair.py --apply`（2026-09-23〜10-04 の11行に m2_yoy_pct・m2_yoy_pctile。最新 +5.66%・36パーセンタイル）を実行し、
+コードと同じ push で入れた。今日のスコア 27→27（計算日 10-02〜10-05）。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
+check_dependency_map.py 一致58・不一致0。確認の対象: 本番の画面で、スコア推移の点の日付が現地の暦日（データの日付）になっていること
+
 ---
 
 ### [MACRO-PULSE-THRESHOLD-PERCENTILE-1] MACRO PULSEのHY・Claims・Permits・Michiganの段の境目を、過去10年の分布のパーセンタイルで決める方式（試算の結果、不採用）
 **優先度:** 保留
+**状態:** 保留（試算の結果、不採用〈2026-10-04〉。8指標のカードの tooltip に閾値の出典の有無を出す変更は feature/macro-pulse-m5 で統合済み〈`f62485feaf`〉）
 **分類:** 判定の閾値の設計 / MACRO PULSE（05_main.py・index.html）
 **登録日:** 2026-10-04
 **発見:** 指示書M-4（閾値の出どころの調査）・M-5 STEP 7（試算）
