@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 10050798083.53238,
   "intrinsic_value_per_share": 156.77002880753895,
   "intrinsic_value_beta": 65.16,
-  "upside_percent_beta": -81.4,
-  "intrinsic_value_rf": 594.01,
-  "upside_percent_rf": 69.6,
-  "intrinsic_value_rf_rate": 0.05276999950408936,
+  "upside_percent_beta": -82.0,
+  "intrinsic_value_rf": 582.69,
+  "upside_percent_rf": 60.8,
+  "intrinsic_value_rf_rate": 0.05310999870300293,
   "v0": 10050798083.53238,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.15589119704080995,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 242.69,
       "value_growth_pct": 54.8,
-      "expected_return_pct": -30.7
+      "expected_return_pct": -33.0
     },
     "2年後": {
       "future_value": 375.69,
       "value_growth_pct": 139.6,
-      "expected_return_pct": 7.2
+      "expected_return_pct": 3.7
     },
     "3年後": {
       "future_value": 581.58,
       "value_growth_pct": 271.0,
-      "expected_return_pct": 66.0
+      "expected_return_pct": 60.5
     },
     "4年後": {
       "future_value": 900.3,
       "value_growth_pct": 474.3,
-      "expected_return_pct": 157.0
+      "expected_return_pct": 148.5
     },
     "5年後": {
       "future_value": 1393.7,
       "value_growth_pct": 789.0,
-      "expected_return_pct": 297.8
+      "expected_return_pct": 284.6
     }
   },
-  "upside_percent": -55.3,
-  "calculation_date": "2026-10-05T20:25:22+09:00",
+  "upside_percent": -56.7,
+  "calculation_date": "2026-10-06T05:44:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -320,7 +320,7 @@
     "roe_10yr_avg": 0.03711695167638333,
     "roe_years_used": 2,
     "roe_outlier_adj": false,
-    "current_price": 350.3299865722656,
+    "current_price": 362.3399963378906,
     "latest_revenue": 852525000.0,
     "rpo": 0.0,
     "beta": 2.5,
@@ -354,11 +354,11 @@
     "alpha_uncapped": 0.15589119704080995,
     "per": 172.57635,
     "per_is_forward": false,
-    "per_adjusted": 124.0,
+    "per_adjusted": 128.25,
     "peg": null,
     "ps": 50.566666,
     "ev_ebitda": 208.722,
-    "ma200": 241.08252460479736,
+    "ma200": 242.1695245742798,
     "forward_eps": 6.39348,
     "next_quarter_eps": 1.19,
     "analyst_target_median": 425.0,
@@ -377,11 +377,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 171.1,
     "max_eps": 3.0523,
-    "max_eps_per": 114.8,
+    "max_eps_per": 118.7,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-05",
+    "validated_at": "2026-10-06",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -405,14 +405,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.5480362628467157,
-  "required_growth_rf_base": 0.017123174495952798,
-  "risk_free_rate_live": 0.05276999950408936,
-  "risk_free_rate_live_date": "2026-10-02",
+  "required_growth_rf_base": 0.02400326689079213,
+  "risk_free_rate_live": 0.05310999870300293,
+  "risk_free_rate_live_date": "2026-10-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.19314447706849935,
-  "tanuki_score": "GROWTH_PREMIUM",
+  "required_growth_rf_live": 0.2057770919247619,
+  "tanuki_score": "TRIM",
   "funda_score": 75,
-  "score_comment": "成長率が市場要求を上回る、割高(-55%超)、FCF黒字",
+  "score_comment": "割高(-57%超)、FCF黒字、売上成長加速",
   "timing_score": 30,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -478,7 +478,7 @@
     "shares_yr_now_label": "2025",
     "shares_yr_3ago_label": "2022"
   },
-  "net_current_assets_ratio": 0.0245,
+  "net_current_assets_ratio": 0.0237,
   "dupont": {
     "ni_ttm": 369494000,
     "revenue_ttm": 1201919000,
@@ -534,8 +534,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0345,
-  "forward_earnings_yield": 0.0182,
+  "erp": -0.0355,
+  "forward_earnings_yield": 0.0176,
   "dilution_severity": "critical",
   "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"
 }

@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 122876200130.9327,
   "intrinsic_value_per_share": 1157.3854789947654,
   "intrinsic_value_beta": 365.8,
-  "upside_percent_beta": 36.4,
-  "intrinsic_value_rf": 5285.37,
-  "upside_percent_rf": 1870.5,
-  "intrinsic_value_rf_rate": 0.05276999950408936,
+  "upside_percent_beta": 29.7,
+  "intrinsic_value_rf": 5177.17,
+  "upside_percent_rf": 1736.1,
+  "intrinsic_value_rf_rate": 0.05310999870300293,
   "v0": 122521141365.41942,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 1.0,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 1736.09,
       "value_growth_pct": 50.0,
-      "expected_return_pct": 547.3
+      "expected_return_pct": 515.7
     },
     "2年後": {
       "future_value": 2604.13,
       "value_growth_pct": 125.0,
-      "expected_return_pct": 870.9
+      "expected_return_pct": 823.5
     },
     "3年後": {
       "future_value": 3906.19,
       "value_growth_pct": 237.5,
-      "expected_return_pct": 1356.3
+      "expected_return_pct": 1285.3
     },
     "4年後": {
       "future_value": 5859.29,
       "value_growth_pct": 406.3,
-      "expected_return_pct": 2084.5
+      "expected_return_pct": 1978.0
     },
     "5年後": {
       "future_value": 8788.93,
       "value_growth_pct": 659.4,
-      "expected_return_pct": 3176.8
+      "expected_return_pct": 3017.0
     }
   },
-  "upside_percent": 331.5,
-  "calculation_date": "2026-10-05T20:25:39+09:00",
+  "upside_percent": 310.5,
+  "calculation_date": "2026-10-06T05:44:18+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -330,7 +330,7 @@
       "total_transient_amount": 11000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、リストラ関連の典型的な一時的費用であるため、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -453,7 +453,7 @@
     "roe_10yr_avg": 0.35984140285898175,
     "roe_years_used": 5,
     "roe_outlier_adj": true,
-    "current_price": 268.2200012207031,
+    "current_price": 281.9700012207031,
     "latest_revenue": 5480717000.0,
     "rpo": 47682000.0,
     "beta": 2.488,
@@ -487,11 +487,11 @@
     "alpha_uncapped": 1.5113338920077233,
     "per": 20.61645,
     "per_is_forward": false,
-    "per_adjusted": 19.31,
+    "per_adjusted": 20.3,
     "peg": 0.6831,
     "ps": 13.143701,
     "ev_ebitda": 16.662,
-    "ma200": 456.21615051269526,
+    "ma200": 454.2395005798341,
     "forward_eps": 20.98079,
     "next_quarter_eps": 4.01,
     "analyst_target_median": 475.0,
@@ -510,11 +510,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": -59.0,
     "max_eps": 13.8066,
-    "max_eps_per": 19.4,
+    "max_eps_per": 20.4,
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-05",
+    "validated_at": "2026-10-06",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -537,14 +537,14 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.2555882509306334,
-  "risk_free_rate_live": 0.05276999950408936,
-  "risk_free_rate_live_date": "2026-10-02",
+  "required_growth_rf_base": -0.24810781964944995,
+  "risk_free_rate_live": 0.05310999870300293,
+  "risk_free_rate_live_date": "2026-10-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.12676184228407772,
+  "required_growth_rf_live": -0.11463723214787036,
   "tanuki_score": "BUY",
   "funda_score": 100,
-  "score_comment": "割安圏(332%)で買い余地大、FCF黒字、売上成長加速",
+  "score_comment": "割安圏(310%)で買い余地大、FCF黒字、売上成長加速",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -611,7 +611,7 @@
     "shares_yr_3ago_label": "2022",
     "buyback_ttm": 2452467000
   },
-  "net_current_assets_ratio": 0.0461,
+  "net_current_assets_ratio": 0.0439,
   "dupont": {
     "ni_ttm": 4409952000,
     "revenue_ttm": 6829124000,
@@ -673,8 +673,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0255,
-  "forward_earnings_yield": 0.0782,
+  "erp": 0.0213,
+  "forward_earnings_yield": 0.0744,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

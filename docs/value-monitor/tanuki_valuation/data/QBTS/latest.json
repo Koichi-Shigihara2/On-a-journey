@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 360990504.30109894,
   "intrinsic_value_per_share": 3.3411150612001257,
   "intrinsic_value_beta": 2.3,
-  "upside_percent_beta": -85.4,
-  "intrinsic_value_rf": 7.92,
-  "upside_percent_rf": -49.8,
-  "intrinsic_value_rf_rate": 0.05276999950408936,
+  "upside_percent_beta": -85.3,
+  "intrinsic_value_rf": 7.82,
+  "upside_percent_rf": -50.0,
+  "intrinsic_value_rf_rate": 0.05310999870300293,
   "v0": 360990504.30109894,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 4.35,
       "value_growth_pct": 30.2,
-      "expected_return_pct": -72.4
+      "expected_return_pct": -72.2
     },
     "2年後": {
       "future_value": 5.68,
       "value_growth_pct": 70.1,
-      "expected_return_pct": -64.0
+      "expected_return_pct": -63.7
     },
     "3年後": {
       "future_value": 7.4,
       "value_growth_pct": 121.6,
-      "expected_return_pct": -53.1
+      "expected_return_pct": -52.7
     },
     "4年後": {
       "future_value": 9.65,
       "value_growth_pct": 188.9,
-      "expected_return_pct": -38.8
+      "expected_return_pct": -38.3
     },
     "5年後": {
       "future_value": 12.59,
       "value_growth_pct": 276.9,
-      "expected_return_pct": -20.2
+      "expected_return_pct": -19.5
     }
   },
-  "upside_percent": -78.8,
-  "calculation_date": "2026-10-05T20:28:37+09:00",
+  "upside_percent": -78.6,
+  "calculation_date": "2026-10-06T05:47:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 46000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄にすべて『一過性の在庫評価損』と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目が「一過性の在庫評価損」と明記され、金額も0Mと negligible で、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "flagged",
@@ -317,7 +317,7 @@
     "roe_10yr_avg": -0.6722089889662023,
     "roe_years_used": 3,
     "roe_outlier_adj": true,
-    "current_price": 15.770000457763672,
+    "current_price": 15.640000343322754,
     "latest_revenue": 24587000.0,
     "rpo": 40700000,
     "beta": 2.14,
@@ -355,7 +355,7 @@
     "peg": null,
     "ps": 481.82794,
     "ev_ebitda": null,
-    "ma200": 20.804199938774108,
+    "ma200": 20.754799938201906,
     "forward_eps": -0.37765,
     "next_quarter_eps": -0.09,
     "analyst_target_median": 36.0,
@@ -374,11 +374,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 977.5,
     "max_eps": 0.0597,
-    "max_eps_per": 264.2,
+    "max_eps_per": 262.0,
     "max_eps_reliability": "MED"
   },
   "validation": {
-    "validated_at": "2026-10-05",
+    "validated_at": "2026-10-06",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -402,11 +402,11 @@
     "ai_comment": null
   },
   "phase1_growth": 0.3038846624227339,
-  "required_growth_rf_base": 0.338187878285954,
-  "risk_free_rate_live": 0.05276999950408936,
-  "risk_free_rate_live_date": "2026-10-02",
+  "required_growth_rf_base": 0.33597429480748175,
+  "risk_free_rate_live": 0.05310999870300293,
+  "risk_free_rate_live_date": "2026-10-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.4969283909693274,
+  "required_growth_rf_live": 0.49888880461048446,
   "tanuki_score": "PASS",
   "funda_score": 10,
   "score_comment": "割高(-79%超)、FCFマイナス（投資フェーズ）、売上成長停滞",
@@ -476,7 +476,7 @@
     "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 86.42186593534096,
-  "net_current_assets_ratio": 0.0891,
+  "net_current_assets_ratio": 0.0898,
   "dupont": {
     "excluded": true,
     "reason": "revenue_too_small"
@@ -523,8 +523,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0767,
-  "forward_earnings_yield": -0.0239,
+  "erp": -0.0773,
+  "forward_earnings_yield": -0.0241,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }
