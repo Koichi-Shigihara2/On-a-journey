@@ -118,6 +118,25 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 次の候補: (1) JST火曜朝に、サイトへ反映されたことを確認する（下の確認手順の4） (2) `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害の確認
   （数銘柄で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測）
 
+**2026-10-03〜10-05 MACRO PULSE の確認と修正（指示書M-1〜M-5。経緯は`BACKLOG.md`の`MACRO-PULSE-*`と`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`）**
+- M-1（10-03、読み取り専用）: 画面の全要素・更新のタイミング・データの基準日・ロジックを棚卸しし、不具合B-01〜を登録。実ブラウザの確認`browser_checks/check_macro_pulse.py`を新設
+- M-2（10-03〜04）: Claimsの公表元（321→180）と観測日の行、ティッカーの未来日付の行、先読み除外を時刻で比べる、流動性の「週」をH.4.1の水曜で数える、
+  CFNAI MA3、日次の`--date`のUTCずれ。統合`7cd9bd2d12`、修復`70793c2185`。本番確認（M-2c）で4件をBACKLOG_DONE.mdへ
+- M-3（10-04）: events.csvに`known_at`（公開時点）・`revised_actual`/`revised_at`（改定値）・`sp500_t0_asof`、使える指標が無い日は判定不能、
+  画面の締めを米国東部時間23:59:59に、05_liquidity.csvの日付ずれ33行。統合`76c58b3522`、修復4本`547e7fca31`
+- M-3b（10-04）: NFP・Permits・Michiganの行を予定の枠ではなく観測日に置く（既存の枠の行19件を修復）、スコア推移の点の日付を現地の暦日に
+- M-4（10-04、読み取り専用）: スコアと実際の景気後退・閾値の出どころ・Hollow Rally・M2のパーセンタイルの調査（`befc659b40`）
+- M-5（10-04）: 重み50%未満の日は「データ不足」、WALCLが増えない週はEASING関連を「適用外」、Hollow Rallyを参考情報に、M2を前年比の分布の位置に、
+  カードとヘルスバーを同じ段の定義（`SIGNAL_STEPS`）から、CFNAIの段の境目。閾値のパーセンタイル化は試算の結果、不採用（`[[MACRO-PULSE-THRESHOLD-PERCENTILE-1]]`、保留）
+- 2026-10-05: M-3の本番確認（10-04分の実行。新しい行は0件で、新しい行のknown_at・sp500_t0_asofは未確認。同じ行の書き直しで最初のknown_atを残すこと・
+  修復済みの行の上書きなしは確認）。feature/macro-pulse-m5（M-3bを含む）を統合（マージ`f62485feaf`）し、kaihatsuで予定の枠の行の修復（移す7・消す12）と
+  M2の前年比の修復（11行）を実行して同じpushで入れた（`c536bb9354`）。今日のスコア27→27。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
+  check_dependency_map.py 一致58・不一致0。worktree（../On-a-journey-macro・../On-a-journey-macro-m4）は片付け済み
+- **残っている確認**: (1) 2026-10-05 22:15 UTCの日次の実行（JST 10-06 11:00以降に確認）: 新しい行の`known_at`（written）・`sp500_t0_asof`、
+  新しい行が観測日に置かれること、`apply_revisions()`が書いた行、05_liquidity.csvの新しい行のEASING関連の判定（適用外か）と`m2_yoy_pct`・`m2_yoy_pctile`。
+  想定どおりならM-3・M-3b・M-5の確認が終わった項目をBACKLOG_DONE.mdへ (2) 2026-10-09: 10-08（木）公表のClaimsの行が観測日（週末日）に置かれること
+  （`[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`）
+
 **火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
 夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
 1. Cloudflare側: 20:25・20:55・21:25・21:50 UTCのcronが発火したか
