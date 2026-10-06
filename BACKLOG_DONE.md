@@ -31807,6 +31807,9 @@ GitHub Actions週次自動実行が本来の更新経路）が、`--skip-risk`�
   `pipeline.check_growth_sanity`を空dictを返すようmonkeypatchし、
   無関係な`growth_sanity`関連コードパスでのTypeError
   （MagicMockとfloatの比較エラー）を回避した。
+  （2026-10-07、`[[TEST-SYSMODULES-MOCK-LEAK-1]]`の修正でsys.modulesの差し替えは
+  pipelineのimportの間だけになった。pipeline側の`check_growth_sanity`等がMagicMockで
+  ある点は変わらないため、このmonkeypatchは引き続き必要）
 
 #### 検証結果
 - **既存risk_events保持確認**（AAPL、risk_events 3件保有）:
