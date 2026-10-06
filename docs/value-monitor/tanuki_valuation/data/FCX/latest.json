@@ -3,9 +3,9 @@
   "intrinsic_value_per_share": 11.889504480320305,
   "intrinsic_value_beta": 7.99,
   "upside_percent_beta": -89.0,
-  "intrinsic_value_rf": 44.07,
-  "upside_percent_rf": -39.3,
-  "intrinsic_value_rf_rate": 0.05310999870300293,
+  "intrinsic_value_rf": 44.96,
+  "upside_percent_rf": -38.0,
+  "intrinsic_value_rf_rate": 0.05269000053405762,
   "v0": 16784586120.07095,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.2964150405125512,
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -83.6,
-  "calculation_date": "2026-10-06T05:49:02+09:00",
+  "calculation_date": "2026-10-07T05:39:39+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -309,7 +309,7 @@
     "roe_10yr_avg": 0.07057500964584552,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 72.5999984741211,
+    "current_price": 72.55999755859375,
     "latest_revenue": 25915000000.0,
     "rpo": 106000000.0,
     "beta": 1.401,
@@ -347,7 +347,7 @@
     "peg": 4.5363,
     "ps": 3.999177,
     "ev_ebitda": 12.753,
-    "ma200": 63.7378500175476,
+    "ma200": 63.86155000686646,
     "forward_eps": 4.17656,
     "next_quarter_eps": 0.76,
     "analyst_target_median": 77.0,
@@ -370,7 +370,7 @@
     "max_eps_reliability": "HIGH"
   },
   "validation": {
-    "validated_at": "2026-10-06",
+    "validated_at": "2026-10-07",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -393,11 +393,11 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.000555650911309602,
-  "risk_free_rate_live": 0.05310999870300293,
-  "risk_free_rate_live_date": "2026-10-05",
+  "required_growth_rf_base": -0.0006658093236200369,
+  "risk_free_rate_live": 0.05269000053405762,
+  "risk_free_rate_live_date": "2026-10-06",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.12132093521763876,
+  "required_growth_rf_live": 0.11709209130151832,
   "tanuki_score": "HOLD",
   "funda_score": 40,
   "score_comment": "割高(-84%超)、FCF黒字、売上安定成長",
@@ -533,8 +533,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0044,
-  "forward_earnings_yield": 0.0575,
+  "erp": 0.0049,
+  "forward_earnings_yield": 0.0576,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
