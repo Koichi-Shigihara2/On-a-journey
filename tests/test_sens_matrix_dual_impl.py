@@ -5,7 +5,8 @@ tests/test_sens_matrix_dual_impl.py
 
 docs/value-monitor/tanuki_valuation/stock.htmlには、バックエンドの
 sensitivity.matrix（3×3、DCFタイプ〈two_stage/three_stage/tapering〉に
-応じて自動的に正しい計算式が使われる、`.sensitivity-section`）とは別に、
+応じて自動的に正しい計算式が使われる、`.sensitivity-section`。ただしtaperingは
+2026-10-06まで2段階DCFで計算していた〈SENS-TAPERING-CENTER-MISMATCH-1〉）とは別に、
 クライアント側で常に2段階DCFのみを仮定して再計算する独自5×5マトリクス
 （`calcSensIV()`）が同一ページに並存していた。three_stage/tapering DCFの
 銘柄では2つのセクションが異なる数値を表示する不整合があったため、

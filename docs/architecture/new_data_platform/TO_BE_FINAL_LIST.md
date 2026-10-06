@@ -1096,7 +1096,7 @@ assert check == 515
 
 | AS-IS ID | 項目 | 判定根拠 |
 |---|---|---|
-| AS-IS-069 | WACCスライダー | `updateWacc()`(stock.html:2524-2556)。`adjustFactor=baseWacc/newWacc`によるIVの比例近似再計算トリガー。スライダー自体は独立した値を持たない |
+| AS-IS-069 | WACCスライダー | `updateWacc()`(stock.html:2524-2556)。`adjustFactor=baseWacc/newWacc`によるIVの比例近似再計算トリガー。スライダー自体は独立した値を持たない。**2026-10-06にstock.htmlから削除**（β基準の倍率をRm基準の表に掛ける近似で本物の行と食い違うため、[[SENS-WACC-SLIDER-BASIS-MIX-1]]） |
 | AS-IS-070 | Layer2トグル | `applyLayer2Toggle()`(stock.html:2558-2580)。既存コンポーネント`(v0+rpoPV+goPv)/shares+bs`の再合成トリガー。独立した値を持たない |
 | AS-IS-233 | 期間切替(1年/3年/5年/全期間)ボタン | `setScoreRange()`(index.html:1590-1596)。本文に既存の通り「UI状態のみ、値の計算はAS-IS-230（スコア推移折れ線）と同一」と明記済み |
 | AS-IS-236 | スライダー（過去に戻る） | `buildL3Snapshots()`/`onL3SliderInput()`/`resetL3Slider()`。スライダー移動時のスコア表示は`computeScoreAsOf()`を再利用するのみで、独立した値を持たない |

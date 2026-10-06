@@ -9,6 +9,15 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-06（日中、Rf反映確認とstock.htmlのメインIV説明系）**: Rf現在値化（`bb81928103`）の本番反映を確認（全99銘柄が`risk_free_rate_live_source="tnx"`・
+  日付2026-10-05、`fallback_fixed`0件、^TNXの終値と一致）。`[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害を実測し、ウォーターフォール図が全99銘柄で
+  棒の高さ（β版のPV）とV₀のラベル（v0_rm）が食い違っていたこと、感応度表の見出し・スライダーの基準の混在、逓減型7銘柄の中央セルの不一致を確認。
+  `97add7f1c4`で図をRm版のPVに、感応度の見出しをメインIVに、スライダーを削除、`create_sensitivity_calc_func()`を逓減型に対応
+  （全99銘柄の変更前後の比較で、時刻以外の差は逓減型7銘柄の`sensitivity.matrix`だけ、(A)判定系は不変）。`browser_checks/check_valuation_chart_basis.py`を新設。
+  `[[SENS-TAPERING-CENTER-MISMATCH-1]]`・`[[SENS-WACC-SLIDER-BASIS-MIX-1]]`を完了として記録、`[[TEST-SYSMODULES-MOCK-LEAK-1]]`（中）を新規登録、
+  IDEAS_AND_WATCH.mdに`[[MARKETDATA-SELF-CANCEL-HTTP502-1]]`、CHAT_RULES.md事例25を追加。アクティブBACKLOG 17件。
+  pytest・audit.py・report_consistency_check.pyとも通過。**次回確認**: 今夜の実行後に`check_valuation_chart_basis.py`で全99銘柄の一致、
+  TEST-SYSMODULES-MOCK-LEAK-1の読み取り調査、MARKETDATA-SELF-CANCEL-HTTP502-1の再発監視
 - **2026-10-03〜10-05（MACRO PULSE 指示書M-1〜M-5）**: M-1 棚卸しと実ブラウザ確認の新設、M-2 Claimsの公表元・先読み除外・流動性の週単位化等（統合`7cd9bd2d12`）、
   M-3 公開時点（known_at）・改定値・S&P500の観測日・判定不能（統合`76c58b3522`・修復`547e7fca31`）、M-3b 予定の枠の行を観測日へ、M-4 判定ロジックの調査、
   M-5 データ不足・EASINGの適用外・カードとヘルスバーの段の統一・M2の前年比（閾値のパーセンタイル化は不採用）。2026-10-05にM-3b・M-5を統合（`f62485feaf`）し、

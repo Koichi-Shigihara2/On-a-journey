@@ -4892,6 +4892,13 @@ report_consistency_check.py --fail-on-ng NG=0。
 「分解の過程で新たに気づいた問題」備考）へ解消済み追記（過去記載は
 書き換えず追記のみ）。
 
+**2026-10-06追記（上の記述のうち古くなった2点）**: (1) 「独立した機能」として残したWACC調整スライダー（`updateWacc()`）は、
+β込みWACCから作った倍率をRm基準の3×3の表に掛ける近似で、本物の行と値が食い違っていたため削除した（[[SENS-WACC-SLIDER-BASIS-MIX-1]]）。
+本項目のテストのうちスライダーの存在を確認していた1件は「削除されていること」の確認に置き換えた。
+(2) 3×3の表は「DCFタイプに応じて自動的に正しい計算式」としていたが、逓減型（tapering）は`create_sensitivity_calc_func()`が
+`tapering_g_end`を受け取らず2段階DCFで計算していた（ASTSの確認も見た目だけで、中央セルはメインIVと不一致だった）。
+同日に修正（[[SENS-TAPERING-CENTER-MISMATCH-1]]）。
+
 ---
 
 ### ✅ [RICE-ADJ-ASYMMETRIC-ZERO-1] RICEのrice_adjのみ0フロアガードがある非対称設計 — 両者とも測定不能時はNoneを返す対称設計に変更して解消

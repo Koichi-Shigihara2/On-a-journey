@@ -116,7 +116,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - ブラッシュアップ: `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`を新規登録し、優先度を中にした（ウォーターフォール図の棒がβ版のPVで、合計のV₀がメインのv0_rmだと
   一致しない疑い）。CHAT_RULES.mdに事例22（判定に影響しないことは、表示が正しいことを意味しない）。BACKLOG.mdのアクティブは15件（機械カウント、MACRO PULSE側の登録を含む）
 - 次の候補: (1) JST火曜朝に、サイトへ反映されたことを確認する（下の確認手順の4） (2) `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害の確認
-  （数銘柄で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測）
+  （数銘柄で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測） → (1)(2)とも2026-10-06に完了（下の「2026-10-06（日中）」）
 
 **2026-10-03〜10-05 MACRO PULSE の確認と修正（指示書M-1〜M-5。経緯は`BACKLOG.md`の`MACRO-PULSE-*`と`docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`）**
 - M-1（10-03、読み取り専用）: 画面の全要素・更新のタイミング・データの基準日・ロジックを棚卸しし、不具合B-01〜を登録。実ブラウザの確認`browser_checks/check_macro_pulse.py`を新設
@@ -145,6 +145,30 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - browser_checks（作業用コピーで`backfill_implc.py`を流して確認、commitはしていない）: 一致59・不一致2・判定不能0。C-02・C-08（先物・ドル円）・C-08b（予定）は一致。
   不一致はD-02（WTI・金の前日比 記録-1.73/-0.72 vs 再計算-1.9/-0.95）とD-04（ブレッス 503 vs 502、除外1）で、統合前のkaihatsuでも同じ値＝10-03のエントリと今のdaily/のずれ（実装Cとは無関係）
 
+**2026-10-06（日中） Rf現在値化の本番反映の確認と、stock.htmlのメインIV説明系の修正（`97add7f1c4`）**
+- Rf現在値化（`bb81928103`）の本番反映を確認（読み取り専用、HEAD `5c689659d7`）: 10-05の足の実行（外部起動20:25 UTC → Market Data Daily `5e95f84aa6` →
+  TANUKI VALUATION `609694c6b5` 20:51 UTC）で、全99銘柄のlatest.jsonが`risk_free_rate_live_source="tnx"`（99/99、`fallback_fixed`は0件）・
+  `risk_free_rate_live_date="2026-10-05"`・`intrinsic_value_rf_rate`=0.05311（^TNXの10-05の終値5.311と一致）。RXRXのreport.txtのERP_Signalに
+  `[Rf 5.31%, ^TNX 2026-10-05]`、stock.htmlの参考②の見出しに「（5.31%、^TNX 2026-10-05）」（Playwrightで確認）
+- `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害を実測: ウォーターフォール図は**全99銘柄**で棒の高さ（β版のPVの合計）とV₀のラベル（v0_rm）が
+  食い違っていた（差の率の中央値は約21%、NVDAは棒6.15T・ラベル17.65T、KOは棒178.68B・ラベル88.54B）。追加の確認で、感応度表の見出しがβ基準・表がRm基準、
+  WACC調整スライダーがβ基準の倍率をRm基準の表に掛ける近似、逓減型7銘柄の中央セルがメインIVと不一致（ALAB $373.09対$156.77）も判明
+- `97add7f1c4`: ウォーターフォール図をRm版のPV（`dcf_components.*_rm`）に切り替え（無いデータだけβ版に戻して注記）、ラベルとY軸の切れを解消、
+  逓減型のSTEP見出し。感応度の見出しをメインIVに、スライダーを削除。`create_sensitivity_calc_func()`に`tapering_g_end`を追加し逓減型だけ渡す。
+  全99銘柄を変更前後のworktreeで再生成し、時刻以外の差は逓減型7銘柄の`sensitivity.matrix`だけ（(A)判定系・score_historyは全銘柄不変）。
+  新設`browser_checks/check_valuation_chart_basis.py`は再生成データで一致99・不一致0（commit済みのデータでは逓減型7銘柄が不一致、今夜の実行で解消する想定）。
+  テスト`test_sensitivity_tapering.py`・`test_stock_html_waterfall_rm.py`を追加（修正前のコードで失敗を確認）。**再生成したデータはcommitしていない**
+- BACKLOG: `[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`はウォーターフォール部分を解消し優先度を低に（残りは`components.pv_high`等の注記だけ）。
+  `[[SENS-TAPERING-CENTER-MISMATCH-1]]`・`[[SENS-WACC-SLIDER-BASIS-MIX-1]]`をBACKLOG_DONE.mdへ直接記録。IDEAS_AND_WATCH.mdに
+  `[[MARKETDATA-SELF-CANCEL-HTTP502-1]]`（10-06 08:58 UTCのMarket Data Dailyが自己取り消しAPIのHTTP 502でfailure、下流はskippedで実害なし）
+- ブラッシュアップ: `[[TEST-SYSMODULES-MOCK-LEAK-1]]`（中）を新規登録（test_pipeline_logic.pyが収集時にcore_calculator等をMagicMockへ差し替え、
+  後から収集されるテストが本物のコードを実行していない可能性。今日の新しいテストで実際に起き、回避策で対処）。CHAT_RULES.mdに事例25
+  （説明図・補助表は主計算と同じ基準の値を描いているかを、描画される値で突き合わせる）。古くなった記述を更新（[[SENS-MATRIX-DUAL-IMPL-1]]の
+  「スライダーは独立機能として残置」への追記、FIELD_DEFINITIONS.mdのAS-IS-014・029、TO_BE_FINAL_LIST.mdのAS-IS-069）。
+  BACKLOG.mdのアクティブは17件（機械カウント）、3ファイル間のID重複0件
+- 次の候補: (1) 今夜の実行後に`check_valuation_chart_basis.py`で全99銘柄の一致を確認（下の水曜朝の確認手順の5）
+  (2) `[[TEST-SYSMODULES-MOCK-LEAK-1]]`の読み取り調査 (3) `[[MARKETDATA-SELF-CANCEL-HTTP502-1]]`の再発監視
+
 **水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）**
 1. 実装Cの表示（Market Pulseの今夜のエントリ）: 段階2のニュースの見出し（`headlines`の件数・status・failed、画面の#headlinesTable）、
    段階8の先物・ドル円（`futures`、ES=F・NQ=F・NIY=F・ドル円の最新値・前日比・限月・「暫定（清算前）」「暫定（日中）」）、今後7日の予定（`calendar`、#calendarTableInner）。
@@ -153,6 +177,10 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 3. **D-02・D-04の不一致が、今夜のMarket Pulseの正常な実行で解消したか**（新しいエントリの計算時点とdaily/がそろうので一致する想定。残れば別の原因として調べる）
 4. 下流の完了時刻: `gh run list --limit 40 --json workflowName,event,createdAt,updatedAt,conclusion`で、**Market Pulseを含む**下流（Market Pulse・Stonks Silo・
    TANUKI VALUATION・TANUKI Score）が**22:00 UTCまでに完了したか**を記録（10-05はMarket Pulseがランナー未割り当てで欠けた。外部起動の各起動のガードの判定も前回と同じ形式で記録）
+5. **stock.htmlのメインIV説明系（`97add7f1c4`）**: 夜間のTANUKI VALUATIONの実行後に`venv\Scripts\python.exe browser_checks\check_valuation_chart_basis.py`。
+   **全99銘柄が一致**すること（ウォーターフォール図の棒の高さ＝V₀のラベル＝v0_rm、感応度の中央セル＝見出し＝メインIV、スライダーなし、ページエラー0件）。
+   10-06昼のcommit済みのデータでは逓減型7銘柄（ALAB・KULR・SITM・IONQ・S・RDW・ASTS）の中央セルだけ不一致で、今夜の再計算で解消する想定。
+   残れば、その銘柄のlatest.jsonの`sensitivity.matrix[1][1]`と`intrinsic_value_per_share`を比べて原因を調べる
 
 **2026-10-06 外部起動の初回確認の結果（米国10-05〈月〉の足。下の確認手順の1〜4を実施）**
 - **判定: 外部起動は成功**（チャット側の判定）。Cloudflareのcronは3本とも発火した（20:25:47・20:55:40・21:25:40 UTCにworkflow_dispatchの実行が作られた）。
