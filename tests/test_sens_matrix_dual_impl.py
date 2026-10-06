@@ -62,11 +62,31 @@ class TestBackendSectionPreserved:
         assert content.count('class="sensitivity-section"') == 1
         assert content.count("SENSITIVITY ANALYSIS") == 1
 
-    def test_backend_matrix_table_and_wacc_slider_still_present(self):
-        """バックエンド側の3×3マトリクステーブル・WACCスライダー
-        （唯一のインタラクティブ操作）が引き続き存在すること"""
+    def test_backend_matrix_table_still_present(self):
+        """バックエンド側の3×3マトリクステーブルが引き続き存在すること"""
         content = _read_stock_html()
         assert 'id="sensitivityTable"' in content
-        assert 'id="waccSlider"' in content
-        assert "function updateWacc" in content
         assert "function renderMatrixRows" in content
+
+
+class TestWaccSliderRemoved:
+    """2026-10-06: 「WACC調整」スライダー（updateWacc()）を削除した。
+    β込みWACCから作った倍率（wacc.value/(wacc.value+Δ)）をRm基準の表に掛ける
+    近似で、行のラベルだけRm基準+Δに書き換えていたため、表の本物の行と値が
+    食い違っていた（NVDA +1%: 「11.0%」行の中央$692.71 vs 本物$603.68）。"""
+
+    def test_slider_dom_and_function_are_gone(self):
+        content = _read_stock_html()
+        assert 'id="waccSlider"' not in content
+        assert "updateWacc" not in content
+        assert "wacc-slider" not in content
+        assert 'id="waccDeltaDisplay"' not in content
+
+    def test_heading_shows_main_iv_not_beta(self):
+        """見出しはメイン理論株価（Rm基準、表の中央セルと同じ）で、β込みWACCの値ではないこと"""
+        content = _read_stock_html()
+        i = content.index("SENSITIVITY ANALYSIS")
+        head = content[i:content.index('class="sensitivity-matrix"', i)]
+        assert "ivpsBeta" not in head
+        assert "β込みWACC:" not in head
+        assert 'id="sensBaseIvps">$${fmt(ivps)}' in head

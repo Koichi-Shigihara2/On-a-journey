@@ -665,6 +665,9 @@ class KoichiValuationCalculator:
             net_cash_per_share=bs_adjustment.net_cash_per_share,  # v7.1: BS補正
             phase2_growth=_phase2_growth,                          # v7.1: 3段階対応
             phase2_years=_phase2_years,                            # v7.1: 3段階対応
+            # 逓減型の銘柄だけ線形逓減DCFで計算し、中央セルをメイン理論株価に一致させる
+            # （2026-10-06。渡していなかったため逓減型7銘柄で中央セルが2段階DCFの値だった）
+            tapering_g_end=tapering_g_end if dcf_type == "tapering" else None,
         )
         # 感度分析のbase_yearsはMoat Score連動Phase1年数（ALPHA-REDESIGN-1）
         _sensitivity_base_years = _moat_phase1_years

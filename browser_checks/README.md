@@ -111,3 +111,16 @@ TANUKI SCORE画面で、株価欠損により判定不能（`tanuki_score=UNDETE
 ブラウザ側（`page.route`）で差し替える（ファイルは変更しない）。タイミング欄が「—」（0で埋めない）、
 分類カードに「判定不能」が出ること、consoleエラーが無いことを確認する。本番用の絶対パス
 （`/On-a-journey/…`、ロゴ画像）はローカル配信では404になるため除外している。
+
+## check_valuation_chart_basis.py（2026-10-06追加）
+
+TANUKI VALUATIONの銘柄ページ（stock.html）で、メイン理論株価（Rm基準）を説明する表示の基準がそろっているかを確認する。
+既定は全銘柄（`common/sec_data/tickers.py::get_tanuki_tickers()`のうちlatest.jsonがあるもの）、引数で銘柄を指定できる。
+期待値はlatest.jsonから独立に作る。
+
+- ウォーターフォール図（VALUATION COMPONENTS）: V₀の棒の高さ（Plotlyが前の棒を積んだ値）＝V₀のラベル＝`dcf_components.v0_rm`、
+  P_tの棒の高さ・ラベル＝v0_rm＋RPO PV＋成長OPT PV、図の注記がRm基準
+- SENSITIVITY ANALYSIS: 表の中央セル＝見出し（`#sensBaseIvps`）＝`intrinsic_value_per_share`、WACC調整スライダーが無い
+- ページエラー0件（`/On-a-journey/common/sec_data/normalized/`の404はローカル配信だけの既知の差分として除外）
+
+`--docs-dir <別worktreeのdocs>`で、再生成したデータを別のworktreeで確かめられる（ポート8795）。

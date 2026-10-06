@@ -4,6 +4,78 @@
 
 ## 2026-10-06（完了）
 
+### ✅ [SENS-TAPERING-CENTER-MISMATCH-1] 逓減型（dcf_type="tapering"）の7銘柄で、感応度表の中央セルがメイン理論株価と一致しない（create_sensitivity_calc_func()がtapering_g_endを受け取らず、2段階DCFで計算していた） — 修正完了（2026-10-06）
+**優先度:** 中
+**分類:** 計算 / TANUKI VALUATION（calculator/sensitivity.py・core_calculator.py）
+**登録日・完了日:** 2026-10-06（BACKLOG.mdを経由せず完了として直接記録）
+**発見:** Rf現在値化の本番反映確認と[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]の実害確認（読み取り専用、HEAD `5c689659d7`）で、
+SENSITIVITY ANALYSISの見出しと表の基準を確認した際に、全99銘柄の`sensitivity.matrix[1][1]`と`intrinsic_value_per_share`を突き合わせて発見
+
+#### 内容
+感応度表（`sensitivity.matrix`、3×3、Ke=Rm±1%×高成長年数）は`base_wacc=_rm`（v7.3）で、中央セルがメイン理論株価と一致する設計。
+ところが`core_calculator.py`のSTEP 10は`create_sensitivity_calc_func()`に`tapering_g_end`を渡しておらず、関数側にも引数が無かった
+（`scenarios.py::create_scenario_calc_func()`はDCF-1〈v9.0〉で対応済みだったが、感応度側は取り残されていた）。
+このため逓減型の7銘柄だけ、表の全9セルが逓減なしの2段階DCFの値になり、「基準値」の色の付いた中央セルがメインIVと食い違っていた。
+3段階DCFの銘柄は、DCF-1b（2026-09-25）でPhase1の逓減が`calculate_three_stage_dcf()`の中に入ったため一致していた。
+
+#### 修正
+- `calculator/sensitivity.py::create_sensitivity_calc_func()`に`tapering_g_end`（既定None）を追加。分岐は`scenarios.py`と同じ
+  （`tapering_g_end is not None and high_growth_rate > tapering_g_end`なら`calculate_tapering_dcf()`、年数は表の列の年数）
+- `core_calculator.py`のSTEP 10から`tapering_g_end if dcf_type == "tapering" else None`を渡す（逓減型以外の銘柄は従来と同じ経路）
+
+#### 検証（全99銘柄を変更前〈worktreeのHEAD〉と変更後で同時に再生成、XAIのキーを外して実行。成功99・失敗0）
+- 比べたファイル595（両方で同じ集合）。時刻（calculation_date・history.jsonのdate・report.txtのGenerated）以外の差は、
+  **逓減型7銘柄の`sensitivity.matrix`だけ**（latest.json・history/のスナップショット・report.txtの感応度の表）。
+  (A)判定系（intrinsic_value_per_share・upside_percent・tanuki_score・funda_score・timing_score・score_history.json）を含め、他は全銘柄で変化0件
+- 中央セル（修正前 → 修正後）とメインIV:
+
+  | 銘柄 | 修正前 | 修正後 | メインIV |
+  |---|---|---|---|
+  | ALAB | $373.09 | $156.77 | $156.77 |
+  | KULR | $9.50 | $5.49 | $5.49 |
+  | SITM | $167.97 | $98.89 | $98.89 |
+  | IONQ | $42.88 | $25.74 | $25.74 |
+  | S | $29.01 | $21.32 | $21.32 |
+  | RDW | $7.50 | $6.14 | $6.14 |
+  | ASTS | $3.28 | $3.66 | $3.66 |
+
+  変更後は全99銘柄で中央セル＝メインIV
+- テスト: `tests/test_sensitivity_tapering.py`（9件: calculate_pt()で逓減型の中央セル＝メインIV、2段階の対照、逓減型7銘柄の実データから
+  逓減DCFの入力を復元してRm 10%・基準年数の値＝メインIV）。修正前のコードで8件失敗（2段階の対照1件は成功）、修正後は9件成功。
+  `tests/test_pipeline_logic.py`が収集時に`sys.modules["core_calculator"]`をMagicMockへ差し替えるため、テストは`core_calculator.py`をファイルから別名で読み込む
+- 実ブラウザ: `browser_checks/check_valuation_chart_basis.py`（再生成したデータで一致99・不一致0）
+- 再生成したデータはcommitしていない（次の夜間のTANUKI VALUATIONの実行で反映）
+
+---
+
+### ✅ [SENS-WACC-SLIDER-BASIS-MIX-1] stock.htmlのSENSITIVITY ANALYSISで、見出しはβ込みWACC基準、表はRm基準と基準が食い違い、「WACC調整」スライダーはβ基準の倍率をRm基準の表に掛ける近似で本物の行と食い違う — 見出しをメインIVに、スライダーを削除（2026-10-06）
+**優先度:** 中
+**分類:** 表示 / TANUKI VALUATION（stock.html）
+**登録日・完了日:** 2026-10-06（BACKLOG.mdを経由せず完了として直接記録）
+**発見:** [[SENS-TAPERING-CENTER-MISMATCH-1]]と同じ読み取り調査（Koichiさんの追加の確認依頼）
+**関連:** [[SENS-MATRIX-DUAL-IMPL-1]]（2026-09-19完了。画面側の5×5の表を削除した際、スライダーは「影響を受けない独立の機能」として残していた）
+
+#### 内容
+- 見出し: 「β込みWACC: $17.74（WACC: 10.40% β=1.07）」（`intrinsic_value_beta`・`wacc.value`）。表はv7.3から`base_wacc=_rm`
+  （Ke 9%・10%・11%）で、中央セル$18.75＝メインIV（RXRX）。見出しの値は表のどこにも出てこない
+- スライダー（`updateWacc()`）: 倍率を**β込みWACC**から`wacc.value/(wacc.value+Δ)`で作り、**Rm基準の表**の全セルに掛け、行のラベルを
+  「Rm基準の行＋Δ」に書き換えていた。IVがWACCに反比例するという近似で、DCFの再計算でもない。
+  実測（Playwright）: NVDA +1%で「11.0%」行の中央が$692.71（本物の11.0%の行は$603.68）、RXRX +1%で$17.11（本物$16.43）、
+  ALAB −1%で「10.0%」行が$333.68（元の10.0%の行は$373.09）と、同じラベルで違う値を出していた
+
+#### 修正（案A、Koichiさんの指示）
+- 見出しをメイン理論株価（Rm基準）に: 「メイン理論株価（Rm基準）: $18.75（Ke 10.0%・高成長3年 ＝ 表の中央）」（`#sensBaseIvps`、
+  Keと年数は`sensitivity.base_wacc`・`base_years`）
+- スライダーを削除: `#waccSlider`・`#waccDeltaDisplay`・`#displayWacc`・`#displayIvps`のDOM、`updateWacc()`、`.wacc-slider*`のCSS（スマホ用を含む）。
+  削除前に`updateWacc`・`waccSlider`等をリポジトリ全体でgrepし、呼び出し元はstock.htmlのoninputだけ
+  （admin.htmlの`updateWaccPreview()`は別の関数）、テストは`tests/test_sens_matrix_dual_impl.py`だけだったことを確認
+- テスト: `tests/test_sens_matrix_dual_impl.py`のスライダー存在の確認を「削除されていること」「見出しがβの値ではなくメインIV」に置き換え
+  （修正前のstock.htmlで2件失敗・修正後に成功）
+- 実ブラウザ: `browser_checks/check_valuation_chart_basis.py`で全99銘柄の見出し＝中央セル＝メインIV・スライダーなし・ページエラー0件。
+  スクリーンショット（RXRX・NVDA・ALAB・KO、PC幅・スマホ幅）でもスライダーが無いことを確認
+
+---
+
 ### ✅ [MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1] MACRO PULSEのスコア推移が2026-03-29より前を描画しない（過去データの取り込み日がupdated_atに入り、先読み除外で全行が「未取得」になる） — M-3で対応・本番で確認
 **優先度:** 中
 **分類:** 表示の欠落 / MACRO PULSE（index.html・05_events.csv）

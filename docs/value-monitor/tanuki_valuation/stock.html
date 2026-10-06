@@ -117,18 +117,6 @@
     .sensitivity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
     .sensitivity-title { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--acc); letter-spacing: .05em; }
 
-    .wacc-slider-container { display: flex; align-items: center; gap: 12px; }
-    .wacc-slider-label { font-size: 12px; color: var(--mut); }
-    .wacc-slider {
-      width: 180px; height: 6px; -webkit-appearance: none; appearance: none;
-      background: var(--sur2); border-radius: 3px; outline: none;
-    }
-    .wacc-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 18px; height: 18px; background: var(--acc);
-      border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(196,208,255,.4);
-    }
-    .wacc-slider-value { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--acc); min-width: 50px; }
-
     .sensitivity-matrix { margin-top: 16px; overflow-x: auto; }
     .matrix-table { width: 100%; border-collapse: collapse; min-width: 400px; }
     .matrix-table th, .matrix-table td {
@@ -263,8 +251,6 @@
     @media (max-width: 768px) {
       .value-display, .inputs-grid { grid-template-columns: 1fr; }
       .future-table { font-size: 12px; }
-      .wacc-slider-container { flex-direction: column; align-items: flex-start; }
-      .wacc-slider { width: 100%; }
       #valMetricsRow { grid-template-columns: 1fr !important; }
     }
 
@@ -1151,19 +1137,13 @@ function render(d) {
       <div class="sensitivity-section">
         <div class="sensitivity-header">
           <div class="sensitivity-title">📈 SENSITIVITY ANALYSIS</div>
-          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-            <div style="font-size:11px;color:var(--mut);font-family:var(--mono)">
-              β込みWACC:
-              <span style="color:var(--acc);font-weight:700" id="displayIvps">$${fmt(ivpsBeta > 0 ? ivpsBeta : ivps)}</span>
-              <span style="color:var(--mut);font-size:10px">（WACC: <span id="displayWacc">${fmtPct2(waccValue)}</span> β=${beta.toFixed(2)}）</span>
-            </div>
-            <div class="wacc-slider-container">
-              <span class="wacc-slider-label">WACC調整:</span>
-              <input type="range" class="wacc-slider" id="waccSlider"
-                     min="-2" max="2" step="0.5" value="0"
-                     oninput="updateWacc(this.value)">
-              <span class="wacc-slider-value" id="waccDeltaDisplay">±0%</span>
-            </div>
+          <!-- 見出しはメイン理論株価（Rm基準）。表の中央セル（Ke=Rm・基準年数）と同じ値（2026-10-06）。
+               以前はβ込みWACCの理論株価を出しており、Rm基準の表と基準が食い違っていた。
+               β込みWACCの倍率をRm基準の表に掛ける近似の「WACC調整」スライダーも同日に削除 -->
+          <div style="font-size:11px;color:var(--mut);font-family:var(--mono)" id="sensBaseLabel">
+            メイン理論株価（Rm基準）:
+            <span style="color:var(--acc);font-weight:700" id="sensBaseIvps">$${fmt(ivps)}</span>
+            <span style="color:var(--mut);font-size:10px">（Ke ${fmtPct(sensitivity.base_wacc ?? marketReturn)}・高成長${sensitivity.base_years ?? '—'}年 ＝ 表の中央）</span>
           </div>
         </div>
 
@@ -1869,7 +1849,7 @@ function render(d) {
           <div class="calc-step-header" onclick="toggleStep(this)">
             <div class="calc-step-title">
               <span class="step-num">${nextStep()}</span>
-              <span class="step-name">${dcfType === 'three_stage' ? '3段階DCF計算' : '2段階DCF計算'}</span>
+              <span class="step-name">${dcfType === 'three_stage' ? '3段階DCF計算' : dcfType === 'tapering' ? '逓減型DCF計算' : '2段階DCF計算'}</span>
             </div>
             <div style="display:flex;align-items:center;gap:16px">
               <span class="step-result">${fmtB(dcfC.v0 || 0)}</span>
@@ -2135,6 +2115,7 @@ function render(d) {
     <div class="chart-container">
       <h2 class="section-title">VALUATION COMPONENTS</h2>
       <div id="valuation-chart"></div>
+      <div id="valuation-chart-note" style="font-size:11px;color:var(--mut);margin-top:6px"></div>
     </div>
 
     <!-- FCF過去5年バーチャート -->
@@ -2201,7 +2182,7 @@ function render(d) {
     </footer>
   `;
 
-  renderChart(dcfType, pvPhase1, pvPhase2, pvHigh, pvTerminal, rpoPV, goPv, alpha, v0);
+  renderChart(dcfType, dcfC, pvPhase1, pvPhase2, pvHigh, pvTerminal, rpoPV, goPv, v0, dcfC.v0 || d.v0 || 0);
 
   // ---- Growth Sanity ----
   if (sanity) {
@@ -2386,40 +2367,6 @@ function renderMatrixRows(matrix, waccValues, growthYears, currentPrice, baseRow
   `).join('');
 }
 
-function updateWacc(delta) {
-  const d = parseFloat(delta);
-  document.getElementById('waccDeltaDisplay').textContent = d >= 0 ? `+${d}%` : `${d}%`;
-
-  if (!globalData) return;
-
-  const baseWacc = globalData.wacc?.value || 0.085;
-  const newWacc = baseWacc + (d / 100);
-  const sensitivity = globalData.sensitivity || {};
-  const matrix = sensitivity.matrix || [];
-  const waccValues = sensitivity.wacc_values || [];
-  const growthYears = sensitivity.growth_years || [3, 5, 7];
-  const currentPrice = globalData.components?.current_price || 0;
-
-  const adjustedWaccValues = waccValues.map(w => w + (d / 100));
-  const adjustFactor = baseWacc / newWacc;
-  const adjustedMatrix = matrix.map(row => row.map(p => p * adjustFactor));
-
-  document.getElementById('matrixBody').innerHTML = renderMatrixRows(adjustedMatrix, adjustedWaccValues, growthYears, currentPrice, 1);
-  document.getElementById('displayWacc').textContent = fmtPct2(newWacc);
-
-  // β込みWACC感度表示を更新（displayIvps）
-  const baseIvpsBeta = globalData.intrinsic_value_beta || globalData.intrinsic_value_per_share || 0;
-  const newIvps = baseIvpsBeta * adjustFactor;
-  document.getElementById('displayIvps').textContent = '$' + fmt(newIvps);
-
-  // メイン理論株価（Rmβなし固定）のupside更新
-  const mainIvps = globalData.intrinsic_value_per_share || 0;
-  const newUpside = ((mainIvps / currentPrice) - 1) * 100;
-  const badge = document.getElementById('displayUpside');
-  badge.className = 'upside-badge ' + (newUpside >= 0 ? 'positive' : 'negative');
-  badge.textContent = (newUpside >= 0 ? '▲' : '▼') + ' ' + Math.abs(newUpside).toFixed(1) + '%';
-}
-
 function applyLayer2Toggle() {
   if (!globalData) return;
   const d = globalData;
@@ -2448,33 +2395,55 @@ function toggleStep(header) {
   header.parentElement.classList.toggle('open');
 }
 
-function renderChart(dcfType, pvP1, pvP2, pvHigh, pvTv, rpoPV, goPv, alpha, v0) {
+// メイン理論株価（Rm基準、βなし10%）の内訳を描く。棒の合計がV₀（v0_rm）と一致するよう、
+// 棒にはRm版のPV（*_rm）を使う（2026-10-06、TANUKI-BETA-BASIS-FIELDS-UNLABELED-1）。
+// 以前はβ込みWACCのPV（components.pv_high等）を積み、V₀のラベルだけv0_rmだったため、
+// 棒の高さ（β版の合計）とラベル（Rm版）が全銘柄で食い違っていた。
+// *_rmが無い古いデータだけβ版に戻し、その場合はV₀もβ版にそろえて注記する。
+function renderChart(dcfType, dcfC, pvP1Beta, pvP2Beta, pvHighBeta, pvTvBeta, rpoPV, goPv, v0Rm, v0Beta) {
   const hasThreeStage = dcfType === 'three_stage';
   const hasRPO = rpoPV > 0;
   const hasGO = goPv > 0;
+  const num = v => (typeof v === 'number' && isFinite(v)) ? v : null;
 
-  const totalV0 = v0 + rpoPV + goPv;
+  let parts;   // [[ラベル, 値], ...]
+  let v0;
+  let betaFallback = false;
+  if (hasThreeStage) {
+    const p1 = num(dcfC.pv_phase1_rm), p2 = num(dcfC.pv_phase2_rm), tv = num(dcfC.pv_tv_rm);
+    if (p1 != null && p2 != null && tv != null) {
+      parts = [['PV Phase1', p1], ['PV Phase2', p2], ['PV Terminal', tv]];
+      v0 = v0Rm;
+    } else {
+      parts = [['PV Phase1', pvP1Beta], ['PV Phase2', pvP2Beta], ['PV Terminal', pvTvBeta]];
+      betaFallback = true;
+    }
+  } else {
+    const hi = num(dcfC.pv_fcf_rm), tv = num(dcfC.pv_tv_rm);
+    if (hi != null && tv != null) {
+      parts = [['PV 高成長期', hi], ['PV ターミナル', tv]];
+      v0 = v0Rm;
+    } else {
+      parts = [['PV 高成長期', pvHighBeta], ['PV ターミナル', pvTvBeta]];
+      betaFallback = true;
+    }
+  }
+  if (betaFallback) v0 = v0Beta;
 
-  // ラベル・値・measure を動的構築
   const x = [];
   const y = [];
   const measure = [];
   const text = [];
 
   // DCF要素
-  if (hasThreeStage) {
-    x.push('PV Phase1', 'PV Phase2', 'PV Terminal');
-    y.push(pvP1, pvP2, pvTv);
-    measure.push('relative', 'relative', 'relative');
-    text.push(fmtB(pvP1), fmtB(pvP2), fmtB(pvTv));
-  } else {
-    x.push('PV 高成長期', 'PV ターミナル');
-    y.push(pvHigh, pvTv);
-    measure.push('relative', 'relative');
-    text.push(fmtB(pvHigh), fmtB(pvTv));
+  for (const [label, val] of parts) {
+    x.push(label);
+    y.push(val);
+    measure.push('relative');
+    text.push(fmtB(val));
   }
 
-  // V₀ 小計
+  // V₀ 小計（totalの棒の高さは前の棒の合計。ラベルも同じ値）
   x.push('V₀');
   y.push(0);
   measure.push('total');
@@ -2499,11 +2468,23 @@ function renderChart(dcfType, pvP1, pvP2, pvHigh, pvTv, rpoPV, goPv, alpha, v0) 
   measure.push('total');
   text.push(fmtB(v0 + rpoPV + goPv));
 
+  const note = document.getElementById('valuation-chart-note');
+  if (note) {
+    note.textContent = betaFallback
+      ? '※ β込みWACC基準（Rm基準の内訳がないデータのため）。メイン理論株価（Rm基準）とは一致しません。'
+      : 'Rm基準（割引率10%、βなし）。メイン理論株価の内訳。';
+    note.style.color = betaFallback ? 'var(--yellow)' : 'var(--mut)';
+  }
+
+  // 軸は10億ドル単位（$,.0f のままだと桁が長く左端で切れていた）
+  const toB = v => v / 1e9;
   Plotly.newPlot('valuation-chart', [{
     type: 'waterfall',
     orientation: 'v',
-    x, y, measure, text,
+    x, y: y.map(toB), measure, text,
     textposition: 'outside',
+    cliponaxis: false,
+    hoverinfo: 'x+text',
     connector: { line: { color: '#1e2840' } },
     increasing: { marker: { color: '#4ade80' } },
     decreasing: { marker: { color: '#f87171' } },
@@ -2512,10 +2493,10 @@ function renderChart(dcfType, pvP1, pvP2, pvHigh, pvTv, rpoPV, goPv, alpha, v0) 
     paper_bgcolor: '#111520',
     plot_bgcolor: '#111520',
     font: { family: 'Space Mono', color: '#94a3b8', size: 11 },
-    margin: { t: 40, b: 80, l: 60, r: 40 },
+    margin: { t: 56, b: 80, l: 60, r: 40 },
     showlegend: false,
-    yaxis: { gridcolor: '#1e2840', tickformat: '$,.0f' },
-    xaxis: { tickangle: -30 }
+    yaxis: { gridcolor: '#1e2840', tickprefix: '$', ticksuffix: 'B', tickformat: ',.0f', automargin: true, rangemode: 'tozero' },
+    xaxis: { tickangle: -30, automargin: true }
   }, { displayModeBar: false, responsive: true });
 }
 

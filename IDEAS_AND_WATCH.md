@@ -308,3 +308,33 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 `src/`配下の消費者は0件（本文「着手条件」の前提は変わらず）。
 
 ---
+
+### [MARKETDATA-SELF-CANCEL-HTTP502-1] Market Data Dailyの自己取り消し（gh run cancel）がGitHub APIのHTTP 502で失敗し、実行がfailureになった（2026-10-06 08:58 UTC、1回）
+**種別:** 監視メモ（実害なし、再発したら改修を検討）
+**登録日:** 2026-10-06
+**発見:** Rf現在値化の本番反映確認（読み取り専用、2026-10-06）の中で、Market Data Dailyの実行履歴を確認
+
+#### 内容
+- run `37439685214`（schedule、2026-10-06 08:58:02 UTC作成→09:00:10完了）。ガードは
+  「2026-10-06 08:59 UTC: 引け（20:00 UTC）から20分経っていない → run=false」で正常に何もしない判定
+- その後の段「Cancel this run when no new data was saved (downstream stays idle)」の`gh run cancel`が
+  `HTTP 502: Server Error (https://api.github.com/repos/Koichi-Shigihara2/On-a-journey/actions/runs/37439685214/cancel)`で
+  exit 1 → 実行のconclusionが**failure**（通常はcancelled）
+- 下流（Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Update・TANUKI_Score_Update）は
+  `conclusion == 'success'`の条件に当たらず4本ともskipped。取得・commitもなし。**実害なし**
+- GitHub側の一時的な障害とみられる（同じ段は前後の実行〈08:09・02:56・01:46・01:28 UTC〉では成功）
+
+#### System Health（check_j_workflow_runs()）が通知したか（2026-10-06 10:31 UTC時点）
+- 08:58の実行の後、System Health Checkはまだ動いていない（直前は10-06 03:09 UTC、次は10-06 23:30 UTCのcron）。
+- check_j_workflow_runs()は「ワークフローごとに直近の完了した実行1件のconclusion」で判定するため、23:30 UTCの時点では
+  今夜の外部起動（20:25・20:55・21:25 UTC）の実行が直近になり、**この1件は通知されない見込み**。
+  逆に、直近がこのfailureのまま判定された場合は「失敗」として数えられる（ガードのcancelledと同じく、
+  [[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]の判定方式の問題の範囲）
+
+#### 再発した場合の対応案（実装しない）
+- 取り消しの失敗を非致命にする: `gh run cancel … || echo "[WARN] 取り消しに失敗（下流は条件で起動しない）"`のようにして、
+  取り消せなかった実行も成功で終わらせる。ただし成功で終わると下流の`conclusion == 'success'`の条件に当たって
+  起動してしまうため、下流の条件をガードの出力（`steps.guard.outputs.run`等）を見る形にするか、
+  取り消しを数回リトライする形を先に検討する（単純な`|| true`は不可）
+
+---

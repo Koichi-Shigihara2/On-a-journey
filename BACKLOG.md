@@ -2638,7 +2638,7 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 ---
 
 ### [TANUKI-BETA-BASIS-FIELDS-UNLABELED-1] latest.jsonのトップレベルintrinsic_value_ptとcomponents.pv_high・pv_terminalがβ込みWACCで割り引いた値なのに注記がなく、メインの計算根拠と紛らわしい
-**優先度:** 中（2026-10-04に低から変更）
+**優先度:** 低（2026-10-06に中から戻した。ウォーターフォール図の部分は解消、残りは注記だけ）
 **分類:** 表示・命名 / TANUKI VALUATION（core_calculator.py・stock.html）
 **登録日:** 2026-10-04
 **発見:** Rfの読み手の棚卸し（2026-10-04、読み取り専用、HEAD `befc659b40`）
@@ -2668,6 +2668,23 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 数銘柄（2段階・3段階・逓減を各1以上）で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測する。
 一致しなければ図の修正（Rm版のPV〈`pv_fcf_rm`・`pv_tv_rm`・`pv_phase1_rm`・`pv_phase2_rm`〉への置き換え）、一致すれば
 `v0_note`と同じ形の注記の追加だけにする。
+
+#### 2026-10-06 ウォーターフォール図の部分を解消（優先度を低に戻した）
+- 実測（読み取り専用、HEAD `5c689659d7`）: **全99銘柄で不一致**だった。Plotlyの`measure:'total'`の棒の高さは前の棒の合計になるため、
+  V₀の棒の高さはβ版のPVの合計、ラベルの文字だけがv0_rm。差の率（÷v0_rm）の中央値は約21%、50%超が31銘柄、0.5%以内は0銘柄。
+  例: RXRX 棒8.98B・ラベル9.52B（+5.7%）、NVDA 棒6.15T・ラベル17.65T（+65.1%）、ALAB 棒10.05B・ラベル25.94B（+61.3%）、
+  KO 棒178.68B・ラベル88.54B（−101.8%。β込みWACCが10%未満の29銘柄では棒のほうが大きい）。
+  外側のラベルとY軸の目盛りもグラフの上端・左端で切れてほぼ読めなかった
+- Rm版の内訳（`pv_fcf_rm`・`pv_tv_rm`、3段階は`pv_phase1_rm`・`pv_phase2_rm`・`pv_tv_rm`）は全99銘柄のlatest.jsonにあり、
+  合計はv0_rmと一致（出力側の改修は不要だった）
+- 修正: `stock.html::renderChart()`の棒をRm版のPVに切り替え。`*_rm`が無いデータだけβ版に戻し、そのときはV₀もβ版にそろえて
+  図の下に「β込みWACC基準」と注記（`#valuation-chart-note`、通常は「Rm基準（割引率10%、βなし）」）。軸を10億ドル単位にし、
+  `cliponaxis:false`・`automargin`・上の余白56pxでラベルの切れを解消。STEP「DCF計算」の見出しを逓減型の銘柄では「逓減型DCF計算」に
+- テスト: `tests/test_stock_html_waterfall_rm.py`（ソースのパターン4件は修正前のコードで失敗・修正後に成功、
+  全銘柄のRm版の内訳の合計＝v0_rmの1件）。実ブラウザ: `browser_checks/check_valuation_chart_basis.py`（全銘柄の棒の高さ＝ラベル＝v0_rm）
+- **残り**: トップレベルの`intrinsic_value_pt`と`components.pv_high`・`pv_terminal`への注記（`v0_note`と同じ形）だけ。
+  これらを読む画面はSTEPの「DCF計算」欄だけで、そこは「V₀β」「β込みWACC基準（参考）」と表示済みのため、残りは
+  latest.jsonを直接読む人・AI向けの命名の問題。優先度を低に戻した
 
 ---
 

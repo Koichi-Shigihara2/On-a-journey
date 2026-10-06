@@ -101,6 +101,7 @@ def create_sensitivity_calc_func(
     net_cash_per_share: float = 0.0,
     phase2_growth: float = None,
     phase2_years: int = 0,
+    tapering_g_end: float | None = None,
 ) -> Callable[[float, int], float]:
     """
     感度分析用の計算関数を生成（v7.1: BS補正・3段階DCF対応）
@@ -115,6 +116,8 @@ def create_sensitivity_calc_func(
         net_cash_per_share: BS補正（ネットキャッシュ/株）v7.0追加
         phase2_growth: Phase2成長率（Noneなら2段階DCF）
         phase2_years: Phase2年数（0なら2段階DCF）
+        tapering_g_end: Phase1終了成長率（設定時は線形逓減DCFを使用。
+            scenarios.py::create_scenario_calc_func()と同じ分岐。2026-10-06）
 
     Returns:
         calc_func: (wacc, years) -> per_share_value（BS補正込み）
@@ -122,7 +125,19 @@ def create_sensitivity_calc_func(
     def calc_func(wacc: float, years: int) -> float:
         # 精密計算のためdcfモジュールを使用
         try:
-            if phase2_growth is not None and phase2_years > 0:
+            if tapering_g_end is not None and high_growth_rate > tapering_g_end:
+                # 線形逓減DCF（DCF-1）: メイン理論株価が逓減型の銘柄で中央セルを一致させる
+                from .dcf import calculate_tapering_dcf
+                result = calculate_tapering_dcf(
+                    base_fcf=base_fcf,
+                    g_start=high_growth_rate,
+                    g_end=tapering_g_end,
+                    high_growth_years=years,
+                    terminal_growth=terminal_growth,
+                    wacc=wacc,
+                )
+                v0 = result.v0
+            elif phase2_growth is not None and phase2_years > 0:
                 from .dcf import calculate_three_stage_dcf
                 result = calculate_three_stage_dcf(
                     base_fcf=base_fcf,
