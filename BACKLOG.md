@@ -2862,6 +2862,54 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 一致しなければ図の修正（Rm版のPV〈`pv_fcf_rm`・`pv_tv_rm`・`pv_phase1_rm`・`pv_phase2_rm`〉への置き換え）、一致すれば
 `v0_note`と同じ形の注記の追加だけにする。
 
+---
+
+### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、Market Data Dailyのガードによる正常なcancelledを失敗と数え、ほぼ毎日🔴になっている
+**優先度:** 高
+**分類:** 監視 / System Health・GitHub Actions
+**登録日:** 2026-10-06
+**発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
+
+#### 内容
+`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了済みの実行1件
+（`_fetch_latest_run()`、`per_page=1&status=completed`）の`conclusion`だけを見て、`success`・`skipped`以外を失敗にする。
+Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動）は自分で取り消す
+（cancelled）設計になった。このため直近の1件はほとんどの日でcancelledになり、[J]が🔴（CRITICAL、`main()`はexit 2）になる。
+[J]が本物の失敗を知らせる信号として役に立たない（2026-09-29の🔴はMarket_Pulse_Updateの本物のfailureだった）。
+
+#### 実測（System Health Checkの日次の実行のログ、2026-10-06確認）
+- [J]が「Market_Data_Daily_Update.yml(cancelled)」で🔴: 10-01・10-02・10-04・10-05・10-06
+- 10-03は✅（直近の1件が01:55のfetched〈success〉だったため）
+- 09-29は🔴だが原因はMarket_Pulse_Update.yml(failure)（本物）。09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）
+- 実行そのもの（System Health Check）は、WARNINGでもexit≠0にする意図的な設計のため、09-28以前から毎日failure。これは本件の対象外
+
+#### 直し方の案（チャット側）
+ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
+`_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
+failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
+
+---
+
+### [EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1] 外部起動のWorkerの21:50 UTCの確認はMarket Data Dailyの成功しか見ないため、下流（Market Pulse等）が欠けても検知できない
+**優先度:** 中
+**分類:** 監視 / 外部起動（Cloudflare Worker）・GitHub Actions
+**登録日:** 2026-10-06
+**発見:** 外部起動の初回確認（米国10-05の足）
+
+#### 内容
+`tools/external_trigger/lib.js::successfulRunsSinceClose()`は、Market_Data_Daily_Update.ymlについて
+「その日の20:00 UTC以降に作られて成功した実行」の数だけを数える。下流（Market_Pulse_Update・Stonks Silo Update・
+TANUKI VALUATION Daily Update・TANUKI_Score_Update）の結果は見ないので、下流が失敗しても21:50の確認は「成功した実行あり」で何もせず、
+Discordにも通知しない。
+
+#### 実例（2026-10-05 米国10-05の足）
+20:25:47 UTCの外部起動で取得に成功したが、その下流のMarket_Pulse_Update（20:28:54作成、run `37369996575`）が
+「The job was not acquired by Runner of type hosted even after multiple attempts」で15分後にfailure（ジョブのstepは0件）。
+Market Pulseの10-05の足のエントリは作られず、21:50の確認では検知されなかった（手動実行での作り直しはしない、チャット側の判断）。
+同じ夜の20:55の外部起動（run `37372743458`）も同じランナー未割り当てでfailure（取得は20:25で済んでいたので実害なし）。
+
+#### 着手条件
+直し方（21:50に下流4本の成功も数えて足りなければ通知するか、再実行まで行うか）はチャット側で決める。
 
 ## 優先度：低（アイデア段階）
 

@@ -137,6 +137,27 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   想定どおりならM-3・M-3b・M-5の確認が終わった項目をBACKLOG_DONE.mdへ (2) 2026-10-09: 10-08（木）公表のClaimsの行が観測日（週末日）に置かれること
   （`[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`）
 
+**2026-10-06 外部起動の初回確認の結果（米国10-05〈月〉の足。下の確認手順の1〜4を実施）**
+- **判定: 外部起動は成功**（チャット側の判定）。Cloudflareのcronは3本とも発火した（20:25:47・20:55:40・21:25:40 UTCにworkflow_dispatchの実行が作られた）。
+  20:25の起動がガードrun=true（2026-10-05の終値が未取得 0/583）→ status=fetched・with_bars 587・no_close_after_retry 0で取得（20:28:51完了）。
+  21:25の起動は「終値はそろっている（583/583）→ run=false」で取り消し、下流はskipped。
+- 20:55の起動（run `37372743458`）は「The job was not acquired by Runner of type hosted even after multiple attempts」で15分後にfailure（stepは0件、GitHub側の事情）。
+  取得は20:25で済んでいたため実害なし。
+- 下流: Stonks Silo 20:36:56・TANUKI VALUATION 20:51:51（1回だけ）・TANUKI Score 20:58:14、いずれもsuccess。**下流は20:58 UTCに完了し22:00 UTCに間に合った**。
+- **Market Pulseの10-05の足は欠けた**: Market_Pulse_Update（20:28:54作成、run `37369996575`）が20:55と同じランナー未割り当てでfailure。最新のエントリは10-03 11:08 JSTのまま。
+  **手動実行での作り直しはしない（チャット側の判断）**。21:50の確認は下流を見ないため検知されなかった → `[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`（中）を登録
+- GitHubのschedule（保険）: 01:28・01:46・02:56 UTCの起動は「そろい済み」で、08:09は「引けから20分経っていない」でrun=false、すべて取り消し。夜の枠（20:47〜23:17）の時刻の起動は今回も0本
+- **まだ確かめられていないこと**: 21:50 UTCのcronの発火（GitHub側には何も残らない設計。Observabilityか`workersInvocationsScheduled`で確認する）と、
+  Discordへの送信経路（今回は通知の条件に当たる出来事が無く、20:55のfailureは204の応答の後なので通知対象外）
+- System Health Checkの[J] CronRunsが、ガードによる正常なcancelledを失敗と数えて🔴になっている（10-01・10-02・10-04〜10-06。10-03は✅、09-29の🔴は本物のMarket Pulseのfailure）
+  → `[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`（高）を登録
+- Rfの現在値化（`bb81928103`）は反映済み: RXRXのlatest.jsonが`risk_free_rate_live_source="tnx"`・`risk_free_rate_live_date="2026-10-05"`・`intrinsic_value_rf_rate`≈0.0531、
+  report.txtに`[Rf 5.31%, ^TNX 2026-10-05]`。stock.htmlの表示はブラウザで未確認
+- MACRO PULSE（10-05 22:15 UTCの枠、実際の起動は10-06 02:18 UTC、`99d8c8a00a`）: 新しい行（hy_spread・vixの10-02）はknown_at=written・sp500_t0_asofあり、
+  書き直したyc_10y2yの行は最初のknown_at（alfred）を残した。05_liquidity.csvの新しい行（10-05）は`easing_check=適用外`（WALCLが6,747,704→6,743,031と減った週）、
+  `m2_yoy_pct` 5.6589・`m2_yoy_pctile` 36。列`easing_check`が全行に加わった（既存の1346行は空欄）。**NFP・Permits・Michiganの新しい行の観測日への配置と、
+  `apply_revisions()`の新しい書き込みは今回該当する行が無く未確認**のため、M-3・M-3b・M-5の項目はまだBACKLOG_DONE.mdへ移していない
+
 **火曜（2026-10-06）朝の確認手順（米国10-05〈月〉の足。外部起動の初回の実地テスト）**
 夏時間（引け20:00 UTC）なので、想定は「20:25の起動が取得 → 20:55・21:25はガードで取得済みとして何もしない → 21:50は成功した実行ありで何もしない」。
 1. Cloudflare側: 20:25・20:55・21:25・21:50 UTCのcronが発火したか
