@@ -137,6 +137,23 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   想定どおりならM-3・M-3b・M-5の確認が終わった項目をBACKLOG_DONE.mdへ (2) 2026-10-09: 10-08（木）公表のClaimsの行が観測日（週末日）に置かれること
   （`[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`）
 
+**2026-10-06 実装C（`feature/mp-impl-c`）を統合**
+- `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
+  daily/のES=F・NQ=F・NIY=Fは09-30まで、空きは3営業日（10-01・10-02・10-05）で手順の5営業日以内のため埋めていない（今夜の取得の抜け補完で埋まる想定）
+- C-02（ニュースの見出し）の不一致の修正`687fdaaaa5`: RSSの見出しの連続した空白（"Gen Z.  Here’s why …"）をブラウザがまとめて表示するため保存値と画面が食い違っていた。
+  `news_headlines.py`で保存前にASCIIの空白の連続を1つにまとめる（全角スペースは残す）。回帰テストは修正前のコードで失敗することを確認。commit済みのエントリに見出しは無く、データの修復は不要
+- browser_checks（作業用コピーで`backfill_implc.py`を流して確認、commitはしていない）: 一致59・不一致2・判定不能0。C-02・C-08（先物・ドル円）・C-08b（予定）は一致。
+  不一致はD-02（WTI・金の前日比 記録-1.73/-0.72 vs 再計算-1.9/-0.95）とD-04（ブレッス 503 vs 502、除外1）で、統合前のkaihatsuでも同じ値＝10-03のエントリと今のdaily/のずれ（実装Cとは無関係）
+
+**水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）**
+1. 実装Cの表示（Market Pulseの今夜のエントリ）: 段階2のニュースの見出し（`headlines`の件数・status・failed、画面の#headlinesTable）、
+   段階8の先物・ドル円（`futures`、ES=F・NQ=F・NIY=F・ドル円の最新値・前日比・限月・「暫定（清算前）」「暫定（日中）」）、今後7日の予定（`calendar`、#calendarTableInner）。
+   daily/のES=F・NQ=F・NIY=Fに10-01〜10-06の行が入ったか（抜け補完）
+2. browser_checks: `venv\Scripts\python.exe browser_checks\check_dependency_map.py`。実装Cの要素（C-02・C-08・C-08b）が一致すること
+3. **D-02・D-04の不一致が、今夜のMarket Pulseの正常な実行で解消したか**（新しいエントリの計算時点とdaily/がそろうので一致する想定。残れば別の原因として調べる）
+4. 下流の完了時刻: `gh run list --limit 40 --json workflowName,event,createdAt,updatedAt,conclusion`で、**Market Pulseを含む**下流（Market Pulse・Stonks Silo・
+   TANUKI VALUATION・TANUKI Score）が**22:00 UTCまでに完了したか**を記録（10-05はMarket Pulseがランナー未割り当てで欠けた。外部起動の各起動のガードの判定も前回と同じ形式で記録）
+
 **2026-10-06 外部起動の初回確認の結果（米国10-05〈月〉の足。下の確認手順の1〜4を実施）**
 - **判定: 外部起動は成功**（チャット側の判定）。Cloudflareのcronは3本とも発火した（20:25:47・20:55:40・21:25:40 UTCにworkflow_dispatchの実行が作られた）。
   20:25の起動がガードrun=true（2026-10-05の終値が未取得 0/583）→ status=fetched・with_bars 587・no_close_after_retry 0で取得（20:28:51完了）。
@@ -178,7 +195,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
    `risk_free_rate_live_date`（10-05の足）・`intrinsic_value_rf_rate`があること、report.txtのERP_Signalの行に`[Rf x.xx%, ^TNX 日付]`が付いていること、
    stock.htmlの参考②の見出しに「（x.xx%、^TNX 日付）」が出ていること。`fallback_fixed`になっていたら、^TNXの日足が更新されていない（Market Data Dailyを確認）
 
-**マージ待ちのブランチ（残り2本。順番: 翌晩C → 最後にupdate-schedule。Bは2026-10-01に統合済み）**
+**マージ待ちのブランチ（残り1本: update-schedule。Bは2026-10-01、Cは2026-10-06〈`31812675c0`〉に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
   **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
@@ -186,7 +203,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   実行し直して`market_data.json`の既存エントリに実装Bの要素を付け直す (3) 09-29/30からマージまでに5営業日程度より多く空いたら、14銘柄を
   `python common/market_data/fetcher.py <14銘柄> --layer daily --repair-missing-days`で埋める（5営業日以内なら夜間の取得の抜け補完で埋まる）
   (4) 3ゲート＋browser_checks（57件一致だった）→commit→push。
-- `feature/mp-impl-c`（`2e45457c9b`、Bから分岐。Bの`36309d41f3`をマージ済み、段階8の先物・ドル円にも暫定の表示）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
+- （統合済み 2026-10-06、`31812675c0`）`feature/mp-impl-c`（`2e45457c9b`、Bから分岐。Bの`36309d41f3`をマージ済み、段階8の先物・ドル円にも暫定の表示）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
   **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`の再実行は任意（最新エントリだけに付く。
   翌晩の本番実行で自然に付く） (3) 空きが5営業日程度を超えたらES=F・NQ=F・NIY=Fを`--repair-missing-days`で埋める (4) 3ゲート＋browser_checks（60件一致）。
   **既知の不一致（2026-10-03 チャット側の指示）**: `browser_checks/check_dependency_map.py`の⑤Hollow Rallyだけが不一致になった場合は、
