@@ -292,7 +292,23 @@ def _analyze_ctrl_text(item4_text: str) -> Dict[str, Any]:
 # メイン取得
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def fetch_ctrl(ticker: str, cik: str) -> Optional[Dict[str, Any]]:
+# fetch_ctrl()の戻り値: 保存済みと同じ10-Q（四半期・提出日が同じ）なので取得も保存もしない
+UNCHANGED = "unchanged"
+
+
+def _stored_latest(ticker: str) -> Optional[Dict[str, Any]]:
+    """ctrl/{TICKER}/latest.json（無い・読めなければNone）。"""
+    path = os.path.join(CTRL_DIR, ticker.upper(), "latest.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def fetch_ctrl(ticker: str, cik: str):
+    """最新の10-QのItem 4を取得して評価する。
+    戻り値: 保存する内容のdict / 保存済みと同じ10-QならUNCHANGED / 取得できなければNone（失敗）。"""
     print(f"\n[{ticker}] CIK={cik}")
     filings = _get_recent_filings(cik, form="10-Q", count=1)
     if not filings:
@@ -306,6 +322,13 @@ def fetch_ctrl(ticker: str, cik: str) -> Optional[Dict[str, Any]]:
     filed   = filing["filing_date"]
     cik_int = int(cik.lstrip("0") or "0")
     accn_nd = accn.replace("-", "")
+
+    # 保存済みと同じ10-Qなら、本文の取得・Grokの翻訳・書き込みをしない（毎週fetched_atだけが変わるcommitを作らない）
+    stored = _stored_latest(ticker)
+    if (stored and stored.get("quarter") == _report_date_to_quarter(report)
+            and stored.get("filing_date") == filed):
+        print(f"  [{ticker}] 変更なし（保存済みと同じ10-Q: {stored.get('quarter')} 提出 {filed}）")
+        return UNCHANGED
 
     if not pdoc:
         print(f"  [{ticker}] primaryDocument なし ({accn})")
@@ -366,18 +389,17 @@ def fetch_ctrl(ticker: str, cik: str) -> Optional[Dict[str, Any]]:
 
 
 def load_tail_tickers() -> List[str]:
-    """positions_index.json から全ティッカーを取得"""
+    """positions_index.json（`{"positions": ["PLTR_thesis.json", …]}`）から全ティッカーを取得。
+    edgar_rss_monitor.get_monitored_tickers()と同じ読み方（[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]: 以前はdictを
+    そのまま回し、キーの"positions"だけをティッカー`POSITIONS`として読んでいた）。"""
     if not os.path.exists(POS_IDX_PATH):
         return []
     with open(POS_IDX_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    tickers = []
-    for entry in data:
-        if isinstance(entry, dict):
-            t = entry.get("ticker", "").upper().strip()
-        else:
-            t = str(entry).upper().strip()
-        if t:
+    tickers: List[str] = []
+    for fname in (data.get("positions") or []) if isinstance(data, dict) else []:
+        t = str(fname).replace("_thesis.json", "").upper().strip()
+        if t and t not in tickers:
             tickers.append(t)
     return tickers
 
@@ -398,7 +420,8 @@ def main():
 
     os.makedirs(CTRL_DIR, exist_ok=True)
 
-    ok, ng = 0, 0
+    # 成功 = 取得して書いた（written）＋保存済みと同じ10-Qなので書かなかった（unchanged）。失敗 = CIK未登録・取得の失敗・例外
+    written, unchanged, ng = 0, 0, 0
     for ticker in tickers:
         cik = _tickers_mod.get_cik(ticker)
         if not cik:
@@ -410,6 +433,9 @@ def main():
             result = fetch_ctrl(ticker, cik)
             if result is None:
                 ng += 1
+                continue
+            if result == UNCHANGED:
+                unchanged += 1
                 continue
             quarter    = result["quarter"]
             ticker_dir = os.path.join(CTRL_DIR, ticker)
@@ -434,14 +460,18 @@ def main():
             print(f"  [{ticker}] 保存: {period_path}")
             print(f"  [{ticker}] 保存: {latest_path}")
             print(f"  [{ticker}] index.json: {merged}")
-            ok += 1
+            written += 1
         except Exception as e:
             print(f"  [{ticker}] エラー: {e}")
             ng += 1
 
         time.sleep(0.5)
 
-    print(f"\n完了: {ok} 成功 / {ng} 失敗")
+    print(f"\n完了: {written + unchanged} 成功（更新 {written} / 変更なし {unchanged}） / {ng} 失敗")
+    # 1銘柄も成功しなかった実行は失敗にする（以前は0銘柄の処理でも終了コード0で、実行がsuccessのまま何もしていなかった）。
+    # 全銘柄が「変更なし」の週は成功
+    if written + unchanged == 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

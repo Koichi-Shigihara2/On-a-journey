@@ -35,6 +35,8 @@ jobs:
         run: pip install requests
 
       - name: Fetch SEC ctrl data
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}   # Item 4の抜粋の和訳（item4_excerpt_ja）。無いと和訳なしで保存される
         run: |
           INPUT="${{ github.event.inputs.ticker }}"
           if [ -z "$INPUT" ]; then
