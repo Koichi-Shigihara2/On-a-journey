@@ -2864,29 +2864,45 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 
 ---
 
-### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、Market Data Dailyのガードによる正常なcancelledを失敗と数え、ほぼ毎日🔴になっている
+### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
 **優先度:** 高
 **分類:** 監視 / System Health・GitHub Actions
-**登録日:** 2026-10-06
+**登録日:** 2026-10-06（同日、チャット側の確認を受けて実測と件名を訂正）
 **発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
 
 #### 内容
-`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了済みの実行1件
+`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了した実行1件
 （`_fetch_latest_run()`、`per_page=1&status=completed`）の`conclusion`だけを見て、`success`・`skipped`以外を失敗にする。
-Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動）は自分で取り消す
-（cancelled）設計になった。このため直近の1件はほとんどの日でcancelledになり、[J]が🔴（CRITICAL、`main()`はexit 2）になる。
-[J]が本物の失敗を知らせる信号として役に立たない（2026-09-29の🔴はMarket_Pulse_Updateの本物のfailureだった）。
+Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動・休場日の起動）は
+自分で取り消す（cancelled）設計になった。System Healthの起動時点で直近の1件がこの取り消しだと[J]が🔴になり、
+`main()`は`return 2 if (not ok_a or not ok_j) else 1`でCRITICAL（exit 2）を返す。
+見るのは最新の1件だけなので、1日に何本取り消しがあっても「失敗1件」になる。
 
-#### 実測（System Health Checkの日次の実行のログ、2026-10-06確認）
-- [J]が「Market_Data_Daily_Update.yml(cancelled)」で🔴: 10-01・10-02・10-04・10-05・10-06
-- 10-03は✅（直近の1件が01:55のfetched〈success〉だったため）
-- 09-29は🔴だが原因はMarket_Pulse_Update.yml(failure)（本物）。09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）
-- 実行そのもの（System Health Check）は、WARNINGでもexit≠0にする意図的な設計のため、09-28以前から毎日failure。これは本件の対象外
+#### 実測（System Health Checkの日次の実行のログと、その時点で[J]が見たMarket Data Dailyの実行、2026-10-06確認）
+| System Health（UTC） | [J] | 見た実行 | 理由 |
+|---|---|---|---|
+| 10-06 03:09 | 🔴 | `37406580032`（02:56の保険のschedule、cancelled） | ガード「終値はそろっている」 |
+| 10-05 02:09 | 🔴 | `37168962405`（10-04 01:45、トークンの動作確認の手動実行、cancelled） | ガード「NYSE休場日」 |
+| 10-04 02:46 | 🔴 | 同上`37168962405` | 同上 |
+| 10-03 02:08 | ✅ | `37087907001`（01:55の取得、success） | — |
+| 10-02 02:20 | 🔴 | `36954558060`（02:12、cancelled） | ガード「そろい済み」 |
+| 10-01 02:14 | 🔴 | `36804310278`（02:07、cancelled） | ガード「そろい済み」（ほかにAdjusted_Eps_Analyzer_update.ymlの未実行超過） |
+
+- 09-29の🔴はMarket_Pulse_Update.yml(failure)（本物）、09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）、09-28は✅
+- 監視件数は10-04から16→13。`791faa1f02`（金曜の保険のcronを削除）でMarket Pulse・Stonks Silo・TANUKI VALUATIONの3本からcronが無くなり、
+  cronのあるワークフローだけを監視する[J]の対象から外れた（`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`に追記）
+- Discordの1行（`build_one_line()`）は各項目の詳細を先頭20文字で切る（`"short": det_j[:20]`）ため、「13件監視 / 失敗1件: Market…」となり、
+  どのワークフローのどのconclusionかが通知から読めない
+- 毎日のWARNINGの常時の原因は[F] TailCtrl（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）と[K] TickerAudit（APGE・CON・SN・WSTの見直し候補）で、
+  本件の対象外。System Health Checkの実行は[J]が正常でも[F]・[K]によりexit 1で、直近40回すべてfailure
 
 #### 直し方の案（チャット側）
-ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
-`_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
-failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
+1. ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
+   `_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
+   failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
+2. Discordの1行の詳細の20文字の切り詰め（`det_j[:20]`）: [J]が異常のときは、ワークフロー名とconclusion（または未実行の日数）が
+   読める長さで出す（例: 異常のワークフローを`名前(conclusion)`の形で全部並べる、または[J]だけ切り詰めない）。
+   他の項目（`det_f[:20]`等）も同じ切り方なので、まとめて見直すかは実装時に決める。
 
 ---
 
@@ -2908,8 +2924,47 @@ Discordにも通知しない。
 Market Pulseの10-05の足のエントリは作られず、21:50の確認では検知されなかった（手動実行での作り直しはしない、チャット側の判断）。
 同じ夜の20:55の外部起動（run `37372743458`）も同じランナー未割り当てでfailure（取得は20:25で済んでいたので実害なし）。
 
+#### 追記（2026-10-06）: System Healthの[J]も下流の欠けを見逃した
+`791faa1f02`（2026-10-04、金曜の保険のcronを削除）で、Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Updateの3本から
+cronが無くなった。System Healthの[J] CronRunsは`_discover_cron_workflows()`でcronのあるワークフローだけを監視するため、
+この3本は10-04から監視の対象外（監視件数16→13）。このため10-05のMarket_Pulse_Updateのfailure（run `37369996575`）は、
+Workerの21:50の確認に加えて[J]でも検知されなかった（10-06の[J]は「失敗1件: Market_Data_Daily_Update.yml(cancelled)」だけ）。
+**直し方の案（チャット側）**: workflow_runで起動するワークフローも[J]の監視の対象に含める（判定の方式は
+`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の「想定した間隔の中にsuccessが1本以上あるか」と合わせる）。
+
 #### 着手条件
 直し方（21:50に下流4本の成功も数えて足りなければ通知するか、再実行まで行うか）はチャット側で決める。
+
+---
+
+### [TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1] TANUKI TAILの内部統制データの毎週の更新が、positions_index.jsonの形式を読み違えて1銘柄も処理しておらず（「[POSITIONS] CIK 未登録」）、APGEのctrl/latest.jsonが一度も作られず、他の9銘柄も2026-06-27のまま
+**優先度:** 中
+**分類:** バグ / TANUKI TAIL・GitHub Actions（System Health [F] TailCtrl）
+**登録日:** 2026-10-06
+**発見:** System Healthの毎日のWARNINGの切り分け（[F] TailCtrl「9/10件 ctrl/latest.json 存在 (不足: APGE)」）
+
+#### 内容
+`src/tail/sec_ctrl_fetcher.py::load_tail_tickers()`は`positions_index.json`を「要素がdictまたは文字列のリスト」として読むが、
+実際のファイルは`{"positions": ["PLTR_thesis.json", …, "APGE_thesis.json"]}`というdict。dictをそのまま回すためキーの`"positions"`だけが
+ティッカー`POSITIONS`になり、CIKが無くスキップされる。`TANUKI_TAIL_SEC_Ctrl.yml`（毎週月曜01:00 UTC）は終了コード0のため、実行はsuccessになる。
+
+#### 実測（2026-10-06確認）
+- 10-05の実行（run `37272284959`）・08-31の実行（run `33364060058`）のログ: `[POSITIONS] CIK 未登録 — スキップ` → `完了: 0 成功 / 1 失敗` → 「変更なし」
+- 実行履歴の残る06-29以降の毎週の実行はすべてsuccess。`docs/portfolio/tail/data/ctrl/`の最後のcommitは2026-06-27（`de03ca7c07`など手作業の更新）
+- ctrlの9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）の`latest.json`の`fetched_at`は06-24〜06-27、quarterは2026Q1〜Q2のまま
+- APGEは2026-07-02（`3d45e67949`）に`positions_index.json`へ追加されたが、その後の更新が何もしないため`ctrl/APGE/`は一度も作られていない
+- System Healthの[F]は09-28以前から毎日⚠️（BACKLOG_DONE.mdに「既存の別警告、対象外」と2回記録があるだけで、課題として未登録だった）
+
+#### 関係する課題
+- `[[TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1]]`（BACKLOG_DONE.md、2026-09-09クローズ）: APGEのthesis.jsonの`kpis`が空でKPIステータス表が出ない件。
+  `quarterly_review_generator.py`の`kpis`の扱いで、内部統制（`sec_ctrl_fetcher.py`・`ctrl/`）とは出力も原因も別。重複ではない
+- BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdに、ctrlのAPGE不足・`load_tail_tickers()`を扱う項目は無い（grepで確認）
+- System Healthの[J]はconclusionしか見ないので、この「successだが何もしていない」実行は検知できない
+
+#### 直し方の案
+`load_tail_tickers()`を`{"positions": [...]}`の形式に合わせ、`*_thesis.json`からティッカーを取り出す（`src/tail/edgar_rss_monitor.py`の読み方と揃える）。
+対象が1件も処理できなかったときは終了コードを非0にする。直した後に一度手動実行し、APGEを含む10銘柄のctrlが更新されること、
+[F]が✅になることを確認する（9銘柄の内部統制の判定が06-27から変わる可能性があるので、差分は確認してからcommitする）。
 
 ## 優先度：低（アイデア段階）
 
