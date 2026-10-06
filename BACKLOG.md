@@ -2692,6 +2692,7 @@ sp500_asof の順に適用した（適用後の今日のスコア27）。確認�
 
 ### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
 **優先度:** 高
+**状態:** 実装完了・実地確認待ち（2026-10-07）。直した後の最初のSystem Health Checkで[J]が正しい結果を出し、Discordの1行でJ・Kが切れずに読めることを確かめるまでBACKLOG_DONE.mdへ移さない
 **分類:** 監視 / System Health・GitHub Actions
 **登録日:** 2026-10-06（同日、チャット側の確認を受けて実測と件名を訂正）
 **発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
@@ -2730,6 +2731,26 @@ Market Data Dailyは2026-09-30からガードを入れ、新しいデータが�
    読める長さで出す（例: 異常のワークフローを`名前(conclusion)`の形で全部並べる、または[J]だけ切り詰めない）。
    他の項目（`det_f[:20]`等）も同じ切り方なので、まとめて見直すかは実装時に決める。
 
+#### 追記（2026-10-07）: `status=completed`で絞った最新の1件が古い（[J]の別の誤り）
+- 見つけた経緯: 直し方の読み取り調査で、[J]の関数をローカルで実行したところ「Adjusted_Eps_Analyzer_update.ymlが13日未実行」と出たが、
+  `gh run list`では10-05に成功していた。同じAPIを呼び比べて、`status=completed`の絞り込みの結果が古いことが分かった
+- 実測（2026-10-07、認証付き）: MACRO_PULSE_Update.ymlの`runs?per_page=1&status=completed`は**09-24 17:49の実行**（total_count 411）を返し、
+  絞り込みなし・`created>=2026-10-01`はどちらも**10-06 18:52の実行**（total_count 487）を返した。認証なしでは、Adjusted EPSでも09-24の実行が返った
+- 本番でも起きていた: 09-30の[J]の「MACRO_PULSE_Update.yml(7日/毎日閾値3日)」、10-01の「Adjusted_Eps_Analyzer_update.yml(11日/週次閾値10日)」は、
+  どちらも実際には数日以内に成功していた（誤った未実行超過）。この2件は本件の「実測」の表の注記にも書いていたが、[J]の出力をそのまま引用していた
+- System Health Checkの実際の起動は予定の23:30 UTCではなく、直近は02:00〜03:00 UTC（GitHubのscheduleの遅れ）
+
+#### 対応（2026-10-07、チャット側承認済み。`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`と同時）
+- 対象: `scripts/gen_update_schedule.py::load_workflows()`（UPDATE_SCHEDULE.mdの一覧と同じYAMLの読み方）で、cronのあるものとworkflow_runの下流の17本
+  （System_Health.yml自身と手動・pushだけのものは除く）。以前は正規表現で各ファイルの最初のcronだけ（13本）
+- 想定間隔: cronごとの閾値の最短。workflow_runの下流は起動元の閾値を継ぐ（Market Pulse・Stonks Silo・TANUKI VALUATIONは4日、SEC Data Auditは10日）
+- 一覧: `created>=今日（UTC）−閾値`で取り（`status`で絞らない、100件ごとに次のページ）、成否はコードで見る
+- 判定（cancelled・skippedは数えない）: 取り消し・スキップを除いた最新の実行が失敗で、その前の12時間以内に成功が無ければ🔴、あれば⚠️。
+  期間内に成功が無ければ🔴。CRITICAL（終了コード2）は🔴だけ、⚠️はWARNING（終了コード1）
+- Discordの1行: J・Kを切らずに全部出す（他の項目は従来どおり）
+- テスト: `tests/test_system_health_workflow_monitor.py`を書き直し（27件。修正前のコードでは19件失敗・3件エラー、cronの頻度推定4件と
+  リポジトリ特定不可の1件は従来どおり成功）。実際のAPIでの実行（2026-10-07）は「✅ 17件監視 / すべて正常」
+
 ---
 
 ### [EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1] 外部起動のWorkerの21:50 UTCの確認はMarket Data Dailyの成功しか見ないため、下流（Market Pulse等）が欠けても検知できない
@@ -2760,6 +2781,17 @@ Workerの21:50の確認に加えて[J]でも検知されなかった（10-06の[
 
 #### 着手条件
 直し方（21:50に下流4本の成功も数えて足りなければ通知するか、再実行まで行うか）はチャット側で決める。
+
+#### 対応（2026-10-07、チャット側承認済み）
+Workerは変えず、System Healthの[J]で下流を監視する（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の「対応」と同じ修正）。
+workflow_runで起動する下流（Market Pulse・Stonks Silo・TANUKI VALUATION・SEC Data Audit）も[J]の対象にし、起動元の閾値を継ぐ。
+10-05のMarket Pulseの失敗（同じ期間に10-03の成功あり、失敗の前の12時間に成功なし）は🔴になる（テスト`test_market_pulse_failure_on_10_05_is_red_despite_earlier_success`）。
+Workerを選ばなかった理由: 連鎖の知識をJSに二重に持つことになり、変更のたびに再デプロイが要る。冬時間は下流の完了が21:50に間に合わず誤報が出やすい。
+週次の連鎖は見ない。一方、[J]は気づくのがSystem Healthの起動時（予定23:30 UTC、実際は02〜03 UTC）で日本時間7:00には間に合わず、自動回復もしない。
+7:00より前の回復は`[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]`（低）として将来検討する。
+
+**状態:** 実装完了・実地確認待ち（2026-10-07）。下流の失敗が実際に起きた夜に[J]が🔴を出すかは、失敗が起きるまで本番では確かめられない
+（担保はテスト）。直した後の最初のSystem Healthで、[J]の監視件数が17件になり下流4本が含まれることを確かめてからBACKLOG_DONE.mdへ移す
 
 ---
 
@@ -2928,6 +2960,23 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1] 外部起動のWorkerの空いているcronで22:20 UTC頃にMarket Pulseの成功を確かめ、失敗していれば再実行する（将来の検討）
+**優先度:** 低
+**分類:** 監視・自動回復 / 外部起動（Cloudflare Worker）
+**登録日:** 2026-10-07
+**発見:** `[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`の直し方の検討（下流の監視はSystem Healthの[J]で行うことにした）
+
+#### 内容
+System Healthの[J]は下流の失敗に気づけるが、起動は予定23:30 UTC（実際は02〜03 UTC）で日本時間7:00に間に合わず、自動回復もしない。
+10-05のMarket Pulse（ランナー未割り当てによるfailure）のような一時的な失敗は、再実行すれば直る見込みが高い。
+Workerの空いているcron（無料プランの5本のうち3本を使用、残り2本）で22:20 UTC頃に、その日の20:00 UTC以降のMarket_Pulse_Updateに成功が無ければ、
+失敗した実行の再実行（`POST /actions/runs/{id}/rerun`）か手動実行（workflow_dispatch）を行い、Discordに通知する。
+
+#### 着手前に決めること
+- 冬時間（取得は21:25 UTC）でも22:20に下流が終わっているか。間に合わない夜の誤報をどう避けるか
+- 対象をMarket Pulseだけにするか（Stonks Silo・TANUKI VALUATION・TANUKI Scoreも含めるか）。含めるほど連鎖の知識をJSに二重に持つことになる
+- 再実行と手動実行のどちらにするか。トークンの権限（Actions: Read and write）で両方できる
 
 ### [MACRO-PULSE-SLOT-ROWS-1] MACRO PULSEのNFP・Building Permits・Michiganの行が発表予定日の枠の日付に置かれ、後から書いた値が枠の日付の時点で使えたことになっている
 **優先度:** 高

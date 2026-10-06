@@ -201,6 +201,15 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
    10-07 23:30 UTCのSystem Health Checkの[F] TailCtrlが「10/10件 ctrl/latest.json 存在」で✅になったか。
    次の定時の実行（10-12〈月〉01:00 UTC）は、ログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・success・commitなしになる想定
    （その間に新しい10-Qが出た銘柄があれば「更新」に数えられる）
+7. System Healthの[J]の書き直し（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`・`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`、2026-10-07）:
+   直した後の最初のSystem Health Check（予定23:30 UTC、実際は02〜03 UTCに遅れることが多い）のログの`[J] CronRuns:`の行で、次を確かめる
+   - 監視件数が**17件**（以前は13件）。Market_Pulse_Update・Stonks_Silo_Update・TANUKI_VALUATION_Update・SEC_Data_Auditが対象に入っている
+     （ローカルでは`_discover_monitored_workflows(_load_workflow_defs())`で一覧を出せる）
+   - Market Data Dailyのガードによる取り消し（cancelled）だけで🔴にならない。MACRO_PULSE・Adjusted EPSを誤って「成功なし」にしない
+   - [J]の判定が実際と合っているか、`gh run list`で各ワークフローの直近の実行と突き合わせる（特に🔴・⚠️が出たもの）
+   - Discordの1行の通知（Discordのチャンネルで見る。実行のログには1行の本文は出ず、`Discord通知: 送信完了`等の結果だけが出る）で、
+     J・Kの詳細が切れずに全部読める（Koichiさんに確認してもらう）
+   - 終了コード: [J]が✅か⚠️だけなら、CRITICAL（2）ではない（[K]などのWARNINGで1になるのは従来どおり）
 
 **水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）** → 2026-10-07に完了（上の「2026-10-07 update-scheduleを統合」）
 1. 実装Cの表示（Market Pulseの今夜のエントリ）: 段階2のニュースの見出し（`headlines`の件数・status・failed、画面の#headlinesTable）、

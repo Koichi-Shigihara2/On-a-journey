@@ -20,7 +20,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 # repo root を sys.path に追加（common/ から見て1段上）
@@ -360,19 +360,24 @@ def check_i_eps() -> tuple[str, bool, str]:
     return f"{icon} {detail}", ok, detail
 
 
-# ── J. cron定義ワークフローの実行状況チェック ────────────────────────
+# ── J. ワークフローの実行状況チェック ────────────────────────────────
 # [[DATA-FRESHNESS-MONITORING-FUTURE-IDEA-1]]対応（2026-08-30）。
 # SEC_Data_Updateが2週連続でConsistency Check Gateに失敗し、約3週間
 # データ更新が誰にも気づかれず滞留した実例を受けて追加。
 #
-# .github/workflows/配下のcron定義済みワークフローすべてについて、
-# GitHub Actions REST APIで直近の完了済み実行を取得し、
-# (1) 失敗（conclusion != success）していないか
-# (2) cronの想定間隔を大きく超えて未実行になっていないか
-# を確認する。外部通知サービスは使わず、既存のDiscord Webhook
-# （このSystem_Health.yml自体が元々使っている通知経路）とワークフロー
-# 自体の終了コード（異常時は非ゼロ→GitHub Actions上でRED表示）のみで
-# 完結させる。
+# 2026-10-07 書き直し（[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]・[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]）:
+# - 対象: scripts/gen_update_schedule.py::load_workflows()（UPDATE_SCHEDULE.mdの一覧と同じYAMLの読み方）で、
+#   cronのあるワークフローと、workflow_runで起動する下流（Market Pulse・Stonks Silo・TANUKI VALUATION等）。
+#   以前は正規表現で各ファイルの最初のcronだけを拾い、cronの無い下流は監視の対象外だった
+# - 想定間隔: cronごとの閾値の最短。workflow_runの下流は起動元の閾値を継ぐ（両方あれば短い方）
+# - 一覧の取り方: `created>=期間の始め`で取り、成否はここで見る。以前の`per_page=1&status=completed`は
+#   GitHubの絞り込みの結果が古いことがあり（MACRO_PULSEで09-24の実行が返り、実際の最新は10-06）、
+#   成功している日にも「未実行超過」を出していた
+# - 判定（cancelled・skippedは数えない。Market Data Dailyのガードによる正常な取り消しを失敗にしない）:
+#   🔴 失敗: 取り消し・スキップを除いた最新の実行が失敗で、その実行より前の12時間以内に成功が無い
+#   ⚠️ 直前に成功あり: 同じく最新の実行が失敗だが、前の12時間以内に成功がある（取得済みの後の重複起動・保険の起動の失敗など）
+#   🔴 成功なし: 想定間隔の期間に成功が1本も無い
+#   CRITICAL（終了コード2）は🔴だけ。⚠️はWARNING
 #
 # 頻度推定はcron式の day-of-month / day-of-week フィールドを見る簡易
 # ヒューリスティックであり、厳密なcronパーサではない（本用途では
@@ -401,24 +406,57 @@ def _parse_cron_threshold_days(cron_expr: str) -> tuple[str, int]:
     return "週次", 10
 
 
-def _discover_cron_workflows() -> list[tuple[str, str]]:
-    """.github/workflows/配下からcron定義済みワークフロー(ファイル名, cron式)を列挙する。"""
-    found: list[tuple[str, str]] = []
-    if not os.path.isdir(_WORKFLOWS_DIR):
-        return found
-    for fname in sorted(os.listdir(_WORKFLOWS_DIR)):
-        if not fname.endswith((".yml", ".yaml")):
+_SELF_WORKFLOW_FILE = "System_Health.yml"  # 実行環境調査で判明: 本ワークフローは
+# check F/G等のWARNINGでもexit 1になり毎日のようにrun自体がfailure表示に
+# なる設計（意図的な「REDで通知」挙動）のため、これを他ワークフローと
+# 同列の「失敗」として監視対象に含めるとcheck Jが常時RED化し信号として
+# 機能しなくなる。自己を監視対象から除外する（自身が完全に動かなく
+# なった場合の検知はこの仕組みの原理的な限界として残る）。
+
+_J_FAIL_CONCLUSIONS = {"failure", "timed_out", "startup_failure"}
+_J_IGNORED_CONCLUSIONS = {"cancelled", "skipped"}   # ガードによる取り消し・起動元が成功しなかった下流
+_J_COVER_HOURS = 12   # 失敗の前のこの時間内に成功があれば⚠️（🔴にしない）
+_J_MAX_PAGES = 5
+
+
+def _load_workflow_defs(wf_dir: str = _WORKFLOWS_DIR) -> list[dict]:
+    """scripts/gen_update_schedule.py::load_workflows()（UPDATE_SCHEDULE.mdの生成元）でYAMLを読む。"""
+    scripts_dir = os.path.join(_REPO_ROOT, "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    import gen_update_schedule as _gus
+    return _gus.load_workflows(wf_dir)
+
+
+def _discover_monitored_workflows(wfs: list[dict]) -> list[tuple[str, str, int]]:
+    """監視するワークフロー (ファイル名, 頻度の説明, 許容日数)。cronがあるものと、workflow_runで起動する下流。
+    手動・pushだけで動くものと、System_Health.yml自身は対象外。"""
+    by_file = {w["file"]: w for w in wfs}
+    memo: dict[str, Optional[tuple[str, int]]] = {}
+
+    def threshold(fname: str, seen: frozenset) -> Optional[tuple[str, int]]:
+        if fname in memo:
+            return memo[fname]
+        w = by_file.get(fname)
+        if w is None or fname in seen:
+            return None
+        cands = [_parse_cron_threshold_days(c) for c in w["crons"]]
+        for up in w["after_files"]:
+            t = threshold(up, seen | {fname})
+            if t is not None:
+                cands.append((f"連鎖（{up}）", t[1]))
+        best = min(cands, key=lambda x: x[1]) if cands else None
+        memo[fname] = best
+        return best
+
+    out = []
+    for w in wfs:
+        if w["file"] == _SELF_WORKFLOW_FILE:
             continue
-        path = os.path.join(_WORKFLOWS_DIR, fname)
-        try:
-            with open(path, encoding="utf-8") as f:
-                content = f.read()
-        except OSError:
-            continue
-        m = re.search(r"cron:\s*['\"]([^'\"]+)['\"]", content)
-        if m:
-            found.append((fname, m.group(1)))
-    return found
+        t = threshold(w["file"], frozenset())
+        if t is not None:
+            out.append((w["file"], t[0], t[1]))
+    return out
 
 
 def _get_repo_slug() -> Optional[str]:
@@ -434,13 +472,11 @@ def _get_repo_slug() -> Optional[str]:
         return None
 
 
-def _fetch_latest_run(repo_slug: str, workflow_file: str) -> Optional[dict]:
-    """指定ワークフローの直近の完了済み実行1件をGitHub Actions REST APIから取得する。
-    GITHUB_TOKEN環境変数があれば認証付きで（レート制限緩和）、なければ匿名で呼ぶ。"""
+def _fetch_runs_since(repo_slug: str, workflow_file: str, since: date) -> list[dict]:
+    """指定ワークフローの、since（UTCの日付）以降に作られた実行の一覧。
+    `status`では絞らない（絞り込みの結果が古いことがある。上の説明を参照）。GITHUB_TOKENがあれば認証付き。"""
     import urllib.request
 
-    url = (f"{_GH_API_BASE}/repos/{repo_slug}/actions/workflows/"
-           f"{workflow_file}/runs?per_page=1&status=completed")
     headers = {
         "Accept": "application/vnd.github+json",
         "User-Agent": "On-a-journey-system-health",
@@ -448,76 +484,104 @@ def _fetch_latest_run(repo_slug: str, workflow_file: str) -> Optional[dict]:
     token = os.environ.get("GITHUB_TOKEN", "")
     if token:
         headers["Authorization"] = f"token {token}"
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    runs = data.get("workflow_runs") or []
-    return runs[0] if runs else None
+    runs: list[dict] = []
+    for page in range(1, _J_MAX_PAGES + 1):
+        url = (f"{_GH_API_BASE}/repos/{repo_slug}/actions/workflows/"
+               f"{workflow_file}/runs?created=%3E%3D{since.isoformat()}&per_page=100&page={page}")
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        batch = data.get("workflow_runs") or []
+        runs.extend(batch)
+        if len(batch) < 100 or len(runs) >= (data.get("total_count") or 0):
+            break
+    return runs
 
 
-_SELF_WORKFLOW_FILE = "System_Health.yml"  # 実行環境調査で判明: 本ワークフローは
-# check F/G等のWARNINGでもexit 1になり毎日のようにrun自体がfailure表示に
-# なる設計（意図的な「REDで通知」挙動）のため、これを他ワークフローと
-# 同列の「失敗」として監視対象に含めるとcheck Jが常時RED化し信号として
-# 機能しなくなる。自己を監視対象から除外する（自身が完全に動かなく
-# なった場合の検知はこの仕組みの原理的な限界として残る）。
+def _run_time(run: dict) -> Optional[datetime]:
+    try:
+        return datetime.fromisoformat((run.get("created_at") or "").replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
-def check_j_workflow_runs() -> tuple[str, bool, str]:
-    cron_workflows = [
-        (f, c) for f, c in _discover_cron_workflows() if f != _SELF_WORKFLOW_FILE
-    ]
-    if not cron_workflows:
-        return "⚠️  cronワークフロー未検出", True, "no cron workflows found"
+def _judge_runs(runs: list[dict]) -> tuple[str, str]:
+    """期間内の実行の一覧から ("ok" | "failed" | "covered" | "no_success", 詳細)。"""
+    done = [r for r in runs if r.get("status", "completed") == "completed" and _run_time(r) is not None]
+    done.sort(key=_run_time, reverse=True)
+    successes = [r for r in done if r.get("conclusion") == "success"]
+    acted = [r for r in done if r.get("conclusion") not in _J_IGNORED_CONCLUSIONS]
+    if acted and acted[0].get("conclusion") in _J_FAIL_CONCLUSIONS:
+        last = acted[0]
+        t = _run_time(last)
+        stamp = t.strftime("%m-%d %H:%M UTC")
+        cover = [s for s in successes if t - timedelta(hours=_J_COVER_HOURS) <= _run_time(s) < t]
+        if cover:
+            prev = _run_time(cover[0]).strftime("%m-%d %H:%M")
+            return "covered", f"{last.get('conclusion')} {stamp}、直前の成功 {prev}"
+        return "failed", f"{last.get('conclusion')} {stamp}"
+    if not successes:
+        return "no_success", ""
+    return "ok", ""
+
+
+def _check_j() -> dict:
+    """[J]の判定。label・ok・detailに加え、CRITICAL（🔴）かどうかを返す。"""
+    def result(label, ok, detail, critical=False):
+        return {"label": label, "ok": ok, "detail": detail, "critical": critical}
+
+    try:
+        monitored = _discover_monitored_workflows(_load_workflow_defs())
+    except Exception as e:
+        return result(f"⚠️  ワークフロー定義を読めない（{e}）", False, f"workflow defs unreadable: {e}")
+    if not monitored:
+        return result("⚠️  監視するワークフロー未検出", True, "no workflows to monitor")
 
     repo_slug = _get_repo_slug()
     if not repo_slug:
-        return "⚠️  リポジトリ特定不可（スキップ）", True, "repo slug not found"
+        return result("⚠️  リポジトリ特定不可（スキップ）", True, "repo slug not found")
 
     failed: list[str] = []
-    stale: list[str] = []
+    covered: list[str] = []
+    no_success: list[str] = []
     unchecked: list[str] = []
-    today = date.today()
+    today = datetime.now(timezone.utc).date()
 
-    for fname, cron_expr in cron_workflows:
-        freq_label, threshold_days = _parse_cron_threshold_days(cron_expr)
+    for fname, freq_label, threshold_days in monitored:
         try:
-            run = _fetch_latest_run(repo_slug, fname)
+            runs = _fetch_runs_since(repo_slug, fname, today - timedelta(days=threshold_days))
         except Exception:
             unchecked.append(fname)
             continue
-        if run is None:
-            unchecked.append(fname)
-            continue
+        state, info = _judge_runs(runs)
+        if state == "failed":
+            failed.append(f"{fname}({info})")
+        elif state == "covered":
+            covered.append(f"{fname}({info})")
+        elif state == "no_success":
+            no_success.append(f"{fname}({threshold_days}日間に成功なし/{freq_label})")
 
-        conclusion = run.get("conclusion")
-        if conclusion not in ("success", "skipped"):
-            failed.append(f"{fname}({conclusion})")
-            continue
-
-        created_at = (run.get("created_at") or "")[:10]
-        try:
-            run_date = date.fromisoformat(created_at)
-        except ValueError:
-            unchecked.append(fname)
-            continue
-        age = (today - run_date).days
-        if age > threshold_days:
-            stale.append(f"{fname}({age}日/{freq_label}閾値{threshold_days}日)")
-
-    ok   = not failed and not stale
-    icon = "🔴" if failed else ("⚠️ " if stale else "✅")
-    parts = [f"{len(cron_workflows)}件監視"]
+    critical = bool(failed or no_success)
+    ok = not (failed or no_success or covered)
+    icon = "🔴" if critical else ("⚠️ " if covered else "✅")
+    parts = [f"{len(monitored)}件監視"]
     if failed:
-        parts.append(f"失敗{len(failed)}件: {', '.join(failed[:3])}{'…' if len(failed) > 3 else ''}")
-    if stale:
-        parts.append(f"未実行超過{len(stale)}件: {', '.join(stale[:3])}{'…' if len(stale) > 3 else ''}")
+        parts.append(f"失敗{len(failed)}件: {', '.join(failed)}")
+    if no_success:
+        parts.append(f"成功なし{len(no_success)}件: {', '.join(no_success)}")
+    if covered:
+        parts.append(f"失敗（直前に成功あり）{len(covered)}件: {', '.join(covered)}")
     if unchecked:
         parts.append(f"確認不可{len(unchecked)}件（API到達不可等、異常扱いしない）")
-    if not failed and not stale and not unchecked:
+    if ok and not unchecked:
         parts.append("すべて正常")
     detail = " / ".join(parts)
-    return f"{icon} {detail}", ok, detail
+    return result(f"{icon} {detail}", ok, detail, critical)
+
+
+def check_j_workflow_runs() -> tuple[str, bool, str]:
+    r = _check_j()
+    return r["label"], r["ok"], r["detail"]
 
 
 # ── K. 銘柄棚卸しレポート（[[QUALITY-GATES-EPIC-1]]ゲート4） ───────────
@@ -706,7 +770,8 @@ def main() -> int:
     label_g, ok_g, det_g = check_g_hypecore()
     label_h, ok_h, det_h = check_h_config()
     label_i, ok_i, det_i = check_i_eps()
-    label_j, ok_j, det_j = check_j_workflow_runs()
+    j = _check_j()
+    label_j, ok_j, det_j = j["label"], j["ok"], j["detail"]
     label_k, ok_k, det_k = check_k_ticker_audit()
     label_l, ok_l, det_l = check_l_macro_data()
 
@@ -720,8 +785,9 @@ def main() -> int:
         "G": {"ok": ok_g, "short": det_g[:20]},
         "H": {"ok": ok_h, "short": det_h[:20]},
         "I": {"ok": ok_i, "short": det_i[:20]},
-        "J": {"ok": ok_j, "short": det_j[:20]},
-        "K": {"ok": ok_k, "short": det_k[:20]},
+        # J・Kは切らない（どのワークフロー・銘柄かが通知から読めるように。[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]）
+        "J": {"ok": ok_j, "short": det_j},
+        "K": {"ok": ok_k, "short": det_k},
         "L": {"ok": ok_l, "short": det_l[:20]},
     }
 
@@ -751,10 +817,9 @@ def main() -> int:
         print(discord_notify_label(sent))
 
     if not overall_ok:
-        # SEC content異常（A）またはcronワークフロー異常（J、実行失敗・
-        # 長期未実行）はデータパイプライン停止の実害に直結するためCRITICAL、
-        # それ以外はWARNING
-        return 2 if (not ok_a or not ok_j) else 1
+        # SEC content異常（A）またはワークフロー異常（Jの🔴: 失敗・期間内に成功なし）は
+        # データパイプライン停止の実害に直結するためCRITICAL、それ以外（Jの⚠️「直前に成功あり」を含む）はWARNING
+        return 2 if (not ok_a or j["critical"]) else 1
     return 0
 
 
