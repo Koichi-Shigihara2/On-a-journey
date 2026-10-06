@@ -1516,6 +1516,24 @@ def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tu
     return out
 
 
+def _check_update_schedule_drift(repo_root: Optional[str] = None) -> list[str]:
+    """CHECK-58: .github/workflows/*.ymlから生成した更新スケジュールの一覧と、docs/architecture/UPDATE_SCHEDULE.md・
+    config/workflow_dependencies.jsonの内容がずれていないか（2026-09-30新設、NG化しないWARN、指示書㉘）。
+
+    背景: 起動時刻・連鎖の説明が複数の文書とYAMLのコメントに手で書かれ、変更のたびに古くなっていた
+    （例: 解消済みのStonks Siloのcron 15:05 UTCの記述がMarket_Data_Daily_Update.ymlに残っていた）。
+    一覧はscripts/gen_update_schedule.pyが生成する。ずれていたら同スクリプトを実行して更新する。
+    """
+    root = repo_root or REPO_ROOT
+    try:
+        sys.path.insert(0, os.path.join(root, "scripts"))
+        import gen_update_schedule as _gus
+        msgs = _gus.check_drift(root)
+    except Exception as e:
+        msgs = [f"更新スケジュールの一覧を確認できない（{type(e).__name__}: {e}）"]
+    return [f"  [WARN-58 更新スケジュールの一覧のずれ] {m} → python scripts/gen_update_schedule.py で更新する" for m in msgs]
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -3237,6 +3255,13 @@ def run_checks(args=None) -> tuple[int, int]:
     if gap_msgs:
         flagged.append(("[GLOBAL]", [], gap_msgs))
         total_warn += len(gap_msgs)
+
+    # CHECK-58: 更新スケジュールの一覧（UPDATE_SCHEDULE.md・workflow_dependencies.json）とYAMLのずれ
+    sched_warn = _check_update_schedule_drift()
+    if sched_warn:
+        flagged.append(("[GLOBAL]", [], sched_warn))
+        total_warn += len(sched_warn)
+        total_warn_new += len(sched_warn)
 
     # CHECK-54: split_history.yamlの登録漏れ（yfinance splitsと突き合わせ、
     # [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceを使うため

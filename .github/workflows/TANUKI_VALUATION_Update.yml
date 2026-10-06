@@ -1,28 +1,8 @@
 name: TANUKI VALUATION Daily Update
 
-# [[TANUKI-VALUATION-PRICE-SCHEDULE-LAG-1]]・[[WORKFLOW-SEC-TANUKI-GAP-1]]
-# 対応: config/workflow_dependencies.jsonが定義する論理的依存
-# （HypeCore_Update・Adjusted_EPS_Update・Stonks_Silo_Update）に加え、
-# current_priceの取得元であるMarket_Data_Daily_Update（新たに判明した
-# 未定義の依存）もworkflow_runの対象に含め、4本いずれかの完了で連鎖実行
-# する。旧・独立cron（平日14:05 UTC）はMarket_Data_Daily_Update
-# （平日21:40 UTC完了）より先に発火してしまい、current_priceが常に
-# 前営業日終値になる構造的ラグの原因だったため削除。
-# 安全網として、chainが何らかの理由で発火しなかった場合に備え、
-# 週1回のみ低頻度フォールバックcronを残す（Market_Data_Daily_Updateの
-# 金曜実行〈2026-08-29時点で21:25 UTC、旧21:40 UTC〉より確実に後になる
-# 時刻に設定し、旧cronと同じレースを再現しないようにする）。
-#
-# 指示書㉕ STEP C（2026-09-30）: 一晩に2回動いていた（09-30: 00:49と00:51 UTC）。原因は、Market Data Daily Updateの完了と、
-# その完了で動くStonks Silo Updateの完了の両方で起動していたこと。TANUKI VALUATIONはStonks Siloの結果
-# （docs/value-monitor/stonks-silo/data/results.json: runway・revenue_growth）を読むため、Market Data Dailyの直後の1回目は
-# 前夜のStonks Siloの結果で計算しており不要だった。2本が同時に動き、同じファイルへのcommit・pushとDiscord通知
-# （score_watcher、同じ.watcher_state.jsonから判定）が重なる恐れもあった。Market Data Daily Updateを起動元から外し、
-# Stonks Silo Updateの完了（Market Data Dailyの後に必ず動く）で1回だけ起動する。Stonks Siloが失敗した日も株価は
-# 更新されているため、Stonks Siloのfailureでも起動する（その場合はStonks Siloの前回の結果を使う）。
-# あわせてconcurrencyで同時実行を防ぐ（HypeCore・Adjusted EPSの完了と重なった場合は順番に動く）。
-# 2026-10-03: 金曜のフォールバックcron（22:30 UTC）を削除。10-03（土）01:15 UTCに遅れて起動し、Market Data Dailyの取得（02:06）
-# より前のデータで動いたうえ、Stonks Siloのフォールバックの完了でも起動し、この夜は3回動いた。起点はworkflow_runと手動実行だけ。
+# Stonks Silo Update（Market Data Dailyの後に動く）・HypeCore Update・Adjusted_EPS_Data_Updateの完了で起動する。
+# Stonks Siloは失敗でも起動する（株価は更新済み、Stonks Siloは前回の結果を使う）。同時に1本だけ動く。cronは無い（金曜の安全網は2026-10-03に削除）。
+# 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   workflow_run:
     workflows:

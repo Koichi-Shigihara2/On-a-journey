@@ -1,19 +1,13 @@
 name: Adjusted_EPS_Data_Update
 
-# [[WORKFLOW-SEC-TANUKI-GAP-1]]対応: config/workflow_dependencies.jsonが
-# 定義するSEC_Data_Update依存を実際のworkflow_runトリガーに反映。
-# 旧・独立cron（毎週月曜10:07 UTC、SEC Data Update完了〈日曜12:00 UTC〉
-# から最大約22時間後）はworkflow_runに置き換え、代わりにworkflow_run
-# 連鎖が発火しなかった場合の安全網として低頻度（週1回）のフォールバック
-# cronのみ残す。本パイプライン自体はmarket_data日次層に依存しない
-# （SEC由来データのみ）ため、SEC_Data_Update完了トリガーで鮮度要件を
-# 満たせる。
+# SEC Data Update（日曜）の完了で起動する（market_dataの日次には依存しない）。月曜04:10 UTCは安全網。
+# 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   workflow_run:
     workflows: ["SEC Data Update"]
     types: [completed]
   schedule:
-    - cron: '10 4 * * 1'  # 安全網: 月曜4:10 UTC（SEC Data Update日曜分の完了後、低頻度フォールバック）
+    - cron: '10 4 * * 1'  # 安全網（月曜04:10 UTC）
   workflow_dispatch:
     branches:
       - kaihatsu

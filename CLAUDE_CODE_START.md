@@ -3370,42 +3370,17 @@ Windows形式（`r"C:\Users\..."`)を使うこと。
 実装すること。「今回だけ手で直す」対応は次回の自動再生成で必ず巻き戻る
 前提で臨む。
 
-### SEC自動更新とTANUKI VALUATION自動更新の生成順序ズレ（WARN12-COHR-ONDS-1の教訓・2026-07-13追加、2026-08-26状況更新）
+### SEC自動更新とTANUKI VALUATION自動更新の生成順序ズレ（WARN12-COHR-ONDS-1の教訓・2026-07-13追加、2026-09-30更新）
 
-**2026-08-26追記**: 2026-08-22の`workflow_run`連鎖化対応
-（[[WORKFLOW-SEC-TANUKI-GAP-1]]・[[TANUKI-VALUATION-PRICE-SCHEDULE-LAG-1]]）
-により、下記の独立cron自体は既に廃止済み。`TANUKI_VALUATION_Update`は
-`Market_Data_Daily_Update`/`HypeCore_Update`/`Adjusted_EPS_Data_Update`/
-`Stonks_Silo_Update`いずれかの完了で`workflow_run`起動する設計へ変更
-されており、この経路は2026-08-24〜26の実地確認で実際に機能している
-ことを確認済み（`[[TANUKI-VALUATION-PRICE-SCHEDULE-LAG-1]]`は
-BACKLOG_DONE.mdへクローズ済み）。ただし`SEC_Data_Update`→
-`HypeCore_Update`等3ワークフローの連鎖自体は2026-08-26時点でまだ
-実地確認できておらず（`[[WORKFLOW-SEC-TANUKI-GAP-1]]`は未クローズ、
-次回2026-08-30サイクルで再確認予定）、以下の「毎週26時間のズレ」という
-記述は当時（2026-07-13時点）の独立cron運用を前提としたものであり、
-現在の実態とは異なる可能性がある点に注意。`WARN-12`等の期ズレ症状が
-出た場合の切り分け手順自体（`calculation_date`とコミット日時の比較）は
-引き続き有効。
+**起動時刻・連鎖は `docs/architecture/UPDATE_SCHEDULE.md` を参照**（SEC Data Updateの完了でHypeCore・Adjusted EPS・
+Stonks Siloが動き、その完了でTANUKI VALUATIONが動く）。2026-07-13時点の独立cron運用で起きていた「日曜のSEC自動更新から
+次のTANUKI VALUATIONまで約26時間、latest.json/report.txtが陳腐化する」構造は、2026-08-22の連鎖化で解消した
+（経緯は同文書の変更履歴、[[WORKFLOW-SEC-TANUKI-GAP-1]]・[[TANUKI-VALUATION-PRICE-SCHEDULE-LAG-1]]）。
 
-`SEC_Data_Update.yml`（毎週**日曜**12:00 UTC=JST21:00）と
-`TANUKI_VALUATION_Update.yml`（**平日**月〜金のみJST23:05）は独立した
-cronスケジュールで動作しており、`config/workflow_dependencies.json`が
-定義する論理的依存関係（TANUKI_VALUATION_UpdateはSEC_Data_Updateに依存）は
-実際のGitHub Actionsトリガーとしては実装されていない
-（[[WORKFLOW-SEC-TANUKI-GAP-1]]参照、2026-07-13登録時点の記述。
-2026-08-22以降の状況は上記追記参照）。
-
-このため**日曜のSEC自動更新後〜月曜23:05の次回TANUKI VALUATION自動更新
-までの約26時間、SECデータは最新だがlatest.json/report.txtは陳腐化した
-まま**という状態が毎週構造的に発生しうる（2026-07-13時点の記述）。
-`report_consistency_check.py`の`WARN-12`（Cash-STI期ズレ）等がこの
-時間帯に新規発生した場合、まずfact競合等のコードバグを疑う前に、
-`latest.json`の`calculation_date`と対象銘柄の
-`common/sec_data/data/{TICKER}/quarterly_*.json`のコミット日時を
-比較し、**単なる生成順序のズレでないか**を確認すること（該当すれば
-`pipeline.py [TICKER]`の再実行のみで解消する。実例:
-2026-07-12にCOHR/ONDSで発生、コード修正不要だった）。
+`report_consistency_check.py`の`WARN-12`（Cash-STI期ズレ）等が新規発生した場合は、まずfact競合等のコードバグを疑う前に、
+`latest.json`の`calculation_date`と対象銘柄の`common/sec_data/data/{TICKER}/quarterly_*.json`のコミット日時を比較し、
+**単なる生成順序のズレでないか**を確認すること（連鎖が失敗・スキップした週に起こりうる。該当すれば`pipeline.py [TICKER]`の
+再実行のみで解消する。実例: 2026-07-12にCOHR/ONDSで発生、コード修正不要だった）。
 
 ### 表示期間フィルタのルール
 

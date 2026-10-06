@@ -1,25 +1,8 @@
 name: Stonks Silo Update
 
-# [[WORKFLOW-SEC-TANUKI-GAP-1]]対応: config/workflow_dependencies.jsonが
-# 定義するSEC_Data_Update依存をworkflow_runで追加（SEC更新完了後、
-# 既存の平日cronの実行を待たず即座に反映）。
-#
-# [[STONKS-SILO-PRICE-SCHEDULE-LAG-SUSPECT-1]]対応（2026-08-31）: 登録時点の
-# 「疑い」を、ASTS/AVAV/BBAI/CRWVの複数銘柄でresults.json側current_priceと
-# common/market_data/daily/の実際の保存日を突合し実データで確認した
-# （current_priceが一貫してMarket_Data_Daily_Update完了前の前営業日終値に
-# なっていた）。真因は上記コメントの旧設計判断（`案②`、平日日次cronを
-# 独立トリガーとして意図的に併存）そのもの——旧・独立平日cron
-# （15:05 UTC）がMarket_Data_Daily_Update完了（21:25 UTC）より6時間以上
-# 先に発火するため、valuation_fetcher.py経由のcurrent_priceが常に
-# 前営業日終値になる構造的ラグだった。[[TANUKI-VALUATION-PRICE-SCHEDULE-
-# LAG-1]]・TANUKI_VALUATION_Update.ymlで確立済みの解決パターン
-# （`workflow_run`対象にMarket Data Daily Updateを追加し、旧・独立cronは
-# 低頻度フォールバックに置き換え）を横展開する。フォールバックは
-# TANUKI_VALUATION_Update.ymlの金曜22:30 UTCと10分ずらし金曜22:40 UTC
-# （Market_Data_Daily_Update金曜分の完了後になる時刻、衝突回避）。
-# 2026-10-03: 金曜のフォールバックcronを削除（10-03〈土〉01:24 UTCに遅れて起動し、Market Data Dailyの取得〈02:06〉より前の
-# データで動いた）。起点はSEC Data Update・Market Data Daily Updateの完了（workflow_run）と手動実行だけ。
+# SEC Data Update・Market Data Daily Updateの完了で起動する（株価はMarket Data Dailyが保存したdaily/の最新の終値）。
+# cronは無い（金曜の安全網は2026-10-03に削除）。
+# 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   workflow_run:
     workflows:

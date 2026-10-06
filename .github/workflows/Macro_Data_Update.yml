@@ -2,10 +2,7 @@ name: Macro Data Update
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # UTC 10:00 (JST 19:00) 毎日。既存workflow中最速の
-                            # MACRO_PULSE_Update.yml --fill-returns(13:03 UTC)
-                            # より3時間以上前、他4件(21:35/22:07/22:11/22:15 UTC)
-                            # より11時間以上前に確実に先行させる（設計確定事項）
+    - cron: '0 10 * * *'  # 毎日10:00 UTC（MACRO PULSEの補完13:03・本体22:15 UTCより前に取得を終える）。 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
   workflow_dispatch:
     inputs:
       series_ids:

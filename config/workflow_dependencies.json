@@ -4,7 +4,12 @@
       "label": "① SEC データ取得",
       "yml": "SEC_Data_Update.yml",
       "depends_on": [],
-      "outputs": ["common/sec_data/"],
+      "outputs": [
+        "common/sec_data/data/",
+        "common/sec_data/normalized/",
+        "common/sec_data/ttm/",
+        "docs/common/sec_data/normalized/"
+      ],
       "accepts_tickers": true,
       "input_param": "tickers"
     },
@@ -12,47 +17,75 @@
       "label": "① Market Data 日次取得",
       "yml": "Market_Data_Daily_Update.yml",
       "depends_on": [],
-      "outputs": ["common/market_data/daily/"],
+      "outputs": [
+        "common/market_data/*/market_data_violations_log.json",
+        "common/market_data/_daily_close_retry_log.json",
+        "common/market_data/_sp500_constituents_cache.json",
+        "common/market_data/daily/"
+      ],
       "accepts_tickers": true,
       "input_param": "tickers"
     },
     "HypeCore_Update": {
       "label": "② HypeCore",
       "yml": "HypeCore_Update.yml",
-      "depends_on": ["SEC_Data_Update"],
-      "outputs": ["docs/value-monitor/hypecore/"],
+      "depends_on": [
+        "SEC_Data_Update"
+      ],
+      "outputs": [
+        "docs/value-monitor/hypecore/data/"
+      ],
       "accepts_tickers": true,
       "input_param": "tickers"
     },
     "Adjusted_EPS_Update": {
       "label": "③ EPS Analyzer",
       "yml": "Adjusted_Eps_Analyzer_update.yml",
-      "depends_on": ["SEC_Data_Update"],
-      "outputs": ["docs/value-monitor/adjusted_eps_analyzer/"],
+      "depends_on": [
+        "SEC_Data_Update"
+      ],
+      "outputs": [
+        "docs/value-monitor/adjusted_eps_analyzer/data/"
+      ],
       "accepts_tickers": true,
       "input_param": "ticker"
     },
     "Stonks_Silo_Update": {
       "label": "④ Stonks Silo",
       "yml": "Stonks_Silo_Update.yml",
-      "depends_on": ["SEC_Data_Update"],
-      "outputs": ["docs/value-monitor/stonks-silo/"],
+      "depends_on": [
+        "SEC_Data_Update",
+        "Market_Data_Daily_Update"
+      ],
+      "outputs": [
+        "docs/value-monitor/stonks-silo/data/"
+      ],
       "accepts_tickers": false,
       "input_param": "tickers"
     },
     "TANUKI_VALUATION_Update": {
       "label": "⑤ TANUKI VALUATION",
       "yml": "TANUKI_VALUATION_Update.yml",
-      "depends_on": ["HypeCore_Update", "Adjusted_EPS_Update", "Stonks_Silo_Update", "Market_Data_Daily_Update"],
-      "outputs": ["docs/value-monitor/tanuki_valuation/data/"],
+      "depends_on": [
+        "HypeCore_Update",
+        "Adjusted_EPS_Update",
+        "Stonks_Silo_Update"
+      ],
+      "outputs": [
+        "docs/value-monitor/tanuki_valuation/data/"
+      ],
       "accepts_tickers": true,
       "input_param": "tickers"
     },
     "TANUKI_Score_Update": {
       "label": "⑥ TANUKI SCORE",
       "yml": "TANUKI_Score_Update.yml",
-      "depends_on": ["TANUKI_VALUATION_Update"],
-      "outputs": ["docs/integrated-dashboard/"],
+      "depends_on": [
+        "TANUKI_VALUATION_Update"
+      ],
+      "outputs": [
+        "docs/integrated-dashboard/daily_pick.json"
+      ],
       "accepts_tickers": false,
       "input_param": "tickers"
     }
@@ -66,10 +99,36 @@
     "TANUKI_Score_Update"
   ],
   "bulk_update_phases": [
-    {"phase": 1, "parallel": false, "workflows": ["SEC_Data_Update"]},
-    {"phase": 2, "parallel": true,  "workflows": ["HypeCore_Update", "Adjusted_EPS_Update", "Stonks_Silo_Update"]},
-    {"phase": 3, "parallel": false, "workflows": ["TANUKI_VALUATION_Update"]},
-    {"phase": 4, "parallel": false, "workflows": ["TANUKI_Score_Update"]}
+    {
+      "phase": 1,
+      "parallel": false,
+      "workflows": [
+        "SEC_Data_Update"
+      ]
+    },
+    {
+      "phase": 2,
+      "parallel": true,
+      "workflows": [
+        "HypeCore_Update",
+        "Adjusted_EPS_Update",
+        "Stonks_Silo_Update"
+      ]
+    },
+    {
+      "phase": 3,
+      "parallel": false,
+      "workflows": [
+        "TANUKI_VALUATION_Update"
+      ]
+    },
+    {
+      "phase": 4,
+      "parallel": false,
+      "workflows": [
+        "TANUKI_Score_Update"
+      ]
+    }
   ],
   "new_ticker_order": [
     "SEC_Data_Update",
@@ -78,18 +137,5 @@
     "TANUKI_VALUATION_Update",
     "TANUKI_Score_Update"
   ],
-  "known_issues": [
-    {
-      "issue": "HypeCore循環依存",
-      "detail": "HypeCoreはTANUKI latest.jsonを参照するが、TANUKIもHypeCoreを参照。初回実行時は前回値を使用",
-      "severity": "low",
-      "workaround": "2回実行することで完全同期。通常の定期実行では問題なし"
-    },
-    {
-      "issue": "TANUKI Score と Market Pulse の順序",
-      "detail": "TANUKI Score (22:30) が Market Pulse (翌8:05) より先に実行されるため前日データを参照",
-      "severity": "low",
-      "workaround": "手動実行時はMarket Pulseを先に実行してからScoreを実行"
-    }
-  ]
+  "_generated": "workflows.*のdepends_on・outputsはscripts/gen_update_schedule.pyが.github/workflows/*.ymlから生成する。label・yml・accepts_tickers・input_param・bulk_update_*・new_ticker_orderはadmin.htmlの一括更新用の手作業の定義（accepts_tickers・input_paramはYAMLの手動実行の入力と合っているかを確認する）。起動時刻・連鎖の説明はdocs/architecture/UPDATE_SCHEDULE.md"
 }
