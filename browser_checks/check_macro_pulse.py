@@ -999,23 +999,23 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
     add("MAC-44", "④ 類似度（2019・2001）", [[js_fixed(s19, 2) + "%", d19], [js_fixed(s01, 2) + "%", d01]],
         [[x["pct"], x["desc"]] for x in dom["l3Scores"]])
     # スライダー: スナップショット数
-    earliest = min(ms for ms in (ms_date_only(r.get("release_date", "")) for r in m.events) if ms is not None)
-    start = set_hours(earliest, 0, 0, 0)
+    # M-3b（MACRO-PULSE-CHART-DATE-TZ-1、buildL3Snapshots()）: 日付は現地の暦日。データの日付は文字列のまま、
+    # 開始は最古の日付の現地0時、週ごとの点・最後の点も現地の暦日
+    sds = min(ds for ds in ((r.get("release_date") or "")[:10] for r in m.events)
+              if re.fullmatch(r"\d{4}-\d{2}-\d{2}", ds))
+    tds = local_dt(today_end).strftime("%Y-%m-%d")
     monthly = {"Philadelphia Fed Manufacturing", "Chicago Fed National Activity", "Michigan Consumer Sentiment",
                "Building Permits", "Sahm Rule Recession Indicator", "Initial Claims 4W MA"}
     cds = set()
     for r in m.events:
-        dm = ms_date_only(r.get("release_date", ""))
-        if dm is None:
-            continue
-        dl = set_hours(dm, 0, 0, 0)
-        if start <= dl <= today_end and r["indicator"].strip() in monthly:
-            cds.add(iso_date(dl))
-    dcur = start
-    while dcur <= today_end:
-        cds.add(iso_date(dcur))
-        dcur = local_ms(local_dt(dcur) + timedelta(days=7))
-    cds.add(iso_date(start)); cds.add(iso_date(today_end))
+        ds = (r.get("release_date") or "")[:10]
+        if sds <= ds <= tds and r["indicator"].strip() in monthly:
+            cds.add(ds)
+    dcur = datetime.strptime(sds, "%Y-%m-%d").replace(tzinfo=JST)
+    while local_ms(dcur) <= today_end:
+        cds.add(dcur.strftime("%Y-%m-%d"))
+        dcur += timedelta(days=7)
+    cds.add(sds); cds.add(tds)
     add("MAC-45", "④ スライダー（スナップショット数・初期表示）", [str(len(cds) - 1), "現在"], [dom["slider"]["max"], dom["slider"]["date"]])
 
     # MAC-46 直近の動き
