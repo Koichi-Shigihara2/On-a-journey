@@ -11,6 +11,9 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-07（日中、テストのsys.modulesの漏れ）**: `[[TEST-SYSMODULES-MOCK-LEAK-1]]`を調査・修正して完了。MagicMockの差し替えが実行時のimportを通じて
+  先に収集されたテストにも漏れていた（15件、本物のコードで失敗するものは0件、順番を変えると最大156件が失敗）。スタブをpipelineのimportの間だけに閉じ込め
+  （`tests/_tanuki_pipeline_stub.py`）、`tests/conftest.py`に収集完了時の検知を追加。4通りの順番で全件パス。CHAT_RULES.md事例28。アクティブBACKLOG 19件
 - **2026-10-06（日中、Rf反映確認とstock.htmlのメインIV説明系）**: Rf現在値化（`bb81928103`）の本番反映を確認（全99銘柄が`risk_free_rate_live_source="tnx"`・
   日付2026-10-05、`fallback_fixed`0件、^TNXの終値と一致）。`[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]`の実害を実測し、ウォーターフォール図が全99銘柄で
   棒の高さ（β版のPV）とV₀のラベル（v0_rm）が食い違っていたこと、感応度表の見出し・スライダーの基準の混在、逓減型7銘柄の中央セルの不一致を確認。

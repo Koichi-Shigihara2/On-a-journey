@@ -183,6 +183,16 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   `tests/test_update_schedule.py`のYAMLの変更を検出するテストが削除済みの金曜cronを置き換えて空振りしていたのを修正
 - ゲート: pytest 1988件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0/WARN=124件（WARN-58なし）
 
+**2026-10-07（日中） `[[TEST-SYSMODULES-MOCK-LEAK-1]]`の調査と修正（完了、BACKLOG_DONE.mdへ移設）**
+- 読み取り調査: 水曜朝の確認の手順5（`check_valuation_chart_basis.py` 一致99・不一致0、Rf日付2026-10-06 99/99）を再確認。
+  sys.modulesのMagicMockは、実行時のimport（`core_calculator.py:289`・CHECK-34・`maturity_config.py:240`）を通じて**先に収集されたテストにも**漏れていた（15件）。
+  本物のコードで失敗するテストは0件。収集の順番を変えると最大156件が失敗した
+- 修正: `tests/_tanuki_pipeline_stub.py`（新設）でスタブをpipelineのimportの間だけに閉じ込める。test_pipeline_logic.py・test_tanuki_eps_breakeven_safety.pyを置き換え、
+  test_sensitivity_tapering.pyの別名読み込みを撤去。`tests/conftest.py`の`pytest_collection_finish`で、MagicMockが残っていれば止める（fail-before・pass-afterを確認）
+- 検証: 4通りの順番（通常・逆順・test_pipeline_logic先頭・eps先頭）で全件パス、計測で漏れ0件・意図したスタブの利用90件（修正前と同じ集合）。
+  CHAT_RULES.md事例28を追加。BACKLOG.mdのアクティブは19件（`^### [`の機械カウント）
+- 今後の運用: sys.modulesを書き換えるテストを足すときは`_tanuki_pipeline_stub.py`の関数を使う（直接書き換えると収集の完了時点で止まる）
+
 **木曜（2026-10-08）朝の確認手順（米国10-07〈水〉の足。UPDATE_SCHEDULE.mdの時刻と実際の起動・完了の突き合わせ）**
 夏時間（引け20:00 UTC）。UPDATE_SCHEDULE.md 2章の想定は「20:25の外部起動が取得 → Stonks Silo・Market Pulse → TANUKI VALUATION（1回）→ TANUKI Score、
 22:00 UTCまでに完了。20:55・21:25はそろい済みで取り消し。21:50は成功した実行ありで何もしない」。

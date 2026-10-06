@@ -23,23 +23,23 @@ _PIPELINE_DIR = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "src", "value", "tanuki_valuation")
 )
 sys.path.insert(0, _PIPELINE_DIR)
+sys.path.insert(0, os.path.dirname(__file__))
 
-# xlrd（Damodaran XLS 読込）をスタブ化してから growth_sanity を実際にインポート
+# [[TEST-SYSMODULES-MOCK-LEAK-1]]: スタブはsys.modulesに入れたまま残さない
+# （以前はここでsys.modulesへMagicMockを入れて戻さず、以後のテストの実行時のimportに漏れていた）
+from _tanuki_pipeline_stub import load_growth_sanity_with_stub_xlrd, load_stubbed_pipeline  # noqa: E402
+
+# xlrd（Damodaran XLS 読込）だけをスタブにした本物の growth_sanity
 # テスト6（growth_sanity）では本物の check_growth_sanity ロジックを検証する
-sys.modules.setdefault("xlrd", MagicMock())
-import growth_sanity as _gs  # 本物のモジュール参照を保存（後でも参照できるよう変数に束縛）
+_gs = load_growth_sanity_with_stub_xlrd()
 
-# TTM-QUARTERS-CHECK-1: TTMReader/build_rice_annual_shapeの実ロジックを検証するため
-# growth_sanity と同様に、スタブ化前に本物のモジュール参照を保存する
+# TTM-QUARTERS-CHECK-1: TTMReader/build_rice_annual_shapeの実ロジックを検証するため本物を使う
 import data_fetcher as _df
 
-# pipeline の依存モジュールをスタブ化してから pipeline をインポート
-# growth_sanity/data_fetcher は _gs/_df に保持済みだが pipeline 側ではスタブで十分
-for _mod_name in ("data_fetcher", "core_calculator", "validator", "growth_sanity"):
-    sys.modules[_mod_name] = MagicMock()
-
-import pipeline  # noqa: E402
-from pipeline import TanukiValuationPipeline  # noqa: E402
+# pipeline は依存モジュール（data_fetcher・core_calculator・validator・growth_sanity）を
+# スタブにした状態でインポートしたもの（pipeline.TanukiDataFetcher等がMagicMock）
+pipeline = load_stubbed_pipeline()
+TanukiValuationPipeline = pipeline.TanukiValuationPipeline
 
 # ─────────────────────────────────────────────
 # hypecore の detect_substage をインポート
@@ -527,9 +527,10 @@ class TestComputedRunwayIncludesShortTermInvestments:
 # 6. growth_sanity
 #    check_growth_sanity の判定ロジックを、Damodaran データをモックして検証
 #
-#    注意: sys.modules["growth_sanity"] は MagicMock に差し替え済みのため
+#    注意: _gs は xlrd だけをスタブにして読み込んだ別の growth_sanity で、
+#    sys.modules["growth_sanity"] とは別のモジュールのため
 #    @patch("growth_sanity.get_industry_benchmark") は効かない。
-#    _gs（本物のモジュール参照）に patch.object を使う。
+#    _gs に patch.object を使う。
 # ─────────────────────────────────────────────
 
 class TestGrowthSanity:
@@ -2794,8 +2795,8 @@ class TestIonqRevenueSPACBug:
 
 class TestTTMTerminologyDistinction:
     """A-2-TTM: TTM_YoY_Growth (実績) と CAGR_max (成長モデル判定指標) の区別
-    注意: _gs は test_pipeline_logic.py 先頭で import された本物の growth_sanity モジュール。
-          sys.modules["growth_sanity"] は MagicMock に差し替え済みのため _gs を直接使う。
+    注意: _gs は test_pipeline_logic.py 先頭で xlrd だけをスタブにして読み込んだ本物の
+          growth_sanity モジュール（sys.modules["growth_sanity"] とは別）。_gs を直接使う。
     """
 
     def test_growth_model_reason_no_bare_ttm_in_median_label(self):

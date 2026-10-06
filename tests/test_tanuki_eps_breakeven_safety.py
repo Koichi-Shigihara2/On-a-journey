@@ -15,19 +15,17 @@ TANUKI VALUATION（pipeline.py::compute_eps_breakeven()）にSTONKS SILO
 
 import sys
 import os
-from unittest.mock import MagicMock
 
-_PIPELINE_DIR = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "src", "value", "tanuki_valuation")
-)
-if _PIPELINE_DIR not in sys.path:
-    sys.path.insert(0, _PIPELINE_DIR)
+sys.path.insert(0, os.path.dirname(__file__))
 
-sys.modules.setdefault("xlrd", MagicMock())
-for _mod_name in ("data_fetcher", "core_calculator", "validator", "growth_sanity"):
-    sys.modules.setdefault(_mod_name, MagicMock())
+# [[TEST-SYSMODULES-MOCK-LEAK-1]]: 依存モジュールのスタブはpipelineのimportの間だけ入れて戻す
+# （以前はsys.modules.setdefaultでMagicMockを入れたまま残し、収集の順番で結果が変わっていた）
+from _tanuki_pipeline_stub import load_stubbed_pipeline  # noqa: E402
 
-from pipeline import compute_eps_breakeven, EPS_MAGNITUDE_CAP, EPS_SLOPE_CAP_PER_QUARTER  # noqa: E402
+_pipeline = load_stubbed_pipeline()
+compute_eps_breakeven = _pipeline.compute_eps_breakeven
+EPS_MAGNITUDE_CAP = _pipeline.EPS_MAGNITUDE_CAP
+EPS_SLOPE_CAP_PER_QUARTER = _pipeline.EPS_SLOPE_CAP_PER_QUARTER
 
 
 def _q(adjusted_eps, flags=None):

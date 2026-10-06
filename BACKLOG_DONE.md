@@ -2,6 +2,86 @@
 
 ---
 
+## 2026-10-07（完了）
+
+### ✅ [TEST-SYSMODULES-MOCK-LEAK-1] tests/test_pipeline_logic.pyが収集時にsys.modulesのcore_calculator等をMagicMockへ差し替えるため、全件実行で後から収集されるテストが本物のコードではなくMagicMockを相手に通っている可能性がある — スタブをpipelineのimportの間だけに閉じ込め、収集完了時の検知を追加（2026-10-07）
+**優先度:** 中
+**分類:** テスト基盤 / pytest（tests/）
+**登録日:** 2026-10-06 / **完了日:** 2026-10-07
+**発見:** stock.htmlのメインIV説明系の基準統一（`97add7f1c4`）で追加した`tests/test_sensitivity_tapering.py`が、単独では成功し、
+全件実行でだけ失敗した（`assert <MagicMock name='mock.KoichiValuationCalculator().calculate_pt().__getitem__()'> == 'tapering'`）
+
+#### 内容
+`tests/test_pipeline_logic.py:38-39`は、pipelineをimportする前に`data_fetcher`・`core_calculator`・`validator`・`growth_sanity`の4つを
+`sys.modules[_mod_name] = MagicMock()`で無条件に差し替え、元に戻さない。pytestはファイル名の順に収集するため、
+それより後に収集され、モジュールの先頭で`from core_calculator import …`等をするテストは、本物ではなくMagicMockを受け取る。
+MagicMockはどの属性・呼び出しにも値を返すため、比較や型を確かめない書き方のテスト（例: `assert result.get("error") is None`、
+`assert "x" in result`、例外が出ないことだけの確認）は、**本物のコードを1行も実行せずに成功しうる**。
+2026-10-06の件は`==`の比較で失敗したため気づけたが、気づけない形のテストが既に存在するかは未確認。
+
+- 2026-10-06の回避策: `test_sensitivity_tapering.py`は`core_calculator.py`をファイルから別名で読み込む（`importlib.util.spec_from_file_location`、
+  sys.modulesは触らない）。テストの側で個別に避けているだけで、根本の差し替えは残っている
+- 関連する書き方（登録時のgrep、未精査）: `tests/test_tanuki_eps_breakeven_safety.py:26-28`は同じ4つ＋`xlrd`を
+  `sys.modules.setdefault(..., MagicMock())`（先に本物が入っていれば本物のまま、無ければMagicMock。収集の順で結果が変わる）。
+  ほかに`sys.modules[...] = <本物のモジュール>`の登録が`test_flag_consumer_audit_3.py`・`test_runway_cash_unify.py`・
+  `test_stonks_silo_breakeven_unify.py`・`test_stonks_silo_pipeline.py`・`test_pipeline_logic.py:3552`にある（別名での登録で、差し替えではない見込み）
+- `CHAT_RULES.md`の事例15（モックが本番の不具合を自己整合的に再現し、テストが通り続けた）と同じ型のリスク:
+  「テストは成功しているが、検証対象のコードを実行していない」
+
+#### 着手条件（読み取り調査から着手する）
+1. `sys.modules`を書き換えている箇所を全テストからgrepする（代入・`setdefault`・`update`・`pop`・`monkeypatch.setitem(sys.modules, …)`・`patch.dict(sys.modules, …)`）。
+   それぞれ、差し替えか本物の登録か、元に戻すか（fixture・teardown）を表にする
+2. 差し替えたモジュール（`data_fetcher`・`core_calculator`・`validator`・`growth_sanity`・`xlrd`）をimportしているテストの一覧を作る
+   （先頭のimport・関数内のimport・`from … import`・`importlib`）。収集の順で差し替えより後になるものに印を付ける
+3. 単独で実行した場合と全件で実行した場合で、本物のコードを使っているかを比較する
+   （例: conftest等で各テストの開始時に`sys.modules["core_calculator"]`がMagicMockかを記録する、またはテストの対象関数に
+   一時的な検知を入れて呼ばれたかを数える。本物を使っていないテストを一覧にする）
+4. 結果を見て直し方を決める（候補: test_pipeline_logic.pyの差し替えを`monkeypatch`/fixtureで閉じ込めて終了時に戻す、
+   pipelineのimportを差し替えなしで行えるようにする、全件実行の最後に「MagicMockが残っていない」ことを確かめるテストを置く）
+
+#### 読み取り調査の結果（2026-10-07、HEAD `afd6349cb9`）
+計測は一時的なpytestプラグイン（リポジトリの外に置き`-p`で読み込み）で、各テストの実行中にsys.modulesのMagicMockの`mock_calls`が増えたかを記録した。
+- **sys.modulesの書き換えは11箇所**（`patch.dict`・`monkeypatch.setitem`・`pop`・`update`は0件）。MagicMockへの差し替えで元に戻さないのは
+  test_pipeline_logic.py:29（`xlrd`、setdefault）・:38-39（4モジュール、無条件の代入）と、test_tanuki_eps_breakeven_safety.py:26-28（同じ5つ、setdefault）。
+  付随して`sys.modules["pipeline"]`がMagicMockにつながった状態で残る（test_rice_report_txt_none_display・test_split_adjust・test_dcf_phase1_taperが
+  `test_pipeline_logic`をimportしてこれを意図して使う）。残りの5箇所は本物のモジュールを別名で登録するだけで無害
+- **「後から収集されるテストだけが影響を受ける」という当初のモデルは不完全だった**。収集の後の**実行時のimport**
+  （`core_calculator.py:289`の`from data_fetcher import _load_beta_config`、`report_consistency_check.py`のCHECK-34の
+  `importlib.import_module("data_fetcher")`、`maturity_config.py:240`の`import growth_sanity`）は、先に収集されたファイルのテストにも
+  MagicMockを渡していた
+- 全件実行（1992件パス）でMagicMockを呼んだテストは105件。うち**漏れによるもの15件**（単独では本物を使う）:
+  test_core_calculator_rf_reference 2・test_core_calculator_v0_note 4・test_sensitivity_tapering 2（`_load_beta_config`がMagicMock →
+  `software_system_provisional`が`is_provisional=True`・noteがMagicMock）、test_check41_registration_ng 2・test_registration_consistency_gate 3・
+  test_report_consistency_check 2（CHECK-34の`resolve_beta_config_path`がMagicMock → 何も検出しない）。残りの90件は意図したスタブの利用
+  （test_pipeline_logic 82・test_rice_report_txt_none_display 5・test_split_adjust 2・test_dcf_phase1_taper 1。単独でも全件でも同じ）。
+  2026-10-06のtest_sensitivity_tapering.pyの別名読み込みの回避策も、`data_fetcher`の漏れは避けられていなかった
+- **本物のコードで失敗するテストは0件だった**（15件はどれも単独で成功、収集の後に本物のモジュールを戻した全件実行も1992件パス）。
+  隠れた不具合・テストの陳腐化は無し。15件はどれもassertの対象外の経路でMagicMockを受け取っていた
+- **収集の順番を変えると最大156件が失敗する脆さがあった**: 全件を逆順で156件（test_iv_formula 99・test_data_fetcher_market_data_switch 10・
+  test_fcf_component_lists 5・test_core_calculator_v0_note 4・rf_reference 2・test_pipeline_logic自身36）。test_pipeline_logic → 関連ファイル、
+  test_tanuki_eps_breakeven_safety → 関連ファイルの順ではそれぞれ120件。test_pipeline_logicの36件は、eps側のsetdefaultが先にMagicMockを入れ、
+  `_gs`・`_df`がMagicMockになったため。ファイル名の順（既定、pytest-randomlyは未インストール）でたまたま表に出ていなかった
+
+#### 修正（2026-10-07）
+- `tests/_tanuki_pipeline_stub.py`（新設）: `load_stubbed_pipeline()`は依存モジュール4つをMagicMockにした状態で`pipeline`をimportし、
+  終わったらsys.modulesを元に戻す（2回目以降は同じモジュールを返し、`sys.modules["pipeline"]`には登録したまま）。
+  `load_growth_sanity_with_stub_xlrd()`は`xlrd`だけをスタブにした本物のgrowth_sanityを新しく読み込み、sys.modulesは戻す
+- `tests/test_pipeline_logic.py`・`tests/test_tanuki_eps_breakeven_safety.py`の先頭のsys.modulesの書き換えを上の関数に置き換え。
+  test_pipeline_logic.pyの`_gs`の注記2箇所を実態に合わせて更新
+- `tests/test_sensitivity_tapering.py`: 別名読み込みの回避策を撤去し、通常の`from core_calculator import KoichiValuationCalculator`に戻した
+- `tests/conftest.py`: `pytest_collection_finish`で`data_fetcher`・`core_calculator`・`validator`・`growth_sanity`・`xlrd`がsys.modulesで
+  MagicMockのままなら`pytest.exit(returncode=1)`で止める（再発の検知）
+
+#### 検証
+- 検知フック: 修正前のコードで全件実行・test_tanuki_eps_breakeven_safety.py単独ともexit 1（fail-before）、修正後は通過（pass-after）
+- 4通りの順番で全件パス: 通常の順番1992件・全件を逆順1992件・test_pipeline_logic → 関連ファイル573件・test_tanuki_eps_breakeven_safety → 関連ファイル374件
+- 計測プラグイン: 4通りとも漏れ0件。意図したスタブの利用は90件で、修正前と同じテストの集合（eps先頭の実行はtest_pipeline_logicを含まないため8件）
+- `software_system_provisional`: 修正前は全件実行で9回の`calculate_pt()`すべてが`is_provisional=True`・noteがMagicMock、修正後は4通りとも
+  `is_provisional=False`（bool）・noteがstr
+- 関係するファイルの単独実行もすべて成功（test_pipeline_logic 211・eps 12・sensitivity_tapering 9・split_adjust 10・rice 5・dcf_phase1_taper 7・v0_note 4）
+
+---
+
 ## 2026-10-06（完了）
 
 ### ✅ [SENS-TAPERING-CENTER-MISMATCH-1] 逓減型（dcf_type="tapering"）の7銘柄で、感応度表の中央セルがメイン理論株価と一致しない（create_sensitivity_calc_func()がtapering_g_endを受け取らず、2段階DCFで計算していた） — 修正完了（2026-10-06）
@@ -43,6 +123,7 @@ SENSITIVITY ANALYSISの見出しと表の基準を確認した際に、全99銘�
 - テスト: `tests/test_sensitivity_tapering.py`（9件: calculate_pt()で逓減型の中央セル＝メインIV、2段階の対照、逓減型7銘柄の実データから
   逓減DCFの入力を復元してRm 10%・基準年数の値＝メインIV）。修正前のコードで8件失敗（2段階の対照1件は成功）、修正後は9件成功。
   `tests/test_pipeline_logic.py`が収集時に`sys.modules["core_calculator"]`をMagicMockへ差し替えるため、テストは`core_calculator.py`をファイルから別名で読み込む
+  （2026-10-07、`[[TEST-SYSMODULES-MOCK-LEAK-1]]`の修正で差し替えが漏れなくなったため、通常のimportに戻した）
 - 実ブラウザ: `browser_checks/check_valuation_chart_basis.py`（再生成したデータで一致99・不一致0）
 - 再生成したデータはcommitしていない（次の夜間のTANUKI VALUATIONの実行で反映）
 

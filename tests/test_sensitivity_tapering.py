@@ -24,23 +24,8 @@ _TV_DIR = os.path.join(_REPO, "src", "value", "tanuki_valuation")
 if _TV_DIR not in sys.path:
     sys.path.insert(0, _TV_DIR)
 
-import importlib.util
-
 from calculator.sensitivity import create_sensitivity_calc_func  # type: ignore[import]
-
-
-def _load_real_core_calculator():
-    """tests/test_pipeline_logic.py等が収集時にsys.modules["core_calculator"]を
-    MagicMockへ差し替えるため、ファイルから別名で読み込む（sys.modulesは触らない）。"""
-    spec = importlib.util.spec_from_file_location(
-        "_core_calculator_for_sensitivity_test", os.path.join(_TV_DIR, "core_calculator.py")
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-KoichiValuationCalculator = _load_real_core_calculator().KoichiValuationCalculator
+from core_calculator import KoichiValuationCalculator  # type: ignore[import]
 
 _DATA_DIR = os.path.join(_REPO, "docs", "value-monitor", "tanuki_valuation", "data")
 TAPERING_TICKERS = ["ALAB", "KULR", "SITM", "IONQ", "S", "RDW", "ASTS"]

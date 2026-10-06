@@ -2887,41 +2887,6 @@ successになることを確かめるまでBACKLOG_DONE.mdへ移さない（チ�
 
 ---
 
-### [TEST-SYSMODULES-MOCK-LEAK-1] tests/test_pipeline_logic.pyが収集時にsys.modulesのcore_calculator等をMagicMockへ差し替えるため、全件実行で後から収集されるテストが本物のコードではなくMagicMockを相手に通っている可能性がある
-**優先度:** 中
-**分類:** テスト基盤 / pytest（tests/）
-**登録日:** 2026-10-06
-**発見:** stock.htmlのメインIV説明系の基準統一（`97add7f1c4`）で追加した`tests/test_sensitivity_tapering.py`が、単独では成功し、
-全件実行でだけ失敗した（`assert <MagicMock name='mock.KoichiValuationCalculator().calculate_pt().__getitem__()'> == 'tapering'`）
-
-#### 内容
-`tests/test_pipeline_logic.py:38-39`は、pipelineをimportする前に`data_fetcher`・`core_calculator`・`validator`・`growth_sanity`の4つを
-`sys.modules[_mod_name] = MagicMock()`で無条件に差し替え、元に戻さない。pytestはファイル名の順に収集するため、
-それより後に収集され、モジュールの先頭で`from core_calculator import …`等をするテストは、本物ではなくMagicMockを受け取る。
-MagicMockはどの属性・呼び出しにも値を返すため、比較や型を確かめない書き方のテスト（例: `assert result.get("error") is None`、
-`assert "x" in result`、例外が出ないことだけの確認）は、**本物のコードを1行も実行せずに成功しうる**。
-2026-10-06の件は`==`の比較で失敗したため気づけたが、気づけない形のテストが既に存在するかは未確認。
-
-- 2026-10-06の回避策: `test_sensitivity_tapering.py`は`core_calculator.py`をファイルから別名で読み込む（`importlib.util.spec_from_file_location`、
-  sys.modulesは触らない）。テストの側で個別に避けているだけで、根本の差し替えは残っている
-- 関連する書き方（登録時のgrep、未精査）: `tests/test_tanuki_eps_breakeven_safety.py:26-28`は同じ4つ＋`xlrd`を
-  `sys.modules.setdefault(..., MagicMock())`（先に本物が入っていれば本物のまま、無ければMagicMock。収集の順で結果が変わる）。
-  ほかに`sys.modules[...] = <本物のモジュール>`の登録が`test_flag_consumer_audit_3.py`・`test_runway_cash_unify.py`・
-  `test_stonks_silo_breakeven_unify.py`・`test_stonks_silo_pipeline.py`・`test_pipeline_logic.py:3552`にある（別名での登録で、差し替えではない見込み）
-- `CHAT_RULES.md`の事例15（モックが本番の不具合を自己整合的に再現し、テストが通り続けた）と同じ型のリスク:
-  「テストは成功しているが、検証対象のコードを実行していない」
-
-#### 着手条件（読み取り調査から着手する）
-1. `sys.modules`を書き換えている箇所を全テストからgrepする（代入・`setdefault`・`update`・`pop`・`monkeypatch.setitem(sys.modules, …)`・`patch.dict(sys.modules, …)`）。
-   それぞれ、差し替えか本物の登録か、元に戻すか（fixture・teardown）を表にする
-2. 差し替えたモジュール（`data_fetcher`・`core_calculator`・`validator`・`growth_sanity`・`xlrd`）をimportしているテストの一覧を作る
-   （先頭のimport・関数内のimport・`from … import`・`importlib`）。収集の順で差し替えより後になるものに印を付ける
-3. 単独で実行した場合と全件で実行した場合で、本物のコードを使っているかを比較する
-   （例: conftest等で各テストの開始時に`sys.modules["core_calculator"]`がMagicMockかを記録する、またはテストの対象関数に
-   一時的な検知を入れて呼ばれたかを数える。本物を使っていないテストを一覧にする）
-4. 結果を見て直し方を決める（候補: test_pipeline_logic.pyの差し替えを`monkeypatch`/fixtureで閉じ込めて終了時に戻す、
-   pipelineのimportを差し替えなしで行えるようにする、全件実行の最後に「MagicMockが残っていない」ことを確かめるテストを置く）
-
 ### [MARKETDATA-FUTURES-BACKFILL-ROWS-1] daily/のES=F・NQ=F・NIY=Fの抜け補完の行に、前の行と同じvolume・O=H=L=Cでvolume 0の足・確定時刻を過ぎても残る暫定の印がある
 **優先度:** 中
 **分類:** データ品質 / common/market_data（Market Pulse 段階8の先物）
