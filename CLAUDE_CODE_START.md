@@ -174,7 +174,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   no_close_after_retry 0（20:29:36完了）、20:55・21:25は「そろっている（584/586）→ run=false」で取り消し・下流skipped。下流は
   Stonks Silo 20:31:39・Market Pulse 20:32:14・TANUKI VALUATION 20:42:52（1回）・TANUKI Score 20:44:19で**22:00 UTCに間に合った**。
   check_dependency_map.py 一致61・不一致0・判定不能0（D-02・D-04も一致に）、check_valuation_chart_basis.py 一致99・不一致0。
-  daily/のES=F・NQ=F・NIY=Fに10-01〜10-06が入った。**気になった点（未登録・未調査）**: ES=F・NQ=Fの10-05の行のvolumeが10-02と同じ値、
+  daily/のES=F・NQ=F・NIY=Fに10-01〜10-06が入った。**気になった点（2026-10-07に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`〈中〉として登録、原因は未調査）**: ES=F・NQ=Fの10-05の行のvolumeが10-02と同じ値、
   NIY=Fの10-01・10-02・10-05がO=H=L=C・volume 0でcloseが`contract_close`と違う、09-29〜10-06の行の`_provisional`が残っている
 - 統合: 衝突5件（Market Data Daily・Market Pulse・Stonks Silo・TANUKI VALUATIONのYAMLの冒頭コメントと、SYSTEM_MAP.md）。コメントはブランチ側の短い形を
   今の構成に合わせて書き直し、ブランチ側の金曜のschedule（22:50・22:40・22:30）は取り込まない。`gen_update_schedule.py`を再実行し、1章の一覧に
