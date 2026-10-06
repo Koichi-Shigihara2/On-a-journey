@@ -439,6 +439,19 @@ FRED `releases/dates`・Fedの`calendar.json`・決算日・祝日・満期）�
 予定の日付変換（ET→JST、祝日）、過去の実績の先読みバイアス（日tの判定にt以降の値を使っていないことを、未来の値を書き換えても結果が
 変わらないことで確認）
 
+**実施記録（2026-09-30、指示書㉗、ブランチ feature/mp-impl-c〈feature/mp-impl-bから分岐〉）**
+- 追加: `news_headlines.py`（CNBC Markets・Google News ビジネス〈US〉・NHK 経済のRSSから見出し・時刻・リンク・出典だけ。
+  米国14件・日本6件まで。AIの入力には入れない）、`market_calendar.py`（今後7日: FREDの重要指標12種〈日付のみ、時刻は推測で
+  付けない〉、Fedのcalendar.json〈FOMC・講演・議会証言・ベージュブック、ET→JST〉、決算〈保有・TAIL・M7に限る〉、NYSE・JPXの休場と
+  米国の短縮取引、米国の月次オプション満期〈第3金曜、休場なら前営業日〉と日本のSQ〈第2金曜〉）、`futures_snapshot.py`
+  （ES=F・NQ=F・NIY=F・JPY=Xの15分足の最新値・足の時刻・取得時刻・限月、Yahooの前日終値との比）、`backfill_implc.py`、
+  `tests/test_market_pulse_implc.py`（18件、外部取得はモック）
+- daily/にES=F・NQ=F・NIY=Fを2021-01-04から追加（先物として限月の記録・暫定の扱いの対象）。既存のファイルの変更0件
+- 取得に失敗した取得元は推測で埋めず「取得できず」と表示し、data_qualityのunavailableに列挙してpartialにする（段階2・8）
+- 過去の実績（past_outcomes）は、実装Aのstage_conclusions["8"]に記録済みのため、別のキーは設けない
+- 見出し・予定・先物の値はその時点の取得しか残らないため、既存のエントリには付けない（プレビュー用に最新のエントリだけに、
+  取得時刻つきで付けた）
+
 ### 実装の順序
 
 実装A → 実装B → 実装C。Aで結論パネルとdata_qualityの枠組みを作ってから、B・Cの段階を追加する。Bはdaily/にシンボルを追加するため、

@@ -338,6 +338,8 @@
       <div class="stage-h"><span class="stage-no">2</span>なぜ起きたか</div>
       <div class="stage-line" id="stageLine2">—</div>
       <div class="stage-note">同じ日に大きく動いたものを事実として示す（因果は判定しない）。</div>
+      <div class="sub-h">ニュースの見出し（見出し・時刻・出典のみ。AIの入力には使わない）</div>
+      <div id="headlines"></div>
       <div class="ai-card"><div class="ai-h">AIの見解</div><div class="stage-note" style="margin-top:0">AIへの入力は、本システムが判定した結論と数値（確定した事実）だけ。AIに数値の新規生成を禁止している。</div><div id="aiView"></div></div>
     </section>
     <section class="stage" id="stage3">
@@ -497,6 +499,10 @@
     <section class="stage" id="stage8">
       <div class="stage-h"><span class="stage-no">8</span>明日どうなるか</div>
       <div class="stage-line" id="stageLine8">—</div>
+      <div class="sub-h">先物・ドル円の最新値（取得時刻つき。データ基準日の判定には使わない）</div>
+      <div id="futuresTable"></div>
+      <div class="sub-h">今後7日の予定（米国東部時間の日付。経済指標は日付のみ）</div>
+      <div id="calendarTable"></div>
       <div class="sub-h">センチメントのシグナル</div>
       <div id="signalBadge"></div>
       <div class="sub-h">同じシグナルが出た過去の日の、その後の実績</div>
@@ -1054,6 +1060,31 @@ function renderStage7(){
   <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。資金が向かっているセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
 }
 
+// ── 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の先物・予定 ──
+function fmtJst(iso){if(!iso)return'—';const d=new Date(iso);return new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(d)}
+function failedNote(v,label){return (v?.failed||[]).length?`<div class="stage-note" style="color:var(--amb)">${label}が取得できず: ${escHtml(v.failed.join('・'))}</div>`:''}
+function renderHeadlines(){
+  const el=document.getElementById("headlines");if(!el)return;
+  const h=allData[allData.length-1]?.headlines;
+  if(!h){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  if(!(h.items||[]).length){el.innerHTML='<div class="stage-note" id="headlinesStatus">取得できず</div>'+failedNote(h,'見出し');return}
+  el.innerHTML=`<table class="mp-table" id="headlinesTable"><tr><th>時刻（JST）</th><th>見出し</th><th>出典</th></tr>${h.items.map(x=>`<tr><td>${fmtJst(x.published_utc)}</td><td style="white-space:normal"><a href="${escHtml(x.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--txt)">${escHtml(x.title)}</a></td><td>${escHtml(x.source)}</td></tr>`).join('')}</table>${failedNote(h,'見出し')}<div class="stage-note">取得: ${fmtJst(h.fetched_at)}。同じ時間帯に配信された見出しを並べるだけで、値動きとの因果は判定しない。</div>`;
+}
+function renderFutures(){
+  const el=document.getElementById("futuresTable");if(!el)return;
+  const f=allData[allData.length-1]?.futures;
+  if(!f){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  el.innerHTML=`<table class="mp-table" id="futuresTableInner"><tr><th></th><th>最新値</th><th>前日比</th><th>足の時刻（JST）</th><th>限月</th></tr>${(f.items||[]).map(x=>x.status!=="ok"?`<tr><td>${escHtml(x.region)} ${escHtml(x.name)}</td><td colspan="4" style="color:var(--amb)">取得できず</td></tr>`:`<tr><td>${escHtml(x.region)} ${escHtml(x.name)}</td><td class="num">${Number(x.value).toLocaleString("ja-JP",{maximumFractionDigits:3})}${provMark(x)}</td><td class="num ${x.change_pct>0?'up':x.change_pct<0?'down':'flat'}">${x.change_pct==null?'—':pctS(x.change_pct,2)+'%'}</td><td>${fmtJst(x.bar_time_utc)}</td><td>${escHtml(x.contract||'—')}</td></tr>`).join('')}</table><div class="stage-note">取得: ${fmtJst(f.fetched_at)}（15分足の最新の足。前日比はYahooの前日終値〈先物は清算値〉との比）。</div>`;
+}
+function renderCalendar(){
+  const el=document.getElementById("calendarTable");if(!el)return;
+  const c=allData[allData.length-1]?.calendar;
+  if(!c){el.innerHTML='<div class="stage-note">記録なし</div>';return}
+  const ev=c.events||[];
+  const rows=ev.length?ev.map(e=>`<tr><td>${escHtml(e.date_et||e.date_local||'—')}</td><td>${escHtml(e.time_et?e.time_et+' ET':'—')}</td><td>${escHtml(e.time_jst?e.time_jst.slice(5)+' JST':'—')}</td><td>${escHtml(e.region||'米国')}</td><td>${escHtml(e.kind)}</td><td style="white-space:normal">${escHtml(e.title)}</td></tr>`).join(''):'<tr><td colspan="6">該当なし</td></tr>';
+  el.innerHTML=`<table class="mp-table" id="calendarTableInner"><tr><th>日付</th><th>時刻（ET）</th><th>時刻（JST）</th><th>地域</th><th>種別</th><th>予定</th></tr>${rows}</table>${failedNote(c,'予定')}<div class="stage-note">${escHtml(c.start_et||'')}〜${escHtml(c.end_et||'')}。経済指標（FRED）は公表時刻が無いため日付のみ。決算は保有銘柄・TAILの監視銘柄・M7に限る。取得: ${fmtJst(c.fetched_at)}。</div>`;
+}
+
 // ── 今日の結論パネル・段階ごとの結論1行 ──
 function renderConclusions(){
   const el=document.getElementById("conclusionPanel");if(!el)return;
@@ -1068,7 +1099,7 @@ function renderDqBanner(){
   const el=document.getElementById("dqBanner");if(!el)return;
   const dq=allData[allData.length-1]?.data_quality;
   if(dq?.status==="stale")el.innerHTML='<div class="dq-banner dq-stale">前営業日のデータ（最新の終値が未反映）</div>';
-  else if(dq?.status==="partial")el.innerHTML=`<div class="dq-banner dq-partial">${(dq.provisional_elements||[]).length?"一部の値が前営業日または暫定":"一部の値が前営業日"}: ${escHtml((dq.old_elements||[]).join("・"))}</div>`;
+  else if(dq?.status==="partial"){const parts=[];if((dq.old_elements||[]).length)parts.push(`${(dq.provisional_elements||[]).length?"一部の値が前営業日または暫定":"一部の値が前営業日"}: ${escHtml(dq.old_elements.join("・"))}`);if((dq.unavailable||[]).length)parts.push(`取得できず: ${escHtml(dq.unavailable.join("・"))}`);el.innerHTML=`<div class="dq-banner dq-partial">${parts.join(" ／ ")}</div>`}
   else el.innerHTML='';
 }
 function renderStage0(){
@@ -1105,7 +1136,7 @@ function renderStage5(){
 
 // ── SELECT / RENDER ALL ──
 function selectItem(i){selectedIdx=i;renderTimeline();renderDetail()}
-const RENDER_ALL_FNS=[renderConclusions,renderDqBanner,renderStage0,renderStage1Tags,renderAIView,renderStage3Credit,renderStage5,renderSectors,renderStage6,renderStage7,renderStage8,renderSignal,renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
+const RENDER_ALL_FNS=[renderConclusions,renderDqBanner,renderStage0,renderStage1Tags,renderHeadlines,renderFutures,renderCalendar,renderAIView,renderStage3Credit,renderStage5,renderSectors,renderStage6,renderStage7,renderStage8,renderSignal,renderGauge,renderOscMetricBtns,renderOscPeriodBtns,renderOscChart,renderPeriodGroup,renderPhasePills,renderTimeline,renderMetrics,renderMetricBtns,renderChart,renderLegend,renderDetail,renderTechPulse,renderTakeProfit,renderBuyChecklist,renderAssetFlow];
 function renderAll(){RENDER_ALL_FNS.forEach(fn=>{try{fn()}catch(e){console.error(`[renderAll] ${fn.name} failed:`,e)}})}
 
 function renderTakeProfit(){

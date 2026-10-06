@@ -1562,6 +1562,35 @@ def compute_implb(structured_data, get_series):
     return out
 
 
+def compute_implc(implb=None):
+    """実装C（指示書㉗）の取得。どれも失敗しても例外にせず、failed・statusに記録する（推測で埋めない）。
+    決算の予定は保有銘柄・TAILの監視銘柄・M7に限る。"""
+    import news_headlines as _nh
+    import market_calendar as _mc
+    import futures_snapshot as _fs
+    import sector_rotation as _sr
+    out = {}
+    try:
+        out["headlines"] = _nh.fetch_headlines()
+    except Exception as e:
+        print(f"[WARN] ニュースの見出しの取得に失敗: {e}")
+        out["headlines"] = {"items": [], "failed": ["全配信元"], "status": "failed"}
+    try:
+        wt = ((implb or {}).get("watch_list") or {}).get("tickers") or _sr.watch_tickers(REPO_ROOT)
+        tickers = sorted(set(wt.get("all") or []) | set(_sr.M7))
+        from common.market_data.reader import get_calendar as _md_get_calendar
+        out["calendar"] = _mc.build_calendar(REPO_ROOT, tickers, get_calendar=_md_get_calendar)
+    except Exception as e:
+        print(f"[WARN] 予定の取得に失敗: {e}")
+        out["calendar"] = {"events": [], "failed": ["全取得元"], "status": "failed"}
+    try:
+        out["futures"] = _fs.snapshot()
+    except Exception as e:
+        print(f"[WARN] 先物・ドル円の最新値の取得に失敗: {e}")
+        out["futures"] = {"items": [], "failed": ["全銘柄"], "status": "failed"}
+    return out
+
+
 def bond_direction(tlt_chg, spy_chg):
     """MP-27の債券判定。TLT>+0.3%かつSPY<−0.5%→債券買い、TLT<0→債券売り、それ以外→中立。"""
     if tlt_chg is not None and spy_chg is not None and tlt_chg > 0.3 and spy_chg < -0.5:
@@ -1624,7 +1653,7 @@ def write_nyse_holidays(path=None, now_utc=None):
         return None
 
 
-def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None, implb=None):
+def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None, implb=None, implc=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     jst_now = datetime.now(JST)
     date_str = jst_now.strftime('%Y-%m-%dT%H:%M:%S+09:00')
@@ -1722,6 +1751,9 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
     for _k in ("sector_rotation", "semis_m7", "commodity_fx", "watch_list"):
         if implb and implb.get(_k) is not None:
             new_entry[_k] = implb[_k]
+    for _k in ("headlines", "calendar", "futures"):
+        if implc and implc.get(_k) is not None:
+            new_entry[_k] = implc[_k]
     all_data.append(new_entry)
 
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
@@ -1929,9 +1961,11 @@ if __name__ == "__main__":
     from common.market_data.reader import get_price_series_as_of as _md_series_as_of
     # 実装B（指示書㉖）: 段階5のセクター4象限・段階6の半導体とM7・商品と為替の内訳・段階7の監視銘柄
     implb = compute_implb(structured_data, lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
+    # 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の予定・先物とドル円の最新値（AIの入力には入れない）
+    implc = compute_implc(implb)
     stage_result = build_stage_conclusions(
         structured_data, asset_flow_data, sentiment_data.get("breadth"), data_freshness.get("expected_close_date"),
-        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb)
+        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb, implc=implc)
     print(f"[INFO] 天気: {stage_result['weather']['label']} / data_quality: {stage_result['data_quality']['status']}")
     for _k, _v in stage_result["stages"].items():
         print(f"  段階{_k}: {_v.get('line')}")
@@ -1943,7 +1977,7 @@ if __name__ == "__main__":
     report, haiku = analyse_market(ai_facts)
     save_data_to_json_and_csv(report, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data,
                               tp_checklist, buy_checklist, data_freshness, stage_result=stage_result, haiku=haiku,
-                              ai_facts=ai_facts, hindenburg=hindenburg, implb=implb)
+                              ai_facts=ai_facts, hindenburg=hindenburg, implb=implb, implc=implc)
     if GMAIL_USER and GMAIL_PASSWORD:
         send_email(report, sentiment_data)
     else:

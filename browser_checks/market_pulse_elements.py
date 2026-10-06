@@ -278,9 +278,10 @@ DOM_SNAPSHOT_JS = """
     cpWeather: t('cpWeather'),
     cpLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('cpLine' + k)])),
     stageLines: Object.fromEntries(['0','1','2','3','4','5','6','7','8'].map(k => [k, t('stageLine' + k)])),
-    tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table','dqTable'].map(id => [id,
+    tableRows: Object.fromEntries(['sectorTableInner','semisTable','breakdownTable','watchTable','m7Table','headlinesTable','futuresTableInner','calendarTableInner','dqTable'].map(id => [id,
       document.getElementById(id) ? [...document.getElementById(id).querySelectorAll('tr')].slice(id === 'm7Table' ? 0 : 1)
         .map(r => [...r.querySelectorAll('td')].map(td => (id === 'dqTable' ? td.textContent : td.innerText).trim())) : null])),
+    headlinesText: t('headlines'),
     watchHeaders: document.getElementById('watchTable') ? [...document.getElementById('watchTable').querySelectorAll('th')].map(e => e.innerText.trim()) : null,
     quadDatasets: (typeof quadChartInst !== 'undefined' && quadChartInst) ? quadChartInst.data.datasets.map(d => ({label: d.label, n: d.data.length,
       last: d.data[d.data.length - 1]})) : null,
@@ -675,6 +676,43 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
                  ("M7", f(sm["m7_pct"]) + "%" if sm.get("m7_pct") is not None else None)]
         ok = all(c.startswith(lbl) and (v is None or v in c) for c, (lbl, v) in zip(cards, exp_c)) and len(dom["metricCards"]) == 8
         _res(results, cls, "B-01 段階1 主要8指標のSOX・M7のカード", exp_c, cards, ok)
+    # ── 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の先物・予定 ──
+    def jst(iso):
+        if not iso:
+            return "—"
+        d = datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(JST)
+        return f"{d.month:02d}/{d.day:02d} {d.hour:02d}:{d.minute:02d}"
+    hl = L.get("headlines")
+    if hl is not None:
+        exp = [[jst(x["published_utc"]), x["title"], x["source"]] for x in hl.get("items") or []]
+        act = dom["tableRows"]["headlinesTable"]
+        ok = (act == exp) if exp else (act is None and "取得できず" in (dom.get("headlinesText") or ""))
+        _res(results, cls, "C-02 段階2 ニュースの見出し（#headlinesTable、時刻・見出し・出典）", f"{len(exp)}件", f"{len(act or [])}件", ok,
+             note="全セルを比較。見出しが無い場合は「取得できず」")
+    fu = L.get("futures")
+    if fu is not None:
+        exp = []
+        for x in fu.get("items") or []:
+            name = f"{x['region']} {x['name']}"
+            if x.get("status") != "ok":
+                exp.append([name, "取得できず"])
+            else:
+                chg = "—" if x["change_pct"] is None else ("+" if x["change_pct"] >= 0 else "") + js_fixed(x["change_pct"], 2) + "%"
+                exp.append([name, None, chg, jst(x["bar_time_utc"]), x.get("contract") or "—", prov_label(x)])
+        act = dom["tableRows"]["futuresTableInner"] or []
+        ok = len(act) == len(exp) and all(a[0] == e[0] and (e[1] == "取得できず" and a[1] == "取得できず" or
+                                                           e[1] is None and a[2:] == e[2:5] and a[1].endswith(e[5])) for a, e in zip(act, exp))
+        _res(results, cls, "C-08 段階8 先物・ドル円の最新値（#futuresTableInner）", exp, act, ok,
+             note="名前・前日比・足の時刻・限月と、最新値の後ろの「暫定（清算前）」「暫定（日中）」を比較")
+    ca = L.get("calendar")
+    if ca is not None:
+        exp = [[e.get("date_et") or e.get("date_local") or "—", (e["time_et"] + " ET") if e.get("time_et") else "—",
+                (e["time_jst"][5:] + " JST") if e.get("time_jst") else "—", e.get("region") or "米国", e["kind"], e["title"]]
+               for e in ca.get("events") or []] or [["該当なし"]]
+        act = dom["tableRows"]["calendarTableInner"]
+        _res(results, cls, "C-08b 段階8 今後7日の予定（#calendarTableInner）", f"{len(exp)}行", f"{len(act or [])}行", act == exp,
+             note="全セルを比較")
+
     wl = L.get("watch_list")
     if wl:
         qja = {"Strong": "強い", "Improving": "強まりつつある", "Weakening": "弱まりつつある", "Weak": "弱い"}
@@ -691,9 +729,18 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         _res(results, cls, "B-07b 段階7 表の見出しの計算日（TANUKI SCORE・HypeCore）", exp_h, act_h[-2:], act_h[-2:] == exp_h,
              note="Market Pulseより前の夜の計算結果を使うため、計算日を見出しに表示する")
     _res(results, cls, "S-00 data_qualityの判定（#dqStatus）", dq.get("status"), dom["dqStatus"], dom["dqStatus"] == dq.get("status"))
-    exp_b = "" if dq.get("status") not in ("stale", "partial") else (
-        "前営業日のデータ（最新の終値が未反映）" if dq["status"] == "stale" else
-        ("一部の値が前営業日または暫定: " if dq.get("provisional_elements") else "一部の値が前営業日: ") + "・".join(dq.get("old_elements") or []))
+    if dq.get("status") == "stale":
+        exp_b = "前営業日のデータ（最新の終値が未反映）"
+    elif dq.get("status") == "partial":
+        parts = []
+        if dq.get("old_elements"):
+            parts.append(("一部の値が前営業日または暫定: " if dq.get("provisional_elements") else "一部の値が前営業日: ")
+                         + "・".join(dq["old_elements"]))
+        if dq.get("unavailable"):
+            parts.append("取得できず: " + "・".join(dq["unavailable"]))
+        exp_b = " ／ ".join(parts)
+    else:
+        exp_b = ""
     _res(results, cls, "S-00b data_qualityの注意表示（#dqBanner）", exp_b, dom["dqBanner"], (dom["dqBanner"] or "") == exp_b)
     if dq.get("as_of"):
         # 要素ごとの基準日の表: 想定外の暫定は「暫定」、夜の実行の時点で構造上必ず暫定になる値は「暫定（清算前）」「暫定（日中）」
