@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import calendar
+import re
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
@@ -29,6 +30,15 @@ def _default_fetch(url: str) -> bytes:
     return r.content
 
 
+_WS = re.compile(r"[ \t\n\r\f]+")
+
+
+def _collapse_ws(s: str) -> str:
+    """連続した空白（スペース・タブ・改行）を1つにまとめる。画面（HTML）は表示時にまとめるため、保存する値も表示と同じにする。
+    全角スペース（U+3000）はHTMLでもまとめられないので残す。"""
+    return _WS.sub(" ", s).strip()
+
+
 def _published_utc(entry) -> Optional[str]:
     st = entry.get("published_parsed") or entry.get("updated_parsed")
     if not st:
@@ -48,7 +58,7 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
             feed = feedparser.parse(fetch(s["url"]))
             got = []
             for e in feed.entries:
-                title = (e.get("title") or "").strip()
+                title = _collapse_ws(e.get("title") or "")
                 link = (e.get("link") or "").strip()
                 if not title or not link:
                     continue

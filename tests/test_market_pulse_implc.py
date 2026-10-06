@@ -59,6 +59,16 @@ class TestHeadlines:
         regions = [x["region"] for x in h["items"]]
         assert regions.count("日本") == 6 and regions.count("米国") == 14
 
+    def test_title_whitespace_collapsed_like_browser(self):
+        # 見出しの連続した空白（スペース・タブ・改行）は、ブラウザの表示と同じく1つにまとめて保存する（C-02の不一致の再発防止）。
+        # 全角スペースはブラウザもまとめないので残す
+        def fetch(url):
+            return RSS.format(t1="Gen Z.  Here’s why \t experts\n worry", t2="日本　　経済").encode()
+        h = nh.fetch_headlines(fetch)
+        titles = {x["title"] for x in h["items"]}
+        assert "Gen Z. Here’s why experts worry" in titles
+        assert "日本　　経済" in titles
+
 
 class TestCalendar:
     @pytest.mark.parametrize("s,t", [("3:30 p.m.", time(15, 30)), ("10:00 a.m.", time(10, 0)), ("12:00 p.m.", time(12, 0)),
