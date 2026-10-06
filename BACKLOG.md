@@ -2807,9 +2807,49 @@ Workerの21:50の確認に加えて[J]でも検知されなかった（10-06の[
 - 成功＝書いた＋変更なし、失敗＝CIK未登録・取得の失敗・例外。成功が0銘柄の実行は終了コード1（全銘柄が変更なしの週は0）
 - ワークフローに`XAI_API_KEY`を渡す。テスト`tests/test_tail_sec_ctrl_fetcher.py`（修正前のコードで9件中8件が失敗することを確認）
 
+#### 作り直し（2026-10-07、ローカルで実行しチャット側の確認後にcommit）
+- 1回目: `10 成功（更新 10 / 変更なし 0） / 0 失敗`・終了コード0・10銘柄とも和訳あり。2回目: `10 成功（更新 0 / 変更なし 10） / 0 失敗`・終了コード0
+  （書き込み・Grokの呼び出しなし。実データで「全銘柄変更なしの週は終了コード0」を確認）
+- PLTR・SOFI・TSLA・CELH・APPは2026Q1→Q2、NVDA・ADBEはQ2→Q3で、いずれも有効のまま。SOUN・CRWVはQ1→Q2で無効のまま。
+  APGEは2026Q2（08-10提出、有効）を初めて作成。06-27の既存の四半期のファイルは上書きしていない
+- SOUN・CRWVの`material_weaknesses`は2件・4件→12件になったが、状況は変わっていない（件数は語の出現箇所の数、`[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]`）
+
 #### 未了
-止まっていた10銘柄のctrlの作り直し（ローカルで実行し、差分をチャット側が確認してからcommit）、翌朝のSystem Health [F]が10/10で✅、
-次の定時の実行（10-12 01:00 UTC）のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」。
+翌朝のSystem Health [F]が10/10で✅、次の定時の実行（10-12 01:00 UTC）のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」。
+
+---
+
+### [TAIL-CTRL-MW-COUNT-DISPLAY-1] TANUKI TAILの内部統制の「マテリアルウィークネス (N件)」の件数が弱点の数ではなく「material weakness」という語の出現箇所の数で、SOUN・CRWVは状況が変わらないまま2件・4件→12件の表示になった
+**優先度:** 中
+**分類:** 表示の誤り / TANUKI TAIL（src/tail/sec_ctrl_fetcher.py・docs/portfolio/tail/detail.html・index.html）
+**登録日:** 2026-10-07
+**発見:** `[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`の修正後の10銘柄のctrlの作り直しで、差分を確認した
+
+#### 内容
+`sec_ctrl_fetcher.py::_analyze_ctrl_text()`の`material_weaknesses`は、`_extract_sentences()`が返す一覧。Item 4の抜粋（最大6000文字）の中で
+`material weakness(es)`という語が一致した箇所ごとに前後200文字を切り出し、先頭80文字が同じものだけを除いたもの。**弱点そのものの数ではなく、
+語の出現箇所の数**（同じ弱点を説明する複数の文、定義の文〈"A material weakness is a deficiency …"〉、是正の取り組みの文も1件ずつ数える）。
+計算方法は導入時（`8f9152528f`、2026-06-24）から変わっていない。導入時の記録（BACKLOG_DONE.mdの`[SEC-CTRL-1]`）には
+「SOUN検証: MW=3種類（統制環境・複雑取引・職務分掌）を正常検出」とあり、件数を弱点の種類の数として扱う前提だったとみられる。
+
+画面はこの件数をそのまま見せている: `docs/portfolio/tail/detail.html`（「マテリアルウィークネス (N件)」と切り出した文の一覧）、
+`docs/portfolio/tail/index.html`の`buildTabCtrl`（同じ見出し）。
+
+#### 経緯（2026-10-07の作り直し）
+| 銘柄 | 変更前（2026Q1、06-24〜06-27の手作業の実行） | 作り直した後（2026Q2） | 10-Qの記載 |
+|---|---|---|---|
+| SOUN | 無効・2件 | 無効・12件（08-10提出） | 「not effective as of June 30, 2026 due to the material weaknesses」。職務分掌・複雑な取引の会計等の弱点の説明と是正の取り組みが続く |
+| CRWV | 無効・4件 | 無効・12件（08-12提出） | 「not effective … due to the material weaknesses」「continued to exist as of June 30, 2026」（以前から報告している弱点が残っている） |
+
+どちらも開示統制は無効のままで、**状況は変わっていない**。件数が増えたのは10-QのItem 4の書き方・文の長さが変わり、抜粋の中の語の出現箇所が増えたため。
+画面では「2件→12件」「4件→12件」と弱点が増えたように見える。
+
+#### 直し方の案（チャット側、2026-10-07）
+件数を出さずに、**重大な欠陥（マテリアルウィークネス）の有無**と、**Item 4の該当箇所の抜粋**を表示する。語の出現回数は弱点の数ではないので、件数として見せない。
+- 有無は`material_weaknesses`が空かどうか（または`_RE_MATERIAL_WEAKNESS`の一致の有無）で決まる。保存する項目を変えるか（例: 有無の真偽値と抜粋）、
+  画面の表示だけを変えるかは着手時に決める
+- 直す範囲: detail.html・index.htmlの見出しの件数の表示。System Health等で件数を読んでいるところが無いかを着手時にgrepで確かめる
+- 画面の確認はPlaywrightで、SOUN・CRWV（有り）とPLTR（無し）の表示を見る
 
 ---
 

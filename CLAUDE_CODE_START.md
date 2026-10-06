@@ -197,6 +197,10 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 3. 21:50 UTCの確認のcronが発火したか（GitHub側には何も残らない設計。Cloudflareのダッシュボードの Past Cron Events か`workersInvocationsScheduled`）
 4. `venv\Scripts\python.exe scripts\gen_update_schedule.py --check`が「一致」（夜間のbotのcommitでYAMLは変わらない想定）
 5. 文書と実際が食い違ったら、UPDATE_SCHEDULE.mdを直すか（文書の誤り）、YAML・Workerを直すか（起動の誤り）を分けてチャットに報告する
+6. TANUKI TAILの内部統制（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`、2026-10-07に修正`a0b52a814a`・10銘柄のctrlを作り直してcommit）:
+   10-07 23:30 UTCのSystem Health Checkの[F] TailCtrlが「10/10件 ctrl/latest.json 存在」で✅になったか。
+   次の定時の実行（10-12〈月〉01:00 UTC）は、ログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・success・commitなしになる想定
+   （その間に新しい10-Qが出た銘柄があれば「更新」に数えられる）
 
 **水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）** → 2026-10-07に完了（上の「2026-10-07 update-scheduleを統合」）
 1. 実装Cの表示（Market Pulseの今夜のエントリ）: 段階2のニュースの見出し（`headlines`の件数・status・failed、画面の#headlinesTable）、
