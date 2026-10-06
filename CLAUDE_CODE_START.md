@@ -169,7 +169,36 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 次の候補: (1) 今夜の実行後に`check_valuation_chart_basis.py`で全99銘柄の一致を確認（下の水曜朝の確認手順の5）
   (2) `[[TEST-SYSMODULES-MOCK-LEAK-1]]`の読み取り調査 (3) `[[MARKETDATA-SELF-CANCEL-HTTP502-1]]`の再発監視
 
-**水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）**
+**2026-10-07 update-scheduleを統合（`e623cffcb6`、チャット側承認済み）**
+- 水曜朝の確認（米国10-06の足、下の手順1〜5）は**すべて想定どおり**: 外部起動20:25:44がガードrun=true（0/586）→ fetched・with_bars 590・
+  no_close_after_retry 0（20:29:36完了）、20:55・21:25は「そろっている（584/586）→ run=false」で取り消し・下流skipped。下流は
+  Stonks Silo 20:31:39・Market Pulse 20:32:14・TANUKI VALUATION 20:42:52（1回）・TANUKI Score 20:44:19で**22:00 UTCに間に合った**。
+  check_dependency_map.py 一致61・不一致0・判定不能0（D-02・D-04も一致に）、check_valuation_chart_basis.py 一致99・不一致0。
+  daily/のES=F・NQ=F・NIY=Fに10-01〜10-06が入った。**気になった点（未登録・未調査）**: ES=F・NQ=Fの10-05の行のvolumeが10-02と同じ値、
+  NIY=Fの10-01・10-02・10-05がO=H=L=C・volume 0でcloseが`contract_close`と違う、09-29〜10-06の行の`_provisional`が残っている
+- 統合: 衝突5件（Market Data Daily・Market Pulse・Stonks Silo・TANUKI VALUATIONのYAMLの冒頭コメントと、SYSTEM_MAP.md）。コメントはブランチ側の短い形を
+  今の構成に合わせて書き直し、ブランチ側の金曜のschedule（22:50・22:40・22:30）は取り込まない。`gen_update_schedule.py`を再実行し、1章の一覧に
+  20:17の削除・入力guard・3本のcronなし（workflow_runと手動だけ）を反映。外部起動（`wrangler.toml`の3行＝20:25・20:55・21:25・21:50の4回）は2章の表と一致
+- `gen_update_schedule.py`の修正: cronの日付指定をJSTで1日ずらす（Beta Config 2〜8日08:00 JST）、「Check first-Sunday schedule」をガードの列に。
+  `tests/test_update_schedule.py`のYAMLの変更を検出するテストが削除済みの金曜cronを置き換えて空振りしていたのを修正
+- ゲート: pytest 1988件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0/WARN=124件（WARN-58なし）
+
+**木曜（2026-10-08）朝の確認手順（米国10-07〈水〉の足。UPDATE_SCHEDULE.mdの時刻と実際の起動・完了の突き合わせ）**
+夏時間（引け20:00 UTC）。UPDATE_SCHEDULE.md 2章の想定は「20:25の外部起動が取得 → Stonks Silo・Market Pulse → TANUKI VALUATION（1回）→ TANUKI Score、
+22:00 UTCまでに完了。20:55・21:25はそろい済みで取り消し。21:50は成功した実行ありで何もしない」。
+1. `gh run list --limit 60 --json databaseId,workflowName,event,createdAt,updatedAt,conclusion`で10-07 20:00 UTC以降を一覧にし、下の表の形で
+   「文書の時刻／実際の作成時刻／完了時刻／conclusion」を記録する
+   - Market Data Daily: workflow_dispatchが20:25・20:55・21:25頃に各1本（文書の時刻との遅れを分単位で）。ガードは`gh run view <ID> --log | grep -F "[guard]"`
+   - 下流: Market Pulse・Stonks Silo（Market Data Dailyの完了の直後）、TANUKI VALUATION（Stonks Siloの完了の直後、**1回だけ**）、TANUKI Score（その直後）。
+     **4本ともeventがworkflow_runだけ**であること（1章の一覧でcronは「—」。scheduleの実行が1本でもあれば一覧とYAMLの食い違いを疑う）
+   - GitHubのschedule（保険）: 20:47〜23:17の30分おき・01:47・02:17の各枠に対して、作られた実行の時刻とガードの判定（すべてrun=falseの想定）
+2. 連鎖と独立の定時（1章の一覧の時刻と実際の起動の遅れ）: MACRO_PULSE 22:15、**Beta Config Update 23:00**（10-07は1〜7日に入るので起動する。
+   最初の段「Check first-Sunday schedule」が「日曜の起動ではないため何もしない」で終わる想定）、System Health 23:30、Score Verifier 00:00 UTC
+3. 21:50 UTCの確認のcronが発火したか（GitHub側には何も残らない設計。Cloudflareのダッシュボードの Past Cron Events か`workersInvocationsScheduled`）
+4. `venv\Scripts\python.exe scripts\gen_update_schedule.py --check`が「一致」（夜間のbotのcommitでYAMLは変わらない想定）
+5. 文書と実際が食い違ったら、UPDATE_SCHEDULE.mdを直すか（文書の誤り）、YAML・Workerを直すか（起動の誤り）を分けてチャットに報告する
+
+**水曜（2026-10-07）朝の確認手順（米国10-06〈火〉の足。実装Cの初回の実地確認）** → 2026-10-07に完了（上の「2026-10-07 update-scheduleを統合」）
 1. 実装Cの表示（Market Pulseの今夜のエントリ）: 段階2のニュースの見出し（`headlines`の件数・status・failed、画面の#headlinesTable）、
    段階8の先物・ドル円（`futures`、ES=F・NQ=F・NIY=F・ドル円の最新値・前日比・限月・「暫定（清算前）」「暫定（日中）」）、今後7日の予定（`calendar`、#calendarTableInner）。
    daily/のES=F・NQ=F・NIY=Fに10-01〜10-06の行が入ったか（抜け補完）
@@ -223,7 +252,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
    `risk_free_rate_live_date`（10-05の足）・`intrinsic_value_rf_rate`があること、report.txtのERP_Signalの行に`[Rf x.xx%, ^TNX 日付]`が付いていること、
    stock.htmlの参考②の見出しに「（x.xx%、^TNX 日付）」が出ていること。`fallback_fixed`になっていたら、^TNXの日足が更新されていない（Market Data Dailyを確認）
 
-**マージ待ちのブランチ（残り1本: update-schedule。Bは2026-10-01、Cは2026-10-06〈`31812675c0`〉に統合済み）**
+**マージ待ちのブランチ（残り0本。Bは2026-10-01、Cは2026-10-06〈`31812675c0`〉、update-scheduleは2026-10-07〈`e623cffcb6`〉に統合済み）**
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
   **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
@@ -237,7 +266,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   **既知の不一致（2026-10-03 チャット側の指示）**: `browser_checks/check_dependency_map.py`の⑤Hollow Rallyだけが不一致になった場合は、
   `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（MACRO PULSE側がHollow Rallyの判定を週単位に変えた〈M-2 STEP 4〉のに、期待値が旧ロジック〈6行前・前日比〉のまま）
   として扱い、Cの統合の判断材料にしない。期待値の修正はMACRO PULSE側のセッションが行う（こちらでは直さない）。Hollow Rally以外の不一致は従来どおり止める。
-- `feature/update-schedule`（`4e00ee4b80`、kaihatsuから分岐。3章に設計上の暫定値の扱い、2章に外部起動と保険の関係〈2026-10-03〉を追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
+- （統合済み 2026-10-07、`e623cffcb6`）`feature/update-schedule`（`4e00ee4b80`、kaihatsuから分岐。3章に設計上の暫定値の扱い、2章に外部起動と保険の関係〈2026-10-03〉を追記済み）: UPDATE_SCHEDULE.md・`scripts/gen_update_schedule.py`・CHECK-58（WARN、YAMLとの食い違い）・
   workflow_dependencies.jsonの生成化・9本のYAMLのコメント整理。**最後にマージ。** 手順: (1) マージ（9本のYAMLのコメント・CLAUDE_CODE_START.mdの
   SEC→TANUKIの節と衝突しうる。B・Cの後はfetcher・Market Pulse関連の記述がずれるため） (2) **`python scripts/gen_update_schedule.py`を必ず実行し直す**
   （Beta_Config_Updateのcron修正`1f73f1d215`、B・Cの変更、20:17 UTCのcron削除`6de1c89644`、20本のpushの置き換え`cc84f285fd`〈9本のYAMLのコメント整理と衝突しうる〉、金曜のcron削除`791faa1f02`〈Market Pulse・Stonks Silo・TANUKI VALUATIONのYAMLのコメントと衝突しうる〉、guard入力・reset_window`4af62bcd1f`を一覧に反映） (3) CHECK-58がWARN 0件、3ゲート→commit→push。
