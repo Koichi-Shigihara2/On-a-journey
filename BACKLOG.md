@@ -2765,6 +2765,8 @@ Workerの21:50の確認に加えて[J]でも検知されなかった（10-06の[
 
 ### [TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1] TANUKI TAILの内部統制データの毎週の更新が、positions_index.jsonの形式を読み違えて1銘柄も処理しておらず（「[POSITIONS] CIK 未登録」）、APGEのctrl/latest.jsonが一度も作られず、他の9銘柄も2026-06-27のまま
 **優先度:** 高（2026-10-06、チャット側の判断で中から引き上げ）
+**状態:** 実装完了・実地確認待ち（2026-10-07、`a0b52a814a`・`4b8767b385`）。10-12（月）01:00 UTCの定時の実行のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・
+successになることを確かめるまでBACKLOG_DONE.mdへ移さない（チャット側の指示）
 **分類:** バグ / TANUKI TAIL・GitHub Actions（System Health [F] TailCtrl）
 **登録日:** 2026-10-06
 **発見:** System Healthの毎日のWARNINGの切り分け（[F] TailCtrl「9/10件 ctrl/latest.json 存在 (不足: APGE)」）
