@@ -3,9 +3,9 @@
   "intrinsic_value_per_share": 5.492259629747953,
   "intrinsic_value_beta": 2.71,
   "upside_percent_beta": 4.7,
-  "intrinsic_value_rf": 16.81,
-  "upside_percent_rf": 548.9,
-  "intrinsic_value_rf_rate": 0.05269000053405762,
+  "intrinsic_value_rf": 16.75,
+  "upside_percent_rf": 546.7,
+  "intrinsic_value_rf_rate": 0.05276999950408936,
   "v0": 112743463.96922225,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 112.1,
-  "calculation_date": "2026-10-07T05:39:35+09:00",
+  "calculation_date": "2026-10-08T05:38:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -201,7 +201,7 @@
       "total_transient_amount": 2230643,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の一時的な財務調整で構造的悪化の兆候ではない。"
+        "reasoning": "理由が「マクロ変動による一時的影響」と明記されており、事業の構造的悪化ではなく外部要因による一過性の費用と判断される。"
       }
     },
     "action": "excluded",
@@ -342,7 +342,7 @@
     "peg": null,
     "ps": 7.619493,
     "ev_ebitda": null,
-    "ma200": 3.0467000019550325,
+    "ma200": 3.0447500014305113,
     "forward_eps": 0.0,
     "next_quarter_eps": -0.08,
     "analyst_target_median": 7.0,
@@ -365,7 +365,7 @@
     "max_eps_reliability": "LOW"
   },
   "validation": {
-    "validated_at": "2026-10-07",
+    "validated_at": "2026-10-08",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -390,10 +390,10 @@
   },
   "phase1_growth": 0.5013391731944579,
   "required_growth_rf_base": -0.2655278652735452,
-  "risk_free_rate_live": 0.05269000053405762,
-  "risk_free_rate_live_date": "2026-10-06",
+  "risk_free_rate_live": 0.05276999950408936,
+  "risk_free_rate_live_date": "2026-10-07",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.17898034447420985,
+  "required_growth_rf_live": -0.17840221938332357,
   "tanuki_score": "PASS",
   "funda_score": 0,
   "score_comment": "割安圏(112%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -510,7 +510,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0527,
+  "erp": -0.0528,
   "forward_earnings_yield": 0.0,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
