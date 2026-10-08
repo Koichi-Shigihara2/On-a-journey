@@ -2962,7 +2962,13 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 表示するかどうか（候補1か2か）をKoichiさんが決めてから。→ 2026-10-08、Koichiさんの判断で候補1（表示する）＋候補3（定時の実行を足す）。
 
 #### 対応（2026-10-08）
-**状態:** 実装完了・保存済みデータの作り直し待ち（09-13のデータのままのため、push後にローカルで1回実行し、差分をチャット側で確認してからcommitする）
+**状態:** 実装完了・実地確認待ち（実装`9e73c1dd24`）。10-12（月）01:20 UTCのTANUKI_TAIL_SEC_Itemsの初回の定時の実行のログが
+「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなしになることを確かめるまでBACKLOG_DONE.mdへ移さない
+（確認手順はCLAUDE_CODE_START.mdの木曜〈10-08〉朝の確認手順の6）
+- 保存済みデータの作り直し（2026-10-08、チャット側承認済み）: push後にローカルで1回実行。実行前にSECの書類の一覧だけで見積もり
+  （新しい書類はADBEの2026Q3〈2026-09-22提出〉の1件、Grokは約4回）、実行結果は「9 成功（更新 1 / 変更なし 8） / 0 失敗」、
+  Grokは4回（3項目の翻訳＋MD&Aのセグメント別見通し、失敗0）。ADBEの3項目の2026Q3を追加し、latest.json・index.jsonを更新してcommit。
+  他の8銘柄は09-13の保存分が今も最新の書類だった
 - detail.html: `CTRL_ITEMS`の読み先を`data/{risk_factors|legal_proceedings|ctrl|mda}/{T}/latest.json`に変更し、Item 1の読み込みをやめた
   （表示するかどうかは別に決める）。期間の行は`d.quarter || d.period`と書類の種類（10-K/10-Q）を出す
 - sec_items_fetcher.py: sec_ctrl_fetcher.pyと同じ作りに。保存済みの`{period}.json`と提出日が同じ書類は、本文の取得・Grokの翻訳・

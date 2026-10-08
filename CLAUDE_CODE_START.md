@@ -222,7 +222,17 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 6. TANUKI TAILの内部統制（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`、2026-10-07に修正`a0b52a814a`・10銘柄のctrlを作り直してcommit）:
    10-07 23:30 UTCのSystem Health Checkの[F] TailCtrlが「10/10件 ctrl/latest.json 存在」で✅になったか。
    次の定時の実行（10-12〈月〉01:00 UTC）は、ログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・success・commitなしになる想定
-   （その間に新しい10-Qが出た銘柄があれば「更新」に数えられる）
+   （その間に新しい10-Qが出た銘柄があれば「更新」に数えられる）。**2026-10-08にAPGEを登録解除したため、「9 成功（更新 0 / 変更なし 9） / 0 失敗」と読み替える**
+   - **10-12（月）01:20 UTC: TANUKI_TAIL_SEC_Itemsの初回の定時の実行**（`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`、2026-10-08新設、`9e73c1dd24`）。
+     `gh run list --workflow TANUKI_TAIL_SEC_Items.yml --limit 5 --json databaseId,event,createdAt,updatedAt,conclusion`で、eventがschedule・conclusionがsuccess
+     （GitHubの混雑で数時間遅れることがある）。`gh run view <ID> --log`で次を確かめる
+     - 最後の行が「完了: 9 成功（更新 0 / 変更なし 9） / 0 失敗」。各銘柄が「（書いた書類 0 / 変更なし 9）」（ADBEは12）
+     - **Grokの呼び出しが0回**: ログに「10-K 取得:」「10-Q 取得:」「保存:」「[Grok/」の行が1つも無く、項目ごとの行がすべて「変更なし（保存済みと同じ書類: …）」
+       （本文を取得しない書類では翻訳もセグメント別見通しのAI抽出も呼ばない作り）
+     - 「Commit and push」の段が「変更なし」で終わり、botのcommitが無い
+     - 10-08以降に新しい10-Q・10-Kを出した銘柄があれば、その書類だけ「書いた書類」に数えられ、Grokは1書類あたり約4回（3項目の翻訳＋MD&Aの見通し）呼ばれる。
+       その場合は銘柄・書類・回数を記録する
+     - 次のSystem Health Checkの[J]の監視件数が18件で、TANUKI_TAIL_SEC_Items.ymlが「週次」の対象に入っている
 7. System Healthの[J]の書き直し（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`・`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`、2026-10-07）:
    直した後の最初のSystem Health Check（予定23:30 UTC、実際は02〜03 UTCに遅れることが多い）のログの`[J] CronRuns:`の行で、次を確かめる
    - 監視件数が**17件**（以前は13件）。Market_Pulse_Update・Stonks_Silo_Update・TANUKI_VALUATION_Update・SEC_Data_Auditが対象に入っている
