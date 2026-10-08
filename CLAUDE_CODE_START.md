@@ -2845,8 +2845,11 @@ git pull --rebase origin kaihatsu
 
 ### Step 2: テスト実行
 cd C:\Users\shigi\Documents\On-a-journey-git
-python -m pytest tests/ -v
+python -m pytest tests/ src/subport/day_trade/test_logic.py -v
 全件パスを確認してから作業を開始する。
+件数を記録するときは、実行したコマンドも書く（例:「`pytest tests/ src/subport/day_trade/test_logic.py` 2014件全パス」）。
+2026-10-08: ゲートの対象に`src/subport/day_trade/test_logic.py`（22件）を加えた。`pytest tests/`（1992件）と対象を指定しない
+ルートでの実行（2014件）の件数の違いが、テストの減少と取り違えられたため（tests/の件数は変わっていなかった）。
 失敗があれば先に修正する。
 既知の例外: tests/test_iv_formula.py の MSFT/NVDA 2件は既存バグ
 （[[TEST-STALE-IV-1]]、ALPHA-REDESIGN-1後にテスト式が未更新）として
