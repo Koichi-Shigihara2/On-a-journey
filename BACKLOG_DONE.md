@@ -2,6 +2,241 @@
 
 ---
 
+## 2026-10-08（完了）
+
+### ✅ [MARKETDATA-DAILY-CLOSE-NONE-RECUR-1] Yahooの日足に終値が無い事象が再発（09-21・09-25・09-28の足）。同じ実行の中での取り直しと別経路を追加、原因は実測中
+**優先度:** 高
+**分類:** データ取得 / common/market_data（Market Data Daily Update）
+**登録日:** 2026-09-30
+**発見:** 指示書㉔ STEP A（09-29の日次更新で株式の09-28の足に終値が無く、Market Pulseが停止した件の続き）
+
+#### 内容
+終値の無い足が3回（09-21の足: 取得09-22 00:12 UTC・510銘柄 / 09-25: 09-25 23:59〜09-26 00:00 UTC・379銘柄 /
+09-28: 09-29 01:06 UTC・株式のほぼ全銘柄）起きた。9月の正常な回の取得はすべて23:58 UTCより前。ただし8月は
+00:42・01:03・03:23・05:37 UTCの取得でも正常で、時刻だけでは説明できない（実測中、下記）。
+また、最新の足だけを保存する仕様のため、終値の無かった日（09-28）は次の実行で行ごと抜けたままになっていた。
+
+#### 対応（2026-09-30、指示書㉔ STEP A）
+- `fetch_daily_prices()`: 終値の無い銘柄だけを180秒おきに3回まで取り直し、取れなければ`Ticker.history(start, end)`で
+  同じ日の終値を探す（推測では埋めない）。結果を`common/market_data/_daily_close_retry_log.json`に記録
+- 5日窓の終値つきの足のうち、daily/に行の無い日を追加する（既存の行は上書きしない）
+
+#### 実測結果（2026-09-29 22:21〜09-30 00:19 UTC、yfinance 1.2.0・1.7.0、download(period)・download(start)・
+Ticker.history(period)・Ticker.history(start, end)の4経路、AAPL・MSFT・JPM・XOM・HUBB・KO・SPY・^GSPC・^VIX・CL=F）
+- 23:58:36 UTCまでは全経路で09-29の終値あり。**00:00:38 UTCから、個別株・ETF（AAPL・MSFT・JPM・XOM・KO・SPY）の09-29の足の
+  終値が全経路で消えた**（00:19 UTC時点でも無い）。^GSPC・^VIX・CL=Fは終値が残る（09-28の足の事象と同じ形）
+- 仮説（00:00 UTC前後に日足が一時的に不完全になる）は当たり。同じ実行の中の取り直し・別経路はこの時間帯には効かない
+  （全経路が同じデータ）。8月は00:42〜05:37 UTCの取得でも正常だったため、Yahoo側の挙動が9月中旬から変わった可能性がある
+- **回復**: 01:21:43 UTCまで欠け、01:26:43 UTCに全経路で戻った（欠けていた時間は約1時間21〜26分）。^N225の09-29の足も
+  00:01 UTCに消え、01:26 UTCに確定値（65,481.27、出来高1億7,080万）で戻った。Yahooは毎日00:00 UTCに直近の日足を作り直し、
+  01:22〜01:26 UTC頃に確定した足を出していると見られる。3回の失敗（00:12・23:59〜00:00・01:06 UTCの取得）はすべてこの時間帯
+- 09-30の日次実行（00:36〜00:48 UTCの取得）でも560銘柄の終値が無く、取り直し3回・別経路はすべて取れなかった（09-29の行は
+  22:43 UTCの手動実行で保存済みだったため欠落なし）。同じ実行の中の取り直しは、この時間帯には効かない
+- 起動方式の変更（2026-09-30、指示書㉕ STEP A、ユーザー承認）: Market_Data_Daily_Updateを20:17〜23:17 UTCの間に30分おき
+  （7回）に起動し、common/market_data/daily_guard.pyで「NYSEの引けから20分経っていない」「その日の終値が既にそろっている」
+  ときは何もしない。1回目の取得で半数以上の銘柄に終値が無い（作り直しの時間帯）ときは取り直さず保存せずに終了する。
+  新しいデータを保存しなかった実行は自分自身を取り消し（conclusion: cancelled）、下流のジョブを動かさない
+  保険として作り直しの後の01:47・02:17 UTC（UTCの火〜土）にも起動する（ガードはニューヨーク時間の日付＝前日の米国の取引日で判定し、取得済みなら何もしない）
+
+#### 未了
+次の平日の実行で、実際の起動時刻・完了時刻と下流の起動を確認する。
+- 根本の対策は取得を00:00 UTCより前に終えること（Market_Data_Daily_Updateはcron 21:25 UTCだが、GitHubの遅延で
+  23:05〜01:06 UTCに起動している）。起動時刻の変更は下流（Market Pulse・TANUKI VALUATION・Stonks Silo）の起動に影響するため未実施
+
+#### 完了（2026-10-08）
+未了の確認（次の平日の実行の起動・完了の時刻と下流の起動）と、根本の対策（取得を00:00 UTCより前に終える）は、外部起動（Cloudflare Workers、2026-10-04デプロイ）で満たした。
+- 外部起動20:25 UTCの取得: 10-05（run `37369674458`）・10-06（`37526363369`）・10-07（`37681924730`）とも success。
+  10-07のログは`[guard] 2026-10-07の終値が未取得（0/586銘柄） → run=true`、`日次取得の結果: {"status": "fetched", "no_close_after_retry": 0, "with_bars": 590}`。
+  10-05・10-06もno_close_after_retry 0（CLAUDE_CODE_START.mdの10-06・10-07の記録）。3晩とも00:00 UTCより前に取得し、終値の欠けは0件
+- 同じ夜の2本目以降の起動・GitHubのschedule（保険）はガードで取り消し（cancelled）
+
+---
+
+### ✅ [MARKETPULSE-MDD-CHECKOUT-RACE-1] Market_Pulse_UpdateがMarket_Data_Daily_Updateと連鎖しておらず、checkoutが日次データのpushより先になった日は画面全体が1営業日古い
+**優先度:** 中
+**分類:** 更新タイミング / Market Pulse・GitHub Actions
+**登録日:** 2026-09-26
+**発見:** 指示書⑲ STEP 2（Market Pulseの正確性確認）
+
+#### 内容
+`Market_Pulse_Update.yml`（cron `35 21 * * 1-5`）は、`collect_and_send.py`・
+`breadth_calculator.py`が2026-08-11に`common/market_data/daily/`経由へ切り替わって以降、
+`Market_Data_Daily_Update.yml`（cron `25 21 * * 1-5`）が書くdaily/に依存している。
+しかし両者はworkflow_runで連鎖しておらず、cronの10分差だけに依存している。GitHub側の
+遅延で両者とも毎回約1.5〜3時間遅れてほぼ同時に起動するため、Market Pulseの`actions/checkout`
+（`ref: kaihatsu`）が日次データのpushより先に走る日がある。
+
+直近20回（Actions APIの各run・stepの時刻で確認）のうち3回で発生:
+checkout完了−日次データpush完了が+39秒（2026-09-16 JSTエントリ）・−15秒（09-18）・
++37秒（09-22）の回は、S&P500指数を含む全要素が1営業日前の終値のまま保存された
+（+41秒以上の回は正常）。
+
+2026-08-26の横断点検（BACKLOG_DONE.md「横断点検（Market Pulseのcron依存関係）」）の
+「ワークフロー間タイミング競合のリスクは構造上存在しない」、[[MARKET-DATA-SCHEDULE-7AM-JST-1]]
+（Market_Data_Daily_Updateを21:25 UTCへ前倒し）の「近接自体に実害なし」は、いずれもdaily/経由への切替後もこの依存を考慮していない
+（CHAT_RULES.md事例20と同型）。
+
+#### 実害
+競合した日は、画面全体（センチメントスコア・指標カード・資金フロー・ブレッス・チェックリストの入力）が
+前営業日の値のまま「更新 当日」と表示される。`market_data.json`は1日1エントリのため、
+その日の正しい値は後から補われない（翌日の前日比は正しい日同士で計算される）。
+F&Gは実行時にCNNから取るため当日の値で、他の要素と基準日がずれる。
+
+#### 着手条件
+なし（修正はしていない。原因箇所: `.github/workflows/Market_Pulse_Update.yml`の起動条件）
+
+#### 2026-09-26 対応済み・実地確認待ち（指示書⑳ STEP C、commit `69ff44bd44`）
+`Market_Pulse_Update.yml`をworkflow_run（Market Data Daily Updateの完了・成功時）起点に変え、独立cronは金曜22:50 UTCの
+フォールバックにした。`collect_and_send.py`は起動時に期待する終値日とdaily/の最新日付（^GSPC・SPY）を比べ、エントリの
+`data_freshness`に記録する（`stale`がtrueなら古い。画面表示は未実装）。
+**確認方法**: 次の平日のMarket_Pulse_Update実行が`workflow_run`イベントで起動し、そのエントリの`data_freshness.stale`がfalse
+（`expected_close_date`とdaily_latestが一致）であることを確認できたらクローズする。
+
+#### 完了（2026-10-08）
+確認方法（workflow_runで起動し、エントリの`data_freshness.stale`がfalse）を満たした。
+- Market_Pulse_Updateの成功した実行はすべてworkflow_run: 10-01 23:37（run `36941742542`）・10-03 02:06（`37088646124`）・10-06 20:29（`37526857306`）・
+  10-07 20:28（`37682258247`）UTC。10-03 01:28のschedule（`37086229852`）は金曜の保険のcronで、このcronは2026-10-03に削除済み（`791faa1f02`）
+- market_data.jsonの直近4エントリ（10-02 08:39・10-03 11:08・10-07 05:32・10-08 05:31 JST）とも`stale: false`で、
+  `expected_close_date`とdaily/の^GSPC・SPYの最新日が一致
+- 10-05のMarket Pulseのfailure（`37369996575`、ランナー未割り当て）は別の事象で、[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]で扱った
+
+---
+
+### ✅ [EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1] 外部起動のWorkerの21:50 UTCの確認はMarket Data Dailyの成功しか見ないため、下流（Market Pulse等）が欠けても検知できない
+**優先度:** 中
+**分類:** 監視 / 外部起動（Cloudflare Worker）・GitHub Actions
+**登録日:** 2026-10-06
+**発見:** 外部起動の初回確認（米国10-05の足）
+
+#### 内容
+`tools/external_trigger/lib.js::successfulRunsSinceClose()`は、Market_Data_Daily_Update.ymlについて
+「その日の20:00 UTC以降に作られて成功した実行」の数だけを数える。下流（Market_Pulse_Update・Stonks Silo Update・
+TANUKI VALUATION Daily Update・TANUKI_Score_Update）の結果は見ないので、下流が失敗しても21:50の確認は「成功した実行あり」で何もせず、
+Discordにも通知しない。
+
+#### 実例（2026-10-05 米国10-05の足）
+20:25:47 UTCの外部起動で取得に成功したが、その下流のMarket_Pulse_Update（20:28:54作成、run `37369996575`）が
+「The job was not acquired by Runner of type hosted even after multiple attempts」で15分後にfailure（ジョブのstepは0件）。
+Market Pulseの10-05の足のエントリは作られず、21:50の確認では検知されなかった（手動実行での作り直しはしない、チャット側の判断）。
+同じ夜の20:55の外部起動（run `37372743458`）も同じランナー未割り当てでfailure（取得は20:25で済んでいたので実害なし）。
+
+#### 追記（2026-10-06）: System Healthの[J]も下流の欠けを見逃した
+`791faa1f02`（2026-10-04、金曜の保険のcronを削除）で、Market_Pulse_Update・Stonks Silo Update・TANUKI VALUATION Daily Updateの3本から
+cronが無くなった。System Healthの[J] CronRunsは`_discover_cron_workflows()`でcronのあるワークフローだけを監視するため、
+この3本は10-04から監視の対象外（監視件数16→13）。このため10-05のMarket_Pulse_Updateのfailure（run `37369996575`）は、
+Workerの21:50の確認に加えて[J]でも検知されなかった（10-06の[J]は「失敗1件: Market_Data_Daily_Update.yml(cancelled)」だけ）。
+**直し方の案（チャット側）**: workflow_runで起動するワークフローも[J]の監視の対象に含める（判定の方式は
+`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の「想定した間隔の中にsuccessが1本以上あるか」と合わせる）。
+
+#### 着手条件
+直し方（21:50に下流4本の成功も数えて足りなければ通知するか、再実行まで行うか）はチャット側で決める。
+
+#### 対応（2026-10-07、チャット側承認済み）
+Workerは変えず、System Healthの[J]で下流を監視する（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の「対応」と同じ修正）。
+workflow_runで起動する下流（Market Pulse・Stonks Silo・TANUKI VALUATION・SEC Data Audit）も[J]の対象にし、起動元の閾値を継ぐ。
+10-05のMarket Pulseの失敗（同じ期間に10-03の成功あり、失敗の前の12時間に成功なし）は🔴になる（テスト`test_market_pulse_failure_on_10_05_is_red_despite_earlier_success`）。
+Workerを選ばなかった理由: 連鎖の知識をJSに二重に持つことになり、変更のたびに再デプロイが要る。冬時間は下流の完了が21:50に間に合わず誤報が出やすい。
+週次の連鎖は見ない。一方、[J]は気づくのがSystem Healthの起動時（予定23:30 UTC、実際は02〜03 UTC）で日本時間7:00には間に合わず、自動回復もしない。
+7:00より前の回復は`[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]`（低）として将来検討する。
+
+**状態:** 実装完了・実地確認待ち（2026-10-07）。下流の失敗が実際に起きた夜に[J]が🔴を出すかは、失敗が起きるまで本番では確かめられない
+（担保はテスト）。直した後の最初のSystem Healthで、[J]の監視件数が17件になり下流4本が含まれることを確かめてからBACKLOG_DONE.mdへ移す
+
+#### 完了（2026-10-08）
+移設の条件（直した後の最初のSystem Healthで、[J]の監視件数が17件になり下流4本が含まれる）を満たした。
+- System Health Check（run `37719529201`、2026-10-08 02:46 UTC起動）のログ: `[J] CronRuns: ✅ 17件監視 / すべて正常`
+- 監視の対象（ローカルの`_discover_monitored_workflows(_load_workflow_defs())`）にMarket_Pulse_Update・Stonks Silo Update・
+  TANUKI VALUATION Daily Update・SEC Data Auditが含まれる（2026-10-08にTANUKI_TAIL_SEC_Items.ymlを足して18件）
+- 下流の失敗が実際に起きた夜に[J]が🔴を出すかは、失敗が起きるまで本番では確かめられない（担保はテスト
+  `test_market_pulse_failure_on_10_05_is_red_despite_earlier_success`）
+
+---
+
+### ✅ [BETA-CONFIG-CRON-DOM-DOW-OR-1] Beta_Config_Update.ymlのcron `0 23 1-7 * 0` が「毎月第1日曜」ではなく「1〜7日の毎日＋毎週日曜」に動いていた
+**優先度:** 高（10/1の起動に間に合わせる）
+**分類:** 更新タイミング / GitHub Actions・TANUKI VALUATION
+**登録日:** 2026-09-30
+**発見:** 指示書㉘の確認中（Actionsの実行履歴）
+
+#### 内容
+cronは日付（3番目）と曜日（5番目）を両方指定すると「かつ」ではなく「または」になる。
+このため`0 23 1-7 * 0`は毎月1〜7日の毎日と、毎週日曜の23:00 UTCに起動していた。
+2026-09の起動: 09-02〜09-08の毎日と、09-14・09-21・09-28（日曜23:00 UTCの起動が遅延で月曜にずれたもの）。
+bot commitの記録（`config/beta_config.json`）から、6月以降も毎月、余分な起動でβが書き換わっている
+（06-02・06-05・06-06・06-07・06-15、07-03・07-04、08-02・08-04。本来の第1日曜の起動は日本時間の月曜の朝のcommit）。
+
+#### 9月の影響（2026-09-30確認）
+- βが変わった余分な起動は09-21の1回だけ（`984a13c13f`）。変わったのはELFだけ: 2.389 → 1.595（sourceも`yfinance_5yr_2026`→`yfinance_5yr`）。
+  09-02〜05・09-08・09-14・09-28の起動はcommitなし（β値に変化なし）。09-07の`eda03e8a13`は本来の第1日曜（09-06 23:00 UTC）の起動。
+- TANUKIへの影響: ELFのCAPM WACCが0.1792→0.1339、参考値の`intrinsic_value_beta`が73.38→115.59に変わった。
+  メインの理論株価`intrinsic_value_per_share`（181.98）・`upside_percent`・TANUKI SCOREの分類（BUY）は変わっていない
+  （メインの理論株価はβを使わない。β込みの値は参考表示だけ）。score_historyの09-19（BUY、+88.7%）と09-21（BUY、+88.7%）は同じ。
+- 6〜8月の余分な起動による変化は今回は調べていない（08-04は多数の銘柄のβを書き換え、`sector`欄も一度消している）。
+
+#### 2026-09-30 対応
+cronを`0 23 1-7 * *`（1〜7日の毎日）にし、ジョブの最初の段で日曜の分かどうかを判定する。
+遅延でずれても予定日で判定するよう、今の時刻から6時間引いた日付（UTC）の曜日が日曜なら続け、それ以外は後の段をすべて飛ばす
+（手動実行は常に続ける）。10/1（木）23:00 UTCの起動は何もせず終わる。
+**確認方法**: 10/1〜10/3の起動が何もせず終わり、10/4（日）23:00 UTCの起動だけが`beta_fetcher.py`を実行したらクローズする。
+
+#### 完了（2026-10-08）
+確認方法（10/1〜10/3の起動が何もせず終わり、10/4〈日〉23:00 UTCの起動だけが`beta_fetcher.py`を実行）を満たした。
+- 何もせず終わった起動（ログ「日曜の起動ではないため何もしない」）: 10-02 01:50 UTC（run `36952867025`、予定日10-01 Thu）・
+  10-03 01:29（`37086305548`、10-02 Fri）・10-06 02:33（`37404713462`、10-05 Mon）。10-04 02:11の起動（`37170282368`、10-03 Sat）も同じくsuccess
+- 10-04（日）の分の起動（10-05 01:19 UTC、run `37251008010`）だけが`beta_fetcher.py`を実行（「=== β設定リフレッシュ 2026-10-05 10:21 (99銘柄) ===」）。
+  結果は「β値に変化なし」でcommitなし（`config/beta_config.json`の10-01以降のcommitは10-08の4銘柄の登録解除だけ）
+- **CLAUDE_CODE_START.mdとの食い違い**: CLAUDE_CODE_START.mdの「やり残し」には「10/1〜10/3の起動が何もせず終わり、10/4（日）23:00 UTCの起動だけが
+  実行したことを確認してクローズ」と書かれていたが、BACKLOG.mdから移されずアクティブのまま残っていた（移設漏れ）。2026-10-08のBACKLOGの分類で発見
+- 残り: 6〜8月の余分な起動によるβの変化は調べていない（本文のとおり）
+
+---
+
+### ✅ [TAIL-CTRL-MW-COUNT-DISPLAY-1] TANUKI TAILの内部統制の「マテリアルウィークネス (N件)」の件数が弱点の数ではなく「material weakness」という語の出現箇所の数で、SOUN・CRWVは状況が変わらないまま2件・4件→12件の表示になった
+**優先度:** 中
+**分類:** 表示の誤り / TANUKI TAIL（src/tail/sec_ctrl_fetcher.py・docs/portfolio/tail/detail.html・index.html）
+**登録日:** 2026-10-07
+**発見:** `[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`の修正後の10銘柄のctrlの作り直しで、差分を確認した
+
+#### 内容
+`sec_ctrl_fetcher.py::_analyze_ctrl_text()`の`material_weaknesses`は、`_extract_sentences()`が返す一覧。Item 4の抜粋（最大6000文字）の中で
+`material weakness(es)`という語が一致した箇所ごとに前後200文字を切り出し、先頭80文字が同じものだけを除いたもの。**弱点そのものの数ではなく、
+語の出現箇所の数**（同じ弱点を説明する複数の文、定義の文〈"A material weakness is a deficiency …"〉、是正の取り組みの文も1件ずつ数える）。
+計算方法は導入時（`8f9152528f`、2026-06-24）から変わっていない。導入時の記録（BACKLOG_DONE.mdの`[SEC-CTRL-1]`）には
+「SOUN検証: MW=3種類（統制環境・複雑取引・職務分掌）を正常検出」とあり、件数を弱点の種類の数として扱う前提だったとみられる。
+
+画面はこの件数をそのまま見せている: `docs/portfolio/tail/detail.html`（「マテリアルウィークネス (N件)」と切り出した文の一覧）、
+`docs/portfolio/tail/index.html`の`buildTabCtrl`（同じ見出し）。
+
+#### 経緯（2026-10-07の作り直し）
+| 銘柄 | 変更前（2026Q1、06-24〜06-27の手作業の実行） | 作り直した後（2026Q2） | 10-Qの記載 |
+|---|---|---|---|
+| SOUN | 無効・2件 | 無効・12件（08-10提出） | 「not effective as of June 30, 2026 due to the material weaknesses」。職務分掌・複雑な取引の会計等の弱点の説明と是正の取り組みが続く |
+| CRWV | 無効・4件 | 無効・12件（08-12提出） | 「not effective … due to the material weaknesses」「continued to exist as of June 30, 2026」（以前から報告している弱点が残っている） |
+
+どちらも開示統制は無効のままで、**状況は変わっていない**。件数が増えたのは10-QのItem 4の書き方・文の長さが変わり、抜粋の中の語の出現箇所が増えたため。
+画面では「2件→12件」「4件→12件」と弱点が増えたように見える。
+
+#### 直し方の案（チャット側、2026-10-07）
+件数を出さずに、**重大な欠陥（マテリアルウィークネス）の有無**と、**Item 4の該当箇所の抜粋**を表示する。語の出現回数は弱点の数ではないので、件数として見せない。
+- 有無は`material_weaknesses`が空かどうか（または`_RE_MATERIAL_WEAKNESS`の一致の有無）で決まる。保存する項目を変えるか（例: 有無の真偽値と抜粋）、
+  画面の表示だけを変えるかは着手時に決める
+- 直す範囲: detail.html・index.htmlの見出しの件数の表示。System Health等で件数を読んでいるところが無いかを着手時にgrepで確かめる
+- 画面の確認はPlaywrightで、SOUN・CRWV（有り）とPLTR（無し）の表示を見る
+
+#### 完了（2026-10-08）
+直し方の案のうち「件数を出さずに有無だけを表示する」形で、画面の表示だけを変えた（保存する項目〈`material_weaknesses`〉は変えない）。
+- `docs/portfolio/tail/detail.html`（buildCtrl）・`docs/portfolio/tail/index.html`（_buildCtrlBody）: 見出しを「マテリアルウィークネス (N件)」から
+  「マテリアルウィークネス: あり」にし、抜粋の一覧の前に「Item 4の該当箇所（「material weakness」を含む箇所の抜粋。弱点の数ではありません）」を出す。
+  有効で該当箇所が無いときのindex.htmlの「マテリアルウィークネス: なし」は変えない
+- 表示の比較（Playwright、TAILの9銘柄全部、保存済みのctrl/latest.json）: SOUN・CRWVは両画面とも「(12件)」→「あり」＋説明。
+  PLTR・SOFI・TSLA・CELH・APP・NVDA・ADBEは変化なし（index.htmlは「なし」、detail.htmlは表示なし）。consoleエラー0件
+- 同じ数え方の箇所の確認（grep）: `material_weaknesses`を読むのはTAILの2画面だけ。report.txt・stock.html・Discordへの通知・System Healthには無い。
+  `sec_ctrl_fetcher.py`はログに`MW=件数`を出すだけ（画面・通知には出ない）
+- テスト`tests/test_tail_ctrl_mw_display.py`（5件）: 修正前のコード（git stash）で4件失敗、修正後に5件成功（「なし」の表示を変えないことの1件は修正前も成功）
+- 別に残る同型の箇所: index.htmlの「重要な欠陥 (N件)」（`significant_deficiencies`、同じ数え方）。2026-10-08時点で9銘柄とも0件のため表示されていない。
+  見出しの訳語（significant deficiencyは一般に「重要な不備」）とあわせて、チャット側に報告済み（未対応）
+
+---
 ## 2026-10-07（完了）
 
 ### ✅ [TEST-SYSMODULES-MOCK-LEAK-1] tests/test_pipeline_logic.pyが収集時にsys.modulesのcore_calculator等をMagicMockへ差し替えるため、全件実行で後から収集されるテストが本物のコードではなくMagicMockを相手に通っている可能性がある — スタブをpipelineのimportの間だけに閉じ込め、収集完了時の検知を追加（2026-10-07）
