@@ -2928,6 +2928,39 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 ## 優先度：低（アイデア段階）
 
+### [TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1] TAILの詳細画面がItem 1/1A/3/7を一度も作られていないパス（ctrl/{T}/item*/latest.json）から読み、sec_items_fetcher.pyが別のパスに保存したItem 1A/3/7はどこにも表示されていない
+**優先度:** 低（提案。表示される値の誤りは無く、内部統制〈Item 4〉は表示される。データの使い道を決めるまで、取得の費用と古いデータが残るだけ）
+**分類:** 配線漏れ（保存先と表示側の食い違い） / TANUKI TAIL（detail.html・sec_items_fetcher.py）
+**登録日:** 2026-10-08
+**発見:** 4銘柄の登録解除の確認（TAILの詳細画面の確認で、ctrl/{T}/item1・item1a・item3・item7/latest.jsonの4件が404）
+
+#### 内容
+- `docs/portfolio/tail/detail.html`の`CTRL_ITEMS`（2026-06-27、`9a85740581` TAIL-PAGE-1「内部統制マルチItem拡張」）は、
+  `data/ctrl/{T}/item1/latest.json`・`item1a/`・`item3/`・`item7/`と`data/ctrl/{T}/latest.json`（Item 4）を読む。
+  `ctrl/{T}/item*/`に書いた処理は無く、gitの履歴にも一度も現れない。読めなかった項目は`buildCtrl()`が黙って飛ばすため、
+  画面にはItem 4だけが出て、consoleに404が4件出る（どの銘柄でも同じ。2026-10-08、APGE削除の前後で同じことを確認）
+- `src/tail/sec_items_fetcher.py`（2026-09-13、`4c2341cb5e` [[TAIL-SEC-ITEMS-1]]）は、Item 1A・3・7を
+  `data/risk_factors/{T}/`・`data/legal_proceedings/{T}/`・`data/mda/{T}/`に保存する（Item 1〈事業概要〉はSTEP1で対象外にした）。
+  これらを読む画面・レビュー生成は無い（`docs/`・`src/`・`common/`をgrepして、保存側以外の参照は0件）。
+  [[TAIL-SEC-ITEMS-1]]は登録時に「取得・保存・表示したい」としていたが、完了の記録は保存までで、表示への接続は無い
+- sec_items_fetcher.pyを動かす定時のワークフローは無い（`.github/workflows/`をgrepして0件）。保存済みのデータは2026-09-13の手動実行のまま。
+  定時の実行が無いことは404の原因ではない（定時に動いても保存先が違うので画面には出ない）が、データが古いまま残る理由にはなっている
+- sec_items_fetcher.pyは抽出した本文をGrokで翻訳する（`_translate_excerpt()`、XAI_API_KEYがあれば呼ぶ）。
+  9〜10銘柄の全実行で約80回（2026-09-13の実績）。2026-10-08の確認でローカル実行したときも、翻訳の結果は使わずに捨てた
+
+#### 実害
+- 費用をかけて取得・翻訳したItem 1A・3・7のデータが、どこにも表示されていない（[[TAIL-SEC-ITEMS-1]]の目的が未達）
+- 詳細画面のconsoleの404の4件（表示の崩れ・値の誤りは無い）
+
+#### 直し方の候補（未決定）
+1. detail.htmlの`CTRL_ITEMS`のItem 1A・3・7の読み先を、sec_items_fetcher.pyの保存先（`risk_factors/{T}/latest.json`等）に合わせる。
+   Item 1は取得していないので項目から外す。表示する欄の内容（`excerpt_ja`・`changed`等）の扱いも合わせて決める
+2. 表示が要らないなら、sec_items_fetcher.pyと保存済みのデータを撤去し、detail.htmlの項目もItem 4だけにする
+3. 1を選ぶ場合、定時の実行（例: TANUKI_TAIL_SEC_Ctrl.ymlと同じ月曜）を足すか、手動のままにするかを決める（翻訳の費用が毎回かかる）
+
+#### 着手条件
+表示するかどうか（候補1か2か）をKoichiさんが決めてから。
+
 ### [CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1] D-02・D-04の期待値をエントリ作成後に書き換わったdaily/から作るため、暫定の行の置き換えや抜けの補完の後に誤って不一致になる
 **優先度:** 低
 **分類:** 確認スクリプトの時点ずれ / browser_checks（Market Pulse、`browser_checks/market_pulse_elements.py::run_derivation_checks()`）

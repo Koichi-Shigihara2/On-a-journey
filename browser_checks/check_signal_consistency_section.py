@@ -9,8 +9,8 @@
 
 対象:
   - LITE / TSLA / AAPL（price_iv_ratioデータあり、初回テストケース）
-  - データが薄い/存在しない銘柄1件（poc.json自体が存在しないダミー
-    ティッカーでフォールバック確認）
+  - データが薄い銘柄1件（latest.json・poc.jsonがそろい、price_iv_ratioの非null月が
+    1件以下の銘柄のうち、いちばん少ないものをその場で選ぶ。無ければ判定不能）
 
 前提:
   cd C:\\Users\\shigi\\Documents\\On-a-journey-git
@@ -36,10 +36,40 @@ BASE_URL = f"http://127.0.0.1:{PORT}"
 STOCK_URL_TMPL = f"{BASE_URL}/value-monitor/tanuki_valuation/stock.html?ticker={{ticker}}"
 
 TICKERS = ["LITE", "TSLA", "AAPL"]
-# SN: latest.json・poc.jsonともに存在するが、price_iv_ratioの非null月が
-# 1件のみ（history記録がまだ1ヶ月分しか蓄積されていない薄いデータの
-# 実例）。トレンド計算（2点以上必要）のフォールバックを確認する。
-SPARSE_TICKER = "SN"
+# データが薄い銘柄: latest.json・poc.jsonともに存在し、price_iv_ratioの非null月が1件以下の銘柄で、
+# トレンド計算（2点以上必要）の「データ不足」へのフォールバックを確認する。
+# 2026-10-08: 名指し（旧SN）をやめ、非nullの件数がいちばん少ない銘柄をその場で選ぶ（SNは登録解除、
+# また非nullが2件に増えて条件に合わなくなっていた）。条件に合う銘柄が無ければ判定不能とする。
+SPARSE_MAX_POINTS = 1
+TANUKI_DATA_DIR = os.path.join(DOCS_DIR, "value-monitor", "tanuki_valuation", "data")
+HYPECORE_DATA_DIR = os.path.join(DOCS_DIR, "value-monitor", "hypecore", "data")
+
+
+def _piv_points(ticker: str) -> int:
+    """stock.htmlのloadAndRenderSignalConsistency()と同じ数え方（poc.monthlyのうち
+    price_iv_ratioとmonthがそろう点の数）。"""
+    import json
+    with open(os.path.join(HYPECORE_DATA_DIR, f"{ticker}_poc.json"), encoding="utf-8") as f:
+        monthly = json.load(f).get("monthly") or []
+    return sum(1 for m in monthly if m.get("price_iv_ratio") is not None and m.get("month") is not None)
+
+
+def pick_sparse_ticker() -> tuple[str | None, int | None]:
+    """latest.json・poc.jsonがそろう銘柄のうち、price_iv_ratioの非null月がいちばん少ない銘柄
+    （同数ならティッカー順で先）を返す。その件数がSPARSE_MAX_POINTSを超えるなら銘柄はNone。"""
+    # 銘柄の一覧はtickers.py経由（データのフォルダを直接走査しない、tests/test_no_direct_ticker_access.py）
+    if REPO_ROOT not in sys.path:
+        sys.path.insert(0, REPO_ROOT)
+    from common.sec_data import tickers as _tickers
+    counts = []
+    for t in sorted(_tickers.get_tanuki_tickers()):
+        if (os.path.exists(os.path.join(TANUKI_DATA_DIR, t, "latest.json"))
+                and os.path.exists(os.path.join(HYPECORE_DATA_DIR, f"{t}_poc.json"))):
+            counts.append((_piv_points(t), t))
+    if not counts:
+        return None, None
+    n, t = min(counts)
+    return (t if n <= SPARSE_MAX_POINTS else None), n
 
 
 def start_server() -> subprocess.Popen:
@@ -142,25 +172,31 @@ def main() -> int:
                         print("    console error:", e)
                 print("    body snippet:", r["body_text_snippet"].replace("\n", " ")[:150])
 
-            print("\n=== データが薄いティッカー（SN、price_iv_ratio非null1件のみ、フォールバック確認） ===")
-            r = check_ticker(browser, SPARSE_TICKER, expect_data=False)
-            # latest.jsonは存在するのでページ本体は正常描画される想定。
-            # トレンド計算（2点以上必要）が「データ不足」を返し、
-            # チャート自体（1点のみ）は描画されるが判定は不可表示になる。
-            # JSエラーが出ていないことのみを主眼に確認する。
-            ok = (len(r["console_errors"]) == 0 and r["section_display"] not in (None, "none")
-                  and r["body_nonempty"] and "データ不足" in r["body_text_snippet"])
-            overall_ok = overall_ok and ok
-            print(f"[{'OK' if ok else 'NG'}] {SPARSE_TICKER}: display={r['section_display']} "
-                  f"chart_present={r['chart_present']} console_errors={len(r['console_errors'])}")
-            print("    body snippet:", r["body_text_snippet"].replace("\n", " ")[:200])
-            if r["console_errors"]:
-                for e in r["console_errors"]:
-                    print("    console error:", e)
+            sparse, n_min = pick_sparse_ticker()
+            print(f"\n=== データが薄いティッカー（price_iv_ratio非null{SPARSE_MAX_POINTS}件以下でいちばん少ない銘柄、フォールバック確認） ===")
+            if sparse is None:
+                # 条件に合う銘柄が無い: 確認できないので判定不能（NGにはしない）
+                print(f"[判定不能] 条件に合う銘柄なし（latest.json・poc.jsonがそろう銘柄の非null月の最少は{n_min}件）")
+            else:
+                r = check_ticker(browser, sparse, expect_data=False)
+                # latest.jsonは存在するのでページ本体は正常描画される想定。
+                # トレンド計算（2点以上必要）が「データ不足」を返し、
+                # チャート自体（1点のみ）は描画されるが判定は不可表示になる。
+                # JSエラーが出ていないことのみを主眼に確認する。
+                ok = (len(r["console_errors"]) == 0 and r["section_display"] not in (None, "none")
+                      and r["body_nonempty"] and "データ不足" in r["body_text_snippet"])
+                overall_ok = overall_ok and ok
+                print(f"[{'OK' if ok else 'NG'}] {sparse}（非null{n_min}件）: display={r['section_display']} "
+                      f"chart_present={r['chart_present']} console_errors={len(r['console_errors'])}")
+                print("    body snippet:", r["body_text_snippet"].replace("\n", " ")[:200])
+                if r["console_errors"]:
+                    for e in r["console_errors"]:
+                        print("    console error:", e)
 
             browser.close()
 
-        print(f"\n{'✅ 全チェック通過' if overall_ok else '❌ 問題あり'}")
+        note = "（データが薄い銘柄の確認は判定不能）" if sparse is None else ""
+        print(f"\n{'✅ 全チェック通過' + note if overall_ok else '❌ 問題あり'}")
         return 0 if overall_ok else 1
     finally:
         proc.terminate()
