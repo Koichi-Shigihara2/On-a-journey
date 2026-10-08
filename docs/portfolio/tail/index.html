@@ -2359,7 +2359,9 @@ function _buildCtrlBody(ticker, d) {
       '</div>';
   }
 
-  // 重要な欠陥
+  // 重要な不備（significant deficiency）: マテリアルウィークネスと同じく有無だけを出す（[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]の追記、
+  // 2026-10-08）。significant_deficienciesは「significant deficiency」という語の出現箇所ごとの抜粋で、不備の数ではない。
+  // 見出しは「重要な不備」（以前の訳語はmaterial weaknessを指す語で、紛らわしかったため変えた）
   var sdHtml = '';
   if (d.significant_deficiencies && d.significant_deficiencies.length > 0) {
     var sdItems = d.significant_deficiencies.map(function (s) {
@@ -2368,7 +2370,8 @@ function _buildCtrlBody(ticker, d) {
     }).join('');
     sdHtml =
       '<div class="dcf-sec" style="margin-bottom:10px">' +
-      '<div class="dcf-sec-title assum" style="color:#f59e0b">重要な欠陥 (' + d.significant_deficiencies.length + '件)</div>' +
+      '<div class="dcf-sec-title assum" style="color:#f59e0b">重要な不備: あり</div>' +
+      '<div style="font-size:10px;color:var(--mut);margin-top:4px">（「significant deficiency」を含む箇所の抜粋。不備の数ではありません）</div>' +
       '<ul style="margin:6px 0 0 0;padding-left:16px">' + sdItems + '</ul>' +
       '</div>';
   }

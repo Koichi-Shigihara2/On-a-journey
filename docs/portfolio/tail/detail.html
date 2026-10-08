@@ -886,6 +886,14 @@ function buildCtrl() {
           '<div class="muted-meta">Item 4の該当箇所（「material weakness」を含む箇所の抜粋。弱点の数ではありません）</div>' +
           '<ul class="blist">' + mw.map(function (s) { return '<li style="color:var(--red)">' + esc(s) + '</li>'; }).join('') + '</ul></div>';
       }
+      /* 重要な不備（significant deficiency）も有無だけを出す（2026-10-08、index.htmlと同じ形。以前のdetail.htmlには表示自体が無かった）。
+         見出しは「重要な不備」（index.htmlの以前の訳語はmaterial weaknessを指す語で紛らわしかった） */
+      var sd = d.significant_deficiencies || [];
+      if (sd.length) {
+        out += '<div style="margin:8px 0"><div class="sec-sub" style="color:#f59e0b">重要な不備: あり</div>' +
+          '<div class="muted-meta">（「significant deficiency」を含む箇所の抜粋。不備の数ではありません）</div>' +
+          '<ul class="blist">' + sd.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></div>';
+      }
     }
 
     /* 四半期 / 提出日（Item 4はquarter、Item 1A・3・7はperiod〈2026Q2・2025FY等〉と書類の種類source） */

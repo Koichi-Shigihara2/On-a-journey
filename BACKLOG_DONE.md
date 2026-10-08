@@ -234,7 +234,16 @@ cronを`0 23 1-7 * *`（1〜7日の毎日）にし、ジョブの最初の段で
   `sec_ctrl_fetcher.py`はログに`MW=件数`を出すだけ（画面・通知には出ない）
 - テスト`tests/test_tail_ctrl_mw_display.py`（5件）: 修正前のコード（git stash）で4件失敗、修正後に5件成功（「なし」の表示を変えないことの1件は修正前も成功）
 - 別に残る同型の箇所: index.htmlの「重要な欠陥 (N件)」（`significant_deficiencies`、同じ数え方）。2026-10-08時点で9銘柄とも0件のため表示されていない。
-  見出しの訳語（significant deficiencyは一般に「重要な不備」）とあわせて、チャット側に報告済み（未対応）
+  見出しの訳語（significant deficiencyは一般に「重要な不備」）とあわせて、チャット側に報告済み（未対応）→ 同日、下の追記で対応
+
+#### 追記（2026-10-08、重要な不備〈significant deficiency〉の表示も同じ形に）
+- index.html（_buildCtrlBody）: 見出しを「重要な欠陥 (N件)」から「重要な不備: あり」にし、抜粋の前に
+  「（「significant deficiency」を含む箇所の抜粋。不備の数ではありません）」を出す。訳語の「重要な欠陥」はmaterial weaknessを指す語で紛らわしいため変えた
+- detail.html（buildCtrl）: 以前は`significant_deficiencies`を表示していなかった。index.htmlと同じ形の表示（「重要な不備: あり」と抜粋の説明）を加えた
+- テスト（`tests/test_tail_ctrl_mw_display.py`に4件追加、計9件）: 両画面に件数の式と「重要な欠陥」が無いこと、Playwrightでダミーデータ
+  （マテリアルウィークネス2件・重要な不備3件の抜粋）を描かせて「あり」と説明が出て件数が出ないこと。修正前のコード（git stash）で4件失敗、修正後に9件成功
+  （Playwright・chromiumが無い環境では描画の2件はスキップ）
+- Playwright（TAILの9銘柄、保存済みのctrl/latest.json）: 両画面の見出しの表示はこの変更の前と同じ（9銘柄とも`significant_deficiencies`は0件）、consoleエラー0件
 
 ---
 ## 2026-10-07（完了）
