@@ -878,9 +878,12 @@ function buildCtrl() {
       else                             { effLabel = '判定不能';              effCls = 'ctrl-unk'; }
       out += '<span class="ctrl-badge ' + effCls + '">' + esc(effLabel) + '</span>';
 
+      /* マテリアルウィークネスは有無だけを出す（[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]、2026-10-08）。material_weaknessesは
+         「material weakness」という語の出現箇所ごとの抜粋で、弱点の数ではないため件数は表示しない */
       var mw = d.material_weaknesses || [];
       if (mw.length) {
-        out += '<div style="margin:8px 0"><div class="sec-sub" style="color:var(--red)">マテリアルウィークネス (' + mw.length + '件)</div>' +
+        out += '<div style="margin:8px 0"><div class="sec-sub" style="color:var(--red)">マテリアルウィークネス: あり</div>' +
+          '<div class="muted-meta">Item 4の該当箇所（「material weakness」を含む箇所の抜粋。弱点の数ではありません）</div>' +
           '<ul class="blist">' + mw.map(function (s) { return '<li style="color:var(--red)">' + esc(s) + '</li>'; }).join('') + '</ul></div>';
       }
     }

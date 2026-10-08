@@ -2338,7 +2338,8 @@ function _buildCtrlBody(ticker, d) {
     '<span style="font-size:11px;color:var(--mut)">' + esc(d.quarter || '') + ' / 提出日: ' + esc(d.filing_date || '') + '</span>' +
     '</div>';
 
-  // マテリアルウィークネス
+  // マテリアルウィークネス: 有無だけを出す（[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]、2026-10-08）。material_weaknessesは
+  // 「material weakness」という語の出現箇所ごとの抜粋で、弱点の数ではないため件数は表示しない
   var mwHtml = '';
   if (d.material_weaknesses && d.material_weaknesses.length > 0) {
     var mwItems = d.material_weaknesses.map(function (s) {
@@ -2347,7 +2348,8 @@ function _buildCtrlBody(ticker, d) {
     }).join('');
     mwHtml =
       '<div class="dcf-sec" style="margin-bottom:10px">' +
-      '<div class="dcf-sec-title assum" style="color:var(--red,#ef4444)">マテリアルウィークネス (' + d.material_weaknesses.length + '件)</div>' +
+      '<div class="dcf-sec-title assum" style="color:var(--red,#ef4444)">マテリアルウィークネス: あり</div>' +
+      '<div style="font-size:10px;color:var(--mut);margin-top:4px">Item 4の該当箇所（「material weakness」を含む箇所の抜粋。弱点の数ではありません）</div>' +
       '<ul style="margin:6px 0 0 0;padding-left:16px">' + mwItems + '</ul>' +
       '</div>';
   } else if (d.effective === true) {
