@@ -3009,7 +3009,7 @@ git push origin kaihatsu
   修正前レポートが本番に残存する（2026-06-11事例: 再生成02:32 → 修正push04:49）。
 
 ### テストルール
-- 実装後に必ず pytest を実行する
+- 実装後に必ず pytest を実行する（`python -m pytest tests/ src/subport/day_trade/test_logic.py`、Step 2と同じ対象。件数を記録するときは実行したコマンドも書く）
 - 新機能には必ずテストを追加する
 - テスト失敗のままコミットしない
 - **`if __name__ == "__main__":` ブロックを持つスクリプトを変更した場合は
@@ -3695,7 +3695,7 @@ python src/value/tanuki_valuation/pipeline.py NVDA
 python src/value/tanuki_valuation/pipeline.py
 
 ### pytest実行
-python -m pytest tests/ -v
+python -m pytest tests/ src/subport/day_trade/test_logic.py -v
 
 ### GitHub Actions 確認
 admin.html の「実行」タブ → 一括更新ボタンを使用
@@ -3893,7 +3893,7 @@ python common/sec_data/report_consistency_check.py --fail-on-ng
 cd src/value/tanuki_valuation && python pipeline.py && cd -
 
 # Step 6: 削除したティッカーに依存するテストがないか確認
-pytest tests/ -q
+pytest tests/ src/subport/day_trade/test_logic.py -q
 
 # Step 7: コミット
 git add -A
