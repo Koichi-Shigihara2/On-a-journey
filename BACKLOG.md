@@ -2754,6 +2754,30 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 ## 優先度：低（アイデア段階）
 
+### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
+**優先度:** 低
+**分類:** 監視・起動の判定 / 外部起動（Cloudflare Worker、`tools/external_trigger/lib.js`）
+**登録日:** 2026-10-08
+**発見:** BACKLOGの分類（2026-10-08）で、移設の根拠を集めるためにMarket Data Dailyの実行一覧を見た
+
+#### 内容（観測した事実のみ。原因は未調査）
+- 2026-10-07 21:50:41 UTCに、外部起動のworkflow_dispatch（Market_Data_Daily_Update.yml、run `37692219197`）が作られた
+- 21:50の確認は、その日の20:00 UTC以降に作られて成功した実行が無いときだけ、もう一度起動する設計
+  （`successfulRunsSinceClose()`、CLAUDE_CODE_START.mdの2026-10-03の記録）。この日は20:25:48 UTCの外部起動（run `37681924730`）がsuccess
+  （ガードrun=true、`status=fetched`・`no_close_after_retry 0`・`with_bars 590`）だったので、21:50の確認は何もしないはずだった
+- 21:50の実行はガード（その日の終値はそろっている）で取り消され（cancelled）、下流もskipped。実害はない
+- 同じ日の20:55・21:25の外部起動（`37685706372`・`37689320829`）もガードで取り消し（設計どおり）
+
+#### リスク
+- Workerの成功の数え方が、実際の実行の結果と合っていない可能性がある
+- 逆向きの誤り（取得に失敗した日に「成功あり」と数えて起動しない）も起こりうる。その場合、その夜の取得が保険のscheduleまで遅れる
+
+#### 着手条件
+読み取り調査から始める。Workerが成功を判定するAPIの呼び方（status・conclusionの絞り込み、eventの種別、時刻の範囲〈created・updated・
+タイムゾーン〉）と、10-07の実際の実行一覧（20:00 UTC以降のMarket Data Dailyの実行と、それぞれの作成時刻・conclusion）を突き合わせる。
+Cloudflare側の21:50の発火とログ（Observability・Past Cron Events）も確かめる。10-05・10-06の夜に同じ起動が無かったかも見る。
+参考: [[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]（BACKLOG_DONE.md）では、GitHubのAPIの`status=completed`の絞り込みが古い結果を返す例があった
+
 ### [TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1] TAILの詳細画面がItem 1/1A/3/7を一度も作られていないパス（ctrl/{T}/item*/latest.json）から読み、sec_items_fetcher.pyが別のパスに保存したItem 1A/3/7はどこにも表示されていない
 **優先度:** 低（提案。表示される値の誤りは無く、内部統制〈Item 4〉は表示される。データの使い道を決めるまで、取得の費用と古いデータが残るだけ）
 **分類:** 配線漏れ（保存先と表示側の食い違い） / TANUKI TAIL（detail.html・sec_items_fetcher.py）
