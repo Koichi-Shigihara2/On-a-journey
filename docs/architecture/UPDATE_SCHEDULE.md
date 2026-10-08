@@ -19,7 +19,7 @@
 
 <!-- BEGIN GENERATED: workflows（scripts/gen_update_schedule.pyが生成。手で編集しない） -->
 
-全22本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
+全23本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
 
 | ワークフロー | 起動（cron） UTC | 起動（cron） JST | 起動元（workflow_run、完了で起動） | 手動の入力 | 同時実行 | ガード・動く条件 | 出力先（commitするパス） | 下流 |
 |---|---|---|---|---|---|---|---|---|
@@ -44,6 +44,7 @@
 | `TANUKI_TAIL_Position_Write.yml`<br>TANUKI TAIL Position Write | — | — | — | action・payload | — | — | `docs/portfolio/tail/data/positions/` | — |
 | `TANUKI_TAIL_RSS_Monitor.yml`<br>TANUKI TAIL RSS Monitor | 月〜金 08:00 | 月〜金 17:00 | — | ticker | — | — | `docs/portfolio/tail/data/rss_state.json` | — |
 | `TANUKI_TAIL_SEC_Ctrl.yml`<br>TANUKI TAIL SEC Ctrl Update | 月 01:00 | 月 10:00 | — | ticker | — | — | `docs/portfolio/tail/data/ctrl/` | — |
+| `TANUKI_TAIL_SEC_Items.yml`<br>TANUKI TAIL SEC Items Update | 月 01:20 | 月 10:20 | — | ticker | — | — | `docs/portfolio/tail/data/legal_proceedings/`<br>`docs/portfolio/tail/data/mda/`<br>`docs/portfolio/tail/data/risk_factors/` | — |
 | `TANUKI_VALUATION_Update.yml`<br>TANUKI VALUATION Daily Update | — | — | HypeCore_Update.yml<br>Adjusted_Eps_Analyzer_update.yml<br>Stonks_Silo_Update.yml | tickers | tanuki-valuation | 起動元が成功したときだけ動く。Stonks Silo Updateは失敗でも動く（手動・cronは常に動く） | `docs/value-monitor/tanuki_valuation/data/` | TANUKI_Score_Update.yml |
 
 <!-- END GENERATED: workflows -->

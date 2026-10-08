@@ -372,6 +372,32 @@ def _report_date_to_quarter(report_date: str) -> str:
         return report_date
 
 
+# fetch_annual()・fetch_quarterly_updates()が返す「保存済みと同じ書類」の印（[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、
+# 2026-10-08）。sec_ctrl_fetcher.pyのUNCHANGEDと同じ考え方で、同じ期間・同じ提出日の書類は本文の取得・Grokの翻訳・
+# セグメント別見通しのAI抽出・書き込みをしない（毎週fetched_atだけが変わるcommitと、無駄なGrokの呼び出しを作らない）。
+UNCHANGED_KEY = "_unchanged"
+
+
+def _stored_period(ticker: str, item_key: str, period: str) -> Optional[Dict[str, Any]]:
+    """{item_key}/{TICKER}/{period}.json（無い・読めなければNone）。"""
+    path = os.path.join(DATA_DIR, item_key, ticker.upper(), f"{period}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def _unchanged_marker(ticker: str, item_key: str, period: str, report: str, filed: str) -> Optional[Dict[str, Any]]:
+    """保存済みの同じ期間のファイルと提出日が同じなら「変更なし」の印を返す（違えばNone）。"""
+    stored = _stored_period(ticker, item_key, period)
+    if not stored or stored.get("filing_date") != filed:
+        return None
+    print(f"  [{ticker}/{item_key}] 変更なし（保存済みと同じ書類: {period} 提出 {filed}）")
+    return {"ticker": ticker.upper(), "item_key": item_key, "period": period,
+            "report_date": report, "filing_date": filed, UNCHANGED_KEY: True}
+
+
 def _fetch_filing_text(cik_int: int, accn: str, pdoc: str) -> Optional[str]:
     accn_nd = accn.replace("-", "")
     url = f"{EDGAR_BASE}/Archives/edgar/data/{cik_int}/{accn_nd}/{pdoc}"
@@ -399,6 +425,10 @@ def fetch_annual(ticker: str, cik: str, item_key: str) -> Optional[Dict[str, Any
     report  = filing["report_date"]
     filed   = filing["filing_date"]
     cik_int = int(cik.lstrip("0") or "0")
+
+    unchanged = _unchanged_marker(ticker, item_key, _report_date_to_fy(report), report, filed)
+    if unchanged:
+        return unchanged
 
     if not pdoc:
         print(f"  [{ticker}/{item_key}] primaryDocument なし ({accn})")
@@ -467,6 +497,10 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
         pdoc   = filing["primary_document"]
         report = filing["report_date"]
         filed  = filing["filing_date"]
+        unchanged = _unchanged_marker(ticker, item_key, _report_date_to_quarter(report), report, filed)
+        if unchanged:
+            results.append(unchanged)
+            continue
         if not pdoc:
             continue
 
@@ -585,22 +619,31 @@ def _save_result(result: Dict[str, Any]) -> None:
 
 def fetch_and_save_all_items(ticker: str, cik: str) -> Dict[str, int]:
     """3項目（risk_factors・legal_proceedings・mda）を全て取得・保存する。
-    Returns: {"annual_ok": int, "quarterly_ok": int, "ng": int}
+    Returns: {"annual_ok": int, "quarterly_ok": int, "ng": int, "written": int, "unchanged": int}
+      annual_ok・quarterly_ok は書いた書類と「変更なし」の書類の合計、written・unchanged はその内訳（書類の数）
     """
-    stats = {"annual_ok": 0, "quarterly_ok": 0, "ng": 0}
+    stats = {"annual_ok": 0, "quarterly_ok": 0, "ng": 0, "written": 0, "unchanged": 0}
+
+    def _record(result: Dict[str, Any]) -> None:
+        if result.get(UNCHANGED_KEY):
+            stats["unchanged"] += 1
+        else:
+            _save_result(result)
+            stats["written"] += 1
+
     for item_key in ITEM_KEYS:
         annual = fetch_annual(ticker, cik, item_key)
         if annual is None:
             stats["ng"] += 1
             continue
-        _save_result(annual)
+        _record(annual)
         stats["annual_ok"] += 1
 
         quarterlies = fetch_quarterly_updates(
             ticker, cik, item_key, after_date=annual["report_date"],
         )
         for q in quarterlies:
-            _save_result(q)
+            _record(q)
             stats["quarterly_ok"] += 1
 
     return stats
@@ -620,7 +663,9 @@ def main():
             print("positions_index.json が見つからないか空です")
             sys.exit(1)
 
-    ok, ng = 0, 0
+    # sec_ctrl_fetcher.main()と同じ数え方（[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、2026-10-08）:
+    # 成功 = 書いた銘柄（written）＋すべて保存済みと同じ書類だった銘柄（unchanged）。失敗 = CIK未登録・10-Kの取得や抽出の失敗・例外
+    written, unchanged, ng = 0, 0, 0
     for ticker in tickers:
         cik = _tickers_mod.get_cik(ticker)
         if not cik:
@@ -631,19 +676,26 @@ def main():
         print(f"\n[{ticker}] CIK={cik}")
         try:
             stats = fetch_and_save_all_items(ticker, cik)
+            n_written = stats.get("written", stats["annual_ok"] + stats["quarterly_ok"])
             print(f"  [{ticker}] 完了: annual={stats['annual_ok']} "
-                  f"quarterly={stats['quarterly_ok']} ng={stats['ng']}")
-            if stats["ng"] == 0:
-                ok += 1
-            else:
+                  f"quarterly={stats['quarterly_ok']} ng={stats['ng']} "
+                  f"（書いた書類 {n_written} / 変更なし {stats.get('unchanged', 0)}）")
+            if stats["ng"] > 0:
                 ng += 1
+            elif n_written > 0:
+                written += 1
+            else:
+                unchanged += 1
         except Exception as e:
             print(f"  [{ticker}] エラー: {e}")
             ng += 1
 
         time.sleep(0.5)
 
-    print(f"\n完了: {ok} 成功 / {ng} 失敗")
+    print(f"\n完了: {written + unchanged} 成功（更新 {written} / 変更なし {unchanged}） / {ng} 失敗")
+    # 1銘柄も成功しなかった実行は失敗にする。全銘柄が「変更なし」の週は成功
+    if written + unchanged == 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

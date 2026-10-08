@@ -2959,7 +2959,20 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 3. 1を選ぶ場合、定時の実行（例: TANUKI_TAIL_SEC_Ctrl.ymlと同じ月曜）を足すか、手動のままにするかを決める（翻訳の費用が毎回かかる）
 
 #### 着手条件
-表示するかどうか（候補1か2か）をKoichiさんが決めてから。
+表示するかどうか（候補1か2か）をKoichiさんが決めてから。→ 2026-10-08、Koichiさんの判断で候補1（表示する）＋候補3（定時の実行を足す）。
+
+#### 対応（2026-10-08）
+**状態:** 実装完了・保存済みデータの作り直し待ち（09-13のデータのままのため、push後にローカルで1回実行し、差分をチャット側で確認してからcommitする）
+- detail.html: `CTRL_ITEMS`の読み先を`data/{risk_factors|legal_proceedings|ctrl|mda}/{T}/latest.json`に変更し、Item 1の読み込みをやめた
+  （表示するかどうかは別に決める）。期間の行は`d.quarter || d.period`と書類の種類（10-K/10-Q）を出す
+- sec_items_fetcher.py: sec_ctrl_fetcher.pyと同じ作りに。保存済みの`{period}.json`と提出日が同じ書類は、本文の取得・Grokの翻訳・
+  MD&Aのセグメント別見通しのAI抽出・書き込みをしない。成功＝書いた銘柄＋すべて変更なしの銘柄、失敗＝CIKなし・10-Kの取得や抽出の失敗・例外。
+  成功0銘柄のときだけ終了コード1
+- `.github/workflows/TANUKI_TAIL_SEC_Items.yml`（新設）: 毎週月曜01:20 UTC（TANUKI_TAIL_SEC_Ctrlの20分後）、XAI_API_KEYを渡す。
+  gen_update_schedule.pyでUPDATE_SCHEDULE.mdの一覧（23本）に入り、System Healthの[J]の監視が17→18件（週次・10日）
+- テスト`tests/test_tail_sec_items_unchanged.py`（8件、Grok・ネットワークはスタブ）。修正前のコード（git stash）で8件とも失敗を確認。
+  `tests/test_update_schedule.py`の本数の決め打ち（全22本）を、今の本数から作る形に直した
+- Playwright（保存済みの09-13のデータ）: PLTR・NVDA・ADBEの詳細画面で、Item 1A・3・4・7が表示され、404・consoleエラーとも0件
 
 ### [CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1] D-02・D-04の期待値をエントリ作成後に書き換わったdaily/から作るため、暫定の行の置き換えや抜けの補完の後に誤って不一致になる
 **優先度:** 低

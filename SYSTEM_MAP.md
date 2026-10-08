@@ -1744,6 +1744,11 @@ PORTFOLIO     ← 手動入力 / 証券会社API
 TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半期レビュー生成）
 　　内部統制評価: src/tail/sec_ctrl_fetcher.py → docs/portfolio/tail/data/ctrl/{TICKER}/{QUARTER}.json + latest.json
 　　（SEC-CTRL-1 2026-06-24実装、週次自動更新）
+　　SEC項目（Item 1A・3・7）: src/tail/sec_items_fetcher.py → docs/portfolio/tail/data/{risk_factors,legal_proceedings,mda}/{TICKER}/
+　　{period}.json + latest.json + index.json（TAIL-SEC-ITEMS-1 2026-09-13実装。2026-10-08に週次の定時実行
+　　TANUKI_TAIL_SEC_Items.yml〈月 01:20 UTC〉を追加し、保存済みと同じ書類は取得・Grok翻訳・書き込みをしない形に。
+　　detail.htmlの「内部統制 · SEC提出書類」がItem 1A・3・7をこの保存先から、Item 4をctrl/から読む。Item 1は取得していない。
+　　[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]）
 　　モーダル構成: coreとsatelliteで同等の5タブ（テーゼ/最新レビュー/KPIトレンド/DCFシナリオ/内部統制）
 　　（TAIL-SAT-CORE-1 2026-06-26でcore同等化。AI視点タブはTAIL-UX-1 2026-07-05でdetail.htmlに
 　　一本化・モーダルから削除）

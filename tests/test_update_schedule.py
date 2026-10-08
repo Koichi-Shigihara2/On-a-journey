@@ -1,6 +1,7 @@
 """更新スケジュールの自動生成（scripts/gen_update_schedule.py）とCHECK-58（指示書㉘、2026-09-30）のテスト。"""
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -55,7 +56,11 @@ def test_drift_detected_when_yaml_changes(tmp_path):
 def test_drift_detected_when_doc_edited_by_hand(tmp_path):
     root = _copy_repo(tmp_path)
     p = root / "docs" / "architecture" / "UPDATE_SCHEDULE.md"
-    p.write_text(p.read_text(encoding="utf-8").replace("全22本", "全21本"), encoding="utf-8")
+    # 本数を1つ減らして手で書き換えたことにする（本数は決め打ちしない。2026-10-08に22→23本で置き換えが空振りした）
+    text = p.read_text(encoding="utf-8")
+    edited, n = re.subn(r"全(\d+)本", lambda m: f"全{int(m.group(1)) - 1}本", text, count=1)
+    assert n == 1
+    p.write_text(edited, encoding="utf-8")
     assert gus.check_drift(str(root)) == ["UPDATE_SCHEDULE.mdのワークフロー一覧が.github/workflows/*.ymlと一致しない"]
 
 

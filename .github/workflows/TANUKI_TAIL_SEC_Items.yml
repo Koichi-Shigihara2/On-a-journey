@@ -1,0 +1,65 @@
+name: TANUKI TAIL SEC Items Update
+
+# TANUKI TAILの詳細画面のItem 1A（リスク要因）・Item 3（法的手続き）・Item 7（MD&A）を、10-K・10-Qから取得する
+# （src/tail/sec_items_fetcher.py、[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、2026-10-08）。
+# 内部統制（Item 4、TANUKI_TAIL_SEC_Ctrl.yml 01:00 UTC）の後に動かす。
+# 保存済みと同じ書類（同じ期間・提出日）は、本文の取得・Grokの翻訳・書き込みをしない。
+on:
+  schedule:
+    - cron: '20 1 * * 1'  # 毎週月曜 01:20 UTC = 月曜 10:20 JST
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: '対象ティッカー（スペース区切り、空白で全銘柄）'
+        required: false
+        default: ''
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  fetch-items:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: kaihatsu
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch SEC items (Item 1A / 3 / 7)
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}   # 抜粋の和訳（excerpt_ja）とMD&Aのセグメント別見通し。無いと和訳なしで保存される
+        run: |
+          INPUT="${{ github.event.inputs.ticker }}"
+          if [ -z "$INPUT" ]; then
+            python src/tail/sec_items_fetcher.py
+          else
+            python src/tail/sec_items_fetcher.py $INPUT
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config merge.ours.driver true
+          git add docs/portfolio/tail/data/risk_factors/
+          git add docs/portfolio/tail/data/legal_proceedings/
+          git add docs/portfolio/tail/data/mda/
+          if git diff --staged --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "chore: TANUKI TAIL SEC項目（Item 1A・3・7） 自動更新 $(date +'%Y-%m-%d')"
+            bash .github/scripts/push_with_retry.sh kaihatsu
+          fi

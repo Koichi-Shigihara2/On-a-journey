@@ -284,7 +284,7 @@ var S = {
   thesis:  null,   /* positions/{ticker}_thesis.json */
   reviews: {},     /* { quarter: reviewJson } */
   kpi:     null,   /* kpi/{ticker}_layer2.json */
-  ctrlItems: {},   /* { item1, item1a, item3, item4, item7 } */
+  ctrlItems: {},   /* { item1a, item3, item4, item7 } */
   scenarios: {},   /* { bear, base, bull } — ../scenario/{ticker}/{sc}.json */
   val:     null,   /* value-monitor/tanuki_valuation/data/{ticker}/latest.json */
   allPos:  [],     /* ナビ用全ポジション（CORE→SAT順） */
@@ -323,18 +323,19 @@ function loadAll() {
     .catch(function () { return null; })
     .then(function (d) { S.kpi = d; });
 
-  /* 内部統制（Item 1/1A/3/4/7 並列取得） */
+  /* 内部統制（Item 1A/3/4/7 並列取得）
+     Item 4は sec_ctrl_fetcher.py の ctrl/{T}/、Item 1A・3・7は sec_items_fetcher.py の保存先
+     （risk_factors/・legal_proceedings/・mda/ の {T}/latest.json）から読む。
+     Item 1（事業概要）は取得している処理が無いため読まない（[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、2026-10-08） */
   var CTRL_ITEMS = [
-    { key: 'item1',  path: 'item1/latest.json',  label: 'ITEM 1 — 事業概要',                          badge: false },
-    { key: 'item1a', path: 'item1a/latest.json', label: 'ITEM 1A — リスク要因',                       badge: false },
-    { key: 'item3',  path: 'item3/latest.json',  label: 'ITEM 3 — 法的手続き',                        badge: false },
-    { key: 'item4',  path: 'latest.json',         label: 'ITEM 4 — 内部統制',                         badge: true  },
-    { key: 'item7',  path: 'item7/latest.json',  label: 'ITEM 7 — 経営者による財務状態の分析（MD&A）', badge: false },
+    { key: 'item1a', dir: 'risk_factors',      label: 'ITEM 1A — リスク要因',                       badge: false },
+    { key: 'item3',  dir: 'legal_proceedings', label: 'ITEM 3 — 法的手続き',                        badge: false },
+    { key: 'item4',  dir: 'ctrl',              label: 'ITEM 4 — 内部統制',                         badge: true  },
+    { key: 'item7',  dir: 'mda',               label: 'ITEM 7 — 経営者による財務状態の分析（MD&A）', badge: false },
   ];
-  var ctrlBase = 'data/ctrl/' + ticker + '/';
   var ctrlP = Promise.allSettled(
     CTRL_ITEMS.map(function (item) {
-      return fetch(ctrlBase + item.path + '?_=' + Date.now())
+      return fetch('data/' + item.dir + '/' + ticker + '/latest.json?_=' + Date.now())
         .then(function (r) { return r.ok ? r.json() : null; })
         .catch(function () { return null; });
     })
@@ -884,10 +885,12 @@ function buildCtrl() {
       }
     }
 
-    /* 四半期 / 提出日 */
-    if (d.quarter || d.filing_date) {
+    /* 四半期 / 提出日（Item 4はquarter、Item 1A・3・7はperiod〈2026Q2・2025FY等〉と書類の種類source） */
+    var periodLabel = d.quarter || d.period || '';
+    if (periodLabel || d.filing_date) {
       out += '<div class="muted-meta">' +
-        esc(d.quarter || '') + (d.filing_date ? ' / 提出日: ' + esc(d.filing_date) : '') + '</div>';
+        esc(periodLabel) + (d.source ? '（' + esc(d.source) + '）' : '') +
+        (d.filing_date ? ' / 提出日: ' + esc(d.filing_date) : '') + '</div>';
     }
 
     /* 日本語訳（優先）→ 英文原文 */
