@@ -27,6 +27,7 @@ _REAL_INDEX = os.path.join(_REPO, "docs", "portfolio", "tail", "data", "position
 _TEN = ["PLTR", "SOFI", "TSLA", "CELH", "APP", "NVDA", "ADBE", "SOUN", "CRWV", "APGE"]
 
 # 2026-10-07時点の docs/portfolio/tail/data/positions_index.json と同じ形・同じ内容
+# （APGEは2026-10-08に登録解除したが、ここは一時フォルダに書く架空の10銘柄として残す）
 _INDEX = {"positions": [f"{t}_thesis.json" for t in _TEN]}
 
 
@@ -74,7 +75,7 @@ def test_load_tail_tickers_real_file_has_no_positions_key_as_ticker():
         expected = [p.replace("_thesis.json", "").upper() for p in json.load(f)["positions"]]
     got = scf.load_tail_tickers()
     assert "POSITIONS" not in got
-    assert got == expected and len(got) >= 10
+    assert got == expected and len(got) >= 9   # 2026-10-08にAPGEを登録解除して9銘柄
 
 
 def test_sec_items_fetcher_uses_same_loader(tail, monkeypatch):

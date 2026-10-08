@@ -868,7 +868,7 @@ SEC EDGAR
 │    （DELLはFY2013-2016非公開期間のフィリングギャップの注記あり）。
 │    `registration_validator.py::check_p6_cik_discontinuity_candidate()`
 │    （P6-CIKDiscontinuity、`CIK_DISCONTINUITY_CONFIRMED_STRUCTURAL`＝
-│    {CEG,LITE,ABBV,GEV,SN,CON,VST}・境界年2010以降・売上5億ドル以上を
+│    {CEG,LITE,ABBV,GEV,VST}〈2026-10-08にSN・CONを登録解除で削除〉・境界年2010以降・売上5億ドル以上を
 │    ヒューリスティックとする）が新規登録時にCIK不連続候補をWARN検知する。
 │    **追記（FETCHER-10KT-10QT-FORM-EXCLUSION-1案③ 2026-08-01実装完了、
 │    コミット1fd44fc0a）**: fetcher.py本体は無変更（案①のrelevant_forms

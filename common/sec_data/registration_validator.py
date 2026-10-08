@@ -62,7 +62,7 @@ TODAY = date.today()
 # （スピンオフ・カーブアウト型、破産再生型）。旧CIKへの接続対象ではないため、
 # cik_history.json 未登録でも P6 の再フラグ対象から除外する。
 CIK_DISCONTINUITY_CONFIRMED_STRUCTURAL = {
-    "CEG", "LITE", "ABBV", "GEV", "SN", "CON", "VST",
+    "CEG", "LITE", "ABBV", "GEV", "VST",
 }
 
 # 汎用検知ロジック（CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1で検証済み: 既知9銘柄

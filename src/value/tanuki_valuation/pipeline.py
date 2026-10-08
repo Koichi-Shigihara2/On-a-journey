@@ -124,11 +124,6 @@ CIK_DISCONTINUITY_TICKERS = {
             "スピンオフ以前のデータは親会社連結からの区分推定値であり接続していません。",
     "GEV": "2024年4月General ElectricからのスピンオフによりGE Vernova Inc.発足。"
            "スピンオフ以前のデータは親会社連結からの区分推定値であり接続していません。",
-    "SN": "2023年7月、香港上場JS Global LifestyleからのスピンオフによりSharkNinja, Inc.が"
-          "米国単独上場。分離以前のデータは接続していません。",
-    "CON": "2024年11月Select Medical Holdingsからの完全スピンオフによりConcentra Group "
-           "Holdings発足（2024年7月に一部先行IPO）。分離以前のデータは親会社連結からの"
-           "区分推定値であり接続していません。",
     "VST": "2016年のEnergy Future Holdings破産手続き(Chapter 11)に伴うfresh-start会計により"
            "Vistra Energy Corp発足。破産前後で会計上の連続性自体が断絶しているため接続していません。",
 }

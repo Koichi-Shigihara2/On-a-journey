@@ -266,12 +266,6 @@
       "comment": "決算期変更境界バケツ競合（net_income、end=2015-08-01）。FYE-BOUNDARY-COLLISION-UNCONFIRMED-1一次情報調査でSEC EDGAR原本（FY2018 10-K、accn 0001633978-18-000108）を確認し、2015年8月1日のJDSUからのLumentumスピンオフに伴うPredecessor/Successor会計処理（GAAP標準の分割開示）と確定。決算期変更ではない。"
     },
     {
-      "check": "WARN-24",
-      "ticker": "WST",
-      "acknowledged_date": "2026-09-05",
-      "comment": "決算期変更境界バケツ競合（rpo、end=2013-06-30）。FYE-BOUNDARY-COLLISION-UNCONFIRMED-1一次情報調査でSEC EDGAR原本（FY2022 10-K、accn 0000105770-23-000012）を確認したところ、該当値は開示書類のどこにも表示されない非表示のXBRLタグ付けアーティファクト（2013年当時のDeferredRevenue用コンテキストがContractWithCustomerLiabilityへ誤って使い回された可能性）と確定。決算期変更ではない。"
-    },
-    {
       "check": "WARN-26",
       "ticker": "LLY",
       "acknowledged_date": "2026-09-10",
@@ -334,13 +328,6 @@
       "acknowledged_date": "2026-09-26",
       "match": "候補数=1件",
       "comment": "recommended_g候補不足。上場後日が浅く、候補数が構造的に少ない。登録時点の候補数=1件（Noneでない候補: rev_cagr_3yr）。matchにより候補数が変わると再び未確認になる（[[JNJ-XOM-PM-FLOOR-RISK-1]]の自動検知化、指示書⑰ STEP 2）。"
-    },
-    {
-      "check": "WARN-52",
-      "ticker": "SN",
-      "acknowledged_date": "2026-09-26",
-      "match": "候補数=1件",
-      "comment": "recommended_g候補不足。上場後日が浅く、候補数が構造的に少ない。登録時点の候補数=1件（Noneでない候補: g_fundamental）。matchにより候補数が変わると再び未確認になる（[[JNJ-XOM-PM-FLOOR-RISK-1]]の自動検知化、指示書⑰ STEP 2）。"
     },
     {
       "check": "WARN-54",

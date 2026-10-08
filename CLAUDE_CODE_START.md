@@ -193,6 +193,18 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   CHAT_RULES.md事例28を追加。BACKLOG.mdのアクティブは19件（`^### [`の機械カウント）
 - 今後の運用: sys.modulesを書き換えるテストを足すときは`_tanuki_pipeline_stub.py`の関数を使う（直接書き換えると収集の完了時点で止まる）
 
+**2026-10-08 APGE・CON・SN・WSTの登録解除（System Health [K]の4銘柄、Koichiさんの判断で全削除）**
+- 銘柄削除の手順どおり: cik_lookup.csv・monitor_tickers.yaml・beta/discover（config/とdocs/の両方）・segment（WST）・split_history（WST）・
+  warn_acknowledged（SN・WST）・stonks_flag_rule（SN）・tail_kpi_map/tail_kpi_fetch_baseline（APGE）、`CIK_DISCONTINUITY_CONFIRMED_STRUCTURAL`と
+  pipeline.pyのスピンオフ注記からSN・CON。データ631ファイル（SEC・normalized・ttm・TANUKI・HypeCore・EPS・market_data〈WST以外〉）
+- APGEはTANUKI TAILからも削除（positions_index.json・APGE_thesis.json・ctrl/risk_factors/mda/legal_proceedings/reviews/kpi/kpi_proposalsと、
+  rss_state・review_queue・prediction_historyの項目）。TAILは9銘柄。sec_ctrl_fetcher.py・sec_items_fetcher.pyとも9成功/0失敗、TAILの3画面でAPGEなし
+- **WSTの`common/market_data/`（daily・attributes・analyst_history・違反ログ）は残した**: WSTはS&P500構成銘柄で、Market Data Dailyが
+  S&P500として取得し（`get_default_symbol_universe()`）Market Pulseのブレッスが使う。未登録のS&P500銘柄（MMM・HSY等）と同じ扱い
+- 派生ファイル: TANUKIのtickers.json（`_save_tickers_index`）・HypeCoreのtickers.jsonは本来の関数で作り直し、EPSのsummary.json
+  （既存とマージするだけで外した銘柄が残る）・STONKS SILOのresults.json・.watcher_state.jsonは項目を除いた
+- System Health: [K]⚠️→✅、[F] 9/9件✅、[H]整合OK、全12項目✅
+
 **木曜（2026-10-08）朝の確認手順（米国10-07〈水〉の足。UPDATE_SCHEDULE.mdの時刻と実際の起動・完了の突き合わせ）**
 夏時間（引け20:00 UTC）。UPDATE_SCHEDULE.md 2章の想定は「20:25の外部起動が取得 → Stonks Silo・Market Pulse → TANUKI VALUATION（1回）→ TANUKI Score、
 22:00 UTCまでに完了。20:55・21:25はそろい済みで取り消し。21:50は成功した実行ありで何もしない」。

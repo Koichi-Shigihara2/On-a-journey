@@ -85,7 +85,7 @@ class TestJudgeStonksSilo:
     def test_production_config_loads(self):
         cfg = sfr.load_rule_config()
         assert "SOFI" in cfg["excluded"]
-        assert {"ASTS", "XOM", "SN"} <= set(cfg["known_undeterminable"])
+        assert {"ASTS", "XOM"} <= set(cfg["known_undeterminable"])
 
 
 class TestCheck51:
