@@ -9,6 +9,11 @@
 - 配信元の最新記事が取得時刻から72時間より古ければ、その配信元をfailedに入れる（理由はstale。failed_reasonsで取得失敗と区別する）。
 - 見出しをGrokで日本語に訳してtitle_jaに入れる（translate_titles()、1日1回まとめて。失敗したらNone→原文だけを出す）。
   訳は画面の表示だけに使い、判定・AIの見解の入力には渡さない。
+
+2026-10-09（[[MARKETPULSE-HEADLINES-RELEVANCE-1]]、方式B）:
+- 各配信元から16件取り、翻訳と同じ1回の呼び出しで「市況と関係あり」（market: true/false）も返させる。データには全件残し、
+  画面はtrueを最大MAX_ITEMS件出し、falseは「関係の薄い見出し N件」に折りたたむ（split_for_display()）。
+- 判定が使えないとき（失敗・形が崩れた・全件false）は、全件を今までどおり出す。判定はAIの見解の入力には渡さない。
 """
 from __future__ import annotations
 
@@ -25,9 +30,9 @@ SOURCES = [
     {"key": "google_business_us", "name": "Google News ビジネス（US）", "region": "米国", "publisher_suffix": True,
      "url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en"},
 ]
-MAX_ITEMS = 20
-PER_SOURCE = 8
-REGION_MAX = {"米国": MAX_ITEMS}   # 地域ごとの上限（日本の枠はNHKを外したため無い）
+MAX_ITEMS = 20                    # 画面の本表に出す件数の上限（split_for_display()）
+PER_SOURCE = 16                   # 各配信元から取る件数（関係の判定で隠れる分を補うため、表示の上限より多く取る）
+MAX_CANDIDATES = PER_SOURCE * len(SOURCES)   # データに残す件数の上限（判定の対象。地域の枠は米国だけなので置かない）
 STALE_HOURS = 72                  # 配信元の最新記事がこれより古ければ更新停止（stale）とみなす
 
 GROK_URL = "https://api.x.ai/v1/chat/completions"
@@ -85,7 +90,8 @@ def _is_stale(newest_utc: Optional[str], now: datetime) -> bool:
 def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optional[datetime] = None) -> Dict[str, Any]:
     """{"fetched_at": UTC, "items": [{title, published_utc, link, source, region, (publisher)}], "failed": [配信元の名前],
     "failed_reasons": {配信元の名前: "fetch_error" | "no_items" | "stale"}, "status"}。
-    各配信元の新しい順にPER_SOURCE件、全体で時刻の新しい順にMAX_ITEMS件（同じ見出しは1件にまとめる）。
+    各配信元の新しい順にPER_SOURCE件、全体で時刻の新しい順にMAX_CANDIDATES件（同じ見出しは1件にまとめる）。
+    画面に出す件数（MAX_ITEMS）への絞り込みはsplit_for_display()で行う。
     最新記事が取得時刻からSTALE_HOURS時間より古い配信元は見出しを使わず、failedに入れる（推測で埋めない）。
     statusは、failedの配信元を除いて見出しが1件以上あればok（failedが無い）かpartial、0件ならfailed。"""
     import feedparser
@@ -120,15 +126,14 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
             print(f"[WARN] ニュースの見出しの取得に失敗: {s['name']} ({type(ex).__name__}: {ex})")
             failed.append(s["name"])
             reasons[s["name"]] = "fetch_error"
-    seen, uniq, per_region = set(), [], {}
+    seen, uniq = set(), []
     for it in sorted(items, key=lambda x: x["published_utc"] or "", reverse=True):
         k = it["title"].lower()
-        if k in seen or per_region.get(it["region"], 0) >= REGION_MAX.get(it["region"], MAX_ITEMS):
+        if k in seen:
             continue
         seen.add(k)
-        per_region[it["region"]] = per_region.get(it["region"], 0) + 1
         uniq.append(it)
-    uniq = uniq[:MAX_ITEMS]
+    uniq = uniq[:MAX_CANDIDATES]
     status = "failed" if not uniq else ("ok" if not failed else "partial")
     return {"fetched_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "items": uniq, "failed": failed, "failed_reasons": reasons,
             "status": status, "sources": [s["name"] for s in SOURCES]}
@@ -143,50 +148,99 @@ def _default_post(payload: dict, api_key: str) -> dict:
 
 
 def translate_titles(titles: List[str], post: Callable[[dict, str], dict] = _default_post,
-                     api_key: Optional[str] = None) -> Optional[List[str]]:
-    """見出しの一覧をGrokで日本語に訳し、同じ順・同じ件数の訳の一覧を返す（1回の呼び出しでまとめて訳す）。
-    キーが無い・呼び出しに失敗した・応答がJSONの文字列の配列でない・件数が合わないときはNone
-    （訳と見出しの取り違えを防ぐため、一部だけは使わない）。
-    渡すのは見出しの文字だけ（sec_ctrl_fetcher._translate_excerpt()と同じ形、temperature 0）。"""
+                     api_key: Optional[str] = None) -> Optional[Dict[str, Optional[list]]]:
+    """見出しの一覧をGrokに1回で渡し、日本語訳と「市況と関係あり」の判定を返す。{"ja": [str] or None, "market": [bool] or None}。
+    渡すのは見出しの文字だけ（sec_ctrl_fetcher._translate_excerpt()と同じ形、temperature 0）。
+    - キーが無い・呼び出しに失敗した・応答がJSONの配列でない・件数が合わない・finish_reasonがstop以外（途中で切れた）: None
+      （訳も判定も全件使わない。訳と見出しの取り違えを防ぐため、一部だけは使わない）
+    - jaが1件でも空・文字列でない: 訳だけ全件None。marketが1件でも真偽値でない: 判定だけ全件None（＝画面は全件を表示）"""
     api_key = api_key if api_key is not None else os.getenv("XAI_API_KEY")
     if not titles or not api_key:
         return None
     prompt = (
-        "以下は英語のニュースの見出しのJSON配列です。各見出しを自然で簡潔な日本語に訳してください。"
-        "固有名詞・ティッカー・数値はそのまま正確に残してください。"
-        f"出力は訳だけを同じ順に並べた、要素数{len(titles)}のJSONの文字列の配列だけにしてください（説明や前置きは不要）。\n\n"
+        "以下は英語のニュースの見出しのJSON配列です。各見出しについて、次の2つを返してください。\n"
+        "- ja: 自然で簡潔な日本語訳（固有名詞・ティッカー・数値はそのまま正確に残す）\n"
+        "- market: 米国の株式・債券・為替・商品の相場、金融政策・経済指標、上場企業の業績・株価・M&A・資金調達に関係する見出しならtrue。"
+        "買い物のセール、スポーツ、事故、生活・健康の話題、相場や企業業績との関係が書かれていない政治・社会・技術の話題ならfalse。\n"
+        f"出力は同じ順に並べた、要素数{len(titles)}のJSON配列だけにしてください。"
+        '各要素は {"ja": 文字列, "market": true または false}（説明や前置きは不要）。\n\n'
         + json.dumps(titles, ensure_ascii=False)
     )
-    payload = {"model": GROK_MODEL, "messages": [{"role": "user", "content": prompt}], "temperature": 0, "max_tokens": 3000}
+    payload = {"model": GROK_MODEL, "messages": [{"role": "user", "content": prompt}], "temperature": 0, "max_tokens": 8000}
     try:
-        text = post(payload, api_key)["choices"][0]["message"]["content"].strip()
+        choice = post(payload, api_key)["choices"][0]
+        finish = choice.get("finish_reason")
+        text = (choice["message"]["content"] or "").strip()
+    except Exception as e:
+        print(f"[WARN] 見出しの翻訳・判定に失敗: {type(e).__name__}: {e}")
+        return None
+    if finish != "stop":
+        print(f"[WARN] 見出しの翻訳・判定の応答が途中で切れた（finish_reason={finish}）。訳も判定も使わない")
+        return None
+    try:
         m = re.search(r"\[.*\]", text, re.S)   # ```json ... ``` で囲まれて返る場合
         out = json.loads(m.group(0) if m else text)
     except Exception as e:
-        print(f"[WARN] 見出しの翻訳に失敗: {type(e).__name__}: {e}")
+        print(f"[WARN] 見出しの翻訳・判定の応答がJSONでない: {type(e).__name__}: {e}")
         return None
-    if not isinstance(out, list) or len(out) != len(titles) or not all(isinstance(x, str) and x.strip() for x in out):
+    if not isinstance(out, list) or len(out) != len(titles):
         n = len(out) if isinstance(out, list) else type(out).__name__
-        print(f"[WARN] 見出しの翻訳の件数・形式が合わない（{len(titles)}件に対して{n}）。訳は使わない")
+        print(f"[WARN] 見出しの翻訳・判定の件数が合わない（{len(titles)}件に対して{n}）。訳も判定も使わない")
         return None
-    return [_collapse_ws(x) for x in out]
+    rows = [o if isinstance(o, dict) else {} for o in out]
+    ja = [r.get("ja") for r in rows]
+    market = [r.get("market") for r in rows]
+    if all(isinstance(x, str) and x.strip() for x in ja):
+        ja = [_collapse_ws(x) for x in ja]
+    else:
+        print("[WARN] 見出しの訳が欠けている・形が違う。訳は全件使わない")
+        ja = None
+    if not all(isinstance(x, bool) for x in market):
+        print("[WARN] 「市況と関係あり」の判定が真偽値でない。判定は全件使わない（全件を表示）")
+        market = None
+    return {"ja": ja, "market": market}
 
 
-def add_title_ja(h: Dict[str, Any], translate: Callable[[List[str]], Optional[List[str]]] = translate_titles) -> Dict[str, Any]:
-    """h["items"]の各要素にtitle_ja（訳せなかったものはNone）を加える。原文のtitleは残す。
-    h["translation"]に結果（ok / failed / skipped）を記録する。例外は外に出さない（翻訳の失敗で毎晩の実行を止めない）。"""
+def annotate_headlines(h: Dict[str, Any], translate: Callable[[List[str]], Optional[dict]] = translate_titles) -> Dict[str, Any]:
+    """h["items"]の各要素にtitle_ja（訳せなかったものはNone）とmarket（true/false、判定なしはNone）を加える。原文のtitleと全件は残す。
+    h["translation"]に訳の結果（ok / failed / skipped）、h["relevance"]に判定の結果（ok / unavailable / all_false）を記録する。
+    全件falseのときは判定を使わない（all_false。画面は全件を表示）。例外は外に出さない（毎晩の実行を止めない）。"""
     items = h.get("items") or []
     if not items:
         h["translation"] = {"status": "skipped"}
+        h["relevance"] = {"status": "unavailable"}
         return h
     try:
-        ja = translate([x["title"] for x in items])
+        r = translate([x["title"] for x in items])
     except Exception as e:
-        print(f"[WARN] 見出しの翻訳に失敗: {type(e).__name__}: {e}")
-        ja = None
+        print(f"[WARN] 見出しの翻訳・判定に失敗: {type(e).__name__}: {e}")
+        r = None
+    ja = (r or {}).get("ja")
+    market = (r or {}).get("market")
     if ja is None or len(ja) != len(items):
         ja = [None] * len(items)
-    for x, t in zip(items, ja):
+    if market is None or len(market) != len(items):
+        market = [None] * len(items)
+    for x, t, mk in zip(items, ja, market):
         x["title_ja"] = t
+        x["market"] = mk
     h["translation"] = {"status": "ok" if any(ja) else "failed", "model": GROK_MODEL}
+    if any(mk is None for mk in market):
+        rel = "unavailable"
+    elif not any(market):
+        rel = "all_false"
+    else:
+        rel = "ok"
+    h["relevance"] = {"status": rel, "model": GROK_MODEL, "true": sum(1 for mk in market if mk is True),
+                      "false": sum(1 for mk in market if mk is False)}
     return h
+
+
+def split_for_display(h: Dict[str, Any]):
+    """画面の出し分け（index.htmlのsplitHeadlines()と同じ規則）。(本表の見出し, 折りたたむ見出し)。
+    relevance.statusがokなら、market=falseを折りたたみ、それ以外（true）を新しい順に最大MAX_ITEMS件。
+    ok以外（判定なし・全件false・判定の無い古いエントリ）は、新しい順に最大MAX_ITEMS件を本表に出し、折りたたみは無し。"""
+    items = h.get("items") or []
+    if (h.get("relevance") or {}).get("status") != "ok":
+        return items[:MAX_ITEMS], []
+    return [x for x in items if x.get("market") is not False][:MAX_ITEMS], [x for x in items if x.get("market") is False]

@@ -5,7 +5,7 @@
 
 使い方: python src/market/market_pulse/backfill_implc.py [--dry-run] [--only headlines]
   --only headlines: 見出しだけを取り直す（予定・先物の最新値はエントリの値を残す。2026-10-09、[[MARKETPULSE-HEADLINES-NHK-STALE-1]]・
-  [[MARKETPULSE-HEADLINES-JA-1]]の修正の反映用）。見出しの翻訳でGrokを1回呼ぶ（XAI_API_KEYがあるとき）
+  [[MARKETPULSE-HEADLINES-JA-1]]の修正の反映用）。見出しの翻訳と関係の判定でGrokを1回呼ぶ（XAI_API_KEYがあるとき）
 """
 import argparse
 import json
@@ -32,7 +32,7 @@ def main():
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if args.only == "headlines":
         import news_headlines as nh
-        new = {"headlines": nh.add_title_ja(nh.fetch_headlines())}
+        new = {"headlines": nh.annotate_headlines(nh.fetch_headlines())}
         implc = {k: L.get(k) or {} for k in ("calendar", "futures")}
         implc.update(new)
     else:
@@ -46,7 +46,9 @@ def main():
                                 implb={"sector_rotation": L.get("sector_rotation")}, implc=implc)
     L["data_quality"] = r["data_quality"]
     L["stage_conclusions"]["0"] = r["stages"]["0"]
-    print(f"最新エントリ {L['date']} に付けた: 見出し{len(implc['headlines'].get('items') or [])}件（{implc['headlines']['status']}）、"
+    rel = implc["headlines"].get("relevance") or {}
+    print(f"最新エントリ {L['date']} に付けた: 見出し{len(implc['headlines'].get('items') or [])}件（{implc['headlines']['status']}、"
+          f"関係の判定 {rel.get('status')} true{rel.get('true')}・false{rel.get('false')}）、"
           f"予定{len(implc['calendar'].get('events') or [])}件（{implc['calendar']['status']}）、先物{implc['futures']['status']}、"
           f"data_quality={L['data_quality']['status']}")
     if args.dry_run:

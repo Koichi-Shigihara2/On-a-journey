@@ -282,6 +282,8 @@ DOM_SNAPSHOT_JS = """
       document.getElementById(id) ? [...document.getElementById(id).querySelectorAll('tr')].slice(id === 'm7Table' ? 0 : 1)
         .map(r => [...r.querySelectorAll('td')].map(td => (id === 'dqTable' ? td.textContent : td.innerText).trim())) : null])),
     headlinesText: t('headlines'),
+    headlinesFoldedSummary: t('headlinesFoldedSummary'),
+    headlinesFoldedRows: document.getElementById('headlinesFoldedTable') ? document.getElementById('headlinesFoldedTable').querySelectorAll('tr').length - 1 : null,
     watchHeaders: document.getElementById('watchTable') ? [...document.getElementById('watchTable').querySelectorAll('th')].map(e => e.innerText.trim()) : null,
     quadDatasets: (typeof quadChartInst !== 'undefined' && quadChartInst) ? quadChartInst.data.datasets.map(d => ({label: d.label, n: d.data.length,
       last: d.data[d.data.length - 1]})) : null,
@@ -686,12 +688,27 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     if hl is not None:
         # 見出しのセルは、訳（title_ja）があれば「訳＋改行＋原文」、出典のセルは、出典名（publisher）があれば「配信元＋改行＋出典名」
         # （MARKETPULSE-HEADLINES-JA-1、画面のheadlineCell()）
+        # 本表と折りたたみの出し分けは、news_headlines.split_for_display()・画面のsplitHeadlines()と同じ規則
+        # （MARKETPULSE-HEADLINES-RELEVANCE-1。relevance.statusがokならmarket=falseを折りたたみ、本表は最大20件）
+        items = hl.get("items") or []
+        if (hl.get("relevance") or {}).get("status") == "ok":
+            main, folded = [x for x in items if x.get("market") is not False][:20], [x for x in items if x.get("market") is False]
+        else:
+            main, folded = items[:20], []
         exp = [[jst(x["published_utc"]), (x["title_ja"] + "\n" + x["title"]) if x.get("title_ja") else x["title"],
-                (x["source"] + "\n" + x["publisher"]) if x.get("publisher") else x["source"]] for x in hl.get("items") or []]
+                (x["source"] + "\n" + x["publisher"]) if x.get("publisher") else x["source"]] for x in main]
         act = dom["tableRows"]["headlinesTable"]
         ok = (act == exp) if exp else (act is None and "取得できず" in (dom.get("headlinesText") or ""))
         _res(results, cls, "C-02 段階2 ニュースの見出し（#headlinesTable、時刻・見出し・出典）", f"{len(exp)}件", f"{len(act or [])}件", ok,
              note="全セルを比較。見出しが無い場合は「取得できず」")
+        if folded:
+            ok = (dom.get("headlinesFoldedRows") == len(folded)
+                  and f"関係の薄い見出し {len(folded)}件" in (dom.get("headlinesFoldedSummary") or ""))
+        else:
+            ok = dom.get("headlinesFoldedRows") is None
+        _res(results, cls, "C-02b 段階2 関係の薄い見出しの折りたたみ（#headlinesFolded、件数）", f"{len(folded)}件",
+             f"{dom.get('headlinesFoldedRows')}件 / {dom.get('headlinesFoldedSummary')}", ok,
+             note="market=falseの件数（relevance.statusがokのときだけ）。0件なら折りたたみが無いこと")
     fu = L.get("futures")
     if fu is not None:
         exp = []

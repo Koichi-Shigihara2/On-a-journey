@@ -43,7 +43,7 @@ class TestHeadlines:
         # NHK 経済は外した（[[MARKETPULSE-HEADLINES-NHK-STALE-1]]、日本の配信元は置かない）
         assert [s["region"] for s in nh.SOURCES] == ["米国", "米国"]
         assert not any("nhk" in s["url"] for s in nh.SOURCES)
-        assert nh.REGION_MAX == {"米国": nh.MAX_ITEMS}
+        assert not hasattr(nh, "REGION_MAX")   # 地域の枠は置かない（米国だけ。表示の上限はMAX_ITEMS）
 
     def test_ok_dedupe_and_fields(self):
         def fetch(url):
@@ -95,20 +95,17 @@ class TestHeadlines:
         h = nh.fetch_headlines(lambda url: f'<?xml version="1.0"?><rss version="2.0"><channel>{body}</channel></rss>'.encode(), now=NOW)
         assert h["status"] == "failed" and set(h["failed_reasons"].values()) == {"stale"}
 
-    def test_region_cap_us_only(self):
-        # 地域の上限は「米国 = MAX_ITEMS」（日本の枠は無い）。各配信元PER_SOURCE件ずつで、全体はMAX_ITEMS件以内
+    def test_fetch_16_per_source_keeps_all_candidates(self):
+        # 各配信元から16件取り、データには全件（最大MAX_CANDIDATES=32件）を残す（[[MARKETPULSE-HEADLINES-RELEVANCE-1]]）。
+        # 表示の上限（MAX_ITEMS）はsplit_for_display()で掛ける
+        assert nh.PER_SOURCE == 16 and nh.MAX_CANDIDATES == 32 and nh.MAX_ITEMS == 20
         def fetch(url):
-            return _rss([(f"{url[-8:]} {i}", f"Tue, 29 Sep 2026 23:{i:02d}:00 GMT", None) for i in range(15)])
+            return _rss([(f"{url[-8:]} {i}", f"Tue, 29 Sep 2026 23:{i:02d}:00 GMT", None) for i in range(25)])
         h = nh.fetch_headlines(fetch, now=NOW + timedelta(hours=1))
-        regions = [x["region"] for x in h["items"]]
-        assert regions == ["米国"] * min(nh.PER_SOURCE * len(nh.SOURCES), nh.MAX_ITEMS)
-
-    def test_region_cap_truncates_at_max_items(self, monkeypatch):
-        monkeypatch.setattr(nh, "PER_SOURCE", 15)
-        def fetch(url):
-            return _rss([(f"{url[-8:]} {i}", f"Tue, 29 Sep 2026 23:{i:02d}:00 GMT", None) for i in range(15)])
-        h = nh.fetch_headlines(fetch, now=NOW + timedelta(hours=1))
-        assert len(h["items"]) == nh.MAX_ITEMS == 20
+        assert len(h["items"]) == 32
+        assert [x["region"] for x in h["items"]] == ["米国"] * 32
+        main, folded = nh.split_for_display(h)    # 判定なし（relevanceなし）→ 新しい順に20件、折りたたみ無し
+        assert main == h["items"][:20] and folded == []
 
     def test_publisher_split_google_only(self):
         def fetch(url):
@@ -142,61 +139,118 @@ class TestHeadlines:
         assert "日本　　経済" in titles
 
 
-def _resp(content):
-    return {"choices": [{"message": {"content": content}}]}
+def _resp(content, finish="stop"):
+    return {"choices": [{"message": {"content": content}, "finish_reason": finish}]}
+
+
+def _rows(*pairs):
+    return json.dumps([{"ja": j, "market": m} for j, m in pairs], ensure_ascii=False)
 
 
 class TestHeadlineTranslation:
-    """[[MARKETPULSE-HEADLINES-JA-1]]: 見出しの日本語訳。外部APIはすべてモック。"""
+    """[[MARKETPULSE-HEADLINES-JA-1]]・[[MARKETPULSE-HEADLINES-RELEVANCE-1]]: 見出しの日本語訳と「市況と関係あり」の判定。外部APIはすべてモック。"""
 
     def test_ok_sends_titles_only(self):
         sent = {}
 
         def post(payload, key):
             sent.update(payload)
-            return _resp('```json\n["株が上昇", "原油が下落"]\n```')
-        assert nh.translate_titles(["Stocks rise", "Oil falls"], post=post, api_key="k") == ["株が上昇", "原油が下落"]
-        assert sent["temperature"] == 0 and sent["model"] == nh.GROK_MODEL
+            return _resp("```json\n" + _rows(("株が上昇", True), ("セール情報", False)) + "\n```")
+        r = nh.translate_titles(["Stocks rise", "Prime Day deals"], post=post, api_key="k")
+        assert r == {"ja": ["株が上昇", "セール情報"], "market": [True, False]}
+        assert sent["temperature"] == 0 and sent["model"] == nh.GROK_MODEL and sent["max_tokens"] == 8000
         prompt = sent["messages"][0]["content"]
-        assert '["Stocks rise", "Oil falls"]' in prompt and "http" not in prompt   # 見出しの文字だけ（リンク等は渡さない）
+        assert '["Stocks rise", "Prime Day deals"]' in prompt and "http" not in prompt   # 見出しの文字だけ（リンク等は渡さない）
 
     def test_no_key_returns_none_without_call(self):
         def post(payload, key):
             raise AssertionError("呼ばれてはいけない")
         assert nh.translate_titles(["a"], post=post, api_key="") is None
 
-    @pytest.mark.parametrize("content", ['["一件だけ"]', '["1", "2", "3"]', "訳せません", '{"a": 1}', '["訳", ""]', '["訳", null]'])
-    def test_count_or_format_mismatch_returns_none(self, content):
-        # 件数が合わない・形式が違うときは全件Noneにする（訳と見出しの取り違えを防ぐ）
+    # 形が崩れたとき（1）件数違い・JSONでない: 訳も判定も全件None
+    @pytest.mark.parametrize("content", [_rows(("一件だけ", True)), _rows(("1", True), ("2", True), ("3", True)),
+                                         "訳せません", '{"a": 1}'])
+    def test_count_mismatch_returns_none(self, content):
         assert nh.translate_titles(["a", "b"], post=lambda p, k: _resp(content), api_key="k") is None
+
+    # 形が崩れたとき（2）finish_reasonがstop以外（途中で切れた）: 中身がそろって見えても全件None
+    @pytest.mark.parametrize("finish", ["length", None, "content_filter"])
+    def test_finish_reason_not_stop_returns_none(self, finish):
+        content = _rows(("株が上昇", True), ("原油が下落", True))
+        assert nh.translate_titles(["a", "b"], post=lambda p, k: _resp(content, finish), api_key="k") is None
+
+    # 形が崩れたとき（3）marketが真偽値でない: 判定だけ全件None、訳はそろっていれば使う
+    @pytest.mark.parametrize("bad", ["true", None, 1])
+    def test_market_not_bool_drops_judgment_only(self, bad):
+        content = json.dumps([{"ja": "株が上昇", "market": True}, {"ja": "原油が下落", "market": bad}], ensure_ascii=False)
+        assert nh.translate_titles(["a", "b"], post=lambda p, k: _resp(content), api_key="k") == {
+            "ja": ["株が上昇", "原油が下落"], "market": None}
+
+    def test_missing_ja_drops_translation_only(self):
+        content = json.dumps([{"ja": "株が上昇", "market": True}, {"ja": "", "market": False}], ensure_ascii=False)
+        assert nh.translate_titles(["a", "b"], post=lambda p, k: _resp(content), api_key="k") == {
+            "ja": None, "market": [True, False]}
 
     def test_api_error_returns_none(self):
         def post(payload, key):
             raise ConnectionError("down")
         assert nh.translate_titles(["a"], post=post, api_key="k") is None
 
-    def test_add_title_ja_ok_keeps_original(self):
-        h = {"items": [{"title": "Stocks rise"}, {"title": "Oil falls"}]}
-        nh.add_title_ja(h, translate=lambda ts: ["株が上昇", "原油が下落"])
-        assert [(x["title"], x["title_ja"]) for x in h["items"]] == [("Stocks rise", "株が上昇"), ("Oil falls", "原油が下落")]
+    def test_annotate_ok_keeps_original_and_all_items(self):
+        h = {"items": [{"title": "Stocks rise"}, {"title": "Prime Day deals"}, {"title": "Oil falls"}]}
+        nh.annotate_headlines(h, translate=lambda ts: {"ja": ["株が上昇", "セール", "原油が下落"], "market": [True, False, True]})
+        assert [(x["title"], x["title_ja"], x["market"]) for x in h["items"]] == [
+            ("Stocks rise", "株が上昇", True), ("Prime Day deals", "セール", False), ("Oil falls", "原油が下落", True)]   # データには全件残す
         assert h["translation"]["status"] == "ok"
+        assert h["relevance"] == {"status": "ok", "model": nh.GROK_MODEL, "true": 2, "false": 1}
 
-    @pytest.mark.parametrize("translate", [lambda ts: None, lambda ts: ["一件だけ"],
+    @pytest.mark.parametrize("translate", [lambda ts: None, lambda ts: {"ja": ["一件だけ"], "market": [True]},
                                            lambda ts: (_ for _ in ()).throw(RuntimeError("x"))])
-    def test_add_title_ja_failure_falls_back_to_null(self, translate):
-        # 訳せなかったときはtitle_jaをnullにし（画面は原文だけ）、例外は外に出さない（毎晩の実行を止めない）
+    def test_annotate_failure_falls_back_to_null(self, translate):
+        # 訳も判定もできなかったときはtitle_ja・marketをnullにし（画面は原文だけ・全件）、例外は外に出さない（毎晩の実行を止めない）
         h = {"items": [{"title": "Stocks rise"}, {"title": "Oil falls"}]}
-        nh.add_title_ja(h, translate=translate)
-        assert [x["title_ja"] for x in h["items"]] == [None, None]
+        nh.annotate_headlines(h, translate=translate)
+        assert [(x["title_ja"], x["market"]) for x in h["items"]] == [(None, None), (None, None)]
         assert [x["title"] for x in h["items"]] == ["Stocks rise", "Oil falls"]
-        assert h["translation"]["status"] == "failed"
+        assert h["translation"]["status"] == "failed" and h["relevance"]["status"] == "unavailable"
+        main, folded = nh.split_for_display(h)
+        assert len(main) == 2 and folded == []
 
-    def test_add_title_ja_no_items_skips(self):
+    def test_annotate_market_unavailable_keeps_translation(self):
+        h = {"items": [{"title": "Stocks rise"}, {"title": "Oil falls"}]}
+        nh.annotate_headlines(h, translate=lambda ts: {"ja": ["株が上昇", "原油が下落"], "market": None})
+        assert [x["title_ja"] for x in h["items"]] == ["株が上昇", "原油が下落"]
+        assert h["translation"]["status"] == "ok" and h["relevance"]["status"] == "unavailable"
+        assert nh.split_for_display(h) == (h["items"], [])
+
+    def test_all_false_is_not_used(self):
+        # 全件falseのときは判定を使わない（all_false）。画面は全件を出し、折りたたみは無し
+        h = {"items": [{"title": f"t{i}"} for i in range(3)]}
+        nh.annotate_headlines(h, translate=lambda ts: {"ja": ["a", "b", "c"], "market": [False, False, False]})
+        assert h["relevance"]["status"] == "all_false" and h["relevance"]["false"] == 3
+        main, folded = nh.split_for_display(h)
+        assert main == h["items"] and folded == []
+
+    def test_annotate_no_items_skips(self):
         def translate(ts):
             raise AssertionError("呼ばれてはいけない")
         h = {"items": [], "status": "failed"}
-        nh.add_title_ja(h, translate=translate)
-        assert h["translation"] == {"status": "skipped"}
+        nh.annotate_headlines(h, translate=translate)
+        assert h["translation"] == {"status": "skipped"} and h["relevance"] == {"status": "unavailable"}
+
+    def test_split_folds_false_and_caps_main_at_max_items(self):
+        # 32件のうち10件がfalse → 本表はtrueの22件のうち新しい順に20件、折りたたみは10件（件数は画面の「関係の薄い見出し 10件」）
+        items = [{"title": f"t{i}", "market": not (i % 3 == 0 and i < 30)} for i in range(32)]
+        h = {"items": items, "relevance": {"status": "ok"}}
+        main, folded = nh.split_for_display(h)
+        assert len(folded) == 10 and all(x["market"] is False for x in folded)
+        assert len(main) == 20 and all(x["market"] is True for x in main)
+        assert main == [x for x in items if x["market"]][:20]   # 新しい順（itemsの順）のまま
+
+    def test_split_folds_when_few_true(self):
+        items = [{"title": "a", "market": True}, {"title": "b", "market": False}, {"title": "c", "market": False}]
+        main, folded = nh.split_for_display({"items": items, "relevance": {"status": "ok"}})
+        assert [x["title"] for x in main] == ["a"] and [x["title"] for x in folded] == ["b", "c"]
 
     def test_stale_reason_shown_in_data_quality(self):
         r = sc.build_stage_conclusions({}, None, None, None,
