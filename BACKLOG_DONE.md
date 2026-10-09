@@ -4,6 +4,63 @@
 
 ## 2026-10-09（完了）
 
+### ✅ [MARKETPULSE-HEADLINES-RELEVANCE-1] Market Pulseの段階2のニュースの見出しに、Google News ビジネス（US）由来の市況と関係の薄い記事（セール情報・スポーツ等）が混ざり、相場を動かした見出しが埋もれる
+**優先度:** 中
+**分類:** 表示の質 / Market Pulse 実装C（`src/market/market_pulse/news_headlines.py`、index.htmlの`#headlines`）
+**登録日:** 2026-10-09
+**発見:** チャット側の依頼（2026-10-09）。`[[MARKETPULSE-HEADLINES-JA-1]]`の反映（`01634073a9`）で取り直した10-09の見出し15件に、
+Prime Dayのセール情報（Mashable）などが入っていた
+
+#### 内容（観測した事実）
+- 見出しは最大20件（CNBC Markets・Google News ビジネス〈US〉から各8件、時刻の新しい順）。Google News ビジネスは一般的な経済・企業ニュースの配信で、
+  市況と関係の薄い記事も含む（設計書`MARKET_PULSE_REDESIGN.md`の比較表でも「一般的な経済ニュース」）
+- 相場を動かした見出し（例: 10-08のOpenAIの収益報告）が、関係の薄い記事と同じ並びに埋もれる
+
+#### 対応（チャット側の依頼）
+段階1（読み取り調査、結果を報告して止まる）:
+1. 10-07〜10-09の3エントリと今日取得した分の見出しを「市況と関係あり／薄い」に分け、配信元ごとの件数・割合と分けた基準を報告
+2. 方式A（Google News ビジネスの代わりに市況に絞った配信〈Google Newsの検索RSS等〉を使う）と、方式B（`translate_titles()`の1回の呼び出しで
+   「市況と関係あり true/false」も返させ、falseは画面で隠す〈データには残す〉。失敗・判定なしは全件を出す）を同じ見出しで比べる。
+   Bは費用の追加の有無と出力の形が崩れたときの扱いをコードで確認（実際のAPIは1回まで）
+3. 両方式の取り違えの影響（大事な見出しが隠れる危険・関係の薄い記事が残る程度）を1の数に当てはめる
+4. ハードコードの語句リスト（除外ワード等）だけで外す方式は採らない
+判定の結果はAIの分析の入力（`build_ai_facts`）に入れず、表示の絞り込みにだけ使う
+
+#### 段階1の調査（読み取り、2026-10-09）
+- 夜間の3エントリの米国の42件を「関係あり／薄い」に分けた（基準: 米国の株・債券・為替・商品の相場、金融政策・経済指標・金利、上場企業の業績・株価・
+  M&A・資金調達なら関係あり。セール・事故・健康・生活・スポーツ・賭け、相場との関係が書かれていない政治・社会・技術は薄い）:
+  Google News ビジネス24件中、関係あり13・薄い11（46%）、CNBC Markets18件中、関係あり9・薄い9（50%）
+- 方式A（Google Newsの検索RSS、`when:1d`）: 組み合わせの検索語は16件中16件が関係ありだったが、同じ記事の重複が約6件・金と金利の記事に偏る。
+  単語1つの検索語は関係の薄い記事が3〜4件/8件。検索RSSは公開された仕様ではない
+- 方式B（54件で1回試した）: 私の分類と48件（89%）一致。相場を動かした見出し（OpenAIの収益報告3件・Fedの議事録・金利3件等）はすべてtrue、
+  セール・事故・Kratom等はすべてfalse。隠れた関係ありは2件（中国の不動産・Oracleのガス）、残った薄い記事は4件（予測市場3件・債券の買い方）
+- 語句リストだけで外す方式は採らない（「Feds get ready to rewrite car headlight rules」「Sports betting… financial experts」のように語句で分けられない例があった）
+
+#### 修正（`5cbe0b63c5`、方式B、チャット側の決定1〜4）
+- `news_headlines.py`: 各配信元から16件取り、データには全件（最大32件）を残す（地域の枠`REGION_MAX`は廃止）。`translate_titles()`は1回の呼び出しで
+  `[{"ja","market"}]`を返させる（max_tokens 8000）。`finish_reason`がstop以外・件数違い・JSONでない→訳も判定も全件None、`market`が真偽値でない→
+  判定だけ全件None、`ja`が欠ける→訳だけ全件None。`annotate_headlines()`（旧`add_title_ja()`）がitemsに`title_ja`・`market`（true/false/null）、
+  headlinesに`relevance`（status ok / unavailable / all_false、true・falseの件数）を加える。全件falseは判定を使わない
+- `split_for_display()`と画面の`splitHeadlines()`（同じ規則）: `relevance.status`がokなら`market=false`を「関係の薄い見出し N件（表示する）」
+  （`<details>`）に折りたたみ、本表は最大20件。ok以外は新しい順に20件、折りたたみ無し
+- 判定は`build_ai_facts`に入れない（表示の絞り込みだけ）。browser_checksのC-02を同じ出し分けに合わせ、C-02b（折りたたみの件数）を追加
+- テスト: 件数違い・`finish_reason`がlength等・`market`が真偽値でない・訳の欠け、全件false、16件取得と表示の上限、折りたたみの件数。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2056件→2064件
+
+#### 反映（再生成データ）
+- `backfill_implc.py --only headlines`で最新エントリ（2026-10-09T05:31 JST）の見出しだけを取り直した（取得06:11 UTC、`backfilled_at`付き、
+  他のエントリ・他の要素は不変）。Grokの呼び出し1回、`finish_reason=stop`、入力909・出力917・推論1,801トークン（約$0.008）
+- 31件（CNBC 16・Google 15）、`relevance.status=ok`、true 23・false 8（本表20件・折りたたみ8件。trueのうち古い3件は本表の上限で出ない）
+- falseの8件: Microsoft社員のグリーンカードへの移民弁護士の助言（Business Insider）、OpenAIの新リリースで数学界が揺れる（NYT）、
+  AnthropicがClaudeへの虐待的な行為を禁止（Guardian）、Trump大統領が献金者に科学賞（TechCrunch）、Anthropicの無料AIセキュリティスキャン（The Verge）、
+  HuaweiがEV減速でスマートフォンに注力、IMFのGeorgievaのAIの話、Z世代のスポーツ賭博（以上CNBC）
+- check_dependency_map.py 一致62・不一致0・判定不能0（C-02 20件・C-02b 8件とも一致）
+
+#### 残る確認・関係する項目
+- 今夜のGitHub Actionsの実行（10-09の足）で`relevance.status`と折りたたみの件数を確かめる（`[[MARKETPULSE-HEADLINES-JA-1]]`の翻訳の確認と同じ実行）
+- 同じ見出しでも判定が呼び出しごとに変わることがある（「Trump bought over $1 million in SpaceX debt…」は段階1ではfalse、反映ではtrue）
+- CNBC Marketsのフィードの遅さは`[[MARKETPULSE-CNBC-FEED-SLOW-1]]`（IDEAS_AND_WATCH.md）で監視する（16件取るようにした後、本表に10-05の記事まで入る）
+
 ### ✅ [MARKETPULSE-HEADLINES-NHK-STALE-1] Market Pulseの段階2のニュースの見出しで、NHK 経済（cat5.xml）の見出しが2026-08-07〜08-08のまま更新されていないのに、取得できたもの（status=ok）として表示されている
 **優先度:** 中
 **分類:** データ鮮度 / Market Pulse 実装C（`src/market/market_pulse/news_headlines.py`、index.htmlの`#headlines`）

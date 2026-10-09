@@ -338,3 +338,23 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
   取り消しを数回リトライする形を先に検討する（単純な`|| true`は不可）
 
 ---
+
+### [MARKETPULSE-CNBC-FEED-SLOW-1] Market Pulseの見出しの配信元CNBC Marketsのフィードが遅く（新しい順の8件目が約58時間前）、同じ見出しが数日続けて並ぶ
+**種別:** 監視メモ（実害の範囲を見てから対応を判断する。チャット側の依頼で登録、実装しない）
+**登録日:** 2026-10-09
+**発見:** `[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`の段階1の調査（読み取り、2026-10-09）
+
+#### 内容（観測した事実）
+- 2026-10-09 04:41 UTCに取得した`https://www.cnbc.com/id/10000664/device/rss/rss.html`は30件で、最新が4.7時間前、新しい順の8件目が57.9時間前、
+  最古が277時間前（約11.5日前）
+- 夜間のエントリ（10-07〜10-09、各CNBC 6件）で、同じ見出しが2日続けて並んでいた: 「Fed officials see another hike coming…」（10-08・10-09）、
+  「Chart: A look at the S&P 500's remarkable and defiant trip to a new record」（10-08・10-09）、「How event contract bundles…」「Kalshi, Polymarket…」
+  「Goldman: Diesel prices…」（10-07・10-08）、「Why AI is both the hope and the hazard…」（10-08・10-09）
+- `[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`で各配信元から16件取るようにした後の最新エントリ（10-09、取得06:11 UTC）では、CNBCの16件が
+  10-02 13:29〜10-08 23:57 UTCの記事で、本表（関係ありの新しい順20件）に10-05の記事まで入っている
+- 72時間の更新停止の判定（`[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`）は配信元の最新記事だけを見るため、この状態はstaleにならない
+
+#### 見ること・対応案（実装しない）
+- 夜間の取得（20:30 UTC頃）でも8件目・16件目の古さが同じ程度か、数日分を記録する
+- 対応案: 記事ごとに取得時刻から一定時間（例: 72時間）より古いものを本表から外す、CNBC Marketsを別の配信（CNBC Top News等）に替える。
+  どちらも件数・関係の判定（`relevance`）への影響を先に数える
