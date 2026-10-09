@@ -11,6 +11,11 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-09（午後、Market Pulseの見出し）**: `[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`・`[[MARKETPULSE-HEADLINES-JA-1]]`を登録・調査・実装して完了
+  （機能`a9cbd2194c`・再生成データ`01634073a9`・移設`44d1b6c87d`）。NHK 経済は旧URLが転送されず08-08の内容を返していたため外し、日本の配信元は置かない。
+  最新記事が72時間より古い配信元はstaleとして失敗扱い、見出しはGrokで1日1回まとめて訳して`title_ja`（失敗時は原文だけ、AIの見解の入力には渡さない）。
+  CHAT_RULES.md事例31を追加。アクティブBACKLOG 15件。`pytest tests/ src/subport/day_trade/test_logic.py` 2056件・audit.py・report_consistency_check.pyとも通過。
+  **次回確認**: 今夜のMarket Pulseの実行（JST 10-10朝）で翻訳のstatusと画面の表示
 - **2026-10-09（Claimsの確認・pytestの件数の内訳・HypeCoreのテストID）**: MACRO PULSEのClaimsの観測日の行と改定値の書き込みを本番で確認し、
   `[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`・`[[MACRO-PULSE-REVISION-NOT-APPLIED-1]]`をBACKLOG_DONE.mdへ（`612ee09444`）。スコア27→22はYield Curve
   （0.48→0.51、0.5の境目で40→15点）だけで、Claimsは15点のまま。pytestの件数2014→2028はTAILのテスト+17とCON・SN・WSTの登録解除による−3で、

@@ -158,6 +158,19 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - HypeCoreのテストIDの絶対パス依存を解消（`65cb8684a7`、記録`7458007466`、`[[TEST-HYPECORE-PARAM-ID-ABSPATH-1]]`）: 本体とworktreeのID一覧の差 8行→0行、件数は2028件のまま
 - ブラッシュアップ: CHAT_RULES.md事例30（提案は実施ではない。完了の判断はcommitで確認する）。Step 2の「既知の例外」（test_iv_formula.pyのMSFT/NVDA 2件、
   [[TEST-STALE-IV-1]]は2026-08-20に解消済み）を「既知の例外は無い」に更新。BACKLOG.mdのアクティブは15件（`^### [`の機械カウント）、移設漏れ0件
+
+**2026-10-09（午後）Market Pulseの見出しの修正（`[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`・`[[MARKETPULSE-HEADLINES-JA-1]]`、2件ともBACKLOG_DONE.mdへ）**
+- 登録`58e4af156c`→段階1（読み取り）→チャット側の決定1〜3→機能`a9cbd2194c`・再生成データ`01634073a9`・移設`44d1b6c87d`
+- 段階1: NHKの旧URL`www3.nhk.or.jp/rss/news/cat5.xml`はURLの移転（2025-10の放送法改正による見直し）で、転送されず08-08の内容を200 OKで返していた。
+  新URL`news.web.nhk/n-data/conf/na/rss/cat5.xml`は取得できるが、RSSは個人の利用に限るとされている → **日本の配信元は置かない**（決定1）
+- `news_headlines.py`: NHKを外し、上限は米国=MAX_ITEMS。最新記事が取得時刻から72時間より古い配信元はfailed（`failed_reasons`がstale、画面は「取得できず（更新停止）」）。
+  見出しは`translate_titles()`でGrok（grok-4.3、temperature 0、1日1回まとめて）に訳して`title_ja`（失敗・件数不一致は全件null→原文だけ）。
+  `add_title_ja()`は例外を出さず、`analyse_market()`は使っていない（翻訳の失敗で夜間の実行は止まらない）。AIの見解の入力には渡さない。
+  Google Newsの末尾の出典名は`publisher`へ。`backfill_implc.py`に`--only headlines`
+- 確認: `pytest tests/ src/subport/day_trade/test_logic.py` 2028件→2056件（見出しのテスト4→32件）。最新エントリの見出しを取り直し（15件、Grok 1回、翻訳ok、
+  他のエントリ・他の要素は不変）。check_dependency_map.py 一致61・不一致0・判定不能0（C-02一致）。CHAT_RULES.md事例31
+- **残っている確認**: 今夜のMarket Pulseの実行（10-09の足、JST 10-10朝）で、`headlines.translation.status`がok・見出しの`status`・画面の訳の表示を確かめる。
+  GitHub Actionsから`XAI_API_KEY`で翻訳が動くのはこの実行が初めて。BACKLOG.mdのアクティブは15件
 - 次の候補:
   1. 10-21（水）11:00 JST以降: Building Permitsの確認（`[[MACRO-PULSE-SLOT-ROWS-1]]`、月次の行が観測日に置かれること）
   2. M-6（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、FED-REGIMEの判定の遅れの調査）: Koichiさんの判断待ち
