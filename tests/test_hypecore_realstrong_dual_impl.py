@@ -41,6 +41,11 @@ _DETAIL_HTML = os.path.join(_REPO_ROOT, "docs", "value-monitor", "hypecore", "de
 _INDEX_HTML = os.path.join(_REPO_ROOT, "docs", "value-monitor", "hypecore", "index.html")
 
 
+def _rel_id(path):
+    """テストIDをリポジトリのルートからの相対パスにする（絶対パスだと置き場所ごとにIDが変わる）"""
+    return os.path.relpath(path, _REPO_ROOT).replace(os.sep, "/")
+
+
 def _row(rev_yoy=None, eps_surprise=None, **extra):
     data = {"rev_yoy": rev_yoy, "eps_surprise": eps_surprise}
     data.update(extra)
@@ -94,7 +99,7 @@ class TestFrontendUsesServerComputedField:
     """detail.html/index.htmlが独自のreal_strong再計算をやめ、
     JSON出力のd.real_strongをそのまま使っていることをソース上で確認する。"""
 
-    @pytest.mark.parametrize("path", [_DETAIL_HTML, _INDEX_HTML])
+    @pytest.mark.parametrize("path", [_DETAIL_HTML, _INDEX_HTML], ids=_rel_id)
     def test_old_client_side_reimplementation_is_gone(self, path):
         with open(path, encoding="utf-8") as f:
             content = f.read()
@@ -102,7 +107,7 @@ class TestFrontendUsesServerComputedField:
         assert "d.rev_yoy!=null&&d.rev_yoy>30" not in content
         assert "d.eps_surprise!=null&&d.eps_surprise>0" not in content
 
-    @pytest.mark.parametrize("path", [_DETAIL_HTML, _INDEX_HTML])
+    @pytest.mark.parametrize("path", [_DETAIL_HTML, _INDEX_HTML], ids=_rel_id)
     def test_uses_server_computed_real_strong_field(self, path):
         with open(path, encoding="utf-8") as f:
             content = f.read()
