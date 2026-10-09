@@ -4,6 +4,39 @@
 
 ## 2026-10-09（完了）
 
+### ✅ [MARKETPULSE-HEADLINES-AGE-1] Market Pulseの見出しの本表に、取得時刻から2〜3日以上前の古い見出しが入る（`[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`の副作用）
+**優先度:** 中
+**分類:** 表示の質 / Market Pulse 実装C（`news_headlines.split_for_display()`、index.htmlの`splitHeadlines()`）
+**登録日:** 2026-10-09
+**発見:** `[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`の反映（`747936b56c`）の確認。監視メモ`[[MARKETPULSE-CNBC-FEED-SLOW-1]]`（IDEAS_AND_WATCH.md）
+
+#### 内容（観測した事実）
+- 各配信元から16件取るようにした後、最新エントリ（10-09、取得06:11 UTC）の本表20件のうち6件がCNBC Marketsの48時間より古い記事
+  （55.8〜81.5時間前、10-05 20:41 UTCの記事まで）。折りたたみ8件のうち1件も113.2時間前（10-04）の記事
+- CNBC Marketsのフィードが遅いため（新しい順の8件目が約58時間前）。72時間の更新停止の判定は配信元の最新記事だけを見るため、この状態は止められない
+
+#### 対応（チャット側の決定）
+本表と折りたたみに出すのは取得時刻から48時間以内の見出しだけ（古いものはデータに残し、画面には出さない）。48時間以内でtrueが0件なら48時間以内をすべて出し
+（判定を使わない）、それも0件なら「取得できず」。72時間のstale判定は今のまま。年齢の判定は表示側（画面とC-02の期待値）で行い、データの形は変えない。
+48時間は定数にし、news_headlines.py（STALE_HOURSの隣）と画面で同じ値を使う。10-09のデータは取り直さない
+
+#### 修正（`198faae12f`）
+- `news_headlines.py`: `DISPLAY_MAX_AGE_HOURS = 48`（`STALE_HOURS`の隣）。`recent_items()`が取得時刻から48時間以内（ちょうど48時間を含む）の見出しだけを返す
+  （記事の時刻・取得時刻が無いものは含めない）。`split_for_display()`はその中で出し分け、48時間以内にtrueが無ければ判定を使わず48時間以内をすべて出す。
+  48時間以内が0件なら本表・折りたたみとも空。データの形は変えていない。72時間のstale判定はそのまま
+- index.html: `HEADLINES_MAX_AGE_HOURS=48`で`splitHeadlines()`に同じ規則。本表が空なら「取得できず（取得時刻から48時間以内の見出しが無い）」
+- browser_checksのC-02・C-02bの期待値は`news_headlines.split_for_display()`そのものから作る（規則の写しを持たない）
+- テスト: 47.9・48・48.1時間の境界、折りたたみは48時間以内だけ、48時間以内にtrueが0件、48時間以内が0件、時刻なし、48時間・20件の定数が画面と一致。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2064件→2070件
+
+#### 反映（10-09のデータは取り直していない。画面だけで変わる）
+- 最新エントリ（取得10-09 06:11 UTC）: 本表20件→14件、折りたたみ8件→7件（データの31件は不変）。check_dependency_map.py 一致62・不一致0・判定不能0
+- 本表から外れた6件（すべてCNBC Markets）: S&P 500の最高値のチャート（55.8時間前）、予測市場の取引量の2件（59.4・59.5時間前）、
+  Goldmanのディーゼル価格（69.4時間前）、予測市場の取引を問題にする下院議員（80.8時間前）、Bolsonaroでブラジル株高（81.5時間前）。代わりに入った見出しは無い
+  （48時間以内のtrueは14件だけ）
+- 折りたたみから外れた1件: Z世代のスポーツ賭博（CNBC、113.2時間前）
+- IMFのGeorgieva氏の見出し（47.9時間前）は48時間以内で、折りたたみに残る
+
 ### ✅ [MARKETPULSE-HEADLINES-RELEVANCE-1] Market Pulseの段階2のニュースの見出しに、Google News ビジネス（US）由来の市況と関係の薄い記事（セール情報・スポーツ等）が混ざり、相場を動かした見出しが埋もれる
 **優先度:** 中
 **分類:** 表示の質 / Market Pulse 実装C（`src/market/market_pulse/news_headlines.py`、index.htmlの`#headlines`）
