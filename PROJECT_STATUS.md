@@ -11,6 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-09（夕方、Market Pulseの見出しの関係の判定・古い見出しの除外）**: `[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`（方式B: 翻訳と同じ1回の
+  Grokの呼び出しで「市況と関係あり」も判定し、falseを画面で折りたたむ。各配信元16件。実装`5cbe0b63c5`・データ`747936b56c`）と、その副作用の
+  `[[MARKETPULSE-HEADLINES-AGE-1]]`（画面に出すのは取得時刻から48時間以内だけ。`198faae12f`、10-09は本表20→14件・折りたたみ8→7件）を完了。
+  IDEAS_AND_WATCH.mdに`[[MARKETPULSE-CNBC-FEED-SLOW-1]]`。CHAT_RULES.md事例32を追加。アクティブBACKLOG 15件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2070件・audit.py・report_consistency_check.pyとも通過。
+  **次回確認**: 今夜のMarket Pulseの実行（JST 10-10朝）で翻訳・判定のstatusと本表・折りたたみの件数
 - **2026-10-09（午後、Market Pulseの見出し）**: `[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`・`[[MARKETPULSE-HEADLINES-JA-1]]`を登録・調査・実装して完了
   （機能`a9cbd2194c`・再生成データ`01634073a9`・移設`44d1b6c87d`）。NHK 経済は旧URLが転送されず08-08の内容を返していたため外し、日本の配信元は置かない。
   最新記事が72時間より古い配信元はstaleとして失敗扱い、見出しはGrokで1日1回まとめて訳して`title_ja`（失敗時は原文だけ、AIの見解の入力には渡さない）。

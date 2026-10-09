@@ -158,6 +158,11 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - HypeCoreのテストIDの絶対パス依存を解消（`65cb8684a7`、記録`7458007466`、`[[TEST-HYPECORE-PARAM-ID-ABSPATH-1]]`）: 本体とworktreeのID一覧の差 8行→0行、件数は2028件のまま
 - ブラッシュアップ: CHAT_RULES.md事例30（提案は実施ではない。完了の判断はcommitで確認する）。Step 2の「既知の例外」（test_iv_formula.pyのMSFT/NVDA 2件、
   [[TEST-STALE-IV-1]]は2026-08-20に解消済み）を「既知の例外は無い」に更新。BACKLOG.mdのアクティブは15件（`^### [`の機械カウント）、移設漏れ0件
+- 次の候補:
+  1. 10-21（水）11:00 JST以降: Building Permitsの確認（`[[MACRO-PULSE-SLOT-ROWS-1]]`、月次の行が観測日に置かれること）
+  2. M-6（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、FED-REGIMEの判定の遅れの調査）: Koichiさんの判断待ち
+  3. `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（Market Pulse側、優先度 中）
+  4. （任意）BACKLOG_DONE.mdの同じIDの見出しの重複の整理（`^### ✅ [ID]`が2回以上あるIDは13件、2026-10-09時点）
 
 **2026-10-09（午後）Market Pulseの見出しの修正（`[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`・`[[MARKETPULSE-HEADLINES-JA-1]]`、2件ともBACKLOG_DONE.mdへ）**
 - 登録`58e4af156c`→段階1（読み取り）→チャット側の決定1〜3→機能`a9cbd2194c`・再生成データ`01634073a9`・移設`44d1b6c87d`
@@ -171,11 +176,20 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   他のエントリ・他の要素は不変）。check_dependency_map.py 一致61・不一致0・判定不能0（C-02一致）。CHAT_RULES.md事例31
 - **残っている確認**: 今夜のMarket Pulseの実行（10-09の足、JST 10-10朝）で、`headlines.translation.status`がok・見出しの`status`・画面の訳の表示を確かめる。
   GitHub Actionsから`XAI_API_KEY`で翻訳が動くのはこの実行が初めて。BACKLOG.mdのアクティブは15件
-- 次の候補:
-  1. 10-21（水）11:00 JST以降: Building Permitsの確認（`[[MACRO-PULSE-SLOT-ROWS-1]]`、月次の行が観測日に置かれること）
-  2. M-6（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、FED-REGIMEの判定の遅れの調査）: Koichiさんの判断待ち
-  3. `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（Market Pulse側、優先度 中）
-  4. （任意）BACKLOG_DONE.mdの同じIDの見出しの重複の整理（`^### ✅ [ID]`が2回以上あるIDは13件、2026-10-09時点）
+
+**2026-10-09（夕方）Market Pulseの見出しの関係の判定と古い見出しの除外（`[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`・`[[MARKETPULSE-HEADLINES-AGE-1]]`、2件ともBACKLOG_DONE.mdへ）**
+- RELEVANCE-1: 登録`a658523f1f`→段階1（方式A〈Google Newsの検索RSS〉とB〈翻訳の呼び出しで判定〉の比較、Grok 1回）→方式Bで実装`5cbe0b63c5`・
+  再生成データ`747936b56c`・移設`9a64aef8b9`。各配信元から16件取り、`translate_titles()`の1回の呼び出しで`[{"ja","market"}]`（max_tokens 8000、
+  `finish_reason`がstop以外・件数違いは全件None、marketが真偽値でなければ判定だけNone）。`annotate_headlines()`（旧`add_title_ja()`）が
+  `title_ja`・`market`と`relevance.status`（ok / unavailable / all_false）を付ける。画面はfalseを「関係の薄い見出し N件（表示する）」に折りたたむ
+- AGE-1（RELEVANCE-1の副作用、本表20件中6件がCNBCの48時間より古い記事）: 登録`a7d3d91df5`→実装`198faae12f`→移設`04dc891170`。
+  画面（本表・折りたたみ）に出すのは取得時刻から48時間以内だけ（`DISPLAY_MAX_AGE_HOURS`と画面の`HEADLINES_MAX_AGE_HOURS`、テストで一致）。データの形は不変。
+  10-09のデータは取り直さず、本表20→14件・折りたたみ8→7件。browser_checksのC-02・C-02bの期待値は`news_headlines.split_for_display()`から作る
+- 監視メモ`[[MARKETPULSE-CNBC-FEED-SLOW-1]]`（IDEAS_AND_WATCH.md）: CNBC Marketsのフィードが遅い（8件目が約58時間前）・同じ見出しが数日並ぶ
+- 確認: `pytest tests/ src/subport/day_trade/test_logic.py` 2070件。check_dependency_map.py 一致62・不一致0・判定不能0。CHAT_RULES.md事例32
+- **残っている確認**: 今夜のMarket Pulseの実行（10-09の足、JST 10-10朝）で、`translation.status`・`relevance.status`（true・falseの件数）・
+  本表と折りたたみの件数（48時間の制限込み）・`finish_reason`起因の失敗が無いか（ログの`[WARN] 見出しの翻訳・判定`）を確かめる。
+  GitHub Actionsから翻訳・判定が動くのはこの実行が初めて。BACKLOG.mdのアクティブは15件
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
