@@ -2885,6 +2885,8 @@ python -m pytest tests/ src/subport/day_trade/test_logic.py -v
 件数を記録するときは、実行したコマンドも書く（例:「`pytest tests/ src/subport/day_trade/test_logic.py` 2014件全パス」）。
 2026-10-08: ゲートの対象に`src/subport/day_trade/test_logic.py`（22件）を加えた。`pytest tests/`（1992件）と対象を指定しない
 ルートでの実行（2014件）の件数の違いが、テストの減少と取り違えられたため（tests/の件数は変わっていなかった）。
+pytestの件数はテストの追加と、`tests/test_iv_formula.py`がティッカーの登録状況（`get_tanuki_tickers()`）でパラメータ化されているため変動する。
+固定値として扱わない（例: 10-08の2014件→10-09の2028件は、TAILのテスト17件の追加とCON・SN・WSTの登録解除による3件の減少）。
 失敗があれば先に修正する。
 既知の例外: tests/test_iv_formula.py の MSFT/NVDA 2件は既存バグ
 （[[TEST-STALE-IV-1]]、ALPHA-REDESIGN-1後にテスト式が未更新）として
