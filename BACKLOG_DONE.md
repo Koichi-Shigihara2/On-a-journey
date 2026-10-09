@@ -2,6 +2,149 @@
 
 ---
 
+## 2026-10-09（完了）
+
+### ✅ [MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1] MACRO PULSEのInitial Claimsの予定表がEmpire State Manufacturing Surveyの日付になっており、最新週の値が未来日付の行に入ってスコアに使われない
+**優先度:** 中
+**状態:** 対応済み（M-2 STEP 2、kaihatsuへ統合 7cd9bd2d12）。修復スクリプト macro_claims_slot_rows_repair.py を2026-10-03 07:12 UTCに実行済み（70793c2185、今日のスコア27→27）。次の木曜（10-08）の公表後の行が観測日に置かれることの確認が残る
+**分類:** データの取得遅れ・判定の誤り / MACRO PULSE（05_main.py）
+**登録日:** 2026-10-03
+**発見:** 指示書M-1（MACRO PULSEのデータ適切性の確認）STEP 2。記録: `docs/architecture/MACRO_PULSE_LOGIC_INVENTORY.md`（不具合B-01）
+
+#### 内容
+`src/market/macro_pulse/05_main.py`の`INDICATOR_CONFIG["Initial Claims 4W MA"]["fred_release_id"]`が`321`だが、FREDの
+release 321は「Empire State Manufacturing Survey」（毎月15日ごろ）。IC4WSAの公表元は180「Unemployment Insurance Weekly
+Claims Report」（FRED API `fred/series/release`で確認）。このため`update_schedule()`が作るClaimsの予定の枠が月1回（毎月15日ごろ）
+になり、`refresh_monthly_indicators()`が最新週の値を次の15日の枠へ書く。その行は枠の日付まで未来の日付なので、画面
+（`computeCurrentScore()`等、`dateMs <= now`）と週次スナップショットの計算に入らない。
+- 2026-10-03時点: 09-26週=200,000（10-01公表）が`release_date=2026-10-15`の行にあり、画面は09-19週=202,250を使う
+- 2026-07-01〜10-03の95日のうち、使われたClaimsの週が最新の公表より1週遅れ33日・2週遅れ33日・3週遅れ1日
+  （0週は28日）。毎月繰り返す
+- events.csvのClaimsは2026-04-01以降18行（FREDは26週）。週次の値の多くが記録されない
+
+#### 実害
+- 2026-07-18の週次スナップショット（ゲージ・AIコメンタリー、07-19〜07-25に表示）: 07-11週（214,250、07-16公表）が使われず
+  06-27週（222,000）で計算され、Claimsの点数が15ではなく35、スコア29（他の入力が同じなら27。局面はどちらも「拡張」）
+- 2026-07-11のMACRO SURPRISE「Initial Claims 4W MA: +21,750件 ↑ 急悪化（2.02e+05→2.24e+05）」は、予定の枠に入った
+  05-16週と06-20週（5週離れた行）の比較による見かけの急変（当時の実際の前週比は約+1,000件）
+- 8指標カード・ヘルスバー・類似度・直近の動きのClaimsが1〜3週古い。未来日付の行は[[MACRO-PULSE-TICKER-FUTURE-ROW-1]]の原因にもなる
+
+#### 着手条件
+なし（修正はしていない）
+
+#### 対応（2026-10-03、指示書M-2 STEP 2、feature/macro-pulse-fix）
+- `INDICATOR_CONFIG["Initial Claims 4W MA"]`: `fred_release_id` 321→180、`"weekly": True`を追加
+- `refresh_monthly_indicators()`: 週次の系列は予定の枠へ寄せず、観測日（週末日）の行にする
+- `_compute_current_score()`: その日までに書き込まれた行だけを使う。`updated_at`（実行環境のUTC）を「target_dateの米国東部時間
+  23:59:59をUTCに直した時刻」と時刻で比べる（日付の文字列では比べない。日次の実行はUTCの0時をまたいで書くため）。index.htmlの
+  `idxLatestKnownAsOf()`（MACRO-BUG-1）と同じ考え方の先読み除外。観測日に置いた行を、公開前の日付の計算に使わないため。
+  ただしindex.html側は基準が違う（updated_atをブラウザのローカル時刻として読み、日の終わりもローカル時刻）。揃えるかはM-3で扱う
+  → M-3 STEP 6で揃えた（[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]の「対応（M-3 STEP 6）」）
+- `detect_macro_surprises()`: 前回比を取る2行の間隔が週次10日・月次45日を超える場合は比べない
+- 回帰テスト `tests/test_macro_pulse_accuracy.py`（6件。修正前は4件fail、修正後は6件pass。時刻での比較の2件を追加し8件、追加分は修正前1件fail）
+- 今日のスコア: 27→27（Claimsは09-19週 202,250 → 09-26週 200,000。どちらも215K以下で15点）
+
+**統合後の手順（必須）**: `05_events.csv`・`05_indicator_schedule.csv`は`.gitattributes`の`merge=ours`のため、データの修復は
+このブランチに含めていない。kaihatsuへ統合した直後に、kaihatsu上で
+`FRED_API_KEY=... python scripts/analysis/macro_claims_slot_rows_repair.py --apply`を実行してcommitする
+（予定の枠の行6件のうち5件を観測日〈05-16・06-27・08-01・08-29・09-26〉へ移し、観測日の行がある05-15の1件を消す。
+予定表から321由来のClaimsの行〈10-15・11-16・12-15〉を消す。値・`updated_at`は変えない）。これをしないと、残った
+未来日付の行と同じ値の観測日の行を`dedupe_new_rows()`が重複として捨てる。180の週次の予定は次のupdate-scheduleで入る。
+
+**過去の週次スナップショットは書き換えない**（`05_weekly_analysis.csv`）。本来の値の推定（他の入力が同じと仮定）:
+2026-07-18のスナップショットは29→27（07-11週214,250〈07-16公表〉を使えばClaimsが35→15点）。2026-07-11のMACRO SURPRISE
+「Initial Claims 4W MA +21,750件 急悪化」は、連続する週の比較なら当時の前週比は約+1,000件で、閾値（2万件）に届かず出なかった。
+
+#### 本番の確認（2026-10-09、10-08〈木〉のClaimsの公表の後の実行）→ 完了
+- 実行: run 37873382459（予定 10-08 22:15 UTC → 作成 10-09 02:11:28 UTC、success、push `85447a4fa7`）
+- 新しい行`ic4wsa_2026-10-03`: `release_date=2026-10-03`（観測日＝週末日。予定の枠の日付ではない）・actual 198,000（FRED系列ストア`IC4WSA.json`の10-03と一致）・
+  `known_at=2026-10-09T02:13:10Z`（written）・`updated_at` 2026-10-09 02:13:10・`sp500_t0_asof` 2026-10-07。
+  **known_atは公表（10-08 12:30 UTC）より後で、観測日（10-03）になっていない**ことを確認（行は観測日に置き、公開の時点はknown_at・updated_atで持つ設計どおり）
+- 同じevent_idの重複なし、`release_date`が今日より後のClaimsの行は0件、予定表（05_indicator_schedule.csv）のClaimsはIC4WSAの週次
+- `_compute_current_score()`（kaihatsu `85447a4fa7`のevents.csv）: Claimsは10-07時点で09-26週200,000、10-08・10-09時点で10-03週198,000（10-08の締めは米国東部23:59:59＝10-09 03:59:59 UTCで、02:13 UTCに書いた行が入るのは設計どおり）。
+  スコアは27（10-07）→22（10-08・10-09）。差はYield Curve 0.48→0.51で段の境目0.5をまたいだため（40→15点、重み20で−5）。Claimsはどちらも215K以下で15点のまま
+
+---
+
+### ✅ [MACRO-PULSE-REVISION-NOT-APPLIED-1] MACRO PULSEのrefresh_monthly_indicators()が既に値のある観測月の行を上書きしないため、改定値が反映されない
+**優先度:** 中
+**分類:** データの取得遅れ（改定） / MACRO PULSE（05_main.py）
+**登録日:** 2026-10-03
+**発見:** 指示書M-1 STEP 2（MM-12）・M-2のレビューで登録
+
+#### 内容
+`refresh_monthly_indicators()`は、05_events.csvに同じ観測月（または予定の枠）の行があり値が入っていれば、その行を飛ばす。
+FRED系列ストア（`common/macro_data/series/`）は取得のたびに改定値で上書きされるが、events.csvは最初に書いた値のまま残る。
+画面・週次スナップショットの「今」の値も改定前になる（例: Building Permits 2026年8月 速報1394 → 改定1403〈09-24公表〉。
+events.csvの最新行は予定の枠09-15の1394）。
+
+events.csvと系列ストアの最新観測を全指標で突き合わせた件数（2026-10-03、観測日の行だけ比較。予定の枠の日付の行は比較対象外）:
+| 指標（系列） | 観測日の行 | 値が違う行 | うち2025年以降 | 予定の枠の行（対象外） |
+|---|---|---|---|---|
+| Building Permits（PERMIT） | 366 | 73 | 14 | 7 |
+| Chicago Fed National Activity（CFNAIMA3） | 368 | 72 | 11 | 0 |
+| Initial Claims 4W MA（IC4WSA） | 1,594 | 20 | 17 | 0 |
+| Yield Curve・HY Spread・VIX・Philly Fed・Michigan Sentiment・Sahm・Michigan Inflation 1Y/5Y | 計30,998 | 0 | 0 | Michigan Sentiment 6 |
+例: Claims 09-19週 202,250→202,500、09-05週 206,000→206,250。CFNAIは2026-10-03の修復で「その行の時点に公表されていた版」に
+置き換えたため（[[MACRO-PULSE-CFNAI-MA3-SERIES-1]]）、その後の改定（例: 2026-06 −0.05→0.01）が反映されていない。
+
+#### 実害
+「今」のスコア・カード・ヘルスバーの値が改定前のまま（2026-10-03時点では、改定前後で点数の区分が変わる指標は無い）。
+一方で、過去の時点の再現（比較バー・スコア推移・週次の週差）には、最初に書いた値（当時公表されていた値）のほうが正しい。
+
+#### 着手条件
+改定値の取り込みは、先読み除外（`updated_at`、[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]）と合わせてM-3で設計する
+（改定値を別の行・別の列として持つか等）。コードは変えていない。
+
+
+#### 対応（2026-10-04、指示書M-3 STEP 2、feature/macro-pulse-m3）
+- 05_events.csvに`revised_actual`（後からの改定値）と`revised_at`（それを書いた時刻、UTC）を追加。`actual`は初回公表の値として変えない
+- 日次の実行で`apply_revisions()`: 観測日に置かれた既存の行について、FRED系列ストアの値が今の値（revised_actual、無ければactual）と
+  違えばrevised_actual・revised_atを書く（NFPはPAYEMSの水準から前月比）。予定の枠の日付の行は対象外
+- 計算: `_compute_current_score()`・index.htmlの`valueAt()`は、計算日の時点でrevised_atを過ぎていれば改定値、そうでなければ初回公表の値
+  （直近の発表・3点の傾きも同じ）
+- **近似**: 途中の改定（初回と最新の間の版）は持たず、最新の改定値だけを持つ。過去のある日の値は「最新の版の公表日より前なら初回、後なら最新」
+- 修復スクリプト`scripts/analysis/macro_events_revision_repair.py`（STEP 1の修復の後に実行）: ALFREDで初回公表の値が分かる行はactualを
+  初回公表の値に、最新の版と違う行はrevised_actual・revised_at（最新の版の公表日の米国東部時間08:30）を設定。確認モード:
+  actualを初回公表の値に変更1,911行・revised_actualを設定1,968行・初回公表が不明で変えない13,111行・予定の枠などで変えない7,003行・
+  FREDに無い指標674行。STEP 1と続けて適用した後の今日のスコア27→27
+- 回帰テスト4件（修正前4件fail→修正後pass）
+- 統合後に承認を得て kaihatsu で `--apply` を実行する（merge=ours）
+
+#### 状態（2026-10-04）
+**統合・修復済み、本番の確認待ち（新しい行の known_at・sp500_t0_asof は 2026-10-05 22:15 UTC の実行で確認）。** M-3 STEP 2（初回公表の値と改定値）。kaihatsuへ統合（76c58b3522）し、kaihatsuで4つの修復を known_at → revision → liquidity_row_date →
+sp500_asof の順に適用した（適用後の今日のスコア27）。確認の対象: 今夜（2026-10-04 22:15 UTC）の日次の実行が、新しく書く行に`known_at`・`known_at_source`（written）と`sp500_t0_asof`を書くこと、`apply_revisions()`が改定値（`revised_actual`・`revised_at`）を書くこと（書かれる行があれば）
+
+#### 本番の確認（2026-10-05、2026-10-04分の日次の実行）
+- 実行: run 37249450468（予定 22:15 UTC → 起動 10-05 00:56:42・完了 00:58:39 UTC、success、対象日 2026-10-04、push `e2d0261c15`）。M-3の修復後の最初の実行
+- **新しい行は0件**（行数34,399のまま。FRED系列ストアの最新観測が VIX・HY 10-01、YC 10-02 で、どれも既に行があった）。
+  新しい行の`known_at`（written）・`sp500_t0_asof`は確かめられていない → 2026-10-05 22:15 UTC の実行で確認する
+- 確かめられたこと:
+  - 観測日の取得: ログ`S&P500 t0: 7722.72 (as of 2026-10-02)`
+  - 同じ行を書き直したときに最初の known_at を残すこと: hy_spread・vix の 10-01、yc_10y2y の 10-02 の3行は値が同じまま updated_at だけが変わり、
+    known_at（alfred）・sp500_t0_asof は修復時のまま
+  - 修復済みの行の上書きなし: 修復の commit `547e7fca31` と全34,399行・全列を比べ、変わったのは上の3行の updated_at だけ
+- `apply_revisions()`が書いた行: 無し（revised_at のある行は修復時の1,968行のまま）
+- 05_liquidity.csv: 2026-10-04 の行を追加（日付は米国の日付どおり。10-02 の行が無いのは修復で移した結果どおり）
+- check_macro_pulse.py 一致70・不一致1（D-01、M-3b の予定の枠の行の修復前で既知）・判定不能1（D-02）、check_dependency_map.py 全項目一致
+
+#### 本番の確認と残りの確認（2026-10-06）
+- run 37249450468（10-04分、予定22:15 UTC → 起動10-05 00:56:42 UTC、push `e2d0261c15`） と run 37403520015（10-05分、予定22:15 UTC → 起動10-06 02:18:57・完了02:20:23 UTC、success、push `99d8c8a00a`）: apply_revisions() が書いた行は無し。FRED系列ストア（10-05分の実行が使った版）と今の値（revised_actual、無ければ actual）の
+  違いは12指標とも0件で、書く行が無かったのは正しい。改定値を書く処理は本番でまだ動いていない（担保は回帰テスト4件）
+- known_at・修復済みの行の上書きなし等の同じ実行の確認は[[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]（BACKLOG_DONE.md「2026-10-06（完了）」）
+- **確認の時期: 2026-10-09（JST 11:00以降）**。10-08（木）の Claims の公表で前の週の値が改定されるので、10-08 22:15 UTC の実行で
+  apply_revisions() が書いた行（revised_actual・revised_at）が FRED 系列ストアの値と一致することを確かめる
+
+#### 本番の確認（2026-10-09）→ 完了
+- 同じ実行（run 37873382459、push `85447a4fa7`）で、`apply_revisions()`が本番で初めて書いた: `ic4wsa_2026-09-26`の`revised_actual=200500.0`・
+  `revised_at=2026-10-09T02:13:11Z`（FRED系列ストアの09-26＝200,500と一致）。`actual`（初回公表200,000）と`known_at`（alfred 2026-10-01T12:30:00Z）は変わらず
+- `revised_at`は書いた時刻（公表の10-08 12:30 UTCではない）で設計どおり。計算では書いた後の日から改定値になる（遅れる側で、先読みは無い）
+- 気づいた点（対応不要）: 修復スクリプトで入れた`revised_actual`は`200500`のような整数の表記、`apply_revisions()`は`200500.0`。読み込みはfloatで差は無い
+- 月次の改定（NFPのPAYEMSからの前月比、Permits・CFNAI）を本番で書いたことはまだ無い（担保は回帰テスト4件）。次に書かれたときは
+  [[MACRO-PULSE-SLOT-ROWS-1]]の確認（次のBuilding Permitsの公表の後）とあわせて見る
+
+---
+
 ## 2026-10-08（完了）
 
 ### ✅ [MARKETDATA-DAILY-CLOSE-NONE-RECUR-1] Yahooの日足に終値が無い事象が再発（09-21・09-25・09-28の足）。同じ実行の中での取り直しと別経路を追加、原因は実測中

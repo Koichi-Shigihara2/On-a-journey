@@ -136,6 +136,14 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   新しい行が観測日に置かれること、`apply_revisions()`が書いた行、05_liquidity.csvの新しい行のEASING関連の判定（適用外か）と`m2_yoy_pct`・`m2_yoy_pctile`。
   想定どおりならM-3・M-3b・M-5の確認が終わった項目をBACKLOG_DONE.mdへ (2) 2026-10-09: 10-08（木）公表のClaimsの行が観測日（週末日）に置かれること
   （`[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`）
+  → (1)は2026-10-06に5項目を移設（`5c689659d7`）。(2)と`[[MACRO-PULSE-REVISION-NOT-APPLIED-1]]`は**2026-10-09に完了**（下の「2026-10-09」）。
+  残りは`[[MACRO-PULSE-SLOT-ROWS-1]]`だけ（次のBuilding Permitsの公表〈10月中旬〜下旬〉の後の実行で、月次の行が観測日に置かれること）
+
+**2026-10-09 MACRO PULSEのClaims・改定値の本番確認（2項目をBACKLOG_DONE.mdへ）**
+- 10-08 22:15 UTCの枠（run 37873382459、作成10-09 02:11:28 UTC、push `85447a4fa7`）: 新しい行`ic4wsa_2026-10-03`は`release_date=2026-10-03`（観測日）・198,000・
+  `known_at=2026-10-09T02:13:10Z`（written、公表10-08 12:30 UTCより後で、10-03になっていない）。`apply_revisions()`が本番で初めて書いた
+  （`ic4wsa_2026-09-26` revised_actual 200,500・revised_at 02:13:11Z、actual・known_atは不変）。FRED系列ストアの値と一致
+- 今日のスコア: 27（10-07）→22（10-08・10-09）。差はYield Curve 0.48→0.51（段の境目0.5、40→15点）で、Claimsは15点のまま
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
