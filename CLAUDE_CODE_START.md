@@ -144,6 +144,11 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   `known_at=2026-10-09T02:13:10Z`（written、公表10-08 12:30 UTCより後で、10-03になっていない）。`apply_revisions()`が本番で初めて書いた
   （`ic4wsa_2026-09-26` revised_actual 200,500・revised_at 02:13:11Z、actual・known_atは不変）。FRED系列ストアの値と一致
 - 今日のスコア: 27（10-07）→22（10-08・10-09）。差はYield Curve 0.48→0.51（段の境目0.5、40→15点）で、Claimsは15点のまま
+- 設計どおりで値も一致: 段は`05_main.py`の`SIGNAL_STEPS["yc"]`（<−0.5→90・<0→70・<0.5→40・それ以上→15〈bull〉、スコアは高いほど後退寄り）、
+  index.htmlの同名の表（testsで一致を確認）・`MACRO_PULSE_LOGIC_INVENTORY.md:512`と同じ。0.5の境目の根拠は画面の注記どおり「公的な根拠なし（M-4 調査）」。
+  0.48・0.51は系列ストア`T10Y2Y.json`とFRED APIのT10Y2Y（10-06・10-07）と一致。FREDには10-08の0.47が出ており、次の実行で40点の段に戻る見込み
+- check_macro_pulse.py（12:21 JST）: 一致71・不一致1・判定不能1。不一致はD-07（1Y EXPECTED FF 4.44 vs ストアのDGS1 10-06の4.46）で、
+  REGIMEの更新が週1回（土曜）のため週の途中に出る想定内のずれ（M-1で記録済み、`MACRO_PULSE_LOGIC_INVENTORY.md:481`）
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
