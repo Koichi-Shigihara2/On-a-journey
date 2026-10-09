@@ -208,7 +208,7 @@ class TestHeadlineTranslation:
                                            lambda ts: (_ for _ in ()).throw(RuntimeError("x"))])
     def test_annotate_failure_falls_back_to_null(self, translate):
         # 訳も判定もできなかったときはtitle_ja・marketをnullにし（画面は原文だけ・全件）、例外は外に出さない（毎晩の実行を止めない）
-        h = {"items": [{"title": "Stocks rise"}, {"title": "Oil falls"}]}
+        h = _fresh([{"title": "Stocks rise"}, {"title": "Oil falls"}])
         nh.annotate_headlines(h, translate=translate)
         assert [(x["title_ja"], x["market"]) for x in h["items"]] == [(None, None), (None, None)]
         assert [x["title"] for x in h["items"]] == ["Stocks rise", "Oil falls"]
@@ -217,7 +217,7 @@ class TestHeadlineTranslation:
         assert len(main) == 2 and folded == []
 
     def test_annotate_market_unavailable_keeps_translation(self):
-        h = {"items": [{"title": "Stocks rise"}, {"title": "Oil falls"}]}
+        h = _fresh([{"title": "Stocks rise"}, {"title": "Oil falls"}])
         nh.annotate_headlines(h, translate=lambda ts: {"ja": ["株が上昇", "原油が下落"], "market": None})
         assert [x["title_ja"] for x in h["items"]] == ["株が上昇", "原油が下落"]
         assert h["translation"]["status"] == "ok" and h["relevance"]["status"] == "unavailable"
@@ -225,7 +225,7 @@ class TestHeadlineTranslation:
 
     def test_all_false_is_not_used(self):
         # 全件falseのときは判定を使わない（all_false）。画面は全件を出し、折りたたみは無し
-        h = {"items": [{"title": f"t{i}"} for i in range(3)]}
+        h = _fresh([{"title": f"t{i}"} for i in range(3)])
         nh.annotate_headlines(h, translate=lambda ts: {"ja": ["a", "b", "c"], "market": [False, False, False]})
         assert h["relevance"]["status"] == "all_false" and h["relevance"]["false"] == 3
         main, folded = nh.split_for_display(h)
@@ -240,17 +240,19 @@ class TestHeadlineTranslation:
 
     def test_split_folds_false_and_caps_main_at_max_items(self):
         # 32件のうち10件がfalse → 本表はtrueの22件のうち新しい順に20件、折りたたみは10件（件数は画面の「関係の薄い見出し 10件」）
-        items = [{"title": f"t{i}", "market": not (i % 3 == 0 and i < 30)} for i in range(32)]
-        h = {"items": items, "relevance": {"status": "ok"}}
+        h = _fresh([{"title": f"t{i}", "market": not (i % 3 == 0 and i < 30)} for i in range(32)], relevance={"status": "ok"})
+        items = h["items"]
         main, folded = nh.split_for_display(h)
         assert len(folded) == 10 and all(x["market"] is False for x in folded)
         assert len(main) == 20 and all(x["market"] is True for x in main)
         assert main == [x for x in items if x["market"]][:20]   # 新しい順（itemsの順）のまま
 
     def test_split_folds_when_few_true(self):
-        items = [{"title": "a", "market": True}, {"title": "b", "market": False}, {"title": "c", "market": False}]
-        main, folded = nh.split_for_display({"items": items, "relevance": {"status": "ok"}})
+        h = _fresh([{"title": "a", "market": True}, {"title": "b", "market": False}, {"title": "c", "market": False}],
+                   relevance={"status": "ok"})
+        main, folded = nh.split_for_display(h)
         assert [x["title"] for x in main] == ["a"] and [x["title"] for x in folded] == ["b", "c"]
+
 
     def test_stale_reason_shown_in_data_quality(self):
         r = sc.build_stage_conclusions({}, None, None, None,
@@ -259,6 +261,68 @@ class TestHeadlineTranslation:
                                                                                "Google News ビジネス（US）": "fetch_error"}}})
         assert r["data_quality"]["unavailable"] == ["ニュースの見出し: CNBC Markets（更新停止）",
                                                     "ニュースの見出し: Google News ビジネス（US）"]
+
+
+FETCHED = datetime(2026, 10, 9, 6, 0, tzinfo=timezone.utc)
+
+
+def _iso(dt):
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _fresh(items, hours=None, **extra):
+    """取得時刻FETCHEDの見出し。published_utcは、hoursを渡せばその時間前、渡さなければ1分ずつ古く（すべて48時間以内）"""
+    for i, x in enumerate(items):
+        age = timedelta(hours=hours[i]) if hours is not None else timedelta(minutes=i + 1)
+        x.setdefault("published_utc", _iso(FETCHED - age))
+    return {"fetched_at": _iso(FETCHED), "items": items, **extra}
+
+
+class TestHeadlineAge:
+    """[[MARKETPULSE-HEADLINES-AGE-1]]: 本表・折りたたみに出すのは取得時刻から48時間以内の見出しだけ（データは変えない）。"""
+
+    def test_constant_matches_page(self):
+        # 48時間はnews_headlines.pyと画面で同じ値を使う
+        assert nh.DISPLAY_MAX_AGE_HOURS == 48 and nh.STALE_HOURS == 72
+        html = open(os.path.join(os.path.dirname(__file__), "..", "docs", "market-monitor", "market-pulse", "index.html"),
+                    encoding="utf-8").read()
+        assert f"const HEADLINES_MAX_AGE_HOURS={nh.DISPLAY_MAX_AGE_HOURS};" in html
+        assert f"const HEADLINES_MAX={nh.MAX_ITEMS};" in html
+
+    def test_boundary_47_9_and_48_1_hours(self):
+        h = _fresh([{"title": "new", "market": True}, {"title": "at48", "market": True},
+                    {"title": "old", "market": True}, {"title": "oldfalse", "market": False}],
+                   hours=[47.9, 48, 48.1, 48.1], relevance={"status": "ok"})
+        main, folded = nh.split_for_display(h)
+        assert [x["title"] for x in main] == ["new", "at48"]   # ちょうど48時間は含む、48.1時間は出さない
+        assert folded == []                                    # 古いfalseは折りたたみにも入れない
+        assert len(h["items"]) == 4                            # データには残す
+
+    def test_folded_counts_only_recent(self):
+        h = _fresh([{"title": "t", "market": True}, {"title": "f1", "market": False}, {"title": "f2", "market": False}],
+                   hours=[1, 47.9, 48.1], relevance={"status": "ok"})
+        main, folded = nh.split_for_display(h)
+        assert [x["title"] for x in main] == ["t"] and [x["title"] for x in folded] == ["f1"]
+
+    def test_no_recent_true_shows_all_recent_without_judgment(self):
+        # 48時間以内でtrueが0件 → 48時間以内の見出しをすべて出す（判定を使わない、折りたたみ無し）
+        h = _fresh([{"title": "f1", "market": False}, {"title": "f2", "market": False}, {"title": "oldtrue", "market": True}],
+                   hours=[2, 3, 60], relevance={"status": "ok"})
+        main, folded = nh.split_for_display(h)
+        assert [x["title"] for x in main] == ["f1", "f2"] and folded == []
+
+    def test_no_recent_items_is_empty(self):
+        # 48時間以内が0件 → 本表も折りたたみも空（画面は「取得できず」）
+        h = _fresh([{"title": "a", "market": True}, {"title": "b", "market": False}], hours=[49, 100], relevance={"status": "ok"})
+        assert nh.split_for_display(h) == ([], [])
+        h = _fresh([{"title": "a", "market": None}], hours=[49], relevance={"status": "unavailable"})
+        assert nh.split_for_display(h) == ([], [])
+
+    def test_missing_times_are_not_recent(self):
+        # 記事の時刻・取得時刻が無いものは新しいと確かめられないので出さない
+        h = {"fetched_at": _iso(FETCHED), "items": [{"title": "a", "published_utc": None}, {"title": "b", "published_utc": _iso(FETCHED)}]}
+        assert [x["title"] for x in nh.split_for_display(h)[0]] == ["b"]
+        assert nh.split_for_display({"items": [{"title": "b", "published_utc": _iso(FETCHED)}]}) == ([], [])
 
 
 class TestCalendar:

@@ -34,6 +34,9 @@ MAX_ITEMS = 20                    # 画面の本表に出す件数の上限（sp
 PER_SOURCE = 16                   # 各配信元から取る件数（関係の判定で隠れる分を補うため、表示の上限より多く取る）
 MAX_CANDIDATES = PER_SOURCE * len(SOURCES)   # データに残す件数の上限（判定の対象。地域の枠は米国だけなので置かない）
 STALE_HOURS = 72                  # 配信元の最新記事がこれより古ければ更新停止（stale）とみなす
+DISPLAY_MAX_AGE_HOURS = 48        # 画面（本表・折りたたみ）に出すのは取得時刻からこの時間以内の見出しだけ（[[MARKETPULSE-HEADLINES-AGE-1]]。
+                                  # 実行は米国の取引日の後だけなので、週明けの実行でも前の取引日の夕方以降のニュースは入る）。
+                                  # index.htmlのHEADLINES_MAX_AGE_HOURSと同じ値（テストで一致を確かめる）
 
 GROK_URL = "https://api.x.ai/v1/chat/completions"
 GROK_MODEL = "grok-4.3"
@@ -236,11 +239,36 @@ def annotate_headlines(h: Dict[str, Any], translate: Callable[[List[str]], Optio
     return h
 
 
+def _parse_utc(s: Optional[str]) -> Optional[datetime]:
+    try:
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def recent_items(h: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """取得時刻（fetched_at）からDISPLAY_MAX_AGE_HOURS時間以内（ちょうど48時間を含む）の見出し。データは変えない。
+    記事の時刻か取得時刻が無いものは、新しいと確かめられないので含めない。"""
+    fetched = _parse_utc(h.get("fetched_at"))
+    if fetched is None:
+        return []
+    out = []
+    for x in h.get("items") or []:
+        pub = _parse_utc(x.get("published_utc"))
+        if pub is not None and fetched - pub <= timedelta(hours=DISPLAY_MAX_AGE_HOURS):
+            out.append(x)
+    return out
+
+
 def split_for_display(h: Dict[str, Any]):
     """画面の出し分け（index.htmlのsplitHeadlines()と同じ規則）。(本表の見出し, 折りたたむ見出し)。
+    対象は取得時刻から48時間以内の見出しだけ（recent_items()。古いものは本表にも折りたたみにも入れない）。
     relevance.statusがokなら、market=falseを折りたたみ、それ以外（true）を新しい順に最大MAX_ITEMS件。
-    ok以外（判定なし・全件false・判定の無い古いエントリ）は、新しい順に最大MAX_ITEMS件を本表に出し、折りたたみは無し。"""
-    items = h.get("items") or []
-    if (h.get("relevance") or {}).get("status") != "ok":
-        return items[:MAX_ITEMS], []
-    return [x for x in items if x.get("market") is not False][:MAX_ITEMS], [x for x in items if x.get("market") is False]
+    ただし48時間以内にtrueが1件も無いときは判定を使わない。ok以外（判定なし・全件false・判定の無い古いエントリ）も同じで、
+    48時間以内を新しい順に最大MAX_ITEMS件を本表に出し、折りたたみは無し。48時間以内が0件なら両方空（画面は「取得できず」）。"""
+    items = recent_items(h)
+    if (h.get("relevance") or {}).get("status") == "ok":
+        main = [x for x in items if x.get("market") is not False]
+        if main:
+            return main[:MAX_ITEMS], [x for x in items if x.get("market") is False]
+    return items[:MAX_ITEMS], []

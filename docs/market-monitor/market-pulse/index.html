@@ -1076,6 +1076,7 @@ function renderHeadlines(){
   if(!h){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   if(!(h.items||[]).length){el.innerHTML='<div class="stage-note" id="headlinesStatus">取得できず</div>'+failedNote(h,'見出し');return}
   const [main,folded]=splitHeadlines(h);
+  if(!main.length){el.innerHTML=`<div class="stage-note" id="headlinesStatus">取得できず（取得時刻から${HEADLINES_MAX_AGE_HOURS}時間以内の見出しが無い）</div>`+failedNote(h,'見出し');return}
   const rows=xs=>xs.map(x=>`<tr><td>${fmtJst(x.published_utc)}</td><td style="white-space:normal">${headlineCell(x)}</td><td>${escHtml(x.source)}${x.publisher?`<div class="hl-orig">${escHtml(x.publisher)}</div>`:''}</td></tr>`).join('');
   const head='<tr><th>時刻（JST）</th><th>見出し</th><th>出典</th></tr>';
   const fold=folded.length?`<details class="hl-fold" id="headlinesFolded"><summary id="headlinesFoldedSummary">関係の薄い見出し ${folded.length}件（表示する）</summary><table class="mp-table" id="headlinesFoldedTable">${head}${rows(folded)}</table></details>`:'';
@@ -1083,10 +1084,16 @@ function renderHeadlines(){
 }
 // 見出しの出し分け（MARKETPULSE-HEADLINES-RELEVANCE-1、news_headlines.split_for_display()と同じ規則）:
 // relevance.statusがokなら、market=falseを折りたたみ、残りを新しい順に最大HEADLINES_MAX件。ok以外（判定なし・全件false・古いエントリ）は新しい順に最大HEADLINES_MAX件
+// 対象は取得時刻から HEADLINES_MAX_AGE_HOURS 時間以内（ちょうどを含む）の見出しだけ（MARKETPULSE-HEADLINES-AGE-1。古いものは本表にも折りたたみにも出さない）。
+// 48時間以内にtrueが無いときは判定を使わない。HEADLINES_MAX_AGE_HOURSはnews_headlines.DISPLAY_MAX_AGE_HOURSと同じ値（テストで一致を確かめる）
 const HEADLINES_MAX=20;
-function splitHeadlines(h){const xs=h.items||[];
-  if(h.relevance?.status!=='ok')return [xs.slice(0,HEADLINES_MAX),[]];
-  return [xs.filter(x=>x.market!==false).slice(0,HEADLINES_MAX),xs.filter(x=>x.market===false)]}
+const HEADLINES_MAX_AGE_HOURS=48;
+function recentHeadlines(h){const f=Date.parse(h.fetched_at||'');if(isNaN(f))return [];
+  return (h.items||[]).filter(x=>{const p=Date.parse(x.published_utc||'');return !isNaN(p)&&f-p<=HEADLINES_MAX_AGE_HOURS*3600e3})}
+function splitHeadlines(h){const xs=recentHeadlines(h);
+  if(h.relevance?.status==='ok'){const main=xs.filter(x=>x.market!==false);
+    if(main.length)return [main.slice(0,HEADLINES_MAX),xs.filter(x=>x.market===false)]}
+  return [xs.slice(0,HEADLINES_MAX),[]]}
 function renderFutures(){
   const el=document.getElementById("futuresTable");if(!el)return;
   const f=allData[allData.length-1]?.futures;

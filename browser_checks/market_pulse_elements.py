@@ -688,13 +688,14 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
     if hl is not None:
         # 見出しのセルは、訳（title_ja）があれば「訳＋改行＋原文」、出典のセルは、出典名（publisher）があれば「配信元＋改行＋出典名」
         # （MARKETPULSE-HEADLINES-JA-1、画面のheadlineCell()）
-        # 本表と折りたたみの出し分けは、news_headlines.split_for_display()・画面のsplitHeadlines()と同じ規則
-        # （MARKETPULSE-HEADLINES-RELEVANCE-1。relevance.statusがokならmarket=falseを折りたたみ、本表は最大20件）
-        items = hl.get("items") or []
-        if (hl.get("relevance") or {}).get("status") == "ok":
-            main, folded = [x for x in items if x.get("market") is not False][:20], [x for x in items if x.get("market") is False]
-        else:
-            main, folded = items[:20], []
+        # 本表と折りたたみの出し分けの期待値は、news_headlines.split_for_display()そのものから作る（画面のsplitHeadlines()と同じ規則。
+        # MARKETPULSE-HEADLINES-RELEVANCE-1: relevance.statusがokならmarket=falseを折りたたみ、本表は最大20件。
+        # MARKETPULSE-HEADLINES-AGE-1: 対象は取得時刻から48時間以内の見出しだけ）
+        _mp_dir = os.path.join(REPO_ROOT, "src", "market", "market_pulse")
+        if _mp_dir not in sys.path:
+            sys.path.insert(0, _mp_dir)
+        import news_headlines as _nh
+        main, folded = _nh.split_for_display(hl)
         exp = [[jst(x["published_utc"]), (x["title_ja"] + "\n" + x["title"]) if x.get("title_ja") else x["title"],
                 (x["source"] + "\n" + x["publisher"]) if x.get("publisher") else x["source"]] for x in main]
         act = dom["tableRows"]["headlinesTable"]
