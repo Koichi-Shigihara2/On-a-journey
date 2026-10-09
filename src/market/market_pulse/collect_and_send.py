@@ -1575,6 +1575,9 @@ def compute_implc(implb=None):
     except Exception as e:
         print(f"[WARN] ニュースの見出しの取得に失敗: {e}")
         out["headlines"] = {"items": [], "failed": ["全配信元"], "status": "failed"}
+    # 見出しの日本語訳（[[MARKETPULSE-HEADLINES-JA-1]]）。画面の表示だけに使い、AIの見解の入力（build_ai_facts）には渡さない。
+    # add_title_ja()は失敗しても例外を出さず、title_jaをNoneにする（原文だけを出す）
+    _nh.add_title_ja(out["headlines"])
     try:
         wt = ((implb or {}).get("watch_list") or {}).get("tickers") or _sr.watch_tickers(REPO_ROOT)
         tickers = sorted(set(wt.get("all") or []) | set(_sr.M7))

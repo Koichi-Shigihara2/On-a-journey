@@ -3,7 +3,9 @@
 ニュース・予定・先物の最新値は、その時点で取得したものしか残らない（過去のエントリの時点の値は取り直せない）ため、最新のエントリだけに
 付け、取得時刻（fetched_at）と付けた旨（backfilled_at）を記録する。過去のエントリには付けない。data_quality・段階0を計算し直す。
 
-使い方: python src/market/market_pulse/backfill_implc.py [--dry-run]
+使い方: python src/market/market_pulse/backfill_implc.py [--dry-run] [--only headlines]
+  --only headlines: 見出しだけを取り直す（予定・先物の最新値はエントリの値を残す。2026-10-09、[[MARKETPULSE-HEADLINES-NHK-STALE-1]]・
+  [[MARKETPULSE-HEADLINES-JA-1]]の修正の反映用）。見出しの翻訳でGrokを1回呼ぶ（XAI_API_KEYがあるとき）
 """
 import argparse
 import json
@@ -22,13 +24,20 @@ from stage_conclusions import build_stage_conclusions  # noqa: E402
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--only", choices=["headlines"], help="この要素だけを取り直す")
     args = ap.parse_args()
     with open(cs.JSON_PATH, encoding="utf-8") as f:
         data = json.load(f)
     L = data[-1]
-    implc = cs.compute_implc({"watch_list": L.get("watch_list")})
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    for k, v in implc.items():
+    if args.only == "headlines":
+        import news_headlines as nh
+        new = {"headlines": nh.add_title_ja(nh.fetch_headlines())}
+        implc = {k: L.get(k) or {} for k in ("calendar", "futures")}
+        implc.update(new)
+    else:
+        new = implc = cs.compute_implc({"watch_list": L.get("watch_list")})
+    for k, v in new.items():
         v["backfilled_at"] = stamp
         L[k] = v
     # data_qualityと段階0だけを計算し直す（他の段階は変更しない）

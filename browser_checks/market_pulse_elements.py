@@ -684,7 +684,10 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         return f"{d.month:02d}/{d.day:02d} {d.hour:02d}:{d.minute:02d}"
     hl = L.get("headlines")
     if hl is not None:
-        exp = [[jst(x["published_utc"]), x["title"], x["source"]] for x in hl.get("items") or []]
+        # 見出しのセルは、訳（title_ja）があれば「訳＋改行＋原文」、出典のセルは、出典名（publisher）があれば「配信元＋改行＋出典名」
+        # （MARKETPULSE-HEADLINES-JA-1、画面のheadlineCell()）
+        exp = [[jst(x["published_utc"]), (x["title_ja"] + "\n" + x["title"]) if x.get("title_ja") else x["title"],
+                (x["source"] + "\n" + x["publisher"]) if x.get("publisher") else x["source"]] for x in hl.get("items") or []]
         act = dom["tableRows"]["headlinesTable"]
         ok = (act == exp) if exp else (act is None and "取得できず" in (dom.get("headlinesText") or ""))
         _res(results, cls, "C-02 段階2 ニュースの見出し（#headlinesTable、時刻・見出し・出典）", f"{len(exp)}件", f"{len(act or [])}件", ok,

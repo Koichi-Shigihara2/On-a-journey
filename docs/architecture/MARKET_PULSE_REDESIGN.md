@@ -309,6 +309,11 @@ v4はv3より1件多く一致するが、一致率は選定の基準にしてい
 
 推奨: 米国はCNBC MarketsとGoogle News ビジネス（US）、日本はNHK 経済。既存の`02_market_rss.txt`はAI分析の入力として残す。
 
+> **2026-10-09 変更**（`[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`・`[[MARKETPULSE-HEADLINES-JA-1]]`）: NHK 経済を外し、日本の配信元は置かない
+> （旧URL`www3.nhk.or.jp/rss/news/cat5.xml`が2026-08-08の内容を200 OKで返し続けていた。新しいURLのRSSは個人の利用に限るとされている）。
+> 配信元の最新記事が取得時刻から72時間より古ければ、その配信元をfailed（理由stale、画面は「取得できず（更新停止）」）にする。
+> 見出しはGrokで日本語に訳して`title_ja`に入れ、画面は訳を主に、原文を小さな文字で出す（訳せなければ原文だけ）。訳は表示だけに使い、判定・AIの見解の入力には渡さない。
+
 **TANUKI TAILの既存のRSS取得の流用**: `src/tail/edgar_rss_monitor.py`はSEC EDGARの提出書類のRSS（銘柄ごとの10-Q・10-K等）を取得する仕組みで、
 ニュースの見出しには使えない。段階8の「決算」の補足（監視銘柄の決算書類が提出されたか）には流用できる。
 ニュースの取得は、Market Pulseの既存の`get_market_news()`（requests＋feedparser）を、見出し・時刻・リンクを返す形に分けて使う。

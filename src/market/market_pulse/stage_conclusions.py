@@ -420,8 +420,10 @@ def build_stage_conclusions(ind: dict, af: Optional[dict], breadth: Optional[dic
     for key, v in (implc or {}).items():
         if not isinstance(v, dict):
             continue
+        reasons = v.get("failed_reasons") or {}
         for f in v.get("failed") or []:
-            unavailable.append(f"{IMPLC_NAMES.get(key, key)}: {f}")
+            # 最新記事が古い配信元（stale、[[MARKETPULSE-HEADLINES-NHK-STALE-1]]）は取得失敗と区別して示す
+            unavailable.append(f"{IMPLC_NAMES.get(key, key)}: {f}" + ("（更新停止）" if reasons.get(f) == "stale" else ""))
         if v.get("failed"):
             dq["old_stages"] = sorted(set(dq.get("old_stages") or []) | set(IMPLC_STAGES.get(key, ())))
     dq["unavailable"] = unavailable
