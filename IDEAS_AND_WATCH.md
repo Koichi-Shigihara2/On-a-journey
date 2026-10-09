@@ -358,3 +358,5 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 - 夜間の取得（20:30 UTC頃）でも8件目・16件目の古さが同じ程度か、数日分を記録する
 - 対応案: 記事ごとに取得時刻から一定時間（例: 72時間）より古いものを本表から外す、CNBC Marketsを別の配信（CNBC Top News等）に替える。
   どちらも件数・関係の判定（`relevance`）への影響を先に数える
+- **2026-10-09追記**: 本表に古い見出しが入る件は`[[MARKETPULSE-HEADLINES-AGE-1]]`（BACKLOG.md）で対応する（画面に出すのを取得時刻から48時間以内に限る）。
+  この監視メモは、フィードそのものの遅さ・同じ見出しの繰り返しを見るために残す
