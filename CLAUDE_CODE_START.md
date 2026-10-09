@@ -150,6 +150,20 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - check_macro_pulse.py（12:21 JST）: 一致71・不一致1・判定不能1。不一致はD-07（1Y EXPECTED FF 4.44 vs ストアのDGS1 10-06の4.46）で、
   REGIMEの更新が週1回（土曜）のため週の途中に出る想定内のずれ（M-1で記録済み、`MACRO_PULSE_LOGIC_INVENTORY.md:481`）
 
+**2026-10-09 pytestの件数の内訳と、HypeCoreのテストIDの修正（セッション終了時のまとめ）**
+- Claimsの確認は完了（`612ee09444`、上の「2026-10-09 MACRO PULSEのClaims・改定値の本番確認」）。スコア27→22はYield Curveだけが原因で、Claimsは15点のまま
+- pytestの件数2014（`8c1022a22c`）→2028（`cb975238cb`）の内訳を`--collect-only`のテストIDの突き合わせで確認: TAILのテスト+17
+  （`9e73c1dd24` +8・`cedc374cdf` +5・`2b9712217a` +4）、CON・SN・WSTの登録解除で−3（`2316fb0068`、`test_iv_formula.py`は`get_tanuki_tickers()`でパラメータ化）。
+  重複して収集されたテストは0件。Step 2に「件数は変動し固定値として扱わない」注記を追加（`351d197f04`）
+- HypeCoreのテストIDの絶対パス依存を解消（`65cb8684a7`、記録`7458007466`、`[[TEST-HYPECORE-PARAM-ID-ABSPATH-1]]`）: 本体とworktreeのID一覧の差 8行→0行、件数は2028件のまま
+- ブラッシュアップ: CHAT_RULES.md事例30（提案は実施ではない。完了の判断はcommitで確認する）。Step 2の「既知の例外」（test_iv_formula.pyのMSFT/NVDA 2件、
+  [[TEST-STALE-IV-1]]は2026-08-20に解消済み）を「既知の例外は無い」に更新。BACKLOG.mdのアクティブは15件（`^### [`の機械カウント）、移設漏れ0件
+- 次の候補:
+  1. 10-21（水）11:00 JST以降: Building Permitsの確認（`[[MACRO-PULSE-SLOT-ROWS-1]]`、月次の行が観測日に置かれること）
+  2. M-6（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、FED-REGIMEの判定の遅れの調査）: Koichiさんの判断待ち
+  3. `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（Market Pulse側、優先度 中）
+  4. （任意）BACKLOG_DONE.mdの同じIDの見出しの重複の整理（`^### ✅ [ID]`が2回以上あるIDは13件、2026-10-09時点）
+
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
   daily/のES=F・NQ=F・NIY=Fは09-30まで、空きは3営業日（10-01・10-02・10-05）で手順の5営業日以内のため埋めていない（今夜の取得の抜け補完で埋まる想定）
@@ -2888,9 +2902,9 @@ python -m pytest tests/ src/subport/day_trade/test_logic.py -v
 pytestの件数はテストの追加と、`tests/test_iv_formula.py`がティッカーの登録状況（`get_tanuki_tickers()`）でパラメータ化されているため変動する。
 固定値として扱わない（例: 10-08の2014件→10-09の2028件は、TAILのテスト17件の追加とCON・SN・WSTの登録解除による3件の減少）。
 失敗があれば先に修正する。
-既知の例外: tests/test_iv_formula.py の MSFT/NVDA 2件は既存バグ
-（[[TEST-STALE-IV-1]]、ALPHA-REDESIGN-1後にテスト式が未更新）として
-認識済み。この2件以外の失敗が出た場合のみ先に修正する
+既知の例外は無い（以前の例外だった tests/test_iv_formula.py の MSFT/NVDA 2件〈[[TEST-STALE-IV-1]]、
+ALPHA-REDESIGN-1後にテスト式が未更新〉は2026-08-20に解消済み。2026-10-09に記述を更新）。
+1件でも失敗したら先に修正する
 （QUALITY-GATES-EPIC-1 Phase 1で2026-07-12にtest_pipeline_logic.py単体実行
 からtests/全体実行へ変更。ALPHA-REDESIGN-1後の回帰がtest_pipeline_logic.py
 実行のみでは2週間見逃されていた教訓による）。

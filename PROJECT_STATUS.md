@@ -11,6 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-09（Claimsの確認・pytestの件数の内訳・HypeCoreのテストID）**: MACRO PULSEのClaimsの観測日の行と改定値の書き込みを本番で確認し、
+  `[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]`・`[[MACRO-PULSE-REVISION-NOT-APPLIED-1]]`をBACKLOG_DONE.mdへ（`612ee09444`）。スコア27→22はYield Curve
+  （0.48→0.51、0.5の境目で40→15点）だけで、Claimsは15点のまま。pytestの件数2014→2028はTAILのテスト+17とCON・SN・WSTの登録解除による−3で、
+  CLAUDE_CODE_START.md Step 2に「件数は変動する」注記（`351d197f04`）。HypeCoreのテストIDの絶対パス依存を解消（`65cb8684a7`、記録`7458007466`）。
+  CHAT_RULES.md事例30を追加。アクティブBACKLOG 15件。`pytest tests/ src/subport/day_trade/test_logic.py` 2028件・audit.py・report_consistency_check.pyとも通過。
+  **次回確認**: 10-21（水）11:00 JST以降にBuilding Permitsの行（`[[MACRO-PULSE-SLOT-ROWS-1]]`）、M-6（FED-REGIMEの遅れの調査）はKoichiさんの判断待ち
 - **2026-10-07（日中、テストのsys.modulesの漏れ）**: `[[TEST-SYSMODULES-MOCK-LEAK-1]]`を調査・修正して完了。MagicMockの差し替えが実行時のimportを通じて
   先に収集されたテストにも漏れていた（15件、本物のコードで失敗するものは0件、順番を変えると最大156件が失敗）。スタブをpipelineのimportの間だけに閉じ込め
   （`tests/_tanuki_pipeline_stub.py`）、`tests/conftest.py`に収集完了時の検知を追加。4通りの順番で全件パス。CHAT_RULES.md事例28。アクティブBACKLOG 19件
