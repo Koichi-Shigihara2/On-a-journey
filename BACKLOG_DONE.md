@@ -4,6 +4,61 @@
 
 ## 2026-10-09（完了）
 
+### ✅ [MARKETPULSE-HEADLINES-NHK-STALE-1] Market Pulseの段階2のニュースの見出しで、NHK 経済（cat5.xml）の見出しが2026-08-07〜08-08のまま更新されていないのに、取得できたもの（status=ok）として表示されている
+**優先度:** 中
+**分類:** データ鮮度 / Market Pulse 実装C（`src/market/market_pulse/news_headlines.py`、index.htmlの`#headlines`）
+**登録日:** 2026-10-09
+**発見:** チャット側の依頼（2026-10-09）
+
+#### 内容（観測した事実のみ。原因は段階1で調査）
+- `docs/market-monitor/market-pulse/data/market_data.json`の見出しがあるエントリ3件（10-07・10-08・10-09、取得は各前日20:30 UTC頃）のすべてで、
+  日本（NHK 経済）の6件の`published_utc`が2026-08-07T13:28:52Z〜2026-08-08T06:10:11Z。3件とも`status=ok`・`failed=[]`
+- `fetch_headlines()`は配信元から1件でも見出しが取れれば成功として扱い、記事の日付の古さを見ていない。地域ごとの上限（日本6件）があるため、
+  2か月前の見出しが毎日そのまま並ぶ
+
+#### 対応（チャット側の依頼）
+段階1（読み取り）: cat5.xmlの`lastBuildDate`と最新記事の日付、止まった原因（配信終了か移転か）、代わりの配信元の候補（NHKの新しいRSS・Google News 日本版のビジネス）を
+実際に取得して報告。段階2（承認後）: 配信元の最新記事が取得時刻から72時間より古ければstaleとしてfailed扱い（画面は「取得できず（更新停止）」）、
+NHKを段階1で決めた配信元に置き換え、テスト
+
+#### 修正（`a9cbd2194c`、チャット側の決定1〜3）
+- 段階1の調査（読み取り、2026-10-09）: 旧URL`www3.nhk.or.jp/rss/news/cat5.xml`は配信終了ではなくURLの移転
+  （NHKのRSS案内ページ「2025年10月1日の放送法改正による見直しでURLが変更」）。`www.nhk.or.jp/…`は新URL`news.web.nhk/n-data/conf/na/rss/cat5.xml`へ
+  転送されるが、`www3.nhk.or.jp/…`は転送されず、`lastBuildDate` 2026-08-09 01:15 JST・最新記事08-08 15:10 JSTの内容を200 OKで返し続けていた。
+  新URLは今日（10-09）の記事まで取得できたが、NHKのRSSは「個人の利用のためのみ。プログラム等による再配信・再提供は許可しない」とされている
+- `news_headlines.py`: NHK 経済をSOURCESから外し、日本の配信元は置かない（決定1）。地域の上限は米国=MAX_ITEMS。
+  配信元の最新記事（publishedの最大値）が取得時刻から72時間より古ければfailedに入れ、`failed_reasons`（fetch_error / no_items / stale）で区別。
+  時刻が1件も無い配信元もstale（鮮度を確かめられないため）。statusは失敗・staleの配信元を除いた見出しが1件以上ならok/partial、0件ならfailed
+- 翻訳（決定2）: `translate_titles()`が見出しの文字だけをGrok（grok-4.3、temperature 0）に1回で渡す。キーが無い・失敗・件数や形式が合わないときはNone
+  （全件。訳と見出しの取り違えを防ぐ）。`add_title_ja()`がitemsに`title_ja`（訳せなければnull）を加え、例外は外に出さない（`compute_implc()`から呼ぶ。
+  `analyse_market()`は流用せず、翻訳の失敗で毎晩の実行は止まらない）。AIの見解の入力（`build_ai_facts`）には渡さない。
+  Google Newsの見出しの末尾「 - 出典名」は訳す前に`publisher`へ分ける（`<source>`と一致する末尾だけ。無ければ最後の「 - 」）
+- 画面: `title_ja`があれば主に出し、原文は小さな文字でリンク付き。出典名は配信元の下に小さく。staleの配信元は「取得できず（更新停止）」、
+  data_qualityのunavailableも「（更新停止）」付き。browser_checksのC-02の期待値を新しいセルに合わせた。設計書`MARKET_PULSE_REDESIGN.md`に変更を追記
+- テスト（`tests/test_market_pulse_implc.py`）: 72時間の境界（ちょうど72時間は古くない）、1配信元だけstale、時刻なし、出典名の切り出し、地域の上限、
+  翻訳の失敗（None・件数不一致・形式違い・例外）。`pytest tests/ src/subport/day_trade/test_logic.py` 2028件→2056件（見出しのテスト4件→32件）
+- 反映（再生成データ）: `backfill_implc.py --only headlines`（このために追加）で最新エントリ（2026-10-09T05:31 JST）の見出しだけを取り直した
+  （取得10-09 04:29 UTC、`backfilled_at`付き。他のエントリ・他の要素は不変を確認）。見出し15件（CNBC 8・Google 7）、status ok、翻訳ok（Grok 1回）。
+  check_dependency_map.py 一致61・不一致0・判定不能0（C-02一致）
+- 残る確認: GitHub Actionsの夜間の実行（10-09の足）で、翻訳が動くこと（`translation.status`）と、見出しのstatusを確かめる
+
+### ✅ [MARKETPULSE-HEADLINES-JA-1] Market Pulseの段階2のニュースの見出しのうち、米国の配信元（CNBC Markets・Google News ビジネス〈US〉）の見出しが英語のまま表示されている
+**優先度:** 中
+**分類:** 表示 / Market Pulse 実装C（`news_headlines.py`、index.htmlの`#headlines`）
+**登録日:** 2026-10-09
+**発見:** チャット側の依頼（2026-10-09）
+
+#### 内容
+見出しは最大20件（米国14件・日本6件）で、米国の2つの配信元の見出しは原文（英語）のまま保存・表示している
+
+#### 対応（チャット側の依頼）
+段階1（読み取り）: 今あるAI呼び出し（haiku / ai_facts）の仕組みを流用して見出しを日本語に訳せるか（使っているモデル・失敗時の扱い）を確認して報告。
+段階2（承認後）: 英語の見出しに`title_ja`を追加して画面ではそちらを出し、原文はリンクと小さな文字で残す。訳せなかったときは原文だけを出す。
+AIに渡すのは見出しの文字だけにし、判定には使わない（「ニュースはAIの入力に入れない」方針は維持）。テストは翻訳に失敗したときの戻しと地域ごとの上限
+
+#### 修正
+`[[MARKETPULSE-HEADLINES-NHK-STALE-1]]`と同じcommit（`a9cbd2194c`）。内容・反映・残る確認は同項目の「修正」を参照
+
 ### ✅ [TEST-HYPECORE-PARAM-ID-ABSPATH-1] test_hypecore_realstrong_dual_impl.pyのparametrizeのテストIDに絶対パスが入り、リポジトリの置き場所（本体・worktree）でIDが変わる
 **優先度:** 低
 **分類:** テスト / HypeCore（tests/test_hypecore_realstrong_dual_impl.py）
