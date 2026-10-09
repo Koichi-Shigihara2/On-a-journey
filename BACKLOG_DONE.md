@@ -4,6 +4,25 @@
 
 ## 2026-10-09（完了）
 
+### ✅ [TEST-HYPECORE-PARAM-ID-ABSPATH-1] test_hypecore_realstrong_dual_impl.pyのparametrizeのテストIDに絶対パスが入り、リポジトリの置き場所（本体・worktree）でIDが変わる
+**優先度:** 低
+**分類:** テスト / HypeCore（tests/test_hypecore_realstrong_dual_impl.py）
+**登録日・完了日:** 2026-10-09（BACKLOG.mdを経由せず完了として直接記録）
+**発見:** pytestの件数の増加（2014件→2028件）の内訳確認（読み取り専用）で、`8c1022a22c`のworktreeとHEADの収集結果を突き合わせた際、
+件数の差と無関係に4件のIDが「追加」「削除」の両方に出たことから
+
+#### 内容
+`TestFrontendUsesServerComputedField`の2つのparametrize（`[_DETAIL_HTML, _INDEX_HTML]`）は`_REPO_ROOT`から作った絶対パスを値に渡し、
+ids=の指定が無かったため、テストIDが`[C:\Users\...\docs\value-monitor\hypecore\detail.html]`のように置き場所を含んでいた。
+件数や判定には影響しないが、別のフォルダの収集結果とIDで突き合わせると同じテストが別物に見える。
+`tests/`と`src/subport/day_trade/test_logic.py`の`--collect-only -q`で絶対パスを含むIDはこの4件だけだった。
+
+#### 修正（`65cb8684a7`）
+- `_rel_id()`（リポジトリのルートからの相対パス、区切りは`/`）を追加し、2つのparametrizeに`ids=_rel_id`を指定。
+  IDは`[docs/value-monitor/hypecore/detail.html]`等になった。検証内容は変更なし
+- 確認: 修正前は本体とworktreeのID一覧に差8行（4件ずつ）、修正後は差0行。件数は前後とも2028件
+  （`venv\Scripts\python.exe -m pytest tests/ src/subport/day_trade/test_logic.py --collect-only -q`）、修正後のIDに絶対パスを含むもの0件
+
 ### ✅ [MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1] MACRO PULSEのInitial Claimsの予定表がEmpire State Manufacturing Surveyの日付になっており、最新週の値が未来日付の行に入ってスコアに使われない
 **優先度:** 中
 **状態:** 対応済み（M-2 STEP 2、kaihatsuへ統合 7cd9bd2d12）。修復スクリプト macro_claims_slot_rows_repair.py を2026-10-03 07:12 UTCに実行済み（70793c2185、今日のスコア27→27）。次の木曜（10-08）の公表後の行が観測日に置かれることの確認が残る
