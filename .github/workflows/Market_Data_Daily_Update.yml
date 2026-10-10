@@ -81,6 +81,14 @@ jobs:
           fi
           echo "status=$(python -c "import json;print(json.load(open('/tmp/daily_status.json'))['status'])")" >> "$GITHUB_OUTPUT"
 
+      # [[ROTCE-PTBV-1]]（2026-10-10）: ROTCE・P/TBV（参考表示、TANUKI SCOREの散布図・EPS Analyzerの推移）を
+      # 保存した終値と手元のSECデータ（Layer3。SEC Data Update〈週次〉の後は翌営業日のこの実行で反映）で再計算する。
+      # 有料APIは呼ばない。失敗しても株価の保存・下流の起動は止めない（continue-on-error）
+      - name: Build ROTCE / P/TBV (reference only)
+        if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
+        continue-on-error: true
+        run: python common/sec_data/rotce.py
+
       # reset_window（Yahooの作り直しの時間帯）で終わった実行はcommitしない（2026-10-03）。daily/は変わらず、
       # _daily_close_retry_log.jsonの記録だけのcommitが「Update Market Data Daily」の件名で残っていた（10-03の2本）
       - name: Commit and push changes
@@ -100,6 +108,7 @@ jobs:
           git add common/market_data/*/market_data_violations_log.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add common/market_data/_daily_close_retry_log.json || true
+          git add docs/common/sec_data/rotce/ || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
