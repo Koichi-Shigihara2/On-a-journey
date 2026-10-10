@@ -202,3 +202,26 @@ class TestShares:
         assert c["price"] == 30.0 and c["price_date"] == "2026-10-09"
         assert abs(c["ptbv"] - 30.0 * 10 / 1_000) < 1e-12
         assert c["quarter_end"] == "2025-12-31"
+
+
+class TestAssumedZero:
+    def test_assumed_zero_quarters_excluded_from_percentile(self):
+        # のれんを2024-12-31に初めて申告 → それより前の期は0と仮定（assumed_zero）し、自社比の母数に入れない
+        gw = {q: 100 for q in QEND if q >= "2024-12-31"}
+        cf = {"facts": {"us-gaap": {"Goodwill": {"units": {"USD": [
+            {"end": q, "val": 100, "form": "10-Q"} for q in gw]}}}}}
+        r = _run(_store(gw=gw), company_facts=cf)
+        assumed = [h["end"] for h in r["history"] if h.get("assumed_zero")]
+        assert assumed == ["2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30"]
+        assert all(h["assumed_zero"] == ["goodwill"] for h in r["history"] if h.get("assumed_zero"))
+        p = r["percentile"]
+        assert p["n_quarters"] == 5            # 9期のうち0と仮定した4期を除く
+        assert p["n_excluded_assumed_zero"] == 4
+        assert p["signal"] is None and p["reason"] == rotce.R_INSUFFICIENT_QUARTERS
+
+    def test_reported_quarters_have_no_assumed_zero(self):
+        r = _run(_store(gw={q: 100 for q in QEND}),
+                 company_facts={"facts": {"us-gaap": {"Goodwill": {"units": {"USD": [
+                     {"end": q, "val": 100, "form": "10-Q"} for q in QEND]}}}}})
+        assert not any(h.get("assumed_zero") for h in r["history"])
+        assert r["percentile"]["n_quarters"] == 9

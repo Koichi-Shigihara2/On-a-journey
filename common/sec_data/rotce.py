@@ -16,6 +16,7 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
   P/TBV = 時価総額 ÷ 期末のTCE
           四半期: 期末日（または直前の取引日）の終値 × その期の希薄化後株式数
           直近:   最新の終値 × 最新四半期の希薄化後株式数（TCEは最新四半期）
+  成分を初めて申告した期末日より前の期は0と仮定し、assumed_zeroを付ける（自社比の母数には入れない）。
   優先配当は純利益から引いていない（優先株が残る銘柄はVSTなど少数）。
 
 データ: Layer3（layer3_builder.build_ticker_store）・日次株価（common/market_data/daily/）・
@@ -128,7 +129,7 @@ def _quarterly_flow(store: dict, field: str) -> Dict[str, dict]:
 
 def component_at(by_end: Dict[str, dict], q: str, fy_ends: frozenset = frozenset(),
                  first_reported: Optional[str] = None) -> Dict[str, Any]:
-    """期末日qの成分の値。戻り値 {"val", "filled_from"（年次で補った期末日）, "missing"}
+    """期末日qの成分の値。戻り値 {"val", "filled_from"（年次で補った期末日）, "missing", "assumed_zero"}
 
     - qの値があればその値
     - 無ければ、q以前ANNUAL_FILL_MAX_DAYS日以内の年度末（fy_ends）の値で補う（filled_from）。
@@ -137,10 +138,14 @@ def component_at(by_end: Dict[str, dict], q: str, fy_ends: frozenset = frozenset
       （first_reported、company_factsの全履歴）より前なら0（該当なし）
     - 直前の申告値が0なら0（残高がなくなって申告をやめた）
     - それ以外（申告していたが直近の値が無い）は推測せず missing
+    assumed_zero: qが初めて申告した期末日より前で0と仮定した（実際は0でない可能性がある。
+    AAPLの無形資産のように、申告していない期間にも残高があった例がある）
     """
     if q in by_end:
         return {"val": by_end[q]["val"], "filled_from": None, "missing": False}
-    if not by_end or (first_reported is not None and q < first_reported):
+    if first_reported is not None and q < first_reported:
+        return {"val": 0, "filled_from": None, "missing": False, "assumed_zero": True}
+    if not by_end:
         return {"val": 0, "filled_from": None, "missing": False}
     annual = [e for end, e in by_end.items()
               if end < q and end in fy_ends and _days(end, q) <= ANNUAL_FILL_MAX_DAYS]
@@ -169,6 +174,7 @@ def tce_at(series: Dict[str, Dict[str, dict]], q: str, intangible_tags: Dict[str
     parts: Dict[str, Any] = {"stockholders_equity": se["val"], "stockholders_equity_tag": se_tag}
     filled: Dict[str, str] = {}
     missing: List[str] = []
+    assumed_zero: List[str] = []
     fields = list(DEDUCTION_FIELDS) + (["minority_interest"] if se_tag == SE_NCI_TAG else [])
     for f in fields:
         c = ({"val": None, "filled_from": None, "missing": True} if f in unavailable
@@ -178,10 +184,14 @@ def tce_at(series: Dict[str, Dict[str, dict]], q: str, intangible_tags: Dict[str
             filled[f] = c["filled_from"]
         if c["missing"]:
             missing.append(f)
+        if c.get("assumed_zero"):
+            assumed_zero.append(f)
     src_end = filled.get("intangible_assets_excl_goodwill", q)
     parts["intangible_assets_excl_goodwill_tag"] = intangible_tags.get(src_end) if parts.get(
         "intangible_assets_excl_goodwill") else None
     out: Dict[str, Any] = {"components": parts, "filled_components": filled}
+    if assumed_zero:
+        out["assumed_zero"] = assumed_zero
     if missing:
         out.update(tce=None, reason=R_COMPONENT_MISSING, missing_components=missing)
         return out
@@ -383,6 +393,8 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
                    filled_components=t.get("filled_components") or {})
         if t.get("missing_components"):
             row["missing_components"] = t["missing_components"]
+        if t.get("assumed_zero"):
+            row["assumed_zero"] = t["assumed_zero"]
         sh = shares.get(q)
         px = _close_on_or_before(prices, q)
         row.update(price=px["close"] if px else None, price_date=px["date"] if px else None,
@@ -449,8 +461,12 @@ def _current(history: List[dict], prices: List[dict], ends: List[str]) -> Dict[s
 
 
 def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
-    pts = [h for h in history if h.get("rotce") is not None and h.get("ptbv") is not None]
-    res: Dict[str, Any] = {"n_quarters": len(pts), "signal": None}
+    """自社の過去の四半期との比較。成分を0と仮定した期（assumed_zero）は母数から外す"""
+    pts = [h for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
+           and not h.get("assumed_zero")]
+    n_assumed = sum(1 for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
+                    and h.get("assumed_zero"))
+    res: Dict[str, Any] = {"n_quarters": len(pts), "n_excluded_assumed_zero": n_assumed, "signal": None}
     if current.get("ptbv") is None or current.get("rotce") is None:
         res["reason"] = current.get("reason") or R_INSUFFICIENT_QUARTERS
         return res
@@ -474,7 +490,8 @@ def _summary_row(r: Dict[str, Any]) -> Dict[str, Any]:
         "filled_components": c.get("filled_components") or {},
         "rotce_basis": c.get("rotce_basis"),
         "reason": c.get("reason"), "missing_components": c.get("missing_components"),
-        "n_quarters": p.get("n_quarters", 0), "ptbv_pctl": p.get("ptbv"), "rotce_pctl": p.get("rotce"),
+        "n_quarters": p.get("n_quarters", 0), "n_excluded_assumed_zero": p.get("n_excluded_assumed_zero", 0),
+        "ptbv_pctl": p.get("ptbv"), "rotce_pctl": p.get("rotce"),
         "signal": p.get("signal"), "signal_reason": p.get("reason"),
         "notes": r.get("notes") or [],
     }
