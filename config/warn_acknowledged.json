@@ -385,6 +385,11 @@
       "comment": "IV過大の疑い（IV/株$18.75÷株価$3.74＝5.0倍）。FCFが全年赤字（2021〜2025、年約−$3.7億）のためrevenue floorでFCFベースを置いた理論値で、DCF信頼性LOW・分類はPolicy AでWATCHに丸め済み（upside依存の判定をしていない）。IVは09-25から不変で、株価の下落（$3.89→$3.74）で閾値5倍をわずかに超えただけ（09-25は4.82倍）。価格欠損の間（09-26 JSTの誤った実行）は株価0で検知できていなかった。既存の信頼性判定で扱い済みのため新たな異常ではない（指示書⑳ STEP F、2026-09-26）。"
     },
  {"check": "WARN-59", "ticker": "LOAR", "acknowledged_date": "2026-10-10", "comment": "annual_2023・quarterly_2024Q1のshares=204は上場（2024年4月）前の株数（LOAR Holdingsの上場前の発行済株式）で、単位誤りではない。上場後の千株単位の申告はfact_overrides.jsonの\"share_unit\"で×1000補正済み（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]）。"},
- {"check": "WARN-59", "ticker": "SOUN", "acknowledged_date": "2026-10-10", "comment": "quarterly_2022Q1のshares_basic=4,161,000はSPAC合併（2022年4月）前の株数で、単位誤りではない（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]の調査で確認）。"}
+ {"check": "WARN-59", "ticker": "SOUN", "acknowledged_date": "2026-10-10", "comment": "quarterly_2022Q1のshares_basic=4,161,000はSPAC合併（2022年4月）前の株数で、単位誤りではない（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]の調査で確認）。"},
+ {"check": "WARN-60", "ticker": "CDNS", "match": "0000813672-26-000092", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-07-29提出の10-Q（0000813672-26-000092、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"},
+ {"check": "WARN-60", "ticker": "KO", "match": "0001628280-26-050503", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-07-29提出の10-Q（0001628280-26-050503、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"},
+ {"check": "WARN-60", "ticker": "RMBS", "match": "0001193125-26-321000", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-07-28提出の10-Q（0001193125-26-321000、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"},
+ {"check": "WARN-60", "ticker": "V", "match": "0001403161-26-000104", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-07-29提出の10-Q（0001403161-26-000104、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"},
+ {"check": "WARN-60", "ticker": "XOM", "match": "0000034088-26-000093", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-08-03提出の10-Q（0000034088-26-000093、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"}
 ]
 }
