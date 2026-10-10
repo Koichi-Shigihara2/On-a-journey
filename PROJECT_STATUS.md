@@ -11,6 +11,11 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、STONKS SILOの黒字化の基準）**: `[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`を完了。一覧の黒字化を「OCF ✓／OCF 27年」と「純益 28年」の2段に、
+  ソートはOCF ✓＞予測年の早い順＞—、上部カードと③パネルを「OCFトレンド …」、③の詳細に点数の根拠（OCFの傾向だけ・営業CFがプラスなら最低80・黒字化年は入らない）。
+  QoQの日数の下限を60→75日（RCATの2か月の移行期を除く。ヒートマップで「—」になったのはRCATの24/12の列だけ）。実装`77a15fafee`・データ`3d01dc0c25`、
+  計算・スコア・判定は不変。範囲外として`[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`（低）を登録。アクティブBACKLOG 30件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2186件・audit.py・report_consistency_check.py（NG=0）とも通過
 - **2026-10-10（夜、STONKS SILOのヒートマップのラベルと前年同期比）**: `[[STONKS-HEATMAP-FQ-LABEL-1]]`を完了。財務トレンドでfpを判断に使わず、
   前年同期比は期末日の330〜400日前（365日に最も近い）、QoQは日数差60〜120日のときだけ、画面のラベルは期末の「yy/mm」（実装`9d7505e9d0`・データ`2f0e1327c7`）。
   yoyがNone→値になった系列はfpが原因だった10系列だけ、既存のyoy・qoqの値・スコア・判定の変化0件。Layer3のfp（書類の会計期間）は

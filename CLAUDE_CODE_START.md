@@ -250,7 +250,17 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   - 前年同期比は最新のendの330〜400日前（365日に最も近い）、QoQは直前との日数差60〜120日のときだけ（Python・JSで同じ閾値）、画面のラベルは期末の「yy/mm」
 - yoyがNone→値: fpが原因の10系列だけ（既存の値・スコア・判定の変化0件）。`test_stonks_silo_yoy_period_validation.py`は新方式に書き直して15件
 - `pytest tests/ src/subport/day_trade/test_logic.py` 2181件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは30件
-- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`（中）
+- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（中。`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`は下の同日の作業で完了）
+
+**2026-10-10（夜）STONKS SILOの黒字化の基準（`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`、BACKLOG_DONE.mdへ）とQoQの下限75日**
+- 実装`77a15fafee`・データ`3d01dc0c25`。表示だけ（計算・スコア・判定は不変）
+- 一覧の黒字化は2段（`breakevenLines()`: 上「OCF ✓」または「OCF 27年」、下「純益 28年」、無ければ「—」）、ソートは`breakevenSortVal()`で1回目のクリックが
+  OCF ✓＞予測年の早い順＞—。上部カードと③パネルは「OCFトレンド …」、③の詳細の先頭に`PATH_SCORE_NOTE`（analyzer.pyの`_overall()`の`trend_map`と一致をテストで確認）
+- s3はOCFの傾向だけで決まり、黒字化年の推定は入らない（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`に追記。100点6・80点6・20点11・0点1、推定が両方無いのに100点はASTSだけ）
+- QoQの日数の下限60→75日（Python・JS）。新しく「—」はRCATの24/12の列の4マスだけ。記録はBACKLOG_DONE.mdの`[[STONKS-HEATMAP-FQ-LABEL-1]]`に追記
+- 範囲外として登録: `[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`（低。純利益がすでに黒字だと2段目が出ず、SPIRは「—」）
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2186件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは30件
+- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（中、点数の算出は確認済み）
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。

@@ -4,6 +4,46 @@
 
 ## 2026-10-10（完了）
 
+### ✅ [STONKS-BREAKEVEN-BASIS-UNLABELED-1] 一覧の「黒字化：達成済」とカードの「③黒字化パス100 加速中」がOCF基準（hidden_profit_already）であることが画面から読み取れない
+**優先度:** 中
+**分類:** 表示（基準の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- GTLB: `profitability_path`は`score=100`・`ocf_trend=ACCELERATING`・`hidden_profit_already=true`・`verdict_reason="IMMINENT | ACHIEVED"`（results.json、2026-10-09T20:30Z）。
+  一覧は「黒字化：達成済」、カードは「③黒字化パス100 加速中」
+- 一方、GTLBの純利益は−$56M（チャート）、詳細の「黒字化への道のり」では営業利益が「改善トレンドなし」
+- 「達成済」「加速中」がOCF（営業キャッシュフロー）基準であることは、画面のどこにも書かれていない
+
+#### 実害
+GAAPでは赤字の銘柄を、黒字化済みと読み違える
+
+#### 直し方の候補（未決定）
+- 「黒字化（OCF）：達成済」のように基準をラベルに入れる
+- glossary.jsonの説明（`data-info`）で基準を示す
+- GAAPの純利益・営業利益の黒字化の状態も並べて出す
+
+#### 完了の記録（2026-10-10、表示だけの修正。verdict・score・overall・profitability_pathの計算は変えていない）
+- STEP0: 黒字化の表示は、一覧の列（beCell）と見出しのtooltip・ソート（getSortVal 'be'）・上部カード「黒字化進捗」・③黒字化パスのパネル・要約の1行の5か所。
+  ほかに、②の詳細の「黒字転換目算（調整後EPS線形推定）」（TANUKIのlatest.jsonから注入）・「黒字化への道のり」のラダー図・使い方の説明があり、
+  いずれも基準を明示した別の表示のため変えていない。要約の1行（「× OCF黒字達成済み」「× 2026年黒字化予測」）も範囲外のため変えていない
+- s3はOCFの傾向だけで決まる（加速中100・改善中75・横ばい50・悪化中20・不明0、営業CFがプラスなら最低80）。黒字化年の推定は点数に入らない
+  （[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]に追記）
+- 24銘柄の一覧の列の基準（変更前）: OCF達成済10（CRWV・ESTC・FROG・GTLB・LYFT・NET・RBRK・S・SITM・ZS）・OCFの推定年6（IONQ・KULR・ONDS・QBTS・RKLB・SOUN）・
+  純利益の推定年1（AVAV）・なし7（ASTS・BBAI・JOBY・RCAT・RDW・RXRX・SPIR）
+- 実装`77a15fafee`: 一覧のセルを2段に（上「OCF ✓」／「OCF 27年」、下「純益 28年」、無ければ「—」）、見出しのtooltipを書き直し、
+  ソートは1回目のクリックで OCF ✓ ＞ 予測年の早い順 ＞ —（以前は予測年の無い11銘柄〈純利益の年が無いOCF✓の4銘柄と「—」の7銘柄〉が先頭に混ざり、
+  純利益の年があるOCF✓は年の中に散らばっていた）。上部カードと③パネルを「OCFトレンド 加速中」の形に、③の詳細の先頭に点数の根拠（`PATH_SCORE_NOTE`）
+- 確認した表示（1440px）: GTLB 一覧「OCF ✓ / 純益 27年」・カード「黒字化進捗 100 OCFトレンド 加速中」・③「100 OCFトレンド 加速中」、
+  SOUN「OCF 26年 / 純益 26年」・100・加速中、ASTS「—」・100・加速中、QBTS「OCF 28年」・20・悪化中。390pxでも2段のセルは崩れず
+  （行の高さは57pxのまま、ページの横幅は390px）
+- 残る点（範囲外として登録）: 純利益がすでに黒字（`gaap_breakeven_reason=ACHIEVED`）の銘柄は2段目が出ない（ESTC・LYFTは「OCF ✓」だけ、SPIRは「—」）
+  → [[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2186件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+
+---
+
 ### ✅ [STONKS-HEATMAP-FQ-LABEL-1] 変化ヒートマップの四半期ラベルが「期末日の暦年の下2桁＋会計期間のfp」の組み合わせで、12月決算以外の銘柄で順序が逆転して見える
 **優先度:** 中
 **分類:** 表示（ラベルの作り方） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）・`financial_vectors`の`series_q`
@@ -51,6 +91,14 @@
   JOBY・NET「24/09 24/12 25/03 25/06 25/09 25/12 26/03 26/06」
 - ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2181件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
 - Layer3のfpの付け方は直していない（[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]として登録）
+
+#### 追記（2026-10-10、QoQの日数の下限を60→75日に。[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]と同じcommit）
+- RCATの2024-10-31→2024-12-31（61日、決算期の変更による2か月の移行期）が、3か月の期と比べられていた。全銘柄の隣り合う期末の日数は、
+  通常の四半期が89〜95日（52/53週を含む）、RCATの移行期だけ61日（ほかは欠けた期の274日・425日）だったため、下限を75日にして移行期だけを除いた。上限120日は変えていない
+- `financial_trend_calculator.py`の`_QOQ_GAP_DAYS_MIN`とindex.htmlの`QOQ_GAP_DAYS_MIN`を75に（実装`77a15fafee`）。テストの境界値（74日None・75日・91日・120日・121日None）と
+  RCATの移行期の確認を追加
+- 再生成（`3d01dc0c25`）: yoy・qoqの値の変化0件（最新のqoqに61日の比較は無かった）。ヒートマップで新しく「—」になったのはRCATの24/12の列の4マス
+  （Revenue・GrossProfit・R&D・NetIncome。OCFはこの列に値が無い）だけで、期待どおり
 
 ---
 

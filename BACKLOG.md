@@ -2936,27 +2936,16 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 - OCFが赤字のままの改善と、黒字の拡大を分けて点を付ける
 - `ocf_breakeven_reason`が`NO_DATA`なのにOCFの年次が5年分ある理由を先に確認する（ASTSのocf_annualは2021〜2025の5値）
 
+#### 追記（2026-10-10、[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]のSTEP0で再確認、修正はしていない）
+- s3（黒字化パスの点数）は`analyzer.py::StonksAnalyzer._overall()`の`trend_map[pp.ocf_trend]`（加速中100・改善中75・横ばい50・悪化中20・不明0）。
+  `hidden_profit_already`（最新年のOCF>0）なら`max(点数, 80)`。`ocf_breakeven_year`・`gaap_breakeven_year`は点数に入らない
+- 24銘柄の内訳（2026-10-10のresults.json）: 100点はASTS・GTLB・NET・RBRK・SITM・SOUN（ACCELERATING）、80点はCRWV・ESTC・FROG・LYFT・S・ZS
+  （IMPROVINGだが営業CFがプラスで最低80）、20点は11銘柄（DETERIORATING）、0点はRCAT（UNKNOWN）。黒字化年の推定が両方とも無いのに100点はASTSだけ
+- 画面には③パネルの詳細の先頭に、この算出をそのまま説明として出した（`PATH_SCORE_NOTE`、`77a15fafee`）
+
 ---
 
-### [STONKS-BREAKEVEN-BASIS-UNLABELED-1] 一覧の「黒字化：達成済」とカードの「③黒字化パス100 加速中」がOCF基準（hidden_profit_already）であることが画面から読み取れない
-**優先度:** 中
-**分類:** 表示（基準の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- GTLB: `profitability_path`は`score=100`・`ocf_trend=ACCELERATING`・`hidden_profit_already=true`・`verdict_reason="IMMINENT | ACHIEVED"`（results.json、2026-10-09T20:30Z）。
-  一覧は「黒字化：達成済」、カードは「③黒字化パス100 加速中」
-- 一方、GTLBの純利益は−$56M（チャート）、詳細の「黒字化への道のり」では営業利益が「改善トレンドなし」
-- 「達成済」「加速中」がOCF（営業キャッシュフロー）基準であることは、画面のどこにも書かれていない
-
-#### 実害
-GAAPでは赤字の銘柄を、黒字化済みと読み違える
-
-#### 直し方の候補（未決定）
-- 「黒字化（OCF）：達成済」のように基準をラベルに入れる
-- glossary.jsonの説明（`data-info`）で基準を示す
-- GAAPの純利益・営業利益の黒字化の状態も並べて出す
+（[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -3361,6 +3350,25 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 - エントリにfpを入れず、期間から決めた四半期（会計年度の期末月からの位置）を別のキーで持つ
 - fp・fyのキー名を`filing_fp`・`filing_fy`のように改め、意味を名前で示す（消費者の書き換えが要る）
 - 現状維持（新しい消費者が四半期のfpを使うときは、期末日で識別するよう手順書に書く）
+
+---
+
+### [STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1] STONKS SILOの一覧の黒字化の列で、純利益がすでに黒字の銘柄の「純益」の段が出ない（SPIRは「—」になる）
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`breakevenLines()`）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- 一覧の黒字化の2段目（純益）は`gaap_breakeven_year`があるときだけ出す（依頼の仕様どおり）。純利益がすでに黒字の銘柄は
+  `gaap_breakeven_year=None`・`gaap_breakeven_reason="ACHIEVED"`で、2段目が出ない
+- 2026-10-10のresults.json: ESTC・LYFTは「OCF ✓」だけ（純利益も黒字）。SPIRはOCFが改善傾向なし（NO_TREND）で、一覧は「—」だが純利益は黒字
+  （SPIRのACHIEVEDが一時的な利益によるものかは未確認）
+- 見出しのtooltipでは「—」を「どちらの基準でも予測年が出ない」と説明しており、純利益が黒字の銘柄の「—」は読み違えやすい
+
+#### 直し方の候補（未決定）
+- `gaap_breakeven_reason="ACHIEVED"`なら2段目に「純益 ✓」を出す（ソートの扱いも決める）
+- 現状維持（③パネルの詳細の「純利益黒字化予測」には「達成済み」が出ている）
 
 ---
 
