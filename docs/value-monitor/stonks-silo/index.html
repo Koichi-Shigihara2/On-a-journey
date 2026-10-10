@@ -251,7 +251,8 @@
       <div class="hero-sub">「次のPLTR $7を見つけ、次のSRGAを避ける」<br>良い赤字・生存能力・隠れ黒字化の3本柱で成長初期銘柄を評価。</div>
     </div>
     <div class="hero-meta">
-      UPDATED<br><span id="hero-updated">—</span><br><br>
+      PRICE UPDATED<br><span id="hero-updated">—</span><br><br>
+      FINANCIALS<br><span id="hero-financials">—</span><br><br>
       COVERAGE<br><span id="hero-count">—</span> TICKERS
     </div>
   </div>
@@ -416,6 +417,16 @@ async function loadData() {
       dt.toLocaleDateString('ja-JP', {month:'2-digit', day:'2-digit'}) +
       ' ' + dt.toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('hero-count').textContent = Object.keys(allData).length;
+    // [[STONKS-DATA-ASOF-MISSING-1]]: 財務データが古い銘柄（最新四半期末＋135日超）の数
+    const staleTickers = Object.entries(allData).filter(([, x]) => (x.financial_as_of || {}).stale === true).map(([t]) => t);
+    const unknownAsOf = Object.values(allData).filter(x => !(x.financial_as_of || {}).latest_quarter_end).length;
+    const finEl = document.getElementById('hero-financials');
+    if (staleTickers.length) {
+      finEl.innerHTML = `<span style="color:var(--amb)" data-info-text="最新四半期末から${STALE_DAYS}日を超えても次の四半期の財務が入っていない銘柄: ${staleTickers.join(', ')}">古い ${staleTickers.length}銘柄</span>`;
+    } else {
+      finEl.textContent = '全銘柄 最新';
+    }
+    if (unknownAsOf) finEl.innerHTML += ` <span style="color:var(--mut)">（不明 ${unknownAsOf}）</span>`;
 
     render();
     loadTanukiBadges(Object.keys(allData));
@@ -458,7 +469,7 @@ function getSortVal(ticker, d, key) {
     case 'score':   return d.overall_score ?? -1;
     case 'verdict': return ['10x_CANDIDATE','PROMISING','WATCH','AVOID'].indexOf(d.overall_verdict);
     case 'deficit': return dq.score ?? -1;
-    case 'runway':  return ra.runway_months === null ? -1 : (ra.runway_months > 999 ? 9999 : (ra.runway_months ?? -1));
+    case 'runway':  return runwaySortVal(d.runway);
     case 'trend':   return ['ACCELERATING','IMPROVING','FLAT','DETERIORATING','UNKNOWN'].indexOf(pp.ocf_trend);
     case 'price':   return v.current_price ?? -1;
     case 'gm':      return dq.gross_margin ?? -1;
@@ -534,14 +545,13 @@ function render() {
     else if (beYear) beCell = `<span style="font-family:var(--mono);font-size:11px">${beYear}年</span>`;
 
     // runway bar
-    const rm = ra.runway_months;
+    const rd = runwayDisplay(ra);
     let runwayHtml = runwayCell(ra);
-    if (rm !== null && rm !== undefined && rm < 999) {
-      const pct = Math.min(100, Math.round(rm / 36 * 100));
-      const barColor = rm >= 24 ? 'var(--grn)' : rm >= 12 ? 'var(--amb)' : 'var(--red)';
+    if (rd.kind === 'months') {
+      const pct = Math.min(100, Math.round(rd.months / 36 * 100));
       runwayHtml = `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-        <span style="color:${barColor};font-family:var(--mono);font-size:11px">${Math.round(rm)}M</span>
-        <div style="width:44px;height:3px;background:var(--bdr)"><div style="width:${pct}%;height:100%;background:${barColor}"></div></div>
+        ${fmtRunway(ra, 11)}
+        <div style="width:44px;height:3px;background:var(--bdr)"><div style="width:${pct}%;height:100%;background:${rd.color}"></div></div>
       </div>`;
     }
 
@@ -550,7 +560,7 @@ function render() {
       <td style="padding:10px 6px 10px 10px;width:28px">
         <span onclick="togglePin('${ticker}',event)" title="ピン留め" style="cursor:pointer;font-size:13px;color:${isPinned?'var(--stonks)':'var(--bdr)'};transition:color .15s">★</span>
       </td>
-      <td class="col-ticker" style="white-space:nowrap"><a class="ticker-cell" href="../tanuki_valuation/stock.html?ticker=${ticker}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;color:inherit;transition:color .15s" onmouseover="this.style.color='var(--acc)'" onmouseout="this.style.color='inherit'">${ticker}</a><span id="tscore-${ticker}" style="margin-left:5px"></span></td>
+      <td class="col-ticker" style="white-space:nowrap"><a class="ticker-cell" href="../tanuki_valuation/stock.html?ticker=${ticker}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;color:inherit;transition:color .15s" onmouseover="this.style.color='var(--acc)'" onmouseout="this.style.color='inherit'">${ticker}</a><span id="tscore-${ticker}" style="margin-left:5px"></span>${asOfCell(d.financial_as_of)}</td>
       <td>${verdictBadge(d.overall_verdict)}</td>
       <td>${deficitBadge(dq.verdict)}</td>
       <td class="r">${runwayHtml}</td>
@@ -1037,6 +1047,7 @@ function buildDetail(ticker, d) {
       <div class="conclusion-verdict" style="color:${vc};border-color:${vbc};background:${vbg}">${verdictLabel}</div>
       <div class="conclusion-summary">${summaryOneLiner}</div>
       ${valInlineHtml ? `<div style="flex-basis:100%;font-family:var(--mono);font-size:10px;color:var(--mut);margin-top:2px">${valInlineHtml}</div>` : ''}
+      <div style="flex-basis:100%;font-family:var(--mono);font-size:10px;color:var(--mut);margin-top:2px">${asOfDetail(d.financial_as_of)}</div>
       <div id="ned-${ticker}" style="font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:4px">次回決算: —</div>
       <div style="font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:2px">機関保有: N/A</div>
     </div>
@@ -1095,7 +1106,7 @@ function buildDetail(ticker, d) {
         <div class="pillar-title">② 生存能力</div>
         <div class="pillar-score" style="color:${pillarColor(s2)}">${s2}</div>
         <div class="pillar-max">/100</div>
-        <div class="pillar-label">${fmtRunway(ra.runway_months)}</div>
+        <div class="pillar-label">${fmtRunway(ra)}${['cfpos','unknown'].includes(runwayDisplay(ra).kind) && ra.verdict_reason ? `<div style="font-size:9px;color:var(--mut);margin-top:2px;font-family:var(--mono)">${ra.verdict_reason}</div>` : ''}</div>
       </div>
       <details style="border-top:1px solid var(--bdr)">
         <summary style="padding:6px 12px;cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--mut);user-select:none;list-style:none">▶ 詳細</summary>
@@ -1104,7 +1115,7 @@ function buildDetail(ticker, d) {
           <div class="detail-row"><span class="detail-key">判定</span><span class="detail-val ${ra.verdict==='DANGER'?'neg':ra.verdict==='SAFE'?'pos':''}">${{'SAFE':'安全','WATCH':'要注意','DANGER':'危険','UNKNOWN':'不明'}[ra.verdict]||ra.verdict||'—'}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">現金<span class="tip-icon">?</span><span class="tip-box">現金及び現金同等物+短期投資の合計</span></span></span><span class="detail-val">${fmtB(ra.cash)}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">月次資金消費<span class="tip-icon">?</span><span class="tip-box">（営業CF+設備投資）÷12。マイナス=現金流出中 / プラス=現金増加中</span></span></span><span class="detail-val ${(ra.monthly_burn||0)<0?'neg':'pos'}">${(ra.monthly_burn||0)>0?`+${fmtB(ra.monthly_burn)}/月 <span style="font-size:9px;color:var(--mut)">（OCF ${fmtB(ra.ocf_annual)} - CapEx ${fmtB(ra.capex_annual)} = CF黒字）</span>`:`${fmtB(ra.monthly_burn)}/月`}</span></div>
-          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">生存可能期間<span class="tip-icon">?</span><span class="tip-box">現金÷月次バーンの絶対値。OCFがプラスの場合は∞</span></span></span><span class="detail-val ${ra.runway_months!==null&&ra.runway_months<12?'neg':''}">${ra.runway_months===null?'—':ra.runway_months===Infinity?'∞':fmtRunway(ra.runway_months)}</span></div>
+          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">生存可能期間<span class="tip-icon">?</span><span class="tip-box">現金÷月次バーンの絶対値（ヶ月）。現金が減っていない（営業CF−設備投資≧0）ときは「CF黒字」、データが足りないときは「不明」</span></span></span><span class="detail-val">${fmtRunway(ra)}</span></div>
           <div id="eps-be-${ticker}" style="display:none;padding:8px 0;border-top:1px solid var(--bdr);margin-top:6px"></div>
         </div>
       </details>
@@ -1429,16 +1440,55 @@ function deficitBadge(v) {
   return `<span class="def-badge ${cls}">${label}</span>`;
 }
 
-function runwayCell(ra) {
-  if (!ra) return '—';
-  return fmtRunway(ra.runway_months);
+// [[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]・[[STONKS-SURVIVAL-PANEL-DASH-1]]（2026-10-10）: 生存期間の表示を
+// 一覧・②パネル・詳細の行で共通にする。runway_monthsがnullなのは、現金が減っていない
+// （analyzer.pyでinf → results.jsonでnull、verdict=SAFE）か、データ不足（verdict=UNKNOWN）のどちらか。
+// 以前はどちらも「—」で、月数の「25M」は金額（$25M）と読み違えやすかった。表示だけで判定は変えない。
+function runwayDisplay(ra) {
+  const rm = ra ? ra.runway_months : null;
+  if (!ra || rm === null || rm === undefined) {
+    if (ra && ra.verdict === 'SAFE') return {kind:'cfpos', text:'CF黒字', color:'var(--grn)'};
+    return {kind:'unknown', text:'不明', color:'var(--mut)'};
+  }
+  if (rm > 999) return {kind:'inf', text:'∞', color:'var(--grn)'};
+  const color = rm >= 24 ? 'var(--grn)' : rm >= 12 ? 'var(--amb)' : 'var(--red)';
+  return {kind:'months', text:`${Math.round(rm)}ヶ月`, color, months:rm};
 }
 
-function fmtRunway(months) {
-  if (months === null || months === undefined) return '—';
-  if (months > 999) return '<span style="color:var(--grn)">∞</span>';
-  const color = months >= 24 ? 'var(--grn)' : months >= 12 ? 'var(--amb)' : 'var(--red)';
-  return `<span style="color:${color};font-family:var(--mono);font-size:12px">${Math.round(months)}M</span>`;
+function fmtRunway(ra, size) {
+  const r = runwayDisplay(ra);
+  return `<span style="color:${r.color};font-family:var(--mono);font-size:${size || 12}px">${r.text}</span>`;
+}
+
+function runwayCell(ra) {
+  return fmtRunway(ra);
+}
+
+// 並び: CF黒字 ＞ ∞ ＞ 月数の降順 ＞ 不明（値が大きいほど上）
+function runwaySortVal(ra) {
+  const r = runwayDisplay(ra);
+  if (r.kind === 'cfpos') return 2e9;
+  if (r.kind === 'inf') return 1e9;
+  if (r.kind === 'months') return r.months;
+  return -1;
+}
+
+// [[STONKS-DATA-ASOF-MISSING-1]]（2026-10-10）: 財務データの基準日（pipeline.pyのfinancial_as_of）
+const STALE_DAYS = 135;
+function asOfCell(fa) {
+  const q = fa && fa.latest_quarter_end;
+  if (!q) return `<div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:1px">財務 不明</div>`;
+  const stale = fa.stale === true
+    ? ` <span style="color:var(--amb)" data-info-text="最新四半期末から${fa.stale_threshold_days || STALE_DAYS}日を超えても、次の四半期の財務が入っていない">古い</span>` : '';
+  return `<div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:1px">〜${q.slice(2).replace(/-/g, '/')}${stale}</div>`;
+}
+
+function asOfDetail(fa) {
+  fa = fa || {};
+  const q = fa.latest_quarter_end || '不明';
+  const fy = fa.scoring_fy != null ? `FY${fa.scoring_fy}（期末 ${fa.scoring_fy_end || '不明'}）` : '不明';
+  const stale = fa.stale === true ? ' <span style="color:var(--amb)">古い</span>' : '';
+  return `財務: 最新四半期末 ${q}${stale} ／ スコアの基準 ${fy}`;
 }
 
 function trendCell(t) {

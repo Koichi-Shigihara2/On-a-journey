@@ -25,8 +25,10 @@ from fetcher import load_annual_data
 from analyzer import StonksAnalyzer
 from valuation_fetcher import fetch_valuation
 from financial_trend_calculator import compute_vectors, load_all_normalized
+import financial_as_of
 from common.sec_data import tickers
 from common.sec_data.reader import SECReader, get_ttm_revenue
+from common.sec_data.layer3_builder import build_ticker_store
 
 
 _OUTPUT_DIR = _REPO_ROOT / "docs" / "value-monitor" / "stonks-silo" / "data"
@@ -102,6 +104,7 @@ def run(tickers: list[str] | None = None) -> dict:
 
     analyzer = StonksAnalyzer()
     sec_reader = SECReader()
+    generated_at = datetime.now(timezone.utc)
     results = {}
     errors = {}
 
@@ -139,7 +142,11 @@ def run(tickers: list[str] | None = None) -> dict:
 
             # 2026-09-26（指示書㉑ STEP C）: PSR・EV/Salesの分母は直近4四半期（TTM）の売上を優先し、
             # 取れない場合のみ最新年度の売上を使う（いずれも表示用。verdict・scoreには使わない）
-            _ttm_rev = get_ttm_revenue(ticker)
+            try:
+                store = build_ticker_store(ticker)
+            except Exception:
+                store = None
+            _ttm_rev = get_ttm_revenue(ticker, store=store)
             sales_denom = _ttm_rev["val"] if _ttm_rev else latest_rev
             sales_basis = f"TTM {_ttm_rev['ttm_end']}" if _ttm_rev else "最新年度"
             psr = val["market_cap"] / sales_denom if val["market_cap"] and sales_denom else None
@@ -160,6 +167,16 @@ def run(tickers: list[str] | None = None) -> dict:
                 "fetched_at":       val["fetched_at"],
                 "error":            val["error"],
             }
+
+            # [[STONKS-DATA-ASOF-MISSING-1]]、2026-10-10: 財務データの基準日（表示用。
+            # verdict・score・overallには使わない）。取れない値はNone
+            try:
+                result["financial_as_of"] = financial_as_of.build(ticker, data["years"], store, generated_at)
+            except Exception as e:
+                print(f"  [{ticker}] financial_as_of 取得エラー: {e}")
+                result["financial_as_of"] = {"latest_quarter_end": None, "scoring_fy": None,
+                                             "scoring_fy_end": None, "stale": None,
+                                             "stale_threshold_days": financial_as_of.STALE_DAYS_AFTER_QUARTER_END}
 
             results[ticker] = result
             print(f"  [{ticker}] {analysis.overall_verdict} (score={analysis.overall_score})")
@@ -202,8 +219,11 @@ def run(tickers: list[str] | None = None) -> dict:
         import traceback
         traceback.print_exc()
 
+    # staleは出力のgenerated_atで全銘柄そろえて判定する（マージした古い行も含む）
+    n_stale = financial_as_of.restamp(results, generated_at)
+
     output = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": generated_at.isoformat(),
         "ticker_count": len(results),
         "tickers": results,
         "errors": errors,
@@ -233,6 +253,7 @@ def run(tickers: list[str] | None = None) -> dict:
 
     print(f"\n保存完了: {_OUTPUT_FILE}")
     print(f"成功={len(results)}  スキップ/エラー={len(errors)}")
+    print(f"財務データが古い銘柄（最新四半期末＋{financial_as_of.STALE_DAYS_AFTER_QUARTER_END}日超）: {n_stale}")
     return output
 
 
