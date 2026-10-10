@@ -2828,6 +2828,30 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 - 影響なし: TANUKI VALUATIONのdiluted_shares（yfinance優先、該当銘柄はすべてyf_implied）・理論株価・最大EPS・時価総額、EPS Analyzer（`extract_key_facts.py`に千株単位の自動補正あり）、
   TANUKI TAIL（保有9銘柄に該当なし。CIX・LOARを保有すればEPSが1,000倍になる）、STONKS SILO・HypeCore（SECの株式数を使わない）、ROTCE（外れ値として捨てて回避）
 - 凍結年度: LOARの2023〜2025年度はfields_snapshotにshares_dilutedを含む（修正時は登録の更新が必要）
+- 2026-10-10訂正: 上の調査で「funda/timingは希薄化率を使わず影響なし」としたのは誤り。`pipeline.py::_compute_tanuki_score()`の
+  希薄化ペナルティ（3年年率>40%で−25、>20%で−15）がfunda_scoreに入る。ONDSは修正後にfunda_score 75→50（tanuki_scoreはWATCHのまま）
+
+#### 対応（2026-10-10）
+- STEP1 `b11a4dbd3d`: Layer3の株式数（category=sharesの3フィールド）にYTD→単四半期変換をかけない（ESTCの2点）
+- STEP2 `514b2ce230`: `share_unit_fix.py`。同じ期間で比が1,000倍・100万倍の2値は、その概念の全期間の中央値に近い方を採る
+  （指示書の「大きい方」から変更: MSCI 2014-12-31は1つの10-Qだけが1,000倍で、大きい方が誤り）。置き換えは`data/{T}/share_unit_fix_log.json`
+- STEP3 `04419e6058`: fact_overrides.jsonの銘柄ごとの"share_unit"で個別補正（CIX 2026-06-30・ONDS 2025年度・2026-03-31・LOARの上場後の全期）。
+  年度単位の上書きと違い四半期・Layer3にも効く。LOAR 2024・2025年度のfields_snapshot_hashを更新（他の凍結25項目は不変）
+- STEP4 `1cae34ace2`: report_consistency_check.pyにCHECK-59（WARN）。LOARの上場前の204・SOUNのSPAC合併前の株数は確認済み台帳に登録
+- 結果: タスク開始時点から株式数52値（Layer2）が変わり、株式数以外の差分0件。ONDSの希薄化率73.8%/年（critical）、グローストラップhigh
+- ONDSは確認のためXAI_API_KEYを空にして1銘柄だけ再生成し（fcf_outlier.transient_found=FalseでGrokの呼び出し条件に当たらない）、
+  再生成した出力はcommitせず元に戻した（チャット側の指示）。公開データへの反映は2026-10-12（月）13:00 JSTごろの定時実行。
+  再生成で変わった項目: 希薄化率73.8%・dilution_severity=critical・funda_score 75→50（希薄化ペナルティ、正しい結果として承認済み）、
+  category（None）・tanuki_score（WATCH）・timing_score（25）・matrixは不変。AI由来の欄（fcf_outlier.ai_assessment等）は再生成前後とも空で、
+  空になった欄はない。ほかに最大EPS 0.3144→0.4604・per_is_forward False→Trueが変わったが、株式数とは無関係（[[TANUKI-MAXEPS-NI-SOURCE-1]]・
+  [[TANUKISCORE-PER-FORWARD-MIX-1]]の修正が未反映だったもの）
+- ONDS以外の全銘柄: 判定値に効くのは希薄化率（funda_scoreのペナルティ）だけで、pipeline.pyの計算を開始時点・修正後のコードで全98銘柄について
+  再現すると、開始時点の再現値は公開中のlatest.jsonと全銘柄一致、修正後に変わるのはONDSだけ
+
+#### 未補正（同じ期に正しい値を申告した書類がなく、根拠のある補正ができない。いずれも直近5年より前でCHECK-59の対象外）
+- ELF 2014〜15（上場前、27,593・30,523、2016Q1は490,760で倍率が一定でない）
+- RCAT 2013〜14（167,097,874→1,113,986→257,097,874→92,935,896→19,241,365と不規則、資本再編とみられる）
+- KO 2018Q1（4,306）、NVDA 2008・2009年度・2010Q2、FCX 2010Q2（473、翌年の書類は2対1分割後の947,000,000で比が100万倍ちょうどでない）
 
 ---
 
