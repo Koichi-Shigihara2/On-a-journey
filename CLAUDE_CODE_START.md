@@ -241,7 +241,16 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - 確認はPlaywright（`/On-a-journey/`以下をdocs/に振り替えて配信）。デスクトップ1440px・モバイル390px、コンソールの404はRKLB・ZSのlatest.jsonだけ（既知）
 - `pytest tests/ src/subport/day_trade/test_logic.py` 2171件・audit.py exit 0・report_consistency_check.py NG=0（WARN 127件）。BACKLOG.mdのアクティブは30件
 - **残っている確認**: 次のStonks_Silo_Update（CI）の後も全銘柄に`financial_as_of`が出ていること（PROJECT_STATUS.mdの同日の「次回確認」）
-- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`・`[[STONKS-HEATMAP-FQ-LABEL-1]]`（中）
+- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`（中。`[[STONKS-HEATMAP-FQ-LABEL-1]]`は下の同日の作業で完了）
+
+**2026-10-10（夜）STONKS SILOのヒートマップのラベルと前年同期比（`[[STONKS-HEATMAP-FQ-LABEL-1]]`、BACKLOG_DONE.mdへ）**
+- 実装`9d7505e9d0`・データ`2f0e1327c7`。STONKS SILOの財務トレンドではfpを判断に使わず、四半期は期末日（end）だけで識別する
+  - Layer3の四半期のfp/fyは「その数値を最後に申告した書類のfp/fy」で、期間の四半期ではない（`[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]`、低、登録のみ。
+    四半期のfpを判断に使う機能は、今回の修正でなくなった）
+  - 前年同期比は最新のendの330〜400日前（365日に最も近い）、QoQは直前との日数差60〜120日のときだけ（Python・JSで同じ閾値）、画面のラベルは期末の「yy/mm」
+- yoyがNone→値: fpが原因の10系列だけ（既存の値・スコア・判定の変化0件）。`test_stonks_silo_yoy_period_validation.py`は新方式に書き直して15件
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2181件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは30件
+- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`（中）
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。

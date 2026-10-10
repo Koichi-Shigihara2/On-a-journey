@@ -11,6 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、STONKS SILOのヒートマップのラベルと前年同期比）**: `[[STONKS-HEATMAP-FQ-LABEL-1]]`を完了。財務トレンドでfpを判断に使わず、
+  前年同期比は期末日の330〜400日前（365日に最も近い）、QoQは日数差60〜120日のときだけ、画面のラベルは期末の「yy/mm」（実装`9d7505e9d0`・データ`2f0e1327c7`）。
+  yoyがNone→値になった系列はfpが原因だった10系列だけ、既存のyoy・qoqの値・スコア・判定の変化0件。Layer3のfp（書類の会計期間）は
+  `[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]`（低）として登録のみ。アクティブBACKLOG 30件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2181件・audit.py・report_consistency_check.py（NG=0）とも通過。
+  **次回確認**: 次のStonks_Silo_Update（CI）の後も、10系列（CRWV・JOBY等のNetIncome、KULRのRevenue・GrossProfit・NetIncome）のyoyが値のままであること
 - **2026-10-10（夜、STONKS SILOの表示）**: `[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`を完了。
   results.jsonに表示用の`financial_as_of`（最新四半期末・スコアの基準年度とその期末日・stale〈最新四半期末＋135日超〉）、一覧・詳細・ヒーローに財務の基準日、
   生存期間の表示を「CF黒字／不明／∞／{n}ヶ月」の1つの書式に（一覧・②パネル・詳細の行）、ソートはCF黒字＞∞＞月数＞不明。

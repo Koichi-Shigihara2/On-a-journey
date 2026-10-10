@@ -4,6 +4,56 @@
 
 ## 2026-10-10（完了）
 
+### ✅ [STONKS-HEATMAP-FQ-LABEL-1] 変化ヒートマップの四半期ラベルが「期末日の暦年の下2桁＋会計期間のfp」の組み合わせで、12月決算以外の銘柄で順序が逆転して見える
+**優先度:** 中
+**分類:** 表示（ラベルの作り方） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）・`financial_vectors`の`series_q`
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html` L1215-1220: ラベルは`e.end.slice(2,4)`（期末日の暦年）＋`e.fp`（会計期間）。同じ方式がL1346-1350（チャートのラベル）にもある
+- 12月決算以外の銘柄で、暦年と会計年度がずれて並びが崩れる。該当: AVAV・ESTC・GTLB・IOT・RBRK・S・ZS
+  （例 GTLB「24Q2 24Q3 25Q4 25Q1 25Q2 25Q3 26Q4 26Q1」。results.jsonのGTLBのNetIncomeの`series_q`は2024-07-31 Q2〜2026-04-30 Q1で、ラベルの作り方どおり）
+- RCATは決算期の変更で「23Q2 24Q3 24Q2 2024-12 25Q1…」と崩れる（fpが`FY`の行は`end`の年月で表示）
+
+#### 参考（fpの付与の疑い、別途確認）
+- `financial_vectors`の`series_q`のfpにも誤りがある。JOBYのNetIncomeで2025-03-31・2026-03-31が"Q2"（同じ銘柄のRevenueでは"Q1"）。
+  RCATのNetIncomeでも2025-03-31・2026-03-31が"Q2"（2026-10-10にresults.jsonで確認）
+- ヒートマップはRD・NetIncome・OCFから日付の軸を作るため、12月決算の銘柄ではfpの誤りが表面化していない。fpをどこで付けているか（Layer3の`fp`か、STONKS SILO側か）は未確認
+
+#### 実害
+四半期の並びを読み違える（新しい期が古く見える）。判定値には影響しない（表示だけ）
+
+#### 直し方の候補（未決定）
+- ラベルを会計年度（`fy`）＋fpにする（`fy`が付いていれば）
+- 期末の年月（例 2025-07）で表示する
+- fpの付与の誤りを先に直す（上の参考）
+
+#### 完了の記録（2026-10-10、方針: STONKS SILOの財務トレンドではfpを判断に使わず、四半期は期末日だけで識別する）
+- 原因: Layer3の四半期エントリのfp/fyは「その数値を最後に申告した書類のfp/fy」で、期間そのものの四半期ではない（`quarterly.py::_process_entries()`が
+  company_factsのfactのfp/fyをそのまま写す。例: JOBYの2025-03-31・2026-03-31の純利益は2026年Q2の10-Qで再掲されたためfp="Q2"・fy=2026）。
+  これがラベルの崩れと、前年同期比の欠落の両方の原因だった
+- 前提の確認: financial_vectorsはanalyzer.py・pipeline.pyのverdict・score・overallに使われていない（表示用）。yoyがNoneの系列は168系列中12で、
+  fpの誤りでガードに止められたもの10（同じfp「Q2」の直前が91日前）・データ不足（5件未満）2（ASTSのOperatingIncome・LYFTのCapEx）・val_prev=0は0
+- 実装`9d7505e9d0`: `_calc_yoy_change`は最新エントリのendから330〜400日前にendがあるエントリ（複数なら365日に最も近いもの）を前年同期とする
+  （戻り値の"fp"はキーを残し空文字）。`_calc_qoq_change`は直前のエントリとの日数差が60〜120日のときだけ（`_QOQ_GAP_DAYS_MIN/MAX`）。
+  index.htmlはヒートマップの列とチャートのラベルを期末の「yy/mm」（`fvEndLabel()`）に、ヒートマップのQoQは直前の列との日数差が60〜120日のときだけ
+  （`fvIsAdjacentQuarter()`、閾値はPythonと同じ）、見出しに「列は期末の年月（yy/mm）」。依頼にあった3か所目（initFvChartsのlabels、L69-73付近）は、
+  L69-73がCSSで、initFvChartsのlabelsは「チャートのラベル」と同じ箇所だった（fpの使用は2か所だけ）
+- テスト: `test_stonks_silo_yoy_period_validation.py`の旧方式（fpの誤りならNone）を固定していた3件を書き直し、15件に（fpの誤りでもYoYが取れる・
+  330〜400日に無ければNone・365日に近い方・QoQの日数のガード・HTMLのラベルとQoQの閾値がPythonと一致）
+- 再生成データ`2f0e1327c7`: yoyがNone→値はCRWV・JOBY・LYFT・ONDS・RCAT・RKLB・SPIRのNetIncome、KULRのRevenue・GrossProfit・NetIncomeの10系列
+  （前年同期2025-06-30→最新2026-06-30）。既存のyoy・qoqのchange_pct・比較期間の変化0件、qoqが新しくNoneになった系列0件、
+  ヒートマップで日数のガードにより新しく「—」になるマス0件、スコア・判定の変化0件。yoyの母集団に10系列が加わったため、既存62系列の
+  percentile・population_sizeと全24銘柄のcompositeが変わった（相対順位、画面・判定では未使用）
+- ブラウザ（1440px）のヒートマップの見出し（すべて時系列の昇順、チャートのラベルも同じ）:
+  GTLB・ZS・ESTC「24/10 25/01 25/04 25/07 25/10 26/01 26/04 26/07」、RCAT「23/10 24/01 24/10 24/12 25/03 25/06 25/09 25/12 26/03 26/06」、
+  JOBY・NET「24/09 24/12 25/03 25/06 25/09 25/12 26/03 26/06」
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2181件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+- Layer3のfpの付け方は直していない（[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]として登録）
+
+---
+
 ### ✅ [STONKS-DATA-ASOF-MISSING-1] STONKS SILOに財務データの基準日の表示がなく、ヒーローの「UPDATED」（株価の更新時刻）だけで新しく見える
 **優先度:** 中
 **分類:** 表示（データの鮮度の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
@@ -10603,6 +10653,8 @@ beta_config.jsonにoverrideが存在する銘柄（現状ほぼ全銘柄=101件�
 ## 2026-09-12⑥（完了）
 
 ### ✅ [STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1] STONKS SILOのYoY計算がfpラベルの完全一致のみで照合し期間長の妥当性チェックを持たない — 期間長(330-400日)チェックを追加、9銘柄で現在進行形の実害を確認し是正
+
+**2026-10-10追記**: この方式（fpでグルーピングしてから日数を検証）は[[STONKS-HEATMAP-FQ-LABEL-1]]で置き換えた。fpの誤りの系列で前年同期比がNoneになっていた（168系列中10系列）ため、fpを使わず期末日だけで前年同期を決める。
 **状態:** ✅実装・本番反映完了
 **優先度:** 低〜中 → 完了
 **分類:** データ品質 / 設計改善

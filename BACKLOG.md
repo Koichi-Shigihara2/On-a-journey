@@ -2906,30 +2906,7 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [STONKS-HEATMAP-FQ-LABEL-1] 変化ヒートマップの四半期ラベルが「期末日の暦年の下2桁＋会計期間のfp」の組み合わせで、12月決算以外の銘柄で順序が逆転して見える
-**優先度:** 中
-**分類:** 表示（ラベルの作り方） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）・`financial_vectors`の`series_q`
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- `index.html` L1215-1220: ラベルは`e.end.slice(2,4)`（期末日の暦年）＋`e.fp`（会計期間）。同じ方式がL1346-1350（チャートのラベル）にもある
-- 12月決算以外の銘柄で、暦年と会計年度がずれて並びが崩れる。該当: AVAV・ESTC・GTLB・IOT・RBRK・S・ZS
-  （例 GTLB「24Q2 24Q3 25Q4 25Q1 25Q2 25Q3 26Q4 26Q1」。results.jsonのGTLBのNetIncomeの`series_q`は2024-07-31 Q2〜2026-04-30 Q1で、ラベルの作り方どおり）
-- RCATは決算期の変更で「23Q2 24Q3 24Q2 2024-12 25Q1…」と崩れる（fpが`FY`の行は`end`の年月で表示）
-
-#### 参考（fpの付与の疑い、別途確認）
-- `financial_vectors`の`series_q`のfpにも誤りがある。JOBYのNetIncomeで2025-03-31・2026-03-31が"Q2"（同じ銘柄のRevenueでは"Q1"）。
-  RCATのNetIncomeでも2025-03-31・2026-03-31が"Q2"（2026-10-10にresults.jsonで確認）
-- ヒートマップはRD・NetIncome・OCFから日付の軸を作るため、12月決算の銘柄ではfpの誤りが表面化していない。fpをどこで付けているか（Layer3の`fp`か、STONKS SILO側か）は未確認
-
-#### 実害
-四半期の並びを読み違える（新しい期が古く見える）。判定値には影響しない（表示だけ）
-
-#### 直し方の候補（未決定）
-- ラベルを会計年度（`fy`）＋fpにする（`fy`が付いていれば）
-- 期末の年月（例 2025-07）で表示する
-- fpの付与の誤りを先に直す（上の参考）
+（[[STONKS-HEATMAP-FQ-LABEL-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -3358,6 +3335,32 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 #### 直し方の候補（未決定）
 - 行をメモリに貯めて、最後に見出しと一緒に書く
 - 最初の行を書く前に見出しを書く
+
+---
+
+### [LAYER3-QUARTERLY-FP-FILING-LABEL-1] Layer3・normalizedの四半期エントリのfp・fyが、期間そのものではなく「その数値を最後に申告した書類」の会計期間になっている
+**優先度:** 低（2026-10-10時点で、四半期のfpを判断に使っている機能は無い）
+**分類:** データの意味（ラベル） / common/sec_data（`quarterly.py::_process_entries()`、Layer3・normalized共通）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-HEATMAP-FQ-LABEL-1]]のSTEP0（読み取り調査、2026-10-10、登録のみ）
+
+#### 内容（観測した事実）
+- `_process_entries()`は、company_factsのfactの`fp`・`fy`（SECのXBRL APIでは、そのfactを含む書類の会計期間）をそのままエントリに写す。
+  同じ期間（start・end）に複数の書類の値があると最新の提出を選ぶ（`select_latest_filed`）ため、後の10-Qで再掲された期間は、その10-Qのfp・fyになる
+- 例: JOBYの純利益で、2025-03-31・2026-03-31（1〜3月期）のエントリがfp="Q2"・fy=2026（accn 0001819848-26-000435、2026-08-06提出のQ2の10-Q）。
+  2025-06-30もfy=2026。STONKS SILOの対象ではCRWV・JOBY・ONDS・RCAT・RKLB・SPIR・LYFT・KULRで1〜3月期がQ2
+- quarterly.pyの`_classify_period()`は、fpが書類の期間種別であることをコメントで明記し、日数を主に判定している（年次の判定は`fp == "FY"`だけに頼らない）
+
+#### 影響（2026-10-10の洗い出し）
+- 四半期のfpを判断に使っていたのはSTONKS SILOの財務トレンド（前年同期比・ヒートマップ・チャートのラベル）だけで、[[STONKS-HEATMAP-FQ-LABEL-1]]で期末日に切り替えた
+- 他のfpの使用は、10-Kの`fp == "FY"`の判定（`layer3_builder.py`・`utils.py`・`fye_change_candidate_scan.py`・TANUKI VALUATIONの`pipeline.py`の株式数）と
+  ログの出力だけで、四半期のfpの誤りの影響は受けない。EPS Analyzer（`extract_key_facts.py`）・`parser.py`は独自に年度を決める（`determine_fiscal_year()`）
+- results.jsonの`financial_vectors.fields.*.series_q`には、このfpがそのまま入っている（画面・計算では使わないと注記済み）
+
+#### 直し方の候補（未決定）
+- エントリにfpを入れず、期間から決めた四半期（会計年度の期末月からの位置）を別のキーで持つ
+- fp・fyのキー名を`filing_fp`・`filing_fy`のように改め、意味を名前で示す（消費者の書き換えが要る）
+- 現状維持（新しい消費者が四半期のfpを使うときは、期末日で識別するよう手順書に書く）
 
 ---
 
