@@ -20,11 +20,18 @@ layer3_builder.py（最新の提出を優先）のどちらの選び方でも、
 
 対象は株式数のタグだけ（金額には適用しない）。比がちょうど1,000倍・100万倍でない2つの値
 （株式分割の前後など）には適用しない。書類が1つしかない期（CIX 2026-06-30・ONDS 2025年度・LOAR）は
-直らないため、fact_overrides.jsonで個別に補正する。
+直らないため、fact_overrides.jsonの銘柄ごとの"share_unit"に根拠つきで登録し、同じ前処理の中で
+個別に補正する（apply_share_unit_overrides()）。fact_overrides.jsonの年度単位の上書き
+（parser.py::_apply_fact_overrides()、年次のLayer2だけに効く）と違い、四半期とLayer3にも効く。
+年度単位の上書きは年度のキーを整数として読むため、"share_unit"のキーは読み飛ばされる。
 """
+import json
 import math
+import os
 import statistics
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
+FACT_OVERRIDES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fact_overrides.json")
 
 SHARE_TAGS: Tuple[str, ...] = (
     "WeightedAverageNumberOfDilutedSharesOutstanding",
@@ -111,12 +118,85 @@ def resolve_share_unit_conflicts(us_gaap: dict) -> Tuple[dict, List[Dict[str, An
     return out, log
 
 
-def with_share_unit_fix(company_facts: dict) -> Tuple[dict, List[Dict[str, Any]]]:
-    """company_factsの写し（us-gaapの株式数を置き換えたもの）と置き換えの一覧を返す"""
+def load_share_unit_overrides(ticker: str, path: Optional[str] = None) -> List[Dict[str, Any]]:
+    """fact_overrides.jsonの{ticker: {"share_unit": [...]}}を返す（無ければ空リスト）"""
+    p = path or FACT_OVERRIDES_PATH
+    if not ticker or not os.path.exists(p):
+        return []
+    try:
+        with open(p, encoding="utf-8") as f:
+            return ((json.load(f).get(ticker.upper()) or {}).get("share_unit")) or []
+    except Exception:
+        return []
+
+
+def _rule_matches(rule: Dict[str, Any], tag: str, f: Dict[str, Any]) -> bool:
+    if tag not in rule.get("tags", []):
+        return False
+    if rule.get("accn") and f.get("accn") != rule["accn"]:
+        return False
+    if rule.get("end") and f.get("end") != rule["end"]:
+        return False
+    v = f.get("val")
+    if v is None:
+        return False
+    if "match_vals" in rule:
+        return v in rule["match_vals"]
+    return rule.get("min_val", 0) <= v < rule.get("max_val", float("inf"))
+
+
+def apply_share_unit_overrides(us_gaap: dict, rules: List[Dict[str, Any]]) -> Tuple[dict, List[Dict[str, Any]]]:
+    """fact_overrides.jsonの"share_unit"の規則で、株式数のファクトの値をmultiply倍にする。
+
+    規則: {"tags": [...], "accn"（省略で全書類）, "end"（省略で全期）, "match_vals"（誤った値の一覧）
+    または "min_val"/"max_val"（値の範囲）, "multiply", "reason", "evidence"}
+    """
+    log: List[Dict[str, Any]] = []
+    if not rules or not isinstance(us_gaap, dict):
+        return us_gaap, log
+    out = dict(us_gaap)
+    for tag in SHARE_TAGS:
+        node = us_gaap.get(tag)
+        if not node:
+            continue
+        new_units, changed = {}, False
+        for unit, facts in (node.get("units") or {}).items():
+            new_facts = []
+            for f in facts:
+                rule = next((r for r in rules if _rule_matches(r, tag, f)), None)
+                if rule is None:
+                    new_facts.append(f)
+                    continue
+                val = f["val"] * rule["multiply"]
+                new_facts.append({**f, "val": val, "share_unit_fix": {
+                    "rejected_val": f["val"], "source": "fact_overrides", "multiply": rule["multiply"]}})
+                log.append({"tag": tag, "start": f.get("start"), "end": f["end"], "source": "fact_overrides",
+                            "rejected_val": f["val"], "rejected_accn": f.get("accn"), "rejected_filed": f.get("filed"),
+                            "rejected_form": f.get("form"), "adopted_val": val, "multiply": rule["multiply"],
+                            "reason": rule.get("reason")})
+                changed = True
+            new_units[unit] = new_facts
+        if changed:
+            out[tag] = {**node, "units": new_units}
+    log.sort(key=lambda x: (x["tag"], x["end"], x["start"] or "", x["rejected_accn"] or ""))
+    return out, log
+
+
+def with_share_unit_fix(company_facts: dict, ticker: Optional[str] = None,
+                        overrides: Optional[List[Dict[str, Any]]] = None) -> Tuple[dict, List[Dict[str, Any]]]:
+    """company_factsの写し（us-gaapの株式数を直したもの）と置き換えの一覧を返す。
+
+    ①fact_overrides.jsonの個別補正（tickerを渡したとき、またはoverridesで直接）
+    ②同じ期間の1,000倍・100万倍の2値の解消（resolve_share_unit_conflicts）の順に適用する。
+    """
     if not isinstance(company_facts, dict):
         return company_facts, []
     facts = company_facts.get("facts") or {}
-    us_gaap, log = resolve_share_unit_conflicts(facts.get("us-gaap") or {})
+    rules = overrides if overrides is not None else load_share_unit_overrides(
+        ticker or "")
+    us_gaap, log_ov = apply_share_unit_overrides(facts.get("us-gaap") or {}, rules)
+    us_gaap, log = resolve_share_unit_conflicts(us_gaap)
+    log = log_ov + log
     if not log:
         return company_facts, log
     return {**company_facts, "facts": {**facts, "us-gaap": us_gaap}}, log

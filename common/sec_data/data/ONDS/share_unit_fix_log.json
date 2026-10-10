@@ -3,6 +3,58 @@
   "fixes": [
     {
       "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "source": "fact_overrides",
+      "rejected_val": 221769,
+      "rejected_accn": "0001213900-26-035981",
+      "rejected_filed": "2026-03-30",
+      "rejected_form": "10-K",
+      "adopted_val": 221769000,
+      "multiply": 1000,
+      "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] FY2025の10-Kが年間の加重平均株式数を千株単位の値（221,769）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する"
+    },
+    {
+      "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+      "start": "2026-01-01",
+      "end": "2026-03-31",
+      "source": "fact_overrides",
+      "rejected_val": 461706,
+      "rejected_accn": "0001213900-26-057859",
+      "rejected_filed": "2026-05-15",
+      "rejected_form": "10-Q",
+      "adopted_val": 461706000,
+      "multiply": 1000,
+      "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] 2026年第1四半期10-Qが加重平均株式数を千株単位の値（希薄化後461,706・基本445,089）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する"
+    },
+    {
+      "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "source": "fact_overrides",
+      "rejected_val": 221769,
+      "rejected_accn": "0001213900-26-035981",
+      "rejected_filed": "2026-03-30",
+      "rejected_form": "10-K",
+      "adopted_val": 221769000,
+      "multiply": 1000,
+      "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] FY2025の10-Kが年間の加重平均株式数を千株単位の値（221,769）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する"
+    },
+    {
+      "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+      "start": "2026-01-01",
+      "end": "2026-03-31",
+      "source": "fact_overrides",
+      "rejected_val": 445089,
+      "rejected_accn": "0001213900-26-057859",
+      "rejected_filed": "2026-05-15",
+      "rejected_form": "10-Q",
+      "adopted_val": 445089000,
+      "multiply": 1000,
+      "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] 2026年第1四半期10-Qが加重平均株式数を千株単位の値（希薄化後461,706・基本445,089）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する"
+    },
+    {
+      "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
       "start": "2024-01-01",
       "end": "2024-12-31",
       "rejected_val": 69917,

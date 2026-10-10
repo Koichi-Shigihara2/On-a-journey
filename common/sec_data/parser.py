@@ -513,7 +513,7 @@ class SECParser:
         raw_data = with_derived_intangibles(raw_data)
         # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 同じ期間の株式数が書類によって1,000倍・100万倍
         # ずれていたら大きい方を採る（千株単位での申告の誤り）。置き換えはログに記録する
-        raw_data, _share_unit_fixes = with_share_unit_fix(raw_data)
+        raw_data, _share_unit_fixes = with_share_unit_fix(raw_data, ticker)
         self._save_share_unit_fix_log(ticker, _share_unit_fixes)
         result = {
             "ticker": ticker,

@@ -1241,7 +1241,7 @@ def build_ticker_store(ticker: str) -> dict | None:
     company_facts = with_derived_intangibles(company_facts)
     # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 株式数の千株単位の申告の誤り（同じ期間の1,000倍・100万倍の
     # 2値は大きい方）。parser.pyと同じ前処理で、記録はparser.pyのshare_unit_fix_log.json
-    company_facts, _ = with_share_unit_fix(company_facts)
+    company_facts, _ = with_share_unit_fix(company_facts, ticker)
 
     concept_defs = load_concept_definitions()
     fields_def = concept_defs.get("fields", {})

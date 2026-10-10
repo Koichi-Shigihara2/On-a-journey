@@ -102,3 +102,38 @@ def test_amount_tags_untouched():
         {"start": "2025-04-01", "end": "2025-06-30", "val": 1_000_000, "filed": "b", "accn": "b"}]}}}}}
     out, log = with_share_unit_fix(cf)
     assert log == [] and out is cf
+
+
+# ---- STEP3: fact_overrides.jsonの"share_unit"による個別補正 ----
+from common.sec_data.share_unit_fix import apply_share_unit_overrides, load_share_unit_overrides
+B = "WeightedAverageNumberOfSharesOutstandingBasic"
+
+
+def test_override_single_filing_by_accn_and_values():
+    # CIX 2026-06-30型: その期を申告した書類が1つだけで、千株単位の値
+    rule = {"tags": [W, B], "accn": "x", "end": "2026-06-30", "match_vals": [12329], "multiply": 1000}
+    facts = [_f("2026-06-30", 12329, "2026-08-04", "x"), _f("2026-06-30", 12329, "2026-08-04", "other"),
+             _f("2026-03-31", 12_323_000, "2026-05-05", "x")]
+    out, log = apply_share_unit_overrides({W: {"units": {"shares": facts}}}, [rule])
+    vals = [(f["accn"], f["end"], f["val"]) for f in out[W]["units"]["shares"]]
+    assert ("x", "2026-06-30", 12_329_000) in vals
+    assert ("other", "2026-06-30", 12329) in vals          # 別の書類は対象外
+    assert ("x", "2026-03-31", 12_323_000) in vals          # 他の期・正しい値は対象外
+    assert len(log) == 1 and log[0]["source"] == "fact_overrides" and log[0]["rejected_val"] == 12329
+
+
+def test_override_range_rule_excludes_pre_ipo():
+    # LOAR型: 1,000以上100万未満をすべて×1000、上場前の204は対象外
+    rule = {"tags": [W, B], "min_val": 1000, "max_val": 1000000, "multiply": 1000}
+    facts = [_f("2024-03-31", 204, "2024-05-14", "a"), _f("2026-06-30", 95_521, "2026-08-06", "b")]
+    out, _ = apply_share_unit_overrides({W: {"units": {"shares": facts}}, CS: {"units": {"shares": [
+        _f("2026-06-30", 93_684_471, "2026-08-06", "b", start=None)]}}}, [rule])
+    assert sorted(f["val"] for f in out[W]["units"]["shares"]) == [204, 95_521_000]
+    assert out[CS]["units"]["shares"][0]["val"] == 93_684_471  # 規則のtagsに無いタグは対象外
+
+
+def test_registered_overrides_in_fact_overrides_json():
+    for t in ("CIX", "ONDS", "LOAR"):
+        rules = load_share_unit_overrides(t)
+        assert rules and all(r["multiply"] == 1000 and r.get("reason") and r.get("evidence") for r in rules)
+    assert load_share_unit_overrides("AAPL") == []
