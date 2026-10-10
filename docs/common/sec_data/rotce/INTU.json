@@ -339,9 +339,12 @@
    "prev_quarter_end": "2025-01-31",
    "rotce": 12.803632236095346,
    "rotce_basis": "quarter_end_only",
-   "tce_begin": -971000000,
    "rotce_ttm": 3.9364358683314413,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm_tce_avg": 881000000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-04-30"
+   ],
+   "rotce_ttm_basis": "avg1",
    "market_cap": 176946531738.28125,
    "ptbv": 200.84736860190833
   },
@@ -369,9 +372,13 @@
    "prev_quarter_end": "2025-04-30",
    "rotce": 2.3284950343773874,
    "rotce_basis": "quarter_average",
-   "tce_begin": -1228000000,
-   "rotce_ttm": 9.039719626168225,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm": 5.911382734912147,
+   "rotce_ttm_tce_avg": 654500000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-04-30",
+    "2025-07-31"
+   ],
+   "rotce_ttm_basis": "avg2",
    "market_cap": 222191791381.83594,
    "ptbv": 519.1396994902709
   },
@@ -399,9 +406,14 @@
    "prev_quarter_end": "2025-07-31",
    "rotce": 5.62776025236593,
    "rotce_basis": "quarter_average",
-   "tce_begin": -1370000000,
-   "rotce_ttm": 19.990291262135923,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm": 8.154455445544555,
+   "rotce_ttm_tce_avg": 505000000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-04-30",
+    "2025-07-31",
+    "2025-10-31"
+   ],
+   "rotce_ttm_basis": "avg3",
    "market_cap": 187581546569.82422,
    "ptbv": 910.5900318923506
   },
@@ -429,9 +441,15 @@
    "prev_quarter_end": "2025-10-31",
    "rotce": 18.058631921824105,
    "rotce_basis": "quarter_average",
-   "tce_begin": -1397000000,
-   "rotce_ttm": 42.97029702970297,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm": 10.742574257425742,
+   "rotce_ttm_tce_avg": 404000000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-04-30",
+    "2025-07-31",
+    "2025-10-31",
+    "2026-01-31"
+   ],
+   "rotce_ttm_basis": "avg4",
    "market_cap": 139697603759.76562,
    "ptbv": 1383.1445916808477
   },
@@ -459,9 +477,16 @@
    "prev_quarter_end": "2026-01-31",
    "rotce": 12.628541988665637,
    "rotce_basis": "quarter_average",
-   "tce_begin": 881000000,
-   "rotce_ttm": 3.369349503858875,
-   "rotce_ttm_basis": "average",
+   "rotce_ttm": 6.631944444444445,
+   "rotce_ttm_tce_avg": 691200000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-04-30",
+    "2025-07-31",
+    "2025-10-31",
+    "2026-01-31",
+    "2026-04-30"
+   ],
+   "rotce_ttm_basis": "avg5",
    "market_cap": 107226000000.0,
    "ptbv": 58.275
   },
@@ -489,9 +514,16 @@
    "prev_quarter_end": "2026-04-30",
    "rotce": 1.314622000905387,
    "rotce_basis": "quarter_average",
-   "tce_begin": 428000000,
-   "rotce_ttm": 11.457967377666249,
-   "rotce_ttm_basis": "average",
+   "rotce_ttm": 7.754755434782608,
+   "rotce_ttm_tce_avg": 588800000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-07-31",
+    "2025-10-31",
+    "2026-01-31",
+    "2026-04-30",
+    "2026-07-31"
+   ],
+   "rotce_ttm_basis": "avg5",
    "market_cap": 87551392028.8086,
    "ptbv": 237.26664506452192
   }
@@ -507,8 +539,15 @@
   "rotce": 1.314622000905387,
   "rotce_basis": "quarter_average",
   "ttm_net_income": 4566000000,
-  "rotce_ttm": 11.457967377666249,
-  "rotce_ttm_basis": "average",
+  "rotce_ttm": 7.754755434782608,
+  "rotce_ttm_basis": "avg5",
+  "rotce_ttm_tce_ends": [
+   "2025-07-31",
+   "2025-10-31",
+   "2026-01-31",
+   "2026-04-30",
+   "2026-07-31"
+  ],
   "filled_from_annual": false,
   "filled_components": {},
   "price": 302.75,
@@ -519,9 +558,10 @@
   "ptbv": 227.26761517615176
  },
  "percentile": {
-  "n_quarters": 7,
+  "n_quarters": 6,
   "n_excluded_assumed_zero": 0,
   "signal": null,
+  "rotce_series": "rotce_ttm",
   "reason": "insufficient_quarters"
  },
  "tags": {
@@ -530,5 +570,5 @@
   "goodwill": "Goodwill",
   "preferred_stock": "PreferredStockValue"
  },
- "generated_at": "2026-10-11T00:55:07"
+ "generated_at": "2026-10-11T01:13:14"
 }

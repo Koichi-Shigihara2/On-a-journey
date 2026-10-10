@@ -248,9 +248,12 @@
    "prev_quarter_end": "2025-03-31",
    "rotce": 3.3073764409043687,
    "rotce_basis": "quarter_end_only",
-   "tce_begin": -15212000,
    "rotce_ttm": 2.1951219512195124,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm_tce_avg": 20213000.0,
+   "rotce_ttm_tce_ends": [
+    "2025-06-30"
+   ],
+   "rotce_ttm_basis": "avg1",
    "market_cap": 8282057034.011841,
    "ptbv": 409.73912996644935
   },
@@ -278,9 +281,13 @@
    "prev_quarter_end": "2025-06-30",
    "rotce": 4.384601639897556,
    "rotce_basis": "quarter_average",
-   "tce_begin": -368967000,
-   "rotce_ttm": 2.099747977185303,
-   "rotce_ttm_basis": "end_only",
+   "rotce_ttm": 2.5142448728384523,
+   "rotce_ttm_tce_avg": 25184500.0,
+   "rotce_ttm_tce_ends": [
+    "2025-06-30",
+    "2025-09-30"
+   ],
+   "rotce_ttm_basis": "avg2",
    "market_cap": 7670000000.0,
    "ptbv": 254.34407746385463
   },
@@ -364,6 +371,7 @@
   "ttm_net_income": 68002000,
   "rotce_ttm": null,
   "rotce_ttm_basis": null,
+  "rotce_ttm_tce_ends": null,
   "filled_from_annual": false,
   "filled_components": {},
   "reason": "tce_nonpositive"
@@ -372,6 +380,7 @@
   "n_quarters": 2,
   "n_excluded_assumed_zero": 0,
   "signal": null,
+  "rotce_series": "rotce_ttm",
   "reason": "tce_nonpositive"
  },
  "tags": {
@@ -379,5 +388,5 @@
   "intangible_assets_excl_goodwill": "IntangibleAssetsNetExcludingGoodwill",
   "goodwill": "Goodwill"
  },
- "generated_at": "2026-10-11T00:55:07"
+ "generated_at": "2026-10-11T01:13:14"
 }
