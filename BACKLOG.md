@@ -2956,6 +2956,121 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
+### [STONKS-DATA-ASOF-MISSING-1] STONKS SILOに財務データの基準日の表示がなく、ヒーローの「UPDATED」（株価の更新時刻）だけで新しく見える
+**優先度:** 中
+**分類:** 表示（データの鮮度の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- ヒーローの「UPDATED」は`results.json`の`generated_at`（2026-10-09T20:30:25Z）で、夜間の株価の更新の時刻。財務データが何期末までかはどこにも出ていない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]の状態でも、GTLBは「10/10 05:30更新」と表示され、財務が2026-04-30期末で止まっていることが画面から分からない
+
+#### 実害
+財務データが古くなっても利用者が気づけない（今回はSECの取得が止まっていることに、画面からは気づけなかった）
+
+#### 直し方の候補（未決定）
+- 銘柄ごとに財務の最新の期末（例 `financial_vectors`の最新の`end`）を一覧・詳細に出す
+- 期末から一定の日数（例 決算期＋提出期限）を過ぎたら古いことを示す印を出す
+- ヒーローの「UPDATED」を「株価」と「財務」に分ける
+
+---
+
+### [STONKS-HEATMAP-FQ-LABEL-1] 変化ヒートマップの四半期ラベルが「期末日の暦年の下2桁＋会計期間のfp」の組み合わせで、12月決算以外の銘柄で順序が逆転して見える
+**優先度:** 中
+**分類:** 表示（ラベルの作り方） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）・`financial_vectors`の`series_q`
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html` L1215-1220: ラベルは`e.end.slice(2,4)`（期末日の暦年）＋`e.fp`（会計期間）。同じ方式がL1346-1350（チャートのラベル）にもある
+- 12月決算以外の銘柄で、暦年と会計年度がずれて並びが崩れる。該当: AVAV・ESTC・GTLB・IOT・RBRK・S・ZS
+  （例 GTLB「24Q2 24Q3 25Q4 25Q1 25Q2 25Q3 26Q4 26Q1」。results.jsonのGTLBのNetIncomeの`series_q`は2024-07-31 Q2〜2026-04-30 Q1で、ラベルの作り方どおり）
+- RCATは決算期の変更で「23Q2 24Q3 24Q2 2024-12 25Q1…」と崩れる（fpが`FY`の行は`end`の年月で表示）
+
+#### 参考（fpの付与の疑い、別途確認）
+- `financial_vectors`の`series_q`のfpにも誤りがある。JOBYのNetIncomeで2025-03-31・2026-03-31が"Q2"（同じ銘柄のRevenueでは"Q1"）。
+  RCATのNetIncomeでも2025-03-31・2026-03-31が"Q2"（2026-10-10にresults.jsonで確認）
+- ヒートマップはRD・NetIncome・OCFから日付の軸を作るため、12月決算の銘柄ではfpの誤りが表面化していない。fpをどこで付けているか（Layer3の`fp`か、STONKS SILO側か）は未確認
+
+#### 実害
+四半期の並びを読み違える（新しい期が古く見える）。判定値には影響しない（表示だけ）
+
+#### 直し方の候補（未決定）
+- ラベルを会計年度（`fy`）＋fpにする（`fy`が付いていれば）
+- 期末の年月（例 2025-07）で表示する
+- fpの付与の誤りを先に直す（上の参考）
+
+---
+
+### [STONKS-RUNWAY-CELL-AMBIGUOUS-1] 生存期間の列で、キャッシュフロー黒字のSAFEとデータ不足のUNKNOWNがどちらも「—」になり、「25M」が金額と誤読されやすい
+**優先度:** 中
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`fmtRunway()`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `fmtRunway()`（L1437-1442）は`runway_months`がnullなら「—」、999超なら「∞」、それ以外は「{月数}M」
+- `runway_months=null`は2種類ある（results.json、2026-10-09T20:30Z）:
+  - SAFE（`verdict_reason`「キャッシュフロー黒字またはトントン」、score 100）: GTLB・NET・ESTC・LYFT 等
+  - UNKNOWN（`verdict_reason`「データ不足」、score 50）: RCAT
+- 「25M」は25ヶ月の意味だが、金額（$25M）と読み違えやすい
+
+#### 実害
+資金に問題の無い銘柄と、判定できない銘柄が同じ見た目になる。月数を金額と読み違える
+
+#### 直し方の候補（未決定）
+- `verdict`を見て、SAFEでnullなら「∞」か「黒字」、UNKNOWNなら「不明」と出し分ける
+- 単位を「25ヶ月」「25mo」等にする
+
+---
+
+### [STONKS-PATHSCORE-WITHOUT-ESTIMATE-1] 黒字化パスのスコアがOCFの傾向（ocf_trend）だけで決まり、黒字化年の推定が無くても満点になる（ASTS 100）
+**優先度:** 中
+**分類:** 判定ロジック / STONKS SILO（`discover/stonks-silo/src/analyzer.py`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実。算出式は2026-10-10にコードで確認）
+- `analyzer.py`の総合スコアの計算（L869-878）: `path_score = trend_map[pp.ocf_trend]`（ACCELERATING 100・IMPROVING 75・FLAT 50・DETERIORATING 20・UNKNOWN 0）、
+  `hidden_profit_already`が真なら80以上に引き上げ。`gaap_breakeven_year`・`ocf_breakeven_year`は使わない
+- ocf_trendの判定（L788-795）: 最新年のOCFの前年差がプラスで、加速度（前年差の変化）もプラスならACCELERATING。OCFが赤字のままでも、赤字の縮み方が前年より大きければ当たる
+- ASTS（results.json、2026-10-09T20:30Z）: OCF 2024 −126.1M→2025 −71.5M（前年差 +54.6M、加速度 +31.8M）でACCELERATING → `profitability_path.score=100`（「明確な道筋」）。
+  一方`gaap_breakeven_year=null`（`NO_TREND:-229%→-482%`）・`ocf_breakeven_year=null`（`NO_DATA`）。総合82で`10x_CANDIDATE`（「急成長候補」）
+- 総合スコアは赤字品質40%・生存能力30%・黒字化パス30%
+
+#### 実害
+黒字化の時期の見通しが立たない銘柄が、黒字化パス満点として上位の区分に入る
+
+#### 直し方の候補（未決定）
+- 黒字化年の推定が無いとき（NO_TREND・NO_DATA）はスコアに上限を設ける
+- OCFが赤字のままの改善と、黒字の拡大を分けて点を付ける
+- `ocf_breakeven_reason`が`NO_DATA`なのにOCFの年次が5年分ある理由を先に確認する（ASTSのocf_annualは2021〜2025の5値）
+
+---
+
+### [STONKS-BREAKEVEN-BASIS-UNLABELED-1] 一覧の「黒字化：達成済」とカードの「③黒字化パス100 加速中」がOCF基準（hidden_profit_already）であることが画面から読み取れない
+**優先度:** 中
+**分類:** 表示（基準の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- GTLB: `profitability_path`は`score=100`・`ocf_trend=ACCELERATING`・`hidden_profit_already=true`・`verdict_reason="IMMINENT | ACHIEVED"`（results.json、2026-10-09T20:30Z）。
+  一覧は「黒字化：達成済」、カードは「③黒字化パス100 加速中」
+- 一方、GTLBの純利益は−$56M（チャート）、詳細の「黒字化への道のり」では営業利益が「改善トレンドなし」
+- 「達成済」「加速中」がOCF（営業キャッシュフロー）基準であることは、画面のどこにも書かれていない
+
+#### 実害
+GAAPでは赤字の銘柄を、黒字化済みと読み違える
+
+#### 直し方の候補（未決定）
+- 「黒字化（OCF）：達成済」のように基準をラベルに入れる
+- glossary.jsonの説明（`data-info`）で基準を示す
+- GAAPの純利益・営業利益の黒字化の状態も並べて出す
+
+---
+
 ## 優先度：低（アイデア段階）
 
 ### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
@@ -3242,6 +3357,71 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 ---
 
 （[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]は2026-09-26、CHECK-54の実装と未登録分割27件の登録で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+### [STONKS-HERO-DISCOVER-LABEL-1] STONKS SILOのヒーローに「Discover · 10x Candidates」がDiscoverの廃止後も残っている
+**優先度:** 低
+**分類:** 表示（文言） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L249）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html` L249の`<div class="hero-label">Discover · 10x Candidates</div>`が、Discoverの廃止後もそのまま表示されている
+
+#### 直し方の候補（未決定）
+- 今の位置づけに合う文言に変える、またはラベルを外す
+
+---
+
+### [STONKS-MONEY-FORMAT-SIGN-1] STONKS SILOの金額の負号の位置が「$-56M」（チャートの見出し）と「-$155M」（棒のラベル）で混在している
+**優先度:** 低
+**分類:** 表示（書式） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- 詳細のチャートの見出しは「$-56M」、棒のラベルは「-$155M」の形で、同じ画面に2つの書き方がある
+
+#### 直し方の候補（未決定）
+- 金額の書式を1つの関数にまとめ、負号を先頭（-$56M）にそろえる
+
+---
+
+### [STONKS-SURVIVAL-PANEL-DASH-1] 詳細の②生存能力のパネルが「—」なのに、上部のカードは「資金安全性100 安全」と表示され、食い違って見える
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の詳細の②生存能力）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- 詳細の②生存能力のパネルが「—」だけで、上部のカードは「資金安全性100 安全」
+- results.jsonでは、キャッシュフロー黒字の銘柄（例 GTLB）は`runway.verdict=SAFE`・`score=100`・`runway_months=null`（2026-10-09T20:30Z）。
+  パネルはnullの月数を「—」と出しているとみられる（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と同じ原因の可能性、未確認）
+
+#### 直し方の候補（未決定）
+- SAFEで月数がnullのときは、パネルにも「キャッシュフロー黒字」等の理由を出す（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と合わせて直す）
+
+---
+
+### [STONKS-TANUKI-BADGE-404-1] STONKS SILOがRKLB・ZSのTANUKI VALUATIONのlatest.jsonを読みに行き、404になる
+**優先度:** 低
+**分類:** 表示（外部データの読み込み） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L435・L612）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html`はL435（TANUKIのスコアのバッジ）とL612（次回決算日・黒字転換の目算）で`tanuki_valuation/data/{T}/latest.json`を読む
+- RKLB・ZSは`docs/value-monitor/tanuki_valuation/data/{T}/`に`score_history.json`しかなく、latest.jsonの取得が404になる
+- `config/cik_lookup.csv`でRKLB・ZSは`tanuki=false`・`stonks_silo=true`で、`exclusion_reason`は「成長株のためSTONKS SILO側で評価する設計」（2026-10-10確認）。
+  TANUKIの対象外であることは意図どおりとみられる。score_history.jsonだけが残っている理由は未確認
+
+#### 判断待ち
+- TANUKIの対象外が意図どおりなら、404を出さない扱い（tanuki=falseの銘柄は読みに行かない等）にするか
+
+#### 直し方の候補（未決定）
+- tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
+- 404を想定内として静かに扱う（コンソールのエラーを出さない）
 
 ---
 
