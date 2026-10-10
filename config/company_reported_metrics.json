@@ -1,0 +1,21 @@
+{
+  "_description": "会社が自ら開示している指標の値（出典付き）。common/sec_data/rotce.pyがROTCEをEPS Analyzerの個別ページに並べて出し、report_consistency_check.pyのCHECK-61（WARN）が最新の四半期末の値の登録漏れを検知する（[[ROTCE-QUARTERLY-ANNUALIZED-1]]、2026-10-11）。valueは小数（7.1% → 0.071）。quarter_endは会社の四半期末日（Layer3の期末日と同じ日付）。新しい四半期の資料が出たら values に1行足す",
+  "metrics": [
+    {
+      "ticker": "SOFI",
+      "metric": "ROTCE",
+      "definition": "調整後の普通株主帰属純利益（希薄化後）を年率にしたもの ÷ その四半期の日次平均の有形自己資本（純資産−のれん−無形資産＋関連する繰延税金負債）",
+      "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51",
+      "guidance": {"period": "FY2026", "value": 0.080, "source": "SoFi Technologies 2026-Q2 Investor Presentation"},
+      "long_term_target": {"low": 0.20, "high": 0.30, "source": "SoFi Technologies 2026-Q2 Investor Presentation"},
+      "values": [
+        {"quarter_end": "2025-03-31", "value": 0.058, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"},
+        {"quarter_end": "2025-06-30", "value": 0.077, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"},
+        {"quarter_end": "2025-09-30", "value": 0.085, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"},
+        {"quarter_end": "2025-12-31", "value": 0.090, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"},
+        {"quarter_end": "2026-03-31", "value": 0.076, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"},
+        {"quarter_end": "2026-06-30", "value": 0.071, "source": "SoFi Technologies 2026-Q2 Investor Presentation p.51"}
+      ]
+    }
+  ]
+}
