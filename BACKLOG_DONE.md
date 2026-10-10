@@ -2,6 +2,33 @@
 
 ---
 
+## 2026-10-11（完了）
+
+### ✅ [PAGES-JEKYLL-UNDERSCORE-1] GitHub Pages（Jekyll）が「_」で始まるファイルを公開せず、TANUKI SCOREのROTCE×P/TBV散布図が本番で表示されない
+**優先度:** 中
+**分類:** 公開・配信 / GitHub Pages（kaihatsu・/docs、build_type legacy）・TANUKI SCORE（`docs/value-monitor/tanuki_score/index.html::renderRotcePanel()`）
+**登録日:** 2026-10-11
+**発見:** チャット側の本番確認（2026-10-11）、[[ROTCE-PTBV-1]]のSTEP3（`0945814072`）
+
+#### 内容（観測した事実）
+- 本番で`common/sec_data/rotce/AAPL.json`は200、`common/sec_data/rotce/_summary.json`は404。Jekyllは「_」で始まるファイルを出力しない
+- `renderRotcePanel()`は`_summary.json`の取得に失敗するとパネルを空にするため、散布図が何も出ていなかった（ローカル配信では表示されていた）
+- docs/配下で「_」で始まるファイルは`_summary.json`だけ
+
+#### 対応（2026-10-11、`9f3a06f8bb`）
+- `docs/.nojekyll`（空ファイル）を追加
+- 事前確認: docs/配下にLiquid（`{% %}`・`{{ site/page/content/include }}`）・front matter・`_config.yml`・`_includes`等を使うものは0件
+- 副作用（確認済み、対応不要）: Jekyllが.md（docs/配下19件）から作っていた.htmlが無くなる（`architecture/UPDATE_SCHEDULE.html`は200→404、.mdそのものは200のまま）。
+  .htmlへのリンク元はリポジトリ内に0件。ドットで始まる`.watcher_state.json`（TANUKIの判定の要約）・`.gitkeep`も公開されるようになる
+
+#### 確認（Pagesの構築`pages-build-deployment`がsuccessで終わった後、本番のURLで）
+- `https://koichi-shigihara2.github.io/On-a-journey/common/sec_data/rotce/_summary.json` 200（generated_at 2026-10-10T16:38:46）
+- TANUKI SCOREで「▶ ROTCE × P/TBV（参考表示・判定には使っていない／63銘柄）」が`dupont-panel`と`trap-panel`の間に出て、散布図の点は63個
+- ほかのページ: TOP・TANUKI VALUATION・Market Pulse・STONKS SILO・MACRO PULSE・EPS Analyzerを表示して変わりないこと、TANUKI SCOREのナビの各リンクが200であることを確認
+- 再発防止はCHAT_RULES.mdの事例36（公開されるかどうかは本番のURLで確かめる）
+
+---
+
 ## 2026-10-10（完了）
 
 ### ✅ [STONKS-PATHSCORE-WITHOUT-ESTIMATE-1] 黒字化パスのスコアがOCFの傾向（ocf_trend）だけで決まり、黒字化年の推定が無くても満点になる（ASTS 100）

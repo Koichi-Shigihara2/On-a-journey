@@ -1175,6 +1175,16 @@ Plotlyの`measure:'total'`の棒の高さは前の棒の合計になるため、
 
 **教訓**: 確認のための手元の再生成（特に有料APIを止めた実行）の出力は、差分を報告するだけにとどめ、`git checkout`で元に戻す。公開データは定時実行が作ったものだけをcommitする。
 
+**事例36: 公開されるかどうかは、ローカル配信ではなく本番のURLで確かめる（2026-10-11、`[[PAGES-JEKYLL-UNDERSCORE-1]]`）**
+- `[[ROTCE-PTBV-1]]`のSTEP3で、TANUKI SCOREのROTCE×P/TBV散布図は`docs/common/sec_data/rotce/_summary.json`を読む。ローカル配信（`python -m http.server`等）では
+  ファイルがそのまま返るため表示されたが、GitHub Pages（Jekyll、build_type legacy）は「_」で始まるファイルを公開しないため本番では404になり、
+  `renderRotcePanel()`は取得に失敗するとパネルを空にするので、何も出ていなかった（同じフォルダの`AAPL.json`は200）。
+- `docs/.nojekyll`を置いて解決。docs/配下にLiquid・front matter・_config.yml・_includes等を使うものは無かった。副作用は、Jekyllが.mdから作っていた.html
+  （例: `architecture/UPDATE_SCHEDULE.html`）が無くなること（リンク元は0件、.mdそのものは引き続き公開）。
+
+**教訓**: 新しく公開するファイル（特に「_」「.」で始まる名前・新しいフォルダ）は、push後にPagesの構築が終わってから本番のURLを`curl`で取得し、200を確かめる。
+ローカル配信での表示は、本番で公開されることの確認にならない。
+
 ## チャット側Claudeの役割
 設計判断・検証・調査結果の議論・Claude Code向け指示書の作成を担う。
 リポジトリのファイル変更そのものは行わない（詳細は下記「原則」）。
