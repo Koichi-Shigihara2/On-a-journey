@@ -16,7 +16,8 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
   P/TBV = 時価総額 ÷ 期末のTCE
           四半期: 期末日（または直前の取引日）の終値 × その期の希薄化後株式数
           直近:   最新の終値 × 最新四半期の希薄化後株式数（TCEは最新四半期）
-  成分を初めて申告した期末日より前の期は0と仮定し、assumed_zeroを付ける（自社比の母数には入れない）。
+  成分を初めて申告した期末日より前の期は0と仮定し、assumed_zeroを付ける。自社比の母数から外すのは、
+  無形資産を0と仮定した期だけ（ASSUMED_ZERO_EXCLUDED_FIELDS、excluded_from_percentile=true）。
   優先配当は純利益から引いていない（優先株が残る銘柄はVSTなど少数）。
 
 データ: Layer3（layer3_builder.build_ticker_store）・日次株価（common/market_data/daily/）・
@@ -88,6 +89,12 @@ R_SHARES_MISSING = "shares_missing"
 R_INTANGIBLE_ONLY_INCL = "intangible_only_including_goodwill_tag"
 R_PREFERRED_TEMPORARY_EQUITY = "preferred_stock_classified_as_temporary_equity"
 R_ROTCE_NONPOSITIVE = "rotce_nonpositive"   # 直近のROTCE≤0（赤字）→ 目安を付けない
+
+# 0と仮定した期（assumed_zero）のうち、自社比の母数から外す成分。のれん・優先株は存在すれば
+# 貸借対照表に独立した行として出るため、初申告より前を0とするのは実態どおり（ALABは2025年の
+# 買収で初めてのれんが生じた）。無形資産は注記にしか出ないことがあり、申告していない期間にも
+# 残高があった例がある（AAPL 2018〜2025年）ため、0の仮定が外れうる
+ASSUMED_ZERO_EXCLUDED_FIELDS = frozenset({"intangible_assets_excl_goodwill"})
 
 # 成分ごとの生タグ（初めて申告した期末日の判定に使う。無形資産は派生概念の期末日）
 RAW_TAG_BY_FIELD = {"goodwill": "Goodwill", "preferred_stock": "PreferredStockValue",
@@ -396,6 +403,8 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
             row["missing_components"] = t["missing_components"]
         if t.get("assumed_zero"):
             row["assumed_zero"] = t["assumed_zero"]
+            if ASSUMED_ZERO_EXCLUDED_FIELDS.intersection(t["assumed_zero"]):
+                row["excluded_from_percentile"] = True
         sh = shares.get(q)
         px = _close_on_or_before(prices, q)
         row.update(price=px["close"] if px else None, price_date=px["date"] if px else None,
@@ -462,11 +471,11 @@ def _current(history: List[dict], prices: List[dict], ends: List[str]) -> Dict[s
 
 
 def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
-    """自社の過去の四半期との比較。成分を0と仮定した期（assumed_zero）は母数から外す"""
+    """自社の過去の四半期との比較。無形資産を0と仮定した期（excluded_from_percentile）は母数から外す"""
     pts = [h for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
-           and not h.get("assumed_zero")]
+           and not h.get("excluded_from_percentile")]
     n_assumed = sum(1 for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
-                    and h.get("assumed_zero"))
+                    and h.get("excluded_from_percentile"))
     res: Dict[str, Any] = {"n_quarters": len(pts), "n_excluded_assumed_zero": n_assumed, "signal": None}
     if current.get("ptbv") is None or current.get("rotce") is None:
         res["reason"] = current.get("reason") or R_INSUFFICIENT_QUARTERS

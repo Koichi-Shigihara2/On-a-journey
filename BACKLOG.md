@@ -2791,6 +2791,15 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
   （tce_nonpositive 29・rotce_nonpositive 19・insufficient_quarters 11・component_missing 4）
 - 株式数の単位誤りは[[LAYER2-SHARES-UNIT-THOUSANDS-1]]に登録
 
+#### 追補2（2026-10-10）: 判断4の条件を修正
+- assumed_zeroの記録は全成分のまま、自社比の母数から外すのは無形資産（intangible_assets_excl_goodwill）を0と仮定した期だけにした
+  （`rotce.py::ASSUMED_ZERO_EXCLUDED_FIELDS`、期にexcluded_from_percentile=true）。のれん・優先株は存在すれば貸借対照表に
+  独立した行として出るため、初申告より前を0とするのは実態どおり（ALABは2025年の買収で初めてのれんが生じた）。
+  EPS Analyzerの中抜きの点も母数から外した期だけ
+- 母数が戻った5銘柄: ALAB（3→10期、判定なし→中立）・PAYS（7→15、判定なし→中立）・LITE（2→8、直近ROTCE−213.5%のためrotce_nonpositiveのまま）・
+  ONDS（2→3、期数不足のまま）・QBTS（3→7、rotce_nonpositiveのまま）。SOUN（無形資産を0と仮定した2期を除外、10期）は変わらない
+- 目安の内訳（98銘柄）: 自社比割安5・中立26→28・自社比割高4・判定なし63→61（insufficient_quarters 11→9）
+
 ---
 
 ### [LAYER2-SHARES-UNIT-THOUSANDS-1] CIX・ONDSで、希薄化後株式数が千株単位の値で取り込まれた期がある（他の利用箇所への影響は未調査）

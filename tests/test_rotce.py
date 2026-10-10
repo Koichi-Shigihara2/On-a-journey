@@ -205,8 +205,9 @@ class TestShares:
 
 
 class TestAssumedZero:
-    def test_assumed_zero_quarters_excluded_from_percentile(self):
-        # のれんを2024-12-31に初めて申告 → それより前の期は0と仮定（assumed_zero）し、自社比の母数に入れない
+    def test_goodwill_assumed_zero_stays_in_percentile(self):
+        # のれんを2024-12-31に初めて申告 → それより前の期は0と仮定（assumed_zero）するが、
+        # のれんは存在すれば貸借対照表に出るため母数には入れる
         gw = {q: 100 for q in QEND if q >= "2024-12-31"}
         cf = {"facts": {"us-gaap": {"Goodwill": {"units": {"USD": [
             {"end": q, "val": 100, "form": "10-Q"} for q in gw]}}}}}
@@ -214,8 +215,24 @@ class TestAssumedZero:
         assumed = [h["end"] for h in r["history"] if h.get("assumed_zero")]
         assert assumed == ["2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30"]
         assert all(h["assumed_zero"] == ["goodwill"] for h in r["history"] if h.get("assumed_zero"))
+        assert not any(h.get("excluded_from_percentile") for h in r["history"])
         p = r["percentile"]
-        assert p["n_quarters"] == 5            # 9期のうち0と仮定した4期を除く
+        assert p["n_quarters"] == 9
+        assert p["n_excluded_assumed_zero"] == 0
+        assert p["signal"] is not None
+
+    def test_intangible_assumed_zero_excluded_from_percentile(self):
+        # 無形資産を2024-12-31に初めて申告 → それより前の期は0と仮定し、母数から外す（注記だけの開示で漏れうる）
+        it = {q: 50 for q in QEND if q >= "2024-12-31"}
+        cf = {"facts": {"us-gaap": {"IntangibleAssetsNetExcludingGoodwill": {"units": {"USD": [
+            {"end": q, "val": 50, "form": "10-Q", "accn": "a" + q} for q in it]}}}}}
+        r = _run(_store(intang=it), company_facts=cf)
+        excluded = [h["end"] for h in r["history"] if h.get("excluded_from_percentile")]
+        assert excluded == ["2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30"]
+        assert all(h["assumed_zero"] == ["intangible_assets_excl_goodwill"]
+                   for h in r["history"] if h.get("assumed_zero"))
+        p = r["percentile"]
+        assert p["n_quarters"] == 5            # 9期のうち無形資産を0と仮定した4期を除く
         assert p["n_excluded_assumed_zero"] == 4
         assert p["signal"] is None and p["reason"] == rotce.R_INSUFFICIENT_QUARTERS
 
