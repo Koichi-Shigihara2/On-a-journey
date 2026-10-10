@@ -136,7 +136,7 @@
     .num { font-family: var(--mono); font-size: 13px; text-align: right; }
     .pos { color: var(--grn); } .neg { color: var(--red); } .neu { color: var(--sub); }
     .s1 { color: var(--grn); } .s2 { color: var(--cyn); } .s3 { color: var(--amb); } .s4 { color: var(--red); }
-    .fcf-ok { color: var(--grn); } .fcf-ng { color: var(--mut); }
+    .fcf-ok { color: var(--grn); } .fcf-ng { color: var(--mut); } .fcf-floor { color: var(--mut); font-size: 11px; cursor: help; }
     .tbl-note { font-family: var(--mono); font-size: 10px; color: var(--mut); margin-top: 8px; letter-spacing: .04em; }
     .per-fwd { font-size: 9px; color: var(--mut); margin-left: 3px; letter-spacing: 0; cursor: help; }
 
@@ -354,7 +354,11 @@ function renderDetailTable() {
 
   const tbody = sorted.map(s => {
     const m = CAT_META[s.cat];
-    const fcfDisp = s.fcf == null ? '<span class="neu">—</span>'
+    // [[TANUKISCORE-FCF-COL-FLOOR-1]]: base_fcfはDCF用に売上8%へ底上げした後の値のため、
+    // 構造的赤字（5年・2年平均とも≤0）と底上げの有無を先に見る
+    const fcfDisp = s.fcfDeficit ? '<span class="fcf-ng" style="font-family:var(--mono)" title="5年・2年平均FCFとも赤字">✗</span>'
+                  : s.fcfFloor   ? '<span class="fcf-floor" style="font-family:var(--mono)" title="売上8%の下限補正後">△床</span>'
+                  : s.fcf == null ? '<span class="neu">—</span>'
                   : s.fcf > 0    ? '<span class="fcf-ok" style="font-family:var(--mono)">✓</span>'
                                  : '<span class="fcf-ng" style="font-family:var(--mono)">✗</span>';
     return `<tr>
@@ -479,6 +483,8 @@ function renderDetailTable() {
     const stage   = lastMo?.stage      ?? null;
     const rawUp   = tk?.upside_percent ?? null;
     const fcfBase = tk?.fcf_base?.base_fcf ?? null;
+    const fcfDeficit = tk?.components?.structural_deficit === true;
+    const fcfFloor   = (tk?.components?.fcf_floor_applied ?? 0) > 0;
     const epsYoyDec = ep?.yoy_growth ?? null;
     const epsYoy  = epsYoyDec != null ? epsYoyDec * 100 : null;
 
@@ -521,7 +527,7 @@ function renderDetailTable() {
     const buybackTtm          = tk?.financial_health?.buyback_ttm ?? null;
     const netDebt             = tk?.financial_health?.net_debt ?? null;
 
-    return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase,
+    return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
              matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, perGap, dupont,
              growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier,
