@@ -2777,6 +2777,40 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 - 目安は赤字銘柄にも付く（SOUN・KULRは自社比割安、ROTCEがマイナス同士の比較）。赤字銘柄を除くかはチャット側の判断待ち
 - 優先配当は純利益から引いていない
 
+#### 指示書に無かった判断1〜4の採否（チャット側の決定、2026-10-10）
+- 判断1（EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限）・判断2（メザニンと同額の優先株は控除しない）・
+  判断3（株式数の外れ値は使わない）: 採用
+- 判断4（初めて申告する前の期は0）: 0とした期にassumed_zeroを付け、自社比の母数から外す条件で採用
+
+#### 追補（2026-10-10）
+- `54ccf5dd78`: assumed_zero（成分名の一覧）を付け、パーセンタイルの母数から外す。EPS Analyzerでは中抜きの点。
+  母数が減った6銘柄: ALAB（のれん、10→3期）・LITE（優先株、8→2）・ONDS（優先株、3→2）・PAYS（のれん、15→7）・QBTS（のれん、7→3）・SOUN（のれん・無形資産、12→10）。
+  うちALAB（中立）・LITE（自社比割高）・PAYS（中立）が判定なし（insufficient_quarters）に
+- `e6378a614d`: 直近のROTCE≤0なら目安なし（rotce_nonpositive、19銘柄）。散布図・個別ページの表示も合わせた
+- 目安の内訳（98銘柄）: 追補前 自社比割安7・中立34・自社比割高9・判定なし48 → 追補後 自社比割安5・中立26・自社比割高4・判定なし63
+  （tce_nonpositive 29・rotce_nonpositive 19・insufficient_quarters 11・component_missing 4）
+- 株式数の単位誤りは[[LAYER2-SHARES-UNIT-THOUSANDS-1]]に登録
+
+---
+
+### [LAYER2-SHARES-UNIT-THOUSANDS-1] CIX・ONDSで、希薄化後株式数が千株単位の値で取り込まれた期がある（他の利用箇所への影響は未調査）
+**優先度:** 中
+**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`）
+**登録日:** 2026-10-10
+**発見:** [[ROTCE-PTBV-1]]（rotce.pyのP/TBVがCIXで0.0xになった）
+
+#### 内容（観測した事実）
+- Layer2: CIX `quarterly_2026Q2.json`のshares_diluted・shares_basicが12,329（前後の期は約1,232万株）、
+  ONDS `annual_2025.json`が221,769（同じ期末日の発行済株式数は380,763,481）、`quarterly_2026Q1.json`が461,706（basicは445,089）
+- Layer3（shares_diluted）でも同じ値に加え、ONDS 2024-12-31の年次加重平均69,917、ESTC 2022-10-31の343,058（Layer2には無い）
+- 提出者が千株単位の値を株数としてタグ付けしたとみられる（10-K/10-Q原本は未確認）
+
+#### 対応済みの範囲
+- `common/sec_data/rotce.py`だけ、分割換算後の中央値から20倍以上離れた値を捨て、同じ期末日の次の候補（発行済株式数）を使って回避している
+
+#### 未調査
+- 最大EPS・EPS（EPS Analyzer）・時価総額・希薄化率（TANUKI VALUATION）・split_adjustの判定など、株式数を使う他の箇所が同じ値を使っていないか、影響の有無と範囲
+
 ---
 
 ## 優先度：低（アイデア段階）
