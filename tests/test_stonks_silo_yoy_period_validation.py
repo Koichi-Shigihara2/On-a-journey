@@ -216,14 +216,18 @@ class TestBreakevenCell:
         body = self._func("breakevenLines")
         assert "if (pp.hidden_profit_already) lines.push({text: 'OCF ✓'" in body
         assert "else if (pp.ocf_breakeven_year) lines.push({text: `OCF ${String(pp.ocf_breakeven_year).slice(-2)}年`" in body
-        assert "if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`" in body
+        assert "if (pp.gaap_breakeven_reason === 'ACHIEVED') lines.push({text: '純益 ✓', color: 'var(--grn)'});" in body
+        assert "else if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`" in body
+        # 純益 ✓ は純益の年より先に判定する（ACHIEVEDのときgaap_breakeven_yearはNone）
+        assert body.index("'ACHIEVED'") < body.index("pp.gaap_breakeven_year)")
 
     def test_cell_dash_when_no_lines(self):
         assert "if (!lines.length) return '—';" in self._func("breakevenCell")
 
     def test_sort_ocf_achieved_first(self):
         body = self._func("breakevenSortVal")
-        assert "if (pp.hidden_profit_already) return 20000;" in body
+        assert "if (pp.hidden_profit_already) return gaapAchieved ? 30000 : 20000;" in body
+        assert "if (gaapAchieved) return 15000;" in body
         assert "const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;" in body
         assert "return y ? 10000 - y : 0;" in body
         assert "case 'be':      return breakevenSortVal(pp);" in self._html()
@@ -241,3 +245,6 @@ class TestBreakevenCell:
         assert "path_score = max(path_score, 80)" in src and "最低80" in note
         assert "黒字化年の推定は点数に入らない" in note
         assert html.count("OCFトレンド ${trendJa[pp.ocf_trend]||'—'}") == 2  # 上部カードと③パネル
+
+    def test_tooltip_mentions_gaap_achieved(self):
+        assert "「純益 ✓」はGAAP純利益がすでにプラス" in self._html()

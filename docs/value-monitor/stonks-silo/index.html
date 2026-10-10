@@ -358,7 +358,7 @@
           </th>
           <th class="r" data-sort="be">
             <span class="th-inner" style="justify-content:flex-end">
-              <span class="tip-wrap">黒字化<span class="tip-icon" onclick="event.stopPropagation()">?</span><span class="tip-box" style="left:auto;right:0;transform:none">2つの基準で示す。上の段「OCF」＝営業キャッシュフロー、下の段「純益」＝GAAP純利益。「OCF ✓」は営業CFがすでにプラス。「27年」等は、過去の年次トレンドを線形外挿してゼロを超える予測年（推定）。推定が無い基準の段は出さない。「—」はどちらの基準でも予測年が出ない（改善傾向なし・データ不足・5年超など）ことを示す</span></span>
+              <span class="tip-wrap">黒字化<span class="tip-icon" onclick="event.stopPropagation()">?</span><span class="tip-box" style="left:auto;right:0;transform:none">2つの基準で示す。上の段「OCF」＝営業キャッシュフロー、下の段「純益」＝GAAP純利益。「OCF ✓」は営業CFがすでにプラス、「純益 ✓」はGAAP純利益がすでにプラス。「27年」等は、過去の年次トレンドを線形外挿してゼロを超える予測年（推定）。推定が無い基準の段は出さない。「—」はどちらの基準でも予測年が出ない（改善傾向なし・データ不足・5年超など）ことを示す</span></span>
               <span class="sort-arr" onclick="setSort('be')" style="color:var(--mut)"> ⇅</span>
             </span>
           </th>
@@ -1454,7 +1454,9 @@ function breakevenLines(pp) {
   const lines = [];
   if (pp.hidden_profit_already) lines.push({text: 'OCF ✓', color: 'var(--grn)'});
   else if (pp.ocf_breakeven_year) lines.push({text: `OCF ${String(pp.ocf_breakeven_year).slice(-2)}年`, color: 'var(--txt)'});
-  if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`, color: 'var(--txt)'});
+  // [[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]（2026-10-10）: 純利益がすでにプラスなら「純益 ✓」（以前は段が出ず、SPIRは「—」だった）
+  if (pp.gaap_breakeven_reason === 'ACHIEVED') lines.push({text: '純益 ✓', color: 'var(--grn)'});
+  else if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`, color: 'var(--txt)'});
   return lines;
 }
 function breakevenCell(pp) {
@@ -1463,10 +1465,12 @@ function breakevenCell(pp) {
   return `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">${lines.map(l =>
     `<span style="color:${l.color};font-family:var(--mono);font-size:10px;white-space:nowrap">${l.text}</span>`).join('')}</div>`;
 }
-// 並び（降順＝1回目のクリック）: OCF ✓ ＞ 予測年の早い順（OCFの年、無ければ純利益の年）＞ —
+// 並び（降順＝1回目のクリック）: OCF ✓・純益 ✓ ＞ OCF ✓ ＞ 純益 ✓（OCFは未達）＞ 予測年の早い順（OCFの年、無ければ純利益の年）＞ —
 function breakevenSortVal(pp) {
   pp = pp || {};
-  if (pp.hidden_profit_already) return 20000;
+  const gaapAchieved = pp.gaap_breakeven_reason === 'ACHIEVED';
+  if (pp.hidden_profit_already) return gaapAchieved ? 30000 : 20000;
+  if (gaapAchieved) return 15000;
   const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;
   return y ? 10000 - y : 0;
 }
