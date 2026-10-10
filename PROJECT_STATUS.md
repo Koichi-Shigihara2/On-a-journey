@@ -11,6 +11,16 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、セッション終了時のまとめ）**: `[[SEC-FETCH-CACHE-MTIME-CI-1]]`（SEC_Data_UpdateがCIでSEC APIを一度も呼んでいなかった件。submissionsで新しい提出を検知した銘柄だけcompany_factsを取り直す・`_freshness.json`・CHECK-60・System Health [M]、`61d0a085d6`〜`f7c4789b63`）と、
+  STONKS SILOの7件を完了: `[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`（財務の基準日・生存期間の書式）、`[[STONKS-HEATMAP-FQ-LABEL-1]]`（前年同期比・ラベルを期末日で）、`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`・`[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`
+  （黒字化の列をOCF／純益の2段に・「純益 ✓」）、`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（③の点数をOCFマージンでの黒字化推定に、判定の変化6件）。
+  IOTはstonks_silo=false、SEC_LAG 5件は確認済み。この日に登録してアクティブに残っているのは8件（中: `[[SEC-COMPANYFACTS-API-LAG-1]]`、低: `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`・`[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]`・`[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]`・STONKS SILOの表示3件）。
+  BACKLOGの整合: アクティブ29件、移設漏れ0件、この日に増えた参照切れ0件（以前からの26件は未対応のまま）。`pytest tests/ src/subport/day_trade/test_logic.py` 2222件・audit.py・report_consistency_check.py（NG=0）とも通過。
+  **次回確認**（この日の夜の各項目の「次回確認」はこの3点にまとめた）:
+  ① 10-11（日）12:00 UTCのSEC_Data_Update（GitHubのscheduleは数時間遅れることがある。`gh run view --log`）: 全銘柄に「submissions取得完了」が出ていること、「SEC API取得中」（company_factsの取り直し）が新しい提出のあった銘柄とSEC_LAGの5銘柄（CDNS・KO・RMBS・V・XOM）だけであること、最後の「鮮度:」の行の内訳、`common/sec_data/data/_freshness.json`のgenerated_atが更新されてcommitされていること
+  ② 次のStonks_Silo_Update（CI）の後のresults.json: IOTが外れて24銘柄、全銘柄に`financial_as_of`（`latest_quarter_end`がnullでない・`stale`の判定あり）と`profitability_path.path_score_basis`があり、10x候補が13銘柄（ASTS 67.0・RKLB 79.2・IONQ 82.7）。①でSECデータが更新された銘柄は、点数の差が財務の更新によるものかを分けて読む。あわせて、ヒートマップの10系列（CRWV・JOBY等のNetIncome、KULRのRevenue・GrossProfit・NetIncome）のyoyが値のままであること
+  ③ 次のSystem Health Checkのログで`[M] SecFreshness:`が✅（確認済み5件を表示）、終了コードが[M]のせいで2にならないこと
+  ほかに、10/12（月）13:00 JSTごろ以降のTANUKI SCOREの表示値の確認（下の「2026-10-10（TANUKI SCORE表示値…）」）が残っている
 - **2026-10-10（夜、STONKS SILOの黒字化パスの点数）**: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`を完了（Koichi決定）。③の点数をOCFマージンの回帰による黒字化推定で決める（OCF達成済100／推定年まで1年以内90・2年80・3年65・4〜5年50／5年超30／改善傾向なし20／推定不能はOCF金額の傾向で上限50）。
   判定の変化6件（有望→10x候補 IONQ・ONDS・QBTS・RKLB・LYFT、10x候補→有望 ASTS）、実装前の試算と一致。重み・閾値・ocf_trendの算出は不変。実装`c3923315a6`・データ`080f99afa3`。点数・判定を読むのはSTONKS SILOの画面とStonks_Silo_UpdateのStep Summaryだけ（履歴ファイル・Discord通知なし）。
   範囲外として`[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]`（低）を登録。アクティブBACKLOG 29件。`pytest tests/ src/subport/day_trade/test_logic.py` 2222件・audit.py・report_consistency_check.py（NG=0）とも通過。

@@ -211,6 +211,20 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   4. ONDS以外の判定値（category・tanuki_score・funda/timing・matrix）が変わっていないこと（前日のlatest.jsonとの比較。株価の変化による分は除いて読む）
   5. 確認後、`[[TANUKI-MAXEPS-NI-SOURCE-1]]`・`[[TANUKISCORE-PER-FORWARD-MIX-1]]`・`[[TANUKISCORE-FCF-COL-FLOOR-1]]`をBACKLOG_DONE.mdへ移す
 
+**2026-10-10（夜）セッション終了時のまとめ（SECデータの取得とSTONKS SILOの7件。詳細は下の同日の各項目）**
+- 現在の到達点: kaihatsuは`c393a681ca`＋このまとめのcommit。BACKLOG.mdのアクティブは29件（`^### [`の機械カウント）、移設漏れ0件。`[[...]]`の参照切れは26件あるが、すべてこの日より前からのもの（この日に増えたものは0件）
+- `[[SEC-FETCH-CACHE-MTIME-CI-1]]`: SEC_Data_Updateは、submissionsを毎回取り直し、手元に無い10-K/10-Q(/A)がある銘柄だけcompany_factsを取り直す。鮮度は`_freshness.json`（OK_NO_NEW／REFRESHED／SEC_LAG／FETCH_FAILED）、CHECK-60・System Health [M]。SEC_LAGの5件（CDNS・KO・RMBS・V・XOM）はwarn_acknowledged.jsonで確認済み、IOTはstonks_silo=false
+- STONKS SILOの7件（すべてBACKLOG_DONE.mdへ）: 財務の基準日`financial_as_of`と生存期間の書式（`[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`）、前年同期比・ヒートマップのラベルを期末日で（`[[STONKS-HEATMAP-FQ-LABEL-1]]`、QoQは75〜120日）、
+  黒字化の列をOCF／純益の2段に・「純益 ✓」（`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`・`[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`）、③の点数をOCFマージンでの黒字化推定に（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`、判定の変化6件、10x候補13銘柄）
+- この日に登録してアクティブに残っているもの（8件、`[[SEC-COMPANYFACTS-API-LAG-1]]`だけ中、ほかは低）: `[[SEC-COMPANYFACTS-API-LAG-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`・`[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]`・`[[STONKS-HERO-DISCOVER-LABEL-1]]`・`[[STONKS-MONEY-FORMAT-SIGN-1]]`・`[[STONKS-TANUKI-BADGE-404-1]]`・`[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]`
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2222件・`python common/sec_data/audit.py` exit 0・`python common/sec_data/report_consistency_check.py --fail-on-ng` NG=0（WARN 127件）
+- **残っている確認**（下の同日の各項目の「残っている確認」はこの3点にまとめた。PROJECT_STATUS.mdの同日のまとめと同じ）:
+  ① 10-11（日）12:00 UTCのSEC_Data_Update（GitHubのscheduleは数時間遅れることがある。`gh run view --log`）: 全銘柄に「submissions取得完了」が出ていること、「SEC API取得中」（company_factsの取り直し）が新しい提出のあった銘柄とSEC_LAGの5銘柄（CDNS・KO・RMBS・V・XOM）だけであること、最後の「鮮度:」の行の内訳、`common/sec_data/data/_freshness.json`のgenerated_atが更新されてcommitされていること
+  ② 次のStonks_Silo_Update（CI）の後のresults.json: IOTが外れて24銘柄、全銘柄に`financial_as_of`（`latest_quarter_end`がnullでない・`stale`の判定あり）と`profitability_path.path_score_basis`があり、10x候補が13銘柄（ASTS 67.0・RKLB 79.2・IONQ 82.7）。①でSECデータが更新された銘柄は、点数の差が財務の更新によるものかを分けて読む。あわせて、ヒートマップの10系列（CRWV・JOBY等のNetIncome、KULRのRevenue・GrossProfit・NetIncome）のyoyが値のままであること
+  ③ 次のSystem Health Checkのログで`[M] SecFreshness:`が✅（確認済み5件を表示）、終了コードが[M]のせいで2にならないこと
+  ほかに、10/12（月）13:00 JSTごろ以降のTANUKI SCOREの表示値の確認（上の「2026-10-10 TANUKI SCORE表示値の3件…」の「残っている確認」）
+- 次の候補: `[[SEC-COMPANYFACTS-API-LAG-1]]`の経過観察（5銘柄がREFRESHEDになったらwarn_acknowledged.jsonの5件を消して移設）、STONKS SILOの低の表示の項目
+
 **2026-10-10（夜）SECデータの取得が止まっていた件（`[[SEC-FETCH-CACHE-MTIME-CI-1]]`、BACKLOG_DONE.mdへ）とSTONKS SILOの表示確認の登録**
 - 登録: STONKS SILOの表示確認（チャット側）の9件（`9502bbad24`・`3a2eb575e1`・`3d1fa2cd5e`）。読み取り調査で、SEC_Data_UpdateがCIで一度もSEC APIを呼んでいないことを確定
   （fetcher.pyのmtimeの24時間キャッシュ×actions/checkout。botはcompany_facts.jsonを新規追加しかしたことがない。company_facts.jsonは2026-08-30の手動実行から未更新）
