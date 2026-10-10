@@ -252,6 +252,12 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - `pytest tests/ src/subport/day_trade/test_logic.py` 2181件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは30件
 - 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（中。`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`は下の同日の作業で完了）
 
+**2026-10-10（夜）STONKS SILOの黒字化パスの点数（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`、BACKLOG_DONE.mdへ）**
+- 実装`c3923315a6`・データ`080f99afa3`。③の点数は`analyzer.py`の`_path_score_from_breakeven()`（定数`PATH_SCORE_*`）。OCFマージン回帰の推定年−回帰の最新年（`pp.ocf_breakeven_basis_year`）で刻み、根拠は`pp.path_score_basis`。画面の`PATH_SCORE_NOTE`は定数と一致をテストで確認
+- 判定の変化6件（IONQ・ONDS・QBTS・RKLB・LYFTが10x候補へ、ASTSが有望へ）。新旧の比較表はBACKLOG_DONE.md
+- 範囲外として登録: `[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]`（低。総合判定の根拠に「純利益：NO_TREND:…」がそのまま出る、使い方のシグナルが旧ラベル）
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2222件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは29件
+
 **2026-10-10（夜）STONKS SILOの黒字化の基準（`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`、BACKLOG_DONE.mdへ）とQoQの下限75日**
 - 実装`77a15fafee`・データ`3d01dc0c25`。表示だけ（計算・スコア・判定は不変）
 - 一覧の黒字化は2段（`breakevenLines()`: 上「OCF ✓」または「OCF 27年」、下「純益 28年」、無ければ「—」）、ソートは`breakevenSortVal()`で1回目のクリックが

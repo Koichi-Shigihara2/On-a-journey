@@ -4,6 +4,93 @@
 
 ## 2026-10-10（完了）
 
+### ✅ [STONKS-PATHSCORE-WITHOUT-ESTIMATE-1] 黒字化パスのスコアがOCFの傾向（ocf_trend）だけで決まり、黒字化年の推定が無くても満点になる（ASTS 100）
+**優先度:** 中
+**分類:** 判定ロジック / STONKS SILO（`discover/stonks-silo/src/analyzer.py`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実。算出式は2026-10-10にコードで確認）
+- `analyzer.py`の総合スコアの計算（L869-878）: `path_score = trend_map[pp.ocf_trend]`（ACCELERATING 100・IMPROVING 75・FLAT 50・DETERIORATING 20・UNKNOWN 0）、
+  `hidden_profit_already`が真なら80以上に引き上げ。`gaap_breakeven_year`・`ocf_breakeven_year`は使わない
+- ocf_trendの判定（L788-795）: 最新年のOCFの前年差がプラスで、加速度（前年差の変化）もプラスならACCELERATING。OCFが赤字のままでも、赤字の縮み方が前年より大きければ当たる
+- ASTS（results.json、2026-10-09T20:30Z）: OCF 2024 −126.1M→2025 −71.5M（前年差 +54.6M、加速度 +31.8M）でACCELERATING → `profitability_path.score=100`（「明確な道筋」）。
+  一方`gaap_breakeven_year=null`（`NO_TREND:-229%→-482%`）・`ocf_breakeven_year=null`（`NO_DATA`）。総合82で`10x_CANDIDATE`（「急成長候補」）
+- 総合スコアは赤字品質40%・生存能力30%・黒字化パス30%
+
+#### 実害
+黒字化の時期の見通しが立たない銘柄が、黒字化パス満点として上位の区分に入る
+
+#### 直し方の候補（未決定）
+- 黒字化年の推定が無いとき（NO_TREND・NO_DATA）はスコアに上限を設ける
+- OCFが赤字のままの改善と、黒字の拡大を分けて点を付ける
+- `ocf_breakeven_reason`が`NO_DATA`なのにOCFの年次が5年分ある理由を先に確認する（ASTSのocf_annualは2021〜2025の5値）
+
+#### 追記（2026-10-10、[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]のSTEP0で再確認、修正はしていない）
+- s3（黒字化パスの点数）は`analyzer.py::StonksAnalyzer._overall()`の`trend_map[pp.ocf_trend]`（加速中100・改善中75・横ばい50・悪化中20・不明0）。
+  `hidden_profit_already`（最新年のOCF>0）なら`max(点数, 80)`。`ocf_breakeven_year`・`gaap_breakeven_year`は点数に入らない
+- 24銘柄の内訳（2026-10-10のresults.json）: 100点はASTS・GTLB・NET・RBRK・SITM・SOUN（ACCELERATING）、80点はCRWV・ESTC・FROG・LYFT・S・ZS
+  （IMPROVINGだが営業CFがプラスで最低80）、20点は11銘柄（DETERIORATING）、0点はRCAT（UNKNOWN）。黒字化年の推定が両方とも無いのに100点はASTSだけ
+- 画面には③パネルの詳細の先頭に、この算出をそのまま説明として出した（`PATH_SCORE_NOTE`、`77a15fafee`）
+
+#### 完了の記録（2026-10-10、Koichi決定の方針で実装。③黒字化パスの点数を、OCFマージンの回帰による黒字化推定で決める）
+- 決定（2026-10-10）: ③の点数（`profitability_path.score`、overallの30%）を、OCF「金額」の傾向（`ocf_trend`）ではなく、
+  OCF「マージン」の回帰による黒字化推定（`_margin_breakeven`）で決める。理由: 赤字の金額の大きさは②生存能力（ランウェイ）が見ている。
+  ③は「黒字化に向かっているか」を、規模に左右されないマージンで測る
+- 刻み（`analyzer.py`の`PATH_SCORE_*`定数、`_path_score_from_breakeven()`）: OCF達成済（`hidden_profit_already`または`ocf_breakeven_reason=ACHIEVED`）100／
+  PREDICTEDは推定年−回帰に使った最新年が1年以内90・2年80・3年65・4〜5年50／TOO_FAR 30／NO_TREND 20／NO_DATAは`ocf_trend`の点数（加速中100・改善中75・横ばい50・悪化中20・不明0）で上限50
+- 変えていない: `ocf_trend`の算出、①赤字品質・②生存能力の点数、overallの重み（40/30/30）、verdictの閾値（75/55/35）、`ocf_trend`を使うほかの判定（`_calc_deficit_fixed_risk`・`_breakeven_estimate`）
+- 回帰に使った最新年は`_margin_breakeven_detail()`が返し、`pp.ocf_breakeven_basis_year`に残す（`_margin_breakeven()`の戻り値の形は不変）。点数の根拠は`pp.path_score_basis`
+  （例「OCF達成済」「OCF黒字化 2027年（2年後）」「推定不能: OCF加速中（上限50）」）。総合判定の根拠の③の行は「黒字化パス 80点　（OCF黒字化 2027年（2年後））」の形
+  （旧「明確な道筋」等の`ocf_trend`による対応表は廃止）、続く行を「営業CFトレンド（金額）」に
+- 画面: 上部カード「黒字化進捗」と③パネルの文言を`path_score_basis`に、`PATH_SCORE_NOTE`・スコア列のtooltip・使い方（OCF TREND・SCORE）を新しい刻みに。
+  ③の詳細には参考として「OCFトレンド（金額）」の行を残した（`ocf_trend`は判定にも使われているため）
+- ASTSが`NO_DATA`だった理由（直し方の候補の3つ目）: 回帰は直近4年（2022〜2025）のうち売上が最新年（70.9M）の10%以上の年だけを使う。2023（売上0）・2024（4.4M）は外れ、
+  2022はマージン−1132%で|マージン|≤1000%の条件から外れ、有効な点が2025の1点だけになる（既存の校正値のまま、変えていない）
+- STEP0の試算（実装前、results.jsonとローカルのannual_*.jsonから計算）はチャット側の試算と全銘柄で一致。「回帰に使った最新年」と`years[-1]`が違うのはRCAT（2023と2025）だけで、
+  RCATはNO_TRENDのため点数に影響しない
+
+| 銘柄 | s3 旧→新 | overall 旧→新 | 判定 旧→新 | 点数の根拠 |
+|---|---|---|---|---|
+| ASTS | 100→50 | 82.0→67.0 | **10x候補→有望** | 推定不能: OCF加速中（上限50） |
+| IONQ | 20→65 | 69.2→82.7 | **有望→10x候補** | OCF黒字化 2028年（3年後） |
+| ONDS | 20→65 | 69.2→82.7 | **有望→10x候補** | OCF黒字化 2028年（3年後） |
+| QBTS | 20→65 | 74.0→87.5 | **有望→10x候補** | OCF黒字化 2028年（3年後） |
+| RKLB | 20→80 | 61.2→79.2 | **有望→10x候補** | OCF黒字化 2027年（2年後） |
+| LYFT | 80→100 | 69.2→75.2 | **有望→10x候補** | OCF達成済 |
+| SOUN | 100→90 | 93.2→90.2 | 10x候補 | OCF黒字化 2026年（1年以内） |
+| ESTC | 80→100 | 82.0→88.0 | 10x候補 | OCF達成済 |
+| FROG | 80→100 | 84.0→90.0 | 10x候補 | OCF達成済 |
+| S | 80→100 | 88.0→94.0 | 10x候補 | OCF達成済 |
+| ZS | 80→100 | 84.0→90.0 | 10x候補 | OCF達成済 |
+| CRWV | 80→100 | 42.0→48.0 | 要観察 | OCF達成済 |
+| KULR | 20→50 | 42.0→51.0 | 要観察 | OCF黒字化 2029年（4年後） |
+| RCAT | 0→20 | 45.0→51.0 | 要観察 | OCFマージン 改善傾向なし |
+| GTLB・NET・RBRK | 100→100 | 94.0・94.0・90.0（不変） | 10x候補 | OCF達成済 |
+| SITM | 100→100 | 72.0（不変） | 有望 | OCF達成済 |
+| AVAV | 20→20 | 58.0（不変） | 有望 | OCFマージン 改善傾向なし |
+| BBAI・RDW・RXRX | 20→20 | 40.0・48.0・46.0（不変） | 要観察 | OCFマージン 改善傾向なし |
+| JOBY | 20→20 | 53.2（不変） | 要観察 | 推定不能: OCF悪化中（上限50） |
+| SPIR | 20→20 | 31.2（不変） | 回避 | OCFマージン 改善傾向なし |
+
+- 10x候補は9→13銘柄、有望は7→3銘柄（SITM・AVAV・ASTS）
+- 実装`c3923315a6`（analyzer.py・index.html・テスト）、再生成`080f99afa3`（24銘柄・エラー0、差分は点数・判定・根拠の文言・summaryの③の行・時刻の項目だけ）
+- 確認した表示（1440px）: ASTS カード・③「50 推定不能: OCF加速中（上限50）」、IONQ「65 OCF黒字化 2028年（3年後）」、RKLB「80 OCF黒字化 2027年（2年後）」、GTLB「100 OCF達成済」。
+  総合判定の根拠は「黒字化パス 50点　（推定不能: OCF加速中（上限50））」等、点数の根拠と一致
+- 判定の変化で動く消費者（STEP0で洗い出し）:
+  - `overall_score`・`overall_verdict`・`profitability_path.score`を読むのは、STONKS SILOの画面（一覧・判定のフィルタ・詳細）と、
+    `Stonks_Silo_Update.yml`のStep Summaryの表（Ticker・Verdict・Score）だけ
+  - TANUKI SCORE（`tanuki_score/index.html`）・TANUKI VALUATION（`stock.html`・`pipeline.py`）・report_consistency_check.py（WARN-48）・system_health.py（[E]）は
+    results.jsonの`runway`・`deficit_quality`だけを読み、点数・判定は読まない。Discordの通知・daily pick・score_historyでSTONKS SILOの点数や判定を使うものは無い
+  - STONKS SILOには点数・判定の履歴ファイルが無い（results.jsonは毎回上書き）。算出方法を2026-10-10に変えたことは、results.jsonのgit履歴（`080f99afa3`）と
+    この記録から読める。履歴データの書き換え・注記の追加はしていない
+- 範囲外として登録: 総合判定の根拠の「純利益：NO_TREND:-229%→-482%」のように理由コードがそのまま出る件と、使い方の「シグナル」の旧ラベル → [[STONKS-SUMMARY-GAAP-REASON-RAW-1]]
+- テスト: `tests/test_stonks_silo_path_score.py`（刻みの各分岐と境界〈0〜5年〉、NO_DATAの上限50、OCF達成済、回帰の最新年、重み・閾値）、
+  `test_stonks_silo_yoy_period_validation.py`の説明の一致を新しい定数に、`test_stonks_silo_breakeven_unify.py`は戻り値の要素の位置を`[6]`に
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2222件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+
+---
+
 ### ✅ [STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1] STONKS SILOの一覧の黒字化の列で、純利益がすでに黒字の銘柄の「純益」の段が出ない（SPIRは「—」になる）
 **優先度:** 低
 **分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`breakevenLines()`）

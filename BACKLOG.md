@@ -2914,34 +2914,7 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [STONKS-PATHSCORE-WITHOUT-ESTIMATE-1] 黒字化パスのスコアがOCFの傾向（ocf_trend）だけで決まり、黒字化年の推定が無くても満点になる（ASTS 100）
-**優先度:** 中
-**分類:** 判定ロジック / STONKS SILO（`discover/stonks-silo/src/analyzer.py`）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実。算出式は2026-10-10にコードで確認）
-- `analyzer.py`の総合スコアの計算（L869-878）: `path_score = trend_map[pp.ocf_trend]`（ACCELERATING 100・IMPROVING 75・FLAT 50・DETERIORATING 20・UNKNOWN 0）、
-  `hidden_profit_already`が真なら80以上に引き上げ。`gaap_breakeven_year`・`ocf_breakeven_year`は使わない
-- ocf_trendの判定（L788-795）: 最新年のOCFの前年差がプラスで、加速度（前年差の変化）もプラスならACCELERATING。OCFが赤字のままでも、赤字の縮み方が前年より大きければ当たる
-- ASTS（results.json、2026-10-09T20:30Z）: OCF 2024 −126.1M→2025 −71.5M（前年差 +54.6M、加速度 +31.8M）でACCELERATING → `profitability_path.score=100`（「明確な道筋」）。
-  一方`gaap_breakeven_year=null`（`NO_TREND:-229%→-482%`）・`ocf_breakeven_year=null`（`NO_DATA`）。総合82で`10x_CANDIDATE`（「急成長候補」）
-- 総合スコアは赤字品質40%・生存能力30%・黒字化パス30%
-
-#### 実害
-黒字化の時期の見通しが立たない銘柄が、黒字化パス満点として上位の区分に入る
-
-#### 直し方の候補（未決定）
-- 黒字化年の推定が無いとき（NO_TREND・NO_DATA）はスコアに上限を設ける
-- OCFが赤字のままの改善と、黒字の拡大を分けて点を付ける
-- `ocf_breakeven_reason`が`NO_DATA`なのにOCFの年次が5年分ある理由を先に確認する（ASTSのocf_annualは2021〜2025の5値）
-
-#### 追記（2026-10-10、[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]のSTEP0で再確認、修正はしていない）
-- s3（黒字化パスの点数）は`analyzer.py::StonksAnalyzer._overall()`の`trend_map[pp.ocf_trend]`（加速中100・改善中75・横ばい50・悪化中20・不明0）。
-  `hidden_profit_already`（最新年のOCF>0）なら`max(点数, 80)`。`ocf_breakeven_year`・`gaap_breakeven_year`は点数に入らない
-- 24銘柄の内訳（2026-10-10のresults.json）: 100点はASTS・GTLB・NET・RBRK・SITM・SOUN（ACCELERATING）、80点はCRWV・ESTC・FROG・LYFT・S・ZS
-  （IMPROVINGだが営業CFがプラスで最低80）、20点は11銘柄（DETERIORATING）、0点はRCAT（UNKNOWN）。黒字化年の推定が両方とも無いのに100点はASTSだけ
-- 画面には③パネルの詳細の先頭に、この算出をそのまま説明として出した（`PATH_SCORE_NOTE`、`77a15fafee`）
+（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -3354,6 +3327,25 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 ---
 
 （[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+### [STONKS-SUMMARY-GAAP-REASON-RAW-1] STONKS SILOの総合判定の根拠で、純利益の理由コードがそのまま出る（「純利益：NO_TREND:-229%→-482%」）。使い方の「シグナル」も旧ラベル
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`analyzer.py::_build_summary()`、`docs/value-monitor/stonks-silo/index.html`の使い方）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]の実装時の表示確認（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `_build_summary()`の純利益の行は、`gaap_breakeven_reason`が`NO_TREND`・`NO_DATA`・`TOO_FAR`と完全に一致するときだけ日本語にする。
+  `NO_TREND:-229%→-482%`のように後ろにマージンが付くと一致せず、「純利益：NO_TREND:-229%→-482%」と出る
+  （2026-10-10のresults.json: ASTS・RBRK・SITM）。OCFの行も同じ作りだが、OCFが`NO_TREND:…`の銘柄では未確認
+- 使い方の「▲ 買いシグナル」「▼ 回避シグナル」は、OCF TRENDを「IMPROVING」「DECLINING」、DEFICITを「QUALITY / GROWTH-INVEST」「PURE-LOSS」と書いており、
+  画面の表示（加速中・改善中・横ばい・悪化中、良い赤字等）と違う。SCOREの「70以上」も判定の閾値（75/55/35）と合っていない
+
+#### 直し方の候補（未決定）
+- 理由コードは前方一致で日本語にする（③パネルの`fmtBe()`は`NO_TREND:`を「予測不可（改善なし）」とマージンに分けて出している）
+- シグナルの文言を画面のラベルと判定の閾値に合わせる
 
 ---
 

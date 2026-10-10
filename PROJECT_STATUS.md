@@ -11,6 +11,10 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、STONKS SILOの黒字化パスの点数）**: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`を完了（Koichi決定）。③の点数をOCFマージンの回帰による黒字化推定で決める（OCF達成済100／推定年まで1年以内90・2年80・3年65・4〜5年50／5年超30／改善傾向なし20／推定不能はOCF金額の傾向で上限50）。
+  判定の変化6件（有望→10x候補 IONQ・ONDS・QBTS・RKLB・LYFT、10x候補→有望 ASTS）、実装前の試算と一致。重み・閾値・ocf_trendの算出は不変。実装`c3923315a6`・データ`080f99afa3`。点数・判定を読むのはSTONKS SILOの画面とStonks_Silo_UpdateのStep Summaryだけ（履歴ファイル・Discord通知なし）。
+  範囲外として`[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]`（低）を登録。アクティブBACKLOG 29件。`pytest tests/ src/subport/day_trade/test_logic.py` 2222件・audit.py・report_consistency_check.py（NG=0）とも通過。
+  **次回確認**: 次のStonks_Silo_Update（CI）の後も、新しい点数・判定のままであること（10x候補13銘柄、ASTS 67.0・RKLB 79.2・IONQ 82.7、全銘柄に`path_score_basis`）
 - **2026-10-10（夜、STONKS SILOの黒字化の基準）**: `[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`を完了。一覧の黒字化を「OCF ✓／OCF 27年」と「純益 28年」の2段に、
   ソートはOCF ✓＞予測年の早い順＞—、上部カードと③パネルを「OCFトレンド …」、③の詳細に点数の根拠（OCFの傾向だけ・営業CFがプラスなら最低80・黒字化年は入らない）。
   QoQの日数の下限を60→75日（RCATの2か月の移行期を除く。ヒートマップで「—」になったのはRCATの24/12の列だけ）。実装`77a15fafee`・データ`3d01dc0c25`、
