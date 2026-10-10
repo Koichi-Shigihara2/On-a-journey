@@ -148,16 +148,26 @@ class TestQoqGapGuard:
         assert ftc._calc_qoq_change(entries) is None
 
     def test_fiscal_year_change_short_gap_is_none(self):
-        """決算期の変更などで直前の行が60日未満なら比較しない"""
+        """決算期の変更などで直前の行が75日未満なら比較しない"""
         entries = [_entry("", "2024-11-30", "Q2", 100.0), _entry("", "2024-12-31", "FY", 150.0)]  # 31日
         assert ftc._calc_qoq_change(entries) is None
 
+    def test_rcat_two_month_transition_period_is_none(self):
+        """RCAT実例: 決算期の変更による2か月の移行期（2024-10-31→2024-12-31、61日）を3か月の期と比べない
+        （2026-10-10、下限を60→75日に）"""
+        entries = [_entry("2024-08-01", "2024-10-31", "Q1", 100.0), _entry("2024-11-01", "2024-12-31", "Q4", 150.0)]
+        assert ftc._calc_qoq_change(entries) is None
+
     def test_boundaries(self):
-        assert ftc._QOQ_GAP_DAYS_MIN == 60 and ftc._QOQ_GAP_DAYS_MAX == 120
-        ok_lo = [_entry("", "2025-01-01", "", 100.0), _entry("", "2025-03-02", "", 110.0)]   # 60日
+        assert ftc._QOQ_GAP_DAYS_MIN == 75 and ftc._QOQ_GAP_DAYS_MAX == 120
+        ng_lo = [_entry("", "2025-01-01", "", 100.0), _entry("", "2025-03-16", "", 110.0)]   # 74日
+        ok_lo = [_entry("", "2025-01-01", "", 100.0), _entry("", "2025-03-17", "", 110.0)]   # 75日
+        ok_53w = [_entry("", "2024-12-28", "", 100.0), _entry("", "2025-03-29", "", 110.0)]  # 91日（52/53週）
         ok_hi = [_entry("", "2025-01-01", "", 100.0), _entry("", "2025-05-01", "", 110.0)]   # 120日
         ng_hi = [_entry("", "2025-01-01", "", 100.0), _entry("", "2025-05-02", "", 110.0)]   # 121日
+        assert ftc._calc_qoq_change(ng_lo) is None
         assert ftc._calc_qoq_change(ok_lo) is not None
+        assert ftc._calc_qoq_change(ok_53w) is not None
         assert ftc._calc_qoq_change(ok_hi) is not None
         assert ftc._calc_qoq_change(ng_hi) is None
 
@@ -187,3 +197,47 @@ class TestHtmlLabels:
         hi = int(re.search(r"const QOQ_GAP_DAYS_MAX = (\d+);", html).group(1))
         assert (lo, hi) == (ftc._QOQ_GAP_DAYS_MIN, ftc._QOQ_GAP_DAYS_MAX)
         assert "fvIsAdjacentQuarter(prevEnd, end)" in html
+
+
+class TestBreakevenCell:
+    """[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]（2026-10-10）: 一覧の黒字化の列を「OCF」「純益」の2段に。JSは文字列で確認する"""
+
+    def _html(self):
+        with open(_INDEX_HTML, encoding="utf-8") as f:
+            return f.read()
+
+    def _func(self, name):
+        html = self._html()
+        m = re.search(r"function " + name + r"\(pp\) \{(.+?)\n\}", html, re.S)
+        assert m, name
+        return m.group(1)
+
+    def test_lines_rules(self):
+        body = self._func("breakevenLines")
+        assert "if (pp.hidden_profit_already) lines.push({text: 'OCF ✓'" in body
+        assert "else if (pp.ocf_breakeven_year) lines.push({text: `OCF ${String(pp.ocf_breakeven_year).slice(-2)}年`" in body
+        assert "if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`" in body
+
+    def test_cell_dash_when_no_lines(self):
+        assert "if (!lines.length) return '—';" in self._func("breakevenCell")
+
+    def test_sort_ocf_achieved_first(self):
+        body = self._func("breakevenSortVal")
+        assert "if (pp.hidden_profit_already) return 20000;" in body
+        assert "const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;" in body
+        assert "return y ? 10000 - y : 0;" in body
+        assert "case 'be':      return breakevenSortVal(pp);" in self._html()
+
+    def test_path_score_note_matches_analyzer(self):
+        """③の説明の点数がanalyzer.pyのtrend_map・最低80と一致する"""
+        html = self._html()
+        note = re.search(r"const PATH_SCORE_NOTE = '(.+?)';", html).group(1)
+        src = open(os.path.join(_STONKS_SRC, "analyzer.py"), encoding="utf-8").read()
+        tm = re.search(r"trend_map = \{(.+?)\}", src, re.S).group(1)
+        pts = dict(re.findall(r'"(\w+)": (\d+)', tm))
+        ja = {"ACCELERATING": "加速中", "IMPROVING": "改善中", "FLAT": "横ばい", "DETERIORATING": "悪化中", "UNKNOWN": "不明"}
+        for k, v in pts.items():
+            assert f"{ja[k]}{v}" in note, (k, v)
+        assert "path_score = max(path_score, 80)" in src and "最低80" in note
+        assert "黒字化年の推定は点数に入らない" in note
+        assert html.count("OCFトレンド ${trendJa[pp.ocf_trend]||'—'}") == 2  # 上部カードと③パネル

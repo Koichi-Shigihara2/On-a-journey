@@ -157,12 +157,12 @@ def _get_quarterly_entries(store: dict, field_name: str) -> list:
 # 以前はfpでグルーピングしてから日数を検証していたため、こうした系列では前年同期比が
 # 算出不能（None）になっていた（2026-10-10時点で24銘柄×7指標の168系列中10系列）。
 # 前年同期 = 最新エントリのendから330〜400日前にendがあるエントリ（複数なら365日に最も近いもの）。
-# QoQ = 直前のエントリとの日数差が60〜120日のときだけ（欠けた四半期・決算期の変更をまたがない）。
+# QoQ = 直前のエントリとの日数差が75〜120日のときだけ（欠けた四半期・決算期の変更の移行期をまたがない）。
 # QoQの閾値はindex.htmlのヒートマップ（QOQ_GAP_DAYS_MIN/MAX）と同じ値。
 _YOY_GAP_DAYS_MIN = 330
 _YOY_GAP_DAYS_MAX = 400
 _YOY_TARGET_DAYS = 365
-_QOQ_GAP_DAYS_MIN = 60
+_QOQ_GAP_DAYS_MIN = 75  # 2026-10-10 60→75: 決算期の変更の2か月の移行期（RCAT 2024-10-31→12-31、61日）を除く。52/53週の四半期でも84〜98日
 _QOQ_GAP_DAYS_MAX = 120
 
 
@@ -213,8 +213,8 @@ def _calc_yoy_change(entries: list) -> Optional[dict]:
 
 
 def _calc_qoq_change(entries: list) -> Optional[dict]:
-    """直近四半期と前四半期のQoQ変化率を計算。直前のエントリとの日数差が60〜120日のときだけ
-    （範囲外は欠けた四半期・決算期の変更をまたいだ比較になるためNone）。"""
+    """直近四半期と前四半期のQoQ変化率を計算。直前のエントリとの日数差が75〜120日のときだけ
+    （範囲外は欠けた四半期・決算期の変更の移行期をまたいだ比較になるためNone）。"""
     if len(entries) < 2:
         return None
 
