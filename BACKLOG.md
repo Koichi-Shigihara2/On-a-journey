@@ -2802,23 +2802,32 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [LAYER2-SHARES-UNIT-THOUSANDS-1] CIX・ONDSで、希薄化後株式数が千株単位の値で取り込まれた期がある（他の利用箇所への影響は未調査）
+### [LAYER2-SHARES-UNIT-THOUSANDS-1] 株式数の単位誤り（提出者の千株・百万株単位の申告、Layer2とLayer3の書類選択、ESTCはLayer3の計算の誤り）
 **優先度:** 中
-**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`）
-**登録日:** 2026-10-10
+**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`等）
+**登録日:** 2026-10-10（同日、影響範囲調査の結果で更新）
 **発見:** [[ROTCE-PTBV-1]]（rotce.pyのP/TBVがCIXで0.0xになった）
 
-#### 内容（観測した事実）
-- Layer2: CIX `quarterly_2026Q2.json`のshares_diluted・shares_basicが12,329（前後の期は約1,232万株）、
-  ONDS `annual_2025.json`が221,769（同じ期末日の発行済株式数は380,763,481）、`quarterly_2026Q1.json`が461,706（basicは445,089）
-- Layer3（shares_diluted）でも同じ値に加え、ONDS 2024-12-31の年次加重平均69,917、ESTC 2022-10-31の343,058（Layer2には無い）
-- 提出者が千株単位の値を株数としてタグ付けしたとみられる（10-K/10-Q原本は未確認）
+#### 原因の分類（2026-10-10の調査、company_facts.jsonの生の値で確認）
+1. 提出者の単位誤り（同じ期の別の書類と比がちょうど1,000倍・100万倍）
+   - 後の書類の比較期間（再掲）が誤り、元の書類は正しい: CIX 2025-06-30（12,321,000→12,321）、ONDS 2024年度（69,917,062→69,917）・
+     2025-03-31（105,004,818→105,005）、TER 2022-10-02（166,733,000→166,733）
+   - その期の書類しかなく誤り: CIX 2026-06-30（12,329、表紙12,336,657株）、ONDS 2025年度（221,769、期末発行済380,763,481）・2026-03-31（461,706）
+   - LOARは加重平均を一貫して千株単位で申告（例: 2026Q2 95,521、表紙93,688,471株。2024-03以前の204は上場前の株数）。前後比較では境目しか検出されない
+   - 古い期で元の書類が誤り・翌年の書類で正しい: KO 2018–19（4,306）・NVDA 2009–11・FCX 2010Q2（473）・CPRT 2014–15・COHR 2012・2020・HEI 2012・TER 2023-10-01。
+     ELF 2014–15・RCAT 2013–14は生データ未確認
+2. Layer2とLayer3で選ぶ書類が逆: Layer2（parser.py）は本人のその期の書類を優先し「元の書類の誤り」を拾う（TER 2023Q3はLayer2だけ164,050）、
+   Layer3は最新の提出を優先し「再掲の誤り」を拾う（CIX・ONDS・TER 2022）
+3. ESTCはLayer3の計算の誤り: 2022-10-31の343,058（＝上半期累計94,964,423−第1四半期94,621,365）・2022-01-31の437,133は、
+   `layer3_builder.py::_normalize_field_entries`のYTD→四半期変換が足し算できない株式数にもかかったもの（全銘柄でESTCの2点だけ）
+- 正当な変化（誤りではない）: BKNG（25対1、2026-04）・KLAC（10対1、2026-06）・AMZN（2022）の分割、QBTS・SOUNのSPAC合併前の株数
 
-#### 対応済みの範囲
-- `common/sec_data/rotce.py`だけ、分割換算後の中央値から20倍以上離れた値を捨て、同じ期末日の次の候補（発行済株式数）を使って回避している
-
-#### 未調査
-- 最大EPS・EPS（EPS Analyzer）・時価総額・希薄化率（TANUKI VALUATION）・split_adjustの判定など、株式数を使う他の箇所が同じ値を使っていないか、影響の有無と範囲
+#### 公開データへの影響（2026-10-10時点）
+- ONDSだけ: TANUKI VALUATIONの希薄化率・dilution_severityが未算出（Layer3年次の69,917・221,769でyfinance比10倍超の安全弁が働く。正しくは約73.8%/年＝critical）、
+  TANUKI SCOREのグローストラップがmedium（正しくはhigh）
+- 影響なし: TANUKI VALUATIONのdiluted_shares（yfinance優先、該当銘柄はすべてyf_implied）・理論株価・最大EPS・時価総額、EPS Analyzer（`extract_key_facts.py`に千株単位の自動補正あり）、
+  TANUKI TAIL（保有9銘柄に該当なし。CIX・LOARを保有すればEPSが1,000倍になる）、STONKS SILO・HypeCore（SECの株式数を使わない）、ROTCE（外れ値として捨てて回避）
+- 凍結年度: LOARの2023〜2025年度はfields_snapshotにshares_dilutedを含む（修正時は登録の更新が必要）
 
 ---
 
