@@ -460,6 +460,34 @@
         <div style="font-size:10px;color:var(--mut);margin-top:10px">3指標は単一スコアへ合成していません（恣意的な重み付けを避けるため個別提示）。DCF/IV計算には使用していません。</div>
       </div>
 
+      <!-- ROTCE・P/TBV（[[ROTCE-PTBV-1]]、2026-10-10、参考表示） -->
+      <div id="rotce-panel" style="display:none;background:var(--sur);border:1px solid var(--bdr);padding:14px 16px;margin-bottom:20px">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase;margin-bottom:10px">ROTCE・P/TBV（参考表示。判定には使っていない）</div>
+        <div id="rotce-unavailable" style="display:none;font-size:12px;color:var(--sub)"></div>
+        <div id="rotce-body">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+            <div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">ROTCE（直近）</div>
+              <div id="rotce-cur" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">—</div>
+              <div id="rotce-cur-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+            </div>
+            <div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">P/TBV（直近）</div>
+              <div id="ptbv-cur" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--txt)">—</div>
+              <div id="ptbv-cur-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+            </div>
+            <div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:4px">自社の過去と比べた目安</div>
+              <div id="rotce-signal" style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--txt)">—</div>
+              <div id="rotce-signal-note" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+            </div>
+          </div>
+          <div style="position:relative;height:150px;margin-top:12px"><canvas id="rotce-chart"></canvas></div>
+          <div style="position:relative;height:150px;margin-top:6px"><canvas id="ptbv-chart"></canvas></div>
+          <div id="rotce-foot" style="font-size:10px;color:var(--mut);margin-top:8px;line-height:1.6"></div>
+        </div>
+      </div>
+
       <!-- PER比較（Addition G） -->
       <div id="per-comparison" style="display:none;background:var(--sur);border:1px solid var(--bdr);padding:14px 16px;margin-bottom:20px">
         <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase;margin-bottom:10px">PER 比較</div>
@@ -616,6 +644,7 @@
         switchTab('quarterly');
         updateTanukiInfo(tanukiData);
         renderExecutionMetrics(quarterlyData.execution_metrics);
+        renderRotce(currentTicker);
       } catch (error) {
         console.error('Error:', error);
         showLoading(false);
@@ -671,6 +700,125 @@
         sbcEl.style.color = 'var(--mut)';
         sbcNoteEl.textContent = 'SBCデータなし';
       }
+    }
+
+    // [[ROTCE-PTBV-1]]: ROTCE・P/TBVの四半期推移と自社比の目安（参考表示、判定には使わない）。
+    // データ: common/sec_data/rotce/{TICKER}.json（common/sec_data/rotce.py、日次で再計算）
+    let rotceChart = null, ptbvChart = null;
+    const ROTCE_REASON_TEXT = {
+      tce_nonpositive: '有形自己資本（純資産−のれん−無形資産−優先株）がマイナスのため算出不可',
+      component_missing: '控除項目（のれん・無形資産・優先株・非支配持分）の直近の値が取れないため算出不可',
+      equity_missing: '純資産の値が取れないため算出不可',
+      insufficient_quarters: '連続4四半期の純利益がそろわないため算出不可',
+      price_missing: '株価が無いため算出不可',
+      shares_missing: '希薄化後株式数が取れないため算出不可',
+      no_layer3: 'SECデータが無いため算出不可',
+      exception: '計算エラー',
+    };
+    const ROTCE_COMPONENT_LABEL = {
+      goodwill: 'のれん', intangible_assets_excl_goodwill: '無形資産',
+      preferred_stock: '優先株', minority_interest: '非支配持分',
+    };
+    const ROTCE_SIGNAL_TEXT = {
+      cheap: ['自社比割安', 'var(--grn)'], neutral: ['中立', 'var(--txt)'], rich: ['自社比割高', 'var(--red)'],
+    };
+
+    async function renderRotce(ticker) {
+      const panel = document.getElementById('rotce-panel');
+      if (!panel) return;
+      if (rotceChart) { rotceChart.destroy(); rotceChart = null; }
+      if (ptbvChart) { ptbvChart.destroy(); ptbvChart = null; }
+      let d = null;
+      try {
+        const r = await fetch(`../../common/sec_data/rotce/${ticker}.json`, { cache: 'no-store' });
+        if (r.ok) d = await r.json();
+      } catch (e) {}
+      if (ticker !== currentTicker) return;  // 読み込み中に別の銘柄へ切り替えた
+      if (!d) { panel.style.display = 'none'; return; }
+      panel.style.display = '';
+      const cur = d.current || {}, pc = d.percentile || {};
+      const unavailable = document.getElementById('rotce-unavailable');
+      const body = document.getElementById('rotce-body');
+      const hist = d.history || [];
+      const nComputed = hist.filter(h => h.rotce != null || h.ptbv != null).length;
+      const pct = v => `${(v * 100).toFixed(1)}%`;
+
+      if (cur.rotce == null || cur.ptbv == null) {
+        let msg = ROTCE_REASON_TEXT[cur.reason] || '算出不可';
+        if (cur.missing_components && cur.missing_components.length) {
+          msg += `（${cur.missing_components.map(c => ROTCE_COMPONENT_LABEL[c] || c).join('・')}）`;
+        }
+        if ((d.notes || []).includes('intangible_only_including_goodwill_tag')) {
+          msg += '。無形資産が「のれん込み」のタグでしか申告されていない';
+        }
+        unavailable.textContent = msg + (cur.quarter_end ? `（直近の四半期: ${cur.quarter_end}）` : '');
+        unavailable.style.display = '';
+      } else {
+        unavailable.style.display = 'none';
+      }
+      if (cur.rotce == null && nComputed === 0) { body.style.display = 'none'; return; }
+      body.style.display = '';
+
+      document.getElementById('rotce-cur').textContent = cur.rotce != null ? pct(cur.rotce) : '—';
+      document.getElementById('rotce-cur-note').textContent = cur.rotce != null
+        ? `TTM純利益÷有形自己資本（${cur.rotce_basis === 'average' ? '期首・期末の平均' : '期末のみ'}）・${cur.quarter_end}` : '';
+      document.getElementById('ptbv-cur').textContent = cur.ptbv != null ? `${cur.ptbv.toFixed(1)}x` : '—';
+      document.getElementById('ptbv-cur-note').textContent = cur.ptbv != null
+        ? `終値 ${cur.price.toFixed(2)}（${cur.price_date}）× 株式数（${cur.shares_quarter_end || cur.quarter_end}）` : '';
+      const sigEl = document.getElementById('rotce-signal');
+      const sigNote = document.getElementById('rotce-signal-note');
+      if (pc.signal) {
+        const [label, color] = ROTCE_SIGNAL_TEXT[pc.signal];
+        sigEl.textContent = label;
+        sigEl.style.color = color;
+        sigNote.textContent = `自社の過去${pc.n_quarters}四半期の中で P/TBV ${pc.ptbv.toFixed(0)}・ROTCE ${pc.rotce.toFixed(0)} パーセンタイル`;
+      } else {
+        sigEl.textContent = '判定なし';
+        sigEl.style.color = 'var(--mut)';
+        sigNote.textContent = cur.ptbv == null ? '直近値が算出不可'
+          : `比較できる四半期が${pc.n_quarters || 0}期（8期以上で判定）`;
+      }
+
+      const labels = hist.map(h => h.end);
+      const common = (yTitle, extra = {}) => ({
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: false }, datalabels: { display: false },
+                   title: { display: true, text: yTitle, color: '#94a3b8', font: { size: 11 } } },
+        scales: {
+          x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
+               grid: { color: 'rgba(148,163,184,.08)' } },
+          y: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: 'rgba(148,163,184,.08)' }, ...extra },
+        },
+      });
+      const filledIdx = hist.map(h => !!h.filled_from_annual);
+      rotceChart = new Chart(document.getElementById('rotce-chart').getContext('2d'), {
+        type: 'line',
+        data: { labels, datasets: [{
+          label: 'ROTCE', data: hist.map(h => h.rotce != null ? h.rotce * 100 : null),
+          borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,.1)', tension: 0.15, spanGaps: false,
+          pointRadius: filledIdx.map(f => f ? 4 : 2), pointBackgroundColor: filledIdx.map(f => f ? '#f59e0b' : '#06b6d4'),
+        }] },
+        options: common('ROTCE（%、四半期末のTTM）', { ticks: { color: '#64748b', font: { size: 9 }, callback: v => v + '%' } }),
+      });
+      ptbvChart = new Chart(document.getElementById('ptbv-chart').getContext('2d'), {
+        type: 'line',
+        data: { labels, datasets: [{
+          label: 'P/TBV', data: hist.map(h => h.ptbv != null && h.ptbv > 0 ? h.ptbv : null),
+          borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,.1)', tension: 0.15, spanGaps: false,
+          pointRadius: filledIdx.map(f => f ? 4 : 2), pointBackgroundColor: filledIdx.map(f => f ? '#f59e0b' : '#8b5cf6'),
+        }] },
+        options: common('P/TBV（倍、四半期末の終値）', { type: 'logarithmic', ticks: { color: '#64748b', font: { size: 9 },
+          // 対数軸の目盛りは1・2・3・4・5・6・8の倍数だけ表示（7・9を省き、9x・10xが重ならないように）
+          callback: v => [1, 2, 3, 4, 5, 6, 8].includes(Number((v / 10 ** Math.floor(Math.log10(v))).toFixed(6))) ? v + 'x' : '' } }),
+      });
+
+      const filledNow = cur.filled_from_annual && cur.ptbv != null
+        ? `直近値は、期末日に無い控除項目（${Object.keys(cur.filled_components || {}).map(c => ROTCE_COMPONENT_LABEL[c] || c).join('・')}）を年度末の値で補っています。` : '';
+      document.getElementById('rotce-foot').innerHTML =
+        '参考表示です。TANUKI SCORE・TANUKI VALUATIONの判定や計算には使っていません。' + filledNow + '<br>'
+        + '有形自己資本＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。'
+        + '目安は自社の過去の四半期との比較で、P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高。'
+        + 'オレンジの点は年度末の値で補った四半期。線が切れている期は算出不可（有形自己資本がマイナス等）。';
     }
 
     function updateTanukiInfo(data) {

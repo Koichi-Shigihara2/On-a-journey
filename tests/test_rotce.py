@@ -117,6 +117,14 @@ class TestAnnualFill:
         year_end = next(h for h in r["history"] if h["end"] == "2025-12-31")
         assert year_end["filled_from_annual"] is False
 
+    def test_fill_with_zero_is_not_flagged(self):
+        # 年度末の値が0（優先株0等）で補ってもTCEは変わらないので注記しない
+        pref = {e: 0 for e in ("2022-12-31", "2023-12-31", "2024-12-31", "2025-12-31")}
+        r = _run(_store(pref=pref, annual_ends=("2022-12-31", "2023-12-31", "2024-12-31", "2025-12-31")))
+        row = next(h for h in r["history"] if h["end"] == "2025-09-30")
+        assert row["tce"] == 1_000
+        assert row["filled_from_annual"] is False
+
     def test_stale_component_is_missing(self):
         # 12か月より古い年度末の値しかない → 推測で埋めずcomponent_missing
         intang = {"2023-12-31": 50}

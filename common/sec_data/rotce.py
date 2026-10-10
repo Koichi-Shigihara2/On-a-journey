@@ -174,7 +174,7 @@ def tce_at(series: Dict[str, Dict[str, dict]], q: str, intangible_tags: Dict[str
         c = ({"val": None, "filled_from": None, "missing": True} if f in unavailable
              else component_at(series[f], q, fy_ends, first_reported.get(f)))
         parts[f] = c["val"]
-        if c["filled_from"]:
+        if c["filled_from"] and c["val"]:  # 0で補った場合（優先株0等）は値が変わらないので記録しない
             filled[f] = c["filled_from"]
         if c["missing"]:
             missing.append(f)

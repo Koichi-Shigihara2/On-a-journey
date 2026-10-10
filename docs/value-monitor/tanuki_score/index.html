@@ -240,6 +240,7 @@
   <div id="cat-board"></div>
   <div id="rice-matrix"></div>
   <div id="dupont-panel"></div>
+  <div id="rotce-panel"></div>
   <div id="trap-panel"></div>
   <div id="detail-tbl"></div>
 
@@ -262,6 +263,7 @@ const H_BASE = '../hypecore/data/';
 const E_PATH = '../adjusted_eps_analyzer/data/summary.json';
 const M_PATH = '../../market-monitor/market-pulse/data/market_data.json';
 const S_PATH = '../stonks-silo/data/results.json';
+const R_PATH = '../../common/sec_data/rotce/_summary.json';  // [[ROTCE-PTBV-1]] 参考表示
 
 // ─── Display helpers ─────────────────────────────────────────
 // ARCH-SCORE-SYNC-1: funda/timing/分類はすべてpipeline.py(latest.json)が
@@ -667,6 +669,8 @@ function renderDetailTable() {
 
   // ⑥ DuPont分解パネル
   renderDuPontPanel();
+  // ⑥-2 ROTCE × P/TBV 散布図（参考表示。判定には使わない）
+  renderRotcePanel(tickers);
 
   // ⑦ 投資トラップ検出パネル
   renderTrapPanel();
@@ -1002,6 +1006,116 @@ function renderDuPontPanel() {
         </thead>
         <tbody>${trs}</tbody>
       </table>
+    </div>
+  </details>`;
+}
+
+// ─── ⑥-2 ROTCE × P/TBV 散布図（[[ROTCE-PTBV-1]]、参考表示） ─────────
+// 判定（category・funda/timing・tanuki_score・matrix・トラップ）には使わない。
+// データ: common/sec_data/rotce/_summary.json（common/sec_data/rotce.py、日次で再計算）
+const ROTCE_REASON_LABEL = {
+  tce_nonpositive: '有形自己資本がマイナス',
+  component_missing: '控除項目（のれん・無形資産等）が取れない',
+  equity_missing: '純資産が取れない',
+  insufficient_quarters: '連続4四半期の純利益が無い',
+  price_missing: '株価が無い',
+  shares_missing: '株式数が無い',
+  no_layer3: 'SECデータが無い',
+  exception: '計算エラー',
+};
+const ROTCE_SIGNAL = {
+  cheap:   { label: '自社比割安', color: '#10b981' },
+  neutral: { label: '中立',       color: '#7a92b0' },
+  rich:    { label: '自社比割高', color: '#f43f5e' },
+};
+
+async function renderRotcePanel(tickers) {
+  const el = document.getElementById('rotce-panel');
+  if (!el) return;
+  let summary = null;
+  try {
+    const r = await fetch(R_PATH + TS);
+    if (r.ok) summary = await r.json();
+  } catch (_) {}
+  if (!summary || !summary.tickers) { el.innerHTML = ''; return; }
+
+  const rows = tickers.map(tk => [tk, summary.tickers[tk]]).filter(([, r]) => r);
+  const pts = rows.filter(([, r]) => r.rotce != null && r.ptbv != null && r.ptbv > 0);
+  const ng = rows.filter(([, r]) => !(r.rotce != null && r.ptbv != null && r.ptbv > 0));
+  const missing = tickers.filter(tk => !summary.tickers[tk]);
+
+  // 座標: 横 ROTCE（-100%〜+200%、範囲外は端に寄せて◂▸）、縦 P/TBV（対数 0.5x〜200x）
+  const W = 720, H = 420, L = 46, R = 14, T = 14, B = 40;
+  const XMIN = -1.0, XMAX = 2.0, YMIN = Math.log10(0.5), YMAX = Math.log10(200);
+  const sx = v => L + (Math.min(Math.max(v, XMIN), XMAX) - XMIN) / (XMAX - XMIN) * (W - L - R);
+  const sy = v => T + (1 - (Math.min(Math.max(Math.log10(v), YMIN), YMAX) - YMIN) / (YMAX - YMIN)) * (H - T - B);
+  const pct = v => (v * 100).toFixed(1) + '%';
+
+  let grid = '';
+  [-1, -0.5, 0, 0.5, 1, 1.5, 2].forEach(v => {
+    const x = sx(v);
+    grid += `<line x1="${x}" y1="${T}" x2="${x}" y2="${H - B}" stroke="#1b2540" stroke-width="${v === 0 ? 1.5 : 1}"/>`
+          + `<text x="${x}" y="${H - B + 14}" fill="#7a92b0" font-size="10" text-anchor="middle">${(v * 100).toFixed(0)}%</text>`;
+  });
+  [0.5, 1, 2, 5, 10, 20, 50, 100, 200].forEach(v => {
+    const y = sy(v);
+    grid += `<line x1="${L}" y1="${y}" x2="${W - R}" y2="${y}" stroke="#1b2540"/>`
+          + `<text x="${L - 5}" y="${y + 3}" fill="#7a92b0" font-size="10" text-anchor="end">${v}x</text>`;
+  });
+  grid += `<text x="${(L + W - R) / 2}" y="${H - 6}" fill="#7a92b0" font-size="11" text-anchor="middle">ROTCE（TTM純利益 ÷ 有形自己資本）</text>`
+        + `<text x="12" y="${(T + H - B) / 2}" fill="#7a92b0" font-size="11" text-anchor="middle" transform="rotate(-90 12 ${(T + H - B) / 2})">P/TBV（対数）</text>`;
+
+  const dots = pts.map(([tk, r]) => {
+    const sig = ROTCE_SIGNAL[r.signal];
+    const color = sig ? sig.color : '#7a92b0';
+    const x = sx(r.rotce), y = sy(r.ptbv);
+    const clip = r.rotce < XMIN ? '◂' : r.rotce > XMAX ? '▸' : '';
+    const star = r.filled_from_annual ? '*' : '';
+    const title = `${tk}  ROTCE ${pct(r.rotce)} / P/TBV ${r.ptbv.toFixed(1)}x`
+      + `\n目安: ${sig ? sig.label : '判定なし（比較できる四半期が' + (r.n_quarters || 0) + '期）'}`
+      + (r.ptbv_pctl != null ? `\n自社の過去でのパーセンタイル: P/TBV ${r.ptbv_pctl.toFixed(0)} / ROTCE ${r.rotce_pctl.toFixed(0)}` : '')
+      + (r.filled_from_annual ? `\n* 期末日に無い控除項目を年度末の値で補った（${Object.keys(r.filled_components || {}).join(', ')}）` : '')
+      + `\n直近の四半期: ${r.quarter_end}`;
+    const fill = sig ? color : 'none';
+    return `<g><title>${escAttr(title)}</title>`
+      + `<circle cx="${x}" cy="${y}" r="4.5" fill="${fill}" fill-opacity=".85" stroke="${color}" stroke-width="1.5"/>`
+      + (x > W - R - 70  // 右端付近はラベルを点の左に出す（SVGの外で切れないように）
+        ? `<text x="${x - 6}" y="${y - 5}" fill="${color}" font-size="10" text-anchor="end">${clip}${tk}${star}</text></g>`
+        : `<text x="${x + 6}" y="${y - 5}" fill="${color}" font-size="10">${clip}${tk}${star}</text></g>`);
+  }).join('');
+
+  const byReason = {};
+  ng.forEach(([tk, r]) => { const k = r.reason || 'unknown'; (byReason[k] = byReason[k] || []).push(tk); });
+  if (missing.length) byReason.no_data = missing;
+  const reasonList = Object.entries(byReason).sort((a, b) => b[1].length - a[1].length).map(([k, tks]) =>
+    `<li><span style="color:var(--sub)">${ROTCE_REASON_LABEL[k] || (k === 'no_data' ? 'データファイルが無い' : k)}</span>: ${tks.length}銘柄 `
+    + `<span style="color:var(--mut);font-family:var(--mono);font-size:10px">${tks.join(' ')}</span></li>`).join('');
+  const cnt = k => pts.filter(([, r]) => r.signal === k).length;
+  const noSig = pts.filter(([, r]) => !r.signal).length;
+  const nFilled = pts.filter(([, r]) => r.filled_from_annual).length;
+  const legend = Object.entries(ROTCE_SIGNAL).map(([k, v]) =>
+    `<span style="white-space:nowrap"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${v.color};margin-right:4px"></span>${v.label} ${cnt(k)}</span>`).join(' ')
+    + ` <span style="white-space:nowrap"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;border:1.5px solid #7a92b0;margin-right:4px;box-sizing:border-box"></span>判定なし ${noSig}</span>`;
+
+  el.innerHTML = `
+  <details style="margin:10px 0 10px;border:1px solid var(--border);border-radius:6px;overflow:hidden">
+    <summary style="padding:10px 14px;cursor:pointer;background:var(--surface);font-weight:600;font-size:13px;list-style:none">
+      ▶ ROTCE × P/TBV（参考表示・判定には使っていない／${pts.length}銘柄）
+    </summary>
+    <div style="padding:10px 14px">
+      <p style="font-size:11px;color:var(--mut);margin:0 0 8px;line-height:1.6">
+        有形自己資本（TCE）＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。
+        ROTCE＝TTM純利益÷TCE（期首・期末の平均）、P/TBV＝時価総額（最新終値）÷TCE。
+        色は自社の過去の四半期との比較（P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高、比較できる四半期が8期未満は判定なし）。
+        * は期末日に無い控除項目を12か月以内の年度末の値で補った銘柄（${nFilled}）。◂▸ はROTCEが表示範囲（−100%〜+200%）の外。点にカーソルを合わせると値を表示。
+      </p>
+      <div style="font-size:11px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:4px 12px">${legend}</div>
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;display:block;background:var(--sur)" role="img" aria-label="ROTCEとP/TBVの散布図">
+        ${grid}${dots}
+      </svg>
+      <div style="font-size:11px;margin-top:8px;color:var(--sub)">算出できない銘柄: ${ng.length + missing.length}</div>
+      <ul style="font-size:11px;margin:4px 0 0;padding-left:18px;line-height:1.7;overflow-wrap:anywhere">${reasonList}</ul>
+      <div style="font-size:10px;color:var(--mut);margin-top:6px">更新: ${escAttr(summary.generated_at || '')}（common/sec_data/rotce.py）</div>
     </div>
   </details>`;
 }
