@@ -16,8 +16,11 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
           〈暗黙のQ4を含む〉、無い四半期はLayer3の純利益〈net_income_source="net_income"〉。
           前の四半期末〈70〜120日前の純資産の期末日〉のTCEが無い・0以下なら当四半期末のTCEだけで計算し、
           rotce_basis="quarter_end_only"。両方そろえば rotce_basis="quarter_average"）
-  ROTCE（参考、TTM）= rotce_ttm: Layer3の四半期純利益を連続4期足したTTM純利益 ÷（4四半期前と当四半期末のTCEの平均）
-          （2026-10-10の当初の定義。4四半期前のTCEが無い・0以下なら当四半期末だけ、rotce_ttm_basis="end_only"）
+  比較用ROTCE（TTM）= rotce_ttm: 直近4四半期（連続）の普通株主帰属純利益〈上と同じ四半期ごとの分子〉の合計
+          ÷ 5つの四半期末（当四半期末と、そこから前の四半期末を4回たどった期末）のTCEの平均（2026-10-11、チャット側の決定）。
+          TCEが取れない（成分の欠け）・0以下の期末は平均から外し、ある期末だけで平均する（rotce_ttm_tce_ends に使った期末、
+          rotce_ttm_basis="avg5"〈5つそろった〉／"avg<n>"）。自社比の目安（パーセンタイル）はこの系列で計算する。
+          画面の「参考（TTM）」もこの値
   P/TBV = 時価総額 ÷ 期末のTCE
           四半期: 期末日（または直前の取引日）の終値 × その期の希薄化後株式数
           直近:   最新の終値 × 最新四半期の希薄化後株式数（TCEは最新四半期）
@@ -28,7 +31,7 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
 データ: Layer3（layer3_builder.build_ticker_store）・日次株価（common/market_data/daily/）・
 分割履歴（config/split_history.yaml、株式数の未調整の値を split_adjust.py で換算）。
 
-自社の過去との比較: 直近のROTCEが正（赤字でない）で、四半期のROTCE・P/TBVが両方そろう期がMIN_QUARTERS_FOR_PERCENTILE以上あるときだけ、
+自社の過去との比較: 直近の比較用ROTCE（TTM）が正（赤字でない）で、比較用ROTCE・P/TBVが両方そろう期がMIN_QUARTERS_FOR_PERCENTILE以上あるときだけ、
 直近値が過去の四半期分布の何パーセンタイルにあるかを出し、目安（自社比割安・中立・自社比割高）を付ける。
 
 出力: docs/common/sec_data/rotce/{TICKER}.json と _summary.json（TANUKI SCOREの散布図用）。
@@ -75,9 +78,8 @@ SIGNAL_RICH = "rich"
 
 # 期末日に成分が無いとき、補ってよい年次（10-K）の値の古さ（日）
 ANNUAL_FILL_MAX_DAYS = 365
-# TTMの4四半期が連続とみなす間隔（日）・期首（4四半期前）とみなす間隔（日）
+# 隣り合う四半期とみなす間隔（日）。TTMの4四半期の連続・前の四半期末の判定に使う
 QUARTER_GAP_DAYS = (70, 120)   # 上限120日: PEPの第4四半期は16週（112日）
-YEAR_GAP_DAYS = (340, 390)
 # 期末日の終値として使える直前の取引日の古さ（日）
 PRICE_MAX_STALE_DAYS = 7
 # 株式数の外れ値: 分割換算後の中央値からこの倍率以上離れた値は使わない
@@ -93,6 +95,8 @@ COMMON_NI_BASIC_TAG = "NetIncomeLossAvailableToCommonStockholdersBasic"
 NI_SOURCE_BY_TAG = {COMMON_NI_DILUTED_TAG: "common_diluted", COMMON_NI_BASIC_TAG: "common_basic"}
 NI_SOURCE_FALLBACK = "net_income"
 ANNUALIZE_QUARTERS = 4
+# 比較用（TTM）のROTCEの分母: 当四半期末と過去4つの四半期末のTCEの平均
+TTM_TCE_POINTS = 5
 DEDUCTION_FIELDS = ("goodwill", "intangible_assets_excl_goodwill", "preferred_stock")
 TAG_BY_FIELD = {"goodwill": "Goodwill", "preferred_stock": "PreferredStockValue",
                 "minority_interest": "MinorityInterest"}
@@ -107,7 +111,7 @@ R_PRICE_MISSING = "price_missing"
 R_SHARES_MISSING = "shares_missing"
 R_INTANGIBLE_ONLY_INCL = "intangible_only_including_goodwill_tag"
 R_PREFERRED_TEMPORARY_EQUITY = "preferred_stock_classified_as_temporary_equity"
-R_ROTCE_NONPOSITIVE = "rotce_nonpositive"   # 直近のROTCE≤0（赤字）→ 目安を付けない
+R_ROTCE_NONPOSITIVE = "rotce_nonpositive"   # 直近の比較用ROTCE（TTM）≤0（赤字）→ 目安を付けない
 
 # 0と仮定した期（assumed_zero）のうち、自社比の母数から外す成分。のれん・優先株は存在すれば
 # 貸借対照表に独立した行として出るため、初申告より前を0とするのは実態どおり（ALABは2025年の
@@ -179,6 +183,19 @@ def _previous_quarter_end(equity_ends: List[str], q: str) -> Optional[str]:
     """qの前の四半期末（純資産の期末日のうち、qの70〜120日前で最も新しいもの）"""
     prev = [e for e in equity_ends if e < q and QUARTER_GAP_DAYS[0] <= _days(e, q) <= QUARTER_GAP_DAYS[1]]
     return max(prev) if prev else None
+
+
+def _ttm_tce_ends(equity_ends: List[str], q: str, tce_of) -> List[str]:
+    """比較用（TTM）の分母に使う四半期末: qと、そこから前の四半期末を4回たどった期末（最大5つ）のうち、
+    TCEが取れて正のもの。qのTCEは呼び出し元で正であることを確かめている"""
+    ends_5 = [q]
+    while len(ends_5) < TTM_TCE_POINTS:
+        p = _previous_quarter_end(equity_ends, ends_5[-1])
+        if p is None:
+            break
+        ends_5.append(p)
+    used = [e for e in ends_5 if (tce_of(e).get("tce") or 0) > 0]
+    return sorted(used)
 
 
 def component_at(by_end: Dict[str, dict], q: str, fy_ends: frozenset = frozenset(),
@@ -438,6 +455,10 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
     common_ni = _common_ni_quarterly(company_facts, ticker)
     equity_ends = list(series["stockholders_equity"])
 
+    def _quarter_ni(x: str) -> float:
+        """四半期の分子: 普通株主帰属純利益、無ければLayer3の純利益"""
+        return common_ni[x]["val"] if x in common_ni else ni[x]["val"]
+
     for i in range(len(ends)):
         q = ends[i]
         window = ends[i - 3:i + 1] if i >= 3 else []
@@ -446,9 +467,9 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
         cn = common_ni.get(q)
         row: Dict[str, Any] = {
             "end": q,
-            "quarter_net_income": cn["val"] if cn else ni[q]["val"],
+            "quarter_net_income": _quarter_ni(q),
             "net_income_source": NI_SOURCE_BY_TAG.get(cn.get("source_tag"), "common") if cn else NI_SOURCE_FALLBACK,
-            "ttm_net_income": sum(ni[x]["val"] for x in window) if ttm_ok else None,
+            "ttm_net_income": sum(_quarter_ni(x) for x in window) if ttm_ok else None,
         }
         t = _tce(q)
         row.update(tce=t.get("tce"), components=t.get("components"),
@@ -478,15 +499,12 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
         else:
             row.update(tce_prev_quarter=tp, prev_quarter_end=prev,
                        rotce=annualized / t["tce"], rotce_basis="quarter_end_only")
-        # 参考: TTM純利益 ÷（4四半期前と当四半期末のTCEの平均）
+        # 比較用（TTM）: 直近4四半期の分子の合計 ÷ 5つの四半期末のTCEの平均（取れる期末だけ）
         if ttm_ok:
-            begin = ends[i - 4] if i >= 4 and YEAR_GAP_DAYS[0] <= _days(ends[i - 4], q) <= YEAR_GAP_DAYS[1] else None
-            tb = _tce(begin).get("tce") if begin else None
-            if tb is not None and tb > 0:
-                row.update(tce_begin=tb, rotce_ttm=row["ttm_net_income"] / ((t["tce"] + tb) / 2),
-                           rotce_ttm_basis="average")
-            else:
-                row.update(tce_begin=tb, rotce_ttm=row["ttm_net_income"] / t["tce"], rotce_ttm_basis="end_only")
+            used = _ttm_tce_ends(equity_ends, q, _tce)
+            avg = sum(_tce(e)["tce"] for e in used) / len(used)
+            row.update(rotce_ttm=row["ttm_net_income"] / avg, rotce_ttm_tce_avg=avg, rotce_ttm_tce_ends=used,
+                       rotce_ttm_basis=f"avg{len(used)}")
         if px and sh:
             row["market_cap"] = px["close"] * sh["shares"]
             row["ptbv"] = row["market_cap"] / t["tce"]
@@ -516,7 +534,7 @@ def _current(history: List[dict], prices: List[dict], ends: List[str]) -> Dict[s
         "tce_prev_quarter": h.get("tce_prev_quarter"), "prev_quarter_end": h.get("prev_quarter_end"),
         "rotce": h.get("rotce"), "rotce_basis": h.get("rotce_basis"),
         "ttm_net_income": h.get("ttm_net_income"), "rotce_ttm": h.get("rotce_ttm"),
-        "rotce_ttm_basis": h.get("rotce_ttm_basis"),
+        "rotce_ttm_basis": h.get("rotce_ttm_basis"), "rotce_ttm_tce_ends": h.get("rotce_ttm_tce_ends"),
         "filled_from_annual": h.get("filled_from_annual", False),
         "filled_components": h.get("filled_components") or {},
     }
@@ -541,16 +559,21 @@ def _current(history: List[dict], prices: List[dict], ends: List[str]) -> Dict[s
 
 
 def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
-    """自社の過去の四半期との比較。無形資産を0と仮定した期（excluded_from_percentile）は母数から外す"""
-    pts = [h for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
+    """自社の過去の四半期との比較。ROTCEは比較用（TTM、rotce_ttm）の系列を使う（見出しの四半期の年率は
+    一過性の四半期を4倍にするため）。無形資産を0と仮定した期（excluded_from_percentile）は母数から外す"""
+    pts = [h for h in history if h.get("rotce_ttm") is not None and h.get("ptbv") is not None
            and not h.get("excluded_from_percentile")]
-    n_assumed = sum(1 for h in history if h.get("rotce") is not None and h.get("ptbv") is not None
+    n_assumed = sum(1 for h in history if h.get("rotce_ttm") is not None and h.get("ptbv") is not None
                     and h.get("excluded_from_percentile"))
-    res: Dict[str, Any] = {"n_quarters": len(pts), "n_excluded_assumed_zero": n_assumed, "signal": None}
+    res: Dict[str, Any] = {"n_quarters": len(pts), "n_excluded_assumed_zero": n_assumed, "signal": None,
+                           "rotce_series": "rotce_ttm"}
     if current.get("ptbv") is None or current.get("rotce") is None:
         res["reason"] = current.get("reason") or R_INSUFFICIENT_QUARTERS
         return res
-    if current["rotce"] <= 0:
+    if current.get("rotce_ttm") is None:
+        res["reason"] = R_INSUFFICIENT_QUARTERS
+        return res
+    if current["rotce_ttm"] <= 0:
         # 赤字（ROTCE≤0）の銘柄は、マイナス同士の比較で「自社比割安」等になるため目安の対象外
         res["reason"] = R_ROTCE_NONPOSITIVE
         return res
@@ -558,7 +581,7 @@ def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
         res["reason"] = R_INSUFFICIENT_QUARTERS
         return res
     res["ptbv"] = percentile_of(current["ptbv"], [h["ptbv"] for h in pts])
-    res["rotce"] = percentile_of(current["rotce"], [h["rotce"] for h in pts])
+    res["rotce"] = percentile_of(current["rotce_ttm"], [h["rotce_ttm"] for h in pts])
     res["first_quarter"] = pts[0]["end"]
     res["last_quarter"] = pts[-1]["end"]
     res["signal"] = signal_for(res["ptbv"], res["rotce"])

@@ -11,7 +11,8 @@ tests/test_rotce.py
 - 株式数の外れ値（千株単位の申告ミス）は使わず、同じ期末日の次の候補を使う
 - 優先株がメザニンと同額の期末日は控除しない
 - [[ROTCE-QUARTERLY-ANNUALIZED-1]]（2026-10-11）: ROTCEは四半期の普通株主帰属純利益×4÷（前の四半期末と当四半期末の
-  TCEの平均）。タグが無い四半期は純利益。TTM方式はrotce_ttm（参考）
+  TCEの平均）。タグが無い四半期は純利益。比較用（TTM、rotce_ttm）は4四半期の合計÷5つの四半期末のTCEの平均で、
+  自社比の目安はこの系列で計算する
 
 実行方法:
     python -m pytest tests/test_rotce.py -v
@@ -84,7 +85,8 @@ class TestTce:
         assert last["rotce_basis"] == "quarter_average"
         assert last["prev_quarter_end"] == "2025-09-30"
         assert abs(last["rotce_ttm"] - 100 / 850) < 1e-12
-        assert last["rotce_ttm_basis"] == "average"
+        assert last["rotce_ttm_basis"] == "avg5"
+        assert last["rotce_ttm_tce_ends"] == QEND[-5:]
         assert abs(last["ptbv"] - 200 / 850) < 1e-12
 
     def test_minority_interest_subtracted_only_with_nci_inclusive_equity_tag(self):
@@ -147,7 +149,7 @@ class TestAnnualFill:
 
 class TestPercentile:
     def test_fewer_than_8_quarters_has_no_percentile(self):
-        qs = QEND[-7:]  # 四半期ごとに1期（TTMの窓は不要）
+        qs = QEND[-10:]  # 比較用（TTM）の窓は7つ（10−3）
         r = _run(_store(se={q: 1_000 for q in qs}, ni={q: 25 for q in qs}, shares={q: 10 for q in qs}))
         assert r["percentile"]["n_quarters"] == 7
         assert r["percentile"]["signal"] is None
@@ -155,7 +157,7 @@ class TestPercentile:
         assert "ptbv" not in r["percentile"]
 
     def test_8_quarters_gives_percentile(self):
-        qs = QEND[-8:]
+        qs = QEND[-11:]
         r = _run(_store(se={q: 1_000 for q in qs}, ni={q: 25 for q in qs}, shares={q: 10 for q in qs}))
         assert r["percentile"]["n_quarters"] == 8
         assert r["percentile"]["signal"] in (rotce.SIGNAL_CHEAP, rotce.SIGNAL_NEUTRAL, rotce.SIGNAL_RICH)
@@ -222,7 +224,7 @@ class TestAssumedZero:
         assert all(h["assumed_zero"] == ["goodwill"] for h in r["history"] if h.get("assumed_zero"))
         assert not any(h.get("excluded_from_percentile") for h in r["history"])
         p = r["percentile"]
-        assert p["n_quarters"] == 12
+        assert p["n_quarters"] == 9             # 比較用（TTM）の窓がそろう9期
         assert p["n_excluded_assumed_zero"] == 0
         assert p["signal"] is not None
 
@@ -237,8 +239,8 @@ class TestAssumedZero:
         assert all(h["assumed_zero"] == ["intangible_assets_excl_goodwill"]
                    for h in r["history"] if h.get("assumed_zero"))
         p = r["percentile"]
-        assert p["n_quarters"] == 5            # 12期のうち無形資産を0と仮定した7期を除く
-        assert p["n_excluded_assumed_zero"] == 7
+        assert p["n_quarters"] == 5            # 比較用（TTM）の9期のうち無形資産を0と仮定した4期を除く
+        assert p["n_excluded_assumed_zero"] == 4
         assert p["signal"] is None and p["reason"] == rotce.R_INSUFFICIENT_QUARTERS
 
     def test_reported_quarters_have_no_assumed_zero(self):
@@ -246,7 +248,7 @@ class TestAssumedZero:
                  company_facts={"facts": {"us-gaap": {"Goodwill": {"units": {"USD": [
                      {"end": q, "val": 100, "form": "10-Q"} for q in QEND]}}}}})
         assert not any(h.get("assumed_zero") for h in r["history"])
-        assert r["percentile"]["n_quarters"] == 12
+        assert r["percentile"]["n_quarters"] == 9
 
 
 class TestLossMakers:
@@ -289,8 +291,9 @@ class TestQuarterlyAnnualized:
         assert last["prev_quarter_end"] == "2025-09-30" and last["tce_prev_quarter"] == 900
         assert abs(last["rotce"] - 80 / 1_000) < 1e-12
         assert last["rotce_basis"] == "quarter_average"
-        # TTM（参考）はLayer3の純利益25×4=100 ÷（4四半期前1,000と当四半期末1,100の平均）
-        assert abs(last["rotce_ttm"] - 100 / 1_050) < 1e-12
+        # 比較用（TTM）は分子を四半期ごとに選ぶ（20＋25×3=95）÷ 5つの四半期末の平均（1,000×3＋900＋1,100）÷5=1,000
+        assert last["ttm_net_income"] == 95
+        assert abs(last["rotce_ttm"] - 95 / 1_000) < 1e-12
         assert r["current"]["rotce"] == last["rotce"] and r["current"]["net_income_source"] == "common_diluted"
 
     def test_falls_back_to_net_income_without_common_tag(self):
@@ -362,3 +365,36 @@ class TestCompanyReported:
         msgs = rcc._check_company_reported_rotce(out_dir=str(tmp_path))
         sofi = [m for t, m in msgs if t == "SOFI"]
         assert sofi and "WARN-61" in sofi[0] and "2099-12-31" in sofi[0]
+
+
+class TestComparisonTtm:
+    def test_ttm_average_skips_missing_and_nonpositive_ends(self):
+        # 4四半期前（2024-12-31）のTCEが0以下・2025-03-31は純資産が無い → 残り3つの期末の平均
+        se = {q: 1_000 for q in QEND}
+        del se["2025-03-31"]
+        gw = {q: 0 for q in QEND}
+        gw["2024-12-31"] = 1_200
+        r = _run(_store(se=se, gw=gw))
+        last = r["history"][-1]
+        assert last["rotce_ttm_tce_ends"] == ["2025-06-30", "2025-09-30", "2025-12-31"]
+        assert last["rotce_ttm_basis"] == "avg3"
+        assert abs(last["rotce_ttm"] - 100 / 1_000) < 1e-12
+
+    def test_percentile_uses_ttm_series_not_quarterly(self):
+        # 直近の四半期だけ一過性の大きな利益 → 見出しのROTCEは大きいが、比較用（TTM）で順位を付ける
+        ni = {q: 25 for q in QEND}
+        ni["2025-12-31"] = 1_000
+        r = _run(_store(ni=ni))
+        cur, last = r["current"], r["history"][-1]
+        assert abs(cur["rotce"] - 4_000 / 1_000) < 1e-12
+        assert abs(cur["rotce_ttm"] - 1_075 / 1_000) < 1e-12
+        assert r["percentile"]["rotce_series"] == "rotce_ttm"
+        assert r["percentile"]["rotce"] == rotce.percentile_of(
+            last["rotce_ttm"], [h["rotce_ttm"] for h in r["history"] if h.get("rotce_ttm") is not None])
+
+    def test_nonpositive_ttm_gets_no_signal_even_if_quarter_positive(self):
+        ni = {q: -50 for q in QEND}
+        ni["2025-12-31"] = 10
+        r = _run(_store(ni=ni))
+        assert r["current"]["rotce"] > 0 and r["current"]["rotce_ttm"] < 0
+        assert r["percentile"]["reason"] == rotce.R_ROTCE_NONPOSITIVE

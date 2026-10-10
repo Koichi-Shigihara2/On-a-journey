@@ -1072,9 +1072,9 @@ async function renderRotcePanel(tickers) {
     const clip = r.rotce < XMIN ? '◂' : r.rotce > XMAX ? '▸' : '';
     const star = r.filled_from_annual ? '*' : '';
     const title = `${tk}  ROTCE ${pct(r.rotce)} / P/TBV ${r.ptbv.toFixed(1)}x`
-      + `\n目安: ${sig ? sig.label : r.signal_reason === 'rotce_nonpositive' ? '判定なし（ROTCEがマイナス＝赤字のため対象外）'
+      + `\n目安: ${sig ? sig.label : r.signal_reason === 'rotce_nonpositive' ? '判定なし（ROTCE（TTM）がマイナス＝赤字のため対象外）'
                                      : '判定なし（比較できる四半期が' + (r.n_quarters || 0) + '期）'}`
-      + (r.ptbv_pctl != null ? `\n自社の過去でのパーセンタイル: P/TBV ${r.ptbv_pctl.toFixed(0)} / ROTCE ${r.rotce_pctl.toFixed(0)}` : '')
+      + (r.ptbv_pctl != null ? `\n自社の過去でのパーセンタイル: P/TBV ${r.ptbv_pctl.toFixed(0)} / ROTCE（TTM）${r.rotce_pctl.toFixed(0)}` : '')
       + (r.filled_from_annual ? `\n* 期末日に無い控除項目を年度末の値で補った（${Object.keys(r.filled_components || {}).join(', ')}）` : '')
       + `\n直近の四半期: ${r.quarter_end}`;
     const fill = sig ? color : 'none';
@@ -1108,7 +1108,7 @@ async function renderRotcePanel(tickers) {
       <p style="font-size:11px;color:var(--mut);margin:0 0 8px;line-height:1.6">
         有形自己資本（TCE）＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。
         ROTCE＝直近の四半期の普通株主帰属純利益（希薄化後。タグが無い銘柄は純利益）×4÷TCE（前の四半期末と当四半期末の平均）、P/TBV＝時価総額（最新終値）÷TCE。
-        色は自社の過去の四半期との比較（P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高、ROTCEがマイナス（赤字）の銘柄と、比較できる四半期が8期未満の銘柄は判定なし）。
+        色は自社の過去の四半期との比較。比べるROTCEは直近4四半期の普通株主帰属純利益の合計÷TCE（当四半期末と過去4つの四半期末の平均）＝ROTCE（TTM）（P/TBVが下位25%以内かつROTCE（TTM）が中央以上→自社比割安、P/TBVが上位25%以内かつROTCE（TTM）が中央以下→自社比割高、ROTCE（TTM）がマイナス（赤字）の銘柄と、比較できる四半期が8期未満の銘柄は判定なし）。
         * は期末日に無い控除項目を12か月以内の年度末の値で補った銘柄（${nFilled}）。◂▸ はROTCEが表示範囲（−100%〜+200%）の外。点にカーソルを合わせると値を表示。
       </p>
       <div style="font-size:11px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:4px 12px">${legend}</div>

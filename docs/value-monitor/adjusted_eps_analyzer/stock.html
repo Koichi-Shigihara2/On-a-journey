@@ -767,7 +767,7 @@
       document.getElementById('rotce-cur-note').textContent = cur.rotce != null
         ? `${cur.quarter_end}の四半期の${niLabel}×4÷有形自己資本（`
           + (cur.rotce_basis === 'quarter_average' ? `${cur.prev_quarter_end}末と${cur.quarter_end}末の平均` : `${cur.quarter_end}末のみ`) + '）'
-          + (cur.rotce_ttm != null ? `。参考（TTM）${pct(cur.rotce_ttm)}` : '') : '';
+          + (cur.rotce_ttm != null ? `。参考（TTM）${pct(cur.rotce_ttm)}（自社比の目安はこちらで比較）` : '') : '';
       document.getElementById('ptbv-cur').textContent = cur.ptbv != null ? `${cur.ptbv.toFixed(1)}x` : '—';
       document.getElementById('ptbv-cur-note').textContent = cur.ptbv != null
         ? `終値 ${cur.price.toFixed(2)}（${cur.price_date}）× 株式数（${cur.shares_quarter_end || cur.quarter_end}）` : '';
@@ -777,12 +777,12 @@
         const [label, color] = ROTCE_SIGNAL_TEXT[pc.signal];
         sigEl.textContent = label;
         sigEl.style.color = color;
-        sigNote.textContent = `自社の過去${pc.n_quarters}四半期の中で P/TBV ${pc.ptbv.toFixed(0)}・ROTCE ${pc.rotce.toFixed(0)} パーセンタイル`;
+        sigNote.textContent = `自社の過去${pc.n_quarters}四半期の中で P/TBV ${pc.ptbv.toFixed(0)}・ROTCE（TTM）${pc.rotce.toFixed(0)} パーセンタイル`;
       } else {
         sigEl.textContent = '判定なし';
         sigEl.style.color = 'var(--mut)';
         sigNote.textContent = cur.ptbv == null ? '直近値が算出不可'
-          : pc.reason === 'rotce_nonpositive' ? 'ROTCEがマイナス（赤字）のため目安の対象外'
+          : pc.reason === 'rotce_nonpositive' ? 'ROTCE（TTM）がマイナス（赤字）のため目安の対象外'
           : `比較できる四半期が${pc.n_quarters || 0}期（8期以上で判定）`
             + (pc.n_excluded_assumed_zero ? `。無形資産を0と仮定した${pc.n_excluded_assumed_zero}期は除外` : '');
       }
@@ -840,24 +840,54 @@
         pointBorderColor: hist.map((h, i) => filledIdx[i] && !assumedIdx[i] ? '#f59e0b' : line),
         pointBorderWidth: hist.map((h, i) => assumedIdx[i] ? 1.5 : 1),
       });
+      // 縦軸: その銘柄の系列の5〜95パーセンタイルと会社発表の値の範囲。外れた点は端に寄せて▲▼（実際の値はツールチップ）
+      const rawR = hist.map(h => h.rotce != null ? h.rotce * 100 : null);
+      const coR = co ? hist.map(h => {
+        const v = co.values.find(x => x.quarter_end === h.end);
+        return v ? v.value * 100 : null;
+      }) : [];
+      const sortedR = rawR.filter(v => v != null).sort((a, b) => a - b);
+      const qtl = p => {
+        const k = (sortedR.length - 1) * p, lo = Math.floor(k), hi = Math.ceil(k);
+        return sortedR[lo] + (sortedR[hi] - sortedR[lo]) * (k - lo);
+      };
+      let yMin = null, yMax = null;
+      if (sortedR.length) {
+        const coVals = coR.filter(v => v != null);
+        yMin = Math.min(qtl(0.05), ...coVals);
+        yMax = Math.max(qtl(0.95), ...coVals);
+        const pad = (yMax - yMin) * 0.08 || 1;
+        yMin -= pad; yMax += pad;
+      }
+      const outR = rawR.map(v => v == null || yMin == null ? null : v > yMax ? 'hi' : v < yMin ? 'lo' : null);
+      const rotcePts = pointStyle('#06b6d4');
       rotceChart = new Chart(document.getElementById('rotce-chart').getContext('2d'), {
         type: 'line',
         data: { labels, datasets: [{
-          label: 'ROTCE', data: hist.map(h => h.rotce != null ? h.rotce * 100 : null),
+          label: 'ROTCE', data: rawR.map(v => v == null || yMin == null ? v : Math.min(Math.max(v, yMin), yMax)),
           borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,.1)', tension: 0.15, spanGaps: false,
-          ...pointStyle('#06b6d4'),
+          ...rotcePts,
+          pointStyle: outR.map(o => o ? 'triangle' : 'circle'),
+          rotation: outR.map(o => o === 'lo' ? 180 : 0),
+          pointRadius: rotcePts.pointRadius.map((r, i) => outR[i] ? 5 : r),
+          pointBackgroundColor: rotcePts.pointBackgroundColor.map((c, i) => outR[i] ? '#ef4444' : c),
+          pointBorderColor: rotcePts.pointBorderColor.map((c, i) => outR[i] ? '#ef4444' : c),
         }].concat(co ? [{
           // 会社発表（登録した四半期だけ点を打ち、点の間は線でつなぐ）
-          label: '会社発表', data: hist.map(h => {
-            const v = co.values.find(x => x.quarter_end === h.end);
-            return v ? v.value * 100 : null;
-          }),
+          label: '会社発表', data: coR,
           borderColor: '#f59e0b', backgroundColor: '#f59e0b', borderDash: [4, 3], tension: 0, spanGaps: true,
           pointRadius: 3, pointBorderWidth: 1,
         }] : []) },
         options: (() => {
-          const o = common('ROTCE（%、四半期の年率）', { ticks: { color: '#64748b', font: { size: 9 }, callback: v => v + '%' } });
+          const o = common('ROTCE（%、四半期の年率）', {
+            ...(yMin != null ? { min: yMin, max: yMax } : {}),
+            ticks: { color: '#64748b', font: { size: 9 }, callback: v => Number(v.toFixed(1)) + '%' } });
           if (co) o.plugins.legend = { display: true, labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12 } };
+          o.plugins.tooltip = { callbacks: { label: ctx => {
+            if (ctx.datasetIndex !== 0) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`;
+            const v = rawR[ctx.dataIndex];
+            return `ROTCE: ${v.toFixed(1)}%` + (outR[ctx.dataIndex] ? '（縦軸の範囲外、端に表示）' : '');
+          } } };
           return o;
         })(),
       });
@@ -878,9 +908,10 @@
       document.getElementById('rotce-foot').innerHTML =
         '参考表示です。TANUKI SCORE・TANUKI VALUATIONの判定や計算には使っていません。' + filledNow + '<br>'
         + 'ROTCE＝その四半期の普通株主帰属純利益（希薄化後。タグが無い四半期は純利益）×4÷有形自己資本（前の四半期末と当四半期末の平均。前の四半期末が無い・マイナスなら当四半期末だけ）。'
-        + '参考（TTM）＝直近4四半期の純利益の合計÷有形自己資本（4四半期前と当四半期末の平均）。'
+        + '参考（TTM）＝直近4四半期の普通株主帰属純利益（同上）の合計÷有形自己資本（当四半期末と過去4つの四半期末、計5つの平均。取れない・マイナスの期末は除いて平均）。自社比の目安のROTCEはこの値で比べる（四半期の年率は一過性の四半期を4倍にするため）。'
+        + 'ROTCEのグラフの縦軸は、その銘柄の系列の5〜95パーセンタイルと会社発表の値の範囲。外れた点は端に寄せた赤い▲▼（カーソルで実際の値）。'
         + '有形自己資本＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。'
-        + '目安は自社の過去の四半期との比較で、P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高（ROTCEがマイナスの銘柄は対象外）。'
+        + '目安は自社の過去の四半期との比較で、P/TBVが下位25%以内かつROTCE（TTM）が中央以上→自社比割安、P/TBVが上位25%以内かつROTCE（TTM）が中央以下→自社比割高（ROTCE（TTM）がマイナスの銘柄は対象外）。'
         + 'オレンジの点は年度末の値で補った四半期。中抜きの点は、無形資産をまだ申告していない期で0と仮定した四半期（自社比の目安の計算には使わない）。'
         + '線が切れている期は算出不可（有形自己資本がマイナス等）。';
     }
