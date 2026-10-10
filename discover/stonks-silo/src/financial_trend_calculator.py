@@ -150,61 +150,53 @@ def _get_quarterly_entries(store: dict, field_name: str) -> list:
 
 
 
-# [[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]: fpラベル（Q1〜Q4）だけで
-# YoYペアを確定すると、比較列（10-Qの前四半期再掲）が申告元filingのfpを
-# そのまま引き継ぐ等のSEC/XBRL申告慣行により、同一fpラベルの下に実際には
-# 隣接する四半期（QoQ相当、約91日差）が混在するケースがある。true YoYの
-# end日付差は約365日のはずなので、この期間長を許容誤差込みで検証する。
+# [[STONKS-HEATMAP-FQ-LABEL-1]]（2026-10-10、旧[[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]の方式を置き換え）:
+# 四半期の識別はend（期末日）だけで行い、fpは判断に使わない。Layer3の四半期エントリの
+# fp/fyは「その数値を最後に申告した書類のfp/fy」で、期間そのものの四半期ではない
+# （例: JOBYの2025-03-31・2026-03-31の純利益は、2026年Q2の10-Qで再掲されたためfp="Q2"）。
+# 以前はfpでグルーピングしてから日数を検証していたため、こうした系列では前年同期比が
+# 算出不能（None）になっていた（2026-10-10時点で24銘柄×7指標の168系列中10系列）。
+# 前年同期 = 最新エントリのendから330〜400日前にendがあるエントリ（複数なら365日に最も近いもの）。
+# QoQ = 直前のエントリとの日数差が60〜120日のときだけ（欠けた四半期・決算期の変更をまたがない）。
+# QoQの閾値はindex.htmlのヒートマップ（QOQ_GAP_DAYS_MIN/MAX）と同じ値。
 _YOY_GAP_DAYS_MIN = 330
 _YOY_GAP_DAYS_MAX = 400
+_YOY_TARGET_DAYS = 365
+_QOQ_GAP_DAYS_MIN = 60
+_QOQ_GAP_DAYS_MAX = 120
+
+
+def _days_between(end_later: str, end_earlier: str) -> Optional[int]:
+    try:
+        return (datetime.strptime(end_later, "%Y-%m-%d") - datetime.strptime(end_earlier, "%Y-%m-%d")).days
+    except (ValueError, TypeError):
+        return None
 
 
 def _calc_yoy_change(entries: list) -> Optional[dict]:
     """
-    直近四半期と1年前同期のYoY変化率を計算。
-    同じfp（Q1/Q2/Q3/Q4）同士で比較する。
+    直近四半期と前年同期のYoY変化率を計算する（期末日だけで前年同期を決める、上記コメント参照）。
 
-    [[STONKS-SILO-FP-LABEL-PERIOD-VALIDATION-1]]: fpラベルの一致だけでは
-    不十分（上記モジュールコメント参照）なため、同一fp内の直近2件の
-    end日付差が330〜400日の範囲内（真のYoYとして妥当な期間長）である
-    ことも確認する。範囲外の場合はfpラベルの誤りを疑いYoY計算をスキップ
-    する（None、「算出不能」として扱う既存の他のNone分岐と同じ扱い）。
-    実データ確認済み: RCAT・CRWV等9銘柄で、1〜3月期エントリが
-    fp="Q2"と誤タグ付けされ直近の真のQ2（4〜6月期）と隣接比較される
-    （日数差91日）実例を2026-09-12調査で確認している。
+    前年同期は、最新エントリ（entries[-1]）のendから330〜400日前にendがあるエントリ。
+    該当が複数あれば365日に最も近いもの、無ければNone。戻り値の"fp"は互換のため残すが
+    空文字（期間はend_latest・end_prevで分かる。消費者がいないことは2026-10-10に確認）。
     """
     if len(entries) < 5:
         return None
 
-    # fpでグルーピング
-    by_fp: dict[str, list] = {}
-    for e in entries:
-        fp = e.get("fp", "")
-        if fp.startswith("Q"):
-            by_fp.setdefault(fp, []).append(e)
-
-    # 最新エントリのfpを取得
     latest = entries[-1]
-    latest_fp = latest.get("fp", "")
-    if not latest_fp.startswith("Q"):
+    end_latest_str = latest["end"]
+    candidates = []
+    for e in entries[:-1]:
+        gap = _days_between(end_latest_str, e["end"])
+        if gap is not None and _YOY_GAP_DAYS_MIN <= gap <= _YOY_GAP_DAYS_MAX:
+            candidates.append((abs(gap - _YOY_TARGET_DAYS), e))
+    if not candidates:
         return None
+    prev = min(candidates, key=lambda x: x[0])[1]
 
-    same_fp = sorted(by_fp.get(latest_fp, []), key=lambda x: x["end"])
-    if len(same_fp) < 2:
-        return None
-
-    end_latest_str = same_fp[-1]["end"]
-    end_prev_str   = same_fp[-2]["end"]
-    try:
-        gap_days = (datetime.strptime(end_latest_str, "%Y-%m-%d")
-                    - datetime.strptime(end_prev_str, "%Y-%m-%d")).days
-    except (ValueError, TypeError):
-        return None
-    if not (_YOY_GAP_DAYS_MIN <= gap_days <= _YOY_GAP_DAYS_MAX):
-        return None
-
-    val_latest = same_fp[-1]["val"]
-    val_prev   = same_fp[-2]["val"]
+    val_latest = latest["val"]
+    val_prev   = prev["val"]
 
     if val_prev == 0:
         return None
@@ -215,14 +207,19 @@ def _calc_yoy_change(entries: list) -> Optional[dict]:
         "val_latest": val_latest,
         "val_prev":   val_prev,
         "end_latest": end_latest_str,
-        "end_prev":   end_prev_str,
-        "fp":         latest_fp,
+        "end_prev":   prev["end"],
+        "fp":         "",
     }
 
 
 def _calc_qoq_change(entries: list) -> Optional[dict]:
-    """直近四半期と前四半期のQoQ変化率を計算。"""
+    """直近四半期と前四半期のQoQ変化率を計算。直前のエントリとの日数差が60〜120日のときだけ
+    （範囲外は欠けた四半期・決算期の変更をまたいだ比較になるためNone）。"""
     if len(entries) < 2:
+        return None
+
+    gap = _days_between(entries[-1]["end"], entries[-2]["end"])
+    if gap is None or not (_QOQ_GAP_DAYS_MIN <= gap <= _QOQ_GAP_DAYS_MAX):
         return None
 
     val_latest = entries[-1]["val"]
@@ -361,6 +358,8 @@ def compute_vectors(all_stores: dict[str, dict]) -> dict[str, dict]:
             else:
                 filtered = entries
             recent = filtered[-8:]
+            # fpはLayer3の値（申告した書類のfp）をそのまま残す。期間そのものの四半期ではない
+            # ため、計算・画面のラベルには使わない（[[STONKS-HEATMAP-FQ-LABEL-1]]、画面はendのyy/mm）
             field_out["series_q"] = [
                 {"end": e["end"], "fp": e.get("fp", ""), "val": e["val"]}
                 for e in recent

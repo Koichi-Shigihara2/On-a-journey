@@ -1221,14 +1221,10 @@ function buildVectorPanel(fv) {
   // 日付軸はRD/純利益/OCFの安定フィールドから構築
   // 売上・粗利はその軸にデータがあれば表示、なければ—
   const stableKeys = ['RD', 'NetIncome', 'OCF'];
-  const allEnds = new Map(); // end → label
+  const allEnds = new Map(); // end → label（期末の yy/mm。fpは使わない、fvEndLabel()参照）
   FIELDS.filter(f => stableKeys.includes(f.key)).forEach(f => {
     (fv.fields[f.key]?.series_q || []).forEach(e => {
-      if (!allEnds.has(e.end)) {
-        const y = e.end.slice(2,4);
-        const fp = e.fp || '';
-        allEnds.set(e.end, fp.startsWith('Q') ? y+fp : e.end.slice(0,7));
-      }
+      if (!allEnds.has(e.end)) allEnds.set(e.end, fvEndLabel(e.end));
     });
   });
   const sortedEnds = [...allEnds.keys()].sort().slice(-10); // 直近10Q
@@ -1250,7 +1246,9 @@ function buildVectorPanel(fv) {
       const prevEnd = j > 0 ? sortedEnds[j-1] : null;
       const prevVal = prevEnd ? (valByEnd.get(prevEnd) ?? null) : null;
       let pct = null;
-      if (val != null && prevVal != null && prevVal !== 0 && valByEnd.has(end) && valByEnd.has(prevEnd)) {
+      // 直前の列との日数差が60〜120日のときだけ（欠けた四半期・決算期の変更をまたがない）
+      if (val != null && prevVal != null && prevVal !== 0 && valByEnd.has(end) && valByEnd.has(prevEnd)
+          && fvIsAdjacentQuarter(prevEnd, end)) {
         pct = (val - prevVal) / Math.abs(prevVal) * 100;
       }
       const txt = pct == null ? '—' : (pct > 0 ? '+' : '') + pct.toFixed(0) + '%';
@@ -1275,7 +1273,7 @@ function buildVectorPanel(fv) {
     <div class="fv-body" id="${uid}_body">
       <div class="fv-spark-grid">${sparkCols}</div>
       <div class="fv-hm-section">
-        <div class="fv-hm-label">変化ヒートマップ（QoQ）</div>
+        <div class="fv-hm-label">変化ヒートマップ（QoQ）<span style="letter-spacing:0;font-size:9px;color:var(--mut);margin-left:6px">列は期末の年月（yy/mm）</span></div>
         <div class="fv-hm-grid" id="${uid}_hm">${hmHeader}${hmRows}</div>
       </div>
       <div class="fv-legend">
@@ -1284,6 +1282,21 @@ function buildVectorPanel(fv) {
       </div>
     </div>
   </div>`;
+}
+
+// [[STONKS-HEATMAP-FQ-LABEL-1]]（2026-10-10）: 財務トレンドの四半期は期末日（end）だけで識別する。
+// 以前のラベル「期末の暦年の下2桁＋fp」は、fp（申告した書類の会計期間）が期間と一致しない
+// 銘柄（12月決算以外・1〜3月期がQ2の銘柄・決算期の変更）で順序が逆転して見えた。
+// yy/mmの昇順は時間の順と必ず一致する。QoQの日数の閾値はfinancial_trend_calculator.pyの
+// _QOQ_GAP_DAYS_MIN/MAXと同じ値。
+const QOQ_GAP_DAYS_MIN = 60;
+const QOQ_GAP_DAYS_MAX = 120;
+function fvEndLabel(end) {
+  return (end && end.length >= 7) ? end.slice(2, 4) + '/' + end.slice(5, 7) : (end || '—');
+}
+function fvIsAdjacentQuarter(prevEnd, end) {
+  const days = (Date.parse(end) - Date.parse(prevEnd)) / 86400000;
+  return Number.isFinite(days) && days >= QOQ_GAP_DAYS_MIN && days <= QOQ_GAP_DAYS_MAX;
 }
 
 function initFvCharts(uid) {
@@ -1354,12 +1367,7 @@ function initFvCharts(uid) {
 
     if (seriesQ.length < 2) return;
 
-    const labels = seriesQ.map(e => {
-      // "2025-03-31" → "25Q1" 形式
-      const y = e.end.slice(2,4);
-      const fp = e.fp || '';
-      return fp.startsWith('Q') ? y + fp : e.end.slice(0,7);
-    });
+    const labels = seriesQ.map(e => fvEndLabel(e.end));  // "2025-03-31" → "25/03"（fpは使わない）
     const vals = seriesQ.map(e => e.val == null ? null : Math.round(e.val / 1e6 * 10) / 10);
 
     // ゼロラインを基準にした色づけ（正=指標色、負=赤）
