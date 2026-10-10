@@ -2294,6 +2294,14 @@ ttm/を参照しない。
   IV（64.87）・RICE（base rice 1.709）・tanuki_score（HOLD）は算出されており、
   欠落する指標はない
 
+#### 追記（2026-10-10、[[TANUKI-MAXEPS-NI-SOURCE-1]]の実装時に観測、読み取りのみ）
+最大EPSがTTM系列の最新エントリ（`ttm_end`）を使うようになったため、TTM系列の期間の遅れが表示値（`components.max_eps_ttm_end`）に出る。
+2026-10-10時点で`ttm_end`が2026-06-01より前の銘柄（括弧内は`common/sec_data/data/{T}/`の最新のquarterlyファイル）:
+XOM 2026-03-31（2026Q1）・DELL 2026-05-01（2027Q1）・KO 2026-04-03（2026Q1）・V 2026-03-31（2026Q2）・CDNS 2026-03-31（2026Q1）・
+RMBS 2026-03-31（2026Q1）・ADBE 2026-05-29・AVAV/CPRT/INTU/ZS 2026-04-30・GTLB/RBRK 2026-04-30・IOT 2026-05-02。
+TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合っている（遅れはTTMの計算ではなく、四半期データの取り込み側にあるとみられる。決算期の違いで
+まだ次の四半期が出ていない銘柄も含む。銘柄ごとの原因は未確認）。XOMはTTM純利益25,314Mで、Yahooのtrailing PEから逆算した純利益（約32,910M）と大きくずれる。
+
 ---
 
 ### [MARKETDATA-DAILY-PROVISIONAL-ROWS-1] daily/に日足の確定前（取引時間中・清算前）の値が確定値として保存されている行がある（CL=F・GC=F・JPY=X・^N225の97行）
@@ -2647,6 +2655,17 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 純利益・株式報酬ともTTM系列の最新エントリから取る。純利益None→None・LOW、株式報酬None→0扱いでMED、両方→HIGH、合計≤0→None。
 `components.max_eps_ttm_end`を出力。`dupont.*`・`financial_health.sbc_ttm`は変更しない
 
+
+#### 対応（2026-10-10、`86db08acf3`）
+- `pipeline.py`: `_latest_ttm_entry()`（`ttm_end`の最大値で選ぶ。データ98ファイルとも`series[0]`が最大で、`calc_ttm_series()`も新しい順）・`compute_max_eps()`
+- `components.max_eps_ttm_end`を追加。`dupont.*`・`financial_health.sbc_ttm`は変更なし。テスト`tests/test_tanuki_max_eps.py`（6件）
+- 現在のデータに当てた試算: DELL 515.4→40.8x、ABBV 511.6→67.1x、BKNG 202.7→15.9x、FICO 92.0→14.6x、MSCI 369.0→27.8x、RBRK 78.2→633.9x、QBTS 244.1x→None。
+  MO・PMはLOW→MED（15.0x・28.8x）。WMTはTTM系列に株式報酬が無くHIGH→MED（34.4→40.0x）。株式報酬が年次→TTMに変わるため、HIGHの銘柄も小さく動く
+
+#### 未了
+- latest.jsonはまだ再生成していない（パイプラインの全銘柄実行はFCF一過性費用のAI定性評価〈Grok〉を`transient_found`の33銘柄で呼ぶため、ローカルで実行しなかった）。
+  翌朝の定時実行（05:43 JST頃）の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
+
 ---
 
 ### [TANUKISCORE-PER-FORWARD-MIX-1] TANUKI SCOREの「GAAP PER」列に前向きPERが注記なしで混ざり、乖離列が無意味になっていた（QBTSではper_is_forwardが立っていない）
@@ -2663,6 +2682,19 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 #### 対応方針（チャット側の決定）
 trailing_peが無くforward_peを使ったときはforward_peの正負にかかわらずper_is_forward=true。画面でFwdと注記し、その銘柄の乖離は「—」
+
+
+#### 対応（2026-10-10、`eca2072b45`）
+- `data_fetcher.py`: `per_is_forward = (not trailing_pe) and bool(forward_pe)`（forward_peを使ったときだけtrue、正負は問わない）。
+  trailing_peが負でperにそれを使った場合は、以前のtrueからfalseに変わる（現在のデータでは該当なし）
+- `tanuki_score/index.html`: per_is_forward=trueならGAAP PERの横に「Fwd」（title付き）、乖離は「—」、表下に凡例1行
+- per_is_forwardの参照: data_fetcher.py・core_calculator.py:935（componentsへ渡すだけ）・hypecore/detail.html:567（FwdPEのラベル）。判定・点数には使われていない
+- 同じ問題がある画面（修正していない）: `tanuki_valuation/stock.html`（フェアPER・PEGのパネルで、per_adjustedが無いとき「GAAP PER」として表示し、フェアPER・PEGの計算に使う）、
+  `adjusted_eps_analyzer/stock.html`（PER比較の「市場 PER（GAAP）」と調整後PERとの差）。`tanuki_score/index.html`のトラップ判定（低PER）・チップの「PER」も
+  per_is_forwardを見ない（判定値を変えないため今回は対象外）
+
+#### 未了
+- QBTSのper_is_forwardは翌朝の定時実行で反映される（それまでは画面でFwdが付かない）
 
 ---
 
@@ -2681,6 +2713,30 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 
 #### 対応方針（チャット側の決定）
 structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、それ以外は従来どおり
+
+
+#### 対応（2026-10-10、`c2751316df`）
+- `tanuki_score/index.html`: structural_deficit→✗（title「5年・2年平均FCFとも赤字」）、それ以外でfcf_floor_applied>0→「△床」（title「売上8%の下限補正後」）、それ以外は従来どおり
+- 現在のデータで✗ 17銘柄・△床 S・✓ 78銘柄（ローカルの描画で確認）。FCF列はソート対象外のまま。latest.jsonの再生成は不要（既存のフィールドだけを使う）
+- 画面のトラップ判定（computeTraps）・カテゴリボード・RICEマトリクスは修正前のindex.htmlと同じ出力（全96銘柄）
+
+---
+
+### [SBC-TAG-STOCKOPTIONPLAN-1] HEI・TDYは株式報酬をStockOptionPlanExpenseで申告しており、株式報酬を取得できていない
+**優先度:** 低
+**分類:** データ取得 / common/sec_data（`tag_definitions.py`のSTOCK_BASED_COMPENSATION）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）、[[TANUKI-MAXEPS-NI-SOURCE-1]]
+
+#### 内容（観測した事実）
+- STOCK_BASED_COMPENSATIONのタグは`ShareBasedCompensation`・`AllocatedShareBasedCompensationExpense`の2つだけ
+- HEI（FY2025 34M）・TDY（FY2025 40M）は`StockOptionPlanExpense`で申告しており、年次・TTMとも株式報酬が欠ける（最大EPSの信頼性MED）
+- ほかに株式報酬が欠ける銘柄: CIX・SCCO・XOM・MO（費用のタグ自体が無い）、VZ（`EmployeeBenefitsAndShareBasedCompensationNoncash`、年金等との合算で純粋な株式報酬ではない）、
+  PM（`StockIssuedDuringPeriodValueShareBasedCompensation`、株主資本の項目）、WMT（年次は3,603Mあり、TTM系列に無い。原因は未確認）
+  （タグの確認は手元の`company_facts.json`による。gitの管理外のため最新かは未確認）
+
+#### 着手条件
+タグの追加は凍結年度（fixed_registry）・Layer3への影響の確認が必要。追加前に、HEI・TDYで`StockOptionPlanExpense`が株式報酬の全額か（RSU等を含むか）を10-Kで確認する
 
 ---
 
