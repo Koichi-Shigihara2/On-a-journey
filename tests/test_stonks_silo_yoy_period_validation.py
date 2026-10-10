@@ -233,18 +233,29 @@ class TestBreakevenCell:
         assert "case 'be':      return breakevenSortVal(pp);" in self._html()
 
     def test_path_score_note_matches_analyzer(self):
-        """③の説明の点数がanalyzer.pyのtrend_map・最低80と一致する"""
+        """③の説明の点数がanalyzer.pyのPATH_SCORE_*定数と一致する
+        （[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]）"""
+        import analyzer as am
         html = self._html()
         note = re.search(r"const PATH_SCORE_NOTE = '(.+?)';", html).group(1)
-        src = open(os.path.join(_STONKS_SRC, "analyzer.py"), encoding="utf-8").read()
-        tm = re.search(r"trend_map = \{(.+?)\}", src, re.S).group(1)
-        pts = dict(re.findall(r'"(\w+)": (\d+)', tm))
-        ja = {"ACCELERATING": "加速中", "IMPROVING": "改善中", "FLAT": "横ばい", "DETERIORATING": "悪化中", "UNKNOWN": "不明"}
-        for k, v in pts.items():
-            assert f"{ja[k]}{v}" in note, (k, v)
-        assert "path_score = max(path_score, 80)" in src and "最低80" in note
-        assert "黒字化年の推定は点数に入らない" in note
-        assert html.count("OCFトレンド ${trendJa[pp.ocf_trend]||'—'}") == 2  # 上部カードと③パネル
+        assert f"OCF達成済{am.PATH_SCORE_OCF_ACHIEVED}" in note
+        (g1, p1), (g2, p2), (g3, p3), (g5, p5) = am.PATH_SCORE_PREDICTED
+        assert f"推定年まで{g1}年以内{p1}・{g2}年{p2}・{g3}年{p3}・{g3 + 1}〜{g5}年{p5}" in note
+        assert f"5年超{am.PATH_SCORE_TOO_FAR}" in note
+        assert f"改善傾向なし{am.PATH_SCORE_NO_TREND}" in note
+        for k, v in am.PATH_SCORE_NO_DATA_TREND.items():
+            assert f"{am._PATH_TREND_JA[k]}{v}" in note, (k, v)
+        assert f"上限{am.PATH_SCORE_NO_DATA_CAP}" in note
+        # 上部カードと③パネルは点数の根拠を出す
+        assert html.count("${pp.path_score_basis||'—'}") == 2
+        assert "OCFトレンド ${trendJa[pp.ocf_trend]||'—'}" not in html
+        # ③の詳細に参考としてOCFトレンド（金額）の行を残す
+        assert "OCFトレンド（金額）" in html
+
+    def test_score_header_tooltip_matches_new_rule(self):
+        html = self._html()
+        assert "黒字化パス: 加速中=100" not in html
+        assert "OCF達成済=100/推定年まで1年以内=90・2年=80・3年=65・4〜5年=50/5年超=30/改善傾向なし=20/推定不能=OCF金額の傾向で上限50" in html
 
     def test_tooltip_mentions_gaap_achieved(self):
         assert "「純益 ✓」はGAAP純利益がすでにプラス" in self._html()

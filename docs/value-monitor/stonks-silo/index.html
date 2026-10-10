@@ -278,11 +278,11 @@
         </div>
         <div class="guide-col">
           <div class="guide-col-head">OCF TREND</div>
-          <div class="guide-col-body">営業CF推移。<br>IMPROVING / STABLE / DECLINING。黒字化に向かっているかを示す。</div>
+          <div class="guide-col-body">営業CFの金額の推移。<br>加速中 / 改善中 / 横ばい / 悪化中。黒字化に向かっているかの点数は、OCFマージンの回帰による推定で別に出す（SCORE参照）。</div>
         </div>
         <div class="guide-col">
           <div class="guide-col-head">SCORE</div>
-          <div class="guide-col-body">0〜100の総合スコア。①赤字品質②生存能力③黒字化パスの加重平均。</div>
+          <div class="guide-col-body">0〜100の総合スコア。①赤字品質②生存能力③黒字化パスの加重平均。③はOCFマージン（営業CF÷売上）の回帰で推定した黒字化年までの近さ（OCF達成済100〜改善傾向なし20）。</div>
         </div>
       </div>
       <div class="guide-signals">
@@ -364,7 +364,7 @@
           </th>
           <th class="r" data-sort="score">
             <span class="th-inner" style="justify-content:flex-end">
-              <span class="tip-wrap">スコア<span class="tip-icon" onclick="event.stopPropagation()">?</span><span class="tip-box" style="left:auto;right:0;transform:none">総合スコア(0-100点)。赤字品質スコア×40%+生存期間点数×30%+黒字化パス点数×30%。生存期間: SAFE=100/WATCH=60/DANGER=20。黒字化パス: 加速中=100/改善中=75/横ばい=50/悪化中=20</span></span>
+              <span class="tip-wrap">スコア<span class="tip-icon" onclick="event.stopPropagation()">?</span><span class="tip-box" style="left:auto;right:0;transform:none">総合スコア(0-100点)。赤字品質スコア×40%+生存期間点数×30%+黒字化パス点数×30%。生存期間: SAFE=100/WATCH=60/DANGER=20。黒字化パス（OCFマージンの回帰による黒字化の推定）: OCF達成済=100/推定年まで1年以内=90・2年=80・3年=65・4〜5年=50/5年超=30/改善傾向なし=20/推定不能=OCF金額の傾向で上限50</span></span>
               <span class="sort-arr" onclick="setSort('score')" style="color:var(--stonks)"> ▼</span>
             </span>
           </th>
@@ -918,11 +918,6 @@ function buildDetail(ticker, d) {
     }
     return breReasonJa[reason] || '—';
   };
-  const trendJaColor = {
-    'ACCELERATING': 'var(--grn)', 'IMPROVING': 'var(--grn)',
-    'FLAT': 'var(--mut)', 'DETERIORATING': 'var(--red)', 'UNKNOWN': 'var(--mut)',
-  };
-
   // バーチャートヘルパー（ゼロライン中央・プラス上向き緑／マイナス下向き赤）
   function makeChart(vals) {
     const valid = vals.filter(v => v !== null);
@@ -1062,7 +1057,7 @@ function buildDetail(ticker, d) {
       <div class="pillar-mini">
         <div class="pm-label">黒字化進捗</div>
         <div class="pm-score" style="color:${pillarColor(s3)}">${s3}</div>
-        <div class="pm-sub">OCFトレンド ${trendJa[pp.ocf_trend]||'—'}</div>
+        <div class="pm-sub">${pp.path_score_basis||'—'}</div>
       </div>
     </div>
   </div>
@@ -1122,14 +1117,14 @@ function buildDetail(ticker, d) {
         <div class="pillar-title">③ 黒字化パス</div>
         <div class="pillar-score" style="color:${pillarColor(s3)}">${s3}</div>
         <div class="pillar-max">/100</div>
-        <div class="pillar-label" style="color:${trendJaColor[pp.ocf_trend]||'var(--mut)'};font-size:12px">OCFトレンド ${trendJa[pp.ocf_trend]||'—'}</div>
+        <div class="pillar-label" style="color:${pillarColor(s3)};font-size:12px">${pp.path_score_basis||'—'}</div>
       </div>
       <details style="border-top:1px solid var(--bdr)">
         <summary style="padding:6px 12px;cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--mut);user-select:none;list-style:none">▶ 詳細</summary>
         <div class="detail-col" style="border-top:1px solid var(--bdr)">
           <div class="detail-col-title">③ 黒字化パス · 詳細</div>
           <div style="font-size:10px;color:var(--mut);line-height:1.6;margin-bottom:6px">${PATH_SCORE_NOTE}</div>
-          <div class="detail-row"><span class="detail-key">営業CFトレンド</span><span class="detail-val">${trendJa[pp.ocf_trend]||'—'}</span></div>
+          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">OCFトレンド（金額）<span class="tip-icon">?</span><span class="tip-box">営業CFの金額の直近2年の変化と加速度。点数には、OCFマージンで黒字化年を推定できないときだけ使う（上限50）。参考表示</span></span></span><span class="detail-val">${trendJa[pp.ocf_trend]||'—'}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字<span class="tip-icon">?</span><span class="tip-box">OCF(営業CF)がプラスかどうか。本業のキャッシュ創出力がプラスに転じている状態</span></span></span><span class="detail-val ${pp.hidden_profit_already?'pos':''}">${pp.hidden_profit_already?'✓ 達成済み':'未達'}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字化予測<span class="tip-icon">?</span><span class="tip-box">OCF改善トレンドを線形外挿してゼロを超える年を予測</span></span></span><span class="detail-val">${fmtBe(pp.ocf_breakeven_year, pp.ocf_breakeven_reason)}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">純利益黒字化予測<span class="tip-icon">?</span><span class="tip-box">純利益改善トレンドを線形外挿してゼロを超える年を予測</span></span></span><span class="detail-val">${fmtBe(pp.gaap_breakeven_year, pp.gaap_breakeven_reason)}</span></div>
@@ -1474,8 +1469,9 @@ function breakevenSortVal(pp) {
   const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;
   return y ? 10000 - y : 0;
 }
-// ③黒字化パスの点数の根拠（analyzer.py::StonksAnalyzer._overall()のtrend_mapと同じ。変えるときは両方）
-const PATH_SCORE_NOTE = '点数は営業CFの傾向（加速中100・改善中75・横ばい50・悪化中20・不明0）。営業CFがすでにプラスなら最低80。黒字化年の推定は点数に入らない';
+// ③黒字化パスの点数の根拠（analyzer.py の PATH_SCORE_* 定数・_path_score_from_breakeven()と同じ。変えるときは両方）
+// [[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]（2026-10-10）: OCF金額の傾向ではなく、OCFマージンの回帰による黒字化推定で決める
+const PATH_SCORE_NOTE = '点数はOCFマージン（営業CF÷売上）の回帰による黒字化の推定で決める。OCF達成済100／推定年まで1年以内90・2年80・3年65・4〜5年50／5年超30／改善傾向なし20／推定不能はOCF金額の傾向（加速中100・改善中75・横ばい50・悪化中20・不明0）で上限50';
 
 // [[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]・[[STONKS-SURVIVAL-PANEL-DASH-1]]（2026-10-10）: 生存期間の表示を
 // 一覧・②パネル・詳細の行で共通にする。runway_monthsがnullなのは、現金が減っていない

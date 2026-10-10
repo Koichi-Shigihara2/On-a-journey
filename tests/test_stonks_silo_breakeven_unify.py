@@ -207,7 +207,7 @@ class TestDiscontinuousGrowthGateUsesActualPrediction:
         }
         ocf_annual = {2023: -30.0, 2024: -20.0, 2025: -10.0}
         result = analyzer._breakeven_estimate(years, records, ocf_annual, ocf_trend="IMPROVING")
-        any_predicted = result[-1]
+        any_predicted = result[6]  # 8番目はOCFマージン回帰の最新年（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]）
         assert isinstance(any_predicted, bool)
 
     def test_no_data_case_returns_false_for_seventh_element(self):
@@ -216,4 +216,4 @@ class TestDiscontinuousGrowthGateUsesActualPrediction:
         records = {2025: {"pl": {"revenue_sanitized": 100.0, "net_income": -10.0}}}
         ocf_annual = {2025: -10.0}
         result = analyzer._breakeven_estimate(years, records, ocf_annual, ocf_trend="FLAT")
-        assert result[-1] is False
+        assert result[6] is False

@@ -120,9 +120,11 @@ class ProfitabilityPath:
     ocf_breakeven_year: Optional[int] = None      # OCFベース（隠れ黒字化）
     ocf_breakeven_reason: str = ""                # ACHIEVED/PREDICTED/NO_TREND/NO_DATA/TOO_FAR
     hidden_profit_already: bool = False            # OCFが既に黒字かどうか
+    ocf_breakeven_basis_year: Optional[int] = None # OCFマージン回帰に使った最新年（③の点数の年数の起点）
 
     verdict_reason: str = ""
     score: Optional[float] = None             # 0-100
+    path_score_basis: str = ""                # ③の点数の根拠（表示用、_path_score_from_breakeven()）
 
     # 非連続成長フラグ
     discontinuous_growth: bool = False
@@ -637,9 +639,8 @@ class StonksAnalyzer:
         ocf_trend = self._ocf_trend(years, ocf_annual, ocf_yoy, ocf_accel)
 
         # 黒字化予測
-        gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, reason, any_predicted = self._breakeven_estimate(
-            years, records, ocf_annual, ocf_trend
-        )
+        (gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, reason, any_predicted,
+         ocf_basis_year) = self._breakeven_estimate(years, records, ocf_annual, ocf_trend)
 
         # 非連続成長の検出（実際に将来年を予測〈PREDICTED/IMMINENT〉した
         # 場合のみ、その予測の精度への影響を確認する）
@@ -742,6 +743,7 @@ class StonksAnalyzer:
             ocf_breakeven_year=ocf_be,
             ocf_breakeven_reason=ocf_reason,
             hidden_profit_already=hidden_already,
+            ocf_breakeven_basis_year=ocf_basis_year,
             verdict_reason=reason,
             discontinuous_growth=discontinuous_growth,
             discontinuous_growth_note=discontinuous_growth_note,
@@ -807,11 +809,14 @@ class StonksAnalyzer:
         records: dict,
         ocf_annual: dict,
         ocf_trend: str,
-    ) -> tuple[Optional[int], Optional[int], bool, str, str, str, bool]:
+    ) -> tuple[Optional[int], Optional[int], bool, str, str, str, bool, Optional[int]]:
         """
         常に直近4年のマージン比率OLS回帰で黒字化年を予測する
         （[[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]、2026-09-05統一）。
-        Returns: (gaap_be_year, ocf_be_year, hidden_already, gaap_reason, ocf_reason, combined_reason, any_predicted)
+        Returns: (gaap_be_year, ocf_be_year, hidden_already, gaap_reason, ocf_reason, combined_reason, any_predicted,
+                  ocf_basis_year)
+        ocf_basis_year: OCFマージン回帰に使った最新年（OCFがすでに黒字なら None）。
+        ③の点数の「推定年まで何年か」の起点（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]）。
         reason codes: ACHIEVED / PREDICTED / IMMINENT / NO_TREND[:XX%→XX%] / NO_DATA / TOO_FAR
         any_predicted: GAAP・OCFいずれかがPREDICTED/IMMINENT（実際に将来年を
         算出）した場合のみTrue。非連続成長チェックのゲートに使う
@@ -829,11 +834,12 @@ class StonksAnalyzer:
         latest_ocf = ocf_annual.get(years[-1])
         hidden_already = latest_ocf is not None and latest_ocf > 0
         predicted_ocf = False
+        ocf_basis_year = None
         if hidden_already:
             ocf_be = None
             ocf_reason = "ACHIEVED"
         else:
-            ocf_be, ocf_reason, predicted_ocf = _margin_breakeven(years, ocf_annual, records)
+            ocf_be, ocf_reason, predicted_ocf, ocf_basis_year = _margin_breakeven_detail(years, ocf_annual, records)
 
         if ocf_trend == "DETERIORATING" and gaap_reason not in ("ACHIEVED", "PREDICTED", "IMMINENT"):
             gaap_be = None
@@ -841,7 +847,7 @@ class StonksAnalyzer:
 
         any_predicted = predicted_gaap or predicted_ocf
         combined = f"{gaap_reason} | {ocf_reason}"
-        return gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, combined, any_predicted
+        return gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, combined, any_predicted, ocf_basis_year
 
     # ------------------------------------------------------------------
     # 総合スコア・サマリー
@@ -865,20 +871,13 @@ class StonksAnalyzer:
         runway_map = {"SAFE": 100, "WATCH": 60, "DANGER": 20, "UNKNOWN": 50}
         ra_score = runway_map.get(ra.verdict, 0)
 
-        # 黒字化パス (0-100)
-        trend_map = {
-            "ACCELERATING": 100,
-            "IMPROVING": 75,
-            "FLAT": 50,
-            "DETERIORATING": 20,
-            "UNKNOWN": 0,
-        }
-        path_score = trend_map.get(pp.ocf_trend, 0)
-        if pp.hidden_profit_already:
-            path_score = max(path_score, 80)
+        # 黒字化パス (0-100): OCFマージン回帰による黒字化推定で決める
+        # （[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]、2026-10-10）
+        path_score, path_basis = _path_score_from_breakeven(pp, pp.ocf_breakeven_basis_year)
 
         ra.score = float(ra_score)
         pp.score = float(path_score)
+        pp.path_score_basis = path_basis
 
         overall = (
             dq_score * weights["deficit"]
@@ -917,12 +916,6 @@ class StonksAnalyzer:
             "SAFE":   "極めて安全水準",
             "WATCH":  "要注意水準",
             "DANGER": "危険水準",
-        }
-        path_label_map = {
-            "ACCELERATING":  "明確な道筋",
-            "IMPROVING":     "改善中",
-            "FLAT":          "横ばい",
-            "DETERIORATING": "悪化中",
         }
         trend_ja_map = {
             "ACCELERATING":  "加速中",
@@ -1010,7 +1003,6 @@ class StonksAnalyzer:
 
         verdict_label = verdict_label_map.get(dq.verdict, dq.verdict)
         runway_label  = runway_label_map.get(ra.verdict, ra.verdict)
-        path_label    = path_label_map.get(pp.ocf_trend, pp.ocf_trend)
         trend_ja      = trend_ja_map.get(pp.ocf_trend, pp.ocf_trend)
 
         cagr_str = f"{dq.cagr_3yr:.1f}" if dq.cagr_3yr is not None else "N/A"
@@ -1038,8 +1030,8 @@ class StonksAnalyzer:
             f"生存能力 {ra_s}点　（{runway_label}）",
             f"• 現金 {fmt_b(ra.cash)}・月次バーン {fmt_b(ra.monthly_burn)}/月　→　ランウェイ{runway_detail}",
             "",
-            f"黒字化パス {pp_s}点　（{path_label}）",
-            f"• 営業CFトレンド {trend_ja}",
+            f"黒字化パス {pp_s}点　（{pp.path_score_basis or '—'}）",
+            f"• 営業CFトレンド（金額） {trend_ja}",
             f"• {ocf_be_text}",
             f"• {gaap_be_text}",
         ]
@@ -1108,12 +1100,77 @@ def _ols_slope_intercept(xs: list[float], ys: list[float]) -> tuple[Optional[flo
     return slope, intercept
 
 
+# ③黒字化パスの点数（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]、2026-10-10 Koichi決定）。
+# OCF「金額」の傾向（ocf_trend）ではなく、OCF「マージン」の回帰による黒字化推定
+# （_margin_breakeven）で決める。赤字の金額の大きさは②生存能力が見ているため、
+# ③は規模に左右されないマージンで「黒字化に向かっているか」を測る。
+# 画面の説明（index.html の PATH_SCORE_NOTE・スコア列のtooltip）も同じ値。変えるときは両方。
+PATH_SCORE_OCF_ACHIEVED = 100
+# PREDICTED: 推定年 − 回帰に使った最新年 が N年以内 → 点数（上から順に判定）
+PATH_SCORE_PREDICTED = ((1, 90), (2, 80), (3, 65), (5, 50))
+PATH_SCORE_TOO_FAR = 30
+PATH_SCORE_NO_TREND = 20
+# NO_DATA（推定不能）: OCF金額の傾向の点数で、上限 PATH_SCORE_NO_DATA_CAP
+PATH_SCORE_NO_DATA_TREND = {
+    "ACCELERATING": 100,
+    "IMPROVING": 75,
+    "FLAT": 50,
+    "DETERIORATING": 20,
+    "UNKNOWN": 0,
+}
+PATH_SCORE_NO_DATA_CAP = 50
+_PATH_TREND_JA = {
+    "ACCELERATING": "加速中",
+    "IMPROVING": "改善中",
+    "FLAT": "横ばい",
+    "DETERIORATING": "悪化中",
+    "UNKNOWN": "不明",
+}
+
+
+def _path_score_from_breakeven(pp: ProfitabilityPath, latest_yr: Optional[int]) -> tuple[int, str]:
+    """
+    ③黒字化パスの点数と、その根拠（表示用の文字列）を返す。
+    latest_yr: OCFマージン回帰に使った最新年（ProfitabilityPath.ocf_breakeven_basis_year）。
+    """
+    reason = pp.ocf_breakeven_reason or ""
+    if pp.hidden_profit_already or reason == "ACHIEVED":
+        return PATH_SCORE_OCF_ACHIEVED, "OCF達成済"
+    if reason == "PREDICTED" and pp.ocf_breakeven_year is not None and latest_yr is not None:
+        gap = pp.ocf_breakeven_year - latest_yr
+        when = "1年以内" if gap <= 1 else f"{gap}年後"
+        for max_gap, score in PATH_SCORE_PREDICTED:
+            if gap <= max_gap:
+                return score, f"OCF黒字化 {pp.ocf_breakeven_year}年（{when}）"
+        return PATH_SCORE_TOO_FAR, f"OCF黒字化 {pp.ocf_breakeven_year}年（{when}）"
+    if reason == "TOO_FAR":
+        return PATH_SCORE_TOO_FAR, "OCF黒字化 5年超"
+    if reason.startswith("NO_TREND"):
+        return PATH_SCORE_NO_TREND, "OCFマージン 改善傾向なし"
+    trend_score = PATH_SCORE_NO_DATA_TREND.get(pp.ocf_trend, 0)
+    trend_ja = _PATH_TREND_JA.get(pp.ocf_trend, "不明")
+    return min(trend_score, PATH_SCORE_NO_DATA_CAP), f"推定不能: OCF{trend_ja}（上限{PATH_SCORE_NO_DATA_CAP}）"
+
+
 def _margin_breakeven(
     years: list[int],
     ocf_annual: dict[int, Optional[float]],
     records: dict,
     horizon: int = 5,
 ) -> tuple[Optional[int], str, bool]:
+    """
+    _margin_breakeven_detail() の (year, reason, predicted) だけを返す（既存の戻り値の形）。
+    """
+    year, reason, predicted, _ = _margin_breakeven_detail(years, ocf_annual, records, horizon)
+    return year, reason, predicted
+
+
+def _margin_breakeven_detail(
+    years: list[int],
+    ocf_annual: dict[int, Optional[float]],
+    records: dict,
+    horizon: int = 5,
+) -> tuple[Optional[int], str, bool, Optional[int]]:
     """
     OCFマージン（OCF/Revenue）の改善外挿で黒字化年を予測する。
 
@@ -1126,10 +1183,11 @@ def _margin_breakeven(
     フィルタ（売上規模が直近年の10%未満の年を除外・|マージン|>1000%を
     除外）は既存の校正値のまま変更していない。
 
-    Returns: (year, reason, predicted)
+    Returns: (year, reason, predicted, basis_year)
     reason codes: ACHIEVED / PREDICTED / NO_TREND[:XX%→XX%] / NO_DATA / TOO_FAR
     predicted: PREDICTED（実際に将来年を算出した場合）のみTrue。
     呼び出し元の非連続成長チェックのゲートに使う。
+    basis_year: 回帰に使った最新年（有効な点が2点未満なら None）。
     """
     latest_rev = None
     for yr in reversed(years):
@@ -1149,29 +1207,29 @@ def _margin_breakeven(
                     margin_data.append((yr, m))
 
     if len(margin_data) < 2:
-        return None, "NO_DATA", False
+        return None, "NO_DATA", False, None
 
     latest_yr, latest_m = margin_data[-1]
     if latest_m >= 0:
-        return latest_yr, "ACHIEVED", False
+        return latest_yr, "ACHIEVED", False, latest_yr
 
     xs = [yr for yr, _ in margin_data]
     ys = [m for _, m in margin_data]
     slope, intercept = _ols_slope_intercept(xs, ys)
     if slope is None:
-        return None, "NO_DATA", False
+        return None, "NO_DATA", False, latest_yr
 
     # 傾き<=0（改善傾向なし）、または500pt/年超（信頼できない急変、既存の
     # 校正値のまま）はいずれもNO_TRENDとして予測を出さない
     if slope <= 0 or slope * 100 > 500:
         trend_str = _fmt_margin_trend(margin_data, scale=100)
         reason = f"NO_TREND:{trend_str}" if trend_str else "NO_TREND"
-        return None, reason, False
+        return None, reason, False, latest_yr
 
     be_year = max(int(-intercept / slope + 0.5), latest_yr)
     if be_year > latest_yr + horizon:
-        return None, "TOO_FAR", False
-    return be_year, "PREDICTED", True
+        return None, "TOO_FAR", False, latest_yr
+    return be_year, "PREDICTED", True, latest_yr
 
 
 def _gaap_margin_breakeven(
