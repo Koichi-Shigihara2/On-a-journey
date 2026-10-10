@@ -1466,6 +1466,97 @@ def _check_annual_da_partial_concept(ticker: str, sec_dir: str = SEC_DATA_DIR) -
         f"FCF内訳表示のD&Aが過小/過大の可能性（PARSER-MERGED-PARTIAL-CONCEPT-TAG-1）"
     ]
 
+# CHECK-59: 株式数の単位誤りの検知（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]、2026-10-10新設）
+_SHARE_NEIGHBOR_RATIO = 20.0      # 前後の期（前2・後2）の中央値からのずれ
+_SHARE_COVER_RATIO = 100.0        # 最新の株数と表紙の発行済株式数（dei）の比
+_SHARE_RECENT_YEARS = 5           # 前後比較は直近5年の期だけ（古い期の申告誤りは消費者が使わない）
+_SHARE_DEI_STALE_DAYS = 400       # deiの最新の提出が株式数の最新の提出よりこれ以上古ければ比較しない
+_SHARE_SPLIT_TOLERANCE = 0.2      # 登録済み分割の倍率とのずれの許容
+
+
+def _check_share_count_outliers(ticker: str, sec_dir: str = SEC_DATA_DIR,
+                                today: Optional[datetime] = None) -> list[str]:
+    """CHECK-59: Layer2（annual_*.json・quarterly_*.json）の株式数の単位誤りを検知するWARN。
+
+    ①直近5年の期で、shares_diluted・shares_basicが前後の期（前2・後2）の中央値から20倍超ずれる
+      （config/split_history.yamlに登録済みの分割の倍率に近いずれは除く）
+    ②最新の年次・四半期のshares_dilutedが、表紙の発行済株式数（dei:EntityCommonStockSharesOutstanding、
+      最新の期末日の合計）の1/100未満または100倍超。deiの最新の提出が、株式数（加重平均）の最新の
+      提出より400日以上古い銘柄（SOUN・HEI等、deiの更新が止まっている・1クラス分だけ）は比較しない
+    提出者が千株単位の値を株数としてタグ付けした誤り（CIX・ONDS・LOAR）はshare_unit_fix.pyと
+    fact_overrides.jsonの"share_unit"で補正済み。新しく発生したものを検知する。
+    """
+    import statistics as _st
+    tdir = os.path.join(sec_dir, ticker)
+    now = today or datetime.now()
+    cutoff_year = now.year - _SHARE_RECENT_YEARS
+    try:
+        from common.sec_data.split_adjust import load_split_history
+        split_ratios = [float(s["ratio"]) for s in load_split_history().get(ticker, [])]
+    except Exception:
+        split_ratios = []
+
+    def _is_split(r: float) -> bool:
+        return any(abs(r / sr - 1) <= _SHARE_SPLIT_TOLERANCE or abs(r * sr - 1) <= _SHARE_SPLIT_TOLERANCE
+                   for sr in split_ratios if sr > 0)
+
+    findings: list[str] = []
+    latest: dict = {}
+    for kind in ("annual", "quarterly"):
+        rows = []
+        for p in sorted(glob.glob(os.path.join(tdir, f"{kind}_*.json"))):
+            m = re.search(rf"{kind}_(\d{{4}})(Q\d)?\.json$", p)
+            if not m:
+                continue
+            try:
+                with open(p, encoding="utf-8") as f:
+                    sh = json.load(f).get("shares") or {}
+            except Exception:
+                continue
+            rows.append((os.path.basename(p), int(m.group(1)), sh))
+        if rows:
+            latest[kind] = (rows[-1][0], rows[-1][2].get("shares_diluted"))
+        for field in ("shares_diluted", "shares_basic"):
+            ser = [(name, yr, (sh or {}).get(field)) for name, yr, sh in rows]
+            for i, (name, yr, v) in enumerate(ser):
+                if yr < cutoff_year or not v or v <= 0:
+                    continue
+                nb = [x[2] for x in ser[max(0, i - 2):i] + ser[i + 1:i + 3] if x[2] and x[2] > 0]
+                if len(nb) < 2:
+                    continue
+                r = v / _st.median(nb)
+                if (r > _SHARE_NEIGHBOR_RATIO or r < 1 / _SHARE_NEIGHBOR_RATIO) and not _is_split(r):
+                    findings.append(f"{name} {field}={v:,.0f}（前後の中央値の{r:.4g}倍）")
+
+    cf_path = os.path.join(tdir, "company_facts.json")
+    if os.path.exists(cf_path):
+        try:
+            with open(cf_path, encoding="utf-8") as f:
+                facts = json.load(f).get("facts") or {}
+        except Exception:
+            facts = {}
+        dei = ((facts.get("dei") or {}).get("EntityCommonStockSharesOutstanding") or {}).get("units", {}).get("shares", [])
+        wavg = ((facts.get("us-gaap") or {}).get("WeightedAverageNumberOfDilutedSharesOutstanding") or {}).get(
+            "units", {}).get("shares", [])
+        if dei and wavg:
+            dei_end = max(e["end"] for e in dei)
+            dei_filed = max(e["filed"] for e in dei)
+            cover = sum(e["val"] for e in dei if e["end"] == dei_end
+                        and e["filed"] == max(x["filed"] for x in dei if x["end"] == dei_end))
+            stale = (datetime.fromisoformat(max(e["filed"] for e in wavg))
+                     - datetime.fromisoformat(dei_filed)).days >= _SHARE_DEI_STALE_DAYS
+            if cover > 0 and not stale:
+                for kind, (name, v) in latest.items():
+                    if v and v > 0 and not (1 / _SHARE_COVER_RATIO <= v / cover <= _SHARE_COVER_RATIO):
+                        findings.append(f"{name} shares_diluted={v:,.0f}が表紙の発行済株式数{cover:,.0f}（{dei_end}）の"
+                                        f"{v / cover:.4g}倍")
+    if not findings:
+        return []
+    return [f"  [WARN-59 株式数の単位誤りの疑い] " + "、".join(findings[:6])
+            + (f" ほか{len(findings) - 6}件" if len(findings) > 6 else "")
+            + " → 千株・百万株単位での申告の誤りか確認（share_unit_fix.py・fact_overrides.jsonの\"share_unit\"、"
+              "LAYER2-SHARES-UNIT-THOUSANDS-1）"]
+
 
 def _check_current_price_missing(ticker: str, latest: dict) -> list[str]:
     """CHECK-56: TANUKI VALUATIONのlatest.jsonでcomponents.current_priceが0または
@@ -2322,6 +2413,8 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     # ありreport.txtに依存しない。
     warn.extend(_check_ttm_parser_layer3_reconciliation(ticker))
     warn.extend(_check_annual_da_partial_concept(ticker))
+    # CHECK-59: 株式数の単位誤り（common/sec_data/側の検証、report.txtに依存しない）
+    warn.extend(_check_share_count_outliers(ticker))
 
     text = _read_report(ticker)
     if text is None:
