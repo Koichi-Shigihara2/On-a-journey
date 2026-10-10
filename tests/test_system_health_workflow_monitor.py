@@ -272,6 +272,8 @@ def _patch_main(monkeypatch, j, k_ok=True, k_detail="すべて正常"):
         monkeypatch.setattr(sh, name, ok3)
     monkeypatch.setattr(sh, "check_k_ticker_audit", lambda: ("⚠️", k_ok, k_detail))
     monkeypatch.setattr(sh, "_check_j", lambda: j)
+    # [M]（SECの一次データの鮮度）は実データの_freshness.jsonを読むため、正常に固定する
+    monkeypatch.setattr(sh, "_check_m", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
     monkeypatch.setattr(sh, "get_registered_tickers", lambda: [])
     sent = []
     monkeypatch.setattr(sh, "post_discord", lambda text: sent.append(text) or False)

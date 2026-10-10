@@ -157,7 +157,7 @@ import re
 import json
 import glob
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 # ─── パス設定 ────────────────────────────────────────────────
@@ -1623,6 +1623,47 @@ def _check_update_schedule_drift(repo_root: Optional[str] = None) -> list[str]:
     except Exception as e:
         msgs = [f"更新スケジュールの一覧を確認できない（{type(e).__name__}: {e}）"]
     return [f"  [WARN-58 更新スケジュールの一覧のずれ] {m} → python scripts/gen_update_schedule.py で更新する" for m in msgs]
+
+
+def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:
+    """CHECK-60: SECの一次データの鮮度（common/sec_data/data/_freshness.json）を読むWARN
+    （2026-10-10新設、NG化しない。[[SEC-FETCH-CACHE-MTIME-CI-1]]）。
+
+    背景: SEC_Data_UpdateがSEC APIを一度も呼ばずにsuccessで終わり続け、company_facts.json
+    が2026-08-30から更新されていなかった。update.pyがsubmissionsで新しい提出を検知して
+    取り直した結果（分類）を_freshness.jsonに書くので、それを読むだけ（ネットワークを使わない）。
+    1つの銘柄の問題でゲート（--fail-on-ng）全体を止めないため、NGにはしない
+    （2026-08に全銘柄の反映が止まったのを繰り返さないため）。
+    - FETCH_FAILED の銘柄
+    - SEC_LAG が提出日から freshness.SEC_LAG_WARN_DAYS 日を超えている銘柄
+    - _freshness.json が無い
+    SEC_LAGはaccnごとに1行。SEC側の既知の未反映は、warn_acknowledged.jsonに
+    {"check": "WARN-60", "ticker": 銘柄, "match": accn} で登録すると確認済みになる
+    （System Health [M]も同じエントリを読み、CRITICALの判定から外す）。
+    Returns: [(ticker または "[GLOBAL]", WARNメッセージ)]
+    """
+    from common.sec_data import freshness as _fr
+    doc = _fr.load(path)
+    if doc is None:
+        return [("[GLOBAL]", f"  [WARN-60 SECデータの鮮度] {_fr.FRESHNESS_FILENAME}が無い"
+                             f" → common/sec_data/update.pyの実行で作られる")]
+    out: list[tuple[str, str]] = []
+    for ticker, e in sorted((doc.get("tickers") or {}).items()):
+        status = (e or {}).get("status")
+        if status == _fr.FETCH_FAILED:
+            out.append((ticker, f"  [WARN-60 SECデータの鮮度] {ticker}: FETCH_FAILED（{e.get('note') or '取得失敗'}、"
+                                f"確認 {e.get('checked_at')}）→ 手元のcompany_facts.json（最大filed "
+                                f"{e.get('local_latest_filed')}）のまま"))
+        elif status == _fr.SEC_LAG:
+            # accnごとに1行で出す（warn_acknowledged.jsonのmatchにaccnを書いて、その提出だけを
+            # 確認済みにできるように。同じ銘柄の別の提出は未確認のまま残る）
+            for p in e.get("pending") or []:
+                lag = _fr.lag_days(p.get("filing_date", ""), today)
+                if lag is not None and lag > _fr.SEC_LAG_WARN_DAYS:
+                    out.append((ticker, f"  [WARN-60 SECデータの鮮度] {ticker}: SEC_LAG {lag}日 "
+                                        f"{p['accn']}（提出 {p['filing_date']}）"
+                                        f" → 提出がcompanyfacts APIに入っていない（SEC側）"))
+    return out
 
 
 def _check_stonks_silo_flag_rule() -> list[str]:
@@ -3355,6 +3396,18 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", [], sched_warn))
         total_warn += len(sched_warn)
         total_warn_new += len(sched_warn)
+
+    # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
+    # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。
+    fresh_msgs = []
+    for _t, _w in _check_sec_freshness():
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        fresh_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if fresh_msgs:
+        flagged.append(("[GLOBAL]", [], fresh_msgs))
+        total_warn += len(fresh_msgs)
 
     # CHECK-54: split_history.yamlの登録漏れ（yfinance splitsと突き合わせ、
     # [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceを使うため

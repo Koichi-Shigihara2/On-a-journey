@@ -716,6 +716,99 @@ def check_l_macro_data() -> tuple[str, bool, str]:
     return f"{icon} {detail}", ok, detail
 
 
+# ── M. SECの一次データの鮮度（[[SEC-FETCH-CACHE-MTIME-CI-1]]、2026-10-10） ──
+# SEC_Data_UpdateがSEC APIを一度も呼ばずにsuccessで終わり続け、company_facts.jsonが
+# 2026-08-30から更新されていなかった（[J]はワークフローの成否しか見ないため検知できなかった）。
+# update.pyが書くcommon/sec_data/data/_freshness.jsonを読むだけ（ネットワークを使わない）。
+# 閾値はcommon/sec_data/freshness.pyの定数（CHECK-60と共有）。
+# 🔴（CRITICAL）: _freshness.jsonが無い・generated_at（全銘柄の実行の時刻）が古い・
+#   FETCH_FAILEDが全銘柄の一定割合以上・SEC_LAGが提出日から一定日数を超えた銘柄がある
+# ⚠️ : FETCH_FAILEDがある（割合は閾値未満）・SEC_LAGがCHECK-60の日数を超えている
+def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
+             ack_path: Optional[str] = None) -> dict:
+    """ack_path: 確認済みの台帳（既定はconfig/warn_acknowledged.json）。WARN-60で銘柄＋accnを
+    登録したSEC_LAGの提出は、CRITICAL・⚠️の判定から外し、詳細に「確認済み」と表示する。"""
+    from common.sec_data import freshness as fr
+
+    def result(label, ok, detail, critical=False):
+        return {"label": label, "ok": ok, "detail": detail, "critical": critical}
+
+    try:
+        doc = fr.load(path)
+    except Exception as e:
+        return result(f"🔴 {fr.FRESHNESS_FILENAME}を読めない（{e}）", False, f"unreadable: {e}", True)
+    if doc is None:
+        return result(f"🔴 {fr.FRESHNESS_FILENAME}が無い", False, "freshness file not found", True)
+
+    now = now or datetime.now(timezone.utc)
+    today = now.date()
+    tickers = doc.get("tickers") or {}
+    n = len(tickers)
+    counts = fr.count_statuses(tickers)
+    critical_parts: list[str] = []
+    warn_parts: list[str] = []
+
+    gen = doc.get("generated_at")
+    try:
+        gen_dt = datetime.strptime(gen, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) if gen else None
+    except ValueError:
+        gen_dt = None
+    if gen_dt is None:
+        critical_parts.append("全銘柄の実行の記録なし")
+    else:
+        age = (now - gen_dt).total_seconds() / 86400
+        if age > fr.FRESHNESS_MAX_AGE_DAYS:
+            critical_parts.append(f"全銘柄の実行が{age:.1f}日前（{gen}）")
+
+    failed = sorted(t for t, e in tickers.items() if e.get("status") == fr.FETCH_FAILED)
+    if failed:
+        msg = f"FETCH_FAILED {len(failed)}/{n}件: {', '.join(failed)}"
+        if n and len(failed) / n >= fr.FETCH_FAILED_CRITICAL_RATIO:
+            critical_parts.append(msg)
+        else:
+            warn_parts.append(msg)
+
+    acked = fr.acknowledged_accns(ack_path)
+    lag_crit, lag_warn, lag_ok, lag_acked = [], [], [], []
+    for t, e in sorted(tickers.items()):
+        if e.get("status") != fr.SEC_LAG:
+            continue
+        acked_here = [p["accn"] for p in e.get("pending") or [] if (t, p.get("accn")) in acked]
+        if acked_here:
+            lag_acked.append(f"{t}({fr.max_pending_lag(e, today)}日・{', '.join(acked_here)})")
+        lag = fr.max_pending_lag(e, today, exclude_accns=acked_here)
+        if lag is None:
+            continue  # 未反映の提出がすべて確認済み
+        label = f"{t}({lag}日)"
+        if lag > fr.SEC_LAG_CRITICAL_DAYS:
+            lag_crit.append(label)
+        elif lag > fr.SEC_LAG_WARN_DAYS:
+            lag_warn.append(label)
+        else:
+            lag_ok.append(label)
+    if lag_crit:
+        critical_parts.append(f"SEC_LAG {fr.SEC_LAG_CRITICAL_DAYS}日超{len(lag_crit)}件: {', '.join(lag_crit)}")
+    if lag_warn:
+        warn_parts.append(f"SEC_LAG {fr.SEC_LAG_WARN_DAYS}日超{len(lag_warn)}件: {', '.join(lag_warn)}")
+
+    critical = bool(critical_parts)
+    ok = not (critical_parts or warn_parts)
+    icon = "🔴" if critical else ("⚠️ " if warn_parts else "✅")
+    parts = [f"{n}銘柄（REFRESHED {counts[fr.REFRESHED]}・SEC_LAG {counts[fr.SEC_LAG]}・"
+             f"FETCH_FAILED {counts[fr.FETCH_FAILED]}）"] + critical_parts + warn_parts
+    if lag_ok:
+        parts.append(f"SEC_LAG {fr.SEC_LAG_WARN_DAYS}日以内: {', '.join(lag_ok)}")
+    if lag_acked:
+        parts.append(f"SEC_LAG 確認済み{len(lag_acked)}件: {', '.join(lag_acked)}")
+    detail = " / ".join(parts)
+    return result(f"{icon} {detail}", ok, detail, critical)
+
+
+def check_m_sec_freshness() -> tuple[str, bool, str]:
+    r = _check_m()
+    return r["label"], r["ok"], r["detail"]
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def discord_notify_label(sent: bool) -> str:
     """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
@@ -737,7 +830,7 @@ def build_one_line(run_date: str, results: dict) -> str:
     labels = {
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
-        "K": "TickerAudit", "L": "MacroData",
+        "K": "TickerAudit", "L": "MacroData", "M": "SecFresh",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -774,6 +867,8 @@ def main() -> int:
     label_j, ok_j, det_j = j["label"], j["ok"], j["detail"]
     label_k, ok_k, det_k = check_k_ticker_audit()
     label_l, ok_l, det_l = check_l_macro_data()
+    m = _check_m()
+    label_m, ok_m, det_m = m["label"], m["ok"], m["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -789,6 +884,8 @@ def main() -> int:
         "J": {"ok": ok_j, "short": det_j},
         "K": {"ok": ok_k, "short": det_k},
         "L": {"ok": ok_l, "short": det_l[:20]},
+        # Mも切らない（どの銘柄・何日かが通知から読めるように）
+        "M": {"ok": ok_m, "short": det_m},
     }
 
     overall_ok = all(r["ok"] for r in results.values())
@@ -807,6 +904,7 @@ def main() -> int:
         print(f"[J] CronRuns:      {label_j}")
         print(f"[K] TickerAudit:   {label_k}")
         print(f"[L] MacroData:     {label_l}")
+        print(f"[M] SecFreshness:  {label_m}")
         status_str = "✅ HEALTHY" if overall_ok else f"⚠️  WARNING（問題{n_warn}件）"
         print(f"Overall: {status_str}\n")
 
@@ -818,8 +916,9 @@ def main() -> int:
 
     if not overall_ok:
         # SEC content異常（A）またはワークフロー異常（Jの🔴: 失敗・期間内に成功なし）は
-        # データパイプライン停止の実害に直結するためCRITICAL、それ以外（Jの⚠️「直前に成功あり」を含む）はWARNING
-        return 2 if (not ok_a or j["critical"]) else 1
+        # データパイプライン停止の実害に直結するためCRITICAL、それ以外（Jの⚠️「直前に成功あり」を含む）はWARNING。
+        # SECの一次データの鮮度（Mの🔴: 週次の更新の停止・取得失敗の多発・SEC側の長い未反映）もCRITICAL
+        return 2 if (not ok_a or j["critical"] or m["critical"]) else 1
     return 0
 
 
