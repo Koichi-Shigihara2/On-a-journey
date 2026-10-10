@@ -225,3 +225,20 @@ class TestAssumedZero:
                      {"end": q, "val": 100, "form": "10-Q"} for q in QEND]}}}}})
         assert not any(h.get("assumed_zero") for h in r["history"])
         assert r["percentile"]["n_quarters"] == 9
+
+
+class TestLossMakers:
+    def test_nonpositive_rotce_gets_no_signal(self):
+        # 赤字（TTM純利益<0）→ ROTCE≤0 → 目安なし（rotce_nonpositive）。ROTCE・P/TBV自体は出す
+        ni = {q: -10 - i for i, q in enumerate(QEND)}
+        prices = [{"date": q, "close": 50.0 - i} for i, q in enumerate(QEND)]
+        r = _run(_store(ni=ni), prices=prices)
+        assert r["current"]["rotce"] < 0 and r["current"]["ptbv"] is not None
+        assert r["percentile"]["signal"] is None
+        assert r["percentile"]["reason"] == rotce.R_ROTCE_NONPOSITIVE
+        assert "ptbv" not in r["percentile"]
+
+    def test_zero_rotce_gets_no_signal(self):
+        r = _run(_store(ni={q: 0 for q in QEND}))
+        assert r["percentile"]["signal"] is None
+        assert r["percentile"]["reason"] == rotce.R_ROTCE_NONPOSITIVE

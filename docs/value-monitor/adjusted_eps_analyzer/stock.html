@@ -776,6 +776,7 @@
         sigEl.textContent = '判定なし';
         sigEl.style.color = 'var(--mut)';
         sigNote.textContent = cur.ptbv == null ? '直近値が算出不可'
+          : pc.reason === 'rotce_nonpositive' ? 'ROTCEがマイナス（赤字）のため目安の対象外'
           : `比較できる四半期が${pc.n_quarters || 0}期（8期以上で判定）`
             + (pc.n_excluded_assumed_zero ? `。0と仮定した${pc.n_excluded_assumed_zero}期は除外` : '');
       }
@@ -826,7 +827,7 @@
       document.getElementById('rotce-foot').innerHTML =
         '参考表示です。TANUKI SCORE・TANUKI VALUATIONの判定や計算には使っていません。' + filledNow + '<br>'
         + '有形自己資本＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。'
-        + '目安は自社の過去の四半期との比較で、P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高。'
+        + '目安は自社の過去の四半期との比較で、P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高（ROTCEがマイナスの銘柄は対象外）。'
         + 'オレンジの点は年度末の値で補った四半期。中抜きの点は、のれん等をまだ申告していない期で0と仮定した四半期（自社比の目安の計算には使わない）。'
         + '線が切れている期は算出不可（有形自己資本がマイナス等）。';
     }

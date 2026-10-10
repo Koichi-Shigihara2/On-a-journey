@@ -22,7 +22,7 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
 データ: Layer3（layer3_builder.build_ticker_store）・日次株価（common/market_data/daily/）・
 分割履歴（config/split_history.yaml、株式数の未調整の値を split_adjust.py で換算）。
 
-自社の過去との比較: 四半期のROTCE・P/TBVが両方そろう期がMIN_QUARTERS_FOR_PERCENTILE以上あるときだけ、
+自社の過去との比較: 直近のROTCEが正（赤字でない）で、四半期のROTCE・P/TBVが両方そろう期がMIN_QUARTERS_FOR_PERCENTILE以上あるときだけ、
 直近値が過去の四半期分布の何パーセンタイルにあるかを出し、目安（自社比割安・中立・自社比割高）を付ける。
 
 出力: docs/common/sec_data/rotce/{TICKER}.json と _summary.json（TANUKI SCOREの散布図用）。
@@ -87,6 +87,7 @@ R_PRICE_MISSING = "price_missing"
 R_SHARES_MISSING = "shares_missing"
 R_INTANGIBLE_ONLY_INCL = "intangible_only_including_goodwill_tag"
 R_PREFERRED_TEMPORARY_EQUITY = "preferred_stock_classified_as_temporary_equity"
+R_ROTCE_NONPOSITIVE = "rotce_nonpositive"   # 直近のROTCE≤0（赤字）→ 目安を付けない
 
 # 成分ごとの生タグ（初めて申告した期末日の判定に使う。無形資産は派生概念の期末日）
 RAW_TAG_BY_FIELD = {"goodwill": "Goodwill", "preferred_stock": "PreferredStockValue",
@@ -469,6 +470,10 @@ def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
     res: Dict[str, Any] = {"n_quarters": len(pts), "n_excluded_assumed_zero": n_assumed, "signal": None}
     if current.get("ptbv") is None or current.get("rotce") is None:
         res["reason"] = current.get("reason") or R_INSUFFICIENT_QUARTERS
+        return res
+    if current["rotce"] <= 0:
+        # 赤字（ROTCE≤0）の銘柄は、マイナス同士の比較で「自社比割安」等になるため目安の対象外
+        res["reason"] = R_ROTCE_NONPOSITIVE
         return res
     if len(pts) < MIN_QUARTERS_FOR_PERCENTILE:
         res["reason"] = R_INSUFFICIENT_QUARTERS
