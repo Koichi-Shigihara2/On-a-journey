@@ -111,6 +111,24 @@ TAG_CANDIDATES: dict[str, tuple[str, ...]] = {
     "OPERATING_CASH_FLOW": (
         "NetCashProvidedByUsedInOperatingActivities",
     ),
+    # [[ROTCE-PTBV-1]]（2026-10-10）: 有形普通株主資本（TCE）の控除項目。
+    # 時点値（instant）のBS項目で、ROTCE・P/TBVの参考表示にだけ使う（判定には使わない）
+    "GOODWILL": (
+        "Goodwill",
+    ),
+    "PREFERRED_STOCK": (
+        "PreferredStockValue",
+    ),
+    "MINORITY_INTEREST": (
+        "MinorityInterest",
+    ),
+    # のれんを除く無形資産。期末日ごとにEXCL→「有限＋無期限」の順で解決済みの
+    # 派生概念（下記with_derived_intangibles()）を単独の候補にする。parser.py
+    # （候補タグ単位で採用タグが決まる）とLayer3（期末日単位の優先順位マージ）の
+    # どちらでも同じ値になるよう、優先順位の解決は派生概念の側で済ませる
+    "INTANGIBLE_ASSETS_EXCL_GOODWILL": (
+        "IntangibleAssetsNetExcludingGoodwillResolvedDerived",
+    ),
 }
 
 
@@ -226,4 +244,109 @@ def with_derived_net_income(company_facts: dict) -> dict:
                 "label": f"{tag} attributable to parent (derived, NCI deducted)",
                 "units": {"USD": derive_nci_adjusted_facts(us_gaap, tag)},
             }
+    return {**company_facts, "facts": {**facts, "us-gaap": new_us_gaap}}
+
+
+# ---------------------------------------------------------------------------
+# のれんを除く無形資産: 派生概念（[[ROTCE-PTBV-1]]、2026-10-10）
+# ---------------------------------------------------------------------------
+# 優先順位: ①IntangibleAssetsNetExcludingGoodwill（EXCL）
+#           ②FiniteLivedIntangibleAssetsNet + IndefiniteLivedIntangibleAssetsExcludingGoodwill
+#             （同じ提出書類・同じ期末日の値。片方しか無ければその値だけ）
+# EXCLは「有限＋無期限」の合計なので、両方ある期末日にEXCLと内訳を足すと二重計上になる
+# （96銘柄中66銘柄で併存、比較できた74銘柄中12銘柄で値が一致しない〈DELL・PEP等〉ため、
+# 内訳での置き換えもしない）。
+# IntangibleAssetsNetIncludingGoodwill（INCL）は使わない。CAKE・RCAT・CELHは
+# 「のれんを除く無形資産」の意味でINCLを使っており（RCATではINCL−のれんが負）、
+# 「INCL−のれん」は銘柄によって意味が変わるため。INCLしか無い銘柄（ASTS）はNone。
+# 例外: 同じ期末日・同じaccnでEXCLが「有限＋無期限」より2%超小さい期末日は、EXCLが
+# 合計ではない（一部の項目だけ）とみなし「有限＋無期限」を使う（合計が内訳より小さいことは
+# 定義上ありえない）。2026-10-10時点の該当: PEP（EXCL 500Mに対し有限1,219M＋無期限13,847M）・
+# AVAV・TSLA・ADSKの一部の期末日。EXCLの方が大きい食い違い（DELL・JNJ・MRVL等、
+# 片方の内訳が申告されていない）はEXCLを使う。
+INTANGIBLE_EXCL_TAG = "IntangibleAssetsNetExcludingGoodwill"
+INTANGIBLE_FINITE_TAG = "FiniteLivedIntangibleAssetsNet"
+INTANGIBLE_INDEFINITE_TAG = "IndefiniteLivedIntangibleAssetsExcludingGoodwill"
+INTANGIBLE_INCL_GOODWILL_TAG = "IntangibleAssetsNetIncludingGoodwill"  # 使わない（上記）
+INTANGIBLE_SUM_DERIVED = "IntangibleAssetsFiniteAndIndefiniteLivedSumDerived"
+INTANGIBLE_RESOLVED_DERIVED = "IntangibleAssetsNetExcludingGoodwillResolvedDerived"
+# EXCLが「有限＋無期限」より小さいとみなす許容幅（端数・丸めの差は無視する）
+EXCL_BELOW_SUM_TOLERANCE = 0.02
+
+
+def _instant_facts(us_gaap: dict, tag: str, unit: str = "USD") -> list:
+    try:
+        facts = us_gaap[tag]["units"][unit] or []
+    except (KeyError, TypeError):
+        return []
+    return [f for f in facts if not f.get("start") and f.get("end") and f.get("val") is not None]
+
+
+def derive_intangible_sum_facts(us_gaap: dict) -> list:
+    """有限＋無期限の無形資産を、同じ期末日・同じaccnごとに合算した派生ファクトを返す。
+
+    各ファクトは元ファクト（有限を優先）の写しで、valと"source_tags"（合算したタグ）が変わる。
+    """
+    by_key: dict = {}
+    for tag in (INTANGIBLE_FINITE_TAG, INTANGIBLE_INDEFINITE_TAG):
+        for f in _instant_facts(us_gaap, tag):
+            key = (f["end"], f.get("accn"))
+            slot = by_key.setdefault(key, {})
+            slot.setdefault(tag, f)  # 同じaccn・同じ期末日の重複は先勝ち（同じ値）
+    out = []
+    for key in sorted(by_key, key=lambda k: (k[0], k[1] or "")):
+        slot = by_key[key]
+        tags = [t for t in (INTANGIBLE_FINITE_TAG, INTANGIBLE_INDEFINITE_TAG) if t in slot]
+        base = slot[tags[0]]
+        out.append({**base, "val": sum(slot[t]["val"] for t in tags), "source_tags": "+".join(tags)})
+    return out
+
+
+def derive_intangible_resolved_facts(us_gaap: dict) -> list:
+    """期末日ごとに優先順位を解決した派生ファクトを返す（parser.py用）。
+
+    その期末日にEXCLのファクトが1件でもあればEXCLのファクトだけ、無ければ
+    有限＋無期限の派生ファクトだけを返す（Layer3の期末日単位の優先順位マージと同じ結果）。
+    各ファクトの"source_tags"に採用したタグを記録する。
+    """
+    all_sums = derive_intangible_sum_facts(us_gaap)
+    sum_by_key = {(f["end"], f.get("accn")): f["val"] for f in all_sums}
+    excl_raw = _instant_facts(us_gaap, INTANGIBLE_EXCL_TAG)
+    # EXCLが同じaccnの「有限＋無期限」より小さい期末日（EXCLが合計ではない）
+    partial_excl_ends = {
+        f["end"] for f in excl_raw
+        if (f["end"], f.get("accn")) in sum_by_key
+        and f["val"] < sum_by_key[(f["end"], f.get("accn"))] * (1 - EXCL_BELOW_SUM_TOLERANCE)
+    }
+    excl = [{**f, "source_tags": INTANGIBLE_EXCL_TAG} for f in excl_raw if f["end"] not in partial_excl_ends]
+    excl_ends = {f["end"] for f in excl}
+    sums = [f for f in all_sums if f["end"] not in excl_ends]
+    return sorted(excl + sums, key=lambda f: (f["end"], f.get("accn") or ""))
+
+
+def with_derived_intangibles(company_facts: dict) -> dict:
+    """company_factsのコピーを返し、us-gaapに無形資産の派生概念2つを追加する。
+
+    元のcompany_facts（ファイルから読んだdict）は変更しない。有限・無期限の
+    どちらのタグも無い銘柄では何も追加しない。
+    """
+    if not isinstance(company_facts, dict):
+        return company_facts
+    facts = company_facts.get("facts") or {}
+    us_gaap = facts.get("us-gaap") or {}
+    sums = derive_intangible_sum_facts(us_gaap)
+    resolved = derive_intangible_resolved_facts(us_gaap)
+    if not sums and not resolved:
+        return company_facts
+    new_us_gaap = dict(us_gaap)
+    if sums:
+        new_us_gaap[INTANGIBLE_SUM_DERIVED] = {
+            "label": "Finite-lived + indefinite-lived intangible assets (derived)",
+            "units": {"USD": sums},
+        }
+    if resolved:
+        new_us_gaap[INTANGIBLE_RESOLVED_DERIVED] = {
+            "label": "Intangible assets excluding goodwill, EXCL first then finite+indefinite (derived)",
+            "units": {"USD": resolved},
+        }
     return {**company_facts, "facts": {**facts, "us-gaap": new_us_gaap}}

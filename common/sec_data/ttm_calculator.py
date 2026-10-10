@@ -43,7 +43,7 @@ FLOW_FIELDS = (
     "eps_basic", "eps_diluted", "selling_general_and_administrative",
 )
 
-# ストック系フィールド（最新Q末の値）。Layer3のcategory="stock"（10件）。
+# ストック系フィールド（最新Q末の値）。Layer3のcategory="stock"（14件）。
 # CurrentAssets/CurrentLiabilities: GATE2-PHASE3B-1②で追加（貸借対照表項目の
 # ためフロー〈4Q合算〉ではなくストック〈最新Q末の値〉分類が妥当。抽出はされて
 # いたがFLOW/STOCK/SHARESいずれにも属さず消費者ゼロのままTTM出力から漏れて
@@ -67,6 +67,9 @@ STOCK_FIELDS = frozenset([
     "deferred_revenue", "stockholders_equity", "total_assets",
     "current_assets", "current_liabilities",
     "short_term_investments", "total_liabilities",
+    # [[ROTCE-PTBV-1]]（2026-10-10）: TCEの控除項目。TTM系列には出さない（ROTCEは
+    # common/sec_data/rotce.pyがLayer3から直接読む）
+    "goodwill", "intangible_assets_excl_goodwill", "preferred_stock", "minority_interest",
 ])
 
 # 株式数フィールド（最新Q末の値）。Layer3のcategory="shares"（3件）。

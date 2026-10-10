@@ -13,6 +13,7 @@ from .quarterly import TICKER_RESTRICTIONS, _classify_period
 from .normalizer import _ytd_to_quarterly
 from .tag_definitions import (
     TAG_CANDIDATES, NET_INCOME_CANDIDATES, with_derived_net_income,
+    with_derived_intangibles, INTANGIBLE_RESOLVED_DERIVED,
 )
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
@@ -182,6 +183,22 @@ class SECParser:
         # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]（2026-09-17）: 決済/フロート型
         # 事業の運転資本開示用フィールド（DCF計算には未使用）
         "insurance_reserves", "restricted_cash",
+        # [[ROTCE-PTBV-1]]（2026-10-10）: TCEの控除項目（参考表示専用）
+        "goodwill", "intangible_assets_excl_goodwill", "preferred_stock", "minority_interest",
+    }
+
+    # [[ROTCE-PTBV-1]]（2026-10-10）: 有形普通株主資本（TCE）の控除項目。ROTCE・P/TBVの
+    # 参考表示にだけ使い、DCF・判定には使わない。XBRL_MAPPINGとは別に持ち、
+    # 既存フィールドの抽出ループ・fy衝突ログ・年度/四半期の集合に影響させない
+    # （_parse_raw_data()の抽出ループの後で抽出し、衝突ログには記録しない。
+    # 既存フィールドが1つも無い年度・四半期のファイルは作らない）。
+    # 無形資産は期末日ごとにEXCL→有限＋無期限の順で解決済みの派生概念を単独で使う
+    # （tag_definitions.py::with_derived_intangibles()）。
+    TANGIBLE_EQUITY_MAPPING = {
+        "goodwill": list(TAG_CANDIDATES["GOODWILL"]),
+        "intangible_assets_excl_goodwill": list(TAG_CANDIDATES["INTANGIBLE_ASSETS_EXCL_GOODWILL"]),
+        "preferred_stock": list(TAG_CANDIDATES["PREFERRED_STOCK"]),
+        "minority_interest": list(TAG_CANDIDATES["MINORITY_INTEREST"]),
     }
 
     # [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1で対象とするBSフィールド。
@@ -491,6 +508,8 @@ class SECParser:
         """生データをパース"""
         # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_income用の派生概念を追加
         raw_data = with_derived_net_income(raw_data)
+        # [[ROTCE-PTBV-1]]: のれんを除く無形資産の派生概念を追加
+        raw_data = with_derived_intangibles(raw_data)
         result = {
             "ticker": ticker,
             "cik": raw_data.get("cik", ""),
@@ -617,6 +636,21 @@ class SECParser:
                 fy_mismatches_out=_fy_tag_mismatches,
                 boundary_collisions_out=_fye_boundary_collisions,
             )
+
+        # [[ROTCE-PTBV-1]]: TCEの控除項目（既存フィールドの後に抽出し、衝突ログには記録しない）
+        for field_name, xbrl_keys in self.TANGIBLE_EQUITY_MAPPING.items():
+            extracted[field_name] = self._extract_values(
+                us_gaap, xbrl_keys, use_max=False, merge_all_tags=False,
+                fiscal_end_month=fiscal_end_month, accn_reportdate=_accn_reportdate,
+                field_name=field_name, collisions_out=None,
+                anchor_month=anchor_month, anchor_day=anchor_day,
+                extra_anchors=extra_anchors,
+                fy_mismatches_out=None,
+                boundary_collisions_out=None,
+            )
+        extracted["intangible_assets_excl_goodwill"]["_source_tags_by_val"] = (
+            self._intangible_source_tags_by_val(us_gaap)
+        )
 
         # [[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]: fact_overrides.jsonの
         # 個別上書きを、抽出直後・全ての逆算バックフィル処理より前に適用する
@@ -3222,18 +3256,35 @@ class SECParser:
         return result
 
     def _get_available_years(self, extracted: dict) -> List[int]:
-        """利用可能な年度を取得"""
+        """利用可能な年度を取得（[[ROTCE-PTBV-1]]のTCE控除項目だけの年度は含めない）"""
         years = set()
-        for field_data in extracted.values():
+        for field_name, field_data in extracted.items():
+            if field_name in self.TANGIBLE_EQUITY_MAPPING:
+                continue
             years.update(field_data.get("annual", {}).keys())
         return sorted(years, reverse=True)
     
     def _get_available_quarters(self, extracted: dict) -> List[str]:
-        """利用可能な四半期を取得"""
+        """利用可能な四半期を取得（[[ROTCE-PTBV-1]]のTCE控除項目だけの四半期は含めない）"""
         quarters = set()
-        for field_data in extracted.values():
+        for field_name, field_data in extracted.items():
+            if field_name in self.TANGIBLE_EQUITY_MAPPING:
+                continue
             quarters.update(field_data.get("quarterly", {}).keys())
         return sorted(quarters, reverse=True)
+
+    @staticmethod
+    def _intangible_source_tags_by_val(us_gaap: dict) -> Dict[Any, str]:
+        """無形資産の派生概念の値→採用タグ（Layer2のbs_tag_sourcesに記録する）。
+
+        期末日を持たない期間キー（年度・四半期）から採用タグを引くため値で照合する。
+        同じ値が別のタグから来ることは実質なく、あっても値自体は同じなのでEXCLを優先する。
+        """
+        out: Dict[Any, str] = {}
+        facts = (us_gaap.get(INTANGIBLE_RESOLVED_DERIVED) or {}).get("units", {}).get("USD", [])
+        for f in sorted(facts, key=lambda f: "+" in (f.get("source_tags") or "")):
+            out.setdefault(f["val"], f.get("source_tags"))
+        return out
     
     def _build_period_data(self, extracted: dict, period: Any, is_annual: bool) -> Optional[Dict[str, Any]]:
         """特定期間のデータを構築"""
@@ -3312,6 +3363,22 @@ class SECParser:
         # Other (RPO等)
         for field in ["rpo"]:
             _record("other", field, extracted.get(field, {}).get(period_type, {}).get(period))
+
+        # [[ROTCE-PTBV-1]]: TCEの控除項目と採用タグ（bs_tag_sources）。既存フィールドが
+        # 1つも無い期間には付けない（この項目だけのファイルを作らないため）
+        if any([data["bs"], data["pl"], data["cf"]]):
+            tag_sources: Dict[str, str] = {}
+            for field, xbrl_keys in self.TANGIBLE_EQUITY_MAPPING.items():
+                val = extracted.get(field, {}).get(period_type, {}).get(period)
+                if val is None:
+                    continue
+                _record("bs", field, val)
+                if field == "intangible_assets_excl_goodwill":
+                    tag_sources[field] = extracted[field].get("_source_tags_by_val", {}).get(val)
+                else:
+                    tag_sources[field] = xbrl_keys[0]
+            if tag_sources:
+                data["bs_tag_sources"] = tag_sources
 
         # 出所メタデータのサイドカーを空でないセクションのみ付与する
         # （既存スキーマへの無用なサイズ増加・省略時の互換性維持のため）

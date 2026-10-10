@@ -304,6 +304,38 @@
         "SellingGeneralAndAdministrativeExpense"
       ],
       "_note": "2026-07-24 SCHEMA-SM-SGA-CONFLATION-1対応。selling_and_marketingと明示的に分離"
+    },
+    "goodwill": {
+      "category": "stock",
+      "unit": "USD",
+      "candidates": [
+        "Goodwill"
+      ],
+      "_note": "2026-10-10 [[ROTCE-PTBV-1]] 有形普通株主資本（TCE）の控除項目。ROTCE・P/TBVの参考表示専用（判定には使わない）。候補はtag_definitions.py::TAG_CANDIDATES[\"GOODWILL\"]と同じ"
+    },
+    "intangible_assets_excl_goodwill": {
+      "category": "stock",
+      "unit": "USD",
+      "candidates": [
+        "IntangibleAssetsNetExcludingGoodwillResolvedDerived"
+      ],
+      "_note": "2026-10-10 [[ROTCE-PTBV-1]] のれんを除く無形資産。期末日ごとにIntangibleAssetsNetExcludingGoodwill→FiniteLivedIntangibleAssetsNet+IndefiniteLivedIntangibleAssetsExcludingGoodwillの順で解決済みの派生概念（tag_definitions.py::with_derived_intangibles()、layer3_builder.pyがcompany_factsのコピーへ追加する）。IntangibleAssetsNetIncludingGoodwillは銘柄で意味が違うため使わない"
+    },
+    "preferred_stock": {
+      "category": "stock",
+      "unit": "USD",
+      "candidates": [
+        "PreferredStockValue"
+      ],
+      "_note": "2026-10-10 [[ROTCE-PTBV-1]] TCEの控除項目（優先株）"
+    },
+    "minority_interest": {
+      "category": "stock",
+      "unit": "USD",
+      "candidates": [
+        "MinorityInterest"
+      ],
+      "_note": "2026-10-10 [[ROTCE-PTBV-1]] TCEの控除項目（非支配持分）。stockholders_equityが非支配持分込みのタグ（source_tag）の期末日だけ引く"
     }
   },
   "_ticker_overrides_source": "銘柄別の上書き設定はcommon/sec_data/quarterly.py::TICKER_RESTRICTIONSが唯一の正で、layer3_builder.pyも同じ定義を直接読む（[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]、2026-09-24にJSON側の写しticker_overridesを廃止。2026-07-24移行以降に追加されたCPRT/HEI/CEG/JOBY/LYFTの設定がLayer3に反映されていなかったため）"

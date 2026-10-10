@@ -2733,10 +2733,31 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 - HEI（FY2025 34M）・TDY（FY2025 40M）は`StockOptionPlanExpense`で申告しており、年次・TTMとも株式報酬が欠ける（最大EPSの信頼性MED）
 - ほかに株式報酬が欠ける銘柄: CIX・SCCO・XOM・MO（費用のタグ自体が無い）、VZ（`EmployeeBenefitsAndShareBasedCompensationNoncash`、年金等との合算で純粋な株式報酬ではない）、
   PM（`StockIssuedDuringPeriodValueShareBasedCompensation`、株主資本の項目）、WMT（年次は3,603Mあり、TTM系列に無い。原因は未確認）
-  （タグの確認は手元の`company_facts.json`による。gitの管理外のため最新かは未確認）
+  （タグの確認は手元の`company_facts.json`による。2026-10-10訂正: company_facts.jsonはgitの管理対象〈最新commitは2026-08-30、DELLのみ07-20〉で、「gitの管理外」は誤り）
 
 #### 着手条件
 タグの追加は凍結年度（fixed_registry）・Layer3への影響の確認が必要。追加前に、HEI・TDYで`StockOptionPlanExpense`が株式報酬の全額か（RSU等を含むか）を10-Kで確認する
+
+---
+
+### [ROTCE-PTBV-1] ROTCE・P/TBVの参考表示（TCEの控除項目の取り込み→計算→TANUKI SCOREの散布図・EPS Analyzerの推移）
+**優先度:** 中
+**分類:** 新規指標（参考表示のみ） / common/sec_data（Layer2・Layer3・`rotce.py`）・TANUKI SCORE・EPS Analyzer
+**登録日:** 2026-10-10
+**発見:** ROTCE / P/TBV / 理論P/TBV の実現可能性調査（2026-10-10、読み取り専用）
+
+#### 内容（調査で確認した事実）
+- Layer2・Layer3・TTM系列に、のれん・無形資産・優先株・非支配持分のフィールドが無い（company_facts.jsonにはある。Goodwill 89銘柄・
+  IntangibleAssetsNetExcludingGoodwill 71・FiniteLived 81・IndefiniteLived 26・PreferredStockValue 50・MinorityInterest 31、直近3年）
+- EXCLと「有限＋無期限」の併存は66銘柄。IntangibleAssetsNetIncludingGoodwillはCAKE・RCAT・CELHで「のれんを除く無形資産」の意味で使われている
+- 96銘柄の最新期で、TCE＞0は67銘柄（成分が期末日にそろうのは56）。理論P/TBV（(ROTCE−g)/(COE−g)）は、乖離が±50%以内に収まるのが
+  計算できた47銘柄中3銘柄（GOOGL・VZ・CPRT）で、物差しにならない
+- CRMの純資産の急減（2026-01-31 59.1B→04-30 34.2B）は、借入（長期債務14.4B→39.3B）で賄った自社株買い（自己株式32.2B→55.0B）による。
+  資本の内訳（APIC−3,922M・利益剰余金+1,733M・AOCI+82M・自己株式−22,800M）の合計が純資産の減少−24,907Mと一致（取り込みの誤りではない）
+
+#### 対応方針（チャット側の決定）
+- 参考表示のみ。TANUKI SCOREの判定（category・funda/timing・tanuki_score・matrix・トラップ判定）には入れない。理論P/TBVは実装しない
+- 銘柄間比較はTANUKI SCOREのROTCE×P/TBV散布図、単体の割安・割高はその銘柄自身の過去の四半期分布との比較（パーセンタイル）
 
 ---
 

@@ -63,7 +63,7 @@ from datetime import date, datetime, timedelta
 from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
-from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income
+from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income, with_derived_intangibles
 
 logger = logging.getLogger(__name__)
 
@@ -1196,7 +1196,7 @@ def _backfill_operating_income(fields_out: dict) -> None:
 
 def build_ticker_store(ticker: str) -> dict | None:
     """
-    1銘柄分のLayer3データ（32フィールド）を構築する。
+    1銘柄分のLayer3データ（36フィールド。2026-10-10に[[ROTCE-PTBV-1]]のTCE控除項目4つを追加）を構築する。
 
     戻り値の構造:
     {
@@ -1218,6 +1218,8 @@ def build_ticker_store(ticker: str) -> dict | None:
         return None
     # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_income用の派生概念を追加
     company_facts = with_derived_net_income(company_facts)
+    # [[ROTCE-PTBV-1]]: intangible_assets_excl_goodwill用の派生概念を追加
+    company_facts = with_derived_intangibles(company_facts)
 
     concept_defs = load_concept_definitions()
     fields_def = concept_defs.get("fields", {})
