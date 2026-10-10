@@ -259,6 +259,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 - s3はOCFの傾向だけで決まり、黒字化年の推定は入らない（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`に追記。100点6・80点6・20点11・0点1、推定が両方無いのに100点はASTSだけ）
 - QoQの日数の下限60→75日（Python・JS）。新しく「—」はRCATの24/12の列の4マスだけ。記録はBACKLOG_DONE.mdの`[[STONKS-HEATMAP-FQ-LABEL-1]]`に追記
 - 範囲外として登録: `[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`（低。純利益がすでに黒字だと2段目が出ず、SPIRは「—」）
+  → 同日に実装（`fd57b5af01`、BACKLOG_DONE.mdへ）: `gaap_breakeven_reason=ACHIEVED`なら「純益 ✓」（緑）。ソートはOCF ✓・純益 ✓＞OCF ✓＞純益 ✓（SPIR）＞予測年＞—。pytest 2187件、BACKLOG.mdのアクティブは29件
 - `pytest tests/ src/subport/day_trade/test_logic.py` 2186件・audit.py exit 0・report_consistency_check.py NG=0。BACKLOG.mdのアクティブは30件
 - 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（中、点数の算出は確認済み）
 

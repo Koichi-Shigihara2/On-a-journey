@@ -3353,22 +3353,7 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1] STONKS SILOの一覧の黒字化の列で、純利益がすでに黒字の銘柄の「純益」の段が出ない（SPIRは「—」になる）
-**優先度:** 低
-**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`breakevenLines()`）
-**登録日:** 2026-10-10
-**発見:** [[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]の実装時（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- 一覧の黒字化の2段目（純益）は`gaap_breakeven_year`があるときだけ出す（依頼の仕様どおり）。純利益がすでに黒字の銘柄は
-  `gaap_breakeven_year=None`・`gaap_breakeven_reason="ACHIEVED"`で、2段目が出ない
-- 2026-10-10のresults.json: ESTC・LYFTは「OCF ✓」だけ（純利益も黒字）。SPIRはOCFが改善傾向なし（NO_TREND）で、一覧は「—」だが純利益は黒字
-  （SPIRのACHIEVEDが一時的な利益によるものかは未確認）
-- 見出しのtooltipでは「—」を「どちらの基準でも予測年が出ない」と説明しており、純利益が黒字の銘柄の「—」は読み違えやすい
-
-#### 直し方の候補（未決定）
-- `gaap_breakeven_reason="ACHIEVED"`なら2段目に「純益 ✓」を出す（ソートの扱いも決める）
-- 現状維持（③パネルの詳細の「純利益黒字化予測」には「達成済み」が出ている）
+（[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 

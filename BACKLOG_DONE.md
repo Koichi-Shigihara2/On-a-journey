@@ -4,6 +4,33 @@
 
 ## 2026-10-10（完了）
 
+### ✅ [STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1] STONKS SILOの一覧の黒字化の列で、純利益がすでに黒字の銘柄の「純益」の段が出ない（SPIRは「—」になる）
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`breakevenLines()`）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- 一覧の黒字化の2段目（純益）は`gaap_breakeven_year`があるときだけ出す（依頼の仕様どおり）。純利益がすでに黒字の銘柄は
+  `gaap_breakeven_year=None`・`gaap_breakeven_reason="ACHIEVED"`で、2段目が出ない
+- 2026-10-10のresults.json: ESTC・LYFTは「OCF ✓」だけ（純利益も黒字）。SPIRはOCFが改善傾向なし（NO_TREND）で、一覧は「—」だが純利益は黒字
+  （SPIRのACHIEVEDが一時的な利益によるものかは未確認）
+- 見出しのtooltipでは「—」を「どちらの基準でも予測年が出ない」と説明しており、純利益が黒字の銘柄の「—」は読み違えやすい
+
+#### 直し方の候補（未決定）
+- `gaap_breakeven_reason="ACHIEVED"`なら2段目に「純益 ✓」を出す（ソートの扱いも決める）
+- 現状維持（③パネルの詳細の「純利益黒字化予測」には「達成済み」が出ている）
+
+#### 完了の記録（2026-10-10、表示だけ。計算は不変）
+- 実装`fd57b5af01`: 一覧の黒字化の2段目で、`gaap_breakeven_reason="ACHIEVED"`なら「純益 ✓」（緑）。ほかの2段目の規則（「純益 28年」／無ければ出さない）は不変。
+  見出しのtooltipに「「純益 ✓」はGAAP純利益がすでにプラス」を追加
+- ソート（1回目のクリック）: OCF ✓・純益 ✓（ESTC・LYFT）＞ OCF ✓（8銘柄）＞ 純益 ✓（OCFは未達、SPIR）＞ 予測年の早い順 ＞ —
+- 確認（1440px）: ESTC・LYFT「OCF ✓ / 純益 ✓」、SPIR「純益 ✓」、GTLB「OCF ✓ / 純益 27年」（「純益 ✓」の色はrgb(16,185,129)＝緑）
+- results.jsonは計算を変えていないため再生成していない
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2187件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+
+---
+
 ### ✅ [STONKS-BREAKEVEN-BASIS-UNLABELED-1] 一覧の「黒字化：達成済」とカードの「③黒字化パス100 加速中」がOCF基準（hidden_profit_already）であることが画面から読み取れない
 **優先度:** 中
 **分類:** 表示（基準の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
