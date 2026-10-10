@@ -80,6 +80,18 @@ NO_CANDIDATE_MERGE_FIELDS = frozenset({
     "shares_outstanding_period_end_sec",
 })
 
+# [[LAYER2-SHARES-UNIT-THOUSANDS-1]]（2026-10-10）: 足し算できない値（株式数。
+# 加重平均・期末発行済とも）のフィールド。YTD→単四半期変換（累計−前四半期）を
+# かけず、単独四半期の値がない期は欠けたままにする。変換すると「上半期の加重平均
+# 94,964,423 − 第1四半期の加重平均 94,621,365 = 343,058」のような意味のない値に
+# なっていた（ESTC 2022-10-31・2022-01-31）。sec_concept_definitions.jsonの
+# category="shares"の3フィールドと一致させる
+NON_ADDITIVE_FIELDS = frozenset({
+    "shares_diluted",
+    "shares_basic_weighted_avg",
+    "shares_outstanding_period_end_sec",
+})
+
 # [[LAYER3-ANNUAL-MISCLASSIFICATION-BBAI-1]]対応。quarterly.py::
 # _classify_period()の`fp=='FY' and days>130`判定（[[XBRL-TAG-KLAC-1]]
 # 対応時に追加、[[QUARTERLY-CLASSIFY-PERIOD-NO-UPPER-BOUND-1]]で上限が
@@ -477,7 +489,7 @@ def _merge_candidate_entries(
         processed = _reclassify_misannotated_fy_entries(processed, ticker)
         if not processed:
             continue
-        normalized = _normalize_field_entries(processed)
+        normalized = _normalize_field_entries(processed, additive=field_name not in NON_ADDITIVE_FIELDS)
         if not normalized:
             continue
         for e in normalized:
@@ -729,10 +741,13 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     return converted, unresolved
 
 
-def _normalize_field_entries(raw_entries: list) -> list:
+def _normalize_field_entries(raw_entries: list, additive: bool = True) -> list:
     """
     1フィールドのエントリ群をYTD→単四半期変換する
     （normalizer.py::_normalize_field()と同型のロジック）。
+
+    additive=False（株式数等の足し算できない値、NON_ADDITIVE_FIELDS）のときは
+    変換せず、年次と単独四半期のエントリだけを返す（YTD累計は捨てる）。
     """
     if not raw_entries:
         return []
@@ -742,6 +757,9 @@ def _normalize_field_entries(raw_entries: list) -> list:
 
     sa_entries = [e for e in quarterly if not e.get("is_ytd")]
     ytd_entries = [e for e in quarterly if e.get("is_ytd")]
+
+    if not additive:
+        return sorted(annual + sa_entries, key=lambda x: x["end"])
 
     if not ytd_entries:
         return sorted(annual + sa_entries, key=lambda x: x["end"])
@@ -1263,7 +1281,8 @@ def build_ticker_store(ticker: str) -> dict | None:
         if field_name in NO_CANDIDATE_MERGE_FIELDS:
             # NO_CANDIDATE_MERGE_FIELDSはextract_field_raw_entries()が
             # _process_entries()止まりの未正規化エントリを返すため、ここで正規化する。
-            normalized_entries = _normalize_field_entries(raw_entries)
+            normalized_entries = _normalize_field_entries(
+                raw_entries, additive=field_name not in NON_ADDITIVE_FIELDS)
         else:
             # 候補マージ対象フィールドはextract_field_raw_entries()内
             # （_merge_candidate_entries）で既に正規化済み。ここで再度
