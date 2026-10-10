@@ -227,9 +227,21 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
      最後の「鮮度:」の行、`_freshness.json`のgenerated_atの更新がcommitされていること
   2. 次のStonks_Silo_Updateの後、results.jsonからIOTが外れていること
   3. 次のSystem Health Checkで`[M] SecFreshness:`が✅（確認済み5件を表示）
-- 次の候補: STONKS SILOの表示の項目（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-DATA-ASOF-MISSING-1]]`等、中）、`[[SEC-COMPANYFACTS-API-LAG-1]]`の経過観察
+- 次の候補: STONKS SILOの表示の項目（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`等、中。`[[STONKS-DATA-ASOF-MISSING-1]]`は下の同日の作業で完了）、`[[SEC-COMPANYFACTS-API-LAG-1]]`の経過観察
   （5銘柄がREFRESHEDになったらwarn_acknowledged.jsonの5件を消して移設）。10/12（月）の上の「残っている確認」（TANUKI SCORE表示値）は、今回SECデータが更新された
   10銘柄（DELLを含む）の値も動くので、比較では株価の変化に加えて財務の更新による変化を分けて読む
+
+**2026-10-10（夜）STONKS SILOの表示（`[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`、3件ともBACKLOG_DONE.mdへ）**
+- 実装`5f6dc22ef2`・データ`94335c3f27`。verdict・score・overallの計算は変えていない
+- results.jsonの各銘柄に表示用の`financial_as_of`（`discover/stonks-silo/src/financial_as_of.py`）: `latest_quarter_end`（Layer3の`calc_ttm_series()`の最新ttm_end。
+  get_ttm_revenue・ttm/ファイル・series_qと全24銘柄で一致）、`scoring_fy`・`scoring_fy_end`（年次ファイルの本人データのaccn → submissionsのreportDate）、
+  `stale`（最新四半期末＋135日超、定数`STALE_DAYS_AFTER_QUARTER_END`、出力時に全銘柄そろえて判定）。staleは0件
+- 画面: ティッカーの下に「〜yy/mm/dd」（staleならamberで「古い」）、詳細の見出しに財務の基準日、ヒーローは「PRICE UPDATED」と「FINANCIALS」。
+  生存期間は`runwayDisplay()`／`fmtRunway(ra)`の1つの書式（CF黒字／不明／∞／{n}ヶ月）で一覧・②パネル・詳細の行に、ソートはCF黒字＞∞＞月数＞不明
+- 確認はPlaywright（`/On-a-journey/`以下をdocs/に振り替えて配信）。デスクトップ1440px・モバイル390px、コンソールの404はRKLB・ZSのlatest.jsonだけ（既知）
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2171件・audit.py exit 0・report_consistency_check.py NG=0（WARN 127件）。BACKLOG.mdのアクティブは30件
+- **残っている確認**: 次のStonks_Silo_Update（CI）の後も全銘柄に`financial_as_of`が出ていること（PROJECT_STATUS.mdの同日の「次回確認」）
+- 次の候補: `[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`・`[[STONKS-HEATMAP-FQ-LABEL-1]]`（中）
 
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。

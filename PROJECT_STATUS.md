@@ -11,6 +11,13 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、STONKS SILOの表示）**: `[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`を完了。
+  results.jsonに表示用の`financial_as_of`（最新四半期末・スコアの基準年度とその期末日・stale〈最新四半期末＋135日超〉）、一覧・詳細・ヒーローに財務の基準日、
+  生存期間の表示を「CF黒字／不明／∞／{n}ヶ月」の1つの書式に（一覧・②パネル・詳細の行）、ソートはCF黒字＞∞＞月数＞不明。
+  verdict・score・overallの計算は不変（実装`5f6dc22ef2`・データ`94335c3f27`、staleは0件、スコアが変わったのはFY2026の10-Kを取り込んだZSだけ）。
+  アクティブBACKLOG 30件。`pytest tests/ src/subport/day_trade/test_logic.py` 2171件・audit.py・report_consistency_check.py（NG=0）とも通過。
+  **次回確認**: 次のStonks_Silo_Update（CI、Market Data Dailyの連鎖）の後も、results.jsonの全銘柄に`financial_as_of`が出ていること
+  （`latest_quarter_end`がnullでない・`stale`の判定が出ている）と、画面のヒーローの「FINANCIALS」・一覧の「〜yy/mm/dd」
 - **2026-10-10（夜、SECデータの取得が止まっていた件の修正）**: `[[SEC-FETCH-CACHE-MTIME-CI-1]]`を完了。SEC_Data_Update（CI）はmtimeの24時間キャッシュのため
   SEC APIを一度も呼んでいなかった（company_facts.jsonは2026-08-30から未更新）。submissionsで新しい提出を検知した銘柄だけcompany_factsを取り直す方式にし、
   鮮度を`common/sec_data/data/_freshness.json`に記録、CHECK-60（WARN）・System Health [M]で検知（コード`61d0a085d6`）。全銘柄の再取得でREFRESHED 10

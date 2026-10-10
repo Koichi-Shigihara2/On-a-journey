@@ -2902,23 +2902,7 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [STONKS-DATA-ASOF-MISSING-1] STONKS SILOに財務データの基準日の表示がなく、ヒーローの「UPDATED」（株価の更新時刻）だけで新しく見える
-**優先度:** 中
-**分類:** 表示（データの鮮度の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- ヒーローの「UPDATED」は`results.json`の`generated_at`（2026-10-09T20:30:25Z）で、夜間の株価の更新の時刻。財務データが何期末までかはどこにも出ていない
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]の状態でも、GTLBは「10/10 05:30更新」と表示され、財務が2026-04-30期末で止まっていることが画面から分からない
-
-#### 実害
-財務データが古くなっても利用者が気づけない（今回はSECの取得が止まっていることに、画面からは気づけなかった）
-
-#### 直し方の候補（未決定）
-- 銘柄ごとに財務の最新の期末（例 `financial_vectors`の最新の`end`）を一覧・詳細に出す
-- 期末から一定の日数（例 決算期＋提出期限）を過ぎたら古いことを示す印を出す
-- ヒーローの「UPDATED」を「株価」と「財務」に分ける
+（[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -2949,25 +2933,7 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [STONKS-RUNWAY-CELL-AMBIGUOUS-1] 生存期間の列で、キャッシュフロー黒字のSAFEとデータ不足のUNKNOWNがどちらも「—」になり、「25M」が金額と誤読されやすい
-**優先度:** 中
-**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`fmtRunway()`）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- `fmtRunway()`（L1437-1442）は`runway_months`がnullなら「—」、999超なら「∞」、それ以外は「{月数}M」
-- `runway_months=null`は2種類ある（results.json、2026-10-09T20:30Z）:
-  - SAFE（`verdict_reason`「キャッシュフロー黒字またはトントン」、score 100）: GTLB・NET・ESTC・LYFT 等
-  - UNKNOWN（`verdict_reason`「データ不足」、score 50）: RCAT
-- 「25M」は25ヶ月の意味だが、金額（$25M）と読み違えやすい
-
-#### 実害
-資金に問題の無い銘柄と、判定できない銘柄が同じ見た目になる。月数を金額と読み違える
-
-#### 直し方の候補（未決定）
-- `verdict`を見て、SAFEでnullなら「∞」か「黒字」、UNKNOWNなら「不明」と出し分ける
-- 単位を「25ヶ月」「25mo」等にする
+（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -3334,19 +3300,7 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 
 ---
 
-### [STONKS-SURVIVAL-PANEL-DASH-1] 詳細の②生存能力のパネルが「—」なのに、上部のカードは「資金安全性100 安全」と表示され、食い違って見える
-**優先度:** 低
-**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の詳細の②生存能力）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- 詳細の②生存能力のパネルが「—」だけで、上部のカードは「資金安全性100 安全」
-- results.jsonでは、キャッシュフロー黒字の銘柄（例 GTLB）は`runway.verdict=SAFE`・`score=100`・`runway_months=null`（2026-10-09T20:30Z）。
-  パネルはnullの月数を「—」と出しているとみられる（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と同じ原因の可能性、未確認）
-
-#### 直し方の候補（未決定）
-- SAFEで月数がnullのときは、パネルにも「キャッシュフロー黒字」等の理由を出す（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と合わせて直す）
+（[[STONKS-SURVIVAL-PANEL-DASH-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 

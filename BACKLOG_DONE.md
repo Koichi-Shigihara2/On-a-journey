@@ -4,6 +4,88 @@
 
 ## 2026-10-10（完了）
 
+### ✅ [STONKS-DATA-ASOF-MISSING-1] STONKS SILOに財務データの基準日の表示がなく、ヒーローの「UPDATED」（株価の更新時刻）だけで新しく見える
+**優先度:** 中
+**分類:** 表示（データの鮮度の明示） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- ヒーローの「UPDATED」は`results.json`の`generated_at`（2026-10-09T20:30:25Z）で、夜間の株価の更新の時刻。財務データが何期末までかはどこにも出ていない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]の状態でも、GTLBは「10/10 05:30更新」と表示され、財務が2026-04-30期末で止まっていることが画面から分からない
+
+#### 実害
+財務データが古くなっても利用者が気づけない（今回はSECの取得が止まっていることに、画面からは気づけなかった）
+
+#### 直し方の候補（未決定）
+- 銘柄ごとに財務の最新の期末（例 `financial_vectors`の最新の`end`）を一覧・詳細に出す
+- 期末から一定の日数（例 決算期＋提出期限）を過ぎたら古いことを示す印を出す
+- ヒーローの「UPDATED」を「株価」と「財務」に分ける
+
+#### 完了の記録（2026-10-10）
+- results.jsonの各銘柄に`financial_as_of`（表示用）: `latest_quarter_end`（Layer3から`calc_ttm_series()`で計算した最新のttm_end。`get_ttm_revenue()`のttm_end・ttm/ファイル・financial_vectorsのseries_qの最新endと全24銘柄で一致、食い違い0件）、`scoring_fy`・`scoring_fy_end`（スコアに使った年次〈years[-1]〉と、年次ファイルの本人データのaccnをsubmissions.jsonのreportDateで引いた期末日）、`stale`（generated_atが最新四半期末＋135日〈`STALE_DAYS_AFTER_QUARTER_END`、四半期91日＋10-Qの期限45日〉超。出力時に全銘柄そろえて判定）
+- 画面: ティッカーの下に「〜26/07/31」（staleならamberで「古い」）、詳細の見出しに「財務: 最新四半期末 2026-07-31 ／ スコアの基準 FY2026（期末 2026-01-31）」、ヒーローは「PRICE UPDATED」と「FINANCIALS」（staleの銘柄数、0件なら「全銘柄 最新」）
+- 2026-10-10の再生成でstaleは0件（最新四半期末は2026-06-30〜2026-08-01）。SEC_LAGの5銘柄（CDNS・KO・RMBS・V・XOM）はSTONKS SILOの対象外
+- 実装`5f6dc22ef2`（pipeline.py・financial_as_of.py〈新規〉・index.html・テスト8件）、再生成データ`94335c3f27`（24銘柄、エラー0）。verdict・score・overallの計算は変えていない（表示と表示用フィールドの追加のみ。再生成でスコア・判定が変わったのはZSだけで、`e2a629fb58`で取り込んだFY2026の10-Kで年次の基準がFY2025→FY2026に進んだため）
+- ブラウザ（Playwright、デスクトップ1440px・モバイル390px）で、GTLB・RCAT・SOUN・ASTSの一覧・②パネル・詳細の行・詳細の見出しを確認。モバイル幅でもページの横幅は390pxに収まる。コンソールの404はRKLB・ZSのTANUKIのlatest.jsonだけ（既知の[[STONKS-TANUKI-BADGE-404-1]]）
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2171件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+- 次回確認: 次のStonks_Silo_Update（CI）の後もresults.jsonにfinancial_as_ofが出ていること（PROJECT_STATUS.md）
+
+---
+
+### ✅ [STONKS-RUNWAY-CELL-AMBIGUOUS-1] 生存期間の列で、キャッシュフロー黒字のSAFEとデータ不足のUNKNOWNがどちらも「—」になり、「25M」が金額と誤読されやすい
+**優先度:** 中
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の`fmtRunway()`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `fmtRunway()`（L1437-1442）は`runway_months`がnullなら「—」、999超なら「∞」、それ以外は「{月数}M」
+- `runway_months=null`は2種類ある（results.json、2026-10-09T20:30Z）:
+  - SAFE（`verdict_reason`「キャッシュフロー黒字またはトントン」、score 100）: GTLB・NET・ESTC・LYFT 等
+  - UNKNOWN（`verdict_reason`「データ不足」、score 50）: RCAT
+- 「25M」は25ヶ月の意味だが、金額（$25M）と読み違えやすい
+
+#### 実害
+資金に問題の無い銘柄と、判定できない銘柄が同じ見た目になる。月数を金額と読み違える
+
+#### 直し方の候補（未決定）
+- `verdict`を見て、SAFEでnullなら「∞」か「黒字」、UNKNOWNなら「不明」と出し分ける
+- 単位を「25ヶ月」「25mo」等にする
+
+#### 完了の記録（2026-10-10）
+- 生存期間の書式を`runwayDisplay()`／`fmtRunway(ra)`の1つにまとめ、一覧・②パネル・詳細の行で共通にした: runway_months=null×SAFE→「CF黒字」（緑）、null×UNKNOWN・runwayなし→「不明」（muted）、999超→「∞」、それ以外→「25ヶ月」（色の閾値24/12は従来どおり）。一覧の行は月数のときだけバーを残し、以前の独自の「{n}M」の組み立てをやめた
+- ソート（`runwaySortVal()`）: CF黒字 ＞ ∞ ＞ 月数の降順 ＞ 不明（以前はnullが−1で、CF黒字も最下位だった）
+- 確認した表示: GTLB「CF黒字」・RCAT「不明」・SOUN「25ヶ月」・ASTS「48ヶ月」。要約の1行（「Runway ∞（CF黒字）」「25ヶ月安全」）は指定の範囲外のため変えていない
+- 実装`5f6dc22ef2`（pipeline.py・financial_as_of.py〈新規〉・index.html・テスト8件）、再生成データ`94335c3f27`（24銘柄、エラー0）。verdict・score・overallの計算は変えていない（表示と表示用フィールドの追加のみ。再生成でスコア・判定が変わったのはZSだけで、`e2a629fb58`で取り込んだFY2026の10-Kで年次の基準がFY2025→FY2026に進んだため）
+- ブラウザ（Playwright、デスクトップ1440px・モバイル390px）で、GTLB・RCAT・SOUN・ASTSの一覧・②パネル・詳細の行・詳細の見出しを確認。モバイル幅でもページの横幅は390pxに収まる。コンソールの404はRKLB・ZSのTANUKIのlatest.jsonだけ（既知の[[STONKS-TANUKI-BADGE-404-1]]）
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2171件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+
+---
+
+### ✅ [STONKS-SURVIVAL-PANEL-DASH-1] 詳細の②生存能力のパネルが「—」なのに、上部のカードは「資金安全性100 安全」と表示され、食い違って見える
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`の詳細の②生存能力）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- 詳細の②生存能力のパネルが「—」だけで、上部のカードは「資金安全性100 安全」
+- results.jsonでは、キャッシュフロー黒字の銘柄（例 GTLB）は`runway.verdict=SAFE`・`score=100`・`runway_months=null`（2026-10-09T20:30Z）。
+  パネルはnullの月数を「—」と出しているとみられる（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と同じ原因の可能性、未確認）
+
+#### 直し方の候補（未決定）
+- SAFEで月数がnullのときは、パネルにも「キャッシュフロー黒字」等の理由を出す（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と合わせて直す）
+
+#### 完了の記録（2026-10-10）
+- ②生存能力のパネルは[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]と同じ書式になり、「CF黒字」「不明」のときは理由（verdict_reason）を小さく添える（GTLB「CF黒字／キャッシュフロー黒字またはトントン」・RCAT「不明／データ不足」）。上部のカードの「資金安全性100 安全」と食い違わない
+- 詳細の「生存可能期間」の行も同じ書式。tooltipを「現金÷月次バーンの絶対値（ヶ月）。現金が減っていない（営業CF−設備投資≧0）ときは「CF黒字」、データが足りないときは「不明」」に直した（以前の「OCFがプラスの場合は∞」は表示と合っていなかった）
+- 実装`5f6dc22ef2`（pipeline.py・financial_as_of.py〈新規〉・index.html・テスト8件）、再生成データ`94335c3f27`（24銘柄、エラー0）。verdict・score・overallの計算は変えていない（表示と表示用フィールドの追加のみ。再生成でスコア・判定が変わったのはZSだけで、`e2a629fb58`で取り込んだFY2026の10-Kで年次の基準がFY2025→FY2026に進んだため）
+- ブラウザ（Playwright、デスクトップ1440px・モバイル390px）で、GTLB・RCAT・SOUN・ASTSの一覧・②パネル・詳細の行・詳細の見出しを確認。モバイル幅でもページの横幅は390pxに収まる。コンソールの404はRKLB・ZSのTANUKIのlatest.jsonだけ（既知の[[STONKS-TANUKI-BADGE-404-1]]）
+- ゲート: `pytest tests/ src/subport/day_trade/test_logic.py` 2171件全パス・audit.py exit 0・report_consistency_check.py --fail-on-ng NG=0（WARN 127件）
+
+---
+
 ### ✅ [SEC-FETCH-CACHE-MTIME-CI-1] SEC_Data_Update（CI）がSEC APIを一度も呼ばず、commit済みのcompany_facts.json・submissions.jsonを読み直すだけになっている（checkout時のmtimeで24時間キャッシュが常に有効と判定される）
 **優先度:** 高
 **分類:** データ取得 / common/sec_data（`fetcher.py`のキャッシュ判定）・`.github/workflows/SEC_Data_Update.yml`
