@@ -2664,7 +2664,8 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 #### 未了
 - latest.jsonはまだ再生成していない（パイプラインの全銘柄実行はFCF一過性費用のAI定性評価〈Grok〉を`transient_found`の33銘柄で呼ぶため、ローカルで実行しなかった）。
-  翌朝の定時実行（05:43 JST頃）の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
+  10/12（月）13:00 JST ごろ以降の再生成の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
 
 ---
 
@@ -2694,7 +2695,9 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
   per_is_forwardを見ない（判定値を変えないため今回は対象外）
 
 #### 未了
-- QBTSのper_is_forwardは翌朝の定時実行で反映される（それまでは画面でFwdが付かない）
+- QBTSのper_is_forwardは10/12（月）13:00 JST ごろ以降の再生成で反映される（それまでは画面でFwdが付かない）
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
+- ONDSもper_is_forward=trueになる（公開中のlatest.jsonはper=-362.0・per_is_forward=falseで、画面はマイナスPERなのに乖離〈per−最大EPS PER〉を出していた）。この修正で解消する（2026-10-10にXAI_API_KEYを空にした手元の再生成でper_is_forward=trueを確認、出力はcommitしていない）。10/12の再生成で確認する
 
 ---
 

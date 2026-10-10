@@ -191,6 +191,26 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   本表と折りたたみの件数（48時間の制限込み）・`finish_reason`起因の失敗が無いか（ログの`[WARN] 見出しの翻訳・判定`）を確かめる。
   GitHub Actionsから翻訳・判定が動くのはこの実行が初めて。BACKLOG.mdのアクティブは15件
 
+**2026-10-10 TANUKI SCORE表示値の3件・ROTCE/P/TBVの参考表示・株式数の単位誤り（セッション終了時のまとめ）**
+- TANUKI SCORE表示値（読み取り調査→修正）: `[[TANUKI-MAXEPS-NI-SOURCE-1]]`（最大EPSをTTM系列の純利益＋株式報酬から、`86db08acf3`）・
+  `[[TANUKISCORE-PER-FORWARD-MIX-1]]`（前向きPERにFwdの注記・乖離は「—」、`eca2072b45`）・`[[TANUKISCORE-FCF-COL-FLOOR-1]]`（FCF列は構造赤字で✗・底上げは「△床」、`c2751316df`）。
+  latest.jsonは手元で全銘柄を再生成していない（Grokを呼ぶ銘柄があるため）
+- `[[ROTCE-PTBV-1]]`（参考表示のみ、判定には使わない）: のれん・無形資産・優先株・非支配持分をLayer2・Layer3に取り込み（`d88693784b`）、
+  `common/sec_data/rotce.py`と`docs/common/sec_data/rotce/`（Market Data Dailyで日次に再計算、`b9ccaae898`）、TANUKI SCOREの散布図とEPS Analyzerの推移（`0945814072`）、
+  追補（assumed_zeroは無形資産の期だけ母数から外す・赤字は目安なし、`54ccf5dd78`・`e6378a614d`・`2d98487df9`）
+- `[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`: Layer3の株式数にYTD変換をかけない（ESTC）、同じ期の1,000倍・100万倍の2値は中央値に近い方（`share_unit_fix.py`、MSCIは小さい方）、
+  CIX・ONDS・LOARはfact_overrides.jsonの"share_unit"で個別補正（LOARの凍結2年度のハッシュ更新）、CHECK-59（WARN）。`b11a4dbd3d`〜`9a8fe655e2`。
+  株式数以外のLayer2/Layer3の差分0件。影響範囲調査の「funda/timingは影響なし」は誤りで、希薄化ペナルティでONDSのfunda_scoreが75→50になる（CHAT_RULES.md事例34）
+- ブラッシュアップ: CHAT_RULES.md事例33〜35。BACKLOGの確認日を「10/12（月）13:00 JSTごろ以降」に訂正。BACKLOG.mdのアクティブは21件、移設漏れ0件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2129件・audit.py・report_consistency_check.py（NG=0・WARN 123件、未確認56件）とも通過
+- **残っている確認**（10/12（月）13:00 JSTごろ以降。TANUKI VALUATIONは土曜〜日曜朝の定時の連鎖が無く、日曜のSEC Data Updateの連鎖か月曜のHypeCoreの安全網〈04:00 UTC〉の連鎖で
+  再生成される。前週は10/5 01:05 JST・20:07 JSTに動いた。cronの遅延があるため、latest.jsonの`calculation_date`が10/11以降であることを先に確かめる）:
+  1. 最大EPS PERの新値: DELL ≈40.8x、ABBV ≈67x、QBTSはNone（`components.max_eps_per`・`max_eps_ttm_end`）
+  2. QBTS・ONDSに「Fwd」の注記、乖離は「—」（`components.per_is_forward=true`）
+  3. ONDS: 希薄化率73.8%/年（`dilution_severity=critical`）、funda_score 50、TANUKI SCOREのグローストラップhigh
+  4. ONDS以外の判定値（category・tanuki_score・funda/timing・matrix）が変わっていないこと（前日のlatest.jsonとの比較。株価の変化による分は除いて読む）
+  5. 確認後、`[[TANUKI-MAXEPS-NI-SOURCE-1]]`・`[[TANUKISCORE-PER-FORWARD-MIX-1]]`・`[[TANUKISCORE-FCF-COL-FLOOR-1]]`をBACKLOG_DONE.mdへ移す
+
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
   daily/のES=F・NQ=F・NIY=Fは09-30まで、空きは3営業日（10-01・10-02・10-05）で手順の5営業日以内のため埋めていない（今夜の取得の抜け補完で埋まる想定）

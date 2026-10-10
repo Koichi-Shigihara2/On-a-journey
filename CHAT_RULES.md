@@ -1147,6 +1147,34 @@ Plotlyの`measure:'total'`の棒の高さは前の棒の合計になるため、
 （件数と判定が合っていても、中身が古ければ目的を満たさない）。あわせて、確認用のスクリプトは本体の規則を呼び出して期待値を作り、規則の写しを持たない
 （AGE-1でbrowser_checksのC-02の期待値を`news_headlines.split_for_display()`から作るように改めた）。
 
+**事例33: 実行タイミングは推測せず、ワークフローの起動条件（cron・workflow_runの連鎖）から確かめる（2026-10-10、`[[TANUKI-MAXEPS-NI-SOURCE-1]]`）**
+- TANUKI SCOREの表示値の修正（10-10の昼にpush）で、latest.jsonの再生成を「翌朝の定時実行（05:43 JST頃）」と報告した。10-10は土曜で、翌朝（10-11 日曜）の定時の実行は無かった。
+- TANUKI VALUATIONにcronは無く、上流の連鎖で動く。平日はMarket Data Daily（UTCの月〜金の引け）→Stonks Silo→TANUKI VALUATION（20:30 UTC前後＝翌朝05:30 JST）。
+  週末は日曜のSEC Data Update（12:00 UTC予定）→HypeCore・Adjusted EPS・Stonks Silo→TANUKI VALUATIONと、月曜のHypeCoreの安全網（04:00 UTC）からの連鎖。
+  前週はそれぞれ遅延して10-04 16:05 UTC・10-05 11:07 UTCに動いていた（`gh run list`で確認）。
+
+**教訓**: 「いつ反映されるか」は、`.github/workflows/*.yml`の`on:`（cron・workflow_runの起動元）を上流までたどり、曜日の条件と、過去の実行（`gh run list --workflow`）の
+実際の時刻で確かめてから書く。cronの予定時刻はGitHub側で数時間遅れることがあるため、確認の時刻は予定より遅めに置く。
+
+**事例34: 「判定に影響なし」は、コードを読むだけでなく、全銘柄の再現計算で確かめる（2026-10-10、`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`）**
+- 株式数の単位誤りの影響範囲調査（読み取り専用）で、TANUKI VALUATIONの希薄化率がONDSで未算出になっていることを見つけたが、
+  判定への影響はTANUKI SCOREのグローストラップだけで、category・tanuki_score・funda/timing・matrixには影響しないと報告した。
+- 実際には`pipeline.py::_compute_tanuki_score()`が希薄化率をfunda_scoreのペナルティ（3年年率>40%で−25）に使っており、修正後にONDSのfunda_scoreが75→50になった。
+  希薄化率を参照する箇所を表示の側（index.html・stock.html）だけで探し、点数の計算の側を見落としていた。
+- 修正の確認では、pipeline.pyの希薄化率の計算を開始時点・修正後のコードで全98銘柄について再現し、開始時点の再現値が公開中のlatest.jsonと全銘柄一致すること、
+  修正後に変わるのはONDSだけであることを確かめた。
+
+**教訓**: 「判定に影響なし」と書く前に、変わる値を入力に使う箇所を`grep`で全部挙げ（表示だけでなく点数・分類の計算も）、可能なら判定の計算を全銘柄で再現して
+変化の有無を数える。再現の正しさは、変更前のコードでの再現値が公開データと一致することで確かめる。
+
+**事例35: 有料APIを止めて手元で再生成した出力は、公開データとしてcommitしない。公開は定時実行に任せる（2026-10-10、`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`）**
+- 株式数の修正後、ONDSの希薄化率が算出されることを確かめるため、`XAI_API_KEY`を空にしてTANUKI VALUATIONをONDSだけ手元で再生成した
+  （FCF一過性費用のAI評価は`transient_found=False`で呼び出し条件に当たらないことを先に確認）。
+- 再生成した出力には、手元の環境・時刻で決まる値（株価・アナリスト情報の取得時点、AI評価の欄の有無）が混ざる。今回はAI由来の欄が前後とも空で、
+  ほかに最大EPS・per_is_forwardが（別の修正の未反映分として）変わっていた。チャット側の判断で出力は元に戻し、10-12の定時実行での反映とした。
+
+**教訓**: 確認のための手元の再生成（特に有料APIを止めた実行）の出力は、差分を報告するだけにとどめ、`git checkout`で元に戻す。公開データは定時実行が作ったものだけをcommitする。
+
 ## チャット側Claudeの役割
 設計判断・検証・調査結果の議論・Claude Code向け指示書の作成を担う。
 リポジトリのファイル変更そのものは行わない（詳細は下記「原則」）。

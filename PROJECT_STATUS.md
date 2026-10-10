@@ -11,6 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（TANUKI SCORE表示値・ROTCE/P/TBV・株式数の単位誤り）**: TANUKI SCOREの表示値の3件（最大EPSの算出元`86db08acf3`・前向きPERのFwd注記`eca2072b45`・
+  FCF列の底上げ表示`c2751316df`）、`[[ROTCE-PTBV-1]]`（TCEの控除項目をLayer2・Layer3に取り込み、`rotce.py`・散布図・EPS Analyzerの推移、参考表示のみ。`d88693784b`〜`2d98487df9`）、
+  `[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`（株式数の千株単位の申告・Layer3のYTD変換・CHECK-59、`b11a4dbd3d`〜`9a8fe655e2`、株式数以外の差分0件）。
+  CHAT_RULES.md事例33〜35を追加。アクティブBACKLOG 21件。`pytest tests/ src/subport/day_trade/test_logic.py` 2129件・audit.py・report_consistency_check.pyとも通過。
+  **次回確認**: 10/12（月）13:00 JSTごろ以降の再生成で、最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTS None）、QBTS・ONDSのFwd注記、
+  ONDSの希薄化率73.8%（critical）・funda 50・グローストラップhigh、ONDS以外の判定値が不変（CLAUDE_CODE_START.mdの「2026-10-10」）
 - **2026-10-09（夕方、Market Pulseの見出しの関係の判定・古い見出しの除外）**: `[[MARKETPULSE-HEADLINES-RELEVANCE-1]]`（方式B: 翻訳と同じ1回の
   Grokの呼び出しで「市況と関係あり」も判定し、falseを画面で折りたたむ。各配信元16件。実装`5cbe0b63c5`・データ`747936b56c`）と、その副作用の
   `[[MARKETPULSE-HEADLINES-AGE-1]]`（画面に出すのは取得時刻から48時間以内だけ。`198faae12f`、10-09は本表20→14件・折りたたみ8→7件）を完了。
