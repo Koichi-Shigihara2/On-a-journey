@@ -64,6 +64,7 @@ from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income, with_derived_intangibles
+from .share_unit_fix import with_share_unit_fix
 
 logger = logging.getLogger(__name__)
 
@@ -1238,6 +1239,9 @@ def build_ticker_store(ticker: str) -> dict | None:
     company_facts = with_derived_net_income(company_facts)
     # [[ROTCE-PTBV-1]]: intangible_assets_excl_goodwill用の派生概念を追加
     company_facts = with_derived_intangibles(company_facts)
+    # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 株式数の千株単位の申告の誤り（同じ期間の1,000倍・100万倍の
+    # 2値は大きい方）。parser.pyと同じ前処理で、記録はparser.pyのshare_unit_fix_log.json
+    company_facts, _ = with_share_unit_fix(company_facts)
 
     concept_defs = load_concept_definitions()
     fields_def = concept_defs.get("fields", {})

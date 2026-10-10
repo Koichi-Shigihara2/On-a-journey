@@ -15,6 +15,7 @@ from .tag_definitions import (
     TAG_CANDIDATES, NET_INCOME_CANDIDATES, with_derived_net_income,
     with_derived_intangibles, INTANGIBLE_RESOLVED_DERIVED,
 )
+from .share_unit_fix import with_share_unit_fix
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
     detect_fiscal_anchor_clusters, _day_of_year, FIXED_REGISTRY_CATEGORIES,
@@ -510,6 +511,10 @@ class SECParser:
         raw_data = with_derived_net_income(raw_data)
         # [[ROTCE-PTBV-1]]: のれんを除く無形資産の派生概念を追加
         raw_data = with_derived_intangibles(raw_data)
+        # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 同じ期間の株式数が書類によって1,000倍・100万倍
+        # ずれていたら大きい方を採る（千株単位での申告の誤り）。置き換えはログに記録する
+        raw_data, _share_unit_fixes = with_share_unit_fix(raw_data)
+        self._save_share_unit_fix_log(ticker, _share_unit_fixes)
         result = {
             "ticker": ticker,
             "cik": raw_data.get("cik", ""),
@@ -3493,6 +3498,20 @@ class SECParser:
             json.dump({"ticker": ticker, "collisions": collisions}, f, ensure_ascii=False, indent=2)
         if collisions:
             print(f"   [{ticker}] 決算期変更境界の年度バケツ競合を検知・記録: {len(collisions)}件 ({path})")
+
+    def _save_share_unit_fix_log(self, ticker: str, fixes: List[Dict[str, Any]]) -> None:
+        """[[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 株式数の単位誤りを置き換えた一覧を記録する
+        （share_unit_fix.py、退けた値と採った値の書類）。置き換えがある銘柄だけ書き、
+        0件になった銘柄は古いファイルを消す（化石ファイルを残さない。98銘柄に空のファイルを作らない）。
+        """
+        path = os.path.join(self.data_dir, ticker, "share_unit_fix_log.json")
+        if not fixes:
+            if os.path.exists(path):
+                os.remove(path)
+            return
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({"ticker": ticker, "fixes": fixes}, f, ensure_ascii=False, indent=2)
 
     def _save_spac_shell_detection_log(self, ticker: str, detections: List[Dict[str, Any]]) -> None:
         """
