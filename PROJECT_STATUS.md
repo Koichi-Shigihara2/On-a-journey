@@ -11,6 +11,17 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-10（夜、SECデータの取得が止まっていた件の修正）**: `[[SEC-FETCH-CACHE-MTIME-CI-1]]`を完了。SEC_Data_Update（CI）はmtimeの24時間キャッシュのため
+  SEC APIを一度も呼んでいなかった（company_facts.jsonは2026-08-30から未更新）。submissionsで新しい提出を検知した銘柄だけcompany_factsを取り直す方式にし、
+  鮮度を`common/sec_data/data/_freshness.json`に記録、CHECK-60（WARN）・System Health [M]で検知（コード`61d0a085d6`）。全銘柄の再取得でREFRESHED 10
+  （ADBE・AVAV・CPRT・DELL・GTLB・INTU・IOT・PEP・RBRK・ZS）・SEC_LAG 5（CDNS・KO・RMBS・V・XOM、SEC側、`[[SEC-COMPANYFACTS-API-LAG-1]]`）、
+  リクエスト204回・150.4秒（データ`e2a629fb58`）。IOTの黒字化でstonks_siloをfalseに、SEC_LAG 5件を確認済みに（config`fa9dbb7739`）。
+  BACKLOGにSTONKS SILOの表示確認の9件・範囲外の2件を登録、アクティブBACKLOG 33件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2163件・audit.py・report_consistency_check.py（NG=0）とも通過。
+  **次回確認**: (1) 10-11（日）12:00 UTCのSEC_Data_Updateのログ（`gh run view --log`）で、全銘柄に「submissions取得完了」が出て、「SEC API取得中」が
+  新しい提出のあった銘柄（とSEC_LAGの5銘柄）だけであること、最後の行の「鮮度:」の内訳と`_freshness.json`のgenerated_atが更新されてcommitされていること。
+  GitHubのscheduleは数時間遅れることがある (2) 次のStonks_Silo_Updateの後、STONKS SILOの一覧（results.json）からIOTが外れていること
+  (3) 次のSystem Health Checkのログの`[M] SecFreshness:`が✅（確認済み5件を表示）で、終了コードが[M]のせいで2にならないこと
 - **2026-10-10（TANUKI SCORE表示値・ROTCE/P/TBV・株式数の単位誤り）**: TANUKI SCOREの表示値の3件（最大EPSの算出元`86db08acf3`・前向きPERのFwd注記`eca2072b45`・
   FCF列の底上げ表示`c2751316df`）、`[[ROTCE-PTBV-1]]`（TCEの控除項目をLayer2・Layer3に取り込み、`rotce.py`・散布図・EPS Analyzerの推移、参考表示のみ。`d88693784b`〜`2d98487df9`）、
   `[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`（株式数の千株単位の申告・Layer3のYTD変換・CHECK-59、`b11a4dbd3d`〜`9a8fe655e2`、株式数以外の差分0件）。

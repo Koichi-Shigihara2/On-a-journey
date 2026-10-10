@@ -1861,67 +1861,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ## 優先度：高
 
-### [SEC-FETCH-CACHE-MTIME-CI-1] SEC_Data_Update（CI）がSEC APIを一度も呼ばず、commit済みのcompany_facts.json・submissions.jsonを読み直すだけになっている（checkout時のmtimeで24時間キャッシュが常に有効と判定される）
-**優先度:** 高
-**分類:** データ取得 / common/sec_data（`fetcher.py`のキャッシュ判定）・`.github/workflows/SEC_Data_Update.yml`
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）。同日の読み取り調査（基準`f86617f38f`、実行ログ・git log・EDGARの公開データ）で仮説を確定
-
-#### 内容（観測した事実）
-- `common/sec_data/fetcher.py`の`fetch_company_facts()`（L113-116）は`os.path.getmtime`で24時間キャッシュを判定する。`fetch_submissions()`（L242-246）、
-  旧CIKの`_fetch_legacy_company_facts()`（L175-177）・`_fetch_legacy_submissions()`（L356-358）も同じ方式。`update.py`（L48・L56）は`force_refresh`を渡さない。
-  キャッシュ判定は最初の版（`00000e3172`、2026-04-07）からある
-- gitはファイルのmtimeを記録しないため、`actions/checkout`後のファイルのmtimeはチェックアウトの時刻になる。CIでは常に「24時間以内」と判定される
-- 実行ログ（`gh run view --log`）で、取得できた11回（2026-07-26〜10-04。それより前はログの保存期間切れでHTTP 410）すべてで、全銘柄が「キャッシュから読み込み」、
-  「SEC API取得中」は0件:
-  10-04 `37215153615`・09-27 `36331055289`・09-24 `35985080142`（workflow_dispatch）・09-20 `35518006804`（failure）・09-13 `34764641080`・09-06 `34039199103` は102/102、
-  08-30 `33319837088`・08-23 `32638688349`（failure）・08-16 `31946370185`（failure）・08-09 `31313013997`・08-02 `30748550607` は105/105
-- botのcommitがcompany_facts.jsonに触れたのは、全期間で新規追加の93ファイルだけ（2026-05-09〜06-02、新しく登録した銘柄の初回取得）。既存ファイルの書き換えは0件。
-  submissions.jsonに触れたbotのcommitは0件。company_facts.jsonの更新はすべて手動のローカル実行（mtimeが古いのでAPIを呼ぶ）で、最後は`68b172b3ee`（2026-08-30）。
-  それ以降は銘柄の削除のcommitだけ
-- 手元の98銘柄のcompany_facts.jsonの`filed`の最大値は2026-08-28（WMT）
-- botの週次commit（例 `54ba8ad55a`、10-05）は`ttm/`・`normalized/`・`docs/common/sec_data/normalized/`の各102ファイルを書き換える（`generated_at`等）。commitの日付やgenerated_atでは元データの鮮度を判断できない
-- 2026-08-28より後に10-Q・10-Kを提出し、EDGARのcompanyfacts APIには入っているのに手元に無い銘柄（2026-10-10にdata.sec.govのsubmissions・companyfactsと照合。★は保有銘柄）:
-  ★ADBE（10-Q 09-22、期末08-28）・AVAV（10-Q 09-10、期末08-01）・CPRT（10-K 09-29、期末07-31）・DELL（10-Q 09-08、期末07-31）・GTLB（10-Q 09-02、期末07-31）・
-  INTU（10-K 09-09、期末07-31）・IOT（10-Q 09-08、期末08-01）・PEP（10-Q 10-08、期末09-05）・RBRK（10-Q 09-01、期末07-31）・ZS（10-K 09-03、期末07-31）の10銘柄
-- このほか5銘柄（CDNS・KO・RMBS・V・XOM）はQ2の10-Qが手元に無いが、原因はSEC側（companyfacts APIに入っていない）で、本件とは別。[[SEC-COMPANYFACTS-API-LAG-1]]
-- SECのデータが古いことを検知する仕組みが無い。System Healthの[J]・SEC_Data_Updateの成否はワークフローのconclusionだけを見るため、毎週successになる
-
-#### 実害
-- SECの一次データ（Layer1）から作る出力（annual/quarterly・normalized・Layer3・ttm）と、それを使うTANUKI VALUATION・STONKS SILO・HypeCore・TANUKI TAIL・ROTCEが、
-  2026-08-30の手動実行の時点で止まっている。例: ttmの最新期（`ttm_end`）はGTLB・ZS・RBRK・AVAVが2026-04-30、ADBEが05-29、DELLが05-01、IOTが05-02
-- EPS Analyzerは`extract_key_facts.py::fetch_company_facts()`がキャッシュを使わずにSEC APIを直接呼ぶため最新（GTLB 2026-07-31・ADBE 2026-08-28・DELL 2026-07-31の期まで、
-  `9e6dfac131` 10-04）。同じ銘柄で、EPS AnalyzerとTANUKI VALUATION等の最新期が食い違う
-- 12月決算銘柄のQ3（10月下旬〜11月上旬の提出）も反映されない
-- 08-16・08-23の失敗（原因はyaml・pandasが入っていないこと、`3637139f20`で修正）とは別の問題。ただし、この2回が成功していても更新はされなかった
-  （どちらも全105銘柄がキャッシュからの読み込み）。08-30のcommit本文の「ゲートの失敗で反映されていなかった」は、原因の一部しか言っていない
-
-#### 同じmtime方式のキャッシュ（common/・src/・discover/・scripts/の全体、2026-10-10）
-- mtimeで判定しているのは`common/sec_data/fetcher.py`の上の4か所だけ
-- S&P500の銘柄リスト（`common/market_data/fetcher.py::get_sp500_constituents()`、`src/market/market_pulse/breadth_calculator.py`）は、ファイルの中の`fetched_at`で判定するのでCIでも正しく期限切れになる
-
-#### 関連
-- [[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]: 原因は別（3つの生成パスの併存）。ただし同項目の2026-09-12・09-19の再確認の「鮮度に問題なし」は、ttm/のcommitの日付による判断で、元データ（company_facts.json）は古いままだった。
-  同項目の2026-10-10の追記で原因未確認だった15銘柄の内訳（本件10・[[SEC-COMPANYFACTS-API-LAG-1]] 5）を同項目に追記した
-
-#### 直し方の候補（未決定）
-SECのアクセスの目安は10リクエスト/秒以下・User-Agent必須。`fetcher.py`は1リクエストごとに0.15秒待つ（約6.7リクエスト/秒）。
-週1回の実行で102銘柄×（companyfacts＋submissions）＝約204リクエスト（旧CIKの銘柄は追加あり）。
-1. CIでは`force_refresh`にする（`update.py`に引数か環境変数を足し、ワークフローで指定）
-   - 長所: 変更が小さく、ローカルの連続実行は今のキャッシュのまま
-   - 短所: 毎週全銘柄を取り直す（約204リクエスト、手元のcompany_facts.jsonは1銘柄0.9〜12.4MB・中央値6.2MB・計539MBで、実行時間が延びる）。内容が変われば大きなファイルの差分がcommitされる
-2. mtimeではなく、取得した時刻を記録して判定する（company_facts.jsonは生のレスポンスのまま残し、銘柄ごとの別ファイルに取得時刻を書く）
-   - 長所: ローカルとCIで同じ動きになる
-   - 短所: 週1回の実行では常に期限切れなので、リクエスト数は1と同じ。記録ファイルもcommitが要る
-3. submissions（小さい）を毎回取り直し、新しい10-Q・10-Kがあった銘柄だけcompanyfactsを取り直す
-   - 長所: リクエストは約102＋提出があった銘柄の数で、大きなファイルのダウンロードが減る
-   - 短所: 判定のロジックが増える。submissionsには提出があるのにcompanyfactsに入らない銘柄（[[SEC-COMPANYFACTS-API-LAG-1]]）があるので、filedの比較で扱う必要がある
-4. キャッシュを既定で使わない（常に取得し、ローカルでだけ明示的にキャッシュを使う）
-   - 長所: CIで取り忘れる余地が無い
-   - 短所: ローカルで繰り返し実行すると毎回APIを呼ぶ。リクエスト数は1と同じ
-5. （1〜4のどれとも組み合わせる）検知: 手元のcompany_facts.jsonの最大filedと、EDGARのsubmissionsの最新の10-Q・10-Kの提出日を比べる検査を足す
-   - 長所: 今回のような止まり方を、ワークフローがsuccessでも見つけられる
-   - 短所: 検査がネットワークに依存する（report_consistency_check.pyは`--include-yfinance-checks`で既に外部に問い合わせている）
+（[[SEC-FETCH-CACHE-MTIME-CI-1]]は2026-10-10、submissionsで新しい提出を検知してcompany_factsを取り直す方式に変更して完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
 
@@ -2373,6 +2313,7 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 - 10銘柄（ADBE・AVAV・CPRT・DELL・GTLB・INTU・IOT・PEP・RBRK・ZS）: 新しい10-Q・10-KはEDGARのcompanyfactsに入っているが、SEC_Data_UpdateがSEC APIを呼んでいないため手元に無い → [[SEC-FETCH-CACHE-MTIME-CI-1]]
 - 5銘柄（CDNS・KO・RMBS・V・XOM）: Q2の10-QがEDGARのcompanyfacts APIに入っていない → [[SEC-COMPANYFACTS-API-LAG-1]]
 また、2026-09-12・09-19の再確認の「鮮度に問題なし」は`ttm/`のcommitの日付（botが毎週全102ファイルを書き換える）による判断で、元のcompany_facts.jsonは2026-08-30から更新されていなかった。
+- **2026-10-10 解消（10銘柄）**: [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正（`61d0a085d6`）と全銘柄の再取得（`e2a629fb58`）で、上の10銘柄の`ttm_end`が進んだ（ADBE 2026-08-28・AVAV 2026-08-01・CPRT/DELL/GTLB/INTU/RBRK/ZS 2026-07-31・IOT 2026-08-01・PEP 2026-09-05）。残りはSEC側の5銘柄（CDNS・KO・RMBS・V・XOM、[[SEC-COMPANYFACTS-API-LAG-1]]）だけ
 
 ---
 
@@ -2954,6 +2895,11 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 2. 欠けている書類だけ、別の経路（その書類のXBRLのインスタンス、XBRL frames API等）から取り込む。取り込み方が2系統になる
 3. 検知: submissionsにある10-Q・10-Kが、companyfactsに一定の日数入らないときに知らせる（[[SEC-FETCH-CACHE-MTIME-CI-1]]の候補5と同じ検査で見つけられる）
 
+#### 追記（2026-10-10、[[SEC-FETCH-CACHE-MTIME-CI-1]]の完了時）
+- 候補3の検知は実装済み: update.pyが毎週submissionsと照らし、取り直しても入らない提出をSEC_LAGとして`common/sec_data/data/_freshness.json`に記録する（CHECK-60はSEC_LAG 14日超でWARN、System Health [M]は確認済みでないSEC_LAG 30日超でCRITICAL）。SEC_LAGの銘柄は毎週company_factsを取り直すので、SEC側で入れば自動でREFRESHEDになる
+- 5件のaccnを`config/warn_acknowledged.json`（WARN-60・銘柄＋accn、確認日2026-10-10）で確認済みにした（`fa9dbb7739`）。[M]の詳細には「確認済み」として表示され続ける。同じ銘柄の次の提出（Q3の10-Q等）が入らなければ、別のaccnとして再び警告される
+- 解消の確認: `_freshness.json`で5銘柄がREFRESHEDになったら、warn_acknowledged.jsonの5件を消して本項目をBACKLOG_DONE.mdへ移す
+
 ---
 
 ### [STONKS-DATA-ASOF-MISSING-1] STONKS SILOに財務データの基準日の表示がなく、ヒーローの「UPDATED」（株価の更新時刻）だけで新しく見える
@@ -3422,6 +3368,42 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 #### 直し方の候補（未決定）
 - tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
 - 404を想定内として静かに扱う（コンソールのエラーを出さない）
+
+---
+
+### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
+**優先度:** 低
+**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
+- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
+  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
+- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
+
+#### 直し方の候補（未決定）
+- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
+- 失敗が一定の割合を超えたときだけexit 1にする
+
+---
+
+### [SEC-UPDATE-SUMMARY-HEADER-ORDER-1] SEC_Data_UpdateのStep Summaryで、Revenue品質チェックの表の見出しが行より後に書かれる
+**優先度:** 低
+**分類:** 表示（GitHub ActionsのStep Summary） / common/sec_data（`update.py`）
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `update.py`は銘柄ごとの処理の中でRevenue品質（WARN/ISSUE）の行を`GITHUB_STEP_SUMMARY`に追記し、全銘柄の処理の後に表の見出し（「## Revenue品質チェック…」と列名の行）を追記する。
+  コメントは「先頭に書く」だが、実際は追記なので見出しが行より後になり、Markdownの表として表示されない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]で足した鮮度の節は、その後に追記している（この順序の問題には影響しない）
+
+#### 直し方の候補（未決定）
+- 行をメモリに貯めて、最後に見出しと一緒に書く
+- 最初の行を書く前に見出しを書く
 
 ---
 

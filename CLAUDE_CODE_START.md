@@ -211,6 +211,26 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
   4. ONDS以外の判定値（category・tanuki_score・funda/timing・matrix）が変わっていないこと（前日のlatest.jsonとの比較。株価の変化による分は除いて読む）
   5. 確認後、`[[TANUKI-MAXEPS-NI-SOURCE-1]]`・`[[TANUKISCORE-PER-FORWARD-MIX-1]]`・`[[TANUKISCORE-FCF-COL-FLOOR-1]]`をBACKLOG_DONE.mdへ移す
 
+**2026-10-10（夜）SECデータの取得が止まっていた件（`[[SEC-FETCH-CACHE-MTIME-CI-1]]`、BACKLOG_DONE.mdへ）とSTONKS SILOの表示確認の登録**
+- 登録: STONKS SILOの表示確認（チャット側）の9件（`9502bbad24`・`3a2eb575e1`・`3d1fa2cd5e`）。読み取り調査で、SEC_Data_UpdateがCIで一度もSEC APIを呼んでいないことを確定
+  （fetcher.pyのmtimeの24時間キャッシュ×actions/checkout。botはcompany_facts.jsonを新規追加しかしたことがない。company_facts.jsonは2026-08-30の手動実行から未更新）
+- 修正（Koichi決定: 候補3＋5）: submissionsを毎回取り直し、手元の最大filed以降にcompany_factsに無い10-K/10-Q(/A)がある銘柄だけ取り直す。
+  `_freshness.json`（分類 OK_NO_NEW／REFRESHED／SEC_LAG／FETCH_FAILED）、CHECK-60（WARN）、System Health `[M]`。コード`61d0a085d6`・データ`e2a629fb58`・config`fa9dbb7739`
+  - 全銘柄の再取得: REFRESHED 10（GTLBのttm_end 2026-04-30→07-31など）、SEC_LAG 5（CDNS・KO・RMBS・V・XOM。companyfacts API自体に未反映、`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+  - SEC_LAGの既知の提出はwarn_acknowledged.json（`"check": "WARN-60"`・`"ticker"`・`"match": accn`）で確認済みにできる（[M]のCRITICALとCHECK-60の未確認から外れる）
+  - IOTが黒字化してstonks_siloをfalseに（案C、例外なし）
+  - update.pyに`--dry-run`（submissionsだけ取得し、取り直す銘柄を表示。書き込みなし）。銘柄を絞った実行では`_freshness.json`のgenerated_atは変わらない
+- 範囲外として登録: `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`（低）。BACKLOG.mdのアクティブは33件（`^### [`の機械カウント）
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2163件・audit.py exit 0・report_consistency_check.py NG=0（WARN 127件）
+- **残っている確認**（PROJECT_STATUS.mdの同日の「次回確認」）:
+  1. 10-11（日）12:00 UTCのSEC_Data_Update（数時間遅れることがある）: ログで全銘柄の「submissions取得完了」、「SEC API取得中」が新しい提出のあった銘柄とSEC_LAGの5銘柄だけ、
+     最後の「鮮度:」の行、`_freshness.json`のgenerated_atの更新がcommitされていること
+  2. 次のStonks_Silo_Updateの後、results.jsonからIOTが外れていること
+  3. 次のSystem Health Checkで`[M] SecFreshness:`が✅（確認済み5件を表示）
+- 次の候補: STONKS SILOの表示の項目（`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`・`[[STONKS-DATA-ASOF-MISSING-1]]`等、中）、`[[SEC-COMPANYFACTS-API-LAG-1]]`の経過観察
+  （5銘柄がREFRESHEDになったらwarn_acknowledged.jsonの5件を消して移設）。10/12（月）の上の「残っている確認」（TANUKI SCORE表示値）は、今回SECデータが更新された
+  10銘柄（DELLを含む）の値も動くので、比較では株価の変化に加えて財務の更新による変化を分けて読む
+
 **2026-10-06 実装C（`feature/mp-impl-c`）を統合**
 - `6a00501e94`の上でマージ（`31812675c0`。`market_data.json`は`merge=ours`でkaihatsu側のまま、`backfill_implc.py`は実行していない＝最新エントリに実装Cの要素なし）。
   daily/のES=F・NQ=F・NIY=Fは09-30まで、空きは3営業日（10-01・10-02・10-05）で手順の5営業日以内のため埋めていない（今夜の取得の抜け補完で埋まる想定）
