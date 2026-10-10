@@ -2759,6 +2759,24 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 - 参考表示のみ。TANUKI SCOREの判定（category・funda/timing・tanuki_score・matrix・トラップ判定）には入れない。理論P/TBVは実装しない
 - 銘柄間比較はTANUKI SCOREのROTCE×P/TBV散布図、単体の割安・割高はその銘柄自身の過去の四半期分布との比較（パーセンタイル）
 
+#### 対応（2026-10-10）
+- STEP1 `d88693784b`: Layer2（parser.py、bsに4項目＋bs_tag_sources）・Layer3（sec_concept_definitions.json）に
+  goodwill・intangible_assets_excl_goodwill・preferred_stock・minority_interest。既存フィールドの値の差分0件（Layer2 4,486ファイル・Layer3 98銘柄×32フィールド）
+- STEP2 `b9ccaae898`: `common/sec_data/rotce.py`、出力`docs/common/sec_data/rotce/`、Market_Data_Daily_Update.ymlで日次に再計算
+- STEP3 `0945814072`: TANUKI SCOREの散布図、EPS Analyzer個別ページの推移
+- 指示書からの追加判断（報告済み）: ①EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限
+  （PEP〈EXCL 500M／有限1,219M＋無期限13,847M〉・AVAV・TSLA・ADSKの一部の期末日）、②優先株がメザニンと同額の期末日は控除しない（CELH）、
+  ③株式数の外れ値（中央値の20倍超、CIX・ONDSの千株単位の申告）は使わない、④その成分を初めて申告した期末日より前は0
+- 2026-10-10時点: 98銘柄中65銘柄で算出（TANUKIの96銘柄では63、年度末の値で補ったのは8）。TCE≤0が29、成分が取れない4、
+  目安は自社比割安7・中立34・自社比割高9・判定なし48
+
+#### 未了・観察（未対応）
+- KOは無形資産の大半が`IndefiniteLivedTrademarks`（12.5B）で、対象タグに無いため2024年以降component_missing（2023年以前の行は無形資産を過小に引いている）
+- AVAVは純資産が非支配持分込みのタグで、MinorityInterestの申告が途中で止まっている→component_missing。PLTRはのれんの申告が2022年末だけ→component_missing
+- Vの優先株は`PreferredStockValueOutstanding`（528M）で、対象タグ（PreferredStockValue）に無い（VはTCE≤0のため結果には影響なし）
+- 目安は赤字銘柄にも付く（SOUN・KULRは自社比割安、ROTCEがマイナス同士の比較）。赤字銘柄を除くかはチャット側の判断待ち
+- 優先配当は純利益から引いていない
+
 ---
 
 ## 優先度：低（アイデア段階）
