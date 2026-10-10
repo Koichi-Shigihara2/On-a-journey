@@ -138,6 +138,7 @@
     .s1 { color: var(--grn); } .s2 { color: var(--cyn); } .s3 { color: var(--amb); } .s4 { color: var(--red); }
     .fcf-ok { color: var(--grn); } .fcf-ng { color: var(--mut); }
     .tbl-note { font-family: var(--mono); font-size: 10px; color: var(--mut); margin-top: 8px; letter-spacing: .04em; }
+    .per-fwd { font-size: 9px; color: var(--mut); margin-left: 3px; letter-spacing: 0; cursor: help; }
 
     /* Loading */
     .spin { display: inline-block; width: 11px; height: 11px; border: 2px solid var(--bdr); border-top-color: var(--acc); border-radius: 50%; animation: spin .8s linear infinite; margin-right: 8px; }
@@ -366,7 +367,7 @@ function renderDetailTable() {
       <td class="num">${pct(s.epsYoy)}</td>
       <td style="text-align:center">${fcfDisp}</td>
       <td class="num">${pct(s.upside)}</td>
-      <td class="num" style="font-family:var(--mono)">${s.per != null ? s.per.toFixed(1) + 'x' : '<span class="neu">—</span>'}</td>
+      <td class="num" style="font-family:var(--mono)">${s.per != null ? s.per.toFixed(1) + 'x' + (s.perIsFwd ? '<span class="per-fwd" title="trailing PE がないため予想PER">Fwd</span>' : '') : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.maxEpsRel === 'LOW' ? 'opacity:.45' : ''}">${s.maxEpsPer != null ? s.maxEpsPer.toFixed(1) + 'x' : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.perGap != null && s.perGap > 0 ? 'color:#f97316' : ''}">${s.perGap != null ? (s.perGap > 0 ? '+' : '') + s.perGap.toFixed(1) : '<span class="neu">—</span>'}</td>
       <td>${stageLabel(s.stage, s.stageL)}</td>
@@ -396,7 +397,8 @@ function renderDetailTable() {
       </table>
     </div>
     <div class="tbl-note">
-      ファンダ/タイミング: 0–100pt · 🟢75+ 🟡50+ ⚪25+ · 売上成長/EPS成長/TANUKI乖離は最新期
+      ファンダ/タイミング: 0–100pt · 🟢75+ 🟡50+ ⚪25+ · 売上成長/EPS成長/TANUKI乖離は最新期<br>
+      Fwd = 実績PERがなく予想PERを表示（乖離は算出しない）
     </div>`;
 }
 
@@ -501,7 +503,10 @@ function renderDetailTable() {
     const ps         = tk?.components?.ps              ?? null;
     const maxEpsPer  = tk?.components?.max_eps_per     ?? null;
     const maxEpsRel  = tk?.components?.max_eps_reliability ?? 'LOW';
-    const perGap     = (per != null && maxEpsPer != null) ? parseFloat((per - maxEpsPer).toFixed(1)) : null;
+    // [[TANUKISCORE-PER-FORWARD-MIX-1]]: perがtrailing PEの代わりの予想PERなら、GAAPの最大EPS PERと
+    // 比べる意味がないため乖離は算出しない（表示は「—」）
+    const perIsFwd   = tk?.components?.per_is_forward ?? false;
+    const perGap     = (per != null && maxEpsPer != null && !perIsFwd) ? parseFloat((per - maxEpsPer).toFixed(1)) : null;
 
     const dupont      = tk?.dupont ?? null;
     const growthRate  = tk?.growth?.rate ?? null;
@@ -518,7 +523,7 @@ function renderDetailTable() {
 
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
-             matrixInfo, riceVal, riceAvailable, roe, per, peg, ps, maxEpsPer, maxEpsRel, perGap, dupont,
+             matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, perGap, dupont,
              growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });

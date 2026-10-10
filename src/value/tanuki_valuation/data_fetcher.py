@@ -723,10 +723,10 @@ class TanukiDataFetcher:
                 _trailing_pe = attrs.get("trailing_pe")
                 _forward_pe  = attrs.get("forward_pe")
                 per = _trailing_pe or _forward_pe or None
-                per_is_forward = (
-                    (_trailing_pe is None or _trailing_pe <= 0)
-                    and _forward_pe is not None and _forward_pe > 0
-                )
+                # [[TANUKISCORE-PER-FORWARD-MIX-1]]: trailing_peが無くforward_peを使ったときは
+                # forward_peの正負にかかわらずtrue（以前はforward_pe>0のときだけで、
+                # QBTS〈forward_pe -41.8〉はper=forward_peなのにfalseだった）
+                per_is_forward = (not _trailing_pe) and bool(_forward_pe)
                 if per is not None and per > 0:
                     _pe_src = "Fwd" if per_is_forward else "Trailing"
                     print(f"   [{ticker}] market_data PER({_pe_src}): {per:.1f}")

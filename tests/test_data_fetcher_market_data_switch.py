@@ -113,6 +113,23 @@ class TestAttributesFromMarketData:
         assert result["per"] == 18.0  # forward_peにフォールバック
         assert result["per_is_forward"] is True
 
+    def test_negative_forward_pe_used_is_flagged_forward(self, fetcher, monkeypatch):
+        """[[TANUKISCORE-PER-FORWARD-MIX-1]]: trailing_peが無く負のforward_peを使った場合も
+        per_is_forward=true（QBTS: per=-41.8なのにfalseだった）"""
+        attrs = dict(_FULL_ATTRS, trailing_pe=None, forward_pe=-41.758244)
+        _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=attrs)
+        result = fetcher.get_financials("XYZ")
+        assert result["per"] == -41.758244
+        assert result["per_is_forward"] is True
+
+    def test_trailing_pe_used_is_not_flagged_forward(self, fetcher, monkeypatch):
+        """trailing_peを使ったときはforward_peの有無にかかわらずfalse"""
+        attrs = dict(_FULL_ATTRS, trailing_pe=-12.5, forward_pe=18.0)
+        _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=attrs)
+        result = fetcher.get_financials("XYZ")
+        assert result["per"] == -12.5
+        assert result["per_is_forward"] is False
+
     def test_missing_attributes_falls_back_to_neutral_defaults(self, fetcher, monkeypatch):
         """attributes/未取得（reader.get_attributes()がNone）の場合、
         beta/sector/per等が全て中立デフォルトに倒れる（既存except節と同じ値）"""
