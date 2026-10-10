@@ -1062,7 +1062,7 @@ async function renderRotcePanel(tickers) {
     grid += `<line x1="${L}" y1="${y}" x2="${W - R}" y2="${y}" stroke="#1b2540"/>`
           + `<text x="${L - 5}" y="${y + 3}" fill="#7a92b0" font-size="10" text-anchor="end">${v}x</text>`;
   });
-  grid += `<text x="${(L + W - R) / 2}" y="${H - 6}" fill="#7a92b0" font-size="11" text-anchor="middle">ROTCE（TTM純利益 ÷ 有形自己資本）</text>`
+  grid += `<text x="${(L + W - R) / 2}" y="${H - 6}" fill="#7a92b0" font-size="11" text-anchor="middle">ROTCE（直近の四半期の年率）</text>`
         + `<text x="12" y="${(T + H - B) / 2}" fill="#7a92b0" font-size="11" text-anchor="middle" transform="rotate(-90 12 ${(T + H - B) / 2})">P/TBV（対数）</text>`;
 
   const dots = pts.map(([tk, r]) => {
@@ -1107,7 +1107,7 @@ async function renderRotcePanel(tickers) {
     <div style="padding:10px 14px">
       <p style="font-size:11px;color:var(--mut);margin:0 0 8px;line-height:1.6">
         有形自己資本（TCE）＝純資産−優先株−のれん−無形資産（純資産が非支配持分込みのときは非支配持分も引く）。
-        ROTCE＝TTM純利益÷TCE（期首・期末の平均）、P/TBV＝時価総額（最新終値）÷TCE。
+        ROTCE＝直近の四半期の普通株主帰属純利益（希薄化後。タグが無い銘柄は純利益）×4÷TCE（前の四半期末と当四半期末の平均）、P/TBV＝時価総額（最新終値）÷TCE。
         色は自社の過去の四半期との比較（P/TBVが下位25%以内かつROTCEが中央以上→自社比割安、P/TBVが上位25%以内かつROTCEが中央以下→自社比割高、ROTCEがマイナス（赤字）の銘柄と、比較できる四半期が8期未満の銘柄は判定なし）。
         * は期末日に無い控除項目を12か月以内の年度末の値で補った銘柄（${nFilled}）。◂▸ はROTCEが表示範囲（−100%〜+200%）の外。点にカーソルを合わせると値を表示。
       </p>

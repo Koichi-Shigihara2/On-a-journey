@@ -10,15 +10,20 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
   TCE   = stockholders_equity
           − minority_interest（純資産が非支配持分込みのタグの期末日だけ）
           − preferred_stock − goodwill − intangible_assets_excl_goodwill
-  ROTCE = TTM純利益 ÷ 期首・期末のTCEの平均
-          （TTM純利益はLayer3の四半期純利益〈暗黙のQ4を含む〉を連続4期足す。
-          期首〈4四半期前〉のTCEが無い・0以下なら期末のTCEだけで計算し、rotce_basis="end_only"）
+  ROTCE = その四半期の普通株主帰属純利益 × 4 ÷（前の四半期末と当四半期末のTCEの平均）
+          （[[ROTCE-QUARTERLY-ANNUALIZED-1]]、2026-10-11。会社発表のROTCE〈SOFI等〉と同じ四半期の年率。
+          分子はcompany_factsのNetIncomeLossAvailableToCommonStockholdersDiluted→Basicの単独四半期
+          〈暗黙のQ4を含む〉、無い四半期はLayer3の純利益〈net_income_source="net_income"〉。
+          前の四半期末〈70〜120日前の純資産の期末日〉のTCEが無い・0以下なら当四半期末のTCEだけで計算し、
+          rotce_basis="quarter_end_only"。両方そろえば rotce_basis="quarter_average"）
+  ROTCE（参考、TTM）= rotce_ttm: Layer3の四半期純利益を連続4期足したTTM純利益 ÷（4四半期前と当四半期末のTCEの平均）
+          （2026-10-10の当初の定義。4四半期前のTCEが無い・0以下なら当四半期末だけ、rotce_ttm_basis="end_only"）
   P/TBV = 時価総額 ÷ 期末のTCE
           四半期: 期末日（または直前の取引日）の終値 × その期の希薄化後株式数
           直近:   最新の終値 × 最新四半期の希薄化後株式数（TCEは最新四半期）
   成分を初めて申告した期末日より前の期は0と仮定し、assumed_zeroを付ける。自社比の母数から外すのは、
   無形資産を0と仮定した期だけ（ASSUMED_ZERO_EXCLUDED_FIELDS、excluded_from_percentile=true）。
-  優先配当は純利益から引いていない（優先株が残る銘柄はVSTなど少数）。
+  優先配当は、普通株主帰属純利益のタグがある四半期は引かれている。タグが無く純利益で代用した四半期は引いていない。
 
 データ: Layer3（layer3_builder.build_ticker_store）・日次株価（common/market_data/daily/）・
 分割履歴（config/split_history.yaml、株式数の未調整の値を split_adjust.py で換算）。
@@ -27,6 +32,8 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
 直近値が過去の四半期分布の何パーセンタイルにあるかを出し、目安（自社比割安・中立・自社比割高）を付ける。
 
 出力: docs/common/sec_data/rotce/{TICKER}.json と _summary.json（TANUKI SCOREの散布図用）。
+会社発表のROTCE: config/company_reported_metrics.jsonに登録した銘柄は、{TICKER}.jsonのcompany_reportedに
+会社の値・こちらの計算値・差・ガイダンス・長期目標と、直近の四半期末が登録済みか（latest_registered）を書く。
 実行: python common/sec_data/rotce.py [TICKER ...]（引数なしは common/sec_data/config.py の全銘柄）
 """
 import contextlib
@@ -40,7 +47,10 @@ from typing import Any, Dict, List, Optional
 if __name__ == "__main__":
     sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
 
-from common.sec_data.layer3_builder import build_ticker_store, get_field_entries, load_company_facts
+from common.sec_data.layer3_builder import (
+    build_ticker_store, extract_field_raw_entries, get_field_entries, load_company_facts,
+)
+from common.sec_data.q4_implied import build_q4_implied_entries
 from common.sec_data.split_adjust import adjust_share_points, load_split_history
 from common.sec_data.tag_definitions import (
     INTANGIBLE_EXCL_TAG, INTANGIBLE_FINITE_TAG, INTANGIBLE_INCL_GOODWILL_TAG, INTANGIBLE_INDEFINITE_TAG,
@@ -49,6 +59,9 @@ from common.sec_data.tag_definitions import (
 
 REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 OUTPUT_DIR = os.path.join(REPO_ROOT, "docs", "common", "sec_data", "rotce")
+# 会社発表のROTCE（出典付きの登録、[[ROTCE-QUARTERLY-ANNUALIZED-1]]）。個別ページに並べて出し、CHECK-61が登録漏れを見る
+COMPANY_REPORTED_PATH = os.path.join(REPO_ROOT, "config", "company_reported_metrics.json")
+COMPANY_REPORTED_METRIC = "ROTCE"
 
 # 自社の過去との比較（しきい値はパーセンタイル、0〜100）
 MIN_QUARTERS_FOR_PERCENTILE = 8
@@ -74,6 +87,12 @@ SHARES_OUTLIER_RATIO = 20.0
 SE_TAG = "StockholdersEquity"
 SE_NCI_TAG = "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"
 WEIGHTED_DILUTED_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
+# ROTCEの分子（普通株主帰属純利益）。希薄化後を優先（会社発表のROTCEは希薄化後の調整後純利益）
+COMMON_NI_DILUTED_TAG = "NetIncomeLossAvailableToCommonStockholdersDiluted"
+COMMON_NI_BASIC_TAG = "NetIncomeLossAvailableToCommonStockholdersBasic"
+NI_SOURCE_BY_TAG = {COMMON_NI_DILUTED_TAG: "common_diluted", COMMON_NI_BASIC_TAG: "common_basic"}
+NI_SOURCE_FALLBACK = "net_income"
+ANNUALIZE_QUARTERS = 4
 DEDUCTION_FIELDS = ("goodwill", "intangible_assets_excl_goodwill", "preferred_stock")
 TAG_BY_FIELD = {"goodwill": "Goodwill", "preferred_stock": "PreferredStockValue",
                 "minority_interest": "MinorityInterest"}
@@ -133,6 +152,33 @@ def _quarterly_flow(store: dict, field: str) -> Dict[str, dict]:
             continue
         out[e["end"]] = e
     return dict(sorted(out.items()))
+
+
+def _common_ni_quarterly(company_facts: Optional[dict], ticker: str = "") -> Dict[str, dict]:
+    """普通株主帰属純利益の単独四半期（暗黙のQ4を含む）を期末日→エントリにする
+
+    Layer3のflowと同じ抽出（希薄化後→基本の候補を期末日ごとに優先順位でマージ、YTD→単独四半期）と
+    Q4の逆算（年次−Q1〜Q3）を使う。各エントリのsource_tagに採用したタグが入る。
+    """
+    if not company_facts:
+        return {}
+    field_def = {"category": "flow", "unit": "USD", "candidates": [COMMON_NI_DILUTED_TAG, COMMON_NI_BASIC_TAG]}
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        entries, _ = extract_field_raw_entries(company_facts, field_def, "net_income", ticker)
+        annual = [e for e in entries if e.get("is_annual")]
+        quarterly = [e for e in entries if not e.get("is_annual") and not e.get("is_ytd")]
+        q4 = build_q4_implied_entries(annual, quarterly, "net_income")
+    out = {e["end"]: e for e in quarterly if e.get("val") is not None}
+    for e in q4:
+        if e["end"] not in out and e.get("val") is not None:
+            out[e["end"]] = e
+    return dict(sorted(out.items()))
+
+
+def _previous_quarter_end(equity_ends: List[str], q: str) -> Optional[str]:
+    """qの前の四半期末（純資産の期末日のうち、qの70〜120日前で最も新しいもの）"""
+    prev = [e for e in equity_ends if e < q and QUARTER_GAP_DAYS[0] <= _days(e, q) <= QUARTER_GAP_DAYS[1]]
+    return max(prev) if prev else None
 
 
 def component_at(by_end: Dict[str, dict], q: str, fy_ends: frozenset = frozenset(),
@@ -389,12 +435,21 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
             tce_cache[q] = tce_at(series, q, intangible_tags, unavailable, fy_ends, first_reported)
         return tce_cache[q]
 
-    for i in range(3, len(ends)):
-        window = ends[i - 3:i + 1]
-        if not all(QUARTER_GAP_DAYS[0] <= _days(window[k], window[k + 1]) <= QUARTER_GAP_DAYS[1] for k in range(3)):
-            continue
+    common_ni = _common_ni_quarterly(company_facts, ticker)
+    equity_ends = list(series["stockholders_equity"])
+
+    for i in range(len(ends)):
         q = ends[i]
-        row: Dict[str, Any] = {"end": q, "ttm_net_income": sum(ni[x]["val"] for x in window)}
+        window = ends[i - 3:i + 1] if i >= 3 else []
+        ttm_ok = bool(window) and all(
+            QUARTER_GAP_DAYS[0] <= _days(window[k], window[k + 1]) <= QUARTER_GAP_DAYS[1] for k in range(3))
+        cn = common_ni.get(q)
+        row: Dict[str, Any] = {
+            "end": q,
+            "quarter_net_income": cn["val"] if cn else ni[q]["val"],
+            "net_income_source": NI_SOURCE_BY_TAG.get(cn.get("source_tag"), "common") if cn else NI_SOURCE_FALLBACK,
+            "ttm_net_income": sum(ni[x]["val"] for x in window) if ttm_ok else None,
+        }
         t = _tce(q)
         row.update(tce=t.get("tce"), components=t.get("components"),
                    filled_from_annual=bool(t.get("filled_components")),
@@ -413,12 +468,25 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
             row["reason"] = t["reason"]
             out["history"].append(row)
             continue
-        begin = ends[i - 4] if i >= 4 and YEAR_GAP_DAYS[0] <= _days(ends[i - 4], q) <= YEAR_GAP_DAYS[1] else None
-        tb = _tce(begin).get("tce") if begin else None
-        if tb is not None and tb > 0:
-            row.update(tce_begin=tb, rotce=row["ttm_net_income"] / ((t["tce"] + tb) / 2), rotce_basis="average")
+        # 主表示: 四半期の年率（前の四半期末と当四半期末のTCEの平均）
+        prev = _previous_quarter_end(equity_ends, q)
+        tp = _tce(prev).get("tce") if prev else None
+        annualized = row["quarter_net_income"] * ANNUALIZE_QUARTERS
+        if tp is not None and tp > 0:
+            row.update(tce_prev_quarter=tp, prev_quarter_end=prev,
+                       rotce=annualized / ((t["tce"] + tp) / 2), rotce_basis="quarter_average")
         else:
-            row.update(tce_begin=tb, rotce=row["ttm_net_income"] / t["tce"], rotce_basis="end_only")
+            row.update(tce_prev_quarter=tp, prev_quarter_end=prev,
+                       rotce=annualized / t["tce"], rotce_basis="quarter_end_only")
+        # 参考: TTM純利益 ÷（4四半期前と当四半期末のTCEの平均）
+        if ttm_ok:
+            begin = ends[i - 4] if i >= 4 and YEAR_GAP_DAYS[0] <= _days(ends[i - 4], q) <= YEAR_GAP_DAYS[1] else None
+            tb = _tce(begin).get("tce") if begin else None
+            if tb is not None and tb > 0:
+                row.update(tce_begin=tb, rotce_ttm=row["ttm_net_income"] / ((t["tce"] + tb) / 2),
+                           rotce_ttm_basis="average")
+            else:
+                row.update(tce_begin=tb, rotce_ttm=row["ttm_net_income"] / t["tce"], rotce_ttm_basis="end_only")
         if px and sh:
             row["market_cap"] = px["close"] * sh["shares"]
             row["ptbv"] = row["market_cap"] / t["tce"]
@@ -443,13 +511,15 @@ def _current(history: List[dict], prices: List[dict], ends: List[str]) -> Dict[s
         return {"reason": R_INSUFFICIENT_QUARTERS, "quarter_end": ends[-1] if ends else None}
     h = history[-1]
     cur: Dict[str, Any] = {
-        "quarter_end": h["end"], "ttm_net_income": h["ttm_net_income"], "tce": h.get("tce"),
+        "quarter_end": h["end"], "quarter_net_income": h.get("quarter_net_income"),
+        "net_income_source": h.get("net_income_source"), "tce": h.get("tce"),
+        "tce_prev_quarter": h.get("tce_prev_quarter"), "prev_quarter_end": h.get("prev_quarter_end"),
         "rotce": h.get("rotce"), "rotce_basis": h.get("rotce_basis"),
+        "ttm_net_income": h.get("ttm_net_income"), "rotce_ttm": h.get("rotce_ttm"),
+        "rotce_ttm_basis": h.get("rotce_ttm_basis"),
         "filled_from_annual": h.get("filled_from_annual", False),
         "filled_components": h.get("filled_components") or {},
     }
-    if ends and ends[-1] != h["end"]:
-        cur["note"] = f"latest_net_income_quarter_{ends[-1]}_has_no_ttm_window"
     if h.get("reason") in (R_EQUITY_MISSING, R_COMPONENT_MISSING, R_TCE_NONPOSITIVE):
         cur["reason"] = h["reason"]
         if h.get("missing_components"):
@@ -495,6 +565,60 @@ def _percentile(history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
     return res
 
 
+def load_company_reported(path: str = COMPANY_REPORTED_PATH) -> Dict[str, dict]:
+    """config/company_reported_metrics.jsonのROTCEの登録を 銘柄→登録 にする（ファイルが無ければ空）"""
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        doc = json.load(f)
+    return {m["ticker"].upper(): m for m in doc.get("metrics") or []
+            if m.get("metric") == COMPANY_REPORTED_METRIC and m.get("ticker")}
+
+
+def company_reported_block(entry: dict, history: List[dict], current: Dict[str, Any]) -> Dict[str, Any]:
+    """会社発表のROTCEと、同じ四半期末のこちらの計算値・差（こちら−会社、小数）
+
+    latest_registered: こちらの直近の四半期末（current.quarter_end）の会社発表の値が登録済みか。
+    Falseなら個別ページに「未登録」と出し、CHECK-61がWARNにする。
+    """
+    ours = {h["end"]: h.get("rotce") for h in history}
+    values = []
+    for v in sorted(entry.get("values") or [], key=lambda x: x["quarter_end"]):
+        c = ours.get(v["quarter_end"])
+        values.append({**v, "computed": c,
+                       "diff": (c - v["value"]) if c is not None and v.get("value") is not None else None})
+    latest_q = current.get("quarter_end")
+    return {
+        "metric": COMPANY_REPORTED_METRIC,
+        "definition": entry.get("definition"), "source": entry.get("source"),
+        "guidance": entry.get("guidance"), "long_term_target": entry.get("long_term_target"),
+        "values": values,
+        "latest_quarter_end": latest_q,
+        "latest_registered": latest_q is not None and any(v["quarter_end"] == latest_q for v in values),
+        "last_registered_quarter_end": values[-1]["quarter_end"] if values else None,
+    }
+
+
+def unregistered_latest_quarters(reported: Optional[Dict[str, dict]] = None,
+                                 out_dir: str = OUTPUT_DIR) -> List[Dict[str, Any]]:
+    """CHECK-61用: 会社発表を登録している銘柄のうち、直近の四半期末（出力済みの{TICKER}.jsonの
+    current.quarter_end）の値が未登録のもの。出力が無い銘柄は reason="no_output" で返す"""
+    reported = load_company_reported() if reported is None else reported
+    out: List[Dict[str, Any]] = []
+    for t, entry in sorted(reported.items()):
+        path = os.path.join(out_dir, f"{t}.json")
+        if not os.path.exists(path):
+            out.append({"ticker": t, "reason": "no_output"})
+            continue
+        with open(path, encoding="utf-8") as f:
+            q = ((json.load(f).get("current") or {}).get("quarter_end"))
+        registered = sorted(v["quarter_end"] for v in entry.get("values") or [])
+        if q and q not in registered:
+            out.append({"ticker": t, "reason": "unregistered", "latest_quarter_end": q,
+                        "last_registered_quarter_end": registered[-1] if registered else None})
+    return out
+
+
 def _summary_row(r: Dict[str, Any]) -> Dict[str, Any]:
     c, p = r.get("current") or {}, r.get("percentile") or {}
     return {
@@ -502,7 +626,8 @@ def _summary_row(r: Dict[str, Any]) -> Dict[str, Any]:
         "quarter_end": c.get("quarter_end"), "price_date": c.get("price_date"),
         "filled_from_annual": c.get("filled_from_annual", False),
         "filled_components": c.get("filled_components") or {},
-        "rotce_basis": c.get("rotce_basis"),
+        "rotce_basis": c.get("rotce_basis"), "net_income_source": c.get("net_income_source"),
+        "rotce_ttm": c.get("rotce_ttm"),
         "reason": c.get("reason"), "missing_components": c.get("missing_components"),
         "n_quarters": p.get("n_quarters", 0), "n_excluded_assumed_zero": p.get("n_excluded_assumed_zero", 0),
         "ptbv_pctl": p.get("ptbv"), "rotce_pctl": p.get("rotce"),
@@ -515,6 +640,7 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
     """全銘柄を計算して {TICKER}.json と _summary.json を書き出す"""
     os.makedirs(out_dir, exist_ok=True)
     splits_all = load_split_history()
+    reported = load_company_reported()
     generated_at = datetime.now().isoformat(timespec="seconds")
     rows: Dict[str, Any] = {}
     for t in tickers:
@@ -524,6 +650,8 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
             r = {"ticker": t.upper(), "reference_only": True, "history": [], "notes": [],
                  "current": {"reason": "exception", "error": repr(e)[:300]},
                  "percentile": {"n_quarters": 0, "signal": None, "reason": "exception"}}
+        if r["ticker"] in reported:
+            r["company_reported"] = company_reported_block(reported[r["ticker"]], r["history"], r["current"])
         r["generated_at"] = generated_at
         with open(os.path.join(out_dir, f"{r['ticker']}.json"), "w", encoding="utf-8") as f:
             json.dump(r, f, ensure_ascii=False, indent=1)

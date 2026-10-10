@@ -1666,6 +1666,31 @@ def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = Non
     return out
 
 
+def _check_company_reported_rotce(out_dir: Optional[str] = None) -> list[tuple[str, str]]:
+    """CHECK-61: 会社発表のROTCE（config/company_reported_metrics.json）の登録漏れを検知するWARN
+    （2026-10-11新設、NG化しない。[[ROTCE-QUARTERLY-ANNUALIZED-1]]）。
+
+    登録した銘柄で、common/sec_data/rotce.pyの出力（docs/common/sec_data/rotce/{TICKER}.json）の
+    直近の四半期末の会社発表の値が無ければWARN（新しい四半期の資料が出たらvaluesに1行足す）。
+    EPS Analyzerの個別ページにも「未登録」と出る。
+    Returns: [(ticker, WARNメッセージ)]
+    """
+    from common.sec_data import rotce as _rotce
+    try:
+        rows = _rotce.unregistered_latest_quarters(out_dir=out_dir or _rotce.OUTPUT_DIR)
+    except Exception as e:
+        return [("[GLOBAL]", f"  [WARN-61 会社発表のROTCE] 登録を確認できない（{type(e).__name__}: {e}）")]
+    out: list[tuple[str, str]] = []
+    for r in rows:
+        t = r["ticker"]
+        if r["reason"] == "no_output":
+            out.append((t, f"  [WARN-61 会社発表のROTCE] {t}: rotce.pyの出力が無い → python common/sec_data/rotce.py {t}"))
+        else:
+            out.append((t, f"  [WARN-61 会社発表のROTCE] {t}: 直近の四半期末{r['latest_quarter_end']}の会社発表の値が未登録"
+                           f"（登録済みの最新 {r['last_registered_quarter_end']}）→ config/company_reported_metrics.jsonに追加する"))
+    return out
+
+
 def _check_stonks_silo_flag_rule() -> list[str]:
     """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
     案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
@@ -3408,6 +3433,18 @@ def run_checks(args=None) -> tuple[int, int]:
     if fresh_msgs:
         flagged.append(("[GLOBAL]", [], fresh_msgs))
         total_warn += len(fresh_msgs)
+
+    # CHECK-61: 会社発表のROTCEの登録漏れ（config/company_reported_metrics.json、NG化しない）。
+    # 登録した銘柄だけを見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。
+    crm_msgs = []
+    for _t, _w in _check_company_reported_rotce():
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        crm_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if crm_msgs:
+        flagged.append(("[GLOBAL]", [], crm_msgs))
+        total_warn += len(crm_msgs)
 
     # CHECK-54: split_history.yamlの登録漏れ（yfinance splitsと突き合わせ、
     # [[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]）。yfinanceを使うため

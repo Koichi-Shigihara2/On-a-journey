@@ -10,6 +10,8 @@ tests/test_rotce.py
 - 目安のしきい値（P/TBV 25以下かつROTCE 50以上→自社比割安 等）
 - 株式数の外れ値（千株単位の申告ミス）は使わず、同じ期末日の次の候補を使う
 - 優先株がメザニンと同額の期末日は控除しない
+- [[ROTCE-QUARTERLY-ANNUALIZED-1]]（2026-10-11）: ROTCEは四半期の普通株主帰属純利益×4÷（前の四半期末と当四半期末の
+  TCEの平均）。タグが無い四半期は純利益。TTM方式はrotce_ttm（参考）
 
 実行方法:
     python -m pytest tests/test_rotce.py -v
@@ -74,12 +76,15 @@ class TestTce:
         assert r["percentile"]["signal"] is None
 
     def test_rotce_and_ptbv_values(self):
-        # TCE=1,000−100−50−0=850、TTM純利益=100、P/TBV=20×10÷850
+        # TCE=1,000−100−50−0=850、四半期の純利益25×4=100、P/TBV=20×10÷850（TTMも100÷850）
         r = _run(_store(gw={q: 100 for q in QEND}, intang={q: 50 for q in QEND}))
         last = r["history"][-1]
         assert last["tce"] == 850
         assert abs(last["rotce"] - 100 / 850) < 1e-12
-        assert last["rotce_basis"] == "average"
+        assert last["rotce_basis"] == "quarter_average"
+        assert last["prev_quarter_end"] == "2025-09-30"
+        assert abs(last["rotce_ttm"] - 100 / 850) < 1e-12
+        assert last["rotce_ttm_basis"] == "average"
         assert abs(last["ptbv"] - 200 / 850) < 1e-12
 
     def test_minority_interest_subtracted_only_with_nci_inclusive_equity_tag(self):
@@ -142,7 +147,7 @@ class TestAnnualFill:
 
 class TestPercentile:
     def test_fewer_than_8_quarters_has_no_percentile(self):
-        qs = QEND[-10:]  # TTMの窓は7つ（10−3）
+        qs = QEND[-7:]  # 四半期ごとに1期（TTMの窓は不要）
         r = _run(_store(se={q: 1_000 for q in qs}, ni={q: 25 for q in qs}, shares={q: 10 for q in qs}))
         assert r["percentile"]["n_quarters"] == 7
         assert r["percentile"]["signal"] is None
@@ -150,7 +155,7 @@ class TestPercentile:
         assert "ptbv" not in r["percentile"]
 
     def test_8_quarters_gives_percentile(self):
-        qs = QEND[-11:]
+        qs = QEND[-8:]
         r = _run(_store(se={q: 1_000 for q in qs}, ni={q: 25 for q in qs}, shares={q: 10 for q in qs}))
         assert r["percentile"]["n_quarters"] == 8
         assert r["percentile"]["signal"] in (rotce.SIGNAL_CHEAP, rotce.SIGNAL_NEUTRAL, rotce.SIGNAL_RICH)
@@ -213,11 +218,11 @@ class TestAssumedZero:
             {"end": q, "val": 100, "form": "10-Q"} for q in gw]}}}}}
         r = _run(_store(gw=gw), company_facts=cf)
         assumed = [h["end"] for h in r["history"] if h.get("assumed_zero")]
-        assert assumed == ["2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30"]
+        assert assumed == [q for q in QEND if q < "2024-12-31"]
         assert all(h["assumed_zero"] == ["goodwill"] for h in r["history"] if h.get("assumed_zero"))
         assert not any(h.get("excluded_from_percentile") for h in r["history"])
         p = r["percentile"]
-        assert p["n_quarters"] == 9
+        assert p["n_quarters"] == 12
         assert p["n_excluded_assumed_zero"] == 0
         assert p["signal"] is not None
 
@@ -228,12 +233,12 @@ class TestAssumedZero:
             {"end": q, "val": 50, "form": "10-Q", "accn": "a" + q} for q in it]}}}}}
         r = _run(_store(intang=it), company_facts=cf)
         excluded = [h["end"] for h in r["history"] if h.get("excluded_from_percentile")]
-        assert excluded == ["2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30"]
+        assert excluded == [q for q in QEND if q < "2024-12-31"]
         assert all(h["assumed_zero"] == ["intangible_assets_excl_goodwill"]
                    for h in r["history"] if h.get("assumed_zero"))
         p = r["percentile"]
-        assert p["n_quarters"] == 5            # 9期のうち無形資産を0と仮定した4期を除く
-        assert p["n_excluded_assumed_zero"] == 4
+        assert p["n_quarters"] == 5            # 12期のうち無形資産を0と仮定した7期を除く
+        assert p["n_excluded_assumed_zero"] == 7
         assert p["signal"] is None and p["reason"] == rotce.R_INSUFFICIENT_QUARTERS
 
     def test_reported_quarters_have_no_assumed_zero(self):
@@ -241,7 +246,7 @@ class TestAssumedZero:
                  company_facts={"facts": {"us-gaap": {"Goodwill": {"units": {"USD": [
                      {"end": q, "val": 100, "form": "10-Q"} for q in QEND]}}}}})
         assert not any(h.get("assumed_zero") for h in r["history"])
-        assert r["percentile"]["n_quarters"] == 9
+        assert r["percentile"]["n_quarters"] == 12
 
 
 class TestLossMakers:
@@ -259,3 +264,101 @@ class TestLossMakers:
         r = _run(_store(ni={q: 0 for q in QEND}))
         assert r["percentile"]["signal"] is None
         assert r["percentile"]["reason"] == rotce.R_ROTCE_NONPOSITIVE
+
+
+def _cf_common_ni(vals, tag=rotce.COMMON_NI_DILUTED_TAG):
+    """company_factsの普通株主帰属純利益（単独四半期、10-Q）"""
+    from datetime import date, timedelta
+    facts = []
+    for q, v in vals.items():
+        start = (date.fromisoformat(q) - timedelta(days=89)).isoformat()
+        facts.append({"start": start, "end": q, "val": v, "form": "10-Q", "fp": "Q1", "fy": int(q[:4]),
+                      "filed": q, "accn": "c" + q, "frame": None})
+    return {"facts": {"us-gaap": {tag: {"units": {"USD": facts}}}}}
+
+
+class TestQuarterlyAnnualized:
+    def test_uses_common_ni_and_previous_quarter_average(self):
+        # 普通株主帰属純利益（優先配当を引いた後）20 × 4 ÷（前の四半期末900と当四半期末1,100の平均1,000）
+        se = {q: 1_000 for q in QEND}
+        se["2025-09-30"], se["2025-12-31"] = 900, 1_100
+        r = _run(_store(se=se), company_facts=_cf_common_ni({"2025-12-31": 20}))
+        last = r["history"][-1]
+        assert last["net_income_source"] == "common_diluted"
+        assert last["quarter_net_income"] == 20
+        assert last["prev_quarter_end"] == "2025-09-30" and last["tce_prev_quarter"] == 900
+        assert abs(last["rotce"] - 80 / 1_000) < 1e-12
+        assert last["rotce_basis"] == "quarter_average"
+        # TTM（参考）はLayer3の純利益25×4=100 ÷（4四半期前1,000と当四半期末1,100の平均）
+        assert abs(last["rotce_ttm"] - 100 / 1_050) < 1e-12
+        assert r["current"]["rotce"] == last["rotce"] and r["current"]["net_income_source"] == "common_diluted"
+
+    def test_falls_back_to_net_income_without_common_tag(self):
+        r = _run(_store())
+        assert all(h["net_income_source"] == rotce.NI_SOURCE_FALLBACK for h in r["history"])
+        assert r["current"]["net_income_source"] == rotce.NI_SOURCE_FALLBACK
+
+    def test_basic_tag_used_when_no_diluted(self):
+        r = _run(_store(), company_facts=_cf_common_ni({"2025-12-31": 20}, tag=rotce.COMMON_NI_BASIC_TAG))
+        assert r["history"][-1]["net_income_source"] == "common_basic"
+
+    def test_end_only_when_previous_quarter_tce_nonpositive(self):
+        gw = {"2025-09-30": 1_200}  # 前の四半期末のTCE=−200
+        r = _run(_store(gw={**{q: 0 for q in QEND}, **gw}))
+        last = r["history"][-1]
+        assert last["rotce_basis"] == "quarter_end_only"
+        assert abs(last["rotce"] - 100 / 1_000) < 1e-12
+
+    def test_first_quarter_has_rotce_but_no_ttm(self):
+        r = _run(_store())
+        first = r["history"][0]
+        assert first["rotce"] is not None and first["rotce_basis"] == "quarter_end_only"
+        assert first["ttm_net_income"] is None and first.get("rotce_ttm") is None
+
+
+class TestCompanyReported:
+    ENTRY = {"ticker": "TEST", "metric": "ROTCE", "source": "IR p.1",
+             "guidance": {"period": "FY2026", "value": 0.08}, "long_term_target": {"low": 0.2, "high": 0.3},
+             "values": [{"quarter_end": "2025-09-30", "value": 0.09}, {"quarter_end": "2025-12-31", "value": 0.12}]}
+
+    def test_block_has_diff_and_latest_registered(self):
+        r = _run(_store())
+        b = rotce.company_reported_block(self.ENTRY, r["history"], r["current"])
+        last = b["values"][-1]
+        assert last["quarter_end"] == "2025-12-31" and last["computed"] == r["history"][-1]["rotce"]
+        assert abs(last["diff"] - (r["history"][-1]["rotce"] - 0.12)) < 1e-12
+        assert b["latest_registered"] is True
+        assert b["guidance"]["value"] == 0.08 and b["long_term_target"]["high"] == 0.3
+
+    def test_unregistered_when_latest_quarter_missing(self):
+        entry = {**self.ENTRY, "values": self.ENTRY["values"][:1]}
+        r = _run(_store())
+        b = rotce.company_reported_block(entry, r["history"], r["current"])
+        assert b["latest_registered"] is False and b["last_registered_quarter_end"] == "2025-09-30"
+
+    def test_unregistered_latest_quarters(self, tmp_path):
+        import json
+        (tmp_path / "TEST.json").write_text(json.dumps({"current": {"quarter_end": "2026-03-31"}}), encoding="utf-8")
+        rows = rotce.unregistered_latest_quarters({"TEST": self.ENTRY, "NONE": self.ENTRY}, out_dir=str(tmp_path))
+        assert {"ticker": "NONE", "reason": "no_output"} in rows
+        t = next(x for x in rows if x["ticker"] == "TEST")
+        assert t["latest_quarter_end"] == "2026-03-31" and t["last_registered_quarter_end"] == "2025-12-31"
+        (tmp_path / "TEST.json").write_text(json.dumps({"current": {"quarter_end": "2025-12-31"}}), encoding="utf-8")
+        assert not [x for x in rotce.unregistered_latest_quarters({"TEST": self.ENTRY}, out_dir=str(tmp_path))]
+
+    def test_config_file_is_valid(self):
+        reported = rotce.load_company_reported()
+        assert "SOFI" in reported
+        for t, m in reported.items():
+            assert m.get("source")
+            for v in m["values"]:
+                assert 0 < abs(v["value"]) < 1   # 小数（7.1% → 0.071）
+                assert len(v["quarter_end"]) == 10 and v.get("source")
+
+    def test_check_61_message(self, tmp_path):
+        import json
+        from common.sec_data import report_consistency_check as rcc
+        (tmp_path / "SOFI.json").write_text(json.dumps({"current": {"quarter_end": "2099-12-31"}}), encoding="utf-8")
+        msgs = rcc._check_company_reported_rotce(out_dir=str(tmp_path))
+        sofi = [m for t, m in msgs if t == "SOFI"]
+        assert sofi and "WARN-61" in sofi[0] and "2099-12-31" in sofi[0]
