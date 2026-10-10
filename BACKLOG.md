@@ -2628,6 +2628,62 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 ---
 
+### [TANUKI-MAXEPS-NI-SOURCE-1] 最大EPSがdupont.ni_ttm（負の純資産・売上$15M未満では欠ける）と年次のsbc_ttmに依存し、片側だけで計算していた
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`pipeline.py`の max_eps 算出）・TANUKI SCORE（最大EPS PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10、origin/kaihatsu `3a39561030`）
+
+#### 内容（観測した事実）
+- `pipeline.py:1237-1260`は純利益を`dupont.ni_ttm`から取る。`dupont.ni_ttm`はDuPont分解が成功したときだけ書かれ、負の純資産
+  （ABBV・BKNG・DELL・FICO・MSCI・RBRK・MO・PM）・売上$15M未満（QBTS）では欠ける。TTM系列（`common/sec_data/ttm/{T}_ttm_series.json`の
+  `flow.net_income`）には9銘柄とも4四半期そろった値がある
+- 片側が欠けると残った側だけで計算し信頼性MEDにする。例: DELL max_eps 1.1371（株式報酬のみ÷株数）・最大EPS PER 515.4x
+  （TTM純利益を使うと約40.8x）。RBRKは78.2x（正しくは約631x）、QBTSは244.1x（純利益＋株式報酬≤0で本来None）
+- `financial_health.sbc_ttm`は名前に反して最新年次ファイルの`cf.stock_based_compensation`（TTMではない）
+- 判定・点数（funda/timing/tanuki_score/matrix/トラップ）は max_eps 系を参照していない。影響は表示のみ
+
+#### 対応方針（チャット側の決定）
+純利益・株式報酬ともTTM系列の最新エントリから取る。純利益None→None・LOW、株式報酬None→0扱いでMED、両方→HIGH、合計≤0→None。
+`components.max_eps_ttm_end`を出力。`dupont.*`・`financial_health.sbc_ttm`は変更しない
+
+---
+
+### [TANUKISCORE-PER-FORWARD-MIX-1] TANUKI SCOREの「GAAP PER」列に前向きPERが注記なしで混ざり、乖離列が無意味になっていた（QBTSではper_is_forwardが立っていない）
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`data_fetcher.py`の per）・TANUKI SCORE（GAAP PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
+
+#### 内容（観測した事実）
+- `components.per`は`data_fetcher.py:725`の`trailing_pe or forward_pe`。trailing PEが無い（赤字）銘柄はアナリスト予想EPSによる前向きPERになる
+- `per_is_forward`はforward_pe>0のときだけtrue。QBTSはtrailingが無くforward_peが負（-41.8）のため、per=-41.8なのにper_is_forward=false
+- 画面（`docs/value-monitor/tanuki_score/index.html`）はper_is_forwardを見ず「GAAP PER」として表示し、乖離（GAAP PER − 最大EPS PER）も計算する。
+  例: NETはGAAP純利益が赤字（TTM -206M）なのに「GAAP PER 208.3x」（forward）と表示。前向きPERの銘柄はAVAV・FROG・GTLB・LITE・NET・RBRK・S・ZETA（＋QBTS）
+
+#### 対応方針（チャット側の決定）
+trailing_peが無くforward_peを使ったときはforward_peの正負にかかわらずper_is_forward=true。画面でFwdと注記し、その銘柄の乖離は「—」
+
+---
+
+### [TANUKISCORE-FCF-COL-FLOOR-1] TANUKI SCOREのFCF列が売上8%の底上げ後のbase_fcfで判定され、全件✓になっていた
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI SCORE（`index.html`のFCF列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
+
+#### 内容（観測した事実）
+- FCF列は`fcf_base.base_fcf > 0`で✓。`base_fcf`はDCF用に`calculator/adjustments.py::adjust_fcf()`で5年平均FCF≤0のとき「最新売上の8%」に
+  底上げした後の値のため、全96銘柄で正になり✗が出ない（例: QBTS 1.97M＝売上の8%、実際の5年平均は-71M。SOUN・KULRも同様）
+- 底上げされた銘柄は18（ASTS・AVAV・BBAI・CEG・COHR・CRWV・IONQ・JOBY・KULR・ONDS・QBTS・RCAT・RDW・RXRX・SOFI・SOUN・SPIR・S）。
+  `components.structural_deficit`（5年・2年平均とも≤0）は17銘柄（Sを除く上記）
+- トラップ判定（`latestFcf`）は実績のfcf_historyを使っており影響なし
+
+#### 対応方針（チャット側の決定）
+structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、それ以外は従来どおり
+
+---
+
 ## 優先度：低（アイデア段階）
 
 ### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）

@@ -158,6 +158,52 @@ def _dilution_severity_info(dil_pct: float | None) -> tuple:
         return "critical", "極度の希薄化 🚨 IPO直後か継続増資か要確認", f"IPO後の株式発行が主因の可能性。継続なら1株価値を年率{dil_pct:.1f}%毀損。"
 
 
+def _latest_ttm_entry(ttm_series: dict | None) -> dict | None:
+    """ttm/{T}_ttm_series.jsonのseriesからttm_endが最大のエントリを返す（無ければNone）。
+
+    ttm_calculator.calc_ttm_series()はseriesを新しい順に並べるが、並び順に
+    依存しないようttm_endの最大値で選ぶ。
+    """
+    entries = [e for e in ((ttm_series or {}).get("series") or []) if e and e.get("ttm_end")]
+    if not entries:
+        return None
+    return max(entries, key=lambda e: e["ttm_end"])
+
+
+def compute_max_eps(ttm_entry: dict | None, diluted_shares, current_price) -> dict:
+    """[[TANUKI-MAXEPS-NI-SOURCE-1]]: 最大EPS = (純利益TTM + 株式報酬TTM) / 希薄化後株式数。
+
+    純利益・株式報酬とも同じTTMエントリ（ttm_entry.flow）から取る。
+    - 純利益がNone → max_eps/max_eps_perともNone、信頼性LOW
+    - 株式報酬がNone → 0として計算し信頼性MED
+    - 両方そろう → 信頼性HIGH
+    - 純利益＋株式報酬 ≤ 0（または株式数なし） → max_eps/max_eps_perともNone（信頼性は上の規則どおり）
+    """
+    flow = (ttm_entry or {}).get("flow") or {}
+    ni = (flow.get("net_income") or {}).get("val")
+    sbc = (flow.get("stock_based_compensation") or {}).get("val")
+    if ni is None:
+        reliability = "LOW"
+    elif sbc is None:
+        reliability = "MED"
+    else:
+        reliability = "HIGH"
+    max_eps = None
+    max_eps_per = None
+    if ni is not None and diluted_shares and diluted_shares > 0:
+        max_earn = ni + (sbc or 0)
+        if max_earn > 0:
+            max_eps = round(max_earn / diluted_shares, 4)
+            if current_price and current_price > 0:
+                max_eps_per = round(current_price / max_eps, 1)
+    return {
+        "max_eps": max_eps,
+        "max_eps_per": max_eps_per,
+        "max_eps_reliability": reliability,
+        "max_eps_ttm_end": (ttm_entry or {}).get("ttm_end"),
+    }
+
+
 def _calculate_erp(forward_eps, current_price, risk_free_rate: float = 0.043) -> tuple:
     """ERP（株式リスクプレミアム）と益利回りを計算する（[[ERP-DUAL-CALC-1]]）。
 
@@ -1235,29 +1281,25 @@ class TanukiValuationPipeline:
             )
 
         # max_eps / max_eps_per / max_eps_reliability: (GAAP NI TTM + SBC TTM) / 希薄化後株式数
-        _ni_ttm_me  = (latest_data.get("dupont") or {}).get("ni_ttm")
-        _sbc_ttm_me = (latest_data.get("financial_health") or {}).get("sbc_ttm")
-        _shares_me  = (latest_data.get("components") or {}).get("diluted_shares")
-        _price_me   = (latest_data.get("components") or {}).get("current_price") or 0
-        _max_eps_val     = None
-        _max_eps_per_val = None
-        _reliability_val = "LOW"
-        if _shares_me and _shares_me > 0:
-            if _ni_ttm_me is not None and _sbc_ttm_me is not None:
-                _max_earn = _ni_ttm_me + _sbc_ttm_me
-                if _max_earn > 0:
-                    _max_eps_val     = round(_max_earn / _shares_me, 4)
-                    _max_eps_per_val = round(_price_me / _max_eps_val, 1) if _price_me > 0 else None
-                    _reliability_val = "HIGH"
-            elif _ni_ttm_me is not None or _sbc_ttm_me is not None:
-                _max_earn = (_ni_ttm_me or 0) + (_sbc_ttm_me or 0)
-                if _max_earn > 0:
-                    _max_eps_val     = round(_max_earn / _shares_me, 4)
-                    _max_eps_per_val = round(_price_me / _max_eps_val, 1) if _price_me > 0 else None
-                    _reliability_val = "MED"
-        latest_data["components"]["max_eps"]             = _max_eps_val
-        latest_data["components"]["max_eps_per"]         = _max_eps_per_val
-        latest_data["components"]["max_eps_reliability"] = _reliability_val
+        # [[TANUKI-MAXEPS-NI-SOURCE-1]]: 以前はdupont.ni_ttm（DuPont分解が成功した銘柄だけに
+        # 入る。負の純資産・売上$15M未満では欠ける）と年次のfinancial_health.sbc_ttmを使い、
+        # 片側だけで計算していた。純利益・株式報酬ともTTM系列の最新エントリから取る
+        # （dupont.*・financial_health.sbc_ttmは変更しない）。
+        _ttm_entry_me = None
+        _ttm_path_me = os.path.join(
+            self.repo_root, "common", "sec_data", "ttm", f"{ticker}_ttm_series.json"
+        )
+        if os.path.exists(_ttm_path_me):
+            try:
+                with open(_ttm_path_me, encoding="utf-8") as _tf_me:
+                    _ttm_entry_me = _latest_ttm_entry(json.load(_tf_me))
+            except Exception as _e_me:
+                print(f"   [{ticker}] 最大EPS用TTM系列の読み込みエラー: {_e_me}")
+        latest_data["components"].update(compute_max_eps(
+            _ttm_entry_me,
+            (latest_data.get("components") or {}).get("diluted_shares"),
+            (latest_data.get("components") or {}).get("current_price"),
+        ))
 
         with open(latest_path, "w", encoding="utf-8") as f:
             json.dump(latest_data, f, ensure_ascii=False, indent=2)
