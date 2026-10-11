@@ -377,7 +377,10 @@ def check_i_eps() -> tuple[str, bool, str]:
 #   🔴 失敗: 取り消し・スキップを除いた最新の実行が失敗で、その実行より前の12時間以内に成功が無い
 #   ⚠️ 直前に成功あり: 同じく最新の実行が失敗だが、前の12時間以内に成功がある（取得済みの後の重複起動・保険の起動の失敗など）
 #   🔴 成功なし: 想定間隔の期間に成功が1本も無い
-#   CRITICAL（終了コード2）は🔴だけ。⚠️はWARNING
+#   ⚪ 初回待ち: 期間内の実行が0件で、初回の予定時刻がまだ来ていない（新設のワークフロー。[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]、2026-10-11）。
+#      初回の予定時刻＝GitHub Actions APIのワークフローの登録日時（created_at）の後に、YAMLのcronが最初に発火する時刻
+#      （workflow_runの下流は起動元のcronで同じ計算）。予定時刻を過ぎても0件なら、登録日時が取れないときと同じく成功なし
+#   全体の重大度（終了コード）は各項目の判定の最大（✅・⚪→0、⚠️→1、🔴→2。[[SYSHEALTH-SEVERITY-MISMATCH-1]]、`_overall_severity()`）
 #
 # 頻度推定はcron式の day-of-month / day-of-week フィールドを見る簡易
 # ヒューリスティックであり、厳密なcronパーサではない（本用途では
@@ -419,13 +422,62 @@ _J_COVER_HOURS = 12   # 失敗の前のこの時間内に成功があれば⚠�
 _J_MAX_PAGES = 5
 
 
-def _load_workflow_defs(wf_dir: str = _WORKFLOWS_DIR) -> list[dict]:
-    """scripts/gen_update_schedule.py::load_workflows()（UPDATE_SCHEDULE.mdの生成元）でYAMLを読む。"""
+def _gen_update_schedule():
     scripts_dir = os.path.join(_REPO_ROOT, "scripts")
     if scripts_dir not in sys.path:
         sys.path.insert(0, scripts_dir)
     import gen_update_schedule as _gus
-    return _gus.load_workflows(wf_dir)
+    return _gus
+
+
+def _load_workflow_defs(wf_dir: str = _WORKFLOWS_DIR) -> list[dict]:
+    """scripts/gen_update_schedule.py::load_workflows()（UPDATE_SCHEDULE.mdの生成元）でYAMLを読む。"""
+    return _gen_update_schedule().load_workflows(wf_dir)
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _cron_next_fire(expr: str, after: datetime) -> Optional[datetime]:
+    """cron式（UTC）が after より後に最初に発火する時刻。読めない式は None。
+    日と曜日の両方を指定した式は「どちらか」に一致する日（GitHubの実際の動き、[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]で実測）。"""
+    expand = _gen_update_schedule()._expand
+    try:
+        mi, hr, dom, mon, dow = expr.split()
+        mins = expand(mi, 0, 59) or list(range(60))
+        hrs = expand(hr, 0, 23) or list(range(24))
+        doms, mons, dows = expand(dom, 1, 31), expand(mon, 1, 12), expand(dow, 0, 7)
+    except ValueError:
+        return None
+    dows = None if dows is None else {d % 7 for d in dows}
+    start = after.astimezone(timezone.utc).replace(second=0, microsecond=0) + timedelta(minutes=1)
+    for i in range(400):
+        d = start.date() + timedelta(days=i)
+        if mons is not None and d.month not in mons:
+            continue
+        dom_ok = doms is None or d.day in doms
+        dow_ok = dows is None or d.isoweekday() % 7 in dows
+        day_ok = (dom_ok or dow_ok) if (doms is not None and dows is not None) else (dom_ok and dow_ok)
+        if not day_ok:
+            continue
+        for h in hrs:
+            for m in mins:
+                t = datetime(d.year, d.month, d.day, h, m, tzinfo=timezone.utc)
+                if t >= start:
+                    return t
+    return None
+
+
+def _first_due(fname: str, by_file: dict, registered: datetime, seen: frozenset = frozenset()) -> Optional[datetime]:
+    """登録日時の後の初回の予定時刻: 自身のcronと、workflow_runの起動元のcronが最初に発火する時刻の早い方。"""
+    w = by_file.get(fname)
+    if w is None or fname in seen:
+        return None
+    cands = [_cron_next_fire(c, registered) for c in w.get("crons") or []]
+    cands += [_first_due(up, by_file, registered, seen | {fname}) for up in w.get("after_files") or []]
+    cands = [c for c in cands if c is not None]
+    return min(cands) if cands else None
 
 
 def _discover_monitored_workflows(wfs: list[dict]) -> list[tuple[str, str, int]]:
@@ -498,6 +550,27 @@ def _fetch_runs_since(repo_slug: str, workflow_file: str, since: date) -> list[d
     return runs
 
 
+def _fetch_workflow_created_at(repo_slug: str, workflow_file: str) -> Optional[datetime]:
+    """GitHub Actions APIのワークフローの登録日時（created_at）。取れなければ None。"""
+    import urllib.request
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "On-a-journey-system-health",
+    }
+    token = os.environ.get("GITHUB_TOKEN", "")
+    if token:
+        headers["Authorization"] = f"token {token}"
+    try:
+        req = urllib.request.Request(f"{_GH_API_BASE}/repos/{repo_slug}/actions/workflows/{workflow_file}",
+                                     headers=headers)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return datetime.fromisoformat((data.get("created_at") or "").replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
 def _run_time(run: dict) -> Optional[datetime]:
     try:
         return datetime.fromisoformat((run.get("created_at") or "").replace("Z", "+00:00"))
@@ -528,10 +601,13 @@ def _judge_runs(runs: list[dict]) -> tuple[str, str]:
 def _check_j() -> dict:
     """[J]の判定。label・ok・detailに加え、CRITICAL（🔴）かどうかを返す。"""
     def result(label, ok, detail, critical=False):
-        return {"label": label, "ok": ok, "detail": detail, "critical": critical}
+        severity = _item_severity(label, ok)
+        icon = "⚪" if severity == 0 and label.startswith("⚪") else _SEVERITY_ICON[severity]
+        return {"label": label, "ok": ok, "detail": detail, "critical": critical, "severity": severity, "icon": icon}
 
     try:
-        monitored = _discover_monitored_workflows(_load_workflow_defs())
+        wf_defs = _load_workflow_defs()
+        monitored = _discover_monitored_workflows(wf_defs)
     except Exception as e:
         return result(f"⚠️  ワークフロー定義を読めない（{e}）", False, f"workflow defs unreadable: {e}")
     if not monitored:
@@ -544,8 +620,11 @@ def _check_j() -> dict:
     failed: list[str] = []
     covered: list[str] = []
     no_success: list[str] = []
+    waiting: list[str] = []
     unchecked: list[str] = []
-    today = datetime.now(timezone.utc).date()
+    now = _utcnow()
+    today = now.date()
+    by_file = {w["file"]: w for w in wf_defs}
 
     for fname, freq_label, threshold_days in monitored:
         try:
@@ -559,11 +638,18 @@ def _check_j() -> dict:
         elif state == "covered":
             covered.append(f"{fname}({info})")
         elif state == "no_success":
-            no_success.append(f"{fname}({threshold_days}日間に成功なし/{freq_label})")
+            due = None
+            if not runs:
+                registered = _fetch_workflow_created_at(repo_slug, fname)
+                due = _first_due(fname, by_file, registered) if registered else None
+            if due is not None and now < due:
+                waiting.append(f"{fname}(初回予定 {due.strftime('%m-%d %H:%M')} UTC)")
+            else:
+                no_success.append(f"{fname}({threshold_days}日間に成功なし/{freq_label})")
 
     critical = bool(failed or no_success)
     ok = not (failed or no_success or covered)
-    icon = "🔴" if critical else ("⚠️ " if covered else "✅")
+    icon = "🔴" if critical else ("⚠️ " if covered else ("⚪" if waiting else "✅"))
     parts = [f"{len(monitored)}件監視"]
     if failed:
         parts.append(f"失敗{len(failed)}件: {', '.join(failed)}")
@@ -571,9 +657,11 @@ def _check_j() -> dict:
         parts.append(f"成功なし{len(no_success)}件: {', '.join(no_success)}")
     if covered:
         parts.append(f"失敗（直前に成功あり）{len(covered)}件: {', '.join(covered)}")
+    if waiting:
+        parts.append(f"初回待ち{len(waiting)}件: {', '.join(waiting)}")
     if unchecked:
         parts.append(f"確認不可{len(unchecked)}件（API到達不可等、異常扱いしない）")
-    if ok and not unchecked:
+    if ok and not unchecked and not waiting:
         parts.append("すべて正常")
     detail = " / ".join(parts)
     return result(f"{icon} {detail}", ok, detail, critical)
@@ -823,9 +911,8 @@ def discord_notify_label(sent: bool) -> str:
 
 
 def build_one_line(run_date: str, results: dict) -> str:
-    overall_ok = all(r["ok"] for r in results.values())
-    globe      = "🟢" if overall_ok else "🔴"
-    status     = "HEALTHY" if overall_ok else "WARNING"
+    severity = _overall_severity(results)
+    globe, status = _OVERALL_HEAD[severity], _OVERALL_WORD[severity]
     parts = []
     labels = {
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
@@ -834,11 +921,45 @@ def build_one_line(run_date: str, results: dict) -> str:
     }
     for key, label in labels.items():
         r = results.get(key, {})
-        icon = "✅" if r.get("ok") else "⚠️"
-        extra = f"{r.get('short','')}" if not r.get("ok") else ""
+        sev = _result_severity(r)
+        icon = r.get("icon") or _SEVERITY_ICON[sev]
+        extra = f"{r.get('short','')}" if (sev or icon == "⚪") else ""
         parts.append(f"{label}{icon}{extra}")
 
     return f"{globe} System Health {run_date}: {status} | {' '.join(parts)}"
+
+
+# ── 全体の重大度（[[SYSHEALTH-SEVERITY-MISMATCH-1]]、2026-10-11） ──────────
+# 各項目の判定（✅・⚪→0、⚠️→1、🔴→2）の最大を全体の重大度とし、Discordの先頭の絵文字・文言・各欄の絵文字・
+# Overallの行・終了コードをすべてこの値から出す。以前は先頭（全項目のokだけで🟢/🔴）・文言（HEALTHY/WARNINGの2通り）・
+# 各欄（✅/⚠️の2通り）・終了コード（A・J・Mのcriticalだけを見る）が別々の判定から出ていて、10-11は🔴・WARNING・⚠️・2と食い違った
+_SEVERITY_ICON = {0: "✅", 1: "⚠️", 2: "🔴"}
+_OVERALL_HEAD = {0: "🟢", 1: "🟡", 2: "🔴"}
+_OVERALL_WORD = {0: "HEALTHY", 1: "WARNING", 2: "CRITICAL"}
+
+
+def _item_severity(label: str, ok: bool) -> int:
+    """項目の判定: 問題なし（ok）→0、ラベルが🔴→2、それ以外の問題→1。
+    okでも⚠️で始まるラベル（「未作成（スキップ）」等）は従来どおり問題に数えない。"""
+    if ok:
+        return 0
+    return 2 if label.lstrip().startswith("🔴") else 1
+
+
+def _result_severity(r: dict) -> int:
+    if "severity" in r:
+        return r["severity"]
+    return 0 if r.get("ok", True) else 1
+
+
+def _overall_severity(results: dict) -> int:
+    return max((_result_severity(r) for r in results.values()), default=0)
+
+
+def _overall_text(severity: int, n_problem: int) -> str:
+    if severity == 0:
+        return "✅ HEALTHY"
+    return f"{_SEVERITY_ICON[severity]} {_OVERALL_WORD[severity]}（問題{n_problem}件）"
 
 
 # ── メイン ───────────────────────────────────────────────────────────
@@ -887,9 +1008,16 @@ def main() -> int:
         # Mも切らない（どの銘柄・何日かが通知から読めるように）
         "M": {"ok": ok_m, "short": det_m},
     }
+    labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
+              "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m}
+    for key, r in results.items():
+        r["severity"] = _item_severity(labels[key], r["ok"])
+    # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
+    results["J"]["severity"] = j.get("severity", results["J"]["severity"])
+    results["J"]["icon"] = j.get("icon") or _SEVERITY_ICON[results["J"]["severity"]]
 
-    overall_ok = all(r["ok"] for r in results.values())
-    n_warn     = sum(1 for r in results.values() if not r["ok"])
+    severity  = _overall_severity(results)
+    n_problem = sum(1 for r in results.values() if r["severity"] > 0)
 
     if not args.quiet:
         print(f"[A] SEC Data:      {label_a}")
@@ -905,8 +1033,7 @@ def main() -> int:
         print(f"[K] TickerAudit:   {label_k}")
         print(f"[L] MacroData:     {label_l}")
         print(f"[M] SecFreshness:  {label_m}")
-        status_str = "✅ HEALTHY" if overall_ok else f"⚠️  WARNING（問題{n_warn}件）"
-        print(f"Overall: {status_str}\n")
+        print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知
     one_line = build_one_line(today, results)
@@ -914,12 +1041,9 @@ def main() -> int:
     if not args.quiet:
         print(discord_notify_label(sent))
 
-    if not overall_ok:
-        # SEC content異常（A）またはワークフロー異常（Jの🔴: 失敗・期間内に成功なし）は
-        # データパイプライン停止の実害に直結するためCRITICAL、それ以外（Jの⚠️「直前に成功あり」を含む）はWARNING。
-        # SECの一次データの鮮度（Mの🔴: 週次の更新の停止・取得失敗の多発・SEC側の長い未反映）もCRITICAL
-        return 2 if (not ok_a or j["critical"] or m["critical"]) else 1
-    return 0
+    # 終了コードも全体の重大度から（✅→0、⚠️→1、🔴→2）。SEC content異常（Aの重大）・ワークフロー異常（Jの🔴: 失敗・
+    # 期間内に成功なし）・SECの一次データの鮮度（Mの🔴）は各項目のラベルが🔴のため2になる（以前の判定と同じ）
+    return severity
 
 
 if __name__ == "__main__":

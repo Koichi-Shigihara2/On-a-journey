@@ -114,7 +114,8 @@ Market Data Daily Updateは、主にCloudflare Workers Cron Triggers（`tools/ex
 - **無料プラン**: Cron Triggersはアカウントあたり5本まで、Workerは3本を使う
 - **監視**: Workerの21:50の確認はMarket Data Dailyの成功だけを見る。下流（Market Pulse・Stonks Silo・TANUKI VALUATION・TANUKI Score）の失敗は、
   System Health Check（23:30 UTC）の[J]が見る（2026-10-07から。1章の一覧と同じYAMLの読み方で、cronのあるものとworkflow_runの下流を対象にし、
-  下流は起動元の想定間隔を継ぐ。ガードの取り消し・スキップは数えない）。日本時間7:00より前には気づけない
+  下流は起動元の想定間隔を継ぐ。ガードの取り消し・スキップは数えない。2026-10-11から、期間内の実行が0件で初回の予定時刻〈Actions APIの登録日時の後に
+  cronが最初に発火する時刻〉がまだ来ていない新設のワークフローは「⚪ 初回待ち」で、成功なしに数えない〈[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]〉）。日本時間7:00より前には気づけない
   （[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]・[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]）
 
 ---

@@ -36,7 +36,11 @@ BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。Gi
    `profitability_path.path_score_basis`、10x候補13銘柄（ASTS 67.0・RKLB 79.2・IONQ 82.7）、ヒートマップの10系列のyoyが値のまま。1でSECデータが更新された銘柄は財務の更新による差を分けて読む
 3. **System Healthの[M]**（同③）: 10-11 02:00 UTCの実行（`38103735425`）で`[M] SecFreshness: ✅ 98銘柄（REFRESHED 10・SEC_LAG 5・FETCH_FAILED 0）`、確認済み5件を表示。
    終了コード2は[J]によるもので[M]ではない。1の後の実行でも✅で、[M]のせいで終了コードが2にならないことを確かめる。
-   あわせて[J]: 新設の`TANUKI_TAIL_SEC_Items.yml`が一度も起動していないのに10-09から🔴（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の2026-10-11の追記）。10-12 01:20 UTCの初回の実行の後の[J]を記録する
+   あわせて[J]: 新設の`TANUKI_TAIL_SEC_Items.yml`が一度も起動していないのに10-09から🔴だった件は、2026-10-11に修正
+   （期間内の実行が0件で、初回の予定時刻〈Actions APIの登録日時の後にcronが最初に発火する時刻〉の前は「⚪ 初回待ち」、`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。
+   重大度も一本化した（Discordの先頭🟢／🟡／🔴・文言HEALTHY／WARNING／CRITICAL・各欄・Overall・終了コード0／1／2が全体の重大度から出る、`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）。
+   10-12の朝のSystem Health（01:20 UTCの初回の実行の後）で、[J]のTANUKI_TAIL_SEC_Itemsが⚪でも🔴でもなく通常の判定になり、Discordの1行・Overall・終了コードが同じ重大度であることを確かめる。
+   01:20の実行がSystem Healthの起動より後に遅れた場合は、予定時刻を過ぎて0件のため🔴になる（設計どおり）
 4. **10-12（月）01:00・01:20 UTCのTANUKI TAIL 2本**: 01:00の`TANUKI_TAIL_SEC_Ctrl`のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・success（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）、
    01:20の`TANUKI_TAIL_SEC_Items`の初回の定時の実行のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなし（`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`）
 5. **10-12（月）13:00 JSTごろのTANUKI VALUATIONの再生成**（latest.jsonの`calculation_date`が10/11以降であることを先に確かめる）: 最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTSはNone、

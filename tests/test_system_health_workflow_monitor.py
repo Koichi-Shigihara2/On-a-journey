@@ -296,3 +296,127 @@ def test_main_warning_only_j_exits_one(monkeypatch):
     d = "17件監視 / 失敗（直前に成功あり）1件: Market_Data_Daily_Update.yml(failure 10-07 01:47 UTC、直前の成功 10-06 20:25)"
     _patch_main(monkeypatch, {"label": "⚠️  " + d, "ok": False, "detail": d, "critical": False})
     assert sh.main() == 1
+
+
+# ── 初回待ち（[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]、2026-10-11） ─────────
+# TANUKI_TAIL_SEC_Items.yml: 2026-10-08 12:06:14 UTCに登録（Actions APIのcreated_at）、cron「20 1 * * 1」、
+# 初回の定時は10-12 01:20 UTC。10-09〜10-11のSystem Healthは実行0件を「10日間に成功なし」と数え、終了コード2だった
+_ITEMS = "TANUKI_TAIL_SEC_Items.yml"
+_ITEMS_CREATED = datetime(2026, 10, 8, 12, 6, 14, tzinfo=timezone.utc)
+
+
+def test_cron_next_fire_weekly():
+    assert sh._cron_next_fire("20 1 * * 1", _ITEMS_CREATED) == datetime(2026, 10, 12, 1, 20, tzinfo=timezone.utc)
+
+
+def test_cron_next_fire_is_strictly_after():
+    t = datetime(2026, 10, 12, 1, 20, tzinfo=timezone.utc)
+    assert sh._cron_next_fire("20 1 * * 1", t) == datetime(2026, 10, 19, 1, 20, tzinfo=timezone.utc)
+
+
+def test_cron_next_fire_weekdays_and_lists():
+    # Market Data Dailyの「17,47 21-22 * * 1-5」: 金曜23:00 UTCの後は月曜21:17
+    fri = datetime(2026, 10, 9, 23, 0, tzinfo=timezone.utc)
+    assert sh._cron_next_fire("17,47 21-22 * * 1-5", fri) == datetime(2026, 10, 12, 21, 17, tzinfo=timezone.utc)
+
+
+def test_cron_next_fire_dom_and_dow_are_or():
+    # GitHubは日と曜日の両方の指定を「どちらか」で扱う（[[BETA-CONFIG-CRON-DOM-DOW-OR-1]]で実測）
+    after = datetime(2026, 10, 8, 0, 0, tzinfo=timezone.utc)   # 木曜
+    assert sh._cron_next_fire("0 23 1-7 * 0", after) == datetime(2026, 10, 11, 23, 0, tzinfo=timezone.utc)
+
+
+def _patch_items(monkeypatch, now, created=_ITEMS_CREATED, crons=("20 1 * * 1",), runs=()):
+    monkeypatch.setattr(sh, "_get_repo_slug", lambda: "Koichi-Shigihara2/On-a-journey")
+    monkeypatch.setattr(sh, "_load_workflow_defs",
+                        lambda: [{"file": _ITEMS, "crons": list(crons), "after_files": []}])
+    monkeypatch.setattr(sh, "_discover_monitored_workflows", lambda wfs: [(_ITEMS, "週次", 10)])
+    monkeypatch.setattr(sh, "_fetch_runs_since", lambda slug, f, since: list(runs))
+    monkeypatch.setattr(sh, "_fetch_workflow_created_at", lambda slug, f: created)
+    monkeypatch.setattr(sh, "_utcnow", lambda: now)
+
+
+def test_check_j_never_run_before_first_due_is_waiting(monkeypatch):
+    """10-11 02:00 UTC（初回の定時10-12 01:20の前）: 実行0件は⚪初回待ちで、成功なしにも🔴⚠️にも数えない。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc))
+    r = sh._check_j()
+    assert r["ok"] is True and r["critical"] is False
+    assert r["severity"] == 0
+    assert r["label"].startswith("⚪")
+    assert "初回待ち1件: TANUKI_TAIL_SEC_Items.yml(初回予定 10-12 01:20 UTC)" in r["detail"]
+    assert "成功なし" not in r["detail"]
+
+
+def test_check_j_never_run_after_first_due_is_no_success(monkeypatch):
+    """初回の予定時刻を過ぎても実行0件なら、従来どおり成功なし（起動していない事故を見逃さない）。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 12, 2, 30, tzinfo=timezone.utc))
+    r = sh._check_j()
+    assert r["critical"] is True and r["severity"] == 2
+    assert r["label"].startswith("🔴")
+    assert "成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次)" in r["detail"]
+    assert "初回待ち" not in r["detail"]
+
+
+def test_check_j_only_cancelled_runs_is_not_waiting(monkeypatch):
+    """期間内に実行が1件でもあれば初回待ちではない（取り消しだけでも成功なし）。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc),
+                 runs=[_run("cancelled", "2026-10-10T01:20:00Z")])
+    r = sh._check_j()
+    assert r["critical"] is True and "成功なし1件" in r["detail"]
+
+
+def test_check_j_registration_time_unknown_is_no_success(monkeypatch):
+    """登録日時が取れない（APIの失敗）ときは初回の予定時刻を決められないため、従来どおり成功なし。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc), created=None)
+    r = sh._check_j()
+    assert r["critical"] is True and "成功なし1件" in r["detail"]
+
+
+def test_check_j_downstream_first_due_comes_from_upstream_cron(monkeypatch):
+    """cronの無い下流（workflow_run）は、起動元のcronが登録後に最初に発火する時刻を初回の予定とする。"""
+    monkeypatch.setattr(sh, "_get_repo_slug", lambda: "o/r")
+    monkeypatch.setattr(sh, "_load_workflow_defs", lambda: [
+        {"file": "Up.yml", "crons": ["20 1 * * 1"], "after_files": []},
+        {"file": "Down.yml", "crons": [], "after_files": ["Up.yml"]}])
+    monkeypatch.setattr(sh, "_discover_monitored_workflows",
+                        lambda wfs: [("Down.yml", "連鎖（Up.yml）", 10)])
+    monkeypatch.setattr(sh, "_fetch_runs_since", lambda slug, f, since: [])
+    monkeypatch.setattr(sh, "_fetch_workflow_created_at", lambda slug, f: _ITEMS_CREATED)
+    monkeypatch.setattr(sh, "_utcnow", lambda: datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc))
+    r = sh._check_j()
+    assert "初回待ち1件: Down.yml(初回予定 10-12 01:20 UTC)" in r["detail"]
+
+
+# ── 全体の重大度の一本化（[[SYSHEALTH-SEVERITY-MISMATCH-1]]、2026-10-11） ─
+# 10-11 02:00 UTCは、Discordの先頭🔴・文言「WARNING」・CronRuns⚠️・Overall「⚠️ WARNING」・終了コード2と食い違っていた
+_J_WAIT = "18件監視 / 初回待ち1件: TANUKI_TAIL_SEC_Items.yml(初回予定 10-12 01:20 UTC)"
+_J_COVER = "17件監視 / 失敗（直前に成功あり）1件: Market_Data_Daily_Update.yml(failure 10-07 01:47 UTC、直前の成功 10-06 20:25)"
+_J_RED = "18件監視 / 成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次)"
+
+
+@pytest.mark.parametrize("j, code, head, word, cron_icon, overall", [
+    ({"label": "⚪ " + _J_WAIT, "ok": True, "detail": _J_WAIT, "critical": False, "severity": 0, "icon": "⚪"},
+     0, "🟢", "HEALTHY", "CronRuns⚪", "Overall: ✅ HEALTHY"),
+    ({"label": "⚠️  " + _J_COVER, "ok": False, "detail": _J_COVER, "critical": False, "severity": 1, "icon": "⚠️"},
+     1, "🟡", "WARNING", "CronRuns⚠️", "Overall: ⚠️ WARNING（問題1件）"),
+    ({"label": "🔴 " + _J_RED, "ok": False, "detail": _J_RED, "critical": True, "severity": 2, "icon": "🔴"},
+     2, "🔴", "CRITICAL", "CronRuns🔴", "Overall: 🔴 CRITICAL（問題1件）"),
+])
+def test_main_overall_severity_matches_discord_and_exit_code(monkeypatch, capsys, j, code, head, word, cron_icon, overall):
+    sent = _patch_main(monkeypatch, j)
+    monkeypatch.setattr(sys, "argv", ["system_health.py"])
+    assert sh.main() == code
+    line = sent[0]
+    assert line.startswith(f"{head} System Health ")
+    assert f": {word} |" in line
+    assert cron_icon + j["detail"] in line
+    assert overall in capsys.readouterr().out
+
+
+def test_main_red_label_of_other_check_is_critical(monkeypatch):
+    """J以外でも、項目の判定が🔴（例: Stonks Siloのresults.jsonの読み込みエラー）なら全体も🔴・終了コード2。"""
+    sent = _patch_main(monkeypatch, {"label": "✅ 17件監視 / すべて正常", "ok": True, "detail": "17件監視 / すべて正常",
+                                     "critical": False, "severity": 0, "icon": "✅"})
+    monkeypatch.setattr(sh, "check_e_silo", lambda: ("🔴 読み込みエラー: x", False, "x"))
+    assert sh.main() == 2
+    assert sent[0].startswith("🔴 System Health ") and ": CRITICAL |" in sent[0] and "Silo🔴x" in sent[0]

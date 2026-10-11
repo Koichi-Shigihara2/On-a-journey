@@ -393,6 +393,14 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 `depends_on`・`outputs`は同スクリプトがYAMLから生成する。`label`・`yml`・`accepts_tickers`・`input_param`・
 `bulk_update_*`・`new_ticker_order`は手作業の定義（ワークフローを新設したらここに追記する）。
 
+### System Health（`common/system_health.py`、`System_Health.yml`）の重大度と[J]（2026-10-11追記）
+- 全体の重大度は各項目の判定の最大（✅・⚪→0、⚠️→1、🔴→2、`_overall_severity()`）。Discordの1行の先頭（🟢／🟡／🔴）・文言（HEALTHY／WARNING／CRITICAL）・
+  各欄の絵文字・Overallの行・終了コード（0／1／2）はすべてこの値から出す（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）。項目の判定は「ok→✅、ラベルが🔴→🔴、それ以外→⚠️」
+- [J] CronRuns: 監視の対象は`scripts/gen_update_schedule.py::load_workflows()`で読んだcronのあるワークフローとworkflow_runの下流（System_Health.yml自身を除く）。
+  想定間隔の期間の実行を`created>=`で取り、cancelled・skippedは数えない。🔴失敗／⚠️直前12時間に成功あり／🔴期間内に成功なし／
+  ⚪初回待ち（期間内の実行が0件で、Actions APIのワークフローの登録日時〈created_at〉の後にcronが最初に発火する時刻がまだ来ていない。下流は起動元のcronで計算。
+  `[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。登録日時が取れない・予定時刻を過ぎて0件なら成功なし
+
 ---
 
 ## AutoTrade/OpenD運用前提（2026-07-10追記）
