@@ -403,6 +403,10 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
   欄の表示は「ファイル名（初回予定 MM-DD HH:MM UTC・猶予 MM-DD HH:MM UTCまで）」。`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。
   登録日時が取れない・猶予の終わりちょうど以降も0件なら成功なし
 - E・I・Lの「🔴 読み込みエラー」は終了コード2（ラベルに合わせる。2026-10-11にKoichi承認で据え置き、`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
+- [I] EPS Analyzer（`_check_i()`、2026-10-11に3つ目の判定を追加、`[[EPS-SILENT-TICKER-FAILURE-1]]`）: summary.jsonの`last_updated`（14日）・
+  eps=trueの銘柄の行の有無に加えて、`run_status.started_at`より前の`generated_at`（無い行を含む）を持つeps=trueの行＝今回の全銘柄の実行で
+  作り直されていない行を「{日付}の実行で未更新n件: 銘柄(理由)」として⚠️（重大度1）。`run_status`の無いsummary.json（実装前の形）では
+  この判定をせず、詳細に「run_status無し」と出す
 
 ---
 
@@ -1362,6 +1366,19 @@ quarterly.py・parser.py・tag_definitions.pyは一切importしていない（im
   TANUKIの3年希薄化率で共通）してKULR・SPIR・HON（1-for-2）・BKNGを登録。
   詳細はBACKLOG_DONE.md [[SPLIT-REALTIME-GAP-1]]・
   [[SPLIT-REALTIME-GAP-REVERSE-1]]参照
+- `summary.json`（一覧・TANUKI VALUATION・TANUKI SCORE・daily_pickが読む。2026-10-11追記、[[EPS-SILENT-TICKER-FAILURE-1]]・
+  [[EPS-SUMMARY-GHOST-ROWS-1]]・[[EPS-INDEX-MINOR-1]]）: `run()`は銘柄ごとの成功・失敗（「データなし」／「例外: 型: メッセージ」）を数え、
+  全銘柄の実行は`run_status`（scope=all・started_at・finished_at・requested・succeeded・failed〈ticker・reason〉）、
+  `--ticker`の部分実行は`partial_run_status`（scope=partial・tickers）に書く（部分実行で`run_status`を上書きしない。
+  System Health [I]の基準のため）。各行の`generated_at`（UTC）はその実行で作り直した行だけ更新し、失敗した銘柄の行は前回の値のまま残る。
+  `generate_summary()`は`get_registrable_tickers("eps")`（eps=trueで、登録処理中〈provisioning〉を含む）に無い銘柄の行を消し、
+  残す全行に`tanuki`（cik_lookup.csvのtanuki）を付ける。`latest_fiscal_quarter`は一覧の古い期末日の印が使う。
+  `latest_filing_date`・`quarters[].filing_date`の中身は直近四半期の**期末日**（提出日ではない。名前は消費者が多いため変えない）。
+  終了コード: 成功1件以上で0（一部の失敗を含む。TANUKI VALUATIONの連鎖はAdjusted_EPS_Data_Updateのsuccessで起動するため止めない）、
+  成功0件（対象0件を含む）で1（summary.jsonは書かない）、冪等性ガードのスキップは0。GITHUB_STEP_SUMMARYに件数と失敗した銘柄・理由
+- 一覧（`index.html`）: 期末日が古い銘柄の「決算日」に⚠と黄色（次の提出が10-Qなら期末から145日超、直近がQ3で次が10-Kなら190日超。
+  `STALE_PERIOD_DAYS_10Q`・`STALE_PERIOD_DAYS_10K`、[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]）。一覧・詳細（`stock.html`）とも、
+  `tanuki=false`の行はTANUKI VALUATIONの`latest.json`を読みに行かない
      ↓ TTMデータ（JSON）
 【バリュエーション計算層】
 ├─ common/sec_data/reader.py::SECReader.get_net_cash()  # BS項目（Cash/ST_Invest/

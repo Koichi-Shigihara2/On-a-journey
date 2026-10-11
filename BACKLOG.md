@@ -2234,6 +2234,27 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 - GITHUB_STEP_SUMMARYに成功・失敗の件数と失敗した銘柄・理由
 - System Health [I]に「eps=trueの銘柄のうち、generated_atがrun_status.started_atより前の行」を加え、1件以上で⚠️（重大度は`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`の仕組みに合わせる）
 
+#### 対応（2026-10-11、`ea5a58608b`）
+- `process_one_ticker()`は`(ticker, data, 理由)`を返す（理由は「データなし」か「例外: 型: メッセージ」）。`run()`が数え、全銘柄の実行は`run_status`
+  （scope=all・started_at・finished_at・requested・succeeded・failed〈ticker・reason〉）、`--ticker`の部分実行は`partial_run_status`（scope=partial・tickers）に書く。
+  **部分実行で`run_status`を上書きしない**（指示に無い追加。新規登録のStep 5bの1銘柄の実行で上書きすると、[I]が他の全銘柄を「未更新」にするため）
+- 各行の`generated_at`（UTC）は作り直した行だけ。終了コードは成功1件以上で0、成功0件（対象0件を含む）で1・summaryは書かない、冪等性ガードのスキップは0。
+  下流: TANUKI VALUATIONはAdjusted_EPS_Data_Updateのsuccessだけで起動する（`TANUKI_VALUATION_Update.yml`の`if:`）。一部の失敗では止まらない。
+  終了コード1のときはConsistency Check Gateとcommitも動かない。`register_ticker.py`のStep 5bは終了コードを見ていない（生成物の有無で判定）
+- GITHUB_STEP_SUMMARYに「対象・成功・失敗」と失敗の表
+- System Health [I]（`_check_i()`）: `run_status.started_at`より前の`generated_at`（無い行を含む）のeps=trueの行を「{日付}の実行で未更新n件: 銘柄(理由)」として⚠️（`_item_severity()`で1）。
+  **初回の扱い**: `run_status`の無いsummary.json（実装前の形、今夜のCIの実行まで）では、この判定をせず✅のまま詳細に「run_status無し（作り直されていない行の判定は次の全銘柄の実行から）」と出す
+- テスト`tests/test_eps_run_status.py` 14件（修正前のコードで13件が失敗、1件は互換性の確認で修正前から成功）
+- 手元で全銘柄の実行（`--force`、`XAI_API_KEY`・`ALPHA_VANTAGE_API_KEY`を空にして有料APIを呼ばない）: run_status 対象95・成功95・失敗0、行97→95（FIG・ZSを削除）、
+  値が変わった行はPEPだけ（10-08提出のQ3の10-Q、期末2026-09-05。`_freshness.json`でREFRESHED）。[I]は「✅ … 2026-10-11の実行で全95銘柄を更新」。
+  出力はcommitしていない（下の「未了」）
+
+#### 未了
+- 今夜（10-11〈日〉）のSEC Data Updateから連鎖するAdjusted_EPS_Data_Updateで、summary.jsonの`run_status`（scope=all・失敗の件数）、Step Summaryの表示、
+  行が95（FIG・ZSが無い）、各行の`generated_at`・`tanuki`・`latest_fiscal_quarter`を確かめる。その後のSystem Healthの[I]が「…の実行で全n銘柄を更新」（失敗があれば⚠️と銘柄）であること
+- 手元の実行のsummary.jsonをcommitしなかった理由: `last_updated`が24時間以内だと、全銘柄の実行は冪等性ガード（`_recently_completed_at()`）でスキップされる。
+  10-11 06:00 UTCの結果をcommitすると、今夜の連鎖（12:00 UTC以降）と月曜04:10 UTCの安全網の両方が何もせずに終わり、今週の更新とCIでの初回の確認ができなくなるため
+
 ---
 
 ## 優先度：中（こなれてきたら対応）
@@ -2826,6 +2847,15 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 #### 対応方針（チャット側の指示、2026-10-11）
 `generate_summary()`で`get_eps_tickers()`に含まれない銘柄の行を消し、消した銘柄をログに出す。`--ticker`の部分実行でも同じ（eps=trueの他の銘柄の行は残す）
 
+#### 対応（2026-10-11、`ea5a58608b`）
+- `generate_summary(allowed_tickers=...)`で、渡された銘柄に無い行を消し「eps=trueでない銘柄の行を削除: …」とログに出す。`run()`は全銘柄・部分実行とも
+  `get_registrable_tickers("eps")`を渡す（**指示の`get_eps_tickers()`から変えた**: `get_eps_tickers()`は登録処理中〈status=provisioning〉を除くため、
+  新規登録のStep 5bで作った行をその場で消してしまう。2026-10-11時点で両者は同じ95銘柄）。`allowed_tickers`を渡さない呼び出しは従来どおり消さない
+- 手元の全銘柄の実行で「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」、97→95行。テストは`tests/test_eps_run_status.py`（全銘柄・部分実行）
+
+#### 未了
+今夜のAdjusted_EPS_Data_Updateの後、本番のsummary.jsonが95行でFIG・ZSが無いこと（手元の結果はcommitしていない。[[EPS-SILENT-TICKER-FAILURE-1]]の「未了」）
+
 ---
 
 ### [EPS-INDEX-STALE-PERIOD-UNMARKED-1] EPS ANALYZERの一覧で、直近の決算が反映されていない銘柄（期末日が古い銘柄）に印が無い
@@ -2841,6 +2871,19 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 
 #### 対応方針（チャット側の指示、2026-10-11）
 期末日が今日から一定の日数より古い銘柄に印（色とツールチップ「直近の決算が未反映の可能性」）。日数は全銘柄の分布と提出期限・決算期の違いから決める
+
+#### 対応（2026-10-11、`ea5a58608b`）
+- 日数: 次の提出が10-Q（直近がQ1・Q2・Q4）なら期末から**145日**超、10-K（直近がQ3）なら**190日**超（`index.html`の`STALE_PERIOD_DAYS_10Q`・`STALE_PERIOD_DAYS_10K`）。
+  四半期の長さの上限（14週＝98日）＋提出期限（10-Q 45日・10-K 90日、非早期提出会社。大規模早期提出会社は40日・60日）＋余裕。
+  1本の日数（例: STONKS SILOの135日）にしないのは、10-Kの時期（2〜3月）にQ3の期末から135〜150日を過ぎた正常な銘柄まで印が付くため。
+  PEPのQ4（16週＝112日）でも112＋60＝172日 < 190。直近の四半期が分からない行（`latest_fiscal_quarter`の無い旧形式）は190日
+- 2026-10-11の分布（上の内容）に当てはめると、印はCDNS・RMBS・V・XOM（194日）・KO（191日）の5銘柄。次に古いPEP（120日、Q2）は対象外
+  （PEPはその後、10-08提出のQ3が手元の実行で入り36日）
+- 表示: 「決算日」のセルに「⚠」と黄色、ツールチップ「直近の決算が未反映の可能性（期末からn日。目安m日を超過）」。summaryの各行に`latest_fiscal_quarter`
+- Playwright（手元の全銘柄の実行のsummary.json）で印が上の5銘柄だけに付くことを確認
+
+#### 未了
+今夜のAdjusted_EPS_Data_Updateの後、本番の一覧で同じ5銘柄（SEC_LAGが解消していれば減る）に印が付くこと
 
 ---
 
@@ -3751,6 +3794,23 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 - 参照が無いことを確かめてAMDttm.jsonを削除
 - ツールチップを値に合わせる
 - フィールド名（`latest_filing_date`・`filing_date`）と中身（期末日）のずれは記録だけにする（消費者が多い: 一覧・tickers.html・stock.htmlの期間の絞り込み・TANUKIの`_find_four_quarters`系・report_consistency_check・audit・execution_metrics等）
+
+#### 対応（2026-10-11、`ea5a58608b`・`646a4c20fa`）
+- summaryの各行に`tanuki`（cik_lookup.csvのtanuki、`get_registrable_tickers("tanuki")`）。一覧は`tanuki === false`の行のlatest.jsonを読まない。
+  詳細（stock.html）はsummary.jsonを1回読み、その銘柄の行が`tanuki === false`なら読まない（行が無い・`tanuki`の無い旧形式では従来どおり読みに行く）
+- AMDttm.jsonを削除（`646a4c20fa`）
+- ツールチップ: 「決算日」→直近四半期の期末日（提出日ではない）と古い期末日の印の説明、「Adj EPS」→SECの開示（XBRL）から自前で算出した値（会社のNon-GAAP EPSではない）、
+  足し戻す項目（`config/adjustment_items.json`の株式報酬・無形資産償却・M&A統合費用・のれん減損・リストラ・訴訟・公正価値や為替の評価損益等）と
+  税効果（その四半期の実効税率＝税金費用÷税前利益、0〜50%の外なら21%、`tax_adjuster.py`）・希薄化後株式数で割ること
+- フィールド名と中身のずれは記録だけ（変えていない）。消費者（2026-10-11、STEP 0の0-5）: `latest_filing_date`は一覧（index.html）・`tickers.html`（列名「最新決算日」、ツールチップなし）。
+  `quarters[].filing_date`はstock.html（期間の絞り込み・YoY・ラベル）・`report_consistency_check.py`（CHECK-17・19等の直近の四半期の選択）・`audit.py`・`execution_metrics.py`・
+  TANUKI VALUATIONの`pipeline.py`（quarterly.jsonの並び）。summary.jsonの他の列は`tanuki_valuation/pipeline.py`（`_load_eps_map()`）・`tanuki_score/daily_pick.py`・
+  `tanuki_score/index.html`・`admin.html`（last_updated）が読む
+- Playwright（一覧・AAPL・RKLB・CDNS）で404・consoleエラー0件、RKLBはlatest.jsonを読みに行かない（一覧のlatest.jsonの取得は94件）
+
+#### 未了
+- 本番の404が消えるのは今夜のAdjusted_EPS_Data_Updateでsummary.jsonに`tanuki`が入った後
+- `tickers.html`の列名「最新決算日」も中身は期末日（今回は変えていない。名前のずれと同じく記録だけ）
 
 ---
 

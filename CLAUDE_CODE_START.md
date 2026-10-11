@@ -46,6 +46,14 @@ BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。Gi
 5. **10-12（月）13:00 JSTごろのTANUKI VALUATIONの再生成**（latest.jsonの`calculation_date`が10/11以降であることを先に確かめる）: 最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTSはNone、
    `[[TANUKI-MAXEPS-NI-SOURCE-1]]`）、QBTS・ONDSの「Fwd」注記と乖離「—」（`[[TANUKISCORE-PER-FORWARD-MIX-1]]`）、ONDSの希薄化率73.8%/年・`dilution_severity` critical・funda_score 50・
    グローストラップhigh（`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`、確認後に「未補正」の各件を回収不可能と検証済みとしてクローズ）、ONDS以外の判定値が不変（株価・財務の更新による分は分けて読む）
+6. **今夜（10-11〈日〉）のAdjusted_EPS_Data_Update**（1のSEC_Data_Updateの完了で起動、`[[EPS-SILENT-TICKER-FAILURE-1]]`ほか3件の初回の確認）: `gh run view --log`の
+   「[RunStatus] 対象 / 成功 / 失敗」の行と「eps=trueでない銘柄の行を削除: FIG, ZS」、ジョブのStep Summaryの「Adjusted EPS: 全銘柄 対象n / 成功n / 失敗n」（失敗があれば銘柄と理由の表）。
+   commitされたsummary.jsonに`run_status`（scope=all）があり、行が95（FIG・ZSが無い）、各行に`generated_at`・`tanuki`・`latest_fiscal_quarter`があること。
+   冪等性ガードで「意図的にスキップします」になっていないこと（10-11の手元の全銘柄の実行の結果は、これを避けるためcommitしていない）。
+   その後のSystem Healthの[I]が「✅ … {日付}の実行で全n銘柄を更新」（失敗があれば「⚠️ … 未更新n件: 銘柄(理由)」）で、
+   今朝までの「run_status無し」が消えていること。一覧で「決算日」の⚠がCDNS・RMBS・KO・V・XOM（SEC_LAGが解消していれば減る）にだけ付き、
+   ブラウザのconsoleにRKLB・ZS・FIGのlatest.jsonの404が出ないこと。確認後、4件（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・
+   `[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`）をBACKLOG_DONE.mdへ移す
 - ほかに: 次の平日のMarket Data Daily（10-12 20:25 UTC起動）の後、CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09の`_provisional`が外れ、
   report_consistency_checkのCHECK-62（確定時刻から11日を過ぎた暫定の行）が0件で、daily/に意図しない差分が無いこと（2026-10-11の対応a・b・c・e＋先物の平らな足、
   `[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`。既存の行への適用は10-11にcommit済み）。
@@ -54,6 +62,16 @@ BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。Gi
   （`[[CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1]]`）。
   次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行で、月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）。
   次のFOMC（10月下旬）までに`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
+
+**2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
+- 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）
+- STEP 0: 直近4回の実行（2回は冪等性ガードで何もしない）で銘柄ごとの失敗は0件。期末日が2026Q1のままの5銘柄はパイプラインの失敗ではなくSEC_LAG（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+- summary.jsonに`run_status`（全銘柄の実行）・`partial_run_status`（`--ticker`）、各行に`generated_at`・`tanuki`・`latest_fiscal_quarter`。終了コードは成功0件だけ1。
+  行は`get_registrable_tickers("eps")`に無いものを消す。System Health [I]は`run_status.started_at`より前の`generated_at`の行を⚠️（run_status無しなら判定しない）
+- 一覧の古い期末日の印は次が10-Qなら145日超・10-Kなら190日超。Adj EPS・決算日のツールチップを値に合わせ、tanuki=falseの銘柄はlatest.jsonを読まない
+- 手元の全銘柄の実行（有料APIなし）: 成功95・失敗0、97→95行、値の変化はPEPの新しい10-Qだけ。**summary.jsonはcommitしていない**（24時間の冪等性ガードで今夜の連鎖と月曜の安全網がスキップされるため）
+- `pytest tests/ src/subport/day_trade/test_logic.py` 2287件・audit.py exit 0・report_consistency_check.py NG=0（WARN 127件）。Playwright（一覧・AAPL・RKLB・CDNS）で404・consoleエラー0件
+- **残っている確認**: 上の「次回の確認手順」の6
 
 **2026-10-01（日中）の作業（チャット側の決定1〜3を実施）**
 - 実装Bを統合: マージ`305adcc3fb`、統合後処理`eb6cf8d98d`。14銘柄はブランチ側で09-29まで（DX-Y.NYBのみ09-30）だったため、夜間と同じ通常の
