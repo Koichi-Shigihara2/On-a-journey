@@ -2255,6 +2255,44 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 - 手元の実行のsummary.jsonをcommitしなかった理由: `last_updated`が24時間以内だと、全銘柄の実行は冪等性ガード（`_recently_completed_at()`）でスキップされる。
   10-11 06:00 UTCの結果をcommitすると、今夜の連鎖（12:00 UTC以降）と月曜04:10 UTCの安全網の両方が何もせずに終わり、今週の更新とCIでの初回の確認ができなくなるため
 
+#### 追記（2026-10-12朝の確認、未確認のまま）
+10-11のSEC_Data_Update（run `38157028361`）がXOMで失敗し（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）、連鎖のAdjusted_EPS_Data_Update（run `38157215214`）はskipped。
+run_status・Step Summary・95行・[I]はまだCIで確かめられていない。次の機会は10-12（月）04:10 UTCの安全網のschedule（summary.jsonの`last_updated`は10-04のため冪等性ガードに当たらない見込み）
+
+---
+
+### [SEC-XOM-CIK-HOLDING-REORG-1] XOMの登録者が持株会社（ExxonMobil Holdings Corp、新CIK 0002115436）に変わり、SEC_Data_Updateが新CIKのcompanyfactsで2023年度の凍結の検査に失敗して止まり、日曜の連鎖が全部skippedになった
+**優先度:** 高（毎週のSEC_Data_Updateとその連鎖〈Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION〉が、直すまで毎週止まる）
+**分類:** データ取得（法人再編によるCIKの切り替え） / common/sec_data（`fetcher.py::get_cik()`・`cik_history.json`・`parser.py::_apply_fixed_registry_freeze()`）・`config/cik_lookup.csv`
+**登録日:** 2026-10-12
+**発見:** 2026-10-12朝の確認（CLAUDE_CODE_START.mdの次回の確認手順1、SEC_Data_Updateのログ）
+
+#### 内容（2026-10-12に確認した事実）
+- SEC_Data_Update（run `38157028361`、schedule、10-11 16:49 UTC起動、**failure**）は「Run SEC Data Update」の段がexit 1。以降のConsistency Check Gate・commitはskipped。
+  下流の`38157215214`（Adjusted_EPS_Data_Update）・`38157215190`（Stonks Silo Update）・`38157215263`（HypeCore Update）・TANUKI VALUATION（3本）・TANUKI_Score_Update（3本）はすべてskipped。SEC Data Quality Audit（`38157215170`）だけsuccess
+- 止まった箇所: XOMで`RuntimeError: XOM 2023: fixed_registry.json登録済みだが今回の抽出結果に該当年度が存在しない（データ欠落の疑い）`（`parser.py::_apply_fixed_registry_freeze()`）。
+  XOMの後に処理する予定だったRMBS・ENTG・TER・KLAC・LRCXの5銘柄は処理されていない（98銘柄中93銘柄を処理）
+- ログでXOMは「SEC API取得中... (CIK: 0002115436)」「鮮度: REFRESHED（b）」。`config/cik_lookup.csv`のXOMは0000034088のまま。
+  CIKは`fetcher.py::get_cik()`がSECの`company_tickers.json`から引く（`_cik_cache.json`は.gitignoreのためCIでは毎回取り直す）
+- SEC側（2026-10-12に取得）: `company_tickers.json`のXOMは`cik_str` 2115436・「ExxonMobil Holdings Corp」。新CIKのsubmissionsは`tickers` ['XOM']で、2026-08-03の10-Q（期末06-30）・07-31以降の8-K等。
+  旧CIK 0000034088（EXXON MOBIL CORP）は`tickers`が空で、07-02に25-NSE（上場廃止の届出）・07-01にPOSASR。新CIKのcompanyfactsはus-gaap 94概念・NetIncomeLossのfyは2026だけ（filedの最大2026-08-03）
+- cik_lookup.csvの全銘柄とSECの`company_tickers.json`のCIKを照らすと、食い違いはXOMだけ
+- 凍結の検査（2023年度、`fixed_registry.json`のXOM 2023: total_assets等）は設計どおりに働き、新CIKの短い履歴で既存の年次データが上書きされるのを防いだ（CIの作業領域のデータはcommitされていない）
+- `[[SEC-COMPANYFACTS-API-LAG-1]]`のXOMのQ2の10-Q（accn `0000034088-26-000093`）は、SEC側の未反映ではなく、この登録者の切り替えで旧CIKのcompanyfactsに入らなかったものとみられる（新CIKのcompanyfactsにはfiled 2026-08-03がある）
+
+#### 関係する課題
+- `[[CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1]]`（BACKLOG_DONE.md）: MRVL・GOOGL・DELLの法人再編で、`common/sec_data/cik_history.json`に旧CIKを登録し、旧CIKのCompany Factsを統合する仕組み（AVGOも同系統）
+- `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（低）: 1銘柄の例外でupdate.pyがexit 1になり、全銘柄のcommitと連鎖が止まる形。今回それが実際に起きた
+
+#### 直し方の候補（未決定、実装していない）
+1. XOMを`cik_history.json`に登録（`legacy_ciks: ["34088"]`、持株会社化の注記）し、`cik_lookup.csv`のXOMのCIKを0002115436に。新旧のcompany_factsを統合して年次・四半期が欠けないか、凍結の25項目が変わらないかを確かめてから入れる
+2. あわせて`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（1銘柄の例外で全体を止めない）の優先度を見直す
+
+#### 次の実行への影響（2026-10-12時点の見込み）
+- 月曜の安全網: Adjusted_EPS_Data_Update（04:10 UTC、schedule、SEC Data Updateの結果に依存しない）とHypeCore（04:00 UTC）→TANUKI VALUATIONは動く見込み。
+  SECデータはcommitされていないため、XOM・新しい提出のあった銘柄のSECデータは前回（10-10）のまま
+- 直すまで、毎週日曜のSEC_Data_Updateが同じ箇所で止まる
+
 ---
 
 ## 優先度：中（こなれてきたら対応）
@@ -2811,6 +2849,12 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 - 5件のaccnを`config/warn_acknowledged.json`（WARN-60・銘柄＋accn、確認日2026-10-10）で確認済みにした（`fa9dbb7739`）。[M]の詳細には「確認済み」として表示され続ける。同じ銘柄の次の提出（Q3の10-Q等）が入らなければ、別のaccnとして再び警告される
 - 解消の確認: `_freshness.json`で5銘柄がREFRESHEDになったら、warn_acknowledged.jsonの5件を消して本項目をBACKLOG_DONE.mdへ移す
 
+#### 追記（2026-10-12、10-11のSEC_Data_Updateの確認。移設しない）
+- run `38157028361`（10-11 16:49 UTC起動）はXOMで失敗し（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）、`_freshness.json`は更新・commitされていない（generated_atは10-10T10:10:24Zのまま）
+- ログの判定: KO・CDNS・Vは「SEC API取得中」の後も「SEC_LAG（b）提出はあるがcompanyfacts APIに入っていない」（同じCIKのまま。SECの`company_tickers.json`とcik_lookup.csvのCIKは一致）
+- XOMは新CIK（0002115436）のcompanyfactsで「REFRESHED（b）」。XOMの未反映はSEC側の遅れではなく、持株会社への登録者の切り替えとみられる（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）
+- RMBSはXOMの後の順番のため処理されず、未確認
+
 ---
 
 （[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
@@ -3169,6 +3213,10 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 #### 直し方の候補（未決定）
 - 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
 - 失敗が一定の割合を超えたときだけexit 1にする
+
+#### 追記（2026-10-12）: 実害が出た
+2026-10-11のSEC_Data_Update（run `38157028361`）が、XOMの`parser.parse_and_save()`のRuntimeError（凍結の検査、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）でexit 1になり、
+93銘柄分の取り直しの結果もcommitされず、日曜の連鎖（Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてskippedになった。優先度（低）の見直しが必要
 
 ---
 

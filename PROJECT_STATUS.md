@@ -11,6 +11,17 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-12（朝の確認）**: 04:45 JST（10-11 19:45 UTC）に次回の確認手順の1〜7を時刻の順に確認（読み取りのみ）。
+  1: SEC_Data_Update（run `38157028361`、10-11 16:49 UTC起動）が**failure**。XOMの登録者が持株会社「ExxonMobil Holdings Corp」（新CIK 0002115436、SECの`company_tickers.json`のXOM）に変わり、
+  新CIKのcompanyfacts（FY2026だけ）で`fixed_registry.json`のXOM 2023の凍結の検査がRuntimeError。98銘柄中93銘柄を処理したところで停止（RMBS・ENTG・TER・KLAC・LRCXは未処理）、
+  `_freshness.json`は更新・commitされていない。KO・CDNS・Vは同じCIKのままSEC_LAG、XOMは新CIKでREFRESHED。cik_lookup.csvとSECのCIKの食い違いはXOMだけ。
+  2〜4: 連鎖のAdjusted_EPS_Data_Update（`38157215214`）・Stonks Silo Update（`38157215190`）・HypeCore Update（`38157215263`）・TANUKI VALUATION・TANUKI Score（各3本）はすべてskipped。
+  5: summary.jsonが更新されていないため確かめていない。6・7: 10-12 01:00・01:20 UTCのTANUKI TAIL、02:00 UTCのSystem Healthはまだ時刻前。
+  TANUKI VALUATIONの再生成（手順8）は13:00 JSTより前でまだ動いていないため、ここで止めた。
+  **新規登録**: `[[SEC-XOM-CIK-HOLDING-REORG-1]]`（高。直すまで毎週日曜のSEC_Data_Updateと連鎖が止まる。直し方の候補はcik_history.jsonへの旧CIKの登録とcik_lookup.csvの更新、実装していない）。
+  `[[SEC-COMPANYFACTS-API-LAG-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（実害が出た、優先度の見直しが必要）・`[[EPS-SILENT-TICKER-FAILURE-1]]`に追記。**移設0件**（すべて未確認のため）。
+  アクティブBACKLOG 36件→37件。`python common/sec_data/report_consistency_check.py --fail-on-ng` NG=0・`audit.py` exit 0（文書だけの変更）。
+  **次回確認**: CLAUDE_CODE_START.mdの「次回の確認手順」（2・4・5は月曜の安全網〈EPS 04:10 UTC・HypeCore 04:00 UTC→TANUKI〉、3は10-12 20:25 UTCのMarket Data Dailyの連鎖、1は`[[SEC-XOM-CIK-HOLDING-REORG-1]]`の対応の後）
 - **2026-10-11（夜、セッション終了時のまとめ）**: 午後の作業: System Healthの[J]の初回待ちと12時間の猶予（`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`、`e946cf100b`）と
   重大度の一本化（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）、daily/の暫定の行の対応a・b・c・e＋先物の平らな足（`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`、
   `981e0f0129`・`4dcbfd09da`、既存の行への適用`e20017b555`）、EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・
