@@ -47,8 +47,11 @@ BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。Gi
    `[[TANUKI-MAXEPS-NI-SOURCE-1]]`）、QBTS・ONDSの「Fwd」注記と乖離「—」（`[[TANUKISCORE-PER-FORWARD-MIX-1]]`）、ONDSの希薄化率73.8%/年・`dilution_severity` critical・funda_score 50・
    グローストラップhigh（`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`、確認後に「未補正」の各件を回収不可能と検証済みとしてクローズ）、ONDS以外の判定値が不変（株価・財務の更新による分は分けて読む）
 - ほかに: 次の平日のMarket Data Daily（10-12 20:25 UTC起動）の後、CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09の`_provisional`が外れ、
-  report_consistency_checkのCHECK-62（確定時刻から4日を過ぎた暫定の行）が0件であること（2026-10-11の対応a・b・c・e、`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`）。
-  既存の10行（09-07の先物2・土曜のJPY=X 2・ES/NQ/NIYの09-29・09-30の6）へのデータの適用は、チャット側の承認待ち（承認前にCIの夜間の取得が動けば同じ変更が入る）。
+  report_consistency_checkのCHECK-62（確定時刻から11日を過ぎた暫定の行）が0件で、daily/に意図しない差分が無いこと（2026-10-11の対応a・b・c・e＋先物の平らな足、
+  `[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`。既存の行への適用は10-11にcommit済み）。
+  NIY=Fの10-08（平らな足、暫定のまま）は10-17 04:00 UTC以降の夜間の取得で`_no_yahoo_bar`になる。
+  あわせて、次のMarket Pulseのエントリの後にcheck_dependency_map.pyのD-02（10-11時点でWTI 記録−0.09%・再計算+0.39%、金 1.53%・1.43%の❌）が一致に戻ること
+  （`[[CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1]]`）。
   次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行で、月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）。
   次のFOMC（10月下旬）までに`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
 

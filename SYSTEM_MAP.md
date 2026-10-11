@@ -2072,8 +2072,10 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
   消さずに`_provisional`を外して`_no_yahoo_bar: true`の印を付ける。保存の前に`is_symbol_trading_day()`で取引日かを確かめる
   （JPY=Xは土日を除く、先物はpandas_market_calendarsの`CME_TradeDate`、^N225は`JPX`）。
   **`_no_yahoo_bar`の行は値として使わない**: `reader._load_daily_payload()`（readerの全関数＝Market Pulse・TANUKI VALUATION・hypecore・
-  STONKS SILO・score_verifier・browser_checks）・`rotce._load_prices()`・`daily_guard.completeness()`・`fetcher.find_missing_trading_days()`
-  （CHECK-57）が除外する。確定時刻から4日を過ぎて残る暫定の行はreport_consistency_checkのCHECK-62（WARN）
+  STONKS SILO・score_verifier・browser_checks）・`rotce._load_prices()`・`daily_guard.completeness()`が除外する
+  （`fetcher.find_missing_trading_days()`〈CHECK-57〉は印の行を「行がある」と数え、抜けにしない）。先物のO=H=L=Cかつ出来高0の足（`is_flat_futures_bar()`、ほぼNIY=Fだけ）は確定の根拠にしない（置き換えず、
+  新しい行は暫定で保存、既存の行を上書きしない、7日後に`_no_yahoo_bar`）。確定時刻から11日（bの7日＋4日）を過ぎて残る暫定の行は
+  report_consistency_checkのCHECK-62（WARN）
 
   切替過程で`daily/`層が`auto_adjust=False`（未調整終値）で保存されて
   いることを発見し、当初「バグ」として登録したが、事実確認調査の結果

@@ -2349,7 +2349,9 @@ CL=F 35・GC=F 35（先物の確定値は清算値。夕方〈NY 18〜21時〉�
   - 除外を入れた: `common/market_data/reader.py::_load_daily_payload()`（readerの全関数。Market Pulse〈collect_and_send・breadth_calculator・
     sector_rotation・stage_conclusions・backfill_*〉・TANUKI VALUATION〈data_fetcher・pipeline の^TNX・score_verifier〉・hypecore・
     STONKS SILO〈valuation_fetcher〉・browser_checks〈check_dependency_map・market_pulse_elements〉はこれ経由）、`common/sec_data/rotce.py::_load_prices()`、
-    `common/market_data/daily_guard.py::completeness()`、`fetcher.find_missing_trading_days()`（CHECK-57。`repair_missing_trading_days()`は同じ日の印の行を置き換える）
+    `common/market_data/daily_guard.py::completeness()`
+  - 印の行を「行がある」と数える: `fetcher.find_missing_trading_days()`（CHECK-57）。当初は除外したが、同日（平らな足の追記の後）に戻した。
+    印の行はYahooに確定に使える足が無いことを確かめ済みで取り直しても埋まらず、NIY=Fの平らな足の日（半分以上）がCHECK-57の抜けとして増え続けるため
   - 対応なし: `Market_Data_Daily_Update.yml`（git add・ファイル数だけ）、`scripts/analysis/`の3本（daily_intraday_rows_scan・futures_roll_suspects・
     market_pulse_redesign。手動の一過性の分析で、market_pulse_redesignは固定のcommitのデータを読む）、attributes/だけを読むもの（audit・beta_fetcher・
     extract_key_facts・core_calculator）
@@ -2358,14 +2360,26 @@ CL=F 35・GC=F 35（先物の確定値は清算値。夕方〈NY 18〜21時〉�
   ^N225は`JPX`（`find_missing_trading_days()`と同じ）。2024-10〜2026-10のYahooの日足と比べ、^N225・JPY=Xは一致、先物はYahooにある足のうち
   2025-01-09（カーター元大統領の国葬）・2025-07-04の2日だけがCME_TradeDateに無い（今後この種の日の足は保存しない。既存の行は変えない）
 - e（report_consistency_checkのCHECK-62、WARN）: 確定時刻から`STALE_PROVISIONAL_WARN_DAYS`＝4日を過ぎて残る暫定の行（足なしの印の行は数えない）。
+  **同日に11日へ変更**（下の「追記: 先物の平らな足」。平らな足の行は7日後に足なしの印になるのが正常のため、bの7日＋4日）。
   4日は、週末と祝日の月曜で夜間の取得が無い間（金曜のJPY=Xの行は確定時刻から火曜の夜の取得まで約93時間）にWARNを出さないため。
   10-11の時点では上の10行がWARN（NG=0）
 - テスト（`tests/test_market_data_stale_provisional.py`、15件）: 修正前のコードで12件が失敗（`now`引数を外して実行しても失敗）、
   3件（取り直し不要なら取り直さない・7日以内は印を変えない・取得失敗なら印を付けない）は修正前から成功する過剰な変更の防止。修正後は15件成功
 
+#### 追記（2026-10-11、既存の行への適用。Koichi承認済み）
+手元で8銘柄（CL=F・GC=F・ES=F・NQ=F・NIY=F・JPY=X・DX-Y.NYB・^N225）の夜間の取得を1回実行した差分をcommitした（NIY=Fの09-29・09-30は
+Koichi判断で値の置き換えから外し、下の平らな足の扱いで値はそのまま・足なしの印）:
+- 足なしの印（値はそのまま）: CL=F・GC=Fの09-07、JPY=Xの08-15・10-03、NIY=Fの09-29・09-30
+- 確定値に置き換え: ES=F・NQ=Fの09-29（出来高だけ: ES 1,768,110→1,643,532、NQ 678,480→585,162）・09-30（取引時間中の値→確定値）、
+  CL=F・GC=F・ES=F・NQ=Fの10-08・10-09、NIY=Fの10-09、JPY=X・DX-Y.NYBの10-09（10-08・10-09は既存の5日窓の置き換えでも次の平日に起きる分）
+- 暫定のまま: NIY=Fの10-08（Yahooの足が平らな足。10-17 04:00 UTC以降に足なしの印）
+- 追加: ^N225の10-09（昨夜の時点で終値の無い足だったため未保存だった行。最新の足の保存による通常の追加で、a・b・cとは無関係）
+- 8銘柄の`market_data_violations_log.json`（通常の実行と同じ更新）
+- cの`CME_TradeDate`により、Yahooには足がある2025-01-09（カーター元大統領の国葬）・2025-07-04のような日の先物の足は、今後は保存しない
+  （既存の行は変えない。daily/には2025-01-09・2025-07-04・2023-11-23の先物の確定済みの行が残っている）
+
 #### 未了（2026-10-11）
-- 既存の行への適用（手元で取得を1回実行した差分）は、チャット側の承認を受けてからcommitする
-- 次の平日のMarket Data Dailyの後、CHECK-62が0件で、10-08・10-09の行の印が外れていること
+- 10-12 20:25 UTCのMarket Data DailyのCIの後に、CHECK-62が0件で、daily/に意図しない差分が無いことを確かめる
 
 ---
 
@@ -2555,13 +2569,31 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 #### 対応（2026-10-11）
 - 「確定時刻を過ぎても印が残る」部分は[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]の対応（a: 窓の外の暫定の行の取り直し、b: 足なしの印、c: 取引日の確認、
-  e: CHECK-62）で解消する。ES=F・NQ=F・NIY=Fの09-29・09-30は、aでYahooの今の足に置き換わる（dの一過性の取り直しは不要）
+  e: CHECK-62）で解消する。ES=F・NQ=Fの09-29・09-30は、aでYahooの今の足に置き換わる（dの一過性の取り直しは不要）。NIY=Fの09-29・09-30は下の追記（平らな足）のとおり足なしの印
 - 「前の行と同じ出来高」と「NIY=Fの平らな足（O=H=L=C・出来高0）」はYahooの返す値そのものの問題のため、今回の対象外（Koichi決定、2026-10-11）。
-  観察を続ける。aの置き換えで、ES=F・NQ=Fの09-29の出来高はYahooの今の値（ES 1,643,532・NQ 585,162）になり、NIY=Fの09-30はYahooの今の平らな足
-  （66810・出来高0）になる（試算）
+  観察を続ける。aの置き換えで、ES=F・NQ=Fの09-29の出来高はYahooの今の値（ES 1,643,532・NQ 585,162）になる。NIY=Fの09-30がYahooの今の平らな足
+  （66810・出来高0）に置き換わる試算だった件は、下の追記で置き換えないことにした
+
+#### 追記（2026-10-11、先物の平らな足を確定の根拠にしない。Koichi判断）
+- 数え上げ（読み取り）: Yahooの直近2年の日足（全593銘柄）でO=H=L=Cかつ出来高0の足が出るのはNIY=F（501本中279本、毎月0〜22本）と
+  ^TNX（4本、2024・2025年の10月・11月の債券市場の休日〈コロンバスデー・退役軍人の日〉）だけ。CL=F・GC=F・ES=F・NQ=Fと個別株・ETFは0本。
+  手元のdaily/ではほかにAVB・EQR（2026-08の4・3行）・FERG（2021年の27行）・SW（2024年の424行）・BBAI（2行）・GC=F（2021-09-10・2022-05-25）が
+  平らな足だが、Yahooの今の足には出来高がある（過去の取得の時点の値）。出来高が常に0の銘柄はJPY=X・DX-Y.NYB・^SOX・^TNX・^VIX・^VIX9D
+- 適用の範囲は**先物（FUTURES_SYMBOLS）だけ**: 出来高が常に0の銘柄は出来高で確定を判断できず、^TNXの平らな足は債券市場の休日の
+  Yahooの表し方（確定値として扱ってよい）。個別株・ETFはYahooに平らな足が無い。先物で実際にかかるのはNIY=Fだけ
+- 扱い（`fetcher.is_flat_futures_bar()`）: 置き換え（a）では平らな足で置き換えず`_provisional`も外さない。bでは「足が無い」のと同じに数え、
+  確定時刻から7日を過ぎたら`_no_yahoo_bar`。新しい行は**暫定として保存**する（既存の作りで^N225の出来高0の足を暫定で保存するのと同じ。
+  `is_provisional_bar()`がTrueを返す）。最新の足が平らな足で同じ日の行が既にあれば上書きしない
+- NIY=Fの09-29・09-30の結果: 上書きされず、確定時刻（10-01・10-02 04:00 UTC）から7日を過ぎているため`_no_yahoo_bar`（値は既存のまま。
+  09-29は保存時から平らな足66230・出来高0、09-30は取引中の値66995・出来高5,911）。NIY=Fは日足の半分以上が平らな足のため、今後も
+  NIY=Fの行の半分程度が7日後に足なしの印になる見込み（daily/のNIY=Fを読むものは無い。段階8の先物の表示は15分足を直接取得）
+- CHECK-62の猶予を4日→11日（bの7日＋夜間の取得が無い最長の4日）に変更: 平らな足の行が4〜7日目に毎回WARNになるのを避けるため
+- テスト（6件）: 修正前に4件が失敗（平らな足で置き換えない・7日後に足なしの印・新しい平らな足は暫定・既存の行を上書きしない）、
+  2件（普通の足は確定・先物以外の出来高0の銘柄は対象外）は修正前から成功。修正後は6件成功
 
 #### 未了（2026-10-11）
 - 出来高の重複とNIY=Fの平らな足の観察（Yahooの値が後から直るか）
+- 10-12 20:25 UTCのMarket Data DailyのCIの後に、CHECK-62が0件で、daily/に意図しない差分が無いことを確かめる
 
 ---
 
@@ -2853,6 +2885,9 @@ D-04は基準日より新しい行は切り詰めて比べるが、基準日以�
   10-05のMarket Pulseがランナー未割り当てで失敗したため、kaihatsuは10-06 05:28〜10-07 05:32 JSTの間「エントリ10-03・daily/ 10-06以降」の状態だった
 - 毎晩の同じ型: Market Dataのpushから Market Pulseのpushまでの約3分間（例 `258a0c5b82`）は、WTI・金・ドル円とD-04が不一致になる
 - 一致したcommit: `99402b01b9`（10-07朝、一致61）・`ffab0e2ad6`（10-08、一致61・不一致0）
+- 実例（2026-10-11、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]の既存の行への適用の後）: 10-09のエントリはCL=F・GC=Fの10-09の暫定値で前日比を記録していた。
+  確定値への置き換え（CL 91.41→91.85、GC 4220.6→4216.3）の後、D-02はWTI 記録−0.09% vs 再計算+0.39%、金 記録1.53% vs 再計算1.43%で❌（一致61・不一致1）。
+  次のMarket Pulseのエントリの後に一致に戻るかを確かめる（CLAUDE_CODE_START.mdの次回の確認）
 
 [[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]とは別の課題（あちらは期待値の計算方法が画面の判定の変更に追いついていない問題、
 こちらは計算方法は正しく比べる相手のdaily/が後から書き換わる時点のずれ。直し方も担当のファイルも違う）。

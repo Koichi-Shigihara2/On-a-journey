@@ -153,8 +153,8 @@ daily/の行のうち、日足の確定前に保存したものには`_provision
 段階8の先物・ドル円の最新値（実装C、15分足）も同じ判定で種類を付ける（data_qualityの判定からは元々外している）。
 暫定の行は翌晩以降の取得で確定値に置き換わる（先物は`FUTURES_FINAL_DELAY`のため、確定の印が付くのは翌々晩の取得）。
 2026-10-11から、5日窓より古い暫定の行も最古日から取り直し、Yahooに足が無いまま確定時刻から7日を過ぎた行は`_no_yahoo_bar`の印に変える
-（読む側は除外）。取引日でない足（土曜のJPY=X・CMEの休場日の先物・JPXの休場日の^N225）は保存しない。確定時刻から4日を過ぎて
-残る暫定の行はreport_consistency_checkのCHECK-62（WARN）。[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]
+（読む側は除外）。取引日でない足（土曜のJPY=X・CMEの休場日の先物・JPXの休場日の^N225）は保存しない。先物のO=H=L=Cかつ出来高0の足は
+確定の根拠にしない（7日後に`_no_yahoo_bar`）。確定時刻から11日を過ぎて残る暫定の行はreport_consistency_checkのCHECK-62（WARN）。[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]
 
 **`FUTURES_FINAL_DELAY`（+24時間）を維持する理由**（2026-09-30決定）: 実測では先物の日足はニューヨークの翌日0時に清算値へ置き換わるため、0にもできる。しかし0にすると、清算値の反映が遅れた日（翌日0時を過ぎても取引中の値のままの日）に、取引中の値が確定値として保存され、以後置き換わらない。+24時間の不利益は暫定の印が一晩長く残るだけ（値は翌晩の取得で清算値に置き換わり、Market Pulseでは設計上の暫定値としてdata_qualityをpartialにしない）。[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]
 
