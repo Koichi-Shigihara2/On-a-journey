@@ -444,6 +444,8 @@ def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], 
     records = []
     for r in payload.get("records", []):
         b = by_date.get(r.get("date"))
+        if b is not None and is_flat_futures_bar(symbol, b):
+            b = None   # 先物の平らな足では置き換えない（値も印もそのまま。7日後に足なしの印になる）
         if r.get("_provisional") and b is not None:
             new = _mark_provisional(symbol, dict(b), now)
             if symbol in FUTURES_SYMBOLS and r.get("contract"):
@@ -578,10 +580,22 @@ def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
     return close
 
 
+def is_flat_futures_bar(symbol: str, bar: Dict[str, Any]) -> bool:
+    """先物のO=H=L=Cかつ出来高0の足（2026-10-11、Koichi判断）。暫定の行を確定にする根拠として扱わない。
+    Yahooの直近2年の日足ではNIY=Fだけに出る（501本中279本）。取引中の値（出来高つき）で保存した行が、後でこの足に変わる
+    （NIY=Fの09-30: 66995・出来高5,911 → 66810・出来高0）。出来高が常に0の銘柄（JPY=X・DX-Y.NYB・^TNX等）は対象外。"""
+    if symbol not in FUTURES_SYMBOLS or bar.get("volume"):
+        return False
+    o, h, l, c = (bar.get(k) for k in ("open", "high", "low", "close"))
+    return c is not None and o == h == l == c
+
+
 def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:
-    """確定前の日足か（確定時刻より前に取得した足、または^N225の出来高0の足）。"""
+    """確定前の日足か（確定時刻より前に取得した足、^N225の出来高0の足、先物の平らな足）。"""
     now = now or datetime.now(timezone.utc)
     if symbol == "^N225" and not bar.get("volume"):
+        return True
+    if is_flat_futures_bar(symbol, bar):
         return True
     final = bar_final_at(symbol, bar["date"])
     return final is not None and now < final
@@ -867,7 +881,9 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
         refetch = refetched.get(symbol)
         if refetch or raw_bars:
             # b: Yahooが返した日付（取引日かどうかを問わない）と、取得した範囲の始め
-            bar_dates = {b["date"] for b in (refetch["bars"] if refetch else []) + raw_bars}
+            # 先物の平らな足は「足が無い」のと同じに扱う
+            bar_dates = {b["date"] for b in (refetch["bars"] if refetch else []) + raw_bars
+                         if not is_flat_futures_bar(symbol, b)}
             covered_from = refetch["start"] if refetch else raw_bars[0]["date"]
         if not symbol_bars and not refetch:
             if not raw_bars:
@@ -913,6 +929,9 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
                 _append_daily_record(symbol, filled, base_dir=base)
                 print(f"   [{symbol}] 抜けていた{b['date']}の終値を追加")
         bar = valid_bars[-1]
+        if is_flat_futures_bar(symbol, bar) and bar["date"] in have:
+            print(f"   [{symbol}] {bar['date']}の足がO=H=L=C・出来高0のため、既存の行を上書きしない")
+            continue
 
         record = _mark_provisional(symbol, dict(bar), now)
         if symbol in FUTURES_SYMBOLS:
@@ -1052,8 +1071,9 @@ def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> Li
     base = _resolve_base_dir(base_dir)
     payload = _load_json(os.path.join(base, "daily", f"{symbol}.json"), default=None)
     records = (payload or {}).get("records", [])
-    # 足なしの印（`_no_yahoo_bar`）の行は値として使わないため、行があるとは数えない
-    have = {r["date"] for r in records if r.get("date") and not r.get(NO_BAR_MARK)}
+    # 足なしの印（`_no_yahoo_bar`）の行は「行がある」と数える（Yahooに確定に使える足が無いことはbで確かめ済みで、
+    # 取り直しても埋まらない。NIY=Fは平らな足の日が半分以上あり、抜けとして数えるとCHECK-57が増え続ける）
+    have = {r["date"] for r in records if r.get("date")}
     if not have:
         return []
     lo, hi = min(have), max(have)
@@ -1099,8 +1119,7 @@ def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = No
                 rec = dict(by_date[d])
                 rec["_validation_warnings"] = validate_price_record(rec)
                 new_records.append(rec)
-            kept = [r for r in payload.get("records", []) if r.get("date") not in filled]   # 同じ日の足なしの印の行は置き換える
-            payload["records"] = sorted(kept + new_records, key=lambda r: r.get("date", ""))
+            payload["records"] = sorted(payload.get("records", []) + new_records, key=lambda r: r.get("date", ""))
             _atomic_write_json(path, payload)
         result[symbol] = {"filled": filled, "unresolved": [d for d in missing if d not in by_date]}
         print(f"   [{symbol}] 抜けていた取引日{len(missing)}日: 取得{len(filled)}日・取得できず{len(missing) - len(filled)}日")

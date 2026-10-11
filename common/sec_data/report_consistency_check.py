@@ -1607,7 +1607,7 @@ def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tu
     return out
 
 
-STALE_PROVISIONAL_WARN_DAYS = 4
+STALE_PROVISIONAL_WARN_DAYS = 11   # bの7日（NO_BAR_MARK_DAYS）＋夜間の取得が無い最長の間（週末と祝日の月曜）の4日
 
 
 def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str]]:
@@ -1618,8 +1618,9 @@ def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[
     背景: 置き換えが5日窓に入った日付だけで、窓から外れた行・Yahooに足が無い日付の行（CL=F・GC=Fの09-07、JPY=Xの08-15・10-03、
     ES=F・NQ=F・NIY=Fの09-29・09-30）が確定時刻を過ぎても残り、ブラッシュアップの手作業でしか見つからなかった。
     夜間の取得が取り直し（a）・足なしの印（b、`_no_yahoo_bar`）で片づけるため、残っていればそれが効いていない。
-    足なしの印の行は数えない。4日の猶予は、週末と祝日の月曜で夜間の取得が無い間（金曜のJPY=Xの行は確定時刻から
-    火曜の夜の取得まで約93時間）にWARNを出さないため。
+    足なしの印の行は数えない。11日の猶予＝bの7日＋夜間の取得が無い最長の間の4日（金曜のJPY=Xの行は確定時刻から
+    火曜の夜の取得まで約93時間）。先物の平らな足（O=H=L=C・出来高0）の行は確定にならず7日後に足なしの印になるのが正常のため
+    （NIY=FはYahooの日足の半分以上が平らな足）、WARNはa・bで片づくはずの期間を過ぎた行だけにする（2026-10-11、当初の4日から変更）。
     Returns: [(symbol, WARNメッセージ)]（1行1件）
     """
     from common.market_data.fetcher import bar_final_at, NO_BAR_MARK
@@ -3459,7 +3460,7 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", [], gap_msgs))
         total_warn += len(gap_msgs)
 
-    # CHECK-62: daily/の暫定の行が確定時刻から4日を過ぎても残っている（NG化しない）。銘柄単位の台帳照合（match＝日付）
+    # CHECK-62: daily/の暫定の行が確定時刻から11日を過ぎても残っている（NG化しない）。銘柄単位の台帳照合（match＝日付）
     stale_msgs = []
     for _t, _w in _check_stale_provisional_rows():
         _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
