@@ -26,6 +26,26 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
+**次回の確認手順（2026-10-11 ブラッシュアップ時点の最新。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+1. **今夜（10-11〈日〉12:00 UTC予定）のSEC_Data_Update**（PROJECT_STATUS.mdの2026-10-10夜の「次回確認」①）: `gh run view --log`で、全銘柄に「submissions取得完了」、
+   「SEC API取得中」（company_factsの取り直し）が新しい提出のあった銘柄とSEC_LAGの5銘柄（CDNS・KO・RMBS・V・XOM）だけ、最後の「鮮度:」の行の内訳、
+   `common/sec_data/data/_freshness.json`のgenerated_atが更新されてcommitされていること。5銘柄がREFRESHEDになったら、
+   `config/warn_acknowledged.json`の5件（`"check": "WARN-60"`）を消して`[[SEC-COMPANYFACTS-API-LAG-1]]`を移設する
+2. **次のStonks_Silo_Update（CI）**（同②）: results.jsonからIOTが外れて24銘柄、全銘柄に`financial_as_of`（`latest_quarter_end`がnullでない・`stale`の判定あり）と
+   `profitability_path.path_score_basis`、10x候補13銘柄（ASTS 67.0・RKLB 79.2・IONQ 82.7）、ヒートマップの10系列のyoyが値のまま。1でSECデータが更新された銘柄は財務の更新による差を分けて読む
+3. **System Healthの[M]**（同③）: 10-11 02:00 UTCの実行（`38103735425`）で`[M] SecFreshness: ✅ 98銘柄（REFRESHED 10・SEC_LAG 5・FETCH_FAILED 0）`、確認済み5件を表示。
+   終了コード2は[J]によるもので[M]ではない。1の後の実行でも✅で、[M]のせいで終了コードが2にならないことを確かめる。
+   あわせて[J]: 新設の`TANUKI_TAIL_SEC_Items.yml`が一度も起動していないのに10-09から🔴（`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`の2026-10-11の追記）。10-12 01:20 UTCの初回の実行の後の[J]を記録する
+4. **10-12（月）01:00・01:20 UTCのTANUKI TAIL 2本**: 01:00の`TANUKI_TAIL_SEC_Ctrl`のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・success（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）、
+   01:20の`TANUKI_TAIL_SEC_Items`の初回の定時の実行のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなし（`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`）
+5. **10-12（月）13:00 JSTごろのTANUKI VALUATIONの再生成**（latest.jsonの`calculation_date`が10/11以降であることを先に確かめる）: 最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTSはNone、
+   `[[TANUKI-MAXEPS-NI-SOURCE-1]]`）、QBTS・ONDSの「Fwd」注記と乖離「—」（`[[TANUKISCORE-PER-FORWARD-MIX-1]]`）、ONDSの希薄化率73.8%/年・`dilution_severity` critical・funda_score 50・
+   グローストラップhigh（`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`、確認後に「未補正」の各件を回収不可能と検証済みとしてクローズ）、ONDS以外の判定値が不変（株価・財務の更新による分は分けて読む）
+- ほかに: 次の平日のMarket Data Dailyの後、CL=F・GC=Fの10-08・10-09とJPY=Xの10-09の`_provisional`が外れていること（`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`）。
+  次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行で、月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）。
+  次のFOMC（10月下旬）までに`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
+
 **2026-10-01（日中）の作業（チャット側の決定1〜3を実施）**
 - 実装Bを統合: マージ`305adcc3fb`、統合後処理`eb6cf8d98d`。14銘柄はブランチ側で09-29まで（DX-Y.NYBのみ09-30）だったため、夜間と同じ通常の
   日次取得（`fetcher.py <14銘柄> --layer daily`）で09-30を追加（`--repair-missing-days`は途中の抜けだけが対象で末尾は埋めない。空きは1営業日）。

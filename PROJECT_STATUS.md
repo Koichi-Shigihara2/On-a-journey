@@ -11,6 +11,24 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-11（ブラッシュアップ）**: 未明に`[[ROTCE-QUARTERLY-ANNUALIZED-1]]`の追加対応（チャット側の決定1〜3: 自社比の目安を比較用ROTCE〈TTM、5つの四半期末のTCEの平均〉で比べる、
+  GOOGL・LITEのLayer3の値を原本と照合〈どちらも正しい〉、推移チャートの縦軸を5〜95パーセンタイルに。`dbcb26f19d`・`7d8b4af63a`、記録`876e0ef108`）を行い、本番のURLで
+  SOFI・GOOGL・LYFTの個別ページとTANUKI SCOREの散布図を確認した。照合で見つかったGOOGLの強制転換優先株は`[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]`（低）に登録。
+  ブラッシュアップでの実地確認: TANUKI SCOREの本番の画面でFCF列が✗17・△床1（S）・✓78、System Healthの[J]は10-08に✅（cancelledを数えない判定が動いた）が、10-09〜10-11は
+  新設の`TANUKI_TAIL_SEC_Items.yml`（実行0件）を「成功なし」として🔴（監視18件）、daily/の暫定の印が確定時刻を過ぎても7行に残る、先物の限月の乗り換えは09-30以降なし、
+  MACRO PULSEの月次3指標（Michigan速報・NFP・Permits）を10-06以降に書いた実行なし、CHECK-47は0件（BKNG・FCXは09-24に解消済み）。
+  **移設（3件）**: `[[ROTCE-QUARTERLY-ANNUALIZED-1]]`・`[[ROTCE-PTBV-1]]`（「赤字銘柄を除くか」は追補`e6378a614d`で決定済みと明記）・`[[TANUKISCORE-FCF-COL-FLOOR-1]]`。
+  **移設を見送り、確認結果を追記**: `[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`（上の[J]の🔴、Overallの行と終了コード2の食い違い）・`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`（7行）・
+  `[[MARKETDATA-FUTURES-ROLL-1]]`（乗り換えがまだ無い）・`[[MACRO-PULSE-SLOT-ROWS-1]]`（確認待ち）。
+  **新規登録**: `[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]`（低、ROTCE-PTBV-1の残りの観察: KO・AVAV・PLTR・Vのタグ、優先配当）。
+  **優先度の区分の整理**: 見出しの区分と「**優先度:**」の行の食い違い8件を、区分の側を移して解消（高へ: SYSHEALTH・TAIL-CTRL・MACRO-PULSE-SLOT-ROWS、
+  低へ: TTM-DATA-DRIFT・TANUKI-BETA-BASIS-FIELDS-UNLABELED・SBC-TAG-STOCKOPTIONPLAN・ROTCE-PREFERRED-CONVERTIBLE-TAG。ROTCE-QUARTERLY-ANNUALIZEDは移設）。
+  ほかに`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`の未了を9銘柄に、`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`に未了、`[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`に追記。
+  CHAT_RULES.mdのブラッシュアップの整合性確認に2点（区分と優先度の行の一致・解消済みの事項が未了に残っていないか）、SYSTEM_MAP.mdにROTCE・P/TBV（rotce.py・company_reported_metrics.json・CHECK-61）の節。
+  アクティブBACKLOG 31件→29件、移設漏れ0件。`python common/sec_data/report_consistency_check.py` NG=0（WARN 127件、文書だけの変更のためpytestは実行していない）。
+  **次回確認**（CLAUDE_CODE_START.mdの「次回の確認手順」）: ① 今夜（10-11 12:00 UTC予定）のSEC_Data_Update（2026-10-10夜の①）と`[[SEC-COMPANYFACTS-API-LAG-1]]`の5銘柄、② 次のStonks_Silo_Update（同②）、
+  ③ System Healthの[M]（10-11 02:00 UTCの実行で✅済み、SEC_Data_Updateの後も✅か）と[J]、④ 10-12 01:00・01:20 UTCのTANUKI TAIL 2本、
+  ⑤ 10-12 13:00 JSTごろのTANUKI VALUATIONの再生成（MAXEPS・PER-FORWARD・LAYER2のONDS）
 - **2026-10-10（夜、セッション終了時のまとめ）**: `[[SEC-FETCH-CACHE-MTIME-CI-1]]`（SEC_Data_UpdateがCIでSEC APIを一度も呼んでいなかった件。submissionsで新しい提出を検知した銘柄だけcompany_factsを取り直す・`_freshness.json`・CHECK-60・System Health [M]、`61d0a085d6`〜`f7c4789b63`）と、
   STONKS SILOの7件を完了: `[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`（財務の基準日・生存期間の書式）、`[[STONKS-HEATMAP-FQ-LABEL-1]]`（前年同期比・ラベルを期末日で）、`[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]`・`[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]`
   （黒字化の列をOCF／純益の2段に・「純益 ✓」）、`[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]`（③の点数をOCFマージンでの黒字化推定に、判定の変化6件）。

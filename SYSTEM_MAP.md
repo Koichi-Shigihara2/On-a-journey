@@ -850,6 +850,25 @@ SCOREが`BUY`と判定されているが、**これは測定されたモート�
 
 ---
 
+## ROTCE・P/TBV（参考表示、`common/sec_data/rotce.py`）（2026-10-11追記）
+
+判定（TANUKI SCOREのcategory・funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATIONの計算には使わない参考表示
+（`[[ROTCE-PTBV-1]]`・`[[ROTCE-QUARTERLY-ANNUALIZED-1]]`、いずれも2026-10-11にBACKLOG_DONE.mdへ）。定義の正はモジュール冒頭のdocstring。
+
+- 入力: Layer3（`layer3_builder.build_ticker_store`。TCEの控除項目goodwill・intangible_assets_excl_goodwill・preferred_stock・minority_interestは
+  2026-10-10にLayer2〈parser.pyのbs〉・Layer3〈sec_concept_definitions.json〉へ追加）、company_factsの普通株主帰属純利益のタグ、
+  日次株価（`common/market_data/daily/`）、分割履歴（`config/split_history.yaml`）、会社発表のROTCE（`config/company_reported_metrics.json`）
+- 実行: `Market_Data_Daily_Update.yml`の中で`python common/sec_data/rotce.py`（日次に全銘柄を再計算し、`docs/common/sec_data/rotce/`をcommit）
+- 出力: `docs/common/sec_data/rotce/{TICKER}.json`（四半期ごとのROTCE〈四半期の年率〉・比較用ROTCE〈TTM〉・P/TBV・自社比の目安・`company_reported`）と
+  `_summary.json`（散布図用。「_」で始まるため`docs/.nojekyll`が必要、`[[PAGES-JEKYLL-UNDERSCORE-1]]`）
+- 表示: TANUKI SCOREのROTCE×P/TBV散布図（`docs/value-monitor/tanuki_score/index.html::renderRotcePanel()`）、
+  EPS Analyzerの個別ページの推移・会社発表の表（`docs/value-monitor/adjusted_eps_analyzer/stock.html`）
+- `config/company_reported_metrics.json`: 会社が発表したROTCE（現在はSOFIの四半期の値・ガイダンス・長期目標、出典つき）を手で登録する。
+  新しい四半期の資料が出たら`values`に1行足す。登録漏れは`report_consistency_check.py`のCHECK-61（WARN、NG化しない）が
+  「直近の四半期末の会社発表が未登録」として知らせる
+
+---
+
 ## データフロー（上流→下流）
 【SECデータ取得層】
 SEC EDGAR

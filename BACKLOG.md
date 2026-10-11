@@ -1865,11 +1865,243 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-## 優先度：中（こなれてきたら対応）
+### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
+**優先度:** 高
+**状態:** 実装完了・実地確認待ち（2026-10-07）。直した後の最初のSystem Health Checkで[J]が正しい結果を出し、Discordの1行でJ・Kが切れずに読めることを確かめるまでBACKLOG_DONE.mdへ移さない
+**分類:** 監視 / System Health・GitHub Actions
+**登録日:** 2026-10-06（同日、チャット側の確認を受けて実測と件名を訂正）
+**発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
+
+#### 内容
+`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了した実行1件
+（`_fetch_latest_run()`、`per_page=1&status=completed`）の`conclusion`だけを見て、`success`・`skipped`以外を失敗にする。
+Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動・休場日の起動）は
+自分で取り消す（cancelled）設計になった。System Healthの起動時点で直近の1件がこの取り消しだと[J]が🔴になり、
+`main()`は`return 2 if (not ok_a or not ok_j) else 1`でCRITICAL（exit 2）を返す。
+見るのは最新の1件だけなので、1日に何本取り消しがあっても「失敗1件」になる。
+
+#### 実測（System Health Checkの日次の実行のログと、その時点で[J]が見たMarket Data Dailyの実行、2026-10-06確認）
+| System Health（UTC） | [J] | 見た実行 | 理由 |
+|---|---|---|---|
+| 10-06 03:09 | 🔴 | `37406580032`（02:56の保険のschedule、cancelled） | ガード「終値はそろっている」 |
+| 10-05 02:09 | 🔴 | `37168962405`（10-04 01:45、トークンの動作確認の手動実行、cancelled） | ガード「NYSE休場日」 |
+| 10-04 02:46 | 🔴 | 同上`37168962405` | 同上 |
+| 10-03 02:08 | ✅ | `37087907001`（01:55の取得、success） | — |
+| 10-02 02:20 | 🔴 | `36954558060`（02:12、cancelled） | ガード「そろい済み」 |
+| 10-01 02:14 | 🔴 | `36804310278`（02:07、cancelled） | ガード「そろい済み」（ほかにAdjusted_Eps_Analyzer_update.ymlの未実行超過） |
+
+- 09-29の🔴はMarket_Pulse_Update.yml(failure)（本物）、09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）、09-28は✅
+- 監視件数は10-04から16→13。`791faa1f02`（金曜の保険のcronを削除）でMarket Pulse・Stonks Silo・TANUKI VALUATIONの3本からcronが無くなり、
+  cronのあるワークフローだけを監視する[J]の対象から外れた（`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`に追記）
+- Discordの1行（`build_one_line()`）は各項目の詳細を先頭20文字で切る（`"short": det_j[:20]`）ため、「13件監視 / 失敗1件: Market…」となり、
+  どのワークフローのどのconclusionかが通知から読めない
+- 毎日のWARNINGの常時の原因は[F] TailCtrl（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）と[K] TickerAudit（APGE・CON・SN・WSTの見直し候補）で、
+  本件の対象外。System Health Checkの実行は[J]が正常でも[F]・[K]によりexit 1で、直近40回すべてfailure
+
+#### 直し方の案（チャット側）
+1. ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
+   `_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
+   failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
+2. Discordの1行の詳細の20文字の切り詰め（`det_j[:20]`）: [J]が異常のときは、ワークフロー名とconclusion（または未実行の日数）が
+   読める長さで出す（例: 異常のワークフローを`名前(conclusion)`の形で全部並べる、または[J]だけ切り詰めない）。
+   他の項目（`det_f[:20]`等）も同じ切り方なので、まとめて見直すかは実装時に決める。
+
+#### 追記（2026-10-07）: `status=completed`で絞った最新の1件が古い（[J]の別の誤り）
+- 見つけた経緯: 直し方の読み取り調査で、[J]の関数をローカルで実行したところ「Adjusted_Eps_Analyzer_update.ymlが13日未実行」と出たが、
+  `gh run list`では10-05に成功していた。同じAPIを呼び比べて、`status=completed`の絞り込みの結果が古いことが分かった
+- 実測（2026-10-07、認証付き）: MACRO_PULSE_Update.ymlの`runs?per_page=1&status=completed`は**09-24 17:49の実行**（total_count 411）を返し、
+  絞り込みなし・`created>=2026-10-01`はどちらも**10-06 18:52の実行**（total_count 487）を返した。認証なしでは、Adjusted EPSでも09-24の実行が返った
+- 本番でも起きていた: 09-30の[J]の「MACRO_PULSE_Update.yml(7日/毎日閾値3日)」、10-01の「Adjusted_Eps_Analyzer_update.yml(11日/週次閾値10日)」は、
+  どちらも実際には数日以内に成功していた（誤った未実行超過）。この2件は本件の「実測」の表の注記にも書いていたが、[J]の出力をそのまま引用していた
+- System Health Checkの実際の起動は予定の23:30 UTCではなく、直近は02:00〜03:00 UTC（GitHubのscheduleの遅れ）
+
+#### 対応（2026-10-07、チャット側承認済み。`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`と同時）
+- 対象: `scripts/gen_update_schedule.py::load_workflows()`（UPDATE_SCHEDULE.mdの一覧と同じYAMLの読み方）で、cronのあるものとworkflow_runの下流の17本
+  （System_Health.yml自身と手動・pushだけのものは除く）。以前は正規表現で各ファイルの最初のcronだけ（13本）
+- 想定間隔: cronごとの閾値の最短。workflow_runの下流は起動元の閾値を継ぐ（Market Pulse・Stonks Silo・TANUKI VALUATIONは4日、SEC Data Auditは10日）
+- 一覧: `created>=今日（UTC）−閾値`で取り（`status`で絞らない、100件ごとに次のページ）、成否はコードで見る
+- 判定（cancelled・skippedは数えない）: 取り消し・スキップを除いた最新の実行が失敗で、その前の12時間以内に成功が無ければ🔴、あれば⚠️。
+  期間内に成功が無ければ🔴。CRITICAL（終了コード2）は🔴だけ、⚠️はWARNING（終了コード1）
+- Discordの1行: J・Kを切らずに全部出す（他の項目は従来どおり）
+- テスト: `tests/test_system_health_workflow_monitor.py`を書き直し（27件。修正前のコードでは19件失敗・3件エラー、cronの頻度推定4件と
+  リポジトリ特定不可の1件は従来どおり成功）。実際のAPIでの実行（2026-10-07）は「✅ 17件監視 / すべて正常」
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）: 新設のワークフローが一度も起動していないのに[J]が🔴になる（移設を見送り）
+2026-10-08〜10-11のSystem Health Check（すべてschedule・kaihatsu、`gh run view --log`）:
+
+| 起動（UTC） | run | [J] | Overallの行 | 終了コード |
+|---|---|---|---|---|
+| 10-08 02:46 | `37719529201` | ✅ 17件監視 / すべて正常 | ⚠️ WARNING（問題1件。[K]のAPGE・CON・SN・WST） | 1 |
+| 10-09 02:59 | `37877165771` | 🔴 18件監視 / 成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次) | ⚠️ WARNING（問題1件） | 2 |
+| 10-10 02:29 | `38017122312` | 同上 | 同上 | 2 |
+| 10-11 02:00 | `38103735425` | 同上 | 同上 | 2 |
+
+- 10-08は、Market Data Dailyのガードによるcancelledを数えずに✅（この項目で直した判定は意図どおりに動いている）
+- 10-09から監視が18件なのは、10-08に新設した`TANUKI_TAIL_SEC_Items.yml`（`9e73c1dd24`、[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、毎週月曜01:20 UTC）が加わったため。
+  このワークフローの実行は0件（`gh run list`、初回の定時は10-12 01:20 UTC）で、[J]は「閾値の期間（10日）に成功なし」として🔴・CRITICAL（終了コード2）にしている。
+  **実行が一度も無い新設のワークフローを失敗と数えており、「[J]が正しい結果を出す」という移設の前提と違う**
+- 同じ実行のOverallの行は「⚠️ WARNING（問題1件）」で、終了コード2（CRITICAL）と表示が食い違う（`common/system_health.py:908`の`status_str`は✅と⚠️の2通りだけ）
+- Discordの1行: コードではJ・Kを切り詰めない（`common/system_health.py:884-885`）。ログは「Discord通知: 送信完了」までで、Discordに届いた本文は確認していない
+- 原因の調査・修正はしていない
+
+#### 未了（2026-10-11）
+1. 一度も起動していない新設のワークフローを[J]でどう扱うか決める（10-12 01:20 UTCの初回の実行の後の[J]の結果もあわせて記録する）
+2. Overallの行（⚠️ WARNING）と終了コード2の食い違いを直すか決める
+3. Discordに届いた1行で、J・Kが切れずに読めることを確かめる
 
 ---
 
+### [TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1] TANUKI TAILの内部統制データの毎週の更新が、positions_index.jsonの形式を読み違えて1銘柄も処理しておらず（「[POSITIONS] CIK 未登録」）、APGEのctrl/latest.jsonが一度も作られず、他の9銘柄も2026-06-27のまま
+**優先度:** 高（2026-10-06、チャット側の判断で中から引き上げ）
+**追記（2026-10-08）:** APGEを登録解除しTAILからも外したため（4銘柄の登録解除、チャット側承認済み）、対象は9銘柄。
+下の状態の「10 成功（更新 0 / 変更なし 10）」は「9 成功（更新 0 / 変更なし 9）」と読み替える（2026-10-08にローカルで実行し、この表示を確認済み）。
+**状態:** 実装完了・実地確認待ち（2026-10-07、`a0b52a814a`・`4b8767b385`）。10-12（月）01:00 UTCの定時の実行のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・
+successになることを確かめるまでBACKLOG_DONE.mdへ移さない（チャット側の指示）
+**分類:** バグ / TANUKI TAIL・GitHub Actions（System Health [F] TailCtrl）
+**登録日:** 2026-10-06
+**発見:** System Healthの毎日のWARNINGの切り分け（[F] TailCtrl「9/10件 ctrl/latest.json 存在 (不足: APGE)」）
 
+#### 内容
+`src/tail/sec_ctrl_fetcher.py::load_tail_tickers()`は`positions_index.json`を「要素がdictまたは文字列のリスト」として読むが、
+実際のファイルは`{"positions": ["PLTR_thesis.json", …, "APGE_thesis.json"]}`というdict。dictをそのまま回すためキーの`"positions"`だけが
+ティッカー`POSITIONS`になり、CIKが無くスキップされる。`TANUKI_TAIL_SEC_Ctrl.yml`（毎週月曜01:00 UTC）は終了コード0のため、実行はsuccessになる。
+
+#### 実測（2026-10-06確認）
+- 10-05の実行（run `37272284959`）・08-31の実行（run `33364060058`）のログ: `[POSITIONS] CIK 未登録 — スキップ` → `完了: 0 成功 / 1 失敗` → 「変更なし」
+- 実行履歴の残る06-29以降の毎週の実行はすべてsuccess。`docs/portfolio/tail/data/ctrl/`の最後のcommitは2026-06-27（`de03ca7c07`など手作業の更新）
+- ctrlの9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）の`latest.json`の`fetched_at`は06-24〜06-27、quarterは2026Q1〜Q2のまま
+- APGEは2026-07-02（`3d45e67949`）に`positions_index.json`へ追加されたが、その後の更新が何もしないため`ctrl/APGE/`は一度も作られていない
+- System Healthの[F]は09-28以前から毎日⚠️（BACKLOG_DONE.mdに「既存の別警告、対象外」と2回記録があるだけで、課題として未登録だった）
+
+#### 関係する課題
+- `[[TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1]]`（BACKLOG_DONE.md、2026-09-09クローズ）: APGEのthesis.jsonの`kpis`が空でKPIステータス表が出ない件。
+  `quarterly_review_generator.py`の`kpis`の扱いで、内部統制（`sec_ctrl_fetcher.py`・`ctrl/`）とは出力も原因も別。重複ではない
+- BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdに、ctrlのAPGE不足・`load_tail_tickers()`を扱う項目は無い（grepで確認）
+- System Healthの[J]はconclusionしか見ないので、この「successだが何もしていない」実行は検知できない
+
+#### 直し方の案
+`load_tail_tickers()`を`{"positions": [...]}`の形式に合わせ、`*_thesis.json`からティッカーを取り出す（`src/tail/edgar_rss_monitor.py`の読み方と揃える）。
+対象が1件も処理できなかったときは終了コードを非0にする。直した後に一度手動実行し、APGEを含む10銘柄のctrlが更新されること、
+[F]が✅になることを確認する（9銘柄の内部統制の判定が06-27から変わる可能性があるので、差分は確認してからcommitする）。
+
+#### 読み取り調査（2026-10-07）
+- `positions_index.json`は最初のcommit（2026-06-05）から一貫して`{"positions": [...]}`。`load_tail_tickers()`は2026-06-24（`8f9152528f`）に書かれてから
+  変わっておらず、**引数なしの実行は導入時から一度も機能していない**。既存の9銘柄のctrlは06-24〜06-27に銘柄を指定した手作業の実行で作られた
+- 毎週の実行15本（06-29〜10-05、すべてschedule・success）のうち、ログが読める13本（07-13〜10-05）はすべて`[POSITIONS] CIK 未登録` →
+  `完了: 0 成功 / 1 失敗` → 「変更なし」。06-29・07-06の2本はログの期限切れ（HTTP 410）だが、ctrl/の最後のcommitが06-27のため同じく何もしていない
+- `src/tail/sec_items_fetcher.py:68`が同じ関数を使っており、引数なしの実行は同じく何もしない（定時の実行は無い）
+- `TANUKI_TAIL_SEC_Ctrl.yml`だけ`XAI_API_KEY`を渡しておらず、自動の実行では`item4_excerpt_ja`が付かない
+- EDGARでは9銘柄とも保存済みより新しい10-Qが出ている（07-23〜09-22提出。7銘柄はQ1→Q2、NVDA・ADBEはQ2→Q3）。APGEの最新は2026Q2（08-10提出）
+
+#### 対応（2026-10-07、チャット側承認済み）
+- `load_tail_tickers()`を`positions`の`*_thesis.json`から読む形に（`edgar_rss_monitor.get_monitored_tickers()`と同じ読み方）。`sec_items_fetcher.py`も同じ関数で直る
+- 保存済みの`latest.json`と四半期・提出日が同じ10-Qは、本文の取得・Grokの翻訳・書き込みをしない（「変更なし」）
+- 成功＝書いた＋変更なし、失敗＝CIK未登録・取得の失敗・例外。成功が0銘柄の実行は終了コード1（全銘柄が変更なしの週は0）
+- ワークフローに`XAI_API_KEY`を渡す。テスト`tests/test_tail_sec_ctrl_fetcher.py`（修正前のコードで9件中8件が失敗することを確認）
+
+#### 作り直し（2026-10-07、ローカルで実行しチャット側の確認後にcommit）
+- 1回目: `10 成功（更新 10 / 変更なし 0） / 0 失敗`・終了コード0・10銘柄とも和訳あり。2回目: `10 成功（更新 0 / 変更なし 10） / 0 失敗`・終了コード0
+  （書き込み・Grokの呼び出しなし。実データで「全銘柄変更なしの週は終了コード0」を確認）
+- PLTR・SOFI・TSLA・CELH・APPは2026Q1→Q2、NVDA・ADBEはQ2→Q3で、いずれも有効のまま。SOUN・CRWVはQ1→Q2で無効のまま。
+  APGEは2026Q2（08-10提出、有効）を初めて作成。06-27の既存の四半期のファイルは上書きしていない
+- SOUN・CRWVの`material_weaknesses`は2件・4件→12件になったが、状況は変わっていない（件数は語の出現箇所の数、`[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]`）
+
+#### 未了
+翌朝のSystem Health [F]が10/10で✅、次の定時の実行（10-12 01:00 UTC）のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」（APGEの登録解除による。先頭の追記〈2026-10-08〉と同じ）。
+
+---
+
+### [MACRO-PULSE-SLOT-ROWS-1] MACRO PULSEのNFP・Building Permits・Michiganの行が発表予定日の枠の日付に置かれ、後から書いた値が枠の日付の時点で使えたことになっている
+**優先度:** 高
+**分類:** 先読み・データの日付の割り当て / MACRO PULSE（05_main.py・05_events.csv）
+**登録日:** 2026-10-04
+**発見:** 指示書M-3b STEP 0
+
+#### 内容
+`refresh_monthly_indicators()`が、予定表（05_indicator_schedule.csv）に載っている指標（NFP・Building Permits・Michigan Consumer
+Sentiment）の行を、FREDの観測日ではなく発表予定日の枠の日付に置いていた（Claimsは[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]で修正済み）。
+05_events.csvの該当は19行（Permits 7・Michigan 6・NFP 6、2026-03〜10の実行分）。M-3 STEP 2で「予定の枠などで変えない」とした7,003行の
+うち残りの6,984行はHY Spreadの取り込み分で、観測日の行（ALFREDの版の記録が2023-10以降しか無いため照合できなかっただけで、
+系列ストアの同じ日付の値と全行一致）。
+- 枠の日付は観測日より後のため、スコアは枠の行を「最新の行」として使う（今日: Permits 09-15の1394、Michigan 08-14の51.7）
+- 枠の行の値は、書いた時点（updated_at）のFREDの最新値で、枠の日付の時点の値ではない（例: Michiganの08-14の枠には08-28公表の
+  確定値51.7〈09-27に書いた〉、NFPの04-03の枠には05-08時点の3月の改定値214,000〈04-03の初回公表は178,000〉）
+- **M-3 STEP 1の修復が、枠の行のknown_atを枠の日付（推定）にしたため、過去の日付の再計算でこれらの値が公表前に使われる**
+  （今日のスコアには影響しない）
+
+#### 着手条件
+M-3bで、コードを観測日に置く形に直し、既存の19行を観測日へ移す修復を行う。
+
+#### 対応（2026-10-04、指示書M-3b STEP 1、feature/macro-pulse-m3b）
+- `refresh_monthly_indicators()`: 予定の枠へ寄せる処理を外し、FREDから取る指標は全て観測日に置く（NFPはPAYEMSの観測月の1日）。
+  観測日の行に値があれば飛ばす（改定値は`apply_revisions()`が書く）。予定表はDiscordのリマインドなど予定に使う処理だけに残る。
+  `fetch_event_row()`はもともとFREDの観測日に置いており、予定日に書くのは手入力（予定表のactual）の行だけ
+- **Michiganの速報と確定（STEP 1-3）**: FREDのUMCSENT・MICHには月中の速報が入らない（ALFREDで2026年の各月とも版は1つで、
+  初回公表日は月末の確定値の日。2016年以降の128か月中117か月は版が1つ）。そのため自動で入るのは確定値で、それがactualになる。
+  速報を手入力したとき（予定表のactual）だけ、それを観測月の1日の行のactualにし（`_PRELIM_TO_OBS_MONTH`: Michigan Consumer
+  Sentiment・Michigan Inflation 1Y）、確定値はFREDに入った後に`apply_revisions()`がrevised_actualに書く
+- 回帰テスト: 以前の「月次は予定の枠に置く」テストを「観測日に置く」に書き換え、5件追加（修正前5件fail→修正後pass）
+
+#### 対応（2026-10-04、指示書M-3b STEP 2、feature/macro-pulse-m3b）— 値が違う行2件で一度停止（下の判断で再開）
+- 修復スクリプト`scripts/analysis/macro_events_slot_rows_repair.py`: 枠の行の値を、ALFREDで「書いた日（updated_atの米国東部時間の暦日、
+  無ければ前日）に有効だった版の値が一致する観測」（書いた日の120日前以降）と照合して観測日を決める（Claimsの修復と同じ方式。枠の行の
+  known_atはM-3 STEP 1の推定で書いた時刻ではないため使わない）。移す先の行があり値が同じなら枠の行を消し、値が違えば何も書かずに止まる
+- 確認モード（19行）: 観測日へ移す7行（Permits 1・Michigan 4・NFP 2）、同じ値の観測日の行があり消す7行（Permits 4・Michigan 2・NFP 1）、
+  一致なしで移さない3行（NFPの枠04-03 214,000・05-08 148,000・06-05 129,000。書いた日・前日のどの版の前月比とも一致しない）、
+  **値が違う2行で停止**:
+  - Permits 枠2026-03-17 1,363（2026-05-08に書いた）→ 観測03-01の行 actual 1,372（初回）・revised_actual 1,363
+  - Permits 枠2026-05-19 1,423（2026-06-14に書いた）→ 観測04-01の行 actual 1,442（初回）・revised_actual 1,423
+  どちらも枠の行の値は同じ観測の後の版（改定値）で、既存の行のrevised_actualと同じ
+- 参考（仮に上の2行も枠の行を消した場合、試しに適用して元に戻した）: 移す7行・消す9行。今日のスコア27→27（Permitsは観測08-01の1,403〈改定値〉、
+  Michiganは観測08-01の51.7）。画面の過去の点は34日（2026-03-23〜08-06）で±1点
+
+#### 判断と確認モードのやり直し（2026-10-04、指示書M-3b STEP 2の判断）
+- 判断: Permitsの2行（枠03-17・05-19）は枠の行を消し、観測日の行のrevised_atを既存のrevised_atと枠の行のupdated_at（UTC）の早いほうにする。
+  NFPの一致しない3行は、発表月の前月を観測月とし、その観測月の1日の行があれば枠の行を消し、無ければ動かさずknown_at＝updated_at（written）
+- 行ごとの結果: Permits 枠03-17（1,363）→ 観測03-01の行を残し枠の行を消す（revised_atは既存の2026-05-05T12:30:00Zが早いため変わらない）、
+  Permits 枠05-19（1,423）→ 観測04-01（revised_atは既存の2026-05-28T12:30:00Zのまま）、
+  NFP 枠04-03（214,000）→ 観測月03-01の行あり（actual 178,000）で枠の行を消す、NFP 枠05-08（148,000）→ 04-01の行あり（115,000）で消す、
+  NFP 枠06-05（129,000）→ 05-01の行あり（172,000）で消す。動かさずwrittenにした行は0
+- NFPはスコアの8指標に入っていない（`_compute_current_score()`の`indicator_keys`・画面の`computeScoreAsOf()`とも。画面ではNFPは
+  ⑤直近の動きの矢印の向き〈BULL_UP〉にだけ使う）
+- 確認モード: 移す7行（Michigan 05-01・06-01・07-01・08-01、NFP 08-01・09-01、Permits 08-01）・消す12行。試しに適用して元に戻した結果:
+  行数34,399→34,387、event_id・(指標,日付)の重複0。今日のスコア27→27（計算日10-02・10-03。Permitsは観測08-01の1,403〈改定値〉、
+  Michiganは観測08-01の51.7）。画面の過去の点は34日（2026-03-23〜08-06）で±1点（最大−1、2026-03-23 31→30）。比較バーの3点は変わらない
+
+#### 対応（2026-10-04、指示書M-3b STEP 3-1・3-3、feature/macro-pulse-m3b）
+- index.html: ⑤直近の動きの副題を「日付は観測日（月次指標は観測月の1日、週次指標〈新規失業保険申請〉は週末日）」に。8指標カードの
+  tooltip「データの日付」は常に「（観測日）」（`SLOT_DATED_SIGNALS`による「（発表予定日）」の判定を外した）
+- browser_checks/check_macro_pulse.py: MACのtooltipの期待を「（観測日）」に。N-06は「月次6指標の行が全て観測月の1日」かつ副題に「観測日」が
+  あり「発表予定日」が無いこと、N-09は全tooltipが「（観測日）」でMichigan・Permitsの日付が月の1日であることを確かめる
+- 確認: 枠の行の修復を試しに当てたデータで **D-01が一致**（Permits 08-01の1,403・Michigan 08-01の51.7がFRED系列ストアの最新観測と一致）。
+  全体 一致71・不一致0・判定不能1（D-02）、consoleエラー0。修復前のデータ（今のkaihatsu）では D-01・N-06・N-09 が不一致（枠の行の残りを検出）
+- **統合の注意**: tooltipは常に「（観測日）」と出すため、コードと枠の行の修復（`macro_events_slot_rows_repair.py --apply`）は同時に当てる
+
+#### 状態（2026-10-05）
+**統合・修復済み、本番の確認待ち。** feature/macro-pulse-m5（M-3b を含む）を kaihatsu へ統合（マージ `f62485feaf`）し、kaihatsu で
+`macro_events_slot_rows_repair.py --apply`（移す7行・消す12行、34,399→34,387行、event_id・(指標,日付)の重複0）と
+`macro_liquidity_m2_yoy_repair.py --apply`（2026-09-23〜10-04 の11行に m2_yoy_pct・m2_yoy_pctile。最新 +5.66%・36パーセンタイル）を実行し、
+コードと同じ push で入れた。今日のスコア 27→27（計算日 10-02〜10-05）。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
+check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:15 UTC の日次の実行で、新しく書く行が観測日に置かれること（予定の枠の日付に置かれないこと）
+
+#### 本番の確認と残りの確認（2026-10-06）
+- run 37403520015（10-05分、予定22:15 UTC → 起動10-06 02:18:57・完了02:20:23 UTC、success、push `99d8c8a00a`）: 新しく書いた2行（hy_spread・vix の 10-02）は観測日に置かれたが、日次の系列で、M-3b で直した月次の処理は動いていない
+  （10-05 までに新しい月次の観測の公表が無かった）
+- **確認の時期: 次の Building Permits の公表（10月中旬〜下旬）の後の実行**。新しい行が観測日（観測月の1日）に置かれ、予定の枠の日付の行が
+  作られないことを確かめる
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）: 確認待ちのまま
+- 10-06以降の日次の実行（MACRO_PULSE_Updateは10-06〜10-11にすべてsuccess）のうち、Michigan Consumer Sentiment（10-09の速報）・NFP・Building Permitsの行を書いた実行は**無い**。
+  05_events.csvでこの3指標の`updated_at`・`known_at`・`revised_at`が10-05以降の行は0件（NFPの最新の観測09-01の行は10-03に書かれたもの）。
+  Michiganの速報はFREDに入らないため、自動で行ができないのは設計どおり（上の「Michiganの速報と確定」）
+- 参考: 10-10 01:45 UTC起動の実行（`38014398752`、push `632fed6804`）が、Michigan Inflation 1Yの観測08-01の行（`mich_1y_2026-08-01`、actual 4.0、
+  `known_at` 2026-10-10T01:46:59Z・written）を観測月の1日に書いた。同じ実行で予定の枠の日付の行は作られていない
+  （同じ実行のもう1行`mich_5y_2026-10-08`は、release_dateが観測日の系列〈全5,826行〉の行）
+- 確認の時期は従来どおり、次のBuilding Permitsの公表（10月中旬〜下旬）の後の実行
+
+---
+
+## 優先度：中（こなれてきたら対応）
 
 （[[DISCOVER-CONFIG-DUAL-MGMT-1]]は2026-08-15実装完了、BACKLOG_DONE.md
 「2026-08-15（完了）」参照）
@@ -1892,6 +2124,726 @@ BACKLOG_DONE.md「2026-09-16（完了）」参照）
 （[[MACRODATA-SCHEDULED-SILENT-GAP-CSCICP-USALOL-1]]は2026-09-13、
 `05_indicator_schedule.csv`から該当7行を削除し実装完了、
 BACKLOG_DONE.md「2026-09-13（完了）」参照）
+
+---
+
+### [MARKETDATA-DAILY-PROVISIONAL-ROWS-1] daily/に日足の確定前（取引時間中・清算前）の値が確定値として保存されている行がある（CL=F・GC=F・JPY=X・^N225の97行）
+**優先度:** 中
+**分類:** データ品質 / common/market_data
+**登録日:** 2026-09-30
+**発見:** 指示書㉔の追加確認（^N225の09-29の行が東京の取引時間中〈10:06 JST〉の値だった）
+
+#### 内容
+gitの履歴から各行の保存時刻を求め、その市場の日足の確定時刻（Yahooの日足の区切り）と比べた
+（scripts/analysis/daily_intraday_rows_scan.py）。08-06以降の21,775行のうち97行が確定前の保存:
+CL=F 35・GC=F 35（先物の確定値は清算値。夕方〈NY 18〜21時〉の取引中の値を保存していた）、JPY=X 25（ロンドンの暦日の途中）、
+^N225 2（08-27・09-29、東京の取引時間中）。個別株・ETF・米国指数は0行。
+^N225は、東京の引け後〜翌朝まで終値の無い足（出来高0）をYahooが返し（08-10以降の夜間の実行23回すべて）、
+翌日の東京の取引開始（00:00 UTC）で前日の足が消え、当日の取引中の足（出来高0）に置き換わる。
+
+#### 対応（2026-09-30、指示書㉔）
+- fetcher: 確定時刻より前に取得した足と^N225の出来高0の足に`_provisional`の印を付けて保存し、次回以降の取得で確定した足が
+  届いたら置き換える（印の無い行は従来どおり上書きしない）。^N225は同じ実行の中の取り直しの対象から外す
+- 97行に印を付けて確定した日足で置き換え（89行）。残り8行（先物の09-28・09-29〈清算値の確定待ち〉、先物の09-07〈Yahooに足が無い〉、
+  JPY=Xの08-15〈土曜、Yahooに足が無い〉、^N225の09-29〈Yahooが足を削除〉）は印を付けたまま
+- 先物の確定時刻はNYの翌日0時の24時間後（清算値が入る時刻の実測が続いているため安全側）
+
+#### 実測（2026-09-30）
+- ^N225の確定した足は、翌日の01:26 UTC頃（東京の引けの約19時間後、上記のYahooの作り直しと同じ時刻）に出る
+- 先物の09-29の足は09-30 02:35 UTCでも取引中の値のまま（清算値はそれより後）。確定の判定（NYの翌日0時の24時間後）は据え置き
+- 2026-09-30の実測（09-29 23:05〜09-30 08:55 UTC、10分おき）: CL=F・GC=Fの09-29の足は04:05 UTC（＝NYの09-30 0:00 EDT）の取得で清算値（CL 89.38・GC 4179.70。直前の取引中の値はGC 4206.70で、清算値とは27ドル違う）に置き換わり、以後は変わらない。04:15 UTCから09-30の足が現れる。つまり先物の日足はNYの暦日の終わり（翌日0時）に確定する。今の判定（`bar_final_at`＝NYの翌日0時＋`FUTURES_FINAL_DELAY`〈24時間〉）は実測より24時間安全側（09-30の記録で「一致する」と書いたのは誤り、同日訂正）。夕方（20:17〜23:17 UTC）の取得で保存する当日の先物の行は必ず暫定になり、翌晩の取得で値は清算値に置き換わるが、暫定の印が外れるのは翌々晩の取得。2026-09-30決定: `FUTURES_FINAL_DELAY`は+24時間を維持する。0にすると、清算値の反映が遅れた日（Yahooの日足がNYの翌日0時を過ぎても取引中の値のままの日）に、取引中の値が確定値として残り、以後置き換わらない。+24時間の不利益は暫定の印が一晩長く残るだけ（値は翌晩の取得で清算値に置き換わり、Market Pulseでは設計上の暫定値としてdata_qualityをpartialにしない）。Market Pulseでは、この設計上の暫定値はdata_qualityをpartialにしない（feature/mp-impl-b `36309d41f3`、UPDATE_SCHEDULE.md 3章）
+
+#### 未了
+次回以降の日次取得で、先物・^N225の暫定行が確定値で置き換わることの確認。
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）: 確定時刻を過ぎても印が残る行は7件（0件でないため移設しない）
+2026-10-11 02:45 UTCに、daily/の4銘柄の`_provisional`の行を`fetcher.bar_final_at()`の確定時刻と比べた（`_provisional`はCL=F 3・GC=F 3・JPY=X 3・^N225 0行。
+うちCL=F・GC=Fの10-09の2行は確定時刻〈10-11 04:00 UTC〉の前）。確定時刻を過ぎて残っている7行:
+
+| 銘柄 | 日付 | 確定時刻（UTC） | 備考 |
+|---|---|---|---|
+| CL=F | 2026-09-07 | 09-09 04:00 | 登録時の97行の残り（09-30の記録で「Yahooに足が無い」） |
+| GC=F | 2026-09-07 | 09-09 04:00 | 同上 |
+| JPY=X | 2026-08-15 | 08-15 23:00 | 同上（土曜） |
+| JPY=X | 2026-10-03 | 10-03 23:00 | 登録後の行（土曜）。その後の取得（10-05〜10-09）でも置き換わっていない |
+| CL=F | 2026-10-08 | 10-10 04:00 | 登録後の行。最後に成功した取得は10-09 20:25 UTC起動（`37986943798`）で確定時刻より前 |
+| GC=F | 2026-10-08 | 10-10 04:00 | 同上 |
+| JPY=X | 2026-10-09 | 10-09 23:00 | 同上 |
+
+- 登録時の97行のうち印が残るのは3行（CL=F・GC=Fの09-07、JPY=Xの08-15）。先物の09-28・09-29、^N225の09-29は印が外れている
+- 10-08の先物2行と10-09のJPY=Xは、確定時刻の後にまだ取得が動いていない（10-10以降のMarket Data Dailyの起動はすべてガードでcancelled）。
+  次の平日の取得で置き換わるかを確かめる。JPY=Xの10-03は、08-15と同じ土曜の行で、置き換わらずに残っている（原因の調査はしていない）
+
+#### 未了（2026-10-11）
+- 次の平日の取得の後に、CL=F・GC=Fの10-08・10-09、JPY=Xの10-09の印が外れていることを確かめる
+- 置き換わる足が無い行（09-07の先物・土曜のJPY=X）の扱いを決める（土曜のJPY=Xの行は10-03にも新しくできている）
+
+---
+
+### [MARKETDATA-FUTURES-ROLL-1] 先物（CL=F・GC=F）の連続シンボルは限月の乗り換え日に前日比が不連続になり、Market Pulseの段階1・2が「大きな変動」と判定していた
+**優先度:** 中
+**分類:** 判定の誤り / Market Pulse・common/market_data
+**登録日:** 2026-09-30
+**発見:** 指示書㉔の追加確認
+
+#### 内容
+2026-09-18の夕方の取得でCL=Fが10月限→11月限に切り替わり、前日比−5.52%（同じ11月限では−1.18%）で、09-19・09-22の
+エントリが「原油（-5.52%）」「同時に大きく動いたもの：原油」になっていた。Yahooの過去の連続系列は09-23に乗り換えており、
+夕方の取得とは乗り換え日が違う。Yahooは期限切れの限月を返さないため、過去の乗り換え日は同じ限月で計算し直せない。
+
+#### 対応（2026-09-30、指示書㉔）
+- fetcher: 先物の行に限月（YahooのunderlyingSymbol）と、その限月自身の当日・前営業日の終値を記録する
+- collect_and_send.apply_same_contract_change: 限月が前の行から変わった日は、新しい限月の前営業日の終値と比べた前日比にする。
+  取れない場合は前日比を出さず「限月乗り換え日」として段階1・2の判定から外す（推測で補わない）
+- 過去のエントリ: USO・GLDの同じ2日間の前日比との差が2pt超の日（原油20日・金7日、scripts/analysis/futures_roll_suspects.py）に
+  「限月乗り換えの可能性」の印を付け、前日比による判定から外して段階1・2を計算し直した（値はそのまま、26エントリ・結論が変わったのは9件）。
+  09-18は11月限（CLX26）の終値で計算し直した（−1.18%）
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）
+daily/のCL=F・GC=Fの2026-09-29（限月の記録の開始）〜10-09の各行の`contract`はCL=FがCLX26.NYM、GC=FがGCZ26.CMXのままで、**2026-09-30以降に限月の乗り換えは無い**。
+各行の`contract_prev_close`は前の行の`contract_close`と一致（同じ限月の前日比）
+
+#### 未了
+次の限月乗り換え日に、同じ限月の前日比になっていることを確認
+
+---
+
+（[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]は2026-09-26、保存側・reader・TANUKIの修正と既存行の取り直し・再生成で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[MARKETPULSE-BREADTH-MIXED-DATES-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[MARKETPULSE-TECHPULSE-QQQ-NULL-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
+**優先度:** 中
+**分類:** データの取得遅れ / MACRO PULSE（05_main.py）
+**登録日:** 2026-10-03
+**発見:** 指示書M-1 STEP 2。記録: B-07
+
+#### 内容
+`update_fed_context()`は`record_date`の月（`record_month`）に既に行があれば、FF・DGS1・IMPLIED CUTSだけを更新し、FOMC声明の
+取得とGrokによるREGIME・主眼の判定をしない。FOMCは月の最初の土曜より後に開かれるため、会合のたびに次の月の最初の土曜の
+実行まで前回の声明に基づく判定が続く。`05_fed_context.csv`の記録: 04-29の会合→05-02に反映（3日）、06-17→07-04（17日）、
+07-29→08-01（3日）、09-16→10-03時点で未反映（17日。9月の行は09-05に07-29の声明で判定済み）。
+
+#### 実害
+REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会合後最大2〜3週間、前回の声明に基づく判定のまま表示される
+（FRB主眼のtooltipに「2026-07-29のFOMC声明に基づく判定です」と出るため、基準日は分かる）。週次AIの入力（FED context）も同じ。
+
+#### 着手条件
+なし（修正はしていない）
+
+次のFOMC（2026年10月下旬）の後も同じ遅れが起きるため、それまでに対応するか、Market Pulse側のセッションと担当を決める（2026-10-11追記）
+
+---
+
+### [CHECK-DEPMAP-HOLLOW-RALLY-STALE-1] browser_checks/check_dependency_map.pyのHollow Rallyの期待値が旧ロジック（6行前・前日比）のままで、M-2 STEP 4の統合後に画面との不一致が出る
+**優先度:** 中
+**分類:** 確認スクリプトの陳腐化 / browser_checks（Market Pulse・MACRO PULSE共通）
+**登録日:** 2026-10-03
+**発見:** 指示書M-2 STEP 8（修正した要素を読む他の画面・システムの確認）
+
+#### 内容
+`browser_checks/check_dependency_map.py::expected_hollow_rally_trigger()`は、05_liquidity.csvの6行前のsp500と直前の行の
+net_liquidityで判定する旧ロジックを再現している。[[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]（M-2 STEP 4）で画面の判定は
+「最新行のsp500_5d_pct>+1.0% かつ net_liq_wow_pct<−0.5%」（S&P500の5営業日リターン・H.4.1の水曜どうしのNET流動性の前週比）に
+変わったため、統合後の日次の実行で新しい列が書かれると、⑤Hollow Rallyで画面との不一致が出うる（2026-10-03時点では両方とも
+不発火で一致、58件一致）。MACRO PULSE用の確認は`browser_checks/check_macro_pulse.py`（MAC-18）が新しい判定で行っている。
+
+#### 実害
+確認スクリプトの誤検知（画面の不具合ではない）。
+
+#### 着手条件
+`check_dependency_map.py`はMarket Pulse側のセッションの作業範囲のため、こちら（指示書M-1・M-2）では変更していない。
+Market Pulse側の作業と調整のうえで直す。
+
+---
+
+### [MARKETDATA-FUTURES-BACKFILL-ROWS-1] daily/のES=F・NQ=F・NIY=Fの抜け補完の行に、前の行と同じvolume・O=H=L=Cでvolume 0の足・確定時刻を過ぎても残る暫定の印がある
+**優先度:** 中
+**分類:** データ品質 / common/market_data（Market Pulse 段階8の先物）
+**登録日:** 2026-10-07
+**発見:** 水曜（2026-10-07）朝の確認（米国10-06の足、実装Cの初回の実地確認）
+
+#### 内容（観測した事実のみ。**原因は未調査**）
+実装C（`31812675c0`で統合）のdaily/のES=F・NQ=F・NIY=Fは、ブランチで保存した09-30までの行（`1193cd5845`）に、10-06 20:25 UTCの外部起動の取得
+（`47ca116ce7`）が抜け補完で10-01・10-02・10-05・10-06の行を加えた。2026-10-07 07:15 JST時点のファイルで次を確認した。
+
+1. **前の行と同じvolume**: ES=Fの10-05のvolumeが1,859,407で10-02と同じ。NQ=Fの10-05も581,527で10-02と同じ。
+   ブランチ側の行にも同じ形があり、ES=Fの09-29（1,768,110）とNQ=Fの09-29（678,480）が、それぞれ09-28と同じ値
+2. **NIY=Fの平らな足**: 10-01・10-02・10-05はO=H=L=C・volume 0（`_validation_warnings: ["volume must be > 0 (got 0)"]`）で、closeが`contract_close`と違う
+   （10-01 68,270と68,520、10-02 69,855と69,910、10-05 69,935と70,130）。ブランチ側の09-28（65,895）・09-29（66,230）もO=H=L=C・volume 0
+   （`contract_close`の記録は無い）。10-06はvolume 18,085で、closeと`contract_close`は同じ70,885
+3. **暫定の印**: 3銘柄とも09-29・09-30・10-05・10-06の行が`_provisional: true`で、10-01・10-02の行には印が無い
+   - 09-29・09-30の確定時刻（`fetcher.bar_final_at`）は10-01 04:00・10-02 04:00 UTCで、10-06 20:25の取得の時点で過ぎていた。
+     この取得のcommitは10-01〜10-06の行を加えただけで、09-29・09-30の行は変えていない
+   - 10-05・10-06の確定時刻は10-07 04:00・10-08 04:00 UTCで、10-06 20:25の取得の時点ではまだ来ていない（`FUTURES_FINAL_DELAY`による設計上の暫定）
+
+#### 影響（観測の範囲）
+Market Pulseの段階8の先物の表示（`futures`）はdaily/の行を使っていない（`src/market/market_pulse/futures_snapshot.py`がyfinanceの15分足と
+`previousClose`を直接取得）。10-07のエントリの値・前日比・限月は
+check_dependency_map.pyのC-08で一致した。日足の行を読むものへの影響は未確認。
+
+#### 関係する課題
+- `[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`: CL=F・GC=F・JPY=X・^N225の暫定の印の付け方と置き換え。その「未了」（次回以降の取得で暫定行が確定値に置き換わること）は
+  これら4銘柄が対象で、実装Cで加えた3銘柄は含まれていなかった。3の09-29・09-30の行はこの置き換えが起きていない例
+- `[[MARKETDATA-FUTURES-ROLL-1]]`: 先物の限月の記録（`contract`・`contract_close`）。2の`contract_close`はこの対応で加えた列
+
+#### 着手条件（読み取り調査から）
+1. 夜間の取得（今夜以降）で、3の各行の印が外れて値が置き換わるかを、行ごとに記録する
+2. 1と2について、Yahooが今返す同じ日の日足（`yf.Ticker(...).history`）とdaily/の行を比べ、保存の時点の値か、Yahoo側の値そのものかを分ける
+3. CL=F・GC=Fの同じ期間の行に同じ形があるかを確かめる（実装Cの3銘柄に限った話かどうか）
+
+#### 追記（2026-10-08、BACKLOGの分類の中で確認、読み取りのみ）
+2026-10-08 18:53 JST（kaihatsu `ffab0e2ad6`以降、10-07の足の取得`258a0c5b82`を含む）のdaily/の行:
+- **着手条件3は「ある」で確定**: CL=F・GC=Fでも、10-01と10-02、10-05と10-06のvolumeが同じ値
+  （CL=F 337,181・337,181、274,982・274,982。GC=F 130,846・130,846、112,195・112,195）。実装Cの3銘柄に限った話ではない
+  （ES=F・NQ=Fでも10-05と10-06が同じ: ES=F 1,359,089、NQ=F 468,008）。いずれも後の日の行は暫定の印のある行か、抜け補完で加わった行
+- ES=F・NQ=Fの09-29・09-30の行は、確定時刻（10-01 04:00・10-02 04:00 UTC）を過ぎ、その後の夜間の取得（10-06〜10-07の足）を経ても
+  `_provisional: true`のまま（印が外れず、値も置き換わっていない）。NIY=Fも09-29・09-30が暫定のまま
+- NIY=Fのvolume 0の行は続いている（10-01・10-02・10-05・10-06）。10-07の行はvolume 20,529
+- 段階8の先物の表示（`futures_snapshot.py`）はdaily/を使わないため、画面の値への影響は引き続き確認されていない（日足を読む他の消費者は未確認）
+
+---
+
+### [TANUKI-MAXEPS-NI-SOURCE-1] 最大EPSがdupont.ni_ttm（負の純資産・売上$15M未満では欠ける）と年次のsbc_ttmに依存し、片側だけで計算していた
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`pipeline.py`の max_eps 算出）・TANUKI SCORE（最大EPS PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10、origin/kaihatsu `3a39561030`）
+
+#### 内容（観測した事実）
+- `pipeline.py:1237-1260`は純利益を`dupont.ni_ttm`から取る。`dupont.ni_ttm`はDuPont分解が成功したときだけ書かれ、負の純資産
+  （ABBV・BKNG・DELL・FICO・MSCI・RBRK・MO・PM）・売上$15M未満（QBTS）では欠ける。TTM系列（`common/sec_data/ttm/{T}_ttm_series.json`の
+  `flow.net_income`）には9銘柄とも4四半期そろった値がある
+- 片側が欠けると残った側だけで計算し信頼性MEDにする。例: DELL max_eps 1.1371（株式報酬のみ÷株数）・最大EPS PER 515.4x
+  （TTM純利益を使うと約40.8x）。RBRKは78.2x（正しくは約631x）、QBTSは244.1x（純利益＋株式報酬≤0で本来None）
+- `financial_health.sbc_ttm`は名前に反して最新年次ファイルの`cf.stock_based_compensation`（TTMではない）
+- 判定・点数（funda/timing/tanuki_score/matrix/トラップ）は max_eps 系を参照していない。影響は表示のみ
+
+#### 対応方針（チャット側の決定）
+純利益・株式報酬ともTTM系列の最新エントリから取る。純利益None→None・LOW、株式報酬None→0扱いでMED、両方→HIGH、合計≤0→None。
+`components.max_eps_ttm_end`を出力。`dupont.*`・`financial_health.sbc_ttm`は変更しない
+
+#### 対応（2026-10-10、`86db08acf3`）
+- `pipeline.py`: `_latest_ttm_entry()`（`ttm_end`の最大値で選ぶ。データ98ファイルとも`series[0]`が最大で、`calc_ttm_series()`も新しい順）・`compute_max_eps()`
+- `components.max_eps_ttm_end`を追加。`dupont.*`・`financial_health.sbc_ttm`は変更なし。テスト`tests/test_tanuki_max_eps.py`（6件）
+- 現在のデータに当てた試算: DELL 515.4→40.8x、ABBV 511.6→67.1x、BKNG 202.7→15.9x、FICO 92.0→14.6x、MSCI 369.0→27.8x、RBRK 78.2→633.9x、QBTS 244.1x→None。
+  MO・PMはLOW→MED（15.0x・28.8x）。WMTはTTM系列に株式報酬が無くHIGH→MED（34.4→40.0x）。株式報酬が年次→TTMに変わるため、HIGHの銘柄も小さく動く
+
+#### 未了
+- latest.jsonはまだ再生成していない（パイプラインの全銘柄実行はFCF一過性費用のAI定性評価〈Grok〉を`transient_found`の33銘柄で呼ぶため、ローカルで実行しなかった）。
+  10/12（月）13:00 JST ごろ以降の再生成の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
+
+---
+
+### [TANUKISCORE-PER-FORWARD-MIX-1] TANUKI SCOREの「GAAP PER」列に前向きPERが注記なしで混ざり、乖離列が無意味になっていた（QBTSではper_is_forwardが立っていない）
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`data_fetcher.py`の per）・TANUKI SCORE（GAAP PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
+
+#### 内容（観測した事実）
+- `components.per`は`data_fetcher.py:725`の`trailing_pe or forward_pe`。trailing PEが無い（赤字）銘柄はアナリスト予想EPSによる前向きPERになる
+- `per_is_forward`はforward_pe>0のときだけtrue。QBTSはtrailingが無くforward_peが負（-41.8）のため、per=-41.8なのにper_is_forward=false
+- 画面（`docs/value-monitor/tanuki_score/index.html`）はper_is_forwardを見ず「GAAP PER」として表示し、乖離（GAAP PER − 最大EPS PER）も計算する。
+  例: NETはGAAP純利益が赤字（TTM -206M）なのに「GAAP PER 208.3x」（forward）と表示。前向きPERの銘柄はAVAV・FROG・GTLB・LITE・NET・RBRK・S・ZETA（＋QBTS）
+
+#### 対応方針（チャット側の決定）
+trailing_peが無くforward_peを使ったときはforward_peの正負にかかわらずper_is_forward=true。画面でFwdと注記し、その銘柄の乖離は「—」
+
+#### 対応（2026-10-10、`eca2072b45`）
+- `data_fetcher.py`: `per_is_forward = (not trailing_pe) and bool(forward_pe)`（forward_peを使ったときだけtrue、正負は問わない）。
+  trailing_peが負でperにそれを使った場合は、以前のtrueからfalseに変わる（現在のデータでは該当なし）
+- `tanuki_score/index.html`: per_is_forward=trueならGAAP PERの横に「Fwd」（title付き）、乖離は「—」、表下に凡例1行
+- per_is_forwardの参照: data_fetcher.py・core_calculator.py:935（componentsへ渡すだけ）・hypecore/detail.html:567（FwdPEのラベル）。判定・点数には使われていない
+- 同じ問題がある画面（修正していない）: `tanuki_valuation/stock.html`（フェアPER・PEGのパネルで、per_adjustedが無いとき「GAAP PER」として表示し、フェアPER・PEGの計算に使う）、
+  `adjusted_eps_analyzer/stock.html`（PER比較の「市場 PER（GAAP）」と調整後PERとの差）。`tanuki_score/index.html`のトラップ判定（低PER）・チップの「PER」も
+  per_is_forwardを見ない（判定値を変えないため今回は対象外）
+
+#### 未了
+- QBTSのper_is_forwardは10/12（月）13:00 JST ごろ以降の再生成で反映される（それまでは画面でFwdが付かない）
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
+- ONDSもper_is_forward=trueになる（公開中のlatest.jsonはper=-362.0・per_is_forward=falseで、画面はマイナスPERなのに乖離〈per−最大EPS PER〉を出していた）。この修正で解消する（2026-10-10にXAI_API_KEYを空にした手元の再生成でper_is_forward=trueを確認、出力はcommitしていない）。10/12の再生成で確認する
+
+---
+
+（[[TANUKISCORE-FCF-COL-FLOOR-1]]は2026-10-11、本番の画面でFCF列が✗17・△床1・✓78になったことを確認して完了、BACKLOG_DONE.md「2026-10-11（完了）」参照）
+
+---
+
+（[[ROTCE-PTBV-1]]は2026-10-11、参考表示の本体を完了として移設、残りの観察は[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]へ、BACKLOG_DONE.md「2026-10-11（完了）」参照）
+
+---
+
+（[[ROTCE-QUARTERLY-ANNUALIZED-1]]は2026-10-11、四半期の年率と比較用ROTCE（TTM）・会社発表の表示を本番で確認して完了、BACKLOG_DONE.md「2026-10-11（完了）」参照）
+
+---
+
+### [LAYER2-SHARES-UNIT-THOUSANDS-1] 株式数の単位誤り（提出者の千株・百万株単位の申告、Layer2とLayer3の書類選択、ESTCはLayer3の計算の誤り）
+**優先度:** 中
+**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`等）
+**登録日:** 2026-10-10（同日、影響範囲調査の結果で更新）
+**発見:** [[ROTCE-PTBV-1]]（rotce.pyのP/TBVがCIXで0.0xになった）
+
+#### 原因の分類（2026-10-10の調査、company_facts.jsonの生の値で確認）
+1. 提出者の単位誤り（同じ期の別の書類と比がちょうど1,000倍・100万倍）
+   - 後の書類の比較期間（再掲）が誤り、元の書類は正しい: CIX 2025-06-30（12,321,000→12,321）、ONDS 2024年度（69,917,062→69,917）・
+     2025-03-31（105,004,818→105,005）、TER 2022-10-02（166,733,000→166,733）
+   - その期の書類しかなく誤り: CIX 2026-06-30（12,329、表紙12,336,657株）、ONDS 2025年度（221,769、期末発行済380,763,481）・2026-03-31（461,706）
+   - LOARは加重平均を一貫して千株単位で申告（例: 2026Q2 95,521、表紙93,688,471株。2024-03以前の204は上場前の株数）。前後比較では境目しか検出されない
+   - 古い期で元の書類が誤り・翌年の書類で正しい: KO 2018–19（4,306）・NVDA 2009–11・FCX 2010Q2（473）・CPRT 2014–15・COHR 2012・2020・HEI 2012・TER 2023-10-01。
+     ELF 2014–15・RCAT 2013–14は生データ未確認
+2. Layer2とLayer3で選ぶ書類が逆: Layer2（parser.py）は本人のその期の書類を優先し「元の書類の誤り」を拾う（TER 2023Q3はLayer2だけ164,050）、
+   Layer3は最新の提出を優先し「再掲の誤り」を拾う（CIX・ONDS・TER 2022）
+3. ESTCはLayer3の計算の誤り: 2022-10-31の343,058（＝上半期累計94,964,423−第1四半期94,621,365）・2022-01-31の437,133は、
+   `layer3_builder.py::_normalize_field_entries`のYTD→四半期変換が足し算できない株式数にもかかったもの（全銘柄でESTCの2点だけ）
+- 正当な変化（誤りではない）: BKNG（25対1、2026-04）・KLAC（10対1、2026-06）・AMZN（2022）の分割、QBTS・SOUNのSPAC合併前の株数
+
+#### 公開データへの影響（2026-10-10時点）
+- ONDSだけ: TANUKI VALUATIONの希薄化率・dilution_severityが未算出（Layer3年次の69,917・221,769でyfinance比10倍超の安全弁が働く。正しくは約73.8%/年＝critical）、
+  TANUKI SCOREのグローストラップがmedium（正しくはhigh）
+- 影響なし: TANUKI VALUATIONのdiluted_shares（yfinance優先、該当銘柄はすべてyf_implied）・理論株価・最大EPS・時価総額、EPS Analyzer（`extract_key_facts.py`に千株単位の自動補正あり）、
+  TANUKI TAIL（保有9銘柄に該当なし。CIX・LOARを保有すればEPSが1,000倍になる）、STONKS SILO・HypeCore（SECの株式数を使わない）、ROTCE（外れ値として捨てて回避）
+- 凍結年度: LOARの2023〜2025年度はfields_snapshotにshares_dilutedを含む（修正時は登録の更新が必要）
+- 2026-10-10訂正: 上の調査で「funda/timingは希薄化率を使わず影響なし」としたのは誤り。`pipeline.py::_compute_tanuki_score()`の
+  希薄化ペナルティ（3年年率>40%で−25、>20%で−15）がfunda_scoreに入る。ONDSは修正後にfunda_score 75→50（tanuki_scoreはWATCHのまま）
+
+#### 対応（2026-10-10）
+- STEP1 `b11a4dbd3d`: Layer3の株式数（category=sharesの3フィールド）にYTD→単四半期変換をかけない（ESTCの2点）
+- STEP2 `514b2ce230`: `share_unit_fix.py`。同じ期間で比が1,000倍・100万倍の2値は、その概念の全期間の中央値に近い方を採る
+  （指示書の「大きい方」から変更: MSCI 2014-12-31は1つの10-Qだけが1,000倍で、大きい方が誤り）。置き換えは`data/{T}/share_unit_fix_log.json`
+- STEP3 `04419e6058`: fact_overrides.jsonの銘柄ごとの"share_unit"で個別補正（CIX 2026-06-30・ONDS 2025年度・2026-03-31・LOARの上場後の全期）。
+  年度単位の上書きと違い四半期・Layer3にも効く。LOAR 2024・2025年度のfields_snapshot_hashを更新（他の凍結25項目は不変）
+- STEP4 `1cae34ace2`: report_consistency_check.pyにCHECK-59（WARN）。LOARの上場前の204・SOUNのSPAC合併前の株数は確認済み台帳に登録
+- 結果: タスク開始時点から株式数52値（Layer2）が変わり、株式数以外の差分0件。ONDSの希薄化率73.8%/年（critical）、グローストラップhigh
+- ONDSは確認のためXAI_API_KEYを空にして1銘柄だけ再生成し（fcf_outlier.transient_found=FalseでGrokの呼び出し条件に当たらない）、
+  再生成した出力はcommitせず元に戻した（チャット側の指示）。公開データへの反映は2026-10-12（月）13:00 JSTごろの定時実行。
+  再生成で変わった項目: 希薄化率73.8%・dilution_severity=critical・funda_score 75→50（希薄化ペナルティ、正しい結果として承認済み）、
+  category（None）・tanuki_score（WATCH）・timing_score（25）・matrixは不変。AI由来の欄（fcf_outlier.ai_assessment等）は再生成前後とも空で、
+  空になった欄はない。ほかに最大EPS 0.3144→0.4604・per_is_forward False→Trueが変わったが、株式数とは無関係（[[TANUKI-MAXEPS-NI-SOURCE-1]]・
+  [[TANUKISCORE-PER-FORWARD-MIX-1]]の修正が未反映だったもの）
+- ONDS以外の全銘柄: 判定値に効くのは希薄化率（funda_scoreのペナルティ）だけで、pipeline.pyの計算を開始時点・修正後のコードで全98銘柄について
+  再現すると、開始時点の再現値は公開中のlatest.jsonと全銘柄一致、修正後に変わるのはONDSだけ
+
+#### 未補正（同じ期に正しい値を申告した書類がなく、根拠のある補正ができない。いずれも直近5年より前でCHECK-59の対象外）
+- ELF 2014〜15（上場前、27,593・30,523、2016Q1は490,760で倍率が一定でない）
+- RCAT 2013〜14（167,097,874→1,113,986→257,097,874→92,935,896→19,241,365と不規則、資本再編とみられる）
+- KO 2018Q1（4,306）、NVDA 2008・2009年度・2010Q2、FCX 2010Q2（473、翌年の書類は2対1分割後の947,000,000で比が100万倍ちょうどでない）
+
+#### 未了
+- 10-12（月）13:00 JSTごろの再生成（TANUKI VALUATION）で、ONDSの希薄化率が73.8%/年・`dilution_severity`がcritical・`funda_score`が50・TANUKI SCOREのグローストラップがhighになることを確かめる
+- 上の確認の後に正式にクローズする。そのとき「未補正」の各件は「同じ期に正しい値を申告した書類がなく回収不可能と検証済み・CHECK-59の対象外」として閉じる
+
+---
+
+### [SEC-COMPANYFACTS-API-LAG-1] CDNS・KO・RMBS・V・XOMのQ2の10-Q（2026-07-28〜08-03提出）が、EDGARのcompanyfacts APIに入っておらず、手元でも取り込めない
+**優先度:** 中（保有銘柄ではない。5銘柄のQ2が欠け、TTMが1四半期古い）
+**分類:** データ取得 / 外部データ（SEC EDGARのcompanyfacts API）
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の読み取り調査（2026-10-10、EDGARの公開データとの照合）
+
+#### 内容（観測した事実。SEC側の原因は未確認）
+- data.sec.govのsubmissionsでは5銘柄ともQ2の10-Qを提出済みで、`isXBRL=1`・`isInlineXBRL=1`:
+  CDNS 2026-07-29（`0000813672-26-000092`）・KO 2026-07-29（`0001628280-26-050503`）・RMBS 2026-07-28（`0001193125-26-321000`）・
+  V 2026-07-29（`0001403161-26-000104`）・XOM 2026-08-03（`0000034088-26-000093`）
+- 同じ日（2026-10-10）に取得したcompanyfacts APIの`filed`の最大値は、CDNS 05-01・KO 04-30・RMBS 04-28・V 04-29・XOM 05-04で、Q1の10-Qまでしか入っていない。手元のcompany_facts.jsonと同じ値
+- CDNS・Vは2026-08-30の手動実行（`68b172b3ee`）でAPIから取り直されている（差分は`"units": {}`の空の概念の追加だけで、今のEDGARの内容と一致）。手元のキャッシュの問題ではない
+- 比較: 同じ時期に提出した他の銘柄は、08-30の手動実行で取り込めている（手元のfiledの最大値がMSFT・FICO・VRT 07-29、META 07-30、AAPL・AMZN 07-31、CAKE 08-03）
+
+#### 実害
+- 5銘柄の年次・四半期・TTMがQ1（2026-03-31前後）で止まる（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]の2026-10-10の追記の15銘柄のうちの5銘柄）。
+  XOMのTTM純利益がYahooのtrailing PEからの逆算と大きくずれる件（同追記）は、これが原因の可能性がある（未確認）
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]を直しても、この5銘柄は解消しない
+
+#### 直し方の候補（未決定）
+1. 様子を見る（SECの取り込みを待つ）。週次の実行の後にcompanyfactsのfiledを確かめる
+2. 欠けている書類だけ、別の経路（その書類のXBRLのインスタンス、XBRL frames API等）から取り込む。取り込み方が2系統になる
+3. 検知: submissionsにある10-Q・10-Kが、companyfactsに一定の日数入らないときに知らせる（[[SEC-FETCH-CACHE-MTIME-CI-1]]の候補5と同じ検査で見つけられる）
+
+#### 追記（2026-10-10、[[SEC-FETCH-CACHE-MTIME-CI-1]]の完了時）
+- 候補3の検知は実装済み: update.pyが毎週submissionsと照らし、取り直しても入らない提出をSEC_LAGとして`common/sec_data/data/_freshness.json`に記録する（CHECK-60はSEC_LAG 14日超でWARN、System Health [M]は確認済みでないSEC_LAG 30日超でCRITICAL）。SEC_LAGの銘柄は毎週company_factsを取り直すので、SEC側で入れば自動でREFRESHEDになる
+- 5件のaccnを`config/warn_acknowledged.json`（WARN-60・銘柄＋accn、確認日2026-10-10）で確認済みにした（`fa9dbb7739`）。[M]の詳細には「確認済み」として表示され続ける。同じ銘柄の次の提出（Q3の10-Q等）が入らなければ、別のaccnとして再び警告される
+- 解消の確認: `_freshness.json`で5銘柄がREFRESHEDになったら、warn_acknowledged.jsonの5件を消して本項目をBACKLOG_DONE.mdへ移す
+
+---
+
+（[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+（[[STONKS-HEATMAP-FQ-LABEL-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+（[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+## 優先度：低（アイデア段階）
+
+### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
+**優先度:** 低
+**分類:** 監視・起動の判定 / 外部起動（Cloudflare Worker、`tools/external_trigger/lib.js`）
+**登録日:** 2026-10-08
+**発見:** BACKLOGの分類（2026-10-08）で、移設の根拠を集めるためにMarket Data Dailyの実行一覧を見た
+
+#### 内容（観測した事実のみ。原因は未調査）
+- 2026-10-07 21:50:41 UTCに、外部起動のworkflow_dispatch（Market_Data_Daily_Update.yml、run `37692219197`）が作られた
+- 21:50の確認は、その日の20:00 UTC以降に作られて成功した実行が無いときだけ、もう一度起動する設計
+  （`successfulRunsSinceClose()`、CLAUDE_CODE_START.mdの2026-10-03の記録）。この日は20:25:48 UTCの外部起動（run `37681924730`）がsuccess
+  （ガードrun=true、`status=fetched`・`no_close_after_retry 0`・`with_bars 590`）だったので、21:50の確認は何もしないはずだった
+- 21:50の実行はガード（その日の終値はそろっている）で取り消され（cancelled）、下流もskipped。実害はない
+- 同じ日の20:55・21:25の外部起動（`37685706372`・`37689320829`）もガードで取り消し（設計どおり）
+
+#### リスク
+- Workerの成功の数え方が、実際の実行の結果と合っていない可能性がある
+- 逆向きの誤り（取得に失敗した日に「成功あり」と数えて起動しない）も起こりうる。その場合、その夜の取得が保険のscheduleまで遅れる
+
+#### 着手条件
+読み取り調査から始める。Workerが成功を判定するAPIの呼び方（status・conclusionの絞り込み、eventの種別、時刻の範囲〈created・updated・
+タイムゾーン〉）と、10-07の実際の実行一覧（20:00 UTC以降のMarket Data Dailyの実行と、それぞれの作成時刻・conclusion）を突き合わせる。
+Cloudflare側の21:50の発火とログ（Observability・Past Cron Events）も確かめる。10-05・10-06の夜に同じ起動が無かったかも見る。
+参考: [[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]（BACKLOG_DONE.md）では、GitHubのAPIの`status=completed`の絞り込みが古い結果を返す例があった
+
+---
+
+### [TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1] TAILの詳細画面がItem 1/1A/3/7を一度も作られていないパス（ctrl/{T}/item*/latest.json）から読み、sec_items_fetcher.pyが別のパスに保存したItem 1A/3/7はどこにも表示されていない
+**優先度:** 低（提案。表示される値の誤りは無く、内部統制〈Item 4〉は表示される。データの使い道を決めるまで、取得の費用と古いデータが残るだけ）
+**分類:** 配線漏れ（保存先と表示側の食い違い） / TANUKI TAIL（detail.html・sec_items_fetcher.py）
+**登録日:** 2026-10-08
+**発見:** 4銘柄の登録解除の確認（TAILの詳細画面の確認で、ctrl/{T}/item1・item1a・item3・item7/latest.jsonの4件が404）
+
+#### 内容
+- `docs/portfolio/tail/detail.html`の`CTRL_ITEMS`（2026-06-27、`9a85740581` TAIL-PAGE-1「内部統制マルチItem拡張」）は、
+  `data/ctrl/{T}/item1/latest.json`・`item1a/`・`item3/`・`item7/`と`data/ctrl/{T}/latest.json`（Item 4）を読む。
+  `ctrl/{T}/item*/`に書いた処理は無く、gitの履歴にも一度も現れない。読めなかった項目は`buildCtrl()`が黙って飛ばすため、
+  画面にはItem 4だけが出て、consoleに404が4件出る（どの銘柄でも同じ。2026-10-08、APGE削除の前後で同じことを確認）
+- `src/tail/sec_items_fetcher.py`（2026-09-13、`4c2341cb5e` [[TAIL-SEC-ITEMS-1]]）は、Item 1A・3・7を
+  `data/risk_factors/{T}/`・`data/legal_proceedings/{T}/`・`data/mda/{T}/`に保存する（Item 1〈事業概要〉はSTEP1で対象外にした）。
+  これらを読む画面・レビュー生成は無い（`docs/`・`src/`・`common/`をgrepして、保存側以外の参照は0件）。
+  [[TAIL-SEC-ITEMS-1]]は登録時に「取得・保存・表示したい」としていたが、完了の記録は保存までで、表示への接続は無い
+- sec_items_fetcher.pyを動かす定時のワークフローは無い（`.github/workflows/`をgrepして0件）。保存済みのデータは2026-09-13の手動実行のまま。
+  定時の実行が無いことは404の原因ではない（定時に動いても保存先が違うので画面には出ない）が、データが古いまま残る理由にはなっている
+- sec_items_fetcher.pyは抽出した本文をGrokで翻訳する（`_translate_excerpt()`、XAI_API_KEYがあれば呼ぶ）。
+  9〜10銘柄の全実行で約80回（2026-09-13の実績）。2026-10-08の確認でローカル実行したときも、翻訳の結果は使わずに捨てた
+
+#### 実害
+- 費用をかけて取得・翻訳したItem 1A・3・7のデータが、どこにも表示されていない（[[TAIL-SEC-ITEMS-1]]の目的が未達）
+- 詳細画面のconsoleの404の4件（表示の崩れ・値の誤りは無い）
+
+#### 直し方の候補（未決定）
+1. detail.htmlの`CTRL_ITEMS`のItem 1A・3・7の読み先を、sec_items_fetcher.pyの保存先（`risk_factors/{T}/latest.json`等）に合わせる。
+   Item 1は取得していないので項目から外す。表示する欄の内容（`excerpt_ja`・`changed`等）の扱いも合わせて決める
+2. 表示が要らないなら、sec_items_fetcher.pyと保存済みのデータを撤去し、detail.htmlの項目もItem 4だけにする
+3. 1を選ぶ場合、定時の実行（例: TANUKI_TAIL_SEC_Ctrl.ymlと同じ月曜）を足すか、手動のままにするかを決める（翻訳の費用が毎回かかる）
+
+#### 着手条件
+表示するかどうか（候補1か2か）をKoichiさんが決めてから。→ 2026-10-08、Koichiさんの判断で候補1（表示する）＋候補3（定時の実行を足す）。
+
+#### 対応（2026-10-08）
+**状態:** 実装完了・実地確認待ち（実装`9e73c1dd24`）。10-12（月）01:20 UTCのTANUKI_TAIL_SEC_Itemsの初回の定時の実行のログが
+「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなしになることを確かめるまでBACKLOG_DONE.mdへ移さない
+（確認手順はCLAUDE_CODE_START.mdの木曜〈10-08〉朝の確認手順の6）
+- 保存済みデータの作り直し（2026-10-08、チャット側承認済み）: push後にローカルで1回実行。実行前にSECの書類の一覧だけで見積もり
+  （新しい書類はADBEの2026Q3〈2026-09-22提出〉の1件、Grokは約4回）、実行結果は「9 成功（更新 1 / 変更なし 8） / 0 失敗」、
+  Grokは4回（3項目の翻訳＋MD&Aのセグメント別見通し、失敗0）。ADBEの3項目の2026Q3を追加し、latest.json・index.jsonを更新してcommit。
+  他の8銘柄は09-13の保存分が今も最新の書類だった
+- detail.html: `CTRL_ITEMS`の読み先を`data/{risk_factors|legal_proceedings|ctrl|mda}/{T}/latest.json`に変更し、Item 1の読み込みをやめた
+  （表示するかどうかは別に決める）。期間の行は`d.quarter || d.period`と書類の種類（10-K/10-Q）を出す
+- sec_items_fetcher.py: sec_ctrl_fetcher.pyと同じ作りに。保存済みの`{period}.json`と提出日が同じ書類は、本文の取得・Grokの翻訳・
+  MD&Aのセグメント別見通しのAI抽出・書き込みをしない。成功＝書いた銘柄＋すべて変更なしの銘柄、失敗＝CIKなし・10-Kの取得や抽出の失敗・例外。
+  成功0銘柄のときだけ終了コード1
+- `.github/workflows/TANUKI_TAIL_SEC_Items.yml`（新設）: 毎週月曜01:20 UTC（TANUKI_TAIL_SEC_Ctrlの20分後）、XAI_API_KEYを渡す。
+  gen_update_schedule.pyでUPDATE_SCHEDULE.mdの一覧（23本）に入り、System Healthの[J]の監視が17→18件（週次・10日）
+- テスト`tests/test_tail_sec_items_unchanged.py`（8件、Grok・ネットワークはスタブ）。修正前のコード（git stash）で8件とも失敗を確認。
+  `tests/test_update_schedule.py`の本数の決め打ち（全22本）を、今の本数から作る形に直した
+- Playwright（保存済みの09-13のデータ）: PLTR・NVDA・ADBEの詳細画面で、Item 1A・3・4・7が表示され、404・consoleエラーとも0件
+
+---
+
+### [CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1] D-02・D-04の期待値をエントリ作成後に書き換わったdaily/から作るため、暫定の行の置き換えや抜けの補完の後に誤って不一致になる
+**優先度:** 低
+**分類:** 確認スクリプトの時点ずれ / browser_checks（Market Pulse、`browser_checks/market_pulse_elements.py::run_derivation_checks()`）
+**登録日:** 2026-10-08
+**発見:** MACRO PULSE側の報告（2026-10-07、`check_dependency_map.py`でD-02 WTI・金の前日比、D-04 ブレッスの基準日が不一致）の読み取り調査
+
+#### 内容
+D-02（指標の前日比）・D-04（ブレッスの基準日）は、ブラウザを使わず、`market_data.json`最新エントリの記録値と「今の」daily/から
+作り直した値を比べる。エントリの作成後にdaily/が書き換わると、エントリ・表示が正しくても不一致になる。書き換わる理由は設計どおりのもの:
+先物（CL=F・GC=F）・ドル円の当日の行は夜の取得では`_provisional`（暫定）で保存され翌晩に清算値・確定値へ置き換わる
+（[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）、終値の取れなかった銘柄の行は後の取得の抜け補完で追加される。
+D-04は基準日より新しい行は切り詰めて比べるが、基準日以前の行の置き換え・追加は扱えない。
+
+実測（2026-10-08、一時worktreeでD-02・D-04だけを再計算）:
+- 10-03のエントリ（`e0fc4058b6`、02:08 UTC）は直前のdaily/（`95d251995b`、02:06 UTC）から作られた。その時点でCL=F・GC=Fの10-01・10-02は
+  `_provisional`、HUBBの10-02は行が無かった。`5e95f84aa6`（10-06）でCLの10-02は91.26→91.11、GCは4172.1→4162.3（清算値）に置き換わり、
+  HUBBの10-02（475.52）が追加された
+- その結果、D-02はWTI 記録−1.73 vs 再計算−1.9、金 記録−0.72 vs 再計算−0.95、D-04は記録502銘柄・除外1 vs 再計算503・除外0
+  （(91.26−92.87)/92.87＝−1.73%、(91.11−92.87)/92.87＝−1.90%）
+- 不一致になったcommit: `5c689659d7`（feature/macro-pulse-confirmの先頭）・`4ce46886fc`（10-07 07:00 JSTまでのローカル）。
+  10-05のMarket Pulseがランナー未割り当てで失敗したため、kaihatsuは10-06 05:28〜10-07 05:32 JSTの間「エントリ10-03・daily/ 10-06以降」の状態だった
+- 毎晩の同じ型: Market Dataのpushから Market Pulseのpushまでの約3分間（例 `258a0c5b82`）は、WTI・金・ドル円とD-04が不一致になる
+- 一致したcommit: `99402b01b9`（10-07朝、一致61）・`ffab0e2ad6`（10-08、一致61・不一致0）
+
+[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]とは別の課題（あちらは期待値の計算方法が画面の判定の変更に追いついていない問題、
+こちらは計算方法は正しく比べる相手のdaily/が後から書き換わる時点のずれ。直し方も担当のファイルも違う）。
+
+#### 実害
+確認スクリプトの誤検知だけ（表示・データは設計どおり）。不一致の原因の切り分けに毎回手間がかかり、別セッション間の報告の食い違いを招く（10-06・10-07）。
+
+#### 直し方の候補（未決定）
+1. （先に勧める案）daily/がエントリより新しいとき（例: ^GSPCのdaily/の最新日 > エントリのS&P500の日付）はD-02・D-04を「判定不能」にして注記を付ける
+2. エントリの作成時点のdaily/をgitの履歴から復元して比べる
+3. エントリに前日比の計算に使った2つの終値を記録し、それと比べる
+
+#### 着手条件
+なし（Market Pulse側の作業として、[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]の調整と合わせて判断してよい）。
+
+---
+
+### [EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1] 外部起動のWorkerの空いているcronで22:20 UTC頃にMarket Pulseの成功を確かめ、失敗していれば再実行する（将来の検討）
+**優先度:** 低
+**分類:** 監視・自動回復 / 外部起動（Cloudflare Worker）
+**登録日:** 2026-10-07
+**発見:** `[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`の直し方の検討（下流の監視はSystem Healthの[J]で行うことにした）
+
+#### 内容
+System Healthの[J]は下流の失敗に気づけるが、起動は予定23:30 UTC（実際は02〜03 UTC）で日本時間7:00に間に合わず、自動回復もしない。
+10-05のMarket Pulse（ランナー未割り当てによるfailure）のような一時的な失敗は、再実行すれば直る見込みが高い。
+Workerの空いているcron（無料プランの5本のうち3本を使用、残り2本）で22:20 UTC頃に、その日の20:00 UTC以降のMarket_Pulse_Updateに成功が無ければ、
+失敗した実行の再実行（`POST /actions/runs/{id}/rerun`）か手動実行（workflow_dispatch）を行い、Discordに通知する。
+
+#### 着手前に決めること
+- 冬時間（取得は21:25 UTC）でも22:20に下流が終わっているか。間に合わない夜の誤報をどう避けるか
+- 対象をMarket Pulseだけにするか（Stonks Silo・TANUKI VALUATION・TANUKI Scoreも含めるか）。含めるほど連鎖の知識をJSに二重に持つことになる
+- 再実行と手動実行のどちらにするか。トークンの権限（Actions: Read and write）で両方できる
+
+---
+
+### [MACRO-PULSE-THRESHOLD-PERCENTILE-1] MACRO PULSEのHY・Claims・Permits・Michiganの段の境目を、過去10年の分布のパーセンタイルで決める方式（試算の結果、不採用）
+**優先度:** 保留
+**状態:** 保留（試算の結果、不採用〈2026-10-04〉。8指標のカードの tooltip に閾値の出典の有無を出す変更は feature/macro-pulse-m5 で統合済み〈`f62485feaf`〉）
+**分類:** 判定の閾値の設計 / MACRO PULSE（05_main.py・index.html）
+**登録日:** 2026-10-04
+**発見:** 指示書M-4（閾値の出どころの調査）・M-5 STEP 7（試算）
+
+#### 内容
+HY・Claims・Permits・Michiganの閾値は公的な根拠が無く、水準に置いた閾値が長期の分布の端に寄っている（M-4 STEP 2: Claims 300K でも
+1967年以降の30.9パーセンタイル）。段の数と点数を変えずに、段の境目を「その日に分かっていた過去10年の観測の分布の、今の閾値の1990年以降の
+割合と同じパーセンタイル」にする方式を試算した（`scripts/analysis/macro_m5_threshold_simulation.py`、段階関数のスコア、1997年以降の毎日）。
+
+#### 試算の要点
+- 今日のスコア 27 → 33（HY 3.24 が過去10年の境目3.22を超えて15→40点、Permits 1,403 が境目1,414を下回って35→60点）
+- 1997年以降 10,867日中 9,854日が変わる。最大 −20（2014-11-24、43→23）。2013〜2017年は平均10〜13点下がり、2025年は約6点上がる
+- 後退の前後で ≥52 に初めて達した日: 2001年 148日前→103日前、2008年 122日前→365日前、2020年 22日後→22日後。
+  ≥70: 2008年 143日後→178日後、2020年 73日後→82日後（2001年は両方なし）
+- 誤報（後退期でない日に ≥52）: 51回・1,693日 → 36回・1,259日（後退の直前12か月・終了直後を除くと 44回・1,223日 → 28回・873日）
+- Michigan は段の数と点数を変えないため、最良の段は30点（中立）のままで「拡張」に入る月は0%
+- HY は分布が1996-12以降しか無く、2006年までは過去10年の窓に足りない
+
+#### 判断（2026-10-04）
+**不採用。** 試算では、ほぼ全ての日のスコアが変わり（最大20点）、後退の前の早さは後退ごとに良くも悪くもなった（2008年の ≥70 は遅れる）。
+代わりに、8指標のカードの tooltip に閾値の出典の有無（M-4 調査）を出す: HY・Claims・Permits・Michigan は「閾値の公的な根拠は無い」、
+Michigan は「最良の段は中立（拡張の段なし）」、CFNAI・Sahm・Philly・YC は出典（feature/macro-pulse-m5）。
+
+#### 着手条件
+保留（閾値の設計を見直すときの材料として残す）。
+
+---
+
+（[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]は数値KPI抽出構想
+→「MD&A原文のセグメント別成長見通し定性要約」（10銘柄パイロット、
+2026-09-18完了）→ MD&A原文に将来向き定量ガイダンスが存在しないと
+判明したため方針転換し、XBRLセグメント売上からの決定論的算出（案①）
+へ最終確定・第1陣7銘柄実装完了（2026-09-18）。拡張候補3件は
+[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]（IDEAS_AND_WATCH.md へ移動）参照。
+BACKLOG_DONE.md「2026-09-18（完了）」参照）
+
+---
+
+（[[DUPONT-TTM-FIELD-CASE-MISMATCH-1]]は2026-08-27実装完了(PascalCase→
+snake_caseキー修正、全3実消費箇所で正常化を確認)、BACKLOG_DONE.md
+「2026-08-27（完了）」参照）
+
+---
+
+（[[KPI-FETCHER-SEGMENT-SOURCE-ORPHANED-1]]は2026-08-27、誤った前提
+〈XBRL会計セグメントデータ〉で設計された機能と判明したため残骸を撤去、
+BACKLOG_DONE.md「2026-08-27（完了）」参照）
+
+---
+
+（[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]は2026-09-26、年次D&Aの確認後にreport_consistency_check.pyのCHECK-55による自動検知に置き換えてクローズ、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+（[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]は2026-09-26、CHECK-54の実装と未登録分割27件の登録で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
+
+---
+
+### [STONKS-HERO-DISCOVER-LABEL-1] STONKS SILOのヒーローに「Discover · 10x Candidates」がDiscoverの廃止後も残っている
+**優先度:** 低
+**分類:** 表示（文言） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L249）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html` L249の`<div class="hero-label">Discover · 10x Candidates</div>`が、Discoverの廃止後もそのまま表示されている
+
+#### 直し方の候補（未決定）
+- 今の位置づけに合う文言に変える、またはラベルを外す
+
+---
+
+### [STONKS-MONEY-FORMAT-SIGN-1] STONKS SILOの金額の負号の位置が「$-56M」（チャートの見出し）と「-$155M」（棒のラベル）で混在している
+**優先度:** 低
+**分類:** 表示（書式） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- 詳細のチャートの見出しは「$-56M」、棒のラベルは「-$155M」の形で、同じ画面に2つの書き方がある
+
+#### 直し方の候補（未決定）
+- 金額の書式を1つの関数にまとめ、負号を先頭（-$56M）にそろえる
+
+---
+
+（[[STONKS-SURVIVAL-PANEL-DASH-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+### [STONKS-TANUKI-BADGE-404-1] STONKS SILOがRKLB・ZSのTANUKI VALUATIONのlatest.jsonを読みに行き、404になる
+**優先度:** 低
+**分類:** 表示（外部データの読み込み） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L435・L612）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html`はL435（TANUKIのスコアのバッジ）とL612（次回決算日・黒字転換の目算）で`tanuki_valuation/data/{T}/latest.json`を読む
+- RKLB・ZSは`docs/value-monitor/tanuki_valuation/data/{T}/`に`score_history.json`しかなく、latest.jsonの取得が404になる
+- `config/cik_lookup.csv`でRKLB・ZSは`tanuki=false`・`stonks_silo=true`で、`exclusion_reason`は「成長株のためSTONKS SILO側で評価する設計」（2026-10-10確認）。
+  TANUKIの対象外であることは意図どおりとみられる。score_history.jsonだけが残っている理由は未確認
+
+#### 判断待ち
+- TANUKIの対象外が意図どおりなら、404を出さない扱い（tanuki=falseの銘柄は読みに行かない等）にするか
+
+#### 直し方の候補（未決定）
+- tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
+- 404を想定内として静かに扱う（コンソールのエラーを出さない）
+
+---
+
+### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
+**優先度:** 低
+**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
+- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
+  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
+- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
+
+#### 直し方の候補（未決定）
+- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
+- 失敗が一定の割合を超えたときだけexit 1にする
+
+---
+
+### [SEC-UPDATE-SUMMARY-HEADER-ORDER-1] SEC_Data_UpdateのStep Summaryで、Revenue品質チェックの表の見出しが行より後に書かれる
+**優先度:** 低
+**分類:** 表示（GitHub ActionsのStep Summary） / common/sec_data（`update.py`）
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `update.py`は銘柄ごとの処理の中でRevenue品質（WARN/ISSUE）の行を`GITHUB_STEP_SUMMARY`に追記し、全銘柄の処理の後に表の見出し（「## Revenue品質チェック…」と列名の行）を追記する。
+  コメントは「先頭に書く」だが、実際は追記なので見出しが行より後になり、Markdownの表として表示されない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]で足した鮮度の節は、その後に追記している（この順序の問題には影響しない）
+
+#### 直し方の候補（未決定）
+- 行をメモリに貯めて、最後に見出しと一緒に書く
+- 最初の行を書く前に見出しを書く
+
+---
+
+### [LAYER3-QUARTERLY-FP-FILING-LABEL-1] Layer3・normalizedの四半期エントリのfp・fyが、期間そのものではなく「その数値を最後に申告した書類」の会計期間になっている
+**優先度:** 低（2026-10-10時点で、四半期のfpを判断に使っている機能は無い）
+**分類:** データの意味（ラベル） / common/sec_data（`quarterly.py::_process_entries()`、Layer3・normalized共通）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-HEATMAP-FQ-LABEL-1]]のSTEP0（読み取り調査、2026-10-10、登録のみ）
+
+#### 内容（観測した事実）
+- `_process_entries()`は、company_factsのfactの`fp`・`fy`（SECのXBRL APIでは、そのfactを含む書類の会計期間）をそのままエントリに写す。
+  同じ期間（start・end）に複数の書類の値があると最新の提出を選ぶ（`select_latest_filed`）ため、後の10-Qで再掲された期間は、その10-Qのfp・fyになる
+- 例: JOBYの純利益で、2025-03-31・2026-03-31（1〜3月期）のエントリがfp="Q2"・fy=2026（accn 0001819848-26-000435、2026-08-06提出のQ2の10-Q）。
+  2025-06-30もfy=2026。STONKS SILOの対象ではCRWV・JOBY・ONDS・RCAT・RKLB・SPIR・LYFT・KULRで1〜3月期がQ2
+- quarterly.pyの`_classify_period()`は、fpが書類の期間種別であることをコメントで明記し、日数を主に判定している（年次の判定は`fp == "FY"`だけに頼らない）
+
+#### 影響（2026-10-10の洗い出し）
+- 四半期のfpを判断に使っていたのはSTONKS SILOの財務トレンド（前年同期比・ヒートマップ・チャートのラベル）だけで、[[STONKS-HEATMAP-FQ-LABEL-1]]で期末日に切り替えた
+- 他のfpの使用は、10-Kの`fp == "FY"`の判定（`layer3_builder.py`・`utils.py`・`fye_change_candidate_scan.py`・TANUKI VALUATIONの`pipeline.py`の株式数）と
+  ログの出力だけで、四半期のfpの誤りの影響は受けない。EPS Analyzer（`extract_key_facts.py`）・`parser.py`は独自に年度を決める（`determine_fiscal_year()`）
+- results.jsonの`financial_vectors.fields.*.series_q`には、このfpがそのまま入っている（画面・計算では使わないと注記済み）
+
+#### 直し方の候補（未決定）
+- エントリにfpを入れず、期間から決めた四半期（会計年度の期末月からの位置）を別のキーで持つ
+- fp・fyのキー名を`filing_fp`・`filing_fy`のように改め、意味を名前で示す（消費者の書き換えが要る）
+- 現状維持（新しい消費者が四半期のfpを使うときは、期末日で識別するよう手順書に書く）
+
+---
+
+（[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+### [STONKS-SUMMARY-GAAP-REASON-RAW-1] STONKS SILOの総合判定の根拠で、純利益の理由コードがそのまま出る（「純利益：NO_TREND:-229%→-482%」）。使い方の「シグナル」も旧ラベル
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`analyzer.py::_build_summary()`、`docs/value-monitor/stonks-silo/index.html`の使い方）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]の実装時の表示確認（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `_build_summary()`の純利益の行は、`gaap_breakeven_reason`が`NO_TREND`・`NO_DATA`・`TOO_FAR`と完全に一致するときだけ日本語にする。
+  `NO_TREND:-229%→-482%`のように後ろにマージンが付くと一致せず、「純利益：NO_TREND:-229%→-482%」と出る
+  （2026-10-10のresults.json: ASTS・RBRK・SITM）。OCFの行も同じ作りだが、OCFが`NO_TREND:…`の銘柄では未確認
+- 使い方の「▲ 買いシグナル」「▼ 回避シグナル」は、OCF TRENDを「IMPROVING」「DECLINING」、DEFICITを「QUALITY / GROWTH-INVEST」「PURE-LOSS」と書いており、
+  画面の表示（加速中・改善中・横ばい・悪化中、良い赤字等）と違う。SCOREの「70以上」も判定の閾値（75/55/35）と合っていない
+
+#### 直し方の候補（未決定）
+- 理由コードは前方一致で日本語にする（③パネルの`fmtBe()`は`NO_TREND:`を「予測不可（改善なし）」とマージンに分けて出している）
+- シグナルの文言を画面のラベルと判定の閾値に合わせる
 
 ---
 
@@ -2315,114 +3267,10 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 また、2026-09-12・09-19の再確認の「鮮度に問題なし」は`ttm/`のcommitの日付（botが毎週全102ファイルを書き換える）による判断で、元のcompany_facts.jsonは2026-08-30から更新されていなかった。
 - **2026-10-10 解消（10銘柄）**: [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正（`61d0a085d6`）と全銘柄の再取得（`e2a629fb58`）で、上の10銘柄の`ttm_end`が進んだ（ADBE 2026-08-28・AVAV 2026-08-01・CPRT/DELL/GTLB/INTU/RBRK/ZS 2026-07-31・IOT 2026-08-01・PEP 2026-09-05）。残りはSEC側の5銘柄（CDNS・KO・RMBS・V・XOM、[[SEC-COMPANYFACTS-API-LAG-1]]）だけ
 
----
-
-### [MARKETDATA-DAILY-PROVISIONAL-ROWS-1] daily/に日足の確定前（取引時間中・清算前）の値が確定値として保存されている行がある（CL=F・GC=F・JPY=X・^N225の97行）
-**優先度:** 中
-**分類:** データ品質 / common/market_data
-**登録日:** 2026-09-30
-**発見:** 指示書㉔の追加確認（^N225の09-29の行が東京の取引時間中〈10:06 JST〉の値だった）
-
-#### 内容
-gitの履歴から各行の保存時刻を求め、その市場の日足の確定時刻（Yahooの日足の区切り）と比べた
-（scripts/analysis/daily_intraday_rows_scan.py）。08-06以降の21,775行のうち97行が確定前の保存:
-CL=F 35・GC=F 35（先物の確定値は清算値。夕方〈NY 18〜21時〉の取引中の値を保存していた）、JPY=X 25（ロンドンの暦日の途中）、
-^N225 2（08-27・09-29、東京の取引時間中）。個別株・ETF・米国指数は0行。
-^N225は、東京の引け後〜翌朝まで終値の無い足（出来高0）をYahooが返し（08-10以降の夜間の実行23回すべて）、
-翌日の東京の取引開始（00:00 UTC）で前日の足が消え、当日の取引中の足（出来高0）に置き換わる。
-
-#### 対応（2026-09-30、指示書㉔）
-- fetcher: 確定時刻より前に取得した足と^N225の出来高0の足に`_provisional`の印を付けて保存し、次回以降の取得で確定した足が
-  届いたら置き換える（印の無い行は従来どおり上書きしない）。^N225は同じ実行の中の取り直しの対象から外す
-- 97行に印を付けて確定した日足で置き換え（89行）。残り8行（先物の09-28・09-29〈清算値の確定待ち〉、先物の09-07〈Yahooに足が無い〉、
-  JPY=Xの08-15〈土曜、Yahooに足が無い〉、^N225の09-29〈Yahooが足を削除〉）は印を付けたまま
-- 先物の確定時刻はNYの翌日0時の24時間後（清算値が入る時刻の実測が続いているため安全側）
-
-#### 実測（2026-09-30）
-- ^N225の確定した足は、翌日の01:26 UTC頃（東京の引けの約19時間後、上記のYahooの作り直しと同じ時刻）に出る
-- 先物の09-29の足は09-30 02:35 UTCでも取引中の値のまま（清算値はそれより後）。確定の判定（NYの翌日0時の24時間後）は据え置き
-- 2026-09-30の実測（09-29 23:05〜09-30 08:55 UTC、10分おき）: CL=F・GC=Fの09-29の足は04:05 UTC（＝NYの09-30 0:00 EDT）の取得で清算値（CL 89.38・GC 4179.70。直前の取引中の値はGC 4206.70で、清算値とは27ドル違う）に置き換わり、以後は変わらない。04:15 UTCから09-30の足が現れる。つまり先物の日足はNYの暦日の終わり（翌日0時）に確定する。今の判定（`bar_final_at`＝NYの翌日0時＋`FUTURES_FINAL_DELAY`〈24時間〉）は実測より24時間安全側（09-30の記録で「一致する」と書いたのは誤り、同日訂正）。夕方（20:17〜23:17 UTC）の取得で保存する当日の先物の行は必ず暫定になり、翌晩の取得で値は清算値に置き換わるが、暫定の印が外れるのは翌々晩の取得。2026-09-30決定: `FUTURES_FINAL_DELAY`は+24時間を維持する。0にすると、清算値の反映が遅れた日（Yahooの日足がNYの翌日0時を過ぎても取引中の値のままの日）に、取引中の値が確定値として残り、以後置き換わらない。+24時間の不利益は暫定の印が一晩長く残るだけ（値は翌晩の取得で清算値に置き換わり、Market Pulseでは設計上の暫定値としてdata_qualityをpartialにしない）。Market Pulseでは、この設計上の暫定値はdata_qualityをpartialにしない（feature/mp-impl-b `36309d41f3`、UPDATE_SCHEDULE.md 3章）
-
-#### 未了
-次回以降の日次取得で、先物・^N225の暫定行が確定値で置き換わることの確認。
-
-### [MARKETDATA-FUTURES-ROLL-1] 先物（CL=F・GC=F）の連続シンボルは限月の乗り換え日に前日比が不連続になり、Market Pulseの段階1・2が「大きな変動」と判定していた
-**優先度:** 中
-**分類:** 判定の誤り / Market Pulse・common/market_data
-**登録日:** 2026-09-30
-**発見:** 指示書㉔の追加確認
-
-#### 内容
-2026-09-18の夕方の取得でCL=Fが10月限→11月限に切り替わり、前日比−5.52%（同じ11月限では−1.18%）で、09-19・09-22の
-エントリが「原油（-5.52%）」「同時に大きく動いたもの：原油」になっていた。Yahooの過去の連続系列は09-23に乗り換えており、
-夕方の取得とは乗り換え日が違う。Yahooは期限切れの限月を返さないため、過去の乗り換え日は同じ限月で計算し直せない。
-
-#### 対応（2026-09-30、指示書㉔）
-- fetcher: 先物の行に限月（YahooのunderlyingSymbol）と、その限月自身の当日・前営業日の終値を記録する
-- collect_and_send.apply_same_contract_change: 限月が前の行から変わった日は、新しい限月の前営業日の終値と比べた前日比にする。
-  取れない場合は前日比を出さず「限月乗り換え日」として段階1・2の判定から外す（推測で補わない）
-- 過去のエントリ: USO・GLDの同じ2日間の前日比との差が2pt超の日（原油20日・金7日、scripts/analysis/futures_roll_suspects.py）に
-  「限月乗り換えの可能性」の印を付け、前日比による判定から外して段階1・2を計算し直した（値はそのまま、26エントリ・結論が変わったのは9件）。
-  09-18は11月限（CLX26）の終値で計算し直した（−1.18%）
-
----
-
-（[[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]は2026-09-26、保存側・reader・TANUKIの修正と既存行の取り直し・再生成で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[MARKETPULSE-BREADTH-MIXED-DATES-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[MARKETPULSE-TECHPULSE-QQQ-NULL-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
-**優先度:** 中
-**分類:** データの取得遅れ / MACRO PULSE（05_main.py）
-**登録日:** 2026-10-03
-**発見:** 指示書M-1 STEP 2。記録: B-07
-
-#### 内容
-`update_fed_context()`は`record_date`の月（`record_month`）に既に行があれば、FF・DGS1・IMPLIED CUTSだけを更新し、FOMC声明の
-取得とGrokによるREGIME・主眼の判定をしない。FOMCは月の最初の土曜より後に開かれるため、会合のたびに次の月の最初の土曜の
-実行まで前回の声明に基づく判定が続く。`05_fed_context.csv`の記録: 04-29の会合→05-02に反映（3日）、06-17→07-04（17日）、
-07-29→08-01（3日）、09-16→10-03時点で未反映（17日。9月の行は09-05に07-29の声明で判定済み）。
-
-#### 実害
-REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会合後最大2〜3週間、前回の声明に基づく判定のまま表示される
-（FRB主眼のtooltipに「2026-07-29のFOMC声明に基づく判定です」と出るため、基準日は分かる）。週次AIの入力（FED context）も同じ。
-
-#### 着手条件
-なし（修正はしていない）
-
----
-
-### [CHECK-DEPMAP-HOLLOW-RALLY-STALE-1] browser_checks/check_dependency_map.pyのHollow Rallyの期待値が旧ロジック（6行前・前日比）のままで、M-2 STEP 4の統合後に画面との不一致が出る
-**優先度:** 中
-**分類:** 確認スクリプトの陳腐化 / browser_checks（Market Pulse・MACRO PULSE共通）
-**登録日:** 2026-10-03
-**発見:** 指示書M-2 STEP 8（修正した要素を読む他の画面・システムの確認）
-
-#### 内容
-`browser_checks/check_dependency_map.py::expected_hollow_rally_trigger()`は、05_liquidity.csvの6行前のsp500と直前の行の
-net_liquidityで判定する旧ロジックを再現している。[[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]（M-2 STEP 4）で画面の判定は
-「最新行のsp500_5d_pct>+1.0% かつ net_liq_wow_pct<−0.5%」（S&P500の5営業日リターン・H.4.1の水曜どうしのNET流動性の前週比）に
-変わったため、統合後の日次の実行で新しい列が書かれると、⑤Hollow Rallyで画面との不一致が出うる（2026-10-03時点では両方とも
-不発火で一致、58件一致）。MACRO PULSE用の確認は`browser_checks/check_macro_pulse.py`（MAC-18）が新しい判定で行っている。
-
-#### 実害
-確認スクリプトの誤検知（画面の不具合ではない）。
-
-#### 着手条件
-`check_dependency_map.py`はMarket Pulse側のセッションの作業範囲のため、こちら（指示書M-1・M-2）では変更していない。
-Market Pulse側の作業と調整のうえで直す。
+#### 追記（2026-10-11、ブラッシュアップでの確認）
+- `python common/sec_data/report_consistency_check.py`（HEAD `14125e4715`、2026-10-11 02:4x UTC）: NG=0・WARN 127件（確認済み71／未確認56）。**CHECK-47（WARN-47）の発火は0件**
+- 2026-09-24に発火したBKNG `stock_based_compensation`・FCX `net_income`は残っていない（どちらも上の「着手条件3の実害確認と対応（2026-09-24）」で解消済み。
+  RCATの確認済みの台帳の行〈`config/warn_acknowledged.json`〉も今回は発火していない）。着手条件3には当たらず、トリガー制の保留のまま。原因の調査はしていない
 
 ---
 
@@ -2479,265 +3327,6 @@ Market Pulse側の作業と調整のうえで直す。
 
 ---
 
-### [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
-**優先度:** 高
-**状態:** 実装完了・実地確認待ち（2026-10-07）。直した後の最初のSystem Health Checkで[J]が正しい結果を出し、Discordの1行でJ・Kが切れずに読めることを確かめるまでBACKLOG_DONE.mdへ移さない
-**分類:** 監視 / System Health・GitHub Actions
-**登録日:** 2026-10-06（同日、チャット側の確認を受けて実測と件名を訂正）
-**発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
-
-#### 内容
-`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了した実行1件
-（`_fetch_latest_run()`、`per_page=1&status=completed`）の`conclusion`だけを見て、`success`・`skipped`以外を失敗にする。
-Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動・休場日の起動）は
-自分で取り消す（cancelled）設計になった。System Healthの起動時点で直近の1件がこの取り消しだと[J]が🔴になり、
-`main()`は`return 2 if (not ok_a or not ok_j) else 1`でCRITICAL（exit 2）を返す。
-見るのは最新の1件だけなので、1日に何本取り消しがあっても「失敗1件」になる。
-
-#### 実測（System Health Checkの日次の実行のログと、その時点で[J]が見たMarket Data Dailyの実行、2026-10-06確認）
-| System Health（UTC） | [J] | 見た実行 | 理由 |
-|---|---|---|---|
-| 10-06 03:09 | 🔴 | `37406580032`（02:56の保険のschedule、cancelled） | ガード「終値はそろっている」 |
-| 10-05 02:09 | 🔴 | `37168962405`（10-04 01:45、トークンの動作確認の手動実行、cancelled） | ガード「NYSE休場日」 |
-| 10-04 02:46 | 🔴 | 同上`37168962405` | 同上 |
-| 10-03 02:08 | ✅ | `37087907001`（01:55の取得、success） | — |
-| 10-02 02:20 | 🔴 | `36954558060`（02:12、cancelled） | ガード「そろい済み」 |
-| 10-01 02:14 | 🔴 | `36804310278`（02:07、cancelled） | ガード「そろい済み」（ほかにAdjusted_Eps_Analyzer_update.ymlの未実行超過） |
-
-- 09-29の🔴はMarket_Pulse_Update.yml(failure)（本物）、09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）、09-28は✅
-- 監視件数は10-04から16→13。`791faa1f02`（金曜の保険のcronを削除）でMarket Pulse・Stonks Silo・TANUKI VALUATIONの3本からcronが無くなり、
-  cronのあるワークフローだけを監視する[J]の対象から外れた（`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`に追記）
-- Discordの1行（`build_one_line()`）は各項目の詳細を先頭20文字で切る（`"short": det_j[:20]`）ため、「13件監視 / 失敗1件: Market…」となり、
-  どのワークフローのどのconclusionかが通知から読めない
-- 毎日のWARNINGの常時の原因は[F] TailCtrl（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）と[K] TickerAudit（APGE・CON・SN・WSTの見直し候補）で、
-  本件の対象外。System Health Checkの実行は[J]が正常でも[F]・[K]によりexit 1で、直近40回すべてfailure
-
-#### 直し方の案（チャット側）
-1. ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
-   `_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
-   failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
-2. Discordの1行の詳細の20文字の切り詰め（`det_j[:20]`）: [J]が異常のときは、ワークフロー名とconclusion（または未実行の日数）が
-   読める長さで出す（例: 異常のワークフローを`名前(conclusion)`の形で全部並べる、または[J]だけ切り詰めない）。
-   他の項目（`det_f[:20]`等）も同じ切り方なので、まとめて見直すかは実装時に決める。
-
-#### 追記（2026-10-07）: `status=completed`で絞った最新の1件が古い（[J]の別の誤り）
-- 見つけた経緯: 直し方の読み取り調査で、[J]の関数をローカルで実行したところ「Adjusted_Eps_Analyzer_update.ymlが13日未実行」と出たが、
-  `gh run list`では10-05に成功していた。同じAPIを呼び比べて、`status=completed`の絞り込みの結果が古いことが分かった
-- 実測（2026-10-07、認証付き）: MACRO_PULSE_Update.ymlの`runs?per_page=1&status=completed`は**09-24 17:49の実行**（total_count 411）を返し、
-  絞り込みなし・`created>=2026-10-01`はどちらも**10-06 18:52の実行**（total_count 487）を返した。認証なしでは、Adjusted EPSでも09-24の実行が返った
-- 本番でも起きていた: 09-30の[J]の「MACRO_PULSE_Update.yml(7日/毎日閾値3日)」、10-01の「Adjusted_Eps_Analyzer_update.yml(11日/週次閾値10日)」は、
-  どちらも実際には数日以内に成功していた（誤った未実行超過）。この2件は本件の「実測」の表の注記にも書いていたが、[J]の出力をそのまま引用していた
-- System Health Checkの実際の起動は予定の23:30 UTCではなく、直近は02:00〜03:00 UTC（GitHubのscheduleの遅れ）
-
-#### 対応（2026-10-07、チャット側承認済み。`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`と同時）
-- 対象: `scripts/gen_update_schedule.py::load_workflows()`（UPDATE_SCHEDULE.mdの一覧と同じYAMLの読み方）で、cronのあるものとworkflow_runの下流の17本
-  （System_Health.yml自身と手動・pushだけのものは除く）。以前は正規表現で各ファイルの最初のcronだけ（13本）
-- 想定間隔: cronごとの閾値の最短。workflow_runの下流は起動元の閾値を継ぐ（Market Pulse・Stonks Silo・TANUKI VALUATIONは4日、SEC Data Auditは10日）
-- 一覧: `created>=今日（UTC）−閾値`で取り（`status`で絞らない、100件ごとに次のページ）、成否はコードで見る
-- 判定（cancelled・skippedは数えない）: 取り消し・スキップを除いた最新の実行が失敗で、その前の12時間以内に成功が無ければ🔴、あれば⚠️。
-  期間内に成功が無ければ🔴。CRITICAL（終了コード2）は🔴だけ、⚠️はWARNING（終了コード1）
-- Discordの1行: J・Kを切らずに全部出す（他の項目は従来どおり）
-- テスト: `tests/test_system_health_workflow_monitor.py`を書き直し（27件。修正前のコードでは19件失敗・3件エラー、cronの頻度推定4件と
-  リポジトリ特定不可の1件は従来どおり成功）。実際のAPIでの実行（2026-10-07）は「✅ 17件監視 / すべて正常」
-
----
-
-### [TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1] TANUKI TAILの内部統制データの毎週の更新が、positions_index.jsonの形式を読み違えて1銘柄も処理しておらず（「[POSITIONS] CIK 未登録」）、APGEのctrl/latest.jsonが一度も作られず、他の9銘柄も2026-06-27のまま
-**優先度:** 高（2026-10-06、チャット側の判断で中から引き上げ）
-**追記（2026-10-08）:** APGEを登録解除しTAILからも外したため（4銘柄の登録解除、チャット側承認済み）、対象は9銘柄。
-下の状態の「10 成功（更新 0 / 変更なし 10）」は「9 成功（更新 0 / 変更なし 9）」と読み替える（2026-10-08にローカルで実行し、この表示を確認済み）。
-**状態:** 実装完了・実地確認待ち（2026-10-07、`a0b52a814a`・`4b8767b385`）。10-12（月）01:00 UTCの定時の実行のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」・
-successになることを確かめるまでBACKLOG_DONE.mdへ移さない（チャット側の指示）
-**分類:** バグ / TANUKI TAIL・GitHub Actions（System Health [F] TailCtrl）
-**登録日:** 2026-10-06
-**発見:** System Healthの毎日のWARNINGの切り分け（[F] TailCtrl「9/10件 ctrl/latest.json 存在 (不足: APGE)」）
-
-#### 内容
-`src/tail/sec_ctrl_fetcher.py::load_tail_tickers()`は`positions_index.json`を「要素がdictまたは文字列のリスト」として読むが、
-実際のファイルは`{"positions": ["PLTR_thesis.json", …, "APGE_thesis.json"]}`というdict。dictをそのまま回すためキーの`"positions"`だけが
-ティッカー`POSITIONS`になり、CIKが無くスキップされる。`TANUKI_TAIL_SEC_Ctrl.yml`（毎週月曜01:00 UTC）は終了コード0のため、実行はsuccessになる。
-
-#### 実測（2026-10-06確認）
-- 10-05の実行（run `37272284959`）・08-31の実行（run `33364060058`）のログ: `[POSITIONS] CIK 未登録 — スキップ` → `完了: 0 成功 / 1 失敗` → 「変更なし」
-- 実行履歴の残る06-29以降の毎週の実行はすべてsuccess。`docs/portfolio/tail/data/ctrl/`の最後のcommitは2026-06-27（`de03ca7c07`など手作業の更新）
-- ctrlの9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）の`latest.json`の`fetched_at`は06-24〜06-27、quarterは2026Q1〜Q2のまま
-- APGEは2026-07-02（`3d45e67949`）に`positions_index.json`へ追加されたが、その後の更新が何もしないため`ctrl/APGE/`は一度も作られていない
-- System Healthの[F]は09-28以前から毎日⚠️（BACKLOG_DONE.mdに「既存の別警告、対象外」と2回記録があるだけで、課題として未登録だった）
-
-#### 関係する課題
-- `[[TAIL-THESIS-KPIS-EMPTY-ADBE-APGE-1]]`（BACKLOG_DONE.md、2026-09-09クローズ）: APGEのthesis.jsonの`kpis`が空でKPIステータス表が出ない件。
-  `quarterly_review_generator.py`の`kpis`の扱いで、内部統制（`sec_ctrl_fetcher.py`・`ctrl/`）とは出力も原因も別。重複ではない
-- BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdに、ctrlのAPGE不足・`load_tail_tickers()`を扱う項目は無い（grepで確認）
-- System Healthの[J]はconclusionしか見ないので、この「successだが何もしていない」実行は検知できない
-
-#### 直し方の案
-`load_tail_tickers()`を`{"positions": [...]}`の形式に合わせ、`*_thesis.json`からティッカーを取り出す（`src/tail/edgar_rss_monitor.py`の読み方と揃える）。
-対象が1件も処理できなかったときは終了コードを非0にする。直した後に一度手動実行し、APGEを含む10銘柄のctrlが更新されること、
-[F]が✅になることを確認する（9銘柄の内部統制の判定が06-27から変わる可能性があるので、差分は確認してからcommitする）。
-
-#### 読み取り調査（2026-10-07）
-- `positions_index.json`は最初のcommit（2026-06-05）から一貫して`{"positions": [...]}`。`load_tail_tickers()`は2026-06-24（`8f9152528f`）に書かれてから
-  変わっておらず、**引数なしの実行は導入時から一度も機能していない**。既存の9銘柄のctrlは06-24〜06-27に銘柄を指定した手作業の実行で作られた
-- 毎週の実行15本（06-29〜10-05、すべてschedule・success）のうち、ログが読める13本（07-13〜10-05）はすべて`[POSITIONS] CIK 未登録` →
-  `完了: 0 成功 / 1 失敗` → 「変更なし」。06-29・07-06の2本はログの期限切れ（HTTP 410）だが、ctrl/の最後のcommitが06-27のため同じく何もしていない
-- `src/tail/sec_items_fetcher.py:68`が同じ関数を使っており、引数なしの実行は同じく何もしない（定時の実行は無い）
-- `TANUKI_TAIL_SEC_Ctrl.yml`だけ`XAI_API_KEY`を渡しておらず、自動の実行では`item4_excerpt_ja`が付かない
-- EDGARでは9銘柄とも保存済みより新しい10-Qが出ている（07-23〜09-22提出。7銘柄はQ1→Q2、NVDA・ADBEはQ2→Q3）。APGEの最新は2026Q2（08-10提出）
-
-#### 対応（2026-10-07、チャット側承認済み）
-- `load_tail_tickers()`を`positions`の`*_thesis.json`から読む形に（`edgar_rss_monitor.get_monitored_tickers()`と同じ読み方）。`sec_items_fetcher.py`も同じ関数で直る
-- 保存済みの`latest.json`と四半期・提出日が同じ10-Qは、本文の取得・Grokの翻訳・書き込みをしない（「変更なし」）
-- 成功＝書いた＋変更なし、失敗＝CIK未登録・取得の失敗・例外。成功が0銘柄の実行は終了コード1（全銘柄が変更なしの週は0）
-- ワークフローに`XAI_API_KEY`を渡す。テスト`tests/test_tail_sec_ctrl_fetcher.py`（修正前のコードで9件中8件が失敗することを確認）
-
-#### 作り直し（2026-10-07、ローカルで実行しチャット側の確認後にcommit）
-- 1回目: `10 成功（更新 10 / 変更なし 0） / 0 失敗`・終了コード0・10銘柄とも和訳あり。2回目: `10 成功（更新 0 / 変更なし 10） / 0 失敗`・終了コード0
-  （書き込み・Grokの呼び出しなし。実データで「全銘柄変更なしの週は終了コード0」を確認）
-- PLTR・SOFI・TSLA・CELH・APPは2026Q1→Q2、NVDA・ADBEはQ2→Q3で、いずれも有効のまま。SOUN・CRWVはQ1→Q2で無効のまま。
-  APGEは2026Q2（08-10提出、有効）を初めて作成。06-27の既存の四半期のファイルは上書きしていない
-- SOUN・CRWVの`material_weaknesses`は2件・4件→12件になったが、状況は変わっていない（件数は語の出現箇所の数、`[[TAIL-CTRL-MW-COUNT-DISPLAY-1]]`）
-
-#### 未了
-翌朝のSystem Health [F]が10/10で✅、次の定時の実行（10-12 01:00 UTC）のログが「10 成功（更新 0 / 変更なし 10） / 0 失敗」。
-
----
-
-### [MARKETDATA-FUTURES-BACKFILL-ROWS-1] daily/のES=F・NQ=F・NIY=Fの抜け補完の行に、前の行と同じvolume・O=H=L=Cでvolume 0の足・確定時刻を過ぎても残る暫定の印がある
-**優先度:** 中
-**分類:** データ品質 / common/market_data（Market Pulse 段階8の先物）
-**登録日:** 2026-10-07
-**発見:** 水曜（2026-10-07）朝の確認（米国10-06の足、実装Cの初回の実地確認）
-
-#### 内容（観測した事実のみ。**原因は未調査**）
-実装C（`31812675c0`で統合）のdaily/のES=F・NQ=F・NIY=Fは、ブランチで保存した09-30までの行（`1193cd5845`）に、10-06 20:25 UTCの外部起動の取得
-（`47ca116ce7`）が抜け補完で10-01・10-02・10-05・10-06の行を加えた。2026-10-07 07:15 JST時点のファイルで次を確認した。
-
-1. **前の行と同じvolume**: ES=Fの10-05のvolumeが1,859,407で10-02と同じ。NQ=Fの10-05も581,527で10-02と同じ。
-   ブランチ側の行にも同じ形があり、ES=Fの09-29（1,768,110）とNQ=Fの09-29（678,480）が、それぞれ09-28と同じ値
-2. **NIY=Fの平らな足**: 10-01・10-02・10-05はO=H=L=C・volume 0（`_validation_warnings: ["volume must be > 0 (got 0)"]`）で、closeが`contract_close`と違う
-   （10-01 68,270と68,520、10-02 69,855と69,910、10-05 69,935と70,130）。ブランチ側の09-28（65,895）・09-29（66,230）もO=H=L=C・volume 0
-   （`contract_close`の記録は無い）。10-06はvolume 18,085で、closeと`contract_close`は同じ70,885
-3. **暫定の印**: 3銘柄とも09-29・09-30・10-05・10-06の行が`_provisional: true`で、10-01・10-02の行には印が無い
-   - 09-29・09-30の確定時刻（`fetcher.bar_final_at`）は10-01 04:00・10-02 04:00 UTCで、10-06 20:25の取得の時点で過ぎていた。
-     この取得のcommitは10-01〜10-06の行を加えただけで、09-29・09-30の行は変えていない
-   - 10-05・10-06の確定時刻は10-07 04:00・10-08 04:00 UTCで、10-06 20:25の取得の時点ではまだ来ていない（`FUTURES_FINAL_DELAY`による設計上の暫定）
-
-#### 影響（観測の範囲）
-Market Pulseの段階8の先物の表示（`futures`）はdaily/の行を使っていない（`src/market/market_pulse/futures_snapshot.py`がyfinanceの15分足と
-`previousClose`を直接取得）。10-07のエントリの値・前日比・限月は
-check_dependency_map.pyのC-08で一致した。日足の行を読むものへの影響は未確認。
-
-#### 関係する課題
-- `[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`: CL=F・GC=F・JPY=X・^N225の暫定の印の付け方と置き換え。その「未了」（次回以降の取得で暫定行が確定値に置き換わること）は
-  これら4銘柄が対象で、実装Cで加えた3銘柄は含まれていなかった。3の09-29・09-30の行はこの置き換えが起きていない例
-- `[[MARKETDATA-FUTURES-ROLL-1]]`: 先物の限月の記録（`contract`・`contract_close`）。2の`contract_close`はこの対応で加えた列
-
-#### 着手条件（読み取り調査から）
-1. 夜間の取得（今夜以降）で、3の各行の印が外れて値が置き換わるかを、行ごとに記録する
-2. 1と2について、Yahooが今返す同じ日の日足（`yf.Ticker(...).history`）とdaily/の行を比べ、保存の時点の値か、Yahoo側の値そのものかを分ける
-3. CL=F・GC=Fの同じ期間の行に同じ形があるかを確かめる（実装Cの3銘柄に限った話かどうか）
-
-#### 追記（2026-10-08、BACKLOGの分類の中で確認、読み取りのみ）
-2026-10-08 18:53 JST（kaihatsu `ffab0e2ad6`以降、10-07の足の取得`258a0c5b82`を含む）のdaily/の行:
-- **着手条件3は「ある」で確定**: CL=F・GC=Fでも、10-01と10-02、10-05と10-06のvolumeが同じ値
-  （CL=F 337,181・337,181、274,982・274,982。GC=F 130,846・130,846、112,195・112,195）。実装Cの3銘柄に限った話ではない
-  （ES=F・NQ=Fでも10-05と10-06が同じ: ES=F 1,359,089、NQ=F 468,008）。いずれも後の日の行は暫定の印のある行か、抜け補完で加わった行
-- ES=F・NQ=Fの09-29・09-30の行は、確定時刻（10-01 04:00・10-02 04:00 UTC）を過ぎ、その後の夜間の取得（10-06〜10-07の足）を経ても
-  `_provisional: true`のまま（印が外れず、値も置き換わっていない）。NIY=Fも09-29・09-30が暫定のまま
-- NIY=Fのvolume 0の行は続いている（10-01・10-02・10-05・10-06）。10-07の行はvolume 20,529
-- 段階8の先物の表示（`futures_snapshot.py`）はdaily/を使わないため、画面の値への影響は引き続き確認されていない（日足を読む他の消費者は未確認）
-
----
-
-### [TANUKI-MAXEPS-NI-SOURCE-1] 最大EPSがdupont.ni_ttm（負の純資産・売上$15M未満では欠ける）と年次のsbc_ttmに依存し、片側だけで計算していた
-**優先度:** 中
-**分類:** 表示値の誤り / TANUKI VALUATION（`pipeline.py`の max_eps 算出）・TANUKI SCORE（最大EPS PER列・乖離列）
-**登録日:** 2026-10-10
-**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10、origin/kaihatsu `3a39561030`）
-
-#### 内容（観測した事実）
-- `pipeline.py:1237-1260`は純利益を`dupont.ni_ttm`から取る。`dupont.ni_ttm`はDuPont分解が成功したときだけ書かれ、負の純資産
-  （ABBV・BKNG・DELL・FICO・MSCI・RBRK・MO・PM）・売上$15M未満（QBTS）では欠ける。TTM系列（`common/sec_data/ttm/{T}_ttm_series.json`の
-  `flow.net_income`）には9銘柄とも4四半期そろった値がある
-- 片側が欠けると残った側だけで計算し信頼性MEDにする。例: DELL max_eps 1.1371（株式報酬のみ÷株数）・最大EPS PER 515.4x
-  （TTM純利益を使うと約40.8x）。RBRKは78.2x（正しくは約631x）、QBTSは244.1x（純利益＋株式報酬≤0で本来None）
-- `financial_health.sbc_ttm`は名前に反して最新年次ファイルの`cf.stock_based_compensation`（TTMではない）
-- 判定・点数（funda/timing/tanuki_score/matrix/トラップ）は max_eps 系を参照していない。影響は表示のみ
-
-#### 対応方針（チャット側の決定）
-純利益・株式報酬ともTTM系列の最新エントリから取る。純利益None→None・LOW、株式報酬None→0扱いでMED、両方→HIGH、合計≤0→None。
-`components.max_eps_ttm_end`を出力。`dupont.*`・`financial_health.sbc_ttm`は変更しない
-
-
-#### 対応（2026-10-10、`86db08acf3`）
-- `pipeline.py`: `_latest_ttm_entry()`（`ttm_end`の最大値で選ぶ。データ98ファイルとも`series[0]`が最大で、`calc_ttm_series()`も新しい順）・`compute_max_eps()`
-- `components.max_eps_ttm_end`を追加。`dupont.*`・`financial_health.sbc_ttm`は変更なし。テスト`tests/test_tanuki_max_eps.py`（6件）
-- 現在のデータに当てた試算: DELL 515.4→40.8x、ABBV 511.6→67.1x、BKNG 202.7→15.9x、FICO 92.0→14.6x、MSCI 369.0→27.8x、RBRK 78.2→633.9x、QBTS 244.1x→None。
-  MO・PMはLOW→MED（15.0x・28.8x）。WMTはTTM系列に株式報酬が無くHIGH→MED（34.4→40.0x）。株式報酬が年次→TTMに変わるため、HIGHの銘柄も小さく動く
-
-#### 未了
-- latest.jsonはまだ再生成していない（パイプラインの全銘柄実行はFCF一過性費用のAI定性評価〈Grok〉を`transient_found`の33銘柄で呼ぶため、ローカルで実行しなかった）。
-  10/12（月）13:00 JST ごろ以降の再生成の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
-  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
-
----
-
-### [TANUKISCORE-PER-FORWARD-MIX-1] TANUKI SCOREの「GAAP PER」列に前向きPERが注記なしで混ざり、乖離列が無意味になっていた（QBTSではper_is_forwardが立っていない）
-**優先度:** 中
-**分類:** 表示値の誤り / TANUKI VALUATION（`data_fetcher.py`の per）・TANUKI SCORE（GAAP PER列・乖離列）
-**登録日:** 2026-10-10
-**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
-
-#### 内容（観測した事実）
-- `components.per`は`data_fetcher.py:725`の`trailing_pe or forward_pe`。trailing PEが無い（赤字）銘柄はアナリスト予想EPSによる前向きPERになる
-- `per_is_forward`はforward_pe>0のときだけtrue。QBTSはtrailingが無くforward_peが負（-41.8）のため、per=-41.8なのにper_is_forward=false
-- 画面（`docs/value-monitor/tanuki_score/index.html`）はper_is_forwardを見ず「GAAP PER」として表示し、乖離（GAAP PER − 最大EPS PER）も計算する。
-  例: NETはGAAP純利益が赤字（TTM -206M）なのに「GAAP PER 208.3x」（forward）と表示。前向きPERの銘柄はAVAV・FROG・GTLB・LITE・NET・RBRK・S・ZETA（＋QBTS）
-
-#### 対応方針（チャット側の決定）
-trailing_peが無くforward_peを使ったときはforward_peの正負にかかわらずper_is_forward=true。画面でFwdと注記し、その銘柄の乖離は「—」
-
-
-#### 対応（2026-10-10、`eca2072b45`）
-- `data_fetcher.py`: `per_is_forward = (not trailing_pe) and bool(forward_pe)`（forward_peを使ったときだけtrue、正負は問わない）。
-  trailing_peが負でperにそれを使った場合は、以前のtrueからfalseに変わる（現在のデータでは該当なし）
-- `tanuki_score/index.html`: per_is_forward=trueならGAAP PERの横に「Fwd」（title付き）、乖離は「—」、表下に凡例1行
-- per_is_forwardの参照: data_fetcher.py・core_calculator.py:935（componentsへ渡すだけ）・hypecore/detail.html:567（FwdPEのラベル）。判定・点数には使われていない
-- 同じ問題がある画面（修正していない）: `tanuki_valuation/stock.html`（フェアPER・PEGのパネルで、per_adjustedが無いとき「GAAP PER」として表示し、フェアPER・PEGの計算に使う）、
-  `adjusted_eps_analyzer/stock.html`（PER比較の「市場 PER（GAAP）」と調整後PERとの差）。`tanuki_score/index.html`のトラップ判定（低PER）・チップの「PER」も
-  per_is_forwardを見ない（判定値を変えないため今回は対象外）
-
-#### 未了
-- QBTSのper_is_forwardは10/12（月）13:00 JST ごろ以降の再生成で反映される（それまでは画面でFwdが付かない）
-  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
-- ONDSもper_is_forward=trueになる（公開中のlatest.jsonはper=-362.0・per_is_forward=falseで、画面はマイナスPERなのに乖離〈per−最大EPS PER〉を出していた）。この修正で解消する（2026-10-10にXAI_API_KEYを空にした手元の再生成でper_is_forward=trueを確認、出力はcommitしていない）。10/12の再生成で確認する
-
----
-
-### [TANUKISCORE-FCF-COL-FLOOR-1] TANUKI SCOREのFCF列が売上8%の底上げ後のbase_fcfで判定され、全件✓になっていた
-**優先度:** 中
-**分類:** 表示値の誤り / TANUKI SCORE（`index.html`のFCF列）
-**登録日:** 2026-10-10
-**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
-
-#### 内容（観測した事実）
-- FCF列は`fcf_base.base_fcf > 0`で✓。`base_fcf`はDCF用に`calculator/adjustments.py::adjust_fcf()`で5年平均FCF≤0のとき「最新売上の8%」に
-  底上げした後の値のため、全96銘柄で正になり✗が出ない（例: QBTS 1.97M＝売上の8%、実際の5年平均は-71M。SOUN・KULRも同様）
-- 底上げされた銘柄は18（ASTS・AVAV・BBAI・CEG・COHR・CRWV・IONQ・JOBY・KULR・ONDS・QBTS・RCAT・RDW・RXRX・SOFI・SOUN・SPIR・S）。
-  `components.structural_deficit`（5年・2年平均とも≤0）は17銘柄（Sを除く上記）
-- トラップ判定（`latestFcf`）は実績のfcf_historyを使っており影響なし
-
-#### 対応方針（チャット側の決定）
-structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、それ以外は従来どおり
-
-
-#### 対応（2026-10-10、`c2751316df`）
-- `tanuki_score/index.html`: structural_deficit→✗（title「5年・2年平均FCFとも赤字」）、それ以外でfcf_floor_applied>0→「△床」（title「売上8%の下限補正後」）、それ以外は従来どおり
-- 現在のデータで✗ 17銘柄・△床 S・✓ 78銘柄（ローカルの描画で確認）。FCF列はソート対象外のまま。latest.jsonの再生成は不要（既存のフィールドだけを使う）
-- 画面のトラップ判定（computeTraps）・カテゴリボード・RICEマトリクスは修正前のindex.htmlと同じ出力（全96銘柄）
-
----
-
 ### [SBC-TAG-STOCKOPTIONPLAN-1] HEI・TDYは株式報酬をStockOptionPlanExpenseで申告しており、株式報酬を取得できていない
 **優先度:** 低
 **分類:** データ取得 / common/sec_data（`tag_definitions.py`のSTOCK_BASED_COMPENSATION）
@@ -2753,172 +3342,6 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 #### 着手条件
 タグの追加は凍結年度（fixed_registry）・Layer3への影響の確認が必要。追加前に、HEI・TDYで`StockOptionPlanExpense`が株式報酬の全額か（RSU等を含むか）を10-Kで確認する
-
----
-
-### [ROTCE-PTBV-1] ROTCE・P/TBVの参考表示（TCEの控除項目の取り込み→計算→TANUKI SCOREの散布図・EPS Analyzerの推移）
-**優先度:** 中
-**分類:** 新規指標（参考表示のみ） / common/sec_data（Layer2・Layer3・`rotce.py`）・TANUKI SCORE・EPS Analyzer
-**登録日:** 2026-10-10
-**発見:** ROTCE / P/TBV / 理論P/TBV の実現可能性調査（2026-10-10、読み取り専用）
-
-#### 内容（調査で確認した事実）
-- Layer2・Layer3・TTM系列に、のれん・無形資産・優先株・非支配持分のフィールドが無い（company_facts.jsonにはある。Goodwill 89銘柄・
-  IntangibleAssetsNetExcludingGoodwill 71・FiniteLived 81・IndefiniteLived 26・PreferredStockValue 50・MinorityInterest 31、直近3年）
-- EXCLと「有限＋無期限」の併存は66銘柄。IntangibleAssetsNetIncludingGoodwillはCAKE・RCAT・CELHで「のれんを除く無形資産」の意味で使われている
-- 96銘柄の最新期で、TCE＞0は67銘柄（成分が期末日にそろうのは56）。理論P/TBV（(ROTCE−g)/(COE−g)）は、乖離が±50%以内に収まるのが
-  計算できた47銘柄中3銘柄（GOOGL・VZ・CPRT）で、物差しにならない
-- CRMの純資産の急減（2026-01-31 59.1B→04-30 34.2B）は、借入（長期債務14.4B→39.3B）で賄った自社株買い（自己株式32.2B→55.0B）による。
-  資本の内訳（APIC−3,922M・利益剰余金+1,733M・AOCI+82M・自己株式−22,800M）の合計が純資産の減少−24,907Mと一致（取り込みの誤りではない）
-
-#### 対応方針（チャット側の決定）
-- 参考表示のみ。TANUKI SCOREの判定（category・funda/timing・tanuki_score・matrix・トラップ判定）には入れない。理論P/TBVは実装しない
-- 銘柄間比較はTANUKI SCOREのROTCE×P/TBV散布図、単体の割安・割高はその銘柄自身の過去の四半期分布との比較（パーセンタイル）
-
-#### 対応（2026-10-10）
-- STEP1 `d88693784b`: Layer2（parser.py、bsに4項目＋bs_tag_sources）・Layer3（sec_concept_definitions.json）に
-  goodwill・intangible_assets_excl_goodwill・preferred_stock・minority_interest。既存フィールドの値の差分0件（Layer2 4,486ファイル・Layer3 98銘柄×32フィールド）
-- STEP2 `b9ccaae898`: `common/sec_data/rotce.py`、出力`docs/common/sec_data/rotce/`、Market_Data_Daily_Update.ymlで日次に再計算
-- STEP3 `0945814072`: TANUKI SCOREの散布図、EPS Analyzer個別ページの推移
-- 指示書からの追加判断（報告済み）: ①EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限
-  （PEP〈EXCL 500M／有限1,219M＋無期限13,847M〉・AVAV・TSLA・ADSKの一部の期末日）、②優先株がメザニンと同額の期末日は控除しない（CELH）、
-  ③株式数の外れ値（中央値の20倍超、CIX・ONDSの千株単位の申告）は使わない、④その成分を初めて申告した期末日より前は0
-- 2026-10-10時点: 98銘柄中65銘柄で算出（TANUKIの96銘柄では63、年度末の値で補ったのは8）。TCE≤0が29、成分が取れない4、
-  目安は自社比割安7・中立34・自社比割高9・判定なし48
-
-#### 未了・観察（未対応）
-- KOは無形資産の大半が`IndefiniteLivedTrademarks`（12.5B）で、対象タグに無いため2024年以降component_missing（2023年以前の行は無形資産を過小に引いている）
-- AVAVは純資産が非支配持分込みのタグで、MinorityInterestの申告が途中で止まっている→component_missing。PLTRはのれんの申告が2022年末だけ→component_missing
-- Vの優先株は`PreferredStockValueOutstanding`（528M）で、対象タグ（PreferredStockValue）に無い（VはTCE≤0のため結果には影響なし）
-- 目安は赤字銘柄にも付く（SOUN・KULRは自社比割安、ROTCEがマイナス同士の比較）。赤字銘柄を除くかはチャット側の判断待ち
-- 優先配当は純利益から引いていない
-
-#### 指示書に無かった判断1〜4の採否（チャット側の決定、2026-10-10）
-- 判断1（EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限）・判断2（メザニンと同額の優先株は控除しない）・
-  判断3（株式数の外れ値は使わない）: 採用
-- 判断4（初めて申告する前の期は0）: 0とした期にassumed_zeroを付け、自社比の母数から外す条件で採用
-
-#### 追補（2026-10-10）
-- `54ccf5dd78`: assumed_zero（成分名の一覧）を付け、パーセンタイルの母数から外す。EPS Analyzerでは中抜きの点。
-  母数が減った6銘柄: ALAB（のれん、10→3期）・LITE（優先株、8→2）・ONDS（優先株、3→2）・PAYS（のれん、15→7）・QBTS（のれん、7→3）・SOUN（のれん・無形資産、12→10）。
-  うちALAB（中立）・LITE（自社比割高）・PAYS（中立）が判定なし（insufficient_quarters）に
-- `e6378a614d`: 直近のROTCE≤0なら目安なし（rotce_nonpositive、19銘柄）。散布図・個別ページの表示も合わせた
-- 目安の内訳（98銘柄）: 追補前 自社比割安7・中立34・自社比割高9・判定なし48 → 追補後 自社比割安5・中立26・自社比割高4・判定なし63
-  （tce_nonpositive 29・rotce_nonpositive 19・insufficient_quarters 11・component_missing 4）
-- 株式数の単位誤りは[[LAYER2-SHARES-UNIT-THOUSANDS-1]]に登録
-
-#### 追補2（2026-10-10）: 判断4の条件を修正
-- assumed_zeroの記録は全成分のまま、自社比の母数から外すのは無形資産（intangible_assets_excl_goodwill）を0と仮定した期だけにした
-  （`rotce.py::ASSUMED_ZERO_EXCLUDED_FIELDS`、期にexcluded_from_percentile=true）。のれん・優先株は存在すれば貸借対照表に
-  独立した行として出るため、初申告より前を0とするのは実態どおり（ALABは2025年の買収で初めてのれんが生じた）。
-  EPS Analyzerの中抜きの点も母数から外した期だけ
-- 母数が戻った5銘柄: ALAB（3→10期、判定なし→中立）・PAYS（7→15、判定なし→中立）・LITE（2→8、直近ROTCE−213.5%のためrotce_nonpositiveのまま）・
-  ONDS（2→3、期数不足のまま）・QBTS（3→7、rotce_nonpositiveのまま）。SOUN（無形資産を0と仮定した2期を除外、10期）は変わらない
-- 目安の内訳（98銘柄）: 自社比割安5・中立26→28・自社比割高4・判定なし63→61（insufficient_quarters 11→9）
-
----
-
-### [ROTCE-QUARTERLY-ANNUALIZED-1] SOFIのROTCEが会社発表と方向まで食い違う（TTM÷1年前と期末の平均）→ 四半期の年率に変更し、会社発表を並べて表示
-**優先度:** 高
-**分類:** 指標の定義 / common/sec_data（`rotce.py`）・EPS Analyzer個別ページ・TANUKI SCOREの散布図・`config/company_reported_metrics.json`・CHECK-61
-**登録日:** 2026-10-11
-**発見:** チャット側のSOFIの確認（2026-10-11、2026-Q2 Investor Presentation p.51との比較）、[[ROTCE-PTBV-1]]
-
-#### STEP0（読み取り、2026-10-11）
-- 変更前の定義（`rotce.py`、2026-10-10）: 分子＝Layer3の四半期純利益（暗黙のQ4を含む）を連続4期足したTTM（親会社帰属、優先配当は引かない）。
-  分母＝4四半期前（340〜390日前の純利益の期末日）と当四半期末のTCEの単純平均＝`rotce_basis: "average"`。4四半期前のTCEが無い・0以下なら当四半期末だけ（`"end_only"`）。
-  TCE＝純資産−（非支配持分込みのタグの期末日だけ非支配持分）−優先株−のれん−無形資産。assumed_zeroは成分の初申告より前を0とした期で、
-  無形資産を0と仮定した期だけ自社比の母数から外す（計算値自体はそのまま出す）
-- SOFIのタグ: `NetIncomeLossAvailableToCommonStockholdersDiluted`（2020-06〜2026-06）・`…Basic`（2019-12〜2026-06）あり。
-  優先配当`PreferredStockDividendsIncomeStatementImpact`は2024-03で終わり（優先株は2024年に償還、メザニン区分）。
-  `DeferredTaxLiabilitiesGoodwillAndIntangibleAssetsIntangibleAssets`は年度末だけ（2023〜2025年末: 42M・52M・39M）
-- SOFIの比較（(A)＝四半期の普通株主帰属純利益〈希薄化後〉×4÷前の四半期末と当四半期末のTCEの平均、(B)＝(A)の分母に無形資産の繰延税金負債〈直前の年度末の値〉を足し戻す）:
-
-| 四半期末 | 変更前（TTM） | (A) | (B) | 会社発表 |
-|---|---|---|---|---|
-| 2024-09-30 | 5.6% | 5.4% | 5.4% | — |
-| 2024-12-31 | 12.0% | 29.9% | 29.6% | — |
-| 2025-03-31 | 10.6% | 5.8% | 5.7% | 5.8% |
-| 2025-06-30 | 12.0% | 7.6% | 7.6% | 7.7% |
-| 2025-09-30 | 11.1% | 9.1% | 9.0% | 8.5% |
-| 2025-12-31 | 7.0% | 8.7% | 8.6% | 9.0% |
-| 2026-03-31 | 8.1% | 7.4% | 7.4% | 7.6% |
-| 2026-06-30 | 8.7% | 6.7% | 6.7% | 7.1% |
-
-  会社発表との差の絶対値の平均（6四半期）: 変更前 2.63pt・(A) 0.27pt・(B) 0.28pt。向きは(A)が6四半期すべてで一致（Q1'26→Q2'26は低下）。
-  (B)は繰延税金負債が年度末しか取れず、(A)より近くならないため採らない。2024-12-31の29.9%は税効果（評価性引当金の取り崩し）でGAAP純利益が大きい四半期（会社の調整後には入らない）
-
-#### 対応（2026-10-11）
-- `74b2ce6249`（config）: `config/company_reported_metrics.json`（SOFIの6四半期・2026年ガイダンス8.0%・長期目標20〜30%、出典 2026-Q2 Investor Presentation p.51。値はチャット側の提示）
-- `91a1378521`（コード）: ROTCE＝その四半期の普通株主帰属純利益（Diluted→Basic、タグが無い四半期はLayer3の純利益で`net_income_source: "net_income"`）×4÷
-  （前の四半期末〈70〜120日前の純資産の期末日〉と当四半期末のTCEの平均＝`rotce_basis: "quarter_average"`、前が無い・0以下なら`"quarter_end_only"`）。
-  TTM方式は`rotce_ttm`（参考）。四半期ごとに1行（TTMの窓が無い四半期も行になる）ため、自社比の母数は多くの銘柄で+3期。
-  `{TICKER}.json`の`company_reported`（会社の値・こちらの値・差・ガイダンス・長期目標・`latest_registered`）。CHECK-61（WARN、直近の四半期末の会社発表が未登録）。
-  EPS Analyzerの個別ページ: 定義の説明、会社発表の表、推移チャートに会社発表の線、未登録の表示。TANUKI SCOREの散布図の説明
-- `d83902613e`（データ）: 98銘柄を作り直し（65銘柄で算出、変更前と同じ）。変更前のコードの手元の再現は、10-10 19:25のSEC_Data_Update（`e2a629fb58`）で
-  新しい四半期が入った9銘柄（GTLB・IOT・RBRK・ZS・ADBE・INTU・CPRT・DELL・PEP）以外で公開中の値と一致
-- 分子のタグ（最新四半期）: 純利益で代用61・希薄化後29・基本8銘柄
-
-#### 全銘柄の変化（算出できる65銘柄、変更前のコードの手元の再現→変更後）
-- 目安が変わるのは6銘柄: CSGP 自社比割高→中立（2.8%→17.7%）、DDOG 中立→自社比割高（5.7%→5.0%）、ESTC 自社比割安→判定なし（48.1%→−7.3%、直近の四半期が赤字）、
-  FLYW 中立→判定なし（16.3%→−13.2%）、ONDS 期数不足→判定なし（51.3%→−100.5%）、ZETA 判定なし→中立（−0.9%→17.6%）
-- 目安の内訳（98銘柄）: 自社比割安5→4・中立28・自社比割高4・判定なし61→62（insufficient_quarters 9→8、rotce_nonpositive 19→21）
-- TANUKI SCOREの散布図（96銘柄）: 点は63のまま。表示範囲（−100%〜+200%）の外は10のまま（入れ替わり: INTU・LYFT・MRVLが中へ、KULR・ONDS・SOUNが外へ）
-- 大きく変わった例: GOOGL 42.6%→91.0%、LYFT 203.2%→8.4%、INTU 1145.8%→131.5%、FRSH 27.2%→2.0%、CEG 21.0%→9.8%、LITE −213.5%→−1195.6%、APP 342.2%→575.6%
-
-#### 未了・観察（未対応）
-- 四半期の年率は一過性の四半期をそのまま4倍にする: LYFT 2025-12-31（純利益2,755M、税効果）815%、ESTC 2026-04-30 263%、FRSH 2025-12-31 107%、SOFI 2024-12-31 30%。
-  自社比のパーセンタイルの母数にも入る → 2026-10-11 チャット側の決定で、目安は比較用ROTCE（TTM）で比べる（下の「追加対応」）。見出しは四半期の年率のまま
-- LITE 2026-06-27の純利益−7,162M・GOOGL 2026-06-30の112,107M（基本のタグ）→ 2026-10-11に原本と照合し、どちらも正しい値と確認（下の「追加対応」）
-- 新しい四半期の資料が出たら`config/company_reported_metrics.json`の`values`に1行足す（CHECK-61が知らせる。2026-10-11のゲートではWARN-61は0件）
-- SOFIの推移チャートは過去の値（−35%〜+30%）で縦軸が広く、会社発表の線とこちらの線がほぼ重なって見える（表で差を読める）
-
-#### 本番での確認（2026-10-11、Pagesの構築`d83902613e`がsuccessで終わった後、本番のURLで。事例36）
-- SOFIの個別ページ: ROTCE 6.7%、説明「2026-06-30の四半期の普通株主帰属純利益×4÷有形自己資本（2026-03-31末と2026-06-30末の平均）。参考（TTM）8.7%」。
-  会社発表の表（6四半期・差 +0.0〜+0.6pt／−0.1〜−0.4pt）、ガイダンス（FY2026）8.0%・長期目標20〜30%・出典、推移チャートに「会社発表」の線（…9.0・7.6・7.1）。
-  Q1'26→Q2'26はこちら7.4%→6.7%、会社7.6%→7.1%で同じ向き（低下）
-- NVDAの個別ページ: 「純利益（普通株主帰属のタグなし）×4÷…」、会社発表の欄は出ない、コンソールのエラー0件
-- TANUKI SCORE: 「▶ ROTCE × P/TBV（…／63銘柄）」がDuPontとトラップの間、点63、横軸「ROTCE（直近の四半期の年率）」、説明も新しい定義。SOFIの点は6.7%・2.3x・中立
-
-#### 追加対応（2026-10-11、チャット側の決定1〜3）
-1. 自社比の目安の系列（`dbcb26f19d` コード・`7d8b4af63a` データ）: 比較用ROTCE（TTM、`rotce_ttm`）＝直近4四半期（連続）の普通株主帰属純利益
-   （四半期ごとに見出しと同じ分子）の合計 ÷ 当四半期末と、前の四半期末を4回たどった期末（最大5つ）のTCEの平均。TCEが取れない（成分の欠け）・
-   0以下の期末は平均から外す（`rotce_ttm_tce_ends`・`rotce_ttm_basis: "avg<n>"`）。パーセンタイルと`rotce_nonpositive`はこの系列で判定
-   （4四半期の窓がそろう期だけが母数になり、多くの銘柄で−3期）。画面の「参考（TTM）」もこの値、説明を直した
-   - 指示に無かった判断: 0以下のTCEの期末も平均から外した（変更前のTTMの「期首が0以下なら期末だけ」と同じ扱い）。目安なし（赤字）の判定も見出しではなく比較用（TTM）で行う
-   - 目安が変わるのは7銘柄（変更前＝`d83902613e`の四半期の年率で比較 → 変更後）:
-
-| 銘柄 | 変更前 | 変更後 | ROTCE（四半期の年率） | ROTCE（TTM） | 比較できる期 |
-|---|---|---|---|---|---|
-| CAT | 中立 | 自社比割高 | 112.8% | 78.2% | 18→15 |
-| CSGP | 中立 | 自社比割高 | 17.7% | 3.7% | 18→15 |
-| DDOG | 自社比割高 | 中立 | 5.0% | 5.6% | 18→15 |
-| ESTC | 判定なし（赤字） | 自社比割安 | −7.3% | 55.3% | 18→17 |
-| FLYW | 判定なし（赤字） | 中立 | −13.2% | 14.8% | 17→14 |
-| ONDS | 判定なし（赤字） | 判定なし（期数不足） | −100.5% | 65.1% | 7→4 |
-| ZETA | 中立 | 判定なし（赤字） | 17.6% | −1.1% | 10→10 |
-
-   - 目安の内訳（98銘柄）: 自社比割安4→5・中立28→27・自社比割高4→5・判定なし62→61（insufficient_quarters 8→9、rotce_nonpositive 21→19）。散布図の点は63のまま
-   - SOFI: ROTCE（TTM）2025-12-31 7.8%・2026-03-31 8.2%・2026-06-30 8.0%（5つの期末がそろう）。目安は中立のまま（P/TBV 33・ROTCE（TTM）63パーセンタイル、15期）
-   - ESTCは見出しのROTCEが−7.3%（直近の四半期が赤字）のまま、TTMでは2026-04-30の一過性の利益（436M）を含んで55.3%で「自社比割安」になる。
-     LYFTのTTMも2025-12-31の税効果（2,755M）を含んで180.3%（2026-09-30の四半期まで続く）
-2. Layer3の値の照合（読み取りのみ）: どちらも原本どおりで、誤りではない（独立の項目は登録しない）
-   - GOOGL 2026-06-30: 10-Q（accn 0001652044-26-000071、2026-07-23提出）の損益計算書の3か月の値。純利益112,193M、優先配当86M、普通株主帰属112,107M。
-     その他の収益（OI&E）97,983M（6か月の有価証券の評価益135,803M、キャッシュフロー計算書）による。6か月の累計174,771M＝Q1 62,578M＋Q2 112,193M
-   - LITE 2026-06-27: 10-K（accn 0001628280-26-057358、2026-08-17提出）のFY2026の純損失−6,935.1M（その他の費用−7,697.6M、税率調整の表に「Nondeductible loss on
-     extinguishment of debt」1,628.6M〈税効果〉、社債の消滅損）。Q4＝年次−Q1〜Q3の累計227M＝−7,162M（Layer3の逆算、10-KにQ4単独の値は無い）。
-     10-Kに普通株主帰属のタグが無いため、この四半期の分子は純利益（`net_income_source: "net_income"`）
-   - 照合で見つかった別の問題は[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]に登録（GOOGLの優先株がTCEから引かれていない）
-3. ROTCEの推移チャート（`dbcb26f19d`）: 縦軸をその銘柄の系列の5〜95パーセンタイルと会社発表の値の範囲（上下に8%の余白）にし、外れた点は端に寄せた赤い▲▼、
-   ツールチップは実際の値
-   - LYFTは2022〜2023年の大きなマイナス（−1,000%超）が複数あり、5パーセンタイル自体が大きいため縦軸は−1,141%〜+245%のまま（指示どおりの範囲）
-
-#### 本番での確認（追加対応、2026-10-11、Pagesの構築`7d8b4af63a`がsuccessで終わった後、本番のURLで）
-- SOFI: 「参考（TTM）8.0%（自社比の目安はこちらで比較）」、目安「中立 / 自社の過去15四半期の中で P/TBV 33・ROTCE（TTM）63 パーセンタイル」、
-  縦軸−20.6%〜+14.6%、端に寄せた点は2023-09-30（下）・2024-12-31（上）、会社発表の線（…7.6・7.1）と表は表示
-- GOOGL: ROTCE 91.0%、参考（TTM）53.6%、縦軸20.3%〜81.3%で2026-06-30を上端に寄せる。目安 中立（P/TBV 63・ROTCE（TTM）94、8期）
-- LYFT: ROTCE 8.4%、参考（TTM）180.3%、縦軸−1,141%〜+245%、端に寄せた点は2023-03-31（下）・2025-12-31（上）。目安 自社比割安（P/TBV 13・ROTCE（TTM）84）
-- TANUKI SCORE: 63銘柄・点63・DuPontとトラップの間。説明とツールチップが「ROTCE（TTM）」（SOFI・ESTC・CATで確認）
 
 ---
 
@@ -2941,534 +3364,24 @@ structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、�
 
 ---
 
-### [LAYER2-SHARES-UNIT-THOUSANDS-1] 株式数の単位誤り（提出者の千株・百万株単位の申告、Layer2とLayer3の書類選択、ESTCはLayer3の計算の誤り）
-**優先度:** 中
-**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`等）
-**登録日:** 2026-10-10（同日、影響範囲調査の結果で更新）
-**発見:** [[ROTCE-PTBV-1]]（rotce.pyのP/TBVがCIXで0.0xになった）
-
-#### 原因の分類（2026-10-10の調査、company_facts.jsonの生の値で確認）
-1. 提出者の単位誤り（同じ期の別の書類と比がちょうど1,000倍・100万倍）
-   - 後の書類の比較期間（再掲）が誤り、元の書類は正しい: CIX 2025-06-30（12,321,000→12,321）、ONDS 2024年度（69,917,062→69,917）・
-     2025-03-31（105,004,818→105,005）、TER 2022-10-02（166,733,000→166,733）
-   - その期の書類しかなく誤り: CIX 2026-06-30（12,329、表紙12,336,657株）、ONDS 2025年度（221,769、期末発行済380,763,481）・2026-03-31（461,706）
-   - LOARは加重平均を一貫して千株単位で申告（例: 2026Q2 95,521、表紙93,688,471株。2024-03以前の204は上場前の株数）。前後比較では境目しか検出されない
-   - 古い期で元の書類が誤り・翌年の書類で正しい: KO 2018–19（4,306）・NVDA 2009–11・FCX 2010Q2（473）・CPRT 2014–15・COHR 2012・2020・HEI 2012・TER 2023-10-01。
-     ELF 2014–15・RCAT 2013–14は生データ未確認
-2. Layer2とLayer3で選ぶ書類が逆: Layer2（parser.py）は本人のその期の書類を優先し「元の書類の誤り」を拾う（TER 2023Q3はLayer2だけ164,050）、
-   Layer3は最新の提出を優先し「再掲の誤り」を拾う（CIX・ONDS・TER 2022）
-3. ESTCはLayer3の計算の誤り: 2022-10-31の343,058（＝上半期累計94,964,423−第1四半期94,621,365）・2022-01-31の437,133は、
-   `layer3_builder.py::_normalize_field_entries`のYTD→四半期変換が足し算できない株式数にもかかったもの（全銘柄でESTCの2点だけ）
-- 正当な変化（誤りではない）: BKNG（25対1、2026-04）・KLAC（10対1、2026-06）・AMZN（2022）の分割、QBTS・SOUNのSPAC合併前の株数
-
-#### 公開データへの影響（2026-10-10時点）
-- ONDSだけ: TANUKI VALUATIONの希薄化率・dilution_severityが未算出（Layer3年次の69,917・221,769でyfinance比10倍超の安全弁が働く。正しくは約73.8%/年＝critical）、
-  TANUKI SCOREのグローストラップがmedium（正しくはhigh）
-- 影響なし: TANUKI VALUATIONのdiluted_shares（yfinance優先、該当銘柄はすべてyf_implied）・理論株価・最大EPS・時価総額、EPS Analyzer（`extract_key_facts.py`に千株単位の自動補正あり）、
-  TANUKI TAIL（保有9銘柄に該当なし。CIX・LOARを保有すればEPSが1,000倍になる）、STONKS SILO・HypeCore（SECの株式数を使わない）、ROTCE（外れ値として捨てて回避）
-- 凍結年度: LOARの2023〜2025年度はfields_snapshotにshares_dilutedを含む（修正時は登録の更新が必要）
-- 2026-10-10訂正: 上の調査で「funda/timingは希薄化率を使わず影響なし」としたのは誤り。`pipeline.py::_compute_tanuki_score()`の
-  希薄化ペナルティ（3年年率>40%で−25、>20%で−15）がfunda_scoreに入る。ONDSは修正後にfunda_score 75→50（tanuki_scoreはWATCHのまま）
-
-#### 対応（2026-10-10）
-- STEP1 `b11a4dbd3d`: Layer3の株式数（category=sharesの3フィールド）にYTD→単四半期変換をかけない（ESTCの2点）
-- STEP2 `514b2ce230`: `share_unit_fix.py`。同じ期間で比が1,000倍・100万倍の2値は、その概念の全期間の中央値に近い方を採る
-  （指示書の「大きい方」から変更: MSCI 2014-12-31は1つの10-Qだけが1,000倍で、大きい方が誤り）。置き換えは`data/{T}/share_unit_fix_log.json`
-- STEP3 `04419e6058`: fact_overrides.jsonの銘柄ごとの"share_unit"で個別補正（CIX 2026-06-30・ONDS 2025年度・2026-03-31・LOARの上場後の全期）。
-  年度単位の上書きと違い四半期・Layer3にも効く。LOAR 2024・2025年度のfields_snapshot_hashを更新（他の凍結25項目は不変）
-- STEP4 `1cae34ace2`: report_consistency_check.pyにCHECK-59（WARN）。LOARの上場前の204・SOUNのSPAC合併前の株数は確認済み台帳に登録
-- 結果: タスク開始時点から株式数52値（Layer2）が変わり、株式数以外の差分0件。ONDSの希薄化率73.8%/年（critical）、グローストラップhigh
-- ONDSは確認のためXAI_API_KEYを空にして1銘柄だけ再生成し（fcf_outlier.transient_found=FalseでGrokの呼び出し条件に当たらない）、
-  再生成した出力はcommitせず元に戻した（チャット側の指示）。公開データへの反映は2026-10-12（月）13:00 JSTごろの定時実行。
-  再生成で変わった項目: 希薄化率73.8%・dilution_severity=critical・funda_score 75→50（希薄化ペナルティ、正しい結果として承認済み）、
-  category（None）・tanuki_score（WATCH）・timing_score（25）・matrixは不変。AI由来の欄（fcf_outlier.ai_assessment等）は再生成前後とも空で、
-  空になった欄はない。ほかに最大EPS 0.3144→0.4604・per_is_forward False→Trueが変わったが、株式数とは無関係（[[TANUKI-MAXEPS-NI-SOURCE-1]]・
-  [[TANUKISCORE-PER-FORWARD-MIX-1]]の修正が未反映だったもの）
-- ONDS以外の全銘柄: 判定値に効くのは希薄化率（funda_scoreのペナルティ）だけで、pipeline.pyの計算を開始時点・修正後のコードで全98銘柄について
-  再現すると、開始時点の再現値は公開中のlatest.jsonと全銘柄一致、修正後に変わるのはONDSだけ
-
-#### 未補正（同じ期に正しい値を申告した書類がなく、根拠のある補正ができない。いずれも直近5年より前でCHECK-59の対象外）
-- ELF 2014〜15（上場前、27,593・30,523、2016Q1は490,760で倍率が一定でない）
-- RCAT 2013〜14（167,097,874→1,113,986→257,097,874→92,935,896→19,241,365と不規則、資本再編とみられる）
-- KO 2018Q1（4,306）、NVDA 2008・2009年度・2010Q2、FCX 2010Q2（473、翌年の書類は2対1分割後の947,000,000で比が100万倍ちょうどでない）
-
----
-
-### [SEC-COMPANYFACTS-API-LAG-1] CDNS・KO・RMBS・V・XOMのQ2の10-Q（2026-07-28〜08-03提出）が、EDGARのcompanyfacts APIに入っておらず、手元でも取り込めない
-**優先度:** 中（保有銘柄ではない。5銘柄のQ2が欠け、TTMが1四半期古い）
-**分類:** データ取得 / 外部データ（SEC EDGARのcompanyfacts API）
-**登録日:** 2026-10-10
-**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の読み取り調査（2026-10-10、EDGARの公開データとの照合）
-
-#### 内容（観測した事実。SEC側の原因は未確認）
-- data.sec.govのsubmissionsでは5銘柄ともQ2の10-Qを提出済みで、`isXBRL=1`・`isInlineXBRL=1`:
-  CDNS 2026-07-29（`0000813672-26-000092`）・KO 2026-07-29（`0001628280-26-050503`）・RMBS 2026-07-28（`0001193125-26-321000`）・
-  V 2026-07-29（`0001403161-26-000104`）・XOM 2026-08-03（`0000034088-26-000093`）
-- 同じ日（2026-10-10）に取得したcompanyfacts APIの`filed`の最大値は、CDNS 05-01・KO 04-30・RMBS 04-28・V 04-29・XOM 05-04で、Q1の10-Qまでしか入っていない。手元のcompany_facts.jsonと同じ値
-- CDNS・Vは2026-08-30の手動実行（`68b172b3ee`）でAPIから取り直されている（差分は`"units": {}`の空の概念の追加だけで、今のEDGARの内容と一致）。手元のキャッシュの問題ではない
-- 比較: 同じ時期に提出した他の銘柄は、08-30の手動実行で取り込めている（手元のfiledの最大値がMSFT・FICO・VRT 07-29、META 07-30、AAPL・AMZN 07-31、CAKE 08-03）
-
-#### 実害
-- 5銘柄の年次・四半期・TTMがQ1（2026-03-31前後）で止まる（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]の2026-10-10の追記の15銘柄のうちの5銘柄）。
-  XOMのTTM純利益がYahooのtrailing PEからの逆算と大きくずれる件（同追記）は、これが原因の可能性がある（未確認）
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]を直しても、この5銘柄は解消しない
-
-#### 直し方の候補（未決定）
-1. 様子を見る（SECの取り込みを待つ）。週次の実行の後にcompanyfactsのfiledを確かめる
-2. 欠けている書類だけ、別の経路（その書類のXBRLのインスタンス、XBRL frames API等）から取り込む。取り込み方が2系統になる
-3. 検知: submissionsにある10-Q・10-Kが、companyfactsに一定の日数入らないときに知らせる（[[SEC-FETCH-CACHE-MTIME-CI-1]]の候補5と同じ検査で見つけられる）
-
-#### 追記（2026-10-10、[[SEC-FETCH-CACHE-MTIME-CI-1]]の完了時）
-- 候補3の検知は実装済み: update.pyが毎週submissionsと照らし、取り直しても入らない提出をSEC_LAGとして`common/sec_data/data/_freshness.json`に記録する（CHECK-60はSEC_LAG 14日超でWARN、System Health [M]は確認済みでないSEC_LAG 30日超でCRITICAL）。SEC_LAGの銘柄は毎週company_factsを取り直すので、SEC側で入れば自動でREFRESHEDになる
-- 5件のaccnを`config/warn_acknowledged.json`（WARN-60・銘柄＋accn、確認日2026-10-10）で確認済みにした（`fa9dbb7739`）。[M]の詳細には「確認済み」として表示され続ける。同じ銘柄の次の提出（Q3の10-Q等）が入らなければ、別のaccnとして再び警告される
-- 解消の確認: `_freshness.json`で5銘柄がREFRESHEDになったら、warn_acknowledged.jsonの5件を消して本項目をBACKLOG_DONE.mdへ移す
-
----
-
-（[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-（[[STONKS-HEATMAP-FQ-LABEL-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-（[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-（[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-## 優先度：低（アイデア段階）
-
-### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
+### [ROTCE-TCE-COMPONENT-TAG-GAPS-1] ROTCEのTCEの控除項目・分子で、対象タグに無い申告や申告の途絶により成分が欠ける・過小になる銘柄がある（KO・AVAV・PLTR・V、優先配当）
 **優先度:** 低
-**分類:** 監視・起動の判定 / 外部起動（Cloudflare Worker、`tools/external_trigger/lib.js`）
-**登録日:** 2026-10-08
-**発見:** BACKLOGの分類（2026-10-08）で、移設の根拠を集めるためにMarket Data Dailyの実行一覧を見た
+**分類:** 指標の定義 / common/sec_data（`rotce.py`のTCEの控除項目・Layer2/Layer3の取り込みタグ）
+**登録日:** 2026-10-11
+**発見:** [[ROTCE-PTBV-1]]の「未了・観察」（2026-10-10）。同項目のBACKLOG_DONE.mdへの移設時に、残りの観察を独立させた
 
-#### 内容（観測した事実のみ。原因は未調査）
-- 2026-10-07 21:50:41 UTCに、外部起動のworkflow_dispatch（Market_Data_Daily_Update.yml、run `37692219197`）が作られた
-- 21:50の確認は、その日の20:00 UTC以降に作られて成功した実行が無いときだけ、もう一度起動する設計
-  （`successfulRunsSinceClose()`、CLAUDE_CODE_START.mdの2026-10-03の記録）。この日は20:25:48 UTCの外部起動（run `37681924730`）がsuccess
-  （ガードrun=true、`status=fetched`・`no_close_after_retry 0`・`with_bars 590`）だったので、21:50の確認は何もしないはずだった
-- 21:50の実行はガード（その日の終値はそろっている）で取り消され（cancelled）、下流もskipped。実害はない
-- 同じ日の20:55・21:25の外部起動（`37685706372`・`37689320829`）もガードで取り消し（設計どおり）
-
-#### リスク
-- Workerの成功の数え方が、実際の実行の結果と合っていない可能性がある
-- 逆向きの誤り（取得に失敗した日に「成功あり」と数えて起動しない）も起こりうる。その場合、その夜の取得が保険のscheduleまで遅れる
+#### 内容（[[ROTCE-PTBV-1]]で観測した事実）
+- KOは無形資産の大半が`IndefiniteLivedTrademarks`（12.5B）で、対象タグに無いため2024年以降component_missing（2023年以前の行は無形資産を過小に引いている）
+- AVAVは純資産が非支配持分込みのタグで、`MinorityInterest`の申告が途中で止まっている→component_missing
+- PLTRはのれんの申告が2022年末だけ→component_missing
+- Vの優先株は`PreferredStockValueOutstanding`（528M）で、対象タグ（`PreferredStockValue`）に無い（VはTCE≤0のため結果には影響なし）
+- 優先配当は純利益から引いていない（[[ROTCE-QUARTERLY-ANNUALIZED-1]]で分子は普通株主帰属のタグを優先するようになったが、タグが無い四半期は純利益で代用）
 
 #### 着手条件
-読み取り調査から始める。Workerが成功を判定するAPIの呼び方（status・conclusionの絞り込み、eventの種別、時刻の範囲〈created・updated・
-タイムゾーン〉）と、10-07の実際の実行一覧（20:00 UTC以降のMarket Data Dailyの実行と、それぞれの作成時刻・conclusion）を突き合わせる。
-Cloudflare側の21:50の発火とログ（Observability・Past Cron Events）も確かめる。10-05・10-06の夜に同じ起動が無かったかも見る。
-参考: [[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]（BACKLOG_DONE.md）では、GitHubのAPIの`status=completed`の絞り込みが古い結果を返す例があった
+[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]と同じ。控除の対象タグを足すときは、Layer2・Layer3・凍結年度（fixed_registry）への影響を確かめる
 
-### [TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1] TAILの詳細画面がItem 1/1A/3/7を一度も作られていないパス（ctrl/{T}/item*/latest.json）から読み、sec_items_fetcher.pyが別のパスに保存したItem 1A/3/7はどこにも表示されていない
-**優先度:** 低（提案。表示される値の誤りは無く、内部統制〈Item 4〉は表示される。データの使い道を決めるまで、取得の費用と古いデータが残るだけ）
-**分類:** 配線漏れ（保存先と表示側の食い違い） / TANUKI TAIL（detail.html・sec_items_fetcher.py）
-**登録日:** 2026-10-08
-**発見:** 4銘柄の登録解除の確認（TAILの詳細画面の確認で、ctrl/{T}/item1・item1a・item3・item7/latest.jsonの4件が404）
-
-#### 内容
-- `docs/portfolio/tail/detail.html`の`CTRL_ITEMS`（2026-06-27、`9a85740581` TAIL-PAGE-1「内部統制マルチItem拡張」）は、
-  `data/ctrl/{T}/item1/latest.json`・`item1a/`・`item3/`・`item7/`と`data/ctrl/{T}/latest.json`（Item 4）を読む。
-  `ctrl/{T}/item*/`に書いた処理は無く、gitの履歴にも一度も現れない。読めなかった項目は`buildCtrl()`が黙って飛ばすため、
-  画面にはItem 4だけが出て、consoleに404が4件出る（どの銘柄でも同じ。2026-10-08、APGE削除の前後で同じことを確認）
-- `src/tail/sec_items_fetcher.py`（2026-09-13、`4c2341cb5e` [[TAIL-SEC-ITEMS-1]]）は、Item 1A・3・7を
-  `data/risk_factors/{T}/`・`data/legal_proceedings/{T}/`・`data/mda/{T}/`に保存する（Item 1〈事業概要〉はSTEP1で対象外にした）。
-  これらを読む画面・レビュー生成は無い（`docs/`・`src/`・`common/`をgrepして、保存側以外の参照は0件）。
-  [[TAIL-SEC-ITEMS-1]]は登録時に「取得・保存・表示したい」としていたが、完了の記録は保存までで、表示への接続は無い
-- sec_items_fetcher.pyを動かす定時のワークフローは無い（`.github/workflows/`をgrepして0件）。保存済みのデータは2026-09-13の手動実行のまま。
-  定時の実行が無いことは404の原因ではない（定時に動いても保存先が違うので画面には出ない）が、データが古いまま残る理由にはなっている
-- sec_items_fetcher.pyは抽出した本文をGrokで翻訳する（`_translate_excerpt()`、XAI_API_KEYがあれば呼ぶ）。
-  9〜10銘柄の全実行で約80回（2026-09-13の実績）。2026-10-08の確認でローカル実行したときも、翻訳の結果は使わずに捨てた
-
-#### 実害
-- 費用をかけて取得・翻訳したItem 1A・3・7のデータが、どこにも表示されていない（[[TAIL-SEC-ITEMS-1]]の目的が未達）
-- 詳細画面のconsoleの404の4件（表示の崩れ・値の誤りは無い）
-
-#### 直し方の候補（未決定）
-1. detail.htmlの`CTRL_ITEMS`のItem 1A・3・7の読み先を、sec_items_fetcher.pyの保存先（`risk_factors/{T}/latest.json`等）に合わせる。
-   Item 1は取得していないので項目から外す。表示する欄の内容（`excerpt_ja`・`changed`等）の扱いも合わせて決める
-2. 表示が要らないなら、sec_items_fetcher.pyと保存済みのデータを撤去し、detail.htmlの項目もItem 4だけにする
-3. 1を選ぶ場合、定時の実行（例: TANUKI_TAIL_SEC_Ctrl.ymlと同じ月曜）を足すか、手動のままにするかを決める（翻訳の費用が毎回かかる）
-
-#### 着手条件
-表示するかどうか（候補1か2か）をKoichiさんが決めてから。→ 2026-10-08、Koichiさんの判断で候補1（表示する）＋候補3（定時の実行を足す）。
-
-#### 対応（2026-10-08）
-**状態:** 実装完了・実地確認待ち（実装`9e73c1dd24`）。10-12（月）01:20 UTCのTANUKI_TAIL_SEC_Itemsの初回の定時の実行のログが
-「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなしになることを確かめるまでBACKLOG_DONE.mdへ移さない
-（確認手順はCLAUDE_CODE_START.mdの木曜〈10-08〉朝の確認手順の6）
-- 保存済みデータの作り直し（2026-10-08、チャット側承認済み）: push後にローカルで1回実行。実行前にSECの書類の一覧だけで見積もり
-  （新しい書類はADBEの2026Q3〈2026-09-22提出〉の1件、Grokは約4回）、実行結果は「9 成功（更新 1 / 変更なし 8） / 0 失敗」、
-  Grokは4回（3項目の翻訳＋MD&Aのセグメント別見通し、失敗0）。ADBEの3項目の2026Q3を追加し、latest.json・index.jsonを更新してcommit。
-  他の8銘柄は09-13の保存分が今も最新の書類だった
-- detail.html: `CTRL_ITEMS`の読み先を`data/{risk_factors|legal_proceedings|ctrl|mda}/{T}/latest.json`に変更し、Item 1の読み込みをやめた
-  （表示するかどうかは別に決める）。期間の行は`d.quarter || d.period`と書類の種類（10-K/10-Q）を出す
-- sec_items_fetcher.py: sec_ctrl_fetcher.pyと同じ作りに。保存済みの`{period}.json`と提出日が同じ書類は、本文の取得・Grokの翻訳・
-  MD&Aのセグメント別見通しのAI抽出・書き込みをしない。成功＝書いた銘柄＋すべて変更なしの銘柄、失敗＝CIKなし・10-Kの取得や抽出の失敗・例外。
-  成功0銘柄のときだけ終了コード1
-- `.github/workflows/TANUKI_TAIL_SEC_Items.yml`（新設）: 毎週月曜01:20 UTC（TANUKI_TAIL_SEC_Ctrlの20分後）、XAI_API_KEYを渡す。
-  gen_update_schedule.pyでUPDATE_SCHEDULE.mdの一覧（23本）に入り、System Healthの[J]の監視が17→18件（週次・10日）
-- テスト`tests/test_tail_sec_items_unchanged.py`（8件、Grok・ネットワークはスタブ）。修正前のコード（git stash）で8件とも失敗を確認。
-  `tests/test_update_schedule.py`の本数の決め打ち（全22本）を、今の本数から作る形に直した
-- Playwright（保存済みの09-13のデータ）: PLTR・NVDA・ADBEの詳細画面で、Item 1A・3・4・7が表示され、404・consoleエラーとも0件
-
-### [CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1] D-02・D-04の期待値をエントリ作成後に書き換わったdaily/から作るため、暫定の行の置き換えや抜けの補完の後に誤って不一致になる
-**優先度:** 低
-**分類:** 確認スクリプトの時点ずれ / browser_checks（Market Pulse、`browser_checks/market_pulse_elements.py::run_derivation_checks()`）
-**登録日:** 2026-10-08
-**発見:** MACRO PULSE側の報告（2026-10-07、`check_dependency_map.py`でD-02 WTI・金の前日比、D-04 ブレッスの基準日が不一致）の読み取り調査
-
-#### 内容
-D-02（指標の前日比）・D-04（ブレッスの基準日）は、ブラウザを使わず、`market_data.json`最新エントリの記録値と「今の」daily/から
-作り直した値を比べる。エントリの作成後にdaily/が書き換わると、エントリ・表示が正しくても不一致になる。書き換わる理由は設計どおりのもの:
-先物（CL=F・GC=F）・ドル円の当日の行は夜の取得では`_provisional`（暫定）で保存され翌晩に清算値・確定値へ置き換わる
-（[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）、終値の取れなかった銘柄の行は後の取得の抜け補完で追加される。
-D-04は基準日より新しい行は切り詰めて比べるが、基準日以前の行の置き換え・追加は扱えない。
-
-実測（2026-10-08、一時worktreeでD-02・D-04だけを再計算）:
-- 10-03のエントリ（`e0fc4058b6`、02:08 UTC）は直前のdaily/（`95d251995b`、02:06 UTC）から作られた。その時点でCL=F・GC=Fの10-01・10-02は
-  `_provisional`、HUBBの10-02は行が無かった。`5e95f84aa6`（10-06）でCLの10-02は91.26→91.11、GCは4172.1→4162.3（清算値）に置き換わり、
-  HUBBの10-02（475.52）が追加された
-- その結果、D-02はWTI 記録−1.73 vs 再計算−1.9、金 記録−0.72 vs 再計算−0.95、D-04は記録502銘柄・除外1 vs 再計算503・除外0
-  （(91.26−92.87)/92.87＝−1.73%、(91.11−92.87)/92.87＝−1.90%）
-- 不一致になったcommit: `5c689659d7`（feature/macro-pulse-confirmの先頭）・`4ce46886fc`（10-07 07:00 JSTまでのローカル）。
-  10-05のMarket Pulseがランナー未割り当てで失敗したため、kaihatsuは10-06 05:28〜10-07 05:32 JSTの間「エントリ10-03・daily/ 10-06以降」の状態だった
-- 毎晩の同じ型: Market Dataのpushから Market Pulseのpushまでの約3分間（例 `258a0c5b82`）は、WTI・金・ドル円とD-04が不一致になる
-- 一致したcommit: `99402b01b9`（10-07朝、一致61）・`ffab0e2ad6`（10-08、一致61・不一致0）
-
-[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]とは別の課題（あちらは期待値の計算方法が画面の判定の変更に追いついていない問題、
-こちらは計算方法は正しく比べる相手のdaily/が後から書き換わる時点のずれ。直し方も担当のファイルも違う）。
-
-#### 実害
-確認スクリプトの誤検知だけ（表示・データは設計どおり）。不一致の原因の切り分けに毎回手間がかかり、別セッション間の報告の食い違いを招く（10-06・10-07）。
-
-#### 直し方の候補（未決定）
-1. （先に勧める案）daily/がエントリより新しいとき（例: ^GSPCのdaily/の最新日 > エントリのS&P500の日付）はD-02・D-04を「判定不能」にして注記を付ける
-2. エントリの作成時点のdaily/をgitの履歴から復元して比べる
-3. エントリに前日比の計算に使った2つの終値を記録し、それと比べる
-
-#### 着手条件
-なし（Market Pulse側の作業として、[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]の調整と合わせて判断してよい）。
-
-### [EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1] 外部起動のWorkerの空いているcronで22:20 UTC頃にMarket Pulseの成功を確かめ、失敗していれば再実行する（将来の検討）
-**優先度:** 低
-**分類:** 監視・自動回復 / 外部起動（Cloudflare Worker）
-**登録日:** 2026-10-07
-**発見:** `[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`の直し方の検討（下流の監視はSystem Healthの[J]で行うことにした）
-
-#### 内容
-System Healthの[J]は下流の失敗に気づけるが、起動は予定23:30 UTC（実際は02〜03 UTC）で日本時間7:00に間に合わず、自動回復もしない。
-10-05のMarket Pulse（ランナー未割り当てによるfailure）のような一時的な失敗は、再実行すれば直る見込みが高い。
-Workerの空いているcron（無料プランの5本のうち3本を使用、残り2本）で22:20 UTC頃に、その日の20:00 UTC以降のMarket_Pulse_Updateに成功が無ければ、
-失敗した実行の再実行（`POST /actions/runs/{id}/rerun`）か手動実行（workflow_dispatch）を行い、Discordに通知する。
-
-#### 着手前に決めること
-- 冬時間（取得は21:25 UTC）でも22:20に下流が終わっているか。間に合わない夜の誤報をどう避けるか
-- 対象をMarket Pulseだけにするか（Stonks Silo・TANUKI VALUATION・TANUKI Scoreも含めるか）。含めるほど連鎖の知識をJSに二重に持つことになる
-- 再実行と手動実行のどちらにするか。トークンの権限（Actions: Read and write）で両方できる
-
-### [MACRO-PULSE-SLOT-ROWS-1] MACRO PULSEのNFP・Building Permits・Michiganの行が発表予定日の枠の日付に置かれ、後から書いた値が枠の日付の時点で使えたことになっている
-**優先度:** 高
-**分類:** 先読み・データの日付の割り当て / MACRO PULSE（05_main.py・05_events.csv）
-**登録日:** 2026-10-04
-**発見:** 指示書M-3b STEP 0
-
-#### 内容
-`refresh_monthly_indicators()`が、予定表（05_indicator_schedule.csv）に載っている指標（NFP・Building Permits・Michigan Consumer
-Sentiment）の行を、FREDの観測日ではなく発表予定日の枠の日付に置いていた（Claimsは[[MACRO-PULSE-CLAIMS-RELEASE-ID-WRONG-1]]で修正済み）。
-05_events.csvの該当は19行（Permits 7・Michigan 6・NFP 6、2026-03〜10の実行分）。M-3 STEP 2で「予定の枠などで変えない」とした7,003行の
-うち残りの6,984行はHY Spreadの取り込み分で、観測日の行（ALFREDの版の記録が2023-10以降しか無いため照合できなかっただけで、
-系列ストアの同じ日付の値と全行一致）。
-- 枠の日付は観測日より後のため、スコアは枠の行を「最新の行」として使う（今日: Permits 09-15の1394、Michigan 08-14の51.7）
-- 枠の行の値は、書いた時点（updated_at）のFREDの最新値で、枠の日付の時点の値ではない（例: Michiganの08-14の枠には08-28公表の
-  確定値51.7〈09-27に書いた〉、NFPの04-03の枠には05-08時点の3月の改定値214,000〈04-03の初回公表は178,000〉）
-- **M-3 STEP 1の修復が、枠の行のknown_atを枠の日付（推定）にしたため、過去の日付の再計算でこれらの値が公表前に使われる**
-  （今日のスコアには影響しない）
-
-#### 着手条件
-M-3bで、コードを観測日に置く形に直し、既存の19行を観測日へ移す修復を行う。
-
-
-#### 対応（2026-10-04、指示書M-3b STEP 1、feature/macro-pulse-m3b）
-- `refresh_monthly_indicators()`: 予定の枠へ寄せる処理を外し、FREDから取る指標は全て観測日に置く（NFPはPAYEMSの観測月の1日）。
-  観測日の行に値があれば飛ばす（改定値は`apply_revisions()`が書く）。予定表はDiscordのリマインドなど予定に使う処理だけに残る。
-  `fetch_event_row()`はもともとFREDの観測日に置いており、予定日に書くのは手入力（予定表のactual）の行だけ
-- **Michiganの速報と確定（STEP 1-3）**: FREDのUMCSENT・MICHには月中の速報が入らない（ALFREDで2026年の各月とも版は1つで、
-  初回公表日は月末の確定値の日。2016年以降の128か月中117か月は版が1つ）。そのため自動で入るのは確定値で、それがactualになる。
-  速報を手入力したとき（予定表のactual）だけ、それを観測月の1日の行のactualにし（`_PRELIM_TO_OBS_MONTH`: Michigan Consumer
-  Sentiment・Michigan Inflation 1Y）、確定値はFREDに入った後に`apply_revisions()`がrevised_actualに書く
-- 回帰テスト: 以前の「月次は予定の枠に置く」テストを「観測日に置く」に書き換え、5件追加（修正前5件fail→修正後pass）
-
-
-#### 対応（2026-10-04、指示書M-3b STEP 2、feature/macro-pulse-m3b）— 値が違う行2件で一度停止（下の判断で再開）
-- 修復スクリプト`scripts/analysis/macro_events_slot_rows_repair.py`: 枠の行の値を、ALFREDで「書いた日（updated_atの米国東部時間の暦日、
-  無ければ前日）に有効だった版の値が一致する観測」（書いた日の120日前以降）と照合して観測日を決める（Claimsの修復と同じ方式。枠の行の
-  known_atはM-3 STEP 1の推定で書いた時刻ではないため使わない）。移す先の行があり値が同じなら枠の行を消し、値が違えば何も書かずに止まる
-- 確認モード（19行）: 観測日へ移す7行（Permits 1・Michigan 4・NFP 2）、同じ値の観測日の行があり消す7行（Permits 4・Michigan 2・NFP 1）、
-  一致なしで移さない3行（NFPの枠04-03 214,000・05-08 148,000・06-05 129,000。書いた日・前日のどの版の前月比とも一致しない）、
-  **値が違う2行で停止**:
-  - Permits 枠2026-03-17 1,363（2026-05-08に書いた）→ 観測03-01の行 actual 1,372（初回）・revised_actual 1,363
-  - Permits 枠2026-05-19 1,423（2026-06-14に書いた）→ 観測04-01の行 actual 1,442（初回）・revised_actual 1,423
-  どちらも枠の行の値は同じ観測の後の版（改定値）で、既存の行のrevised_actualと同じ
-- 参考（仮に上の2行も枠の行を消した場合、試しに適用して元に戻した）: 移す7行・消す9行。今日のスコア27→27（Permitsは観測08-01の1,403〈改定値〉、
-  Michiganは観測08-01の51.7）。画面の過去の点は34日（2026-03-23〜08-06）で±1点
-
-#### 判断と確認モードのやり直し（2026-10-04、指示書M-3b STEP 2の判断）
-- 判断: Permitsの2行（枠03-17・05-19）は枠の行を消し、観測日の行のrevised_atを既存のrevised_atと枠の行のupdated_at（UTC）の早いほうにする。
-  NFPの一致しない3行は、発表月の前月を観測月とし、その観測月の1日の行があれば枠の行を消し、無ければ動かさずknown_at＝updated_at（written）
-- 行ごとの結果: Permits 枠03-17（1,363）→ 観測03-01の行を残し枠の行を消す（revised_atは既存の2026-05-05T12:30:00Zが早いため変わらない）、
-  Permits 枠05-19（1,423）→ 観測04-01（revised_atは既存の2026-05-28T12:30:00Zのまま）、
-  NFP 枠04-03（214,000）→ 観測月03-01の行あり（actual 178,000）で枠の行を消す、NFP 枠05-08（148,000）→ 04-01の行あり（115,000）で消す、
-  NFP 枠06-05（129,000）→ 05-01の行あり（172,000）で消す。動かさずwrittenにした行は0
-- NFPはスコアの8指標に入っていない（`_compute_current_score()`の`indicator_keys`・画面の`computeScoreAsOf()`とも。画面ではNFPは
-  ⑤直近の動きの矢印の向き〈BULL_UP〉にだけ使う）
-- 確認モード: 移す7行（Michigan 05-01・06-01・07-01・08-01、NFP 08-01・09-01、Permits 08-01）・消す12行。試しに適用して元に戻した結果:
-  行数34,399→34,387、event_id・(指標,日付)の重複0。今日のスコア27→27（計算日10-02・10-03。Permitsは観測08-01の1,403〈改定値〉、
-  Michiganは観測08-01の51.7）。画面の過去の点は34日（2026-03-23〜08-06）で±1点（最大−1、2026-03-23 31→30）。比較バーの3点は変わらない
-
-
-#### 対応（2026-10-04、指示書M-3b STEP 3-1・3-3、feature/macro-pulse-m3b）
-- index.html: ⑤直近の動きの副題を「日付は観測日（月次指標は観測月の1日、週次指標〈新規失業保険申請〉は週末日）」に。8指標カードの
-  tooltip「データの日付」は常に「（観測日）」（`SLOT_DATED_SIGNALS`による「（発表予定日）」の判定を外した）
-- browser_checks/check_macro_pulse.py: MACのtooltipの期待を「（観測日）」に。N-06は「月次6指標の行が全て観測月の1日」かつ副題に「観測日」が
-  あり「発表予定日」が無いこと、N-09は全tooltipが「（観測日）」でMichigan・Permitsの日付が月の1日であることを確かめる
-- 確認: 枠の行の修復を試しに当てたデータで **D-01が一致**（Permits 08-01の1,403・Michigan 08-01の51.7がFRED系列ストアの最新観測と一致）。
-  全体 一致71・不一致0・判定不能1（D-02）、consoleエラー0。修復前のデータ（今のkaihatsu）では D-01・N-06・N-09 が不一致（枠の行の残りを検出）
-- **統合の注意**: tooltipは常に「（観測日）」と出すため、コードと枠の行の修復（`macro_events_slot_rows_repair.py --apply`）は同時に当てる
-
-
-#### 状態（2026-10-05）
-**統合・修復済み、本番の確認待ち。** feature/macro-pulse-m5（M-3b を含む）を kaihatsu へ統合（マージ `f62485feaf`）し、kaihatsu で
-`macro_events_slot_rows_repair.py --apply`（移す7行・消す12行、34,399→34,387行、event_id・(指標,日付)の重複0）と
-`macro_liquidity_m2_yoy_repair.py --apply`（2026-09-23〜10-04 の11行に m2_yoy_pct・m2_yoy_pctile。最新 +5.66%・36パーセンタイル）を実行し、
-コードと同じ push で入れた。今日のスコア 27→27（計算日 10-02〜10-05）。check_macro_pulse.py 一致72・不一致0・判定不能1（D-02）、
-check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:15 UTC の日次の実行で、新しく書く行が観測日に置かれること（予定の枠の日付に置かれないこと）
-
-#### 本番の確認と残りの確認（2026-10-06）
-- run 37403520015（10-05分、予定22:15 UTC → 起動10-06 02:18:57・完了02:20:23 UTC、success、push `99d8c8a00a`）: 新しく書いた2行（hy_spread・vix の 10-02）は観測日に置かれたが、日次の系列で、M-3b で直した月次の処理は動いていない
-  （10-05 までに新しい月次の観測の公表が無かった）
-- **確認の時期: 次の Building Permits の公表（10月中旬〜下旬）の後の実行**。新しい行が観測日（観測月の1日）に置かれ、予定の枠の日付の行が
-  作られないことを確かめる
-
----
-
-### [MACRO-PULSE-THRESHOLD-PERCENTILE-1] MACRO PULSEのHY・Claims・Permits・Michiganの段の境目を、過去10年の分布のパーセンタイルで決める方式（試算の結果、不採用）
-**優先度:** 保留
-**状態:** 保留（試算の結果、不採用〈2026-10-04〉。8指標のカードの tooltip に閾値の出典の有無を出す変更は feature/macro-pulse-m5 で統合済み〈`f62485feaf`〉）
-**分類:** 判定の閾値の設計 / MACRO PULSE（05_main.py・index.html）
-**登録日:** 2026-10-04
-**発見:** 指示書M-4（閾値の出どころの調査）・M-5 STEP 7（試算）
-
-#### 内容
-HY・Claims・Permits・Michiganの閾値は公的な根拠が無く、水準に置いた閾値が長期の分布の端に寄っている（M-4 STEP 2: Claims 300K でも
-1967年以降の30.9パーセンタイル）。段の数と点数を変えずに、段の境目を「その日に分かっていた過去10年の観測の分布の、今の閾値の1990年以降の
-割合と同じパーセンタイル」にする方式を試算した（`scripts/analysis/macro_m5_threshold_simulation.py`、段階関数のスコア、1997年以降の毎日）。
-
-#### 試算の要点
-- 今日のスコア 27 → 33（HY 3.24 が過去10年の境目3.22を超えて15→40点、Permits 1,403 が境目1,414を下回って35→60点）
-- 1997年以降 10,867日中 9,854日が変わる。最大 −20（2014-11-24、43→23）。2013〜2017年は平均10〜13点下がり、2025年は約6点上がる
-- 後退の前後で ≥52 に初めて達した日: 2001年 148日前→103日前、2008年 122日前→365日前、2020年 22日後→22日後。
-  ≥70: 2008年 143日後→178日後、2020年 73日後→82日後（2001年は両方なし）
-- 誤報（後退期でない日に ≥52）: 51回・1,693日 → 36回・1,259日（後退の直前12か月・終了直後を除くと 44回・1,223日 → 28回・873日）
-- Michigan は段の数と点数を変えないため、最良の段は30点（中立）のままで「拡張」に入る月は0%
-- HY は分布が1996-12以降しか無く、2006年までは過去10年の窓に足りない
-
-#### 判断（2026-10-04）
-**不採用。** 試算では、ほぼ全ての日のスコアが変わり（最大20点）、後退の前の早さは後退ごとに良くも悪くもなった（2008年の ≥70 は遅れる）。
-代わりに、8指標のカードの tooltip に閾値の出典の有無（M-4 調査）を出す: HY・Claims・Permits・Michigan は「閾値の公的な根拠は無い」、
-Michigan は「最良の段は中立（拡張の段なし）」、CFNAI・Sahm・Philly・YC は出典（feature/macro-pulse-m5）。
-
-#### 着手条件
-保留（閾値の設計を見直すときの材料として残す）。
-
----
-
-
-
-（[[DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[MARKETPULSE-INFO-MODAL-WEIGHTS-STALE-1]]は2026-09-26に完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]は数値KPI抽出構想
-→「MD&A原文のセグメント別成長見通し定性要約」（10銘柄パイロット、
-2026-09-18完了）→ MD&A原文に将来向き定量ガイダンスが存在しないと
-判明したため方針転換し、XBRLセグメント売上からの決定論的算出（案①）
-へ最終確定・第1陣7銘柄実装完了（2026-09-18）。拡張候補3件は
-[[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]（IDEAS_AND_WATCH.md へ移動）参照。
-BACKLOG_DONE.md「2026-09-18（完了）」参照）
-
----
-
-（[[DUPONT-TTM-FIELD-CASE-MISMATCH-1]]は2026-08-27実装完了(PascalCase→
-snake_caseキー修正、全3実消費箇所で正常化を確認)、BACKLOG_DONE.md
-「2026-08-27（完了）」参照）
-
----
-
-（[[KPI-FETCHER-SEGMENT-SOURCE-ORPHANED-1]]は2026-08-27、誤った前提
-〈XBRL会計セグメントデータ〉で設計された機能と判明したため残骸を撤去、
-BACKLOG_DONE.md「2026-08-27（完了）」参照）
-
----
-
-（[[PARSER-MERGED-PARTIAL-CONCEPT-TAG-1]]は2026-09-26、年次D&Aの確認後にreport_consistency_check.pyのCHECK-55による自動検知に置き換えてクローズ、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-（[[SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1]]は2026-09-26、CHECK-54の実装と未登録分割27件の登録で完了、BACKLOG_DONE.md「2026-09-26（完了）」参照）
-
----
-
-### [STONKS-HERO-DISCOVER-LABEL-1] STONKS SILOのヒーローに「Discover · 10x Candidates」がDiscoverの廃止後も残っている
-**優先度:** 低
-**分類:** 表示（文言） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L249）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- `index.html` L249の`<div class="hero-label">Discover · 10x Candidates</div>`が、Discoverの廃止後もそのまま表示されている
-
-#### 直し方の候補（未決定）
-- 今の位置づけに合う文言に変える、またはラベルを外す
-
----
-
-### [STONKS-MONEY-FORMAT-SIGN-1] STONKS SILOの金額の負号の位置が「$-56M」（チャートの見出し）と「-$155M」（棒のラベル）で混在している
-**優先度:** 低
-**分類:** 表示（書式） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- 詳細のチャートの見出しは「$-56M」、棒のラベルは「-$155M」の形で、同じ画面に2つの書き方がある
-
-#### 直し方の候補（未決定）
-- 金額の書式を1つの関数にまとめ、負号を先頭（-$56M）にそろえる
-
----
-
-（[[STONKS-SURVIVAL-PANEL-DASH-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-### [STONKS-TANUKI-BADGE-404-1] STONKS SILOがRKLB・ZSのTANUKI VALUATIONのlatest.jsonを読みに行き、404になる
-**優先度:** 低
-**分類:** 表示（外部データの読み込み） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L435・L612）
-**登録日:** 2026-10-10
-**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
-
-#### 内容（観測した事実）
-- `index.html`はL435（TANUKIのスコアのバッジ）とL612（次回決算日・黒字転換の目算）で`tanuki_valuation/data/{T}/latest.json`を読む
-- RKLB・ZSは`docs/value-monitor/tanuki_valuation/data/{T}/`に`score_history.json`しかなく、latest.jsonの取得が404になる
-- `config/cik_lookup.csv`でRKLB・ZSは`tanuki=false`・`stonks_silo=true`で、`exclusion_reason`は「成長株のためSTONKS SILO側で評価する設計」（2026-10-10確認）。
-  TANUKIの対象外であることは意図どおりとみられる。score_history.jsonだけが残っている理由は未確認
-
-#### 判断待ち
-- TANUKIの対象外が意図どおりなら、404を出さない扱い（tanuki=falseの銘柄は読みに行かない等）にするか
-
-#### 直し方の候補（未決定）
-- tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
-- 404を想定内として静かに扱う（コンソールのエラーを出さない）
-
----
-
-### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
-**優先度:** 低
-**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
-**登録日:** 2026-10-10
-**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
-- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
-  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
-- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
-
-#### 直し方の候補（未決定）
-- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
-- 失敗が一定の割合を超えたときだけexit 1にする
-
----
-
-### [SEC-UPDATE-SUMMARY-HEADER-ORDER-1] SEC_Data_UpdateのStep Summaryで、Revenue品質チェックの表の見出しが行より後に書かれる
-**優先度:** 低
-**分類:** 表示（GitHub ActionsのStep Summary） / common/sec_data（`update.py`）
-**登録日:** 2026-10-10
-**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- `update.py`は銘柄ごとの処理の中でRevenue品質（WARN/ISSUE）の行を`GITHUB_STEP_SUMMARY`に追記し、全銘柄の処理の後に表の見出し（「## Revenue品質チェック…」と列名の行）を追記する。
-  コメントは「先頭に書く」だが、実際は追記なので見出しが行より後になり、Markdownの表として表示されない
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]で足した鮮度の節は、その後に追記している（この順序の問題には影響しない）
-
-#### 直し方の候補（未決定）
-- 行をメモリに貯めて、最後に見出しと一緒に書く
-- 最初の行を書く前に見出しを書く
-
----
-
-### [LAYER3-QUARTERLY-FP-FILING-LABEL-1] Layer3・normalizedの四半期エントリのfp・fyが、期間そのものではなく「その数値を最後に申告した書類」の会計期間になっている
-**優先度:** 低（2026-10-10時点で、四半期のfpを判断に使っている機能は無い）
-**分類:** データの意味（ラベル） / common/sec_data（`quarterly.py::_process_entries()`、Layer3・normalized共通）
-**登録日:** 2026-10-10
-**発見:** [[STONKS-HEATMAP-FQ-LABEL-1]]のSTEP0（読み取り調査、2026-10-10、登録のみ）
-
-#### 内容（観測した事実）
-- `_process_entries()`は、company_factsのfactの`fp`・`fy`（SECのXBRL APIでは、そのfactを含む書類の会計期間）をそのままエントリに写す。
-  同じ期間（start・end）に複数の書類の値があると最新の提出を選ぶ（`select_latest_filed`）ため、後の10-Qで再掲された期間は、その10-Qのfp・fyになる
-- 例: JOBYの純利益で、2025-03-31・2026-03-31（1〜3月期）のエントリがfp="Q2"・fy=2026（accn 0001819848-26-000435、2026-08-06提出のQ2の10-Q）。
-  2025-06-30もfy=2026。STONKS SILOの対象ではCRWV・JOBY・ONDS・RCAT・RKLB・SPIR・LYFT・KULRで1〜3月期がQ2
-- quarterly.pyの`_classify_period()`は、fpが書類の期間種別であることをコメントで明記し、日数を主に判定している（年次の判定は`fp == "FY"`だけに頼らない）
-
-#### 影響（2026-10-10の洗い出し）
-- 四半期のfpを判断に使っていたのはSTONKS SILOの財務トレンド（前年同期比・ヒートマップ・チャートのラベル）だけで、[[STONKS-HEATMAP-FQ-LABEL-1]]で期末日に切り替えた
-- 他のfpの使用は、10-Kの`fp == "FY"`の判定（`layer3_builder.py`・`utils.py`・`fye_change_candidate_scan.py`・TANUKI VALUATIONの`pipeline.py`の株式数）と
-  ログの出力だけで、四半期のfpの誤りの影響は受けない。EPS Analyzer（`extract_key_facts.py`）・`parser.py`は独自に年度を決める（`determine_fiscal_year()`）
-- results.jsonの`financial_vectors.fields.*.series_q`には、このfpがそのまま入っている（画面・計算では使わないと注記済み）
-
-#### 直し方の候補（未決定）
-- エントリにfpを入れず、期間から決めた四半期（会計年度の期末月からの位置）を別のキーで持つ
-- fp・fyのキー名を`filing_fp`・`filing_fy`のように改め、意味を名前で示す（消費者の書き換えが要る）
-- 現状維持（新しい消費者が四半期のfpを使うときは、期末日で識別するよう手順書に書く）
-
----
-
-（[[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
-
----
-
-### [STONKS-SUMMARY-GAAP-REASON-RAW-1] STONKS SILOの総合判定の根拠で、純利益の理由コードがそのまま出る（「純利益：NO_TREND:-229%→-482%」）。使い方の「シグナル」も旧ラベル
-**優先度:** 低
-**分類:** 表示 / STONKS SILO（`analyzer.py::_build_summary()`、`docs/value-monitor/stonks-silo/index.html`の使い方）
-**登録日:** 2026-10-10
-**発見:** [[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]の実装時の表示確認（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- `_build_summary()`の純利益の行は、`gaap_breakeven_reason`が`NO_TREND`・`NO_DATA`・`TOO_FAR`と完全に一致するときだけ日本語にする。
-  `NO_TREND:-229%→-482%`のように後ろにマージンが付くと一致せず、「純利益：NO_TREND:-229%→-482%」と出る
-  （2026-10-10のresults.json: ASTS・RBRK・SITM）。OCFの行も同じ作りだが、OCFが`NO_TREND:…`の銘柄では未確認
-- 使い方の「▲ 買いシグナル」「▼ 回避シグナル」は、OCF TRENDを「IMPROVING」「DECLINING」、DEFICITを「QUALITY / GROWTH-INVEST」「PURE-LOSS」と書いており、
-  画面の表示（加速中・改善中・横ばい・悪化中、良い赤字等）と違う。SCOREの「70以上」も判定の閾値（75/55/35）と合っていない
-
-#### 直し方の候補（未決定）
-- 理由コードは前方一致で日本語にする（③パネルの`fmtBe()`は`NO_TREND:`を「予測不可（改善なし）」とマージンに分けて出している）
-- シグナルの文言を画面のラベルと判定の閾値に合わせる
+#### 関連
+[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]（GOOGLの強制転換優先株のタグ）
 
 ---
 

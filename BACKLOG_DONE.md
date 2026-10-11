@@ -29,6 +29,209 @@
 
 ---
 
+### ✅ [ROTCE-QUARTERLY-ANNUALIZED-1] SOFIのROTCEが会社発表と方向まで食い違う（TTM÷1年前と期末の平均）→ 四半期の年率に変更し、会社発表を並べて表示
+**優先度:** 高
+**分類:** 指標の定義 / common/sec_data（`rotce.py`）・EPS Analyzer個別ページ・TANUKI SCOREの散布図・`config/company_reported_metrics.json`・CHECK-61
+**登録日:** 2026-10-11
+**発見:** チャット側のSOFIの確認（2026-10-11、2026-Q2 Investor Presentation p.51との比較）、[[ROTCE-PTBV-1]]
+
+#### STEP0（読み取り、2026-10-11）
+- 変更前の定義（`rotce.py`、2026-10-10）: 分子＝Layer3の四半期純利益（暗黙のQ4を含む）を連続4期足したTTM（親会社帰属、優先配当は引かない）。
+  分母＝4四半期前（340〜390日前の純利益の期末日）と当四半期末のTCEの単純平均＝`rotce_basis: "average"`。4四半期前のTCEが無い・0以下なら当四半期末だけ（`"end_only"`）。
+  TCE＝純資産−（非支配持分込みのタグの期末日だけ非支配持分）−優先株−のれん−無形資産。assumed_zeroは成分の初申告より前を0とした期で、
+  無形資産を0と仮定した期だけ自社比の母数から外す（計算値自体はそのまま出す）
+- SOFIのタグ: `NetIncomeLossAvailableToCommonStockholdersDiluted`（2020-06〜2026-06）・`…Basic`（2019-12〜2026-06）あり。
+  優先配当`PreferredStockDividendsIncomeStatementImpact`は2024-03で終わり（優先株は2024年に償還、メザニン区分）。
+  `DeferredTaxLiabilitiesGoodwillAndIntangibleAssetsIntangibleAssets`は年度末だけ（2023〜2025年末: 42M・52M・39M）
+- SOFIの比較（(A)＝四半期の普通株主帰属純利益〈希薄化後〉×4÷前の四半期末と当四半期末のTCEの平均、(B)＝(A)の分母に無形資産の繰延税金負債〈直前の年度末の値〉を足し戻す）:
+
+| 四半期末 | 変更前（TTM） | (A) | (B) | 会社発表 |
+|---|---|---|---|---|
+| 2024-09-30 | 5.6% | 5.4% | 5.4% | — |
+| 2024-12-31 | 12.0% | 29.9% | 29.6% | — |
+| 2025-03-31 | 10.6% | 5.8% | 5.7% | 5.8% |
+| 2025-06-30 | 12.0% | 7.6% | 7.6% | 7.7% |
+| 2025-09-30 | 11.1% | 9.1% | 9.0% | 8.5% |
+| 2025-12-31 | 7.0% | 8.7% | 8.6% | 9.0% |
+| 2026-03-31 | 8.1% | 7.4% | 7.4% | 7.6% |
+| 2026-06-30 | 8.7% | 6.7% | 6.7% | 7.1% |
+
+  会社発表との差の絶対値の平均（6四半期）: 変更前 2.63pt・(A) 0.27pt・(B) 0.28pt。向きは(A)が6四半期すべてで一致（Q1'26→Q2'26は低下）。
+  (B)は繰延税金負債が年度末しか取れず、(A)より近くならないため採らない。2024-12-31の29.9%は税効果（評価性引当金の取り崩し）でGAAP純利益が大きい四半期（会社の調整後には入らない）
+
+#### 対応（2026-10-11）
+- `74b2ce6249`（config）: `config/company_reported_metrics.json`（SOFIの6四半期・2026年ガイダンス8.0%・長期目標20〜30%、出典 2026-Q2 Investor Presentation p.51。値はチャット側の提示）
+- `91a1378521`（コード）: ROTCE＝その四半期の普通株主帰属純利益（Diluted→Basic、タグが無い四半期はLayer3の純利益で`net_income_source: "net_income"`）×4÷
+  （前の四半期末〈70〜120日前の純資産の期末日〉と当四半期末のTCEの平均＝`rotce_basis: "quarter_average"`、前が無い・0以下なら`"quarter_end_only"`）。
+  TTM方式は`rotce_ttm`（参考）。四半期ごとに1行（TTMの窓が無い四半期も行になる）ため、自社比の母数は多くの銘柄で+3期。
+  `{TICKER}.json`の`company_reported`（会社の値・こちらの値・差・ガイダンス・長期目標・`latest_registered`）。CHECK-61（WARN、直近の四半期末の会社発表が未登録）。
+  EPS Analyzerの個別ページ: 定義の説明、会社発表の表、推移チャートに会社発表の線、未登録の表示。TANUKI SCOREの散布図の説明
+- `d83902613e`（データ）: 98銘柄を作り直し（65銘柄で算出、変更前と同じ）。変更前のコードの手元の再現は、10-10 19:25のSEC_Data_Update（`e2a629fb58`）で
+  新しい四半期が入った9銘柄（GTLB・IOT・RBRK・ZS・ADBE・INTU・CPRT・DELL・PEP）以外で公開中の値と一致
+- 分子のタグ（最新四半期）: 純利益で代用61・希薄化後29・基本8銘柄
+
+#### 全銘柄の変化（算出できる65銘柄、変更前のコードの手元の再現→変更後）
+- 目安が変わるのは6銘柄: CSGP 自社比割高→中立（2.8%→17.7%）、DDOG 中立→自社比割高（5.7%→5.0%）、ESTC 自社比割安→判定なし（48.1%→−7.3%、直近の四半期が赤字）、
+  FLYW 中立→判定なし（16.3%→−13.2%）、ONDS 期数不足→判定なし（51.3%→−100.5%）、ZETA 判定なし→中立（−0.9%→17.6%）
+- 目安の内訳（98銘柄）: 自社比割安5→4・中立28・自社比割高4・判定なし61→62（insufficient_quarters 9→8、rotce_nonpositive 19→21）
+- TANUKI SCOREの散布図（96銘柄）: 点は63のまま。表示範囲（−100%〜+200%）の外は10のまま（入れ替わり: INTU・LYFT・MRVLが中へ、KULR・ONDS・SOUNが外へ）
+- 大きく変わった例: GOOGL 42.6%→91.0%、LYFT 203.2%→8.4%、INTU 1145.8%→131.5%、FRSH 27.2%→2.0%、CEG 21.0%→9.8%、LITE −213.5%→−1195.6%、APP 342.2%→575.6%
+
+#### 未了・観察（未対応）
+- 四半期の年率は一過性の四半期をそのまま4倍にする: LYFT 2025-12-31（純利益2,755M、税効果）815%、ESTC 2026-04-30 263%、FRSH 2025-12-31 107%、SOFI 2024-12-31 30%。
+  自社比のパーセンタイルの母数にも入る → 2026-10-11 チャット側の決定で、目安は比較用ROTCE（TTM）で比べる（下の「追加対応」）。見出しは四半期の年率のまま
+- LITE 2026-06-27の純利益−7,162M・GOOGL 2026-06-30の112,107M（基本のタグ）→ 2026-10-11に原本と照合し、どちらも正しい値と確認（下の「追加対応」）
+- 新しい四半期の資料が出たら`config/company_reported_metrics.json`の`values`に1行足す（CHECK-61が知らせる。2026-10-11のゲートではWARN-61は0件）
+- SOFIの推移チャートは過去の値（−35%〜+30%）で縦軸が広く、会社発表の線とこちらの線がほぼ重なって見える（表で差を読める）
+
+#### 本番での確認（2026-10-11、Pagesの構築`d83902613e`がsuccessで終わった後、本番のURLで。事例36）
+- SOFIの個別ページ: ROTCE 6.7%、説明「2026-06-30の四半期の普通株主帰属純利益×4÷有形自己資本（2026-03-31末と2026-06-30末の平均）。参考（TTM）8.7%」。
+  会社発表の表（6四半期・差 +0.0〜+0.6pt／−0.1〜−0.4pt）、ガイダンス（FY2026）8.0%・長期目標20〜30%・出典、推移チャートに「会社発表」の線（…9.0・7.6・7.1）。
+  Q1'26→Q2'26はこちら7.4%→6.7%、会社7.6%→7.1%で同じ向き（低下）
+- NVDAの個別ページ: 「純利益（普通株主帰属のタグなし）×4÷…」、会社発表の欄は出ない、コンソールのエラー0件
+- TANUKI SCORE: 「▶ ROTCE × P/TBV（…／63銘柄）」がDuPontとトラップの間、点63、横軸「ROTCE（直近の四半期の年率）」、説明も新しい定義。SOFIの点は6.7%・2.3x・中立
+
+#### 追加対応（2026-10-11、チャット側の決定1〜3）
+1. 自社比の目安の系列（`dbcb26f19d` コード・`7d8b4af63a` データ）: 比較用ROTCE（TTM、`rotce_ttm`）＝直近4四半期（連続）の普通株主帰属純利益
+   （四半期ごとに見出しと同じ分子）の合計 ÷ 当四半期末と、前の四半期末を4回たどった期末（最大5つ）のTCEの平均。TCEが取れない（成分の欠け）・
+   0以下の期末は平均から外す（`rotce_ttm_tce_ends`・`rotce_ttm_basis: "avg<n>"`）。パーセンタイルと`rotce_nonpositive`はこの系列で判定
+   （4四半期の窓がそろう期だけが母数になり、多くの銘柄で−3期）。画面の「参考（TTM）」もこの値、説明を直した
+   - 指示に無かった判断: 0以下のTCEの期末も平均から外した（変更前のTTMの「期首が0以下なら期末だけ」と同じ扱い）。目安なし（赤字）の判定も見出しではなく比較用（TTM）で行う
+   - 目安が変わるのは7銘柄（変更前＝`d83902613e`の四半期の年率で比較 → 変更後）:
+
+| 銘柄 | 変更前 | 変更後 | ROTCE（四半期の年率） | ROTCE（TTM） | 比較できる期 |
+|---|---|---|---|---|---|
+| CAT | 中立 | 自社比割高 | 112.8% | 78.2% | 18→15 |
+| CSGP | 中立 | 自社比割高 | 17.7% | 3.7% | 18→15 |
+| DDOG | 自社比割高 | 中立 | 5.0% | 5.6% | 18→15 |
+| ESTC | 判定なし（赤字） | 自社比割安 | −7.3% | 55.3% | 18→17 |
+| FLYW | 判定なし（赤字） | 中立 | −13.2% | 14.8% | 17→14 |
+| ONDS | 判定なし（赤字） | 判定なし（期数不足） | −100.5% | 65.1% | 7→4 |
+| ZETA | 中立 | 判定なし（赤字） | 17.6% | −1.1% | 10→10 |
+
+   - 目安の内訳（98銘柄）: 自社比割安4→5・中立28→27・自社比割高4→5・判定なし62→61（insufficient_quarters 8→9、rotce_nonpositive 21→19）。散布図の点は63のまま
+   - SOFI: ROTCE（TTM）2025-12-31 7.8%・2026-03-31 8.2%・2026-06-30 8.0%（5つの期末がそろう）。目安は中立のまま（P/TBV 33・ROTCE（TTM）63パーセンタイル、15期）
+   - ESTCは見出しのROTCEが−7.3%（直近の四半期が赤字）のまま、TTMでは2026-04-30の一過性の利益（436M）を含んで55.3%で「自社比割安」になる。
+     LYFTのTTMも2025-12-31の税効果（2,755M）を含んで180.3%（2026-09-30の四半期まで続く）
+2. Layer3の値の照合（読み取りのみ）: どちらも原本どおりで、誤りではない（独立の項目は登録しない）
+   - GOOGL 2026-06-30: 10-Q（accn 0001652044-26-000071、2026-07-23提出）の損益計算書の3か月の値。純利益112,193M、優先配当86M、普通株主帰属112,107M。
+     その他の収益（OI&E）97,983M（6か月の有価証券の評価益135,803M、キャッシュフロー計算書）による。6か月の累計174,771M＝Q1 62,578M＋Q2 112,193M
+   - LITE 2026-06-27: 10-K（accn 0001628280-26-057358、2026-08-17提出）のFY2026の純損失−6,935.1M（その他の費用−7,697.6M、税率調整の表に「Nondeductible loss on
+     extinguishment of debt」1,628.6M〈税効果〉、社債の消滅損）。Q4＝年次−Q1〜Q3の累計227M＝−7,162M（Layer3の逆算、10-KにQ4単独の値は無い）。
+     10-Kに普通株主帰属のタグが無いため、この四半期の分子は純利益（`net_income_source: "net_income"`）
+   - 照合で見つかった別の問題は[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]に登録（GOOGLの優先株がTCEから引かれていない）
+3. ROTCEの推移チャート（`dbcb26f19d`）: 縦軸をその銘柄の系列の5〜95パーセンタイルと会社発表の値の範囲（上下に8%の余白）にし、外れた点は端に寄せた赤い▲▼、
+   ツールチップは実際の値
+   - LYFTは2022〜2023年の大きなマイナス（−1,000%超）が複数あり、5パーセンタイル自体が大きいため縦軸は−1,141%〜+245%のまま（指示どおりの範囲）
+
+#### 本番での確認（追加対応、2026-10-11、Pagesの構築`7d8b4af63a`がsuccessで終わった後、本番のURLで）
+- SOFI: 「参考（TTM）8.0%（自社比の目安はこちらで比較）」、目安「中立 / 自社の過去15四半期の中で P/TBV 33・ROTCE（TTM）63 パーセンタイル」、
+  縦軸−20.6%〜+14.6%、端に寄せた点は2023-09-30（下）・2024-12-31（上）、会社発表の線（…7.6・7.1）と表は表示
+- GOOGL: ROTCE 91.0%、参考（TTM）53.6%、縦軸20.3%〜81.3%で2026-06-30を上端に寄せる。目安 中立（P/TBV 63・ROTCE（TTM）94、8期）
+- LYFT: ROTCE 8.4%、参考（TTM）180.3%、縦軸−1,141%〜+245%、端に寄せた点は2023-03-31（下）・2025-12-31（上）。目安 自社比割安（P/TBV 13・ROTCE（TTM）84）
+- TANUKI SCORE: 63銘柄・点63・DuPontとトラップの間。説明とツールチップが「ROTCE（TTM）」（SOFI・ESTC・CATで確認）
+
+#### 移設（2026-10-11、ブラッシュアップ）
+本番での確認（上の2回）が済んだため移設。「未了・観察」の4点は運用上の注記として残す（新しい四半期の資料が出たときの`config/company_reported_metrics.json`への追記はCHECK-61が知らせる）
+
+---
+
+### ✅ [ROTCE-PTBV-1] ROTCE・P/TBVの参考表示（TCEの控除項目の取り込み→計算→TANUKI SCOREの散布図・EPS Analyzerの推移）
+**優先度:** 中
+**分類:** 新規指標（参考表示のみ） / common/sec_data（Layer2・Layer3・`rotce.py`）・TANUKI SCORE・EPS Analyzer
+**登録日:** 2026-10-10
+**発見:** ROTCE / P/TBV / 理論P/TBV の実現可能性調査（2026-10-10、読み取り専用）
+
+#### 内容（調査で確認した事実）
+- Layer2・Layer3・TTM系列に、のれん・無形資産・優先株・非支配持分のフィールドが無い（company_facts.jsonにはある。Goodwill 89銘柄・
+  IntangibleAssetsNetExcludingGoodwill 71・FiniteLived 81・IndefiniteLived 26・PreferredStockValue 50・MinorityInterest 31、直近3年）
+- EXCLと「有限＋無期限」の併存は66銘柄。IntangibleAssetsNetIncludingGoodwillはCAKE・RCAT・CELHで「のれんを除く無形資産」の意味で使われている
+- 96銘柄の最新期で、TCE＞0は67銘柄（成分が期末日にそろうのは56）。理論P/TBV（(ROTCE−g)/(COE−g)）は、乖離が±50%以内に収まるのが
+  計算できた47銘柄中3銘柄（GOOGL・VZ・CPRT）で、物差しにならない
+- CRMの純資産の急減（2026-01-31 59.1B→04-30 34.2B）は、借入（長期債務14.4B→39.3B）で賄った自社株買い（自己株式32.2B→55.0B）による。
+  資本の内訳（APIC−3,922M・利益剰余金+1,733M・AOCI+82M・自己株式−22,800M）の合計が純資産の減少−24,907Mと一致（取り込みの誤りではない）
+
+#### 対応方針（チャット側の決定）
+- 参考表示のみ。TANUKI SCOREの判定（category・funda/timing・tanuki_score・matrix・トラップ判定）には入れない。理論P/TBVは実装しない
+- 銘柄間比較はTANUKI SCOREのROTCE×P/TBV散布図、単体の割安・割高はその銘柄自身の過去の四半期分布との比較（パーセンタイル）
+
+#### 対応（2026-10-10）
+- STEP1 `d88693784b`: Layer2（parser.py、bsに4項目＋bs_tag_sources）・Layer3（sec_concept_definitions.json）に
+  goodwill・intangible_assets_excl_goodwill・preferred_stock・minority_interest。既存フィールドの値の差分0件（Layer2 4,486ファイル・Layer3 98銘柄×32フィールド）
+- STEP2 `b9ccaae898`: `common/sec_data/rotce.py`、出力`docs/common/sec_data/rotce/`、Market_Data_Daily_Update.ymlで日次に再計算
+- STEP3 `0945814072`: TANUKI SCOREの散布図、EPS Analyzer個別ページの推移
+- 指示書からの追加判断（報告済み）: ①EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限
+  （PEP〈EXCL 500M／有限1,219M＋無期限13,847M〉・AVAV・TSLA・ADSKの一部の期末日）、②優先株がメザニンと同額の期末日は控除しない（CELH）、
+  ③株式数の外れ値（中央値の20倍超、CIX・ONDSの千株単位の申告）は使わない、④その成分を初めて申告した期末日より前は0
+- 2026-10-10時点: 98銘柄中65銘柄で算出（TANUKIの96銘柄では63、年度末の値で補ったのは8）。TCE≤0が29、成分が取れない4、
+  目安は自社比割安7・中立34・自社比割高9・判定なし48
+
+#### 未了・観察（未対応）
+- KOは無形資産の大半が`IndefiniteLivedTrademarks`（12.5B）で、対象タグに無いため2024年以降component_missing（2023年以前の行は無形資産を過小に引いている）
+- AVAVは純資産が非支配持分込みのタグで、MinorityInterestの申告が途中で止まっている→component_missing。PLTRはのれんの申告が2022年末だけ→component_missing
+- Vの優先株は`PreferredStockValueOutstanding`（528M）で、対象タグ（PreferredStockValue）に無い（VはTCE≤0のため結果には影響なし）
+- 目安は赤字銘柄にも付く（SOUN・KULRは自社比割安、ROTCEがマイナス同士の比較）。赤字銘柄を除くかはチャット側の判断待ち
+  → **決定・実装済み**: 下の追補`e6378a614d`（直近のROTCEが0以下なら目安を付けない、`rotce_nonpositive`）で決まった（2026-10-10）
+- 優先配当は純利益から引いていない
+
+#### 指示書に無かった判断1〜4の採否（チャット側の決定、2026-10-10）
+- 判断1（EXCLが同じaccnの有限＋無期限より2%超小さい期末日は有限＋無期限）・判断2（メザニンと同額の優先株は控除しない）・
+  判断3（株式数の外れ値は使わない）: 採用
+- 判断4（初めて申告する前の期は0）: 0とした期にassumed_zeroを付け、自社比の母数から外す条件で採用
+
+#### 追補（2026-10-10）
+- `54ccf5dd78`: assumed_zero（成分名の一覧）を付け、パーセンタイルの母数から外す。EPS Analyzerでは中抜きの点。
+  母数が減った6銘柄: ALAB（のれん、10→3期）・LITE（優先株、8→2）・ONDS（優先株、3→2）・PAYS（のれん、15→7）・QBTS（のれん、7→3）・SOUN（のれん・無形資産、12→10）。
+  うちALAB（中立）・LITE（自社比割高）・PAYS（中立）が判定なし（insufficient_quarters）に
+- `e6378a614d`: 直近のROTCE≤0なら目安なし（rotce_nonpositive、19銘柄）。散布図・個別ページの表示も合わせた
+- 目安の内訳（98銘柄）: 追補前 自社比割安7・中立34・自社比割高9・判定なし48 → 追補後 自社比割安5・中立26・自社比割高4・判定なし63
+  （tce_nonpositive 29・rotce_nonpositive 19・insufficient_quarters 11・component_missing 4）
+- 株式数の単位誤りは[[LAYER2-SHARES-UNIT-THOUSANDS-1]]に登録
+
+#### 追補2（2026-10-10）: 判断4の条件を修正
+- assumed_zeroの記録は全成分のまま、自社比の母数から外すのは無形資産（intangible_assets_excl_goodwill）を0と仮定した期だけにした
+  （`rotce.py::ASSUMED_ZERO_EXCLUDED_FIELDS`、期にexcluded_from_percentile=true）。のれん・優先株は存在すれば貸借対照表に
+  独立した行として出るため、初申告より前を0とするのは実態どおり（ALABは2025年の買収で初めてのれんが生じた）。
+  EPS Analyzerの中抜きの点も母数から外した期だけ
+- 母数が戻った5銘柄: ALAB（3→10期、判定なし→中立）・PAYS（7→15、判定なし→中立）・LITE（2→8、直近ROTCE−213.5%のためrotce_nonpositiveのまま）・
+  ONDS（2→3、期数不足のまま）・QBTS（3→7、rotce_nonpositiveのまま）。SOUN（無形資産を0と仮定した2期を除外、10期）は変わらない
+- 目安の内訳（98銘柄）: 自社比割安5・中立26→28・自社比割高4・判定なし63→61（insufficient_quarters 11→9）
+
+#### 移設（2026-10-11、ブラッシュアップ）
+本体（取り込み・計算・表示・追補）は完了。「未了・観察」の残り（KOの`IndefiniteLivedTrademarks`、AVAVの`MinorityInterest`の申告途絶、PLTRののれんの申告が2022年末だけ、
+Vの`PreferredStockValueOutstanding`、優先配当を純利益から引いていない件）は[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]としてBACKLOG.mdに登録した
+
+---
+
+### ✅ [TANUKISCORE-FCF-COL-FLOOR-1] TANUKI SCOREのFCF列が売上8%の底上げ後のbase_fcfで判定され、全件✓になっていた
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI SCORE（`index.html`のFCF列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
+
+#### 内容（観測した事実）
+- FCF列は`fcf_base.base_fcf > 0`で✓。`base_fcf`はDCF用に`calculator/adjustments.py::adjust_fcf()`で5年平均FCF≤0のとき「最新売上の8%」に
+  底上げした後の値のため、全96銘柄で正になり✗が出ない（例: QBTS 1.97M＝売上の8%、実際の5年平均は-71M。SOUN・KULRも同様）
+- 底上げされた銘柄は18（ASTS・AVAV・BBAI・CEG・COHR・CRWV・IONQ・JOBY・KULR・ONDS・QBTS・RCAT・RDW・RXRX・SOFI・SOUN・SPIR・S）。
+  `components.structural_deficit`（5年・2年平均とも≤0）は17銘柄（Sを除く上記）
+- トラップ判定（`latestFcf`）は実績のfcf_historyを使っており影響なし
+
+#### 対応方針（チャット側の決定）
+structural_deficit→✗、それ以外でfcf_floor_applied>0→「△床」、それ以外は従来どおり
+
+
+#### 対応（2026-10-10、`c2751316df`）
+- `tanuki_score/index.html`: structural_deficit→✗（title「5年・2年平均FCFとも赤字」）、それ以外でfcf_floor_applied>0→「△床」（title「売上8%の下限補正後」）、それ以外は従来どおり
+- 現在のデータで✗ 17銘柄・△床 S・✓ 78銘柄（ローカルの描画で確認）。FCF列はソート対象外のまま。latest.jsonの再生成は不要（既存のフィールドだけを使う）
+- 画面のトラップ判定（computeTraps）・カテゴリボード・RICEマトリクスは修正前のindex.htmlと同じ出力（全96銘柄）
+
+#### 本番での確認（2026-10-11、ブラッシュアップ）
+本番のTANUKI SCOREの画面（`https://koichi-shigihara2.github.io/On-a-journey/value-monitor/tanuki_score/index.html`、Pagesの構築は`14125e4715`までsuccess）で、
+FCF列は✗17（JOBY・SOFI・COHR・AVAV・ASTS・IONQ・ONDS・RCAT・RDW・CEG・SOUN・CRWV・RXRX・BBAI・QBTS・KULR・SPIR）・△床1（S）・✓78。
+✗の17銘柄は登録時の`structural_deficit`の17銘柄と同じ。ローカルの描画の結果と一致したため移設
+
+---
+
 ## 2026-10-10（完了）
 
 ### ✅ [STONKS-PATHSCORE-WITHOUT-ESTIMATE-1] 黒字化パスのスコアがOCFの傾向（ocf_trend）だけで決まり、黒字化年の推定が無くても満点になる（ASTS 100）
