@@ -2204,6 +2204,38 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 
 ---
 
+### [EPS-SILENT-TICKER-FAILURE-1] EPS ANALYZERの銘柄ごとの失敗が、ワークフロー・summary.json・System Health [I]のどこにも出ない
+**優先度:** 高
+**分類:** 運用（失敗の見え方） / EPS ANALYZER（`src/value/adjusted_eps_analyzer/pipeline.py`の`process_one_ticker()`・`run()`・`generate_summary()`）・System Health（`common/system_health.py`の`check_i_eps()`）
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11、HEAD `b26b852711`で確認した事実）
+- `process_one_ticker()`は、取得結果が空なら「{T}: データなし」、例外なら「✗ {T} 処理エラー」を表示して`(ticker, None)`を返す。`run()`はNoneを数えずに捨てる
+  （`run()`の「✗ 未捕捉エラー」は、`process_one_ticker()`の外に漏れた例外だけ。ふつうの例外は`process_one_ticker()`の中で握りつぶされる）
+- 何銘柄失敗しても終了コードは0。成功が0件のときはsummary.jsonを書かないが、終了コードはやはり0
+- `generate_summary()`は前回のsummary.jsonに今回の結果を上書きでマージするだけなので、失敗した銘柄は前回の行（古い値）がそのまま残る
+- System Health [I]は`last_updated`（14日）とeps=trueの銘柄の行があるかしか見ないため、銘柄ごとの失敗は検知できない（古い行が必ず残るので「未収録」にもならない）
+
+#### 直近の実行での失敗（STEP 0、2026-10-11に`gh run view --log`で数えた）
+| run | 起動 | 処理 | データなし | 処理エラー | 未捕捉エラー |
+|---|---|---|---|---|---|
+| `37302451184`（10-05 schedule） | 冪等性ガードで何もしない | 0 | 0 | 0 | 0 |
+| `37215353826`（10-04 workflow_run） | 99銘柄を処理・保存 | 99 | 0 | 0 | 0 |
+| `36411829197`（09-28 schedule） | 冪等性ガードで何もしない | 0 | 0 | 0 | 0 |
+| `36331248101`（09-27 workflow_run） | 99銘柄を処理・保存 | 99 | 0 | 0 | 0 |
+- 銘柄ごとの失敗は0件。期末日が2026Q1のままのCDNS・V・XOM・RMBS・KOは、パイプラインの失敗ではなく、SECのcompanyfacts APIにQ2の10-Qが入っていないため
+  （`[[SEC-COMPANYFACTS-API-LAG-1]]`。`_freshness.json`でSEC_LAG。EPS ANALYZERもcompanyfacts APIを直接読む）
+- ログの「Error」はすべてAI分析（Grok）のタイムアウト・429（10-04は7件、09-27は23件）。銘柄の処理は成功扱いで、別件として`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`に登録
+
+#### 対応方針（チャット側の指示、2026-10-11）
+- `run()`で成功・失敗（データなし／例外）を数え、summary.jsonに今回の実行の`run_status`（started_at・succeeded・failed〈銘柄と理由〉）を書く。各行に`generated_at`（その行を今回作り直した日時）。失敗した銘柄の行は残すが`generated_at`は更新しない
+- 終了コード: 成功0件なら1（summaryは書かない）。一部の失敗では0のまま（TANUKI VALUATIONの連鎖を止めない。`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`と同じ問題を作らない）
+- GITHUB_STEP_SUMMARYに成功・失敗の件数と失敗した銘柄・理由
+- System Health [I]に「eps=trueの銘柄のうち、generated_atがrun_status.started_atより前の行」を加え、1件以上で⚠️（重大度は`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`の仕組みに合わせる）
+
+---
+
 ## 優先度：中（こなれてきたら対応）
 
 （[[DISCOVER-CONFIG-DUAL-MGMT-1]]は2026-08-15実装完了、BACKLOG_DONE.md
@@ -2777,6 +2809,38 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 ---
 
 （[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
+
+---
+
+### [EPS-SUMMARY-GHOST-ROWS-1] EPS ANALYZERのsummary.jsonに、eps=trueでなくなった銘柄（FIG・ZS）の行が残り、一覧から開いた詳細画面が404になる
+**優先度:** 中
+**分類:** データの整理 / EPS ANALYZER（`pipeline.py`の`generate_summary()`）・`docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+- summary.jsonは97行、`get_eps_tickers()`は95銘柄。多い2行はFIG（`config/cik_lookup.csv`から削除済み）とZS（eps=false）
+- どちらも`data/{T}/`が無く、一覧から詳細画面を開くと`data/{T}/quarterly.json`が404（「データを読み込めませんでした」）
+- `generate_summary()`は前回の行に上書きでマージするだけで、行を消さない。過去にBXの行を手で消した記録がある（BACKLOG_DONE.mdの`check_i_eps`の項、「generate_summaryがマージ方式のため手動削除が必要」）
+
+#### 対応方針（チャット側の指示、2026-10-11）
+`generate_summary()`で`get_eps_tickers()`に含まれない銘柄の行を消し、消した銘柄をログに出す。`--ticker`の部分実行でも同じ（eps=trueの他の銘柄の行は残す）
+
+---
+
+### [EPS-INDEX-STALE-PERIOD-UNMARKED-1] EPS ANALYZERの一覧で、直近の決算が反映されていない銘柄（期末日が古い銘柄）に印が無い
+**優先度:** 中
+**分類:** 表示 / `docs/value-monitor/adjusted_eps_analyzer/index.html`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+- 一覧の「決算日」列（値は直近四半期の期末日）は日付を出すだけで、古さの印が無い
+- 期末日から今日までの日数（eps=trueの95銘柄）: 44日1・71日3・72日13・77日2・103日61・105日5・106日4・120日1（PEP）・191日1（KO）・194日4（CDNS・RMBS・V・XOM）
+- KO・CDNS・RMBS・V・XOMは2026Q1のまま（Q2の10-Qがcompanyfacts APIに未反映、`[[SEC-COMPANYFACTS-API-LAG-1]]`）。一覧では他の銘柄と区別がつかない
+
+#### 対応方針（チャット側の指示、2026-10-11）
+期末日が今日から一定の日数より古い銘柄に印（色とツールチップ「直近の決算が未反映の可能性」）。日数は全銘柄の分布と提出期限・決算期の違いから決める
 
 ---
 
@@ -3666,6 +3730,45 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 
 #### 関連
 [[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]（GOOGLの強制転換優先株のタグ）
+
+---
+
+### [EPS-INDEX-MINOR-1] EPS ANALYZERの一覧・詳細の細かい不具合（TANUKIのlatest.jsonの404、data/直下のAMDttm.json、ツールチップの説明が値と違う2点）
+**優先度:** 低
+**分類:** 表示・不要ファイル / `docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`・`data/AMDttm.json`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+1. 一覧（index.html L233）は全行について`../tanuki_valuation/data/{T}/latest.json`を読み、詳細（stock.html L630）も同じ。tanuki=falseのRKLB・ZS（`score_history.json`だけのフォルダ）と、フォルダの無いFIGで404になる
+   （STONKS SILO側の同じ件は`[[STONKS-TANUKI-BADGE-404-1]]`）
+2. `data/AMDttm.json`（AMDのttm.jsonの旧版、2026-03-23の「Rename ttm.json to AMDttm.json」`9219352c52`から残る）。リポジトリ内の参照は0件（`grep -rn AMDttm`、venv・.gitを除く）
+3. 一覧の「決算日」のツールチップは「最新の決算申告日（SEC EDGAR基準）」だが、値（`latest_filing_date`＝`quarters[0].filing_date`）は直近四半期の期末日（95銘柄すべてで`period_end`と一致）
+4. 一覧の「Adj EPS」のツールチップは「企業が公表するNon-GAAP調整後EPS」だが、値はSECの開示から自前で算出したもの
+
+#### 対応方針（チャット側の指示、2026-10-11）
+- summaryの各行にtanukiフラグを持たせ、一覧と詳細はtanuki=falseの銘柄のlatest.jsonを読まない
+- 参照が無いことを確かめてAMDttm.jsonを削除
+- ツールチップを値に合わせる
+- フィールド名（`latest_filing_date`・`filing_date`）と中身（期末日）のずれは記録だけにする（消費者が多い: 一覧・tickers.html・stock.htmlの期間の絞り込み・TANUKIの`_find_four_quarters`系・report_consistency_check・audit・execution_metrics等）
+
+---
+
+### [EPS-AI-ANALYSIS-ERROR-SILENT-1] EPS ANALYZERのAI分析（Grok）がタイムアウト・429で失敗すると、最新四半期のai_analysisが「Error」のまま次の実行まで残り、実行の結果にも数えられない
+**優先度:** 低
+**分類:** 運用（失敗の見え方） / `src/value/adjusted_eps_analyzer/ai_analyzer.py`の`analyze_adjustments()`
+**登録日:** 2026-10-11
+**発見:** [[EPS-SILENT-TICKER-FAILURE-1]]のSTEP 0（直近の実行のログの「Error」を数えたとき）
+
+#### 内容（観測した事実）
+- `analyze_adjustments()`は1回だけ呼び（timeout=30秒、再試行なし）、失敗すると`{"health": "Error", "comment": "AI分析中にリクエストエラーが発生しました: …"}`を返す。銘柄の処理は成功扱い
+- 10-04の実行（`37215353826`）で7件（Read timed out）、09-27の実行（`36331248101`）で23件（Read timed out 20・429 Too Many Requests 3）
+- 2026-10-11時点で最新四半期のai_analysisが「Error」の銘柄は7件（AMZN・AVAV・BBAI・BSY・CRM・CSGP・NVDA）。詳細画面のAI分析欄・バッジに「Error」が出る
+- 4並列（`ThreadPoolExecutor(max_workers=4)`）で呼ぶため、429はレート制限の可能性
+
+#### 直し方の候補（未決定）
+- 再試行（429・タイムアウトは間隔を空けて数回）、timeoutの延長
+- 失敗件数を`run_status`（[[EPS-SILENT-TICKER-FAILURE-1]]）とStep Summaryに出す
 
 ---
 
