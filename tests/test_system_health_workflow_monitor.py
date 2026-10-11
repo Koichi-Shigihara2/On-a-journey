@@ -343,18 +343,40 @@ def test_check_j_never_run_before_first_due_is_waiting(monkeypatch):
     assert r["ok"] is True and r["critical"] is False
     assert r["severity"] == 0
     assert r["label"].startswith("⚪")
-    assert "初回待ち1件: TANUKI_TAIL_SEC_Items.yml(初回予定 10-12 01:20 UTC)" in r["detail"]
+    assert "初回待ち1件: TANUKI_TAIL_SEC_Items.yml（初回予定 10-12 01:20 UTC・猶予 10-12 13:20 UTCまで）" in r["detail"]
     assert "成功なし" not in r["detail"]
 
 
-def test_check_j_never_run_after_first_due_is_no_success(monkeypatch):
-    """初回の予定時刻を過ぎても実行0件なら、従来どおり成功なし（起動していない事故を見逃さない）。"""
+def test_check_j_never_run_within_grace_after_first_due_is_waiting(monkeypatch):
+    """初回の予定時刻を過ぎても、12時間の猶予の間は⚪初回待ち（GitHubの定時実行の遅れ。TANUKI_TAIL_SEC_Ctrlの初回は約4時間20分遅れた）。"""
     _patch_items(monkeypatch, now=datetime(2026, 10, 12, 2, 30, tzinfo=timezone.utc))
+    r = sh._check_j()
+    assert r["ok"] is True and r["critical"] is False and r["severity"] == 0
+    assert r["label"].startswith("⚪")
+    assert "初回待ち1件: TANUKI_TAIL_SEC_Items.yml（初回予定 10-12 01:20 UTC・猶予 10-12 13:20 UTCまで）" in r["detail"]
+    assert "成功なし" not in r["detail"]
+
+
+def test_check_j_never_run_after_grace_is_no_success(monkeypatch):
+    """猶予（初回の予定時刻＋12時間）を過ぎても実行0件なら、従来どおり成功なし（起動していない事故を見逃さない）。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 12, 13, 21, tzinfo=timezone.utc))
     r = sh._check_j()
     assert r["critical"] is True and r["severity"] == 2
     assert r["label"].startswith("🔴")
     assert "成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次)" in r["detail"]
     assert "初回待ち" not in r["detail"]
+
+
+def test_check_j_never_run_exactly_at_grace_end_is_no_success(monkeypatch):
+    """境界: 現在がちょうど初回の予定時刻＋12時間なら🔴（⚪は「現在 < 予定＋12時間」の間だけ）。"""
+    _patch_items(monkeypatch, now=datetime(2026, 10, 12, 13, 20, tzinfo=timezone.utc))
+    r = sh._check_j()
+    assert r["critical"] is True and "成功なし1件" in r["detail"]
+
+
+def test_check_j_first_run_grace_equals_cover_window():
+    """初回待ちの猶予は、「直前12時間以内に成功があれば⚠️」の幅と同じ12時間。"""
+    assert sh._J_FIRST_RUN_GRACE_HOURS == sh._J_COVER_HOURS == 12
 
 
 def test_check_j_only_cancelled_runs_is_not_waiting(monkeypatch):
@@ -384,12 +406,12 @@ def test_check_j_downstream_first_due_comes_from_upstream_cron(monkeypatch):
     monkeypatch.setattr(sh, "_fetch_workflow_created_at", lambda slug, f: _ITEMS_CREATED)
     monkeypatch.setattr(sh, "_utcnow", lambda: datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc))
     r = sh._check_j()
-    assert "初回待ち1件: Down.yml(初回予定 10-12 01:20 UTC)" in r["detail"]
+    assert "初回待ち1件: Down.yml（初回予定 10-12 01:20 UTC・猶予 10-12 13:20 UTCまで）" in r["detail"]
 
 
 # ── 全体の重大度の一本化（[[SYSHEALTH-SEVERITY-MISMATCH-1]]、2026-10-11） ─
 # 10-11 02:00 UTCは、Discordの先頭🔴・文言「WARNING」・CronRuns⚠️・Overall「⚠️ WARNING」・終了コード2と食い違っていた
-_J_WAIT = "18件監視 / 初回待ち1件: TANUKI_TAIL_SEC_Items.yml(初回予定 10-12 01:20 UTC)"
+_J_WAIT = "18件監視 / 初回待ち1件: TANUKI_TAIL_SEC_Items.yml（初回予定 10-12 01:20 UTC・猶予 10-12 13:20 UTCまで）"
 _J_COVER = "17件監視 / 失敗（直前に成功あり）1件: Market_Data_Daily_Update.yml(failure 10-07 01:47 UTC、直前の成功 10-06 20:25)"
 _J_RED = "18件監視 / 成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次)"
 

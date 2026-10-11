@@ -377,9 +377,11 @@ def check_i_eps() -> tuple[str, bool, str]:
 #   🔴 失敗: 取り消し・スキップを除いた最新の実行が失敗で、その実行より前の12時間以内に成功が無い
 #   ⚠️ 直前に成功あり: 同じく最新の実行が失敗だが、前の12時間以内に成功がある（取得済みの後の重複起動・保険の起動の失敗など）
 #   🔴 成功なし: 想定間隔の期間に成功が1本も無い
-#   ⚪ 初回待ち: 期間内の実行が0件で、初回の予定時刻がまだ来ていない（新設のワークフロー。[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]、2026-10-11）。
-#      初回の予定時刻＝GitHub Actions APIのワークフローの登録日時（created_at）の後に、YAMLのcronが最初に発火する時刻
-#      （workflow_runの下流は起動元のcronで同じ計算）。予定時刻を過ぎても0件なら、登録日時が取れないときと同じく成功なし
+#   ⚪ 初回待ち: 期間内の実行が0件で、現在が初回の予定時刻＋12時間（`_J_FIRST_RUN_GRACE_HOURS`）より前（新設のワークフロー。
+#      [[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]、2026-10-11）。初回の予定時刻＝GitHub Actions APIのワークフローの登録日時（created_at）の後に、
+#      YAMLのcronが最初に発火する時刻（workflow_runの下流は起動元のcronで同じ計算）。12時間の猶予はGitHubの定時実行の遅れのため
+#      （TANUKI_TAIL_SEC_Ctrlの初回は約4時間20分遅れた）で、幅は⚠️の「直前12時間以内に成功」と同じ。
+#      猶予の終わりちょうど以降も0件なら、登録日時が取れないときと同じく成功なし
 #   全体の重大度（終了コード）は各項目の判定の最大（✅・⚪→0、⚠️→1、🔴→2。[[SYSHEALTH-SEVERITY-MISMATCH-1]]、`_overall_severity()`）
 #
 # 頻度推定はcron式の day-of-month / day-of-week フィールドを見る簡易
@@ -419,6 +421,7 @@ _SELF_WORKFLOW_FILE = "System_Health.yml"  # 実行環境調査で判明: 本ワ
 _J_FAIL_CONCLUSIONS = {"failure", "timed_out", "startup_failure"}
 _J_IGNORED_CONCLUSIONS = {"cancelled", "skipped"}   # ガードによる取り消し・起動元が成功しなかった下流
 _J_COVER_HOURS = 12   # 失敗の前のこの時間内に成功があれば⚠️（🔴にしない）
+_J_FIRST_RUN_GRACE_HOURS = _J_COVER_HOURS   # 実行0件の新設は、初回の予定時刻からこの時間を過ぎるまで⚪初回待ち（GitHubの定時実行の遅れ）
 _J_MAX_PAGES = 5
 
 
@@ -642,8 +645,9 @@ def _check_j() -> dict:
             if not runs:
                 registered = _fetch_workflow_created_at(repo_slug, fname)
                 due = _first_due(fname, by_file, registered) if registered else None
-            if due is not None and now < due:
-                waiting.append(f"{fname}(初回予定 {due.strftime('%m-%d %H:%M')} UTC)")
+            grace_end = due + timedelta(hours=_J_FIRST_RUN_GRACE_HOURS) if due is not None else None
+            if grace_end is not None and now < grace_end:
+                waiting.append(f"{fname}（初回予定 {due.strftime('%m-%d %H:%M')} UTC・猶予 {grace_end.strftime('%m-%d %H:%M')} UTCまで）")
             else:
                 no_success.append(f"{fname}({threshold_days}日間に成功なし/{freq_label})")
 

@@ -398,8 +398,11 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
   各欄の絵文字・Overallの行・終了コード（0／1／2）はすべてこの値から出す（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）。項目の判定は「ok→✅、ラベルが🔴→🔴、それ以外→⚠️」
 - [J] CronRuns: 監視の対象は`scripts/gen_update_schedule.py::load_workflows()`で読んだcronのあるワークフローとworkflow_runの下流（System_Health.yml自身を除く）。
   想定間隔の期間の実行を`created>=`で取り、cancelled・skippedは数えない。🔴失敗／⚠️直前12時間に成功あり／🔴期間内に成功なし／
-  ⚪初回待ち（期間内の実行が0件で、Actions APIのワークフローの登録日時〈created_at〉の後にcronが最初に発火する時刻がまだ来ていない。下流は起動元のcronで計算。
-  `[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。登録日時が取れない・予定時刻を過ぎて0件なら成功なし
+  ⚪初回待ち（期間内の実行が0件で、現在が初回の予定時刻＋12時間〈`_J_FIRST_RUN_GRACE_HOURS`、⚠️の「直前12時間」と同じ幅〉より前。初回の予定時刻＝Actions APIのワークフローの
+  登録日時〈created_at〉の後にcronが最初に発火する時刻、下流は起動元のcronで計算。12時間の猶予はGitHubの定時実行の遅れのため〈2026-10-11追加〉。
+  欄の表示は「ファイル名（初回予定 MM-DD HH:MM UTC・猶予 MM-DD HH:MM UTCまで）」。`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。
+  登録日時が取れない・猶予の終わりちょうど以降も0件なら成功なし
+- E・I・Lの「🔴 読み込みエラー」は終了コード2（ラベルに合わせる。2026-10-11にKoichi承認で据え置き、`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
 
 ---
 
