@@ -11,6 +11,20 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-11（夜、セッション終了時のまとめ）**: 午後の作業: System Healthの[J]の初回待ちと12時間の猶予（`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`、`e946cf100b`）と
+  重大度の一本化（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）、daily/の暫定の行の対応a・b・c・e＋先物の平らな足（`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`、
+  `981e0f0129`・`4dcbfd09da`、既存の行への適用`e20017b555`）、EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・
+  `[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、登録`36f7e4298b`・コード`ea5a58608b`・AMDttm.jsonの削除`646a4c20fa`・記録`74fee4f090`。
+  summary.jsonのrun_status・generated_at、System Health [I]で作り直されていない行を⚠️、一覧の古い期末日の印、FIG・ZSの行の削除。前提に無かった
+  `[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈低〉を登録）。手元の全銘柄の実行のsummary.jsonは、冪等性ガードでその夜の連鎖と月曜の安全網が止まるためcommitしていない（CHAT_RULES.md事例37）。
+  **今夜の実行は未確認**: SEC_Data_Update（12:00 UTC予定）が22:18 JST（13:18 UTC）の時点で未起動（先週は16:00 UTCに起動）のため、SEC_Data_Update・Adjusted_EPS_Data_Update・
+  Stonks_Silo_Update・TANUKI VALUATION・本番のEPS ANALYZERの画面はいずれも確かめていない。**移設は0件**（`[[SEC-COMPANYFACTS-API-LAG-1]]`・EPSの4件・TANUKIの3件
+  〈MAXEPS・PER-FORWARD・LAYER2〉は確認待ち、SYSHEALTHの3件は10-12のSystem Health、MARKETDATAの2件は10-12 20:25 UTCのCIの確認待ちで残す）。新規登録はEPSの5件（上記）。
+  整合性確認: 移設漏れ（`^### ✅ [`）0件、優先度の区分と「**優先度:**」の行の食い違い0件（低の区分の`[[MACRO-PULSE-THRESHOLD-PERCENTILE-1]]`は「保留」、10-04の登録時から）、
+  この日に増えた参照切れ0件。CHAT_RULES.mdに事例37（確認用の再生成をcommitすると冪等性ガードで定時実行が止まる）と、指示書を書く側の確認1行。
+  アクティブBACKLOG 29件（朝のブラッシュアップ）→36件（SYSHEALTH-NEVER-RUN・SEVERITY-MISMATCHとEPSの5件の登録、移設0件）。
+  `python common/sec_data/report_consistency_check.py --fail-on-ng` NG=0・`audit.py` exit 0（文書だけの変更のためpytestは実行していない。EPSのコードのcommitの時点で2287件通過）。
+  **次回確認**: CLAUDE_CODE_START.mdの「次回の確認手順」1〜11（時刻の順。1〜5が今夜の実行の確認、6〜9が10-12、10・11が10月中旬〜下旬）
 - **2026-10-11（ブラッシュアップ）**: 未明に`[[ROTCE-QUARTERLY-ANNUALIZED-1]]`の追加対応（チャット側の決定1〜3: 自社比の目安を比較用ROTCE〈TTM、5つの四半期末のTCEの平均〉で比べる、
   GOOGL・LITEのLayer3の値を原本と照合〈どちらも正しい〉、推移チャートの縦軸を5〜95パーセンタイルに。`dbcb26f19d`・`7d8b4af63a`、記録`876e0ef108`）を行い、本番のURLで
   SOFI・GOOGL・LYFTの個別ページとTANUKI SCOREの散布図を確認した。照合で見つかったGOOGLの強制転換優先株は`[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]`（低）に登録。
