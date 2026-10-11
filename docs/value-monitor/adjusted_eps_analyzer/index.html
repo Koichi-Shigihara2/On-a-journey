@@ -99,6 +99,7 @@
     .ticker-cell a { color: var(--acc); font-family: var(--mono); font-size: 14px; text-decoration: none; font-weight: 700; }
     .ticker-cell a:hover { text-decoration: underline; }
     .number { font-family: var(--mono); text-align: right; }
+    .stale-period { color: var(--amb); cursor: help; }
     .pos { color: var(--grn); }
     .neg { color: var(--red); }
 
@@ -185,6 +186,26 @@ function healthStyle(h) {
   if (h === '調整小（マイナス）') return 'background:rgba(100,116,139,.15);color:var(--mut)';
   return 'background:rgba(100,116,139,.15);color:var(--mut)';
 }
+// ── 古い期末日の印（[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]、2026-10-11） ──
+// 次の提出の期限を過ぎても新しい四半期が入っていない銘柄に印を付ける。日数＝四半期の長さの上限（14週＝98日）＋提出期限＋数日の余裕:
+//   次が10-Q（直近がQ1・Q2・Q4）: 98＋45（非早期提出会社の10-Qの期限。大規模早期提出会社は40日）＝143 → 145日
+//   次が10-K（直近がQ3）: 98＋90（非早期提出会社の10-Kの期限。大規模早期提出会社は60日）＝188 → 190日
+//   （PEPのQ4は16週＝112日だが10-Kの期限60日で172日 < 190）。直近の四半期が分からない行（latest_fiscal_quarterの無い古いsummary.json）は190日
+// 1本の日数にしないのは、10-Kの時期（2〜3月）に、Q3の期末から135〜150日を過ぎた正常な銘柄まで印が付くため
+const STALE_PERIOD_DAYS_10Q = 145;
+const STALE_PERIOD_DAYS_10K = 190;
+function stalePeriod(t) {
+  const d = t.latest_filing_date;
+  if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return null;
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const [y, m, dd] = d.split('-').map(Number);
+  const days = Math.round((todayUtc - Date.UTC(y, m - 1, dd)) / 86400000);
+  const q = t.latest_fiscal_quarter;
+  const limit = (q === 1 || q === 2 || q === 4) ? STALE_PERIOD_DAYS_10Q : STALE_PERIOD_DAYS_10K;
+  return days > limit ? { days, limit } : null;
+}
+
 function fmt4(v)    { return v != null ? '$' + v.toFixed(4) : '—'; }
 function fmtDiff(v) { return v == null ? '—' : (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(4); }
 function fmtRatio(v)  { return v != null ? (v >= 0 ? '+' : '') + v.toFixed(1) + '%' : '—'; }
@@ -227,8 +248,10 @@ function toggleTranFilter() {
     let tickers = data.tickers || [];
     document.getElementById('last-updated').textContent = toJST(data.last_updated);
 
-    // 2. TANUKI 乖離率を並行取得
+    // 2. TANUKI 乖離率を並行取得（tanuki=falseの銘柄はTANUKI VALUATIONの対象外でlatest.jsonが無いため読みに行かない。
+    //    [[EPS-INDEX-MINOR-1]]。tanukiの無い古いsummary.jsonでは従来どおり読みに行く）
     await Promise.allSettled(tickers.map(async t => {
+      if (t.tanuki === false) return;
       try {
         const r = await fetch(`../tanuki_valuation/data/${t.ticker}/latest.json`);
         if (r.ok) {
@@ -335,9 +358,9 @@ function toggleTranFilter() {
     html += '<div class="table-wrap"><table id="main-table"><thead><tr>';
     html += '<th data-tip="銘柄コード。クリックで詳細画面へ">ティッカー</th>';
     html += '<th data-tip="企業の正式名称">会社名</th>';
-    html += '<th data-tip="最新の決算申告日（SEC EDGAR基準）">決算日</th>';
+    html += `<th data-tip="直近四半期の期末日（SECに提出されたXBRLの四半期データの期間の末日。提出日ではない）。⚠と黄色は、次の提出（10-Q・10-K）の期限を過ぎても新しい四半期が入っていない銘柄（期末から${STALE_PERIOD_DAYS_10Q}日超、直近がQ3で次が10-Kなら${STALE_PERIOD_DAYS_10K}日超）＝直近の決算が未反映の可能性">決算日</th>`;
     html += '<th data-tip="一般会計原則に基づく1株利益。SBC・のれん償却等のコストを全て含む">GAAP EPS</th>';
-    html += '<th data-tip="企業が公表するNon-GAAP調整後EPS。一過性・非現金コストを除外した実力値">Adj EPS</th>';
+    html += '<th data-tip="SECの開示（XBRL）から自前で算出した調整後EPS（会社が公表するNon-GAAP EPSではない）。GAAP純利益に、株式報酬（SBC）・無形資産償却・M&A統合費用・のれん減損・リストラ費用・訴訟和解金・公正価値や為替の評価損益などの非現金・一過性の費用を足し戻し、税前の項目はその四半期の実効税率（税金費用÷税前利益。0〜50%の外なら21%）の税効果を差し引いて、希薄化後株式数で割った値">Adj EPS</th>';
     html += '<th data-tip="Adj EPS − GAAP EPS。プラス＝GAAPで実力が過小評価されている可能性">差分額</th>';
     html += '<th data-tip="差分額 ÷ |GAAP EPS| × 100。高いほどGAAPと実力の乖離が大きい">差分比率</th>';
     html += '<th data-tip="調整後EPSの前年同期比成長率。企業の実力ベースの成長を測る">YoY成長</th>';
@@ -360,6 +383,11 @@ function toggleTranFilter() {
       const devTxt     = t.deviation_rate != null ? fmtPct(t.deviation_rate) : '—';
       const devStyle   = (t.deviation_rate || 0) >= 0 ? 'color:var(--grn)' : 'color:var(--red)';
 
+      const stale      = stalePeriod(t);
+      const periodCell = stale
+        ? `<td class="stale-period" data-sort="${t.latest_filing_date}" title="直近の決算が未反映の可能性（期末から${stale.days}日。目安${stale.limit}日を超過）">⚠ ${t.latest_filing_date}</td>`
+        : `<td>${t.latest_filing_date || ''}</td>`;
+
       const ratioSort = t.eps_ratio      != null ? t.eps_ratio              : -9999;
       const growSort  = t.yoy_growth     != null ? t.yoy_growth  * 100      : -9999;
       const devSort   = t.deviation_rate != null ? t.deviation_rate * 100   : -9999;
@@ -367,7 +395,7 @@ function toggleTranFilter() {
       html += `<tr data-tran="${isTran ? '1' : '0'}">
         <td class="ticker-cell"><a href="stock.html?ticker=${t.ticker}">${t.ticker}</a></td>
         <td>${t.company_name || ''}</td>
-        <td>${t.latest_filing_date || ''}</td>
+        ${periodCell}
         <td class="number">${fmt4(t.gaap_eps)}</td>
         <td class="number">${fmt4(t.adjusted_eps)}</td>
         <td class="number" data-sort="${(t.eps_diff||0).toFixed(4)}" style="${diffStyle}">${fmtDiff(t.eps_diff)}</td>

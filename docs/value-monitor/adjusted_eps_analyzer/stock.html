@@ -591,6 +591,18 @@
       document.getElementById('ticker-search').value = currentTicker;
     }
 
+    // summary.jsonの行（ticker→行）。銘柄を切り替えても1回だけ読む。読めなければ空
+    let summaryRowsPromise = null;
+    function loadSummaryRows() {
+      if (!summaryRowsPromise) {
+        summaryRowsPromise = fetch('data/summary.json', { cache: 'no-store' })
+          .then(r => r.ok ? r.json() : { tickers: [] })
+          .then(d => Object.fromEntries((d.tickers || []).map(t => [t.ticker, t])))
+          .catch(() => ({}));
+      }
+      return summaryRowsPromise;
+    }
+
     function showLoading(show) {
       document.getElementById('loading').style.display = show ? 'block' : 'none';
     }
@@ -625,11 +637,16 @@
           if (tResp.ok) ttmData = await tResp.json();
         } catch (e) {}
 
+        // tanuki=falseの銘柄はTANUKI VALUATIONの対象外でlatest.jsonが無いため読みに行かない（[[EPS-INDEX-MINOR-1]]）。
+        // summary.jsonに行が無い・tanukiの無い古いsummary.jsonでは従来どおり読みに行く
         tanukiData = null;
-        try {
-          const tkResp = await fetch(`../tanuki_valuation/data/${currentTicker}/latest.json`, { cache: 'no-store' });
-          if (tkResp.ok) tanukiData = await tkResp.json();
-        } catch (e) {}
+        const summaryRow = (await loadSummaryRows())[currentTicker];
+        if (!(summaryRow && summaryRow.tanuki === false)) {
+          try {
+            const tkResp = await fetch(`../tanuki_valuation/data/${currentTicker}/latest.json`, { cache: 'no-store' });
+            if (tkResp.ok) tanukiData = await tkResp.json();
+          } catch (e) {}
+        }
 
         const companyName = companyNames[currentTicker];
         document.getElementById('ticker-title').innerText = companyName

@@ -9,7 +9,7 @@ import csv
 import threading
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 
 from .extract_key_facts import extract_quarterly_facts, normalize_value, get_cik as get_cik_func
@@ -483,21 +483,36 @@ def aggregate_annual(quarterly_results: List[Dict]) -> List[Dict]:
     annual_results.sort(key=lambda x: x["year"], reverse=True)
     return annual_results
 
-def generate_summary(tickers_data: Dict[str, Dict], existing_summary_path: str = None) -> Dict:
+def generate_summary(tickers_data: Dict[str, Dict], existing_summary_path: str = None,
+                     allowed_tickers: Optional[List[str]] = None,
+                     tanuki_tickers: Optional[List[str]] = None,
+                     generated_at: Optional[str] = None) -> Dict:
     """
     サマリーを生成。既存のsummary.jsonがあればマージする。
+
+    [[EPS-SUMMARY-GHOST-ROWS-1]]: allowed_tickers（run()はeps=trueの銘柄〈登録処理中を含む〉）を
+    渡すと、それ以外の銘柄の行を消す（cik_lookup.csvから外れた・eps=falseになった銘柄の行が
+    残り、詳細画面が404になっていた）。Noneなら従来どおり行を消さない。
+    [[EPS-SILENT-TICKER-FAILURE-1]]: 今回作り直した行にだけgenerated_at（tickers_dataの
+    "generated_at"、無ければ引数generated_at、それも無ければ現在時刻）を付ける。失敗した銘柄の
+    行は前回のまま（generated_atも前回の値）。既存のrun_status・partial_run_statusは引き継ぐ
+    （書き換えはrun()が行う）。
+    [[EPS-INDEX-MINOR-1]]: tanuki_tickersを渡すと、残す全行にtanuki（真偽値）を付ける。
     """
     # 既存のサマリーを読み込み
     existing_tickers = {}
+    existing_top = {}
     if existing_summary_path and os.path.exists(existing_summary_path):
         try:
             with open(existing_summary_path, 'r', encoding='utf-8') as f:
                 existing = json.load(f)
                 for t in existing.get("tickers", []):
                     existing_tickers[t["ticker"]] = t
+                existing_top = {k: existing[k] for k in ("run_status", "partial_run_status") if k in existing}
             print(f"  [Summary] Loaded {len(existing_tickers)} existing tickers from summary.json")
         except Exception as e:
             print(f"  [Summary] Warning: Could not load existing summary.json: {e}")
+    default_generated_at = generated_at or _utc_now_iso()
 
     # 新しいデータで更新
     for ticker, data in tickers_data.items():
@@ -544,21 +559,45 @@ def generate_summary(tickers_data: Dict[str, Dict], existing_summary_path: str =
             existing_tickers[ticker] = {
                 "ticker": ticker,
                 "company_name": data.get("company_name", ""),
+                # 値は直近四半期の期末日（quarters[].filing_dateの中身は期末日。名前とのずれは
+                # [[EPS-INDEX-MINOR-1]]に記録、消費者が多いため改名しない）
                 "latest_filing_date": latest["filing_date"],
+                # 一覧の古い期末日の印（[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]）が、次の提出が
+                # 10-Q（Q1・Q2・Q4の後）か10-K（Q3の後）かで日数を変えるために使う
+                "latest_fiscal_quarter": latest.get("quarter"),
                 "gaap_eps": gaap_eps,
                 "adjusted_eps": adj_eps,
                 "eps_diff": round(adj_eps - gaap_eps, 4),
                 "eps_ratio": round(ratio, 1),
                 "gaap_to_adj_positive": gaap_eps < 0 and adj_eps > 0,
                 "yoy_growth": yoy_growth,
-                "health": health
+                "health": health,
+                "generated_at": data.get("generated_at") or default_generated_at,
             }
+
+    if allowed_tickers is not None:
+        allowed = set(allowed_tickers)
+        removed = sorted(t for t in existing_tickers if t not in allowed)
+        if removed:
+            print(f"  [Summary] eps=trueでない銘柄の行を削除: {', '.join(removed)}"
+                  f"（{len(removed)}件、[[EPS-SUMMARY-GHOST-ROWS-1]]）")
+        existing_tickers = {t: r for t, r in existing_tickers.items() if t in allowed}
+
+    if tanuki_tickers is not None:
+        tanuki = set(tanuki_tickers)
+        for t, r in existing_tickers.items():
+            r["tanuki"] = t in tanuki
 
     summary = {
         "last_updated": datetime.now().isoformat(),
+        **existing_top,
         "tickers": list(existing_tickers.values())
     }
     return summary
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 def get_revenue(period_data: Dict) -> float:
     """売上高を取得（一般企業：Revenues、銀行：RevenuesNetOfInterestExpense優先）"""
@@ -593,14 +632,18 @@ def get_revenue(period_data: Dict) -> float:
 
 def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
                        DATA_ROOT, SBC_YTD_TAGS, maturity_config, split_history=None):
-    """1銘柄を処理して (ticker, data_dict) を返す。エラー時は (ticker, None)。"""
+    """1銘柄を処理して (ticker, data_dict, None) を返す。失敗時は (ticker, None, 理由)。
+
+    理由は「データなし」（SECから四半期データが取れない）か「例外: 型: メッセージ」。
+    run()が数えてsummary.jsonのrun_statusとStep Summaryに出す（[[EPS-SILENT-TICKER-FAILURE-1]]）。
+    """
     try:
         print(f"\n=== Processing {ticker} ===")
 
         quarterly_raw = extract_quarterly_facts(ticker, years=10)
         if not quarterly_raw:
             print(f"{ticker}: データなし")
-            return (ticker, None)
+            return (ticker, None, "データなし")
 
         try:
             cik = get_cik_func(ticker)
@@ -810,13 +853,17 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
         return (ticker, {
             "quarters": quarterly_results,
             "company_name": ticker_to_name.get(ticker, metadata.get('name', ''))
-        })
+        }, None)
 
     except Exception as e:
         import traceback
         print(f"✗ {ticker} 処理エラー: {e}")
         traceback.print_exc()
-        return (ticker, None)
+        return (ticker, None, _exception_reason(e))
+
+
+def _exception_reason(e: BaseException) -> str:
+    return f"例外: {type(e).__name__}: {e}"[:300]
 
 
 def _filter_eps_tickers(target, eps_tickers):
@@ -867,9 +914,43 @@ def _recently_completed_at(data_root: str, threshold_hours: float = _RECENT_UPDA
     return None
 
 
-def run(ticker_filter: str = None, force: bool = False):
+_DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
+
+
+def _write_step_summary(status: Dict) -> None:
+    """GITHUB_STEP_SUMMARYに成功・失敗の件数と失敗した銘柄・理由を書く（[[EPS-SILENT-TICKER-FAILURE-1]]）。
+    環境変数が無い（手元の実行）ときは何もしない。"""
+    path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not path:
+        return
+    scope = "全銘柄" if status["scope"] == "all" else f"部分実行（{', '.join(status.get('tickers', []))}）"
+    n_failed = len(status["failed"])
+    lines = [
+        f"### Adjusted EPS: {scope} 対象 {status['requested']} / 成功 {status['succeeded']} / 失敗 {n_failed}",
+        "",
+    ]
+    if status["succeeded"] == 0:
+        lines += ["成功が0件のため summary.json を書いていない（終了コード1）。", ""]
+    if n_failed:
+        lines += ["| 銘柄 | 理由 |", "|---|---|"]
+        lines += [f"| {f['ticker']} | {f['reason'].replace('|', '/')} |" for f in status["failed"]]
+        lines += ["", "失敗した銘柄の行は前回の値のまま（generated_atは更新しない）。", ""]
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+    except OSError as e:
+        print(f"  [StepSummary] 書き込めない: {e}")
+
+
+def run(ticker_filter: str = None, force: bool = False, data_root: Optional[str] = None) -> int:
+    """終了コードを返す: 成功が1件以上なら0（一部の失敗を含む）、成功0件（対象0件を含む）なら1。
+
+    [[EPS-SILENT-TICKER-FAILURE-1]]: 一部の失敗で1にしないのは、TANUKI VALUATIONの連鎖
+    （Adjusted_EPS_Data_Updateのsuccessで起動）を止めないため（[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]と
+    同じ形の止まり方を作らない）。失敗はsummary.jsonのrun_status・Step Summary・System Health [I]で見る。
+    """
     config_base = os.path.join(PROJECT_ROOT, "config")
-    DATA_ROOT = os.path.join(PROJECT_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
+    DATA_ROOT = data_root or _DATA_ROOT
 
     # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応（案2: 冪等性ガード）。
     # 全銘柄バッチ経路（ticker_filter未指定）のみ対象とする。--ticker
@@ -884,8 +965,9 @@ def run(ticker_filter: str = None, force: bool = False):
                 f"DUPLICATE-1]]対応: 週次フォールバックcronによる無条件"
                 f"重複実行の防止。強制実行するには --force を指定）"
             )
-            return
+            return 0
 
+    started_at = _utc_now_iso()
     tickers = get_eps_tickers()
 
     if ticker_filter:
@@ -921,6 +1003,7 @@ def run(ticker_filter: str = None, force: bool = False):
     split_history = load_split_history()
 
     all_tickers_data = {}
+    failed: List[Dict[str, str]] = []
     lock = threading.Lock()
 
     # ★ YTD 変換用の基本タグ（固定）
@@ -948,19 +1031,52 @@ def run(ticker_filter: str = None, force: bool = False):
         for future in as_completed(futures):
             _ticker = futures[future]
             try:
-                result_ticker, result_data = future.result()
-                if result_data is not None:
-                    with lock:
-                        all_tickers_data[result_ticker] = result_data
+                result_ticker, result_data, reason = future.result()
             except Exception as e:
                 print(f"✗ {_ticker} 未捕捉エラー: {e}")
+                result_ticker, result_data, reason = _ticker, None, _exception_reason(e)
+            with lock:
+                if result_data is not None:
+                    result_data["generated_at"] = _utc_now_iso()
+                    all_tickers_data[result_ticker] = result_data
+                else:
+                    failed.append({"ticker": result_ticker, "reason": reason or "不明"})
 
-    if all_tickers_data:
-        summary_path = os.path.join(DATA_ROOT, "summary.json")
-        summary = generate_summary(all_tickers_data, existing_summary_path=summary_path)
-        with open(summary_path, "w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-        print(f"✓ summary.json 生成完了 (全{len(summary['tickers'])}銘柄)")
+    failed.sort(key=lambda f: f["ticker"])
+    status = {
+        "scope": "partial" if ticker_filter else "all",
+        "started_at": started_at,
+        "finished_at": _utc_now_iso(),
+        "requested": len(tickers),
+        "succeeded": len(all_tickers_data),
+        "failed": failed,
+    }
+    if ticker_filter:
+        status["tickers"] = list(tickers)
+    failed_text = ", ".join(f"{f['ticker']}（{f['reason']}）" for f in failed)
+    print(f"[RunStatus] 対象 {status['requested']} / 成功 {status['succeeded']} / 失敗 {len(failed)}"
+          + (f": {failed_text}" if failed else ""))
+    _write_step_summary(status)
+
+    if not all_tickers_data:
+        print("✗ 成功した銘柄が0件のため summary.json を書かずに終了します（終了コード1）")
+        return 1
+
+    summary_path = os.path.join(DATA_ROOT, "summary.json")
+    summary = generate_summary(
+        all_tickers_data, existing_summary_path=summary_path,
+        allowed_tickers=get_registrable_tickers("eps"),
+        tanuki_tickers=get_registrable_tickers("tanuki"),
+    )
+    # 全銘柄の実行の記録（run_status）は部分実行で上書きしない。System Health [I]は
+    # run_status.started_atより前のgenerated_atの行を「今回作り直されていない」と数えるため、
+    # 1銘柄の部分実行（新規登録のStep 5b等）で上書きすると他の全銘柄が誤って⚠️になる
+    summary["partial_run_status" if ticker_filter else "run_status"] = status
+    os.makedirs(DATA_ROOT, exist_ok=True)
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2, ensure_ascii=False)
+    print(f"✓ summary.json 生成完了 (全{len(summary['tickers'])}銘柄)")
+    return 0
 
 if __name__ == "__main__":
     import argparse
@@ -970,4 +1086,4 @@ if __name__ == "__main__":
                          help="[[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]対応の冪等性ガードを"
                               "無視して強制実行する（手動re-run等の正当な再実行用）")
     args = parser.parse_args()
-    run(ticker_filter=args.ticker, force=args.force)
+    sys.exit(run(ticker_filter=args.ticker, force=args.force))

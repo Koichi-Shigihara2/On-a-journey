@@ -319,19 +319,41 @@ def check_h_config() -> tuple[str, bool, str]:
     return f"{icon} {detail}", ok, detail
 
 
-# ── I. EPS ANALYZER summary.json 鮮度・カバレッジ ────────────────────
-def check_i_eps() -> tuple[str, bool, str]:
-    if not os.path.exists(_EPS_SUMMARY):
-        return "⚠️  summary.json未作成", False, "summary.json not found"
+# ── I. EPS ANALYZER summary.json 鮮度・カバレッジ・今回作り直されていない行 ────────────────────
+# [[EPS-SILENT-TICKER-FAILURE-1]]（2026-10-11）: summary.jsonは前回の行にマージするため、失敗した銘柄の
+# 古い行が残り、鮮度とカバレッジだけでは銘柄ごとの失敗が見えなかった。run_status（全銘柄の実行の記録、
+# pipeline.pyのrun()が書く）があれば、eps=trueの銘柄のうちgenerated_atがrun_status.started_atより前の行
+# （generated_atの無い行を含む）を「未更新」として⚠️にする。run_statusが無いsummary.json（実装前の形、
+# 次の全銘柄の実行で付く）では、この判定をせず✅のまま詳細に「run_status無し」と出す（誤検知しない）。
+# 重大度は他の項目と同じく`_item_severity()`（ラベルの⚠️→1）で決まる（[[SYSHEALTH-SEVERITY-MISMATCH-1]]）
+def _parse_iso_utc(s: Optional[str]) -> Optional[datetime]:
+    if not s:
+        return None
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def _check_i(path: Optional[str] = None, eps_tickers: Optional[list] = None,
+             today: Optional[date] = None) -> dict:
+    path = path or _EPS_SUMMARY
+
+    def result(label, ok, detail):
+        return {"label": label, "ok": ok, "detail": detail}
+
+    if not os.path.exists(path):
+        return result("⚠️  summary.json未作成", False, "summary.json not found")
 
     try:
-        data = json.load(open(_EPS_SUMMARY, encoding="utf-8"))
+        data = json.load(open(path, encoding="utf-8"))
     except Exception as e:
-        return f"🔴 読み込みエラー: {e}", False, str(e)
+        return result(f"🔴 読み込みエラー: {e}", False, str(e))
 
     last_updated = (data.get("last_updated") or "")[:10]
     tickers_list = data.get("tickers", [])
-    today = date.today()
+    today = today or date.today()
 
     stale_days: int | None = None
     stale = False
@@ -345,19 +367,42 @@ def check_i_eps() -> tuple[str, bool, str]:
 
     # eps=true のティッカーが summary.json に含まれているかカバレッジ確認
     # （ZS-TICKERS-LEAK-1: tickers.py経由に統一）
-    eps_tickers    = set(_tickers_mod.get_eps_tickers())
-    summary_tickers= {e["ticker"] for e in tickers_list if isinstance(e, dict)}
-    missing_eps    = sorted(eps_tickers - summary_tickers)
+    eps_tickers    = set(eps_tickers if eps_tickers is not None else _tickers_mod.get_eps_tickers())
+    rows           = {e["ticker"]: e for e in tickers_list if isinstance(e, dict) and "ticker" in e}
+    missing_eps    = sorted(eps_tickers - set(rows))
 
-    ok   = not stale and not missing_eps
+    # 今回の全銘柄の実行で作り直されていない行（失敗した銘柄の前回の行）
+    run_status = data.get("run_status") if isinstance(data.get("run_status"), dict) else None
+    started = _parse_iso_utc(run_status.get("started_at")) if run_status else None
+    not_regenerated: list[str] = []
+    if started is not None:
+        for t in sorted(eps_tickers & set(rows)):
+            gen = _parse_iso_utc(rows[t].get("generated_at"))
+            if gen is None or gen < started:
+                not_regenerated.append(t)
+
+    ok   = not stale and not missing_eps and not not_regenerated
     icon = "✅" if ok else "⚠️ "
     parts = [f"更新{last_updated or '不明'}({stale_days if stale_days is not None else '?'}日経過)"]
     if stale:
         parts.append(f"{stale_days}日更新なし(閾値{_EPS_STALE_DAYS}日)")
     if missing_eps:
         parts.append(f"未収録({len(missing_eps)}件): {', '.join(missing_eps[:3])}{'…' if len(missing_eps) > 3 else ''}")
+    if run_status is None or started is None:
+        parts.append("run_status無し（作り直されていない行の判定は次の全銘柄の実行から）")
+    elif not_regenerated:
+        reasons = {f.get("ticker"): f.get("reason") for f in run_status.get("failed") or [] if isinstance(f, dict)}
+        listed = [f"{t}({reasons[t]})" if reasons.get(t) else t for t in not_regenerated]
+        parts.append(f"{run_status['started_at'][:10]}の実行で未更新{len(not_regenerated)}件: {', '.join(listed)}")
+    else:
+        parts.append(f"{run_status['started_at'][:10]}の実行で全{len(eps_tickers & set(rows))}銘柄を更新")
     detail = " / ".join(parts)
-    return f"{icon} {detail}", ok, detail
+    return result(f"{icon} {detail}", ok, detail)
+
+
+def check_i_eps() -> tuple[str, bool, str]:
+    r = _check_i()
+    return r["label"], r["ok"], r["detail"]
 
 
 # ── J. ワークフローの実行状況チェック ────────────────────────────────
