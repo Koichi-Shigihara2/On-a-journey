@@ -46,7 +46,9 @@ BACKLOG.mdのアクティブは**29件**（`^### [`の機械カウント）。Gi
 5. **10-12（月）13:00 JSTごろのTANUKI VALUATIONの再生成**（latest.jsonの`calculation_date`が10/11以降であることを先に確かめる）: 最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTSはNone、
    `[[TANUKI-MAXEPS-NI-SOURCE-1]]`）、QBTS・ONDSの「Fwd」注記と乖離「—」（`[[TANUKISCORE-PER-FORWARD-MIX-1]]`）、ONDSの希薄化率73.8%/年・`dilution_severity` critical・funda_score 50・
    グローストラップhigh（`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`、確認後に「未補正」の各件を回収不可能と検証済みとしてクローズ）、ONDS以外の判定値が不変（株価・財務の更新による分は分けて読む）
-- ほかに: 次の平日のMarket Data Dailyの後、CL=F・GC=Fの10-08・10-09とJPY=Xの10-09の`_provisional`が外れていること（`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`）。
+- ほかに: 次の平日のMarket Data Daily（10-12 20:25 UTC起動）の後、CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09の`_provisional`が外れ、
+  report_consistency_checkのCHECK-62（確定時刻から4日を過ぎた暫定の行）が0件であること（2026-10-11の対応a・b・c・e、`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`）。
+  既存の10行（09-07の先物2・土曜のJPY=X 2・ES/NQ/NIYの09-29・09-30の6）へのデータの適用は、チャット側の承認待ち（承認前にCIの夜間の取得が動けば同じ変更が入る）。
   次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行で、月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）。
   次のFOMC（10月下旬）までに`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
 

@@ -46,7 +46,7 @@ def completeness(day: str, base: str = BASE) -> tuple:
         if not recent:
             continue
         active += 1
-        if any(r.get("date") == day and _valid_close(r) for r in recent):
+        if any(r.get("date") == day and _valid_close(r) and not r.get("_no_yahoo_bar") for r in recent):
             have += 1
     return have, active
 

@@ -710,7 +710,97 @@ def _retry_missing_closes(history: Dict[str, List[Dict[str, Any]]], attempts: Op
     return out
 
 
-def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Any]:
+# [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]・[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]（2026-10-11）: 確定時刻を過ぎても`_provisional`が
+# 残る行があった（CL=F・GC=Fの09-07、JPY=Xの08-15・10-03、ES=F・NQ=F・NIY=Fの09-29・09-30）。置き換えが「その実行の5日窓に入った日付」
+# だけで、窓から外れた行・Yahooが足を返さない日付の行を見直す処理が無く、休場日・週末の足を取引日かどうかを見ずに保存していた。
+#   a: 確定時刻を過ぎた暫定の行の最古日から取り直す（窓の外も対象、最大PROVISIONAL_REFETCH_MAX_DAYS日）。確定済みの行は上書きしない
+#   b: Yahooに足が無いまま確定時刻からNO_BAR_MARK_DAYS日を過ぎた暫定の行は、消さずに`_no_yahoo_bar`の印に変える（読む側は除外する）
+#   c: 保存の前に、その銘柄の取引日かを確かめる（is_symbol_trading_day）
+PROVISIONAL_REFETCH_MAX_DAYS = 90   # 10-11時点の最古の暫定の行（JPY=Xの08-15、57日前）を含み、bで7日後には印が変わるため通常は数日で足りる
+NO_BAR_MARK_DAYS = 7
+NO_BAR_MARK = "_no_yahoo_bar"
+# 取引日の情報源（推測で作らない）: 先物はpandas_market_calendarsのCME_TradeDate（清算のある取引日。CMEGlobex_*はLabor Dayの短縮取引を
+# 取引日に含むが、清算は無くYahooの日足も無い）、^N225はJPX（find_missing_trading_daysと同じ）。JPY=Xは土日を除く
+_TRADING_DAY_CALENDARS = {"^N225": "JPX", **{s: "CME_TradeDate" for s in FUTURES_SYMBOLS}}
+_WEEKDAY_ONLY_SYMBOLS = {"JPY=X"}
+_TRADING_DAY_SETS: Dict[str, set] = {}
+
+
+def is_symbol_trading_day(symbol: str, day: str) -> bool:
+    """その日がその銘柄の取引日か（c）。対象はJPY=X・先物・^N225で、それ以外の銘柄は判定しない（True）。"""
+    if symbol in _WEEKDAY_ONLY_SYMBOLS:
+        return datetime.strptime(day, "%Y-%m-%d").weekday() < 5
+    name = _TRADING_DAY_CALENDARS.get(symbol)
+    if name is None:
+        return True
+    if name not in _TRADING_DAY_SETS:
+        _TRADING_DAY_SETS[name] = set(_calendar_trading_days(name))
+    return day in _TRADING_DAY_SETS[name]
+
+
+def _stale_provisional_dates(symbol: str, base_dir: str, now: datetime) -> List[str]:
+    """確定時刻を過ぎても`_provisional`が残る行の日付（足なしの印の行は除く）。"""
+    payload = _load_json(os.path.join(base_dir, "daily", f"{symbol}.json"), default={})
+    out = []
+    for r in payload.get("records", []):
+        if r.get("_provisional") and not r.get(NO_BAR_MARK) and r.get("date"):
+            final = bar_final_at(symbol, r["date"])
+            if final is None or final <= now:
+                out.append(r["date"])
+    return out
+
+
+def _refetch_stale_provisional(symbols: List[str], history: Dict[str, List[Dict[str, Any]]], base_dir: str,
+                               now: datetime) -> Dict[str, Dict[str, Any]]:
+    """a: 確定時刻を過ぎた暫定の行が5日窓より古い銘柄だけ、その最古日（最大PROVISIONAL_REFETCH_MAX_DAYS日前）から取り直す。
+    Returns: {symbol: {"start": 取り直しの開始日, "bars": [...]}}（取得できた銘柄だけ）"""
+    floor = (now.date() - timedelta(days=PROVISIONAL_REFETCH_MAX_DAYS)).isoformat()
+    by_start: Dict[str, List[str]] = {}
+    for s in symbols:
+        stale = _stale_provisional_dates(s, base_dir, now)
+        if not stale:
+            continue
+        window_from = (history.get(s) or [{}])[0].get("date")
+        oldest = max(min(stale), floor)
+        if window_from is None or oldest < window_from:
+            by_start.setdefault(oldest, []).append(s)
+    out: Dict[str, Dict[str, Any]] = {}
+    for start, group in sorted(by_start.items()):
+        got = _download_historical_bars(group, start=start)
+        for s in group:
+            if got.get(s):
+                out[s] = {"start": start, "bars": got[s]}
+        print(f"   暫定の行の取り直し: {start}から{len(group)}銘柄（取得{sum(1 for s in group if got.get(s))}）")
+    return out
+
+
+def _mark_no_bar_rows(symbol: str, bar_dates: set, covered_from: Optional[str], base_dir: str, now: datetime) -> List[str]:
+    """b: 取得した範囲（covered_from以降）にYahooの足が無いまま、確定時刻からNO_BAR_MARK_DAYS日を過ぎた暫定の行は、
+    行を消さずに`_provisional`を外して`_no_yahoo_bar`の印を付ける。印を付けた日付を返す。"""
+    if covered_from is None:
+        return []
+    path = os.path.join(base_dir, "daily", f"{symbol}.json")
+    payload = _load_json(path, default=None)
+    if not payload:
+        return []
+    marked = []
+    for r in payload.get("records", []):
+        d = r.get("date")
+        if not r.get("_provisional") or r.get(NO_BAR_MARK) or not d or d < covered_from or d in bar_dates:
+            continue
+        final = bar_final_at(symbol, d)
+        if final is not None and now >= final + timedelta(days=NO_BAR_MARK_DAYS):
+            r.pop("_provisional", None)
+            r[NO_BAR_MARK] = True
+            marked.append(d)
+    if marked:
+        _atomic_write_json(path, payload)
+        print(f"   [{symbol}] Yahooに足が無い暫定の行{len(marked)}件に足なしの印: {', '.join(marked)}")
+    return marked
+
+
+def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
+                       now: Optional[datetime] = None) -> Dict[str, Any]:
     """日次価格層を取得・保存する。
 
     yf.download()で対象銘柄を一括取得し、銘柄ごとに直近1営業日分のOHLCVを
@@ -724,6 +814,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Di
     戻り値: {"status": "fetched" | "reset_window" | "no_symbols", ...}（指示書㉕、ワークフローの判定用）
     """
     base = _resolve_base_dir(base_dir)
+    now = now or datetime.now(timezone.utc)
     target_symbols = _dedupe_symbols(symbols)
     if not target_symbols:
         return {"status": "no_symbols"}
@@ -765,12 +856,34 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Di
         log.append({"checked_at": _now_iso(), **{k: (len(v) if k != "still_missing" else v) for k, v in retry.items()},
                     "initial_symbols": retry["initial"][:50]})
         _atomic_write_json(summary_path, log[-60:])
+    refetched = _refetch_stale_provisional(target_symbols, history, base, now)
     for symbol in target_symbols:
-        symbol_bars = history.get(symbol) or []
-        if not symbol_bars:
-            print(f"   [{symbol}] 日次データ取得失敗（スキップ）")
+        # c: その銘柄の取引日でない足（土曜のJPY=X・Labor Dayの先物・日本の祝日の^N225）は保存にも置き換えにも使わない
+        raw_bars = history.get(symbol) or []
+        symbol_bars = [b for b in raw_bars if is_symbol_trading_day(symbol, b["date"])]
+        skipped = [b["date"] for b in raw_bars if b not in symbol_bars]
+        if skipped:
+            print(f"   [{symbol}] 取引日でない足を保存しない: {', '.join(skipped)}")
+        refetch = refetched.get(symbol)
+        if refetch or raw_bars:
+            # b: Yahooが返した日付（取引日かどうかを問わない）と、取得した範囲の始め
+            bar_dates = {b["date"] for b in (refetch["bars"] if refetch else []) + raw_bars}
+            covered_from = refetch["start"] if refetch else raw_bars[0]["date"]
+        if not symbol_bars and not refetch:
+            if not raw_bars:
+                print(f"   [{symbol}] 日次データ取得失敗（スキップ）")
             continue
         valid_bars = [b for b in symbol_bars if _has_valid_close(b)]
+        # a: 窓の外の暫定の行は、取り直した足で置き換える（同じ日付は5日窓の足を優先）
+        replace_bars = {b["date"]: b for b in (refetch["bars"] if refetch else [])
+                        if _has_valid_close(b) and is_symbol_trading_day(symbol, b["date"])}
+        replace_bars.update({b["date"]: b for b in valid_bars})
+        replace_bars = [replace_bars[d] for d in sorted(replace_bars)]
+        if not symbol_bars:
+            _replace_provisional_records(symbol, replace_bars, base_dir=base, now=now,
+                                         contract=contracts.get(symbol), contract_closes=contract_closes.get(symbol))
+            _mark_no_bar_rows(symbol, bar_dates, covered_from, base, now)
+            continue
         if not _has_valid_close(symbol_bars[-1]):
             print(f"   [{symbol}] {symbol_bars[-1]['date']}の足に終値が無い（未確定のため保存せず、次回取り直す）")
             _write_violations_section(
@@ -781,8 +894,9 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Di
             )
         _repair_close_missing_records(symbol, valid_bars, base_dir=base)
         # ^N225の出来高0の足は、終値があっても取引時間中の値のため確定値として扱わない（暫定の印を付けて保存）
-        _replace_provisional_records(symbol, valid_bars, base_dir=base,
+        _replace_provisional_records(symbol, replace_bars, base_dir=base, now=now,
                                      contract=contracts.get(symbol), contract_closes=contract_closes.get(symbol))
+        _mark_no_bar_rows(symbol, bar_dates, covered_from, base, now)
         if not valid_bars:
             continue
         # 5日窓のうち、daily/に行の無い日の終値つきの足を追加する（既存の行は上書きしない）。
@@ -792,7 +906,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Di
         have = {r.get("date") for r in _load_json(path, default={}).get("records", [])}
         for b in valid_bars[:-1]:
             if b["date"] not in have:
-                filled = _mark_provisional(symbol, dict(b))
+                filled = _mark_provisional(symbol, dict(b), now)
                 if symbol in FUTURES_SYMBOLS:
                     _attach_contract_fields(filled, contracts.get(symbol), contract_closes.get(symbol) or {})
                 filled["_validation_warnings"] = validate_price_record(filled)
@@ -800,7 +914,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None) -> Di
                 print(f"   [{symbol}] 抜けていた{b['date']}の終値を追加")
         bar = valid_bars[-1]
 
-        record = _mark_provisional(symbol, dict(bar))
+        record = _mark_provisional(symbol, dict(bar), now)
         if symbol in FUTURES_SYMBOLS:
             _attach_contract_fields(record, contracts.get(symbol), contract_closes.get(symbol) or {})
         record_warnings = validate_price_record(record)
@@ -938,7 +1052,8 @@ def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> Li
     base = _resolve_base_dir(base_dir)
     payload = _load_json(os.path.join(base, "daily", f"{symbol}.json"), default=None)
     records = (payload or {}).get("records", [])
-    have = {r["date"] for r in records if r.get("date")}
+    # 足なしの印（`_no_yahoo_bar`）の行は値として使わないため、行があるとは数えない
+    have = {r["date"] for r in records if r.get("date") and not r.get(NO_BAR_MARK)}
     if not have:
         return []
     lo, hi = min(have), max(have)
@@ -984,7 +1099,8 @@ def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = No
                 rec = dict(by_date[d])
                 rec["_validation_warnings"] = validate_price_record(rec)
                 new_records.append(rec)
-            payload["records"] = sorted(payload.get("records", []) + new_records, key=lambda r: r.get("date", ""))
+            kept = [r for r in payload.get("records", []) if r.get("date") not in filled]   # 同じ日の足なしの印の行は置き換える
+            payload["records"] = sorted(kept + new_records, key=lambda r: r.get("date", ""))
             _atomic_write_json(path, payload)
         result[symbol] = {"filled": filled, "unresolved": [d for d in missing if d not in by_date]}
         print(f"   [{symbol}] 抜けていた取引日{len(missing)}日: 取得{len(filled)}日・取得できず{len(missing) - len(filled)}日")

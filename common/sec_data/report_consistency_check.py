@@ -157,7 +157,7 @@ import re
 import json
 import glob
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 # ─── パス設定 ────────────────────────────────────────────────
@@ -1604,6 +1604,50 @@ def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tu
         for d in find_missing_trading_days(symbol, base_dir=base):
             out.append((symbol, f"  [WARN-57 daily/行の抜け] {symbol} {d}: 取引日の行が無い"
                                 f" → fetcher.py --repair-missing-daysで取り直す（取れない日は台帳に登録）"))
+    return out
+
+
+STALE_PROVISIONAL_WARN_DAYS = 4
+
+
+def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str]]:
+    """CHECK-62: daily/の暫定の行（`_provisional`）のうち、日足の確定時刻（fetcher.bar_final_at）から
+    STALE_PROVISIONAL_WARN_DAYS日を過ぎても残っている行を数えるWARN（2026-10-11新設、NG化しない。
+    [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]・[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]）。
+
+    背景: 置き換えが5日窓に入った日付だけで、窓から外れた行・Yahooに足が無い日付の行（CL=F・GC=Fの09-07、JPY=Xの08-15・10-03、
+    ES=F・NQ=F・NIY=Fの09-29・09-30）が確定時刻を過ぎても残り、ブラッシュアップの手作業でしか見つからなかった。
+    夜間の取得が取り直し（a）・足なしの印（b、`_no_yahoo_bar`）で片づけるため、残っていればそれが効いていない。
+    足なしの印の行は数えない。4日の猶予は、週末と祝日の月曜で夜間の取得が無い間（金曜のJPY=Xの行は確定時刻から
+    火曜の夜の取得まで約93時間）にWARNを出さないため。
+    Returns: [(symbol, WARNメッセージ)]（1行1件）
+    """
+    from common.market_data.fetcher import bar_final_at, NO_BAR_MARK
+    base = base_dir or os.path.join(REPO_ROOT, "common", "market_data")
+    now = now or datetime.now(timezone.utc)
+    out: list[tuple[str, str]] = []
+    daily_dir = os.path.join(base, "daily")
+    if not os.path.isdir(daily_dir):
+        return out
+    for name in sorted(os.listdir(daily_dir)):
+        if not name.endswith(".json"):
+            continue
+        symbol = name[:-5]
+        try:
+            with open(os.path.join(daily_dir, name), encoding="utf-8") as f:
+                recs = json.load(f).get("records") or []
+        except Exception:
+            continue
+        for r in recs:
+            if not r.get("_provisional") or r.get(NO_BAR_MARK) or not r.get("date"):
+                continue
+            final = bar_final_at(symbol, r["date"])
+            if final is not None and now < final + timedelta(days=STALE_PROVISIONAL_WARN_DAYS):
+                continue
+            when = final.strftime("%m-%d %H:%M UTC") if final else "不明"
+            out.append((symbol, f"  [WARN-62 暫定の行の残り] {symbol} {r['date']}: 確定時刻（{when}）から"
+                                f"{STALE_PROVISIONAL_WARN_DAYS}日を過ぎても_provisionalのまま"
+                                f" → 夜間の取得の取り直し・足なしの印が効いていないかを確かめる"))
     return out
 
 
@@ -3414,6 +3458,17 @@ def run_checks(args=None) -> tuple[int, int]:
     if gap_msgs:
         flagged.append(("[GLOBAL]", [], gap_msgs))
         total_warn += len(gap_msgs)
+
+    # CHECK-62: daily/の暫定の行が確定時刻から4日を過ぎても残っている（NG化しない）。銘柄単位の台帳照合（match＝日付）
+    stale_msgs = []
+    for _t, _w in _check_stale_provisional_rows():
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        stale_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if stale_msgs:
+        flagged.append(("[GLOBAL]", [], stale_msgs))
+        total_warn += len(stale_msgs)
 
     # CHECK-58: 更新スケジュールの一覧（UPDATE_SCHEDULE.md・workflow_dependencies.json）とYAMLのずれ
     sched_warn = _check_update_schedule_drift()

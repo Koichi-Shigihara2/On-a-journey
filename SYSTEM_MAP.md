@@ -2066,6 +2066,14 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
   `backfill_tech_pulse.py`（QQQ/SPY取得、`get_price_series_as_of()`
   新設が前提作業）。詳細はBACKLOG.md`[[MARKETDATA-LAYER-CONSTRUCTION-1]]`・
   BACKLOG_DONE.md「2026-08-12（完了）」参照。
+- 暫定の行（`_provisional`）の後始末（2026-10-11、`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`）: `fetch_daily_prices()`は、
+  確定時刻（`bar_final_at`）を過ぎた暫定の行が5日窓より古ければ、その最古日（最大`PROVISIONAL_REFETCH_MAX_DAYS`＝90日前）から
+  取り直して置き換える（確定済みの行は上書きしない）。Yahooに足が無いまま確定時刻から`NO_BAR_MARK_DAYS`（7日）を過ぎた暫定の行は、
+  消さずに`_provisional`を外して`_no_yahoo_bar: true`の印を付ける。保存の前に`is_symbol_trading_day()`で取引日かを確かめる
+  （JPY=Xは土日を除く、先物はpandas_market_calendarsの`CME_TradeDate`、^N225は`JPX`）。
+  **`_no_yahoo_bar`の行は値として使わない**: `reader._load_daily_payload()`（readerの全関数＝Market Pulse・TANUKI VALUATION・hypecore・
+  STONKS SILO・score_verifier・browser_checks）・`rotce._load_prices()`・`daily_guard.completeness()`・`fetcher.find_missing_trading_days()`
+  （CHECK-57）が除外する。確定時刻から4日を過ぎて残る暫定の行はreport_consistency_checkのCHECK-62（WARN）
 
   切替過程で`daily/`層が`auto_adjust=False`（未調整終値）で保存されて
   いることを発見し、当初「バグ」として登録したが、事実確認調査の結果

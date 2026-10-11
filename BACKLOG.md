@@ -2331,6 +2331,42 @@ CL=F 35・GC=F 35（先物の確定値は清算値。夕方〈NY 18〜21時〉�
   4. ES=F・NQ=F・NIY=Fの09-29・09-30は、`--repair-provisional`の一過性の取り直しで直せる（ただしNIY=Fは置き換え先のYahooの足が平らな足）
   5. 検知: 確定時刻を過ぎて残る暫定の行を数えるWARN（report_consistency_checkかSystem Health）。今回の7件・6件はブラッシュアップの手作業で見つけた
 
+#### 対応（2026-10-11、a・b・c・e。Koichi承認済み。dは「aで吸収」のため実装しない）
+**2-0. 試算（読み取りのみ、2026-10-11 04:25 UTC）**: daily/の全593銘柄で`_provisional`の行は22行、すべて確定時刻を過ぎていた。
+10-11の調査の13行（上の7行＋ES=F・NQ=F・NIY=Fの09-29・09-30）との差の9行は、CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09で、
+週末に確定時刻を過ぎて夜間の取得がまだ動いていない行（既存の5日窓で次の平日に置き換わる。10-11の調査は4銘柄だけを見ていた）。
+窓から外れたかYahooに足が無くて残る行は10行で前提と同じ。a（と既存の5日窓）: 置き換え18行（値が変わる16行・同じ2行、NIY=Fの09-29・10-08。窓の外のaで置き換わるのはES=F・NQ=F・NIY=Fの09-29・09-30の6行）、b: 足なしの印4行
+（CL=F・GC=Fの09-07、JPY=Xの08-15・10-03）、c: この4行は取引日でない（今後は保存しない）。取り直す範囲の確定済みの行は変わらない
+（CL=F・GC=F 22行・JPY=X 38行・ES=F・NQ=F・NIY=F各5行。うちYahooの今の値と違う行がCL=F・GC=Fの10-02、JPY=Xの金曜の5行にあるが、aは触らない）
+
+- a（`fetcher._refetch_stale_provisional()`）: 夜間の取得で、確定時刻を過ぎた暫定の行の最古日が5日窓より古い銘柄だけ、その日から
+  `yf.download(start=...)`で取り直して置き換える（`_replace_provisional_records()`。確定済みの行は上書きしない、同じ日付は5日窓の足を優先）。
+  取り直す範囲の上限は`PROVISIONAL_REFETCH_MAX_DAYS`＝90日（10-11時点の最古の暫定の行〈JPY=Xの08-15、57日前〉を含み、bで7日後には印が
+  変わるため通常は数日分で足りる。超えた行はCHECK-62で見える）
+- b（`fetcher._mark_no_bar_rows()`）: 取得した範囲にYahooの足が無いまま確定時刻から`NO_BAR_MARK_DAYS`＝7日を過ぎた暫定の行は、
+  削除せずに`_provisional`を外して`_no_yahoo_bar: true`を付ける（既存の`_provisional`・`_validation_warnings`と同じ「_」始まりの印。取得に失敗した銘柄・
+  取り直しの範囲より古い行には付けない）。読む側の対応（daily/を読むものをgrepで洗い出した結果）:
+  - 除外を入れた: `common/market_data/reader.py::_load_daily_payload()`（readerの全関数。Market Pulse〈collect_and_send・breadth_calculator・
+    sector_rotation・stage_conclusions・backfill_*〉・TANUKI VALUATION〈data_fetcher・pipeline の^TNX・score_verifier〉・hypecore・
+    STONKS SILO〈valuation_fetcher〉・browser_checks〈check_dependency_map・market_pulse_elements〉はこれ経由）、`common/sec_data/rotce.py::_load_prices()`、
+    `common/market_data/daily_guard.py::completeness()`、`fetcher.find_missing_trading_days()`（CHECK-57。`repair_missing_trading_days()`は同じ日の印の行を置き換える）
+  - 対応なし: `Market_Data_Daily_Update.yml`（git add・ファイル数だけ）、`scripts/analysis/`の3本（daily_intraday_rows_scan・futures_roll_suspects・
+    market_pulse_redesign。手動の一過性の分析で、market_pulse_redesignは固定のcommitのデータを読む）、attributes/だけを読むもの（audit・beta_fetcher・
+    extract_key_facts・core_calculator）
+- c（`fetcher.is_symbol_trading_day()`）: 保存・置き換えの前に取引日でない足を外す。JPY=Xは土日、先物（CL=F・GC=F・ES=F・NQ=F・NIY=F）は
+  pandas_market_calendars 5.4.0の`CME_TradeDate`（清算のある取引日。`CMEGlobex_*`はLabor Dayの短縮取引を取引日に含むため使わない）、
+  ^N225は`JPX`（`find_missing_trading_days()`と同じ）。2024-10〜2026-10のYahooの日足と比べ、^N225・JPY=Xは一致、先物はYahooにある足のうち
+  2025-01-09（カーター元大統領の国葬）・2025-07-04の2日だけがCME_TradeDateに無い（今後この種の日の足は保存しない。既存の行は変えない）
+- e（report_consistency_checkのCHECK-62、WARN）: 確定時刻から`STALE_PROVISIONAL_WARN_DAYS`＝4日を過ぎて残る暫定の行（足なしの印の行は数えない）。
+  4日は、週末と祝日の月曜で夜間の取得が無い間（金曜のJPY=Xの行は確定時刻から火曜の夜の取得まで約93時間）にWARNを出さないため。
+  10-11の時点では上の10行がWARN（NG=0）
+- テスト（`tests/test_market_data_stale_provisional.py`、15件）: 修正前のコードで12件が失敗（`now`引数を外して実行しても失敗）、
+  3件（取り直し不要なら取り直さない・7日以内は印を変えない・取得失敗なら印を付けない）は修正前から成功する過剰な変更の防止。修正後は15件成功
+
+#### 未了（2026-10-11）
+- 既存の行への適用（手元で取得を1回実行した差分）は、チャット側の承認を受けてからcommitする
+- 次の平日のMarket Data Dailyの後、CHECK-62が0件で、10-08・10-09の行の印が外れていること
+
 ---
 
 ### [MARKETDATA-FUTURES-ROLL-1] 先物（CL=F・GC=F）の連続シンボルは限月の乗り換え日に前日比が不連続になり、Market Pulseの段階1・2が「大きな変動」と判定していた
@@ -2516,6 +2552,16 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
   3. 保存の前に取引日かを確かめる: JPY=Xは土日の足を保存しない、先物はCMEの休場日の足を保存しない（`pandas_market_calendars`）
   4. ES=F・NQ=F・NIY=Fの09-29・09-30は、`--repair-provisional`の一過性の取り直しで直せる（ただしNIY=Fは置き換え先のYahooの足が平らな足）
   5. 検知: 確定時刻を過ぎて残る暫定の行を数えるWARN（report_consistency_checkかSystem Health）。今回の7件・6件はブラッシュアップの手作業で見つけた
+
+#### 対応（2026-10-11）
+- 「確定時刻を過ぎても印が残る」部分は[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]の対応（a: 窓の外の暫定の行の取り直し、b: 足なしの印、c: 取引日の確認、
+  e: CHECK-62）で解消する。ES=F・NQ=F・NIY=Fの09-29・09-30は、aでYahooの今の足に置き換わる（dの一過性の取り直しは不要）
+- 「前の行と同じ出来高」と「NIY=Fの平らな足（O=H=L=C・出来高0）」はYahooの返す値そのものの問題のため、今回の対象外（Koichi決定、2026-10-11）。
+  観察を続ける。aの置き換えで、ES=F・NQ=Fの09-29の出来高はYahooの今の値（ES 1,643,532・NQ 585,162）になり、NIY=Fの09-30はYahooの今の平らな足
+  （66810・出来高0）になる（試算）
+
+#### 未了（2026-10-11）
+- 出来高の重複とNIY=Fの平らな足の観察（Yahooの値が後から直るか）
 
 ---
 

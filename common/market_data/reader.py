@@ -65,8 +65,13 @@ def _load_json(path: str, default: Any) -> Any:
 
 
 def _load_daily_payload(symbol: str, base_dir: str) -> Dict[str, Any]:
+    """daily/{symbol}.json。足なしの印（`_no_yahoo_bar`、Yahooに日足が無いと確かめた暫定の行。
+    [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]、2026-10-11）の行は、値として使わないため除く。"""
     path = os.path.join(base_dir, "daily", f"{symbol}.json")
-    return _load_json(path, default={"symbol": symbol, "records": []})
+    payload = _load_json(path, default={"symbol": symbol, "records": []})
+    if isinstance(payload, dict) and isinstance(payload.get("records"), list):
+        payload["records"] = [r for r in payload["records"] if not r.get("_no_yahoo_bar")]
+    return payload
 
 
 # ── 日次価格層 ────────────────────────────────────────────

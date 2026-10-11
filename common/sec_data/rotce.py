@@ -372,7 +372,9 @@ def _load_prices(repo_root: str, ticker: str) -> List[dict]:
         return []
     with open(path, encoding="utf-8") as f:
         recs = json.load(f).get("records") or []
-    return sorted((r for r in recs if r.get("close") is not None and r.get("date")), key=lambda r: r["date"])
+    # 足なしの印（`_no_yahoo_bar`、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）の行は値として使わない
+    return sorted((r for r in recs if r.get("close") is not None and r.get("date") and not r.get("_no_yahoo_bar")),
+                  key=lambda r: r["date"])
 
 
 def _close_on_or_before(prices: List[dict], q: str) -> Optional[dict]:
