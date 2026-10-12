@@ -3,9 +3,9 @@
   "intrinsic_value_per_share": 36.218615957024284,
   "intrinsic_value_beta": 39.76,
   "upside_percent_beta": 185.6,
-  "intrinsic_value_rf": 116.37,
-  "upside_percent_rf": 736.0,
-  "intrinsic_value_rf_rate": 0.0524399995803833,
+  "intrinsic_value_rf": 116.59,
+  "upside_percent_rf": 737.5,
+  "intrinsic_value_rf_rate": 0.052400002479553225,
   "v0": 9708371505.40279,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 160.2,
-  "calculation_date": "2026-10-12T21:03:14+09:00",
+  "calculation_date": "2026-10-13T05:40:11+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -203,7 +203,7 @@
       "total_transient_amount": 405000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -363,7 +363,7 @@
     "peg": 0.5232,
     "ps": 4.018305,
     "ev_ebitda": 50.775,
-    "ma200": 10.228424985408784,
+    "ma200": 10.236424987316132,
     "forward_eps": 0.82947,
     "next_quarter_eps": 0.18,
     "analyst_target_median": 14.5,
@@ -387,7 +387,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-12",
+    "validated_at": "2026-10-13",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -412,10 +412,10 @@
   },
   "phase1_growth": 0.23204331876757467,
   "required_growth_rf_base": -0.27594169753245357,
-  "risk_free_rate_live": 0.0524399995803833,
-  "risk_free_rate_live_date": "2026-10-09",
+  "risk_free_rate_live": 0.052400002479553225,
+  "risk_free_rate_live_date": "2026-10-12",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.19241278269372453,
+  "required_growth_rf_live": -0.19270087718637885,
   "tanuki_score": "BUY",
   "funda_score": 55,
   "score_comment": "割安圏(160%)で買い余地大、FCF黒字、売上安定成長",
@@ -531,7 +531,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0071,
+  "erp": 0.0072,
   "forward_earnings_yield": 0.0596,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
