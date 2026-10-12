@@ -2289,6 +2289,30 @@ EPS ANALYZERの出力を読む処理（grep `adjusted_eps_analyzer/data`・`EPS_
   `fcf_outlier.transient_evidence.ai_assessment.reasoning`（GrokのAI評価の文言の言い換え）だけで、判定値（intrinsic_value・tanuki_score・funda/timing・category・matrix・トラップ）は変化なし
 - 同じ比較でXOMは`components.per_adjusted` 28.37→21.68、`funda_score` 55→80（EPSの前年同期比 −43%→+112%で「EPS成長>20%」が0→25点）。tanuki_score（TRIM）・category・matrixは変化なし。
   2026Q2の純利益14,525M（Q1の約3.4倍）に一過性の項目が含まれるかは未確認
+#### 追記（2026-10-12夕方）: XOMの2026Q2の値の検証（誤りなし）
+原本: 新CIKの10-Q（accn `0000034088-26-000093`、2026-08-03提出、`xom-20260630.htm`）の損益計算書・Note 2（EPS）と、同じ書類のXBRL（companyfacts）。
+
+| 項目 | 原本 3か月（2026Q2） | 原本 6か月（上半期） | 差し引きのQ1 |
+|---|---|---|---|
+| 売上（Total revenues and other income） | 116,017M | 201,155M | 85,138M |
+| 純利益（親会社帰属） | 14,525M | 18,708M | 4,183M（Q1の10-Qの値と一致） |
+| 希薄化後EPS | 3.48 | 4.47 | — |
+| 加重平均株式数（XOMは基本・希薄化後が同じ。希薄化後の加重平均のXBRLタグは出していない） | 4,174M | 4,188M | — |
+
+| 置き場所 | 入っている値 | 判定 |
+|---|---|---|
+| Layer2 `quarterly_2026Q2.json` | 売上116,017M・純利益14,525M・shares_basic 4,174M・shares_diluted 4,112M | 3か月の値。shares_dilutedは期末の発行済株式数（`CommonStockSharesOutstanding`、parser.pyの明示的なフォールバック。2025Q1以降の各四半期も同じ形で、今回の統合とは無関係） |
+| Layer2 `quarterly_2026Q1.json`・`annual_2025.json` | Q1 85,138M・4,183M、FY2025 332,238M・28,844M | 正しい |
+| TTM `XOM_ttm_series.json`（最新 2026-06-30） | 売上368,757M・純利益32,757M | 4四半期の和（14,525＋4,183＋2025年下期14,049＝32,757） |
+| EPS ANALYZER `quarterly.json` | 2026-06-30: 純利益14,525M・GAAP EPS 3.48・株式数4,173.85M（EPS逆算 14,525÷3.48） | 3か月の値 |
+| EPS ANALYZER `ttm.json`（最新） | 純利益32,757M・EPS 7.786 | 4四半期の和 |
+| TANUKI VALUATION `latest.json` | max_eps 7.9664（＝32,757M÷4,111.9M株〈yfinance〉）、per_adjusted 21.68（＝株価168.94÷直近4四半期の調整後EPSの和7.794）、funda 80（売上成長9.1%→15・Rule40 21.6→15・EPS成長+112%→25・FCF>0→25） | 3か月の値・その和から計算 |
+| HypeCore `XOM_poc.json`（2026-10） | ni_yoy +105.1%（＝14,525÷7,082）、rev_yoy 9.1%、trailing_pe 21.74 | 3か月の値 |
+- 累計（6か月）を四半期として取り込んだ箇所は無い。MRVL・GOOGL・DELLも、EPS ANALYZERの直近8四半期の純利益がLayer2の同じ会計四半期と全件一致（Q4はLayer2に四半期ファイルが無いため対象外）
+- Q1（4,183M）からQ2（14,525M）への増加の理由（原本のMD&A）: Q1はEnergy Productsのデリバティブの時価評価（Estimated Timing Effects）−3,330M・Upstream −690M、
+  特定項目 −706M（中東の供給途絶でヘッジに対応する出荷ができなかった損失）で押し下げられていた。Q2はEnergy Productsの時価評価が+2,560M（Upstream −180M）に反転し、
+  価格・マージンの上昇と構造的なコスト削減が加わった。Q2の特定項目は −2,379M（Upstreamの財務上の引当 −1,199M、Energy Productsの主に減損 −1,180M）で利益を押し下げる側。
+  一過性の「利益」は無く、Q2の押し上げの主因は時価評価のタイミング（後の期で戻る性質）と価格・マージン
 ---
 
 ### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
@@ -2856,6 +2880,16 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 #### 直し方の候補（未決定）
 - `period`を「古い期末 to 新しい期末」の順にする（ttm.jsonを読む処理は詳細画面だけ）か、画面で新しい側を使う
 
+#### 追記（2026-10-12夕方）: 「A to B」形式の期間の文字列を読む処理（リポジトリ全体をgrep）
+| 処理 | 読み方 | 期末として扱う日付 | 誤り |
+|---|---|---|---|
+| EPS ANALYZER `stock.html::applyDateRange()`（L1018） | `period.split(' to ')[1]` | 古い側（窓の最初の四半期） | TTMのタブの期間の絞り込みが9か月ずれる（表示） |
+| EPS ANALYZER `stock.html::updateChart()`（L1235） | 同上をラベルに | 古い側 | TTMのチャートのラベルが3四半期前の期になる（表示） |
+| EPS ANALYZER `stock.html::switchTab()`（L1510） | 同上 | 古い側 | 絞り込みのずれ（表示） |
+| `common/sec_data/ttm/`（TANUKI VALUATION・STONKS SILO・HypeCore・rotce・TANUKI SCOREが読む） | `ttm_end`（日付の項目） | — | 対象外（文字列の期間を持たない） |
+| TANUKI VALUATION・TANUKI SCORE・daily_pick・report_consistency_check・audit | EPS ANALYZERのttm.jsonを読まない（summary・quarterly・annualだけ） | — | 対象外 |
+- ttm.jsonを読む処理は`stock.html`だけ（grep `ttm.json`: 書く側の`pipeline.py`、コメントだけの`ttm_calculator.py`、読む側の`stock.html`）。ほかの`period`の読み手（Layer2の年度・四半期のラベル、TAILの期末日）は「A to B」形式ではない
+- 判定値には効いていないため、優先度は低のまま
 ---
 
 ### [EPS-TICKERS-HTML-PERIOD-LABEL-1] EPS ANALYZERの銘柄一覧（tickers.html）の列名「最新決算日」の中身が、直近四半期の期末日（提出日ではない）

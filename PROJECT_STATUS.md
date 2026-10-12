@@ -11,6 +11,13 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-12（夕方の調査、読み取りのみ）**: (1) XOMの2026Q2を原本（新CIKの10-Q、2026-08-03提出）で検証: 3か月の売上116,017M・純利益14,525M・EPS 3.48、6か月 201,155M・18,708M・4.47。
+  Layer2・TTM・EPS ANALYZER・TANUKI VALUATION・HypeCoreはすべて3か月の値（またはその4四半期の和）で、累計の取り込みは無い。MRVL・GOOGL・DELLもEPS ANALYZERとLayer2の直近8四半期が一致。
+  Q1→Q2の増加は、Q1のデリバティブの時価評価 −3,330M（Energy Products）・特定項目 −706Mが、Q2に時価評価+2,560Mへ反転したことと価格・マージン（一過性の利益は無い、Q2の特定項目は −2,379M）。
+  (2) ABBV・PMのHOLD→TRIM（timing 40→30）は、HypeCoreの週次の再生成で最新月のstageが2→3になったため（F&Gは両時点とも45）。timingだけ変わった11銘柄中10銘柄が同じ原因、CPRTは上方余地の変化。
+  意図した動きのため記録だけ（日中の確認で「F&G等とみられる」と書いたのは誤りで、BACKLOG_DONE.mdの`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`で訂正）。
+  (3) ttm.jsonの「A to B」の期間を読むのはEPS ANALYZERの詳細画面の3か所だけで、判定には効かない → `[[EPS-TTM-PERIOD-ORDER-REVERSED-1]]`は低のまま。
+  BACKLOGの件数は不変（34件、新規登録・移設なし）。report_consistency_check.py NG=0・audit.py exit 0
 - **2026-10-12（日中の確認）**: CHAT_RULES.mdの「システム全体を一つのものとして考える」に従って、EPS ANALYZERの出力の読み手を洗い出し、MRVLの変化（`8b77792126`）の下流を表にした。
   MRVLは旧CIKの13四半期が加わり古い期の値が変わったが、summary.json・直近4四半期・直近の年次は不変で、TANUKI VALUATIONの判定値の変化は0件（EPSの更新前後の2回の再生成で比較、違いはGrokの文言だけ）。
   XOMは同じ比較でfunda_score 55→80（EPSの前年同期比 −43%→+112%）、tanuki_scoreは不変。

@@ -149,6 +149,22 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 「未補正」の各件（ELF 2014〜15・RCAT 2013〜14・KO 2018Q1・NVDA 2008・2009年度・2010Q2・FCX 2010Q2）は、同じ期に正しい値を申告した書類がなく
 根拠のある補正ができないため、回収不可能と検証済みとしてクローズする（いずれも直近5年より前でCHECK-59の対象外。2026-10-10の調査でcompany_facts.jsonの生の値を確認済み）
 
+#### 訂正（2026-10-12夕方）: timing_scoreだけの変化の原因
+上の「F&G等の市場の入力の変化とみられる〈未分解〉」は誤り。`_calc_timing()`の入力（上方余地・F&G・HypeCoreの最新月のstage）を10-10（`a39eae8d09`）と10-12（`a25d2b6d20`）で並べると、
+F&Gは両方とも45（Market Pulseの10-10のエントリ）、上方余地はCPRT以外同じで、変化の原因はHypeCoreの最新月（2026-10）のstage。10-10のTANUKIは10-05生成のHypeCore（株価は10-02まで）、
+10-12のTANUKIは10-12に生成し直したHypeCore（株価は10-09まで）を使った:
+| 銘柄 | timing | stage | 備考 |
+|---|---|---|---|
+| ABBV | 40→30 | 2→3 | RSI 53.1→72.6、ma200乖離13.5→18.8%。HOLD→TRIM |
+| PM | 40→30 | 2→3 | RSI 33.4→73.9、ma200乖離5.4→12.5%。HOLD→TRIM |
+| V | 40→30 | 2→3 | |
+| CART | 65→70 | 4→3 | |
+| NVDA | 70→80 | 3→2 | |
+| MSCI | 25→40 | 4→2 | |
+| VZ | 80→65 | 2→4 | |
+| SITM・DOCN・TER | 30→25 | 3→4 | |
+| CPRT | 50→35 | 4→4 | 上方余地18.1→7.7%（10-10のSECの再取得で理論株価が変化） |
+HypeCoreは週1回の更新（日曜の連鎖・月曜の安全網）で、stageはその時点の株価から決まる。意図した動きのため記録だけ（新規登録なし）
 ---
 
 ### ✅ [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
