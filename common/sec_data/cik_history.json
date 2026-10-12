@@ -10,5 +10,9 @@
   "DELL": {
     "legacy_ciks": ["826083"],
     "transition_note": "旧CIK 826083「Dell Inc.」は2013年のLBOにより非公開化（最終自社10-KはFY2012、期末2013-02-01、filed 2013-03-12）。新CIK 1571996「Dell Technologies Inc.」の最初の自社10-KはFY2017（filed 2017-03-31）で、2016年のEMC統合完了(2016年9月)後の初回申告にあたる。実データで検証した結果、FY2013〜FY2016の4年間は旧CIK・新CIKいずれの自社10-Kも存在しない完全な申告ギャップであることを確認した。ただしannual_2015.json/annual_2016.jsonにはFY2017 10-K（accn 0001571996-17-000004）の比較年度再掲データ（is_own_data=False）が入る一方、FY2014のみ比較年度ウィンドウにも含まれず値が完全に欠落する。同一事業継続のため旧CIKのCompany Factsデータを統合するが、上記の申告ギャップ自体は旧CIK統合では埋まらない（フロントエンドに注記を別途表示）。"
+  },
+  "XOM": {
+    "legacy_ciks": ["34088"],
+    "transition_note": "2026年7月の持株会社化に伴うCIK切替（旧CIK 34088「EXXON MOBIL CORP」→新CIK 2115436「ExxonMobil Holdings Corp」）。旧CIKは2026-07-01にPOSASR、07-02に25-NSE（上場廃止の届出）を提出し、2026-08-03提出のQ2の10-Q以降は新CIKが登録者（SECのcompany_tickers.jsonのXOMも新CIK）。新CIKのCompany FactsにはFY2026しか無い。同一事業の継続のため旧CIKのCompany Facts・submissionsを統合する（[[SEC-XOM-CIK-HOLDING-REORG-1]]、2026-10-12）。"
   }
 }
