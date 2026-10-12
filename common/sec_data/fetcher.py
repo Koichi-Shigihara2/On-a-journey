@@ -31,6 +31,39 @@ def _load_cik_history() -> dict:
     return {}
 
 
+def legacy_ciks_for(ticker: str) -> list:
+    """cik_history.jsonに登録された旧CIK（法人再編で切り替わる前のCIK）のリスト。未登録なら空。
+
+    SECデータの層（SECFetcher）とEPS ANALYZER（extract_key_facts.py）が共通に使う
+    （[[SEC-XOM-CIK-HOLDING-REORG-1]]、2026-10-12）。"""
+    return list(_load_cik_history().get(ticker.upper(), {}).get("legacy_ciks", []))
+
+
+def merge_us_gaap_facts(primary: Dict[str, Any], legacy: Dict[str, Any]) -> Dict[str, Any]:
+    """primaryのfacts.us-gaapに、legacyのfacts.us-gaapエントリを統合する。
+
+    同一conceptは units[unit_type] のentryリストをそのまま連結するのみで、
+    マージ専用の優先順位判定・重複排除は行わない。年度ごとの採用値決定は
+    既存のparser.py（本人データ優先・filed日時タイブレーク）にそのまま
+    委ねる設計（CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1調査で確認済みの前提）。
+    EPS ANALYZER（extract_key_facts.py）も同じ関数で統合し、どちらを採るかは
+    EPS ANALYZERの既存の選び方（株式数はselect_latest_filed等）に任せる
+    （[[SEC-XOM-CIK-HOLDING-REORG-1]]、2026-10-12にSECFetcherの静的メソッドから移した）。
+    """
+    merged = json.loads(json.dumps(primary))
+    legacy_us_gaap = legacy.get("facts", {}).get("us-gaap", {})
+    merged_us_gaap = merged.setdefault("facts", {}).setdefault("us-gaap", {})
+    for concept, concept_data in legacy_us_gaap.items():
+        if concept not in merged_us_gaap:
+            merged_us_gaap[concept] = concept_data
+            continue
+        merged_units = merged_us_gaap[concept].setdefault("units", {})
+        for unit_type, entries in concept_data.get("units", {}).items():
+            merged_units.setdefault(unit_type, [])
+            merged_units[unit_type].extend(entries)
+    return merged
+
+
 class SECFetcher:
     """SEC EDGAR Company Facts API クライアント"""
 
@@ -148,7 +181,7 @@ class SECFetcher:
                 # 旧CIKに継続していた銘柄は、旧CIKのus-gaap factsを追加取得して
                 # マージする。マージ専用の優先順位ロジックは追加しない
                 # （parser.pyの本人データ優先・タイブレークにそのまま委ねる）。
-                legacy_ciks = _load_cik_history().get(ticker, {}).get("legacy_ciks", [])
+                legacy_ciks = legacy_ciks_for(ticker)
                 for legacy_cik in legacy_ciks:
                     legacy_data = self._fetch_legacy_company_facts(ticker, legacy_cik, force_refresh)
                     if legacy_data:
@@ -219,25 +252,8 @@ class SECFetcher:
 
     @staticmethod
     def _merge_us_gaap_facts(primary: Dict[str, Any], legacy: Dict[str, Any]) -> Dict[str, Any]:
-        """primaryのfacts.us-gaapに、legacyのfacts.us-gaapエントリを統合する。
-
-        同一conceptは units[unit_type] のentryリストをそのまま連結するのみで、
-        マージ専用の優先順位判定・重複排除は行わない。年度ごとの採用値決定は
-        既存のparser.py（本人データ優先・filed日時タイブレーク）にそのまま
-        委ねる設計（CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1調査で確認済みの前提）。
-        """
-        merged = json.loads(json.dumps(primary))
-        legacy_us_gaap = legacy.get("facts", {}).get("us-gaap", {})
-        merged_us_gaap = merged.setdefault("facts", {}).setdefault("us-gaap", {})
-        for concept, concept_data in legacy_us_gaap.items():
-            if concept not in merged_us_gaap:
-                merged_us_gaap[concept] = concept_data
-                continue
-            merged_units = merged_us_gaap[concept].setdefault("units", {})
-            for unit_type, entries in concept_data.get("units", {}).items():
-                merged_units.setdefault(unit_type, [])
-                merged_units[unit_type].extend(entries)
-        return merged
+        """モジュールの merge_us_gaap_facts() と同じ（EPS ANALYZERと共通の関数）。"""
+        return merge_us_gaap_facts(primary, legacy)
     
     def fetch_submissions(self, ticker: str, force_refresh: bool = False, save: bool = True,
                           return_payload: bool = False) -> Optional[Dict[str, Any]]:
@@ -302,7 +318,7 @@ class SECFetcher:
         # parser.pyの本人データ判定（accn_reportdate.get(accn)==end_date）は
         # このマッピングにaccnが含まれていないと機能しないため、company_facts.json
         # だけでなくsubmissions.json側も旧CIK分を統合する必要がある。
-        legacy_ciks = _load_cik_history().get(ticker, {}).get("legacy_ciks", [])
+        legacy_ciks = legacy_ciks_for(ticker)
         for legacy_cik in legacy_ciks:
             legacy = self._fetch_legacy_submissions(ticker, legacy_cik, force_refresh, save=save)
             if legacy is None:

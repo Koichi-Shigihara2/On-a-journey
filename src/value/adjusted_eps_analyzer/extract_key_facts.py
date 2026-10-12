@@ -40,6 +40,9 @@ if PROJECT_ROOT not in sys.path:
 from common.sec_data.utils import determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date
 from common.sec_data.tag_definitions import TAG_CANDIDATES
 from common.sec_data.fact_selection import select_latest_filed
+# [[SEC-XOM-CIK-HOLDING-REORG-1]]: 法人再編でCIKが切り替わった銘柄（cik_history.json）の旧CIKの統合は、
+# SECデータの層（common/sec_data/fetcher.py）と同じ関数を使う（重複した実装を作らない）
+from common.sec_data.fetcher import legacy_ciks_for, merge_us_gaap_facts
 # MARKETDATA-LAYER-CONSTRUCTION-1着手順序6: 株式数フォールバック④（旧yfinance直接
 # 呼び出し）をcommon.market_data.reader経由に切替（beta_fetcher.pyと同じ簡潔な
 # トップレベルimportパターン、try/exceptガードなし）
@@ -228,6 +231,34 @@ def fetch_company_facts(cik: str) -> Dict:
     except Exception as e:
         print(f"Error fetching company facts: {e}")
         return {}
+
+def fetch_company_facts_with_legacy(ticker: str, cik: str) -> Dict:
+    """現CIKのCompany Factsに、cik_history.jsonの旧CIKのCompany Factsを統合して返す
+    （[[SEC-XOM-CIK-HOLDING-REORG-1]]、2026-10-12）。
+
+    以前は現CIKだけを取得していたため、持株会社化等でCIKが切り替わった銘柄（MRVL・GOOGL・DELL・XOM）は
+    切り替え前の期を取り込めなかった（cik_lookup.csvのCIKを新しい番号に変えると、XOMはFY2026だけになる）。
+    統合はSECデータの層と同じmerge_us_gaap_facts()（entryを連結するだけ）で、どちらを採るかは
+    このモジュールの既存の選び方に任せる。連結の順は「旧CIKが先・現CIKが後」にする。このモジュールは
+    同じ期間の値が複数あると並び順で決める箇所がある（他のタグは後勝ち、年次・YTDの検索は先勝ち）。
+    旧CIK（古い提出）を先に置くと、両方にある期で統合前と同じ値（現CIKの再掲の値）が選ばれる
+    （2026-10-12の試算: XOM・GOOGL・DELLの既存の四半期は変化0件。現CIKを先にすると、MRVLの2020-05-02の
+    リストラ費用が旧CIKの値に置き換わり、2021-01-30にリストラ −90.9Mという不自然な値が出た）。
+    株式数はselect_latest_filed()で並び順に依らない。
+    旧CIKが取れないときは、切り詰めた履歴を出さないよう例外にする
+    （呼び出し元のextract_quarterly_facts()が空を返し、pipeline.pyのrun_statusに失敗として出る）。
+    """
+    facts = fetch_company_facts(cik)
+    if not facts:
+        return facts
+    for legacy_cik in legacy_ciks_for(ticker):
+        legacy_cik = str(legacy_cik).zfill(10)
+        legacy_facts = fetch_company_facts(legacy_cik)
+        if not legacy_facts:
+            raise RuntimeError(f"{ticker}: 旧CIK {legacy_cik}（cik_history.json）のCompany Factsを取得できない")
+        print(f"Merged legacy CIK {legacy_cik} facts for {ticker}")
+        facts = merge_us_gaap_facts(legacy_facts, facts)
+    return facts
 
 def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: Optional[str] = None, limit: int = 40, min_end_date: Optional[str] = None) -> List[Dict]:
     """
@@ -449,8 +480,8 @@ def extract_quarterly_facts(ticker: str, years: int = 10) -> List[Dict[str, Any]
         cik = get_cik(ticker)
         print(f"CIK: {cik}")
         
-        # Company Facts取得
-        facts = fetch_company_facts(cik)
+        # Company Facts取得（cik_history.jsonの旧CIKを統合、[[SEC-XOM-CIK-HOLDING-REORG-1]]）
+        facts = fetch_company_facts_with_legacy(ticker, cik)
         if not facts:
             print(f"No facts data for {ticker}")
             return []
