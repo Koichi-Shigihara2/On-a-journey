@@ -898,8 +898,16 @@ SEC EDGAR
 │    `_fetch_legacy_company_facts()`/`_fetch_legacy_submissions()`で旧CIKの
 │    データも取得した上で`_merge_us_gaap_facts()`（静的メソッド）が
 │    us-gaapタグ単位でマージする。`fetch_company_facts()`/`fetch_submissions()`
-│    は保存前に本マージを実行。現在登録銘柄: MRVL/GOOGL/AVGO/DELL
-│    （DELLはFY2013-2016非公開期間のフィリングギャップの注記あり）。
+│    は保存前に本マージを実行。現在登録銘柄: MRVL/GOOGL/DELL/XOM
+│    （DELLはFY2013-2016非公開期間のフィリングギャップの注記あり。XOMは2026-07の持株会社化、
+│    2026-10-12追加。以前の記載にあったAVGOはcik_history.jsonに無い〈2026-10-12確認〉）。
+│    **追記（2026-10-12、[[SEC-XOM-CIK-HOLDING-REORG-1]]）**: 旧CIKの一覧と統合はモジュールの関数
+│    `legacy_ciks_for()`・`merge_us_gaap_facts()`（us-gaapのentryを連結するだけ）にし、SECFetcherと
+│    EPS ANALYZER（`extract_key_facts.py::fetch_company_facts_with_legacy()`、連結は旧CIKが先）が共通に使う。
+│    cik_history.jsonを読むのはこの2つ（＋登録の検査のP6）。現CIKは、SECデータの層はSECの`company_tickers.json`
+│    （`get_cik()`、CIでは毎回取り直す）、EPS ANALYZER（財務・会社情報）とTANUKI VALUATIONのインサイダー取引（Form 4）は
+│    `config/cik_lookup.csv`から引く。CIKが切り替わったら、cik_history.jsonへの旧CIKの登録とcik_lookup.csvの変更を同じpushで入れる
+│    （cik_lookup.csvだけ先に変えると、旧CIKを統合しない処理の履歴が新CIKの分だけになる）
 │    `registration_validator.py::check_p6_cik_discontinuity_candidate()`
 │    （P6-CIKDiscontinuity、`CIK_DISCONTINUITY_CONFIRMED_STRUCTURAL`＝
 │    {CEG,LITE,ABBV,GEV,VST}〈2026-10-08にSN・CONを登録解除で削除〉・境界年2010以降・売上5億ドル以上を
@@ -1329,7 +1337,8 @@ SEC EDGAR
 都度ライブ取得する**独自の抽出パイプライン**であり、上記`common/sec_data/`配下の
 quarterly.py・parser.py・tag_definitions.pyは一切importしていない（importは
 `common.sec_data.utils`の`determine_fiscal_year`・`detect_fiscal_end_month`・
-`detect_fiscal_anchor_date`の3関数のみ、ARCH-DATA-1ステージ2 2026-07-17時点）。
+`detect_fiscal_anchor_date`の3関数のみ、ARCH-DATA-1ステージ2 2026-07-17時点）。2026-10-12に`common.sec_data.fetcher`の`legacy_ciks_for`・`merge_us_gaap_facts`も
+importし、cik_history.jsonの旧CIKのCompany Factsを統合するようになった（[[SEC-XOM-CIK-HOLDING-REORG-1]]）。
 自前で持っていた会計年度末月検出ロジック（旧`determine_fiscal_year_end()`、
 10-K/Aを含むstartswith判定でparser.py側とは基準が異なっていた）は削除し、
 統一関数を参照するよう変更済み。ローカルraw JSONキャッシュも

@@ -2,6 +2,128 @@
 
 ---
 
+## 2026-10-12（完了）
+
+### ✅ [EPS-SUMMARY-GHOST-ROWS-1] EPS ANALYZERのsummary.jsonに、eps=trueでなくなった銘柄（FIG・ZS）の行が残り、一覧から開いた詳細画面が404になる
+**優先度:** 中
+**分類:** データの整理 / EPS ANALYZER（`pipeline.py`の`generate_summary()`）・`docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+- summary.jsonは97行、`get_eps_tickers()`は95銘柄。多い2行はFIG（`config/cik_lookup.csv`から削除済み）とZS（eps=false）
+- どちらも`data/{T}/`が無く、一覧から詳細画面を開くと`data/{T}/quarterly.json`が404（「データを読み込めませんでした」）
+- `generate_summary()`は前回の行に上書きでマージするだけで、行を消さない。過去にBXの行を手で消した記録がある（BACKLOG_DONE.mdの`check_i_eps`の項、「generate_summaryがマージ方式のため手動削除が必要」）
+
+#### 対応方針（チャット側の指示、2026-10-11）
+`generate_summary()`で`get_eps_tickers()`に含まれない銘柄の行を消し、消した銘柄をログに出す。`--ticker`の部分実行でも同じ（eps=trueの他の銘柄の行は残す）
+
+#### 対応（2026-10-11、`ea5a58608b`）
+- `generate_summary(allowed_tickers=...)`で、渡された銘柄に無い行を消し「eps=trueでない銘柄の行を削除: …」とログに出す。`run()`は全銘柄・部分実行とも
+  `get_registrable_tickers("eps")`を渡す（**指示の`get_eps_tickers()`から変えた**: `get_eps_tickers()`は登録処理中〈status=provisioning〉を除くため、
+  新規登録のStep 5bで作った行をその場で消してしまう。2026-10-11時点で両者は同じ95銘柄）。`allowed_tickers`を渡さない呼び出しは従来どおり消さない
+- 手元の全銘柄の実行で「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」、97→95行。テストは`tests/test_eps_run_status.py`（全銘柄・部分実行）
+
+#### 未了
+今夜のAdjusted_EPS_Data_Updateの後、本番のsummary.jsonが95行でFIG・ZSが無いこと（手元の結果はcommitしていない。[[EPS-SILENT-TICKER-FAILURE-1]]の「未了」）
+
+
+#### 確認（2026-10-12、CI・本番）
+- SEC_Data_Updateの手動実行（run `38194243923`）から連鎖したAdjusted_EPS_Data_Update（run `38194524660`、workflow_run、02:07〜02:17 UTC、success。冪等性ガードには当たらず処理）:
+  ログ「[RunStatus] 対象 95 / 成功 95 / 失敗 0」「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」。commitされたsummary.jsonは95行、`run_status`（scope=all・started_at 02:08:36Z・succeeded 95・failed []）、
+  全行に`generated_at`・`tanuki`・`latest_fiscal_quarter`（tanuki=falseはRKLBだけ）
+- System Health（run `38196102871`、02:32 UTC）: `[I] EPS Analyzer: ✅ 更新2026-10-12(0日経過) / 2026-10-12の実行で全95銘柄を更新`
+- 本番（Pagesの構築 `38196194080` の後、Playwright）: 一覧は95行でFIG・ZS無し、「決算日」の⚠はCDNS・RMBS・KO・Vの4銘柄（XOMは2026-06-30で外れた）、
+  一覧・XOMの個別ページともHTTPエラー・consoleエラー0件
+
+---
+
+### ✅ [EPS-INDEX-STALE-PERIOD-UNMARKED-1] EPS ANALYZERの一覧で、直近の決算が反映されていない銘柄（期末日が古い銘柄）に印が無い
+**優先度:** 中
+**分類:** 表示 / `docs/value-monitor/adjusted_eps_analyzer/index.html`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+- 一覧の「決算日」列（値は直近四半期の期末日）は日付を出すだけで、古さの印が無い
+- 期末日から今日までの日数（eps=trueの95銘柄）: 44日1・71日3・72日13・77日2・103日61・105日5・106日4・120日1（PEP）・191日1（KO）・194日4（CDNS・RMBS・V・XOM）
+- KO・CDNS・RMBS・V・XOMは2026Q1のまま（Q2の10-Qがcompanyfacts APIに未反映、`[[SEC-COMPANYFACTS-API-LAG-1]]`）。一覧では他の銘柄と区別がつかない
+
+#### 対応方針（チャット側の指示、2026-10-11）
+期末日が今日から一定の日数より古い銘柄に印（色とツールチップ「直近の決算が未反映の可能性」）。日数は全銘柄の分布と提出期限・決算期の違いから決める
+
+#### 対応（2026-10-11、`ea5a58608b`）
+- 日数: 次の提出が10-Q（直近がQ1・Q2・Q4）なら期末から**145日**超、10-K（直近がQ3）なら**190日**超（`index.html`の`STALE_PERIOD_DAYS_10Q`・`STALE_PERIOD_DAYS_10K`）。
+  四半期の長さの上限（14週＝98日）＋提出期限（10-Q 45日・10-K 90日、非早期提出会社。大規模早期提出会社は40日・60日）＋余裕。
+  1本の日数（例: STONKS SILOの135日）にしないのは、10-Kの時期（2〜3月）にQ3の期末から135〜150日を過ぎた正常な銘柄まで印が付くため。
+  PEPのQ4（16週＝112日）でも112＋60＝172日 < 190。直近の四半期が分からない行（`latest_fiscal_quarter`の無い旧形式）は190日
+- 2026-10-11の分布（上の内容）に当てはめると、印はCDNS・RMBS・V・XOM（194日）・KO（191日）の5銘柄。次に古いPEP（120日、Q2）は対象外
+  （PEPはその後、10-08提出のQ3が手元の実行で入り36日）
+- 表示: 「決算日」のセルに「⚠」と黄色、ツールチップ「直近の決算が未反映の可能性（期末からn日。目安m日を超過）」。summaryの各行に`latest_fiscal_quarter`
+- Playwright（手元の全銘柄の実行のsummary.json）で印が上の5銘柄だけに付くことを確認
+
+#### 未了
+今夜のAdjusted_EPS_Data_Updateの後、本番の一覧で同じ5銘柄（SEC_LAGが解消していれば減る）に印が付くこと
+
+
+#### 確認（2026-10-12、CI・本番）
+- SEC_Data_Updateの手動実行（run `38194243923`）から連鎖したAdjusted_EPS_Data_Update（run `38194524660`、workflow_run、02:07〜02:17 UTC、success。冪等性ガードには当たらず処理）:
+  ログ「[RunStatus] 対象 95 / 成功 95 / 失敗 0」「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」。commitされたsummary.jsonは95行、`run_status`（scope=all・started_at 02:08:36Z・succeeded 95・failed []）、
+  全行に`generated_at`・`tanuki`・`latest_fiscal_quarter`（tanuki=falseはRKLBだけ）
+- System Health（run `38196102871`、02:32 UTC）: `[I] EPS Analyzer: ✅ 更新2026-10-12(0日経過) / 2026-10-12の実行で全95銘柄を更新`
+- 本番（Pagesの構築 `38196194080` の後、Playwright）: 一覧は95行でFIG・ZS無し、「決算日」の⚠はCDNS・RMBS・KO・Vの4銘柄（XOMは2026-06-30で外れた）、
+  一覧・XOMの個別ページともHTTPエラー・consoleエラー0件
+
+---
+
+### ✅ [EPS-INDEX-MINOR-1] EPS ANALYZERの一覧・詳細の細かい不具合（TANUKIのlatest.jsonの404、data/直下のAMDttm.json、ツールチップの説明が値と違う2点）
+**優先度:** 低
+**分類:** 表示・不要ファイル / `docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`・`data/AMDttm.json`
+**登録日:** 2026-10-11
+**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+
+#### 内容（2026-10-11に確認した事実）
+1. 一覧（index.html L233）は全行について`../tanuki_valuation/data/{T}/latest.json`を読み、詳細（stock.html L630）も同じ。tanuki=falseのRKLB・ZS（`score_history.json`だけのフォルダ）と、フォルダの無いFIGで404になる
+   （STONKS SILO側の同じ件は`[[STONKS-TANUKI-BADGE-404-1]]`）
+2. `data/AMDttm.json`（AMDのttm.jsonの旧版、2026-03-23の「Rename ttm.json to AMDttm.json」`9219352c52`から残る）。リポジトリ内の参照は0件（`grep -rn AMDttm`、venv・.gitを除く）
+3. 一覧の「決算日」のツールチップは「最新の決算申告日（SEC EDGAR基準）」だが、値（`latest_filing_date`＝`quarters[0].filing_date`）は直近四半期の期末日（95銘柄すべてで`period_end`と一致）
+4. 一覧の「Adj EPS」のツールチップは「企業が公表するNon-GAAP調整後EPS」だが、値はSECの開示から自前で算出したもの
+
+#### 対応方針（チャット側の指示、2026-10-11）
+- summaryの各行にtanukiフラグを持たせ、一覧と詳細はtanuki=falseの銘柄のlatest.jsonを読まない
+- 参照が無いことを確かめてAMDttm.jsonを削除
+- ツールチップを値に合わせる
+- フィールド名（`latest_filing_date`・`filing_date`）と中身（期末日）のずれは記録だけにする（消費者が多い: 一覧・tickers.html・stock.htmlの期間の絞り込み・TANUKIの`_find_four_quarters`系・report_consistency_check・audit・execution_metrics等）
+
+#### 対応（2026-10-11、`ea5a58608b`・`646a4c20fa`）
+- summaryの各行に`tanuki`（cik_lookup.csvのtanuki、`get_registrable_tickers("tanuki")`）。一覧は`tanuki === false`の行のlatest.jsonを読まない。
+  詳細（stock.html）はsummary.jsonを1回読み、その銘柄の行が`tanuki === false`なら読まない（行が無い・`tanuki`の無い旧形式では従来どおり読みに行く）
+- AMDttm.jsonを削除（`646a4c20fa`）
+- ツールチップ: 「決算日」→直近四半期の期末日（提出日ではない）と古い期末日の印の説明、「Adj EPS」→SECの開示（XBRL）から自前で算出した値（会社のNon-GAAP EPSではない）、
+  足し戻す項目（`config/adjustment_items.json`の株式報酬・無形資産償却・M&A統合費用・のれん減損・リストラ・訴訟・公正価値や為替の評価損益等）と
+  税効果（その四半期の実効税率＝税金費用÷税前利益、0〜50%の外なら21%、`tax_adjuster.py`）・希薄化後株式数で割ること
+- フィールド名と中身のずれは記録だけ（変えていない）。消費者（2026-10-11、STEP 0の0-5）: `latest_filing_date`は一覧（index.html）・`tickers.html`（列名「最新決算日」、ツールチップなし）。
+  `quarters[].filing_date`はstock.html（期間の絞り込み・YoY・ラベル）・`report_consistency_check.py`（CHECK-17・19等の直近の四半期の選択）・`audit.py`・`execution_metrics.py`・
+  TANUKI VALUATIONの`pipeline.py`（quarterly.jsonの並び）。summary.jsonの他の列は`tanuki_valuation/pipeline.py`（`_load_eps_map()`）・`tanuki_score/daily_pick.py`・
+  `tanuki_score/index.html`・`admin.html`（last_updated）が読む
+- Playwright（一覧・AAPL・RKLB・CDNS）で404・consoleエラー0件、RKLBはlatest.jsonを読みに行かない（一覧のlatest.jsonの取得は94件）
+
+#### 未了
+- 本番の404が消えるのは今夜のAdjusted_EPS_Data_Updateでsummary.jsonに`tanuki`が入った後
+- `tickers.html`の列名「最新決算日」も中身は期末日（今回は変えていない。名前のずれと同じく記録だけ）
+
+
+#### 確認（2026-10-12、CI・本番）
+- SEC_Data_Updateの手動実行（run `38194243923`）から連鎖したAdjusted_EPS_Data_Update（run `38194524660`、workflow_run、02:07〜02:17 UTC、success。冪等性ガードには当たらず処理）:
+  ログ「[RunStatus] 対象 95 / 成功 95 / 失敗 0」「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」。commitされたsummary.jsonは95行、`run_status`（scope=all・started_at 02:08:36Z・succeeded 95・failed []）、
+  全行に`generated_at`・`tanuki`・`latest_fiscal_quarter`（tanuki=falseはRKLBだけ）
+- System Health（run `38196102871`、02:32 UTC）: `[I] EPS Analyzer: ✅ 更新2026-10-12(0日経過) / 2026-10-12の実行で全95銘柄を更新`
+- 本番（Pagesの構築 `38196194080` の後、Playwright）: 一覧は95行でFIG・ZS無し、「決算日」の⚠はCDNS・RMBS・KO・Vの4銘柄（XOMは2026-06-30で外れた）、
+  一覧・XOMの個別ページともHTTPエラー・consoleエラー0件
+- 残りの`tickers.html`の列名「最新決算日」（中身は期末日）は[[EPS-TICKERS-HTML-PERIOD-LABEL-1]]（低）に分けて登録
+
+---
+
 ## 2026-10-11（完了）
 
 ### ✅ [PAGES-JEKYLL-UNDERSCORE-1] GitHub Pages（Jekyll）が「_」で始まるファイルを公開せず、TANUKI SCOREのROTCE×P/TBV散布図が本番で表示されない

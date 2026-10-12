@@ -2259,6 +2259,16 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 10-11のSEC_Data_Update（run `38157028361`）がXOMで失敗し（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）、連鎖のAdjusted_EPS_Data_Update（run `38157215214`）はskipped。
 run_status・Step Summary・95行・[I]はまだCIで確かめられていない。次の機会は10-12（月）04:10 UTCの安全網のschedule（summary.jsonの`last_updated`は10-04のため冪等性ガードに当たらない見込み）
 
+#### 確認（2026-10-12、CI・本番。移設しない）
+- SEC_Data_Updateの手動実行（run `38194243923`）から連鎖したAdjusted_EPS_Data_Update（run `38194524660`、workflow_run、02:07〜02:17 UTC、success。冪等性ガードには当たらず処理）:
+  ログ「[RunStatus] 対象 95 / 成功 95 / 失敗 0」「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」。commitされたsummary.jsonは95行、`run_status`（scope=all・started_at 02:08:36Z・succeeded 95・failed []）、
+  全行に`generated_at`・`tanuki`・`latest_fiscal_quarter`（tanuki=falseはRKLBだけ）
+- System Health（run `38196102871`、02:32 UTC）: `[I] EPS Analyzer: ✅ 更新2026-10-12(0日経過) / 2026-10-12の実行で全95銘柄を更新`
+- 本番（Pagesの構築 `38196194080` の後、Playwright）: 一覧は95行でFIG・ZS無し、「決算日」の⚠はCDNS・RMBS・KO・Vの4銘柄（XOMは2026-06-30で外れた）、
+  一覧・XOMの個別ページともHTTPエラー・consoleエラー0件
+- AI分析（Grok）の「[AI] Error」はこの実行で20件（すべてRead timed out、`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`）
+- **未確認**: ジョブのStep Summaryの表示（`gh api`のcheck-runの`output`は空で、APIから読めない。Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」を確かめてから移設する）
+
 ---
 
 ### [SEC-XOM-CIK-HOLDING-REORG-1] XOMの登録者が持株会社（ExxonMobil Holdings Corp、新CIK 0002115436）に変わり、SEC_Data_Updateが新CIKのcompanyfactsで2023年度の凍結の検査に失敗して止まり、日曜の連鎖が全部skippedになった
@@ -2292,6 +2302,75 @@ run_status・Step Summary・95行・[I]はまだCIで確かめられていない
 - 月曜の安全網: Adjusted_EPS_Data_Update（04:10 UTC、schedule、SEC Data Updateの結果に依存しない）とHypeCore（04:00 UTC）→TANUKI VALUATIONは動く見込み。
   SECデータはcommitされていないため、XOM・新しい提出のあった銘柄のSECデータは前回（10-10）のまま
 - 直すまで、毎週日曜のSEC_Data_Updateが同じ箇所で止まる
+
+#### 影響の洗い出し（2026-10-12、STEP 2。CIKを使う処理をリポジトリ全体からgrep〈cik・company_tickers・submissions・companyfacts・Archives/edgar・cik_lookup・get_cik〉）
+| 処理 | 現CIKをどこから引くか | 今の状態（変更前） | 対応 |
+|---|---|---|---|
+| SECデータの層（`fetcher.py`、Layer1〜3・TTM・normalized → TANUKI VALUATION・TANUKI SCORE・HypeCore・rotce） | SECの`company_tickers.json`（`get_cik()`、`_cik_cache.json`は.gitignoreでCIは毎回取り直す） | 新CIK（0002115436）を引き、旧CIKを統合しないため凍結の検査で停止 | cik_history.jsonにXOMの旧CIKを登録 |
+| EPS ANALYZERの財務（`extract_key_facts.py::get_cik()`） | `cik_lookup.csv`優先 | 旧CIK（Q2が入らない）。cik_lookup.csvだけ新CIKにすると履歴がFY2026だけになる（旧CIKを統合しない） | 旧CIKの統合を追加（共通の関数）、cik_lookup.csvを新CIKに |
+| EPS ANALYZERの会社情報（`company_metadata.py`、submissions） | `pipeline.py`が`extract_key_facts.get_cik()`で引く | 旧CIK | cik_lookup.csvの変更で新CIK |
+| TANUKI VALUATIONのインサイダー取引（`data_fetcher.py::fetch_insider_trades()`、submissionsのForm 4） | `cik_lookup.csv`（直接CSVを読む） | 旧CIK（07-01が最後のForm 4、以後は届出なし） | cik_lookup.csvの変更で新CIK |
+| 登録の検査（`registration_validator.py`のP6 CIK断絶候補） | cik_history.json・年次ファイル | — | 対応不要（登録済み銘柄はP6の対象外） |
+| `preflight_check.py`・TAILの各処理（`tickers.get_cik()`） | `cik_lookup.csv` | XOMは対象外（新規登録・TAILの保有銘柄ではない） | 対応不要 |
+| System Healthの銘柄監査（[K]）・cik_lookup.csvのフラグを読む各処理 | フラグ・statusだけ（CIKの値は読まない） | — | 対応不要 |
+| `discover_config.json`・`beta_config.json`・`stonks_flag_rule.json`・`warn_acknowledged.json`のXOMの行 | CIKを持たない（warn_acknowledgedのWARN-60だけ旧CIKのaccnを照合） | — | WARN-60のXOMの1件を削除（SEC_LAGが解消したため） |
+- チャット側の表との違い: 足したのは、`preflight_check.py`・TAILの`tickers.get_cik()`（XOMは対象外）と、SYSTEM_MAP.mdの記載の誤り（cik_history.jsonの登録銘柄に、実在しないAVGOが書かれていた）
+
+#### 対応（2026-10-12、コード`8b77792126`・設定`fbf681f89c`、同じpush）
+- `common/sec_data/cik_history.json`にXOM（legacy_ciks ["34088"]、持株会社化の注記）
+- `fetcher.py`: `legacy_ciks_for()`・`merge_us_gaap_facts()`をモジュールの関数にし、SECFetcherとEPS ANALYZERで共通に使う
+- `extract_key_facts.py::fetch_company_facts_with_legacy()`: 旧CIKのCompany Factsを同じ関数で統合（連結は旧CIKが先。現CIKを先にするとMRVLの2020-05-02のリストラ費用が旧CIKの値になり、
+  2021-01-30にリストラ −90.9Mという不自然な値が出たため）。旧CIKが取れないときは切り詰めた履歴を出さずに失敗
+- `config/cik_lookup.csv`: XOMを0002115436・ExxonMobil Holdings Corpに
+- テスト`tests/test_eps_cik_history_merge.py` 5件（修正前に4件失敗）。`pytest tests/ src/subport/day_trade/test_logic.py` 2292件・audit.py exit 0・report_consistency_check.py NG=0・registration_validator.py XOM NG=0
+
+#### 検証（2026-10-12、commitの前に手元で。出力はcommitせず元に戻した）
+- SECデータの層（`update.py XOM`、手元の`_cik_cache.json`のXOMをCIと同じ新CIKに直して実行）: 凍結の検査を通過（XOMの凍結は2023年度の3項目）、年次ファイルの変更0件、
+  `quarterly_2026Q2.json`（期末06-30、売上116,017M・純利益14,525M）が新規、TTMの最新の期末が2026-03-31→2026-06-30（TTM純利益32,757M）
+- EPS ANALYZER（`--ticker XOM,MRVL,GOOGL,DELL`、有料APIのキーは空。変更前のコードの同じ実行と比較）:
+  XOM 37→38四半期（2026-06-30を追加、GAAP EPS 3.48、既存の四半期の変化0件）、GOOGL・DELLは変化0件、
+  MRVLは39四半期（旧CIKの期の2016-10-29〜2020-02-01の13四半期を追加。これまで統合していなかった分）で、既存の2四半期が変化:
+  2021-01-30（リストラ費用4.37Mが新たに入る〈旧CIKの第1〜3四半期の累計が使えるようになった〉、DTAの補正 −96.87M→−83.32M、adjusted EPS −0.1201→−0.0999）、
+  2022-01-29（DTAの補正 −114.46M→−100.91M、adjusted EPS −0.1359→−0.1189）。DTAの補正は全四半期の正常な税費用の中央値を使うため、13四半期の追加で中央値が変わった
+- インサイダー取引: 新CIKのsubmissionsは取れるが、Form 4の届出は0件（旧CIKの最後は2026-07-01）。`fetch_insider_trades()`は新旧どちらのCIKでも直近90日 0件（中立）
+
+#### 止まった連鎖の取り戻し（2026-10-12、STEP 4）
+- SEC_Data_Updateの手動実行（run `38194243923`、02:02〜02:06 UTC、success）: 98銘柄すべてを処理（XOMの後のRMBS・ENTG・TER・KLAC・LRCXも）、
+  「鮮度: OK_NO_NEW 93 / REFRESHED 1 / SEC_LAG 4 / FETCH_FAILED 0」（REFRESHEDはXOM、SEC_LAGはCDNS・KO・RMBS・V）、SECへのリクエスト293回・100.0秒、
+  Consistency Check Gate NG=0、`_freshness.json`（generated_at 2026-10-12T02:05:31Z）をcommit（push `5afcf836`）
+- 連鎖: HypeCore Update `38194524638`・Stonks Silo Update `38194524654`・SEC Data Quality Audit `38194524673`・Adjusted_EPS_Data_Update `38194524660`（いずれもsuccess）→
+  TANUKI VALUATION `38194628040`（success）・`38194634657`（cancelled、同時に1本の設定で後続に置き換え）・`38195218219`（success）→ TANUKI_Score_Update `38195252874`・`38196200564`（success）
+- Adjusted_EPS_Data_Updateは連鎖で動いた（13:10 JSTの安全網より先。ticker=XOMの手動実行は不要だった）。XOMはsummary.jsonで期末2026-06-30・Q2・GAAP EPS 3.48
+- TANUKI VALUATIONのXOMのlatest.json: `calculation_date` 2026-10-12T11:17、`components.max_eps_ttm_end` 2026-06-30、インサイダー0件・中立
+- 本番（Playwright、Pagesの構築`38196194080`の後）: EPS ANALYZERの一覧（XOMの「決算日」2026-06-30、⚠が外れた）・個別ページ（推移の最後が2026-Q2、GAAP EPS $3.48）、
+  TANUKI VALUATIONの個別ページ（2026-06-30を表示）、TANUKI SCORE、HypeCoreの詳細（generated_at 10-12）で、HTTPエラー・consoleエラー0件
+
+#### 未了
+- EPS ANALYZERの個別ページのROTCEはまだ2026-03-31の四半期（`docs/common/sec_data/rotce/XOM.json`の再計算はMarket Data Dailyの中で動く）。10-12 20:25 UTCのMarket Data Dailyの後に、
+  XOMのROTCEの直近が2026-06-30になることを確かめてから移設する
+
+---
+
+### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
+**優先度:** 高（2026-10-12、低から変更。2026-10-11に実害: XOMの1銘柄の例外で日曜の連鎖がすべてskippedになった。直し方は次の指示書で扱う）
+**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
+**登録日:** 2026-10-10
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
+- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
+  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
+- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
+
+#### 直し方の候補（未決定）
+- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
+- 失敗が一定の割合を超えたときだけexit 1にする
+
+#### 追記（2026-10-12）: 実害が出た
+2026-10-11のSEC_Data_Update（run `38157028361`）が、XOMの`parser.parse_and_save()`のRuntimeError（凍結の検査、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）でexit 1になり、
+93銘柄分の取り直しの結果もcommitされず、日曜の連鎖（Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてskippedになった。優先度（低）の見直しが必要
 
 ---
 
@@ -2855,6 +2934,12 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 - XOMは新CIK（0002115436）のcompanyfactsで「REFRESHED（b）」。XOMの未反映はSEC側の遅れではなく、持株会社への登録者の切り替えとみられる（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）
 - RMBSはXOMの後の順番のため処理されず、未確認
 
+#### 追記（2026-10-12、XOMは解消・4銘柄は残る）
+- XOMは会社番号の切り替え（2026-07の持株会社化）が原因と確定（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）。新CIKの統合でQ2（期末06-30）が入り、REFRESHED。
+  `config/warn_acknowledged.json`のXOMの1件（WARN-60・accn `0000034088-26-000093`）を削除
+- SEC_Data_Updateの手動実行（run `38194243923`）の`_freshness.json`（2026-10-12T02:05:31Z）: CDNS・KO・RMBS・VはSEC_LAGのまま（4銘柄ともSECの`company_tickers.json`のCIKとcik_lookup.csvは一致）。
+  System Health（02:32 UTC）の[M]は✅、確認済み4件（CDNS 75日・KO 75日・RMBS 76日・V 75日）
+
 ---
 
 （[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
@@ -2877,61 +2962,43 @@ trailing_peが無くforward_peを使ったときはforward_peの正負にかか�
 
 ---
 
-### [EPS-SUMMARY-GHOST-ROWS-1] EPS ANALYZERのsummary.jsonに、eps=trueでなくなった銘柄（FIG・ZS）の行が残り、一覧から開いた詳細画面が404になる
-**優先度:** 中
-**分類:** データの整理 / EPS ANALYZER（`pipeline.py`の`generate_summary()`）・`docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`
-**登録日:** 2026-10-11
-**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
-
-#### 内容（2026-10-11に確認した事実）
-- summary.jsonは97行、`get_eps_tickers()`は95銘柄。多い2行はFIG（`config/cik_lookup.csv`から削除済み）とZS（eps=false）
-- どちらも`data/{T}/`が無く、一覧から詳細画面を開くと`data/{T}/quarterly.json`が404（「データを読み込めませんでした」）
-- `generate_summary()`は前回の行に上書きでマージするだけで、行を消さない。過去にBXの行を手で消した記録がある（BACKLOG_DONE.mdの`check_i_eps`の項、「generate_summaryがマージ方式のため手動削除が必要」）
-
-#### 対応方針（チャット側の指示、2026-10-11）
-`generate_summary()`で`get_eps_tickers()`に含まれない銘柄の行を消し、消した銘柄をログに出す。`--ticker`の部分実行でも同じ（eps=trueの他の銘柄の行は残す）
-
-#### 対応（2026-10-11、`ea5a58608b`）
-- `generate_summary(allowed_tickers=...)`で、渡された銘柄に無い行を消し「eps=trueでない銘柄の行を削除: …」とログに出す。`run()`は全銘柄・部分実行とも
-  `get_registrable_tickers("eps")`を渡す（**指示の`get_eps_tickers()`から変えた**: `get_eps_tickers()`は登録処理中〈status=provisioning〉を除くため、
-  新規登録のStep 5bで作った行をその場で消してしまう。2026-10-11時点で両者は同じ95銘柄）。`allowed_tickers`を渡さない呼び出しは従来どおり消さない
-- 手元の全銘柄の実行で「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」、97→95行。テストは`tests/test_eps_run_status.py`（全銘柄・部分実行）
-
-#### 未了
-今夜のAdjusted_EPS_Data_Updateの後、本番のsummary.jsonが95行でFIG・ZSが無いこと（手元の結果はcommitしていない。[[EPS-SILENT-TICKER-FAILURE-1]]の「未了」）
+（[[EPS-SUMMARY-GHOST-ROWS-1]]は2026-10-12、本番で確認して完了、BACKLOG_DONE.md「2026-10-12（完了）」参照）
 
 ---
 
-### [EPS-INDEX-STALE-PERIOD-UNMARKED-1] EPS ANALYZERの一覧で、直近の決算が反映されていない銘柄（期末日が古い銘柄）に印が無い
+（[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]は2026-10-12、本番で確認して完了、BACKLOG_DONE.md「2026-10-12（完了）」参照）
+
+---
+
+### [CIK-REORG-DETECTION-1] cik_lookup.csvのCIKとSECのcompany_tickers.jsonのCIKが食い違ったとき（法人再編による会社番号の切り替え）に、update.pyが止まる前に検知して知らせる仕組みが無い
 **優先度:** 中
-**分類:** 表示 / `docs/value-monitor/adjusted_eps_analyzer/index.html`
-**登録日:** 2026-10-11
-**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+**分類:** 監視 / common/sec_data（`fetcher.py::get_cik()`・`config/cik_lookup.csv`・`cik_history.json`）・System Health または report_consistency_check
+**登録日:** 2026-10-12
+**発見:** [[SEC-XOM-CIK-HOLDING-REORG-1]]（XOMの持株会社化で、SECの`company_tickers.json`のXOMが新CIKに変わり、2026-10-11のSEC_Data_Updateが凍結の検査で止まって初めて分かった）
 
-#### 内容（2026-10-11に確認した事実）
-- 一覧の「決算日」列（値は直近四半期の期末日）は日付を出すだけで、古さの印が無い
-- 期末日から今日までの日数（eps=trueの95銘柄）: 44日1・71日3・72日13・77日2・103日61・105日5・106日4・120日1（PEP）・191日1（KO）・194日4（CDNS・RMBS・V・XOM）
-- KO・CDNS・RMBS・V・XOMは2026Q1のまま（Q2の10-Qがcompanyfacts APIに未反映、`[[SEC-COMPANYFACTS-API-LAG-1]]`）。一覧では他の銘柄と区別がつかない
+#### 内容
+- SECデータの層は現CIKをSECの`company_tickers.json`から引き（CIでは毎回取り直す）、EPS ANALYZER・TANUKI VALUATIONのインサイダー取引は`config/cik_lookup.csv`から引く。
+  2つが食い違っても知らせる仕組みが無く、今回は2026-07-02（旧CIKの25-NSE）から約3か月気づかなかった
+- 2026-10-12時点で、cik_lookup.csvの全銘柄とcompany_tickers.jsonのCIKの食い違いはXOMだけ（XOMは同日にcik_lookup.csvを新CIKに変更）
 
-#### 対応方針（チャット側の指示、2026-10-11）
-期末日が今日から一定の日数より古い銘柄に印（色とツールチップ「直近の決算が未反映の可能性」）。日数は全銘柄の分布と提出期限・決算期の違いから決める
-
-#### 対応（2026-10-11、`ea5a58608b`）
-- 日数: 次の提出が10-Q（直近がQ1・Q2・Q4）なら期末から**145日**超、10-K（直近がQ3）なら**190日**超（`index.html`の`STALE_PERIOD_DAYS_10Q`・`STALE_PERIOD_DAYS_10K`）。
-  四半期の長さの上限（14週＝98日）＋提出期限（10-Q 45日・10-K 90日、非早期提出会社。大規模早期提出会社は40日・60日）＋余裕。
-  1本の日数（例: STONKS SILOの135日）にしないのは、10-Kの時期（2〜3月）にQ3の期末から135〜150日を過ぎた正常な銘柄まで印が付くため。
-  PEPのQ4（16週＝112日）でも112＋60＝172日 < 190。直近の四半期が分からない行（`latest_fiscal_quarter`の無い旧形式）は190日
-- 2026-10-11の分布（上の内容）に当てはめると、印はCDNS・RMBS・V・XOM（194日）・KO（191日）の5銘柄。次に古いPEP（120日、Q2）は対象外
-  （PEPはその後、10-08提出のQ3が手元の実行で入り36日）
-- 表示: 「決算日」のセルに「⚠」と黄色、ツールチップ「直近の決算が未反映の可能性（期末からn日。目安m日を超過）」。summaryの各行に`latest_fiscal_quarter`
-- Playwright（手元の全銘柄の実行のsummary.json）で印が上の5銘柄だけに付くことを確認
-
-#### 未了
-今夜のAdjusted_EPS_Data_Updateの後、本番の一覧で同じ5銘柄（SEC_LAGが解消していれば減る）に印が付くこと
+#### 対応方針（チャット側の指示、2026-10-12。今回は登録だけ）
+食い違いをupdate.pyが止まる前に検知して知らせる（System HealthかCHECKで）。cik_history.jsonへの旧CIKの登録とcik_lookup.csvの変更は人が判断する
 
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [EPS-TICKERS-HTML-PERIOD-LABEL-1] EPS ANALYZERの銘柄一覧（tickers.html）の列名「最新決算日」の中身が、直近四半期の期末日（提出日ではない）
+**優先度:** 低
+**分類:** 表示 / `docs/value-monitor/adjusted_eps_analyzer/tickers.html`（L229の列名、L260の`latest_filing_date`）
+**登録日:** 2026-10-12
+**発見:** [[EPS-INDEX-MINOR-1]]の残り（一覧〈index.html〉のツールチップは2026-10-11に値に合わせたが、tickers.htmlの列名は変えていない）
+
+#### 内容
+- `tickers.html`の列「最新決算日」は`summary.json`の`latest_filing_date`を出す。中身は`quarters[].filing_date`＝直近四半期の期末日（95銘柄すべてで`period_end`と一致、2026-10-11確認）
+- フィールド名と中身のずれは記録だけにする方針（消費者が多い、[[EPS-INDEX-MINOR-1]]）。列名だけを「直近四半期の期末日」等に合わせるかは未決定
+
+---
 
 ### [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
 **優先度:** 低
@@ -3194,29 +3261,6 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 #### 直し方の候補（未決定）
 - tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
 - 404を想定内として静かに扱う（コンソールのエラーを出さない）
-
----
-
-### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
-**優先度:** 低
-**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
-**登録日:** 2026-10-10
-**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
-- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
-  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
-- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
-
-#### 直し方の候補（未決定）
-- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
-- 失敗が一定の割合を超えたときだけexit 1にする
-
-#### 追記（2026-10-12）: 実害が出た
-2026-10-11のSEC_Data_Update（run `38157028361`）が、XOMの`parser.parse_and_save()`のRuntimeError（凍結の検査、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）でexit 1になり、
-93銘柄分の取り直しの結果もcommitされず、日曜の連鎖（Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてskippedになった。優先度（低）の見直しが必要
 
 ---
 
@@ -3824,41 +3868,7 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 
 ---
 
-### [EPS-INDEX-MINOR-1] EPS ANALYZERの一覧・詳細の細かい不具合（TANUKIのlatest.jsonの404、data/直下のAMDttm.json、ツールチップの説明が値と違う2点）
-**優先度:** 低
-**分類:** 表示・不要ファイル / `docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`・`data/AMDttm.json`
-**登録日:** 2026-10-11
-**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
-
-#### 内容（2026-10-11に確認した事実）
-1. 一覧（index.html L233）は全行について`../tanuki_valuation/data/{T}/latest.json`を読み、詳細（stock.html L630）も同じ。tanuki=falseのRKLB・ZS（`score_history.json`だけのフォルダ）と、フォルダの無いFIGで404になる
-   （STONKS SILO側の同じ件は`[[STONKS-TANUKI-BADGE-404-1]]`）
-2. `data/AMDttm.json`（AMDのttm.jsonの旧版、2026-03-23の「Rename ttm.json to AMDttm.json」`9219352c52`から残る）。リポジトリ内の参照は0件（`grep -rn AMDttm`、venv・.gitを除く）
-3. 一覧の「決算日」のツールチップは「最新の決算申告日（SEC EDGAR基準）」だが、値（`latest_filing_date`＝`quarters[0].filing_date`）は直近四半期の期末日（95銘柄すべてで`period_end`と一致）
-4. 一覧の「Adj EPS」のツールチップは「企業が公表するNon-GAAP調整後EPS」だが、値はSECの開示から自前で算出したもの
-
-#### 対応方針（チャット側の指示、2026-10-11）
-- summaryの各行にtanukiフラグを持たせ、一覧と詳細はtanuki=falseの銘柄のlatest.jsonを読まない
-- 参照が無いことを確かめてAMDttm.jsonを削除
-- ツールチップを値に合わせる
-- フィールド名（`latest_filing_date`・`filing_date`）と中身（期末日）のずれは記録だけにする（消費者が多い: 一覧・tickers.html・stock.htmlの期間の絞り込み・TANUKIの`_find_four_quarters`系・report_consistency_check・audit・execution_metrics等）
-
-#### 対応（2026-10-11、`ea5a58608b`・`646a4c20fa`）
-- summaryの各行に`tanuki`（cik_lookup.csvのtanuki、`get_registrable_tickers("tanuki")`）。一覧は`tanuki === false`の行のlatest.jsonを読まない。
-  詳細（stock.html）はsummary.jsonを1回読み、その銘柄の行が`tanuki === false`なら読まない（行が無い・`tanuki`の無い旧形式では従来どおり読みに行く）
-- AMDttm.jsonを削除（`646a4c20fa`）
-- ツールチップ: 「決算日」→直近四半期の期末日（提出日ではない）と古い期末日の印の説明、「Adj EPS」→SECの開示（XBRL）から自前で算出した値（会社のNon-GAAP EPSではない）、
-  足し戻す項目（`config/adjustment_items.json`の株式報酬・無形資産償却・M&A統合費用・のれん減損・リストラ・訴訟・公正価値や為替の評価損益等）と
-  税効果（その四半期の実効税率＝税金費用÷税前利益、0〜50%の外なら21%、`tax_adjuster.py`）・希薄化後株式数で割ること
-- フィールド名と中身のずれは記録だけ（変えていない）。消費者（2026-10-11、STEP 0の0-5）: `latest_filing_date`は一覧（index.html）・`tickers.html`（列名「最新決算日」、ツールチップなし）。
-  `quarters[].filing_date`はstock.html（期間の絞り込み・YoY・ラベル）・`report_consistency_check.py`（CHECK-17・19等の直近の四半期の選択）・`audit.py`・`execution_metrics.py`・
-  TANUKI VALUATIONの`pipeline.py`（quarterly.jsonの並び）。summary.jsonの他の列は`tanuki_valuation/pipeline.py`（`_load_eps_map()`）・`tanuki_score/daily_pick.py`・
-  `tanuki_score/index.html`・`admin.html`（last_updated）が読む
-- Playwright（一覧・AAPL・RKLB・CDNS）で404・consoleエラー0件、RKLBはlatest.jsonを読みに行かない（一覧のlatest.jsonの取得は94件）
-
-#### 未了
-- 本番の404が消えるのは今夜のAdjusted_EPS_Data_Updateでsummary.jsonに`tanuki`が入った後
-- `tickers.html`の列名「最新決算日」も中身は期末日（今回は変えていない。名前のずれと同じく記録だけ）
+（[[EPS-INDEX-MINOR-1]]は2026-10-12、本番で確認して完了、BACKLOG_DONE.md「2026-10-12（完了）」参照）
 
 ---
 

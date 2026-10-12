@@ -11,6 +11,17 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-12（昼、XOMの会社番号の切り替えへの対応）**: CHAT_RULES.mdに最重要ルール「システム全体を一つのものとして考える」（Koichi指示、`2db380cad9`）。
+  `[[SEC-XOM-CIK-HOLDING-REORG-1]]`: CIKを使う処理をgrepで洗い出して表にし（EPS ANALYZERの財務・会社情報とTANUKIのインサイダー取引はcik_lookup.csv、SECデータの層はSECのcompany_tickers.json）、
+  cik_history.jsonにXOMの旧CIKを登録・cik_lookup.csvを新CIKに（`fbf681f89c`）、EPS ANALYZERも旧CIKを共通の関数（`merge_us_gaap_facts()`）で統合（`8b77792126`、テスト5件・修正前4件失敗）。
+  手元の検証: SECデータの層は凍結の検査を通過・年次の変更0件・2026Q2が入る、EPS ANALYZERはXOMに2026Q2が加わり既存の四半期は不変・GOOGL・DELLは不変・MRVLは旧CIKの13四半期が加わり既存の2四半期のDTAの補正が変化。
+  SEC_Data_Updateを手動実行（run `38194243923`、98銘柄、REFRESHED 1〈XOM〉・SEC_LAG 4、success）し、連鎖のEPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Scoreがすべてsuccess。
+  EPSのrun_status（成功95・失敗0）・95行・System Health [I]✅・本番の画面（XOMの⚠が外れ、⚠はCDNS・RMBS・KO・V）を確認。warn_acknowledged.jsonのXOMの1件を削除。
+  **移設3件**: `[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`。**残した**: `[[SEC-XOM-CIK-HOLDING-REORG-1]]`（XOMのROTCEはMarket Data Dailyの後）・
+  `[[EPS-SILENT-TICKER-FAILURE-1]]`（Step Summaryの表示が未確認）・`[[SEC-COMPANYFACTS-API-LAG-1]]`（4銘柄が残る）。**優先度の変更**: `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]` 低→高。
+  **新規登録**: `[[CIK-REORG-DETECTION-1]]`（中）・`[[EPS-TICKERS-HTML-PERIOD-LABEL-1]]`（低）。アクティブBACKLOG 37件→36件。
+  `pytest tests/ src/subport/day_trade/test_logic.py` 2292件・audit.py exit 0・report_consistency_check.py NG=0。
+  **次回確認**: CLAUDE_CODE_START.mdの「次回の確認手順」（TANUKI VALUATIONは10-12に再生成済みのため、MAXEPS・PER-FORWARD・LAYER2の値はすぐ確かめられる）
 - **2026-10-12（朝の確認）**: 04:45 JST（10-11 19:45 UTC）に次回の確認手順の1〜7を時刻の順に確認（読み取りのみ）。
   1: SEC_Data_Update（run `38157028361`、10-11 16:49 UTC起動）が**failure**。XOMの登録者が持株会社「ExxonMobil Holdings Corp」（新CIK 0002115436、SECの`company_tickers.json`のXOM）に変わり、
   新CIKのcompanyfacts（FY2026だけ）で`fixed_registry.json`のXOM 2023の凍結の検査がRuntimeError。98銘柄中93銘柄を処理したところで停止（RMBS・ENTG・TER・KLAC・LRCXは未処理）、
