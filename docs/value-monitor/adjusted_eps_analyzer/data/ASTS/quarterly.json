@@ -1,6 +1,6 @@
 {
   "ticker": "ASTS",
-  "last_updated": "2026-10-04T16:06:08.345683",
+  "last_updated": "2026-10-12T02:09:36.957552",
   "quarters": [
     {
       "gaap_eps": -0.7721116724082139,
@@ -36,15 +36,9 @@
       "tax_expense": 1113000.0,
       "pretax_income": -229796000.0,
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目はSBC（株式報酬費用）のみで、これは恒常的に発生する非現金コストであり一過性とは言えません。GAAP EPS（-0.77）がAdjusted EPS（-0.56）より大幅に悪化しているため、市場がGAAP EPSのみで判断する場合、企業の実力（特に非現金費用の影響を除いた運用状況）が過小評価される可能性があります。ただしSBCは実質的な株主希薄化を伴うため、調整を過信すると過大評価リスクが生じます。投資家はSBCの今後の推移、希薄化効果、キャッシュフローへの影響を注視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、成長企業では毎期発生する恒常的コストであり、株主希薄化の実態を伴う。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "ESTC",
-  "last_updated": "2026-10-04T16:07:39.272983",
+  "last_updated": "2026-10-12T02:11:05.370696",
   "quarters": [
     {
       "gaap_eps": -0.1598715889684915,
@@ -91,30 +91,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目のうちSBCと無形資産償却は恒常的な運用コスト（非現金だが継続発生）、リストラ費用と異常貸倒引当は一過性と判断。GAAP EPSが赤字(-0.16)なのに対しAdjusted EPSが黒字(0.73)に転換するのは主にこれら調整によるため、市場がGAAPベースで評価する場合に企業の実力(キャッシュ生成力や事業基盤)を過小評価している可能性が高い。投資家はSBCの継続性・希薄化リスクと一過性項目の正常化を慎重に見極める必要があり、全体として過小評価リスクが目立つ銘柄。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、テック企業では毎期発生する恒常的コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去M&Aに基づく継続的な費用で一過性とは言えない",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響として異常変動分を調整しており真に一過性",
-            "confidence": 0.75
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は事業再編に伴う一過性の費用として明確に非経常的",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

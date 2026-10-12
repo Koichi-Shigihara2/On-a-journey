@@ -1,6 +1,6 @@
 {
   "ticker": "CPRT",
-  "last_updated": "2026-10-04T16:11:03.888601",
+  "last_updated": "2026-10-12T02:15:12.537980",
   "quarters": [
     {
       "gaap_eps": 0.3421848546286813,
@@ -49,18 +49,18 @@
       "tax_expense": 354580000.0,
       "pretax_income": 682003000.0,
       "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目のうちSBCは恒常的な非現金費用であり、毎期発生する性質から調整の正当性は限定的。一方、異常貸倒引当金はマクロ要因による一時的変動と位置づけられる。全体の調整幅はEPSで約3%と小さく、市場がGAAP EPSで判断する場合でも企業の実力は大きく歪んで見えにくい。ただしSBC加算によりAdjusted EPSが上方修正されているため、GAAPベースでは若干の実力過小評価リスクが存在。投資家はSBCの継続性と株式希薄化効果、貸倒引当金の異常性の持続可能性に注目すべきであり、過大評価を避けるため非GAAP依存を過度に信用しないことが重要。",
+        "health": "調整中",
+        "comment": "調整項目のうちSBCは恒常的な報酬コストであるため加算調整により実力EPSを過大に見せている可能性がある一方、異常貸倒引当金はマクロ要因による一時的項目と判断される。市場がGAAP EPS基準で評価する場合、非現金・異常項目の影響で企業の実力（特に調整後EPS）がわかりにくくなっており、過小評価のリスクが存在する。ただしSBCの恒常加算により投資家が調整後数値をそのまま信用すると過大評価リスクも生じる。投資家はSBCの継続性と異常引当金の真の一過性を慎重に検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが恒常的に発生する報酬コストであり、調整の妥当性は限定的（confidence低め）",
+            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的なコストであり、調整の正当性は中程度。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされ、加算調整の根拠がある",
-            "confidence": 0.65
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響とされ、調整の根拠が比較的明確。",
+            "confidence": 0.75
           }
         ]
       }
@@ -2400,6 +2400,11 @@
     "roic_trend": {
       "years": [
         {
+          "year": 2026,
+          "roic_wacc_ratio": null,
+          "reason": "missing_cash_data"
+        },
+        {
           "year": 2025,
           "roic_wacc_ratio": null,
           "reason": "missing_cash_data"
@@ -2411,11 +2416,6 @@
         },
         {
           "year": 2023,
-          "roic_wacc_ratio": null,
-          "reason": "missing_cash_data"
-        },
-        {
-          "year": 2022,
           "roic_wacc_ratio": null,
           "reason": "missing_cash_data"
         }

@@ -1,6 +1,6 @@
 {
   "ticker": "INTU",
-  "last_updated": "2026-10-04T16:10:27.463879",
+  "last_updated": "2026-10-12T02:14:33.142183",
   "quarters": [
     {
       "gaap_eps": 1.3104693140794224,
@@ -78,25 +78,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の多く（特にSBCと無形資産償却）が恒常的な非現金費用である一方、リストラは一過性。GAAP EPS 1.31に対しAdjusted EPS 3.94と3倍近い開きがあり、市場がGAAP中心に判断する場合、非現金・一時費用の影響で企業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただしSBCは株主希薄化の実態を伴う恒常コストのため、調整後EPSを過度に信頼すると過大評価リスクもある。投資家はSBCの継続規模とリストラの再発可能性を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、技術企業において毎期発生する恒常的な運用コストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の定期的な非現金償却であり、恒常的な調整項目とみなされる。",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用として調整の根拠が強く、真に非経常的。",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {
@@ -2285,6 +2269,11 @@
     "roic_trend": {
       "years": [
         {
+          "year": 2026,
+          "roic_wacc_ratio": 2.1171251594097282,
+          "reason": "ok"
+        },
+        {
           "year": 2025,
           "roic_wacc_ratio": 1.7058511338216589,
           "reason": "ok"
@@ -2297,11 +2286,6 @@
         {
           "year": 2023,
           "roic_wacc_ratio": 1.208018110121221,
-          "reason": "ok"
-        },
-        {
-          "year": 2022,
-          "roic_wacc_ratio": 0.9879322924266744,
           "reason": "ok"
         }
       ],

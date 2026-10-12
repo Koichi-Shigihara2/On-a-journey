@@ -1,6 +1,6 @@
 {
   "ticker": "BSY",
-  "last_updated": "2026-10-04T16:06:40.776637",
+  "last_updated": "2026-10-12T02:10:04.686893",
   "quarters": [
     {
       "gaap_eps": 0.2463430165528035,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目のSBCと無形資産償却はともに恒常的に発生する項目です。市場がGAAP EPS（0.246）で判断する場合、非現金費用による利益圧縮で同社のキャッシュ生成力や事業実力が過小評価される可能性があります。ただしSBCは実質的な報酬コストであり、Adjusted EPS（0.327）が実力を過大に見せているリスクも存在します。投資家は調整の持続性、株式希薄化影響、FCFを総合的に検証すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する恒常的な株式報酬費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の継続的な償却費で恒常的項目",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

@@ -1,6 +1,6 @@
 {
   "ticker": "ADBE",
-  "last_updated": "2026-10-04T16:10:11.077777",
+  "last_updated": "2026-10-12T02:14:04.444101",
   "quarters": [
     {
       "gaap_eps": 4.619469026548672,
@@ -65,20 +65,9 @@
         }
       },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の主力はSBC（恒常的な非現金報酬コスト）と無形資産償却（買収後の定期償却）であり、両者とも一過性ではなく毎期発生する性質です。これによりAdjusted EPSはGAAP EPSを約26%上回っています。市場がGAAP EPSのみで判断する場合、非現金項目の影響でAdobeのキャッシュ生成力や事業実力が過小評価される可能性があります。ただしSBCは株主希薄化を伴う実質コストであるため、調整依存は過大評価リスクを孕み、投資家はFCFやSBC規模・希薄化効果を慎重に検証すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、Adobeのようなテック企業では継続的に発生する恒常的コストであり一過性とは評価しにくい。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり、恒常的に計上される非一過性項目である。",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

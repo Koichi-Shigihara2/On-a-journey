@@ -1,7 +1,65 @@
 {
   "ticker": "PEP",
-  "last_updated": "2026-10-04T16:12:13.151555",
+  "last_updated": "2026-10-12T02:16:46.634213",
   "quarters": [
+    {
+      "gaap_eps": 2.2297000731528898,
+      "adjusted_eps": 2.274500847420258,
+      "gaap_net_income": 3048000000.0,
+      "adjusted_net_income": 3109242658.423493,
+      "diluted_shares_used": 1367000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 78000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 61242658.42349304,
+          "tax_rate_applied": 0.21483771251931993
+        }
+      ],
+      "net_adjustment_total": 61242658.42349304,
+      "filing_date": "2026-09-05",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV",
+      "sector_exclusions": [
+        "inventory_writeoff",
+        "gov_subsidy_timing"
+      ],
+      "revenue": 25274000000.0,
+      "diluted_shares": 1367000000.0,
+      "period_end": "2026-09-05",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 834000000.0,
+      "pretax_income": 3882000000.0,
+      "maturity_monitor": {
+        "alert": "SBC寄与率が40%超（現在 127.4%）",
+        "sbc_contribution": 1.274,
+        "sbc_to_revenue": 0.003,
+        "sbc_per_share": 0.0571,
+        "sector_threshold": {
+          "sbc_contribution": 0.4,
+          "sbc_to_revenue": 0.25
+        }
+      },
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目の株式報酬費用(SBC)は恒常的な運用コストであり、一過性ではない。GAAP EPSではこの非現金費用が控除されているため、企業のキャッシュ生成力や実力がやや過小表示され、市場がGAAP中心に判断する場合にPEPの実力を過小評価するリスクがある。ただしSBCは株式希薄化を伴う実質コストのため、調整EPSを過度に信頼すると過大評価の危険性もある。投資家はSBCの継続規模と希薄化影響をモニタリングすべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_back調整されているが、毎期発生する恒常的コストであり、企業の実質的な報酬支出を反映する。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 2.1775018261504746,
       "adjusted_eps": 2.216741216592988,
@@ -12,12 +70,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 69000000,
+          "amount": 69000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 53718725.51580047,
           "tax_rate_applied": 0.22146774614781928
@@ -37,28 +95,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 848000000.0,
-      "pretax_income": 3829000000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 128.4%）",
-        "sbc_contribution": 1.284,
-        "sbc_to_revenue": 0.003,
-        "sbc_per_share": 0.0504,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "当該調整項目は株式報酬費用(SBC)であり、恒常的に発生する非現金コストであるため一過性とはみなせません。市場がGAAP EPS(2.1775)で企業を評価する場合、非現金費用の実態を加味した真の実力(Adjusted EPS 2.2167)がやや見えにくくなり、株価が過小評価されるリスクが存在します。ただし調整幅は小さく(約1.8%増)、過大調整の懸念は限定的です。投資家はSBCの継続性と潜在的な株式希薄化効果を注視し、長期的な資本配分への影響を評価すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用として株式報酬費用をadd_backする恒常的な調整。毎期発生するSBCはコア事業に関わる報酬コストであり、一過性ではない。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 3829000000.0
     },
     {
       "gaap_eps": 1.6973012399708243,
@@ -1679,11 +1716,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.061976805818594716,
+      "value": 0.06126115823124354,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.05792159983977409,
-      "prior_4q_avg_yoy": -0.004055205978820629
+      "recent_4q_avg_yoy": 0.06525983946522083,
+      "prior_4q_avg_yoy": 0.003998681233977292
     },
     "roic_trend": {
       "years": [
@@ -1711,9 +1748,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.002853480004962574,
+      "value": 0.0030861755163409037,
       "reason": "ok",
-      "period_end": "2026-06-13"
+      "period_end": "2026-09-05"
     }
   }
 }
