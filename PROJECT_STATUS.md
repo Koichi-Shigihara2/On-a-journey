@@ -11,6 +11,17 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-12（日中の確認）**: CHAT_RULES.mdの「システム全体を一つのものとして考える」に従って、EPS ANALYZERの出力の読み手を洗い出し、MRVLの変化（`8b77792126`）の下流を表にした。
+  MRVLは旧CIKの13四半期が加わり古い期の値が変わったが、summary.json・直近4四半期・直近の年次は不変で、TANUKI VALUATIONの判定値の変化は0件（EPSの更新前後の2回の再生成で比較、違いはGrokの文言だけ）。
+  XOMは同じ比較でfunda_score 55→80（EPSの前年同期比 −43%→+112%）、tanuki_scoreは不変。
+  インサイダー取引: XOMの新CIKのForm 4は0件（全文検索でも07-02以降0件、役員本人の届出も07-01が最後）。0/0の「中立」は全96銘柄中13銘柄（届出なし5・P/S以外だけ8）で、
+  判定には使っていない → `[[TANUKI-INSIDER-ZERO-VS-NODATA-1]]`（低）を登録。ほかに`[[EPS-TTM-PERIOD-ORDER-REVERSED-1]]`（低、TTMの期間の文字列の順が逆で、詳細画面のTTMのタブのラベルが9か月ずれる）を登録。
+  朝の確認: TANUKI TAILの2本（予定01:00・01:20 UTC）は05:13 UTCの時点で未起動（未確認のまま残す）。System Health（run `38196102871`、02:31 UTC）は全項目✅・[J]⚪（TAIL_SEC_Itemsの初回待ち）・Overall ✅・終了コード0。
+  TANUKI VALUATION（10-12の再生成）: ABBV 67.1x・QBTS None、DELLは30.8x（想定の≈40.8xと違うが、10-10のSECの再取得でTTMの期末が2026-07-31になったため。計算式どおり）、
+  QBTS・ONDSのFwdと乖離「—」、ONDSの希薄化率73.8%・critical・funda 50・グローストラップhighを本番の画面で確認。ONDS以外の判定値の変化15銘柄は、timingだけ11・SECの再取得とEPSによるfunda 4（GTLB・INTU・PEP・XOM）。
+  **移設4件**: `[[TANUKI-MAXEPS-NI-SOURCE-1]]`・`[[TANUKISCORE-PER-FORWARD-MIX-1]]`・`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`（未補正の各件を回収不可能と検証済みとしてクローズ）・`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`。
+  **残した**: `[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`・`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`（TAILが未起動）、`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`（[J]が⚪のまま）、`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`（Discordの本文が未確認）。
+  `[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`にタイムアウトの件数の推移（09-27 23・10-04 7・10-12 20）。アクティブBACKLOG 36件→34件。report_consistency_check.py NG=0・audit.py exit 0（文書だけの変更）
 - **2026-10-12（昼、XOMの会社番号の切り替えへの対応）**: CHAT_RULES.mdに最重要ルール「システム全体を一つのものとして考える」（Koichi指示、`2db380cad9`）。
   `[[SEC-XOM-CIK-HOLDING-REORG-1]]`: CIKを使う処理をgrepで洗い出して表にし（EPS ANALYZERの財務・会社情報とTANUKIのインサイダー取引はcik_lookup.csv、SECデータの層はSECのcompany_tickers.json）、
   cik_history.jsonにXOMの旧CIKを登録・cik_lookup.csvを新CIKに（`fbf681f89c`）、EPS ANALYZERも旧CIKを共通の関数（`merge_us_gaap_facts()`）で統合（`8b77792126`、テスト5件・修正前4件失敗）。

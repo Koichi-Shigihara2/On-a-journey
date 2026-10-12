@@ -26,32 +26,30 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-12 昼〈XOMの会社番号の対応の後〉の最新。時刻の順。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**36件**（`^### [`の機械カウント）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+**次回の確認手順（2026-10-12 日中の確認の後の最新。時刻の順。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**34件**（`^### [`の機械カウント）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-12の対応**: XOMの会社番号の切り替え（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）を直してSEC_Data_Updateを手動実行（run `38194243923`、98銘柄、success）し、
 連鎖（EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてsuccess。EPS ANALYZERのrun_status・95行・[I]・本番の画面は確認済み（3件を移設）。
+10-12日中の確認で、TANUKI VALUATIONの3件（MAXEPS・PER-FORWARD・LAYER2）と[J]の`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`を移設。TANUKI TAILの2本は05:13 UTCの時点で未起動
 1. **Adjusted_EPS_Data_UpdateのStep Summary**（run `38194524660`）: Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」が出ていること（APIからは読めない）。
    確かめたら`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設する
 2. **Stonks_Silo_Update**（10-12 02:07 UTCの連鎖の実行 `38194524654`、success）のresults.json: IOTが外れて24銘柄、全銘柄に`financial_as_of`（`latest_quarter_end`がnullでない・`stale`の判定あり）と
    `profitability_path.path_score_basis`、10x候補の数とASTS・RKLB・IONQの点数（前回の想定は13銘柄・67.0・79.2・82.7。10-12のSEC_Data_Updateで更新されたXOMは財務の更新による差を分けて書く）、
    ヒートマップの10系列（CRWV・JOBY等のNetIncome、KULRのRevenue・GrossProfit・NetIncome）のyoyが値のまま
-3. **TANUKI_VALUATION_Update**（10-12 02:08・02:17 UTCの連鎖の実行 `38194628040`・`38195218219`、success。latest.jsonの`calculation_date`は10-12）: 最大EPS PER（DELL ≈40.8x・ABBV ≈67x・QBTSはNone、`[[TANUKI-MAXEPS-NI-SOURCE-1]]`）、
-   QBTS・ONDSの`per_is_forward`（「Fwd」注記と乖離「—」、`[[TANUKISCORE-PER-FORWARD-MIX-1]]`）、ONDSの希薄化率73.8%/年・`dilution_severity` critical・funda_score 50・
-   グローストラップhigh（`[[LAYER2-SHARES-UNIT-THOUSANDS-1]]`、確認後に「未補正」の各件を回収不可能と検証済みとしてクローズ）、ONDS以外の判定値が不変（株価・財務の更新による分は分けて読む）
-4. **10-12（月）01:00・01:20 UTCのTANUKI TAIL 2本**: 01:00の`TANUKI_TAIL_SEC_Ctrl`のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・success（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）、
+3. **10-12（月）01:00・01:20 UTCのTANUKI TAIL 2本**: 01:00の`TANUKI_TAIL_SEC_Ctrl`のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・success（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）、
    01:20の`TANUKI_TAIL_SEC_Items`の初回の定時の実行のログが「9 成功（更新 0 / 変更なし 9） / 0 失敗」・Grokの呼び出し0回・commitなし（`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`）
-5. **10-12の朝のSystem Health（02:00 UTC予定）**: [J]のTANUKI_TAIL_SEC_Itemsが⚪でも🔴でもなく通常の判定（01:20の実行が02:00より後に遅れたら⚪〈猶予 10-12 13:20 UTCまで〉のままで、
+4. **3のTANUKI_TAIL_SEC_Itemsの初回の後のSystem Health**（10-12 02:31 UTCの実行では⚪のまま。10-13以降）: [J]のTANUKI_TAIL_SEC_Itemsが⚪でも🔴でもなく通常の判定（01:20の実行が02:00より後に遅れたら⚪〈猶予 10-12 13:20 UTCまで〉のままで、
    次の日に通常の判定、`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。Discordの1行（🟢／🟡／🔴・HEALTHY／WARNING／CRITICAL）・Overall・終了コードが同じ重大度（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）。
    [M]が10-12のSEC_Data_Updateの後も✅で、[M]のせいで終了コードが2にならないこと。
-   [F]も含めて結果を`[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]`に記録し、各項目の移設を判断する
+   Discordの1行の本文（ログに出ない）も確かめ、`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`・`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`の移設を判断する
    （参考: 10-12 02:32 UTCのSystem Health `38196102871`は[I]✅「2026-10-12の実行で全95銘柄を更新」・[M]✅ SEC_LAG確認済み4件・[J]⚪ TANUKI_TAIL_SEC_Items初回待ち・Overall ✅ HEALTHY）
-6. **10-12（月）20:25 UTC起動のMarket Data Daily（CI）**: CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09の`_provisional`が外れ、
+5. **10-12（月）20:25 UTC起動のMarket Data Daily（CI）**: CL=F・GC=F・ES=F・NQ=F・NIY=Fの10-08・10-09、JPY=X・DX-Y.NYBの10-09の`_provisional`が外れ、
    report_consistency_checkのCHECK-62（確定時刻から11日を過ぎた暫定の行）が0件で、daily/に意図しない差分が無いこと（`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`）。
    NIY=Fの10-08（平らな足、暫定のまま）は10-17 04:00 UTC以降の夜間の取得で`_no_yahoo_bar`になる。あわせて、次のMarket Pulseのエントリの後にcheck_dependency_map.pyのD-02
    （10-11時点でWTI 記録−0.09%・再計算+0.39%、金 1.53%・1.43%の❌）が一致に戻ること（`[[CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1]]`）
    あわせて、XOMのROTCE（`docs/common/sec_data/rotce/XOM.json`）の直近が2026-06-30になること（rotce.pyはMarket Data Dailyの中で動く）。確かめたら`[[SEC-XOM-CIK-HOLDING-REORG-1]]`を移設する
-7. **次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行**: 月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
-8. **次のFOMC（10月下旬）まで**: `[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
+6. **次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行**: 月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
+7. **次のFOMC（10月下旬）まで**: `[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
 
 **2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
 - 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）

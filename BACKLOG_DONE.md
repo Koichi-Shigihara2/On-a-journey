@@ -4,6 +4,247 @@
 
 ## 2026-10-12（完了）
 
+### ✅ [TANUKI-MAXEPS-NI-SOURCE-1] 最大EPSがdupont.ni_ttm（負の純資産・売上$15M未満では欠ける）と年次のsbc_ttmに依存し、片側だけで計算していた
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`pipeline.py`の max_eps 算出）・TANUKI SCORE（最大EPS PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10、origin/kaihatsu `3a39561030`）
+
+#### 内容（観測した事実）
+- `pipeline.py:1237-1260`は純利益を`dupont.ni_ttm`から取る。`dupont.ni_ttm`はDuPont分解が成功したときだけ書かれ、負の純資産
+  （ABBV・BKNG・DELL・FICO・MSCI・RBRK・MO・PM）・売上$15M未満（QBTS）では欠ける。TTM系列（`common/sec_data/ttm/{T}_ttm_series.json`の
+  `flow.net_income`）には9銘柄とも4四半期そろった値がある
+- 片側が欠けると残った側だけで計算し信頼性MEDにする。例: DELL max_eps 1.1371（株式報酬のみ÷株数）・最大EPS PER 515.4x
+  （TTM純利益を使うと約40.8x）。RBRKは78.2x（正しくは約631x）、QBTSは244.1x（純利益＋株式報酬≤0で本来None）
+- `financial_health.sbc_ttm`は名前に反して最新年次ファイルの`cf.stock_based_compensation`（TTMではない）
+- 判定・点数（funda/timing/tanuki_score/matrix/トラップ）は max_eps 系を参照していない。影響は表示のみ
+
+#### 対応方針（チャット側の決定）
+純利益・株式報酬ともTTM系列の最新エントリから取る。純利益None→None・LOW、株式報酬None→0扱いでMED、両方→HIGH、合計≤0→None。
+`components.max_eps_ttm_end`を出力。`dupont.*`・`financial_health.sbc_ttm`は変更しない
+
+#### 対応（2026-10-10、`86db08acf3`）
+- `pipeline.py`: `_latest_ttm_entry()`（`ttm_end`の最大値で選ぶ。データ98ファイルとも`series[0]`が最大で、`calc_ttm_series()`も新しい順）・`compute_max_eps()`
+- `components.max_eps_ttm_end`を追加。`dupont.*`・`financial_health.sbc_ttm`は変更なし。テスト`tests/test_tanuki_max_eps.py`（6件）
+- 現在のデータに当てた試算: DELL 515.4→40.8x、ABBV 511.6→67.1x、BKNG 202.7→15.9x、FICO 92.0→14.6x、MSCI 369.0→27.8x、RBRK 78.2→633.9x、QBTS 244.1x→None。
+  MO・PMはLOW→MED（15.0x・28.8x）。WMTはTTM系列に株式報酬が無くHIGH→MED（34.4→40.0x）。株式報酬が年次→TTMに変わるため、HIGHの銘柄も小さく動く
+
+#### 未了
+- latest.jsonはまだ再生成していない（パイプラインの全銘柄実行はFCF一過性費用のAI定性評価〈Grok〉を`transient_found`の33銘柄で呼ぶため、ローカルで実行しなかった）。
+  10/12（月）13:00 JST ごろ以降の再生成の結果で、上の値と判定値（intrinsic_value・tanuki_score・funda/timing・matrix）が変わっていないことを確認してから完了にする
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
+
+
+#### 確認（2026-10-12）
+- TANUKI VALUATIONは10-12に2回再生成（`f109142b92` 11:18 JST・`a25d2b6d20` 11:32 JST、SEC_Data_Updateの手動実行〈run `38194243923`〉からの連鎖、run `38194628040`・`38195218219`）
+- ABBV 67.1x・QBTS None（想定どおり）。DELLは30.8x（想定の≈40.8xと違う）。原因は財務の更新: 想定はTTMの期末2026-05-01（純利益8,409M）で計算していたが、
+  10-10のSECの再取得（`e2a629fb58`、DELLはREFRESHED）で期末2026-07-31（純利益11,378M・株式報酬727M）になった。(11,378M＋727M)÷635,812,750株＝19.0386＝`components.max_eps`、
+  586.06÷19.0386＝30.8xで、計算式どおり。`max_eps_ttm_end`はDELL 2026-07-31・ABBV 2026-06-30・QBTS 2026-06-30
+- 本番のTANUKI SCORE（Playwright）: 最大EPS PERの列がDELL 30.8x・ABBV 67.1x・QBTS「—」、HTTPエラー・consoleエラー0件
+
+---
+
+### ✅ [TANUKISCORE-PER-FORWARD-MIX-1] TANUKI SCOREの「GAAP PER」列に前向きPERが注記なしで混ざり、乖離列が無意味になっていた（QBTSではper_is_forwardが立っていない）
+**優先度:** 中
+**分類:** 表示値の誤り / TANUKI VALUATION（`data_fetcher.py`の per）・TANUKI SCORE（GAAP PER列・乖離列）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）
+
+#### 内容（観測した事実）
+- `components.per`は`data_fetcher.py:725`の`trailing_pe or forward_pe`。trailing PEが無い（赤字）銘柄はアナリスト予想EPSによる前向きPERになる
+- `per_is_forward`はforward_pe>0のときだけtrue。QBTSはtrailingが無くforward_peが負（-41.8）のため、per=-41.8なのにper_is_forward=false
+- 画面（`docs/value-monitor/tanuki_score/index.html`）はper_is_forwardを見ず「GAAP PER」として表示し、乖離（GAAP PER − 最大EPS PER）も計算する。
+  例: NETはGAAP純利益が赤字（TTM -206M）なのに「GAAP PER 208.3x」（forward）と表示。前向きPERの銘柄はAVAV・FROG・GTLB・LITE・NET・RBRK・S・ZETA（＋QBTS）
+
+#### 対応方針（チャット側の決定）
+trailing_peが無くforward_peを使ったときはforward_peの正負にかかわらずper_is_forward=true。画面でFwdと注記し、その銘柄の乖離は「—」
+
+#### 対応（2026-10-10、`eca2072b45`）
+- `data_fetcher.py`: `per_is_forward = (not trailing_pe) and bool(forward_pe)`（forward_peを使ったときだけtrue、正負は問わない）。
+  trailing_peが負でperにそれを使った場合は、以前のtrueからfalseに変わる（現在のデータでは該当なし）
+- `tanuki_score/index.html`: per_is_forward=trueならGAAP PERの横に「Fwd」（title付き）、乖離は「—」、表下に凡例1行
+- per_is_forwardの参照: data_fetcher.py・core_calculator.py:935（componentsへ渡すだけ）・hypecore/detail.html:567（FwdPEのラベル）。判定・点数には使われていない
+- 同じ問題がある画面（修正していない）: `tanuki_valuation/stock.html`（フェアPER・PEGのパネルで、per_adjustedが無いとき「GAAP PER」として表示し、フェアPER・PEGの計算に使う）、
+  `adjusted_eps_analyzer/stock.html`（PER比較の「市場 PER（GAAP）」と調整後PERとの差）。`tanuki_score/index.html`のトラップ判定（低PER）・チップの「PER」も
+  per_is_forwardを見ない（判定値を変えないため今回は対象外）
+
+#### 未了
+- QBTSのper_is_forwardは10/12（月）13:00 JST ごろ以降の再生成で反映される（それまでは画面でFwdが付かない）
+  （確認日の訂正、2026-10-10: TANUKI VALUATIONは上流のMarket Data Dailyが平日の引け（UTCの月〜金）の分だけ動くため、土曜〜日曜朝の定時の連鎖は無い。次の再生成は日曜のSEC Data Update〈12:00 UTC予定、前週は16:00 UTC〉からの連鎖か、月曜のHypeCoreの安全網〈04:00 UTC＝13:00 JST予定、前週は11:05 UTC〉からの連鎖。前週はそれぞれ10/5 01:05 JST・20:07 JSTにTANUKI VALUATIONが動いた〈gh run listで確認〉）
+- ONDSもper_is_forward=trueになる（公開中のlatest.jsonはper=-362.0・per_is_forward=falseで、画面はマイナスPERなのに乖離〈per−最大EPS PER〉を出していた）。この修正で解消する（2026-10-10にXAI_API_KEYを空にした手元の再生成でper_is_forward=trueを確認、出力はcommitしていない）。10/12の再生成で確認する
+
+
+#### 確認（2026-10-12）
+- TANUKI VALUATIONは10-12に2回再生成（`f109142b92` 11:18 JST・`a25d2b6d20` 11:32 JST、SEC_Data_Updateの手動実行〈run `38194243923`〉からの連鎖、run `38194628040`・`38195218219`）
+- QBTS（per −38.58、`per_is_forward` true）・ONDS（per −336.5、true）。本番のTANUKI SCOREで「−38.6xFwd」「−336.5xFwd」、乖離はどちらも「—」
+
+---
+
+### ✅ [LAYER2-SHARES-UNIT-THOUSANDS-1] 株式数の単位誤り（提出者の千株・百万株単位の申告、Layer2とLayer3の書類選択、ESTCはLayer3の計算の誤り）
+**優先度:** 中
+**分類:** データ品質 / common/sec_data（Layer2 `shares`・Layer3 `shares_diluted`等）
+**登録日:** 2026-10-10（同日、影響範囲調査の結果で更新）
+**発見:** [[ROTCE-PTBV-1]]（rotce.pyのP/TBVがCIXで0.0xになった）
+
+#### 原因の分類（2026-10-10の調査、company_facts.jsonの生の値で確認）
+1. 提出者の単位誤り（同じ期の別の書類と比がちょうど1,000倍・100万倍）
+   - 後の書類の比較期間（再掲）が誤り、元の書類は正しい: CIX 2025-06-30（12,321,000→12,321）、ONDS 2024年度（69,917,062→69,917）・
+     2025-03-31（105,004,818→105,005）、TER 2022-10-02（166,733,000→166,733）
+   - その期の書類しかなく誤り: CIX 2026-06-30（12,329、表紙12,336,657株）、ONDS 2025年度（221,769、期末発行済380,763,481）・2026-03-31（461,706）
+   - LOARは加重平均を一貫して千株単位で申告（例: 2026Q2 95,521、表紙93,688,471株。2024-03以前の204は上場前の株数）。前後比較では境目しか検出されない
+   - 古い期で元の書類が誤り・翌年の書類で正しい: KO 2018–19（4,306）・NVDA 2009–11・FCX 2010Q2（473）・CPRT 2014–15・COHR 2012・2020・HEI 2012・TER 2023-10-01。
+     ELF 2014–15・RCAT 2013–14は生データ未確認
+2. Layer2とLayer3で選ぶ書類が逆: Layer2（parser.py）は本人のその期の書類を優先し「元の書類の誤り」を拾う（TER 2023Q3はLayer2だけ164,050）、
+   Layer3は最新の提出を優先し「再掲の誤り」を拾う（CIX・ONDS・TER 2022）
+3. ESTCはLayer3の計算の誤り: 2022-10-31の343,058（＝上半期累計94,964,423−第1四半期94,621,365）・2022-01-31の437,133は、
+   `layer3_builder.py::_normalize_field_entries`のYTD→四半期変換が足し算できない株式数にもかかったもの（全銘柄でESTCの2点だけ）
+- 正当な変化（誤りではない）: BKNG（25対1、2026-04）・KLAC（10対1、2026-06）・AMZN（2022）の分割、QBTS・SOUNのSPAC合併前の株数
+
+#### 公開データへの影響（2026-10-10時点）
+- ONDSだけ: TANUKI VALUATIONの希薄化率・dilution_severityが未算出（Layer3年次の69,917・221,769でyfinance比10倍超の安全弁が働く。正しくは約73.8%/年＝critical）、
+  TANUKI SCOREのグローストラップがmedium（正しくはhigh）
+- 影響なし: TANUKI VALUATIONのdiluted_shares（yfinance優先、該当銘柄はすべてyf_implied）・理論株価・最大EPS・時価総額、EPS Analyzer（`extract_key_facts.py`に千株単位の自動補正あり）、
+  TANUKI TAIL（保有9銘柄に該当なし。CIX・LOARを保有すればEPSが1,000倍になる）、STONKS SILO・HypeCore（SECの株式数を使わない）、ROTCE（外れ値として捨てて回避）
+- 凍結年度: LOARの2023〜2025年度はfields_snapshotにshares_dilutedを含む（修正時は登録の更新が必要）
+- 2026-10-10訂正: 上の調査で「funda/timingは希薄化率を使わず影響なし」としたのは誤り。`pipeline.py::_compute_tanuki_score()`の
+  希薄化ペナルティ（3年年率>40%で−25、>20%で−15）がfunda_scoreに入る。ONDSは修正後にfunda_score 75→50（tanuki_scoreはWATCHのまま）
+
+#### 対応（2026-10-10）
+- STEP1 `b11a4dbd3d`: Layer3の株式数（category=sharesの3フィールド）にYTD→単四半期変換をかけない（ESTCの2点）
+- STEP2 `514b2ce230`: `share_unit_fix.py`。同じ期間で比が1,000倍・100万倍の2値は、その概念の全期間の中央値に近い方を採る
+  （指示書の「大きい方」から変更: MSCI 2014-12-31は1つの10-Qだけが1,000倍で、大きい方が誤り）。置き換えは`data/{T}/share_unit_fix_log.json`
+- STEP3 `04419e6058`: fact_overrides.jsonの銘柄ごとの"share_unit"で個別補正（CIX 2026-06-30・ONDS 2025年度・2026-03-31・LOARの上場後の全期）。
+  年度単位の上書きと違い四半期・Layer3にも効く。LOAR 2024・2025年度のfields_snapshot_hashを更新（他の凍結25項目は不変）
+- STEP4 `1cae34ace2`: report_consistency_check.pyにCHECK-59（WARN）。LOARの上場前の204・SOUNのSPAC合併前の株数は確認済み台帳に登録
+- 結果: タスク開始時点から株式数52値（Layer2）が変わり、株式数以外の差分0件。ONDSの希薄化率73.8%/年（critical）、グローストラップhigh
+- ONDSは確認のためXAI_API_KEYを空にして1銘柄だけ再生成し（fcf_outlier.transient_found=FalseでGrokの呼び出し条件に当たらない）、
+  再生成した出力はcommitせず元に戻した（チャット側の指示）。公開データへの反映は2026-10-12（月）13:00 JSTごろの定時実行。
+  再生成で変わった項目: 希薄化率73.8%・dilution_severity=critical・funda_score 75→50（希薄化ペナルティ、正しい結果として承認済み）、
+  category（None）・tanuki_score（WATCH）・timing_score（25）・matrixは不変。AI由来の欄（fcf_outlier.ai_assessment等）は再生成前後とも空で、
+  空になった欄はない。ほかに最大EPS 0.3144→0.4604・per_is_forward False→Trueが変わったが、株式数とは無関係（[[TANUKI-MAXEPS-NI-SOURCE-1]]・
+  [[TANUKISCORE-PER-FORWARD-MIX-1]]の修正が未反映だったもの）
+- ONDS以外の全銘柄: 判定値に効くのは希薄化率（funda_scoreのペナルティ）だけで、pipeline.pyの計算を開始時点・修正後のコードで全98銘柄について
+  再現すると、開始時点の再現値は公開中のlatest.jsonと全銘柄一致、修正後に変わるのはONDSだけ
+
+#### 未補正（同じ期に正しい値を申告した書類がなく、根拠のある補正ができない。いずれも直近5年より前でCHECK-59の対象外）
+- ELF 2014〜15（上場前、27,593・30,523、2016Q1は490,760で倍率が一定でない）
+- RCAT 2013〜14（167,097,874→1,113,986→257,097,874→92,935,896→19,241,365と不規則、資本再編とみられる）
+- KO 2018Q1（4,306）、NVDA 2008・2009年度・2010Q2、FCX 2010Q2（473、翌年の書類は2対1分割後の947,000,000で比が100万倍ちょうどでない）
+
+#### 未了
+- 10-12（月）13:00 JSTごろの再生成（TANUKI VALUATION）で、ONDSの希薄化率が73.8%/年・`dilution_severity`がcritical・`funda_score`が50・TANUKI SCOREのグローストラップがhighになることを確かめる
+- 上の確認の後に正式にクローズする。そのとき「未補正」の各件は「同じ期に正しい値を申告した書類がなく回収不可能と検証済み・CHECK-59の対象外」として閉じる
+
+
+#### 確認（2026-10-12）
+- TANUKI VALUATIONは10-12に2回再生成（`f109142b92` 11:18 JST・`a25d2b6d20` 11:32 JST、SEC_Data_Updateの手動実行〈run `38194243923`〉からの連鎖、run `38194628040`・`38195218219`）
+- ONDS: `financial_health.dilution_3yr_annual_pct` 73.8、`dilution_severity` critical、`funda_score` 50（10-10の公開値75から）、`tanuki_score` WATCH。
+  本番のTANUKI SCOREの投資トラップの表でONDSのグロースが🔴（high）
+- 10-10（`a39eae8d09`）→10-12（`a25d2b6d20`）で判定値（tanuki_score・category・funda/timing・matrixの象限）が変わった銘柄は16: ONDS（本項目）、timing_scoreだけの変化11銘柄
+  （CART・NVDA・SITM・V・CPRT・MSCI・DOCN・VZ・TER・ABBV・PM。ABBV・PMはtiming 40→30でHOLD→TRIM。株価はどちらも10-09の終値のため、F&G等の市場の入力の変化とみられる〈未分解〉）、
+  funda_scoreの変化はGTLB 80→65・INTU 90→80（10-10のSECの再取得による財務の更新）、PEP 65→55（SECの再取得とEPSの前年同期比）、
+  XOM 25→80・WATCH→TRIM（SECの再取得〈新CIKの統合で2026Q2〉とEPSの前年同期比 −43%→+112%、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）。株式数の修正による変化はONDSだけ
+
+#### クローズ（2026-10-12）
+「未補正」の各件（ELF 2014〜15・RCAT 2013〜14・KO 2018Q1・NVDA 2008・2009年度・2010Q2・FCX 2010Q2）は、同じ期に正しい値を申告した書類がなく
+根拠のある補正ができないため、回収不可能と検証済みとしてクローズする（いずれも直近5年より前でCHECK-59の対象外。2026-10-10の調査でcompany_facts.jsonの生の値を確認済み）
+
+---
+
+### ✅ [SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1] System Healthの[J] CronRunsが、ワークフローごとに直近の完了した実行1件のconclusionだけで判定するため、Market Data Dailyのガードによる正常なcancelledを失敗と数え、10-01以降の6日中5日でCRITICALになっている
+**優先度:** 高
+**状態:** 実装完了・実地確認待ち（2026-10-07）。直した後の最初のSystem Health Checkで[J]が正しい結果を出し、Discordの1行でJ・Kが切れずに読めることを確かめるまでBACKLOG_DONE.mdへ移さない
+**分類:** 監視 / System Health・GitHub Actions
+**登録日:** 2026-10-06（同日、チャット側の確認を受けて実測と件名を訂正）
+**発見:** 外部起動の初回確認（米国10-05の足）の中で、System Health Checkの実行履歴を確認
+
+#### 内容
+`common/system_health.py::check_j_workflow_runs()`は、cronのあるワークフローごとに直近の完了した実行1件
+（`_fetch_latest_run()`、`per_page=1&status=completed`）の`conclusion`だけを見て、`success`・`skipped`以外を失敗にする。
+Market Data Dailyは2026-09-30からガードを入れ、新しいデータが無い起動（保険のschedule・2本目以降の外部起動・休場日の起動）は
+自分で取り消す（cancelled）設計になった。System Healthの起動時点で直近の1件がこの取り消しだと[J]が🔴になり、
+`main()`は`return 2 if (not ok_a or not ok_j) else 1`でCRITICAL（exit 2）を返す。
+見るのは最新の1件だけなので、1日に何本取り消しがあっても「失敗1件」になる。
+
+#### 実測（System Health Checkの日次の実行のログと、その時点で[J]が見たMarket Data Dailyの実行、2026-10-06確認）
+| System Health（UTC） | [J] | 見た実行 | 理由 |
+|---|---|---|---|
+| 10-06 03:09 | 🔴 | `37406580032`（02:56の保険のschedule、cancelled） | ガード「終値はそろっている」 |
+| 10-05 02:09 | 🔴 | `37168962405`（10-04 01:45、トークンの動作確認の手動実行、cancelled） | ガード「NYSE休場日」 |
+| 10-04 02:46 | 🔴 | 同上`37168962405` | 同上 |
+| 10-03 02:08 | ✅ | `37087907001`（01:55の取得、success） | — |
+| 10-02 02:20 | 🔴 | `36954558060`（02:12、cancelled） | ガード「そろい済み」 |
+| 10-01 02:14 | 🔴 | `36804310278`（02:07、cancelled） | ガード「そろい済み」（ほかにAdjusted_Eps_Analyzer_update.ymlの未実行超過） |
+
+- 09-29の🔴はMarket_Pulse_Update.yml(failure)（本物）、09-30は⚠️（MACRO_PULSE_Update.ymlの未実行超過）、09-28は✅
+- 監視件数は10-04から16→13。`791faa1f02`（金曜の保険のcronを削除）でMarket Pulse・Stonks Silo・TANUKI VALUATIONの3本からcronが無くなり、
+  cronのあるワークフローだけを監視する[J]の対象から外れた（`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`に追記）
+- Discordの1行（`build_one_line()`）は各項目の詳細を先頭20文字で切る（`"short": det_j[:20]`）ため、「13件監視 / 失敗1件: Market…」となり、
+  どのワークフローのどのconclusionかが通知から読めない
+- 毎日のWARNINGの常時の原因は[F] TailCtrl（`[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`）と[K] TickerAudit（APGE・CON・SN・WSTの見直し候補）で、
+  本件の対象外。System Health Checkの実行は[J]が正常でも[F]・[K]によりexit 1で、直近40回すべてfailure
+
+#### 直し方の案（チャット側）
+1. ワークフローごとに「想定した間隔の中にsuccessが1本以上あるか」で判定する。直近1件のconclusionではなく、
+   `_parse_cron_threshold_days()`の閾値の期間の実行を取り、successが1本以上あれば正常、無ければ失敗または未実行超過にする。
+   failureは期間の中にsuccessがあっても別に数えるかどうか（ランナー未割り当てのような一時的なfailureの扱い）は実装時に決める。
+2. Discordの1行の詳細の20文字の切り詰め（`det_j[:20]`）: [J]が異常のときは、ワークフロー名とconclusion（または未実行の日数）が
+   読める長さで出す（例: 異常のワークフローを`名前(conclusion)`の形で全部並べる、または[J]だけ切り詰めない）。
+   他の項目（`det_f[:20]`等）も同じ切り方なので、まとめて見直すかは実装時に決める。
+
+#### 追記（2026-10-07）: `status=completed`で絞った最新の1件が古い（[J]の別の誤り）
+- 見つけた経緯: 直し方の読み取り調査で、[J]の関数をローカルで実行したところ「Adjusted_Eps_Analyzer_update.ymlが13日未実行」と出たが、
+  `gh run list`では10-05に成功していた。同じAPIを呼び比べて、`status=completed`の絞り込みの結果が古いことが分かった
+- 実測（2026-10-07、認証付き）: MACRO_PULSE_Update.ymlの`runs?per_page=1&status=completed`は**09-24 17:49の実行**（total_count 411）を返し、
+  絞り込みなし・`created>=2026-10-01`はどちらも**10-06 18:52の実行**（total_count 487）を返した。認証なしでは、Adjusted EPSでも09-24の実行が返った
+- 本番でも起きていた: 09-30の[J]の「MACRO_PULSE_Update.yml(7日/毎日閾値3日)」、10-01の「Adjusted_Eps_Analyzer_update.yml(11日/週次閾値10日)」は、
+  どちらも実際には数日以内に成功していた（誤った未実行超過）。この2件は本件の「実測」の表の注記にも書いていたが、[J]の出力をそのまま引用していた
+- System Health Checkの実際の起動は予定の23:30 UTCではなく、直近は02:00〜03:00 UTC（GitHubのscheduleの遅れ）
+
+#### 対応（2026-10-07、チャット側承認済み。`[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`と同時）
+- 対象: `scripts/gen_update_schedule.py::load_workflows()`（UPDATE_SCHEDULE.mdの一覧と同じYAMLの読み方）で、cronのあるものとworkflow_runの下流の17本
+  （System_Health.yml自身と手動・pushだけのものは除く）。以前は正規表現で各ファイルの最初のcronだけ（13本）
+- 想定間隔: cronごとの閾値の最短。workflow_runの下流は起動元の閾値を継ぐ（Market Pulse・Stonks Silo・TANUKI VALUATIONは4日、SEC Data Auditは10日）
+- 一覧: `created>=今日（UTC）−閾値`で取り（`status`で絞らない、100件ごとに次のページ）、成否はコードで見る
+- 判定（cancelled・skippedは数えない）: 取り消し・スキップを除いた最新の実行が失敗で、その前の12時間以内に成功が無ければ🔴、あれば⚠️。
+  期間内に成功が無ければ🔴。CRITICAL（終了コード2）は🔴だけ、⚠️はWARNING（終了コード1）
+- Discordの1行: J・Kを切らずに全部出す（他の項目は従来どおり）
+- テスト: `tests/test_system_health_workflow_monitor.py`を書き直し（27件。修正前のコードでは19件失敗・3件エラー、cronの頻度推定4件と
+  リポジトリ特定不可の1件は従来どおり成功）。実際のAPIでの実行（2026-10-07）は「✅ 17件監視 / すべて正常」
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）: 新設のワークフローが一度も起動していないのに[J]が🔴になる（移設を見送り）
+2026-10-08〜10-11のSystem Health Check（すべてschedule・kaihatsu、`gh run view --log`）:
+
+| 起動（UTC） | run | [J] | Overallの行 | 終了コード |
+|---|---|---|---|---|
+| 10-08 02:46 | `37719529201` | ✅ 17件監視 / すべて正常 | ⚠️ WARNING（問題1件。[K]のAPGE・CON・SN・WST） | 1 |
+| 10-09 02:59 | `37877165771` | 🔴 18件監視 / 成功なし1件: TANUKI_TAIL_SEC_Items.yml(10日間に成功なし/週次) | ⚠️ WARNING（問題1件） | 2 |
+| 10-10 02:29 | `38017122312` | 同上 | 同上 | 2 |
+| 10-11 02:00 | `38103735425` | 同上 | 同上 | 2 |
+
+- 10-08は、Market Data Dailyのガードによるcancelledを数えずに✅（この項目で直した判定は意図どおりに動いている）
+- 10-09から監視が18件なのは、10-08に新設した`TANUKI_TAIL_SEC_Items.yml`（`9e73c1dd24`、[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]、毎週月曜01:20 UTC）が加わったため。
+  このワークフローの実行は0件（`gh run list`、初回の定時は10-12 01:20 UTC）で、[J]は「閾値の期間（10日）に成功なし」として🔴・CRITICAL（終了コード2）にしている。
+  **実行が一度も無い新設のワークフローを失敗と数えており、「[J]が正しい結果を出す」という移設の前提と違う**
+- 同じ実行のOverallの行は「⚠️ WARNING（問題1件）」で、終了コード2（CRITICAL）と表示が食い違う（`common/system_health.py:908`の`status_str`は✅と⚠️の2通りだけ）
+- Discordの1行: コードではJ・Kを切り詰めない（`common/system_health.py:884-885`）。ログは「Discord通知: 送信完了」までで、Discordに届いた本文は確認していない
+- 原因の調査・修正はしていない
+
+#### 未了（2026-10-11）
+1. 一度も起動していない新設のワークフローを[J]でどう扱うか決める（10-12 01:20 UTCの初回の実行の後の[J]の結果もあわせて記録する）
+2. Overallの行（⚠️ WARNING）と終了コード2の食い違いを直すか決める
+3. ~~Discordに届いた1行で、J・Kが切れずに読めることを確かめる~~ → **済み**（2026-10-11、Koichiさんが10-11 11:02 JSTの通知の本文で、J・Kが切れずに全文表示されていることを確認）
+
+1・2はそれぞれ[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]・[[SYSHEALTH-SEVERITY-MISMATCH-1]]として登録した（2026-10-11）
+
+
+#### 確認（2026-10-12、移設）
+- System Health（run `38196102871`、10-12 02:31 UTC起動、success・終了コード0）: `[J] CronRuns: ⚪ 18件監視 / 初回待ち1件: TANUKI_TAIL_SEC_Items.yml（初回予定 10-12 01:20 UTC・猶予 10-12 13:20 UTCまで）`。
+  Market Data Dailyのガードによるcancelledを失敗と数えず（10-08以降）、新設の未起動のワークフローは⚪。[F] ✅ 9/9件、Overall ✅ HEALTHY
+- この項目の「未了」の1・2は[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]・[[SYSHEALTH-SEVERITY-MISMATCH-1]]に移しており、3（Discordの1行でJ・Kが切れない）は2026-10-11に確認済み
+
+---
+
 ### ✅ [EPS-SUMMARY-GHOST-ROWS-1] EPS ANALYZERのsummary.jsonに、eps=trueでなくなった銘柄（FIG・ZS）の行が残り、一覧から開いた詳細画面が404になる
 **優先度:** 中
 **分類:** データの整理 / EPS ANALYZER（`pipeline.py`の`generate_summary()`）・`docs/value-monitor/adjusted_eps_analyzer/index.html`・`stock.html`
