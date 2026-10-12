@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 220.0,
-  "calculation_date": "2026-10-10T05:37:36+09:00",
+  "calculation_date": "2026-10-12T11:13:16+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -433,19 +433,19 @@
     "bear": {
       "growth_rate": 0.35,
       "rice": 33.807,
-      "rice_per_ratio": 1.143,
+      "rice_per_ratio": 1.1663,
       "rice_adj": 55.017
     },
     "base": {
       "growth_rate": 0.5,
       "rice": 48.296,
-      "rice_per_ratio": 1.6329,
+      "rice_per_ratio": 1.6662,
       "rice_adj": 78.596
     },
     "bull": {
       "growth_rate": 0.6,
       "rice": 57.955,
-      "rice_per_ratio": 1.9595,
+      "rice_per_ratio": 1.9994,
       "rice_adj": 94.315
     }
   },
@@ -501,36 +501,37 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 1859714437.220018,
     "alpha_uncapped": 1.8671768517675833,
-    "per": 29.576487,
+    "per": 28.986094,
     "per_is_forward": false,
     "per_adjusted": 28.08,
     "peg": 0.4791,
-    "ps": 18.646038,
-    "ev_ebitda": 27.896,
+    "ps": 18.273836,
+    "ev_ebitda": 28.318,
     "ma200": 202.15404998779297,
-    "forward_eps": 15.69508,
+    "forward_eps": 15.9146,
     "next_quarter_eps": 2.47,
     "analyst_target_median": 315.0,
-    "analyst_target_mean": 327.7,
+    "analyst_target_mean": 328.71695,
     "analyst_target_low": 180.0,
     "analyst_target_high": 515.0,
     "analyst_count": 59,
     "analyst_rec_key": "strong_buy",
-    "dividend_yield": 0.0012128563,
+    "dividend_yield": 0.0012148559,
     "payout_ratio": 0.0354,
     "insider_buy_count": 0,
     "insider_sell_count": 25,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-23",
+    "insider_latest_date": "2026-10-09",
     "revenue_ttm": 302969000000,
     "revenue_ttm_end": "2026-07-26",
     "analyst_vs_iv": -57.1,
-    "max_eps": 8.2522,
-    "max_eps_per": 27.8,
-    "max_eps_reliability": "HIGH"
+    "max_eps": 8.2876,
+    "max_eps_per": 27.7,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-07-26"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -561,7 +562,7 @@
   "tanuki_score": "BUY",
   "funda_score": 100,
   "score_comment": "割安圏(220%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 70,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -684,9 +685,9 @@
     "recommended_g": 0.55,
     "growth_model": "decay",
     "growth_model_reason": "CAGR_max=100.0%と業界平均10.0%の中間値55.0%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
-    "hype_phase_used": 3,
-    "hype_phase_label": "陶酔期",
-    "hype_substage_label": "陶酔期入り",
+    "hype_phase_used": 2,
+    "hype_phase_label": "期待拡大期",
+    "hype_substage_label": "期待拡大開始",
     "signals": [
       "過去実績(3yr:100.0% / 5yr:66.9%)と整合 ✅",
       "RR×ROIC(2.1%)：再投資より還元重視型、または期待値先行 ℹ️"
@@ -695,8 +696,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.016,
-  "forward_earnings_yield": 0.0685,
+  "erp": 0.017,
+  "forward_earnings_yield": 0.0694,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

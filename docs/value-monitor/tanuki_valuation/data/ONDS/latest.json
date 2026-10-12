@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -58.5,
-  "calculation_date": "2026-10-10T05:37:38+09:00",
+  "calculation_date": "2026-10-12T11:13:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -333,20 +333,20 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": -362.0,
-    "per_is_forward": false,
+    "per": -336.5,
+    "per_is_forward": true,
     "per_adjusted": null,
     "peg": null,
-    "ps": 24.214811,
+    "ps": 22.509073,
     "ev_ebitda": null,
     "ma200": 9.41135000705719,
     "forward_eps": -0.02,
     "next_quarter_eps": -0.09,
-    "analyst_target_median": 19.0,
-    "analyst_target_mean": 19.41667,
+    "analyst_target_median": 18.5,
+    "analyst_target_mean": 18.875,
     "analyst_target_low": 13.0,
     "analyst_target_high": 25.0,
-    "analyst_count": 9,
+    "analyst_count": 10,
     "analyst_rec_key": "strong_buy",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
@@ -356,13 +356,14 @@
     "insider_latest_date": "2026-09-24",
     "revenue_ttm": 174104000,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 580.5,
-    "max_eps": 0.3144,
-    "max_eps_per": 21.4,
-    "max_eps_reliability": "HIGH"
+    "analyst_vs_iv": 562.6,
+    "max_eps": 0.4604,
+    "max_eps_per": 14.6,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -391,7 +392,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.6468165434083535,
   "tanuki_score": "WATCH",
-  "funda_score": 75,
+  "funda_score": 50,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 25,
   "sell_reason": null,
@@ -451,7 +452,12 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "dilution_3yr_annual_pct": 73.8,
+    "shares_yr_now": 221769000,
+    "shares_yr_3ago": 42242525,
+    "shares_yr_now_label": "2025",
+    "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 407.403531142717,
   "net_current_assets_ratio": 0.3681,
@@ -512,5 +518,7 @@
     "fcf_margin_note": null
   },
   "erp": -0.0554,
-  "forward_earnings_yield": -0.003
+  "forward_earnings_yield": -0.003,
+  "dilution_severity": "critical",
+  "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"
 }

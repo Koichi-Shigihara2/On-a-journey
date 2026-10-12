@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -48.4,
-  "calculation_date": "2026-10-10T05:42:38+09:00",
+  "calculation_date": "2026-10-12T11:16:59+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -227,7 +227,7 @@
       "total_transient_amount": 151000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、典型的な一時的リストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -361,23 +361,23 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 25.714678,
+    "per": 28.906609,
     "per_is_forward": false,
     "per_adjusted": 27.29,
     "peg": 2.292,
-    "ps": 6.8674974,
-    "ev_ebitda": 18.72,
+    "ps": 7.3704886,
+    "ev_ebitda": 19.172,
     "ma200": 178.82240005493165,
-    "forward_eps": 9.19078,
-    "next_quarter_eps": 2.34,
+    "forward_eps": 9.18175,
+    "next_quarter_eps": 2.33,
     "analyst_target_median": 211.0,
     "analyst_target_mean": 208.13333,
     "analyst_target_low": 175.0,
     "analyst_target_high": 230.0,
     "analyst_count": 15,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.031514633,
-    "payout_ratio": 0.80730003,
+    "dividend_yield": 0.029326685,
+    "payout_ratio": 0.84480006,
     "insider_buy_count": 0,
     "insider_sell_count": 0,
     "insider_net_direction": "中立",
@@ -385,12 +385,13 @@
     "revenue_ttm": 42545000000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 103.2,
-    "max_eps": null,
-    "max_eps_per": null,
-    "max_eps_reliability": "LOW"
+    "max_eps": 6.9767,
+    "max_eps_per": 28.8,
+    "max_eps_reliability": "MED",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -419,10 +420,10 @@
   "risk_free_rate_live_date": "2026-10-09",
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.06981815672740477,
-  "tanuki_score": "HOLD",
+  "tanuki_score": "TRIM",
   "funda_score": 55,
   "score_comment": "割高(-48%超)、FCF黒字、売上安定成長",
-  "timing_score": 40,
+  "timing_score": 30,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -515,9 +516,9 @@
     "recommended_g": 0.07891843864844605,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=19.7%のため中央値モデル適用",
-    "hype_phase_used": 2,
-    "hype_phase_label": "期待拡大期",
-    "hype_substage_label": "期待拡大開始",
+    "hype_phase_used": 3,
+    "hype_phase_label": "陶酔期",
+    "hype_substage_label": "陶酔期入り",
     "signals": [
       "過去実績(3yr:8.6% / 5yr:7.2%)と整合 ✅"
     ],
@@ -526,7 +527,7 @@
     "fcf_margin_note": null
   },
   "erp": -0.0068,
-  "forward_earnings_yield": 0.0457,
+  "forward_earnings_yield": 0.0456,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }

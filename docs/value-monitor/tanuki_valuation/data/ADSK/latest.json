@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 52.5,
-  "calculation_date": "2026-10-10T05:39:35+09:00",
+  "calculation_date": "2026-10-12T11:14:46+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 197000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断されるため。"
+        "reasoning": "すべての項目の理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断できる。"
       }
     },
     "action": "flagged",
@@ -324,19 +324,19 @@
     "bear": {
       "growth_rate": 0.096,
       "rice": 0.47,
-      "rice_per_ratio": 0.0172,
+      "rice_per_ratio": 0.0155,
       "rice_adj": 18.957
     },
     "base": {
       "growth_rate": 0.137,
       "rice": 0.67,
-      "rice_per_ratio": 0.0245,
+      "rice_per_ratio": 0.0221,
       "rice_adj": 27.054
     },
     "bull": {
       "growth_rate": 0.165,
       "rice": 0.808,
-      "rice_per_ratio": 0.0295,
+      "rice_per_ratio": 0.0267,
       "rice_adj": 32.583
     }
   },
@@ -393,12 +393,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.5554542294673441,
-    "per": 27.390182,
+    "per": 30.289576,
     "per_is_forward": false,
     "per_adjusted": 21.36,
     "peg": 0.845,
-    "ps": 5.6878047,
-    "ev_ebitda": 19.185,
+    "ps": 6.3142686,
+    "ev_ebitda": 21.293,
     "ma200": 237.31672485351564,
     "forward_eps": 14.19939,
     "next_quarter_eps": 3.07,
@@ -417,12 +417,13 @@
     "revenue_ttm": 7790000000,
     "revenue_ttm_end": "2026-07-31",
     "analyst_vs_iv": -15.7,
-    "max_eps": 11.6268,
-    "max_eps_per": 20.2,
-    "max_eps_reliability": "HIGH"
+    "max_eps": 11.2344,
+    "max_eps_per": 20.9,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-07-31"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -556,7 +557,7 @@
     "growth_model_reason": "CAGR_max=15.0%のため中央値モデル適用",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "長期調整・実体強",
+    "hype_substage_label": "底打ち兆候",
     "signals": [
       "業界平均Software (System & Application)(21.6%)の0.6倍以内 ✅",
       "過去実績(3yr:12.9% / 5yr:13.7%)と整合 ✅"

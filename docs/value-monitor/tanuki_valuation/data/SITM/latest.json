@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -83.9,
-  "calculation_date": "2026-10-10T05:38:42+09:00",
+  "calculation_date": "2026-10-12T11:14:10+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -275,19 +275,19 @@
     "bear": {
       "growth_rate": 0.324,
       "rice": 1.844,
-      "rice_per_ratio": 0.0015,
+      "rice_per_ratio": 0.0017,
       "rice_adj": 10.944
     },
     "base": {
       "growth_rate": 0.463,
       "rice": 2.636,
-      "rice_per_ratio": 0.0021,
+      "rice_per_ratio": 0.0024,
       "rice_adj": 15.639
     },
     "bull": {
       "growth_rate": 0.556,
       "rice": 3.165,
-      "rice_per_ratio": 0.0025,
+      "rice_per_ratio": 0.0029,
       "rice_adj": 18.78
     }
   },
@@ -344,12 +344,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 1244.6316,
+    "per": 1093.5178,
     "per_is_forward": false,
     "per_adjusted": 118.94,
     "peg": 3.82,
-    "ps": 45.599125,
-    "ev_ebitda": 452.413,
+    "ps": 39.359966,
+    "ev_ebitda": 423.366,
     "ma200": 536.4760255432129,
     "forward_eps": 14.92114,
     "next_quarter_eps": 3.54,
@@ -358,7 +358,7 @@
     "analyst_target_low": 730.0,
     "analyst_target_high": 900.0,
     "analyst_count": 10,
-    "analyst_rec_key": "buy",
+    "analyst_rec_key": "none",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
@@ -368,12 +368,13 @@
     "revenue_ttm": 467851000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 759.6,
-    "max_eps": 3.9118,
-    "max_eps_per": 156.5,
-    "max_eps_reliability": "HIGH"
+    "max_eps": 4.2583,
+    "max_eps_per": 143.8,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -405,7 +406,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 100,
   "score_comment": "割高(-84%超)、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -515,9 +516,9 @@
     "recommended_g": 0.4631862628467157,
     "growth_model": "decay",
     "growth_model_reason": "G入力値=83.0%と業界平均9.6%の中間値46.3%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
-    "hype_phase_used": 3,
-    "hype_phase_label": "陶酔期",
-    "hype_substage_label": "陶酔期入り",
+    "hype_phase_used": 4,
+    "hype_phase_label": "期待剥落期",
+    "hype_substage_label": "実体維持・バリュエーション過熱",
     "signals": [],
     "warnings": [
       "業界平均Semiconductor(9.6%)の4.8倍超 ⚠️",

@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -77.1,
-  "calculation_date": "2026-10-10T05:37:53+09:00",
+  "calculation_date": "2026-10-12T11:13:30+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 46000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄にすべて「一過性の在庫評価損」と明記されており、在庫評価損は一時的な市場変動や調整によるものと判断できるため。"
       }
     },
     "action": "flagged",
@@ -349,11 +349,11 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": -41.758244,
-    "per_is_forward": false,
+    "per": -38.580696,
+    "per_is_forward": true,
     "per_adjusted": null,
     "peg": null,
-    "ps": 481.82794,
+    "ps": 445.16376,
     "ev_ebitda": null,
     "ma200": 20.517199954986577,
     "forward_eps": -0.37765,
@@ -373,12 +373,13 @@
     "revenue_ttm": 12425000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 977.5,
-    "max_eps": 0.0597,
-    "max_eps_per": 244.1,
-    "max_eps_reliability": "MED"
+    "max_eps": null,
+    "max_eps_per": null,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {

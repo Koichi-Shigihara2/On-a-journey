@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 144.5,
-  "calculation_date": "2026-10-10T05:41:58+09:00",
+  "calculation_date": "2026-10-12T11:16:31+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 11051000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による貸倒引当金と一過性のリストラ費用のみで、事業運営上の一時的な問題を示す内容である。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -306,19 +306,19 @@
     "bear": {
       "growth_rate": 0.229,
       "rice": 0.644,
-      "rice_per_ratio": 0.0099,
+      "rice_per_ratio": 0.0089,
       "rice_adj": 9.771
     },
     "base": {
       "growth_rate": 0.328,
       "rice": 0.923,
-      "rice_per_ratio": 0.0142,
+      "rice_per_ratio": 0.0128,
       "rice_adj": 13.995
     },
     "bull": {
       "growth_rate": 0.393,
       "rice": 1.106,
-      "rice_per_ratio": 0.017,
+      "rice_per_ratio": 0.0153,
       "rice_adj": 16.768
     }
   },
@@ -375,12 +375,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 65.11111,
+    "per": 72.15385,
     "per_is_forward": false,
     "per_adjusted": 20.84,
     "peg": null,
-    "ps": 2.9976227,
-    "ev_ebitda": 29.112,
+    "ps": 3.1988282,
+    "ev_ebitda": 30.206,
     "ma200": 15.191249980926516,
     "forward_eps": 1.34717,
     "next_quarter_eps": 0.49,
@@ -399,12 +399,13 @@
     "revenue_ttm": 713538000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": -52.0,
-    "max_eps": 0.8697,
-    "max_eps_per": 21.6,
-    "max_eps_reliability": "HIGH"
+    "max_eps": 0.8623,
+    "max_eps_per": 21.8,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -539,7 +540,7 @@
     "growth_model_reason": "CAGR_max=50.0%のため中央値モデル適用",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "長期調整・実体強",
+    "hype_substage_label": "底打ち兆候",
     "signals": [
       "過去実績(3yr:29.1% / 5yr:36.4%)と整合 ✅"
     ],

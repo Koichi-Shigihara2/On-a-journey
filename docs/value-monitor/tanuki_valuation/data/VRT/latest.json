@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -29.4,
-  "calculation_date": "2026-10-10T05:39:06+09:00",
+  "calculation_date": "2026-10-12T11:14:26+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 54500000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が一過性の事業再編費用と明記されており、構造的な収益力悪化を示唆する内容ではないため。"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用であることが明確に示されているため。"
       }
     },
     "action": "flagged",
@@ -306,19 +306,19 @@
     "bear": {
       "growth_rate": 0.133,
       "rice": 45.298,
-      "rice_per_ratio": 0.7957,
+      "rice_per_ratio": 0.8247,
       "rice_adj": 45.298
     },
     "base": {
       "growth_rate": 0.19,
       "rice": 64.712,
-      "rice_per_ratio": 1.1368,
+      "rice_per_ratio": 1.1781,
       "rice_adj": 64.712
     },
     "bull": {
       "growth_rate": 0.228,
       "rice": 77.654,
-      "rice_per_ratio": 1.3641,
+      "rice_per_ratio": 1.4138,
       "rice_adj": 77.654
     }
   },
@@ -375,22 +375,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.8469074352099573,
-    "per": 56.925507,
+    "per": 54.9276,
     "per_is_forward": false,
     "per_adjusted": 49.12,
     "peg": 0.8388,
-    "ps": 8.45729,
-    "ev_ebitda": 36.327,
+    "ps": 8.142046,
+    "ev_ebitda": 35.51,
     "ma200": 266.85509994506833,
-    "forward_eps": 9.17432,
+    "forward_eps": 9.17851,
     "next_quarter_eps": 1.83,
     "analyst_target_median": 340.0,
-    "analyst_target_mean": 337.74075,
+    "analyst_target_mean": 337.42856,
     "analyst_target_low": 236.0,
     "analyst_target_high": 427.0,
-    "analyst_count": 27,
+    "analyst_count": 28,
     "analyst_rec_key": "strong_buy",
-    "dividend_yield": 0.0007110353,
+    "dividend_yield": 0.0007180076,
     "payout_ratio": 0.0509,
     "insider_buy_count": 0,
     "insider_sell_count": 8,
@@ -399,12 +399,13 @@
     "revenue_ttm": 11479600000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 98.2,
-    "max_eps": 4.6181,
-    "max_eps_per": 52.6,
-    "max_eps_reliability": "HIGH"
+    "max_eps": 4.6344,
+    "max_eps_per": 52.4,
+    "max_eps_reliability": "HIGH",
+    "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-10",
+    "validated_at": "2026-10-12",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -558,7 +559,7 @@
     "growth_model_reason": "CAGR_max=21.6%のため中央値モデル適用",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "底打ち兆候",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "過去実績(3yr:21.6% / 5yr:18.5%)と整合 ✅"
     ],
@@ -566,7 +567,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0147,
+  "erp": -0.0146,
   "forward_earnings_yield": 0.0378,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
