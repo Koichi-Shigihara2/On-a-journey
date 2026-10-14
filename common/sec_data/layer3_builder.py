@@ -1396,6 +1396,7 @@ def build_ticker_store(ticker: str) -> dict | None:
         "fields": fields_out,
     }
     store["latest_period_end"] = latest_period_end(store)
+    store["latest_fiscal_year_end"] = latest_fiscal_year_end(store)
     return store
 
 
@@ -1466,6 +1467,10 @@ CURRENT_VALUE_MAX_LAG_DAYS = 135
 
 # 銘柄の最新の期末を決める項目（どれかに値があれば、その期の書類は取り込まれている）
 _LATEST_PERIOD_FIELDS = ("revenue", "operating_cash_flow", "net_income", "total_assets", "stockholders_equity")
+# 最新の会計年度末（最新の10-Kの期末）を決める項目（年次の値）
+_LATEST_FY_FIELDS = ("revenue", "net_income", "operating_cash_flow")
+# 会計年度末の一致の許容（52/53週の決算で数日ずれる）
+_FY_END_TOLERANCE_DAYS = 7
 
 
 def latest_period_end(store: dict) -> str | None:
@@ -1477,13 +1482,35 @@ def latest_period_end(store: dict) -> str | None:
     return max(ends) if ends else None
 
 
+def latest_fiscal_year_end(store: dict) -> str | None:
+    """銘柄の最新の会計年度末（主要項目の年次の値の期末の最大＝最新の10-Kの期末）。build_ticker_store()がstoreに入れる。"""
+    if store.get("latest_fiscal_year_end"):
+        return store["latest_fiscal_year_end"]
+    ends = [e["end"] for f in _LATEST_FY_FIELDS for e in get_field_entries(store, f)
+            if e.get("is_annual") and e.get("end") and e.get("val") is not None]
+    return max(ends) if ends else None
+
+
 def is_current_end(store: dict, end: str | None) -> bool:
-    """endが銘柄の最新の期末からCURRENT_VALUE_MAX_LAG_DAYS以内か（最新の期末が分からなければTrue）。"""
+    """
+    endの値を「直近の値」として扱ってよいか（最新の期末が分からなければTrue）。
+    次のどちらかを満たせば直近の値（[[LAYER3-STALE-LATEST-VALUE-1]]、2026-10-14改）:
+      - 銘柄の最新の期末からCURRENT_VALUE_MAX_LAG_DAYS（135日）以内
+      - 銘柄の最新の会計年度末（最新の10-Kの期末）以降の期末（許容7日）
+    2つ目は、10-Kだけで申告される項目（年度末の発行済株式数・のれん・優先株等）の年度末の値を、
+    第1〜3四半期の時点でも最新の開示として残すため（135日だけでは第2・第3四半期に外れていた）。
+    get_latest_quarterly()・get_long_term_debt_latest()・STONKS SILOのベクトルが共通に使う。
+    """
     latest = latest_period_end(store)
     if not end or not latest:
         return bool(end)
     try:
-        return (date.fromisoformat(latest) - date.fromisoformat(end)).days <= CURRENT_VALUE_MAX_LAG_DAYS
+        if (date.fromisoformat(latest) - date.fromisoformat(end)).days <= CURRENT_VALUE_MAX_LAG_DAYS:
+            return True
+        fy_end = latest_fiscal_year_end(store)
+        if fy_end and (date.fromisoformat(fy_end) - date.fromisoformat(end)).days <= _FY_END_TOLERANCE_DAYS:
+            return True
+        return False
     except ValueError:
         return False
 

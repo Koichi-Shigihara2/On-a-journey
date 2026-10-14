@@ -172,3 +172,44 @@ class TestStaleLatestRealData:
         # rotce.pyは期末日が一致する値だけを引くため、最新の期末にこの項目の値は無い
         from common.sec_data import rotce
         assert lb.latest_period_end(st) not in rotce._quarterly_flow(st, field)
+
+
+class TestCurrentByFiscalYearEnd:
+    """2026-10-14改: 「最新の期末から135日以内」または「最新の会計年度末以降の期末」を直近の値とする"""
+
+    def _store(self, latest_q, fy_end, field_ends):
+        def q(end):
+            return {"end": end, "start": end[:5] + "01-01", "val": 1, "is_annual": False, "is_ytd": False}
+        return {"fields": {
+            "revenue": {"entries": [q(latest_q), {"end": fy_end, "start": fy_end[:5] + "01-01", "val": 4, "is_annual": True}]},
+            "x": {"entries": [q(e) for e in field_ends]},
+        }}
+
+    def test_type_a_fiscal_year_end_value_stays_at_q2_q3(self):
+        for latest_q in ("2026-06-30", "2026-09-30"):
+            st = self._store(latest_q, "2025-12-31", ["2025-12-31"])
+            assert lb.is_current_end(st, "2025-12-31")
+            assert lb.get_latest_quarterly(st, "x")["end"] == "2025-12-31"
+
+    def test_stopped_before_previous_fiscal_year_end_is_excluded(self):
+        st = self._store("2026-06-30", "2025-12-31", ["2021-03-31"])  # ASTSの営業利益型
+        assert lb.get_latest_quarterly(st, "x") is None
+
+    def test_stopped_at_q3_and_missing_in_10k_is_excluded(self):
+        st = self._store("2026-06-30", "2025-12-31", ["2025-09-30"])  # 第3四半期で止まり、その後の10-Kに無い
+        assert lb.get_latest_quarterly(st, "x") is None
+
+    def test_missing_in_latest_10k_is_excluded(self):
+        # ZS・KLACの短期借入金型: 最新が10-K（2026-07-31）で、値は前の会計年度末（2025-07-31）まで
+        st = self._store("2026-07-31", "2026-07-31", ["2025-07-31"])
+        assert lb.get_latest_quarterly(st, "x") is None
+
+    def test_long_term_debt_and_stonks_use_same_rule(self):
+        st = self._store("2026-06-30", "2025-12-31", [])
+        st["fields"]["long_term_debt"] = {"entries": [{"end": "2025-12-31", "val": 500}]}
+        assert lb.get_long_term_debt_latest(st) == 500.0
+        st["fields"]["long_term_debt"] = {"entries": [{"end": "2025-09-30", "val": 500}]}
+        assert lb.get_long_term_debt_latest(st) == 0.0
+        st["fields"]["operating_income"] = {"entries": [
+            {"end": "2025-12-31", "start": "2025-10-01", "val": 1, "is_annual": False, "is_ytd": False}]}
+        assert _stonks_entries(st, "OperatingIncome")[-1]["end"] == "2025-12-31"
