@@ -26,29 +26,52 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-14 朝〈08:59 JST〉の確認の後の最新。時刻の順。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**31件**（`^### [`の機械カウント）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+**次回の確認手順（2026-10-14 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**46件**（`^### [`の機械カウント、2026-10-14 終業）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
-0. **日曜（2026-10-18）のSEC_Data_Updateからの連鎖の後**（`[[LAYER3-RETENTION-PERIOD-1]]`の公開データの作り直し。保持期間7年・8年、FCFの5点平均、設備投資の条件付きタグ、最新期欠けのガード、直近の値の判定。
-   `config/method_change.json`で10-18・10-19〈JST〉の実行に印が付く）: 連鎖（SEC → EPS・HypeCore・Stonks Silo → TANUKI VALUATION）が全部終わったら、次の順で手動実行する。
-   - HypeCore Update（新しい理論株価で期待スコアを作り直す。`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`）→ 連鎖でTANUKI VALUATIONが動く
-   - TANUKI Score Update（workflow_dispatchで`--force`が付く。連鎖では当日の選出済みで止まるため）
-   そのあと次を確かめる。
-   - FCXの理論株価が約$20.15（公開値$11.89から。2026年第2四半期の設備投資が`SegmentExpenditureAdditionToLongLivedAssets`で入る）
-   - 6銘柄の判定・timingが試算どおり: BSY WATCH→HOLD（timing 35→25・象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM、DDOG timing 55→40、NOW timing 65→50
-   - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
-   - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
-   - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
-   - 月曜の安全網: HypeCore Update（04:00 UTC＝10-19 13:00 JST、重複防止なし）は動き、印が付く。Adjusted_EPS_Data_Update（04:10 UTC）は24時間の重複防止で何もせずに終わる
-1. **Adjusted_EPS_Data_UpdateのStep Summary**（run `38194524660`）: Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」が出ていること（APIからは読めない）。
-   確かめたら`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設する
-2. **10-14以降のSystem Health**: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。⚠️・🔴が出た日にも一致すること。
-   確かめたら`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`を移設する（10-12・10-13は全項目✅で、Overall・終了コードは一致）
-3. **10-17 04:00 UTC以降の夜間のMarket Data Daily**: NIY=Fの10-08（平らな足）が`_no_yahoo_bar`になること（`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`、出来高の重複・平らな足の観察も続ける）
-4. **次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行**: 月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
-5. **次のFOMC（10月下旬）まで**: `[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
-6. **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（stageの時間の尺度。定義v2〈`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`〉で作り直す、検証中）の方針、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+1. **Adjusted_EPS_Data_UpdateのStep Summary**（`[[EPS-SILENT-TICKER-FAILURE-1]]`）
+   - 日時: いつでも（run `38194524660`は実行済み）
+   - 期限: 2026-10-18（日）21:00 JST（次のSEC_Data_Updateからの連鎖で新しい実行が始まる前）
+   - 確認の手順: Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」が出ていること（APIからは読めない）。確かめたら`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設する
+2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
+   - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
+   - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
+   - 確認の手順: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。確かめたら移設する
+3. **NIY=Fの2026-10-08の足**（`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`）
+   - 日時: 2026-10-17（土）13:00 JST（04:00 UTC）以降の夜間のMarket Data Dailyの後
+   - 期限: 2026-10-20（火）
+   - 確認の手順: `common/market_data/daily/NIY=F.json`の10-08（平らな足）が`_no_yahoo_bar`になっていること。出来高の重複・平らな足の観察も続ける
+4. **日曜のSEC_Data_Updateからの連鎖の後**（`[[LAYER3-RETENTION-PERIOD-1]]`の公開データの作り直し。保持期間7年・8年、FCFの5点平均、設備投資の条件付きタグ、最新期欠けのガード、直近の値の判定。`config/method_change.json`で10-18・10-19〈JST〉の実行に印が付く）
+   - 日時: 2026-10-18（日）21:00 JST（12:00 UTC）に始まる連鎖（SEC → EPS・HypeCore・Stonks Silo → TANUKI VALUATION）が全部終わった後
+   - 期限: 2026-10-19（月）23:59 JST（手動実行は印の付く10-19 JSTまでに行う）
+   - 確認の手順:
+     - 手動実行の順: HypeCore Update（新しい理論株価で期待スコアを作り直す。`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`）→ 連鎖でTANUKI VALUATIONが動く → TANUKI Score Update（workflow_dispatchで`--force`が付く。連鎖では当日の選出済みで止まるため）
+     - FCXの理論株価が約$20.15（公開値$11.89から。2026年第2四半期の設備投資が`SegmentExpenditureAdditionToLongLivedAssets`で入る）
+     - 6銘柄の判定・timingが試算どおり: BSY WATCH→HOLD（timing 35→25・象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM、DDOG timing 55→40、NOW timing 65→50
+     - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
+     - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
+     - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
+     - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は未対応。止まっていたら原因の銘柄を確かめて手動で再実行する）
+     - 確かめたら`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
+5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
+   - 日時: 2026-10-18（日）のSEC_Data_Updateの後（上の4と同じ実行）
+   - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
+   - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
+6. **月曜の安全網**（上の4の続き）
+   - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS_Data_Update
+   - 期限: 2026-10-19（月）
+   - 確認の手順: HypeCore Update（重複防止なし）は動き、10-19の印が付く。Adjusted_EPS_Data_Updateは24時間の重複防止で何もせずに終わる
+7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
+   - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
+   - 期限: 2026-10-31
+   - 確認の手順: 月次の行が観測日（公表日）に置かれること
+8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）
+   - 日時: いつでも
+   - 期限: 次のFOMC（10月下旬。日付はFRBの予定表で確かめる）の声明の前
+   - 確認の手順: 対応するか担当を決める（チャット側の判断）
+- **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
 - 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）

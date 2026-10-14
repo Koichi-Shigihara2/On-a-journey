@@ -393,6 +393,14 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 `depends_on`・`outputs`は同スクリプトがYAMLから生成する。`label`・`yml`・`accepts_tickers`・`input_param`・
 `bulk_update_*`・`new_ticker_order`は手作業の定義（ワークフローを新設したらここに追記する）。
 
+### 計算方法の変更の印と最新期欠けのガード（2026-10-14追記、[[LAYER3-RETENTION-PERIOD-1]]・[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
+- `common/method_change.py`・`config/method_change.json`: 公開データを作り直す日（JST）と項目IDを書くと、その日の実行の記録に`"method_change"`が付く
+  （TANUKIのscore_history.json・history.json・history/・latest.json・hypecore_history/、HypeCoreの_poc.json、STONKS SILOのresults.json、rotceの{T}.json・_summary.json、
+  daily_pickのhistory.json。環境変数METHOD_CHANGEでも可）。`score_watcher.py`は印のある変化を「🛠 計算方法の変更による変化」の節に分けて通知する
+- 最新期欠けのガード: `data_fetcher.py::build_latest_period_missing()`がTTMの最新の点で営業CF・設備投資が欠けているかを`latest_period_missing`としてlatest.jsonへ出す。
+  年次の値での代用が無ければPolicy BでDCF信頼性LOW→WATCH、年次で代用していれば注記だけ（TANUKI VALUATIONの個別ページ・TANUKI SCOREに表示）。
+  `report_consistency_check.py`のCHECK-63（WARN）が発動した銘柄と項目を列挙する
+
 ### System Health（`common/system_health.py`、`System_Health.yml`）の重大度と[J]（2026-10-11追記）
 - 全体の重大度は各項目の判定の最大（✅・⚪→0、⚠️→1、🔴→2、`_overall_severity()`）。Discordの1行の先頭（🟢／🟡／🔴）・文言（HEALTHY／WARNING／CRITICAL）・
   各欄の絵文字・Overallの行・終了コード（0／1／2）はすべてこの値から出す（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）。項目の判定は「ok→✅、ラベルが🔴→🔴、それ以外→⚠️」
@@ -924,9 +932,17 @@ SEC EDGAR
 │    `tests/test_report_consistency_check.py`。詳細はBACKLOG_DONE.md
 │    [[FETCHER-10KT-10QT-FORM-EXCLUSION-1]]参照。
 ├─ quarterly.py      # 四半期データ取得・正規化。保持期間`_QUARTERLY_YEARS=7`・`_ANNUAL_YEARS=8`
-│    （Layer3・normalized共通。2026-10-14に5・6から延長、[[LAYER3-RETENTION-PERIOD-1]]）
+│    （Layer3・normalized共通。2026-10-14に5・6から延長、[[LAYER3-RETENTION-PERIOD-1]]）。
+│    normalizedの候補タグの選び直しの判定（件数・最新の期末）は保持期間と切り離した固定の期間
+│    `_SELECTION_QUARTERLY_YEARS=5`・`_SELECTION_ANNUAL_YEARS=6`で数える（2026-10-14、[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]）
 ├─ normalizer.py     # フィールド正規化
 ├─ layer3_builder.py # Layer3（common/sec_data統合、config/sec_concept_definitions.json
+│    **2026-10-14追記**: ①直近の値の判定`is_current_end()`（最新の期末から135日以内、または最新の会計年度末
+│    〈最新の10-Kの期末〉以降の期末。`get_latest_quarterly()`・`get_long_term_debt_latest()`・STONKS SILOのベクトルが共通に使う、
+│    [[LAYER3-STALE-LATEST-VALUE-1]]）。storeに`latest_period_end`・`latest_fiscal_year_end`を持つ。
+│    ②期間ごとに混ぜない項目（rpo等）は全期間で最新の期末が新しい候補から試す（[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]）。
+│    ③設備投資は`conditional_tags.py`の条件を満たす銘柄（2026-10-14時点で18銘柄）だけ`SegmentExpenditureAdditionToLongLivedAssets`を
+│    候補の最後に加え、採用した期に`fallback_reason: "segment_total"`（値が変わるのはFCXだけ）
 │    〈全32フィールドの候補タグ・分類定義〉に基づきcompany_facts.json生データから
 │    直接、統一snake_caseの銘柄別ストア（インメモリのみ、ファイル永続化なし）を
 │    構築する`build_ticker_store()`が本体。update.py Step5で呼ばれ、戻り値は

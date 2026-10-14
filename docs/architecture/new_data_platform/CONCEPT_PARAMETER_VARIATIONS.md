@@ -303,6 +303,22 @@ bear/base/bull」と「全銘柄平均」という2つの独立したパラメ�
 
 ---
 
+## 概念13: 財務データの鮮度（どれだけ古い値まで「今の値」とみなすか）（2026-10-14追加）
+
+**共通の計算対象**: SECの財務データの値が、今の時点の値として使えるか。
+
+**パラメータバリエーション**（基準と日数が処理ごとに違う。どれも意図した違いで、統合はしない）:
+
+| 処理 | 基準 | しきい値 | 用途 |
+|---|---|---|---|
+| `layer3_builder.is_current_end()` | その銘柄の最新の期末（主要項目） | 135日以内、または最新の会計年度末以降の期末 | Layer3の項目の直近の値（TAIL・TANUKIの長期借入金の予備・STONKS SILOのベクトル）。10-Kだけで申告される項目の年度末の値を第1〜3四半期でも残すため、会計年度末の条件を併用（[[LAYER3-STALE-LATEST-VALUE-1]]） |
+| `discover/stonks-silo/src/financial_as_of.py` | 今日 | 最新の四半期末から135日 | STONKS SILOの財務の古さの印。`is_current_end()`の135日はこれに揃えた（テストで一致を確かめる） |
+| `src/value/tanuki_valuation/data_fetcher.py::_quarters_fresh()` | 今日 | TTMの最新の点の期末から270日 | TANUKIのTTM系列を使うか（古ければ年次へ） |
+| `docs/value-monitor/adjusted_eps_analyzer/index.html`（`STALE_PERIOD_DAYS_10Q`・`_10K`） | 今日 | 最新の期末から145日（次が10-Q）・190日（次が10-K） | EPS ANALYZERの一覧の古い期末日の印 |
+| `ttm_calculator._last4_reaches_anchor()` | TTMの点の期末 | 4四半期の最新の期末が10日以内 | TTMに古い四半期を足さない（[[TTM-STALE-QUARTER-IN-WINDOW-1]]） |
+
+---
+
 ## 精査した結果、棄却した候補（第3カテゴリに該当しないと判定）
 
 ### ③成長率系: TANUKI「FCF CAGR(3yr)」(AS-IS-068) vs STONKS SILO「cagr_3yr」(AS-IS-136)

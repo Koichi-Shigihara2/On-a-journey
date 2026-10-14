@@ -4,6 +4,227 @@
 
 ## 2026-10-14（完了）
 
+### ✅ [LAYER3-STALE-LATEST-VALUE-1] 保持期間を延ばすと、今は申告されていない項目に2019〜2021年の値が入り、「直近の値」として読む処理（STONKS SILOのベクトル・TAILのKPI等）に古い値が出る
+**完了（2026-10-14）:** 実装・push済み、65ace9d86e・5f2a56d099（直近の値の判定: 最新の期末から135日以内、または最新の会計年度末以降の期末）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 高（[[LAYER3-RETENTION-PERIOD-1]]〈高〉のコードをpushする前に直す。延長で新たに起きる不具合）
+**分類:** 計算 / Layer3の直近の値を読む処理（`discover/stonks-silo/src/financial_trend_calculator.py`・`layer3_builder.py::get_latest_quarterly()`・`get_long_term_debt_latest()`）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 5（全体の差分の試算）
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- 保持期間7年で、5年では値が無かった項目に古い期の値だけが入る（直近の値に見える）もの: 21項目。
+  ASTS operating_income（2021-03-31）、COHR・ZS buyback、IONQ・SOFI preferred_stock、SOFI current_assets・current_liabilities、PLTR・ADBE・V deferred_revenue、SITM・CPRT short_term_debt、
+  INTU gross_profit・cost_of_revenue、PAYS minority_interest、DDOG・FRSH・LYFT shares_outstanding_period_end_sec、LITE・LRCX finance_lease_payments、WMT rpo
+- 出たもの: STONKS SILOでASTSの営業利益のベクトルが2020-2021年（SPACの器の時期）の値で作られ、24銘柄の順位の母集団に入る（他の23銘柄の営業利益のパーセンタイルも変わる）
+- 出うるもの: TAILの`kpi_proposer.py`（`get_latest_quarterly(store, field)`を項目を問わず読む。保有のADBE・PLTRのdeferred_revenue、SOFIのpreferred_stock等）、
+  `get_long_term_debt_latest()`（TANUKIの長期借入金の予備。今回の21項目に長期借入金は無い）、rotce.py（優先株・少数株主持分の控除）
+- TTMは[[TTM-STALE-QUARTER-IN-WINDOW-1]]で点の期末に届かない四半期を足さなくなったため対象外
+
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- `layer3_builder.py`に`latest_period_end()`（主要項目〈売上・営業CF・純利益・総資産・純資産〉の最新の期末。build_ticker_store()がstoreに入れる）・
+  `is_current_end()`・`CURRENT_VALUE_MAX_LAG_DAYS = 135`を足した。最新の期末から135日より古い値は直近の値として使わない
+- 当てた処理: `get_latest_quarterly()`（TAILのkpi_proposer・quarterly_review_generator・tail_dcf_bridge）、`get_long_term_debt_latest()`（TANUKIの長期借入金の予備。古ければ0.0＝エントリ無しと同じ）、
+  STONKS SILOの`financial_trend_calculator._get_quarterly_entries()`（ベクトル・ヒートマップ。古ければデータなし）
+- 当てなかった処理（根拠）: rotce.pyは期末日が一致する値だけを引く（`_stock_by_end()`・`_quarterly_flow()`）ため、古い値が今の期に入らない。
+  HypeCore（`fetch_quarterly_fundamentals()`）は売上・純利益・営業CFの月次の推移で、直近の値として使わない。EPS ANALYZERはLayer3を読まない
+- テスト`tests/test_conditional_tags_and_stale_latest.py`: 合成のstoreと、全数調査で止まっていた項目（CEG・PMの株式報酬、ASTSの営業利益、INTU・CAKEの粗利、BROSの販売費）の実データで、
+  TAIL・TANUKI・STONKS SILO・rotceのどれも直近の値として使わないことを確かめた
+- 記載との違い: 方針は「一定の日数〈例: 1年〉」だったが、チャット側の指示（既存の鮮度判定と揃える）に従い135日（STONKS SILOの`financial_as_of.STALE_DAYS_AFTER_QUARTER_END`と同じ。テストで一致を確かめる）。
+  試算（保持期間7年）では、ASTSの営業利益（2021-03）に加え粗利（2023-12）も古い値として外れ、STONKS SILOの粗利の順位の母集団も変わった（23銘柄、総合の判定は不変）
+
+- 2026-10-14改（5f2a56d099）: 135日だけの判定では、10-Kだけで申告される項目（年度末の発行済株式数・のれん・無形資産・優先株・借入金等）の年度末の値が、
+  第2・第3四半期の時点で外れていた（全98銘柄で40件。例: CATの長期借入金、TSLAののれん、NVDAの期末発行済株式数、PLTRの自社株買い）。
+  条件を「最新の期末から135日以内、または最新の会計年度末（最新の10-Kの期末）以降の期末」に広げた（`is_current_end()`、3経路共通）。
+  全数の再確認: 外れる値145件→105件（誤って外れた40件が0件、何年も前に止まった97件と第3四半期で止まった8件は引き続き外れる、新たに外れるもの0件）。
+  試算は前回と差なし（TANUKI・HypeCore・STONKS SILO・rotce・CHECK）。TAILのkpi_proposerのLayer3の確認では、APPのRPO・NVDAの期末発行済株式数・PLTRの自社株買い・TSLAののれんと無形資産が戻る
+
+#### 方針
+上のとおり実装した。2026-10-18のSEC_Data_Updateからの連鎖で公開データに反映する（[[LAYER3-RETENTION-PERIOD-1]]の手順、`config/method_change.json`に10-18・10-19の印）
+
+
+---
+
+### ✅ [NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1] normalized（quarterly.py）の候補タグの選び方が保持期間の中の件数・最新の期末で決まり、期間を延ばすと今の窓の中の値（AMZN・LITEのRPO、NOWの長期負債等）が消える
+**完了（2026-10-14）:** 実装・push済み、65ace9d86e（normalizedの選び直しの判定を固定の5年・6年で数える）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 高（[[LAYER3-RETENTION-PERIOD-1]]〈高〉の前提。TANUKI VALUATIONのRPOはnormalizedから読む）
+**分類:** 一次データ / common/sec_data（`quarterly.py::build_raw_table()` L595-640・`_select_best_candidate()` L656）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]の修正の調査（全母集団で窓の長さを変えた試算）
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- normalizedは、主の候補の件数が4未満か、他の候補の最新の期末が新しいときに`_select_best_candidate()`で候補を選び直す。件数は保持期間で切った後に数えるため、期間を変えると選ぶ候補が変わる
+- 全98銘柄で、5年の窓の値が7年の窓でどう変わるか: 窓の内側（端の1年を除く）で消える値45件。RPO 19件（AMZN・LITE）、長期負債 6件（CPRT・NOW〈2025-12-31・2026-06-30を含む〉・ONDS）、減価償却費 20件（ESTC）。窓の端の1年では70件
+- 使っている処理: TANUKI VALUATIONのRPO（`reader.py::get_rpo_series()`・`get_rpo_context()`）、CHECK-47（normalizedとTTMの直近4四半期）、`tail_dcf_bridge.py`等。
+  2026-10-14の前回の試算（7年）では、TANUKIのRPOの値（SEC RPO）はAMZN・LITEとも変わらなかった（系列の過去の点は未確認）
+- 保持期間を5年のまま使う限り、今の値は変わらない
+
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- `quarterly.py::build_raw_table()`の選び直しの判定（主の候補の四半期の件数・最新の期末、`_select_best_candidate()`の件数・最新の期末）を、
+  保持期間と切り離した固定の期間（`_SELECTION_QUARTERLY_YEARS = 5`・`_SELECTION_ANNUAL_YEARS = 6`、`_selection_entries()`）で数える。データは保持期間（7年・8年）で切る
+- 記載との違い: 方針の例は「全期間で数える」だったが、全期間で数えると今の5年の窓の中の選択まで変わる（主の候補の件数が増え、選び直しが起きなくなる）。
+  延長前の保持期間と同じ固定の期間で数えると、今の値を変えずに保持期間から切り離せるためこちらにした
+- 確認: 全98銘柄で、5年の窓の内側（端の1年を除く）の値は7年・10年の窓でも全件同じ（消える値45件→0件）。窓の端の1年の差は、Q4の推計の開始日が1日違うだけ（値は同じ）
+- テスト`tests/test_normalized_selection_window.py`（2件）: 修正前は2件失敗、修正後は2件成功
+
+#### 方針
+上のとおり実装した。pushはチャット側の承認のあと
+
+
+---
+
+### ✅ [LAYER3-LATEST-FILING-TAG-DROP-1] 直近の書類で、それまで申告されていた候補タグが消えた項目がある（FCXの設備投資・CRWVの借入金）。今は検知する仕組みが無い
+**完了（2026-10-14）:** 実装・push済み、65ace9d86e（設備投資のSegmentExpenditureAdditionToLongLivedAssetsを条件付きで採用、最新期欠けのガード・CHECK-63）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 中（TANUKI VALUATIONのFCX〈TTMのFCF〉と、FY2026の10-K以降のCRWV〈借入金〉にかかわる）
+**分類:** 一次データ・監視 / common/sec_data（Layer2の候補タグ・company_facts）
+**登録日:** 2026-10-14
+**発見:** [[FCX-CAPEX-2026Q2-MISSING-1]]の原因の確認（[[LAYER3-RETENTION-PERIOD-1]]の作業のSTEP 2）
+
+#### 内容（2026-10-14の洗い出し、読み取りのみ）
+- 全98銘柄・Layer2の全項目で、「直近の書類（10-Qか10-K）でどの候補タグも申告されず、同じ種類の一つ前の書類では申告されていた」項目: 6銘柄・7項目
+  - **FCX capital_expenditure**（10-Q 2026-08-06）: 区分なしの合計をやめ、事業区分の軸つきだけになった（[[FCX-CAPEX-2026Q2-MISSING-1]]）
+  - **CRWV short_term_debt・long_term_debt**（10-Q 2026-08-12）: `LongTermDebtCurrent`・`LongTermDebtNoncurrent`が消え、`DebtInstrumentCarryingAmount`（2026-06-30 $35,551M）だけになった。
+    Layer3の最新は2026-03-31（長期$17,312M・短期$7,547M）。TANUKIは借入金を年次（FY2025）から取るため今の値には響かないが、FY2026の10-Kも同じなら借入金が取れなくなる
+  - KLAC short_term_debt（10-K、流動分の返済）・ZS short_term_debt（10-K、転換社債を固定に振り替え）・LITE buyback（10-K、自社株買いなし）・MRVL rpo（10-Q、前受収益の流動分の申告なし）: 残高・取引が無くなっただけの可能性が高い
+- 今は「直近の書類で項目が消えた」ことを知らせる仕組みが無い（FCXはTTMの点の期末に届かない四半期として[[TTM-STALE-QUARTER-IN-WINDOW-1]]の試算で見つかった）
+
+#### 全数調査（2026-10-14、読み取りのみ）
+- 98銘柄×Layer3の36項目: 毎期出ていた項目が最新期で欠けるのは108件（EPSの10-K〈Q4〉16件、最後の値が0の45件を含む）。評価に使う項目で直近の書類から欠けたのはFCXの設備投資とCRWVの借入金だけ。一度も値が無い項目は551件
+- 値が一致する移行先タグ（±0.5%で2期間以上一致・不一致0）: FCXの設備投資（`SegmentExpenditureAdditionToLongLivedAssets`）、CPRTの現金（`CashCashEquivalentsRestrictedCash…`）、CDNS・SOFIの前受収益（`ContractWithCustomerLiability(Current)`）。
+  Layer3の現金・前受収益は読む処理が無いため見送り
+- 原本の確認: CRWVは独自タグ、ADBEはus-gaapの2タグ分割、LRCXは10-Qが独自タグ、CEGは行の取りやめ、ASTSは営業利益の行が無い（[[LAYER3-CUSTOM-TAG-MIGRATION-1]]）
+
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- 条件付きの候補タグ（`common/sec_data/conditional_tags.py`の`conditional_candidate()`。Layer3とparser.pyの両方から呼ぶ）: 設備投資の`SegmentExpenditureAdditionToLongLivedAssets`を、
+  過去の重なる期間で既存の候補と±0.5%で2期間以上一致し不一致0の銘柄だけ使う。Layer3は候補の最後に足し（期間ごとの優先順位で既存の候補の期は上書きしない）、
+  parser.pyは通常の抽出の後に値が無い年・四半期だけを埋める（`_extract_values()`は最新の期末のタグを勝者にするため、候補の末尾に足すと既存の期まで置き換わる）。採用した期に`fallback_reason: "segment_total"`（parser.pyは`cf_provenance`）
+- 採用は18銘柄（AMAT・CAKE・CIX・COHR・KO・SPIR・VRT・HEI・HWM・HON・SCCO・FCX・JNJ・MO・PEP・PM・WMT・ENTG）、不採用9銘柄（AMZN・AVAV・RDW・ADSK・CPRT・CAT・GEV・XOM・TER）。
+  HONは事業の分離後に過去の設備投資を修正再表示しており、Layer3が持つ最後の申告の値とは13期間一致・不一致0（最初の申告の値とは不一致）のため採用。値が変わるのはFCXだけ
+- 最新期欠けのガード: TTMの最新の点で営業CFか設備投資が欠け、年次の値での代用も無い → DCF信頼性LOW（Policy B）→ WATCH、report.txt・TANUKI VALUATIONの個別ページ・TANUKI SCOREに注記。
+  年次で代用している（`fcf_source=annual_fallback`）→ 判定は変えず注記「最新期は年次の値で代用」。CHECK-63（WARN）で発動した銘柄と項目を列挙する
+- 記載との違い: 方針の「直近の書類で項目が消えたことを知らせるCHECK（関連タグの有無も見る）」そのものは作っていない。CHECK-63はTTMの最新の点の営業CF・設備投資の欠け（評価に響く場合）だけを知らせる
+- テスト: `tests/test_conditional_tags_and_stale_latest.py`（FCXのQ2単独$1,104M・上期累計$2,077M、条件を満たさない銘柄で値が変わらない等）、`tests/test_latest_period_guard.py`（7件）
+
+#### 方針
+上のとおり実装した。直近の書類で項目が消えたことの一般的な検知（CHECK）は、要るかをチャット側で判断する
+
+
+---
+
+### ✅ [FCX-CAPEX-2026Q2-MISSING-1] FCXの2026年第2四半期の10-Qの設備投資がcompany_factsに無く、TTMの最新の点が1四半期古い設備投資で計算されていた
+**完了（2026-10-14）:** 実装・push済み、65ace9d86e（条件付きの候補タグで2026年第2四半期の設備投資が単独$1,104Mで入る）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 中（TANUKI VALUATIONのFCXの理論株価にかかわる。[[TTM-STALE-QUARTER-IN-WINDOW-1]]の修正を反映すると、その点のFCFが無くなる）
+**分類:** 一次データ / common/sec_data（FCXの`capital_expenditure`の候補タグ）
+**登録日:** 2026-10-14
+**発見:** [[TTM-STALE-QUARTER-IN-WINDOW-1]]の試算
+
+#### 内容（2026-10-14、読み取りのみ）
+- FCXの`PaymentsToAcquireProductiveAssets`は2026-03-31（2026-05-08提出の10-Q）まであり、2026-08-06提出の10-Q（2026年第2四半期）には無い。同じ10-Qの営業CF（2026-01-01〜06-30の累計）はある。
+  company_factsのFCXの名前空間はdei・srt・us-gaap・ecdだけで、2026-06-30の期末に設備投資らしいタグは無い（会社の独自タグに移った可能性。company_factsは独自タグを含まない）
+- 今のTTMの2026-06-30の点は、営業CFは2026年第2四半期まで、設備投資は2026-03-31までの4四半期を足していた（期間がずれたFCF）
+- [[TTM-STALE-QUARTER-IN-WINDOW-1]]の修正を反映すると、この点のFCFが無くなり、TANUKIのFCXの理論株価は $11.89→$15.46（FCFの点数4→3、方式が2年平均）
+
+#### 原因（2026-10-14、10-Q〈0000831259-26-000036〉のXBRLのインスタンス`fcx-20260630_htm.xml`をEDGARから読んだ）
+- SECの取り込みの遅れではない（`_freshness.json`はOK_NO_NEW、手元の最新の提出日2026-08-06＝submissionsの最新）
+- 設備投資は`us-gaap:PaymentsToAcquireProductiveAssets`のまま申告されているが、すべて事業区分の軸（`StatementBusinessSegmentsAxis`: 北米銅・南米・インドネシア・モリブデン・その他）つきで、区分なしの合計が無い。
+  company_factsは軸つきの値を含まないため取り込めない。区分の値の合計は2026年上半期$2,077M（2025年上半期$2,433Mはcompany_factsの合計と一致）
+- 区分なしで申告されている`us-gaap:SegmentExpenditureAdditionToLongLivedAssets`（2026年上半期$2,077M、第2四半期$1,104M）は区分の合計と一致するが、候補に無く、意味（区分ごとの長期資産の追加額）が現金ベースの設備投資と違いうる
+- 分類: タグの変更（合計を区分なしで申告しなくなった）。Layer2の候補の漏れではない。全銘柄の洗い出しは[[LAYER3-LATEST-FILING-TAG-DROP-1]]
+
+#### 方針
+2026-10-14、条件付きの候補タグ（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）で直した（65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））。Layer3・parser.pyとも2026年第2四半期の設備投資が単独$1,104M（由来segment_total）で入る。
+試算: FCXの理論株価は公開値$11.89→$20.15（+69.5%。b6c1e86def単独の$26.29からは−23.4%）、判定は不変。公開データへの反映はpushと作り直しのあと
+
+
+---
+
+### ✅ [TTM-STALE-QUARTER-IN-WINDOW-1] TTMの各点が「期末以前の直近4四半期」を足すが、その4四半期が点の期末に近いかを見ておらず、古い四半期が今のTTMに入る
+**完了（2026-10-14）:** 実装・push済み、c47d425bce（TTMに点の期末に届かない四半期を足さない）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 高（今の5年でも起きている。[[LAYER3-RETENTION-PERIOD-1]]〈高〉の前提で、延ばすと増える）
+**分類:** 計算 / common/sec_data（`ttm_calculator.py::calc_ttm_series()` L315-336、`_last4_is_contiguous()` L190）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 3
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- `calc_ttm_series()`は各点の期末（anchor）以前の四半期から先頭4件を取り、`_last4_is_contiguous()`で「4件が連続した約12か月か」だけを確かめる。4件の最新が点の期末から離れていても通る
+- 点の期末から100日超前の四半期しか無い項目（今の5年）: 54か所・20銘柄。buyback 28・finance_lease_payments 10・stock_based_compensation 4・gross_profit 3・selling_and_marketing 3・research_and_development 2・financing_cash_flow 2・operating_cash_flow 1・investing_cash_flow 1。
+  例: AMATの2024〜2026年のTTMのリース返済額が2023-10-29までの4四半期、CEGの2023〜2026年の株式報酬が2022-12-31までの4四半期、BROSの販売費が2023-12-31まで
+- TANUKI VALUATIONへの影響（試算で古い四半期を外した場合）: AMAT・CELH・IOTの理論株価が0.2%以下変わるだけ。判定値は変わらない
+- 保持期間を延ばすと増える（7年で95か所・28銘柄、8年で120か所・33銘柄）。8年ではABBV・HON・LRCX・VST・WMTのFCFに2019〜2020年のリース返済額が入る
+
+**状態（2026-10-14）:** 実装済み・テスト済み。c47d425bceをpush済み（チャット側の承認、2026-10-14）。公開データは手元で作り直さず、次のSEC_Data_Update（毎週日曜12:00 UTC、全銘柄のTTMを作り直す）で反映される（下の「作り直しで変わる値」。保持期間の延長〈[[LAYER3-RETENTION-PERIOD-1]]〉のコードは手元に置き、承認待ち）
+
+#### 原因（2026-10-14の調査）
+- `ttm_calculator.py::calc_ttm_series()`（L315-336）は、各点（anchor）以前の四半期の先頭4件を取り、`_last4_is_contiguous()`（L190、2026-08-02の[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]、e2892a91f7）で4件どうしが連続しているかだけを見ていた
+- 元に戻ったものではなく、検査の抜け。2026-08-02のスキャンも「同じ古い四半期を複数の点で使い回す」型（CDNS・CAKE・PM・CIX・TDY）を見つけていたが、FCFの中核の4項目に当たらないとして直していなかった
+- 点の期末と4四半期の最新の期末の差（全98銘柄・全FLOW項目、EPS除く）: 0日か90日以上のどちらかで、1〜89日は無い。90日以上は5年で56か所（うち91日〈1四半期古い〉が2か所: AMZNの自社株買い・FCXの設備投資）、7年で92か所、8年で117か所
+
+#### 直し方（2026-10-14）
+- 案T1（4四半期の最新の期末＝点の期末）と案T2（差が10日以内）を比べた。今のデータでは差が0日か90日以上なので結果は同じ。T2を採った（隣り合う四半期の許容〈±10日〉と揃え、52/53週の決算で数日ずれても誤って外さない）
+- `_last4_reaches_anchor()`を新設し、`calc_ttm_series()`で連続性の検査の後に呼ぶ。4四半期そろわない項目にも当てる（点の期末に届かない部分合計も作らない）。EPSは連続性の検査と同じく対象外（Q4の推計の対象外で、Q4の期末では構造的に1四半期古い）
+- テスト`tests/test_ttm_anchor_reach.py`（5件）: 修正前は3件失敗、修正後は5件成功
+- 修正後、古い四半期が入る点は5年・7年・8年とも0
+
+#### 作り直しで変わる値（2026-10-14、手元で5年のまま作り直して全システムを実行。commitしていない）
+- TANUKI VALUATION: 値が変わるのは5銘柄で、判定値（分類・timing・象限）は変わらない
+  - FCX: 理論株価 $11.89→$15.46（+30.0%）、乖離率 −83.6%→−78.6%、FCFの点数4→3、方式が5年平均→2年平均（基準値 $1,320M→$1,622M）、RICEのCFの年数3→2、外れ値の判定が消える。
+    2026-06-30の点は設備投資が2026-03-31までの1四半期古い4件を足していた（2026年第2四半期の10-Qの設備投資がcompany_factsに無い、[[FCX-CAPEX-2026Q2-MISSING-1]]）。直すとその点のFCFが無くなる
+  - AMAT（リース返済額）・CELH・IOT・MSFT: 理論株価の変化は0.2%以下
+- HypeCore: 期待スコアがAMAT・IOT・MSFTで少し変わるだけで、stageは不変
+- STONKS SILO: 判定・値とも不変（更新時刻だけ）。rotce.py: 不変
+- report_consistency_check: NG 0・WARN 126で出力も同じ。registration_validator: 修正前と同じNG 7・WARN 7（既存: RKLB・ZSのlatest.json未生成、RMBS・ENTG・TER・KLAC・LRCXのDiscover未登録）
+- audit.py: 「一部None」の警告が6→10銘柄（COHR・KLAC・LITE・LRCXのOCF、RCATの件数）。いずれも窓の端の最古の点（2022-06-30）で、修正前は1四半期古い1件だけの部分合計だった。TANUKIは4四半期そろわない点をもともと使わない
+
+#### 方針
+上のとおり実装した。公開データの作り直しはチャット側の承認のあと（コードをpushすれば次のSEC_Data_Updateで作り直される）
+
+
+---
+
+### ✅ [LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1] Layer3が候補タグのうち「保持期間の中に値がある最初のタグ」を採るため、保持期間を延ばすと昔使われたタグが選ばれ、直近の値が古い期の値に置き換わる
+**完了（2026-10-14）:** 実装・push済み、c47d425bce（rpoの候補を窓に左右されず選ぶ）。公開データへの反映は2026-10-18のSEC_Data_Updateからの連鎖で、確認は`CLAUDE_CODE_START.md`「次回の確認手順」0番（[[LAYER3-RETENTION-PERIOD-1]]の項目で扱う）
+**優先度:** 高（[[LAYER3-RETENTION-PERIOD-1]]〈高〉の前提。直さずに保持期間を延ばすと、正しくない値が公開データに入る）
+**分類:** 一次データ / common/sec_data（`layer3_builder.py`の候補の選び方、`quarterly.py::_process_entries()`の保持期間）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 3（保持期間を7年・8年にした試算）
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- `layer3_builder.py`は「Layer2 candidatesに基づくフィールド抽出（最初に見つかった非空候補を採用）」（モジュールのdocstring）。保持期間で切った後に「値があるか」を見るため、期間が変わると採るタグが変わる
+- 5年→7年で直近の四半期の値・期末が変わる項目が26（8年で44）。多くは今は値が無い項目に2019〜2021年の値が入るもの（例: ASTSの営業利益が2021-03、INTUの粗利が2020-07）。
+  直近の値が古い期に置き換わるもの: AMZNのRPO（2025-12-31 $25.0B→2020-06-30 $41.0B）、LITEのRPO（2026-06→2021-04）、MRVL・ZETA・CPRTのRPO
+- VZの設備投資: 5年〜8年はLayer3に1件も無い（TANUKIは年次で代替）。10年にすると2016〜2019年にしか申告の無い`PaymentsToAcquireProductiveAssets`が選ばれる
+- 2026-10-14の試算では、TANUKI VALUATIONのRPOは別の経路で読まれていて変わらなかった。STONKS SILOはASTSの営業利益が「なし→あり（2021年の値）」になった
+
+**状態（2026-10-14）:** 実装済み・テスト済み。c47d425bceをpush済み（チャット側の承認、2026-10-14）。公開データは手元で作り直さず、次のSEC_Data_Update（毎週日曜12:00 UTC、全銘柄のTTMを作り直す）で反映される（下の「作り直しで変わる値」。保持期間の延長〈[[LAYER3-RETENTION-PERIOD-1]]〉のコードは手元に置き、承認待ち）
+
+#### 原因（2026-10-14の調査）
+- 候補の選び方は2通りある。大半の項目は`layer3_builder.py::_merge_candidate_entries()`（L424-）で、候補ごとに正規化してから期間（期末日・年次か）ごとに優先順位で選ぶ（すでに期間ごと）。
+  窓の長さに左右されるのは、期間ごとに混ぜない`NO_CANDIDATE_MERGE_FIELDS`（L78-82: rpo・shares_basic_weighted_avg・shares_outstanding_period_end_sec）の
+  「保持期間の中に値がある最初の候補」（`extract_field_raw_entries()` L410-419）。株式数の2項目は候補が1つなので影響せず、実際に左右されるのはrpo（候補8つ）だけ
+- 全98銘柄・全項目で、5年の窓の値が7年・10年の窓でどう変わるかを数えた: 窓の内側（端の1年を除く）で消える値49件はすべてrpo。窓の端の1年では22件の値が違う（窓の境目でYTDの差し引きに要る前の四半期が切れ、次の候補タグが使われる。窓を延ばした方が本来の優先タグの値になる）
+- 2026-10-14の前回の試算の「直近の値・期末が変わる26項目」のうち、rpo以外（ASTSの営業利益・INTUの粗利等）は、期間ごとの選び方で昔の期に昔の値が入ったもの。直近の値に見えるのはその項目が今は申告されていないため。今のTTMに入る問題は[[TTM-STALE-QUARTER-IN-WINDOW-1]]で直した
+- Layer3のrpoを読む処理は0件（[[LAYER3-RPO-CANDIDATE-ORDER-1]]のクローズ理由と同じ。TANUKI VALUATIONのRPOはnormalizedから読む）。normalized側の同じ型の問題は[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]
+
+#### 直し方の案と試算（全98銘柄、5年の窓）
+| 案 | 中身 | 今と値が違う | 窓を7年・10年にしたとき |
+|---|---|---|---|
+| A | rpoも期間ごとの優先順位で選ぶ（`_merge_candidate_entries()`） | 28銘柄・183件 | 変わらない |
+| B（採用） | 保持期間で切る前の全期間で、最新の期末が最も新しい候補から試す（同着は優先順位） | 11銘柄・165件（AMZN・CELH・JOBY・SOFI・MRVL・FLYW・BROS・KLAC・V・HWM・APP） | 変わらない |
+| 今 | 保持期間の中に値がある最初の候補 | — | 5銘柄で変わる |
+
+案Bを選んだ理由: 案Aは同じ銘柄の中で期によって概念の違うタグ（RPOの総額と契約負債の流動分等）が混ざる（rpoを期間ごとの選び方から外した理由そのもの）。案Bは銘柄ごとに1つのタグで、窓の長さに左右されない。
+Layer3のrpoを読む処理が無いため、下流の値は変わらない。凍結（fixed_registry）はparser.pyの年次だけが対象で影響しない
+
+#### 実装とテスト（2026-10-14）
+- `layer3_builder.py::extract_field_raw_entries()`の`NO_CANDIDATE_MERGE_FIELDS`の分岐で、候補を「全期間の最新の期末が新しい順（同着は優先順位）」に並べ替えてから試す
+- テスト`tests/test_layer3_no_merge_window_independent.py`（3件）: 修正前は2件失敗（窓10年で古い優先タグが選ばれる）、修正後は3件成功
+- 修正後、全98銘柄で5年の窓の内側の値は7年・10年の窓でも全件同じ（消える値49件→0件）。窓の端の22件は窓の境目の影響で残る
+
+#### 方針
+上のとおり実装した。保持期間を延ばす前に、normalized側（[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]）も直す
+
+
+---
+
 ### ✅ [TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1] TANUKI TAILの内部統制データの毎週の更新が、positions_index.jsonの形式を読み違えて1銘柄も処理しておらず（「[POSITIONS] CIK 未登録」）、APGEのctrl/latest.jsonが一度も作られず、他の9銘柄も2026-06-27のまま
 **優先度:** 高（2026-10-06、チャット側の判断で中から引き上げ）
 **追記（2026-10-08）:** APGEを登録解除しTAILからも外したため（4銘柄の登録解除、チャット側承認済み）、対象は9銘柄。

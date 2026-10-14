@@ -11,6 +11,14 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+**次の作業（2026-10-14 終業時点の候補。上から順。日曜〈10-18〉の連鎖の確認〈CLAUDE_CODE_START.md「次回の確認手順」4〉の後に着手）**:
+1. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 保持期間の延長（`[[LAYER3-RETENTION-PERIOD-1]]`）の公開データへの反映の確認の後。他の作業には依存しない
+2. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（1と並行できる）。次の新規銘柄の登録の前に必要
+3. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（1・2）の後。再検証は§7(a)〜(d)の方法で
+
+- **2026-10-14（終業のブラッシュアップ）**: 完了6件（`[[LAYER3-STALE-LATEST-VALUE-1]]`・`[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]`・`[[LAYER3-LATEST-FILING-TAG-DROP-1]]`・`[[FCX-CAPEX-2026Q2-MISSING-1]]`・
+  `[[TTM-STALE-QUARTER-IN-WINDOW-1]]`・`[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]`）をBACKLOG_DONE.mdへ。`[[LAYER3-RETENTION-PERIOD-1]]`は10-18の連鎖の確認まで高に残す。
+  中の13件に着手条件を追記。SYSTEM_MAP・FIELD_DEFINITIONS・CONCEPT_PARAMETER_VARIATIONS（概念13: 財務データの鮮度）に今日の実装を反映。CLAUDE_CODE_START.mdの次回の確認手順を日時・期限・手順の形に並べ直した
 - **2026-10-14（直近の値の判定の修正とpush）**: 135日だけの判定で、10-Kだけで申告される項目の年度末の値が第2・第3四半期に外れていた（40件）。
   「最新の期末から135日以内、または最新の会計年度末以降の期末」に広げた（5f2a56d099、テスト5件）。全数の再確認で外れる値145→105件（誤り40→0、正しい97件・要確認8件は外れたまま）、試算は前回と差なし。
   `config/method_change.json`に`LAYER3-RETENTION-PERIOD-1`の10-18・10-19を入れ、b6c1e86def〜をpush。日曜（10-18）のSEC_Data_Updateからの連鎖で公開データに反映される。CHAT_RULES.mdに事例38
