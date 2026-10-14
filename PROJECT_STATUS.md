@@ -11,6 +11,18 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14**: (A) 残っている確認: STONKS SILO（`38194524654`の後のresults.json。24銘柄・IOTなし・全銘柄にfinancial_as_ofとpath_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・
+  ヒートマップの10系列のyoyあり。10-13・10-14の実行の後も同じ）、TANUKI TAILの2本（Ctrl `38214118841` 10-12 06:45 UTC・Items `38217813723` 07:27 UTC、どちらも9成功・変更なし9・0失敗、
+  ItemsのGrok 0回・commitなし）、System Health（10-13 `38342842526`で[J]✅ 18件すべて正常・[F]✅・[M]✅・Overall ✅・終了コード0。10-14の実行は08:59 JSTの時点で未起動）、
+  Market Data Daily（10-12 20:25 UTC `38304160214`・10-13 20:34 UTC `38463884206`。10-08・10-09の暫定の印はNIY=Fの10-08〈平らな足〉以外すべて外れた、CHECK-62 0件、
+  daily/の差分は暫定の行の置き換えと追加だけ、check_dependency_map.py 一致62・不一致0〈D-02一致〉、XOMのROTCEの直近2026-06-30）。
+  **移設5件**: `[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]`・`[[TAIL-DETAIL-SEC-ITEMS-PATH-MISMATCH-1]]`・`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`・`[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]`・`[[SEC-XOM-CIK-HOLDING-REORG-1]]`。
+  **残した**: `[[SYSHEALTH-SEVERITY-MISMATCH-1]]`（Discordの本文と⚠️・🔴の日が未確認）、`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`（出来高の重複・平らな足の観察）、`[[CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1]]`（仕組みは残る）、
+  `[[EPS-SILENT-TICKER-FAILURE-1]]`（Step Summaryが未確認）。
+  (B) HypeCoreのstageの試算（読み取り・計算のみ、出力はcommitしない）: 月中にその日までのデータで計算したstageが月末の確定値と違う日は16.2%、揺れた月は39.0%。
+  案1（確定月）は月中の変化0だが今の定義と26.7%の月で違う（1か月遅れ）、案2（RSIの月内平均）は4.9%の月で違い月中の揺れは14.4%、どの案でも月ごとの往復（122→112回）は残る。
+  今日の判定が変わるのは案1 6銘柄・案2 3銘柄・案3 8銘柄。**新規登録**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（中）・`[[EPS-SHARES-BASIS-MISMATCH-1]]`（中、株式数の比が1%超は94銘柄中53）。
+  アクティブBACKLOG 34件→31件。report_consistency_check.py NG=0・audit.py exit 0
 - **2026-10-12（夕方の調査、読み取りのみ）**: (1) XOMの2026Q2を原本（新CIKの10-Q、2026-08-03提出）で検証: 3か月の売上116,017M・純利益14,525M・EPS 3.48、6か月 201,155M・18,708M・4.47。
   Layer2・TTM・EPS ANALYZER・TANUKI VALUATION・HypeCoreはすべて3か月の値（またはその4四半期の和）で、累計の取り込みは無い。MRVL・GOOGL・DELLもEPS ANALYZERとLayer2の直近8四半期が一致。
   Q1→Q2の増加は、Q1のデリバティブの時価評価 −3,330M（Energy Products）・特定項目 −706Mが、Q2に時価評価+2,560Mへ反転したことと価格・マージン（一過性の利益は無い、Q2の特定項目は −2,379M）。
