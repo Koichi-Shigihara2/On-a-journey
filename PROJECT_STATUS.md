@@ -11,6 +11,11 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14（保持期間7年・8年と5点平均・計算方法の変更の印の試算）**: c47d425bce（Layer3・TTMの2件）をpush（次の日曜のSEC_Data_Updateで反映）。
+  FCXの設備投資の欠けは、2026年第2四半期の10-Qで合計を区分なしで申告しなくなったため（事業区分の軸つきだけ。company_factsは軸つきを含まない）。全銘柄の洗い出しは`[[LAYER3-LATEST-FILING-TAG-DROP-1]]`（中、FCX・CRWV）。
+  保持期間7年・8年・5点平均・印（`common/method_change.py`）を実装し手元に置いた（テスト17件、修正前5件失敗、pytest 2317件成功）。全体の試算: TANUKIの理論株価48銘柄（中央値6.3%、FCX +121%・AMZN −45%）、
+  判定値6銘柄（BSY・BROS・DDOG・HQY・NOW・TDY）、HypeCoreの今月のstage・STONKS SILOの判定は不変、rotceのシグナル7銘柄、CHECK NG 0・WARN 126、auditの警告6→8。
+  pushの前に直すもの（新規・高）`[[LAYER3-STALE-LATEST-VALUE-1]]`（延ばすと今は申告されていない項目に古い値が入り、STONKS SILOのASTSの営業利益等に出る）。新規・低`[[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]`（AVAV）
 - **2026-10-14（Layer3・TTMの不具合2件の修正）**: `[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]`（窓に左右されるのは期間ごとに混ぜないrpoだけ。全期間で最新の期末が新しい候補から試す案Bを採用、
   Layer3のrpoを読む処理は0件）・`[[TTM-STALE-QUARTER-IN-WINDOW-1]]`（2026-08の連続性の検査は4四半期どうしだけを見ていた検査の抜け。最新の四半期が点の期末から10日以内の検査を追加、古い四半期の点は5年56・7年92・8年117か所→0）を実装。
   テスト8件（修正前5件失敗→修正後8件成功）、pytest 2300件成功、CHECK NG 0・WARN 126、auditは終了コード0、registration_validatorは既存のNG 7・WARN 7のまま。
