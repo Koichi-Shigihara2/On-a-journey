@@ -2094,6 +2094,7 @@ Step Summaryの表示は引き続き未確認
 ---
 
 ### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
+**状態（2026-10-14 終業）:** 2026-10-15に、チャット側が影響表付きで直し方の案を作る。日曜（10-18）の反映（[[LAYER3-RETENTION-PERIOD-1]]の公開データの作り直し）より前に判断する
 **優先度:** 高（2026-10-12、低から変更。2026-10-11に実害: XOMの1銘柄の例外で日曜の連鎖がすべてskippedになった。直し方は次の指示書で扱う）
 **分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
 **登録日:** 2026-10-10
@@ -3134,6 +3135,46 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [DOC-BROKEN-REFS-1] BACKLOG.md等の二重角かっこ（`[[` `]]`）の参照のうち30件が、BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdのどの見出しにも無い（壊れた参照）
+**優先度:** 低（読む人が項目をたどれないだけで、システムの動作には影響しない）
+**分類:** 文書 / BACKLOG.md・BACKLOG_DONE.md・CLAUDE_CODE_START.md・CHAT_RULES.md・SYSTEM_MAP.md・PROJECT_STATUS.md
+**登録日:** 2026-10-14
+**発見:** 2026-10-14の終業のブラッシュアップ（各commitの前に壊れた参照の数が増えていないかを数えていた。30件のまま増えていない）
+**着手条件（2026-10-14）:** 期限なし。文書の整理の作業の合間に
+
+#### 内容（2026-10-14、機械的に数えた）
+- 数え方: 6つの文書（BACKLOG.md・BACKLOG_DONE.md・CLAUDE_CODE_START.md・CHAT_RULES.md・SYSTEM_MAP.md・PROJECT_STATUS.md）の二重角かっこ（`[[` `]]`）のうち、
+  BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdの見出し（`### [ID]`・`### ✅ [ID]`）に無いもの
+- 30件: BACKFILL-HISTORY-CLEANUP-1・BUG-INTU-GROWTH-1・DCF-DEFAULT-G-1・EPIC-LAYOUT-1・FINTREND-SM-JOBY-NONE-1・FIVE-CATEGORY-RECLASSIFY-1・GATE2-...・
+  LAYER3-ROIC-WACC-NONE-4TICKERS-1・MACRO-COMPUTE-DUP-1・MACRO-DISP-2・MACRODATA-FTSD-SERIES-ID-INVALID-1・MP-DATA-NULL-1・MP-GAUGE-NEEDLE-1・MP-IRX-FRED-1・
+  NAMING-CONVENTIONS-APPLY-1・PHASE1-SCAN-CLEANUP-1・PREVENT-5・QUALITY-CHECKER-CLEANUP-1・REPORT-TXT-PARSER-CLEANUP-1・SCHEMA-LTDEBT-DOUBLECOUNT-RISK-1・
+  SEC-SUBMISSIONS-DUAL-FETCH-1・SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1・SYSHEALTH-CIK-DEDUP-1・TAG-DEFS-UNIFY-1・TAIL-CIK-LOOKUP-DEDUP-1・
+  TEST-IV-FORMULA-ALPHA-1・TICKER-AUDIT-1・TICKER-SOURCE-CONFIG-DUP-1・TVAL-TS-FIX-1・XXX-1
+- 型の見込み（未確認）: 登録されないまま参照だけされた項目、見出しの形が違う完了済みの項目（古い形式の移設）、例として書いたID（`GATE2-...`・`XXX-1`）
+
+#### 方針
+1件ずつ、登録が漏れたものは登録し、完了済みで見出しの形が違うものは見出しを揃え、例のIDは参照の形（`[[ ]]`）をやめる。
+数える処理を常設のチェック（report_consistency_check等）にするかも合わせて決める。実装しない（チャット側の指示待ち）
+
+---
+
+### [CHAT-RULES-CASE-NUMBER-DUP-1] CHAT_RULES.mdの事例の番号が、前半の通し番号（事例1〜38）と後ろの節の「事例1・2」で重なっている
+**優先度:** 低（参照する人がどちらの事例か取り違えうるだけで、システムの動作には影響しない）
+**分類:** 文書 / CHAT_RULES.md
+**登録日:** 2026-10-14
+**発見:** 2026-10-14の終業のブラッシュアップ（事例37・38の重複の確認）
+**着手条件（2026-10-14）:** 番号を振り直すときは、他の文書からの「事例N」の参照の更新と一緒に行う（今は振り直さない。参照が切れるため）
+
+#### 内容（2026-10-14）
+- 前半: `**事例1:**`〜`**事例38:**`（太字の段落。「事例37」等で各文書から参照されている）
+- 後ろの節「ローカル環境固有の検証ノイズ（2026-08-15〜16の教訓）」: `### 事例1: core.autocrlf=trueによる改行コード差`・`### 事例2: ALPHA_VANTAGE_API_KEY未設定による出力欠落`
+- 「事例1」「事例2」の参照は、どちらを指すかが文面からしか分からない
+
+#### 方針
+後ろの節の2件を別の名前（例: 「環境ノイズ1・2」）にするか、通し番号に入れて振り直し、各文書の参照を合わせて更新する。実装しない（チャット側の指示待ち）
+
+---
 
 ### [HYPECORE-RECOMMENDATION-DUPLICATE-1] stageからの推奨文のロジックがTANUKI VALUATIONのPythonとHypeCoreの画面のJS（2ファイル）にある
 **優先度:** 低（文言の表示だけ。判定には使わない）
