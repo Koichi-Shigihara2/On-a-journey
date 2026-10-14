@@ -2471,6 +2471,10 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 #### 対応方針（チャット側の指示、2026-10-12。今回は登録だけ）
 食い違いをupdate.pyが止まる前に検知して知らせる（System HealthかCHECKで）。cik_history.jsonへの旧CIKの登録とcik_lookup.csvの変更は人が判断する
 
+#### HypeCoreのstageの定義v2との関係（2026-10-14追記）
+- 定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §5・§6）は過去のstageを財務の履歴から作る。CIKの切り替えで財務の履歴が途切れると、倍率の履歴・g_F・Lが途中で欠ける
+- そのため定義v2の共通の部品の1つとし、新しい銘柄の登録の手順でもStep 1の前（プリフライト）に確かめる（[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」）。既存の銘柄の検知（本項目）と同じ照合を使う
+
 ---
 
 ### [HYPECORE-STAGE-TIMESCALE-1] HypeCoreのstageは「数か月単位の期待と実体の関係」の定義なのに、月末（月の途中はその日）の1日の値で判定され、RSI（14日）の1日の値が境目を分ける
@@ -2624,10 +2628,22 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
   (b) 移行中で直前のstageを保つため、長く同じstageが続き、§7(1)で段階の意味が出ない。(c) 2021年からの日足では5年の自社比・先行き12か月の結果の件数が足りない（日足の過去分の取得が要る）。
   (d) 黒字化の見込み・業種・景気循環株の代わりは仮。試算のスクリプトはリポジトリに置いていない（一時フォルダ）
 
+#### 検証の結果の解釈（2026-10-14、チャット側の判断、Koichi了承）
+- 月末の判定の70%が「移行中」になった最大の原因は、§4に「実体が伸びて倍率が縮む（g_Fプラス・g_Mマイナス）」局面の受け皿が無かったこと（チャット側の設計の誤り）。
+  METAが2022-12〜2025-06に「該当なし」になったのは規則の順序の問題（g_Fマイナスの間に倍率が見直された2023年をS1で捉えられなかった）
+- 検証は「移行中は直前を保つ」扱いのまま行ったため、stageごとの差が出にくかった。今の定義のS3は、その後倍率が縮んでいた（中央値−0.111）。テクニカルの過熱には短期の行き過ぎを捉える力がある
+- 日足の10年分の取り込みは当面保留する（運用には不要。検証の結果が際どいときだけ、hypecoreの98銘柄に限って一度だけ取り込む。[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）。
+  Layer3の最初の提出日と保持期間は、期間の長さと関係なく必要（[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]）
+- 新しい銘柄の登録を前提に入れる（共通の部品に1銘柄を追加する経路を持たせ、登録の手順から呼ぶ）
+
+#### 次の手順（2026-10-14）
+1. 規則の修正: 定義v2の文書を改めた（§3 Lは自社3年＋業種を主、§4 消化の追加・g_Fプラス・g_Mマイナスの分岐・g_Fマイナスでの倍率の見直しをS1の候補に・判定の順序・テクニカルはS3の補助、§6 新しい銘柄の登録・履歴の取り方、§7 検証のしかたの変更）
+2. 再検証: §7の(a)〜(d)（生の判定・業種に対する相対値・6か月と12か月の超過リターン・移行中10%未満）で試算し直す。チャット側の指示を待つ
+
 #### 方針（2026-10-14更新）
 stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・検証中）で作り直す。今は定義v2の検証中で、実装しない。
 定義v2は期待の段階を倍率の変化g_M・実体の伸びg_F・倍率の水準Lで決め、テクニカル（RSI・MA200乖離）は補助に下げる。持続の条件（2か月）を持つ。
-依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（共通の部品）→ [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）。
+依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]・[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]・[[CIK-REORG-DETECTION-1]]（共通の部品）→ [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）。
 試算のスクリプトはリポジトリに置いていない（一時フォルダ）
 
 ---
@@ -2687,7 +2703,10 @@ stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・�
 #### 方針
 - 共通の導出データを1つ作り、stage・TANUKI SCOREのPERの列・最大EPSのPER・`rotce.py`が読む。パーセンタイルの計算は`rotce.py`のものを共通化する
 - `docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`の「対象3（フェーズ3）: 導出データ — 評価倍率・バリュエーション系」と`CONCEPT_PARAMETER_VARIATIONS.md`に登録し、新しい定義の違いを増やさない
-- 依存: [[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（粗利の提出日）・[[SECTOR-MASTER-UNIFY-1]]（業種の中の順位）。実装しない（チャット側の指示待ち）
+- 依存: [[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（粗利の提出日）・[[SECTOR-MASTER-UNIFY-1]]（業種の中の順位）・[[LAYER3-FIRST-FILED-DATE-1]]（その時点で公表済みの財務）。実装しない（チャット側の指示待ち）
+- 定義v2のLは、2026-10-14の改訂で自社3年＋業種の中の位置（主）に変わった（上の「自社の過去5年」は改訂前）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
 
 ---
 
@@ -2703,6 +2722,9 @@ stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・�
 
 #### 方針
 業種のマスターを1つにし、景気循環株かどうかも持たせる。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- 当てはまる区分が無い銘柄（銀行・保険・REIT・バイオ等）は区分なしとして持ち、stageは「判定不能（区分なし）」にする（中立の値で埋めない、定義v2 §6）
 
 ---
 
@@ -2718,6 +2740,9 @@ stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・�
 
 #### 方針
 STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算する。TANUKIの`structural_deficit`も揃える。依存される側: [[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- 2026-10-14時点の登録の手順はSTONKS SILOを動かさない（Step 1〜8にSTONKS SILOが無い）。stonks_silo=falseの銘柄でも計算する経路が要る
 
 ---
 
@@ -2734,6 +2759,9 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 
 #### 方針
 配当・増資をLayer2・Layer3に加え、凍結・CHECK・auditの対象に入れる。Layer3の各項目に提出日（filed）が揃っているかを確かめる（定義v2は財務を提出日から使う）。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- Layer3の`filed`は「最後に申告した書類」の日付（2026-10-14の調査）。最初の提出日は[[LAYER3-FIRST-FILED-DATE-1]]で扱う。Layer3は1銘柄の取得（`update.py TICKER`、登録のStep 1）でも作られるため、項目を加えれば登録の経路にも入る
 
 ---
 
@@ -2767,8 +2795,131 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 - 監視: System Healthにstageの鮮度、`report_consistency_check.py`にCHECK（判定不能の割合、S0→S3のような飛び越し）。stageの出力に価格の日付・財務の提出日を持たせ、SECの取り込みの遅れの印を引き継ぐ
 - テスト: どんな入力の組み合わせでも必ずどれかの段階に入ること
 
+#### 新しい銘柄の登録への組み込み（2026-10-14追記、定義v2 §6）
+- 共通の部品は1銘柄を追加する経路を持ち、登録の手順から呼ぶ。登録の時点で、取れる範囲の過去のstageも作る
+- 当てはまる収益の段階・業種の区分が無い銘柄（銀行・保険・REIT・バイオ等）は「判定不能（区分なし）」と出し、中立の値で埋めない
+- `registration_validator.py`が登録の時点で知らせる（区分なし・履歴不足〈上場12か月未満〉・共通の部品の欠け）。今のP1〜P7に新しい項目を足す
+- 対象の銘柄が増えるため、定義v2の検証（§7）は四半期ごとにやり直す
+
+#### 登録の手順との対応（2026-10-14の調査、読み取りのみ）
+今の手順（`common/registration/register_ticker.py`のdocstringと`CLAUDE_CODE_START.md`「新規銘柄登録時の必須手順」）:
+
+| 手順 | 中身 | 実行 |
+|---|---|---|
+| Step 0 | カナダ企業チェック（yfinanceのcountry） | 手動 |
+| Step 0.5 | `cik_lookup.csv`にstatus=provisioning・CIK・4フラグ・登録日・経緯を記録 | 手動 |
+| プリフライト | `preflight_check.py`（上場3年未満・直近の書類が20-F等・収益のタグ不在）。警告だけで止めない | 自動 |
+| Step 1 | `update.py TICKER`（company_facts→annual・normalized・Layer3・TTM） | 自動 |
+| Step 2 / 2.5 | β（`beta_fetcher.py`）/ Software_Systemの区分（一時停止、10-Kで判断） | 自動 / 一時停止 |
+| Step 3 / 3.5 | TANUKI VALUATIONの`pipeline.py`（tanuki=true）/ セグメントの確認（一時停止） | 自動 / 一時停止 |
+| Step 4 | `audit.py --check-beta`（止めない） | 自動 |
+| Step 5 / 5b | HypeCore（hypecore=true、`_poc.json`の有無で判定）/ EPS Analyzer（eps=true） | 自動 |
+| Step 6 / 7 | `discover_config.json` / `monitor_tickers.yaml` | 自動 |
+| Step 7.5 | `report_consistency_check.py --ticker T --include-provisioning --include-yfinance-checks --fail-on-ng`（NGで昇格を止める） | 自動 |
+| Step 8 | `registration_validator.py`（NG=0なら`--target-status`へ昇格） | 自動 |
+| Step 8.5 | 対象システム横断チェック（4フラグ・segment_config・rpo_config・TAIL・monitor_tickers・EPSのチェックリスト） | 手動 |
+
+今の手順に無いもの: 日足の過去分の取り込み（[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）、STONKS SILO（赤字の質）、market_dataの属性（業種。週次のMarket Data Weeklyを待つ）。
+
+定義v2 §6の共通の部品の入れどころ（案）:
+
+| 共通の部品 | 入れる手順 | 理由 |
+|---|---|---|
+| 法人再編の確認（[[CIK-REORG-DETECTION-1]]） | Step 0.5の後・Step 1の前（プリフライトに足す） | CIKが違うと以降の取得が全部ずれる。`cik_lookup.csv`のCIKと`company_tickers.json`を照合する |
+| Layer3の最初の提出日・保持期間（[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]） | Step 1（`update.py`の中） | `update.py`はもともと1銘柄で動き、一括と同じ関数を通る。新しい経路は要らない |
+| 日足の過去分（2021-01か上場日の遅い方から） | Step 1の後・Step 2の前（新しい手順） | Step 2のβ・Step 5のHypeCoreがmarket_dataを読む前に揃える |
+| 業種のマスター・景気循環株の区分（[[SECTOR-MASTER-UNIFY-1]]） | Step 2の前後（Step 2.5と同じく業種を決める場所） | 区分なし（判定不能）の判定もここ。週次の属性の更新を待たない |
+| 赤字の質・黒字化の見込み（[[DEFICIT-QUALITY-COMMON-1]]） | Step 4の後・Step 5の前（新しい手順） | stonks_silo=falseの銘柄でも計算する |
+| 倍率の履歴（[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]） | Step 5の前（上の後） | 日足・Layer3・業種・赤字の質が揃ってから作る |
+| 一次データ（配当・増資、[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]） | Step 1（Layer3に加われば自動で入る） | 同上 |
+| 過去のstageの計算 | Step 5（HypeCoreの中、hypecore=trueだけ） | 登録の時点で取れる範囲の過去を作る |
+| 区分なし・履歴不足・部品の欠けの知らせ | Step 8（`registration_validator.py`の新しい項目） | 昇格の前に人が見る |
+| 確認の項目 | Step 8.5のチェックリストに1行足す | 手動の横断確認 |
+
 #### 方針
-依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]と定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]）。関連: [[STAGE-LIFECYCLE-LABEL-MIXUP-1]]・[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]・[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]。実装しない
+依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]・[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]・[[CIK-REORG-DETECTION-1]]と定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]）。関連: [[STAGE-LIFECYCLE-LABEL-MIXUP-1]]・[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]・[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]・[[MARKETDATA-DAILY-HISTORY-POLICY-1]]。実装しない
+
+---
+
+### [LAYER3-FIRST-FILED-DATE-1] Layer3の提出日（filed）が「その値を最後に申告した書類」の日付で、過去の時点で使えた値が分からない
+**優先度:** 中
+**分類:** 一次データ / common/sec_data（`quarterly.py::_process_entries()`・`fact_selection.py::select_latest_filed()`・`layer3_builder.py`・`contracts.py`）
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14、c52db854d8）。試算ではcompany_factsの最初の提出日を使い、10,743件がLayer3のfiledと食い違った
+
+#### 内容（2026-10-14の調査、読み取りのみ）
+- Layer3・normalizedは、同じ期間（四半期は(start, end)、年次は期末日）に複数の書類の値があると、提出日が最新の1件を選ぶ（`quarterly.py::_process_entries()`→`select_latest_filed()`）。
+  YTDと単独の四半期の混在も最新（`layer3_builder.py`のL794・L1030、`normalizer.py`のL169・L419）。持つ`filed`はその書類の提出日。Q4の暗黙の値は年次（10-K）のfiledを写す（`q4_implied.py` L192）。
+  TTM（`ttm_calculator.py`）は提出日を持たない。parser.py（annual_*.json、TANUKI VALUATION）も同じ年度の候補から最新filedを選び、provenanceに`filed`を記録する
+- 規模（2026-10-14、全98銘柄のLayer3、60,013件）: 単一タグで照合できた43,360件のうち25,682件（59%）は、最後の提出日が最初の提出日より遅い（中央値364日。翌年の書類の比較用の再掲）。
+  そのうち1,555件は、最初に申告された値と今の値が違う（修正・組み替え）。派生・暗黙の値4,940件と照合できない11,713件（YTDからの差し引きで期間が変わった四半期等）は、元のエントリから決める必要がある
+- 同じ根の問題: [[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]（fp・fyも最後の書類のもの）
+
+#### 提出日を読む処理（2026-10-14、grep。company_factsの生のfiledを読むものとLayer3のfiledを読むものを分けた）
+| 処理 | 読むもの | 何に使うか | 最初の提出日を並べて持たせたとき | 置き換えたとき |
+|---|---|---|---|---|
+| `quarterly.py::_process_entries()`（Layer3・normalized共通） | 生 | 同じ期間の候補から最新filedを選ぶ | 変わらない | 古い値（修正前）を選ぶことになり、全消費者の値が変わる |
+| `layer3_builder.py`（YTD・単独の選択）・`normalizer.py` | Layer3 | 同上 | 変わらない | 同上 |
+| `q4_implied.py` | Layer3 | Q4の暗黙の値に年次のfiledを写す | 年次の最初の提出日を写す処理が要る | 同上 |
+| `contracts.py`（エントリの必須キー） | Layer3 | 形の検査 | 任意キーとして足す（契約の変更、テストの更新） | 意味が変わる |
+| `rotce.py`（L146・L286・L344） | Layer3 | 同じ期末のstockの値・無形資産のタグを最新filedで選ぶ | 変わらない | ROTCE・P/TBVの値が変わる |
+| `share_unit_fix.py` | 生 | 同じ期の株式数の候補から最新filedを採用 | 変わらない | 株式数の単位の直しが変わる |
+| `parser.py`（annual_*.json、TANUKI VALUATION） | 生 | 同じ年度の候補の選択とprovenanceの記録 | Layer3だけに入れれば変わらない | （対象にしない） |
+| EPS ANALYZER（`extract_key_facts.py`） | 生（Layer3を通らない） | 株式数・四半期の候補を最新filedで選ぶ | 変わらない | 変わらない |
+| TANUKI VALUATION（`pipeline.py`・`score_verifier.py`） | 読まない | score_verifierはscore_historyの日付と株価 | 変わらない | 変わらない |
+| STONKS SILO | 読まない | `financial_as_of`は最新の四半期末（期末日） | 変わらない | 変わらない |
+| `report_consistency_check.py` | 生 | 株式数のDEIの古さ（L1543）、CHECK-37の最新の10-Q/10-Kの提出日（L1815） | 変わらない | 変わらない |
+| `freshness.py`・`update.py`（`_freshness.json`）・`fetcher.py::_get_latest_accn()` | 生 | 手元の最大filed（取り直しの判定） | 変わらない | 変わらない |
+| `src/tail/`（edgar_rss_monitor・sec_ctrl_fetcher・sec_items_fetcher・quarterly_review_generator・xbrl_segment_fetcher・kpi_proposer） | submissions・RSS・生 | 新しい提出の検知、730日以内のconcept | 変わらない | 変わらない |
+| HypeCore（`hypecore.py`）・`audit.py` | 読まない | — | 定義v2の消費者になる | — |
+
+#### 置き方の案（未決定、チャット側の判断）
+- 並べて持つ（推奨）: 各エントリに`first_filed`（同じタグ・期間で最初に申告された書類の提出日）を足し、`filed`は今の意味（採用した値の書類）のまま残す。選び方・値は変わらない
+- 置き換えは不可: 上の表のとおり、選び方（最新の値を採る）と値が変わり、Layer3・normalized・ROTCE・株式数の直しに及ぶ
+- 時点の値を厳密にするなら、最初に申告された値（`first_val`）も要る（1,555件は今の値と違う）。stageの検証で「その時点で使えた値」を使うかどうかで決める
+- 派生の値（YTDからの差し引き・Q4の暗黙・合算）は、元のエントリの`first_filed`の最大を使う
+- 凍結（fixed_registry）への影響: 凍結はparser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外のため影響しない。
+  parser.pyにも入れる場合、provenanceは`fields_snapshot_hash`に含まれるが、凍結の項目はprovenanceごと旧ファイルから戻されるため新しいキーは付かず、CHECK-31はNGにならない（凍結していない項目だけに付く）。stageはLayer3を読むので、parser.pyに入れる必要は無い
+
+#### 方針
+Layer3に最初の提出日を持たせる（期間の長さと関係なく必要。定義v2 §3・§5）。Layer3は登録のStep 1（`update.py TICKER`）でも作られるため、新しい銘柄にもそのまま入る。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+---
+
+### [LAYER3-RETENTION-PERIOD-1] Layer3の保持期間が四半期5年・年次6年で、財務の自社比較・長い期間の検証に足りず、TTMの6点も満たせていない
+**優先度:** 中
+**分類:** 一次データ / common/sec_data（`quarterly.py`の`_QUARTERLY_YEARS`・`_ANNUAL_YEARS`、Layer3・normalized共通）
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14。試算の中だけ8年・9年に延ばした）
+
+#### 内容（2026-10-14の調査、読み取りのみ）
+- 設定の場所: `quarterly.py` L436-437（`_QUARTERLY_YEARS = 5`・`_ANNUAL_YEARS = 6`）。`_process_entries()`が「今日から5年（年次6年）より前の期末」を落とす。Layer3・normalizedの両方がこれを通る。
+  `layer3_builder.py` L194-195にも同じ名前の定数があるが、どこからも使われていない（効くのはquarterly.py側）。
+  parser.py（annual_*.json）は期間で切らない。EPS ANALYZERは`extract_quarterly_facts(years=5)`で別に5年。`report_consistency_check.py`の`_SHARE_RECENT_YEARS = 5`は株式数の前後比較の範囲
+- 前提にしている処理:
+  - TTM（`ttm_calculator.py`、`n_periods=6`。約1年おきに6点、docstringでは「RICEのCF 3年＋FCF用5点＋余裕」）: 5年の保持では6点目（と多くの銘柄で5点目）の4四半期が揃わない。
+    98銘柄で完全な点は計487（8年なら576）。設計の6点を今は満たしていない
+  - TANUKI VALUATION: RICE（`build_rice_annual_shape()`→`rice.py`、Q 3年・CF 3年）とFCFの系列（`_select_fcf_source()`: TTMが3点以上ならTTM、`fcf_avg = mean(fcf_list)`）がTTM系列を読む。
+    8年にすると84銘柄でRICEに渡る行数が増える（大半4→6）。RICEの計算は直近3〜4行なので、値が変わるのはNVDA（3→4）・KULR（2→3）等の点が足りない銘柄だけの見込み。
+    FCFの平均と成長率に使う点数は多くの銘柄で増え、理論株価が変わる（値の変化量は未計算）
+  - CHECK: CHECK-47（normalizedとTTMの直近4四半期）は直近だけを見る。`newfield_q4_cutoff_check.py`（Layer3の全期間）をメモリ上で保持期間を変えて実行すると、NGは5年・8年・10年とも0、WARNは1・1・0。
+    古い期で「missing quarter implied value mismatch」のログが増える（2016年・2018年）。他のCHECKは保存済みのファイルを読むため、延ばしたファイルを作らないと測れない（未測定）
+  - audit.py: TTMのファイルの全件Noneを見るだけで、影響は小さい
+  - 凍結（fixed_registry）: parser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外。保持期間を延ばしても凍結には影響しない
+  - 画面・その他: normalizedの全期間を読む処理（`reader.py`のRPOの系列、`tail_dcf_bridge.py`等）は読む期間が延びる（影響は未確認）
+- 見積もり（2026-10-14、98銘柄、手元でメモリ上に作って測った。ファイルは書いていない）:
+
+  | 保持期間（四半期/年次） | normalized | TTM | Layer3のエントリ | normalize＋Layer3＋TTMの計算時間 |
+  |---|---|---|---|---|
+  | 5年/6年（今） | 13.7MB | 0.83MB（487点） | 60,013 | 4.3秒 |
+  | 8年/9年 | 20.3MB | 0.99MB（576点） | 89,154 | 4.7秒 |
+  | 10年/11年 | 23.6MB | 0.99MB（576点） | 104,082 | 4.8秒 |
+
+  company_factsはもともと全期間を持つため、SECからの取得量は変わらない。SEC_Data_Updateの実行時間の増えは数秒程度の見込み
+
+#### 方針
+定義v2の財務の前年比・自社3年の比較・検証の期間に足りる保持期間にする（期間の長さと関係なく必要。定義v2 §5）。延ばす場合はTANUKI VALUATIONのFCF・RICEの入力が変わるため、前後の値を比べてから切り替える。
+`layer3_builder.py`の使われていない定数の扱いも決める。依存される側: [[STAGE-V2-ROLLOUT-1]]。関連: [[LAYER3-FIRST-FILED-DATE-1]]。実装しない（チャット側の指示待ち）
 
 ---
 
@@ -2815,6 +2966,25 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 
 #### 方針
 早く始めるほど履歴がたまる。実装しない（チャット側の指示待ち）
+
+---
+
+### [MARKETDATA-DAILY-HISTORY-POLICY-1] 日足の履歴の取り方（2021-01か上場日の遅い方から）が明文化されておらず、新しい銘柄の登録の手順に過去分を取る工程が無い
+**優先度:** 低
+**分類:** 決まり・登録の手順 / common/market_data（`fetcher.py::fetch_daily_prices()`・`backfill_daily_prices()`）・`common/registration/register_ticker.py`
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2の改訂（§6「履歴の取り方の決まり」・§8）
+
+#### 内容（2026-10-14の調査、読み取りのみ）
+- `common/market_data/daily/`の593ファイルのうち556は2021-01から始まる（2026-08-11の一括の取り込み、`backfill_daily_prices(start="2021-01-01")`、手動実行専用）
+- 日々の取得（`fetch_daily_prices()`）は直近5日分だけを足す。一括の取り込みの後に対象に入った銘柄は、入った日からの日足しか無い（AVGO 2026-09-02〜、RDDT・VMRK 2026-08-24〜、BE・ILMN・P 2026-09-22〜等。いずれも`cik_lookup.csv`の登録銘柄ではない）
+- 登録の手順（`register_ticker.py`のStep 1〜8、`CLAUDE_CODE_START.md`のStep 8.5）に日足の過去分を取る工程が無い。2026-10-14時点の登録銘柄は全て2021-01（か上場日）から日足があるが、最後の登録は2026-07-09で、一括の取り込みより前
+
+#### 方針
+- 決まり「日足は2021-01か上場日の遅い方から」を明文化し、新しい銘柄の登録の手順に過去分の取り込みを入れる（定義v2 §6、[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」）
+- 過去分（2021年より前）の取り込みは保留する（2026-10-14、チャット側の判断、Koichi了承）。運用には不要。定義v2の検証の結果が際どいときだけ、hypecoreの98銘柄に限って一度だけ取り込む。
+  取り込む場合は、既存の銘柄と登録の手順の両方に同じ取り込みを入れる（銘柄によって履歴の長さが変わらないように）
+- 実装しない（チャット側の指示待ち）
 
 ---
 
