@@ -11,6 +11,11 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14（Layer3・TTMの不具合2件の修正）**: `[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]`（窓に左右されるのは期間ごとに混ぜないrpoだけ。全期間で最新の期末が新しい候補から試す案Bを採用、
+  Layer3のrpoを読む処理は0件）・`[[TTM-STALE-QUARTER-IN-WINDOW-1]]`（2026-08の連続性の検査は4四半期どうしだけを見ていた検査の抜け。最新の四半期が点の期末から10日以内の検査を追加、古い四半期の点は5年56・7年92・8年117か所→0）を実装。
+  テスト8件（修正前5件失敗→修正後8件成功）、pytest 2300件成功、CHECK NG 0・WARN 126、auditは終了コード0、registration_validatorは既存のNG 7・WARN 7のまま。
+  作り直しで変わる値（手元の試算、commitしない）: TANUKIの判定値は0銘柄、理論株価はFCX +30%（2026年第2四半期の設備投資がcompany_factsに無い）とAMAT・CELH・IOT・MSFTの0.2%以下。
+  コードのcommitは手元に置き、pushはチャット側の承認待ち（pushすると次のSEC_Data_Update〈日曜〉でTTMが作り直される）。新規登録: 高 `[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]`（normalized側の同じ型の問題）、中 `[[FCX-CAPEX-2026Q2-MISSING-1]]`
 - **2026-10-14（Layer3の保持期間とTTMの点数の試算）**: `[[LAYER3-RETENTION-PERIOD-1]]`を中→高（今公開している理論株価が、設計の6点より少ない点数〈多くは4点〉で計算されている）。
   6点は2026-05-07のc3880e7372で入り、保持期間5年と突き合わせた記録は無い。`[[TTM-QUARTERS-CHECK-1]]`は4点への減少の原因を「四半期データが2022年から」と誤って見立てていた。最低限の保持期間は四半期6.75年（余裕を見て7年・年次8年）。
   試算（手元、commitしない。5年の再現は公開値と96銘柄で一致）: 7年でTANUKIの理論株価が50銘柄で変わり（中央値9.1%）、判定値が8銘柄で変わる（BSY・COHR・BROS・CPRT・DDOG・HQY・NOW・TDY）。HypeCoreの今月のstage・STONKS SILOの判定は不変、rotceのシグナル7銘柄。
