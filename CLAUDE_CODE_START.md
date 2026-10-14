@@ -37,7 +37,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 3. **10-17 04:00 UTC以降の夜間のMarket Data Daily**: NIY=Fの10-08（平らな足）が`_no_yahoo_bar`になること（`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`、出来高の重複・平らな足の観察も続ける）
 4. **次のBuilding Permitsの公表（10月中旬〜下旬）の後のMACRO PULSEの実行**: 月次の行が観測日に置かれること（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
 5. **次のFOMC（10月下旬）まで**: `[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`の対応か担当を決める
-6. **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（stageの時間の尺度、案1〜3の試算あり）・`[[EPS-SHARES-BASIS-MISMATCH-1]]`（EPSの分母の株式数）の方針
+6. **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（stageの時間の尺度、案1〜8の試算あり）の方針、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
 - 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）

@@ -2525,6 +2525,80 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
   - 案2: 3銘柄（V・PM・XOM TRIM→HOLD〈3→2〉）、timingが変わる7銘柄
   - 案3: 8銘柄（AAPL HOLD→TRIM、CDNS HOLD→TRIM〈2→4〉、SCCO・V・ABBV・PM・SNPS・XOM TRIM→HOLD）、timingが変わる16銘柄
 
+#### 前提（チャット側、2026-10-14）
+- 軸は2つ。ライフサイクル（黎明・成長・成熟。年単位で動く）と、期待の段階（hype stage、S0〜S4。数か月〜年で動く）。ライフサイクルは期待の段階の前提（事前の見方）として使う
+- ガートナーのハイプ・サイクルは「期待のピークの曲線」と「成熟のS字の曲線」の重ね合わせ
+- 案1〜3で往復が減らないのは、判定の境目が月末の1点の値（MA200乖離・RSI・from_peak）に依存しているため
+
+#### STEP 1: ライフサイクルを扱っている処理（2026-10-14、読み取りだけ）
+| 処理 | 材料 | 基準 | 出力 | 読み手 |
+|---|---|---|---|---|
+| HypeCore `index.html`・`detail.html`の`detectLifecycle()`（2つは同じ実装） | 売上の伸び（`revenue_growth_yf`、無ければ`rev_yoy`） | >40%成長期（growth）、>15%拡大期（expand）、>0%成熟期（mature）、それ以外は黎明期（dawn） | 画面の表示だけ（保存しない） | 画面を見る人 |
+| TANUKI VALUATION `pipeline.py`（hypecore_historyの書き込み、L3733付近） | HypeCoreの最新月の`stage_label` | — | hypecore_historyの`"lifecycle"`（中身は期待の段階のラベル） | TANUKI VALUATION `stock.html`の履歴の「ライフサイクル」列 |
+| TANUKI VALUATION `stock.html`のシグナル（L601-604） | 最新月の`stage` | stage 2→「成長期」、3→「成熟期」、1→「黎明期」 | シグナルの文言 | 画面を見る人 |
+| `maturity_config.json`・`maturity_config.py` | 業種・成長の段階 | DCFの2段階・3段階のプロファイルと永久成長率 | DCFの前提 | TANUKI VALUATIONのDCF |
+| EPS ANALYZER MaturityMonitor | 業種別のSBCの水準 | 成熟の目安 | SBCの警告 | EPS ANALYZERの画面 |
+| `growth_sanity` | — | — | CELHについてのコメントだけ | — |
+- ライフサイクルを分類して保存する処理は無い。HypeCoreの`detectLifecycle()`は表示だけで、TANUKI VALUATIONの2か所は期待の段階（stage）をライフサイクルの名前で表示している（同じ言葉が2つの軸に使われている）
+- TANUKI VALUATION `pipeline.py::_hypecore_recommendation()`（Python）とHypeCoreの画面の`getRec`（JS）が同じ判断を2か所で持っている可能性（確かめていない）
+
+#### STEP 2: 資本の使い方の指標（2026-10-14、Layer3の四半期化〈`build_ticker_store()`〉に、この試算の中だけ項目を足して計算。`config/sec_concept_definitions.json`は変えていない）
+- 使ったタグ（98銘柄）: 営業CF `NetCashProvidedByUsedInOperatingActivities` 98。設備投資 98中95（無し3）。自社株買い `PaymentsForRepurchaseOfCommonStock` 79（無し19: ASTS・AVAV・BROS・DDOG・HEI・IONQ・LOAR・ONDS・QBTS・RCAT・RDW・RKLB・RXRX・SCCO・SITM・SOUN・SPIR・TSLA・ZETA。`PaymentsForRepurchaseOfEquity`で補えるのは1）。
+  配当 `PaymentsOfDividends`・`PaymentsOfDividendsCommonStock`・`PaymentsOfOrdinaryDividends` 45（無し53）。増資 `ProceedsFromIssuanceOfCommonStock`・`ProceedsFromIssuanceOrSaleOfEquity`・`ProceedsFromIssuanceInitialPublicOffering` 62（無し36。ABBV・AMZN・META・NVDA・PM・XOM等）。
+  オプションの行使 65（無し33）。買収の対価の株 `StockIssuedDuringPeriodValueAcquisitions` 47（無し51）。現金 96（無し2）。短期投資 61（無し37）。期末の発行済株式数 `CommonStockSharesOutstanding` 70（無し28。時価総額は無いとき`WeightedAverageNumberOfSharesOutstandingBasic`で代用）
+- Layer3は足した項目にQ4の暗黙の値（年次−3四半期）を作らないため、試算の中で補った（ABBVの配当はQ4が年次にしか無い）
+- 増資÷時価総額（TTM、直近の月）が5%以上: RDW 33.1%・BBAI 29.4%・IONQ 22.3%・RXRX 18.9%・SOFI 16.6%・ASTS 6.5%・RKLB 5.9%。
+  タグはあるが四半期が欠けてTTMを作れない銘柄が47（GOOGL・PLTR・QBTS・SOUN等）。ATM（市場での随時の売り出し）を別のタグで申告する銘柄があり、増資は取りこぼしがある
+- 現金の滞留: FCF（営業CF−設備投資、STONKS SILOの生存期間と同じ）が負の17銘柄は「現金÷年間の燃焼」、それ以外は「現金÷売上」。現金が売上以上: NET 1.66・PLTR 1.53・FROG 1.37・DDOG 1.26・GTLB 1.19・RBRK 1.13・RMBS 1.09・ALAB 1.04・ZS 1.04
+- 資本還元の割合（（自社株買い＋配当）÷FCF）が50%以上: 41銘柄。FCFが負または自社株買い・配当のタグが無い24銘柄は計算しない
+
+#### STEP 3: 案4〜8の試算（2026-10-14、B-2・B-3と同じ方法。97銘柄、2024-12〜2026-10の23か月）
+- 案4a: stageの変更は2か月続けて成り立ったときだけ。案4b: S3・S4に入るのは2か月、S3・S4から出るのは3か月
+- 案5: RSI・MA200乖離・from_peakを、その月の（月の途中はその日までの）日次の値の平均にする
+- 案6: 期待と実体の差（expectation_score−fundamental_score）の3か月平均D3と傾き（D3−3か月前のD3）。D3>1.0かつ傾き>0→S3（MA200乖離>0のときだけ）、D3>0かつ傾き<−0.5→S4（from_peak<−10%のときだけ）、D3<−1.0→S0、D3<0かつ傾き>0.3→S1、それ以外S2
+- 案7: 案5・案6のうち往復の少ない方（案5）に、増資÷時価総額≥5%、または燃焼の3年分以上の現金、または売上以上の現金で、MA200乖離>10%のときS2をS3にする
+- 案8: 案7に加え、成熟株（資本還元の割合≥50%かつ売上の伸び≤15%〈`detectLifecycle()`の拡大期の下限〉）はS3・S4に入るのに3か月続くことを求める
+
+| 案 | 今の定義と食い違う月 | 月中にstageが変わる日 | 行ったり来たり（A→B→A） | フェーズ転換の通知（日ごとの変化） | 月末のstageの分布（S0/S1/S2/S3/S4） |
+|---|---|---|---|---|---|
+| 今の定義 | — | 7,269 | 122 | 2,832 | 0/1/399/608/1,223 |
+| 案4a | 488/2,231（21.9%） | 1,951 | 0 | 1,150 | 0/0/347/652/1,232 |
+| 案4b | 546/2,231（24.5%） | 1,492 | 0 | 871 | 0/0/238/700/1,293 |
+| 案5 | 330/2,231（14.8%） | 4,168 | 103 | 1,231 | 0/4/403/599/1,225 |
+| 案6 | 1,790/2,231（80.2%） | 4,076 | 107 | 2,003 | 482/225/1,281/180/63 |
+| 案7（案5が土台） | 334/2,231（15.0%） | 4,096 | 100 | 1,204 | 0/4/393/609/1,225 |
+| 案8（案5が土台） | 387/2,231（17.3%） | 3,524 | 82 | 1,075 | 0/4/479/574/1,174 |
+| 参考: 案5の入力＋案4bの持続 | 651/2,231（29.2%） | 745 | 0 | 428 | 0/0/244/677/1,310 |
+- 月中にstageが変わる日の今の定義はB-2の7,631日と数え方が違う（ここは2024-12以降の23か月、B-2は2024-11を含む24か月）
+- 今の定義は月末の55%がS4、27%がS3で、S0・S1はほぼ出ない。案6は逆にS2・S0が多く、S3・S4は11%（D3の直近の分布は中央値−0.38、上位10%で0.93）。案6の閾値は今のscoreの水準に合っていない
+- 成熟（案8の条件）と判定された月は630/2,231。直近の月の成熟株は25（AAPL・ABBV・ADBE・AMAT・BKNG・BSY・CART・CDNS・CIX・CRM・HON・HQY・INTU・JNJ・KLAC・KO・LMT・MO・MSCI・PEP・PM・V・VST・WMT・XOM）。
+  案7のS3の支持が成り立つ月は445/2,231だが、土台がS2かつMA200乖離>10%の月が少なく、案5から変わるのは10か月ほど
+- 代表銘柄（2024-12〜2026-10。今／案4b／案5／案6／案8）:
+  - ABBV: 今「4 4 3 2 2 2 4 4 2 3 2 2 2 2 2 2 2 2 3 2 2 2 3」、案4b「4 4 4 4 4 2 2 4 4 4 4 4 2 2 2 2 2 2 2 2 2 2 2」、案5「4 4 3 3 2 2 2 2 2 3 2 2 2 2 2 2 4 4 4 3 2 2 3」、案6「2 2 2 2 2 2 0 0 0 1 1 1 1 2 2 2 2 0 2 1 2 2 2」、案8「4 4 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 4 3 2 2 2」。
+    成熟した医薬品株としてはS2が続くのが定義に近い。案8で1か月だけのS3は減るが、2026-06・07のS4→S3は残る
+  - PM: 今「4 2 3 3 3 3 3 4 4 4 4 4 4 2 2 2 2 2 2 3 2 2 2」、案4b「3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 2 …2」、案5「2 2 3 3 3 3 3 2 2 4 4 4 4 2 …2」、案6「2 2 3 3 3 3 2 2 2 2 2 0 0 2 …2」、案8「2 2 2 2 3 3 3 2 2 2 2 4 4 2 …2」。
+    2025年の数か月のS3→S4は今・案4b・案5で残り、2026-07の1か月だけのS3は案4b・案5・案8で消える
+  - XOM: 今「4 4 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 4 4 4 2 2 3」、案4b「2 4 4 4 2 … 2 3 3 3 3 3 4 4 4 4 4」、案5「2 … 2 3 3 3 3 4 4 4 3 2 2」、案6「0 0 0 0 1 1 0 1 2 … 2 3 3 3 2 4 2 2 0 0」
+  - NVDA: 今「2 4 4 4 4 2 3 3 3 3 3 4 2 2 4 4 2 2 4 2 2 3 2」、案4b「2 2 4 4 4 4 4 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4」、案5「2 2 2 4 4 2 3 3 3 3 3 3 2 2 4 4 2 3 2 2 2 2 3」。2↔4の往復は案5では残り、案4bでは消えるが2026-03以降S4のまま
+  - PLTR: 今「3 … 3 4 4 4 4 4 4 2 4 4 3 3 3」、案5はほぼ今と同じ、案6「2 … 2 0 0 0 0 0 0 0 0 1 1」（期待のscoreが実体を下回り続ける扱いになり、定義〈陶酔→剥落〉と逆）
+  - RKLB・IONQ・ASTS・QBTS・SOUN: 今・案4b・案5はS3とS4が中心で、案4bは1か月だけの戻りが消える。案6はS2・S0・S1が中心（ASTS「2 … 0 0 0 0 0 0 0 1 1」、QBTS「3 3 3 2 4 2 … 2 1 1 1 2 2」）
+  - META: 今「2 3 2 4 4 2 3 3 2 2 4 4 4 2 2 4 4 4 4 4 4 3 3」、案4b「2 2 2 2 4 4 4 3 3 3 3 4 … 4 3」、案5「3 3 3 2 4 4 3 2 3 2 2 4 4 4 4 4 4 2 2 4 4 4 3」（案5で食い違う月が最も多い12か月）
+  - GOOGL: 今「2 3 2 4 4 4 4 2 3 3 3 3 3 3 4 4 3 3 4 2 4 4 4」、案4b「2 2 2 2 4 4 4 4 4 3 3 3 3 3 3 4 4 3 3 3 3 4 4」、案6「2 2 2 0 0 0 1 1 2 3 3 3 2 2 2 2 2 0 0 0 0 0 0」
+- 今日のTANUKI SCOREの判定を各案のstageで計算し直したとき（B-3と同じ方法。今の定義の再現は全銘柄一致）:
+  - 案4a: 3銘柄（ABBV・PM・XOM TRIM→HOLD〈3→2〉）、timingが変わる9銘柄
+  - 案4b: 3銘柄（KO HOLD→TRIM〈2→3〉、ABBV・PM TRIM→HOLD〈3→2〉）、timingが変わる11銘柄
+  - 案5: 3銘柄（V・PM・XOM TRIM→HOLD〈3→2〉）、timingが変わる12銘柄
+  - 案6: 32銘柄（全部TRIM→HOLD。S4→S0がCSGP・GOOGL・TSLA・HEI・HWM・HON・CAT・GEV・PEP・WMT・TER・BROS等）、timingが変わる58銘柄
+  - 案7（案5が土台）: 案5と同じ3銘柄、timingが変わる12銘柄
+  - 案8（案5が土台）: 4銘柄（V・ABBV・PM・XOM TRIM→HOLD〈3→2〉）、timingが変わる13銘柄
+  - 参考: 案5の入力＋案4bの持続: 4銘柄（AAPL・JNJ HOLD→TRIM〈2→3〉、CDNS HOLD→TRIM〈2→4〉、PM TRIM→HOLD）、timingが変わる16銘柄
+
+#### 所見（Claude Code、判断はチャット側）
+- 往復（A→B→A）を0にできるのは持続の条件（案4a・4b）だけ。案5（入力の平均）は月中の揺れと通知を半分以下にするが往復は122→103で残る。案5の入力に案4bの持続を足すと、月中の揺れ745日・通知428回・往復0で最も静かになる（代わりに今の定義と食い違う月が29.2%、1〜2か月の遅れ）
+- 案6はstageの分布が今と逆になり、期待の段階の定義（陶酔→剥落）と合わない銘柄（PLTR等）が出る。今の閾値のままでは使えない
+- 案7（増資・現金の滞留）は、今の定義でS2がもともと少ない（18%）ためほとんど効かない。案8（成熟株の入りにくさ）はABBV・PM・Vの1か月だけのS3を減らすが、効果は案4bと重なる
+- 成熟（ライフサイクル）の判定は、資本還元の割合が取れない銘柄（タグ無し・FCF負）が24あり、タグの揃い方（自社株買い無し19・配当無し53・増資無し36）に依存する
+
 #### 方針
 チャット側の判断待ち（実装しない）。試算のスクリプトはリポジトリに置いていない（一時フォルダ）
 
@@ -2548,8 +2622,23 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
   KLAC −1.1%、AMZN −1.1%、HEI −1.1%、VST −1.1%
 - 時点（現在値と期間の加重平均）と範囲（完全希薄化・Up-Cの持分・株式クラスの含め方）の2つが違う
 
+#### 株式数の使い分けの原則（Koichi了承、2026-10-14）
+- 1株あたりの理論株価・時価総額 ＝ 今の完全希薄化後の株式数（TANUKI VALUATIONの`diluted_shares`）
+- 期間の利益を割るもの（EPS） ＝ その期間の加重平均の株式数（EPS ANALYZER）
+- 食い違いの原因は、TANUKI VALUATIONの最大EPSがTTMの利益を今の株式数で割っていることだけ。直すのは最大EPSの分母（理論株価の1株あたりは今のまま）
+
+#### 最大EPSを読む処理（2026-10-14、grep `max_eps`・`maxEps`・`最大EPS`）
+| 処理 | 何を読むか | どう使うか |
+|---|---|---|
+| TANUKI VALUATION `pipeline.py::compute_max_eps()`（L173）・呼び出し（L1283付近） | TTM系列の最新の純利益・株式報酬、`components.diluted_shares`、株価 | `components.max_eps`・`max_eps_per`・`max_eps_reliability`・`max_eps_ttm_end`を書く（分母はここ） |
+| TANUKI SCORE `index.html`（L512-517・L377-378・L398-399） | `components.max_eps_per`・`max_eps_reliability` | 「最大EPS PER」列（信頼性LOWは薄く表示）と「乖離」列（PER−最大EPS PER。予想PERのときは出さない）。並べ替えの列 |
+| `tests/test_tanuki_max_eps.py` | `compute_max_eps()` | テスト |
+- `_compute_tanuki_score()`（判定）・report.txt・`score_watcher.py`・`daily_pick.py`・TANUKI VALUATION `stock.html`は最大EPSを読まない（grepで該当なし）
+- `report_consistency_check.py`の`_max_eps`（NG-14・NG-15）は名前が同じだけで、EPS ANALYZERの直近四半期のadj・GAAPのEPSの大きい方。最大EPSとは別
+- 設計の文書（`docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`・`TO_BE_FINAL_LIST.md`・archive）に定義の記載がある。分母を変えるときは合わせて直す
+
 #### 方針
-揃え方はチャット側の判断待ち（実装しない）
+直すのは最大EPSの分母（TTMの期間の加重平均の株式数にする）。実装はチャット側の指示待ち
 
 ---
 
