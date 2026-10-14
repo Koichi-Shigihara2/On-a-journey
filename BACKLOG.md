@@ -2116,6 +2116,161 @@ Step Summaryの表示は引き続き未確認
 
 ---
 
+### [LAYER3-RETENTION-PERIOD-1] Layer3の保持期間が四半期5年・年次6年で、財務の自社比較・長い期間の検証に足りず、TTMの6点も満たせていない
+**優先度:** 高（2026-10-14に中→高。今公開しているTANUKI VALUATIONの理論株価が、設計より少ない点数〈多くの銘柄で6点中4点〉で計算されているため。バグ0の原則）
+**分類:** 一次データ / common/sec_data（`quarterly.py`の`_QUARTERLY_YEARS`・`_ANNUAL_YEARS`、Layer3・normalized共通）
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14。試算の中だけ8年・9年に延ばした）
+
+#### 内容（2026-10-14の調査、読み取りのみ）
+- 設定の場所: `quarterly.py` L436-437（`_QUARTERLY_YEARS = 5`・`_ANNUAL_YEARS = 6`）。`_process_entries()`が「今日から5年（年次6年）より前の期末」を落とす。Layer3・normalizedの両方がこれを通る。
+  `layer3_builder.py` L194-195にも同じ名前の定数があるが、どこからも使われていない（効くのはquarterly.py側）。
+  parser.py（annual_*.json）は期間で切らない。EPS ANALYZERは`extract_quarterly_facts(years=5)`で別に5年。`report_consistency_check.py`の`_SHARE_RECENT_YEARS = 5`は株式数の前後比較の範囲
+- 前提にしている処理:
+  - TTM（`ttm_calculator.py`、`n_periods=6`。約1年おきに6点、docstringでは「RICEのCF 3年＋FCF用5点＋余裕」）: 5年の保持では6点目（と多くの銘柄で5点目）の4四半期が揃わない。
+    98銘柄でTTMの点は計487（8年なら576）、うちFCFの4四半期がそろう点は368（8年なら514。2026-10-14のSTEP 3で数え直し、当初「完全な点487」と書いたのは点の総数）。設計の6点を今は満たしていない
+  - TANUKI VALUATION: RICE（`build_rice_annual_shape()`→`rice.py`、Q 3年・CF 3年）とFCFの系列（`_select_fcf_source()`: TTMが3点以上ならTTM、`fcf_avg = mean(fcf_list)`）がTTM系列を読む。
+    8年にすると84銘柄でRICEに渡る行数が増える（大半4→6）。RICEの計算は直近3〜4行なので、値が変わるのはNVDA（3→4）・KULR（2→3）等の点が足りない銘柄だけの見込み。
+    FCFの平均と成長率に使う点数は多くの銘柄で増え、理論株価が変わる（値の変化量は未計算）
+  - CHECK: CHECK-47（normalizedとTTMの直近4四半期）は直近だけを見る。`newfield_q4_cutoff_check.py`（Layer3の全期間）をメモリ上で保持期間を変えて実行すると、NGは5年・8年・10年とも0、WARNは1・1・0。
+    古い期で「missing quarter implied value mismatch」のログが増える（2016年・2018年）。他のCHECKは保存済みのファイルを読むため、延ばしたファイルを作らないと測れない（未測定）
+  - audit.py: TTMのファイルの全件Noneを見るだけで、影響は小さい
+  - 凍結（fixed_registry）: parser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外。保持期間を延ばしても凍結には影響しない
+  - 画面・その他: normalizedの全期間を読む処理（`reader.py`のRPOの系列、`tail_dcf_bridge.py`等）は読む期間が延びる（影響は未確認）
+- 見積もり（2026-10-14、98銘柄、手元でメモリ上に作って測った。ファイルは書いていない）:
+
+  | 保持期間（四半期/年次） | normalized | TTM | Layer3のエントリ | normalize＋Layer3＋TTMの計算時間 |
+  |---|---|---|---|---|
+  | 5年/6年（今） | 13.7MB | 0.83MB（487点） | 60,013 | 4.3秒 |
+  | 8年/9年 | 20.3MB | 0.99MB（576点） | 89,154 | 4.7秒 |
+  | 10年/11年 | 23.6MB | 0.99MB（576点） | 104,082 | 4.8秒 |
+
+  company_factsはもともと全期間を持つため、SECからの取得量は変わらない。SEC_Data_Updateの実行時間の増えは数秒程度の見込み
+
+#### STEP 1: 設計の意図（2026-10-14の調査、読み取り）
+- 6点を決めている場所: `ttm_calculator.py::calc_ttm_series()`の`n_periods: int = 6`（L227）と`save_ttm_series()`（L356）。docstring（L233）に「n_periods=6 の理由: rice.pyのCF計算が3年分必要（4点）+ FCF用5点 → 安全マージン6点」。
+  点は`_select_anchors()`（L137）が最新の四半期末から約365日（305〜425日）ずつ遡って選び、各点は期末以前の直近4四半期を足す（L311-336）
+- いつ・どの項目で: 2026-05-07のc3880e7372（feat: switch FCF/RICE source to rolling TTM series）で6点を入れた。保持期間5年は同じ日の2時間前のd6420c5e3d（feat: add quarterly/TTM pipeline）で入っていた。
+  2つを突き合わせた記録は無い（6点目には今日から約5.75年＋提出の遅れ分の四半期が要り、5年の保持期間では最初から満たせない）
+- 4点しかないときの扱い: [[TTM-QUARTERS-CHECK-1]]（2026-07-12完了）で、4四半期がそろわない点をFCF・RICEから外すことにした（飛ばす。警告も代わりの値も無い）。
+  そのときの記録は原因を「四半期粒度のSECデータ取得が2022年Q1前後から開始されており、それ以前は年次10-Kの通期集計値しか存在しない」とし、実効ルックバックが5年→4年になるのを「実害小」とした。
+  実際はcompany_factsに2022年より前の四半期があり（15年に延ばすと66銘柄で6点）、原因は保持期間の切り捨て。4点を意図した記録は無い
+- 点数を使う計算（TANUKI VALUATION）:
+
+  | 計算 | 場所 | 点数の前提 |
+  |---|---|---|
+  | FCFの系列の取り出し（OCF・CapExとも4四半期の点だけ） | `data_fetcher.py::TTMReader._filtered_fcf()`（L236） | 2点未満は使わない |
+  | TTMか年次かの選択 | `data_fetcher.py::_select_fcf_source()`（L110） | TTMが3点以上ならTTM |
+  | 「5年平均」 | `data_fetcher.py` L617（`fcf_avg = mean(fcf_list)`） | 取れた点の全部の平均（6点そろうと6点の平均。年次の経路は`get_fcf_list_with_dates(years=5)`で5年） |
+  | FCFの基準値の方式（CV・5年/2年・回復） | `calculator/adjustments.py::determine_fcf_base()`（L186） | 3点未満は2年平均。CVは全点 |
+  | 外れ値の判定（5年平均からの乖離） | `calculator/adjustments.py::analyze_fcf_outlier()`（L1028）・`core_calculator.py` L248-270 | 5年平均・`fcf_list[0]` |
+  | 売上の下限の補正（Policy A） | `calculator/adjustments.py::adjust_fcf()`・`pipeline.py` L919 | 5年平均が負なら発動し、分類をWATCHに丸める |
+  | FCFの成長率（CAGR） | `calculator/growth.py::calculate_fcf_cagr()`（L252） | 先頭5点（`fcf_list[:5]`） |
+  | RICE | `data_fetcher.py::build_rice_annual_shape()`→`calculator/rice.py`（`_calc_q` 3年・`_calc_cf_lagged` 3年） | 4行（CFは3年の差分） |
+  | 最低点数 | `core_calculator.py` L201（`min_fcf_years=3`） | 3点未満は計算しない |
+- 年次の前提の計算: 5年平均のFCF（`reader.py::get_fcf_5yr_avg()`）・FCFの年次リスト（`get_fcf_list_with_dates(years=5)`）・売上の3年/5年CAGR（`growth_sanity.py::calc_revenue_cagr()`、`pipeline.py::_load_annual_revenues()`）は、
+  parser.pyの`annual_*.json`（期間で切らない）を読むため、点数は足りている。Layer3の年次（6年）を読むのは粗利率（直近3年、`pipeline.py` L3599）・STONKS SILO・rotceで、足りている
+- 最低限の保持期間（試算、98銘柄、FCFとRICEの完全な点が15年のときの最大に届く最短）: 5年 12銘柄・6年 36・6.5年 51・**6.75年 97**・7年 97・10年 98（VZだけ10年。下の採用タグの問題による）。
+  理屈: 6点目の期末は最新の四半期末の約5年前で、その最古の四半期の期末はさらに9か月前。最新の四半期末は今日から最大で約4.5か月前（提出の遅れ）。合わせて約6.1〜6.75年。
+  **最低限は四半期6.75年、余裕を見て7年（年次はQ4の推計に要るため四半期＋1年の8年）**。どこまで延ばしても6点に届かない銘柄は32（上場が新しい、四半期のタグが欠ける等）
+
+#### STEP 2: Layer3の四半期・年次・TTMを読む処理（2026-10-14、grepと試算）
+| 処理 | 読むもの | 点数・期間の前提 | 延ばすと（7年の試算） |
+|---|---|---|---|
+| TANUKI VALUATIONのFCF（系列・5年平均・方式・外れ値・下限・CAGR） | `common/sec_data/ttm/`（TTMの6点） | 上のSTEP 1の表 | 変わる。点数4→6が64銘柄・→5が17銘柄、理論株価50銘柄 |
+| TANUKI VALUATIONのRICE | 同上 | 4行 | NVDAだけ（CFの年数2→3、CF 6.14→7.14） |
+| TANUKI VALUATIONのLayer3の直近の値（長期負債・株式数・粗利率・TTM売上） | Layer3（メモリ） | 直近 | 変わらない |
+| TANUKI VALUATIONの成長率の検査（売上CAGR）・年次FCF | parser.pyの年次 | 期間で切らない | 変わらない（年次からTTMへ移るのはKULRだけ） |
+| TANUKI SCORE（funda・timing・tanuki_score・matrix、pipeline.pyの中） | 理論株価・乖離率 | — | 8銘柄で判定値が変わる（下） |
+| daily_pick・score_watcher・PORTFOLIO | latest.json | — | 分類が変われば選定・通知が変わる（試算では動かしていない） |
+| report.txt・TANUKIの画面 | latest.json | FCFの推移の表は年次（`fcf_history`） | 値が変わる。推移の表は変わらない |
+| HypeCore（`fetch_quarterly_fundamentals()`） | Layer3の四半期（売上・純利益・OCFの前年比）とTANUKIの理論株価 | 出力は34か月（2024-01〜） | 今月のstageは全銘柄で不変。過去のstageはBROS（4か月）・PAYS（2）・KULR（1、いずれも2024年初め）。期待スコアが25銘柄で変わる（理論株価の変化による） |
+| STONKS SILO（`financial_trend_calculator.py`） | Layer3の四半期（直近8）・年次 | 直近8四半期 | 判定は不変。営業利益のベクトルのパーセンタイル（母集団）が23銘柄で変わる。ASTSの営業利益が「なし→あり」（2021-03の古い値、下の不具合） |
+| rotce.py | Layer3の全期間と日足（2021〜） | 全四半期でパーセンタイル | 履歴が92銘柄で延びる。シグナルが7銘柄で変わる（CAT・CSGP rich→neutral、NVDA cheap→neutral、RMBS neutral→rich、COHR・INTU・ONDS 不足→neutral） |
+| EPS ANALYZER | company_factsを直接（`extract_quarterly_facts(years=5)`） | 独自に5年 | 読まない（変わらない） |
+| report_consistency_check | 保存したファイルとLayer3 | 直近 | NG 0・WARN 126のまま（出力が同じ。CHECK-31〈凍結〉も通る） |
+| audit.py | TTMのファイル | 6点の中の欠け | 「一部None」の警告が6→8銘柄 |
+| fixed_registry（凍結） | parser.pyの年次 | — | 対象外 |
+| TAIL（tail_dcf_bridge・kpi_proposer・quarterly_review_generator）・`segment_growth_xbrl.py` | Layer3の直近 | 直近 | 試算では動かしていない（直近の値だけ読むので変わらない見込み。ただし下の採用タグの問題がある項目は別） |
+
+#### STEP 3: 試算（2026-10-14、手元。出力はcommitしていない）
+- 方法: 手元のcompany_factsからnormalized・TTMを作り直し（SECのAPIは呼ばない）、TANUKI VALUATION（XAI_API_KEY・ALPHA_VANTAGE_API_KEYは空）・HypeCore・STONKS SILO・rotce・report_consistency_check・auditを全銘柄で実行。
+  保持期間を5年（今）・7年・8年の3通り。終わるたびに`git checkout`と`git clean`で元に戻し、差分0を確認
+- 手元の再現: 5年のTANUKIは公開値（2026-10-14 05:40の実行）と96銘柄の全項目で一致。normalizedは差分0、TTMはEPSの小数の丸めの違いだけ。
+  HypeCoreは公開値が10-12の実行で、その後の日足2日分で今月の行だけ違う。STONKS SILOは取得時刻だけ違う。比べるのは手元の5年と
+- TANUKI VALUATION（5年→7年）: 83銘柄で点数が変わり、理論株価が変わるのは50銘柄（変化の絶対値の中央値9.1%、10%超24銘柄、20%超6銘柄、上がる16・下がる34）。
+  FCFの方式が13銘柄、外れ値の判定が15銘柄で変わる。成長率の検査・成長率は変わらない。8年は7年とほぼ同じ（違いは下の古いタグによる5銘柄だけ）
+- 判定値が変わる銘柄（7年。8年も同じ）:
+
+  | 銘柄 | 点数 | 変化 | 理由 |
+  |---|---|---|---|
+  | BSY | 4→6 | WATCH→HOLD、timing 35→25、象限 右下→左下 | 古い年（2022年 $162M）が平均に入り5年平均 $420M→$371M、理論株価−11.7%で乖離率+1.1%→−10.7%。外れ値の判定も出る |
+  | COHR | 4→6 | WATCH→TRIM | 4点では5年平均が負で売上の下限の補正（$569M）とPolicy A（WATCHに丸め）が働いていた。6点で平均が正（$17M）になり補正が外れた |
+  | BROS | 4→5 | TRIM→WATCH | 5点目（2021年の赤字）で5年平均が負になり、Policy Aが働く（採用値は2年平均のままで理論株価は同じ） |
+  | CPRT | 5→6 | timing 50→35 | 5年平均 $1.03B→$0.95B、乖離率+11.6%→+2.6% |
+  | DDOG | 4→6 | WATCH→BUY、timing 55→70 | 古い年でCVが0.38→0.59になり方式が5年平均→2年平均、基準値 $819M→$1,054M、乖離率+16.3%→+35.0% |
+  | HQY | 4→6 | BUY→WATCH、timing 50→35 | 古い年（2022年 $45M）で5年平均 $342M→$276M、乖離率+27.8%→+4.3% |
+  | NOW | 4→6 | BUY→WATCH、timing 65→50 | 古い年（2022年 $1,052M）で5年平均 $3.45B→$2.90B、乖離率+32.4%→+15.3% |
+  | TDY | 4→6 | HOLD→TRIM | 2022年の赤字（−$62M）で5年平均 $962M→$810M、乖離率−29.1%→−41.5%、外れ値の判定も出る |
+- 理論株価の変化が大きい銘柄（7年）: FCX +106%（方式が回復）、LITE +66%、AMZN −35%、HWM +34%、VST −24%、TASK −22%、BKNG −20%、HQY −18%、CRM −18%、CAT −18%、TDY −17%
+- 古い四半期の混入を直した場合（仮に、点の期末から100日超前の四半期しか無い項目をその点から外して試算）: 5年では3銘柄・0.2%以下の変化だけ。7年でも判定値の8銘柄は同じ
+- 平均を5点にそろえた場合（7年＋直し＋TTMを5点まで）: 判定値の変化は6銘柄（BSY・BROS・HQY・TDYの分類、DDOG・NOWのtiming）、理論株価が変わる48銘柄（中央値6.3%、10%超14銘柄）
+- 大きさと時間（98銘柄）: normalized 14.2MB→19.0MB（7年）→20.9MB（8年）、TTM 1.19MB→1.32MB→1.33MB。作り直し（normalize＋Layer3＋TTM）8秒→9秒。TANUKIの実行時間は約9分で変わらない
+- 延ばすと出てくる問題（新規登録）:
+  - [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]: Layer3は候補タグのうち「保持期間の中に値がある最初のタグ」を採るため、延ばすと昔使われたタグが選ばれ、直近の値が古い期の値に置き換わる（7年で26項目、8年で44項目。VZの設備投資は8年まで無く10年で2016〜2019年のタグ、AMZN・LITE・MRVL・ZETA・CPRTのRPO等）
+  - [[TTM-STALE-QUARTER-IN-WINDOW-1]]: TTMの各点は「期末以前の直近4四半期」を足すが、その4四半期が点の期末に近いかを見ていない。今の5年でも54か所（20銘柄）、7年で95か所、8年で120か所。
+    8年ではリース返済額（2019〜2020年）がABBV・HON・LRCX・VST・WMTのFCFに入る
+
+#### 直し方の案（2026-10-14、実装はチャット側の判断待ち）
+1. 先に[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]と[[TTM-STALE-QUARTER-IN-WINDOW-1]]を直す（延ばすと古いタグ・古い四半期が入るため。直さずに延ばすと、正しくない値の変化が混ざる）
+2. 保持期間は四半期7年・年次8年（最低限6.75年＋提出の遅れの余裕）。8年にしても点数は7年と同じで、古いタグの混入が増えるだけ
+3. 平均の点数を決める: 今のTTMの経路は取れた点を全部平均する（6点なら6点の平均）。年次の経路とCAGRは5点。設計の記述（FCF用5点＋余裕）に合わせて5点にそろえるか、6点のままにするか
+4. 凍結・CHECK: 凍結（fixed_registry）はparser.pyの年次だけが対象で影響しない。CHECKの結果は変わらない。足す案: TTMの完全な点が設計に届かない銘柄の数と、古い四半期の混入を数えるCHECK
+5. 公開データの作り直しの手順: SEC_Data_Update（normalized・TTM）→ TANUKI VALUATION → HypeCore → STONKS SILO → rotce（Market Data Daily）→ TANUKI SCORE（daily_pick）の順に1回ずつ動かす。
+   score_history・history.jsonに不連続が出るため、切り替えの日を記録に残す（[[TTM-QUARTERS-CHECK-1]]で105銘柄を一括で作り直した前例と同じ）。分類が変わる銘柄（上の8銘柄、5点なら6銘柄）はBUY・WATCHの通知が出る
+
+#### 方針
+定義v2の財務の前年比・自社3年の比較・検証の期間に足りる保持期間にする（期間の長さと関係なく必要。定義v2 §5）。延ばす場合はTANUKI VALUATIONのFCF・RICEの入力が変わるため、前後の値を比べてから切り替える。
+`layer3_builder.py`の使われていない定数の扱いも決める。依存される側: [[STAGE-V2-ROLLOUT-1]]。関連: [[LAYER3-FIRST-FILED-DATE-1]]。前提: [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]・[[TTM-STALE-QUARTER-IN-WINDOW-1]]。実装しない（チャット側の指示待ち）
+
+---
+
+### [LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1] Layer3が候補タグのうち「保持期間の中に値がある最初のタグ」を採るため、保持期間を延ばすと昔使われたタグが選ばれ、直近の値が古い期の値に置き換わる
+**優先度:** 高（[[LAYER3-RETENTION-PERIOD-1]]〈高〉の前提。直さずに保持期間を延ばすと、正しくない値が公開データに入る）
+**分類:** 一次データ / common/sec_data（`layer3_builder.py`の候補の選び方、`quarterly.py::_process_entries()`の保持期間）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 3（保持期間を7年・8年にした試算）
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- `layer3_builder.py`は「Layer2 candidatesに基づくフィールド抽出（最初に見つかった非空候補を採用）」（モジュールのdocstring）。保持期間で切った後に「値があるか」を見るため、期間が変わると採るタグが変わる
+- 5年→7年で直近の四半期の値・期末が変わる項目が26（8年で44）。多くは今は値が無い項目に2019〜2021年の値が入るもの（例: ASTSの営業利益が2021-03、INTUの粗利が2020-07）。
+  直近の値が古い期に置き換わるもの: AMZNのRPO（2025-12-31 $25.0B→2020-06-30 $41.0B）、LITEのRPO（2026-06→2021-04）、MRVL・ZETA・CPRTのRPO
+- VZの設備投資: 5年〜8年はLayer3に1件も無い（TANUKIは年次で代替）。10年にすると2016〜2019年にしか申告の無い`PaymentsToAcquireProductiveAssets`が選ばれる
+- 2026-10-14の試算では、TANUKI VALUATIONのRPOは別の経路で読まれていて変わらなかった。STONKS SILOはASTSの営業利益が「なし→あり（2021年の値）」になった
+
+#### 方針
+候補の選び方に鮮度を入れる（直近の期に値がある候補を優先する等）。保持期間を延ばす前に直す。実装しない（チャット側の指示待ち）
+
+---
+
+### [TTM-STALE-QUARTER-IN-WINDOW-1] TTMの各点が「期末以前の直近4四半期」を足すが、その4四半期が点の期末に近いかを見ておらず、古い四半期が今のTTMに入る
+**優先度:** 高（今の5年でも起きている。[[LAYER3-RETENTION-PERIOD-1]]〈高〉の前提で、延ばすと増える）
+**分類:** 計算 / common/sec_data（`ttm_calculator.py::calc_ttm_series()` L315-336、`_last4_is_contiguous()` L190）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 3
+
+#### 内容（2026-10-14の試算、読み取りのみ）
+- `calc_ttm_series()`は各点の期末（anchor）以前の四半期から先頭4件を取り、`_last4_is_contiguous()`で「4件が連続した約12か月か」だけを確かめる。4件の最新が点の期末から離れていても通る
+- 点の期末から100日超前の四半期しか無い項目（今の5年）: 54か所・20銘柄。buyback 28・finance_lease_payments 10・stock_based_compensation 4・gross_profit 3・selling_and_marketing 3・research_and_development 2・financing_cash_flow 2・operating_cash_flow 1・investing_cash_flow 1。
+  例: AMATの2024〜2026年のTTMのリース返済額が2023-10-29までの4四半期、CEGの2023〜2026年の株式報酬が2022-12-31までの4四半期、BROSの販売費が2023-12-31まで
+- TANUKI VALUATIONへの影響（試算で古い四半期を外した場合）: AMAT・CELH・IOTの理論株価が0.2%以下変わるだけ。判定値は変わらない
+- 保持期間を延ばすと増える（7年で95か所・28銘柄、8年で120か所・33銘柄）。8年ではABBV・HON・LRCX・VST・WMTのFCFに2019〜2020年のリース返済額が入る
+
+#### 方針
+4四半期の最新が点の期末から一定の日数（例: 100日）以内でなければ、その項目をその点で欠けとして扱う（`quarters_used`の扱いと同じ）。RICEの株式報酬・販売費も同じ。保持期間を延ばす前に直す。実装しない（チャット側の指示待ち）
+
+---
+
 ## 優先度：中（こなれてきたら対応）
 
 （[[DISCOVER-CONFIG-DUAL-MGMT-1]]は2026-08-15実装完了、BACKLOG_DONE.md
@@ -2646,6 +2801,9 @@ stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・�
 依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]・[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]・[[CIK-REORG-DETECTION-1]]（共通の部品）→ [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）。
 試算のスクリプトはリポジトリに置いていない（一時フォルダ）
 
+#### 一時停止（2026-10-14、Koichi了承）
+Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）・最初の提出日（[[LAYER3-FIRST-FILED-DATE-1]]）を先に片づけるため、定義v2の作業を一時停止する（今公開している理論株価の計算にかかわるため。バグ0の原則）
+
 ---
 
 ### [EPS-SHARES-BASIS-MISMATCH-1] TANUKI VALUATION（最大EPS・理論株価の1株あたり）とEPS ANALYZERで、EPSの分母の株式数の取り方が違う
@@ -2839,6 +2997,9 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 #### 方針
 依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]・[[LAYER3-FIRST-FILED-DATE-1]]・[[LAYER3-RETENTION-PERIOD-1]]・[[CIK-REORG-DETECTION-1]]と定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]）。関連: [[STAGE-LIFECYCLE-LABEL-MIXUP-1]]・[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]・[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]・[[MARKETDATA-DAILY-HISTORY-POLICY-1]]。実装しない
 
+#### 一時停止（2026-10-14、Koichi了承）
+Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）・最初の提出日（[[LAYER3-FIRST-FILED-DATE-1]]）を先に片づけるため、定義v2の作業を一時停止する（今公開している理論株価の計算にかかわるため。バグ0の原則）
+
 ---
 
 ### [LAYER3-FIRST-FILED-DATE-1] Layer3の提出日（filed）が「その値を最後に申告した書類」の日付で、過去の時点で使えた値が分からない
@@ -2886,40 +3047,22 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 ---
 
-### [LAYER3-RETENTION-PERIOD-1] Layer3の保持期間が四半期5年・年次6年で、財務の自社比較・長い期間の検証に足りず、TTMの6点も満たせていない
-**優先度:** 中
-**分類:** 一次データ / common/sec_data（`quarterly.py`の`_QUARTERLY_YEARS`・`_ANNUAL_YEARS`、Layer3・normalized共通）
+### [MARKETDATA-DAILY-HISTORY-POLICY-1] 日足の履歴の取り方（2021-01か上場日の遅い方から）が明文化されておらず、新しい銘柄の登録の手順に過去分を取る工程が無い
+**優先度:** 中（2026-10-14に低→中。登録の手順に日足の過去分を取る工程が無く、次に登録する銘柄はHypeCoreのMA200〈200営業日〉・ROTCEの推移・TANUKIの価格の履歴が登録から1年近くまともに動かないため。登録の予定が決まれば高）
+**分類:** 決まり・登録の手順 / common/market_data（`fetcher.py::fetch_daily_prices()`・`backfill_daily_prices()`）・`common/registration/register_ticker.py`
 **登録日:** 2026-10-14
-**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14。試算の中だけ8年・9年に延ばした）
+**発見:** HypeCoreのstageの定義v2の改訂（§6「履歴の取り方の決まり」・§8）
 
 #### 内容（2026-10-14の調査、読み取りのみ）
-- 設定の場所: `quarterly.py` L436-437（`_QUARTERLY_YEARS = 5`・`_ANNUAL_YEARS = 6`）。`_process_entries()`が「今日から5年（年次6年）より前の期末」を落とす。Layer3・normalizedの両方がこれを通る。
-  `layer3_builder.py` L194-195にも同じ名前の定数があるが、どこからも使われていない（効くのはquarterly.py側）。
-  parser.py（annual_*.json）は期間で切らない。EPS ANALYZERは`extract_quarterly_facts(years=5)`で別に5年。`report_consistency_check.py`の`_SHARE_RECENT_YEARS = 5`は株式数の前後比較の範囲
-- 前提にしている処理:
-  - TTM（`ttm_calculator.py`、`n_periods=6`。約1年おきに6点、docstringでは「RICEのCF 3年＋FCF用5点＋余裕」）: 5年の保持では6点目（と多くの銘柄で5点目）の4四半期が揃わない。
-    98銘柄で完全な点は計487（8年なら576）。設計の6点を今は満たしていない
-  - TANUKI VALUATION: RICE（`build_rice_annual_shape()`→`rice.py`、Q 3年・CF 3年）とFCFの系列（`_select_fcf_source()`: TTMが3点以上ならTTM、`fcf_avg = mean(fcf_list)`）がTTM系列を読む。
-    8年にすると84銘柄でRICEに渡る行数が増える（大半4→6）。RICEの計算は直近3〜4行なので、値が変わるのはNVDA（3→4）・KULR（2→3）等の点が足りない銘柄だけの見込み。
-    FCFの平均と成長率に使う点数は多くの銘柄で増え、理論株価が変わる（値の変化量は未計算）
-  - CHECK: CHECK-47（normalizedとTTMの直近4四半期）は直近だけを見る。`newfield_q4_cutoff_check.py`（Layer3の全期間）をメモリ上で保持期間を変えて実行すると、NGは5年・8年・10年とも0、WARNは1・1・0。
-    古い期で「missing quarter implied value mismatch」のログが増える（2016年・2018年）。他のCHECKは保存済みのファイルを読むため、延ばしたファイルを作らないと測れない（未測定）
-  - audit.py: TTMのファイルの全件Noneを見るだけで、影響は小さい
-  - 凍結（fixed_registry）: parser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外。保持期間を延ばしても凍結には影響しない
-  - 画面・その他: normalizedの全期間を読む処理（`reader.py`のRPOの系列、`tail_dcf_bridge.py`等）は読む期間が延びる（影響は未確認）
-- 見積もり（2026-10-14、98銘柄、手元でメモリ上に作って測った。ファイルは書いていない）:
-
-  | 保持期間（四半期/年次） | normalized | TTM | Layer3のエントリ | normalize＋Layer3＋TTMの計算時間 |
-  |---|---|---|---|---|
-  | 5年/6年（今） | 13.7MB | 0.83MB（487点） | 60,013 | 4.3秒 |
-  | 8年/9年 | 20.3MB | 0.99MB（576点） | 89,154 | 4.7秒 |
-  | 10年/11年 | 23.6MB | 0.99MB（576点） | 104,082 | 4.8秒 |
-
-  company_factsはもともと全期間を持つため、SECからの取得量は変わらない。SEC_Data_Updateの実行時間の増えは数秒程度の見込み
+- `common/market_data/daily/`の593ファイルのうち556は2021-01から始まる（2026-08-11の一括の取り込み、`backfill_daily_prices(start="2021-01-01")`、手動実行専用）
+- 日々の取得（`fetch_daily_prices()`）は直近5日分だけを足す。一括の取り込みの後に対象に入った銘柄は、入った日からの日足しか無い（AVGO 2026-09-02〜、RDDT・VMRK 2026-08-24〜、BE・ILMN・P 2026-09-22〜等。いずれも`cik_lookup.csv`の登録銘柄ではない）
+- 登録の手順（`register_ticker.py`のStep 1〜8、`CLAUDE_CODE_START.md`のStep 8.5）に日足の過去分を取る工程が無い。2026-10-14時点の登録銘柄は全て2021-01（か上場日）から日足があるが、最後の登録は2026-07-09で、一括の取り込みより前
 
 #### 方針
-定義v2の財務の前年比・自社3年の比較・検証の期間に足りる保持期間にする（期間の長さと関係なく必要。定義v2 §5）。延ばす場合はTANUKI VALUATIONのFCF・RICEの入力が変わるため、前後の値を比べてから切り替える。
-`layer3_builder.py`の使われていない定数の扱いも決める。依存される側: [[STAGE-V2-ROLLOUT-1]]。関連: [[LAYER3-FIRST-FILED-DATE-1]]。実装しない（チャット側の指示待ち）
+- 決まり「日足は2021-01か上場日の遅い方から」を明文化し、新しい銘柄の登録の手順に過去分の取り込みを入れる（定義v2 §6、[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」）
+- 過去分（2021年より前）の取り込みは保留する（2026-10-14、チャット側の判断、Koichi了承）。運用には不要。定義v2の検証の結果が際どいときだけ、hypecoreの98銘柄に限って一度だけ取り込む。
+  取り込む場合は、既存の銘柄と登録の手順の両方に同じ取り込みを入れる（銘柄によって履歴の長さが変わらないように）
+- 実装しない（チャット側の指示待ち）
 
 ---
 
@@ -2966,25 +3109,6 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 #### 方針
 早く始めるほど履歴がたまる。実装しない（チャット側の指示待ち）
-
----
-
-### [MARKETDATA-DAILY-HISTORY-POLICY-1] 日足の履歴の取り方（2021-01か上場日の遅い方から）が明文化されておらず、新しい銘柄の登録の手順に過去分を取る工程が無い
-**優先度:** 低
-**分類:** 決まり・登録の手順 / common/market_data（`fetcher.py::fetch_daily_prices()`・`backfill_daily_prices()`）・`common/registration/register_ticker.py`
-**登録日:** 2026-10-14
-**発見:** HypeCoreのstageの定義v2の改訂（§6「履歴の取り方の決まり」・§8）
-
-#### 内容（2026-10-14の調査、読み取りのみ）
-- `common/market_data/daily/`の593ファイルのうち556は2021-01から始まる（2026-08-11の一括の取り込み、`backfill_daily_prices(start="2021-01-01")`、手動実行専用）
-- 日々の取得（`fetch_daily_prices()`）は直近5日分だけを足す。一括の取り込みの後に対象に入った銘柄は、入った日からの日足しか無い（AVGO 2026-09-02〜、RDDT・VMRK 2026-08-24〜、BE・ILMN・P 2026-09-22〜等。いずれも`cik_lookup.csv`の登録銘柄ではない）
-- 登録の手順（`register_ticker.py`のStep 1〜8、`CLAUDE_CODE_START.md`のStep 8.5）に日足の過去分を取る工程が無い。2026-10-14時点の登録銘柄は全て2021-01（か上場日）から日足があるが、最後の登録は2026-07-09で、一括の取り込みより前
-
-#### 方針
-- 決まり「日足は2021-01か上場日の遅い方から」を明文化し、新しい銘柄の登録の手順に過去分の取り込みを入れる（定義v2 §6、[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」）
-- 過去分（2021年より前）の取り込みは保留する（2026-10-14、チャット側の判断、Koichi了承）。運用には不要。定義v2の検証の結果が際どいときだけ、hypecoreの98銘柄に限って一度だけ取り込む。
-  取り込む場合は、既存の銘柄と登録の手順の両方に同じ取り込みを入れる（銘柄によって履歴の長さが変わらないように）
-- 実装しない（チャット側の指示待ち）
 
 ---
 
