@@ -11,6 +11,9 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14（定義v2の検証の試算）**: `[[HYPECORE-STAGE-TIMESCALE-1]]`に追記。日足は2021-01からで判定は2022-01以降。§4の初期値のままでは月末の生の判定の70%が「移行中」
+  （「実体が伸び倍率が縮む」局面の受け皿が無い）、§7(1)でS3のあとの倍率の縮みが出ない（中央値+0.010、今の定義は−0.111）。往復は少ない（2024-12〜で1回、通知360）が移行中で直前を保つため。
+  閾値を±20%動かしても変わらない。今日のstageは今の定義と82銘柄で違う。判断はチャット側
 - **2026-10-14（stageの定義v2）**: `docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`を新設（案・検証中。期待の段階を倍率の変化g_M・実体の伸びg_F・倍率の水準Lで決め、テクニカルは補助に。7段階＋該当なし＋判定不能、持続の条件2か月、共通の部品・影響・切り替え・検証のしかた）。
   `[[HYPECORE-STAGE-TIMESCALE-1]]`の方針を「定義v2で作り直す、検証中」に更新。新規登録（すべて実装しない）: 中 `[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]`・`[[SECTOR-MASTER-UNIFY-1]]`・`[[DEFICIT-QUALITY-COMMON-1]]`・`[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]`・
   `[[STAGE-LIFECYCLE-LABEL-MIXUP-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、低 `[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`・`[[OPTIONS-OI-ACCUMULATION-1]]`。定義v2の検証の試算は別途（commitしない）
