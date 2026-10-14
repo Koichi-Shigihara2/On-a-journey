@@ -408,6 +408,15 @@ def extract_field_raw_entries(
     candidates = field_def.get("candidates", [])
 
     if field_name in NO_CANDIDATE_MERGE_FIELDS:
+        # [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]: 候補は「保持期間の中に値がある
+        # 最初の候補」ではなく、保持期間で切る前の全期間で最新の期末が最も新しい候補
+        # から試す（同着は優先順位）。保持期間で切った後に「値があるか」で選ぶと、
+        # 期間を延ばしたときに昔使われていた優先候補が選ばれ、直近の値が古い期の値に
+        # 置き換わっていた（AMZNのrpo: 5年では2025-12-31まで、7年では2020-06-30が最新）
+        def _latest_end(concept: str) -> str:
+            raw = _get_concept_units(company_facts, concept, unit)
+            return max((e.get("end") or "" for e in raw), default="")
+        candidates = sorted(candidates, key=lambda c: (_latest_end(c), -candidates.index(c)), reverse=True)
         for concept in candidates:
             raw_entries = _get_concept_units(company_facts, concept, unit)
             if not raw_entries:

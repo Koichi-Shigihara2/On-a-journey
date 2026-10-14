@@ -221,6 +221,30 @@ def _last4_is_contiguous(last4: list[dict]) -> bool:
         return False
 
 
+# [[TTM-STALE-QUARTER-IN-WINDOW-1]]: 採用した4四半期の最新の期末と点（anchor）の
+# 期末の差の許容日数。_last4_is_contiguous()の隣接四半期の許容（±10日）と揃える。
+# 2026-10-14の全98銘柄・全FLOWフィールド（EPS除く）の試算では、差は0日か
+# 90日以上のどちらかで、1〜89日の点は無かった
+_ANCHOR_REACH_MAX_DAYS = 10
+
+
+def _last4_reaches_anchor(last4: list[dict], anchor: str) -> bool:
+    """
+    [[TTM-STALE-QUARTER-IN-WINDOW-1]]: 採用した四半期（end降順、last4[0]が
+    最新）の最新の期末が、点の期末（anchor）に接しているかを検証する。
+
+    _last4_is_contiguous()は4四半期どうしの連続性だけを見るため、申告が
+    途絶えた項目の古い4四半期（AMATのリース返済額が2023-10-29まで、等）が
+    2026年の点のTTMにそのまま入っていた。4四半期そろわない（quarters_used<4）
+    項目にも同じく適用する（点の期末に届かない部分合計も作らない）。
+    """
+    try:
+        gap = (date.fromisoformat(anchor) - date.fromisoformat(last4[0]["end"])).days
+        return gap <= _ANCHOR_REACH_MAX_DAYS
+    except (KeyError, TypeError, ValueError, IndexError):
+        return False
+
+
 def calc_ttm_series(
     ticker: str,
     store: dict,
@@ -327,6 +351,11 @@ def calc_ttm_series(
                 # [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]: 連続性が
                 # 崩れている場合は「候補ゼロ」と同様に扱う（quarters_used<4
                 # 相当。代替候補探索は行わない）
+                continue
+            if (field_name not in CONTIGUITY_CHECK_EXEMPT_FIELDS
+                    and not _last4_reaches_anchor(last4, anchor)):
+                # [[TTM-STALE-QUARTER-IN-WINDOW-1]]: 最新の四半期が点の期末に
+                # 届かない（申告が途絶えた古い四半期）場合も「候補ゼロ」と同様に扱う
                 continue
             total = sum(e["val"] or 0 for e in last4)
             flow[field_name] = {
