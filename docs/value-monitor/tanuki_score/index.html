@@ -523,6 +523,8 @@ function renderDetailTable() {
     const industry    = tk?.components?.industry ?? '';
     const fcfHistory    = tk?.fcf_history ?? [];
     const fcfOutlier    = tk?.fcf_outlier?.detected ?? false;
+    // 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）: TANUKI VALUATIONの個別ページと同じ注記
+    const latestMissing = (tk?.latest_period_missing?.fields || []).length ? tk.latest_period_missing : null;
     const dividendYield       = tk?.components?.dividend_yield ?? 0.0;
     const payoutRatio         = tk?.components?.payout_ratio   ?? 0.0;
     const netCurrentAssetsRatio = tk?.net_current_assets_ratio ?? null;
@@ -532,7 +534,7 @@ function renderDetailTable() {
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
              matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, perGap, dupont,
-             growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier,
+             growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier, latestMissing,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });
 
@@ -584,6 +586,13 @@ function renderDetailTable() {
   }
 
   function chipTag(key, s) {
+    const lpm = s.latestMissing
+      ? `<span class="chip-tags" title="${s.latestMissing.substituted_by_annual ? 'FCFは年次の値で評価（判定は通常どおり）' : 'DCF信頼性LOW→WATCH'}">⚠ ${s.latestMissing.note}</span>`
+      : '';
+    return lpm + chipTagBase(key, s);
+  }
+
+  function chipTagBase(key, s) {
     if (key === 'WATCH' && s.upside != null && s.upside > 0) {
       const sub = s.substage ? ' ' + s.substage : '';
       return `<span class="chip-tags">割安+${s.upside.toFixed(0)}%${sub}</span>`;

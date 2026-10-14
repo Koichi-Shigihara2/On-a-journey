@@ -154,6 +154,26 @@ def _select_fcf_dates(
     return ttm_fcf_dates if use_ttm else annual_fcf_dates
 
 
+# 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）で見る項目と、画面・report.txtでの名前
+LATEST_PERIOD_GUARD_FIELDS = ("operating_cash_flow", "capital_expenditure")
+LATEST_PERIOD_GUARD_LABELS = {"operating_cash_flow": "営業CF", "capital_expenditure": "設備投資"}
+
+
+def build_latest_period_missing(missing_fields: list[str], fcf_source: str) -> dict | None:
+    """
+    最新期欠けのガードの判定結果（latest.jsonの"latest_period_missing"）。欠けが無ければNone。
+    fcf_source=="annual_fallback"（年次の値で代用）なら substituted_by_annual=True
+    （判定は変えず注記だけ）。TTMの古い点で評価している場合は False（DCF信頼性LOW→WATCH）。
+    """
+    if not missing_fields:
+        return None
+    labels = [LATEST_PERIOD_GUARD_LABELS.get(f, f) for f in missing_fields]
+    substituted = fcf_source == "annual_fallback"
+    note = (f"最新期の{'・'.join(labels)}が未取得（最新期は年次の値で代用）" if substituted
+            else f"最新期の{'・'.join(labels)}が未取得")
+    return {"fields": list(missing_fields), "labels": labels, "substituted_by_annual": substituted, "note": note}
+
+
 def _quarters_complete(flow: dict, *field_names: str, min_quarters: int = 4) -> bool:
     """
     指定フィールドすべてがquarters_used>=min_quartersを満たすか判定する。
@@ -346,6 +366,20 @@ class TTMReader:
 
     def get_series(self) -> list[dict] | None:
         return self._series
+
+    def latest_point_missing_fields(self) -> list[str]:
+        """
+        [[LAYER3-LATEST-FILING-TAG-DROP-1]]（2026-10-14、最新期欠けのガード）: TTM系列の最新の点
+        （ttm_endが最大の点）で、4四半期がそろわない営業CF・設備投資の項目名を返す
+        （系列が無ければ空）。FCF系列の取り出し（_filtered_fcf()）はその点を飛ばして
+        古い点から5点を取るため、最新期の欠けが黙って古いFCFで評価される
+        （FCXの2026年第2四半期の設備投資）。
+        """
+        if not self._series:
+            return []
+        latest = max(self._series, key=lambda s: s.get("ttm_end") or "")
+        flow = latest.get("flow", {})
+        return [f for f in LATEST_PERIOD_GUARD_FIELDS if not _quarters_complete(flow, f)]
 
 
 def build_rice_annual_shape(ttm_series: list[dict]) -> list[dict]:
@@ -634,6 +668,12 @@ class TanukiDataFetcher:
             print(f"   [{ticker}] TTM系列点数不足({len(fcf_series)}点<年次{len(fcf_list)}点) → 年次SEC実績を優先")
         else:
             logging.warning("[%s] TTM series unavailable, fallback to annual FCF", ticker)
+
+        # 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
+        latest_period_missing = build_latest_period_missing(
+            ttm_reader.latest_point_missing_fields(), fcf_source)
+        if latest_period_missing:
+            print(f"   [{ticker}] ⚠️ {latest_period_missing['note']}")
 
         ttm_series_data = ttm_reader.get_series()
         rice_annual_data = build_rice_annual_shape(ttm_series_data) if ttm_series_data else []
@@ -960,6 +1000,7 @@ class TanukiDataFetcher:
             "fcf_source": fcf_source,
             "fcf_ttm_end": fcf_ttm_end,
             "fcf_ttm_periods": fcf_ttm_periods,
+            "latest_period_missing": latest_period_missing,
             "rice_annual_data": rice_annual_data,
             "rice_data_source": rice_data_source,
             "rice_sector": self._get_rice_sector(ticker, sector),

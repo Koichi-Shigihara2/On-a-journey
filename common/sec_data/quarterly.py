@@ -440,6 +440,15 @@ _FIELD_FALLBACKS["FinanceLeasePmts"] = TAG_CANDIDATES["FINANCE_LEASE_PAYMENTS"][
 _QUARTERLY_YEARS = 7
 _ANNUAL_YEARS = 8
 
+# [[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]（2026-10-14）: normalizedの候補タグの選び直しの判定
+# （主の候補の四半期の件数・最新の期末、_select_best_candidate()の件数）を数える期間。
+# 保持期間（上の_QUARTERLY_YEARS）で切った後に数えると、保持期間を変えたときに選ぶ候補が変わり、
+# 今の窓の中の値が消えていた（7年でAMZN・LITEのRPO、NOWの長期負債等45件）。
+# 判定だけをこの固定の期間で数え、データは保持期間で切る。値は延長前の保持期間（5年・6年）と同じにして、
+# 5年の窓の中の選択を変えない
+_SELECTION_QUARTERLY_YEARS = 5
+_SELECTION_ANNUAL_YEARS = 6
+
 
 def build_raw_table(ticker: str, company_facts: dict) -> dict:
     """
@@ -596,6 +605,8 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
                                  ticker, ticker_cogs_concept, added)
 
         processed = _process_entries(entries)
+        # 選び直しの判定用（保持期間に依存しない固定の期間で数える。[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]）
+        selection = _selection_entries(entries)
 
         # 汎用フォールバック:
         # ① タグ欠如またはエントリなし → 全フィールド対象
@@ -607,7 +618,7 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
         #   ProfitLossへのフォールバックが必要（annualはあるため not processed=False）
         _FALLBACK_MIN_FIELDS = {"Cash", "SBC", "CapEx", "GrossProfit", "NetIncome", "LTDebt"}
         if field_name in _FIELD_FALLBACKS:
-            q_count = sum(1 for e in processed if not e.get("is_annual"))
+            q_count = sum(1 for e in selection if not e.get("is_annual"))
             use_min = field_name in _FALLBACK_MIN_FIELDS and q_count < _FALLBACK_MIN
             # [[SCHEMA-NORMALIZED-ISSUES-1]]③派生（2026-09-23、FLYW型）:
             # primaryの件数がuse_minを満たしても、企業がそのタグの申告自体を
@@ -618,17 +629,18 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
             # primaryの最新end日よりフォールバック候補の最新end日が新しい場合も
             # 起動対象に追加する。
             stale = False
-            if field_name in _FALLBACK_MIN_FIELDS and processed:
-                primary_latest_end = max((e["end"] for e in processed), default="")
+            if field_name in _FALLBACK_MIN_FIELDS and selection:
+                primary_latest_end = max((e["end"] for e in selection), default="")
                 for _fb_concept in _FIELD_FALLBACKS[field_name]:
                     _fb_raw = _get_field_units(company_facts, _fb_concept, unit)
                     if _fb_raw and max(e["end"] for e in _fb_raw) > primary_latest_end:
                         stale = True
                         break
-            if not processed or use_min or stale:
+            if not selection or use_min or stale:
                 processed, _source_tag = _select_best_candidate(
                     company_facts, unit, concept, processed,
                     _FIELD_FALLBACKS[field_name], _FALLBACK_MIN,
+                    primary_selection=selection,
                 )
                 if _source_tag:
                     # 規約③（出所メタデータ）: フォールバック候補が採用された場合のみ
@@ -649,6 +661,11 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
     }
 
 
+def _selection_entries(raw_entries: list) -> list:
+    """候補の選び直しの判定に使うエントリ（_SELECTION_QUARTERLY_YEARS・_SELECTION_ANNUAL_YEARSで切る）。"""
+    return _process_entries(raw_entries, _SELECTION_QUARTERLY_YEARS, _SELECTION_ANNUAL_YEARS)
+
+
 def _get_field_units(company_facts: dict, concept: str, unit: str = "USD") -> list:
     """company_facts.facts.us-gaap.{concept}.units.{unit} を安全に取得"""
     try:
@@ -664,6 +681,7 @@ def _select_best_candidate(
     primary_processed: list,
     fallback_concepts: tuple[str, ...],
     min_count: int,
+    primary_selection: list | None = None,
 ) -> tuple[list, str | None]:
     """primary概念＋フォールバック候補群の中から採用する候補を選ぶ。
 
@@ -688,15 +706,17 @@ def _select_best_candidate(
         latest_end = max((e["end"] for e in processed), default="")
         return q_count, latest_end
 
+    # [[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]: 件数・最新の期末は選び直しの判定用の固定の期間
+    # （_selection_entries()）で数え、返すエントリは保持期間で切ったもの
     candidates: list[tuple[list, int, str, str]] = []
-    q0, end0 = _stats(primary_processed)
+    q0, end0 = _stats(primary_processed if primary_selection is None else primary_selection)
     candidates.append((primary_processed, q0, end0, primary_concept))
     for concept in fallback_concepts:
         fb_entries = _get_field_units(company_facts, concept, unit)
         if not fb_entries:
             continue
         fb_processed = _process_entries(fb_entries)
-        q, end = _stats(fb_processed)
+        q, end = _stats(_selection_entries(fb_entries))
         candidates.append((fb_processed, q, end, concept))
 
     qualified = [c for c in candidates if c[1] >= min_count]
@@ -776,7 +796,8 @@ def _classify_period(start: str, end: str, fp: str, form: str = "") -> dict:
     }
 
 
-def _process_entries(raw_entries: list) -> list:
+def _process_entries(raw_entries: list, quarterly_years: float | None = None,
+                     annual_years: float | None = None) -> list:
     """
     生エントリをフィルタ・分類・重複排除・ソートして返す。
 
@@ -788,8 +809,10 @@ def _process_entries(raw_entries: list) -> list:
     年次: 直近8年、四半期: 直近7年（_QUARTERLY_YEARS・_ANNUAL_YEARS）。
     """
     today = date.today()
-    cutoff_q = (today - timedelta(days=_QUARTERLY_YEARS * 365)).isoformat()
-    cutoff_a = (today - timedelta(days=_ANNUAL_YEARS * 365)).isoformat()
+    q_years = _QUARTERLY_YEARS if quarterly_years is None else quarterly_years
+    a_years = _ANNUAL_YEARS if annual_years is None else annual_years
+    cutoff_q = (today - timedelta(days=q_years * 365)).isoformat()
+    cutoff_a = (today - timedelta(days=a_years * 365)).isoformat()
 
     # (start, end) → 候補リスト（quarterly）、end → 候補リスト（annual）
     quarterly_by_period: dict[tuple, list] = defaultdict(list)

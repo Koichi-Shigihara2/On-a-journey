@@ -16,6 +16,7 @@ from .tag_definitions import (
     with_derived_intangibles, INTANGIBLE_RESOLVED_DERIVED,
 )
 from .share_unit_fix import with_share_unit_fix
+from .conditional_tags import CONDITIONAL_CANDIDATES, conditional_candidate
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
     detect_fiscal_anchor_clusters, _day_of_year, FIXED_REGISTRY_CATEGORIES,
@@ -641,6 +642,40 @@ class SECParser:
                 fy_mismatches_out=_fy_tag_mismatches,
                 boundary_collisions_out=_fye_boundary_collisions,
             )
+
+        # 条件付きの候補タグ（[[LAYER3-LATEST-FILING-TAG-DROP-1]]、common/sec_data/conditional_tags.py）:
+        # Layer3と同じ判定で採用条件を満たす銘柄だけ、既存の候補に値が無い年・四半期を
+        # その候補タグで埋める（_extract_values()は候補の中で最新の期末のタグを勝者にするため、
+        # 候補リストの末尾に足すと既存の候補に値がある期まで置き換わる。それを避けて欠けだけ埋める）
+        for field_name in CONDITIONAL_CANDIDATES:
+            if field_name == "capital_expenditure" and _capex_concept_override:
+                continue
+            _cond = conditional_candidate(field_name, {"facts": {"us-gaap": us_gaap}},
+                                          list(self.XBRL_MAPPING.get(field_name, [])))
+            if not _cond:
+                continue
+            _cond_tag, _cond_reason = _cond
+            _cond_vals = self._extract_values(
+                us_gaap, [_cond_tag], use_max=False, merge_all_tags=False,
+                fiscal_end_month=fiscal_end_month, accn_reportdate=_accn_reportdate,
+                field_name=field_name, collisions_out=None,
+                anchor_month=anchor_month, anchor_day=anchor_day,
+                extra_anchors=extra_anchors,
+                fy_mismatches_out=None,
+                boundary_collisions_out=None,
+            )
+            _cur = extracted.setdefault(field_name, {"annual": {}, "quarterly": {}, "_annual_provenance": {}})
+            for _y, _v in (_cond_vals.get("annual") or {}).items():
+                if _v is not None and _cur.setdefault("annual", {}).get(_y) is None:
+                    _cur["annual"][_y] = _v
+                    _prov = dict((_cond_vals.get("_annual_provenance") or {}).get(_y) or {})
+                    _prov.update({"source_tag": _cond_tag, "fallback_reason": _cond_reason})
+                    _cur.setdefault("_annual_provenance", {})[_y] = _prov
+            for _q, _v in (_cond_vals.get("quarterly") or {}).items():
+                if _v is not None and _cur.setdefault("quarterly", {}).get(_q) is None:
+                    _cur["quarterly"][_q] = _v
+                    _cur.setdefault("_quarterly_provenance", {})[_q] = {
+                        "source_tag": _cond_tag, "fallback_reason": _cond_reason}
 
         # [[ROTCE-PTBV-1]]: TCEの控除項目（既存フィールドの後に抽出し、衝突ログには記録しない）
         for field_name, xbrl_keys in self.TANGIBLE_EQUITY_MAPPING.items():
@@ -3319,6 +3354,10 @@ class SECParser:
                 return
             data[section][field] = val
             if not is_annual:
+                # 四半期は条件付きの候補タグで埋めた期だけ由来を記録する（conditional_tags.py）
+                qprov = extracted.get(field, {}).get("_quarterly_provenance", {}).get(period)
+                if qprov:
+                    provenance_sections[section][field] = qprov
                 return
             prov = extracted.get(field, {}).get("_annual_provenance", {}).get(period)
             if prov:

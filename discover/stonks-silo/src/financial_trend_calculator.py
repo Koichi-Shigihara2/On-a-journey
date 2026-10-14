@@ -79,7 +79,7 @@ except IndexError:
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 from common.sec_data.layer3_builder import (  # noqa: E402
-    build_ticker_store, get_field_entries, get_quarterly_series,
+    build_ticker_store, get_field_entries, get_quarterly_series, is_current_end,
 )
 from common.sec_data.q4_implied import build_q4_implied_entries  # noqa: E402
 
@@ -146,7 +146,13 @@ def _get_quarterly_entries(store: dict, field_name: str) -> list:
             quarterly.append(q4)
             existing_ends.add(q4["end"])
 
-    return sorted(quarterly, key=lambda x: x["end"])
+    quarterly = sorted(quarterly, key=lambda x: x["end"])
+    # [[LAYER3-STALE-LATEST-VALUE-1]]（2026-10-14）: 申告が止まった項目（最新の四半期が銘柄の
+    # 最新の期末から古い。ASTSの営業利益が2021-03-31まで等）は、古い値でベクトルを作らず
+    # データなしとして扱う（layer3_builder.is_current_end()、TAIL・TANUKIと同じ判定）
+    if quarterly and not is_current_end(store, quarterly[-1]["end"]):
+        return []
+    return quarterly
 
 
 

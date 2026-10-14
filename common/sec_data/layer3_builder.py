@@ -65,6 +65,7 @@ from .fact_selection import select_latest_filed  # noqa: F401  (contract of _pro
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income, with_derived_intangibles
 from .share_unit_fix import with_share_unit_fix
+from .conditional_tags import conditional_candidate
 
 logger = logging.getLogger(__name__)
 
@@ -1263,6 +1264,13 @@ def build_ticker_store(ticker: str) -> dict | None:
         # 対応）: 抽出処理そのものに入る前に、この銘柄・フィールドに
         # 単純除外/概念差し替えの設定が無いか判定する。
         override = _get_ticker_field_override(concept_defs, ticker, field_name)
+        # 条件付きの候補タグ（[[LAYER3-LATEST-FILING-TAG-DROP-1]]、common/sec_data/conditional_tags.py）:
+        # 採用条件を満たす銘柄だけ、候補の最後に加える（期間ごとの優先順位マージのため、
+        # 既存の候補に値がある期は上書きしない）。銘柄別の上書き設定がある項目には加えない
+        conditional = None if override else conditional_candidate(
+            field_name, company_facts, list(field_def.get("candidates", [])), field_def.get("unit", "USD"))
+        if conditional:
+            field_def = dict(field_def, candidates=list(field_def.get("candidates", [])) + [conditional[0]])
         if override and override.get("action") == "exclude":
             # 抽出処理自体をスキップする（quarterly.py::build_raw_table()の
             # excluded判定と同型）。
@@ -1358,6 +1366,11 @@ def build_ticker_store(ticker: str) -> dict | None:
         sign_normalize = field_def.get("sign_normalize")
         normalized_entries = _apply_sign_normalize(normalized_entries, sign_normalize)
 
+        if conditional:
+            for e in normalized_entries:
+                if e.get("source_tag") == conditional[0]:
+                    e["fallback_reason"] = conditional[1]
+
         fields_out[field_name] = {
             "source_tag": source_tag,
             "category": field_def.get("category"),
@@ -1376,12 +1389,14 @@ def build_ticker_store(ticker: str) -> dict | None:
     # _backfill_operating_income()のdocstring参照）。
     _backfill_operating_income(fields_out)
 
-    return {
+    store = {
         "ticker": ticker,
         "generated_at": datetime.now().isoformat(),
         "layer2_schema_version": concept_defs.get("_schema_version"),
         "fields": fields_out,
     }
+    store["latest_period_end"] = latest_period_end(store)
+    return store
 
 
 # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応（2026-09-11）:
@@ -1442,6 +1457,37 @@ def get_quarterly_series(store: dict, field_name: str, source_tag: str | None = 
     return sorted(quarterly, key=lambda x: x["end"])
 
 
+# [[LAYER3-STALE-LATEST-VALUE-1]]（2026-10-14）: 「直近の値」として扱う期末の古さの上限（日）。
+# その銘柄の最新の期末（latest_period_end()）からこの日数より前の値は、直近の値として使わない
+# （何年も前に申告が止まった項目の古い値が、今の値に見えるのを防ぐ）。
+# STONKS SILOの財務の鮮度の判定（discover/stonks-silo/src/financial_as_of.py::
+# STALE_DAYS_AFTER_QUARTER_END = 135、四半期末＋提出の遅れ）と同じ値に揃える
+CURRENT_VALUE_MAX_LAG_DAYS = 135
+
+# 銘柄の最新の期末を決める項目（どれかに値があれば、その期の書類は取り込まれている）
+_LATEST_PERIOD_FIELDS = ("revenue", "operating_cash_flow", "net_income", "total_assets", "stockholders_equity")
+
+
+def latest_period_end(store: dict) -> str | None:
+    """銘柄の最新の期末（主要項目のエントリの期末の最大）。build_ticker_store()がstoreに入れる。"""
+    if store.get("latest_period_end"):
+        return store["latest_period_end"]
+    ends = [e["end"] for f in _LATEST_PERIOD_FIELDS for e in get_field_entries(store, f)
+            if e.get("end") and e.get("val") is not None]
+    return max(ends) if ends else None
+
+
+def is_current_end(store: dict, end: str | None) -> bool:
+    """endが銘柄の最新の期末からCURRENT_VALUE_MAX_LAG_DAYS以内か（最新の期末が分からなければTrue）。"""
+    latest = latest_period_end(store)
+    if not end or not latest:
+        return bool(end)
+    try:
+        return (date.fromisoformat(latest) - date.fromisoformat(end)).days <= CURRENT_VALUE_MAX_LAG_DAYS
+    except ValueError:
+        return False
+
+
 def get_latest_quarterly(store: dict, field_name: str, source_tag: str | None = None) -> dict | None:
     """
     get_quarterly_series()の最新1件（末尾）を返す。空ならNone
@@ -1449,9 +1495,14 @@ def get_latest_quarterly(store: dict, field_name: str, source_tag: str | None = 
 
     source_tag: get_quarterly_series()にそのまま伝播する
     （[[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応）。
+
+    [[LAYER3-STALE-LATEST-VALUE-1]]（2026-10-14）: 最新の1件が銘柄の最新の期末から
+    CURRENT_VALUE_MAX_LAG_DAYSより古い（申告が止まった項目）ならNoneを返す。
     """
     series = get_quarterly_series(store, field_name, source_tag=source_tag)
-    return series[-1] if series else None
+    if not series or not is_current_end(store, series[-1]["end"]):
+        return None
+    return series[-1]
 
 
 def get_long_term_debt_latest(store: dict) -> float:
@@ -1484,7 +1535,11 @@ def get_long_term_debt_latest(store: dict) -> float:
     entries = [e for e in get_field_entries(store, "long_term_debt") if e.get("val") is not None]
     if not entries:
         return 0.0
-    return float(max(entries, key=lambda e: e["end"])["val"])
+    latest = max(entries, key=lambda e: e["end"])
+    # [[LAYER3-STALE-LATEST-VALUE-1]]: 申告が止まった古い値は直近の値として使わない（エントリ無しと同じ0.0）
+    if not is_current_end(store, latest["end"]):
+        return 0.0
+    return float(latest["val"])
 
 
 def save_ticker_store(ticker: str, store: dict) -> str:

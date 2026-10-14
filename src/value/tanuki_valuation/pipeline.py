@@ -692,6 +692,14 @@ class TanukiValuationPipeline:
         return (required_fcf5 / fcf_base) ** 0.2 - 1
 
     @staticmethod
+    def _latest_period_missing_unsubstituted(valuation: dict) -> dict | None:
+        """最新期欠けのガードが発動する（欠けがあり、年次の値での代用が無い）ならその判定結果を返す。"""
+        lpm = valuation.get("latest_period_missing") or {}
+        if lpm.get("fields") and not lpm.get("substituted_by_annual"):
+            return lpm
+        return None
+
+    @staticmethod
     def _calc_dcf_reliability_policy_b(valuation: dict) -> str:
         """
         DCF_Reliability Policy B（DCF-RELIABILITY-1）
@@ -743,6 +751,12 @@ class TanukiValuationPipeline:
           detected=true, 上記いずれにも該当しない    → LOW
           detected=false                           → NORMAL
         """
+        # 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]、2026-10-14）: TTMの最新の点で
+        # 営業CFか設備投資が欠け、年次の値での代用も無い（古いTTMの点でFCFを評価している）ならLOW。
+        # 年次で代用している場合（substituted_by_annual=True）は判定を変えない（注記だけ）
+        if TanukiValuationPipeline._latest_period_missing_unsubstituted(valuation):
+            return "LOW"
+
         fcf_outlier = valuation.get("fcf_outlier", {}) or {}
         detected = fcf_outlier.get("detected", False)
         explained = fcf_outlier.get("action") == "excluded"
@@ -931,7 +945,9 @@ class TanukiValuationPipeline:
         if (not _policy_a_fires and score not in (Classification.SELL, Classification.PASS, Classification.UNDETERMINED)
                 and self._calc_dcf_reliability_policy_b(valuation) == "LOW"):
             score = Classification.WATCH
-            comment = "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH"
+            _lpm = self._latest_period_missing_unsubstituted(valuation)
+            comment = (f"DCF信頼性LOW({_lpm['note']})のためupside依存判定を抑制→WATCH" if _lpm
+                       else "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH")
             sell_reason = None
             _rounded_by_policy = "B"
 
@@ -1989,7 +2005,12 @@ class TanukiValuationPipeline:
             L.append("   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]")
         else:
             _reliability_b_raw = self._calc_dcf_reliability_policy_b(valuation)
-            if _reliability_b_raw == "LOW":
+            _lpm_r = self._latest_period_missing_unsubstituted(valuation)
+            if _lpm_r:
+                L.append(f"DCF_Reliability: LOW ⚠️ ({_lpm_r['note']}, IV参考値)")
+                L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
+                L.append("   TTMの最新の点で営業CF・設備投資の4四半期がそろわず、古い点のFCFで評価しているため。]")
+            elif _reliability_b_raw == "LOW":
                 L.append("DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)")
                 L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
                 L.append("   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]")
@@ -1998,6 +2019,10 @@ class TanukiValuationPipeline:
                     L.append(f"   [DCF-REL-SYNC-1: FCF実績が5年平均から{_dev_pct_polb_raw:.0f}%乖離]")
             else:
                 L.append("DCF_Reliability: NORMAL  (通常判定適用)")
+        # 最新期欠けのガードの注記（年次の値で代用している場合は判定を変えず、注記だけ）
+        _lpm_note = valuation.get("latest_period_missing") or {}
+        if _lpm_note.get("fields") and _lpm_note.get("substituted_by_annual"):
+            L.append(f"Latest_Period_Note: {_lpm_note['note']}")
 
         # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
         # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている

@@ -10,6 +10,8 @@ report_consistency_check.py
   NG  3. LOW丸め未発動         DCF_Reliability=LOW & Classification が WATCH/SELL/PASS 以外
                               （UNDETERMINED〈株価欠損で判定不能〉は対象外。NG-56で検知）
   NG 56. 株価欠損              tanuki=true銘柄のlatest.jsonでcomponents.current_priceが0またはNone
+  WARN 63. 最新期欠け          latest.jsonのlatest_period_missingで、TTMの最新の点の営業CF・設備投資が欠け、
+                              年次の値での代用も無い（DCF信頼性LOW→WATCH、[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
                               （2026-09-26、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
   NG  4. 割引率1段             Discount_Rate_Primary 行なし（旧WACC単独形式）
   NG  7. RPO条件違反           RPO_PV>0 & whitelist外 & RPO/Revenue<0.3
@@ -1668,6 +1670,33 @@ def _check_update_schedule_drift(repo_root: Optional[str] = None) -> list[str]:
     except Exception as e:
         msgs = [f"更新スケジュールの一覧を確認できない（{type(e).__name__}: {e}）"]
     return [f"  [WARN-58 更新スケジュールの一覧のずれ] {m} → python scripts/gen_update_schedule.py で更新する" for m in msgs]
+
+
+def _check_latest_period_missing(data_dir: Optional[str] = None) -> list[tuple[str, str]]:
+    """CHECK-63: 最新期欠けのガードが発動した銘柄（2026-10-14新設、NG化しない、[[LAYER3-LATEST-FILING-TAG-DROP-1]]）。
+
+    TANUKI VALUATIONのlatest.jsonのlatest_period_missing（data_fetcher.build_latest_period_missing()）で、
+    TTMの最新の点の営業CF・設備投資が欠け、年次の値での代用も無い銘柄と項目を列挙する。
+    年次で代用している銘柄（substituted_by_annual=True、判定は変えない）は対象外。
+    Returns: [(ticker, WARNメッセージ)]
+    """
+    base = data_dir or DATA_DIR
+    out: list[tuple[str, str]] = []
+    if not os.path.isdir(base):
+        return out
+    for t in sorted(os.listdir(base)):
+        path = os.path.join(base, t, "latest.json")
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                lpm = (json.load(f) or {}).get("latest_period_missing") or {}
+        except Exception:
+            continue
+        if lpm.get("fields") and not lpm.get("substituted_by_annual"):
+            out.append((t, f"  [WARN-63 最新期欠け] {t}: {lpm.get('note') or ','.join(lpm['fields'])}"
+                           f"（DCF信頼性LOW→WATCH）→ 候補タグ・SECの取り込みを確認"))
+    return out
 
 
 def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:
@@ -3477,6 +3506,17 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", [], sched_warn))
         total_warn += len(sched_warn)
         total_warn_new += len(sched_warn)
+
+    # CHECK-63: 最新期欠けのガードが発動した銘柄（NG化しない）。銘柄単位の台帳照合を行う
+    lpm_msgs = []
+    for _t, _w in _check_latest_period_missing():
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        lpm_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if lpm_msgs:
+        flagged.append(("[GLOBAL]", [], lpm_msgs))
+        total_warn += len(lpm_msgs)
 
     # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
     # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。

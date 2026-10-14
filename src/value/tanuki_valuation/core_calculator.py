@@ -877,6 +877,8 @@ class KoichiValuationCalculator:
             "fcf_source": financials.get("fcf_source", "unknown"),
             "fcf_ttm_end": financials.get("fcf_ttm_end"),
             "fcf_ttm_periods": financials.get("fcf_ttm_periods", 0),
+            # 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]、data_fetcher.build_latest_period_missing()）
+            "latest_period_missing": financials.get("latest_period_missing"),
             "rice_data_source": financials.get("rice_data_source", "unknown"),
 
             "components": {
