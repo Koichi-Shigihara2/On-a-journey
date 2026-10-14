@@ -11,6 +11,11 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14（設備投資の条件付きタグ・最新期欠けのガード・高の2件）**: 65ace9d86eを手元でcommit（pushしていない、b6c1e86defの上）。全数調査（98銘柄×36項目）で評価に響くタグの乗り換えはFCXだけ。
+  `SegmentExpenditureAdditionToLongLivedAssets`を条件付き（過去の期間で2期間以上一致・不一致0）で設備投資の候補の最後に（Layer3とparser.pyで共通の判定、18銘柄が採用、値が変わるのはFCXだけ。HONは修正再表示後の値と一致して採用）。
+  最新期欠けのガード（Policy BでLOW→WATCH・注記・CHECK-63）、`[[LAYER3-STALE-LATEST-VALUE-1]]`（最新の期末から135日より古い値を直近の値として使わない）、`[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]`（選び直しの判定を固定の5年・6年で数える）。
+  テスト28件追加、pytest 2345件成功。試算（公開値と比較）: 理論株価48銘柄（中央値6.3%、FCX +69.5%）、判定値6銘柄、ガードの発動0、年次代用の注記5銘柄。
+  新規登録: 中`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`、低`[[LAYER3-CUSTOM-TAG-MIGRATION-1]]`
 - **2026-10-14（保持期間7年・8年と5点平均・計算方法の変更の印の試算）**: c47d425bce（Layer3・TTMの2件）をpush（次の日曜のSEC_Data_Updateで反映）。
   FCXの設備投資の欠けは、2026年第2四半期の10-Qで合計を区分なしで申告しなくなったため（事業区分の軸つきだけ。company_factsは軸つきを含まない）。全銘柄の洗い出しは`[[LAYER3-LATEST-FILING-TAG-DROP-1]]`（中、FCX・CRWV）。
   保持期間7年・8年・5点平均・印（`common/method_change.py`）を実装し手元に置いた（テスト17件、修正前5件失敗、pytest 2317件成功）。全体の試算: TANUKIの理論株価48銘柄（中央値6.3%、FCX +121%・AMZN −45%）、

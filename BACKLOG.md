@@ -2259,6 +2259,13 @@ Step Summaryの表示は引き続き未確認
   - 印: 試算の実行に`METHOD_CHANGE`を付け、上の履歴10種すべてに印が入ることを確かめた。score_watcherは印のある変化を別の節に分ける。
     ただし印のある日は、相場による変化（例: 公開値〈10-12〉以降の日足でHypeCoreのstageが変わったENTG・FCX・KO・PM）も「計算方法の変更」に入る
 - pushの前に直すもの: [[LAYER3-STALE-LATEST-VALUE-1]]（高）・[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]（高）
+- 2026-10-14追記: 上の2件と、設備投資の条件付きの候補タグ・最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）を65ace9d86eとして実装（手元、pushしていない）。
+  全体の試算（公開値と比較）: 理論株価が変わる48銘柄（中央値6.3%、10%超14銘柄、最大FCX +69.5%）、判定値が変わる6銘柄（BSY・BROS・DDOG・HQY・NOW・TDY、b6c1e86def単独と同じ）、
+  b6c1e86def単独との差はFCXの理論株価だけ（$26.29→$20.15）。ガードの発動は0銘柄、年次の代用の注記はAPP・LOAR・LYFT・RCAT・VZ。CHECK NG 0・WARN 126、auditの警告8銘柄
+- 日曜（2026-10-18）のSEC_Data_Updateで反映させる場合の`config/method_change.json`の案:
+  `{"id": "LAYER3-RETENTION-PERIOD-1", "date": "2026-10-18"}`と`{"id": "LAYER3-RETENTION-PERIOD-1", "date": "2026-10-19"}`
+  （SEC_Data_Updateは12:00 UTC＝21:00 JSTに始まり、連鎖が日付をまたぐため翌日も入れる。10-18・10-19（JST）は平日のMarket Data Dailyが動かず、相場による変化が印に混ざりにくい）。
+  連鎖の後にHypeCore（[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]）とTANUKI Score（`--force`）を手動実行する
 
 #### 承認のあとの手順（2026-10-14、案）
 1. 上の2件（高）を直し、保持期間・5点平均・印のコードをpushする（ゲート: pytest・audit・report_consistency_check NG=0）
@@ -2372,8 +2379,16 @@ Layer3のrpoを読む処理が無いため、下流の値は変わらない。�
   2026-10-14の前回の試算（7年）では、TANUKIのRPOの値（SEC RPO）はAMZN・LITEとも変わらなかった（系列の過去の点は未確認）
 - 保持期間を5年のまま使う限り、今の値は変わらない
 
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- `quarterly.py::build_raw_table()`の選び直しの判定（主の候補の四半期の件数・最新の期末、`_select_best_candidate()`の件数・最新の期末）を、
+  保持期間と切り離した固定の期間（`_SELECTION_QUARTERLY_YEARS = 5`・`_SELECTION_ANNUAL_YEARS = 6`、`_selection_entries()`）で数える。データは保持期間（7年・8年）で切る
+- 記載との違い: 方針の例は「全期間で数える」だったが、全期間で数えると今の5年の窓の中の選択まで変わる（主の候補の件数が増え、選び直しが起きなくなる）。
+  延長前の保持期間と同じ固定の期間で数えると、今の値を変えずに保持期間から切り離せるためこちらにした
+- 確認: 全98銘柄で、5年の窓の内側（端の1年を除く）の値は7年・10年の窓でも全件同じ（消える値45件→0件）。窓の端の1年の差は、Q4の推計の開始日が1日違うだけ（値は同じ）
+- テスト`tests/test_normalized_selection_window.py`（2件）: 修正前は2件失敗、修正後は2件成功
+
 #### 方針
-Layer3と同じく、候補の選び方を保持期間に左右されないようにする（全期間で数える等）。保持期間を延ばす前に直す。全母集団の試算をしてから。実装しない（チャット側の指示待ち）
+上のとおり実装した。pushはチャット側の承認のあと
 
 ---
 
@@ -2392,13 +2407,42 @@ Layer3と同じく、候補の選び方を保持期間に左右されないよ�
   `get_long_term_debt_latest()`（TANUKIの長期借入金の予備。今回の21項目に長期借入金は無い）、rotce.py（優先株・少数株主持分の控除）
 - TTMは[[TTM-STALE-QUARTER-IN-WINDOW-1]]で点の期末に届かない四半期を足さなくなったため対象外
 
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- `layer3_builder.py`に`latest_period_end()`（主要項目〈売上・営業CF・純利益・総資産・純資産〉の最新の期末。build_ticker_store()がstoreに入れる）・
+  `is_current_end()`・`CURRENT_VALUE_MAX_LAG_DAYS = 135`を足した。最新の期末から135日より古い値は直近の値として使わない
+- 当てた処理: `get_latest_quarterly()`（TAILのkpi_proposer・quarterly_review_generator・tail_dcf_bridge）、`get_long_term_debt_latest()`（TANUKIの長期借入金の予備。古ければ0.0＝エントリ無しと同じ）、
+  STONKS SILOの`financial_trend_calculator._get_quarterly_entries()`（ベクトル・ヒートマップ。古ければデータなし）
+- 当てなかった処理（根拠）: rotce.pyは期末日が一致する値だけを引く（`_stock_by_end()`・`_quarterly_flow()`）ため、古い値が今の期に入らない。
+  HypeCore（`fetch_quarterly_fundamentals()`）は売上・純利益・営業CFの月次の推移で、直近の値として使わない。EPS ANALYZERはLayer3を読まない
+- テスト`tests/test_conditional_tags_and_stale_latest.py`: 合成のstoreと、全数調査で止まっていた項目（CEG・PMの株式報酬、ASTSの営業利益、INTU・CAKEの粗利、BROSの販売費）の実データで、
+  TAIL・TANUKI・STONKS SILO・rotceのどれも直近の値として使わないことを確かめた
+- 記載との違い: 方針は「一定の日数〈例: 1年〉」だったが、チャット側の指示（既存の鮮度判定と揃える）に従い135日（STONKS SILOの`financial_as_of.STALE_DAYS_AFTER_QUARTER_END`と同じ。テストで一致を確かめる）。
+  試算（保持期間7年）では、ASTSの営業利益（2021-03）に加え粗利（2023-12）も古い値として外れ、STONKS SILOの粗利の順位の母集団も変わった（23銘柄、総合の判定は不変）
+
 #### 方針
-「直近の値」を読む処理に鮮度の条件を入れる（直近の四半期末から一定の日数〈例: 1年〉より古い値は直近の値として使わない）。読む処理ごとに全母集団で試算してから。
-保持期間の延長（[[LAYER3-RETENTION-PERIOD-1]]）のコードはこれを直すまでpushしない。実装しない（チャット側の指示待ち）
+上のとおり実装した。pushと公開データの作り直しはチャット側の承認のあと（[[LAYER3-RETENTION-PERIOD-1]]の手順）
 
 ---
 
 ## 優先度：中（こなれてきたら対応）
+
+### [HYPECORE-TANUKI-CIRCULAR-DEP-1] HypeCoreとTANUKI VALUATIONが互いの前回の出力を読み合っており、連鎖の順序（HypeCore → TANUKI）ではHypeCoreの期待スコアが前回の理論株価で作られる
+**優先度:** 中（計算方法を変えて作り直すとき、HypeCoreの期待スコアが1回遅れる）
+**分類:** ワークフロー・依存関係 / `src/value/hypecore/hypecore.py`・`src/value/tanuki_valuation/pipeline.py`・`.github/workflows/`（SEC_Data_Update → HypeCore_Update → TANUKI_VALUATION_Update）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]の作り直しの手順の検討
+
+#### 内容（2026-10-14、読み取りのみ）
+- HypeCoreはTANUKIの`latest.json`の`intrinsic_value_per_share`を読み（`hypecore.py` L27・L324-336）、`price_iv_ratio`（株価÷理論株価）を期待スコア（`expectation_score`）の材料にする（L541・L633）
+- TANUKIはHypeCoreの`{T}_poc.json`を読み（`pipeline.py` L795・L1397・L1571・L3522・L3702・L3751）、stageをtimingの点数・推奨文・hypecore_history等に使う
+- 連鎖の順序はSEC_Data_Update → HypeCore_Update → TANUKI_VALUATION_Update（`HypeCore_Update.yml`はSEC Data Updateの完了で起動、TANUKIはHypeCore・EPS・Stonks Siloの完了で起動）。
+  そのため、HypeCoreの期待スコアは前回のTANUKIの理論株価で作られ、新しい理論株価が入るのは次のHypeCoreの実行（毎週日曜、または手動）。TANUKIは新しいHypeCoreのstageを使う
+- 2026-10-14の試算: 理論株価が変わると期待スコアが25銘柄で変わる（stageは不変）
+
+#### 方針
+計算方法を変えて作り直すときは、TANUKIの後にHypeCoreをもう一度手動実行する（[[LAYER3-RETENTION-PERIOD-1]]の手順）。恒久的な直し方（期待スコアだけTANUKIの後に作り直す等）はチャット側の判断。実装しない
+
+---
 
 （[[DISCOVER-CONFIG-DUAL-MGMT-1]]は2026-08-15実装完了、BACKLOG_DONE.md
 「2026-08-15（完了）」参照）
@@ -3213,7 +3257,8 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 - 分類: タグの変更（合計を区分なしで申告しなくなった）。Layer2の候補の漏れではない。全銘柄の洗い出しは[[LAYER3-LATEST-FILING-TAG-DROP-1]]
 
 #### 方針
-取り方を決める（区分の値の合計を使う、`SegmentExpenditureAdditionToLongLivedAssets`を候補の最後に加える、FCXだけの上書き、等）。全母集団の試算をしてから。実装しない（チャット側の指示待ち）
+2026-10-14、条件付きの候補タグ（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）で直した（65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））。Layer3・parser.pyとも2026年第2四半期の設備投資が単独$1,104M（由来segment_total）で入る。
+試算: FCXの理論株価は公開値$11.89→$20.15（+69.5%。b6c1e86def単独の$26.29からは−23.4%）、判定は不変。公開データへの反映はpushと作り直しのあと
 
 ---
 
@@ -3231,8 +3276,25 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
   - KLAC short_term_debt（10-K、流動分の返済）・ZS short_term_debt（10-K、転換社債を固定に振り替え）・LITE buyback（10-K、自社株買いなし）・MRVL rpo（10-Q、前受収益の流動分の申告なし）: 残高・取引が無くなっただけの可能性が高い
 - 今は「直近の書類で項目が消えた」ことを知らせる仕組みが無い（FCXはTTMの点の期末に届かない四半期として[[TTM-STALE-QUARTER-IN-WINDOW-1]]の試算で見つかった）
 
+#### 全数調査（2026-10-14、読み取りのみ）
+- 98銘柄×Layer3の36項目: 毎期出ていた項目が最新期で欠けるのは108件（EPSの10-K〈Q4〉16件、最後の値が0の45件を含む）。評価に使う項目で直近の書類から欠けたのはFCXの設備投資とCRWVの借入金だけ。一度も値が無い項目は551件
+- 値が一致する移行先タグ（±0.5%で2期間以上一致・不一致0）: FCXの設備投資（`SegmentExpenditureAdditionToLongLivedAssets`）、CPRTの現金（`CashCashEquivalentsRestrictedCash…`）、CDNS・SOFIの前受収益（`ContractWithCustomerLiability(Current)`）。
+  Layer3の現金・前受収益は読む処理が無いため見送り
+- 原本の確認: CRWVは独自タグ、ADBEはus-gaapの2タグ分割、LRCXは10-Qが独自タグ、CEGは行の取りやめ、ASTSは営業利益の行が無い（[[LAYER3-CUSTOM-TAG-MIGRATION-1]]）
+
+#### 実装（2026-10-14、65ace9d86e（手元のcommit、pushしていない。b6c1e86defの上に積んだ））
+- 条件付きの候補タグ（`common/sec_data/conditional_tags.py`の`conditional_candidate()`。Layer3とparser.pyの両方から呼ぶ）: 設備投資の`SegmentExpenditureAdditionToLongLivedAssets`を、
+  過去の重なる期間で既存の候補と±0.5%で2期間以上一致し不一致0の銘柄だけ使う。Layer3は候補の最後に足し（期間ごとの優先順位で既存の候補の期は上書きしない）、
+  parser.pyは通常の抽出の後に値が無い年・四半期だけを埋める（`_extract_values()`は最新の期末のタグを勝者にするため、候補の末尾に足すと既存の期まで置き換わる）。採用した期に`fallback_reason: "segment_total"`（parser.pyは`cf_provenance`）
+- 採用は18銘柄（AMAT・CAKE・CIX・COHR・KO・SPIR・VRT・HEI・HWM・HON・SCCO・FCX・JNJ・MO・PEP・PM・WMT・ENTG）、不採用9銘柄（AMZN・AVAV・RDW・ADSK・CPRT・CAT・GEV・XOM・TER）。
+  HONは事業の分離後に過去の設備投資を修正再表示しており、Layer3が持つ最後の申告の値とは13期間一致・不一致0（最初の申告の値とは不一致）のため採用。値が変わるのはFCXだけ
+- 最新期欠けのガード: TTMの最新の点で営業CFか設備投資が欠け、年次の値での代用も無い → DCF信頼性LOW（Policy B）→ WATCH、report.txt・TANUKI VALUATIONの個別ページ・TANUKI SCOREに注記。
+  年次で代用している（`fcf_source=annual_fallback`）→ 判定は変えず注記「最新期は年次の値で代用」。CHECK-63（WARN）で発動した銘柄と項目を列挙する
+- 記載との違い: 方針の「直近の書類で項目が消えたことを知らせるCHECK（関連タグの有無も見る）」そのものは作っていない。CHECK-63はTTMの最新の点の営業CF・設備投資の欠け（評価に響く場合）だけを知らせる
+- テスト: `tests/test_conditional_tags_and_stale_latest.py`（FCXのQ2単独$1,104M・上期累計$2,077M、条件を満たさない銘柄で値が変わらない等）、`tests/test_latest_period_guard.py`（7件）
+
 #### 方針
-CHECK（report_consistency_check）かSEC_Data_Updateの要約で、上の条件に当たる項目を知らせる（残高0・取引なしと区別するため、同じ書類の関連タグ〈合計の別タグ・軸つきの値〉の有無も見る）。FCX・CRWVの取り方はそれぞれ決める。実装しない（チャット側の指示待ち）
+上のとおり実装した。直近の書類で項目が消えたことの一般的な検知（CHECK）は、要るかをチャット側で判断する
 
 ---
 
@@ -4202,6 +4264,27 @@ TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合�
 
 #### 方針
 派生の純利益で期末が数日違う同じ期を1件にまとめる（他の銘柄にも同じ型が無いか全母集団で確かめる）。実装しない（チャット側の指示待ち）
+
+---
+
+### [LAYER3-CUSTOM-TAG-MIGRATION-1] 会社の独自タグ・us-gaapの2タグ分割への移行で、company_factsの候補タグでは取れない項目がある（CRWVの借入金・ADBEの前受収益・LRCXの10-Qの売上原価）
+**優先度:** 低（2026-10-14時点で評価への影響なし。効果が出たときに対応）
+**分類:** 一次データ / common/sec_data（Layer2の候補タグ・company_facts）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-LATEST-FILING-TAG-DROP-1]]の全数調査（調査3、原本のXBRL・財務諸表の確認）
+
+#### 内容（2026-10-14、EDGARの原本を読んだ）
+- **CRWV**（10-Q 2026-08-12）: 借入金が独自タグ`crwv:RecourseDebtCurrent`・`crwv:NonRecourseDebtCurrent`・`crwv:RecourseDebtNonCurrent`・`crwv:NonRecourseDebtNonCurrent`に移った（company_factsに載らない）。
+  TANUKIは借入金を年次（FY2025）から取るため今は響かない。**効果が出るとき**: FY2026の10-Kで同じ申告になった時点で年次の借入金が取れなくなる →
+  `DebtInstrumentCarryingAmount`（2026-06-30 $35,551M）を候補にするか、XBRLのインスタンスから独自タグを読む経路を作る
+- **ADBE**: 前受収益が`ContractWithCustomerLiabilityCurrent`＋`ContractWithCustomerLiabilityNoncurrent`の2タグに分かれた（どちらもus-gaap）。合計なら従来の`DeferredRevenue`と一致するはずだが、1タグの一致の探索では拾えない。
+  Layer3の`deferred_revenue`を読む処理は0件。**効果が出るとき**: 前受収益を使う処理ができたら、2タグの合計を候補にする
+- **LRCX**: FY2026の10-Qの売上原価は独自タグ`lrcx:CostOfGoodsAndServicesSoldExcludingRestructuringCharges`だけ（10-Kには合計の`CostOfGoodsAndServicesSold`がある）。粗利（`GrossProfit`）は申告されており影響なし。
+  **効果が出るとき**: 粗利の申告も止まったら、売上−粗利で売上原価を逆算する
+- 参考: CEGの株式報酬はキャッシュフロー計算書の行が無くなった（他の行にまとめた）、ASTSは営業利益の行がもともと無い（営業費用の合計だけ）。どちらもタグの移行ではない
+
+#### 方針
+効果が出た時点で上の対応をとる。実装しない
 
 ---
 

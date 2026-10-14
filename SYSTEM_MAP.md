@@ -1102,6 +1102,9 @@ SEC EDGAR
 │    残存（[[RCAT-2016Q3-ORPHANED-QUARTERLY-FILE-1]]）。併せて
 │    `common/sec_data/raw/`（`quarterly.py`書き込み専用・実消費者ゼロの
 │    デッドコード）を削除済み（Step1で全消費者洗い出し済み）。
+├─ conditional_tags.py # 条件付きの候補タグ（2026-10-14、[[LAYER3-LATEST-FILING-TAG-DROP-1]]）。設備投資の
+│    SegmentExpenditureAdditionToLongLivedAssetsを、既存の候補と過去の期間で一致する銘柄だけ使う判定
+│    （conditional_candidate()）。layer3_builder.py・parser.pyの両方から呼ぶ
 ├─ tag_definitions.py  # XBRLタグ候補の共通定義（TAG_CANDIDATES。quarterly.py・parser.py
 │    双方が参照。9概念のみ統合済み、LTDebt/SM/DA/RPO/Revenueは意図的に未統合。
 │    LLY-CAPEX-STALE-1 Phase 2a 2026-07-12新設）
