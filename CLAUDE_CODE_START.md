@@ -30,6 +30,17 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 BACKLOG.mdのアクティブは**31件**（`^### [`の機械カウント）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
+0. **日曜（2026-10-18）のSEC_Data_Updateからの連鎖の後**（`[[LAYER3-RETENTION-PERIOD-1]]`の公開データの作り直し。保持期間7年・8年、FCFの5点平均、設備投資の条件付きタグ、最新期欠けのガード、直近の値の判定。
+   `config/method_change.json`で10-18・10-19〈JST〉の実行に印が付く）: 連鎖（SEC → EPS・HypeCore・Stonks Silo → TANUKI VALUATION）が全部終わったら、次の順で手動実行する。
+   - HypeCore Update（新しい理論株価で期待スコアを作り直す。`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`）→ 連鎖でTANUKI VALUATIONが動く
+   - TANUKI Score Update（workflow_dispatchで`--force`が付く。連鎖では当日の選出済みで止まるため）
+   そのあと次を確かめる。
+   - FCXの理論株価が約$20.15（公開値$11.89から。2026年第2四半期の設備投資が`SegmentExpenditureAdditionToLongLivedAssets`で入る）
+   - 6銘柄の判定・timingが試算どおり: BSY WATCH→HOLD（timing 35→25・象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM、DDOG timing 55→40、NOW timing 65→50
+   - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
+   - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
+   - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
+   - 月曜の安全網: HypeCore Update（04:00 UTC＝10-19 13:00 JST、重複防止なし）は動き、印が付く。Adjusted_EPS_Data_Update（04:10 UTC）は24時間の重複防止で何もせずに終わる
 1. **Adjusted_EPS_Data_UpdateのStep Summary**（run `38194524660`）: Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」が出ていること（APIからは読めない）。
    確かめたら`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設する
 2. **10-14以降のSystem Health**: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。⚠️・🔴が出た日にも一致すること。
