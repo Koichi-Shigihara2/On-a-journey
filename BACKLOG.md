@@ -2599,8 +2599,11 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 - 案7（増資・現金の滞留）は、今の定義でS2がもともと少ない（18%）ためほとんど効かない。案8（成熟株の入りにくさ）はABBV・PM・Vの1か月だけのS3を減らすが、効果は案4bと重なる
 - 成熟（ライフサイクル）の判定は、資本還元の割合が取れない銘柄（タグ無し・FCF負）が24あり、タグの揃い方（自社株買い無し19・配当無し53・増資無し36）に依存する
 
-#### 方針
-チャット側の判断待ち（実装しない）。試算のスクリプトはリポジトリに置いていない（一時フォルダ）
+#### 方針（2026-10-14更新）
+stageは定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`、案・検証中）で作り直す。今は定義v2の検証中で、実装しない。
+定義v2は期待の段階を倍率の変化g_M・実体の伸びg_F・倍率の水準Lで決め、テクニカル（RSI・MA200乖離）は補助に下げる。持続の条件（2か月）を持つ。
+依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（共通の部品）→ [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）。
+試算のスクリプトはリポジトリに置いていない（一時フォルダ）
 
 ---
 
@@ -2642,7 +2645,153 @@ check_dependency_map.pyのC-08で一致した。日足の行を読むものへ�
 
 ---
 
+### [VALUATION-MULTIPLES-HISTORY-COMMON-1] 倍率（PER・EV/売上・EV/粗利・P/TBV等）の履歴を共通の導出データとして1つ作る（今はTANUKI SCOREのPER・最大EPSのPER・rotce.pyがそれぞれ別に計算している）
+**優先度:** 中
+**分類:** 共通の導出データ / `common/sec_data/`（新設）・TANUKI VALUATION `data_fetcher.py`（PER）・`pipeline.py::compute_max_eps()`・`common/sec_data/rotce.py`
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §5）
+
+#### 内容
+- 定義v2のg_M（倍率の12か月の対数の変化）とL（自社の過去5年・業種の中のパーセンタイル）には、各時点の「その時点の株価÷その時点で公表済みの財務（提出日から使う）」の倍率の履歴が要る
+- 今の倍率の計算（2026-10-14、grep）:
+  - TANUKI SCOREのPERの列: `data_fetcher.py`がmarket_dataの属性の`trailing_pe`（無ければ`forward_pe`）を使う（yfinanceのスナップショット。履歴は無い）
+  - 最大EPSのPER: `pipeline.py::compute_max_eps()`（TTMの純利益＋株式報酬÷今の希薄化後の株式数）
+  - `rotce.py`: 四半期ごとのP/TBVとROTCEの履歴と、自社の過去に対するパーセンタイル（`percentile_of()`・`_percentile()`）
+- 株式数は[[EPS-SHARES-BASIS-MISMATCH-1]]の原則（期間の利益を割るときは期間の加重平均、1株あたりの価値・時価総額は今の完全希薄化後）に従う
+
+#### 方針
+- 共通の導出データを1つ作り、stage・TANUKI SCOREのPERの列・最大EPSのPER・`rotce.py`が読む。パーセンタイルの計算は`rotce.py`のものを共通化する
+- `docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`の「対象3（フェーズ3）: 導出データ — 評価倍率・バリュエーション系」と`CONCEPT_PARAMETER_VARIATIONS.md`に登録し、新しい定義の違いを増やさない
+- 依存: [[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（粗利の提出日）・[[SECTOR-MASTER-UNIFY-1]]（業種の中の順位）。実装しない（チャット側の指示待ち）
+
+---
+
+### [SECTOR-MASTER-UNIFY-1] 業種の分類が4か所（cik_lookupのeps_sector・EPS ANALYZERのsectors.yaml・market_dataのyfinanceの業種・maturity_configの業種）にあり、景気循環株の区分が無い
+**優先度:** 中
+**分類:** 共通の設定 / `config/cik_lookup.csv`・`config/sectors.yaml`（`src/value/adjusted_eps_analyzer/sector_classifier_v2.py`）・`common/market_data/fetcher.py`（属性の`sector`）・`config/maturity_config.json`
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§2・§5）
+
+#### 内容
+- 定義v2は業種で倍率を切り替え（景気循環株は5年平均の利益による倍率かEV/売上、金融・資産の重い業種はP/TBV÷ROTCE）、g_M・Lを業種全体の倍率の変化を差し引いて測る。業種のマスターと景気循環株の区分が要る
+- 今は4か所で別々に業種を持つ（2026-10-14、grep）
+
+#### 方針
+業種のマスターを1つにし、景気循環株かどうかも持たせる。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+---
+
+### [DEFICIT-QUALITY-COMMON-1] 赤字の質・構造的な赤字・黒字化の見込みの判定がSTONKS SILO（DeficitQuality）とTANUKI VALUATION（structural_deficit）に別々にあり、hypecoreの全銘柄では計算されていない
+**優先度:** 中
+**分類:** 共通の部品 / `discover/stonks-silo/src/analyzer.py`（`DeficitQuality`・`_analyze_deficit_quality()`）・`src/value/tanuki_valuation/core_calculator.py`（`structural_deficit`）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§2・§5）
+
+#### 内容
+- 定義v2は収益の段階（黒字・黒字化目前〈赤字だが黒字化の見込みが2年以内〉・赤字）で使う指標を切り替える。黒字化の見込みの判定が全銘柄で要る
+- STONKS SILOの判定はSTONKS SILOの対象銘柄だけ、TANUKIの`structural_deficit`はTANUKIの対象銘柄だけで計算している
+
+#### 方針
+STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算する。TANUKIの`structural_deficit`も揃える。依存される側: [[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+---
+
+### [LAYER3-CAPITAL-ALLOCATION-FIELDS-1] 配当・増資（とオプションの行使）がLayer2・Layer3に無く、粗利・販売費の提出日が揃っているか確かめていない
+**優先度:** 中
+**分類:** 一次データ / `config/sec_concept_definitions.json`・`common/sec_data/layer3_builder.py`
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 2（資本の使い方の指標）・HypeCoreのstageの定義v2（§3③・§5）
+
+#### 内容
+- 2026-10-14時点のLayer3には`gross_profit`・`selling_and_marketing`・`selling_general_and_administrative`・`research_and_development`・`buyback`がある。配当・増資・オプションの行使は無い
+- STEP 2の試算では、試算の中だけで配当（`PaymentsOfDividends`等）・増資（`ProceedsFromIssuanceOfCommonStock`等）を足した。98銘柄で配当のタグ無し53・増資のタグ無し36・自社株買いのタグ無し19。
+  Layer3は足した項目にQ4の暗黙の値（年次−3四半期）を作らなかった（ABBVの配当）。ATMの増資は別のタグで申告されることがあり取りこぼす
+
+#### 方針
+配当・増資をLayer2・Layer3に加え、凍結・CHECK・auditの対象に入れる。Layer3の各項目に提出日（filed）が揃っているかを確かめる（定義v2は財務を提出日から使う）。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+---
+
+### [STAGE-LIFECYCLE-LABEL-MIXUP-1] TANUKI VALUATIONがstage（期待の段階）をライフサイクルの名前で保存・表示し、glossary.jsonのS0の名前が古い
+**優先度:** 中
+**分類:** 表示・履歴 / `src/value/tanuki_valuation/pipeline.py`（hypecore_historyの書き込み）・`docs/value-monitor/tanuki_valuation/stock.html`・`docs/common/glossary.json`
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 1
+
+#### 内容（2026-10-14に確認した事実）
+- `pipeline.py`（L3733付近）がhypecore_historyの`"lifecycle"`に最新月の`stage_label`を入れ、`stock.html`の履歴の「ライフサイクル」列に出る
+- `stock.html`のシグナル（L601-604）がstage 2を「成長期」、3を「成熟期」、1を「黎明期」と表示する（期待の段階をライフサイクルの名前で呼んでいる）
+- `docs/common/glossary.json`の`hype_stage_color`が「S0 失望」のまま（hypecore.pyのS0は蓄積、`stock.html`のSTAGE_LABELSは「失望/蓄積期」）
+
+#### 方針
+ライフサイクルと期待の段階の名前を分ける。定義v2（S5 失望の新設）の切り替え（[[STAGE-V2-ROLLOUT-1]]）と合わせて直すか先に直すかはチャット側の判断待ち。実装しない
+
+---
+
+### [STAGE-V2-ROLLOUT-1] HypeCoreのstageの定義v2を並行して計算し、監視・ワークフローの連鎖を組み直して、1機能ずつ切り替える
+**優先度:** 中
+**分類:** 切り替え / HypeCore（`hypecore.py`・`_poc.json`）とstageを読む全処理（[[HYPECORE-STAGE-TIMESCALE-1]]のB-1の表）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §6）
+
+#### 内容
+- 進め方: (1) `stage_v2`として並行して計算・保存し、各機能は今のstageを読んだまま (2) 数週間比べる (3) `MIGRATION_CHECKLIST.md`の手順で1機能ずつ切り替える（表示→通知→SCORE）。`_poc.json`に版の番号を持たせる
+- 切り替えで決め直すもの（§6の表）: SCOREのtiming（S0・S5・安定の点数）、TRIM・SELL（番号の比較をやめ名前で条件を書く）、ナラティブトラップ（S4を含めるか）、HypeCoreのsubstage（SCOREの「底」の並べ替え）、
+  HypeCoreの画面（色・絞り込み・遷移の確率）、`dcf_validity_checker.py`（状態の数）、`score_watcher.py`・`daily_pick.py`・`sector_rotation.py`・PORTFOLIO（ラベル）、TANUKIの履歴（版の番号と過去の再計算）
+- 更新の順番: HypeCoreをSTONKS SILO（赤字の質）とMarket Data Weekly（業種）のあとに動かす（`UPDATE_SCHEDULE.md`の連鎖の組み直し）
+- 監視: System Healthにstageの鮮度、`report_consistency_check.py`にCHECK（判定不能の割合、S0→S3のような飛び越し）。stageの出力に価格の日付・財務の提出日を持たせ、SECの取り込みの遅れの印を引き継ぐ
+- テスト: どんな入力の組み合わせでも必ずどれかの段階に入ること
+
+#### 方針
+依存: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]と定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]）。関連: [[STAGE-LIFECYCLE-LABEL-MIXUP-1]]・[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]・[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]。実装しない
+
+---
+
 ## 優先度：低（アイデア段階）
+
+### [HYPECORE-RECOMMENDATION-DUPLICATE-1] stageからの推奨文のロジックがTANUKI VALUATIONのPythonとHypeCoreの画面のJS（2ファイル）にある
+**優先度:** 低（文言の表示だけ。判定には使わない）
+**分類:** 重複 / `src/value/tanuki_valuation/pipeline.py::_hypecore_recommendation()`（L3690）・`docs/value-monitor/hypecore/index.html::getRec()`（L161）・`detail.html::getRec()`（L370）
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 1
+
+#### 内容（2026-10-14に確認した事実）
+- 3か所とも「stage 0で直前が4なら『強い買い推奨』」等の同じ分岐を持つ（Pythonは`ma200_dev`・`from_peak`も受け取る）。中身が全部同じかは突き合わせていない
+- 定義v2ではS5→S0の移り目に変わるため、3か所を同時に直す必要がある
+
+#### 方針
+1か所（HypeCoreの出力）で作り、他は読むだけにする。[[STAGE-V2-ROLLOUT-1]]と合わせて扱う。実装しない
+
+---
+
+### [TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1] TANUKI VALUATIONの個別ページがgrowth_sanityのrecommended_g_hypecoreを表示しようとするが、作る処理が無い
+**優先度:** 低（値が無いため表示されないだけ）
+**分類:** 表示 / `docs/value-monitor/tanuki_valuation/stock.html`（L2202、`sanity.recommended_g_hypecore`・`hypecore_stage_used`）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§6）のチャット側の点検
+
+#### 内容（2026-10-14に確認した事実）
+- `recommended_g_hypecore`をgrepすると`stock.html`のL2202だけ。`growth_sanity.py`は`recommended_g`・`recommended_g_median`だけを作る
+
+#### 方針
+表示を消すか、作る処理を足すか（定義v2のstageを使うか）はチャット側の判断待ち。実装しない
+
+---
+
+### [OPTIONS-OI-ACCUMULATION-1] オプションの建玉の集計値を、common/market_dataの新しい種類として毎日蓄積する
+**優先度:** 低（データ蓄積。定義v2の⑤は履歴が6〜12か月たまるまで判定に使わない）
+**分類:** データ取得 / `common/market_data/`（`fetcher.py`・`reader.py`）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§3⑤）
+
+#### 内容
+- hypecoreの98銘柄から始め、建玉の集計値（コール・プットの合計等）だけを保存する。チェーンそのものは保存しない
+- fetcher・readerの作り（daily・attributes・analyst_historyと同じ形）に揃える
+
+#### 方針
+早く始めるほど履歴がたまる。実装しない（チャット側の指示待ち）
+
+---
 
 ### [TANUKI-INSIDER-ZERO-VS-NODATA-1] TANUKI VALUATIONのインサイダー取引で、「90日に届出が無い」「届出はあるが買い・売りが無い」が、買いと売りが同数のときと同じ「中立」（0/0）になる
 **優先度:** 低（表示とreport.txtだけ。判定〈`_compute_tanuki_score()`〉では参照していない。2026-10-12の数え上げで96銘柄中13銘柄が該当）

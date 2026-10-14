@@ -11,6 +11,9 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+- **2026-10-14（stageの定義v2）**: `docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md`を新設（案・検証中。期待の段階を倍率の変化g_M・実体の伸びg_F・倍率の水準Lで決め、テクニカルは補助に。7段階＋該当なし＋判定不能、持続の条件2か月、共通の部品・影響・切り替え・検証のしかた）。
+  `[[HYPECORE-STAGE-TIMESCALE-1]]`の方針を「定義v2で作り直す、検証中」に更新。新規登録（すべて実装しない）: 中 `[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]`・`[[SECTOR-MASTER-UNIFY-1]]`・`[[DEFICIT-QUALITY-COMMON-1]]`・`[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]`・
+  `[[STAGE-LIFECYCLE-LABEL-MIXUP-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、低 `[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`・`[[OPTIONS-OI-ACCUMULATION-1]]`。定義v2の検証の試算は別途（commitしない）
 - **2026-10-14（stageの追加の試算）**: `[[HYPECORE-STAGE-TIMESCALE-1]]`にSTEP 1〜3と前提を追記。ライフサイクルを分類して保存する処理は無く（HypeCoreの`detectLifecycle()`は表示だけ）、
   TANUKI VALUATIONの2か所は期待の段階をライフサイクルの名前で表示している。資本の使い方の指標（増資÷時価総額・現金の滞留・資本還元の割合）はタグの揃い方に依存（自社株買い無し19・配当無し53・増資無し36）。
   案4〜8の試算（97銘柄・23か月）: 往復を0にできるのは持続の条件（案4a・4b）だけ、案5は月中の揺れと通知を半分以下に、案5の入力＋案4bの持続が最も静か（揺れ745日・通知428回・往復0、食い違う月29.2%）。
