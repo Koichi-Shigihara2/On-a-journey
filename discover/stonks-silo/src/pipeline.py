@@ -29,6 +29,7 @@ import financial_as_of
 from common.sec_data import tickers
 from common.sec_data.reader import SECReader, get_ttm_revenue
 from common.sec_data.layer3_builder import build_ticker_store
+from common.method_change import stamp as _stamp_method_change  # 計算方法の変更の印
 
 
 _OUTPUT_DIR = _REPO_ROOT / "docs" / "value-monitor" / "stonks-silo" / "data"
@@ -247,6 +248,7 @@ def run(tickers: list[str] | None = None) -> dict:
         ),
     }
 
+    _stamp_method_change(output)
     _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     with open(_OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)

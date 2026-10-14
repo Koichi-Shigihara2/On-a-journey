@@ -28,6 +28,11 @@ HIST_FILE    = OUT_DIR / "history.json"
 
 JST = timezone(timedelta(hours=9))
 
+# 計算方法の変更の印（common/method_change.py、[[LAYER3-RETENTION-PERIOD-1]]）
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from common.method_change import stamp as _stamp_method_change  # noqa: E402
+
 XAI_API_KEY = os.environ.get("XAI_API_KEY", "")
 XAI_API_URL = "https://api.x.ai/v1/chat/completions"
 
@@ -566,6 +571,7 @@ def main(force: bool = False):
         "timing_score":     selected["timing"],
         "all_categories":   all_cats,
     })
+    _stamp_method_change(history[0])
     history = history[:30]
     save_history(history)
     print(f"[daily_pick] History updated ({len(history)} entries)")

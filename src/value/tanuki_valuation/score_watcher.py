@@ -15,6 +15,11 @@ TANUKI VALUATIONパイプライン実行後に呼び出す。
   docs/value-monitor/tanuki_valuation/data/.watcher_state.json
   に「前回通知時の状態」を保存し、重複通知を防ぐ。
 
+計算方法の変更（[[LAYER3-RETENTION-PERIOD-1]]、2026-10-14追加）:
+  latest.json（HypeCoreのstageは{TICKER}_poc.json）に計算方法の変更の印
+  （"method_change"、common/method_change.py）がある実行では、その変化を
+  「計算方法の変更による変化」として、相場の変化とは別の節で通知する。
+
 使用方法:
     python score_watcher.py
     python score_watcher.py NVDA PLTR   # 特定銘柄のみ
@@ -68,6 +73,17 @@ def load_latest(ticker: str) -> dict:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_hype_method_change(ticker: str) -> str | None:
+    """HypeCoreの{TICKER}_poc.jsonの計算方法の変更の印（無ければNone）"""
+    path = HYPE_DIR / f"{ticker}_poc.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("method_change")
+    except Exception:
+        return None
 
 
 def load_hype_stage(ticker: str) -> tuple[int | None, str]:
@@ -159,6 +175,14 @@ def detect_changes(ticker: str, prev_state: dict) -> tuple[list[dict], dict]:
             "detail": f"Phase{prev_stage}({prev_label}) → **Phase{cur_stage}({cur_label})**",
         })
 
+    # 計算方法の変更の印（latest.json・poc.json）を各変化に付ける
+    mc_latest = latest.get("method_change")
+    mc_hype = load_hype_method_change(ticker)
+    for c in changes:
+        mc = mc_hype if c["type"] == "hype" else mc_latest
+        if mc:
+            c["method_change"] = mc
+
     return changes, new_state
 
 
@@ -174,13 +198,31 @@ def build_discord_message(ticker_changes: dict[str, list[dict]]) -> str:
     ]
 
     priority = {"score": 0, "hype": 1, "upside": 2, "funda": 3}
-    for ticker, changes in sorted(ticker_changes.items()):
-        sorted_changes = sorted(changes, key=lambda c: priority.get(c["type"], 9))
-        lines.append(f"**{ticker}**")
-        for c in sorted_changes:
-            comment = f"　*{c['comment']}*" if c.get("comment") else ""
-            lines.append(f"　{c['label']}: {c['detail']}{comment}")
+
+    def _section(selected: dict[str, list[dict]]) -> None:
+        for ticker, changes in sorted(selected.items()):
+            sorted_changes = sorted(changes, key=lambda c: priority.get(c["type"], 9))
+            lines.append(f"**{ticker}**")
+            for c in sorted_changes:
+                comment = f"　*{c['comment']}*" if c.get("comment") else ""
+                lines.append(f"　{c['label']}: {c['detail']}{comment}")
+            lines.append("")
+
+    market = {t: [c for c in cs if not c.get("method_change")] for t, cs in ticker_changes.items()}
+    market = {t: cs for t, cs in market.items() if cs}
+    method = {t: [c for c in cs if c.get("method_change")] for t, cs in ticker_changes.items()}
+    method = {t: cs for t, cs in method.items() if cs}
+    if not method:
+        _section(market)
+    else:
+        if market:
+            lines.append("📈 **相場の変化**")
+            lines.append("")
+            _section(market)
+        ids = sorted({c["method_change"] for cs in method.values() for c in cs})
+        lines.append(f"🛠 **計算方法の変更による変化**（{', '.join(ids)}）— 相場の変化ではありません")
         lines.append("")
+        _section(method)
 
     lines.append("*長期投資仮説の検証に影響する変化のみ通知しています*")
     return "\n".join(lines)

@@ -191,8 +191,9 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 CONFIG_PATH = os.path.join(REPO_ROOT, "config", "sec_concept_definitions.json")
 STORE_V2_DIR = os.path.join(BASE_DIR, "store_v2")
 
-_QUARTERLY_YEARS = 5
-_ANNUAL_YEARS = 6
+# 保持期間はquarterly.pyの_QUARTERLY_YEARS・_ANNUAL_YEARS（_process_entries()がそれで切る）。
+# 以前はここにも同じ名前の定数（5・6）があったが、どこからも使われていなかったため
+# 2026-10-14に削除した（[[LAYER3-RETENTION-PERIOD-1]]）
 
 
 # ---------------------------------------------------------------------------

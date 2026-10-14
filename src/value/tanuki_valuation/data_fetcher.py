@@ -25,6 +25,9 @@ repo_root: str | None = None
 # reader.pyと同じsys.path解決に依存するためHAS_SECと同じtry/exceptブロックに同居させる。
 FCFSeries = None
 ContractViolation = None
+# [[LAYER3-RETENTION-PERIOD-1]]: FCFの平均等に使うTTMの点数（common/sec_data/ttm_calculator.py::FCF_AVG_POINTS）。
+# import前・import失敗時も同じ値で動くよう既定値を置く
+FCF_AVG_POINTS = 5
 
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +38,7 @@ try:
 
     from common.sec_data.reader import SECReader
     from common.sec_data.contracts import FCFSeries, ContractViolation
+    from common.sec_data.ttm_calculator import FCF_AVG_POINTS
     HAS_SEC = True
 except Exception:
     pass
@@ -248,7 +252,7 @@ class TTMReader:
 
         鮮度チェック（LLY-CAPEX-STALE-1型のタグ切替見逃し再発対策）は
         系列先頭（最新期間）のみに適用する。TTM系列は各エントリが約1年間隔で
-        過去5年分の実データとして保存される設計のため、series[0]以外は
+        6点（約5年遡る）の実データとして保存される設計のため、series[0]以外は
         正常な銘柄でも構造的に365日以上古い（過去年度の正規のTTMスナップショット）。
         全エントリに鮮度フィルタを適用すると正常な過去実績まで陳腐化扱いされ
         全銘柄でシリーズが1点以下に縮退してしまうため、「最新のはずのデータが
@@ -263,6 +267,9 @@ class TTMReader:
             if s.get("flow", {}).get("FCF", {}).get("val") is not None
             and _quarters_complete(s.get("flow", {}), "operating_cash_flow", "capital_expenditure")
         ]
+        # [[LAYER3-RETENTION-PERIOD-1]]（2026-10-14）: 4四半期がそろう点のうち直近の
+        # FCF_AVG_POINTS（5）点だけを使う（6点目は平均・方式・外れ値・CAGRに入れない）
+        filtered = filtered[:FCF_AVG_POINTS]
         if len(filtered) < 2:
             return None, None
         vals = [s["flow"]["FCF"]["val"] for s in filtered]
@@ -331,11 +338,11 @@ class TTMReader:
             return 0
         if not _quarters_fresh(_freshest_end(self._series)):
             return 0
-        return sum(
+        return min(FCF_AVG_POINTS, sum(
             1 for s in self._series
             if s.get("flow", {}).get("FCF", {}).get("val") is not None
             and _quarters_complete(s.get("flow", {}), "operating_cash_flow", "capital_expenditure")
-        )
+        ))
 
     def get_series(self) -> list[dict] | None:
         return self._series

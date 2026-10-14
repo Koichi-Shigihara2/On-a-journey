@@ -432,9 +432,13 @@ _FIELD_FALLBACKS: dict[str, tuple[str, ...]] = {
 # parser.py側にFinanceLeasePmtsの追加候補があったため統合する（Phase 2a）。
 _FIELD_FALLBACKS["FinanceLeasePmts"] = TAG_CANDIDATES["FINANCE_LEASE_PAYMENTS"][1:]
 
-# 取得期間
-_QUARTERLY_YEARS = 5
-_ANNUAL_YEARS = 6
+# 取得期間（保持期間）。Layer3（layer3_builder.py）・normalizedの両方がこの値で切る。
+# [[LAYER3-RETENTION-PERIOD-1]]（2026-10-14、Koichi了承）: 5年・6年→7年・8年。
+# TTMの6点目（最新の四半期末から約5年前の点）の4四半期は、今日から約6.1〜6.75年前に
+# 及ぶ（提出の遅れ分を含む）。全98銘柄の試算で6.75年あれば97銘柄が最大の点数に届く。
+# 余裕を見て四半期7年、年次はQ4の推計に要るため四半期＋1年の8年
+_QUARTERLY_YEARS = 7
+_ANNUAL_YEARS = 8
 
 
 def build_raw_table(ticker: str, company_facts: dict) -> dict:
@@ -599,7 +603,7 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
         #    ※ SMはメインタグで少数取れていてもSGA等に乗り換えると意味が変わるため除外
         _FALLBACK_MIN = 4
         # NetIncome: quarterly数が少ない場合もフォールバックを試みる
-        #   AVGO等: NetIncomeLossの四半期データが5年窓外で q_count=0 になる場合に
+        #   AVGO等: NetIncomeLossの四半期データが保持期間の外で q_count=0 になる場合に
         #   ProfitLossへのフォールバックが必要（annualはあるため not processed=False）
         _FALLBACK_MIN_FIELDS = {"Cash", "SBC", "CapEx", "GrossProfit", "NetIncome", "LTDebt"}
         if field_name in _FIELD_FALLBACKS:
@@ -781,7 +785,7 @@ def _process_entries(raw_entries: list) -> list:
       Q1-Q3累計）の別期間エントリを誤って「重複」扱いし、一方（主にYTD）を
       完全に破棄してしまう（BUG-CON-YTD-1）。YTDは欠落四半期の逆算に使える
       有用な情報のため、start違いは別期間として保持する。
-    年次: 直近6年、四半期: 直近5年。
+    年次: 直近8年、四半期: 直近7年（_QUARTERLY_YEARS・_ANNUAL_YEARS）。
     """
     today = date.today()
     cutoff_q = (today - timedelta(days=_QUARTERLY_YEARS * 365)).isoformat()

@@ -40,6 +40,7 @@ _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_
 if _REPO_ROOT_FOR_IMPORT not in sys.path:
     sys.path.insert(0, _REPO_ROOT_FOR_IMPORT)
 from common.sec_data.contracts import Classification  # GATE2-PHASE3B-1③-b
+from common.method_change import stamp as _stamp_method_change  # [[LAYER3-RETENTION-PERIOD-1]] 計算方法の変更の印
 from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     build_ticker_store,
     get_field_entries,
@@ -1181,6 +1182,10 @@ class TanukiValuationPipeline:
         latest_data["matrix"] = self._compute_matrix_position(
             ticker, valuation, extra.get("fcf_history", [])
         )
+        # 計算方法の変更の印（common/method_change.py）。score_watcher.pyはlatest.jsonの印で
+        # 判定の変化を「計算方法の変更による変化」として通知する
+        _stamp_method_change(latest_data)
+        _stamp_method_change(valuation)
         latest_path = os.path.join(ticker_dir, "latest.json")
         with open(latest_path, "w", encoding="utf-8") as f:
             json.dump(latest_data, f, ensure_ascii=False, indent=2)
@@ -1214,6 +1219,7 @@ class TanukiValuationPipeline:
             "scenario_bear": (valuation.get("scenario_valuations") or {}).get("bear", {}).get("intrinsic_value_per_share"),
             "scenario_bull": (valuation.get("scenario_valuations") or {}).get("bull", {}).get("intrinsic_value_per_share"),
         }
+        _stamp_method_change(entry)
         # 同日エントリを上書き
         history_summary = [e for e in history_summary if e.get("date") != date_str]
         history_summary.append(entry)
@@ -1240,6 +1246,7 @@ class TanukiValuationPipeline:
             "upside_pct": valuation.get("upside_percent"),
             "hype_phase": (_growth_sanity.get("hype_phase_used") if isinstance(_growth_sanity, dict) else None),
         }
+        _stamp_method_change(sh_entry)
         score_history = [e for e in score_history if e.get("date") != date_only]
         score_history.append(sh_entry)
         score_history.sort(key=lambda e: e.get("date", ""))
@@ -3770,6 +3777,7 @@ class TanukiValuationPipeline:
                     history = json.load(f)
             except Exception:
                 history = []
+        _stamp_method_change(entry)
         history = [e for e in history if e.get("date") != date_only]
         history.append(entry)
         history.sort(key=lambda e: e.get("date", ""))

@@ -221,6 +221,12 @@ def _last4_is_contiguous(last4: list[dict]) -> bool:
         return False
 
 
+# [[LAYER3-RETENTION-PERIOD-1]]（2026-10-14、Koichi了承）: TANUKI VALUATIONのFCFの
+# 平均（「5年平均」）・方式・外れ値・CAGRに使うTTMの点数。4四半期がそろう点のうち
+# 直近の5点。年次の経路（get_fcf_list_with_dates(years=5)）・FCFのCAGR（fcf_list[:5]）と揃える。
+# 以前は取れた点を全部平均しており、6点そろうと6点の平均になっていた
+FCF_AVG_POINTS = 5
+
 # [[TTM-STALE-QUARTER-IN-WINDOW-1]]: 採用した4四半期の最新の期末と点（anchor）の
 # 期末の差の許容日数。_last4_is_contiguous()の隣接四半期の許容（±10日）と揃える。
 # 2026-10-14の全98銘柄・全FLOWフィールド（EPS除く）の試算では、差は0日か
@@ -254,7 +260,11 @@ def calc_ttm_series(
     Rolling TTM系列を生成する。
     直近Qをanchor[0]とし、約1年(4Q)ずつ遡ってn_periods点を計算。
 
-    n_periods=6 の理由: rice.pyのCF計算が3年分必要（4点）+ FCF用5点 → 安全マージン6点
+    n_periods=6 の理由: rice.pyのCF計算が3年分必要（4点）+ FCF用5点 → 安全マージン6点。
+    FCFの平均・方式・外れ値・CAGRに使うのは直近のFCF_AVG_POINTS（5）点だけで、
+    6点目は余裕（4四半期がそろわない点を飛ばしたときの補い）として残す
+    （[[LAYER3-RETENTION-PERIOD-1]]、2026-10-14）。6点に届くには保持期間が
+    約6.75年要る（quarterly.pyの_QUARTERLY_YEARS=7）
 
     storeはlayer3_builder.py::build_ticker_store()の戻り値（インメモリ、
     ファイル経由にしない。フェーズC対応）。フィールド抽出は

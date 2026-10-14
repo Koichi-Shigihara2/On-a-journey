@@ -923,7 +923,8 @@ SEC EDGAR
 │    四半期報告書〉）、他104銘柄で誤検知なし。単体テストは
 │    `tests/test_report_consistency_check.py`。詳細はBACKLOG_DONE.md
 │    [[FETCHER-10KT-10QT-FORM-EXCLUSION-1]]参照。
-├─ quarterly.py      # 四半期データ取得・正規化
+├─ quarterly.py      # 四半期データ取得・正規化。保持期間`_QUARTERLY_YEARS=7`・`_ANNUAL_YEARS=8`
+│    （Layer3・normalized共通。2026-10-14に5・6から延長、[[LAYER3-RETENTION-PERIOD-1]]）
 ├─ normalizer.py     # フィールド正規化
 ├─ layer3_builder.py # Layer3（common/sec_data統合、config/sec_concept_definitions.json
 │    〈全32フィールドの候補タグ・分類定義〉に基づきcompany_facts.json生データから
@@ -1029,6 +1030,9 @@ SEC EDGAR
 │    変化なし）。詳細はBACKLOG_DONE.md
 │    [[DOCS-SECDATA-NORMALIZED-DIR-STALE-1]]参照。
 ├─ ttm_calculator.py # TTM系列計算。本番経路は calc_ttm_series()/save_ttm_series()
+│    （6点〈n_periods=6〉を作り、TANUKIのFCFの平均等に使うのは直近の`FCF_AVG_POINTS=5`点、
+│    2026-10-14 [[LAYER3-RETENTION-PERIOD-1]]。点の期末に届かない四半期は足さない、
+│    [[TTM-STALE-QUARTER-IN-WINDOW-1]]）
 │    のみ（update.pyが呼ぶ）。**フェーズC対応（2026-07-24〜）**: 入力元は
 │    旧`normalize()`の戻り値から`layer3_builder.py::build_ticker_store()`の
 │    戻り値（Layer3、インメモリ）に切替済み。フィールド抽出は
@@ -1513,6 +1517,10 @@ importし、cik_history.jsonの旧CIKのCompany Factsを統合するようにな
 │    RICE 62銘柄・FCFソース94銘柄が正常化（IVが変化した40銘柄のうち
 │    MSCI/LITE/ENTGは一次データで裏取りしFCF_Base選択ロジックの妥当な挙動と
 │    確認済み）。詳細はBACKLOG_DONE.md [[TTM-PASCALCASE-KEY-STALE-1]]参照。
+│    **追記（2026-10-14、[[LAYER3-RETENTION-PERIOD-1]]）**: `get_fcf_series()`・
+│    `get_fcf_dates()`・`get_periods()`は4四半期がそろう点のうち直近の5点
+│    （`ttm_calculator.py::FCF_AVG_POINTS`）だけを返す。以前は全点で、6点そろうと
+│    「5年平均」が6点の平均になっていた
 ├─ core_calculator.py    # DCF・理論株価
 ├─ calculator/rice.py    # RICE投資効率
 ├─ calculator/dcf.py     # DCFエンジン
