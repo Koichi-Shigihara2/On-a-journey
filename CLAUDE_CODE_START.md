@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-15 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**52件**（`^### [`の機械カウント、2026-10-15。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+**次回の確認手順（2026-10-15 夜の終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**53件**（`^### [`の機械カウント、2026-10-15 夜の終業。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
@@ -85,6 +85,9 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - `b03fa86d88`: PROJECT_STATUS.mdの次の作業を更新（1. 10-18〜10-19の確認、2. `[[LAYER3-FIRST-FILED-DATE-1]]`、3. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`、4. stage定義v2の検証の再開）
 - 新規（中）: `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（APPの`latest_period_missing`が10-15の夜間の実行で印なしで公開。CHAT_RULES.md 事例39）
 - 実データに対するupdate.pyの実行・workflow_dispatchはしていない（method_changeの日付の外で計算方法の変更が公開されるため）
+- （夜）`937d32dd60`: 銘柄別の例外の台帳の設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`（段階A・B・C、10-15の件数、集約処理・表示・影響表、BACKLOGから移す候補7件）。新規`[[TICKER-EXCEPTION-LEDGER-1]]`（高）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）。実装は10-18〜19の確認の後
+- （夜）`a0ab34ea68`: 台帳の段の位置を「Gate → 集約 → score_watcher → commit」で決定。集約が失敗しても後ろを止めない、score_watcherは台帳が無い・今日（JST）でないときは台帳の通知だけ省く、初回は新規発生を通知しない。CIX・ENTG・SPIR・XOMのRICEの「エラー」は`core_calculator.py:756`のログ用のprintがNoneを書式化した例外（`1895356e0a`以降）で、判定・理論株価には影響しない（MATRIXの分類と表示だけ）。CHAT_RULES.md 事例40
+- （夜の終業）新規`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低。daily_pick.py:304が存在しない`rice.score`を読み常にNone、選出には使われない）
 
 **2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
 - 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）

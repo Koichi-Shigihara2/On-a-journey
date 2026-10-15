@@ -19,11 +19,15 @@
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（3と並行できる）。次の新規銘柄の登録の前に必要
 5. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（3・4）の後。再検証は§7(a)〜(d)の方法で
 
-**登録済み・後回し（2026-10-15 登録、中）**:
+**登録済み・後回し（2026-10-15 登録、中・低）**:
+- `[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低。daily_pick.pyが存在しない`rice.score`を読み、Grokの入力とdaily_pick.jsonに常にnull）
 - `[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（RICEのwarningsが96銘柄すべてでTrueになり、全銘柄に⚠の注記が出る。計算の例外4銘柄〈CIX・ENTG・SPIR・XOM〉もnoteに入っている）
 - `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 
+- **2026-10-15（夜の終業のブラッシュアップ）**: 移設0件。新規`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）でアクティブBACKLOG 52件→53件。CHAT_RULES.mdに事例40（Noneにしうる変更ではログ・print・f-stringの書式化もgrepの対象）。SYSTEM_MAP.mdに台帳の設計書への参照
+- **2026-10-15（台帳の段の位置とRICEの例外）**: `a0ab34ea68`。段の位置を「Gate → 集約 → score_watcher → commit」で決定（集約の失敗時・初回の条件を追加）。RICEの4銘柄（CIX・ENTG・SPIR・XOM）の例外は判定・理論株価に影響しないことを確認し、`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`に追記
+- **2026-10-15（銘柄別の例外の台帳の設計）**: `937d32dd60`。`docs/architecture/TICKER_EXCEPTION_LEDGER.md`を新設、`[[TICKER-EXCEPTION-LEDGER-1]]`（高）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）を登録。次の作業の2番に台帳を入れた
 - **2026-10-15（終業のブラッシュアップ）**: 移設0件（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`は10-18の本番の確認まで残す）。
   新規2件（中）でアクティブBACKLOG 48件→50件（10-14 終業の記載46件は補足commitの2件を数えていなかった）。CHAT_RULES.mdに事例39（反映の時期は読み手の「読み方〈ファイル／その場で計算〉」で確かめる）。
   CLAUDE_CODE_START.mdの手順4にLayer3由来（10-15公開済み）とTTMのファイル由来（10-18）の区別を追記、BACKLOGの「0番」の表記を手順4・6に。SYSTEM_MAP.mdにrollback_failed.py・update_notify.py・FAILEDを追記

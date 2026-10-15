@@ -3260,6 +3260,22 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 ## 優先度：低（アイデア段階）
 
+### [DAILY-PICK-RICE-SCORE-MISSING-1] TANUKI SCOREの選出のGrokへの入力（daily_pick.py）が、latest.jsonのRICEに無い項目「score」を読み、常にNoneになっている
+**優先度:** 低（選出の順位・条件には使われず、Grokのプロンプトとdaily_pick.jsonの「tanuki」の欄に常にnullで入るだけ。画面には出ない）
+**分類:** データの受け渡し / `src/value/tanuki_score/daily_pick.py`
+**登録日:** 2026-10-15
+**発見:** [[RICE-WARNINGS-ALWAYS-TRUE-1]]の読み取り調査（2026-10-15）
+
+#### 内容（観測した事実）
+- `daily_pick.py:272`で`rice_raw = tk.get("rice")`、304行で`"rice_score": rice_raw.get("score")`。latest.jsonの`rice`の項目は`available`・`q`・`cf_conversion`・`bear`・`base`・`bull`・`note`等で、`score`は無い（`calculator/rice.py:99-` の`to_dict()`）
+- `build_data_package()`は、選出（`select_ticker()`、118行）の後に、選ばれた1銘柄についてだけ呼ばれる（382行・526行）。値はGrokのプロンプトと`docs/integrated-dashboard/daily_pick.json`の`tanuki.rice_score`に入る（10-15のDDOGでもnull）
+- `docs/`のHTML・JSで`rice_score`を読むものは0件（`grep -rn rice_score --include=*.html --include=*.js docs`）
+
+#### 直し方の候補（未決定）
+- `rice.base.rice`（と`available`・`note`）を渡すか、項目ごと削除する
+
+---
+
 ### [DOC-BROKEN-REFS-1] BACKLOG.md等の二重角かっこ（`[[` `]]`）の参照のうち30件が、BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdのどの見出しにも無い（壊れた参照）
 **優先度:** 低（読む人が項目をたどれないだけで、システムの動作には影響しない）
 **分類:** 文書 / BACKLOG.md・BACKLOG_DONE.md・CLAUDE_CODE_START.md・CHAT_RULES.md・SYSTEM_MAP.md・PROJECT_STATUS.md

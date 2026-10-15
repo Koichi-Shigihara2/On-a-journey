@@ -389,6 +389,8 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 `docs/architecture/UPDATE_SCHEDULE.md` を参照**（一覧は`.github/workflows/*.yml`から`scripts/gen_update_schedule.py`が生成し、
 ずれるとCHECK-58のWARN）。
 
+**銘柄別の例外の台帳（設計のみ、2026-10-15）**: `docs/architecture/TICKER_EXCEPTION_LEDGER.md`（`[[TICKER-EXCEPTION-LEDGER-1]]`）。TANUKI_VALUATION_Update.ymlに「Gate → 台帳の集約 → score_watcher → commit」の段を足す予定（未実装）。
+
 `config/workflow_dependencies.json`は`docs/value-monitor/admin.html`の一括更新（実行順序・表示名・tickersの渡し方）が読む。
 `depends_on`・`outputs`は同スクリプトがYAMLから生成する。`label`・`yml`・`accepts_tickers`・`input_param`・
 `bulk_update_*`・`new_ticker_order`は手作業の定義（ワークフローを新設したらここに追記する）。
