@@ -22,6 +22,13 @@
 - `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 
+- **2026-10-15（終業のブラッシュアップ）**: 移設0件（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`は10-18の本番の確認まで残す）。
+  新規2件（中）でアクティブBACKLOG 48件→50件（10-14 終業の記載46件は補足commitの2件を数えていなかった）。CHAT_RULES.mdに事例39（反映の時期は読み手の「読み方〈ファイル／その場で計算〉」で確かめる）。
+  CLAUDE_CODE_START.mdの手順4にLayer3由来（10-15公開済み）とTTMのファイル由来（10-18）の区別を追記、BACKLOGの「0番」の表記を手順4・6に。SYSTEM_MAP.mdにrollback_failed.py・update_notify.py・FAILEDを追記
+- **2026-10-15（PROJECT_STATUSの次の作業）**: `b03fa86d88`。10-18〜10-19の確認を先頭に、「登録済み・後回し」の欄を新設
+- **2026-10-15（SEC_Data_Updateの1銘柄の失敗）**: `d193ee798a`で`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`を実装。銘柄単位で失敗扱いにして続行し、失敗した銘柄は巻き戻す（`rollback_failed.py`）。
+  失敗が対象の10%超かループの外の例外だけ終了コード1。`_freshness.json`の`FAILED`（CHECK-60・System Health [M]）、Discordの通知（`update_notify.py`）、SEC_Data_Auditの前段失敗の表示。
+  テスト30件、pytest 2380件・audit.py exit 0・report_consistency_check.py NG=0。新規（中）`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`
 - **2026-10-14（終業のブラッシュアップ）**: 完了6件（`[[LAYER3-STALE-LATEST-VALUE-1]]`・`[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]`・`[[LAYER3-LATEST-FILING-TAG-DROP-1]]`・`[[FCX-CAPEX-2026Q2-MISSING-1]]`・
   `[[TTM-STALE-QUARTER-IN-WINDOW-1]]`・`[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]`）をBACKLOG_DONE.mdへ。`[[LAYER3-RETENTION-PERIOD-1]]`は10-18の連鎖の確認まで高に残す。
   中の13件に着手条件を追記。SYSTEM_MAP・FIELD_DEFINITIONS・CONCEPT_PARAMETER_VARIATIONS（概念13: 財務データの鮮度）に今日の実装を反映。CLAUDE_CODE_START.mdの次回の確認手順を日時・期限・手順の形に並べ直した

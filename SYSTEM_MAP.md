@@ -896,6 +896,15 @@ SCOREが`BUY`と判定されているが、**これは測定されたモート�
 【SECデータ取得層】
 SEC EDGAR
 └─ common/sec_data/update.py
+│    **追記（SEC-UPDATE-EXIT1-BLOCKS-ALL-1 2026-10-15）**: 銘柄ごとの処理（取得からTTMまで、`process_ticker()`）を
+│    銘柄単位で失敗扱いにして次の銘柄へ進む（段階 fetch・parse・raw・normalize・ttm と理由）。失敗の一覧は
+│    `$RUNNER_TEMP/sec_update_result.json`（リポジトリの外、commitしない）、`_freshness.json`では status `FAILED`
+│    （`freshness.py`。読み手はCHECK-60・System Health [M]）。終了コードは失敗が対象の10%超かループの外の例外のときだけ1。
+│    SEC_Data_Update.ymlの後続の段:
+│    ├─ rollback_failed.py  # 失敗した銘柄の`data/{T}/`・`normalized/{T}_quarterly_normalized.json`・
+│    │    `ttm/{T}_ttm_series.json`をHEADに戻す（新規の銘柄の作りかけはgit clean）。Gateの前
+│    └─ update_notify.py    # 最後の段（if: always()）。結果・止まった段・失敗した銘柄をDiscordへ（audit.post_discord）
+│    SEC_Data_Audit.yml（audit.py）は前段がsuccess以外なら本文の先頭に「⚠ SEC更新が失敗：前回のデータを監査」
 ├─ fetcher.py  # SECFetcher::fetch_company_facts()/fetch_submissions()。SEC EDGAR
 │    Company Facts/Submissions APIへの生取得（update.py Step1が最初に呼ぶ）。
 │    **追記（CIK-DISCONTINUITY-OLDEST-YEAR-GAP-1 2026-07-20新設）**: 企業再編で

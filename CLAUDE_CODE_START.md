@@ -26,7 +26,7 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-14 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+**次回の確認手順（2026-10-15 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
 BACKLOG.mdのアクティブは**50件**（`^### [`の機械カウント、2026-10-15。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
@@ -52,6 +52,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 6銘柄の判定・timingが試算どおり: BSY WATCH→HOLD（timing 35→25・象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM、DDOG timing 55→40、NOW timing 65→50
      - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
      - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
+     - APPなどLayer3由来の変化（`latest_period_missing`の注記等）は、TANUKI・HypeCore・Stonks SiloがLayer3をcompany_facts.jsonからその場で作るため2026-10-15 05:43 JSTの夜間の実行（`d69e6e2ed8`）で公開済み。score_watcherの「🛠 計算方法の変更による変化」の欄に出ないのは正常（`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`、CHAT_RULES.md 事例39）
+     - FCXなどTTMのファイル（`common/sec_data/ttm/`、SEC_Data_Updateだけが作り直す）由来の変化は、10-18の連鎖で出る（「🛠」の欄に入る）
      - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
      - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は2026-10-15に実装済み。update.pyが止まるのは失敗が対象の10%超か、銘柄のループの外の例外のときだけ。Gateの1銘柄のNGではまだ止まる〈`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`〉。止まっていたら原因を確かめて手動で再実行する）
      - SEC_Data_UpdateのDiscordの通知（「✅／⚠／❌ SEC Data Update」）が届いている。❌なら「止まった段」を見る
@@ -74,6 +76,15 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: 次のFOMC（10月下旬。日付はFRBの予定表で確かめる）の声明の前
    - 確認の手順: 対応するか担当を決める（チャット側の判断）
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-15 SEC_Data_Updateの1銘柄の失敗で全体を止めない（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、10-18の本番で確認するまでBACKLOG.mdに残す）**
+- 読み取り調査: parserの例外は`failed`に入らずその場で全体が止まる（10-11はXOMで93/98銘柄目、後ろの5銘柄は未処理）、Raw・normalize・TTMの例外は成功扱いで古いnormalized・TTMと混在したままcommitされる、
+  SEC_Data_AuditはSECの失敗の日も前回のデータを監査して送る、月曜の安全網はSECを再実行しない、を確認（BACKLOGの内容を訂正）
+- `d193ee798a`: 銘柄単位で失敗扱いにして続行（段階と理由）、失敗した銘柄は`rollback_failed.py`でHEADに戻す、失敗が対象の10%超かループの外の例外だけ終了コード1、
+  `_freshness.json`の`FAILED`（CHECK-60・System Health [M]が扱う）、Discordの通知（`update_notify.py`、if: always()）、SEC_Data_Auditの前段失敗の表示。テスト30件、pytest 2380件
+- `b03fa86d88`: PROJECT_STATUS.mdの次の作業を更新（1. 10-18〜10-19の確認、2. `[[LAYER3-FIRST-FILED-DATE-1]]`、3. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`、4. stage定義v2の検証の再開）
+- 新規（中）: `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（APPの`latest_period_missing`が10-15の夜間の実行で印なしで公開。CHAT_RULES.md 事例39）
+- 実データに対するupdate.pyの実行・workflow_dispatchはしていない（method_changeの日付の外で計算方法の変更が公開されるため）
 
 **2026-10-11 EPS ANALYZERの可用性（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[EPS-SUMMARY-GHOST-ROWS-1]]`・`[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]`・`[[EPS-INDEX-MINOR-1]]`、確認待ちでBACKLOG.mdに残す）**
 - 登録`36f7e4298b`（5件。前提に無かった`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`〈Grokのタイムアウト・429でai_analysisがError、10-04は7件・09-27は23件、低〉を含む）→コード`ea5a58608b`→データ`646a4c20fa`（AMDttm.jsonの削除）

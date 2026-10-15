@@ -2143,7 +2143,7 @@ Step Summaryの表示は引き続き未確認
 ---
 
 ### [LAYER3-RETENTION-PERIOD-1] Layer3の保持期間が四半期5年・年次6年で、財務の自社比較・長い期間の検証に足りず、TTMの6点も満たせていない
-**状態（2026-10-14 終業）:** 実装・push済み（b6c1e86def・65ace9d86e・5f2a56d099、印は5cdcbafc20）。2026-10-18のSEC_Data_Updateからの連鎖の後の確認（`CLAUDE_CODE_START.md`「次回の確認手順」0番）が済んだら、関係する完了済みの6件と合わせてBACKLOG_DONE.mdへ移す
+**状態（2026-10-14 終業）:** 実装・push済み（b6c1e86def・65ace9d86e・5f2a56d099、印は5cdcbafc20）。2026-10-18のSEC_Data_Updateからの連鎖の後の確認（`CLAUDE_CODE_START.md`「次回の確認手順」4〈日曜の連鎖〉・6〈月曜の安全網〉。2026-10-15に「0番」の表記を直した）が済んだら、関係する完了済みの6件と合わせてBACKLOG_DONE.mdへ移す
 **優先度:** 高（2026-10-14に中→高。今公開しているTANUKI VALUATIONの理論株価が、設計より少ない点数〈多くの銘柄で6点中4点〉で計算されているため。バグ0の原則）
 **分類:** 一次データ / common/sec_data（`quarterly.py`の`_QUARTERLY_YEARS`・`_ANNUAL_YEARS`、Layer3・normalized共通）
 **登録日:** 2026-10-14
