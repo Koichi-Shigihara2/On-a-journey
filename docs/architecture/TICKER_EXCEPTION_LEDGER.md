@@ -30,7 +30,7 @@
 | `fcf_estimation_fallback` | TANUKI latest.json `fcf_estimation.fallback_reason` が空でない | 2 | LOAR・VZ |
 | `sector_guard` | TANUKI latest.json `bs_adjustment.sector_guard != "none"`（短期借入金を除く） | 3 | MSCI・SOFI・V |
 | `dupont_excluded` | TANUKI latest.json `dupont.excluded` | 9 | ABBV・BKNG・DELL・FICO・MO・MSCI・PM・QBTS・RBRK |
-| `rice_error` | TANUKI latest.json `rice.available == false` かつ note が「エラー:」で始まる（計算の例外） | 4 | CIX・ENTG・SPIR・XOM |
+| `rice_error` | TANUKI latest.json `rice.available == false` かつ note が「エラー:」で始まる（計算の例外） | 4 | CIX・ENTG・SPIR・XOM（原因は `core_calculator.py:756` の表示用の print。判定・理論株価には効かず、MATRIX の分類と RICE の表示に効く。`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`） |
 | `undetermined` | TANUKI latest.json `tanuki_score == "UNDETERMINED"` | 0 | — |
 | `sec_lag` | `_freshness.json` の SEC_LAG（提出はあるが companyfacts に無い＝TTM が古い） | 4 | CDNS・KO・RMBS・V |
 | `sec_fetch_failed` | `_freshness.json` の FETCH_FAILED | 0 | — |
@@ -128,9 +128,11 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 - **stock.html（TANUKI VALUATION の個別ページ）**: その銘柄の A の open の行をバッジで出す（kind の日本語名と note のツールチップ）。B は出さない（今は既存の欄がそれぞれ注記を出している）。
 - **admin.html**: タブ「⚠ 銘柄別の例外」を足す。A・B の一覧（絞り込み: level・kind・status）と C の件数の表。
 - **score_watcher**: 台帳で **A の open が新しく出た行（first_seen が今回）だけ**を Discord に通知する。B・C と解消は通知しない。既存の判定変化の通知とは別の欄にする。
-- **実行の位置**: TANUKI_VALUATION_Update.yml の最後の処理の群。
-  - 要判断: score_watcher（台帳を読んで通知する）と commit（台帳を含める）より前に置く必要がある。このため、具体的な順序は「Gate → **台帳の集約** → score_watcher → commit」とする。「最後」は、TANUKI 本体と Gate の後という意味で扱う。
-  - 集約の段は `continue-on-error: true`。失敗してもワークフローの成否を変えない。失敗した回は前回の台帳がそのまま残り、score_watcher は台帳の通知をしない。
+  - 台帳が無い、または台帳の `generated_at` が今日（JST）でない場合は、**台帳を使った通知だけを省き**、判定変化などほかの通知は今までどおり送る（集約の段が失敗した回に、前回の台帳で通知しない）。
+  - 前回の台帳が無い初回の実行（first_seen の引き継ぎ元が無い）では、全行が「新しく出た行」になるため、**新規発生の通知を出さない**。集約の処理は台帳に `initial_run: true` を書き、score_watcher はそれを見て省く。
+- **実行の位置（2026-10-15 決定）**: TANUKI_VALUATION_Update.yml の「**Gate → 台帳の集約 → score_watcher → commit**」。
+  - score_watcher（台帳を読んで通知する）と commit（台帳を含める）より前に置く必要があるため。
+  - 集約の段は `continue-on-error: true`。**失敗しても後ろの段（score_watcher・commit）を止めず**、ワークフローの成否も変えない。失敗した回は前回の台帳がそのまま残る（score_watcher は上の条件で台帳の通知だけを省く）。
 
 ## 6. 影響表
 
@@ -140,7 +142,7 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 |---|---|---|---|---|
 | 集約の処理（新設） | 3.2 の各ファイル | ファイル | 無い | 新設 |
 | TANUKI_VALUATION_Update.yml | — | — | Gate → score_watcher → commit | 集約の段を Gate の後・score_watcher の前に足す（continue-on-error）。commit の `git add` は既存のフォルダに含まれるので変更不要 |
-| score_watcher.py | latest.json・poc.json | ファイル | 判定・乖離率・ファンダ・stage の変化を通知 | 台帳の A の新規を読んで別の欄で通知する |
+| score_watcher.py | latest.json・poc.json | ファイル | 判定・乖離率・ファンダ・stage の変化を通知 | 台帳の A の新規を読んで別の欄で通知する。台帳が無い・`generated_at` が今日（JST）でない・初回（`initial_run`）なら台帳の通知だけ省く |
 | stock.html | latest.json | ファイル | A の各欄は一部だけ表示（latest_period_missing・fcf_outlier 等。cash_missing・sti_quarterly_missing・segment_xbrl_status・method_change は表示 0 件） | 台帳を読んで A のバッジ |
 | admin.html | 各設定 | ファイル | タブ 6 つ（銘柄管理・銘柄設定・β・FCF 転換率・RPO・実行） | タブを 1 つ足す |
 | TANUKI pipeline.py | latest.json を書く | その場 | — | 不要（書き手は変えない） |

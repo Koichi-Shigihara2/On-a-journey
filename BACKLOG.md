@@ -1889,8 +1889,10 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 移す候補のBACKLOG 7件: [[SEC-COMPANYFACTS-API-LAG-1]]・[[SBC-TAG-STOCKOPTIONPLAN-1]]・[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]・[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]・
   [[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]・[[LAYER3-CUSTOM-TAG-MIGRATION-1]]・[[STONKS-TANUKI-BADGE-404-1]]
 
-#### 要判断
-- 実行の位置: 依頼は「TANUKI_VALUATION_Update.ymlの最後」だが、score_watcherが台帳を読んで通知し、commitに台帳を含めるため、設計書では「Gate → 台帳の集約 → score_watcher → commit」とした
+#### 決定（2026-10-15）
+- 実行の位置: 「Gate → 台帳の集約 → score_watcher → commit」で決定（score_watcherが台帳を読んで通知し、commitに台帳を含めるため）
+- 集約の段は失敗しても後ろの段を止めない（continue-on-error）。score_watcherは、台帳が無い、または`generated_at`が今日（JST）でない場合、台帳を使った通知だけを省き、ほかの通知は今までどおり送る。
+  前回の台帳が無い初回の実行では、新規発生の通知を出さない（設計書の5章）
 
 ---
 
@@ -2359,7 +2361,22 @@ Step Summaryの表示は引き続き未確認
 - `stock.html:872`で`rice.warnings`を読み、`stock.html:1436`で全銘柄に「⚠️ {note}」の黄色の枠を出している
 - noteの内訳（多い順）: 「Q計算不可（OCF/純利益データなし）」16、セクター除外（Consumer Defensive 7・Consumer Cyclical 6・Financial Services 3・Utilities 2）、
   「エラー: unsupported format string passed to NoneType.__format__」4（CIX・ENTG・SPIR・XOM。`core_calculator.py:760-765`がRICEの計算の例外をnoteに入れたもの。available=false）
-- 計算の例外の4銘柄は、[[TICKER-EXCEPTION-LEDGER-1]]の段階A（rice_error）に入る。例外そのものの原因は未調査
+- 計算の例外の4銘柄は、[[TICKER-EXCEPTION-LEDGER-1]]の段階A（rice_error）に入る
+
+#### 追記（2026-10-15、読み取りのみ）: 計算の例外の原因と影響
+- 例外の場所は`core_calculator.py:756`の表示用のprint（`base={_base_rice:.1f}`）。`calculate_rice()`自体は成功している。
+  4銘柄はCF変換率がマイナス（09-19の履歴でCIX -0.613・ENTG -0.183・SPIR -0.070・XOM -1.222）で、`1895356e0a`（2026-09-19、[[RICE-ADJ-ASYMMETRIC-ZERO-1]]）から`base.rice`がNone（測定不能）になった。
+  753行の`_base_rice = rice_result.base.rice`がNoneのまま`:.1f`で書式化され、TypeErrorになる。exceptが成功した結果を捨てて`available=False`・note「エラー: …」の結果に置き換える
+  （4銘柄とも最初の「エラー」は2026-09-21 18時台の履歴。それより前の09-19の履歴はavailable=true）
+- 読み手が受け取るもの: `rice.available=false`・`base/bear/bull`なし（欄なし）・noteがエラー文
+  - 判定（tanuki_score・funda_score・timing）: RICEを読まない（pipeline.pyの判定は600〜1190行で、RICEの参照なし）。**影響なし**
+  - 理論株価: RICEはSTEP 13で理論株価の計算の後に作られ、理論株価に入らない。**影響なし**
+  - MATRIX（`pipeline.py:1343-1450`の`_compute_matrix_position()`、判定の後に作る表示用）: 本来は「①投資効率系・RICE = N/A（理由）」のところ、available=falseのため「④キャッシュ創出力系」に入っている（今: CIX・ENTG・XOM 左下「割高×低FCF」、SPIR 右下「割安×低FCF」）。report.txtの象限・stock.htmlの表示に効く
+  - stock.html: 872・1436行で「⚠️ エラー: unsupported format…」を表示。TANUKI SCOREの画面（`tanuki_score/index.html:505-507`）はRICEを「計算不可」として扱う
+  - `common/screening/dcf_validity_checker.py:301-310`: base.riceがNoneなので「RICE計算不可」（例外が無くてもbase.riceはNoneなので結果は同じ）
+  - CHECK-13（`report_consistency_check.py:2853-2862`）: available=falseなので対象外
+- 判定・理論株価に影響しないため、RICE-NONE-FORMAT-EXCEPTION-1としては切り出さない（2026-10-15の指示の条件）。直すときは753〜756行で`_base_rice`のNoneを書式化しないようにする
+- 参考（範囲外）: `src/value/tanuki_score/daily_pick.py:304`が`rice_raw.get("score")`を読むが、latest.jsonの`rice`に`score`の欄は無く、全銘柄で常にNone
 
 #### 直し方の候補（未決定）
 - noteを「警告」と「情報」に分け、warningsは警告があるときだけTrueにする
