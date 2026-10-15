@@ -861,6 +861,8 @@ def check_l_macro_data() -> tuple[str, bool, str]:
 # 🔴（CRITICAL）: _freshness.jsonが無い・generated_at（全銘柄の実行の時刻）が古い・
 #   FETCH_FAILEDが全銘柄の一定割合以上・SEC_LAGが提出日から一定日数を超えた銘柄がある
 # ⚠️ : FETCH_FAILEDがある（割合は閾値未満）・SEC_LAGがCHECK-60の日数を超えている
+# FAILED（取得からTTMまでのどこかで失敗し、出力を前回の状態に戻した銘柄。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]、2026-10-15）:
+#   全銘柄のfreshness.FAILED_EXIT_RATIOを超えたら🔴、それ以下でも1件あれば⚠️（update.pyの終了コードと同じ境目）
 def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
              ack_path: Optional[str] = None) -> dict:
     """ack_path: 確認済みの台帳（既定はconfig/warn_acknowledged.json）。WARN-60で銘柄＋accnを
@@ -905,6 +907,15 @@ def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
         else:
             warn_parts.append(msg)
 
+    failed_t = sorted(t for t, e in tickers.items() if e.get("status") == fr.FAILED)
+    if failed_t:
+        msg = "FAILED {}/{}件（前回の状態のまま）: {}".format(
+            len(failed_t), n, ", ".join(f"{t}({tickers[t].get('failed_stage') or '?'})" for t in failed_t))
+        if n and len(failed_t) / n > fr.FAILED_EXIT_RATIO:
+            critical_parts.append(msg)
+        else:
+            warn_parts.append(msg)
+
     acked = fr.acknowledged_accns(ack_path)
     lag_crit, lag_warn, lag_ok, lag_acked = [], [], [], []
     for t, e in sorted(tickers.items()):
@@ -932,7 +943,7 @@ def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
     ok = not (critical_parts or warn_parts)
     icon = "🔴" if critical else ("⚠️ " if warn_parts else "✅")
     parts = [f"{n}銘柄（REFRESHED {counts[fr.REFRESHED]}・SEC_LAG {counts[fr.SEC_LAG]}・"
-             f"FETCH_FAILED {counts[fr.FETCH_FAILED]}）"] + critical_parts + warn_parts
+             f"FETCH_FAILED {counts[fr.FETCH_FAILED]}・FAILED {counts[fr.FAILED]}）"] + critical_parts + warn_parts
     if lag_ok:
         parts.append(f"SEC_LAG {fr.SEC_LAG_WARN_DAYS}日以内: {', '.join(lag_ok)}")
     if lag_acked:

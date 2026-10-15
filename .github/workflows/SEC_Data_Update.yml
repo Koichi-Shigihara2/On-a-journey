@@ -29,11 +29,16 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
+        id: install
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 1銘柄の失敗では止まらない（[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]、2026-10-15）。失敗した銘柄は
+      # $RUNNER_TEMP/sec_update_result.jsonに段階と理由つきで書き、_freshness.jsonにはFAILEDとして残す。
+      # 終了コード1になるのは、失敗が対象の10%を超えたときと、銘柄のループの外で例外が出たときだけ
       - name: Run SEC Data Update
+        id: update
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
@@ -42,7 +47,14 @@ jobs:
             python common/sec_data/update.py
           fi
 
+      # 失敗した銘柄の出力（common/sec_data/data/{T}/・normalized・ttm）を前回の状態（HEAD）に戻す。
+      # 既存の銘柄はgit checkout HEAD --、新規の銘柄の作りかけはgit cleanで消す（rollback_failed.py）
+      - name: Roll back failed tickers
+        id: rollback
+        run: python common/sec_data/rollback_failed.py
+
       - name: Consistency Check Gate
+        id: gate
         # --include-yfinance-checks: CHECK-35/41のyfinance突合（operating_
         # income/revenue/net_income）を実行する。SECデータ更新は本ワーク
         # フロー（週1回、日曜）でのみ発生するため、yfinance突合も同じ頻度に
@@ -56,6 +68,7 @@ jobs:
           fi
 
       - name: Sync normalized data to docs/ (stock.html public copy)
+        id: sync
         # [[DOCS-SECDATA-NORMALIZED-DIR-STALE-1]]対応: common/sec_data/normalized/
         # （正規化ストアの唯一の正）を、GitHub Pages公開用コピー
         # docs/common/sec_data/normalized/ へ毎回同期する。stock.htmlが
@@ -66,6 +79,7 @@ jobs:
           rsync -a --delete common/sec_data/normalized/ docs/common/sec_data/normalized/
 
       - name: Commit and push changes
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -95,3 +109,18 @@ jobs:
               echo "| $ticker | ${annual_count} files | ${ttm_count} files |" >> $GITHUB_STEP_SUMMARY
             fi
           done
+
+      # 結果・止まった段・失敗した銘柄と理由をDiscordへ送る（どの段で止まっても送る）。
+      # webhookは他のワークフロー（SEC_Data_Audit.yml等）と同じDISCORD_WEB_HOOK
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
+          OUTCOME_INSTALL: ${{ steps.install.outcome }}
+          OUTCOME_UPDATE: ${{ steps.update.outcome }}
+          OUTCOME_ROLLBACK: ${{ steps.rollback.outcome }}
+          OUTCOME_GATE: ${{ steps.gate.outcome }}
+          OUTCOME_SYNC: ${{ steps.sync.outcome }}
+          OUTCOME_COMMIT: ${{ steps.commit.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 common/sec_data/update_notify.py

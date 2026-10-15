@@ -1709,6 +1709,7 @@ def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = Non
     1つの銘柄の問題でゲート（--fail-on-ng）全体を止めないため、NGにはしない
     （2026-08に全銘柄の反映が止まったのを繰り返さないため）。
     - FETCH_FAILED の銘柄
+    - FAILED の銘柄（取得からTTMまでのどこかで失敗し、出力を前回の状態に戻した。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]）
     - SEC_LAG が提出日から freshness.SEC_LAG_WARN_DAYS 日を超えている銘柄
     - _freshness.json が無い
     SEC_LAGはaccnごとに1行。SEC側の既知の未反映は、warn_acknowledged.jsonに
@@ -1728,6 +1729,10 @@ def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = Non
             out.append((ticker, f"  [WARN-60 SECデータの鮮度] {ticker}: FETCH_FAILED（{e.get('note') or '取得失敗'}、"
                                 f"確認 {e.get('checked_at')}）→ 手元のcompany_facts.json（最大filed "
                                 f"{e.get('local_latest_filed')}）のまま"))
+        elif status == _fr.FAILED:
+            out.append((ticker, f"  [WARN-60 SECデータの鮮度] {ticker}: FAILED（{e.get('failed_stage') or '?'}: "
+                                f"{e.get('failed_reason') or e.get('note') or '失敗'}、確認 {e.get('checked_at')}）"
+                                f" → この銘柄の出力は前回の状態のまま"))
         elif status == _fr.SEC_LAG:
             # accnごとに1行で出す（warn_acknowledged.jsonのmatchにaccnを書いて、その提出だけを
             # 確認済みにできるように。同じ銘柄の別の提出は未確認のまま残る）

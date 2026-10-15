@@ -23,13 +23,17 @@ OK_NO_NEW = "OK_NO_NEW"          # 新しい提出なし（手元のcompany_fact
 REFRESHED = "REFRESHED"          # 取り直して反映（company_facts.jsonが無かった銘柄の初回取得を含む）
 SEC_LAG = "SEC_LAG"              # 提出はあるが、取り直してもcompanyfactsに入っていない（SEC側の未反映）
 FETCH_FAILED = "FETCH_FAILED"    # submissionsかcompany_factsの取得に失敗（手元のファイルで続行）
-STATUSES = (OK_NO_NEW, REFRESHED, SEC_LAG, FETCH_FAILED)
+FAILED = "FAILED"                # 取得からTTMまでのどこかで失敗し、この銘柄の出力を前回の状態に戻した
+                                 # （failed_stage・failed_reason・fetch_statusを持つ。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]）
+STATUSES = (OK_NO_NEW, REFRESHED, SEC_LAG, FETCH_FAILED, FAILED)
 
 # 閾値（CHECK-60とSystem Health [M]が共有する。変えるときはここだけ）
 SEC_LAG_WARN_DAYS = 14                 # CHECK-60: SEC_LAGが提出日からこの日数を超えたらWARN
 SEC_LAG_CRITICAL_DAYS = 30             # [M]: SEC_LAGが提出日からこの日数を超えた銘柄があればCRITICAL
 FRESHNESS_MAX_AGE_DAYS = 8             # [M]: generated_at（全銘柄の実行の時刻）がこの日数より古ければCRITICAL
 FETCH_FAILED_CRITICAL_RATIO = 0.10     # [M]: FETCH_FAILEDが全銘柄のこの割合以上ならCRITICAL
+FAILED_EXIT_RATIO = 0.10               # update.py: FAILEDが対象のこの割合を超えたら終了コード1（commitしない）。
+                                       # [M]: FAILEDがこの割合を超えたらCRITICAL、以下でも1件あれば⚠️
 
 
 def default_path(data_dir: Optional[str] = None) -> str:
@@ -184,7 +188,7 @@ def step_summary_markdown(doc: dict) -> str:
     lines = ["", "## SECデータの鮮度（submissionsで新しい提出を検知）", "",
              "| 分類 | 件数 |", "|:---|---:|"]
     lines += [f"| {s} | {counts.get(s, 0)} |" for s in STATUSES]
-    for s in (REFRESHED, SEC_LAG, FETCH_FAILED):
+    for s in (REFRESHED, SEC_LAG, FETCH_FAILED, FAILED):
         rows = [(t, e) for t, e in (doc.get("tickers") or {}).items() if e.get("status") == s]
         if not rows:
             continue

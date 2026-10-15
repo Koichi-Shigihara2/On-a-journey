@@ -45,6 +45,9 @@ jobs:
       - name: Run SEC Data Quality Audit
         env:
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
+          # 前段（SEC Data Update）の結果。success以外なら本文の先頭に「⚠ SEC更新が失敗：前回のデータを監査」
+          # （audit.py。手動実行では空）
+          SEC_UPDATE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')

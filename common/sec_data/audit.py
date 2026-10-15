@@ -237,6 +237,20 @@ def build_discord_message(
     return "\n".join(lines)
 
 
+UPSTREAM_FAILED_PREFIX = "⚠ SEC更新が失敗：前回のデータを監査"
+
+
+def upstream_failed_prefix(conclusion=None) -> str:
+    """前段（SEC Data Update）がsuccess以外で終わったときの本文の先頭の行（無ければ空）。
+    SEC_Data_Audit.ymlはworkflow_runのconclusionを見ずに動くため、SECの更新が止まった日も
+    前回のデータを監査して送る。それを本文で分かるようにする（[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]、2026-10-15）。
+    conclusionの既定は環境変数SEC_UPDATE_CONCLUSION（手動実行・手元の実行では空＝何も付けない）。"""
+    c = os.environ.get("SEC_UPDATE_CONCLUSION", "") if conclusion is None else conclusion
+    if not c or c == "success":
+        return ""
+    return f"{UPSTREAM_FAILED_PREFIX}（SEC Data Update: {c}）"
+
+
 def post_discord(message: str) -> bool:
     webhook = os.environ.get("DISCORD_WEB_HOOK", "")
     if not webhook:
@@ -406,6 +420,12 @@ def main():
         beta_lines.append("\n```\npython src/value/tanuki_valuation/beta_fetcher.py\n```")
         message = message + "\n" + "\n".join(beta_lines) if message else "\n".join(beta_lines)
 
+    # 前段（SEC Data Update）が失敗した日は、本文の先頭に前回のデータの監査であることを出す
+    prefix = upstream_failed_prefix()
+    if prefix:
+        print(f"\n{prefix}")
+        message = f"**{prefix}**\n{message}"
+
     # GitHub Actionsの外（ローカルでゲートとして実行したとき）は通知しない。
     # GITHUB_ACTIONSはGitHubのランナーが全ジョブで"true"に設定する（SEC_Data_Audit.ymlの本番実行は常に送信される）。
     # post_discord()自体はsystem_health.pyも使うため変えず、ここだけで判定する
@@ -419,6 +439,8 @@ def main():
     if summary_path:
         with open(summary_path, "a", encoding="utf-8") as f:
             f.write("## SECデータ品質監査\n\n")
+            if prefix:
+                f.write(f"**{prefix}**\n\n")
             status = "🔴 重大問題あり" if critical else ("🟡 警告あり" if warning else "🟢 問題なし")
             f.write(f"**{status}** — 対象: {len(tickers)}銘柄  正常: {ok_count}  警告: {len(warning)}  重大: {len(critical)}\n\n")
             if critical:

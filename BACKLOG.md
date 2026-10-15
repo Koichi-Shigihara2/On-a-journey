@@ -2094,14 +2094,20 @@ Step Summaryの表示は引き続き未確認
 ---
 
 ### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
-**状態（2026-10-14 終業）:** 2026-10-15に、チャット側が影響表付きで直し方の案を作る。日曜（10-18）の反映（[[LAYER3-RETENTION-PERIOD-1]]の公開データの作り直し）より前に判断する
+**状態（2026-10-15）:** 実装済み・10-18の本番で確認（CLAUDE_CODE_START.md「次回の確認手順」4。Discordの通知が届く・失敗した銘柄があれば巻き戻され、他の銘柄はcommitされている）。確かめたら移設する
 **優先度:** 高（2026-10-12、低から変更。2026-10-11に実害: XOMの1銘柄の例外で日曜の連鎖がすべてskippedになった。直し方は次の指示書で扱う）
 **分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
 **登録日:** 2026-10-10
 **発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
 
 #### 内容（観測した事実）
-- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`の失敗
+- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`が`None`を返した場合（company_facts.jsonが無い・読めない）
+- **訂正（2026-10-15）**: `parser.parse_and_save()`の例外（凍結の検査のRuntimeError 3種〈parser.py:4029・4036・4058〉や想定外の例外）は`failed`に入らない。
+  update.pyに銘柄ごとのtryが無く、例外は`main()`の外まで伝わって**その場で全体が止まる**。後ろの銘柄は処理されず、`_freshness.json`と最後のStep Summaryも書かれない
+  （2026-10-11はXOMが93/98銘柄目で、RMBS・ENTG・TER・KLAC・LRCXの5銘柄が未処理。Step Summaryには見出しの無いRevenueの行だけが残った）
+- **訂正（2026-10-15）**: Raw Table・normalize・TTMの例外（update.py:192-205・256-257）は`[WARN]`をログに出すだけで成功として数え、
+  その銘柄は「新しいcompany_facts.json・annual」と「古いnormalized・TTM」が混在した状態のままcommitされる（Step Summaryにも出ない）。
+  直近4回の実行（10-12・10-11・10-04・09-27）のログでは、この3段の`[WARN]`は0件（`[WARN]`はRevenue品質チェックの`division by zero`〈ASTS・JOBY、毎回〉だけで、出力は書かない検査）
 - SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
 - [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
   残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
@@ -2114,6 +2120,25 @@ Step Summaryの表示は引き続き未確認
 #### 追記（2026-10-12）: 実害が出た
 2026-10-11のSEC_Data_Update（run `38157028361`）が、XOMの`parser.parse_and_save()`のRuntimeError（凍結の検査、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）でexit 1になり、
 93銘柄分の取り直しの結果もcommitされず、日曜の連鎖（Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてskippedになった。優先度（低）の見直しが必要
+（2026-10-15に補足: 処理済みの93銘柄の内訳はOK_NO_NEW 89・SEC_LAG 3・REFRESHED 1〈XOM〉で、commitされなかった新しいデータは実質XOMだけ）
+
+#### 実装（2026-10-15）
+- `update.py`: 銘柄ごとの処理（取得からTTMまで、`process_ticker()`）を銘柄単位のtryで囲む。例外・`None`の戻り値・Raw・normalize・TTMの例外は、
+  すべて段階（fetch・parse・raw・normalize・ttm）と理由つきでfailedに入れ、次の銘柄へ進む。Revenue品質・タグ競合の検査の例外は従来どおり`[WARN]`だけ（出力を書かないため）
+- 失敗の一覧を`$RUNNER_TEMP/sec_update_result.json`（手元は一時ディレクトリ。環境変数`SEC_UPDATE_RESULT`で指定可）に書く。リポジトリの外なのでcommitされない
+- `_freshness.json`・失敗の一覧・Step Summaryは`finally`で必ず書く。失敗した銘柄はstatus `FAILED`（`failed_stage`・`failed_reason`・`fetch_status`、
+  手元の最大filed・未反映の提出は取り直す前の値）。ループの外の例外で途中までの実行は`generated_at`を進めない。
+  Step Summaryは先頭に失敗した銘柄の表、次にRevenue品質（見出しを行より先に書く。[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]も同時に解消、10-18の表示で確認）、最後に鮮度
+- 終了コード: 失敗0件は0、失敗が対象の10%以下は0（Step Summaryに⚠）、10%を超えるか銘柄のループの外で例外が出たら1（`freshness.FAILED_EXIT_RATIO`）
+- `FAILED`の読み手: `freshness.py`（`STATUSES`に追加。以前は`entry()`のassertで落ちる・Step Summaryの一覧に出ない）、
+  CHECK-60（`FAILED`の銘柄をWARN-60で出す。以前は黙って無視）、System Health [M]（1件以上で⚠️、`FAILED_EXIT_RATIO`超で🔴、件数の表示にFAILED。以前は✅のまま）
+- `SEC_Data_Update.yml`: update.pyの後・Gateの前に「Roll back failed tickers」（`common/sec_data/rollback_failed.py`）。失敗した銘柄の
+  `common/sec_data/data/{T}/`（company_facts・company_facts_legacy・submissions・annual・quarterly・parserの検知ログ）・`normalized/{T}_quarterly_normalized.json`・
+  `ttm/{T}_ttm_series.json`を、HEADにあるものは`git checkout HEAD --`、HEADに無いもの（新規の銘柄の作りかけ・今回新しくできたファイル）は`git clean`で戻す。
+  共有の`_freshness.json`・`_cik_cache.json`は戻さない。最後に`if: always()`の「Notify Discord」（`common/sec_data/update_notify.py`、DISCORD_WEB_HOOK）で、結果・止まった段・失敗した銘柄と理由を毎回送る
+- `SEC_Data_Audit.yml`・`audit.py`: 前段のconclusionがsuccess以外なら、Discordの本文とStep Summaryの先頭に「⚠ SEC更新が失敗：前回のデータを監査」
+- テスト`tests/test_sec_update_ticker_failure.py`（30件。巻き戻しは一時のgitリポジトリで確認）。実データに対するupdate.pyの実行・workflow_dispatchはしていない
+- 範囲外として登録: [[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]（Gateの1銘柄のNGで全体が止まる）・[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]
 
 ---
 
@@ -2301,6 +2326,48 @@ Step Summaryの表示は引き続き未確認
 ---
 
 ## 優先度：中（こなれてきたら対応）
+
+### [SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1] SEC_Data_UpdateのConsistency Check Gateで、1銘柄でもNGがあると全銘柄のcommitと日曜の連鎖が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める
+**優先度:** 中（2026-09-20に実際に止まった。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]でupdate.pyの1銘柄の失敗は止まらなくなったが、Gateは全体で1つの判定のまま）
+**分類:** 運用（ワークフローの止まり方） / `common/sec_data/report_consistency_check.py`・`.github/workflows/SEC_Data_Update.yml`
+**登録日:** 2026-10-15
+**発見:** [[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]の読み取り調査（2026-10-15、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `report_consistency_check.py --fail-on-ng`は、NGの合計が1件以上なら`sys.exit(1)`（3607-3609行）。銘柄ごとのNGと全体のNGを区別しない
+- 全体のチェック（3397-3470行: Discoverの同期・config loader・コアポジションの見直し・KPIの取得失敗・KPIの却下・DCF検証）のNGも合計に入り、
+  SECのデータと無関係でもSEC_Data_Updateのcommitを止める
+- 実例: 2026-09-20（run `35518006804`）は23銘柄でNG-31が計136件（凍結の検査がファイル全体のハッシュで比べていた。[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]で修正済み）。
+  update.pyは成功していたが、Gateで全銘柄のcommitが止まり、連鎖がskippedになった
+- workflow_dispatchの`tickers`がTANUKIの対象外だけ（provisioning等）のときは`exit(2)`（3365行）でGateが失敗する
+- 同じGateはAdjusted EPS・Stonks Silo・TANUKI VALUATIONのワークフローにもある
+
+#### 直し方の候補（未決定）
+- SEC_Data_UpdateのGateでは、NGの銘柄だけを`rollback_failed.py`と同じ方法で前回の状態に戻し、他の銘柄はcommitする（全体のNGの扱いは別に決める）
+- SECのデータに関係するチェックだけをSEC_Data_UpdateのGateで見る
+
+---
+
+### [METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1] Layer3をcompany_facts.jsonからメモリ上で作り直しているため、計算方法の変更が日曜のSEC_Data_Updateを待たずに、計算方法の変更の印なしで公開される
+**優先度:** 中（判定・評価の変化を「相場による変化」として通知・記録してしまう。印の仕組み〈`common/method_change.py`〉の前提が崩れる）
+**分類:** 運用（計算方法の変更の反映） / `common/method_change.py`・`config/method_change.json`・Layer3の読み手（TANUKI VALUATION・HypeCore・Stonks Silo）
+**登録日:** 2026-10-15
+**発見:** [[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]の読み取り調査（2026-10-15、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- TANUKI VALUATION・HypeCore・Stonks SiloはLayer3を`build_ticker_store()`でcompany_facts.jsonから毎回メモリ上で作る。Layer3のコードを変えると、
+  pushの後の最初の実行（平日の夜のMarket Data Dailyからの連鎖を含む）でそのまま公開データに出る
+- 一方、`common/sec_data/ttm/{T}_ttm_series.json`・normalizedはSEC_Data_Update（日曜）でしか作り直されないので、TTMのファイルを使う部分だけが日曜に変わる
+- 実例: [[LAYER3-RETENTION-PERIOD-1]]の変更（10-14 push）で、10-15 05:43 JSTのTANUKI VALUATIONの実行（`d69e6e2ed8`）がAPPの`latest_period_missing`（最新期の設備投資を年次の値で代用）を
+  印なしで公開した。FCXの理論株価（TTMのファイルを使う）は$11.89のままで、日曜に変わる見込み
+- `config/method_change.json`の印は日付（JST）だけで付き、SEC_Data_Updateの成否・計算方法の変更が実際に反映された実行かを見ない
+  （日曜のSECが失敗して手動の再実行が印の日付の後になると、作り直しに印が付かない）
+
+#### 直し方の候補（未決定）
+- Layer3・TTMに効く変更は、pushの日から印を付ける（method_change.jsonの日付をpushの日から日曜の連鎖の後までにする）
+- Layer3を読む側も、SEC_Data_Updateが作ったファイル（またはその版）を読むようにして、反映を日曜にそろえる
+
+---
 
 ### [HYPECORE-TANUKI-CIRCULAR-DEP-1] HypeCoreとTANUKI VALUATIONが互いの前回の出力を読み合っており、連鎖の順序（HypeCore → TANUKI）ではHypeCoreの期待スコアが前回の理論株価で作られる
 **優先度:** 中（計算方法を変えて作り直すとき、HypeCoreの期待スコアが1回遅れる）
@@ -3497,6 +3564,7 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 ---
 
 ### [SEC-UPDATE-SUMMARY-HEADER-ORDER-1] SEC_Data_UpdateのStep Summaryで、Revenue品質チェックの表の見出しが行より後に書かれる
+**状態（2026-10-15）:** [[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]の実装で同時に解消（行をメモリに貯め、最後に見出しと一緒に書く）。10-18の本番のStep Summaryで表として表示されることを確かめたら移設する
 **優先度:** 低
 **分類:** 表示（GitHub ActionsのStep Summary） / common/sec_data（`update.py`）
 **登録日:** 2026-10-10

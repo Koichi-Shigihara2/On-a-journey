@@ -27,7 +27,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
 **次回の確認手順（2026-10-14 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**46件**（`^### [`の機械カウント、2026-10-14 終業）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+BACKLOG.mdのアクティブは**50件**（`^### [`の機械カウント、2026-10-15。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
@@ -53,7 +53,9 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
      - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
      - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
-     - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は未対応。止まっていたら原因の銘柄を確かめて手動で再実行する）
+     - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は2026-10-15に実装済み。update.pyが止まるのは失敗が対象の10%超か、銘柄のループの外の例外のときだけ。Gateの1銘柄のNGではまだ止まる〈`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`〉。止まっていたら原因を確かめて手動で再実行する）
+     - SEC_Data_UpdateのDiscordの通知（「✅／⚠／❌ SEC Data Update」）が届いている。❌なら「止まった段」を見る
+     - 失敗した銘柄（Discord・Step Summaryの先頭の表・`_freshness.json`のFAILED）があれば、その銘柄の`common/sec_data/data/{T}/`・normalized・ttmがcommitに含まれず前回のまま（「Roll back failed tickers」の段のログ）で、他の銘柄はcommitされている。Step SummaryのRevenue品質の表が表として表示されている（`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`）。確かめたら`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設する
      - 確かめたら`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
    - 日時: 2026-10-18（日）のSEC_Data_Updateの後（上の4と同じ実行）
