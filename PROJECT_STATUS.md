@@ -14,11 +14,13 @@
 **次の作業（2026-10-15 更新。上から順）**:
 1. 10-18〜10-19（JST）の確認 — 日曜（10-18）のSEC_Data_Updateからの連鎖と月曜の安全網（CLAUDE_CODE_START.md「次回の確認手順」4・6。確認の中身はそちらを正とし、ここには書かない）。
    `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は実装済み（d193ee798a）・10-18の本番で確認（同じ手順4に含む）。`[[LAYER3-RETENTION-PERIOD-1]]`の公開データへの反映の確認もここ。依存: なし（下の2〜4より先）
-2. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後。他の作業には依存しない
-3. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（2と並行できる）。次の新規銘柄の登録の前に必要
-4. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（2・3）の後。再検証は§7(a)〜(d)の方法で
+2. `[[TICKER-EXCEPTION-LEDGER-1]]`（銘柄別の例外の台帳。設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`）— 依存: 1の確認の後（設計書の9章の順で実装）
+3. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後。他の作業には依存しない
+4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（3と並行できる）。次の新規銘柄の登録の前に必要
+5. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（3・4）の後。再検証は§7(a)〜(d)の方法で
 
 **登録済み・後回し（2026-10-15 登録、中）**:
+- `[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（RICEのwarningsが96銘柄すべてでTrueになり、全銘柄に⚠の注記が出る。計算の例外4銘柄〈CIX・ENTG・SPIR・XOM〉もnoteに入っている）
 - `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 

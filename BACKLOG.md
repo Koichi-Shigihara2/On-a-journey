@@ -1873,6 +1873,27 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
+### [TICKER-EXCEPTION-LEDGER-1] 銘柄別の例外（データの欠け・代用・除外・SECの遅れ等）が10種類以上の出力と人が書く台帳・BACKLOGの個別項目に散らばり、1か所で見られない
+**優先度:** 高（評価値に効く例外〈A〉が画面に出ていないもの・読み手が0件の出力がある。BACKLOGに銘柄の事情の項目が混ざり、仕組みの問題と区別できない）
+**状態（2026-10-15）:** 設計済み（`docs/architecture/TICKER_EXCEPTION_LEDGER.md`）。**実装は2026-10-18〜19の確認（CLAUDE_CODE_START.md「次回の確認手順」4・6）の後**
+**分類:** 運用（例外の記録と表示） / 新設の集約処理・TANUKI_VALUATION_Update.yml・stock.html・admin.html・score_watcher.py
+**登録日:** 2026-10-15
+**発見:** 2026-10-15の読み取り調査「銘柄ごとの例外の記録の棚卸し」
+
+#### 内容
+- 銘柄ごとの例外は直す対象ではなく、記録して表示する対象とする。BACKLOGには仕組みの問題だけを残す
+- 設計の要点（詳細は設計書）: 段階A（評価値に影響）・B（注記）・C（内部の検知、件数だけ）。既存の書き手は変えず、保存済みの出力だけを読む集約処理を1本新設。
+  first_seenは前回の台帳から引き継ぎ、検知されなくなったら解消、30日後に削除。自動で検知できないものは手書きの入力ファイル。
+  表示はstock.htmlにAのバッジ、admin.htmlに一覧のタブ、score_watcherはAの新規発生だけを通知。TANUKI_VALUATION_Update.ymlの最後の処理の群（Gateの後・score_watcherとcommitの前、continue-on-error）
+- 10-15時点のA: latest_period_missing 5・fcf_outlierの除外 5・fcf_estimationの代用 2・sector_guard 3・dupontの除外 9・RICEの計算の例外 4・SEC_LAG 4・fact_overrides 5
+- 移す候補のBACKLOG 7件: [[SEC-COMPANYFACTS-API-LAG-1]]・[[SBC-TAG-STOCKOPTIONPLAN-1]]・[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]・[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]・
+  [[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]・[[LAYER3-CUSTOM-TAG-MIGRATION-1]]・[[STONKS-TANUKI-BADGE-404-1]]
+
+#### 要判断
+- 実行の位置: 依頼は「TANUKI_VALUATION_Update.ymlの最後」だが、score_watcherが台帳を読んで通知し、commitに台帳を含めるため、設計書では「Gate → 台帳の集約 → score_watcher → commit」とした
+
+---
+
 ### [SYSHEALTH-SEVERITY-MISMATCH-1] System HealthのDiscordの先頭の絵文字・文言・各欄の絵文字・Overallの行・終了コードが別々の判定から出ていて、同じ実行で重大度が食い違う
 **優先度:** 高
 **分類:** 監視の表示 / System Health（`common/system_health.py`の`build_one_line()`・`main()`）
@@ -2326,6 +2347,25 @@ Step Summaryの表示は引き続き未確認
 ---
 
 ## 優先度：中（こなれてきたら対応）
+
+### [RICE-WARNINGS-ALWAYS-TRUE-1] RICEのwarningsが「noteが空でない」をそのまま警告にしており、96銘柄すべてでTrueになって、TANUKI VALUATIONの個別ページの全銘柄に⚠の注記が出る
+**優先度:** 中（全銘柄に出る警告は読まれなくなり、本当の警告〈計算の例外・セクター除外〉が埋もれる）
+**分類:** 表示・指標 / `src/value/tanuki_valuation/calculator/rice.py`・`docs/value-monitor/tanuki_valuation/stock.html`
+**登録日:** 2026-10-15
+**発見:** 2026-10-15の読み取り調査「銘柄ごとの例外の記録の棚卸し」
+
+#### 内容（観測した事実、公開データ10-15）
+- `rice.py:110`が`"warnings": self.note != ""`。noteには警告でない情報（「RICE-1価値創造係数=…(ROIC/WACC=…)」45銘柄・「SBC補正済み」等）も入るため、96銘柄すべてでwarnings=True
+- `stock.html:872`で`rice.warnings`を読み、`stock.html:1436`で全銘柄に「⚠️ {note}」の黄色の枠を出している
+- noteの内訳（多い順）: 「Q計算不可（OCF/純利益データなし）」16、セクター除外（Consumer Defensive 7・Consumer Cyclical 6・Financial Services 3・Utilities 2）、
+  「エラー: unsupported format string passed to NoneType.__format__」4（CIX・ENTG・SPIR・XOM。`core_calculator.py:760-765`がRICEの計算の例外をnoteに入れたもの。available=false）
+- 計算の例外の4銘柄は、[[TICKER-EXCEPTION-LEDGER-1]]の段階A（rice_error）に入る。例外そのものの原因は未調査
+
+#### 直し方の候補（未決定）
+- noteを「警告」と「情報」に分け、warningsは警告があるときだけTrueにする
+- 計算の例外（4銘柄）の原因を調べて直す（別の項目にするかはチャット側の判断）
+
+---
 
 ### [SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1] SEC_Data_UpdateのConsistency Check Gateで、1銘柄でもNGがあると全銘柄のcommitと日曜の連鎖が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める
 **優先度:** 中（2026-09-20に実際に止まった。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]でupdate.pyの1銘柄の失敗は止まらなくなったが、Gateは全体で1つの判定のまま）

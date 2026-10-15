@@ -27,7 +27,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
 **次回の確認手順（2026-10-15 終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**50件**（`^### [`の機械カウント、2026-10-15。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+BACKLOG.mdのアクティブは**52件**（`^### [`の機械カウント、2026-10-15。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
