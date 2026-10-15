@@ -11,11 +11,16 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-14 終業時点の候補。上から順。日曜〈10-18〉の連鎖の確認〈CLAUDE_CODE_START.md「次回の確認手順」4〉の後に着手）**:
-0. `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（update.pyが1銘柄の失敗で止まり、日曜の連鎖全体が止まる）— 2026-10-15にチャット側が影響表付きで直し方の案を作り、日曜（10-18）の反映（`[[LAYER3-RETENTION-PERIOD-1]]`）より前に判断する。依存: なし（下の1〜3より先）
-1. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 保持期間の延長（`[[LAYER3-RETENTION-PERIOD-1]]`）の公開データへの反映の確認の後。他の作業には依存しない
-2. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（1と並行できる）。次の新規銘柄の登録の前に必要
-3. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（1・2）の後。再検証は§7(a)〜(d)の方法で
+**次の作業（2026-10-15 更新。上から順）**:
+1. 10-18〜10-19（JST）の確認 — 日曜（10-18）のSEC_Data_Updateからの連鎖と月曜の安全網（CLAUDE_CODE_START.md「次回の確認手順」4・6。確認の中身はそちらを正とし、ここには書かない）。
+   `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は実装済み（d193ee798a）・10-18の本番で確認（同じ手順4に含む）。`[[LAYER3-RETENTION-PERIOD-1]]`の公開データへの反映の確認もここ。依存: なし（下の2〜4より先）
+2. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後。他の作業には依存しない
+3. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（2と並行できる）。次の新規銘柄の登録の前に必要
+4. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（2・3）の後。再検証は§7(a)〜(d)の方法で
+
+**登録済み・後回し（2026-10-15 登録、中）**:
+- `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
+- `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 
 - **2026-10-14（終業のブラッシュアップ）**: 完了6件（`[[LAYER3-STALE-LATEST-VALUE-1]]`・`[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]`・`[[LAYER3-LATEST-FILING-TAG-DROP-1]]`・`[[FCX-CAPEX-2026Q2-MISSING-1]]`・
   `[[TTM-STALE-QUARTER-IN-WINDOW-1]]`・`[[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]`）をBACKLOG_DONE.mdへ。`[[LAYER3-RETENTION-PERIOD-1]]`は10-18の連鎖の確認まで高に残す。
