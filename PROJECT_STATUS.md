@@ -15,6 +15,7 @@
 1. 10-18〜10-19（JST）の確認（CLAUDE_CODE_START.md「次回の確認手順」4・6）と、TANUKI TAILの確認（同9、次の平日のRSS Monitorの後）。確認の中身はそちらを正とし、ここには書かない。
    `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（d193ee798a）・`[[LAYER3-RETENTION-PERIOD-1]]`の反映は手順4、`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`は手順9。依存: なし（下の2〜5より先）
 2. `FINDINGS.md`の初回の束ね（CHAT_RULES.md「発見の溜め方と根治の判断」3）と、型A（読み手・検証の無い出力）の根治＝出力の一覧（書き手・読み手・定義、機械が照合できる形）の作成。SECデータ層から（同5）— 依存: 1の後（日曜の確認の後の週1回の束ねに当たる）。
+   各段階は「grepで一覧（書き手・読み手・画面）を作る → Koichiさんが画面の項目と機能を投資判断に使っているかで残す／消すを判断 → 消すものを削除してから残ったものだけにCHECKを有効にする」の順（CHAT_RULES.md「発見の溜め方と根治の判断」5）。
    `[[TICKER-EXCEPTION-LEDGER-1]]`は単独で実装しない。必要かどうかは一覧の結果で判断する（BACKLOGに追記済み）
 3. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる。案Aで決定）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（3と並行できる）。次の新規銘柄の登録の前に必要
