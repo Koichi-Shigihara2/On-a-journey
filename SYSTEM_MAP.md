@@ -1901,9 +1901,11 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　**2026-09-23削除済み**——`satellite_monitor.py`・
 　　`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`は
 　　Koichiさんの承認済み判断（機能自体が「認識されていない・不要」と
-　　判明）により完全削除した（`[[TAIL-SATELLITE-MONITOR-CORE-
+　　判明）により完全削除した（`ed2739d9bb`、`[[TAIL-SATELLITE-MONITOR-CORE-
 　　APPLICABILITY-1]]`参照、BACKLOG_DONE.md）。以下は削除前の設計・
-　　調査記録として歴史的に保持する。
+　　調査記録として歴史的に保持する（現在形の記述も削除前の状態）。
+　　削除後に`rss_state.json`を読むのは`edgar_rss_monitor.py`だけ
+　　（2026-10-16のgrep）。④決算接近のアラートは今は無い。
 　　`satellite_monitor.py`は`edgar_rss_monitor.py`/
 　　`quarterly_review_generator.py`とは独立した別システムで、
 　　`positions_index.json`の`type=="satellite"`を**直接**フィルタする
@@ -1935,7 +1937,8 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　かった（`edgar_rss_monitor.py`がsatelliteに対して一度も実行されて
 　　いなかったための帰結、`[[TAIL-SATELLITE-POSITION-MONITORING-
 　　GAP-1]]`と同根）。2026-08-19③時点でsatellite 7銘柄全てに
-　　`rss_state.json`のエントリが存在するため、今後は④も機能する。
+　　`rss_state.json`のエントリが存在するため、今後は④も機能する
+　　（とされたが、2026-09-23に`satellite_monitor.py`ごと削除〈`ed2739d9bb`〉）。
 
 　　**core側の非対称（2026-08-19③発見）**: `satellite_monitor.py`は
 　　`type=="satellite"`のみを対象とし、core（PLTR/SOFI/TSLA）は

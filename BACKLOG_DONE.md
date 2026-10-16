@@ -44,7 +44,7 @@
 - rss_state.jsonは既に`last_filed`を`last_accn`と一緒に保存している（2026-10-16時点で9銘柄すべてにある）。`last_filed`の無い旧形式は、同じ書類を見た回に足し、accnが違えば従来どおり新規とする（遅延チェックは提出日が無ければしない）
 
 ### ✅ [TAIL-REVIEW-LATEST-MISMATCH-1] TANUKI TAILで、後から作られた古い期のレビューにis_latestが移り、6銘柄のDCFシナリオが古いレビュー（2025Q4）から作られていた。画面は2026Q2を最新として表示し、DCFの見出しと数字の期が食い違っていた
-**完了（2026-10-16）:** commit「fix(tail): レビューとDCFシナリオの最新をキューのcompletedの最大の期にそろえる」。テスト`tests/test_tail_review_latest.py`（14件）。
+**完了（2026-10-16）:** `e615dc2b21`。テスト`tests/test_tail_review_latest.py`（14件）。
 **確認:** 次の平日のTANUKI TAIL RSS Monitorの後に、APP・CELH・SOUN・PLTR・SOFI・TSLAの`docs/portfolio/scenario/{T}/base.json`の`quarter`が2026Q2になっていること（シナリオはtail_dcf_bridge.pyが毎回作り直す。今回はスクリプトを実行していないため、それまでは2025Q4のまま。index.htmlのDCFのタブには「レビュー2026Q2の反映待ち」が出る）。prediction_history.jsonから6銘柄の2025Q4の行が消えていること
 **優先度:** 高（公開中のDCFの数字が古いレビューの前提で計算されていた。PLTRは1年目の売上成長率28%〈2025Q4のレビュー〉で、画面の最新の2026Q2のレビューは52%）
 **分類:** 表示・計算の入力 / TANUKI TAIL（`tail_dcf_bridge.py`・`quarterly_review_generator.py`・`prediction_tracker.py`・`docs/portfolio/tail/index.html`）

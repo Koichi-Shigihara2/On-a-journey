@@ -76,6 +76,16 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: いつでも
    - 期限: 次のFOMC（10月下旬。日付はFRBの予定表で確かめる）の声明の前
    - 確認の手順: 対応するか担当を決める（チャット側の判断）
+9. **TANUKI TAILのRSS Monitorの後**（`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`。日時の順では2と3の間だが、1〜8の番号がBACKLOGから参照されているため末尾に置く）
+   - 日時: 次の平日の実行（cronは08:00 UTC＝17:00 JST、2026-10-16〈金〉から。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
+   - 期限: 2026-10-20（火）
+   - 確認の手順:
+     - APP・CELH・SOUN・PLTR・SOFI・TSLAの`docs/portfolio/scenario/{T}/base.json`の`quarter`が2026Q2（tail_dcf_bridge.pyが作り直す。e615dc2b21の時点では2025Q4のまま）
+     - `docs/portfolio/tail/index.html`のDCFのタブ（6銘柄）に「⚠ レビュー2026Q2の反映待ち」が出ていない
+     - `docs/portfolio/tail/data/prediction_history.json`に6銘柄の`"review_quarter": "2025Q4"`の行が無い
+     - 実行のログで、「RSS 取得エラー」が出た銘柄に「★ 新規提出」が出ていない（代わりに「新規提出の判定をしない」）
+     - Discordの通知: ログの`DISCORD_WEBHOOK:`が空でない（`***`）。通知は新規提出か遅れのアラート（`ALERT_BIZ_DAYS`にちょうど達した日）がある日だけ出るため、その日のログに「Discord 送信OK」があり、Discordに届いていること
+     - 確かめたら、移設済みの3件の「確認」の欄に結果を書き足す（BACKLOG_DONE.md）
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-15 SEC_Data_Updateの1銘柄の失敗で全体を止めない（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、10-18の本番で確認するまでBACKLOG.mdに残す）**
