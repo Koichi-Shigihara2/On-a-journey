@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 63108504137.73531,
   "intrinsic_value_per_share": 95.85267843969777,
   "intrinsic_value_beta": 63.24,
-  "upside_percent_beta": -86.6,
-  "intrinsic_value_rf": 407.52,
-  "upside_percent_rf": -13.9,
-  "intrinsic_value_rf_rate": 0.050889997482299804,
+  "upside_percent_beta": -86.0,
+  "intrinsic_value_rf": 405.61,
+  "upside_percent_rf": -10.2,
+  "intrinsic_value_rf_rate": 0.05098000049591064,
   "v0": 63108504137.73531,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.3836027507983574,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 99.37,
       "value_growth_pct": 3.7,
-      "expected_return_pct": -79.0
+      "expected_return_pct": -78.0
     },
     "2年後": {
       "future_value": 103.01,
       "value_growth_pct": 7.5,
-      "expected_return_pct": -78.2
+      "expected_return_pct": -77.2
     },
     "3年後": {
       "future_value": 106.79,
       "value_growth_pct": 11.4,
-      "expected_return_pct": -77.4
+      "expected_return_pct": -76.4
     },
     "4年後": {
       "future_value": 110.7,
       "value_growth_pct": 15.5,
-      "expected_return_pct": -76.6
+      "expected_return_pct": -75.5
     },
     "5年後": {
       "future_value": 114.76,
       "value_growth_pct": 19.7,
-      "expected_return_pct": -75.8
+      "expected_return_pct": -74.6
     }
   },
-  "upside_percent": -79.8,
-  "calculation_date": "2026-10-16T05:41:36+09:00",
+  "upside_percent": -78.8,
+  "calculation_date": "2026-10-17T05:41:30+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -316,7 +316,7 @@
     "roe_10yr_avg": 0.0913339882853232,
     "roe_years_used": 3,
     "roe_outlier_adj": true,
-    "current_price": 473.3900146484375,
+    "current_price": 451.7099914550781,
     "latest_revenue": 113538000000.0,
     "rpo": 132000000000,
     "beta": 1.401,
@@ -350,11 +350,11 @@
     "alpha_uncapped": 0.3836027507983574,
     "per": 33.41277,
     "per_is_forward": false,
-    "per_adjusted": 25.95,
+    "per_adjusted": 24.76,
     "peg": 0.6458,
     "ps": 2.4644961,
     "ev_ebitda": 22.104,
-    "ma200": 312.3773498535156,
+    "ma200": 313.9962998199463,
     "forward_eps": 29.11713,
     "next_quarter_eps": 6.56,
     "analyst_target_median": 600.0,
@@ -373,12 +373,12 @@
     "revenue_ttm_end": "2026-07-31",
     "analyst_vs_iv": 526.0,
     "max_eps": 19.0386,
-    "max_eps_per": 24.9,
+    "max_eps_per": 23.7,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-07-31"
   },
   "validation": {
-    "validated_at": "2026-10-16",
+    "validated_at": "2026-10-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -402,14 +402,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.036673230902471654,
-  "required_growth_rf_base": -0.07174967615644956,
-  "risk_free_rate_live": 0.050889997482299804,
-  "risk_free_rate_live_date": "2026-10-15",
+  "required_growth_rf_base": -0.08041213803508318,
+  "risk_free_rate_live": 0.05098000049591064,
+  "risk_free_rate_live_date": "2026-10-16",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.020620098689626998,
+  "required_growth_rf_live": 0.011965387690340723,
   "tanuki_score": "TRIM",
   "funda_score": 100,
-  "score_comment": "割高(-80%超)、FCF黒字、売上成長加速",
+  "score_comment": "割高(-79%超)、FCF黒字、売上成長加速",
   "timing_score": 30,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -476,7 +476,7 @@
     "shares_yr_3ago_label": "2023",
     "buyback_ttm": 8518000000
   },
-  "net_current_assets_ratio": -0.0105,
+  "net_current_assets_ratio": -0.011,
   "dupont": {
     "excluded": true,
     "reason": "negative_equity"
@@ -513,8 +513,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0106,
-  "forward_earnings_yield": 0.0615,
+  "erp": 0.0135,
+  "forward_earnings_yield": 0.0645,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

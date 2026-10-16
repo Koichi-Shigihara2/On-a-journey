@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 6153094604388.07,
   "intrinsic_value_per_share": 733.6383771800133,
   "intrinsic_value_beta": 257.55,
-  "upside_percent_beta": 18.6,
-  "intrinsic_value_rf": 3989.39,
-  "upside_percent_rf": 1736.5,
-  "intrinsic_value_rf_rate": 0.050889997482299804,
+  "upside_percent_beta": 20.3,
+  "intrinsic_value_rf": 3964.66,
+  "upside_percent_rf": 1751.5,
+  "intrinsic_value_rf_rate": 0.05098000049591064,
   "v0": 6151234889950.851,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 1.0,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 1100.46,
       "value_growth_pct": 50.0,
-      "expected_return_pct": 406.6
+      "expected_return_pct": 413.9
     },
     "2年後": {
       "future_value": 1650.69,
       "value_growth_pct": 125.0,
-      "expected_return_pct": 659.9
+      "expected_return_pct": 670.9
     },
     "3年後": {
       "future_value": 2476.03,
       "value_growth_pct": 237.5,
-      "expected_return_pct": 1039.8
+      "expected_return_pct": 1056.3
     },
     "4年後": {
       "future_value": 3714.05,
       "value_growth_pct": 406.2,
-      "expected_return_pct": 1609.7
+      "expected_return_pct": 1634.5
     },
     "5年後": {
       "future_value": 5571.08,
       "value_growth_pct": 659.4,
-      "expected_return_pct": 2464.6
+      "expected_return_pct": 2501.7
     }
   },
-  "upside_percent": 237.7,
-  "calculation_date": "2026-10-16T05:37:13+09:00",
+  "upside_percent": 242.6,
+  "calculation_date": "2026-10-17T05:37:34+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -470,7 +470,7 @@
     "roe_10yr_avg": 0.4445659170875199,
     "roe_years_used": 10,
     "roe_outlier_adj": true,
-    "current_price": 217.22999572753906,
+    "current_price": 214.1300048828125,
     "latest_revenue": 215938000000.0,
     "rpo": 3200000000,
     "beta": 2.215,
@@ -504,11 +504,11 @@
     "alpha_uncapped": 1.8671768517675833,
     "per": 28.986094,
     "per_is_forward": false,
-    "per_adjusted": 26.6,
+    "per_adjusted": 26.22,
     "peg": 0.4791,
     "ps": 18.273836,
     "ev_ebitda": 28.318,
-    "ma200": 202.83805000305176,
+    "ma200": 202.97100006103517,
     "forward_eps": 15.9146,
     "next_quarter_eps": 2.47,
     "analyst_target_median": 315.0,
@@ -527,12 +527,12 @@
     "revenue_ttm_end": "2026-07-26",
     "analyst_vs_iv": -57.1,
     "max_eps": 8.2876,
-    "max_eps_per": 26.2,
+    "max_eps_per": 25.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-07-26"
   },
   "validation": {
-    "validated_at": "2026-10-16",
+    "validated_at": "2026-10-17",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -555,14 +555,14 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.17850364081500958,
-  "risk_free_rate_live": 0.050889997482299804,
-  "risk_free_rate_live_date": "2026-10-15",
+  "required_growth_rf_base": -0.1808617807551849,
+  "risk_free_rate_live": 0.05098000049591064,
+  "risk_free_rate_live_date": "2026-10-16",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.057649617237748974,
+  "required_growth_rf_live": -0.05929262258701862,
   "tanuki_score": "BUY",
   "funda_score": 100,
-  "score_comment": "割安圏(238%)で買い余地大、FCF黒字、売上成長加速",
+  "score_comment": "割安圏(243%)で買い余地大、FCF黒字、売上成長加速",
   "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -629,7 +629,7 @@
     "shares_yr_3ago_label": "2023",
     "buyback_ttm": 55315000000
   },
-  "net_current_assets_ratio": 0.0294,
+  "net_current_assets_ratio": 0.0299,
   "dupont": {
     "ni_ttm": 192879000000,
     "revenue_ttm": 302969000000,
@@ -697,8 +697,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0224,
-  "forward_earnings_yield": 0.0733,
+  "erp": 0.0233,
+  "forward_earnings_yield": 0.0743,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
