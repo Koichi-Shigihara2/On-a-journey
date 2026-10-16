@@ -22,7 +22,7 @@
 - 10-QのRSSのタイムアウトで古い10-Kを新規提出と誤検知する件は[[TAIL-RSS-FALSE-NEW-FILING-1]]で直した（下の項目）
 
 ### ✅ [TAIL-RSS-FALSE-NEW-FILING-1] TANUKI TAIL RSS Monitorが、10-QのRSSのタイムアウトで古い10-Kを最新と見なし、新規提出と誤検知していた（戻る回にも再び新規提出）
-**完了（2026-10-16）:** `src/tail/edgar_rss_monitor.py`を修正（commit「fix(tail): RSSの片方が取れない回と古い提出への戻りを新規提出と誤検知しない」）。テスト`tests/test_tail_rss_false_new_filing.py`（12件）。確認は次の平日の実行のログで、RSS 取得エラーの銘柄に「新規提出の判定をしない」が出て「★ 新規提出」が出ないこと
+**完了（2026-10-16）:** `src/tail/edgar_rss_monitor.py`を修正（`2d8dcf33ab`）。テスト`tests/test_tail_rss_false_new_filing.py`（12件）。確認は次の平日の実行のログで、RSS 取得エラーの銘柄に「新規提出の判定をしない」が出て「★ 新規提出」が出ないこと
 **優先度:** 中（[[TAIL-RSS-SECRET-NAME-1]]の修正で、誤検知がDiscordに届くようになったため）
 **分類:** 監視 / TANUKI TAIL（`edgar_rss_monitor.py::fetch_rss_latest()`・`process_ticker()`）
 **登録日:** 2026-10-16
@@ -32,7 +32,8 @@
 - 直す前の`fetch_rss_latest()`（L134-143）は10-Qと10-KのRSSを1件ずつ取り、filedが新しい方を返していた。`_fetch_rss_form()`は取得の失敗も「エントリ無し」もNoneを返すため、10-Qが取れない回は10-Kだけで「最新」が決まった。
   `process_ticker()`（L376）はaccnがstateと違えば提出日を比べずに新規提出とし、`last_accn`を書き換えていた
 - 実例: run 36451110918（09-28）で10-Qの読み取りタイムアウトの後にTSLA 2025Q4、run 36583985823（09-29）でTSLA・CELH 2026Q2（戻る回）。CELHは09-22〜09-29に2025Q4と2026Q2を交互に検知
-- review_queueはaccnの重複を防ぐが、初めて誤検知された古い書類は入っていた: SOUN 2025Q4（提出2026-03-02、09-01に投入）、APP 2025Q4（提出2026-02-19、09-03）、CELH 2025Q4（提出2026-03-02、09-22）。3件ともGrokのレビューが作られてcompleted（[[TAIL-RSS-SECRET-NAME-1]]の記載「review_queueは増えない」は誤りで、ここで訂正する）。キューとレビューのファイルは消していない
+- review_queueはaccnの重複を防ぐが、初めて誤検知された古い書類は入っていた: SOUN 2025Q4（提出2026-03-02、09-01に投入）、APP 2025Q4（提出2026-02-19、09-03）、CELH 2025Q4（提出2026-03-02、09-22）。3件ともGrokのレビューが作られてcompleted（[[TAIL-RSS-SECRET-NAME-1]]の記載「review_queueは増えない」は誤りで、ここで訂正する）。キューとレビューのファイルは消していない。
+  後から作られたこれらの古い期のレビューにis_latestが移り、DCFシナリオが古いレビューから作られていた件は[[TAIL-REVIEW-LATEST-MISMATCH-1]]で直し、キューでsupersededにした
 - rss_state.json・review_queue.jsonの読み手（2026-10-16、grep）: rss_state.jsonは`edgar_rss_monitor.py`だけ（SYSTEM_MAP.mdに書かれたsatellite_monitor.pyは2026-09-23に削除済み〈`ed2739d9bb`〉）。
   review_queue.jsonは`quarterly_review_generator.py`（pendingにGrokでレビュー）、TANUKI_TAIL_RSS_Monitor.ymlの3つの段（pendingの銘柄）、`report_consistency_check.py`のCHECK-37（`load_queue()`）、画面の`docs/portfolio/tail/index.html` L956・`detail.html` L305（completedのレビューを表示）
 
@@ -41,6 +42,42 @@
 - `classify_filing()`: 同じaccnはsame、どちらかのRSSが取れない回はunverified（判定しない）、提出日が記録済みより新しいか同じでaccnが違えばnew、古ければolder
 - new以外は`last_accn`を更新せず新規提出の通知もしない。遅れの通知（`ALERT_BIZ_DAYS`）は今までどおり出す。初回の記録も、片方が取れない回は見送る
 - rss_state.jsonは既に`last_filed`を`last_accn`と一緒に保存している（2026-10-16時点で9銘柄すべてにある）。`last_filed`の無い旧形式は、同じ書類を見た回に足し、accnが違えば従来どおり新規とする（遅延チェックは提出日が無ければしない）
+
+### ✅ [TAIL-REVIEW-LATEST-MISMATCH-1] TANUKI TAILで、後から作られた古い期のレビューにis_latestが移り、6銘柄のDCFシナリオが古いレビュー（2025Q4）から作られていた。画面は2026Q2を最新として表示し、DCFの見出しと数字の期が食い違っていた
+**完了（2026-10-16）:** commit「fix(tail): レビューとDCFシナリオの最新をキューのcompletedの最大の期にそろえる」。テスト`tests/test_tail_review_latest.py`（14件）。
+**確認:** 次の平日のTANUKI TAIL RSS Monitorの後に、APP・CELH・SOUN・PLTR・SOFI・TSLAの`docs/portfolio/scenario/{T}/base.json`の`quarter`が2026Q2になっていること（シナリオはtail_dcf_bridge.pyが毎回作り直す。今回はスクリプトを実行していないため、それまでは2025Q4のまま。index.htmlのDCFのタブには「レビュー2026Q2の反映待ち」が出る）。prediction_history.jsonから6銘柄の2025Q4の行が消えていること
+**優先度:** 高（公開中のDCFの数字が古いレビューの前提で計算されていた。PLTRは1年目の売上成長率28%〈2025Q4のレビュー〉で、画面の最新の2026Q2のレビューは52%）
+**分類:** 表示・計算の入力 / TANUKI TAIL（`tail_dcf_bridge.py`・`quarterly_review_generator.py`・`prediction_tracker.py`・`docs/portfolio/tail/index.html`）
+**登録日:** 2026-10-16
+**発見:** [[TAIL-RSS-FALSE-NEW-FILING-1]]の影響の調査（2026-10-16）
+
+#### 内容（2026-10-16の確認、読み取りのみ）
+- 画面（index.html L956・L1078ほか、detail.html L305・L417ほか）は、キューのcompletedだけを読み、quarterの文字列の降順の先頭を最新とする。is_latestは読まない
+- `tail_dcf_bridge.py::_load_latest_review()`（直す前のL79-97）はis_latest=Trueのレビューを最新とした。`quarterly_review_generator.py`（直す前のL1704-1717）は保存するレビューに必ずis_latest=Trueを付けて既存の印を外すため、後から作った古い期に印が移る
+- 6銘柄の2025Q4（PLTR 08-28、SOFI・TSLA 08-29、SOUN 09-01、APP 09-03、CELH 09-22に生成）がis_latest=Trueで、10-15生成の`scenario/{T}/base.json`は6銘柄とも`"quarter": "2025Q4"`（NVDA等は正しい）
+- 生成はその時点の最新の財務を使う（L209-236）ため、後から作った「2025Q4」の中身は2025Q4の決算ではない。detail.htmlのスコア推移・過去レビュー履歴に「前の期」として出ていた（APPは72→62）
+- 読み手（2026-10-16、grep）:
+
+| 読み手 | 読むもの | 読み方 | 公開データ・画面 |
+|---|---|---|---|
+| index.html L1028・detail.html L352 | `scenario/{T}/*.json` | 保存済み | 画面（DCFのタブ・一覧のDCFの列・業績見通し） |
+| `tail_dcf_bridge.py` | レビュー（書き出す側） | その場で計算して保存 | `docs/portfolio/scenario/` |
+| `prediction_tracker.py` L65・L167 | レビューのファイルを全部（キューを見ない） | その場で計算して保存 | prediction_history.json（index.html L919、次のレビューのGrokのプロンプト） |
+| index.html・detail.html | キューのstatus | completedだけ | superseded・skipped_oldは表示しない（問題なし） |
+| TANUKI_TAIL_RSS_Monitor.ymlの3つの段 | キューのstatus | pendingだけ数える | superseded・skipped_oldは数えない（問題なし） |
+| CHECK-37（`report_consistency_check.py`） | キューの銘柄・レビューのファイルの有無 | statusを見ない | 6銘柄は2026Q2がcompletedで変わらない（問題なし） |
+| `edgar_rss_monitor.py` | キューのaccn | statusを見ず重複を防ぐ | supersededのaccnを再投入しない（問題なし） |
+
+  TANUKI VALUATION・TANUKI Score・score_watcher・HypeCoreはシナリオ・レビュー・キューを読まない（TANUKIが読むTAILのデータは`kpi/{T}_layer2.json`だけ）。is_latestの読み手は`tail_dcf_bridge.py`だけだった
+
+#### 実装（2026-10-16）
+- `src/tail/review_status.py`（新規）: quarterの比較、キューのcompletedの最大の期、superseded・skipped_oldの期
+- `tail_dcf_bridge.py::_load_latest_review()`: キューのcompletedのうちquarterが最大のレビュー（ファイルが無ければ次の期）。is_latestは使わない
+- `quarterly_review_generator.py`: 保存する期がcompletedの最大以上のときだけis_latest=True（古い期を保存しても既存の印を外さない）。生成の前に、対象の期がcompletedの最大より古ければGrokを呼ばずstatusを`skipped_old`（`skipped_at`・`skipped_reason`）にする
+- `prediction_tracker.py`: superseded・skipped_oldの期のレビューを外す
+- index.htmlのDCFのタブ: 見出しの期をシナリオのファイルの`quarter`にし、最新のレビューの期と違えば「⚠ レビュー○○の反映待ち」を出す
+- データ: 6銘柄の2025Q4をキューで`superseded`にし、`superseded_at`・`superseded_reason`を足した（レビューのファイルは消さない）。6銘柄のis_latestを2026Q2=True・2025Q4=Falseに直した
+- 06-06の一括生成の各期も同じ問題を持つ可能性は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]（調査）
 
 ---
 

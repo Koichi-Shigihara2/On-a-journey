@@ -47,6 +47,7 @@ from common.sec_data.layer3_builder import (  # noqa: E402
     WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
 from src.tail.thesis_utils import thesis_narrative_fields  # noqa: E402
+from src.tail import review_status  # noqa: E402
 
 DATA_DIR          = os.path.join(repo_root, "docs", "portfolio", "tail", "data")
 POSITIONS_DIR     = os.path.join(DATA_DIR, "positions")
@@ -1545,10 +1546,34 @@ def save_queue(queue: Dict[str, Any]) -> None:
 # 1銘柄レビュー生成
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _mark_older_reviews_not_latest(ticker: str) -> None:
+def is_latest_quarter(queue: Dict[str, Any], ticker: str, quarter: str) -> bool:
+    """保存するレビューの期が、その銘柄のcompletedの最大以上ならTrue（[[TAIL-REVIEW-LATEST-MISMATCH-1]]）。
+
+    古い期を後から保存しても既存のis_latestを外さない。期の形が正しくない（"不明"等）ときは、
+    completedが1件も無い場合だけTrue。
+    """
+    latest = review_status.latest_completed_quarter(queue, ticker)
+    if latest is None:
+        return True
+    key = review_status.quarter_key(quarter)
+    return key is not None and key >= review_status.quarter_key(latest)
+
+
+def is_older_than_completed(queue: Dict[str, Any], ticker: str, quarter: str) -> Optional[str]:
+    """対象の期がその銘柄のcompletedの最大より古ければ、その最大の期を返す（生成しない理由）。"""
+    latest = review_status.latest_completed_quarter(queue, ticker)
+    key = review_status.quarter_key(quarter)
+    if latest is None or key is None:
+        return None
+    return latest if key < review_status.quarter_key(latest) else None
+
+
+def _mark_older_reviews_not_latest(ticker: str, keep_quarter: Optional[str] = None) -> None:
     if not os.path.exists(REVIEWS_DIR):
         return
     for fname in os.listdir(REVIEWS_DIR):
+        if keep_quarter and fname == f"{ticker}_{keep_quarter}_review.json":
+            continue
         if fname.startswith(f"{ticker}_") and fname.endswith("_review.json"):
             fpath = os.path.join(REVIEWS_DIR, fname)
             try:
@@ -1562,7 +1587,9 @@ def _mark_older_reviews_not_latest(ticker: str) -> None:
                 pass
 
 
-def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[str]:
+def generate_review(entry: Dict[str, Any], dry_run: bool = False,
+                    queue: Optional[Dict[str, Any]] = None) -> Optional[str]:
+    """queueはis_latestの判定に使う（main()の実行中のキュー。省略時はファイルから読む）。"""
     ticker     = entry["ticker"]
     quarter    = entry["quarter"]
     accn       = entry.get("accn", "")
@@ -1701,8 +1728,11 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
     except Exception as e:
         print(f"  [WARN] Call 2 失敗（スキップ）: {e}")
 
-    # 同一tickerの既存レビューをis_latest=falseに更新してから保存
-    _mark_older_reviews_not_latest(ticker)
+    # 保存する期がcompletedの最大以上のときだけis_latest=Trueにし、既存のレビューの印を外す。
+    # 古い期を後から保存しても既存の印は動かさない（[[TAIL-REVIEW-LATEST-MISMATCH-1]]）
+    is_latest = is_latest_quarter(review_status.load_queue() if queue is None else queue, ticker, quarter)
+    if is_latest:
+        _mark_older_reviews_not_latest(ticker, keep_quarter=quarter)
 
     os.makedirs(REVIEWS_DIR, exist_ok=True)
     output_path = os.path.join(REVIEWS_DIR, f"{ticker}_{quarter}_review.json")
@@ -1714,7 +1744,7 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
         # idempotencyフィールド
         "data_version":         accn,
         "filed_date":           filed_date,
-        "is_latest":            True,
+        "is_latest":            is_latest,
         "layer1_complete":      bool(accn),
         "layer2_complete":      kpi_data.get("layer2_complete", False) if kpi_data else False,
         "layer2_missing_kpis":  kpi_data.get("missing_kpis", []) if kpi_data else [],
@@ -1767,10 +1797,23 @@ def main() -> None:
 
     generated: List[str] = []
     failed:    List[str] = []
+    skipped:   List[str] = []
 
     for entry in pending:
+        # 対象の期がcompletedの最大より古ければ生成しない（Grokを呼ばない）。後から作った古い期のレビューは
+        # その時点の最新の財務で書かれ、その期の決算の中身にならないため（[[TAIL-REVIEW-LATEST-MISMATCH-1]]）
+        newer = is_older_than_completed(queue, entry["ticker"], entry["quarter"])
+        if newer:
+            print(f"  [SKIP] {entry['ticker']} {entry['quarter']}: completedの最大 {newer} より古い期のため生成しない"
+                  f"（status={review_status.STATUS_SKIPPED_OLD}）")
+            if not args.dry_run:
+                entry["status"]         = review_status.STATUS_SKIPPED_OLD
+                entry["skipped_at"]     = now_jst.isoformat()
+                entry["skipped_reason"] = f"completedの最大 {newer} より古い期"
+            skipped.append(f"{entry['ticker']} {entry['quarter']}")
+            continue
         try:
-            output_path = generate_review(entry, dry_run=args.dry_run)
+            output_path = generate_review(entry, dry_run=args.dry_run, queue=queue)
             if output_path:
                 entry["status"]       = "completed"
                 entry["completed_at"] = now_jst.isoformat()
@@ -1796,11 +1839,13 @@ def main() -> None:
         print("\n✓ review_queue.json 更新完了")
 
     print(f"\n{'━' * 60}")
-    print(f"完了: 生成 {len(generated)} 件 / 失敗 {len(failed)} 件")
+    print(f"完了: 生成 {len(generated)} 件 / 失敗 {len(failed)} 件 / 古い期のため生成しない {len(skipped)} 件")
     for g in generated:
         print(f"  OK: {g}")
     for f_item in failed:
         print(f"  NG: {f_item}")
+    for s_item in skipped:
+        print(f"  SKIP: {s_item}")
 
 
 if __name__ == "__main__":

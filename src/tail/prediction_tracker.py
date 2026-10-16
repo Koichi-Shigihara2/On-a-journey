@@ -21,6 +21,10 @@ from typing import Dict, Any, Optional, List
 _THIS_DIR  = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR   = os.path.dirname(_THIS_DIR)
 _REPO_ROOT = os.path.dirname(_SRC_DIR)
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from src.tail import review_status  # noqa: E402
 
 REVIEWS_DIR  = os.path.join(_REPO_ROOT, "docs", "portfolio", "tail", "data", "reviews")
 KPI_DIR      = os.path.join(_REPO_ROOT, "docs", "portfolio", "tail", "data", "kpi")
@@ -60,14 +64,22 @@ def _classify_deviation(dev_pct: float) -> str:
         return "over_estimated"
 
 
-def _load_reviews_for_ticker(ticker: str) -> List[Dict[str, Any]]:
-    """ticker の全レビューを四半期昇順で返す"""
+def _load_reviews_for_ticker(ticker: str, queue: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    """ticker の全レビューを四半期昇順で返す。
+
+    キューでsuperseded・skipped_oldの期のレビューは外す（ファイルは残っているが、その期の決算の
+    中身ではないため。[[TAIL-REVIEW-LATEST-MISMATCH-1]]）。
+    """
+    excluded = review_status.excluded_quarters(review_status.load_queue() if queue is None else queue, ticker)
     pattern = os.path.join(REVIEWS_DIR, f"{ticker}_*_review.json")
     files = sorted(glob.glob(pattern))
     reviews = []
     for fp in files:
         with open(fp, encoding="utf-8") as f:
-            reviews.append(json.load(f))
+            rv = json.load(f)
+        if rv.get("quarter") in excluded:
+            continue
+        reviews.append(rv)
     reviews.sort(key=lambda r: r.get("quarter", ""))
     return reviews
 

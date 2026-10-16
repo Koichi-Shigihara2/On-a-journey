@@ -2350,6 +2350,24 @@ Step Summaryの表示は引き続き未確認
 
 ## 優先度：中（こなれてきたら対応）
 
+### [TAIL-REVIEW-BACKFILL-DATA-PERIOD-1] TANUKI TAILの06-06の一括生成のレビュー（2023Q3〜2026Q1）も、作った時点の最新の財務で書かれている可能性があり、スコアの推移・過去レビュー履歴が期ごとの比較になっていないかもしれない
+**優先度:** 中
+**分類:** 表示・データの意味 / TANUKI TAIL（`src/tail/quarterly_review_generator.py`・`docs/portfolio/tail/detail.html`のスコア推移〈L590〉・過去レビュー履歴〈L934〉・`prediction_tracker.py`）
+**登録日:** 2026-10-16
+**着手条件:** いつでも（調査のみ。直し方はチャット側が判断）
+**発見:** [[TAIL-REVIEW-LATEST-MISMATCH-1]]の調査（2026-10-16）
+
+#### 内容（2026-10-16の確認、読み取りのみ）
+- `quarterly_review_generator.py`は対象の期にかかわらず、生成の時点の最新の財務（SEC EDGAR Layer3の`get_latest_quarterly()`・`get_quarterly_series()`、L209-236）を使う。対象の期までデータを絞っていない
+- review_queue.jsonでは、PLTR・SOFI・TSLAの2023Q3〜2026Q1の8期が2026-06-06に一括で投入・生成されている（queued_atが同じ日）。同じ関数で作られたため、どの期の「レビュー」も2026-06-06時点の最新データの分析である可能性がある（未確認）
+- その場合、スコアの推移（detail.html L590）・過去レビュー履歴の前期比（L934）・予測の振り返り（prediction_history.json、index.html L919と次のレビューのGrokのプロンプト）が、期ごとの比較になっていない
+
+#### 確かめること
+- 06-06の各期のレビューの`kpi_snapshot`・`layer3_snapshot`・stage1の本文が、その期の数字か、06-06時点の最新の数字か
+- スコアの推移・履歴・予測の振り返りの表示が意味を持つか。持たないなら、表示から外す・印を付ける・作り直す（Grokの費用がかかる）のどれにするか
+
+---
+
 ### [RICE-WARNINGS-ALWAYS-TRUE-1] RICEのwarningsが「noteが空でない」をそのまま警告にしており、96銘柄すべてでTrueになって、TANUKI VALUATIONの個別ページの全銘柄に⚠の注記が出る
 **優先度:** 中（全銘柄に出る警告は読まれなくなり、本当の警告〈計算の例外・セクター除外〉が埋もれる）
 **分類:** 表示・指標 / `src/value/tanuki_valuation/calculator/rice.py`・`docs/value-monitor/tanuki_valuation/stock.html`

@@ -5,7 +5,8 @@ Grok stage2シナリオ（売上成長率・営業利益率）→ 将来理論�
 
 入力:
   - docs/value-monitor/tanuki_valuation/data/{ticker}/latest.json
-  - docs/portfolio/tail/data/reviews/{ticker}_*_review.json (is_latest=true)
+  - docs/portfolio/tail/data/reviews/{ticker}_{quarter}_review.json
+    （review_queue.jsonのcompletedのうちquarterが最大のもの。画面と同じ規則、review_status.py）
 
 出力:
   - docs/portfolio/scenario/{ticker}/bear.json
@@ -36,6 +37,7 @@ if _REPO_ROOT not in sys.path:
 
 from future_values import calculate_future_values          # noqa: E402
 from common.sec_data import tickers as _tickers_mod         # noqa: E402
+from src.tail import review_status                          # noqa: E402
 # [フェーズD Step2-3対応、2026-08-07] SEC EDGAR Layer3
 # （common/sec_data/layer3_builder.py、company_facts.json由来の統合
 # スキーマ）経由でnormalized/参照を廃止した。本ファイル内の
@@ -75,24 +77,20 @@ def _load_latest_valuation(ticker: str) -> Optional[Dict[str, Any]]:
         return json.load(f)
 
 
-def _load_latest_review(ticker: str) -> Optional[Dict[str, Any]]:
-    """is_latest=True のレビュー、なければファイル名で最新を返す"""
-    if not os.path.exists(REVIEWS_DIR):
-        return None
-    files = sorted(
-        [f for f in os.listdir(REVIEWS_DIR)
-         if f.startswith(f"{ticker}_") and f.endswith("_review.json")],
-        reverse=True,
-    )
-    if not files:
-        return None
-    for fname in files:
-        with open(os.path.join(REVIEWS_DIR, fname), encoding="utf-8") as f:
-            rv = json.load(f)
-        if rv.get("is_latest"):
-            return rv
-    with open(os.path.join(REVIEWS_DIR, files[0]), encoding="utf-8") as f:
-        return json.load(f)
+def _load_latest_review(ticker: str, queue: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    """review_queue.jsonのcompletedのうち、対象期間（quarter）が最大のレビューを返す。
+
+    画面（index.html・detail.html）と同じ規則。is_latestは使わない（後から古い期のレビューを
+    作ると印が移り、シナリオが古いレビューから作られていた。[[TAIL-REVIEW-LATEST-MISMATCH-1]]）。
+    completedの期のファイルが無ければ次に新しい期を見る。completedが1件も無いときはNone。
+    """
+    queue = review_status.load_queue() if queue is None else queue
+    for quarter in review_status.completed_quarters(queue, ticker):
+        path = os.path.join(REVIEWS_DIR, f"{ticker}_{quarter}_review.json")
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)
+    return None
 
 
 def _load_thesis(ticker: str) -> Optional[Dict[str, Any]]:

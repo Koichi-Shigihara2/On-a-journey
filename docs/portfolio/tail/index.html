@@ -2102,10 +2102,13 @@ function buildTabDcf(ticker) {
     return _buildLegacyDcfTable(qs[0], sc, s2);
   }
 
-  return _buildFuturePriceTable(ticker, qs[0], scd, sc, s2);
+  // 見出しの期はシナリオのファイルの quarter（数字の出どころ）。最新のレビューの期と違えば反映待ち
+  // （TAIL-REVIEW-LATEST-MISMATCH-1。シナリオは次の RSS Monitor の実行で作り直される）
+  var scAny = scd.base || scd.bear || scd.bull || {};
+  return _buildFuturePriceTable(ticker, scAny.quarter || qs[0], scd, sc, s2, qs[0]);
 }
 
-function _buildFuturePriceTable(ticker, quarter, scd, sc, s2) {
+function _buildFuturePriceTable(ticker, quarter, scd, sc, s2, reviewQ) {
   var anyScen  = scd.base || scd.bear || scd.bull || {};
   var baseIv   = anyScen.base_intrinsic_value;
   var curPrice = anyScen.current_price;
@@ -2157,7 +2160,11 @@ function _buildFuturePriceTable(ticker, quarter, scd, sc, s2) {
     esc(quarter) + ' 将来理論価格（起点: $' +
     (baseIv ? Number(baseIv).toFixed(2) : '—') +
     ' / 現在株価: $' +
-    (curPrice ? Number(curPrice).toFixed(2) : '—') + '）</div>';
+    (curPrice ? Number(curPrice).toFixed(2) : '—') + '）</div>' +
+    (reviewQ && quarter && reviewQ !== quarter
+      ? '<div style="margin-bottom:8px;font-size:11px;color:var(--amb)">⚠ レビュー' + esc(reviewQ) +
+        'の反映待ち（この表は' + esc(quarter) + 'のレビューのシナリオから計算）</div>'
+      : '');
 
   var tableHtml =
     '<div class="tbl-wrap"><table class="dcf-tbl"><thead>' + thead +
