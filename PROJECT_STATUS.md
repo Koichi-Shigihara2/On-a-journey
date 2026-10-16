@@ -11,20 +11,40 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-15 更新。上から順）**:
-1. 10-18〜10-19（JST）の確認 — 日曜（10-18）のSEC_Data_Updateからの連鎖と月曜の安全網（CLAUDE_CODE_START.md「次回の確認手順」4・6。確認の中身はそちらを正とし、ここには書かない）。
-   `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は実装済み（d193ee798a）・10-18の本番で確認（同じ手順4に含む）。`[[LAYER3-RETENTION-PERIOD-1]]`の公開データへの反映の確認もここ。依存: なし（下の2〜4より先）
-2. `[[TICKER-EXCEPTION-LEDGER-1]]`（銘柄別の例外の台帳。設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`）— 依存: 1の確認の後（設計書の9章の順で実装）
-3. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後。他の作業には依存しない
+**次の作業（2026-10-16 更新。上から順）**:
+1. 10-18〜10-19（JST）の確認（CLAUDE_CODE_START.md「次回の確認手順」4・6）と、TANUKI TAILの確認（同9、次の平日のRSS Monitorの後）。確認の中身はそちらを正とし、ここには書かない。
+   `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（d193ee798a）・`[[LAYER3-RETENTION-PERIOD-1]]`の反映は手順4、`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`は手順9。依存: なし（下の2〜5より先）
+2. `FINDINGS.md`の初回の束ね（CHAT_RULES.md「発見の溜め方と根治の判断」3）と、型A（読み手・検証の無い出力）の根治＝出力の一覧（書き手・読み手・定義、機械が照合できる形）の作成。SECデータ層から（同5）— 依存: 1の後（日曜の確認の後の週1回の束ねに当たる）。
+   `[[TICKER-EXCEPTION-LEDGER-1]]`は単独で実装しない。必要かどうかは一覧の結果で判断する（BACKLOGに追記済み）
+3. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる。案Aで決定）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（3と並行できる）。次の新規銘柄の登録の前に必要
-5. stageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（3・4）の後。再検証は§7(a)〜(d)の方法で
+5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（3・4）の後。再検証は§7(a)〜(d)の方法で
 
 **登録済み・後回し（2026-10-15 登録、中・低）**:
 - `[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低。daily_pick.pyが存在しない`rice.score`を読み、Grokの入力とdaily_pick.jsonに常にnull）
 - `[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（RICEのwarningsが96銘柄すべてでTrueになり、全銘柄に⚠の注記が出る。計算の例外4銘柄〈CIX・ENTG・SPIR・XOM〉もnoteに入っている）
 - `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
+- `[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、2026-10-16登録、調査のみ。06-06の一括生成のレビューも作った時点の最新データで書かれている可能性）
 
+- **2026-10-16（終業のブラッシュアップ）**: 移設0件（今日の完了3件は登録と同時にBACKLOG_DONE.mdへ）。アクティブBACKLOG 54件（10-15 終業の53件に`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`を足した数、`^### [`の機械カウント）。
+  CHAT_RULES.mdの「発見の溜め方と根治の判断」に5（型Aの根治策＝出力の一覧とCHECK、grepで下書き、SECデータ層から段階的に）・6（終業の数の記録と、数を増やさない決まり）を追記。
+  FINDINGS.mdにRSSの誤検知（B、済）・is_latestの読み手0（A、未登録）の2行を追加（計11行）。`[[TICKER-EXCEPTION-LEDGER-1]]`に「単独では実装しない」を追記。次の作業を並べ直した。
+  SYSTEM_MAP.mdのTAILの節に最新のレビューの決め方・キューのstatus・RSSの新規提出の判定を、FIELD_DEFINITIONS.mdのAS-IS-481（is_latest）に今の動きを反映。
+  **終業の数（2026-10-16、初回。数え方を次回も同じにする）**:
+  - 読み手の決まっていない出力: 7（`FINDINGS.md`の型Aのうち読み手0件と分かっている出力。`TICKER_EXCEPTION_LEDGER.md` 7章の6種＋is_latest。出力の一覧ができるまではこの数で代える）
+  - 二重実装の規則: 5（`SYSTEM_MAP.md`の【二重】の印。MACRO PULSEの画面の監査〈MAC-11・20・30・35・39〉だけで、他のサブシステムは未監査。`FINDINGS.md`の型Bの2件は済）
+  - サブシステム: 10（`archive/OUTPUT_ITEMS_INVENTORY.md`の数え方: TANUKI VALUATION・HypeCore・STONKS SILO・MACRO PULSE・Discover・EPS Analyzer・TANUKI SCORE・Market Pulse・Portfolio・TANUKI TAIL）
+  - コードの行数: Python 69,535行（159ファイル、`git ls-files '*.py'`からtestsと`test_`を除く）、テスト34,046行、docs配下のHTML・JS 24,946行（22ファイル）、ワークフロー23本
+- **2026-10-16（発見の溜め方と根治の判断）**: `c36dbfbc02`。CHAT_RULES.mdに「発見の溜め方と根治の判断（2026-10-16新設）」と事例41（範囲外の発見をその場で直す判断で、本筋の日曜の確認から外れた。07-11のルールの違反）。
+  FINDINGS.mdを新設し、10-15〜16の発見を型A（読み手・検証の無い出力）・B（同じ規則の二重実装）・C（時点のずれ）に分けて記録
+- **2026-10-16（記録の後始末）**: `f1167c2f42`。CLAUDE_CODE_START.mdの次回の確認手順に9（TANUKI TAILのRSS Monitorの後）、BACKLOG_DONE.mdのcommitをhashに、SYSTEM_MAP.mdのsatellite_monitor.pyの節に削除のcommit
+- **2026-10-16（TAILのレビューとDCFシナリオの最新）**: `e615dc2b21`で`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`（高）を修正・完了。最新のレビューをキューのcompletedのquarterの最大に統一（`src/tail/review_status.py`新設、tail_dcf_bridge・quarterly_review_generator・prediction_tracker・index.htmlのDCFのタブ）。
+  6銘柄（APP・CELH・SOUN・PLTR・SOFI・TSLA）の後から作られた2025Q4をキューでsupersededに、is_latestを2026Q2に。古い期はskipped_oldで生成しない。テスト14件。`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中）を登録。
+  TANUKI VALUATION・TANUKI Score・score_watcher・HypeCoreはシナリオ・レビュー・キューを読まない（理論株価・判定に影響なし）
+- **2026-10-16（TAILのRSSの誤検知）**: `2d8dcf33ab`で`[[TAIL-RSS-FALSE-NEW-FILING-1]]`を修正・完了。10-Q・10-KのどちらかのRSSが取れない回は新規提出を判定しない、提出日で新旧を比べる（`classify_filing()`）。テスト12件
+- **2026-10-16（日曜の前の点検とTAILのsecret名）**: d193ee798aの点検（actionlint 0件・secret名・結果ファイルのパス・巻き戻しの対象・段の順序・下流の条件、読み取りのみ）と`[[LAYER3-FIRST-FILED-DATE-1]]`の調査（案Aで決定、BACKLOGに記録）。
+  `1c2529cf6c`: SEC_Data_UpdateのSummaryの段に`continue-on-error`、TANUKI TAIL RSS Monitorのsecret名を`DISCORD_WEB_HOOK`に（`[[TAIL-RSS-SECRET-NAME-1]]`、2026-06-06から通知が届いていなかった）。CLAUDE_CODE_START.mdの手順4に巻き戻した銘柄のGateのNGの記録を追加
 - **2026-10-15（夜の終業のブラッシュアップ）**: 移設0件。新規`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）でアクティブBACKLOG 52件→53件。CHAT_RULES.mdに事例40（Noneにしうる変更ではログ・print・f-stringの書式化もgrepの対象）。SYSTEM_MAP.mdに台帳の設計書への参照
 - **2026-10-15（台帳の段の位置とRICEの例外）**: `a0ab34ea68`。段の位置を「Gate → 集約 → score_watcher → commit」で決定（集約の失敗時・初回の条件を追加）。RICEの4銘柄（CIX・ENTG・SPIR・XOM）の例外は判定・理論株価に影響しないことを確認し、`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`に追記
 - **2026-10-15（銘柄別の例外の台帳の設計）**: `937d32dd60`。`docs/architecture/TICKER_EXCEPTION_LEDGER.md`を新設、`[[TICKER-EXCEPTION-LEDGER-1]]`（高）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）を登録。次の作業の2番に台帳を入れた

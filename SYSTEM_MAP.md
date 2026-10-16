@@ -1855,6 +1855,16 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　（.github/workflows/TANUKI_TAIL_Position_Write.yml → src/tail/workflow_write.py）
 　　経由でリポジトリにコミット（TAIL-SEC-1 2026-06-21、旧:ブラウザから直接GitHub API書き込み）
 
+　　**最新のレビューの決め方とキューのstatus（2026-10-16、[[TAIL-REVIEW-LATEST-MISMATCH-1]]、`e615dc2b21`）**:
+　　最新のレビュー = `review_queue.json`でstatusがcompletedのうち、quarterが最大のもの。画面（index.html・detail.html）・
+　　`tail_dcf_bridge.py`（DCFシナリオ）・`quarterly_review_generator.py`（is_latest）が同じ規則を`src/tail/review_status.py`で使う。
+　　レビューのファイルの`is_latest`は、completedの最大以上の期を保存したときだけTrueになる表示用の印で、読み手は無い。
+　　status: pending（生成待ち）・completed・error・superseded（後から作られた古い期のレビュー。ファイルは残し、画面・
+　　予測の振り返り〈`prediction_tracker.py`〉から外す）・skipped_old（completedの最大より古い期のためGrokを呼ばずに生成しない）。
+　　RSSの新規提出の判定（`edgar_rss_monitor.py::classify_filing()`、2026-10-16、[[TAIL-RSS-FALSE-NEW-FILING-1]]、`2d8dcf33ab`）:
+　　10-Q・10-KのどちらかのRSSが取れない回は判定しない。提出日が記録（`rss_state.json`の`last_filed`）より新しいか、
+　　同じ日でaccnが違うときだけ新規。Discordの通知はsecret `DISCORD_WEB_HOOK`（[[TAIL-RSS-SECRET-NAME-1]]、`1c2529cf6c`）
+
 　　**RSS監視・四半期レビュー自動生成の対象範囲（確定、2026-08-19②
 　　決定）**: RSS監視（`edgar_rss_monitor.py`の`--ticker`未指定時
 　　デフォルト、`get_monitored_tickers()`）・四半期レビュー自動生成

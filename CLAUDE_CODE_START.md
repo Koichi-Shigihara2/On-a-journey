@@ -26,8 +26,10 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-15 夜の終業時の最新。確認する日時〈JST〉の順。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**53件**（`^### [`の機械カウント、2026-10-15 夜の終業。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+**次回の確認手順（2026-10-16 終業時の最新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**54件**（`^### [`の機械カウント、2026-10-16 終業。10-16に`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中）を登録。完了3件〈`[[TAIL-RSS-SECRET-NAME-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`〉は登録と同時にBACKLOG_DONE.mdへ）。
+範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。
+以下は2026-10-15 夜の終業の記載（53件。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
@@ -87,6 +89,19 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - Discordの通知: ログの`DISCORD_WEBHOOK:`が空でない（`***`）。通知は新規提出か遅れのアラート（`ALERT_BIZ_DAYS`にちょうど達した日）がある日だけ出るため、その日のログに「Discord 送信OK」があり、Discordに届いていること
      - 確かめたら、移設済みの3件の「確認」の欄に結果を書き足す（BACKLOG_DONE.md）
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-16 日曜の前の点検と、TANUKI TAILの通知・誤検知・最新のレビューの修正（確認は上の「次回の確認手順」9。完了3件はBACKLOG_DONE.mdへ移設済み）**
+- 読み取り: `d193ee798a`の点検（actionlint 0件、secret名`DISCORD_WEB_HOOK`の一致、`$RUNNER_TEMP/sec_update_result.json`のパスの一致、巻き戻しの対象が1銘柄分の3つのパスで共有ファイルを含まない、段の順序と`if`、下流の`conclusion == success`）。
+  止める問題は無し。`[[LAYER3-FIRST-FILED-DATE-1]]`の調査（読み手の表、案A〜Cと置き換え）→ 案Aで決定（BACKLOGに記録、着手は10-19の確認の後）
+- `1c2529cf6c`: SEC_Data_UpdateのSummaryの段に`continue-on-error: true`。TANUKI TAIL RSS Monitorのsecret名を`DISCORD_WEB_HOOK`に（`[[TAIL-RSS-SECRET-NAME-1]]`。2026-06-06の作成から通知が届いていなかった。既読は通知の前に保存されるため、まとめて届くことはない）。手順4にGateのNGの記録を追加
+- `2d8dcf33ab`: `[[TAIL-RSS-FALSE-NEW-FILING-1]]`。10-QのRSSのタイムアウトで古い10-Kを新規提出と誤検知していた（SOUN・APP・CELHの2025Q4がキューに入りGrokのレビューが作られた）。片方が取れない回は判定しない、提出日で新旧を比べる。テスト12件
+- `e615dc2b21`: `[[TAIL-REVIEW-LATEST-MISMATCH-1]]`（高）。後から作られた古い期のレビューにis_latestが移り、6銘柄（APP・CELH・SOUN・PLTR・SOFI・TSLA）のDCFシナリオが2025Q4から作られていた。
+  最新 = キューのcompletedのquarterの最大に統一（`src/tail/review_status.py`）、2025Q4をsuperseded、古い期はskipped_old、index.htmlのDCFのタブに反映待ちの注記。テスト14件。新規`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、調査）
+- `f1167c2f42`: 次回の確認手順に9、BACKLOG_DONE.mdのcommitをhashに、SYSTEM_MAP.mdのsatellite_monitor.py（2026-09-23削除、`ed2739d9bb`）
+- `c36dbfbc02`: CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」と事例41、`FINDINGS.md`を新設（型A・B・C）
+- （終業）CHAT_RULES.mdの同じ節に5（型Aの根治策＝出力の一覧〈書き手・読み手・定義〉とCHECK、grepで下書き、SECデータ層から）・6（終業の数の記録と、数を増やさない決まり）。初回の数はPROJECT_STATUS.mdの10-16の終業の記録
+- スクリプト・ワークフローの実行はしていない。TAILのシナリオ・prediction_history.jsonは次の平日のRSS Monitorで作り直される。どの変更も理論株価・判定には影響しない（TANUKI・Score・score_watcher・HypeCoreはTAILのシナリオ・レビュー・キューを読まない）
+- ゲートはローカルの環境変数`DISCORD_WEB_HOOK`を外して実行する（`env -u DISCORD_WEB_HOOK`。audit.pyはローカルでは送らない作りだが念のため）。出力はファイルに書かない
 
 **2026-10-15 SEC_Data_Updateの1銘柄の失敗で全体を止めない（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、10-18の本番で確認するまでBACKLOG.mdに残す）**
 - 読み取り調査: parserの例外は`failed`に入らずその場で全体が止まる（10-11はXOMで93/98銘柄目、後ろの5銘柄は未処理）、Raw・normalize・TTMの例外は成功扱いで古いnormalized・TTMと混在したままcommitされる、
