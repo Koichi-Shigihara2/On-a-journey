@@ -1301,6 +1301,7 @@ SYSTEM_MAP.md/CHAT_RULES.md等への追記、ソースコードの修正等）�
 - 同じ型が2件以上ある、または影響の大きいものがあれば、型に対する根治策を1件設計し、BACKLOGに1件として登録する（症状ごとには登録しない）。束ねた行には、その根治策のIDを書く
 - 影響が無く、長く気づかれなかったもの（読み手のいない出力など）は、直すのではなく、機能を削除するか記録を捨てる
 - 束ねた結果（根治策・削除・捨てる）は`FINDINGS.md`の各行の状態に書き、行は消さない
+- 初回の束ね（2026-10-19の確認の後）は、`FINDINGS.md`の行に加えて、BACKLOG.mdのアクティブ全件も同じ基準で対象にする（進め方は`PROJECT_STATUS.md`「次の作業」の2）
 
 **4. 根治策は2026-07-23のトップダウンの手順に沿う**
 - 出力項目の棚卸し → 定義 → 必要データ → 取得の確認、の順（`docs/architecture/new_data_platform/`の`archive/OUTPUT_ITEMS_INVENTORY.md`〈07-22の棚卸しの凍結版〉・`TO_BE_FINAL_LIST.md`・`FIELD_DEFINITIONS.md`・`INPUT_DATA_AS_IS.md`／`INPUT_DATA_TOBE.md`）
