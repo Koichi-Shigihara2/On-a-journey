@@ -36,7 +36,7 @@ jobs:
 
       - name: Run RSS monitor
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
           if [ -n "${{ github.event.inputs.ticker }}" ]; then
             python src/tail/edgar_rss_monitor.py --ticker ${{ github.event.inputs.ticker }}
@@ -83,7 +83,7 @@ jobs:
       - name: Run quarterly review generator (pending only)
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
           PENDING=$(python -c "
           import json

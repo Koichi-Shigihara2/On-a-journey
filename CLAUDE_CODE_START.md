@@ -58,6 +58,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は2026-10-15に実装済み。update.pyが止まるのは失敗が対象の10%超か、銘柄のループの外の例外のときだけ。Gateの1銘柄のNGではまだ止まる〈`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`〉。止まっていたら原因を確かめて手動で再実行する）
      - SEC_Data_UpdateのDiscordの通知（「✅／⚠／❌ SEC Data Update」）が届いている。❌なら「止まった段」を見る
      - 失敗した銘柄（Discord・Step Summaryの先頭の表・`_freshness.json`のFAILED）があれば、その銘柄の`common/sec_data/data/{T}/`・normalized・ttmがcommitに含まれず前回のまま（「Roll back failed tickers」の段のログ）で、他の銘柄はcommitされている。Step SummaryのRevenue品質の表が表として表示されている（`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`）。確かめたら`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設する
+     - 巻き戻した銘柄（前回のデータのまま）がConsistency Check GateでNGになっていたら、`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`の実例として、銘柄とCHECKの番号（NGの行）をそのBACKLOGに記録する（`--include-yfinance-checks`の突合で新しい期とずれる可能性がある。2026-10-16の点検）
      - 確かめたら`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
    - 日時: 2026-10-18（日）のSEC_Data_Updateの後（上の4と同じ実行）

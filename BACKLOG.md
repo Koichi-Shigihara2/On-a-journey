@@ -3188,7 +3188,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **優先度:** 中
 **分類:** 一次データ / common/sec_data（`quarterly.py::_process_entries()`・`fact_selection.py::select_latest_filed()`・`layer3_builder.py`・`contracts.py`）
 **登録日:** 2026-10-14
-**着手条件（2026-10-14 終業）:** 次の作業の候補の1番目（2026-10-14、PROJECT_STATUS.md「次の作業」）。2026-10-18の連鎖の確認の後
+**着手条件（2026-10-16 更新）:** 2026-10-19の確認（`CLAUDE_CODE_START.md`「次回の確認手順」の4・6）の後。置き方は下の「決定（2026-10-16）」
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14、c52db854d8）。試算ではcompany_factsの最初の提出日を使い、10,743件がLayer3のfiledと食い違った
 
 #### 内容（2026-10-14の調査、読み取りのみ）
@@ -3227,6 +3227,17 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 #### 方針
 Layer3に最初の提出日を持たせる（期間の長さと関係なく必要。定義v2 §3・§5）。Layer3は登録のStep 1（`update.py TICKER`）でも作られるため、新しい銘柄にもそのまま入る。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+#### 決定（2026-10-16、チャット側）
+- 案A: `quarterly.py::_process_entries()`で各エントリに`first_filed`を足す。`filed`は今の意味（採用した値の書類）のまま残し、選び方・値は変えない
+  - 派生の値（YTDからの差し引き〈`layer3_builder.py` L952・`normalizer.py` L369〉・Q4の暗黙〈`q4_implied.py` L192〉・合算）は、元の値の`first_filed`の最大にする
+  - 共通の関数に入れるため、normalized（`common/sec_data/normalized/`と公開のコピー`docs/common/sec_data/normalized/`）にもキーが入る（次のSEC_Data_Updateで全銘柄のファイルに差分が出る。値は変わらない）
+  - 理論株価・判定・注記は変わらない見込み（2026-10-16の調査: Layer3の`filed`で選ぶ処理は`first_filed`を読まず、`is_current_end`・`latest_period_missing`・`financial_as_of`は期末日を見る。method_changeの印は要らない）
+  - `contracts.py`は知らないキーを無視する（`from_dict()`）ため弾かれない。任意キーとして書き足す
+- 「最初」は、候補のタグ全体の中で最小の`filed`とする（年によってタグが変わる項目も、その期間の値が最初に申告された書類の日付）。`_process_entries()`はタグごとに呼ばれるため、タグをまたぐ最小は候補のタグを合わせる側で取る
+- 10-Q/A・10-K/Aも提出として数える（`_process_entries()`の対象のformと同じ）
+- `first_val`（案B）は保留。[[STAGE-V2-ROLLOUT-1]]の検証で、後から修正された値による先読みのずれが問題になるかを見て決める
+- 2026-10-16の調査で表に無かった読み手: `xbrl_segment_fetcher.py` L446（Layer3の`filed`を`docs/portfolio/tail/data/kpi/*_layer2.json`へ書く。キーを指定して取り出すため`first_filed`は入らない。HTMLは`filed`を読まない）、`conditional_tags.py` L45（生のfiled、2026-10-14追加）。行番号の更新: `layer3_builder.py` L805・L1041、`rotce.py` L147・L287・L345、`report_consistency_check.py` L1545・L1864
 
 ---
 

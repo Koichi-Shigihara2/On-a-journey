@@ -95,7 +95,9 @@ jobs:
             bash .github/scripts/push_with_retry.sh kaihatsu
           fi
 
+      # 表示だけの段。失敗してもjobの結果（下流の連鎖の条件）を変えない（通知の段はこの段を見ていないため）
       - name: Summary
+        continue-on-error: true
         run: |
           echo "## SEC Data Update Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

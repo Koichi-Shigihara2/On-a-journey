@@ -2,6 +2,28 @@
 
 ---
 
+## 2026-10-16（完了）
+
+### ✅ [TAIL-RSS-SECRET-NAME-1] TANUKI TAIL RSS Monitorが存在しないsecret名（DISCORD_WEBHOOK）を参照し、新規提出・提出遅延のDiscord通知が一度も送られていなかった
+**完了（2026-10-16）:** `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml`の39行・86行を`secrets.DISCORD_WEB_HOOK`に直した（commit「fix(workflows): SEC_Data_UpdateのSummaryの段を結果に響かせない・TAIL RSS Monitorのsecret名を直す」）。環境変数名`DISCORD_WEBHOOK`はスクリプト（`edgar_rss_monitor.py` L311）が読む名前のため変えない。確認は次の平日の実行のログで`DISCORD_WEBHOOK: ***`（空でない）と、新規提出・遅延があった日の「Discord 送信OK」
+**優先度:** 中
+**分類:** 通知 / ワークフローのsecret
+**登録日:** 2026-10-16
+**発見:** SEC_Data_Updateの通知の段の点検（2026-10-16、全ワークフローの`secrets.*`の参照と`gh secret list`の照合）
+
+#### 内容（2026-10-16の確認、読み取りのみ）
+- リポジトリのsecretは`DISCORD_WEB_HOOK`だけで、`DISCORD_WEBHOOK`は無い。`edgar_rss_monitor.py::send_discord()`は未設定なら「Discord スキップ」と出して送らない
+- 通知が送られていなかった期間: ワークフローの作成（`7c24c2e291`、2026-06-06）から本件の修正まで。`git log -S`で、39行は`7c24c2e291`、86行は`d47fc4d9d1`（同日）からずっと`secrets.DISCORD_WEBHOOK`。Actionsに残る最古の実行は2026-06-08
+- ログの実例（「Discord スキップ (DISCORD_WEBHOOK 未設定)」）: 09-17 SOUN、09-18 NVDA・SOUN、09-22〜09-29 CELH・ADBE・TSLA、10-07 TSLAの提出遅延。10-15の実行のログでも`DISCORD_WEBHOOK:`が空
+- 86行（quarterly_review_generator.pyの段）は、スクリプトがwebhookを読まないため直しても動きは変わらない（名前をそろえただけ）
+- 直した直後に溜まった分がまとめて通知されるおそれは無い: 既読の状態は`docs/portfolio/tail/data/rss_state.json`（銘柄ごとの`last_accn`）で、`main()`は通知の前に`save_state()`する（通知の成否を記録しない）。通知はその回にstateと違うaccnを検知した銘柄（new_filing）と、遅延の日数がちょうど`ALERT_BIZ_DAYS`の銘柄（overdue）だけ
+
+#### 見つかったこと（未登録、チャット側の判断）
+- 偽の「新規提出」: `fetch_rss_latest()`は10-Qと10-KのRSSのうちfiledが新しい方を返すが、10-QのRSSがタイムアウトすると古い10-Kのaccnが最新になり、stateと違うため新規提出として扱われる。次の回で10-Qに戻ると、もう一度新規提出になる（run 36451110918〈09-28〉で10-Qの読み取りタイムアウトの後にTSLA 2025Q4、run 36583985823〈09-29〉でTSLA・CELH 2026Q2。CELHは09-22〜09-29に2025Q4と2026Q2を交互に検知）。
+  review_queueはaccnの重複を防ぐため増えないが、本件の修正でこの偽の通知がDiscordに届くようになる。直し方の案: どちらかのformのRSSが取れなかった回は、その銘柄のstateを更新せず通知もしない
+
+---
+
 ## 2026-10-14（完了）
 
 ### ✅ [LAYER3-STALE-LATEST-VALUE-1] 保持期間を延ばすと、今は申告されていない項目に2019〜2021年の値が入り、「直近の値」として読む処理（STONKS SILOのベクトル・TAILのKPI等）に古い値が出る
