@@ -5,7 +5,7 @@
 ## 2026-10-16（完了）
 
 ### ✅ [TAIL-RSS-SECRET-NAME-1] TANUKI TAIL RSS Monitorが存在しないsecret名（DISCORD_WEBHOOK）を参照し、新規提出・提出遅延のDiscord通知が一度も送られていなかった
-**完了（2026-10-16）:** `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml`の39行・86行を`secrets.DISCORD_WEB_HOOK`に直した（commit「fix(workflows): SEC_Data_UpdateのSummaryの段を結果に響かせない・TAIL RSS Monitorのsecret名を直す」）。環境変数名`DISCORD_WEBHOOK`はスクリプト（`edgar_rss_monitor.py` L311）が読む名前のため変えない。確認は次の平日の実行のログで`DISCORD_WEBHOOK: ***`（空でない）と、新規提出・遅延があった日の「Discord 送信OK」
+**完了（2026-10-16）:** `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml`の39行・86行を`secrets.DISCORD_WEB_HOOK`に直した（`1c2529cf6c`）。環境変数名`DISCORD_WEBHOOK`はスクリプト（`edgar_rss_monitor.py` L311）が読む名前のため変えない。確認は次の平日の実行のログで`DISCORD_WEBHOOK: ***`（空でない）と、新規提出・遅延があった日の「Discord 送信OK」
 **優先度:** 中
 **分類:** 通知 / ワークフローのsecret
 **登録日:** 2026-10-16
@@ -18,9 +18,29 @@
 - 86行（quarterly_review_generator.pyの段）は、スクリプトがwebhookを読まないため直しても動きは変わらない（名前をそろえただけ）
 - 直した直後に溜まった分がまとめて通知されるおそれは無い: 既読の状態は`docs/portfolio/tail/data/rss_state.json`（銘柄ごとの`last_accn`）で、`main()`は通知の前に`save_state()`する（通知の成否を記録しない）。通知はその回にstateと違うaccnを検知した銘柄（new_filing）と、遅延の日数がちょうど`ALERT_BIZ_DAYS`の銘柄（overdue）だけ
 
-#### 見つかったこと（未登録、チャット側の判断）
-- 偽の「新規提出」: `fetch_rss_latest()`は10-Qと10-KのRSSのうちfiledが新しい方を返すが、10-QのRSSがタイムアウトすると古い10-Kのaccnが最新になり、stateと違うため新規提出として扱われる。次の回で10-Qに戻ると、もう一度新規提出になる（run 36451110918〈09-28〉で10-Qの読み取りタイムアウトの後にTSLA 2025Q4、run 36583985823〈09-29〉でTSLA・CELH 2026Q2。CELHは09-22〜09-29に2025Q4と2026Q2を交互に検知）。
-  review_queueはaccnの重複を防ぐため増えないが、本件の修正でこの偽の通知がDiscordに届くようになる。直し方の案: どちらかのformのRSSが取れなかった回は、その銘柄のstateを更新せず通知もしない
+#### 見つかったこと
+- 10-QのRSSのタイムアウトで古い10-Kを新規提出と誤検知する件は[[TAIL-RSS-FALSE-NEW-FILING-1]]で直した（下の項目）
+
+### ✅ [TAIL-RSS-FALSE-NEW-FILING-1] TANUKI TAIL RSS Monitorが、10-QのRSSのタイムアウトで古い10-Kを最新と見なし、新規提出と誤検知していた（戻る回にも再び新規提出）
+**完了（2026-10-16）:** `src/tail/edgar_rss_monitor.py`を修正（commit「fix(tail): RSSの片方が取れない回と古い提出への戻りを新規提出と誤検知しない」）。テスト`tests/test_tail_rss_false_new_filing.py`（12件）。確認は次の平日の実行のログで、RSS 取得エラーの銘柄に「新規提出の判定をしない」が出て「★ 新規提出」が出ないこと
+**優先度:** 中（[[TAIL-RSS-SECRET-NAME-1]]の修正で、誤検知がDiscordに届くようになったため）
+**分類:** 監視 / TANUKI TAIL（`edgar_rss_monitor.py::fetch_rss_latest()`・`process_ticker()`）
+**登録日:** 2026-10-16
+**発見:** [[TAIL-RSS-SECRET-NAME-1]]の確認（Actionsのログの「Discord スキップ」の実例）
+
+#### 内容（2026-10-16の確認）
+- 直す前の`fetch_rss_latest()`（L134-143）は10-Qと10-KのRSSを1件ずつ取り、filedが新しい方を返していた。`_fetch_rss_form()`は取得の失敗も「エントリ無し」もNoneを返すため、10-Qが取れない回は10-Kだけで「最新」が決まった。
+  `process_ticker()`（L376）はaccnがstateと違えば提出日を比べずに新規提出とし、`last_accn`を書き換えていた
+- 実例: run 36451110918（09-28）で10-Qの読み取りタイムアウトの後にTSLA 2025Q4、run 36583985823（09-29）でTSLA・CELH 2026Q2（戻る回）。CELHは09-22〜09-29に2025Q4と2026Q2を交互に検知
+- review_queueはaccnの重複を防ぐが、初めて誤検知された古い書類は入っていた: SOUN 2025Q4（提出2026-03-02、09-01に投入）、APP 2025Q4（提出2026-02-19、09-03）、CELH 2025Q4（提出2026-03-02、09-22）。3件ともGrokのレビューが作られてcompleted（[[TAIL-RSS-SECRET-NAME-1]]の記載「review_queueは増えない」は誤りで、ここで訂正する）。キューとレビューのファイルは消していない
+- rss_state.json・review_queue.jsonの読み手（2026-10-16、grep）: rss_state.jsonは`edgar_rss_monitor.py`だけ（SYSTEM_MAP.mdに書かれたsatellite_monitor.pyは2026-09-23に削除済み〈`ed2739d9bb`〉）。
+  review_queue.jsonは`quarterly_review_generator.py`（pendingにGrokでレビュー）、TANUKI_TAIL_RSS_Monitor.ymlの3つの段（pendingの銘柄）、`report_consistency_check.py`のCHECK-37（`load_queue()`）、画面の`docs/portfolio/tail/index.html` L956・`detail.html` L305（completedのレビューを表示）
+
+#### 実装（2026-10-16）
+- `_fetch_rss_form()`は(取れたか, エントリ)を返す（失敗と「その種類の提出が無い」を分ける）。`fetch_rss_latest()`は(最新, 取れなかったフォームの一覧)を返す
+- `classify_filing()`: 同じaccnはsame、どちらかのRSSが取れない回はunverified（判定しない）、提出日が記録済みより新しいか同じでaccnが違えばnew、古ければolder
+- new以外は`last_accn`を更新せず新規提出の通知もしない。遅れの通知（`ALERT_BIZ_DAYS`）は今までどおり出す。初回の記録も、片方が取れない回は見送る
+- rss_state.jsonは既に`last_filed`を`last_accn`と一緒に保存している（2026-10-16時点で9銘柄すべてにある）。`last_filed`の無い旧形式は、同じ書類を見た回に足し、accnが違えば従来どおり新規とする（遅延チェックは提出日が無ければしない）
 
 ---
 

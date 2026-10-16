@@ -70,8 +70,12 @@ _FORM_RE  = re.compile(r'<filing-type>\s*(10-[QK])\s*</filing-type>', re.IGNOREC
 # RSS 取得・パース
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _fetch_rss_form(cik: str, form_type: str) -> Optional[Dict[str, str]]:
-    """EDGAR Atom RSS から指定フォームタイプの最新エントリを1件返す。"""
+def _fetch_rss_form(cik: str, form_type: str) -> tuple:
+    """EDGAR Atom RSS から指定フォームタイプの最新エントリを1件返す。
+
+    戻り値は (取れたか, エントリ)。取得の失敗（タイムアウト・HTTPエラー）は (False, None)、
+    取れたがエントリが無い（その種類の提出が無い）は (True, None)。
+    """
     url = (
         "https://www.sec.gov/cgi-bin/browse-edgar"
         f"?action=getcompany&CIK={cik}&type={form_type}"
@@ -84,7 +88,7 @@ def _fetch_rss_form(cik: str, form_type: str) -> Optional[Dict[str, str]]:
         xml = r.text
     except Exception as e:
         print(f"  RSS 取得エラー ({form_type}): {e}")
-        return None
+        return False, None
 
     for m in _ENTRY_RE.finditer(xml):
         entry = m.group(1)
@@ -94,12 +98,12 @@ def _fetch_rss_form(cik: str, form_type: str) -> Optional[Dict[str, str]]:
         am = _ACCN_RE.search(entry)
         dm = _DATE_RE.search(entry)
         if am and dm:
-            return {
+            return True, {
                 "accn":  am.group(1).strip(),
                 "filed": dm.group(1),
                 "form":  fm.group(1).upper(),
             }
-    return None
+    return True, None
 
 
 def get_filing_period(cik: str, accn: str) -> Optional[str]:
@@ -131,16 +135,26 @@ def get_filing_period(cik: str, accn: str) -> Optional[str]:
     return None
 
 
-def fetch_rss_latest(cik: str) -> Optional[Dict[str, str]]:
-    """10-Q と 10-K のうち filed が新しい方を返す。"""
+def fetch_rss_latest(cik: str) -> tuple:
+    """10-Q と 10-K のうち filed が新しい方と、取れなかったフォームの一覧を返す。
+
+    戻り値は (最新のエントリ or None, 取れなかったフォームのリスト)。
+    片方が取れなかった回の「最新」は、もう片方だけの最新で、本当の最新とは限らない
+    （10-Qのタイムアウトで古い10-Kが最新に見え、新規提出と誤検知していた。
+    [[TAIL-RSS-FALSE-NEW-FILING-1]]）。扱いはprocess_ticker()が決める。
+    """
     latest: Optional[Dict[str, str]] = None
+    failed: List[str] = []
     for form_type in ("10-Q", "10-K"):
-        entry = _fetch_rss_form(cik, form_type)
+        ok, entry = _fetch_rss_form(cik, form_type)
+        if not ok:
+            failed.append(form_type)
+            continue
         if entry is None:
             continue
         if latest is None or entry["filed"] > latest["filed"]:
             latest = entry
-    return latest
+    return latest, failed
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -326,6 +340,27 @@ def send_discord(message: str) -> bool:
 # 1銘柄処理
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+def classify_filing(latest: Dict[str, str], prev: Dict[str, Any], failed: List[str]) -> str:
+    """RSSの最新（latest）を記録済みの提出（prev）と比べ、扱いを返す（[[TAIL-RSS-FALSE-NEW-FILING-1]]）。
+
+      same:       記録済みと同じ書類
+      unverified: 10-Q・10-KのどちらかのRSSが取れなかった回（latestが本当の最新とは限らないので判定しない）
+      new:        提出日が記録済みより新しい。提出日が同じならaccnの違いで新規とする
+      older:      提出日が記録済みより古い（古い書類への戻り。更新も通知もしない）
+    記録済みの提出日が無い旧形式のstateは、従来どおりaccnの違いだけで新規とする。
+    """
+    if latest["accn"] == prev.get("last_accn"):
+        return "same"
+    if failed:
+        return "unverified"
+    prev_filed = prev.get("last_filed")
+    if not prev_filed:
+        return "new"
+    if latest["filed"] >= prev_filed:
+        return "new"
+    return "older"
+
+
 def process_ticker(
     ticker: str,
     cik: str,
@@ -339,13 +374,24 @@ def process_ticker(
     """
     alerts: List[Dict[str, Any]] = []
 
-    latest = fetch_rss_latest(cik)
+    latest, failed = fetch_rss_latest(cik)
     if latest is None:
         print(f"  [{ticker}] RSS 取得失敗 → スキップ")
         return alerts
 
     prev      = state.get(ticker, {})
     prev_accn = prev.get("last_accn")
+
+    if prev_accn is None and failed:
+        # 初回でも、片方のRSSが取れない回の「最新」は記録しない（次の回に記録する）
+        print(f"  [{ticker}] 初回記録を見送り（{'・'.join(failed)} のRSSが取れない）")
+        return alerts
+
+    # 提出日の無い旧形式のstate: 同じ書類を見ている回に提出日を足す
+    if prev_accn is not None and not prev.get("last_filed") and latest["accn"] == prev_accn:
+        prev["last_filed"] = latest["filed"]
+
+    kind = classify_filing(latest, prev, failed)
 
     if prev_accn is None:
         # 初回実行: 現状を記録するだけでキューには追加しない
@@ -359,7 +405,7 @@ def process_ticker(
             "no_filing_days": 0,
         }
 
-    elif latest["accn"] != prev_accn:
+    elif kind == "new":
         # 新規提出を検知: RSS に period-of-report がないので submissions API で補完
         period = get_filing_period(cik, latest["accn"]) or ""
         quarter = quarter_label(period) if period else "不明"
@@ -392,7 +438,16 @@ def process_ticker(
         })
 
     else:
-        # 変更なし — 遅延チェック
+        # 変更なし（同じ書類・古い書類への戻り・片方のRSSが取れず判定しない回）— 遅延チェック
+        if kind == "older":
+            print(f"  [{ticker}] RSSの最新 {latest['accn']} (filed={latest['filed']}) は記録済みの提出"
+                  f" (filed={prev.get('last_filed')}) より古い → 更新しない")
+        elif kind == "unverified":
+            print(f"  [{ticker}] {'・'.join(failed)} のRSSが取れないため、新規提出の判定をしない"
+                  f"（RSSの最新 {latest['accn']} filed={latest['filed']}）")
+        if not prev.get("last_filed"):
+            print(f"  [{ticker}] 記録済みの提出日が無いため遅延チェックをしない")
+            return alerts
         last_filed = date.fromisoformat(prev["last_filed"])
         expected   = last_filed + timedelta(days=EXPECTED_DAYS)
         today      = date.today()
