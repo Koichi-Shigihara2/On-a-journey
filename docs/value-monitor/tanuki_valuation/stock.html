@@ -739,12 +739,20 @@ async function loadAndRenderSignalConsistency() {
   }
 }
 
+// ヘッダーは innerHTML で後から描画するため、描画の後に共通ナビ・銘柄横断リンクを当て直す（NAV-LINK-INTEGRITY-1）。
+// 共通スクリプトがまだ読まれていなければ、それぞれの DOMContentLoaded 時の初回処理が当てる
+function applySharedNav() {
+  if (window.SiteNav) window.SiteNav.apply();
+  if (window.TickerLinks) window.TickerLinks.render();
+}
+
 async function loadData() {
   try {
     const response = await fetch(`data/${ticker}/latest.json`, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Data not found');
     globalData = await response.json();
     render(globalData);
+    applySharedNav();
     loadAndRenderMatrices();
     loadAndRenderHypeSignal();
     loadCfData(globalData);
@@ -763,13 +771,7 @@ async function loadData() {
       <header>
         <a href="index.html" class="back-link">← BACK TO LIST</a>
         <div class="header-right">
-          <nav class="nav-links">
-            <a href="../../">HOME</a>
-            <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
-            <a href="index.html" class="active">TANUKI</a>
-            <a href="../../market-monitor/market-pulse/">Market Pulse</a>
-            <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
-          </nav>
+          <nav class="nav-links"></nav>
         </div>
       </header>
       <div class="hero">
@@ -778,6 +780,7 @@ async function loadData() {
           <p>Failed to load data for ${ticker}</p>
         </div>
       </div>`;
+    applySharedNav();
   }
 }
 
@@ -1057,20 +1060,16 @@ function render(d) {
           <img src="../../common/images/logo.png" alt="TANUKI" style="height:30px;width:auto;object-fit:contain">
           <span class="logo-dot"></span>
           <span class="logo-text">TANUKI<span class="logo-accent">VALUATION</span></span>
+        </a>
         <a href="index.html" class="back-link">← BACK TO LIST</a>
       </div>
       <div class="header-right" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <nav class="nav-links">
-          <a href="../../">HOME</a>
-          <a href="../adjusted_eps_analyzer/">EPS Analyzer</a>
-          <a href="index.html" class="active">TANUKI</a>
-          <a href="../../market-monitor/market-pulse/">Market Pulse</a>
-          <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
-        </nav>
+        <nav class="nav-links"></nav>
         <div class="version-tag">${(d.formula || '').match(/v[\d.]+/) ? (d.formula.match(/v[\d.]+/)[0]) : 'v6.2'} | ${toJST(calcDate)}${d.next_earnings_date ? ` | 次回決算: ${d.next_earnings_date}` : ''}</div>
       </div>
     </header>
     <div class="last-updated">${toJST(calcDate)}</div>
+    <div data-ticker-links></div>
 
     <div class="hero">
       <div class="ticker-header">
@@ -2878,6 +2877,7 @@ document.addEventListener('keydown', e => {
 </div>
 
   <script src="../../common/info-tooltip.js"></script>
+  <script src="../../common/ticker-links.js"></script>
   <script src="../../common/site-nav.js"></script>
 </body>
 </html>

@@ -32,6 +32,7 @@
   --tool-discover:     #06b6d4;   /* シアン（HOME card-discover） */
   --tool-portfolio:    #f97316;   /* オレンジ（HOME card-portfolio） */
   --tool-tail:         var(--tool-portfolio); /* TANUKI TAILはportfolio配下のため同色を採用 */
+  --tool-ef:           #f43f5e;   /* Extreme Fear: fear red（HOME card-ef） */
   --tool-home:         #3b82f6;   /* HOMEのデフォルト青 */
 
   /* デフォルト --acc は青（ランディング・ホーム） */
@@ -54,7 +55,7 @@ body[data-tool="discover"]     { --acc: var(--tool-discover); }
 body[data-tool="portfolio"]    { --acc: var(--tool-portfolio); }
 body[data-tool="tail"]         { --acc: var(--tool-tail); }
 body[data-tool="home"]         { --acc: var(--tool-home); }
-body[data-tool="ef"]           { --acc: #f43f5e; }          /* Extreme Fear: fear red */
+body[data-tool="ef"]           { --acc: var(--tool-ef); }
 
 /* === 基本タイポ === */
 body {
@@ -108,15 +109,76 @@ a:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
   margin: 0 4px;
 }
 
+/* === サブナビ（ツール内のサブページ。site-nav.js の置換対象外。NAV-LINK-INTEGRITY-1） ===
+ * <nav data-sub-nav><a href="...">ダッシュボード</a><a class="active" ...>銘柄一覧</a></nav>
+ * ヘッダーの直後に1行で置く。グローバルナビ（.site-nav）の項目はここに書かない。 */
+[data-sub-nav] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+[data-sub-nav] a {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .06em;
+  color: var(--mut);
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid var(--bdr);
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+[data-sub-nav] a:hover { color: var(--acc); border-color: var(--acc); }
+[data-sub-nav] a.active {
+  color: var(--acc);
+  border-color: var(--acc);
+  background: color-mix(in oklab, var(--acc) 8%, transparent);
+}
+
+/* === 銘柄横断リンク（ticker-links.js が [data-ticker-links] に描画。NAV-LINK-INTEGRITY-1） === */
+[data-ticker-links] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .06em;
+}
+[data-ticker-links]:empty { display: none; }
+[data-ticker-links] .tl-label { color: var(--mut); margin-right: 2px; }
+[data-ticker-links] .tl-item {
+  padding: 3px 9px;
+  border: 1px solid var(--bdr);
+  border-radius: 3px;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--txt);
+}
+[data-ticker-links] a.tl-item:hover { color: var(--acc); border-color: var(--acc); }
+[data-ticker-links] .tl-item.active {
+  color: var(--acc);
+  border-color: var(--acc);
+  background: color-mix(in oklab, var(--acc) 8%, transparent);
+}
+[data-ticker-links] .tl-item.off { color: var(--mut2); border-style: dashed; cursor: default; }
+
 /* === ヘッダー共通整形 === */
+/* ロゴは折り返さず縮めない。幅が足りないときはナビ（.site-nav）の側が下の段に回る（NAV-LINK-INTEGRITY-1） */
 header .logo,
-.shell > header .logo {
+.shell > header .logo,
+.hdr .logo {
   font-family: var(--mono);
   font-weight: 700;
   letter-spacing: .15em;
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* === 統一ヘッダー部品（site-header.js が生成するDOM。EPIC-HEADER-1） === */
@@ -125,6 +187,8 @@ header .logo,
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .site-header-inner .logo {
   font-family: var(--mono) !important;
@@ -152,6 +216,7 @@ header .logo,
 }
 .site-header-inner .logo-title {
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .site-header-inner .logo-subtitle {
   font-family: var(--mono) !important;

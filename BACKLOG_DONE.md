@@ -39327,6 +39327,10 @@ CSV書込み前にヘッダー整合チェックを追加。
   フォールバック」設計は変更せず、挙動の説明のみユーザーに報告（設計判断はユーザー側）
 
 ✅ [EPIC-HEADER-1] ページヘッダー・タイトル共通部品化（2026-06-21 完了）
+- **追記（2026-10-17、[[NAV-LINK-INTEGRITY-1]]の調査）**: `site-header.js`を読み込むのは19ページ中5ページ（HOME・EPS index・
+  Extreme Fear・TANUKI SCORE・TANUKI VALUATION index）。残る14ページへの適用拡大は未着手（NAV-LINK-INTEGRITY-1では扱わない）
+- **追記（2026-10-17）**: TAIL 3ページ site-theme.css 適用済み（NAV-LINK-INTEGRITY-1で実施）。対象は`portfolio/tail/index.html`・`detail.html`・
+  `decision_log.html`。ページ内の`<style>`より前に読み込み、ページ内の`.site-nav`・`.nav-links`の定義は削除した。これで docs/ の19ページすべてが`site-theme.css`を読み込む
 - **統合元9件全件対応**: TVAL-HEADER-1/2/3, TSCORE-FIX-1/3/4, EPS-DISP-1, HOME-FIX-2
   （TVAL-HEADER-4はEPIC自体の実行で解消）。対象4画面（TANUKI VALUATION/TANUKI SCORE/
   EPS ANALYZER/HOME）に適用。stock.html（個別銘柄詳細ページ）は動的バージョンタグの

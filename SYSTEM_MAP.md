@@ -447,10 +447,14 @@ GitHub Actions（クラウド・端末状態非依存）と同等の可用性は
 
 | ファイル | 役割 | 適用範囲 |
 |---|---|---|
-| site-nav.js | `.nav-links`/`[data-site-nav]`をナビゲーションリンク行に置換。`body[data-tool]`でアクティブリンクをハイライト | 全ページ |
+| site-nav.js | `.nav-links`/`[data-site-nav]`をナビゲーションリンク行に置換。`body[data-tool]`でアクティブリンクをハイライト。ナビ項目の正本はITEMSだけ。`window.SiteNav.ITEMS`・`window.SiteNav.apply()`（ヘッダーを後から描画するページが描画後に呼ぶ。TANUKI stock.html）を公開（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | 全ページ（HOMEはカードが代わり） |
+| サブナビ `[data-sub-nav]` | ツール内のサブページへのリンク行。ヘッダーの直後に置く。`site-nav.js`の置換の対象外。CSSは`site-theme.css`（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | EPS ANALYZER（index・stock・tickers・admin：ダッシュボード／銘柄一覧／管理）・TANUKI VALUATION index（銘柄一覧／管理＝`value-monitor/admin.html`）・TANUKI TAIL（index・decision_log） |
+| ticker-links.js | 個別銘柄ページの`[data-ticker-links]`に同じ銘柄の「TANUKI / EPS / HYPE / TAIL」の切替行を描画。現在のツールはactive、登録銘柄リストに無いツールはグレーアウト（リンクにしない）、リストが読めなければリンク。判定元: `tanuki_valuation/data/tickers.json`・`adjusted_eps_analyzer/data/summary.json`の`tickers[].ticker`・`hypecore/data/tickers.json`・`portfolio/tail/data/positions_index.json`。`TickerLinks.render(X)`で再描画（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | TANUKI stock.html・EPS stock.html・HYPE detail.html・TAIL detail.html |
 | site-header.js | `header a.logo`をロゴ画像・タイトルドット・タイトル・サブタイトルの統一DOMに置換。`body[data-tool]`からタイトル/サブタイトル/アクセント色を自動解決（EPIC-HEADER-1 2026-06-21新設） | TANUKI VALUATION・TANUKI SCORE・EPS ANALYZER・HOME・Extreme Fear（EXTREME-FEAR-1 2026-07-01追加） |
-| site-theme.css | 配色トークン（`--tool-*`）・タイポ・ナビ/ヘッダー共通CSSを`!important`で上書き | 全ページ |
+| site-theme.css | 配色トークン（`--tool-*`）・タイポ・ナビ/ヘッダー共通CSSを`!important`で上書き。ナビ・サブナビ・銘柄横断リンクのCSSの正本（ページ内に書かない）。ヘッダー内のロゴは折り返さず縮めない | 全ページ（TANUKI TAILの3ページは2026-10-17から） |
 | glossary.json + info-tooltip.js | `<span data-info="key">`を自動検出しホバー/タップで用語説明をポップアップ表示（EPIC-LEGEND-1） | 該当箇所のみ |
+
+リンク監査: `scripts/audit_site_links.py`（docs/配下の全HTMLの href・src と共通JSの`BASE + '...'`から、リンク切れ・孤立ページを検出して終了コードで返す。手元で実行。CIへの組込みは[[NAV-LINK-AUDIT-CI-1]]）。
 
 ---
 

@@ -185,13 +185,7 @@
       VALUE MONITOR <span style="color:var(--acc)">ADMIN</span>
     </a>
     <div class="header-right">
-      <nav class="nav-links">
-        <a href="../">HOME</a>
-        <a href="adjusted_eps_analyzer/">EPS Analyzer</a>
-        <a href="tanuki_valuation/">TANUKI</a>
-        <a href="../market-monitor/market-pulse/">Market Pulse</a>
-        <a href="../market-monitor/macro-pulse/">MACRO PULSE</a>
-      </nav>
+      <nav class="nav-links"></nav>
     </div>
   </header>
 
@@ -3365,7 +3359,7 @@ function renderDiscoverTable(allTickers) {
       `<option value="${c}" ${info.category === c ? 'selected' : ''}>${c}</option>`
     ).join('');
     return `<tr>
-      <td><a class="mono" href="../tanuki_valuation/stock.html?ticker=${ticker}" style="color:var(--acc);text-decoration:none" target="_blank">${ticker}</a></td>
+      <td><a class="mono" href="tanuki_valuation/stock.html?ticker=${ticker}" style="color:var(--acc);text-decoration:none" target="_blank">${ticker}</a></td>
       <td>
         <select class="form-input discover-cat" data-ticker="${ticker}" style="width:100px;padding:5px 8px">
           ${catOptions}
@@ -3542,7 +3536,7 @@ function renderBrokerContent(brokerName) {
     const avg_cost = pos.avg_cost ?? 0;
     const memo     = pos.memo     ?? '';
     return `<tr>
-      <td><a class="mono" href="../tanuki_valuation/stock.html?ticker=${ticker}"
+      <td><a class="mono" href="tanuki_valuation/stock.html?ticker=${ticker}"
              style="color:var(--acc);text-decoration:none" target="_blank">${ticker}</a></td>
       <td><input type="number" class="form-input pf-shares"
            data-ticker="${ticker}" data-broker="${escAttr(brokerName)}"

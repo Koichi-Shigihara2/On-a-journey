@@ -67,6 +67,11 @@
     .card-score .card-title{color:#84cc16}
     .card-portfolio{--acc-c:#f97316}
     .card-portfolio .card-title{color:#f97316}
+    /* Extreme Fear・TANUKI TAIL は site-theme.css の --tool-* を使う（body[data-tool] と同じ色） */
+    .card-ef{--acc-c:var(--tool-ef)}
+    .card-ef .card-title{color:var(--tool-ef)}
+    .card-tail{--acc-c:var(--tool-tail)}
+    .card-tail .card-title{color:var(--tool-tail)}
 
     /* Features */
     .features{margin-top:48px}
@@ -150,6 +155,16 @@
       </div>
     </a>
 
+    <a href="value-monitor/extreme-fear/" class="card card-ef">
+      <div class="card-tag">buy support</div>
+      <div class="card-title">EXTREME<br>FEAR</div>
+      <div class="card-desc">CNN Fear &amp; Greed が極端な恐怖に入った局面の買付を支援。TANUKI スコアリング TOP10・投入額シミュレーター・過去の買い場。</div>
+      <div class="card-footer">
+        <div class="card-status"><span class="dot dot-live"></span>LIVE</div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
     <a href="market-monitor/macro-pulse/" class="card card-macro">
       <div class="card-tag">macro analysis</div>
       <div class="card-title">MACRO<br>PULSE</div>
@@ -174,6 +189,16 @@
       <div class="card-tag">portfolio tracker</div>
       <div class="card-title">PORT<br>FOLIO</div>
       <div class="card-desc">保有銘柄の時価残高・評価損益・理論株価乖離を一元管理。TANUKI SCOREと連動した売買判断サポート。</div>
+      <div class="card-footer">
+        <div class="card-status"><span class="dot dot-live"></span>LIVE</div>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="portfolio/tail/" class="card card-tail">
+      <div class="card-tag">thesis tracker</div>
+      <div class="card-title">TANUKI<br>TAIL</div>
+      <div class="card-desc">保有銘柄の長期投資テーゼ・KPI・決算ごとのレビューを管理。SEC提出の監視と DECISION LOG（パスワード保護）。</div>
       <div class="card-footer">
         <div class="card-status"><span class="dot dot-live"></span>LIVE</div>
         <span class="card-arrow">→</span>

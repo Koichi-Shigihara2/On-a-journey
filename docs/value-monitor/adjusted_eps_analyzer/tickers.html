@@ -205,19 +205,14 @@
       Adjusted EPS Analyzer
     </a>
     <div class="hdr-r">
-      <div class="nav-links">
-        <a href="../../">HOME</a>
-        <a href="index.html">ダッシュボード</a>
-        <a href="tickers.html" style="color:var(--acc); border-bottom-color:var(--acc);">銘柄一覧</a>
-        <a href="../../market-monitor/">Market Pulse</a>
-        <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
-      </div>
+      <div class="nav-links"></div>
       <div class="search-box">
         <input type="text" id="ticker-search" placeholder="ティッカー (例: TSLA)" value="TSLA">
         <button onclick="window.location.href='stock.html?ticker='+document.getElementById('ticker-search').value.toUpperCase()">検索</button>
       </div>
     </div>
   </header>
+  <nav data-sub-nav><a href="index.html">ダッシュボード</a><a href="tickers.html" class="active">銘柄一覧</a><a href="admin.html">管理</a></nav>
 
   <h2 class="sec" style="margin-top:0;">📋 全監視銘柄一覧</h2>
   <div class="table-wrap">

@@ -2,6 +2,11 @@
  * On a Journey · 統一ナビゲーション挿入
  * 各ページの <header> 内の `.nav-links` または `[data-site-nav]`
  * を見つけて、共通ナビに置き換える。
+ * ナビ項目の正本は ITEMS だけ（他のファイルに項目を書かない）。
+ * ツール内のサブページへのリンクは `[data-sub-nav]`（置換の対象外）に置く。
+ *
+ * 公開: window.SiteNav.ITEMS（項目）・window.SiteNav.apply()（置換の再実行。
+ *       ヘッダーを後から描画するページは、描画の後に呼ぶ）
  *
  * GitHub Pages の base path（/On-a-journey/）を前提に絶対パスで構築。
  * ────────────────────────────────────────────────────────── */
@@ -49,6 +54,8 @@
       t.parentNode.replaceChild(fresh, t);
     });
   }
+
+  window.SiteNav = { ITEMS: ITEMS, apply: init };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

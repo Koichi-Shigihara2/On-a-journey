@@ -4431,10 +4431,15 @@ Step 0のgrep結果を1件ずつ確認すること。
 ## リンク整合性チェック（HTMLファイルを新規作成・移設・削除した場合は必須）
 
 ```bash
-python ~/check_links.py
+python scripts/audit_site_links.py            # リンク切れ・孤立ページがあれば終了コード1
+python scripts/audit_site_links.py --verbose  # 検証できなかったテンプレートのリンクも表示
 ```
 
-リンク切れが0件であることを確認してからコミットすること。
+リンク切れ0件・孤立ページ0件を確認してからコミットすること（2026-10-17 [[NAV-LINK-INTEGRITY-1]]で新設。
+`site-nav.js`のITEMS・`ticker-links.js`の各ページへのリンク、`/On-a-journey/`の絶対パス、`${...}`のテンプレートのリンクのパス部分も検証する。
+意図的にどこからもリンクしないページは、同スクリプトの`ORPHAN_ALLOWED`に理由付きで登録する）。
+pytestの`tests/test_audit_site_links.py`も同じ判定をする（CIへの組込みは[[NAV-LINK-AUDIT-CI-1]]、未着手）。
+以下の`~/check_links.py`は旧手順（fetchのパスも見るが、孤立ページ・ITEMSは見ない）。
 スクリプトが存在しない場合は以下で再作成：
 
 ```python
@@ -4488,10 +4493,10 @@ else:
 ### ① リンク切れチェック（HTMLファイル作成・移設・削除後は必須）
 
 ```bash
-python ~/check_links.py
+python scripts/audit_site_links.py
 ```
 
-リンク切れ0件を確認してからコミットすること。
+リンク切れ0件・孤立ページ0件を確認してからコミットすること（上の「リンク整合性チェック」）。
 
 ### ② site-nav.js への登録（新規ページ作成時は必須）
 
@@ -4540,6 +4545,31 @@ grep -n "data-tool=\"xxx\"" docs/common/site-theme.css
 ```
 
 （2026-07-01 EXTREME-FEAR-1対応時の実施パターンより追記）
+
+### ⑤ ヘッダー・ナビ・サブナビの置き方（新規ページ作成時は必須、2026-10-17 [[NAV-LINK-INTEGRITY-1]]）
+
+- **ヘッダーは`position:fixed`にせず、`position:sticky; top:0`にする**。fixedにして本文の`padding-top`で高さを補う形は、
+  ナビの項目数・画面幅でヘッダーの高さが変わると本文が隠れる（EPS stock.htmlで銘柄名の行が隠れていた。A-6）。`height`の決め打ちもしない
+- **`site-theme.css`は全ページで読み込む**（ページ内の`<style>`より前に読めば、ページ側の`:root`の色が残る）
+- **ナビ・サブナビ・銘柄横断リンクのCSS（`.site-nav`・`.nav-links`・`[data-sub-nav]`・`[data-ticker-links]`）をページ内に書かない**。
+  正本は`site-theme.css`の1か所（TAILのページ内の定義が二重になり、ロゴが押し縮められて折り返していた）
+- グローバルナビ（ツール間）は、ヘッダーの中に空の`<nav class="nav-links"></nav>`か`<nav data-site-nav></nav>`を置くだけにする。
+  項目を書かない（正本は`site-nav.js`のITEMSだけ）
+- ヘッダーを`innerHTML`等で後から描画するページは、描画の後に`if (window.SiteNav) SiteNav.apply();`を呼ぶ（TANUKI stock.htmlの`applySharedNav()`）
+- ツール内のサブページ（一覧・詳細・管理画面等）への導線は、ヘッダーの直後に`<nav data-sub-nav>`で置く（`site-nav.js`の置換の対象外）。
+  現在のページの項目に`class="active"`。管理画面（admin.html）も必ずどこかのサブナビから辿れるようにする（孤立ページにしない）
+
+### ⑥ 個別銘柄ページの銘柄横断リンク（`?ticker=`を受けるページを作る場合は必須）
+
+- `<div data-ticker-links></div>`を置き、`docs/common/ticker-links.js`を読み込む。URLの`?ticker=X`で「X TANUKI / EPS / HYPE / TAIL」を描画する
+- 銘柄を後から決める・ページ内で切り替えるページは、描画の後に`TickerLinks.render(X)`を呼び、`history.replaceState`でURLの`?ticker=`も合わせる（EPS stock.html）
+- 新しいツールの個別銘柄ページを足すときは、`ticker-links.js`の`TOOLS`に、ページのパスと、フロントエンドが読める登録銘柄リスト（`docs/`配下のJSON）を足す。
+  `config/cik_lookup.csv`はGitHub Pagesから読めないため使わない
+
+### ⑦ HOMEカード（`site-nav.js`のITEMSに足した場合は必須）
+
+- `docs/index.html`のカードをITEMSと同じ順に足す（HOMEを除く。2026-10-17時点10枚）
+- カードの色は`site-theme.css`の`--tool-*`（`body[data-tool]`と同じ色）を使い、`docs/index.html`に`.card-xxx{--acc-c:var(--tool-xxx)}`・`.card-xxx .card-title{color:var(--tool-xxx)}`を足す
 
 ---
 

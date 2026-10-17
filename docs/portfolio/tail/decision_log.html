@@ -6,6 +6,8 @@
   <title>DECISION LOG — TANUKI TAIL</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="icon" href="/On-a-journey/favicon.ico">
+  <!-- 共通テーマ。ページ内の<style>より前に読み、ページ側の :root の色を残す（NAV-LINK-INTEGRITY-1） -->
+  <link rel="stylesheet" href="../../common/site-theme.css">
   <style>
     :root {
       --bg:#0a0d14; --sur:#111520; --sur2:#161c2d; --bdr:#1e2840;
@@ -57,7 +59,7 @@
     .count-badge{font-family:var(--mono);font-size:10px;color:var(--mut);margin-left:4px}
   </style>
 </head>
-<body>
+<body data-tool="tail">
 
 <div id="auth-screen">
   <div class="auth-box">
@@ -76,10 +78,11 @@
   <a class="logo" href="/On-a-journey/">
     <span class="logo-dot"></span>DECISION LOG
   </a>
-  <a class="back-link" href="index.html">← TANUKI TAIL に戻る</a>
+  <nav data-site-nav></nav>
 </header>
 
 <div class="shell">
+  <nav data-sub-nav><a href="index.html">← TANUKI TAIL</a><a href="decision_log.html" class="active">DECISION LOG</a></nav>
   <div class="sec">DECISION LOG <span id="entry-count" class="count-badge"></span></div>
 
   <div class="journal-filter">
@@ -206,5 +209,6 @@ function renderJournal() {
   }).join('');
 }
 </script>
+<script src="../../common/site-nav.js"></script>
 </body>
 </html>

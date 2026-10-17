@@ -35,7 +35,8 @@
 
     /* ── ヘッダー ── */
     .hdr {
-      position: fixed; top: 0; left: 0; right: 0;
+      /* sticky: ナビの折り返しでヘッダーの高さが変わっても本文が隠れない（NAV-LINK-INTEGRITY-1 A-6。旧: fixed＋.shellのpadding-top 80px） */
+      position: sticky; top: 0;
       background: var(--bg);
       border-bottom: 1px solid var(--bdr);
       z-index: 100;
@@ -83,7 +84,7 @@
     /* ── メインレイアウト ── */
     .shell {
       max-width: 1200px; margin: 0 auto;
-      padding: 80px 20px 48px;
+      padding: 24px 20px 48px;
     }
 
     /* ── ローディング・エラー ── */
@@ -373,13 +374,7 @@
         Adjusted EPS Analyzer
       </a>
       <div class="hdr-right" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:flex-end">
-        <nav class="nav-links">
-          <a href="../../">HOME</a>
-          <a href="index.html">ダッシュボード</a>
-          <a href="tickers.html">銘柄一覧</a>
-          <a href="../../market-monitor/">Market Pulse</a>
-          <a href="../../market-monitor/macro-pulse/">MACRO PULSE</a>
-        </nav>
+        <nav class="nav-links"></nav>
         <div class="search-row">
           <input type="text" id="ticker-search" placeholder="ティッカー (例: NVDA)">
           <button onclick="loadTicker()">検索</button>
@@ -389,6 +384,8 @@
   </div>
 
   <div class="shell">
+    <nav data-sub-nav><a href="index.html">ダッシュボード</a><a href="tickers.html">銘柄一覧</a><a href="admin.html">管理</a></nav>
+    <div data-ticker-links></div>
     <!-- ローディング -->
     <div id="loading" class="empty" style="display:none">
       <span class="spin"></span>データを読み込み中...
@@ -656,6 +653,13 @@
           `最終更新: ${new Date(quarterlyData.last_updated).toLocaleDateString('ja-JP')}`;
 
         setInitialDateRange(quarterlyData.quarters);
+        // ページ内検索で切り替えたときも URL の ?ticker= を合わせる（履歴は増やさない）
+        const url = new URL(location.href);
+        if (url.searchParams.get('ticker') !== currentTicker) {
+          url.searchParams.set('ticker', currentTicker);
+          history.replaceState(null, '', url);
+        }
+        if (window.TickerLinks) TickerLinks.render(currentTicker);
 
         showLoading(false);
         document.getElementById('content').style.display = 'block';
@@ -1526,6 +1530,7 @@
       loadTicker();
     };
   </script>
+  <script src="../../common/ticker-links.js"></script>
   <script src="../../common/site-nav.js"></script>
 </body>
 </html>
