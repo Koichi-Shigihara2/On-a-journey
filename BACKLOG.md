@@ -2352,35 +2352,7 @@ Step Summaryの表示は引き続き未確認
 
 ## 優先度：中（こなれてきたら対応）
 
-### [NAV-LINK-INTEGRITY-1] 全ページの相互リンクに抜け・リンク切れがある（共通ナビの置換が効かないページ、サブページ・admin.htmlへの導線なし、個別銘柄ページ間の行き来なし）
-**優先度:** 中
-**分類:** 表示（ナビゲーション） / docs/配下の全HTML（19ページ）・`docs/common/site-nav.js`
-**登録日:** 2026-10-17
-**発見:** 2026-10-17 チャット側の読み取り調査（kaihatsu `749a2788f2`）。Claude Codeが実ファイルで全件の再現を確認
-
-#### 内容（観測した事実）
-- A-1 `tanuki_valuation/stock.html`: ヘッダーを`innerHTML`で非同期に描画するため、`site-nav.js`の置換（DOMContentLoaded時）が効かず、旧5項目のナビのまま。ロゴの`<a>`が閉じられておらず、「← BACK TO LIST」の`<a>`が入れ子になっている（エラー時のヘッダーも旧5項目）
-- A-2 EPS ANALYZERの`index.html`・`stock.html`・`tickers.html`: `.nav-links`の中の「ダッシュボード」「銘柄一覧」が共通ナビの置換で消え、`tickers.html`へのリンクがどのページにも無い
-- A-3 `portfolio/tail/decision_log.html`: `site-nav.js`の読み込み・`body[data-tool]`が無い
-- A-4 `adjusted_eps_analyzer/admin.html`: ナビの置換対象（`.nav-links`／`[data-site-nav]`）が無い
-- A-5 `site-header.js`を読むのは19ページ中5ページ（HOME・EPS index・Extreme Fear・TANUKI SCORE・TANUKI VALUATION index）。**本件では扱わない**（EPIC-HEADER-1の範囲。EPIC-HEADER-1は2026-06-21に完了済みのため、BACKLOG_DONE.mdの同項に追記した）
-- B-1 `value-monitor/admin.html`・`adjusted_eps_analyzer/admin.html`がどのページからもリンクされていない
-- B-2 `docs/index.html`のHOMEカード（8枚）にExtreme Fear・TANUKI TAILが無く、`site-nav.js`のITEMS（11項目）と順序も一致しない
-- C-1 個別銘柄ページ（TANUKI stock・EPS stock・HYPE detail・TAIL detail）の間にリンクが無い（SCORE・PORTFOLIO・Extreme Fear・STONKS・admin → TANUKI stockの一方向だけ）
-- A-6 固定ヘッダーの高さの決め打ち補正（変更前から存在した問題。2026-10-17の実装中に発見）: `adjusted_eps_analyzer/stock.html`の`.hdr`が`position:fixed`で、
-  その高さを`.shell`の`padding-top:80px`で補っていた。11項目のナビが折り返してヘッダーが171px（1440px幅）になり、銘柄名の行が隠れていた。
-  19ページをgrepした結果、`position:fixed`のヘッダーはこの1ページだけ（他のfixedはモーダル・ツールチップ・背景の飾り）。`position:sticky; top:0`にして補正を削除する
-  同じ型（ヘッダー・ナビまわりの`height`・`max-height`・`line-height`の決め打ちで、ナビの折り返しを想定していないもの）を19ページでgrepした結果、
-  `hypecore/index.html`・`hypecore/detail.html`の`header`の`height:48px`だけ（ナビが2段になると上下にはみ出し、390px幅では上に170px切れていた）。
-  `height:48px`を削除し`min-height:48px`・`padding:6px 24px`にして、内容に合わせて高さが決まるようにする（1440px幅で80px・390px幅で400px）。
-  **A-6の対象ページ: `adjusted_eps_analyzer/stock.html`・`hypecore/index.html`・`hypecore/detail.html`**
-- （同じ調査で）TANUKI TAILの3ページは`site-theme.css`を読み込まず、`.site-nav`・`.nav-links`をページ内で別に定義していた。`site-theme.css`を読み込み、ページ内の定義を削除する
-
-#### 方針（指示書で決定済み）
-- ナビの定義の正本は`site-nav.js`のITEMSだけ。グローバルナビ（ツール間）とサブナビ（`[data-sub-nav]`、ツール内のサブページ）は別のDOM
-- 銘柄横断リンクは新規`docs/common/ticker-links.js`（`[data-ticker-links]`）。各ツールの登録銘柄の判定元はフロントエンドが読めるもの（TANUKI `tanuki_valuation/data/tickers.json`・HYPE `hypecore/data/tickers.json`・EPS `adjusted_eps_analyzer/data/summary.json`の`tickers[].ticker`・TAIL `portfolio/tail/data/positions_index.json`）
-- リンク監査`scripts/audit_site_links.py`（リンク切れ・孤立ページを終了コードで返す）。CIへの組込みは後続の`[[NAV-LINK-AUDIT-CI-1]]`
-- A-1は2026-10-17 STEP 0で「Sunday time and GitHub update」タスクの未完了の変更が`stock.html`に無いことを確認したため、本件に含める
+（[[NAV-LINK-INTEGRITY-1]]は2026-10-17、実装・push済みで完了、BACKLOG_DONE.md「2026-10-17（完了）」参照）
 
 ---
 

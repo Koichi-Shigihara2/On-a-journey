@@ -33,6 +33,8 @@
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 - `[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、2026-10-16登録、調査のみ。06-06の一括生成のレビューも作った時点の最新データで書かれている可能性）
 
+- **2026-10-17（`[[NAV-LINK-INTEGRITY-1]]` 完了）**: 全19ページの相互リンクを整備（共通ナビ・サブナビ`[data-sub-nav]`・銘柄横断リンク`ticker-links.js`・HOMEカード10枚・リンク監査`scripts/audit_site_links.py`、リンク切れ4・孤立2→0・0、固定ヘッダーの高さの決め打ちをsticky・min-heightに）。`3af0c7f677`・`b4d11b3ca1`・`884f1b26e8`。後続`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`。CHAT_RULES.md 事例42（プロセスの停止はPIDだけ）。
+
 - **2026-10-16（終業のブラッシュアップ）**: 移設0件（今日の完了3件は登録と同時にBACKLOG_DONE.mdへ）。アクティブBACKLOG 54件（10-15 終業の53件に`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`を足した数、`^### [`の機械カウント）。
   CHAT_RULES.mdの「発見の溜め方と根治の判断」に5（型Aの根治策＝出力の一覧とCHECK、grepで下書き、SECデータ層から段階的に）・6（終業の数の記録と、数を増やさない決まり）を追記。
   FINDINGS.mdにRSSの誤検知（B、済）・is_latestの読み手0（A、未登録）の2行を追加（計11行）。`[[TICKER-EXCEPTION-LEDGER-1]]`に「単独では実装しない」を追記。次の作業を並べ直した。

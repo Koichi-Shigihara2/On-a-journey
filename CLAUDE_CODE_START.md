@@ -4524,6 +4524,11 @@ python -m http.server 8767 --directory docs
 
 ブラウザで新規ページを開いてナビの該当項目がハイライトされていることを目視確認すること。
 
+**ローカルサーバーの止め方（CHAT_RULES.md 事例42、2026-10-17）:**
+- バックグラウンドで起動したサーバーは、起動時にPIDを記録しておく（例: `python -m http.server 8767 --directory docs & echo $! > <スクラッチパッド>/server.pid`。Claude Codeのバックグラウンドのタスクとして起動した場合はそのタスクID）
+- 止めるときは、記録したPID（`kill <PID>`・`taskkill /PID <PID> /F`）か、Claude Codeのタスク停止機能だけを使う
+- イメージ名の一括指定（`taskkill /IM python.exe`・`pkill python`・`killall python`等）は禁止。無関係のPythonのプロセスまで止める
+
 ### ④ 共通デザイン適用（新規ページ作成時は必須）
 
 `docs/common/site-header.js` の `TOOL_META` に新ページのツール定義を追加：
