@@ -2370,6 +2370,10 @@ Step Summaryの表示は引き続き未確認
 - A-6 固定ヘッダーの高さの決め打ち補正（変更前から存在した問題。2026-10-17の実装中に発見）: `adjusted_eps_analyzer/stock.html`の`.hdr`が`position:fixed`で、
   その高さを`.shell`の`padding-top:80px`で補っていた。11項目のナビが折り返してヘッダーが171px（1440px幅）になり、銘柄名の行が隠れていた。
   19ページをgrepした結果、`position:fixed`のヘッダーはこの1ページだけ（他のfixedはモーダル・ツールチップ・背景の飾り）。`position:sticky; top:0`にして補正を削除する
+  同じ型（ヘッダー・ナビまわりの`height`・`max-height`・`line-height`の決め打ちで、ナビの折り返しを想定していないもの）を19ページでgrepした結果、
+  `hypecore/index.html`・`hypecore/detail.html`の`header`の`height:48px`だけ（ナビが2段になると上下にはみ出し、390px幅では上に170px切れていた）。
+  `height:48px`を削除し`min-height:48px`・`padding:6px 24px`にして、内容に合わせて高さが決まるようにする（1440px幅で80px・390px幅で400px）。
+  **A-6の対象ページ: `adjusted_eps_analyzer/stock.html`・`hypecore/index.html`・`hypecore/detail.html`**
 - （同じ調査で）TANUKI TAILの3ページは`site-theme.css`を読み込まず、`.site-nav`・`.nav-links`をページ内で別に定義していた。`site-theme.css`を読み込み、ページ内の定義を削除する
 
 #### 方針（指示書で決定済み）
@@ -2377,6 +2381,46 @@ Step Summaryの表示は引き続き未確認
 - 銘柄横断リンクは新規`docs/common/ticker-links.js`（`[data-ticker-links]`）。各ツールの登録銘柄の判定元はフロントエンドが読めるもの（TANUKI `tanuki_valuation/data/tickers.json`・HYPE `hypecore/data/tickers.json`・EPS `adjusted_eps_analyzer/data/summary.json`の`tickers[].ticker`・TAIL `portfolio/tail/data/positions_index.json`）
 - リンク監査`scripts/audit_site_links.py`（リンク切れ・孤立ページを終了コードで返す）。CIへの組込みは後続の`[[NAV-LINK-AUDIT-CI-1]]`
 - A-1は2026-10-17 STEP 0で「Sunday time and GitHub update」タスクの未完了の変更が`stock.html`に無いことを確認したため、本件に含める
+
+---
+
+### [NAV-MOBILE-1] スマホ幅（390px）でグローバルナビ11項目が3段以上に折り返し、ヘッダーが画面の大きな割合を占める
+**優先度:** 中
+**分類:** 表示（ナビゲーション） / 全ページ共通・`docs/common/site-nav.js`・`docs/common/site-theme.css`
+**登録日:** 2026-10-17
+**発見:** [[NAV-LINK-INTEGRITY-1]]の確認（EPS stock.htmlのsticky化・HYPE COREの高さの決め打ちの削除の後、390px幅でヘッダーの高さを測った。FINDINGS.md 2026-10-17 型D）
+
+#### 内容（観測した事実）
+- 390px幅では、11項目のグローバルナビが3段以上（ページにより1列）に折り返す。stickyのヘッダーは画面（高さ844px）に残り続ける（EPS stockは273px・HYPE COREは401px・TANUKI stockは495px）
+- ページごとにヘッダーのレイアウト（`flex-wrap`の有無・ロゴとナビの並び）が違い、HYPE COREはロゴの右にナビが1列に並ぶ
+- 全ページ共通の課題で、ページごとに直すと[[NAV-LINK-INTEGRITY-1]]の決まり（ナビ・サブナビのCSSをページ内に書かない）に反する
+
+#### 390px幅でのヘッダーの高さ（2026-10-17、`kaihatsu`の[[NAV-LINK-INTEGRITY-1]]の修正の後、Playwrightで計測）
+| ページ | 高さ | position |
+|---|---|---|
+| HOME | 61px（ナビ無し、カード） | static |
+| TANUKI SCORE | 233px | sticky |
+| TANUKI VALUATION index | 421px | sticky |
+| TANUKI VALUATION stock.html | 495px | sticky |
+| EPS ANALYZER index | 287px | static |
+| EPS ANALYZER stock.html | 273px | sticky |
+| EPS ANALYZER tickers.html | 285px | static |
+| EPS ANALYZER admin.html | 403px | static |
+| value-monitor/admin.html | 403px | static |
+| STONKS SILO | 403px | static |
+| Market Pulse | 263px | static |
+| Extreme Fear | 166px | static |
+| MACRO PULSE | 403px | static |
+| HYPE CORE index | 401px | sticky |
+| HYPE CORE detail.html | 401px | sticky |
+| PORTFOLIO | 237px | static |
+| TANUKI TAIL index | 237px | sticky |
+| TANUKI TAIL detail.html | 341px | sticky |
+| TANUKI TAIL decision_log.html | 228px | static |
+
+#### 直し方の候補（未決定）
+- `site-nav.js`・`site-theme.css`の側で、狭い幅ではナビを折りたたむ（メニューボタン・横スクロールの1行・現在のツールだけ表示など）。ページ内のCSSでは直さない
+- stickyのヘッダーは、狭い幅ではナビの部分を固定しない（ロゴの行だけ固定）ことも合わせて検討する
 
 ---
 
@@ -3332,6 +3376,20 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [DOCS-README-STALE-1] docs/README.md が ZIP の適用手順の古い内容のままで、現行のdocs/の構成と合っていない
+**優先度:** 低
+**分類:** ドキュメント / `docs/README.md`
+**登録日:** 2026-10-17
+**発見:** [[NAV-LINK-INTEGRITY-1]]の作業中（ドキュメントの更新の対象を確認したとき）
+
+#### 内容
+- `docs/README.md`はZIPを展開して適用する手順のまま。現行の共通部品（`site-nav.js`・`site-header.js`・`site-theme.css`・`ticker-links.js`・サブナビ`[data-sub-nav]`）が書かれていない
+
+#### 直し方の候補（未決定）
+- 現行の構成に合わせて書き直す、またはSYSTEM_MAP.mdの共通部品の表への参照だけにする
+
+---
 
 ### [DAILY-PICK-RICE-SCORE-MISSING-1] TANUKI SCOREの選出のGrokへの入力（daily_pick.py）が、latest.jsonのRICEに無い項目「score」を読み、常にNoneになっている
 **優先度:** 低（選出の順位・条件には使われず、Grokのプロンプトとdaily_pick.jsonの「tanuki」の欄に常にnullで入るだけ。画面には出ない）
