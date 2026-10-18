@@ -11,9 +11,10 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-16 更新。上から順）**:
-1. 10-18〜10-19（JST）の確認（CLAUDE_CODE_START.md「次回の確認手順」4・6）と、TANUKI TAILの確認（同9、次の平日のRSS Monitorの後）。確認の中身はそちらを正とし、ここには書かない。
-   `[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（d193ee798a）・`[[LAYER3-RETENTION-PERIOD-1]]`の反映は手順4、`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`は手順9。依存: なし（下の2〜5より先）
+**次の作業（2026-10-19 朝 更新。上から順）**:
+1. 10-19の確認の残り（CLAUDE_CODE_START.md「次回の確認手順」4・6。中身はそちらを正とし、ここには書かない）。日曜の連鎖と手動実行の確認は10-19 朝に済み、`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`を移設。
+   残りは手順6（月曜の安全網、13:00・13:10 JST）、手順4（Step Summaryの表とscore_watcherの「🛠」の欄の目視、timingの値が試算と違う件のチャット側の判断）→ `[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`の移設。
+   TAILの3件は移設済みで、RSS 取得エラー・Discord 送信OKの経路は起きた回に確かめる（手順9）。手順3（NIY=F、期限10-20）。依存: なし（下の2〜5より先）
 2. `FINDINGS.md`の初回の束ね（CHAT_RULES.md「発見の溜め方と根治の判断」3）と、型A（読み手・検証の無い出力）の根治＝出力の一覧（書き手・読み手・定義、機械が照合できる形）の作成。SECデータ層から（同5）— 依存: 1の後（日曜の確認の後の週1回の束ねに当たる）。
    各段階は「grepで一覧（書き手・読み手・画面）を作る → Koichiさんが画面の項目と機能を投資判断に使っているかで残す／消すを判断 → 消すものを削除してから残ったものだけにCHECKを有効にする」の順（CHAT_RULES.md「発見の溜め方と根治の判断」5）。
    最初の束ねでは、`FINDINGS.md`の行に加えて、BACKLOG.mdのアクティブ全件（2026-10-16終業時54件）を同じ基準で分ける:
@@ -32,6 +33,10 @@
 - `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 - `[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、2026-10-16登録、調査のみ。06-06の一括生成のレビューも作った時点の最新データで書かれている可能性）
+
+- **2026-10-19 朝（日曜の連鎖の後の確認・手動実行・記録）**: 読み取りと、HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`（`--force`）の手動実行（すべてsuccess、ubuntu-24.04 20261012.334.1）。
+  移設2件（`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`）。アクティブBACKLOG 57件→55件（`^### [`の機械カウント。10-16 終業の54件に10-17の3件〈`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`〉を足して57件）。
+  UPDATE_SCHEDULE.md 2章に外部起動の対象、FINDINGS.mdに3行（計16行）。スクリプトの手元での実行・コードの変更はしていない
 
 - **2026-10-17（`[[NAV-LINK-INTEGRITY-1]]` 完了）**: 全19ページの相互リンクを整備（共通ナビ・サブナビ`[data-sub-nav]`・銘柄横断リンク`ticker-links.js`・HOMEカード10枚・リンク監査`scripts/audit_site_links.py`、リンク切れ4・孤立2→0・0、固定ヘッダーの高さの決め打ちをsticky・min-heightに）。`3af0c7f677`・`b4d11b3ca1`・`884f1b26e8`。後続`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`。CHAT_RULES.md 事例42（プロセスの停止はPIDだけ）。
 

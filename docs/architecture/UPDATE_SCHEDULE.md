@@ -117,6 +117,7 @@ Market Data Daily Updateは、主にCloudflare Workers Cron Triggers（`tools/ex
   下流は起動元の想定間隔を継ぐ。ガードの取り消し・スキップは数えない。2026-10-11から、期間内の実行が0件で初回の予定時刻〈Actions APIの登録日時の後に
   cronが最初に発火する時刻〉＋12時間の猶予（定時実行の遅れのため）を過ぎていない新設のワークフローは「⚪ 初回待ち」で、成功なしに数えない〈[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]〉）。日本時間7:00より前には気づけない
   （[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]・[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]）
+- **外部起動の対象**: 外部起動は締め切りのある Market Data Daily だけ。SEC Data Update（週次）は遅れても連鎖がずれるだけなので GitHub の schedule のまま（2026-10-16 決定）
 
 ---
 

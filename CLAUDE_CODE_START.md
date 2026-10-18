@@ -26,17 +26,16 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-16 終業時の最新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**54件**（`^### [`の機械カウント、2026-10-16 終業。10-16に`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中）を登録。完了3件〈`[[TAIL-RSS-SECRET-NAME-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`〉は登録と同時にBACKLOG_DONE.mdへ）。
-範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。
+**次回の確認手順（2026-10-19 朝の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**55件**（`^### [`の機械カウント、2026-10-19 朝。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`をBACKLOG_DONE.mdへ移して55件）。
+範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
+**2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
+判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
 以下は2026-10-15 夜の終業の記載（53件。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
-1. **Adjusted_EPS_Data_UpdateのStep Summary**（`[[EPS-SILENT-TICKER-FAILURE-1]]`）
-   - 日時: いつでも（run `38194524660`は実行済み）
-   - 期限: 2026-10-18（日）21:00 JST（次のSEC_Data_Updateからの連鎖で新しい実行が始まる前）
-   - 確認の手順: Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」が出ていること（APIからは読めない）。確かめたら`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設する
+1. （済 2026-10-19）Adjusted_EPS_Data_UpdateのStep Summary: Koichiさんが10-18に目視で確認、`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設
 2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
    - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
    - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
@@ -45,31 +44,21 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 2026-10-17（土）13:00 JST（04:00 UTC）以降の夜間のMarket Data Dailyの後
    - 期限: 2026-10-20（火）
    - 確認の手順: `common/market_data/daily/NIY=F.json`の10-08（平らな足）が`_no_yahoo_bar`になっていること。出来高の重複・平らな足の観察も続ける
-4. **日曜のSEC_Data_Updateからの連鎖の後**（`[[LAYER3-RETENTION-PERIOD-1]]`の公開データの作り直し。保持期間7年・8年、FCFの5点平均、設備投資の条件付きタグ、最新期欠けのガード、直近の値の判定。`config/method_change.json`で10-18・10-19〈JST〉の実行に印が付く）
-   - 日時: 2026-10-18（日）21:00 JST（12:00 UTC）に始まる連鎖（SEC → EPS・HypeCore・Stonks Silo → TANUKI VALUATION）が全部終わった後
-   - 期限: 2026-10-19（月）23:59 JST（手動実行は印の付く10-19 JSTまでに行う）
+4. **日曜の連鎖の後の残り**（`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`。連鎖と手動実行の確認は2026-10-19 朝に済み、結果は各BACKLOGの「確認（2026-10-19 朝）」）
+   - 日時: いつでも（Koichiさんの目視とチャット側の判断）
+   - 期限: なし（どちらも公開データの作り直しは済んでいる）
    - 確認の手順:
-     - 手動実行の順: HypeCore Update（新しい理論株価で期待スコアを作り直す。`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`）→ 連鎖でTANUKI VALUATIONが動く → TANUKI Score Update（workflow_dispatchで`--force`が付く。連鎖では当日の選出済みで止まるため）
-     - FCXの理論株価が約$20.15（公開値$11.89から。2026年第2四半期の設備投資が`SegmentExpenditureAdditionToLongLivedAssets`で入る）
-     - 6銘柄の判定・timingが試算どおり: BSY WATCH→HOLD（timing 35→25・象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM、DDOG timing 55→40、NOW timing 65→50
-     - score_watcherのDiscordの通知で、これらが「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄に入っている。score_history.json等に`"method_change"`が付いている
-     - APP・LOAR・LYFT・RCAT・VZのlatest.jsonの`latest_period_missing`が「最新期は年次の値で代用」で、TANUKI VALUATIONの個別ページとTANUKI SCOREに注記が出ている
-     - APPなどLayer3由来の変化（`latest_period_missing`の注記等）は、TANUKI・HypeCore・Stonks SiloがLayer3をcompany_facts.jsonからその場で作るため2026-10-15 05:43 JSTの夜間の実行（`d69e6e2ed8`）で公開済み。score_watcherの「🛠 計算方法の変更による変化」の欄に出ないのは正常（`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`、CHAT_RULES.md 事例39）
-     - FCXなどTTMのファイル（`common/sec_data/ttm/`、SEC_Data_Updateだけが作り直す）由来の変化は、10-18の連鎖で出る（「🛠」の欄に入る）
-     - report_consistency_check.pyのCHECK-63（最新期欠け）が0件
-     - 連鎖が1銘柄の失敗で止まっていないこと（`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`は2026-10-15に実装済み。update.pyが止まるのは失敗が対象の10%超か、銘柄のループの外の例外のときだけ。Gateの1銘柄のNGではまだ止まる〈`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`〉。止まっていたら原因を確かめて手動で再実行する）
-     - SEC_Data_UpdateのDiscordの通知（「✅／⚠／❌ SEC Data Update」）が届いている。❌なら「止まった段」を見る
-     - 失敗した銘柄（Discord・Step Summaryの先頭の表・`_freshness.json`のFAILED）があれば、その銘柄の`common/sec_data/data/{T}/`・normalized・ttmがcommitに含まれず前回のまま（「Roll back failed tickers」の段のログ）で、他の銘柄はcommitされている。Step SummaryのRevenue品質の表が表として表示されている（`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`）。確かめたら`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設する
-     - 巻き戻した銘柄（前回のデータのまま）がConsistency Check GateでNGになっていたら、`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`の実例として、銘柄とCHECKの番号（NGの行）をそのBACKLOGに記録する（`--include-yfinance-checks`の突合で新しい期とずれる可能性がある。2026-10-16の点検）
-     - 確かめたら`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
+     - SEC Data Update（run `39138117185`）のActionsの実行の画面で、Step SummaryのRevenue品質の表が表として表示されている（APIで読めない）。確かめたら`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設する
+     - 10-19 00:13 JST（`39138493192`、23銘柄）と05:19 JST（`39161925163`、AMDの1件）のscore_watcherのDiscordの通知に「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄が出ている（ログには区分が出ない）。印は日付単位のため相場の変化も同じ欄に入る作り（FINDINGS.md 2026-10-19）
+     - timingの値が試算と違うこと（原因はF&Gの区分と株価、計算方法の変更による分はBSY・DDOGで一致）を想定どおりとするかをチャット側が判断し、6の確認の後に`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
-   - 日時: 2026-10-18（日）のSEC_Data_Updateの後（上の4と同じ実行）
+   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない）
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
-6. **月曜の安全網**（上の4の続き）
+6. **月曜の安全網**（上の4の続き。2026-10-19 朝の時点で未確認）
    - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS_Data_Update
    - 期限: 2026-10-19（月）
-   - 確認の手順: HypeCore Update（重複防止なし）は動き、10-19の印が付く。Adjusted_EPS_Data_Updateは24時間の重複防止で何もせずに終わる
+   - 確認の手順: HypeCore Update（重複防止なし）は動き、10-19の印が付く。Adjusted_EPS_Data_Updateは24時間の重複防止で何もせずに終わる。あわせて「Set up job」のRunner Image（ubuntu-latestのUbuntu 26への移行、FINDINGS.md 2026-10-18）
 7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
    - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
    - 期限: 2026-10-31
@@ -78,17 +67,21 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: いつでも
    - 期限: 次のFOMC（10月下旬。日付はFRBの予定表で確かめる）の声明の前
    - 確認の手順: 対応するか担当を決める（チャット側の判断）
-9. **TANUKI TAILのRSS Monitorの後**（`[[TAIL-REVIEW-LATEST-MISMATCH-1]]`・`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`。日時の順では2と3の間だが、1〜8の番号がBACKLOGから参照されているため末尾に置く）
-   - 日時: 次の平日の実行（cronは08:00 UTC＝17:00 JST、2026-10-16〈金〉から。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
-   - 期限: 2026-10-20（火）
+9. **TANUKI TAILのRSS Monitorの残り**（`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`、どちらも移設済み。ファイルで見る3点とログの`DISCORD_WEBHOOK: ***`は2026-10-19に確認済み、結果はBACKLOG_DONE.mdの「確認」の欄）
+   - 日時: 平日の実行（cronは08:00 UTC＝17:00 JST。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
+   - 期限: それぞれ起きた回（10-16の実行はRSS 取得エラー0件・新規提出0件で、どちらの経路も通っていない）
    - 確認の手順:
-     - APP・CELH・SOUN・PLTR・SOFI・TSLAの`docs/portfolio/scenario/{T}/base.json`の`quarter`が2026Q2（tail_dcf_bridge.pyが作り直す。e615dc2b21の時点では2025Q4のまま）
-     - `docs/portfolio/tail/index.html`のDCFのタブ（6銘柄）に「⚠ レビュー2026Q2の反映待ち」が出ていない
-     - `docs/portfolio/tail/data/prediction_history.json`に6銘柄の`"review_quarter": "2025Q4"`の行が無い
-     - 実行のログで、「RSS 取得エラー」が出た銘柄に「★ 新規提出」が出ていない（代わりに「新規提出の判定をしない」）
-     - Discordの通知: ログの`DISCORD_WEBHOOK:`が空でない（`***`）。通知は新規提出か遅れのアラート（`ALERT_BIZ_DAYS`にちょうど達した日）がある日だけ出るため、その日のログに「Discord 送信OK」があり、Discordに届いていること
-     - 確かめたら、移設済みの3件の「確認」の欄に結果を書き足す（BACKLOG_DONE.md）
+     - 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている
+     - 新規提出か遅延のアラート（`ALERT_BIZ_DAYS`にちょうど達した日）がある回のログに「Discord 送信OK」があり、Discordに届いている
+     - 確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-19 朝 日曜の連鎖の後の確認・手動実行・記録（確認の残りは上の「次回の確認手順」4・6・9）**
+- 読み取り: SEC Data Update `39138117185`（✅、Discordの送信完了、98/98・FAILED 0・巻き戻しなし・Gate NG=0、CHECK-63 0件）、6銘柄の判定・timing、5銘柄の`latest_period_missing`、score_watcherのログ、TAILのRSS Monitor `38904610396`のログ
+- 手動実行（10-19 JST、`[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]`の順）: HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`（`--force`）。すべてsuccess、Runner Imageはubuntu-24.04（20261012.334.1）
+- 移設: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`（失敗0件で巻き戻しの経路は未通過）。残す: `[[LAYER3-RETENTION-PERIOD-1]]`（timingの値が試算と違う件の判断・「🛠」の目視・手順6）、`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`（Step Summaryの目視）
+- TAILの3件はBACKLOG_DONE.mdの「確認」の欄に書き足した（RSS 取得エラー・Discord 送信OKの経路は10-16の実行では未通過）
+- UPDATE_SCHEDULE.md 2章「外部起動と保険の関係」に外部起動の対象（Market Data Dailyだけ、2026-10-16決定）。FINDINGS.mdに3行（ubuntu-latestのUbuntu 26への移行・計算方法の変更の印が日付単位・daily pickのGrokの「未来の日付」）
 
 **2026-10-16 日曜の前の点検と、TANUKI TAILの通知・誤検知・最新のレビューの修正（確認は上の「次回の確認手順」9。完了3件はBACKLOG_DONE.mdへ移設済み）**
 - 読み取り: `d193ee798a`の点検（actionlint 0件、secret名`DISCORD_WEB_HOOK`の一致、`$RUNNER_TEMP/sec_update_result.json`のパスの一致、巻き戻しの対象が1銘柄分の3つのパスで共有ファイルを含まない、段の順序と`if`、下流の`conclusion == success`）。

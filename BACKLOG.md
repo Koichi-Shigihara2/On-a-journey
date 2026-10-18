@@ -2044,126 +2044,15 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 
 ---
 
-### [EPS-SILENT-TICKER-FAILURE-1] EPS ANALYZERの銘柄ごとの失敗が、ワークフロー・summary.json・System Health [I]のどこにも出ない
-**優先度:** 高
-**分類:** 運用（失敗の見え方） / EPS ANALYZER（`src/value/adjusted_eps_analyzer/pipeline.py`の`process_one_ticker()`・`run()`・`generate_summary()`）・System Health（`common/system_health.py`の`check_i_eps()`）
-**登録日:** 2026-10-11
-**発見:** 2026-10-11 チャット側の読み取り確認（EPS ANALYZERの可用性）
+（[[EPS-SILENT-TICKER-FAILURE-1]]は2026-10-19、本番の確認で完了、BACKLOG_DONE.md「2026-10-19（完了）」参照）
 
-#### 内容（2026-10-11、HEAD `b26b852711`で確認した事実）
-- `process_one_ticker()`は、取得結果が空なら「{T}: データなし」、例外なら「✗ {T} 処理エラー」を表示して`(ticker, None)`を返す。`run()`はNoneを数えずに捨てる
-  （`run()`の「✗ 未捕捉エラー」は、`process_one_ticker()`の外に漏れた例外だけ。ふつうの例外は`process_one_ticker()`の中で握りつぶされる）
-- 何銘柄失敗しても終了コードは0。成功が0件のときはsummary.jsonを書かないが、終了コードはやはり0
-- `generate_summary()`は前回のsummary.jsonに今回の結果を上書きでマージするだけなので、失敗した銘柄は前回の行（古い値）がそのまま残る
-- System Health [I]は`last_updated`（14日）とeps=trueの銘柄の行があるかしか見ないため、銘柄ごとの失敗は検知できない（古い行が必ず残るので「未収録」にもならない）
-
-#### 直近の実行での失敗（STEP 0、2026-10-11に`gh run view --log`で数えた）
-| run | 起動 | 処理 | データなし | 処理エラー | 未捕捉エラー |
-|---|---|---|---|---|---|
-| `37302451184`（10-05 schedule） | 冪等性ガードで何もしない | 0 | 0 | 0 | 0 |
-| `37215353826`（10-04 workflow_run） | 99銘柄を処理・保存 | 99 | 0 | 0 | 0 |
-| `36411829197`（09-28 schedule） | 冪等性ガードで何もしない | 0 | 0 | 0 | 0 |
-| `36331248101`（09-27 workflow_run） | 99銘柄を処理・保存 | 99 | 0 | 0 | 0 |
-- 銘柄ごとの失敗は0件。期末日が2026Q1のままのCDNS・V・XOM・RMBS・KOは、パイプラインの失敗ではなく、SECのcompanyfacts APIにQ2の10-Qが入っていないため
-  （`[[SEC-COMPANYFACTS-API-LAG-1]]`。`_freshness.json`でSEC_LAG。EPS ANALYZERもcompanyfacts APIを直接読む）
-- ログの「Error」はすべてAI分析（Grok）のタイムアウト・429（10-04は7件、09-27は23件）。銘柄の処理は成功扱いで、別件として`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`に登録
-
-#### 対応方針（チャット側の指示、2026-10-11）
-- `run()`で成功・失敗（データなし／例外）を数え、summary.jsonに今回の実行の`run_status`（started_at・succeeded・failed〈銘柄と理由〉）を書く。各行に`generated_at`（その行を今回作り直した日時）。失敗した銘柄の行は残すが`generated_at`は更新しない
-- 終了コード: 成功0件なら1（summaryは書かない）。一部の失敗では0のまま（TANUKI VALUATIONの連鎖を止めない。`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`と同じ問題を作らない）
-- GITHUB_STEP_SUMMARYに成功・失敗の件数と失敗した銘柄・理由
-- System Health [I]に「eps=trueの銘柄のうち、generated_atがrun_status.started_atより前の行」を加え、1件以上で⚠️（重大度は`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`の仕組みに合わせる）
-
-#### 対応（2026-10-11、`ea5a58608b`）
-- `process_one_ticker()`は`(ticker, data, 理由)`を返す（理由は「データなし」か「例外: 型: メッセージ」）。`run()`が数え、全銘柄の実行は`run_status`
-  （scope=all・started_at・finished_at・requested・succeeded・failed〈ticker・reason〉）、`--ticker`の部分実行は`partial_run_status`（scope=partial・tickers）に書く。
-  **部分実行で`run_status`を上書きしない**（指示に無い追加。新規登録のStep 5bの1銘柄の実行で上書きすると、[I]が他の全銘柄を「未更新」にするため）
-- 各行の`generated_at`（UTC）は作り直した行だけ。終了コードは成功1件以上で0、成功0件（対象0件を含む）で1・summaryは書かない、冪等性ガードのスキップは0。
-  下流: TANUKI VALUATIONはAdjusted_EPS_Data_Updateのsuccessだけで起動する（`TANUKI_VALUATION_Update.yml`の`if:`）。一部の失敗では止まらない。
-  終了コード1のときはConsistency Check Gateとcommitも動かない。`register_ticker.py`のStep 5bは終了コードを見ていない（生成物の有無で判定）
-- GITHUB_STEP_SUMMARYに「対象・成功・失敗」と失敗の表
-- System Health [I]（`_check_i()`）: `run_status.started_at`より前の`generated_at`（無い行を含む）のeps=trueの行を「{日付}の実行で未更新n件: 銘柄(理由)」として⚠️（`_item_severity()`で1）。
-  **初回の扱い**: `run_status`の無いsummary.json（実装前の形、今夜のCIの実行まで）では、この判定をせず✅のまま詳細に「run_status無し（作り直されていない行の判定は次の全銘柄の実行から）」と出す
-- テスト`tests/test_eps_run_status.py` 14件（修正前のコードで13件が失敗、1件は互換性の確認で修正前から成功）
-- 手元で全銘柄の実行（`--force`、`XAI_API_KEY`・`ALPHA_VANTAGE_API_KEY`を空にして有料APIを呼ばない）: run_status 対象95・成功95・失敗0、行97→95（FIG・ZSを削除）、
-  値が変わった行はPEPだけ（10-08提出のQ3の10-Q、期末2026-09-05。`_freshness.json`でREFRESHED）。[I]は「✅ … 2026-10-11の実行で全95銘柄を更新」。
-  出力はcommitしていない（下の「未了」）
-
-#### 未了
-- 今夜（10-11〈日〉）のSEC Data Updateから連鎖するAdjusted_EPS_Data_Updateで、summary.jsonの`run_status`（scope=all・失敗の件数）、Step Summaryの表示、
-  行が95（FIG・ZSが無い）、各行の`generated_at`・`tanuki`・`latest_fiscal_quarter`を確かめる。その後のSystem Healthの[I]が「…の実行で全n銘柄を更新」（失敗があれば⚠️と銘柄）であること
-- 手元の実行のsummary.jsonをcommitしなかった理由: `last_updated`が24時間以内だと、全銘柄の実行は冪等性ガード（`_recently_completed_at()`）でスキップされる。
-  10-11 06:00 UTCの結果をcommitすると、今夜の連鎖（12:00 UTC以降）と月曜04:10 UTCの安全網の両方が何もせずに終わり、今週の更新とCIでの初回の確認ができなくなるため
-
-#### 追記（2026-10-12朝の確認、未確認のまま）
-10-11のSEC_Data_Update（run `38157028361`）がXOMで失敗し（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）、連鎖のAdjusted_EPS_Data_Update（run `38157215214`）はskipped。
-run_status・Step Summary・95行・[I]はまだCIで確かめられていない。次の機会は10-12（月）04:10 UTCの安全網のschedule（summary.jsonの`last_updated`は10-04のため冪等性ガードに当たらない見込み）
-
-#### 確認（2026-10-12、CI・本番。移設しない）
-- SEC_Data_Updateの手動実行（run `38194243923`）から連鎖したAdjusted_EPS_Data_Update（run `38194524660`、workflow_run、02:07〜02:17 UTC、success。冪等性ガードには当たらず処理）:
-  ログ「[RunStatus] 対象 95 / 成功 95 / 失敗 0」「eps=trueでない銘柄の行を削除: FIG, ZS（2件）」。commitされたsummary.jsonは95行、`run_status`（scope=all・started_at 02:08:36Z・succeeded 95・failed []）、
-  全行に`generated_at`・`tanuki`・`latest_fiscal_quarter`（tanuki=falseはRKLBだけ）
-- System Health（run `38196102871`、02:32 UTC）: `[I] EPS Analyzer: ✅ 更新2026-10-12(0日経過) / 2026-10-12の実行で全95銘柄を更新`
-- 本番（Pagesの構築 `38196194080` の後、Playwright）: 一覧は95行でFIG・ZS無し、「決算日」の⚠はCDNS・RMBS・KO・Vの4銘柄（XOMは2026-06-30で外れた）、
-  一覧・XOMの個別ページともHTTPエラー・consoleエラー0件
-- AI分析（Grok）の「[AI] Error」はこの実行で20件（すべてRead timed out、`[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]`）
-- **未確認**: ジョブのStep Summaryの表示（`gh api`のcheck-runの`output`は空で、APIから読めない。Actionsの実行の画面で「Adjusted EPS: 全銘柄 対象95 / 成功95 / 失敗0」を確かめてから移設する）
-
-#### 追記（2026-10-14、未確認のまま）
-10-12 11:50 UTCの安全網のAdjusted_EPS_Data_Update（run `38245295889`、schedule）は、summary.jsonの最終更新（10-12 02:17）が24時間以内のため冪等性ガードでスキップ（設計どおり）。
-Step Summaryの表示は引き続き未確認
 ---
 
 （[[SEC-XOM-CIK-HOLDING-REORG-1]]は2026-10-14、本番の実行で確認して完了、BACKLOG_DONE.md「2026-10-14（完了）」参照）
 
 ---
 
-### [SEC-UPDATE-EXIT1-BLOCKS-ALL-1] update.pyが1銘柄の失敗でexit(1)になり、SEC_Data_Updateのゲートとcommitが全銘柄分止まる
-**状態（2026-10-15）:** 実装済み・10-18の本番で確認（CLAUDE_CODE_START.md「次回の確認手順」4。Discordの通知が届く・失敗した銘柄があれば巻き戻され、他の銘柄はcommitされている）。確かめたら移設する
-**優先度:** 高（2026-10-12、低から変更。2026-10-11に実害: XOMの1銘柄の例外で日曜の連鎖がすべてskippedになった。直し方は次の指示書で扱う）
-**分類:** 運用（ワークフローの止まり方） / common/sec_data（`update.py`）・`.github/workflows/SEC_Data_Update.yml`
-**登録日:** 2026-10-10
-**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の実装時（2026-10-10、範囲外のため登録のみ）
-
-#### 内容（観測した事実）
-- `update.py`の最後は`sys.exit(0 if not failed else 1)`。`failed`に入るのは、company_facts.jsonが無い銘柄（新規登録）の取得失敗と、`parser.parse_and_save()`が`None`を返した場合（company_facts.jsonが無い・読めない）
-- **訂正（2026-10-15）**: `parser.parse_and_save()`の例外（凍結の検査のRuntimeError 3種〈parser.py:4029・4036・4058〉や想定外の例外）は`failed`に入らない。
-  update.pyに銘柄ごとのtryが無く、例外は`main()`の外まで伝わって**その場で全体が止まる**。後ろの銘柄は処理されず、`_freshness.json`と最後のStep Summaryも書かれない
-  （2026-10-11はXOMが93/98銘柄目で、RMBS・ENTG・TER・KLAC・LRCXの5銘柄が未処理。Step Summaryには見出しの無いRevenueの行だけが残った）
-- **訂正（2026-10-15）**: Raw Table・normalize・TTMの例外（update.py:192-205・256-257）は`[WARN]`をログに出すだけで成功として数え、
-  その銘柄は「新しいcompany_facts.json・annual」と「古いnormalized・TTM」が混在した状態のままcommitされる（Step Summaryにも出ない）。
-  直近4回の実行（10-12・10-11・10-04・09-27）のログでは、この3段の`[WARN]`は0件（`[WARN]`はRevenue品質チェックの`division by zero`〈ASTS・JOBY、毎回〉だけで、出力は書かない検査）
-- SEC_Data_Update.ymlでは、この段が失敗すると後の「Consistency Check Gate」「Commit and push」が動かず、他の全銘柄の更新もcommitされない
-- [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正で、取り直し・submissionsの失敗は手元のファイルで続行する（FETCH_FAILED）ようにしたので、既存の銘柄の通信の失敗ではもう止まらない。
-  残るのは上の2つ（新規の銘柄の取得失敗・parserの例外）
-- 2026-08に全銘柄の反映が止まった件（依存パッケージの不足でゲートが失敗）と同じ形の止まり方
-
-#### 直し方の候補（未決定）
-- 失敗した銘柄はStep Summaryと_freshness.json等に記録し、exit 0で続ける（ゲートとcommitは他の銘柄の分を進める）
-- 失敗が一定の割合を超えたときだけexit 1にする
-
-#### 追記（2026-10-12）: 実害が出た
-2026-10-11のSEC_Data_Update（run `38157028361`）が、XOMの`parser.parse_and_save()`のRuntimeError（凍結の検査、`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）でexit 1になり、
-93銘柄分の取り直しの結果もcommitされず、日曜の連鎖（Adjusted EPS・HypeCore・Stonks Silo・TANUKI VALUATION・TANUKI Score）がすべてskippedになった。優先度（低）の見直しが必要
-（2026-10-15に補足: 処理済みの93銘柄の内訳はOK_NO_NEW 89・SEC_LAG 3・REFRESHED 1〈XOM〉で、commitされなかった新しいデータは実質XOMだけ）
-
-#### 実装（2026-10-15）
-- `update.py`: 銘柄ごとの処理（取得からTTMまで、`process_ticker()`）を銘柄単位のtryで囲む。例外・`None`の戻り値・Raw・normalize・TTMの例外は、
-  すべて段階（fetch・parse・raw・normalize・ttm）と理由つきでfailedに入れ、次の銘柄へ進む。Revenue品質・タグ競合の検査の例外は従来どおり`[WARN]`だけ（出力を書かないため）
-- 失敗の一覧を`$RUNNER_TEMP/sec_update_result.json`（手元は一時ディレクトリ。環境変数`SEC_UPDATE_RESULT`で指定可）に書く。リポジトリの外なのでcommitされない
-- `_freshness.json`・失敗の一覧・Step Summaryは`finally`で必ず書く。失敗した銘柄はstatus `FAILED`（`failed_stage`・`failed_reason`・`fetch_status`、
-  手元の最大filed・未反映の提出は取り直す前の値）。ループの外の例外で途中までの実行は`generated_at`を進めない。
-  Step Summaryは先頭に失敗した銘柄の表、次にRevenue品質（見出しを行より先に書く。[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]も同時に解消、10-18の表示で確認）、最後に鮮度
-- 終了コード: 失敗0件は0、失敗が対象の10%以下は0（Step Summaryに⚠）、10%を超えるか銘柄のループの外で例外が出たら1（`freshness.FAILED_EXIT_RATIO`）
-- `FAILED`の読み手: `freshness.py`（`STATUSES`に追加。以前は`entry()`のassertで落ちる・Step Summaryの一覧に出ない）、
-  CHECK-60（`FAILED`の銘柄をWARN-60で出す。以前は黙って無視）、System Health [M]（1件以上で⚠️、`FAILED_EXIT_RATIO`超で🔴、件数の表示にFAILED。以前は✅のまま）
-- `SEC_Data_Update.yml`: update.pyの後・Gateの前に「Roll back failed tickers」（`common/sec_data/rollback_failed.py`）。失敗した銘柄の
-  `common/sec_data/data/{T}/`（company_facts・company_facts_legacy・submissions・annual・quarterly・parserの検知ログ）・`normalized/{T}_quarterly_normalized.json`・
-  `ttm/{T}_ttm_series.json`を、HEADにあるものは`git checkout HEAD --`、HEADに無いもの（新規の銘柄の作りかけ・今回新しくできたファイル）は`git clean`で戻す。
-  共有の`_freshness.json`・`_cik_cache.json`は戻さない。最後に`if: always()`の「Notify Discord」（`common/sec_data/update_notify.py`、DISCORD_WEB_HOOK）で、結果・止まった段・失敗した銘柄と理由を毎回送る
-- `SEC_Data_Audit.yml`・`audit.py`: 前段のconclusionがsuccess以外なら、Discordの本文とStep Summaryの先頭に「⚠ SEC更新が失敗：前回のデータを監査」
-- テスト`tests/test_sec_update_ticker_failure.py`（30件。巻き戻しは一時のgitリポジトリで確認）。実データに対するupdate.pyの実行・workflow_dispatchはしていない
-- 範囲外として登録: [[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]（Gateの1銘柄のNGで全体が止まる）・[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]
+（[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]は2026-10-19、本番の確認で完了、BACKLOG_DONE.md「2026-10-19（完了）」参照）
 
 ---
 
@@ -2331,6 +2220,19 @@ Step Summaryの表示は引き続き未確認
 #### 方針
 定義v2の財務の前年比・自社3年の比較・検証の期間に足りる保持期間にする（期間の長さと関係なく必要。定義v2 §5）。延ばす場合はTANUKI VALUATIONのFCF・RICEの入力が変わるため、前後の値を比べてから切り替える。
 `layer3_builder.py`の使われていない定数の扱いも決める。依存される側: [[STAGE-V2-ROLLOUT-1]]。関連: [[LAYER3-FIRST-FILED-DATE-1]]。前提: [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]・[[TTM-STALE-QUARTER-IN-WINDOW-1]]・[[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]。実装しない（チャット側の指示待ち）
+
+#### 確認（2026-10-19 朝、移設しない）
+- 日曜の連鎖: SEC Data Update `39138117185`（✅、98/98、FAILED 0、Gate NG=0）→ HypeCore `39138385009`・Stonks Silo `39138385010`・Adjusted EPS `39138385040` → TANUKI VALUATION `39138493192`・`39139192380`（success）→ TANUKI Score `39139531073`。commit `a05051a92f`〜`d437c083a4`
+- 手動実行（10-19 JST）: HypeCore Update `39161789572`（workflow_dispatch、20:06:25〜20:08:11 UTC、success）→ TANUKI VALUATION `39161925163`（workflow_run、20:08:13〜20:20:08 UTC、success）→ 連鎖のTANUKI Score `39162835300`（20:20:10〜20:20:38 UTC、success、当日選出済み）→ TANUKI Score Update `39162895773`（workflow_dispatch・`--force`、20:20:57〜20:21:41 UTC、success、NVDA）。commit `a670ed141b`・`d06aaec68d`・`ea386b9ade`。Runner Imageは全実行でubuntu-24.04（20261012.334.1）
+- FCXの理論株価20.15（`method_change` LAYER3-RETENTION-PERIOD-1）。96銘柄のlatest.json・98銘柄のpoc.json・score_history.jsonの10-19の行に`method_change`
+- 判定は試算どおり: BSY WATCH→HOLD（象限 右下→左下）、BROS TRIM→WATCH、HQY BUY→WATCH、TDY HOLD→TRIM（10-17 05:43の`218eeb89d5`との比較。手動実行の後も同じ）
+- **timingの値は試算と違う**: BSY 35→40（試算25）、DDOG 70→70（試算 55→40）、NOW 50→65（試算 65→50）。timingは乖離率・F&G・HypeCoreのstageの合計（`pipeline.py::_calc_timing`）で、
+  10-17 05:43の実行のtimingはF&Gが30〜50の区分（25点）で計算されており（Market Pulseのcommit〈05:32 JST、17.9〉とほぼ同時に動き、前日の31.5を読んだとみられる。値から逆算した推定）、10-19は17.9（40点）で全銘柄+15。計算方法の変更による分（今日の株価で旧理論株価と新理論株価の乖離率の区分を比べた）は BSY −10・DDOG −15で試算と一致、
+  NOWは0（10-17の時点で株価の変化により乖離率が29.3%に下がり、変更の前から25点の区分にいた。試算の時点〈10-15〉は31.1%）。HQYは−15（試算に記載なし、判定の変化と一致）
+- APP・LOAR・LYFT・RCAT・VZの`latest_period_missing`は「最新期は年次の値で代用」（`substituted_by_annual: true`）。CHECK-63（年次の代用の無い最新期欠け）は0件（latest.jsonから同じ条件で数えた）
+- score_watcherの「🛠 計算方法の変更による変化」の欄: ログには区分が出ない（`print`は節を分けない）ため、Discordの本文はKoichiさんの目視が必要。コード上は、10-19（JST）の実行は全銘柄の
+  latest.json・poc.jsonに印が付くため、00:13の実行（`39138493192`、23銘柄の変化、送信完了）の変化はすべて「🛠」の欄に入り、相場の変化（F&G・株価による AAPL・KO・LLY・LMT・SCCO の判定の変化など）も混ざる（FINDINGS.md 2026-10-19）。05:19の実行（`39161925163`）の変化はAMDのHypeCoreのフェーズ（Phase4→3）の1件
+- 残す理由: timingの値が試算と違う（原因は上のとおりで、計算方法の変更による分はBSY・DDOGで一致）ことの扱いと、Discordの「🛠」の欄の目視はチャット側の判断。手順6（月曜の安全網、13:00 JSTのHypeCore・13:10 JSTのAdjusted EPS）が未確認
 
 ---
 
@@ -3754,6 +3656,10 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
 #### 直し方の候補（未決定）
 - 行をメモリに貯めて、最後に見出しと一緒に書く
 - 最初の行を書く前に見出しを書く
+
+#### 確認（2026-10-19 朝、移設しない）
+- 2026-10-18のSEC Data Update（run `39138117185`、success、Summaryの段もsuccess）のStep Summaryは、APIで読めない（`gh run view --log`には書き込んだ中身が出ない）。
+  Revenue品質の表が表として表示されているかは、Koichiさんが実行の画面で目視して確かめる必要がある。確かめたら移設する
 
 ---
 
