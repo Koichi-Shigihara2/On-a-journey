@@ -1,17 +1,18 @@
 BROS INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-17T05:41:12+09:00
+Generated: 2026-10-19T00:11:13+09:00
 Price: $41.16
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: TRIM
+Classification: WATCH
+Classification_Pre_Rounding: TRIM
 Funda_Score: 75/100
 Timing_Score (components):
   Deviation_Rate: -49.3%
   MA200_Deviation: -24.3%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Strong Buy | Target: $75 median ($29-$95) | 25 analysts | vs IV: +259.1%
-Comment: 割高(-49%超)、FCF黒字、売上成長加速
+Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -78,12 +79,14 @@ WACC_CAPM_Reference: 17.34%
 Terminal_Growth_Rate: 3.0%
 Beta: 2.288
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $99.83M (直近2yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Base: $99.83M (直近2yr平均) [実績avg: $-14.6M]
 FCF_Breakdown（直近年）: OCF=$296M / CapEx=$241M / SBC(非現金)=$18M / D&A=$115M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-DCF_Reliability: NORMAL  (通常判定適用)
+DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
+  [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
+   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
 DCF_FCF_PV: $0.75B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $2.84B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $3.59B (= FCF_PV + TV_PV, Rm=10% enterprise value)

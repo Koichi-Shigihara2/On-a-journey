@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -17.7,
-  "calculation_date": "2026-10-17T05:35:40+09:00",
+  "calculation_date": "2026-10-19T00:05:12+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -268,11 +268,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -204810000.0,
+    "fcf_5yr_avg": -172939200.0,
     "fcf_2yr_avg": -319485000.0,
     "structural_deficit": true,
     "fcf_base_used": 225064280.0,
@@ -282,7 +282,8 @@
       -483868000,
       -155102000,
       -117875000,
-      -62395000
+      -62395000,
+      -45456000
     ],
     "diluted_shares": 405135656,
     "roe_10yr_avg": -0.3874348251894227,
@@ -312,7 +313,7 @@
     "pv_high": 1340718717.0910053,
     "pv_terminal": 2228819877.5113688,
     "roe_used": -0.3874348251894227,
-    "fcf_floor_applied": 215211280.0,
+    "fcf_floor_applied": 183340480.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -350,7 +351,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -382,7 +383,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 75,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "フェアバリュー近辺、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -395,6 +396,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -496,7 +498,7 @@
     "growth_model_reason": "CAGR_max=100.0%と業界平均9.6%の中間値54.8%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,
     "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "底打ち兆候",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "過去実績(3yr:126.9% / 5yr:N/A)と整合 ✅"
     ],

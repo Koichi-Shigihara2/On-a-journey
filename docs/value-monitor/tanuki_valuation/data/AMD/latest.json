@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -65.4,
-  "calculation_date": "2026-10-17T05:33:00+09:00",
+  "calculation_date": "2026-10-19T00:01:37+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -249,11 +249,11 @@
   "fcf_base": {
     "base_fcf": 6223000000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 3917500000.0,
+    "fcf_5yr_avg": 3800000000.0,
     "fcf_2yr_avg": 6223000000.0,
-    "cv": 0.819,
+    "cv": 0.735,
     "cv_threshold": 0.5,
-    "ratio": 0.819,
+    "ratio": 0.735,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -262,7 +262,7 @@
     "fiscal_year": 2025,
     "fcf_value": 8403000000,
     "threshold_pct": 0.6,
-    "deviation_pct": 114.49904275686025,
+    "deviation_pct": 121.13157894736841,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -277,11 +277,11 @@
       "total_transient_amount": 186000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的費用と判断できるため。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($8403M)が5年平均($3918M)から114%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($8403M)が5年平均($3800M)から121%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -380,11 +380,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-27",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 3917500000.0,
+    "fcf_5yr_avg": 3800000000.0,
     "fcf_2yr_avg": 6223000000.0,
     "structural_deficit": false,
     "fcf_base_used": 8536333333.333333,
@@ -394,7 +394,8 @@
       8403000000,
       4043000000,
       1357000000,
-      1867000000
+      1867000000,
+      3330000000
     ],
     "diluted_shares": 1632475042,
     "roe_10yr_avg": 0.06422545341763311,
@@ -462,7 +463,7 @@
     "max_eps_ttm_end": "2026-06-27"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -493,7 +494,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 100,
   "score_comment": "割高(-65%超)、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -506,6 +507,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -632,9 +634,9 @@
     "recommended_g": 0.13643599335368428,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=28.8%のため中央値モデル適用",
-    "hype_phase_used": 3,
-    "hype_phase_label": "陶酔期",
-    "hype_substage_label": "過熱継続",
+    "hype_phase_used": 4,
+    "hype_phase_label": "期待剥落期",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "過去実績(3yr:13.6% / 5yr:28.8%)と整合 ✅",
       "RR×ROIC(0.7%)：再投資より還元重視型、または期待値先行 ℹ️"

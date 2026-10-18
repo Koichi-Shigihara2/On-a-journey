@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 161.8,
-  "calculation_date": "2026-10-17T05:38:55+09:00",
+  "calculation_date": "2026-10-19T00:08:36+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -295,11 +295,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -6077486250.0,
+    "fcf_5yr_avg": -5554296800.0,
     "fcf_2yr_avg": -5906138500.0,
     "structural_deficit": true,
     "fcf_base_used": 447912653.3333333,
@@ -309,7 +309,8 @@
       -8792187000,
       -3020090000,
       -2811098000,
-      -9686570000
+      -9686570000,
+      -3461539000
     ],
     "diluted_shares": 1291570324,
     "roe_10yr_avg": -0.15120344803977956,
@@ -339,7 +340,7 @@
     "pv_high": 6392409000.75116,
     "pv_terminal": 12955203600.110138,
     "roe_used": -0.15120344803977956,
-    "fcf_floor_applied": 6366554570.0,
+    "fcf_floor_applied": 5843365120.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -377,7 +378,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -408,7 +409,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 100,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "BUY",
   "pre_rounding_comment": "割安圏(162%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -421,6 +422,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -471,8 +473,7 @@
     "shares_yr_now": 1251767000,
     "shares_yr_3ago": 900886000,
     "shares_yr_now_label": "2025",
-    "shares_yr_3ago_label": "2022",
-    "buyback_ttm": 0
+    "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 22.143488073700297,
   "dupont": {

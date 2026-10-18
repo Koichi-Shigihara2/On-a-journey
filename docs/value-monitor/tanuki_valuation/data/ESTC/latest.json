@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 74.2,
-  "calculation_date": "2026-10-17T05:35:27+09:00",
+  "calculation_date": "2026-10-19T00:04:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -175,29 +175,57 @@
   "fcf_base": {
     "base_fcf": 331516000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 225878250.0,
+    "fcf_5yr_avg": 176625000.0,
     "fcf_2yr_avg": 331516000.0,
-    "cv": 0.563,
+    "cv": 0.881,
     "cv_threshold": 0.5,
-    "ratio": 0.563,
+    "ratio": 0.881,
     "threshold": 0.5
   },
   "fcf_outlier": {
-    "detected": false,
-    "rule": "none",
+    "detected": true,
+    "rule": "deviation_large",
     "fiscal_year": 2026,
     "fcf_value": 349037000,
-    "threshold_pct": 0.0,
-    "deviation_pct": null,
+    "threshold_pct": 0.6,
+    "deviation_pct": 97.61472045293701,
     "transient_evidence": {
-      "found": false,
-      "source": null,
-      "items": [],
-      "total_transient_amount": 0.0,
-      "ai_assessment": null
+      "found": true,
+      "source": "adjusted_eps_analyzer",
+      "items": [
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1515000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1050000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 948000.0,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 845000,
+          "reason": "マクロ変動による一時的影響"
+        }
+      ],
+      "total_transient_amount": 4358000.0,
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業の構造的悪化を示す内容ではない。"
+      }
     },
-    "action": "none",
-    "note": ""
+    "action": "flagged",
+    "note": "FY2026 FCF($349M)が5年平均($177M)から98%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -294,11 +322,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-07-31",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 225878250.0,
+    "fcf_5yr_avg": 176625000.0,
     "fcf_2yr_avg": 331516000.0,
     "structural_deficit": false,
     "fcf_base_used": 443053333.3333333,
@@ -308,7 +336,8 @@
       349037000,
       313995000,
       160139000,
-      80342000
+      80342000,
+      -20388000
     ],
     "diluted_shares": 104991280,
     "roe_10yr_avg": -0.23847756483862642,
@@ -376,7 +405,7 @@
     "max_eps_ttm_end": "2026-07-31"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -408,7 +437,7 @@
   "tanuki_score": "BUY",
   "funda_score": 65,
   "score_comment": "割安圏(74%)で買い余地大、FCF黒字、売上安定成長",
-  "timing_score": 70,
+  "timing_score": 85,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -421,6 +450,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2022,

@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -95.0,
-  "calculation_date": "2026-10-17T05:36:26+09:00",
+  "calculation_date": "2026-10-19T00:06:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -163,11 +163,11 @@
   "fcf_base": {
     "base_fcf": 97700000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 34600000.0,
+    "fcf_5yr_avg": 101300000.0,
     "fcf_2yr_avg": 97700000.0,
-    "cv": 5.549,
+    "cv": 2.205,
     "cv_threshold": 0.5,
-    "ratio": 5.549,
+    "ratio": 2.205,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -176,7 +176,7 @@
     "fiscal_year": 2026,
     "fcf_value": 300100000,
     "threshold_pct": 0.6,
-    "deviation_pct": 767.3410404624278,
+    "deviation_pct": 196.248766041461,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -221,11 +221,11 @@
       "total_transient_amount": 12000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての費用がマクロ変動や一過性の事業再編によるもので、理由欄に一時的・一過性と明記されており構造的悪化の兆候はない。"
+        "reasoning": "すべての項目の理由欄に「一過性の事業再編費用」や「マクロ変動による一時的影響」と明記されており、構造的悪化を示す内容はない。"
       }
     },
     "action": "flagged",
-    "note": "FY2026 FCF($300M)が5年平均($35M)から767%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2026 FCF($300M)が5年平均($101M)から196%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -324,11 +324,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-27",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 34600000.0,
+    "fcf_5yr_avg": 101300000.0,
     "fcf_2yr_avg": 97700000.0,
     "structural_deficit": false,
     "fcf_base_used": 149566666.6666667,
@@ -338,7 +338,8 @@
       300100000,
       -104700000,
       -108300000,
-      51300000
+      51300000,
+      368100000
     ],
     "diluted_shares": 90582856,
     "roe_10yr_avg": -0.09822418164309851,
@@ -406,7 +407,7 @@
     "max_eps_ttm_end": "2026-06-27"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -437,7 +438,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 50,
   "score_comment": "割高(-95%超)、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -450,6 +451,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2022,
@@ -500,8 +502,7 @@
     "shares_yr_now": 74600000,
     "shares_yr_3ago": 68300000,
     "shares_yr_now_label": "2026",
-    "shares_yr_3ago_label": "2023",
-    "buyback_ttm": 0
+    "shares_yr_3ago_label": "2023"
   },
   "net_current_assets_ratio": 0.0071,
   "dupont": {
@@ -554,9 +555,9 @@
     "recommended_g": 0.1157814561822057,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=19.5%のため中央値モデル適用",
-    "hype_phase_used": 3,
-    "hype_phase_label": "陶酔期",
-    "hype_substage_label": "陶酔期入り",
+    "hype_phase_used": 4,
+    "hype_phase_label": "期待剥落期",
+    "hype_substage_label": "実体維持・期待崩壊中",
     "signals": [
       "過去実績(3yr:19.5% / 5yr:11.6%)と整合 ✅",
       "RR×ROIC(7.6%)：再投資より還元重視型、または期待値先行 ℹ️"

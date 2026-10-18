@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -28.7,
-  "calculation_date": "2026-10-17T05:33:23+09:00",
+  "calculation_date": "2026-10-19T00:02:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -233,11 +233,11 @@
       "total_transient_amount": 10557000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性』または『マクロ変動による一時的影響』と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目がマクロ変動や一過性の在庫評価損と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "excluded",
-    "note": "FY2026 FCF($-25.0M)がマイナス。一過性費用合計$11M(金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $3M)、金融関連(貸倒引当金繰入（異常変動分） $-0M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $2M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $1M))による影響と判断し除外。5年平均($-54M)を採用。"
+    "note": "FY2026 FCF($-25.0M)がマイナス。一過性費用合計$11M(金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $3M)、金融関連(貸倒引当金繰入（異常変動分） $-0M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $2M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $1M))による影響と判断し除外。5年平均($-43M)を採用。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -334,11 +334,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-08-01",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -53500750.0,
+    "fcf_5yr_avg": -42936800.0,
     "fcf_2yr_avg": -107635500.0,
     "structural_deficit": true,
     "fcf_base_used": 198268600.0,
@@ -348,7 +348,8 @@
       -25031000,
       -190240000,
       35924000,
-      -34656000
+      -34656000,
+      -681000
     ],
     "diluted_shares": 50820702,
     "roe_10yr_avg": 0.002411992231078816,
@@ -378,7 +379,7 @@
     "pv_high": 865553158.3889997,
     "pv_terminal": 2509570151.2191567,
     "roe_used": 0.002411992231078816,
-    "fcf_floor_applied": 211648350.0,
+    "fcf_floor_applied": 201084400.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -416,7 +417,7 @@
     "max_eps_ttm_end": "2026-08-01"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -447,7 +448,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 85,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "割高(-29%超)、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -460,6 +461,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2022,

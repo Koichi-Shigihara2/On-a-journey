@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 125.6,
-  "calculation_date": "2026-10-17T05:39:45+09:00",
+  "calculation_date": "2026-10-19T00:09:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -181,11 +181,11 @@
   "fcf_base": {
     "base_fcf": 32432429.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 32418748.5,
+    "fcf_5yr_avg": 28705524.0,
     "fcf_2yr_avg": 32432429.0,
-    "cv": 1.192,
+    "cv": 1.201,
     "cv_threshold": 0.5,
-    "ratio": 1.192,
+    "ratio": 1.201,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -194,7 +194,7 @@
     "fiscal_year": 2025,
     "fcf_value": 73510395,
     "threshold_pct": 0.6,
-    "deviation_pct": 126.75272304234693,
+    "deviation_pct": 156.0844909154071,
     "transient_evidence": {
       "found": false,
       "source": null,
@@ -203,7 +203,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "FY2025 FCF($74M)が5年平均($32M)から127%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($74M)が5年平均($29M)から156%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -302,11 +302,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 32418748.5,
+    "fcf_5yr_avg": 28705524.0,
     "fcf_2yr_avg": 32432429.0,
     "structural_deficit": false,
     "fcf_base_used": 32432429.0,
@@ -316,7 +316,8 @@
       73510395,
       -8645537,
       55892198,
-      8917938
+      8917938,
+      13852626
     ],
     "diluted_shares": 56462156,
     "roe_10yr_avg": 0.12253545425768095,
@@ -384,7 +385,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -416,7 +417,7 @@
   "tanuki_score": "BUY",
   "funda_score": 100,
   "score_comment": "割安圏(126%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 70,
+  "timing_score": 85,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -429,6 +430,7 @@
     "qx": true,
     "qy": true
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,

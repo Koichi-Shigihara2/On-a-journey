@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -85.3,
-  "calculation_date": "2026-10-17T05:33:57+09:00",
+  "calculation_date": "2026-10-19T00:02:45+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -176,7 +176,7 @@
     "fiscal_year": 2025,
     "fcf_value": 309000000,
     "threshold_pct": 0.6,
-    "deviation_pct": 107.29763240243255,
+    "deviation_pct": 108.55244948796015,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -209,11 +209,11 @@
       "total_transient_amount": 47000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($309M)が5年平均($-4234M)から107%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($309M)が5年平均($-3613M)から109%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -292,11 +292,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -4234250000.0,
+    "fcf_5yr_avg": -3613000000.0,
     "fcf_2yr_avg": -1044500000.0,
     "structural_deficit": true,
     "fcf_base_used": 2042640000.0,
@@ -306,7 +306,8 @@
       309000000,
       -2398000000,
       -7881000000,
-      -6967000000
+      -6967000000,
+      -1128000000
     ],
     "diluted_shares": 354307379,
     "roe_10yr_avg": 0.11205128617729962,
@@ -336,7 +337,7 @@
     "pv_high": 7980490078.832472,
     "pv_terminal": 26346647597.68388,
     "roe_used": 0.11205128617729962,
-    "fcf_floor_applied": 6276890000.0,
+    "fcf_floor_applied": 5655640000.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -368,13 +369,13 @@
     "revenue_ttm": 31270000000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 765.7,
-    "max_eps": 10.107,
-    "max_eps_per": 26.8,
-    "max_eps_reliability": "HIGH",
+    "max_eps": 9.7796,
+    "max_eps_per": 27.7,
+    "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -405,7 +406,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 65,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "TRIM",
   "pre_rounding_comment": "割高(-85%超)、FCF黒字、売上成長加速",
@@ -418,6 +419,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -468,8 +470,7 @@
     "shares_yr_now": 314000000,
     "shares_yr_3ago": 329000000,
     "shares_yr_now_label": "2025",
-    "shares_yr_3ago_label": "2022",
-    "buyback_ttm": 400000000
+    "shares_yr_3ago_label": "2022"
   },
   "net_current_assets_ratio": 0.0617,
   "dupont": {

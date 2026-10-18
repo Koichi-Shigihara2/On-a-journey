@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 31.1,
-  "calculation_date": "2026-10-17T05:36:13+09:00",
+  "calculation_date": "2026-10-19T00:05:50+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -264,11 +264,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -491634000.0,
+    "fcf_5yr_avg": -447225200.0,
     "fcf_2yr_avg": -622013000.0,
     "structural_deficit": true,
     "fcf_base_used": 205213000.0,
@@ -278,7 +278,8 @@
       -743330000,
       -500696000,
       -400786000,
-      -321724000
+      -321724000,
+      -269590000
     ],
     "diluted_shares": 996294246,
     "roe_10yr_avg": -0.4967553857804474,
@@ -308,7 +309,7 @@
     "pv_high": 761213401.6652744,
     "pv_terminal": 1203640600.9680367,
     "roe_used": -0.4967553857804474,
-    "fcf_floor_applied": 495908000.0,
+    "fcf_floor_applied": 451499200.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -346,7 +347,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -377,7 +378,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 100,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "BUY",
   "pre_rounding_comment": "割安圏(31%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -390,6 +391,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -440,8 +442,7 @@
     "shares_yr_now": 826240955,
     "shares_yr_3ago": 585544043,
     "shares_yr_now_label": "2025",
-    "shares_yr_3ago_label": "2022",
-    "buyback_ttm": 85000
+    "shares_yr_3ago_label": "2022"
   },
   "computed_runway_months": 48.30998443960343,
   "net_current_assets_ratio": 0.4711,

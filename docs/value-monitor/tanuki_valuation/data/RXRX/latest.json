@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 441.2,
-  "calculation_date": "2026-10-17T05:38:30+09:00",
+  "calculation_date": "2026-10-19T00:08:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,7 +191,7 @@
       "total_transient_amount": 1393000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "両項目とも「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断される。"
+        "reasoning": "両項目とも理由が一過性の事業再編費用と明記されており、事業運営上の一時的な問題を示すため。"
       }
     },
     "action": "flagged",
@@ -274,11 +274,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -336057500.0,
+    "fcf_5yr_avg": -291531600.0,
     "fcf_2yr_avg": -368305000.0,
     "structural_deficit": true,
     "fcf_base_used": 244131146.66666666,
@@ -288,7 +288,8 @@
       -350481000,
       -386129000,
       -342163000,
-      -265457000
+      -265457000,
+      -113428000
     ],
     "diluted_shares": 536271087,
     "roe_10yr_avg": -0.5125061112141825,
@@ -318,7 +319,7 @@
     "pv_high": 1293918460.2848735,
     "pv_terminal": 7685939962.59043,
     "roe_used": -0.5125061112141825,
-    "fcf_floor_applied": 342031980.0,
+    "fcf_floor_applied": 297506080.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -356,7 +357,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -388,7 +389,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 35,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "割安圏(441%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長停滞",
@@ -401,6 +402,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,

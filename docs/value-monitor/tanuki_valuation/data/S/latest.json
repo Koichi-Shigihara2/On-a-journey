@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": -1.2,
-  "calculation_date": "2026-10-17T05:38:43+09:00",
+  "calculation_date": "2026-10-19T00:08:29+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -176,9 +176,9 @@
     "method": "recent_2yr",
     "fcf_5yr_avg": 80102240.0,
     "fcf_2yr_avg": 48180500.0,
-    "cv": 24.955,
+    "cv": 3.053,
     "cv_threshold": 0.5,
-    "ratio": 24.955,
+    "ratio": 3.053,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -187,7 +187,7 @@
     "fiscal_year": 2026,
     "fcf_value": 56536000,
     "threshold_pct": 0.6,
-    "deviation_pct": 1824.3156690812048,
+    "deviation_pct": 284.2067536394323,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -220,11 +220,11 @@
       "total_transient_amount": 12265000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が一過性の事業再編費用と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2026 FCF($57M)が5年平均($-3M)から1824%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2026 FCF($57M)が5年平均($-31M)から284%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -303,11 +303,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-07-31",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -3278750.0,
+    "fcf_5yr_avg": -30691600.0,
     "fcf_2yr_avg": 48180500.0,
     "structural_deficit": false,
     "fcf_base_used": 141304833.33333334,
@@ -317,7 +317,8 @@
       56536000,
       39825000,
       13642000,
-      -123118000
+      -123118000,
+      -140343000
     ],
     "diluted_shares": 348049117,
     "roe_10yr_avg": -0.2183403383548284,
@@ -347,7 +348,7 @@
     "pv_high": 1378939015.6937451,
     "pv_terminal": 7216960242.210257,
     "roe_used": -0.2183403383548284,
-    "fcf_floor_applied": 83380990.0,
+    "fcf_floor_applied": 110793840.0,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -385,7 +386,7 @@
     "max_eps_ttm_end": "2026-07-31"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -417,7 +418,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 75,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 30,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
@@ -430,6 +431,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2022,
@@ -480,8 +482,7 @@
     "shares_yr_now": 330111148,
     "shares_yr_3ago": 277802861,
     "shares_yr_now_label": "2026",
-    "shares_yr_3ago_label": "2023",
-    "buyback_ttm": 49249000
+    "shares_yr_3ago_label": "2023"
   },
   "net_current_assets_ratio": 0.0412,
   "dupont": {

@@ -45,7 +45,7 @@
     }
   },
   "upside_percent": 148.3,
-  "calculation_date": "2026-10-17T05:41:42+09:00",
+  "calculation_date": "2026-10-19T00:12:07+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -163,11 +163,11 @@
   "fcf_base": {
     "base_fcf": 129715000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 77289750.0,
+    "fcf_5yr_avg": 55691000.0,
     "fcf_2yr_avg": 129715000.0,
-    "cv": 0.891,
+    "cv": 1.378,
     "cv_threshold": 0.5,
-    "ratio": 0.891,
+    "ratio": 1.378,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -176,7 +176,7 @@
     "fiscal_year": 2025,
     "fcf_value": 165280000,
     "threshold_pct": 0.6,
-    "deviation_pct": 113.84465598607835,
+    "deviation_pct": 196.78044926469266,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -221,11 +221,11 @@
       "total_transient_amount": 11051000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべてマクロ変動による一時的影響および一過性の事業再編費用と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "マクロ変動による貸倒引当金繰入と一過性のリストラ費用はいずれも事業運営上の一時的な影響で、構造的悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($165M)が5年平均($77M)から114%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($165M)が5年平均($56M)から197%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -324,11 +324,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 77289750.0,
+    "fcf_5yr_avg": 55691000.0,
     "fcf_2yr_avg": 129715000.0,
     "structural_deficit": false,
     "fcf_base_used": 140281666.66666666,
@@ -338,7 +338,8 @@
       165280000,
       94150000,
       43642000,
-      6087000
+      6087000,
+      -30704000
     ],
     "diluted_shares": 121667674,
     "roe_10yr_avg": -0.02621381859445087,
@@ -394,7 +395,7 @@
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
-    "insider_sell_count": 25,
+    "insider_sell_count": 23,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-10-15",
     "revenue_ttm": 713538000,
@@ -406,7 +407,7 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-17",
+    "validated_at": "2026-10-19",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -438,7 +439,7 @@
   "tanuki_score": "BUY",
   "funda_score": 90,
   "score_comment": "割安圏(148%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -451,6 +452,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
