@@ -1,6 +1,6 @@
 {
   "ticker": "INTU",
-  "last_updated": "2026-10-12T02:14:33.142183",
+  "last_updated": "2026-10-18T15:06:07.943663",
   "quarters": [
     {
       "gaap_eps": 1.3104693140794224,
@@ -78,9 +78,25 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目のうちSBCと無形資産償却は恒常的なコストである一方、リストラ費用は一過性と判断される。GAAP EPS 1.31に対しAdjusted EPS 3.94と3倍近い開きがあるため、市場がGAAPベースで評価している場合にINTUのキャッシュ生成力や事業実力が過小評価されている可能性がある。ただしSBC（恒常的報酬コスト）と償却費の大部分を加算しているため、調整後EPSが実力を過大に示しているリスクもあり、投資家は持続可能性と株主希薄化を慎重に検証する必要がある。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金だが、従業員報酬として恒常的に発生する運用コストであり、株主希薄化を伴う。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用で、買収の経済的コストを反映する恒常的項目。",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "リストラ費用は事業再編に伴う一過性の費用として扱われ、調整の根拠が強い。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

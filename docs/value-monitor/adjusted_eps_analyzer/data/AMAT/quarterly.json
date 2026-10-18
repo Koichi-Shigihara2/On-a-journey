@@ -1,6 +1,6 @@
 {
   "ticker": "AMAT",
-  "last_updated": "2026-10-12T02:09:07.291872",
+  "last_updated": "2026-10-18T15:01:05.407910",
   "quarters": [
     {
       "gaap_eps": 3.1725,
@@ -52,9 +52,15 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "過大調整",
+        "comment": "株式報酬費用（SBC）は恒常的に発生する運用コストであり、一過性調整とは言えません。市場がGAAP EPSで判断する場合、非現金費用を反映した保守的な実績を見ており、企業の実力が見えにくくなっている可能性は低いですが、調整によりEPSを約5.8%押し上げているため、投資家が調整EPSを過信すると過大評価リスクが生じます。逆にGAAP重視ではSBCの希薄化効果を適切に織り込んでいる可能性が高く、過小評価リスクは限定的です。投資家はSBCの継続性と株主価値への実質的影響を注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、技術企業で毎期継続的に発生する恒常的な報酬コストであり、株主希薄化を伴うため調整の妥当性は低い。",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {

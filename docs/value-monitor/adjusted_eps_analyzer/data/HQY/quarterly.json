@@ -1,6 +1,6 @@
 {
   "ticker": "HQY",
-  "last_updated": "2026-10-12T02:15:31.620987",
+  "last_updated": "2026-10-18T15:07:15.054759",
   "quarters": [
     {
       "gaap_eps": 0.781345966148499,
@@ -62,9 +62,25 @@
       "tax_expense": 22221000.0,
       "pretax_income": 87865000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "調整項目の主力はSBC（恒常的非現金費用）と無形資産償却（買収に伴う継続的償却）であり、M&A統合費用のみが一過性。GAAP EPS 0.78に対しAdjusted EPS 1.36と大幅に加算されており、市場がGAAPベースで判断する場合、非現金項目により企業の実力が見えにくくなり過小評価の可能性がある。ただしSBCは株主希薄化の実質コスト、無形資産償却も過去買収の経済効果を反映するため、調整後EPSを過信すると過大評価リスクが生じる。投資家は持続可能性を検証し、調整の質を慎重に考慮すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが恒常的に発生する株式報酬コストであり、毎期の運用コストとして考慮すべき。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金だが継続的に発生し、買収の経済的コストを反映する。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストであり、調整の妥当性は比較的高い。",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

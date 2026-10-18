@@ -1,6 +1,6 @@
 {
   "ticker": "COHR",
-  "last_updated": "2026-10-12T02:10:24.524233",
+  "last_updated": "2026-10-18T15:02:26.890223",
   "quarters": [
     {
       "gaap_eps": 1.2310440305649812,
@@ -75,30 +75,9 @@
       "tax_expense": 60849000.0,
       "pretax_income": 301379000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の多くをSBCと無形資産償却が占めており、これらは恒常的に発生しやすい項目である一方、M&A統合・リストラ費用は一過性が高い。GAAP EPS 1.23に対しAdjusted EPS 1.82と調整幅が大きいため、市場がGAAPベースで評価する場合に企業の実力（買収シナジーや非現金費用の実態）が過小評価されている可能性がある。ただし恒常的コストのadd_backが大きいため過大評価リスクもあり、投資家はSBCによる希薄化や償却の持続性を注視し、調整の質を見極める必要がある。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的な運用コストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり、恒常的に発生する非現金項目。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、取引完了後の非経常的支出。",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用で、特定の再構築イベントに紐づく。",
-            "confidence": 0.8
-          }
-        ]
+        "health": "Error",
+        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
+        "sources": []
       }
     },
     {

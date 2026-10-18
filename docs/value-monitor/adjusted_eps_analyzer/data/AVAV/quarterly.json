@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-10-12T02:09:37.604835",
+  "last_updated": "2026-10-18T15:01:37.139242",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
@@ -88,9 +88,35 @@
       "tax_expense": -397000.0,
       "pretax_income": -5463000.0,
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "GAAP EPSが-0.10と赤字である一方、Adjusted EPSは+0.96と大幅にプラス転換しており、主に無形資産償却（43M）とSBCのadd backによる。市場がGAAP EPSのみで判断する場合、非現金・買収関連の調整項目により企業の実力（特にキャッシュ生成力や買収シナジー効果）が過小評価されている可能性が高い。ただしSBCと無形資産償却は恒常的に発生しやすい項目のため、調整の持続可能性に注意が必要。投資家は一過性項目（M&A統合費用、在庫評価損）の規模と頻度を確認し、過大調整リスクを考慮してコア事業の収益性を評価すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが恒常的に発生する株式報酬費用であり、毎期の事業運営コストとして実質的な負担",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で非現金項目だが、買収戦略を続ける限り継続的に発生する可能性が高い",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストであり、特定取引に関連した非経常的費用",
+            "confidence": 0.8
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的な異常変動分であり、通常の事業とは無関係な非経常項目",
+            "confidence": 0.75
+          },
+          {
+            "item": "inventory_writeoff",
+            "snippet": "一過性の在庫評価損で、特殊要因による非経常的費用",
+            "confidence": 0.65
+          }
+        ]
       }
     },
     {

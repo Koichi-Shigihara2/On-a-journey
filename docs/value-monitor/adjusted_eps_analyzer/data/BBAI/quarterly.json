@@ -1,6 +1,6 @@
 {
   "ticker": "BBAI",
-  "last_updated": "2026-10-12T02:09:51.282966",
+  "last_updated": "2026-10-18T15:01:52.364428",
   "quarters": [
     {
       "gaap_eps": -0.053742286370096475,
@@ -91,9 +91,30 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "SBCと無形資産償却は恒常的な非現金費用だが、M&A統合・リストラは一過性。GAAP EPS(-0.0537)はこれら調整で実態より悪化して表示されており、市場がGAAP重視の場合に企業の実力(調整後-0.0275)を過小評価する可能性がある。ただしSBCの希薄化効果や償却の経済的実態を考慮すると過大調整リスクもあり、投資家はキャッシュフロー・希薄化・買収効果の持続性を注視すべき。過小評価より過大評価リスクの方がやや高い。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だがテック企業で毎期発生する恒常的コスト(株式報酬関連)",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で過去買収に基づく恒常的非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コスト(M&A統合費用)",
+            "confidence": 0.8
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用(リストラ費用)",
+            "confidence": 0.8
+          }
+        ]
       }
     },
     {

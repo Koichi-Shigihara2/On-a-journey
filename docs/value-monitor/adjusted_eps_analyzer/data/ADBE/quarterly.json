@@ -1,6 +1,6 @@
 {
   "ticker": "ADBE",
-  "last_updated": "2026-10-12T02:14:04.444101",
+  "last_updated": "2026-10-18T15:05:45.194948",
   "quarters": [
     {
       "gaap_eps": 4.619469026548672,
@@ -65,9 +65,20 @@
         }
       },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "主な調整は恒常的な株式報酬費用(SBC)と無形資産償却費です。SBCはテック企業で毎期発生する実質コスト(希薄化伴う)であり、無形資産償却も買収後の複数年にわたる非一過性項目です。Adjusted EPSがGAAP比で約26%上昇しており、市場がGAAP EPS中心に判断する場合、Adobeのキャッシュ生成力や事業実力が過小評価される可能性があります。ただしSBC調整の過度な加算は実態を過大評価するリスクもあり、投資家は非GAAPに加えFCFや株主希薄化影響を注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する株式報酬(SBC)は恒常的コストであり、調整の非経常性は低い",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は複数年継続する恒常的項目で、一過性とはみなしにくい",
+            "confidence": 0.2
+          }
+        ]
       }
     },
     {
