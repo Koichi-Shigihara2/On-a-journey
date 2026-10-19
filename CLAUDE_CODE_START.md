@@ -54,6 +54,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS（`Adjusted_Eps_Analyzer_update.yml`）の、遅れて起動した後
    - 期限: 2026-10-20（火）
    - 確認の手順: `gh run list`で10-19のHypeCore（schedule）とAdjusted EPS（schedule）の起動・conclusion・Runner Imageを確かめる。HypeCoreがsuccessで、Adjusted EPSが24時間の重複防止で何もせず終わっていれば済（Runner Imageはubuntu-latestのUbuntu 26への移行の確認、FINDINGS.md 2026-10-18）
+   - 途中の結果（2026-10-19 18:40 JST）: HypeCoreはschedule `39230653656`（09:31〜09:32 UTC）でsuccess、Runner Imageはubuntu-24.04 20261012.334.1、commit `5fb554d71a`（連鎖のTANUKI VALUATION `39230891630`は実行中）。Adjusted EPSのscheduleは09:40 UTCの時点で未起動のため、まだ済にしない
 7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
    - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
    - 期限: 2026-10-31
