@@ -26,11 +26,12 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-19 朝の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**55件**（`^### [`の機械カウント、2026-10-19 朝。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`をBACKLOG_DONE.mdへ移して55件）。
+**次回の確認手順（2026-10-19 夜の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**53件**（`^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
+**2026-10-19 夜**: Step SummaryのRevenue品質の表（17:28 JST）と「🛠」の欄（17:30 JST）をKoichiさんが目視で確認し、チャット側の判定で`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（6）は17:36 JSTの時点で未起動のため残す
 以下は2026-10-15 夜の終業の記載（53件。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
@@ -44,21 +45,15 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 2026-10-17（土）13:00 JST（04:00 UTC）以降の夜間のMarket Data Dailyの後
    - 期限: 2026-10-20（火）
    - 確認の手順: `common/market_data/daily/NIY=F.json`の10-08（平らな足）が`_no_yahoo_bar`になっていること。出来高の重複・平らな足の観察も続ける
-4. **日曜の連鎖の後の残り**（`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`。連鎖と手動実行の確認は2026-10-19 朝に済み、結果は各BACKLOGの「確認（2026-10-19 朝）」）
-   - 日時: いつでも（Koichiさんの目視とチャット側の判断）
-   - 期限: なし（どちらも公開データの作り直しは済んでいる）
-   - 確認の手順:
-     - SEC Data Update（run `39138117185`）のActionsの実行の画面で、Step SummaryのRevenue品質の表が表として表示されている（APIで読めない）。確かめたら`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設する
-     - 10-19 00:13 JST（`39138493192`、23銘柄）と05:19 JST（`39161925163`、AMDの1件）のscore_watcherのDiscordの通知に「🛠 計算方法の変更による変化（LAYER3-RETENTION-PERIOD-1）」の欄が出ている（ログには区分が出ない）。印は日付単位のため相場の変化も同じ欄に入る作り（FINDINGS.md 2026-10-19）
-     - timingの値が試算と違うこと（原因はF&Gの区分と株価、計算方法の変更による分はBSY・DDOGで一致）を想定どおりとするかをチャット側が判断し、6の確認の後に`[[LAYER3-RETENTION-PERIOD-1]]`を移設する
+4. （済 2026-10-19 夜）日曜の連鎖の後の残り: Step Summaryの表（17:28 JST）と「🛠」の欄（17:30 JST）をKoichiさんが目視で確認、timingの差はチャット側が想定どおりと判定。`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設（結果はBACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
    - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない）
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
-6. **月曜の安全網**（上の4の続き。2026-10-19 朝の時点で未確認）
-   - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS_Data_Update
-   - 期限: 2026-10-19（月）
-   - 確認の手順: HypeCore Update（重複防止なし）は動き、10-19の印が付く。Adjusted_EPS_Data_Updateは24時間の重複防止で何もせずに終わる。あわせて「Set up job」のRunner Image（ubuntu-latestのUbuntu 26への移行、FINDINGS.md 2026-10-18）
+6. **月曜の安全網**（2026-10-19 17:36 JSTの時点で2本とも未起動。GitHubのscheduleの遅れで、過去の月曜は10-05が11:05 UTC、10-12が11:35 UTCに起動）
+   - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS（`Adjusted_Eps_Analyzer_update.yml`）の、遅れて起動した後
+   - 期限: 2026-10-20（火）
+   - 確認の手順: `gh run list`で10-19のHypeCore（schedule）とAdjusted EPS（schedule）の起動・conclusion・Runner Imageを確かめる。HypeCoreがsuccessで、Adjusted EPSが24時間の重複防止で何もせず終わっていれば済（Runner Imageはubuntu-latestのUbuntu 26への移行の確認、FINDINGS.md 2026-10-18）
 7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
    - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
    - 期限: 2026-10-31
@@ -75,6 +70,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 新規提出か遅延のアラート（`ALERT_BIZ_DAYS`にちょうど達した日）がある回のログに「Discord 送信OK」があり、Discordに届いている
      - 確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-19 夜 移設と、Q4の逆算の基準の混在の範囲の調査（確認の残りは上の「次回の確認手順」3・6・9）**
+- 移設: `[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`（Koichiさんの目視とチャット側の判定、BACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）。アクティブ53件
+- 月曜の安全網は17:36 JSTの時点で未起動（scheduleの遅れ）。手順6に残し、期限を10-20にした
+- 調査（読み取りのみ、BACKLOG未登録）: Q4の逆算（`q4_implied.py::build_q4_implied_entries`、年次−直近3四半期。どの期も最新の申告の値）で、年次が後の申告で組み替えられた期が58期・20銘柄、
+  逆向きが12期・9銘柄。結果は`PROJECT_STATUS.md`「次の作業」2（初回の束ねの入力）。FINDINGS.mdにAPP・PAYSの負の四半期（`743c87fc97`）とEPS ANALYZERの年次の選び方の2行
 
 **2026-10-19 朝 日曜の連鎖の後の確認・手動実行・記録（確認の残りは上の「次回の確認手順」4・6・9）**
 - 読み取り: SEC Data Update `39138117185`（✅、Discordの送信完了、98/98・FAILED 0・巻き戻しなし・Gate NG=0、CHECK-63 0件）、6銘柄の判定・timing、5銘柄の`latest_period_missing`、score_watcherのログ、TAILのRSS Monitor `38904610396`のログ
