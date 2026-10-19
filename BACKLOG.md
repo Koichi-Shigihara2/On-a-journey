@@ -2918,7 +2918,7 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 - `pipeline.py`（L3733付近）がhypecore_historyの`"lifecycle"`に最新月の`stage_label`を入れ、`stock.html`の履歴の「ライフサイクル」列に出る
 - `stock.html`のシグナル（L601-604）がstage 2を「成長期」、3を「成熟期」、1を「黎明期」と表示する（期待の段階をライフサイクルの名前で呼んでいる）
 - `docs/common/glossary.json`の`hype_stage_color`が「S0 失望」のまま（hypecore.pyのS0は蓄積、`stock.html`のSTAGE_LABELSは「失望/蓄積期」）
-  - 追記（2026-10-19）: このSTAGE_LABELSは推奨成長率の内訳のHypeCoreの行の中だけで使っていたため、[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]の削除で行ごと消した（`1e65c8e5f8`）。stock.htmlのシグナル（L601-604）の名前は残っている
+  - 追記（2026-10-19）: このSTAGE_LABELSは推奨成長率の内訳のHypeCoreの行の中だけで使っていたため、[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]の削除で行ごと消した（`3b6cd1b3bf`）。stock.htmlのシグナル（L601-604）の名前は残っている
 
 #### 方針
 ライフサイクルと期待の段階の名前を分ける。定義v2（S5 失望の新設）の切り替え（[[STAGE-V2-ROLLOUT-1]]）と合わせて直すか先に直すかはチャット側の判断待ち。実装しない

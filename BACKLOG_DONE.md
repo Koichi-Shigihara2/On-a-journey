@@ -346,7 +346,7 @@ Step Summaryの表示は引き続き未確認
 - 同じ表のISSUEのうち、APP「Revenue負値: [('2023-12-31', -488.1)]」・PAYS「Revenue負値: [('2020-09-30', -0.2)]」は範囲外の発見として`FINDINGS.md`（2026-10-19、`743c87fc97`）に記録
 
 ### ✅ [DOCS-README-STALE-1] docs/README.md が ZIP の適用手順の古い内容のままで、現行のdocs/の構成と合っていない
-**完了（2026-10-19）:** 削除で完了（`1e65c8e5f8`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
+**完了（2026-10-19）:** 削除で完了（`3b6cd1b3bf`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
 **優先度:** 低
 **分類:** ドキュメント / `docs/README.md`
 **登録日:** 2026-10-17
@@ -364,7 +364,7 @@ Step Summaryの表示は引き続き未確認
 - 削除の後の`python scripts/audit_site_links.py`: ページ19件・検証したリンク190件・リンク切れ0件・孤立ページ0件（検証できないテンプレートのリンク1件は削除の前から）。GitHub Pagesの入口は`docs/index.html`
 
 ### ✅ [TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1] TANUKI VALUATIONの個別ページがgrowth_sanityのrecommended_g_hypecoreを表示しようとするが、作る処理が無い
-**完了（2026-10-19）:** 削除で完了（`1e65c8e5f8`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
+**完了（2026-10-19）:** 削除で完了（`3b6cd1b3bf`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
 **優先度:** 低（値が無いため表示されないだけ）
 **分類:** 表示 / `docs/value-monitor/tanuki_valuation/stock.html`（L2202、`sanity.recommended_g_hypecore`・`hypecore_stage_used`）
 **登録日:** 2026-10-14

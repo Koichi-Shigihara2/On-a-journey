@@ -18,7 +18,7 @@
    束ねの入力に、2026-10-19 夜のQ4の逆算の基準の混在の範囲の調査（読み取りのみ、BACKLOG未登録）を加える: 年次が後の申告で組み替えられ、組み替え前のQ1〜Q3から逆算したQ4が58期・20銘柄（今の読み手の期間に入るのは14銘柄）、
    逆向き（Q1〜Q3だけ後で組み替え）が12期・9銘柄。理論株価が大きく変わる見込みはAPPだけ（粗利率の代わりの計算で+20〜27%）。判定の基準・影響表・直し方の候補3案・C1の全件は`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。関係: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[LAYER3-FIRST-FILED-DATE-1]]`・`FINDINGS.md`（2026-10-19の2行）。
    初回の束ねの下書き（FINDINGS 18行＋BACKLOGのアクティブ53件の分類、型ごとの根治策の案、終業の数）は`docs/architecture/BUNDLING_2026-10-19.md`（2026-10-19 夜。BACKLOG・FINDINGSの状態はまだ変えていない）。
-   下書きからの処置（2026-10-19 夜）: 削除の候補3件（F8の`is_latest`・`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`）は**済**（削除、`1e65c8e5f8`）。F5（TAILの提出遅延のアラート）は実装を止めた（期待日が前回の提出日＋75日で決算の予定日を見ず、保有9銘柄のQ3がどれも決算の前に「遅れ」になる。FINDINGS.md 2026-10-19）。直し方はチャット側が決め直す。F3はR-Aの段階で判断
+   下書きからの処置（2026-10-19 夜）: 削除の候補3件（F8の`is_latest`・`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`）は**済**（削除、`3b6cd1b3bf`）。F5（TAILの提出遅延のアラート）は実装を止めた（期待日が前回の提出日＋75日で決算の予定日を見ず、保有9銘柄のQ3がどれも決算の前に「遅れ」になる。FINDINGS.md 2026-10-19）。直し方はチャット側が決め直す。F3はR-Aの段階で判断
    各段階は「grepで一覧（書き手・読み手・画面）を作る → Koichiさんが画面の項目と機能を投資判断に使っているかで残す／消すを判断 → 消すものを削除してから残ったものだけにCHECKを有効にする」の順（CHAT_RULES.md「発見の溜め方と根治の判断」5）。
    最初の束ねでは、`FINDINGS.md`の行に加えて、BACKLOG.mdのアクティブ全件（2026-10-16終業時54件）を同じ基準で分ける:
    - 各件に、原因の型（A・B・C、要れば型を足す）と、投資判断（理論株価・判定・保有銘柄の監視）への影響の有無を付ける
@@ -37,7 +37,7 @@
 - `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
 - `[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、2026-10-16登録、調査のみ。06-06の一括生成のレビューも作った時点の最新データで書かれている可能性）
 
-- **2026-10-19 夜（読み手の無いもの3件の削除、F5は止めた）**: `1e65c8e5f8`でTAILのレビューの`is_latest`（書き手と公開の35件）・`docs/README.md`・TANUKIの`stock.html`の`recommended_g_hypecore`の表示を削除。`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`をBACKLOG_DONE.mdへ（アクティブ53件→51件、`^### [`の機械カウント）。
+- **2026-10-19 夜（読み手の無いもの3件の削除、F5は止めた）**: `3b6cd1b3bf`でTAILのレビューの`is_latest`（書き手と公開の35件）・`docs/README.md`・TANUKIの`stock.html`の`recommended_g_hypecore`の表示を削除。`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`をBACKLOG_DONE.mdへ（アクティブ53件→51件、`^### [`の機械カウント）。
   F5は新旧の条件の比較で、期待日（前回の提出日＋75日）が決算の予定日より前に来るため止めた。FINDINGS.mdに2行（期待日と決算の予定、stock.htmlの算式の説明の古い文言。計20行）。
   **終業の数（2026-10-19、10-16と同じ数え方）**: 読み手の決まっていない出力 6（F3の6種。F8が減った）、二重実装の規則 5、サブシステム 10、Python 69,665行（160ファイル）、テスト34,105行、ワークフロー23本
 - **2026-10-19 夜（移設と、Q4の逆算の基準の混在の範囲の調査）**: 移設2件（`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`、Koichiさんの目視とチャット側の判定）。アクティブBACKLOG 55件→53件（`^### [`の機械カウント）。
