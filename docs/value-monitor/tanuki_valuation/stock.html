@@ -2205,18 +2205,11 @@ function render(d) {
     const autoAdjusted = d.phase1_growth_auto_adjusted || false;
     const recG  = sanity.recommended_g;
     const recM  = sanity.recommended_g_median;
-    const recH  = sanity.recommended_g_hypecore;
-    const hStage = sanity.hypecore_stage_used;
-    const STAGE_LABELS = {0:'失望/蓄積期', 1:'黎明期', 2:'期待拡大期', 3:'陶酔期', 4:'期待剥落期'};
 
     let recBlock = '';
     if (recG != null) {
       let rows = '';
       if (recM != null) rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0"><span style="color:#64748b">中央値ベース</span><span style="font-family:var(--mono);color:#94a3b8">${(recM*100).toFixed(1)}%</span></div>`;
-      if (recH != null) {
-        const sl = hStage != null ? `Phase${hStage}・${STAGE_LABELS[hStage]||''}` : '';
-        rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0"><span style="color:#64748b">HypeCoreフェーズ補正${sl?' ('+sl+')':''}</span><span style="font-family:var(--mono);color:#94a3b8">${(recH*100).toFixed(1)}%</span></div>`;
-      }
       rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-top:1px solid #1e2a3a;margin-top:3px"><span style="color:#94a3b8;font-weight:600">最終推奨値</span><span style="font-family:var(--mono);color:#c4d0ff;font-weight:700">${(recG*100).toFixed(1)}%</span></div>`;
       const adjBanner = autoAdjusted
         ? `<div style="margin-top:6px;padding:4px 8px;background:rgba(196,208,255,0.1);border:1px solid rgba(196,208,255,0.3);border-radius:4px;font-size:11px;color:#c4d0ff">✓ DCFに自動適用済（推奨値・中央値ベース）</div>`
