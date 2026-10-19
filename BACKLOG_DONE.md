@@ -2,6 +2,1240 @@
 
 ---
 
+## 2026-10-19（初回の束ね）
+
+初回の束ね（`docs/architecture/BUNDLING_2026-10-19.md`、確定はチャット側の判断）で、根治策に統合した件と捨てる件を移した。本文は元のまま。
+
+### ✅ [TICKER-EXCEPTION-LEDGER-1] 銘柄別の例外（データの欠け・代用・除外・SECの遅れ等）が10種類以上の出力と人が書く台帳・BACKLOGの個別項目に散らばり、1か所で見られない
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。単独では実装しない決定（2026-10-16）。要否は出力の一覧の結果で決める
+**優先度:** 高（評価値に効く例外〈A〉が画面に出ていないもの・読み手が0件の出力がある。BACKLOGに銘柄の事情の項目が混ざり、仕組みの問題と区別できない）
+**状態（2026-10-15）:** 設計済み（`docs/architecture/TICKER_EXCEPTION_LEDGER.md`）。**実装は2026-10-18〜19の確認（CLAUDE_CODE_START.md「次回の確認手順」4・6）の後**
+**着手条件（2026-10-16 決定）:** 単独では実装しない。型A（読み手・検証の無い出力）の根治策として作る出力の一覧（書き手・読み手・定義、SECデータ層から。CHAT_RULES.md「発見の溜め方と根治の判断」5）の結果で、台帳が必要かどうかを判断する。
+設計書の7章「読み手の一覧と読み方」の12種は、一覧の入力として使う
+**分類:** 運用（例外の記録と表示） / 新設の集約処理・TANUKI_VALUATION_Update.yml・stock.html・admin.html・score_watcher.py
+**登録日:** 2026-10-15
+**発見:** 2026-10-15の読み取り調査「銘柄ごとの例外の記録の棚卸し」
+
+#### 内容
+- 銘柄ごとの例外は直す対象ではなく、記録して表示する対象とする。BACKLOGには仕組みの問題だけを残す
+- 設計の要点（詳細は設計書）: 段階A（評価値に影響）・B（注記）・C（内部の検知、件数だけ）。既存の書き手は変えず、保存済みの出力だけを読む集約処理を1本新設。
+  first_seenは前回の台帳から引き継ぎ、検知されなくなったら解消、30日後に削除。自動で検知できないものは手書きの入力ファイル。
+  表示はstock.htmlにAのバッジ、admin.htmlに一覧のタブ、score_watcherはAの新規発生だけを通知。TANUKI_VALUATION_Update.ymlの最後の処理の群（Gateの後・score_watcherとcommitの前、continue-on-error）
+- 10-15時点のA: latest_period_missing 5・fcf_outlierの除外 5・fcf_estimationの代用 2・sector_guard 3・dupontの除外 9・RICEの計算の例外 4・SEC_LAG 4・fact_overrides 5
+- 移す候補のBACKLOG 7件: [[SEC-COMPANYFACTS-API-LAG-1]]・[[SBC-TAG-STOCKOPTIONPLAN-1]]・[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]・[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]・
+  [[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]・[[LAYER3-CUSTOM-TAG-MIGRATION-1]]・[[STONKS-TANUKI-BADGE-404-1]]
+
+#### 決定（2026-10-15）
+- 実行の位置: 「Gate → 台帳の集約 → score_watcher → commit」で決定（score_watcherが台帳を読んで通知し、commitに台帳を含めるため）
+- 集約の段は失敗しても後ろの段を止めない（continue-on-error）。score_watcherは、台帳が無い、または`generated_at`が今日（JST）でない場合、台帳を使った通知だけを省き、ほかの通知は今までどおり送る。
+  前回の台帳が無い初回の実行では、新規発生の通知を出さない（設計書の5章）
+
+### ✅ [NAV-LINK-AUDIT-CI-1] リンク監査（scripts/audit_site_links.py）がCIで実行されておらず、ページの追加・移動でリンク切れ・孤立ページが出ても気づけない
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。出力の一覧のCHECKをCIで走らせる作りに含める（推定）
+**優先度:** 低
+**分類:** 品質ゲート / `scripts/audit_site_links.py`・`.github/workflows/`
+**登録日:** 2026-10-17
+**発見:** `[[NAV-LINK-INTEGRITY-1]]`の指示書（CIへの組込みは同件では行わず、後続として登録）
+
+#### 内容
+- `[[NAV-LINK-INTEGRITY-1]]`で作るリンク監査は手元で実行するだけで、pushで自動的には走らない
+
+#### 直し方の候補（未決定）
+- docs/配下のHTML・`docs/common/*.js`を変更したpushで実行するワークフロー、または`report_consistency_check.py`のCHECKとして組み込む
+
+### ✅ [TAIL-REVIEW-BACKFILL-DATA-PERIOD-1] TANUKI TAILの06-06の一括生成のレビュー（2023Q3〜2026Q1）も、作った時点の最新の財務で書かれている可能性があり、スコアの推移・過去レビュー履歴が期ごとの比較になっていないかもしれない
+**完了（2026-10-19）:** [[LAYER3-FIRST-FILED-DATE-1]]に統合（2026-10-19 初回の束ね）。型: C。「その時点で使えた値」を最初の申告で絞る部分（期末日で絞る部分はTAIL側の変更）
+**優先度:** 中
+**分類:** 表示・データの意味 / TANUKI TAIL（`src/tail/quarterly_review_generator.py`・`docs/portfolio/tail/detail.html`のスコア推移〈L590〉・過去レビュー履歴〈L934〉・`prediction_tracker.py`）
+**登録日:** 2026-10-16
+**着手条件:** いつでも（調査のみ。直し方はチャット側が判断）
+**発見:** [[TAIL-REVIEW-LATEST-MISMATCH-1]]の調査（2026-10-16）
+
+#### 内容（2026-10-16の確認、読み取りのみ）
+- `quarterly_review_generator.py`は対象の期にかかわらず、生成の時点の最新の財務（SEC EDGAR Layer3の`get_latest_quarterly()`・`get_quarterly_series()`、L209-236）を使う。対象の期までデータを絞っていない
+- review_queue.jsonでは、PLTR・SOFI・TSLAの2023Q3〜2026Q1の8期が2026-06-06に一括で投入・生成されている（queued_atが同じ日）。同じ関数で作られたため、どの期の「レビュー」も2026-06-06時点の最新データの分析である可能性がある（未確認）
+- その場合、スコアの推移（detail.html L590）・過去レビュー履歴の前期比（L934）・予測の振り返り（prediction_history.json、index.html L919と次のレビューのGrokのプロンプト）が、期ごとの比較になっていない
+
+#### 確かめること
+- 06-06の各期のレビューの`kpi_snapshot`・`layer3_snapshot`・stage1の本文が、その期の数字か、06-06時点の最新の数字か
+- スコアの推移・履歴・予測の振り返りの表示が意味を持つか。持たないなら、表示から外す・印を付ける・作り直す（Grokの費用がかかる）のどれにするか
+
+### ✅ [RICE-WARNINGS-ALWAYS-TRUE-1] RICEのwarningsが「noteが空でない」をそのまま警告にしており、96銘柄すべてでTrueになって、TANUKI VALUATIONの個別ページの全銘柄に⚠の注記が出る
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。警告の定義を出力の一覧の「定義」の欄で照合する
+**優先度:** 中（全銘柄に出る警告は読まれなくなり、本当の警告〈計算の例外・セクター除外〉が埋もれる）
+**分類:** 表示・指標 / `src/value/tanuki_valuation/calculator/rice.py`・`docs/value-monitor/tanuki_valuation/stock.html`
+**登録日:** 2026-10-15
+**発見:** 2026-10-15の読み取り調査「銘柄ごとの例外の記録の棚卸し」
+
+#### 内容（観測した事実、公開データ10-15）
+- `rice.py:110`が`"warnings": self.note != ""`。noteには警告でない情報（「RICE-1価値創造係数=…(ROIC/WACC=…)」45銘柄・「SBC補正済み」等）も入るため、96銘柄すべてでwarnings=True
+- `stock.html:872`で`rice.warnings`を読み、`stock.html:1436`で全銘柄に「⚠️ {note}」の黄色の枠を出している
+- noteの内訳（多い順）: 「Q計算不可（OCF/純利益データなし）」16、セクター除外（Consumer Defensive 7・Consumer Cyclical 6・Financial Services 3・Utilities 2）、
+  「エラー: unsupported format string passed to NoneType.__format__」4（CIX・ENTG・SPIR・XOM。`core_calculator.py:760-765`がRICEの計算の例外をnoteに入れたもの。available=false）
+- 計算の例外の4銘柄は、[[TICKER-EXCEPTION-LEDGER-1]]の段階A（rice_error）に入る
+
+#### 追記（2026-10-15、読み取りのみ）: 計算の例外の原因と影響
+- 例外の場所は`core_calculator.py:756`の表示用のprint（`base={_base_rice:.1f}`）。`calculate_rice()`自体は成功している。
+  4銘柄はCF変換率がマイナス（09-19の履歴でCIX -0.613・ENTG -0.183・SPIR -0.070・XOM -1.222）で、`1895356e0a`（2026-09-19、[[RICE-ADJ-ASYMMETRIC-ZERO-1]]）から`base.rice`がNone（測定不能）になった。
+  753行の`_base_rice = rice_result.base.rice`がNoneのまま`:.1f`で書式化され、TypeErrorになる。exceptが成功した結果を捨てて`available=False`・note「エラー: …」の結果に置き換える
+  （4銘柄とも最初の「エラー」は2026-09-21 18時台の履歴。それより前の09-19の履歴はavailable=true）
+- 読み手が受け取るもの: `rice.available=false`・`base/bear/bull`なし（欄なし）・noteがエラー文
+  - 判定（tanuki_score・funda_score・timing）: RICEを読まない（pipeline.pyの判定は600〜1190行で、RICEの参照なし）。**影響なし**
+  - 理論株価: RICEはSTEP 13で理論株価の計算の後に作られ、理論株価に入らない。**影響なし**
+  - MATRIX（`pipeline.py:1343-1450`の`_compute_matrix_position()`、判定の後に作る表示用）: 本来は「①投資効率系・RICE = N/A（理由）」のところ、available=falseのため「④キャッシュ創出力系」に入っている（今: CIX・ENTG・XOM 左下「割高×低FCF」、SPIR 右下「割安×低FCF」）。report.txtの象限・stock.htmlの表示に効く
+  - stock.html: 872・1436行で「⚠️ エラー: unsupported format…」を表示。TANUKI SCOREの画面（`tanuki_score/index.html:505-507`）はRICEを「計算不可」として扱う
+  - `common/screening/dcf_validity_checker.py:301-310`: base.riceがNoneなので「RICE計算不可」（例外が無くてもbase.riceはNoneなので結果は同じ）
+  - CHECK-13（`report_consistency_check.py:2853-2862`）: available=falseなので対象外
+- 判定・理論株価に影響しないため、RICE-NONE-FORMAT-EXCEPTION-1としては切り出さない（2026-10-15の指示の条件）。直すときは753〜756行で`_base_rice`のNoneを書式化しないようにする
+- 参考（範囲外）: `src/value/tanuki_score/daily_pick.py:304`が`rice_raw.get("score")`を読むが、latest.jsonの`rice`に`score`の欄は無く、全銘柄で常にNone
+
+#### 直し方の候補（未決定）
+- noteを「警告」と「情報」に分け、warningsは警告があるときだけTrueにする
+- 計算の例外（4銘柄）の原因を調べて直す（別の項目にするかはチャット側の判断）
+
+### ✅ [SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1] SEC_Data_UpdateのConsistency Check Gateで、1銘柄でもNGがあると全銘柄のcommitと日曜の連鎖が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: —（作り）。CHECKを足すとNGが増えるため、NGの範囲（銘柄ごと／全体）の切り分けを同じ根治策に入れる
+**優先度:** 中（2026-09-20に実際に止まった。[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]でupdate.pyの1銘柄の失敗は止まらなくなったが、Gateは全体で1つの判定のまま）
+**分類:** 運用（ワークフローの止まり方） / `common/sec_data/report_consistency_check.py`・`.github/workflows/SEC_Data_Update.yml`
+**登録日:** 2026-10-15
+**発見:** [[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]の読み取り調査（2026-10-15、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `report_consistency_check.py --fail-on-ng`は、NGの合計が1件以上なら`sys.exit(1)`（3607-3609行）。銘柄ごとのNGと全体のNGを区別しない
+- 全体のチェック（3397-3470行: Discoverの同期・config loader・コアポジションの見直し・KPIの取得失敗・KPIの却下・DCF検証）のNGも合計に入り、
+  SECのデータと無関係でもSEC_Data_Updateのcommitを止める
+- 実例: 2026-09-20（run `35518006804`）は23銘柄でNG-31が計136件（凍結の検査がファイル全体のハッシュで比べていた。[[CHECK31-WHOLE-FILE-HASH-VS-DIFF-FREEZE-1]]で修正済み）。
+  update.pyは成功していたが、Gateで全銘柄のcommitが止まり、連鎖がskippedになった
+- workflow_dispatchの`tickers`がTANUKIの対象外だけ（provisioning等）のときは`exit(2)`（3365行）でGateが失敗する
+- 同じGateはAdjusted EPS・Stonks Silo・TANUKI VALUATIONのワークフローにもある
+
+#### 直し方の候補（未決定）
+- SEC_Data_UpdateのGateでは、NGの銘柄だけを`rollback_failed.py`と同じ方法で前回の状態に戻し、他の銘柄はcommitする（全体のNGの扱いは別に決める）
+- SECのデータに関係するチェックだけをSEC_Data_UpdateのGateで見る
+
+### ✅ [METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1] Layer3をcompany_facts.jsonからメモリ上で作り直しているため、計算方法の変更が日曜のSEC_Data_Updateを待たずに、計算方法の変更の印なしで公開される
+**完了（2026-10-19）:** [[METHOD-CHANGE-PUBLISH-TIMING-1]]に統合（2026-10-19 初回の束ね）。型: C。計算方法の変更が公開に出る時点の件
+**優先度:** 中（判定・評価の変化を「相場による変化」として通知・記録してしまう。印の仕組み〈`common/method_change.py`〉の前提が崩れる）
+**分類:** 運用（計算方法の変更の反映） / `common/method_change.py`・`config/method_change.json`・Layer3の読み手（TANUKI VALUATION・HypeCore・Stonks Silo）
+**登録日:** 2026-10-15
+**発見:** [[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]の読み取り調査（2026-10-15、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- TANUKI VALUATION・HypeCore・Stonks SiloはLayer3を`build_ticker_store()`でcompany_facts.jsonから毎回メモリ上で作る。Layer3のコードを変えると、
+  pushの後の最初の実行（平日の夜のMarket Data Dailyからの連鎖を含む）でそのまま公開データに出る
+- 一方、`common/sec_data/ttm/{T}_ttm_series.json`・normalizedはSEC_Data_Update（日曜）でしか作り直されないので、TTMのファイルを使う部分だけが日曜に変わる
+- 実例: [[LAYER3-RETENTION-PERIOD-1]]の変更（10-14 push）で、10-15 05:43 JSTのTANUKI VALUATIONの実行（`d69e6e2ed8`）がAPPの`latest_period_missing`（最新期の設備投資を年次の値で代用）を
+  印なしで公開した。FCXの理論株価（TTMのファイルを使う）は$11.89のままで、日曜に変わる見込み
+- `config/method_change.json`の印は日付（JST）だけで付き、SEC_Data_Updateの成否・計算方法の変更が実際に反映された実行かを見ない
+  （日曜のSECが失敗して手動の再実行が印の日付の後になると、作り直しに印が付かない）
+
+#### 直し方の候補（未決定）
+- Layer3・TTMに効く変更は、pushの日から印を付ける（method_change.jsonの日付をpushの日から日曜の連鎖の後までにする）
+- Layer3を読む側も、SEC_Data_Updateが作ったファイル（またはその版）を読むようにして、反映を日曜にそろえる
+
+### ✅ [HYPECORE-TANUKI-CIRCULAR-DEP-1] HypeCoreとTANUKI VALUATIONが互いの前回の出力を読み合っており、連鎖の順序（HypeCore → TANUKI）ではHypeCoreの期待スコアが前回の理論株価で作られる
+**完了（2026-10-19）:** [[METHOD-CHANGE-PUBLISH-TIMING-1]]に統合（2026-10-19 初回の束ね）。型: C。作り直しの反映が1回遅れる件（公開の時点）
+**優先度:** 中（計算方法を変えて作り直すとき、HypeCoreの期待スコアが1回遅れる）
+**分類:** ワークフロー・依存関係 / `src/value/hypecore/hypecore.py`・`src/value/tanuki_valuation/pipeline.py`・`.github/workflows/`（SEC_Data_Update → HypeCore_Update → TANUKI_VALUATION_Update）
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 2026-10-18の連鎖の後の確認（HypeCoreの手動の再実行）で、計算方法の変更のたびの手動の再実行が負担になるとチャット側が判断したとき。期限なし
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]の作り直しの手順の検討
+
+#### 内容（2026-10-14、読み取りのみ）
+- HypeCoreはTANUKIの`latest.json`の`intrinsic_value_per_share`を読み（`hypecore.py` L27・L324-336）、`price_iv_ratio`（株価÷理論株価）を期待スコア（`expectation_score`）の材料にする（L541・L633）
+- TANUKIはHypeCoreの`{T}_poc.json`を読み（`pipeline.py` L795・L1397・L1571・L3522・L3702・L3751）、stageをtimingの点数・推奨文・hypecore_history等に使う
+- 連鎖の順序はSEC_Data_Update → HypeCore_Update → TANUKI_VALUATION_Update（`HypeCore_Update.yml`はSEC Data Updateの完了で起動、TANUKIはHypeCore・EPS・Stonks Siloの完了で起動）。
+  そのため、HypeCoreの期待スコアは前回のTANUKIの理論株価で作られ、新しい理論株価が入るのは次のHypeCoreの実行（毎週日曜、または手動）。TANUKIは新しいHypeCoreのstageを使う
+- 2026-10-14の試算: 理論株価が変わると期待スコアが25銘柄で変わる（stageは不変）
+
+#### 方針
+計算方法を変えて作り直すときは、TANUKIの後にHypeCoreをもう一度手動実行する（[[LAYER3-RETENTION-PERIOD-1]]の手順）。恒久的な直し方（期待スコアだけTANUKIの後に作り直す等）はチャット側の判断。実装しない
+
+### ✅ [MARKETDATA-FUTURES-ROLL-1] 先物（CL=F・GC=F）の連続シンボルは限月の乗り換え日に前日比が不連続になり、Market Pulseの段階1・2が「大きな変動」と判定していた
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。外のデータ（Yahooの連続限月）の作りの変化
+**優先度:** 中
+**分類:** 判定の誤り / Market Pulse・common/market_data
+**登録日:** 2026-09-30
+**発見:** 指示書㉔の追加確認
+
+#### 内容
+2026-09-18の夕方の取得でCL=Fが10月限→11月限に切り替わり、前日比−5.52%（同じ11月限では−1.18%）で、09-19・09-22の
+エントリが「原油（-5.52%）」「同時に大きく動いたもの：原油」になっていた。Yahooの過去の連続系列は09-23に乗り換えており、
+夕方の取得とは乗り換え日が違う。Yahooは期限切れの限月を返さないため、過去の乗り換え日は同じ限月で計算し直せない。
+
+#### 対応（2026-09-30、指示書㉔）
+- fetcher: 先物の行に限月（YahooのunderlyingSymbol）と、その限月自身の当日・前営業日の終値を記録する
+- collect_and_send.apply_same_contract_change: 限月が前の行から変わった日は、新しい限月の前営業日の終値と比べた前日比にする。
+  取れない場合は前日比を出さず「限月乗り換え日」として段階1・2の判定から外す（推測で補わない）
+- 過去のエントリ: USO・GLDの同じ2日間の前日比との差が2pt超の日（原油20日・金7日、scripts/analysis/futures_roll_suspects.py）に
+  「限月乗り換えの可能性」の印を付け、前日比による判定から外して段階1・2を計算し直した（値はそのまま、26エントリ・結論が変わったのは9件）。
+  09-18は11月限（CLX26）の終値で計算し直した（−1.18%）
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）
+daily/のCL=F・GC=Fの2026-09-29（限月の記録の開始）〜10-09の各行の`contract`はCL=FがCLX26.NYM、GC=FがGCZ26.CMXのままで、**2026-09-30以降に限月の乗り換えは無い**。
+各行の`contract_prev_close`は前の行の`contract_close`と一致（同じ限月の前日比）
+
+#### 未了
+次の限月乗り換え日に、同じ限月の前日比になっていることを確認
+
+### ✅ [CHECK-DEPMAP-HOLLOW-RALLY-STALE-1] browser_checks/check_dependency_map.pyのHollow Rallyの期待値が旧ロジック（6行前・前日比）のままで、M-2 STEP 4の統合後に画面との不一致が出る
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。確認スクリプトが画面の判定を別に再実装した（規則の二重。一覧の「規則」の欄）
+**優先度:** 中
+**分類:** 確認スクリプトの陳腐化 / browser_checks（Market Pulse・MACRO PULSE共通）
+**登録日:** 2026-10-03
+**発見:** 指示書M-2 STEP 8（修正した要素を読む他の画面・システムの確認）
+
+#### 内容
+`browser_checks/check_dependency_map.py::expected_hollow_rally_trigger()`は、05_liquidity.csvの6行前のsp500と直前の行の
+net_liquidityで判定する旧ロジックを再現している。[[MACRO-PULSE-LIQUIDITY-DAILY-ROWS-AS-WEEKS-1]]（M-2 STEP 4）で画面の判定は
+「最新行のsp500_5d_pct>+1.0% かつ net_liq_wow_pct<−0.5%」（S&P500の5営業日リターン・H.4.1の水曜どうしのNET流動性の前週比）に
+変わったため、統合後の日次の実行で新しい列が書かれると、⑤Hollow Rallyで画面との不一致が出うる（2026-10-03時点では両方とも
+不発火で一致、58件一致）。MACRO PULSE用の確認は`browser_checks/check_macro_pulse.py`（MAC-18）が新しい判定で行っている。
+
+#### 実害
+確認スクリプトの誤検知（画面の不具合ではない）。
+
+#### 着手条件
+`check_dependency_map.py`はMarket Pulse側のセッションの作業範囲のため、こちら（指示書M-1・M-2）では変更していない。
+Market Pulse側の作業と調整のうえで直す。
+
+### ✅ [CIK-REORG-DETECTION-1] cik_lookup.csvのCIKとSECのcompany_tickers.jsonのCIKが食い違ったとき（法人再編による会社番号の切り替え）に、update.pyが止まる前に検知して知らせる仕組みが無い
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。外の変化（法人再編のCIK）を知らせる仕組みの件
+**優先度:** 中
+**分類:** 監視 / common/sec_data（`fetcher.py::get_cik()`・`config/cik_lookup.csv`・`cik_history.json`）・System Health または report_consistency_check
+**登録日:** 2026-10-12
+**着手条件（2026-10-14 終業）:** 次の新規銘柄の登録の前（登録の手順のプリフライトにも入れる、[[STAGE-V2-ROLLOUT-1]]）
+**発見:** [[SEC-XOM-CIK-HOLDING-REORG-1]]（XOMの持株会社化で、SECの`company_tickers.json`のXOMが新CIKに変わり、2026-10-11のSEC_Data_Updateが凍結の検査で止まって初めて分かった）
+
+#### 内容
+- SECデータの層は現CIKをSECの`company_tickers.json`から引き（CIでは毎回取り直す）、EPS ANALYZER・TANUKI VALUATIONのインサイダー取引は`config/cik_lookup.csv`から引く。
+  2つが食い違っても知らせる仕組みが無く、今回は2026-07-02（旧CIKの25-NSE）から約3か月気づかなかった
+- 2026-10-12時点で、cik_lookup.csvの全銘柄とcompany_tickers.jsonのCIKの食い違いはXOMだけ（XOMは同日にcik_lookup.csvを新CIKに変更）
+
+#### 対応方針（チャット側の指示、2026-10-12。今回は登録だけ）
+食い違いをupdate.pyが止まる前に検知して知らせる（System HealthかCHECKで）。cik_history.jsonへの旧CIKの登録とcik_lookup.csvの変更は人が判断する
+
+#### HypeCoreのstageの定義v2との関係（2026-10-14追記）
+- 定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §5・§6）は過去のstageを財務の履歴から作る。CIKの切り替えで財務の履歴が途切れると、倍率の履歴・g_F・Lが途中で欠ける
+- そのため定義v2の共通の部品の1つとし、新しい銘柄の登録の手順でもStep 1の前（プリフライト）に確かめる（[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」）。既存の銘柄の検知（本項目）と同じ照合を使う
+
+### ✅ [VALUATION-MULTIPLES-HISTORY-COMMON-1] 倍率（PER・EV/売上・EV/粗利・P/TBV等）の履歴を共通の導出データとして1つ作る（今はTANUKI SCOREのPER・最大EPSのPER・rotce.pyがそれぞれ別に計算している）
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。倍率の規則の二重（定義v2の前提）。一覧の「規則」の欄で共通化する
+**優先度:** 中
+**分類:** 共通の導出データ / `common/sec_data/`（新設）・TANUKI VALUATION `data_fetcher.py`（PER）・`pipeline.py::compute_max_eps()`・`common/sec_data/rotce.py`
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]の再検証の後）
+**発見:** HypeCoreのstageの定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §5）
+
+#### 内容
+- 定義v2のg_M（倍率の12か月の対数の変化）とL（自社の過去5年・業種の中のパーセンタイル）には、各時点の「その時点の株価÷その時点で公表済みの財務（提出日から使う）」の倍率の履歴が要る
+- 今の倍率の計算（2026-10-14、grep）:
+  - TANUKI SCOREのPERの列: `data_fetcher.py`がmarket_dataの属性の`trailing_pe`（無ければ`forward_pe`）を使う（yfinanceのスナップショット。履歴は無い）
+  - 最大EPSのPER: `pipeline.py::compute_max_eps()`（TTMの純利益＋株式報酬÷今の希薄化後の株式数）
+  - `rotce.py`: 四半期ごとのP/TBVとROTCEの履歴と、自社の過去に対するパーセンタイル（`percentile_of()`・`_percentile()`）
+- 株式数は[[EPS-SHARES-BASIS-MISMATCH-1]]の原則（期間の利益を割るときは期間の加重平均、1株あたりの価値・時価総額は今の完全希薄化後）に従う
+
+#### 方針
+- 共通の導出データを1つ作り、stage・TANUKI SCOREのPERの列・最大EPSのPER・`rotce.py`が読む。パーセンタイルの計算は`rotce.py`のものを共通化する
+- `docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`の「対象3（フェーズ3）: 導出データ — 評価倍率・バリュエーション系」と`CONCEPT_PARAMETER_VARIATIONS.md`に登録し、新しい定義の違いを増やさない
+- 依存: [[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]（粗利の提出日）・[[SECTOR-MASTER-UNIFY-1]]（業種の中の順位）・[[LAYER3-FIRST-FILED-DATE-1]]（その時点で公表済みの財務）。実装しない（チャット側の指示待ち）
+- 定義v2のLは、2026-10-14の改訂で自社3年＋業種の中の位置（主）に変わった（上の「自社の過去5年」は改訂前）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+
+### ✅ [SECTOR-MASTER-UNIFY-1] 業種の分類が4か所（cik_lookupのeps_sector・EPS ANALYZERのsectors.yaml・market_dataのyfinanceの業種・maturity_configの業種）にあり、景気循環株の区分が無い
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。業種の規則の二重（定義v2の前提）
+**優先度:** 中
+**分類:** 共通の設定 / `config/cik_lookup.csv`・`config/sectors.yaml`（`src/value/adjusted_eps_analyzer/sector_classifier_v2.py`）・`common/market_data/fetcher.py`（属性の`sector`）・`config/maturity_config.json`
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]の再検証の後）
+**発見:** HypeCoreのstageの定義v2（§2・§5）
+
+#### 内容
+- 定義v2は業種で倍率を切り替え（景気循環株は5年平均の利益による倍率かEV/売上、金融・資産の重い業種はP/TBV÷ROTCE）、g_M・Lを業種全体の倍率の変化を差し引いて測る。業種のマスターと景気循環株の区分が要る
+- 今は4か所で別々に業種を持つ（2026-10-14、grep）
+
+#### 方針
+業種のマスターを1つにし、景気循環株かどうかも持たせる。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- 当てはまる区分が無い銘柄（銀行・保険・REIT・バイオ等）は区分なしとして持ち、stageは「判定不能（区分なし）」にする（中立の値で埋めない、定義v2 §6）
+
+### ✅ [DEFICIT-QUALITY-COMMON-1] 赤字の質・構造的な赤字・黒字化の見込みの判定がSTONKS SILO（DeficitQuality）とTANUKI VALUATION（structural_deficit）に別々にあり、hypecoreの全銘柄では計算されていない
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。赤字の質の規則の二重（定義v2の前提）
+**優先度:** 中
+**分類:** 共通の部品 / `discover/stonks-silo/src/analyzer.py`（`DeficitQuality`・`_analyze_deficit_quality()`）・`src/value/tanuki_valuation/core_calculator.py`（`structural_deficit`）
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]の再検証の後）
+**発見:** HypeCoreのstageの定義v2（§2・§5）
+
+#### 内容
+- 定義v2は収益の段階（黒字・黒字化目前〈赤字だが黒字化の見込みが2年以内〉・赤字）で使う指標を切り替える。黒字化の見込みの判定が全銘柄で要る
+- STONKS SILOの判定はSTONKS SILOの対象銘柄だけ、TANUKIの`structural_deficit`はTANUKIの対象銘柄だけで計算している
+
+#### 方針
+STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算する。TANUKIの`structural_deficit`も揃える。依存される側: [[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- 2026-10-14時点の登録の手順はSTONKS SILOを動かさない（Step 1〜8にSTONKS SILOが無い）。stonks_silo=falseの銘柄でも計算する経路が要る
+
+### ✅ [LAYER3-CAPITAL-ALLOCATION-FIELDS-1] 配当・増資（とオプションの行使）がLayer2・Layer3に無く、粗利・販売費の提出日が揃っているか確かめていない
+**完了（2026-10-19）:** [[STAGE-V2-ROLLOUT-1]]に統合（2026-10-19 初回の束ね）。型: —（機能の追加）。定義v2の束
+**優先度:** 中
+**分類:** 一次データ / `config/sec_concept_definitions.json`・`common/sec_data/layer3_builder.py`
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 定義v2の確定（[[HYPECORE-STAGE-TIMESCALE-1]]の再検証の後）
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 2（資本の使い方の指標）・HypeCoreのstageの定義v2（§3③・§5）
+
+#### 内容
+- 2026-10-14時点のLayer3には`gross_profit`・`selling_and_marketing`・`selling_general_and_administrative`・`research_and_development`・`buyback`がある。配当・増資・オプションの行使は無い
+- STEP 2の試算では、試算の中だけで配当（`PaymentsOfDividends`等）・増資（`ProceedsFromIssuanceOfCommonStock`等）を足した。98銘柄で配当のタグ無し53・増資のタグ無し36・自社株買いのタグ無し19。
+  Layer3は足した項目にQ4の暗黙の値（年次−3四半期）を作らなかった（ABBVの配当）。ATMの増資は別のタグで申告されることがあり取りこぼす
+
+#### 方針
+配当・増資をLayer2・Layer3に加え、凍結・CHECK・auditの対象に入れる。Layer3の各項目に提出日（filed）が揃っているかを確かめる（定義v2は財務を提出日から使う）。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+- 要件（2026-10-14追記）: 全銘柄の一括の処理だけでなく、1銘柄を追加する経路を持ち、新しい銘柄の登録の手順（`register_ticker.py`・`CLAUDE_CODE_START.md`のStep 8.5）から呼ぶ（定義v2 §5・§6）。
+  手順のどこに入れるかは[[STAGE-V2-ROLLOUT-1]]の「登録の手順との対応」の表
+- Layer3の`filed`は「最後に申告した書類」の日付（2026-10-14の調査）。最初の提出日は[[LAYER3-FIRST-FILED-DATE-1]]で扱う。Layer3は1銘柄の取得（`update.py TICKER`、登録のStep 1）でも作られるため、項目を加えれば登録の経路にも入る
+
+### ✅ [STAGE-LIFECYCLE-LABEL-MIXUP-1] TANUKI VALUATIONがstage（期待の段階）をライフサイクルの名前で保存・表示し、glossary.jsonのS0の名前が古い
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。名前と中身のずれ（一覧の「定義」の欄）
+**優先度:** 中
+**分類:** 表示・履歴 / `src/value/tanuki_valuation/pipeline.py`（hypecore_historyの書き込み）・`docs/value-monitor/tanuki_valuation/stock.html`・`docs/common/glossary.json`
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** 定義v2の切り替え（[[STAGE-V2-ROLLOUT-1]]）と合わせるか先に直すかをチャット側が決めたとき
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 1
+
+#### 内容（2026-10-14に確認した事実）
+- `pipeline.py`（L3733付近）がhypecore_historyの`"lifecycle"`に最新月の`stage_label`を入れ、`stock.html`の履歴の「ライフサイクル」列に出る
+- `stock.html`のシグナル（L601-604）がstage 2を「成長期」、3を「成熟期」、1を「黎明期」と表示する（期待の段階をライフサイクルの名前で呼んでいる）
+- `docs/common/glossary.json`の`hype_stage_color`が「S0 失望」のまま（hypecore.pyのS0は蓄積、`stock.html`のSTAGE_LABELSは「失望/蓄積期」）
+  - 追記（2026-10-19）: このSTAGE_LABELSは推奨成長率の内訳のHypeCoreの行の中だけで使っていたため、[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]の削除で行ごと消した（`3b6cd1b3bf`）。stock.htmlのシグナル（L601-604）の名前は残っている
+
+#### 方針
+ライフサイクルと期待の段階の名前を分ける。定義v2（S5 失望の新設）の切り替え（[[STAGE-V2-ROLLOUT-1]]）と合わせて直すか先に直すかはチャット側の判断待ち。実装しない
+
+### ✅ [DAILY-PICK-RICE-SCORE-MISSING-1] TANUKI SCOREの選出のGrokへの入力（daily_pick.py）が、latest.jsonのRICEに無い項目「score」を読み、常にNoneになっている
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。読み手が書き手の作らない項目を読む（一覧のCHECKで検知できる）
+**優先度:** 低（選出の順位・条件には使われず、Grokのプロンプトとdaily_pick.jsonの「tanuki」の欄に常にnullで入るだけ。画面には出ない）
+**分類:** データの受け渡し / `src/value/tanuki_score/daily_pick.py`
+**登録日:** 2026-10-15
+**発見:** [[RICE-WARNINGS-ALWAYS-TRUE-1]]の読み取り調査（2026-10-15）
+
+#### 内容（観測した事実）
+- `daily_pick.py:272`で`rice_raw = tk.get("rice")`、304行で`"rice_score": rice_raw.get("score")`。latest.jsonの`rice`の項目は`available`・`q`・`cf_conversion`・`bear`・`base`・`bull`・`note`等で、`score`は無い（`calculator/rice.py:99-` の`to_dict()`）
+- `build_data_package()`は、選出（`select_ticker()`、118行）の後に、選ばれた1銘柄についてだけ呼ばれる（382行・526行）。値はGrokのプロンプトと`docs/integrated-dashboard/daily_pick.json`の`tanuki.rice_score`に入る（10-15のDDOGでもnull）
+- `docs/`のHTML・JSで`rice_score`を読むものは0件（`grep -rn rice_score --include=*.html --include=*.js docs`）
+
+#### 直し方の候補（未決定）
+- `rice.base.rice`（と`available`・`note`）を渡すか、項目ごと削除する
+
+### ✅ [DOC-BROKEN-REFS-1] BACKLOG.md等の二重角かっこ（`[[` `]]`）の参照のうち30件が、BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdのどの見出しにも無い（壊れた参照）
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A（推定）。参照の検証をCHECKに入れる（推定）
+**優先度:** 低（読む人が項目をたどれないだけで、システムの動作には影響しない）
+**分類:** 文書 / BACKLOG.md・BACKLOG_DONE.md・CLAUDE_CODE_START.md・CHAT_RULES.md・SYSTEM_MAP.md・PROJECT_STATUS.md
+**登録日:** 2026-10-14
+**発見:** 2026-10-14の終業のブラッシュアップ（各commitの前に壊れた参照の数が増えていないかを数えていた。30件のまま増えていない）
+**着手条件（2026-10-14）:** 期限なし。文書の整理の作業の合間に
+
+#### 内容（2026-10-14、機械的に数えた）
+- 数え方: 6つの文書（BACKLOG.md・BACKLOG_DONE.md・CLAUDE_CODE_START.md・CHAT_RULES.md・SYSTEM_MAP.md・PROJECT_STATUS.md）の二重角かっこ（`[[` `]]`）のうち、
+  BACKLOG.md・BACKLOG_DONE.md・IDEAS_AND_WATCH.mdの見出し（`### [ID]`・`### ✅ [ID]`）に無いもの
+- 30件: BACKFILL-HISTORY-CLEANUP-1・BUG-INTU-GROWTH-1・DCF-DEFAULT-G-1・EPIC-LAYOUT-1・FINTREND-SM-JOBY-NONE-1・FIVE-CATEGORY-RECLASSIFY-1・GATE2-...・
+  LAYER3-ROIC-WACC-NONE-4TICKERS-1・MACRO-COMPUTE-DUP-1・MACRO-DISP-2・MACRODATA-FTSD-SERIES-ID-INVALID-1・MP-DATA-NULL-1・MP-GAUGE-NEEDLE-1・MP-IRX-FRED-1・
+  NAMING-CONVENTIONS-APPLY-1・PHASE1-SCAN-CLEANUP-1・PREVENT-5・QUALITY-CHECKER-CLEANUP-1・REPORT-TXT-PARSER-CLEANUP-1・SCHEMA-LTDEBT-DOUBLECOUNT-RISK-1・
+  SEC-SUBMISSIONS-DUAL-FETCH-1・SPAC-SHELL-MAINTAINED-FIELDS-FREEZE-CONSIDERATION-1・SYSHEALTH-CIK-DEDUP-1・TAG-DEFS-UNIFY-1・TAIL-CIK-LOOKUP-DEDUP-1・
+  TEST-IV-FORMULA-ALPHA-1・TICKER-AUDIT-1・TICKER-SOURCE-CONFIG-DUP-1・TVAL-TS-FIX-1・XXX-1
+- 型の見込み（未確認）: 登録されないまま参照だけされた項目、見出しの形が違う完了済みの項目（古い形式の移設）、例として書いたID（`GATE2-...`・`XXX-1`）
+
+#### 方針
+1件ずつ、登録が漏れたものは登録し、完了済みで見出しの形が違うものは見出しを揃え、例のIDは参照の形（`[[ ]]`）をやめる。
+数える処理を常設のチェック（report_consistency_check等）にするかも合わせて決める。実装しない（チャット側の指示待ち）
+
+### ✅ [CHAT-RULES-CASE-NUMBER-DUP-1] CHAT_RULES.mdの事例の番号が、前半の通し番号（事例1〜38）と後ろの節の「事例1・2」で重なっている
+**完了（2026-10-19）:** 捨てる（2026-10-19 初回の束ね。記録だけで対応しない）。型: E。文面で区別でき、システムの動作に影響しない（直すなら文書だけの1commit）
+**優先度:** 低（参照する人がどちらの事例か取り違えうるだけで、システムの動作には影響しない）
+**分類:** 文書 / CHAT_RULES.md
+**登録日:** 2026-10-14
+**発見:** 2026-10-14の終業のブラッシュアップ（事例37・38の重複の確認）
+**着手条件（2026-10-14）:** 番号を振り直すときは、他の文書からの「事例N」の参照の更新と一緒に行う（今は振り直さない。参照が切れるため）
+
+#### 内容（2026-10-14）
+- 前半: `**事例1:**`〜`**事例38:**`（太字の段落。「事例37」等で各文書から参照されている）
+- 後ろの節「ローカル環境固有の検証ノイズ（2026-08-15〜16の教訓）」: `### 事例1: core.autocrlf=trueによる改行コード差`・`### 事例2: ALPHA_VANTAGE_API_KEY未設定による出力欠落`
+- 「事例1」「事例2」の参照は、どちらを指すかが文面からしか分からない
+
+#### 方針
+後ろの節の2件を別の名前（例: 「環境ノイズ1・2」）にするか、通し番号に入れて振り直し、各文書の参照を合わせて更新する。実装しない（チャット側の指示待ち）
+
+### ✅ [HYPECORE-RECOMMENDATION-DUPLICATE-1] stageからの推奨文のロジックがTANUKI VALUATIONのPythonとHypeCoreの画面のJS（2ファイル）にある
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。推奨文の規則の二重（定義v2で同時に直す要がある）
+**優先度:** 低（文言の表示だけ。判定には使わない）
+**分類:** 重複 / `src/value/tanuki_valuation/pipeline.py::_hypecore_recommendation()`（L3690）・`docs/value-monitor/hypecore/index.html::getRec()`（L161）・`detail.html::getRec()`（L370）
+**登録日:** 2026-10-14
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]のSTEP 1
+
+#### 内容（2026-10-14に確認した事実）
+- 3か所とも「stage 0で直前が4なら『強い買い推奨』」等の同じ分岐を持つ（Pythonは`ma200_dev`・`from_peak`も受け取る）。中身が全部同じかは突き合わせていない
+- 定義v2ではS5→S0の移り目に変わるため、3か所を同時に直す必要がある
+
+#### 方針
+1か所（HypeCoreの出力）で作り、他は読むだけにする。[[STAGE-V2-ROLLOUT-1]]と合わせて扱う。実装しない
+
+### ✅ [OPTIONS-OI-ACCUMULATION-1] オプションの建玉の集計値を、common/market_dataの新しい種類として毎日蓄積する
+**完了（2026-10-19）:** [[STAGE-V2-ROLLOUT-1]]に統合（2026-10-19 初回の束ね）。型: —（機能の追加）。定義v2の束
+**優先度:** 低（データ蓄積。定義v2の⑤は履歴が6〜12か月たまるまで判定に使わない）
+**分類:** データ取得 / `common/market_data/`（`fetcher.py`・`reader.py`）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§3⑤）
+
+#### 内容
+- hypecoreの98銘柄から始め、建玉の集計値（コール・プットの合計等）だけを保存する。チェーンそのものは保存しない
+- fetcher・readerの作り（daily・attributes・analyst_historyと同じ形）に揃える
+
+#### 方針
+早く始めるほど履歴がたまる。実装しない（チャット側の指示待ち）
+
+### ✅ [TANUKI-INSIDER-ZERO-VS-NODATA-1] TANUKI VALUATIONのインサイダー取引で、「90日に届出が無い」「届出はあるが買い・売りが無い」が、買いと売りが同数のときと同じ「中立」（0/0）になる
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。値の意味と表示の言葉（一覧の「定義」の欄）
+**優先度:** 低（表示とreport.txtだけ。判定〈`_compute_tanuki_score()`〉では参照していない。2026-10-12の数え上げで96銘柄中13銘柄が該当）
+**分類:** 表示 / TANUKI VALUATION（`data_fetcher.py::fetch_insider_trades()`・`stock.html`のインサイダー取引）
+**登録日:** 2026-10-12
+**発見:** [[SEC-XOM-CIK-HOLDING-REORG-1]]の確認（XOMの新CIKでForm 4が0件）
+
+#### 内容（2026-10-12に確認した事実）
+- `fetch_insider_trades()`は、submissions（`filings.recent`）の直近90日のForm 4（form「4」だけ。「4/A」は数えない）のXMLから取引コードP・Sを数え、合計0なら「中立」。
+  submissionsが取れないときだけNone（表示なし）。個々のXMLが取れないときは黙って飛ばす
+- 0/0の「中立」になる経路: (1) 90日に届出なし、(2) 届出はあるがP・S以外（付与・行使等）だけ、(3) XMLの取得が全部失敗。買いと売りが同数のときも「中立」
+- 全96銘柄（tanuki=true、10-12のlatest.json）: Buy/Sell優勢83、0/0で届出日なし5（ADSK・GEV・LOAR・PM・XOM）、0/0で届出日あり8（APP・BBAI・BSY・ZETA・HEI・HWM・KULR・TASK）、None 0
+- 届出日なしの5銘柄はEDGARのsubmissionsで90日（07-14以降）のForm 4が実際に0件（最後はADSK 06-23・GEV 06-03・LOAR 05-22・PM 05-08・XOM〈旧CIK〉07-01）。XMLの取得の失敗ではない
+- XOM: 新CIK（0002115436）のsubmissionsにForm 4は0件（`filings.files`の追加ページは無い）。EDGARの全文検索でも2026-07-02以降のXOM関連のForm 4は0件
+  （4〜6月は旧CIKで4件、最後は07-01のFox Leonard M.・Chapman James R.。2人の本人のCIKのsubmissionsも07-01が最後）
+
+#### 直し方の候補（未決定）
+- 「届出なし」「P・S以外だけ」「中立（同数）」を分けて表示する（`latest_date`の有無とForm 4の件数を返す）
+- XMLの取得の失敗を数えて返す
+
+### ✅ [EPS-TTM-PERIOD-ORDER-REVERSED-1] EPS ANALYZERのttm.jsonの期間の文字列が「TTM 新しい期末 to 古い期末」の順で、詳細画面のTTMのタブが古い側の日付をラベルと期間の絞り込みに使っている
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。期間の文字列の決まりを書き手と読み手が別々に持つ（規則の二重）
+**優先度:** 低（EPS ANALYZERの詳細画面のTTMのタブの表示だけ。値・判定には影響しない〈ttm.jsonを読むのは詳細画面だけ〉）
+**分類:** 表示 / `src/value/adjusted_eps_analyzer/pipeline.py::calculate_ttm()`・`docs/value-monitor/adjusted_eps_analyzer/stock.html`（`updateChart()`・`applyDateRange()`・`switchTab()`の`period.split(' to ')[1]`）
+**登録日:** 2026-10-12
+**発見:** [[SEC-XOM-CIK-HOLDING-REORG-1]]のMRVLのttm.jsonの差分を見たとき
+
+#### 内容（2026-10-12に確認した事実）
+- `calculate_ttm()`の`period`は`f"TTM {ttm_data[0]['filing_date']} to {ttm_data[-1]['filing_date']}"`で、`quarterly_results`はこの時点で新しい順のため、先頭が新しい期末になる
+  （例: AAPL「TTM 2026-06-27 to 2025-09-27」、XOM「TTM 2026-06-30 to 2025-09-30」。全銘柄同じ形）
+- 詳細画面は`period.split(' to ')[1]`を期末として使うため、最新のTTMが9か月前の期（AAPLなら2025-09-27）のラベルになり、期間の絞り込みも9か月ずれる
+- 「TTM 」の前置きは2026-08-13（`388f4e3c28`、[[NETINCOME-DUAL-PIPELINE-1]]）。順序がいつからかは確かめていない
+
+#### 直し方の候補（未決定）
+- `period`を「古い期末 to 新しい期末」の順にする（ttm.jsonを読む処理は詳細画面だけ）か、画面で新しい側を使う
+
+#### 追記（2026-10-12夕方）: 「A to B」形式の期間の文字列を読む処理（リポジトリ全体をgrep）
+| 処理 | 読み方 | 期末として扱う日付 | 誤り |
+|---|---|---|---|
+| EPS ANALYZER `stock.html::applyDateRange()`（L1018） | `period.split(' to ')[1]` | 古い側（窓の最初の四半期） | TTMのタブの期間の絞り込みが9か月ずれる（表示） |
+| EPS ANALYZER `stock.html::updateChart()`（L1235） | 同上をラベルに | 古い側 | TTMのチャートのラベルが3四半期前の期になる（表示） |
+| EPS ANALYZER `stock.html::switchTab()`（L1510） | 同上 | 古い側 | 絞り込みのずれ（表示） |
+| `common/sec_data/ttm/`（TANUKI VALUATION・STONKS SILO・HypeCore・rotce・TANUKI SCOREが読む） | `ttm_end`（日付の項目） | — | 対象外（文字列の期間を持たない） |
+| TANUKI VALUATION・TANUKI SCORE・daily_pick・report_consistency_check・audit | EPS ANALYZERのttm.jsonを読まない（summary・quarterly・annualだけ） | — | 対象外 |
+- ttm.jsonを読む処理は`stock.html`だけ（grep `ttm.json`: 書く側の`pipeline.py`、コメントだけの`ttm_calculator.py`、読む側の`stock.html`）。ほかの`period`の読み手（Layer2の年度・四半期のラベル、TAILの期末日）は「A to B」形式ではない
+- 判定値には効いていないため、優先度は低のまま
+
+### ✅ [EPS-TICKERS-HTML-PERIOD-LABEL-1] EPS ANALYZERの銘柄一覧（tickers.html）の列名「最新決算日」の中身が、直近四半期の期末日（提出日ではない）
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。列名と中身のずれ（一覧の「定義」の欄）
+**優先度:** 低
+**分類:** 表示 / `docs/value-monitor/adjusted_eps_analyzer/tickers.html`（L229の列名、L260の`latest_filing_date`）
+**登録日:** 2026-10-12
+**発見:** [[EPS-INDEX-MINOR-1]]の残り（一覧〈index.html〉のツールチップは2026-10-11に値に合わせたが、tickers.htmlの列名は変えていない）
+
+#### 内容
+- `tickers.html`の列「最新決算日」は`summary.json`の`latest_filing_date`を出す。中身は`quarters[].filing_date`＝直近四半期の期末日（95銘柄すべてで`period_end`と一致、2026-10-11確認）
+- フィールド名と中身のずれは記録だけにする方針（消費者が多い、[[EPS-INDEX-MINOR-1]]）。列名だけを「直近四半期の期末日」等に合わせるかは未決定
+
+### ✅ [EXTERNAL-TRIGGER-SPURIOUS-2150-DISPATCH-1] 外部起動のWorkerの21:50 UTCの確認が、その日に成功した実行があったのに、Market Data Dailyを起動した（10-07）
+**完了（2026-10-19）:** 捨てる（2026-10-19 初回の束ね。記録だけで対応しない）。型: 未分類（原因未調査）。実害なし・1回だけ（2026-10-07）・ガードが取り消す
+**優先度:** 低
+**分類:** 監視・起動の判定 / 外部起動（Cloudflare Worker、`tools/external_trigger/lib.js`）
+**登録日:** 2026-10-08
+**発見:** BACKLOGの分類（2026-10-08）で、移設の根拠を集めるためにMarket Data Dailyの実行一覧を見た
+
+#### 内容（観測した事実のみ。原因は未調査）
+- 2026-10-07 21:50:41 UTCに、外部起動のworkflow_dispatch（Market_Data_Daily_Update.yml、run `37692219197`）が作られた
+- 21:50の確認は、その日の20:00 UTC以降に作られて成功した実行が無いときだけ、もう一度起動する設計
+  （`successfulRunsSinceClose()`、CLAUDE_CODE_START.mdの2026-10-03の記録）。この日は20:25:48 UTCの外部起動（run `37681924730`）がsuccess
+  （ガードrun=true、`status=fetched`・`no_close_after_retry 0`・`with_bars 590`）だったので、21:50の確認は何もしないはずだった
+- 21:50の実行はガード（その日の終値はそろっている）で取り消され（cancelled）、下流もskipped。実害はない
+- 同じ日の20:55・21:25の外部起動（`37685706372`・`37689320829`）もガードで取り消し（設計どおり）
+
+#### リスク
+- Workerの成功の数え方が、実際の実行の結果と合っていない可能性がある
+- 逆向きの誤り（取得に失敗した日に「成功あり」と数えて起動しない）も起こりうる。その場合、その夜の取得が保険のscheduleまで遅れる
+
+#### 着手条件
+読み取り調査から始める。Workerが成功を判定するAPIの呼び方（status・conclusionの絞り込み、eventの種別、時刻の範囲〈created・updated・
+タイムゾーン〉）と、10-07の実際の実行一覧（20:00 UTC以降のMarket Data Dailyの実行と、それぞれの作成時刻・conclusion）を突き合わせる。
+Cloudflare側の21:50の発火とログ（Observability・Past Cron Events）も確かめる。10-05・10-06の夜に同じ起動が無かったかも見る。
+参考: [[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]（BACKLOG_DONE.md）では、GitHubのAPIの`status=completed`の絞り込みが古い結果を返す例があった
+
+### ✅ [CHECK-DEPMAP-ENTRY-VS-REWRITTEN-DAILY-1] D-02・D-04の期待値をエントリ作成後に書き換わったdaily/から作るため、暫定の行の置き換えや抜けの補完の後に誤って不一致になる
+**完了（2026-10-19）:** 捨てる（2026-10-19 初回の束ね。記録だけで対応しない）。型: C。不一致は設計どおりのdaily/の書き換えで起きると分かっている（推定）
+**優先度:** 低
+**分類:** 確認スクリプトの時点ずれ / browser_checks（Market Pulse、`browser_checks/market_pulse_elements.py::run_derivation_checks()`）
+**登録日:** 2026-10-08
+**発見:** MACRO PULSE側の報告（2026-10-07、`check_dependency_map.py`でD-02 WTI・金の前日比、D-04 ブレッスの基準日が不一致）の読み取り調査
+
+#### 内容
+D-02（指標の前日比）・D-04（ブレッスの基準日）は、ブラウザを使わず、`market_data.json`最新エントリの記録値と「今の」daily/から
+作り直した値を比べる。エントリの作成後にdaily/が書き換わると、エントリ・表示が正しくても不一致になる。書き換わる理由は設計どおりのもの:
+先物（CL=F・GC=F）・ドル円の当日の行は夜の取得では`_provisional`（暫定）で保存され翌晩に清算値・確定値へ置き換わる
+（[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）、終値の取れなかった銘柄の行は後の取得の抜け補完で追加される。
+D-04は基準日より新しい行は切り詰めて比べるが、基準日以前の行の置き換え・追加は扱えない。
+
+実測（2026-10-08、一時worktreeでD-02・D-04だけを再計算）:
+- 10-03のエントリ（`e0fc4058b6`、02:08 UTC）は直前のdaily/（`95d251995b`、02:06 UTC）から作られた。その時点でCL=F・GC=Fの10-01・10-02は
+  `_provisional`、HUBBの10-02は行が無かった。`5e95f84aa6`（10-06）でCLの10-02は91.26→91.11、GCは4172.1→4162.3（清算値）に置き換わり、
+  HUBBの10-02（475.52）が追加された
+- その結果、D-02はWTI 記録−1.73 vs 再計算−1.9、金 記録−0.72 vs 再計算−0.95、D-04は記録502銘柄・除外1 vs 再計算503・除外0
+  （(91.26−92.87)/92.87＝−1.73%、(91.11−92.87)/92.87＝−1.90%）
+- 不一致になったcommit: `5c689659d7`（feature/macro-pulse-confirmの先頭）・`4ce46886fc`（10-07 07:00 JSTまでのローカル）。
+  10-05のMarket Pulseがランナー未割り当てで失敗したため、kaihatsuは10-06 05:28〜10-07 05:32 JSTの間「エントリ10-03・daily/ 10-06以降」の状態だった
+- 毎晩の同じ型: Market Dataのpushから Market Pulseのpushまでの約3分間（例 `258a0c5b82`）は、WTI・金・ドル円とD-04が不一致になる
+- 一致したcommit: `99402b01b9`（10-07朝、一致61）・`ffab0e2ad6`（10-08、一致61・不一致0）
+- 実例（2026-10-11、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]の既存の行への適用の後）: 10-09のエントリはCL=F・GC=Fの10-09の暫定値で前日比を記録していた。
+  確定値への置き換え（CL 91.41→91.85、GC 4220.6→4216.3）の後、D-02はWTI 記録−0.09% vs 再計算+0.39%、金 記録1.53% vs 再計算1.43%で❌（一致61・不一致1）。
+  次のMarket Pulseのエントリの後に一致に戻るかを確かめる（CLAUDE_CODE_START.mdの次回の確認）
+
+[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]とは別の課題（あちらは期待値の計算方法が画面の判定の変更に追いついていない問題、
+こちらは計算方法は正しく比べる相手のdaily/が後から書き換わる時点のずれ。直し方も担当のファイルも違う）。
+
+#### 実害
+確認スクリプトの誤検知だけ（表示・データは設計どおり）。不一致の原因の切り分けに毎回手間がかかり、別セッション間の報告の食い違いを招く（10-06・10-07）。
+
+#### 直し方の候補（未決定）
+1. （先に勧める案）daily/がエントリより新しいとき（例: ^GSPCのdaily/の最新日 > エントリのS&P500の日付）はD-02・D-04を「判定不能」にして注記を付ける
+2. エントリの作成時点のdaily/をgitの履歴から復元して比べる
+3. エントリに前日比の計算に使った2つの終値を記録し、それと比べる
+
+#### 着手条件
+なし（Market Pulse側の作業として、[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]の調整と合わせて判断してよい）。
+
+#### 追記（2026-10-14）
+10-14のcheck_dependency_map.pyはD-02を含め一致62・不一致0（エントリの後のdaily/の書き換えが無い時点）。不一致が出る仕組みは変わっていないため、項目は残す
+
+### ✅ [MACRO-PULSE-THRESHOLD-PERCENTILE-1] MACRO PULSEのHY・Claims・Permits・Michiganの段の境目を、過去10年の分布のパーセンタイルで決める方式（試算の結果、不採用）
+**完了（2026-10-19）:** 捨てる（2026-10-19 初回の束ね。記録だけで対応しない）。型: —（機能の追加）。試算の結果、不採用と判断済み（2026-10-04）
+**優先度:** 保留
+**状態:** 保留（試算の結果、不採用〈2026-10-04〉。8指標のカードの tooltip に閾値の出典の有無を出す変更は feature/macro-pulse-m5 で統合済み〈`f62485feaf`〉）
+**分類:** 判定の閾値の設計 / MACRO PULSE（05_main.py・index.html）
+**登録日:** 2026-10-04
+**発見:** 指示書M-4（閾値の出どころの調査）・M-5 STEP 7（試算）
+
+#### 内容
+HY・Claims・Permits・Michiganの閾値は公的な根拠が無く、水準に置いた閾値が長期の分布の端に寄っている（M-4 STEP 2: Claims 300K でも
+1967年以降の30.9パーセンタイル）。段の数と点数を変えずに、段の境目を「その日に分かっていた過去10年の観測の分布の、今の閾値の1990年以降の
+割合と同じパーセンタイル」にする方式を試算した（`scripts/analysis/macro_m5_threshold_simulation.py`、段階関数のスコア、1997年以降の毎日）。
+
+#### 試算の要点
+- 今日のスコア 27 → 33（HY 3.24 が過去10年の境目3.22を超えて15→40点、Permits 1,403 が境目1,414を下回って35→60点）
+- 1997年以降 10,867日中 9,854日が変わる。最大 −20（2014-11-24、43→23）。2013〜2017年は平均10〜13点下がり、2025年は約6点上がる
+- 後退の前後で ≥52 に初めて達した日: 2001年 148日前→103日前、2008年 122日前→365日前、2020年 22日後→22日後。
+  ≥70: 2008年 143日後→178日後、2020年 73日後→82日後（2001年は両方なし）
+- 誤報（後退期でない日に ≥52）: 51回・1,693日 → 36回・1,259日（後退の直前12か月・終了直後を除くと 44回・1,223日 → 28回・873日）
+- Michigan は段の数と点数を変えないため、最良の段は30点（中立）のままで「拡張」に入る月は0%
+- HY は分布が1996-12以降しか無く、2006年までは過去10年の窓に足りない
+
+#### 判断（2026-10-04）
+**不採用。** 試算では、ほぼ全ての日のスコアが変わり（最大20点）、後退の前の早さは後退ごとに良くも悪くもなった（2008年の ≥70 は遅れる）。
+代わりに、8指標のカードの tooltip に閾値の出典の有無（M-4 調査）を出す: HY・Claims・Permits・Michigan は「閾値の公的な根拠は無い」、
+Michigan は「最良の段は中立（拡張の段なし）」、CFNAI・Sahm・Philly・YC は出典（feature/macro-pulse-m5）。
+
+#### 着手条件
+保留（閾値の設計を見直すときの材料として残す）。
+
+### ✅ [STONKS-HERO-DISCOVER-LABEL-1] STONKS SILOのヒーローに「Discover · 10x Candidates」がDiscoverの廃止後も残っている
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。廃止の後に残った文言（一覧の「画面」の欄、推定）
+**優先度:** 低
+**分類:** 表示（文言） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L249）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html` L249の`<div class="hero-label">Discover · 10x Candidates</div>`が、Discoverの廃止後もそのまま表示されている
+
+#### 直し方の候補（未決定）
+- 今の位置づけに合う文言に変える、またはラベルを外す
+
+### ✅ [STONKS-MONEY-FORMAT-SIGN-1] STONKS SILOの金額の負号の位置が「$-56M」（チャートの見出し）と「-$155M」（棒のラベル）で混在している
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: B。書式の規則の二重
+**優先度:** 低
+**分類:** 表示（書式） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html`）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- 詳細のチャートの見出しは「$-56M」、棒のラベルは「-$155M」の形で、同じ画面に2つの書き方がある
+
+#### 直し方の候補（未決定）
+- 金額の書式を1つの関数にまとめ、負号を先頭（-$56M）にそろえる
+
+### ✅ [STONKS-TANUKI-BADGE-404-1] STONKS SILOがRKLB・ZSのTANUKI VALUATIONのlatest.jsonを読みに行き、404になる
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。読み手と書き手の対象の照合（一覧のCHECK）
+**優先度:** 低
+**分類:** 表示（外部データの読み込み） / STONKS SILO（`docs/value-monitor/stonks-silo/index.html` L435・L612）
+**登録日:** 2026-10-10
+**発見:** 2026-10-10 チャット側のSTONKS SILO表示確認（ローカル描画＋results.json/コード突合）
+
+#### 内容（観測した事実）
+- `index.html`はL435（TANUKIのスコアのバッジ）とL612（次回決算日・黒字転換の目算）で`tanuki_valuation/data/{T}/latest.json`を読む
+- RKLB・ZSは`docs/value-monitor/tanuki_valuation/data/{T}/`に`score_history.json`しかなく、latest.jsonの取得が404になる
+- `config/cik_lookup.csv`でRKLB・ZSは`tanuki=false`・`stonks_silo=true`で、`exclusion_reason`は「成長株のためSTONKS SILO側で評価する設計」（2026-10-10確認）。
+  TANUKIの対象外であることは意図どおりとみられる。score_history.jsonだけが残っている理由は未確認
+
+#### 判断待ち
+- TANUKIの対象外が意図どおりなら、404を出さない扱い（tanuki=falseの銘柄は読みに行かない等）にするか
+
+#### 直し方の候補（未決定）
+- tanukiフラグをresults.jsonに持たせ、falseの銘柄はlatest.jsonを読まない
+- 404を想定内として静かに扱う（コンソールのエラーを出さない）
+
+### ✅ [LAYER3-QUARTERLY-FP-FILING-LABEL-1] Layer3・normalizedの四半期エントリのfp・fyが、期間そのものではなく「その数値を最後に申告した書類」の会計期間になっている
+**完了（2026-10-19）:** [[LAYER3-FIRST-FILED-DATE-1]]に統合（2026-10-19 初回の束ね）。型: C。LAYER3-FIRST-FILED-DATE-1と同じ根（最後の申告の値を写す）
+**優先度:** 低（2026-10-10時点で、四半期のfpを判断に使っている機能は無い）
+**分類:** データの意味（ラベル） / common/sec_data（`quarterly.py::_process_entries()`、Layer3・normalized共通）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-HEATMAP-FQ-LABEL-1]]のSTEP0（読み取り調査、2026-10-10、登録のみ）
+
+#### 内容（観測した事実）
+- `_process_entries()`は、company_factsのfactの`fp`・`fy`（SECのXBRL APIでは、そのfactを含む書類の会計期間）をそのままエントリに写す。
+  同じ期間（start・end）に複数の書類の値があると最新の提出を選ぶ（`select_latest_filed`）ため、後の10-Qで再掲された期間は、その10-Qのfp・fyになる
+- 例: JOBYの純利益で、2025-03-31・2026-03-31（1〜3月期）のエントリがfp="Q2"・fy=2026（accn 0001819848-26-000435、2026-08-06提出のQ2の10-Q）。
+  2025-06-30もfy=2026。STONKS SILOの対象ではCRWV・JOBY・ONDS・RCAT・RKLB・SPIR・LYFT・KULRで1〜3月期がQ2
+- quarterly.pyの`_classify_period()`は、fpが書類の期間種別であることをコメントで明記し、日数を主に判定している（年次の判定は`fp == "FY"`だけに頼らない）
+
+#### 影響（2026-10-10の洗い出し）
+- 四半期のfpを判断に使っていたのはSTONKS SILOの財務トレンド（前年同期比・ヒートマップ・チャートのラベル）だけで、[[STONKS-HEATMAP-FQ-LABEL-1]]で期末日に切り替えた
+- 他のfpの使用は、10-Kの`fp == "FY"`の判定（`layer3_builder.py`・`utils.py`・`fye_change_candidate_scan.py`・TANUKI VALUATIONの`pipeline.py`の株式数）と
+  ログの出力だけで、四半期のfpの誤りの影響は受けない。EPS Analyzer（`extract_key_facts.py`）・`parser.py`は独自に年度を決める（`determine_fiscal_year()`）
+- results.jsonの`financial_vectors.fields.*.series_q`には、このfpがそのまま入っている（画面・計算では使わないと注記済み）
+
+#### 直し方の候補（未決定）
+- エントリにfpを入れず、期間から決めた四半期（会計年度の期末月からの位置）を別のキーで持つ
+- fp・fyのキー名を`filing_fp`・`filing_fy`のように改め、意味を名前で示す（消費者の書き換えが要る）
+- 現状維持（新しい消費者が四半期のfpを使うときは、期末日で識別するよう手順書に書く）
+
+### ✅ [STONKS-SUMMARY-GAAP-REASON-RAW-1] STONKS SILOの総合判定の根拠で、純利益の理由コードがそのまま出る（「純利益：NO_TREND:-229%→-482%」）。使い方の「シグナル」も旧ラベル
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。理由コードと表示の言葉（一覧の「定義」の欄）
+**優先度:** 低
+**分類:** 表示 / STONKS SILO（`analyzer.py::_build_summary()`、`docs/value-monitor/stonks-silo/index.html`の使い方）
+**登録日:** 2026-10-10
+**発見:** [[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]の実装時の表示確認（2026-10-10、範囲外のため登録のみ）
+
+#### 内容（観測した事実）
+- `_build_summary()`の純利益の行は、`gaap_breakeven_reason`が`NO_TREND`・`NO_DATA`・`TOO_FAR`と完全に一致するときだけ日本語にする。
+  `NO_TREND:-229%→-482%`のように後ろにマージンが付くと一致せず、「純利益：NO_TREND:-229%→-482%」と出る
+  （2026-10-10のresults.json: ASTS・RBRK・SITM）。OCFの行も同じ作りだが、OCFが`NO_TREND:…`の銘柄では未確認
+- 使い方の「▲ 買いシグナル」「▼ 回避シグナル」は、OCF TRENDを「IMPROVING」「DECLINING」、DEFICITを「QUALITY / GROWTH-INVEST」「PURE-LOSS」と書いており、
+  画面の表示（加速中・改善中・横ばい・悪化中、良い赤字等）と違う。SCOREの「70以上」も判定の閾値（75/55/35）と合っていない
+
+#### 直し方の候補（未決定）
+- 理由コードは前方一致で日本語にする（③パネルの`fmtBe()`は`NO_TREND:`を「予測不可（改善なし）」とマージンに分けて出している）
+- シグナルの文言を画面のラベルと判定の閾値に合わせる
+
+### ✅ [TTM-DATA-DRIFT-BEHIND-PIPELINE-1] common/sec_data/ttm/配下のTTM系列ファイルが2026-07-26生成のまま、以降のパイプライン修正に追従しておらず陳腐化している可能性
+**完了（2026-10-19）:** [[LAYER3-FIRST-FILED-DATE-1]]に統合（2026-10-19 初回の束ね）。型: C。年次の組み替えの部分（APPのFY2023）はR-C。ファイルの作り直しの時点の部分は[[METHOD-CHANGE-PUBLISH-TIMING-1]]に重なる
+**優先度:** 低（2026-09-19に中から低へ変更。本文「優先度変更（2026-09-19、中→低）」。見出しを本文に合わせたのは2026-10-08。経緯: 登録時「高」から中へ引き下げ、影響実測の結果、現在進行形の
+実害はゼロと確定したため。構造的リスクは残存）
+**分類:** データ品質 / パイプライン出力の陳腐化
+**登録日:** 2026-08-02
+**発見:** [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]実装検証時（チャット記録）
+
+#### 内容
+（2026-09-19注記: 本文中の「105銘柄」は登録当時〈2026-08-02〉の
+ticker宇宙の件数。その後のAVGO/CWAN/ENB除外により現行ticker宇宙は
+102銘柄。過去記録のため本文自体は書き換えない。）
+
+`common/sec_data/ttm/`配下の全105銘柄のTTM系列ファイル
+（`{ticker}_ttm_series.json`）が、`git log`確認で2026-07-26生成のまま
+であることが判明した。一方、TTM系列の入力元となる抽出パイプライン
+（`common/sec_data/layer3_builder.py`・`common/sec_data/q4_implied.py`）
+は2026-07-30に、`common/sec_data/parser.py`は本セッション中の
+2026-08-02に、それぞれ別コミットで修正されている。実際にPEP銘柄で
+検証したところ、現行パイプライン（2026-08-02時点）で再生成すると
+`selling_general_and_administrative`が$34,501,000,000→$37,791,000,000
+（約9.5%）変化することを確認済み（`[[TTM-CALC-QUARTER-CONTIGUITY-
+UNCHECKED-1]]`実装作業の副産物として発見。この差分は今回実装した連続性
+チェックとは無関係で、単純にttm/ファイルが2026-07-26時点のパイプライン
+出力のまま更新されていないことに起因すると特定済み）。
+
+`.github/workflows/SEC_Data_Update.yml`を確認したところ、毎週日曜
+12:00 UTC（cron: `0 12 * * 0`）に`update.py`を実行し
+`common/sec_data/ttm/`を含む全出力を自動再生成・commit・pushする
+ワークフローが既に存在する。**このワークフローが正常に稼働していれば
+陳腐化は本来自然解消されるはずであり、なぜ2026-07-26以降ttm/が
+更新されていないのか（ワークフロー自体の失敗・無効化・直近未実行等）
+が未確認の論点として残る。**
+
+#### 影響
+未確定。PEP1銘柄のSG&Aで約9.5%の差分を確認したのみで、105銘柄全体で
+どのフィールド・どの銘柄にどの程度の乖離があるかは未調査。TTM系列は
+TANUKI VALUATIONのFCFベースDCF計算・STONKS SILOのrunway計算に直結する
+ため、陳腐化の程度次第では現在進行形のIV算出精度への実害がありうる。
+`[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]`実装時は対象18銘柄のみを
+最新化し、残り87銘柄は意図的に未対応のまま据え置いている。
+
+#### 対応方針（登録時点）
+未定。実装は行わず、まず以下の調査が必要:
+- `.github/workflows/SEC_Data_Update.yml`のGitHub Actions実行履歴を
+  確認し、2026-07-26以降に正常実行されているか・失敗しているか・
+  無効化されていないかを特定する
+- 陳腐化の実際の範囲（全105銘柄中何銘柄・どのフィールドで実質的な差分が
+  生じるか）を、現行パイプラインでの全銘柄再生成とフローズン入力比較で
+  定量化する
+- 通常の週次自動更新サイクルで自然解消される見込みか（ワークフローが
+  正常なら次回日曜実行で解消するはず）を確認する
+- 上記調査の結果次第で、手動での全105銘柄再生成が必要か、ワークフロー
+  側の修正が必要かを判断する
+
+#### 根本原因調査結果（2026-08-02、チャット記録、読み取りのみ・重大な
+構造的発見）
+GitHub Actions APIで`SEC Data Update`ワークフローの実行履歴を確認した
+結果、**ワークフロー自体は正常稼働中**と判明した（毎週日曜、直近9回超
+すべて`schedule`トリガーで`success`、無効化もされていない。`git log`上の
+`ttm/`最終更新コミット`340b8b8ae`〈author=`github-actions[bot]`〉が
+2026-07-26の実行と完全に一致）。調査時点（2026-08-02 12:32〜12:36 UTC、
+本日も日曜）では本日分の実行が未発火だったが、前週の実行もcron時刻
+（12:00 UTC）から49分遅れて開始しており、GitHub自身が公式に案内する
+「12:00〜15:00 UTC帯はscheduleトリガーの遅延が起きやすい」時間帯と
+一致するため、**単なる未発火（これから発火する見込み）であり失敗では
+ない可能性が高い**。default_branch=`kaihatsu`とワークフローの
+checkout先も一致しており、本セッションのコード変更後も
+`common.sec_data.update`のimportエラーなし・ゲート
+（`report_consistency_check.py`）もNG=0を確認済みで、本セッションの
+変更との衝突の兆候はない。
+
+**真の問題（当初想定より深刻）**: `common/sec_data/ttm/`を生成する
+`layer3_builder.py`（＋`quarterly.py`・`fact_selection.py`・
+`q4_implied.py`）は、`parser.py`（annual_YYYY.json生成）とは**完全に
+独立した別実装のパイプライン**であることを確認した。`layer3_builder.py`
+は`parser.py`のクラス・関数を一切importせず、`fact_overrides.json`も
+読み込まない。`parser.py`側の`_resolve_bs_entity_mixing()`・
+`_backfill_total_liabilities_via_identity()`・
+`_align_cost_of_revenue_to_revenue_period()`に相当する処理も存在しない。
+
+結果、本セッションで実装した以下の修正は、**ワークフローが正常実行
+されてもTTM系列には反映されない**（唯一の例外は
+[[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]。これは`ttm_calculator.py`
+自体への実装のため次回実行で全105銘柄に自動反映される）:
+- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）
+- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1・2（7銘柄+SPIR）
+- [[TOTAL-LIABILITIES-FALLBACK-TAG-DESIGN-FLAW-1]]（22銘柄278件、
+  AMZN/GOOGL/MSFT/NVDA/AMD/WMT等の大型株含む）
+- [[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案b（LRCX）
+- [[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]（GOOGL、`fact_overrides.json`
+  自体が未読込のため）
+- [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]（COHR、同上）
+- [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]（ELF）
+
+なお`layer3_builder.py`側は`gross_profit`逆算のみ独自に別実装済みで
+（既存の別系統バグ追跡ID`[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]`、
+annual側の`[[LAYER3-GROSSPROFIT-BACKFILL-PROD-UNREACHED-1]]`とは別系統
+であることを確認済み）、全ての annual側修正が未移植というわけではない。
+
+**結論**: 「ワークフローを動かせば陳腐化が解消する」という単純な話では
+なく、今回実装した連続性チェック以外のannual側の修正は、たとえ
+ワークフローが毎週正常に動いても恒久的にTTM側へは反映されない
+（別途`layer3_builder.py`側への個別移植が必要）という、より根深い
+構造的問題であることが判明した。
+
+**対応方針の選択肢**:
+1. 現状維持（cron待ち）: [[TTM-CALC-QUARTER-CONTIGUITY-UNCHECKED-1]]の
+   みが次回実行で全105銘柄に自動反映される。他は反映されないまま。
+2. 手動トリガー（`workflow_dispatch`）: pushを伴うため明示的承認が必要。
+3. `layer3_builder.py`側への個別移植: 範囲が大きく複数タスクへの分割が
+   必要。
+4. 影響の実測確認を先行: TANUKI VALUATION・STONKS SILOがTTM経由で
+   未移植の修正対象フィールド・銘柄をどの程度消費しているか確認し、
+   実害の大きさに応じて3の優先度を判断する。
+
+#### 対応方針（前回時点）
+④（影響の実測確認を先行）から着手する。範囲の大きい③（個別移植）に
+いきなり着手する前に、実装前に実害を確認するという原則に基づき、実際に
+どれだけの影響があるかをまず確認する。
+
+#### 影響実測結果（2026-08-02、チャット記録、読み取りのみ）
+7件の既知修正について、TANUKI VALUATION・STONKS SILOいずれも**現在
+進行形の実害は確認されなかった**。
+
+- [[SPAC-SHELL-BS-ENTITY-MIXING-1]]・[[TOTAL-LIABILITIES-FALLBACK-
+  TAG-DESIGN-FLAW-1]]（AMZN/GOOGL/MSFT/NVDA/AMD/WMT等22銘柄278件）・
+  [[COHR-SHARES-DILUTED-UNIT-SCALE-BUG-1]]: 対象フィールド（BS項目・
+  shares系）が構造的にTTM出力（`FLOW_FIELDS`17種のみ）に一切含まれない
+  カテゴリであり、消費経路（`get_net_cash()`・`get_diluted_shares()`）も
+  `annual_*.json`を直接参照するため無関係と確定。
+- [[PERIOD-LENGTH-VALIDATION-GAP-1]]（28銘柄）・[[PL-FIELD-CROSS-ACCN-
+  PERIOD-MISMATCH-1]]（LRCX）・[[GOOGL-FACT-OVERRIDE-SEQUENCING-BUG-1]]・
+  [[ELF-FISCAL-END-MONTH-MISDETECTION-1]]: 対象年度が現在のTTM系列
+  anchor範囲（実測で2021〜2022年始まり）の外にあるため無関係。唯一の
+  例外RCAT(2024年度)のstock_based_compensationも、FCF計算式
+  （`_calc_fcf()`）に直接使われず、現状RCATのRICEスコア自体が「年次
+  データ不足で計算不可」のため現時点で出力に無影響。
+- STONKS SILOは独立した第3のパイプライン（`load_annual_data()`経由で
+  `annual_*.json`を直接読み込み）であり、コード全体を検索してもTTM/
+  layer3経由の参照が一切存在せず、実害はゼロと確定。
+
+**重要な留保**: これは「今回はたまたま対象年度がTTM窓の外だった」結果
+であり、2つの独立パイプラインが同期しない設計上の脆弱性自体は温存されて
+いる。将来のannual側修正が、対象年度が現在のTTM窓内である場合には同様の
+未反映リスクが顕在化しうる。
+
+#### 対応方針
+現在進行形の実害がゼロと確定したため、優先度を「高」から「中」に
+引き下げる。ただし構造的脆弱性は残存するため、以下のいずれかの対応を
+将来検討する:
+- 短期的な運用対応: annual側で新規修正を行う際は、対象年度がTTM系列の
+  anchor範囲内かどうかを都度確認し、範囲内の場合はlayer3_builder.py側
+  への個別移植も検討するというチェック項目を、今後の実装依頼テンプレート
+  に追加する
+- 長期的な構造対応: layer3_builder.pyとparser.pyの重複ロジック
+  （gross_profit逆算等）を統合する、またはannual側の修正結果をTTM側が
+  参照する設計に変更する等、パイプライン統合自体の検討（大規模な設計
+  変更のため別途独立検討が必要）
+
+#### 長期的構造対応の検討結果（2026-08-03、チャット記録、読み取りのみ）
+上記「長期的な構造対応」（パイプライン統合）の実現可能性を設計調査した。
+
+**認識の訂正**: 当初「parser.py⇔layer3_builder.pyの2パイプライン問題」
+としていたが、実際は`update.py`内で3つの独立生成パスが並存する構造
+であり（①`parser.py`→`annual_*.json`、②`quarterly.py`→`normalizer.py`
+→`normalized/*.json`、③`layer3_builder.py`→`ttm_calculator.py`→
+`ttm/*.json`）、`SEC_EDGAR_LAYER_DESIGN.md`が既に「3スキーマ併存」として
+認識済みの既知課題の一部だったと判明した。
+
+**重複ロジックの棚卸し結果**: parser.py側の安全ロジック（本人データ優先・
+BS系バックフィル・cost_of_revenue期間整合）の大半はTTM出力対象フィールド
+（FLOW_FIELDS 17種）に該当しないBS/shares系であり、構造的に「移植する
+意味自体がない」。真に問題になりうるスコープは「FLOW型フィールドに
+関わる本人データ優先判定」のみという、当初想定より狭い範囲であることが
+判明した。
+
+**経緯の確認**: `layer3_builder.py`初出は2026-07-24（既存コード非改変
+方針で新規構築）、parser.py側の安全ロジック追加は2026-08-01（本
+セッション）。設計時点で後からparser.py側にこれらのロジックが追加
+されることは想定されておらず、意図的な除外ではなく単純な時間差による
+取り残されと確定した。
+
+**選択肢の再評価**:
+- 案A（完全統合）: layer3_builder.pyがparser.pyの共通ロジックを
+  import・再利用する設計。新DB構築フェーズ相当の規模
+- 案B（部分統合）: FLOW_FIELDS関連の本人データ優先ロジックのみ
+  `fact_selection.py`へ追加。個別バグ修正1〜2件相当の規模
+- 案C（運用チェック継続）: CHAT_RULES.md追記済みの現状（parser.py修正
+  依頼作成時のTTM同期確認チェック）を維持
+
+**推奨・対応方針**: 現時点は案C（運用チェック継続）を維持し、統合作業
+（案A/B）には着手しない。根拠:
+(a) 実害が実測でゼロと確定済み
+(b) 真に問題になるスコープは当初想定より狭い（FLOW型フィールドの
+    本人データ優先判定のみ）
+(c) 3スキーマ併存自体は新DB構築プロジェクトのフェーズD（consumer切替）
+    以降で本格的に扱われる射程の既存の中長期課題であり、前倒しの
+    必然性が薄い
+(d) gross_profit逆算のように既に個別重複が許容されている先例
+    （[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]系）がある
+
+#### 再確認結果（2026-09-12、チャット記録、読み取りのみ・据え置き継続）
+直近1ヶ月の追加修正（CRM(2018) GP-COGS不整合修正
+[[CRM-REVENUE-COGS-TAG-COVERAGE-GAP-1]]含む）を踏まえ、鮮度・実害の
+再確認を実施した。結論として「据え置き継続」（クローズしない）。
+
+**STEP1: 鮮度・cron健全性の再確認**
+`common/sec_data/ttm/`の最終コミットは2026-09-06であり、陳腐化はして
+いない。GitHub Actions API（`gh`未導入のため`curl`直接照会、
+workflow ID 258451437「SEC Data Update」）でワークフロー実行履歴を
+確認したところ、2026-08-16・2026-08-23の2回連続でscheduleトリガーの
+実行が失敗していたことが判明した。ただしこれは既に根本原因が診断済み
+（依存パッケージインストール工程の欠落）で、BACKLOG_DONE.mdの
+[[DATA-FRESHNESS-MONITORING-FUTURE-IDEA-1]]（2026-08-30完了）で
+是正済みの事象であり、同タスクでは再発検知のための監視機構
+（`common/system_health.py`の`check_j_workflow_runs()`、通称
+「Check J」）も新設されている。本セッションで`python3
+common/system_health.py`をローカル実行し確認した結果、`[J]
+CronRuns: ✅ 17件監視 / すべて正常`であり、直近2回（08-30・09-06）は
+成功していることを確認した。cron自体は現在健全。
+
+**STEP2: 直近1ヶ月の修正のLayer3/TTM側への反映状況の再確認**
+`layer3_builder.py`を確認したところ、parser.py側の
+[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]案a〜e（`_align_revenue_*`
+`_align_cost_of_revenue_*`・`dimension_aggregate`等の関数群）および
+本日実施したCRM修正（`_REVENUE_ALIGNMENT_CANDIDATES`・
+`_COST_OF_REVENUE_ALIGNMENT_CANDIDATES`への`SalesRevenueServicesNet`・
+`CostOfServices`追加）は、依然としてLayer3側へ移植されていないことを
+確認した。Layer3独自の候補タグ設定`config/sec_concept_definitions.json`
+を直接確認したところ、`revenue`候補リストには`SalesRevenueServicesNet`
+が同様に欠落している（parser.py側が今回修正した欠落と同一）一方、
+`cost_of_revenue`候補リストには`CostOfServices`が既に含まれており
+欠落はなかった。なお[[LAYER3-OI-RECONSTRUCTION-FALLBACK-GAP-1]]は
+Layer3側へも移植済み（コミット`b9f781c7f3`）であることを確認しており、
+移植の要否判断・実施は案件ごとに一貫していない運用実態が改めて
+確認された。
+
+**新規発見（構造的リスクの実例化）**: APP（保有銘柄）のFY2023年次
+revenueを直接比較したところ、parser.py側
+（`common/sec_data/data/APP/annual_2023.json`）は$3,283,087,000、
+Layer3側（`build_ticker_store("APP")`→`get_field_entries(store,
+"revenue")`をannual・end=2023-12-31でフィルタ）は$1,841,762,000と、
+**約14.4億ドルの乖離**を確認した（FY2024も$4,709,248,000 vs
+$3,224,058,000で同様に乖離、FY2025は$5,480,717,000で完全一致）。
+原因を`company_facts.json`の生XBRLデータで確認したところ、SECの
+`Revenues`タグ自体が同一期間（FY2023）に対し複数の異なる値を報告して
+いた（FY2023本体・FY2024の10-Kでの比較列では$3,283,087,000、FY2025の
+10-Kでの比較列では$1,841,762,000〈遡及修正後とみられる〉）。
+parser.py側とLayer3側でどちらの値を採用するかのtie-breakロジックが
+異なるため、同一の生データから異なる値を選択してしまっていることが
+直接確認された。これは本日のCRMタグ網羅漏れとは異なる、
+「企業が過去実績を遡及修正した場合、独立した2パイプラインが
+クロスチェックなしに異なる値を選択しうる」という、本チケット登録時
+から理論上の懸念とされていた構造的リスクの、初めての具体的・定量的な
+実例確認である。
+
+**STEP3: 保有9銘柄の現在のTTMローリング窓における実害再確認**
+`common/sec_data/reader.py::SECReader.get_rpo_context()`と同じ手法
+（`common/sec_data/normalized/{ticker}_quarterly_normalized.json`から
+直近4四半期を合算する`rev_ttm = sum(e["val"] for e in rev_all[-4:])`
+方式）をparser.py側の独立再計算値とみなし、`common/sec_data/ttm/
+{ticker}_ttm_series.json`の最新値（`series[0]["flow"][field]["val"]`）
+と、保有9銘柄（ADBE/APP/CELH/CRWV/NVDA/PLTR/SOFI/SOUN/TSLA）×7指標
+（Revenue/NetIncome/GrossProfit/OCF/SBC/CapEx/OperatingIncome）の
+全63通りで突合した。結果、Revenue/NetIncome/GrossProfit/OCF/SBC/CapExの
+6指標は9銘柄全てで完全一致（乖離ゼロ）。唯一SOFIのOperatingIncomeのみ
+normalized/側が`None`（parser.py側`common/sec_data/data/SOFI/
+quarterly_*.json`の`operating_income`も直近四半期で同じく`None`である
+ことを直接確認済み）に対しLayer3/TTM側は$1,572,033,000と、Layer3側が
+より完全なデータ（自己のGP逆算バックフィル）を持っているという無害な
+差異であり、実害ではない。
+
+**総括・対応方針**: 現在のTTMローリング窓において保有銘柄への実害は
+今回も確認されなかった（STEP3）ため、優先度「中」は維持する。一方で
+APP実例により、構造的リスク自体は理論上の懸念ではなく実例のある
+現実のリスクであることが再確認された（STEP2）ため、クローズはせず
+「据え置き継続」とする。cron健全性は現状問題なし（STEP1）。今後の
+自動検知については、STEP3で用いた「parser.py側の独立再計算値と
+Layer3/TTM側の値を突合する」手法を`report_consistency_check.py`への
+新規WARNチェックとして恒久化する（本チケットとは別コミットで対応、
+下記③参照）。
+
+#### 再確認結果（2026-09-19、チャット記録、読み取りのみ・据え置き継続）
+STEP1（鮮度・cron健全性）: `common/sec_data/ttm/`の直近更新はコミット
+`1be11d715`（2026-09-14 00:09 JST、`github-actions[bot]`の週次自動更新）＋
+`c79df1cd5`（2026-09-17 21:14 JST、`[[FCF-CONVRATE-LOWER-DIVERGENCE-1]]`
+に伴うLYFT/PAYS/FLYW3銘柄のみの手動再生成）。`gh`未導入のため
+`SEC_Data_Update`ワークフロー（cron `0 12 * * 0`＝毎週日曜21:00 JST）の
+実行成否は自動コミット`Update SEC Data - YYYY-MM-DD`の履歴突合で代替確認
+し、2026-08-16・08-23の既知障害（2026-08-30是正済み）以降は毎週正常に
+コミットが発生していることを確認した。`layer3_builder.py`/
+`ttm_calculator.py`/`parser.py`への直近の変更は2026-09-17の1件（LYFT
+CapExタグ追加）のみで、同日中に対象3銘柄が手動再生成済みであることも
+確認した。
+
+STEP2（全銘柄再生成との突合）: 現行ticker宇宙（`config.get_all()`＝102
+銘柄、`ttm/`ファイル数と完全一致）全件について、`layer3_builder.
+build_ticker_store()`＋`ttm_calculator.calc_ttm_series()`を一時
+ディレクトリ（scratchpad配下、調査後削除済み）へ再生成し、FLOW_FIELDS
+17種＋FCFを既存`ttm/`と`ttm_end`単位（anchor不一致0件）で突合した。
+**実質差分（|Δ|>1%）は102銘柄×18フィールド中0件**。唯一検出された
+1件（COHR・eps_diluted・ttm_end=2025-06-30）は5.5e-17 vs 2.08e-17という
+浮動小数点誤差ノイズ（両者とも実質ゼロ）であり実害なしと判定。
+FCF/runway系フィールドへの影響もゼロ。登録時（2026-08-02、PEP銘柄
+SG&A約9.5%乖離を確認）や前回再確認時（2026-09-12、APP FY2023 revenue
+約14.4億ドル乖離を確認）とは異なり、今回は現行パイプライン出力と
+`ttm/`が完全に同期していることを確認した（cronが直近まで正常稼働し、
+唯一のコード変更〈LYFT CapEx〉も即日手動反映されたため）。
+
+STEP3（「layer3_builderがparser.pyと独立実装」診断の再検証）: 現行
+コードでも診断は成立することを確認した。`layer3_builder.py`は
+`parser.py`を一切import せず（grep 0件）、`fact_overrides.json`参照も
+`parser.py`側のみ（`layer3_builder.py`は0件）。parser.py側の安全ロジック
+3種（`_resolve_bs_entity_mixing`・`_backfill_total_liabilities_via_
+identity`・`_align_cost_of_revenue_to_revenue_period`）も
+`layer3_builder.py`には引き続き存在しない（一方`quarterly.py::
+_classify_period`・`fact_selection.py::select_latest_filed`はドキュメント化
+済みの意図的共有のまま）。2026-09-12発見のCRM関連ギャップ
+（`config/sec_concept_definitions.json`のrevenue候補に
+`SalesRevenueServicesNet`が依然欠落、`CostOfServices`は既存のまま）も
+未変化で残存している。
+
+**総括・対応方針**: 実質差分0件（COHRの1件は測定誤差）・cron健全・
+保有銘柄含む全銘柄で実害なしという結果は、前回（2026-09-12）の
+「据え置き継続」判断を追認するもの。案C（運用チェック継続、統合作業には
+着手しない）を維持し、優先度「中」も変更しない。着手条件（下記）も
+変更なし。
+
+#### 着手条件
+以下いずれかのトリガー条件が発生するまで保留:
+1. 今後の運用チェックでTTM anchor範囲内×FLOW型フィールドの修正が発生し
+   実害が確認された場合 → 案B（部分統合）を個別タスクとして起票
+2. 新DB構築プロジェクトのフェーズDに進む際、3スキーマ併存全体の解消を
+   検討するタイミングで本件も合わせて設計する
+3. `report_consistency_check.py`に新設したparser.py⇔Layer3/TTM突合
+   WARNが実際に発火した場合（99銘柄いずれかで乖離検知）→ 発火した
+   銘柄・フィールドを起点に実害確認・案B着手要否を判断する
+
+#### 優先度変更（2026-09-19、中→低）
+2026-08-02の初回検証・2026-09-19の再検証と2回連続で実質差0件が確認され、
+着手条件も上記3トリガーのいずれかが発生するまで完全に保留（トリガー
+制）となっている。能動的な着手見込みがない待機状態であるため、
+優先度を「中」から「低」へ変更する。
+
+#### 再確認（2026-09-24、クローズ見送り）
+陳腐化クローズを検討したが、前提の一部が不一致のため見送った:
+- 鮮度: `common/sec_data/ttm/*_ttm_series.json`全102ファイルの
+  `generated_at`が2026-09-24（同日のSEC Data Update〈bot、`569acf66bf`〉後）
+  であることを確認（条件一致）
+- **CHECK-47（parser⇔Layer3 TTM乖離）が3件発火**（着手条件3に該当）:
+  - BKNG `stock_based_compensation`（乖離2.2%、🆕未確認）
+  - FCX `net_income`（乖離39.9%、🆕未確認）
+  - RCAT `stock_based_compensation`（乖離8.2%、`config/warn_acknowledged.json`で
+    確認済み: normalized側のSBC四半期欠落によるCHECK-47突合方式由来の
+    見かけ上の乖離、実害なし）
+  BKNG・FCXの2件は未確認のため、着手条件3に従い発火銘柄・フィールドを
+  起点とした実害確認が次のステップとなる（本日は記録のみ）
+
+#### 着手条件3の実害確認と対応（2026-09-24、指示書⑥・同補足）
+2026-09-24に発火したWARN-47 3件を調査した:
+- BKNG SBC（2.2%）・RCAT SBC（8.2%）: normalized/側の末尾4件が連続した4四半期でない
+  （10-K由来のQ4欠落）ことによるCHECK-47の誤検知で実害なし。
+  [[CHECK47-NONCONTIGUOUS-WINDOW-1]]で連続性チェックを追加し解消
+- FCX net_income（39.9%）: 実害あり。3系統とも非支配持分込みの`ProfitLoss`を
+  親会社帰属タグより優先していた（FY2025 連結4,152M vs 親会社帰属2,204M）。
+  [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]で3系統共通の候補定義に一本化し解消
+- 横断確認で見つかったLayer3の上書き設定の写しの陳腐化（CPRT/CEG/JOBYのTTM
+  gross_profit None等）は[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]で解消
+CIと同条件の再生成後、WARN-47は0件。本エントリの構造的リスク（layer3_builder.pyが
+parser.pyと独立実装であること）自体は残るため、エントリは引き続きトリガー制で保留する。
+
+#### missing>0（4四半期未満）のTTMの消費側の扱い（2026-09-24、指示書⑦、調査のみ・実害なし）
+`common/sec_data/ttm/*_ttm_series.json`の消費者は、TANUKI VALUATION
+（`data_fetcher.py`・`pipeline.py`）と検証系（`audit.py`・`registration_validator.py`・
+`report_consistency_check.py`）のみ。HypeCore・TAIL（tail_dcf_bridge等）はLayer3の
+四半期系列を直接読み自前で集計、EPS Analyzerは独自のTTM計算、STONKS SILOは
+ttm/を参照しない。
+- `data_fetcher.py`: FCF系列（`TTMReader._filtered_fcf`）はOCF・CapExのいずれかが
+  quarters_used<4の期間を除外、RICE用（`build_rice_annual_shape`）はOCF・CapEx・
+  revenue・net_incomeのいずれかが不完全な行を除外（SBCのみ部分値をNone化して行は維持）
+  → (a) 除外
+- `pipeline.py`のDuPont分解（net_income・revenue・buyback）とセグメントのTTM売上
+  フォールバック（revenue）: `series[0]`（最新アンカー）のみ参照し、quarters_usedを
+  見ない → 最新アンカーについては(b)、それ以前のアンカーは(c) 参照しない
+- 実測（本番データ）: missing>0のエントリは全銘柄で1,390件、うち1,182件（85%）が
+  最古アンカー（index 4、四半期粒度データ取得開始前の境界期間）。(b)経路
+  （最新アンカーのnet_income・revenue・buyback）に該当するのはbuybackの5件のみ
+  （CPRT 1,414M〈1四半期〉・S 49.2M〈2四半期〉・JOBY 85K〈3四半期〉・CIX 0・KULR 0）。
+  net_income・revenueの該当は0件
+- buybackの消費者は`financial_health.buyback_ttm`→TANUKI SCORE画面のキャッシュトラップ
+  判定のみで、`buybackTtm === 0`（還元ゼロか）の真偽しか使わない。部分合計>0の
+  CPRT・S・JOBYは「自社株買いあり」で正しい。CIXは配当利回り3.2%のため判定に
+  影響せず、KULRは部分合計0を除外（null）しても判定ロジックがnullを還元なしと
+  同じに扱うため結果は同じ → 判定への実害なし
+- BROS・CEG（[[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]でスタブ期間を除外した結果、
+  最古アンカー2022-06-30のnet_incomeがquarters_used=3の部分TTMになる）: 最古アンカーは
+  pipeline.pyが参照せず、data_fetcher.pyのRICE変換はnet_income不完全の行を除外する
+  （修正前もval=Noneで除外されていた）ため、成長率・YoY・CAGR・RICEへの混入はない
+- LYFTのTTM capital_expenditure・FCF=None（[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]、
+  上書き先タグが10-K年次のみの申告）: FCFは`_select_fcf_source()`で年次実績へ、RICEは
+  `build_rice_annual_shape()`が空になり`get_annual_range()`の年次実績へフォールバック
+  （latest.jsonの`fcf_source`・`rice_data_source`はいずれも`annual_fallback`）。
+  IV（64.87）・RICE（base rice 1.709）・tanuki_score（HOLD）は算出されており、
+  欠落する指標はない
+
+#### 追記（2026-10-10、[[TANUKI-MAXEPS-NI-SOURCE-1]]の実装時に観測、読み取りのみ）
+最大EPSがTTM系列の最新エントリ（`ttm_end`）を使うようになったため、TTM系列の期間の遅れが表示値（`components.max_eps_ttm_end`）に出る。
+2026-10-10時点で`ttm_end`が2026-06-01より前の銘柄（括弧内は`common/sec_data/data/{T}/`の最新のquarterlyファイル）:
+XOM 2026-03-31（2026Q1）・DELL 2026-05-01（2027Q1）・KO 2026-04-03（2026Q1）・V 2026-03-31（2026Q2）・CDNS 2026-03-31（2026Q1）・
+RMBS 2026-03-31（2026Q1）・ADBE 2026-05-29・AVAV/CPRT/INTU/ZS 2026-04-30・GTLB/RBRK 2026-04-30・IOT 2026-05-02。
+TTM系列の生成日は2026-10-05で、最新のquarterlyファイルとは合っている（遅れはTTMの計算ではなく、四半期データの取り込み側にあるとみられる。決算期の違いで
+まだ次の四半期が出ていない銘柄も含む。銘柄ごとの原因は未確認）。XOMはTTM純利益25,314Mで、Yahooのtrailing PEから逆算した純利益（約32,910M）と大きくずれる。
+
+#### 追記（2026-10-10、[[SEC-FETCH-CACHE-MTIME-CI-1]]の読み取り調査）
+上の15銘柄の原因が分かった（EDGARのsubmissions・companyfactsとの照合）。TTMの計算の問題ではない:
+- 10銘柄（ADBE・AVAV・CPRT・DELL・GTLB・INTU・IOT・PEP・RBRK・ZS）: 新しい10-Q・10-KはEDGARのcompanyfactsに入っているが、SEC_Data_UpdateがSEC APIを呼んでいないため手元に無い → [[SEC-FETCH-CACHE-MTIME-CI-1]]
+- 5銘柄（CDNS・KO・RMBS・V・XOM）: Q2の10-QがEDGARのcompanyfacts APIに入っていない → [[SEC-COMPANYFACTS-API-LAG-1]]
+また、2026-09-12・09-19の再確認の「鮮度に問題なし」は`ttm/`のcommitの日付（botが毎週全102ファイルを書き換える）による判断で、元のcompany_facts.jsonは2026-08-30から更新されていなかった。
+- **2026-10-10 解消（10銘柄）**: [[SEC-FETCH-CACHE-MTIME-CI-1]]の修正（`61d0a085d6`）と全銘柄の再取得（`e2a629fb58`）で、上の10銘柄の`ttm_end`が進んだ（ADBE 2026-08-28・AVAV 2026-08-01・CPRT/DELL/GTLB/INTU/RBRK/ZS 2026-07-31・IOT 2026-08-01・PEP 2026-09-05）。残りはSEC側の5銘柄（CDNS・KO・RMBS・V・XOM、[[SEC-COMPANYFACTS-API-LAG-1]]）だけ
+
+#### 追記（2026-10-11、ブラッシュアップでの確認）
+- `python common/sec_data/report_consistency_check.py`（HEAD `14125e4715`、2026-10-11 02:4x UTC）: NG=0・WARN 127件（確認済み71／未確認56）。**CHECK-47（WARN-47）の発火は0件**
+- 2026-09-24に発火したBKNG `stock_based_compensation`・FCX `net_income`は残っていない（どちらも上の「着手条件3の実害確認と対応（2026-09-24）」で解消済み。
+  RCATの確認済みの台帳の行〈`config/warn_acknowledged.json`〉も今回は発火していない）。着手条件3には当たらず、トリガー制の保留のまま。原因の調査はしていない
+
+### ✅ [TANUKI-BETA-BASIS-FIELDS-UNLABELED-1] latest.jsonのトップレベルintrinsic_value_ptとcomponents.pv_high・pv_terminalがβ込みWACCで割り引いた値なのに注記がなく、メインの計算根拠と紛らわしい
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: E。名前から基準が分からない（一覧の「定義」の欄）
+**優先度:** 低（2026-10-06に中から戻した。ウォーターフォール図の部分は解消、残りは注記だけ）
+**分類:** 表示・命名 / TANUKI VALUATION（core_calculator.py・stock.html）
+**登録日:** 2026-10-04
+**発見:** Rfの読み手の棚卸し（2026-10-04、読み取り専用、HEAD `befc659b40`）
+
+#### 内容
+`core_calculator.py::calculate_pt()`の戻り値のうち、次の3つはβ込みCAPM WACC（参考①、`wacc.value`）で割り引いたDCFの値で、
+メインの理論株価（Rm=10%固定・βなし、根拠は`dcf_components.v0_rm`・`pv_fcf_rm`・`pv_tv_rm`）の根拠ではない。
+- トップレベルの`intrinsic_value_pt`（= `v0` + RPO + 成長オプション、`intrinsic_value_beta`の計算根拠）
+- `components.pv_high`・`components.pv_terminal`（`dcf_result`／`three_stage_result`の値）
+
+トップレベルの`v0`には[[V0-V0RM-CONFUSION-RISK-1]]で`v0_note`を付けたが、上の3つには付いていない。Rfを4.3%→5.28%に変えた検証
+（2026-10-04）で、この3つは参考①と一緒に変わり、メインの値は変わらないことを確認した。
+
+#### 実害
+判定（intrinsic_value_per_share・upside_percent・tanuki_score等）への影響はない。読み手は次のとおりで、表示の食い違いが無いかは未確認。
+- `stock.html:820-821`（`components.pv_high`・`pv_terminal`）: 2段階DCFの「高成長期PV」「ターミナルPV」と、ウォーターフォール図（`renderChart()`）の
+  PVの棒。同じ図の`v0`は`dcf_components.v0_rm || d.v0`（メイン）で、PVの棒の合計（β版）と食い違う可能性がある（要確認）
+  → **2026-10-06更新**: 実測で全99銘柄の食い違いを確認し、図はRm版（`dcf_components.*_rm`）に切り替えた（下の2026-10-06の節）。
+  β版を読むのは今はSTEPの「DCF計算」欄（`stock.html:806-807`の`pvHigh`・`pvTerminal`）だけで、そこは「V₀β」「β込みWACC基準（参考）」と表示済み
+- `validator.py`（v0の検算、β版同士で一致するためPASS）、`diag_iv_trace.py`（診断用、「uses CAPM WACC」と表示済み）
+- `pipeline.py:2007・2036`はRm版（`pv_fcf_rm`・`pv_tv_rm`）を優先し、無いときだけβ版に戻る
+
+#### 優先度を中にした理由（2026-10-04）
+ウォーターフォール図（`stock.html::renderChart()`）の棒がβ版のPV（`components.pv_high`・`pv_terminal`、3段階は`dcf_components`の
+β版のPhase1・2）で、合計の`v0`がメインの`dcf_components.v0_rm`の場合、棒の合計がV₀と一致しない。これはメインIVを説明する図の
+不整合にあたり、命名だけの問題より重い。
+
+#### 着手条件
+数銘柄（2段階・3段階・逓減を各1以上）で、ウォーターフォール図の棒の合計とV₀が一致するかを読み取り専用で実測する。
+一致しなければ図の修正（Rm版のPV〈`pv_fcf_rm`・`pv_tv_rm`・`pv_phase1_rm`・`pv_phase2_rm`〉への置き換え）、一致すれば
+`v0_note`と同じ形の注記の追加だけにする。
+
+#### 2026-10-06 ウォーターフォール図の部分を解消（優先度を低に戻した）
+- 実測（読み取り専用、HEAD `5c689659d7`）: **全99銘柄で不一致**だった。Plotlyの`measure:'total'`の棒の高さは前の棒の合計になるため、
+  V₀の棒の高さはβ版のPVの合計、ラベルの文字だけがv0_rm。差の率（÷v0_rm）の中央値は約21%、50%超が31銘柄、0.5%以内は0銘柄。
+  例: RXRX 棒8.98B・ラベル9.52B（+5.7%）、NVDA 棒6.15T・ラベル17.65T（+65.1%）、ALAB 棒10.05B・ラベル25.94B（+61.3%）、
+  KO 棒178.68B・ラベル88.54B（−101.8%。β込みWACCが10%未満の29銘柄では棒のほうが大きい）。
+  外側のラベルとY軸の目盛りもグラフの上端・左端で切れてほぼ読めなかった
+- Rm版の内訳（`pv_fcf_rm`・`pv_tv_rm`、3段階は`pv_phase1_rm`・`pv_phase2_rm`・`pv_tv_rm`）は全99銘柄のlatest.jsonにあり、
+  合計はv0_rmと一致（出力側の改修は不要だった）
+- 修正: `stock.html::renderChart()`の棒をRm版のPVに切り替え。`*_rm`が無いデータだけβ版に戻し、そのときはV₀もβ版にそろえて
+  図の下に「β込みWACC基準」と注記（`#valuation-chart-note`、通常は「Rm基準（割引率10%、βなし）」）。軸を10億ドル単位にし、
+  `cliponaxis:false`・`automargin`・上の余白56pxでラベルの切れを解消。STEP「DCF計算」の見出しを逓減型の銘柄では「逓減型DCF計算」に
+- テスト: `tests/test_stock_html_waterfall_rm.py`（ソースのパターン4件は修正前のコードで失敗・修正後に成功、
+  全銘柄のRm版の内訳の合計＝v0_rmの1件）。実ブラウザ: `browser_checks/check_valuation_chart_basis.py`（全銘柄の棒の高さ＝ラベル＝v0_rm）
+- **残り**: トップレベルの`intrinsic_value_pt`と`components.pv_high`・`pv_terminal`への注記（`v0_note`と同じ形）だけ。
+  これらを読む画面はSTEPの「DCF計算」欄だけで、そこは「V₀β」「β込みWACC基準（参考）」と表示済みのため、残りは
+  latest.jsonを直接読む人・AI向けの命名の問題。優先度を低に戻した
+
+### ✅ [SBC-TAG-STOCKOPTIONPLAN-1] HEI・TDYは株式報酬をStockOptionPlanExpenseで申告しており、株式報酬を取得できていない
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。申告のタグのばらつき（取得の確認）
+**優先度:** 低
+**分類:** データ取得 / common/sec_data（`tag_definitions.py`のSTOCK_BASED_COMPENSATION）
+**登録日:** 2026-10-10
+**発見:** TANUKI SCORE 表示値の読み取り調査（2026-10-10）、[[TANUKI-MAXEPS-NI-SOURCE-1]]
+
+#### 内容（観測した事実）
+- STOCK_BASED_COMPENSATIONのタグは`ShareBasedCompensation`・`AllocatedShareBasedCompensationExpense`の2つだけ
+- HEI（FY2025 34M）・TDY（FY2025 40M）は`StockOptionPlanExpense`で申告しており、年次・TTMとも株式報酬が欠ける（最大EPSの信頼性MED）
+- ほかに株式報酬が欠ける銘柄: CIX・SCCO・XOM・MO（費用のタグ自体が無い）、VZ（`EmployeeBenefitsAndShareBasedCompensationNoncash`、年金等との合算で純粋な株式報酬ではない）、
+  PM（`StockIssuedDuringPeriodValueShareBasedCompensation`、株主資本の項目）、WMT（年次は3,603Mあり、TTM系列に無い。原因は未確認）
+  （タグの確認は手元の`company_facts.json`による。2026-10-10訂正: company_facts.jsonはgitの管理対象〈最新commitは2026-08-30、DELLのみ07-20〉で、「gitの管理外」は誤り）
+
+#### 着手条件
+タグの追加は凍結年度（fixed_registry）・Layer3への影響の確認が必要。追加前に、HEI・TDYで`StockOptionPlanExpense`が株式報酬の全額か（RSU等を含むか）を10-Kで確認する
+
+### ✅ [ROTCE-PREFERRED-CONVERTIBLE-TAG-1] GOOGLの強制転換優先株（2026-06-30に18,023M）がTCEから引かれていない（タグがPreferredStockValueではない）
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。申告のタグのばらつき（取得の確認）
+**優先度:** 低
+**分類:** 指標の定義 / common/sec_data（`rotce.py`のTCEの控除項目・Layer2/Layer3の`preferred_stock`）
+**登録日:** 2026-10-11
+**発見:** [[ROTCE-QUARTERLY-ANNUALIZED-1]]の追加対応2（GOOGLの10-Qの照合）
+
+#### 内容（観測した事実）
+- GOOGLの2026-06-30の貸借対照表の株主資本に「Series A and Series B preferred stock and additional paid-in capital」18,023M（6.25%の強制転換優先株、
+  2026年Q2に19,034Mで発行）。タグは`ConvertiblePreferredStockNonredeemableOrRedeemableIssuerOptionValue`で、TCEの控除の対象タグ（`PreferredStockValue`）に無い
+- そのため`docs/common/sec_data/rotce/GOOGL.json`の2026-06-30は`preferred_stock: 0`、TCE 573,547M（引けば555,524M）。
+  見出しのROTCEは91.0%→約92.7%、P/TBVは約3%小さく出ている（試算）。分子の普通株主帰属純利益（112,107M）は優先配当86Mを引いた後の値で正しい
+- 同じ種類のタグを使う銘柄（company_factsの10-K/10-Q）: GOOGLのほか、FLYW（2021-12-31に0）。`PreferredStockValueOutstanding`はV（528M、TCE≤0で結果に影響なし。
+  [[ROTCE-PTBV-1]]に記録済み）・SOUN（2022-04-25に280M、上場前）・PEP（2010年）・FICO・NVDA・LYFT・RCAT（いずれも0）
+
+#### 着手条件
+控除の対象タグに足すときは、Layer2・Layer3（`preferred_stock`）・凍結年度（fixed_registry）への影響と、メザニン区分の優先株（CELH型の二重控除の除外）との関係を確かめる
+
+### ✅ [ROTCE-TCE-COMPONENT-TAG-GAPS-1] ROTCEのTCEの控除項目・分子で、対象タグに無い申告や申告の途絶により成分が欠ける・過小になる銘柄がある（KO・AVAV・PLTR・V、優先配当）
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。申告のタグのばらつき・途絶（取得の確認）
+**優先度:** 低
+**分類:** 指標の定義 / common/sec_data（`rotce.py`のTCEの控除項目・Layer2/Layer3の取り込みタグ）
+**登録日:** 2026-10-11
+**発見:** [[ROTCE-PTBV-1]]の「未了・観察」（2026-10-10）。同項目のBACKLOG_DONE.mdへの移設時に、残りの観察を独立させた
+
+#### 内容（[[ROTCE-PTBV-1]]で観測した事実）
+- KOは無形資産の大半が`IndefiniteLivedTrademarks`（12.5B）で、対象タグに無いため2024年以降component_missing（2023年以前の行は無形資産を過小に引いている）
+- AVAVは純資産が非支配持分込みのタグで、`MinorityInterest`の申告が途中で止まっている→component_missing
+- PLTRはのれんの申告が2022年末だけ→component_missing
+- Vの優先株は`PreferredStockValueOutstanding`（528M）で、対象タグ（`PreferredStockValue`）に無い（VはTCE≤0のため結果には影響なし）
+- 優先配当は純利益から引いていない（[[ROTCE-QUARTERLY-ANNUALIZED-1]]で分子は普通株主帰属のタグを優先するようになったが、タグが無い四半期は純利益で代用）
+
+#### 着手条件
+[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]と同じ。控除の対象タグを足すときは、Layer2・Layer3・凍結年度（fixed_registry）への影響を確かめる
+
+#### 関連
+[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]（GOOGLの強制転換優先株のタグ）
+
+### ✅ [EPS-AI-ANALYSIS-ERROR-SILENT-1] EPS ANALYZERのAI分析（Grok）がタイムアウト・429で失敗すると、最新四半期のai_analysisが「Error」のまま次の実行まで残り、実行の結果にも数えられない
+**完了（2026-10-19）:** [[OUTPUT-INVENTORY-CHECK-1]]に統合（2026-10-19 初回の束ね）。型: A。失敗を誰も確かめない出力（一覧の「検証」の欄）
+**優先度:** 低
+**分類:** 運用（失敗の見え方） / `src/value/adjusted_eps_analyzer/ai_analyzer.py`の`analyze_adjustments()`
+**登録日:** 2026-10-11
+**発見:** [[EPS-SILENT-TICKER-FAILURE-1]]のSTEP 0（直近の実行のログの「Error」を数えたとき）
+
+#### 内容（観測した事実）
+- `analyze_adjustments()`は1回だけ呼び（timeout=30秒、再試行なし）、失敗すると`{"health": "Error", "comment": "AI分析中にリクエストエラーが発生しました: …"}`を返す。銘柄の処理は成功扱い
+- 10-04の実行（`37215353826`）で7件（Read timed out）、09-27の実行（`36331248101`）で23件（Read timed out 20・429 Too Many Requests 3）
+- 2026-10-11時点で最新四半期のai_analysisが「Error」の銘柄は7件（AMZN・AVAV・BBAI・BSY・CRM・CSGP・NVDA）。詳細画面のAI分析欄・バッジに「Error」が出る
+- 4並列（`ThreadPoolExecutor(max_workers=4)`）で呼ぶため、429はレート制限の可能性
+
+#### 直し方の候補（未決定）
+- 再試行（429・タイムアウトは間隔を空けて数回）、timeoutの延長
+- 失敗件数を`run_status`（[[EPS-SILENT-TICKER-FAILURE-1]]）とStep Summaryに出す
+
+#### 追記（2026-10-12）: タイムアウトの件数の推移
+| 実行 | run | 「[AI] Error」 | 内訳 |
+|---|---|---|---|
+| 09-27 | `36331248101` | 23 | Read timed out 20・429 Too Many Requests 3 |
+| 10-04 | `37215353826` | 7 | Read timed out 7 |
+| 10-12 | `38194524660` | 20 | Read timed out 20 |
+
+### ✅ [LAYER3-DUPLICATE-QUARTER-ONE-DAY-1] AVAVの純利益で、同じ四半期が期末1日違い（2021-01-30と2021-01-31）の2件としてLayer3に入っている
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。会社の申告の期末のばらつき（取得の確認）
+**優先度:** 低（保持期間を7年にすると、TTMの6点目〈平均に入れない点〉が欠けになるだけ）
+**分類:** 一次データ / common/sec_data（`layer3_builder.py`、net_incomeの派生〈ProfitLossAttributableToParentDerived〉）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-RETENTION-PERIOD-1]]のSTEP 3（auditの「一部None」が増える銘柄の原因の確認）
+
+#### 内容（2026-10-14、読み取りのみ）
+- 保持期間7年で、AVAVの`net_income`の四半期に（2020-11-01〜2021-01-30、$211K）と（2020-11-01〜2021-01-31、$258K）の2件がある。営業CF・売上は2021-01-30の1件だけ
+- TTMの2021-07-31の点で、純利益の直近4件が連続性の検査に通らず欠けになる（auditの「NI一部None」）。5年の保持期間では窓の外
+
+#### 方針
+派生の純利益で期末が数日違う同じ期を1件にまとめる（他の銘柄にも同じ型が無いか全母集団で確かめる）。実装しない（チャット側の指示待ち）
+
+### ✅ [LAYER3-CUSTOM-TAG-MIGRATION-1] 会社の独自タグ・us-gaapの2タグ分割への移行で、company_factsの候補タグでは取れない項目がある（CRWVの借入金・ADBEの前受収益・LRCXの10-Qの売上原価）
+**完了（2026-10-19）:** [[EXTERNAL-SOURCE-CHANGE-WATCH-1]]に統合（2026-10-19 初回の束ね）。型: X。会社の独自タグ・2タグ分割への移行（外の変化）
+**優先度:** 低（2026-10-14時点で評価への影響なし。効果が出たときに対応）
+**分類:** 一次データ / common/sec_data（Layer2の候補タグ・company_facts）
+**登録日:** 2026-10-14
+**発見:** [[LAYER3-LATEST-FILING-TAG-DROP-1]]の全数調査（調査3、原本のXBRL・財務諸表の確認）
+
+#### 内容（2026-10-14、EDGARの原本を読んだ）
+- **CRWV**（10-Q 2026-08-12）: 借入金が独自タグ`crwv:RecourseDebtCurrent`・`crwv:NonRecourseDebtCurrent`・`crwv:RecourseDebtNonCurrent`・`crwv:NonRecourseDebtNonCurrent`に移った（company_factsに載らない）。
+  TANUKIは借入金を年次（FY2025）から取るため今は響かない。**効果が出るとき**: FY2026の10-Kで同じ申告になった時点で年次の借入金が取れなくなる →
+  `DebtInstrumentCarryingAmount`（2026-06-30 $35,551M）を候補にするか、XBRLのインスタンスから独自タグを読む経路を作る
+- **ADBE**: 前受収益が`ContractWithCustomerLiabilityCurrent`＋`ContractWithCustomerLiabilityNoncurrent`の2タグに分かれた（どちらもus-gaap）。合計なら従来の`DeferredRevenue`と一致するはずだが、1タグの一致の探索では拾えない。
+  Layer3の`deferred_revenue`を読む処理は0件。**効果が出るとき**: 前受収益を使う処理ができたら、2タグの合計を候補にする
+- **LRCX**: FY2026の10-Qの売上原価は独自タグ`lrcx:CostOfGoodsAndServicesSoldExcludingRestructuringCharges`だけ（10-Kには合計の`CostOfGoodsAndServicesSold`がある）。粗利（`GrossProfit`）は申告されており影響なし。
+  **効果が出るとき**: 粗利の申告も止まったら、売上−粗利で売上原価を逆算する
+- 参考: CEGの株式報酬はキャッシュフロー計算書の行が無くなった（他の行にまとめた）、ASTSは営業利益の行がもともと無い（営業費用の合計だけ）。どちらもタグの移行ではない
+
+#### 方針
+効果が出た時点で上の対応をとる。実装しない
+
+---
+
 ## 2026-10-19（完了）
 
 ### ✅ [EPS-SILENT-TICKER-FAILURE-1] EPS ANALYZERの銘柄ごとの失敗が、ワークフロー・summary.json・System Health [I]のどこにも出ない

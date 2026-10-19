@@ -9,6 +9,26 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 
 ---
 
+### [EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1] 外部起動のWorkerの空いているcronで22:20 UTC頃にMarket Pulseの成功を確かめ、失敗していれば再実行する（将来の検討）
+**移動（2026-10-19）:** 初回の束ねでBACKLOG.mdから移した（構想のため。CHAT_RULESの登録基準、2026-09-26）。型: —（機能の追加）
+**優先度:** 低
+**分類:** 監視・自動回復 / 外部起動（Cloudflare Worker）
+**登録日:** 2026-10-07
+**発見:** `[[EXTERNAL-TRIGGER-DOWNSTREAM-UNCHECKED-1]]`の直し方の検討（下流の監視はSystem Healthの[J]で行うことにした）
+
+#### 内容
+System Healthの[J]は下流の失敗に気づけるが、起動は予定23:30 UTC（実際は02〜03 UTC）で日本時間7:00に間に合わず、自動回復もしない。
+10-05のMarket Pulse（ランナー未割り当てによるfailure）のような一時的な失敗は、再実行すれば直る見込みが高い。
+Workerの空いているcron（無料プランの5本のうち3本を使用、残り2本）で22:20 UTC頃に、その日の20:00 UTC以降のMarket_Pulse_Updateに成功が無ければ、
+失敗した実行の再実行（`POST /actions/runs/{id}/rerun`）か手動実行（workflow_dispatch）を行い、Discordに通知する。
+
+#### 着手前に決めること
+- 冬時間（取得は21:25 UTC）でも22:20に下流が終わっているか。間に合わない夜の誤報をどう避けるか
+- 対象をMarket Pulseだけにするか（Stonks Silo・TANUKI VALUATION・TANUKI Scoreも含めるか）。含めるほど連鎖の知識をJSに二重に持つことになる
+- 再実行と手動実行のどちらにするか。トークンの権限（Actions: Read and write）で両方できる
+
+---
+
 ### [SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1] segment_xbrl（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①）の対象銘柄拡張候補3件
 **優先度:** 低（今すぐ着手する項目ではない、Koichiさんが着手タイミングを判断する）
 **分類:** 新機能拡張候補 / TANUKI VALUATION
