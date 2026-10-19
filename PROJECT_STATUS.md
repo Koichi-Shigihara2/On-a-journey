@@ -20,6 +20,7 @@
    - 残っている確認（手順3のNIY=F〈期限10-20〉・手順9のTAILのエラーの回の経路・手順10）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`のSECデータ層の段階（出力の一覧〈書き手・読み手・画面・定義・規則〉をgrepで下書き → Koichiさんが残す／消すを判断 → 消してから残りにCHECK）。
    CHAT_RULES.md「発見の溜め方と根治の判断」5。読み手0件の出力6種（FINDINGS 2026-10-15）の残す／消すもこの段階で判断する。`[[TICKER-EXCEPTION-LEDGER-1]]`（統合済み）の要否も一覧の結果で決める
+   本番外のコード（`scripts/analysis` 2,740行・`browser_checks` 3,208行・`discover/stonks-silo` 2,620行）も一覧に入れ、呼ばれているかをgrepで示してKoichiさんが残す／消す／移すを判断する（2026-10-19追記、`[[OUTPUT-INVENTORY-CHECK-1]]`）
 3. R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（範囲を広げたもの: `first_filed`に加えて`first_val`、Q4の逆算の案1、年次の組み替え〈C1〉を検知するCHECK）。`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。APPの理論株価（約20〜27%低い）がここで戻る見込み
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
@@ -52,6 +53,7 @@
   - 二重実装の規則: 5（`SYSTEM_MAP.md`の【二重】の印。MACRO PULSEの画面の監査〈MAC-11・20・30・35・39〉だけで、他のサブシステムは未監査。`FINDINGS.md`の型Bの2件は済）
   - サブシステム: 10（`archive/OUTPUT_ITEMS_INVENTORY.md`の数え方: TANUKI VALUATION・HypeCore・STONKS SILO・MACRO PULSE・Discover・EPS Analyzer・TANUKI SCORE・Market Pulse・Portfolio・TANUKI TAIL）
   - コードの行数: Python 69,535行（159ファイル、`git ls-files '*.py'`からtestsと`test_`を除く）、テスト34,046行、docs配下のHTML・JS 24,946行（22ファイル）、ワークフロー23本
+  - 注（2026-10-19追記）: 10-16のチャットで「3か月で約2.7万行から増えた」としたが、2.7万行が同じ数え方（`git ls-files '*.py'`からtestsと`test_`を除く）かは確かめていない
 - **2026-10-16（発見の溜め方と根治の判断）**: `c36dbfbc02`。CHAT_RULES.mdに「発見の溜め方と根治の判断（2026-10-16新設）」と事例41（範囲外の発見をその場で直す判断で、本筋の日曜の確認から外れた。07-11のルールの違反）。
   FINDINGS.mdを新設し、10-15〜16の発見を型A（読み手・検証の無い出力）・B（同じ規則の二重実装）・C（時点のずれ）に分けて記録
 - **2026-10-16（記録の後始末）**: `f1167c2f42`。CLAUDE_CODE_START.mdの次回の確認手順に9（TANUKI TAILのRSS Monitorの後）、BACKLOG_DONE.mdのcommitをhashに、SYSTEM_MAP.mdのsatellite_monitor.pyの節に削除のcommit
