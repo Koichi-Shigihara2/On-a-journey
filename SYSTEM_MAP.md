@@ -1868,6 +1868,7 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　RSSの新規提出の判定（`edgar_rss_monitor.py::classify_filing()`、2026-10-16、[[TAIL-RSS-FALSE-NEW-FILING-1]]、`2d8dcf33ab`）:
 　　10-Q・10-KのどちらかのRSSが取れない回は判定しない。提出日が記録（`rss_state.json`の`last_filed`）より新しいか、
 　　同じ日でaccnが違うときだけ新規。Discordの通知はsecret `DISCORD_WEB_HOOK`（[[TAIL-RSS-SECRET-NAME-1]]、`1c2529cf6c`）
+　　提出の遅れ（2026-10-19、FINDINGS.md 2026-10-16・2026-10-19）: 次の報告期（`last_period`＋3か月、月末は月末）の法定の期限（10-Q 45日・10-K 90日。提出者の区分のうち最も遅い期限、土日なら次の月曜）を過ぎた平日の数を`no_filing_days`とし、1以上の回は毎回Discordに期限と遅れの日数を出す。会計年度末に当たる期は10-K（submissionsの`fiscalYearEnd`、52/53週は±15日。取れなければ期限の遅い10-K）
 
 　　**RSS監視・四半期レビュー自動生成の対象範囲（確定、2026-08-19②
 　　決定）**: RSS監視（`edgar_rss_monitor.py`の`--ticker`未指定時

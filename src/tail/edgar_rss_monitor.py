@@ -20,6 +20,7 @@ import json
 import time
 import re
 import argparse
+import calendar
 from datetime import datetime, date, timedelta
 from typing import Optional, Dict, Any, List
 from zoneinfo import ZoneInfo
@@ -49,10 +50,14 @@ SEC_HEADERS = {
 }
 THROTTLE = 0.3
 
-# 前回提出から EXPECTED_DAYS 日後を「期待提出日」とし、
-# そこから ALERT_BIZ_DAYS 回スクリプトが実行されても変化なければアラート
-EXPECTED_DAYS  = 75
-ALERT_BIZ_DAYS = 3
+# 提出の遅れ: 次の報告期（最新の提出の対象期末＋3か月）の法定の提出期限を過ぎても提出が無ければ、
+# 期限を過ぎてからの平日の数を遅れの日数として、毎回アラートを出す（提出が見つかれば止まる）。
+# 期限は提出者の区分のうち最も遅いもの（大規模な早期提出会社は10-Q 40日・10-K 60日）に合わせ、
+# 決算の前に誤ったアラートを出さない側にする（FINDINGS.md 2026-10-16・2026-10-19）。
+QUARTER_DEADLINE_DAYS = 45   # 10-Q: 期末から45日
+ANNUAL_DEADLINE_DAYS  = 90   # 10-K: 会計年度末から90日
+# 52/53週の会計年度では、期末がsubmissionsのfiscalYearEnd（月日）から数日ずれる
+FISCAL_YEAR_END_TOLERANCE_DAYS = 15
 
 # ── Atom RSS パース用正規表現 ─────────────────────────────────
 # EDGAR Atom フィードの実際のタグ構造:
@@ -133,6 +138,75 @@ def get_filing_period(cik: str, accn: str) -> Optional[str]:
     except Exception as e:
         print(f"  period 取得エラー: {e}")
     return None
+
+
+def get_fiscal_year_end(cik: str) -> Optional[str]:
+    """submissions API の fiscalYearEnd（会計年度末の月日、"MMDD"）。取れなければNone。
+
+    次の報告期が10-Kか10-Qかを決めるのに使う。get_filing_period()と同じAPIで、提出の期限を
+    過ぎた銘柄だけが呼ぶ（毎回の実行で全銘柄を呼ばない）。
+    """
+    try:
+        time.sleep(THROTTLE)
+        r = requests.get(
+            f"https://data.sec.gov/submissions/CIK{cik}.json",
+            headers=SEC_HEADERS, timeout=20,
+        )
+        r.raise_for_status()
+        fye = r.json().get("fiscalYearEnd")
+        return fye if fye and len(fye) == 4 and fye.isdigit() else None
+    except Exception as e:
+        print(f"  会計年度末 取得エラー: {e}")
+    return None
+
+
+def _add_months(d: date, months: int) -> date:
+    """月を足す。月末の日（06-30・09-30等）は月末のまま（09-30の3か月後は12-31）。"""
+    y, m = divmod(d.month - 1 + months, 12)
+    y += d.year
+    m += 1
+    last = calendar.monthrange(y, m)[1]
+    if d.day == calendar.monthrange(d.year, d.month)[1]:
+        return date(y, m, last)
+    return date(y, m, min(d.day, last))
+
+
+def _is_fiscal_year_end(period_end: date, fiscal_year_end: str) -> bool:
+    mm, dd = int(fiscal_year_end[:2]), int(fiscal_year_end[2:])
+    for y in (period_end.year - 1, period_end.year, period_end.year + 1):
+        fy_end = date(y, mm, min(dd, calendar.monthrange(y, mm)[1]))
+        if abs((period_end - fy_end).days) <= FISCAL_YEAR_END_TOLERANCE_DAYS:
+            return True
+    return False
+
+
+def _roll_to_weekday(d: date) -> date:
+    """期限が土日に当たれば次の月曜にする（米国の祝日は見ない）。"""
+    while d.weekday() >= 5:
+        d += timedelta(days=1)
+    return d
+
+
+def next_period_end(last_period: date) -> date:
+    """次の報告期の期末（最新の提出の対象期末＋3か月）。"""
+    return _add_months(last_period, 3)
+
+
+def filing_due(period_end: date, fiscal_year_end: Optional[str]) -> tuple:
+    """(書類の種類, 提出期限)。会計年度末に当たる期は10-K。会計年度末が分からなければ、期限の遅い10-Kとみなす。"""
+    if fiscal_year_end is None or _is_fiscal_year_end(period_end, fiscal_year_end):
+        return "10-K", _roll_to_weekday(period_end + timedelta(days=ANNUAL_DEADLINE_DAYS))
+    return "10-Q", _roll_to_weekday(period_end + timedelta(days=QUARTER_DEADLINE_DAYS))
+
+
+def weekdays_overdue(due: date, today: date) -> int:
+    """期限の翌日から今日までの平日の数（期限の当日以前は0）。"""
+    n, d = 0, due + timedelta(days=1)
+    while d <= today:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
 
 
 def fetch_rss_latest(cik: str) -> tuple:
@@ -445,33 +519,35 @@ def process_ticker(
         elif kind == "unverified":
             print(f"  [{ticker}] {'・'.join(failed)} のRSSが取れないため、新規提出の判定をしない"
                   f"（RSSの最新 {latest['accn']} filed={latest['filed']}）")
-        if not prev.get("last_filed"):
-            print(f"  [{ticker}] 記録済みの提出日が無いため遅延チェックをしない")
+        try:
+            last_period = date.fromisoformat(prev.get("last_period") or "")
+        except ValueError:
+            print(f"  [{ticker}] 記録済みの対象期末が無いため遅延チェックをしない")
             return alerts
-        last_filed = date.fromisoformat(prev["last_filed"])
-        expected   = last_filed + timedelta(days=EXPECTED_DAYS)
-        today      = date.today()
-
-        if today >= expected:
-            no_filing_days = prev.get("no_filing_days", 0) + 1
-            state[ticker]["no_filing_days"] = no_filing_days
-            state[ticker]["last_checked"]   = now_jst.isoformat()
-
-            if no_filing_days == ALERT_BIZ_DAYS:
-                print(f"  [{ticker}] ⚠ 提出遅延アラート {no_filing_days}日 (expected={expected})")
-                alerts.append({
-                    "type":           "overdue",
-                    "ticker":         ticker,
-                    "no_filing_days": no_filing_days,
-                    "expected":       expected.isoformat(),
-                })
-            else:
-                print(f"  [{ticker}] 変更なし、遅延中 {no_filing_days}日 (expected={expected})")
-        else:
+        today      = now_jst.date()
+        period_end = next_period_end(last_period)
+        state[ticker]["last_checked"] = now_jst.isoformat()
+        # 10-Qの期限（早い方）までは、10-Kか10-Qかに関係なく遅れではない
+        quarter_due = _roll_to_weekday(period_end + timedelta(days=QUARTER_DEADLINE_DAYS))
+        if today <= quarter_due:
             state[ticker]["no_filing_days"] = 0
-            state[ticker]["last_checked"]   = now_jst.isoformat()
-            days_left = (expected - today).days
-            print(f"  [{ticker}] 変更なし (次回期待日={expected}, あと{days_left}日)")
+            print(f"  [{ticker}] 変更なし (次の期末={period_end}、10-Qの期限={quarter_due}の前、遅れ0日)")
+            return alerts
+        form, due = filing_due(period_end, get_fiscal_year_end(cik))
+        no_filing_days = weekdays_overdue(due, today)
+        state[ticker]["no_filing_days"] = no_filing_days
+        if no_filing_days >= 1:
+            print(f"  [{ticker}] ⚠ 提出遅延アラート {form} 期末={period_end} 期限={due} 平日{no_filing_days}日超過")
+            alerts.append({
+                "type":           "overdue",
+                "ticker":         ticker,
+                "form":           form,
+                "period_end":     period_end.isoformat(),
+                "due":            due.isoformat(),
+                "no_filing_days": no_filing_days,
+            })
+        else:
+            print(f"  [{ticker}] 変更なし (次の期末={period_end}、{form}の期限={due})")
 
     return alerts
 
@@ -479,6 +555,19 @@ def process_ticker(
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # エントリーポイント
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def format_alert(alert: Dict[str, Any]) -> str:
+    """Discordの本文。遅れのアラートは期限と遅れの日数を入れる（毎日同じ文面にしない）。"""
+    if alert["type"] == "new_filing":
+        return (
+            f"📊 **{alert['ticker']}** の **{alert['quarter']}** 決算 ({alert['accn']}) が提出されました。"
+            f"\nレビュー生成を開始します。  提出日: {alert['filed']}"
+        )
+    return (
+        f"⚠️ **{alert['ticker']}** の {alert['form']}（対象期末 {alert['period_end']}）の提出が遅れています"
+        f"（期限 {alert['due']}、平日で{alert['no_filing_days']}日超過）"
+    )
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -535,17 +624,7 @@ def main() -> None:
 
     # Discord 通知
     for alert in all_alerts:
-        if alert["type"] == "new_filing":
-            msg = (
-                f"📊 **{alert['ticker']}** の **{alert['quarter']}** 決算 ({alert['accn']}) が提出されました。"
-                f"\nレビュー生成を開始します。  提出日: {alert['filed']}"
-            )
-        else:
-            msg = (
-                f"⚠️ **{alert['ticker']}** の 10-Q 提出が遅延しています"
-                f" ({alert['no_filing_days']}営業日超過、期待日: {alert['expected']})"
-            )
-        send_discord(msg)
+        send_discord(format_alert(alert))
 
     # サマリ
     new_pending = [a for a in all_alerts if a["type"] == "new_filing"]

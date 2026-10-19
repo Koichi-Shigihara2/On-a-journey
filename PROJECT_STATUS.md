@@ -11,32 +11,26 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-19 夜 更新。上から順）**:
-1. （済 2026-10-19 夜）10-19の確認: 日曜の連鎖と手動実行（朝）、Step Summaryの表と「🛠」の欄の目視（夜）。`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。
-   残っている確認（手順3のNIY=F〈期限10-20〉・手順9のTAILのエラーの回の経路。手順6の月曜の安全網は2026-10-19 夜に済）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、2と並行して確かめる
-2. `FINDINGS.md`の初回の束ね（CHAT_RULES.md「発見の溜め方と根治の判断」3）と、型A（読み手・検証の無い出力）の根治＝出力の一覧（書き手・読み手・定義、機械が照合できる形）の作成。SECデータ層から（同5）— 次の作業（1は済）。
-   束ねの入力に、2026-10-19 夜のQ4の逆算の基準の混在の範囲の調査（読み取りのみ、BACKLOG未登録）を加える: 年次が後の申告で組み替えられ、組み替え前のQ1〜Q3から逆算したQ4が58期・20銘柄（今の読み手の期間に入るのは14銘柄）、
-   逆向き（Q1〜Q3だけ後で組み替え）が12期・9銘柄。理論株価が大きく変わる見込みはAPPだけ（粗利率の代わりの計算で+20〜27%）。判定の基準・影響表・直し方の候補3案・C1の全件は`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。関係: `[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]`・`[[LAYER3-FIRST-FILED-DATE-1]]`・`FINDINGS.md`（2026-10-19の2行）。
-   初回の束ねの下書き（FINDINGS 18行＋BACKLOGのアクティブ53件の分類、型ごとの根治策の案、終業の数）は`docs/architecture/BUNDLING_2026-10-19.md`（2026-10-19 夜。BACKLOG・FINDINGSの状態はまだ変えていない）。
-   下書きからの処置（2026-10-19 夜）: 削除の候補3件（F8の`is_latest`・`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`）は**済**（削除、`3b6cd1b3bf`）。F5（TAILの提出遅延のアラート）は実装を止めた（期待日が前回の提出日＋75日で決算の予定日を見ず、保有9銘柄のQ3がどれも決算の前に「遅れ」になる。FINDINGS.md 2026-10-19）。直し方はチャット側が決め直す。F3はR-Aの段階で判断
-   各段階は「grepで一覧（書き手・読み手・画面）を作る → Koichiさんが画面の項目と機能を投資判断に使っているかで残す／消すを判断 → 消すものを削除してから残ったものだけにCHECKを有効にする」の順（CHAT_RULES.md「発見の溜め方と根治の判断」5）。
-   最初の束ねでは、`FINDINGS.md`の行に加えて、BACKLOG.mdのアクティブ全件（2026-10-16終業時54件）を同じ基準で分ける:
-   - 各件に、原因の型（A・B・C、要れば型を足す）と、投資判断（理論株価・判定・保有銘柄の監視）への影響の有無を付ける
-   - 同じ型のものは根治策1件に束ね、元の件は「根治策のIDに統合」として閉じる
-   - 影響が無く、長く手が付いていないものは、閉じるか機能の削除の候補にする
-   - 確認待ちの件と、投資判断に今、誤った値が出ている件は、そのまま残す
-   `[[TICKER-EXCEPTION-LEDGER-1]]`は単独で実装しない。必要かどうかは一覧の結果で判断する（BACKLOGに追記済み）
-3. `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の提出日を持たせる。案Aで決定）— 依存: 1の`[[LAYER3-RETENTION-PERIOD-1]]`の反映の確認の後
-4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）— 依存: なし（3と並行できる）。次の新規銘柄の登録の前に必要
-5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`、2026-10-14から一時停止中）— 依存: データ基盤の2件（3・4）の後。再検証は§7(a)〜(d)の方法で
+**次の作業（2026-10-19 夜 更新〈初回の束ねの確定とF5の直しの後〉。上から順）**:
+1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
+   - 10-19の確認: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（手順6）も済
+   - 初回の束ね: `docs/architecture/BUNDLING_2026-10-19.md`（「確定」の節）。根治策5件（R-A `[[OUTPUT-INVENTORY-CHECK-1]]`〈R-Bを統合〉・R-C `[[LAYER3-FIRST-FILED-DATE-1]]`を広げる・R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`）。
+     統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
+   - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
+   - 残っている確認（手順3のNIY=F〈期限10-20〉・手順9のTAILのエラーの回の経路・手順10）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`のSECデータ層の段階（出力の一覧〈書き手・読み手・画面・定義・規則〉をgrepで下書き → Koichiさんが残す／消すを判断 → 消してから残りにCHECK）。
+   CHAT_RULES.md「発見の溜め方と根治の判断」5。読み手0件の出力6種（FINDINGS 2026-10-15）の残す／消すもこの段階で判断する。`[[TICKER-EXCEPTION-LEDGER-1]]`（統合済み）の要否も一覧の結果で決める
+3. R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（範囲を広げたもの: `first_filed`に加えて`first_val`、Q4の逆算の案1、年次の組み替え〈C1〉を検知するCHECK）。`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。APPの理論株価（約20〜27%低い）がここで戻る見込み
+4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
+5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
 
-**登録済み・後回し（2026-10-15 登録、中・低）**:
-- `[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低。daily_pick.pyが存在しない`rice.score`を読み、Grokの入力とdaily_pick.jsonに常にnull）
-- `[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（RICEのwarningsが96銘柄すべてでTrueになり、全銘柄に⚠の注記が出る。計算の例外4銘柄〈CIX・ENTG・SPIR・XOM〉もnoteに入っている）
-- `[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`（SEC_Data_UpdateのGateで1銘柄でもNGがあると全体が止まる。SECと無関係な全体チェックのNGもSECのcommitを止める）
-- `[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`（Layer3をcompany_factsからメモリ上で作り直すため、計算方法の変更が日曜を待たずに印なしで公開される。10-15のAPPの`latest_period_missing`が実例）
-- `[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`（中、2026-10-16登録、調査のみ。06-06の一括生成のレビューも作った時点の最新データで書かれている可能性）
+**後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
+2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-19 夜（初回の束ねの確定と、F5の直し）**: 第1部`c2874a0189`（束ねの確定、記録だけ）。第2部（F5の直し）: `edgar_rss_monitor.py`の期待日を「前回の提出日＋75日」から、次の報告期（対象期末＋3か月）の法定の期限
+  （10-Q 45日・10-K 90日、会計年度末はsubmissionsの`fiscalYearEnd`）に替え、期限を過ぎた平日の数を`no_filing_days`にして、1以上の回は毎回Discordに期限と遅れの日数を出す。`ALERT_BIZ_DAYS`・`EXPECTED_DAYS`は削除。
+  保有9銘柄のQ3の10-Qの期限は11-16（11-14が土曜）、NVDAは12-10、ADBEは10-Kで2027-02-26。テスト`tests/test_tail_rss_overdue.py`。FINDINGS.mdのF5と期待日の行を済に。
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 6、二重実装の規則 5、サブシステム 10、Python 69,743行（160ファイル。F5の直しで78行増えた。不具合の直しで、出力・規則は増やしていない）、テスト34,267行、ワークフロー23本、アクティブBACKLOG 14件
 - **2026-10-19 夜（読み手の無いもの3件の削除、F5は止めた）**: `3b6cd1b3bf`でTAILのレビューの`is_latest`（書き手と公開の35件）・`docs/README.md`・TANUKIの`stock.html`の`recommended_g_hypecore`の表示を削除。`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`をBACKLOG_DONE.mdへ（アクティブ53件→51件、`^### [`の機械カウント）。
   F5は新旧の条件の比較で、期待日（前回の提出日＋75日）が決算の予定日より前に来るため止めた。FINDINGS.mdに2行（期待日と決算の予定、stock.htmlの算式の説明の古い文言。計20行）。
   **終業の数（2026-10-19、10-16と同じ数え方）**: 読み手の決まっていない出力 6（F3の6種。F8が減った）、二重実装の規則 5、サブシステム 10、Python 69,665行（160ファイル）、テスト34,105行、ワークフロー23本

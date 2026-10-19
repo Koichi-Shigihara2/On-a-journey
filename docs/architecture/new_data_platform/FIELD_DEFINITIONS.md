@@ -57,7 +57,7 @@
 | AS-IS-300 | Market Pulse | 生成日時 | `date` | market_data.jsonエントリのJST実行時刻 | システム内部（バッチ実行時刻） | システム設定データ |
 | AS-IS-401 | TANUKI TAIL | 取得日時 | `fetched_at` | 内部統制データ（sec_ctrl_fetcher.py）の取得日時 | システム内部（バッチ実行時刻） | システム設定データ |
 | AS-IS-403 | TANUKI TAIL | 直近確認accession number | `last_accn`（`rss_state.json`） | 新規提出監視の差分比較用、内部状態変数（画面非表示） | システム内部（`edgar_rss_monitor.py`自身が次回実行時に読取） | システム設定データ（監視状態管理系） |
-| AS-IS-405 | TANUKI TAIL | 提出遅延連続検知日数 | `no_filing_days`（`rss_state.json`） | 提出遅延アラート発報回数カウント用、内部状態変数（画面非表示） | システム内部（`edgar_rss_monitor.py`自身が次回実行時に読取） | システム設定データ（監視状態管理系） |
+| AS-IS-405 | TANUKI TAIL | 提出の遅れの日数（2026-10-19に意味を変更） | `no_filing_days`（`rss_state.json`） | 次の報告期（最新の提出の対象期末`last_period`＋3か月）の法定の提出期限（10-Q 45日・10-K 90日、土日なら次の月曜。会計年度末はsubmissionsの`fiscalYearEnd`）を過ぎてからの平日の数。毎回の実行で計算し直して保存する（期限の前・提出が見つかった回は0）。1以上の回は毎回アラートを出す。2026-10-19まではアラートの判定のための実行の回数（前回の提出日＋75日を過ぎてから実行ごとに＋1、3ちょうどの回だけアラート。FINDINGS.md 2026-10-16・2026-10-19）。内部状態変数（画面非表示） | システム内部（`edgar_rss_monitor.py`自身がログに出すだけで、次回の実行では読まない。ほかの読み手は無い〈2026-10-19のgrep〉） | システム設定データ（監視状態管理系） |
 | AS-IS-409 | TANUKI TAIL | レビュー生成完了時刻 | `completed_at`（`review_queue.json`） | 四半期レビュー生成の完了記録 | システム内部（`quarterly_review_generator.py`が記録） | システム設定データ |
 | AS-IS-411 | TANUKI TAIL | **2026-09-23削除済み**（`satellite_monitor.py`自体を削除、以下は削除前の記録） アラート発報タイムスタンプ | `"{ticker}:{condition}"`キー（`satellite_alerts.json`） | 4条件別の直近アラート発報時刻、24時間以内重複通知抑止用 | システム内部（`satellite_monitor.py`自身が次回実行時に読取） | システム設定データ（監視状態管理系） |
 | AS-IS-480 | TANUKI TAIL | レビュー生成日時 | `generated_at`（`reviews/*.json`トップレベル） | 四半期レビューJSON生成時点の日時 | システム内部（`quarterly_review_generator.py`） | システム設定データ |

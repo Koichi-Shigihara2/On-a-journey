@@ -7,7 +7,7 @@ RSS・submissionsの取得は差し替え、ネットワークには出ない。
 """
 import os
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 import pytest
 
@@ -45,6 +45,7 @@ def rss(monkeypatch):
     monkeypatch.setattr(erm, "_fetch_rss_form", lambda cik, form: r.q if form == "10-Q" else r.k)
     periods = {CELH_Q["accn"]: "2026-06-30", CELH_K["accn"]: "2025-12-31"}
     monkeypatch.setattr(erm, "get_filing_period", lambda cik, accn: periods.get(accn, "2026-09-30"))
+    monkeypatch.setattr(erm, "get_fiscal_year_end", lambda cik: "1231")
     return r
 
 
@@ -118,13 +119,13 @@ def test_same_filed_date_new_accn_is_new():
 
 
 def test_overdue_alert_still_fires_when_10q_times_out(rss):
-    """片方が取れない回も、遅れの通知（ALERT_BIZ_DAYS）は今までどおり出す。"""
-    old = (date.today() - timedelta(days=erm.EXPECTED_DAYS + 10)).isoformat()
-    state = _celh_state(last_filed=old, no_filing_days=erm.ALERT_BIZ_DAYS - 1)
+    """片方が取れない回も、遅れの通知は今までどおり出す（新規提出の判定だけをしない）。
+    対象期末2026-03-31の次の期末06-30の10-Qの期限は08-14。NOW（10-16）では期限を過ぎている。"""
+    state = _celh_state(last_period="2026-03-31")
     rss.set(q=TIMEOUT, k=(True, CELH_K))
     alerts = _run(state, {"queue": []})
     assert [a["type"] for a in alerts] == ["overdue"]
-    assert state["CELH"]["no_filing_days"] == erm.ALERT_BIZ_DAYS
+    assert state["CELH"]["no_filing_days"] == erm.weekdays_overdue(date(2026, 8, 14), NOW.date())
     assert state["CELH"]["last_accn"] == CELH_Q["accn"]
 
 
