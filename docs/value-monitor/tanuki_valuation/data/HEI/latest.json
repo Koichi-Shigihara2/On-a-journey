@@ -2,10 +2,10 @@
   "intrinsic_value_pt": 12746238752.04043,
   "intrinsic_value_per_share": 77.69969479818056,
   "intrinsic_value_beta": 74.74,
-  "upside_percent_beta": -75.9,
-  "intrinsic_value_rf": 309.0,
-  "upside_percent_rf": -0.3,
-  "intrinsic_value_rf_rate": 0.05098000049591064,
+  "upside_percent_beta": -75.7,
+  "intrinsic_value_rf": 303.11,
+  "upside_percent_rf": -1.6,
+  "intrinsic_value_rf_rate": 0.05136000156402588,
   "v0": 12746238752.04043,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.6562081288107785,
@@ -21,31 +21,31 @@
     "1年後": {
       "future_value": 85.47,
       "value_growth_pct": 10.0,
-      "expected_return_pct": -72.4
+      "expected_return_pct": -72.3
     },
     "2年後": {
       "future_value": 94.02,
       "value_growth_pct": 21.0,
-      "expected_return_pct": -69.7
+      "expected_return_pct": -69.5
     },
     "3年後": {
       "future_value": 103.42,
       "value_growth_pct": 33.1,
-      "expected_return_pct": -66.6
+      "expected_return_pct": -66.4
     },
     "4年後": {
       "future_value": 113.76,
       "value_growth_pct": 46.4,
-      "expected_return_pct": -63.3
+      "expected_return_pct": -63.1
     },
     "5年後": {
       "future_value": 125.14,
       "value_growth_pct": 61.1,
-      "expected_return_pct": -59.6
+      "expected_return_pct": -59.4
     }
   },
-  "upside_percent": -74.9,
-  "calculation_date": "2026-10-19T18:56:36+09:00",
+  "upside_percent": -74.8,
+  "calculation_date": "2026-10-20T05:39:04+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -315,7 +315,7 @@
     "roe_10yr_avg": 0.15624003066923298,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 309.8699951171875,
+    "current_price": 308.1700134277344,
     "latest_revenue": 4485044000.0,
     "rpo": 65261000,
     "beta": 1.038,
@@ -349,11 +349,11 @@
     "alpha_uncapped": 0.6562081288107785,
     "per": 51.645,
     "per_is_forward": false,
-    "per_adjusted": 45.29,
+    "per_adjusted": 45.05,
     "peg": 2.1333,
     "ps": 8.365591,
     "ev_ebitda": 31.411,
-    "ma200": 320.97164962768557,
+    "ma200": 320.8945497131348,
     "forward_eps": 7.22799,
     "next_quarter_eps": 1.64,
     "analyst_target_median": 402.5,
@@ -372,12 +372,12 @@
     "revenue_ttm_end": "2026-07-31",
     "analyst_vs_iv": 418.0,
     "max_eps": 6.0657,
-    "max_eps_per": 51.1,
+    "max_eps_per": 50.8,
     "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-07-31"
   },
   "validation": {
-    "validated_at": "2026-10-19",
+    "validated_at": "2026-10-20",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -400,11 +400,11 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.029625472409617992,
-  "risk_free_rate_live": 0.05098000049591064,
-  "risk_free_rate_live_date": "2026-10-16",
+  "required_growth_rf_base": -0.030692533380176856,
+  "risk_free_rate_live": 0.05136000156402588,
+  "risk_free_rate_live_date": "2026-10-19",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.06785384587350696,
+  "required_growth_rf_live": 0.07051595326100268,
   "tanuki_score": "TRIM",
   "funda_score": 90,
   "score_comment": "割高(-75%超)、FCF黒字、売上成長加速",
@@ -421,7 +421,6 @@
     "qx": false,
     "qy": true
   },
-  "method_change": "LAYER3-RETENTION-PERIOD-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -474,7 +473,7 @@
     "shares_yr_now_label": "2025",
     "shares_yr_3ago_label": "2022"
   },
-  "net_current_assets_ratio": 0.0398,
+  "net_current_assets_ratio": 0.04,
   "dupont": {
     "ni_ttm": 847724000,
     "revenue_ttm": 5176756000,
@@ -534,8 +533,8 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0277,
-  "forward_earnings_yield": 0.0233,
+  "erp": -0.0279,
+  "forward_earnings_yield": 0.0235,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }
