@@ -2918,6 +2918,7 @@ STONKS SILOの判定を共通の部品にし、hypecoreの全銘柄で計算す�
 - `pipeline.py`（L3733付近）がhypecore_historyの`"lifecycle"`に最新月の`stage_label`を入れ、`stock.html`の履歴の「ライフサイクル」列に出る
 - `stock.html`のシグナル（L601-604）がstage 2を「成長期」、3を「成熟期」、1を「黎明期」と表示する（期待の段階をライフサイクルの名前で呼んでいる）
 - `docs/common/glossary.json`の`hype_stage_color`が「S0 失望」のまま（hypecore.pyのS0は蓄積、`stock.html`のSTAGE_LABELSは「失望/蓄積期」）
+  - 追記（2026-10-19）: このSTAGE_LABELSは推奨成長率の内訳のHypeCoreの行の中だけで使っていたため、[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]の削除で行ごと消した（`1e65c8e5f8`）。stock.htmlのシグナル（L601-604）の名前は残っている
 
 #### 方針
 ライフサイクルと期待の段階の名前を分ける。定義v2（S5 失望の新設）の切り替え（[[STAGE-V2-ROLLOUT-1]]）と合わせて直すか先に直すかはチャット側の判断待ち。実装しない
@@ -3076,17 +3077,7 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 ## 優先度：低（アイデア段階）
 
-### [DOCS-README-STALE-1] docs/README.md が ZIP の適用手順の古い内容のままで、現行のdocs/の構成と合っていない
-**優先度:** 低
-**分類:** ドキュメント / `docs/README.md`
-**登録日:** 2026-10-17
-**発見:** [[NAV-LINK-INTEGRITY-1]]の作業中（ドキュメントの更新の対象を確認したとき）
-
-#### 内容
-- `docs/README.md`はZIPを展開して適用する手順のまま。現行の共通部品（`site-nav.js`・`site-header.js`・`site-theme.css`・`ticker-links.js`・サブナビ`[data-sub-nav]`）が書かれていない
-
-#### 直し方の候補（未決定）
-- 現行の構成に合わせて書き直す、またはSYSTEM_MAP.mdの共通部品の表への参照だけにする
+（[[DOCS-README-STALE-1]]は2026-10-19、削除で完了、BACKLOG_DONE.md「2026-10-19（完了）」参照）
 
 ---
 
@@ -3161,17 +3152,7 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 ---
 
-### [TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1] TANUKI VALUATIONの個別ページがgrowth_sanityのrecommended_g_hypecoreを表示しようとするが、作る処理が無い
-**優先度:** 低（値が無いため表示されないだけ）
-**分類:** 表示 / `docs/value-monitor/tanuki_valuation/stock.html`（L2202、`sanity.recommended_g_hypecore`・`hypecore_stage_used`）
-**登録日:** 2026-10-14
-**発見:** HypeCoreのstageの定義v2（§6）のチャット側の点検
-
-#### 内容（2026-10-14に確認した事実）
-- `recommended_g_hypecore`をgrepすると`stock.html`のL2202だけ。`growth_sanity.py`は`recommended_g`・`recommended_g_median`だけを作る
-
-#### 方針
-表示を消すか、作る処理を足すか（定義v2のstageを使うか）はチャット側の判断待ち。実装しない
+（[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]は2026-10-19、削除で完了、BACKLOG_DONE.md「2026-10-19（完了）」参照）
 
 ---
 

@@ -345,6 +345,43 @@ Step Summaryの表示は引き続き未確認
 - 2026-10-19 17:28 JST、Koichiさんがrun `39138117185`のStep Summaryで、Revenue品質の表（23銘柄）が表として表示されていることを目視で確認
 - 同じ表のISSUEのうち、APP「Revenue負値: [('2023-12-31', -488.1)]」・PAYS「Revenue負値: [('2020-09-30', -0.2)]」は範囲外の発見として`FINDINGS.md`（2026-10-19、`743c87fc97`）に記録
 
+### ✅ [DOCS-README-STALE-1] docs/README.md が ZIP の適用手順の古い内容のままで、現行のdocs/の構成と合っていない
+**完了（2026-10-19）:** 削除で完了（`1e65c8e5f8`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
+**優先度:** 低
+**分類:** ドキュメント / `docs/README.md`
+**登録日:** 2026-10-17
+**発見:** [[NAV-LINK-INTEGRITY-1]]の作業中（ドキュメントの更新の対象を確認したとき）
+
+#### 内容
+- `docs/README.md`はZIPを展開して適用する手順のまま。現行の共通部品（`site-nav.js`・`site-header.js`・`site-theme.css`・`ticker-links.js`・サブナビ`[data-sub-nav]`）が書かれていない
+
+#### 直し方の候補（未決定）
+- 現行の構成に合わせて書き直す、またはSYSTEM_MAP.mdの共通部品の表への参照だけにする
+
+#### 対応（2026-10-19、削除）
+- `docs/README.md`（2026-05-17の`bc3b92ca45`で追加した、ZIPの3ファイルの上書きの手順のメモ。20行）を削除
+- 参照の確認（`git grep "docs/README\|README\.md"`）: `docs/README.md`を指すのは本件だけ。ほかの`README.md`の参照は`tools/external_trigger/README.md`・`browser_checks/README.md`・`src/subport/fg_level2/README.md`の別のファイル。各ページのHTML・JS・`scripts/audit_site_links.py`・`.github/`に参照なし。置き換える参照が無いため、SYSTEM_MAP.mdの共通部品の表への差し替えはしていない
+- 削除の後の`python scripts/audit_site_links.py`: ページ19件・検証したリンク190件・リンク切れ0件・孤立ページ0件（検証できないテンプレートのリンク1件は削除の前から）。GitHub Pagesの入口は`docs/index.html`
+
+### ✅ [TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1] TANUKI VALUATIONの個別ページがgrowth_sanityのrecommended_g_hypecoreを表示しようとするが、作る処理が無い
+**完了（2026-10-19）:** 削除で完了（`1e65c8e5f8`）。Koichiさんがチャット側に判断を任せ、チャット側が削除と決定（2026-10-19、`docs/architecture/BUNDLING_2026-10-19.md`の削除の候補）
+**優先度:** 低（値が無いため表示されないだけ）
+**分類:** 表示 / `docs/value-monitor/tanuki_valuation/stock.html`（L2202、`sanity.recommended_g_hypecore`・`hypecore_stage_used`）
+**登録日:** 2026-10-14
+**発見:** HypeCoreのstageの定義v2（§6）のチャット側の点検
+
+#### 内容（2026-10-14に確認した事実）
+- `recommended_g_hypecore`をgrepすると`stock.html`のL2202だけ。`growth_sanity.py`は`recommended_g`・`recommended_g_median`だけを作る
+
+#### 方針
+表示を消すか、作る処理を足すか（定義v2のstageを使うか）はチャット側の判断待ち。実装しない
+
+#### 対応（2026-10-19、削除）
+- `stock.html`の推奨成長率の内訳（Growth Sanity）から、`sanity.recommended_g_hypecore`・`sanity.hypecore_stage_used`を読む2行と、その行の中だけで使うローカルの`STAGE_LABELS`、「HypeCoreフェーズ補正」の行を削除（7行）
+- 参照の確認（`git grep "recommended_g_hypecore\|hypecore_stage_used"`）: 削除の後、`*.html`・`*.js`・`*.py`に0件（残るのは記録の文書だけ）。`growth_sanity.py`は`recommended_g`・`recommended_g_median`だけを作る
+- 表示の確認: 手元のサーバー（`http.server`、PIDで停止）とPlaywrightで`stock.html?ticker=`APP・PAYS・NVDA・HONを開き、JavaScriptのエラー（pageerror）0件、推奨成長率の内訳と「最終推奨値」が表示され、「HypeCoreフェーズ補正」の行が出ないことを確認。404は`/On-a-journey/`から始まる絶対パスの5件で、手元のサーバーだけのもの
+- 同じページの算式の説明（L1679付近）に「× HypeCoreフェーズ補正の平均」が残っているが、補正は計算から外されている（`growth_sanity.py`、固定50:50）。範囲外のため`FINDINGS.md`（2026-10-19）に記録
+
 ---
 
 ## 2026-10-17（完了）

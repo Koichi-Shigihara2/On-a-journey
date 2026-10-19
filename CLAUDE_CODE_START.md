@@ -27,7 +27,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
 **次回の確認手順（2026-10-19 夜の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**53件**（`^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件）。
+BACKLOG.mdのアクティブは**51件**（`^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -50,11 +50,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない）
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
-6. **月曜の安全網**（2026-10-19 17:36 JSTの時点で2本とも未起動。GitHubのscheduleの遅れで、過去の月曜は10-05が11:05 UTC、10-12が11:35 UTCに起動）
-   - 日時: 2026-10-19（月）13:00 JST（04:00 UTC）のHypeCore Update、13:10 JST（04:10 UTC）のAdjusted_EPS（`Adjusted_Eps_Analyzer_update.yml`）の、遅れて起動した後
-   - 期限: 2026-10-20（火）
-   - 確認の手順: `gh run list`で10-19のHypeCore（schedule）とAdjusted EPS（schedule）の起動・conclusion・Runner Imageを確かめる。HypeCoreがsuccessで、Adjusted EPSが24時間の重複防止で何もせず終わっていれば済（Runner Imageはubuntu-latestのUbuntu 26への移行の確認、FINDINGS.md 2026-10-18）
-   - 途中の結果（2026-10-19 18:40 JST）: HypeCoreはschedule `39230653656`（09:31〜09:32 UTC）でsuccess、Runner Imageはubuntu-24.04 20261012.334.1、commit `5fb554d71a`（連鎖のTANUKI VALUATION `39230891630`は実行中）。Adjusted EPSのscheduleは09:40 UTCの時点で未起動のため、まだ済にしない
+6. （済 2026-10-19）月曜の安全網: HypeCoreはschedule `39230653656`（09:31〜09:32 UTC）でsuccess、commit `5fb554d71a`、連鎖のTANUKI VALUATION `39230891630`もsuccess。Adjusted EPSはschedule `39232746231`（09:47 UTC起動）でsuccess、「summary.jsonの最終更新は2026-10-18T15:08（24時間以内）のため、意図的にスキップ」でcommitなし。Runner Imageは2本ともubuntu-24.04 20261012.334.1（Ubuntu 26への移行はまだ、FINDINGS.md 2026-10-18）
 7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
    - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
    - 期限: 2026-10-31
