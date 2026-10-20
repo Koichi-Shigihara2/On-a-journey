@@ -7343,7 +7343,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "社名・CIKが変わった銘柄の、旧CIKの提出書類の一覧",
-   "decision": "消す→保留（2026-10-20。fetcher.py の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている）"
+   "decision": "残す（2026-10-20。fetcher.py の _fetch_legacy_submissions が旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読む）"
   },
   {
    "path": "common/sec_data/dimension_aggregate_registry.json",
@@ -13468,28 +13468,6 @@
   },
   {
    "dir": "scripts/analysis",
-   "file": "scripts/analysis/futures_roll_suspects.py",
-   "decision": "消す→保留（2026-10-20。src/market/market_pulse/backfill_futures_roll.py の入力〈--suspects〉がこの結果）",
-   "lines": 75,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_cfnai_ma3_rows_repair.py",
-   "decision": "消す→保留（2026-10-20。browser_checks/check_macro_pulse.py のN-07の説明の文が名前を出す）",
-   "lines": 91,
-   "workflows": [],
-   "code": [
-    "browser_checks/check_macro_pulse.py"
-   ],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
    "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
    "decision": "残す（2026-10-20）",
    "lines": 110,
@@ -13503,7 +13481,7 @@
   {
    "dir": "scripts/analysis",
    "file": "scripts/analysis/market_pulse_redesign.py",
-   "decision": "消す→保留（2026-10-20。src/market/market_pulse/stage_conclusions.py のdocstringが「同じ閾値を使う」と参照）",
+   "decision": "残す（2026-10-20。Market Pulse の作り直しの検討中。src/market/market_pulse/stage_conclusions.py が同じ値を使う）",
    "lines": 478,
    "workflows": [],
    "code": [],
@@ -13748,6 +13726,14 @@
   {
    "what": "scripts/analysis の14ファイル",
    "detail": "macro_alfred_lib・macro_claims_slot_rows_repair・macro_events_known_at_repair・macro_events_revision_repair・macro_events_slot_rows_repair・macro_liquidity_m2_yoy_repair・macro_liquidity_row_date_repair・macro_liquidity_weekly_before_after・macro_m4_hollow_rally・macro_m4_m2_percentile・macro_m4_score_vs_recession・macro_m4_thresholds・macro_m5_threshold_simulation・macro_ticker_history_check（.py）"
+  },
+  {
+   "what": "scripts/analysis/futures_roll_suspects.py と src/market/market_pulse/backfill_futures_roll.py",
+   "detail": "組で削除（2026-10-20、保留の決着）。一過性の修復の道具で、互いの参照のほかに読み手0件。付けた印（roll_suspect 等）のデータは残る"
+  },
+  {
+   "what": "scripts/analysis/macro_cfnai_ma3_rows_repair.py",
+   "detail": "削除（2026-10-20、保留の決着）。修復は 70793c2185（2026-10-03）で実行済み。browser_checks/check_macro_pulse.py の N-07 の説明の文から名前を消した"
   }
  ],
  "stop_condition": {

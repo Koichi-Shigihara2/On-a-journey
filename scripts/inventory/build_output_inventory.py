@@ -130,15 +130,11 @@ ANNOTATIONS: Dict[str, str] = {
 # 段階2の判断（残す／消す）。Koichi さんの判断を写す欄で、機械の一覧とは別。書いていないものは DECISION_DEFAULT
 DECISION_DEFAULT = "残す（2026-10-20）"
 DECISIONS: Dict[str, str] = {
-    # 消すと決めたが、変更の前の grep で想定外の読み手・言及が見つかり、消さずに止めたもの（チャット側の判断待ち）
+    # 段階2で消すと決めたが、変更の前の grep で読み手・言及が見つかり、チャット側が改めて判断したもの（2026-10-20）
     "common/sec_data/data/{T}/submissions_legacy_{CIK}.json":
-        "消す→保留（2026-10-20。fetcher.py の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている）",
-    "scripts/analysis/futures_roll_suspects.py":
-        "消す→保留（2026-10-20。src/market/market_pulse/backfill_futures_roll.py の入力〈--suspects〉がこの結果）",
+        "残す（2026-10-20。fetcher.py の _fetch_legacy_submissions が旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読む）",
     "scripts/analysis/market_pulse_redesign.py":
-        "消す→保留（2026-10-20。src/market/market_pulse/stage_conclusions.py のdocstringが「同じ閾値を使う」と参照）",
-    "scripts/analysis/macro_cfnai_ma3_rows_repair.py":
-        "消す→保留（2026-10-20。browser_checks/check_macro_pulse.py のN-07の説明の文が名前を出す）",
+        "残す（2026-10-20。Market Pulse の作り直しの検討中。src/market/market_pulse/stage_conclusions.py が同じ値を使う）",
 }
 
 # 段階2で消したもの（2026-10-20）。一覧からは消え、ここに記録だけ残す
@@ -149,6 +145,10 @@ DELETED: List[Tuple[str, str]] = [
     ("scripts/analysis の14ファイル", "macro_alfred_lib・macro_claims_slot_rows_repair・macro_events_known_at_repair・macro_events_revision_repair・macro_events_slot_rows_repair・"
      "macro_liquidity_m2_yoy_repair・macro_liquidity_row_date_repair・macro_liquidity_weekly_before_after・macro_m4_hollow_rally・macro_m4_m2_percentile・"
      "macro_m4_score_vs_recession・macro_m4_thresholds・macro_m5_threshold_simulation・macro_ticker_history_check（.py）"),
+    ("scripts/analysis/futures_roll_suspects.py と src/market/market_pulse/backfill_futures_roll.py",
+     "組で削除（2026-10-20、保留の決着）。一過性の修復の道具で、互いの参照のほかに読み手0件。付けた印（roll_suspect 等）のデータは残る"),
+    ("scripts/analysis/macro_cfnai_ma3_rows_repair.py",
+     "削除（2026-10-20、保留の決着）。修復は 70793c2185（2026-10-03）で実行済み。browser_checks/check_macro_pulse.py の N-07 の説明の文から名前を消した"),
 ]
 
 # 規則の二重のうち既知のもの（CHECK-INV-3 で WARN。SEC層のファイルを含むものでこれ以外が二重になったら NG）

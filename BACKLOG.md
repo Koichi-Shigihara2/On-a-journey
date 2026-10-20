@@ -1922,6 +1922,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（CHECK）: 第2部のcommit（件名「feat: R-A SEC層の段階3、出力の一覧のCHECK-INV-1〜4」）。`report_consistency_check.py`のCHECK-INV-1（NG、一覧に無い出力）・INV-2（NG、読み手とされているファイルが読んでいない・読み手0件の出力）・
   INV-3（規則の二重。既知の5つはWARN、SEC層を含む6つ目はNG）・INV-4（WARN、注記の無い出力）。[GLOBAL]で銘柄ごとのNGと混ぜない。一覧の作り方はスクリプト1つ（rccはそれをimportする）
 - 段階3で一覧のスクリプトを直した: 入れ子の関数の中の名前を外側の関数で解決する（`submissions_legacy`の読み手が見えるようになった）、段階2の判断の欄（`DECISIONS`・消したもの）
+- 保留4件の決着（2026-10-20、チャット側の判断）: `submissions_legacy`は残す（`_fetch_legacy_submissions`が読む）、`market_pulse_redesign.py`は残す（Market Pulseの作り直しの検討中）、
+  `futures_roll_suspects.py`と`src/market/market_pulse/backfill_futures_roll.py`は組で削除（互いの参照のほかは0件）、`macro_cfnai_ma3_rows_repair.py`は修復が`70793c2185`で実行済みのため削除（check_macro_pulse.pyのN-07は前後とも一致）。件名「refactor: R-A SEC層の保留4件の決着」のcommit
 - **次はTANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**
 
 #### 規模の見込み

@@ -1210,7 +1210,7 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
     uses_ma3 = '"fred_id": "CFNAIMA3"' in main_src
     R.append(Result("N-07", "「CFNAI MA3」の表示名と説明（3ヶ月MA）", "取得系列が CFNAIMA3（05_main.pyのINDICATOR_CONFIG）",
                     "CFNAIMA3" if uses_ma3 else "CFNAI（単月）", uses_ma3, "説明",
-                    "events.csvの既存の行は修復スクリプト（macro_cfnai_ma3_rows_repair.py）を統合後に実行するまで単月の値"))
+                    "events.csvの既存の行は2026-10-03に3ヶ月MA（ALFREDの当時の版）へ修復済み（70793c2185）"))
     lq = m.liq[-1]
     if lq.get("h41_date"):
         ok = ("H.4.1 " + lq["h41_date"]) in ((dom.get("stealth") or {}).get("text") or "")

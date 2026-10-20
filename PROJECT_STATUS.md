@@ -21,7 +21,7 @@
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**TANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**。SEC層と同じく`scripts/inventory/build_output_inventory.py`を広げて
    書き手・読み手（保存済みファイル／その場で計算）・画面・定義・規則をASTとgrepで作り、Koichiさんの残す／消すの判断（段階2）→削除→CHECK（段階3）の順。CHAT_RULES.md「発見の溜め方と根治の判断」5
    - （済 2026-10-20）SEC層の段階1〜3: `5dda340c96`（一覧）・`b6294a559b`（削除）・第2部のcommit（CHECK-INV-1〜4）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」
-   - SEC層の保留: `submissions_legacy_{CIK}.json`と`scripts/analysis`の3ファイル（想定外の読み手・言及。チャット側の判断待ち）
+   - SEC層の保留4件は2026-10-20に決着（残す2・削除で3ファイル。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」）
    - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する
 3. R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（範囲を広げたもの: `first_filed`に加えて`first_val`、Q4の逆算の案1、年次の組み替え〈C1〉を検知するCHECK）。`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。APPの理論株価（約20〜27%低い）がここで戻る見込み
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
@@ -30,6 +30,8 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-20 夜（R-AのSEC層の保留4件の決着）**: submissions_legacy・market_pulse_redesign.pyは残す。futures_roll_suspects.py・backfill_futures_roll.py・macro_cfnai_ma3_rows_repair.py（修復は`70793c2185`で実行済み）を削除、check_macro_pulse.pyのN-07の文から名前を消した（実行の結果は前後とも一致72・不一致0・判定不能1、N-07は一致）。
+  **Python 68,977行（144ファイル。前の69,235行〈147ファイル〉から258行減）**。ほかの終業の数は下の段階2・3の記録と同じ（読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、テスト34,355行、ワークフロー23本、アクティブBACKLOG 13件）
 - **2026-10-20 夜（R-AのSEC層の段階2・3）**: 第1部`b6294a559b`（削除。読み手0件の出力3つ〈share_unit_fix_log 15ファイル・spac_shell_detection_log 98ファイル・store_v2の保存の関数とCLI〉と`scripts/analysis`の14ファイル、計127ファイルを削除。
   98銘柄のannual・quarterly・normalized・Layer3・TTMは前後で一致〈generated_atを除く〉。`submissions_legacy`と`scripts/analysis`の3ファイルは想定外の読み手・言及のため保留）。
   第2部: `report_consistency_check.py`にCHECK-INV-1〜4（[GLOBAL]。今のリポジトリでNG 0・WARN 5〈既知の規則の二重〉）、テスト6件。一覧を作り直した（出力21・読み手0件0）。FINDINGS.mdにF3の2種の済と、設計の文書の古い記載（型E）の1行〈計22行〉
