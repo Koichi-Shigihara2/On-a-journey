@@ -62,7 +62,6 @@ class RPOAdjustmentResult:
             "rpo_pv": self.rpo_pv,
             "rpo_raw": self.rpo_raw,
             "discount_rate": self.discount_rate,
-            "assumed_realization_years": self.assumed_years,
             "applied": self.applied,
             "application_rate": self.application_rate,
             "sector_category": self.sector_category,

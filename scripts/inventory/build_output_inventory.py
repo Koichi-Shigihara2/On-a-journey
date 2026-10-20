@@ -166,13 +166,14 @@ DECISION_NOTE = "段階2の判断（2026-10-20、チャット側の案をKoichi�
 NON_PRODUCTION_FILES: List[str] = []         # 本番外のコードの候補（フォルダ単位でなく、ファイル単位で示すもの）
 SCREEN_PAGES: Tuple[str, ...] = ()           # 画面の項目の表を作るページのフォルダ（TANUKI）
 SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, 区画の始まりの行の式, 次の区画の行の式, 判断)
+UNREAD_KEY_NOTES: Dict[str, str] = {}      # 誰も読まないキーを残した理由（段階2の判断）
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
             DECISIONS=DECISIONS, DELETED=DELETED, OUTSIDE_HINT=OUTSIDE_HINT, OUTSIDE_PREFIXES=OUTSIDE_PREFIXES,
             READ_PREFIXES=READ_PREFIXES, READ_HINT=READ_HINT, NAME_SHORT=NAME_SHORT, TITLE=TITLE, DECISION_NOTE=DECISION_NOTE,
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
-            SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS)
+            SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -208,6 +209,10 @@ _TANUKI.update(
          "削除（2026-10-20、本番外。参照は自分自身のほか0件、計407行と UTF-16 のログ）"),
         ("docs/value-monitor/tanuki_score/daily_pick.json・history.json",
          "削除（2026-10-20。2026-06-27 から更新が無く、書き手・読み手0件。画面は integrated-dashboard を読む）"),
+        ("誰も読まないキー14個（latest.json 等への書き込み）",
+         "書き込みをやめた（2026-10-20）: avg_rev_growth_lagged・assumed_realization_years・intrinsic_value_pt・is_provisional・"
+         "moat_gross_margin_norm・moat_roic_norm・moat_fcf_margin_norm・forward_earnings_yield・shares_yr_now_label・shares_yr_3ago_label・"
+         "upside_pct・validated_at・hype_phase_label・hype_substage_label。98銘柄の latest.json の iv・判定・RICE・TANUKI Score は前後で同じ"),
         ("今日の特選銘柄（src/value/tanuki_score/daily_pick.py・docs/integrated-dashboard/daily_pick.json・history.json・"
          "tanuki_score/index.html の区画・TANUKI_Score_Update.yml の段）",
          "削除（2026-10-20、Koichiさんの判断で機能をまるごと。history.json の読み手は daily_pick.py 自身だけだった。"
@@ -221,6 +226,22 @@ _TANUKI.update(
     KNOWN_DUPLICATE_RULES=["quarter_label", "valuation_threshold", "growth_bounds", "wacc_beta", "fcf_fallback"], TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score"),
     SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={
+        **{k: "残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）"
+           for k in ("applicable", "current_subgroup", "deviation_from_current", "invalid_reason", "realized_ratio",
+                     "reclassify_recommended", "recommended_subgroup", "software_system_reclassification", "v0_adjusted")},
+        "g_fundamental": "残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）",
+        "formula_verification": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
+        "pt_shares_consistency": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
+        **{k: "残す: テストが参照する" for k in ("dupont_bs_period", "max_eps", "max_eps_ttm_end", "segment_quarter", "segment_xbrl_status", "v0_note")},
+        **{k: "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+           for k in ("avg_rev_growth_lagged", "assumed_realization_years", "intrinsic_value_pt", "is_provisional",
+                     "moat_gross_margin_norm", "moat_roic_norm", "moat_fcf_margin_norm", "forward_earnings_yield",
+                     "shares_yr_now_label", "shares_yr_3ago_label", "upside_pct", "validated_at",
+                     "hype_phase_label", "hype_substage_label")},
+        "fallback": "残す: 名前が一般的で、grep で読み手を決めきれない",
+        "labels": "残す: 名前が一般的で、grep で読み手を決めきれない",
+    },
     RULES=RULES + [
         {"id": "valuation_threshold", "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
          "patterns": [r"\bupside\w*\s*(?:>=|>|<=|<)\s*-?\d", r"\bupside\w*\s*(?:>=|>|<=|<)\s*[A-Z_]{3,}"]},
@@ -1559,7 +1580,8 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             r"Object\.(?:keys|entries|values)\(\s*[\w.?\[\]'\"]*\b" + re.escape(par) + r"\b|for\s*\(\s*(?:const|let|var)\s+\w+\s+in\s+[\w.?]*\b" + re.escape(par) + r"\b", page_text)]
         if loop_par:
             continue
-        unread.append({"key": key, "sources": sorted(written[key]), "parents": sorted(p for p in parents.get(key, set()) if p)})
+        unread.append({"key": key, "sources": sorted(written[key]), "parents": sorted(p for p in parents.get(key, set()) if p),
+                       "note": UNREAD_KEY_NOTES.get(key, "")})
     return {"pages": pages, "items": items, "unread_keys": unread, "written_key_count": len(written)}
 
 
@@ -1763,7 +1785,10 @@ def render_md(inv: dict) -> str:
         L.append("")
         L.append("### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）")
         L.append("")
-        L.append("・".join(f"`{u['key']}`" for u in sc["unread_keys"]) or "なし")
+        if not sc["unread_keys"]:
+            L.append("なし")
+        for u in sc["unread_keys"]:
+            L.append(f"- `{u['key']}`（{'、'.join('`' + s + '`' for s in u['sources'][:2])}）{(': ' + md_escape(u['note'])) if u.get('note') else ''}")
         L.append("")
         for pg in sc["pages"]:
             rows = [i for i in sc["items"] if i["page"] == pg]

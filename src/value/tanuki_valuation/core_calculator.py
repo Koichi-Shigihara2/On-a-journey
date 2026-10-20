@@ -791,7 +791,6 @@ class KoichiValuationCalculator:
 
         # ── 結果返却 ──
         result = {
-            "intrinsic_value_pt": float(intrinsic_value_pt),
             "intrinsic_value_per_share": float(intrinsic_value_per_share),
             # 割引率別理論株価（v7.3: 差額分析用）
             # メイン: Rmβなし（10%）→ intrinsic_value_per_share
@@ -857,7 +856,6 @@ class KoichiValuationCalculator:
             "fcf_outlier": fcf_outlier_result.to_dict(ai_assessment=_fcf_outlier_ai_assessment),
             "fcf_estimation": fcf_composition.to_dict(),
             "software_system_provisional": {
-                "is_provisional": _sw_provisional,
                 "note": _sw_provisional_note,
             },
 
@@ -919,9 +917,6 @@ class KoichiValuationCalculator:
                 "moat_score_source": moat_result.source,  # [[MOAT-SCORE-PARTIAL-NULL-1]]: measured/neutral_fallback
                 "moat_score_n_present": moat_result.n_present,
                 "moat_phase1_years": moat_result.phase1_years,
-                "moat_gross_margin_norm": moat_result.gross_margin_norm,
-                "moat_roic_norm": moat_result.roic_norm,
-                "moat_fcf_margin_norm": moat_result.fcf_margin_norm,
                 "pv_high": pv_high,
                 "pv_terminal": pv_terminal,
                 "roe_used": roe_avg,

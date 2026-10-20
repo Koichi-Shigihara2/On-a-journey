@@ -867,7 +867,7 @@ class TestGrowthDecayModelFixedWeight:
         "industry": "Semiconductor", "g_ebit": 0.096, "roc": 0.20, "rr": 0.60,
     })
     def test_hype_phase_used_still_recorded_for_display(self, _mock):
-        """hype_phase_used/hype_phase_labelはTiming側表示用に引き続き記録される
+        """hype_phase_usedはTiming側表示用に引き続き記録される（hype_phase_labelは読み手が無いため2026-10-20に削除）
         （DCF成長率の計算には使われないが、report.txt等の表示情報としては残置）"""
         ttm = 0.80
         result_phase4 = _gs.check_growth_sanity(

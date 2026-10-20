@@ -17,6 +17,7 @@
 
 - `src/value/tanuki_valuation の diag_iv_trace.py・growth_model_audit.py・remove_legacy_tanuki_score.py・pipeline_log.txt`: 削除（2026-10-20、本番外。参照は自分自身のほか0件、計407行と UTF-16 のログ）
 - `docs/value-monitor/tanuki_score/daily_pick.json・history.json`: 削除（2026-10-20。2026-06-27 から更新が無く、書き手・読み手0件。画面は integrated-dashboard を読む）
+- `誰も読まないキー14個（latest.json 等への書き込み）`: 書き込みをやめた（2026-10-20）: avg_rev_growth_lagged・assumed_realization_years・intrinsic_value_pt・is_provisional・moat_gross_margin_norm・moat_roic_norm・moat_fcf_margin_norm・forward_earnings_yield・shares_yr_now_label・shares_yr_3ago_label・upside_pct・validated_at・hype_phase_label・hype_substage_label。98銘柄の latest.json の iv・判定・RICE・TANUKI Score は前後で同じ
 - `今日の特選銘柄（src/value/tanuki_score/daily_pick.py・docs/integrated-dashboard/daily_pick.json・history.json・tanuki_score/index.html の区画・TANUKI_Score_Update.yml の段）`: 削除（2026-10-20、Koichiさんの判断で機能をまるごと。history.json の読み手は daily_pick.py 自身だけだった。src/value/tanuki_score/ と docs/integrated-dashboard/ はフォルダごと無くなった。判定の実績表は score_history.json を読み、影響なし）
 
 ## 出力（読み手0件 → テストだけ → 1件 → 2件以上）
@@ -61,8 +62,8 @@
 - Python・保存済みファイル: `common/system_health.py` 行 205・296・788・1045・1049・1110（経由 `common/sec_data/registration_validator.py::_load_json`、`common/system_health.py::check_h_config`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 40・71・155・288・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 483・489・503・509・558・561・874・1153（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`、`src/value/tanuki_valuation/data_fetcher.py::_load_beta_config`、`src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/growth_sanity.py` 行 217
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427・491・1007・1330・1862・1863・3814・3816・3872（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/growth_sanity.py` 行 209
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427・490・1006・1323・1855・1856・3803・3805・3861（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/admin.html` 行 936・1997・2002
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 269
 - ワークフロー・保存済みファイル: `.github/workflows/Beta_Config_Update.yml` 行 88・92
@@ -104,7 +105,7 @@
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/company_metadata.py` 行 38
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 655（経由 `src/value/adjusted_eps_analyzer/company_metadata.py::get_company_metadata`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 86・279・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::get_registered_tickers`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 439・491・593・811・992・1072・1149・1330・1537・1622・2959・3540 ほか1（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 439・490・592・810・991・1069・1144・1323・1530・1615・2952・3529 ほか1（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 52・264・314（経由 `src/value/tanuki_valuation/score_watcher.py::get_tickers`）
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 16・18・28・34
 - JS・HTML・保存済みファイル: `docs/index.html` 行 246
@@ -274,7 +275,40 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-`applicable`・`assumed_realization_years`・`avg_rev_growth_lagged`・`current_subgroup`・`deviation_from_current`・`dupont_bs_period`・`fallback`・`formula_verification`・`forward_earnings_yield`・`g_fundamental`・`hype_phase_label`・`hype_substage_label`・`intrinsic_value_pt`・`invalid_reason`・`is_provisional`・`labels`・`max_eps`・`max_eps_ttm_end`・`moat_fcf_margin_norm`・`moat_gross_margin_norm`・`moat_roic_norm`・`pt_shares_consistency`・`realized_ratio`・`reclassify_recommended`・`recommended_subgroup`・`segment_quarter`・`segment_xbrl_status`・`shares_yr_3ago_label`・`shares_yr_now_label`・`software_system_reclassification`・`upside_pct`・`v0_adjusted`・`v0_note`・`validated_at`
+- `applicable`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `assumed_realization_years`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `avg_rev_growth_lagged`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `current_subgroup`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `deviation_from_current`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `dupont_bs_period`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `fallback`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: 名前が一般的で、grep で読み手を決めきれない
+- `formula_verification`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: validator の検証の結果（validation.checks。overall の判定に入る）
+- `forward_earnings_yield`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `g_fundamental`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）
+- `hype_phase_label`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `hype_substage_label`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `intrinsic_value_pt`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `invalid_reason`（`docs/value-monitor/tanuki_valuation/data/{T}/history.json`、`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `is_provisional`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `labels`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: 名前が一般的で、grep で読み手を決めきれない
+- `max_eps`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `max_eps_ttm_end`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `moat_fcf_margin_norm`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `moat_gross_margin_norm`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `moat_roic_norm`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `pt_shares_consistency`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: validator の検証の結果（validation.checks。overall の判定に入る）
+- `realized_ratio`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `reclassify_recommended`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `recommended_subgroup`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `segment_quarter`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `segment_xbrl_status`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `shares_yr_3ago_label`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `shares_yr_now_label`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `software_system_reclassification`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `upside_pct`（`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
+- `v0_adjusted`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）
+- `v0_note`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `validated_at`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る
 
 ### `docs/value-monitor/tanuki_score/index.html`（92項目）
 
@@ -686,9 +720,9 @@
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:405`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | いいえ |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 6 | `docs/portfolio/index.html:673`<br>`docs/value-monitor/extreme-fear/index.html:143`<br>`docs/value-monitor/extreme-fear/index.html:175`<br>`docs/value-monitor/extreme-fear/index.html:184`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:623`<br>`src/value/tanuki_valuation/pipeline.py:625`<br>`src/value/tanuki_valuation/pipeline.py:627`<br>`src/value/tanuki_valuation/pipeline.py:866`<br>`src/value/tanuki_valuation/pipeline.py:879`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:901`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:970`<br>`src/value/tanuki_valuation/pipeline.py:971`<br>`src/value/tanuki_valuation/pipeline.py:1362`<br>`src/value/tanuki_valuation/pipeline.py:1389`<br>`src/value/tanuki_valuation/pipeline.py:1394`<br>`src/value/tanuki_valuation/pipeline.py:1440`<br>`src/value/tanuki_valuation/pipeline.py:1745`<br>`src/value/tanuki_valuation/pipeline.py:1923` | はい |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 6 | `docs/portfolio/index.html:673`<br>`docs/value-monitor/extreme-fear/index.html:143`<br>`docs/value-monitor/extreme-fear/index.html:175`<br>`docs/value-monitor/extreme-fear/index.html:184`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:622`<br>`src/value/tanuki_valuation/pipeline.py:624`<br>`src/value/tanuki_valuation/pipeline.py:626`<br>`src/value/tanuki_valuation/pipeline.py:865`<br>`src/value/tanuki_valuation/pipeline.py:878`<br>`src/value/tanuki_valuation/pipeline.py:898`<br>`src/value/tanuki_valuation/pipeline.py:900`<br>`src/value/tanuki_valuation/pipeline.py:967`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:970`<br>`src/value/tanuki_valuation/pipeline.py:1355`<br>`src/value/tanuki_valuation/pipeline.py:1382`<br>`src/value/tanuki_valuation/pipeline.py:1387`<br>`src/value/tanuki_valuation/pipeline.py:1433`<br>`src/value/tanuki_valuation/pipeline.py:1738`<br>`src/value/tanuki_valuation/pipeline.py:1916` | はい |
 | β・WACCの作り方 | 4 | `docs/value-monitor/admin.html:1236`<br>`docs/value-monitor/admin.html:1838`<br>`docs/value-monitor/admin.html:1860`<br>`docs/value-monitor/admin.html:1898`<br>`docs/value-monitor/admin.html:1915`<br>`docs/value-monitor/admin.html:1919`<br>`docs/value-monitor/admin.html:1972`<br>`src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1121` | はい |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:185`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1105` | はい |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1105` | はい |
 
 1か所だけのもの: 成長率の上限・下限（1）
 

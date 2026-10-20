@@ -163,14 +163,6 @@ SECTOR_TO_DAMODARAN = {
 
 # 銘柄個別の Damodaran 分類上書き
 # indname.xls で実際に確認したマッピング（SICベース分類が実態と乖離する場合）
-_PHASE_LABELS: dict[int, str] = {
-    0: "失望/蓄積期",
-    1: "期待覚醒期",
-    2: "期待拡大期",
-    3: "陶酔期",
-    4: "期待剥落期",
-}
-
 # 銘柄個別のベンチマーク成長率直接指定（Damodaran未分類 or 保守的調整が必要な銘柄）
 # Damodaran 業種マッピングより優先される
 _TICKER_BENCHMARK_OVERRIDES: dict[str, float] = {
@@ -388,8 +380,6 @@ def check_growth_sanity(
     g_fundamental: float | None = None,
     ttm_actual: float | None = None,  # TTM Revenue YoY (decimal) from STONKS/SEC
     hype_phase: int | None = None,         # GROWTH-1: HypeCoreフェーズ（1〜4）
-    hype_phase_label: str | None = None,   # poc.json の stage_label
-    hype_substage_label: str | None = None, # poc.json の substage_label
     fcf_margins: list[float] | None = None,  # TANUKI-DCF-1③: FCFマージン時系列（古い順）
     growth_source: str | None = None,  # GROWTH-FLOOR-VERDICT-1: phase1_growthの採用経路("fcf_cagr"等)
 ) -> dict:
@@ -671,8 +661,6 @@ def check_growth_sanity(
         "growth_model": growth_model,
         "growth_model_reason": growth_model_reason,
         "hype_phase_used": hype_phase,
-        "hype_phase_label": hype_phase_label or (_PHASE_LABELS.get(hype_phase) if hype_phase is not None else None),
-        "hype_substage_label": hype_substage_label,
         "signals": signals,
         "warnings": warnings,
         "fcf_margin_bear_multiplier": fcf_margin_bear_multiplier,

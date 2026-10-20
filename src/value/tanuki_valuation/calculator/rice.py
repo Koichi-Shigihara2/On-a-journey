@@ -106,7 +106,6 @@ class RICEResult:
             "q_years": self.q_years,
             "cf_years": self.cf_years,
             "avg_intensity": round(self.avg_intensity, 4),
-            "avg_rev_growth_lagged": round(self.avg_rev_growth, 4),
             "warnings": self.note != "",   # 警告ありフラグ（フロントで表示判定用）
             "note": self.note,
         }

@@ -1934,6 +1934,10 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（CHECK）: 件名「feat: R-A TANUKIの段階3、CHECK-INVをTANUKIにも当てる」のcommit。CHECK-INV-1〜4をTANUKIにも当て、INV-5（NG、画面が読むのに書き手の無いキーが新しくできた）・INV-6（WARN、誰も読まないキーが新しくできた）を足した。
   既知の規則の二重（TANUKIを含む: 期の名前・割安割高のしきい値・β・WACC・FCFの基準）はWARN。成長率の上限・下限の式はMACRO PULSEの変数〈MAX_GAP_DAYS等〉を拾わないように直した（TANUKIでは1ファイルだけになり二重でなくなった）。
   一覧のスクリプト: 読み手をパスの全体で照合（同じ名前の別のファイル〈history.json・tickers.json〉の誤った読み手103件が消えた）、パースを段階で共有。rccのCHECK-INVはSEC層とTANUKIで約27秒
+- **保留2件の決着（2026-10-20）**: ①今日の特選銘柄はKoichiさんの判断で機能をまるごと削除（`ad6af70b5c`。daily_pick.py・integrated-dashboard/のJSON 2つ〈フォルダごと〉・画面の区画・ワークフローの段、XAI_API_KEYのenv。
+  TANUKI_Score_Update.ymlはworkflow_dispatch `39427928710`でsuccess、画面は判定の実績表を含めてエラー無し〈手元の配信のロゴの404だけ〉）。
+  ②誰も読まないキー34のうち14の書き込みをやめた（件名「refactor: R-A TANUKI、誰も読まない14キーの書き込みをやめる」のcommit）。前後ともXAI_API_KEYを外してpipelineを手元で回し、96銘柄のlatest.jsonのiv・判定・RICE・TANUKI Scoreは前後で同じ（消したキーと時刻のほかの差も0）。
+  残した20キーの理由は一覧の注記（書き手が見つからない9・テストが参照6・名前が一般的2・validatorの検証の結果2・rccが名前の組で読む1）
 - **次はほかのサブシステム（HypeCore・STONKS SILO・EPS・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）。順はチャット側が決める**
 
 #### 規模の見込み

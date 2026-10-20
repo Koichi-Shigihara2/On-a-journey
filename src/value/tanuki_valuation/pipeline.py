@@ -480,7 +480,6 @@ class TanukiValuationPipeline:
                 except Exception as e:
                     print(f"   ⚠️  検証エラー: {e}")
                     valuation["validation"] = {
-                        "validated_at": datetime.now().strftime("%Y-%m-%d"),
                         "model": "error",
                         "checks": {},
                         "overall": "ERROR",
@@ -1020,8 +1019,6 @@ class TanukiValuationPipeline:
                 g_fundamental=_g_fund,
                 ttm_actual=_phase1_growth if _phase1_growth > 0 else None,
                 hype_phase=_hype_phase,                           # GROWTH-1
-                hype_phase_label=_hype_info.get("stage_label"),
-                hype_substage_label=_hype_info.get("substage_label"),
                 fcf_margins=_fcf_margins or None,                  # TANUKI-DCF-1③
                 growth_source=_phase1_growth_source,               # GROWTH-FLOOR-VERDICT-1
             )
@@ -1090,8 +1087,6 @@ class TanukiValuationPipeline:
                             g_fundamental=_g_fund,
                             ttm_actual=_recommended_g if _recommended_g > 0 else None,
                             hype_phase=_hype_phase,
-                            hype_phase_label=_hype_info.get("stage_label"),
-                            hype_substage_label=_hype_info.get("substage_label"),
                             fcf_margins=_fcf_margins or None,
                             growth_source=_adopted_source,
                         )
@@ -1259,7 +1254,6 @@ class TanukiValuationPipeline:
             "tanuki_score": score_data.get("score"),
             "funda_score": score_data.get("funda_score"),
             "price_at_judgment": valuation.get("components", {}).get("current_price"),
-            "upside_pct": valuation.get("upside_percent"),
             "hype_phase": (_growth_sanity.get("hype_phase_used") if isinstance(_growth_sanity, dict) else None),
         }
         _stamp_method_change(sh_entry)
@@ -1288,7 +1282,6 @@ class TanukiValuationPipeline:
         _ey_ld, _erp_ld = _calculate_erp(_fwd_eps_ld, _cp_ld, _rf_ld)
         if _erp_ld is not None:
             latest_data["erp"] = round(_erp_ld, 4)
-            latest_data["forward_earnings_yield"] = round(_ey_ld, 4)
         _dil_pct = (latest_data.get("financial_health") or {}).get("dilution_3yr_annual_pct")
         _dil_sev, _dil_badge, _ = _dilution_severity_info(_dil_pct)
         if _dil_sev:
@@ -2982,8 +2975,6 @@ class TanukiValuationPipeline:
                 if len(annual_shares) >= 4:
                     s_now_entry = annual_shares[-1]
                     s_3ago_entry = annual_shares[-4]
-                    yr_now = s_now_entry.get("end", "")[:4]
-                    yr_3ago = s_3ago_entry.get("end", "")[:4]
 
                     # 株式分割による不連続を検出・補正（最新基準に統一）
                     # 判定: FY値の前年比が2.5倍超 かつ 同一会計年度の四半期中央値と2.5倍超乖離
@@ -3089,8 +3080,6 @@ class TanukiValuationPipeline:
                         result["financial_health"]["dilution_3yr_annual_pct"] = round(dilution_3yr, 2)
                         result["financial_health"]["shares_yr_now"] = s_now_entry["val"]
                         result["financial_health"]["shares_yr_3ago"] = s_3ago_entry["val"]
-                        result["financial_health"]["shares_yr_now_label"] = yr_now
-                        result["financial_health"]["shares_yr_3ago_label"] = yr_3ago
                         if abs(split_factor - 1.0) > 0.01:
                             result["financial_health"]["split_adjusted"] = True
                             result["financial_health"]["split_factor"] = round(split_factor, 4)

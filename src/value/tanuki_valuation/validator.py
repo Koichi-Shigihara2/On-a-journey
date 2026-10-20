@@ -18,7 +18,6 @@ v6.2 変更点:
 import os
 import json
 import requests
-from datetime import datetime
 from typing import Dict, Any, Optional
 
 # [[VALIDATOR-ALPHA-CAP-STALE-1]]対応（2026-08-20）: alpha_capの
@@ -406,7 +405,6 @@ def run_basic_checks(ticker: str, data: Dict[str, Any]) -> Dict[str, Any]:
         overall = "WARN"
 
     return {
-        "validated_at": datetime.now().strftime("%Y-%m-%d"),
         "model": "basic_checks_only",  # v7.3: Grok廃止、basic_checksで代替
         "checks": checks,
         "overall": overall,
