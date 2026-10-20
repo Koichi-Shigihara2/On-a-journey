@@ -66,6 +66,13 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 10. （済 2026-10-20）F5の直しの後の最初の平日のRSS Monitor: 直し（`7492427f3f`、10-19 10:50 UTCのpush）の後の実行はschedule `39276537966`（10-19 15:16 UTC起動、head `d154e71c71`は直しを含む、success、commit `0f91fe9895`）の1回（10-20 08:45 UTCの時点で今日の回は未起動）。
    「RSS チェック」で9銘柄とも「変更なし (…、遅れ0日)」、次の期末・10-Qの期限は表のとおり（APP・CELH・CRWV・PLTR・SOFI・SOUN・TSLAは2026-09-30・2026-11-16、NVDAは2026-10-26・2026-12-10、ADBEは2026-11-28・2027-01-12）。
    「⚠ 提出遅延アラート」・「★ 新規提出」・「RSS 取得エラー」は0件、新規pending 0件。`docs/portfolio/tail/data/rss_state.json`の`no_filing_days`は9銘柄とも0（TSLAは10から0）。9の経路（エラーの回・新規提出の回）はこの回でも通っていない
+11. **R-Cの公開の確認**（`[[LAYER3-FIRST-FILED-DATE-1]]`、2026-10-21 commit。BACKLOG_DONE.mdの「シミュレーション」が試算の値）
+   - 日時: ①10-22 05:30〜06:00 JSTのStonks Silo・TANUKI VALUATIONの後（Layer3をその場で作る読み手なので、日曜を待たずに出る。事例39）、②次の日曜（10-25）のSEC_Data_Updateと連鎖のTANUKI VALUATIONの後
+   - 期限: 2026-10-26
+   - 確認の手順: ①APPの理論株価がシミュレーションのとおり（1,135.99ドル前後〈株価・F&Gで動く分を除く〉、−1.47%）、HON・FLYWも同じ向き（−4.19%・−4.37%）で、判定・TANUKI Scoreは変わらない。
+     history・score_historyのその日の行に`method_change: LAYER3-FIRST-FILED-DATE-1`（`config/method_change.json`の10-22・10-25・10-26）。
+     ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
+     APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**

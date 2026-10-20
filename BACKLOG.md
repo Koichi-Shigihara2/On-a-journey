@@ -2739,73 +2739,17 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ---
 
-### [LAYER3-FIRST-FILED-DATE-1] Layer3の提出日（filed）が「その値を最後に申告した書類」の日付で、過去の時点で使えた値が分からない
-**型・処置（2026-10-19 束ね）:** 型C・根治策の本体（型C（申告の時点）の根治策（R-C）の本体。範囲を広げた）
+### [TAIL-REVIEW-PERIOD-FILTER-1] TANUKI TAILのレビューは対象の期にかかわらず作った時点の最新の財務で書かれ、後から作った過去の期のレビュー・スコアの推移が期ごとの比較になっていない
+**型・処置（2026-10-21）:** 型C。[[LAYER3-FIRST-FILED-DATE-1]]（2026-10-21完了）から、TAIL側の変更の部分だけを分けて残す（[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「期末日で絞る部分」）
 **優先度:** 中
-**分類:** 一次データ / common/sec_data（`quarterly.py::_process_entries()`・`fact_selection.py::select_latest_filed()`・`layer3_builder.py`・`contracts.py`）
-**登録日:** 2026-10-14
-**着手条件（2026-10-16 更新）:** 2026-10-19の確認（`CLAUDE_CODE_START.md`「次回の確認手順」の4・6）の後。置き方は下の「決定（2026-10-16）」
-**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14、c52db854d8）。試算ではcompany_factsの最初の提出日を使い、10,743件がLayer3のfiledと食い違った
+**分類:** 表示・データの意味 / TANUKI TAIL（`src/tail/quarterly_review_generator.py` L209-236・`docs/portfolio/tail/detail.html`のスコア推移・過去レビュー履歴・`prediction_tracker.py`）
+**登録日:** 2026-10-21
+**着手条件:** いつでも（直し方はチャット側が判断。作り直すならGrokの費用がかかる）
 
-#### 内容（2026-10-14の調査、読み取りのみ）
-- Layer3・normalizedは、同じ期間（四半期は(start, end)、年次は期末日）に複数の書類の値があると、提出日が最新の1件を選ぶ（`quarterly.py::_process_entries()`→`select_latest_filed()`）。
-  YTDと単独の四半期の混在も最新（`layer3_builder.py`のL794・L1030、`normalizer.py`のL169・L419）。持つ`filed`はその書類の提出日。Q4の暗黙の値は年次（10-K）のfiledを写す（`q4_implied.py` L192）。
-  TTM（`ttm_calculator.py`）は提出日を持たない。parser.py（annual_*.json、TANUKI VALUATION）も同じ年度の候補から最新filedを選び、provenanceに`filed`を記録する
-- 規模（2026-10-14、全98銘柄のLayer3、60,013件）: 単一タグで照合できた43,360件のうち25,682件（59%）は、最後の提出日が最初の提出日より遅い（中央値364日。翌年の書類の比較用の再掲）。
-  そのうち1,555件は、最初に申告された値と今の値が違う（修正・組み替え）。派生・暗黙の値4,940件と照合できない11,713件（YTDからの差し引きで期間が変わった四半期等）は、元のエントリから決める必要がある
-- 同じ根の問題: [[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]（fp・fyも最後の書類のもの）
-
-#### 提出日を読む処理（2026-10-14、grep。company_factsの生のfiledを読むものとLayer3のfiledを読むものを分けた）
-| 処理 | 読むもの | 何に使うか | 最初の提出日を並べて持たせたとき | 置き換えたとき |
-|---|---|---|---|---|
-| `quarterly.py::_process_entries()`（Layer3・normalized共通） | 生 | 同じ期間の候補から最新filedを選ぶ | 変わらない | 古い値（修正前）を選ぶことになり、全消費者の値が変わる |
-| `layer3_builder.py`（YTD・単独の選択）・`normalizer.py` | Layer3 | 同上 | 変わらない | 同上 |
-| `q4_implied.py` | Layer3 | Q4の暗黙の値に年次のfiledを写す | 年次の最初の提出日を写す処理が要る | 同上 |
-| `contracts.py`（エントリの必須キー） | Layer3 | 形の検査 | 任意キーとして足す（契約の変更、テストの更新） | 意味が変わる |
-| `rotce.py`（L146・L286・L344） | Layer3 | 同じ期末のstockの値・無形資産のタグを最新filedで選ぶ | 変わらない | ROTCE・P/TBVの値が変わる |
-| `share_unit_fix.py` | 生 | 同じ期の株式数の候補から最新filedを採用 | 変わらない | 株式数の単位の直しが変わる |
-| `parser.py`（annual_*.json、TANUKI VALUATION） | 生 | 同じ年度の候補の選択とprovenanceの記録 | Layer3だけに入れれば変わらない | （対象にしない） |
-| EPS ANALYZER（`extract_key_facts.py`） | 生（Layer3を通らない） | 株式数・四半期の候補を最新filedで選ぶ | 変わらない | 変わらない |
-| TANUKI VALUATION（`pipeline.py`・`score_verifier.py`） | 読まない | score_verifierはscore_historyの日付と株価 | 変わらない | 変わらない |
-| STONKS SILO | 読まない | `financial_as_of`は最新の四半期末（期末日） | 変わらない | 変わらない |
-| `report_consistency_check.py` | 生 | 株式数のDEIの古さ（L1543）、CHECK-37の最新の10-Q/10-Kの提出日（L1815） | 変わらない | 変わらない |
-| `freshness.py`・`update.py`（`_freshness.json`）・`fetcher.py::_get_latest_accn()` | 生 | 手元の最大filed（取り直しの判定） | 変わらない | 変わらない |
-| `src/tail/`（edgar_rss_monitor・sec_ctrl_fetcher・sec_items_fetcher・quarterly_review_generator・xbrl_segment_fetcher・kpi_proposer） | submissions・RSS・生 | 新しい提出の検知、730日以内のconcept | 変わらない | 変わらない |
-| HypeCore（`hypecore.py`）・`audit.py` | 読まない | — | 定義v2の消費者になる | — |
-
-#### 置き方の案（未決定、チャット側の判断）
-- 並べて持つ（推奨）: 各エントリに`first_filed`（同じタグ・期間で最初に申告された書類の提出日）を足し、`filed`は今の意味（採用した値の書類）のまま残す。選び方・値は変わらない
-- 置き換えは不可: 上の表のとおり、選び方（最新の値を採る）と値が変わり、Layer3・normalized・ROTCE・株式数の直しに及ぶ
-- 時点の値を厳密にするなら、最初に申告された値（`first_val`）も要る（1,555件は今の値と違う）。stageの検証で「その時点で使えた値」を使うかどうかで決める
-- 派生の値（YTDからの差し引き・Q4の暗黙・合算）は、元のエントリの`first_filed`の最大を使う
-- 凍結（fixed_registry）への影響: 凍結はparser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外のため影響しない。
-  parser.pyにも入れる場合、provenanceは`fields_snapshot_hash`に含まれるが、凍結の項目はprovenanceごと旧ファイルから戻されるため新しいキーは付かず、CHECK-31はNGにならない（凍結していない項目だけに付く）。stageはLayer3を読むので、parser.pyに入れる必要は無い
-
-#### 方針
-Layer3に最初の提出日を持たせる（期間の長さと関係なく必要。定義v2 §3・§5）。Layer3は登録のStep 1（`update.py TICKER`）でも作られるため、新しい銘柄にもそのまま入る。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
-
-#### 決定（2026-10-16、チャット側）
-- 案A: `quarterly.py::_process_entries()`で各エントリに`first_filed`を足す。`filed`は今の意味（採用した値の書類）のまま残し、選び方・値は変えない
-  - 派生の値（YTDからの差し引き〈`layer3_builder.py` L952・`normalizer.py` L369〉・Q4の暗黙〈`q4_implied.py` L192〉・合算）は、元の値の`first_filed`の最大にする
-  - 共通の関数に入れるため、normalized（`common/sec_data/normalized/`と公開のコピー`docs/common/sec_data/normalized/`）にもキーが入る（次のSEC_Data_Updateで全銘柄のファイルに差分が出る。値は変わらない）
-  - 理論株価・判定・注記は変わらない見込み（2026-10-16の調査: Layer3の`filed`で選ぶ処理は`first_filed`を読まず、`is_current_end`・`latest_period_missing`・`financial_as_of`は期末日を見る。method_changeの印は要らない）
-  - `contracts.py`は知らないキーを無視する（`from_dict()`）ため弾かれない。任意キーとして書き足す
-- 「最初」は、候補のタグ全体の中で最小の`filed`とする（年によってタグが変わる項目も、その期間の値が最初に申告された書類の日付）。`_process_entries()`はタグごとに呼ばれるため、タグをまたぐ最小は候補のタグを合わせる側で取る
-- 10-Q/A・10-K/Aも提出として数える（`_process_entries()`の対象のformと同じ）
-- `first_val`（案B）は保留。[[STAGE-V2-ROLLOUT-1]]の検証で、後から修正された値による先読みのずれが問題になるかを見て決める
-- 2026-10-19のQ4の逆算の調査で、`first_val`も要る可能性。扱いは初回の束ねで決める（`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`）
-- 2026-10-16の調査で表に無かった読み手: `xbrl_segment_fetcher.py` L446（Layer3の`filed`を`docs/portfolio/tail/data/kpi/*_layer2.json`へ書く。キーを指定して取り出すため`first_filed`は入らない。HTMLは`filed`を読まない）、`conditional_tags.py` L45（生のfiled、2026-10-14追加）。行番号の更新: `layer3_builder.py` L805・L1041、`rotce.py` L147・L287・L345、`report_consistency_check.py` L1545・L1864
-
-#### 範囲の拡大（2026-10-19 初回の束ね、根治策R-C）
-型C（申告の時点の違う値を1つの計算に混ぜる・時点が分からない）の根治策の本体とする。新しいIDにはしない（`docs/architecture/BUNDLING_2026-10-19.md`・`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`）。
-- 範囲: 案A（`first_filed`）に加えて、最初に申告された値`first_val`も持つ（上の「`first_val`（案B）は保留」を、この束ねで範囲に入れる）。
-  Q4の逆算は案1（逆算に使う年次を、Q1〜Q3と同じ時期の申告〈最初の10-K〉にする）とし、年次が後の申告で組み替えられた期（C1）を検知するCHECKを`report_consistency_check.py`に足す
-- 束ねた件: FINDINGS 2026-10-16（TAILのレビューは作った時点の最新の財務で書かれる）・2026-10-14（Layer3のfiledが最後の申告の日付）・2026-10-19（APP・PAYSの負の四半期）、
-  BACKLOG（統合して移設）: [[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]（期末日で絞る部分はTAIL側の変更）・[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]・[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]（年次の組み替えの部分）
-- 始める段（CHAT_RULES 4）: 必要データ（Layer3に`first_filed`と`first_val`）→ 取得の確認（C1を検知するCHECK）
-- 投資判断への影響: 今あり。APPの理論株価が約20〜27%低く出ている（案1で戻る見込み）、HON約−2.6%。判定の変化は0の見込み
-- 規模の見込み: 中（`quarterly.py`・`q4_implied.py`・`contracts.py`・CHECK 1本。normalizedに差分が出る。method_changeの印が要る）
-- 入らない型Cの件: 計算方法の変更の公開の時点の件は[[METHOD-CHANGE-PUBLISH-TIMING-1]]、MACRO PULSEの2件（[[MACRO-PULSE-SLOT-ROWS-1]]・[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]）は残す、[[HYPECORE-STAGE-TIMESCALE-1]]は定義v2の束
+#### 内容
+- `quarterly_review_generator.py`はLayer3の`get_latest_quarterly()`・`get_quarterly_series()`で、対象の期にかかわらず生成の時点の最新の財務を使う。対象の期末日までデータを絞っていない（BACKLOG_DONE.mdの[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「内容」）
+- Layer3の各エントリに`first_filed`・`first_val`が入った（2026-10-21）ため、「対象の期末日までの期」と「その時点で申告されていた値」の両方で絞れるようになった
+- 確かめること: 06-06の一括生成の各期のレビューの`kpi_snapshot`・`layer3_snapshot`が対象の期の数字か。スコアの推移・履歴・予測の振り返りの表示を外す・印を付ける・作り直すのどれにするか
 
 ---
 

@@ -96,7 +96,12 @@ class FinancialEntry:
     """quarterly.py::_process_entries() が生成する標準エントリ形状の型表現。
 
     必須キー: end/start/val/accn/fp/fy/form/filed/period_days/is_ytd/is_annual
-    任意キー: is_implied/anomaly/backfilled/_provenance
+    任意キー: is_implied/anomaly/backfilled/_provenance/first_filed/first_val/q4_basis
+
+    filed・val は採用した値（その期間の最新の申告）。first_filed はその期間の値が最初に申告された
+    書類の提出日（候補のタグ全体で最小）、first_val は採用したタグで最初に申告された値。派生の値は
+    元の値から同じ計算で作り、元の値のどれかに無ければ持たない。q4_basis="latest" は、最初の申告の
+    値が無く最新どうしの差で逆算したQ4の印（[[LAYER3-FIRST-FILED-DATE-1]]、2026-10-21）。
 
     生成元辞書のキー欠落・形状崩れを construction 時に検知する。従来は
     dict.get() による暗黙の None フォールバックで検知不能だった
@@ -117,6 +122,9 @@ class FinancialEntry:
     anomaly: bool = False
     backfilled: bool = False
     provenance: EntryProvenance = field(default_factory=EntryProvenance)
+    first_filed: str | None = None
+    first_val: Any = None
+    q4_basis: str | None = None
 
     @classmethod
     def from_dict(cls, d: dict) -> "FinancialEntry":
@@ -136,6 +144,9 @@ class FinancialEntry:
             anomaly=bool(d.get("anomaly", False)),
             backfilled=bool(d.get("backfilled", False)),
             provenance=EntryProvenance.from_dict(d.get("_provenance")),
+            first_filed=d.get("first_filed"),
+            first_val=d.get("first_val"),
+            q4_basis=d.get("q4_basis"),
         )
 
     def to_dict(self) -> dict:
@@ -153,6 +164,12 @@ class FinancialEntry:
             d["backfilled"] = True
         if not self.provenance.is_empty():
             d["_provenance"] = self.provenance.to_dict()
+        if self.first_filed is not None:
+            d["first_filed"] = self.first_filed
+        if self.first_val is not None:
+            d["first_val"] = self.first_val
+        if self.q4_basis is not None:
+            d["q4_basis"] = self.q4_basis
         return d
 
 

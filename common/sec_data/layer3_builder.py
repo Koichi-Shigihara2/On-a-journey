@@ -61,8 +61,9 @@ import os
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
-from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries
+from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries, earliest_filed_by_period
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
+from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income, with_derived_intangibles
 from .share_unit_fix import with_share_unit_fix
@@ -419,11 +420,13 @@ def extract_field_raw_entries(
             raw = _get_concept_units(company_facts, concept, unit)
             return max((e.get("end") or "" for e in raw), default="")
         candidates = sorted(candidates, key=lambda c: (_latest_end(c), -candidates.index(c)), reverse=True)
+        # [[LAYER3-FIRST-FILED-DATE-1]]: first_filed は候補のタグ全体で最小にする
+        floor = earliest_filed_by_period(_get_concept_units(company_facts, c, unit) for c in candidates)
         for concept in candidates:
             raw_entries = _get_concept_units(company_facts, concept, unit)
             if not raw_entries:
                 continue
-            processed = _process_entries(raw_entries)
+            processed = _process_entries(raw_entries, first_filed_floor=floor)
             processed = _reclassify_misannotated_fy_entries(processed, ticker)
             if processed:
                 return processed, concept
@@ -493,11 +496,13 @@ def _merge_candidate_entries(
     used_concepts: list = []
     per_tag_normalized: list = []
     apply_missing_quarter = field_name in MISSING_QUARTER_IMPLIED_FIELDS
+    # [[LAYER3-FIRST-FILED-DATE-1]]: first_filed は候補のタグ全体で最小にする（first_val は各タグの値）
+    floor = earliest_filed_by_period(_get_concept_units(company_facts, c, unit) for c in candidates)
     for concept in candidates:
         raw_entries = _get_concept_units(company_facts, concept, unit)
         if not raw_entries:
             continue
-        processed = _process_entries(raw_entries)
+        processed = _process_entries(raw_entries, first_filed_floor=floor)
         processed = _reclassify_misannotated_fy_entries(processed, ticker)
         if not processed:
             continue
@@ -666,6 +671,7 @@ def _apply_sign_normalize(entries: list, mode: str | None) -> list:
         e = dict(e)
         if e.get("val") is not None:
             e["val"] = abs(e["val"])
+        set_derived(e, derive([(1, abs_term(e))]))
         out.append(e)
     return out
 
@@ -699,6 +705,8 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     prev_ytd: float = 0
     prev_ytd_known = False
     prev_end: str | None = None
+    # [[LAYER3-FIRST-FILED-DATE-1]]: 前回までの累計の first_filed・first_val・_asof（valと同じ計算でたどる）
+    prev_first: dict = ZERO_TERM
 
     for entry in fy_entries:
         new_entry = dict(entry)
@@ -708,6 +716,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd += standalone
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_first = derive([(1, prev_first), (1, entry)])
             new_entry["val"] = standalone
             converted.append(new_entry)
             continue
@@ -717,9 +726,12 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd = entry["val"]
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_first = derive([(1, entry)])
             continue
 
         standalone = entry["val"] - prev_ytd
+        set_derived(new_entry, derive([(1, entry), (-1, prev_first)]))
+        prev_first = derive([(1, entry)])
         if prev_ytd > 0 and entry["val"] < prev_ytd:
             new_entry["anomaly"] = True
             logger.warning(
@@ -936,6 +948,7 @@ def _build_missing_quarter_implied_entries(entries: list) -> list:
         missing_start = c_start
 
         missing_val = c_val - sum(q["val"] for q in contained_sorted)
+        first = derive([(1, cand)] + [(-1, q) for q in contained_sorted])  # [[LAYER3-FIRST-FILED-DATE-1]]
 
         try:
             period_days = (date.fromisoformat(missing_end) - date.fromisoformat(missing_start)).days
@@ -955,6 +968,7 @@ def _build_missing_quarter_implied_entries(entries: list) -> list:
             "is_ytd":      False,
             "is_annual":   False,
             "is_implied":  True,
+            **first,
         })
 
     # 複数の累計候補（例: 6ヶ月YTDと9ヶ月YTDの両方）が同一の欠落四半期を
@@ -1097,6 +1111,7 @@ def _backfill_gross_profit(fields_out: dict) -> None:
             "val": gp_val,
             "accn": rev_entry.get("accn", ""),
             "backfilled": True,
+            **derive([(1, rev_entry), (-1, abs_term(cogs_entry))]),  # [[LAYER3-FIRST-FILED-DATE-1]]
         })
 
     if backfilled:
@@ -1204,8 +1219,8 @@ def _backfill_operating_income(fields_out: dict) -> None:
         sga_entry = sga_by_end.get(end_date)
         sga_val = sga_entry.get("val") if sga_entry else None
         if sga_val is None:
-            sm_entry = sm_by_end.get(end_date)
-            sga_val = sm_entry.get("val") if sm_entry else None
+            sga_entry = sm_by_end.get(end_date)
+            sga_val = sga_entry.get("val") if sga_entry else None
         if sga_val is None:
             continue
 
@@ -1218,6 +1233,7 @@ def _backfill_operating_income(fields_out: dict) -> None:
             "accn": gp_entry.get("accn", ""),
             "backfilled": True,
             "backfill_source": "reconstructed_gp",
+            **derive([(1, gp_entry), (-1, rd_entry), (-1, sga_entry)]),  # [[LAYER3-FIRST-FILED-DATE-1]]
         })
 
     if backfilled:
@@ -1388,6 +1404,10 @@ def build_ticker_store(ticker: str) -> dict | None:
     # _backfill_gross_profit()の後に実行する（理由は
     # _backfill_operating_income()のdocstring参照）。
     _backfill_operating_income(fields_out)
+
+    # 申告の履歴（_asof）はQ4の逆算・補完のためのメモリの中だけのキー。読み手に渡す前に消す（[[LAYER3-FIRST-FILED-DATE-1]]）
+    for f in fields_out.values():
+        strip_asof(f["entries"])
 
     store = {
         "ticker": ticker,

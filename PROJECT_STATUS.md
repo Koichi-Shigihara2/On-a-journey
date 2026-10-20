@@ -29,13 +29,18 @@
    - （済 2026-10-20）SEC層の段階1〜3: `5dda340c96`（一覧）・`b6294a559b`（削除）・第2部のcommit（CHECK-INV-1〜4）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」
    - SEC層の保留4件は2026-10-20に決着（残す2・削除で3ファイル。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」）
    - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する
-3. R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（範囲を広げたもの: `first_filed`に加えて`first_val`、Q4の逆算の案1、年次の組み替え〈C1〉を検知するCHECK）。`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。APPの理論株価（約20〜27%低い）がここで戻る見込み
+3. （済 2026-10-21）R-C `[[LAYER3-FIRST-FILED-DATE-1]]`: `first_filed`・`first_val`、Q4の逆算を年次と同じ時点の値どうし、CHECK-64。APPの理論株価は戻らない（シミュレーション −1.47%。窓の中の基準の混在は`FINDINGS.md` 2026-10-21、[[STAGE-V2-ROLLOUT-1]]で決める）。公開の確認は`CLAUDE_CODE_START.md`「次回の確認手順」11。TAIL側の残りは`[[TAIL-REVIEW-PERIOD-FILTER-1]]`
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
 
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-21（R-Aの一覧の作り直し・CHECK-INV-5、R-C）**: 第1部`c4819cf6be`（tanuki_layerの作り直し。誰も読まないキーは34→29〈見込み20。9キーは過去のhistory/・score_historyに残る、FINDINGS.md 2026-10-21〉、CHECK-INV-5は本番のワークフローでWARN）。
+  第2部（R-C、件名「feat: R-C Layer3に最初の申告を持たせ、Q4の逆算を年次と同じ時点の値どうしにする」）: `first_filed`・`first_val`・`q4_basis`、Q4の逆算の基準は`implied_q4_value()`の1か所、CHECK-64。
+  案1（Q1〜Q3もfirst_val）はシミュレーションでHypeCoreのstageが2か所変わり止めた。結果の表はBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`「シミュレーション」。method_changeは10-22・10-25・10-26
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5（SYSTEM_MAP.mdの【二重】。参考: 一覧の規則の欄の「Q4の逆算」はHEAD・今とも3ファイル、検出式の二重は6→6）、サブシステム 10、
+  Python 68,773行（139ファイル。68,442行から331行増: R-Cのcommon/sec_data。新しい出力・規則は足していない。normalizedのキー`first_filed`は読み手がまだ無い〈[[STAGE-V2-ROLLOUT-1]]で使う〉）、テスト34,556行、ワークフロー23本、アクティブBACKLOG 13件（`[[LAYER3-FIRST-FILED-DATE-1]]`を移設、`[[TAIL-REVIEW-PERIOD-FILTER-1]]`を登録）
 - **2026-10-20 夜（R-AのTANUKIの保留2件の決着）**: `ad6af70b5c`（今日の特選銘柄の削除、workflow_dispatch `39427928710` success）、第2部（誰も読まない14キー。96銘柄のlatest.jsonのiv・判定・RICE・TANUKI Scoreは前後で同じ）。CHECK-INVはNG 0・WARN 9、約27秒。FINDINGS.mdにTANUKI_Score_Update.ymlの名前と中身のずれ（型E）を1行〈計24行〉
   **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 68,433行（139ファイル。69,035行から602行減: daily_pick.py 588・誰も読まないキーの書き込み32・一覧のスクリプトは18行増）、テスト34,343行（−62、daily_pickのテスト）、ワークフロー23本、アクティブBACKLOG 13件
 - **2026-10-20 夜（R-AのTANUKIの段階2・3）**: 第1部`d180cf8bab`（本番外の4つ〈407行とUTF-16のログ〉・tanuki_score/のJSON 2つを削除）。第2部: CHECK-INVをTANUKIにも当て、画面のキーのINV-5・6を足した。今のリポジトリでNG 0・WARN 9（既知の規則の二重 SEC層5・TANUKI 4）、rccのCHECK-INVは約27秒。

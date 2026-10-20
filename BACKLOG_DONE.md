@@ -2,6 +2,98 @@
 
 ---
 
+## 2026-10-21（完了）
+
+### ✅ [LAYER3-FIRST-FILED-DATE-1] Layer3の提出日（filed）が「その値を最後に申告した書類」の日付で、過去の時点で使えた値が分からない
+**完了（2026-10-21）:** 件名「feat: R-C Layer3に最初の申告を持たせ、Q4の逆算を年次と同じ時点の値どうしにする」のcommit。TAIL側の変更（レビューのデータを対象の期末日で絞る）は[[TAIL-REVIEW-PERIOD-FILTER-1]]として残す
+
+#### 実施（2026-10-21）
+- `quarterly.py::_process_entries()`で各エントリに`first_filed`（候補のタグ全体で最小のfiled。タグをまたぐ最小は`earliest_filed_by_period()`を候補を合わせる側〈`build_raw_table`・`layer3_builder.py`〉で作って渡す）・
+  `first_val`（採用したタグで最初に申告された値）と、メモリの中だけの申告の履歴`_asof`（保存・読み手に渡す前に消す）。`filed`・`val`は今の意味のまま。normalizedの売上はタグを混ぜるため、`first_val`・`_asof`は採用したタグの中だけで取る
+- 派生の値（YTDからの差し引き・欠落四半期の逆算・粗利と営業利益の補完）は`fact_selection.py::derive()`で、`first_filed`を元の値の最大、`first_val`・`_asof`を同じ計算で作る。`contracts.py`に任意キー（`first_filed`・`first_val`・`q4_basis`）
+- Q4の逆算は「年次と同じ時点の値どうし」: 最初の10-Kの年次（`first_val`）− その10-Kの提出日以前に申告されたQ1〜Q3の最も新しい値。その時点の値が無い期は最新どうしの差にして`q4_basis: "latest"`。
+  基準の選び方は`q4_implied.py::implied_q4_value()`の1か所で、`build_q4_implied_entries`と`normalizer.py`の欠落四半期の逆算（年次から末尾の四半期）が呼ぶ。Q4のエントリの`first_val`は最初の申告どうし
+- 案1（Q1〜Q3も`first_val`）はシミュレーションで止めた: AVAV FY2026 Q4の純利益が+63.2M→−24.1M（Q1〜Q3が10-Kの前に載せ直されていた）になり、HypeCoreのstageが2か所（AVAV 2026-06・QBTS 2024-01）で変わったため
+- CHECK-64（`report_consistency_check.py::_check_restated_annual`、銘柄・期・項目ごとのWARN、全体のNGと混ぜない）: 年次が後の申告で組み替えられた期（C1）。normalizedに`first_val`が入る次のSEC_Data_Updateから出る（作り直したnormalizedで77件・23銘柄）
+- 一覧の規則の欄の「Q4の逆算」はHEAD・今とも3ファイル（parser.py・q4_implied.py・extract_key_facts.py）、二重の規則の数は6→6
+
+#### シミュレーション（2026-10-21、全98銘柄、手元のcompany_factsから作り直し、XAI_API_KEYを外して前後で実行。作り直したファイルはcommitしていない）
+- TANUKI VALUATION: 判定・TANUKI Scoreの変化0。理論株価が1%以上変わったのはFLYW −4.37%（45.17→43.19）・HON −4.19%（122.45→117.33）・APP −1.47%（1,152.94→1,135.99）。RICEは9銘柄で変化（APP 7.517→6.660、HON 0.129→0.093 等）
+- APPは見込みの+20〜27%にならない: moatの粗利率の窓の中で、2023Q4・2024Q4（組み替え前）と2024Q2・Q3・2025Q1（翌年の10-Qで組み替え後）が混ざる。粗利率は0.818→約0.839で、境目0.857に届かない（`FINDINGS.md` 2026-10-21、未解決）
+- HypeCore: stageの変化0（過去の月を含む）。小区分・real_strongの変化はAPP 15か月・SNPS 10か月・SPIR 1か月。実体スコアは27銘柄（APP 2026-10 0.183→0.472、HON 0.880→1.161 等）
+- Stonks Silo: 判定・スコアの変化0。ヒートマップの値は25銘柄（SPIR 2025-12の純利益 −25.1M→−28.0M、KULR 2025-12の売上 3.18M→2.86M 等）
+- ROTCE: 最新の値の1%以上の変化0。履歴の点は9銘柄（ASTS・CELH・GTLB・IONQ・SOUN・SPIRの古い期、CSGP 2025Q4のrotce_ttm −5.7%、TSLA 2024Q4のrotce +8.9%）
+- 負の四半期の売上: APP 2023Q4は−488.1M→+953.3M。残るのはASTS 2022Q4（−0.001M）・2023Q4（−2.4M、normalized。年次と同じ時点の値どうしでも負）とPAYS 2020Q3（10-Qの値そのまま）
+- Layer3のQ4の逆算6,772件のうち`q4_basis: "latest"`は353件（その時点のQ1〜Q3の値が無い期）
+**型・処置（2026-10-19 束ね）:** 型C・根治策の本体（型C（申告の時点）の根治策（R-C）の本体。範囲を広げた）
+**優先度:** 中
+**分類:** 一次データ / common/sec_data（`quarterly.py::_process_entries()`・`fact_selection.py::select_latest_filed()`・`layer3_builder.py`・`contracts.py`）
+**登録日:** 2026-10-14
+**着手条件（2026-10-16 更新）:** 2026-10-19の確認（`CLAUDE_CODE_START.md`「次回の確認手順」の4・6）の後。置き方は下の「決定（2026-10-16）」
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の定義v2の検証の試算（2026-10-14、c52db854d8）。試算ではcompany_factsの最初の提出日を使い、10,743件がLayer3のfiledと食い違った
+
+#### 内容（2026-10-14の調査、読み取りのみ）
+- Layer3・normalizedは、同じ期間（四半期は(start, end)、年次は期末日）に複数の書類の値があると、提出日が最新の1件を選ぶ（`quarterly.py::_process_entries()`→`select_latest_filed()`）。
+  YTDと単独の四半期の混在も最新（`layer3_builder.py`のL794・L1030、`normalizer.py`のL169・L419）。持つ`filed`はその書類の提出日。Q4の暗黙の値は年次（10-K）のfiledを写す（`q4_implied.py` L192）。
+  TTM（`ttm_calculator.py`）は提出日を持たない。parser.py（annual_*.json、TANUKI VALUATION）も同じ年度の候補から最新filedを選び、provenanceに`filed`を記録する
+- 規模（2026-10-14、全98銘柄のLayer3、60,013件）: 単一タグで照合できた43,360件のうち25,682件（59%）は、最後の提出日が最初の提出日より遅い（中央値364日。翌年の書類の比較用の再掲）。
+  そのうち1,555件は、最初に申告された値と今の値が違う（修正・組み替え）。派生・暗黙の値4,940件と照合できない11,713件（YTDからの差し引きで期間が変わった四半期等）は、元のエントリから決める必要がある
+- 同じ根の問題: [[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]（fp・fyも最後の書類のもの）
+
+#### 提出日を読む処理（2026-10-14、grep。company_factsの生のfiledを読むものとLayer3のfiledを読むものを分けた）
+| 処理 | 読むもの | 何に使うか | 最初の提出日を並べて持たせたとき | 置き換えたとき |
+|---|---|---|---|---|
+| `quarterly.py::_process_entries()`（Layer3・normalized共通） | 生 | 同じ期間の候補から最新filedを選ぶ | 変わらない | 古い値（修正前）を選ぶことになり、全消費者の値が変わる |
+| `layer3_builder.py`（YTD・単独の選択）・`normalizer.py` | Layer3 | 同上 | 変わらない | 同上 |
+| `q4_implied.py` | Layer3 | Q4の暗黙の値に年次のfiledを写す | 年次の最初の提出日を写す処理が要る | 同上 |
+| `contracts.py`（エントリの必須キー） | Layer3 | 形の検査 | 任意キーとして足す（契約の変更、テストの更新） | 意味が変わる |
+| `rotce.py`（L146・L286・L344） | Layer3 | 同じ期末のstockの値・無形資産のタグを最新filedで選ぶ | 変わらない | ROTCE・P/TBVの値が変わる |
+| `share_unit_fix.py` | 生 | 同じ期の株式数の候補から最新filedを採用 | 変わらない | 株式数の単位の直しが変わる |
+| `parser.py`（annual_*.json、TANUKI VALUATION） | 生 | 同じ年度の候補の選択とprovenanceの記録 | Layer3だけに入れれば変わらない | （対象にしない） |
+| EPS ANALYZER（`extract_key_facts.py`） | 生（Layer3を通らない） | 株式数・四半期の候補を最新filedで選ぶ | 変わらない | 変わらない |
+| TANUKI VALUATION（`pipeline.py`・`score_verifier.py`） | 読まない | score_verifierはscore_historyの日付と株価 | 変わらない | 変わらない |
+| STONKS SILO | 読まない | `financial_as_of`は最新の四半期末（期末日） | 変わらない | 変わらない |
+| `report_consistency_check.py` | 生 | 株式数のDEIの古さ（L1543）、CHECK-37の最新の10-Q/10-Kの提出日（L1815） | 変わらない | 変わらない |
+| `freshness.py`・`update.py`（`_freshness.json`）・`fetcher.py::_get_latest_accn()` | 生 | 手元の最大filed（取り直しの判定） | 変わらない | 変わらない |
+| `src/tail/`（edgar_rss_monitor・sec_ctrl_fetcher・sec_items_fetcher・quarterly_review_generator・xbrl_segment_fetcher・kpi_proposer） | submissions・RSS・生 | 新しい提出の検知、730日以内のconcept | 変わらない | 変わらない |
+| HypeCore（`hypecore.py`）・`audit.py` | 読まない | — | 定義v2の消費者になる | — |
+
+#### 置き方の案（未決定、チャット側の判断）
+- 並べて持つ（推奨）: 各エントリに`first_filed`（同じタグ・期間で最初に申告された書類の提出日）を足し、`filed`は今の意味（採用した値の書類）のまま残す。選び方・値は変わらない
+- 置き換えは不可: 上の表のとおり、選び方（最新の値を採る）と値が変わり、Layer3・normalized・ROTCE・株式数の直しに及ぶ
+- 時点の値を厳密にするなら、最初に申告された値（`first_val`）も要る（1,555件は今の値と違う）。stageの検証で「その時点で使えた値」を使うかどうかで決める
+- 派生の値（YTDからの差し引き・Q4の暗黙・合算）は、元のエントリの`first_filed`の最大を使う
+- 凍結（fixed_registry）への影響: 凍結はparser.pyのannual_*.jsonだけが対象で、Layer3・normalized・TTMは対象外のため影響しない。
+  parser.pyにも入れる場合、provenanceは`fields_snapshot_hash`に含まれるが、凍結の項目はprovenanceごと旧ファイルから戻されるため新しいキーは付かず、CHECK-31はNGにならない（凍結していない項目だけに付く）。stageはLayer3を読むので、parser.pyに入れる必要は無い
+
+#### 方針
+Layer3に最初の提出日を持たせる（期間の長さと関係なく必要。定義v2 §3・§5）。Layer3は登録のStep 1（`update.py TICKER`）でも作られるため、新しい銘柄にもそのまま入る。依存される側: [[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[STAGE-V2-ROLLOUT-1]]。実装しない（チャット側の指示待ち）
+
+#### 決定（2026-10-16、チャット側）
+- 案A: `quarterly.py::_process_entries()`で各エントリに`first_filed`を足す。`filed`は今の意味（採用した値の書類）のまま残し、選び方・値は変えない
+  - 派生の値（YTDからの差し引き〈`layer3_builder.py` L952・`normalizer.py` L369〉・Q4の暗黙〈`q4_implied.py` L192〉・合算）は、元の値の`first_filed`の最大にする
+  - 共通の関数に入れるため、normalized（`common/sec_data/normalized/`と公開のコピー`docs/common/sec_data/normalized/`）にもキーが入る（次のSEC_Data_Updateで全銘柄のファイルに差分が出る。値は変わらない）
+  - 理論株価・判定・注記は変わらない見込み（2026-10-16の調査: Layer3の`filed`で選ぶ処理は`first_filed`を読まず、`is_current_end`・`latest_period_missing`・`financial_as_of`は期末日を見る。method_changeの印は要らない）
+  - `contracts.py`は知らないキーを無視する（`from_dict()`）ため弾かれない。任意キーとして書き足す
+- 「最初」は、候補のタグ全体の中で最小の`filed`とする（年によってタグが変わる項目も、その期間の値が最初に申告された書類の日付）。`_process_entries()`はタグごとに呼ばれるため、タグをまたぐ最小は候補のタグを合わせる側で取る
+- 10-Q/A・10-K/Aも提出として数える（`_process_entries()`の対象のformと同じ）
+- `first_val`（案B）は保留。[[STAGE-V2-ROLLOUT-1]]の検証で、後から修正された値による先読みのずれが問題になるかを見て決める
+- 2026-10-19のQ4の逆算の調査で、`first_val`も要る可能性。扱いは初回の束ねで決める（`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`）
+- 2026-10-16の調査で表に無かった読み手: `xbrl_segment_fetcher.py` L446（Layer3の`filed`を`docs/portfolio/tail/data/kpi/*_layer2.json`へ書く。キーを指定して取り出すため`first_filed`は入らない。HTMLは`filed`を読まない）、`conditional_tags.py` L45（生のfiled、2026-10-14追加）。行番号の更新: `layer3_builder.py` L805・L1041、`rotce.py` L147・L287・L345、`report_consistency_check.py` L1545・L1864
+
+#### 範囲の拡大（2026-10-19 初回の束ね、根治策R-C）
+型C（申告の時点の違う値を1つの計算に混ぜる・時点が分からない）の根治策の本体とする。新しいIDにはしない（`docs/architecture/BUNDLING_2026-10-19.md`・`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`）。
+- 範囲: 案A（`first_filed`）に加えて、最初に申告された値`first_val`も持つ（上の「`first_val`（案B）は保留」を、この束ねで範囲に入れる）。
+  Q4の逆算は案1（逆算に使う年次を、Q1〜Q3と同じ時期の申告〈最初の10-K〉にする）とし、年次が後の申告で組み替えられた期（C1）を検知するCHECKを`report_consistency_check.py`に足す
+- 束ねた件: FINDINGS 2026-10-16（TAILのレビューは作った時点の最新の財務で書かれる）・2026-10-14（Layer3のfiledが最後の申告の日付）・2026-10-19（APP・PAYSの負の四半期）、
+  BACKLOG（統合して移設）: [[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]（期末日で絞る部分はTAIL側の変更）・[[LAYER3-QUARTERLY-FP-FILING-LABEL-1]]・[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]（年次の組み替えの部分）
+- 始める段（CHAT_RULES 4）: 必要データ（Layer3に`first_filed`と`first_val`）→ 取得の確認（C1を検知するCHECK）
+- 投資判断への影響: 今あり。APPの理論株価が約20〜27%低く出ている（案1で戻る見込み）、HON約−2.6%。判定の変化は0の見込み
+- 規模の見込み: 中（`quarterly.py`・`q4_implied.py`・`contracts.py`・CHECK 1本。normalizedに差分が出る。method_changeの印が要る）
+- 入らない型Cの件: 計算方法の変更の公開の時点の件は[[METHOD-CHANGE-PUBLISH-TIMING-1]]、MACRO PULSEの2件（[[MACRO-PULSE-SLOT-ROWS-1]]・[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]）は残す、[[HYPECORE-STAGE-TIMESCALE-1]]は定義v2の束
+
+---
+
 ## 2026-10-20（完了）
 
 ### ✅ [MARKETDATA-FUTURES-BACKFILL-ROWS-1] daily/のES=F・NQ=F・NIY=Fの抜け補完の行に、前の行と同じvolume・O=H=L=Cでvolume 0の足・確定時刻を過ぎても残る暫定の印がある

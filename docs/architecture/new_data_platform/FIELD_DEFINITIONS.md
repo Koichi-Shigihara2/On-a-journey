@@ -1653,3 +1653,24 @@ grep -oE 'AS-IS-[0-9]+' DERIVED_DATA_SUBCATEGORIES.md（8分類の明細一覧�
   ff_rateのtruthy判定バグ・fear_greedの重複キーバグ・CSV列欠落・
   `^GSPC`重複フェッチ等）はいずれも実装（コード修正）を伴うため、
   本タスクの範囲外として記録にとどめた
+
+---
+
+## 追記（2026-10-21）: Layer3・normalizedのエントリの最初の申告と、Q4の逆算の基準（[[LAYER3-FIRST-FILED-DATE-1]]）
+
+各フィールドのエントリ（`common/sec_data/quarterly.py::_process_entries()`の形。`contracts.py::FinancialEntry`）に任意キーを足した。
+`filed`・`val`の意味は変えていない。
+
+| キー | 意味 | 派生の値（YTDからの差し引き・欠落四半期の逆算・粗利と営業利益の補完・Q4の逆算） |
+|---|---|---|
+| `filed` | 採用した値（その期間の最新の申告）の書類の提出日（従来どおり） | 従来どおり |
+| `val` | 採用した値（最新の申告）（従来どおり。Q4の逆算だけ下の基準） | 従来どおり |
+| `first_filed` | その期間の値が最初に申告された書類の提出日。候補のタグ全体で最小 | 元の値の`first_filed`の最大 |
+| `first_val` | 採用したタグで、その期間に最初に申告された値 | 元の値の`first_val`から同じ計算（Q4は年次とQ1〜Q3の`first_val`の差） |
+| `q4_basis` | `"latest"`のときだけ付く。Q4の逆算で、年次の時点のQ1〜Q3の値が無く、最新どうしの差にした印 | — |
+
+**Q4の逆算の基準（2026-10-21）**: Q4 = その会計年度の最初の10-Kの年次（`first_val`）− その10-Kの提出日以前に申告されたQ1〜Q3の最も新しい値
+（年次と同じ時点の値どうし。`q4_implied.py::implied_q4_value()`）。後の10-Kは年次を事業の売却等で組み替えて載せ直すが、10-Qは2年前のQ1〜Q3を
+載せ直さないため、最新どうしの差では基準が混ざっていた（`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`、APP 2023Q4の売上が−488.1M）。
+同じ時系列の中のQ1〜Q3は最新の申告のままなので、窓の中で基準が混ざることは残る（`FINDINGS.md` 2026-10-21、[[STAGE-V2-ROLLOUT-1]]で決める）。
+

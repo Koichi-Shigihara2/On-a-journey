@@ -1347,6 +1347,16 @@ SEC EDGAR
 │    extract_key_facts.py（SPLIT-AUTO-CHECK-1）がそれぞれ独立実装していた
 │    同一ロジックをここに集約。parser.py本体（本人データ優先・fy一致等の
 │    多段規則）は対象外
+│    **2026-10-21追記（[[LAYER3-FIRST-FILED-DATE-1]]）**: 最初の申告の部品。`select_first_filed`・
+│    `asof_history`（同じ期間の申告の履歴`_asof`、メモリの中だけで保存・読み手に渡す前に`strip_asof`で消す）・
+│    `value_asof`（ある提出日以前の最も新しい値）・`derive`（派生の値の`first_filed`＝元の値の最大、
+│    `first_val`・`_asof`＝同じ計算）。quarterly.py・normalizer.py・layer3_builder.py・q4_implied.pyが使う。
+│    Layer3・normalizedの各エントリは`filed`・`val`（最新の申告）に加えて`first_filed`（候補のタグ全体で
+│    最初に申告された書類の提出日）・`first_val`（採用したタグで最初に申告された値）を持つ。
+│    Q4の逆算の基準は`q4_implied.py::implied_q4_value()`の1か所: 最初の10-Kの年次 − その提出日以前に
+│    申告されたQ1〜Q3の最も新しい値（年次と同じ時点の値どうし）。その時点の値が無い期は最新どうしの差に
+│    して`q4_basis: "latest"`。`build_q4_implied_entries`と`normalizer.py`の欠落四半期の逆算（年次から
+│    末尾の四半期）が呼ぶ。年次の組み替え（C1）はrccのCHECK-64（WARN、銘柄ごと）が検知する
 ├─ newfield_q4_cutoff_check.py  # LAYER3-TTM-REGRESSION-NEWFIELD-BLINDSPOT-1
 │    対応の常設チェックツール（2026-07-30新設、コミットa7b840c32）。現行の
 │    TTM回帰比較（旧ttm/データのキーを起点に新旧を突合する設計）は、旧

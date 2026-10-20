@@ -11,7 +11,8 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 from .contracts import validate_fields
-from .q4_implied import build_q4_implied_entries
+from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
+from .q4_implied import build_q4_implied_entries, implied_q4_value
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +108,7 @@ def normalize(ticker: str, raw: dict) -> dict:
     for entry in fields_norm.get("CapEx", []):
         if entry.get("val") is not None:
             entry["val"] = abs(entry["val"])
+        set_derived(entry, derive([(1, abs_term(entry))]))
 
     logger.info("[%s] normalization done", ticker)
     return {
@@ -201,6 +203,8 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     prev_ytd: float = 0
     prev_ytd_known = False
     prev_end: str | None = None
+    # [[LAYER3-FIRST-FILED-DATE-1]]: 前回までの累計の first_filed・first_val・_asof（valと同じ計算でたどる）
+    prev_first: dict = ZERO_TERM
 
     for entry in fy_entries:
         new_entry = dict(entry)
@@ -211,6 +215,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd += standalone
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_first = derive([(1, prev_first), (1, entry)])
             new_entry["val"] = standalone
             converted.append(new_entry)
             continue
@@ -223,10 +228,13 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd = entry["val"]
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_first = derive([(1, entry)])
             continue
 
         # YTD entry: 前回YTDとの差分
         standalone = entry["val"] - prev_ytd
+        set_derived(new_entry, derive([(1, entry), (-1, prev_first)]))
+        prev_first = derive([(1, entry)])
         # 異常フラグ: 前QのYTDが正値だったのに累積が減少した場合（決算期変更等）
         if prev_ytd > 0 and entry["val"] < prev_ytd:
             new_entry["anomaly"] = True
@@ -352,7 +360,13 @@ def _build_missing_quarter_implied_entries(entries: list) -> list:
         else:
             continue  # 欠落位置が中間（飛び地）等で特定できないため対象外
 
-        missing_val = c_val - sum(q["val"] for q in contained_sorted)
+        if cand.get("is_annual") and missing_end == c_end:
+            # 年次から末尾の四半期を出す＝Q4の逆算。q4_implied.pyと同じく最初の申告どうしの差にする
+            # （[[LAYER3-FIRST-FILED-DATE-1]]の案1。CapExの符号は normalize() の最後でそろえる）
+            missing_val, first = implied_q4_value(cand, contained_sorted, "")
+        else:
+            missing_val = c_val - sum(q["val"] for q in contained_sorted)
+            first = derive([(1, cand)] + [(-1, q) for q in contained_sorted])
 
         try:
             period_days = (_date.fromisoformat(missing_end) - _date.fromisoformat(missing_start)).days
@@ -372,6 +386,7 @@ def _build_missing_quarter_implied_entries(entries: list) -> list:
             "is_ytd":      False,
             "is_annual":   False,
             "is_implied":  True,
+            **first,
         })
 
     # 複数の累計候補（例: 6ヶ月YTDと9ヶ月YTDの両方）が同一の欠落四半期を
@@ -460,6 +475,7 @@ def _calc_gross_profit(fields: dict) -> dict:
             "val": gp_val,
             "accn": rev_entry.get("accn", ""),
             "backfilled": True,
+            **derive([(1, rev_entry), (-1, abs_term(cogs_entry))]),  # [[LAYER3-FIRST-FILED-DATE-1]]
         })
         logger.debug("GrossProfit backfilled for end=%s: %s", end_date, gp_val)
 
@@ -482,6 +498,8 @@ def save_normalized(ticker: str, normalized: dict) -> str:
     違反時はContractViolation（ValueErrorのサブクラス）を送出し、呼び出し元
     （update.py）の既存のper-ticker try/except Exceptionで捕捉・スキップされる。
     """
+    for entries in normalized.get("fields", {}).values():
+        strip_asof(entries)   # メモリの中だけの申告の履歴は保存しない（[[LAYER3-FIRST-FILED-DATE-1]]）
     validate_fields(normalized.get("fields", {}))
     os.makedirs(NORMALIZED_DIR, exist_ok=True)
     path = os.path.join(NORMALIZED_DIR, f"{ticker.upper()}_quarterly_normalized.json")

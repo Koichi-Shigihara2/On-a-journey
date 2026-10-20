@@ -1717,6 +1717,60 @@ def _check_latest_period_missing(data_dir: Optional[str] = None) -> list[tuple[s
     return out
 
 
+# CHECK-64 の対象（Q4の逆算の基準の混在の調査と同じ6項目。docs/architecture/Q4_IMPLIED_BASIS_MIX.md）
+_RESTATED_ANNUAL_FIELDS = ("Revenue", "GrossProfit", "OperatingIncome", "NetIncome", "OCF", "CapEx")
+_RESTATED_ANNUAL_MIN_RATIO = 0.01
+
+
+def _check_restated_annual(norm_dir: Optional[str] = None) -> list[tuple[str, str]]:
+    """CHECK-64: 年次が後の申告で組み替えられた期（C1、2026-10-21新設、NG化しない、[[LAYER3-FIRST-FILED-DATE-1]]）。
+
+    normalized（保存済みファイル）の年次のエントリで、次の2つを満たす期を銘柄・期・項目ごとに列挙する。
+    ①今の年次（最新の申告）の提出日が、その年度の直近3四半期（Q4の逆算に使うQ1〜Q3）の提出日の最大より後
+    ②最初の申告の年次（first_val）と今の年次の差が、今の年次の絶対値の1%を超える
+    Q4の逆算は最初の申告どうし（案1）でそろえているため、値の誤りではなく「組み替えがあった」ことの検知。
+    最初の申告の値が無く最新どうしで逆算したQ4（q4_basis="latest"）は、そのことも書く。
+    first_valを持たない（SEC_Data_Updateで作り直す前の）ファイルは対象にならない。
+    台帳は {"check": "WARN-64", "ticker": 銘柄, "match": "<項目> <期末日>"}。
+    Returns: [(ticker, WARNメッセージ)]
+    """
+    base = norm_dir or NORMALIZED_DIR
+    out: list[tuple[str, str]] = []
+    if not os.path.isdir(base):
+        return out
+    for name in sorted(os.listdir(base)):
+        if not name.endswith("_quarterly_normalized.json"):
+            continue
+        t = name[: -len("_quarterly_normalized.json")]
+        try:
+            with open(os.path.join(base, name), encoding="utf-8") as f:
+                fields = (json.load(f) or {}).get("fields") or {}
+        except Exception:
+            continue
+        for fname in _RESTATED_ANNUAL_FIELDS:
+            entries = fields.get(fname) or []
+            quarters = [e for e in entries if not e.get("is_annual") and not e.get("is_ytd")]
+            for a in entries:
+                if not a.get("is_annual") or a.get("val") is None or a.get("first_val") is None:
+                    continue
+                cur, first = a["val"], a["first_val"]
+                if not cur or abs(cur - first) <= _RESTATED_ANNUAL_MIN_RATIO * abs(cur):
+                    continue
+                fy_qs = [q for q in quarters if q.get("end", "") < a["end"] and q.get("start", "") >= a.get("start", "")
+                         and not q.get("is_implied")]
+                top3 = sorted(fy_qs, key=lambda q: q["end"], reverse=True)[:3]
+                if not top3 or a.get("filed", "") <= max(q.get("filed", "") for q in top3):
+                    continue
+                q4 = next((q for q in quarters if q.get("end") == a["end"] and q.get("is_implied")), None)
+                basis = ""
+                if q4 is not None and q4.get("q4_basis") == "latest":
+                    basis = "。Q4は最初の申告の値が無く最新どうしで逆算（基準が混ざりうる）"
+                out.append((t, f"  [WARN-64 年次の組み替え] {t}: {fname} {a['end']} 年次 今{cur / 1e6:,.1f}M"
+                               f"（{a.get('filed', '?')}）／最初{first / 1e6:,.1f}M（{a.get('first_filed', '?')}）、"
+                               f"ずれ{(cur - first) / abs(cur) * 100:+.1f}%{basis}"))
+    return out
+
+
 def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:
     """CHECK-60: SECの一次データの鮮度（common/sec_data/data/_freshness.json）を読むWARN
     （2026-10-10新設、NG化しない。[[SEC-FETCH-CACHE-MTIME-CI-1]]）。
@@ -3548,6 +3602,20 @@ def run_checks(args=None) -> tuple[int, int]:
     if lpm_msgs:
         flagged.append(("[GLOBAL]", [], lpm_msgs))
         total_warn += len(lpm_msgs)
+
+    # CHECK-64: 年次が後の申告で組み替えられた期（C1、NG化しない）。銘柄・期・項目ごとの台帳照合を行う
+    # （[[LAYER3-FIRST-FILED-DATE-1]]。全体のNGとは混ぜない）
+    restated_msgs = []
+    for _t, _w in _check_restated_annual():
+        if ticker_filter and _t not in ticker_filter:
+            continue
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        restated_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if restated_msgs:
+        flagged.append(("[GLOBAL]", [], restated_msgs))
+        total_warn += len(restated_msgs)
 
     # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
     # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。

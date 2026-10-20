@@ -15,7 +15,7 @@ from .tag_definitions import (
     TAG_CANDIDATES, NET_INCOME_CANDIDATES, with_derived_net_income,
 )
 from .utils import quarters_in_trailing_window
-from .fact_selection import select_latest_filed
+from .fact_selection import ASOF_KEY, asof_history, select_first_filed, select_latest_filed
 
 logger = logging.getLogger(__name__)
 
@@ -523,14 +523,16 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
             # メインタグ＋全フォールバックをマージして最多エントリを確保する
             # 注意: 同一accn内にYTDとstandalone両方が含まれる場合があるため
             # accnではなく(end, start, val)の組み合わせで重複排除する
-            all_entries = list(entries)
+            # _tag: 混ぜたエントリの元のタグ。first_val・申告の履歴は採用したタグの中だけで取る
+            # （[[LAYER3-FIRST-FILED-DATE-1]]。総額と純額の売上のように、タグで値の定義が違うことがある）
+            all_entries = [{**e, "_tag": concept} for e in entries]
             seen_key = {(e.get("end"), e.get("start"), e.get("val")) for e in entries}
             for fallback_concept in _REVENUE_FALLBACKS:
                 fb = _get_field_units(company_facts, fallback_concept, unit)
                 for e in fb:
                     key = (e.get("end"), e.get("start"), e.get("val"))
                     if key not in seen_key:
-                        all_entries.append(e)
+                        all_entries.append({**e, "_tag": fallback_concept})
                         seen_key.add(key)
             entries = all_entries
             if entries:
@@ -592,12 +594,12 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
                 override_entries = _get_field_units(company_facts, ticker_cogs_concept, unit)
                 if override_entries:
                     seen_key = {(e.get("end"), e.get("start"), e.get("val")) for e in entries}
-                    merged = list(entries)
+                    merged = [{**e, "_tag": "_COGS"} for e in entries]   # _tag は Revenue のマージと同じ
                     added = 0
                     for e in override_entries:
                         key = (e.get("end"), e.get("start"), e.get("val"))
                         if key not in seen_key:
-                            merged.append(e)
+                            merged.append({**e, "_tag": ticker_cogs_concept})
                             seen_key.add(key)
                             added += 1
                     entries = merged
@@ -651,7 +653,15 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
                     ]
                 logger.debug("[%s] %s fallback evaluated (best candidate selected)", ticker, field_name)
 
-        fields[field_name] = processed
+        # [[LAYER3-FIRST-FILED-DATE-1]]: first_filed は候補のタグ全体で最小にする（first_val は採用したタグの値のまま）
+        candidate_concepts = [concept]
+        if field_name == "Revenue":
+            candidate_concepts += list(_REVENUE_FALLBACKS)
+        if field_name == "_COGS":
+            candidate_concepts += list(_COGS_FALLBACKS) + [c for c in [restrictions.get("cogs_concept")] if c]
+        candidate_concepts += list(_FIELD_FALLBACKS.get(field_name, ()))
+        floor = earliest_filed_by_period(_get_field_units(company_facts, c, unit) for c in dict.fromkeys(candidate_concepts))
+        fields[field_name] = [_floor_first_filed(e, floor) for e in processed]
 
     logger.info("[%s] raw table built: %d fields", ticker, len(fields))
     return {
@@ -659,6 +669,15 @@ def build_raw_table(ticker: str, company_facts: dict) -> dict:
         "generated_at": datetime.now().isoformat(),
         "fields": fields,
     }
+
+
+def _floor_first_filed(entry: dict, floor: dict) -> dict:
+    """entry の first_filed を、ほかの候補のタグで同じ期間が先に申告されていればその日にする。"""
+    if entry.get("first_filed"):
+        f = floor.get(_period_key(entry))
+        if f and f < entry["first_filed"]:
+            entry = {**entry, "first_filed": f}
+    return entry
 
 
 def _selection_entries(raw_entries: list) -> list:
@@ -796,28 +815,8 @@ def _classify_period(start: str, end: str, fp: str, form: str = "") -> dict:
     }
 
 
-def _process_entries(raw_entries: list, quarterly_years: float | None = None,
-                     annual_years: float | None = None) -> list:
-    """
-    生エントリをフィルタ・分類・重複排除・ソートして返す。
-
-    四半期: (start, end) の期間単位でグルーピングし、同一期間内は最新filed優先。
-    ※ end日付だけでグルーピングすると、同一end・異なるstart（例: Q3単独 vs
-      Q1-Q3累計）の別期間エントリを誤って「重複」扱いし、一方（主にYTD）を
-      完全に破棄してしまう（BUG-CON-YTD-1）。YTDは欠落四半期の逆算に使える
-      有用な情報のため、start違いは別期間として保持する。
-    年次: 直近8年、四半期: 直近7年（_QUARTERLY_YEARS・_ANNUAL_YEARS）。
-    """
-    today = date.today()
-    q_years = _QUARTERLY_YEARS if quarterly_years is None else quarterly_years
-    a_years = _ANNUAL_YEARS if annual_years is None else annual_years
-    cutoff_q = (today - timedelta(days=q_years * 365)).isoformat()
-    cutoff_a = (today - timedelta(days=a_years * 365)).isoformat()
-
-    # (start, end) → 候補リスト（quarterly）、end → 候補リスト（annual）
-    quarterly_by_period: dict[tuple, list] = defaultdict(list)
-    annual_by_end: dict[str, list] = defaultdict(list)
-
+def _classified_entries(raw_entries: list):
+    """生エントリから対象の書類（10-Q・10-K と訂正）の値を取り出し、期間を分類して返す（_process_entries の前段）。"""
     for entry in raw_entries:
         form = entry.get("form", "")
         if form not in ("10-Q", "10-Q/A", "10-K", "10-K/A"):
@@ -840,7 +839,7 @@ def _process_entries(raw_entries: list, quarterly_years: float | None = None,
         if form in ("10-Q", "10-Q/A") and period_info["period_days"] > 300:
             continue
 
-        enriched = {
+        out = {
             "end": end,
             "start": start,
             "val": val,
@@ -853,23 +852,87 @@ def _process_entries(raw_entries: list, quarterly_years: float | None = None,
             "is_ytd": period_info["is_ytd"],
             "is_annual": period_info["is_annual"],
         }
+        if "_tag" in entry:
+            out["_tag"] = entry["_tag"]
+        yield out
 
-        if period_info["is_annual"]:
+
+def _period_key(e: dict) -> tuple:
+    """_process_entries の期間の単位（年次は期末日、四半期は (start, end)）。"""
+    return ("A", e["end"]) if e["is_annual"] else ("Q", e["start"], e["end"])
+
+
+def earliest_filed_by_period(raw_lists) -> dict:
+    """候補のタグ全体で、期間ごとに最初に申告された書類の提出日（first_filed のタグをまたぐ最小）。
+
+    [[LAYER3-FIRST-FILED-DATE-1]]: _process_entries() はタグごとに呼ばれるため、タグをまたぐ最小は
+    候補のタグを合わせる側（build_raw_table・layer3_builder）でこの辞書を作って渡す。"""
+    out: dict = {}
+    for raw in raw_lists:
+        for e in _classified_entries(raw or []):
+            k = _period_key(e)
+            if e["filed"] and (k not in out or e["filed"] < out[k]):
+                out[k] = e["filed"]
+    return out
+
+
+def _process_entries(raw_entries: list, quarterly_years: float | None = None,
+                     annual_years: float | None = None, first_filed_floor: dict | None = None) -> list:
+    """
+    生エントリをフィルタ・分類・重複排除・ソートして返す。
+
+    四半期: (start, end) の期間単位でグルーピングし、同一期間内は最新filed優先。
+    ※ end日付だけでグルーピングすると、同一end・異なるstart（例: Q3単独 vs
+      Q1-Q3累計）の別期間エントリを誤って「重複」扱いし、一方（主にYTD）を
+      完全に破棄してしまう（BUG-CON-YTD-1）。YTDは欠落四半期の逆算に使える
+      有用な情報のため、start違いは別期間として保持する。
+    年次: 直近8年、四半期: 直近7年（_QUARTERLY_YEARS・_ANNUAL_YEARS）。
+
+    [[LAYER3-FIRST-FILED-DATE-1]]: 選んだエントリに first_filed（同じ期間で最初に申告された書類の
+    提出日）と first_val（その申告の値）、申告の履歴 _asof（メモリの中だけ）を足す。first_filed_floor（earliest_filed_by_period()）を
+    渡すと、first_filed はほかの候補のタグを含めた最小にする（first_val はこのタグの値のまま）。
+    """
+    today = date.today()
+    q_years = _QUARTERLY_YEARS if quarterly_years is None else quarterly_years
+    a_years = _ANNUAL_YEARS if annual_years is None else annual_years
+    cutoff_q = (today - timedelta(days=q_years * 365)).isoformat()
+    cutoff_a = (today - timedelta(days=a_years * 365)).isoformat()
+
+    # (start, end) → 候補リスト（quarterly）、end → 候補リスト（annual）
+    quarterly_by_period: dict[tuple, list] = defaultdict(list)
+    annual_by_end: dict[str, list] = defaultdict(list)
+
+    for enriched in _classified_entries(raw_entries):
+        end = enriched["end"]
+        if enriched["is_annual"]:
             if end >= cutoff_a:
                 annual_by_end[end].append(enriched)
         else:
             if end >= cutoff_q:
-                quarterly_by_period[(start, end)].append(enriched)
+                quarterly_by_period[(enriched["start"], end)].append(enriched)
 
     result: list = []
 
+    def _with_first(candidates: list) -> dict:
+        chosen = dict(select_latest_filed(candidates))
+        tag = chosen.pop("_tag", None)
+        same_tag = [c for c in candidates if c.get("_tag") == tag]
+        first = select_first_filed(same_tag)
+        chosen["first_filed"] = min(c.get("filed", "") for c in candidates)
+        chosen["first_val"] = first["val"]
+        chosen[ASOF_KEY] = asof_history(same_tag)
+        floor = (first_filed_floor or {}).get(_period_key(chosen))
+        if floor and floor < chosen["first_filed"]:
+            chosen["first_filed"] = floor
+        return chosen
+
     # 四半期: 同一(start, end)内は最新filed優先。異なるstartは別期間として全保持。
     for period, candidates in quarterly_by_period.items():
-        result.append(select_latest_filed(candidates))
+        result.append(_with_first(candidates))
 
     # 年次: 最新filed
     for end_date, candidates in annual_by_end.items():
-        result.append(select_latest_filed(candidates))
+        result.append(_with_first(candidates))
 
     result.sort(key=lambda x: x["end"])
     return result

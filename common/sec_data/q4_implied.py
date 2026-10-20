@@ -54,6 +54,8 @@ from __future__ import annotations
 
 from datetime import date
 
+from .fact_selection import combine_first, value_asof
+
 # フロー系（累積・加算可能）フィールドの許可リスト（PascalCase）。
 # normalizer.py::Q4_IMPLIED_FIELDS ∪ ttm_calculator.py::FLOW_FIELDS。
 # 上記docstring参照。
@@ -99,6 +101,39 @@ _SNAKE_TO_PASCAL = {
 }
 
 
+# [[LAYER3-FIRST-FILED-DATE-1]]（2026-10-21）: Q4 の逆算は「年次と同じ時点の値どうし」にする。
+#   年次: その会計年度の最初の 10-K の値（first_val）
+#   Q1〜Q3: その 10-K の提出日（年次の first_filed）以前に申告された値のうち最も新しいもの（value_asof()）
+# 後の 10-K は年次を事業の売却等で組み替えて載せ直すが、10-Q は2年前の Q1〜Q3 を載せ直さないため、
+# 最新どうしの差では基準が混ざる（docs/architecture/Q4_IMPLIED_BASIS_MIX.md、APP 2023Q4 の売上が負）。
+# Q1〜Q3 を最初の申告（first_val）にすると、10-K の前に載せ直された四半期で年次と時点がずれる（AVAV FY2026）。
+# その時点の値が無い期は、今までの計算（最新どうしの差）にし、印 Q4_BASIS_KEY = "latest" を付ける。
+Q4_BASIS_KEY = "q4_basis"
+Q4_BASIS_LATEST = "latest"
+
+
+def implied_q4_value(annual: dict, quarters: list, field_name: str) -> tuple[float, dict]:
+    """年次と Q1〜Q3 から逆算した Q4 の値と、エントリに付け足すキー（first_filed・first_val か、印）を返す。
+
+    q4_implied の Q4 と、normalizer.py の欠落四半期の逆算のうち年次から末尾の四半期を出すもの（同じ Q4）が使う。"""
+    as_of = annual.get("first_filed")
+    q_vals = [value_asof(q, as_of) for q in quarters] if as_of else [None]
+    if annual.get("first_val") is not None and all(v is not None for v in q_vals):
+        q4_val = annual["first_val"] - sum(q_vals)
+        extra: dict = {}
+    else:
+        fy_val = annual["val"]
+        q4_val = fy_val - sum(q["val"] or 0 for q in quarters)
+        extra = {Q4_BASIS_KEY: Q4_BASIS_LATEST}
+    # first_filed・first_val は、ほかの派生の値と同じく最初の申告どうしで作る（[[STAGE-V2-ROLLOUT-1]]で使う）
+    extra.update(combine_first([(1, annual)] + [(-1, q) for q in quarters]))
+    if _SNAKE_TO_PASCAL.get(field_name, field_name) == "CapEx":
+        q4_val = abs(q4_val)
+        if extra.get("first_val") is not None:
+            extra["first_val"] = abs(extra["first_val"])
+    return q4_val, extra
+
+
 def build_q4_implied_entries(
     annual_entries: list,
     quarterly_entries: list,
@@ -127,6 +162,9 @@ def build_q4_implied_entries(
       側のLayer2 sign_normalize:"abs"と重複適用されても
       abs(abs(x))==abs(x)のため無害）。
     - 未来のFY（fy_end > 本日）はアナリスト予想化を避けるため対象外。
+    - Q4の値は、最初の10-Kの年次と、その提出日以前に申告されたQ1〜Q3の最も新しい値の差
+      （年次と同じ時点の値どうし。implied_q4_value()、[[LAYER3-FIRST-FILED-DATE-1]]）。その時点の値が
+      無ければ最新どうしの差にし、q4_basis="latest"の印を付ける。
     - [[LAYER3-DA-SBC-CANDIDATE-REGRESSION-1]]対応: 年次エントリと
       採用するQ1〜Q3の3エントリ、計4エントリの"source_tag"
       （layer3_builder.py::_merge_candidate_entries()が付与。
@@ -173,9 +211,7 @@ def build_q4_implied_entries(
             continue
 
         q3_end = sorted(top3, key=lambda x: x["end"], reverse=True)[0]["end"]
-        q4_val = fy_val - sum(e["val"] or 0 for e in top3)
-        if canonical_field_name == "CapEx":
-            q4_val = abs(q4_val)
+        q4_val, extra = implied_q4_value(annual, top3, canonical_field_name)
 
         try:
             period_days = (date.fromisoformat(fy_end) - date.fromisoformat(q3_end)).days
@@ -195,6 +231,7 @@ def build_q4_implied_entries(
             "is_ytd": False,
             "is_annual": False,
             "is_implied": True,
+            **extra,
         })
 
     return result
