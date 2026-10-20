@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-19 夜の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**14件**（2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-10-20 の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**13件**（2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -41,10 +41,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
    - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
    - 確認の手順: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。確かめたら移設する
-3. **NIY=Fの2026-10-08の足**（`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`）
-   - 日時: 2026-10-17（土）13:00 JST（04:00 UTC）以降の夜間のMarket Data Dailyの後
-   - 期限: 2026-10-20（火）
-   - 確認の手順: `common/market_data/daily/NIY=F.json`の10-08（平らな足）が`_no_yahoo_bar`になっていること。出来高の重複・平らな足の観察も続ける
+3. （済 2026-10-20）NIY=Fの2026-10-08の足: `common/market_data/daily/NIY=F.json`の10-08の行は`_no_yahoo_bar: true`で`_provisional`は無い。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（BACKLOG_DONE.mdの「確認（2026-10-20、移設）」）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
 4. （済 2026-10-19 夜）日曜の連鎖の後の残り: Step Summaryの表（17:28 JST）と「🛠」の欄（17:30 JST）をKoichiさんが目視で確認、timingの差はチャット側が想定どおりと判定。`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設（結果はBACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
    - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない）
@@ -66,12 +63,14 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている
      - 新規提出か遅延のアラート（2026-10-19から、法定の期限を過ぎた平日のあいだ毎回。下の10）がある回のログに「Discord 送信OK」があり、Discordに届いている
      - 確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
-10. **F5の直しの後の最初の平日のRSS Monitor**（FINDINGS.md 2026-10-16・2026-10-19、`src/tail/edgar_rss_monitor.py`）
-   - 日時: 直しのpushの後の最初の平日の実行（cronは08:00 UTC＝17:00 JST。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）
-   - 期限: 2026-10-23（金）
-   - 確認の手順: 「RSS チェック」のログで、9銘柄が「変更なし (次の期末=…、10-Qの期限=…の前、遅れ0日)」で次の表のとおり、「⚠ 提出遅延アラート」が0件、`rss_state.json`の`no_filing_days`が9銘柄とも0（TSLAの10は0に戻る）。新規提出があった銘柄は「★ 新規提出」になり、その対象期末で次の期限が決まる
-     - 次の期末・10-Qの期限: APP・CELH・CRWV・PLTR・SOFI・SOUN・TSLAは2026-09-30・2026-11-16、NVDAは2026-10-26・2026-12-10、ADBEは2026-11-28・2027-01-12（ADBEは会計年度末のため実際の期限は10-Kの2027-02-26。10-Qの期限を過ぎるまでは会計年度末を取りに行かない）
+10. （済 2026-10-20）F5の直しの後の最初の平日のRSS Monitor: 直し（`7492427f3f`、10-19 10:50 UTCのpush）の後の実行はschedule `39276537966`（10-19 15:16 UTC起動、head `d154e71c71`は直しを含む、success、commit `0f91fe9895`）の1回（10-20 08:45 UTCの時点で今日の回は未起動）。
+   「RSS チェック」で9銘柄とも「変更なし (…、遅れ0日)」、次の期末・10-Qの期限は表のとおり（APP・CELH・CRWV・PLTR・SOFI・SOUN・TSLAは2026-09-30・2026-11-16、NVDAは2026-10-26・2026-12-10、ADBEは2026-11-28・2027-01-12）。
+   「⚠ 提出遅延アラート」・「★ 新規提出」・「RSS 取得エラー」は0件、新規pending 0件。`docs/portfolio/tail/data/rss_state.json`の`no_filing_days`は9銘柄とも0（TSLAは10から0）。9の経路（エラーの回・新規提出の回）はこの回でも通っていない
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-20 確認の記録（手順3・10。確認の残りは上の「次回の確認手順」2・5・7・8・9）**
+- 手順3: NIY=Fの10-08は`_no_yahoo_bar`。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（アクティブ13件）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
+- 手順10: 直しの後のRSS Monitor `39276537966`で9銘柄とも表のとおり・遅延アラート0件・`no_filing_days`は全0
 
 **2026-10-19 夜 移設と、Q4の逆算の基準の混在の範囲の調査（確認の残りは上の「次回の確認手順」3・6・9）**
 - 移設: `[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`（Koichiさんの目視とチャット側の判定、BACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）。アクティブ53件
