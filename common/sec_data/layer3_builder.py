@@ -6,7 +6,8 @@ common/sec_data/layer3_builder.py
 フェーズA（新規構築、既存コード非改変）: 詳細は
 docs/architecture/new_data_platform/SEC_EDGAR_LAYER_DESIGN.md 8章を参照。
 既存の data/・normalized/・raw/・ttm/ には一切書き込まない。
-出力先: common/sec_data/store_v2/{TICKER}.json（新規パス）。
+出力: build_ticker_store()の戻り値（ファイルには保存しない。読み手はその場で計算する。
+store_v2/{TICKER}.jsonへの保存は読み手が無いため2026-10-20に削除、[[OUTPUT-INVENTORY-CHECK-1]]）。
 
 設計上の再利用（意図的）:
 XBRLエントリの期間分類（10-Q/10-K・is_annual/is_ytd判定、
@@ -190,7 +191,6 @@ BASE_DIR = os.path.dirname(__file__)
 REPO_ROOT = os.path.dirname(os.path.dirname(BASE_DIR))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CONFIG_PATH = os.path.join(REPO_ROOT, "config", "sec_concept_definitions.json")
-STORE_V2_DIR = os.path.join(BASE_DIR, "store_v2")
 
 # 保持期間はquarterly.pyの_QUARTERLY_YEARS・_ANNUAL_YEARS（_process_entries()がそれで切る）。
 # 以前はここにも同じ名前の定数（5・6）があったが、どこからも使われていなかったため
@@ -1251,7 +1251,7 @@ def build_ticker_store(ticker: str) -> dict | None:
     # [[ROTCE-PTBV-1]]: intangible_assets_excl_goodwill用の派生概念を追加
     company_facts = with_derived_intangibles(company_facts)
     # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 株式数の千株単位の申告の誤り（同じ期間の1,000倍・100万倍の
-    # 2値は大きい方）。parser.pyと同じ前処理で、記録はparser.pyのshare_unit_fix_log.json
+    # 2値は大きい方）。parser.pyと同じ前処理（置き換えの記録のファイルは2026-10-20に削除）
     company_facts, _ = with_share_unit_fix(company_facts, ticker)
 
     concept_defs = load_concept_definitions()
@@ -1568,34 +1568,3 @@ def get_long_term_debt_latest(store: dict) -> float:
         return 0.0
     return float(latest["val"])
 
-
-def save_ticker_store(ticker: str, store: dict) -> str:
-    """common/sec_data/store_v2/{TICKER}.json へ保存する（新規パス、既存ファイルは変更しない）。"""
-    os.makedirs(STORE_V2_DIR, exist_ok=True)
-    path = os.path.join(STORE_V2_DIR, f"{ticker.upper()}.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(store, f, ensure_ascii=False, indent=2)
-    return path
-
-
-def build_and_save(ticker: str) -> str | None:
-    store = build_ticker_store(ticker)
-    if store is None:
-        return None
-    return save_ticker_store(ticker, store)
-
-
-if __name__ == "__main__":
-    import sys
-
-    tickers = sys.argv[1:]
-    if not tickers:
-        print("使い方: python -m common.sec_data.layer3_builder TICKER [TICKER ...]")
-        sys.exit(1)
-
-    for t in tickers:
-        path = build_and_save(t)
-        if path:
-            print(f"[{t}] 生成完了 -> {path}")
-        else:
-            print(f"[{t}] company_facts.json が見つからずスキップ")

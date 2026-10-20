@@ -513,9 +513,8 @@ class SECParser:
         # [[ROTCE-PTBV-1]]: のれんを除く無形資産の派生概念を追加
         raw_data = with_derived_intangibles(raw_data)
         # [[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 同じ期間の株式数が書類によって1,000倍・100万倍
-        # ずれていたら大きい方を採る（千株単位での申告の誤り）。置き換えはログに記録する
-        raw_data, _share_unit_fixes = with_share_unit_fix(raw_data, ticker)
-        self._save_share_unit_fix_log(ticker, _share_unit_fixes)
+        # ずれていたら大きい方を採る（千株単位での申告の誤り）
+        raw_data, _ = with_share_unit_fix(raw_data, ticker)
         result = {
             "ticker": ticker,
             "cik": raw_data.get("cik", ""),
@@ -703,10 +702,8 @@ class SECParser:
         # （①数学的整合性が破綻している、または②アンカー候補accnのreportDateが
         # 法人名変更履歴の期間内にあり社名変更前後のデータ混在が疑われる）
         # 年度についてのみ、本人データ(is_own_data=True)を提供するaccnへ統一する
-        _spac_shell_detections: List[Dict[str, Any]] = []
         self._resolve_bs_entity_mixing(extracted, accn_reportdate=_accn_reportdate,
-                                        former_names=former_names or [],
-                                        spac_detections_out=_spac_shell_detections)
+                                        former_names=former_names or [])
 
         # [[PARSER-STOCKHOLDERS-EQUITY-CROSS-YEAR-MISSELECT-1]] VRT型対応:
         # stockholders_equityの本人データが皆無の年度のみ、total_assets/
@@ -793,10 +790,6 @@ class SECParser:
         # 衝突0件でも毎回書き込む（IOT/AVGO/MRVLの化石ファイル問題の再発防止。
         # 一度検知された衝突が後日解消された場合に古いログが残り続けることを防ぐ）
         self._save_fy_collision_log(ticker, _fy_collisions)
-
-        # [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階2: 0件でも毎回書き込む（同上の
-        # 化石ファイル対策と同じ理由）
-        self._save_spac_shell_detection_log(ticker, _spac_shell_detections)
 
         # FYE-CHANGE-BOUNDARY-COLLISION-BLIND-1: 0件でも毎回書き込む（同上の化石
         # ファイル対策と同じ理由）
@@ -929,8 +922,9 @@ class SECParser:
 
         spac_detections_out: ③'（former_names一致）で発火した年度の詳細
         （アンカーaccn・reportDate・一致したformerNameエントリ・None化した
-        フィールド）を記録する。呼び出し元がspac_shell_detection_log.jsonへ
-        保存する。
+        フィールド）を記録する。本番の呼び出しは渡さない（記録のファイル
+        spac_shell_detection_log.jsonは読み手が無いため2026-10-20に削除、
+        [[OUTPUT-INVENTORY-CHECK-1]]）。テストが発火の内容を確かめるのに使う。
         """
         former_names = former_names or []
         years = set()
@@ -3537,39 +3531,6 @@ class SECParser:
             json.dump({"ticker": ticker, "collisions": collisions}, f, ensure_ascii=False, indent=2)
         if collisions:
             print(f"   [{ticker}] 決算期変更境界の年度バケツ競合を検知・記録: {len(collisions)}件 ({path})")
-
-    def _save_share_unit_fix_log(self, ticker: str, fixes: List[Dict[str, Any]]) -> None:
-        """[[LAYER2-SHARES-UNIT-THOUSANDS-1]]: 株式数の単位誤りを置き換えた一覧を記録する
-        （share_unit_fix.py、退けた値と採った値の書類）。置き換えがある銘柄だけ書き、
-        0件になった銘柄は古いファイルを消す（化石ファイルを残さない。98銘柄に空のファイルを作らない）。
-        """
-        path = os.path.join(self.data_dir, ticker, "share_unit_fix_log.json")
-        if not fixes:
-            if os.path.exists(path):
-                os.remove(path)
-            return
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({"ticker": ticker, "fixes": fixes}, f, ensure_ascii=False, indent=2)
-
-    def _save_spac_shell_detection_log(self, ticker: str, detections: List[Dict[str, Any]]) -> None:
-        """
-        [[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階2: 法人名変更履歴（former_names）
-        の[from, to]区間一致によりBS実体混在の是正が発火した年度を記録する
-        （`_resolve_bs_entity_mixing()`のspac_detections_out参照）。
-
-        数学的矛盾の有無に関わらず、former_namesが一致して発火したケースは
-        すべて記録する（BBAI/RDW/RKLB/SOFI/VRTのように矛盾も同時に存在する
-        ケースも含む。段階2の検知範囲を監査目的で可視化するため）。
-        0件でも毎回書き込む（fy_collision_log等と同じ化石ファイル対策）。
-        """
-        ticker_dir = os.path.join(self.data_dir, ticker)
-        os.makedirs(ticker_dir, exist_ok=True)
-        path = os.path.join(ticker_dir, "spac_shell_detection_log.json")
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({"ticker": ticker, "detections": detections}, f, ensure_ascii=False, indent=2)
-        if detections:
-            print(f"   [{ticker}] SPAC合併疑い(法人名変更履歴一致)を検知・記録: {len(detections)}件 ({path})")
 
     # [[CHECK29-ACCOUNTING-IDENTITY-DETECTION-LAYER-1]]: 会計恒等式
     # Total_Assets = Total_Liabilities + Stockholders_Equity（+NCI+一時的

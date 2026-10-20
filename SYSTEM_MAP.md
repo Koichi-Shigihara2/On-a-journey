@@ -126,7 +126,7 @@ liabilities_via_identity()`）・[[PL-FIELD-CROSS-ACCN-PERIOD-MISMATCH-1]]
 案b（`_align_cost_of_revenue_to_revenue_period()`）・[[LAYER3-GROSSPROFIT-
 BACKFILL-PROD-UNREACHED-1]]①（`_backfill_gross_profit_from_revenue_
 cogs()`）・[[SPAC-SHELL-BS-ENTITY-MIXING-1]]段階1・段階2
-（`_resolve_bs_entity_mixing()`、新設`spac_shell_detection_log.json`）を
+（`_resolve_bs_entity_mixing()`、新設`spac_shell_detection_log.json`〈2026-10-20削除〉）を
 追記。utils.py項に`detect_fiscal_anchor_clusters()`（ELF-FISCAL-END-
 MONTH-MISDETECTION-1案②）を追記。fetcher.py項に[[FETCHER-10KT-10QT-
 FORM-EXCLUSION-1]]案③（report_consistency_check.pyのCHECK-28/WARN-28）を
@@ -959,7 +959,7 @@ SEC EDGAR
 │    ③設備投資は`conditional_tags.py`の条件を満たす銘柄（2026-10-14時点で18銘柄）だけ`SegmentExpenditureAdditionToLongLivedAssets`を
 │    候補の最後に加え、採用した期に`fallback_reason: "segment_total"`（値が変わるのはFCXだけ）
 │    〈全32フィールドの候補タグ・分類定義〉に基づきcompany_facts.json生データから
-│    直接、統一snake_caseの銘柄別ストア（インメモリのみ、ファイル永続化なし）を
+│    直接、統一snake_caseの銘柄別ストア（インメモリのみ、ファイル永続化なし。手動用の保存`save_ticker_store()`・`build_and_save()`・CLI〈store_v2/〉は読み手が無いため2026-10-20に削除）を
 │    構築する`build_ticker_store()`が本体。update.py Step5で呼ばれ、戻り値は
 │    そのままttm_calculator.py::calc_ttm_series()へ渡される（フェーズC対応、
 │    2026-07-24〜。旧経路はnormalize()の戻り値を渡していた）。
@@ -1294,10 +1294,10 @@ SEC EDGAR
 │    年度のみ、本人データaccnをアンカーとして採用し他accn由来の値をNone化する
 │    （減算的設計、既存の正しい値を上書きする経路を持たない）。105銘柄・87件の
 │    複数accn混在ケースへのシミュレーションで矛盾のない56件（41銘柄）・
-│    KULR(2019)に無影響を確認済み。段階2で発火した年度の詳細は新設
+│    KULR(2019)に無影響を確認済み。段階2で発火した年度の詳細を記録していた
 │    common/sec_data/data/{ticker}/spac_shell_detection_log.json
-│    （_save_spac_shell_detection_log()が保存、0件でも毎回書き込みの化石
-│    ファイル対策パターン）に記録。詳細はBACKLOG_DONE.md
+│    （_save_spac_shell_detection_log()）は、読み手が無いため2026-10-20に
+│    削除（[[OUTPUT-INVENTORY-CHECK-1]]。是正の処理そのものは残す）。詳細はBACKLOG_DONE.md
 │    [[SPAC-SHELL-BS-ENTITY-MIXING-1]]参照。
 ├─ utils.py  # determine_fiscal_year() — 年度判定共通関数（ARCH-DATA-1-FY 2026-06-25）。
 │    ARCH-DATA-1ステージ2（2026-07-17）でアンカー日ウィンドウ方式に刷新:
