@@ -800,6 +800,14 @@
    ],
    "readers_compute": [
     {
+     "file": "common/sec_data/fetcher.py",
+     "line": 603,
+     "func": "<module>",
+     "how": "その場で計算",
+     "via": "common/sec_data/fetcher.py::SECFetcher",
+     "type": "Python"
+    },
+    {
      "file": "common/sec_data/freshness.py",
      "line": 103,
      "func": "entry",
@@ -834,7 +842,7 @@
    "decision_effect": [],
    "reader_count": 2,
    "reader_count_test": 1,
-   "reader_count_compute": 1,
+   "reader_count_compute": 2,
    "group": "2件以上",
    "note": "SEC_Data_Updateの1回の実行の結果（成功・失敗の銘柄）。後の段の通知が読む",
    "decision": "残す（2026-10-20）"
@@ -3262,8 +3270,20 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
@@ -3288,6 +3308,10 @@
     {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/index.html",
@@ -3618,10 +3642,26 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
+     "line": 1437,
+     "func": "_check_annual_da_partial_concept",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
      "line": 1550,
      "func": "_check_share_count_outliers",
      "how": "保存済みファイル",
      "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1553,
+     "func": "_check_share_count_outliers",
+     "how": "保存済みファイル",
+     "via": "AST",
      "type": "Python"
     },
     {
@@ -5585,6 +5625,10 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
@@ -5601,6 +5645,10 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
      "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
     },
@@ -5615,6 +5663,10 @@
     {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/index.html",
@@ -6718,12 +6770,32 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
@@ -6736,6 +6808,10 @@
     {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/index.html",
@@ -8769,12 +8845,32 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
@@ -8787,6 +8883,10 @@
     {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/index.html",
@@ -10391,12 +10491,32 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
@@ -10411,8 +10531,16 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
      "page": "docs/value-monitor/hypecore/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/stonks-silo/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
@@ -10424,7 +10552,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json）"
     }
    ],
    "definitions": [
@@ -12799,6 +12927,10 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
@@ -12833,6 +12965,10 @@
     {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/index.html",
@@ -12884,7 +13020,7 @@
    "launched_by": [
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
-   "files_tracked": 99,
+   "files_tracked": 98,
    "top_keys_sampled_files": 3,
    "top_keys": [
     {
@@ -12916,16 +13052,8 @@
      "reader_files": 1
     },
     {
-     "key": "thresholds",
-     "reader_files": 1
-    },
-    {
      "key": "ticker",
      "reader_files": 7
-    },
-    {
-     "key": "tickers",
-     "reader_files": 4
     }
    ],
    "readers": [
@@ -13740,7 +13868,7 @@
   "outputs": 21,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 55,
+  "python_read_sites_into_layer_resolved": 57,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/sec_data/reader.py",
@@ -13762,7 +13890,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.052,
+  "ratio_reader": 0.05,
   "threshold": 0.1,
   "hit": false
  }

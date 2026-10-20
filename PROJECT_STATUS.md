@@ -18,7 +18,11 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**TANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**。SEC層と同じく`scripts/inventory/build_output_inventory.py`を広げて
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**TANUKI VALUATION・TANUKI Scoreの段階2（Koichiさんの判断）**。`docs/architecture/output_inventory/tanuki_layer.md`の出力・画面の項目・本番外のコードの「残す／消す」の欄を埋める（空欄のまま）→削除→CHECK（段階3）
+   - （済 2026-10-20）TANUKIの段階1の下書き: `scripts/inventory/build_output_inventory.py --layer tanuki` → `tanuki_layer.json`・`tanuki_layer.md`。出力13（ファイル11・人が見るもの2）、読み手0件0・テストだけ0・1件2・2件以上9。
+     画面が読むキー369のうち書き手なし15、書き手があるのに誰も読まないキー53。規則の二重10（検出式10種のうちTANUKIを含むもの5: 期の名前・割安割高のしきい値・成長率の上限下限・β・WACC・FCFの基準）。
+     止める条件には当たらない（書き手7.1%〈remove_legacy_tanuki_score.pyの{path}〉・読み方5.4%）。本番外のコードの候補4つ（diag_iv_trace.py 180行・growth_model_audit.py 152行・remove_legacy_tanuki_score.py 75行・pipeline_log.txt〈UTF-16のログ〉、どれも参照0件）。CHECK-INVはSEC層だけのまま
+   各段階の進め方: SEC層と同じく`scripts/inventory/build_output_inventory.py`で
    書き手・読み手（保存済みファイル／その場で計算）・画面・定義・規則をASTとgrepで作り、Koichiさんの残す／消すの判断（段階2）→削除→CHECK（段階3）の順。CHAT_RULES.md「発見の溜め方と根治の判断」5
    - （済 2026-10-20）SEC層の段階1〜3: `5dda340c96`（一覧）・`b6294a559b`（削除）・第2部のcommit（CHECK-INV-1〜4）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」
    - SEC層の保留4件は2026-10-20に決着（残す2・削除で3ファイル。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」）
@@ -30,6 +34,10 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-20 夜（R-AのTANUKIの段階1の下書き）**: 一覧のスクリプトに段階の引数（`--layer sec / tanuki`）と、TANUKIの画面の項目の表・規則の検出式4つ・本番外のコードのファイル単位の候補を足した（上の次の作業の2）。本番の処理は変えていない。
+  段階を分けるだけの書き換えでは`--layer sec`の結果は今のsec_layer.json・.mdと差0。その後のパスの解決の改善（深さの上限・入れ子・クラスの呼び出し・GITHUB_WORKSPACE）でSEC層の一覧も変わったため作り直した（読み手2行〈rccのcompany_facts〉と経由の画面が増えただけで、CHECK-INVのNGは0）。
+  rccのCHECK-INV（SEC層）の一覧を作る時間は約36秒→約22秒（行番号の索引）。FINDINGS.mdにtanuki_score/のJSON 2つ（書き手・読み手0件）を1行〈計23行〉
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 69,311行（144ファイル。68,977行から334行増。すべて一覧のスクリプトでR-Aの一部）、テスト34,355行、ワークフロー23本、アクティブBACKLOG 13件
 - **2026-10-20 夜（R-AのSEC層の保留4件の決着）**: submissions_legacy・market_pulse_redesign.pyは残す。futures_roll_suspects.py・backfill_futures_roll.py・macro_cfnai_ma3_rows_repair.py（修復は`70793c2185`で実行済み）を削除、check_macro_pulse.pyのN-07の文から名前を消した（実行の結果は前後とも一致72・不一致0・判定不能1、N-07は一致）。
   **Python 68,977行（144ファイル。前の69,235行〈147ファイル〉から258行減）**。ほかの終業の数は下の段階2・3の記録と同じ（読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、テスト34,355行、ワークフロー23本、アクティブBACKLOG 13件）
 - **2026-10-20 夜（R-AのSEC層の段階2・3）**: 第1部`b6294a559b`（削除。読み手0件の出力3つ〈share_unit_fix_log 15ファイル・spac_shell_detection_log 98ファイル・store_v2の保存の関数とCLI〉と`scripts/analysis`の14ファイル、計127ファイルを削除。
