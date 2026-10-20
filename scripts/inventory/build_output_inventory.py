@@ -165,12 +165,14 @@ TITLE = "SECデータ層の出力の一覧（段階1の下書き）"
 DECISION_NOTE = "段階2の判断（2026-10-20、チャット側の案をKoichiさんが了承）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す"
 NON_PRODUCTION_FILES: List[str] = []         # 本番外のコードの候補（フォルダ単位でなく、ファイル単位で示すもの）
 SCREEN_PAGES: Tuple[str, ...] = ()           # 画面の項目の表を作るページのフォルダ（TANUKI）
+SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, 区画の始まりの行の式, 次の区画の行の式, 判断)
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
             DECISIONS=DECISIONS, DELETED=DELETED, OUTSIDE_HINT=OUTSIDE_HINT, OUTSIDE_PREFIXES=OUTSIDE_PREFIXES,
             READ_PREFIXES=READ_PREFIXES, READ_HINT=READ_HINT, NAME_SHORT=NAME_SHORT, TITLE=TITLE, DECISION_NOTE=DECISION_NOTE,
-            NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES)
+            NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
+            SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -201,18 +203,37 @@ _TANUKI.update(
         "${GITHUB_STEP_SUMMARY}": "GitHub Actionsの実行の画面に出す要約（人が見る）",
         "Discord（DISCORD_WEB_HOOK）": "βの更新・判定の変化のDiscordへの通知",
     },
-    DECISION_DEFAULT="", DECISIONS={}, DELETED=[],
+    DECISION_DEFAULT="残す（2026-10-20）",
+    DECISIONS={
+        "docs/integrated-dashboard/daily_pick.json":
+            "消す→保留（2026-10-20。今日の特選銘柄はKoichiさんの判断で消す。ただし残すはずの判定の記録 docs/integrated-dashboard/history.json の読み手は"
+            "daily_pick.py 自身〈前日の分類との比較・同じ日の2回目の実行を止める〉だけで、判定の実績表は tanuki_valuation/data/{T}/score_history.json を読む。"
+            "選出をやめると history.json は読み手0件になるため、チャット側の判断待ち）",
+        "docs/integrated-dashboard/history.json": "残す→保留（2026-10-20。daily_pick.json と同じ理由でチャット側の判断待ち）",
+    },
+    DELETED=[
+        ("src/value/tanuki_valuation の diag_iv_trace.py・growth_model_audit.py・remove_legacy_tanuki_score.py・pipeline_log.txt",
+         "削除（2026-10-20、本番外。参照は自分自身のほか0件、計407行と UTF-16 のログ）"),
+        ("docs/value-monitor/tanuki_score/daily_pick.json・history.json",
+         "削除（2026-10-20。2026-06-27 から更新が無く、書き手・読み手0件。画面は integrated-dashboard を読む）"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-20）。画面の区画はKoichiさんの判断で「今日の特選銘柄」だけ消し、ほかは残す。出力・キー・本番外のコードはチャット側の判断。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="tanuki", OUTSIDE_PREFIXES=("docs/value-monitor/tanuki_valuation/", "docs/value-monitor/tanuki_score/", "src/value/tanuki_valuation/", "src/value/tanuki_score/"),
     READ_PREFIXES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score", "src/value/tanuki_valuation", "src/value/tanuki_score"),
-    READ_HINT="tanuki", NAME_SHORT="TANUKI", TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
-    DECISION_NOTE="空欄（Koichiさんが決める）",
+    READ_HINT="tanuki", NAME_SHORT="TANUKI",
+    KNOWN_DUPLICATE_RULES=["quarter_label", "valuation_threshold", "growth_bounds", "wacc_beta", "fcf_fallback"], TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score"),
+    SCREEN_SECTION_DECISIONS=[
+        ("docs/value-monitor/tanuki_score/index.html", r"^// ─── 今日の特選銘柄", r"^// ─── ",
+         "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"),
+    ],
     RULES=RULES + [
         {"id": "valuation_threshold", "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
          "patterns": [r"\bupside\w*\s*(?:>=|>|<=|<)\s*-?\d", r"\bupside\w*\s*(?:>=|>|<=|<)\s*[A-Z_]{3,}"]},
         {"id": "growth_bounds", "name": "成長率の上限・下限",
-         "patterns": [r"(?i)\b_?(?:growth|g|cagr)_(?:cap|floor|max|min|upper|lower)\w*\s*=(?!=)",
-                      r"(?i)\b_?(?:cap|floor|max|min)_(?:growth|g|cagr)\w*\s*=(?!=)"]},
+         "patterns": [r"(?i)^\s*(?:self\.)?_?(?:growth|g|cagr)_(?:cap|floor|max|min|upper|lower)(?![a-z])\w*\s*=(?!=)",
+                      r"(?i)^\s*(?:self\.)?_?(?:cap|floor|max|min)_(?:growth|g|cagr)(?![a-z])\w*\s*=(?!=)"]},
         {"id": "wacc_beta", "name": "β・WACCの作り方",
          "patterns": [r"def\s+_?\w*(?:calculate_wacc|calc_wacc|cost_of_equity|capped_beta|determine_beta|default_beta)\w*\s*\(",
                       r"function\s+\w*(?:[Ww]acc|WACC|[Bb]eta)\w*\s*\("]},
@@ -736,6 +757,7 @@ def template_regex(tmpl: str) -> re.Pattern:
     return re.compile("^" + out + "$")
 
 
+AMBIGUOUS_BASES: Dict[str, bool] = {}   # ファイル名（型）→ リポジトリの中で別のフォルダにも同じ名前があるか（build() が埋める）
 GENERIC_BASES = {"_summary", "summary", "index", "latest", "data", "result", "results", "", "state"}
 
 
@@ -766,7 +788,7 @@ def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
         if len(first) >= 6:
             pats.append(re.compile(r"[\"'`]" + re.escape(first) + r"[\"'`]"))
     need_dir = None
-    if lit_core in GENERIC_BASES or len(lit_core) < 6:
+    if lit_core in GENERIC_BASES or len(lit_core) < 6 or AMBIGUOUS_BASES.get(base, False):
         parts = [p for p in posixpath.dirname(tmpl).split("/") if p and not PH_RE.search(p)]
         need_dir = parts[-1] if parts else None
         if not pats:
@@ -777,7 +799,30 @@ def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
 # ---------------------------------------------------------------- 呼び出し（import を解決した呼び出し先）
 
 def calls_in(mod: Module) -> List[Tuple[int, str, str]]:
-    """(行, 呼び出し先のモジュール rel, 関数名) の一覧。"""
+    """(行, 呼び出し先のモジュール rel, 関数名) の一覧（モジュールごとに1回だけ作る）。"""
+    cached = getattr(mod, "_calls_cache", None)
+    if cached is None:
+        cached = mod._calls_cache = _calls_in(mod)
+    return cached
+
+
+def _scope_instances(mod: Module, scope: ast.AST) -> Dict[str, Tuple[str, str]]:
+    """スコープの中で「変数 = import したクラス(...)」と代入した最初のもの（ast.walk の順）。スコープごとに1回だけ作る。"""
+    cache = mod.__dict__.setdefault("_scope_cache", {})
+    key = id(scope)
+    if key not in cache:
+        m: Dict[str, Tuple[str, str]] = {}
+        for n in ast.walk(scope):
+            if isinstance(n, ast.Assign) and isinstance(n.value, ast.Call) and isinstance(n.value.func, ast.Name) \
+                    and n.value.func.id in mod.from_imports:
+                for tg in n.targets:
+                    if isinstance(tg, ast.Name) and tg.id not in m:
+                        m[tg.id] = mod.from_imports[n.value.func.id]
+        cache[key] = m
+    return cache[key]
+
+
+def _calls_in(mod: Module) -> List[Tuple[int, str, str]]:
     out = []
     for node in ast.walk(mod.tree):
         if not isinstance(node, ast.Call):
@@ -804,14 +849,10 @@ def calls_in(mod: Module) -> List[Tuple[int, str, str]]:
                 # 変数に入れたインスタンス（r = SECReader(); r.get_x()）
                 func = mod.enclosing_func(node)
                 scope = func if func is not None else mod.tree
-                for n in ast.walk(scope):
-                    if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == f.value.id for t in n.targets) \
-                            and isinstance(n.value, ast.Call) and isinstance(n.value.func, ast.Name) and n.value.func.id in mod.from_imports:
-                        src_rel, name = mod.from_imports[n.value.func.id]
-                        out.append((node.lineno, src_rel, f"{name}.{f.attr}"))
-                        break
-                    if isinstance(n, ast.Assign) and any(isinstance(t, ast.Attribute) and t.attr == f.value.id for t in n.targets):
-                        pass
+                inst = _scope_instances(mod, scope).get(f.value.id)
+                if inst is not None:
+                    src_rel, name = inst
+                    out.append((node.lineno, src_rel, f"{name}.{f.attr}"))
             elif isinstance(f.value, ast.Attribute) and isinstance(f.value.value, ast.Name) and f.value.value.id == "self":
                 # self.reader.get_x(): クラスの中で self.reader = SECReader() としているもの
                 cls = mod.enclosing_class(node)
@@ -839,8 +880,15 @@ def calls_in(mod: Module) -> List[Tuple[int, str, str]]:
 
 # ---------------------------------------------------------------- 本体
 
-def build() -> dict:
-    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC):   # 2回目の呼び出しで積み増さない
+_PREPARED: Dict[str, object] = {}
+
+
+def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
+    """リポジトリのコードを読んで、パースと呼び出しの索引を作る。段階に関係しないので、同じプロセスでは1回だけ作る
+    （report_consistency_check.py が SEC 層と TANUKI を続けて作るとき）。force で作り直す。"""
+    if _PREPARED and not force:
+        return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
+    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC):   # 作り直すときに積み増さない
         g.clear()
     files = code_files()
     ALL_PY.update(f for f in git_ls_files("*.py"))
@@ -848,8 +896,6 @@ def build() -> dict:
     texts = {f: read_text(f) for f in files}
     for f in py_files:
         load_module(f)
-
-    layer_py = [f for f in py_files if in_layer(f) and not is_test(f)]
     for rel in py_files:
         mod = MODULES.get(rel)
         if mod is not None and not is_test(rel):
@@ -863,6 +909,14 @@ def build() -> dict:
                 CALLERS[(src_rel, name)].append((rel, line))
                 call = next(iter(mod.calls_by_line.get(line, [])), None)
                 CALL_FUNC[(rel, line)] = mod.qualname(call) if call is not None else "<module>"
+    _PREPARED.update(files=files, py_files=py_files, texts=texts)
+    return files, py_files, texts
+
+
+def build() -> dict:
+    files, py_files, texts = prepare()
+    texts = dict(texts)   # 段階ごとに足すページの文字列で、共有の辞書を汚さない
+    layer_py = [f for f in py_files if in_layer(f) and not is_test(f)]
 
     # 1. 書き手
     outputs: Dict[str, dict] = {}
@@ -897,6 +951,17 @@ def build() -> dict:
 
     tracked = git_ls_files()
     workflows = [f for f in tracked if f.startswith(".github/workflows/") and f.endswith((".yml", ".yaml"))]
+    # 同じファイル名（型）が、この出力のフォルダの外にもあるか（history.json 等。読み手をパスの全体で照合するため）
+    AMBIGUOUS_BASES.clear()
+    for key in outputs:
+        if key.startswith("${"):
+            continue
+        base = posixpath.basename(key)
+        brx = template_regex(base)
+        drx = template_regex(posixpath.dirname(key)) if posixpath.dirname(key) else None
+        others = {posixpath.dirname(f) for f in tracked if brx.match(posixpath.basename(f))
+                  and not (drx is not None and drx.match(posixpath.dirname(f)))}
+        AMBIGUOUS_BASES[base] = AMBIGUOUS_BASES.get(base, False) or bool(others)
 
     # 書き手の関数の範囲（自分の読み書きを読み手から除く）
     def func_range(rel: str, qual: str) -> Tuple[int, int]:
@@ -1345,29 +1410,32 @@ def json_keys(obj, depth: int = 0, max_depth: int = 8, out: Optional[Set[str]] =
                 out.add(k)
             json_keys(v, depth + 1, max_depth, out)
     elif isinstance(obj, list):
-        for v in obj[:50]:
+        for v in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
             json_keys(v, depth + 1, max_depth, out)
     return out
 
 
 def sample_files(files: List[str], n: int = SCREEN_SAMPLE) -> List[str]:
-    """並べたファイルから等間隔に n 個まで（銘柄ごとにキーが違うことがあるため）。"""
-    if len(files) <= n:
+    """200ファイルまでは全部、それより多ければ等間隔に n 個（銘柄ごとにキーが違うため、銘柄の数の分は全部見る）。"""
+    if len(files) <= 200:
         return files
     return [files[round(i * (len(files) - 1) / (n - 1))] for i in range(n)]
 
 
 def page_code_lines(rel: str, text: str) -> List[Tuple[int, str]]:
-    """<style> の中・コメントの行を除いた (行, 文字列)。"""
-    out, in_style = [], False
+    """JS の行（.js は全部、.html は <script> の中だけ）からコメントの行を除いた (行, 文字列)。"""
+    out, in_script = [], rel.endswith(".js")
     for i, line in enumerate(text.splitlines(), 1):
         s = line.strip()
-        if "<style" in s:
-            in_style = True
-        if in_style:
-            if "</style>" in s:
-                in_style = False
-            continue
+        if rel.endswith(".html"):
+            if re.search(r"<script\b(?![^>]*\bsrc=)", s):
+                in_script = True
+                s = s.split(">", 1)[-1] if ">" in s else ""
+            if "</script>" in s:
+                in_script = False
+                continue
+            if not in_script:
+                continue
         if s.startswith(("//", "<!--", "*", "/*")):
             continue
         out.append((i, line))
@@ -1392,6 +1460,19 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                    and f.endswith((".html", ".js")) and "/data/" not in f)
     # 書き手のある JSON のキー（この段階の docs/ の出力。各型から3ファイルまで）
     written: Dict[str, Set[str]] = defaultdict(set)
+    written_parents: Dict[str, Set[str]] = defaultdict(set)
+
+    def _parents(obj, parent: str = "", depth: int = 0) -> None:
+        if depth > 8:
+            return
+        if isinstance(obj, dict):
+            for kk, vv in obj.items():
+                if isinstance(kk, str):
+                    written_parents[kk].add(parent)
+                _parents(vv, kk if isinstance(kk, str) else parent, depth + 1)
+        elif isinstance(obj, list):
+            for vv in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
+                _parents(vv, parent, depth + 1)
     for k, o in outputs.items():
         if o["kind"] != "ファイル" or not k.endswith(".json") or not k.startswith("docs/"):
             continue
@@ -1405,6 +1486,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                 continue
             for key in json_keys(d):
                 written[key].add(k)
+            _parents(d)
     docs_json = [f for f in tracked if f.startswith("docs/") and f.endswith(".json")]
     items = []
     for pg in pages:
@@ -1412,11 +1494,11 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
         raw = text.splitlines()
         # ページが読む JSON（.json の文字列の末尾で、docs/ の JSON と照合。各3ファイルまで）のキー
         fetched: Dict[str, Set[str]] = defaultdict(set)
-        for lit in sorted(set(re.findall(r"['\"`]([^'\"`\s]*\.json)['\"`]", text))):
+        for lit in sorted(set(re.findall(r"['\"`]([^'\"`\s]*?\.json)(?:\$\{[^}]*\}|\?[^'\"`\s]*)?['\"`]", text))):
             tail = lit.split("}")[-1].lstrip("/").lstrip("./")
             if not tail:
                 continue
-            cands = sorted(f for f in docs_json if f.endswith("/" + tail) or f == tail)
+            cands = sorted(f for f in docs_json if f.endswith(tail if tail.startswith(("_", "-")) else "/" + tail) or f == tail)
             for f in sample_files(cands):
                 try:
                     with open(os.path.join(REPO, f), encoding="utf-8") as fh:
@@ -1425,7 +1507,11 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                     continue
                 for key in json_keys(d):
                     fetched[key].add(f)
-        local_keys = set(re.findall(r"[{,]\s*([A-Za-z_][A-Za-z0-9_]*)\s*:(?!:)", text))   # ページの中で作るオブジェクトのキー
+        # ページの中で作る値: オブジェクトのキー（key: ・{ key, } の省略形）、宣言・代入（const key = ・obj.key = ）
+        local_keys = set(re.findall(r"[{,]\s*([A-Za-z_][A-Za-z0-9_]*)\s*:(?!:)", text))
+        local_keys |= set(re.findall(r"\b(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=", text))
+        local_keys |= set(re.findall(r"\.([A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)", text))
+        local_keys |= set(re.findall(r"[{,]\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?=[,}])", text))
         seen: Dict[str, dict] = {}
         for i, line in page_code_lines(pg, text):
             names = [m.group(1) for m in PROP_RE.finditer(line)] + [m.group(1) for m in SUBS_RE.finditer(line)]
@@ -1446,28 +1532,53 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                 it["lines"].append(i)
                 if not it["label"]:
                     it["label"] = nearest_label(raw, i - 1)
-        items.extend(seen[k] for k in sorted(seen))
-    # 書き手があるのに誰も読まないキー: 書き手のファイルとテストを除くコード（.py・.js・.html）に、読みの形で出てこない
-    read_rx_cache: Dict[str, re.Pattern] = {}
-    readers_pool = [f for f in texts if f.endswith((".py", ".js", ".html")) and not is_test(f) and f not in writer_files]
+        # 区画ごとの判断: キーを読む行がすべてその区画の中にあれば、その区画の判断
+        sections = []
+        for spg, start_rx, end_rx, decision in SCREEN_SECTION_DECISIONS:
+            if spg != pg:
+                continue
+            start = next((n for n, ln in enumerate(raw, 1) if re.search(start_rx, ln)), None)
+            if start is None:
+                continue
+            end = next((n for n, ln in enumerate(raw, 1) if n > start and re.search(end_rx, ln)), len(raw) + 1)
+            sections.append((start, end, decision))
+        for k in sorted(seen):
+            it = seen[k]
+            it["decision"] = next((d for a, b, d in sections if all(a <= x < b for x in it["lines"])), DECISION_DEFAULT)
+            items.append(it)
+    # 書き手があるのに誰も読まないキー: テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形で出てこず、
+    # 画面がそのキーの親を列挙（Object.keys/entries/values・for in）してもいないもの
+    readers_pool = [f for f in texts if f.endswith((".py", ".js", ".html")) and not is_test(f)]
     big = "\n".join(texts[f] for f in readers_pool)
+    read_names = set(re.findall(r"(?<=[\w\)\]])\??\.([A-Za-z_]\w*)\b", big))
+    read_names |= set(re.findall(r"\[\s*['\"]([A-Za-z_]\w*)['\"]\s*\](?!\s*=[^=])", big))
+    read_names |= set(re.findall(r"\.get\(\s*['\"]([A-Za-z_]\w*)['\"]", big))
+    page_text = "\n".join(texts.get(pg) or read_text(pg) for pg in pages)
+    parents = written_parents
     unread = []
     for key in sorted(written):
         # 銘柄名・日付などの値のキー（小文字を含まないもの）は除く
-        if len(key) < 3 or not re.match(r"[A-Za-z_]\w*$", key) or not re.search(r"[a-z]", key):
+        if len(key) < 3 or not re.match(r"[a-z_]\w*$", key):
             continue
-        rx = read_rx_cache.setdefault(key, re.compile(
-            r"(?<=[\w\)\]])\??\." + re.escape(key) + r"\b|\[\s*['\"]" + re.escape(key) + r"['\"]\s*\](?!\s*=[^=])|\.get\(\s*['\"]" + re.escape(key) + r"['\"]"))
-        if not rx.search(big):
-            unread.append({"key": key, "sources": sorted(written[key])})
+        if key in read_names:
+            continue
+        loop_par = [par for par in sorted(parents.get(key, set())) if par and re.search(
+            r"Object\.(?:keys|entries|values)\(\s*[\w.?\[\]'\"]*\b" + re.escape(par) + r"\b|for\s*\(\s*(?:const|let|var)\s+\w+\s+in\s+[\w.?]*\b" + re.escape(par) + r"\b", page_text)]
+        if loop_par:
+            continue
+        unread.append({"key": key, "sources": sorted(written[key]), "parents": sorted(p for p in parents.get(key, set()) if p)})
     return {"pages": pages, "items": items, "unread_keys": unread, "written_key_count": len(written)}
 
 
 # ---------------------------------------------------------------- CHECK（report_consistency_check.py の CHECK-INV-1〜4 が使う）
 
-def check_inventory(saved: dict, now: dict) -> Tuple[List[str], List[str]]:
-    """保存した一覧（sec_layer.json）と、今のリポジトリから作った一覧を比べる。(NG, WARN) の文の一覧を返す。
-    銘柄ごとではなく全体の判定。"""
+def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = None,
+                    out_json: Optional[str] = None, tag: str = "") -> Tuple[List[str], List[str]]:
+    """保存した一覧（sec_layer.json・tanuki_layer.json）と、今のリポジトリから作った一覧を比べる。(NG, WARN) の文の一覧を返す。
+    銘柄ごとではなく全体の判定。known_rules・out_json を省くと、今の段階の設定を使う。"""
+    known_rules = KNOWN_DUPLICATE_RULES if known_rules is None else known_rules
+    out_json = OUT_JSON if out_json is None else out_json
+    tg = f"{tag} " if tag else ""
     ng: List[str] = []
     warn: List[str] = []
     saved_out = {o["path"]: o for o in saved.get("outputs", [])}
@@ -1475,51 +1586,70 @@ def check_inventory(saved: dict, now: dict) -> Tuple[List[str], List[str]]:
     # CHECK-INV-1: 一覧に無い出力
     for path in sorted(set(now_out) - set(saved_out)):
         w = "、".join(f"{x['file']}:{x['func']}" for x in now_out[path].get("writers", []))
-        ng.append(f"  [NG-INV-1 一覧に無い出力] {path}（書き手 {w}）。{OUT_JSON} に入れる（スクリプトで作り直す）か、出力をやめる")
+        ng.append(f"  [NG-INV-1 {tg}一覧に無い出力] {path}（書き手 {w}）。{out_json} に入れる（スクリプトで作り直す）か、出力をやめる")
     # CHECK-INV-2: 一覧で読み手とされているファイルが読んでいない／読み手0件の出力
     for path in sorted(set(saved_out) & set(now_out)):
         before = {r["file"] for r in saved_out[path].get("readers", []) + saved_out[path].get("readers_compute", [])}
         after = {r["file"] for r in now_out[path].get("readers", []) + now_out[path].get("readers_compute", [])}
         for f in sorted(before - after):
-            ng.append(f"  [NG-INV-2 読み手が読んでいない] {path} の読み手 {f} が、今はこの出力を読んでいない。一覧を作り直すか、読み手を確かめる")
+            ng.append(f"  [NG-INV-2 {tg}読み手が読んでいない] {path} の読み手 {f} が、今はこの出力を読んでいない。一覧を作り直すか、読み手を確かめる")
     for path, o in sorted(now_out.items()):
         if o.get("group") == "読み手0件":
-            ng.append(f"  [NG-INV-2 読み手0件の出力] {path}。読み手を作るか、出力をやめる（[[OUTPUT-INVENTORY-CHECK-1]]）")
-    # CHECK-INV-3: 規則の二重（SEC層のファイルを含むもの）。既知は WARN、それ以外は NG
+            ng.append(f"  [NG-INV-2 {tg}読み手0件の出力] {path}。読み手を作るか、出力をやめる（[[OUTPUT-INVENTORY-CHECK-1]]）")
+    # CHECK-INV-3: 規則の二重（その段階のファイルを含むもの）。既知は WARN、それ以外は NG
     for r in now.get("rules", []):
         if not (r.get("duplicated") and r.get("in_layer")):
             continue
         where = "、".join(r["files"])
-        if r["id"] in KNOWN_DUPLICATE_RULES:
-            warn.append(f"  [WARN-INV-3 規則の二重（既知）] {r['name']}: {len(r['files'])}ファイル（{where}）")
+        if r["id"] in known_rules:
+            warn.append(f"  [WARN-INV-3 {tg}規則の二重（既知）] {r['name']}: {len(r['files'])}ファイル（{where}）")
         else:
-            ng.append(f"  [NG-INV-3 規則の二重（新規）] {r['name']}: {len(r['files'])}ファイル（{where}）。直し方はチャット側が決める")
+            ng.append(f"  [NG-INV-3 {tg}規則の二重（新規）] {r['name']}: {len(r['files'])}ファイル（{where}）。直し方はチャット側が決める")
     # CHECK-INV-4: 「何か」の注記が無い出力
     for path, o in sorted(now_out.items()):
         if not o.get("note"):
-            warn.append(f"  [WARN-INV-4 注記なし] {path}。scripts/inventory/build_output_inventory.py の ANNOTATIONS に1文を足す")
+            warn.append(f"  [WARN-INV-4 {tg}注記なし] {path}。scripts/inventory/build_output_inventory.py の ANNOTATIONS に1文を足す")
+    # 画面の項目（TANUKI）: 画面が読むのに書き手の無いキーが新しくできたら NG、書き手があるのに誰も読まないキーが新しくできたら WARN
+    if now.get("screen") is not None:
+        s_saved = saved.get("screen") or {}
+        known_nw = {(i["page"], i["key"]) for i in s_saved.get("items", []) if i.get("status") == "書き手なし"}
+        for i in now["screen"].get("items", []):
+            if i.get("status") == "書き手なし" and (i["page"], i["key"]) not in known_nw:
+                ng.append(f"  [NG-INV-5 {tg}画面のキーに書き手なし] {i['page']} の {i['key']}（行 {'・'.join(str(x) for x in i['lines'][:4])}）。"
+                          "書き手を作るか、表示をやめる")
+        known_ur = {u["key"] for u in s_saved.get("unread_keys", [])}
+        for u in now["screen"].get("unread_keys", []):
+            if u["key"] not in known_ur:
+                warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
     return ng, warn
 
 
-_RUN_CHECK_CACHE: List[Tuple[List[str], List[str]]] = []
+CHECK_LAYERS = ("sec", "tanuki")   # CHECK-INV を当てる段階（段階3が済んだもの）
+_RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 
-def run_check() -> Tuple[List[str], List[str]]:
-    """今のリポジトリで一覧を作り、保存した一覧と比べる。保存した一覧が無ければ NG。
-    一覧を作るのに時間がかかるため、同じプロセスでは1回だけ作る（report_consistency_check.py を何度呼んでも同じ）。"""
-    if not _RUN_CHECK_CACHE:
-        _RUN_CHECK_CACHE.append(_run_check())
-    return _RUN_CHECK_CACHE[0]
+def run_check(layers: Tuple[str, ...] = CHECK_LAYERS) -> Tuple[List[str], List[str]]:
+    """今のリポジトリで各段階の一覧を作り、保存した一覧と比べる。保存した一覧が無ければ NG。
+    一覧を作るのに時間がかかるため、同じプロセスでは段階ごとに1回だけ作る（report_consistency_check.py を何度呼んでも同じ）。"""
+    ng: List[str] = []
+    warn: List[str] = []
+    for layer in layers:
+        if layer not in _RUN_CHECK_CACHE:
+            _RUN_CHECK_CACHE[layer] = _run_check(layer)
+        ng += _RUN_CHECK_CACHE[layer][0]
+        warn += _RUN_CHECK_CACHE[layer][1]
+    return ng, warn
 
 
-def _run_check() -> Tuple[List[str], List[str]]:
-    set_layer("sec")   # CHECK-INV は今は SEC 層だけ
+def _run_check(layer: str) -> Tuple[List[str], List[str]]:
+    set_layer(layer)
+    tag = NAME_SHORT
     try:
         with open(os.path.join(REPO, OUT_JSON), encoding="utf-8") as f:
             saved = json.load(f)
     except (OSError, ValueError) as e:
-        return [f"  [NG-INV-1 一覧が読めない] {OUT_JSON}: {e}"], []
-    return check_inventory(saved, build())
+        return [f"  [NG-INV-1 {tag} 一覧が読めない] {OUT_JSON}: {e}"], []
+    return check_inventory(saved, build(), tag=tag)
 
 
 # ---------------------------------------------------------------- Markdown（Koichi さんが読む表）
@@ -1650,7 +1780,7 @@ def render_md(inv: dict) -> str:
             L.append("|---|---|---|---|---|")
             for it in rows:
                 src = "<br>".join(f"`{s}`" for s in it["sources"][:2])
-                L.append(f"| {md_escape(it['label']) or '—'} | `{it['key']}` | {it['status']}{('<br>' + src) if src else ''} | {'・'.join(str(x) for x in it['lines'][:4])} |  |")
+                L.append(f"| {md_escape(it['label']) or '—'} | `{it['key']}` | {it['status']}{('<br>' + src) if src else ''} | {'・'.join(str(x) for x in it['lines'][:4])} | {md_escape(it.get('decision', ''))} |")
             L.append("")
     L.append("## FINDINGS 2026-10-15 の読み手0件の6種（F3）")
     L.append("")

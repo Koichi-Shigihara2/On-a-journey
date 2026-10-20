@@ -1924,7 +1924,17 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3で一覧のスクリプトを直した: 入れ子の関数の中の名前を外側の関数で解決する（`submissions_legacy`の読み手が見えるようになった）、段階2の判断の欄（`DECISIONS`・消したもの）
 - 保留4件の決着（2026-10-20、チャット側の判断）: `submissions_legacy`は残す（`_fetch_legacy_submissions`が読む）、`market_pulse_redesign.py`は残す（Market Pulseの作り直しの検討中）、
   `futures_roll_suspects.py`と`src/market/market_pulse/backfill_futures_roll.py`は組で削除（互いの参照のほかは0件）、`macro_cfnai_ma3_rows_repair.py`は修復が`70793c2185`で実行済みのため削除（check_macro_pulse.pyのN-07は前後とも一致）。件名「refactor: R-A SEC層の保留4件の決着」のcommit
-- **次はTANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**
+#### TANUKI VALUATION・TANUKI Scoreの段階（2026-10-20 済、保留2件）
+- 段階1（一覧の下書き）: `1f2212c895`（`build_output_inventory.py --layer tanuki` → `tanuki_layer.json`・`tanuki_layer.md`）
+- 段階2（判断と削除）: `d180cf8bab`。本番外の4つ（diag_iv_trace.py・growth_model_audit.py・remove_legacy_tanuki_score.py・pipeline_log.txt）と、6月から更新の無い`docs/value-monitor/tanuki_score/daily_pick.json`・`history.json`を削除。
+  画面が読むのに書き手の無いキー15は全ファイルで探し、消すものは0（11は別のJSONにあり抜き取りで見落とし、2つはページの中で作る値、`market_data`は画面の説明の文の誤検出、`rice_na_reason`はRICEを出せないときだけ書く〈今は該当0銘柄〉）
+- **保留（チャット側の判断待ち）**:
+  ①今日の特選銘柄: `docs/integrated-dashboard/history.json`の読み手は`daily_pick.py`自身（前日の分類との比較・同じ日の2回目の実行を止める）だけで、判定の実績表は`tanuki_valuation/data/{T}/score_history.json`を読む。選出をやめるとhistory.jsonは読み手0件になる（依頼の前提と違うため止めた）。
+  ②誰も読まないキー（53→42。書き手のファイルの中の読み・画面のループを読みに数えた）: 書くのをやめる確認（98銘柄のlatest.jsonのiv・判定の前後比較）にはpipelineの手元での実行が要り、手元にXAI_API_KEYがある（Grokを呼ぶ）。書き手はpipeline・core_calculator・validator・growth_sanity・rice・adjustmentsに散る
+- 段階3（CHECK）: 件名「feat: R-A TANUKIの段階3、CHECK-INVをTANUKIにも当てる」のcommit。CHECK-INV-1〜4をTANUKIにも当て、INV-5（NG、画面が読むのに書き手の無いキーが新しくできた）・INV-6（WARN、誰も読まないキーが新しくできた）を足した。
+  既知の規則の二重（TANUKIを含む: 期の名前・割安割高のしきい値・β・WACC・FCFの基準）はWARN。成長率の上限・下限の式はMACRO PULSEの変数〈MAX_GAP_DAYS等〉を拾わないように直した（TANUKIでは1ファイルだけになり二重でなくなった）。
+  一覧のスクリプト: 読み手をパスの全体で照合（同じ名前の別のファイル〈history.json・tickers.json〉の誤った読み手103件が消えた）、パースを段階で共有。rccのCHECK-INVはSEC層とTANUKIで約27秒
+- **次はほかのサブシステム（HypeCore・STONKS SILO・EPS・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）。順はチャット側が決める**
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

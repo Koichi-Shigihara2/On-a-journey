@@ -79,6 +79,56 @@ def test_sixth_duplicated_rule_is_ng_but_outside_layer_is_not():
     assert not any("outside_only" in x for x in ng + warn)
 
 
+def _tanuki_inventory():
+    inv_ = _inventory()
+    inv_["rules"] = [_rule(r, ["src/value/tanuki_valuation/a.py", "docs/p.html"]) for r in inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]]
+    inv_["screen"] = {
+        "items": [{"page": "docs/value-monitor/tanuki_valuation/stock.html", "key": "rice_na_reason", "status": "書き手なし", "lines": [1]},
+                  {"page": "docs/value-monitor/tanuki_valuation/stock.html", "key": "upside_percent", "status": "この段階の書き手あり", "lines": [2]}],
+        "unread_keys": [{"key": "v0_note", "sources": ["docs/value-monitor/tanuki_valuation/data/{T}/latest.json"]}],
+    }
+    return inv_
+
+
+def _check_tanuki(saved, now):
+    known = inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]
+    return inv.check_inventory(saved, now, known_rules=known, out_json="tanuki_layer.json", tag="TANUKI")
+
+
+def test_tanuki_known_rules_and_known_screen_keys_are_not_ng():
+    saved = _tanuki_inventory()
+    ng, warn = _check_tanuki(saved, copy.deepcopy(saved))
+    assert ng == []
+    assert len([w for w in warn if "WARN-INV-3" in w]) == len(inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]) == 5
+
+
+def test_tanuki_new_screen_key_without_writer_is_ng():
+    saved = _tanuki_inventory()
+    now = copy.deepcopy(saved)
+    now["screen"]["items"].append({"page": "docs/value-monitor/tanuki_valuation/index.html", "key": "new_key", "status": "書き手なし", "lines": [9]})
+    ng, _ = _check_tanuki(saved, now)
+    assert any("NG-INV-5" in x and "new_key" in x for x in ng)
+
+
+def test_tanuki_new_unread_key_is_warn():
+    saved = _tanuki_inventory()
+    now = copy.deepcopy(saved)
+    now["screen"]["unread_keys"].append({"key": "new_unread", "sources": ["docs/x.json"]})
+    ng, warn = _check_tanuki(saved, now)
+    assert ng == []
+    assert any("WARN-INV-6" in x and "new_unread" in x for x in warn)
+
+
+def test_tanuki_output_not_in_inventory_and_reader_removed_are_ng():
+    saved = _tanuki_inventory()
+    now = copy.deepcopy(saved)
+    now["outputs"].append(_output("docs/value-monitor/tanuki_valuation/data/{T}/new.json"))
+    now["outputs"][1]["readers"] = now["outputs"][1]["readers"][:1]
+    ng, _ = _check_tanuki(saved, now)
+    assert any("NG-INV-1" in x and "new.json" in x for x in ng)
+    assert any("NG-INV-2" in x and "docs/p.html" in x for x in ng)
+
+
 def test_missing_annotation_is_warn():
     saved = _inventory()
     now = copy.deepcopy(saved)
