@@ -1,11 +1,10 @@
 {
-  "intrinsic_value_pt": 233286766172.03397,
   "intrinsic_value_per_share": 329.0494570226714,
   "intrinsic_value_beta": 306.53,
-  "upside_percent_beta": 88.5,
-  "intrinsic_value_rf": 1427.84,
-  "upside_percent_rf": 778.1,
-  "intrinsic_value_rf_rate": 0.05136000156402588,
+  "upside_percent_beta": 87.0,
+  "intrinsic_value_rf": 1445.16,
+  "upside_percent_rf": 781.6,
+  "intrinsic_value_rf_rate": 0.05116999626159668,
   "v0": 233286766172.03397,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.6,
@@ -21,31 +20,31 @@
     "1年後": {
       "future_value": 382.85,
       "value_growth_pct": 16.4,
-      "expected_return_pct": 135.5
+      "expected_return_pct": 133.6
     },
     "2年後": {
       "future_value": 445.44,
       "value_growth_pct": 35.4,
-      "expected_return_pct": 173.9
+      "expected_return_pct": 171.7
     },
     "3年後": {
       "future_value": 518.26,
       "value_growth_pct": 57.5,
-      "expected_return_pct": 218.7
+      "expected_return_pct": 216.2
     },
     "4年後": {
       "future_value": 602.99,
       "value_growth_pct": 83.3,
-      "expected_return_pct": 270.8
+      "expected_return_pct": 267.9
     },
     "5年後": {
       "future_value": 701.57,
       "value_growth_pct": 113.2,
-      "expected_return_pct": 331.5
+      "expected_return_pct": 328.0
     }
   },
-  "upside_percent": 102.4,
-  "calculation_date": "2026-10-20T05:38:27+09:00",
+  "upside_percent": 100.7,
+  "calculation_date": "2026-10-21T05:38:49+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -218,7 +217,6 @@
     "note": "OCF$9.41B - CapEx$0.32B（直近年。5yr/2yr平均・外れ値除外後の採用値は$7.72B）"
   },
   "software_system_provisional": {
-    "is_provisional": false,
     "note": ""
   },
   "rd_capitalization": {
@@ -237,7 +235,6 @@
     "rpo_pv": 0.0,
     "rpo_raw": 0.0,
     "discount_rate": 0.15,
-    "assumed_realization_years": 1.5,
     "applied": false,
     "application_rate": 1.0,
     "sector_category": "",
@@ -276,7 +273,6 @@
     "q_years": 0,
     "cf_years": 0,
     "avg_intensity": 0.0,
-    "avg_rev_growth_lagged": 0.0,
     "warnings": true,
     "note": "セクター除外（Consumer Cyclical）: 投資強度の定義が成立しないため計算対象外"
   },
@@ -303,7 +299,7 @@
     "roe_10yr_avg": 0.38300077931287885,
     "roe_years_used": 7,
     "roe_outlier_adj": true,
-    "current_price": 162.60000610351562,
+    "current_price": 163.9199981689453,
     "latest_revenue": 26917000000.0,
     "rpo": 0.0,
     "beta": 1.075,
@@ -321,9 +317,6 @@
     "moat_score_source": "neutral_fallback",
     "moat_score_n_present": 1,
     "moat_phase1_years": 7,
-    "moat_gross_margin_norm": null,
-    "moat_roic_norm": null,
-    "moat_fcf_margin_norm": 1.0,
     "pv_high": 66981446426.42609,
     "pv_terminal": 166305319745.60788,
     "roe_used": 0.38300077931287885,
@@ -341,7 +334,7 @@
     "peg": 0.6067,
     "ps": 4.348753,
     "ev_ebitda": 12.15,
-    "ma200": 179.5469620513916,
+    "ma200": 179.30192207336427,
     "forward_eps": 12.37827,
     "next_quarter_eps": 4.49,
     "analyst_target_median": 240.0,
@@ -360,12 +353,11 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": -27.1,
     "max_eps": 10.3942,
-    "max_eps_per": 15.6,
+    "max_eps_per": 15.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-20",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -389,14 +381,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.1634869878187224,
-  "required_growth_rf_base": -0.34313584319609547,
-  "risk_free_rate_live": 0.05136000156402588,
-  "risk_free_rate_live_date": "2026-10-19",
+  "required_growth_rf_base": -0.34207280068029455,
+  "risk_free_rate_live": 0.05116999626159668,
+  "risk_free_rate_live_date": "2026-10-20",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.24209593730271806,
+  "required_growth_rf_live": -0.24264093594868108,
   "tanuki_score": "BUY",
   "funda_score": 55,
-  "score_comment": "割安圏(102%)で買い余地大、FCF黒字、売上安定成長",
+  "score_comment": "割安圏(101%)で買い余地大、FCF黒字、売上安定成長",
   "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -458,7 +450,7 @@
     "stdebt_last_confirmed_zero_year": null,
     "buyback_ttm": 10530000000
   },
-  "net_current_assets_ratio": 0.0163,
+  "net_current_assets_ratio": 0.0161,
   "dupont": {
     "excluded": true,
     "reason": "negative_equity"
@@ -485,8 +477,6 @@
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=31.7%のため中央値モデル適用",
     "hype_phase_used": 4,
-    "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "長期調整・実体強",
     "signals": [
       "過去実績(3yr:16.3% / 5yr:31.7%)と整合 ✅"
     ],
@@ -496,6 +486,5 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0248,
-  "forward_earnings_yield": 0.0761
+  "erp": 0.0243
 }

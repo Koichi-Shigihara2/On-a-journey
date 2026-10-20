@@ -1,11 +1,10 @@
 {
-  "intrinsic_value_pt": -81545198.47629738,
   "intrinsic_value_per_share": 3.657978606155693,
   "intrinsic_value_beta": 3.94,
-  "upside_percent_beta": -90.6,
-  "intrinsic_value_rf": 2.16,
+  "upside_percent_beta": -90.4,
+  "intrinsic_value_rf": 2.14,
   "upside_percent_rf": -94.8,
-  "intrinsic_value_rf_rate": 0.05136000156402588,
+  "intrinsic_value_rf_rate": 0.05116999626159668,
   "v0": -81545198.47629738,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -21,31 +20,31 @@
     "1年後": {
       "future_value": 5.13,
       "value_growth_pct": 40.2,
-      "expected_return_pct": -87.7
+      "expected_return_pct": -87.5
     },
     "2年後": {
       "future_value": 7.19,
       "value_growth_pct": 96.4,
-      "expected_return_pct": -82.8
+      "expected_return_pct": -82.5
     },
     "3年後": {
       "future_value": 10.07,
       "value_growth_pct": 175.1,
-      "expected_return_pct": -75.9
+      "expected_return_pct": -75.5
     },
     "4年後": {
       "future_value": 14.11,
       "value_growth_pct": 285.5,
-      "expected_return_pct": -66.3
+      "expected_return_pct": -65.7
     },
     "5年後": {
       "future_value": 14.6,
       "value_growth_pct": 298.9,
-      "expected_return_pct": -65.1
+      "expected_return_pct": -64.5
     }
   },
-  "upside_percent": -91.3,
-  "calculation_date": "2026-10-20T05:31:52+09:00",
+  "upside_percent": -91.1,
+  "calculation_date": "2026-10-21T05:32:40+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -204,7 +203,6 @@
     "note": "OCF$-0.07B - CapEx$1.06B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
   },
   "software_system_provisional": {
-    "is_provisional": false,
     "note": ""
   },
   "rd_capitalization": {
@@ -223,7 +221,6 @@
     "rpo_pv": 0.0,
     "rpo_raw": 252093000,
     "discount_rate": 0.15,
-    "assumed_realization_years": 1.5,
     "applied": false,
     "application_rate": 0.0,
     "sector_category": "Non-SaaS",
@@ -262,7 +259,6 @@
     "q_years": 0,
     "cf_years": 0,
     "avg_intensity": 0.0,
-    "avg_rev_growth_lagged": 0.0,
     "warnings": true,
     "note": "Q計算不可（OCF/純利益データなし）"
   },
@@ -289,7 +285,7 @@
     "roe_10yr_avg": -0.3293556398919198,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
-    "current_price": 41.869998931884766,
+    "current_price": 41.130001068115234,
     "latest_revenue": 70918000.0,
     "rpo": 252093000,
     "beta": 2.5,
@@ -307,9 +303,6 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 4,
-    "moat_gross_margin_norm": 0.4176,
-    "moat_roic_norm": 0.0,
-    "moat_fcf_margin_norm": 0.0,
     "pv_high": -32295254.042276576,
     "pv_terminal": -49249944.434020795,
     "roe_used": -0.3293556398919198,
@@ -327,7 +320,7 @@
     "peg": null,
     "ps": 137.23927,
     "ev_ebitda": null,
-    "ma200": 79.81642490386963,
+    "ma200": 79.60472490310669,
     "forward_eps": -1.28668,
     "next_quarter_eps": -0.45,
     "analyst_target_median": 78.0,
@@ -341,7 +334,7 @@
     "insider_buy_count": 3,
     "insider_sell_count": 2,
     "insider_net_direction": "Buy優勢",
-    "insider_latest_date": "2026-10-01",
+    "insider_latest_date": "2026-10-19",
     "revenue_ttm": 115299000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 2032.3,
@@ -351,7 +344,6 @@
     "max_eps_ttm_end": "2026-06-30"
   },
   "validation": {
-    "validated_at": "2026-10-20",
     "model": "basic_checks_only",
     "checks": {
       "pt_shares_consistency": {
@@ -376,8 +368,8 @@
   },
   "phase1_growth": 0.4012337772444385,
   "required_growth_rf_base": null,
-  "risk_free_rate_live": 0.05136000156402588,
-  "risk_free_rate_live_date": "2026-10-19",
+  "risk_free_rate_live": 0.05116999626159668,
+  "risk_free_rate_live_date": "2026-10-20",
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": null,
   "tanuki_score": "WATCH",
@@ -444,7 +436,7 @@
     "stdebt_last_confirmed_zero_year": null
   },
   "computed_runway_months": 48.45645619216762,
-  "net_current_assets_ratio": 0.1413,
+  "net_current_assets_ratio": 0.1439,
   "dupont": {
     "ni_ttm": -618761000,
     "revenue_ttm": 115299000,
@@ -488,8 +480,6 @@
     "growth_model": "decay",
     "growth_model_reason": "CAGR_max=78.8%と業界平均1.4%の中間値40.1%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,
-    "hype_phase_label": "期待剥落期",
-    "hype_substage_label": "実体軟化・期待崩壊中",
     "signals": [
       "過去実績(3yr:78.8% / 5yr:N/A)と整合 ✅"
     ],
@@ -499,6 +489,5 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0821,
-  "forward_earnings_yield": -0.0307
+  "erp": -0.0825
 }
