@@ -1913,6 +1913,17 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 理由: 行数が多すぎる疑いの確かめ。出力の一覧だけでは、本番外のコードが対象に入らないため
 - 行数の数え方: 各フォルダの`git ls-files '*.py'`から`tests/`と`test_`を除いた行の合計（2026-10-19）
 
+#### SEC層の段階（2026-10-20 済）
+- 段階1（一覧の下書き）: `5dda340c96`。`scripts/inventory/build_output_inventory.py` → `docs/architecture/output_inventory/sec_layer.json`・`sec_layer.md`
+- 段階2（Koichiさんの判断と削除）: `b6294a559b`。消したもの: `share_unit_fix_log.json`（15ファイル）・`spac_shell_detection_log.json`（98ファイル）・`store_v2/`の保存の関数とCLI・`scripts/analysis`の14ファイル。
+  98銘柄のannual・quarterly・normalized・Layer3・TTMは削除の前後で一致（generated_atを除く）。
+  保留（消さない、チャット側の判断待ち）: `submissions_legacy_{CIK}.json`（`fetcher.py`の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている。段階1の一覧は書き手の関数の中の読み込みを数えていなかった）、
+  `scripts/analysis`の3ファイル（`futures_roll_suspects.py`は`backfill_futures_roll.py`の入力、`market_pulse_redesign.py`は`stage_conclusions.py`のdocstringが参照、`macro_cfnai_ma3_rows_repair.py`は`browser_checks/check_macro_pulse.py`の文が名前を出す）
+- 段階3（CHECK）: 第2部のcommit（件名「feat: R-A SEC層の段階3、出力の一覧のCHECK-INV-1〜4」）。`report_consistency_check.py`のCHECK-INV-1（NG、一覧に無い出力）・INV-2（NG、読み手とされているファイルが読んでいない・読み手0件の出力）・
+  INV-3（規則の二重。既知の5つはWARN、SEC層を含む6つ目はNG）・INV-4（WARN、注記の無い出力）。[GLOBAL]で銘柄ごとのNGと混ぜない。一覧の作り方はスクリプト1つ（rccはそれをimportする）
+- 段階3で一覧のスクリプトを直した: 入れ子の関数の中の名前を外側の関数で解決する（`submissions_legacy`の読み手が見えるようになった）、段階2の判断の欄（`DECISIONS`・消したもの）
+- **次はTANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**
+
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）
 

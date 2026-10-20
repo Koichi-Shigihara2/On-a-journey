@@ -127,6 +127,33 @@ ANNOTATIONS: Dict[str, str] = {
     "config/cik_lookup.csv": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える",
 }
 
+# 段階2の判断（残す／消す）。Koichi さんの判断を写す欄で、機械の一覧とは別。書いていないものは DECISION_DEFAULT
+DECISION_DEFAULT = "残す（2026-10-20）"
+DECISIONS: Dict[str, str] = {
+    # 消すと決めたが、変更の前の grep で想定外の読み手・言及が見つかり、消さずに止めたもの（チャット側の判断待ち）
+    "common/sec_data/data/{T}/submissions_legacy_{CIK}.json":
+        "消す→保留（2026-10-20。fetcher.py の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている）",
+    "scripts/analysis/futures_roll_suspects.py":
+        "消す→保留（2026-10-20。src/market/market_pulse/backfill_futures_roll.py の入力〈--suspects〉がこの結果）",
+    "scripts/analysis/market_pulse_redesign.py":
+        "消す→保留（2026-10-20。src/market/market_pulse/stage_conclusions.py のdocstringが「同じ閾値を使う」と参照）",
+    "scripts/analysis/macro_cfnai_ma3_rows_repair.py":
+        "消す→保留（2026-10-20。browser_checks/check_macro_pulse.py のN-07の説明の文が名前を出す）",
+}
+
+# 段階2で消したもの（2026-10-20）。一覧からは消え、ここに記録だけ残す
+DELETED: List[Tuple[str, str]] = [
+    ("common/sec_data/data/{T}/share_unit_fix_log.json", "書き手 parser.py:SECParser._save_share_unit_fix_log と呼び出し、既存15ファイル。単位を直す処理は残す"),
+    ("common/sec_data/data/{T}/spac_shell_detection_log.json", "書き手 parser.py:SECParser._save_spac_shell_detection_log と呼び出し、既存98ファイル。SPACの時期の値を外す処理は残す"),
+    ("common/sec_data/store_v2/{T}.json", "layer3_builder.py の save_ticker_store・build_and_save・手動のCLI・STORE_V2_DIR、.gitignore の行。その場で計算する読み手は変えない"),
+    ("scripts/analysis の14ファイル", "macro_alfred_lib・macro_claims_slot_rows_repair・macro_events_known_at_repair・macro_events_revision_repair・macro_events_slot_rows_repair・"
+     "macro_liquidity_m2_yoy_repair・macro_liquidity_row_date_repair・macro_liquidity_weekly_before_after・macro_m4_hollow_rally・macro_m4_m2_percentile・"
+     "macro_m4_score_vs_recession・macro_m4_thresholds・macro_m5_threshold_simulation・macro_ticker_history_check（.py）"),
+]
+
+# 規則の二重のうち既知のもの（CHECK-INV-3 で WARN。SEC層のファイルを含むものでこれ以外が二重になったら NG）
+KNOWN_DUPLICATE_RULES = ["q4_implied", "latest_filed", "staleness", "ttm_sum", "fiscal_year"]
+
 PLACEHOLDER_BY_NAME = [
     (re.compile(r"(^|_)(ticker|tickers|tk|sym|symbol)($|_)|^t$|^T$", re.I), "{T}"),
     (re.compile(r"(^|_)(year|yr|fy)($|_)|^y$", re.I), "{YYYY}"),
@@ -347,6 +374,14 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
         if expr.id == "__file__":
             return mod.rel
         func = mod.enclosing_func(use_node)
+        # 入れ子の関数の中で代入も引数も無い名前は、外側の関数で探す（クロージャ）
+        while func is not None and not any(
+                (isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == expr.id for t in n.targets))
+                for n in ast.walk(func)) and not any(a.arg == expr.id for a in func.args.args + func.args.kwonlyargs):
+            outer = mod.enclosing_func(func)
+            if outer is None:
+                break
+            use_node, func = func, outer
         # 関数の中の代入（使う行より前で最も近いもの）
         if func is not None:
             best = None
@@ -690,6 +725,8 @@ def calls_in(mod: Module) -> List[Tuple[int, str, str]]:
 # ---------------------------------------------------------------- 本体
 
 def build() -> dict:
+    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC):   # 2回目の呼び出しで積み増さない
+        g.clear()
     files = code_files()
     ALL_PY.update(f for f in git_ls_files("*.py"))
     py_files = [f for f in files if f.endswith(".py")]
@@ -1006,6 +1043,7 @@ def build() -> dict:
         else:
             o["group"] = "2件以上"
         o["note"] = ANNOTATIONS.get(o["path"], "")
+        o["decision"] = DECISIONS.get(o["path"], DECISION_DEFAULT)
 
     # 6. 規則
     rules_out = []
@@ -1084,7 +1122,7 @@ def build() -> dict:
                         out.append(f)
                 return sorted(set(out))
             nonprod.append({
-                "dir": d, "file": rel, "lines": texts.get(rel, read_text(rel)).count("\n"),
+                "dir": d, "file": rel, "decision": DECISIONS.get(rel, DECISION_DEFAULT), "lines": texts.get(rel, read_text(rel)).count("\n"),
                 "workflows": refs(workflows), "code": [f for f in refs(prod_code) if not f.startswith(d + "/")],
                 "same_dir": [f for f in refs(prod_code) if f.startswith(d + "/")], "tests": refs(test_code),
             })
@@ -1130,8 +1168,67 @@ def build() -> dict:
         "rules": rules_out,
         "non_production_code": nonprod,
         "f3_zero_reader": f3,
+        "deleted": [{"what": a, "detail": b} for a, b in DELETED],
         "stop_condition": stop,
     }
+
+
+# ---------------------------------------------------------------- CHECK（report_consistency_check.py の CHECK-INV-1〜4 が使う）
+
+def check_inventory(saved: dict, now: dict) -> Tuple[List[str], List[str]]:
+    """保存した一覧（sec_layer.json）と、今のリポジトリから作った一覧を比べる。(NG, WARN) の文の一覧を返す。
+    銘柄ごとではなく全体の判定。"""
+    ng: List[str] = []
+    warn: List[str] = []
+    saved_out = {o["path"]: o for o in saved.get("outputs", [])}
+    now_out = {o["path"]: o for o in now.get("outputs", [])}
+    # CHECK-INV-1: 一覧に無い出力
+    for path in sorted(set(now_out) - set(saved_out)):
+        w = "、".join(f"{x['file']}:{x['func']}" for x in now_out[path].get("writers", []))
+        ng.append(f"  [NG-INV-1 一覧に無い出力] {path}（書き手 {w}）。{OUT_JSON} に入れる（スクリプトで作り直す）か、出力をやめる")
+    # CHECK-INV-2: 一覧で読み手とされているファイルが読んでいない／読み手0件の出力
+    for path in sorted(set(saved_out) & set(now_out)):
+        before = {r["file"] for r in saved_out[path].get("readers", []) + saved_out[path].get("readers_compute", [])}
+        after = {r["file"] for r in now_out[path].get("readers", []) + now_out[path].get("readers_compute", [])}
+        for f in sorted(before - after):
+            ng.append(f"  [NG-INV-2 読み手が読んでいない] {path} の読み手 {f} が、今はこの出力を読んでいない。一覧を作り直すか、読み手を確かめる")
+    for path, o in sorted(now_out.items()):
+        if o.get("group") == "読み手0件":
+            ng.append(f"  [NG-INV-2 読み手0件の出力] {path}。読み手を作るか、出力をやめる（[[OUTPUT-INVENTORY-CHECK-1]]）")
+    # CHECK-INV-3: 規則の二重（SEC層のファイルを含むもの）。既知は WARN、それ以外は NG
+    for r in now.get("rules", []):
+        if not (r.get("duplicated") and r.get("in_layer")):
+            continue
+        where = "、".join(r["files"])
+        if r["id"] in KNOWN_DUPLICATE_RULES:
+            warn.append(f"  [WARN-INV-3 規則の二重（既知）] {r['name']}: {len(r['files'])}ファイル（{where}）")
+        else:
+            ng.append(f"  [NG-INV-3 規則の二重（新規）] {r['name']}: {len(r['files'])}ファイル（{where}）。直し方はチャット側が決める")
+    # CHECK-INV-4: 「何か」の注記が無い出力
+    for path, o in sorted(now_out.items()):
+        if not o.get("note"):
+            warn.append(f"  [WARN-INV-4 注記なし] {path}。scripts/inventory/build_output_inventory.py の ANNOTATIONS に1文を足す")
+    return ng, warn
+
+
+_RUN_CHECK_CACHE: List[Tuple[List[str], List[str]]] = []
+
+
+def run_check() -> Tuple[List[str], List[str]]:
+    """今のリポジトリで一覧を作り、保存した一覧と比べる。保存した一覧が無ければ NG。
+    一覧を作るのに時間がかかるため、同じプロセスでは1回だけ作る（report_consistency_check.py を何度呼んでも同じ）。"""
+    if not _RUN_CHECK_CACHE:
+        _RUN_CHECK_CACHE.append(_run_check())
+    return _RUN_CHECK_CACHE[0]
+
+
+def _run_check() -> Tuple[List[str], List[str]]:
+    try:
+        with open(os.path.join(REPO, OUT_JSON), encoding="utf-8") as f:
+            saved = json.load(f)
+    except (OSError, ValueError) as e:
+        return [f"  [NG-INV-1 一覧が読めない] {OUT_JSON}: {e}"], []
+    return check_inventory(saved, build())
 
 
 # ---------------------------------------------------------------- Markdown（Koichi さんが読む表）
@@ -1152,7 +1249,7 @@ def render_md(inv: dict) -> str:
     L.append("- 読み手の数: その出力のファイルを読む本番のコードのファイルの数（テストを除く。ワークフロー・JS・HTMLを含む）。「その場で計算」は、ファイルを読まずに同じ中身を関数で作り直す読み手のファイルの数")
     L.append("- 画面: 直接（docs/のページがそのファイルを読む）と経由（読み手のPythonのファイル〈呼び出しを3段までたどった箇所を含む〉がdocs/に書くファイルを読むページ。推定。経由の元は「読み手の内訳」）")
     L.append("- 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`があれば「効く」")
-    L.append("- 残す／消す: 空欄（Koichiさんが決める）")
+    L.append("- 残す／消す: 段階2の判断（2026-10-20、チャット側の案をKoichiさんが了承）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す")
     L.append("")
     st = inv["stop_condition"]
     n_zero = sum(1 for o in files if o["group"] == "読み手0件")
@@ -1165,6 +1262,11 @@ def render_md(inv: dict) -> str:
     L.append(f"**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない {len(st['outputs_with_writer_outside_layer'])}＋{len(st['unresolved_write_sites'])}件（{st['ratio_writer']:.1%}）、"
              f"読み方を決めきれない読み込み {len(st['python_read_sites_unresolved_in_files_mentioning_sec_data'])}件／解決できた読み込み {st['python_read_sites_into_layer_resolved']}件（{st['ratio_reader']:.1%}）→ "
              + ("**当たる**" if st["hit"] else "当たらない"))
+    L.append("")
+    L.append("## 消したもの（段階2、2026-10-20）")
+    L.append("")
+    for x in inv["deleted"]:
+        L.append(f"- `{x['what']}`: {x['detail']}")
     L.append("")
     L.append("## 出力（読み手0件 → テストだけ → 1件 → 2件以上）")
     L.append("")
@@ -1183,7 +1285,7 @@ def render_md(inv: dict) -> str:
         eff = "効く: " + "・".join(o["decision_effect"]) if o["decision_effect"] else "—"
         defs = "・".join(o["definitions"]) or "—"
         files_n = f"<br>（{o['files_tracked']}ファイル）" if o.get("files_tracked") is not None else ""
-        L.append(f"| {o['group']} | `{md_escape(o['path'])}`{files_n} | {md_escape(o['note'])} | {writers} | {rc} | {screens} | {md_escape(eff)} | {defs} |  |")
+        L.append(f"| {o['group']} | `{md_escape(o['path'])}`{files_n} | {md_escape(o['note'])} | {writers} | {rc} | {screens} | {md_escape(eff)} | {defs} | {md_escape(o['decision'])} |")
     L.append("")
     L.append("### 人が見るもの（Step Summary・Discord）")
     L.append("")
@@ -1259,7 +1361,7 @@ def render_md(inv: dict) -> str:
         L.append("|---|---|---|---|---|---|---|")
         for x in rows:
             fmt = lambda xs: "<br>".join(f"`{v}`" for v in xs) or "—"  # noqa: E731
-            L.append(f"| `{x['file'].replace(d + '/', '')}` | {x['lines']:,} | {fmt(x['workflows'])} | {fmt(x['code'])} | {fmt(x['same_dir'])} | {fmt(x['tests'])} |  |")
+            L.append(f"| `{x['file'].replace(d + '/', '')}` | {x['lines']:,} | {fmt(x['workflows'])} | {fmt(x['code'])} | {fmt(x['same_dir'])} | {fmt(x['tests'])} | {md_escape(x['decision'])} |")
         L.append("")
     L.append("## 止める条件の内訳")
     L.append("")

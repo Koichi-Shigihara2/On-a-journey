@@ -11,20 +11,18 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-20 更新〈R-AのSEC層の段階1の下書きの後〉。上から順）**:
+**次の作業（2026-10-20 夜 更新〈R-AのSEC層の段階1〜3の後〉。上から順）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
    - 10-19の確認: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（手順6）も済
    - 初回の束ね: `docs/architecture/BUNDLING_2026-10-19.md`（「確定」の節）。根治策5件（R-A `[[OUTPUT-INVENTORY-CHECK-1]]`〈R-Bを統合〉・R-C `[[LAYER3-FIRST-FILED-DATE-1]]`を広げる・R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`）。
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`のSECデータ層の段階（出力の一覧〈書き手・読み手・画面・定義・規則〉をgrepで下書き → Koichiさんが残す／消すを判断 → 消してから残りにCHECK）。
-   CHAT_RULES.md「発見の溜め方と根治の判断」5。読み手0件の出力6種（FINDINGS 2026-10-15）の残す／消すもこの段階で判断する。`[[TICKER-EXCEPTION-LEDGER-1]]`（統合済み）の要否も一覧の結果で決める
-   本番外のコード（`scripts/analysis` 2,740行・`browser_checks` 3,208行・`discover/stonks-silo` 2,620行）も一覧に入れ、呼ばれているかをgrepで示してKoichiさんが残す／消す／移すを判断する（2026-10-19追記、`[[OUTPUT-INVENTORY-CHECK-1]]`）
-   - （済 2026-10-20）段階1の下書き: `scripts/inventory/build_output_inventory.py`（ASTとgrepで作る。CHECKとしてはまだ動かさない）→ `docs/architecture/output_inventory/sec_layer.json`（機械が読む）・`sec_layer.md`（Koichiさんが読む表）。
-     出力24（ファイル22・人が見るもの2）、読み手0件4（`share_unit_fix_log`・`spac_shell_detection_log`〈F3の2種〉・`submissions_legacy_{CIK}`・`store_v2/{T}.json`〈本番で書かれず、Layer3は13ファイルがその場で計算〉）、テストだけ0、1件6、2件以上12。
-     規則の二重6（検出式6種のうち。SEC層を含むもの5: Q4の逆算・提出日が最新の選び方・提出の古さの判定・TTMの作り方・会計年度の決め方）。止める条件（1割）には当たらない（書き手0%・読み方を決めきれない読み込み4件／58件で6.9%）
-   - **次は段階2: Koichiさんの判断**。`sec_layer.md`の「残す／消す」と本番外のコードの「残す／消す／移す」の欄を埋める（空欄のまま）。消すと決めたものを消してから、段階3で残りにCHECKを有効にする
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**TANUKI VALUATION・TANUKI Scoreの段階1（一覧の下書き）**。SEC層と同じく`scripts/inventory/build_output_inventory.py`を広げて
+   書き手・読み手（保存済みファイル／その場で計算）・画面・定義・規則をASTとgrepで作り、Koichiさんの残す／消すの判断（段階2）→削除→CHECK（段階3）の順。CHAT_RULES.md「発見の溜め方と根治の判断」5
+   - （済 2026-10-20）SEC層の段階1〜3: `5dda340c96`（一覧）・`b6294a559b`（削除）・第2部のcommit（CHECK-INV-1〜4）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」
+   - SEC層の保留: `submissions_legacy_{CIK}.json`と`scripts/analysis`の3ファイル（想定外の読み手・言及。チャット側の判断待ち）
+   - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する
 3. R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（範囲を広げたもの: `first_filed`に加えて`first_val`、Q4の逆算の案1、年次の組み替え〈C1〉を検知するCHECK）。`docs/architecture/Q4_IMPLIED_BASIS_MIX.md`。APPの理論株価（約20〜27%低い）がここで戻る見込み
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
@@ -32,6 +30,11 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-20 夜（R-AのSEC層の段階2・3）**: 第1部`b6294a559b`（削除。読み手0件の出力3つ〈share_unit_fix_log 15ファイル・spac_shell_detection_log 98ファイル・store_v2の保存の関数とCLI〉と`scripts/analysis`の14ファイル、計127ファイルを削除。
+  98銘柄のannual・quarterly・normalized・Layer3・TTMは前後で一致〈generated_atを除く〉。`submissions_legacy`と`scripts/analysis`の3ファイルは想定外の読み手・言及のため保留）。
+  第2部: `report_consistency_check.py`にCHECK-INV-1〜4（[GLOBAL]。今のリポジトリでNG 0・WARN 5〈既知の規則の二重〉）、テスト6件。一覧を作り直した（出力21・読み手0件0）。FINDINGS.mdにF3の2種の済と、設計の文書の古い記載（型E）の1行〈計22行〉
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4（F3の残りの4種。SEC層の2種を削除）、二重実装の規則 5（SYSTEM_MAP.mdの【二重】。参考: 一覧の検出式ではSEC層を含む5〈CHECK-INV-3で既知のWARN〉）、サブシステム 10、
+  Python 69,235行（147ファイル。前回の71,041行〈161ファイル〉から1,806行減。削除で1,933行減〈scripts/analysis 1,863・parser.py 39・layer3_builder.py 31〉、CHECKで127行増〈rcc 25・一覧のスクリプト 102。R-Aの一部〉）、テスト34,355行（+88）、ワークフロー23本、アクティブBACKLOG 13件
 - **2026-10-20（確認の記録と、R-AのSEC層の段階1の下書き）**: 第1部`889d28bdd7`（手順3: NIY=Fの10-08は`_no_yahoo_bar`で`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設、アクティブ14件→13件。手順10: 直しの後のRSS Monitor `39276537966`で9銘柄とも表のとおり・遅延アラート0件・`no_filing_days`は全0。FINDINGS.mdにNIY=Fの10-07の印の無い平らな足〈計21行〉）。
   第2部: `[[OUTPUT-INVENTORY-CHECK-1]]`のSEC層の段階1の下書き（上の次の作業の2）。本番の処理は変えていない。ゲートにも入れていない
   **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 6（FINDINGSの型Aの読み手0件、F3の6種。参考: 一覧の下書きではSEC層の読み手0件が4、うち2つはF3と同じ）、二重実装の規則 5（SYSTEM_MAP.mdの【二重】。参考: 一覧の下書きでは検出式6種が二重）、サブシステム 10、

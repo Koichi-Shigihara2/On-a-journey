@@ -4,346 +4,13 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "common/sec_data/data/{T}/share_unit_fix_log.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/sec_data/parser.py",
-     "func": "SECParser._save_share_unit_fix_log",
-     "line": 3552
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/SEC_Data_Update.yml"
-   ],
-   "files_tracked": 15,
-   "top_keys_sampled_files": 3,
-   "top_keys": [
-    {
-     "key": "fixes",
-     "reader_files": 0
-    },
-    {
-     "key": "ticker",
-     "reader_files": 0
-    }
-   ],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "株式数の単位（千株・株）の取り違えを直した記録"
-  },
-  {
-   "path": "common/sec_data/data/{T}/spac_shell_detection_log.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/sec_data/parser.py",
-     "func": "SECParser._save_spac_shell_detection_log",
-     "line": 3569
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/SEC_Data_Update.yml"
-   ],
-   "files_tracked": 98,
-   "top_keys_sampled_files": 3,
-   "top_keys": [
-    {
-     "key": "detections",
-     "reader_files": 0
-    },
-    {
-     "key": "ticker",
-     "reader_files": 0
-    }
-   ],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "SPAC（上場のための空の会社）の時期の値を外した記録"
-  },
-  {
-   "path": "common/sec_data/data/{T}/submissions_legacy_{CIK}.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/sec_data/fetcher.py",
-     "func": "SECFetcher._fetch_legacy_submissions",
-     "line": 458
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/SEC_Data_Update.yml"
-   ],
-   "files_tracked": 4,
-   "top_keys_sampled_files": 3,
-   "top_keys": [
-    {
-     "key": "accn_to_filingdate",
-     "reader_files": 0
-    },
-    {
-     "key": "accn_to_reportdate",
-     "reader_files": 0
-    },
-    {
-     "key": "cik",
-     "reader_files": 0
-    },
-    {
-     "key": "ticker",
-     "reader_files": 0
-    }
-   ],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "社名・CIKが変わった銘柄の、旧CIKの提出書類の一覧"
-  },
-  {
-   "path": "common/sec_data/store_v2/{T}.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/sec_data/layer3_builder.py",
-     "func": "save_ticker_store",
-     "line": 1576
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [],
-   "files_tracked": 0,
-   "top_keys_sampled_files": 0,
-   "top_keys": [],
-   "readers": [],
-   "readers_compute": [
-    {
-     "file": "common/sec_data/newfield_q4_cutoff_check.py",
-     "line": 133,
-     "func": "check_ticker",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/reader.py",
-     "line": 55,
-     "func": "get_ttm_revenue",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/rotce.py",
-     "line": 415,
-     "func": "compute_ticker",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/update.py",
-     "line": 241,
-     "func": "process_ticker",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-     "line": 466,
-     "func": "load_all_normalized",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 147,
-     "func": "run",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/kpi_proposer.py",
-     "line": 573,
-     "func": "route_rejected_to_layer3",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/quarterly_review_generator.py",
-     "line": 203,
-     "func": "load_layer1_financials",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/tail_dcf_bridge.py",
-     "line": 137,
-     "func": "_load_layer1_financials",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 427,
-     "func": "fetch_layer3_kpis",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/hypecore/hypecore.py",
-     "line": 261,
-     "func": "fetch_quarterly_fundamentals",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
-     "line": 218,
-     "func": "_total_revenue_series",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 402,
-     "func": "TanukiValuationPipeline._get_layer3_store",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_conditional_tags_and_stale_latest.py",
-     "line": 50,
-     "func": "_build",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_conditional_tags_and_stale_latest.py",
-     "line": 89,
-     "func": "_real_store",
-     "how": "その場で計算",
-     "via": "common/sec_data/layer3_builder.py::build_ticker_store",
-     "type": "テスト"
-    }
-   ],
-   "producers": [
-    "common/sec_data/layer3_builder.py::build_ticker_store"
-   ],
-   "screens": [
-    {
-     "page": "docs/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/portfolio/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/portfolio/tail/detail.html",
-     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
-    },
-    {
-     "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
-    },
-    {
-     "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
-    },
-    {
-     "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/extreme-fear/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/hypecore/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
-    },
-    {
-     "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/_summary.json）"
-    },
-    {
-     "page": "docs/value-monitor/tanuki_valuation/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
-     "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
-    }
-   ],
-   "definitions": [],
-   "decision_effect": [
-    "理論株価・判定（TANUKI VALUATION）",
-    "HypeCore（TANUKI のtiming・判定の入力）",
-    "保有銘柄の監視（TANUKI TAIL）"
-   ],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 13,
-   "group": "読み手0件",
-   "note": "Layer3（項目ごとの四半期・年次の値と提出日）をファイルに保存したもの"
-  },
-  {
    "path": "common/sec_data/data/{T}/bs_identity_violations_log.json",
    "kind": "ファイル",
    "writers": [
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_bs_identity_violations_log",
-     "line": 3906
+     "line": 3867
     }
    ],
    "writers_outside_layer": [],
@@ -365,7 +32,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2342,
+     "line": 2359,
      "func": "_read_bs_identity_violations_log",
      "how": "保存済みファイル",
      "via": "grep",
@@ -373,7 +40,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2346,
+     "line": 2363,
      "func": "_read_bs_identity_violations_log",
      "how": "保存済みファイル",
      "via": "AST",
@@ -381,7 +48,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3179,
+     "line": 3196,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log",
@@ -389,7 +56,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log",
@@ -397,7 +64,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log",
@@ -453,7 +120,8 @@
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "貸借対照表の資産＝負債＋資本が合わない期の記録"
+   "note": "貸借対照表の資産＝負債＋資本が合わない期の記録",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json",
@@ -512,7 +180,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "社名・CIKが変わった銘柄の、旧CIKのXBRLの生データ"
+   "note": "社名・CIKが変わった銘柄の、旧CIKのXBRLの生データ",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/fy_collision_log.json",
@@ -521,7 +190,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_collision_log",
-     "line": 3491
+     "line": 3485
     }
    ],
    "writers_outside_layer": [],
@@ -543,7 +212,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2282,
+     "line": 2299,
      "func": "_read_fy_collision_log",
      "how": "保存済みファイル",
      "via": "grep",
@@ -551,7 +220,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2286,
+     "line": 2303,
      "func": "_read_fy_collision_log",
      "how": "保存済みファイル",
      "via": "AST",
@@ -559,7 +228,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2983,
+     "line": 3000,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_collision_log",
@@ -567,7 +236,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_collision_log",
@@ -575,7 +244,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_collision_log",
@@ -671,7 +340,8 @@
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "同じ会計年度に2つの年次が当たった記録（解析の内部の記録）"
+   "note": "同じ会計年度に2つの年次が当たった記録（解析の内部の記録）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/fy_tag_mismatch_log.json",
@@ -680,7 +350,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_tag_mismatch_log",
-     "line": 3509
+     "line": 3503
     }
    ],
    "writers_outside_layer": [],
@@ -702,7 +372,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2302,
+     "line": 2319,
      "func": "_read_fy_tag_mismatch_log",
      "how": "保存済みファイル",
      "via": "grep",
@@ -710,7 +380,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2306,
+     "line": 2323,
      "func": "_read_fy_tag_mismatch_log",
      "how": "保存済みファイル",
      "via": "AST",
@@ -718,7 +388,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3002,
+     "line": 3019,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log",
@@ -726,7 +396,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log",
@@ -734,7 +404,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log",
@@ -806,7 +476,8 @@
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "申告の会計年度のタグと期末日が合わない記録（解析の内部の記録）"
+   "note": "申告の会計年度のタグと期末日が合わない記録（解析の内部の記録）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/fye_boundary_collision_log.json",
@@ -815,7 +486,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fye_boundary_collision_log",
-     "line": 3536
+     "line": 3530
     }
    ],
    "writers_outside_layer": [],
@@ -837,7 +508,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2322,
+     "line": 2339,
      "func": "_read_fye_boundary_collision_log",
      "how": "保存済みファイル",
      "via": "grep",
@@ -845,7 +516,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2326,
+     "line": 2343,
      "func": "_read_fye_boundary_collision_log",
      "how": "保存済みファイル",
      "via": "AST",
@@ -853,7 +524,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3020,
+     "line": 3037,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log",
@@ -861,7 +532,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log",
@@ -869,7 +540,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log",
@@ -949,7 +620,8 @@
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "会計年度末の境目で期がぶつかった記録（解析の内部の記録）"
+   "note": "会計年度末の境目で期がぶつかった記録（解析の内部の記録）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "docs/common/sec_data/rotce/_summary.json",
@@ -1009,7 +681,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "ROTCEの全銘柄のまとめ"
+   "note": "ROTCEの全銘柄のまとめ",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "${RUNNER_TEMP}/sec_update_result.json",
@@ -1163,7 +836,8 @@
    "reader_count_test": 1,
    "reader_count_compute": 1,
    "group": "2件以上",
-   "note": "SEC_Data_Updateの1回の実行の結果（成功・失敗の銘柄）。後の段の通知が読む"
+   "note": "SEC_Data_Updateの1回の実行の結果（成功・失敗の銘柄）。後の段の通知が読む",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/_cik_cache.json",
@@ -1225,7 +899,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄とCIKの対応の控え"
+   "note": "銘柄とCIKの対応の控え",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/_freshness.json",
@@ -1276,7 +951,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1721,
+     "line": 1738,
      "func": "_check_sec_freshness",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1284,7 +959,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3529,
+     "line": 3554,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1292,7 +967,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1732,7 +1407,8 @@
    "reader_count_test": 5,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとのSECデータの新しさ（REFRESHED・SEC_LAG・FAILED等）"
+   "note": "銘柄ごとのSECデータの新しさ（REFRESHED・SEC_LAG・FAILED等）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/annual_{YYYY}.json",
@@ -1741,7 +1417,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4073
+     "line": 4034
     }
    ],
    "writers_outside_layer": [],
@@ -1883,7 +1559,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 818,
+     "line": 811,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -1891,7 +1567,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4040,
+     "line": 4001,
      "func": "SECParser._apply_fixed_registry_freeze",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1899,7 +1575,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4096,
+     "line": 4057,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -2123,7 +1799,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 466,
+     "line": 483,
      "func": "_check_fixed_registry_integrity",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2131,7 +1807,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 638,
+     "line": 655,
      "func": "_check_operating_income_reconstruction",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2139,7 +1815,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 645,
+     "line": 662,
      "func": "_check_operating_income_reconstruction",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2147,7 +1823,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 712,
+     "line": 729,
      "func": "_check_operating_income_reconstruction_scope",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2155,7 +1831,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 793,
+     "line": 810,
      "func": "_check_revenue_net_income_reconciliation",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2163,7 +1839,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 800,
+     "line": 817,
      "func": "_check_revenue_net_income_reconciliation",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2171,7 +1847,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1154,
+     "line": 1171,
      "func": "_check_sti_quarterly_missing",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_annual_range",
@@ -2179,7 +1855,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2541,
+     "line": 2558,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_fixed_registry_integrity",
@@ -2187,7 +1863,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2545,
+     "line": 2562,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction",
@@ -2195,7 +1871,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2551,
+     "line": 2568,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_revenue_net_income_reconciliation",
@@ -2203,7 +1879,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2574,
+     "line": 2591,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_annual_range",
@@ -2211,7 +1887,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2710,
+     "line": 2727,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2219,7 +1895,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2765,
+     "line": 2782,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_get_annual_years",
@@ -2227,7 +1903,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2794,
+     "line": 2811,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_get_annual_years",
@@ -2235,7 +1911,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2805,
+     "line": 2822,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_get_annual_years",
@@ -2243,7 +1919,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
@@ -2251,7 +1927,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3417,
+     "line": 3442,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope",
@@ -2259,7 +1935,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope",
@@ -3642,7 +3318,8 @@
    "reader_count_test": 20,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "生データから1年分ずつ取り出した年次の財務（損益・貸借・CF）"
+   "note": "生データから1年分ずつ取り出した年次の財務（損益・貸借・CF）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/company_facts.json",
@@ -3804,30 +3481,6 @@
      "type": "Python"
     },
     {
-     "file": "common/sec_data/layer3_builder.py",
-     "line": 1582,
-     "func": "build_and_save",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/layer3_builder.py",
-     "line": 1597,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/layer3_builder.py",
-     "line": 1601,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
      "file": "common/sec_data/newfield_q4_cutoff_check.py",
      "line": 133,
      "func": "check_ticker",
@@ -3869,7 +3522,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4096,
+     "line": 4057,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3877,7 +3530,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4106,
+     "line": 4067,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3957,7 +3610,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1414,
+     "line": 1431,
      "func": "_check_annual_da_partial_concept",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3965,7 +3618,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1533,
+     "line": 1550,
      "func": "_check_share_count_outliers",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3973,7 +3626,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1730,
+     "line": 1747,
      "func": "_check_sec_freshness",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3981,7 +3634,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1854,
+     "line": 1871,
      "func": "_get_latest_10q_10k_filed_date",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3989,7 +3642,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1950,
+     "line": 1967,
      "func": "_check_core_position_review_coverage",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3997,7 +3650,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2560,
+     "line": 2577,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
@@ -4005,7 +3658,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2562,
+     "line": 2579,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_share_count_outliers",
@@ -4013,7 +3666,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3143,
+     "line": 3160,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4021,7 +3674,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3146,
+     "line": 3163,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4029,7 +3682,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
@@ -4037,7 +3690,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3434,
+     "line": 3459,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4045,7 +3698,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3529,
+     "line": 3554,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_sec_freshness",
@@ -4053,7 +3706,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
@@ -5994,7 +5647,8 @@
    "reader_count_test": 18,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "SECから取った、その銘柄の全XBRLの申告の生データ"
+   "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/quarterly_{Q}.json",
@@ -6003,7 +5657,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4084
+     "line": 4045
     }
    ],
    "writers_outside_layer": [],
@@ -6289,7 +5943,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1154,
+     "line": 1171,
      "func": "_check_sti_quarterly_missing",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_net_cash",
@@ -6297,7 +5951,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2574,
+     "line": 2591,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_net_cash",
@@ -6305,7 +5959,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_net_cash",
@@ -7112,7 +6766,8 @@
    "reader_count_test": 10,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "生データから1四半期分ずつ取り出した四半期の財務"
+   "note": "生データから1四半期分ずつ取り出した四半期の財務",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/data/{T}/submissions.json",
@@ -7223,7 +6878,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4096,
+     "line": 4057,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7231,7 +6886,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4106,
+     "line": 4067,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7239,7 +6894,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 499,
+     "line": 516,
      "func": "_get_annual_period_end",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7247,7 +6902,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 652,
+     "line": 669,
      "func": "_check_operating_income_reconstruction",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7255,7 +6910,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 805,
+     "line": 822,
      "func": "_check_revenue_net_income_reconciliation",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7263,7 +6918,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2545,
+     "line": 2562,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7271,7 +6926,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2551,
+     "line": 2568,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7279,7 +6934,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3159,
+     "line": 3176,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7287,7 +6942,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7295,7 +6950,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7591,7 +7246,104 @@
    "reader_count_test": 10,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "SECから取った、その銘柄の提出書類の一覧（提出日・対象期末）"
+   "note": "SECから取った、その銘柄の提出書類の一覧（提出日・対象期末）",
+   "decision": "残す（2026-10-20）"
+  },
+  {
+   "path": "common/sec_data/data/{T}/submissions_legacy_{CIK}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/sec_data/fetcher.py",
+     "func": "SECFetcher._fetch_legacy_submissions",
+     "line": 458
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "files_tracked": 4,
+   "top_keys_sampled_files": 3,
+   "top_keys": [
+    {
+     "key": "accn_to_filingdate",
+     "reader_files": 2
+    },
+    {
+     "key": "accn_to_reportdate",
+     "reader_files": 1
+    },
+    {
+     "key": "cik",
+     "reader_files": 1
+    },
+    {
+     "key": "ticker",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/sec_data/fetcher.py",
+     "line": 186,
+     "func": "SECFetcher.fetch_company_facts",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/fetcher.py",
+     "line": 239,
+     "func": "SECFetcher._fetch_legacy_company_facts",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/fetcher.py",
+     "line": 246,
+     "func": "SECFetcher._read_json_or_none",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/fetcher.py",
+     "line": 488,
+     "func": "SECFetcher.fetch_all",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/fetcher.py",
+     "line": 606,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/update.py",
+     "line": 91,
+     "func": "execute_company_facts",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 2,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "社名・CIKが変わった銘柄の、旧CIKの提出書類の一覧",
+   "decision": "消す→保留（2026-10-20。fetcher.py の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている）"
   },
   {
    "path": "common/sec_data/dimension_aggregate_registry.json",
@@ -7696,7 +7448,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 774,
+     "line": 771,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7704,7 +7456,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 830,
+     "line": 823,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7712,7 +7464,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3765,
+     "line": 3726,
      "func": "SECParser._bs_identity_extra_components",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7720,7 +7472,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3879,
+     "line": 3840,
      "func": "SECParser._check_bs_identity_violations",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7728,7 +7480,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3978,
+     "line": 3939,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7738,7 +7490,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 3765,
+     "line": 3726,
      "func": "SECParser._bs_identity_extra_components",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7746,7 +7498,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3978,
+     "line": 3939,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7763,7 +7515,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 1,
    "group": "2件以上",
-   "note": "セグメント等の内訳タグを合計して使う銘柄・項目の登録簿"
+   "note": "セグメント等の内訳タグを合計して使う銘柄・項目の登録簿",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/normalized/{T}_quarterly_normalized.json",
@@ -8038,7 +7791,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 911,
+     "line": 928,
      "func": "_check_ttm_parser_layer3_reconciliation",
      "how": "保存済みファイル",
      "via": "grep",
@@ -8046,7 +7799,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 914,
+     "line": 931,
      "func": "_check_ttm_parser_layer3_reconciliation",
      "how": "保存済みファイル",
      "via": "AST",
@@ -8054,7 +7807,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1154,
+     "line": 1171,
      "func": "_check_sti_quarterly_missing",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized",
@@ -8062,7 +7815,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2559,
+     "line": 2576,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -8070,7 +7823,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2574,
+     "line": 2591,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized",
@@ -8078,7 +7831,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -8086,7 +7839,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -9068,7 +8821,8 @@
    "reader_count_test": 14,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "四半期の財務を項目ごとの時系列に並べ直し、Q4の逆算を足したもの"
+   "note": "四半期の財務を項目ごとの時系列に並べ直し、Q4の逆算を足したもの",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "common/sec_data/ttm/{T}_ttm_series.json",
@@ -9331,7 +9085,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 912,
+     "line": 929,
      "func": "_check_ttm_parser_layer3_reconciliation",
      "how": "保存済みファイル",
      "via": "grep",
@@ -9339,7 +9093,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 919,
+     "line": 936,
      "func": "_check_ttm_parser_layer3_reconciliation",
      "how": "保存済みファイル",
      "via": "AST",
@@ -9347,7 +9101,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1795,
+     "line": 1812,
      "func": "_check_stonks_silo_flag_rule",
      "how": "保存済みファイル",
      "via": "common/sec_data/stonks_flag_rule.py::_latest_ttm",
@@ -9355,7 +9109,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2559,
+     "line": 2576,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -9363,7 +9117,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3383,
+     "line": 3400,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -9371,7 +9125,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3480,
+     "line": 3505,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/stonks_flag_rule.py::_latest_ttm",
@@ -9379,7 +9133,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
@@ -10683,7 +10437,8 @@
    "reader_count_test": 13,
    "reader_count_compute": 2,
    "group": "2件以上",
-   "note": "直近4四半期の合計（TTM）の時系列"
+   "note": "直近4四半期の合計（TTM）の時系列",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "config/cik_lookup.csv",
@@ -11065,7 +10820,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1791,
+     "line": 1808,
      "func": "_check_stonks_silo_flag_rule",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11073,7 +10828,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3342,
+     "line": 3359,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11081,7 +10836,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3343,
+     "line": 3360,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11089,7 +10844,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3480,
+     "line": 3505,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11097,7 +10852,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3557,
+     "line": 3582,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11105,7 +10860,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -13112,7 +12867,8 @@
    "reader_count_test": 25,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える"
+   "note": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "docs/common/sec_data/rotce/{T}.json",
@@ -13175,7 +12931,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1759,
+     "line": 1776,
      "func": "_check_company_reported_rotce",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::unregistered_latest_quarters",
@@ -13183,7 +12939,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3541,
+     "line": 3566,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::unregistered_latest_quarters",
@@ -13191,7 +12947,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3607,
+     "line": 3632,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::unregistered_latest_quarters",
@@ -13304,7 +13060,8 @@
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとのROTCE（有形自己資本利益率）の計算結果"
+   "note": "銘柄ごとのROTCE（有形自己資本利益率）の計算結果",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "${GITHUB_STEP_SUMMARY}",
@@ -13350,7 +13107,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "人が見る",
-   "note": "GitHub Actionsの実行の画面に出す要約（人が見る）"
+   "note": "GitHub Actionsの実行の画面に出す要約（人が見る）",
+   "decision": "残す（2026-10-20）"
   },
   {
    "path": "Discord（DISCORD_WEB_HOOK）",
@@ -13387,7 +13145,8 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "人が見る",
-   "note": "SECデータの監査の結果のDiscordへの通知"
+   "note": "SECデータの監査の結果のDiscordへの通知",
+   "decision": "残す（2026-10-20）"
   }
  ],
  "rules": [
@@ -13401,7 +13160,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2318,
+     "line": 2312,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -13531,17 +13290,17 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3041,
+     "line": 3035,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1615,
+     "line": 1632,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1702,
+     "line": 1719,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -13698,6 +13457,7 @@
   {
    "dir": "scripts/analysis",
    "file": "scripts/analysis/daily_intraday_rows_scan.py",
+   "decision": "残す（2026-10-20）",
    "lines": 123,
    "workflows": [],
    "code": [
@@ -13709,6 +13469,7 @@
   {
    "dir": "scripts/analysis",
    "file": "scripts/analysis/futures_roll_suspects.py",
+   "decision": "消す→保留（2026-10-20。src/market/market_pulse/backfill_futures_roll.py の入力〈--suspects〉がこの結果）",
    "lines": 75,
    "workflows": [],
    "code": [],
@@ -13717,20 +13478,8 @@
   },
   {
    "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_alfred_lib.py",
-   "lines": 144,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "scripts/analysis/macro_events_known_at_repair.py",
-    "scripts/analysis/macro_events_revision_repair.py",
-    "scripts/analysis/macro_events_slot_rows_repair.py"
-   ],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
    "file": "scripts/analysis/macro_cfnai_ma3_rows_repair.py",
+   "decision": "消す→保留（2026-10-20。browser_checks/check_macro_pulse.py のN-07の説明の文が名前を出す）",
    "lines": 91,
    "workflows": [],
    "code": [
@@ -13741,48 +13490,8 @@
   },
   {
    "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_claims_slot_rows_repair.py",
-   "lines": 103,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_events_known_at_repair.py",
-   "lines": 132,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "scripts/analysis/macro_events_revision_repair.py",
-    "scripts/analysis/macro_events_slot_rows_repair.py"
-   ],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_events_revision_repair.py",
-   "lines": 109,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "scripts/analysis/macro_events_slot_rows_repair.py"
-   ],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_events_slot_rows_repair.py",
-   "lines": 183,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
    "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
+   "decision": "残す（2026-10-20）",
    "lines": 110,
    "workflows": [],
    "code": [],
@@ -13793,91 +13502,8 @@
   },
   {
    "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_liquidity_m2_yoy_repair.py",
-   "lines": 83,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_liquidity_row_date_repair.py",
-   "lines": 109,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_liquidity_weekly_before_after.py",
-   "lines": 142,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_m4_hollow_rally.py",
-   "lines": 160,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_m4_m2_percentile.py",
-   "lines": 77,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_m4_score_vs_recession.py",
-   "lines": 192,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "scripts/analysis/macro_m4_m2_percentile.py",
-    "scripts/analysis/macro_m4_thresholds.py"
-   ],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_m4_thresholds.py",
-   "lines": 101,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_m5_threshold_simulation.py",
-   "lines": 287,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
-   "file": "scripts/analysis/macro_ticker_history_check.py",
-   "lines": 41,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "scripts/analysis",
    "file": "scripts/analysis/market_pulse_redesign.py",
+   "decision": "消す→保留（2026-10-20。src/market/market_pulse/stage_conclusions.py のdocstringが「同じ閾値を使う」と参照）",
    "lines": 478,
    "workflows": [],
    "code": [],
@@ -13887,6 +13513,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/check_dependency_map.py",
+   "decision": "残す（2026-10-20）",
    "lines": 458,
    "workflows": [],
    "code": [],
@@ -13896,6 +13523,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/check_macro_pulse.py",
+   "decision": "残す（2026-10-20）",
    "lines": 1273,
    "workflows": [],
    "code": [],
@@ -13905,6 +13533,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/check_signal_consistency_section.py",
+   "decision": "残す（2026-10-20）",
    "lines": 206,
    "workflows": [],
    "code": [],
@@ -13914,6 +13543,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/check_tanuki_score_undetermined.py",
+   "decision": "残す（2026-10-20）",
    "lines": 86,
    "workflows": [],
    "code": [],
@@ -13923,6 +13553,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/check_valuation_chart_basis.py",
+   "decision": "残す（2026-10-20）",
    "lines": 213,
    "workflows": [],
    "code": [],
@@ -13932,6 +13563,7 @@
   {
    "dir": "browser_checks",
    "file": "browser_checks/market_pulse_elements.py",
+   "decision": "残す（2026-10-20）",
    "lines": 972,
    "workflows": [],
    "code": [],
@@ -13943,6 +13575,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/analyzer.py",
+   "decision": "残す（2026-10-20）",
    "lines": 1351,
    "workflows": [],
    "code": [],
@@ -13961,6 +13594,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/fetcher.py",
+   "decision": "残す（2026-10-20）",
    "lines": 298,
    "workflows": [],
    "code": [],
@@ -13973,6 +13607,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/financial_as_of.py",
+   "decision": "残す（2026-10-20）",
    "lines": 104,
    "workflows": [],
    "code": [],
@@ -13987,6 +13622,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/financial_trend_calculator.py",
+   "decision": "残す（2026-10-20）",
    "lines": 471,
    "workflows": [],
    "code": [],
@@ -14002,6 +13638,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/pipeline.py",
+   "decision": "残す（2026-10-20）",
    "lines": 275,
    "workflows": [
     ".github/workflows/Stonks_Silo_Update.yml"
@@ -14017,6 +13654,7 @@
   {
    "dir": "discover/stonks-silo",
    "file": "discover/stonks-silo/src/valuation_fetcher.py",
+   "decision": "残す（2026-10-20）",
    "lines": 121,
    "workflows": [],
    "code": [],
@@ -14031,41 +13669,15 @@
  "f3_zero_reader": [
   {
    "name": "spac_shell_detection_log",
-   "in_layer": true,
-   "output": "common/sec_data/data/{T}/spac_shell_detection_log.json",
-   "sites": [
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 799
-    },
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 3555
-    },
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 3568
-    }
-   ]
+   "in_layer": false,
+   "output": null,
+   "sites": []
   },
   {
    "name": "share_unit_fix_log",
-   "in_layer": true,
-   "output": "common/sec_data/data/{T}/share_unit_fix_log.json",
-   "sites": [
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 518
-    },
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 3541
-    },
-    {
-     "file": "common/sec_data/parser.py",
-     "line": 3546
-    }
-   ]
+   "in_layer": false,
+   "output": null,
+   "sites": []
   },
   {
    "name": "low_base_effect",
@@ -14120,18 +13732,30 @@
    ]
   }
  ],
+ "deleted": [
+  {
+   "what": "common/sec_data/data/{T}/share_unit_fix_log.json",
+   "detail": "書き手 parser.py:SECParser._save_share_unit_fix_log と呼び出し、既存15ファイル。単位を直す処理は残す"
+  },
+  {
+   "what": "common/sec_data/data/{T}/spac_shell_detection_log.json",
+   "detail": "書き手 parser.py:SECParser._save_spac_shell_detection_log と呼び出し、既存98ファイル。SPACの時期の値を外す処理は残す"
+  },
+  {
+   "what": "common/sec_data/store_v2/{T}.json",
+   "detail": "layer3_builder.py の save_ticker_store・build_and_save・手動のCLI・STORE_V2_DIR、.gitignore の行。その場で計算する読み手は変えない"
+  },
+  {
+   "what": "scripts/analysis の14ファイル",
+   "detail": "macro_alfred_lib・macro_claims_slot_rows_repair・macro_events_known_at_repair・macro_events_revision_repair・macro_events_slot_rows_repair・macro_liquidity_m2_yoy_repair・macro_liquidity_row_date_repair・macro_liquidity_weekly_before_after・macro_m4_hollow_rally・macro_m4_m2_percentile・macro_m4_score_vs_recession・macro_m4_thresholds・macro_m5_threshold_simulation・macro_ticker_history_check（.py）"
+  }
+ ],
  "stop_condition": {
-  "outputs": 24,
+  "outputs": 21,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 54,
+  "python_read_sites_into_layer_resolved": 55,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
-   {
-    "file": "common/sec_data/fetcher.py",
-    "line": 246,
-    "func": "SECFetcher._read_json_or_none",
-    "path": "<?>"
-   },
    {
     "file": "common/sec_data/reader.py",
     "line": 776,
@@ -14140,19 +13764,19 @@
    },
    {
     "file": "common/sec_data/report_consistency_check.py",
-    "line": 291,
+    "line": 308,
     "func": "_check_discover_config_sync",
     "path": "<?>"
    },
    {
     "file": "common/sec_data/report_consistency_check.py",
-    "line": 293,
+    "line": 310,
     "func": "_check_discover_config_sync",
     "path": "<?>"
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.069,
+  "ratio_reader": 0.052,
   "threshold": 0.1,
   "hit": false
  }

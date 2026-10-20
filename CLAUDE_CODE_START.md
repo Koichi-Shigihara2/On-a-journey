@@ -68,6 +68,11 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    「⚠ 提出遅延アラート」・「★ 新規提出」・「RSS 取得エラー」は0件、新規pending 0件。`docs/portfolio/tail/data/rss_state.json`の`no_filing_days`は9銘柄とも0（TSLAは10から0）。9の経路（エラーの回・新規提出の回）はこの回でも通っていない
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
+**2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
+- `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）
+- 第2部: `report_consistency_check.py`のCHECK-INV-1〜4（一覧`docs/architecture/output_inventory/sec_layer.json`と今のリポジトリの比較。一覧に無い出力・読み手が読んでいない・読み手0件はNG）。
+  **common/sec_dataに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py`で一覧を作り直してcommitする**（しないとゲートがNG）。次はTANUKI VALUATION・TANUKI Scoreの段階1
+
 **2026-10-20 確認の記録（手順3・10）と、`[[OUTPUT-INVENTORY-CHECK-1]]`（R-A）SEC層の段階1の一覧の下書き（確認の残りは上の「次回の確認手順」2・5・7・8・9）**
 - 手順3: NIY=Fの10-08は`_no_yahoo_bar`。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（アクティブ13件）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
 - 手順10: 直しの後のRSS Monitor `39276537966`で9銘柄とも表のとおり・遅延アラート0件・`no_filing_days`は全0

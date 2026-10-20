@@ -260,6 +260,23 @@ def load_warn_ledger(path: str = WARN_LEDGER) -> set[tuple[str, str]]:
         return set()
 
 
+def _check_output_inventory() -> tuple[list[str], list[str]]:
+    """CHECK-INV-1〜4（[[OUTPUT-INVENTORY-CHECK-1]] 段階3、SECデータ層）: 出力の一覧
+    （docs/architecture/output_inventory/sec_layer.json）と、今のリポジトリから
+    scripts/inventory/build_output_inventory.py で作った一覧を比べる（一覧の作り方を二重にしない）。
+    INV-1（NG）一覧に無い出力、INV-2（NG）読み手とされているファイルが読んでいない・読み手0件の出力、
+    INV-3（既知の5つはWARN、SEC層を含む新しい二重はNG）規則の二重、INV-4（WARN）注記の無い出力。
+    銘柄ごとではなく全体の判定。一覧を作るのに時間がかかるため、同じプロセスでは1回だけ作る（run_check()の中で覚える）。"""
+    inv_dir = os.path.join(REPO_ROOT, "scripts", "inventory")
+    if inv_dir not in sys.path:
+        sys.path.insert(0, inv_dir)
+    try:
+        import build_output_inventory as _inv
+        return _inv.run_check()
+    except Exception as e:  # 一覧を作れないこと自体をNGにする（黙って通さない）
+        return [f"  [NG-INV-0 一覧を作れない] {type(e).__name__}: {e}"], []
+
+
 def _check_discover_config_sync() -> list[str]:
     """CHECK-32: config/discover_config.json・config/theme_config.jsonと
     docs/portfolio/data/側コピーの内容一致を検証する
@@ -3400,6 +3417,14 @@ def run_checks(args=None) -> tuple[int, int]:
     if discover_sync_ng:
         flagged.append(("[GLOBAL]", discover_sync_ng, []))
         total_ng += len(discover_sync_ng)
+
+    # CHECK-INV-1〜4: ティッカー非依存の単発チェック（出力の一覧、[[OUTPUT-INVENTORY-CHECK-1]]）。
+    # 銘柄ごとのNGと混ぜず[GLOBAL]に置く。--tickerフィルタの有無に関わらず常時実行する。
+    inv_ng, inv_warn = _check_output_inventory()
+    if inv_ng or inv_warn:
+        flagged.append(("[GLOBAL]", inv_ng, inv_warn))
+        total_ng += len(inv_ng)
+        total_warn += len(inv_warn)
 
     # CHECK-34: ティッカー非依存の単発チェック（config/設定ファイル読み込み
     # の横断解決チェック、_CONFIG_LOADER_REGISTRY駆動）。
