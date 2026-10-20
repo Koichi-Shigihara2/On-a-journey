@@ -68,9 +68,10 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    「⚠ 提出遅延アラート」・「★ 新規提出」・「RSS 取得エラー」は0件、新規pending 0件。`docs/portfolio/tail/data/rss_state.json`の`no_filing_days`は9銘柄とも0（TSLAは10から0）。9の経路（エラーの回・新規提出の回）はこの回でも通っていない
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
-**2026-10-20 確認の記録（手順3・10。確認の残りは上の「次回の確認手順」2・5・7・8・9）**
+**2026-10-20 確認の記録（手順3・10）と、`[[OUTPUT-INVENTORY-CHECK-1]]`（R-A）SEC層の段階1の一覧の下書き（確認の残りは上の「次回の確認手順」2・5・7・8・9）**
 - 手順3: NIY=Fの10-08は`_no_yahoo_bar`。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（アクティブ13件）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
 - 手順10: 直しの後のRSS Monitor `39276537966`で9銘柄とも表のとおり・遅延アラート0件・`no_filing_days`は全0
+- R-Aの段階1: `scripts/inventory/build_output_inventory.py`（ASTとgrep。ゲートには入れていない）で`docs/architecture/output_inventory/sec_layer.json`・`sec_layer.md`を作った。出力24・読み手0件4・テストだけ0・規則の二重6。次はKoichiさんの残す／消すの判断（段階2、`PROJECT_STATUS.md`「次の作業」2）。作り直すときはスクリプトを実行し、手で直さない
 
 **2026-10-19 夜 移設と、Q4の逆算の基準の混在の範囲の調査（確認の残りは上の「次回の確認手順」3・6・9）**
 - 移設: `[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`（Koichiさんの目視とチャット側の判定、BACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）。アクティブ53件
