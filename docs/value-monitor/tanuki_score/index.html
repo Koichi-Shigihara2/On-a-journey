@@ -76,30 +76,6 @@
     .watch   .cat-chip .ckr { color: var(--sub); }
     .ronogai .cat-chip .ckr { color: var(--red); }
 
-    /* ── 今日の特選銘柄 ── */
-    .pick-card { background: var(--sur); border: 1px solid rgba(20,184,166,.35); }
-    .pick-header { padding: 14px 20px; border-bottom: 1px solid var(--bdr); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    .pick-pin { font-family: var(--mono); font-size: 13px; font-weight: 500; color: #14b8a6; }
-    .pick-ts  { font-family: var(--mono); font-size: 11px; color: var(--mut); }
-    .pick-meta { padding: 14px 20px 10px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-    .pick-ticker { font-family: var(--mono); font-size: 26px; font-weight: 500; color: #14b8a6; text-decoration: none; }
-    .pick-ticker:hover { text-decoration: underline; }
-    .pick-company { font-size: 14px; color: var(--sub); flex: 1; }
-    .pick-reason { font-family: var(--mono); font-size: 12px; color: var(--mut); padding: 0 20px 8px; }
-    .pick-scores { display: flex; gap: 10px; padding: 0 20px 14px; }
-    .pick-sc { font-family: var(--mono); font-size: 12px; padding: 3px 9px; border-radius: 1px; }
-    .pick-sc.shikomi { background: rgba(16,185,129,.12); color: var(--grn); }
-    .pick-sc.wait    { background: rgba(245,158,11,.12);  color: var(--amb); }
-    .pick-sc.profit  { background: rgba(59,130,246,.12);  color: var(--acc); }
-    .pick-sc.watch   { background: rgba(100,116,139,.12); color: var(--sub); }
-    .pick-sc.ronogai { background: rgba(244,63,94,.10);   color: var(--red); }
-    .pick-report { border-top: 1px solid var(--bdr); }
-    .pick-section { padding: 14px 20px; border-bottom: 1px solid rgba(27,37,64,.5); }
-    .pick-section:last-child { border-bottom: none; }
-    .pick-sec-title { font-family: var(--mono); font-size: 11px; color: #14b8a6; letter-spacing: .08em; margin-bottom: 8px; }
-    .pick-sec-body { font-size: 14px; color: var(--txt); line-height: 1.75; white-space: pre-wrap; }
-    .pick-stale { padding: 20px; font-family: var(--mono); font-size: 12px; color: var(--mut); text-align: center; }
-
     /* 論外 toggle */
     .ronogai-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
     .ronogai-toggle .tog-arrow { font-size: 10px; color: var(--mut); transition: transform .2s; }
@@ -236,7 +212,6 @@
   <div class="last-updated" id="last-updated"></div>
 
   <div id="mkt-summary"><div class="loading"><span class="spin"></span>市場データを取得中...</div></div>
-  <div id="daily-pick"></div>
   <div id="cat-board"></div>
   <div id="rice-matrix"></div>
   <div id="dupont-panel"></div>
@@ -687,71 +662,6 @@ function renderDetailTable() {
   // ④ 判定実績バックテスト
   const allEntries = await loadScoreHistory(tickers);
   renderScoreVerify(allEntries);
-})();
-
-// ─── 今日の特選銘柄 ───────────────────────────────────────────
-(async function renderDailyPick() {
-  const el = document.getElementById('daily-pick');
-  const PICK_PATH = '../../integrated-dashboard/daily_pick.json' + TS;
-  // ARCH-SCORE-SYNC-1: 旧5分類(日本語)→CSSクラスのマッピングを廃止し、
-  // メインテーブルと同一のCAT_METAバッジ(badge-BUY等)を再利用する。
-  const SECTION_LABELS = {
-    fundamental: 'ファンダメンタル評価',
-    expectation: '期待値評価',
-    news:        '今日のニュース・時事',
-    timing:      'タイミング評価',
-    summary:     '総合所見',
-  };
-
-  try {
-    const r = await fetch(PICK_PATH);
-    if (!r.ok) throw new Error('not found');
-    const d = await r.json();
-
-    if (!d.ticker) { el.innerHTML = ''; return; }
-    const genAt  = new Date(d.generated_at);
-    const ageHrs = (Date.now() - genAt.getTime()) / 3600000;
-    if (ageHrs > 24) {
-      el.innerHTML = `
-        <div class="sec">📌 今日の特選銘柄</div>
-        <div class="pick-card"><div class="pick-stale">
-          <span class="spin"></span>本日のレポート生成中... (最終更新: ${genAt.toLocaleDateString('ja-JP')})
-        </div></div>`;
-      return;
-    }
-
-    const m       = CAT_META[d.category] || CAT_META.WATCH;
-    const tsLabel = genAt.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) + ' JST';
-    const report  = d.report || {};
-
-    const sectionsHTML = Object.entries(SECTION_LABELS).map(([key, label]) => {
-      const body    = report[key] || '—';
-      const cleaned = body.replace(/^【[^】]+】\s*/, '');
-      return `<div class="pick-section">
-        <div class="pick-sec-title">【${label}】</div>
-        <div class="pick-sec-body">${cleaned}</div>
-      </div>`;
-    }).join('');
-
-    el.innerHTML = `
-      <div class="sec" style="color:#14b8a6">📌 今日の特選銘柄
-        <span style="font-size:10px;color:var(--mut);font-weight:400;margin-left:4px">生成: ${tsLabel}</span>
-      </div>
-      <div class="pick-card">
-        <div class="pick-meta">
-          <a class="pick-ticker" href="${T_BASE}stock.html?ticker=${d.ticker}">${d.ticker}</a>
-          <span class="pick-company">${d.company || ''}</span>
-        </div>
-        <div class="pick-reason">選出理由: ${d.selection_reason || '—'}</div>
-        <div class="pick-scores">
-          <span class="pick-sc">F:${d.funda_score} · T:${d.timing_score ?? '—'}</span>
-          <span class="cat-badge ${m.badge}">${m.icon} ${m.label}</span>
-        </div>
-        <div class="pick-report">${sectionsHTML}</div>
-      </div>`;
-  } catch (_) {
-    el.innerHTML = '';
-  }
 })();
 
 function toggleCat(id) {

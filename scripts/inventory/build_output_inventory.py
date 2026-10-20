@@ -198,24 +198,20 @@ _TANUKI.update(
         "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json": "銘柄ごとのHypeCoreのライフサイクル・ステージ・フェーズの推移（TANUKIの実行のたびに1行）",
         "docs/value-monitor/tanuki_valuation/data/.watcher_state.json": "score_watcherが前回の判定を覚えておく控え（判定の変化の通知に使う）",
         "config/beta_config.json": "銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う",
-        "docs/integrated-dashboard/daily_pick.json": "TANUKI SCOREの今日の1銘柄（daily pick）と選んだ理由",
-        "docs/integrated-dashboard/history.json": "daily pickの過去30日分の選出の履歴",
         "${GITHUB_STEP_SUMMARY}": "GitHub Actionsの実行の画面に出す要約（人が見る）",
         "Discord（DISCORD_WEB_HOOK）": "βの更新・判定の変化のDiscordへの通知",
     },
     DECISION_DEFAULT="残す（2026-10-20）",
-    DECISIONS={
-        "docs/integrated-dashboard/daily_pick.json":
-            "消す→保留（2026-10-20。今日の特選銘柄はKoichiさんの判断で消す。ただし残すはずの判定の記録 docs/integrated-dashboard/history.json の読み手は"
-            "daily_pick.py 自身〈前日の分類との比較・同じ日の2回目の実行を止める〉だけで、判定の実績表は tanuki_valuation/data/{T}/score_history.json を読む。"
-            "選出をやめると history.json は読み手0件になるため、チャット側の判断待ち）",
-        "docs/integrated-dashboard/history.json": "残す→保留（2026-10-20。daily_pick.json と同じ理由でチャット側の判断待ち）",
-    },
+    DECISIONS={},
     DELETED=[
         ("src/value/tanuki_valuation の diag_iv_trace.py・growth_model_audit.py・remove_legacy_tanuki_score.py・pipeline_log.txt",
          "削除（2026-10-20、本番外。参照は自分自身のほか0件、計407行と UTF-16 のログ）"),
         ("docs/value-monitor/tanuki_score/daily_pick.json・history.json",
          "削除（2026-10-20。2026-06-27 から更新が無く、書き手・読み手0件。画面は integrated-dashboard を読む）"),
+        ("今日の特選銘柄（src/value/tanuki_score/daily_pick.py・docs/integrated-dashboard/daily_pick.json・history.json・"
+         "tanuki_score/index.html の区画・TANUKI_Score_Update.yml の段）",
+         "削除（2026-10-20、Koichiさんの判断で機能をまるごと。history.json の読み手は daily_pick.py 自身だけだった。"
+         "src/value/tanuki_score/ と docs/integrated-dashboard/ はフォルダごと無くなった。判定の実績表は score_history.json を読み、影響なし）"),
     ],
     DECISION_NOTE="段階2の判断（2026-10-20）。画面の区画はKoichiさんの判断で「今日の特選銘柄」だけ消し、ほかは残す。出力・キー・本番外のコードはチャット側の判断。"
                   "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
@@ -224,10 +220,7 @@ _TANUKI.update(
     READ_HINT="tanuki", NAME_SHORT="TANUKI",
     KNOWN_DUPLICATE_RULES=["quarter_label", "valuation_threshold", "growth_bounds", "wacc_beta", "fcf_fallback"], TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score"),
-    SCREEN_SECTION_DECISIONS=[
-        ("docs/value-monitor/tanuki_score/index.html", r"^// ─── 今日の特選銘柄", r"^// ─── ",
-         "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"),
-    ],
+    SCREEN_SECTION_DECISIONS=[],
     RULES=RULES + [
         {"id": "valuation_threshold", "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
          "patterns": [r"\bupside\w*\s*(?:>=|>|<=|<)\s*-?\d", r"\bupside\w*\s*(?:>=|>|<=|<)\s*[A-Z_]{3,}"]},

@@ -1951,334 +1951,6 @@
    "decision": "残す（2026-10-20）"
   },
   {
-   "path": "docs/integrated-dashboard/daily_pick.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "func": "main",
-     "line": 557
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/TANUKI_Score_Update.yml"
-   ],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [
-    {
-     "key": "category",
-     "reader_files": 2
-    },
-    {
-     "key": "company",
-     "reader_files": 2
-    },
-    {
-     "key": "funda_score",
-     "reader_files": 2
-    },
-    {
-     "key": "generated_at",
-     "reader_files": 2
-    },
-    {
-     "key": "report",
-     "reader_files": 2
-    },
-    {
-     "key": "selection_reason",
-     "reader_files": 2
-    },
-    {
-     "key": "tanuki",
-     "reader_files": 1
-    },
-    {
-     "key": "ticker",
-     "reader_files": 2
-    },
-    {
-     "key": "timing_score",
-     "reader_files": 2
-    }
-   ],
-   "readers": [
-    {
-     "file": ".github/workflows/TANUKI_Score_Update.yml",
-     "line": 60,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
-    {
-     "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 695,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 26,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [
-    {
-     "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "直接"
-    }
-   ],
-   "definitions": [
-    "AS-IS-285",
-    "AS-IS-286",
-    "AS-IS-287"
-   ],
-   "decision_effect": [
-    "判定（TANUKI SCORE）",
-    "TANUKI SCOREの画面"
-   ],
-   "reader_count": 3,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "2件以上",
-   "note": "TANUKI SCOREの今日の1銘柄（daily pick）と選んだ理由",
-   "decision": "消す→保留（2026-10-20。今日の特選銘柄はKoichiさんの判断で消す。ただし残すはずの判定の記録 docs/integrated-dashboard/history.json の読み手はdaily_pick.py 自身〈前日の分類との比較・同じ日の2回目の実行を止める〉だけで、判定の実績表は tanuki_valuation/data/{T}/score_history.json を読む。選出をやめると history.json は読み手0件になるため、チャット側の判断待ち）"
-  },
-  {
-   "path": "docs/integrated-dashboard/history.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "func": "save_history",
-     "line": 84
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/TANUKI_Score_Update.yml"
-   ],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [],
-   "readers": [
-    {
-     "file": ".github/workflows/TANUKI_Score_Update.yml",
-     "line": 61,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 42,
-     "func": "load_json",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 48,
-     "func": "load_tickers",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 52,
-     "func": "load_market",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 56,
-     "func": "load_tanuki",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 59,
-     "func": "load_hype",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 66,
-     "func": "load_eps_summary",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 72,
-     "func": "load_eps_annual_latest",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 79,
-     "func": "load_history",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 90,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 94,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 259,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 260,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 261,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 382,
-     "func": "generate_report",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 490,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 508,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 509,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 517,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 526,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 588,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 222,
-     "func": "TestDailyPickPackagePrice.test_price_taken_from_components",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 232,
-     "func": "TestDailyPickPackagePrice.test_missing_price_not_passed_to_prompt",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "テスト"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [
-    "src/value/tanuki_score/daily_pick.py::load_history"
-   ],
-   "screens": [
-    {
-     "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（src/value/tanuki_score/daily_pick.py → docs/integrated-dashboard/daily_pick.json）"
-    }
-   ],
-   "definitions": [],
-   "decision_effect": [
-    "判定（TANUKI SCORE）"
-   ],
-   "reader_count": 2,
-   "reader_count_test": 1,
-   "reader_count_compute": 0,
-   "group": "2件以上",
-   "note": "daily pickの過去30日分の選出の履歴",
-   "decision": "残す→保留（2026-10-20。daily_pick.json と同じ理由でチャット側の判断待ち）"
-  },
-  {
    "path": "docs/value-monitor/tanuki_valuation/data/tickers.json",
    "kind": "ファイル",
    "writers": [
@@ -2299,7 +1971,7 @@
     },
     {
      "key": "tickers",
-     "reader_files": 23
+     "reader_files": 22
     },
     {
      "key": "updated_at",
@@ -2509,7 +2181,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 442,
+     "line": 417,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2569,166 +2241,6 @@
      "func": "process_one_ticker",
      "how": "保存済みファイル",
      "via": "src/value/adjusted_eps_analyzer/company_metadata.py::get_company_metadata",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 42,
-     "func": "load_json",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 48,
-     "func": "load_tickers",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 52,
-     "func": "load_market",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 56,
-     "func": "load_tanuki",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 59,
-     "func": "load_hype",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 66,
-     "func": "load_eps_summary",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 72,
-     "func": "load_eps_annual_latest",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 79,
-     "func": "load_history",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 90,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 94,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 259,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 260,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 261,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 382,
-     "func": "generate_report",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 490,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 508,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 509,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 517,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 526,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 588,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
      "type": "Python"
     },
     {
@@ -2882,22 +2394,6 @@
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::get_tickers",
      "type": "Python"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 222,
-     "func": "TestDailyPickPackagePrice.test_price_taken_from_components",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 232,
-     "func": "TestDailyPickPackagePrice.test_missing_price_not_passed_to_prompt",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "テスト"
     },
     {
      "file": "tests/test_dcf_phase1_taper.py",
@@ -4010,12 +3506,11 @@
    ],
    "definitions": [],
    "decision_effect": [
-    "判定（TANUKI SCORE）",
     "TANUKI VALUATIONの画面",
     "TANUKI SCOREの画面"
    ],
-   "reader_count": 20,
-   "reader_count_test": 11,
+   "reader_count": 19,
+   "reader_count_test": 10,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "一覧のページ用の、全銘柄の理論株価・判定の要約",
@@ -4047,7 +3542,7 @@
     },
     {
      "file": ".github/workflows/TANUKI_Score_Update.yml",
-     "line": 62,
+     "line": 46,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4087,7 +3582,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 800,
+     "line": 710,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4200,15 +3695,15 @@
    "top_keys": [
     {
      "key": "alpha",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "alpha_was_capped",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "bs_adjustment",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "calculation_date",
@@ -4216,7 +3711,7 @@
     },
     {
      "key": "components",
-     "reader_files": 7
+     "reader_files": 6
     },
     {
      "key": "dcf_components",
@@ -4228,11 +3723,11 @@
     },
     {
      "key": "fcf_base",
-     "reader_files": 3
+     "reader_files": 2
     },
     {
      "key": "fcf_estimation",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "fcf_outlier",
@@ -4260,7 +3755,7 @@
     },
     {
      "key": "growth",
-     "reader_files": 5
+     "reader_files": 4
     },
     {
      "key": "growth_options",
@@ -4276,7 +3771,7 @@
     },
     {
      "key": "intrinsic_value_per_share",
-     "reader_files": 6
+     "reader_files": 5
     },
     {
      "key": "intrinsic_value_pt",
@@ -4304,7 +3799,7 @@
     },
     {
      "key": "rd_capitalization",
-     "reader_files": 1
+     "reader_files": 0
     },
     {
      "key": "required_growth_rf_base",
@@ -4320,7 +3815,7 @@
     },
     {
      "key": "rice",
-     "reader_files": 3
+     "reader_files": 2
     },
     {
      "key": "rice_data_source",
@@ -4340,7 +3835,7 @@
     },
     {
      "key": "rpo_adjustment",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "scenario_valuations",
@@ -4360,7 +3855,7 @@
     },
     {
      "key": "upside_percent",
-     "reader_files": 7
+     "reader_files": 6
     },
     {
      "key": "upside_percent_beta",
@@ -4388,7 +3883,7 @@
     },
     {
      "key": "wacc",
-     "reader_files": 2
+     "reader_files": 1
     }
    ],
    "readers": [
@@ -4410,15 +3905,7 @@
     },
     {
      "file": ".github/workflows/TANUKI_Score_Update.yml",
-     "line": 61,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
-    {
-     "file": ".github/workflows/TANUKI_Score_Update.yml",
-     "line": 62,
+     "line": 46,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4570,7 +4057,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 800,
+     "line": 710,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4758,14 +4245,6 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/hypecore/hypecore.py::fetch_tanuki_iv",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 27,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
      "type": "Python"
     },
     {
@@ -5485,13 +4964,12 @@
     "AS-IS-506"
    ],
    "decision_effect": [
-    "判定（TANUKI SCORE）",
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）",
     "TANUKI VALUATIONの画面",
     "TANUKI SCOREの画面"
    ],
-   "reader_count": 21,
+   "reader_count": 20,
    "reader_count_test": 12,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -5520,11 +4998,11 @@
    "top_keys": [
     {
      "key": "alpha",
-     "reader_files": 4
+     "reader_files": 3
     },
     {
      "key": "alpha_was_capped",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "breakeven_reason",
@@ -5532,7 +5010,7 @@
     },
     {
      "key": "bs_adjustment",
-     "reader_files": 5
+     "reader_files": 4
     },
     {
      "key": "calculation_date",
@@ -5540,7 +5018,7 @@
     },
     {
      "key": "components",
-     "reader_files": 26
+     "reader_files": 24
     },
     {
      "key": "dcf_components",
@@ -5568,11 +5046,11 @@
     },
     {
      "key": "fcf_base",
-     "reader_files": 6
+     "reader_files": 5
     },
     {
      "key": "fcf_estimation",
-     "reader_files": 4
+     "reader_files": 3
     },
     {
      "key": "fcf_history",
@@ -5616,7 +5094,7 @@
     },
     {
      "key": "funda_score",
-     "reader_files": 7
+     "reader_files": 6
     },
     {
      "key": "future_values",
@@ -5624,7 +5102,7 @@
     },
     {
      "key": "growth",
-     "reader_files": 12
+     "reader_files": 11
     },
     {
      "key": "growth_options",
@@ -5644,7 +5122,7 @@
     },
     {
      "key": "intrinsic_value_per_share",
-     "reader_files": 15
+     "reader_files": 13
     },
     {
      "key": "intrinsic_value_pt",
@@ -5700,7 +5178,7 @@
     },
     {
      "key": "rd_capitalization",
-     "reader_files": 1
+     "reader_files": 0
     },
     {
      "key": "recommended_g",
@@ -5720,7 +5198,7 @@
     },
     {
      "key": "rice",
-     "reader_files": 8
+     "reader_files": 7
     },
     {
      "key": "rice_data_source",
@@ -5744,7 +5222,7 @@
     },
     {
      "key": "rpo_adjustment",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "scenario_valuations",
@@ -5780,15 +5258,15 @@
     },
     {
      "key": "tanuki_score",
-     "reader_files": 17
+     "reader_files": 16
     },
     {
      "key": "timing_score",
-     "reader_files": 3
+     "reader_files": 2
     },
     {
      "key": "upside_percent",
-     "reader_files": 17
+     "reader_files": 16
     },
     {
      "key": "upside_percent_beta",
@@ -5812,7 +5290,7 @@
     },
     {
      "key": "wacc",
-     "reader_files": 5
+     "reader_files": 4
     }
    ],
    "readers": [
@@ -6450,7 +5928,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 451,
+     "line": 426,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -6705,166 +6183,6 @@
      "type": "Python"
     },
     {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 42,
-     "func": "load_json",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 48,
-     "func": "load_tickers",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 52,
-     "func": "load_market",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 56,
-     "func": "load_tanuki",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 59,
-     "func": "load_hype",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 66,
-     "func": "load_eps_summary",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 72,
-     "func": "load_eps_annual_latest",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 79,
-     "func": "load_history",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 90,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 94,
-     "func": "score_all",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 259,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 260,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 261,
-     "func": "build_data_package",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 382,
-     "func": "generate_report",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 490,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 508,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 509,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 517,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 526,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 588,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "Python"
-    },
-    {
      "file": "src/value/tanuki_valuation/score_watcher.py",
      "line": 75,
      "func": "load_latest",
@@ -6930,26 +6248,10 @@
     },
     {
      "file": "tests/test_close_missing_price.py",
-     "line": 128,
+     "line": 127,
      "func": "TestScoreWatcherIgnoresUndetermined.test_undetermined_not_notified_and_state_kept",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 222,
-     "func": "TestDailyPickPackagePrice.test_price_taken_from_components",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_close_missing_price.py",
-     "line": 232,
-     "func": "TestDailyPickPackagePrice.test_missing_price_not_passed_to_prompt",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::load_json",
      "type": "テスト"
     },
     {
@@ -7542,13 +6844,12 @@
     "AS-IS-071"
    ],
    "decision_effect": [
-    "判定（TANUKI SCORE）",
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）",
     "TANUKI VALUATIONの画面",
     "TANUKI SCOREの画面"
    ],
-   "reader_count": 28,
+   "reader_count": 27,
    "reader_count_test": 20,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -7762,22 +7063,6 @@
      "how": "保存済みファイル",
      "via": "grep",
      "type": "JS・HTML"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 551,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_score/daily_pick.py",
-     "line": 588,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_score/daily_pick.py::main",
-     "type": "Python"
     },
     {
      "file": "tests/test_check41_registration_ng.py",
@@ -8416,10 +7701,6 @@
    "producers": [],
    "screens": [
     {
-     "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（src/value/tanuki_score/daily_pick.py → docs/integrated-dashboard/daily_pick.json）"
-    },
-    {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
      "how": "直接"
     }
@@ -8432,10 +7713,9 @@
     "AS-IS-060"
    ],
    "decision_effect": [
-    "判定（TANUKI SCORE）",
     "TANUKI VALUATIONの画面"
    ],
-   "reader_count": 5,
+   "reader_count": 4,
    "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -8507,7 +7787,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 800,
+     "line": 710,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -9021,17 +8301,17 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 596,
+     "line": 571,
      "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1184,
+     "line": 1094,
      "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1413,
+     "line": 1323,
      "text": "xClamped: s.upside > X_MAX_CLIP,"
     },
     {
@@ -9401,13 +8681,17 @@
   {
    "what": "docs/value-monitor/tanuki_score/daily_pick.json・history.json",
    "detail": "削除（2026-10-20。2026-06-27 から更新が無く、書き手・読み手0件。画面は integrated-dashboard を読む）"
+  },
+  {
+   "what": "今日の特選銘柄（src/value/tanuki_score/daily_pick.py・docs/integrated-dashboard/daily_pick.json・history.json・tanuki_score/index.html の区画・TANUKI_Score_Update.yml の段）",
+   "detail": "削除（2026-10-20、Koichiさんの判断で機能をまるごと。history.json の読み手は daily_pick.py 自身だけだった。src/value/tanuki_score/ と docs/integrated-dashboard/ はフォルダごと無くなった。判定の実績表は score_history.json を読み、影響なし）"
   }
  ],
  "stop_condition": {
-  "outputs": 13,
+  "outputs": 11,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 33,
+  "python_read_sites_into_layer_resolved": 31,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "src/value/tanuki_valuation/data_fetcher.py",
@@ -9423,7 +8707,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.057,
+  "ratio_reader": 0.061,
   "threshold": 0.1,
   "hit": false
  },
@@ -9444,8 +8728,8 @@
     ],
     "label": "",
     "lines": [
-     447,
-     797
+     422,
+     707
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9459,8 +8743,8 @@
     ],
     "label": "",
     "lines": [
-     989,
-     1259
+     899,
+     1169
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9475,7 +8759,7 @@
     ],
     "label": "",
     "lines": [
-     507
+     482
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9490,7 +8774,7 @@
     ],
     "label": "",
     "lines": [
-     505
+     480
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9505,7 +8789,7 @@
     ],
     "label": "",
     "lines": [
-     487
+     462
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9519,41 +8803,9 @@
     ],
     "label": "",
     "lines": [
-     531
+     506
     ],
     "decision": "残す（2026-10-20）"
-   },
-   {
-    "page": "docs/value-monitor/tanuki_score/index.html",
-    "key": "category",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "label": "",
-    "lines": [
-     723
-    ],
-    "decision": "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"
-   },
-   {
-    "page": "docs/value-monitor/tanuki_score/index.html",
-    "key": "company",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json"
-    ],
-    "label": "",
-    "lines": [
-     743
-    ],
-    "decision": "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
@@ -9566,18 +8818,18 @@
     ],
     "label": "",
     "lines": [
+     463,
+     464,
+     483,
+     484,
+     485,
+     486,
+     487,
      488,
-     489,
-     508,
-     509,
-     510,
-     511,
-     512,
-     513,
-     516,
-     523,
-     528,
-     529
+     491,
+     498,
+     503,
+     504
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9591,7 +8843,7 @@
     ],
     "label": "VIX指数",
     "lines": [
-     423
+     398
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9601,19 +8853,18 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "label": "VIX指数",
     "lines": [
-     424,
-     425,
-     872,
-     873,
-     873,
-     878
+     399,
+     400,
+     782,
+     783,
+     783,
+     788
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9627,8 +8878,8 @@
     ],
     "label": "銘柄",
     "lines": [
-     625,
-     647
+     600,
+     622
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9643,7 +8894,7 @@
     ],
     "label": "",
     "lines": [
-     525
+     500
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9657,7 +8908,7 @@
     ],
     "label": "",
     "lines": [
-     521
+     496
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9672,7 +8923,7 @@
     ],
     "label": "",
     "lines": [
-     528
+     503
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9686,15 +8937,15 @@
     ],
     "label": "DuPont信頼性LOW(${s.dupont?.reliability_rea",
     "lines": [
-     519,
-     932,
-     936,
-     936,
-     965,
-     1221,
-     1227,
-     1259,
-     1260
+     494,
+     842,
+     846,
+     846,
+     875,
+     1131,
+     1137,
+     1169,
+     1170
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9708,7 +8959,7 @@
     ],
     "label": "",
     "lines": [
-     936
+     846
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9723,14 +8974,14 @@
     ],
     "label": "△床",
     "lines": [
-     363,
-     364,
-     1137,
-     1142,
-     1142,
-     1143,
-     1206,
-     1207
+     338,
+     339,
+     1047,
+     1052,
+     1052,
+     1053,
+     1116,
+     1117
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9740,13 +8991,12 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
     "lines": [
-     487
+     462
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9761,7 +9011,7 @@
     ],
     "label": "",
     "lines": [
-     489
+     464
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9775,7 +9025,7 @@
     ],
     "label": "",
     "lines": [
-     524
+     499
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9790,7 +9040,7 @@
     ],
     "label": "",
     "lines": [
-     525
+     500
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9804,7 +9054,7 @@
     ],
     "label": "",
     "lines": [
-     421
+     396
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9818,7 +9068,7 @@
     ],
     "label": "",
     "lines": [
-     527
+     502
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9832,7 +9082,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1087
+     997
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9846,9 +9096,9 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1082,
-     1087,
-     1106
+     992,
+     997,
+     1016
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9862,9 +9112,9 @@
     ],
     "label": "",
     "lines": [
-     521,
-     531,
-     532
+     496,
+     506,
+     507
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9878,7 +9128,7 @@
     ],
     "label": "",
     "lines": [
-     990
+     900
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9888,17 +9138,14 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/.watcher_state.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "選出理由:",
+    "label": "",
     "lines": [
-     499,
-     747
+     474
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9906,14 +9153,15 @@
     "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "generated_at",
     "has_writer": true,
-    "status": "この段階の書き手あり",
+    "status": "ほかの書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
+     "docs/common/sec_data/rotce/_summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/hypecore/data/AAPL_poc.json"
     ],
     "label": "更新: （common/sec_data/rotce.py）",
     "lines": [
-     712,
-     1129
+     1039
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9928,7 +9176,7 @@
     ],
     "label": "",
     "lines": [
-     520
+     495
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9942,7 +9190,7 @@
     ],
     "label": "VIX指数",
     "lines": [
-     422
+     397
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9957,9 +9205,9 @@
     ],
     "label": "景気敏感()",
     "lines": [
-     523,
-     1202,
-     1214
+     498,
+     1112,
+     1124
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9969,13 +9217,12 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "label": "",
     "lines": [
-     823
+     733
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9987,15 +9234,14 @@
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
-    "label": "選出理由:",
+    "label": "\\n目安: ${sig ? sig.label : r.signal_reaso",
     "lines": [
-     368,
-     570,
-     622,
-     644,
-     748,
-     1084,
-     1108
+     343,
+     545,
+     597,
+     619,
+     994,
+     1018
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10010,8 +9256,8 @@
     ],
     "label": "",
     "lines": [
-     527,
-     527
+     502,
+     502
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10025,59 +9271,59 @@
     ],
     "label": "銘柄",
     "lines": [
-     418,
-     482,
-     527,
-     584,
-     611,
-     623,
-     633,
-     645,
-     669,
-     813,
-     836,
-     836,
-     909,
-     944,
-     998,
-     1099,
-     1100,
-     1100,
-     1101,
-     1103,
-     1104,
-     1105,
-     1106,
-     1114,
-     1127,
-     1127,
-     1137,
-     1137,
-     1141,
-     1142,
-     1142,
-     1143,
-     1145,
-     1159,
-     1185,
-     1205,
+     393,
+     457,
+     502,
+     559,
+     586,
+     598,
+     608,
+     620,
+     644,
+     723,
+     746,
+     746,
+     819,
+     854,
+     908,
+     1009,
+     1010,
+     1010,
+     1011,
+     1013,
+     1014,
+     1015,
+     1016,
+     1024,
+     1037,
+     1037,
+     1047,
+     1047,
+     1051,
+     1052,
+     1052,
+     1053,
+     1055,
+     1069,
+     1095,
+     1115,
+     1116,
+     1117,
+     1120,
+     1133,
      1206,
-     1207,
-     1210,
-     1223,
-     1296,
-     1321,
-     1338,
-     1338,
-     1355,
-     1372,
-     1423,
+     1231,
+     1248,
+     1248,
+     1265,
+     1282,
+     1333,
+     1349,
+     1432,
      1439,
-     1522,
-     1529,
-     1576,
-     1579,
-     1585
+     1486,
+     1489,
+     1495
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10089,7 +9335,7 @@
     "sources": [],
     "label": "が",
     "lines": [
-     899
+     809
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10104,8 +9350,8 @@
     ],
     "label": "",
     "lines": [
-     503,
-     564
+     478,
+     539
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10119,7 +9365,7 @@
     ],
     "label": "",
     "lines": [
-     512
+     487
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10133,7 +9379,7 @@
     ],
     "label": "",
     "lines": [
-     513
+     488
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10149,8 +9395,8 @@
     ],
     "label": "",
     "lines": [
-     482,
-     482
+     457,
+     457
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10164,7 +9410,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1085
+     995
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10178,7 +9424,7 @@
     ],
     "label": "",
     "lines": [
-     530
+     505
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10192,7 +9438,7 @@
     ],
     "label": "",
     "lines": [
-     532
+     507
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10206,8 +9452,8 @@
     ],
     "label": "",
     "lines": [
-     988,
-     1260
+     898,
+     1170
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10219,7 +9465,7 @@
     "sources": [],
     "label": "",
     "lines": [
-     1099
+     1009
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10234,7 +9480,7 @@
     ],
     "label": "FCFは年次の値で評価（判定は通常どおり）",
     "lines": [
-     590
+     565
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10249,7 +9495,7 @@
     ],
     "label": "",
     "lines": [
-     529
+     504
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10264,11 +9510,11 @@
     ],
     "label": "",
     "lines": [
-     510,
-     576,
-     577,
-     577,
-     578
+     485,
+     551,
+     552,
+     552,
+     553
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10283,20 +9529,20 @@
     ],
     "label": "低PER(x)",
     "lines": [
-     376,
-     376,
-     509,
-     575,
-     575,
-     1140,
-     1140,
-     1140,
-     1149,
-     1203,
-     1203,
-     1203,
-     1215,
-     1274
+     351,
+     351,
+     484,
+     550,
+     550,
+     1050,
+     1050,
+     1050,
+     1059,
+     1113,
+     1113,
+     1113,
+     1125,
+     1184
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10311,7 +9557,7 @@
     ],
     "label": "",
     "lines": [
-     516
+     491
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10325,8 +9571,8 @@
     ],
     "label": "",
     "lines": [
-     880,
-     880
+     790,
+     790
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10341,10 +9587,10 @@
     ],
     "label": "",
     "lines": [
-     511,
-     580,
-     581,
-     582
+     486,
+     555,
+     556,
+     557
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10358,12 +9604,12 @@
     ],
     "label": "",
     "lines": [
-     1052,
-     1052,
-     1053,
-     1053,
-     1080,
-     1083
+     962,
+     962,
+     963,
+     963,
+     990,
+     993
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10377,8 +9623,8 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1086,
-     1086
+     996,
+     996
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10392,7 +9638,7 @@
     ],
     "label": "\\n直近の四半期:",
     "lines": [
-     1088
+     998
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10406,9 +9652,9 @@
     ],
     "label": "",
     "lines": [
-     566,
-     567,
-     568
+     541,
+     542,
+     543
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10422,9 +9668,9 @@
     ],
     "label": "",
     "lines": [
-     566,
-     567,
-     568
+     541,
+     542,
+     543
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10439,7 +9685,7 @@
     ],
     "label": "",
     "lines": [
-     520
+     495
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10454,7 +9700,7 @@
     ],
     "label": "",
     "lines": [
-     1098
+     1008
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10468,8 +9714,8 @@
     ],
     "label": "",
     "lines": [
-     972,
-     1221
+     882,
+     1131
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10483,24 +9729,10 @@
     ],
     "label": "一過性要因の可能性あり",
     "lines": [
-     974,
-     1227
+     884,
+     1137
     ],
     "decision": "残す（2026-10-20）"
-   },
-   {
-    "page": "docs/value-monitor/tanuki_score/index.html",
-    "key": "report",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "label": "",
-    "lines": [
-     725
-    ],
-    "decision": "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
@@ -10512,10 +9744,10 @@
     ],
     "label": "",
     "lines": [
-     827,
-     827,
-     827,
-     881
+     737,
+     737,
+     737,
+     791
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10529,10 +9761,10 @@
     ],
     "label": "",
     "lines": [
-     828,
-     828,
-     828,
-     882
+     738,
+     738,
+     738,
+     792
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10546,10 +9778,10 @@
     ],
     "label": "",
     "lines": [
-     829,
-     830,
-     830,
-     883
+     739,
+     740,
+     740,
+     793
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10563,7 +9795,7 @@
     ],
     "label": "",
     "lines": [
-     483
+     458
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10578,10 +9810,10 @@
     ],
     "label": "",
     "lines": [
-     505,
-     505,
-     507,
-     522
+     480,
+     480,
+     482,
+     497
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10595,7 +9827,7 @@
     ],
     "label": "VIX指数",
     "lines": [
-     423
+     398
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10609,12 +9841,12 @@
     ],
     "label": "DuPont ROEと実績ROEの乖離が",
     "lines": [
-     931,
-     981,
-     981,
-     983,
-     983,
-     991
+     841,
+     891,
+     891,
+     893,
+     893,
+     901
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10629,7 +9861,7 @@
     ],
     "label": "",
     "lines": [
-     508
+     483
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10643,14 +9875,14 @@
     ],
     "label": "DuPont ROEと実績ROEの乖離が",
     "lines": [
-     966,
-     967,
-     971,
-     981,
-     981,
-     983,
-     983,
-     987
+     876,
+     877,
+     881,
+     891,
+     891,
+     893,
+     893,
+     897
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10665,7 +9897,7 @@
     ],
     "label": "",
     "lines": [
-     522
+     497
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10679,12 +9911,12 @@
     ],
     "label": "",
     "lines": [
-     1052,
-     1053,
-     1080,
-     1081,
-     1081,
-     1083
+     962,
+     963,
+     990,
+     991,
+     991,
+     993
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10698,7 +9930,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1086
+     996
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10712,11 +9944,11 @@
     ],
     "label": "",
     "lines": [
-     372,
-     372,
-     372,
-     372,
-     372
+     347,
+     347,
+     347,
+     347,
+     347
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10732,7 +9964,7 @@
     ],
     "label": "",
     "lines": [
-     484
+     459
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10747,24 +9979,9 @@
     ],
     "label": "",
     "lines": [
-     421
+     396
     ],
     "decision": "残す（2026-10-20）"
-   },
-   {
-    "page": "docs/value-monitor/tanuki_score/index.html",
-    "key": "selection_reason",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json"
-    ],
-    "label": "選出理由:",
-    "lines": [
-     745
-    ],
-    "decision": "消す→保留（2026-10-20。今日の特選銘柄。daily_pick.json と同じ理由でチャット側の判断待ち）"
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
@@ -10776,7 +9993,7 @@
     ],
     "label": "",
     "lines": [
-     502
+     477
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10791,10 +10008,10 @@
     ],
     "label": "P/TBV（対数）",
     "lines": [
-     1078,
-     1103,
-     1104,
-     1105
+     988,
+     1013,
+     1014,
+     1015
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10808,8 +10025,8 @@
     ],
     "label": "\\n目安: ${sig ? sig.label : r.signal_reaso",
     "lines": [
-     1084,
-     1105
+     994,
+     1015
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10823,12 +10040,12 @@
     ],
     "label": "",
     "lines": [
-     379,
-     485,
-     1182,
-     1182,
-     1189,
-     1189
+     354,
+     460,
+     1092,
+     1092,
+     1099,
+     1099
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10844,7 +10061,7 @@
     ],
     "label": "",
     "lines": [
-     494
+     469
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10859,7 +10076,7 @@
     ],
     "label": "",
     "lines": [
-     488
+     463
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10875,7 +10092,7 @@
     ],
     "label": "",
     "lines": [
-     493
+     468
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10889,7 +10106,7 @@
     ],
     "label": "FCFは年次の値で評価（判定は通常どおり）",
     "lines": [
-     590
+     565
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10905,11 +10122,11 @@
     ],
     "label": "",
     "lines": [
-     501,
-     822,
-     872,
-     879,
-     879
+     476,
+     732,
+     782,
+     789,
+     789
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10919,44 +10136,39 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "銘柄なし",
     "lines": [
-     367,
-     367,
-     467,
-     613,
-     614,
-     635,
-     636,
-     711,
-     742,
-     742,
-     831,
-     877,
-     877,
-     930,
-     986,
-     1328,
-     1328,
-     1359,
-     1359,
-     1410,
-     1513,
-     1516,
-     1517,
-     1532,
-     1534,
-     1535,
-     1545,
-     1547,
-     1548,
-     1577,
-     1580
+     342,
+     342,
+     442,
+     588,
+     589,
+     610,
+     611,
+     741,
+     787,
+     787,
+     840,
+     896,
+     1238,
+     1238,
+     1269,
+     1269,
+     1320,
+     1423,
+     1426,
+     1427,
+     1442,
+     1444,
+     1445,
+     1455,
+     1457,
+     1458,
+     1487,
+     1490
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10970,29 +10182,12 @@
     ],
     "label": "",
     "lines": [
-     443,
-     467,
-     472,
-     1049,
-     1051,
-     1054
-    ],
-    "decision": "残す（2026-10-20）"
-   },
-   {
-    "page": "docs/value-monitor/tanuki_score/index.html",
-    "key": "timing",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "label": "銘柄なし",
-    "lines": [
-     370,
-     370,
-     615,
-     637
+     418,
+     442,
+     447,
+     959,
+     961,
+     964
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11002,14 +10197,11 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
-    "label": "選出理由:",
+    "label": "",
     "lines": [
-     500,
-     747
+     475
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11019,7 +10211,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/.watcher_state.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
@@ -11027,7 +10218,7 @@
     ],
     "label": "",
     "lines": [
-     486
+     461
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11042,9 +10233,9 @@
     ],
     "label": "VIX指数",
     "lines": [
-     422,
-     455,
-     463
+     397,
+     430,
+     438
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11059,8 +10250,8 @@
     ],
     "label": "",
     "lines": [
-     1136,
-     1136
+     1046,
+     1046
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11074,7 +10265,7 @@
     ],
     "label": "",
     "lines": [
-     490
+     465
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11171,7 +10362,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -11188,7 +10378,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
@@ -11206,7 +10395,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -11268,7 +10456,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -11317,7 +10504,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -11573,8 +10759,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -11639,7 +10823,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -11787,7 +10970,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -11819,7 +11001,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -12207,8 +11388,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -12331,7 +11510,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -12394,7 +11572,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
@@ -12766,7 +11943,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -13138,7 +12314,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -13326,7 +12501,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -13379,7 +12553,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
@@ -13802,7 +12975,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -14802,7 +13974,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -15223,8 +14394,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -15345,7 +14514,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/.watcher_state.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
@@ -15494,7 +14662,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/integrated-dashboard/daily_pick.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
@@ -15650,39 +14817,12 @@
     ]
    },
    {
-    "key": "expectation",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "report"
-    ]
-   },
-   {
     "key": "fallback",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "parents": [
      "segment_xbrl_status"
-    ]
-   },
-   {
-    "key": "fcf_conversion_rate",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "tanuki"
-    ]
-   },
-   {
-    "key": "fcf_estimated",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "tanuki"
     ]
    },
    {
@@ -15703,30 +14843,12 @@
     "parents": []
    },
    {
-    "key": "fundamental",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "report"
-    ]
-   },
-   {
     "key": "g_fundamental",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "parents": [
      "growth_sanity"
-    ]
-   },
-   {
-    "key": "growth_source",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "tanuki"
     ]
    },
    {
@@ -15758,7 +14880,6 @@
    {
     "key": "invalid_reason",
     "sources": [
-     "docs/integrated-dashboard/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
@@ -15832,15 +14953,6 @@
     ]
    },
    {
-    "key": "news",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "report"
-    ]
-   },
-   {
     "key": "pt_shares_consistency",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
@@ -15878,15 +14990,6 @@
     ]
    },
    {
-    "key": "rice_score",
-    "sources": [
-     "docs/integrated-dashboard/daily_pick.json"
-    ],
-    "parents": [
-     "tanuki"
-    ]
-   },
-   {
     "key": "segment_quarter",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -15899,13 +15002,6 @@
     "key": "segment_xbrl_status",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": []
-   },
-   {
-    "key": "selection_reason_note",
-    "sources": [
-     "docs/integrated-dashboard/history.json"
     ],
     "parents": []
    },
@@ -15967,6 +15063,6 @@
     ]
    }
   ],
-  "written_key_count": 533
+  "written_key_count": 514
  }
 }

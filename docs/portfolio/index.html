@@ -569,7 +569,7 @@ function _renderTable() {
 const EARLY_STAGE_LABELS = ['失望/蓄積期', '期待覚醒期', '期待拡大期'];
 
 // PORT-LOGIC-1: TANUKI SCORE BUY × 早期フェーズ × 未保有 の仕込み候補を抽出
-// 並び順はdaily_pick.pyのstocks.sort（-funda, -timing）に揃える
+// 並び順は -funda, -timing（2026-10-20に削除したdaily_pick.pyのstocks.sortと同じ）
 function findHypemixCandidates(tanukiMap, hypeMap, posAgg, universeTickers) {
   const heldTickers = new Set(
     Object.keys(posAgg).filter(t => (posAgg[t]?.totalShares ?? 0) > 0)

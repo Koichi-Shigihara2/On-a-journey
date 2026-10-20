@@ -93,7 +93,7 @@
 ### `docs/common/sec_data/rotce/_summary.json`（1件）
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(1)・`reference_only`(0)・`thresholds`(0)・`tickers`(1)
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 266
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 241
 
 ### `${RUNNER_TEMP}/sec_update_result.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
@@ -206,7 +206,7 @@
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 66・71・78（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_bs_field_cross_year_misselect.py` 行 304・314（経由 `common/sec_data/parser.py::SECParser.parse_company_facts`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
-- テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 247・252・257（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 185・190・195（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 50・69・80・86・87・89・94・101・102・105・116・118 ほか1（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/parser.py::SECParser.parse_company_facts`、`tests/test_conditional_tags_and_stale_latest.py::_real_store`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_gate2_phase3b1_reader_integration.py` 行 251・291・299・357・412・464・473（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`src/value/hypecore/hypecore.py::fetch_quarterly_fundamentals`）
@@ -482,7 +482,7 @@
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1777・3567・3633（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 639
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 756
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 266
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 241
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
 - テスト・保存済みファイル: `tests/test_rotce.py` 行 345・350・365（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）

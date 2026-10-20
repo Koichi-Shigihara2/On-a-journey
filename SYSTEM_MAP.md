@@ -186,7 +186,7 @@ AutoTrade運用実体・OpenD前提を追記、report.txt統合レポートの�
 |---|---|---|
 | TANUKI VALUATION | DCF理論株価・RICE投資効率 | docs/value-monitor/tanuki_valuation/ |
 | HypeCore | 期待プレミアム・フェーズ判定 | docs/value-monitor/hypecore/ |
-| TANUKI SCORE | 多銘柄比較・最終投資判断 | docs/value-monitor/tanuki_score/（daily pick機能の出力は docs/integrated-dashboard/、下記参照） |
+| TANUKI SCORE | 多銘柄比較・最終投資判断 | docs/value-monitor/tanuki_score/（daily pick機能は2026-10-20に削除、下記参照） |
 | STONKS SILO | 赤字企業の投資適合性評価（詳細は下記セクション参照） | docs/value-monitor/stonks-silo/ |
 | EPS ANALYZER | GAAP/Non-GAAP乖離・割安発掘 | docs/value-monitor/adjusted_eps_analyzer/ |
 | MACRO PULSE | マクロ環境・景気後退リスク | docs/market-monitor/macro-pulse/ |
@@ -374,12 +374,13 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 
 ---
 
-## TANUKI SCORE daily pick（docs/integrated-dashboard/）（2026-07-10追記）
+## TANUKI SCORE daily pick（docs/integrated-dashboard/）（2026-07-10追記、**2026-10-20削除**）
 
-`src/value/tanuki_score/daily_pick.py`の出力先は`docs/value-monitor/tanuki_score/`配下ではなく
-リポジトリ直下の`docs/integrated-dashboard/`（`daily_pick.json`・`history.json`）。
-`docs/value-monitor/tanuki_score/index.html`がfetchして表示する（CHAT_RULES.mdの
-「銘柄スクリーニング着手前の確認事項」で言及される「Extreme Fear TOP10」の実体データ）。
+**削除済み（2026-10-20、Koichiさんの判断、[[OUTPUT-INVENTORY-CHECK-1]]のTANUKIの段階）**: 今日の特選銘柄（`src/value/tanuki_score/daily_pick.py`・Grokでの選出とレポート、
+`docs/integrated-dashboard/daily_pick.json`・`history.json`、`docs/value-monitor/tanuki_score/index.html`の「📌 今日の特選銘柄」の区画、
+TANUKI_Score_Update.ymlの段）。`src/value/tanuki_score/`と`docs/integrated-dashboard/`はフォルダごと無くなった。
+TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`を読む（daily pickとは関係しない）。
+以下は削除前の記載: `daily_pick.py`の出力先は`docs/integrated-dashboard/`（`daily_pick.json`・`history.json`）で、`docs/value-monitor/tanuki_score/index.html`がfetchして表示していた。
 
 ---
 
@@ -398,7 +399,7 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 ### 計算方法の変更の印と最新期欠けのガード（2026-10-14追記、[[LAYER3-RETENTION-PERIOD-1]]・[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
 - `common/method_change.py`・`config/method_change.json`: 公開データを作り直す日（JST）と項目IDを書くと、その日の実行の記録に`"method_change"`が付く
   （TANUKIのscore_history.json・history.json・history/・latest.json・hypecore_history/、HypeCoreの_poc.json、STONKS SILOのresults.json、rotceの{T}.json・_summary.json、
-  daily_pickのhistory.json。環境変数METHOD_CHANGEでも可）。`score_watcher.py`は印のある変化を「🛠 計算方法の変更による変化」の節に分けて通知する
+  daily_pickのhistory.json〈2026-10-20削除〉。環境変数METHOD_CHANGEでも可）。`score_watcher.py`は印のある変化を「🛠 計算方法の変更による変化」の節に分けて通知する
 - 最新期欠けのガード: `data_fetcher.py::build_latest_period_missing()`がTTMの最新の点で営業CF・設備投資が欠けているかを`latest_period_missing`としてlatest.jsonへ出す。
   年次の値での代用が無ければPolicy BでDCF信頼性LOW→WATCH、年次で代用していれば注記だけ（TANUKI VALUATIONの個別ページ・TANUKI SCOREに表示）。
   `report_consistency_check.py`のCHECK-63（WARN）が発動した銘柄と項目を列挙する
@@ -1179,7 +1180,7 @@ SEC EDGAR
 │    f"Classification: {score}"（1221行目）はreport_consistency_check.py
 │    のNG-3（LOW丸め未発動）がこの行をregexで再パースして比較するため
 │    最重要（__str__override漏れがあるとNG-3が全銘柄で誤発火する）。
-│    daily_pick.py（ELIGIBLE_CATEGORIES/CATEGORY_PRIORITY）・フロントエンド
+│    daily_pick.py〈2026-10-20削除〉（ELIGIBLE_CATEGORIES/CATEGORY_PRIORITY）・フロントエンド
 │    （tanuki_score/index.htmlのCAT_META/CAT_COLOR辞書等）はJSON経由で
 │    文字列を受け取るのみのため無改修で動作。
 │    quarterly.py::_select_best_candidate()のフォールバック採用時・
@@ -1684,7 +1685,7 @@ MACRO PULSE   ← FREDデータ / FRBステートメント
   使わない——`[[FEARGREED-DUPKEY-BUG-1]]`で`previous_close`誤値を修正
   済み）。**Market Pulseがこのシステム内で唯一のCNN F&G取得経路**——
   TANUKI VALUATION（`pipeline.py:390`）・TANUKI SCORE
-  （`daily_pick.py:330`）はいずれも独自取得せず`market_data.json`の
+  （`daily_pick.py:330`、2026-10-20削除）はいずれも独自取得せず`market_data.json`の
   `fear_greed.score`を読むのみであることを確認済み（重複実装なし）
 - **(c)** CNN Fear & Greed Index API（`fear_greed`パッケージ経由）。
   出力先: `docs/market-monitor/market-pulse/data/market_data.json`の

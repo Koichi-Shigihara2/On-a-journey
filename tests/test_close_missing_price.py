@@ -9,7 +9,6 @@ TANUKI VALUATIONがcurrent_price=0.0で計算を続けた不具合（2026-09-22�
 - fetcher: 終値の無い足を保存しない・既存の終値の無い行を取り直す
 - reader: get_latest_price()/get_price_on_or_after()は有効な終値を持つ行を返す
 - score_watcher: UNDETERMINED（判定不能）を通知せず前回状態を維持する
-- daily_pick: UNDETERMINEDを候補にせず、前日UNDETERMINEDを「分類変化」に数えない
 
 ネットワークアクセスは行わない（_download_historical_barsを差し替える）。
 """
@@ -129,32 +128,6 @@ class TestScoreWatcherIgnoresUndetermined:
         assert changes == [] and state == prev
 
 
-class TestDailyPickIgnoresUndetermined:
-    def _import(self):
-        path = os.path.join(_REPO_ROOT, "src", "value", "tanuki_score")
-        if path not in sys.path:
-            sys.path.insert(0, path)
-        import daily_pick
-        return daily_pick
-
-    def test_previous_undetermined_is_not_a_category_change(self, monkeypatch):
-        dp = self._import()
-        monkeypatch.setattr(dp, "XAI_API_KEY", "")
-        stocks = [{"ticker": "ADBE", "company": "A", "funda": 75, "timing": 60, "category": "BUY"},
-                  {"ticker": "KO", "company": "K", "funda": 80, "timing": 40, "category": "HOLD"}]
-        history = [{"date": "2026-09-26", "ticker": "X", "all_categories": {"ADBE": "UNDETERMINED", "KO": "HOLD"}}]
-        pick, reason = dp.select_ticker(stocks, history, "2026-09-27")
-        assert not reason.startswith("分類変化")
-
-    def test_undetermined_never_picked_in_fallback(self, monkeypatch):
-        dp = self._import()
-        monkeypatch.setattr(dp, "XAI_API_KEY", "")
-        stocks = [{"ticker": "ADBE", "company": "A", "funda": 75, "timing": None, "category": "UNDETERMINED"},
-                  {"ticker": "LOAR", "company": "L", "funda": 10, "timing": 20, "category": "PASS"}]
-        pick, _ = dp.select_ticker(stocks, [], "2026-09-27")
-        assert pick["ticker"] != "ADBE"
-
-
 class TestMissingTradingDays:
     """MARKETPULSE-TECHPULSE-QQQ-NULL-1（2026-09-26）: 行ごと抜けた取引日の検知と実データでの取り直し"""
 
@@ -197,41 +170,6 @@ class TestMissingTradingDays:
         out = rcc._check_daily_missing_trading_days(base_dir=base)
         assert [(s, "2026-08-25" in m or "2026-08-26" in m) for s, m in out] == [("QQQ", True), ("QQQ", True)]
         assert all("[WARN-57" in m for _, m in out)
-
-
-class TestDailyPickPackagePrice:
-    """DAILYPICK-TANUKI-CURRENT-PRICE-KEY-1（2026-09-26）: daily pickのtanuki.current_priceは
-    latest.jsonのcomponentsから取り、株価が無い場合はGrokへ渡すパッケージに入れない"""
-
-    def _import(self):
-        path = os.path.join(_REPO_ROOT, "src", "value", "tanuki_score")
-        if path not in sys.path:
-            sys.path.insert(0, path)
-        import daily_pick
-        return daily_pick
-
-    def _stock(self):
-        return {"ticker": "ADBE", "company": "Adobe", "funda": 70, "timing": 65, "category": "BUY"}
-
-    def test_price_taken_from_components(self, monkeypatch):
-        dp = self._import()
-        monkeypatch.setattr(dp, "load_tanuki", lambda t: {"components": {"current_price": 235.47},
-                                                          "intrinsic_value_per_share": 608.2, "upside_percent": 158.3})
-        monkeypatch.setattr(dp, "load_hype", lambda t: {})
-        monkeypatch.setattr(dp, "load_eps_annual_latest", lambda t: {})
-        pkg = dp.build_data_package(self._stock(), {})
-        assert pkg["tanuki"]["current_price"] == 235.47
-        assert "deviation_rate" not in pkg["tanuki"]
-
-    def test_missing_price_not_passed_to_prompt(self, monkeypatch):
-        dp = self._import()
-        monkeypatch.setattr(dp, "load_tanuki", lambda t: {"components": {"current_price": None},
-                                                          "intrinsic_value_per_share": 608.2})
-        monkeypatch.setattr(dp, "load_hype", lambda t: {})
-        monkeypatch.setattr(dp, "load_eps_annual_latest", lambda t: {})
-        pkg = dp.build_data_package(self._stock(), {})
-        assert "current_price" not in pkg["tanuki"]
-        assert '"current_price": null' not in json.dumps(pkg)
 
 
 class TestGetTtmRevenue:

@@ -2455,7 +2455,7 @@ REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会�
 | TANUKI VALUATION `score_watcher.py`（TANUKI_VALUATION_Update.ymlの中） | 最新月の`stage`・`stage_label` | 前回の実行から変わったら「HypeCoreフェーズ転換」をDiscordに通知（月の途中の揺れもそのまま通知になる） |
 | TANUKI VALUATION `stock.html` | 最新月の`stage`、全月の`stage` | 象限×stageのシグナル（🟢最優先候補等）、Phaseの推移の表・ピボット |
 | TANUKI SCORE `index.html` | 最新月の`stage`・`stage_label`・`substage_label` | 一覧の表示、ナラティブトラップ（stage≥3）、「底」のsubstageでの並べ替え |
-| TANUKI SCORE `daily_pick.py` | 最新月の`stage`・`stage_label`・`substage_*` | 日次ピックのAIの入力 |
+| ~~TANUKI SCORE `daily_pick.py`~~（2026-10-20削除、今日の特選銘柄） | ~~最新月の`stage`・`stage_label`・`substage_*`~~ | ~~日次ピックのAIの入力~~（読み手から外れた） |
 | HypeCore `index.html`・`detail.html`（・旧`src/value/hypecore/hypecore.html`） | 最新月の`stage`・`substage_*`、全月の`stage` | 一覧・詳細の表示、stageの絞り込み、遷移確率（全月の遷移を数える） |
 | PORTFOLIO `index.html` | 最新月の`stage_label`・`substage_label` | 保有一覧の表示 |
 | Market Pulse `sector_rotation.py` | 最新月の`stage_label` | セクターの表示 |

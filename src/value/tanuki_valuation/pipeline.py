@@ -3827,7 +3827,7 @@ class TanukiValuationPipeline:
         print(f"   📄 レポート: {report_path}")
 
     def _save_tickers_index(self, success_tickers: List[str]) -> None:
-        """tickers.json（TANUKI SCORE daily_pick.py等が読む対象銘柄一覧）を更新する。
+        """tickers.json（TANUKI SCOREの画面等が読む対象銘柄一覧）を更新する。
 
         ZS-TICKERS-LEAK-1: 既存index_dataとのマージのみ（和集合）で、
         一度でも書き込まれた銘柄はtanuki=falseへ変更されても除去されない

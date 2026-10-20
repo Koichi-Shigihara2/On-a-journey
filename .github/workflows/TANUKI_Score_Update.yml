@@ -1,7 +1,7 @@
 name: TANUKI_Score_Update
 
-# TANUKI VALUATION Daily Updateの完了で起動する（daily_pick.pyはlatest.jsonの分類に依存）。土日は13:30 UTCに独立に動き、
-# 金曜時点のlatest.jsonを使う。
+# TANUKI VALUATION Daily Updateの完了で起動する。土日は13:30 UTCに独立に動く。
+# 今の中身はPortfolioのスナップショット（src/portfolio/snapshot.py）だけ（今日の特選銘柄は2026-10-20に削除）。
 # 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   workflow_run:
@@ -34,22 +34,8 @@ jobs:
           pip install --upgrade pip
           pip install requests
 
-      - name: Run daily_pick
-        env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-        run: |
-          # [[WORKFLOW-FALLBACK-CRON-DUPLICATE-1]]横展開対応: workflow_dispatch
-          # （手動実行）は常に意図的な実行のため、daily_pick.py側の冪等性
-          # ガード（当日分が既に選出済みならスキップ）を --force でバイパスする。
-          FORCE_FLAG=""
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            FORCE_FLAG="--force"
-          fi
-          python src/value/tanuki_score/daily_pick.py $FORCE_FLAG
-
+      # 今日の特選銘柄（daily_pick.py・Grok）は2026-10-20に削除（[[OUTPUT-INVENTORY-CHECK-1]]、Koichiさんの判断）
       - name: Portfolio snapshot
-        env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: python src/portfolio/snapshot.py
 
       - name: Commit and push
@@ -57,9 +43,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config merge.ours.driver true
-          git add docs/integrated-dashboard/daily_pick.json \
-                  docs/integrated-dashboard/history.json \
-                  docs/portfolio/data/history.json
+          git add docs/portfolio/data/history.json
           git diff --staged --quiet || git commit -m \
-            "chore: auto-update TANUKI SCORE daily pick $(date -u '+%Y-%m-%d %H:%M') UTC"
+            "chore: auto-update portfolio snapshot $(date -u '+%Y-%m-%d %H:%M') UTC"
           bash .github/scripts/push_with_retry.sh kaihatsu
