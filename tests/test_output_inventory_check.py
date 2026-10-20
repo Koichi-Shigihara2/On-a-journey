@@ -102,12 +102,42 @@ def test_tanuki_known_rules_and_known_screen_keys_are_not_ng():
     assert len([w for w in warn if "WARN-INV-3" in w]) == len(inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]) == 5
 
 
-def test_tanuki_new_screen_key_without_writer_is_ng():
+def _new_screen_key_without_writer():
     saved = _tanuki_inventory()
     now = copy.deepcopy(saved)
     now["screen"]["items"].append({"page": "docs/value-monitor/tanuki_valuation/index.html", "key": "new_key", "status": "書き手なし", "lines": [9]})
-    ng, _ = _check_tanuki(saved, now)
+    return saved, now
+
+
+def test_tanuki_new_screen_key_without_writer_is_ng(monkeypatch):
+    """手元のゲート（GITHUB_ACTIONS が無い）では NG。"""
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    ng, warn = _check_tanuki(*_new_screen_key_without_writer())
     assert any("NG-INV-5" in x and "new_key" in x for x in ng)
+    assert not any("INV-5" in x for x in warn)
+
+
+def test_tanuki_new_screen_key_without_writer_is_warn_on_github_actions(monkeypatch):
+    """本番のワークフロー（GITHUB_ACTIONS=true）では WARN にして、JSON の中身の変化で公開を止めない。"""
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    ng, warn = _check_tanuki(*_new_screen_key_without_writer())
+    assert ng == []
+    assert any("WARN-INV-5" in x and "new_key" in x for x in warn)
+
+
+def test_github_actions_does_not_soften_code_only_checks(monkeypatch):
+    """INV-1〜4 はコードだけで決まるので、本番のワークフローでも NG のまま。"""
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    saved = _tanuki_inventory()
+    now = copy.deepcopy(saved)
+    now["outputs"].append(_output("docs/value-monitor/tanuki_valuation/data/{T}/new.json"))
+    now["outputs"][0]["readers"] = []
+    now["outputs"][0]["group"] = "読み手0件"
+    now["rules"].append(_rule("new_rule", ["src/value/tanuki_valuation/a.py", "docs/q.html"]))
+    ng, _ = _check_tanuki(saved, now)
+    assert any("NG-INV-1" in x for x in ng)
+    assert any("NG-INV-2" in x for x in ng)
+    assert any("NG-INV-3" in x and "new_rule" in x for x in ng)
 
 
 def test_tanuki_new_unread_key_is_warn():

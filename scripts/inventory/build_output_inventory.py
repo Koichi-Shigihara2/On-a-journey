@@ -234,7 +234,9 @@ _TANUKI.update(
         "formula_verification": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
         "pt_shares_consistency": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
         **{k: "残す: テストが参照する" for k in ("dupont_bs_period", "max_eps", "max_eps_ttm_end", "segment_quarter", "segment_xbrl_status", "v0_note")},
-        **{k: "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+        # 2026-10-21 の本番の実行（819d51bc53）で latest.json・tickers.json からは消えた。過去の history/ のスナップショットと
+        # score_history.json の古いエントリには残り続けるため、一覧の「誰も読まないキー」からは消えない（FINDINGS.md 2026-10-21）
+        **{k: "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
            for k in ("avg_rev_growth_lagged", "assumed_realization_years", "intrinsic_value_pt", "is_provisional",
                      "moat_gross_margin_norm", "moat_roic_norm", "moat_fcf_margin_norm", "forward_earnings_yield",
                      "shares_yr_now_label", "shares_yr_3ago_label", "upside_pct", "validated_at",
@@ -1625,13 +1627,20 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
         if not o.get("note"):
             warn.append(f"  [WARN-INV-4 {tg}注記なし] {path}。scripts/inventory/build_output_inventory.py の ANNOTATIONS に1文を足す")
     # 画面の項目（TANUKI）: 画面が読むのに書き手の無いキーが新しくできたら NG、書き手があるのに誰も読まないキーが新しくできたら WARN
+    # INV-5・6 は抜き取った JSON の中身で結果が変わる（条件のときだけ書くキーが全銘柄で無くなると、コードを変えなくても出る）。
+    # 本番のワークフロー（GITHUB_ACTIONS）で公開を止めないよう、INV-5 は本番では WARN、手元のゲートでは NG のまま
+    inv5_warn = os.environ.get("GITHUB_ACTIONS") == "true"
     if now.get("screen") is not None:
         s_saved = saved.get("screen") or {}
         known_nw = {(i["page"], i["key"]) for i in s_saved.get("items", []) if i.get("status") == "書き手なし"}
         for i in now["screen"].get("items", []):
             if i.get("status") == "書き手なし" and (i["page"], i["key"]) not in known_nw:
-                ng.append(f"  [NG-INV-5 {tg}画面のキーに書き手なし] {i['page']} の {i['key']}（行 {'・'.join(str(x) for x in i['lines'][:4])}）。"
-                          "書き手を作るか、表示をやめる")
+                msg = (f"{tg}画面のキーに書き手なし] {i['page']} の {i['key']}（行 {'・'.join(str(x) for x in i['lines'][:4])}）。"
+                       "書き手を作るか、表示をやめる")
+                if inv5_warn:
+                    warn.append(f"  [WARN-INV-5 {msg}（本番のワークフローでは WARN。手元のゲートでは NG）")
+                else:
+                    ng.append(f"  [NG-INV-5 {msg}")
         known_ur = {u["key"] for u in s_saved.get("unread_keys", [])}
         for u in now["screen"].get("unread_keys", []):
             if u["key"] not in known_ur:

@@ -266,7 +266,7 @@ def _check_output_inventory() -> tuple[list[str], list[str]]:
     scripts/inventory/build_output_inventory.py で作った一覧を比べる（一覧の作り方を二重にしない）。
     INV-1（NG）一覧に無い出力、INV-2（NG）読み手とされているファイルが読んでいない・読み手0件の出力、
     INV-3（既知はWARN、その段階のファイルを含む新しい二重はNG）規則の二重、INV-4（WARN）注記の無い出力、
-    INV-5（NG、TANUKI）画面が読むのに書き手の無いキーが新しくできた、INV-6（WARN、TANUKI）誰も読まないキーが新しくできた。
+    INV-5（NG、TANUKI。本番のワークフロー〈GITHUB_ACTIONS〉ではWARN。抜き取ったJSONの中身で結果が変わるため）画面が読むのに書き手の無いキーが新しくできた、INV-6（WARN、TANUKI）誰も読まないキーが新しくできた。
     銘柄ごとではなく全体の判定。一覧を作るのに時間がかかるため、同じプロセスでは1回だけ作る（run_check()の中で覚える）。"""
     inv_dir = os.path.join(REPO_ROOT, "scripts", "inventory")
     if inv_dir not in sys.path:

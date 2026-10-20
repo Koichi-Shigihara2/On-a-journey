@@ -3690,7 +3690,7 @@
    ],
    "writers_outside_layer": [],
    "launched_by": [],
-   "files_tracked": 28217,
+   "files_tracked": 28313,
    "top_keys_sampled_files": 3,
    "top_keys": [
     {
@@ -5089,10 +5089,6 @@
      "reader_files": 2
     },
     {
-     "key": "forward_earnings_yield",
-     "reader_files": 0
-    },
-    {
      "key": "funda_score",
      "reader_files": 6
     },
@@ -5123,10 +5119,6 @@
     {
      "key": "intrinsic_value_per_share",
      "reader_files": 13
-    },
-    {
-     "key": "intrinsic_value_pt",
-     "reader_files": 0
     },
     {
      "key": "intrinsic_value_rf",
@@ -6489,6 +6481,14 @@
     {
      "file": "tests/test_output_inventory_check.py",
      "line": 106,
+     "func": "_new_screen_key_without_writer",
+     "how": "保存済みファイル",
+     "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 115,
      "func": "test_tanuki_new_screen_key_without_writer_is_ng",
      "how": "保存済みファイル",
      "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
@@ -6496,7 +6496,23 @@
     },
     {
      "file": "tests/test_output_inventory_check.py",
-     "line": 114,
+     "line": 123,
+     "func": "test_tanuki_new_screen_key_without_writer_is_warn_on_github_actions",
+     "how": "保存済みファイル",
+     "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 131,
+     "func": "test_github_actions_does_not_soften_code_only_checks",
+     "how": "保存済みファイル",
+     "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 144,
      "func": "test_tanuki_new_unread_key_is_warn",
      "how": "保存済みファイル",
      "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
@@ -6504,7 +6520,7 @@
     },
     {
      "file": "tests/test_output_inventory_check.py",
-     "line": 123,
+     "line": 153,
      "func": "test_tanuki_output_not_in_inventory_and_reader_removed_are_ng",
      "how": "保存済みファイル",
      "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
@@ -14777,24 +14793,22 @@
    {
     "key": "assumed_realization_years",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "rpo_adjustment"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "avg_rev_growth_lagged",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "rice"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "current_subgroup",
@@ -14848,14 +14862,6 @@
     "note": "残す: validator の検証の結果（validation.checks。overall の判定に入る）"
    },
    {
-    "key": "forward_earnings_yield",
-    "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": [],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
-   },
-   {
     "key": "g_fundamental",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -14866,33 +14872,12 @@
     "note": "残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）"
    },
    {
-    "key": "hype_phase_label",
-    "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": [
-     "growth_sanity"
-    ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
-   },
-   {
-    "key": "hype_substage_label",
-    "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": [
-     "growth_sanity"
-    ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
-   },
-   {
     "key": "intrinsic_value_pt",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "invalid_reason",
@@ -14906,13 +14891,12 @@
    {
     "key": "is_provisional",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "software_system_provisional"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "labels",
@@ -14947,35 +14931,32 @@
    {
     "key": "moat_fcf_margin_norm",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "components"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "moat_gross_margin_norm",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "components"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "moat_roic_norm",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "components"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "pt_shares_consistency",
@@ -15037,26 +15018,6 @@
     "note": "残す: テストが参照する"
    },
    {
-    "key": "shares_yr_3ago_label",
-    "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": [
-     "financial_health"
-    ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
-   },
-   {
-    "key": "shares_yr_now_label",
-    "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
-    ],
-    "parents": [
-     "financial_health"
-    ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
-   },
-   {
     "key": "software_system_reclassification",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
@@ -15070,7 +15031,7 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "parents": [],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "v0_adjusted",
@@ -15092,15 +15053,14 @@
    {
     "key": "validated_at",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
-     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [
      "validation"
     ],
-    "note": "書き込みをやめた（2026-10-20）。commit 済みの JSON には次の TANUKI の実行まで残る"
+    "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    }
   ],
-  "written_key_count": 514
+  "written_key_count": 509
  }
 }
