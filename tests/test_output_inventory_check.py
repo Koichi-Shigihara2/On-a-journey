@@ -234,3 +234,29 @@ def test_relative_path_in_shared_script_is_undetermined(monkeypatch):
     """.js の相対パスは読み込むページのフォルダからになるため、フォルダを決めきれない（止める条件で数える）。"""
     src = "fetch('data/tickers.json');\n"
     assert _mention(monkeypatch, "docs/common/test_shared_d.js", src, 1, HYPECORE_TICKERS) == "undetermined"
+
+
+def test_import_from_own_folder_is_resolved(monkeypatch):
+    """sys.path に自分のフォルダを足して読む形（from core_calculator import …）は、同じフォルダのモジュールにする（2026-10-21）。"""
+    monkeypatch.setattr(inv, "ALL_PY", {"src/v/tv/core_calc.py", "src/v/tv/calculator/adj.py", "src/v/tv/calculator/__init__.py",
+                                        "src/v/tv/pipeline.py", "common/x.py"})
+    assert inv.resolve_import_module("src/v/tv/pipeline.py", "core_calc", 0) == "src/v/tv/core_calc"
+    assert inv.resolve_import_module("src/v/tv/pipeline.py", "calculator.adj", 0) == "src/v/tv/calculator/adj"
+    assert inv.resolve_import_module("src/v/tv/pipeline.py", "common.x", 0) == "common/x"
+    assert inv.resolve_import_module("src/v/tv/pipeline.py", "json", 0) == "json"
+
+
+def test_empty_string_default_is_resolved_from_callers(monkeypatch):
+    """引数の既定値が空の文字列（渡されなければ使わない）のときは、呼び出し元の引数からパスを決める（2026-10-21）。"""
+    import ast
+    src = ("import os\n"
+           "def load(t, d: str = ''):\n"
+           "    return os.path.join(d, t, 'annual.json')\n"
+           "def run():\n"
+           "    load('X', os.path.join('docs', 'eps', 'data'))\n")
+    rel = "src/x/test_default_e.py"
+    mod = inv.Module(rel, ast.parse(src), src)
+    monkeypatch.setitem(inv.MODULES, rel, mod)
+    monkeypatch.setitem(inv.CALLERS, (rel, "load"), [(rel, 5)])
+    join = next(n for n in ast.walk(mod.tree) if isinstance(n, ast.Call) and getattr(n, "lineno", 0) == 3)
+    assert inv.normalize_path(inv.resolve(join, mod, join)) == "docs/eps/data/{T}/annual.json"

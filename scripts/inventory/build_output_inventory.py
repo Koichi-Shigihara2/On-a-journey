@@ -173,6 +173,7 @@ HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の
 PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）
 WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフローが自分で書く Step Summary と、それが読むキーの有無
 SECTION_DECISIONS: Dict[str, str] = {}   # 画面の区画の判断（ページ → 判断。そのページの区画すべてに当てる）
+NONPROD_SCAN = False   # 名前を挙げた候補が無くても、段階のフォルダの .py のうちどこからも呼ばれないものを本番外のコードの候補にする（EPS の段階から）
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -181,7 +182,7 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
             SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
             FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
-            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS)
+            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -313,7 +314,50 @@ _HYPECORE.update(
     WORKFLOW_SUMMARY=True,
     SECTION_DECISIONS={"docs/value-monitor/hypecore/detail.html": "残す（2026-10-21、Koichiさんの判断）"},
 )
-LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE}
+# ---- EPS（adjusted_eps_analyzer、段階1、2026-10-21）
+_EPS = dict(_SEC)
+_EPS.update(
+    LAYER="src/value/adjusted_eps_analyzer",
+    LAYER_DIRS=("src/value/adjusted_eps_analyzer",),
+    OUT_JSON=f"{OUT_DIR}/eps_layer.json", OUT_MD=f"{OUT_DIR}/eps_layer.md",
+    # 自分のフォルダの読み手は「効く」に数えない。TANUKI（理論株価・判定）と画面を「効く」とする
+    DECISION_PREFIXES=DECISION_PREFIXES + [
+        ("docs/value-monitor/adjusted_eps_analyzer/", "EPSの画面"),
+        ("docs/value-monitor/tanuki_valuation/", "TANUKI VALUATIONの画面"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=[],
+    NONPROD_SCAN=True,
+    ANNOTATIONS={
+        "docs/value-monitor/adjusted_eps_analyzer/data/summary.json":
+            "全銘柄の一覧（銘柄ごとの最新期のGAAP EPS・調整後EPS・差・前年比・健全性）と実行の結果（run_status）。EPSの画面の一覧・TANUKI VALUATIONの調整後EPSが読む",
+        "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json":
+            "銘柄ごとの四半期の調整後EPS（調整項目・税の調整・AIの分析・特記）と経営者実行力の指標（execution_metrics）。EPSの個別ページ・TANUKI VALUATIONの調整後PERが読む",
+        "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json":
+            "銘柄ごとの年次の調整後EPS（年ごとの調整項目）。TANUKI VALUATIONのFCFの外れ値の判定が、一過性の費用の突合に読む（calculator/adjustments.py）",
+        "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json":
+            "銘柄ごとの直近4四半期の合計（TTM）の純利益・調整後純利益・EPSの時系列。EPSの個別ページが読む",
+        "${GITHUB_STEP_SUMMARY}": "GitHub Actionsの実行の画面に出す要約（成功・失敗の件数と失敗した銘柄、人が見る）",
+    },
+    DECISION_DEFAULT="",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
+    OUTSIDE_HINT="adjusted_eps", OUTSIDE_PREFIXES=("docs/value-monitor/adjusted_eps_analyzer/", "src/value/adjusted_eps_analyzer/"),
+    READ_PREFIXES=("docs/value-monitor/adjusted_eps_analyzer", "src/value/adjusted_eps_analyzer"),
+    READ_HINT="adjusted_eps", NAME_SHORT="EPS",
+    KNOWN_DUPLICATE_RULES=["q4_implied", "latest_filed", "ttm_sum"], TITLE="EPS（adjusted_eps_analyzer）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/value-monitor/adjusted_eps_analyzer",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=["docs/value-monitor/admin.html"],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+)
+LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS}
 
 
 def set_layer(name: str) -> None:
@@ -506,7 +550,15 @@ def resolve_import_module(rel: str, module: Optional[str], level: int) -> Option
         for _ in range(level - 1):
             base = posixpath.dirname(base)
         return posixpath.join(base, module.replace(".", "/")) if module else base
-    return module.replace(".", "/") if module else None
+    if not module:
+        return None
+    path = module.replace(".", "/")
+    # sys.path に自分のフォルダを足して読む形（tanuki_valuation の from core_calculator import … 等）は、同じフォルダから探す
+    if not any(c in ALL_PY for c in (f"{path}.py", f"{path}/__init__.py")) and not any(p.startswith(path + "/") for p in ALL_PY):
+        local = posixpath.join(posixpath.dirname(rel), path)
+        if any(c in ALL_PY for c in (f"{local}.py", f"{local}/__init__.py")) or any(p.startswith(local + "/") for p in ALL_PY):
+            return local
+    return path
 
 
 def load_module(rel: str) -> Optional[Module]:
@@ -624,7 +676,8 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
                 return resolve(best.value, mod, best, depth + 1)
             args = func.args
             for a, d in zip(args.args[len(args.args) - len(args.defaults):], args.defaults):
-                if a.arg == expr.id and not (isinstance(d, ast.Constant) and d.value is None):
+                # None・空の文字列の既定値は「渡されなければ使わない」の印なので、呼び出し元の引数から解決する
+                if a.arg == expr.id and not (isinstance(d, ast.Constant) and d.value in (None, "")):
                     return r(d)
             if any(a.arg == expr.id for a in args.args + args.kwonlyargs):
                 if any(p.search(expr.id) for p, _ in PLACEHOLDER_BY_NAME):
@@ -752,11 +805,16 @@ def resolve_param_from_callers(func: ast.AST, pname: str, mod: Module, depth: in
             continue
         for call in cm.calls_by_line.get(c_line, []):
             fn = call.func.attr if isinstance(call.func, ast.Attribute) else (call.func.id if isinstance(call.func, ast.Name) else "")
+            call_args = call.args
+            if fn == "submit" and call.args and isinstance(call.args[0], ast.Name) and (
+                    call.args[0].id in names_ok or cm.from_imports.get(call.args[0].id, ("", ""))[1] in names_ok):
+                fn, call_args = call.args[0].id, call.args[1:]   # executor.submit(関数, 引数…)
+                names_ok = names_ok | {fn}
             if fn not in names_ok and not (isinstance(call.func, ast.Name) and cm.from_imports.get(call.func.id, ("", ""))[1] in names_ok):
                 continue
             arg = next((k.value for k in call.keywords if k.arg == pname), None)
-            if arg is None and idx is not None and idx < len(call.args) and not any(isinstance(a, ast.Starred) for a in call.args[:idx + 1]):
-                arg = call.args[idx]
+            if arg is None and idx is not None and idx < len(call_args) and not any(isinstance(a, ast.Starred) for a in call_args[:idx + 1]):
+                arg = call_args[idx]
             if arg is None:
                 continue
             v = resolve(arg, cm, call, depth + 2)
@@ -1233,6 +1291,13 @@ def _calls_in(mod: Module) -> List[Tuple[int, str, str]]:
         if not isinstance(node, ast.Call):
             continue
         f = node.func
+        # executor.submit(関数, 引数…): 渡した関数の呼び出しとみなす（EPS の段階から。引数は1つずらして解決する）
+        if isinstance(f, ast.Attribute) and f.attr == "submit" and node.args and isinstance(node.args[0], ast.Name):
+            fn = node.args[0].id
+            if fn in mod.funcs:
+                out.append((node.lineno, mod.rel, fn))
+            elif fn in mod.from_imports:
+                out.append((node.lineno, *mod.from_imports[fn]))
         if isinstance(f, ast.Name):
             if f.id in mod.from_imports:
                 src_rel, name = mod.from_imports[f.id]
@@ -1704,7 +1769,7 @@ def build() -> dict:
             out.append(line)
         return out
     pairs = [(d, rel) for d in NON_PRODUCTION_DIRS for rel in sorted(git_ls_files(f"{d}/*.py", f"{d}/**/*.py"))]
-    if NON_PRODUCTION_FILES:
+    if NON_PRODUCTION_FILES or NONPROD_SCAN:
         # 段階のフォルダの .py をすべて見て、名前を挙げたものと、どこからも呼ばれないものを候補にする
         layer_files = git_ls_files(*[f"{d}/*.py" for d in LAYER_DIRS], *[f"{d}/**/*.py" for d in LAYER_DIRS])
         pairs += [(posixpath.dirname(rel), rel) for rel in sorted(set(NON_PRODUCTION_FILES) | set(layer_files))]
@@ -1752,7 +1817,8 @@ def build() -> dict:
             "workflows": refs(workflows), "code": [f for f in refs(prod_code) if not f.startswith(d + "/")],
             "same_dir": [f for f in refs(prod_code) if f.startswith(d + "/")], "tests": refs(test_code),
         })
-    if NON_PRODUCTION_FILES:
+    nonprod_scanned = [dict(x) for x in nonprod] if NONPROD_SCAN else []
+    if NON_PRODUCTION_FILES or NONPROD_SCAN:
         nonprod = [x for x in nonprod if x["file"] in NON_PRODUCTION_FILES
                    or (not x["workflows"] and not x["code"] and not x["same_dir"] and not x["file"].endswith("__init__.py"))]
         for x in nonprod:
@@ -1829,6 +1895,7 @@ def build() -> dict:
         "outputs": [outputs[k] for k in sorted(outputs, key=lambda k: (["読み手0件", "テストだけ", "1件", "2件以上", "人が見る"].index(outputs[k]["group"]), k))],
         "rules": rules_out,
         "non_production_code": nonprod,
+        **({"non_production_scanned": nonprod_scanned} if NONPROD_SCAN else {}),
         "f3_zero_reader": f3,
         "deleted": [{"what": a, "detail": b} for a, b in DELETED],
         "stop_condition": stop,
@@ -1998,8 +2065,68 @@ def page_checks(tracked: List[str], texts: Dict[str, str], py_files: List[str]) 
         page_dir = posixpath.dirname(pg).replace("docs/", "")
         links = sorted(f for f in tracked if f.endswith((".html", ".js")) and f != pg and not f.startswith("docs/architecture/")
                        and page_dir in (texts.get(f) or read_text(f)))
-        out.append({"page": pg, "title": title, "reads": reads, "linked_from": links, "last_commit": _last_commit_date(pg)})
+        item = {"page": pg, "title": title, "reads": reads, "linked_from": links, "last_commit": _last_commit_date(pg)}
+        if "/contents/${" in t:
+            item.update(_page_api_io(t, tracked, py_files))
+        out.append(item)
     return out
+
+
+def _page_api_io(t: str, tracked: List[str], py_files: List[str]) -> dict:
+    """GitHub の API（contents）でリポジトリのファイルを読み書きするページ: パスはリポジトリの根から。
+    読み: fetchFile(…)。書き: commitFile(…)・{ path: …, content: … }（複数ファイルの1commit）。ほかに起動するワークフロー。"""
+    consts = dict(re.findall(r"(?:const|let|var)\s+(\w+)\s*=\s*['\"`]([^'\"`]+)['\"`]", t))
+
+    def path_of(arg: str) -> Optional[str]:
+        arg = arg.strip()
+        if arg in consts:
+            arg = consts[arg]
+        elif arg[:1] in "'\"`":
+            arg = arg.strip("'\"`")
+            arg = re.sub(r"\$\{(\w+)\}", lambda m: consts.get(m.group(1), "{T}" if _JS_TICKER_RE.search(m.group(1)) else "{x}"), arg)
+        else:
+            return None
+        return arg if arg.split("/")[0] in TOP_DIRS else None
+
+    def sites(rx: str) -> Dict[str, List[int]]:
+        got: Dict[str, List[int]] = defaultdict(list)
+        for n, line in enumerate(t.splitlines(), 1):
+            if re.search(r"\bfunction\s+(fetchFile|commitFile)\b", line):   # 関数の定義の行
+                continue
+            for m in re.finditer(rx, line):
+                pth = path_of(m.group(1))
+                if pth:
+                    got[pth].append(n)
+        return got
+
+    arg = r"(\w+|'[^']*'|\"[^\"]*\"|`[^`]*`)"
+    reads = sites(r"fetchFile\(\s*" + arg)
+    writes = sites(r"commitFile\(\s*" + arg)
+    for k, v in sites(r"\{\s*path:\s*" + arg + r"\s*,\s*content:").items():
+        writes[k].extend(v)
+    # 関数の中で const path = '…' を決めて、contents の API を直接呼ぶもの（GET は読み、method: 'PUT' は書き）
+    tl = t.splitlines()
+    for n, line in enumerate(tl, 1):
+        m = re.search(r"const\s+path\s*=\s*['\"`]([^'\"`]+)['\"`]", line)
+        if not m or m.group(1).split("/")[0] not in TOP_DIRS:
+            continue
+        end = next((k for k in range(n, min(len(tl), n + 80)) if re.match(r"^(async\s+)?function\b", tl[k])), min(len(tl), n + 80))
+        for k in range(n, end):
+            if "/contents/${path}" in tl[k]:
+                put = any("method: 'PUT'" in x or 'method: "PUT"' in x for x in tl[k:k + 4])
+                (writes if put else reads)[m.group(1)].append(k + 1)
+
+    def row(pth: str, lines: List[int]) -> dict:
+        rx = template_regex(pth)
+        files = [f for f in tracked if rx.match(f)]
+        writers = sorted({f"{rel}:{w['func']}" for rel in py_files if not is_test(rel) and MODULES.get(rel) is not None
+                          for w in io_sites(MODULES[rel])[0] if rx.match(w["path"]) or w["path"] == pth or tail_match(pth, w["path"])})
+        return {"path": pth, "lines": sorted(set(lines)), "files": len(files), "py_writers": writers}
+
+    wfs = sorted(set(re.findall(r"dispatchWorkflow\(\s*['\"]([\w.-]+\.ya?ml)['\"]", t)))
+    return {"api_reads": [row(k, v) for k, v in sorted(reads.items())],
+            "api_writes": [row(k, v) for k, v in sorted(writes.items())],
+            "dispatches": wfs}
 
 
 def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[str, str], layer_py: List[str]) -> List[dict]:
@@ -2134,9 +2261,17 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
         fetched: Dict[str, Set[str]] = defaultdict(set)
         for lit in sorted(set(re.findall(r"['\"`]([^'\"`\s]*?\.json)(?:\$\{[^}]*\}|\?[^'\"`\s]*)?['\"`]", text))):
             tail = lit.split("}")[-1].lstrip("/").lstrip("./")
-            if not tail:
+            if lit.split("}")[-1].startswith("."):
+                # ファイル名がプレースホルダーだけ（rotce/${ticker}.json 等）: 末尾のフォルダからの型で照合する
+                tmpl = re.sub(r"^(\.\.?/)+", "", re.sub(r"\$\{[^}]*\}", "{x}", lit))
+                if "/" not in tmpl:
+                    continue
+                trx = re.compile(r"(^|/)" + re.escape(tmpl).replace(r"\{x\}", "[^/]+") + "$")
+                cands = sorted(f for f in docs_json if trx.search(f))
+            elif not tail:
                 continue
-            cands = sorted(f for f in docs_json if f.endswith(tail if tail.startswith(("_", "-")) else "/" + tail) or f == tail)
+            else:
+                cands = sorted(f for f in docs_json if f.endswith(tail if tail.startswith(("_", "-")) else "/" + tail) or f == tail)
             for f in sample_files(cands):
                 try:
                     with open(os.path.join(REPO, f), encoding="utf-8") as fh:
@@ -2483,8 +2618,18 @@ def render_md(inv: dict) -> str:
             L.append(f"### `{c['page']}`（{md_escape(c['title'])}、最後のcommit {c['last_commit']}）")
             L.append("")
             for r in c["reads"]:
+                if "api_reads" in c and r["literal"].split("/")[0] in TOP_DIRS:
+                    continue   # 下の GitHub の API の読みに出す
                 w = "・".join(f"`{x}`" for x in r["writers"]) or "見つからない"
                 L.append(f"- 読むJSON `{r['literal']}` → `{r['path']}`（{r['files']}ファイル）。書き手（.pyの書き込みの場所で照合）: {w}")
+            if "api_reads" in c:
+                L.append("- GitHub の API（contents）でリポジトリのファイルを読み書きするページ（パスはリポジトリの根から。0ファイルは、リポジトリに無いファイル）")
+                for label, key in (("読む（fetchFile）", "api_reads"), ("書く（commitFile・複数ファイルの1commit）", "api_writes")):
+                    L.append(f"  - {label}:")
+                    for r in c[key]:
+                        w = "・".join(f"`{x}`" for x in r["py_writers"]) or "なし"
+                        L.append(f"    - `{r['path']}`（{r['files']}ファイル、行 {'・'.join(map(str, r['lines']))}）。.pyの書き手: {w}")
+                L.append("  - 起動するワークフロー: " + ("・".join(f"`{x}`" for x in c["dispatches"]) or "なし"))
             L.append("- リンク・参照しているファイル: " + ("・".join(f"`{x}`" for x in c["linked_from"]) or "なし"))
             L.append("")
     L.append("## FINDINGS 2026-10-15 の読み手0件の6種（F3）")
@@ -2512,10 +2657,23 @@ def render_md(inv: dict) -> str:
         L.append("1か所だけのもの: " + "・".join(f"{r['name']}（{len(r['files'])}）" for r in single))
     L.append("")
     np_dirs = NON_PRODUCTION_DIRS or sorted({x["dir"] for x in inv["non_production_code"]})
-    L.append("## 本番外のコード（" + "・".join(np_dirs) + "）")
+    L.append("## 本番外のコード（" + "・".join(np_dirs or LAYER_DIRS) + "）")
     L.append("")
     L.append("参照: ワークフロー（ファイル名・モジュール名が出てくるもの）／ほかのコード（importか、ファイル名・モジュール名の文字列。同じフォルダは別欄）／テスト")
     L.append("")
+    if NONPROD_SCAN and not NON_PRODUCTION_FILES:
+        L.append("候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）")
+        L.append("")
+        if not inv["non_production_code"]:
+            rows = [x for x in inv.get("non_production_scanned", []) if not x["file"].endswith("__init__.py")]
+            L.append(f"候補は0件。見たファイル（{len(rows)}ファイル・{sum(x['lines'] for x in rows):,}行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:")
+            L.append("")
+            L.append("| ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |")
+            L.append("|---|---|---|---|---|---|")
+            for x in rows:
+                fmt = lambda xs: "<br>".join(f"`{v}`" for v in xs[:4]) + (f"<br>ほか{len(xs) - 4}" if len(xs) > 4 else "") or "—"  # noqa: E731
+                L.append(f"| `{posixpath.basename(x['file'])}` | {x['lines']:,} | {fmt(x['workflows'])} | {fmt(x['code'])} | {fmt(x['same_dir'])} | {len(x['tests'])}件 |")
+            L.append("")
     if NON_PRODUCTION_FILES:
         L.append("候補: 名前を挙げたもの（" + "・".join(f"`{posixpath.basename(f)}`" for f in NON_PRODUCTION_FILES) + "）と、段階のフォルダの.pyのうちワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの")
         L.append("")
@@ -2544,7 +2702,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()

@@ -873,7 +873,7 @@
     },
     {
      "key": "overrides",
-     "reader_files": 9
+     "reader_files": 10
     }
    ],
    "readers": [
@@ -1190,6 +1190,22 @@
      "type": "Python"
     },
     {
+     "file": "src/value/tanuki_valuation/core_calculator.py",
+     "line": 290,
+     "func": "KoichiValuationCalculator.calculate_pt",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/core_calculator.py",
+     "line": 1023,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "Python"
+    },
+    {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
      "line": 483,
      "func": "resolve_beta_config_path",
@@ -1223,6 +1239,14 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 454,
+     "func": "TanukiValuationPipeline.run",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
      "line": 490,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
@@ -1235,6 +1259,22 @@
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1047,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1115,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
      "type": "Python"
     },
     {
@@ -1427,6 +1467,46 @@
      "func": "TestDamodaranOverridesProtection.test_market_data_is_not_consulted_for_damodaran_tickers",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_rf_reference.py",
+     "line": 23,
+     "func": "_calc",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_v0_note.py",
+     "line": 47,
+     "func": "TestV0NoteField.test_calculate_pt_returns_no_error",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_v0_note.py",
+     "line": 54,
+     "func": "TestV0NoteField.test_v0_and_v0_note_both_present",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_v0_note.py",
+     "line": 63,
+     "func": "TestV0NoteField.test_v0_note_points_to_v0_rm_as_main_basis",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_v0_note.py",
+     "line": 72,
+     "func": "TestV0NoteField.test_dcf_components_v0_rm_exists_separately_from_top_level_v0",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
      "type": "テスト"
     },
     {
@@ -1742,51 +1822,27 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_rice_report_txt_none_display.py",
-     "line": 39,
-     "func": "TestRiceNoneDisplaysAsNA.test_base_rice_none_shows_na_not_python_none_string",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_rice_report_txt_none_display.py",
-     "line": 51,
-     "func": "TestRiceNoneDisplaysAsNA.test_bear_and_bull_rice_none_also_show_na",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_rice_report_txt_none_display.py",
-     "line": 63,
-     "func": "TestRiceNoneDisplaysAsNA.test_base_rice_available_number_still_displays_normally",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_rice_report_txt_none_display.py",
-     "line": 86,
-     "func": "TestMatrixKeyMetricYAndLabelShowReason.test_ocf_deficit_case_shows_na_with_ocf_deficit_label",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_rice_report_txt_none_display.py",
-     "line": 102,
-     "func": "TestMatrixKeyMetricYAndLabelShowReason.test_sign_cancellation_case_shows_na_with_cf_negative_reason",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_sec_freshness.py",
      "line": 473,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sensitivity_tapering.py",
+     "line": 60,
+     "func": "TestCalculatePtSensitivityCenter.test_tapering_center_matches_main_iv",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sensitivity_tapering.py",
+     "line": 65,
+     "func": "TestCalculatePtSensitivityCenter.test_two_stage_center_unchanged",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
      "type": "テスト"
     },
     {
@@ -2044,8 +2100,8 @@
     "AS-IS-013"
    ],
    "decision_effect": [],
-   "reader_count": 10,
-   "reader_count_test": 11,
+   "reader_count": 11,
+   "reader_count_test": 13,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う",
@@ -3573,6 +3629,14 @@
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_tanuki_valuation",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1787,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/tail/tail_dcf_bridge.py::_load_latest_valuation",
      "type": "Python"
     },
     {

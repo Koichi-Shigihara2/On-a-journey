@@ -1189,7 +1189,7 @@
    "top_keys": [
     {
      "key": "bs",
-     "reader_files": 15
+     "reader_files": 16
     },
     {
      "key": "bs_provenance",
@@ -1201,7 +1201,7 @@
     },
     {
      "key": "cf",
-     "reader_files": 12
+     "reader_files": 13
     },
     {
      "key": "cf_provenance",
@@ -1221,11 +1221,11 @@
     },
     {
      "key": "period",
-     "reader_files": 14
+     "reader_files": 15
     },
     {
      "key": "pl",
-     "reader_files": 22
+     "reader_files": 24
     },
     {
      "key": "pl_provenance",
@@ -1241,7 +1241,7 @@
     },
     {
      "key": "ticker",
-     "reader_files": 22
+     "reader_files": 23
     }
    ],
    "readers": [
@@ -1862,6 +1862,14 @@
      "type": "Python"
     },
     {
+     "file": "discover/stonks-silo/src/analyzer.py",
+     "line": 1306,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
+     "type": "Python"
+    },
+    {
      "file": "discover/stonks-silo/src/fetcher.py",
      "line": 56,
      "func": "load_annual_data",
@@ -1903,10 +1911,26 @@
     },
     {
      "file": "discover/stonks-silo/src/pipeline.py",
+     "line": 114,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
+     "type": "Python"
+    },
+    {
+     "file": "discover/stonks-silo/src/pipeline.py",
      "line": 121,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader._load_json",
+     "type": "Python"
+    },
+    {
+     "file": "discover/stonks-silo/src/pipeline.py",
+     "line": 275,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
      "type": "Python"
     },
     {
@@ -1934,6 +1958,22 @@
      "type": "Python"
     },
     {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 1299,
+     "func": "capitalize_rd",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/core_calculator.py",
+     "line": 324,
+     "func": "KoichiValuationCalculator.calculate_pt",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
+     "type": "Python"
+    },
+    {
      "file": "src/value/tanuki_valuation/core_calculator.py",
      "line": 456,
      "func": "KoichiValuationCalculator.calculate_pt",
@@ -1946,7 +1986,7 @@
      "line": 1023,
      "func": "<module>",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "Python"
     },
     {
@@ -2050,7 +2090,7 @@
      "line": 454,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "Python"
     },
     {
@@ -2090,7 +2130,7 @@
      "line": 1047,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "Python"
     },
     {
@@ -2106,7 +2146,7 @@
      "line": 1115,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "Python"
     },
     {
@@ -2266,7 +2306,31 @@
      "line": 23,
      "func": "_calc",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_rf_reference.py",
+     "line": 27,
+     "func": "test_rf_reference_changes_only_reference2",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_rf_reference.py",
+     "line": 28,
+     "func": "test_rf_reference_changes_only_reference2",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_core_calculator_rf_reference.py",
+     "line": 41,
+     "func": "test_without_rf_reference_uses_fixed_wacc_rf",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -2274,7 +2338,7 @@
      "line": 47,
      "func": "TestV0NoteField.test_calculate_pt_returns_no_error",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -2282,7 +2346,7 @@
      "line": 54,
      "func": "TestV0NoteField.test_v0_and_v0_note_both_present",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -2290,7 +2354,7 @@
      "line": 63,
      "func": "TestV0NoteField.test_v0_note_points_to_v0_rm_as_main_basis",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -2298,7 +2362,7 @@
      "line": 72,
      "func": "TestV0NoteField.test_dcf_components_v0_rm_exists_separately_from_top_level_v0",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -3306,7 +3370,7 @@
      "line": 60,
      "func": "TestCalculatePtSensitivityCenter.test_tapering_center_matches_main_iv",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -3314,7 +3378,7 @@
      "line": 65,
      "func": "TestCalculatePtSensitivityCenter.test_two_stage_center_unchanged",
      "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd",
      "type": "テスト"
     },
     {
@@ -3568,7 +3632,7 @@
    "decision_effect": [
     "理論株価・判定（TANUKI VALUATION）"
    ],
-   "reader_count": 16,
+   "reader_count": 18,
    "reader_count_test": 23,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -4105,6 +4169,14 @@
     {
      "file": "discover/stonks-silo/src/pipeline.py",
      "line": 150,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "discover/stonks-silo/src/pipeline.py",
+     "line": 212,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -12135,23 +12207,17 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 80,
+  "name_hit_sites_resolved": 81,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
     "line": 109,
     "output": "common/sec_data/data/{T}/annual_{YYYY}.json",
     "text": "annual_count=$(ls -1 $dir/annual_*.json 2>/dev/null | wc -l)"
-   },
-   {
-    "file": "src/value/tanuki_valuation/calculator/adjustments.py",
-    "line": 1299,
-    "output": "common/sec_data/data/{T}/annual_{YYYY}.json",
-    "text": "pattern = os.path.join(ticker_dir, \"annual_*.json\")"
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.035,
+  "ratio_reader": 0.028,
   "threshold": 0.1,
   "hit": false
  }
