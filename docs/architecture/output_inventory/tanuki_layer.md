@@ -119,7 +119,7 @@
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 535
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2715
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96・102・108（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 194
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 215
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/sec_data/audit.py::get_registered_tickers`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/sec_data/audit.py::get_registered_tickers`）
 

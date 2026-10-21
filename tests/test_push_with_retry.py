@@ -32,7 +32,7 @@ def test_every_workflow_pushes_through_the_retry_script():
             if "bash .github/scripts/push_with_retry.sh" not in text:
                 problems.append(f"{name}: commitしているがpush_with_retry.shを呼んでいない")
     assert problems == []
-    assert n_commit >= 20
+    assert n_commit >= 19   # 2026-10-21 に TANUKI_CIK_Lookup.yml・TANUKI_Segment_AI.yml を削除（21本のうち commit するのは19本）
 
 
 def _git_bash():

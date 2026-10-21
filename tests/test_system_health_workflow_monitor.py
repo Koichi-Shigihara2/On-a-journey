@@ -73,7 +73,7 @@ def test_discover_includes_workflow_run_downstream_with_inherited_threshold(moni
 
 def test_discover_excludes_self_and_manual_only(monitored):
     assert "System_Health.yml" not in monitored
-    for f in ("TANUKI_CIK_Lookup.yml", "TANUKI_Segment_AI.yml", "TANUKI_TAIL_Position_Write.yml", "Discover_Config_Sync.yml"):
+    for f in ("TANUKI_TAIL_Position_Write.yml", "Discover_Config_Sync.yml"):
         assert f not in monitored
 
 

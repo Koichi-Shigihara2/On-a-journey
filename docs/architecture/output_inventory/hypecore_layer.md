@@ -52,7 +52,7 @@
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 34
 - JS・HTML・保存済みファイル: `docs/index.html` 行 234
 - JS・HTML・保存済みファイル: `docs/value-monitor/hypecore/index.html` 行 214
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 195
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 216
 
 ### `docs/value-monitor/hypecore/data/{T}_poc.json`（2件以上）
 - 起動元: .github/workflows/HypeCore_Update.yml

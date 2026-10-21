@@ -354,10 +354,10 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `company_metadata.py` | 43 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 0件 |
 | `eps_calculator.py` | 73 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 0件 |
 | `execution_metrics.py` | 125 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 1件 |
-| `extract_key_facts.py` | 1,235 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 8件 |
+| `extract_key_facts.py` | 1,235 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 9件 |
 | `fair_value_detector.py` | 403 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 1件 |
 | `maturity_monitor.py` | 84 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 0件 |
-| `pipeline.py` | 1,079 | `.github/workflows/Adjusted_Eps_Analyzer_update.yml` | `common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | — | 10件 |
+| `pipeline.py` | 1,079 | `.github/workflows/Adjusted_Eps_Analyzer_update.yml` | `common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | — | 11件 |
 | `sector_classifier_v2.py` | 107 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 1件 |
 | `tax_adjuster.py` | 58 | — | — | `src/value/adjusted_eps_analyzer/pipeline.py` | 0件 |
 

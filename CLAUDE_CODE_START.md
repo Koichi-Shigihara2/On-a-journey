@@ -3795,13 +3795,27 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 | MACRO PULSE・Market Pulseを動かして | 実行タブ | `gh workflow run MACRO_PULSE_Update.yml --ref kaihatsu -f mode=<モード>`・`gh workflow run Market_Pulse_Update.yml --ref kaihatsu` |
 | 状態を見せて | ステータスタブ | `docs/value-monitor/tanuki_valuation/data/tickers.json`・`{T}/latest.json`を読んで報告する |
 
-**手順にしていない操作**（コードを書き換えるため。扱いはチャット側が決める）:
-- β設定タブのDamodaranの業種の上書き: `src/value/tanuki_valuation/growth_sanity.py`の`TICKER_INDUSTRY_OVERRIDES`を書き換えていた
-- ポートフォリオのパスワードの変更: `docs/portfolio/index.html`の`PW_HASH`（パスワードのSHA-256）を書き換えていた
+**コードを書き換える操作**（2026-10-21、チャット側の判断で手順にした）:
+
+- **〇〇のDamodaranの業種を変えて**（前のページのβ設定タブ）: `src/value/tanuki_valuation/growth_sanity.py`の`TICKER_INDUSTRY_OVERRIDES`の
+  その銘柄の行を書き換える（無ければ足す、外すなら行を消す。行末のコメントに元の分類と理由）。業種名は`_load_damodaran()`が読む
+  Damodaranの表（`fundgrEB.xls`の「Industry Averages」の Industry Name）にある名前と一字一句同じにする（無い名前は黙って無視され、
+  ベンチマークが無くなる）。ゲート3種を通してcommitし、TANUKI_VALUATION_Update.ymlを起動して結果を確かめる
+- **ポートフォリオのパスワードを変えて**: パスワードそのものはチャット・commit・ログに入れない。
+  1. Koichiさんが手元の自分のターミナル（Claude Codeの`!`ではなく）で、ハッシュだけを作る:
+     `python -c "import getpass,hashlib;print(hashlib.sha256(getpass.getpass('新しいパスワード: ').encode('utf-8')).hexdigest())"`
+     （入力は画面に出ず、シェルの履歴にも残らない。画面のJSと同じく、UTF-8の文字列のSHA-256を小文字の16進で出す）
+  2. Koichiさんは出た64文字のハッシュだけをClaude Codeに渡す
+  3. Claude Codeは`docs/portfolio/index.html`の`const PW_HASH = "…";`の値をそのハッシュに書き換え（64文字の小文字の16進かを確かめる）、
+     ゲート3種を通してcommitする。GitHub Pagesへの反映は数分かかる
+  - 注記（2026-10-21、チャット側の確認。今は記録だけ）: このパスワードは画面を隠すだけで、保有銘柄の`docs/portfolio/data/portfolio.json`は
+    公開のリポジトリにあり、誰でも読める
 
 **ページと一緒に無くなった操作**: FCF転換率タブ（`config/fcf_conversion_config.json`は192a45116bで削除済み）、
 登録の中の`kpi_config.py`への追記（0091fa09cbで削除済み）、銘柄設定タブ「AI案を生成」（`TANUKI_Segment_AI.yml`、Grokでセグメントを作る。
-セグメントは10-Kから決める手順〈Step 3.5〉と合わないため使わない）、CIKの自動取得（`TANUKI_CIK_Lookup.yml`。CIKは登録の手順の中で確かめる）
+セグメントは10-Kから決める手順〈Step 3.5〉と合わない）、CIKの自動取得（`TANUKI_CIK_Lookup.yml`。CIKは登録の手順の中で確かめる）。
+この2本のワークフローと出力の`config/cik_lookup_result.json`も2026-10-21に削除した（チャット側の判断。`TANUKI_CIK_Lookup.yml`は`cik_lookup.csv`の書き手の二重で、
+statusの列の無い行を書いていた）
 
 ---
 

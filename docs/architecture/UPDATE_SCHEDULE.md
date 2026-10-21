@@ -20,7 +20,7 @@
 
 <!-- BEGIN GENERATED: workflows（scripts/gen_update_schedule.pyが生成。手で編集しない） -->
 
-全23本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
+全21本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
 
 | ワークフロー | 起動（cron） UTC | 起動（cron） JST | 起動元（workflow_run、完了で起動） | 手動の入力 | 同時実行 | ガード・動く条件 | 出力先（commitするパス） | 下流 |
 |---|---|---|---|---|---|---|---|---|
@@ -38,9 +38,7 @@
 | `Score_Verifier.yml`<br>Score Verifier | 毎日 00:00 | 毎日 09:00 | — | あり（入力なし） | — | — | `docs/value-monitor/tanuki_valuation/data/*/score_history.json` | — |
 | `Stonks_Silo_Update.yml`<br>Stonks Silo Update | — | — | SEC_Data_Update.yml<br>Market_Data_Daily_Update.yml | tickers | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/value-monitor/stonks-silo/data/` | TANUKI_VALUATION_Update.yml |
 | `System_Health.yml`<br>System Health Check | 毎日 23:30 | 毎日（翌日） 08:30 | — | あり（入力なし） | — | — | （commitしない） | — |
-| `TANUKI_CIK_Lookup.yml`<br>TANUKI CIK Lookup | — | — | — | ticker | — | — | `config/cik_lookup.csv`<br>`config/cik_lookup_result.json` | — |
 | `TANUKI_Score_Update.yml`<br>TANUKI_Score_Update | 日・土 13:30 | 日・土 22:30 | TANUKI_VALUATION_Update.yml | あり（入力なし） | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/portfolio/data/history.json` | — |
-| `TANUKI_Segment_AI.yml`<br>TANUKI Segment AI | — | — | — | ticker | — | — | `config/segment_config.json` | — |
 | `TANUKI_TAIL_KPI_Update.yml`<br>TANUKI TAIL KPI Update | 日 23:00 | 月 08:00 | — | ticker・quarters | — | — | `docs/portfolio/tail/data/kpi/` | — |
 | `TANUKI_TAIL_Position_Write.yml`<br>TANUKI TAIL Position Write | — | — | — | action・payload | — | — | `docs/portfolio/tail/data/positions/` | — |
 | `TANUKI_TAIL_RSS_Monitor.yml`<br>TANUKI TAIL RSS Monitor | 月〜金 08:00 | 月〜金 17:00 | — | ticker | — | — | `docs/portfolio/tail/data/rss_state.json` | — |

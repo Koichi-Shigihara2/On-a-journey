@@ -395,6 +395,9 @@ TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T
 （ワークフローを新設したらここに追記する）。読み手はCHECK-58（YAMLとのずれ）だけ。管理のページ（`docs/value-monitor/admin.html`）の
 一括更新が読んでいた`label`・`accepts_tickers`・`input_param`・`bulk_update_*`・`new_ticker_order`は、ページの削除（2026-10-21）で消した。
 一括の更新はClaude Codeが`gh workflow run`で起動する（CLAUDE_CODE_START.md「管理の操作の手順」）。
+管理のページだけが起動していた`TANUKI_CIK_Lookup.yml`（`config/cik_lookup.csv`の書き手の二重、出力の`config/cik_lookup_result.json`は読み手0件）と
+`TANUKI_Segment_AI.yml`（Grokでセグメントを作る。10-Kから決める手順と合わない）は2026-10-21に削除した（23本→21本）。
+`config/cik_lookup.csv`の書き手は登録の手順（`register_ticker.py`が呼ぶ`registration_validator.py`のstatusの昇格）とClaude Codeの直接編集だけ。
 
 ### 計算方法の変更の印と最新期欠けのガード（2026-10-14追記、[[LAYER3-RETENTION-PERIOD-1]]・[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
 - `common/method_change.py`・`config/method_change.json`: 公開データを作り直す日（JST）と項目IDを書くと、その日の実行の記録に`"method_change"`が付く

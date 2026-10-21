@@ -1956,7 +1956,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - Q4の逆算（`extract_key_facts.py`）を`implied_q4_value()`に寄せられるか（読むだけで調べた）: 寄せられるのは純利益のQ4だけで、EPSが company_facts を Layer3 と同じ形（`first_filed`・`first_val`・`_asof`）で持つ必要がある。調整項目のQ4（年次−9か月の累計）・株式数は対象外
 - 段階2（第1部、件名「refactor: R-A EPSの段階2、管理のページ2つと誰も読まない11キーを消す」のcommit）: Koichiさんの判断で管理のページ2つ（`docs/value-monitor/admin.html`・`adjusted_eps_analyzer/admin.html`、計4,246行）を削除し、操作はClaude Codeが代わりにする（CLAUDE_CODE_START.md「管理の操作の手順」。コードを書き換える2つ〈`growth_sanity.py`のDamodaranの業種の上書き・`portfolio/index.html`のPW_HASH〉は手順にせずチャット側が扱いを決める）。stock.html・一覧の表は残す。`workflow_dependencies.json`の管理のページだけが読んだ欄を削除。誰も読まないキー14のうち11の書き込みをやめた（テストが参照する3つは残す。EPSの286ファイル・TANUKIの96銘柄の理論株価・判定は前後で同じ）
 - 段階3（第2部、件名「feat: R-A EPSの段階3、CHECK-INVをEPSにも当てる」のcommit）: CHECK_LAYERSにeps（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重3つ（Q4の逆算・同じ期の値の選び方・TTMの作り方）はWARN。rccのCHECK-INVは約25.5秒（3段階のときは約22.3秒）
-- 管理のページだけが起動していたワークフロー2本（`TANUKI_CIK_Lookup.yml`・`TANUKI_Segment_AI.yml`）は残した。要るかはチャット側が決める
+- 残り4件の決着（2026-10-21、チャット側の判断。件名「refactor: R-A EPSの段階の残り、ワークフロー2本の削除とコードを書き換える管理の操作の手順」のcommit）: 管理のページだけが起動していたワークフロー2本（`TANUKI_CIK_Lookup.yml`〈`cik_lookup.csv`の書き手の二重〉・`TANUKI_Segment_AI.yml`）と出力の`config/cik_lookup_result.json`を削除（23本→21本）。コードを書き換える2つ（Damodaranの業種の上書き・portfolioのパスワード）はCLAUDE_CODE_START.md「管理の操作の手順」に足した（パスワードはKoichiさんが手元でハッシュだけを作って渡す）
 - **次はSTONKS SILOの段階1**（残りのサブシステムはmarket_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
 
 #### 規模の見込み
