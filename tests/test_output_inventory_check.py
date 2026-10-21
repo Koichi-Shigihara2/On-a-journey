@@ -187,3 +187,50 @@ def test_hypecore_layer_is_checked_and_ttm_rule_is_known_warn():
     ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="hypecore_layer.json", tag="HypeCore")
     assert any("WARN-INV-3" in x and "ttm_sum" in x for x in warn)
     assert any("NG-INV-3" in x and "stage_rule" in x for x in ng)
+
+
+# ---- 読み手の照合（2026-10-21）: 行のパスを解決して出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルは読み手にしない
+
+TANUKI_TICKERS = "docs/value-monitor/tanuki_valuation/data/tickers.json"
+HYPECORE_TICKERS = "docs/value-monitor/hypecore/data/tickers.json"
+
+
+def _mention(monkeypatch, rel, src, line_no, tmpl):
+    import ast
+    monkeypatch.setattr(inv, "TOP_DIRS", {"docs", "src", "common", "config"})
+    if rel.endswith(".py"):
+        monkeypatch.setitem(inv.MODULES, rel, inv.Module(rel, ast.parse(src), src))
+    inv._MENTIONS.pop((rel, line_no), None)
+    pats, _ = inv.needles_for(tmpl)
+    line = src.splitlines()[line_no - 1]
+    return inv.mention_class(tmpl, pats, rel, line_no, line, src)
+
+
+def test_page_reading_same_name_file_in_other_folder_is_not_a_reader(monkeypatch):
+    src = "<script>\nfetch('data/tickers.json').then(r => r.json());\n</script>\n"
+    rel = "docs/value-monitor/tanuki_valuation/test_page_a.html"
+    assert _mention(monkeypatch, rel, src, 2, TANUKI_TICKERS) == "reader"
+    assert _mention(monkeypatch, rel, src, 2, HYPECORE_TICKERS) == "no"
+
+
+def test_page_path_built_from_constant_is_resolved(monkeypatch):
+    src = "const BASE = '/On-a-journey';\nconst H_BASE = BASE + '/value-monitor/hypecore/data/';\nfetch(H_BASE + 'tickers.json');\n"
+    rel = "docs/portfolio/test_page_b.html"
+    assert _mention(monkeypatch, rel, src, 3, HYPECORE_TICKERS) == "reader"
+    assert _mention(monkeypatch, rel, src, 3, TANUKI_TICKERS) == "no"
+
+
+def test_python_join_to_other_folder_and_dict_key_are_not_readers(monkeypatch):
+    src = ("import os\n"
+           "P = os.path.join(ROOT, 'docs', 'value-monitor', 'tanuki_valuation', 'data', 'tickers.json')\n"
+           "x = data.get('tickers', [])\n")
+    rel = "src/x/test_reader_c.py"
+    assert _mention(monkeypatch, rel, src, 2, TANUKI_TICKERS) == "reader"
+    assert _mention(monkeypatch, rel, src, 2, HYPECORE_TICKERS) == "no"
+    assert _mention(monkeypatch, rel, src, 3, HYPECORE_TICKERS) == "no"
+
+
+def test_relative_path_in_shared_script_is_undetermined(monkeypatch):
+    """.js の相対パスは読み込むページのフォルダからになるため、フォルダを決めきれない（止める条件で数える）。"""
+    src = "fetch('data/tickers.json');\n"
+    assert _mention(monkeypatch, "docs/common/test_shared_d.js", src, 1, HYPECORE_TICKERS) == "undetermined"

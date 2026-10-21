@@ -1738,7 +1738,7 @@ data/market_data.json`の最新エントリ（以下`L`）に集約され、フ�
 | MP-08 | 市場の広がり `#breadthSummary`（ADV/DEC・AD5d・NH/NL・>50MA/>200MA・EW乖離・McClellan・警戒バッジ） | `bc::compute_breadth()` 141 → `compute_sentiment()`の`breadth_summary` | daily/のS&P500構成銘柄・RSP・SPY → `breadth_data.json`（=⑦） |
 | MP-09 | センチメント推移チャート `#oscChart`（8系列切替・既定Score/F&G） | フロント描画のみ | `market_data.json`過去エントリ |
 | MP-10 | センチメント予測ミニゲージ `#miniGaugesSection`（明日/5日後/20日後） | フロント計算（`renderMiniGauges()` 896、同ゾーン時の平均S&P500リターン×2） | `market_data.json`全エントリのスコア・S&P500 |
-| MP-11 | CNN F&Gゲージ `#fgGaugeScore`/`#fgGaugeLbl`（`renderTechPulse()` 808） | `fetch_cnn_fear_greed()` 1633（=⑥） | CNN API → `L.fear_greed`【共有: TANUKI VALUATION `pipeline.py`・TANUKI SCORE（`daily_pick.py`・画面）】 |
+| MP-11 | CNN F&Gゲージ `#fgGaugeScore`/`#fgGaugeLbl`（`renderTechPulse()` 808） | `fetch_cnn_fear_greed()` 1633（=⑥） | CNN API → `L.fear_greed`【共有: TANUKI VALUATION `pipeline.py`・TANUKI SCORE（画面。`daily_pick.py`は2026-10-20に削除）】 |
 | MP-12 | Tech Pulseゲージ `#tpGaugeScore`/`#tpGaugeLbl` | `calc_tech_pulse_score()` 728（QQQ vs MA125・VXN vs MA50・QQQ vs SPY 20日の90日パーセンタイル平均） | daily/のQQQ・SPY、FRED VXNCLS（`common/macro_data`） |
 | MP-13 | 乖離 `#tpDivVal`・シグナル `#tpDivBadge` | `main`内（TP−CNN F&G）・`_get_tp_signal()` 708 | `L.tech_pulse.divergence` |
 | MP-14 | 乖離Zスコア `#tpDivZscore`/`#tpCZscore` | `_calc_divergence_zscore()` 696（過去90件） | `market_data.json`過去エントリの乖離 |

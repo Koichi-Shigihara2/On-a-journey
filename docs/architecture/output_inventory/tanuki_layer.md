@@ -7,11 +7,13 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`docs/value-monitor/tanuki_valuation/`・`docs/value-monitor/tanuki_score/`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-20）。画面の区画はKoichiさんの判断で「今日の特選銘柄」だけ消し、ほかは残す。出力・キー・本番外のコードはチャット側の判断。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 11（ファイル 9・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 2／2件以上 7／規則の二重 9（検出式 10種のうち。TANUKIのファイルを含むもの 4）
+**件数**: 出力 11（ファイル 9・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 4／2件以上 5／規則の二重 9（検出式 10種のうち。TANUKIのファイルを含むもの 4）
 
 **画面の項目**: 画面が読むキー 372（この段階の書き手あり 320・ほかの書き手あり 42・画面の中で作る値 8・**書き手なし 2**）／書き手があるのに誰も読まないキー **29**
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 2件／解決できた読み込み 31件（6.1%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 2件＋ファイル名で当たった行 0件／解決できた読み込み 31件＋ファイル名で当たった行 73件（1.9%）→ 当たらない
+
+読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
 ## 消したもの（段階2、2026-10-20）
 
@@ -26,13 +28,13 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>（1ファイル） | score_watcherが前回の判定を覚えておく控え（判定の変化の通知に使う） | `score_watcher.py:save_state` | 1 | — | — | — | 残す（2026-10-20） |
 | 1件 | `docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>（99ファイル） | 銘柄ごとのHypeCoreのライフサイクル・ステージ・フェーズの推移（TANUKIの実行のたびに1行） | `pipeline.py:TanukiValuationPipeline._save_hypecore_history` | 1 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | — | 残す（2026-10-20） |
-| 2件以上 | `config/beta_config.json`<br>（1ファイル） | 銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う | `beta_fetcher.py:save_config` | 12・テスト13 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/admin.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: TANUKI VALUATIONの画面 | AS-IS-013 | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/tickers.json`<br>（1ファイル） | 一覧のページ用の、全銘柄の理論株価・判定の要約 | `pipeline.py:TanukiValuationPipeline._save_tickers_index` | 18・テスト10 | common/ticker-links.js（直接）<br>index.html（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/admin.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（直接）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面・TANUKI SCOREの画面 | — | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/history.json`<br>（96ファイル） | 銘柄ごとの理論株価・上振れ余地・成長率などの推移（実行ごとに1行） | `pipeline.py:TanukiValuationPipeline._save_result` | 11 | portfolio/index.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: 保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | — | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>（28313ファイル） | 銘柄ごとの、実行の日時ごとの評価の全体のスナップショット | `pipeline.py:TanukiValuationPipeline._save_result` | 20・テスト12 | index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/admin.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | AS-IS-047・AS-IS-116・AS-IS-258・AS-IS-297・AS-IS-298・AS-IS-299・AS-IS-438・AS-IS-439・AS-IS-506 | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`<br>（96ファイル） | 銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む | `pipeline.py:TanukiValuationPipeline._save_result`<br>`pipeline.py:TanukiValuationPipeline._save_result` | 26・テスト20 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | AS-IS-056・AS-IS-071 | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`<br>（96ファイル） | 銘柄ごとの評価の計算の説明（人が読む文の形式のレポート） | `pipeline.py:TanukiValuationPipeline._save_report` | 4・テスト6 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | AS-IS-045・AS-IS-056・AS-IS-057・AS-IS-058・AS-IS-060 | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`<br>（98ファイル） | 銘柄ごとのTANUKI SCORE（funda等）・判定時の株価と、その後30・60・90日の値動きの推移 | `pipeline.py:TanukiValuationPipeline._save_result`<br>`score_verifier.py:verify_ticker` | 3・テスト3 | value-monitor/tanuki_score/index.html（直接） | 効く: TANUKI SCOREの画面 | — | 残す（2026-10-20） |
+| 1件 | `docs/value-monitor/tanuki_valuation/data/{T}/history.json`<br>（96ファイル） | 銘柄ごとの理論株価・上振れ余地・成長率などの推移（実行ごとに1行） | `pipeline.py:TanukiValuationPipeline._save_result` | 1 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | — | 残す（2026-10-20） |
+| 1件 | `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>（28313ファイル） | 銘柄ごとの、実行の日時ごとの評価の全体のスナップショット | `pipeline.py:TanukiValuationPipeline._save_result` | 1 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: HypeCore（TANUKI のtiming・判定の入力） | AS-IS-047・AS-IS-116・AS-IS-258・AS-IS-297・AS-IS-298・AS-IS-299・AS-IS-438・AS-IS-439・AS-IS-506 | 残す（2026-10-20） |
+| 2件以上 | `config/beta_config.json`<br>（1ファイル） | 銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う | `beta_fetcher.py:save_config` | 10・テスト11 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/admin.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | — | AS-IS-013 | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/tickers.json`<br>（1ファイル） | 一覧のページ用の、全銘柄の理論株価・判定の要約 | `pipeline.py:TanukiValuationPipeline._save_tickers_index` | 10・テスト4 | common/ticker-links.js（直接）<br>portfolio/index.html（直接）<br>value-monitor/admin.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面・TANUKI SCOREの画面 | — | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`<br>（96ファイル） | 銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む | `pipeline.py:TanukiValuationPipeline._save_result`<br>`pipeline.py:TanukiValuationPipeline._save_result` | 30・テスト20 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/admin.html（直接）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | AS-IS-056・AS-IS-071 | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`<br>（96ファイル） | 銘柄ごとの評価の計算の説明（人が読む文の形式のレポート） | `pipeline.py:TanukiValuationPipeline._save_report` | 3・テスト3 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | AS-IS-045・AS-IS-056・AS-IS-057・AS-IS-058・AS-IS-060 | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`<br>（98ファイル） | 銘柄ごとのTANUKI SCORE（funda等）・判定時の株価と、その後30・60・90日の値動きの推移 | `pipeline.py:TanukiValuationPipeline._save_result`<br>`score_verifier.py:verify_ticker` | 3・テスト2 | value-monitor/tanuki_score/index.html（直接） | 効く: TANUKI SCOREの画面 | — | 残す（2026-10-20） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -52,169 +54,101 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 531
 
+### `docs/value-monitor/tanuki_valuation/data/{T}/history.json`（1件）
+- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 761
+
+### `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`（1件）
+- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(0)・`alpha_was_capped`(0)・`bs_adjustment`(0)・`calculation_date`(1)・`components`(0)・`dcf_components`(0)・`dcf_type`(0)・`fcf_base`(0)・`fcf_estimation`(0)・`fcf_outlier`(0)・`fcf_source`(0)・`fcf_ttm_end`(0)・`fcf_ttm_periods`(0)・`formula`(0)・`future_values`(0)・`growth`(0)・`growth_options`(0)・`growth_scenarios`(0)・`intrinsic_value_beta`(0)・`intrinsic_value_per_share`(1)・`intrinsic_value_pt`(0)・`intrinsic_value_rf`(0)・`intrinsic_value_rf_rate`(0)・`latest_period_missing`(0)・`maturity_profile`(0)・`phase1_growth`(0)・`rd_capitalization`(0)・`required_growth_rf_base`(0)・`required_growth_rf_live`(0)・`return_metrics`(0)・`rice`(0)・`rice_data_source`(0)・`risk_free_rate_live`(0)・`risk_free_rate_live_date`(0)・`risk_free_rate_live_source`(0)・`rpo_adjustment`(0)・`scenario_valuations`(0)・`sensitivity`(0)・`software_system_provisional`(0)・`software_system_reclassification`(0) ほか8
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 320・518・1060・1267（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/hypecore/detail.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_valuation/stock.html`
+
 ### `config/beta_config.json`（2件以上）
 - 起動元: .github/workflows/Beta_Config_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `_comment`(0)・`_damodaran_ref_2025`(1)・`_update_note`(0)・`_updated_at`(1)・`overrides`(9)
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 101
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 33・310・390・468（経由 `common/sec_data/audit.py::audit_beta_drift`）
-- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 52・82・104・111・167・202・230・247・295・356・397・480 ほか10（経由 `common/sec_data/registration_validator.py::_load_json`、`common/sec_data/registration_validator.py::check_p1_registration_completeness`）
+- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 52・82・104・111・202・230・247・295・356・397・480・483 ほか8（経由 `common/sec_data/registration_validator.py::_load_json`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 357
 - Python・保存済みファイル: `common/system_health.py` 行 205・296・788・1045・1049・1110（経由 `common/sec_data/registration_validator.py::_load_json`、`common/system_health.py::check_h_config`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 40・71・155・288・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 483・489・503・509・558・561・874・1153（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`、`src/value/tanuki_valuation/data_fetcher.py::_load_beta_config`、`src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/growth_sanity.py` 行 209
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427・490・1006・1323・1855・1856・3806・3808・3864（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector`）
-- JS・HTML・保存済みファイル: `docs/value-monitor/admin.html` 行 936・1997・2002
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 269
-- ワークフロー・保存済みファイル: `.github/workflows/Beta_Config_Update.yml` 行 88・92
-- テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 52・87・95・99・104・111（経由 `common/sec_data/audit.py::audit_beta_drift`）
-- テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 36・80・89・98・105・111・121・129・173・188・201・211 ほか2（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher._determine_beta`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 483・489・503・558（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 490・1006・1323・1855・1856・3806・3808・3864（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector`）
+- JS・HTML・保存済みファイル: `docs/value-monitor/admin.html` 行 936
+- ワークフロー・保存済みファイル: `.github/workflows/Beta_Config_Update.yml` 行 88
+- テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 87・95・99・104・111（経由 `common/sec_data/audit.py::audit_beta_drift`）
+- テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 80・89・98・105・111・121・129・173・188・201・211・223 ほか1（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
 - テスト・保存済みファイル: `tests/test_dcf_phase1_taper.py` 行 91（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96・102・108（経由 `common/sec_data/audit.py::audit_beta_drift`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・637・657 ほか22（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 168（経由 `common/sec_data/registration_validator.py::_load_json`）
-- テスト・保存済みファイル: `tests/test_registration_validator.py` 行 33
 - テスト・保存済みファイル: `tests/test_rice_report_txt_none_display.py` 行 39・51・63・86・102（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_h_config`）
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/sec_data/registration_validator.py::_load_json`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_h_config`）
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 181・193・194・216・220（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/index.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json））: `docs/portfolio/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json））: `docs/portfolio/tail/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/adjusted_eps_analyzer/tickers.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/hypecore/detail.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/stonks-silo/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/tanuki_valuation/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json））: `docs/value-monitor/tanuki_valuation/stock.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/tickers.json`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(5)・`tickers`(21)・`updated_at`(1)
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 47
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 1502・1581・1645（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
-- Python・保存済みファイル: `common/sec_data/audit.py` 行 59・359・468（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- Python・保存済みファイル: `common/system_health.py` 行 159・188・355・404・1032・1041・1042・1046・1110（経由 `common/sec_data/audit.py::get_registered_tickers`、`common/system_health.py::_check_i`、`common/system_health.py::check_d_actions` ほか）
-- Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 60・233・478（経由 `scripts/analysis/market_pulse_redesign.py::load_inputs`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/company_metadata.py` 行 38
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 655（経由 `src/value/adjusted_eps_analyzer/company_metadata.py::get_company_metadata`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 86・279・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::get_registered_tickers`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 439・490・592・810・991・1069・1144・1323・1530・1615・2952・3529 ほか1（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 52・264・314（経由 `src/value/tanuki_valuation/score_watcher.py::get_tickers`）
-- JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 16・18・28・34
-- JS・HTML・保存済みファイル: `docs/index.html` 行 234
-- JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/tickers.html` 行 245
-- JS・HTML・保存済みファイル: `docs/value-monitor/hypecore/index.html` 行 214
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(3)・`tickers`(12)・`updated_at`(1)
+- Python・保存済みファイル: `common/sec_data/audit.py` 行 56・59・359・468（経由 `common/sec_data/audit.py::get_registered_tickers`）
+- Python・保存済みファイル: `common/system_health.py` 行 159・1032・1041・1110（経由 `common/sec_data/audit.py::get_registered_tickers`、`common/system_health.py::check_d_actions`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 83・86・279・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::get_registered_tickers`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 49・52・264・314（経由 `src/value/tanuki_valuation/score_watcher.py::get_tickers`）
+- JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 28
+- JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 274
+- JS・HTML・保存済みファイル: `docs/value-monitor/admin.html` 行 2788
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 417
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 535
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2715
-- ワークフロー・保存済みファイル: `.github/workflows/Stonks_Silo_Update.yml` 行 88
-- テスト・保存済みファイル: `tests/test_dcf_phase1_taper.py` 行 91（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96・102・108（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- テスト・保存済みファイル: `tests/test_eps_run_status.py` 行 161・220・232・242・248・255・264（経由 `common/system_health.py::_check_i`）
-- テスト・保存済みファイル: `tests/test_latest_period_guard.py` 行 68・72・80・83・90・91（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
-- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 165・211・233・253・266・285・289・294・299・304・309・328 ほか83（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`、`tests/test_pipeline_logic.py::_write_stonks_json`）
-- テスト・保存済みファイル: `tests/test_rice_report_txt_none_display.py` 行 39・51・63・86・102（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 194
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 137・140・148（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 181・193・194・216・220（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json））: `docs/portfolio/index.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/history.json））: `docs/portfolio/tail/index.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/admin.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/hypecore/detail.html`
-- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/stonks-silo/index.html`
-
-### `docs/value-monitor/tanuki_valuation/data/{T}/history.json`（2件以上）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 57
-- Python・保存済みファイル: `src/portfolio/snapshot.py` 行 119・142（経由 `src/portfolio/snapshot.py::main`）
-- Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 31
-- Python・保存済みファイル: `src/value/tanuki_valuation/score_verifier.py` 行 57・119・124（経由 `src/value/tanuki_valuation/score_verifier.py::verify_ticker`）
-- JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 217
-- JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 916
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 710
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 761
-- ワークフロー・保存済みファイル: `.github/workflows/Score_Verifier.yml` 行 45
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_Score_Update.yml` 行 46
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` 行 132
-
-### `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`（2件以上）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(1)・`alpha_was_capped`(1)・`bs_adjustment`(1)・`calculation_date`(3)・`components`(6)・`dcf_components`(1)・`dcf_type`(1)・`fcf_base`(2)・`fcf_estimation`(1)・`fcf_outlier`(2)・`fcf_source`(0)・`fcf_ttm_end`(1)・`fcf_ttm_periods`(0)・`formula`(1)・`future_values`(2)・`growth`(4)・`growth_options`(1)・`growth_scenarios`(1)・`intrinsic_value_beta`(1)・`intrinsic_value_per_share`(5)・`intrinsic_value_pt`(0)・`intrinsic_value_rf`(1)・`intrinsic_value_rf_rate`(1)・`latest_period_missing`(2)・`maturity_profile`(1)・`phase1_growth`(1)・`rd_capitalization`(0)・`required_growth_rf_base`(1)・`required_growth_rf_live`(1)・`return_metrics`(1)・`rice`(2)・`rice_data_source`(0)・`risk_free_rate_live`(1)・`risk_free_rate_live_date`(1)・`risk_free_rate_live_source`(1)・`rpo_adjustment`(1)・`scenario_valuations`(2)・`sensitivity`(1)・`software_system_provisional`(0)・`software_system_reclassification`(0) ほか8
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 1465・1660（経由 `common/market_data/fetcher.py::fetch_analyst_events`）
-- Python・保存済みファイル: `common/market_data/reader.py` 行 311・332・356
-- Python・保存済みファイル: `common/sec_data/fetcher.py` 行 15
-- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 57・324・513・692・706・708（経由 `common/sec_data/registration_validator.py::check_p6_cik_discontinuity_candidate`）
-- Python・保存済みファイル: `common/system_health.py` 行 101・1039・1110（経由 `common/system_health.py::check_b_score_history`）
-- Python・保存済みファイル: `src/portfolio/snapshot.py` 行 119・142（経由 `src/portfolio/snapshot.py::main`）
-- Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 31
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 61
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 258・484・1262・1285（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 643（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 320・393・430・489・518・521・1060・1267（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history` ほか）
-- Python・保存済みファイル: `src/value/tanuki_valuation/score_verifier.py` 行 57・119・124（経由 `src/value/tanuki_valuation/score_verifier.py::verify_ticker`）
-- JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 217
-- JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 916
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 710
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 531・702・704・761・763・766
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 71
-- ワークフロー・保存済みファイル: `.github/workflows/Score_Verifier.yml` 行 45
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_Score_Update.yml` 行 46
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` 行 132
-- テスト・保存済みファイル: `tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py` 行 103・123・143・163（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py` 行 106・128・151・174（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_eps_cik_history_merge.py` 行 70・84・92（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_extract_key_facts_net_income_selection.py` 行 107・154（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_extract_key_facts_share_fallback.py` 行 88・122・149・190（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_extract_key_facts_split.py` 行 100・124・149・176（経由 `src/value/adjusted_eps_analyzer/extract_key_facts.py::fetch_company_facts_with_legacy`）
-- テスト・保存済みファイル: `tests/test_hypecore_market_data_switch.py` 行 156・171・182・199・207・212（経由 `common/market_data/reader.py::get_analyst_events`）
-- テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 871・873・887・889・896・898・917・919・928・929・931・938 ほか10（経由 `common/market_data/fetcher.py::fetch_analyst_events`）
-- テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 330・334・338・343・347・354・358・367・371・378・387・389 ほか10（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
-- テスト・保存済みファイル: `tests/test_score_verifier.py` 行 29・41・42・56（経由 `tests/test_score_verifier.py::_make_score_history`）
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_b_score_history`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_b_score_history`）
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
-- 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/admin.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
-- 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/tickers.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/hypecore/detail.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/tanuki_valuation/index.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(3)・`alpha_was_capped`(1)・`breakeven_reason`(1)・`bs_adjustment`(4)・`calculation_date`(7)・`components`(23)・`dcf_components`(5)・`dcf_type`(2)・`dilution_comment`(1)・`dilution_severity`(1)・`dupont`(4)・`erp`(1)・`fcf_base`(5)・`fcf_estimation`(3)・`fcf_history`(5)・`fcf_margin_bear_mult_applied`(0)・`fcf_margin_note`(0)・`fcf_outlier`(4)・`fcf_source`(0)・`fcf_ttm_end`(1)・`fcf_ttm_periods`(0)・`financial_health`(7)・`formula`(2)・`funda_score`(5)・`future_values`(4)・`growth`(11)・`growth_options`(4)・`growth_sanity`(5)・`growth_scenarios`(5)・`intrinsic_value_beta`(2)・`intrinsic_value_per_share`(13)・`intrinsic_value_rf`(2)・`intrinsic_value_rf_rate`(2)・`latest_period_missing`(4)・`matrix`(3)・`maturity_profile`(1)・`net_current_assets_ratio`(1)・`next_earnings_date`(6)・`phase1_growth`(2)・`phase1_growth_auto_adjusted`(3) ほか32
-- Python・保存済みファイル: `browser_checks/check_tanuki_score_undetermined.py` 行 39・57・86（経由 `browser_checks/check_tanuki_score_undetermined.py::main`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(4)・`alpha_was_capped`(2)・`breakeven_reason`(2)・`bs_adjustment`(5)・`calculation_date`(9)・`components`(26)・`dcf_components`(7)・`dcf_type`(4)・`dilution_comment`(2)・`dilution_severity`(2)・`dupont`(5)・`erp`(2)・`fcf_base`(6)・`fcf_estimation`(5)・`fcf_history`(6)・`fcf_margin_bear_mult_applied`(1)・`fcf_margin_note`(1)・`fcf_outlier`(6)・`fcf_source`(0)・`fcf_ttm_end`(2)・`fcf_ttm_periods`(0)・`financial_health`(8)・`formula`(2)・`funda_score`(7)・`future_values`(4)・`growth`(13)・`growth_options`(4)・`growth_sanity`(6)・`growth_scenarios`(6)・`intrinsic_value_beta`(4)・`intrinsic_value_per_share`(16)・`intrinsic_value_rf`(3)・`intrinsic_value_rf_rate`(3)・`latest_period_missing`(5)・`matrix`(4)・`maturity_profile`(2)・`net_current_assets_ratio`(2)・`next_earnings_date`(7)・`phase1_growth`(3)・`phase1_growth_auto_adjusted`(4) ほか32
+- Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 66・175・206（経由 `browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
+- Python・保存済みファイル: `browser_checks/check_tanuki_score_undetermined.py` 行 39・86（経由 `browser_checks/check_tanuki_score_undetermined.py::main`）
 - Python・保存済みファイル: `browser_checks/check_valuation_chart_basis.py` 行 106・107・184・197・213（経由 `browser_checks/check_valuation_chart_basis.py::check_ticker`、`browser_checks/check_valuation_chart_basis.py::main`）
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・166・203・226・254・361・364・367・368・369・370 ほか2（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_ticker`）
-- Python・保存済みファイル: `common/sec_data/audit.py` 行 138・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
-- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 82・104・111・202・230・247・295・356・397・480・483・499 ほか7（経由 `common/sec_data/registration_validator.py::_load_json`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1710・1896・2278・2343・2640・2837・2866・2877・3455・3504・3549・3597 ほか1（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_dcf_validation_failures`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing` ほか）
-- Python・保存済みファイル: `common/system_health.py` 行 86・137・788・1038・1040・1049・1110（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::_load_json`、`common/system_health.py::check_c_latest`）
+- Python・保存済みファイル: `common/sec_data/audit.py` 行 127・138・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
+- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 82・104・111・170・202・230・247・295・356・397・455・480 ほか11（経由 `common/sec_data/registration_validator.py::_latest_json`、`common/sec_data/registration_validator.py::_load_json`、`common/sec_data/registration_validator.py::check_p1_registration_completeness` ほか）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1706・1710・1896・2274・2278・2340・2343・2640・2837・2866・2877・3455 ほか4（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_dcf_validation_failures`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing` ほか）
+- Python・保存済みファイル: `common/system_health.py` 行 86・132・137・788・1038・1040・1049・1110（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::_load_json`、`common/system_health.py::check_c_latest`）
 - Python・保存済みファイル: `src/market/market_pulse/backfill_implb.py` 行 49・63（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - Python・保存済みファイル: `src/market/market_pulse/backfill_implc.py` 行 39（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1559・1586・1967・1969（経由 `src/market/market_pulse/market_calendar.py::earnings_events`、`src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - Python・保存済みファイル: `src/market/market_pulse/market_calendar.py` 行 104・107・192（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 234・268（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 181・254・1573・1574・1775・1811（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/quarterly_review_generator.py::load_tanuki_valuation`）
-- Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 76・161・194・207・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_valuation`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 334・518・1060・1267（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 75・106・277・314（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
-- JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 289・338・363
-- JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1004・1388
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 177・179・181・252・254・1573・1574・1775・1811（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/quarterly_review_generator.py::load_tanuki_valuation`）
+- Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 73・76・159・161・194・207・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_valuation`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 332・334・518・1060・1267（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 517・3849・3864（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 72・75・106・277・314（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
+- JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 348
+- JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 363
+- JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1004
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/index.html` 行 251
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 643
+- JS・HTML・保存済みファイル: `docs/value-monitor/admin.html` 行 2330・2794
 - JS・HTML・保存済みファイル: `docs/value-monitor/hypecore/detail.html` 行 408・652
 - JS・HTML・保存済みファイル: `docs/value-monitor/stonks-silo/index.html` 行 446・619
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 426
@@ -227,36 +161,31 @@
 - テスト・保存済みファイル: `tests/test_dcf_validity_checker.py` 行 46・64・77・86・95・107・118・128・133・143・155・165（経由 `common/screening/dcf_validity_checker.py::_load_json`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_gate2_phase3b1_reader_integration.py` 行 251・291・299・357・412（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
-- テスト・保存済みファイル: `tests/test_iv_formula.py` 行 50・57（経由 `tests/test_iv_formula.py::_load`）
+- テスト・保存済みファイル: `tests/test_iv_formula.py` 行 47・50・57（経由 `tests/test_iv_formula.py::_load`）
 - テスト・保存済みファイル: `tests/test_latest_period_guard.py` 行 107（経由 `common/sec_data/report_consistency_check.py::_check_latest_period_missing`）
-- テスト・保存済みファイル: `tests/test_market_pulse_implc.py` 行 374・381（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
-- テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 117・168（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
+- テスト・保存済みファイル: `tests/test_market_pulse_implc.py` 行 373・374・381（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
+- テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 117・162・168（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - テスト・保存済みファイル: `tests/test_method_change.py` 行 78・88（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 95・106・113・122・130・138・151・160（経由 `tests/test_output_inventory_check.py::_tanuki_inventory`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2867・2877・2902・2909・3037・3041
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82・168（経由 `common/sec_data/registration_validator.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_c_latest`）
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 96
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 93・96
+- テスト・保存済みファイル: `tests/test_stock_html_waterfall_rm.py` 行 62
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/sec_data/registration_validator.py::_load_json`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_c_latest`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::load_tanuki_valuation`）
-- テスト・保存済みファイル: `tests/test_tail_sec_items_unchanged.py` 行 148
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/adjusted_eps_analyzer/tickers.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- Python・保存済みファイル: `common/registration/register_ticker.py` 行 341・425・456・467（経由 `common/registration/register_ticker.py::step7_5_consistency_check`）
-- Python・保存済みファイル: `common/screening/report_txt_parser.py` 行 245・248・265・269・270・275・280・299・305（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`common/screening/report_txt_parser.py::main`、`common/screening/report_txt_parser.py::parse_ticker_report`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2332・2335・2636・3348・3419・3437・3447・3455・3700・3701（経由 `common/sec_data/report_consistency_check.py::_read_report`、`common/sec_data/report_consistency_check.py::parse_args`、`common/sec_data/report_consistency_check.py::run_checks`）
+- Python・保存済みファイル: `common/screening/report_txt_parser.py` 行 245・248・265・275・280・305（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`common/screening/report_txt_parser.py::parse_ticker_report`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2332・2335・2636・3419・3455・3701（経由 `common/sec_data/report_consistency_check.py::_read_report`、`common/sec_data/report_consistency_check.py::run_checks`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2839
-- テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 82・89（経由 `common/sec_data/report_consistency_check.py::run_checks`）
-- テスト・保存済みファイル: `tests/test_collect_and_send_market_data_switch.py` 行 360
-- テスト・保存済みファイル: `tests/test_register_ticker_preflight.py` 行 62・84・100・118（経由 `common/registration/register_ticker.py::step7_5_consistency_check`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 54・64・71・77・82・104・113・118・125・132・148（経由 `common/registration/register_ticker.py::step7_5_consistency_check`、`common/sec_data/report_consistency_check.py::run_checks`）
-- テスト・保存済みファイル: `tests/test_report_consistency_check.py` 行 123・127・139・150・174・178・190・203・227・231・243・263 ほか42（経由 `tests/test_report_consistency_check.py::TestCheck23FyTagMismatch._make_ticker_dir`、`tests/test_report_consistency_check.py::TestCheck24FyeBoundaryCollision._make_ticker_dir`、`tests/test_report_consistency_check.py::TestCheck26BsFieldNoneTransition._make_ticker_dir` ほか）
+- テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::run_checks`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::run_checks`）
 - テスト・保存済みファイル: `tests/test_report_txt_parser.py` 行 25・35・36・37・43・49・50（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`tests/test_report_txt_parser.py::_make_report`）
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`（2件以上）
@@ -264,7 +193,6 @@
 - Python・保存済みファイル: `common/system_health.py` 行 101・106・1039・1110（経由 `common/system_health.py::check_b_score_history`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 710
 - ワークフロー・保存済みファイル: `.github/workflows/Score_Verifier.yml` 行 45
-- テスト・保存済みファイル: `tests/test_score_verifier.py` 行 29・41・42・56（経由 `tests/test_score_verifier.py::_make_score_history`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_b_score_history`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_b_score_history`）
 

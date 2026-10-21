@@ -282,8 +282,8 @@ _HYPECORE.update(
         "src/value/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ判定の作業用の出力（.gitignore。docs/ に写す元）",
         "docs/value-monitor/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む）",
         "docs/value-monitor/hypecore/data/tickers.json": "一覧のページ用の、HypeCoreの対象銘柄の名前の一覧（tickers・count・updated_at）。"
-                                                        "読み手の数は同じ名前の tanuki_valuation/data/tickers.json の読み手を含む（grep のフォルダの語が「data」のため）。"
-                                                        "実際に読むのは docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ（2026-10-21 確認）",
+                                                        "読み手は docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ"
+                                                        "（2026-10-21 に読み手をパスの全体で照合するよう直し、同じ名前の tanuki_valuation/data/tickers.json の読み手が混ざらなくなった）",
     },
     DECISION_DEFAULT="残す（2026-10-21）",
     DECISIONS={},
@@ -553,6 +553,38 @@ def placeholder_for(expr: ast.AST) -> str:
     return "{" + name + "}"
 
 
+def _func_index(mod: Module, func: ast.AST) -> Tuple[Dict[str, List[ast.Assign]], Set[str]]:
+    """関数の中の (名前 → 代入〈ast.walk の順〉, ループの変数の名前)。resolve() が名前ごとに関数を歩き直さないよう、関数ごとに1回だけ作る。"""
+    cache = mod.__dict__.setdefault("_func_index", {})
+    key = id(func)
+    if key not in cache:
+        assigns: Dict[str, List[ast.Assign]] = defaultdict(list)
+        loops: Set[str] = set()
+        for n in ast.walk(func):
+            if isinstance(n, ast.Assign):
+                for t in n.targets:
+                    if isinstance(t, ast.Name):
+                        assigns[t.id].append(n)
+            elif isinstance(n, (ast.For, ast.comprehension)) and isinstance(n.target, ast.Name):
+                loops.add(n.target.id)
+        cache[key] = (assigns, loops)
+    return cache[key]
+
+
+def _self_assigns(mod: Module, cls: ast.ClassDef) -> Dict[str, List[ast.Assign]]:
+    """クラスの中の self.名前 = … の代入（名前 → 代入〈ast.walk の順〉）。クラスごとに1回だけ作る。"""
+    cache = mod.__dict__.setdefault("_self_assigns", {})
+    if id(cls) not in cache:
+        d: Dict[str, List[ast.Assign]] = defaultdict(list)
+        for n in ast.walk(cls):
+            if isinstance(n, ast.Assign):
+                for t in n.targets:
+                    if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name) and t.value.id == "self":
+                        d[t.attr].append(n)
+        cache[id(cls)] = d
+    return cache[id(cls)]
+
+
 def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> str:
     """パスの式を、パスの型の文字列にする。解決できない部分は <?> を含む。"""
     if depth > 30 or expr is None:
@@ -574,9 +606,7 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             return mod.rel
         func = mod.enclosing_func(use_node)
         # 入れ子の関数の中で代入も引数も無い名前は、外側の関数で探す（クロージャ）
-        while func is not None and not any(
-                (isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == expr.id for t in n.targets))
-                for n in ast.walk(func)) and not any(a.arg == expr.id for a in func.args.args + func.args.kwonlyargs):
+        while func is not None and expr.id not in _func_index(mod, func)[0]                 and not any(a.arg == expr.id for a in func.args.args + func.args.kwonlyargs):
             outer = mod.enclosing_func(func)
             if outer is None:
                 break
@@ -584,12 +614,12 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
         # 関数の中の代入（使う行より前で最も近いもの）
         if func is not None:
             best = None
-            for n in ast.walk(func):
-                if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == expr.id for t in n.targets):
-                    if n.lineno < getattr(use_node, "lineno", 10 ** 9) and (best is None or n.lineno > best.lineno):
-                        best = n
-                elif isinstance(n, (ast.For, ast.comprehension)) and isinstance(n.target, ast.Name) and n.target.id == expr.id:
-                    return placeholder_for(expr)
+            assigns, loops = _func_index(mod, func)
+            if expr.id in loops:
+                return placeholder_for(expr)
+            for n in assigns.get(expr.id, []):
+                if n.lineno < getattr(use_node, "lineno", 10 ** 9) and (best is None or n.lineno > best.lineno):
+                    best = n
             if best is not None:
                 return resolve(best.value, mod, best, depth + 1)
             args = func.args
@@ -624,12 +654,7 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
         if isinstance(expr.value, ast.Name) and expr.value.id == "self":
             cls = mod.enclosing_class(use_node)
             if cls is not None:
-                cands = []
-                for n in ast.walk(cls):
-                    if isinstance(n, ast.Assign):
-                        for t in n.targets:
-                            if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name) and t.value.id == "self" and t.attr == expr.attr:
-                                cands.append(resolve(n.value, mod, n, depth + 1))
+                cands = [resolve(n.value, mod, n, depth + 1) for n in _self_assigns(mod, cls).get(expr.attr, [])]
                 good = [c for c in cands if UNRESOLVED not in c]
                 if good:
                     return good[-1]
@@ -778,7 +803,14 @@ def _mode_of(call: ast.Call, pos: int) -> Optional[str]:
 
 
 def io_sites(mod: Module) -> Tuple[List[dict], List[dict]]:
-    """(書き込み, 読み込み) の場所。各 {line, func, path, kind}"""
+    """(書き込み, 読み込み) の場所。各 {line, func, path, kind}。段階に関係しないので、モジュールごとに1回だけ作る（呼び出し側は変えない）"""
+    cached = mod.__dict__.get("_io_sites")
+    if cached is None:
+        cached = mod._io_sites = _io_sites(mod)
+    return cached
+
+
+def _io_sites(mod: Module) -> Tuple[List[dict], List[dict]]:
     writes, reads = [], []
     for node in ast.walk(mod.tree):
         if not isinstance(node, ast.Call):
@@ -866,7 +898,8 @@ def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
     ext = base[len(stem):]
     pats = []
     if len(PH_RE.sub("", stem)) > 0:
-        body = r"[^\"'\s]{0,40}?".join(re.escape(p) for p in lits if p)
+        # プレースホルダーの所は、前後・途中のどこでも任意の文字（annual_{YYYY}.json の末尾の年も）
+        body = r"[^\"'\s]{0,40}?".join(re.escape(p) for p in lits)
         pats.append(re.compile(body + re.escape(ext)))
         first = next((p for p in lits if p), "")
         if len(first) >= 6:
@@ -878,6 +911,294 @@ def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
         if not pats:
             pats.append(re.compile(re.escape(ext) if ext else r"$^"))
     return pats, need_dir
+
+
+# ---------------------------------------------------------------- 読み込みの行のパスの解決（2026-10-21、同じ名前の別のフォルダのファイルを分ける）
+# ファイル名の grep で当たった行は、その行の文字列を、組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と
+# 定数）までたどってパスにし、出力のパスの型と全体で照合する。フォルダを決めきれないものは「読み方を決めきれない」に入れる
+
+SITE_ROOT = "/On-a-journey"   # GitHub Pages の根（docs/）
+TOP_DIRS: Set[str] = set()    # リポジトリの最上位のフォルダ（prepare() が埋める）
+_SAMPLES = ("AAA", "2020", "x")
+_ROOT = "\x00"                # JS の根の決まらない値（<?> の ? がクエリの区切りと紛れないよう、最後に <?> にする）
+_PATH_CALLS = {"join", "Path", "abspath", "realpath", "normpath", "expanduser", "fspath", "str"}
+_JS_STR_RE = re.compile(r"""(['"`])((?:\\.|(?!\1)[^\\])*)\1""")
+_JS_LEFT_RE = re.compile(r"""(?:(['"`])(?:\\.|(?!\1)[^\\])*\1|[\w.$]+)\s*\+\s*$""")
+_JS_RIGHT_RE = re.compile(r"""^\s*\+\s*(?:(['"`])(?:\\.|(?!\1)[^\\])*\1|[\w.$]+(?:\(\))?)""")
+_JS_TICKER_RE = re.compile(r"ticker$|(^|\.)_?(tk|t|sym|symbol)$", re.I)
+_YML_TOKEN_RE = re.compile(r"[\w./{}$*-]+")
+_MENTIONS: Dict[Tuple[str, int], List[Tuple[str, str]]] = {}   # (ファイル, 行) → [(文字列, 解決したパス)]
+_CODE_LINES: Dict[str, List[str]] = {}   # ファイル → コメント・docstring を除いた行（本番外のコードの参照の照合）
+_CODE_TEXT: Dict[str, str] = {}          # ファイル → その行をつないだ文字列
+WORKFLOW_COPIES: List[Tuple[str, str]] = []   # ワークフローの cp・rsync の (写し先, 元)。写しを読む行は元の出力の読み手（prepare() が埋める）
+_COPY_RE = re.compile(r"^\s*(?:rsync|cp)\s+(?:-[-\w]+\s+)*([\w./-]+)\s+([\w./-]+)\s*$")
+
+
+def _workflow_copies(texts: Dict[str, str]) -> List[Tuple[str, str]]:
+    out = []
+    for rel, t in texts.items():
+        if rel.startswith(".github/workflows/"):
+            for line in t.splitlines():
+                m = _COPY_RE.match(line)
+                if m and "/" in m.group(1) and "/" in m.group(2):
+                    out.append((m.group(2), m.group(1)))
+    return out
+
+
+def _sample(p: str, s_: str) -> str:
+    return PH_RE.sub(lambda m: "2020" if m.group(0) == "{YYYY}" else ("AAA" if m.group(0) == "{T}" else s_), p)
+
+
+def path_matches(tmpl: str, p: str) -> bool:
+    """解決したパス（プレースホルダーを含んでよい）が、出力のパスの型に当たるか。"""
+    if p == tmpl:
+        return True
+    rx = template_regex(tmpl)
+    return any(rx.match(_sample(p, x)) for x in _SAMPLES) or tail_match(tmpl, p)
+
+
+def _name_segments(tmpl: str) -> int:
+    """ファイルの名前として比べる末尾の段数。ファイル名がプレースホルダーだけ（{T}.json 等）なら、文字のある親のフォルダまで含める。"""
+    parts = tmpl.split("/")
+    for k in range(1, len(parts) + 1):
+        if re.sub(r"\.\w+$", "", PH_RE.sub("", "/".join(parts[-k:]))).strip("/"):
+            return k
+    return len(parts)
+
+
+def classify_mention(tmpl: str, p: str) -> str:
+    """reader（この出力）・other（同じ名前の別のファイル）・undetermined（同じ名前で、フォルダを決めきれない）・none（この名前ではない）。"""
+    alts = [x.strip() for x in p.split(ALT) if x.strip()] if p else []
+    if len(alts) > 1:
+        got = [classify_mention(tmpl, x) for x in alts]
+        return next((c for c in ("reader", "undetermined", "other") if c in got), "none")
+    p = alts[0] if alts else ""
+    if p.startswith("${GITHUB_WORKSPACE}/"):   # ワークフローのリポジトリの根
+        p = p[len("${GITHUB_WORKSPACE}/"):]
+    if p.startswith("/"):   # 根が絶対パス（テストが渡す /repo 等）: リポジトリの最上位のフォルダの所から
+        segs = p.split("/")
+        i = next((j for j, x in enumerate(segs) if x in TOP_DIRS), None)
+        p = "/".join(segs[i:]) if i is not None else UNRESOLVED + p
+    if not p or re.match(r"^[a-z0-9]+:/", p):   # 外部の URL
+        return "none"
+    if path_matches(tmpl, p):
+        return "reader"
+    for dst, src in WORKFLOW_COPIES:   # ワークフローが写したファイル（docs/common/sec_data/normalized/ 等）
+        if (dst.endswith("/") and p.startswith(dst) and path_matches(tmpl, src + p[len(dst):])) or (p == dst and path_matches(tmpl, src)):
+            return "reader"
+    k = _name_segments(tmpl)
+    name = "/".join(p.split("/")[-k:])
+    nrx = template_regex("/".join(tmpl.split("/")[-k:]))
+    if UNRESOLVED in name or name.count("/") < k - 1 or not any(nrx.match(_sample(name, x)) for x in _SAMPLES):
+        return "none"
+    head = posixpath.dirname(p)
+    if UNRESOLVED in head:
+        tail = p.rsplit(UNRESOLVED, 1)[1].lstrip("/")
+        parts = tmpl.split("/")
+        if "/" in tail and not any(template_regex("/".join(parts[i:])).match(_sample(tail, x))
+                                   for i in range(len(parts)) for x in _SAMPLES):
+            return "other"
+        return "undetermined"
+    return "other" if head.split("/")[0] in TOP_DIRS else "undetermined"
+
+
+def _py_str_nodes(mod: Module) -> Dict[int, List[ast.AST]]:
+    cached = mod.__dict__.get("_str_nodes")
+    if cached is None:
+        cached = defaultdict(list)
+        for n in ast.walk(mod.tree):
+            if isinstance(n, ast.JoinedStr) or (isinstance(n, ast.Constant) and isinstance(n.value, str)
+                                                and not isinstance(mod.parents.get(n), ast.JoinedStr)):
+                for ln in range(n.lineno, (n.end_lineno or n.lineno) + 1):
+                    cached[ln].append(n)
+        mod._str_nodes = cached
+    return cached
+
+
+_NAME_CHECKS = {"endswith", "startswith", "replace", "removesuffix", "removeprefix", "split", "rsplit", "strip", "rstrip", "lstrip",
+                "find", "rfind", "index", "count", "get", "pop", "fnmatch"}
+
+
+def _py_climb(mod: Module, n: ast.AST) -> Tuple[ast.AST, str]:
+    """パスを組み立てる式の外側まで上がる。(式, 使い方)。使い方は path・glob・name（ファイル名を比べるだけ。読み込みではない）。"""
+    cur = n
+    while True:
+        par = mod.parents.get(cur)
+        if isinstance(par, ast.BinOp) and isinstance(par.op, (ast.Add, ast.Div)):
+            cur = par
+        elif isinstance(par, ast.Call) and cur in par.args and (
+                (isinstance(par.func, ast.Name) and par.func.id in _PATH_CALLS)
+                or (isinstance(par.func, ast.Attribute) and par.func.attr in _PATH_CALLS)):
+            cur = par
+        elif isinstance(par, ast.Call) and cur in par.args and isinstance(par.func, ast.Attribute) and par.func.attr in ("glob", "rglob"):
+            return par, "glob"
+        elif isinstance(par, ast.Call) and isinstance(par.func, ast.Attribute) and par.func.attr in _NAME_CHECKS and (
+                par.func.attr not in ("get", "pop") or (par.args and par.args[0] is cur)):
+            return cur, "name"
+        elif isinstance(par, ast.Compare) or (isinstance(par, ast.Dict) and cur in par.keys):
+            return cur, "name"
+        else:
+            return cur, "path"
+
+
+def _py_resolve_use(mod: Module, n: ast.AST, depth: int = 0) -> List[str]:
+    cur, how = _py_climb(mod, n)
+    if how == "name":
+        return []
+    if how == "glob":
+        f = cur.func
+        base = resolve(f.value, mod, cur) if f.value is not None else UNRESOLVED
+        pat = resolve(cur.args[0], mod, cur)
+        if f.attr == "glob" and isinstance(f.value, ast.Name) and f.value.id == "glob":   # glob.glob(パス)
+            return [normalize_path(pat.replace("*", "{x}"))]
+        return [normalize_path(posixpath.join(base, pat).replace("*", "{x}"))]
+    got = normalize_path(resolve(cur, mod, cur)).replace("*", "{x}")
+    # ファイル名だけの定数（FRESHNESS_FILENAME = "_freshness.json" 等）は、その名前を使う場所でパスにする
+    par = mod.parents.get(cur)
+    if depth == 0 and "/" not in got and isinstance(par, (ast.Assign, ast.AnnAssign)):
+        tgts = par.targets if isinstance(par, ast.Assign) else [par.target]
+        names = {t.id for t in tgts if isinstance(t, ast.Name)}
+        uses = [u for u in ast.walk(mod.tree) if isinstance(u, ast.Name) and u.id in names and isinstance(u.ctx, ast.Load)]
+        if uses:
+            return [x for u in uses for x in _py_resolve_use(mod, u, depth + 1)]
+    return [got]
+
+
+def _py_mentions(mod: Module, line: int) -> List[Tuple[str, str]]:
+    out = []
+    for n in _py_str_nodes(mod).get(line, []):
+        text = n.value if isinstance(n, ast.Constant) else "".join(
+            str(v.value) if isinstance(v, ast.Constant) else "{}" for v in n.values)
+        paths = _py_resolve_use(mod, n)
+        out.append((text, ALT.join(paths) if paths else ""))
+    return out
+
+
+def _js_consts(rel: str, text: str) -> Dict[str, str]:
+    d = _JS_CONSTS.get(rel)
+    if d is None:
+        d = {}
+        for m in re.finditer(r"(?:const|let|var)\s+(\w+)\s*=\s*([^;\n]+)", text):
+            d.setdefault(m.group(1), m.group(2).strip())
+        _JS_CONSTS[rel] = d
+    return d
+
+
+_JS_CONSTS: Dict[str, Dict[str, str]] = {}
+
+
+def _js_value(expr: str, consts: Dict[str, str], depth: int = 0) -> str:
+    """JS の + でつないだ式（文字列・定数・変数）を、パスの文字列にする。根の決まらない名前は _ROOT、途中の変数はプレースホルダー。"""
+    out, i, first = "", 0, True
+    while i < len(expr):
+        c = expr[i]
+        if c.isspace() or c == "+":
+            i += 1
+            continue
+        if c in "'\"`":
+            j = i + 1
+            while j < len(expr) and expr[j] != c:
+                j += 2 if expr[j] == "\\" else 1
+            lit = expr[i + 1:j]
+            if c == "`":
+                lit = re.sub(r"\$\{([^}]*)\}", lambda m: _js_name(m.group(1).strip(), consts, depth, False), lit)
+            out += lit
+            i = j + 1
+        else:
+            m = re.match(r"[\w.$]+(?:\([^)]*\))?", expr[i:])
+            if not m:
+                return out + _ROOT
+            out += _js_name(m.group(0), consts, depth, first)
+            i += m.end()
+        first = False
+    return out
+
+
+def _js_name(name: str, consts: Dict[str, str], depth: int, first: bool) -> str:
+    if name in consts and depth < 6:
+        v = _js_value(consts[name], consts, depth + 1)
+        if _ROOT not in v:
+            return v
+    if _JS_TICKER_RE.search(name):
+        return "{T}"
+    return _ROOT if first else "{x}"
+
+
+def _js_mentions(rel: str, text: str, line: str) -> List[Tuple[str, str]]:
+    consts = _js_consts(rel, text)
+    api = "api.github.com/repos/" in text
+    out = []
+    for m in _JS_STR_RE.finditer(line):
+        a, b = m.start(), m.end()
+        while True:
+            lm = _JS_LEFT_RE.search(line[:a])
+            if not lm:
+                break
+            a = lm.start()
+        while True:
+            rm = _JS_RIGHT_RE.match(line[b:])
+            if not rm:
+                break
+            b += rm.end()
+        p = _js_value(line[a:b], consts)
+        if m.group(1) == "`":
+            p = re.sub(r"\$\{[^}]*\}", "{x}", p)
+        p = p.split("?")[0].split("#")[0]
+        if re.match(r"^(https?:)?//", p):
+            g = re.search(r"api\.github\.com/repos/[^/]+/[^/]+/contents/(.+)$", p)
+            p = g.group(1) if g else ""
+        elif p.startswith(SITE_ROOT + "/"):
+            p = "docs/" + p[len(SITE_ROOT) + 1:]
+        elif p.startswith(_ROOT) or p.startswith("/"):
+            p = UNRESOLVED + "/" + p.lstrip(_ROOT).lstrip("/")
+        elif rel.endswith(".js"):
+            p = UNRESOLVED + "/" + p   # .js の相対パスは、読み込むページのフォルダからになる
+        elif not (api and p.split("/")[0] in TOP_DIRS):
+            p = posixpath.join(posixpath.dirname(rel), p)
+        p = p.replace(_ROOT, UNRESOLVED)
+        out.append((m.group(2), normalize_path(p) if p else ""))
+    return out
+
+
+def _yml_mentions(rel: str, text: str, line: str) -> List[Tuple[str, str]]:
+    """ワークフローの行の、パスらしい語（作業フォルダはリポジトリの根）。同じファイルの代入（Python の name = "…"・シェルの name=…）は
+    {name}・$name・${name} に入れる。/ の無い名前（commit のメッセージ・比べ）は読み込みとしない。"""
+    consts = _JS_CONSTS.get(rel)
+    if consts is None:
+        consts = {}
+        for m in re.finditer(r"^\s*(?:export\s+)?(\w+)\s*=\s*[\"']?([\w./-]+/[\w./-]*)[\"']?\s*$", text, re.M):
+            consts.setdefault(m.group(1), m.group(2))
+        _JS_CONSTS[rel] = consts
+    out = []
+    for m in _YML_TOKEN_RE.finditer(line):
+        tok = re.sub(r"\$\{\{[^}]*\}\}", "{x}", m.group(0))
+        tok = re.sub(r"\$?\{(\w+)\}|\$(\w+)", lambda g: consts.get(g.group(1) or g.group(2), "{x}"), tok).replace("*", "{x}")
+        out.append((m.group(0), normalize_path(tok) if "/" in tok else ""))
+    return out
+
+
+def line_mentions(rel: str, line_no: int, line: str, text: str) -> List[Tuple[str, str]]:
+    """その行の文字列ごとの (文字列, 解決したパス)。.py は AST、.js・.html は + と定数、ワークフローは根からのパス。"""
+    key = (rel, line_no)
+    if key not in _MENTIONS:
+        if rel.endswith(".py"):
+            mod = MODULES.get(rel)
+            got = _py_mentions(mod, line_no) if mod is not None else [(line, UNRESOLVED)]
+        elif rel.endswith((".yml", ".yaml")):
+            got = _yml_mentions(rel, text, line)
+        else:
+            got = _js_mentions(rel, text, line)
+        _MENTIONS[key] = got
+    return _MENTIONS[key]
+
+
+def mention_class(tmpl: str, pats: List[re.Pattern], rel: str, line_no: int, line: str, text: str) -> str:
+    """その行がこの出力を読むか: reader・undetermined・no（別のファイル・ファイル名でない文字列）。"""
+    got = [classify_mention(tmpl, path) for lit, path in line_mentions(rel, line_no, line, text)
+           if any(rx.search(lit) or rx.search('"' + lit + '"') for rx in pats)]
+    if "reader" in got:
+        return "reader"
+    return "undetermined" if "undetermined" in got else "no"
 
 
 # ---------------------------------------------------------------- 呼び出し（import を解決した呼び出し先）
@@ -972,12 +1293,14 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     （report_consistency_check.py が SEC 層と TANUKI を続けて作るとき）。force で作り直す。"""
     if _PREPARED and not force:
         return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
-    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC):   # 作り直すときに積み増さない
+    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT):   # 作り直すときに積み増さない
         g.clear()
     files = code_files()
+    TOP_DIRS.update(f.split("/")[0] for f in git_ls_files() if "/" in f)
     ALL_PY.update(f for f in git_ls_files("*.py"))
     py_files = [f for f in files if f.endswith(".py")]
     texts = {f: read_text(f) for f in files}
+    WORKFLOW_COPIES.extend(_workflow_copies(texts))
     for f in py_files:
         load_module(f)
     for rel in py_files:
@@ -1064,6 +1387,9 @@ def build() -> dict:
         _, reads = io_sites(mod)
         py_reads[rel] = reads
     reads_into_layer = [(rel, r) for rel, rs in py_reads.items() for r in rs if r["path"].startswith(READ_PREFIXES) or UNRESOLVED in r["path"]]
+    # ファイル名の grep で当たり、行のパスを解決した場所（読み手・別のファイル・決めきれない）と、決めきれないもの（止める条件）
+    mention_sites: Set[Tuple[str, int]] = set()
+    undetermined_mentions: Dict[Tuple[str, int], dict] = {}
 
     # 起動元（ワークフロー）: 書き手のファイル、または書き手の関数を呼ぶファイルを参照するワークフロー
     def workflows_running(rel: str) -> List[str]:
@@ -1103,11 +1429,17 @@ def build() -> dict:
 
     def pages_reading(tmpl: str) -> List[str]:
         pats, need_dir = needles_for(tmpl)
+        only_ext = not PH_RE.sub("", re.sub(r"\.\w+$", "", posixpath.basename(tmpl)))
         hits = []
         for p in pages:
             t = texts.get(p) or read_text(p)
             texts[p] = t
-            if any((need_dir is None or need_dir in line) and any(rx.search(line) for rx in pats) for line in t.splitlines()):
+            if only_ext and need_dir and need_dir not in t:
+                continue
+            if not any(rx.search(t) for rx in pats):   # 行で当たるなら全体でも当たる（全体で当たらないファイルを先に飛ばす）
+                continue
+            if any(any(rx.search(line) for rx in pats) and mention_class(tmpl, pats, p, i, line, t) == "reader"
+                   for i, line in enumerate(t.splitlines(), 1)):
                 hits.append(p)
         return hits
 
@@ -1172,22 +1504,32 @@ def build() -> dict:
         for rel, rs in py_reads.items():
             for r_ in rs:
                 p = r_["path"]
-                if (tmpl_rx is not None and (tmpl_rx.match(p) or tail_match(key, p))) or p == key:
+                if (tmpl_rx is not None and path_matches(key, p)) or p == key:
                     if not in_own(rel, r_["line"]):
                         readers[(rel, r_["line"])] = {"file": rel, "line": r_["line"], "func": r_["func"], "how": "保存済みファイル", "via": "AST"}
+        # ファイル名の grep で当たった行は、行のパスを解決して出力のパスの型と全体で照合する（同じ名前の別のフォルダのファイルを除く）。
+        # ファイル名がプレースホルダーだけの型（{T}.json 等）は、フォルダの語のあるファイルだけを見る
+        only_ext = not PH_RE.sub("", re.sub(r"\.\w+$", "", posixpath.basename(key)))
         for rel in files:
             t = texts.get(rel, "")
-            if not t or (need_dir and need_dir not in t):
+            if not t or (only_ext and need_dir and need_dir not in t) or not any(rx.search(t) for rx in pats):
                 continue
             mod = MODULES.get(rel) if rel.endswith(".py") else None
             for i, line in enumerate(t.splitlines(), 1):
                 if mod is not None and i in mod.skip_lines:
                     continue
                 s = line.strip()
-                if s.startswith(("//", "<!--", "#")) and not rel.endswith(".py"):
+                if s.startswith(("//", "<!--", "#", "*", "/*")) and not rel.endswith(".py"):
                     continue
-                if (need_dir is None or need_dir in line) and any(rx.search(line) for rx in pats):
+                if any(rx.search(line) for rx in pats):
                     if in_own(rel, i):
+                        continue
+                    mc = mention_class(key, pats, rel, i, line, t)
+                    if mc == "undetermined" and not is_test(rel):
+                        undetermined_mentions.setdefault((rel, i), {"file": rel, "line": i, "output": key, "text": s[:120]})
+                    if mc != "no":
+                        mention_sites.add((rel, i))
+                    if mc != "reader":
                         continue
                     func = ""
                     if mod is not None:
@@ -1319,6 +1661,8 @@ def build() -> dict:
                 continue
             if rule.get("context") and not re.search(rule["context"], texts.get(rel, "")):
                 continue
+            if not any(re.search(p, texts.get(rel, ""), re.M) for p in rule["patterns"]):   # 行で当たるなら全体でも当たる（^・$ は行ごと）
+                continue
             mod = MODULES.get(rel) if rel.endswith(".py") else None
             for i, line in enumerate(texts.get(rel, "").splitlines(), 1):
                 if mod is not None and i in mod.skip_lines:
@@ -1338,8 +1682,18 @@ def build() -> dict:
     for f in ALL_PY:
         basename_count[posixpath.basename(f)] += 1
 
+    def code_text(f: str) -> str:
+        if f not in _CODE_TEXT:
+            _CODE_TEXT[f] = "\n".join(code_lines(f))
+        return _CODE_TEXT[f]
+
     def code_lines(f: str) -> List[str]:
-        """コメント・docstring を除いた行。"""
+        """コメント・docstring を除いた行（ファイルごとに1回だけ作る）。"""
+        if f not in _CODE_LINES:
+            _CODE_LINES[f] = _code_lines(f)
+        return _CODE_LINES[f]
+
+    def _code_lines(f: str) -> List[str]:
         mod = MODULES.get(f) if f.endswith(".py") else None
         out = []
         for i, line in enumerate(texts.get(f, "").splitlines(), 1):
@@ -1370,6 +1724,7 @@ def build() -> dict:
         dir_token = posixpath.basename(d)
         loose_rx = re.compile(r"[\"'/]" + re.escape(base) + r"[\"']|python3?\s+" + re.escape(base) + r"\b"
                               + (r"|^\s*(from|import)\s+" + re.escape(stem) + r"\b" if is_py else ""))
+        loose_rx_m = re.compile(loose_rx.pattern, re.M)   # 行で当たるなら、行をつないだ文字列でも当たる（先に飛ばすだけ）
         wf_dir_rx = re.compile(r"working-directory:\s*" + re.escape(posixpath.dirname(rel)) + r"\s*$", re.M)
 
         def refs(pool: List[str]) -> List[str]:
@@ -1378,7 +1733,7 @@ def build() -> dict:
                 if f == rel:
                     continue
                 lines = code_lines(f)
-                if any(name_rx.search(line) for line in lines):
+                if name_rx.search(code_text(f)):
                     out.append(f)
                     continue
                 mod = MODULES.get(f) if f.endswith(".py") else None
@@ -1389,7 +1744,7 @@ def build() -> dict:
                 elif f.endswith((".yml", ".yaml")):
                     if wf_dir_rx.search(texts.get(f, "")) and any(re.search(r"python3?\s+" + re.escape(base) + r"\b", line) for line in lines):
                         out.append(f)
-                elif dir_token in texts.get(f, "") and any(loose_rx.search(line) for line in lines):
+                elif dir_token in texts.get(f, "") and loose_rx_m.search(code_text(f)) and any(loose_rx.search(line) for line in lines):
                     out.append(f)
             return sorted(set(out))
         nonprod.append({
@@ -1409,6 +1764,8 @@ def build() -> dict:
         hits = []
         for rel in files:
             if is_test(rel) or not rel.endswith((".py", ".js", ".html")):
+                continue
+            if name not in texts.get(rel, ""):
                 continue
             mod = MODULES.get(rel) if rel.endswith(".py") else None
             for i, line in enumerate(texts.get(rel, "").splitlines(), 1):
@@ -1445,6 +1802,10 @@ def build() -> dict:
                           if UNRESOLVED in r_["path"] and (READ_HINT in r_["path"] or in_layer(rel)) and not is_test(rel)
                           and not tail_resolved(r_["path"]) and not other_file(r_["path"])]
     resolved_reads = [1 for rel, r_ in reads_into_layer if (UNRESOLVED not in r_["path"] or tail_resolved(r_["path"])) and not is_test(rel)]
+    # ファイル名の grep で当たった行（テストを除く）: 決めきれないものは、上の決めきれない読み込みと同じ数え方で比に入れる
+    und_mentions = sorted(undetermined_mentions.values(), key=lambda x: (x["file"], x["line"]))
+    und_keys = {(x["file"], x["line"]) for x in und_mentions}
+    n_mention_resolved = sum(1 for k in mention_sites if k not in und_keys and not is_test(k[0]))
     outputs_with_outside_writer = [k for k, o in outputs.items() if o["writers_outside_layer"]]
     stop = {
         "outputs": n_out,
@@ -1452,8 +1813,11 @@ def build() -> dict:
         "unresolved_write_sites": unresolved_writes,
         "python_read_sites_into_layer_resolved": len(resolved_reads),
         "python_read_sites_unresolved_in_files_mentioning_sec_data": undetermined_reads,
+        "name_hit_sites_resolved": n_mention_resolved,
+        "name_hit_sites_undetermined": und_mentions,
         "ratio_writer": round((len(outputs_with_outside_writer) + len(unresolved_writes)) / max(1, n_out + len(unresolved_writes)), 3),
-        "ratio_reader": round(len(undetermined_reads) / max(1, len(undetermined_reads) + len(resolved_reads)), 3),
+        "ratio_reader": round((len(undetermined_reads) + len(und_mentions))
+                              / max(1, len(undetermined_reads) + len(resolved_reads) + len(und_mentions) + n_mention_resolved), 3),
         "threshold": STOP_RATIO,
     }
     stop["hit"] = stop["ratio_writer"] > STOP_RATIO or stop["ratio_reader"] > STOP_RATIO
@@ -1971,8 +2335,18 @@ def render_md(inv: dict) -> str:
                  f"画面の中で作る値 {by['画面の中で作る値']}・**書き手なし {by['書き手なし']}**）／書き手があるのに誰も読まないキー **{len(sc['unread_keys'])}**")
     L.append("")
     L.append(f"**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない {len(st['outputs_with_writer_outside_layer'])}＋{len(st['unresolved_write_sites'])}件（{st['ratio_writer']:.1%}）、"
-             f"読み方を決めきれない読み込み {len(st['python_read_sites_unresolved_in_files_mentioning_sec_data'])}件／解決できた読み込み {st['python_read_sites_into_layer_resolved']}件（{st['ratio_reader']:.1%}）→ "
+             f"読み方を決めきれない読み込み {len(st['python_read_sites_unresolved_in_files_mentioning_sec_data'])}件＋ファイル名で当たった行 {len(st.get('name_hit_sites_undetermined', []))}件"
+             f"／解決できた読み込み {st['python_read_sites_into_layer_resolved']}件＋ファイル名で当たった行 {st.get('name_hit_sites_resolved', 0)}件（{st['ratio_reader']:.1%}）→ "
              + ("**当たる**" if st["hit"] else "当たらない"))
+    L.append("")
+    L.append("読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・"
+             "ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。"
+             "ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする")
+    if st.get("name_hit_sites_undetermined"):
+        L.append("")
+        L.append("フォルダを決めきれない行（ファイル名で当たった行）:")
+        for x in st["name_hit_sites_undetermined"]:
+            L.append(f"- `{x['file']}` 行 {x['line']}（`{x['output']}`）: `{md_escape(x['text'])}`")
     L.append("")
     if inv["deleted"]:
         L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT == "HypeCore" else "2026-10-20") + "）")

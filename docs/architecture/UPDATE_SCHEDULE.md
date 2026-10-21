@@ -67,7 +67,7 @@ Market Data Daily Updateは外部（Cloudflare Worker）からも起動する（
 | NYSEの引け | 20:00 UTC（JST 05:00） | 21:00 UTC（JST 06:00） |
 | Market Data Dailyのガードが取得を許す時刻（引け＋20分） | 20:20 UTC | 21:20 UTC |
 | 取得する最初の起動 | 外部起動 20:25 UTC（JST 05:25）。scheduleでは20:47 UTC（JST 05:47） | 外部起動 21:25 UTC（JST 06:25）。scheduleでは21:47 UTC（JST 06:47） |
-| 下流 | 取得の完了で Market Pulse・Stonks Silo → Stonks Siloの完了で TANUKI VALUATION → その完了で TANUKI Score（daily pick・ポートフォリオのスナップショット） | 同左 |
+| 下流 | 取得の完了で Market Pulse・Stonks Silo → Stonks Siloの完了で TANUKI VALUATION → その完了で TANUKI Score（ポートフォリオのスナップショット。daily pickは2026-10-20に削除） | 同左 |
 | MACRO PULSE | 22:15 UTC（JST 07:15、連鎖とは独立） | 同左 |
 | System Health | 23:30 UTC（JST 08:30） | 同左 |
 | Score Verifier | 00:00 UTC（JST 09:00） | 同左 |
@@ -168,7 +168,7 @@ daily/の行のうち、日足の確定前に保存したものには`_provision
 | Market Pulse | 米国市場の終値・資金フロー・ブレッス・センチメント・8段階の結論・AIの見解 | 期待する終値日（実行時点で取引が終わった直近のNYSEの取引日）の終値。CNN F&Gは実行時点。FRED系列は観測日（遅れあり）。暫定の値を含む要素はdata_qualityがpartial | Market Pulse Update（Market Data Dailyの完了で起動） |
 | MACRO PULSE | FREDのマクロ指標・流動性・週次の分析 | Macro Data（10:00 UTC）で取得したFREDの観測日。22:15 UTCの実行で再計算 | Macro Data Update・MACRO_PULSE_Update |
 | TANUKI VALUATION | 本質価値・分類（TANUKI SCORE） | 株価はdaily/の最新の終値（Stonks Siloの後に計算）。財務はSEC（週次）。Stonks Siloのrunway等は同じ夜の結果 | TANUKI VALUATION Daily Update |
-| TANUKI SCORE（daily pick） | 特選銘柄 | TANUKI VALUATIONの完了後。土日は金曜時点のlatest.jsonで独立に実行 | TANUKI_Score_Update |
+| ~~TANUKI SCORE（daily pick）~~ | ~~特選銘柄~~（2026-10-20に機能ごと削除〈`ad6af70b5c`〉。TANUKI_Score_Updateはポートフォリオのスナップショットだけを作る） | — | — |
 | ポートフォリオ | 評価額・資産推移 | TANUKI_Score_Updateの中で作るスナップショット。ドル円はMarket Pulseの最新エントリの値 | TANUKI_Score_Update |
 | Stonks Silo | 赤字成長株の評価 | 株価はdaily/の最新の終値（Market Data Dailyの後） | Stonks Silo Update |
 | HypeCore | 期待のフェーズ（月次） | SEC Data Updateの完了後（週次）。月曜04:00 UTCの安全網 | HypeCore Update |
