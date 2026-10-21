@@ -20,7 +20,6 @@
     { key: 'eps',          label: 'EPS Analyzer',      href: BASE + '/value-monitor/adjusted_eps_analyzer/' },
     { key: 'stonks',       label: 'STONKS SILO',       href: BASE + '/value-monitor/stonks-silo/' },
     { key: 'mp',           label: 'Market Pulse',      href: BASE + '/market-monitor/market-pulse/' },
-    { key: 'ef',           label: 'Extreme Fear',      href: BASE + '/value-monitor/extreme-fear/' },
     { key: 'macro',        label: 'MACRO PULSE',       href: BASE + '/market-monitor/macro-pulse/' },
     { key: 'hype',         label: 'HYPE CORE',         href: BASE + '/value-monitor/hypecore/' },
     { key: 'portfolio',    label: 'PORTFOLIO',         href: BASE + '/portfolio/' },

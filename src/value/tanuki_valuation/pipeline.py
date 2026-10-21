@@ -3709,7 +3709,10 @@ class TanukiValuationPipeline:
 
     @staticmethod
     def _hypecore_recommendation(stage, prev_stage, ma200_dev, from_peak) -> str | None:
-        """hypecore.html の getRec() ロジックをPython移植（推奨タイトルのみ）"""
+        """HypeCoreの推奨のタイトルだけを出す（getRec() のPython移植）。
+
+        移植元の src/value/hypecore/hypecore.html は2026-10-21に削除した（R-AのHypeCoreの段階2）。
+        今の画面の同じロジックは docs/value-monitor/hypecore/detail.html の getRec()（real_strong 等の分岐はこちらに無い）"""
         if stage is None:
             return None
         ma = ma200_dev or 0

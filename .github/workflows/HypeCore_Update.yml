@@ -68,8 +68,8 @@ jobs:
         run: |
           echo "## HypeCore Update Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Ticker | LC | Stage | Phase | Rec |" >> $GITHUB_STEP_SUMMARY
-          echo "|:-------|:---|:------|:------|:----|" >> $GITHUB_STEP_SUMMARY
+          echo "| Ticker | Stage | Phase |" >> $GITHUB_STEP_SUMMARY
+          echo "|:-------|:------|:------|" >> $GITHUB_STEP_SUMMARY
           python - << 'EOF'
           import json, os, glob
 
@@ -87,13 +87,12 @@ jobs:
                   if not months:
                       continue
                   latest = months[-1]
-                  lc   = latest.get("lifecycle_label", "--")
+                  # LC・Recの列は2026-10-21に削除（lifecycle_label・recommendation はどのpoc.jsonにも無く、常に「--」だった）
                   stage = f"S{latest.get('stage', '--')}"
                   phase = latest.get("substage_label", "--")[:12]
-                  rec   = latest.get("recommendation", "--")
-                  lines.append(f"| {ticker} | {lc} | {stage} | {phase} | {rec} |")
+                  lines.append(f"| {ticker} | {stage} | {phase} |")
               except Exception:
-                  lines.append(f"| {ticker} | -- | -- | -- | error |")
+                  lines.append(f"| {ticker} | -- | error |")
 
           if summary_path:
               with open(summary_path, "a") as out:

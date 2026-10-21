@@ -37,8 +37,7 @@
     'mp':           { title: 'MARKET PULSE',      subtitle: '市場センチメント・資金フロー' },
     'macro':        { title: 'MACRO PULSE',       subtitle: 'マクロ環境・景気後退リスク' },
     'portfolio':    { title: 'PORTFOLIO',         subtitle: '保有ポートフォリオ管理' },
-    'tail':         { title: 'TANUKI TAIL',       subtitle: '長期投資テーゼ管理' },
-    'ef':           { title: 'EXTREME FEAR',      subtitle: '買付支援・Macro Buy Signal' }
+    'tail':         { title: 'TANUKI TAIL',       subtitle: '長期投資テーゼ管理' }
   };
 
   function build(tool, opts) {

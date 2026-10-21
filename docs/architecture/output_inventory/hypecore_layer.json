@@ -22,11 +22,11 @@
    "top_keys": [
     {
      "key": "count",
-     "reader_files": 6
+     "reader_files": 5
     },
     {
      "key": "tickers",
-     "reader_files": 19
+     "reader_files": 18
     },
     {
      "key": "updated_at",
@@ -172,7 +172,7 @@
     },
     {
      "file": "docs/index.html",
-     "line": 246,
+     "line": 234,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -181,14 +181,6 @@
     {
      "file": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
      "line": 245,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    },
-    {
-     "file": "docs/value-monitor/extreme-fear/index.html",
-     "line": 113,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -364,7 +356,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3861,
+     "line": 3864,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -1431,10 +1423,6 @@
      "how": "直接"
     },
     {
-     "page": "docs/value-monitor/extreme-fear/index.html",
-     "how": "直接"
-    },
-    {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
@@ -1465,12 +1453,12 @@
     "HypeCoreの画面",
     "TANUKI VALUATIONの画面"
    ],
-   "reader_count": 16,
+   "reader_count": 15,
    "reader_count_test": 9,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "一覧のページ用の、HypeCoreの対象銘柄の名前の一覧（tickers・count・updated_at）。読み手の数は同じ名前の tanuki_valuation/data/tickers.json の読み手を含む（grep のフォルダの語が「data」のため）。実際に読むのは docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ（2026-10-21 確認）",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "docs/value-monitor/hypecore/data/{T}_poc.json",
@@ -1503,11 +1491,11 @@
     },
     {
      "key": "monthly",
-     "reader_files": 12
+     "reader_files": 11
     },
     {
      "key": "ticker",
-     "reader_files": 16
+     "reader_files": 15
     }
    ],
    "readers": [
@@ -1816,14 +1804,6 @@
      "type": "Python"
     },
     {
-     "file": "src/value/hypecore/hypecore.html",
-     "line": 276,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    },
-    {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "line": 439,
      "func": "TanukiValuationPipeline.run",
@@ -1977,7 +1957,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3740,
+     "line": 3743,
      "func": "TanukiValuationPipeline._save_hypecore_history",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1985,7 +1965,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3745,
+     "line": 3748,
      "func": "TanukiValuationPipeline._save_hypecore_history",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1993,7 +1973,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3861,
+     "line": 3864,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -2812,10 +2792,6 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
-     "page": "docs/value-monitor/extreme-fear/index.html",
-     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
-    },
-    {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "直接"
     },
@@ -2848,12 +2824,12 @@
     "HypeCoreの画面",
     "TANUKI VALUATIONの画面"
    ],
-   "reader_count": 14,
+   "reader_count": 13,
    "reader_count_test": 11,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む）",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "src/value/hypecore/data/{T}_poc.json",
@@ -3050,14 +3026,6 @@
      "type": "Python"
     },
     {
-     "file": "src/value/hypecore/hypecore.html",
-     "line": 276,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    },
-    {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "line": 439,
      "func": "TanukiValuationPipeline.run",
@@ -3171,7 +3139,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3740,
+     "line": 3743,
      "func": "TanukiValuationPipeline._save_hypecore_history",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3179,7 +3147,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3861,
+     "line": 3864,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -3846,10 +3814,6 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
-     "page": "docs/value-monitor/extreme-fear/index.html",
-     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
-    },
-    {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "直接"
     },
@@ -3882,12 +3846,12 @@
     "HypeCoreの画面",
     "TANUKI VALUATIONの画面"
    ],
-   "reader_count": 11,
+   "reader_count": 10,
    "reader_count_test": 9,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの月次の期待・実体の指標とステージ判定の作業用の出力（.gitignore。docs/ に写す元）",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   }
  ],
  "rules": [
@@ -4207,21 +4171,6 @@
      "text": "<span class=\"hcc-meta\">乖離${c.upside!=null?(c.upside>=0?'+':'')+c.upside.toFixed(0)+'%':'—'} · F:${c.funda} T:${c.timing}"
     },
     {
-     "file": "docs/value-monitor/extreme-fear/index.html",
-     "line": 143,
-     "text": "if (upside >= 30) score += Math.min(upside / 100 * 30, 30);"
-    },
-    {
-     "file": "docs/value-monitor/extreme-fear/index.html",
-     "line": 175,
-     "text": "const uCol   = upside != null ? (upside >= 0 ? 'var(--grn)' : 'var(--red)') : 'var(--mut)';"
-    },
-    {
-     "file": "docs/value-monitor/extreme-fear/index.html",
-     "line": 184,
-     "text": "<td class=\"num\" style=\"color:${uCol}\">${upside != null ? (upside>=0?'+':'')+upside.toFixed(1)+'%' : '—'}</td>"
-    },
-    {
      "file": "docs/value-monitor/tanuki_score/index.html",
      "line": 571,
      "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
@@ -4339,7 +4288,6 @@
    ],
    "files": [
     "docs/portfolio/index.html",
-    "docs/value-monitor/extreme-fear/index.html",
     "docs/value-monitor/tanuki_score/index.html",
     "docs/value-monitor/tanuki_valuation/index.html",
     "docs/value-monitor/tanuki_valuation/stock.html",
@@ -4483,19 +4431,7 @@
    "duplicated": true
   }
  ],
- "non_production_code": [
-  {
-   "dir": "src/value/hypecore",
-   "file": "src/value/hypecore/hypecore.html",
-   "decision": "",
-   "lines": 436,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  }
- ],
+ "non_production_code": [],
  "f3_zero_reader": [
   {
    "name": "spac_shell_detection_log",
@@ -4562,7 +4498,20 @@
    ]
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "src/value/hypecore/hypecore.html",
+   "detail": "削除（2026-10-21、チャット側の判断）。2026-05-17 に poc_chart.html から改名した古い単ページ版（436行）。.gitignore の作業用の src/value/hypecore/data/ を読む手元のプレビューで、docs/ の画面とは detail.html と19%・index.html と8%の行だけが同じ。参照は pipeline.py の docstring（移植元が消えたことを書いた）だけ"
+  },
+  {
+   "what": "HypeCore_Update.yml の Summary の段の LC・Rec の列",
+   "detail": "削除（2026-10-21、チャット側の判断）。lifecycle_label・recommendation はどの poc.json にも無く、常に「--」だった（FINDINGS 2026-10-21）"
+  },
+  {
+   "what": "docs/value-monitor/extreme-fear/index.html（Extreme Fear のページ、394行）と、ナビの項目・HOME のカード・site-header.js の 'ef'・site-theme.css の --tool-ef と body[data-tool=\"ef\"]",
+   "detail": "削除（2026-10-21、Koichiさんの判断: 使っていない）。このページだけが読む出力・キーは無い（market_data.json・TANUKI の tickers.json・latest.json はほかの読み手がある）。scripts/audit_site_links.py でリンク切れ0件"
+  }
+ ],
  "stop_condition": {
   "outputs": 3,
   "outputs_with_writer_outside_layer": [],
@@ -4592,7 +4541,7 @@
     "lines": [
      320
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4608,7 +4557,7 @@
     "lines": [
      544
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4623,7 +4572,7 @@
      320,
      354
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4640,7 +4589,7 @@
      572,
      572
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4655,7 +4604,7 @@
      318,
      566
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4673,7 +4622,7 @@
      527,
      536
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4691,7 +4640,7 @@
      440,
      488
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4710,7 +4659,7 @@
      527,
      535
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4724,7 +4673,7 @@
     "lines": [
      376
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4742,7 +4691,7 @@
      526,
      531
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4758,7 +4707,7 @@
      301,
      414
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4772,7 +4721,7 @@
     "lines": [
      319
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4788,7 +4737,7 @@
     "lines": [
      570
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4803,7 +4752,7 @@
      318,
      570
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4819,7 +4768,7 @@
     "lines": [
      565
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4835,7 +4784,7 @@
     "lines": [
      568
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4852,7 +4801,7 @@
      489,
      538
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4867,7 +4816,7 @@
      321,
      354
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4883,7 +4832,7 @@
     "lines": [
      571
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4898,7 +4847,7 @@
      318,
      571
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4912,7 +4861,7 @@
     "lines": [
      375
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4931,7 +4880,7 @@
      505,
      506
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4946,7 +4895,7 @@
      302,
      303
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4964,7 +4913,7 @@
      537,
      537
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4978,7 +4927,7 @@
     "lines": [
      319
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -4994,7 +4943,7 @@
     "lines": [
      425
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5027,7 +4976,7 @@
      532,
      532
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5043,7 +4992,7 @@
      458,
      533
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5057,7 +5006,7 @@
     "lines": [
      461
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5073,7 +5022,7 @@
      528,
      533
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5088,7 +5037,7 @@
      432,
      460
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5103,7 +5052,7 @@
      566,
      569
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -5117,7 +5066,7 @@
     "lines": [
      320
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5132,7 +5081,7 @@
      162,
      248
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5148,7 +5097,7 @@
      234,
      234
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5163,7 +5112,7 @@
      162,
      247
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5177,7 +5126,7 @@
     "lines": [
      166
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5195,7 +5144,7 @@
      229,
      230
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5211,7 +5160,7 @@
      296,
      296
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5225,7 +5174,7 @@
     "lines": [
      244
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5239,7 +5188,7 @@
     "lines": [
      165
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5254,7 +5203,7 @@
      156,
      245
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5269,7 +5218,7 @@
      155,
      156
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5283,7 +5232,7 @@
     "lines": [
      246
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5303,7 +5252,7 @@
      293,
      293
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5317,7 +5266,7 @@
     "lines": [
      241
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5331,7 +5280,7 @@
     "lines": [
      240
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5348,7 +5297,7 @@
      291,
      291
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
@@ -5362,7 +5311,7 @@
     "lines": [
      217
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    }
   ],
   "unread_keys": [],
@@ -6061,67 +6010,6 @@
    }
   ]
  },
- "html_copies": [
-  {
-   "file": "src/value/hypecore/hypecore.html",
-   "lines": 436,
-   "last_commit": "2026-05-17",
-   "pages": [
-    {
-     "page": "docs/value-monitor/hypecore/detail.html",
-     "lines": 665,
-     "same_lines": 76,
-     "share_of_copy": 0.19,
-     "last_commit": "2026-10-17"
-    },
-    {
-     "page": "docs/value-monitor/hypecore/index.html",
-     "lines": 341,
-     "same_lines": 32,
-     "share_of_copy": 0.08,
-     "last_commit": "2026-10-17"
-    }
-   ]
-  }
- ],
- "page_checks": [
-  {
-   "page": "docs/value-monitor/extreme-fear/index.html",
-   "title": "EXTREME FEAR — 買付支援",
-   "reads": [
-    {
-     "literal": "../../market-monitor/market-pulse/data/market_data.json",
-     "path": "docs/market-monitor/market-pulse/data/market_data.json",
-     "files": 1,
-     "writers": [
-      "src/market/market_pulse/backfill_tech_pulse.py:main",
-      "src/market/market_pulse/collect_and_send.py:save_data_to_json_and_csv"
-     ]
-    },
-    {
-     "literal": "../tanuki_valuation/data/${t}/latest.json",
-     "path": "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
-     "files": 96,
-     "writers": [
-      "src/value/tanuki_valuation/pipeline.py:TanukiValuationPipeline._save_result"
-     ]
-    },
-    {
-     "literal": "../tanuki_valuation/data/tickers.json",
-     "path": "docs/value-monitor/tanuki_valuation/data/tickers.json",
-     "files": 1,
-     "writers": [
-      "src/value/tanuki_valuation/pipeline.py:TanukiValuationPipeline._save_tickers_index"
-     ]
-    }
-   ],
-   "linked_from": [
-    "docs/common/site-nav.js",
-    "docs/index.html"
-   ],
-   "last_commit": "2026-07-01"
-  }
- ],
  "workflow_outputs": [
   {
    "workflow": ".github/workflows/HypeCore_Update.yml",
@@ -6134,16 +6022,8 @@
    ],
    "keys": [
     {
-     "key": "lifecycle_label",
-     "in_json": false
-    },
-    {
      "key": "monthly",
      "in_json": true
-    },
-    {
-     "key": "recommendation",
-     "in_json": false
     },
     {
      "key": "stage",

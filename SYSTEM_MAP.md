@@ -191,7 +191,6 @@ AutoTrade運用実体・OpenD前提を追記、report.txt統合レポートの�
 | EPS ANALYZER | GAAP/Non-GAAP乖離・割安発掘 | docs/value-monitor/adjusted_eps_analyzer/ |
 | MACRO PULSE | マクロ環境・景気後退リスク | docs/market-monitor/macro-pulse/ |
 | Market Pulse | 市場センチメント・資金フロー | docs/market-monitor/market-pulse/ |
-| Extreme Fear | 買付支援・TANUKI TOP10・投入額シミュレーター（Market Pulse配下） | docs/value-monitor/extreme-fear/ |
 | PORTFOLIO | 保有ポートフォリオ管理 | docs/portfolio/ |
 | AutoTrade | F&G×TQQQ自動売買 | C:\Users\shigi\AutoTrade\fg_level2\（リポジトリ外、運用中の実体。下記「AutoTrade/OpenD運用前提」参照） |
 
@@ -451,7 +450,7 @@ GitHub Actions（クラウド・端末状態非依存）と同等の可用性は
 | site-nav.js | `.nav-links`/`[data-site-nav]`をナビゲーションリンク行に置換。`body[data-tool]`でアクティブリンクをハイライト。ナビ項目の正本はITEMSだけ。`window.SiteNav.ITEMS`・`window.SiteNav.apply()`（ヘッダーを後から描画するページが描画後に呼ぶ。TANUKI stock.html）を公開（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | 全ページ（HOMEはカードが代わり） |
 | サブナビ `[data-sub-nav]` | ツール内のサブページへのリンク行。ヘッダーの直後に置く。`site-nav.js`の置換の対象外。CSSは`site-theme.css`（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | EPS ANALYZER（index・stock・tickers・admin：ダッシュボード／銘柄一覧／管理）・TANUKI VALUATION index（銘柄一覧／管理＝`value-monitor/admin.html`）・TANUKI TAIL（index・decision_log） |
 | ticker-links.js | 個別銘柄ページの`[data-ticker-links]`に同じ銘柄の「TANUKI / EPS / HYPE / TAIL」の切替行を描画。現在のツールはactive、登録銘柄リストに無いツールはグレーアウト（リンクにしない）、リストが読めなければリンク。判定元: `tanuki_valuation/data/tickers.json`・`adjusted_eps_analyzer/data/summary.json`の`tickers[].ticker`・`hypecore/data/tickers.json`・`portfolio/tail/data/positions_index.json`。`TickerLinks.render(X)`で再描画（[[NAV-LINK-INTEGRITY-1]] 2026-10-17） | TANUKI stock.html・EPS stock.html・HYPE detail.html・TAIL detail.html |
-| site-header.js | `header a.logo`をロゴ画像・タイトルドット・タイトル・サブタイトルの統一DOMに置換。`body[data-tool]`からタイトル/サブタイトル/アクセント色を自動解決（EPIC-HEADER-1 2026-06-21新設） | TANUKI VALUATION・TANUKI SCORE・EPS ANALYZER・HOME・Extreme Fear（EXTREME-FEAR-1 2026-07-01追加） |
+| site-header.js | `header a.logo`をロゴ画像・タイトルドット・タイトル・サブタイトルの統一DOMに置換。`body[data-tool]`からタイトル/サブタイトル/アクセント色を自動解決（EPIC-HEADER-1 2026-06-21新設） | TANUKI VALUATION・TANUKI SCORE・EPS ANALYZER・HOME（Extreme Fearのページは2026-10-21に削除。R-AのHypeCoreの段階2、Koichiさんの判断） |
 | site-theme.css | 配色トークン（`--tool-*`）・タイポ・ナビ/ヘッダー共通CSSを`!important`で上書き。ナビ・サブナビ・銘柄横断リンクのCSSの正本（ページ内に書かない）。ヘッダー内のロゴは折り返さず縮めない | 全ページ（TANUKI TAILの3ページは2026-10-17から） |
 | glossary.json + info-tooltip.js | `<span data-info="key">`を自動検出しホバー/タップで用語説明をポップアップ表示（EPIC-LEGEND-1） | 該当箇所のみ |
 
@@ -1739,7 +1738,7 @@ data/market_data.json`の最新エントリ（以下`L`）に集約され、フ�
 | MP-08 | 市場の広がり `#breadthSummary`（ADV/DEC・AD5d・NH/NL・>50MA/>200MA・EW乖離・McClellan・警戒バッジ） | `bc::compute_breadth()` 141 → `compute_sentiment()`の`breadth_summary` | daily/のS&P500構成銘柄・RSP・SPY → `breadth_data.json`（=⑦） |
 | MP-09 | センチメント推移チャート `#oscChart`（8系列切替・既定Score/F&G） | フロント描画のみ | `market_data.json`過去エントリ |
 | MP-10 | センチメント予測ミニゲージ `#miniGaugesSection`（明日/5日後/20日後） | フロント計算（`renderMiniGauges()` 896、同ゾーン時の平均S&P500リターン×2） | `market_data.json`全エントリのスコア・S&P500 |
-| MP-11 | CNN F&Gゲージ `#fgGaugeScore`/`#fgGaugeLbl`（`renderTechPulse()` 808） | `fetch_cnn_fear_greed()` 1633（=⑥） | CNN API → `L.fear_greed`【共有: TANUKI VALUATION `pipeline.py`・TANUKI SCORE（`daily_pick.py`・画面）・Extreme Fear画面】 |
+| MP-11 | CNN F&Gゲージ `#fgGaugeScore`/`#fgGaugeLbl`（`renderTechPulse()` 808） | `fetch_cnn_fear_greed()` 1633（=⑥） | CNN API → `L.fear_greed`【共有: TANUKI VALUATION `pipeline.py`・TANUKI SCORE（`daily_pick.py`・画面）】 |
 | MP-12 | Tech Pulseゲージ `#tpGaugeScore`/`#tpGaugeLbl` | `calc_tech_pulse_score()` 728（QQQ vs MA125・VXN vs MA50・QQQ vs SPY 20日の90日パーセンタイル平均） | daily/のQQQ・SPY、FRED VXNCLS（`common/macro_data`） |
 | MP-13 | 乖離 `#tpDivVal`・シグナル `#tpDivBadge` | `main`内（TP−CNN F&G）・`_get_tp_signal()` 708 | `L.tech_pulse.divergence` |
 | MP-14 | 乖離Zスコア `#tpDivZscore`/`#tpCZscore` | `_calc_divergence_zscore()` 696（過去90件） | `market_data.json`過去エントリの乖離 |

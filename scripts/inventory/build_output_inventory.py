@@ -172,6 +172,7 @@ SCREEN_SECTIONS = False    # 画面の区画（HTML の <!-- 見出し --> ご�
 HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の候補と、比べる docs/ のページ
 PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）
 WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフローが自分で書く Step Summary と、それが読むキーの有無
+SECTION_DECISIONS: Dict[str, str] = {}   # 画面の区画の判断（ページ → 判断。そのページの区画すべてに当てる）
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -180,7 +181,7 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
             SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
             FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
-            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY)
+            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -276,7 +277,7 @@ _HYPECORE.update(
         ("docs/value-monitor/tanuki_valuation/", "TANUKI VALUATIONの画面"),
     ],
     NON_PRODUCTION_DIRS=[],
-    NON_PRODUCTION_FILES=["src/value/hypecore/hypecore.html"],
+    NON_PRODUCTION_FILES=[],
     ANNOTATIONS={
         "src/value/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ判定の作業用の出力（.gitignore。docs/ に写す元）",
         "docs/value-monitor/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む）",
@@ -284,10 +285,20 @@ _HYPECORE.update(
                                                         "読み手の数は同じ名前の tanuki_valuation/data/tickers.json の読み手を含む（grep のフォルダの語が「data」のため）。"
                                                         "実際に読むのは docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ（2026-10-21 確認）",
     },
-    DECISION_DEFAULT="",
+    DECISION_DEFAULT="残す（2026-10-21）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
+    DELETED=[
+        ("src/value/hypecore/hypecore.html",
+         "削除（2026-10-21、チャット側の判断）。2026-05-17 に poc_chart.html から改名した古い単ページ版（436行）。.gitignore の作業用の src/value/hypecore/data/ を読む手元のプレビューで、"
+         "docs/ の画面とは detail.html と19%・index.html と8%の行だけが同じ。参照は pipeline.py の docstring（移植元が消えたことを書いた）だけ"),
+        ("HypeCore_Update.yml の Summary の段の LC・Rec の列",
+         "削除（2026-10-21、チャット側の判断）。lifecycle_label・recommendation はどの poc.json にも無く、常に「--」だった（FINDINGS 2026-10-21）"),
+        ("docs/value-monitor/extreme-fear/index.html（Extreme Fear のページ、394行）と、ナビの項目・HOME のカード・site-header.js の 'ef'・site-theme.css の --tool-ef と body[data-tool=\"ef\"]",
+         "削除（2026-10-21、Koichiさんの判断: 使っていない）。このページだけが読む出力・キーは無い（market_data.json・TANUKI の tickers.json・latest.json はほかの読み手がある）。"
+         "scripts/audit_site_links.py でリンク切れ0件"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-21）。画面の区画はKoichiさんの判断で detail.html の7区画をすべて残す。Extreme Fear のページはKoichiさんの判断で消した（範囲外の確認の結果）。"
+                  "出力・本番外のコード・Step Summary の列はチャット側の判断。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="hypecore", OUTSIDE_PREFIXES=("docs/value-monitor/hypecore/", "src/value/hypecore/"),
     READ_PREFIXES=("docs/value-monitor/hypecore", "src/value/hypecore"),
     READ_HINT="hypecore", NAME_SHORT="HypeCore",
@@ -297,9 +308,10 @@ _HYPECORE.update(
     UNREAD_KEY_NOTES={},
     RULES=_TANUKI["RULES"],
     FULL_SCAN=True, SCREEN_SECTIONS=True,
-    HTML_COPIES=[("src/value/hypecore/hypecore.html", ["docs/value-monitor/hypecore/detail.html", "docs/value-monitor/hypecore/index.html"])],
-    PAGE_CHECKS=["docs/value-monitor/extreme-fear/index.html"],
+    HTML_COPIES=[],   # 段階1で比べた src/value/hypecore/hypecore.html は段階2で削除
+    PAGE_CHECKS=[],   # 段階1で確かめた docs/value-monitor/extreme-fear/ は段階2で削除
     WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={"docs/value-monitor/hypecore/detail.html": "残す（2026-10-21、Koichiさんの判断）"},
 )
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE}
 
@@ -1963,7 +1975,7 @@ def render_md(inv: dict) -> str:
              + ("**当たる**" if st["hit"] else "当たらない"))
     L.append("")
     if inv["deleted"]:
-        L.append("## 消したもの（段階2、2026-10-20）")
+        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT == "HypeCore" else "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")
@@ -2070,7 +2082,7 @@ def render_md(inv: dict) -> str:
             L.append("|---|---|---|")
             for x in [x for x in inv["screen"]["sections"] if x["page"] == pg]:
                 ks = "<br>".join(f"`{k['key']}`（{k['status']}）" for k in x["keys"])
-                L.append(f"| {md_escape(x['section'])} | {ks} |  |")
+                L.append(f"| {md_escape(x['section'])} | {ks} | {md_escape(SECTION_DECISIONS.get(pg, ''))} |")
             L.append("")
     if inv.get("workflow_outputs"):
         L.append("## ワークフローが自分で書く出力（.pyの外）")

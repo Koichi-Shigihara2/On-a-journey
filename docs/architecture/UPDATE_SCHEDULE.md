@@ -173,7 +173,6 @@ daily/の行のうち、日足の確定前に保存したものには`_provision
 | Stonks Silo | 赤字成長株の評価 | 株価はdaily/の最新の終値（Market Data Dailyの後） | Stonks Silo Update |
 | HypeCore | 期待のフェーズ（月次） | SEC Data Updateの完了後（週次）。月曜04:00 UTCの安全網 | HypeCore Update |
 | EPS Analyzer | 調整後EPS | SEC Data Updateの完了後（週次） | Adjusted_EPS_Data_Update |
-| Extreme Fear | CNN F&G | Market Pulseのエントリの値 | Market Pulse Update |
 | TANUKI TAIL | 保有銘柄のRSS・KPI・SECの管理指標 | RSSは平日08:00 UTC、KPIは日曜23:00 UTC、SECの管理指標は月曜01:00 UTC | TANUKI TAIL の各ワークフロー |
 
 ---
