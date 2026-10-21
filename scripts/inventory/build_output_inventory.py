@@ -59,7 +59,8 @@ DECISION_PREFIXES = [
 ]
 
 # 本番外のコード（[[OUTPUT-INVENTORY-CHECK-1]]の2026-10-19追記）
-NON_PRODUCTION_DIRS = ["scripts/analysis", "browser_checks", "discover/stonks-silo"]
+# discover/stonks-silo は 2026-10-21 に src/value/stonks_silo/ へ移した（STONKS SILO の段階の一覧で扱う）
+NON_PRODUCTION_DIRS = ["scripts/analysis", "browser_checks"]
 
 # 規則の検出式。式（定義の書き方の型）は人が決め、当たる場所は grep で出す
 RULES = [
@@ -378,11 +379,11 @@ _EPS.update(
         "docs/value-monitor/adjusted_eps_analyzer/tickers.html": "残す（2026-10-21）",
     },
 )
-# ---- STONKS SILO（discover/stonks-silo、段階1、2026-10-21）
+# ---- STONKS SILO（src/value/stonks_silo、段階1、2026-10-21。段階2で discover/stonks-silo/src から移した）
 _STONKS = dict(_SEC)
 _STONKS.update(
-    LAYER="discover/stonks-silo",
-    LAYER_DIRS=("discover/stonks-silo",),
+    LAYER="src/value/stonks_silo",
+    LAYER_DIRS=("src/value/stonks_silo",),
     OUT_JSON=f"{OUT_DIR}/stonks_layer.json", OUT_MD=f"{OUT_DIR}/stonks_layer.md",
     # 自分のフォルダの読み手は「効く」に数えない。TANUKI（理論株価・判定）と画面を「効く」とする
     DECISION_PREFIXES=DECISION_PREFIXES + [
@@ -397,23 +398,41 @@ _STONKS.update(
             "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、"
             "四半期・年次の財務の推移（financial_vectors）。STONKS SILOの画面・TANUKI VALUATIONの赤字銘柄の評価とTANUKI Score・rcc・System Healthが読む",
     },
-    DECISION_DEFAULT="",
+    DECISION_DEFAULT="残す（2026-10-21）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
-    OUTSIDE_HINT="stonks", OUTSIDE_PREFIXES=("docs/value-monitor/stonks-silo/", "discover/stonks-silo/"),
-    READ_PREFIXES=("docs/value-monitor/stonks-silo", "discover/stonks-silo"),
+    DELETED=[
+        ("discover/stonks-silo/src/ の6ファイル",
+         "src/value/stonks_silo/ へ移した（2026-10-21、チャット側の判断）。Discover は削除済みのサブシステムで、フォルダの名前と中身が合わなかった（型E）。"
+         "根からの深さは同じ3段で、根を階層の数で求めるコードは変えていない。出力 results.json と画面の場所は変えない。"
+         "画面の見出しの「Discover · 10x Candidates」も「Value Monitor · Early-Stage Growth」に直した"),
+        ("誰も読まないキー10個（results.json への書き込み）",
+         "書き込みをやめた（2026-10-21、チャット側の判断）: " + "・".join(('angle', 'composite', 'population_size', 'fields_available', 'fields_missing', 'heatmap_fields', 'financial_vectors_note', 'gross_margin_note', 'ticker_count', 'unit_economics_label')) + "（data_quality はこの3つの入れ物ごと）。"
+         "合成ベクトル・角度の計算と使われなくなった定数（COMPOSITE_FIELDS・HEATMAP_FIELDS・VECTOR_FIELDS の weight）も消した。"
+         "全24銘柄の results.json は消したキーと時刻のほか前後で同じ、overall_verdict・overall_score も同じ"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-21）。画面の区画はKoichiさんの判断ですべて残す。フォルダの付け替えと誰も読まないキーはチャット側の判断。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
+    OUTSIDE_HINT="stonks", OUTSIDE_PREFIXES=("docs/value-monitor/stonks-silo/", "src/value/stonks_silo/"),
+    READ_PREFIXES=("docs/value-monitor/stonks-silo", "src/value/stonks_silo"),
     READ_HINT="stonks", NAME_SHORT="STONKS",
-    KNOWN_DUPLICATE_RULES=["staleness"], TITLE="STONKS SILO（discover/stonks-silo）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["staleness"], TITLE="STONKS SILO（src/value/stonks_silo）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/stonks-silo",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        "gross_margin_trend": "残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う",
+        "latest_year": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）",
+        # 今の出力のファイル（commit 済み）には、次の本番の実行まで残る
+        **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('angle', 'composite', 'population_size', 'fields_available', 'fields_missing', 'heatmap_fields', 'financial_vectors_note', 'gross_margin_note', 'ticker_count', 'unit_economics_label')},
+    },
     RULES=_TANUKI["RULES"],
     FULL_SCAN=True, SCREEN_SECTIONS=True,
     HTML_COPIES=[],
     PAGE_CHECKS=[],
     WORKFLOW_SUMMARY=True,
-    SECTION_DECISIONS={},
+    SECTION_DECISIONS={
+        "docs/value-monitor/stonks-silo/index.html":
+            "残す（2026-10-21、Koichiさんの判断: 一覧の表・買い／回避シグナル・黒字化への道のり・拡大再生産・①〜③・推移のグラフ・財務トレンド・使い方のすべて）",
+    },
 )
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS}
 
@@ -1866,7 +1885,7 @@ def build() -> dict:
                 elif f.endswith((".yml", ".yaml")):
                     if wf_dir_rx.search(texts.get(f, "")) and any(re.search(r"python3?\s+" + re.escape(base) + r"\b", line) for line in lines):
                         out.append(f)
-                elif dir_token in texts.get(f, "") and loose_rx_m.search(code_text(f)) and any(loose_rx.search(line) for line in lines):
+                elif dir_token in texts.get(f, "") and loose_rx_m.search(code_text(f)) and any(loose_ref(line, rel) for line in lines):
                     out.append(f)
             return sorted(set(out))
         nonprod.append({
@@ -2184,6 +2203,30 @@ def _page_api_io(t: str, tracked: List[str], py_files: List[str]) -> dict:
     return {"api_reads": [row(k, v) for k, v in sorted(reads.items())],
             "api_writes": [row(k, v) for k, v in sorted(writes.items())],
             "dispatches": wfs}
+
+
+def loose_ref(line: str, rel: str) -> bool:
+    """フォルダを sys.path に足して名前だけで読む使い方の行か（本番外のコードの参照）。引用符の中のパスに / があるときは、
+    パスの全体で rel と照合する（別のフォルダの同じ名前のファイルは参照にしない。register_ticker.py の
+    "src/value/tanuki_valuation/pipeline.py" を STONKS の pipeline.py の呼び出しとしていた、2026-10-21）。"""
+    base = posixpath.basename(rel)
+    stem = posixpath.splitext(base)[0]
+    if re.search(r"python3?\s+" + re.escape(base) + r"\b", line):
+        return True
+    if rel.endswith(".py") and re.search(r"^\s*(from|import)\s+" + re.escape(stem) + r"\b", line):
+        return True
+    for m in re.finditer(r"[\"']([^\"'\s]*" + re.escape(base) + r")[\"']", line):
+        tok = m.group(1)
+        if "/" not in tok:
+            if tok == base:
+                return True
+            continue
+        if not tok.endswith("/" + base):
+            continue
+        path = re.sub(r"^(\.\.?/)+", "", posixpath.normpath(tok))
+        if path == rel or rel.endswith("/" + path):
+            return True
+    return False
 
 
 def workflow_runs_file(text: str, rel: str) -> bool:
@@ -2551,7 +2594,7 @@ def render_md(inv: dict) -> str:
             L.append(f"- `{x['file']}` 行 {x['line']}（`{x['output']}`）: `{md_escape(x['text'])}`")
     L.append("")
     if inv["deleted"]:
-        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT in ("HypeCore", "EPS") else "2026-10-20") + "）")
+        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT in ("HypeCore", "EPS", "STONKS") else "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")

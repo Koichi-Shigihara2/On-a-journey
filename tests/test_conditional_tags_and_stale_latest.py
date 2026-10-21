@@ -22,7 +22,7 @@ from common.sec_data import conditional_tags as ct
 from common.sec_data import layer3_builder as lb
 
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_STONKS_SRC = os.path.join(_REPO, "discover", "stonks-silo", "src")
+_STONKS_SRC = os.path.join(_REPO, "src", "value", "stonks_silo")
 OLD = "PaymentsToAcquireProductiveAssets"
 NEW = ct.SEGMENT_TOTAL_CAPEX_TAG
 

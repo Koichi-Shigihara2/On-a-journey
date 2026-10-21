@@ -4,7 +4,7 @@ tests/test_tanuki_eps_breakeven_safety.py
 [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]の回帰テスト。
 
 TANUKI VALUATION（pipeline.py::compute_eps_breakeven()）にSTONKS SILO
-（discover/stonks-silo/src/analyzer.py::_margin_breakeven()）と同種の
+（src/value/stonks_silo/analyzer.py::_margin_breakeven()）と同種の
 安全策一式（理由コード・傾き上限・異常値除外）を追加したことの検証。
 回帰の方式自体（常に直近4点のOLS）はSTONKS SILO側と揃えたが、対象指標は
 調整後EPSのまま維持している。

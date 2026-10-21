@@ -14,7 +14,7 @@ reader`経由の設計へ統合した（`[[MACRODATA-IMPORT-HISTORY-
 CONFIG-DRIFT-1]]`）。詳細はBACKLOG_DONE.md「2026-08-15（完了）」参照）
 
 最終更新: 2026-08-13（重複計算パターン4件の解消を反映。STONKS SILO
-（`discover/stonks-silo/src/pipeline.py`）はTANUKI VALUATIONと同じ
+（`src/value/stonks_silo/pipeline.py`）はTANUKI VALUATIONと同じ
 `SECReader.get_net_cash()`を直接参照するよう切替済み（独自の
 `cash - yfinance totalDebt`算出は廃止、`[[NETCASH-DUAL-CALC-1]]`）。
 HypeCore・TANUKI VALUATION・STONKS SILOのRule of 40系フィールドは
@@ -115,7 +115,7 @@ SEC_Data_Update.ymlへのrsync同期ステップ新設で解消、コミット5e
 追記。新規`segment_fetcher.py`項を追加し[[SEGMENT-FETCHER-DUPLICATE-
 ORPHAN-1]]（src/value/tanuki_valuation側の重複ファイル削除・
 common/sec_data側へ一本化、コミット0e60ee255）を記載。STONKS SILO節に
-STONKS-SILO-COGS-DEAD-FALLBACK-1（discover/stonks-silo/src/fetcher.py::
+STONKS-SILO-COGS-DEAD-FALLBACK-1（src/value/stonks_silo/fetcher.py::
 _normalize_record()のcost_of_revenue代替キー参照デッドコード削除・
 falsy-zeroバグ副次修正、コミット84385c271）を追記。newfield_q4_cutoff_
 check.pyの新設日表記を2026-08-01→2026-07-30〈同コミットa7b840c32〉に訂正）
@@ -226,7 +226,7 @@ FLAG-CONSUMER-AUDIT-2/3で全面適用完了）:**
 - `tanuki=true` → `src/value/tanuki_valuation/pipeline.py`（`_load_tickers_from_csv()`が
   `get_tanuki_tickers()`経由で取得）。CLI引数でticker明示指定時も`_filter_tanuki_tickers()`で
   同フラグを検証し範囲外を除外
-- `stonks_silo=true` → `discover/stonks-silo/src/pipeline.py`（`stonks_tickers()`が
+- `stonks_silo=true` → `src/value/stonks_silo/pipeline.py`（`stonks_tickers()`が
   `get_stonks_silo_tickers()`経由）。CLI引数明示指定時も`_filter_stonks_silo_tickers()`で検証
 - `hypecore=true` → `src/value/hypecore/hypecore.py --all`（`get_hypecore_tickers()`直接）。
   `--batch`/単体指定時も`_filter_hypecore_tickers()`で検証（2026-07-12まではノーガードだった、
@@ -322,6 +322,8 @@ HypeCore遷移確率サンプル数の4観点を機械判定。詳細はスク�
 
 ## STONKS SILO（詳細・2026-07-10追記）
 
+**コードの場所（2026-10-21）**: `discover/stonks-silo/src/`から`src/value/stonks_silo/`へ移した（R-A STONKS SILOの段階2）。Discoverは削除済みのサブシステムで、フォルダの名前と中身が合わなかった（型E）。根からの深さは同じ3段のため、根を階層の数で求めるコードは変えていない。出力の`docs/value-monitor/stonks-silo/data/results.json`と画面`docs/value-monitor/stonks-silo/`の場所は変えない（もともと`discover/`の下には無く、公開の画面のURLとTANUKI・rcc・System Healthの読み手のパスを保つため）。
+
 赤字企業（cik_lookup.csv `stonks_silo=true`、2026-07-10時点25銘柄）を対象に、
 黒字化までの投資適合性を評価する。
 
@@ -336,7 +338,7 @@ REDESIGN-1]]方針4対応）**: `cik_lookup.csv`の`stonks_silo=false`は
 RKLB/ZS〈成長株のためSTONKS SILO評価が適切、tanuki側は対象外〉のような
 ケースのみ記入する設計）。
 
-**パイプライン:** `discover/stonks-silo/src/pipeline.py`（analyzer.py/fetcher.py/
+**パイプライン:** `src/value/stonks_silo/pipeline.py`（analyzer.py/fetcher.py/
 financial_trend_calculator.py/valuation_fetcher.pyで構成）→
 `docs/value-monitor/stonks-silo/data/results.json`
 
@@ -367,7 +369,7 @@ YYYY.jsonのpl辞書に実在せず常にNoneを返すデッドコードだっ�
 
 STONKS SILO非対象銘柄（stonks_silo=false）でRunway相当の情報が必要な場合は、
 pipeline.py内で`computed_runway_months`（Cash / 月次FCF Burn）を独自にフォールバック計算する。
-→ 変更時の影響範囲チェックリストに関わる: `discover/stonks-silo/src/pipeline.py`の
+→ 変更時の影響範囲チェックリストに関わる: `src/value/stonks_silo/pipeline.py`の
 runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③・Runwayペナルティへの
 影響も確認すること。
 
@@ -1030,7 +1032,7 @@ SEC EDGAR
 │    `financial_trend_calculator.py`はStep2-2でLayer3へ切替済み）。
 │    **`normalized/`の残存消費者は以下3系統に確定・恒久化**（いずれも
 │    設計判断により現状維持を選択、着手見送り確定）:
-│    - `discover/stonks-silo/src/fetcher.py`（`data/annual_*.json`
+│    - `src/value/stonks_silo/fetcher.py`（`data/annual_*.json`
 │      直読み、`[[LAYER3-FETCHER-SELECTION-PHILOSOPHY-MISMATCH-1]]`
 │      案2採用）
 │    - `common/screening/dcf_validity_checker.py::check_c_data_jump()`
@@ -2150,7 +2152,7 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
   2026-08-12時点）:
   本番消費者8ファイル: `beta_fetcher.py`・`data_fetcher.py`（TANUKI
   VALUATION本体、DCF計算直結の本丸）・
-  `discover/stonks-silo/src/valuation_fetcher.py`（STONKS SILO）・
+  `src/value/stonks_silo/valuation_fetcher.py`（STONKS SILO）・
   `pipeline.py`（`.calendar`のみ）・`collect.py`（Discover）・
   `collect_and_send.py`（Market Pulse）・`breadth_calculator.py`・
   `hypecore.py`（daily/attributes/analyst_historyの3層すべてが混在する
@@ -2318,7 +2320,7 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
 | hypecore結果（hypecore_results.json） | growth_sanity経由でDCF成長率が変わるため影響銘柄のpipeline.py再実行 |
 | hypecore_results（poc.json）更新時 | 影響銘柄のpipeline.py再実行（hypecore_history/{TICKER}.jsonが更新される） |
 | pipeline.py | audit.py → 全銘柄pipeline.py再実行 |
-| discover/stonks-silo/src/pipeline.py（runway計算ロジック） | TANUKI VALUATION側のMatrix③・Runwayペナルティも影響を受けるため、影響銘柄のtanuki pipeline.py再実行を確認 |
+| src/value/stonks_silo/pipeline.py（runway計算ロジック） | TANUKI VALUATION側のMatrix③・Runwayペナルティも影響を受けるため、影響銘柄のtanuki pipeline.py再実行を確認 |
 | Market Pulse / MACRO PULSE 各スクリプト | 独立しているため他システムへの影響なし |
 
 ---

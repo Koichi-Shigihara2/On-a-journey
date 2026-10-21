@@ -1,4 +1,4 @@
-# discover/stonks-silo/src/analyzer.py
+# src/value/stonks_silo/analyzer.py
 """
 Stonks Silo Analyzer
 3本柱の計算ロジック。
@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-# discover/stonks-silo/src/ → repo root は3階層上（financial_trend_calculator.pyと同型）
+# src/value/stonks_silo/ → repo root は3階層上（financial_trend_calculator.pyと同型）
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
@@ -73,9 +73,7 @@ class DeficitQuality:
 
     # ユニットエコノミクス（DESIGN-11）
     gross_margin_trend: Optional[str] = None      # "improving"/"stable"/"declining"
-    gross_margin_note: str = ""                    # "construction_phase" など
     unit_economics_score: Optional[float] = None   # 0-100
-    unit_economics_label: Optional[str] = None     # "優秀"/"良好"/"低調"
 
 
 
@@ -324,9 +322,6 @@ class StonksAnalyzer:
         else:
             gross_margin_trend = None
 
-        # 粗利率が取得できない銘柄は建設フェーズ扱い
-        gross_margin_note = "construction_phase" if gross_margin is None else ""
-
         # LPR（損失/売上比率）
         def _lpr(ni: Optional[float], rev: Optional[float]) -> Optional[float]:
             if ni is None or rev is None or rev <= 0:
@@ -341,7 +336,6 @@ class StonksAnalyzer:
 
         # Unit Economics スコア（gross_margin が null の場合はスキップ）
         ue_score: Optional[float] = None
-        ue_label: Optional[str] = None
         if gross_margin is not None:
             s = 0.0
             # GM 水準 (20pt)
@@ -373,7 +367,6 @@ class StonksAnalyzer:
                 elif improvement >= 10.0:
                     s += 15.0
             ue_score = round(s, 1)
-            ue_label = "優秀" if s >= 70.0 else ("良好" if s >= 40.0 else "低調")
 
         return DeficitQuality(
             latest_year=latest_year,
@@ -397,9 +390,7 @@ class StonksAnalyzer:
             dilution_risk=dilution_risk,
             revenue_outlier_years=revenue_outlier_years,
             gross_margin_trend=gross_margin_trend,
-            gross_margin_note=gross_margin_note,
             unit_economics_score=ue_score,
-            unit_economics_label=ue_label,
         )
 
     def _deficit_verdict(

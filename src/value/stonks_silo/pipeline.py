@@ -1,4 +1,4 @@
-# discover/stonks-silo/src/pipeline.py
+# src/value/stonks_silo/pipeline.py
 """
 Stonks Silo Pipeline
 config/cik_lookup.csv の stonks_silo=true 銘柄を一括処理して results.json に保存する。
@@ -6,8 +6,8 @@ config/cik_lookup.csv の stonks_silo=true 銘柄を一括処理して results.j
 出力先: docs/value-monitor/stonks-silo/data/results.json  (GitHub Pages 公開パス)
 
 使い方:
-  python discover/stonks-silo/src/pipeline.py          # stonks_silo=true 全件
-  python discover/stonks-silo/src/pipeline.py SOUN BBAI  # 指定ティッカーのみ
+  python src/value/stonks_silo/pipeline.py          # stonks_silo=true 全件
+  python src/value/stonks_silo/pipeline.py SOUN BBAI  # 指定ティッカーのみ
 """
 
 import dataclasses
@@ -225,27 +225,8 @@ def run(tickers: list[str] | None = None) -> dict:
 
     output = {
         "generated_at": generated_at.isoformat(),
-        "ticker_count": len(results),
         "tickers": results,
         "errors": errors,
-        # [[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]、2026-09-06: 各ticker配下の
-        # financial_vectors.fields.{field}.{yoy|qoq}.angle/length/percentileは
-        # 絶対的な変化率ではなく、この実行時点の相対順位であることの注記
-        # （開発者向けメタ情報。画面表示には影響しない。実測の結果、現行の
-        # docs/value-monitor/stonks-silo/index.htmlはangle/length/percentile/
-        # compositeを一切参照しておらず〈change_pct等の絶対値のみ表示〉、
-        # 画面表示箇所は見つからなかったため対応方針③を採用した）。
-        "financial_vectors_note": (
-            "financial_vectors配下のangle/length/percentile/compositeは、"
-            "同時点で有効なchange_pctを持つ銘柄集合に対する相対順位であり、"
-            "絶対的な変化率ではない。新規銘柄の追加・除外のたびに、対象銘柄"
-            "自身のデータが変わっていなくても値が変動しうる。各yoy/qoq辞書の"
-            "population_sizeが、そのフィールド・期間における実際の比較対象"
-            "銘柄数（母集団サイズ）。change_pct/val_latest/val_prev/series_q"
-            "は絶対値のため母集団変動の影響を受けない。過去の保存値と時系列"
-            "比較する際はこの点に留意すること（[[STONKS-FINANCIAL-VECTORS-"
-            "RELATIVE-1]]参照）。"
-        ),
     }
 
     _stamp_method_change(output)

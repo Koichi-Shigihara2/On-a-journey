@@ -1,4 +1,4 @@
-# discover/stonks-silo/src/signal_detector.py
+# src/value/stonks_silo/signal_detector.py
 """
 財務ベクトル計算モジュール
 
@@ -16,44 +16,30 @@ Layer3ストア（common/sec_data/layer3_builder.py::build_ticker_store()の
 該当フィールドがNoneになる）をそのまま受け入れている。
 
 ベクトル定義:
-  角度: 半円180度。真上(90°)=最大改善, 水平(0°)=変化なし, 真下(-90°)=最大悪化
   長さ: 全銘柄×全期間の変化率分布のパーセンタイル(0-1)
   原価(原価率): 下がる方が改善のため符号を反転
 
-[[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]、2026-09-06: angle/length/
-percentileは絶対的な変化率ではなく、この実行時点で有効なchange_pctを
-持つ銘柄集合に対する相対順位である（同時点の全STONKS SILO銘柄集合とは
-限らず、フィールド・期間ごとにデータが揃っている銘柄数が異なる）。
-新規銘柄の追加・除外のたびに、対象銘柄自身のデータが変わっていなくても
-値が変動しうる。この母集団サイズを`population_size`として各yoy/qoq
-辞書に記録する。change_pct/val_latest/val_prev/series_qは絶対値のため
-母集団変動の影響を受けない。画面表示（docs/value-monitor/stonks-silo/
-index.html）ではpercentile/angle/length/compositeはいずれも未使用
-（change_pct等の絶対値のみ表示）であることを確認済みのため、本注記は
-results.json側のメタ情報としてのみ追加し、画面表示への変更は行わない。
+[[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]、2026-09-06: length/percentileは
+絶対的な変化率ではなく、この実行時点で有効なchange_pctを持つ銘柄集合に
+対する相対順位である。change_pct/val_latest/val_prev/series_qは絶対値の
+ため母集団変動の影響を受けない。
+2026-10-21（R-A STONKS SILOの段階2）: 誰も読まなかった angle・composite
+（合成ベクトル）・population_size・data_quality（fields_available・
+fields_missing・heatmap_fields）の書き込みをやめた。
 
 出力フィールド（results.jsonのticker配下に追加）:
   "financial_vectors": {
     "updated_at": "...",
     "fields": {
-      "OCF":        { "yoy": {"angle":45, "length":0.7, "percentile":75,
-                               "population_size":42, "val_latest":-26M, "val_prev":-35M},
-                      "qoq": {"angle":20, "length":0.4, "percentile":60,
-                               "population_size":40, ...} },
+      "OCF":        { "yoy": {"length":0.7, "percentile":75,
+                               "val_latest":-26M, "val_prev":-35M},
+                      "qoq": {"length":0.4, "percentile":60, ...} },
       "RD":         { ... },
       "NetIncome":  { ... },
       "CapEx":      { ... },
       "Revenue":    { ... },   # 取得できない銘柄はNone
       "GrossProfit":{ ... },   # 取得できない銘柄はNone（逆算含む）
     },
-    "composite": {
-      "yoy": {"angle":35, "length":0.6},
-      "qoq": {"angle":50, "length":0.8},
-    },
-    "data_quality": {
-      "fields_available": ["OCF","RD","NetIncome","CapEx"],
-      "fields_missing":   ["Revenue","GrossProfit"],
-    }
   }
 """
 
@@ -69,7 +55,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 _THIS_DIR = Path(__file__).resolve().parent
-# discover/stonks-silo/src/ → repo root は3階層上
+# src/value/stonks_silo/ → repo root は3階層上
 # テスト環境ではフォールバックとして現在ディレクトリから探す
 try:
     _REPO_ROOT = _THIS_DIR.parents[2]
@@ -86,23 +72,17 @@ from common.sec_data.q4_implied import build_q4_implied_entries  # noqa: E402
 # 計算対象フィールド（PascalCase、既存の表示・フロントエンド契約を維持）
 # invert=True: 値が下がる方が改善（原価率）
 VECTOR_FIELDS = [
-    {"name": "Revenue",         "invert": False, "weight": 1.5},
-    {"name": "GrossProfit",     "invert": False, "weight": 1.5},  # 原価率の合成
-    {"name": "OperatingIncome", "invert": False, "weight": 1.5},  # 営業利益（黒字化への道のり用）
-    {"name": "RD",              "invert": False, "weight": 1.0},  # 投資継続性（増加=良い）
-    {"name": "NetIncome",       "invert": False, "weight": 2.0},  # 損益改善
-    {"name": "OCF",             "invert": False, "weight": 2.0},  # 現金創出力
-    {"name": "CapEx",           "invert": False, "weight": 0.5},  # 投資強度（参考）
+    {"name": "Revenue",         "invert": False},
+    {"name": "GrossProfit",     "invert": False},  # 原価率の合成
+    {"name": "OperatingIncome", "invert": False},  # 営業利益（黒字化への道のり用）
+    {"name": "RD",              "invert": False},  # 投資継続性（増加=良い）
+    {"name": "NetIncome",       "invert": False},  # 損益改善
+    {"name": "OCF",             "invert": False},  # 現金創出力
+    {"name": "CapEx",           "invert": False},  # 投資強度（参考）
 ]
-
-# ヒートマップ対象フィールド（全フィールド・データある四半期のみ表示）
-HEATMAP_FIELDS = {"Revenue", "GrossProfit", "OperatingIncome", "RD", "NetIncome", "OCF"}
 
 # サブパネル用（別折りたたみ）
 SUB_FIELDS = ["SM", "SBC"]
-
-# 合成ベクトルに使うフィールド（RD/CapExは方向性が複雑なため除外）
-COMPOSITE_FIELDS = {"Revenue", "GrossProfit", "NetIncome", "OCF"}
 
 # PascalCase（既存フィールド名・フロントエンド契約）→ Layer3 snake_case
 # フィールド名の対応表（フェーズD Step2-2対応）。
@@ -244,17 +224,6 @@ def _calc_qoq_change(entries: list) -> Optional[dict]:
     }
 
 
-def _pct_to_angle(pct: float) -> float:
-    """
-    パーセンタイル(0-100) → 角度(-90°〜+90°)
-    50パーセンタイル = 0°（水平、変化なし）
-    100パーセンタイル = +90°（真上、最大改善）
-    0パーセンタイル = -90°（真下、最大悪化）
-    """
-    normalized = (pct - 50) / 50  # -1 〜 +1
-    return round(normalized * 90, 1)
-
-
 def _pct_to_length(pct: float) -> float:
     """パーセンタイル(0-100) → 長さ(0-1)。50パーセンタイルを0.5とする。"""
     return round(abs(pct - 50) / 50, 3)
@@ -331,10 +300,6 @@ def compute_vectors(all_stores: dict[str, dict]) -> dict[str, dict]:
     for ticker, field_data in raw_changes.items():
         store = all_stores[ticker]
         fields_out: dict = {}
-        available: list[str] = []
-        missing: list[str] = []
-        composite_angles_yoy: list[tuple[float, float]] = []  # (angle, weight)
-        composite_angles_qoq: list[tuple[float, float]] = []
 
         # 全フィールドの最新endを取得して基準日を決定
         all_entries_by_field = {
@@ -352,7 +317,6 @@ def compute_vectors(all_stores: dict[str, dict]) -> dict[str, dict]:
         for field_cfg in VECTOR_FIELDS:
             fname = field_cfg["name"]
             invert = field_cfg["invert"]
-            weight = field_cfg["weight"]
             info = field_data.get(fname, {})
 
             field_out: dict = {}
@@ -383,22 +347,15 @@ def compute_vectors(all_stores: dict[str, dict]) -> dict[str, dict]:
 
                 sv = sorted_changes[period].get(fname, [])
                 pct_rank = _calc_percentile(pct_val, sv)
-                angle = _pct_to_angle(pct_rank)
                 length = _pct_to_length(pct_rank)
 
                 field_out[period] = {
-                    "angle":      angle,
                     "length":     length,
                     "percentile": pct_rank,
-                    # [[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]: angle/length/
-                    # percentileは絶対的な変化率ではなく、この実行時点で
-                    # 有効なchange_pctを持つ銘柄集合（下記population_size件）
-                    # に対する相対順位である。フィールド・期間（yoy/qoq）ごとに
-                    # データが揃っている銘柄数が異なるため、population_sizeは
-                    # フィールド・期間ごとに個別に記録する（全銘柄一律の値では
-                    # ない）。change_pct/val_latest/val_prev/series_qは絶対値
-                    # のため母集団変動の影響を受けない。
-                    "population_size": len(sv),
+                    # [[STONKS-FINANCIAL-VECTORS-RELATIVE-1]]: length/percentileは
+                    # 絶対的な変化率ではなく、この実行時点で有効なchange_pctを持つ
+                    # 銘柄集合に対する相対順位。change_pct/val_latest/val_prev/
+                    # series_qは絶対値のため母集団変動の影響を受けない。
                     "change_pct": round(change["change_pct"], 1),
                     "val_latest": change["val_latest"],
                     "val_prev":   change["val_prev"],
@@ -408,46 +365,11 @@ def compute_vectors(all_stores: dict[str, dict]) -> dict[str, dict]:
                 if "fp" in change:
                     field_out[period]["fp"] = change["fp"]
 
-                # 合成ベクトル用に収集（対象フィールドのみ）
-                if fname in COMPOSITE_FIELDS:
-                    if period == "yoy":
-                        composite_angles_yoy.append((angle, weight))
-                    else:
-                        composite_angles_qoq.append((angle, weight))
-
             fields_out[fname] = field_out
-            if any(field_out.get(p) is not None for p in ("yoy", "qoq")):
-                available.append(fname)
-            else:
-                missing.append(fname)
-
-        # 合成ベクトル（加重平均角度）
-        def _weighted_angle(angle_weights: list[tuple[float, float]]) -> Optional[dict]:
-            if not angle_weights:
-                return None
-            total_w = sum(w for _, w in angle_weights)
-            if total_w == 0:
-                return None
-            avg_angle = sum(a * w for a, w in angle_weights) / total_w
-            # 角度の絶対値を長さとして使用（-90〜+90 → 0〜1）
-            length = round(abs(avg_angle) / 90, 3)
-            return {
-                "angle":  round(avg_angle, 1),
-                "length": length,
-            }
 
         results[ticker] = {
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "fields": fields_out,
-            "composite": {
-                "yoy": _weighted_angle(composite_angles_yoy),
-                "qoq": _weighted_angle(composite_angles_qoq),
-            },
-            "data_quality": {
-                "fields_available": available,
-                "fields_missing":   missing,
-                "heatmap_fields":   sorted(HEATMAP_FIELDS),
-            },
         }
 
     return results

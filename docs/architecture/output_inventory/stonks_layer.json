@@ -1,6 +1,6 @@
 {
  "generated_by": "scripts/inventory/build_output_inventory.py",
- "layer": "discover/stonks-silo",
+ "layer": "src/value/stonks_silo",
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
@@ -8,9 +8,9 @@
    "kind": "ファイル",
    "writers": [
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
+     "file": "src/value/stonks_silo/pipeline.py",
      "func": "run",
-     "line": 253
+     "line": 234
     }
    ],
    "writers_outside_layer": [],
@@ -26,7 +26,7 @@
     },
     {
      "key": "financial_vectors_note",
-     "reader_files": 1
+     "reader_files": 0
     },
     {
      "key": "generated_at",
@@ -34,7 +34,7 @@
     },
     {
      "key": "ticker_count",
-     "reader_files": 1
+     "reader_files": 0
     },
     {
      "key": "tickers",
@@ -139,14 +139,6 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 36,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
      "file": "docs/value-monitor/stonks-silo/index.html",
      "line": 392,
      "func": "",
@@ -169,6 +161,14 @@
      "how": "保存済みファイル",
      "via": "grep",
      "type": "JS・HTML"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 36,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
@@ -1058,7 +1058,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、四半期・年次の財務の推移（financial_vectors）。STONKS SILOの画面・TANUKI VALUATIONの赤字銘柄の評価とTANUKI Score・rcc・System Healthが読む",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   }
  ],
  "rules": [
@@ -1221,11 +1221,6 @@
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 70,
-     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
-    },
-    {
      "file": "docs/portfolio/tail/index.html",
      "line": 942,
      "text": "function _updateReviewStaleness() {"
@@ -1234,6 +1229,11 @@
      "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "line": 192,
      "text": "function stalePeriod(t) {"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 70,
+     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
     }
    ],
    "files": [
@@ -1241,9 +1241,9 @@
     "common/sec_data/parser.py",
     "common/sec_data/report_consistency_check.py",
     "common/system_health.py",
-    "discover/stonks-silo/src/financial_as_of.py",
     "docs/portfolio/tail/index.html",
-    "docs/value-monitor/adjusted_eps_analyzer/index.html"
+    "docs/value-monitor/adjusted_eps_analyzer/index.html",
+    "src/value/stonks_silo/financial_as_of.py"
    ],
    "in_layer": true,
    "duplicated": true
@@ -1605,16 +1605,17 @@
  "non_production_code": [],
  "non_production_scanned": [
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/analyzer.py",
-   "decision": "",
-   "lines": 1351,
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/analyzer.py",
+   "decision": "残す（2026-10-21）",
+   "lines": 1342,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
+    "src/value/stonks_silo/pipeline.py"
    ],
    "tests": [
+    "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
     "tests/test_runway_cash_unify.py",
     "tests/test_stonks_silo_breakeven_unify.py",
@@ -1624,27 +1625,27 @@
    ]
   },
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/fetcher.py",
-   "decision": "",
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/fetcher.py",
+   "decision": "残す（2026-10-21）",
    "lines": 298,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "discover/stonks-silo/src/analyzer.py",
-    "discover/stonks-silo/src/pipeline.py"
+    "src/value/stonks_silo/analyzer.py",
+    "src/value/stonks_silo/pipeline.py"
    ],
    "tests": []
   },
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/financial_as_of.py",
-   "decision": "",
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/financial_as_of.py",
+   "decision": "残す（2026-10-21）",
    "lines": 104,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
+    "src/value/stonks_silo/pipeline.py"
    ],
    "tests": [
     "tests/test_conditional_tags_and_stale_latest.py",
@@ -1652,14 +1653,14 @@
    ]
   },
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-   "decision": "",
-   "lines": 471,
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/financial_trend_calculator.py",
+   "decision": "残す（2026-10-21）",
+   "lines": 393,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
+    "src/value/stonks_silo/pipeline.py"
    ],
    "tests": [
     "tests/test_conditional_tags_and_stale_latest.py",
@@ -1668,37 +1669,31 @@
    ]
   },
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/pipeline.py",
-   "decision": "",
-   "lines": 275,
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/pipeline.py",
+   "decision": "残す（2026-10-21）",
+   "lines": 256,
    "workflows": [
     ".github/workflows/Stonks_Silo_Update.yml"
    ],
-   "code": [
-    "common/registration/register_ticker.py"
-   ],
+   "code": [],
    "same_dir": [],
    "tests": [
-    "tests/test_eps_discrepancy_flag_overload.py",
-    "tests/test_no_direct_ticker_access.py",
     "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
-    "tests/test_split_adjust.py",
     "tests/test_stonks_silo_financial_as_of.py",
-    "tests/test_stonks_silo_pipeline.py",
-    "tests/test_ttm_flow_key_names.py"
+    "tests/test_stonks_silo_pipeline.py"
    ]
   },
   {
-   "dir": "discover/stonks-silo/src",
-   "file": "discover/stonks-silo/src/valuation_fetcher.py",
-   "decision": "",
+   "dir": "src/value/stonks_silo",
+   "file": "src/value/stonks_silo/valuation_fetcher.py",
+   "decision": "残す（2026-10-21）",
    "lines": 121,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
+    "src/value/stonks_silo/pipeline.py"
    ],
    "tests": [
     "tests/test_valuation_fetcher_market_data_switch.py"
@@ -1735,14 +1730,9 @@
   },
   {
    "name": "fields_missing",
-   "in_layer": true,
+   "in_layer": false,
    "output": null,
-   "sites": [
-    {
-     "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-     "line": 448
-    }
-   ]
+   "sites": []
   },
   {
    "name": "maturity_monitor",
@@ -1767,7 +1757,16 @@
    ]
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "discover/stonks-silo/src/ の6ファイル",
+   "detail": "src/value/stonks_silo/ へ移した（2026-10-21、チャット側の判断）。Discover は削除済みのサブシステムで、フォルダの名前と中身が合わなかった（型E）。根からの深さは同じ3段で、根を階層の数で求めるコードは変えていない。出力 results.json と画面の場所は変えない。画面の見出しの「Discover · 10x Candidates」も「Value Monitor · Early-Stage Growth」に直した"
+  },
+  {
+   "what": "誰も読まないキー10個（results.json への書き込み）",
+   "detail": "書き込みをやめた（2026-10-21、チャット側の判断）: angle・composite・population_size・fields_available・fields_missing・heatmap_fields・financial_vectors_note・gross_margin_note・ticker_count・unit_economics_label（data_quality はこの3つの入れ物ごと）。合成ベクトル・角度の計算と使われなくなった定数（COMPOSITE_FIELDS・HEATMAP_FIELDS・VECTOR_FIELDS の weight）も消した。全24銘柄の results.json は消したキーと時刻のほか前後で同じ、overall_verdict・overall_score も同じ"
+  }
+ ],
  "stop_condition": {
   "outputs": 1,
   "outputs_with_writer_outside_layer": [],
@@ -1775,7 +1774,7 @@
   "python_read_sites_into_layer_resolved": 6,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
-    "file": "discover/stonks-silo/src/fetcher.py",
+    "file": "src/value/stonks_silo/fetcher.py",
     "line": 73,
     "func": "load_annual_data",
     "path": "<?>"
@@ -1808,7 +1807,7 @@
      660,
      663
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1824,7 +1823,7 @@
     "lines": [
      631
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1840,7 +1839,7 @@
     "lines": [
      632
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1856,7 +1855,7 @@
      1080,
      1080
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1870,7 +1869,7 @@
     "lines": [
      1109
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1884,7 +1883,7 @@
     "lines": [
      1108
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1899,7 +1898,7 @@
      1194,
      1195
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1918,7 +1917,7 @@
      1028,
      1028
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1932,7 +1931,7 @@
     "lines": [
      1091
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1948,7 +1947,7 @@
      534,
      875
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1962,7 +1961,7 @@
     "lines": [
      1092
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1977,7 +1976,7 @@
      1131,
      1139
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1991,7 +1990,7 @@
     "lines": [
      1131
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2011,7 +2010,7 @@
      1235,
      1363
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2026,7 +2025,7 @@
      1030,
      1030
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2045,7 +2044,7 @@
      1233,
      1358
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2062,7 +2061,7 @@
      560,
      1042
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2078,7 +2077,7 @@
      1163,
      1358
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2094,7 +2093,7 @@
      1453,
      1466
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2112,7 +2111,7 @@
      1454,
      1469
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2126,7 +2125,7 @@
     "lines": [
      415
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2143,7 +2142,7 @@
      566,
      1081
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2157,7 +2156,7 @@
     "lines": [
      1081
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2175,7 +2174,7 @@
      1450,
      1467
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2190,7 +2189,7 @@
      1019,
      1019
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2207,7 +2206,7 @@
      1018,
      1019
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2224,7 +2223,7 @@
      1015,
      1016
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2239,7 +2238,7 @@
      1013,
      1015
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2253,7 +2252,7 @@
     "lines": [
      1019
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2272,7 +2271,7 @@
      1201,
      1251
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2288,7 +2287,7 @@
      1512,
      1521
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2328,7 +2327,7 @@
      1361,
      1459
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2344,7 +2343,7 @@
      1027,
      1027
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2360,7 +2359,7 @@
      1085,
      1085
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2374,7 +2373,7 @@
     "lines": [
      1085
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2392,7 +2391,7 @@
      1109,
      1109
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2407,7 +2406,7 @@
      1031,
      1031
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2422,7 +2421,7 @@
      972,
      974
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2438,7 +2437,7 @@
     "lines": [
      623
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2454,7 +2453,7 @@
      967,
      1109
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2468,7 +2467,7 @@
     "lines": [
      1129
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2486,7 +2485,7 @@
      1451,
      1469
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2502,7 +2501,7 @@
      564,
      1127
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2517,7 +2516,7 @@
      469,
      538
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2536,7 +2535,7 @@
      984,
      985
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2551,7 +2550,7 @@
      1060,
      1120
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2567,7 +2566,7 @@
      536,
      877
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2582,7 +2581,7 @@
      1029,
      1029
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2596,7 +2595,7 @@
     "lines": [
      1193
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2612,7 +2611,7 @@
     "lines": [
      657
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2631,7 +2630,7 @@
      973,
      974
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2645,7 +2644,7 @@
     "lines": [
      1008
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2659,7 +2658,7 @@
     "lines": [
      1007
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2674,7 +2673,7 @@
      971,
      973
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2689,7 +2688,7 @@
      1146,
      1146
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2704,7 +2703,7 @@
      1084,
      1084
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2721,7 +2720,7 @@
      1082,
      1082
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2738,7 +2737,7 @@
      535,
      876
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2753,7 +2752,7 @@
      998,
      1481
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2768,7 +2767,7 @@
      1029,
      1029
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2784,7 +2783,7 @@
      1086,
      1086
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2798,7 +2797,7 @@
     "lines": [
      1087
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2814,7 +2813,7 @@
      1088,
      1088
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2831,7 +2830,7 @@
      978,
      979
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2846,7 +2845,7 @@
      1522,
      1522
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2860,7 +2859,7 @@
     "lines": [
      1522
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2877,7 +2876,7 @@
      1233,
      1359
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2892,7 +2891,7 @@
      1084,
      1084
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2908,7 +2907,7 @@
      1514,
      1523
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2922,7 +2921,7 @@
     "lines": [
      1515
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2936,7 +2935,7 @@
     "lines": [
      1139
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2952,7 +2951,7 @@
     "lines": [
      449
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2966,7 +2965,7 @@
     "lines": [
      412
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -2984,7 +2983,7 @@
      799,
      800
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3017,7 +3016,7 @@
      1364,
      1364
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3033,7 +3032,7 @@
      537,
      1024
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3056,7 +3055,7 @@
      1107,
      1483
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3071,7 +3070,7 @@
      1101,
      1101
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3085,7 +3084,7 @@
     "lines": [
      878
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
@@ -3099,7 +3098,7 @@
     "lines": [
      1193
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    }
   ],
   "unread_keys": [
@@ -3112,7 +3111,7 @@
      "qoq",
      "yoy"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "composite",
@@ -3122,7 +3121,7 @@
     "parents": [
      "financial_vectors"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "fields_available",
@@ -3132,7 +3131,7 @@
     "parents": [
      "data_quality"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "fields_missing",
@@ -3142,7 +3141,7 @@
     "parents": [
      "data_quality"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "financial_vectors_note",
@@ -3150,7 +3149,7 @@
      "docs/value-monitor/stonks-silo/data/results.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "gross_margin_note",
@@ -3160,7 +3159,7 @@
     "parents": [
      "deficit_quality"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "gross_margin_trend",
@@ -3170,7 +3169,7 @@
     "parents": [
      "deficit_quality"
     ],
-    "note": ""
+    "note": "残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う"
    },
    {
     "key": "heatmap_fields",
@@ -3180,7 +3179,7 @@
     "parents": [
      "data_quality"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "latest_year",
@@ -3191,7 +3190,7 @@
      "deficit_quality",
      "runway"
     ],
-    "note": ""
+    "note": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）"
    },
    {
     "key": "population_size",
@@ -3202,7 +3201,7 @@
      "qoq",
      "yoy"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "ticker_count",
@@ -3210,7 +3209,7 @@
      "docs/value-monitor/stonks-silo/data/results.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "unit_economics_label",
@@ -3220,7 +3219,7 @@
     "parents": [
      "deficit_quality"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    }
   ],
   "written_key_count": 143,

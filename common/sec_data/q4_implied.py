@@ -5,7 +5,7 @@ common/sec_data/q4_implied.py
 [[Q4-IMPLIED-CALC-TRIPLICATION-1]]対応（移行実装計画フェーズB）。
 従来normalizer.py::_build_q4_implied_entries()・
 ttm_calculator.py::_build_q4_quarterly_entries()・
-discover/stonks-silo/src/financial_trend_calculator.py::_build_q4_implied()
+src/value/stonks_silo/financial_trend_calculator.py::_build_q4_implied()
 の3箇所に独立実装されていたロジックを本モジュールに統一する。
 
 適用範囲のガード（重要）:

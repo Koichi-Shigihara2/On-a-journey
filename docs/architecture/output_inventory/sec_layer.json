@@ -1862,78 +1862,6 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/analyzer.py",
-     "line": 1306,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/fetcher.py",
-     "line": 56,
-     "func": "load_annual_data",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/fetcher.py",
-     "line": 282,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 52,
-     "func": "scoring_fy_end",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 54,
-     "func": "scoring_fy_end",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 87,
-     "func": "build",
-     "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/financial_as_of.py::scoring_fy_end",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 114,
-     "func": "run",
-     "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 121,
-     "func": "run",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader._load_json",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 275,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/fetcher.py::load_annual_data",
-     "type": "Python"
-    },
-    {
      "file": "src/value/adjusted_eps_analyzer/execution_metrics.py",
      "line": 85,
      "func": "calc_roic_trend",
@@ -1955,6 +1883,78 @@
      "func": "process_one_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/roic.py::calc_roic_wacc_ratio",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/analyzer.py",
+     "line": 1297,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/fetcher.py::load_annual_data",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/fetcher.py",
+     "line": 56,
+     "func": "load_annual_data",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/fetcher.py",
+     "line": 282,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/fetcher.py::load_annual_data",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 52,
+     "func": "scoring_fy_end",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 54,
+     "func": "scoring_fy_end",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 87,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 114,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/fetcher.py::load_annual_data",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 121,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/reader.py::SECReader._load_json",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 256,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/fetcher.py::load_annual_data",
      "type": "Python"
     },
     {
@@ -3498,7 +3498,7 @@
      "line": 68,
      "func": "test_scoring_fy_end_from_own_10k_accn",
      "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/financial_as_of.py::scoring_fy_end",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
      "type": "テスト"
     },
     {
@@ -3506,7 +3506,7 @@
      "line": 72,
      "func": "test_scoring_fy_end_none_when_missing",
      "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/financial_as_of.py::scoring_fy_end",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
      "type": "テスト"
     },
     {
@@ -3514,7 +3514,7 @@
      "line": 73,
      "func": "test_scoring_fy_end_none_when_missing",
      "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/financial_as_of.py::scoring_fy_end",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
      "type": "テスト"
     },
     {
@@ -3522,7 +3522,7 @@
      "line": 75,
      "func": "test_scoring_fy_end_none_when_missing",
      "how": "保存済みファイル",
-     "via": "discover/stonks-silo/src/financial_as_of.py::scoring_fy_end",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
      "type": "テスト"
     },
     {
@@ -3599,11 +3599,11 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/index.html",
@@ -3611,7 +3611,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     }
    ],
    "definitions": [
@@ -4143,46 +4143,6 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-     "line": 466,
-     "func": "load_all_normalized",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 147,
-     "func": "run",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 150,
-     "func": "run",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 212,
-     "func": "run",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 275,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "Python"
-    },
-    {
      "file": "src/tail/kpi_proposer.py",
      "line": 212,
      "func": "fetch_real_us_gaap_concepts",
@@ -4282,6 +4242,46 @@
      "file": "src/value/hypecore/hypecore.py",
      "line": 515,
      "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_trend_calculator.py",
+     "line": 388,
+     "func": "load_all_normalized",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 147,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 150,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 212,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 256,
+     "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "Python"
@@ -5468,7 +5468,7 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
@@ -5480,7 +5480,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
     }
    ],
    "definitions": [],
@@ -5796,7 +5796,7 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
+     "file": "src/value/stonks_silo/pipeline.py",
      "line": 121,
      "func": "run",
      "how": "保存済みファイル",
@@ -6297,11 +6297,11 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/index.html",
@@ -6309,7 +6309,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     }
    ],
    "definitions": [
@@ -6508,7 +6508,7 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
+     "file": "src/value/stonks_silo/financial_as_of.py",
      "line": 64,
      "func": "scoring_fy_end",
      "how": "保存済みファイル",
@@ -6516,7 +6516,7 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
+     "file": "src/value/stonks_silo/financial_as_of.py",
      "line": 87,
      "func": "build",
      "how": "保存済みファイル",
@@ -6944,7 +6944,7 @@
    "top_keys": [
     {
      "key": "fields",
-     "reader_files": 12
+     "reader_files": 11
     },
     {
      "key": "generated_at",
@@ -7285,7 +7285,15 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
+     "file": "docs/value-monitor/tanuki_valuation/stock.html",
+     "line": 336,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
      "line": 121,
      "func": "run",
      "how": "保存済みファイル",
@@ -7293,20 +7301,12 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 275,
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 256,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized",
      "type": "Python"
-    },
-    {
-     "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 336,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
@@ -8109,11 +8109,11 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/index.html",
@@ -9521,7 +9521,7 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
+     "file": "src/value/stonks_silo/financial_as_of.py",
      "line": 40,
      "func": "latest_quarter_end",
      "how": "その場で計算",
@@ -10118,14 +10118,6 @@
      "type": "Python"
     },
     {
-     "file": "discover/stonks-silo/src/pipeline.py",
-     "line": 46,
-     "func": "stonks_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "Python"
-    },
-    {
      "file": "src/tail/kpi_proposer.py",
      "line": 739,
      "func": "propose_kpis",
@@ -10299,6 +10291,14 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/adjusted_eps_analyzer/pipeline.py::run",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 46,
+     "func": "stonks_tickers",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "Python"
     },
     {
@@ -11207,7 +11207,7 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
@@ -11219,7 +11219,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（discover/stonks-silo/src/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     }
    ],
    "definitions": [
@@ -11667,11 +11667,6 @@
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 70,
-     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
-    },
-    {
      "file": "docs/portfolio/tail/index.html",
      "line": 942,
      "text": "function _updateReviewStaleness() {"
@@ -11680,6 +11675,11 @@
      "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "line": 192,
      "text": "function stalePeriod(t) {"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 70,
+     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
     }
    ],
    "files": [
@@ -11687,9 +11687,9 @@
     "common/sec_data/parser.py",
     "common/sec_data/report_consistency_check.py",
     "common/system_health.py",
-    "discover/stonks-silo/src/financial_as_of.py",
     "docs/portfolio/tail/index.html",
-    "docs/value-monitor/adjusted_eps_analyzer/index.html"
+    "docs/value-monitor/adjusted_eps_analyzer/index.html",
+    "src/value/stonks_silo/financial_as_of.py"
    ],
    "in_layer": true,
    "duplicated": true
@@ -11907,99 +11907,6 @@
     "browser_checks/check_dependency_map.py"
    ],
    "tests": []
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/analyzer.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 1351,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
-   ],
-   "tests": [
-    "tests/test_pipeline_logic.py",
-    "tests/test_runway_cash_unify.py",
-    "tests/test_stonks_silo_breakeven_unify.py",
-    "tests/test_stonks_silo_path_score.py",
-    "tests/test_stonks_silo_pipeline.py",
-    "tests/test_stonks_silo_yoy_period_validation.py"
-   ]
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/fetcher.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 298,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "discover/stonks-silo/src/analyzer.py",
-    "discover/stonks-silo/src/pipeline.py"
-   ],
-   "tests": []
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/financial_as_of.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 104,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
-   ],
-   "tests": [
-    "tests/test_conditional_tags_and_stale_latest.py",
-    "tests/test_stonks_silo_financial_as_of.py"
-   ]
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 471,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
-   ],
-   "tests": [
-    "tests/test_conditional_tags_and_stale_latest.py",
-    "tests/test_gate2_phase3b1_reader_integration.py",
-    "tests/test_stonks_silo_yoy_period_validation.py"
-   ]
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/pipeline.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 275,
-   "workflows": [
-    ".github/workflows/Stonks_Silo_Update.yml"
-   ],
-   "code": [],
-   "same_dir": [],
-   "tests": [
-    "tests/test_pipeline_logic.py",
-    "tests/test_stonks_silo_financial_as_of.py",
-    "tests/test_stonks_silo_pipeline.py"
-   ]
-  },
-  {
-   "dir": "discover/stonks-silo",
-   "file": "discover/stonks-silo/src/valuation_fetcher.py",
-   "decision": "残す（2026-10-20）",
-   "lines": 121,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "discover/stonks-silo/src/pipeline.py"
-   ],
-   "tests": [
-    "tests/test_valuation_fetcher_market_data_switch.py"
-   ]
   }
  ],
  "f3_zero_reader": [
@@ -12034,12 +11941,7 @@
    "name": "fields_missing",
    "in_layer": false,
    "output": null,
-   "sites": [
-    {
-     "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-     "line": 448
-    }
-   ]
+   "sites": []
   },
   {
    "name": "maturity_monitor",

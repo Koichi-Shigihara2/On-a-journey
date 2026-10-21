@@ -3,7 +3,7 @@ tests/test_stonks_silo_breakeven_unify.py
 
 [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]の回帰テスト。
 
-discover/stonks-silo/src/analyzer.py::_margin_breakeven()・
+src/value/stonks_silo/analyzer.py::_margin_breakeven()・
 _gaap_margin_breakeven()を、旧「直近2点の傾き優先→条件次第で絶対値
 ベース3点OLSへフォールバック」という2段階方式から「常に直近4年
 （データがあれば）のマージン比率OLS回帰」へ統一したことの検証。
@@ -19,7 +19,7 @@ import os
 import sys
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
-_STONKS_SRC = os.path.join(_REPO_ROOT, "discover", "stonks-silo", "src")
+_STONKS_SRC = os.path.join(_REPO_ROOT, "src", "value", "stonks_silo")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 if _STONKS_SRC not in sys.path:

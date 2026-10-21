@@ -285,9 +285,9 @@ def test_empty_string_default_is_resolved_from_callers(monkeypatch):
 
 def test_workflow_working_directory_runs_file():
     """working-directory: <フォルダ> の段で python <ファイル名> と動かす形も、そのファイルを動かすワークフローとする（2026-10-21、STONKS SILO・TANUKI）。"""
-    wf = ("      - name: Run\n        working-directory: discover/stonks-silo/src\n        run: |\n          python pipeline.py $TICKERS\n")
-    assert inv.workflow_runs_file(wf, "discover/stonks-silo/src/pipeline.py")
-    assert not inv.workflow_runs_file(wf, "discover/stonks-silo/src/analyzer.py")
+    wf = ("      - name: Run\n        working-directory: src/value/stonks_silo\n        run: |\n          python pipeline.py $TICKERS\n")
+    assert inv.workflow_runs_file(wf, "src/value/stonks_silo/pipeline.py")
+    assert not inv.workflow_runs_file(wf, "src/value/stonks_silo/analyzer.py")
     assert not inv.workflow_runs_file(wf, "src/value/tanuki_valuation/pipeline.py")
     assert inv.workflow_runs_file("python -m src.value.adjusted_eps_analyzer.pipeline", "src/value/adjusted_eps_analyzer/pipeline.py")
 
@@ -297,3 +297,14 @@ def test_stonks_layer_is_configured_but_not_checked_yet():
     assert "stonks" in inv.LAYERS
     assert "stonks" not in inv.CHECK_LAYERS
     assert inv.LAYERS["stonks"]["KNOWN_DUPLICATE_RULES"] == ["staleness"]
+
+
+def test_loose_reference_compares_whole_path():
+    """名前だけで読む使い方の参照: 引用符の中のパスに / があればパスの全体で照合する（2026-10-21、register_ticker.py の取り違え）。"""
+    rel = "src/value/stonks_silo/pipeline.py"
+    assert not inv.loose_ref('    rc = _run([PYTHON, "src/value/tanuki_valuation/pipeline.py", ticker],', rel)
+    assert inv.loose_ref('    path = "src/value/stonks_silo/pipeline.py"', rel)
+    assert inv.loose_ref("spec = load('pipeline.py')", rel)
+    assert not inv.loose_ref("spec = load('mypipeline.py')", rel)
+    assert inv.loose_ref("          python pipeline.py $TICKERS", rel)
+    assert inv.loose_ref("from pipeline import run", rel)

@@ -278,7 +278,7 @@ def _resolve_live_risk_free_rate(get_latest_price=None, calendar=None, today=Non
 
 
 # [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]（2026-09-05）: STONKS SILO
-# （discover/stonks-silo/src/analyzer.py::_margin_breakeven()）が持つ
+# （src/value/stonks_silo/analyzer.py::_margin_breakeven()）が持つ
 # 安全策一式（理由コード・傾き上限・異常値除外）をこちら側にも追加し、
 # 「常に直近4点のOLS回帰」という回帰方式自体はSTONKS SILO側と揃えた
 # （対象指標は調整後EPSのまま維持、STONKS SILO側のマージン比率とは別軸）。
@@ -305,7 +305,7 @@ def compute_eps_breakeven(quarters_list: list, current_year: int) -> tuple:
     EPS Analyzer quarterly.jsonの"quarters"（filing_date降順、直近が
     index 0）から、調整後EPSの直近4四半期OLS回帰で黒字化四半期を予測する。
 
-    STONKS SILO（discover/stonks-silo/src/analyzer.py::_margin_
+    STONKS SILO（src/value/stonks_silo/analyzer.py::_margin_
     breakeven()）と回帰の方式（常に直近4点のOLS）・安全策の考え方
     （理由コード・傾き上限・異常値除外）を揃えている。対象指標は
     調整後EPS（STONKS SILO側はマージン比率）のまま維持。
@@ -1964,7 +1964,7 @@ class TanukiValuationPipeline:
         # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]STEP6（2026-09-17、Koichiさん
         # 決定3・保守的版）: 5年・2年平均とも実績FCFが負の構造的赤字銘柄
         # （QBTS/SOUN型）は、DCF/IVをこのまま参考値として使わず、STONKS
-        # SILO側の赤字銘柄評価枠組み（discover/stonks-silo/、既に同一
+        # SILO側の赤字銘柄評価枠組み（src/value/stonks_silo/、既に同一
         # 銘柄群がstonks_silo=trueで分析済み）を参照するよう促す。IV自体は
         # null化せず、Classification/Policy A・Bのロジックも変更しない
         # （フラグと注記の追加のみ、ブラスト半径を限定する保守的スコープ）。
@@ -2929,7 +2929,7 @@ class TanukiValuationPipeline:
             #
             # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: Runwayのcashは
             # common/sec_data/reader.py::get_runway_cash()でSTONKS SILOの
-            # `runway_months`（discover/stonks-silo/src/analyzer.py::
+            # `runway_months`（src/value/stonks_silo/analyzer.py::
             # _analyze_runway()）と共通化した。get_net_cash()（bs_adjustment）の
             # 四半期優先ロジックで確定したcash_and_equivalents +
             # short_term_investments（非流動AFSは含めない、保守側）。

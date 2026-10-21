@@ -40,7 +40,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Stonks Silo Pipeline
-        working-directory: discover/stonks-silo/src
+        working-directory: src/value/stonks_silo
         run: |
           if [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')

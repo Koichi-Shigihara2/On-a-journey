@@ -1,7 +1,7 @@
 """
 tests/test_stonks_silo_pipeline.py
 
-discover/stonks-silo/src/pipeline.py::_filter_stonks_silo_tickers() の
+src/value/stonks_silo/pipeline.py::_filter_stonks_silo_tickers() の
 ユニットテスト。FLAG-CONSUMER-AUDIT-2（CLI引数でticker明示指定時に
 stonks_silo=trueフラグの検証を一切行わず無条件実行していた問題）の
 回帰テスト。
@@ -16,7 +16,7 @@ import sys
 import textwrap
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
-_STONKS_SRC = os.path.join(_REPO_ROOT, "discover", "stonks-silo", "src")
+_STONKS_SRC = os.path.join(_REPO_ROOT, "src", "value", "stonks_silo")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 if _STONKS_SRC not in sys.path:

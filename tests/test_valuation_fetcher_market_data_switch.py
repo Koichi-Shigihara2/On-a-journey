@@ -6,7 +6,7 @@ tests/test_valuation_fetcher_market_data_switch.py
 reader経由に置き換わったこと・reader側がNoneを返す場合の中立デフォルト
 劣化（選択肢A）を検証する。
 
-discover/stonks-silo/src/valuation_fetcher.pyはパッケージ経由でimport
+src/value/stonks_silo/valuation_fetcher.pyはパッケージ経由でimport
 できない構成のため、importlib.util経由でファイルパス指定してモジュール
 単体を読む（beta_fetcher.py/data_fetcher.pyのsys.path追加パターンとは
 異なり、本モジュールはトップレベルパッケージに属さない独立ディレクトリの
@@ -22,7 +22,7 @@ import os
 import pytest
 
 _MODULE_PATH = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "discover", "stonks-silo", "src", "valuation_fetcher.py")
+    os.path.join(os.path.dirname(__file__), "..", "src", "value", "stonks_silo", "valuation_fetcher.py")
 )
 
 

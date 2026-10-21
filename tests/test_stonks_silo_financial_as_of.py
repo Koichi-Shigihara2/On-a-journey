@@ -15,7 +15,7 @@ import sys
 from datetime import datetime, timezone
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
-_STONKS_SRC = os.path.join(_REPO_ROOT, "discover", "stonks-silo", "src")
+_STONKS_SRC = os.path.join(_REPO_ROOT, "src", "value", "stonks_silo")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 if _STONKS_SRC not in sys.path:

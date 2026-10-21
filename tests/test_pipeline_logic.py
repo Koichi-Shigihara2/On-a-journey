@@ -3545,7 +3545,7 @@ class TestStonksDivisionGuards:
     def _load_analyzer():
         import importlib.util, os, sys as _sys
         path = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), "..", "discover", "stonks-silo", "src", "analyzer.py")
+            os.path.join(os.path.dirname(__file__), "..", "src", "value", "stonks_silo", "analyzer.py")
         )
         mod_name = "stonks_analyzer_test"
         spec = importlib.util.spec_from_file_location(mod_name, path)

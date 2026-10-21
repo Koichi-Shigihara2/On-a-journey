@@ -1,4 +1,4 @@
-# discover/stonks-silo/src/financial_as_of.py
+# src/value/stonks_silo/financial_as_of.py
 """
 財務データの基準日（表示用。verdict・score・overallには使わない）
 [[STONKS-DATA-ASOF-MISSING-1]]（2026-10-10）

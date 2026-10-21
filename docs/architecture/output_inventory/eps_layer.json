@@ -2720,11 +2720,6 @@
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
-     "file": "discover/stonks-silo/src/financial_as_of.py",
-     "line": 70,
-     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
-    },
-    {
      "file": "docs/portfolio/tail/index.html",
      "line": 942,
      "text": "function _updateReviewStaleness() {"
@@ -2733,6 +2728,11 @@
      "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "line": 192,
      "text": "function stalePeriod(t) {"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 70,
+     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
     }
    ],
    "files": [
@@ -2740,9 +2740,9 @@
     "common/sec_data/parser.py",
     "common/sec_data/report_consistency_check.py",
     "common/system_health.py",
-    "discover/stonks-silo/src/financial_as_of.py",
     "docs/portfolio/tail/index.html",
-    "docs/value-monitor/adjusted_eps_analyzer/index.html"
+    "docs/value-monitor/adjusted_eps_analyzer/index.html",
+    "src/value/stonks_silo/financial_as_of.py"
    ],
    "in_layer": false,
    "duplicated": true
@@ -3111,9 +3111,7 @@
    "workflows": [],
    "code": [],
    "same_dir": [],
-   "tests": [
-    "tests/test_output_inventory_check.py"
-   ]
+   "tests": []
   },
   {
    "dir": "src/value/adjusted_eps_analyzer",
@@ -3313,12 +3311,7 @@
    "name": "fields_missing",
    "in_layer": false,
    "output": null,
-   "sites": [
-    {
-     "file": "discover/stonks-silo/src/financial_trend_calculator.py",
-     "line": 448
-    }
-   ]
+   "sites": []
   },
   {
    "name": "maturity_monitor",

@@ -1,4 +1,4 @@
-# discover/stonks-silo/src/fetcher.py
+# src/value/stonks_silo/fetcher.py
 """
 Stonks Silo Fetcher
 annual_*.json から複数年データを読み込む専用フェッチャー。
@@ -14,9 +14,9 @@ from typing import Optional
 
 
 # リポジトリルートからの相対パス
-# このファイルは discover/stonks-silo/src/ に置かれる想定
+# このファイルは src/value/stonks_silo/ に置かれる想定
 _THIS_DIR = Path(__file__).resolve().parent
-_REPO_ROOT = _THIS_DIR.parents[2]  # discover/stonks-silo/src/ → 3階層上
+_REPO_ROOT = _THIS_DIR.parents[2]  # src/value/stonks_silo/ → 3階層上
 _SEC_DATA_DIR = _REPO_ROOT / "common" / "sec_data" / "data"
 
 

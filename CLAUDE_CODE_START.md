@@ -354,7 +354,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **2026-10-10（夜）STONKS SILOの表示（`[[STONKS-DATA-ASOF-MISSING-1]]`・`[[STONKS-RUNWAY-CELL-AMBIGUOUS-1]]`・`[[STONKS-SURVIVAL-PANEL-DASH-1]]`、3件ともBACKLOG_DONE.mdへ）**
 - 実装`5f6dc22ef2`・データ`94335c3f27`。verdict・score・overallの計算は変えていない
-- results.jsonの各銘柄に表示用の`financial_as_of`（`discover/stonks-silo/src/financial_as_of.py`）: `latest_quarter_end`（Layer3の`calc_ttm_series()`の最新ttm_end。
+- results.jsonの各銘柄に表示用の`financial_as_of`（`src/value/stonks_silo/financial_as_of.py`）: `latest_quarter_end`（Layer3の`calc_ttm_series()`の最新ttm_end。
   get_ttm_revenue・ttm/ファイル・series_qと全24銘柄で一致）、`scoring_fy`・`scoring_fy_end`（年次ファイルの本人データのaccn → submissionsのreportDate）、
   `stale`（最新四半期末＋135日超、定数`STALE_DAYS_AFTER_QUARTER_END`、出力時に全銘柄そろえて判定）。staleは0件
 - 画面: ティッカーの下に「〜yy/mm/dd」（staleならamberで「古い」）、詳細の見出しに財務の基準日、ヒーローは「PRICE UPDATED」と「FINANCIALS」。
@@ -4457,7 +4457,7 @@ grep -rln "[SUBSYSTEM_NAME]" . --include="*.py" --include="*.html" \
 #   （site-header.js以外にも存在する場合は同様に確認）
 # - 他サブシステムのキャッチコピー・ソースパス名としての偶然の同名
 #   一致（例: STONKS SILOの"Discover · 10x Candidates"というタグ、
-#   discover/stonks-silo/というソースパス）は削除対象と誤認しないこと
+#   src/value/stonks_silo/というソースパス）は削除対象と誤認しないこと
 
 # Step 2: リンク整合性チェックを必ず実行（下記セクション参照）
 python ~/check_links.py

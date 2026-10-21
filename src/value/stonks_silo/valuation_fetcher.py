@@ -1,5 +1,5 @@
 """
-discover/stonks-silo/src/valuation_fetcher.py
+src/value/stonks_silo/valuation_fetcher.py
 STONKS SILO 評価指標取得（market_cap/current_price/enterprise_value/total_debt/sector/industry）
 
 [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-3: yfinance直接呼び出し
@@ -21,7 +21,7 @@ import sys
 from datetime import datetime, timezone
 
 # common/market_data - beta_fetcher.py/data_fetcher.pyと同型の二段構え
-# sys.path解決パターン。本ファイルはdiscover/stonks-silo/src/pipeline.py
+# sys.path解決パターン。本ファイルはsrc/value/stonks_silo/pipeline.py
 # 経由でimportされる場合はpipeline.py自身が既にリポジトリルートを
 # sys.pathへ追加済みだが、本ファイル単体でimportされるケース
 # （単体テスト等）にも対応できるよう独立して解決する。

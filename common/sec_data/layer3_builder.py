@@ -1481,7 +1481,7 @@ def get_quarterly_series(store: dict, field_name: str, source_tag: str | None = 
 # [[LAYER3-STALE-LATEST-VALUE-1]]（2026-10-14）: 「直近の値」として扱う期末の古さの上限（日）。
 # その銘柄の最新の期末（latest_period_end()）からこの日数より前の値は、直近の値として使わない
 # （何年も前に申告が止まった項目の古い値が、今の値に見えるのを防ぐ）。
-# STONKS SILOの財務の鮮度の判定（discover/stonks-silo/src/financial_as_of.py::
+# STONKS SILOの財務の鮮度の判定（src/value/stonks_silo/financial_as_of.py::
 # STALE_DAYS_AFTER_QUARTER_END = 135、四半期末＋提出の遅れ）と同じ値に揃える
 CURRENT_VALUE_MAX_LAG_DAYS = 135
 

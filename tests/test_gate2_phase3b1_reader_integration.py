@@ -138,7 +138,7 @@ class TestGetRpoContextAfterMigration:
 # 3. financial_trend_calculator.py 回帰テスト
 # ─────────────────────────────────────────────
 
-_STONKS_SILO_SRC = os.path.join(_REPO_ROOT, "discover", "stonks-silo", "src")
+_STONKS_SILO_SRC = os.path.join(_REPO_ROOT, "src", "value", "stonks_silo")
 if _STONKS_SILO_SRC not in sys.path:
     sys.path.insert(0, _STONKS_SILO_SRC)
 import financial_trend_calculator as ftc  # noqa: E402

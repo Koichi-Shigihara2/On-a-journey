@@ -3,7 +3,7 @@ tests/test_runway_cash_unify.py
 
 [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）の回帰テスト。
 Runway算出用cashをcommon/sec_data/reader.py::get_runway_cash()へ集約し、
-STONKS SILO（discover/stonks-silo/src/analyzer.py::_analyze_runway()）が
+STONKS SILO（src/value/stonks_silo/analyzer.py::_analyze_runway()）が
 直近年次annual_*.jsonのみでなくSECReader.get_net_cash()の四半期優先値を
 使うことを検証する。TANUKI VALUATION側（computed_runway_months）の
 回帰テストはtests/test_pipeline_logic.py::
@@ -25,7 +25,7 @@ import sys
 import pytest
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
-_STONKS_SRC = os.path.join(_REPO_ROOT, "discover", "stonks-silo", "src")
+_STONKS_SRC = os.path.join(_REPO_ROOT, "src", "value", "stonks_silo")
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
