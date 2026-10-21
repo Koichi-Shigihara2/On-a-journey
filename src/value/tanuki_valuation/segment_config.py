@@ -9,9 +9,8 @@ v8.0 変更点:
   - フォールバック: JSONが存在しない場合はエラーを出力して空dictを返す
 
 設定変更方法:
-  - admin.html（docs/value-monitor/admin.html）からフォーム入力
-  - GitHub API経由で config/segment_config.json / config/growth_options_config.json を更新
-  - ローカル直接編集は非推奨（admin.htmlを使用すること）
+  - Claude Codeが config/segment_config.json / config/growth_options_config.json を直接編集してcommitする
+    （管理のページ docs/value-monitor/admin.html は2026-10-21に削除。CLAUDE_CODE_START.md「管理の操作の手順」）
 """
 
 import json

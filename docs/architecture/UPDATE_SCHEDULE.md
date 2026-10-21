@@ -8,9 +8,10 @@
   YAMLを変えたら生成し直す。一覧と文書・`config/workflow_dependencies.json`がずれると、report_consistency_check.pyの
   CHECK-58（WARN）が出る
 - `config/workflow_dependencies.json` のうち、YAMLから決まる項目（depends_on＝workflow_runの起動元、outputs＝commitするパス）も
-  同じスクリプトが生成する。表示名（label）・yml・accepts_tickers・input_param・一括更新の順序（bulk_update_*・new_ticker_order）は、
-  docs/value-monitor/admin.htmlの一括更新が使う手作業の定義として残す（accepts_tickers・input_paramは、YAMLの手動実行の入力と
-  合っているかをCHECK-58で確認する）。このファイルはadmin.htmlが読むため廃止しない
+  同じスクリプトが生成する。キーとymlは手作業の定義（ymlが.github/workflows/にあるかをCHECK-58で確認する）。
+  管理のページ（docs/value-monitor/admin.html）の一括更新が使っていた表示名（label）・accepts_tickers・input_param・
+  一括更新の順序（bulk_update_*・new_ticker_order）は、ページの削除（2026-10-21）で読み手が無くなり消した。
+  手動の起動はClaude Codeが`gh workflow run`でする（CLAUDE_CODE_START.md「管理の操作の手順」）
 - 時刻はUTCとJST（UTC+9）で書く。米国の日付はニューヨーク時間（夏時間 EDT＝UTC−4、冬時間 EST＝UTC−5）
 
 ---

@@ -64,7 +64,7 @@ def test_drift_detected_when_doc_edited_by_hand(tmp_path):
     assert gus.check_drift(str(root)) == ["UPDATE_SCHEDULE.mdのワークフロー一覧が.github/workflows/*.ymlと一致しない"]
 
 
-def test_deps_generated_fields_and_curated_kept(tmp_path):
+def test_deps_generated_fields_and_yml_kept(tmp_path):
     root = _copy_repo(tmp_path)
     dp = root / "config" / "workflow_dependencies.json"
     d = json.loads(dp.read_text(encoding="utf-8"))
@@ -74,17 +74,23 @@ def test_deps_generated_fields_and_curated_kept(tmp_path):
     wfs = gus.load_workflows(str(root / ".github" / "workflows"))
     g = gus.generated_deps(wfs, d)
     assert g["workflows"]["TANUKI_VALUATION_Update"]["depends_on"] == ["HypeCore_Update", "Adjusted_EPS_Update", "Stonks_Silo_Update"]
-    # admin.htmlが使う手作業の定義はそのまま
+    # 手作業の定義（キー・yml）はそのまま
+    assert set(g["workflows"]) == set(d["workflows"])
     for k, v in d["workflows"].items():
-        for f in ("label", "yml", "accepts_tickers", "input_param"):
-            assert g["workflows"][k].get(f) == v.get(f)
-    for f in ("bulk_update_order", "bulk_update_phases", "new_ticker_order"):
-        assert g[f] == d[f]
+        assert g["workflows"][k]["yml"] == v["yml"]
 
 
-def test_curated_input_param_checked():
+def test_unknown_yml_checked():
     wfs = gus.load_workflows()
     d = json.load(open(os.path.join(_REPO, "config", "workflow_dependencies.json"), encoding="utf-8"))
-    assert gus.curated_input_problems(wfs, d) == []
-    d["workflows"]["Adjusted_EPS_Update"]["input_param"] = "tickers"   # 実際の入力はticker
-    assert gus.curated_input_problems(wfs, d) == ["Adjusted_EPS_Update: input_param tickers がAdjusted_Eps_Analyzer_update.ymlの手動実行の入力に無い"]
+    assert gus.unknown_yml_problems(wfs, d) == []
+    d["workflows"]["Adjusted_EPS_Update"]["yml"] = "Adjusted_EPS_Update.yml"   # 実際のファイル名はAdjusted_Eps_Analyzer_update.yml
+    assert gus.unknown_yml_problems(wfs, d) == ["Adjusted_EPS_Update: yml Adjusted_EPS_Update.yml が.github/workflows/に無い"]
+
+def test_admin_only_fields_removed():
+    """管理のページ（2026-10-21削除）だけが読んでいた欄が残っていない"""
+    d = json.load(open(os.path.join(_REPO, "config", "workflow_dependencies.json"), encoding="utf-8"))
+    for f in ("bulk_update_order", "bulk_update_phases", "new_ticker_order"):
+        assert f not in d
+    for v in d["workflows"].values():
+        assert not {"label", "accepts_tickers", "input_param"} & set(v)

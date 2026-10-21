@@ -15,9 +15,8 @@ v8.0 変更点:
 phase1.growth = null の場合は segment_config の加重平均成長率を流用する。
 
 設定変更方法:
-  - admin.html（docs/value-monitor/admin.html）からフォーム入力
-  - GitHub API経由で config/maturity_config.json を更新
-  - ローカル直接編集は非推奨（admin.htmlを使用すること）
+  - Claude Codeが config/maturity_config.json を直接編集してcommitする
+    （管理のページ docs/value-monitor/admin.html は2026-10-21に削除。CLAUDE_CODE_START.md「管理の操作の手順」）
 """
 
 import json

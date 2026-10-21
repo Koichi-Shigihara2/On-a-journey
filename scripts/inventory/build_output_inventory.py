@@ -339,23 +339,44 @@ _EPS.update(
             "銘柄ごとの直近4四半期の合計（TTM）の純利益・調整後純利益・EPSの時系列。EPSの個別ページが読む",
         "${GITHUB_STEP_SUMMARY}": "GitHub Actionsの実行の画面に出す要約（成功・失敗の件数と失敗した銘柄、人が見る）",
     },
-    DECISION_DEFAULT="",
+    DECISION_DEFAULT="残す（2026-10-21）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
+    DELETED=[
+        ("docs/value-monitor/adjusted_eps_analyzer/admin.html（EPSの管理、596行）・docs/value-monitor/admin.html（VALUE MONITOR · Admin、3,650行）と、"
+         "サブナビの「管理」「管理（VALUE MONITOR ADMIN）」のリンク・tests/test_admin_calc_wacc.py",
+         "削除（2026-10-21、Koichiさんの判断）。GitHubのAPIでリポジトリのファイルを直接読み書きする管理のページ。操作はClaude Codeが代わりにする"
+         "（CLAUDE_CODE_START.md「管理の操作の手順」）。消したファイル（kpi_config.py・fcf_conversion_config.json）を読む2か所（FINDINGS 2026-10-21）もページと一緒に無くなった。"
+         "scripts/audit_site_links.py でリンク切れ・孤立ページ0件"),
+        ("config/workflow_dependencies.json の label・accepts_tickers・input_param・bulk_update_order・bulk_update_phases・new_ticker_order",
+         "削除（2026-10-21）。読み手は管理のページの一括更新だけだった。depends_on・outputs（生成）とキー・yml は残す"),
+        ("誰も読まないキー11個（quarterly.json・ttm.json への書き込み）",
+         "書き込みをやめた（2026-10-21、チャット側の判断）: " + "・".join(('adjusted_income', 'condition1', 'detected_items', 'adjustment_amount', 'dta_detected', 'maturity_monitor', 'sbc_per_share', 'sector_threshold', 'sector_exclusions', 'split_adjusted', 'xbrl_eps')) + "。"
+         "全95銘柄の EPS の出力は、消したキーのほかは前後で同じ。TANUKI の理論株価・判定も前後で同じ（EPS の annual.json を FCF の外れ値の判定が読むため確かめた）"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-21）。画面の区画はKoichiさんの判断で stock.html・一覧の表を残し、管理のページ2つを消した。"
+                  "誰も読まないキーはチャット側の判断（TANUKI と同じ手順で、どこにも使われていないものだけ書くのをやめた）。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="adjusted_eps", OUTSIDE_PREFIXES=("docs/value-monitor/adjusted_eps_analyzer/", "src/value/adjusted_eps_analyzer/"),
     READ_PREFIXES=("docs/value-monitor/adjusted_eps_analyzer", "src/value/adjusted_eps_analyzer"),
     READ_HINT="adjusted_eps", NAME_SHORT="EPS",
     KNOWN_DUPLICATE_RULES=["q4_implied", "latest_filed", "ttm_sum"], TITLE="EPS（adjusted_eps_analyzer）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/adjusted_eps_analyzer",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        **{k: "残す: テストが参照する" for k in ("fair_value_auto_detect", "finished_at", "share_structure_mismatch")},
+        # 今の出力のファイル（commit 済み）には、次の本番の実行（月曜の連鎖）まで残る
+        **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('adjusted_income', 'condition1', 'detected_items', 'adjustment_amount', 'dta_detected', 'maturity_monitor', 'sbc_per_share', 'sector_threshold', 'sector_exclusions', 'split_adjusted', 'xbrl_eps')},
+    },
     RULES=_TANUKI["RULES"],
     FULL_SCAN=True, SCREEN_SECTIONS=True,
     HTML_COPIES=[],
-    PAGE_CHECKS=["docs/value-monitor/admin.html"],
+    PAGE_CHECKS=[],   # 段階1で確かめた docs/value-monitor/admin.html は段階2で削除
     WORKFLOW_SUMMARY=True,
-    SECTION_DECISIONS={},
+    SECTION_DECISIONS={
+        "docs/value-monitor/adjusted_eps_analyzer/stock.html": "残す（2026-10-21、Koichiさんの判断）",
+        "docs/value-monitor/adjusted_eps_analyzer/index.html": "残す（2026-10-21、Koichiさんの判断: 一覧の表）",
+        "docs/value-monitor/adjusted_eps_analyzer/tickers.html": "残す（2026-10-21）",
+    },
 )
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS}
 
@@ -2484,7 +2505,7 @@ def render_md(inv: dict) -> str:
             L.append(f"- `{x['file']}` 行 {x['line']}（`{x['output']}`）: `{md_escape(x['text'])}`")
     L.append("")
     if inv["deleted"]:
-        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT == "HypeCore" else "2026-10-20") + "）")
+        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT in ("HypeCore", "EPS") else "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")

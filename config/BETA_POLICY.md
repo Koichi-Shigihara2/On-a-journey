@@ -100,7 +100,7 @@ yfinanceが提供する個別株βは市場の投機・需給ノイズに歪み�
 1. [Damodaran最新版](https://pages.stern.nyu.edu/~adamodar/) で対象業種の **unlevered β中央値** を確認する
 2. `_damodaran_ref_2025` にその業種が未登録なら追加する
 3. `overrides` に銘柄別の最終β値・`industry`・`reason` を記載する
-4. admin.htmlの「β設定タブ」からGUI操作でも編集可能
+4. 編集はClaude Codeが直接する（管理のページは2026-10-21に削除。CLAUDE_CODE_START.md「管理の操作の手順」）
 
 ---
 

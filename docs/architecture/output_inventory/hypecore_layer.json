@@ -1624,10 +1624,6 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
-     "page": "docs/value-monitor/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "直接"
     },
@@ -1871,7 +1867,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 405,
+     "line": 402,
      "text": "def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:"
     },
     {
@@ -2144,41 +2140,6 @@
    ],
    "sites": [
     {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1236,
-     "text": "function calcWacc(beta) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1838,
-     "text": "async function loadBetaTab() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1860,
-     "text": "function renderBetaTable() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1898,
-     "text": "function updateWaccPreview(ticker) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1915,
-     "text": "function removeBetaRow(ticker) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1919,
-     "text": "function addBetaRow() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1972,
-     "text": "async function saveBeta() {"
-    },
-    {
      "file": "src/value/tanuki_valuation/beta_fetcher.py",
      "line": 110,
      "text": "def calc_capped_beta(raw_beta: float, ticker: str) -> tuple[float, str]:"
@@ -2200,7 +2161,6 @@
     }
    ],
    "files": [
-    "docs/value-monitor/admin.html",
     "src/value/tanuki_valuation/beta_fetcher.py",
     "src/value/tanuki_valuation/calculator/wacc.py",
     "src/value/tanuki_valuation/data_fetcher.py"
@@ -2293,10 +2253,6 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "line": 22
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 814
     }
    ]
   },

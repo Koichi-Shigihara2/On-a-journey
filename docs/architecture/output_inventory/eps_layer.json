@@ -10,7 +10,7 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "func": "process_one_ticker",
-     "line": 844
+     "line": 834
     }
    ],
    "writers_outside_layer": [],
@@ -80,7 +80,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "銘柄ごとの直近4四半期の合計（TTM）の純利益・調整後純利益・EPSの時系列。EPSの個別ページが読む",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
@@ -89,7 +89,7 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "func": "run",
-     "line": 1076
+     "line": 1066
     }
    ],
    "writers_outside_layer": [],
@@ -101,7 +101,7 @@
    "top_keys": [
     {
      "key": "last_updated",
-     "reader_files": 6
+     "reader_files": 5
     },
     {
      "key": "run_status",
@@ -162,14 +162,6 @@
      "type": "JS・HTML"
     },
     {
-     "file": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-     "line": 358,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    },
-    {
      "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "line": 240,
      "func": "",
@@ -203,7 +195,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 507,
+     "line": 503,
      "func": "generate_summary",
      "how": "保存済みファイル",
      "via": "AST",
@@ -211,7 +203,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 901,
+     "line": 891,
      "func": "_recently_completed_at",
      "how": "保存済みファイル",
      "via": "grep",
@@ -219,7 +211,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 905,
+     "line": 895,
      "func": "_recently_completed_at",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1118,10 +1110,6 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
-     "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-     "how": "直接"
-    },
-    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "how": "直接"
     },
@@ -1132,10 +1120,6 @@
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
      "how": "直接"
-    },
-    {
-     "page": "docs/value-monitor/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/detail.html",
@@ -1163,12 +1147,12 @@
     "理論株価・判定（TANUKI VALUATION）",
     "EPSの画面"
    ],
-   "reader_count": 9,
+   "reader_count": 8,
    "reader_count_test": 8,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "全銘柄の一覧（銘柄ごとの最新期のGAAP EPS・調整後EPS・差・前年比・健全性）と実行の結果（run_status）。EPSの画面の一覧・TANUKI VALUATIONの調整後EPSが読む",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
@@ -1177,7 +1161,7 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "func": "process_one_ticker",
-     "line": 848
+     "line": 838
     }
    ],
    "writers_outside_layer": [],
@@ -1382,10 +1366,6 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
-     "page": "docs/value-monitor/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
-    },
-    {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
@@ -1418,7 +1398,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの年次の調整後EPS（年ごとの調整項目）。TANUKI VALUATIONのFCFの外れ値の判定が、一過性の費用の突合に読む（calculator/adjustments.py）",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
@@ -1427,7 +1407,7 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "func": "process_one_ticker",
-     "line": 835
+     "line": 825
     }
    ],
    "writers_outside_layer": [],
@@ -1443,7 +1423,7 @@
     },
     {
      "key": "last_updated",
-     "reader_files": 3
+     "reader_files": 2
     },
     {
      "key": "quarters",
@@ -1451,7 +1431,7 @@
     },
     {
      "key": "ticker",
-     "reader_files": 15
+     "reader_files": 14
     }
    ],
    "readers": [
@@ -1590,14 +1570,6 @@
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
      "type": "Python"
-    },
-    {
-     "file": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-     "line": 372,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
     },
     {
      "file": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -2508,20 +2480,12 @@
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
-     "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-     "how": "直接"
-    },
-    {
      "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
      "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
      "how": "直接"
-    },
-    {
-     "page": "docs/value-monitor/admin.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/detail.html",
@@ -2552,12 +2516,12 @@
     "理論株価・判定（TANUKI VALUATION）",
     "EPSの画面"
    ],
-   "reader_count": 8,
+   "reader_count": 7,
    "reader_count_test": 12,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの四半期の調整後EPS（調整項目・税の調整・AIの分析・特記）と経営者実行力の指標（execution_metrics）。EPSの個別ページ・TANUKI VALUATIONの調整後PERが読む",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   },
   {
    "path": "${GITHUB_STEP_SUMMARY}",
@@ -2566,7 +2530,7 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "func": "_write_step_summary",
-     "line": 939
+     "line": 929
     }
    ],
    "writers_outside_layer": [],
@@ -2593,7 +2557,7 @@
    "reader_count_compute": 0,
    "group": "人が見る",
    "note": "GitHub Actionsの実行の画面に出す要約（成功・失敗の件数と失敗した銘柄、人が見る）",
-   "decision": ""
+   "decision": "残す（2026-10-21）"
   }
  ],
  "rules": [
@@ -2799,7 +2763,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 405,
+     "line": 402,
      "text": "def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:"
     },
     {
@@ -3072,41 +3036,6 @@
    ],
    "sites": [
     {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1236,
-     "text": "function calcWacc(beta) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1838,
-     "text": "async function loadBetaTab() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1860,
-     "text": "function renderBetaTable() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1898,
-     "text": "function updateWaccPreview(ticker) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1915,
-     "text": "function removeBetaRow(ticker) {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1919,
-     "text": "function addBetaRow() {"
-    },
-    {
-     "file": "docs/value-monitor/admin.html",
-     "line": 1972,
-     "text": "async function saveBeta() {"
-    },
-    {
      "file": "src/value/tanuki_valuation/beta_fetcher.py",
      "line": 110,
      "text": "def calc_capped_beta(raw_beta: float, ticker: str) -> tuple[float, str]:"
@@ -3128,7 +3057,6 @@
     }
    ],
    "files": [
-    "docs/value-monitor/admin.html",
     "src/value/tanuki_valuation/beta_fetcher.py",
     "src/value/tanuki_valuation/calculator/wacc.py",
     "src/value/tanuki_valuation/data_fetcher.py"
@@ -3178,7 +3106,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/__init__.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 0,
    "workflows": [],
    "code": [],
@@ -3188,7 +3116,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/adjustment_detector.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 165,
    "workflows": [],
    "code": [],
@@ -3200,7 +3128,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/ai_analyzer.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 164,
    "workflows": [],
    "code": [
@@ -3214,7 +3142,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/company_metadata.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 43,
    "workflows": [],
    "code": [],
@@ -3226,7 +3154,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/eps_calculator.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 73,
    "workflows": [],
    "code": [],
@@ -3238,7 +3166,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/execution_metrics.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 125,
    "workflows": [],
    "code": [],
@@ -3252,7 +3180,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 1235,
    "workflows": [],
    "code": [],
@@ -3273,8 +3201,8 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/fair_value_detector.py",
-   "decision": "",
-   "lines": 414,
+   "decision": "残す（2026-10-21）",
+   "lines": 403,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -3287,7 +3215,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/maturity_monitor.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 84,
    "workflows": [],
    "code": [],
@@ -3299,8 +3227,8 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-   "decision": "",
-   "lines": 1089,
+   "decision": "残す（2026-10-21）",
+   "lines": 1079,
    "workflows": [
     ".github/workflows/Adjusted_Eps_Analyzer_update.yml"
    ],
@@ -3325,7 +3253,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/sector_classifier_v2.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 107,
    "workflows": [],
    "code": [],
@@ -3339,7 +3267,7 @@
   {
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/tax_adjuster.py",
-   "decision": "",
+   "decision": "残す（2026-10-21）",
    "lines": 58,
    "workflows": [],
    "code": [],
@@ -3396,10 +3324,6 @@
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "line": 22
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 814
     }
    ]
   },
@@ -3415,7 +3339,20 @@
    ]
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "docs/value-monitor/adjusted_eps_analyzer/admin.html（EPSの管理、596行）・docs/value-monitor/admin.html（VALUE MONITOR · Admin、3,650行）と、サブナビの「管理」「管理（VALUE MONITOR ADMIN）」のリンク・tests/test_admin_calc_wacc.py",
+   "detail": "削除（2026-10-21、Koichiさんの判断）。GitHubのAPIでリポジトリのファイルを直接読み書きする管理のページ。操作はClaude Codeが代わりにする（CLAUDE_CODE_START.md「管理の操作の手順」）。消したファイル（kpi_config.py・fcf_conversion_config.json）を読む2か所（FINDINGS 2026-10-21）もページと一緒に無くなった。scripts/audit_site_links.py でリンク切れ・孤立ページ0件"
+  },
+  {
+   "what": "config/workflow_dependencies.json の label・accepts_tickers・input_param・bulk_update_order・bulk_update_phases・new_ticker_order",
+   "detail": "削除（2026-10-21）。読み手は管理のページの一括更新だけだった。depends_on・outputs（生成）とキー・yml は残す"
+  },
+  {
+   "what": "誰も読まないキー11個（quarterly.json・ttm.json への書き込み）",
+   "detail": "書き込みをやめた（2026-10-21、チャット側の判断）: adjusted_income・condition1・detected_items・adjustment_amount・dta_detected・maturity_monitor・sbc_per_share・sector_threshold・sector_exclusions・split_adjusted・xbrl_eps。全95銘柄の EPS の出力は、消したキーのほかは前後で同じ。TANUKI の理論株価・判定も前後で同じ（EPS の annual.json を FCF の外れ値の判定が読むため確かめた）"
+  }
+ ],
  "stop_condition": {
   "outputs": 5,
   "outputs_with_writer_outside_layer": [],
@@ -3424,121 +3361,25 @@
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-    "line": 507,
+    "line": 503,
     "func": "generate_summary",
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 20,
+  "name_hit_sites_resolved": 18,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.031,
+  "ratio_reader": 0.033,
   "threshold": 0.1,
   "hit": false
  },
  "screen": {
   "pages": [
-   "docs/value-monitor/adjusted_eps_analyzer/admin.html",
    "docs/value-monitor/adjusted_eps_analyzer/index.html",
    "docs/value-monitor/adjusted_eps_analyzer/stock.html",
    "docs/value-monitor/adjusted_eps_analyzer/tickers.html"
   ],
   "items": [
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "key": "cik_str",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
-    "label": "",
-    "lines": [
-     344
-    ],
-    "decision": ""
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "key": "eps_sector",
-    "has_writer": false,
-    "status": "画面の中で作る値",
-    "sources": [],
-    "label": "",
-    "lines": [
-     327,
-     549,
-     572
-    ],
-    "decision": ""
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "key": "last_updated",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
-    ],
-    "label": "不明",
-    "lines": [
-     363,
-     377
-    ],
-    "decision": ""
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "key": "ticker",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
-    ],
-    "label": "SEC API 応答エラー",
-    "lines": [
-     327,
-     343,
-     343,
-     408,
-     408,
-     408,
-     554,
-     556,
-     571,
-     571
-    ],
-    "decision": ""
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "key": "value",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json"
-    ],
-    "label": "取得中...",
-    "lines": [
-     385,
-     453,
-     488,
-     494,
-     495,
-     506,
-     507,
-     508,
-     536,
-     537,
-     538,
-     572
-    ],
-    "decision": ""
-   },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
     "key": "adjusted_eps",
@@ -3554,7 +3395,7 @@
     "lines": [
      395
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3566,7 +3407,7 @@
     "lines": [
      469
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3578,7 +3419,7 @@
     "lines": [
      467
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3593,7 +3434,7 @@
      328,
      392
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3619,7 +3460,7 @@
      388,
      388
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3635,7 +3476,7 @@
      396,
      396
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3662,7 +3503,7 @@
      386,
      397
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3678,7 +3519,7 @@
     "lines": [
      394
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3694,7 +3535,7 @@
      320,
      368
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3711,7 +3552,7 @@
      401,
      401
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3728,7 +3569,7 @@
     "lines": [
      244
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3745,7 +3586,7 @@
      383,
      384
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3759,7 +3600,7 @@
     "lines": [
      199
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3771,7 +3612,7 @@
     "lines": [
      468
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3785,7 +3626,7 @@
     "lines": [
      249
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3810,7 +3651,7 @@
      391,
      391
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3824,7 +3665,7 @@
     "lines": [
      243
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3840,7 +3681,7 @@
     "lines": [
      254
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -3860,7 +3701,7 @@
      398,
      398
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3886,7 +3727,7 @@
      1163,
      1243
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3901,7 +3742,7 @@
     "lines": [
      1321
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3919,7 +3760,7 @@
      1438,
      1443
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3936,7 +3777,7 @@
      1445,
      1445
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3950,7 +3791,7 @@
     "lines": [
      1198
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3964,7 +3805,7 @@
     "lines": [
      812
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3980,7 +3821,7 @@
     "lines": [
      960
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -3994,7 +3835,7 @@
     "lines": [
      820
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4011,7 +3852,7 @@
      1448,
      1448
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4027,7 +3868,7 @@
     "lines": [
      762
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4041,7 +3882,7 @@
     "lines": [
      835
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4055,7 +3896,7 @@
     "lines": [
      821
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4070,7 +3911,7 @@
     "lines": [
      1322
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4087,7 +3928,7 @@
      843,
      867
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4101,7 +3942,7 @@
     "lines": [
      1242
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4115,7 +3956,7 @@
     "lines": [
      1110
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4129,7 +3970,7 @@
     "lines": [
      1105
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4145,7 +3986,7 @@
     "lines": [
      857
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4159,7 +4000,7 @@
     "lines": [
      669
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4174,7 +4015,7 @@
     "lines": [
      1459
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4206,7 +4047,7 @@
      1474,
      1474
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4222,7 +4063,7 @@
     "lines": [
      928
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4239,7 +4080,7 @@
      854,
      927
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4254,7 +4095,7 @@
      1222,
      1223
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4274,7 +4115,7 @@
      1163,
      1242
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4289,7 +4130,7 @@
     "lines": [
      1318
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4303,7 +4144,7 @@
     "lines": [
      822
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4318,7 +4159,7 @@
     "lines": [
      1195
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4332,7 +4173,7 @@
     "lines": [
      829
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4348,7 +4189,7 @@
     "lines": [
      765
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4364,7 +4205,7 @@
      1447,
      1447
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4380,7 +4221,7 @@
      1339,
      1447
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4397,7 +4238,7 @@
      1447,
      1456
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4413,7 +4254,7 @@
     "lines": [
      908
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4427,7 +4268,7 @@
     "lines": [
      825
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4444,7 +4285,7 @@
     "lines": [
      653
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4458,7 +4299,7 @@
     "lines": [
      824
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4472,7 +4313,7 @@
     "lines": [
      823
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4486,7 +4327,7 @@
     "lines": [
      822
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4500,7 +4341,7 @@
     "lines": [
      829
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4518,7 +4359,7 @@
      771,
      772
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4535,7 +4376,7 @@
      808,
      808
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4552,7 +4393,7 @@
      801,
      807
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4567,7 +4408,7 @@
     "lines": [
      1320
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4583,7 +4424,7 @@
      1337,
      1457
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4599,7 +4440,7 @@
     "lines": [
      787
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4615,7 +4456,7 @@
     "lines": [
      951
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4631,7 +4472,7 @@
     "lines": [
      774
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4645,7 +4486,7 @@
     "lines": [
      1109
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4661,7 +4502,7 @@
     "lines": [
      961
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4677,7 +4518,7 @@
     "lines": [
      962
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4693,7 +4534,7 @@
     "lines": [
      762
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4710,7 +4551,7 @@
      1239,
      1514
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4727,7 +4568,7 @@
      1226,
      1226
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4743,7 +4584,7 @@
     "lines": [
      790
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4759,7 +4600,7 @@
     "lines": [
      794
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4775,7 +4616,7 @@
     "lines": [
      794
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4789,7 +4630,7 @@
     "lines": [
      691
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4815,7 +4656,7 @@
      918,
      927
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4830,7 +4671,7 @@
      1222,
      1223
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4853,7 +4694,7 @@
      818,
      867
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4875,7 +4716,7 @@
      1066,
      1503
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4896,7 +4737,7 @@
      806,
      1458
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4910,7 +4751,7 @@
     "lines": [
      691
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4924,7 +4765,7 @@
     "lines": [
      684
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4938,7 +4779,7 @@
     "lines": [
      698
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4952,7 +4793,7 @@
     "lines": [
      704
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4976,7 +4817,7 @@
      865,
      865
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -4992,7 +4833,7 @@
     "lines": [
      790
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5009,7 +4850,7 @@
      791,
      791
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5023,7 +4864,7 @@
     "lines": [
      714
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5039,7 +4880,7 @@
     "lines": [
      794
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5056,7 +4897,7 @@
      797,
      798
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5070,7 +4911,7 @@
     "lines": [
      1210
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5086,7 +4927,7 @@
     "lines": [
      835
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5104,7 +4945,7 @@
      1445,
      1445
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5127,7 +4968,7 @@
      1423,
      1423
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5146,7 +4987,7 @@
      1424,
      1424
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5160,7 +5001,7 @@
     "lines": [
      641
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5177,7 +5018,7 @@
     "lines": [
      597
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5191,7 +5032,7 @@
     "lines": [
      597
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5210,7 +5051,7 @@
      1505,
      1513
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5225,7 +5066,7 @@
      1144,
      1424
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5257,7 +5098,7 @@
      1511,
      1512
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5272,7 +5113,7 @@
      817,
      867
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5287,7 +5128,7 @@
     "lines": [
      707
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
@@ -5302,7 +5143,7 @@
     "lines": [
      701
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
@@ -5316,7 +5157,7 @@
     "lines": [
      315
     ],
-    "decision": ""
+    "decision": "残す（2026-10-21）"
    }
   ],
   "unread_keys": [
@@ -5328,7 +5169,7 @@
     "parents": [
      "ttm"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "adjustment_amount",
@@ -5338,7 +5179,7 @@
     "parents": [
      "detected_items"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "condition1",
@@ -5348,7 +5189,7 @@
     "parents": [
      "fair_value_auto_detect"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "detected_items",
@@ -5358,7 +5199,7 @@
     "parents": [
      "fair_value_auto_detect"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "dta_detected",
@@ -5368,7 +5209,7 @@
     "parents": [
      "quarters"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "fair_value_auto_detect",
@@ -5378,7 +5219,7 @@
     "parents": [
      "special_notes"
     ],
-    "note": ""
+    "note": "残す: テストが参照する"
    },
    {
     "key": "finished_at",
@@ -5388,7 +5229,7 @@
     "parents": [
      "run_status"
     ],
-    "note": ""
+    "note": "残す: テストが参照する"
    },
    {
     "key": "maturity_monitor",
@@ -5398,7 +5239,7 @@
     "parents": [
      "quarters"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "sbc_per_share",
@@ -5408,7 +5249,7 @@
     "parents": [
      "maturity_monitor"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "sector_exclusions",
@@ -5418,7 +5259,7 @@
     "parents": [
      "quarters"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "sector_threshold",
@@ -5428,7 +5269,7 @@
     "parents": [
      "maturity_monitor"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "share_structure_mismatch",
@@ -5438,7 +5279,7 @@
     "parents": [
      "special_notes"
     ],
-    "note": ""
+    "note": "残す: テストが参照する"
    },
    {
     "key": "split_adjusted",
@@ -5448,7 +5289,7 @@
     "parents": [
      "quarters"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "xbrl_eps",
@@ -5458,119 +5299,11 @@
     "parents": [
      "eps_discrepancy"
     ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    }
   ],
   "written_key_count": 96,
   "sections": [
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "section": "新規ティッカー登録",
-    "keys": [
-     {
-      "key": "cik_str",
-      "status": "書き手なし",
-      "lines": [
-       344
-      ]
-     },
-     {
-      "key": "eps_sector",
-      "status": "画面の中で作る値",
-      "lines": [
-       327
-      ]
-     },
-     {
-      "key": "ticker",
-      "status": "この段階の書き手あり",
-      "lines": [
-       327,
-       343,
-       343
-      ]
-     },
-     {
-      "key": "value",
-      "status": "この段階の書き手あり",
-      "lines": [
-       453,
-       488,
-       494,
-       495,
-       506,
-       507,
-       508,
-       536,
-       537,
-       538
-      ]
-     }
-    ]
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "section": "EPSセクター手動設定",
-    "keys": [
-     {
-      "key": "eps_sector",
-      "status": "画面の中で作る値",
-      "lines": [
-       327,
-       549,
-       572
-      ]
-     },
-     {
-      "key": "ticker",
-      "status": "この段階の書き手あり",
-      "lines": [
-       327,
-       554,
-       556,
-       571,
-       571
-      ]
-     },
-     {
-      "key": "value",
-      "status": "この段階の書き手あり",
-      "lines": [
-       572
-      ]
-     }
-    ]
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "section": "（区画を決められない）",
-    "keys": [
-     {
-      "key": "last_updated",
-      "status": "この段階の書き手あり",
-      "lines": [
-       363,
-       377
-      ]
-     },
-     {
-      "key": "ticker",
-      "status": "この段階の書き手あり",
-      "lines": [
-       408,
-       408,
-       408
-      ]
-     },
-     {
-      "key": "value",
-      "status": "この段階の書き手あり",
-      "lines": [
-       385
-      ]
-     }
-    ]
-   },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
     "section": "（ページの先頭）",
@@ -6864,393 +6597,5 @@
    }
   ]
  },
- "page_checks": [
-  {
-   "page": "docs/value-monitor/admin.html",
-   "title": "VALUE MONITOR · Admin",
-   "reads": [
-    {
-     "literal": "config/beta_config.json",
-     "path": "docs/value-monitor/config/beta_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/discover_config.json",
-     "path": "docs/value-monitor/config/discover_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/fcf_conversion_config.json",
-     "path": "docs/value-monitor/config/fcf_conversion_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/growth_options_config.json",
-     "path": "docs/value-monitor/config/growth_options_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/maturity_config.json",
-     "path": "docs/value-monitor/config/maturity_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/rpo_config.json",
-     "path": "docs/value-monitor/config/rpo_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/segment_config.json",
-     "path": "docs/value-monitor/config/segment_config.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "config/workflow_dependencies.json",
-     "path": "docs/value-monitor/config/workflow_dependencies.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "docs/portfolio/data/portfolio.json",
-     "path": "docs/value-monitor/docs/portfolio/data/portfolio.json",
-     "files": 0,
-     "writers": []
-    },
-    {
-     "literal": "https://data.sec.gov/submissions/CIK${paddedCik}.json",
-     "path": "docs/value-monitor/https:/data.sec.gov/submissions/CIK{T}.json",
-     "files": 0,
-     "writers": []
-    }
-   ],
-   "linked_from": [
-    "docs/common/site-nav.js",
-    "docs/common/ticker-links.js",
-    "docs/index.html",
-    "docs/portfolio/index.html",
-    "docs/portfolio/tail/detail.html",
-    "docs/portfolio/tail/index.html",
-    "docs/value-monitor/adjusted_eps_analyzer/admin.html",
-    "docs/value-monitor/stonks-silo/index.html",
-    "docs/value-monitor/tanuki_valuation/stock.html"
-   ],
-   "last_commit": "2026-10-17",
-   "api_reads": [
-    {
-     "path": "config/beta_config.json",
-     "lines": [
-      1715,
-      1843,
-      1996
-     ],
-     "files": 1,
-     "py_writers": [
-      "src/value/tanuki_valuation/beta_fetcher.py:save_config"
-     ]
-    },
-    {
-     "path": "config/cik_lookup.csv",
-     "lines": [
-      1296,
-      1411,
-      1502,
-      1651,
-      1672,
-      1696
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/sec_data/registration_validator.py:promote_ticker_status"
-     ]
-    },
-    {
-     "path": "config/cik_lookup_result.json",
-     "lines": [
-      1457,
-      1496,
-      1639
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/discover_config.json",
-     "lines": [
-      3321,
-      3436
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/registration/register_ticker.py:step6_discover_register"
-     ]
-    },
-    {
-     "path": "config/fcf_conversion_config.json",
-     "lines": [
-      2027,
-      2110
-     ],
-     "files": 0,
-     "py_writers": []
-    },
-    {
-     "path": "config/growth_options_config.json",
-     "lines": [
-      2248
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/maturity_config.json",
-     "lines": [
-      1731,
-      2248,
-      2625
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/monitor_tickers.yaml",
-     "lines": [
-      1295,
-      1491,
-      1749,
-      1792,
-      1805,
-      3322
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/registration/register_ticker.py:step7_monitor_register"
-     ]
-    },
-    {
-     "path": "config/rpo_config.json",
-     "lines": [
-      2143,
-      2234
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/segment_config.json",
-     "lines": [
-      1722,
-      2248,
-      2461
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/workflow_dependencies.json",
-     "lines": [
-      2893
-     ],
-     "files": 1,
-     "py_writers": [
-      "scripts/gen_update_schedule.py:main"
-     ]
-    },
-    {
-     "path": "docs/portfolio/data/portfolio.json",
-     "lines": [
-      3435
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "docs/portfolio/index.html",
-     "lines": [
-      3631
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "docs/value-monitor/tanuki_valuation/data/tickers.json",
-     "lines": [
-      2788
-     ],
-     "files": 1,
-     "py_writers": [
-      "src/value/tanuki_valuation/pipeline.py:TanukiValuationPipeline._save_tickers_index"
-     ]
-    },
-    {
-     "path": "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
-     "lines": [
-      2330,
-      2794
-     ],
-     "files": 96,
-     "py_writers": [
-      "src/value/tanuki_valuation/pipeline.py:TanukiValuationPipeline._save_result"
-     ]
-    },
-    {
-     "path": "src/value/tanuki_valuation/growth_sanity.py",
-     "lines": [
-      2340,
-      2364
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "src/value/tanuki_valuation/kpi_config.py",
-     "lines": [
-      1738
-     ],
-     "files": 0,
-     "py_writers": []
-    }
-   ],
-   "api_writes": [
-    {
-     "path": "config/beta_config.json",
-     "lines": [
-      1719,
-      1997
-     ],
-     "files": 1,
-     "py_writers": [
-      "src/value/tanuki_valuation/beta_fetcher.py:save_config"
-     ]
-    },
-    {
-     "path": "config/cik_lookup.csv",
-     "lines": [
-      1420,
-      1507,
-      1681,
-      1689,
-      1704,
-      1711
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/sec_data/registration_validator.py:promote_ticker_status"
-     ]
-    },
-    {
-     "path": "config/discover_config.json",
-     "lines": [
-      3401
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/registration/register_ticker.py:step6_discover_register"
-     ]
-    },
-    {
-     "path": "config/fcf_conversion_config.json",
-     "lines": [
-      2111
-     ],
-     "files": 0,
-     "py_writers": []
-    },
-    {
-     "path": "config/growth_options_config.json",
-     "lines": [
-      2756
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/maturity_config.json",
-     "lines": [
-      1735,
-      2623,
-      2755
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/monitor_tickers.yaml",
-     "lines": [
-      1492,
-      1753,
-      1794,
-      1807
-     ],
-     "files": 1,
-     "py_writers": [
-      "common/registration/register_ticker.py:step7_monitor_register"
-     ]
-    },
-    {
-     "path": "config/rpo_config.json",
-     "lines": [
-      2235
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "config/segment_config.json",
-     "lines": [
-      1728,
-      2754
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "docs/portfolio/data/portfolio.json",
-     "lines": [
-      3604
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "docs/portfolio/index.html",
-     "lines": [
-      3637
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "src/value/tanuki_valuation/growth_sanity.py",
-     "lines": [
-      2391
-     ],
-     "files": 1,
-     "py_writers": []
-    },
-    {
-     "path": "src/value/tanuki_valuation/kpi_config.py",
-     "lines": [
-      1743
-     ],
-     "files": 0,
-     "py_writers": []
-    }
-   ],
-   "dispatches": [
-    "SEC_Data_Update.yml",
-    "Stonks_Silo_Update.yml",
-    "TANUKI_CIK_Lookup.yml",
-    "TANUKI_Segment_AI.yml",
-    "TANUKI_VALUATION_Update.yml"
-   ]
-  }
- ],
  "workflow_outputs": []
 }

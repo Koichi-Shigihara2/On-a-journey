@@ -3,9 +3,9 @@
 生成するもの:
   1. docs/architecture/UPDATE_SCHEDULE.md の「ワークフロー一覧」節（<!-- BEGIN GENERATED --> 〜 <!-- END GENERATED --> の間）
   2. config/workflow_dependencies.json のうちYAMLから決まる項目（各ワークフローの depends_on〈workflow_runの起動元〉・
-     outputs〈commitするパス〉）。表示名（label）・yml・accepts_tickers・input_param と一括更新の順序（bulk_update_order・
-     bulk_update_phases・new_ticker_order）は docs/value-monitor/admin.html の一括更新が使う手作業の定義のため、そのまま残す
-     （accepts_tickers・input_paramは、YAMLの手動実行の入力と合っているかだけを確認する）
+     outputs〈commitするパス〉）。キーと yml は手作業の定義（yml が .github/workflows/ にあるかだけを確認する）。
+     管理のページ（docs/value-monitor/admin.html）の一括更新が使っていた label・accepts_tickers・input_param・
+     bulk_update_order・bulk_update_phases・new_ticker_order は、ページの削除（2026-10-21）で読み手が無くなり消した
 
 使い方:
   python scripts/gen_update_schedule.py          # 生成して書き込む
@@ -187,14 +187,13 @@ def apply_section(doc_text: str, section: str) -> str:
 # ─────────────────────────────────────────────────────────
 
 def generated_deps(wfs: List[Dict[str, Any]], deps: Dict[str, Any]) -> Dict[str, Any]:
-    """YAMLから決まる項目を差し替えたdepsを返す（キー・label・順序の定義はそのまま）。"""
+    """YAMLから決まる項目を差し替えたdepsを返す（キー・ymlはそのまま）。"""
     by_file = {w["file"]: w for w in wfs}
     key_by_file = {v.get("yml"): k for k, v in (deps.get("workflows") or {}).items()}
     out = json.loads(json.dumps(deps))
     out.pop("known_issues", None)   # 古い時刻の記述（UPDATE_SCHEDULE.mdの変更履歴へ移した、2026-09-30）
     out["_generated"] = ("workflows.*のdepends_on・outputsはscripts/gen_update_schedule.pyが.github/workflows/*.ymlから生成する。"
-                         "label・yml・accepts_tickers・input_param・bulk_update_*・new_ticker_orderはadmin.htmlの一括更新用の手作業の定義"
-                         "（accepts_tickers・input_paramはYAMLの手動実行の入力と合っているかを確認する）。"
+                         "キーとymlは手作業の定義（ワークフローを新設したら足す）。"
                          "起動時刻・連鎖の説明はdocs/architecture/UPDATE_SCHEDULE.md")
     for k, v in (out.get("workflows") or {}).items():
         w = by_file.get(v.get("yml"))
@@ -205,18 +204,11 @@ def generated_deps(wfs: List[Dict[str, Any]], deps: Dict[str, Any]) -> Dict[str,
     return out
 
 
-def curated_input_problems(wfs: List[Dict[str, Any]], deps: Dict[str, Any]) -> List[str]:
-    """admin.htmlが使う手作業の定義（accepts_tickers・input_param）が、YAMLの手動実行の入力と合っているか。
-    accepts_tickers=trueなのにinput_paramがworkflow_dispatchの入力に無い場合を返す（値は書き換えない）。"""
+def unknown_yml_problems(wfs: List[Dict[str, Any]], deps: Dict[str, Any]) -> List[str]:
+    """手作業の定義の yml が .github/workflows/ に無いワークフローを返す（値は書き換えない）。"""
     by_file = {w["file"]: w for w in wfs}
-    out = []
-    for k, v in (deps.get("workflows") or {}).items():
-        w = by_file.get(v.get("yml"))
-        if w is None:
-            out.append(f"{k}: yml {v.get('yml')} が.github/workflows/に無い")
-        elif v.get("accepts_tickers") is not False and v.get("input_param", "tickers") not in (w["dispatch_inputs"] or []):
-            out.append(f"{k}: input_param {v.get('input_param', 'tickers')} が{w['file']}の手動実行の入力に無い")
-    return out
+    return [f"{k}: yml {v.get('yml')} が.github/workflows/に無い"
+            for k, v in (deps.get("workflows") or {}).items() if v.get("yml") not in by_file]
 
 
 def _dump(d: Dict[str, Any]) -> str:
@@ -239,7 +231,7 @@ def check_drift(repo: str = REPO) -> List[str]:
         cur = json.load(open(dp, encoding="utf-8"))
         if generated_deps(wfs, cur) != cur:
             msgs.append("config/workflow_dependencies.jsonのYAML由来の項目（depends_on・outputs）が.github/workflows/*.ymlと一致しない")
-        msgs += [f"config/workflow_dependencies.json: {m}" for m in curated_input_problems(wfs, cur)]
+        msgs += [f"config/workflow_dependencies.json: {m}" for m in unknown_yml_problems(wfs, cur)]
     except (OSError, ValueError) as e:
         msgs.append(f"workflow_dependencies.jsonを確認できない（{e}）")
     return msgs

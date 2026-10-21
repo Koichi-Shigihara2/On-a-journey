@@ -2987,21 +2987,6 @@ Update workflows実装・本番消費者8ファイル中3/8切替完了〉へ既
 
 ## 毎回の作業開始時に必ず実行すること
 
-> ⚠️ **一時的な運用注意（2026-08-16追記、Koichiさんが実施確認後に本ブロックごと削除してよい）**
-> `docs/value-monitor/admin.html`（`[[PORTFOLIO-CONFIG-DUP-1]]`、コミット
-> `e97741f54`/`eaf3016cb`）の保存先が`config/portfolio.json`→
-> `docs/portfolio/data/portfolio.json`（v2）へ変更された。同様に
-> `docs/discover/admin.html`（`[[DISCOVER-CONFIG-DUAL-MGMT-1]]`、コミット
-> `20a173a76`/`80bcf5f57`）も保存フロー（同期ワークフロー・検証ロジック）が
-> 変更されている。**ブラウザに旧版admin.htmlがキャッシュされたまま保存操作を
-> 行うと、value-monitor/admin.htmlは旧パス（`config/portfolio.json`）に
-> ファイルが再作成され、表示側（`docs/portfolio/`）に反映されない。**
-> admin.html自体は「保存成功」と表示するため、この不一致には気づけない。
-> **次回admin.html使用前にハードリロード（Ctrl+Shift+R）を必須で実施する
-> こと。** value-monitor/admin.htmlは画面上部に保存先バージョン表記
-> （「保存先: docs/portfolio/data/portfolio.json（v2、2026-08-15〜。
-> config/への保存は廃止）」）があり、新版が読み込まれているかここで確認
-> できる。
 
 ### Step 0: ローカルリポジトリの最新化（最優先）
 GitHub Actions が前回セッション後にデータを自動更新している可能性があるため、
@@ -3211,9 +3196,9 @@ TANUKI-POLICYB-FIX-1として正式分離・再コミットした事例）。
 バックエンド（pipeline.py・data_fetcher.py等）に新しい銘柄属性・設定項目を追加した場合、
 以下を必ずセットで実施する：
 
-**① フロントエンドへの登録機能追加**
-- admin.html（または該当する管理画面）に
-  新属性の入力・編集UIを追加する
+**① 設定の手順の追加**
+- 「管理の操作の手順」の表に、新属性の設定ファイルと編集の手順を足す
+  （管理のページは2026-10-21に削除。編集の画面は作らない）
 - 既存銘柄への一括適用手段も合わせて用意する
 
 **② 銘柄登録手順への追記**
@@ -3784,6 +3769,42 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 
 ---
 
+## 管理の操作の手順（2026-10-21、管理のページの削除の後）
+
+2026-10-21に管理のページ2つ（`docs/value-monitor/admin.html`・`docs/value-monitor/adjusted_eps_analyzer/admin.html`）を消した
+（Koichiさんの判断、R-A EPSの段階2）。Koichiさんは「〇〇を登録して」「〇〇のβを変えて」と頼むだけにし、Claude Codeが下の手順でする。
+
+- 設定ファイルを直接編集する操作も、ゲート3種（pytest・audit.py・report_consistency_check.py --fail-on-ng）を通してからcommit・pushする
+- ワークフローの起動は`gh workflow run <yml> --ref kaihatsu -f <入力>=<値>`。結果は`gh run list --workflow <yml> -L 1`・`gh run watch <id>`で確かめる。
+  入力の名前はワークフローごとに違う（EPSだけ`ticker`、ほかは`tickers`。UPDATE_SCHEDULE.mdの1章「手動の入力」）
+- 設定を変えた後は、その設定を読むワークフローを起動して結果を確かめる（多くはTANUKI_VALUATION_Update.yml）
+
+| 頼まれること | 前のページの操作 | Claude Codeがすること |
+|---|---|---|
+| 〇〇を登録して | 銘柄管理「新規銘柄登録」・EPSの管理「追加」 | 「新規銘柄登録時の必須手順」（Step 0・0.5の後に`common/registration/register_ticker.py`）。CIKはSECの`company_tickers.json`で確かめて`config/cik_lookup.csv`の新しい行に書く |
+| 〇〇を監視から外して | 銘柄管理「選択銘柄を削除」 | `config/monitor_tickers.yaml`からその行を消す（単純リスト。yaml.dumpは使わず、コメントを残してテキストで消す）。前のページもこのファイルから消すだけで、`cik_lookup.csv`は変えなかった |
+| 〇〇の対象のシステム・EPSセクターを変えて | 銘柄管理の行の編集・EPSの管理「EPSセクター手動設定」 | `config/cik_lookup.csv`のその行の列（`tanuki`・`eps`・`hypecore`・`stonks_silo`・`eps_sector`）を直接編集する。`eps_sector`は`config/sectors.yaml`の`name`から選ぶ（空は自動） |
+| 〇〇のβを変えて | β設定タブ | `config/beta_config.json`の`overrides.{T}`（`beta`・`sector`・`industry`・`reason`）を直接編集する（`config/BETA_POLICY.md`の手順）。月次の自動の取得は`Beta_Config_Update.yml`（`beta_fetcher.py`） |
+| 〇〇のセグメント・成熟プロファイル・成長オプションを変えて | 銘柄設定タブ | `config/segment_config.json`・`config/maturity_config.json`・`config/growth_options_config.json`を直接編集する（セグメントは下の「新規銘柄のセグメント設定判断ルール」に従い10-Kから。根拠を`comment`に書く） |
+| Phase2成長率のセクター別の上限を変えて | 銘柄設定タブ「上限テーブル」 | `config/maturity_config.json`のセクター別の上限の表を直接編集する |
+| RPOのホワイトリストを変えて | RPO設定タブ | `config/rpo_config.json`のwhitelistを理由付きで直接編集する |
+| Discoverの区分・メモを変えて | Discover設定タブ | `config/discover_config.json`を直接編集する（pushで`Discover_Config_Sync.yml`が`docs/portfolio/data/`へ写す） |
+| ポートフォリオを変えて | ポートフォリオタブ「保存」 | `docs/portfolio/data/portfolio.json`を直接編集する |
+| 〇〇を更新して（全銘柄） | 実行タブ・一括実行 | `gh workflow run SEC_Data_Update.yml --ref kaihatsu`。完了で連鎖（HypeCore・EPS・Stonks → TANUKI VALUATION → TANUKI Score）が動く |
+| 〇〇を更新して（一部の銘柄） | 銘柄管理「SECデータ取得」「選択銘柄を更新実行」・実行タブ・EPSの管理「選択した銘柄を更新」 | 必要なワークフローだけを銘柄を指定して起動する（例: `gh workflow run TANUKI_VALUATION_Update.yml --ref kaihatsu -f tickers=NVDA`）。SEC_Data_Updateを銘柄を指定して起動しても、連鎖の下流は全銘柄で動く |
+| MACRO PULSE・Market Pulseを動かして | 実行タブ | `gh workflow run MACRO_PULSE_Update.yml --ref kaihatsu -f mode=<モード>`・`gh workflow run Market_Pulse_Update.yml --ref kaihatsu` |
+| 状態を見せて | ステータスタブ | `docs/value-monitor/tanuki_valuation/data/tickers.json`・`{T}/latest.json`を読んで報告する |
+
+**手順にしていない操作**（コードを書き換えるため。扱いはチャット側が決める）:
+- β設定タブのDamodaranの業種の上書き: `src/value/tanuki_valuation/growth_sanity.py`の`TICKER_INDUSTRY_OVERRIDES`を書き換えていた
+- ポートフォリオのパスワードの変更: `docs/portfolio/index.html`の`PW_HASH`（パスワードのSHA-256）を書き換えていた
+
+**ページと一緒に無くなった操作**: FCF転換率タブ（`config/fcf_conversion_config.json`は192a45116bで削除済み）、
+登録の中の`kpi_config.py`への追記（0091fa09cbで削除済み）、銘柄設定タブ「AI案を生成」（`TANUKI_Segment_AI.yml`、Grokでセグメントを作る。
+セグメントは10-Kから決める手順〈Step 3.5〉と合わないため使わない）、CIKの自動取得（`TANUKI_CIK_Lookup.yml`。CIKは登録の手順の中で確かめる）
+
+---
+
 ## 新規銘柄登録時の必須手順
 
 **2026-09-03改訂（[[REGISTER-FLOW-REDESIGN-1]]方針2・3）**: Step 1〜8は
@@ -3975,7 +3996,7 @@ python src/value/tanuki_valuation/pipeline.py
 python -m pytest tests/ src/subport/day_trade/test_logic.py -v
 
 ### GitHub Actions 確認
-admin.html の「実行」タブ → 一括更新ボタンを使用
+`gh workflow run <yml> --ref kaihatsu`・`gh run list --workflow <yml> -L 1`（管理のページは2026-10-21に削除。「管理の操作の手順」）
 
 ---
 
@@ -4570,7 +4591,7 @@ grep -n "data-tool=\"xxx\"" docs/common/site-theme.css
   項目を書かない（正本は`site-nav.js`のITEMSだけ）
 - ヘッダーを`innerHTML`等で後から描画するページは、描画の後に`if (window.SiteNav) SiteNav.apply();`を呼ぶ（TANUKI stock.htmlの`applySharedNav()`）
 - ツール内のサブページ（一覧・詳細・管理画面等）への導線は、ヘッダーの直後に`<nav data-sub-nav>`で置く（`site-nav.js`の置換の対象外）。
-  現在のページの項目に`class="active"`。管理画面（admin.html）も必ずどこかのサブナビから辿れるようにする（孤立ページにしない）
+  現在のページの項目に`class="active"`。どのページも必ずどこかのサブナビから辿れるようにする（孤立ページにしない）
 
 ### ⑥ 個別銘柄ページの銘柄横断リンク（`?ticker=`を受けるページを作る場合は必須）
 

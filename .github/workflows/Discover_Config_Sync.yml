@@ -1,8 +1,8 @@
 name: Discover Config Sync
 
 # [[DISCOVER-CONFIG-DUAL-MGMT-1]] 対応。config/discover_config.json・
-# config/theme_config.jsonの書き手は複数存在する（value-monitor/admin.html
-# 〈dual-write済み〉・discover/admin.html〈single-write〉・
+# config/theme_config.jsonの書き手は複数存在した（value-monitor/admin.html・
+# discover/admin.html〈どちらも削除済み、value-monitorは2026-10-21〉・
 # CLAUDE_CODE_START.md新規銘柄登録手順〈shutil.copy一回限り〉・
 # Claude Code経由の直接編集）。書き手ごとに同期処理を分散実装するのでは
 # なく、config/側への変更を検知してdocs/側へ自動同期する仕組みを本

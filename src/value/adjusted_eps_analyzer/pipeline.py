@@ -120,7 +120,6 @@ def check_eps_discrepancy(ticker: str, quarterly_results: List[Dict]) -> Dict[st
 
             discrepancies[period_end] = {
                 'flag': 'EPS_DISCREPANCY',
-                'xbrl_eps': xbrl_eps,
                 'official_eps': av_eps,
                 'eps_diff_pct': round(eps_diff_ratio * 100, 1),
                 'note': (
@@ -210,7 +209,6 @@ def apply_split_adjustments(ticker: str, quarterly_results: List[Dict], split_hi
             q['diluted_shares'] = q.get('diluted_shares', shares) * ratio
             q['gaap_eps'] = q.get('gaap_eps', 0) / ratio
             q['adjusted_eps'] = q.get('adjusted_eps', 0) / ratio
-            q['split_adjusted'] = True
             adjusted_count += 1
 
         print(f"  [SPLIT] {ticker}: {adjusted_count}四半期を {ratio}x 分割補正済み")
@@ -274,7 +272,6 @@ def apply_dta_adjustments(ticker: str, quarterly_results: List[Dict]) -> List[Di
         result["adjusted_net_income"] = adj_net
         result["adjusted_eps"]        = adj_eps
         result["net_adjustment_total"] = adj_net - net_income
-        result["dta_detected"]        = True
         result["adjustments"] = result.get("adjustments", []) + [{
             "item_id":   "tax_one_time_dta",
             "item_name": "DTA認識（繰延税金資産）除外",
@@ -428,7 +425,6 @@ def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]
     return {
         "period": f"TTM {ttm_data[0]['filing_date']} to {ttm_data[-1]['filing_date']}",
         "net_income": total_net_income,
-        "adjusted_income": total_net_income + total_adjustments,
         "diluted_shares": avg_shares,
         "eps": total_net_income / avg_shares if avg_shares else 0,
         "adjusted_eps": (total_net_income + total_adjustments) / avg_shares if avg_shares else 0
@@ -726,7 +722,6 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
             result["form"] = data["form"]
             result["net_adjustment_total"] = net_adjustment
             result["sector"] = sector
-            result["sector_exclusions"] = exclusion_item_ids
             result["revenue"] = data.get("revenue", 0)
             result["diluted_shares"] = data.get("diluted_shares", 0)
             result["period_end"] = period_data.get("end", period_data["filing_date"])
@@ -767,9 +762,6 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
                                               sbc_override=_sbc_val)
             if maturity_status.get('alert'):
                 print(f"  ⚠ Maturity Alert for {ticker} ({sector}): {maturity_status['alert']}")
-            _pending_maturity = maturity_status
-        else:
-            _pending_maturity = None
 
         # EPS差分検知（Alpha Vantage API vs XBRL）
         if ticker in EPS_CHECK_TICKERS:
@@ -810,8 +802,6 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
         if quarterly_results:
             quarterly_results.sort(key=lambda x: x["filing_date"], reverse=True)
             latest = quarterly_results[0]
-            if _pending_maturity is not None:
-                latest['maturity_monitor'] = _pending_maturity
             # 意図的設計（EPS-AI-ANALYSIS-LATEST-ONLY-1、2026-09-19判断確定）:
             # AI分析（health/comment/sources）は最新四半期のみに生成し、過去四半期には
             # 遡及しない。APIコスト抑制目的。過去四半期の調整項目自体（adjustments）は

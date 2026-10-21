@@ -334,7 +334,7 @@ async function loadData() {
 
   if (displayTickers.length === 0 && Object.keys(posAgg).length === 0) {
     document.getElementById('summary-section').innerHTML =
-      '<p style="color:var(--mut);font-family:var(--mono);font-size:13px;padding:40px">保有銘柄がありません。ADMIN からポートフォリオを設定してください。</p>';
+      '<p style="color:var(--mut);font-family:var(--mono);font-size:13px;padding:40px">保有銘柄がありません。ポートフォリオの設定（docs/portfolio/data/portfolio.json）は Claude Code に頼んでください。</p>';
     return;
   }
 

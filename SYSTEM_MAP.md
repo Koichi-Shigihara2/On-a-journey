@@ -248,7 +248,7 @@ cik_lookup.csvとは独立した別ファイルで、以下の実際の用途を
   指定銘柄がmonitor_tickers.yamlに存在するかを**非ブロッキング警告**としてチェックする
   （未登録でも処理は続行。eps=trueフラグの検証＝ブロッキングとは別軸）
 - `common/sec_data/registration_validator.py`の既定スキャン範囲（`target_tickers`未指定時）
-- `docs/value-monitor/adjusted_eps_analyzer/admin/`のUIから直接編集可能（EPS ANALYZER運用者向けの手動キュレーションリスト）
+- 編集はClaude Codeがファイルを直接編集する（管理のページは2026-10-21に削除。CLAUDE_CODE_START.md「管理の操作の手順」）
 
 cik_lookup.csvとの同期は自動化されておらず、新規銘柄登録手順Step 7
 （CLAUDE_CODE_START.md）で手動追加する運用。`registration_validator.py`の
@@ -391,9 +391,10 @@ TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T
 
 **銘柄別の例外の台帳（設計のみ、2026-10-15）**: `docs/architecture/TICKER_EXCEPTION_LEDGER.md`（`[[TICKER-EXCEPTION-LEDGER-1]]`）。TANUKI_VALUATION_Update.ymlに「Gate → 台帳の集約 → score_watcher → commit」の段を足す予定（未実装）。
 
-`config/workflow_dependencies.json`は`docs/value-monitor/admin.html`の一括更新（実行順序・表示名・tickersの渡し方）が読む。
-`depends_on`・`outputs`は同スクリプトがYAMLから生成する。`label`・`yml`・`accepts_tickers`・`input_param`・
-`bulk_update_*`・`new_ticker_order`は手作業の定義（ワークフローを新設したらここに追記する）。
+`config/workflow_dependencies.json`の`depends_on`・`outputs`は同スクリプトがYAMLから生成する。キーと`yml`は手作業の定義
+（ワークフローを新設したらここに追記する）。読み手はCHECK-58（YAMLとのずれ）だけ。管理のページ（`docs/value-monitor/admin.html`）の
+一括更新が読んでいた`label`・`accepts_tickers`・`input_param`・`bulk_update_*`・`new_ticker_order`は、ページの削除（2026-10-21）で消した。
+一括の更新はClaude Codeが`gh workflow run`で起動する（CLAUDE_CODE_START.md「管理の操作の手順」）。
 
 ### 計算方法の変更の印と最新期欠けのガード（2026-10-14追記、[[LAYER3-RETENTION-PERIOD-1]]・[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
 - `common/method_change.py`・`config/method_change.json`: 公開データを作り直す日（JST）と項目IDを書くと、その日の実行の記録に`"method_change"`が付く
@@ -473,10 +474,10 @@ GET https://koichi-shigihara2.github.io/On-a-journey/portfolio/data/portfolio.js
 必ず`docs/`配下に置く**。`config/`へ移動してはならない。`config/`は
 Pythonバックエンド専用ディレクトリとして扱う。
 
-`admin.html`等が使うGitHub Contents API（`https://api.github.com/
+管理のページ（`admin.html`、2026-10-21に削除）が使っていたGitHub Contents API（`https://api.github.com/
 repos/.../contents/{path}`）はパスが`config/`でも`src/`でも`docs/`でも
 区別なくアクセス可能（Pages非公開の`config/fcf_conversion_config.json`
-を実際に読み書きしている実績あり）。ただし
+を読み書きしていた実績あり）。ただし
 `Authorization: token`ヘッダーにPAT（個人アクセストークン）が必須で、
 未認証アクセスは60req/hour/IPと極めて低いレート制限のため、**不特定
 多数が閲覧する表示ページの代替経路にはならない**（admin.html等、単一の

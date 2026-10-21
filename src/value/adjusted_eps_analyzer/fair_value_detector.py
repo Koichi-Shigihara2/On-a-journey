@@ -389,17 +389,6 @@ def apply_fair_value_detection(
         notes = dict(q.get("special_notes", {}))
         notes["fair_value_auto_detect"] = {
             "flag": "FAIR_VALUE_ADJUSTED",
-            "detected_items": [
-                {
-                    "item_name": adj_it["item_name"],
-                    "xbrl_tag": adj_it["extracted_from"],
-                    "xbrl_value": fv_it["xbrl_value"],
-                    "adjustment_amount": adj_it["amount"],
-                    "net_amount": adj_it["net_amount"],
-                }
-                for adj_it, fv_it in zip(adjusted_items, new_items)
-            ],
-            "condition1": cond1_reason,
             "note": (
                 "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。"
                 "GAAP EPSは経済実態を反映していない可能性があります。"
