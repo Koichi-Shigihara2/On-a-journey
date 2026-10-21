@@ -281,3 +281,19 @@ def test_empty_string_default_is_resolved_from_callers(monkeypatch):
     monkeypatch.setitem(inv.CALLERS, (rel, "load"), [(rel, 5)])
     join = next(n for n in ast.walk(mod.tree) if isinstance(n, ast.Call) and getattr(n, "lineno", 0) == 3)
     assert inv.normalize_path(inv.resolve(join, mod, join)) == "docs/eps/data/{T}/annual.json"
+
+
+def test_workflow_working_directory_runs_file():
+    """working-directory: <フォルダ> の段で python <ファイル名> と動かす形も、そのファイルを動かすワークフローとする（2026-10-21、STONKS SILO・TANUKI）。"""
+    wf = ("      - name: Run\n        working-directory: discover/stonks-silo/src\n        run: |\n          python pipeline.py $TICKERS\n")
+    assert inv.workflow_runs_file(wf, "discover/stonks-silo/src/pipeline.py")
+    assert not inv.workflow_runs_file(wf, "discover/stonks-silo/src/analyzer.py")
+    assert not inv.workflow_runs_file(wf, "src/value/tanuki_valuation/pipeline.py")
+    assert inv.workflow_runs_file("python -m src.value.adjusted_eps_analyzer.pipeline", "src/value/adjusted_eps_analyzer/pipeline.py")
+
+
+def test_stonks_layer_is_configured_but_not_checked_yet():
+    """STONKS SILO の段階1（2026-10-21）: 一覧は作るが、CHECK-INV はまだ当てない。"""
+    assert "stonks" in inv.LAYERS
+    assert "stonks" not in inv.CHECK_LAYERS
+    assert inv.LAYERS["stonks"]["KNOWN_DUPLICATE_RULES"] == ["staleness"]

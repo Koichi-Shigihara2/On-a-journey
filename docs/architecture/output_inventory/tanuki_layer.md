@@ -40,26 +40,26 @@
 
 | 出力 | 何か | 書き手 | 起動元のワークフロー |
 |---|---|---|---|
-| `${GITHUB_STEP_SUMMARY}` | GitHub Actionsの実行の画面に出す要約（人が見る） | `beta_fetcher.py:main`<br>`score_watcher.py:main` | .github/workflows/Beta_Config_Update.yml |
-| `Discord（DISCORD_WEB_HOOK）` | βの更新・判定の変化のDiscordへの通知 | `beta_fetcher.py:post_discord`<br>`score_watcher.py:post_discord` | .github/workflows/Beta_Config_Update.yml |
+| `${GITHUB_STEP_SUMMARY}` | GitHub Actionsの実行の画面に出す要約（人が見る） | `beta_fetcher.py:main`<br>`score_watcher.py:main` | .github/workflows/Beta_Config_Update.yml<br>.github/workflows/TANUKI_VALUATION_Update.yml |
+| `Discord（DISCORD_WEB_HOOK）` | βの更新・判定の変化のDiscordへの通知 | `beta_fetcher.py:post_discord`<br>`score_watcher.py:post_discord` | .github/workflows/Beta_Config_Update.yml<br>.github/workflows/TANUKI_VALUATION_Update.yml |
 
 ## 読み手の内訳
 
 ### `docs/value-monitor/tanuki_valuation/data/.watcher_state.json`（1件）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `AAPL`(0)・`ABBV`(0)・`ADBE`(0)・`ADSK`(0)・`ALAB`(0)・`AMAT`(0)・`AMD`(0)・`AMZN`(0)・`APP`(0)・`ASTS`(0)・`AVAV`(0)・`BBAI`(0)・`BKNG`(0)・`BROS`(0)・`BSY`(0)・`CAKE`(0)・`CART`(0)・`CAT`(0)・`CDNS`(0)・`CEG`(0)・`CELH`(0)・`CIX`(0)・`COHR`(0)・`CPRT`(0)・`CRM`(0)・`CRWV`(0)・`CSGP`(0)・`DDOG`(0)・`DELL`(0)・`DOCN`(0)・`ELF`(0)・`ENTG`(0)・`ESTC`(0)・`FCX`(0)・`FICO`(0)・`FLYW`(0)・`FROG`(0)・`FRSH`(0)・`GEV`(0)・`GOOGL`(0) ほか58
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 38・59・271・314（経由 `src/value/tanuki_valuation/score_watcher.py::load_state`）
 
 ### `docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`（1件）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 531
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/history.json`（1件）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 761
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`（1件）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(0)・`alpha_was_capped`(0)・`bs_adjustment`(0)・`calculation_date`(1)・`components`(0)・`dcf_components`(0)・`dcf_type`(0)・`fcf_base`(0)・`fcf_estimation`(0)・`fcf_outlier`(0)・`fcf_source`(0)・`fcf_ttm_end`(0)・`fcf_ttm_periods`(0)・`formula`(0)・`future_values`(0)・`growth`(0)・`growth_options`(0)・`growth_scenarios`(0)・`intrinsic_value_beta`(0)・`intrinsic_value_per_share`(1)・`intrinsic_value_pt`(0)・`intrinsic_value_rf`(0)・`intrinsic_value_rf_rate`(0)・`latest_period_missing`(0)・`maturity_profile`(0)・`phase1_growth`(0)・`rd_capitalization`(0)・`required_growth_rf_base`(0)・`required_growth_rf_live`(0)・`return_metrics`(0)・`rice`(0)・`rice_data_source`(0)・`risk_free_rate_live`(0)・`risk_free_rate_live_date`(0)・`risk_free_rate_live_source`(0)・`rpo_adjustment`(0)・`scenario_valuations`(0)・`sensitivity`(0)・`software_system_provisional`(0)・`software_system_reclassification`(0) ほか8
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 320・518・1060・1267（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
@@ -107,7 +107,7 @@
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json））: `docs/value-monitor/tanuki_valuation/stock.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/tickers.json`（2件以上）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(3)・`tickers`(11)・`updated_at`(0)
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 56・59・359・468（経由 `common/sec_data/audit.py::get_registered_tickers`）
 - Python・保存済みファイル: `common/system_health.py` 行 159・1032・1041・1110（経由 `common/sec_data/audit.py::get_registered_tickers`、`common/system_health.py::check_d_actions`）
@@ -124,7 +124,7 @@
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/sec_data/audit.py::get_registered_tickers`）
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`（2件以上）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(4)・`alpha_was_capped`(2)・`breakeven_reason`(2)・`bs_adjustment`(5)・`calculation_date`(8)・`components`(25)・`dcf_components`(7)・`dcf_type`(4)・`dilution_comment`(2)・`dilution_severity`(2)・`dupont`(5)・`erp`(2)・`fcf_base`(6)・`fcf_estimation`(4)・`fcf_history`(6)・`fcf_margin_bear_mult_applied`(1)・`fcf_margin_note`(1)・`fcf_outlier`(5)・`fcf_source`(0)・`fcf_ttm_end`(2)・`fcf_ttm_periods`(0)・`financial_health`(8)・`formula`(2)・`funda_score`(7)・`future_values`(4)・`growth`(12)・`growth_options`(4)・`growth_sanity`(6)・`growth_scenarios`(6)・`intrinsic_value_beta`(3)・`intrinsic_value_per_share`(15)・`intrinsic_value_rf`(3)・`intrinsic_value_rf_rate`(3)・`latest_period_missing`(5)・`matrix`(4)・`maturity_profile`(2)・`net_current_assets_ratio`(2)・`next_earnings_date`(7)・`phase1_growth`(3)・`phase1_growth_auto_adjusted`(4) ほか32
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 66・175・206（経由 `browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
 - Python・保存済みファイル: `browser_checks/check_tanuki_score_undetermined.py` 行 39・86（経由 `browser_checks/check_tanuki_score_undetermined.py::main`）
@@ -180,7 +180,7 @@
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`（2件以上）
-- 起動元: ワークフローから書き手を呼ぶ参照が見つからない
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - Python・保存済みファイル: `common/screening/report_txt_parser.py` 行 245・248・265・275・280・305（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`common/screening/report_txt_parser.py::parse_ticker_report`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2332・2335・2636・3419・3455・3701（経由 `common/sec_data/report_consistency_check.py::_read_report`、`common/sec_data/report_consistency_check.py::run_checks`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2839
@@ -189,7 +189,7 @@
 - テスト・保存済みファイル: `tests/test_report_txt_parser.py` 行 25・35・36・37・43・49・50（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`tests/test_report_txt_parser.py::_make_report`）
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`（2件以上）
-- 起動元: .github/workflows/Score_Verifier.yml
+- 起動元: .github/workflows/Score_Verifier.yml・.github/workflows/TANUKI_VALUATION_Update.yml
 - Python・保存済みファイル: `common/system_health.py` 行 101・106・1039・1110（経由 `common/system_health.py::check_b_score_history`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 710
 - ワークフロー・保存済みファイル: `.github/workflows/Score_Verifier.yml` 行 45

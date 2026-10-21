@@ -378,7 +378,44 @@ _EPS.update(
         "docs/value-monitor/adjusted_eps_analyzer/tickers.html": "残す（2026-10-21）",
     },
 )
-LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS}
+# ---- STONKS SILO（discover/stonks-silo、段階1、2026-10-21）
+_STONKS = dict(_SEC)
+_STONKS.update(
+    LAYER="discover/stonks-silo",
+    LAYER_DIRS=("discover/stonks-silo",),
+    OUT_JSON=f"{OUT_DIR}/stonks_layer.json", OUT_MD=f"{OUT_DIR}/stonks_layer.md",
+    # 自分のフォルダの読み手は「効く」に数えない。TANUKI（理論株価・判定）と画面を「効く」とする
+    DECISION_PREFIXES=DECISION_PREFIXES + [
+        ("docs/value-monitor/stonks-silo/", "STONKS SILOの画面"),
+        ("docs/value-monitor/tanuki_valuation/", "TANUKI VALUATIONの画面"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=[],
+    NONPROD_SCAN=True,
+    ANNOTATIONS={
+        "docs/value-monitor/stonks-silo/data/results.json":
+            "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、"
+            "四半期・年次の財務の推移（financial_vectors）。STONKS SILOの画面・TANUKI VALUATIONの赤字銘柄の評価とTANUKI Score・rcc・System Healthが読む",
+    },
+    DECISION_DEFAULT="",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
+    OUTSIDE_HINT="stonks", OUTSIDE_PREFIXES=("docs/value-monitor/stonks-silo/", "discover/stonks-silo/"),
+    READ_PREFIXES=("docs/value-monitor/stonks-silo", "discover/stonks-silo"),
+    READ_HINT="stonks", NAME_SHORT="STONKS",
+    KNOWN_DUPLICATE_RULES=["staleness"], TITLE="STONKS SILO（discover/stonks-silo）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/value-monitor/stonks-silo",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=[],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+)
+LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS}
 
 
 def set_layer(name: str) -> None:
@@ -1479,8 +1516,7 @@ def build() -> dict:
 
     # 起動元（ワークフロー）: 書き手のファイル、または書き手の関数を呼ぶファイルを参照するワークフロー
     def workflows_running(rel: str) -> List[str]:
-        dotted = module_rel_to_dotted(rel)
-        return sorted(w for w in workflows if rel in texts.get(w, "") or dotted in texts.get(w, ""))
+        return sorted(w for w in workflows if workflow_runs_file(texts.get(w, ""), rel))
 
     callers_index = CALLERS
 
@@ -2150,6 +2186,16 @@ def _page_api_io(t: str, tracked: List[str], py_files: List[str]) -> dict:
             "dispatches": wfs}
 
 
+def workflow_runs_file(text: str, rel: str) -> bool:
+    """ワークフローの本文が rel の .py を動かすか。パス・モジュール名（python -m）のほか、
+    working-directory: <rel のフォルダ> の段で python <ファイル名> と動かす形も当てる（TANUKI・STONKS SILO、2026-10-21）。"""
+    if rel in text or module_rel_to_dotted(rel) in text:
+        return True
+    d, base = posixpath.split(rel)
+    return bool(re.search(r"working-directory:\s*" + re.escape(d) + r"/?\s*$", text, re.M)
+                and re.search(r"python3?\s+" + re.escape(base) + r"\b", text))
+
+
 def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[str, str], layer_py: List[str]) -> List[dict]:
     """段階の .py を動かすワークフローが、自分の中で書く Step Summary（.py の外）と、それが .get() で読むキーが段階の JSON にあるか。"""
     keys: Set[str] = set()
@@ -2167,7 +2213,7 @@ def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[s
     out = []
     for wf in sorted(f for f in tracked if f.startswith(".github/workflows/") and f.endswith((".yml", ".yaml"))):
         t = texts.get(wf) or read_text(wf)
-        if "GITHUB_STEP_SUMMARY" not in t or not any(rel in t for rel in layer_py):
+        if "GITHUB_STEP_SUMMARY" not in t or not any(workflow_runs_file(t, rel) for rel in layer_py):
             continue
         got = sorted(k for k in set(re.findall(r"\.get\(\s*['\"](\w+)['\"]", t)) if not k.isupper())
         lines = [n for n, line in enumerate(t.splitlines(), 1) if "GITHUB_STEP_SUMMARY" in line]
@@ -2723,7 +2769,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()
