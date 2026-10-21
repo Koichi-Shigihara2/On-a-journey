@@ -302,7 +302,7 @@ _HYPECORE.update(
     OUTSIDE_HINT="hypecore", OUTSIDE_PREFIXES=("docs/value-monitor/hypecore/", "src/value/hypecore/"),
     READ_PREFIXES=("docs/value-monitor/hypecore", "src/value/hypecore"),
     READ_HINT="hypecore", NAME_SHORT="HypeCore",
-    KNOWN_DUPLICATE_RULES=[], TITLE="HypeCoreの出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["ttm_sum"], TITLE="HypeCoreの出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/hypecore",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={},
@@ -1906,7 +1906,7 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-CHECK_LAYERS = ("sec", "tanuki")   # CHECK-INV を当てる段階（段階3が済んだもの）
+CHECK_LAYERS = ("sec", "tanuki", "hypecore")   # CHECK-INV を当てる段階（段階3が済んだもの）
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

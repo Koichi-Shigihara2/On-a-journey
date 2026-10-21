@@ -42,6 +42,12 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 - [[OUTPUT-INVENTORY-CHECK-1]]（R-A）で各サブシステムの画面の項目の「残す／消す」を決めた後に行う（消える項目を作り直さないため）
 - [[NAV-MOBILE-1]]（R-D）と範囲が重なる。着手時に一緒に考える
 
+#### 追記（2026-10-21、R-AのHypeCoreの段階2）
+- HypeCoreの個別ページ（`docs/value-monitor/hypecore/detail.html`）の「期待の正体」（折りたたみ）は、ライフサイクルの段階ごとの定型文で、銘柄ごとの内容ではない
+  （detail.htmlに固定で書かれた`LIFECYCLE[lc]`の`headline`・`body`を、`detectLifecycle()`で決めた段階で選んで出すだけ）
+- Koichiさんは見ているが、記載が期待外れのことが多い（2026-10-21）。区画は残す（段階2の判断）
+- 画面の作り直しのときに、銘柄ごとの内容にするか（何を元に書くか）を決める
+
 #### 着手の条件
 [[OUTPUT-INVENTORY-CHECK-1]]（R-A）のTANUKIの段階が済んでいること（それ以外の画面は、その段階が済んでから）
 

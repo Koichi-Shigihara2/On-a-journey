@@ -232,7 +232,7 @@
 - テスト・保存済みファイル: `tests/test_market_pulse_implc.py` 行 374・381（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
 - テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 117・168（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - テスト・保存済みファイル: `tests/test_method_change.py` 行 78・88（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 88・99・106・115・123・131・144・153（経由 `tests/test_output_inventory_check.py::_tanuki_inventory`）
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 95・106・113・122・130・138・151・160（経由 `tests/test_output_inventory_check.py::_tanuki_inventory`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2867・2877・2902・2909・3037・3041
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82・168（経由 `common/sec_data/registration_validator.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_c_latest`）

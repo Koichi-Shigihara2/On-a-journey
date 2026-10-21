@@ -1938,7 +1938,17 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   TANUKI_Score_Update.ymlはworkflow_dispatch `39427928710`でsuccess、画面は判定の実績表を含めてエラー無し〈手元の配信のロゴの404だけ〉）。
   ②誰も読まないキー34のうち14の書き込みをやめた（件名「refactor: R-A TANUKI、誰も読まない14キーの書き込みをやめる」のcommit）。前後ともXAI_API_KEYを外してpipelineを手元で回し、96銘柄のlatest.jsonのiv・判定・RICE・TANUKI Scoreは前後で同じ（消したキーと時刻のほかの差も0）。
   残した20キーの理由は一覧の注記（書き手が見つからない9・テストが参照6・名前が一般的2・validatorの検証の結果2・rccが名前の組で読む1）
-- **次はほかのサブシステム（HypeCore・STONKS SILO・EPS・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）。順はチャット側が決める**
+#### HypeCoreの段階（2026-10-21 済）
+- 段階1（一覧の下書き）: `42bf2d11d9`（`build_output_inventory.py --layer hypecore` → `hypecore_layer.json`・`hypecore_layer.md`）。出力3、読み手0件0、画面が読むキー49（書き手なし0）、誰も読まないキー0、規則の二重のうちHypeCoreを含むもの1（TTMの作り方）。
+  キーは全ファイル（98銘柄）で照合（TANUKIの段階2の抜き取りの見落としの教訓）。一覧のスクリプトに画面の区画・ワークフローが自分で書くStep Summary・本番外のHTMLの複製・範囲外のページの確認の表を足した
+- 段階2（判断と削除）: 件名「refactor: R-A HypeCoreの段階2、hypecore.html・Step SummaryのLC・Rec・Extreme Fearのページを削除」のcommit。
+  detail.htmlの7区画はすべて残す（Koichiさんの判断）。消したもの: `src/value/hypecore/hypecore.html`（436行、古い単ページ版）、HypeCore_Update.ymlのStep SummaryのLC・Recの列（常に「--」）、
+  Extreme Fearのページ（`docs/value-monitor/extreme-fear/index.html` 394行と、ナビの項目・HOMEのカード・site-header.jsの`ef`・site-theme.cssの色。Koichiさんの判断: 使っていない）。リンクの監査でリンク切れ0件
+- 段階3（CHECK）: 件名「feat: R-A HypeCoreの段階3、CHECK-INVをHypeCoreにも当てる」のcommit。CHECK-INV-1〜6をHypeCoreにも当てた（INV-5は本番のワークフローでWARN）。既知の規則の二重（TTMの作り方）はWARN。
+  rccのCHECK-INVはSEC層・TANUKI・HypeCoreで約32秒（SEC層・TANUKIだけのときは約26秒）
+- 読み手の数え方の誤り（同じ名前のファイル。HypeCoreの`tickers.json`の読み手が16件と出る。実際は3件）は直さず、一覧の注記に実際の読み手を書いた。
+  この誤りがあると、本当の読み手が読むのをやめても、同じ名前のほかのファイル（TANUKIの`tickers.json`）を読む行が残っていればCHECK-INV-2は「読み手が読んでいない」を出さない（見逃しうる）
+- **次はEPSの段階1**（チャット側が決めた順。残りはSTONKS SILO・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

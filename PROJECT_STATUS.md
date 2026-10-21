@@ -18,7 +18,8 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**次のサブシステムの段階1**（HypeCore・STONKS SILO・EPS・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL。順はチャット側が決める）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**次はEPSの段階1**（残りはSTONKS SILO・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
+   - （済 2026-10-21）HypeCoreの段階2・3: 第1部（hypecore.html・Step SummaryのLC・Rec・Extreme Fearのページを削除、detail.htmlの7区画は残す）・第2部（CHECK-INVをHypeCoreにも、rccのCHECK-INVは約32秒）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「HypeCoreの段階」
    - （済 2026-10-21）HypeCoreの段階1の下書き: `scripts/inventory/build_output_inventory.py --layer hypecore` → `hypecore_layer.json`・`hypecore_layer.md`。**次はKoichiさんの判断（段階2）**: 画面の区画（detail.html 7区画・index.html 1区画）の「投資判断に使っているか」、本番外の`src/value/hypecore/hypecore.html`、Step Summaryの`lifecycle_label`・`recommendation`（FINDINGS 2026-10-21）、範囲外の`docs/value-monitor/extreme-fear/`をどの段階で扱うか（チャット側）
      出力3（ファイル3）、読み手0件0・テストだけ0、画面が読むキー49（書き手なし0）、誰も読まないキー0、規則の二重9（HypeCoreを含むもの1: TTMの作り方）。止める条件は書き手0%・読み方0%。キーは抜き取りでなく全ファイル（98銘柄）で照合。CHECK-INVはsec・tanukiのまま（rccのCHECK-INVは25.5秒→25.7秒）
      一覧のスクリプト: `if __name__ == "__main__":`の中の代入をモジュールの名前に（HypeCoreのdocs/への写しとtickers.jsonの書き先が決まった。sec・tanukiの一覧は「画面（経由）」の列だけ変わった）、.py以外の本番外のファイルにimportの照合を当てない
@@ -39,6 +40,9 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-21（R-AのHypeCoreの段階2・3）**: 第1部（削除。src/value/hypecore/hypecore.html 436行・extreme-fear/index.html 394行・共通のナビ・カード・色、Step SummaryのLC・Rec）、第2部（CHECK-INVをHypeCoreにも。NG 0・WARN 10、約32秒）。
+  リンクの監査: ページ18件・リンク181件・リンク切れ0件・孤立ページ0件。IDEAS_AND_WATCH.mdの`[UI-STORY-REDESIGN-1]`に「期待の正体」は段階ごとの定型文であることを追記
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10（Extreme Fearは数えていない）、Python 69,080行（139ファイル。69,065行から+15行: 一覧のスクリプトの設定〈.pyの外のHTML 830行は数に入らない〉）、テスト34,577行、ワークフロー23本、アクティブBACKLOG 13件
 - **2026-10-21（R-AのHypeCoreの段階1）**: 一覧の下書き（件名「chore: R-A HypeCoreの段階1、出力の一覧の下書き」）。本番の処理は変えていない。FINDINGS.mdに2行（Step Summaryの無いキー、一覧の同じ名前のファイルの読み手の混ざり）
   **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 69,065行（139ファイル。68,773行から292行増: 一覧のスクリプトだけ）、テスト34,556行、ワークフロー23本、アクティブBACKLOG 13件
 - **2026-10-21（R-Aの一覧の作り直し・CHECK-INV-5、R-C）**: 第1部`c4819cf6be`（tanuki_layerの作り直し。誰も読まないキーは34→29〈見込み20。9キーは過去のhistory/・score_historyに残る、FINDINGS.md 2026-10-21〉、CHECK-INV-5は本番のワークフローでWARN）。

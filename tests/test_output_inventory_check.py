@@ -13,6 +13,13 @@ if _INV_DIR not in sys.path:
 
 import build_output_inventory as inv  # noqa: E402
 
+# SEC層の既知の規則の二重。inv.KNOWN_DUPLICATE_RULES はその時の段階（set_layer() を最後に呼んだもの）で変わるため、段階の設定から取る
+SEC_KNOWN = inv.LAYERS["sec"]["KNOWN_DUPLICATE_RULES"]
+
+
+def _check_sec(saved, now):
+    return inv.check_inventory(saved, now, known_rules=SEC_KNOWN, out_json="sec_layer.json", tag="SEC層")
+
 
 def _output(path, readers=("src/value/tanuki_valuation/pipeline.py",), group="1件", note="注記"):
     return {
@@ -33,22 +40,22 @@ def _inventory():
     return {
         "outputs": [_output("common/sec_data/data/{T}/a.json"),
                     _output("common/sec_data/data/{T}/b.json", readers=("src/tail/x.py", "docs/p.html"), group="2件以上")],
-        "rules": [_rule(r, ["common/sec_data/a.py", "src/b.py"]) for r in inv.KNOWN_DUPLICATE_RULES],
+        "rules": [_rule(r, ["common/sec_data/a.py", "src/b.py"]) for r in SEC_KNOWN],
     }
 
 
 def test_same_inventory_has_no_ng_and_known_rules_are_warn():
     saved = _inventory()
-    ng, warn = inv.check_inventory(saved, copy.deepcopy(saved))
+    ng, warn = _check_sec(saved, copy.deepcopy(saved))
     assert ng == []
-    assert len([w for w in warn if "WARN-INV-3" in w]) == len(inv.KNOWN_DUPLICATE_RULES) == 5
+    assert len([w for w in warn if "WARN-INV-3" in w]) == len(SEC_KNOWN) == 5
 
 
 def test_output_not_in_inventory_is_ng():
     saved = _inventory()
     now = copy.deepcopy(saved)
     now["outputs"].append(_output("common/sec_data/data/{T}/new_log.json"))
-    ng, _ = inv.check_inventory(saved, now)
+    ng, _ = _check_sec(saved, now)
     assert any("NG-INV-1" in x and "new_log.json" in x for x in ng)
 
 
@@ -56,7 +63,7 @@ def test_reader_no_longer_reading_is_ng():
     saved = _inventory()
     now = copy.deepcopy(saved)
     now["outputs"][1]["readers"] = now["outputs"][1]["readers"][:1]   # docs/p.html が読まなくなった
-    ng, _ = inv.check_inventory(saved, now)
+    ng, _ = _check_sec(saved, now)
     assert any("NG-INV-2" in x and "docs/p.html" in x for x in ng)
 
 
@@ -65,7 +72,7 @@ def test_zero_reader_output_is_ng():
     now = copy.deepcopy(saved)
     now["outputs"][0]["readers"] = []
     now["outputs"][0]["group"] = "読み手0件"
-    ng, _ = inv.check_inventory(saved, now)
+    ng, _ = _check_sec(saved, now)
     assert any("読み手0件" in x and "a.json" in x for x in ng)
 
 
@@ -74,7 +81,7 @@ def test_sixth_duplicated_rule_is_ng_but_outside_layer_is_not():
     now = copy.deepcopy(saved)
     now["rules"].append(_rule("quarter_label_new", ["common/sec_data/q.py", "src/tail/q.py"]))
     now["rules"].append(_rule("outside_only", ["src/a.py", "src/b.py"], in_layer=False))
-    ng, warn = inv.check_inventory(saved, now)
+    ng, warn = _check_sec(saved, now)
     assert any("NG-INV-3" in x and "quarter_label_new" in x for x in ng)
     assert not any("outside_only" in x for x in ng + warn)
 
@@ -163,6 +170,20 @@ def test_missing_annotation_is_warn():
     saved = _inventory()
     now = copy.deepcopy(saved)
     now["outputs"][0]["note"] = ""
-    ng, warn = inv.check_inventory(saved, now)
+    ng, warn = _check_sec(saved, now)
     assert ng == []
     assert any("WARN-INV-4" in x and "a.json" in x for x in warn)
+
+
+def test_hypecore_layer_is_checked_and_ttm_rule_is_known_warn():
+    """HypeCore の段階3（2026-10-21）: CHECK-INV を当て、既知の規則の二重（TTMの作り方）は WARN、それ以外の新しい二重は NG。"""
+    assert "hypecore" in inv.CHECK_LAYERS
+    known = inv.LAYERS["hypecore"]["KNOWN_DUPLICATE_RULES"]
+    assert known == ["ttm_sum"]
+    saved = _inventory()
+    saved["rules"] = [_rule("ttm_sum", ["src/value/hypecore/hypecore.py", "common/sec_data/ttm_calculator.py"])]
+    now = copy.deepcopy(saved)
+    now["rules"].append(_rule("stage_rule", ["src/value/hypecore/hypecore.py", "docs/x.html"]))
+    ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="hypecore_layer.json", tag="HypeCore")
+    assert any("WARN-INV-3" in x and "ttm_sum" in x for x in warn)
+    assert any("NG-INV-3" in x and "stage_rule" in x for x in ng)
