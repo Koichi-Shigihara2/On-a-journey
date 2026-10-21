@@ -18,7 +18,8 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**STONKS SILOの段階1が済んだ（2026-10-21）。次はKoichiさんの判断（STONKS SILOの段階2）**: 画面の区画（index.html 3区画）の「投資判断に使っているか」、誰も読まないキー12の残す／消す、フォルダの名前（`discover/stonks-silo/`）を付け替えるか（チャット側）（残りのサブシステムはmarket_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**STONKS SILOの段階が済んだ（2026-10-21、段階1〜3）。次は残りのサブシステムの段階1**（market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL。順はチャット側が決める）
+   - （済 2026-10-21）STONKS SILOの段階2・3: 第1部（`src/value/stonks_silo/`へ付け替え、誰も読まないキー10の書き込みをやめた、一覧の取り違えの直し。CIの手動の実行 run 39598656283 はsuccessでresults.jsonは手元の実行と時刻のほか同じ）・第2部（CHECK-INVをSTONKS SILOにも、rccのCHECK-INVは約26.3秒）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）STONKS SILOの段階1の一覧の下書き: `build_output_inventory.py --layer stonks` → `stonks_layer.json`・`stonks_layer.md`。出力1（results.json）・ワークフローの中のStep Summary 1、画面が読むキー80（書き手なし0）、誰も読まないキー12、規則の二重のうちSTONKSを含むもの1。止める条件は書き手0%・読み方5.6%。本番外のコードの候補0件。CHECK-INVはsec・tanuki・hypecore・epsのまま。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）EPSの段階が済んだ（段階1〜3と残り4件）
    - （済 2026-10-21）EPSの段階2・3: 第1部（管理のページ2つを削除し、操作はClaude Codeが代わりにする〈CLAUDE_CODE_START.md「管理の操作の手順」〉、`workflow_dependencies.json`の管理のページだけが読んだ欄を削除、誰も読まないキー11の書き込みをやめた）・第2部（CHECK-INVをEPSにも、rccのCHECK-INVは約25.5秒）。残り4件（コードを書き換える管理の操作2つを手順に、`TANUKI_CIK_Lookup.yml`・`TANUKI_Segment_AI.yml`と`cik_lookup_result.json`を削除）も同日に決着。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「EPSの段階」
@@ -46,6 +47,8 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-21（R-AのSTONKS SILOの段階2・3）**: 第1部（フォルダの付け替え・誰も読まないキー10・一覧の取り違えの直し）と第2部（CHECK-INVをSTONKS SILOにも）を別のcommit
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 69,535行（139ファイル。69,598行から−63行: STONKSの合成ベクトル・角度・誰も読まないキーの書き込みの削除、一覧のスクリプトの判断の記入と参照の照合）、テスト34,734行（+19）、ワークフロー21本、アクティブBACKLOG 13件
 - **2026-10-21（R-AのEPSの段階の残り4件・STONKS SILOの段階1）**: 第1部（`TANUKI_CIK_Lookup.yml`・`TANUKI_Segment_AI.yml`と`config/cik_lookup_result.json`を削除、CLAUDE_CODE_START.md「管理の操作の手順」にDamodaranの業種の上書きとportfolioのパスワードを足した）と第2部（STONKS SILOの段階1の一覧の下書き、一覧のスクリプトがworking-directoryの形のワークフローを当てるように）を別のcommit
   **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 69,598行（139ファイル。69,552行から+46行: 一覧のスクリプトのSTONKSの設定とワークフローの判定）、テスト34,715行（+16）、ワークフロー21本（23本から−2）、アクティブBACKLOG 13件
 - **2026-10-21（R-AのEPSの段階2・3）**: 第1部（管理のページ2つ〈3,650行・596行〉とそのテスト〈32行〉を削除、サブナビの「管理」4か所とportfolioの案内を直した。`workflow_dependencies.json`のlabel・accepts_tickers・input_param・bulk_update_*・new_ticker_orderを削除。EPSの誰も読まないキー11の書き込みをやめた。XAI_API_KEYを外しSECの取得をそろえて前後に回し、EPSの286ファイルは消したキーと時刻のほか同じ、TANUKIの96銘柄のlatest.json〈計算の日時を除く〉・tickers.jsonは同じ）と第2部（CHECK-INVをEPSにも）を別のcommit。FINDINGS 2026-10-21（admin.htmlが消したファイルを読む）はページの削除で済。リンクの監査はページ18→16、リンク切れ・孤立ページ0

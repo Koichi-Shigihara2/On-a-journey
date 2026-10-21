@@ -292,11 +292,19 @@ def test_workflow_working_directory_runs_file():
     assert inv.workflow_runs_file("python -m src.value.adjusted_eps_analyzer.pipeline", "src/value/adjusted_eps_analyzer/pipeline.py")
 
 
-def test_stonks_layer_is_configured_but_not_checked_yet():
-    """STONKS SILO の段階1（2026-10-21）: 一覧は作るが、CHECK-INV はまだ当てない。"""
-    assert "stonks" in inv.LAYERS
-    assert "stonks" not in inv.CHECK_LAYERS
-    assert inv.LAYERS["stonks"]["KNOWN_DUPLICATE_RULES"] == ["staleness"]
+def test_stonks_layer_is_checked_and_staleness_rule_is_known_warn():
+    """STONKS SILO の段階3（2026-10-21）: CHECK-INV を当て、既知の規則の二重（データの古さ・遅れの判定）は WARN、それ以外の新しい二重は NG。"""
+    assert "stonks" in inv.CHECK_LAYERS
+    known = inv.LAYERS["stonks"]["KNOWN_DUPLICATE_RULES"]
+    assert known == ["staleness"]
+    assert inv.LAYERS["stonks"]["LAYER_DIRS"] == ("src/value/stonks_silo",)
+    saved = _inventory()
+    saved["rules"] = [_rule("staleness", ["src/value/stonks_silo/financial_as_of.py", "common/sec_data/freshness.py"])]
+    now = copy.deepcopy(saved)
+    now["rules"].append(_rule("verdict_rule", ["src/value/stonks_silo/analyzer.py", "docs/x.html"]))
+    ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="stonks_layer.json", tag="STONKS")
+    assert any("WARN-INV-3" in x and "staleness" in x for x in warn)
+    assert any("NG-INV-3" in x and "verdict_rule" in x for x in ng)
 
 
 def test_loose_reference_compares_whole_path():

@@ -25,16 +25,8 @@
      "reader_files": 1
     },
     {
-     "key": "financial_vectors_note",
-     "reader_files": 0
-    },
-    {
      "key": "generated_at",
      "reader_files": 5
-    },
-    {
-     "key": "ticker_count",
-     "reader_files": 0
     },
     {
      "key": "tickers",
@@ -1649,6 +1641,7 @@
    ],
    "tests": [
     "tests/test_conditional_tags_and_stale_latest.py",
+    "tests/test_output_inventory_check.py",
     "tests/test_stonks_silo_financial_as_of.py"
    ]
   },
@@ -3103,65 +3096,6 @@
   ],
   "unread_keys": [
    {
-    "key": "angle",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "qoq",
-     "yoy"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "composite",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "financial_vectors"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "fields_available",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "data_quality"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "fields_missing",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "data_quality"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "financial_vectors_note",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "gross_margin_note",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "deficit_quality"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
     "key": "gross_margin_trend",
     "sources": [
      "docs/value-monitor/stonks-silo/data/results.json"
@@ -3170,16 +3104,6 @@
      "deficit_quality"
     ],
     "note": "残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う"
-   },
-   {
-    "key": "heatmap_fields",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "data_quality"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    },
    {
     "key": "latest_year",
@@ -3191,38 +3115,9 @@
      "runway"
     ],
     "note": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）"
-   },
-   {
-    "key": "population_size",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "qoq",
-     "yoy"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "ticker_count",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
-   },
-   {
-    "key": "unit_economics_label",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "deficit_quality"
-    ],
-    "note": "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える"
    }
   ],
-  "written_key_count": 143,
+  "written_key_count": 132,
   "sections": [
    {
     "page": "docs/value-monitor/stonks-silo/index.html",

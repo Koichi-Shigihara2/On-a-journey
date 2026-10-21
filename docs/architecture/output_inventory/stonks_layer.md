@@ -9,7 +9,7 @@
 
 **件数**: 出力 1（ファイル 1・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 0／2件以上 1／規則の二重 9（検出式 10種のうち。STONKSのファイルを含むもの 1）
 
-**画面の項目**: 画面が読むキー 80（この段階の書き手あり 72・ほかの書き手あり 8・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **12**
+**画面の項目**: 画面が読むキー 80（この段階の書き手あり 72・ほかの書き手あり 8・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **2**
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 0件／解決できた読み込み 6件＋ファイル名で当たった行 11件（5.6%）→ 当たらない
 
@@ -35,7 +35,7 @@
 
 ### `docs/value-monitor/stonks-silo/data/results.json`（2件以上）
 - 起動元: .github/workflows/Stonks_Silo_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `errors`(1)・`financial_vectors_note`(0)・`generated_at`(5)・`ticker_count`(0)・`tickers`(10)
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `errors`(1)・`generated_at`(5)・`tickers`(10)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 178・214・1117・2645・3455（経由 `common/sec_data/report_consistency_check.py::_load_stonks_results`）
 - Python・保存済みファイル: `common/system_health.py` 行 50・160・183・1041・1042・1110（経由 `common/system_health.py::check_d_actions`、`common/system_health.py::check_e_silo`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 36
@@ -68,18 +68,8 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `angle`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `composite`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `fields_available`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `fields_missing`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `financial_vectors_note`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `gross_margin_note`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
 - `gross_margin_trend`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う
-- `heatmap_fields`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
 - `latest_year`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）
-- `population_size`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `ticker_count`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
-- `unit_economics_label`（`docs/value-monitor/stonks-silo/data/results.json`）: 書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える
 
 ### `docs/value-monitor/stonks-silo/index.html`（80項目）
 
@@ -225,7 +215,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|---|---|
 | `analyzer.py` | 1,342 | — | — | `src/value/stonks_silo/pipeline.py` | 7件 |
 | `fetcher.py` | 298 | — | — | `src/value/stonks_silo/analyzer.py`<br>`src/value/stonks_silo/pipeline.py` | 0件 |
-| `financial_as_of.py` | 104 | — | — | `src/value/stonks_silo/pipeline.py` | 2件 |
+| `financial_as_of.py` | 104 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 | `financial_trend_calculator.py` | 393 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 | `pipeline.py` | 256 | `.github/workflows/Stonks_Silo_Update.yml` | — | — | 4件 |
 | `valuation_fetcher.py` | 121 | — | — | `src/value/stonks_silo/pipeline.py` | 1件 |
