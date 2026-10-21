@@ -4916,6 +4916,10 @@
    "producers": [],
    "screens": [
     {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
      "page": "docs/portfolio/index.html",
      "how": "直接"
     },
@@ -4944,8 +4948,24 @@
      "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
     },
     {
+     "page": "docs/value-monitor/extreme-fear/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
      "page": "docs/value-monitor/tanuki_score/index.html",
      "how": "直接"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
@@ -6811,6 +6831,10 @@
    "producers": [],
    "screens": [
     {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
      "page": "docs/market-monitor/market-pulse/index.html",
      "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
     },
@@ -6831,12 +6855,20 @@
      "how": "直接"
     },
     {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
      "page": "docs/value-monitor/extreme-fear/index.html",
      "how": "直接"
     },
     {
      "page": "docs/value-monitor/hypecore/detail.html",
      "how": "直接"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",

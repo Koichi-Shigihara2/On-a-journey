@@ -167,13 +167,20 @@ NON_PRODUCTION_FILES: List[str] = []         # 本番外のコードの候補（
 SCREEN_PAGES: Tuple[str, ...] = ()           # 画面の項目の表を作るページのフォルダ（TANUKI）
 SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, 区画の始まりの行の式, 次の区画の行の式, 判断)
 UNREAD_KEY_NOTES: Dict[str, str] = {}      # 誰も読まないキーを残した理由（段階2の判断）
+FULL_SCAN = False      # キーを抜き取りでなく全ファイルで集める（HypeCore の段階から。TANUKI の段階2で抜き取りが見落としを生んだ）
+SCREEN_SECTIONS = False    # 画面の区画（HTML の <!-- 見出し --> ごと）の一覧を作る
+HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の候補と、比べる docs/ のページ
+PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）
+WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフローが自分で書く Step Summary と、それが読むキーの有無
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
             DECISIONS=DECISIONS, DELETED=DELETED, OUTSIDE_HINT=OUTSIDE_HINT, OUTSIDE_PREFIXES=OUTSIDE_PREFIXES,
             READ_PREFIXES=READ_PREFIXES, READ_HINT=READ_HINT, NAME_SHORT=NAME_SHORT, TITLE=TITLE, DECISION_NOTE=DECISION_NOTE,
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
-            SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES)
+            SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
+            FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
+            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -257,7 +264,44 @@ _TANUKI.update(
          "patterns": [r"def\s+_?\w*(?:fcf_base|select_fcf_source|estimate_fcf|fcf_fallback|fcf_2yr_avg|fcf_5yr_avg)\w*\s*\("]},
     ],
 )
-LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI}
+# ---- HypeCore（段階1、2026-10-21）
+_HYPECORE = dict(_SEC)
+_HYPECORE.update(
+    LAYER="src/value/hypecore",
+    LAYER_DIRS=("src/value/hypecore",),
+    OUT_JSON=f"{OUT_DIR}/hypecore_layer.json", OUT_MD=f"{OUT_DIR}/hypecore_layer.md",
+    # 自分のフォルダの読み手は「効く」に数えない。TANUKI（timing・判定の入力）と画面を「効く」とする
+    DECISION_PREFIXES=[x for x in DECISION_PREFIXES if x[0] != "src/value/hypecore/"] + [
+        ("docs/value-monitor/hypecore/", "HypeCoreの画面"),
+        ("docs/value-monitor/tanuki_valuation/", "TANUKI VALUATIONの画面"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=["src/value/hypecore/hypecore.html"],
+    ANNOTATIONS={
+        "src/value/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ判定の作業用の出力（.gitignore。docs/ に写す元）",
+        "docs/value-monitor/hypecore/data/{T}_poc.json": "銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む）",
+        "docs/value-monitor/hypecore/data/tickers.json": "一覧のページ用の、HypeCoreの対象銘柄の名前の一覧（tickers・count・updated_at）。"
+                                                        "読み手の数は同じ名前の tanuki_valuation/data/tickers.json の読み手を含む（grep のフォルダの語が「data」のため）。"
+                                                        "実際に読むのは docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ（2026-10-21 確認）",
+    },
+    DECISION_DEFAULT="",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2でKoichiさんが決める（今は空）",
+    OUTSIDE_HINT="hypecore", OUTSIDE_PREFIXES=("docs/value-monitor/hypecore/", "src/value/hypecore/"),
+    READ_PREFIXES=("docs/value-monitor/hypecore", "src/value/hypecore"),
+    READ_HINT="hypecore", NAME_SHORT="HypeCore",
+    KNOWN_DUPLICATE_RULES=[], TITLE="HypeCoreの出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/value-monitor/hypecore",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[("src/value/hypecore/hypecore.html", ["docs/value-monitor/hypecore/detail.html", "docs/value-monitor/hypecore/index.html"])],
+    PAGE_CHECKS=["docs/value-monitor/extreme-fear/index.html"],
+    WORKFLOW_SUMMARY=True,
+)
+LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE}
 
 
 def set_layer(name: str) -> None:
@@ -372,6 +416,18 @@ class Module:
                 self.funcs[node.name] = node
             elif isinstance(node, ast.ClassDef):
                 self.classes[node.name] = node
+            elif isinstance(node, ast.If) and "__main__" in ast.unparse(node.test):
+                # if __name__ == "__main__": の中の代入もモジュールの名前として扱う（関数の中は除く。HypeCore の段階から）
+                stack = list(node.body)
+                while stack:
+                    n = stack.pop()
+                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                        continue
+                    if isinstance(n, ast.Assign):
+                        for tgt in n.targets:
+                            if isinstance(tgt, ast.Name):
+                                self.consts[tgt.id].append(n.value)
+                    stack.extend(ast.iter_child_nodes(n))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 base = resolve_import_module(rel, node.module, node.level)
@@ -1079,7 +1135,7 @@ def build() -> dict:
             matched = sorted(f for f in tracked if rx.match(f))
             o["files_tracked"] = len(matched)
             keys: Dict[str, int] = {}
-            for f in ([matched[0], matched[len(matched) // 2], matched[-1]] if matched else []):
+            for f in (matched if FULL_SCAN else [matched[0], matched[len(matched) // 2], matched[-1]] if matched else []):
                 try:
                     with open(os.path.join(REPO, f), encoding="utf-8") as fh:
                         d = json.load(fh)
@@ -1088,7 +1144,7 @@ def build() -> dict:
                 if isinstance(d, dict):
                     for k in d:
                         keys[k] = keys.get(k, 0) + 1
-            o["top_keys_sampled_files"] = min(3, len(matched))
+            o["top_keys_sampled_files"] = len(matched) if FULL_SCAN else min(3, len(matched))
             o["top_keys"] = [{"key": k} for k in sorted(keys)]
 
         # 2. 読み手（保存済みファイル）
@@ -1296,10 +1352,12 @@ def build() -> dict:
         if basename_count[base] == 1:
             alts.append(r"(?<![\w-])" + re.escape(base))
         name_rx = re.compile("|".join(alts))
-        same_dir_import = re.compile(r"^\s*(from|import)\s+" + re.escape(stem) + r"\b")
+        is_py = rel.endswith(".py")
+        same_dir_import = re.compile(r"^\s*(from|import)\s+" + re.escape(stem) + r"\b" if is_py else r"(?!x)x")
         # フォルダを sys.path・working-directory に足して名前だけで読む使い方: フォルダの語があり、ファイル名・import・python <ファイル名> があるもの
         dir_token = posixpath.basename(d)
-        loose_rx = re.compile(r"[\"'/]" + re.escape(base) + r"[\"']|python3?\s+" + re.escape(base) + r"\b|^\s*(from|import)\s+" + re.escape(stem) + r"\b")
+        loose_rx = re.compile(r"[\"'/]" + re.escape(base) + r"[\"']|python3?\s+" + re.escape(base) + r"\b"
+                              + (r"|^\s*(from|import)\s+" + re.escape(stem) + r"\b" if is_py else ""))
         wf_dir_rx = re.compile(r"working-directory:\s*" + re.escape(posixpath.dirname(rel)) + r"\s*$", re.M)
 
         def refs(pool: List[str]) -> List[str]:
@@ -1402,7 +1460,195 @@ def build() -> dict:
     if SCREEN_PAGES:
         writer_files = {w["file"] for o in outputs.values() for w in o["writers"]}
         result["screen"] = screen_items(outputs, texts, tracked, writer_files)
+        if SCREEN_SECTIONS:
+            result["screen"]["sections"] = screen_sections(result["screen"], texts)
+    if HTML_COPIES:
+        result["html_copies"] = html_copies(texts)
+    if PAGE_CHECKS:
+        result["page_checks"] = page_checks(tracked, texts, py_files)
+    if WORKFLOW_SUMMARY:
+        result["workflow_outputs"] = workflow_outputs(outputs, tracked, texts, layer_py)
     return result
+
+
+# ---------------------------------------------------------------- 画面の区画・複製・範囲外のページ・ワークフローの出力（HypeCore の段階から）
+
+COMMENT_RE = re.compile(r"^\s*<!--\s*(.+?)\s*-->\s*$")
+ID_RE = re.compile(r"\bid=[\"']([\w-]+)[\"']")
+JS_ID_RE = re.compile(r"getElementById\(\s*['\"]([\w-]+)['\"]\s*\)|querySelector(?:All)?\(\s*['\"]#([\w-]+)['\"]")
+JS_FUNC_RE = re.compile(r"^\s*(?:async\s+)?function\s+(\w+)\s*\(|^\s*(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|\w+)\s*=>")
+NEAR_LINES = 15
+
+
+def _html_sections(raw: List[str]) -> Tuple[List[dict], Dict[str, int]]:
+    """<body> の中（<script> の外）を <!-- 見出し --> の行で区切った区画と、id → 区画の番号。"""
+    sections = [{"title": "（ページの先頭）", "start": 1, "ids": []}]
+    id_sec: Dict[str, int] = {}
+    in_script = False
+    for n, line in enumerate(raw, 1):
+        st = line.strip()
+        if re.search(r"<script\b", st):
+            in_script = "</script>" not in st
+            continue
+        if in_script:
+            in_script = "</script>" not in st
+            continue
+        m = COMMENT_RE.match(line)
+        if m:
+            sections.append({"title": m.group(1).strip(), "start": n, "ids": []})
+            continue
+        for i in ID_RE.findall(line):
+            sections[-1]["ids"].append(i)
+            id_sec.setdefault(i, len(sections) - 1)
+    return sections, id_sec
+
+
+def _js_functions(raw: List[str]) -> List[Tuple[str, int, int]]:
+    """JS の関数の (名前, 始まりの行, 終わりの行)。終わりは波かっこの数で決める（文字列の中の波かっこは数えてしまう。下書き）。"""
+    out = []
+    for n, line in enumerate(raw, 1):
+        m = JS_FUNC_RE.match(line)
+        if not m:
+            continue
+        name = m.group(1) or m.group(2)
+        depth, started, end = 0, False, n
+        for k in range(n - 1, len(raw)):
+            depth += raw[k].count("{") - raw[k].count("}")
+            started = started or "{" in raw[k]
+            if started and depth <= 0:
+                end = k + 1
+                break
+        out.append((name, n, end))
+    return out
+
+
+def screen_sections(sc: dict, texts: Dict[str, str]) -> List[dict]:
+    """画面の区画ごとに、画面が読むキーと書き手の有無。キーを読む JS の行から、同じ関数の中で近くに出てくる要素の id
+    （getElementById・querySelector('#…')）を探し、その id がある HTML の区画に入れる。関数の中に id が無ければ、その関数を
+    呼ぶ行で同じことをする（2段まで）。決められないものは「（区画を決められない）」。"""
+    out: List[dict] = []
+    for pg in sc["pages"]:
+        if not pg.endswith(".html"):
+            continue
+        raw = (texts.get(pg) or read_text(pg)).splitlines()
+        sections, id_sec = _html_sections(raw)
+        funcs = _js_functions(raw)
+        id_lines = [(n, a or b) for n, line in enumerate(raw, 1) for a, b in JS_ID_RE.findall(line)]
+
+        def enclosing(line: int) -> Optional[Tuple[str, int, int]]:
+            c = [f for f in funcs if f[1] <= line <= f[2]]
+            return min(c, key=lambda f: f[2] - f[1]) if c else None
+
+        def ids_for(line: int, depth: int = 0) -> List[str]:
+            f = enclosing(line)
+            lo, hi = (f[1], f[2]) if f else (1, len(raw))
+            inside = [(n, i) for n, i in id_lines if lo <= n <= hi]
+            after = [(n, i) for n, i in inside if line <= n <= line + NEAR_LINES]
+            before = [(n, i) for n, i in inside if line - NEAR_LINES <= n < line]
+            if after:
+                return [after[0][1]]
+            if before:
+                return [before[-1][1]]
+            if inside:
+                return [min(inside, key=lambda x: abs(x[0] - line))[1]]
+            if f and depth < 2:
+                call_rx = re.compile(r"(?<![\w.])" + re.escape(f[0]) + r"\s*\(")
+                got: List[str] = []
+                for n, l in enumerate(raw, 1):
+                    if not (f[1] <= n <= f[2]) and call_rx.search(l) and not JS_FUNC_RE.match(l):
+                        got += ids_for(n, depth + 1)
+                return sorted(set(got))
+            return []
+
+        by_sec: Dict[str, Dict[str, dict]] = defaultdict(dict)
+        for it in [i for i in sc["items"] if i["page"] == pg]:
+            for ln in it["lines"]:
+                ids = ids_for(ln)
+                titles = sorted({sections[id_sec[i]]["title"] if i in id_sec else f"（JSで作る要素 #{i}）" for i in ids}) or ["（区画を決められない）"]
+                for t in titles:
+                    e = by_sec[t].setdefault(it["key"], {"key": it["key"], "status": it["status"], "lines": []})
+                    e["lines"].append(ln)
+        order = {s_["title"]: k for k, s_ in enumerate(sections)}
+        for t in sorted(by_sec, key=lambda t: (order.get(t, 999), t)):
+            out.append({"page": pg, "section": t, "keys": [by_sec[t][k] for k in sorted(by_sec[t])]})
+    return out
+
+
+def _last_commit_date(rel: str) -> str:
+    try:
+        return subprocess.run(["git", "log", "-1", "--format=%ad", "--date=short", "--", rel], cwd=REPO,
+                              capture_output=True, text=True, encoding="utf-8").stdout.strip()
+    except OSError:
+        return ""
+
+
+def html_copies(texts: Dict[str, str]) -> List[dict]:
+    """本番外の HTML の複製の候補と、docs/ のページの近さ（difflib の一致率）・最後の commit の日。"""
+    import difflib
+    out = []
+    for src, targets in HTML_COPIES:
+        st = texts.get(src) or read_text(src)
+        rows = []
+        for t in targets:
+            tt = texts.get(t) or read_text(t)
+            a = [x.strip() for x in st.splitlines() if x.strip()]
+            b = [x.strip() for x in tt.splitlines() if x.strip()]
+            sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+            same = sum(m.size for m in sm.get_matching_blocks())
+            rows.append({"page": t, "lines": tt.count("\n"), "same_lines": same, "share_of_copy": round(same / max(1, len(a)), 3),
+                         "last_commit": _last_commit_date(t)})
+        out.append({"file": src, "lines": st.count("\n"), "last_commit": _last_commit_date(src), "pages": rows})
+    return out
+
+
+def page_checks(tracked: List[str], texts: Dict[str, str], py_files: List[str]) -> List[dict]:
+    """範囲外のページの確認: タイトル・読む JSON とその書き手（.py に JSON のファイル名とフォルダの語があるもの）・
+    ページへのリンク（docs/ の HTML・JS にフォルダのパスが出てくるもの）・最後の commit の日。"""
+    out = []
+    for pg in PAGE_CHECKS:
+        t = texts.get(pg) or read_text(pg)
+        title = (re.search(r"<title>(.*?)</title>", t) or [None, ""])[1]
+        consts = dict(re.findall(r"(?:const|let|var)\s+(\w+)\s*=\s*(?:\w+\s*=>\s*)?['\"`]([^'\"`]+\.json)['\"`]", t))
+        lits = sorted(set(consts.values()) | set(re.findall(r"fetch\(\s*['\"`]([^'\"`]+\.json)", t)))
+        reads = []
+        for lit in lits:
+            tail = posixpath.normpath(posixpath.join(posixpath.dirname(pg), lit.split("?")[0]))
+            tmpl = re.sub(r"\$\{\w+\}", "{T}", tail)
+            rx = template_regex(tmpl)
+            files = [f for f in tracked if rx.match(f)]
+            writers = sorted({f"{rel}:{w['func']}" for rel in py_files if not is_test(rel) and MODULES.get(rel) is not None
+                              for w in io_sites(MODULES[rel])[0] if rx.match(w["path"]) or w["path"] == tmpl or tail_match(tmpl, w["path"])})
+            reads.append({"literal": lit, "path": tmpl, "files": len(files), "writers": writers})
+        page_dir = posixpath.dirname(pg).replace("docs/", "")
+        links = sorted(f for f in tracked if f.endswith((".html", ".js")) and f != pg and not f.startswith("docs/architecture/")
+                       and page_dir in (texts.get(f) or read_text(f)))
+        out.append({"page": pg, "title": title, "reads": reads, "linked_from": links, "last_commit": _last_commit_date(pg)})
+    return out
+
+
+def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[str, str], layer_py: List[str]) -> List[dict]:
+    """段階の .py を動かすワークフローが、自分の中で書く Step Summary（.py の外）と、それが .get() で読むキーが段階の JSON にあるか。"""
+    keys: Set[str] = set()
+    for k, o in outputs.items():
+        if o["kind"] != "ファイル" or not k.endswith(".json"):
+            continue
+        rx = template_regex(k)
+        for f in tracked:
+            if rx.match(f):
+                try:
+                    with open(os.path.join(REPO, f), encoding="utf-8") as fh:
+                        json_keys(json.load(fh), out=keys)
+                except (OSError, ValueError):
+                    pass
+    out = []
+    for wf in sorted(f for f in tracked if f.startswith(".github/workflows/") and f.endswith((".yml", ".yaml"))):
+        t = texts.get(wf) or read_text(wf)
+        if "GITHUB_STEP_SUMMARY" not in t or not any(rel in t for rel in layer_py):
+            continue
+        got = sorted(k for k in set(re.findall(r"\.get\(\s*['\"](\w+)['\"]", t)) if not k.isupper())
+        lines = [n for n, line in enumerate(t.splitlines(), 1) if "GITHUB_STEP_SUMMARY" in line]
+        out.append({"workflow": wf, "lines": lines, "keys": [{"key": k, "in_json": k in keys} for k in got]})
+    return out
 
 
 # ---------------------------------------------------------------- 画面の項目（TANUKI）
@@ -1433,7 +1679,7 @@ def json_keys(obj, depth: int = 0, max_depth: int = 8, out: Optional[Set[str]] =
 
 def sample_files(files: List[str], n: int = SCREEN_SAMPLE) -> List[str]:
     """200ファイルまでは全部、それより多ければ等間隔に n 個（銘柄ごとにキーが違うため、銘柄の数の分は全部見る）。"""
-    if len(files) <= 200:
+    if len(files) <= 200 or FULL_SCAN:
         return files
     return [files[round(i * (len(files) - 1) / (n - 1))] for i in range(n)]
 
@@ -1782,9 +2028,10 @@ def render_md(inv: dict) -> str:
         sc = inv["screen"]
         L.append("## 画面の項目")
         L.append("")
+        scope = "全ファイル" if FULL_SCAN else f"型ごとに等間隔で{SCREEN_SAMPLE}ファイル"
         L.append("画面（" + "・".join(f"`{p}`" for p in sc["pages"]) + "）のJSが読むキー（`.key`・`?.key`・`['key']`。"
-                 "この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の出力のJSON（型ごとに等間隔で"
-                 f"{SCREEN_SAMPLE}ファイル、入れ子8段まで）と、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する。"
+                 "この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の出力のJSON（"
+                 f"{scope}、入れ子8段まで）と、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する。"
                  "画面の言葉は、その行と前の3行の日本語の文字列（推定）。")
         L.append("")
         L.append("### 書き手なし（画面が読むのに、どのJSONにも無いキー）")
@@ -1808,6 +2055,51 @@ def render_md(inv: dict) -> str:
             for it in rows:
                 src = "<br>".join(f"`{s}`" for s in it["sources"][:2])
                 L.append(f"| {md_escape(it['label']) or '—'} | `{it['key']}` | {it['status']}{('<br>' + src) if src else ''} | {'・'.join(str(x) for x in it['lines'][:4])} | {md_escape(it.get('decision', ''))} |")
+            L.append("")
+    if inv.get("screen", {}).get("sections") is not None:
+        L.append("## 画面の区画")
+        L.append("")
+        L.append("HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読むキー。キーを読むJSの行から、同じ関数の中で近く（前後"
+                 f"{NEAR_LINES}行）に出てくる要素のid（`getElementById`・`querySelector('#…')`）を探し、そのidがある区画に入れた"
+                 "（関数の中に無ければ、その関数を呼ぶ行で探す。2段まで。推定）。「投資判断に使っているか」はKoichiさんが決める欄（空）。")
+        L.append("")
+        for pg in sorted({x["page"] for x in inv["screen"]["sections"]}):
+            L.append(f"### `{pg}`")
+            L.append("")
+            L.append("| 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |")
+            L.append("|---|---|---|")
+            for x in [x for x in inv["screen"]["sections"] if x["page"] == pg]:
+                ks = "<br>".join(f"`{k['key']}`（{k['status']}）" for k in x["keys"])
+                L.append(f"| {md_escape(x['section'])} | {ks} |  |")
+            L.append("")
+    if inv.get("workflow_outputs"):
+        L.append("## ワークフローが自分で書く出力（.pyの外）")
+        L.append("")
+        L.append("段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。")
+        L.append("")
+        for w in inv["workflow_outputs"]:
+            L.append(f"- `{w['workflow']}`（行 {'・'.join(str(x) for x in w['lines'][:6])}）: "
+                     + "・".join(f"`{k['key']}`（{'ある' if k['in_json'] else '**無い**'}）" for k in w["keys"]))
+        L.append("")
+    if inv.get("html_copies"):
+        L.append("## 本番外のHTMLの複製の候補")
+        L.append("")
+        L.append("| ファイル | 行数 | 最後のcommit | 比べたページ（行数・複製の行のうち同じ行がページにある割合〈空行を除き、前後の空白を無視、difflibの順序つき一致〉・最後のcommit） |")
+        L.append("|---|---|---|---|")
+        for h in inv["html_copies"]:
+            pages = "<br>".join(f"`{p['page']}`（{p['lines']}行・{p['same_lines']}行で{p['share_of_copy']:.0%}・{p['last_commit']}）" for p in h["pages"])
+            L.append(f"| `{h['file']}` | {h['lines']} | {h['last_commit']} | {pages} |")
+        L.append("")
+    if inv.get("page_checks"):
+        L.append("## 範囲外の確認（ページ）")
+        L.append("")
+        for c in inv["page_checks"]:
+            L.append(f"### `{c['page']}`（{md_escape(c['title'])}、最後のcommit {c['last_commit']}）")
+            L.append("")
+            for r in c["reads"]:
+                w = "・".join(f"`{x}`" for x in r["writers"]) or "見つからない"
+                L.append(f"- 読むJSON `{r['literal']}` → `{r['path']}`（{r['files']}ファイル）。書き手（.pyの書き込みの場所で照合）: {w}")
+            L.append("- リンク・参照しているファイル: " + ("・".join(f"`{x}`" for x in c["linked_from"]) or "なし"))
             L.append("")
     L.append("## FINDINGS 2026-10-15 の読み手0件の6種（F3）")
     L.append("")
