@@ -19,7 +19,6 @@ SEC EDGARから企業の財務データを抽出するモジュール（会計�
 """
 import os
 import sys
-import csv
 import json
 import requests
 from typing import Dict, Any, Optional, List, Tuple
@@ -43,6 +42,7 @@ from common.sec_data.fact_selection import select_latest_filed
 # [[SEC-XOM-CIK-HOLDING-REORG-1]]: 法人再編でCIKが切り替わった銘柄（cik_history.json）の旧CIKの統合は、
 # SECデータの層（common/sec_data/fetcher.py）と同じ関数を使う（重複した実装を作らない）
 from common.sec_data.fetcher import legacy_ciks_for, merge_us_gaap_facts
+from common.sec_data import tickers as _tickers_mod
 # MARKETDATA-LAYER-CONSTRUCTION-1着手順序6: 株式数フォールバック④（旧yfinance直接
 # 呼び出し）をcommon.market_data.reader経由に切替（beta_fetcher.pyと同じ簡潔な
 # トップレベルimportパターン、try/exceptガードなし）
@@ -145,70 +145,20 @@ def load_required_xbrl_tags() -> List[str]:
     return list(tags)
 
 # ============================================
-# CIKマップ管理
+# CIKの取得
 # ============================================
-def load_cik_map() -> Dict[str, str]:
-    """CIKマップをCSVから読み込む"""
-    cik_map = {}
-    try:
-        if not os.path.exists(CIK_FILE):
-            print(f"Warning: {CIK_FILE} not found. Creating empty mapping.")
-            os.makedirs(CONFIG_DIR, exist_ok=True)
-            with open(CIK_FILE, 'w', encoding='utf-8') as f:
-                f.write("ticker,cik,name\n")
-            return cik_map
-        
-        with open(CIK_FILE, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row['ticker'] and row['cik']:
-                    cik = row['cik'].strip().zfill(10)
-                    cik_map[row['ticker'].strip().upper()] = cik
-        print(f"Loaded {len(cik_map)} CIK mappings from {CIK_FILE}")
-        return cik_map
-    except Exception as e:
-        print(f"Error loading CIK map: {e}")
-        return {}
-
-def save_cik_map(cik_map: Dict[str, str]) -> bool:
-    """CIKマップをCSVに保存"""
-    try:
-        os.makedirs(CONFIG_DIR, exist_ok=True)
-        with open(CIK_FILE, 'w', encoding='utf-8') as f:
-            f.write("ticker,cik,name\n")
-            for ticker, cik in sorted(cik_map.items()):
-                f.write(f"{ticker},{cik},\n")
-        print(f"Saved {len(cik_map)} CIK mappings to {CIK_FILE}")
-        return True
-    except Exception as e:
-        print(f"Error saving CIK map: {e}")
-        return False
-
 def get_cik(ticker: str) -> str:
-    """ティッカーからCIKを取得"""
-    ticker = ticker.strip().upper()
-    cik_map = load_cik_map()
-    
-    if ticker in cik_map:
-        return cik_map[ticker]
-    
-    # SEC APIから直接取得
-    print(f"CIK not found for {ticker} in local file. Trying SEC API...")
-    try:
-        url = "https://www.sec.gov/files/company_tickers.json"
-        response = requests.get(url, headers=HEADERS, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            for item in data.values():
-                if item['ticker'] and item['ticker'].upper() == ticker:
-                    cik = str(item['cik_str']).zfill(10)
-                    cik_map[ticker] = cik
-                    save_cik_map(cik_map)
-                    return cik
-    except Exception as e:
-        print(f"SEC API lookup failed: {e}")
-    
-    raise Exception(f"CIK not found for {ticker}. Please add to {CIK_FILE}")
+    """ティッカーからCIKを取得（登録簿 config/cik_lookup.csv を読むだけ）。
+
+    CIKの引き方は common/sec_data/tickers.py::get_cik() の1つにする。
+    登録簿の書き手は登録の手順（common/registration/・registration_validator.py）だけで、
+    ここでは書かない（旧 save_cik_map() は登録簿の13列を3列で上書きしうるため削除、
+    SECのAPIで取って書き足す経路も削除。R-AのEPSの段階1、2026-10-21）。
+    """
+    cik = _tickers_mod.get_cik(ticker)
+    if cik:
+        return cik
+    raise Exception(f"CIK not found for {ticker.strip().upper()}. Please add to {CIK_FILE}")
 
 # ============================================
 # SEC Company Facts APIからデータ取得

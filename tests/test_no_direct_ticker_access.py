@@ -69,9 +69,10 @@ _CIK_LOOKUP_DIRECT_PARSE_ALLOWED = {
     # 参照するのみで、バッチ対象リスト構築ではない
     "common/registration/register_ticker.py",
     # EPS ANALYZER独自パイプライン（common/sec_data/とは完全に独立と
-    # SYSTEM_MAP.mdに明記済み）。CIKマッピング構築・ticker→name表示用・
-    # eps_sector列参照のいずれもバッチ対象リスト構築ではない
-    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+    # SYSTEM_MAP.mdに明記済み）。ticker→name表示用・eps_sector列参照の
+    # いずれもバッチ対象リスト構築ではない。extract_key_facts.pyは
+    # R-AのEPSの段階1（2026-10-21）でget_cik()がtickers.py経由になり、
+    # 直接パースしなくなったため許可リストから除外した
     "src/value/adjusted_eps_analyzer/pipeline.py",
     "src/value/adjusted_eps_analyzer/sector_classifier_v2.py",
 }

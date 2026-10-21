@@ -10215,34 +10215,18 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 161,
-     "func": "load_cik_map",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 190,
+     "line": 158,
      "func": "get_cik",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "Python"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 480,
+     "line": 430,
      "func": "extract_quarterly_facts",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 1262,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "Python"
     },
     {
@@ -10263,18 +10247,10 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 643,
-     "func": "process_one_ticker",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
      "line": 649,
      "func": "process_one_ticker",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "Python"
     },
     {
@@ -10526,91 +10502,27 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
-     "line": 103,
-     "func": "TestSkipQ3WhenNeitherQ1NorQ2HasTheTag.test_ytd9m_only_tag_is_skipped_from_q3",
+     "file": "tests/test_eps_get_cik_registry_only.py",
+     "line": 35,
+     "func": "test_returns_registry_cik_zero_padded",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "テスト"
     },
     {
-     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
-     "line": 123,
-     "func": "TestSkipQ3WhenNeitherQ1NorQ2HasTheTag.test_ytd9m_only_tag_with_partial_q1_is_applied",
+     "file": "tests/test_eps_get_cik_registry_only.py",
+     "line": 36,
+     "func": "test_returns_registry_cik_zero_padded",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "テスト"
     },
     {
-     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
-     "line": 143,
-     "func": "TestSkipQ2WhenQ1HasNoTheTag.test_ytd6m_only_tag_is_skipped_from_q2",
+     "file": "tests/test_eps_get_cik_registry_only.py",
+     "line": 47,
+     "func": "test_unregistered_ticker_raises_and_leaves_registry_unchanged",
      "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
-     "line": 163,
-     "func": "TestYtd6mSubtractionUnaffectedByGuard.test_ytd6m_minus_ytd9m_still_applied_without_q1_q2",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
-     "line": 106,
-     "func": "TestSkipWhenZeroQuarterlyPresence.test_annual_only_tag_is_skipped_from_q4",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
-     "line": 128,
-     "func": "TestSkipWhenZeroQuarterlyPresence.test_annual_only_tag_with_no_sibling_is_simply_absent",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
-     "line": 151,
-     "func": "TestStillAppliesWhenAtLeastOneQuarterPresent.test_q1_3_sum_still_applied_when_one_quarter_has_the_tag",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
-     "line": 174,
-     "func": "TestYtdMethodUnaffectedByGuard.test_ytd_method_still_preferred",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_cik_history_merge.py",
-     "line": 70,
-     "func": "test_eps_merges_legacy_cik_facts",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_cik_history_merge.py",
-     "line": 84,
-     "func": "test_eps_without_history_uses_primary_only",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_eps_cik_history_merge.py",
-     "line": 92,
-     "func": "test_eps_legacy_fetch_failure_does_not_return_truncated_history",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
+     "via": "common/sec_data/tickers.py::_load",
      "type": "テスト"
     },
     {
@@ -10667,86 +10579,6 @@
      "func": "test_partial_run_keeps_other_eps_rows_and_run_status",
      "how": "保存済みファイル",
      "via": "src/value/adjusted_eps_analyzer/pipeline.py::run",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_net_income_selection.py",
-     "line": 107,
-     "func": "TestNetIncomeLossPreferredOverProfitLoss.test_annual_prefers_net_income_loss",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_net_income_selection.py",
-     "line": 154,
-     "func": "TestNetIncomeLossPreferredOverProfitLoss.test_quarterly_prefers_net_income_loss",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_share_fallback.py",
-     "line": 88,
-     "func": "TestNeighborCarryOverPrefersRealDataOverMarketData.test_missing_q1_inherits_from_q2_not_market_data",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_share_fallback.py",
-     "line": 122,
-     "func": "TestNeighborCarryOverPrefersRealDataOverMarketData.test_missing_q2_prefers_prior_quarter_over_next",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_share_fallback.py",
-     "line": 149,
-     "func": "TestMarketDataFallbackStillAppliesWhenNoNeighborExists.test_all_quarters_missing_falls_back_to_market_data",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_share_fallback.py",
-     "line": 190,
-     "func": "TestQ4BlockGeneralizedNeighborLookup.test_q4_falls_back_to_q2_when_q3_diluted_shares_missing",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_split.py",
-     "line": 100,
-     "func": "TestDilutedSharesLatestFiledWins.test_q1_prefers_latest_filed_even_when_listed_first",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_split.py",
-     "line": 124,
-     "func": "TestDilutedSharesLatestFiledWins.test_q1_prefers_latest_filed_even_when_listed_last",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_split.py",
-     "line": 149,
-     "func": "TestDilutedSharesLatestFiledWins.test_q4_prefers_latest_filed_annual_fact_not_first_in_list",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_extract_key_facts_split.py",
-     "line": 176,
-     "func": "TestDilutedSharesLatestFiledWins.test_production_nvda_2024_q4_no_longer_pre_split",
-     "how": "保存済みファイル",
-     "via": "src/value/adjusted_eps_analyzer/extract_key_facts.py::load_cik_map",
      "type": "テスト"
     },
     {
@@ -11414,7 +11246,7 @@
     "保有銘柄の監視（TANUKI TAIL）"
    ],
    "reader_count": 31,
-   "reader_count_test": 22,
+   "reader_count_test": 17,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える",
@@ -11717,17 +11549,17 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 773,
+     "line": 723,
      "text": "q4_net = annual_net - q1q3_sum"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 916,
+     "line": 866,
      "text": "q4_val = annual_val - ytd_9m_val"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 944,
+     "line": 894,
      "text": "q4_val = annual_val - q123_sum"
     }
    ],
@@ -11801,7 +11633,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 655,
+     "line": 605,
      "text": "if cand['filed'] > existing_filed:"
     }
    ],
