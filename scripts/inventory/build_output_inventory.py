@@ -2426,7 +2426,7 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-CHECK_LAYERS = ("sec", "tanuki", "hypecore")   # CHECK-INV を当てる段階（段階3が済んだもの）
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps")   # CHECK-INV を当てる段階（段階3が済んだもの）
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

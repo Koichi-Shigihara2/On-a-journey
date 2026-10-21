@@ -1949,12 +1949,15 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 読み手の数え方の誤り（同じ名前のファイル。HypeCoreの`tickers.json`の読み手が16件と出る。実際は3件）は直さず、一覧の注記に実際の読み手を書いた。
   この誤りがあると、本当の読み手が読むのをやめても、同じ名前のほかのファイル（TANUKIの`tickers.json`）を読む行が残っていればCHECK-INV-2は「読み手が読んでいない」を出さない（見逃しうる）
   → 直した（2026-10-21、件名「fix: R-A 一覧のスクリプトの読み手をパスの全体で照合する」のcommit）。ファイル名で当たった行は、行のパスを組み立て（os.path.join・f文字列・Pathの/・モジュールの定数・JSの+と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。フォルダを決めきれない行は止める条件の「読み方を決めきれない」に数える（SEC層3.5%・TANUKI 1.9%・HypeCore 0.0%）。HypeCoreの`tickers.json`の読み手は15件→3件。同じcommitで一覧を作る時間を縮めた（読み書きの場所・関数の代入の索引・コメントを除いた行をモジュールごとに1回だけ作る。出力は前後で同じ。rccのCHECK-INVは直す前の約32秒〈照合の直しだけでは約39秒〉→約21秒）
-#### EPSの段階（2026-10-21 段階1済）
+#### EPSの段階（2026-10-21 済）
 - 段階1（一覧の下書き）: 件名「chore: R-A EPSの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer eps` → `eps_layer.json`・`eps_layer.md`）。出力5（ファイル4・Step Summary 1）、読み手0件0・テストだけ0、画面が読むキー112（書き手なし4）、誰も読まないキー14、規則の二重のうちEPSを含むもの3（Q4の逆算・同じ期の値の選び方・TTMの作り方）。本番外のコードの候補0件
 - 最初の下書きは止める条件で止めた（`config/cik_lookup.csv`にEPSの外の書き手、1/6）。チャット側の判断でEPSの`save_cik_map`を消し（件名「fix: R-A EPSのget_cikを登録簿を読むだけにし、cik_lookup.csvの書き込みを消す」）、出力から外れた
 - 一覧のスクリプトの直し: 空の文字列の既定値（`eps_data_dir: str = ""`）の引数を呼び出し元からたどる、`from core_calculator import …`のようなsys.pathの形のimportを同じフォルダから探す。直す前は`annual.json`が「テストだけ」に見えた（TANUKIの`calculator/adjustments.py`がFCFの外れ値の一過性の費用の突合に読む）。画面が `../../common/sec_data/rotce/${ticker}.json` のようにファイル名がプレースホルダーだけのJSONを読むとき、型で照合する（直す前は ROTCE の区画のキー18が「書き手なし」に見えた）。範囲外のページの確認にGitHubのAPIで読み書きするページ（admin.html）の読み・書き・起動するワークフローを足した
 - Q4の逆算（`extract_key_facts.py`）を`implied_q4_value()`に寄せられるか（読むだけで調べた）: 寄せられるのは純利益のQ4だけで、EPSが company_facts を Layer3 と同じ形（`first_filed`・`first_val`・`_asof`）で持つ必要がある。調整項目のQ4（年次−9か月の累計）・株式数は対象外
-- **次はKoichiさんの判断（段階2）**（残りのサブシステムはSTONKS SILO・market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
+- 段階2（第1部、件名「refactor: R-A EPSの段階2、管理のページ2つと誰も読まない11キーを消す」のcommit）: Koichiさんの判断で管理のページ2つ（`docs/value-monitor/admin.html`・`adjusted_eps_analyzer/admin.html`、計4,246行）を削除し、操作はClaude Codeが代わりにする（CLAUDE_CODE_START.md「管理の操作の手順」。コードを書き換える2つ〈`growth_sanity.py`のDamodaranの業種の上書き・`portfolio/index.html`のPW_HASH〉は手順にせずチャット側が扱いを決める）。stock.html・一覧の表は残す。`workflow_dependencies.json`の管理のページだけが読んだ欄を削除。誰も読まないキー14のうち11の書き込みをやめた（テストが参照する3つは残す。EPSの286ファイル・TANUKIの96銘柄の理論株価・判定は前後で同じ）
+- 段階3（第2部、件名「feat: R-A EPSの段階3、CHECK-INVをEPSにも当てる」のcommit）: CHECK_LAYERSにeps（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重3つ（Q4の逆算・同じ期の値の選び方・TTMの作り方）はWARN。rccのCHECK-INVは約25.5秒（3段階のときは約22.3秒）
+- 管理のページだけが起動していたワークフロー2本（`TANUKI_CIK_Lookup.yml`・`TANUKI_Segment_AI.yml`）は残した。要るかはチャット側が決める
+- **次はSTONKS SILOの段階1**（残りのサブシステムはmarket_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

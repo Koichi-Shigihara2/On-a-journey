@@ -189,6 +189,27 @@ def test_hypecore_layer_is_checked_and_ttm_rule_is_known_warn():
     assert any("NG-INV-3" in x and "stage_rule" in x for x in ng)
 
 
+
+def test_eps_layer_is_checked_and_known_rules_are_warn():
+    """EPS の段階3（2026-10-21）: CHECK-INV を当て、既知の規則の二重（Q4の逆算・同じ期の値の選び方・TTMの作り方）は WARN、それ以外の新しい二重は NG。"""
+    assert "eps" in inv.CHECK_LAYERS
+    known = inv.LAYERS["eps"]["KNOWN_DUPLICATE_RULES"]
+    assert known == ["q4_implied", "latest_filed", "ttm_sum"]
+    saved = _inventory()
+    saved["rules"] = [_rule(r, ["src/value/adjusted_eps_analyzer/extract_key_facts.py", "common/sec_data/layer3_builder.py"]) for r in known]
+    now = copy.deepcopy(saved)
+    now["rules"].append(_rule("adj_rule", ["src/value/adjusted_eps_analyzer/pipeline.py", "docs/x.html"]))
+    ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="eps_layer.json", tag="EPS")
+    assert len([x for x in warn if "WARN-INV-3" in x]) == 3
+    assert any("NG-INV-3" in x and "adj_rule" in x for x in ng)
+
+
+def test_eps_layer_has_no_admin_page_checks():
+    """EPS の段階2（2026-10-21）で管理のページ2つを消した。一覧のスクリプトが消したページを確かめに行かない。"""
+    assert inv.LAYERS["eps"]["PAGE_CHECKS"] == []
+    assert not os.path.exists(os.path.join(inv.REPO, "docs", "value-monitor", "admin.html"))
+    assert not os.path.exists(os.path.join(inv.REPO, "docs", "value-monitor", "adjusted_eps_analyzer", "admin.html"))
+
 # ---- 読み手の照合（2026-10-21）: 行のパスを解決して出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルは読み手にしない
 
 TANUKI_TICKERS = "docs/value-monitor/tanuki_valuation/data/tickers.json"
