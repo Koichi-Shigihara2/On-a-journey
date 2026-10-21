@@ -11,14 +11,15 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-20 夜 更新〈R-AのSEC層の段階1〜3の後〉。上から順）**:
+**次の作業（2026-10-21 終業 更新〈R-AのSTONKS SILOの段階の後〉。上から順）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
    - 10-19の確認: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（手順6）も済
    - 初回の束ね: `docs/architecture/BUNDLING_2026-10-19.md`（「確定」の節）。根治策5件（R-A `[[OUTPUT-INVENTORY-CHECK-1]]`〈R-Bを統合〉・R-C `[[LAYER3-FIRST-FILED-DATE-1]]`を広げる・R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`）。
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**STONKS SILOの段階が済んだ（2026-10-21、段階1〜3）。次は残りのサブシステムの段階1**（market_data・MACRO PULSE・Market Pulse・Portfolio・TAIL。順はチャット側が決める）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り5つのサブシステムの段階を、market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse の順に**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO。CHECK-INVはこの5段階）
+   - （済 2026-10-21）STONKS SILOの段階1〜3
    - （済 2026-10-21）STONKS SILOの段階2・3: 第1部（`src/value/stonks_silo/`へ付け替え、誰も読まないキー10の書き込みをやめた、一覧の取り違えの直し。CIの手動の実行 run 39598656283 はsuccessでresults.jsonは手元の実行と時刻のほか同じ）・第2部（CHECK-INVをSTONKS SILOにも、rccのCHECK-INVは約26.3秒）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）STONKS SILOの段階1の一覧の下書き: `build_output_inventory.py --layer stonks` → `stonks_layer.json`・`stonks_layer.md`。出力1（results.json）・ワークフローの中のStep Summary 1、画面が読むキー80（書き手なし0）、誰も読まないキー12、規則の二重のうちSTONKSを含むもの1。止める条件は書き手0%・読み方5.6%。本番外のコードの候補0件。CHECK-INVはsec・tanuki・hypecore・epsのまま。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）EPSの段階が済んだ（段階1〜3と残り4件）
@@ -47,6 +48,8 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-21（終業のブラッシュアップ）**: 今日のまとめ。R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の申告を持たせ、Q4の逆算を年次と同じ時点の値どうしに。21:34のTANUKI VALUATION〈`f9417ebd89`〉で公開、APPの理論株価1,135.99ドルは試算どおり）。R-A `[[OUTPUT-INVENTORY-CHECK-1]]`のHypeCore・EPS・STONKS SILOの段階1〜3（hypecore.html・Extreme Fearのページ・管理のページ2つ・ワークフロー2本〈TANUKI_CIK_Lookup・TANUKI_Segment_AI〉を削除、STONKS SILOを`src/value/stonks_silo/`へ付け替え、誰も読まないキーをEPS 11・STONKS 10、CHECK-INVは5段階）。BACKLOG_DONE.mdの「2026-10-21（完了）」にR-Aの今日の作業の記録を足した（項目は継続中）。CHAT_RULES.mdに事例43（時点をそろえる直しは基準の日付を1つ決める）・事例44（読み手0件・テストだけは消す前にgrepで人が確かめる）。移設0件（BACKLOGの`### ✅ [`は0件）、アクティブBACKLOG 13件。FINDINGS.mdに1行（使われなくなったsecret）
+  **終業の数（10-16と同じ数え方。括弧は10-16の数）**: 読み手の決まっていない出力 4（7）、二重実装の規則 5（5）、サブシステム 10（10）、Python 69,535行・139ファイル（69,535行・159ファイル。行数は同じで、ファイルは20減。10-16の時点〈`5e9f9cb005`〉を同じ数え方で数え直して確かめた）、テスト34,734行（34,046行、+688）、docs配下のHTML・JS 20,308行・20ファイル（24,946行・22ファイル）、ワークフロー21本（23本）、アクティブBACKLOG 13件（54件）
 - **2026-10-21（R-AのSTONKS SILOの段階2・3）**: 第1部（フォルダの付け替え・誰も読まないキー10・一覧の取り違えの直し）と第2部（CHECK-INVをSTONKS SILOにも）を別のcommit
   **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 4、二重実装の規則 5、サブシステム 10、Python 69,535行（139ファイル。69,598行から−63行: STONKSの合成ベクトル・角度・誰も読まないキーの書き込みの削除、一覧のスクリプトの判断の記入と参照の照合）、テスト34,734行（+19）、ワークフロー21本、アクティブBACKLOG 13件
 - **2026-10-21（R-AのEPSの段階の残り4件・STONKS SILOの段階1）**: 第1部（`TANUKI_CIK_Lookup.yml`・`TANUKI_Segment_AI.yml`と`config/cik_lookup_result.json`を削除、CLAUDE_CODE_START.md「管理の操作の手順」にDamodaranの業種の上書きとportfolioのパスワードを足した）と第2部（STONKS SILOの段階1の一覧の下書き、一覧のスクリプトがworking-directoryの形のワークフローを当てるように）を別のcommit

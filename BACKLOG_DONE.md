@@ -94,6 +94,25 @@ Layer3に最初の提出日を持たせる（期間の長さと関係なく必�
 
 ---
 
+### ✅ R-A `[[OUTPUT-INVENTORY-CHECK-1]]` HypeCore・EPS・STONKS SILOの段階（2026-10-21。項目そのものは継続中で、BACKLOG.mdに残る）
+
+BACKLOGに個別の項目が無かった削除・付け替えを含む、2026-10-21の段階の作業の記録。詳細はBACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`の「HypeCoreの段階」「EPSの段階」「STONKS SILOの段階」。
+
+- 一覧のスクリプト: TANUKIの一覧の作り直しとCHECK-INV-5を本番ではWARNに（`c4819cf6be`）。読み手をパスの全体で照合する（`1cf1921476`。HypeCoreの`tickers.json`の読み手15件→3件）。
+  空の文字列の既定値の引数・sys.pathの形のimport・プレースホルダーだけのファイル名のJSON・working-directoryの形のワークフロー・名前だけで読む参照のパスの照合を直した
+- HypeCore（`42bf2d11d9`・`72a09b52fa`・`fe4ea7b7a2`）: 段階1〜3。削除: `src/value/hypecore/hypecore.html`（436行、古い単ページ版）、HypeCore_Update.ymlのStep SummaryのLC・Recの列（常に「--」）、
+  Extreme Fearのページ（`docs/value-monitor/extreme-fear/index.html` 394行と、ナビ・HOMEのカード・site-header.js・site-theme.cssの関連。Koichiさんの判断: 使っていない）
+- EPS（`95d69ba616`・`9f558609ef`・`65fb7f66e0`・`0f84464da8`・`ae56fa0f00`・`64925445ab`）: 段階1〜3。
+  - `extract_key_facts.py`の`save_cik_map`・SECのAPIでCIKを取って`cik_lookup.csv`に書き足す経路を削除（`get_cik`は登録簿を読むだけ）
+  - 管理のページ2つ（`docs/value-monitor/admin.html` 3,650行・`docs/value-monitor/adjusted_eps_analyzer/admin.html` 596行）とそのテストを削除。操作はClaude Codeが代わりにする（CLAUDE_CODE_START.md「管理の操作の手順」）
+  - `config/workflow_dependencies.json`の管理のページだけが読んだ欄（label・accepts_tickers・input_param・bulk_update_*・new_ticker_order）を削除
+  - ワークフロー2本（`TANUKI_CIK_Lookup.yml`〈`cik_lookup.csv`の書き手の二重〉・`TANUKI_Segment_AI.yml`〈10-Kから決める手順と合わない〉）と出力の`config/cik_lookup_result.json`を削除（23本→21本）
+  - 誰も読まないキー11の書き込みをやめた（EPSの286ファイル・TANUKIの96銘柄の理論株価・判定は前後で同じ）
+- STONKS SILO（`7a92fb2977`・`b8b60e2902`・`928e670118`）: 段階1〜3。
+  - フォルダの付け替え: `discover/stonks-silo/src/` → `src/value/stonks_silo/`（Discoverは削除済みで名前と中身が合わない、型E）。出力・画面の場所は変えない。画面の見出しの「Discover · 10x Candidates」を直した
+  - 誰も読まないキー10の書き込みをやめた（CIの手動の実行 run 39598656283 はsuccess、results.jsonは手元の実行と時刻のほか同じ、判定・スコアは24銘柄すべて同じ）
+- CHECK-INVはSEC層・TANUKI・HypeCore・EPS・STONKS SILOの5段階（rccのCHECK-INVは約26.3秒）。残りはmarket_data・TAIL・Portfolio・MACRO PULSE・Market Pulse
+
 ## 2026-10-20（完了）
 
 ### ✅ [MARKETDATA-FUTURES-BACKFILL-ROWS-1] daily/のES=F・NQ=F・NIY=Fの抜け補完の行に、前の行と同じvolume・O=H=L=Cでvolume 0の足・確定時刻を過ぎても残る暫定の印がある

@@ -1908,7 +1908,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 理論株価の値は直接は変えない。保有銘柄の監視の通知が届かない型（TAILのsecret名）の再発を防ぐ。型Bのうち定義v2の前提の3件（倍率・業種・赤字の質）は、定義v2の検証の前に要る
 
 #### SEC層の段階の一覧に入れる本番外のコード（2026-10-19追記。チャット側の提案をKoichiさんが了承）
-- 出力ではない本番外のコードも、SEC層の段階の一覧に入れる。対象は`scripts/analysis`（2,740行）・`browser_checks`（3,208行）・`discover/stonks-silo`（2,620行。Discoverを消した後も古い名前のフォルダに残っている）
+- 出力ではない本番外のコードも、SEC層の段階の一覧に入れる。対象は`scripts/analysis`（2,740行）・`browser_checks`（3,208行）・`discover/stonks-silo`（2,620行。Discoverを消した後も古い名前のフォルダに残っている。2026-10-21に`src/value/stonks_silo/`へ移し、SEC層の本番外の対象から外した。STONKS SILOの段階の一覧で扱う）
 - 各ファイルについて、ワークフロー・ほかのコード・テストから呼ばれているかをgrepで示し、Koichiさんが残す／消す／移すを判断する
 - 理由: 行数が多すぎる疑いの確かめ。出力の一覧だけでは、本番外のコードが対象に入らないため
 - 行数の数え方: 各フォルダの`git ls-files '*.py'`から`tests/`と`test_`を除いた行の合計（2026-10-19）
@@ -1963,7 +1963,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - フォルダの名前（`discover/`の下にある）の付け替えの影響（数えただけ。付け替えはチャット側が段階2で決める）: ワークフロー1（`Stonks_Silo_Update.yml`の`working-directory`）、テスト10ファイル（`os.path.join(..., "discover", "stonks-silo", "src")`でsys.pathに足す。ほかにdocstringだけ1）、リポジトリの根を階層の数で求めるコード6ファイル（STONKSの.py全部。同じ深さ〈例: `src/value/stonks_silo/`〉なら変えなくてよい）、一覧のスクリプトの設定5か所（SEC層の`NON_PRODUCTION_DIRS`・STONKSの`LAYER`・`LAYER_DIRS`・`OUTSIDE_PREFIXES`・`READ_PREFIXES`）。importのパッケージ名としての参照は0（どのファイルもsys.path経由で名前だけで読む）。コメント・文書: コード7ファイル（`layer3_builder.py`・`q4_implied.py`・TANUKIの`pipeline.py`・STONKSの.pyの見出し・画面1）、SYSTEM_MAP.md 8行・CLAUDE_CODE_START.md 2行・BACKLOG.md 1行
 - 段階2（第1部、件名「refactor: R-A STONKS SILOの段階2、フォルダの付け替えと誰も読まない10キーを消す」のcommit）: 画面の区画はKoichiさんの判断ですべて残す。チャット側の判断で`discover/stonks-silo/src/`→`src/value/stonks_silo/`（出力・画面の場所は変えない、SYSTEM_MAP.mdに理由）、画面の見出しの「Discover · 10x Candidates」を「Value Monitor · Early-Stage Growth」に。誰も読まないキー12のうち10の書き込みをやめた（計算に使うgross_margin_trend・テストが参照するlatest_yearは残す）。手元の前後とCIの手動の実行（run 39598656283、success）で、results.jsonは消したキーと時刻のほか同じ、overall_verdict・overall_scoreは24銘柄すべて同じ。一覧の取り違え（register_ticker.pyをSTONKSのpipeline.pyの呼び出しとした）は、引用符の中のパスを全体で照合して直した
 - 段階3（第2部、件名「feat: R-A STONKS SILOの段階3、CHECK-INVをSTONKS SILOにも当てる」のcommit）: CHECK_LAYERSにstonks（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重1つ（データの古さ・遅れの判定）はWARN。rccのCHECK-INVは約26.3秒（4段階のときは約25.5秒）
-- **次はmarket_dataの段階1**（チャット側が順を決める。残りのサブシステムはmarket_data・MACRO PULSE・Market Pulse・Portfolio・TAIL）
+- **次はmarket_dataの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）
@@ -2232,11 +2232,11 @@ check_dependency_map.py 一致58・不一致0。確認の対象: 2026-10-05 22:1
 | EPS ANALYZER index | 287px | static |
 | EPS ANALYZER stock.html | 273px | sticky |
 | EPS ANALYZER tickers.html | 285px | static |
-| EPS ANALYZER admin.html | 403px | static |
-| value-monitor/admin.html | 403px | static |
+| ~~EPS ANALYZER admin.html~~（2026-10-21削除） | 403px | static |
+| ~~value-monitor/admin.html~~（2026-10-21削除） | 403px | static |
 | STONKS SILO | 403px | static |
 | Market Pulse | 263px | static |
-| Extreme Fear | 166px | static |
+| ~~Extreme Fear~~（2026-10-21削除） | 166px | static |
 | MACRO PULSE | 403px | static |
 | HYPE CORE index | 401px | sticky |
 | HYPE CORE detail.html | 401px | sticky |
@@ -2485,7 +2485,7 @@ REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会�
 | TANUKI VALUATION `stock.html` | 最新月の`stage`、全月の`stage` | 象限×stageのシグナル（🟢最優先候補等）、Phaseの推移の表・ピボット |
 | TANUKI SCORE `index.html` | 最新月の`stage`・`stage_label`・`substage_label` | 一覧の表示、ナラティブトラップ（stage≥3）、「底」のsubstageでの並べ替え |
 | ~~TANUKI SCORE `daily_pick.py`~~（2026-10-20削除、今日の特選銘柄） | ~~最新月の`stage`・`stage_label`・`substage_*`~~ | ~~日次ピックのAIの入力~~（読み手から外れた） |
-| HypeCore `index.html`・`detail.html`（・旧`src/value/hypecore/hypecore.html`） | 最新月の`stage`・`substage_*`、全月の`stage` | 一覧・詳細の表示、stageの絞り込み、遷移確率（全月の遷移を数える） |
+| HypeCore `index.html`・`detail.html`（旧`src/value/hypecore/hypecore.html`は2026-10-21削除） | 最新月の`stage`・`substage_*`、全月の`stage` | 一覧・詳細の表示、stageの絞り込み、遷移確率（全月の遷移を数える） |
 | PORTFOLIO `index.html` | 最新月の`stage_label`・`substage_label` | 保有一覧の表示 |
 | Market Pulse `sector_rotation.py` | 最新月の`stage_label` | セクターの表示 |
 | `common/screening/dcf_validity_checker.py` | 最新月の`stage`と全月の遷移 | 遷移確率のサンプル数の検査 |
@@ -2670,7 +2670,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 | TANUKI VALUATION `pipeline.py::compute_max_eps()`（L173）・呼び出し（L1283付近） | TTM系列の最新の純利益・株式報酬、`components.diluted_shares`、株価 | `components.max_eps`・`max_eps_per`・`max_eps_reliability`・`max_eps_ttm_end`を書く（分母はここ） |
 | TANUKI SCORE `index.html`（L512-517・L377-378・L398-399） | `components.max_eps_per`・`max_eps_reliability` | 「最大EPS PER」列（信頼性LOWは薄く表示）と「乖離」列（PER−最大EPS PER。予想PERのときは出さない）。並べ替えの列 |
 | `tests/test_tanuki_max_eps.py` | `compute_max_eps()` | テスト |
-- `_compute_tanuki_score()`（判定）・report.txt・`score_watcher.py`・`daily_pick.py`・TANUKI VALUATION `stock.html`は最大EPSを読まない（grepで該当なし）
+- `_compute_tanuki_score()`（判定）・report.txt・`score_watcher.py`・`daily_pick.py`（2026-10-20削除）・TANUKI VALUATION `stock.html`は最大EPSを読まない（grepで該当なし）
 - `report_consistency_check.py`の`_max_eps`（NG-14・NG-15）は名前が同じだけで、EPS ANALYZERの直近四半期のadj・GAAPのEPSの大きい方。最大EPSとは別
 - 設計の文書（`docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`・`TO_BE_FINAL_LIST.md`・archive）に定義の記載がある。分母を変えるときは合わせて直す
 
@@ -2710,7 +2710,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 #### 内容
 - 進め方: (1) `stage_v2`として並行して計算・保存し、各機能は今のstageを読んだまま (2) 数週間比べる (3) `MIGRATION_CHECKLIST.md`の手順で1機能ずつ切り替える（表示→通知→SCORE）。`_poc.json`に版の番号を持たせる
 - 切り替えで決め直すもの（§6の表）: SCOREのtiming（S0・S5・安定の点数）、TRIM・SELL（番号の比較をやめ名前で条件を書く）、ナラティブトラップ（S4を含めるか）、HypeCoreのsubstage（SCOREの「底」の並べ替え）、
-  HypeCoreの画面（色・絞り込み・遷移の確率）、`dcf_validity_checker.py`（状態の数）、`score_watcher.py`・`daily_pick.py`・`sector_rotation.py`・PORTFOLIO（ラベル）、TANUKIの履歴（版の番号と過去の再計算）
+  HypeCoreの画面（色・絞り込み・遷移の確率）、`dcf_validity_checker.py`（状態の数）、`score_watcher.py`・~~`daily_pick.py`~~（2026-10-20削除）・`sector_rotation.py`・PORTFOLIO（ラベル）、TANUKIの履歴（版の番号と過去の再計算）
 - 更新の順番: HypeCoreをSTONKS SILO（赤字の質）とMarket Data Weekly（業種）のあとに動かす（`UPDATE_SCHEDULE.md`の連鎖の組み直し）
 - 監視: System Healthにstageの鮮度、`report_consistency_check.py`にCHECK（判定不能の割合、S0→S3のような飛び越し）。stageの出力に価格の日付・財務の提出日を持たせ、SECの取り込みの遅れの印を引き継ぐ
 - テスト: どんな入力の組み合わせでも必ずどれかの段階に入ること

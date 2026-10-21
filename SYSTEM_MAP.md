@@ -187,8 +187,8 @@ AutoTrade運用実体・OpenD前提を追記、report.txt統合レポートの�
 | TANUKI VALUATION | DCF理論株価・RICE投資効率 | docs/value-monitor/tanuki_valuation/ |
 | HypeCore | 期待プレミアム・フェーズ判定 | docs/value-monitor/hypecore/ |
 | TANUKI SCORE | 多銘柄比較・最終投資判断 | docs/value-monitor/tanuki_score/（daily pick機能は2026-10-20に削除、下記参照） |
-| STONKS SILO | 赤字企業の投資適合性評価（詳細は下記セクション参照） | docs/value-monitor/stonks-silo/ |
-| EPS ANALYZER | GAAP/Non-GAAP乖離・割安発掘 | docs/value-monitor/adjusted_eps_analyzer/ |
+| STONKS SILO | 赤字企業の投資適合性評価（詳細は下記セクション参照。コードは`src/value/stonks_silo/`、2026-10-21に`discover/stonks-silo/src/`から移した） | docs/value-monitor/stonks-silo/ |
+| EPS ANALYZER | GAAP/Non-GAAP乖離・割安発掘 | docs/value-monitor/adjusted_eps_analyzer/（管理のページadmin.htmlは2026-10-21に削除。操作はCLAUDE_CODE_START.md「管理の操作の手順」） |
 | MACRO PULSE | マクロ環境・景気後退リスク | docs/market-monitor/macro-pulse/ |
 | Market Pulse | 市場センチメント・資金フロー | docs/market-monitor/market-pulse/ |
 | PORTFOLIO | 保有ポートフォリオ管理 | docs/portfolio/ |
@@ -1429,7 +1429,7 @@ importし、cik_history.jsonの旧CIKのCompany Factsを統合するようにな
   TANUKIの3年希薄化率で共通）してKULR・SPIR・HON（1-for-2）・BKNGを登録。
   詳細はBACKLOG_DONE.md [[SPLIT-REALTIME-GAP-1]]・
   [[SPLIT-REALTIME-GAP-REVERSE-1]]参照
-- `summary.json`（一覧・TANUKI VALUATION・TANUKI SCORE・daily_pickが読む。2026-10-11追記、[[EPS-SILENT-TICKER-FAILURE-1]]・
+- `summary.json`（一覧・TANUKI VALUATION・TANUKI SCOREが読む。daily_pickも読んでいた〈2026-10-20削除〉。2026-10-11追記、[[EPS-SILENT-TICKER-FAILURE-1]]・
   [[EPS-SUMMARY-GHOST-ROWS-1]]・[[EPS-INDEX-MINOR-1]]）: `run()`は銘柄ごとの成功・失敗（「データなし」／「例外: 型: メッセージ」）を数え、
   全銘柄の実行は`run_status`（scope=all・started_at・finished_at・requested・succeeded・failed〈ticker・reason〉）、
   `--ticker`の部分実行は`partial_run_status`（scope=partial・tickers）に書く（部分実行で`run_status`を上書きしない。
