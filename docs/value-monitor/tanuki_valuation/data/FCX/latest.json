@@ -2,9 +2,9 @@
   "intrinsic_value_per_share": 20.148847196087573,
   "intrinsic_value_beta": 14.19,
   "upside_percent_beta": -79.4,
-  "intrinsic_value_rf": 76.13,
-  "upside_percent_rf": 10.5,
-  "intrinsic_value_rf_rate": 0.05116999626159668,
+  "intrinsic_value_rf": 75.04,
+  "upside_percent_rf": 8.9,
+  "intrinsic_value_rf_rate": 0.05145999908447266,
   "v0": 25679971549.222603,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.2964150405125512,
@@ -43,8 +43,8 @@
       "expected_return_pct": -60.2
     }
   },
-  "upside_percent": -70.7,
-  "calculation_date": "2026-10-21T21:30:15+09:00",
+  "upside_percent": -70.8,
+  "calculation_date": "2026-10-22T05:39:49+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -307,7 +307,7 @@
     "roe_10yr_avg": 0.07057500964584552,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 68.87000274658203,
+    "current_price": 68.9000015258789,
     "latest_revenue": 25915000000.0,
     "rpo": 106000000.0,
     "beta": 1.401,
@@ -342,7 +342,7 @@
     "peg": 4.5363,
     "ps": 3.8603938,
     "ev_ebitda": 12.377,
-    "ma200": 64.8618500328064,
+    "ma200": 64.93430004119872,
     "forward_eps": 4.32698,
     "next_quarter_eps": 0.83,
     "analyst_target_median": 82.0,
@@ -388,15 +388,15 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.09167653362852335,
-  "risk_free_rate_live": 0.05116999626159668,
-  "risk_free_rate_live_date": "2026-10-20",
+  "required_growth_rf_base": -0.09159741689347523,
+  "risk_free_rate_live": 0.05145999908447266,
+  "risk_free_rate_live_date": "2026-10-21",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.0013733290507553786,
+  "required_growth_rf_live": 0.004189393314871115,
   "tanuki_score": "HOLD",
   "funda_score": 40,
   "score_comment": "割高(-71%超)、FCF黒字、売上安定成長",
-  "timing_score": 40,
+  "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -409,6 +409,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -524,7 +525,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0117,
+  "erp": 0.0113,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
