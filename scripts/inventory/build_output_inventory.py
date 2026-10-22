@@ -642,21 +642,27 @@ _PORTFOLIO.update(
         "docs/portfolio/data/history.json": "日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む",
         "docs/portfolio/data/discover_config.json":
             "銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。"
-            "Portfolioの画面が保有中の銘柄を選ぶのに読む",
-        "docs/portfolio/data/theme_config.json":
-            "テーマの一覧。config/theme_config.json を Discover_Config_Sync.yml が写したもの。docs/ の写しを読むのは rcc の同期の確認（CHECK-32）だけで、画面は読まない",
+            "Portfolioの画面が保有中の銘柄を選ぶのに読む。各銘柄の themes（読み手なし）は2026-10-23に消し、register_ticker.py も書くのをやめた",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("docs/portfolio/data/theme_config.json",
+         "削除（2026-10-23、Koichiさんの判断）。元の config/theme_config.json も消し、Discover_Config_Sync.yml の写しと rcc の同期の確認（CHECK-32）の組も外した。"
+         "docs/ の写しを読むのは CHECK-32 だけで、画面は読んでいなかった（画面の color・label は画面の中の PHASE_CFG の値）"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-23、Koichiさんの判断）。theme_config.json（config/・docs/）を消し、discover_config.json の各銘柄の themes を消した。"
+                  "history.json・portfolio.json・discover_config.json は残す。history.json の合計9キーは日ごとの記録で作り直せないため残す（下の注記）。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="portfolio", OUTSIDE_PREFIXES=("docs/portfolio/data/", "src/portfolio/"),
     READ_PREFIXES=("docs/portfolio/data", "src/portfolio"),
     READ_HINT="portfolio", NAME_SHORT="Portfolio",
     KNOWN_DUPLICATE_RULES=[], TITLE="Portfolio（src/portfolio・docs/portfolio）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/index.html",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={k: "残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない"
+                      for k in ("cash_usd", "cost_usd", "equity_usd", "total_cash_jpy", "total_cash_usd", "total_equity_jpy",
+                                "total_equity_usd", "total_pnl_jpy", "total_pnl_pct")},
     RULES=_TANUKI["RULES"],
     FULL_SCAN=True, SCREEN_SECTIONS=True,
     HTML_COPIES=[],

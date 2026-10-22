@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|
 | `Adjusted_Eps_Analyzer_update.yml`<br>Adjusted_EPS_Data_Update | 月 04:10 | 月 13:10 | SEC_Data_Update.yml | ticker | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/value-monitor/adjusted_eps_analyzer/data/` | TANUKI_VALUATION_Update.yml |
 | `Beta_Config_Update.yml`<br>Beta Config Update | 毎日（1〜7日） 23:00 | 毎日（2〜8日） 08:00 | — | tickers・dry_run | — | 段「Check first-Sunday schedule」 | `config/beta_config.json` | — |
-| `Discover_Config_Sync.yml`<br>Discover Config Sync | — | — | push: config/discover_config.json・config/theme_config.json | あり（入力なし） | — | — | `docs/portfolio/data/discover_config.json` | — |
+| `Discover_Config_Sync.yml`<br>Discover Config Sync | — | — | push: config/discover_config.json | あり（入力なし） | — | — | `docs/portfolio/data/discover_config.json` | — |
 | `HypeCore_Update.yml`<br>HypeCore Update | 月 04:00 | 月 13:00 | SEC_Data_Update.yml | tickers | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/value-monitor/hypecore/data/` | TANUKI_VALUATION_Update.yml |
 | `MACRO_PULSE_Update.yml`<br>MACRO_PULSE_Update | 毎日 22:15<br>毎日 13:03<br>土 22:07<br>土 22:11 | 毎日（翌日） 07:15<br>毎日 22:03<br>日 07:07<br>日 07:11 | — | mode | — | — | `docs/market-monitor/macro-pulse/data/` | — |
 | `Macro_Data_Update.yml`<br>Macro Data Update | 毎日 10:00 | 毎日 19:00 | — | series_ids | — | — | `common/macro_data/macro_data_violations_log.json`<br>`common/macro_data/series/` | — |

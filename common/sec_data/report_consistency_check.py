@@ -279,7 +279,7 @@ def _check_output_inventory() -> tuple[list[str], list[str]]:
 
 
 def _check_discover_config_sync() -> list[str]:
-    """CHECK-32: config/discover_config.json・config/theme_config.jsonと
+    """CHECK-32: config/discover_config.jsonと
     docs/portfolio/data/側コピーの内容一致を検証する
     （[[DISCOVER-CONFIG-DUAL-MGMT-1]]の同期漏れ検知。書き手が複数
     存在するため`Discover_Config_Sync.yml`が自動同期する設計だが、
@@ -287,11 +287,11 @@ def _check_discover_config_sync() -> list[str]:
     [[FCFCONFIG-MISSING-DETECTION-WEAK-1]]と同型のサイレント破損対策）。
     ティッカー非依存の単発チェックのため、check_ticker()内ではなく
     run_checks()から直接1回だけ呼ばれる。NGメッセージのリストを返す。
+    theme_config.jsonの組は、ファイルごと消したため2026-10-23に外した（R-A Portfolioの段階2）。
     """
     ng: list[str] = []
     pairs = [
         ("config/discover_config.json", "docs/portfolio/data/discover_config.json"),
-        ("config/theme_config.json", "docs/portfolio/data/theme_config.json"),
     ]
     for src_rel, dst_rel in pairs:
         src_path = os.path.join(REPO_ROOT, src_rel)
@@ -3465,7 +3465,7 @@ def run_checks(args=None) -> tuple[int, int]:
             total_ng   += len(ng)
             total_warn += len(annotated_warn)
 
-    # CHECK-32: ティッカー非依存の単発チェック（discover_config/theme_config同期）。
+    # CHECK-32: ティッカー非依存の単発チェック（discover_config同期）。
     # --tickerフィルタの有無に関わらず常時実行する（ticker単位のデータとは
     # 無関係な、config/とdocs/の同期状態そのものを検証するため）。
     discover_sync_ng = _check_discover_config_sync()

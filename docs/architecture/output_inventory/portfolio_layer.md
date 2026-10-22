@@ -5,27 +5,30 @@
 - 読み手の数: その出力のファイルを読む本番のコードのファイルの数（テストを除く。ワークフロー・JS・HTMLを含む）。「その場で計算」は、ファイルを読まずに同じ中身を関数で作り直す読み手のファイルの数
 - 画面: 直接（docs/のページがそのファイルを読む）と経由（読み手のPythonのファイル〈呼び出しを3段までたどった箇所を含む〉がdocs/に書くファイルを読むページ。推定。経由の元は「読み手の内訳」）
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`docs/portfolio/index.html`・`docs/portfolio/tail/`があれば「効く」
-- 残す／消す: 段階2の判断はまだ（Koichiさんの判断待ち）
+- 残す／消す: 段階2の判断（2026-10-23、Koichiさんの判断）。theme_config.json（config/・docs/）を消し、discover_config.json の各銘柄の themes を消した。history.json・portfolio.json・discover_config.json は残す。history.json の合計9キーは日ごとの記録で作り直せないため残す（下の注記）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 4（ファイル 4・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 2／2件以上 2／規則の二重 9（検出式 10種のうち。Portfolioのファイルを含むもの 0）
+**件数**: 出力 3（ファイル 3・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 1／2件以上 2／規則の二重 9（検出式 10種のうち。Portfolioのファイルを含むもの 0）
 
-**画面の項目**: 画面が読むキー 33（この段階の書き手あり 18・ほかの書き手あり 15・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **10**
+**画面の項目**: 画面が読むキー 32（この段階の書き手あり 16・ほかの書き手あり 16・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **9**
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 1件／解決できた読み込み 5件＋ファイル名で当たった行 10件（6.2%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 1件／解決できた読み込み 5件＋ファイル名で当たった行 9件（6.7%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
 フォルダを決めきれない行（ファイル名で当たった行）:
 - `scripts/analysis/market_pulse_redesign.py` 行 393（`docs/portfolio/data/portfolio.json`）: `pf = json.loads(subprocess.run(["git", "-C", REPO, "show", f"{DATA_REV}:docs/portfolio/data/portfolio.json"],`
 
+## 消したもの（段階2、2026-10-20）
+
+- `docs/portfolio/data/theme_config.json`: 削除（2026-10-23、Koichiさんの判断）。元の config/theme_config.json も消し、Discover_Config_Sync.yml の写しと rcc の同期の確認（CHECK-32）の組も外した。docs/ の写しを読むのは CHECK-32 だけで、画面は読んでいなかった（画面の color・label は画面の中の PHASE_CFG の値）
+
 ## 出力（読み手0件 → テストだけ → 1件 → 2件以上）
 
 | 区分 | 出力（パスの型） | 何か | 書き手 | 読み手の数（その場で計算） | 画面 | 投資判断 | 定義 | 残す／消す |
 |---|---|---|---|---|---|---|---|---|
-| 1件 | `docs/portfolio/data/history.json`<br>（1ファイル） | 日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む | `snapshot.py:main` | 1 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | （段階2の判断待ち） |
-| 1件 | `docs/portfolio/data/theme_config.json`<br>（1ファイル） | テーマの一覧。config/theme_config.json を Discover_Config_Sync.yml が写したもの。docs/ の写しを読むのは rcc の同期の確認（CHECK-32）だけで、画面は読まない | `.github/workflows/Discover_Config_Sync.yml:cp config/theme_config.json` | 1・テスト2 | — | — | — | （段階2の判断待ち） |
-| 2件以上 | `docs/portfolio/data/discover_config.json`<br>（1ファイル） | 銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。Portfolioの画面が保有中の銘柄を選ぶのに読む | `.github/workflows/Discover_Config_Sync.yml:cp config/discover_config.json` | 2・テスト2 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | （段階2の判断待ち） |
-| 2件以上 | `docs/portfolio/data/portfolio.json`<br>（1ファイル） | 証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む |  | 9・テスト5 | market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | 効く: 保有銘柄の監視（TANUKI TAIL）・Portfolioの画面・TANUKI TAILの画面（保有銘柄の監視） | AS-IS-391・AS-IS-393 | （段階2の判断待ち） |
+| 1件 | `docs/portfolio/data/history.json`<br>（1ファイル） | 日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む | `snapshot.py:main` | 1 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | 残す（2026-10-23） |
+| 2件以上 | `docs/portfolio/data/discover_config.json`<br>（1ファイル） | 銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。Portfolioの画面が保有中の銘柄を選ぶのに読む。各銘柄の themes（読み手なし）は2026-10-23に消し、register_ticker.py も書くのをやめた | `.github/workflows/Discover_Config_Sync.yml:cp config/discover_config.json` | 2・テスト2 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | 残す（2026-10-23） |
+| 2件以上 | `docs/portfolio/data/portfolio.json`<br>（1ファイル） | 証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む |  | 9・テスト5 | market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | 効く: 保有銘柄の監視（TANUKI TAIL）・Portfolioの画面・TANUKI TAILの画面（保有銘柄の監視） | AS-IS-391・AS-IS-393 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -39,17 +42,10 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `snapshots`(1)
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 217
 
-### `docs/portfolio/data/theme_config.json`（1件）
-- 起動元: .github/workflows/Discover_Config_Sync.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `themes`(0)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 294・3471・3701（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
-- テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
-
 ### `docs/portfolio/data/discover_config.json`（2件以上）
 - 起動元: .github/workflows/Discover_Config_Sync.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `candidates`(0)・`last_updated`(1)・`tickers`(2)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 293・3471・3701（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 294・3471・3701（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 216
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
@@ -84,54 +80,52 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `cash_usd`（`docs/portfolio/data/history.json`）
-- `cost_usd`（`docs/portfolio/data/history.json`）
-- `equity_usd`（`docs/portfolio/data/history.json`）
-- `themes`（`docs/portfolio/data/discover_config.json`、`docs/portfolio/data/theme_config.json`）
-- `total_cash_jpy`（`docs/portfolio/data/history.json`）
-- `total_cash_usd`（`docs/portfolio/data/history.json`）
-- `total_equity_jpy`（`docs/portfolio/data/history.json`）
-- `total_equity_usd`（`docs/portfolio/data/history.json`）
-- `total_pnl_jpy`（`docs/portfolio/data/history.json`）
-- `total_pnl_pct`（`docs/portfolio/data/history.json`）
+- `cash_usd`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `cost_usd`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `equity_usd`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_cash_jpy`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_cash_usd`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_equity_jpy`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_equity_usd`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_pnl_jpy`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
+- `total_pnl_pct`（`docs/portfolio/data/history.json`）: 残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない
 
-### `docs/portfolio/index.html`（33項目）
+### `docs/portfolio/index.html`（32項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
-| — | `avg_cost` | この段階の書き手あり<br>`docs/portfolio/data/portfolio.json` | 320・423 | （段階2の判断待ち） |
-| — | `base` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379 | （段階2の判断待ち） |
-| — | `brokers` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 304 | （段階2の判断待ち） |
-| — | `cash` | この段階の書き手あり<br>`docs/portfolio/data/portfolio.json` | 313・429・430・495 | （段階2の判断待ち） |
-| 保有中 | `category` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json` | 299・405 | （段階2の判断待ち） |
-| — | `color` | この段階の書き手あり<br>`docs/portfolio/data/theme_config.json` | 641・711・714 | （段階2の判断待ち） |
-| — | `components` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 378・425 | （段階2の判断待ち） |
-| — | `count` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json` | 748 | （段階2の判断待ち） |
-| — | `current_price` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 378・425 | （段階2の判断待ち） |
-| — | `date` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 802 | （段階2の判断待ち） |
-| — | `funda_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 400・589 | （段階2の判断待ち） |
-| — | `intrinsic_value_per_share` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379・380 | （段階2の判断待ち） |
-| 陶酔期 | `label` | この段階の書き手あり<br>`docs/portfolio/data/theme_config.json` | 528・608・617・617 | （段階2の判断待ち） |
-| — | `last_updated` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json`<br>`docs/portfolio/data/portfolio.json` | 294・294 | （段階2の判断待ち） |
-| — | `memo` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json`<br>`docs/portfolio/data/portfolio.json` | 325・325・529 | （段階2の判断待ち） |
-| — | `monthly` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 377・377・583・583 | （段階2の判断待ち） |
-| — | `name` | ほかの書き手あり<br>`docs/portfolio/tail/data/mda/ADBE/latest.json`<br>`docs/portfolio/tail/data/mda/CELH/latest.json` | 430・492 | （段階2の判断待ち） |
-| — | `positions` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 317・423・424 | （段階2の判断待ち） |
-| — | `scenario_valuations` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379 | （段階2の判断待ち） |
-| — | `shares` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 319・423・426 | （段階2の判断待ち） |
-| — | `snapshots` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 284・793 | （段階2の判断待ち） |
-| — | `stage_label` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 382・584・616 | （段階2の判断待ち） |
-| — | `substage_label` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 383 | （段階2の判断待ち） |
-| — | `tanuki_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 399・581 | （段階2の判断待ち） |
-| 仕込みゾーン候補（TANUKI SCORE BUY判定 × 早期フェーズ・未保有 | `ticker` | ほかの書き手あり<br>`docs/portfolio/tail/data/ctrl/ADBE/latest.json`<br>`docs/portfolio/tail/data/ctrl/APP/latest.json` | 515・515・671・672 | （段階2の判断待ち） |
-| — | `tickers` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json` | 281・297 | （段階2の判断待ち） |
-| — | `timing_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 401・590 | （段階2の判断待ち） |
-| — | `total_assets_jpy` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 804 | （段階2の判断待ち） |
-| — | `total_assets_usd` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 803 | （段階2の判断待ち） |
-| — | `total_pnl_usd` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 805 | （段階2の判断待ち） |
-| — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 381・588 | （段階2の判断待ち） |
-| — | `usdjpy` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 285・285 | （段階2の判断待ち） |
-| — | `value` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 185・278・279・281 | （段階2の判断待ち） |
+| — | `avg_cost` | この段階の書き手あり<br>`docs/portfolio/data/portfolio.json` | 320・423 | 残す（2026-10-23） |
+| — | `base` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379 | 残す（2026-10-23） |
+| — | `brokers` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 304 | 残す（2026-10-23） |
+| — | `cash` | この段階の書き手あり<br>`docs/portfolio/data/portfolio.json` | 313・429・430・495 | 残す（2026-10-23） |
+| 保有中 | `category` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json` | 299・405 | 残す（2026-10-23） |
+| — | `components` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 378・425 | 残す（2026-10-23） |
+| — | `count` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json` | 748 | 残す（2026-10-23） |
+| — | `current_price` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 378・425 | 残す（2026-10-23） |
+| — | `date` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 802 | 残す（2026-10-23） |
+| — | `funda_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 400・589 | 残す（2026-10-23） |
+| — | `intrinsic_value_per_share` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379・380 | 残す（2026-10-23） |
+| 陶酔期 | `label` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 528・608・617・617 | 残す（2026-10-23） |
+| — | `last_updated` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json`<br>`docs/portfolio/data/portfolio.json` | 294・294 | 残す（2026-10-23） |
+| — | `memo` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json`<br>`docs/portfolio/data/portfolio.json` | 325・325・529 | 残す（2026-10-23） |
+| — | `monthly` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 377・377・583・583 | 残す（2026-10-23） |
+| — | `name` | ほかの書き手あり<br>`docs/portfolio/tail/data/mda/ADBE/latest.json`<br>`docs/portfolio/tail/data/mda/CELH/latest.json` | 430・492 | 残す（2026-10-23） |
+| — | `positions` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 317・423・424 | 残す（2026-10-23） |
+| — | `scenario_valuations` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 379 | 残す（2026-10-23） |
+| — | `shares` | この段階の書き手あり<br>`docs/portfolio/data/history.json`<br>`docs/portfolio/data/portfolio.json` | 319・423・426 | 残す（2026-10-23） |
+| — | `snapshots` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 284・793 | 残す（2026-10-23） |
+| — | `stage_label` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 382・584・616 | 残す（2026-10-23） |
+| — | `substage_label` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 383 | 残す（2026-10-23） |
+| — | `tanuki_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 399・581 | 残す（2026-10-23） |
+| 仕込みゾーン候補（TANUKI SCORE BUY判定 × 早期フェーズ・未保有 | `ticker` | ほかの書き手あり<br>`docs/portfolio/tail/data/ctrl/ADBE/latest.json`<br>`docs/portfolio/tail/data/ctrl/APP/latest.json` | 515・515・671・672 | 残す（2026-10-23） |
+| — | `tickers` | この段階の書き手あり<br>`docs/portfolio/data/discover_config.json` | 281・297 | 残す（2026-10-23） |
+| — | `timing_score` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 401・590 | 残す（2026-10-23） |
+| — | `total_assets_jpy` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 804 | 残す（2026-10-23） |
+| — | `total_assets_usd` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 803 | 残す（2026-10-23） |
+| — | `total_pnl_usd` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 805 | 残す（2026-10-23） |
+| — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 381・588 | 残す（2026-10-23） |
+| — | `usdjpy` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 285・285 | 残す（2026-10-23） |
+| — | `value` | この段階の書き手あり<br>`docs/portfolio/data/history.json` | 185・278・279・281 | 残す（2026-10-23） |
 
 ## 画面の区画
 
@@ -142,7 +136,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
 | ── Auth screen ── | `value`（この段階の書き手あり） |  |
-| ── Main content ── | `avg_cost`（この段階の書き手あり）<br>`base`（ほかの書き手あり）<br>`brokers`（この段階の書き手あり）<br>`cash`（この段階の書き手あり）<br>`category`（この段階の書き手あり）<br>`color`（この段階の書き手あり）<br>`components`（ほかの書き手あり）<br>`count`（ほかの書き手あり）<br>`current_price`（ほかの書き手あり）<br>`funda_score`（ほかの書き手あり）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`label`（この段階の書き手あり）<br>`last_updated`（この段階の書き手あり）<br>`memo`（この段階の書き手あり）<br>`monthly`（ほかの書き手あり）<br>`name`（ほかの書き手あり）<br>`positions`（この段階の書き手あり）<br>`scenario_valuations`（ほかの書き手あり）<br>`shares`（この段階の書き手あり）<br>`snapshots`（この段階の書き手あり）<br>`stage_label`（ほかの書き手あり）<br>`substage_label`（ほかの書き手あり）<br>`tanuki_score`（ほかの書き手あり）<br>`ticker`（ほかの書き手あり）<br>`tickers`（この段階の書き手あり）<br>`timing_score`（ほかの書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`usdjpy`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
+| ── Main content ── | `avg_cost`（この段階の書き手あり）<br>`base`（ほかの書き手あり）<br>`brokers`（この段階の書き手あり）<br>`cash`（この段階の書き手あり）<br>`category`（この段階の書き手あり）<br>`components`（ほかの書き手あり）<br>`count`（ほかの書き手あり）<br>`current_price`（ほかの書き手あり）<br>`funda_score`（ほかの書き手あり）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`label`（ほかの書き手あり）<br>`last_updated`（この段階の書き手あり）<br>`memo`（この段階の書き手あり）<br>`monthly`（ほかの書き手あり）<br>`name`（ほかの書き手あり）<br>`positions`（この段階の書き手あり）<br>`scenario_valuations`（ほかの書き手あり）<br>`shares`（この段階の書き手あり）<br>`snapshots`（この段階の書き手あり）<br>`stage_label`（ほかの書き手あり）<br>`substage_label`（ほかの書き手あり）<br>`tanuki_score`（ほかの書き手あり）<br>`ticker`（ほかの書き手あり）<br>`tickers`（この段階の書き手あり）<br>`timing_score`（ほかの書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`usdjpy`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
 | （JSで作る要素 #history-plotly） | `date`（この段階の書き手あり）<br>`snapshots`（この段階の書き手あり）<br>`total_assets_jpy`（この段階の書き手あり）<br>`total_assets_usd`（この段階の書き手あり）<br>`total_pnl_usd`（この段階の書き手あり） |  |
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）

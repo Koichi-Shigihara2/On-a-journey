@@ -494,7 +494,7 @@ repos/.../contents/{path}`）はパスが`config/`でも`src/`でも`docs/`で�
 |---|---|
 | `portfolio.json` | 2026-05-23 21:37 `config/`のみに作成→66分後の22:43、`4ff1f1992`「portfolio.jsonをdocs/以下に配置・fetchパス修正」でdocs/コピーを追加 |
 | `discover_config.json` | 2026-05-23 `config/`に作成（`ee1b6ddad`）→同日中に`7875c6be1`「discover_config配置・認証DOM修正」でdocs/コピーを追加 |
-| `theme_config.json` | 2026-05-31 `config/`のみに作成→4日後の06-04、`2e99c8844`「docs/ 全HTMLリンク整合性修正」で「GitHub Pagesから参照可能に」とコミットメッセージに明記した上でdocs/コピーを追加 |
+| `theme_config.json` | 2026-05-31 `config/`のみに作成→4日後の06-04、`2e99c8844`「docs/ 全HTMLリンク整合性修正」で「GitHub Pagesから参照可能に」とコミットメッセージに明記した上でdocs/コピーを追加。2026-10-23に`config/`・`docs/`の両方を削除（読み手がrccの同期の確認だけ、R-A Portfolioの段階2） |
 
 新規に手動設定ファイルを追加する際、フロントエンドから直接fetchする
 想定であれば最初から`docs/`配下に置くこと。詳細な調査経緯は

@@ -271,7 +271,8 @@ def step6_discover_register(ticker: str, dry_run: bool) -> None:
     if dry_run:
         print(f"  [dry-run] {ticker} をDiscover監視リストに追加します（実際には書き込みません）")
         return
-    config.setdefault("tickers", {})[ticker] = {"category": "監視中", "memo": "", "themes": []}
+    # themes は読み手が無いため 2026-10-23 に書くのをやめた（R-A Portfolioの段階2）
+    config.setdefault("tickers", {})[ticker] = {"category": "監視中", "memo": ""}
     config["last_updated"] = datetime.now().date().isoformat()
     with open(DISCOVER_CFG, "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
