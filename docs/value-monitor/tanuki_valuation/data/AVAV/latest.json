@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 86.79041003906865,
   "intrinsic_value_beta": 63.46,
-  "upside_percent_beta": -46.0,
-  "intrinsic_value_rf": 297.65,
-  "upside_percent_rf": 153.3,
-  "intrinsic_value_rf_rate": 0.05145999908447266,
+  "upside_percent_beta": -46.1,
+  "intrinsic_value_rf": 327.73,
+  "upside_percent_rf": 178.4,
+  "intrinsic_value_rf_rate": 0.04953000068664551,
   "v0": 3375123309.608156,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.010130367370531027,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 100.95,
       "value_growth_pct": 16.3,
-      "expected_return_pct": -14.1
+      "expected_return_pct": -14.2
     },
     "2年後": {
       "future_value": 117.42,
       "value_growth_pct": 35.3,
-      "expected_return_pct": -0.1
+      "expected_return_pct": -0.2
     },
     "3年後": {
       "future_value": 136.57,
       "value_growth_pct": 57.4,
-      "expected_return_pct": 16.2
+      "expected_return_pct": 16.0
     },
     "4年後": {
       "future_value": 158.85,
       "value_growth_pct": 83.0,
-      "expected_return_pct": 35.2
+      "expected_return_pct": 35.0
     },
     "5年後": {
       "future_value": 163.61,
       "value_growth_pct": 88.5,
-      "expected_return_pct": 39.2
+      "expected_return_pct": 39.0
     }
   },
-  "upside_percent": -26.1,
-  "calculation_date": "2026-10-22T05:33:17+09:00",
+  "upside_percent": -26.3,
+  "calculation_date": "2026-10-23T05:34:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -232,7 +232,7 @@
       "total_transient_amount": 10557000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "全項目の理由がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目の理由がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "excluded",
@@ -351,7 +351,7 @@
     "roe_10yr_avg": 0.002411992231078816,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 117.51000213623047,
+    "current_price": 117.69999694824219,
     "latest_revenue": 1976845000.0,
     "rpo": 1457822000,
     "beta": 1.412,
@@ -382,11 +382,11 @@
     "alpha_uncapped": 0.010130367370531027,
     "per": 27.58182,
     "per_is_forward": true,
-    "per_adjusted": 22.29,
+    "per_adjusted": 22.32,
     "peg": 1.57,
     "ps": 3.0906181,
     "ev_ebitda": 29.418,
-    "ma200": 193.32177490234372,
+    "ma200": 192.32512489318847,
     "forward_eps": 4.41559,
     "next_quarter_eps": 0.39,
     "analyst_target_median": 215.0,
@@ -432,15 +432,15 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.175874150703333,
-  "risk_free_rate_live": 0.05145999908447266,
-  "risk_free_rate_live_date": "2026-10-21",
+  "required_growth_rf_base": -0.1756078270450262,
+  "risk_free_rate_live": 0.04953000068664551,
+  "risk_free_rate_live_date": "2026-10-22",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.08897392850843977,
+  "required_growth_rf_live": -0.10569503670707314,
   "tanuki_score": "WATCH",
   "funda_score": 85,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "割高(-26%超)、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -453,7 +453,6 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2022,
@@ -505,7 +504,7 @@
     "shares_yr_3ago": 25044881
   },
   "computed_runway_months": 49.399239435820306,
-  "net_current_assets_ratio": 0.2411,
+  "net_current_assets_ratio": 0.2407,
   "dupont": {
     "ni_ttm": -202818000,
     "revenue_ttm": 2002659000,
@@ -570,7 +569,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0139,
+  "erp": -0.012,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }
