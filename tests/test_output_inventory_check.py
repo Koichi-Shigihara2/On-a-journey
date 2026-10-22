@@ -517,3 +517,54 @@ def test_portfolio_layer_settings():
     assert pf["RESOLVE_STRICT"] == 3
     assert inv.CHECK_LAYERS[-1] == "portfolio"
     assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["portfolio"]
+
+
+def test_macro_layers_settings():
+    """MACRO PULSE（段階1、2026-10-23）: 共有のデータ層 macro_data（画面なし、市場データ層と同じ印。series_meta.json は書き手の無いファイル）と、
+    macro_pulse（CSV の列をキーとして数える・importlib で読み込んだモジュール〈4〉・ページの el('id')）。CHECK-INV にはまだ入れない。"""
+    md, mp = inv.LAYERS["macro_data"], inv.LAYERS["macro_pulse"]
+    assert md["LAYER_DIRS"] == ("common/macro_data",) and not md["SCREEN_PAGES"]
+    assert md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"] and md["RESOLVE_STRICT"] == 1
+    assert md["EXTRA_OUTPUT_DIRS"] == ("common/macro_data",)
+    assert mp["LAYER_DIRS"] == ("src/market/macro_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/macro-pulse",)
+    assert mp["RESOLVE_STRICT"] == 4 and mp["CSV_COLUMNS"] and mp["JS_ID_HELPERS"]
+    assert not (mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"] or mp["EXTRA_OUTPUT_DIRS"])
+    assert "macro_data" not in inv.CHECK_LAYERS and "macro_pulse" not in inv.CHECK_LAYERS
+    # 既存の段階の一覧を変えないよう、足した印はこの2つの段階だけ
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"] or inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_data", "macro_pulse"]
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"] >= 4] == ["macro_pulse"]
+
+
+def test_csv_columns_are_keys_only_with_flag(tmp_path, monkeypatch):
+    """CSV_COLUMNS: CSV の見出しの行の列を {列: ""} にする（BOM 付きでも）。印が無ければ CSV は読まない（None）。"""
+    (tmp_path / "x.csv").write_text("﻿date,score , phase\n2026-10-23,40,中立\n", encoding="utf-8")
+    monkeypatch.setattr(inv, "REPO", str(tmp_path))
+    monkeypatch.setattr(inv, "CSV_COLUMNS", True)
+    assert inv.data_file_obj("x.csv") == {"date": "", "score": "", "phase": ""}
+    assert inv.data_output_ext() == (".json", ".csv")
+    monkeypatch.setattr(inv, "CSV_COLUMNS", False)
+    assert inv.data_file_obj("x.csv") is None
+    assert inv.data_output_ext() == (".json",)
+
+
+def test_strict4_importlib_spec_module_is_an_import(monkeypatch):
+    """RESOLVE_STRICT 4: _m = module_from_spec(spec_from_file_location(名前, Path(__file__).parent / "05_main.py")) を import と同じにする
+    （05_import_history.py の EVENTS_PATH = _m.EVENTS_PATH が 05_main.py の定数に解決する）。"""
+    src = ("import importlib.util, pathlib\n"
+           "_main_path = pathlib.Path(__file__).parent / '05_main.py'\n"
+           "_spec = importlib.util.spec_from_file_location('main05', _main_path)\n"
+           "_m = importlib.util.module_from_spec(_spec)\n")
+    import ast
+    monkeypatch.setattr(inv, "ALL_PY", {"src/x/05_main.py", "src/x/05_hist.py"})
+    mod = inv.Module("src/x/05_hist.py", ast.parse(src), src)
+    inv._spec_imports(mod)
+    assert mod.mod_imports == {"_m": "src/x/05_main.py"}
+
+
+def test_js_id_helper_definitions():
+    """JS_ID_HELPERS: getElementById を包んだ関数の名前（矢印関数・function の両方）。"""
+    page = ("const el = id => document.getElementById(id);\n"
+            "function $id(x) { return document.getElementById(x); }\n"
+            "const other = document.getElementById('a');\n")
+    assert {a or b for a, b in inv.JS_ID_HELPER_DEF_RE.findall(page)} == {"el", "$id"}

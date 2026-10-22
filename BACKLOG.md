@@ -2010,7 +2010,23 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   前後の比較: 画面が読むキーは33→32（書き手なし0のまま）。減った`color`は画面の中の`PHASE_CFG`の値で、theme_config.jsonのキーと名前が同じだったため一覧が書き手に数えていた（`label`も同じで、書き手の表示が「ほかの書き手あり」に変わった）。`registration_validator.py`の全銘柄の出力は前後で同じ（NG=7・WARN=11は前から）。`register_ticker.py`のStep 6を写しのファイルに当てた結果は`themes`が無いことだけ違う
 - 範囲外（直さない）: 保有銘柄の一覧が3か所にある件はPROJECT_STATUS.mdのR-Aの終わりの論点⑥。`discover_config.json`・Discover_Config_Sync.ymlの名前はFINDINGS 2026-10-23（型E）
 - 段階3（第2部、件名「feat: R-A Portfolioの段階3、CHECK-INVをPortfolioにも当てる」のcommit）: CHECK_LAYERSにportfolio（最後。解決の厳しさ3で索引を作り直す）。Portfolioを含む規則の二重は0で、rccのWARNは149件のまま。rccのCHECK-INVは約64〜66秒（8段階。同じ条件で7段階は約58秒で、Portfolioの分は約8秒）。rcc全体は約85秒。時間を縮める直しはR-Aの終わりの見直し（論点②）で扱う
-- **次はMACRO PULSEの段階1**（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
+- 段階1〜3が済んだ。次はMACRO PULSEの段階1（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
+
+#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1済）
+- 段階1（一覧の下書き）: 件名「chore: R-A MACRO PULSEの段階1、出力の一覧の下書き」のcommit。2つに分けた: `--layer macro_data` → `macro_data_layer.json`・`.md`（画面の無い共有のデータ層）、`--layer macro_pulse` → `macro_pulse_layer.json`・`.md`（画面は`docs/market-monitor/macro-pulse/index.html`）
+- macro_data: 出力4（`series/{series_id}.json` 26ファイル・`macro_data_violations_log.json`・`series_meta.json`〈**コードの書き手なし、人の手で書く静的なファイル**〉・Step Summary）。読み手0件0、テストだけ0、1件1（series_meta.json〈fetcher.py〉）、2件以上2。
+  series はMACRO PULSE・Market Pulseが`reader.py`経由で読み、violations_logはSystem Healthの[L]が読む。誰も読まないキー3（series_metaの`consumers`・`input_id`、seriesの`fallback_used`）。止める条件は書き手0%・読み方0%。
+  本番外のコードの候補1（`migrate_bamlh0a0hym2_history.py`、ワークフロー・ほかのコードから呼ばれない。実行は2ff481b3ad〈2026-08-12〉の1回）
+- macro_pulse: 出力8（CSV 5つ・`05_meta.json`・`05_events.csv.bak_{datetime}`〈05_backfill_nfp_mom.pyの控え、gitに無い。読み手0件〉・Discord）。2件以上6。
+  AIの出力（Grok）: `05_fed_context.csv`のregime・dominant_concern・dominant_label・ai_reason、`05_weekly_analysis.csv`のsummary・factor_analysis・watchpoints・indicator_comments（一覧の「何か」の欄）。
+  画面が読む列・キー48（書き手なし0）、誰も読まない列8（05_events.csvの`analysis`〈全行が空〉・`ret_t1`・`ret_t5`・`ret_t10`・`ret_t20`・`surprise_pct`〈画面の`COL`の対応表にあるが使われない〉、05_fed_context.csvの`zq_price`・`zq_ticker`）。
+  本番外のコードの候補3（`05_import_history.py`・`05_backfill_nfp_mom.py`・`05_audit.py`。どれもワークフロー・ほかのコードから呼ばれない。実行の記録〈commit〉は一覧の表）。
+  **止める条件は書き手12.5%で当たる**: 決めきれない書き込みではなく、`scripts/analysis/macro_events_sp500_asof_repair.py`（M-3の修復のスクリプトの残り。ほかの3つは2026-10-20に削除）が本当に`05_events.csv`を書くため（出力8のうち1）。読み方は1.9%（`05_import_history.py`の`import_from_csv`が引数のファイルを読む）
+- 規則の二重（MACRO PULSE・マクロデータ層のファイルを含むもの）: 取引日の決め方（`05_main.py`の米国の祝日・営業日）・景気後退リスクの点数の計算（Python・JS）・指標ごとの段階の信号（Python・JS）・FREDのAPIを直接呼ぶ所（`common/macro_data/fetcher.py`・`05_main.py`の公表日・`market_calendar.py`の公表日）・AI（Grok）の宛先の直書き（10ファイル）・JSONの書き込みの実装（macro_data・market_data）
+- 一覧のスクリプト（+169行、2段階の設定・注記・検出式が約119行）: 新しい印 `CSV_COLUMNS`（CSVの見出しの行の列をJSONのキーと同じに扱う）・`NONPROD_NOTES`（本番外のコードの表に「実行の記録・注記」の欄）・`JS_ID_HELPERS`（ページの`el('id')`のようにgetElementByIdを包んだ関数も要素のidとし、画面の区画を決める）・`RESOLVE_STRICT` 4（`importlib`でファイルから読み込んだモジュール〈`_m = module_from_spec(spec_from_file_location(…, 05_main.py))`〉をimportと同じに扱う）。
+  `EXTRA_OUTPUT_DIRS`はコード・文書のファイルを出力にしないようにした（Portfolioの一覧は変わらない）。macro_dataは市場データ層と同じ`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`・`RESOLVE_STRICT` 1と`EXTRA_OUTPUT_DIRS`（series_meta.json）を使う。既存8段階の一覧は前後で差0。CHECK-INVには入れていない
+- 範囲外: FINDINGS 2026-10-23（型E 2行: `common/macro_data`の説明文の「本番の消費者は存在しない」、Grokの代わりの文と週次のワークフローの「Gemini」）
+- **次はKoichiさんの判断（段階2）**
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

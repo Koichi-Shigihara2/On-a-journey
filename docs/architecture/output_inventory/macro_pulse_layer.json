@@ -1,0 +1,3895 @@
+{
+ "generated_by": "scripts/inventory/build_output_inventory.py",
+ "layer": "src/market/macro_pulse",
+ "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
+ "outputs": [
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_events.csv.bak_{datetime}",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
+     "func": "backfill",
+     "line": 150
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [],
+   "files_tracked": 0,
+   "top_keys_sampled_files": 0,
+   "top_keys": [],
+   "readers": [],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 0,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "読み手0件",
+   "note": "05_backfill_nfp_mom.py が書き換える前に作る控え（git には無い）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_events.csv",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "save_events",
+     "line": 919
+    }
+   ],
+   "writers_outside_layer": [
+    {
+     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
+     "func": "main",
+     "line": 104
+    }
+   ],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 234,
+     "func": "read_csv",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 250,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 252,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 254,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 255,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 256,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
+     "line": 77,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
+     "line": 85,
+     "func": "_load_hy_spread_rows",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
+     "line": 127,
+     "func": "migrate",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/migrate_bamlh0a0hym2_history.py::_load_hy_spread_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
+     "line": 209,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/migrate_bamlh0a0hym2_history.py::_load_hy_spread_rows",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 743,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
+     "line": 29,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
+     "line": 73,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
+     "line": 110,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "scripts/analysis/macro_events_sp500_asof_repair.py::main",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 50,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 584,
+     "func": "update_schedule",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 906,
+     "func": "load_events",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1126,
+     "func": "fill_returns",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1904,
+     "func": "run_weekly_analysis",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2588,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2595,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2604,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2618,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2734,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2743,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 263,
+     "func": "TestWeeklyDeltaFromSnapshot.test_run_weekly_analysis_passes_snapshot_delta_to_grok",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 399,
+     "func": "TestScoreNoData.test_weekly_analysis_skips_when_none",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_events",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [
+    "src/market/macro_pulse/05_main.py::load_events",
+    "src/market/macro_pulse/05_main.py::recalc"
+   ],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "MACRO PULSE（景気後退リスクの点数・局面）",
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 5,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とその後のリターン）。景気後退リスクの点数の元。過去の行は手で動かすスクリプト（05_import_history.py・05_backfill_nfp_mom.py）と修復のスクリプト（scripts/analysis/macro_events_sp500_asof_repair.py）も書いた。analysis 列は全行が空",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_fed_context.csv",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "update_fed_context",
+     "line": 1459
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 234,
+     "func": "read_csv",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 250,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 252,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 254,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 255,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 256,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 744,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 3133,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 52,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 839,
+     "func": "get_financial_context",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1949,
+     "func": "run_weekly_analysis",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2595,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::run_weekly_analysis",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2621,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::get_financial_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2734,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::get_financial_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2743,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::get_financial_context",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 263,
+     "func": "TestWeeklyDeltaFromSnapshot.test_run_weekly_analysis_passes_snapshot_delta_to_grok",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::run_weekly_analysis",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 399,
+     "func": "TestScoreNoData.test_weekly_analysis_skips_when_none",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::run_weekly_analysis",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [
+    "AS-IS-205"
+   ],
+   "decision_effect": [
+    "MACRO PULSE（景気後退リスクの点数・局面）",
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 3,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "FRBの政策の局面とFF金利・1年金利・利下げの織り込み。**AIの出力（Grok）**: regime・dominant_concern・dominant_label・ai_reason（FOMCの声明から。Grokが使えないときは数値から決め〈_fallback_regime〉、regime_source に出典を書く）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "ensure_schedule_csv",
+     "line": 564
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "update_schedule",
+     "line": 666
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 234,
+     "func": "read_csv",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 250,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 252,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 254,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 255,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 256,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 745,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 51,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 570,
+     "func": "load_schedule",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 685,
+     "func": "remind_manual_indicators",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 708,
+     "func": "remind_missing_actuals",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2587,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2591,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2606,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2734,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2743,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_schedule",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [
+    "AS-IS-240",
+    "AS-IS-242"
+   ],
+   "decision_effect": [
+    "MACRO PULSE（景気後退リスクの点数・局面）",
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 3,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "指標の発表の予定（週1回 update_schedule が作り直す）。手で入れる指標は actual 列に人が入力する",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_liquidity.csv",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_import_history.py",
+     "func": "backfill_liquidity",
+     "line": 464
+    },
+    {
+     "file": "src/market/macro_pulse/05_import_history.py",
+     "func": "backfill_liquidity_sp500",
+     "line": 601
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "update_liquidity_csv",
+     "line": 2561
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 62,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 123,
+     "func": "expected_hollow_rally_trigger",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 308,
+     "func": "run_browser_checks",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_hollow_rally_trigger",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 409,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_hollow_rally_trigger",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 458,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_hollow_rally_trigger",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 234,
+     "func": "read_csv",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 250,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 252,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 254,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 255,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 256,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 2770,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 54,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 268,
+     "func": "load_macro_context",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 287,
+     "func": "load_macro_context",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1572,
+     "func": "generate_review",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1775,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1811,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_tail_review_latest.py",
+     "line": 58,
+     "func": "test_older_pending_is_skipped_without_generating",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    }
+   ],
+   "definitions": [
+    "AS-IS-204"
+   ],
+   "decision_effect": [
+    "保有銘柄の監視（TANUKI TAIL）",
+    "MACRO PULSE（景気後退リスクの点数・局面）",
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 5,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "流動性の指標の日次の行（M2・FRBのバランスシート・TGA・RRP・ネットの流動性・ステルス流動性の印・S&P500 等）。画面の流動性モニターと、TAILのレビュー（quarterly_review_generator.py）が読む",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_meta.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "update_liquidity_csv",
+     "line": 2566
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "generated_at",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 257,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 2771,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [
+    "AS-IS-196"
+   ],
+   "decision_effect": [
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "流動性の更新の時刻（generated_at）。画面の最終更新の表示",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "save_weekly_analysis",
+     "line": 1484
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 65,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 102,
+     "func": "expected_weekly_score",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 246,
+     "func": "run_browser_checks",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_weekly_score",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 409,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_weekly_score",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 458,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_dependency_map.py::expected_weekly_score",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 234,
+     "func": "read_csv",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 250,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 252,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 254,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 255,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::read_csv",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 256,
+     "func": "Model.__init__",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 746,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 53,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1469,
+     "func": "load_weekly_analysis",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1919,
+     "func": "run_weekly_analysis",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1962,
+     "func": "run_weekly_analysis",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2595,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2734,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 267,
+     "func": "load_macro_context",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 273,
+     "func": "load_macro_context",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1572,
+     "func": "generate_review",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1775,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1811,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 263,
+     "func": "TestWeeklyDeltaFromSnapshot.test_run_weekly_analysis_passes_snapshot_delta_to_grok",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 399,
+     "func": "TestScoreNoData.test_weekly_analysis_skips_when_none",
+     "how": "保存済みファイル",
+     "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_review_latest.py",
+     "line": 58,
+     "func": "test_older_pending_is_skipped_without_generating",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_macro_context",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [
+    "src/market/macro_pulse/05_main.py::load_weekly_analysis"
+   ],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "直接"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "保有銘柄の監視（TANUKI TAIL）",
+    "MACRO PULSE（景気後退リスクの点数・局面）",
+    "MACRO PULSEの画面"
+   ],
+   "reader_count": 5,
+   "reader_count_test": 2,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "週次の点数・局面と解説。**AIの出力（Grok）**: summary・factor_analysis・watchpoints・indicator_comments（model は使ったモデル）。score・phase・score_change_1w・score_change_1m・indicator_deltas・surprise_alerts はPythonの計算。TAILのレビューも読む",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "Discord（DISCORD_WEB_HOOK）",
+   "kind": "通知",
+   "writers": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "send_discord",
+     "line": 678
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "analyze_fomc_with_grok",
+     "line": 1359
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "func": "generate_weekly_analysis_with_grok",
+     "line": 1855
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": null,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "（人）",
+     "line": 0,
+     "type": "人",
+     "how": "画面・通知を見る",
+     "via": ""
+    }
+   ],
+   "readers_compute": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "人が見る",
+   "note": "手で入れる指標・実績の入っていない指標のリマインドと、FOMCの局面・週次のAIの解説の通知",
+   "decision": "（段階2の判断待ち）"
+  }
+ ],
+ "rules": [
+  {
+   "id": "q4_implied",
+   "name": "Q4の逆算（年次−Q1〜Q3）",
+   "patterns": [
+    "\\b\\w*q4\\w*\\s*=\\s*\\w*(annual|fy)\\w*\\s*-\\s*",
+    "def\\s+_?\\w*q4_implied\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 2312,
+     "text": "implied_q4 = annual_val - total_q"
+    },
+    {
+     "file": "common/sec_data/q4_implied.py",
+     "line": 126,
+     "text": "q4_val = fy_val - sum(q[\"val\"] or 0 for q in quarters)"
+    },
+    {
+     "file": "common/sec_data/q4_implied.py",
+     "line": 137,
+     "text": "def build_q4_implied_entries("
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 723,
+     "text": "q4_net = annual_net - q1q3_sum"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 866,
+     "text": "q4_val = annual_val - ytd_9m_val"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 894,
+     "text": "q4_val = annual_val - q123_sum"
+    }
+   ],
+   "files": [
+    "common/sec_data/parser.py",
+    "common/sec_data/q4_implied.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "latest_filed",
+   "name": "同じ期の値が複数あるときの選び方（提出日が最新のもの）",
+   "patterns": [
+    "max\\([^)]*key\\s*=\\s*lambda[^)]*[\\\"']filed[\\\"']",
+    "sorted\\([^)]*[\\\"']filed[\\\"'][^)]*reverse\\s*=\\s*True",
+    "\\[[\\\"']filed[\\\"']\\]\\s*>=?\\s*\\w+(\\[[\\\"']filed[\\\"']\\]|_filed)",
+    "def\\s+select_latest_filed\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/fact_selection.py",
+     "line": 19,
+     "text": "def select_latest_filed(candidates: Sequence[dict[str, Any]]) -> dict[str, Any]:"
+    },
+    {
+     "file": "common/sec_data/fact_selection.py",
+     "line": 35,
+     "text": "return max(candidates, key=lambda c: c.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/layer3_builder.py",
+     "line": 817,
+     "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
+    },
+    {
+     "file": "common/sec_data/layer3_builder.py",
+     "line": 1055,
+     "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/normalizer.py",
+     "line": 171,
+     "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
+    },
+    {
+     "file": "common/sec_data/normalizer.py",
+     "line": 434,
+     "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 345,
+     "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
+    },
+    {
+     "file": "common/sec_data/share_unit_fix.py",
+     "line": 104,
+     "text": "adopted = max(same, key=lambda f: (f.get(\"filed\") or \"\", f.get(\"accn\") or \"\"))"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 229,
+     "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 433,
+     "text": "if latest[\"filed\"] >= prev_filed:"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 605,
+     "text": "if cand['filed'] > existing_filed:"
+    }
+   ],
+   "files": [
+    "common/sec_data/fact_selection.py",
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/normalizer.py",
+    "common/sec_data/rotce.py",
+    "common/sec_data/share_unit_fix.py",
+    "src/tail/edgar_rss_monitor.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "staleness",
+   "name": "データの古さ・遅れの判定",
+   "patterns": [
+    "def\\s+_?\\w*(stale|lag_days|freshness)\\w*\\s*\\(",
+    "function\\s+\\w*(stale|Stale|lag|Lag|fresh|Fresh)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/freshness.py",
+     "line": 83,
+     "text": "def lag_days(filing_date: str, today: Optional[date] = None) -> Optional[int]:"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 3035,
+     "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1634,
+     "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1775,
+     "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 955,
+     "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 942,
+     "text": "function _updateReviewStaleness() {"
+    },
+    {
+     "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "line": 192,
+     "text": "function stalePeriod(t) {"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 70,
+     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
+    }
+   ],
+   "files": [
+    "common/sec_data/freshness.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/system_health.py",
+    "docs/portfolio/tail/index.html",
+    "docs/value-monitor/adjusted_eps_analyzer/index.html",
+    "src/value/stonks_silo/financial_as_of.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "ttm_sum",
+   "name": "TTM（直近4四半期の合計）の作り方",
+   "patterns": [
+    "def\\s+_?\\w*(calc|calculate|compute|build)_ttm\\w*\\s*\\(",
+    "rolling\\(\\s*4\\s*\\)\\.sum\\(",
+    "function\\s+\\w*(ttm|Ttm|TTM)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/ttm_calculator.py",
+     "line": 254,
+     "text": "def calc_ttm_series("
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 402,
+     "text": "def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 284,
+     "text": "rev_ttm       = rev.rolling(4).sum()"
+    }
+   ],
+   "files": [
+    "common/sec_data/ttm_calculator.py",
+    "src/value/adjusted_eps_analyzer/pipeline.py",
+    "src/value/hypecore/hypecore.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "quarter_label",
+   "name": "期の名前（四半期のラベル）の付け方",
+   "patterns": [
+    "def\\s+_?\\w*quarter_label\\w*\\s*\\(",
+    "function\\s+\\w*(quarterLabel|QuarterLabel|periodLabel)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 389,
+     "text": "def quarter_label(period_end: str) -> str:"
+    },
+    {
+     "file": "src/tail/xbrl_segment_fetcher.py",
+     "line": 196,
+     "text": "def quarter_label(period_end: str) -> str:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 144,
+     "text": "def _quarter_label(end: str) -> str:"
+    }
+   ],
+   "files": [
+    "src/tail/edgar_rss_monitor.py",
+    "src/tail/xbrl_segment_fetcher.py",
+    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "fiscal_year",
+   "name": "会計年度・会計年度末の決め方",
+   "patterns": [
+    "def\\s+_?\\w*(determine_fiscal_year|detect_fiscal_\\w+|get_fiscal_year_end|fiscal_year_of)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 451,
+     "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 460,
+     "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 93,
+     "text": "def detect_fiscal_end_month(us_gaap: dict, candidate_keys: Sequence[str]) -> int:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 274,
+     "text": "def detect_fiscal_anchor_date(us_gaap: dict, candidate_keys: Sequence[str]) -> Optional[Tuple[int, int]]:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 309,
+     "text": "def detect_fiscal_anchor_clusters("
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 349,
+     "text": "def determine_fiscal_year(end_date, fiscal_end_month: int,"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 143,
+     "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
+    }
+   ],
+   "files": [
+    "common/sec_data/parser.py",
+    "common/sec_data/utils.py",
+    "src/tail/edgar_rss_monitor.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "valuation_threshold",
+   "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
+   "patterns": [
+    "\\bupside\\w*\\s*(?:>=|>|<=|<)\\s*-?\\d",
+    "\\bupside\\w*\\s*(?:>=|>|<=|<)\\s*[A-Z_]{3,}"
+   ],
+   "sites": [
+    {
+     "file": "docs/portfolio/index.html",
+     "line": 673,
+     "text": "<span class=\"hcc-meta\">乖離${c.upside!=null?(c.upside>=0?'+':'')+c.upside.toFixed(0)+'%':'—'} · F:${c.funda} T:${c.timing}"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 571,
+     "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 1094,
+     "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 1323,
+     "text": "xClamped: s.upside > X_MAX_CLIP,"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/index.html",
+     "line": 468,
+     "text": "const upsideClass = r.upside == null ? '' : r.upside >= 0 ? 'positive' : 'negative';"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/stock.html",
+     "line": 1135,
+     "text": "<div class=\"upside-badge ${upside >= 0 ? 'positive' : 'negative'}\" id=\"displayUpside\">"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/stock.html",
+     "line": 1136,
+     "text": "${upside >= 0 ? '▲' : '▼'} ${Math.abs(upside).toFixed(1)}%"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 622,
+     "text": "if upside > 30:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 624,
+     "text": "elif upside >= 10:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 626,
+     "text": "elif upside >= 0:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 865,
+     "text": "and upside is not None and upside < -20"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 878,
+     "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 898,
+     "text": "elif upside is not None and upside > 20 and timing >= 50:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 900,
+     "text": "elif upside is not None and upside > 0:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 967,
+     "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 968,
+     "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 969,
+     "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 970,
+     "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1355,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1382,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1387,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1433,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1738,
+     "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1916,
+     "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
+    }
+   ],
+   "files": [
+    "docs/portfolio/index.html",
+    "docs/value-monitor/tanuki_score/index.html",
+    "docs/value-monitor/tanuki_valuation/index.html",
+    "docs/value-monitor/tanuki_valuation/stock.html",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "growth_bounds",
+   "name": "成長率の上限・下限",
+   "patterns": [
+    "(?i)^\\s*(?:self\\.)?_?(?:growth|g|cagr)_(?:cap|floor|max|min|upper|lower)(?![a-z])\\w*\\s*=(?!=)",
+    "(?i)^\\s*(?:self\\.)?_?(?:cap|floor|max|min)_(?:growth|g|cagr)(?![a-z])\\w*\\s*=(?!=)"
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 121,
+     "text": "_GROWTH_FLOOR = 0.15"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 122,
+     "text": "_GROWTH_CAP = 0.50"
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py"
+   ],
+   "in_layer": false,
+   "duplicated": false
+  },
+  {
+   "id": "wacc_beta",
+   "name": "β・WACCの作り方",
+   "patterns": [
+    "def\\s+_?\\w*(?:calculate_wacc|calc_wacc|cost_of_equity|capped_beta|determine_beta|default_beta)\\w*\\s*\\(",
+    "function\\s+\\w*(?:[Ww]acc|WACC|[Bb]eta)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/beta_fetcher.py",
+     "line": 110,
+     "text": "def calc_capped_beta(raw_beta: float, ticker: str) -> tuple[float, str]:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/wacc.py",
+     "line": 47,
+     "text": "def get_default_beta(sector: Optional[str]) -> float:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/wacc.py",
+     "line": 54,
+     "text": "def calculate_wacc("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 1121,
+     "text": "def _determine_beta("
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/beta_fetcher.py",
+    "src/value/tanuki_valuation/calculator/wacc.py",
+    "src/value/tanuki_valuation/data_fetcher.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "fcf_fallback",
+   "name": "FCFの基準の選び方・推定のフォールバック",
+   "patterns": [
+    "def\\s+_?\\w*(?:fcf_base|select_fcf_source|estimate_fcf|fcf_fallback|fcf_2yr_avg|fcf_5yr_avg)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/reader.py",
+     "line": 220,
+     "text": "def get_fcf_5yr_avg(self, ticker: str) -> float:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 184,
+     "text": "def determine_fcf_base("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 114,
+     "text": "def _select_fcf_source("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 1105,
+     "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
+    }
+   ],
+   "files": [
+    "common/sec_data/reader.py",
+    "src/value/tanuki_valuation/calculator/adjustments.py",
+    "src/value/tanuki_valuation/data_fetcher.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "trading_day",
+   "name": "取引日（市場の営業日）の決め方",
+   "patterns": [
+    "def\\s+_?\\w*(?:trading_days?|business_days?|business_day_add|market_open)\\w*\\s*\\(",
+    "function\\s+\\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 226,
+     "text": "def is_trading_day(day: Any, calendar=None) -> bool:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 722,
+     "text": "def is_symbol_trading_day(symbol: str, day: str) -> bool:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1011,
+     "text": "def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1032,
+     "text": "def _calendar_trading_days(name: str) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1042,
+     "text": "def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 104,
+     "text": "def _expected_trading_days(anchor_date: str, days: int, calendar=None) -> List[str]:"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1604,
+     "text": "def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tuple[str, str]]:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 441,
+     "text": "def nth_us_business_day(year: int, month: int, n: int) -> date:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 455,
+     "text": "def us_business_days_add(start: date, n: int) -> date:"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 342,
+     "text": "def _recent_trading_days(anchor_date: str, n: int) -> list:"
+    }
+   ],
+   "files": [
+    "common/market_data/fetcher.py",
+    "common/market_data/reader.py",
+    "common/sec_data/report_consistency_check.py",
+    "src/market/macro_pulse/05_main.py",
+    "src/market/market_pulse/breadth_calculator.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "recession_score",
+   "name": "景気後退リスクの点数（8指標の段階の点の合計）の計算",
+   "patterns": [
+    "def\\s+_?\\w*(?:compute|calc)\\w*score\\w*\\s*\\(",
+    "function\\s+(?:compute|calc)\\w*Score\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 1445,
+     "text": "function computeCurrentScore() {"
+    },
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 2391,
+     "text": "function computeScoreAsOf(asOf) {"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1586,
+     "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1706,
+     "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
+    }
+   ],
+   "files": [
+    "docs/market-monitor/macro-pulse/index.html",
+    "src/market/macro_pulse/05_main.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "step_signal",
+   "name": "指標ごとの段階の信号（しきい値で点を付ける）",
+   "patterns": [
+    "def\\s+_?step_(?:signal|score)\\s*\\(",
+    "function\\s+stepSignal\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "docs/market-monitor/macro-pulse/index.html",
+     "line": 1412,
+     "text": "function stepSignal(key, val, trend) {"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1569,
+     "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1582,
+     "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
+    }
+   ],
+   "files": [
+    "docs/market-monitor/macro-pulse/index.html",
+    "src/market/macro_pulse/05_main.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "fred_api",
+   "name": "FREDのAPIを直接呼ぶ所（系列の値・公表日）",
+   "patterns": [
+    "\\bFred\\(\\s*api_key",
+    "[\\\"']https://api\\.stlouisfed\\.org/fred/"
+   ],
+   "sites": [
+    {
+     "file": "common/macro_data/fetcher.py",
+     "line": 69,
+     "text": "_FRED_CLIENT = Fred(api_key=api_key)"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 526,
+     "text": "f\"https://api.stlouisfed.org/fred/release/dates\""
+    },
+    {
+     "file": "src/market/market_pulse/market_calendar.py",
+     "line": 63,
+     "text": "j = get_json(\"https://api.stlouisfed.org/fred/releases/dates\","
+    }
+   ],
+   "files": [
+    "common/macro_data/fetcher.py",
+    "src/market/macro_pulse/05_main.py",
+    "src/market/market_pulse/market_calendar.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "grok_endpoint",
+   "name": "AI（Grok）のAPIの宛先の直書き",
+   "patterns": [
+    "[\\\"']https://api\\.x\\.ai/v1/chat/completions[\\\"']"
+   ],
+   "sites": [
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1345,
+     "text": "url = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1838,
+     "text": "url = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1147,
+     "text": "url = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/market/market_pulse/news_headlines.py",
+     "line": 41,
+     "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/tail/kpi_proposer.py",
+     "line": 71,
+     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 78,
+     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/tail/sec_ctrl_fetcher.py",
+     "line": 50,
+     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/tail/text_kpi_extractor.py",
+     "line": 47,
+     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/ai_analyzer.py",
+     "line": 74,
+     "text": "XAI_API_URL = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
+     "line": 35,
+     "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
+    },
+    {
+     "file": "src/value/tanuki_valuation/validator.py",
+     "line": 37,
+     "text": "XAI_ENDPOINT = \"https://api.x.ai/v1/chat/completions\""
+    }
+   ],
+   "files": [
+    "src/market/macro_pulse/05_main.py",
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/news_headlines.py",
+    "src/tail/kpi_proposer.py",
+    "src/tail/quarterly_review_generator.py",
+    "src/tail/sec_ctrl_fetcher.py",
+    "src/tail/text_kpi_extractor.py",
+    "src/value/adjusted_eps_analyzer/ai_analyzer.py",
+    "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
+    "src/value/tanuki_valuation/validator.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "atomic_write_json",
+   "name": "JSONの書き込み（一時ファイル→置き換え）の実装",
+   "patterns": [
+    "def\\s+_?atomic_write\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/macro_data/fetcher.py",
+     "line": 79,
+     "text": "def _atomic_write_json(path: str, payload: Any) -> None:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 180,
+     "text": "def _atomic_write_json(path: str, payload: Any) -> None:"
+    }
+   ],
+   "files": [
+    "common/macro_data/fetcher.py",
+    "common/market_data/fetcher.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  }
+ ],
+ "non_production_code": [
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_audit.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 197,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_macro_pulse_logic.py"
+   ],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 166,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "名前を挙げた候補"
+  },
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_import_history.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 653,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "名前を挙げた候補"
+  }
+ ],
+ "non_production_scanned": [
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_audit.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 197,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_macro_pulse_logic.py"
+   ]
+  },
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 166,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_import_history.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 653,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/market/macro_pulse",
+   "file": "src/market/macro_pulse/05_main.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 2742,
+   "workflows": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "code": [
+    "browser_checks/check_macro_pulse.py"
+   ],
+   "same_dir": [
+    "src/market/macro_pulse/05_audit.py",
+    "src/market/macro_pulse/05_backfill_nfp_mom.py",
+    "src/market/macro_pulse/05_import_history.py"
+   ],
+   "tests": [
+    "tests/test_macro_pulse_accuracy.py",
+    "tests/test_macro_pulse_logic.py",
+    "tests/test_macro_pulse_signal_steps.py",
+    "tests/test_output_inventory_check.py"
+   ]
+  }
+ ],
+ "f3_zero_reader": [
+  {
+   "name": "spac_shell_detection_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "share_unit_fix_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "low_base_effect",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1050
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1095
+    }
+   ]
+  },
+  {
+   "name": "fields_missing",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "maturity_monitor",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 22
+    }
+   ]
+  },
+  {
+   "name": "market_data_violations_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  }
+ ],
+ "deleted": [],
+ "stop_condition": {
+  "outputs": 8,
+  "outputs_with_writer_outside_layer": [
+   "docs/market-monitor/macro-pulse/data/05_events.csv"
+  ],
+  "unresolved_write_sites": [],
+  "python_read_sites_into_layer_resolved": 28,
+  "python_read_sites_unresolved_in_files_mentioning_sec_data": [
+   {
+    "file": "src/market/macro_pulse/05_import_history.py",
+    "line": 238,
+    "func": "import_from_csv",
+    "path": "<?>"
+   }
+  ],
+  "name_hit_sites_resolved": 24,
+  "name_hit_sites_undetermined": [],
+  "ratio_writer": 0.125,
+  "ratio_reader": 0.019,
+  "threshold": 0.1,
+  "hit": true
+ },
+ "screen": {
+  "pages": [
+   "docs/market-monitor/macro-pulse/index.html"
+  ],
+  "items": [
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "actual",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv"
+    ],
+    "label": "",
+    "lines": [
+     866,
+     886,
+     918,
+     2215
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "ai_reason",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1080
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "analysis_date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2593,
+     2593,
+     2606,
+     2644
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "consensus",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv"
+    ],
+    "label": "",
+    "lines": [
+     867,
+     868,
+     2339,
+     2339,
+     2339
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "cuts_implied",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1078
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "現在",
+    "lines": [
+     889,
+     960,
+     1111,
+     1165,
+     1775,
+     1814,
+     1818,
+     1883,
+     1994,
+     2215,
+     2228,
+     2228,
+     2247,
+     2774,
+     2777,
+     2915,
+     2928,
+     2939,
+     2950,
+     3002,
+     3125,
+     3167,
+     3167
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "dominant_concern",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1079
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "dominant_label",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1079
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "easing_check",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     3083
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "factor_analysis",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2648
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "fed_balance",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2830,
+     2830
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "ff_current",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1076
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "fomc_date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1082
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "generated_at",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_meta.json"
+    ],
+    "label": "",
+    "lines": [
+     3170,
+     3170
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "h41_date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "前週比",
+    "lines": [
+     2950,
+     2950,
+     2968,
+     2968,
+     3125,
+     3125
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "hy_spread",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2831,
+     2831,
+     2846,
+     2847,
+     2847
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "indicator",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv"
+    ],
+    "label": "指標名",
+    "lines": [
+     834,
+     888,
+     1165,
+     1776,
+     1995,
+     2215,
+     2249,
+     2313,
+     2331
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "indicator_comments",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2650
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "indicator_deltas",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "指標名:値:週差:月差;...",
+    "lines": [
+     2667
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "known_at",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "label": "",
+    "lines": [
+     893,
+     893
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "m2_yoy_pct",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2842,
+     2842,
+     2842
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "m2_yoy_pctile",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2843,
+     2843,
+     2843
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "model",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2755
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "net_liq_decline_weeks",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     3031,
+     3031
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "net_liq_wow_pct",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2966,
+     2966,
+     2966
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "net_liquidity",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2829,
+     2829
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "phase",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2606,
+     2646
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "record_date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1018,
+     1018
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "regime",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "LAYER 1 — FRB政策意図",
+    "lines": [
+     1075,
+     3097,
+     3139
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "regime_source",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1081
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "release_date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv"
+    ],
+    "label": "発表予定日",
+    "lines": [
+     2312,
+     2316
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "revised_actual",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "label": "",
+    "lines": [
+     900
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "revised_at",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "label": "",
+    "lines": [
+     901,
+     901
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "score",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "先行1ヶ月",
+    "lines": [
+     1417,
+     1418,
+     1421,
+     1520,
+     1532,
+     2394,
+     2478,
+     2604,
+     2645
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "score_change_1m",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2652
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "score_change_1w",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2651
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "sp500_5d_pct",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     2965,
+     2965,
+     2965
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "sp500_t0_asof",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "label": "",
+    "lines": [
+     1120
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "status",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv"
+    ],
+    "label": "データなし",
+    "lines": [
+     3163,
+     3168
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "stealth_absorb_weeks",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     3030,
+     3030
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "stealth_alert",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     3032
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "stealth_signal",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_liquidity.csv"
+    ],
+    "label": "",
+    "lines": [
+     3013
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "summary",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2647
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "surprise",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "label": "",
+    "lines": [
+     869
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "surprise_alerts",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2610
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "updated_at",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv",
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv",
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     895,
+     1111,
+     2755
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "watchpoints",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv"
+    ],
+    "label": "",
+    "lines": [
+     2649
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "key": "zq_rate",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "label": "",
+    "lines": [
+     1077
+    ],
+    "decision": "（段階2の判断待ち）"
+   }
+  ],
+  "unread_keys": [
+   {
+    "key": "analysis",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "ret_t1",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "ret_t10",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "ret_t20",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "ret_t5",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "surprise_pct",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_events.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "zq_price",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "zq_ticker",
+    "sources": [
+     "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
+    ],
+    "parents": [],
+    "note": ""
+   }
+  ],
+  "written_key_count": 75,
+  "sections": [
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "（ページの先頭）",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3167,
+       3167
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3168
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "Notices",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       866,
+       886
+      ]
+     },
+     {
+      "key": "consensus",
+      "status": "この段階の書き手あり",
+      "lines": [
+       867,
+       868
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       834,
+       888
+      ]
+     },
+     {
+      "key": "known_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       893,
+       893
+      ]
+     },
+     {
+      "key": "revised_actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       900
+      ]
+     },
+     {
+      "key": "revised_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       901,
+       901
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1417,
+       1418,
+       1421,
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     },
+     {
+      "key": "surprise",
+      "status": "この段階の書き手あり",
+      "lines": [
+       869
+      ]
+     },
+     {
+      "key": "updated_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       895
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "FED Regime Bar",
+    "keys": [
+     {
+      "key": "ai_reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1080
+      ]
+     },
+     {
+      "key": "cuts_implied",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1078
+      ]
+     },
+     {
+      "key": "dominant_concern",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1079
+      ]
+     },
+     {
+      "key": "dominant_label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1079
+      ]
+     },
+     {
+      "key": "ff_current",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1076
+      ]
+     },
+     {
+      "key": "fomc_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1082
+      ]
+     },
+     {
+      "key": "regime",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1075
+      ]
+     },
+     {
+      "key": "regime_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1081
+      ]
+     },
+     {
+      "key": "zq_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1077
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "Ticker",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       918
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1111,
+       1165
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1165
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1417,
+       1418,
+       1421,
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     },
+     {
+      "key": "sp500_t0_asof",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1120
+      ]
+     },
+     {
+      "key": "updated_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1111
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "💧 流動性モニター",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       866,
+       886
+      ]
+     },
+     {
+      "key": "consensus",
+      "status": "この段階の書き手あり",
+      "lines": [
+       867,
+       868
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889,
+       2774,
+       2777,
+       2915,
+       2928,
+       2939,
+       2950,
+       3002,
+       3125
+      ]
+     },
+     {
+      "key": "easing_check",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3083
+      ]
+     },
+     {
+      "key": "fed_balance",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2830,
+       2830
+      ]
+     },
+     {
+      "key": "generated_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3170,
+       3170
+      ]
+     },
+     {
+      "key": "h41_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2950,
+       2950,
+       2968,
+       2968,
+       3125,
+       3125
+      ]
+     },
+     {
+      "key": "hy_spread",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2831,
+       2831,
+       2846,
+       2847,
+       2847
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       834,
+       888
+      ]
+     },
+     {
+      "key": "known_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       893,
+       893
+      ]
+     },
+     {
+      "key": "m2_yoy_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2842,
+       2842,
+       2842
+      ]
+     },
+     {
+      "key": "m2_yoy_pctile",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2843,
+       2843,
+       2843
+      ]
+     },
+     {
+      "key": "net_liq_decline_weeks",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3031,
+       3031
+      ]
+     },
+     {
+      "key": "net_liq_wow_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2966,
+       2966,
+       2966
+      ]
+     },
+     {
+      "key": "net_liquidity",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2829,
+       2829
+      ]
+     },
+     {
+      "key": "record_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1018,
+       1018
+      ]
+     },
+     {
+      "key": "regime",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3097
+      ]
+     },
+     {
+      "key": "revised_actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       900
+      ]
+     },
+     {
+      "key": "revised_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       901,
+       901
+      ]
+     },
+     {
+      "key": "sp500_5d_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2965,
+       2965,
+       2965
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3163
+      ]
+     },
+     {
+      "key": "stealth_absorb_weeks",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3030,
+       3030
+      ]
+     },
+     {
+      "key": "stealth_alert",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3032
+      ]
+     },
+     {
+      "key": "stealth_signal",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3013
+      ]
+     },
+     {
+      "key": "surprise",
+      "status": "この段階の書き手あり",
+      "lines": [
+       869
+      ]
+     },
+     {
+      "key": "updated_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       895
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "① 景気フェーズ判定",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       918
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1417,
+       1418,
+       1421,
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "スコア比較バー",
+    "keys": [
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "DESIGN-13: マクロサプライズバナー（週次更新）",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       866,
+       886
+      ]
+     },
+     {
+      "key": "analysis_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2606,
+       2644
+      ]
+     },
+     {
+      "key": "consensus",
+      "status": "この段階の書き手あり",
+      "lines": [
+       867,
+       868
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889
+      ]
+     },
+     {
+      "key": "factor_analysis",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2648
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       834,
+       888
+      ]
+     },
+     {
+      "key": "indicator_comments",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2650
+      ]
+     },
+     {
+      "key": "indicator_deltas",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2667
+      ]
+     },
+     {
+      "key": "known_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       893,
+       893
+      ]
+     },
+     {
+      "key": "model",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2755
+      ]
+     },
+     {
+      "key": "phase",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2606,
+       2646
+      ]
+     },
+     {
+      "key": "revised_actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       900
+      ]
+     },
+     {
+      "key": "revised_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       901,
+       901
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2604,
+       2645
+      ]
+     },
+     {
+      "key": "score_change_1m",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2652
+      ]
+     },
+     {
+      "key": "score_change_1w",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2651
+      ]
+     },
+     {
+      "key": "summary",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2647
+      ]
+     },
+     {
+      "key": "surprise",
+      "status": "この段階の書き手あり",
+      "lines": [
+       869
+      ]
+     },
+     {
+      "key": "surprise_alerts",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2610
+      ]
+     },
+     {
+      "key": "updated_at",
+      "status": "この段階の書き手あり",
+      "lines": [
+       895,
+       2755
+      ]
+     },
+     {
+      "key": "watchpoints",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2649
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "AI週次解説（①の直後）",
+    "keys": [
+     {
+      "key": "analysis_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2593,
+       2593
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "② 指標ヘルスバー",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       918
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1417,
+       1418,
+       1421
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "score-history chart",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       960,
+       1994
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1995
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2394,
+       2478
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "③→④ 過去の後退局面との類似度",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       960,
+       1775,
+       1814,
+       1818,
+       1883
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1776
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "⑤ 直近の動き",
+    "keys": [
+     {
+      "key": "actual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       918,
+       2215
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2215,
+       2228,
+       2228,
+       2247
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2215,
+       2249
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "⑥ 今後のスケジュール",
+    "keys": [
+     {
+      "key": "consensus",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2339,
+       2339,
+       2339
+      ]
+     },
+     {
+      "key": "indicator",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2313,
+       2331
+      ]
+     },
+     {
+      "key": "release_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2312,
+       2316
+      ]
+     },
+     {
+      "key": "score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1417,
+       1418,
+       1421,
+       1520,
+       1532,
+       2394,
+       2478
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/market-monitor/macro-pulse/index.html",
+    "section": "（JSで作る要素 #stealthLayer1）",
+    "keys": [
+     {
+      "key": "regime",
+      "status": "この段階の書き手あり",
+      "lines": [
+       3139
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "workflow_outputs": []
+}

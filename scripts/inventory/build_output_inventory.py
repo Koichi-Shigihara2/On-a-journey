@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import csv
 import json
 import os
 import posixpath
@@ -187,7 +188,14 @@ DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキ�
 # 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
 # 2 は TAIL の段階から: 同じフォルダの import X as Y・名前の並びを回す for の変数（市場データ層の一覧を変えないよう 1 と分けた）
 # 3 は Portfolio の段階から: ワークフローの git commit -m の件名・cp の写し先・git add の \ の続きの行を読みとしない（TAIL の一覧を変えないよう 2 と分けた）
+# 4 は MACRO PULSE の段階から: importlib でファイルから読み込んだモジュール（_m = module_from_spec(spec_from_file_location(…, パス))）を import と同じに扱う
 RESOLVE_STRICT = 0
+# CSV の出力の列（見出しの行）を JSON のキーと同じに扱い、画面が読む列・誰も読まない列を数える（MACRO PULSE の段階から）
+CSV_COLUMNS = False
+# 本番外のコードの候補ごとの注記（実行の記録〈commit〉等、ファイル → 1文）。空でなければ表に欄を足す（MACRO PULSE の段階から）
+NONPROD_NOTES: Dict[str, str] = {}
+# 画面の区画: ページの中で getElementById を包んだ関数（const el = id => document.getElementById(id) 等）の呼び出しも要素の id とする（MACRO PULSE の段階から）
+JS_ID_HELPERS = False
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -198,7 +206,7 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
             WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN,
             IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, RESOLVE_STRICT=RESOLVE_STRICT, DATA_UNREAD_KEYS=DATA_UNREAD_KEYS,
-            EXTRA_OUTPUT_DIRS=EXTRA_OUTPUT_DIRS)
+            EXTRA_OUTPUT_DIRS=EXTRA_OUTPUT_DIRS, CSV_COLUMNS=CSV_COLUMNS, NONPROD_NOTES=NONPROD_NOTES, JS_ID_HELPERS=JS_ID_HELPERS)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -672,8 +680,127 @@ _PORTFOLIO.update(
     EXTRA_OUTPUT_DIRS=("docs/portfolio/data",),
     RESOLVE_STRICT=3,
 )
+# ---- MACRO PULSE（段階1、2026-10-23）。共有のデータ層 common/macro_data（画面なし）と、src/market/macro_pulse・docs/market-monitor/macro-pulse の2つ
+_MACRO_DECISION_PREFIXES = DECISION_PREFIXES + [
+    ("src/market/macro_pulse/", "MACRO PULSE（景気後退リスクの点数・局面）"),
+    ("docs/market-monitor/macro-pulse/index.html", "MACRO PULSEの画面"),
+]
+_MACRO_RULES = [
+    {"id": "recession_score", "name": "景気後退リスクの点数（8指標の段階の点の合計）の計算",
+     "patterns": [r"def\s+_?\w*(?:compute|calc)\w*score\w*\s*\(", r"function\s+(?:compute|calc)\w*Score\w*\s*\("],
+     "context": r"05_events|events\.csv"},
+    {"id": "step_signal", "name": "指標ごとの段階の信号（しきい値で点を付ける）",
+     "patterns": [r"def\s+_?step_(?:signal|score)\s*\(", r"function\s+stepSignal\s*\("]},
+    # 関数の名前（fred_latest 等）では当てない: reader.py 経由に切り替えた後も名前が残るため。APIを直接呼ぶ所だけ
+    {"id": "fred_api", "name": "FREDのAPIを直接呼ぶ所（系列の値・公表日）",
+     "patterns": [r"\bFred\(\s*api_key", r"[\"']https://api\.stlouisfed\.org/fred/"]},
+    {"id": "grok_endpoint", "name": "AI（Grok）のAPIの宛先の直書き",
+     "patterns": [r"[\"']https://api\.x\.ai/v1/chat/completions[\"']"]},
+    {"id": "atomic_write_json", "name": "JSONの書き込み（一時ファイル→置き換え）の実装",
+     "patterns": [r"def\s+_?atomic_write\w*\s*\("]},
+]
+_MACRO_DATA = dict(_SEC)
+_MACRO_DATA.update(
+    LAYER="common/macro_data",
+    LAYER_DIRS=("common/macro_data",),
+    OUT_JSON=f"{OUT_DIR}/macro_data_layer.json", OUT_MD=f"{OUT_DIR}/macro_data_layer.md",
+    DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=["common/macro_data/migrate_bamlh0a0hym2_history.py"],
+    NONPROD_SCAN=True,
+    NONPROD_NOTES={
+        "common/macro_data/migrate_bamlh0a0hym2_history.py":
+            "手で動かす一度きりの移行（05_events.csvのHY Spreadの行→series/BAMLH0A0HYM2.json。二重に動かさない印あり）。"
+            "実行の記録: 2ff481b3ad（2026-08-12、実装と実行）。コードの変更はこの1回だけ",
+    },
+    ANNOTATIONS={
+        "common/macro_data/series/{series_id}.json":
+            "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。"
+            "MACRO PULSE（05_main.py・05_import_history.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む",
+        "common/macro_data/macro_data_violations_log.json":
+            "系列ごとの保存前の検証の結果（警告と取得の成否 fetch_status）。System Health の [L]（check_l_macro_data）が取得の失敗を見るのに読む",
+        "common/macro_data/series_meta.json":
+            "系列ごとのメタ情報（fred_release_id・category・consumers 等）。**コードの書き手は無い（人の手で書く静的なファイル）**。"
+            "fetcher.py が取得する系列の一覧として読む",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="macro_data", OUTSIDE_PREFIXES=("common/macro_data/",),
+    READ_PREFIXES=("common/macro_data",),
+    READ_HINT="macro_data", NAME_SHORT="マクロデータ層",
+    KNOWN_DUPLICATE_RULES=[], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"] + _MACRO_RULES,
+    FULL_SCAN=True,
+    WORKFLOW_SUMMARY=True,
+    DATA_UNREAD_KEYS=True,
+    # _atomic_write_json(path)・_load_json(path) で読み書きする（市場データ層と同じ作り）。series_meta.json は書き手の無い静的なファイル
+    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=1, EXTRA_OUTPUT_DIRS=("common/macro_data",),
+)
+_MACRO_PULSE = dict(_SEC)
+_MACRO_PULSE.update(
+    LAYER="src/market/macro_pulse",
+    LAYER_DIRS=("src/market/macro_pulse",),
+    OUT_JSON=f"{OUT_DIR}/macro_pulse_layer.json", OUT_MD=f"{OUT_DIR}/macro_pulse_layer.md",
+    DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=["src/market/macro_pulse/05_import_history.py", "src/market/macro_pulse/05_backfill_nfp_mom.py"],
+    NONPROD_SCAN=True,
+    NONPROD_NOTES={
+        "src/market/macro_pulse/05_import_history.py":
+            "手で動かす一括投入・バックフィル（FRED・CSV・過去の金利の文脈・流動性・流動性のS&P500）。05_main.py を importlib で読み込んで同じパス・関数を使う。"
+            "実行の記録: c54314a003・02dbf3c63c（2026-05-16、流動性のCSVの3年分）、47659297b2（2026-08-26、ff_rate等の復元）、4b440292af（2026-08-26、流動性のsp500列）。"
+            "最後のコードの変更は504b018c07（2026-09-09）",
+        "src/market/macro_pulse/05_backfill_nfp_mom.py":
+            "手で動かす一度きりの変換（05_events.csvのNFPの370行を水準→前月比。書き換える前に .bak を作る）。実行の記録: 671c5cc0d6（2026-07-08、実装と実行）。コードの変更はこの1回だけ",
+        "src/market/macro_pulse/05_audit.py":
+            "手で動かす05_events.csvの監査（重複の行等、読むだけで書かない）。ワークフローからは呼ばれず、テストが重複の判定を使う。"
+            "重複の判定の本体は2026-09-10に05_main.pyへ移した（f38aae4303）",
+    },
+    ANNOTATIONS={
+        "docs/market-monitor/macro-pulse/data/05_events.csv":
+            "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とその後のリターン）。景気後退リスクの点数の元。"
+            "過去の行は手で動かすスクリプト（05_import_history.py・05_backfill_nfp_mom.py）と修復のスクリプト（scripts/analysis/macro_events_sp500_asof_repair.py）も書いた。"
+            "analysis 列は全行が空",
+        "docs/market-monitor/macro-pulse/data/05_fed_context.csv":
+            "FRBの政策の局面とFF金利・1年金利・利下げの織り込み。**AIの出力（Grok）**: regime・dominant_concern・dominant_label・ai_reason"
+            "（FOMCの声明から。Grokが使えないときは数値から決め〈_fallback_regime〉、regime_source に出典を書く）",
+        "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv":
+            "指標の発表の予定（週1回 update_schedule が作り直す）。手で入れる指標は actual 列に人が入力する",
+        "docs/market-monitor/macro-pulse/data/05_liquidity.csv":
+            "流動性の指標の日次の行（M2・FRBのバランスシート・TGA・RRP・ネットの流動性・ステルス流動性の印・S&P500 等）。画面の流動性モニターと、TAILのレビュー（quarterly_review_generator.py）が読む",
+        "docs/market-monitor/macro-pulse/data/05_meta.json": "流動性の更新の時刻（generated_at）。画面の最終更新の表示",
+        "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv":
+            "週次の点数・局面と解説。**AIの出力（Grok）**: summary・factor_analysis・watchpoints・indicator_comments（model は使ったモデル）。"
+            "score・phase・score_change_1w・score_change_1m・indicator_deltas・surprise_alerts はPythonの計算。TAILのレビューも読む",
+        "docs/market-monitor/macro-pulse/data/05_events.csv.bak_{datetime}": "05_backfill_nfp_mom.py が書き換える前に作る控え（git には無い）",
+        "Discord（DISCORD_WEB_HOOK）": "手で入れる指標・実績の入っていない指標のリマインドと、FOMCの局面・週次のAIの解説の通知",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="macro", OUTSIDE_PREFIXES=("docs/market-monitor/macro-pulse/", "src/market/macro_pulse/"),
+    READ_PREFIXES=("docs/market-monitor/macro-pulse", "src/market/macro_pulse"),
+    READ_HINT="macro", NAME_SHORT="MACRO PULSE",
+    KNOWN_DUPLICATE_RULES=[], TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"] + _MARKET["RULES"][:1] + _MACRO_RULES,
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=[],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+    # 出力は CSV が5つ（列を JSON のキーと同じに数える）。手で動かすスクリプトは 05_main.py を importlib で読み込んで同じパスを使う（4）。
+    # ページは要素を el('id')（getElementById を包んだ関数）で取る
+    CSV_COLUMNS=True, RESOLVE_STRICT=4, JS_ID_HELPERS=True,
+)
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
-                           "tail": _TAIL, "portfolio": _PORTFOLIO}
+                           "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE}
 
 
 def set_layer(name: str) -> None:
@@ -893,7 +1020,26 @@ def load_module(rel: str) -> Optional[Module]:
     except SyntaxError:
         return None
     MODULES[rel] = Module(rel, tree, src)
+    if RESOLVE_STRICT >= 4:
+        _spec_imports(MODULES[rel])
     return MODULES[rel]
+
+
+def _spec_imports(mod: Module) -> None:
+    """モジュールの最上位の spec = importlib.util.spec_from_file_location(名前, パス) と m = importlib.util.module_from_spec(spec) を、
+    import と同じ名前の対応（mod_imports）にする（05_import_history.py の _m = 05_main.py 等。RESOLVE_STRICT 4）。"""
+    specs: Dict[str, str] = {}
+    for node in mod.tree.body:
+        if not (isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute)):
+            continue
+        fn, name, call = node.value.func.attr, node.targets[0].id, node.value
+        if fn == "spec_from_file_location" and len(call.args) >= 2:
+            path = normalize_path(resolve(call.args[1], mod, node))
+            if path in ALL_PY:
+                specs[name] = path
+        elif fn == "module_from_spec" and call.args and isinstance(call.args[0], ast.Name) and call.args[0].id in specs:
+            mod.mod_imports[name] = specs[call.args[0].id]
 
 
 UNRESOLVED = "<?>"
@@ -1859,6 +2005,8 @@ def build() -> dict:
         for f in tracked:
             if not f.startswith(tuple(d + "/" for d in EXTRA_OUTPUT_DIRS)) or any(rx.match(f) for rx in rxs):
                 continue
+            if f.endswith(CODE_EXT + (".md",)):
+                continue
             wr = []
             for wf in workflows:
                 for i, line in enumerate((texts.get(wf) or read_text(wf)).splitlines(), 1):
@@ -2373,6 +2521,9 @@ ID_RE = re.compile(r"\bid=[\"']([\w-]+)[\"']")
 JS_ID_RE = re.compile(r"getElementById\(\s*['\"]([\w-]+)['\"]\s*\)|querySelector(?:All)?\(\s*['\"]#([\w-]+)['\"]")
 JS_FUNC_RE = re.compile(r"^\s*(?:async\s+)?function\s+(\w+)\s*\(|^\s*(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|\w+)\s*=>")
 NEAR_LINES = 15
+# getElementById を包んだ関数の定義（const el = id => document.getElementById(id)・function el(id) { return document.getElementById(id); }）
+JS_ID_HELPER_DEF_RE = re.compile(r"(?:const|let|var)\s+([\w$]+)\s*=\s*\(?\s*\w+\s*\)?\s*=>\s*document\.getElementById\(\s*\w+\s*\)"
+                                 r"|function\s+([\w$]+)\s*\(\s*\w+\s*\)\s*\{\s*return\s+document\.getElementById\(\s*\w+\s*\)")
 
 
 def _html_sections(raw: List[str]) -> Tuple[List[dict], Dict[str, int]]:
@@ -2429,6 +2580,11 @@ def screen_sections(sc: dict, texts: Dict[str, str]) -> List[dict]:
         sections, id_sec = _html_sections(raw)
         funcs = _js_functions(raw)
         id_lines = [(n, a or b) for n, line in enumerate(raw, 1) for a, b in JS_ID_RE.findall(line)]
+        if JS_ID_HELPERS:
+            helpers = {a or b for a, b in JS_ID_HELPER_DEF_RE.findall("\n".join(raw))}
+            if helpers:
+                hrx = re.compile(r"(?<![\w.$])(?:" + "|".join(re.escape(h) for h in sorted(helpers)) + r")\(\s*['\"]([\w-]+)['\"]\s*\)")
+                id_lines = sorted(id_lines + [(n, m) for n, line in enumerate(raw, 1) for m in hrx.findall(line)])
 
         def enclosing(line: int) -> Optional[Tuple[str, int, int]]:
             c = [f for f in funcs if f[1] <= line <= f[2]]
@@ -2666,6 +2822,22 @@ def json_keys(obj, depth: int = 0, max_depth: int = 8, out: Optional[Set[str]] =
     return out
 
 
+def data_file_obj(rel: str):
+    """出力のファイルの中身（JSON）。CSV_COLUMNS の段階では、CSV の見出しの行の列を {列: ""} にして JSON のキーと同じに扱う。読めなければ None。"""
+    try:
+        if CSV_COLUMNS and rel.endswith(".csv"):
+            with open(os.path.join(REPO, rel), encoding="utf-8-sig", newline="") as fh:
+                return {c.strip(): "" for c in next(csv.reader(fh), []) if c.strip()}
+        with open(os.path.join(REPO, rel), encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError, StopIteration):
+        return None
+
+
+def data_output_ext() -> Tuple[str, ...]:
+    return (".json", ".csv") if CSV_COLUMNS else (".json",)
+
+
 def sample_files(files: List[str], n: int = SCREEN_SAMPLE) -> List[str]:
     """200ファイルまでは全部、それより多ければ等間隔に n 個（銘柄ごとにキーが違うため、銘柄の数の分は全部見る）。"""
     if len(files) <= 200 or FULL_SCAN:
@@ -2720,14 +2892,12 @@ def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: L
     テストを除くコードに読みの形で出てこないもの。画面の段階の screen_items と同じ読みの形で判定する（Python の for k in d・d.items() で回して読むものは拾えない）。"""
     written: Dict[str, Set[str]] = defaultdict(set)
     for k, o in outputs.items():
-        if o["kind"] != "ファイル" or not k.endswith(".json") or k.startswith(("${", "/")):
+        if o["kind"] != "ファイル" or not k.endswith(data_output_ext()) or k.startswith(("${", "/")):
             continue
         rx = template_regex(k)
         for f in sorted(f for f in tracked if rx.match(f)):
-            try:
-                with open(os.path.join(REPO, f), encoding="utf-8") as fh:
-                    d = json.load(fh)
-            except (OSError, ValueError):
+            d = data_file_obj(f)
+            if d is None:
                 continue
             for key in json_keys(d):
                 written[key].add(k)
@@ -2758,15 +2928,13 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             for vv in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
                 _parents(vv, parent, depth + 1)
     for k, o in outputs.items():
-        if o["kind"] != "ファイル" or not k.endswith(".json") or not k.startswith("docs/"):
+        if o["kind"] != "ファイル" or not k.endswith(data_output_ext()) or not k.startswith("docs/"):
             continue
         rx = template_regex(k)
         matched = sorted(f for f in tracked if rx.match(f))
         for f in sample_files(matched):
-            try:
-                with open(os.path.join(REPO, f), encoding="utf-8") as fh:
-                    d = json.load(fh)
-            except (OSError, ValueError):
+            d = data_file_obj(f)
+            if d is None:
                 continue
             for key in json_keys(d):
                 written[key].add(k)
@@ -3220,11 +3388,12 @@ def render_md(inv: dict) -> str:
         total = sum(x["lines"] for x in rows)
         L.append(f"### `{d}`（{len(rows)}ファイル・{total:,}行）")
         L.append("")
-        L.append("| ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト | 残す／消す／移す |")
-        L.append("|---|---|---|---|---|---|---|")
+        L.append("| ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト | " + ("実行の記録・注記 | " if NONPROD_NOTES else "") + "残す／消す／移す |")
+        L.append("|---|---|---|---|---|---|" + ("---|" if NONPROD_NOTES else "") + "---|")
         for x in rows:
             fmt = lambda xs: "<br>".join(f"`{v}`" for v in xs) or "—"  # noqa: E731
-            L.append(f"| `{x['file'].replace(d + '/', '')}` | {x['lines']:,} | {fmt(x['workflows'])} | {fmt(x['code'])} | {fmt(x['same_dir'])} | {fmt(x['tests'])} | {md_escape(x['decision'])} |")
+            note = f"{md_escape(NONPROD_NOTES.get(x['file'], '')) or '—'} | " if NONPROD_NOTES else ""
+            L.append(f"| `{x['file'].replace(d + '/', '')}` | {x['lines']:,} | {fmt(x['workflows'])} | {fmt(x['code'])} | {fmt(x['same_dir'])} | {fmt(x['tests'])} | {note}{md_escape(x['decision'])} |")
         L.append("")
     L.append("## 止める条件の内訳")
     L.append("")
@@ -3240,7 +3409,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio、macro_data: マクロデータ層、macro_pulse: MACRO PULSE）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()
