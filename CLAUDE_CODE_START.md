@@ -70,10 +70,16 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 2026-10-21 21:34 JSTのTANUKI VALUATION（`f9417ebd89`）で公開済み。APPの理論株価`intrinsic_value_per_share`は1,135.99ドルで試算どおり。10-22朝はチャット側が確かめる
    - 日時: ①10-22 05:30〜06:00 JSTのStonks Silo・TANUKI VALUATIONの後（Layer3をその場で作る読み手なので、日曜を待たずに出る。事例39）、②次の日曜（10-25）のSEC_Data_Updateと連鎖のTANUKI VALUATIONの後
    - 期限: 2026-10-26
-   - 確認の手順: ①APPの理論株価がシミュレーションのとおり（1,135.99ドル前後〈株価・F&Gで動く分を除く〉、−1.47%）、HON・FLYWも同じ向き（−4.19%・−4.37%）で、判定・TANUKI Scoreは変わらない。
+   - ①済（2026-10-22 05:30〜05:44 JSTのTANUKI VALUATION、`eccc5ef5d9`）: APP 1,135.99ドル（−1.47%、試算どおり）。全銘柄（96）の10-22の行に`method_change: LAYER3-FIRST-FILED-DATE-1`。
+     理論株価が0.1%以上動いたのはAPPだけ。HON・FLYWは不変（122.45・45.17）。判定の変化はDDOG BUY→WATCHの1件で、IV不変・株価256.43→273.09による（R-Cと無関係）
+   - HON・FLYWが①で動かなかった理由（2026-10-22、手元で確かめた）: 試算の差分は全部`common/sec_data/ttm/{T}_ttm_series.json`（SEC_Data_Updateの手順5がLayer3から作る。最終更新は10-18の連鎖）から来る。
+     TTMだけを新コードで作り直すとHON 117.33・FLYW 43.19（試算と同じ）、normalized・HypeCoreのpoc.jsonだけを作り直しても122.45・45.17のまま
+     （HONのnormalizedは営業利益率が0.2198→0.2068に変わるが理論株価は動かない。HypeCoreのrev_yoyは変わらない）。TTMの差は、HONは2026-06-30のTTMの営業利益8,366M→7,872M等、FLYWは2025-06-30以前のTTMの営業CF・FCF。②でTTMが作り直されて出る
+   - 確認の手順: ①（済、上）APPの理論株価がシミュレーションのとおり（1,135.99ドル前後〈株価・F&Gで動く分を除く〉、−1.47%）で、判定・TANUKI Scoreは変わらない。
      history・score_historyのその日の行に`method_change: LAYER3-FIRST-FILED-DATE-1`（`config/method_change.json`の10-22・10-25・10-26）。
      ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
-     APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）
+     APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
+     HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
