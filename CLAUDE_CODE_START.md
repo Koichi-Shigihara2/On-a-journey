@@ -87,7 +87,11 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - 市場データ層: 段階1 `31c68840e1`（出力7）→段階2 `4ed11677f8`（`{T}/market_data_violations_log.json` 596ファイル・`_daily_close_retry_log.json`・attributesの`next_quarter_eps_date`を削除。analyst_historyの8キーは溜まる履歴で残す）→段階3 `847e02193d`（CHECK-INV）
 - TAIL: 段階1 `07b5005627`（出力20）→一覧のスクリプトの直し `3312a3c811`（APIを使うページの相対パス）→段階2 `6f6b70e0ba`（`satellite_alerts.json`を削除、誰も読まないキー30は理由を注記）→段階3 `46960950f9`（CHECK-INV）→`943e5ba517`（`segment_outlook`の生成を止め、`segment_growth_outlook_ai.py`を削除）
 - **common/market_data・src/tail・docs/portfolio/tailに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer market_data`（`--layer tail`）で一覧を作り直してcommitする**（しないとゲートがNG）。rccのCHECK-INVは7段階で約67秒
-- 次はR-AのPortfolioの段階1。R-Aの終わりの見直しの論点はPROJECT_STATUS.mdの次の作業2
+
+**2026-10-23 R-AのPortfolioの段階1〜3**
+- Portfolio: 段階1 `097e556125`（出力4。`portfolio.json`はコードの書き手なし・人の入力）→段階2 `6506f5e94f`（`theme_config.json`〈config/・docs/〉を削除し、Discover_Config_Sync.ymlの写しとrccのCHECK-32の組を外した。`discover_config.json`の各銘柄の`themes`を削除し、`register_ticker.py`も書くのをやめた）→段階3（CHECK-INV、8段階で約64〜66秒）
+- **docs/portfolio/data・src/portfolio・docs/portfolio/index.htmlに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer portfolio`で一覧を作り直してcommitする**（しないとゲートがNG）
+- 次はR-AのMACRO PULSEの段階1。R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
 - `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）

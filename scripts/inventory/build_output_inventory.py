@@ -2926,8 +2926,8 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・TAIL は解決の厳しさ（RESOLVE_STRICT 1・2）が違い索引を作り直すため、厳しさの順に最後に置く
-CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "tail")
+# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・TAIL・Portfolio は解決の厳しさ（RESOLVE_STRICT 1・2・3）が違い索引を作り直すため、厳しさの順に最後に置く
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "tail", "portfolio")
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

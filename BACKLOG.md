@@ -1995,7 +1995,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（第2部、件名「feat: R-A TAILの段階3、CHECK-INVをTAILにも当てる」のcommit）: CHECK_LAYERSにtail（最後。市場データ層〈RESOLVE_STRICT 1〉・TAIL〈2〉の順で索引を作り直す）。既知の規則の二重4つ（同じ期の値の選び方・期の名前・会計年度・AI〈Grok〉の呼び方7ファイル）はWARN（直さず、R-Aの後の根治策の入力）。rccのCHECK-INVは約67.3秒（6段階のときは約46.8秒）。時間を縮める直しはR-Aの終わりの見直しで扱う
 - **次はPortfolioの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
-#### Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data）の段階（2026-10-22 段階1済、2026-10-23 段階2済）
+#### Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data）の段階（2026-10-22 段階1済、2026-10-23 段階2・3済）
 - 段階1（一覧の下書き）: 件名「chore: R-A Portfolioの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`）。出力4（すべてファイル）:
   `history.json`（`snapshot.py`、TANUKI_Score_Update.yml）・`portfolio.json`（**コードの書き手なし、人の入力**。「管理の操作の手順」でClaude Codeが直接編集、最後の更新は2026-06-03。読み手9: 画面・snapshot.py・TAIL・System Health・Market Pulse）・`discover_config.json`と`theme_config.json`（Discover_Config_Sync.ymlが`config/`から`cp`で写す）。
   読み手0件0、テストだけ0、1件2（history.json・theme_config.json。theme_configのdocs/の写しを読むのはrccの同期の確認〈CHECK-32〉だけで、画面は読まない）、2件以上2。画面（`docs/portfolio/index.html`）が読むキー33（書き手なし0）、誰も読まないキー10（history.jsonの合計9つ・themes）。
@@ -2009,7 +2009,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   history.json・portfolio.json・discover_config.jsonは残す。history.jsonの合計9キーは日ごとの記録で作り直せないため残し、理由を`UNREAD_KEY_NOTES`に書いた。
   前後の比較: 画面が読むキーは33→32（書き手なし0のまま）。減った`color`は画面の中の`PHASE_CFG`の値で、theme_config.jsonのキーと名前が同じだったため一覧が書き手に数えていた（`label`も同じで、書き手の表示が「ほかの書き手あり」に変わった）。`registration_validator.py`の全銘柄の出力は前後で同じ（NG=7・WARN=11は前から）。`register_ticker.py`のStep 6を写しのファイルに当てた結果は`themes`が無いことだけ違う
 - 範囲外（直さない）: 保有銘柄の一覧が3か所にある件はPROJECT_STATUS.mdのR-Aの終わりの論点⑥。`discover_config.json`・Discover_Config_Sync.ymlの名前はFINDINGS 2026-10-23（型E）
-- **次は段階3（CHECK-INVをPortfolioにも）**
+- 段階3（第2部、件名「feat: R-A Portfolioの段階3、CHECK-INVをPortfolioにも当てる」のcommit）: CHECK_LAYERSにportfolio（最後。解決の厳しさ3で索引を作り直す）。Portfolioを含む規則の二重は0で、rccのWARNは149件のまま。rccのCHECK-INVは約64〜66秒（8段階。同じ条件で7段階は約58秒で、Portfolioの分は約8秒）。rcc全体は約85秒。時間を縮める直しはR-Aの終わりの見直し（論点②）で扱う
+- **次はMACRO PULSEの段階1**（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

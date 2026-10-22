@@ -414,8 +414,8 @@ def test_market_data_layer_settings():
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
     assert not md["SCREEN_PAGES"]
-    assert inv.CHECK_LAYERS[-2:] == ("market_data", "tail")
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "tail"]
+    assert inv.CHECK_LAYERS[-3:] == ("market_data", "tail", "portfolio")
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "tail", "portfolio"]
     assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
 
 
@@ -469,7 +469,7 @@ def test_tail_layer_settings():
     assert tl["LAYER_DIRS"] == ("src/tail",)
     assert tl["RESOLVE_STRICT"] == 2 and not tl["IO_HELPER_BY_CALLER"] and not tl["DATA_UNREAD_KEYS"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
-    assert inv.CHECK_LAYERS[-1] == "tail"
+    assert inv.CHECK_LAYERS[-2] == "tail"
     assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year", "grok_call"]
     assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1
 
@@ -510,10 +510,10 @@ def test_strict3_workflow_commit_copy_and_continuation(monkeypatch):
 
 
 def test_portfolio_layer_settings():
-    """Portfolio（段階1、2026-10-22）: 画面は docs/portfolio/index.html だけ（同じフォルダに TAIL の画面がある）。
-    Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV にはまだ入れない。"""
+    """Portfolio（段階1、2026-10-22。段階3、2026-10-23）: 画面は docs/portfolio/index.html だけ（同じフォルダに TAIL の画面がある）。
+    Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV の最後の段階（解決の厳しさ 3）。"""
     pf = inv.LAYERS["portfolio"]
     assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
     assert pf["RESOLVE_STRICT"] == 3
-    assert "portfolio" not in inv.CHECK_LAYERS
-    assert not any(inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"] for k in inv.CHECK_LAYERS)
+    assert inv.CHECK_LAYERS[-1] == "portfolio"
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["portfolio"]
