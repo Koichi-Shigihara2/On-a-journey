@@ -2012,7 +2012,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（第2部、件名「feat: R-A Portfolioの段階3、CHECK-INVをPortfolioにも当てる」のcommit）: CHECK_LAYERSにportfolio（最後。解決の厳しさ3で索引を作り直す）。Portfolioを含む規則の二重は0で、rccのWARNは149件のまま。rccのCHECK-INVは約64〜66秒（8段階。同じ条件で7段階は約58秒で、Portfolioの分は約8秒）。rcc全体は約85秒。時間を縮める直しはR-Aの終わりの見直し（論点②）で扱う
 - 段階1〜3が済んだ。次はMACRO PULSEの段階1（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
 
-#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1・2済）
+#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1〜3済）
 - 段階1（一覧の下書き）: 件名「chore: R-A MACRO PULSEの段階1、出力の一覧の下書き」のcommit。2つに分けた: `--layer macro_data` → `macro_data_layer.json`・`.md`（画面の無い共有のデータ層）、`--layer macro_pulse` → `macro_pulse_layer.json`・`.md`（画面は`docs/market-monitor/macro-pulse/index.html`）
 - macro_data: 出力4（`series/{series_id}.json` 26ファイル・`macro_data_violations_log.json`・`series_meta.json`〈**コードの書き手なし、人の手で書く静的なファイル**〉・Step Summary）。読み手0件0、テストだけ0、1件1（series_meta.json〈fetcher.py〉）、2件以上2。
   series はMACRO PULSE・Market Pulseが`reader.py`経由で読み、violations_logはSystem Healthの[L]が読む。誰も読まないキー3（series_metaの`consumers`・`input_id`、seriesの`fallback_used`）。止める条件は書き手0%・読み方0%。
@@ -2033,7 +2033,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   前後の比較（scratchpadに写したデータで05_main.pyの関数を動かす。XAI・Discordを外す）: 60週分の点数・局面・指標の値、比較バーと同じ過去の点数の差（7日・30日）、サプライズ、直近の発表、週次の解説でGrokに渡す引数、`--recalc`・`--fill-returns`の結果（消した列のほか）がすべて同じ。`browser_checks/check_macro_pulse.py`（実ブラウザ）は前後とも一致67・不一致5・判定不能1で、各行も同じ。
   一覧を作り直し、止める条件は2つとも0%・0%（macro_pulseの12.5%は消した修復のスクリプトの分）。macro_pulseの解決の厳しさは1にし、段階1で足した4（importlibで読み込んだモジュール）は使う所が無くなったため外した。
   文書: MACRO_PULSE_LOGIC_INVENTORY.mdの2-1（書き手・`--date`）とM-3の修復のスクリプトに削除を注記、SYSTEM_MAP.mdの2か所に削除を注記
-- **次は段階3（CHECK-INVをmacro_data・macro_pulseにも）**
+- 段階3（第2部、件名「feat: R-A MACRO PULSEの段階3、CHECK-INVをmacro_data・macro_pulseにも当てる」のcommit）: CHECK_LAYERSの市場データ層の後にmacro_data・macro_pulse（解決の厳しさはどれも1で、索引を作り直さない）。既知の規則の二重（macro_data 2: FREDのAPI・JSONの書き込み、macro_pulse 5: 取引日・景気後退リスクの点数・段階の信号・FREDのAPI・Grokの宛先）はWARN。rccのWARNは149→156件。rccのCHECK-INVは約67秒（10段階。8段階のときは約65秒）、rcc全体は約87秒。macro_dataのStep Summaryに注記を足した
+- **次はMarket Pulseの段階1**（R-Aの最後のサブシステム）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

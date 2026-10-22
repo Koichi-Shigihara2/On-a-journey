@@ -414,8 +414,11 @@ def test_market_data_layer_settings():
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
     assert not md["SCREEN_PAGES"]
-    assert inv.CHECK_LAYERS[-3:] == ("market_data", "tail", "portfolio")
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "tail", "portfolio"]
+    assert inv.CHECK_LAYERS[-5:] == ("market_data", "macro_data", "macro_pulse", "tail", "portfolio")
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "macro_data", "macro_pulse", "tail", "portfolio"]
+    # 解決の厳しさの順（索引を作り直す回数を少なくする）
+    levels = [inv.LAYERS[k]["RESOLVE_STRICT"] for k in inv.CHECK_LAYERS]
+    assert levels == sorted(levels)
     assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
 
 
@@ -516,12 +519,12 @@ def test_portfolio_layer_settings():
     assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
     assert pf["RESOLVE_STRICT"] == 3
     assert inv.CHECK_LAYERS[-1] == "portfolio"
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["portfolio"]
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["macro_data", "portfolio"]
 
 
 def test_macro_layers_settings():
     """MACRO PULSE（段階1・2、2026-10-23）: 共有のデータ層 macro_data（画面なし、市場データ層と同じ印。series_meta.json は書き手の無いファイル）と、
-    macro_pulse（CSV の列をキーとして数える・ページの el('id')）。解決の厳しさはどちらも 1。CHECK-INV にはまだ入れない。"""
+    macro_pulse（CSV の列をキーとして数える・ページの el('id')）。解決の厳しさはどちらも 1。段階3（2026-10-23）で CHECK-INV に入れた。"""
     md, mp = inv.LAYERS["macro_data"], inv.LAYERS["macro_pulse"]
     assert md["LAYER_DIRS"] == ("common/macro_data",) and not md["SCREEN_PAGES"]
     assert md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"] and md["RESOLVE_STRICT"] == 1
@@ -529,7 +532,9 @@ def test_macro_layers_settings():
     assert mp["LAYER_DIRS"] == ("src/market/macro_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/macro-pulse",)
     assert mp["RESOLVE_STRICT"] == 1 and mp["CSV_COLUMNS"] and mp["JS_ID_HELPERS"]
     assert not (mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"] or mp["EXTRA_OUTPUT_DIRS"])
-    assert "macro_data" not in inv.CHECK_LAYERS and "macro_pulse" not in inv.CHECK_LAYERS
+    assert "macro_data" in inv.CHECK_LAYERS and "macro_pulse" in inv.CHECK_LAYERS
+    assert md["KNOWN_DUPLICATE_RULES"] == ["fred_api", "atomic_write_json"]
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"]
     # 既存の段階の一覧を変えないよう、足した印はこの2つの段階だけ
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"] or inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]

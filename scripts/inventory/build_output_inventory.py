@@ -716,6 +716,7 @@ _MACRO_DATA.update(
         "common/macro_data/series_meta.json":
             "系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。"
             "fetcher.py が取得する系列の一覧として読む",
+        "${GITHUB_STEP_SUMMARY}": "Macro_Data_Update の取得の成功・失敗の件数と、失敗した系列と理由の表",
     },
     DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
@@ -731,7 +732,7 @@ _MACRO_DATA.update(
     OUTSIDE_HINT="macro_data", OUTSIDE_PREFIXES=("common/macro_data/",),
     READ_PREFIXES=("common/macro_data",),
     READ_HINT="macro_data", NAME_SHORT="マクロデータ層",
-    KNOWN_DUPLICATE_RULES=[], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["fred_api", "atomic_write_json"], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
         "source_detail": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。"
                          "読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ",
@@ -791,7 +792,8 @@ _MACRO_PULSE.update(
     OUTSIDE_HINT="macro", OUTSIDE_PREFIXES=("docs/market-monitor/macro-pulse/", "src/market/macro_pulse/"),
     READ_PREFIXES=("docs/market-monitor/macro-pulse", "src/market/macro_pulse"),
     READ_HINT="macro", NAME_SHORT="MACRO PULSE",
-    KNOWN_DUPLICATE_RULES=[], TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"],
+    TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={k: "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
@@ -3082,8 +3084,9 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・TAIL・Portfolio は解決の厳しさ（RESOLVE_STRICT 1・2・3）が違い索引を作り直すため、厳しさの順に最後に置く
-CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "tail", "portfolio")
+# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・マクロデータ層・MACRO PULSE（1）・TAIL（2）・Portfolio（3）は解決の厳しさ（RESOLVE_STRICT）が違い
+# 索引を作り直すため、厳しさの順に最後に置く（同じ厳しさの段階を続けると作り直さない）
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "macro_data", "macro_pulse", "tail", "portfolio")
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

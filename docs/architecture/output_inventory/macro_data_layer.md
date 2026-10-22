@@ -32,7 +32,7 @@
 
 | 出力 | 何か | 書き手 | 起動元のワークフロー |
 |---|---|---|---|
-| `${GITHUB_STEP_SUMMARY}` |  | `fetcher.py:<module>` | .github/workflows/Macro_Data_Update.yml |
+| `${GITHUB_STEP_SUMMARY}` | Macro_Data_Update の取得の成功・失敗の件数と、失敗した系列と理由の表 | `fetcher.py:<module>` | .github/workflows/Macro_Data_Update.yml |
 
 ## 読み手の内訳
 

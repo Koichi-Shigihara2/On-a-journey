@@ -261,9 +261,9 @@ def load_warn_ledger(path: str = WARN_LEDGER) -> set[tuple[str, str]]:
 
 
 def _check_output_inventory() -> tuple[list[str], list[str]]:
-    """CHECK-INV-1〜6（[[OUTPUT-INVENTORY-CHECK-1]] 段階3、SECデータ層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL・Portfolio）: 出力の一覧
+    """CHECK-INV-1〜6（[[OUTPUT-INVENTORY-CHECK-1]] 段階3、SECデータ層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・マクロデータ層・MACRO PULSE・TAIL・Portfolio）: 出力の一覧
     （docs/architecture/output_inventory/sec_layer.json・tanuki_layer.json・hypecore_layer.json・eps_layer.json・stonks_layer.json・
-    market_data_layer.json・tail_layer.json・portfolio_layer.json）と、今のリポジトリから
+    market_data_layer.json・macro_data_layer.json・macro_pulse_layer.json・tail_layer.json・portfolio_layer.json）と、今のリポジトリから
     scripts/inventory/build_output_inventory.py で作った一覧を比べる（一覧の作り方を二重にしない）。
     INV-1（NG）一覧に無い出力、INV-2（NG）読み手とされているファイルが読んでいない・読み手0件の出力、
     INV-3（既知はWARN、その段階のファイルを含む新しい二重はNG）規則の二重、INV-4（WARN）注記の無い出力、
@@ -3474,7 +3474,7 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", discover_sync_ng, []))
         total_ng += len(discover_sync_ng)
 
-    # CHECK-INV-1〜6: ティッカー非依存の単発チェック（出力の一覧〈SEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL・Portfolio〉、[[OUTPUT-INVENTORY-CHECK-1]]）。
+    # CHECK-INV-1〜6: ティッカー非依存の単発チェック（出力の一覧〈SEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・マクロデータ層・MACRO PULSE・TAIL・Portfolio〉、[[OUTPUT-INVENTORY-CHECK-1]]）。
     # 銘柄ごとのNGと混ぜず[GLOBAL]に置く。--tickerフィルタの有無に関わらず常時実行する。
     inv_ng, inv_warn = _check_output_inventory()
     if inv_ng or inv_warn:
