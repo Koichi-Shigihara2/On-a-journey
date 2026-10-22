@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-20 の更新。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**13件**（2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-10-22 の更新〈手順11の①済〉。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -81,6 +81,13 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
      HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-22 R-Cの公開の確認①・FINDINGS 型B・R-Aの市場データ層とTAILの段階1〜3・segment_outlookの停止（確認の残りは上の「次回の確認手順」2・5・7・8・9・11②）**
+- `e3cb083a08`: 手順11の①済（10-22 05:30〜05:44 JSTのTANUKI VALUATION、APP 1,135.99ドル）。HON・FLYWの試算の差は`common/sec_data/ttm/{T}_ttm_series.json`由来（normalized・HypeCoreではない）で、②（10-25のSEC_Data_Update）で出る。FINDINGS 型B（SECのUser-Agentの直書き10ファイル10か所・4種）
+- 市場データ層: 段階1 `31c68840e1`（出力7）→段階2 `4ed11677f8`（`{T}/market_data_violations_log.json` 596ファイル・`_daily_close_retry_log.json`・attributesの`next_quarter_eps_date`を削除。analyst_historyの8キーは溜まる履歴で残す）→段階3 `847e02193d`（CHECK-INV）
+- TAIL: 段階1 `07b5005627`（出力20）→一覧のスクリプトの直し `3312a3c811`（APIを使うページの相対パス）→段階2 `6f6b70e0ba`（`satellite_alerts.json`を削除、誰も読まないキー30は理由を注記）→段階3 `46960950f9`（CHECK-INV）→`943e5ba517`（`segment_outlook`の生成を止め、`segment_growth_outlook_ai.py`を削除）
+- **common/market_data・src/tail・docs/portfolio/tailに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer market_data`（`--layer tail`）で一覧を作り直してcommitする**（しないとゲートがNG）。rccのCHECK-INVは7段階で約67秒
+- 次はR-AのPortfolioの段階1。R-Aの終わりの見直しの論点はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
 - `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）

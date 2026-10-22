@@ -54,7 +54,7 @@
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 393・430・489・521・1060（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 70
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 330・338・347・358・367・378・389・397・400・411・423・433 ほか2（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 426
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 428
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/hypecore/detail.html`
@@ -132,7 +132,7 @@
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 43・48・57・64・69・74・75・80・96・108・122・127 ほか30（経由 `common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_market_data_stale_provisional.py` 行 67・79・89・107・121・129・136・137・138・164・175・185 ほか7（経由 `common/market_data/fetcher.py::fetch_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days`、`common/market_data/reader.py::_load_daily_payload`）
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 430
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 432
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - テスト・保存済みファイル: `tests/test_rotce.py` 行 64・70・81・94・96・101・110・119・130・138・145・153 ほか20（経由 `common/sec_data/rotce.py::_load_prices`）
 - テスト・保存済みファイル: `tests/test_valuation_fetcher_market_data_switch.py` 行 57・78・94・109・120・133・147（経由 `common/market_data/reader.py::_load_daily_payload`）

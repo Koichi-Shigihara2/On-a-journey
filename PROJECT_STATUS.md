@@ -11,14 +11,21 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-21 終業 更新〈R-AのSTONKS SILOの段階の後〉。上から順）**:
+**次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
    - 10-19の確認: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（手順6）も済
    - 初回の束ね: `docs/architecture/BUNDLING_2026-10-19.md`（「確定」の節）。根治策5件（R-A `[[OUTPUT-INVENTORY-CHECK-1]]`〈R-Bを統合〉・R-C `[[LAYER3-FIRST-FILED-DATE-1]]`を広げる・R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`）。
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り5つのサブシステムの段階を、market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse の順に**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO。CHECK-INVはこの5段階）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。次はPortfolioの段階1**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL。CHECK-INVはこの7段階）
+   - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
+     ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか
+     ②rccのCHECK-INVの時間（約67秒、7段階。市場データ層・TAILは解決の厳しさが違い索引を作り直す）
+     ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
+     ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）
+     ⑤規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）
+   - （済 2026-10-22）TAILの`segment_outlook`（MD&AのセグメントのAIの見通し）の生成を止めた（件名「refactor: TAILのsegment_outlookの生成を止める」。読み手0件・report.txtにも出ていなかった。`segment_growth_outlook_ai.py`を削除）
    - （済 2026-10-22）市場データ層の段階1の一覧の下書き: `build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`。出力7、読み手0件1（`_daily_close_retry_log.json`）、誰も読まないキー20、規則の二重3（取引日・暫定の足・S&P500の構成銘柄）。止める条件は書き手0%・読み方3.1%。
      一覧のスクリプトに段階ごとの印3つ（汎用の読み書きの関数は呼び出し箇所を読み手・書き手に、画面の無い層の誰も読まないキー、解決を厳しく）。既存の5段階の一覧は差0。段階2（2026-10-22）: 検証の結果のログ（596ファイル）・取り直しの記録・attributesの`next_quarter_eps_date`を削除、analyst_historyの8キーは溜まる履歴のため残す。TANUKI・HypeCoreは前後で同じ。段階3（2026-10-22）: CHECK-INVを市場データ層にも（既知の規則の二重3つはWARN、rccのCHECK-INVは約43.2秒）。**次はTAILの段階1**。
    - （済 2026-10-22）TAILの段階1の一覧の下書き: `build_output_inventory.py --layer tail` → `tail_layer.json`・`tail_layer.md`。出力20、読み手0件1（ctrl/{T}/index.json）、画面が読むキー180（書き手なし0）、誰も読まないキー30、規則の二重のうちTAILを含むもの4（AIの呼び方を含む）。止める条件は書き手0%・読み方0%。段階2（2026-10-22）: `satellite_alerts.json`を削除、ほかは残す。誰も読まないキー30は理由を一覧に。`segment_outlook`がreport.txtに出ていない件はFINDINGS（型A）。段階3（2026-10-22）: CHECK-INVをTAILにも（既知の規則の二重4つはWARN、rccのCHECK-INVは約67.3秒）。**次はPortfolioの段階1**。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「TANUKI TAILの段階」BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「市場データ層の段階」
@@ -51,6 +58,12 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-22（終業のブラッシュアップ）**: 今日のまとめ。①R-Cの公開の確認①（手順11、APP 1,135.99ドル。HON・FLYWの試算の差はTTMのファイル由来で②で出る）・FINDINGS 型B（SECのUser-Agentの直書き10ファイル10か所）。
+  ②R-Aの市場データ層の段階1〜3（出力7→5、検証の結果のログ596ファイル・取り直しの記録・`next_quarter_eps_date`を削除、yfinanceの応答を記録して再生するハーネスで前後同じ、TANUKI・HypeCoreも前後同じ）とTAILの段階1〜3（出力20、`satellite_alerts.json`を削除、誰も読まないキー30は理由を注記）。
+  ③一覧のスクリプトの直し（段階ごとの印、APIを使うページの相対パス）。④TAILの`segment_outlook`の生成の停止。CHECK-INVは7段階・約67秒。一覧はsec・tanuki・stonks・market_dataを作り直した（本番のデータの増分〈method_change等〉・F3の表の1行・行の番号）
+  **終業の数（10-16と同じ数え方）**: 読み手の決まっていない出力 1（HypeCoreの`low_base_effect`。F3の残り。10-21の記録4は10-21の削除を反映していなかった）、
+  二重実装の規則 **5（SYSTEM_MAP.mdの【二重】）・21件／13種（一覧の検出、CHECK-INV-3のWARN、7段階）**、サブシステム 10、Python 69,611行・138ファイル（10-21の終業の69,535行・139ファイルから+76行・−1ファイル: 一覧のスクリプトの市場データ層・TAILの設定と解決の機能が増え、市場データ層の検証のログ・取り直しの記録の書き手とsegment_growth_outlook_ai.pyが減った）、
+  テスト34,739行、docs配下のHTML・JS 20,308行・20ファイル、ワークフロー21本、アクティブBACKLOG 13件
 - **2026-10-21（終業のブラッシュアップ）**: 今日のまとめ。R-C `[[LAYER3-FIRST-FILED-DATE-1]]`（Layer3に最初の申告を持たせ、Q4の逆算を年次と同じ時点の値どうしに。21:34のTANUKI VALUATION〈`f9417ebd89`〉で公開、APPの理論株価1,135.99ドルは試算どおり）。R-A `[[OUTPUT-INVENTORY-CHECK-1]]`のHypeCore・EPS・STONKS SILOの段階1〜3（hypecore.html・Extreme Fearのページ・管理のページ2つ・ワークフロー2本〈TANUKI_CIK_Lookup・TANUKI_Segment_AI〉を削除、STONKS SILOを`src/value/stonks_silo/`へ付け替え、誰も読まないキーをEPS 11・STONKS 10、CHECK-INVは5段階）。BACKLOG_DONE.mdの「2026-10-21（完了）」にR-Aの今日の作業の記録を足した（項目は継続中）。CHAT_RULES.mdに事例43（時点をそろえる直しは基準の日付を1つ決める）・事例44（読み手0件・テストだけは消す前にgrepで人が確かめる）。移設0件（BACKLOGの`### ✅ [`は0件）、アクティブBACKLOG 13件。FINDINGS.mdに1行（使われなくなったsecret）
   **終業の数（10-16と同じ数え方。括弧は10-16の数）**: 読み手の決まっていない出力 4（7）、二重実装の規則 5（5）、サブシステム 10（10）、Python 69,535行・139ファイル（69,535行・159ファイル。行数は同じで、ファイルは20減。10-16の時点〈`5e9f9cb005`〉を同じ数え方で数え直して確かめた）、テスト34,734行（34,046行、+688）、docs配下のHTML・JS 20,308行・20ファイル（24,946行・22ファイル）、ワークフロー21本（23本）、アクティブBACKLOG 13件（54件）
 - **2026-10-21（R-AのSTONKS SILOの段階2・3）**: 第1部（フォルダの付け替え・誰も読まないキー10・一覧の取り違えの直し）と第2部（CHECK-INVをSTONKS SILOにも）を別のcommit

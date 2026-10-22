@@ -35,7 +35,7 @@
 
 ### `docs/value-monitor/stonks-silo/data/results.json`（2件以上）
 - 起動元: .github/workflows/Stonks_Silo_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `errors`(1)・`generated_at`(5)・`tickers`(10)
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `errors`(1)・`generated_at`(5)・`method_change`(2)・`tickers`(10)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 178・214・1117・2645・3455（経由 `common/sec_data/report_consistency_check.py::_load_stonks_results`）
 - Python・保存済みファイル: `common/system_health.py` 行 50・160・183・1041・1042・1110（経由 `common/system_health.py::check_d_actions`、`common/system_health.py::check_e_silo`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 36
@@ -183,7 +183,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1050`<br>`src/value/hypecore/hypecore.py:1095` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
-| `market_data_violations_log` | いいえ（後の段階） | — | `common/market_data/fetcher.py:315` |
+| `market_data_violations_log` | いいえ（後の段階） | — | — |
 
 ## 規則が2か所以上にあるもの
 

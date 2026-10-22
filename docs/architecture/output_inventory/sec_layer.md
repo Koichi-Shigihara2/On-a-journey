@@ -390,7 +390,7 @@
 - Python・保存済みファイル: `common/system_health.py` 行 293・294・370・756・788・1045・1049・1110（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 739・842（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 426・478（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 670・702（経由 `common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 645・677（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 326（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/text_kpi_extractor.py` 行 581・701（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 50・158・430（経由 `common/sec_data/tickers.py::_load`）
