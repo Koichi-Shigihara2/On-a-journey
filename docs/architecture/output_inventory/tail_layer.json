@@ -4,43 +4,6 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "docs/portfolio/tail/data/ctrl/{T}/index.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "func": "main",
-     "line": 458
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/TANUKI_TAIL_SEC_Ctrl.yml"
-   ],
-   "files_tracked": 9,
-   "top_keys_sampled_files": 9,
-   "top_keys": [
-    {
-     "key": "quarters",
-     "reader_files": 0
-    }
-   ],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [
-    "AS-IS-402"
-   ],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。書き手が次の書き込みでまとめ直すほかに読むコードは無い",
-   "decision": "（段階2の判断待ち）"
-  },
-  {
    "path": "/tmp/tail_commit_message.txt",
    "kind": "ファイル",
    "writers": [
@@ -77,6 +40,59 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "TANUKI_TAIL_Position_Writeの1回の書き込みのcommitの件名（同じワークフローの後の段が git commit -F で読む）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/portfolio/tail/data/ctrl/{T}/index.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/tail/sec_ctrl_fetcher.py",
+     "func": "main",
+     "line": 458
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/TANUKI_TAIL_SEC_Ctrl.yml"
+   ],
+   "files_tracked": 9,
+   "top_keys_sampled_files": 9,
+   "top_keys": [
+    {
+     "key": "quarters",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1380,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [
+    "AS-IS-402"
+   ],
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。書き手が次の書き込みでまとめ直すほかに読むコードは無い",
    "decision": "（段階2の判断待ち）"
   },
   {
@@ -176,6 +192,10 @@
    "screens": [
     {
      "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
      "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
     }
    ],
@@ -284,6 +304,10 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "経由（src/tail/edgar_rss_monitor.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/tail/edgar_rss_monitor.py → docs/portfolio/tail/data/review_queue.json）"
     }
    ],
    "definitions": [
@@ -297,94 +321,6 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
-  },
-  {
-   "path": "docs/portfolio/tail/data/{item_key}/{T}/index.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "src/tail/sec_items_fetcher.py",
-     "func": "_save_result",
-     "line": 614
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/TANUKI_TAIL_SEC_Items.yml"
-   ],
-   "files_tracked": 36,
-   "top_keys_sampled_files": 36,
-   "top_keys": [
-    {
-     "key": "periods",
-     "reader_files": 1
-    },
-    {
-     "key": "quarters",
-     "reader_files": 1
-    }
-   ],
-   "readers": [
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 445,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 453,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "src/tail/sec_ctrl_fetcher.py::main",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 188,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 196,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 197,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 1,
-   "reader_count_compute": 0,
-   "group": "1件",
-   "note": "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
    "decision": "（段階2の判断待ち）"
   },
   {
@@ -639,6 +575,10 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
     }
    ],
    "definitions": [
@@ -784,31 +724,31 @@
    "top_keys": [
     {
      "key": "effective",
-     "reader_files": 1
-    },
-    {
-     "key": "fetched_at",
-     "reader_files": 1
-    },
-    {
-     "key": "filing_date",
      "reader_files": 2
     },
     {
+     "key": "fetched_at",
+     "reader_files": 2
+    },
+    {
+     "key": "filing_date",
+     "reader_files": 3
+    },
+    {
      "key": "item4_excerpt",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item4_excerpt_ja",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "material_weaknesses",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "quarter",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "report_date",
@@ -816,11 +756,11 @@
     },
     {
      "key": "significant_deficiencies",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "ticker",
-     "reader_files": 3
+     "reader_files": 4
     }
    ],
    "readers": [
@@ -847,6 +787,22 @@
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
      "type": "Python"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 893,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1388,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
@@ -915,10 +871,17 @@
    ],
    "readers_compute": [],
    "producers": [],
-   "screens": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    }
+   ],
    "definitions": [],
-   "decision_effect": [],
-   "reader_count": 2,
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 3,
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -944,35 +907,35 @@
    "top_keys": [
     {
      "key": "effective",
-     "reader_files": 1
-    },
-    {
-     "key": "fetched_at",
-     "reader_files": 1
-    },
-    {
-     "key": "filing_date",
      "reader_files": 2
     },
     {
+     "key": "fetched_at",
+     "reader_files": 2
+    },
+    {
+     "key": "filing_date",
+     "reader_files": 3
+    },
+    {
      "key": "item4_excerpt",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item4_excerpt_ja",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "material_weaknesses",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "quarter",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "quarters",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "report_date",
@@ -980,11 +943,11 @@
     },
     {
      "key": "significant_deficiencies",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "ticker",
-     "reader_files": 3
+     "reader_files": 4
     }
    ],
    "readers": [
@@ -1011,6 +974,46 @@
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
      "type": "Python"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 893,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1380,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1387,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1388,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 2414,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
@@ -1079,12 +1082,19 @@
    ],
    "readers_compute": [],
    "producers": [],
-   "screens": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    }
+   ],
    "definitions": [
     "AS-IS-402"
    ],
-   "decision_effect": [],
-   "reader_count": 2,
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 3,
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -1110,7 +1120,7 @@
    "top_keys": [
     {
      "key": "entries",
-     "reader_files": 3
+     "reader_files": 4
     }
    ],
    "readers": [
@@ -1125,6 +1135,14 @@
     {
      "file": "docs/portfolio/tail/decision_log.html",
      "line": 150,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 925,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1157,6 +1175,10 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "経由（src/tail/workflow_write.py → docs/portfolio/tail/data/positions/{T}_thesis.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
     }
    ],
    "definitions": [
@@ -1166,7 +1188,7 @@
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 3,
+   "reader_count": 4,
    "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -1193,11 +1215,11 @@
    "top_keys": [
     {
      "key": "fetched_at",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "kpis",
-     "reader_files": 7
+     "reader_files": 8
     },
     {
      "key": "layer2_complete",
@@ -1209,7 +1231,7 @@
     },
     {
      "key": "ticker",
-     "reader_files": 10
+     "reader_files": 11
     }
    ],
    "readers": [
@@ -1248,6 +1270,14 @@
     {
      "file": "docs/portfolio/tail/detail.html",
      "line": 321,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1356,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1571,7 +1601,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "直接"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -1607,7 +1637,7 @@
     "理論株価・判定（TANUKI VALUATION）",
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 7,
+   "reader_count": 8,
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -1641,11 +1671,11 @@
    "top_keys": [
     {
      "key": "generated_at",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "proposed_kpis",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "rejected_kpis",
@@ -1657,7 +1687,7 @@
     },
     {
      "key": "ticker",
-     "reader_files": 4
+     "reader_files": 5
     }
    ],
    "readers": [
@@ -1692,6 +1722,14 @@
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals",
      "type": "Python"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 2585,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
@@ -1776,10 +1814,17 @@
    ],
    "readers_compute": [],
    "producers": [],
-   "screens": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    }
+   ],
    "definitions": [],
-   "decision_effect": [],
-   "reader_count": 2,
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 3,
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2036,7 +2081,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
     }
    ],
    "definitions": [
@@ -2071,7 +2116,7 @@
    "top_keys": [
     {
      "key": "positions",
-     "reader_files": 9
+     "reader_files": 10
     }
    ],
    "readers": [
@@ -2158,6 +2203,14 @@
     {
      "file": "docs/portfolio/tail/detail.html",
      "line": 377,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 865,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2424,6 +2477,10 @@
      "how": "直接"
     },
     {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    },
+    {
      "page": "docs/value-monitor/tanuki_score/index.html",
      "how": "経由（src/market/market_pulse/backfill_implb.py → docs/market-monitor/market-pulse/data/market_data.json）"
     }
@@ -2434,7 +2491,7 @@
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 12,
+   "reader_count": 13,
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2509,6 +2566,14 @@
      "type": "ワークフロー"
     },
     {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 916,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
      "file": "src/tail/prediction_tracker.py",
      "line": 31,
      "func": "<module>",
@@ -2579,13 +2644,19 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
     }
    ],
    "definitions": [
     "AS-IS-506"
    ],
-   "decision_effect": [],
-   "reader_count": 3,
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 4,
    "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2616,7 +2687,7 @@
    "top_keys": [
     {
      "key": "queue",
-     "reader_files": 7
+     "reader_files": 8
     }
    ],
    "readers": [
@@ -2679,6 +2750,14 @@
     {
      "file": "docs/portfolio/tail/detail.html",
      "line": 305,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 953,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2954,7 +3033,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "直接"
     }
    ],
    "definitions": [
@@ -2969,7 +3048,7 @@
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 8,
+   "reader_count": 9,
    "reader_count_test": 3,
    "reader_count_compute": 1,
    "group": "2件以上",
@@ -3233,7 +3312,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "経由（src/tail/prediction_tracker.py → docs/portfolio/tail/data/prediction_history.json）"
     }
    ],
    "definitions": [],
@@ -3243,6 +3322,109 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・四半期ごとのレビュー。**AIの出力（Grok）**: stage1（健康度・推奨・理由等）・stage2（シナリオ〈bull/base/bear〉・KPIの予想等）・call2。grok_call1_success・grok_call2_success・stage2_json_valid はAIの呼び出しの結果の印、kpi_snapshot・layer3_snapshot・macro_snapshot は作った時点の入力の控え。レビューは対象の期にかかわらず作った時点の最新の財務で書かれる（[[TAIL-REVIEW-PERIOD-FILTER-1]]。06-06の一括生成の分は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]、統合済み）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/portfolio/tail/data/{item_key}/{T}/index.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/tail/sec_items_fetcher.py",
+     "func": "_save_result",
+     "line": 614
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/TANUKI_TAIL_SEC_Items.yml"
+   ],
+   "files_tracked": 36,
+   "top_keys_sampled_files": 36,
+   "top_keys": [
+    {
+     "key": "periods",
+     "reader_files": 1
+    },
+    {
+     "key": "quarters",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1380,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/tail/sec_ctrl_fetcher.py",
+     "line": 445,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/sec_ctrl_fetcher.py",
+     "line": 453,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/sec_ctrl_fetcher.py",
+     "line": 478,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/tail/sec_ctrl_fetcher.py::main",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_tail_sec_items_fetcher.py",
+     "line": 188,
+     "func": "TestSaveResult.test_saves_period_latest_and_index",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_sec_items_fetcher.py",
+     "line": 196,
+     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_sec_items_fetcher.py",
+     "line": 197,
+     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
    "decision": "（段階2の判断待ち）"
   },
   {
@@ -3272,7 +3454,7 @@
     },
     {
      "key": "effective",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "excerpt",
@@ -3284,19 +3466,19 @@
     },
     {
      "key": "fetched_at",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "filing_date",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "item4_excerpt",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item4_excerpt_ja",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item_key",
@@ -3304,7 +3486,7 @@
     },
     {
      "key": "material_weaknesses",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "period",
@@ -3312,7 +3494,7 @@
     },
     {
      "key": "quarter",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "report_date",
@@ -3324,15 +3506,15 @@
     },
     {
      "key": "significant_deficiencies",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "source",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "ticker",
-     "reader_files": 6
+     "reader_files": 7
     }
    ],
    "readers": [
@@ -3363,6 +3545,22 @@
     {
      "file": "docs/portfolio/tail/detail.html",
      "line": 338,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 893,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1388,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3503,6 +3701,10 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "直接"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
     }
    ],
    "definitions": [
@@ -3512,7 +3714,7 @@
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 3,
+   "reader_count": 4,
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -3546,7 +3748,7 @@
     },
     {
      "key": "effective",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "excerpt",
@@ -3558,19 +3760,19 @@
     },
     {
      "key": "fetched_at",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "filing_date",
-     "reader_files": 6
+     "reader_files": 7
     },
     {
      "key": "item4_excerpt",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item4_excerpt_ja",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "item_key",
@@ -3578,7 +3780,7 @@
     },
     {
      "key": "material_weaknesses",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "period",
@@ -3590,11 +3792,11 @@
     },
     {
      "key": "quarter",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "quarters",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "report_date",
@@ -3606,15 +3808,15 @@
     },
     {
      "key": "significant_deficiencies",
-     "reader_files": 2
-    },
-    {
-     "key": "source",
      "reader_files": 3
     },
     {
+     "key": "source",
+     "reader_files": 4
+    },
+    {
      "key": "ticker",
-     "reader_files": 8
+     "reader_files": 9
     }
    ],
    "readers": [
@@ -3645,6 +3847,46 @@
     {
      "file": "docs/portfolio/tail/detail.html",
      "line": 338,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 893,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1380,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1387,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 1388,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 2414,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3897,6 +4139,10 @@
     {
      "page": "docs/portfolio/tail/detail.html",
      "how": "直接"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
     }
    ],
    "definitions": [
@@ -3916,7 +4162,7 @@
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
-   "reader_count": 4,
+   "reader_count": 5,
    "reader_count_test": 5,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -4859,7 +5105,7 @@
   "unresolved_write_sites": [],
   "python_read_sites_into_layer_resolved": 35,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 51,
+  "name_hit_sites_resolved": 62,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
   "ratio_reader": 0.0,

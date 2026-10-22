@@ -470,3 +470,15 @@ def test_tail_layer_settings():
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
     assert "tail" not in inv.CHECK_LAYERS
     assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1
+
+
+def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):
+    """GitHub の API を使うページでも fetch('data/…' + 変数 + '/index.json') はページのフォルダから読む（2026-10-22、TAIL の index.html の ctrl/{T}/index.json）。"""
+    monkeypatch.setattr(inv, "TOP_DIRS", {"docs", "src", "common", "config", "data"})   # リポジトリの最上位にも data/ がある
+    src = ("<script>\nconst API = 'https://api.github.com/repos/o/r/contents/';\n"
+           "fetch('data/ctrl/' + ticker + '/index.json?_=' + Date.now());\n</script>\n")
+    rel = "docs/portfolio/tail/test_page_m.html"
+    tmpl = "docs/portfolio/tail/data/ctrl/{T}/index.json"
+    inv._MENTIONS.pop((rel, 3), None)
+    pats, _ = inv.needles_for(tmpl)
+    assert inv.mention_class(tmpl, pats, rel, 3, src.splitlines()[2], src) == "reader"

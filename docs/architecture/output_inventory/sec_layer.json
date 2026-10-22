@@ -620,6 +620,10 @@
      "reader_files": 1
     },
     {
+     "key": "method_change",
+     "reader_files": 0
+    },
+    {
      "key": "reference_only",
      "reader_files": 0
     },
@@ -5448,7 +5452,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -11187,7 +11191,7 @@
     },
     {
      "page": "docs/portfolio/tail/index.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
@@ -11264,6 +11268,10 @@
     {
      "key": "history",
      "reader_files": 3
+    },
+    {
+     "key": "method_change",
+     "reader_files": 1
     },
     {
      "key": "notes",
@@ -11958,12 +11966,7 @@
    "name": "market_data_violations_log",
    "in_layer": false,
    "output": null,
-   "sites": [
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 315
-    }
-   ]
+   "sites": []
   }
  ],
  "deleted": [

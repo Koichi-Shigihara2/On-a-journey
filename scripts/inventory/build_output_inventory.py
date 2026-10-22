@@ -1518,7 +1518,11 @@ def _js_mentions(rel: str, text: str, line: str) -> List[Tuple[str, str]]:
             p = UNRESOLVED + "/" + p.lstrip(_ROOT).lstrip("/")
         elif rel.endswith(".js"):
             p = UNRESOLVED + "/" + p   # .js の相対パスは、読み込むページのフォルダからになる
-        elif not (api and p.split("/")[0] in TOP_DIRS):
+        elif api and p.split("/")[0] in TOP_DIRS:
+            # GitHub の API でリポジトリのパスを書くページでも、fetch('data/…') のような相対パスはページのフォルダから読む。
+            # どちらかを決めきれないため両方を候補にする（2026-10-22、TAIL の index.html の data/ctrl/{T}/index.json）
+            p = p + ALT + posixpath.join(posixpath.dirname(rel), p)
+        else:
             p = posixpath.join(posixpath.dirname(rel), p)
         p = p.replace(_ROOT, UNRESOLVED)
         out.append((m.group(2), normalize_path(p) if p else ""))
