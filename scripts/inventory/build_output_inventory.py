@@ -25,6 +25,7 @@
   python scripts/inventory/build_output_inventory.py --layer tanuki  # TANUKI: tanuki_layer.json と tanuki_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer market_data  # 市場データ層: market_data_layer.json と market_data_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer tail  # TANUKI TAIL: tail_layer.json と tail_layer.md を書く
+  python scripts/inventory/build_output_inventory.py --layer portfolio  # Portfolio: portfolio_layer.json と portfolio_layer.md を書く
   python scripts/inventory/build_output_inventory.py --check   # 書かずに、今のファイルと同じかだけを見る（違えば終了コード1）
 
 CHECK としてはまだ動かさない（ゲートに入れない。段階3で、消した後に入れる）。
@@ -178,10 +179,14 @@ WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフロー
 SECTION_DECISIONS: Dict[str, str] = {}   # 画面の区画の判断（ページ → 判断。そのページの区画すべてに当てる）
 NONPROD_SCAN = False   # 名前を挙げた候補が無くても、段階のフォルダの .py のうちどこからも呼ばれないものを本番外のコードの候補にする（EPS の段階から）
 IO_HELPER_BY_CALLER = False   # パスを引数で受けて読み書きする汎用の関数（_load_json・_atomic_write_json 等）を読み手・書き手にせず、その出力のパスを渡す呼び出し箇所をそうする（市場データ層の段階から）
+# Pythonの書き手の無いファイルも出力に加えるフォルダ（Portfolio の段階から）。そのフォルダの git にあるファイルのうち、どの出力の型にも当たらないものを
+# 出力にし、書き手はワークフローの cp（あれば）、無ければ「書き手なし（人の手で書く）」とする
+EXTRA_OUTPUT_DIRS: Tuple[str, ...] = ()
 DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキー（入れ子まで）のうち、テストを除くコードに読みの形で出てこないものを出す（市場データ層の段階から）
 # パスと呼び出しの解決を厳しくする（市場データ層の段階から）: join の候補ごとの連結・テストの呼び出しを引数の候補にしない・argparse の引数・
 # 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
 # 2 は TAIL の段階から: 同じフォルダの import X as Y・名前の並びを回す for の変数（市場データ層の一覧を変えないよう 1 と分けた）
+# 3 は Portfolio の段階から: ワークフローの git commit -m の件名・cp の写し先・git add の \ の続きの行を読みとしない（TAIL の一覧を変えないよう 2 と分けた）
 RESOLVE_STRICT = 0
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
@@ -192,7 +197,8 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
             FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
             WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN,
-            IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, RESOLVE_STRICT=RESOLVE_STRICT, DATA_UNREAD_KEYS=DATA_UNREAD_KEYS)
+            IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, RESOLVE_STRICT=RESOLVE_STRICT, DATA_UNREAD_KEYS=DATA_UNREAD_KEYS,
+            EXTRA_OUTPUT_DIRS=EXTRA_OUTPUT_DIRS)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -615,8 +621,53 @@ _TAIL.update(
     SECTION_DECISIONS={},
     RESOLVE_STRICT=2,
 )
+# ---- Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data、段階1、2026-10-22）
+_PORTFOLIO = dict(_SEC)
+_PORTFOLIO.update(
+    LAYER="src/portfolio",
+    LAYER_DIRS=("src/portfolio",),
+    OUT_JSON=f"{OUT_DIR}/portfolio_layer.json", OUT_MD=f"{OUT_DIR}/portfolio_layer.md",
+    DECISION_PREFIXES=DECISION_PREFIXES + [
+        ("docs/portfolio/index.html", "Portfolioの画面"),
+        ("docs/portfolio/tail/", "TANUKI TAILの画面（保有銘柄の監視）"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=[],
+    NONPROD_SCAN=True,
+    ANNOTATIONS={
+        "docs/portfolio/data/portfolio.json":
+            "証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、"
+            "CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。"
+            "Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む",
+        "docs/portfolio/data/history.json": "日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む",
+        "docs/portfolio/data/discover_config.json":
+            "銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。"
+            "Portfolioの画面が保有中の銘柄を選ぶのに読む",
+        "docs/portfolio/data/theme_config.json":
+            "テーマの一覧。config/theme_config.json を Discover_Config_Sync.yml が写したもの。docs/ の写しを読むのは rcc の同期の確認（CHECK-32）だけで、画面は読まない",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="portfolio", OUTSIDE_PREFIXES=("docs/portfolio/data/", "src/portfolio/"),
+    READ_PREFIXES=("docs/portfolio/data", "src/portfolio"),
+    READ_HINT="portfolio", NAME_SHORT="Portfolio",
+    KNOWN_DUPLICATE_RULES=[], TITLE="Portfolio（src/portfolio・docs/portfolio）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/portfolio/index.html",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=[],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+    EXTRA_OUTPUT_DIRS=("docs/portfolio/data",),
+    RESOLVE_STRICT=3,
+)
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
-                           "tail": _TAIL}
+                           "tail": _TAIL, "portfolio": _PORTFOLIO}
 
 
 def set_layer(name: str) -> None:
@@ -1602,6 +1653,20 @@ def mention_class(tmpl: str, pats: List[re.Pattern], rel: str, line_no: int, lin
     # ワークフローの git add・git rm 等はcommitするだけで読まない（RESOLVE_STRICT の段階から）
     if RESOLVE_STRICT and rel.endswith((".yml", ".yaml")) and re.match(r"\s*git\s+(add|rm|diff|checkout|restore)\b", line):
         return "no"
+    if RESOLVE_STRICT >= 3 and rel.endswith((".yml", ".yaml")):
+        # git commit -m の件名に出てくるファイル名と、cp の写し先（書く側）は読みではない（Portfolio の段階から）。
+        # git commit -F <ファイル> は件名をファイルから読む（TAIL の /tmp/tail_commit_message.txt）。git add 等の \ の続きの行も読みではない
+        if re.match(r"\s*git\s+commit\b", line) and not re.search(r"\s(-F|--file)[\s=]", line):
+            return "no"
+        lines_ = text.splitlines()
+        k = line_no - 1
+        while k > 0 and lines_[k - 1].rstrip().endswith("\\"):
+            k -= 1
+        if k < line_no - 1 and re.match(r"\s*git\s+(add|rm|diff|checkout|restore)\b", lines_[k]):
+            return "no"
+        m = _COPY_RE.match(line)
+        if m and path_matches(tmpl, normalize_path(m.group(2))) and not path_matches(tmpl, normalize_path(m.group(1))):
+            return "no"
     got = [classify_mention(tmpl, path) for lit, path in line_mentions(rel, line_no, line, text)
            if any(rx.search(lit) or rx.search('"' + lit + '"') for rx in pats)]
     if "reader" in got:
@@ -1783,6 +1848,18 @@ def build() -> dict:
 
     tracked = git_ls_files()
     workflows = [f for f in tracked if f.startswith(".github/workflows/") and f.endswith((".yml", ".yaml"))]
+    if EXTRA_OUTPUT_DIRS:
+        rxs = [template_regex(k) for k in outputs if not k.startswith("${")]
+        for f in tracked:
+            if not f.startswith(tuple(d + "/" for d in EXTRA_OUTPUT_DIRS)) or any(rx.match(f) for rx in rxs):
+                continue
+            wr = []
+            for wf in workflows:
+                for i, line in enumerate((texts.get(wf) or read_text(wf)).splitlines(), 1):
+                    m = _COPY_RE.match(line)
+                    if m and m.group(2) == f:
+                        wr.append({"file": wf, "func": f"cp {m.group(1)}", "line": i})
+            outputs[f] = {"path": f, "kind": "ファイル", "writers": wr, "writers_outside_layer": [], "extra": True}
     # 同じファイル名（型）が、この出力のフォルダの外にもあるか（history.json 等。読み手をパスの全体で照合するため）
     AMBIGUOUS_BASES.clear()
     for key in outputs:
@@ -1888,6 +1965,7 @@ def build() -> dict:
                     nxt_f.append((c_rel, CALL_FUNC.get((c_rel, c_line), "<module>")))
             frontier_f = nxt_f
         launched.update(wf for (fr, fq) in seen_f if not is_test(fr) for wf in workflows_running(fr))
+        launched.update(w["file"] for w in o["writers"] if w["file"].startswith(".github/workflows/"))
         o["launched_by"] = sorted(launched)
         if o["kind"] != "ファイル" or key.startswith("${"):
             o.update({"files_tracked": None, "top_keys": [], "readers": [], "readers_compute": [], "screens": [], "definitions": []})
@@ -1918,7 +1996,7 @@ def build() -> dict:
         # 2. 読み手（保存済みファイル）
         pats, need_dir = needles_for(key)
         own = {(w["file"], w["func"]) for w in o["writers"]}
-        own_ranges = [(w["file"], *func_range(w["file"], w["func"])) for w in o["writers"] if w["func"] != "<module>"]
+        own_ranges = [(w["file"], *func_range(w["file"], w["func"])) for w in o["writers"] if w["func"] != "<module>" and w["file"].endswith(".py")]
         readers: Dict[Tuple[str, int], dict] = {}
         tmpl_rx = template_regex(key) if not key.startswith("${") else None
 
@@ -2656,7 +2734,7 @@ def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: L
 
 def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str], writer_files: Set[str]) -> dict:
     """画面（SCREEN_PAGES の HTML・JS）が読むキーと、書き手の有無。書き手があるのに誰も読まないキー。"""
-    pages = sorted(f for f in tracked if f.startswith(tuple(d + "/" for d in SCREEN_PAGES))
+    pages = sorted(f for f in tracked if (f.startswith(tuple(d + "/" for d in SCREEN_PAGES)) or f in SCREEN_PAGES)
                    and f.endswith((".html", ".js")) and "/data/" not in f)
     # 書き手のある JSON のキー（この段階の docs/ の出力。各型から3ファイルまで）
     written: Dict[str, Set[str]] = defaultdict(set)
@@ -3156,7 +3234,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()

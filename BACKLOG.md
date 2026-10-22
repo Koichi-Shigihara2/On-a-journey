@@ -1995,6 +1995,16 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（第2部、件名「feat: R-A TAILの段階3、CHECK-INVをTAILにも当てる」のcommit）: CHECK_LAYERSにtail（最後。市場データ層〈RESOLVE_STRICT 1〉・TAIL〈2〉の順で索引を作り直す）。既知の規則の二重4つ（同じ期の値の選び方・期の名前・会計年度・AI〈Grok〉の呼び方7ファイル）はWARN（直さず、R-Aの後の根治策の入力）。rccのCHECK-INVは約67.3秒（6段階のときは約46.8秒）。時間を縮める直しはR-Aの終わりの見直しで扱う
 - **次はPortfolioの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
+#### Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data）の段階（2026-10-22 段階1済）
+- 段階1（一覧の下書き）: 件名「chore: R-A Portfolioの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`）。出力4（すべてファイル）:
+  `history.json`（`snapshot.py`、TANUKI_Score_Update.yml）・`portfolio.json`（**コードの書き手なし、人の入力**。「管理の操作の手順」でClaude Codeが直接編集、最後の更新は2026-06-03。読み手9: 画面・snapshot.py・TAIL・System Health・Market Pulse）・`discover_config.json`と`theme_config.json`（Discover_Config_Sync.ymlが`config/`から`cp`で写す）。
+  読み手0件0、テストだけ0、1件2（history.json・theme_config.json。theme_configのdocs/の写しを読むのはrccの同期の確認〈CHECK-32〉だけで、画面は読まない）、2件以上2。画面（`docs/portfolio/index.html`）が読むキー33（書き手なし0）、誰も読まないキー10（history.jsonの合計9つ・themes）。
+  規則の二重のうちPortfolioを含むもの0。本番外のコードの候補0件（snapshot.py 142行は呼ばれる）。止める条件は書き手0%・読み方6.2%（`scripts/analysis/market_pulse_redesign.py`の`git show`）
+- 一覧のスクリプト（+78行、Portfolioの設定・注記が約45行）: 新しい機能 `EXTRA_OUTPUT_DIRS`（Pythonの書き手の無いファイルも出力に加える。書き手はワークフローの`cp`、無ければ空。Portfolioはコードの書き手が`history.json`だけで、`portfolio.json`と写しが一覧から漏れるため）、
+  `SCREEN_PAGES`にファイルそのものも書けるように（`docs/portfolio/`にはTAILの画面もある）、`RESOLVE_STRICT` 3（ワークフローの`git commit -m`の件名・`cp`の写し先・`git add`の`\`の続きの行を読みとしない。`git commit -F <ファイル>`は読み。TAILの一覧を変えないよう2と分けた）。Portfolioは3を使う（使わないと`git add`の行が読み手になり、読み方が10.0%で止める条件の境目）。
+  `IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`は使わない（汎用の読み書きの関数が無い・画面がある）。既存7段階の一覧は前後で差0。rccのCHECK-INVは約66.7秒（7段階、Portfolioは入れていない）
+- **次はKoichiさんの判断（段階2）**
+
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）
 

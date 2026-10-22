@@ -109,10 +109,13 @@ def test_prediction_tracker_excludes_superseded_reviews(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize("ticker", ["APP", "CELH", "SOUN", "PLTR", "SOFI", "TSLA"])
 def test_published_queue_and_flags_for_six_tickers(ticker):
+    # 新しい10-Qのレビューができると最新の期は進む（2026-10-22にTSLAの2026Q3）。期の値は決め打ちせず、
+    # 2026Q2以降であること・後から作った2025Q4を除くこと・DCFのシナリオの元が最新の期とそろうことを確かめる
     q = rs.load_queue()
-    assert rs.latest_completed_quarter(q, ticker) == "2026Q2"
+    latest = rs.latest_completed_quarter(q, ticker)
+    assert latest >= "2026Q2"
     assert "2025Q4" in rs.excluded_quarters(q, ticker)
-    assert bridge._load_latest_review(ticker, queue=q)["quarter"] == "2026Q2"
+    assert bridge._load_latest_review(ticker, queue=q)["quarter"] == latest
 
 
 def test_published_reviews_have_no_latest_flag():

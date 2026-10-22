@@ -484,3 +484,36 @@ def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):
     inv._MENTIONS.pop((rel, 3), None)
     pats, _ = inv.needles_for(tmpl)
     assert inv.mention_class(tmpl, pats, rel, 3, src.splitlines()[2], src) == "reader"
+
+
+def test_strict3_workflow_commit_copy_and_continuation(monkeypatch):
+    """RESOLVE_STRICT 3（Portfolio の段階から）: git commit -m の件名・cp の写し先・git add の \\ の続きの行は読みでない。
+    git commit -F <ファイル> は読み（TAIL の /tmp/tail_commit_message.txt）。2 では今までどおり（2026-10-22）。"""
+    wf = ("      - run: |\n"
+          "          cp config/theme_x.json docs/pf/data/theme_x.json\n"
+          "          git add docs/a.json \\\n"
+          "                  docs/pf/data/theme_x.json\n"
+          "          git commit -m \"chore: theme_x.json を同期\"\n"
+          "          git commit -F /tmp/msg_x.txt\n")
+    rel = ".github/workflows/x.yml"
+    tmpl = "docs/pf/data/theme_x.json"
+    pats, _ = inv.needles_for(tmpl)
+
+    def cls(level, n, t=tmpl, p=pats):
+        monkeypatch.setattr(inv, "RESOLVE_STRICT", level)
+        inv._MENTIONS.pop((rel, n), None)
+        return inv.mention_class(t, p, rel, n, wf.splitlines()[n - 1], wf)
+    assert [cls(3, n) for n in (2, 4)] == ["no", "no"]
+    assert cls(2, 4) == "reader"
+    mpats, _ = inv.needles_for("/tmp/msg_x.txt")
+    assert cls(3, 6, "/tmp/msg_x.txt", mpats) == "reader"
+
+
+def test_portfolio_layer_settings():
+    """Portfolio（段階1、2026-10-22）: 画面は docs/portfolio/index.html だけ（同じフォルダに TAIL の画面がある）。
+    Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV にはまだ入れない。"""
+    pf = inv.LAYERS["portfolio"]
+    assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
+    assert pf["RESOLVE_STRICT"] == 3
+    assert "portfolio" not in inv.CHECK_LAYERS
+    assert not any(inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"] for k in inv.CHECK_LAYERS)

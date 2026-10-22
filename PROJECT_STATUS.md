@@ -18,7 +18,8 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。次はPortfolioの段階1**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL。CHECK-INVはこの7段階）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。Portfolioの段階1が済んだ（2026-10-22）。次はKoichiさんの判断（Portfolioの段階2）**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL。CHECK-INVはこの7段階）
+   - （済 2026-10-22）Portfolioの段階1の一覧の下書き: `build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`。出力4（`portfolio.json`はコードの書き手なし・人の入力、写し2つはワークフローの`cp`）、読み手0件0、画面が読むキー33（書き手なし0）、誰も読まないキー10、Portfolioを含む規則の二重0。止める条件は書き手0%・読み方6.2%。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
      ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか
      ②rccのCHECK-INVの時間（約67秒、7段階。市場データ層・TAILは解決の厳しさが違い索引を作り直す）

@@ -1,0 +1,2439 @@
+{
+ "generated_by": "scripts/inventory/build_output_inventory.py",
+ "layer": "src/portfolio",
+ "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
+ "outputs": [
+  {
+   "path": "docs/portfolio/data/history.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/portfolio/snapshot.py",
+     "func": "main",
+     "line": 133
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/TANUKI_Score_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "snapshots",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "docs/portfolio/index.html",
+     "line": 217,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "Portfolioの画面"
+   ],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/portfolio/data/theme_config.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": ".github/workflows/Discover_Config_Sync.yml",
+     "func": "cp config/theme_config.json",
+     "line": 40
+    }
+   ],
+   "writers_outside_layer": [],
+   "extra": true,
+   "launched_by": [
+    ".github/workflows/Discover_Config_Sync.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "themes",
+     "reader_files": 0
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 294,
+     "func": "_check_discover_config_sync",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3471,
+     "func": "run_checks",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3701,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_check41_registration_ng.py",
+     "line": 89,
+     "func": "test_run_checks_passes_registration_mode",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 64,
+     "func": "test_include_provisioning_targets_provisioning_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 71,
+     "func": "test_ticker_excluded_to_zero_exits_2",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 77,
+     "func": "test_ticker_meaning_unchanged_for_active",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 82,
+     "func": "test_no_ticker_filter_keeps_active_only",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 2,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "テーマの一覧。config/theme_config.json を Discover_Config_Sync.yml が写したもの。docs/ の写しを読むのは rcc の同期の確認（CHECK-32）だけで、画面は読まない",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/portfolio/data/discover_config.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": ".github/workflows/Discover_Config_Sync.yml",
+     "func": "cp config/discover_config.json",
+     "line": 39
+    }
+   ],
+   "writers_outside_layer": [],
+   "extra": true,
+   "launched_by": [
+    ".github/workflows/Discover_Config_Sync.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "candidates",
+     "reader_files": 0
+    },
+    {
+     "key": "last_updated",
+     "reader_files": 1
+    },
+    {
+     "key": "tickers",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 293,
+     "func": "_check_discover_config_sync",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3471,
+     "func": "run_checks",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3701,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "Python"
+    },
+    {
+     "file": "docs/portfolio/index.html",
+     "line": 216,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "tests/test_check41_registration_ng.py",
+     "line": 89,
+     "func": "test_run_checks_passes_registration_mode",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 64,
+     "func": "test_include_provisioning_targets_provisioning_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 71,
+     "func": "test_ticker_excluded_to_zero_exits_2",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 77,
+     "func": "test_ticker_meaning_unchanged_for_active",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 82,
+     "func": "test_no_ticker_filter_keeps_active_only",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "Portfolioの画面"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 2,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。Portfolioの画面が保有中の銘柄を選ぶのに読む",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "docs/portfolio/data/portfolio.json",
+   "kind": "ファイル",
+   "writers": [],
+   "writers_outside_layer": [],
+   "extra": true,
+   "launched_by": [],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "brokers",
+     "reader_files": 7
+    },
+    {
+     "key": "last_updated",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/system_health.py",
+     "line": 52,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 729,
+     "func": "_portfolio_tickers",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 776,
+     "func": "check_k_ticker_audit",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1049,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1110,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "docs/portfolio/index.html",
+     "line": 213,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 981,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_implb.py",
+     "line": 49,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_implb.py",
+     "line": 63,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_implc.py",
+     "line": 39,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_implc.py",
+     "line": 62,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1559,
+     "func": "compute_implb",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1583,
+     "func": "compute_implc",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1967,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1969,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/sector_rotation.py",
+     "line": 218,
+     "func": "watch_tickers",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/sector_rotation.py",
+     "line": 261,
+     "func": "watch_list",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/sector_rotation.py::watch_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "src/portfolio/snapshot.py",
+     "line": 25,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/portfolio/snapshot.py",
+     "line": 30,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/portfolio/snapshot.py",
+     "line": 142,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/portfolio/snapshot.py::main",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 60,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 302,
+     "func": "get_avg_cost",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1582,
+     "func": "generate_review",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::get_avg_cost",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1775,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::get_avg_cost",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1811,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::get_avg_cost",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_market_pulse_sector_rotation.py",
+     "line": 109,
+     "func": "TestWatchList.test_union_order_and_line",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 473,
+     "func": "test_main_exits_two_when_m_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 71,
+     "func": "TestStaleCandidates.test_detects_stale_candidate",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 80,
+     "func": "TestStaleCandidates.test_candidate_within_threshold_not_flagged",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 88,
+     "func": "TestStaleCandidates.test_active_status_not_flagged_even_if_old",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 96,
+     "func": "TestStaleCandidates.test_candidate_without_registered_date_not_flagged",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 106,
+     "func": "TestScreeningSourceNoPosition.test_detects_screening_source_without_position",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 114,
+     "func": "TestScreeningSourceNoPosition.test_screening_source_with_position_not_flagged",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 120,
+     "func": "TestScreeningSourceNoPosition.test_non_screening_source_not_flagged_even_without_position",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 133,
+     "func": "TestP4CikOrphanAggregation.test_surfaces_p4_cikorphan_warning",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 141,
+     "func": "TestP4CikOrphanAggregation.test_no_p4_warnings_when_clean",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 154,
+     "func": "TestP4CikOrphanAggregation.test_other_p4_categories_are_not_surfaced",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 165,
+     "func": "TestMonitorTickersSyncGap.test_detects_ticker_only_in_cik_lookup",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 174,
+     "func": "TestMonitorTickersSyncGap.test_detects_ticker_only_in_monitor_yaml",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 183,
+     "func": "TestMonitorTickersSyncGap.test_no_sync_gap_when_sets_match",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 191,
+     "func": "TestOverallBehavior.test_all_clear_returns_explicit_message",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 206,
+     "func": "TestOverallBehavior.test_multiple_findings_combined_in_single_report",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_ticker_audit.py",
+     "line": 221,
+     "func": "TestOverallBehavior.test_does_not_mutate_input_rows_or_files",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 290,
+     "func": "test_main_one_line_shows_j_and_k_in_full",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 298,
+     "func": "test_main_warning_only_j_exits_one",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 430,
+     "func": "test_main_overall_severity_matches_discord_and_exit_code",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 443,
+     "func": "test_main_red_label_of_other_check_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_portfolio_tickers",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_review_latest.py",
+     "line": 58,
+     "func": "test_older_pending_is_skipped_without_generating",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::get_avg_cost",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/market/market_pulse/backfill_implb.py → docs/market-monitor/market-pulse/data/market_data.json）"
+    },
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "直接"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "直接"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（src/market/market_pulse/backfill_implb.py → docs/market-monitor/market-pulse/data/market_data.json）"
+    }
+   ],
+   "definitions": [
+    "AS-IS-391",
+    "AS-IS-393"
+   ],
+   "decision_effect": [
+    "保有銘柄の監視（TANUKI TAIL）",
+    "Portfolioの画面",
+    "TANUKI TAILの画面（保有銘柄の監視）"
+   ],
+   "reader_count": 9,
+   "reader_count_test": 5,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む",
+   "decision": "（段階2の判断待ち）"
+  }
+ ],
+ "rules": [
+  {
+   "id": "q4_implied",
+   "name": "Q4の逆算（年次−Q1〜Q3）",
+   "patterns": [
+    "\\b\\w*q4\\w*\\s*=\\s*\\w*(annual|fy)\\w*\\s*-\\s*",
+    "def\\s+_?\\w*q4_implied\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 2312,
+     "text": "implied_q4 = annual_val - total_q"
+    },
+    {
+     "file": "common/sec_data/q4_implied.py",
+     "line": 126,
+     "text": "q4_val = fy_val - sum(q[\"val\"] or 0 for q in quarters)"
+    },
+    {
+     "file": "common/sec_data/q4_implied.py",
+     "line": 137,
+     "text": "def build_q4_implied_entries("
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 723,
+     "text": "q4_net = annual_net - q1q3_sum"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 866,
+     "text": "q4_val = annual_val - ytd_9m_val"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 894,
+     "text": "q4_val = annual_val - q123_sum"
+    }
+   ],
+   "files": [
+    "common/sec_data/parser.py",
+    "common/sec_data/q4_implied.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "latest_filed",
+   "name": "同じ期の値が複数あるときの選び方（提出日が最新のもの）",
+   "patterns": [
+    "max\\([^)]*key\\s*=\\s*lambda[^)]*[\\\"']filed[\\\"']",
+    "sorted\\([^)]*[\\\"']filed[\\\"'][^)]*reverse\\s*=\\s*True",
+    "\\[[\\\"']filed[\\\"']\\]\\s*>=?\\s*\\w+(\\[[\\\"']filed[\\\"']\\]|_filed)",
+    "def\\s+select_latest_filed\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/fact_selection.py",
+     "line": 19,
+     "text": "def select_latest_filed(candidates: Sequence[dict[str, Any]]) -> dict[str, Any]:"
+    },
+    {
+     "file": "common/sec_data/fact_selection.py",
+     "line": 35,
+     "text": "return max(candidates, key=lambda c: c.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/layer3_builder.py",
+     "line": 817,
+     "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
+    },
+    {
+     "file": "common/sec_data/layer3_builder.py",
+     "line": 1055,
+     "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/normalizer.py",
+     "line": 171,
+     "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
+    },
+    {
+     "file": "common/sec_data/normalizer.py",
+     "line": 434,
+     "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 345,
+     "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
+    },
+    {
+     "file": "common/sec_data/share_unit_fix.py",
+     "line": 104,
+     "text": "adopted = max(same, key=lambda f: (f.get(\"filed\") or \"\", f.get(\"accn\") or \"\"))"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 229,
+     "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 433,
+     "text": "if latest[\"filed\"] >= prev_filed:"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 605,
+     "text": "if cand['filed'] > existing_filed:"
+    }
+   ],
+   "files": [
+    "common/sec_data/fact_selection.py",
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/normalizer.py",
+    "common/sec_data/rotce.py",
+    "common/sec_data/share_unit_fix.py",
+    "src/tail/edgar_rss_monitor.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "staleness",
+   "name": "データの古さ・遅れの判定",
+   "patterns": [
+    "def\\s+_?\\w*(stale|lag_days|freshness)\\w*\\s*\\(",
+    "function\\s+\\w*(stale|Stale|lag|Lag|fresh|Fresh)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/freshness.py",
+     "line": 83,
+     "text": "def lag_days(filing_date: str, today: Optional[date] = None) -> Optional[int]:"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 3035,
+     "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1633,
+     "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1774,
+     "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 955,
+     "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
+    },
+    {
+     "file": "docs/portfolio/tail/index.html",
+     "line": 942,
+     "text": "function _updateReviewStaleness() {"
+    },
+    {
+     "file": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "line": 192,
+     "text": "function stalePeriod(t) {"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_as_of.py",
+     "line": 70,
+     "text": "def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:"
+    }
+   ],
+   "files": [
+    "common/sec_data/freshness.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/system_health.py",
+    "docs/portfolio/tail/index.html",
+    "docs/value-monitor/adjusted_eps_analyzer/index.html",
+    "src/value/stonks_silo/financial_as_of.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "ttm_sum",
+   "name": "TTM（直近4四半期の合計）の作り方",
+   "patterns": [
+    "def\\s+_?\\w*(calc|calculate|compute|build)_ttm\\w*\\s*\\(",
+    "rolling\\(\\s*4\\s*\\)\\.sum\\(",
+    "function\\s+\\w*(ttm|Ttm|TTM)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/ttm_calculator.py",
+     "line": 254,
+     "text": "def calc_ttm_series("
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 402,
+     "text": "def calculate_ttm(quarterly_results: List[Dict], end_idx: int) -> Optional[Dict]:"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 284,
+     "text": "rev_ttm       = rev.rolling(4).sum()"
+    }
+   ],
+   "files": [
+    "common/sec_data/ttm_calculator.py",
+    "src/value/adjusted_eps_analyzer/pipeline.py",
+    "src/value/hypecore/hypecore.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "quarter_label",
+   "name": "期の名前（四半期のラベル）の付け方",
+   "patterns": [
+    "def\\s+_?\\w*quarter_label\\w*\\s*\\(",
+    "function\\s+\\w*(quarterLabel|QuarterLabel|periodLabel)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 389,
+     "text": "def quarter_label(period_end: str) -> str:"
+    },
+    {
+     "file": "src/tail/xbrl_segment_fetcher.py",
+     "line": 196,
+     "text": "def quarter_label(period_end: str) -> str:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 144,
+     "text": "def _quarter_label(end: str) -> str:"
+    }
+   ],
+   "files": [
+    "src/tail/edgar_rss_monitor.py",
+    "src/tail/xbrl_segment_fetcher.py",
+    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "fiscal_year",
+   "name": "会計年度・会計年度末の決め方",
+   "patterns": [
+    "def\\s+_?\\w*(determine_fiscal_year|detect_fiscal_\\w+|get_fiscal_year_end|fiscal_year_of)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 451,
+     "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 460,
+     "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 93,
+     "text": "def detect_fiscal_end_month(us_gaap: dict, candidate_keys: Sequence[str]) -> int:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 274,
+     "text": "def detect_fiscal_anchor_date(us_gaap: dict, candidate_keys: Sequence[str]) -> Optional[Tuple[int, int]]:"
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 309,
+     "text": "def detect_fiscal_anchor_clusters("
+    },
+    {
+     "file": "common/sec_data/utils.py",
+     "line": 349,
+     "text": "def determine_fiscal_year(end_date, fiscal_end_month: int,"
+    },
+    {
+     "file": "src/tail/edgar_rss_monitor.py",
+     "line": 143,
+     "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
+    }
+   ],
+   "files": [
+    "common/sec_data/parser.py",
+    "common/sec_data/utils.py",
+    "src/tail/edgar_rss_monitor.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "valuation_threshold",
+   "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
+   "patterns": [
+    "\\bupside\\w*\\s*(?:>=|>|<=|<)\\s*-?\\d",
+    "\\bupside\\w*\\s*(?:>=|>|<=|<)\\s*[A-Z_]{3,}"
+   ],
+   "sites": [
+    {
+     "file": "docs/portfolio/index.html",
+     "line": 673,
+     "text": "<span class=\"hcc-meta\">乖離${c.upside!=null?(c.upside>=0?'+':'')+c.upside.toFixed(0)+'%':'—'} · F:${c.funda} T:${c.timing}"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 571,
+     "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 1094,
+     "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 1323,
+     "text": "xClamped: s.upside > X_MAX_CLIP,"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/index.html",
+     "line": 468,
+     "text": "const upsideClass = r.upside == null ? '' : r.upside >= 0 ? 'positive' : 'negative';"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/stock.html",
+     "line": 1135,
+     "text": "<div class=\"upside-badge ${upside >= 0 ? 'positive' : 'negative'}\" id=\"displayUpside\">"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_valuation/stock.html",
+     "line": 1136,
+     "text": "${upside >= 0 ? '▲' : '▼'} ${Math.abs(upside).toFixed(1)}%"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 622,
+     "text": "if upside > 30:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 624,
+     "text": "elif upside >= 10:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 626,
+     "text": "elif upside >= 0:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 865,
+     "text": "and upside is not None and upside < -20"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 878,
+     "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 898,
+     "text": "elif upside is not None and upside > 20 and timing >= 50:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 900,
+     "text": "elif upside is not None and upside > 0:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 967,
+     "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 968,
+     "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 969,
+     "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 970,
+     "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1355,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1382,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1387,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1433,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1738,
+     "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1916,
+     "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
+    }
+   ],
+   "files": [
+    "docs/portfolio/index.html",
+    "docs/value-monitor/tanuki_score/index.html",
+    "docs/value-monitor/tanuki_valuation/index.html",
+    "docs/value-monitor/tanuki_valuation/stock.html",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "growth_bounds",
+   "name": "成長率の上限・下限",
+   "patterns": [
+    "(?i)^\\s*(?:self\\.)?_?(?:growth|g|cagr)_(?:cap|floor|max|min|upper|lower)(?![a-z])\\w*\\s*=(?!=)",
+    "(?i)^\\s*(?:self\\.)?_?(?:cap|floor|max|min)_(?:growth|g|cagr)(?![a-z])\\w*\\s*=(?!=)"
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 121,
+     "text": "_GROWTH_FLOOR = 0.15"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 122,
+     "text": "_GROWTH_CAP = 0.50"
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py"
+   ],
+   "in_layer": false,
+   "duplicated": false
+  },
+  {
+   "id": "wacc_beta",
+   "name": "β・WACCの作り方",
+   "patterns": [
+    "def\\s+_?\\w*(?:calculate_wacc|calc_wacc|cost_of_equity|capped_beta|determine_beta|default_beta)\\w*\\s*\\(",
+    "function\\s+\\w*(?:[Ww]acc|WACC|[Bb]eta)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/beta_fetcher.py",
+     "line": 110,
+     "text": "def calc_capped_beta(raw_beta: float, ticker: str) -> tuple[float, str]:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/wacc.py",
+     "line": 47,
+     "text": "def get_default_beta(sector: Optional[str]) -> float:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/wacc.py",
+     "line": 54,
+     "text": "def calculate_wacc("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 1121,
+     "text": "def _determine_beta("
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/beta_fetcher.py",
+    "src/value/tanuki_valuation/calculator/wacc.py",
+    "src/value/tanuki_valuation/data_fetcher.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  },
+  {
+   "id": "fcf_fallback",
+   "name": "FCFの基準の選び方・推定のフォールバック",
+   "patterns": [
+    "def\\s+_?\\w*(?:fcf_base|select_fcf_source|estimate_fcf|fcf_fallback|fcf_2yr_avg|fcf_5yr_avg)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/sec_data/reader.py",
+     "line": 220,
+     "text": "def get_fcf_5yr_avg(self, ticker: str) -> float:"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 184,
+     "text": "def determine_fcf_base("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 114,
+     "text": "def _select_fcf_source("
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 1105,
+     "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
+    }
+   ],
+   "files": [
+    "common/sec_data/reader.py",
+    "src/value/tanuki_valuation/calculator/adjustments.py",
+    "src/value/tanuki_valuation/data_fetcher.py"
+   ],
+   "in_layer": false,
+   "duplicated": true
+  }
+ ],
+ "non_production_code": [],
+ "non_production_scanned": [
+  {
+   "dir": "src/portfolio",
+   "file": "src/portfolio/snapshot.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 142,
+   "workflows": [
+    ".github/workflows/TANUKI_Score_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  }
+ ],
+ "f3_zero_reader": [
+  {
+   "name": "spac_shell_detection_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "share_unit_fix_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "low_base_effect",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1050
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1095
+    }
+   ]
+  },
+  {
+   "name": "fields_missing",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "maturity_monitor",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 22
+    }
+   ]
+  },
+  {
+   "name": "market_data_violations_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  }
+ ],
+ "deleted": [],
+ "stop_condition": {
+  "outputs": 4,
+  "outputs_with_writer_outside_layer": [],
+  "unresolved_write_sites": [],
+  "python_read_sites_into_layer_resolved": 5,
+  "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
+  "name_hit_sites_resolved": 10,
+  "name_hit_sites_undetermined": [
+   {
+    "file": "scripts/analysis/market_pulse_redesign.py",
+    "line": 393,
+    "output": "docs/portfolio/data/portfolio.json",
+    "text": "pf = json.loads(subprocess.run([\"git\", \"-C\", REPO, \"show\", f\"{DATA_REV}:docs/portfolio/data/portfolio.json\"],"
+   }
+  ],
+  "ratio_writer": 0.0,
+  "ratio_reader": 0.062,
+  "threshold": 0.1,
+  "hit": false
+ },
+ "screen": {
+  "pages": [
+   "docs/portfolio/index.html"
+  ],
+  "items": [
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "avg_cost",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     320,
+     423
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "base",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     379
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "brokers",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json",
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     304
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "cash",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     313,
+     429,
+     430,
+     495
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "category",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/discover_config.json"
+    ],
+    "label": "保有中",
+    "lines": [
+     299,
+     405
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "color",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/theme_config.json"
+    ],
+    "label": "",
+    "lines": [
+     641,
+     711,
+     714
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "components",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     378,
+     425
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "count",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     748
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "current_price",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     378,
+     425
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "date",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     802
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "funda_score",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     400,
+     589
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "intrinsic_value_per_share",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     379,
+     380
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "label",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/theme_config.json"
+    ],
+    "label": "陶酔期",
+    "lines": [
+     528,
+     608,
+     617,
+     617,
+     623,
+     624,
+     625,
+     642,
+     647,
+     648,
+     650,
+     708,
+     724,
+     728
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "last_updated",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/discover_config.json",
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     294,
+     294
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "memo",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/discover_config.json",
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     325,
+     325,
+     529
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "monthly",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/AAPL_poc.json",
+     "docs/value-monitor/hypecore/data/ABBV_poc.json",
+     "docs/value-monitor/hypecore/data/ADBE_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     377,
+     377,
+     583,
+     583,
+     615,
+     615
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "name",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/portfolio/tail/data/mda/ADBE/latest.json",
+     "docs/portfolio/tail/data/mda/CELH/latest.json",
+     "docs/portfolio/tail/data/mda/NVDA/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     430,
+     492
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "positions",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json",
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     317,
+     423,
+     424
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "scenario_valuations",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     379
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "shares",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json",
+     "docs/portfolio/data/portfolio.json"
+    ],
+    "label": "",
+    "lines": [
+     319,
+     423,
+     426
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "snapshots",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     284,
+     793
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "stage_label",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/AAPL_poc.json",
+     "docs/value-monitor/hypecore/data/ABBV_poc.json",
+     "docs/value-monitor/hypecore/data/ADBE_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     382,
+     584,
+     616
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "substage_label",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/AAPL_poc.json",
+     "docs/value-monitor/hypecore/data/ABBV_poc.json",
+     "docs/value-monitor/hypecore/data/ADBE_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     383
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "tanuki_score",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     399,
+     581
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "ticker",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/portfolio/tail/data/ctrl/ADBE/latest.json",
+     "docs/portfolio/tail/data/ctrl/APP/latest.json",
+     "docs/portfolio/tail/data/ctrl/CELH/latest.json"
+    ],
+    "label": "仕込みゾーン候補（TANUKI SCORE BUY判定 × 早期フェーズ・未保有",
+    "lines": [
+     515,
+     515,
+     671,
+     672
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "tickers",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/discover_config.json"
+    ],
+    "label": "",
+    "lines": [
+     281,
+     297
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "timing_score",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     401,
+     590
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "total_assets_jpy",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     804
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "total_assets_usd",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     803
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "total_pnl_usd",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     805
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "upside_percent",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     381,
+     588
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "usdjpy",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     285,
+     285
+    ],
+    "decision": "（段階2の判断待ち）"
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "key": "value",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "label": "",
+    "lines": [
+     185,
+     278,
+     279,
+     281,
+     282,
+     352,
+     360
+    ],
+    "decision": "（段階2の判断待ち）"
+   }
+  ],
+  "unread_keys": [
+   {
+    "key": "cash_usd",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "MONEX",
+     "Moomoo",
+     "Moomoo(N)",
+     "RAKUTEN",
+     "その他"
+    ],
+    "note": ""
+   },
+   {
+    "key": "cost_usd",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "MONEX",
+     "Moomoo",
+     "Moomoo(N)",
+     "RAKUTEN",
+     "その他"
+    ],
+    "note": ""
+   },
+   {
+    "key": "equity_usd",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "MONEX",
+     "Moomoo",
+     "Moomoo(N)",
+     "RAKUTEN",
+     "その他"
+    ],
+    "note": ""
+   },
+   {
+    "key": "themes",
+    "sources": [
+     "docs/portfolio/data/discover_config.json",
+     "docs/portfolio/data/theme_config.json"
+    ],
+    "parents": [
+     "AAPL",
+     "ABBV",
+     "ADBE",
+     "ADSK",
+     "ALAB",
+     "AMAT",
+     "AMD",
+     "AMZN",
+     "APP",
+     "ASTS",
+     "AVAV",
+     "BBAI",
+     "BKNG",
+     "BROS",
+     "BSY",
+     "CAKE",
+     "CART",
+     "CAT",
+     "CDNS",
+     "CEG",
+     "CELH",
+     "CIX",
+     "COHR",
+     "CPRT",
+     "CRM",
+     "CRWV",
+     "DDOG",
+     "DELL",
+     "DOCN",
+     "ELF",
+     "ESTC",
+     "FCX",
+     "FICO",
+     "FLYW",
+     "FROG",
+     "FRSH",
+     "GEV",
+     "GOOGL",
+     "GTLB",
+     "HEI",
+     "HON",
+     "HQY",
+     "HWM",
+     "INTU",
+     "IONQ",
+     "IOT",
+     "JNJ",
+     "JOBY",
+     "KO",
+     "KULR",
+     "LITE",
+     "LLY",
+     "LMT",
+     "LOAR",
+     "LYFT",
+     "META",
+     "MO",
+     "MRVL",
+     "MSCI",
+     "MSFT",
+     "NET",
+     "NOW",
+     "NVDA",
+     "ONDS",
+     "PAYS",
+     "PEP",
+     "PLTR",
+     "PM",
+     "QBTS",
+     "RBRK",
+     "RCAT",
+     "RDW",
+     "RKLB",
+     "RXRX",
+     "S",
+     "SCCO",
+     "SITM",
+     "SNPS",
+     "SOFI",
+     "SOUN",
+     "SPIR",
+     "TASK",
+     "TDY",
+     "TSLA",
+     "V",
+     "VRT",
+     "VST",
+     "VZ",
+     "WMT",
+     "XOM",
+     "ZETA"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_cash_jpy",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_cash_usd",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_equity_jpy",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_equity_usd",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_pnl_jpy",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   },
+   {
+    "key": "total_pnl_pct",
+    "sources": [
+     "docs/portfolio/data/history.json"
+    ],
+    "parents": [
+     "snapshots"
+    ],
+    "note": ""
+   }
+  ],
+  "written_key_count": 131,
+  "sections": [
+   {
+    "page": "docs/portfolio/index.html",
+    "section": "── Auth screen ──",
+    "keys": [
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       185
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "section": "── Main content ──",
+    "keys": [
+     {
+      "key": "avg_cost",
+      "status": "この段階の書き手あり",
+      "lines": [
+       320,
+       423
+      ]
+     },
+     {
+      "key": "base",
+      "status": "ほかの書き手あり",
+      "lines": [
+       379
+      ]
+     },
+     {
+      "key": "brokers",
+      "status": "この段階の書き手あり",
+      "lines": [
+       304
+      ]
+     },
+     {
+      "key": "cash",
+      "status": "この段階の書き手あり",
+      "lines": [
+       313,
+       429,
+       430,
+       495
+      ]
+     },
+     {
+      "key": "category",
+      "status": "この段階の書き手あり",
+      "lines": [
+       299,
+       405
+      ]
+     },
+     {
+      "key": "color",
+      "status": "この段階の書き手あり",
+      "lines": [
+       641,
+       711,
+       714
+      ]
+     },
+     {
+      "key": "components",
+      "status": "ほかの書き手あり",
+      "lines": [
+       378,
+       425
+      ]
+     },
+     {
+      "key": "count",
+      "status": "ほかの書き手あり",
+      "lines": [
+       748
+      ]
+     },
+     {
+      "key": "current_price",
+      "status": "ほかの書き手あり",
+      "lines": [
+       378,
+       425
+      ]
+     },
+     {
+      "key": "funda_score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       400,
+       589
+      ]
+     },
+     {
+      "key": "intrinsic_value_per_share",
+      "status": "ほかの書き手あり",
+      "lines": [
+       379,
+       380
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       528,
+       608,
+       617,
+       617,
+       623,
+       624,
+       625,
+       642,
+       647,
+       648,
+       650,
+       708,
+       724,
+       728
+      ]
+     },
+     {
+      "key": "last_updated",
+      "status": "この段階の書き手あり",
+      "lines": [
+       294,
+       294
+      ]
+     },
+     {
+      "key": "memo",
+      "status": "この段階の書き手あり",
+      "lines": [
+       325,
+       325,
+       529
+      ]
+     },
+     {
+      "key": "monthly",
+      "status": "ほかの書き手あり",
+      "lines": [
+       377,
+       377,
+       583,
+       583,
+       615,
+       615
+      ]
+     },
+     {
+      "key": "name",
+      "status": "ほかの書き手あり",
+      "lines": [
+       430,
+       492
+      ]
+     },
+     {
+      "key": "positions",
+      "status": "この段階の書き手あり",
+      "lines": [
+       317,
+       423,
+       424
+      ]
+     },
+     {
+      "key": "scenario_valuations",
+      "status": "ほかの書き手あり",
+      "lines": [
+       379
+      ]
+     },
+     {
+      "key": "shares",
+      "status": "この段階の書き手あり",
+      "lines": [
+       319,
+       423,
+       426
+      ]
+     },
+     {
+      "key": "snapshots",
+      "status": "この段階の書き手あり",
+      "lines": [
+       284
+      ]
+     },
+     {
+      "key": "stage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       382,
+       584,
+       616
+      ]
+     },
+     {
+      "key": "substage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       383
+      ]
+     },
+     {
+      "key": "tanuki_score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       399,
+       581
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "ほかの書き手あり",
+      "lines": [
+       515,
+       515,
+       671,
+       672
+      ]
+     },
+     {
+      "key": "tickers",
+      "status": "この段階の書き手あり",
+      "lines": [
+       281,
+       297
+      ]
+     },
+     {
+      "key": "timing_score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       401,
+       590
+      ]
+     },
+     {
+      "key": "upside_percent",
+      "status": "ほかの書き手あり",
+      "lines": [
+       381,
+       588
+      ]
+     },
+     {
+      "key": "usdjpy",
+      "status": "この段階の書き手あり",
+      "lines": [
+       285,
+       285
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       278,
+       279,
+       281,
+       282,
+       352,
+       360
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/portfolio/index.html",
+    "section": "（JSで作る要素 #history-plotly）",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       802
+      ]
+     },
+     {
+      "key": "snapshots",
+      "status": "この段階の書き手あり",
+      "lines": [
+       793
+      ]
+     },
+     {
+      "key": "total_assets_jpy",
+      "status": "この段階の書き手あり",
+      "lines": [
+       804
+      ]
+     },
+     {
+      "key": "total_assets_usd",
+      "status": "この段階の書き手あり",
+      "lines": [
+       803
+      ]
+     },
+     {
+      "key": "total_pnl_usd",
+      "status": "この段階の書き手あり",
+      "lines": [
+       805
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "workflow_outputs": []
+}
