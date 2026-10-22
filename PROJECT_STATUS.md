@@ -19,6 +19,8 @@
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り5つのサブシステムの段階を、market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse の順に**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO。CHECK-INVはこの5段階）
+   - （済 2026-10-22）市場データ層の段階1の一覧の下書き: `build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`。出力7、読み手0件1（`_daily_close_retry_log.json`）、誰も読まないキー20、規則の二重3（取引日・暫定の足・S&P500の構成銘柄）。止める条件は書き手0%・読み方3.1%。
+     一覧のスクリプトに段階ごとの印3つ（汎用の読み書きの関数は呼び出し箇所を読み手・書き手に、画面の無い層の誰も読まないキー、解決を厳しく）。既存の5段階の一覧は差0。**次はKoichiさんの判断（市場データ層の段階2）**。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「市場データ層の段階」
    - （済 2026-10-21）STONKS SILOの段階1〜3
    - （済 2026-10-21）STONKS SILOの段階2・3: 第1部（`src/value/stonks_silo/`へ付け替え、誰も読まないキー10の書き込みをやめた、一覧の取り違えの直し。CIの手動の実行 run 39598656283 はsuccessでresults.jsonは手元の実行と時刻のほか同じ）・第2部（CHECK-INVをSTONKS SILOにも、rccのCHECK-INVは約26.3秒）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）STONKS SILOの段階1の一覧の下書き: `build_output_inventory.py --layer stonks` → `stonks_layer.json`・`stonks_layer.md`。出力1（results.json）・ワークフローの中のStep Summary 1、画面が読むキー80（書き手なし0）、誰も読まないキー12、規則の二重のうちSTONKSを含むもの1。止める条件は書き手0%・読み方5.6%。本番外のコードの候補0件。CHECK-INVはsec・tanuki・hypecore・epsのまま。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」

@@ -23,6 +23,7 @@
 使い方:
   python scripts/inventory/build_output_inventory.py                 # SEC層: docs/architecture/output_inventory/sec_layer.json と sec_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer tanuki  # TANUKI: tanuki_layer.json と tanuki_layer.md を書く
+  python scripts/inventory/build_output_inventory.py --layer market_data  # 市場データ層: market_data_layer.json と market_data_layer.md を書く
   python scripts/inventory/build_output_inventory.py --check   # 書かずに、今のファイルと同じかだけを見る（違えば終了コード1）
 
 CHECK としてはまだ動かさない（ゲートに入れない。段階3で、消した後に入れる）。
@@ -175,6 +176,11 @@ PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何の�
 WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフローが自分で書く Step Summary と、それが読むキーの有無
 SECTION_DECISIONS: Dict[str, str] = {}   # 画面の区画の判断（ページ → 判断。そのページの区画すべてに当てる）
 NONPROD_SCAN = False   # 名前を挙げた候補が無くても、段階のフォルダの .py のうちどこからも呼ばれないものを本番外のコードの候補にする（EPS の段階から）
+IO_HELPER_BY_CALLER = False   # パスを引数で受けて読み書きする汎用の関数（_load_json・_atomic_write_json 等）を読み手・書き手にせず、その出力のパスを渡す呼び出し箇所をそうする（市場データ層の段階から）
+DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキー（入れ子まで）のうち、テストを除くコードに読みの形で出てこないものを出す（市場データ層の段階から）
+# パスと呼び出しの解決を厳しくする（市場データ層の段階から）: join の候補ごとの連結・テストの呼び出しを引数の候補にしない・argparse の引数・
+# 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
+RESOLVE_STRICT = False
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -183,7 +189,8 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
             SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
             FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
-            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN)
+            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN,
+            IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, RESOLVE_STRICT=RESOLVE_STRICT, DATA_UNREAD_KEYS=DATA_UNREAD_KEYS)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -434,7 +441,54 @@ _STONKS.update(
             "残す（2026-10-21、Koichiさんの判断: 一覧の表・買い／回避シグナル・黒字化への道のり・拡大再生産・①〜③・推移のグラフ・財務トレンド・使い方のすべて）",
     },
 )
-LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS}
+# ---- 市場データ層（common/market_data、段階1、2026-10-22）。SEC層と同じく画面を持たない共有のデータ層
+_MARKET = dict(_SEC)
+_MARKET.update(
+    LAYER="common/market_data",
+    LAYER_DIRS=("common/market_data",),
+    OUT_JSON=f"{OUT_DIR}/market_data_layer.json", OUT_MD=f"{OUT_DIR}/market_data_layer.md",
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=[],
+    NONPROD_SCAN=True,
+    ANNOTATIONS={
+        "common/market_data/daily/{T}.json":
+            "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
+        "common/market_data/attributes/{T}.json":
+            "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算日等）",
+        "common/market_data/analyst_history/{T}.json":
+            "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移",
+        "common/market_data/{T}/market_data_violations_log.json":
+            "銘柄ごとの保存前の検証の結果（日次・週次・バックフィルの区画ごと。0件でも毎回書く）。"
+            "読み手の1件は書き先のパスを作る関数（fetcher.py の _violations_log_path）で、書き手が区画ごとに読み直すほかに読むコードは無い（FINDINGS 2026-10-15 の F3）",
+        "common/market_data/_daily_close_retry_log.json":
+            "日次の取得で終値の無い足を取り直した記録・Yahooの作り直しの時間帯で保存しなかった記録（直近60回）。書き手が追記のために読み直すほかに読むコードは無い",
+        "common/market_data/_sp500_constituents_cache.json":
+            "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
+        "/tmp/daily_status.json": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="market_data", OUTSIDE_PREFIXES=("common/market_data/",),
+    READ_PREFIXES=("common/market_data",),
+    READ_HINT="market_data", NAME_SHORT="市場データ層",
+    KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
+    UNREAD_KEY_NOTES={},
+    RULES=[
+        {"id": "trading_day", "name": "取引日（市場の営業日）の決め方",
+         "patterns": [r"def\s+_?\w*(?:trading_days?|business_days?|business_day_add|market_open)\w*\s*\(",
+                      r"function\s+\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\w*\s*\("]},
+        {"id": "provisional_bar", "name": "暫定の足（取引時間中・取得の途中の行）の判定",
+         "patterns": [r"def\s+_?\w*provisional\w*\s*\(", r"function\s+\w*[Pp]rovisional\w*\s*\("]},
+        {"id": "sp500_constituents", "name": "S&P500の構成銘柄の一覧の取り方",
+         "patterns": [r"def\s+_?\w*sp500_(?:tickers|constituents)\w*\s*\("]},
+    ],
+    FULL_SCAN=True,
+    WORKFLOW_SUMMARY=True,
+    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=True, DATA_UNREAD_KEYS=True,
+)
+LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET}
 
 
 def set_layer(name: str) -> None:
@@ -530,6 +584,7 @@ class Module:
         self.classes: Dict[str, ast.ClassDef] = {}
         self.from_imports: Dict[str, Tuple[str, str]] = {}   # local -> (module rel, name)
         self.mod_imports: Dict[str, str] = {}                # local -> module rel
+        self.ext_imports: Set[str] = set()                   # リポジトリの外のモジュールを import した名前（import pandas_market_calendars as mcal 等）
         self.parents: Dict[ast.AST, ast.AST] = {}
         self.skip_lines: Set[int] = set()                    # docstring・コメントの行
         self.calls_by_line: Dict[int, List[ast.Call]] = defaultdict(list)   # 行 -> 呼び出しの式（ast.walk の順）
@@ -578,6 +633,8 @@ class Module:
                     cand = a.name.replace(".", "/") + ".py"
                     if cand in ALL_PY:
                         self.mod_imports[a.asname or a.name] = cand
+                    else:
+                        self.ext_imports.add(a.asname or a.name.split(".")[0])
             if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 body = getattr(node, "body", [])
                 if body and isinstance(body[0], ast.Expr) and isinstance(getattr(body[0], "value", None), ast.Constant) \
@@ -793,6 +850,8 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             other = load_module(mod.mod_imports[expr.value.id])
             if other is not None and expr.attr in other.consts:
                 return resolve(other.consts[expr.attr][-1], other, other.consts[expr.attr][-1], depth + 1)
+        if RESOLVE_STRICT and isinstance(expr.value, ast.Name):
+            return resolve_cli_arg(mod, expr.attr)
         return UNRESOLVED
     if isinstance(expr, ast.BinOp):
         if isinstance(expr.op, ast.Div):
@@ -819,7 +878,15 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
         fbase = f.value.id if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name) else ""
         if fname == "join" and (fbase in ("path", "os", "posixpath") or isinstance(f.value, ast.Attribute)):
             parts = [r(a) for a in expr.args]
-            return posixpath.join(*parts) if parts else UNRESOLVED
+            if not parts:
+                return UNRESOLVED
+            if not RESOLVE_STRICT:
+                return posixpath.join(*parts)
+            # 呼び出し元ごとに違う引数（ALT で並べた候補）は、候補ごとにつなぐ（最後の候補にだけつながないよう。市場データ層の段階から）
+            joined = [""]
+            for p in parts:
+                joined = [posixpath.join(j, a) if j else a for j in joined for a in p.split(ALT)]
+            return ALT.join(dict.fromkeys(joined))
         if fname in ("dirname",):
             inner = r(expr.args[0]) if expr.args else UNRESOLVED
             return UNRESOLVED if inner == UNRESOLVED else posixpath.dirname(inner)
@@ -861,24 +928,87 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
     return UNRESOLVED
 
 
+def resolve_cli_arg(mod: Module, attr: str) -> str:
+    """argparse の引数（args.status_file 等）のパスを、add_argument の文字列の既定値か、
+    ワークフローがそのファイルを動かす行で渡す値から解決する（市場データ層の段階から。--status-file /tmp/… 等）。"""
+    opts = []
+    for n in ast.walk(mod.tree):
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "add_argument":
+            names = [a.value for a in n.args if isinstance(a, ast.Constant) and isinstance(a.value, str)]
+            kw = {k.arg: k.value for k in n.keywords}
+            dest = kw["dest"].value if isinstance(kw.get("dest"), ast.Constant) else \
+                next((s.lstrip("-").replace("-", "_") for s in names if s.startswith("--")), None)
+            if dest == attr:
+                d = kw.get("default")
+                if isinstance(d, ast.Constant) and isinstance(d.value, str) and d.value:
+                    return d.value
+                opts = [s for s in names if s.startswith("-")]
+    if not opts:
+        return UNRESOLVED
+    vals = set()
+    rx = re.compile(r"(?:^|\s)(?:" + "|".join(re.escape(o) for o in opts) + r")[\s=]+([^\s;|&]+)")
+    for wf in git_ls_files(".github/workflows/*.yml", ".github/workflows/*.yaml"):
+        for line in read_text(wf).splitlines():
+            if posixpath.basename(mod.rel) in line and not line.lstrip().startswith("#"):
+                vals.update(m.group(1).strip("\"'") for m in rx.finditer(line))
+    return ALT.join(sorted(vals)) if vals else UNRESOLVED
+
+
+def helper_callers(rel: str, site: dict) -> Optional[List[Tuple[str, int, str, str]]]:
+    """読み書きのパスが関数の引数そのもの（open(path)・os.replace(tmp, path) 等）なら、その関数を呼ぶ箇所ごとの
+    (ファイル, 行, 関数, 渡すパス)。違えば None（呼び出し元の式から解決したパスでも、引数を加工して使うものは今までどおり）。"""
+    mod = MODULES.get(rel)
+    if mod is None:
+        return None
+    for call in mod.calls_by_line.get(site["line"], []):
+        func = mod.enclosing_func(call)
+        if func is None:
+            continue
+        params = [a.arg for a in func.args.args + func.args.kwonlyargs]
+        pname = next((a.id for a in call.args if isinstance(a, ast.Name) and a.id in params
+                      and a.id not in _func_index(mod, func)[0]), None)
+        if pname is None:
+            continue
+        out = []
+        for cm, c_call, arg in caller_args(func, pname, mod):
+            for p in resolve(arg, cm, c_call).split(ALT):
+                out.append((cm.rel, c_call.lineno, cm.qualname(c_call), normalize_path(p)))
+        return out
+    return None
+
+
 def resolve_param_from_callers(func: ast.AST, pname: str, mod: Module, depth: int) -> str:
     """引数のパスを、呼び出し元の引数の式から解決する（呼び出し元ごとに違えば ALT で並べる）。"""
     if depth > 8:
         return UNRESOLVED
+    vals: List[str] = []
+    for cm, call, arg in caller_args(func, pname, mod):
+        v = resolve(arg, cm, call, depth + 2)
+        vals.extend(v.split(ALT))
+    good = sorted({normalize_path(v) for v in vals if UNRESOLVED not in v})
+    if good and len(good) == len({v for v in vals}):
+        return ALT.join(good)
+    if good:
+        return ALT.join(good + [UNRESOLVED])
+    return UNRESOLVED
+
+
+def caller_args(func: ast.AST, pname: str, mod: Module) -> Iterable[Tuple[Module, ast.Call, ast.AST]]:
+    """関数を呼ぶ箇所ごとの (呼び出し元のモジュール, 呼び出しの式, 引数 pname に渡す式)。"""
     args = func.args
     names = [a.arg for a in args.args]
     is_method = bool(names) and names[0] in ("self", "cls")
     idx = names.index(pname) if pname in names else None
     if idx is not None and is_method:
         idx -= 1
-    vals: List[str] = []
     # __init__ の引数は、クラスを呼ぶ箇所（インスタンスを作る箇所）の引数から解決する
     cls = mod.enclosing_class(func) if func.name == "__init__" else None
     names_ok = {func.name} if cls is None else {cls.name}
     keys = [(mod.rel, mod.qualname(func))] + ([(mod.rel, cls.name)] if cls is not None else [])
     for (c_rel, c_line) in [c for k in keys for c in CALLERS.get(k, [])]:
         cm = MODULES.get(c_rel)
-        if cm is None:
+        # テストが渡す一時のフォルダは本番の書き先・読み先ではないので、候補にしない（市場データ層の段階から）
+        if cm is None or (RESOLVE_STRICT and is_test(c_rel)):
             continue
         for call in cm.calls_by_line.get(c_line, []):
             fn = call.func.attr if isinstance(call.func, ast.Attribute) else (call.func.id if isinstance(call.func, ast.Name) else "")
@@ -894,14 +1024,7 @@ def resolve_param_from_callers(func: ast.AST, pname: str, mod: Module, depth: in
                 arg = call_args[idx]
             if arg is None:
                 continue
-            v = resolve(arg, cm, call, depth + 2)
-            vals.extend(v.split(ALT))
-    good = sorted({normalize_path(v) for v in vals if UNRESOLVED not in v})
-    if good and len(good) == len({v for v in vals}):
-        return ALT.join(good)
-    if good:
-        return ALT.join(good + [UNRESOLVED])
-    return UNRESOLVED
+            yield cm, call, arg
 
 
 def normalize_path(p: str) -> str:
@@ -969,7 +1092,8 @@ def _io_sites(mod: Module) -> Tuple[List[dict], List[dict]]:
             reads.append({**site, "path": normalize_path(resolve(f.value, mod, node)), "kind": "ファイル"})
         elif fname in ("to_csv", "to_json", "to_parquet") and node.args:
             writes.append({**site, "path": normalize_path(resolve(node.args[0], mod, node)), "kind": "ファイル"})
-        elif fname in ("read_json", "read_csv", "read_parquet") and node.args:
+        elif fname in ("read_json", "read_csv", "read_parquet") and node.args and not (   # メモリの上の文字列（io.StringIO 等）はファイルでない
+                RESOLVE_STRICT and isinstance(node.args[0], ast.Call) and getattr(node.args[0].func, "attr", getattr(node.args[0].func, "id", "")) in ("StringIO", "BytesIO")):
             reads.append({**site, "path": normalize_path(resolve(node.args[0], mod, node)), "kind": "ファイル"})
         elif fname in ("replace", "move", "copy", "copyfile", "copy2") and isinstance(f, ast.Attribute) \
                 and isinstance(f.value, ast.Name) and f.value.id in ("os", "shutil") and len(node.args) >= 2:
@@ -1002,7 +1126,9 @@ def template_regex(tmpl: str) -> re.Pattern:
     for m in PH_RE.finditer(tmpl):
         out += re.escape(tmpl[pos:m.start()])
         ph = m.group(0)
-        out += r"\d{4}" if ph == "{YYYY}" else (r"[A-Z0-9][A-Z0-9.=^-]*" if ph == "{T}" else r"[^/]+")
+        # 指数の記号（^GSPC 等）は先頭が ^（RESOLVE_STRICT の段階から）
+        t_rx = r"[A-Z0-9^][A-Z0-9.=^-]*" if RESOLVE_STRICT else r"[A-Z0-9][A-Z0-9.=^-]*"
+        out += r"\d{4}" if ph == "{YYYY}" else (t_rx if ph == "{T}" else r"[^/]+")
         pos = m.end()
     out += re.escape(tmpl[pos:])
     return re.compile("^" + out + "$")
@@ -1110,6 +1236,8 @@ def classify_mention(tmpl: str, p: str) -> str:
     p = alts[0] if alts else ""
     if p.startswith("${GITHUB_WORKSPACE}/"):   # ワークフローのリポジトリの根
         p = p[len("${GITHUB_WORKSPACE}/"):]
+    if RESOLVE_STRICT and p == tmpl:   # 出力そのものが絶対パス（ワークフローが渡す /tmp/… 等。市場データ層の段階から）
+        return "reader"
     if p.startswith("/"):   # 根が絶対パス（テストが渡す /repo 等）: リポジトリの最上位のフォルダの所から
         segs = p.split("/")
         i = next((j for j, x in enumerate(segs) if x in TOP_DIRS), None)
@@ -1329,6 +1457,9 @@ def line_mentions(rel: str, line_no: int, line: str, text: str) -> List[Tuple[st
 
 def mention_class(tmpl: str, pats: List[re.Pattern], rel: str, line_no: int, line: str, text: str) -> str:
     """その行がこの出力を読むか: reader・undetermined・no（別のファイル・ファイル名でない文字列）。"""
+    # ワークフローの git add・git rm 等はcommitするだけで読まない（RESOLVE_STRICT の段階から）
+    if RESOLVE_STRICT and rel.endswith((".yml", ".yaml")) and re.match(r"\s*git\s+(add|rm|diff|checkout|restore)\b", line):
+        return "no"
     got = [classify_mention(tmpl, path) for lit, path in line_mentions(rel, line_no, line, text)
            if any(rx.search(lit) or rx.search('"' + lit + '"') for rx in pats)]
     if "reader" in got:
@@ -1416,7 +1547,9 @@ def _calls_in(mod: Module) -> List[Tuple[int, str, str]]:
                     out.append((node.lineno, mod.rel, f"{cls.name}.{f.attr}"))
                     continue
             # ほかで解決できないメソッドの呼び出し: リポジトリで1か所だけに定義された名前（8文字以上）ならそれとみなす
-            if not any(ln == node.lineno and nm.split(".")[-1] == f.attr for ln, _r, nm in out):
+            # （リポジトリの外のモジュールの関数〈mcal.get_calendar 等〉は除く。市場データ層の段階から）
+            if not any(ln == node.lineno and nm.split(".")[-1] == f.attr for ln, _r, nm in out) \
+                    and not (RESOLVE_STRICT and isinstance(f.value, ast.Name) and f.value.id in mod.ext_imports):
                 defs = DEF_INDEX.get(f.attr, [])
                 if len(defs) > 1:   # 属性の呼び出しなので、メソッドの定義が1つならそれ
                     defs = [d for d in defs if "." in d[1]]
@@ -1433,7 +1566,8 @@ _PREPARED: Dict[str, object] = {}
 def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     """リポジトリのコードを読んで、パースと呼び出しの索引を作る。段階に関係しないので、同じプロセスでは1回だけ作る
     （report_consistency_check.py が SEC 層と TANUKI を続けて作るとき）。force で作り直す。"""
-    if _PREPARED and not force:
+    # 解決の厳しさ（RESOLVE_STRICT）が違う段階では、呼び出しの索引・読み書きの場所の控えが変わるので作り直す
+    if _PREPARED and not force and _PREPARED.get("strict") == RESOLVE_STRICT:
         return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
     for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT):   # 作り直すときに積み増さない
         g.clear()
@@ -1458,7 +1592,7 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
                 CALLERS[(src_rel, name)].append((rel, line))
                 call = next(iter(mod.calls_by_line.get(line, [])), None)
                 CALL_FUNC[(rel, line)] = mod.qualname(call) if call is not None else "<module>"
-    _PREPARED.update(files=files, py_files=py_files, texts=texts)
+    _PREPARED.update(files=files, py_files=py_files, texts=texts, strict=RESOLVE_STRICT)
     return files, py_files, texts
 
 
@@ -1481,6 +1615,13 @@ def build() -> dict:
                 unresolved_writes.append({"file": rel, "line": w["line"], "func": w["func"], "path": w["path"]})
                 continue
             o = outputs.setdefault(w["path"], {"path": w["path"], "kind": w["kind"], "writers": [], "writers_outside_layer": []})
+            by_caller = helper_callers(rel, w) if IO_HELPER_BY_CALLER and w.get("from_callers") else None
+            if by_caller:
+                # パスを引数で受けて書く汎用の関数（_atomic_write_json 等）は、この出力のパスを渡す呼び出し箇所を書き手にする
+                for c_rel, c_line, c_func, c_path in by_caller:
+                    if c_path == w["path"] and not any(x["file"] == c_rel and x["line"] == c_line for x in o["writers"]):
+                        o["writers"].append({"file": c_rel, "func": c_func, "line": c_line})
+                continue
             o["writers"].append({"file": rel, "func": w["func"], "line": w["line"]})
     # common/sec_data/ の外の書き手（止める条件）
     outside_writes = []
@@ -1646,7 +1787,14 @@ def build() -> dict:
             for r_ in rs:
                 p = r_["path"]
                 if (tmpl_rx is not None and path_matches(key, p)) or p == key:
-                    if not in_own(rel, r_["line"]):
+                    by_caller = helper_callers(rel, r_) if IO_HELPER_BY_CALLER and r_.get("from_callers") else None
+                    if by_caller is not None:
+                        # パスを引数で受けて読む汎用の関数（_load_json 等）は、この出力のパスを渡す呼び出し箇所を読み手にする
+                        for c_rel, c_line, c_func, c_path in by_caller:
+                            if path_matches(key, c_path) and not in_own(c_rel, c_line):
+                                readers[(c_rel, c_line)] = {"file": c_rel, "line": c_line, "func": c_func, "how": "保存済みファイル",
+                                                            "via": f"{rel}::{r_['func']}"}
+                    elif not in_own(rel, r_["line"]):
                         readers[(rel, r_["line"])] = {"file": rel, "line": r_["line"], "func": r_["func"], "how": "保存済みファイル", "via": "AST"}
         # ファイル名の grep で当たった行は、行のパスを解決して出力のパスの型と全体で照合する（同じ名前の別のフォルダのファイルを除く）。
         # ファイル名がプレースホルダーだけの型（{T}.json 等）は、フォルダの語のあるファイルだけを見る
@@ -1987,6 +2135,8 @@ def build() -> dict:
         result["page_checks"] = page_checks(tracked, texts, py_files)
     if WORKFLOW_SUMMARY:
         result["workflow_outputs"] = workflow_outputs(outputs, tracked, texts, layer_py)
+    if DATA_UNREAD_KEYS:
+        result["data_keys"] = data_unread_keys(outputs, texts, tracked)
     return result
 
 
@@ -2329,6 +2479,39 @@ def nearest_label(lines: List[str], idx: int) -> str:
     return ""
 
 
+def code_read_names(texts: Dict[str, str]) -> Set[str]:
+    """テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形（.key・['key']〈代入でない〉・.get('key')）で出てくる名前。"""
+    readers_pool = [f for f in texts if f.endswith((".py", ".js", ".html")) and not is_test(f)]
+    big = "\n".join(texts[f] for f in readers_pool)
+    read_names = set(re.findall(r"(?<=[\w\)\]])\??\.([A-Za-z_]\w*)\b", big))
+    read_names |= set(re.findall(r"\[\s*['\"]([A-Za-z_]\w*)['\"]\s*\](?!\s*=[^=])", big))
+    read_names |= set(re.findall(r"\.get\(\s*['\"]([A-Za-z_]\w*)['\"]", big))
+    return read_names
+
+
+def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str]) -> dict:
+    """画面の無い層の、書き手があるのに誰も読まないキー（DATA_UNREAD_KEYS）。この段階の JSON の出力の全ファイルのキー（入れ子8段まで）のうち、
+    テストを除くコードに読みの形で出てこないもの。画面の段階の screen_items と同じ読みの形で判定する（Python の for k in d・d.items() で回して読むものは拾えない）。"""
+    written: Dict[str, Set[str]] = defaultdict(set)
+    for k, o in outputs.items():
+        if o["kind"] != "ファイル" or not k.endswith(".json") or k.startswith(("${", "/")):
+            continue
+        rx = template_regex(k)
+        for f in sorted(f for f in tracked if rx.match(f)):
+            try:
+                with open(os.path.join(REPO, f), encoding="utf-8") as fh:
+                    d = json.load(fh)
+            except (OSError, ValueError):
+                continue
+            for key in json_keys(d):
+                written[key].add(k)
+    read_names = code_read_names(texts)
+    unread = [{"key": key, "sources": sorted(written[key]), "note": UNREAD_KEY_NOTES.get(key, "")} for key in sorted(written)
+              # 銘柄名・日付などの値のキー（小文字を含まないもの）は除く
+              if len(key) >= 3 and re.match(r"[a-z_]\w*$", key) and key not in read_names]
+    return {"unread_keys": unread, "written_key_count": len(written)}
+
+
 def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str], writer_files: Set[str]) -> dict:
     """画面（SCREEN_PAGES の HTML・JS）が読むキーと、書き手の有無。書き手があるのに誰も読まないキー。"""
     pages = sorted(f for f in tracked if f.startswith(tuple(d + "/" for d in SCREEN_PAGES))
@@ -2431,11 +2614,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             items.append(it)
     # 書き手があるのに誰も読まないキー: テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形で出てこず、
     # 画面がそのキーの親を列挙（Object.keys/entries/values・for in）してもいないもの
-    readers_pool = [f for f in texts if f.endswith((".py", ".js", ".html")) and not is_test(f)]
-    big = "\n".join(texts[f] for f in readers_pool)
-    read_names = set(re.findall(r"(?<=[\w\)\]])\??\.([A-Za-z_]\w*)\b", big))
-    read_names |= set(re.findall(r"\[\s*['\"]([A-Za-z_]\w*)['\"]\s*\](?!\s*=[^=])", big))
-    read_names |= set(re.findall(r"\.get\(\s*['\"]([A-Za-z_]\w*)['\"]", big))
+    read_names = code_read_names(texts)
     page_text = "\n".join(texts.get(pg) or read_text(pg) for pg in pages)
     parents = written_parents
     unread = []
@@ -2578,6 +2757,9 @@ def render_md(inv: dict) -> str:
         L.append("")
         L.append(f"**画面の項目**: 画面が読むキー {len(sc['items'])}（この段階の書き手あり {by['この段階の書き手あり']}・ほかの書き手あり {by['ほかの書き手あり']}・"
                  f"画面の中で作る値 {by['画面の中で作る値']}・**書き手なし {by['書き手なし']}**）／書き手があるのに誰も読まないキー **{len(sc['unread_keys'])}**")
+    if inv.get("data_keys"):
+        L.append("")
+        L.append(f"**誰も読まないキー**: **{len(inv['data_keys']['unread_keys'])}**（この段階のJSONのキー {inv['data_keys']['written_key_count']} のうち。下の「誰も読まないキー」）")
     L.append("")
     L.append(f"**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない {len(st['outputs_with_writer_outside_layer'])}＋{len(st['unresolved_write_sites'])}件（{st['ratio_writer']:.1%}）、"
              f"読み方を決めきれない読み込み {len(st['python_read_sites_unresolved_in_files_mentioning_sec_data'])}件＋ファイル名で当たった行 {len(st.get('name_hit_sites_undetermined', []))}件"
@@ -2654,6 +2836,18 @@ def render_md(inv: dict) -> str:
                 L.append(f"- 画面（{s['how']}）: `{s['page']}`")
         if not o["readers"] and not o["readers_compute"]:
             L.append("- 読み手なし")
+        L.append("")
+    if inv.get("data_keys"):
+        L.append("## 誰も読まないキー")
+        L.append("")
+        L.append("この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち、テストを除くコード（.py・.js・.html。書き手のファイルを含む）に"
+                 "読みの形（`.key`・`['key']`〈代入でない〉・`.get('key')`）で出てこないもの。銘柄名・日付など小文字を含まないキーは除く。"
+                 "Pythonで`for k in d`・`d.items()`のように回して読むものは拾えないので、消す前にキーの名前でgrepする")
+        L.append("")
+        if not inv["data_keys"]["unread_keys"]:
+            L.append("なし")
+        for u in inv["data_keys"]["unread_keys"]:
+            L.append(f"- `{u['key']}`（{'、'.join('`' + s + '`' for s in u['sources'][:3])}）{(': ' + md_escape(u['note'])) if u.get('note') else ''}")
         L.append("")
     if inv.get("screen"):
         sc = inv["screen"]
@@ -2812,7 +3006,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()

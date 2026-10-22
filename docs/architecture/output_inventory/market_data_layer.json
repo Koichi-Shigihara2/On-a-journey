@@ -1,0 +1,4131 @@
+{
+ "generated_by": "scripts/inventory/build_output_inventory.py",
+ "layer": "common/market_data",
+ "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
+ "outputs": [
+  {
+   "path": "common/market_data/_daily_close_retry_log.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "fetch_daily_prices",
+     "line": 857
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "fetch_daily_prices",
+     "line": 872
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [],
+   "readers": [],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 0,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "読み手0件",
+   "note": "日次の取得で終値の無い足を取り直した記録・Yahooの作り直しの時間帯で保存しなかった記録（直近60回）。書き手が追記のために読み直すほかに読むコードは無い",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "/tmp/daily_status.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "<module>",
+     "line": 1655
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 0,
+   "top_keys_sampled_files": 0,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 78,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 80,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 82,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "common/market_data/_sp500_constituents_cache.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "get_sp500_constituents",
+     "line": 1558
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Beta_Config_Update.yml",
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml",
+    ".github/workflows/SEC_Data_Audit.yml",
+    ".github/workflows/Score_Verifier.yml",
+    ".github/workflows/TANUKI_VALUATION_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "count",
+     "reader_files": 1
+    },
+    {
+     "key": "fetched_at",
+     "reader_files": 1
+    },
+    {
+     "key": "tickers",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 55,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "common/market_data/{T}/market_data_violations_log.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_write_violations_section",
+     "line": 331
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 596,
+   "top_keys_sampled_files": 596,
+   "top_keys": [
+    {
+     "key": "attributes_validation",
+     "reader_files": 2
+    },
+    {
+     "key": "backfill_price_validation",
+     "reader_files": 2
+    },
+    {
+     "key": "daily_price_unconfirmed",
+     "reader_files": 1
+    },
+    {
+     "key": "daily_price_validation",
+     "reader_files": 2
+    },
+    {
+     "key": "ticker",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 315,
+     "func": "_violations_log_path",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 151,
+     "func": "TestViolationsLogSections.test_empty_warnings_still_written",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_violations_log_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 167,
+     "func": "TestViolationsLogSections.test_daily_and_attributes_sections_do_not_clobber_each_other",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_violations_log_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 784,
+     "func": "TestBackfillDailyPrices.test_validation_warnings_are_embedded_per_record",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_violations_log_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 800,
+     "func": "TestBackfillDailyPrices.test_backfill_section_does_not_clobber_daily_section",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_violations_log_path",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "銘柄ごとの保存前の検証の結果（日次・週次・バックフィルの区画ごと。0件でも毎回書く）。読み手の1件は書き先のパスを作る関数（fetcher.py の _violations_log_path）で、書き手が区画ごとに読み直すほかに読むコードは無い（FINDINGS 2026-10-15 の F3）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "common/market_data/analyst_history/{T}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "fetch_analyst_events",
+     "line": 1489
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 596,
+   "top_keys_sampled_files": 596,
+   "top_keys": [
+    {
+     "key": "earnings_history",
+     "reader_files": 2
+    },
+    {
+     "key": "events",
+     "reader_files": 2
+    },
+    {
+     "key": "recommendations_history",
+     "reader_files": 2
+    },
+    {
+     "key": "symbol",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": ".github/workflows/Market_Data_Weekly_Update.yml",
+     "line": 71,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 311,
+     "func": "get_analyst_events",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 312,
+     "func": "get_analyst_events",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 332,
+     "func": "get_earnings_history",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 333,
+     "func": "get_earnings_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 356,
+     "func": "get_recommendations_history",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 357,
+     "func": "get_recommendations_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 393,
+     "func": "fetch_analyst_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 430,
+     "func": "fetch_analyst_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_earnings_history",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 489,
+     "func": "fetch_analyst_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 521,
+     "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1060,
+     "func": "run_poc",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 330,
+     "func": "TestGetAnalystEvents.test_missing_symbol_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 338,
+     "func": "TestGetAnalystEvents.test_all_events_returned_without_since",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 347,
+     "func": "TestGetAnalystEvents.test_since_filters_older_events",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 358,
+     "func": "TestGetAnalystEvents.test_since_accepts_date_object",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 367,
+     "func": "TestGetEarningsHistory.test_missing_symbol_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_earnings_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 378,
+     "func": "TestGetEarningsHistory.test_returns_earnings_history_as_stored",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_earnings_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 389,
+     "func": "TestGetEarningsHistory.test_attributes_without_earnings_history_key_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_earnings_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 397,
+     "func": "TestGetRecommendationsHistory.test_missing_symbol_latest_only_returns_empty_dict",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 400,
+     "func": "TestGetRecommendationsHistory.test_missing_symbol_full_history_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 411,
+     "func": "TestGetRecommendationsHistory.test_latest_only_returns_most_recent_snapshot",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 423,
+     "func": "TestGetRecommendationsHistory.test_full_history_returns_all_snapshots",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 433,
+     "func": "TestGetRecommendationsHistory.test_attributes_without_recommendations_history_key_returns_neutral_default",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 434,
+     "func": "TestGetRecommendationsHistory.test_attributes_without_recommendations_history_key_returns_neutral_default",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_recommendations_history",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 470,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_analyst_events",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "HypeCore（TANUKI のtiming・判定の入力）"
+   ],
+   "reader_count": 3,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "common/market_data/attributes/{T}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "fetch_weekly_attributes",
+     "line": 1339
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 596,
+   "top_keys_sampled_files": 596,
+   "top_keys": [
+    {
+     "key": "_validation_warnings",
+     "reader_files": 1
+    },
+    {
+     "key": "analyst_count",
+     "reader_files": 4
+    },
+    {
+     "key": "analyst_recommendation_key",
+     "reader_files": 2
+    },
+    {
+     "key": "average_volume",
+     "reader_files": 1
+    },
+    {
+     "key": "beta",
+     "reader_files": 9
+    },
+    {
+     "key": "calendar",
+     "reader_files": 4
+    },
+    {
+     "key": "country",
+     "reader_files": 2
+    },
+    {
+     "key": "current_price",
+     "reader_files": 8
+    },
+    {
+     "key": "dividend_yield",
+     "reader_files": 2
+    },
+    {
+     "key": "earnings_growth",
+     "reader_files": 1
+    },
+    {
+     "key": "enterprise_value",
+     "reader_files": 3
+    },
+    {
+     "key": "ev_to_ebitda",
+     "reader_files": 3
+    },
+    {
+     "key": "fetched_at",
+     "reader_files": 4
+    },
+    {
+     "key": "forward_eps",
+     "reader_files": 4
+    },
+    {
+     "key": "forward_pe",
+     "reader_files": 4
+    },
+    {
+     "key": "gross_margins",
+     "reader_files": 1
+    },
+    {
+     "key": "implied_shares_outstanding",
+     "reader_files": 3
+    },
+    {
+     "key": "industry",
+     "reader_files": 7
+    },
+    {
+     "key": "market_cap",
+     "reader_files": 4
+    },
+    {
+     "key": "next_quarter_eps_date",
+     "reader_files": 0
+    },
+    {
+     "key": "next_quarter_eps_estimate",
+     "reader_files": 1
+    },
+    {
+     "key": "payout_ratio",
+     "reader_files": 2
+    },
+    {
+     "key": "peg_ratio",
+     "reader_files": 3
+    },
+    {
+     "key": "price_to_sales",
+     "reader_files": 3
+    },
+    {
+     "key": "recommendation_mean",
+     "reader_files": 3
+    },
+    {
+     "key": "revenue_growth",
+     "reader_files": 1
+    },
+    {
+     "key": "sector",
+     "reader_files": 10
+    },
+    {
+     "key": "shares_outstanding",
+     "reader_files": 5
+    },
+    {
+     "key": "short_pct_float",
+     "reader_files": 3
+    },
+    {
+     "key": "short_ratio",
+     "reader_files": 1
+    },
+    {
+     "key": "symbol",
+     "reader_files": 4
+    },
+    {
+     "key": "target_high_price",
+     "reader_files": 2
+    },
+    {
+     "key": "target_low_price",
+     "reader_files": 2
+    },
+    {
+     "key": "target_mean_price",
+     "reader_files": 2
+    },
+    {
+     "key": "target_median_price",
+     "reader_files": 2
+    },
+    {
+     "key": "total_debt",
+     "reader_files": 5
+    },
+    {
+     "key": "trailing_pe",
+     "reader_files": 4
+    }
+   ],
+   "readers": [
+    {
+     "file": ".github/workflows/Market_Data_Weekly_Update.yml",
+     "line": 70,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 272,
+     "func": "get_attributes",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 275,
+     "func": "get_attributes",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 292,
+     "func": "get_calendar",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 73,
+     "func": "audit_ticker",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 191,
+     "func": "run_audit",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 317,
+     "func": "audit_beta_drift",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 369,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 390,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/audit.py",
+     "line": 468,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 86,
+     "func": "check_a_sec",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "scripts/analysis/market_pulse_redesign.py",
+     "line": 404,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "scripts/analysis/market_pulse_redesign.py",
+     "line": 478,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 1087,
+     "func": "extract_quarterly_facts",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 1212,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+     "line": 1235,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 639,
+     "func": "process_one_ticker",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 1015,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 235,
+     "func": "fetch_info_snapshot",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 466,
+     "func": "fetch_analyst_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 521,
+     "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 524,
+     "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1060,
+     "func": "run_poc",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 115,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 256,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/valuation_fetcher.py",
+     "line": 94,
+     "func": "fetch_valuation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/beta_fetcher.py",
+     "line": 104,
+     "func": "fetch_market_data_beta",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/beta_fetcher.py",
+     "line": 176,
+     "func": "refresh_tickers",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/beta_fetcher.py",
+     "line": 288,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 744,
+     "func": "TanukiDataFetcher.get_financials",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 427,
+     "func": "TanukiValuationPipeline.run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 991,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1069,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 3268,
+     "func": "TanukiValuationPipeline._load_extra_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 3864,
+     "func": "TanukiValuationPipeline.run_single",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 42,
+     "func": "market_data_source",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 66,
+     "func": "TestAuditTickerCanadaCheck.test_canada_country_triggers_warning",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 71,
+     "func": "TestAuditTickerCanadaCheck.test_non_canada_country_no_warning",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 78,
+     "func": "TestAuditTickerCanadaCheck.test_missing_attributes_skips_check_without_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 87,
+     "func": "TestAuditBetaDrift.test_large_drift_detected",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 95,
+     "func": "TestAuditBetaDrift.test_small_drift_not_reported",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 99,
+     "func": "TestAuditBetaDrift.test_missing_attributes_skipped_without_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 104,
+     "func": "TestAuditBetaDrift.test_missing_config_entry_flagged_critical",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_audit_market_data_switch.py",
+     "line": 111,
+     "func": "TestAuditBetaDrift.test_returns_empty_when_market_data_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_beta_fetcher.py",
+     "line": 59,
+     "func": "market_data_source",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_beta_fetcher.py",
+     "line": 67,
+     "func": "TestFetchMarketDataBeta.test_returns_beta_when_attributes_exist",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_beta_fetcher.py",
+     "line": 71,
+     "func": "TestFetchMarketDataBeta.test_returns_none_when_attributes_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 68,
+     "func": "TestPriceFromMarketData.test_current_price_from_daily_close",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 76,
+     "func": "TestPriceFromMarketData.test_missing_daily_data_gives_none_not_zero",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 83,
+     "func": "TestPriceFromMarketData.test_market_data_unavailable_entirely",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 91,
+     "func": "TestAttributesFromMarketData.test_all_fields_correctly_mapped",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 112,
+     "func": "TestAttributesFromMarketData.test_forward_pe_used_when_trailing_pe_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 121,
+     "func": "TestAttributesFromMarketData.test_negative_forward_pe_used_is_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 129,
+     "func": "TestAttributesFromMarketData.test_trailing_pe_used_is_not_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 137,
+     "func": "TestAttributesFromMarketData.test_missing_attributes_falls_back_to_neutral_defaults",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 165,
+     "func": "TestMa200Roundtrip.test_ma200_is_algebraically_derived_from_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 177,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_deviation_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 184,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_price_is_zero",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 191,
+     "func": "TestSharesFromMarketData.test_implied_shares_preferred_over_outstanding",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_discord_user_agent.py",
+     "line": 96,
+     "func": "_run_audit_main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
+     "line": 103,
+     "func": "TestSkipQ3WhenNeitherQ1NorQ2HasTheTag.test_ytd9m_only_tag_is_skipped_from_q3",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
+     "line": 123,
+     "func": "TestSkipQ3WhenNeitherQ1NorQ2HasTheTag.test_ytd9m_only_tag_with_partial_q1_is_applied",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
+     "line": 143,
+     "func": "TestSkipQ2WhenQ1HasNoTheTag.test_ytd6m_only_tag_is_skipped_from_q2",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q2q3_zero_quarterly_presence_guard.py",
+     "line": 163,
+     "func": "TestYtd6mSubtractionUnaffectedByGuard.test_ytd6m_minus_ytd9m_still_applied_without_q1_q2",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
+     "line": 106,
+     "func": "TestSkipWhenZeroQuarterlyPresence.test_annual_only_tag_is_skipped_from_q4",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
+     "line": 128,
+     "func": "TestSkipWhenZeroQuarterlyPresence.test_annual_only_tag_with_no_sibling_is_simply_absent",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
+     "line": 151,
+     "func": "TestStillAppliesWhenAtLeastOneQuarterPresent.test_q1_3_sum_still_applied_when_one_quarter_has_the_tag",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_analyzer_q4_zero_quarterly_presence_guard.py",
+     "line": 174,
+     "func": "TestYtdMethodUnaffectedByGuard.test_ytd_method_still_preferred",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_cik_history_merge.py",
+     "line": 70,
+     "func": "test_eps_merges_legacy_cik_facts",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_cik_history_merge.py",
+     "line": 84,
+     "func": "test_eps_without_history_uses_primary_only",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_eps_cik_history_merge.py",
+     "line": 92,
+     "func": "test_eps_legacy_fetch_failure_does_not_return_truncated_history",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_net_income_selection.py",
+     "line": 107,
+     "func": "TestNetIncomeLossPreferredOverProfitLoss.test_annual_prefers_net_income_loss",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_net_income_selection.py",
+     "line": 154,
+     "func": "TestNetIncomeLossPreferredOverProfitLoss.test_quarterly_prefers_net_income_loss",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_share_fallback.py",
+     "line": 88,
+     "func": "TestNeighborCarryOverPrefersRealDataOverMarketData.test_missing_q1_inherits_from_q2_not_market_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_share_fallback.py",
+     "line": 122,
+     "func": "TestNeighborCarryOverPrefersRealDataOverMarketData.test_missing_q2_prefers_prior_quarter_over_next",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_share_fallback.py",
+     "line": 149,
+     "func": "TestMarketDataFallbackStillAppliesWhenNoNeighborExists.test_all_quarters_missing_falls_back_to_market_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_share_fallback.py",
+     "line": 190,
+     "func": "TestQ4BlockGeneralizedNeighborLookup.test_q4_falls_back_to_q2_when_q3_diluted_shares_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_split.py",
+     "line": 100,
+     "func": "TestDilutedSharesLatestFiledWins.test_q1_prefers_latest_filed_even_when_listed_first",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_split.py",
+     "line": 124,
+     "func": "TestDilutedSharesLatestFiledWins.test_q1_prefers_latest_filed_even_when_listed_last",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_split.py",
+     "line": 149,
+     "func": "TestDilutedSharesLatestFiledWins.test_q4_prefers_latest_filed_annual_fact_not_first_in_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_extract_key_facts_split.py",
+     "line": 176,
+     "func": "TestDilutedSharesLatestFiledWins.test_production_nvda_2024_q4_no_longer_pre_split",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 286,
+     "func": "TestGetAttributes.test_missing_symbol_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 294,
+     "func": "TestGetAttributes.test_present_record_returned_with_symbol",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 301,
+     "func": "TestGetCalendar.test_missing_symbol_returns_empty_dict",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 313,
+     "func": "TestGetCalendar.test_attributes_without_calendar_key_returns_empty_dict",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 325,
+     "func": "TestGetCalendar.test_calendar_key_is_surfaced_when_present",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 469,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 471,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 461,
+     "func": "TestBsAdjustmentCashMissingPropagation.test_cprt_type_financial_health_flag_and_no_runway",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 500,
+     "func": "TestComputedRunwayIncludesShortTermInvestments.test_bbai_type_short_term_investments_added",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 522,
+     "func": "TestComputedRunwayIncludesShortTermInvestments.test_cash_missing_does_not_produce_zero_runway",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2315,
+     "func": "TestSegmentConfiguredFalseForUnconfiguredTicker.test_absent_ticker_gets_segment_configured_false",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2332,
+     "func": "TestSegmentConfiguredFalseForUnconfiguredTicker.test_registered_ticker_gets_segment_configured_true",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2375,
+     "func": "TestXbrlSegmentGrowthTakesPriorityInExtraData.test_xbrl_result_used_when_available_even_if_static_config_exists",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2400,
+     "func": "TestXbrlSegmentGrowthTakesPriorityInExtraData.test_falls_back_to_static_config_when_xbrl_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2429,
+     "func": "TestXbrlSegmentGrowthTakesPriorityInExtraData.test_stale_xbrl_falls_back_to_static_config_with_provenance",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2452,
+     "func": "TestLoadExtraDataNextEarningsDate.test_future_earnings_date_is_selected",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2464,
+     "func": "TestLoadExtraDataNextEarningsDate.test_earliest_future_date_is_selected_when_multiple_present",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2477,
+     "func": "TestLoadExtraDataNextEarningsDate.test_all_past_dates_fall_back_to_first_entry",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2488,
+     "func": "TestLoadExtraDataNextEarningsDate.test_empty_calendar_yields_no_next_earnings_date_key",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2498,
+     "func": "TestLoadExtraDataNextEarningsDate.test_market_data_unavailable_yields_no_next_earnings_date_key",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 2535,
+     "func": "TestSegmentTtmRevenueFallbackKeyCaseFix.test_newer_ttm_revenue_overrides_stale_annual_revenue",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3337,
+     "func": "TestDuPontNormalCalculation.test_normal_case_computes_three_factors_correctly",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3364,
+     "func": "TestDuPontEquityExclusion.test_negative_equity_excludes_dupont_with_explicit_reason",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3382,
+     "func": "TestDuPontOtherExclusionReasons.test_total_assets_missing_gives_total_assets_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3391,
+     "func": "TestDuPontOtherExclusionReasons.test_equity_missing_with_valid_assets_gives_equity_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3400,
+     "func": "TestDuPontOtherExclusionReasons.test_ni_ttm_missing_gives_ni_ttm_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3413,
+     "func": "TestDuPontRevenueThresholdExclusion.test_revenue_below_15m_is_excluded",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3423,
+     "func": "TestDuPontRevenueThresholdExclusion.test_revenue_at_15m_is_not_excluded",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3449,
+     "func": "TestDuPontReliabilityLowFlag.test_single_quarter_concentration_sets_reliability_low",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3470,
+     "func": "TestDuPontReliabilityLowFlag.test_evenly_distributed_quarters_no_reliability_flag",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_pipeline_logic.py",
+     "line": 3487,
+     "func": "TestDuPontExtremeRoeCalculation.test_high_margin_high_leverage_produces_roe_over_100_percent",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_split_adjust.py",
+     "line": 137,
+     "func": "TestTanukiDilutionUsesRegisteredSplits._run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 57,
+     "func": "TestFetchValuationNormalCase.test_all_fields_correctly_mapped",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 78,
+     "func": "TestFetchValuationNormalCase.test_return_keys_include_sector_industry_for_netcash_dual_calc",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 94,
+     "func": "TestFetchValuationNeutralDefaults.test_missing_daily_price_falls_back_to_none_current_price",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 109,
+     "func": "TestFetchValuationNeutralDefaults.test_missing_attributes_falls_back_to_none_for_all_attribute_fields",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 120,
+     "func": "TestFetchValuationNeutralDefaults.test_both_missing_all_fields_none_no_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 133,
+     "func": "TestFetchValuationNeutralDefaults.test_market_data_module_unavailable_sets_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 147,
+     "func": "TestFetchValuationNeutralDefaults.test_unexpected_exception_sets_error_and_neutral_defaults",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/tickers.html",
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/stonks-silo/index.html",
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "理論株価・判定（TANUKI VALUATION）",
+    "HypeCore（TANUKI のtiming・判定の入力）"
+   ],
+   "reader_count": 13,
+   "reader_count_test": 14,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算日等）",
+   "decision": "（段階2の判断待ち）"
+  },
+  {
+   "path": "common/market_data/daily/{T}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_append_daily_record",
+     "line": 421
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_replace_provisional_records",
+     "line": 465
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "mark_and_repair_provisional_rows",
+     "line": 490
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_repair_close_missing_records",
+     "line": 524
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_mark_no_bar_rows",
+     "line": 811
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "backfill_daily_prices",
+     "line": 1012
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "repair_missing_trading_days",
+     "line": 1123
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 596,
+   "top_keys_sampled_files": 596,
+   "top_keys": [
+    {
+     "key": "records",
+     "reader_files": 8
+    },
+    {
+     "key": "symbol",
+     "reader_files": 6
+    }
+   ],
+   "readers": [
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 126,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 194,
+     "func": "expected_hindenburg_active",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 412,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 806,
+     "func": "_real_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 827,
+     "func": "run_derivation_checks",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 844,
+     "func": "run_derivation_checks",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 871,
+     "func": "run_derivation_checks",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 948,
+     "func": "classify_base_dates",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 757,
+     "func": "_stale_provisional_dates",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 774,
+     "func": "_refetch_stale_provisional",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_stale_provisional_dates",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 873,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_stale_provisional_dates",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 921,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 922,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1042,
+     "func": "repair_close_missing_records",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1043,
+     "func": "repair_close_missing_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1072,
+     "func": "find_missing_trading_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1641,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::repair_close_missing_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1652,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 70,
+     "func": "_load_daily_payload",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 71,
+     "func": "_load_daily_payload",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 96,
+     "func": "get_latest_price",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 134,
+     "func": "_price_series_ending_at",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 163,
+     "func": "get_price_series",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 169,
+     "func": "get_price_series",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 193,
+     "func": "get_price_series_as_of",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 217,
+     "func": "get_price_on_or_after",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 242,
+     "func": "get_ma_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 372,
+     "func": "get_index_series",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 391,
+     "func": "get_sp500_constituents_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1624,
+     "func": "_check_daily_missing_trading_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3568,
+     "func": "run_checks",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3701,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 371,
+     "func": "_load_prices",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 374,
+     "func": "_load_prices",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 423,
+     "func": "compute_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 674,
+     "func": "build_all",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 706,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_implb.py",
+     "line": 31,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_stage_conclusions.py",
+     "line": 46,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_tech_pulse.py",
+     "line": 280,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/backfill_tech_pulse.py",
+     "line": 284,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 207,
+     "func": "compute_breadth",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 377,
+     "func": "fetch_rsp_spy_divergence",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 378,
+     "func": "fetch_rsp_spy_divergence",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 508,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 510,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 143,
+     "func": "fetch_recent_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 237,
+     "func": "compute_sentiment",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 401,
+     "func": "_get_sp500_ma_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 402,
+     "func": "_get_sp500_ma_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 407,
+     "func": "_get_sp500_ma_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 445,
+     "func": "fetch_qqq_tech_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 452,
+     "func": "fetch_qqq_tech_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 453,
+     "func": "fetch_qqq_tech_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 761,
+     "func": "_aligned_pair_closes",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 762,
+     "func": "_aligned_pair_closes",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 851,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 881,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 882,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 930,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 954,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 966,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 967,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1003,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1004,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1033,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1250,
+     "func": "collect_asset_flow",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1325,
+     "func": "sp500_up_vs_50d",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1474,
+     "func": "check_data_freshness",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1872,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1890,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1931,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1937,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1967,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1972,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 158,
+     "func": "fetch_price_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 237,
+     "func": "fetch_info_snapshot",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 512,
+     "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 524,
+     "func": "compute_scores",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 115,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/valuation_fetcher.py",
+     "line": 87,
+     "func": "fetch_valuation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 737,
+     "func": "TanukiDataFetcher.get_financials",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 810,
+     "func": "TanukiDataFetcher.get_financials",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 427,
+     "func": "TanukiValuationPipeline.run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/score_verifier.py",
+     "line": 47,
+     "func": "fetch_price_after",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/score_verifier.py",
+     "line": 77,
+     "func": "verify_ticker",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_check41_registration_ng.py",
+     "line": 89,
+     "func": "test_run_checks_passes_registration_mode",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 47,
+     "func": "TestFetchDailyPricesSkipsNoClose.test_latest_bar_without_close_is_not_saved",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 59,
+     "func": "TestFetchDailyPricesSkipsNoClose.test_existing_close_missing_row_is_repaired_on_next_run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 70,
+     "func": "TestFetchDailyPricesSkipsNoClose.test_existing_valid_rows_are_not_overwritten",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 85,
+     "func": "TestFetchDailyPricesSkipsNoClose.test_repair_close_missing_records_only_touches_missing_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::repair_close_missing_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 97,
+     "func": "TestReaderReturnsLatestValidClose.test_get_latest_price_skips_close_none_row",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 103,
+     "func": "TestReaderReturnsLatestValidClose.test_get_latest_price_none_when_no_valid_close",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 108,
+     "func": "TestReaderReturnsLatestValidClose.test_get_price_on_or_after_skips_close_none_row",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 137,
+     "func": "TestMissingTradingDays.test_find_missing_trading_days_nyse",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 143,
+     "func": "TestMissingTradingDays.test_n225_uses_japan_calendar",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 237,
+     "func": "TestCloseRetryInSameRun.test_missing_earlier_day_in_window_is_added",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 297,
+     "func": "TestResetWindowSkip.test_half_or_more_no_close_skips_without_saving",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 308,
+     "func": "TestResetWindowSkip.test_fewer_missing_proceeds",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 68,
+     "func": "TestPriceFromMarketData.test_current_price_from_daily_close",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 76,
+     "func": "TestPriceFromMarketData.test_missing_daily_data_gives_none_not_zero",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 83,
+     "func": "TestPriceFromMarketData.test_market_data_unavailable_entirely",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 91,
+     "func": "TestAttributesFromMarketData.test_all_fields_correctly_mapped",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 112,
+     "func": "TestAttributesFromMarketData.test_forward_pe_used_when_trailing_pe_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 121,
+     "func": "TestAttributesFromMarketData.test_negative_forward_pe_used_is_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 129,
+     "func": "TestAttributesFromMarketData.test_trailing_pe_used_is_not_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 137,
+     "func": "TestAttributesFromMarketData.test_missing_attributes_falls_back_to_neutral_defaults",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 165,
+     "func": "TestMa200Roundtrip.test_ma200_is_algebraically_derived_from_deviation",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 177,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_deviation_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 184,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_price_is_zero",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 191,
+     "func": "TestSharesFromMarketData.test_implied_shares_preferred_over_outstanding",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 43,
+     "func": "TestGetLatestPrice.test_missing_symbol_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 48,
+     "func": "TestGetLatestPrice.test_single_record_returned",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 57,
+     "func": "TestGetLatestPrice.test_picks_most_recent_of_multiple_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 64,
+     "func": "TestGetLatestPrice.test_lowercase_symbol_is_normalized",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 69,
+     "func": "TestGetPriceSeries.test_missing_symbol_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 74,
+     "func": "TestGetPriceSeries.test_zero_or_negative_days_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 75,
+     "func": "TestGetPriceSeries.test_zero_or_negative_days_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 80,
+     "func": "TestGetPriceSeries.test_no_gap_series_matches_expected_trading_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 96,
+     "func": "TestGetPriceSeries.test_missing_trading_day_is_flagged_as_gap",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 108,
+     "func": "TestGetPriceSeries.test_only_latest_available_date_used_as_anchor",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 122,
+     "func": "TestGetPriceSeriesAsOf.test_missing_symbol_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 127,
+     "func": "TestGetPriceSeriesAsOf.test_zero_or_negative_days_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 128,
+     "func": "TestGetPriceSeriesAsOf.test_zero_or_negative_days_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 141,
+     "func": "TestGetPriceSeriesAsOf.test_anchors_at_as_of_date_not_latest_saved_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 158,
+     "func": "TestGetPriceSeriesAsOf.test_missing_trading_day_is_flagged_as_gap",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 169,
+     "func": "TestGetPriceSeriesAsOf.test_date_object_accepted",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 176,
+     "func": "TestGetPriceSeriesAsOf.test_lowercase_symbol_is_normalized",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 184,
+     "func": "TestGetPriceSeriesAsOf.test_as_of_date_beyond_latest_saved_data_returns_gaps",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 194,
+     "func": "TestGetPriceOnOrAfter.test_missing_symbol_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 199,
+     "func": "TestGetPriceOnOrAfter.test_exact_date_match_returned",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 211,
+     "func": "TestGetPriceOnOrAfter.test_target_date_is_non_trading_day_picks_next_available",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 218,
+     "func": "TestGetPriceOnOrAfter.test_no_data_within_5day_window_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 225,
+     "func": "TestGetPriceOnOrAfter.test_data_exactly_at_window_boundary_returned",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 231,
+     "func": "TestGetPriceOnOrAfter.test_data_one_day_past_window_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 238,
+     "func": "TestGetPriceOnOrAfter.test_earliest_candidate_picked_among_multiple",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 245,
+     "func": "TestGetPriceOnOrAfter.test_lowercase_symbol_is_normalized",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 251,
+     "func": "TestGetPriceOnOrAfter.test_date_object_accepted",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 257,
+     "func": "TestGetMaDeviation.test_missing_symbol_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 262,
+     "func": "TestGetMaDeviation.test_insufficient_history_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 267,
+     "func": "TestGetMaDeviation.test_correct_value_when_window_fully_satisfied",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 281,
+     "func": "TestGetMaDeviation.test_gap_within_window_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 441,
+     "func": "TestGetIndexSeries.test_aliases_get_price_series",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 442,
+     "func": "TestGetIndexSeries.test_aliases_get_price_series",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 445,
+     "func": "TestGetIndexSeries.test_missing_symbol_returns_empty_list",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 452,
+     "func": "TestGetSp500ConstituentsPrices.test_only_symbols_with_data_are_included",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 457,
+     "func": "TestGetSp500ConstituentsPrices.test_empty_symbol_list_returns_empty_dict",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 465,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 466,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 467,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 468,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 472,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_reader.py",
+     "line": 473,
+     "func": "TestErrorResilienceForNeverFetchedSymbol.test_all_apis_return_empty_values_not_raise",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 67,
+     "func": "TestRefetchStaleProvisional.test_row_outside_5d_window_is_replaced",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 79,
+     "func": "TestRefetchStaleProvisional.test_no_refetch_when_no_stale_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 89,
+     "func": "TestRefetchStaleProvisional.test_refetch_range_is_capped",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 107,
+     "func": "TestNoYahooBarMark.test_saturday_row_without_bar_gets_mark_after_7_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 121,
+     "func": "TestNoYahooBarMark.test_within_7_days_stays_provisional",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 129,
+     "func": "TestNoYahooBarMark.test_not_marked_when_download_failed",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 136,
+     "func": "TestNoYahooBarMark.test_reader_excludes_marked_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 137,
+     "func": "TestNoYahooBarMark.test_reader_excludes_marked_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 138,
+     "func": "TestNoYahooBarMark.test_reader_excludes_marked_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 164,
+     "func": "TestTradingDayCheckBeforeSave.test_jpy_saturday_bar_not_saved",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 175,
+     "func": "TestTradingDayCheckBeforeSave.test_futures_labor_day_bar_not_saved",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 185,
+     "func": "TestTradingDayCheckBeforeSave.test_n225_japan_holiday_bar_not_saved",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 242,
+     "func": "TestFlatFuturesBarIsNotFinal.test_flat_bar_does_not_replace_provisional_row",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 252,
+     "func": "TestFlatFuturesBarIsNotFinal.test_flat_bar_counts_as_no_bar_after_7_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 261,
+     "func": "TestFlatFuturesBarIsNotFinal.test_normal_bar_still_confirms",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 270,
+     "func": "TestFlatFuturesBarIsNotFinal.test_new_flat_row_is_saved_as_provisional",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 278,
+     "func": "TestFlatFuturesBarIsNotFinal.test_flat_latest_bar_does_not_overwrite_existing_row",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 288,
+     "func": "TestFlatFuturesBarIsNotFinal.test_non_futures_zero_volume_symbols_unaffected",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_stale_provisional.py",
+     "line": 296,
+     "func": "test_check57_does_not_count_no_bar_rows_as_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 64,
+     "func": "test_include_provisioning_targets_provisioning_ticker",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 71,
+     "func": "test_ticker_excluded_to_zero_exits_2",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 77,
+     "func": "test_ticker_meaning_unchanged_for_active",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_registration_consistency_gate.py",
+     "line": 82,
+     "func": "test_no_ticker_filter_keeps_active_only",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 64,
+     "func": "_run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 70,
+     "func": "TestTce.test_tce_nonpositive_gives_none",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 81,
+     "func": "TestTce.test_rotce_and_ptbv_values",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 94,
+     "func": "TestTce.test_minority_interest_subtracted_only_with_nci_inclusive_equity_tag",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 96,
+     "func": "TestTce.test_minority_interest_subtracted_only_with_nci_inclusive_equity_tag",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 101,
+     "func": "TestTce.test_preferred_stock_subtracted",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 110,
+     "func": "TestTce.test_preferred_in_temporary_equity_not_subtracted",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 119,
+     "func": "TestAnnualFill.test_filled_from_annual_value_is_flagged",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 130,
+     "func": "TestAnnualFill.test_fill_with_zero_is_not_flagged",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 138,
+     "func": "TestAnnualFill.test_stale_component_is_missing",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 145,
+     "func": "TestAnnualFill.test_never_reported_component_is_zero",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 153,
+     "func": "TestPercentile.test_fewer_than_8_quarters_has_no_percentile",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 161,
+     "func": "TestPercentile.test_8_quarters_gives_percentile",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 169,
+     "func": "TestPercentile.test_cheap_when_price_low_and_rotce_high",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 177,
+     "func": "TestPercentile.test_rich_when_price_high_and_rotce_low",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 202,
+     "func": "TestShares.test_outlier_shares_replaced_by_next_candidate",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 208,
+     "func": "TestShares.test_current_uses_latest_close",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 221,
+     "func": "TestAssumedZero.test_goodwill_assumed_zero_stays_in_percentile",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 236,
+     "func": "TestAssumedZero.test_intangible_assumed_zero_excluded_from_percentile",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 247,
+     "func": "TestAssumedZero.test_reported_quarters_have_no_assumed_zero",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 259,
+     "func": "TestLossMakers.test_nonpositive_rotce_gets_no_signal",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 266,
+     "func": "TestLossMakers.test_zero_rotce_gets_no_signal",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 287,
+     "func": "TestQuarterlyAnnualized.test_uses_common_ni_and_previous_quarter_average",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 300,
+     "func": "TestQuarterlyAnnualized.test_falls_back_to_net_income_without_common_tag",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 305,
+     "func": "TestQuarterlyAnnualized.test_basic_tag_used_when_no_diluted",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 310,
+     "func": "TestQuarterlyAnnualized.test_end_only_when_previous_quarter_tce_nonpositive",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 316,
+     "func": "TestQuarterlyAnnualized.test_first_quarter_has_rotce_but_no_ttm",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 328,
+     "func": "TestCompanyReported.test_block_has_diff_and_latest_registered",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 338,
+     "func": "TestCompanyReported.test_unregistered_when_latest_quarter_missing",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 377,
+     "func": "TestComparisonTtm.test_ttm_average_skips_missing_and_nonpositive_ends",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 387,
+     "func": "TestComparisonTtm.test_percentile_uses_ttm_series_not_quarterly",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_rotce.py",
+     "line": 398,
+     "func": "TestComparisonTtm.test_nonpositive_ttm_gets_no_signal_even_if_quarter_positive",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 57,
+     "func": "TestFetchValuationNormalCase.test_all_fields_correctly_mapped",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 78,
+     "func": "TestFetchValuationNormalCase.test_return_keys_include_sector_industry_for_netcash_dual_calc",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 94,
+     "func": "TestFetchValuationNeutralDefaults.test_missing_daily_price_falls_back_to_none_current_price",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 109,
+     "func": "TestFetchValuationNeutralDefaults.test_missing_attributes_falls_back_to_none_for_all_attribute_fields",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 120,
+     "func": "TestFetchValuationNeutralDefaults.test_both_missing_all_fields_none_no_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 133,
+     "func": "TestFetchValuationNeutralDefaults.test_market_data_module_unavailable_sets_error",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_valuation_fetcher_market_data_switch.py",
+     "line": 147,
+     "func": "TestFetchValuationNeutralDefaults.test_unexpected_exception_sets_error_and_neutral_defaults",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [
+    "common/market_data/fetcher.py::_mark_provisional",
+    "common/market_data/fetcher.py::_resolve_base_dir"
+   ],
+   "screens": [
+    {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json）"
+    },
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/stonks-silo/index.html",
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/_summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    }
+   ],
+   "definitions": [
+    "AS-IS-258",
+    "AS-IS-285",
+    "AS-IS-286",
+    "AS-IS-287",
+    "AS-IS-297",
+    "AS-IS-298",
+    "AS-IS-299"
+   ],
+   "decision_effect": [
+    "理論株価・判定（TANUKI VALUATION）",
+    "HypeCore（TANUKI のtiming・判定の入力）"
+   ],
+   "reader_count": 18,
+   "reader_count_test": 8,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
+   "decision": "（段階2の判断待ち）"
+  }
+ ],
+ "rules": [
+  {
+   "id": "trading_day",
+   "name": "取引日（市場の営業日）の決め方",
+   "patterns": [
+    "def\\s+_?\\w*(?:trading_days?|business_days?|business_day_add|market_open)\\w*\\s*\\(",
+    "function\\s+\\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 225,
+     "text": "def is_trading_day(day: Any, calendar=None) -> bool:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 743,
+     "text": "def is_symbol_trading_day(symbol: str, day: str) -> bool:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1066,
+     "text": "def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1087,
+     "text": "def _calendar_trading_days(name: str) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1097,
+     "text": "def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 104,
+     "text": "def _expected_trading_days(anchor_date: str, days: int, calendar=None) -> List[str]:"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1603,
+     "text": "def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tuple[str, str]]:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 441,
+     "text": "def nth_us_business_day(year: int, month: int, n: int) -> date:"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 455,
+     "text": "def us_business_days_add(start: date, n: int) -> date:"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 342,
+     "text": "def _recent_trading_days(anchor_date: str, n: int) -> list:"
+    }
+   ],
+   "files": [
+    "common/market_data/fetcher.py",
+    "common/market_data/reader.py",
+    "common/sec_data/report_consistency_check.py",
+    "src/market/macro_pulse/05_main.py",
+    "src/market/market_pulse/breadth_calculator.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "provisional_bar",
+   "name": "暫定の足（取引時間中・取得の途中の行）の判定",
+   "patterns": [
+    "def\\s+_?\\w*provisional\\w*\\s*\\(",
+    "function\\s+\\w*[Pp]rovisional\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 424,
+     "text": "def _mark_provisional(symbol: str, record: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 432,
+     "text": "def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], base_dir: str,"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 471,
+     "text": "def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optional[str] = None,"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 593,
+     "text": "def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 604,
+     "text": "def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 755,
+     "text": "def _stale_provisional_dates(symbol: str, base_dir: str, now: datetime) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 767,
+     "text": "def _refetch_stale_provisional(symbols: List[str], history: Dict[str, List[Dict[str, Any]]], base_dir: str,"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1633,
+     "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 781,
+     "text": "def provisional_kind(symbol, record):"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 795,
+     "text": "def _mark_provisional_item(item, record, symbol):"
+    },
+    {
+     "file": "src/market/market_pulse/futures_snapshot.py",
+     "line": 38,
+     "text": "def _provisional_kind(symbol: str, bar_time: datetime) -> Optional[str]:"
+    }
+   ],
+   "files": [
+    "common/market_data/fetcher.py",
+    "common/sec_data/report_consistency_check.py",
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/futures_snapshot.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  },
+  {
+   "id": "sp500_constituents",
+   "name": "S&P500の構成銘柄の一覧の取り方",
+   "patterns": [
+    "def\\s+_?\\w*sp500_(?:tickers|constituents)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1508,
+     "text": "def get_sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) -> List[str]:"
+    },
+    {
+     "file": "common/market_data/reader.py",
+     "line": 377,
+     "text": "def get_sp500_constituents_prices(symbols: Optional[List[str]] = None,"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 69,
+     "text": "def get_sp500_tickers():"
+    }
+   ],
+   "files": [
+    "common/market_data/fetcher.py",
+    "common/market_data/reader.py",
+    "src/market/market_pulse/breadth_calculator.py"
+   ],
+   "in_layer": true,
+   "duplicated": true
+  }
+ ],
+ "non_production_code": [],
+ "non_production_scanned": [
+  {
+   "dir": "common/market_data",
+   "file": "common/market_data/__init__.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 30,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "common/market_data",
+   "file": "common/market_data/daily_guard.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 81,
+   "workflows": [
+    ".github/workflows/Market_Data_Daily_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [
+    "common/market_data/fetcher.py"
+   ],
+   "tests": [
+    "tests/test_close_missing_price.py",
+    "tests/test_market_data_daily_dispatch_guard.py",
+    "tests/test_market_data_stale_provisional.py"
+   ]
+  },
+  {
+   "dir": "common/market_data",
+   "file": "common/market_data/fetcher.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 1660,
+   "workflows": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "code": [
+    "common/macro_data/fetcher.py",
+    "common/sec_data/report_consistency_check.py",
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/futures_snapshot.py",
+    "src/market/market_pulse/sector_rotation.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/market_data/__init__.py",
+    "common/market_data/reader.py"
+   ],
+   "tests": [
+    "tests/conftest.py",
+    "tests/test_close_missing_price.py",
+    "tests/test_market_data_fetcher.py",
+    "tests/test_market_data_reader.py",
+    "tests/test_market_data_stale_provisional.py",
+    "tests/test_market_pulse_provisional_kind.py"
+   ]
+  },
+  {
+   "dir": "common/market_data",
+   "file": "common/market_data/reader.py",
+   "decision": "（段階2の判断待ち）",
+   "lines": 394,
+   "workflows": [],
+   "code": [
+    "browser_checks/check_dependency_map.py",
+    "browser_checks/market_pulse_elements.py",
+    "common/sec_data/audit.py",
+    "scripts/analysis/market_pulse_redesign.py",
+    "src/market/market_pulse/backfill_implb.py",
+    "src/market/market_pulse/backfill_stage_conclusions.py",
+    "src/market/market_pulse/backfill_tech_pulse.py",
+    "src/market/market_pulse/breadth_calculator.py",
+    "src/market/market_pulse/collect_and_send.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+    "src/value/hypecore/hypecore.py",
+    "src/value/stonks_silo/valuation_fetcher.py",
+    "src/value/tanuki_valuation/beta_fetcher.py",
+    "src/value/tanuki_valuation/data_fetcher.py",
+    "src/value/tanuki_valuation/pipeline.py",
+    "src/value/tanuki_valuation/score_verifier.py"
+   ],
+   "same_dir": [
+    "common/market_data/__init__.py"
+   ],
+   "tests": [
+    "tests/test_audit_market_data_switch.py",
+    "tests/test_beta_fetcher.py",
+    "tests/test_close_missing_price.py",
+    "tests/test_collect_and_send_market_data_switch.py",
+    "tests/test_market_data_reader.py",
+    "tests/test_market_data_stale_provisional.py"
+   ]
+  }
+ ],
+ "f3_zero_reader": [
+  {
+   "name": "spac_shell_detection_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "share_unit_fix_log",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "low_base_effect",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1050
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1095
+    }
+   ]
+  },
+  {
+   "name": "fields_missing",
+   "in_layer": false,
+   "output": null,
+   "sites": []
+  },
+  {
+   "name": "maturity_monitor",
+   "in_layer": false,
+   "output": null,
+   "sites": [
+    {
+     "file": "src/value/adjusted_eps_analyzer/pipeline.py",
+     "line": 22
+    }
+   ]
+  },
+  {
+   "name": "market_data_violations_log",
+   "in_layer": true,
+   "output": "common/market_data/{T}/market_data_violations_log.json",
+   "sites": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 315
+    }
+   ]
+  }
+ ],
+ "deleted": [],
+ "stop_condition": {
+  "outputs": 7,
+  "outputs_with_writer_outside_layer": [],
+  "unresolved_write_sites": [],
+  "python_read_sites_into_layer_resolved": 13,
+  "python_read_sites_unresolved_in_files_mentioning_sec_data": [
+   {
+    "file": "common/market_data/fetcher.py",
+    "line": 1624,
+    "func": "<module>",
+    "path": "<?>"
+   }
+  ],
+  "name_hit_sites_resolved": 18,
+  "name_hit_sites_undetermined": [],
+  "ratio_writer": 0.0,
+  "ratio_reader": 0.031,
+  "threshold": 0.1,
+  "hit": false
+ },
+ "workflow_outputs": [
+  {
+   "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
+   "lines": [
+    122,
+    123,
+    124,
+    125,
+    127
+   ],
+   "keys": []
+  },
+  {
+   "workflow": ".github/workflows/Market_Data_Weekly_Update.yml",
+   "lines": [
+    68,
+    69,
+    72,
+    73
+   ],
+   "keys": []
+  },
+  {
+   "workflow": ".github/workflows/TANUKI_VALUATION_Update.yml",
+   "lines": [
+    102,
+    103,
+    104,
+    105,
+    110
+   ],
+   "keys": [
+    {
+     "key": "intrinsic_value_per_share",
+     "in_json": false
+    },
+    {
+     "key": "overall",
+     "in_json": false
+    },
+    {
+     "key": "validation",
+     "in_json": false
+    }
+   ]
+  }
+ ],
+ "data_keys": {
+  "unread_keys": [
+   {
+    "key": "_validation_warnings",
+    "sources": [
+     "common/market_data/attributes/{T}.json",
+     "common/market_data/daily/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "attributes_validation",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "backfill_price_validation",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "current_price_target",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "daily_price_unconfirmed",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "daily_price_validation",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "dates_fetched",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "dates_with_warnings",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "eps_actual",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "eps_difference",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "eps_estimate",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "initial_symbols",
+    "sources": [
+     "common/market_data/_daily_close_retry_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "next_quarter_eps_date",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "no_close",
+    "sources": [
+     "common/market_data/_daily_close_retry_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "price_target_action",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "prior_price_target",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "skipped_no_close",
+    "sources": [
+     "common/market_data/{T}/market_data_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "strong_buy",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "strong_sell",
+    "sources": [
+     "common/market_data/analyst_history/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "with_bars",
+    "sources": [
+     "common/market_data/_daily_close_retry_log.json"
+    ],
+    "note": ""
+   }
+  ],
+  "written_key_count": 94
+ }
+}

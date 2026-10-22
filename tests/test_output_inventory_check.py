@@ -316,3 +316,101 @@ def test_loose_reference_compares_whole_path():
     assert not inv.loose_ref("spec = load('mypipeline.py')", rel)
     assert inv.loose_ref("          python pipeline.py $TICKERS", rel)
     assert inv.loose_ref("from pipeline import run", rel)
+
+
+def _strict_module(monkeypatch, rel, src, callers):
+    """RESOLVE_STRICT（市場データ層の段階から）を立て、小さなモジュールと呼び出し元の索引を作る。"""
+    import ast
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", True)
+    mod = inv.Module(rel, ast.parse(src), src)
+    monkeypatch.setitem(inv.MODULES, rel, mod)
+    for name, lines in callers.items():
+        monkeypatch.setitem(inv.CALLERS, (rel, name), [(r, ln) for r, ln in lines])
+    return mod
+
+
+def test_strict_join_joins_each_caller_alternative_and_skips_test_callers(monkeypatch):
+    """呼び出し元ごとに違う base_dir は候補ごとにつなぎ、テストが渡す一時のフォルダは候補にしない（2026-10-22、市場データ層）。"""
+    import ast
+    src = ("import os\n"
+           "def save(sym, base_dir):\n"
+           "    return os.path.join(base_dir, 'daily', f'{sym}.json')\n"
+           "def run_a():\n"
+           "    save('X', 'common/md')\n"
+           "def run_b():\n"
+           "    save('X', 'common/md2')\n")
+    rel = "common/md/join_f.py"
+    test_rel = "tests/test_join_f.py"
+    test_src = "def test_x(tmp_path):\n    save('X', tmp_path)\n"
+    monkeypatch.setitem(inv.MODULES, test_rel, inv.Module(test_rel, ast.parse(test_src), test_src))
+    mod = _strict_module(monkeypatch, rel, src, {"save": [(rel, 5), (rel, 7), (test_rel, 2)]})
+    join = next(n for n in ast.walk(mod.tree) if isinstance(n, ast.Call) and getattr(n, "lineno", 0) == 3)
+    got = inv.normalize_path(inv.resolve(join, mod, join)).split(inv.ALT)
+    assert got == ["common/md/daily/{T}.json", "common/md2/daily/{T}.json"]
+
+
+def test_strict_cli_argument_path_is_resolved_from_workflow(monkeypatch):
+    """argparse の引数（args.status_file）のパスは、ワークフローがそのファイルに渡す値から決める（2026-10-22、--status-file /tmp/…）。"""
+    import ast
+    src = ("import argparse, json\n"
+           "p = argparse.ArgumentParser()\n"
+           "p.add_argument('--status-file', default='')\n"
+           "args = p.parse_args()\n"
+           "with open(args.status_file, 'w') as f:\n"
+           "    json.dump({}, f)\n")
+    rel = "common/md/cli_g.py"
+    mod = _strict_module(monkeypatch, rel, src, {})
+    wf = "      - run: python common/md/cli_g.py --layer daily --status-file /tmp/st.json\n"
+    monkeypatch.setattr(inv, "git_ls_files", lambda *a: [".github/workflows/x.yml"])
+    monkeypatch.setattr(inv, "read_text", lambda rel_: wf)
+    writes, _ = inv.io_sites(mod)
+    assert [w["path"] for w in writes] == ["/tmp/st.json"]
+
+
+def test_strict_helper_callers_are_the_readers_and_writers(monkeypatch):
+    """パスを引数で受けて読み書きする汎用の関数は、そのパスを渡す呼び出し箇所を読み手・書き手にする（IO_HELPER_BY_CALLER、2026-10-22）。"""
+    import ast
+    src = ("import os, json\n"
+           "def _load(path):\n"
+           "    with open(path) as f:\n"
+           "        return json.load(f)\n"
+           "def get_attrs(sym):\n"
+           "    return _load(os.path.join('common', 'md', 'attributes', f'{sym}.json'))\n"
+           "def get_daily(sym):\n"
+           "    return _load(os.path.join('common', 'md', 'daily', f'{sym}.json'))\n")
+    rel = "common/md/helper_h.py"
+    _strict_module(monkeypatch, rel, src, {"_load": [(rel, 6), (rel, 8)]})
+    got = inv.helper_callers(rel, {"line": 3})
+    assert [(c[1], c[2], c[3]) for c in got] == [(6, "get_attrs", "common/md/attributes/{T}.json"), (8, "get_daily", "common/md/daily/{T}.json")]
+
+
+def test_strict_external_module_call_is_not_matched_by_name(monkeypatch):
+    """リポジトリの外のモジュールの関数（mcal.get_calendar 等）を、同じ名前のリポジトリの関数の呼び出しにしない（2026-10-22）。"""
+    import ast
+    src = "import pandas_market_calendars as mcal\ncal = mcal.get_calendar_nyse('NYSE')\nx = obj.get_calendar_nyse('NYSE')\n"
+    rel = "common/md/ext_i.py"
+    mod = _strict_module(monkeypatch, rel, src, {})
+    monkeypatch.setitem(inv.DEF_INDEX, "get_calendar_nyse", [("common/md/reader.py", "get_calendar_nyse")])
+    assert [(ln, nm) for ln, _r, nm in inv._calls_in(mod)] == [(3, "get_calendar_nyse")]
+
+
+def test_strict_git_add_line_and_index_symbol(monkeypatch):
+    """ワークフローの git add の行は読み手にしない。{T} は指数の記号（^GSPC）にも当たる（2026-10-22）。"""
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", True)
+    tmpl = "common/md/_retry_log.json"
+    pats, _ = inv.needles_for(tmpl)
+    line = "          git add common/md/_retry_log.json || true"
+    assert inv.mention_class(tmpl, pats, ".github/workflows/x.yml", 1, line, line) == "no"
+    assert inv.template_regex("common/md/daily/{T}.json").match("common/md/daily/^GSPC.json")
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", False)
+    assert not inv.template_regex("common/md/daily/{T}.json").match("common/md/daily/^GSPC.json")
+
+
+def test_market_data_layer_settings():
+    """市場データ層（段階1、2026-10-22）: 画面を持たない共有のデータ層。CHECK-INV にはまだ入れない。"""
+    md = inv.LAYERS["market_data"]
+    assert md["LAYER_DIRS"] == ("common/market_data",)
+    assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
+    assert not md["SCREEN_PAGES"]
+    assert "market_data" not in inv.CHECK_LAYERS
+    assert not any(inv.LAYERS[k]["RESOLVE_STRICT"] for k in inv.CHECK_LAYERS)
