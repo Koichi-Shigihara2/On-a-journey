@@ -550,9 +550,9 @@ _TAIL.update(
         "docs/portfolio/tail/data/ctrl/{T}/index.json": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。画面の index.html が最新の四半期を選ぶのに読む",
         "docs/portfolio/tail/data/{item_key}/{T}/latest.json":
             "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。"
-            "**AIの出力（Grok）**: excerpt_ja（和訳）・segment_outlook（MD&Aのセグメントの見通し）。型は ctrl/ にも当たる。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+            "**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
         "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json":
-            "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja・segment_outlook。型は ctrl/ にも当たる",
+            "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる",
         "docs/portfolio/tail/data/{item_key}/{T}/index.json":
             "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
         "Discord（DISCORD_WEBHOOK）": "新規提出・提出の遅れ（法定の期限超え）のDiscordへの通知",
@@ -577,7 +577,7 @@ _TAIL.update(
         "competitive_advantage": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
         "management": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
         "recommendation_reason": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "segment_outlook": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。TANUKI の report.txt にも出ていない（FINDINGS 2026-10-22、型A）",
+        "segment_outlook": "生成を止めた（2026-10-22、Koichiさんの判断）。過去の mda のファイルにだけ作った時点の記録として残る（TANUKI の report.txt にも出ていなかった、FINDINGS 2026-10-22）",
         "base_revenue": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
         "fcf_adjustment": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
         "rejection_reason": "残す: KPIの提案を却下した理由（XBRLとの照合の結果）。作った時点の記録",

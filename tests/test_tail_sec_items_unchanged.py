@@ -67,7 +67,6 @@ def test_same_filings_skip_fetch_translate_and_write(items, monkeypatch):
     before = {p: p.read_text(encoding="utf-8") for p in paths}
     monkeypatch.setattr(sif, "_fetch_filing_text", _no_call("本文の取得"))
     monkeypatch.setattr(sif, "_translate_excerpt", _no_call("Grokの翻訳"))
-    monkeypatch.setattr(sif, "_extract_segment_outlook_safe", _no_call("セグメント別見通しのAI抽出"))
     stats = sif.fetch_and_save_all_items("PLTR", "0000000001")
     assert stats["ng"] == 0 and stats["written"] == 0 and stats["unchanged"] == 6
     assert {p: p.read_text(encoding="utf-8") for p in paths} == before
@@ -83,10 +82,9 @@ def test_new_filing_is_fetched_and_written(items, monkeypatch):
     monkeypatch.setattr(sif, "extract_item_section", lambda *a, **k: (0, "section text"))
     calls = []
     monkeypatch.setattr(sif, "_translate_excerpt", lambda text, desc, timeout=60: calls.append(desc) or "訳")
-    monkeypatch.setattr(sif, "_extract_segment_outlook_safe", lambda t, s: calls.append("segment") or [])
     stats = sif.fetch_and_save_all_items("PLTR", "0000000001")
     assert stats["ng"] == 0 and stats["written"] == 3 and stats["unchanged"] == 3   # 10-Qの3項目だけ書く
-    assert len(calls) == 4   # 翻訳3項目＋mdaのセグメント別見通し1回（10-Kは呼ばない）
+    assert len(calls) == 3   # 翻訳3項目（10-Kは呼ばない。セグメント別見通しのAI抽出は2026-10-22に止めた）
     for key in sif.ITEM_KEYS:
         q = json.load(open(items / key / "PLTR" / "2026Q2.json", encoding="utf-8"))
         assert q["filing_date"] == "2026-08-05" and q["excerpt_ja"] == "訳"
@@ -109,7 +107,6 @@ def test_all_unchanged_week_exits_zero(items, monkeypatch, capsys):
         _store_all(items, t)
     monkeypatch.setattr(sif, "_fetch_filing_text", _no_call("本文の取得"))
     monkeypatch.setattr(sif, "_translate_excerpt", _no_call("Grokの翻訳"))
-    monkeypatch.setattr(sif, "_extract_segment_outlook_safe", _no_call("セグメント別見通しのAI抽出"))
     code, out = _run_main(monkeypatch, capsys, ["PLTR", "SOFI"])
     assert code == 0
     assert "完了: 2 成功（更新 0 / 変更なし 2） / 0 失敗" in out
@@ -119,7 +116,6 @@ def test_real_failures_count_but_run_succeeds_if_any_success(items, monkeypatch,
     _store_all(items, "SOFI")
     monkeypatch.setattr(sif, "_fetch_filing_text", lambda *a, **k: None)   # 新しい書類の本文の取得に失敗
     monkeypatch.setattr(sif, "_translate_excerpt", _no_call("Grokの翻訳"))
-    monkeypatch.setattr(sif, "_extract_segment_outlook_safe", _no_call("セグメント別見通しのAI抽出"))
     code, out = _run_main(monkeypatch, capsys, ["PLTR", "SOFI", "TSLA"],
                           cik=lambda t: None if t == "PLTR" else "0000000001")
     assert code == 0

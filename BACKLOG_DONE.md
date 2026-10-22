@@ -11051,6 +11051,7 @@ report_consistency_check.py --fail-on-ng` NG=0。
 ---
 
 ### ✅ [SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1] セグメント別成長率のXBRL決定論的算出への置き換え（案①、方針転換）— 第1陣7銘柄実装
+**追記（2026-10-22）:** MD&Aのセグメント別成長見通しのAI抽出（`segment_outlook`）の生成を止めた。読み手0件・TANUKIのreport.txtにも出ていなかったため（Koichiさんの判断、[[OUTPUT-INVENTORY-CHECK-1]]のTAILの段階の後）。`src/tail/segment_growth_outlook_ai.py`とそのテストを削除し、`sec_items_fetcher.py`は`segment_outlook`を書かない。過去の`docs/portfolio/tail/data/mda/`の`segment_outlook`は作った時点の記録として残す（FINDINGS 2026-10-22）
 **優先度:** 保留 → 完了（第1陣7銘柄。第2陣・第3陣・ADBE/CELHは
 [[SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1]]として新規登録）
 **分類:** 新機能 / TANUKI VALUATION / DCF成長率算出方式
@@ -11493,6 +11494,7 @@ Koichiさんの決定により業種別固定転換率（conversion_rate）方�
 ---
 
 ### ✅ [SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1] MD&A原文からのセグメント別成長見通しAI抽出（10銘柄パイロット）
+**追記（2026-10-22）:** MD&Aのセグメント別成長見通しのAI抽出（`segment_outlook`）の生成を止めた。読み手0件・TANUKIのreport.txtにも出ていなかったため（Koichiさんの判断、[[OUTPUT-INVENTORY-CHECK-1]]のTAILの段階の後）。`src/tail/segment_growth_outlook_ai.py`とそのテストを削除し、`sec_items_fetcher.py`は`segment_outlook`を書かない。過去の`docs/portfolio/tail/data/mda/`の`segment_outlook`は作った時点の記録として残す（FINDINGS 2026-10-22）
 **優先度:** 保留/将来検討 → 完了（10銘柄パイロットのみ。99銘柄拡張は別タスク）
 **分類:** 新機能 / TANUKI TAIL・TANUKI VALUATION
 **登録日:** 2026-08-27

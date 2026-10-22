@@ -59,7 +59,6 @@ from common.sec_data import tickers as _tickers_mod  # noqa: E402
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
 import sec_ctrl_fetcher as _ctrl  # noqa: E402
-import segment_growth_outlook_ai as _segment_ai  # noqa: E402
 
 DATA_DIR     = _ctrl.DATA_DIR
 POS_IDX_PATH = _ctrl.POS_IDX_PATH
@@ -316,22 +315,6 @@ def extract_item_section(text: str, item_re: re.Pattern, next_res: List[re.Patte
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# セグメント別成長見通しAI抽出（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-
-# FUTURE-IDEA-1]]、2026-09-18パイロット実装）
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-def _extract_segment_outlook_safe(ticker: str, section_text: str) -> Optional[List[Dict[str, Any]]]:
-    """segment_growth_outlook_ai.extract_segment_growth_outlook()の
-    呼び出しラッパー。AI呼び出し失敗時も例外を外へ伝播させず、既存の
-    risk_factors/legal_proceedings/mda取得処理を止めない。"""
-    try:
-        return _segment_ai.extract_segment_growth_outlook(ticker, section_text)
-    except Exception as e:
-        print(f"  [{ticker}] セグメント別成長見通しAI抽出でエラー（参考情報なしで継続）: {e}")
-        return None
-
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 「変更なし」検知
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -440,8 +423,9 @@ def fetch_annual(ticker: str, cik: str, item_key: str) -> Optional[Dict[str, Any
         return None
 
     # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（2026-09-18）:
-    # mda項目のみ、セグメント別成長見通しAI抽出（本関数末尾で実施）の
-    # ためにmax_charsを拡張する。orig_s（開始位置）はanchor_window
+    # mda項目のみ、セグメント別成長見通しAI抽出のためにmax_charsを拡張した
+    # （AI抽出は2026-10-22に止めた。読み手0件、[[OUTPUT-INVENTORY-CHECK-1]]。
+    # 10-Qの「変更なし」検知が同じsection_textを見るため、長さは変えずに残す）。orig_s（開始位置）はanchor_window
     # （固定3000文字）のみで決まりmax_charsに依存しないため、
     # excerpt=section_text[:2000]の結果は不変（既存のrisk_factors/
     # legal_proceedings/mda表示機能への影響なし、調査フェーズで確認済み）。
@@ -460,10 +444,6 @@ def fetch_annual(ticker: str, cik: str, item_key: str) -> Optional[Dict[str, Any
         excerpt, cfg["translate_desc_annual"], timeout=cfg.get("translate_timeout", 60),
     )
 
-    segment_outlook = None
-    if item_key == "mda":
-        segment_outlook = _extract_segment_outlook_safe(ticker, section_text)
-
     return {
         "ticker":        ticker.upper(),
         "item_key":      item_key,
@@ -475,7 +455,6 @@ def fetch_annual(ticker: str, cik: str, item_key: str) -> Optional[Dict[str, Any
         "changed":       None,  # 10-K基準そのものには「変更検知」概念は適用しない
         "excerpt":       excerpt,
         "excerpt_ja":    excerpt_ja,
-        "segment_outlook": segment_outlook,
         "fetched_at":    datetime.now(JST).isoformat(),
     }
 
@@ -510,7 +489,8 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
             continue
 
         # [[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]（2026-09-18）:
-        # fetch_annual()と同じ理由でmda項目のみmax_charsを拡張する
+        # fetch_annual()と同じ理由でmda項目のみmax_charsを拡張した（AI抽出は2026-10-22に止めた。
+        # 下の「変更なし」検知がsection_textを見るため、長さは変えずに残す）
         _max_chars = 60000 if item_key == "mda" else 20000
         start, section_text = extract_item_section(
             raw_text, cfg["quarterly_item_re"], cfg["quarterly_next_res"],
@@ -537,10 +517,6 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
             excerpt, cfg["translate_desc_quarterly"], timeout=cfg.get("translate_timeout", 60),
         )
 
-        segment_outlook = None
-        if item_key == "mda":
-            segment_outlook = _extract_segment_outlook_safe(ticker, section_text)
-
         results.append({
             "ticker":        ticker.upper(),
             "item_key":      item_key,
@@ -552,7 +528,6 @@ def fetch_quarterly_updates(ticker: str, cik: str, item_key: str,
             "changed":       changed,
             "excerpt":       excerpt,
             "excerpt_ja":    excerpt_ja,
-            "segment_outlook": segment_outlook,
             "fetched_at":    datetime.now(JST).isoformat(),
         })
         time.sleep(0.3)

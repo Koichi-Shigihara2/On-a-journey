@@ -3347,7 +3347,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 614
+     "line": 589
     }
    ],
    "writers_outside_layer": [],
@@ -3458,7 +3458,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 603
+     "line": 578
     }
    ],
    "writers_outside_layer": [],
@@ -3742,7 +3742,7 @@
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）・segment_outlook（MD&Aのセグメントの見通し）。型は ctrl/ にも当たる。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -3752,7 +3752,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 588
+     "line": 563
     }
    ],
    "writers_outside_layer": [],
@@ -3828,7 +3828,7 @@
     },
     {
      "key": "segment_outlook",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "significant_deficiencies",
@@ -3990,7 +3990,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 383,
+     "line": 366,
      "func": "_stored_period",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3998,7 +3998,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 385,
+     "line": 368,
      "func": "_stored_period",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4006,7 +4006,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 393,
+     "line": 376,
      "func": "_unchanged_marker",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4014,7 +4014,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 429,
+     "line": 412,
      "func": "fetch_annual",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4022,7 +4022,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 500,
+     "line": 479,
      "func": "fetch_quarterly_updates",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4030,7 +4030,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 635,
+     "line": 610,
      "func": "fetch_and_save_all_items",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4038,7 +4038,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 642,
+     "line": 617,
      "func": "fetch_and_save_all_items",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4150,7 +4150,7 @@
     },
     {
      "file": "tests/test_tail_sec_items_unchanged.py",
-     "line": 91,
+     "line": 89,
      "func": "test_new_filing_is_fetched_and_written",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4158,7 +4158,7 @@
     },
     {
      "file": "tests/test_tail_sec_items_unchanged.py",
-     "line": 93,
+     "line": 91,
      "func": "test_new_filing_is_fetched_and_written",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4198,7 +4198,7 @@
    "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja・segment_outlook。型は ctrl/ にも当たる",
+   "note": "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -4817,16 +4817,6 @@
      "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
     },
     {
-     "file": "src/tail/segment_growth_outlook_ai.py",
-     "line": 47,
-     "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/segment_growth_outlook_ai.py",
-     "line": 77,
-     "text": "def call_grok("
-    },
-    {
      "file": "src/tail/text_kpi_extractor.py",
      "line": 47,
      "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
@@ -4852,7 +4842,6 @@
     "src/tail/kpi_proposer.py",
     "src/tail/quarterly_review_generator.py",
     "src/tail/sec_ctrl_fetcher.py",
-    "src/tail/segment_growth_outlook_ai.py",
     "src/tail/text_kpi_extractor.py",
     "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py"
    ],
@@ -4971,7 +4960,7 @@
    "dir": "src/tail",
    "file": "src/tail/sec_items_fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 702,
+   "lines": 677,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_SEC_Items.yml"
    ],
@@ -4981,20 +4970,6 @@
     "tests/test_tail_sec_ctrl_fetcher.py",
     "tests/test_tail_sec_items_fetcher.py",
     "tests/test_tail_sec_items_unchanged.py"
-   ]
-  },
-  {
-   "dir": "src/tail",
-   "file": "src/tail/segment_growth_outlook_ai.py",
-   "decision": "残す（2026-10-22）",
-   "lines": 178,
-   "workflows": [],
-   "code": [],
-   "same_dir": [
-    "src/tail/sec_items_fetcher.py"
-   ],
-   "tests": [
-    "tests/test_segment_growth_outlook_ai.py"
    ]
   },
   {
@@ -8432,6 +8407,17 @@
     "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
+    "key": "quote",
+    "sources": [
+     "docs/portfolio/tail/data/{item_key}/{T}/latest.json",
+     "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json"
+    ],
+    "parents": [
+     "segment_outlook"
+    ],
+    "note": ""
+   },
+   {
     "key": "recommendation_reason",
     "sources": [
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
@@ -8468,7 +8454,7 @@
      "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json"
     ],
     "parents": [],
-    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。TANUKI の report.txt にも出ていない（FINDINGS 2026-10-22、型A）"
+    "note": "生成を止めた（2026-10-22、Koichiさんの判断）。過去の mda のファイルにだけ作った時点の記録として残る（TANUKI の report.txt にも出ていなかった、FINDINGS 2026-10-22）"
    },
    {
     "key": "stage2_json_valid",

@@ -453,14 +453,13 @@ class TestApgeWhitespaceSplitRegression:
         assert old_anchor_re.search("Management s Discussio  n and Analysis") is None
 
 
-class TestSegmentOutlookWiring:
-    """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]パイロット実装
-    （2026-09-18）。mda項目のみmax_charsを拡張しsegment_outlookを
-    付与すること・他の2項目（risk_factors/legal_proceedings）には
-    一切影響しないことを、ネットワークアクセスなしで検証する。"""
+class TestNoSegmentOutlook:
+    """[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]のセグメント別成長見通しのAI抽出（segment_outlook）は、
+    読み手0件のため2026-10-22に止めた（[[OUTPUT-INVENTORY-CHECK-1]]、TAILの段階2の後）。mda項目のmax_charsの拡張は、
+    10-Qの「変更なし」検知が同じsection_textを見るため残す。ネットワークアクセスなしで検証する。"""
 
     @staticmethod
-    def _patch_common(monkeypatch, extract_item_section_spy, segment_ai_spy):
+    def _patch_common(monkeypatch, extract_item_section_spy):
         monkeypatch.setattr(sif, "_get_recent_filings", lambda *a, **k: [{
             "accession": "0000000000-00-000001",
             "primary_document": "dummy.htm",
@@ -470,64 +469,46 @@ class TestSegmentOutlookWiring:
         monkeypatch.setattr(sif, "_fetch_filing_text", lambda *a, **k: "dummy raw filing text")
         monkeypatch.setattr(sif, "extract_item_section", extract_item_section_spy)
         monkeypatch.setattr(sif, "_translate_excerpt", lambda *a, **k: None)
-        monkeypatch.setattr(sif, "_extract_segment_outlook_safe", segment_ai_spy)
 
-    def test_fetch_annual_mda_uses_60000_max_chars_and_calls_segment_ai(self, monkeypatch):
+    def test_segment_ai_is_gone(self):
+        assert not hasattr(sif, "_extract_segment_outlook_safe")
+        assert not hasattr(sif, "_segment_ai")
+
+    def test_fetch_annual_mda_keeps_60000_max_chars_without_segment_outlook(self, monkeypatch):
         calls = {}
 
         def fake_extract(*args, **kwargs):
             calls["max_chars"] = kwargs.get("max_chars")
             return 0, "dummy mda section text"
 
-        segment_calls = []
-
-        def fake_segment_ai(ticker, section_text):
-            segment_calls.append((ticker, section_text))
-            return [{"name": "Foo Segment", "trend": "stable", "summary": "s", "quote": "q"}]
-
-        self._patch_common(monkeypatch, fake_extract, fake_segment_ai)
+        self._patch_common(monkeypatch, fake_extract)
         result = sif.fetch_annual("SOFI", "0001818874", "mda")
-
         assert calls["max_chars"] == 60000
-        assert len(segment_calls) == 1
-        assert segment_calls[0] == ("SOFI", "dummy mda section text")
-        assert result["segment_outlook"] == [
-            {"name": "Foo Segment", "trend": "stable", "summary": "s", "quote": "q"}
-        ]
+        assert "segment_outlook" not in result
 
-    def test_fetch_annual_risk_factors_uses_20000_max_chars_and_skips_segment_ai(self, monkeypatch):
+    def test_fetch_annual_risk_factors_uses_20000_max_chars(self, monkeypatch):
         calls = {}
 
         def fake_extract(*args, **kwargs):
             calls["max_chars"] = kwargs.get("max_chars")
             return 0, "dummy risk factors text"
 
-        segment_calls = []
-
-        def fake_segment_ai(ticker, section_text):
-            segment_calls.append((ticker, section_text))
-            return None
-
-        self._patch_common(monkeypatch, fake_extract, fake_segment_ai)
+        self._patch_common(monkeypatch, fake_extract)
         result = sif.fetch_annual("SOFI", "0001818874", "risk_factors")
-
         assert calls["max_chars"] == 20000
-        assert len(segment_calls) == 0  # mda以外はセグメント抽出自体を呼び出さない
-        assert result["segment_outlook"] is None
+        assert "segment_outlook" not in result
 
-    def test_fetch_quarterly_updates_mda_uses_60000_max_chars(self, monkeypatch):
+    def test_fetch_quarterly_updates_mda_keeps_60000_max_chars(self, monkeypatch):
         calls = {}
 
         def fake_extract(*args, **kwargs):
             calls["max_chars"] = kwargs.get("max_chars")
             return 0, "dummy mda quarterly text"
 
-        self._patch_common(monkeypatch, fake_extract, lambda t, s: None)
+        self._patch_common(monkeypatch, fake_extract)
         results = sif.fetch_quarterly_updates("SOFI", "0001818874", "mda", after_date="2026-01-01")
-
         assert calls["max_chars"] == 60000
-        assert len(results) == 1
-        assert "segment_outlook" in results[0]
+        assert len(results) == 1 and "segment_outlook" not in results[0]
 
     def test_fetch_quarterly_updates_legal_proceedings_uses_20000_max_chars(self, monkeypatch):
         calls = {}
@@ -536,8 +517,7 @@ class TestSegmentOutlookWiring:
             calls["max_chars"] = kwargs.get("max_chars")
             return 0, "dummy legal text"
 
-        self._patch_common(monkeypatch, fake_extract, lambda t, s: None)
+        self._patch_common(monkeypatch, fake_extract)
         results = sif.fetch_quarterly_updates("SOFI", "0001818874", "legal_proceedings", after_date="2026-01-01")
-
         assert calls["max_chars"] == 20000
-        assert results[0]["segment_outlook"] is None
+        assert "segment_outlook" not in results[0]

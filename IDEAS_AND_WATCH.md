@@ -77,6 +77,7 @@ Workerの空いているcron（無料プランの5本のうち3本を使用、�
 ---
 
 ### [SEGMENT-XBRL-GROWTH-EXPANSION-CANDIDATES-1] segment_xbrl（[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]案①）の対象銘柄拡張候補3件
+**追記（2026-10-22）:** MD&Aのセグメント別成長見通しのAI抽出（`segment_outlook`）の生成を止めた。読み手0件・TANUKIのreport.txtにも出ていなかったため（Koichiさんの判断、[[OUTPUT-INVENTORY-CHECK-1]]のTAILの段階の後）。`src/tail/segment_growth_outlook_ai.py`とそのテストを削除し、`sec_items_fetcher.py`は`segment_outlook`を書かない。過去の`docs/portfolio/tail/data/mda/`の`segment_outlook`は作った時点の記録として残す（FINDINGS 2026-10-22）
 **優先度:** 低（今すぐ着手する項目ではない、Koichiさんが着手タイミングを判断する）
 **分類:** 新機能拡張候補 / TANUKI VALUATION
 **登録日:** 2026-09-18
