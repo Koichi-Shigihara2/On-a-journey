@@ -434,3 +434,39 @@ def test_market_data_check_known_rules_warn_and_new_unread_key_warns():
     assert any("WARN-INV-3" in x and "trading_day" in x for x in warn)
     assert any("NG-INV-3" in x and "bar_close_rule" in x for x in ng)
     assert [x for x in warn if "WARN-INV-6" in x and "new_key" in x] and not [x for x in warn if "eps_actual" in x]
+
+
+def test_strict2_loop_over_names_and_same_folder_import(monkeypatch):
+    """RESOLVE_STRICT 2（TAIL の段階から）: for path in (a, b) の変数は並びのそれぞれのパス。
+    import sec_ctrl_fetcher as _ctrl（sys.path に自分のフォルダを足す形）は同じフォルダのモジュール（2026-10-22）。"""
+    import ast
+    src = ("import os\n"
+           "BASE = os.path.join('docs', 'tail', 'data')\n"
+           "def save(t, q):\n"
+           "    a = os.path.join(BASE, t, f'{q}.json')\n"
+           "    b = os.path.join(BASE, t, 'latest.json')\n"
+           "    for path in (a, b):\n"
+           "        open(path, 'w')\n")
+    rel = "src/tl/ctrl_k.py"
+    mod = _strict_module(monkeypatch, rel, src, {})
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", 2)
+    writes, _ = inv._io_sites(mod)
+    assert [w["path"] for w in writes] == ["docs/tail/data/{T}/{Q}.json", "docs/tail/data/{T}/latest.json"]
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", 1)
+    assert [w["path"] for w in inv._io_sites(mod)[0]] == ["{path}"]
+    monkeypatch.setattr(inv, "ALL_PY", {"src/tl/ctrl_k.py", "src/tl/items_l.py"})
+    isrc = "import ctrl_k as _ctrl\nDATA_DIR = _ctrl.BASE\n"
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", 2)
+    assert inv.Module("src/tl/items_l.py", ast.parse(isrc), isrc).mod_imports == {"_ctrl": "src/tl/ctrl_k.py"}
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", 1)
+    assert inv.Module("src/tl/items_l.py", ast.parse(isrc), isrc).mod_imports == {}
+
+
+def test_tail_layer_settings():
+    """TAIL（段階1、2026-10-22）: 解決の厳しさは 2。汎用の読み書きの関数の印・画面の無い層のキーの印は使わない。CHECK-INV にはまだ入れない。"""
+    tl = inv.LAYERS["tail"]
+    assert tl["LAYER_DIRS"] == ("src/tail",)
+    assert tl["RESOLVE_STRICT"] == 2 and not tl["IO_HELPER_BY_CALLER"] and not tl["DATA_UNREAD_KEYS"]
+    assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
+    assert "tail" not in inv.CHECK_LAYERS
+    assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1

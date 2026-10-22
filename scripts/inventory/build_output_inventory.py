@@ -24,6 +24,7 @@
   python scripts/inventory/build_output_inventory.py                 # SEC層: docs/architecture/output_inventory/sec_layer.json と sec_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer tanuki  # TANUKI: tanuki_layer.json と tanuki_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer market_data  # 市場データ層: market_data_layer.json と market_data_layer.md を書く
+  python scripts/inventory/build_output_inventory.py --layer tail  # TANUKI TAIL: tail_layer.json と tail_layer.md を書く
   python scripts/inventory/build_output_inventory.py --check   # 書かずに、今のファイルと同じかだけを見る（違えば終了コード1）
 
 CHECK としてはまだ動かさない（ゲートに入れない。段階3で、消した後に入れる）。
@@ -180,7 +181,8 @@ IO_HELPER_BY_CALLER = False   # パスを引数で受けて読み書きする汎
 DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキー（入れ子まで）のうち、テストを除くコードに読みの形で出てこないものを出す（市場データ層の段階から）
 # パスと呼び出しの解決を厳しくする（市場データ層の段階から）: join の候補ごとの連結・テストの呼び出しを引数の候補にしない・argparse の引数・
 # 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
-RESOLVE_STRICT = False
+# 2 は TAIL の段階から: 同じフォルダの import X as Y・名前の並びを回す for の変数（市場データ層の一覧を変えないよう 1 と分けた）
+RESOLVE_STRICT = 0
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -500,9 +502,85 @@ _MARKET.update(
     ],
     FULL_SCAN=True,
     WORKFLOW_SUMMARY=True,
-    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=True, DATA_UNREAD_KEYS=True,
+    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=1, DATA_UNREAD_KEYS=True,
 )
-LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET}
+# ---- TANUKI TAIL（src/tail・docs/portfolio/tail、段階1、2026-10-22）
+_TAIL = dict(_SEC)
+_TAIL.update(
+    LAYER="src/tail",
+    LAYER_DIRS=("src/tail",),
+    OUT_JSON=f"{OUT_DIR}/tail_layer.json", OUT_MD=f"{OUT_DIR}/tail_layer.md",
+    # 自分のフォルダの読み手は「効く」に数えない。TANUKI（理論株価・判定）と画面を「効く」とする
+    DECISION_PREFIXES=[x for x in DECISION_PREFIXES if x[0] != "src/tail/"] + [
+        ("docs/portfolio/tail/", "TANUKI TAILの画面（保有銘柄の監視）"),
+        ("docs/value-monitor/tanuki_valuation/", "TANUKI VALUATIONの画面"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=[],
+    NONPROD_SCAN=True,
+    ANNOTATIONS={
+        "docs/portfolio/tail/data/positions_index.json":
+            "TAILの保有・監視銘柄の一覧（positions）。画面の入力（Position Write）から書き、RSS Monitor・SEC Ctrl・Items・Market Pulse等が監視の対象に読む",
+        "docs/portfolio/tail/data/positions/{T}_thesis.json":
+            "銘柄ごとの投資の仮説（エントリーの理由・条件・撤退の目安・監視するKPI）。画面の入力から書く（人の入力）",
+        "docs/portfolio/tail/data/journal.json": "売買・仮説の見直しの記録（判断の日誌）。画面の入力から書く（人の入力）",
+        "/tmp/tail_commit_message.txt": "TANUKI_TAIL_Position_Writeの1回の書き込みのcommitの件名（同じワークフローの後の段が git commit -F で読む）",
+        "docs/portfolio/tail/data/rss_state.json": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/review_queue.json":
+            "四半期のレビューを作る待ち行列（新規提出で積み、レビューを作ったら completed・古い期は superseded）",
+        "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json":
+            "銘柄・四半期ごとのレビュー。**AIの出力（Grok）**: stage1（健康度・推奨・理由等）・stage2（シナリオ〈bull/base/bear〉・KPIの予想等）・call2。"
+            "grok_call1_success・grok_call2_success・stage2_json_valid はAIの呼び出しの結果の印、kpi_snapshot・layer3_snapshot・macro_snapshot は作った時点の入力の控え。"
+            "レビューは対象の期にかかわらず作った時点の最新の財務で書かれる（[[TAIL-REVIEW-PERIOD-FILTER-1]]。06-06の一括生成の分は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]、統合済み）",
+        "docs/portfolio/scenario/{T}/{sc_name}.json":
+            "銘柄ごとのシナリオ（bull/base/bear）のDCF。tail_dcf_bridge.py がレビューの stage2.scenarios（**AIの出力**）とLayer2のKPIから作る",
+        "docs/portfolio/tail/data/prediction_history.json": "レビューの予想（AIの出力のKPIの予想）と実績の突合の履歴（予想の当たり外れ）",
+        "docs/portfolio/tail/data/kpi/{T}_layer2.json":
+            "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/kpi/{T}_layer3.json": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json":
+            "銘柄ごとのKPIの提案。**AIの出力（Grok）**: proposed_kpis・rejected_kpis（却下はXBRLとの照合の結果）。"
+            "kpi_proposer.py は手で動かす（CLAUDE_CODE_START.md「TANUKI TAIL 銘柄追加手順」。ワークフローは無い）",
+        "config/tail_kpi_map.json": "銘柄ごとに監視するKPIとXBRLのタグの対応。kpi_proposer.py（手で動かす）が提案のうち照合を通ったものを書く",
+        "docs/portfolio/tail/data/ctrl/{T}/latest.json":
+            "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/ctrl/{T}/{Q}.json":
+            "銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。"
+            "この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる",
+        "docs/portfolio/tail/data/ctrl/{T}/index.json": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。書き手が次の書き込みでまとめ直すほかに読むコードは無い",
+        "docs/portfolio/tail/data/{item_key}/{T}/latest.json":
+            "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。"
+            "**AIの出力（Grok）**: excerpt_ja（和訳）・segment_outlook（MD&Aのセグメントの見通し）。型は ctrl/ にも当たる。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json":
+            "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja・segment_outlook。型は ctrl/ にも当たる",
+        "docs/portfolio/tail/data/{item_key}/{T}/index.json":
+            "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
+        "Discord（DISCORD_WEBHOOK）": "新規提出・提出の遅れ（法定の期限超え）のDiscordへの通知",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="tail", OUTSIDE_PREFIXES=("docs/portfolio/tail/", "src/tail/"),
+    READ_PREFIXES=("docs/portfolio/tail", "src/tail"),
+    READ_HINT="tail", NAME_SHORT="TAIL",
+    KNOWN_DUPLICATE_RULES=[], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/portfolio/tail",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"] + [
+        {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・モデル・再試行）",
+         "patterns": [r"^\s*GROK_URL\s*=", r"def\s+_?\w*call_grok\w*\s*\("]},
+    ],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=[],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+    RESOLVE_STRICT=2,
+)
+LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
+                           "tail": _TAIL}
 
 
 def set_layer(name: str) -> None:
@@ -645,8 +723,12 @@ class Module:
             elif isinstance(node, ast.Import):
                 for a in node.names:
                     cand = a.name.replace(".", "/") + ".py"
+                    local = posixpath.join(posixpath.dirname(rel), cand)
                     if cand in ALL_PY:
                         self.mod_imports[a.asname or a.name] = cand
+                    elif RESOLVE_STRICT >= 2 and local in ALL_PY:
+                        # sys.path に自分のフォルダを足して読む形（import sec_ctrl_fetcher as _ctrl 等。TAIL の段階から）
+                        self.mod_imports[a.asname or a.name] = local
                     else:
                         self.ext_imports.add(a.asname or a.name.split(".")[0])
             if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -816,6 +898,12 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             best = None
             assigns, loops = _func_index(mod, func)
             if expr.id in loops:
+                if RESOLVE_STRICT >= 2:
+                    # for path in (period_path, latest_path): のように名前の並びを回すものは、並びのそれぞれのパス（TAIL の段階から）
+                    seqs = [n.iter for n in ast.walk(func) if isinstance(n, ast.For) and isinstance(n.target, ast.Name)
+                            and n.target.id == expr.id and isinstance(n.iter, (ast.Tuple, ast.List))]
+                    if len(seqs) == 1 and seqs[0].elts:
+                        return ALT.join(dict.fromkeys(r(e) for e in seqs[0].elts))
                 return placeholder_for(expr)
             for n in assigns.get(expr.id, []):
                 if n.lineno < getattr(use_node, "lineno", 10 ** 9) and (best is None or n.lineno > best.lineno):
@@ -3028,7 +3116,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()
