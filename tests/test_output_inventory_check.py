@@ -276,6 +276,8 @@ def test_empty_string_default_is_resolved_from_callers(monkeypatch):
            "def run():\n"
            "    load('X', os.path.join('docs', 'eps', 'data'))\n")
     rel = "src/x/test_default_e.py"
+    # 段階の設定はモジュールの変数（最後に set_layer() した段階のもの）。run_check() が市場データ層〈RESOLVE_STRICT〉で終わっても同じになるよう固定する
+    monkeypatch.setattr(inv, "RESOLVE_STRICT", False)
     mod = inv.Module(rel, ast.parse(src), src)
     monkeypatch.setitem(inv.MODULES, rel, mod)
     monkeypatch.setitem(inv.CALLERS, (rel, "load"), [(rel, 5)])
@@ -407,10 +409,28 @@ def test_strict_git_add_line_and_index_symbol(monkeypatch):
 
 
 def test_market_data_layer_settings():
-    """市場データ層（段階1、2026-10-22）: 画面を持たない共有のデータ層。CHECK-INV にはまだ入れない。"""
+    """市場データ層（段階1・3、2026-10-22）: 画面を持たない共有のデータ層。CHECK-INV は最後の段階（索引を作り直すため）。"""
     md = inv.LAYERS["market_data"]
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
     assert not md["SCREEN_PAGES"]
-    assert "market_data" not in inv.CHECK_LAYERS
-    assert not any(inv.LAYERS[k]["RESOLVE_STRICT"] for k in inv.CHECK_LAYERS)
+    assert inv.CHECK_LAYERS[-1] == "market_data"
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data"]
+    assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
+
+
+def test_market_data_check_known_rules_warn_and_new_unread_key_warns():
+    """市場データ層の CHECK-INV（2026-10-22）: 既知の規則の二重3つは WARN、それ以外の新しい二重は NG。
+    誰も読まないキー（data_keys）は新しくできたものだけ WARN-INV-6。"""
+    known = inv.LAYERS["market_data"]["KNOWN_DUPLICATE_RULES"]
+    saved = _inventory()
+    saved["rules"] = [_rule("trading_day", ["common/market_data/fetcher.py", "src/market/market_pulse/breadth_calculator.py"])]
+    saved["data_keys"] = {"unread_keys": [{"key": "eps_actual", "sources": ["common/market_data/analyst_history/{T}.json"]}],
+                          "written_key_count": 2}
+    now = copy.deepcopy(saved)
+    now["rules"].append(_rule("bar_close_rule", ["common/market_data/fetcher.py", "docs/x.html"]))
+    now["data_keys"]["unread_keys"].append({"key": "new_key", "sources": ["common/market_data/daily/{T}.json"]})
+    ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="market_data_layer.json", tag="市場データ層")
+    assert any("WARN-INV-3" in x and "trading_day" in x for x in warn)
+    assert any("NG-INV-3" in x and "bar_close_rule" in x for x in ng)
+    assert [x for x in warn if "WARN-INV-6" in x and "new_key" in x] and not [x for x in warn if "eps_actual" in x]

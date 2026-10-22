@@ -481,7 +481,7 @@ _MARKET.update(
     OUTSIDE_HINT="market_data", OUTSIDE_PREFIXES=("common/market_data/",),
     READ_PREFIXES=("common/market_data",),
     READ_HINT="market_data", NAME_SHORT="市場データ層",
-    KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents"], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
         **{k: "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
            for k in ("current_price_target", "eps_actual", "eps_difference", "eps_estimate",
@@ -2705,10 +2705,17 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
         for u in now["screen"].get("unread_keys", []):
             if u["key"] not in known_ur:
                 warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
+    # 画面の無い層（DATA_UNREAD_KEYS、市場データ層から）: 誰も読まないキーが新しくできたら WARN（INV-6 と同じ）
+    if now.get("data_keys") is not None:
+        known_dk = {u["key"] for u in (saved.get("data_keys") or {}).get("unread_keys", [])}
+        for u in now["data_keys"].get("unread_keys", []):
+            if u["key"] not in known_dk:
+                warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
     return ng, warn
 
 
-CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks")   # CHECK-INV を当てる段階（段階3が済んだもの）
+# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層は解決の厳しさ（RESOLVE_STRICT）が違い索引を作り直すため最後に置く
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data")
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

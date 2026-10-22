@@ -359,6 +359,14 @@
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_analyst_events",
      "type": "テスト"
+    },
+    {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 426,
+     "func": "test_market_data_check_known_rules_warn_and_new_unread_key_warns",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -394,7 +402,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
    "reader_count": 3,
-   "reader_count_test": 1,
+   "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移。3系統とも追記型の履歴（Yahooが返すのは直近の分だけで、過去の分はこのファイルにしか残らない）",
@@ -3032,6 +3040,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 430,
+     "func": "test_market_data_check_known_rules_warn_and_new_unread_key_warns",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_registration_consistency_gate.py",
      "line": 64,
      "func": "test_include_provisioning_targets_provisioning_ticker",
@@ -3449,7 +3465,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
    "reader_count": 18,
-   "reader_count_test": 8,
+   "reader_count_test": 9,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -3688,7 +3704,8 @@
     "tests/test_market_data_fetcher.py",
     "tests/test_market_data_reader.py",
     "tests/test_market_data_stale_provisional.py",
-    "tests/test_market_pulse_provisional_kind.py"
+    "tests/test_market_pulse_provisional_kind.py",
+    "tests/test_output_inventory_check.py"
    ]
   },
   {
