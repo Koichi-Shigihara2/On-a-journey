@@ -40,7 +40,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "TANUKI_TAIL_Position_Writeの1回の書き込みのcommitの件名（同じワークフローの後の段が git commit -F で読む）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/ctrl/{T}/index.json",
@@ -72,6 +72,14 @@
      "how": "保存済みファイル",
      "via": "grep",
      "type": "JS・HTML"
+    },
+    {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 481,
+     "func": "test_api_page_relative_fetch_is_also_page_relative",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -89,11 +97,11 @@
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
    "reader_count": 1,
-   "reader_count_test": 0,
+   "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。書き手が次の書き込みでまとめ直すほかに読むコードは無い",
-   "decision": "（段階2の判断待ち）"
+   "note": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。画面の index.html が最新の四半期を選ぶのに読む",
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/kpi/{T}_layer3.json",
@@ -206,7 +214,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/rss_state.json",
@@ -321,7 +329,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "config/tail_kpi_map.json",
@@ -594,7 +602,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとに監視するKPIとXBRLのタグの対応。kpi_proposer.py（手で動かす）が提案のうち照合を通ったものを書く",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/scenario/{T}/{sc_name}.json",
@@ -703,7 +711,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのシナリオ（bull/base/bear）のDCF。tail_dcf_bridge.py がレビューの stage2.scenarios（**AIの出力**）とLayer2のKPIから作る",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/ctrl/{T}/latest.json",
@@ -886,7 +894,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/ctrl/{T}/{Q}.json",
@@ -1040,6 +1048,14 @@
      "type": "Python"
     },
     {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 481,
+     "func": "test_api_page_relative_fetch_is_also_page_relative",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_sec_freshness.py",
      "line": 473,
      "func": "test_main_exits_two_when_m_is_critical",
@@ -1095,11 +1111,11 @@
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
    "reader_count": 3,
-   "reader_count_test": 2,
+   "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/journal.json",
@@ -1193,7 +1209,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "売買・仮説の見直しの記録（判断の日誌）。画面の入力から書く（人の入力）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/kpi/{T}_layer2.json",
@@ -1642,7 +1658,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json",
@@ -1829,7 +1845,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのKPIの提案。**AIの出力（Grok）**: proposed_kpis・rejected_kpis（却下はXBRLとの照合の結果）。kpi_proposer.py は手で動かす（CLAUDE_CODE_START.md「TANUKI TAIL 銘柄追加手順」。ワークフローは無い）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/positions/{T}_thesis.json",
@@ -2095,7 +2111,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの投資の仮説（エントリーの理由・条件・撤退の目安・監視するKPI）。画面の入力から書く（人の入力）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/positions_index.json",
@@ -2496,7 +2512,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "TAILの保有・監視銘柄の一覧（positions）。画面の入力（Position Write）から書き、RSS Monitor・SEC Ctrl・Items・Market Pulse等が監視の対象に読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/prediction_history.json",
@@ -2661,7 +2677,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "レビューの予想（AIの出力のKPIの予想）と実績の突合の履歴（予想の当たり外れ）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/review_queue.json",
@@ -3053,7 +3069,7 @@
    "reader_count_compute": 1,
    "group": "2件以上",
    "note": "四半期のレビューを作る待ち行列（新規提出で積み、レビューを作ったら completed・古い期は superseded）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json",
@@ -3322,7 +3338,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・四半期ごとのレビュー。**AIの出力（Grok）**: stage1（健康度・推奨・理由等）・stage2（シナリオ〈bull/base/bear〉・KPIの予想等）・call2。grok_call1_success・grok_call2_success・stage2_json_valid はAIの呼び出しの結果の印、kpi_snapshot・layer3_snapshot・macro_snapshot は作った時点の入力の控え。レビューは対象の期にかかわらず作った時点の最新の財務で書かれる（[[TAIL-REVIEW-PERIOD-FILTER-1]]。06-06の一括生成の分は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]、統合済み）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/{item_key}/{T}/index.json",
@@ -3384,6 +3400,14 @@
      "type": "Python"
     },
     {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 481,
+     "func": "test_api_page_relative_fetch_is_also_page_relative",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_tail_sec_items_fetcher.py",
      "line": 188,
      "func": "TestSaveResult.test_saves_period_latest_and_index",
@@ -3421,11 +3445,11 @@
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
    "reader_count": 2,
-   "reader_count_test": 1,
+   "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/{item_key}/{T}/latest.json",
@@ -3719,7 +3743,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）・segment_outlook（MD&Aのセグメントの見通し）。型は ctrl/ にも当たる。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json",
@@ -4021,6 +4045,14 @@
      "type": "Python"
     },
     {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 481,
+     "func": "test_api_page_relative_fetch_is_also_page_relative",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_registration_consistency_gate.py",
      "line": 162,
      "func": "test_hypergrowth_not_ng_after_p2a_removal",
@@ -4163,11 +4195,11 @@
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
    "reader_count": 5,
-   "reader_count_test": 5,
+   "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja・segment_outlook。型は ctrl/ にも当たる",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "Discord（DISCORD_WEBHOOK）",
@@ -4203,7 +4235,7 @@
    "reader_count_compute": 0,
    "group": "人が見る",
    "note": "新規提出・提出の遅れ（法定の期限超え）のDiscordへの通知",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   }
  ],
  "rules": [
@@ -4833,7 +4865,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/__init__.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 0,
    "workflows": [],
    "code": [],
@@ -4843,7 +4875,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/edgar_rss_monitor.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 638,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
@@ -4862,7 +4894,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/kpi_proposer.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 854,
    "workflows": [],
    "code": [
@@ -4874,7 +4906,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/prediction_tracker.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 285,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
@@ -4888,7 +4920,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/quarterly_review_generator.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 1811,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
@@ -4906,7 +4938,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/review_status.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 71,
    "workflows": [],
    "code": [],
@@ -4922,7 +4954,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/sec_ctrl_fetcher.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 478,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_SEC_Ctrl.yml"
@@ -4938,7 +4970,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/sec_items_fetcher.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 702,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_SEC_Items.yml"
@@ -4954,7 +4986,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/segment_growth_outlook_ai.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 178,
    "workflows": [],
    "code": [],
@@ -4968,7 +5000,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/tail_dcf_bridge.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 349,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
@@ -4986,7 +5018,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/text_kpi_extractor.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 713,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
@@ -5000,7 +5032,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/thesis_utils.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 48,
    "workflows": [],
    "code": [],
@@ -5013,7 +5045,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/workflow_write.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 230,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_Position_Write.yml"
@@ -5027,7 +5059,7 @@
   {
    "dir": "src/tail",
    "file": "src/tail/xbrl_segment_fetcher.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 758,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_KPI_Update.yml",
@@ -5098,7 +5130,12 @@
    "sites": []
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "docs/portfolio/tail/data/satellite_alerts.json",
+   "detail": "削除（2026-10-22、Koichiさんの判断）。書き手（satellite_monitor.py、2026-09-23に削除）も読み手も無いファイルだけが残っていた（FINDINGS 2026-10-22）"
+  }
+ ],
  "stop_condition": {
   "outputs": 20,
   "outputs_with_writer_outside_layer": [],
@@ -5131,7 +5168,7 @@
     "lines": [
      154
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5146,7 +5183,7 @@
      192,
      192
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5161,7 +5198,7 @@
      190,
      190
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5175,7 +5212,7 @@
     "lines": [
      204
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5190,7 +5227,7 @@
      191,
      191
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5204,7 +5241,7 @@
     "lines": [
      193
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5231,7 +5268,7 @@
      174,
      200
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5245,7 +5282,7 @@
     "lines": [
      188
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5262,7 +5299,7 @@
      187,
      201
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/decision_log.html",
@@ -5280,7 +5317,7 @@
      171,
      172
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5301,7 +5338,7 @@
      790,
      799
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5315,7 +5352,7 @@
     "lines": [
      637
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5333,7 +5370,7 @@
      783,
      799
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5351,7 +5388,7 @@
      783,
      799
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5365,7 +5402,7 @@
     "lines": [
      717
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5380,7 +5417,7 @@
      738,
      740
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5396,7 +5433,7 @@
     "lines": [
      368
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5410,7 +5447,7 @@
     "lines": [
      571
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5426,7 +5463,7 @@
      448,
      631
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5441,7 +5478,7 @@
      523,
      529
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5459,7 +5496,7 @@
      876,
      877
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5474,7 +5511,7 @@
      501,
      502
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5488,7 +5525,7 @@
     "lines": [
      506
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5503,7 +5540,7 @@
      484,
      484
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5518,7 +5555,7 @@
      495,
      496
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5533,7 +5570,7 @@
      746,
      746
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5548,7 +5585,7 @@
     "lines": [
      911
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5563,7 +5600,7 @@
     "lines": [
      910
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5578,7 +5615,7 @@
      499,
      500
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5592,7 +5629,7 @@
     "lines": [
      579
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5606,7 +5643,7 @@
     "lines": [
      583
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5621,7 +5658,7 @@
      493,
      494
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5640,7 +5677,7 @@
      904,
      904
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5654,7 +5691,7 @@
     "lines": [
      751
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5668,7 +5705,7 @@
     "lines": [
      638
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5685,7 +5722,7 @@
      556,
      556
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5704,7 +5741,7 @@
      941,
      951
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5718,7 +5755,7 @@
     "lines": [
      737
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5732,7 +5769,7 @@
     "lines": [
      743
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5744,7 +5781,7 @@
     "lines": [
      447
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5760,7 +5797,7 @@
     "lines": [
      371
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5774,7 +5811,7 @@
     "lines": [
      692
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5788,7 +5825,7 @@
     "lines": [
      788
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5805,7 +5842,7 @@
      841,
      842
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5819,7 +5856,7 @@
     "lines": [
      790
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5833,7 +5870,7 @@
     "lines": [
      789
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5849,7 +5886,7 @@
     "lines": [
      521
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5868,7 +5905,7 @@
      761,
      871
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5883,7 +5920,7 @@
      748,
      748
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5898,7 +5935,7 @@
      747,
      747
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5915,7 +5952,7 @@
     "lines": [
      883
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5929,7 +5966,7 @@
     "lines": [
      585
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5943,7 +5980,7 @@
     "lines": [
      729
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5957,7 +5994,7 @@
     "lines": [
      689
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5972,7 +6009,7 @@
      567,
      568
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -5986,7 +6023,7 @@
     "lines": [
      742
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6001,7 +6038,7 @@
     "lines": [
      900
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6015,7 +6052,7 @@
     "lines": [
      381
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6029,7 +6066,7 @@
     "lines": [
      570
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6059,7 +6096,7 @@
      1042,
      1048
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6073,7 +6110,7 @@
     "lines": [
      309
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6090,7 +6127,7 @@
      552,
      942
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6104,7 +6141,7 @@
     "lines": [
      686
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6118,7 +6155,7 @@
     "lines": [
      687
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6132,7 +6169,7 @@
     "lines": [
      688
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6146,7 +6183,7 @@
     "lines": [
      693
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6169,7 +6206,7 @@
      782,
      792
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6186,7 +6223,7 @@
     "lines": [
      891
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6200,7 +6237,7 @@
     "lines": [
      741
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6218,7 +6255,7 @@
      903,
      903
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6237,7 +6274,7 @@
      940,
      951
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6252,7 +6289,7 @@
      619,
      792
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6271,7 +6308,7 @@
      388,
      508
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6285,7 +6322,7 @@
     "lines": [
      498
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6305,7 +6342,7 @@
      945,
      945
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6323,7 +6360,7 @@
      492,
      498
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6337,7 +6374,7 @@
     "lines": [
      724
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6370,7 +6407,7 @@
      438,
      438
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6389,7 +6426,7 @@
      415,
      483
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6405,7 +6442,7 @@
     "lines": [
      534
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6422,7 +6459,7 @@
      372,
      446
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/detail.html",
@@ -6456,7 +6493,7 @@
      1041,
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6470,7 +6507,7 @@
     "lines": [
      2174
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6484,7 +6521,7 @@
     "lines": [
      2174
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6498,7 +6535,7 @@
     "lines": [
      2174
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6512,7 +6549,7 @@
     "lines": [
      1801
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6526,7 +6563,7 @@
     "lines": [
      1808
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6543,7 +6580,7 @@
      2182,
      2186
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6558,7 +6595,7 @@
     "lines": [
      2616
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6572,7 +6609,7 @@
     "lines": [
      991
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6597,7 +6634,7 @@
      2225,
      2226
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6612,7 +6649,7 @@
      2110,
      2117
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6631,7 +6668,7 @@
      2104,
      2109
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6645,7 +6682,7 @@
     "lines": [
      987
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6664,7 +6701,7 @@
      2104,
      2109
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6678,7 +6715,7 @@
     "lines": [
      1671
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6694,7 +6731,7 @@
     "lines": [
      1010
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6710,7 +6747,7 @@
      1622,
      1722
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6734,7 +6771,7 @@
      1542,
      2111
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6750,7 +6787,7 @@
      2006,
      2016
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6765,7 +6802,7 @@
     "lines": [
      2623
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6779,7 +6816,7 @@
     "lines": [
      1800
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6804,7 +6841,7 @@
      2331,
      2359
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6819,7 +6856,7 @@
      929,
      988
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6834,7 +6871,7 @@
      2456,
      2533
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6854,7 +6891,7 @@
      2518,
      2537
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6878,7 +6915,7 @@
      2517,
      2536
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6893,7 +6930,7 @@
      1695,
      2515
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6911,7 +6948,7 @@
      2457,
      2534
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6927,7 +6964,7 @@
      1654,
      1729
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6943,7 +6980,7 @@
      1655,
      1767
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6959,7 +6996,7 @@
      1696,
      2516
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6974,7 +7011,7 @@
     "lines": [
      2626
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -6993,7 +7030,7 @@
     "lines": [
      2405
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7011,7 +7048,7 @@
      1520,
      2342
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7025,7 +7062,7 @@
     "lines": [
      1815
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7042,7 +7079,7 @@
      1484,
      2118
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7059,7 +7096,7 @@
      1719,
      1719
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7081,7 +7118,7 @@
      1739,
      1963
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7096,7 +7133,7 @@
      1886,
      1886
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7111,7 +7148,7 @@
      2458,
      2535
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7124,7 +7161,7 @@
      1541,
      1541
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7140,7 +7177,7 @@
     "lines": [
      1013
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7158,7 +7195,7 @@
      2393,
      2400
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7179,7 +7216,7 @@
      2385,
      2391
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7194,7 +7231,7 @@
      2207,
      2308
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7208,7 +7245,7 @@
     "lines": [
      2224
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7222,7 +7259,7 @@
     "lines": [
      1785
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7239,7 +7276,7 @@
      2262,
      2263
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7253,7 +7290,7 @@
     "lines": [
      2226
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7267,7 +7304,7 @@
     "lines": [
      2225
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7286,7 +7323,7 @@
      1434,
      2004
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7303,7 +7340,7 @@
      2192,
      2296
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7317,7 +7354,7 @@
     "lines": [
      1785
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7336,7 +7373,7 @@
      2348,
      2349
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7353,7 +7390,7 @@
     "lines": [
      2620
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7365,7 +7402,7 @@
     "lines": [
      1987
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7380,7 +7417,7 @@
      1629,
      1732
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7392,7 +7429,7 @@
     "lines": [
      1986
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7406,7 +7443,7 @@
     "lines": [
      2186
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7425,7 +7462,7 @@
      1725,
      1726
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7440,7 +7477,7 @@
      869,
      988
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7456,7 +7493,7 @@
      1621,
      1721
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7470,7 +7507,7 @@
     "lines": [
      1807
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7484,7 +7521,7 @@
     "lines": [
      1794
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7500,7 +7537,7 @@
      1884,
      1977
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7515,7 +7552,7 @@
      2608,
      2671
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7532,7 +7569,7 @@
      1604,
      1611
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7567,7 +7604,7 @@
      2342,
      2433
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7587,7 +7624,7 @@
      1385,
      2428
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7601,7 +7638,7 @@
     "lines": [
      957
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7616,7 +7653,7 @@
      2199,
      2302
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7630,7 +7667,7 @@
     "lines": [
      1898
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7649,7 +7686,7 @@
      1716,
      1740
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7664,7 +7701,7 @@
     "lines": [
      2627
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7678,7 +7715,7 @@
     "lines": [
      1815
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7690,7 +7727,7 @@
     "lines": [
      1985
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7705,7 +7742,7 @@
      2208,
      2309
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7720,7 +7757,7 @@
     "lines": [
      1785
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7734,7 +7771,7 @@
     "lines": [
      2086
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7755,7 +7792,7 @@
      1885,
      1978
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7774,7 +7811,7 @@
      2370,
      2371
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7791,7 +7828,7 @@
     "lines": [
      2628
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7812,7 +7849,7 @@
      1738,
      1963
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7826,7 +7863,7 @@
     "lines": [
      2085
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7845,7 +7882,7 @@
      1044,
      2487
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7863,7 +7900,7 @@
      2455,
      2532
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7881,7 +7918,7 @@
      1640,
      1759
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7895,7 +7932,7 @@
     "lines": [
      1887
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7911,7 +7948,7 @@
     "lines": [
      1015
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7926,7 +7963,7 @@
     "lines": [
      2182
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -7943,7 +7980,7 @@
      1694,
      2514
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8004,7 +8041,7 @@
      1894,
      2453
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8020,7 +8057,7 @@
      946,
      1882
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8048,7 +8085,7 @@
      1881,
      1895
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8065,7 +8102,7 @@
      1444,
      2019
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8087,7 +8124,7 @@
      1540,
      1540
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8166,7 +8203,7 @@
      2684,
      2685
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8181,7 +8218,7 @@
     "lines": [
      2625
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    },
    {
     "page": "docs/portfolio/tail/index.html",
@@ -8195,7 +8232,7 @@
     "lines": [
      2178
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-22）"
    }
   ],
   "unread_keys": [
@@ -8205,7 +8242,7 @@
      "docs/portfolio/tail/data/prediction_history.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 予想と実績の突合を最後に更新した時点の記録"
    },
    {
     "key": "base_revenue",
@@ -8215,7 +8252,7 @@
     "parents": [
      "assumptions"
     ],
-    "note": ""
+    "note": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）"
    },
    {
     "key": "business_model",
@@ -8225,7 +8262,7 @@
     "parents": [
      "five_perspectives"
     ],
-    "note": ""
+    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "changed",
@@ -8234,7 +8271,7 @@
      "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 取得の印（前回の取得から本文が変わったか）。取得した時点の記録"
    },
    {
     "key": "competitive_advantage",
@@ -8244,7 +8281,7 @@
     "parents": [
      "five_perspectives"
     ],
-    "note": ""
+    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "completed_at",
@@ -8254,7 +8291,7 @@
     "parents": [
      "queue"
     ],
-    "note": ""
+    "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
     "key": "data_version",
@@ -8262,7 +8299,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
    },
    {
     "key": "fcf_adjustment",
@@ -8272,7 +8309,7 @@
     "parents": [
      "assumptions"
     ],
-    "note": ""
+    "note": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）"
    },
    {
     "key": "filed_date",
@@ -8280,7 +8317,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
    },
    {
     "key": "grok_call1_success",
@@ -8288,7 +8325,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "grok_call2_success",
@@ -8296,7 +8333,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "kpi_snapshot",
@@ -8304,7 +8341,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
    },
    {
     "key": "last_checked",
@@ -8322,7 +8359,7 @@
      "SOUN",
      "TSLA"
     ],
-    "note": ""
+    "note": "残す: RSSで銘柄を最後に確かめた時点の記録（提出の遅れの判定の状態）"
    },
    {
     "key": "layer1_complete",
@@ -8330,7 +8367,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "layer2_missing_kpis",
@@ -8338,7 +8375,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "layer3_complete",
@@ -8346,7 +8383,7 @@
      "docs/portfolio/tail/data/kpi/{T}_layer3.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "layer3_snapshot",
@@ -8354,7 +8391,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
    },
    {
     "key": "macro_score_at_action",
@@ -8364,7 +8401,7 @@
     "parents": [
      "entries"
     ],
-    "note": ""
+    "note": "残す: 人の入力（売買・見直しの判断をした時点のMACROの点数）。作り直せない"
    },
    {
     "key": "macro_snapshot",
@@ -8372,7 +8409,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
    },
    {
     "key": "management",
@@ -8382,7 +8419,7 @@
     "parents": [
      "five_perspectives"
     ],
-    "note": ""
+    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "queued_at",
@@ -8392,7 +8429,7 @@
     "parents": [
      "queue"
     ],
-    "note": ""
+    "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
     "key": "recommendation_reason",
@@ -8402,7 +8439,7 @@
     "parents": [
      "stage1"
     ],
-    "note": ""
+    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "rejection_reason",
@@ -8412,7 +8449,7 @@
     "parents": [
      "rejected_kpis"
     ],
-    "note": ""
+    "note": "残す: KPIの提案を却下した理由（XBRLとの照合の結果）。作った時点の記録"
    },
    {
     "key": "review_path",
@@ -8422,7 +8459,7 @@
     "parents": [
      "queue"
     ],
-    "note": ""
+    "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
     "key": "segment_outlook",
@@ -8431,7 +8468,7 @@
      "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。TANUKI の report.txt にも出ていない（FINDINGS 2026-10-22、型A）"
    },
    {
     "key": "stage2_json_valid",
@@ -8439,7 +8476,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    },
    {
     "key": "superseded_at",
@@ -8449,7 +8486,7 @@
     "parents": [
      "queue"
     ],
-    "note": ""
+    "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
     "key": "superseded_reason",
@@ -8459,7 +8496,7 @@
     "parents": [
      "queue"
     ],
-    "note": ""
+    "note": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録"
    },
    {
     "key": "thesis_version",
@@ -8471,7 +8508,7 @@
     "parents": [
      "entries"
     ],
-    "note": ""
+    "note": "残す: 作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）"
    },
    {
     "key": "transcript_available",
@@ -8479,7 +8516,7 @@
      "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
    }
   ],
   "written_key_count": 243,

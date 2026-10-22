@@ -48,6 +48,9 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 - Koichiさんは見ているが、記載が期待外れのことが多い（2026-10-21）。区画は残す（段階2の判断）
 - 画面の作り直しのときに、銘柄ごとの内容にするか（何を元に書くか）を決める
 
+#### 追記（2026-10-22、R-AのTAILの段階2）
+- TAILのレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）で作っているが画面に出していないキー: AIの文の`business_model`・`competitive_advantage`・`management`・`recommendation_reason`と、品質の印の`grok_call1_success`・`grok_call2_success`・`stage2_json_valid`・`layer1_complete`・`layer3_complete`（kpiのLayer3）・`layer2_missing_kpis`・`transcript_available`（`docs/architecture/output_inventory/tail_layer.md`の「誰も読まないキー」）。画面の作り直しのときに出すかを決める
+
 #### 着手の条件
 [[OUTPUT-INVENTORY-CHECK-1]]（R-A）のTANUKIの段階が済んでいること（それ以外の画面は、その段階が済んでから）
 

@@ -547,7 +547,7 @@ _TAIL.update(
         "docs/portfolio/tail/data/ctrl/{T}/{Q}.json":
             "銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。"
             "この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる",
-        "docs/portfolio/tail/data/ctrl/{T}/index.json": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。書き手が次の書き込みでまとめ直すほかに読むコードは無い",
+        "docs/portfolio/tail/data/ctrl/{T}/index.json": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。画面の index.html が最新の四半期を選ぶのに読む",
         "docs/portfolio/tail/data/{item_key}/{T}/latest.json":
             "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。"
             "**AIの出力（Grok）**: excerpt_ja（和訳）・segment_outlook（MD&Aのセグメントの見通し）。型は ctrl/ にも当たる。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
@@ -557,17 +557,53 @@ _TAIL.update(
             "銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分",
         "Discord（DISCORD_WEBHOOK）": "新規提出・提出の遅れ（法定の期限超え）のDiscordへの通知",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-22）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("docs/portfolio/tail/data/satellite_alerts.json",
+         "削除（2026-10-22、Koichiさんの判断）。書き手（satellite_monitor.py、2026-09-23に削除）も読み手も無いファイルだけが残っていた（FINDINGS 2026-10-22）"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-22、Koichiさんの判断）。satellite_alerts.json だけを消し、ほかの出力はすべて残す（ctrl/{T}/index.json は画面の index.html が読む）。"
+                  "誰も読まないキー30もすべて残す（作った時点の記録で作り直せない）。画面に出していないレビューのキーは IDEAS_AND_WATCH.md の [[UI-STORY-REDESIGN-1]] に記録。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="tail", OUTSIDE_PREFIXES=("docs/portfolio/tail/", "src/tail/"),
     READ_PREFIXES=("docs/portfolio/tail", "src/tail"),
     READ_HINT="tail", NAME_SHORT="TAIL",
     KNOWN_DUPLICATE_RULES=[], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/tail",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        "business_model": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "competitive_advantage": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "management": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "recommendation_reason": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "segment_outlook": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。TANUKI の report.txt にも出ていない（FINDINGS 2026-10-22、型A）",
+        "base_revenue": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
+        "fcf_adjustment": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
+        "rejection_reason": "残す: KPIの提案を却下した理由（XBRLとの照合の結果）。作った時点の記録",
+        "macro_score_at_action": "残す: 人の入力（売買・見直しの判断をした時点のMACROの点数）。作り直せない",
+        "thesis_version": "残す: 作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）",
+        "kpi_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
+        "layer3_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
+        "macro_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
+        "filed_date": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
+        "data_version": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
+        "queued_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
+        "completed_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
+        "superseded_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
+        "superseded_reason": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
+        "review_path": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
+        "grok_call1_success": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "grok_call2_success": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "stage2_json_valid": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "layer1_complete": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "layer3_complete": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "layer2_missing_kpis": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "transcript_available": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
+        "changed": "残す: 取得の印（前回の取得から本文が変わったか）。取得した時点の記録",
+        "_updated_at": "残す: 予想と実績の突合を最後に更新した時点の記録",
+        "last_checked": "残す: RSSで銘柄を最後に確かめた時点の記録（提出の遅れの判定の状態）",
+    },
     RULES=_TANUKI["RULES"] + [
         {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・モデル・再試行）",
          "patterns": [r"^\s*GROK_URL\s*=", r"def\s+_?\w*call_grok\w*\s*\("]},
@@ -2890,7 +2926,7 @@ def render_md(inv: dict) -> str:
     L.append("")
     if inv["deleted"]:
         L.append("## 消したもの（段階2、" + {"HypeCore": "2026-10-21", "EPS": "2026-10-21", "STONKS": "2026-10-21",
-                                            "市場データ層": "2026-10-22"}.get(NAME_SHORT, "2026-10-20") + "）")
+                                            "市場データ層": "2026-10-22", "TAIL": "2026-10-22"}.get(NAME_SHORT, "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")

@@ -1980,7 +1980,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   市場データ層は解決の厳しさ（RESOLVE_STRICT）が違い索引を作り直すため最後に置いた。rccのCHECK-INVは約43.2秒（5段階のときは約27.8秒、市場データ層の分が約15.3秒）
 - **次はTAILの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
-#### TANUKI TAIL（src/tail）の段階（2026-10-22 段階1済）
+#### TANUKI TAIL（src/tail）の段階（2026-10-22 段階1・2済）
 - 段階1（一覧の下書き）: 件名「chore: R-A TAILの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer tail` → `tail_layer.json`・`tail_layer.md`）。出力20（ファイル19・Discord 1）。書き手はすべて`src/tail`の.py（外の書き手0。ワークフローが自分で書く出力・Step Summaryも0）。
   読み手0件1（`ctrl/{T}/index.json`。書き手がまとめ直すほかに読むコードは無い）、テストだけ0、1件4、2件以上14。画面（index.html・detail.html・decision_log.html）が読むキー180（書き手なし0）、誰も読まないキー30。規則の二重のうちTAILを含むもの4（同じ期の値の選び方・期の名前・会計年度の決め方・AI〈Grok〉の呼び方〈7ファイル〉）。本番外のコードの候補0件（13ファイル7,115行すべて呼ばれる）。止める条件は書き手0%・読み方0%
 - AIの出力（Grok）のキー: reviewsの`stage1`・`stage2`・`call2`、kpi_proposalsの`proposed_kpis`・`rejected_kpis`、ctrlの`item4_excerpt_ja`、mda・risk_factors・legal_proceedingsの`excerpt_ja`・`segment_outlook`。scenarioはレビューの`stage2.scenarios`から作る（一覧の「何か」の欄）
@@ -1989,7 +1989,10 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 一覧のスクリプト（+88行、TAILの設定・注記・規則が約75行）: 市場データ層の印のうち`RESOLVE_STRICT`だけを使った（`os.path.join`の候補ごとの連結で`kpi/{T}_layer2.json`が、絶対パスの一致で`/tmp/tail_commit_message.txt`が決まる。使わないと止める条件に当たる〈書き手25%〉）。`IO_HELPER_BY_CALLER`はTAILにパスを引数で受ける汎用の読み書きの関数が無いため、`DATA_UNREAD_KEYS`は画面があり画面の段階の数え方を使うため、使わない。
   `RESOLVE_STRICT`を段階の数にし、2（TAILから）で2つ足した: 同じフォルダの`import X as Y`（`sec_items_fetcher.py`の`import sec_ctrl_fetcher as _ctrl`）・名前の並びを回すforの変数（`for path in (period_path, latest_path)`）。市場データ層は1のまま（2にするとMarket Pulseの画面の「経由」の元の表示が1行変わるため）。既存6段階の一覧は前後で差0
 - rccのCHECK-INVは約46.8秒（6段階、TAILは入れていない。参考: TAILを入れると約68.8秒）
-- **次はKoichiさんの判断（段階2）**
+- 一覧のスクリプトの直し（件名「fix: R-A 一覧のスクリプトで、APIを使うページの相対パスの読み込みもページのフォルダから照合する」のcommit）: GitHubのAPIを使うページ（今は`docs/portfolio/tail/index.html`だけ）の`fetch('data/…' + 変数 + …)`を、リポジトリの根からとページのフォルダからの両方の候補で照合する。`ctrl/{T}/index.json`は読み手0件→1件（index.htmlが読む）、`{item_key}/{T}/index.json`は1件→2件以上、index.htmlが12の出力の読み手に。全7段階で読み手0件・テストだけが変わったのはTAILだけで、過去の段階2で消したものの判定は変わらない。secの一覧は画面の「経由」の元の表示2行が変わった
+- 段階2（第1部、件名「refactor: R-A TAILの段階2、satellite_alerts.jsonを消し、残すキーの理由を一覧に書く」のcommit。Koichiさんの判断）: `satellite_alerts.json`を削除（FINDINGSは削除で済）。ほかの出力はすべて残す。誰も読まないキー30もすべて残し、理由（AIの出力・人の入力・レビューの入力の控え・待ち行列の状態・品質の印）を`UNREAD_KEY_NOTES`に書いた。
+  `segment_outlook`はTANUKIのreport.txtに出ていない（2026-09-18の[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]のSTEP 4で表示を消し、取得はGrokで続いている。FINDINGS 2026-10-22、型A）。画面に出していないレビューのAIの文・品質の印はIDEAS_AND_WATCH.mdの[[UI-STORY-REDESIGN-1]]に追記
+- **次は段階3（CHECK-INVをTAILにも）**
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）
