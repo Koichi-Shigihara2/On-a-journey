@@ -59,7 +59,7 @@
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `quarters`(1)
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1380
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 481
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 483
 
 ### `docs/portfolio/tail/data/kpi/{T}_layer3.json`（1件）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
@@ -109,7 +109,7 @@
 - Python・保存済みファイル: `common/system_health.py` 行 223・1043・1110（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1380・1387・1388・2414
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 481
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 483
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）
 
@@ -233,7 +233,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `periods`(1)・`quarters`(2)
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 445・453・478（経由 `src/tail/sec_ctrl_fetcher.py::main`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1380
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 481
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 483
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 188・196・197
 
 ### `docs/portfolio/tail/data/{item_key}/{T}/latest.json`（2件以上）
@@ -256,7 +256,7 @@
 - Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 383・385・393・429・500・635・642（経由 `src/tail/sec_items_fetcher.py::_stored_period`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 338
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1380・1387・1388・2414
-- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 481
+- テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 483
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 162
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）

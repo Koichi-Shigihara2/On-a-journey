@@ -1980,7 +1980,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   市場データ層は解決の厳しさ（RESOLVE_STRICT）が違い索引を作り直すため最後に置いた。rccのCHECK-INVは約43.2秒（5段階のときは約27.8秒、市場データ層の分が約15.3秒）
 - **次はTAILの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
-#### TANUKI TAIL（src/tail）の段階（2026-10-22 段階1・2済）
+#### TANUKI TAIL（src/tail）の段階（2026-10-22 済）
 - 段階1（一覧の下書き）: 件名「chore: R-A TAILの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer tail` → `tail_layer.json`・`tail_layer.md`）。出力20（ファイル19・Discord 1）。書き手はすべて`src/tail`の.py（外の書き手0。ワークフローが自分で書く出力・Step Summaryも0）。
   読み手0件1（`ctrl/{T}/index.json`。書き手がまとめ直すほかに読むコードは無い）、テストだけ0、1件4、2件以上14。画面（index.html・detail.html・decision_log.html）が読むキー180（書き手なし0）、誰も読まないキー30。規則の二重のうちTAILを含むもの4（同じ期の値の選び方・期の名前・会計年度の決め方・AI〈Grok〉の呼び方〈7ファイル〉）。本番外のコードの候補0件（13ファイル7,115行すべて呼ばれる）。止める条件は書き手0%・読み方0%
 - AIの出力（Grok）のキー: reviewsの`stage1`・`stage2`・`call2`、kpi_proposalsの`proposed_kpis`・`rejected_kpis`、ctrlの`item4_excerpt_ja`、mda・risk_factors・legal_proceedingsの`excerpt_ja`・`segment_outlook`。scenarioはレビューの`stage2.scenarios`から作る（一覧の「何か」の欄）
@@ -1992,7 +1992,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 一覧のスクリプトの直し（件名「fix: R-A 一覧のスクリプトで、APIを使うページの相対パスの読み込みもページのフォルダから照合する」のcommit）: GitHubのAPIを使うページ（今は`docs/portfolio/tail/index.html`だけ）の`fetch('data/…' + 変数 + …)`を、リポジトリの根からとページのフォルダからの両方の候補で照合する。`ctrl/{T}/index.json`は読み手0件→1件（index.htmlが読む）、`{item_key}/{T}/index.json`は1件→2件以上、index.htmlが12の出力の読み手に。全7段階で読み手0件・テストだけが変わったのはTAILだけで、過去の段階2で消したものの判定は変わらない。secの一覧は画面の「経由」の元の表示2行が変わった
 - 段階2（第1部、件名「refactor: R-A TAILの段階2、satellite_alerts.jsonを消し、残すキーの理由を一覧に書く」のcommit。Koichiさんの判断）: `satellite_alerts.json`を削除（FINDINGSは削除で済）。ほかの出力はすべて残す。誰も読まないキー30もすべて残し、理由（AIの出力・人の入力・レビューの入力の控え・待ち行列の状態・品質の印）を`UNREAD_KEY_NOTES`に書いた。
   `segment_outlook`はTANUKIのreport.txtに出ていない（2026-09-18の[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]のSTEP 4で表示を消し、取得はGrokで続いている。FINDINGS 2026-10-22、型A）。画面に出していないレビューのAIの文・品質の印はIDEAS_AND_WATCH.mdの[[UI-STORY-REDESIGN-1]]に追記
-- **次は段階3（CHECK-INVをTAILにも）**
+- 段階3（第2部、件名「feat: R-A TAILの段階3、CHECK-INVをTAILにも当てる」のcommit）: CHECK_LAYERSにtail（最後。市場データ層〈RESOLVE_STRICT 1〉・TAIL〈2〉の順で索引を作り直す）。既知の規則の二重4つ（同じ期の値の選び方・期の名前・会計年度・AI〈Grok〉の呼び方7ファイル）はWARN（直さず、R-Aの後の根治策の入力）。rccのCHECK-INVは約67.3秒（6段階のときは約46.8秒）。時間を縮める直しはR-Aの終わりの見直しで扱う
+- **次はPortfolioの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

@@ -569,7 +569,7 @@ _TAIL.update(
     OUTSIDE_HINT="tail", OUTSIDE_PREFIXES=("docs/portfolio/tail/", "src/tail/"),
     READ_PREFIXES=("docs/portfolio/tail", "src/tail"),
     READ_HINT="tail", NAME_SHORT="TAIL",
-    KNOWN_DUPLICATE_RULES=[], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["latest_filed", "quarter_label", "fiscal_year", "grok_call"], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/tail",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
@@ -2842,8 +2842,8 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層は解決の厳しさ（RESOLVE_STRICT）が違い索引を作り直すため最後に置く
-CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data")
+# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・TAIL は解決の厳しさ（RESOLVE_STRICT 1・2）が違い索引を作り直すため、厳しさの順に最後に置く
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "tail")
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 

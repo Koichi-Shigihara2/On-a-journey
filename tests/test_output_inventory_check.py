@@ -414,8 +414,8 @@ def test_market_data_layer_settings():
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
     assert not md["SCREEN_PAGES"]
-    assert inv.CHECK_LAYERS[-1] == "market_data"
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data"]
+    assert inv.CHECK_LAYERS[-2:] == ("market_data", "tail")
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "tail"]
     assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
 
 
@@ -463,12 +463,14 @@ def test_strict2_loop_over_names_and_same_folder_import(monkeypatch):
 
 
 def test_tail_layer_settings():
-    """TAIL（段階1、2026-10-22）: 解決の厳しさは 2。汎用の読み書きの関数の印・画面の無い層のキーの印は使わない。CHECK-INV にはまだ入れない。"""
+    """TAIL（段階1・3、2026-10-22）: 解決の厳しさは 2。汎用の読み書きの関数の印・画面の無い層のキーの印は使わない。
+    CHECK-INV の最後の段階で、既知の規則の二重は TAIL を含む4つ（同じ期の値の選び方・期の名前・会計年度・AIの呼び方）。"""
     tl = inv.LAYERS["tail"]
     assert tl["LAYER_DIRS"] == ("src/tail",)
     assert tl["RESOLVE_STRICT"] == 2 and not tl["IO_HELPER_BY_CALLER"] and not tl["DATA_UNREAD_KEYS"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
-    assert "tail" not in inv.CHECK_LAYERS
+    assert inv.CHECK_LAYERS[-1] == "tail"
+    assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year", "grok_call"]
     assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1
 
 
