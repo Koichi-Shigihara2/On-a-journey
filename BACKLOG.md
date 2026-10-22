@@ -1964,7 +1964,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階2（第1部、件名「refactor: R-A STONKS SILOの段階2、フォルダの付け替えと誰も読まない10キーを消す」のcommit）: 画面の区画はKoichiさんの判断ですべて残す。チャット側の判断で`discover/stonks-silo/src/`→`src/value/stonks_silo/`（出力・画面の場所は変えない、SYSTEM_MAP.mdに理由）、画面の見出しの「Discover · 10x Candidates」を「Value Monitor · Early-Stage Growth」に。誰も読まないキー12のうち10の書き込みをやめた（計算に使うgross_margin_trend・テストが参照するlatest_yearは残す）。手元の前後とCIの手動の実行（run 39598656283、success）で、results.jsonは消したキーと時刻のほか同じ、overall_verdict・overall_scoreは24銘柄すべて同じ。一覧の取り違え（register_ticker.pyをSTONKSのpipeline.pyの呼び出しとした）は、引用符の中のパスを全体で照合して直した
 - 段階3（第2部、件名「feat: R-A STONKS SILOの段階3、CHECK-INVをSTONKS SILOにも当てる」のcommit）: CHECK_LAYERSにstonks（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重1つ（データの古さ・遅れの判定）はWARN。rccのCHECK-INVは約26.3秒（4段階のときは約25.5秒）
 
-#### 市場データ層（common/market_data）の段階（2026-10-22 段階1済）
+#### 市場データ層（common/market_data）の段階（2026-10-22 段階1・2済）
 - 段階1（一覧の下書き）: 件名「chore: R-A 市場データ層の段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`）。出力7（すべてファイル、書き手はすべて`common/market_data/fetcher.py`、外の書き手0）: daily・attributes・analyst_history・`{T}/market_data_violations_log.json`（各596ファイル）・`_daily_close_retry_log.json`・`_sp500_constituents_cache.json`・`/tmp/daily_status.json`（ワークフローの中だけ）。
   読み手0件1（`_daily_close_retry_log.json`。書き手が追記のために読み直すだけ）、テストだけ0、1件3（violations_logの1件はパスを作る関数、sp500の控えの1件はファイル名の定数の行で、どちらも実際に読むのは書き手自身）、2件以上3（daily 18・attributes 13・analyst_history 3。投資判断に効くのはdaily・attributes〈TANUKI・HypeCore〉とanalyst_history〈HypeCore〉）。
   誰も読まないキー20（94のうち。violations_logの区画のキー・analyst_historyのEPSの実績と予想・推奨の内訳・attributesの`next_quarter_eps_date`・`_validation_warnings`等）。規則の二重3（取引日の決め方5ファイル・暫定の足の判定4ファイル・S&P500の構成銘柄の取り方3ファイル。どれも市場データ層を含む）。本番外のコードの候補0件（3ファイル2,135行すべて呼ばれる）。止める条件は書き手0%・読み方3.1%（`fetcher.py:1624`の`--repair-provisional`の入力ファイル）
@@ -1973,7 +1973,10 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   `IO_HELPER_BY_CALLER`（パスを引数で受けて読み書きする関数は、その出力のパスを渡す呼び出し箇所を読み手・書き手にする）、`DATA_UNREAD_KEYS`（画面の無い層の誰も読まないキー。JSONの全ファイル・入れ子8段まで）、
   `RESOLVE_STRICT`（`os.path.join`で呼び出し元ごとの候補をそれぞれつなぐ・テストの呼び出しを引数の候補にしない・argparseの引数のパスをワークフローが渡す値から決める・絶対パスの出力・`io.StringIO`をファイルとしない・外のモジュールの関数〈`mcal.get_calendar`〉を同じ名前のリポジトリの関数にしない・ワークフローの`git add`の行を読み手にしない・`{T}`が`^GSPC`に当たる）。印が違う段階では索引を作り直す
 - 一覧の限り: 起動元は書き手のファイル（`fetcher.py`）を動かすワークフローで数えるため、DailyとWeeklyの区別が無い（`--layer`の引数を見ない）。`TANUKI_VALUATION_Update.yml`の「ワークフローが自分で書く出力」は、コメントの中のモジュール名（`common.market_data.reader`）で当たった誤り。CHECK-INVにはまだ入れていない
-- **次はKoichiさんの判断（段階2）**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
+- 段階2（第1部、件名「refactor: R-A 市場データ層の段階2、検証の結果のログ・取り直しの記録と誰も読まない1キーを消す」のcommit。Koichiさんの判断）: `{T}/market_data_violations_log.json`（596ファイル）と書き手（`_write_violations_section`・`_violations_log_path`）、`_daily_close_retry_log.json`と追記の処理を削除（保存前の検証・終値の取り直しは残す）。attributesの`next_quarter_eps_date`の書き込みをやめた。
+  analyst_historyの8キー（`current_price_target`・`eps_actual`・`eps_difference`・`eps_estimate`・`price_target_action`・`prior_price_target`・`strong_buy`・`strong_sell`）は溜まる履歴のため残す（3系統とも追記型。earnings_historyはYahooが直近3〜4四半期だけを返し、recommendationsは取得日ごとのスナップショット、upgrades_downgradesは重複を除いて追記）。ワークフロー2本の`git add`の行・`.gitattributes`の行・UPDATE_SCHEDULE.md・`workflow_dependencies.json`の出力の2行も消した。
+  前後の比較: yfinanceの応答を記録して再生するハーネスで11銘柄（株式・ETF・指数・先物・為替）を旧コード／新コードで回し、daily・attributes・analyst_historyの33ファイルは`next_quarter_eps_date`のほか同じ、新コードは検証のログ・取り直しの記録を書かない。TANUKI（96銘柄の理論株価・判定・funda・timing）とHypeCore（98銘柄の全月のstage・小区分）は前後で同じ（手元、XAI・Discordを外し、作り直したデータは戻した）。一覧は出力5、誰も読まないキー10（残す理由を注記）
+- **次は段階3（CHECK-INVを市場データ層にも）**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

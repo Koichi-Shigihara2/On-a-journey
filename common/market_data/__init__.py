@@ -10,7 +10,7 @@ common/sec_data/ と同型構成（fetcher.py がネットワーク取得・保�
         daily/{SYMBOL}.json            日次価格層（.history()/yf.download()由来）
         attributes/{SYMBOL}.json       週次準静的属性層（.info由来のスナップショット）
         analyst_history/{SYMBOL}.json  イベント履歴層（upgrades_downgrades由来）
-        {SYMBOL}/market_data_violations_log.json  保存前検証の結果ログ
+        （{SYMBOL}/market_data_violations_log.json は読み手0件のため2026-10-22に削除）
 
 現時点の消費者はまだ存在しないグリーンフィールドモジュールであり、
 既存システムへの依存・影響はない。

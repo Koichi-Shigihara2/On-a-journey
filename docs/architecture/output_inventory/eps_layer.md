@@ -319,7 +319,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1050`<br>`src/value/hypecore/hypecore.py:1095` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | はい | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
-| `market_data_violations_log` | いいえ（後の段階） | — | `common/market_data/fetcher.py:315` |
+| `market_data_violations_log` | いいえ（後の段階） | — | — |
 
 ## 規則が2か所以上にあるもの
 

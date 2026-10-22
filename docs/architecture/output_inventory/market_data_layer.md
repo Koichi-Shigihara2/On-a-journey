@@ -5,27 +5,31 @@
 - 読み手の数: その出力のファイルを読む本番のコードのファイルの数（テストを除く。ワークフロー・JS・HTMLを含む）。「その場で計算」は、ファイルを読まずに同じ中身を関数で作り直す読み手のファイルの数
 - 画面: 直接（docs/のページがそのファイルを読む）と経由（読み手のPythonのファイル〈呼び出しを3段までたどった箇所を含む〉がdocs/に書くファイルを読むページ。推定。経由の元は「読み手の内訳」）
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`があれば「効く」
-- 残す／消す: 段階2の判断はまだ（Koichiさんの判断待ち）
+- 残す／消す: 段階2の判断（2026-10-22、Koichiさんの判断）。読み手0件の2つ（検証の結果のログ・取り直しの記録）と誰も読まないキー1つを消し、analyst_history の8キーは溜まる履歴のため残す。_validation_warnings は品質の印として残す（読み手は後の画面の整理で決める）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 7（ファイル 7・人が見るもの 0）／読み手0件 1／テストだけ 0／1件 3／2件以上 3／規則の二重 3（検出式 3種のうち。市場データ層のファイルを含むもの 3）
+**件数**: 出力 5（ファイル 5・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 2／2件以上 3／規則の二重 3（検出式 3種のうち。市場データ層のファイルを含むもの 3）
 
-**誰も読まないキー**: **20**（この段階のJSONのキー 94 のうち。下の「誰も読まないキー」）
+**誰も読まないキー**: **10**（この段階のJSONのキー 74 のうち。下の「誰も読まないキー」）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 0件／解決できた読み込み 13件＋ファイル名で当たった行 18件（3.1%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 0件／解決できた読み込み 11件＋ファイル名で当たった行 17件（3.4%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
+
+## 消したもの（段階2、2026-10-22）
+
+- `common/market_data/{T}/market_data_violations_log.json（596ファイル）と書き手（fetcher.py の _write_violations_section・_violations_log_path）`: 削除（2026-10-22、Koichiさんの判断）。読み手0件（FINDINGS 2026-10-15 の F3）。保存前の検証は残し、警告は各レコードの _validation_warnings と標準出力に出す。ワークフロー2本の git add の行と .gitattributes の行も消した
+- `common/market_data/_daily_close_retry_log.json と fetch_daily_prices の追記の処理`: 削除（2026-10-22、Koichiさんの判断）。読み手0件（書き手が追記のために読み直すだけ）。終値の無い足の取り直し（_retry_missing_closes）と、Yahooの作り直しの時間帯の判定は残す
+- `attributes の next_quarter_eps_date の書き込み`: 書き込みをやめた（2026-10-22）。読み手0件（TANUKI が読むのは next_quarter_eps_estimate だけ）。前後で daily・attributes・analyst_history は消したキーのほか同じ（yfinance の応答を記録して再生、11銘柄）、TANUKI の96銘柄の理論株価・判定と HypeCore の98銘柄の stage は前後で同じ
 
 ## 出力（読み手0件 → テストだけ → 1件 → 2件以上）
 
 | 区分 | 出力（パスの型） | 何か | 書き手 | 読み手の数（その場で計算） | 画面 | 投資判断 | 定義 | 残す／消す |
 |---|---|---|---|---|---|---|---|---|
-| 読み手0件 | `common/market_data/_daily_close_retry_log.json`<br>（1ファイル） | 日次の取得で終値の無い足を取り直した記録・Yahooの作り直しの時間帯で保存しなかった記録（直近60回）。書き手が追記のために読み直すほかに読むコードは無い | `fetcher.py:fetch_daily_prices`<br>`fetcher.py:fetch_daily_prices` | 0 | — | — | — | （段階2の判断待ち） |
-| 1件 | `/tmp/daily_status.json`<br>（0ファイル） | Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む | `fetcher.py:<module>` | 1 | — | — | — | （段階2の判断待ち） |
-| 1件 | `common/market_data/_sp500_constituents_cache.json`<br>（1ファイル） | S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す） | `fetcher.py:get_sp500_constituents` | 1 | — | — | — | （段階2の判断待ち） |
-| 1件 | `common/market_data/{T}/market_data_violations_log.json`<br>（596ファイル） | 銘柄ごとの保存前の検証の結果（日次・週次・バックフィルの区画ごと。0件でも毎回書く）。読み手の1件は書き先のパスを作る関数（fetcher.py の _violations_log_path）で、書き手が区画ごとに読み直すほかに読むコードは無い（FINDINGS 2026-10-15 の F3） | `fetcher.py:_write_violations_section` | 1・テスト1 | — | — | — | （段階2の判断待ち） |
-| 2件以上 | `common/market_data/analyst_history/{T}.json`<br>（596ファイル） | 銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移 | `fetcher.py:fetch_analyst_events` | 3・テスト1 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: HypeCore（TANUKI のtiming・判定の入力） | — | （段階2の判断待ち） |
-| 2件以上 | `common/market_data/attributes/{T}.json`<br>（596ファイル） | 銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算日等） | `fetcher.py:fetch_weekly_attributes` | 13・テスト14 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力） | — | （段階2の判断待ち） |
-| 2件以上 | `common/market_data/daily/{T}.json`<br>（596ファイル） | 銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む | `fetcher.py:_append_daily_record`<br>`fetcher.py:_replace_provisional_records`<br>`fetcher.py:mark_and_repair_provisional_rows`<br>`fetcher.py:_repair_close_missing_records`<br>`fetcher.py:_mark_no_bar_rows`<br>`fetcher.py:backfill_daily_prices`<br>`fetcher.py:repair_missing_trading_days` | 18・テスト8 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力） | AS-IS-258・AS-IS-285・AS-IS-286・AS-IS-287・AS-IS-297・AS-IS-298・AS-IS-299 | （段階2の判断待ち） |
+| 1件 | `/tmp/daily_status.json`<br>（0ファイル） | Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む | `fetcher.py:<module>` | 1 | — | — | — | 残す（2026-10-22） |
+| 1件 | `common/market_data/_sp500_constituents_cache.json`<br>（1ファイル） | S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す） | `fetcher.py:get_sp500_constituents` | 1 | — | — | — | 残す（2026-10-22） |
+| 2件以上 | `common/market_data/analyst_history/{T}.json`<br>（596ファイル） | 銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移。3系統とも追記型の履歴（Yahooが返すのは直近の分だけで、過去の分はこのファイルにしか残らない） | `fetcher.py:fetch_analyst_events` | 3・テスト1 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: HypeCore（TANUKI のtiming・判定の入力） | — | 残す（2026-10-22） |
+| 2件以上 | `common/market_data/attributes/{T}.json`<br>（596ファイル） | 銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等） | `fetcher.py:fetch_weekly_attributes` | 13・テスト14 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力） | — | 残す（2026-10-22） |
+| 2件以上 | `common/market_data/daily/{T}.json`<br>（596ファイル） | 銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む | `fetcher.py:_append_daily_record`<br>`fetcher.py:_replace_provisional_records`<br>`fetcher.py:mark_and_repair_provisional_rows`<br>`fetcher.py:_repair_close_missing_records`<br>`fetcher.py:_mark_no_bar_rows`<br>`fetcher.py:backfill_daily_prices`<br>`fetcher.py:repair_missing_trading_days` | 18・テスト8 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力） | AS-IS-258・AS-IS-285・AS-IS-286・AS-IS-287・AS-IS-297・AS-IS-298・AS-IS-299 | 残す（2026-10-22） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -34,10 +38,6 @@
 
 ## 読み手の内訳
 
-### `common/market_data/_daily_close_retry_log.json`（読み手0件）
-- 起動元: .github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml
-- 読み手なし
-
 ### `/tmp/daily_status.json`（1件）
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Daily_Update.yml` 行 78・80・82
@@ -45,20 +45,14 @@
 ### `common/market_data/_sp500_constituents_cache.json`（1件）
 - 起動元: .github/workflows/Beta_Config_Update.yml・.github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml・.github/workflows/SEC_Data_Audit.yml・.github/workflows/Score_Verifier.yml・.github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(1)・`fetched_at`(1)・`tickers`(1)
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 55
-
-### `common/market_data/{T}/market_data_violations_log.json`（1件）
-- 起動元: .github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `attributes_validation`(2)・`backfill_price_validation`(2)・`daily_price_unconfirmed`(1)・`daily_price_validation`(2)・`ticker`(1)
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 315
-- テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 151・167・784・800（経由 `common/market_data/fetcher.py::_violations_log_path`）
+- Python・保存済みファイル: `common/market_data/fetcher.py` 行 56
 
 ### `common/market_data/analyst_history/{T}.json`（2件以上）
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `earnings_history`(2)・`events`(2)・`recommendations_history`(2)・`symbol`(2)
 - Python・保存済みファイル: `common/market_data/reader.py` 行 311・312・332・333・356・357（経由 `common/market_data/reader.py::_load_json`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 393・430・489・521・1060（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 71
+- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 70
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 330・338・347・358・367・378・389・397・400・411・423・433 ほか2（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
@@ -82,7 +76,7 @@
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 104・176・288（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 744（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427・991・1069・3268・3864（経由 `common/market_data/reader.py::get_attributes`）
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 70
+- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 69
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 42・66・71・78・87・95・99・104・111（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 59・67・71（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/market_data/reader.py::get_attributes`）
@@ -116,7 +110,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `records`(8)・`symbol`(6)
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 194・412（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 806・827・844・871・948（経由 `common/market_data/reader.py::_load_daily_payload`）
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 757・774・873・921・922・1042・1043・1072・1641・1652（経由 `common/market_data/fetcher.py::_load_json`、`common/market_data/fetcher.py::_stale_provisional_dates`、`common/market_data/fetcher.py::fetch_daily_prices` ほか）
+- Python・保存済みファイル: `common/market_data/fetcher.py` 行 736・753・840・882・883・987・988・1017・1576・1587（経由 `common/market_data/fetcher.py::_load_json`、`common/market_data/fetcher.py::_stale_provisional_dates`、`common/market_data/fetcher.py::fetch_daily_prices` ほか）
 - Python・保存済みファイル: `common/market_data/reader.py` 行 70・71・96・134・163・169・193・217・242・372・391（経由 `common/market_data/reader.py::_load_daily_payload`、`common/market_data/reader.py::_load_json`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1624・3568・3701（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 371・374・423・674・706（経由 `common/sec_data/rotce.py::_load_prices`）
@@ -131,7 +125,7 @@
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 737・810（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_verifier.py` 行 47・77（経由 `common/market_data/reader.py::_load_daily_payload`）
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Daily_Update.yml` 行 126
+- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Daily_Update.yml` 行 124
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 47・59・70・85・97・103・108・137・143・237・297・308（経由 `common/market_data/fetcher.py::fetch_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days`、`common/market_data/fetcher.py::repair_close_missing_records` ほか）
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/market_data/reader.py::_load_daily_payload`）
@@ -158,33 +152,23 @@
 
 この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち、テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形（`.key`・`['key']`〈代入でない〉・`.get('key')`）で出てこないもの。銘柄名・日付など小文字を含まないキーは除く。Pythonで`for k in d`・`d.items()`のように回して読むものは拾えないので、消す前にキーの名前でgrepする
 
-- `_validation_warnings`（`common/market_data/attributes/{T}.json`、`common/market_data/daily/{T}.json`）
-- `attributes_validation`（`common/market_data/{T}/market_data_violations_log.json`）
-- `backfill_price_validation`（`common/market_data/{T}/market_data_violations_log.json`）
-- `current_price_target`（`common/market_data/analyst_history/{T}.json`）
-- `daily_price_unconfirmed`（`common/market_data/{T}/market_data_violations_log.json`）
-- `daily_price_validation`（`common/market_data/{T}/market_data_violations_log.json`）
-- `dates_fetched`（`common/market_data/{T}/market_data_violations_log.json`）
-- `dates_with_warnings`（`common/market_data/{T}/market_data_violations_log.json`）
-- `eps_actual`（`common/market_data/analyst_history/{T}.json`）
-- `eps_difference`（`common/market_data/analyst_history/{T}.json`）
-- `eps_estimate`（`common/market_data/analyst_history/{T}.json`）
-- `initial_symbols`（`common/market_data/_daily_close_retry_log.json`）
-- `next_quarter_eps_date`（`common/market_data/attributes/{T}.json`）
-- `no_close`（`common/market_data/_daily_close_retry_log.json`）
-- `price_target_action`（`common/market_data/analyst_history/{T}.json`）
-- `prior_price_target`（`common/market_data/analyst_history/{T}.json`）
-- `skipped_no_close`（`common/market_data/{T}/market_data_violations_log.json`）
-- `strong_buy`（`common/market_data/analyst_history/{T}.json`）
-- `strong_sell`（`common/market_data/analyst_history/{T}.json`）
-- `with_bars`（`common/market_data/_daily_close_retry_log.json`）
+- `_validation_warnings`（`common/market_data/attributes/{T}.json`、`common/market_data/daily/{T}.json`）: 残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）
+- `current_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `eps_actual`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `eps_difference`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `eps_estimate`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `next_quarter_eps_date`（`common/market_data/attributes/{T}.json`）: 書き込みをやめた（2026-10-22）。今の attributes のファイルからは次の本番の実行（Market Data Weekly）で消える
+- `price_target_action`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `prior_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `strong_buy`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `strong_sell`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
 
 ## ワークフローが自分で書く出力（.pyの外）
 
 段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。
 
-- `.github/workflows/Market_Data_Daily_Update.yml`（行 122・123・124・125・127）: 
-- `.github/workflows/Market_Data_Weekly_Update.yml`（行 68・69・72・73）: 
+- `.github/workflows/Market_Data_Daily_Update.yml`（行 120・121・122・123・125）: 
+- `.github/workflows/Market_Data_Weekly_Update.yml`（行 67・68・71・72）: 
 - `.github/workflows/TANUKI_VALUATION_Update.yml`（行 102・103・104・105・110）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）
@@ -196,7 +180,7 @@
 | `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1050`<br>`src/value/hypecore/hypecore.py:1095` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
-| `market_data_violations_log` | はい | `common/market_data/{T}/market_data_violations_log.json` | `common/market_data/fetcher.py:315` |
+| `market_data_violations_log` | いいえ（後の段階） | — | — |
 
 ## 規則が2か所以上にあるもの
 
@@ -204,9 +188,9 @@
 
 | 規則 | ファイル数 | 場所 | 市場データ層を含む |
 |---|---|---|---|
-| 取引日（市場の営業日）の決め方 | 5 | `common/market_data/fetcher.py:225`<br>`common/market_data/fetcher.py:743`<br>`common/market_data/fetcher.py:1066`<br>`common/market_data/fetcher.py:1087`<br>`common/market_data/fetcher.py:1097`<br>`common/market_data/reader.py:104`<br>`common/sec_data/report_consistency_check.py:1603`<br>`src/market/macro_pulse/05_main.py:441`<br>`src/market/macro_pulse/05_main.py:455`<br>`src/market/market_pulse/breadth_calculator.py:342` | はい |
-| 暫定の足（取引時間中・取得の途中の行）の判定 | 4 | `common/market_data/fetcher.py:424`<br>`common/market_data/fetcher.py:432`<br>`common/market_data/fetcher.py:471`<br>`common/market_data/fetcher.py:593`<br>`common/market_data/fetcher.py:604`<br>`common/market_data/fetcher.py:755`<br>`common/market_data/fetcher.py:767`<br>`common/sec_data/report_consistency_check.py:1633`<br>`src/market/market_pulse/collect_and_send.py:781`<br>`src/market/market_pulse/collect_and_send.py:795`<br>`src/market/market_pulse/futures_snapshot.py:38` | はい |
-| S&P500の構成銘柄の一覧の取り方 | 3 | `common/market_data/fetcher.py:1508`<br>`common/market_data/reader.py:377`<br>`src/market/market_pulse/breadth_calculator.py:69` | はい |
+| 取引日（市場の営業日）の決め方 | 5 | `common/market_data/fetcher.py:226`<br>`common/market_data/fetcher.py:722`<br>`common/market_data/fetcher.py:1011`<br>`common/market_data/fetcher.py:1032`<br>`common/market_data/fetcher.py:1042`<br>`common/market_data/reader.py:104`<br>`common/sec_data/report_consistency_check.py:1603`<br>`src/market/macro_pulse/05_main.py:441`<br>`src/market/macro_pulse/05_main.py:455`<br>`src/market/market_pulse/breadth_calculator.py:342` | はい |
+| 暫定の足（取引時間中・取得の途中の行）の判定 | 4 | `common/market_data/fetcher.py:403`<br>`common/market_data/fetcher.py:411`<br>`common/market_data/fetcher.py:450`<br>`common/market_data/fetcher.py:572`<br>`common/market_data/fetcher.py:583`<br>`common/market_data/fetcher.py:734`<br>`common/market_data/fetcher.py:746`<br>`common/sec_data/report_consistency_check.py:1633`<br>`src/market/market_pulse/collect_and_send.py:781`<br>`src/market/market_pulse/collect_and_send.py:795`<br>`src/market/market_pulse/futures_snapshot.py:38` | はい |
+| S&P500の構成銘柄の一覧の取り方 | 3 | `common/market_data/fetcher.py:1443`<br>`common/market_data/reader.py:377`<br>`src/market/market_pulse/breadth_calculator.py:69` | はい |
 
 ## 本番外のコード（common/market_data）
 
@@ -214,12 +198,12 @@
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（3ファイル・2,135行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（3ファイル・2,070行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `daily_guard.py` | 81 | `.github/workflows/Market_Data_Daily_Update.yml` | — | `common/market_data/fetcher.py` | 3件 |
-| `fetcher.py` | 1,660 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/sec_data/report_consistency_check.py`<br>`src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/futures_snapshot.py`<br>ほか2 | `common/market_data/__init__.py`<br>`common/market_data/reader.py` | 6件 |
+| `fetcher.py` | 1,595 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/sec_data/report_consistency_check.py`<br>`src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/futures_snapshot.py`<br>ほか2 | `common/market_data/__init__.py`<br>`common/market_data/reader.py` | 6件 |
 | `reader.py` | 394 | — | `browser_checks/check_dependency_map.py`<br>`browser_checks/market_pulse_elements.py`<br>`common/sec_data/audit.py`<br>`scripts/analysis/market_pulse_redesign.py`<br>ほか12 | `common/market_data/__init__.py` | 6件 |
 
 ## 止める条件の内訳
@@ -227,4 +211,4 @@
 - `outputs_with_writer_outside_layer`: 0件
 - `unresolved_write_sites`: 0件
 - `python_read_sites_unresolved_in_files_mentioning_sec_data`: 1件
-  - `common/market_data/fetcher.py:1624` <module> → `<?>`
+  - `common/market_data/fetcher.py:1559` <module> → `<?>`

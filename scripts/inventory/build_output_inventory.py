@@ -454,27 +454,41 @@ _MARKET.update(
         "common/market_data/daily/{T}.json":
             "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
         "common/market_data/attributes/{T}.json":
-            "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算日等）",
+            "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
         "common/market_data/analyst_history/{T}.json":
-            "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移",
-        "common/market_data/{T}/market_data_violations_log.json":
-            "銘柄ごとの保存前の検証の結果（日次・週次・バックフィルの区画ごと。0件でも毎回書く）。"
-            "読み手の1件は書き先のパスを作る関数（fetcher.py の _violations_log_path）で、書き手が区画ごとに読み直すほかに読むコードは無い（FINDINGS 2026-10-15 の F3）",
-        "common/market_data/_daily_close_retry_log.json":
-            "日次の取得で終値の無い足を取り直した記録・Yahooの作り直しの時間帯で保存しなかった記録（直近60回）。書き手が追記のために読み直すほかに読むコードは無い",
+            "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移。"
+            "3系統とも追記型の履歴（Yahooが返すのは直近の分だけで、過去の分はこのファイルにしか残らない）",
         "common/market_data/_sp500_constituents_cache.json":
             "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
         "/tmp/daily_status.json": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-22）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("common/market_data/{T}/market_data_violations_log.json（596ファイル）と書き手（fetcher.py の _write_violations_section・_violations_log_path）",
+         "削除（2026-10-22、Koichiさんの判断）。読み手0件（FINDINGS 2026-10-15 の F3）。保存前の検証は残し、警告は各レコードの _validation_warnings と標準出力に出す。"
+         "ワークフロー2本の git add の行と .gitattributes の行も消した"),
+        ("common/market_data/_daily_close_retry_log.json と fetch_daily_prices の追記の処理",
+         "削除（2026-10-22、Koichiさんの判断）。読み手0件（書き手が追記のために読み直すだけ）。終値の無い足の取り直し（_retry_missing_closes）と、"
+         "Yahooの作り直しの時間帯の判定は残す"),
+        ("attributes の next_quarter_eps_date の書き込み",
+         "書き込みをやめた（2026-10-22）。読み手0件（TANUKI が読むのは next_quarter_eps_estimate だけ）。前後で daily・attributes・analyst_history は"
+         "消したキーのほか同じ（yfinance の応答を記録して再生、11銘柄）、TANUKI の96銘柄の理論株価・判定と HypeCore の98銘柄の stage は前後で同じ"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-22、Koichiさんの判断）。読み手0件の2つ（検証の結果のログ・取り直しの記録）と誰も読まないキー1つを消し、"
+                  "analyst_history の8キーは溜まる履歴のため残す。_validation_warnings は品質の印として残す（読み手は後の画面の整理で決める）。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="market_data", OUTSIDE_PREFIXES=("common/market_data/",),
     READ_PREFIXES=("common/market_data",),
     READ_HINT="market_data", NAME_SHORT="市場データ層",
     KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        **{k: "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+           for k in ("current_price_target", "eps_actual", "eps_difference", "eps_estimate",
+                     "price_target_action", "prior_price_target", "strong_buy", "strong_sell")},
+        "_validation_warnings": "残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）",
+        "next_quarter_eps_date": "書き込みをやめた（2026-10-22）。今の attributes のファイルからは次の本番の実行（Market Data Weekly）で消える",
+    },
     RULES=[
         {"id": "trading_day", "name": "取引日（市場の営業日）の決め方",
          "patterns": [r"def\s+_?\w*(?:trading_days?|business_days?|business_day_add|market_open)\w*\s*\(",
@@ -2776,7 +2790,8 @@ def render_md(inv: dict) -> str:
             L.append(f"- `{x['file']}` 行 {x['line']}（`{x['output']}`）: `{md_escape(x['text'])}`")
     L.append("")
     if inv["deleted"]:
-        L.append("## 消したもの（段階2、" + ("2026-10-21" if NAME_SHORT in ("HypeCore", "EPS", "STONKS") else "2026-10-20") + "）")
+        L.append("## 消したもの（段階2、" + {"HypeCore": "2026-10-21", "EPS": "2026-10-21", "STONKS": "2026-10-21",
+                                            "市場データ層": "2026-10-22"}.get(NAME_SHORT, "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")

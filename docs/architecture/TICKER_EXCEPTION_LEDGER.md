@@ -70,7 +70,7 @@
 | `fixed_registry` | `common/sec_data/fixed_registry.json`（凍結） | 42 |
 | `rpo_not_applied` | TANUKI latest.json `rpo_adjustment.exclusion_reason`（RPO/売上 < 0.3 の規則で不適用） | 12 |
 | `eps_maturity_alert` | EPS quarterly.json `maturity_monitor.alert` | 39 |
-| `market_data_violation` | `common/market_data/{SYM}/market_data_violations_log.json` のいずれかの一覧が空でない | 91 / 593 |
+| `market_data_violation` | `common/market_data/{SYM}/market_data_violations_log.json` のいずれかの一覧が空でない（このファイルは読み手0件のため2026-10-22に削除。実装するときは daily・attributes の各レコードの `_validation_warnings` から作る） | 91 / 593 |
 | `rice_warning` | TANUKI latest.json `rice.warnings` | 96（全銘柄。`[[RICE-WARNINGS-ALWAYS-TRUE-1]]` を直すまでは件数にも意味がない） |
 
 C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を変えた結果の記録はある。parser の中で正しく吸収済みで、評価値の読み手が意識する必要がないので C にした。吸収できていない（値が誤っている）とわかったら、手書きの A で記録する。

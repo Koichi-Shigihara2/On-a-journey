@@ -2140,8 +2140,9 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
   `get_recommendations_history(latest_only)`・`get_index_series()`・
   `get_sp500_constituents_prices()`の12種。
 - 保存構造は3層独立（`daily/{SYMBOL}.json`・`attributes/{SYMBOL}.json`・
-  `analyst_history/{SYMBOL}.json`）＋`{SYMBOL}/market_data_violations_log.json`
-  （fy_collision_log.json型、セクション独立のread-modify-write）。
+  `analyst_history/{SYMBOL}.json`）。`{SYMBOL}/market_data_violations_log.json`（検証の結果のログ）と
+  `_daily_close_retry_log.json`（終値の取り直しの記録）は読み手0件のため2026-10-22に削除（[[OUTPUT-INVENTORY-CHECK-1]]、
+  保存前の検証の警告は各レコードの`_validation_warnings`と標準出力）。
 - current_priceは常に`daily/`層（前日終値、`get_latest_price()["close"]`）
   から取得する方針で統一。`attributes/`層は`.info`スナップショット
   （market_cap/beta/sector/PER/PEG/PS/EV_EBITDA/dividend_yield/
@@ -2232,9 +2233,8 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
   `source_detail`）・`series_meta.json`（25系列の`fred_release_id`/
   `obs_to_release_lag`/`category`/`consumers`、静的ファイル）・
   `macro_data_violations_log.json`（単一の共有ログファイル、系列IDを
-  キーに0件でも毎回書き込む。`market_data_violations_log.json`は
-  銘柄ごとに別ファイルだが、macro_dataは単一ファイル内をセクション
-  分割する点が異なる）。
+  キーに0件でも毎回書き込む。市場データ層の`market_data_violations_log.json`〈銘柄ごとの
+  別ファイル〉は2026-10-22に削除）。
 - 保存前検証: ①同一`as_of`の重複（今回取得バッチ内）②直前値からの
   変化が1桁（10倍または1/10）以上か、の2項目（`EXTRACTION_DESIGN_
   PRINCIPLES.md`原則3対応）。

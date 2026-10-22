@@ -140,34 +140,13 @@ class TestAtomicWriteJson:
         assert leftovers == []
 
 
-class TestViolationsLogSections:
-    def test_empty_warnings_still_written(self, tmp_path):
-        base = str(tmp_path)
-        fetcher._write_violations_section(
-            "AAPL", "daily_price_validation",
-            {"checked_at": "2026-08-10T00:00:00+00:00", "date": "2026-08-10", "warnings": []},
-            base_dir=base,
-        )
-        path = fetcher._violations_log_path("AAPL", base)
-        saved = json.load(open(path, encoding="utf-8"))
-        assert saved["daily_price_validation"]["warnings"] == []
+class TestNoViolationsLog:
+    """market_data_violations_log.json は 2026-10-22 に削除した（R-A 市場データ層の段階2、読み手0件）。
+    保存前の検証は残り、警告は各レコードの _validation_warnings と標準出力に出る。"""
 
-    def test_daily_and_attributes_sections_do_not_clobber_each_other(self, tmp_path):
-        base = str(tmp_path)
-        fetcher._write_violations_section(
-            "AAPL", "daily_price_validation",
-            {"checked_at": "t1", "date": "2026-08-10", "warnings": ["daily warn"]},
-            base_dir=base,
-        )
-        fetcher._write_violations_section(
-            "AAPL", "attributes_validation",
-            {"checked_at": "t2", "warnings": ["attr warn"]},
-            base_dir=base,
-        )
-        path = fetcher._violations_log_path("AAPL", base)
-        saved = json.load(open(path, encoding="utf-8"))
-        assert saved["daily_price_validation"]["warnings"] == ["daily warn"]
-        assert saved["attributes_validation"]["warnings"] == ["attr warn"]
+    def test_write_functions_are_gone(self):
+        assert not hasattr(fetcher, "_write_violations_section")
+        assert not hasattr(fetcher, "_violations_log_path")
 
 
 class TestAppendDailyRecordDedup:
@@ -563,7 +542,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["next_quarter_eps_estimate"] == 6.33
-        assert saved["next_quarter_eps_date"] == "2026-12-09"
+        assert "next_quarter_eps_date" not in saved
 
     def test_future_row_with_nan_estimate_yields_none(self, tmp_path, monkeypatch):
         """CIX/FROG実データ相当: 未発表行は存在するがEPS Estimate自体が
@@ -578,7 +557,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["next_quarter_eps_estimate"] is None
-        assert saved["next_quarter_eps_date"] is None
+        assert "next_quarter_eps_date" not in saved
 
     def test_no_unreported_future_row_yields_none(self, tmp_path, monkeypatch):
         """全行がReported EPS確定済み（次回決算日が未定でyfinance側に
@@ -599,7 +578,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["next_quarter_eps_estimate"] is None
-        assert saved["next_quarter_eps_date"] is None
+        assert "next_quarter_eps_date" not in saved
 
     def test_earnings_dates_fetch_failure_does_not_block_other_fields(self, tmp_path, monkeypatch):
         """.earnings_dates呼び出しが例外を送出しても、.info由来の他フィールドの
@@ -626,7 +605,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["next_quarter_eps_estimate"] == 6.33
-        assert saved["next_quarter_eps_date"] == "2026-12-09"
+        assert "next_quarter_eps_date" not in saved
 
     def test_past_row_with_missing_reported_eps_is_not_mistaken_for_future(self, tmp_path, monkeypatch):
         """ZETA実データで発見: 過去の決算行がYahoo側のデータ欠損で
@@ -647,7 +626,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["next_quarter_eps_estimate"] == 0.28
-        assert saved["next_quarter_eps_date"] == "2026-11-03"
+        assert "next_quarter_eps_date" not in saved
 
 
 class TestMergeDailyRecords:
@@ -780,27 +759,8 @@ class TestBackfillDailyPrices:
         path = os.path.join(base, "daily", "AAPL.json")
         saved = json.load(open(path, encoding="utf-8"))
         assert saved["records"][0]["_validation_warnings"] != []
-
-        violations_path = fetcher._violations_log_path("AAPL", base)
-        violations = json.load(open(violations_path, encoding="utf-8"))
-        assert violations["backfill_price_validation"]["dates_with_warnings"] == ["2026-08-10"]
-
-    def test_backfill_section_does_not_clobber_daily_section(self, tmp_path, monkeypatch):
-        """backfillのviolations_log書き込みが、既存のdaily_price_validation
-        セクション（直近の日次チェック）を上書きしないことを確認する"""
-        base = str(tmp_path)
-        fetcher._write_violations_section(
-            "AAPL", "daily_price_validation",
-            {"checked_at": "t1", "date": "2026-08-10", "warnings": []},
-            base_dir=base,
-        )
-        self._patch_history(monkeypatch, {"AAPL": [self._make_bar("2026-08-09")]})
-        fetcher.backfill_daily_prices(["AAPL"], period="1y", base_dir=base)
-
-        violations_path = fetcher._violations_log_path("AAPL", base)
-        violations = json.load(open(violations_path, encoding="utf-8"))
-        assert violations["daily_price_validation"]["date"] == "2026-08-10"
-        assert "backfill_price_validation" in violations
+        # 検証の結果のログ（{SYMBOL}/market_data_violations_log.json）は書かない（2026-10-22）
+        assert not os.path.exists(os.path.join(base, "AAPL"))
 
     def test_no_symbols_is_a_noop(self, tmp_path, monkeypatch):
         base = str(tmp_path)

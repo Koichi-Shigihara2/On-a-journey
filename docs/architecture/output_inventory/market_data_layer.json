@@ -4,49 +4,13 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "common/market_data/_daily_close_retry_log.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "fetch_daily_prices",
-     "line": 857
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "fetch_daily_prices",
-     "line": 872
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/Market_Data_Daily_Update.yml",
-    ".github/workflows/Market_Data_Weekly_Update.yml"
-   ],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "日次の取得で終値の無い足を取り直した記録・Yahooの作り直しの時間帯で保存しなかった記録（直近60回）。書き手が追記のために読み直すほかに読むコードは無い",
-   "decision": "（段階2の判断待ち）"
-  },
-  {
    "path": "/tmp/daily_status.json",
    "kind": "ファイル",
    "writers": [
     {
      "file": "common/market_data/fetcher.py",
      "func": "<module>",
-     "line": 1655
+     "line": 1590
     }
    ],
    "writers_outside_layer": [],
@@ -93,7 +57,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "common/market_data/_sp500_constituents_cache.json",
@@ -102,7 +66,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "get_sp500_constituents",
-     "line": 1558
+     "line": 1493
     }
    ],
    "writers_outside_layer": [],
@@ -133,7 +97,7 @@
    "readers": [
     {
      "file": "common/market_data/fetcher.py",
-     "line": 55,
+     "line": 56,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -150,100 +114,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
-   "decision": "（段階2の判断待ち）"
-  },
-  {
-   "path": "common/market_data/{T}/market_data_violations_log.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "_write_violations_section",
-     "line": 331
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/Market_Data_Daily_Update.yml",
-    ".github/workflows/Market_Data_Weekly_Update.yml"
-   ],
-   "files_tracked": 596,
-   "top_keys_sampled_files": 596,
-   "top_keys": [
-    {
-     "key": "attributes_validation",
-     "reader_files": 2
-    },
-    {
-     "key": "backfill_price_validation",
-     "reader_files": 2
-    },
-    {
-     "key": "daily_price_unconfirmed",
-     "reader_files": 1
-    },
-    {
-     "key": "daily_price_validation",
-     "reader_files": 2
-    },
-    {
-     "key": "ticker",
-     "reader_files": 1
-    }
-   ],
-   "readers": [
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 315,
-     "func": "_violations_log_path",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_market_data_fetcher.py",
-     "line": 151,
-     "func": "TestViolationsLogSections.test_empty_warnings_still_written",
-     "how": "保存済みファイル",
-     "via": "common/market_data/fetcher.py::_violations_log_path",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_data_fetcher.py",
-     "line": 167,
-     "func": "TestViolationsLogSections.test_daily_and_attributes_sections_do_not_clobber_each_other",
-     "how": "保存済みファイル",
-     "via": "common/market_data/fetcher.py::_violations_log_path",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_data_fetcher.py",
-     "line": 784,
-     "func": "TestBackfillDailyPrices.test_validation_warnings_are_embedded_per_record",
-     "how": "保存済みファイル",
-     "via": "common/market_data/fetcher.py::_violations_log_path",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_data_fetcher.py",
-     "line": 800,
-     "func": "TestBackfillDailyPrices.test_backfill_section_does_not_clobber_daily_section",
-     "how": "保存済みファイル",
-     "via": "common/market_data/fetcher.py::_violations_log_path",
-     "type": "テスト"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 1,
-   "reader_count_compute": 0,
-   "group": "1件",
-   "note": "銘柄ごとの保存前の検証の結果（日次・週次・バックフィルの区画ごと。0件でも毎回書く）。読み手の1件は書き先のパスを作る関数（fetcher.py の _violations_log_path）で、書き手が区画ごとに読み直すほかに読むコードは無い（FINDINGS 2026-10-15 の F3）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "common/market_data/analyst_history/{T}.json",
@@ -252,7 +123,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_analyst_events",
-     "line": 1489
+     "line": 1424
     }
    ],
    "writers_outside_layer": [],
@@ -283,7 +154,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 71,
+     "line": 70,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -526,8 +397,8 @@
    "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移",
-   "decision": "（段階2の判断待ち）"
+   "note": "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移。3系統とも追記型の履歴（Yahooが返すのは直近の分だけで、過去の分はこのファイルにしか残らない）",
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "common/market_data/attributes/{T}.json",
@@ -536,7 +407,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_weekly_attributes",
-     "line": 1339
+     "line": 1279
     }
    ],
    "writers_outside_layer": [],
@@ -699,7 +570,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 70,
+     "line": 69,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1723,8 +1594,8 @@
    "reader_count_test": 14,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算日等）",
-   "decision": "（段階2の判断待ち）"
+   "note": "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
+   "decision": "残す（2026-10-22）"
   },
   {
    "path": "common/market_data/daily/{T}.json",
@@ -1733,37 +1604,37 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "_append_daily_record",
-     "line": 421
+     "line": 400
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_replace_provisional_records",
-     "line": 465
+     "line": 444
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "mark_and_repair_provisional_rows",
-     "line": 490
+     "line": 469
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_repair_close_missing_records",
-     "line": 524
+     "line": 503
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_mark_no_bar_rows",
-     "line": 811
+     "line": 790
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "backfill_daily_prices",
-     "line": 1012
+     "line": 966
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "repair_missing_trading_days",
-     "line": 1123
+     "line": 1068
     }
    ],
    "writers_outside_layer": [],
@@ -1786,7 +1657,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 126,
+     "line": 124,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1850,7 +1721,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 757,
+     "line": 736,
      "func": "_stale_provisional_dates",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1858,7 +1729,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 774,
+     "line": 753,
      "func": "_refetch_stale_provisional",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1866,7 +1737,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 873,
+     "line": 840,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1874,7 +1745,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 921,
+     "line": 882,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1882,7 +1753,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 922,
+     "line": 883,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1890,7 +1761,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1042,
+     "line": 987,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1898,7 +1769,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1043,
+     "line": 988,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1906,7 +1777,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1072,
+     "line": 1017,
      "func": "find_missing_trading_days",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1914,7 +1785,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1641,
+     "line": 1576,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::repair_close_missing_records",
@@ -1922,7 +1793,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1652,
+     "line": 1587,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
@@ -3582,7 +3453,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-22）"
   }
  ],
  "rules": [
@@ -3596,27 +3467,27 @@
    "sites": [
     {
      "file": "common/market_data/fetcher.py",
-     "line": 225,
+     "line": 226,
      "text": "def is_trading_day(day: Any, calendar=None) -> bool:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 743,
+     "line": 722,
      "text": "def is_symbol_trading_day(symbol: str, day: str) -> bool:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1066,
+     "line": 1011,
      "text": "def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> List[str]:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1087,
+     "line": 1032,
      "text": "def _calendar_trading_days(name: str) -> List[str]:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1097,
+     "line": 1042,
      "text": "def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:"
     },
     {
@@ -3665,37 +3536,37 @@
    "sites": [
     {
      "file": "common/market_data/fetcher.py",
-     "line": 424,
+     "line": 403,
      "text": "def _mark_provisional(symbol: str, record: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 432,
+     "line": 411,
      "text": "def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], base_dir: str,"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 471,
+     "line": 450,
      "text": "def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optional[str] = None,"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 593,
+     "line": 572,
      "text": "def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 604,
+     "line": 583,
      "text": "def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 755,
+     "line": 734,
      "text": "def _stale_provisional_dates(symbol: str, base_dir: str, now: datetime) -> List[str]:"
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 767,
+     "line": 746,
      "text": "def _refetch_stale_provisional(symbols: List[str], history: Dict[str, List[Dict[str, Any]]], base_dir: str,"
     },
     {
@@ -3737,7 +3608,7 @@
    "sites": [
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1508,
+     "line": 1443,
      "text": "def get_sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) -> List[str]:"
     },
     {
@@ -3765,7 +3636,7 @@
   {
    "dir": "common/market_data",
    "file": "common/market_data/__init__.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 30,
    "workflows": [],
    "code": [],
@@ -3775,7 +3646,7 @@
   {
    "dir": "common/market_data",
    "file": "common/market_data/daily_guard.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 81,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml"
@@ -3793,8 +3664,8 @@
   {
    "dir": "common/market_data",
    "file": "common/market_data/fetcher.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 1660,
+   "decision": "残す（2026-10-22）",
+   "lines": 1595,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml",
     ".github/workflows/Market_Data_Weekly_Update.yml"
@@ -3823,7 +3694,7 @@
   {
    "dir": "common/market_data",
    "file": "common/market_data/reader.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-22）",
    "lines": 394,
    "workflows": [],
    "code": [
@@ -3904,34 +3775,42 @@
   },
   {
    "name": "market_data_violations_log",
-   "in_layer": true,
-   "output": "common/market_data/{T}/market_data_violations_log.json",
-   "sites": [
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 315
-    }
-   ]
+   "in_layer": false,
+   "output": null,
+   "sites": []
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "common/market_data/{T}/market_data_violations_log.json（596ファイル）と書き手（fetcher.py の _write_violations_section・_violations_log_path）",
+   "detail": "削除（2026-10-22、Koichiさんの判断）。読み手0件（FINDINGS 2026-10-15 の F3）。保存前の検証は残し、警告は各レコードの _validation_warnings と標準出力に出す。ワークフロー2本の git add の行と .gitattributes の行も消した"
+  },
+  {
+   "what": "common/market_data/_daily_close_retry_log.json と fetch_daily_prices の追記の処理",
+   "detail": "削除（2026-10-22、Koichiさんの判断）。読み手0件（書き手が追記のために読み直すだけ）。終値の無い足の取り直し（_retry_missing_closes）と、Yahooの作り直しの時間帯の判定は残す"
+  },
+  {
+   "what": "attributes の next_quarter_eps_date の書き込み",
+   "detail": "書き込みをやめた（2026-10-22）。読み手0件（TANUKI が読むのは next_quarter_eps_estimate だけ）。前後で daily・attributes・analyst_history は消したキーのほか同じ（yfinance の応答を記録して再生、11銘柄）、TANUKI の96銘柄の理論株価・判定と HypeCore の98銘柄の stage は前後で同じ"
+  }
+ ],
  "stop_condition": {
-  "outputs": 7,
+  "outputs": 5,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 13,
+  "python_read_sites_into_layer_resolved": 11,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
-    "line": 1624,
+    "line": 1559,
     "func": "<module>",
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 18,
+  "name_hit_sites_resolved": 17,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.031,
+  "ratio_reader": 0.034,
   "threshold": 0.1,
   "hit": false
  },
@@ -3939,21 +3818,21 @@
   {
    "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
    "lines": [
+    120,
+    121,
     122,
     123,
-    124,
-    125,
-    127
+    125
    ],
    "keys": []
   },
   {
    "workflow": ".github/workflows/Market_Data_Weekly_Update.yml",
    "lines": [
+    67,
     68,
-    69,
-    72,
-    73
+    71,
+    72
    ],
    "keys": []
   },
@@ -3990,142 +3869,72 @@
      "common/market_data/attributes/{T}.json",
      "common/market_data/daily/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "attributes_validation",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "backfill_price_validation",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
+    "note": "残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）"
    },
    {
     "key": "current_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "daily_price_unconfirmed",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "daily_price_validation",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "dates_fetched",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "dates_with_warnings",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "eps_actual",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "eps_difference",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "eps_estimate",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "initial_symbols",
-    "sources": [
-     "common/market_data/_daily_close_retry_log.json"
-    ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "next_quarter_eps_date",
     "sources": [
      "common/market_data/attributes/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "no_close",
-    "sources": [
-     "common/market_data/_daily_close_retry_log.json"
-    ],
-    "note": ""
+    "note": "書き込みをやめた（2026-10-22）。今の attributes のファイルからは次の本番の実行（Market Data Weekly）で消える"
    },
    {
     "key": "price_target_action",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "prior_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "skipped_no_close",
-    "sources": [
-     "common/market_data/{T}/market_data_violations_log.json"
-    ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "strong_buy",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    },
    {
     "key": "strong_sell",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": ""
-   },
-   {
-    "key": "with_bars",
-    "sources": [
-     "common/market_data/_daily_close_retry_log.json"
-    ],
-    "note": ""
+    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    }
   ],
-  "written_key_count": 94
+  "written_key_count": 74
  }
 }

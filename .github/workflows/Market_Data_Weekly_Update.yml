@@ -54,7 +54,6 @@ jobs:
           git config merge.ours.driver true
           git add common/market_data/attributes/ || true
           git add common/market_data/analyst_history/ || true
-          git add common/market_data/*/market_data_violations_log.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"

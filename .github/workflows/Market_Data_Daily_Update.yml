@@ -90,7 +90,7 @@ jobs:
         run: python common/sec_data/rotce.py
 
       # reset_window（Yahooの作り直しの時間帯）で終わった実行はcommitしない（2026-10-03）。daily/は変わらず、
-      # _daily_close_retry_log.jsonの記録だけのcommitが「Update Market Data Daily」の件名で残っていた（10-03の2本）
+      # _daily_close_retry_log.json（2026-10-22に削除）の記録だけのcommitが「Update Market Data Daily」の件名で残っていた（10-03の2本）
       - name: Commit and push changes
         id: commit
         if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
@@ -105,9 +105,7 @@ jobs:
             echo "saved=true" >> "$GITHUB_OUTPUT"
           fi
           git add common/market_data/daily/ || true
-          git add common/market_data/*/market_data_violations_log.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
-          git add common/market_data/_daily_close_retry_log.json || true
           git add docs/common/sec_data/rotce/ || true
           if git diff --staged --quiet; then
             echo "No changes to commit"

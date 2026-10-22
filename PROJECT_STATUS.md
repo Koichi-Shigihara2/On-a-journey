@@ -20,7 +20,7 @@
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り5つのサブシステムの段階を、market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse の順に**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO。CHECK-INVはこの5段階）
    - （済 2026-10-22）市場データ層の段階1の一覧の下書き: `build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`。出力7、読み手0件1（`_daily_close_retry_log.json`）、誰も読まないキー20、規則の二重3（取引日・暫定の足・S&P500の構成銘柄）。止める条件は書き手0%・読み方3.1%。
-     一覧のスクリプトに段階ごとの印3つ（汎用の読み書きの関数は呼び出し箇所を読み手・書き手に、画面の無い層の誰も読まないキー、解決を厳しく）。既存の5段階の一覧は差0。**次はKoichiさんの判断（市場データ層の段階2）**。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「市場データ層の段階」
+     一覧のスクリプトに段階ごとの印3つ（汎用の読み書きの関数は呼び出し箇所を読み手・書き手に、画面の無い層の誰も読まないキー、解決を厳しく）。既存の5段階の一覧は差0。段階2（2026-10-22）: 検証の結果のログ（596ファイル）・取り直しの記録・attributesの`next_quarter_eps_date`を削除、analyst_historyの8キーは溜まる履歴のため残す。TANUKI・HypeCoreは前後で同じ。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「市場データ層の段階」
    - （済 2026-10-21）STONKS SILOの段階1〜3
    - （済 2026-10-21）STONKS SILOの段階2・3: 第1部（`src/value/stonks_silo/`へ付け替え、誰も読まないキー10の書き込みをやめた、一覧の取り違えの直し。CIの手動の実行 run 39598656283 はsuccessでresults.jsonは手元の実行と時刻のほか同じ）・第2部（CHECK-INVをSTONKS SILOにも、rccのCHECK-INVは約26.3秒）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
    - （済 2026-10-21）STONKS SILOの段階1の一覧の下書き: `build_output_inventory.py --layer stonks` → `stonks_layer.json`・`stonks_layer.md`。出力1（results.json）・ワークフローの中のStep Summary 1、画面が読むキー80（書き手なし0）、誰も読まないキー12、規則の二重のうちSTONKSを含むもの1。止める条件は書き手0%・読み方5.6%。本番外のコードの候補0件。CHECK-INVはsec・tanuki・hypecore・epsのまま。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「STONKS SILOの段階」
@@ -42,7 +42,7 @@
    書き手・読み手（保存済みファイル／その場で計算）・画面・定義・規則をASTとgrepで作り、Koichiさんの残す／消すの判断（段階2）→削除→CHECK（段階3）の順。CHAT_RULES.md「発見の溜め方と根治の判断」5
    - （済 2026-10-20）SEC層の段階1〜3: `5dda340c96`（一覧）・`b6294a559b`（削除）・第2部のcommit（CHECK-INV-1〜4）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」
    - SEC層の保留4件は2026-10-20に決着（残す2・削除で3ファイル。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」）
-   - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する
+   - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する（`market_data_violations_log`は2026-10-22に削除で済）
 3. （済 2026-10-21）R-C `[[LAYER3-FIRST-FILED-DATE-1]]`: `first_filed`・`first_val`、Q4の逆算を年次と同じ時点の値どうし、CHECK-64。APPの理論株価は戻らない（シミュレーション −1.47%。窓の中の基準の混在は`FINDINGS.md` 2026-10-21、[[STAGE-V2-ROLLOUT-1]]で決める）。公開の確認は`CLAUDE_CODE_START.md`「次回の確認手順」11。TAIL側の残りは`[[TAIL-REVIEW-PERIOD-FILTER-1]]`
 4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で

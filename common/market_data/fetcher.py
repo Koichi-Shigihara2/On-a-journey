@@ -18,10 +18,11 @@ backfill_daily_prices(symbols, period="1y") は一過性ツール（定期cron�
 を行うが、検証失敗時も保存は拒否しない（_validation_warningsフィールドに
 記録した上で保存継続。common/sec_data/parser.py の fy_collision_log.json と
 同じ「検知のみ・自動修正なし」方針を踏襲、日次連続性に穴を作らないため）。
-検証結果は毎回 {SYMBOL}/market_data_violations_log.json に書き込む（0件でも
-書き込む、fy_collision_log.json型の化石ファイル対策）。
+警告は各レコードの_validation_warningsと標準出力に出す（検証の結果を別に書いた
+{SYMBOL}/market_data_violations_log.jsonは読み手0件のため2026-10-22に削除、
+[[OUTPUT-INVENTORY-CHECK-1]]の市場データ層の段階2）。
 
-daily/・attributes/・analyst_history/・violations_logの書き込みは全て
+daily/・attributes/・analyst_history/の書き込みは全て
 tempfile→os.replace()でアトミック化する（BACKLOG確定事項3）。
 
 本番消費者切替（BACKLOG着手順序4）が開始しており、
@@ -307,28 +308,6 @@ def validate_attributes_record(record: Dict[str, Any]) -> List[str]:
             )
 
     return warnings
-
-
-# ── 検証結果ログ（fy_collision_log.json型） ────────────────
-
-def _violations_log_path(symbol: str, base_dir: str) -> str:
-    return os.path.join(base_dir, symbol, "market_data_violations_log.json")
-
-
-def _write_violations_section(symbol: str, section_key: str, section_value: Dict[str, Any],
-                               base_dir: str) -> None:
-    """market_data_violations_log.json の指定セクションのみを更新する。
-
-    daily_price_validation（日次）とattributes_validation（週次）は独立した
-    頻度で実行されるため、片方の実行が他方の最新記録を上書きしないよう
-    セクション単位でread-modify-writeする。0件でも毎回書き込む
-    （fy_collision_log.json型の化石ファイル対策）。
-    """
-    path = _violations_log_path(symbol, base_dir)
-    payload = _load_json(path, default={"ticker": symbol})
-    payload["ticker"] = symbol
-    payload[section_key] = section_value
-    _atomic_write_json(path, payload)
 
 
 # ── 日次価格層 ────────────────────────────────────────────
@@ -820,7 +799,6 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
     yf.download()で対象銘柄を一括取得し、銘柄ごとに直近1営業日分のOHLCVを
     daily/{SYMBOL}.jsonへ追記する。保存前にvalidate_price_record()で検証し、
     失敗しても保存は拒否しない（_validation_warningsに記録の上で保存継続）。
-    検証結果は{SYMBOL}/market_data_violations_log.jsonへ毎回書き込む。
 
     本番バッチではsymbolsにget_default_symbol_universe()（S&P500構成銘柄＋
     監視銘柄＋指数/ETF/商品の和集合）を渡す想定。
@@ -850,11 +828,6 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
     if len(with_bars) >= RESET_WINDOW_MIN_SYMBOLS and len(no_close) * 2 >= len(with_bars):
         print(f"   終値の無い足が{len(no_close)}/{len(with_bars)}銘柄（半数以上）: Yahooの日足の作り直しの時間帯とみなし、"
               f"取り直さず保存せずに終了")
-        summary_path = os.path.join(base, "_daily_close_retry_log.json")
-        log = _load_json(summary_path, default=[])
-        log.append({"checked_at": _now_iso(), "status": "reset_window_skipped", "no_close": len(no_close),
-                    "with_bars": len(with_bars)})
-        _atomic_write_json(summary_path, log[-60:])
         return {"status": "reset_window", "no_close": len(no_close), "with_bars": len(with_bars)}
     retry = _retry_missing_closes(history)
     contracts: Dict[str, Optional[str]] = {}
@@ -864,12 +837,6 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
             contracts[s] = _futures_contract(s)
             start = (datetime.strptime(history[s][0]["date"], "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d")
             contract_closes[s] = _contract_close_map(contracts[s], start) if contracts[s] else {}
-    if retry["initial"]:
-        summary_path = os.path.join(base, "_daily_close_retry_log.json")
-        log = _load_json(summary_path, default=[])
-        log.append({"checked_at": _now_iso(), **{k: (len(v) if k != "still_missing" else v) for k, v in retry.items()},
-                    "initial_symbols": retry["initial"][:50]})
-        _atomic_write_json(summary_path, log[-60:])
     refetched = _refetch_stale_provisional(target_symbols, history, base, now)
     for symbol in target_symbols:
         # c: その銘柄の取引日でない足（土曜のJPY=X・Labor Dayの先物・日本の祝日の^N225）は保存にも置き換えにも使わない
@@ -902,12 +869,6 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
             continue
         if not _has_valid_close(symbol_bars[-1]):
             print(f"   [{symbol}] {symbol_bars[-1]['date']}の足に終値が無い（未確定のため保存せず、次回取り直す）")
-            _write_violations_section(
-                symbol, "daily_price_unconfirmed",
-                {"checked_at": _now_iso(), "date": symbol_bars[-1]["date"],
-                 "note": "終値が無い足のため保存しなかった（次回実行時に取り直す）"},
-                base_dir=base,
-            )
         _repair_close_missing_records(symbol, valid_bars, base_dir=base)
         # ^N225の出来高0の足は、終値があっても取引時間中の値のため確定値として扱わない（暫定の印を付けて保存）
         _replace_provisional_records(symbol, replace_bars, base_dir=base, now=now,
@@ -940,11 +901,6 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
         record["_validation_warnings"] = record_warnings
 
         _append_daily_record(symbol, record, base_dir=base)
-        _write_violations_section(
-            symbol, "daily_price_validation",
-            {"checked_at": _now_iso(), "date": record["date"], "warnings": record_warnings},
-            base_dir=base,
-        )
         if record_warnings:
             print(f"   [{symbol}] 保存前検証で{len(record_warnings)}件の警告を検知（保存は継続）")
     return {"status": "fetched", "no_close_after_retry": len(retry["still_missing"]), "with_bars": len(with_bars)}
@@ -972,10 +928,8 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
     アトミック書き込みを適用する。同一日付が既存レコードにある場合は
     新しい取得値で上書きする（fetch_daily_prices()の「同一date上書き」
     冪等性設計と一貫。日次cronが既に取得済みの日付を再取得しても、
-    同じ取引日の確定値であれば内容は変わらない）。過去分の検証結果は
-    {SYMBOL}/market_data_violations_log.jsonの`backfill_price_validation`
-    セクションに要約を記録する（`daily_price_validation`＝直近の日次チェック
-    セクションとは独立させ、日次バッチの「最新1件」という意味を壊さない）。
+    同じ取引日の確定値であれば内容は変わらない）。検証の警告は各レコードの
+    _validation_warningsと、完了時の標準出力（警告の日数・終値の無い足の数）に出す。
     """
     base = _resolve_base_dir(base_dir)
     target_symbols = _dedupe_symbols(symbols)
@@ -1011,19 +965,10 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
         payload["records"] = merged
         _atomic_write_json(path, payload)
 
-        _write_violations_section(
-            symbol, "backfill_price_validation",
-            {
-                "checked_at": _now_iso(), "period": start or period,
-                "dates_fetched": len(new_records),
-                "dates_with_warnings": dates_with_warnings,
-                "skipped_no_close": skipped_no_close,
-            },
-            base_dir=base,
-        )
         print(f"   [{symbol}] バックフィル完了: {len(new_records)}日分取得 → "
               f"累計{len(merged)}日分保存"
-              + (f"（検証警告{len(dates_with_warnings)}日分）" if dates_with_warnings else ""))
+              + (f"（検証警告{len(dates_with_warnings)}日分）" if dates_with_warnings else "")
+              + (f"（終値の無い足{skipped_no_close}本は保存せず）" if skipped_no_close else ""))
 
 
 def repair_close_missing_records(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, int]:
@@ -1274,21 +1219,17 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
         # 存在する。単純に最初のNaN行を採用すると、この4年以上前の
         # 過去欠損行を「次回決算」と誤認する。日付が現在時刻より未来
         # であることも条件に加えて除外する。
+        # 次の決算日（next_quarter_eps_date）は読み手0件のため2026-10-22から書かない。推定値だけを書く
         next_quarter_eps_estimate: Optional[float] = None
-        next_quarter_eps_date: Optional[str] = None
         try:
             edates = t.earnings_dates
             if edates is not None and not edates.empty and "Reported EPS" in edates.columns:
                 now = pd.Timestamp.now(tz=edates.index.tz) if edates.index.tz is not None else pd.Timestamp.now()
                 future = edates[edates["Reported EPS"].isna() & (edates.index > now)].sort_index()
                 if not future.empty:
-                    next_idx = future.index[0]
                     est = future.iloc[0].get("EPS Estimate")
                     if est is not None and not pd.isna(est):
                         next_quarter_eps_estimate = float(est)
-                        next_quarter_eps_date = (
-                            next_idx.isoformat()[:10] if hasattr(next_idx, "isoformat") else str(next_idx)[:10]
-                        )
         except Exception as e:
             print(f"   [{symbol}] earnings_dates取得失敗（次期EPS推定なしで継続）: {e}")
 
@@ -1329,7 +1270,6 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
             "average_volume": _numeric_or_none(info.get("averageVolume") or info.get("averageVolume10days")),
             "calendar": calendar_dict,
             "next_quarter_eps_estimate": next_quarter_eps_estimate,
-            "next_quarter_eps_date": next_quarter_eps_date,
         }
 
         record_warnings = validate_attributes_record(record)
@@ -1337,11 +1277,6 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
 
         path = os.path.join(base, "attributes", f"{symbol}.json")
         _atomic_write_json(path, record)
-        _write_violations_section(
-            symbol, "attributes_validation",
-            {"checked_at": fetched_at, "warnings": record_warnings},
-            base_dir=base,
-        )
         if record_warnings:
             print(f"   [{symbol}] 保存前検証で{len(record_warnings)}件の警告を検知（保存は継続）")
 
