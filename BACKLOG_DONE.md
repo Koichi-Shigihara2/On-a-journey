@@ -1941,6 +1941,10 @@ pytest 2412件パス・audit.py exit 0・report_consistency_check.py --fail-on-n
 - 「Run EDGAR RSS Monitor」と「quarterly_review_generator」の段のログで`DISCORD_WEBHOOK: ***`（空でない）。修正前の10-15の実行は空だった
 - 「Discord 送信OK」が出た回は無い: この回は9銘柄とも「変更なし」で新規提出が無く、TSLAの遅延は10日（通知は`ALERT_BIZ_DAYS`＝3にちょうど達した日だけ）。Discordへの実際の送信は、新規提出か遅延のアラートがある日まで未確認
 
+#### 確認（2026-10-23、ログとDiscord）
+- 2026-10-22 22:27〜22:30 JSTの実行（run `39786981021`、schedule、success）のログに`DISCORD_WEBHOOK: ***`・`[TSLA] ★ 新規提出: 0001628280-26-066775 (2026Q3) filed=2026-10-22`・`Discord 送信OK`。Discordへの着信はKoichiさんが確認した。新規提出の通知の経路はこれで済。
+  同じ回のレビュー（TSLA 2026Q3）はbotの`0f442eaeba`
+
 ### ✅ [TAIL-RSS-FALSE-NEW-FILING-1] TANUKI TAIL RSS Monitorが、10-QのRSSのタイムアウトで古い10-Kを最新と見なし、新規提出と誤検知していた（戻る回にも再び新規提出）
 **完了（2026-10-16）:** `src/tail/edgar_rss_monitor.py`を修正（`2d8dcf33ab`）。テスト`tests/test_tail_rss_false_new_filing.py`（12件）。確認は次の平日の実行のログで、RSS 取得エラーの銘柄に「新規提出の判定をしない」が出て「★ 新規提出」が出ないこと
 **優先度:** 中（[[TAIL-RSS-SECRET-NAME-1]]の修正で、誤検知がDiscordに届くようになったため）
@@ -1966,6 +1970,10 @@ pytest 2412件パス・audit.py exit 0・report_consistency_check.py --fail-on-n
 #### 確認（2026-10-19 朝、ログ）
 - 修正後の実行は10-16 22:01 JSTの1回（run `38904610396`、success）。この回は「RSS 取得エラー」が0件で、9銘柄とも「変更なし」。「★ 新規提出」も「新規提出の判定をしない」も出ていない
 - 誤検知は無いが、RSSが取れない回の経路（「新規提出の判定をしない」）は未通過。次にRSS 取得エラーが出た回のログで確かめる
+
+#### 確認（2026-10-23、ログとDiscord）
+- 2026-10-22 22:27〜22:30 JSTの実行（run `39786981021`、schedule、success）で、新しい10-Qを新規提出と判定した: `[TSLA] ★ 新規提出: 0001628280-26-066775 (2026Q3) filed=2026-10-22`・`Discord 送信OK`。Discordへの着信はKoichiさんが確認した（新規提出の正しい判定と通知の経路は済）
+- この回も「RSS 取得エラー」は0件で、RSSが取れない回の経路（「新規提出の判定をしない」）は未通過のまま。CLAUDE_CODE_START.md「次回の確認手順」9に残す
 
 ### ✅ [TAIL-REVIEW-LATEST-MISMATCH-1] TANUKI TAILで、後から作られた古い期のレビューにis_latestが移り、6銘柄のDCFシナリオが古いレビュー（2025Q4）から作られていた。画面は2026Q2を最新として表示し、DCFの見出しと数字の期が食い違っていた
 **完了（2026-10-16）:** `e615dc2b21`。テスト`tests/test_tail_review_latest.py`（14件）。
