@@ -1601,7 +1601,7 @@ MACRO PULSE   ← FREDデータ / FRBステートメント
 　　NFP水準残存兆候の検出、report_consistency_check.py相当の軽量版。MACRO-NFP-1 2026-07-07新設）
 　　過去データ補正: src/market/macro_pulse/05_backfill_nfp_mom.py（05_events.csv内の
 　　既存NFP行を水準→前月比に一括変換する一回限りのバックフィルスクリプト。
-　　MACRO-NFP-HIST-1 2026-07-08新設、実行済み）
+　　MACRO-NFP-HIST-1 2026-07-08新設、実行済み。2026-10-23に削除〈R-A MACRO PULSEの段階2〉）
 　　RECESSION RISK SCORE（景気後退リスク複合スコア）: index.htmlの`computeCurrentScore()`
 　　（JS）が算出するが、2026-08-22以降は`05_main.py::_compute_current_score()`が
 　　AIウィークリーコメンタリー生成時（週1回、`05_weekly_analysis.csv`へ保存）に
@@ -2262,7 +2262,7 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
   observation値ではなく発表日カレンダーを扱う別API表面）のみ対象外・
   維持。詳細はBACKLOG.md`[[MACRODATA-LAYER-CONSTRUCTION-1]]`参照。
 - `common/macro_data/migrate_bamlh0a0hym2_history.py`（例外的履歴移行、
-  2026-08-12実装・実行）: `fetcher.py`・`reader.py`とは別系統の、一度
+  2026-08-12実装・実行。2026-10-23に削除〈R-A MACRO PULSEの段階2、移行済みのデータは`series/BAMLH0A0HYM2.json`に残る〉）: `fetcher.py`・`reader.py`とは別系統の、一度
   限りの例外専用スクリプト。FRED側（データ提供元ICE Data Indices）が
   2026年4月から`BAMLH0A0HYM2`の提供範囲を直近3年に制限したため
   （`fredapi::get_series_info()`のnotes欄で確認）、通常のfetcher.py

@@ -188,7 +188,6 @@ DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキ�
 # 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
 # 2 は TAIL の段階から: 同じフォルダの import X as Y・名前の並びを回す for の変数（市場データ層の一覧を変えないよう 1 と分けた）
 # 3 は Portfolio の段階から: ワークフローの git commit -m の件名・cp の写し先・git add の \ の続きの行を読みとしない（TAIL の一覧を変えないよう 2 と分けた）
-# 4 は MACRO PULSE の段階から: importlib でファイルから読み込んだモジュール（_m = module_from_spec(spec_from_file_location(…, パス))）を import と同じに扱う
 RESOLVE_STRICT = 0
 # CSV の出力の列（見出しの行）を JSON のキーと同じに扱い、画面が読む列・誰も読まない列を数える（MACRO PULSE の段階から）
 CSV_COLUMNS = False
@@ -706,32 +705,37 @@ _MACRO_DATA.update(
     OUT_JSON=f"{OUT_DIR}/macro_data_layer.json", OUT_MD=f"{OUT_DIR}/macro_data_layer.md",
     DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
     NON_PRODUCTION_DIRS=[],
-    NON_PRODUCTION_FILES=["common/macro_data/migrate_bamlh0a0hym2_history.py"],
+    NON_PRODUCTION_FILES=[],
     NONPROD_SCAN=True,
-    NONPROD_NOTES={
-        "common/macro_data/migrate_bamlh0a0hym2_history.py":
-            "手で動かす一度きりの移行（05_events.csvのHY Spreadの行→series/BAMLH0A0HYM2.json。二重に動かさない印あり）。"
-            "実行の記録: 2ff481b3ad（2026-08-12、実装と実行）。コードの変更はこの1回だけ",
-    },
     ANNOTATIONS={
         "common/macro_data/series/{series_id}.json":
             "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。"
-            "MACRO PULSE（05_main.py・05_import_history.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む",
+            "MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む",
         "common/macro_data/macro_data_violations_log.json":
             "系列ごとの保存前の検証の結果（警告と取得の成否 fetch_status）。System Health の [L]（check_l_macro_data）が取得の失敗を見るのに読む",
         "common/macro_data/series_meta.json":
-            "系列ごとのメタ情報（fred_release_id・category・consumers 等）。**コードの書き手は無い（人の手で書く静的なファイル）**。"
+            "系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。"
             "fetcher.py が取得する系列の一覧として読む",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("common/macro_data/migrate_bamlh0a0hym2_history.py",
+         "削除（2026-10-23、Koichiさんの判断）。05_events.csv の HY Spread の行を series/BAMLH0A0HYM2.json へ移す一度きりの移行で、2026-08-12（2ff481b3ad）に適用済み"),
+        ("series_meta.json の consumers・input_id、series/BAMLH0A0HYM2.json の fallback_used",
+         "削除（2026-10-23）。誰も読まない。consumers は reader.py に切り替える前の取り方の古い説明（読み手は一覧が出す）、input_id は INPUT_DATA_AS_IS.md の表から作り直せる参照の番号、"
+         "fallback_used は消した移行のスクリプトが移した6,947件に書いた値（すべて False）"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-23、Koichiさんの判断）。移行のスクリプトと誰も読まないキー3つを消し、出力はすべて残す"
+                  "（macro_data_violations_log.json は System Health の [L] が読む）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="macro_data", OUTSIDE_PREFIXES=("common/macro_data/",),
     READ_PREFIXES=("common/macro_data",),
     READ_HINT="macro_data", NAME_SHORT="マクロデータ層",
     KNOWN_DUPLICATE_RULES=[], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        "source_detail": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。"
+                         "読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ",
+    },
     RULES=_TANUKI["RULES"] + _MACRO_RULES,
     FULL_SCAN=True,
     WORKFLOW_SUMMARY=True,
@@ -746,24 +750,17 @@ _MACRO_PULSE.update(
     OUT_JSON=f"{OUT_DIR}/macro_pulse_layer.json", OUT_MD=f"{OUT_DIR}/macro_pulse_layer.md",
     DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
     NON_PRODUCTION_DIRS=[],
-    NON_PRODUCTION_FILES=["src/market/macro_pulse/05_import_history.py", "src/market/macro_pulse/05_backfill_nfp_mom.py"],
+    NON_PRODUCTION_FILES=["src/market/macro_pulse/05_audit.py"],
     NONPROD_SCAN=True,
     NONPROD_NOTES={
-        "src/market/macro_pulse/05_import_history.py":
-            "手で動かす一括投入・バックフィル（FRED・CSV・過去の金利の文脈・流動性・流動性のS&P500）。05_main.py を importlib で読み込んで同じパス・関数を使う。"
-            "実行の記録: c54314a003・02dbf3c63c（2026-05-16、流動性のCSVの3年分）、47659297b2（2026-08-26、ff_rate等の復元）、4b440292af（2026-08-26、流動性のsp500列）。"
-            "最後のコードの変更は504b018c07（2026-09-09）",
-        "src/market/macro_pulse/05_backfill_nfp_mom.py":
-            "手で動かす一度きりの変換（05_events.csvのNFPの370行を水準→前月比。書き換える前に .bak を作る）。実行の記録: 671c5cc0d6（2026-07-08、実装と実行）。コードの変更はこの1回だけ",
         "src/market/macro_pulse/05_audit.py":
             "手で動かす05_events.csvの監査（重複の行等、読むだけで書かない）。ワークフローからは呼ばれず、テストが重複の判定を使う。"
             "重複の判定の本体は2026-09-10に05_main.pyへ移した（f38aae4303）",
     },
     ANNOTATIONS={
         "docs/market-monitor/macro-pulse/data/05_events.csv":
-            "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とその後のリターン）。景気後退リスクの点数の元。"
-            "過去の行は手で動かすスクリプト（05_import_history.py・05_backfill_nfp_mom.py）と修復のスクリプト（scripts/analysis/macro_events_sp500_asof_repair.py）も書いた。"
-            "analysis 列は全行が空",
+            "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とt+1/5/10/20の終値）。景気後退リスクの点数の元。"
+            "過去の行は手で動かすスクリプトと修復のスクリプト（4つとも削除済み）も書いた",
         "docs/market-monitor/macro-pulse/data/05_fed_context.csv":
             "FRBの政策の局面とFF金利・1年金利・利下げの織り込み。**AIの出力（Grok）**: regime・dominant_concern・dominant_label・ai_reason"
             "（FOMCの声明から。Grokが使えないときは数値から決め〈_fallback_regime〉、regime_source に出典を書く）",
@@ -775,29 +772,39 @@ _MACRO_PULSE.update(
         "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv":
             "週次の点数・局面と解説。**AIの出力（Grok）**: summary・factor_analysis・watchpoints・indicator_comments（model は使ったモデル）。"
             "score・phase・score_change_1w・score_change_1m・indicator_deltas・surprise_alerts はPythonの計算。TAILのレビューも読む",
-        "docs/market-monitor/macro-pulse/data/05_events.csv.bak_{datetime}": "05_backfill_nfp_mom.py が書き換える前に作る控え（git には無い）",
         "Discord（DISCORD_WEB_HOOK）": "手で入れる指標・実績の入っていない指標のリマインドと、FOMCの局面・週次のAIの解説の通知",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("scripts/analysis/macro_events_sp500_asof_repair.py・src/market/macro_pulse/05_backfill_nfp_mom.py（と控えの 05_events.csv.bak_{datetime}）",
+         "削除（2026-10-23、Koichiさんの判断）。1回だけの修復・変換で適用済み（sp500_t0_asof は2026-10-04のM-3、NFPの前月比は2026-07-08の671c5cc0d6）。参照するテストも消した"),
+        ("src/market/macro_pulse/05_import_history.py",
+         "削除（2026-10-23、Koichiさんの判断）。CLAUDE_CODE_START.md・MACRO_PULSE_LOGIC_INVENTORY.md 等に履歴の作り直しに使う手順が無い（あるのは過去の実行・復旧の記録だけ）"),
+        ("05_events.csv の analysis・ret_t1・ret_t5・ret_t10・ret_t20・surprise_pct の列と書き込み",
+         "削除（2026-10-23、Koichiさんの判断）。誰も読まない（画面の COL の対応表にだけあった行も消した）。analysis は全行が空、ret_t* は sp500_t0・sp500_tN から、"
+         "surprise_pct は surprise・consensus から作り直せる。05_main.py の --fill-returns・--recalc・新しい行の書き込みもやめた。"
+         "点数・局面・比較バーの過去の点数・週次の解説の入力・recalc と fill-returns の結果は前後で同じ（消した列のほか）、check_macro_pulse.py は前後とも一致67・不一致5・判定不能1"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-23、Koichiさんの判断）。手で動かすスクリプト3つと修復のスクリプト1つ、05_events.csv の誰も読まない6列を消した。"
+                  "zq_price・zq_ticker（cuts_implied を作った時点の入力の記録）と 05_audit.py は残す（下の注記）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="macro", OUTSIDE_PREFIXES=("docs/market-monitor/macro-pulse/", "src/market/macro_pulse/"),
     READ_PREFIXES=("docs/market-monitor/macro-pulse", "src/market/macro_pulse"),
     READ_HINT="macro", NAME_SHORT="MACRO PULSE",
     KNOWN_DUPLICATE_RULES=[], TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={k: "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
+                      for k in ("zq_price", "zq_ticker")},
     RULES=_TANUKI["RULES"] + _MARKET["RULES"][:1] + _MACRO_RULES,
     FULL_SCAN=True, SCREEN_SECTIONS=True,
     HTML_COPIES=[],
     PAGE_CHECKS=[],
     WORKFLOW_SUMMARY=True,
     SECTION_DECISIONS={},
-    # 出力は CSV が5つ（列を JSON のキーと同じに数える）。手で動かすスクリプトは 05_main.py を importlib で読み込んで同じパスを使う（4）。
-    # ページは要素を el('id')（getElementById を包んだ関数）で取る
-    CSV_COLUMNS=True, RESOLVE_STRICT=4, JS_ID_HELPERS=True,
+    # 出力は CSV が5つ（列を JSON のキーと同じに数える）。ページは要素を el('id')（getElementById を包んだ関数）で取る。
+    # 解決の厳しさ 0 ではテストの呼び出しの引数が読み手に混ざる（市場データ層・macro_data と同じ 1）
+    CSV_COLUMNS=True, RESOLVE_STRICT=1, JS_ID_HELPERS=True,
 )
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
                            "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE}
@@ -1020,26 +1027,7 @@ def load_module(rel: str) -> Optional[Module]:
     except SyntaxError:
         return None
     MODULES[rel] = Module(rel, tree, src)
-    if RESOLVE_STRICT >= 4:
-        _spec_imports(MODULES[rel])
     return MODULES[rel]
-
-
-def _spec_imports(mod: Module) -> None:
-    """モジュールの最上位の spec = importlib.util.spec_from_file_location(名前, パス) と m = importlib.util.module_from_spec(spec) を、
-    import と同じ名前の対応（mod_imports）にする（05_import_history.py の _m = 05_main.py 等。RESOLVE_STRICT 4）。"""
-    specs: Dict[str, str] = {}
-    for node in mod.tree.body:
-        if not (isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
-                and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute)):
-            continue
-        fn, name, call = node.value.func.attr, node.targets[0].id, node.value
-        if fn == "spec_from_file_location" and len(call.args) >= 2:
-            path = normalize_path(resolve(call.args[1], mod, node))
-            if path in ALL_PY:
-                specs[name] = path
-        elif fn == "module_from_spec" and call.args and isinstance(call.args[0], ast.Name) and call.args[0].id in specs:
-            mod.mod_imports[name] = specs[call.args[0].id]
 
 
 UNRESOLVED = "<?>"

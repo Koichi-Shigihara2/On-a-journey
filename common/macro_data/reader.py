@@ -102,7 +102,7 @@ def get_value_as_of(series_id: str, date: Any, lookback_days: int = 45,
     デフォルト45日は月次系列を確実に拾える幅（common/market_data/
     reader.py::get_price_on_or_after()系のAPIパターン: 起点から固定日数の
     ウィンドウでレコードを検索、を踏襲。ただし本APIは「date以前」を探す
-    点が方向として逆であり、05_import_history.py::_lookup_ctx()の
+    点が方向として逆であり、05_import_history.py::_lookup_ctx()〈2026-10-23に削除〉の
     「target_date以前・lookback日以内の直近値」パターンにより近い）。
 
     窓内に該当データが見つからない場合、または系列自体のデータが

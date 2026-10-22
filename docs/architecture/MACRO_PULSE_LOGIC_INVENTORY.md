@@ -81,7 +81,7 @@ BACKLOG_DONE.mdの該当（見出し）:
 | ワークフロー | 起動条件 | 処理 | 書き込み先 |
 |---|---|---|---|
 | `Macro_Data_Update.yml` | cron `0 10 * * *`（毎日UTC10:00）・手動 | `common/macro_data/fetcher.py --start <400日前>`でFRED 25系列を取得 | `common/macro_data/series/`・`macro_data_violations_log.json` |
-| `MACRO_PULSE_Update.yml` 日次 | cron `15 22 * * *` | `05_main.py --date $(date -u +%Y-%m-%d)`（events・流動性・meta）＋`--remind` | `docs/market-monitor/macro-pulse/data/` |
+| `MACRO_PULSE_Update.yml` 日次 | cron `15 22 * * *` | `05_main.py`（events・流動性・meta）＋`--remind`。2026-10-03（`fb7fe34472`）から`--date`を渡さず、対象日は起動時刻の米国東部時間の日付（17:00より前なら直前の営業日）。以下の「予定日の翌日」の記述はその前の状態 | `docs/market-monitor/macro-pulse/data/` |
 | 同 fill-returns | cron `3 13 * * *` | `05_main.py --fill-returns`（S&P500のt+1/5/10/20を後から補完。画面では使わない） | 同上（`05_events.csv`） |
 | 同 update-schedule | cron `7 22 * * 6`（土曜） | `--update-schedule`（予定表＋FED context。REGIMEの再判定は月の最初の実行だけ） | `05_indicator_schedule.csv`・`05_fed_context.csv` |
 | 同 weekly-analysis | cron `11 22 * * 6`（土曜、2026-05-27に日曜から変更） | `--weekly-analysis`（スコア・AI解説・サプライズ） | `05_weekly_analysis.csv` |
@@ -91,7 +91,9 @@ BACKLOG_DONE.mdの該当（見出し）:
   間隔は最短6.3時間あった（順序が逆転した回は無い）。
 - Market Data Daily・Market Pulseとの連鎖は無い（MACRO PULSEは`common/market_data/daily/`を読まない）。共有はFRED系列ストアのみ。
 - 他に`common/macro_data/`・MACRO PULSEの出力に書くものは手動スクリプトだけ（`05_import_history.py`・`05_backfill_nfp_mom.py`・
-  `migrate_bamlh0a0hym2_history.py`）。
+  `migrate_bamlh0a0hym2_history.py`）だった。ほかに`scripts/analysis/macro_events_sp500_asof_repair.py`（下のM-3の修復）も`05_events.csv`を書いていた。
+  4つとも2026-10-23に削除した（R-A MACRO PULSEの段階2。1回だけの修復・移行で適用済み、`05_import_history.py`は履歴の作り直しの手順が無いため）。
+  今の書き手は`05_main.py`（MACRO_PULSE_Update）と`common/macro_data/fetcher.py`（Macro_Data_Update）だけ。
 - 日次の起動が毎回UTCの0時をまたいでいるため、`--date $(date -u +%Y-%m-%d)`は**予定日の翌日**になる（直近20回すべて）。
   流動性CSVの行の日付は予定日の翌日になり、`run()`の「今日発表予定の指標」の照合（`schedule.release_date == date_str`）は
   1日先の予定と照合される（実例: Michigan Inflation 1Yの`2026-09-25`の枠に、9/25の確報の発表〈米国東部10:00〉より前の
@@ -844,6 +846,8 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 2. `macro_events_revision_repair.py`（actualを初回公表の値に1,911行、revised_actualを1,968行）
 3. `macro_liquidity_row_date_repair.py`（05_liquidity.csvの33行〈2026-08-27〜10-02〉を1日前へ。重複する日付0件）
 4. `macro_events_sp500_asof_repair.py`（1,872行に観測日。行の日付の0〜7日前の一致だけ）
+
+（4つとも適用済み。1〜3は2026-10-20〈R-A SEC層の段階2〉、4は2026-10-23〈R-A MACRO PULSEの段階2〉に削除した）
 
 ### 実行順による違い
 - known_at・revision・sp500_asof の相対的な順番の6通り＋liquidity_row_dateを先頭にした2通り＝9通りで、05_liquidity.csv は全て同じ。

@@ -1,210 +1,152 @@
 {
   "GACDFSA066MSFRBPHI": {
-    "input_id": "INPUT-A-026",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "INDICATOR_CONFIGに存在するがfred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "CFNAIMA3": {
-    "input_id": "INPUT-A-027",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "INDICATOR_CONFIGに存在するがfred_release_id/obs_to_release_lagは未設定（メタ情報なし）。2026-10-03に単月のCFNAIから3ヶ月移動平均へ変更（[[MACRO-PULSE-CFNAI-MA3-SERIES-1]]）"
   },
   "PAYEMS": {
-    "input_id": "INPUT-A-034",
     "fred_release_id": 50,
     "obs_to_release_lag": 35,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row", "05_main.py::fred_release_dates"],
     "note": null
   },
   "IC4WSA": {
-    "input_id": "INPUT-A-028",
     "fred_release_id": 321,
     "obs_to_release_lag": 7,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row", "05_main.py::fred_release_dates"],
     "note": null
   },
   "MICH": {
-    "input_id": "INPUT-A-029",
     "fred_release_id": null,
     "obs_to_release_lag": 10,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "fred_release_idは未設定（メタ情報なし）"
   },
   "T5YIE": {
-    "input_id": "INPUT-A-030",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "INDICATOR_CONFIGに存在するがfred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "UMCSENT": {
-    "input_id": "INPUT-A-031",
     "fred_release_id": null,
     "obs_to_release_lag": 10,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "fred_release_idは未設定（メタ情報なし）"
   },
   "PERMIT": {
-    "input_id": "INPUT-A-032",
     "fred_release_id": null,
     "obs_to_release_lag": 47,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "fred_release_idは未設定（FRED Release Calendarが空のためルールベース算出、メタ情報なし）"
   },
   "SAHMCURRENT": {
-    "input_id": "INPUT-A-033",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "monthly_indicator",
-    "consumers": ["05_main.py::fetch_event_row"],
     "note": "INDICATOR_CONFIGに存在するがfred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "T10Y2Y": {
-    "input_id": "INPUT-A-024",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "daily_indicator",
-    "consumers": ["05_main.py::fetch_event_row", "05_main.py::get_financial_context"],
     "note": "重複取得系列（[[MACRODATA-AS-IS-DUPLICATION-UNDERCOUNT-1]]）。fred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "BAMLH0A0HYM2": {
-    "input_id": "INPUT-A-025",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "daily_indicator",
-    "consumers": [
-      "05_main.py::fetch_event_row",
-      "05_main.py::get_financial_context",
-      "05_main.py::update_liquidity_csv",
-      "collect_and_send.py::fetch_hy_spread_from_fred"
-    ],
     "note": "重複取得系列（MACRO PULSE内部3箇所＋Market Pulse1箇所、[[MACRODATA-AS-IS-DUPLICATION-UNDERCOUNT-1]]）。fred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "VIXCLS": {
-    "input_id": "INPUT-A-035",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "daily_indicator",
-    "consumers": ["05_main.py::fetch_event_row", "05_main.py::get_financial_context"],
     "note": "重複取得系列（[[MACRODATA-AS-IS-DUPLICATION-UNDERCOUNT-1]]）。fred_release_id/obs_to_release_lagは未設定（メタ情報なし）"
   },
   "SP500": {
-    "input_id": "INPUT-A-036",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "ticker_display",
-    "consumers": ["05_main.py::get_sp500"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。取得失敗時はstooq.comへフォールバック"
   },
   "DGS1": {
-    "input_id": "INPUT-A-037",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "rate_expectation",
-    "consumers": ["05_main.py::get_implied_cuts"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "DFEDTARU": {
-    "input_id": "INPUT-A-038",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "rate_expectation",
-    "consumers": ["05_main.py::get_ff_current"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "DFEDTARL": {
-    "input_id": "INPUT-A-039",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "rate_expectation",
-    "consumers": ["05_main.py::get_ff_current"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "FEDFUNDS": {
-    "input_id": "INPUT-A-040",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "rate_expectation",
-    "consumers": ["05_main.py::get_ff_current"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。DFEDTARU/DFEDTARL取得失敗時のフォールバック"
   },
   "WALCL": {
-    "input_id": "INPUT-A-041",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "WTREGEN": {
-    "input_id": "INPUT-A-042",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。取得失敗時はFTSDへフォールバック"
   },
   "RRPONTSYD": {
-    "input_id": "INPUT-A-043",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "WRBWFRBL": {
-    "input_id": "INPUT-A-044",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "M2SL": {
-    "input_id": "INPUT-A-045",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）"
   },
   "VXNCLS": {
-    "input_id": "INPUT-A-046",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "market_pulse",
-    "consumers": [
-      "collect_and_send.py::fetch_vxn_from_fred",
-      "backfill_tech_pulse.py"
-    ],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。backfill_tech_pulse.py側は[[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序6-2で未切替のまま残存"
   },
   "DGS3MO": {
-    "input_id": "INPUT-A-047",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "market_pulse",
-    "consumers": ["collect_and_send.py::fetch_fred_short_bond"],
     "note": "INDICATOR_CONFIGに存在しない系列（メタ情報なし）。yfinance ^IRXの構造的フォールバック先（MP-IRX-FRED-1）"
   },
   "WDTGAL": {
-    "input_id": "INPUT-A-050",
     "fred_release_id": null,
     "obs_to_release_lag": null,
     "category": "liquidity",
-    "consumers": ["05_main.py::update_liquidity_csv (WTREGENフォールバック)"],
     "note": "[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]FTSDケース対応（2026-09-13）でFTSDの置換先として追加。Liabilities and Capital: Deposits with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General Account: Wednesday Level。WTREGEN（Week Average）と同一カテゴリ・同一期間・同一単位（Millions USD、週次）で集計方法のみ異なる（週平均 vs 水曜時点値）。2026-09-19追記: 消費者ゼロ・FRED上に実在しない無効系列コードと確定済みだったFTSD自体は本ファイルから撤去した（撤去理由の詳細はBACKLOG_DONE.mdの[[MACRODATA-FETCH-FAILURE-VISIBILITY-GAP-1]]参照）"
   }
 }

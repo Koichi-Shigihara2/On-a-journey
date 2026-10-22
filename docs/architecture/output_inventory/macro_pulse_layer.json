@@ -4,50 +4,16 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "docs/market-monitor/macro-pulse/data/05_events.csv.bak_{datetime}",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
-     "func": "backfill",
-     "line": 150
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [],
-   "files_tracked": 0,
-   "top_keys_sampled_files": 0,
-   "top_keys": [],
-   "readers": [],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 0,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "読み手0件",
-   "note": "05_backfill_nfp_mom.py が書き換える前に作る控え（git には無い）",
-   "decision": "（段階2の判断待ち）"
-  },
-  {
    "path": "docs/market-monitor/macro-pulse/data/05_events.csv",
    "kind": "ファイル",
    "writers": [
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "save_events",
-     "line": 919
+     "line": 920
     }
    ],
-   "writers_outside_layer": [
-    {
-     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
-     "func": "main",
-     "line": 104
-    }
-   ],
+   "writers_outside_layer": [],
    "launched_by": [
     ".github/workflows/MACRO_PULSE_Update.yml"
    ],
@@ -104,68 +70,12 @@
      "type": "Python"
     },
     {
-     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
-     "line": 77,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
-     "line": 85,
-     "func": "_load_hy_spread_rows",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
-     "line": 127,
-     "func": "migrate",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/migrate_bamlh0a0hym2_history.py::_load_hy_spread_rows",
-     "type": "Python"
-    },
-    {
-     "file": "common/macro_data/migrate_bamlh0a0hym2_history.py",
-     "line": 209,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/migrate_bamlh0a0hym2_history.py::_load_hy_spread_rows",
-     "type": "Python"
-    },
-    {
      "file": "docs/market-monitor/macro-pulse/index.html",
      "line": 743,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
      "type": "JS・HTML"
-    },
-    {
-     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
-     "line": 29,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
-     "line": 73,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
-    },
-    {
-     "file": "scripts/analysis/macro_events_sp500_asof_repair.py",
-     "line": 110,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "scripts/analysis/macro_events_sp500_asof_repair.py::main",
-     "type": "Python"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
@@ -177,7 +87,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 584,
+     "line": 585,
      "func": "update_schedule",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -185,7 +95,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 906,
+     "line": 907,
      "func": "load_events",
      "how": "保存済みファイル",
      "via": "AST",
@@ -193,7 +103,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1126,
+     "line": 1124,
      "func": "fill_returns",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -201,7 +111,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1904,
+     "line": 1898,
      "func": "run_weekly_analysis",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -209,7 +119,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2588,
+     "line": 2582,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -217,7 +127,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2595,
+     "line": 2589,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -225,7 +135,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2604,
+     "line": 2598,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -233,7 +143,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2618,
+     "line": 2612,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -241,7 +151,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2734,
+     "line": 2728,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -249,7 +159,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2743,
+     "line": 2737,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_events",
@@ -288,12 +198,12 @@
     "MACRO PULSE（景気後退リスクの点数・局面）",
     "MACRO PULSEの画面"
    ],
-   "reader_count": 5,
+   "reader_count": 3,
    "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とその後のリターン）。景気後退リスクの点数の元。過去の行は手で動かすスクリプト（05_import_history.py・05_backfill_nfp_mom.py）と修復のスクリプト（scripts/analysis/macro_events_sp500_asof_repair.py）も書いた。analysis 列は全行が空",
-   "decision": "（段階2の判断待ち）"
+   "note": "指標の発表ごとの行（実績・予想・サプライズ・その時点のFF金利・10Y-2Y・HY・VIX・S&P500とt+1/5/10/20の終値）。景気後退リスクの点数の元。過去の行は手で動かすスクリプトと修復のスクリプト（4つとも削除済み）も書いた",
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/macro-pulse/data/05_fed_context.csv",
@@ -302,7 +212,7 @@
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "update_fed_context",
-     "line": 1459
+     "line": 1453
     }
    ],
    "writers_outside_layer": [],
@@ -371,7 +281,7 @@
     },
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 3133,
+     "line": 3131,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -387,7 +297,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 839,
+     "line": 840,
      "func": "get_financial_context",
      "how": "保存済みファイル",
      "via": "AST",
@@ -395,7 +305,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1949,
+     "line": 1943,
      "func": "run_weekly_analysis",
      "how": "保存済みファイル",
      "via": "AST",
@@ -403,7 +313,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2595,
+     "line": 2589,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::run_weekly_analysis",
@@ -411,7 +321,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2621,
+     "line": 2615,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::get_financial_context",
@@ -419,7 +329,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2734,
+     "line": 2728,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::get_financial_context",
@@ -427,7 +337,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2743,
+     "line": 2737,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::get_financial_context",
@@ -470,7 +380,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "FRBの政策の局面とFF金利・1年金利・利下げの織り込み。**AIの出力（Grok）**: regime・dominant_concern・dominant_label・ai_reason（FOMCの声明から。Grokが使えないときは数値から決め〈_fallback_regime〉、regime_source に出典を書く）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv",
@@ -479,12 +389,12 @@
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "ensure_schedule_csv",
-     "line": 564
+     "line": 565
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "update_schedule",
-     "line": 666
+     "line": 667
     }
    ],
    "writers_outside_layer": [],
@@ -561,7 +471,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 570,
+     "line": 571,
      "func": "load_schedule",
      "how": "保存済みファイル",
      "via": "AST",
@@ -569,7 +479,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 685,
+     "line": 686,
      "func": "remind_manual_indicators",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -577,7 +487,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 708,
+     "line": 709,
      "func": "remind_missing_actuals",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -585,7 +495,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2587,
+     "line": 2581,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -593,7 +503,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2591,
+     "line": 2585,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -601,7 +511,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2606,
+     "line": 2600,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -609,7 +519,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2734,
+     "line": 2728,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -617,7 +527,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2743,
+     "line": 2737,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_schedule",
@@ -645,26 +555,16 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "指標の発表の予定（週1回 update_schedule が作り直す）。手で入れる指標は actual 列に人が入力する",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/macro-pulse/data/05_liquidity.csv",
    "kind": "ファイル",
    "writers": [
     {
-     "file": "src/market/macro_pulse/05_import_history.py",
-     "func": "backfill_liquidity",
-     "line": 464
-    },
-    {
-     "file": "src/market/macro_pulse/05_import_history.py",
-     "func": "backfill_liquidity_sp500",
-     "line": 601
-    },
-    {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "update_liquidity_csv",
-     "line": 2561
+     "line": 2555
     }
    ],
    "writers_outside_layer": [],
@@ -765,7 +665,7 @@
     },
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 2770,
+     "line": 2768,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -857,7 +757,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "流動性の指標の日次の行（M2・FRBのバランスシート・TGA・RRP・ネットの流動性・ステルス流動性の印・S&P500 等）。画面の流動性モニターと、TAILのレビュー（quarterly_review_generator.py）が読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/macro-pulse/data/05_meta.json",
@@ -866,7 +766,7 @@
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "update_liquidity_csv",
-     "line": 2566
+     "line": 2560
     }
    ],
    "writers_outside_layer": [],
@@ -892,7 +792,7 @@
     },
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 2771,
+     "line": 2769,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -918,7 +818,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "流動性の更新の時刻（generated_at）。画面の最終更新の表示",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv",
@@ -927,7 +827,7 @@
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "save_weekly_analysis",
-     "line": 1484
+     "line": 1478
     }
    ],
    "writers_outside_layer": [],
@@ -1044,7 +944,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1469,
+     "line": 1463,
      "func": "load_weekly_analysis",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1052,7 +952,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1919,
+     "line": 1913,
      "func": "run_weekly_analysis",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
@@ -1060,7 +960,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1962,
+     "line": 1956,
      "func": "run_weekly_analysis",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
@@ -1068,7 +968,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2595,
+     "line": 2589,
      "func": "run",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
@@ -1076,7 +976,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2734,
+     "line": 2728,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/market/macro_pulse/05_main.py::load_weekly_analysis",
@@ -1176,7 +1076,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "週次の点数・局面と解説。**AIの出力（Grok）**: summary・factor_analysis・watchpoints・indicator_comments（model は使ったモデル）。score・phase・score_change_1w・score_change_1m・indicator_deltas・surprise_alerts はPythonの計算。TAILのレビューも読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "Discord（DISCORD_WEB_HOOK）",
@@ -1185,17 +1085,17 @@
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "send_discord",
-     "line": 678
+     "line": 679
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "analyze_fomc_with_grok",
-     "line": 1359
+     "line": 1353
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
      "func": "generate_weekly_analysis_with_grok",
-     "line": 1855
+     "line": 1849
     }
    ],
    "writers_outside_layer": [],
@@ -1222,7 +1122,7 @@
    "reader_count_compute": 0,
    "group": "人が見る",
    "note": "手で入れる指標・実績の入っていない指標のリマインドと、FOMCの局面・週次のAIの解説の通知",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   }
  ],
  "rules": [
@@ -1810,12 +1710,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 441,
+     "line": 442,
      "text": "def nth_us_business_day(year: int, month: int, n: int) -> date:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 455,
+     "line": 456,
      "text": "def us_business_days_add(start: date, n: int) -> date:"
     },
     {
@@ -1844,22 +1744,22 @@
    "sites": [
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 1445,
+     "line": 1443,
      "text": "function computeCurrentScore() {"
     },
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 2391,
+     "line": 2389,
      "text": "function computeScoreAsOf(asOf) {"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1586,
+     "line": 1580,
      "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1706,
+     "line": 1700,
      "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
     }
    ],
@@ -1880,17 +1780,17 @@
    "sites": [
     {
      "file": "docs/market-monitor/macro-pulse/index.html",
-     "line": 1412,
+     "line": 1410,
      "text": "function stepSignal(key, val, trend) {"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1569,
+     "line": 1563,
      "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1582,
+     "line": 1576,
      "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
     }
    ],
@@ -1916,7 +1816,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 526,
+     "line": 527,
      "text": "f\"https://api.stlouisfed.org/fred/release/dates\""
     },
     {
@@ -1942,12 +1842,12 @@
    "sites": [
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1345,
+     "line": 1339,
      "text": "url = \"https://api.x.ai/v1/chat/completions\""
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1838,
+     "line": 1832,
      "text": "url = \"https://api.x.ai/v1/chat/completions\""
     },
     {
@@ -2041,7 +1941,7 @@
   {
    "dir": "src/market/macro_pulse",
    "file": "src/market/macro_pulse/05_audit.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 197,
    "workflows": [],
    "code": [],
@@ -2049,28 +1949,6 @@
    "tests": [
     "tests/test_macro_pulse_logic.py"
    ],
-   "found_by": "どこからも呼ばれない"
-  },
-  {
-   "dir": "src/market/macro_pulse",
-   "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 166,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  },
-  {
-   "dir": "src/market/macro_pulse",
-   "file": "src/market/macro_pulse/05_import_history.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 653,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
    "found_by": "名前を挙げた候補"
   }
  ],
@@ -2078,7 +1956,7 @@
   {
    "dir": "src/market/macro_pulse",
    "file": "src/market/macro_pulse/05_audit.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 197,
    "workflows": [],
    "code": [],
@@ -2089,29 +1967,9 @@
   },
   {
    "dir": "src/market/macro_pulse",
-   "file": "src/market/macro_pulse/05_backfill_nfp_mom.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 166,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/macro_pulse",
-   "file": "src/market/macro_pulse/05_import_history.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 653,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/macro_pulse",
    "file": "src/market/macro_pulse/05_main.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 2742,
+   "decision": "残す（2026-10-23）",
+   "lines": 2736,
    "workflows": [
     ".github/workflows/MACRO_PULSE_Update.yml"
    ],
@@ -2119,15 +1977,12 @@
     "browser_checks/check_macro_pulse.py"
    ],
    "same_dir": [
-    "src/market/macro_pulse/05_audit.py",
-    "src/market/macro_pulse/05_backfill_nfp_mom.py",
-    "src/market/macro_pulse/05_import_history.py"
+    "src/market/macro_pulse/05_audit.py"
    ],
    "tests": [
     "tests/test_macro_pulse_accuracy.py",
     "tests/test_macro_pulse_logic.py",
-    "tests/test_macro_pulse_signal_steps.py",
-    "tests/test_output_inventory_check.py"
+    "tests/test_macro_pulse_signal_steps.py"
    ]
   }
  ],
@@ -2183,28 +2038,32 @@
    "sites": []
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "scripts/analysis/macro_events_sp500_asof_repair.py・src/market/macro_pulse/05_backfill_nfp_mom.py（と控えの 05_events.csv.bak_{datetime}）",
+   "detail": "削除（2026-10-23、Koichiさんの判断）。1回だけの修復・変換で適用済み（sp500_t0_asof は2026-10-04のM-3、NFPの前月比は2026-07-08の671c5cc0d6）。参照するテストも消した"
+  },
+  {
+   "what": "src/market/macro_pulse/05_import_history.py",
+   "detail": "削除（2026-10-23、Koichiさんの判断）。CLAUDE_CODE_START.md・MACRO_PULSE_LOGIC_INVENTORY.md 等に履歴の作り直しに使う手順が無い（あるのは過去の実行・復旧の記録だけ）"
+  },
+  {
+   "what": "05_events.csv の analysis・ret_t1・ret_t5・ret_t10・ret_t20・surprise_pct の列と書き込み",
+   "detail": "削除（2026-10-23、Koichiさんの判断）。誰も読まない（画面の COL の対応表にだけあった行も消した）。analysis は全行が空、ret_t* は sp500_t0・sp500_tN から、surprise_pct は surprise・consensus から作り直せる。05_main.py の --fill-returns・--recalc・新しい行の書き込みもやめた。点数・局面・比較バーの過去の点数・週次の解説の入力・recalc と fill-returns の結果は前後で同じ（消した列のほか）、check_macro_pulse.py は前後とも一致67・不一致5・判定不能1"
+  }
+ ],
  "stop_condition": {
-  "outputs": 8,
-  "outputs_with_writer_outside_layer": [
-   "docs/market-monitor/macro-pulse/data/05_events.csv"
-  ],
+  "outputs": 7,
+  "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 28,
-  "python_read_sites_unresolved_in_files_mentioning_sec_data": [
-   {
-    "file": "src/market/macro_pulse/05_import_history.py",
-    "line": 238,
-    "func": "import_from_csv",
-    "path": "<?>"
-   }
-  ],
-  "name_hit_sites_resolved": 24,
+  "python_read_sites_into_layer_resolved": 24,
+  "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
+  "name_hit_sites_resolved": 22,
   "name_hit_sites_undetermined": [],
-  "ratio_writer": 0.125,
-  "ratio_reader": 0.019,
+  "ratio_writer": 0.0,
+  "ratio_reader": 0.0,
   "threshold": 0.1,
-  "hit": true
+  "hit": false
  },
  "screen": {
   "pages": [
@@ -2222,12 +2081,12 @@
     ],
     "label": "",
     "lines": [
-     866,
-     886,
-     918,
-     2215
+     864,
+     884,
+     916,
+     2213
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2239,9 +2098,9 @@
     ],
     "label": "",
     "lines": [
-     1080
+     1078
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2253,12 +2112,12 @@
     ],
     "label": "",
     "lines": [
-     2593,
-     2593,
-     2606,
-     2644
+     2591,
+     2591,
+     2604,
+     2642
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2271,13 +2130,13 @@
     ],
     "label": "",
     "lines": [
-     867,
-     868,
-     2339,
-     2339,
-     2339
+     865,
+     866,
+     2337,
+     2337,
+     2337
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2290,9 +2149,9 @@
     ],
     "label": "",
     "lines": [
-     1078
+     1076
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2304,31 +2163,31 @@
     ],
     "label": "現在",
     "lines": [
-     889,
-     960,
-     1111,
-     1165,
-     1775,
-     1814,
-     1818,
-     1883,
-     1994,
-     2215,
-     2228,
-     2228,
-     2247,
-     2774,
-     2777,
-     2915,
-     2928,
-     2939,
-     2950,
-     3002,
-     3125,
-     3167,
-     3167
+     887,
+     958,
+     1109,
+     1163,
+     1773,
+     1812,
+     1816,
+     1881,
+     1992,
+     2213,
+     2226,
+     2226,
+     2245,
+     2772,
+     2775,
+     2913,
+     2926,
+     2937,
+     2948,
+     3000,
+     3123,
+     3165,
+     3165
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2340,9 +2199,9 @@
     ],
     "label": "",
     "lines": [
-     1079
+     1077
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2354,9 +2213,9 @@
     ],
     "label": "",
     "lines": [
-     1079
+     1077
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2368,9 +2227,9 @@
     ],
     "label": "",
     "lines": [
-     3083
+     3081
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2382,9 +2241,9 @@
     ],
     "label": "",
     "lines": [
-     2648
+     2646
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2396,10 +2255,10 @@
     ],
     "label": "",
     "lines": [
-     2830,
-     2830
+     2828,
+     2828
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2411,9 +2270,9 @@
     ],
     "label": "",
     "lines": [
-     1076
+     1074
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2425,9 +2284,9 @@
     ],
     "label": "",
     "lines": [
-     1082
+     1080
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2439,10 +2298,10 @@
     ],
     "label": "",
     "lines": [
-     3170,
-     3170
+     3168,
+     3168
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2454,14 +2313,14 @@
     ],
     "label": "前週比",
     "lines": [
-     2950,
-     2950,
-     2968,
-     2968,
-     3125,
-     3125
+     2948,
+     2948,
+     2966,
+     2966,
+     3123,
+     3123
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2474,13 +2333,13 @@
     ],
     "label": "",
     "lines": [
-     2831,
-     2831,
-     2846,
-     2847,
-     2847
+     2829,
+     2829,
+     2844,
+     2845,
+     2845
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2493,17 +2352,17 @@
     ],
     "label": "指標名",
     "lines": [
-     834,
-     888,
-     1165,
-     1776,
-     1995,
-     2215,
-     2249,
-     2313,
-     2331
+     832,
+     886,
+     1163,
+     1774,
+     1993,
+     2213,
+     2247,
+     2311,
+     2329
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2515,9 +2374,9 @@
     ],
     "label": "",
     "lines": [
-     2650
+     2648
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2529,9 +2388,9 @@
     ],
     "label": "指標名:値:週差:月差;...",
     "lines": [
-     2667
+     2665
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2543,10 +2402,10 @@
     ],
     "label": "",
     "lines": [
-     893,
-     893
+     891,
+     891
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2558,11 +2417,11 @@
     ],
     "label": "",
     "lines": [
-     2842,
-     2842,
-     2842
+     2840,
+     2840,
+     2840
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2574,11 +2433,11 @@
     ],
     "label": "",
     "lines": [
-     2843,
-     2843,
-     2843
+     2841,
+     2841,
+     2841
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2590,9 +2449,9 @@
     ],
     "label": "",
     "lines": [
-     2755
+     2753
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2604,10 +2463,10 @@
     ],
     "label": "",
     "lines": [
-     3031,
-     3031
+     3029,
+     3029
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2619,11 +2478,11 @@
     ],
     "label": "",
     "lines": [
-     2966,
-     2966,
-     2966
+     2964,
+     2964,
+     2964
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2635,10 +2494,10 @@
     ],
     "label": "",
     "lines": [
-     2829,
-     2829
+     2827,
+     2827
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2650,10 +2509,10 @@
     ],
     "label": "",
     "lines": [
-     2606,
-     2646
+     2604,
+     2644
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2665,10 +2524,10 @@
     ],
     "label": "",
     "lines": [
-     1018,
-     1018
+     1016,
+     1016
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2681,11 +2540,11 @@
     ],
     "label": "LAYER 1 — FRB政策意図",
     "lines": [
-     1075,
-     3097,
-     3139
+     1073,
+     3095,
+     3137
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2697,9 +2556,9 @@
     ],
     "label": "",
     "lines": [
-     1081
+     1079
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2712,10 +2571,10 @@
     ],
     "label": "発表予定日",
     "lines": [
-     2312,
-     2316
+     2310,
+     2314
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2727,9 +2586,9 @@
     ],
     "label": "",
     "lines": [
-     900
+     898
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2741,10 +2600,10 @@
     ],
     "label": "",
     "lines": [
-     901,
-     901
+     899,
+     899
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2756,17 +2615,17 @@
     ],
     "label": "先行1ヶ月",
     "lines": [
-     1417,
-     1418,
-     1421,
-     1520,
-     1532,
-     2394,
-     2478,
-     2604,
-     2645
+     1415,
+     1416,
+     1419,
+     1518,
+     1530,
+     2392,
+     2476,
+     2602,
+     2643
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2778,9 +2637,9 @@
     ],
     "label": "",
     "lines": [
-     2652
+     2650
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2792,9 +2651,9 @@
     ],
     "label": "",
     "lines": [
-     2651
+     2649
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2806,11 +2665,11 @@
     ],
     "label": "",
     "lines": [
-     2965,
-     2965,
-     2965
+     2963,
+     2963,
+     2963
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2822,9 +2681,9 @@
     ],
     "label": "",
     "lines": [
-     1120
+     1118
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2836,10 +2695,10 @@
     ],
     "label": "データなし",
     "lines": [
-     3163,
-     3168
+     3161,
+     3166
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2851,10 +2710,10 @@
     ],
     "label": "",
     "lines": [
-     3030,
-     3030
+     3028,
+     3028
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2866,9 +2725,9 @@
     ],
     "label": "",
     "lines": [
-     3032
+     3030
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2880,9 +2739,9 @@
     ],
     "label": "",
     "lines": [
-     3013
+     3011
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2894,9 +2753,9 @@
     ],
     "label": "",
     "lines": [
-     2647
+     2645
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2908,9 +2767,9 @@
     ],
     "label": "",
     "lines": [
-     869
+     867
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2922,9 +2781,9 @@
     ],
     "label": "",
     "lines": [
-     2610
+     2608
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2938,11 +2797,11 @@
     ],
     "label": "",
     "lines": [
-     895,
-     1111,
-     2755
+     893,
+     1109,
+     2753
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2954,9 +2813,9 @@
     ],
     "label": "",
     "lines": [
-     2649
+     2647
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -2968,67 +2827,19 @@
     ],
     "label": "",
     "lines": [
-     1077
+     1075
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    }
   ],
   "unread_keys": [
-   {
-    "key": "analysis",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
-   {
-    "key": "ret_t1",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
-   {
-    "key": "ret_t10",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
-   {
-    "key": "ret_t20",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
-   {
-    "key": "ret_t5",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
-   {
-    "key": "surprise_pct",
-    "sources": [
-     "docs/market-monitor/macro-pulse/data/05_events.csv"
-    ],
-    "parents": [],
-    "note": ""
-   },
    {
     "key": "zq_price",
     "sources": [
      "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
    },
    {
     "key": "zq_ticker",
@@ -3036,10 +2847,10 @@
      "docs/market-monitor/macro-pulse/data/05_fed_context.csv"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
    }
   ],
-  "written_key_count": 75,
+  "written_key_count": 69,
   "sections": [
    {
     "page": "docs/market-monitor/macro-pulse/index.html",
@@ -3049,15 +2860,15 @@
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       3167,
-       3167
+       3165,
+       3165
       ]
      },
      {
       "key": "status",
       "status": "この段階の書き手あり",
       "lines": [
-       3168
+       3166
       ]
      }
     ]
@@ -3070,81 +2881,81 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       866,
-       886
+       864,
+       884
       ]
      },
      {
       "key": "consensus",
       "status": "この段階の書き手あり",
       "lines": [
-       867,
-       868
+       865,
+       866
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       889
+       887
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       834,
-       888
+       832,
+       886
       ]
      },
      {
       "key": "known_at",
       "status": "この段階の書き手あり",
       "lines": [
-       893,
-       893
+       891,
+       891
       ]
      },
      {
       "key": "revised_actual",
       "status": "この段階の書き手あり",
       "lines": [
-       900
+       898
       ]
      },
      {
       "key": "revised_at",
       "status": "この段階の書き手あり",
       "lines": [
-       901,
-       901
+       899,
+       899
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1417,
-       1418,
-       1421,
-       1520,
-       1532,
-       2394,
-       2478
+       1415,
+       1416,
+       1419,
+       1518,
+       1530,
+       2392,
+       2476
       ]
      },
      {
       "key": "surprise",
       "status": "この段階の書き手あり",
       "lines": [
-       869
+       867
       ]
      },
      {
       "key": "updated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       895
+       893
       ]
      }
     ]
@@ -3157,63 +2968,63 @@
       "key": "ai_reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1080
+       1078
       ]
      },
      {
       "key": "cuts_implied",
       "status": "この段階の書き手あり",
       "lines": [
-       1078
+       1076
       ]
      },
      {
       "key": "dominant_concern",
       "status": "この段階の書き手あり",
       "lines": [
-       1079
+       1077
       ]
      },
      {
       "key": "dominant_label",
       "status": "この段階の書き手あり",
       "lines": [
-       1079
+       1077
       ]
      },
      {
       "key": "ff_current",
       "status": "この段階の書き手あり",
       "lines": [
-       1076
+       1074
       ]
      },
      {
       "key": "fomc_date",
       "status": "この段階の書き手あり",
       "lines": [
-       1082
+       1080
       ]
      },
      {
       "key": "regime",
       "status": "この段階の書き手あり",
       "lines": [
-       1075
+       1073
       ]
      },
      {
       "key": "regime_source",
       "status": "この段階の書き手あり",
       "lines": [
-       1081
+       1079
       ]
      },
      {
       "key": "zq_rate",
       "status": "この段階の書き手あり",
       "lines": [
-       1077
+       1075
       ]
      }
     ]
@@ -3226,49 +3037,49 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       918
+       916
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       1111,
-       1165
+       1109,
+       1163
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       1165
+       1163
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1417,
-       1418,
-       1421,
-       1520,
-       1532,
-       2394,
-       2478
+       1415,
+       1416,
+       1419,
+       1518,
+       1530,
+       2392,
+       2476
       ]
      },
      {
       "key": "sp500_t0_asof",
       "status": "この段階の書き手あり",
       "lines": [
-       1120
+       1118
       ]
      },
      {
       "key": "updated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       1111
+       1109
       ]
      }
     ]
@@ -3281,218 +3092,218 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       866,
-       886
+       864,
+       884
       ]
      },
      {
       "key": "consensus",
       "status": "この段階の書き手あり",
       "lines": [
-       867,
-       868
+       865,
+       866
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       889,
-       2774,
-       2777,
-       2915,
-       2928,
-       2939,
-       2950,
-       3002,
-       3125
+       887,
+       2772,
+       2775,
+       2913,
+       2926,
+       2937,
+       2948,
+       3000,
+       3123
       ]
      },
      {
       "key": "easing_check",
       "status": "この段階の書き手あり",
       "lines": [
-       3083
+       3081
       ]
      },
      {
       "key": "fed_balance",
       "status": "この段階の書き手あり",
       "lines": [
-       2830,
-       2830
+       2828,
+       2828
       ]
      },
      {
       "key": "generated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       3170,
-       3170
+       3168,
+       3168
       ]
      },
      {
       "key": "h41_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2950,
-       2950,
-       2968,
-       2968,
-       3125,
-       3125
+       2948,
+       2948,
+       2966,
+       2966,
+       3123,
+       3123
       ]
      },
      {
       "key": "hy_spread",
       "status": "この段階の書き手あり",
       "lines": [
-       2831,
-       2831,
-       2846,
-       2847,
-       2847
+       2829,
+       2829,
+       2844,
+       2845,
+       2845
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       834,
-       888
+       832,
+       886
       ]
      },
      {
       "key": "known_at",
       "status": "この段階の書き手あり",
       "lines": [
-       893,
-       893
+       891,
+       891
       ]
      },
      {
       "key": "m2_yoy_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       2842,
-       2842,
-       2842
+       2840,
+       2840,
+       2840
       ]
      },
      {
       "key": "m2_yoy_pctile",
       "status": "この段階の書き手あり",
       "lines": [
-       2843,
-       2843,
-       2843
+       2841,
+       2841,
+       2841
       ]
      },
      {
       "key": "net_liq_decline_weeks",
       "status": "この段階の書き手あり",
       "lines": [
-       3031,
-       3031
+       3029,
+       3029
       ]
      },
      {
       "key": "net_liq_wow_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       2966,
-       2966,
-       2966
+       2964,
+       2964,
+       2964
       ]
      },
      {
       "key": "net_liquidity",
       "status": "この段階の書き手あり",
       "lines": [
-       2829,
-       2829
+       2827,
+       2827
       ]
      },
      {
       "key": "record_date",
       "status": "この段階の書き手あり",
       "lines": [
-       1018,
-       1018
+       1016,
+       1016
       ]
      },
      {
       "key": "regime",
       "status": "この段階の書き手あり",
       "lines": [
-       3097
+       3095
       ]
      },
      {
       "key": "revised_actual",
       "status": "この段階の書き手あり",
       "lines": [
-       900
+       898
       ]
      },
      {
       "key": "revised_at",
       "status": "この段階の書き手あり",
       "lines": [
-       901,
-       901
+       899,
+       899
       ]
      },
      {
       "key": "sp500_5d_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       2965,
-       2965,
-       2965
+       2963,
+       2963,
+       2963
       ]
      },
      {
       "key": "status",
       "status": "この段階の書き手あり",
       "lines": [
-       3163
+       3161
       ]
      },
      {
       "key": "stealth_absorb_weeks",
       "status": "この段階の書き手あり",
       "lines": [
-       3030,
-       3030
+       3028,
+       3028
       ]
      },
      {
       "key": "stealth_alert",
       "status": "この段階の書き手あり",
       "lines": [
-       3032
+       3030
       ]
      },
      {
       "key": "stealth_signal",
       "status": "この段階の書き手あり",
       "lines": [
-       3013
+       3011
       ]
      },
      {
       "key": "surprise",
       "status": "この段階の書き手あり",
       "lines": [
-       869
+       867
       ]
      },
      {
       "key": "updated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       895
+       893
       ]
      }
     ]
@@ -3505,20 +3316,20 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       918
+       916
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1417,
-       1418,
-       1421,
-       1520,
-       1532,
-       2394,
-       2478
+       1415,
+       1416,
+       1419,
+       1518,
+       1530,
+       2392,
+       2476
       ]
      }
     ]
@@ -3531,10 +3342,10 @@
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1520,
-       1532,
-       2394,
-       2478
+       1518,
+       1530,
+       2392,
+       2476
       ]
      }
     ]
@@ -3547,156 +3358,156 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       866,
-       886
+       864,
+       884
       ]
      },
      {
       "key": "analysis_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2606,
-       2644
+       2604,
+       2642
       ]
      },
      {
       "key": "consensus",
       "status": "この段階の書き手あり",
       "lines": [
-       867,
-       868
+       865,
+       866
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       889
+       887
       ]
      },
      {
       "key": "factor_analysis",
       "status": "この段階の書き手あり",
       "lines": [
-       2648
+       2646
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       834,
-       888
+       832,
+       886
       ]
      },
      {
       "key": "indicator_comments",
       "status": "この段階の書き手あり",
       "lines": [
-       2650
+       2648
       ]
      },
      {
       "key": "indicator_deltas",
       "status": "この段階の書き手あり",
       "lines": [
-       2667
+       2665
       ]
      },
      {
       "key": "known_at",
       "status": "この段階の書き手あり",
       "lines": [
-       893,
-       893
+       891,
+       891
       ]
      },
      {
       "key": "model",
       "status": "この段階の書き手あり",
       "lines": [
-       2755
+       2753
       ]
      },
      {
       "key": "phase",
       "status": "この段階の書き手あり",
       "lines": [
-       2606,
-       2646
+       2604,
+       2644
       ]
      },
      {
       "key": "revised_actual",
       "status": "この段階の書き手あり",
       "lines": [
-       900
+       898
       ]
      },
      {
       "key": "revised_at",
       "status": "この段階の書き手あり",
       "lines": [
-       901,
-       901
+       899,
+       899
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       2604,
-       2645
+       2602,
+       2643
       ]
      },
      {
       "key": "score_change_1m",
       "status": "この段階の書き手あり",
       "lines": [
-       2652
+       2650
       ]
      },
      {
       "key": "score_change_1w",
       "status": "この段階の書き手あり",
       "lines": [
-       2651
+       2649
       ]
      },
      {
       "key": "summary",
       "status": "この段階の書き手あり",
       "lines": [
-       2647
+       2645
       ]
      },
      {
       "key": "surprise",
       "status": "この段階の書き手あり",
       "lines": [
-       869
+       867
       ]
      },
      {
       "key": "surprise_alerts",
       "status": "この段階の書き手あり",
       "lines": [
-       2610
+       2608
       ]
      },
      {
       "key": "updated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       895,
-       2755
+       893,
+       2753
       ]
      },
      {
       "key": "watchpoints",
       "status": "この段階の書き手あり",
       "lines": [
-       2649
+       2647
       ]
      }
     ]
@@ -3709,8 +3520,8 @@
       "key": "analysis_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2593,
-       2593
+       2591,
+       2591
       ]
      }
     ]
@@ -3723,16 +3534,16 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       918
+       916
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1417,
-       1418,
-       1421
+       1415,
+       1416,
+       1419
       ]
      }
     ]
@@ -3745,23 +3556,23 @@
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       960,
-       1994
+       958,
+       1992
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       1995
+       1993
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       2394,
-       2478
+       2392,
+       2476
       ]
      }
     ]
@@ -3774,28 +3585,28 @@
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       960,
-       1775,
-       1814,
-       1818,
-       1883
+       958,
+       1773,
+       1812,
+       1816,
+       1881
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       1776
+       1774
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1520,
-       1532,
-       2394,
-       2478
+       1518,
+       1530,
+       2392,
+       2476
       ]
      }
     ]
@@ -3808,26 +3619,26 @@
       "key": "actual",
       "status": "この段階の書き手あり",
       "lines": [
-       918,
-       2215
+       916,
+       2213
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       2215,
-       2228,
-       2228,
-       2247
+       2213,
+       2226,
+       2226,
+       2245
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       2215,
-       2249
+       2213,
+       2247
       ]
      }
     ]
@@ -3840,38 +3651,38 @@
       "key": "consensus",
       "status": "この段階の書き手あり",
       "lines": [
-       2339,
-       2339,
-       2339
+       2337,
+       2337,
+       2337
       ]
      },
      {
       "key": "indicator",
       "status": "この段階の書き手あり",
       "lines": [
-       2313,
-       2331
+       2311,
+       2329
       ]
      },
      {
       "key": "release_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2312,
-       2316
+       2310,
+       2314
       ]
      },
      {
       "key": "score",
       "status": "この段階の書き手あり",
       "lines": [
-       1417,
-       1418,
-       1421,
-       1520,
-       1532,
-       2394,
-       2478
+       1415,
+       1416,
+       1419,
+       1518,
+       1530,
+       2392,
+       2476
       ]
      }
     ]
@@ -3884,7 +3695,7 @@
       "key": "regime",
       "status": "この段階の書き手あり",
       "lines": [
-       3139
+       3137
       ]
      }
     ]

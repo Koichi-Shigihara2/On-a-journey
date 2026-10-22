@@ -2012,7 +2012,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（第2部、件名「feat: R-A Portfolioの段階3、CHECK-INVをPortfolioにも当てる」のcommit）: CHECK_LAYERSにportfolio（最後。解決の厳しさ3で索引を作り直す）。Portfolioを含む規則の二重は0で、rccのWARNは149件のまま。rccのCHECK-INVは約64〜66秒（8段階。同じ条件で7段階は約58秒で、Portfolioの分は約8秒）。rcc全体は約85秒。時間を縮める直しはR-Aの終わりの見直し（論点②）で扱う
 - 段階1〜3が済んだ。次はMACRO PULSEの段階1（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
 
-#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1済）
+#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1・2済）
 - 段階1（一覧の下書き）: 件名「chore: R-A MACRO PULSEの段階1、出力の一覧の下書き」のcommit。2つに分けた: `--layer macro_data` → `macro_data_layer.json`・`.md`（画面の無い共有のデータ層）、`--layer macro_pulse` → `macro_pulse_layer.json`・`.md`（画面は`docs/market-monitor/macro-pulse/index.html`）
 - macro_data: 出力4（`series/{series_id}.json` 26ファイル・`macro_data_violations_log.json`・`series_meta.json`〈**コードの書き手なし、人の手で書く静的なファイル**〉・Step Summary）。読み手0件0、テストだけ0、1件1（series_meta.json〈fetcher.py〉）、2件以上2。
   series はMACRO PULSE・Market Pulseが`reader.py`経由で読み、violations_logはSystem Healthの[L]が読む。誰も読まないキー3（series_metaの`consumers`・`input_id`、seriesの`fallback_used`）。止める条件は書き手0%・読み方0%。
@@ -2026,7 +2026,14 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 一覧のスクリプト（+169行、2段階の設定・注記・検出式が約119行）: 新しい印 `CSV_COLUMNS`（CSVの見出しの行の列をJSONのキーと同じに扱う）・`NONPROD_NOTES`（本番外のコードの表に「実行の記録・注記」の欄）・`JS_ID_HELPERS`（ページの`el('id')`のようにgetElementByIdを包んだ関数も要素のidとし、画面の区画を決める）・`RESOLVE_STRICT` 4（`importlib`でファイルから読み込んだモジュール〈`_m = module_from_spec(spec_from_file_location(…, 05_main.py))`〉をimportと同じに扱う）。
   `EXTRA_OUTPUT_DIRS`はコード・文書のファイルを出力にしないようにした（Portfolioの一覧は変わらない）。macro_dataは市場データ層と同じ`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`・`RESOLVE_STRICT` 1と`EXTRA_OUTPUT_DIRS`（series_meta.json）を使う。既存8段階の一覧は前後で差0。CHECK-INVには入れていない
 - 範囲外: FINDINGS 2026-10-23（型E 2行: `common/macro_data`の説明文の「本番の消費者は存在しない」、Grokの代わりの文と週次のワークフローの「Gemini」）
-- **次はKoichiさんの判断（段階2）**
+- 段階2（第1部、件名「refactor: R-A MACRO PULSEの段階2、手で動かすスクリプト4つと誰も読まない列・キーを消す」のcommit。2026-10-23 Koichiさんの判断）:
+  1回だけの修復・移行で適用済みの`scripts/analysis/macro_events_sp500_asof_repair.py`・`05_backfill_nfp_mom.py`・`migrate_bamlh0a0hym2_history.py`を削除し、参照するテスト（`TestSp500AsofRepairWindow`）を消した。`05_import_history.py`は、CLAUDE_CODE_START.md・MACRO_PULSE_LOGIC_INVENTORY.md等に履歴の作り直しに使う手順が無い（過去の実行・復旧の記録だけ）ため**削除**。
+  `05_events.csv`の`analysis`（全行が空）・`ret_t1/5/10/20`・`surprise_pct`の列を消し（kaihatsu上で消してcommit）、`05_main.py`の書き込み（新しい行・`--fill-returns`・`--recalc`）と画面の`COL`の対応表の2行も消した。名前のgrep（for・items()・行の丸ごとの写しを含む）で想定外の読み手は無かった。
+  macro_dataの誰も読まないキー3つを消した: `series_meta.json`の`consumers`（reader.pyに切り替える前の取り方の古い説明）・`input_id`（INPUT_DATA_AS_IS.mdの表から作り直せる参照の番号）、`series/BAMLH0A0HYM2.json`の`fallback_used`（消した移行のスクリプトが6,947件に書いた値、すべてFalse）。消した移行のスクリプトだけが読んでいた`source_detail`が新しく誰も読まないキーになり、値の出所の記録として残す（`UNREAD_KEY_NOTES`）。`zq_price`・`zq_ticker`・`05_audit.py`・violations_logは残す。
+  前後の比較（scratchpadに写したデータで05_main.pyの関数を動かす。XAI・Discordを外す）: 60週分の点数・局面・指標の値、比較バーと同じ過去の点数の差（7日・30日）、サプライズ、直近の発表、週次の解説でGrokに渡す引数、`--recalc`・`--fill-returns`の結果（消した列のほか）がすべて同じ。`browser_checks/check_macro_pulse.py`（実ブラウザ）は前後とも一致67・不一致5・判定不能1で、各行も同じ。
+  一覧を作り直し、止める条件は2つとも0%・0%（macro_pulseの12.5%は消した修復のスクリプトの分）。macro_pulseの解決の厳しさは1にし、段階1で足した4（importlibで読み込んだモジュール）は使う所が無くなったため外した。
+  文書: MACRO_PULSE_LOGIC_INVENTORY.mdの2-1（書き手・`--date`）とM-3の修復のスクリプトに削除を注記、SYSTEM_MAP.mdの2か所に削除を注記
+- **次は段階3（CHECK-INVをmacro_data・macro_pulseにも）**
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

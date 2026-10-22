@@ -18,13 +18,14 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。Portfolioの段階1〜3・MACRO PULSEの段階1が済んだ（2026-10-23）。次はKoichiさんの判断（MACRO PULSEの段階2）**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL・Portfolio。CHECK-INVはこの8段階）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。Portfolioの段階1〜3・MACRO PULSEの段階1・2が済んだ（2026-10-23）。次はMACRO PULSEの段階3**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL・Portfolio。CHECK-INVはこの8段階）
+   - （済 2026-10-23）MACRO PULSEの段階2（Koichiさんの判断）: 手で動かすスクリプト3つ（`05_import_history.py`は履歴の作り直しの手順が無く削除）と修復のスクリプト1つ、`05_events.csv`の誰も読まない6列、macro_dataの誰も読まないキー3つを消した。点数・局面・週次の解説の入力・check_macro_pulse.pyの結果は前後で同じ。止める条件は2つとも0%。BACKLOG.mdの「MACRO PULSEの段階」
    - （済 2026-10-23）MACRO PULSEの段階1の一覧の下書き: `--layer macro_data` → `macro_data_layer.json`・`.md`（出力4、series_meta.jsonはコードの書き手なし）と`--layer macro_pulse` → `macro_pulse_layer.json`・`.md`（出力8、CSVの列を数える。画面が読む列48〈書き手なし0〉、誰も読まない列8、本番外のコードの候補は手で動かすスクリプト4つ）。MACRO PULSEの止める条件は書き手12.5%で当たる（scripts/analysis の修復のスクリプトが本当に05_events.csvを書くため）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「MACRO PULSEの段階」
    - （済 2026-10-23）Portfolioの段階3: CHECK-INVをPortfolioにも当てた（8段階、rccのCHECK-INVは約64〜66秒）
    - （済 2026-10-23）Portfolioの段階2（Koichiさんの判断）: `theme_config.json`（`config/`・`docs/`）を消し、Discover_Config_Sync.ymlの写しとrccのCHECK-32の組を外した。`discover_config.json`の各銘柄の`themes`を消し、`register_ticker.py`も書くのをやめた。history.json・portfolio.json・discover_config.jsonは残す（history.jsonの合計9キーは日ごとの記録で作り直せない）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - （済 2026-10-22）Portfolioの段階1の一覧の下書き: `build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`。出力4（`portfolio.json`はコードの書き手なし・人の入力、写し2つはワークフローの`cp`）、読み手0件0、画面が読むキー33（書き手なし0）、誰も読まないキー10、Portfolioを含む規則の二重0。止める条件は書き手0%・読み方6.2%。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
-     ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか
+     ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
      ②rccのCHECK-INVの時間（約64〜66秒、8段階。市場データ層・TAIL・Portfolioは解決の厳しさが違い索引を作り直す）
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）

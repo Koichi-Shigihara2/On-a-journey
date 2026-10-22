@@ -86,11 +86,12 @@ if not HAS_MACRO_DATA:
 # ─────────────────────────────────────────────────────────────────
 EVENTS_COLUMNS = [
     "event_id", "indicator", "release_date",
-    "actual", "consensus", "surprise", "surprise_pct",
+    "actual", "consensus", "surprise",
     "regime", "ff_rate", "yc_10y2y", "hy_spread", "vix", "cuts_implied",
     "sp500_t0", "sp500_t1", "sp500_t5", "sp500_t10", "sp500_t20",
-    "ret_t1", "ret_t5", "ret_t10", "ret_t20",
-    "forecast_source", "data_source", "analysis", "updated_at",
+    # surprise_pct・ret_t1/5/10/20・analysis は誰も読まないため2026-10-23に消した（R-A MACRO PULSEの段階2。
+    # surprise・sp500_t*・actual・consensus から作り直せる。analysis は全行が空だった）
+    "forecast_source", "data_source", "updated_at",
     # [[MACRO-PULSE-HISTORY-IMPORT-UPDATED-AT-1]]（2026-10-04 M-3）: その値が公開されて使えるようになった時刻（UTC、
     # 'YYYY-MM-DDTHH:MM:SSZ'）と、その根拠（written=実行が書いた時刻 / alfred=ALFREDの初回公表日 / estimated=公表の遅れから推定）。
     # 先読み除外はupdated_at（最後に書き直した時刻）ではなくこれを使う
@@ -933,8 +934,7 @@ def resolve_forecast(indicator: str, release_date_str: str, actual_val,
                 fv = float(cons_str)
                 src = "user"
                 surp = round(actual_val - fv, 4) if actual_val is not None else None
-                surp_pct = round(surp / abs(fv) * 100, 4) if (surp is not None and fv != 0) else None
-                return fv, src, surp, surp_pct
+                return fv, src, surp
             except (ValueError, TypeError):
                 pass
 
@@ -948,14 +948,13 @@ def resolve_forecast(indicator: str, release_date_str: str, actual_val,
                     fv = float(cons_str)
                     src = str(ev_hits.iloc[-1].get("forecast_source", "stored") or "stored")
                     surp = round(actual_val - fv, 4) if actual_val is not None else None
-                    surp_pct = round(surp / abs(fv) * 100, 4) if (surp is not None and fv != 0) else None
-                    return fv, src, surp, surp_pct
+                    return fv, src, surp
                 except (ValueError, TypeError):
                     pass
 
     if actual_val is not None:
-        return actual_val, "actual_as_forecast", 0.0, 0.0
-    return None, "none", None, None
+        return actual_val, "actual_as_forecast", 0.0
+    return None, "none", None
 
 # ─────────────────────────────────────────────────────────────────
 #  指標フェッチ → event row 生成（変更なし）
@@ -1023,11 +1022,10 @@ def fetch_event_row(indicator: str, target_date: date,
 
     row["actual"] = _fmt(actual_val)
 
-    fv, src, surp, surp_pct = resolve_forecast(
+    fv, src, surp = resolve_forecast(
         indicator, row["release_date"], actual_val, schedule, events)
     row["consensus"]     = _fmt(fv)
     row["surprise"]      = _fmt(surp)
-    row["surprise_pct"]  = _fmt(surp_pct)
     row["forecast_source"] = src or ""
     row["data_source"]   = "FRED" if (fred_id and override_actual is None) else \
                            ("manual" if override_actual is not None else "N/A")
@@ -1185,18 +1183,19 @@ def fill_returns():
         if not t0_str:
             continue
         try:
-            t0_val = float(t0_str)
+            float(t0_str)   # 数値でない sp500_t0 の行は t+N も書かない
         except (ValueError, TypeError):
             continue
 
         if row.get("indicator", "") in DAILY_INDS:
             continue
 
-        for n, col_sp, col_ret in [
-            (1,  "sp500_t1",  "ret_t1"),
-            (5,  "sp500_t5",  "ret_t5"),
-            (10, "sp500_t10", "ret_t10"),
-            (20, "sp500_t20", "ret_t20"),
+        # t+N の終値だけを書く（リターンの列 ret_t* は誰も読まないため2026-10-23に消した。sp500_t0 と sp500_tN から作り直せる）
+        for n, col_sp in [
+            (1,  "sp500_t1"),
+            (5,  "sp500_t5"),
+            (10, "sp500_t10"),
+            (20, "sp500_t20"),
         ]:
             if events.at[idx, col_sp]:
                 continue
@@ -1208,9 +1207,7 @@ def fill_returns():
             if sp_n is None:
                 skip_no_spn += 1
                 continue
-            ret_n = round((sp_n - t0_val) / t0_val * 100, 4)
             events.at[idx, col_sp]  = str(sp_n)
-            events.at[idx, col_ret] = str(ret_n)
             updated += 1
 
     logger.info(f"fill-returns stats: skip_no_sp0={skip_no_sp0} skip_future={skip_future} skip_no_spn={skip_no_spn}")
@@ -1234,12 +1231,10 @@ def recalc(events: pd.DataFrame) -> pd.DataFrame:
             continue
         src     = str(row.get("forecast_source", "") or "")
         new_sur = round(actual - forecast, 4)
-        new_pct = round(new_sur / abs(forecast) * 100, 4) if forecast != 0 else 0.0
         old_sur = row.get("surprise", "")
 
         if src == "actual_as_forecast" and forecast != actual:
             events.at[idx, "surprise"]       = str(new_sur)
-            events.at[idx, "surprise_pct"]   = str(new_pct)
             events.at[idx, "forecast_source"] = "user_retroactive"
             events.at[idx, "updated_at"]     = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             updated += 1
@@ -1248,7 +1243,6 @@ def recalc(events: pd.DataFrame) -> pd.DataFrame:
             old_str = str(old_sur)
             if old_str != str(new_sur):
                 events.at[idx, "surprise"]     = str(new_sur)
-                events.at[idx, "surprise_pct"] = str(new_pct)
                 events.at[idx, "updated_at"]   = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 updated += 1
     logger.info(f"Recalc done: {updated} rows updated.")
