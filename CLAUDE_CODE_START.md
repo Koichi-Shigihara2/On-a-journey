@@ -102,7 +102,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - **src/market/market_pulse・docs/market-monitor/market-pulseに出力・列を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer market_pulse`で一覧を作り直してcommitする**（しないとゲートがNG）
 - R-Aの11層の段階1〜3と終わりの見直し1〜4が済み、R-Aを閉じた（一覧のスクリプトは`scripts/inventory/`の4ファイル: 設定`inventory_layers.py`・解析`inventory_analysis.py`・md`inventory_render.py`・入口`build_output_inventory.py`。
   キーの控えは`.cache/output_inventory/`〈.gitignore済み〉）。次は[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1 → R-E2（チャット側が実装の指示を出す）。
-- `[[HOLDINGS-SINGLE-SOURCE-1]]`済（2026-10-23）: 保有の正はportfolio.json、discover_config.jsonは削除、休眠は`cik_lookup.csv`の`status`の`dormant`、保有と仮説のずれはCHECK-65。次はR-E1`[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]`（チャット側が実装の指示を出す）R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
+- `[[HOLDINGS-SINGLE-SOURCE-1]]`済（2026-10-23）: 保有の正はportfolio.json、discover_config.jsonは削除、休眠は`cik_lookup.csv`の`status`の`dormant`、保有と仮説のずれはCHECK-65。R-E1`[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]`済（2026-10-23）
+- 取引日・休場日・日足の確定時刻と暫定の足・連邦の祝日・S&P500の構成銘柄は`common/market_data/calendar_universe.py`だけに置く（pandas_market_calendarsを直接読まない。連邦の祝日はNYSEの休場日と別の関数）。次はR-E2`[[EXTERNAL-API-CLIENT-UNIFY-1]]`（チャット側が実装の指示を出す）R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
 - `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）

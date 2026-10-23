@@ -4,6 +4,58 @@
 
 ## 2026-10-23（完了）
 
+### ✅ [MARKET-CALENDAR-UNIVERSE-UNIFY-1] 取引日・休場日・暫定の足の判定・S&P500の構成銘柄を、common/の1か所にまとめる（R-E1）
+**完了（2026-10-23）:** 件名「refactor: R-E1 取引日・休場日・暫定の足・S&P500の構成銘柄をcalendar_universe.pyにまとめる」のcommit。common/market_data/calendar_universe.py に1か所。前後で同じ（下の「実施」）。次はR-E2 [[EXTERNAL-API-CLIENT-UNIFY-1]]
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型B・根治策（R-E1。R-Aの論点⑤。実装は[[HOLDINGS-SINGLE-SOURCE-1]]の後、実装の指示はチャット側）
+**優先度:** 高
+**分類:** 根治策 / common/market_data・MACRO PULSE・Market Pulse・rcc
+**登録日:** 2026-10-23
+**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）
+
+#### 内容（2026-10-23の一覧の検出）
+- 取引日（市場の営業日）の決め方: 5ファイル（`common/market_data/fetcher.py`・`common/market_data/reader.py`・`common/sec_data/report_consistency_check.py`・`src/market/macro_pulse/05_main.py`・`src/market/market_pulse/breadth_calculator.py`）
+- 休場日: Market Pulseの`docs/market-monitor/market-pulse/data/nyse_holidays.json`（`collect_and_send.py::write_nyse_holidays`、pandas_market_calendarsから書く）・市場データ層のpandas_market_calendarsの直接の呼び出し（`fetcher.py`・`daily_guard.py`）・MACRO PULSEの`05_main.py::us_holidays`（手で書いた祝日の規則）
+- 暫定の足の判定: 4ファイル（`common/market_data/fetcher.py`・`common/sec_data/report_consistency_check.py`・`src/market/market_pulse/collect_and_send.py`・`src/market/market_pulse/futures_snapshot.py`）
+- S&P500の構成銘柄: `docs/market-monitor/market-pulse/data/sp500_tickers.json`（`breadth_calculator.py::get_sp500_tickers`）と`common/market_data/_sp500_constituents_cache.json`（`fetcher.py::get_sp500_constituents`）。同じ取り方の別の写し（10-23は503銘柄で一致）
+- これらを`common/`の1か所（市場データ層の読み取りのAPI等）にまとめ、各読み手はそこから読む
+
+#### 実施（2026-10-23、Koichiさんの判断）
+- 0（定義の表、2016〜2027年の全日）:
+  | 概念 | 今の実装 | 基準 | 結果が違う日 |
+  |---|---|---|---|
+  | NYSEの取引日・休場日・取引時間 | fetcher（get_nyse_calendar・is_trading_day・_calendar_trading_days・_nyse_close_utc）・reader（_expected_trading_days）・daily_guard・breadth（_recent_trading_days）・collect_and_send（check_data_freshness・signal_window_start・write_nyse_holidays）・market_calendar・TANUKIのpipeline | pandas_market_calendarsのNYSE（同じ暦をそれぞれが直接読む） | 無い。XNYSとも取引日・開場と引けの時刻が2000〜2027年で同じ。nyse_holidays.jsonは計算と同じ |
+  | 銘柄ごとの取引日 | fetcher（is_symbol_trading_day） | ^N225はJPX、先物はCME_TradeDate、JPY=Xは曜日だけ | 実装は1つ |
+  | 連邦の祝日・営業日 | 05_main（us_holidays・us_business_days_add・default_target_dateの直前の営業日。nth_us_business_dayは呼ぶ所が無い） | 連邦の祝日の規則（ジューンティーンス無し、元日が土曜ならその年の12-31） | NYSEとは別の概念: 連邦の祝日だがNYSEは開く日24（コロンブス・デー・退役軍人の日）、NYSEは休場だが連邦の祝日でない日20（聖金曜日・ジューンティーンス・2018-12-05・2025-01-09）。S&P500のt+Nを連邦の営業日で数えていて、NYSEの取引日で数えた日と違う組が1,576（FINDINGS 2026-10-23） |
+  | 暫定の足の判定 | fetcher（bar_final_at・is_provisional_bar・is_flat_futures_bar・expected_provisional_kind）。Market Pulseのcollect_and_send.provisional_kind・futures_snapshot._provisional_kind・sector_rotationはfetcherを呼ぶだけ | 日足の確定時刻（銘柄ごとの日の区切り、NYSEの引け） | 実装は1つ（ほかは呼ぶだけ） |
+  | S&P500の構成銘柄 | fetcher（get_sp500_constituents → _sp500_constituents_cache.json）・breadth（get_sp500_tickers → sp500_tickers.json） | 同じ取得元（Wikipedia→GitHub CSV）・同じ7日の控え | 10-23は503銘柄で一致。違いは全部失敗した時（breadthは終了、fetcherは空）と取り直す時刻だけ |
+  止める条件には当たらない（同じ概念の実装は結果が同じ。連邦の祝日とNYSEは意味の違いで、別の関数にした）
+- 1（件名「refactor: R-E1 取引日・休場日・暫定の足・S&P500の構成銘柄をcalendar_universe.pyにまとめる」のcommit）: `common/market_data/calendar_universe.py`を新設し、意味ごとの関数（NYSE〈XNYS〉の取引日・休場日・取引時間・直近n取引日・引けた最新の日、銘柄ごとの取引日、日足の確定時刻と暫定の足、
+  連邦の祝日と営業日、S&P500の構成銘柄、nyse_holidays.json・sp500_tickers.jsonの書き手）を置いた。読み手11ファイルをここから呼ぶ形にし、本番のコードでpandas_market_calendarsを直接読むのはこのファイルだけ。
+  `sp500_tickers.json`は`browser_checks/market_pulse_elements.py`が読むため写しとして残し、書き手を`write_sp500_copy`（正の控えを写す）にした。`nyse_holidays.json`は残し、書き手を`write_nyse_holidays`に（`source`の文字だけNYSE→XNYS）。
+  一覧の規則の検出式を「決める所」に合わせた（取引日は取引所の暦を直接読む所・手で書いた営業日の計算、暫定の足は判定の関数、S&P500は取得元のURL。本番外のコードは期待値を独立に作るため数えない）
+- 2（前後の比較）: 2016〜2027年の全日で新しい関数とHEADの実装・NYSEの暦が16項目とも同じ。市場データ層（yfinanceの応答を記録・再生、16銘柄のdaily・attributes・analyst_history 48ファイル）同じ。
+  HypeCore 98銘柄・TANUKI 96銘柄（理論株価・判定を含む）同じ。Market Pulse（休場日・期待する終値日・シグナルの窓・直近n取引日・予定表の休場と満期・暫定の印・先物の暫定の種類）同じ。
+  MACRO PULSE（60週の点数・局面・比較バー・サプライズ・週次の解説の入力・recalc・fill-returns・営業日の加算・実行の対象日・公表日の予定）同じ。rccはINV-3の8件が消えたほか同じ（WARN 162→154）。
+  check_macro_pulse.py（71/1/1、行ごとに同じ。MAC-01は画面の時計）・check_dependency_map.py（全項目一致）同じ。CHECK-INV-3は34件／19種→26件／15種（取引日・暫定の足・S&P500・休場日の一覧の作り方の二重が消えた）
+- FINDINGS 2026-10-20（NIY=Fの2026-10-07の行）は未修正: 判定は暫定と言うが、印は保存の時にだけ付く（付け直しは --repair-provisional、範囲外）
+
+#### 条件
+- 各読み手の前後比較（全銘柄・全系列）: 市場データ層のdaily・TANUKI・HypeCore・Market Pulse（ブレッス・8段階の結論）・MACRO PULSE（点数・局面）・rccで、まとめる前後の出力が同じであること
+
+#### 束ねた件
+- FINDINGS 2026-10-20（`NIY=F`の2026-10-07の行が確定値でない足のまま確定値の顔で残る、型C）
+
+#### 始める段（CHAT_RULES 4）
+定義（取引日・休場日・暫定の足の決まりを1つにする）
+
+#### 投資判断への影響
+将来ありうる（片方だけがずれる）。今は値の違いは見つかっていない
+
+#### 規模の見込み
+中
+
+---
+
 ### ✅ [HOLDINGS-SINGLE-SOURCE-1] 保有銘柄の一覧が3か所（portfolio.json・discover_config.jsonの区分「保有中」・TAILのpositions_index.json）にあり、Portfolioの画面に「区分未反映」の警告が出る。正をportfolio.jsonの1つにする
 **完了（2026-10-23）:** 第1部（保有の正をportfolio.json、CHECK-65）・第2部（discover_config.json・Discover_Config_Sync.yml・CHECK-32を削除、休眠はcik_lookup.csvのstatusのdormant）。本番の画面（Portfolioの保有の表）の確認は次の朝のKoichiさんの目視（CLAUDE_CODE_START.mdの次回の確認手順12）
 **型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-Aの論点⑥。実装の順は ⑥ → R-E1 → R-E2、実装の指示はチャット側）

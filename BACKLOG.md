@@ -1862,6 +1862,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 ## 優先度：高
 
 （[[OUTPUT-INVENTORY-CHECK-1]]〈R-A〉は2026-10-23、11層の段階1〜3と終わりの見直しが済んで完了、BACKLOG_DONE.md「2026-10-23（完了）」参照）
+（[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]〈R-E1〉は2026-10-23、取引日・休場日・暫定の足・S&P500の構成銘柄をcalendar_universe.pyにまとめて完了、BACKLOG_DONE.md「2026-10-23（完了）」参照）
 （[[HOLDINGS-SINGLE-SOURCE-1]]は2026-10-23、保有の正をportfolio.jsonにしdiscover_config.jsonを消して完了、BACKLOG_DONE.md「2026-10-23（完了）」参照。本番の画面の目視はCLAUDE_CODE_START.mdの次回の確認手順12）
 
 （[[SEC-FETCH-CACHE-MTIME-CI-1]]は2026-10-10、submissionsで新しい提出を検知してcompany_factsを取り直す方式に変更して完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
@@ -1877,37 +1878,6 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 ---
 
 （[[TICKER-EXCEPTION-LEDGER-1]]は2026-10-19、[[OUTPUT-INVENTORY-CHECK-1]]に統合、BACKLOG_DONE.md「2026-10-19（初回の束ね）」参照）
-
----
-
-### [MARKET-CALENDAR-UNIVERSE-UNIFY-1] 取引日・休場日・暫定の足の判定・S&P500の構成銘柄を、common/の1か所にまとめる（R-E1）
-**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型B・根治策（R-E1。R-Aの論点⑤。実装は[[HOLDINGS-SINGLE-SOURCE-1]]の後、実装の指示はチャット側）
-**優先度:** 高
-**分類:** 根治策 / common/market_data・MACRO PULSE・Market Pulse・rcc
-**登録日:** 2026-10-23
-**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）
-
-#### 内容（2026-10-23の一覧の検出）
-- 取引日（市場の営業日）の決め方: 5ファイル（`common/market_data/fetcher.py`・`common/market_data/reader.py`・`common/sec_data/report_consistency_check.py`・`src/market/macro_pulse/05_main.py`・`src/market/market_pulse/breadth_calculator.py`）
-- 休場日: Market Pulseの`docs/market-monitor/market-pulse/data/nyse_holidays.json`（`collect_and_send.py::write_nyse_holidays`、pandas_market_calendarsから書く）・市場データ層のpandas_market_calendarsの直接の呼び出し（`fetcher.py`・`daily_guard.py`）・MACRO PULSEの`05_main.py::us_holidays`（手で書いた祝日の規則）
-- 暫定の足の判定: 4ファイル（`common/market_data/fetcher.py`・`common/sec_data/report_consistency_check.py`・`src/market/market_pulse/collect_and_send.py`・`src/market/market_pulse/futures_snapshot.py`）
-- S&P500の構成銘柄: `docs/market-monitor/market-pulse/data/sp500_tickers.json`（`breadth_calculator.py::get_sp500_tickers`）と`common/market_data/_sp500_constituents_cache.json`（`fetcher.py::get_sp500_constituents`）。同じ取り方の別の写し（10-23は503銘柄で一致）
-- これらを`common/`の1か所（市場データ層の読み取りのAPI等）にまとめ、各読み手はそこから読む
-
-#### 条件
-- 各読み手の前後比較（全銘柄・全系列）: 市場データ層のdaily・TANUKI・HypeCore・Market Pulse（ブレッス・8段階の結論）・MACRO PULSE（点数・局面）・rccで、まとめる前後の出力が同じであること
-
-#### 束ねた件
-- FINDINGS 2026-10-20（`NIY=F`の2026-10-07の行が確定値でない足のまま確定値の顔で残る、型C）
-
-#### 始める段（CHAT_RULES 4）
-定義（取引日・休場日・暫定の足の決まりを1つにする）
-
-#### 投資判断への影響
-将来ありうる（片方だけがずれる）。今は値の違いは見つかっていない
-
-#### 規模の見込み
-中
 
 ---
 

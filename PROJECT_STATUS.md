@@ -20,7 +20,8 @@
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`: **11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3と、R-Aの終わりの見直し1〜4が済み、R-Aを閉じた（2026-10-23。BACKLOG_DONE.mdへ）。CHECK-INVはこの11段階。
    次は ⑥[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]] → R-E2[[EXTERNAL-API-CLIENT-UNIFY-1]] の順で、チャット側が実装の指示を出す**。
-   - （済 2026-10-23）⑥[[HOLDINGS-SINGLE-SOURCE-1]]: 保有の正をportfolio.json（画面の表・CHECK-65）、discover_config.json・Discover_Config_Sync.yml・CHECK-32を削除、休眠はcik_lookup.csvのstatusのdormant。本番の画面はCLAUDE_CODE_START.mdの次回の確認手順12。**次はR-E1**
+   - （済 2026-10-23）⑥[[HOLDINGS-SINGLE-SOURCE-1]]: 保有の正をportfolio.json（画面の表・CHECK-65）、discover_config.json・Discover_Config_Sync.yml・CHECK-32を削除、休眠はcik_lookup.csvのstatusのdormant。本番の画面はCLAUDE_CODE_START.mdの次回の確認手順12。
+   - （済 2026-10-23）R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]: 取引日・休場日・暫定の足・S&P500の構成銘柄を`common/market_data/calendar_universe.py`に1か所。連邦の祝日はNYSEと別の関数。前後で同じ。CHECK-INV-3は26件／15種。**次はR-E2[[EXTERNAL-API-CLIENT-UNIFY-1]]**
    FINDINGS.mdの2026-10-23のcheck_macro_pulse.pyの行（型C、確認の結果が実行の時刻で変わる）は束ねの入力のまま残す
    - （済 2026-10-23）Market Pulseの段階3: CHECK-INVをMarket Pulseにも当てた（11段階、TAILの後。既知の規則の二重6つはWARN、rccのCHECK-INVは約72.6秒）
    - （済 2026-10-23）Market Pulseの段階2（Koichiさんの判断）: 手で動かすスクリプト4つ（backfill_*）を消した。出力7・誰も読まないキー48は残す（理由は一覧に。消したスクリプトだけが読んでいた`relevance`の`true`・`false`も残し計50）。消したスクリプトをほかの6段階の一覧が読み手に数えていたため作り直した。BACKLOG.mdの「Market Pulseの段階」
@@ -76,6 +77,10 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-23（R-E1 [[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]）**: 1 `06051d0fb5`（calendar_universe.pyを新設し読み手11ファイルをそこから呼ぶ。規則の検出式を「決める所」に）。前後で同じ（2016〜2027年の全日・市場データ層の再生・HypeCore・TANUKI・Market Pulse・MACRO PULSE・rcc・browser_checks）。
+  FINDINGSに1行（MACRO PULSEのS&P500のt+Nは連邦の営業日で数える、型C）。NIY=Fの10-07の行は未修正（印は保存の時にだけ付く）。アクティブBACKLOG 13件。
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **17**（CHECK-INV-3の規則の種類15＋MAC-11・MAC-20の2。21から−4: 取引日・暫定の足・S&P500の構成銘柄・休場日の一覧の作り方）、サブシステム 10、
+  Python 68,299行・134ファイル（68,300行から−1行・+1ファイル: calendar_universe.pyを足し、各ファイルの暦の実装を消した）、テスト34,907行、docs配下のHTML・JS 20,283行・20ファイル、ワークフロー20本
 - **2026-10-23（[[HOLDINGS-SINGLE-SOURCE-1]]）**: 第1部 `4173796c92`（Portfolioの画面の保有の表をportfolio.jsonから・区分の警告を削除・CHECK-65）・第2部 `4e5fd23a0b`（discover_config.json〈config/・docs/〉・Discover_Config_Sync.yml・CHECK-32を削除、休眠〈BBAI〉はcik_lookup.csvのstatusのdormant、登録の検証はNG 7→2〈消えたのはP1-Step6の5件〉）。画面・[K]・TAIL・段階7・snapshotは前後で同じ。アクティブBACKLOG 14件。
   **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **21**（CHECK-INV-3の規則の種類19＋MAC-11・MAC-20の2）、サブシステム 10、Python 68,300行・133ファイル（68,359行から−59行: register_ticker.pyのStep 6・registration_validator.pyのDiscoverの検証・CHECK-32を消し、CHECK-65を足した）、テスト34,861行、docs配下のHTML・JS 20,283行・20ファイル（−23行: Portfolioの画面の区分の読み・警告）、ワークフロー20本（Discover_Config_Sync.ymlを削除）
 - **2026-10-23（R-Aの終わりの見直し・R-Aを閉じた）**: 見直し1（段階ごとの印を1つの設定に。IO_HELPER_BY_CALLERはSEC層で本当の読み手が消えるため広げない）・2（キーの要約をファイルの中身のhashで控え、CHECK-INVは約117.7秒→約26.9秒）・3（一覧のスクリプトを4ファイルに）・4（二重の規則の数え方を1つに、BACKLOGに[[HOLDINGS-SINGLE-SOURCE-1]]・[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]・[[EXTERNAL-API-CLIENT-UNIFY-1]]、[[OUTPUT-INVENTORY-CHECK-1]]をBACKLOG_DONE.mdへ）。アクティブBACKLOG 15件。
