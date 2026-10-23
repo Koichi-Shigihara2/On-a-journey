@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-22 の更新〈手順11の①済〉。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-10-24 の更新〈10-25の確認を先頭に〉。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件。`^### [`の機械カウントも12件）。それまでは**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -35,6 +35,15 @@ BACKLOG.mdのアクティブは**13件**（2026-10-22の`^### [`の機械カウ�
 以下は2026-10-15 夜の終業の記載（53件。終業後に`[[TICKER-EXCEPTION-LEDGER-1]]`（高、設計書`docs/architecture/TICKER_EXCEPTION_LEDGER.md`、実装は10-18〜19の確認の後）・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`（中）・`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`（低）を登録。10-14 終業の記載46件は補足commitの新規2件を数えていなかった〈正しくは48件〉。10-15に`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`を新規登録）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
+
+**2026-10-25（日）に確かめること（先頭。上から順に）**:
+- A. 手順11②（R-Cの公開の確認②）: 日曜のSEC_Data_Update（SECの取得は2026-10-24から`common/external_api.py`の`sec_get`、User-Agentはsecretの`SEC_USER_AGENT_EMAIL`。初めての日曜の本番）と連鎖のTANUKI VALUATIONの後。
+  SEC_Data_Updateのログに`[ERROR] 環境変数 SEC_USER_AGENT_EMAIL が無い`が無く、98銘柄が取れていること（`[sec] … 再試行`の行が出ていればその数も見る）を先に確かめてから、手順11の②の手順
+- B. 手順12（Portfolioの本番の画面）: 10-24の期限までに確かめていなければ10-25に
+- C. 日曜の束ね: FINDINGS.mdの未登録の行を束ねる（CHAT_RULES.md「発見の溜め方と根治の判断」）。入力に次の2件を含める
+  - MACRO PULSEのS&P500のt+N（`05_events.csv`の`sp500_t1`〜`sp500_t20`）は連邦の営業日（`us_federal_business_days_add`）で数え、NYSEの取引日と違う（2016〜2027年で1,576組。FINDINGS.md 2026-10-23、型C）
+  - NIY=Fの古い行: `common/market_data/daily/NIY=F.json`の2026-10-05・10-06・10-07の3行がO=H=L=C・出来高0の平らな足なのに`_provisional`も`_no_yahoo_bar`も無い（FINDINGS.md 2026-10-20は10-07だけを書いている。2026-10-24に3行を確かめた）。
+    印は保存の時にだけ付き、付け直しは`--repair-provisional`（範囲外）。daily/のNIY=Fを読むものは無い
 
 1. （済 2026-10-19）Adjusted_EPS_Data_UpdateのStep Summary: Koichiさんが10-18に目視で確認、`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設
 2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
@@ -81,8 +90,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
      HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
 12. **Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
-   - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）
-   - 期限: 2026-10-24
+   - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）。確かめていなければ10-25（上のB）
+   - 期限: 2026-10-25
    - 確認の手順: Koichiさんが`https://koichi-shigihara2.github.io/On-a-journey/portfolio/`を開き、保有の表が9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）＋合計・キャッシュで、
      「⚠️ 区分未反映」「⚠️ 未登録」が出ていないこと（手元のPlaywrightでは前後で同じ。総資産・時価・評価損益は株価で動く）。確かめたらこの手順を済にする
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
