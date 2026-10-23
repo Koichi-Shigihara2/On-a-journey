@@ -36,6 +36,7 @@
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
        → 済（2026-10-23、見直し1）: `IO_HELPER_BY_CALLER`のほかは全段階で1つの設定に。`IO_HELPER_BY_CALLER`はSEC層で本当の読み手が消えるため広げない（BACKLOG.mdの「R-Aの終わりの見直し」）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）
+       → 済（2026-10-23、見直し3）: `inventory_layers.py`（段階の設定）・`inventory_analysis.py`（解析・CHECK-INV）・`inventory_render.py`（md）・`build_output_inventory.py`（入口）に分けた
      ⑤規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）。
        同じ情報の別の写し: `docs/market-monitor/market-pulse/data/sp500_tickers.json`と`common/market_data/_sp500_constituents_cache.json`（S&P500の構成銘柄）、
        休場日の3か所（Market Pulseの`nyse_holidays.json`・市場データ層のpandas_market_calendarsの直接の呼び出し・MACRO PULSEの`05_main.py`の`us_holidays`）（2026-10-23 Market Pulseの段階2で追加）

@@ -1,4 +1,4 @@
-"""[[OUTPUT-INVENTORY-CHECK-1]] 段階3: 出力の一覧の CHECK-INV-1〜4（scripts/inventory/build_output_inventory.py::check_inventory）。
+"""[[OUTPUT-INVENTORY-CHECK-1]] 段階3: 出力の一覧の CHECK-INV-1〜4（scripts/inventory/inventory_analysis.py::check_inventory）。
 
 保存した一覧（sec_layer.json）と、今のリポジトリから作った一覧を比べる。ここでは小さな一覧を手で作って比べる。
 """
@@ -11,7 +11,7 @@ _INV_DIR = os.path.join(_REPO_ROOT, "scripts", "inventory")
 if _INV_DIR not in sys.path:
     sys.path.insert(0, _INV_DIR)
 
-import build_output_inventory as inv  # noqa: E402
+import inventory_analysis as inv  # noqa: E402  解析・CHECK-INV（段階の設定も set_layer() でここに入る）
 
 # SEC層の既知の規則の二重。inv.KNOWN_DUPLICATE_RULES はその時の段階（set_layer() を最後に呼んだもの）で変わるため、段階の設定から取る
 SEC_KNOWN = inv.LAYERS["sec"]["KNOWN_DUPLICATE_RULES"]
