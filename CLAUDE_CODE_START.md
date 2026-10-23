@@ -93,7 +93,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - **docs/portfolio/data・src/portfolio・docs/portfolio/index.htmlに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer portfolio`で一覧を作り直してcommitする**（しないとゲートがNG）
 - MACRO PULSE: 段階1 `6088b8636f`（`--layer macro_data`〈出力4〉と`--layer macro_pulse`〈出力8、CSVの列を数える〉）→段階2 `31aa31b875`（手で動かすスクリプト3つ・修復のスクリプト1つ、`05_events.csv`の誰も読まない6列、macro_dataの誰も読まないキー3つを削除）→段階3（CHECK-INV、10段階で約67秒）
 - **common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulseに出力・列を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer macro_data`（`--layer macro_pulse`）で一覧を作り直してcommitする**（しないとゲートがNG）
-- 次はR-AのMarket Pulseの段階1。R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
+- Market Pulse: 段階1（`--layer market_pulse`、出力7。通知はメール、`02_market_rss.txt`はコードの書き手なし。CHECK-INVにはまだ入れない）。check_macro_pulse.pyの10-23の不一致5件は実行の時刻による（FINDINGS 型C、画面の値は誤っていない）
+- 次はKoichiさんの判断（R-AのMarket Pulseの段階2）。R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
 - `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）

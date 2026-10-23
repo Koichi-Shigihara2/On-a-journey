@@ -808,8 +808,84 @@ _MACRO_PULSE.update(
     # 解決の厳しさ 0 ではテストの呼び出しの引数が読み手に混ざる（市場データ層・macro_data と同じ 1）
     CSV_COLUMNS=True, RESOLVE_STRICT=1, JS_ID_HELPERS=True,
 )
+# ---- Market Pulse（段階1、2026-10-23）。src/market/market_pulse と docs/market-monitor/market-pulse
+_MARKET_PULSE = dict(_SEC)
+_MARKET_PULSE.update(
+    LAYER="src/market/market_pulse",
+    LAYER_DIRS=("src/market/market_pulse",),
+    OUT_JSON=f"{OUT_DIR}/market_pulse_layer.json", OUT_MD=f"{OUT_DIR}/market_pulse_layer.md",
+    DECISION_PREFIXES=DECISION_PREFIXES + [
+        ("src/market/market_pulse/", "Market Pulse（市況の判定・8段階の結論・天気）"),
+        ("docs/market-monitor/market-pulse/index.html", "Market Pulseの画面"),
+    ],
+    NON_PRODUCTION_DIRS=[],
+    NON_PRODUCTION_FILES=["src/market/market_pulse/backfill_implb.py", "src/market/market_pulse/backfill_implc.py",
+                          "src/market/market_pulse/backfill_stage_conclusions.py", "src/market/market_pulse/backfill_tech_pulse.py"],
+    NONPROD_SCAN=True,
+    NONPROD_NOTES={
+        "src/market/market_pulse/backfill_implb.py":
+            "手で動かす一過性の付け足し（market_data.jsonの既存のエントリに実装B〈指示書㉖〉の sector_rotation・semis_m7・commodity_fx・段階5〜7）。"
+            "collect_and_send.py を import して同じパス・関数を使う。実行の記録: eb6cf8d98d（2026-10-01、107エントリ）。"
+            "手順の文書: CLAUDE_CODE_START.md（実装Bのマージの手順）・MARKET_PULSE_REDESIGN.md 7章",
+        "src/market/market_pulse/backfill_implc.py":
+            "手で動かす一過性の付け足し（最新のエントリだけに実装C〈指示書㉗〉の headlines・calendar・futures。--only headlines は見出しだけ取り直し、Grokを1回呼ぶ）。"
+            "実行の記録: 01634073a9・747936b56c（2026-10-09、--only headlines）。1193cd5845（2026-09-30）は実装と同じcommit。"
+            "手順の文書: CLAUDE_CODE_START.md（実装Cのマージの手順、再実行は任意）・MARKET_PULSE_REDESIGN.md 7章",
+        "src/market/market_pulse/backfill_stage_conclusions.py":
+            "手で動かす一過性の付け足し（既存のエントリに stage_conclusions・weather・data_quality・sentiment.signal。指示書㉓ 実装A）。"
+            "実行の記録: 59406c6131・14b03af90f（2026-09-30、実装と同じcommit）。手順の文書: MARKET_PULSE_REDESIGN.md 7章",
+        "src/market/market_pulse/backfill_tech_pulse.py":
+            "手で動かす補完（tech_pulse の無いエントリを daily/ と VXNCLS から埋める）。実行の記録: 140ce1877c（2026-05-03）・c50a9f3ded（2026-05-21）。"
+            "最後のコードの変更は4930458e72（2026-08-13、VXNCLSを reader.py 経由に）。手順の文書は切り替えの記録（BACKLOG・FIELD_DEFINITIONS 等）だけ",
+    },
+    ANNOTATIONS={
+        "docs/market-monitor/market-pulse/data/market_data.json":
+            "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。"
+            "**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。"
+            "2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・"
+            "sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures",
+        "docs/market-monitor/market-pulse/data/market_data.csv":
+            "market_data.json の指標を平らにした1日1行（指標_value 等）。**AIの出力（Grok）**: summary 列（judgment 列は summary から取り出す）",
+        "docs/market-monitor/market-pulse/data/breadth_data.json":
+            "S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す",
+        "docs/market-monitor/market-pulse/data/sp500_tickers.json":
+            "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さない）。**市場データ層の common/market_data/_sp500_constituents_cache.json と同じ情報の別の写し**"
+            "（取り方も同じ。2026-10-23 は503銘柄で一致。fetcher.py の get_sp500_constituents は意図的な独立の実装と書く）",
+        "docs/market-monitor/market-pulse/data/nyse_holidays.json":
+            "前年〜翌年のNYSEの休場日（pandas_market_calendars から毎回書く）。画面の休場の行の表示に使う。"
+            "**休場日の情報は市場データ層（fetcher.py・daily_guard.py が pandas_market_calendars を直接）と MACRO PULSE（05_main.py の us_holidays、手で書いた祝日の規則）にも別にある**",
+        "src/market/market_pulse/02_market_rss.txt":
+            "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
+        "メール（GMAIL_PASSWORD・GMAIL_USER）": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",
+    },
+    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISIONS={},
+    DELETED=[],
+    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    OUTSIDE_HINT="market-pulse", OUTSIDE_PREFIXES=("docs/market-monitor/market-pulse/", "src/market/market_pulse/"),
+    READ_PREFIXES=("docs/market-monitor/market-pulse", "src/market/market_pulse"),
+    READ_HINT="market-pulse", NAME_SHORT="Market Pulse",
+    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint"],
+    TITLE="Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の出力の一覧（段階1の下書き）",
+    SCREEN_PAGES=("docs/market-monitor/market-pulse",),
+    SCREEN_SECTION_DECISIONS=[],
+    UNREAD_KEY_NOTES={},
+    RULES=_TANUKI["RULES"] + _MARKET["RULES"] + _MACRO_RULES + [
+        {"id": "market_holidays", "name": "休場日（祝日）の一覧の作り方",
+         "patterns": [r"def\s+_?\w*holidays\s*\("]},
+    ],
+    FULL_SCAN=True, SCREEN_SECTIONS=True,
+    HTML_COPIES=[],
+    PAGE_CHECKS=[],
+    WORKFLOW_SUMMARY=True,
+    SECTION_DECISIONS={},
+    # 出力の CSV（market_data.csv）の列を数える。手で動かすスクリプトは import collect_and_send as cs で同じパスを使う（解決の厳しさ 2。1 では書き手3件を決めきれない）
+    # 02_market_rss.txt（人の手で書くRSSの一覧、.py でない入力）も出力に加え、読み手を出す
+    CSV_COLUMNS=True, RESOLVE_STRICT=2, EXTRA_OUTPUT_DIRS=("src/market/market_pulse",),
+)
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
-                           "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE}
+                           "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE,
+                           "market_pulse": _MARKET_PULSE}
 
 
 def set_layer(name: str) -> None:
@@ -1434,6 +1510,9 @@ def _io_sites(mod: Module) -> Tuple[List[dict], List[dict]]:
             env = sorted(set(re.findall(r"[\"']((?:DISCORD|WEBHOOK)[A-Z_]*)[\"']", mod.src)))
             if env:
                 writes.append({**site, "path": "Discord（" + "・".join(env) + "）", "kind": "通知"})
+        elif fname in ("send_message", "sendmail") and isinstance(f, ast.Attribute) and "smtplib" in mod.src:   # メール（Market Pulse の段階から）
+            env = sorted(set(re.findall(r"[\"']((?:GMAIL|SMTP|MAIL)[A-Z_]*)[\"']", mod.src)))
+            writes.append({**site, "path": "メール（" + "・".join(env) + "）", "kind": "通知"})
     def split(sites: List[dict]) -> List[dict]:
         out = []
         for s in sites:
@@ -3193,7 +3272,7 @@ def render_md(inv: dict) -> str:
         files_n = f"<br>（{o['files_tracked']}ファイル）" if o.get("files_tracked") is not None else ""
         L.append(f"| {o['group']} | `{md_escape(o['path'])}`{files_n} | {md_escape(o['note'])} | {writers} | {rc} | {screens} | {md_escape(eff)} | {defs} | {md_escape(o['decision'])} |")
     L.append("")
-    L.append("### 人が見るもの（Step Summary・Discord）")
+    L.append("### 人が見るもの（Step Summary・Discord" + ("・メール" if any(o["path"].startswith("メール（") for o in outs) else "") + "）")
     L.append("")
     L.append("| 出力 | 何か | 書き手 | 起動元のワークフロー |")
     L.append("|---|---|---|---|")
@@ -3400,7 +3479,7 @@ def render_md(inv: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
-    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio、macro_data: マクロデータ層、macro_pulse: MACRO PULSE）")
+    ap.add_argument("--layer", choices=sorted(LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio、macro_data: マクロデータ層、macro_pulse: MACRO PULSE、market_pulse: Market Pulse）")
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()

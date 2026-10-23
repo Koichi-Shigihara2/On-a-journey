@@ -2034,7 +2034,23 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   一覧を作り直し、止める条件は2つとも0%・0%（macro_pulseの12.5%は消した修復のスクリプトの分）。macro_pulseの解決の厳しさは1にし、段階1で足した4（importlibで読み込んだモジュール）は使う所が無くなったため外した。
   文書: MACRO_PULSE_LOGIC_INVENTORY.mdの2-1（書き手・`--date`）とM-3の修復のスクリプトに削除を注記、SYSTEM_MAP.mdの2か所に削除を注記
 - 段階3（第2部、件名「feat: R-A MACRO PULSEの段階3、CHECK-INVをmacro_data・macro_pulseにも当てる」のcommit）: CHECK_LAYERSの市場データ層の後にmacro_data・macro_pulse（解決の厳しさはどれも1で、索引を作り直さない）。既知の規則の二重（macro_data 2: FREDのAPI・JSONの書き込み、macro_pulse 5: 取引日・景気後退リスクの点数・段階の信号・FREDのAPI・Grokの宛先）はWARN。rccのWARNは149→156件。rccのCHECK-INVは約67秒（10段階。8段階のときは約65秒）、rcc全体は約87秒。macro_dataのStep Summaryに注記を足した
-- **次はMarket Pulseの段階1**（R-Aの最後のサブシステム）
+- 段階1〜3が済んだ。次はMarket Pulseの段階1（R-Aの最後のサブシステム）
+
+#### Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の段階（2026-10-23 段階1済）
+- 段階1（一覧の下書き）: 件名「chore: R-A Market Pulseの段階1、出力の一覧の下書き」のcommit。`--layer market_pulse` → `market_pulse_layer.json`・`.md`（画面は`docs/market-monitor/market-pulse/index.html`）
+- 出力7: `market_data.json`・`market_data.csv`（列を数える）・`breadth_data.json`・`sp500_tickers.json`・`nyse_holidays.json`・`02_market_rss.txt`（**コードの書き手なし、人の手で書くRSSの一覧**。読み手は`collect_and_send.py`の`get_market_news`）・メール（Gmail）。
+  **通知はDiscordでなくメール**（`collect_and_send.py`の`send_email`、smtplib。Market PulseにDiscordの送信は無い）。読み手0件0、テストだけ0、1件2（`market_data.csv`は書き手が見出しを確かめるだけ・`02_market_rss.txt`）、2件以上4。
+  AIの出力（Grok）: `market_data.json`のsummary・comments_historyのsummary・haiku（judgmentはsummaryから取り出す）、headlinesのitemsのtitle_ja・marketとtranslation・relevance、`market_data.csv`のsummary列（一覧の「何か」の欄）。
+  画面が読むキー152（書き手なし1: `m7_missing`。`sector_rotation.py`がM7の値が欠けた日だけ書くため、今のデータに無い）、誰も読まないキー48（`ai_facts`・`backfilled_at`・`stage3`・`stage4`等。CSVの`sentiment_score`・`sentiment_label`、breadth_dataの`stocks_ahead_of_base_date`を含む）。
+  本番外のコードの候補4（`backfill_implb.py`・`backfill_implc.py`・`backfill_stage_conclusions.py`・`backfill_tech_pulse.py`。どれもワークフロー・ほかのコードから呼ばれない。実行の記録〈commit〉と手順の文書は一覧の表）。止める条件は書き手0%・読み方4.3%
+- 同じ情報の別の写し: `sp500_tickers.json`は市場データ層の`_sp500_constituents_cache.json`と同じ（2026-10-23は503銘柄で一致、取り方も同じ）。`nyse_holidays.json`の休場日は、市場データ層（pandas_market_calendarsを直接）とMACRO PULSE（`05_main.py`の`us_holidays`、手で書いた祝日の規則）にも別にある
+- 規則の二重（Market Pulseのファイルを含むもの6）: 既知の5つ全部に当たる（取引日〈`breadth_calculator.py`の`_recent_trading_days`〉・暫定の足〈`collect_and_send.py`・`futures_snapshot.py`〉・S&P500の構成銘柄〈`get_sp500_tickers`〉・FREDの直接の呼び出し〈`market_calendar.py`の公表日〉・Grokの宛先〈`collect_and_send.py`・`news_headlines.py`〉）。
+  新しい検出式「休場日の一覧の作り方」が`05_main.py`の`us_holidays`と`collect_and_send.py`の`write_nyse_holidays`に当たる
+- 2026-09-26からの再設計（`MARKET_PULSE_REDESIGN.md`、実装A〜C）で足した出力のキーを`market_data.json`の「何か」に注記した（stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures）。直していない
+- 一覧のスクリプト（+79行）: メール（smtplibの`send_message`・`sendmail`）を通知の出力に数える（smtplibを使うのはリポジトリで`collect_and_send.py`だけで、ほかの段階は変わらないため印にしない）。
+  段階の印は既存のものだけ: `CSV_COLUMNS`（market_data.csv）・`NONPROD_NOTES`（手で動かすスクリプトの実行の記録）・`RESOLVE_STRICT` 2（`import collect_and_send as cs`。1では手で動かすスクリプトの書き手3件を決めきれず止める条件33.3%で当たる。3も同じ一覧）・`EXTRA_OUTPUT_DIRS`（02_market_rss.txt）。
+  既存10段階の一覧は前後で差0。CHECK-INVには入れていない。画面の区画はページに`<!-- -->`の見出しが少なく（7つ）、ほとんどのキーが「③ 折れ線グラフ」に入る（推定の精度は低い）
+- **次はKoichiさんの判断（段階2）**
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

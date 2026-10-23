@@ -536,8 +536,10 @@ def test_macro_layers_settings():
     assert md["KNOWN_DUPLICATE_RULES"] == ["fred_api", "atomic_write_json"]
     assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"]
     # 既存の段階の一覧を変えないよう、足した印はこの2つの段階だけ
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"] or inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
+    # Market Pulse（段階1）も CSV の列・本番外のコードの注記を使う
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"]] == ["macro_pulse", "market_pulse"]
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse", "market_pulse"]
 
 
 def test_csv_columns_are_keys_only_with_flag(tmp_path, monkeypatch):
@@ -558,3 +560,28 @@ def test_js_id_helper_definitions():
             "function $id(x) { return document.getElementById(x); }\n"
             "const other = document.getElementById('a');\n")
     assert {a or b for a, b in inv.JS_ID_HELPER_DEF_RE.findall(page)} == {"el", "$id"}
+
+
+def test_market_pulse_layer_settings():
+    """Market Pulse（段階1、2026-10-23）: 手で動かすスクリプトは import collect_and_send as cs で同じパスを使う（解決の厳しさ 2）。
+    02_market_rss.txt（人の手で書く入力）も出力に加える。CHECK-INV にはまだ入れない（段階2の判断待ち）。"""
+    mp = inv.LAYERS["market_pulse"]
+    assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
+    assert mp["RESOLVE_STRICT"] == 2 and mp["CSV_COLUMNS"] and mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",)
+    assert not (mp["JS_ID_HELPERS"] or mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"])
+    assert "market_pulse" not in inv.CHECK_LAYERS
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint"]
+    assert "market_holidays" in [r["id"] for r in mp["RULES"]]
+
+
+def test_mail_notification_is_output(monkeypatch):
+    """smtplib の send_message・sendmail はメールの通知の出力（Market Pulse の段階から）。smtplib を使わないファイルの同じ名前の呼び出しは数えない。"""
+    src = ("import os, smtplib\n"
+           "GMAIL_USER = os.getenv('GMAIL_USER')\n"
+           "def send(msg):\n"
+           "    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:\n"
+           "        smtp.send_message(msg)\n")
+    mod = _strict_module(monkeypatch, "src/mp/send_k.py", src, {})
+    assert [(w["path"], w["kind"]) for w in inv._io_sites(mod)[0]] == [("メール（GMAIL_USER）", "通知")]
+    other = _strict_module(monkeypatch, "src/mp/queue_k.py", "def f(q, m):\n    q.send_message(m)\n", {})
+    assert inv._io_sites(other)[0] == []
