@@ -5,7 +5,7 @@
 - FOMC・FRB要人: federalreserve.govの`/json/calendar.json`（FOMC・Speeches・Testimony・Beige。時刻は米国東部時間）
 - 決算: 保有銘柄・TANUKI TAILの監視銘柄・M7に限る（TANUKI VALUATIONのlatest.jsonのnext_earnings_date、
   無い銘柄はcommon/market_data/attributesのcalendar）
-- 米国の祝日・短縮取引: pandas_market_calendars（NYSE）。日本の祝日: 同（JPX）
+- 米国の祝日・短縮取引: common/market_data/calendar_universe.py（pandas_market_calendarsのXNYS）。日本の祝日: 同（JPX）
 - 満期: 米国の月次オプション（第3金曜、休場なら前営業日。3・6・9・12月は先物・オプションの同時満期）、
   日本のSQ（第2金曜、休場なら前営業日。3・6・9・12月はメジャーSQ）
 取得に失敗した取得元は推測で埋めず、failedに記録する。
@@ -121,8 +121,9 @@ def earnings_events(start: date, end: date, tickers: List[str], repo_root: str,
 
 
 def _schedule(cal_name: str, start: date, end: date):
-    import pandas_market_calendars as mcal
-    return mcal.get_calendar(cal_name).schedule(start_date=start.isoformat(), end_date=end.isoformat())
+    """取引所の取引時間の表（common/market_data/calendar_universe.py。"NYSE" は XNYS）。"""
+    from common.market_data.calendar_universe import exchange_schedule
+    return exchange_schedule(cal_name, start, end)
 
 
 def holiday_events(start: date, end: date) -> List[dict]:

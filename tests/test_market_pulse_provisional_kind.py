@@ -2,7 +2,7 @@
 
 - 先物（清算前）・為替とドル指数（日の区切り前）の暫定値はdata_qualityをpartialにせず、種類（清算前・日中）を記録する
 - それ以外の暫定値（本来は確定しているはずの値）は今までどおりpartialにする
-- 区別は銘柄ごとの日足の区切り（fetcher.bar_final_at）から判定し、銘柄の一覧を持たない
+- 区別は銘柄ごとの日足の区切り（calendar_universe.bar_final_at）から判定し、銘柄の一覧を持たない
 """
 import os
 import sys
@@ -14,34 +14,34 @@ sys.path.insert(0, os.path.join(ROOT, "src", "market", "market_pulse"))
 import collect_and_send as cs  # noqa: E402
 import sector_rotation as sr  # noqa: E402
 import stage_conclusions as sc  # noqa: E402
-from common.market_data import fetcher  # noqa: E402
+from common.market_data import calendar_universe  # noqa: E402
 
 
 class TestExpectedProvisionalKind:
     def test_futures_are_before_settlement(self):
-        assert fetcher.expected_provisional_kind("CL=F", "2026-09-29") == "清算前"
-        assert fetcher.expected_provisional_kind("GC=F", "2026-09-29") == "清算前"
+        assert calendar_universe.expected_provisional_kind("CL=F", "2026-09-29") == "清算前"
+        assert calendar_universe.expected_provisional_kind("GC=F", "2026-09-29") == "清算前"
 
     def test_fx_and_dollar_index_are_intraday(self):
-        assert fetcher.expected_provisional_kind("JPY=X", "2026-09-29") == "日中"
-        assert fetcher.expected_provisional_kind("DX-Y.NYB", "2026-09-29") == "日中"
+        assert calendar_universe.expected_provisional_kind("JPY=X", "2026-09-29") == "日中"
+        assert calendar_universe.expected_provisional_kind("DX-Y.NYB", "2026-09-29") == "日中"
 
     def test_bars_final_by_the_nightly_run_are_not_expected(self):
         # 米国株・ETF・指数はNYSEの引け、^VIXは引け＋15分、^TNXは引け−1時間、^N225は東京の引けで確定する
         # （夜の取得〈引け＋20分以降〉の時点で確定しているはず）
         for sym in ("SPY", "^GSPC", "GLD", "^VIX", "^TNX", "^N225", "XLK"):
-            assert fetcher.expected_provisional_kind(sym, "2026-09-29") is None, sym
+            assert calendar_universe.expected_provisional_kind(sym, "2026-09-29") is None, sym
 
     def test_us_holiday_row(self):
         # 09-07（Labor Day、NYSE休場）のドル円の足: その日の16:00（NY）を引けとみなす
-        assert fetcher.expected_provisional_kind("JPY=X", "2026-09-07") == "日中"
-        assert fetcher.expected_provisional_kind("SPY", "2026-09-07") is None
+        assert calendar_universe.expected_provisional_kind("JPY=X", "2026-09-07") == "日中"
+        assert calendar_universe.expected_provisional_kind("SPY", "2026-09-07") is None
 
     def test_derived_from_day_boundary_not_a_list(self, monkeypatch):
         # 先物の一覧（FUTURES_SYMBOLS）に加えた銘柄は、日足の区切りの定義から自動的に「清算前」になる
-        assert fetcher.expected_provisional_kind("ZZ=F", "2026-09-29") is None
-        monkeypatch.setattr(fetcher, "FUTURES_SYMBOLS", set(fetcher.FUTURES_SYMBOLS) | {"ZZ=F"})
-        assert fetcher.expected_provisional_kind("ZZ=F", "2026-09-29") == "清算前"
+        assert calendar_universe.expected_provisional_kind("ZZ=F", "2026-09-29") is None
+        monkeypatch.setattr(calendar_universe, "FUTURES_SYMBOLS", set(calendar_universe.FUTURES_SYMBOLS) | {"ZZ=F"})
+        assert calendar_universe.expected_provisional_kind("ZZ=F", "2026-09-29") == "清算前"
 
 
 class TestCollectorMarksKind:

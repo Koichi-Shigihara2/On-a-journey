@@ -15,7 +15,7 @@ import os
 
 import pandas as pd
 
-from common.market_data import fetcher
+from common.market_data import calendar_universe, fetcher
 
 
 class TestValidatePriceRecord:
@@ -180,17 +180,17 @@ class TestAppendDailyRecordDedup:
 class TestNyseCalendar:
     def test_known_fixed_holiday_is_not_trading_day(self):
         # 感謝祭2026-11-26
-        assert fetcher.is_trading_day("2026-11-26") is False
+        assert calendar_universe.is_nyse_trading_day("2026-11-26") is False
 
     def test_regular_weekday_is_trading_day(self):
-        assert fetcher.is_trading_day("2026-08-10") is True
+        assert calendar_universe.is_nyse_trading_day("2026-08-10") is True
 
     def test_observed_july_fourth_holiday_is_not_trading_day(self):
         # 2026-07-04は土曜のため2026-07-03（金）が振替休場になる
-        assert fetcher.is_trading_day("2026-07-03") is False
+        assert calendar_universe.is_nyse_trading_day("2026-07-03") is False
 
     def test_regular_weekend_is_not_trading_day(self):
-        assert fetcher.is_trading_day("2026-08-08") is False
+        assert calendar_universe.is_nyse_trading_day("2026-08-08") is False
 
 
 class TestFetchWeeklyAttributesSchema:

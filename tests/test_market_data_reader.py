@@ -15,7 +15,7 @@ get_calendar・get_index_series・get_sp500_constituents_prices）の正常系�
 
 import os
 
-from common.market_data import fetcher, reader
+from common.market_data import calendar_universe, fetcher, reader
 
 # 合成データの基準日（NYSE通常営業日、月曜）。「今日」の日付に依存させず
 # テストを決定的にするため固定日を使う。
@@ -32,7 +32,7 @@ def _make_price_record(date: str, close: float, warnings=None) -> dict:
 def _seed_no_gap_series(base_dir: str, symbol: str, window: int, anchor: str = _ANCHOR):
     """anchorを最終日とするwindow営業日分の連続データ（欠損なし）を書き込み、
     実際に書き込んだ日付リスト（昇順）を返す。"""
-    dates = reader._expected_trading_days(anchor, window)
+    dates = calendar_universe.nyse_trading_days_ending(anchor, window)
     for i, d in enumerate(dates):
         fetcher._append_daily_record(symbol, _make_price_record(d, 100.0 + i), base_dir=base_dir)
     return dates

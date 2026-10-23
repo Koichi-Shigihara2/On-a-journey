@@ -81,6 +81,10 @@ if not HAS_MACRO_DATA:
     except Exception:
         pass
 
+# 連邦の祝日・営業日（経済指標の公表の予定用。NYSEの休場日ではない）は common/market_data/calendar_universe.py
+# （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23に us_holidays・us_business_days_add から移した。規則は同じ）
+from common.market_data.calendar_universe import previous_us_federal_business_day, us_federal_business_days_add  # noqa: E402
+
 # ─────────────────────────────────────────────────────────────────
 #  カラム定義
 # ─────────────────────────────────────────────────────────────────
@@ -399,70 +403,12 @@ def make_event_id(indicator: str, release_date) -> str:
     return f"{slug}_{date_str}"
 
 # ─────────────────────────────────────────────────────────────────
-#  米国祝日・営業日計算（変更なし）
+#  曜日の計算（連邦の祝日・営業日は calendar_universe.py）
 # ─────────────────────────────────────────────────────────────────
 def nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
     first = date(year, month, 1)
     delta = (weekday - first.weekday()) % 7
     return first + timedelta(days=delta + (n - 1) * 7)
-
-def us_holidays(year: int) -> set:
-    import calendar
-    def last_weekday(y, m, wd):
-        last_day = calendar.monthrange(y, m)[1]
-        last = date(y, m, last_day)
-        delta = (last.weekday() - wd) % 7
-        return last - timedelta(days=delta)
-
-    holidays = set()
-    ny = date(year, 1, 1)
-    if ny.weekday() == 5:   ny = date(year, 12, 31)
-    elif ny.weekday() == 6: ny = date(year, 1, 2)
-    holidays.add(ny)
-    holidays.add(nth_weekday(year, 1, 0, 3))
-    holidays.add(nth_weekday(year, 2, 0, 3))
-    holidays.add(last_weekday(year, 5, 0))
-    jul4 = date(year, 7, 4)
-    if jul4.weekday() == 5:   jul4 = date(year, 7, 3)
-    elif jul4.weekday() == 6: jul4 = date(year, 7, 5)
-    holidays.add(jul4)
-    holidays.add(nth_weekday(year, 9, 0, 1))
-    holidays.add(nth_weekday(year, 10, 0, 2))
-    nov11 = date(year, 11, 11)
-    if nov11.weekday() == 5:   nov11 = date(year, 11, 10)
-    elif nov11.weekday() == 6: nov11 = date(year, 11, 12)
-    holidays.add(nov11)
-    holidays.add(nth_weekday(year, 11, 3, 4))
-    xmas = date(year, 12, 25)
-    if xmas.weekday() == 5:   xmas = date(year, 12, 24)
-    elif xmas.weekday() == 6: xmas = date(year, 12, 26)
-    holidays.add(xmas)
-    return holidays
-
-def nth_us_business_day(year: int, month: int, n: int) -> date:
-    import calendar
-    holidays = us_holidays(year) | us_holidays(year - 1) | us_holidays(year + 1)
-    count = 0
-    d = date(year, month, 1)
-    last_day = calendar.monthrange(year, month)[1]
-    while d <= date(year, month, last_day):
-        if d.weekday() < 5 and d not in holidays:
-            count += 1
-            if count == n:
-                return d
-        d += timedelta(days=1)
-    raise ValueError(f"{year}-{month:02d} の第{n}営業日が見つかりません")
-
-def us_business_days_add(start: date, n: int) -> date:
-    holidays = us_holidays(start.year) | us_holidays(start.year + 1)
-    count = 0
-    d = start + timedelta(days=1)
-    while True:
-        if d.weekday() < 5 and d not in holidays:
-            count += 1
-            if count == n:
-                return d
-        d += timedelta(days=1)
 
 def michigan_consumer_sentiment_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
     today = date.today()
@@ -1199,7 +1145,8 @@ def fill_returns():
         ]:
             if events.at[idx, col_sp]:
                 continue
-            target_n = us_business_days_add(rd, n)
+            # t+N は連邦の祝日を除く営業日で数える（NYSEの取引日ではない。FINDINGS 2026-10-23）
+            target_n = us_federal_business_days_add(rd, n)
             if target_n > today:
                 skip_future += 1
                 continue
@@ -2700,15 +2647,13 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
 # ─────────────────────────────────────────────────────────────────
 def default_target_date(now_utc: datetime) -> date:
     """[[MACRO-PULSE-RUN-DATE-UTC-SHIFT-1]]: 実行の対象日（米国の日付）を起動時刻から決める。
-    米国東部時間の日付を使い、17:00より前なら直前の営業日（土日・us_holidays()を除く）にする。
+    米国東部時間の日付を使い、17:00より前なら直前の営業日（土日・連邦の祝日を除く）にする。
     以前はワークフローが`--date $(date -u +%Y-%m-%d)`を渡しており、22:15 UTCのcronが遅れてUTCの0時を
     またぐと（直近20回すべて）予定日の翌日になっていた。"""
     ny = now_utc.astimezone(_TZ_NY)
     d = ny.date()
     if ny.hour < 17:
-        d = d - timedelta(days=1)
-        while d.weekday() >= 5 or d in us_holidays(d.year):
-            d = d - timedelta(days=1)
+        d = previous_us_federal_business_day(d - timedelta(days=1))
     return d
 
 

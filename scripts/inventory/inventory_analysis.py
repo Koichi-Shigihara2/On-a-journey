@@ -1534,7 +1534,7 @@ def build() -> dict:
     # 6. 規則（当たる場所は段階に関係しないので、同じ式はプロセスで1回だけ探す）
     rules_out = []
     for rule in RULES:
-        rkey = (tuple(rule["patterns"]), rule.get("context"))
+        rkey = (tuple(rule["patterns"]), rule.get("context"), rule.get("exclude"))
         if rkey in _RULE_SITES:
             sites = [dict(x) for x in _RULE_SITES[rkey]]
             files_hit = sorted({x["file"] for x in sites})
@@ -1545,6 +1545,8 @@ def build() -> dict:
         sites = []
         for rel in files:
             if is_test(rel) or not rel.endswith((".py", ".js", ".html")):
+                continue
+            if rule.get("exclude") and re.search(rule["exclude"], rel):   # その規則で数えないファイル（本番外のコード等）
                 continue
             if rule.get("context") and not re.search(rule["context"], texts.get(rel, "")):
                 continue
@@ -2061,7 +2063,7 @@ _KEY_CACHE: Dict[str, dict] = {}       # blob → 要約
 _KEY_CACHE_STATE = {"loaded": False, "dirty": False}
 _BLOBS: Dict[str, str] = {}            # パス → blob（このプロセスで1回）
 _SUMMARY: Dict[str, dict] = {}         # パス → 要約（このプロセスで1回）
-_RULE_SITES: Dict[Tuple[Tuple[str, ...], Optional[str]], List[dict]] = {}   # 規則の式 → 当たる場所（このプロセスで1回）
+_RULE_SITES: Dict[Tuple[Tuple[str, ...], Optional[str], Optional[str]], List[dict]] = {}   # 規則の式 → 当たる場所（このプロセスで1回）
 
 
 def file_blobs() -> Dict[str, str]:

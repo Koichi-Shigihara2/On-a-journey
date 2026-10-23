@@ -425,7 +425,14 @@ _MARKET.update(
             "銘柄ごとのアナリストのイベント（格付け・目標株価の変更）、EPSの実績と予想、推奨の内訳の推移。"
             "3系統とも追記型の履歴（Yahooが返すのは直近の分だけで、過去の分はこのファイルにしか残らない）",
         "common/market_data/_sp500_constituents_cache.json":
-            "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
+            "S&P500の構成銘柄の一覧の控え（正。calendar_universe.sp500_constituents が7日以内なら取り直さずに使う）。"
+            "市場データ層の取得の銘柄の範囲（fetcher）・reader・Market Pulseのブレッス（写しを data/sp500_tickers.json に書く）が使う",
+        "docs/market-monitor/market-pulse/data/nyse_holidays.json":
+            "前年〜翌年のNYSEの休場日（土日以外、XNYS）。Market Pulse（collect_and_send.py）が毎晩 calendar_universe.write_nyse_holidays で書き、"
+            "画面（market-pulse/index.html）が休場の行に使う（2026-10-23に書き手を calendar_universe.py へ移した）",
+        "docs/market-monitor/market-pulse/data/sp500_tickers.json":
+            "S&P500の構成銘柄の写し（正は common/market_data/_sp500_constituents_cache.json）。Market Pulseの breadth_calculator.py が "
+            "calendar_universe.write_sp500_copy で書き、browser_checks/market_pulse_elements.py が読む（2026-10-23に書き手を calendar_universe.py へ移した）",
         "/tmp/daily_status.json": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
     },
     DECISION_DEFAULT="残す（2026-10-22）",
@@ -447,7 +454,7 @@ _MARKET.update(
     OUTSIDE_HINT="market_data", OUTSIDE_PREFIXES=("common/market_data/",),
     READ_PREFIXES=("common/market_data",),
     READ_HINT="market_data", NAME_SHORT="市場データ層",
-    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents"], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
         **{k: "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
            for k in ("current_price_target", "eps_actual", "eps_difference", "eps_estimate",
@@ -456,13 +463,20 @@ _MARKET.update(
         "next_quarter_eps_date": "書き込みをやめた（2026-10-22）。今の attributes のファイルからは次の本番の実行（Market Data Weekly）で消える",
     },
     RULES=[
-        {"id": "trading_day", "name": "取引日（市場の営業日）の決め方",
-         "patterns": [r"def\s+_?\w*(?:trading_days?|business_days?|business_day_add|market_open)\w*\s*\(",
-                      r"function\s+\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\w*\s*\("]},
-        {"id": "provisional_bar", "name": "暫定の足（取引時間中・取得の途中の行）の判定",
-         "patterns": [r"def\s+_?\w*provisional\w*\s*\(", r"function\s+\w*[Pp]rovisional\w*\s*\("]},
-        {"id": "sp500_constituents", "name": "S&P500の構成銘柄の一覧の取り方",
-         "patterns": [r"def\s+_?\w*sp500_(?:tickers|constituents)\w*\s*\("]},
+        # 2026-10-23（[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]）: 3つとも「決める所」に当てる式にした。以前の名前の式は、取引日・暫定の足を
+        # 使うだけの関数（fetcher の find_missing_trading_days・rcc の _check_*・Market Pulse の項目の印付け等）も数えていた。
+        # 本番外のコード（browser_checks・scripts/analysis）は画面の期待値を独立に作るため数えない
+        {"id": "trading_day", "name": "取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）",
+         "patterns": [r"^\s*(?:import|from)\s+pandas_market_calendars\b", r"def\s+_?\w*(?:business_days?|business_day_add)\w*\s*\(",
+                      r"function\s+\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\w*\s*\("],
+         "exclude": r"^(?:browser_checks|scripts/analysis)/"},
+        {"id": "provisional_bar", "name": "暫定の足の判定（日足の確定時刻・暫定かどうか・暫定の種類を決める関数）",
+         "patterns": [r"def\s+_?(?:bar_final_at|is_provisional_\w+|is_flat_\w+_bar|\w*provisional_kind\w*)\s*\(",
+                      r"function\s+\w*[Pp]rovisional\w*\s*\("],
+         "exclude": r"^(?:browser_checks|scripts/analysis)/"},
+        {"id": "sp500_constituents", "name": "S&P500の構成銘柄の一覧の取り方（取得元を直接読む所）",
+         "patterns": [r"List_of_S%26P_500_companies", r"s-and-p-500-companies"],
+         "exclude": r"^(?:browser_checks|scripts/analysis)/"},
     ],
 
     IO_HELPER_BY_CALLER=True,
@@ -741,7 +755,7 @@ _MACRO_PULSE.update(
     OUTSIDE_HINT="macro", OUTSIDE_PREFIXES=("docs/market-monitor/macro-pulse/", "src/market/macro_pulse/"),
     READ_PREFIXES=("docs/market-monitor/macro-pulse", "src/market/macro_pulse"),
     READ_HINT="macro", NAME_SHORT="MACRO PULSE",
-    KNOWN_DUPLICATE_RULES=["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"],
+    KNOWN_DUPLICATE_RULES=["recession_score", "step_signal", "fred_api", "grok_endpoint"],
     TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
@@ -778,12 +792,6 @@ _MARKET_PULSE.update(
             "market_data.json の指標を平らにした1日1行（指標_value 等）。**AIの出力（Grok）**: summary 列（judgment 列は summary から取り出す）",
         "docs/market-monitor/market-pulse/data/breadth_data.json":
             "S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す",
-        "docs/market-monitor/market-pulse/data/sp500_tickers.json":
-            "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さない）。**市場データ層の common/market_data/_sp500_constituents_cache.json と同じ情報の別の写し**"
-            "（取り方も同じ。2026-10-23 は503銘柄で一致。fetcher.py の get_sp500_constituents は意図的な独立の実装と書く）",
-        "docs/market-monitor/market-pulse/data/nyse_holidays.json":
-            "前年〜翌年のNYSEの休場日（pandas_market_calendars から毎回書く）。画面の休場の行の表示に使う。"
-            "**休場日の情報は市場データ層（fetcher.py・daily_guard.py が pandas_market_calendars を直接）と MACRO PULSE（05_main.py の us_holidays、手で書いた祝日の規則）にも別にある**",
         "src/market/market_pulse/02_market_rss.txt":
             "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
         "メール（GMAIL_PASSWORD・GMAIL_USER）": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",
@@ -802,7 +810,7 @@ _MARKET_PULSE.update(
     OUTSIDE_HINT="market-pulse", OUTSIDE_PREFIXES=("docs/market-monitor/market-pulse/", "src/market/market_pulse/"),
     READ_PREFIXES=("docs/market-monitor/market-pulse", "src/market/market_pulse"),
     READ_HINT="market-pulse", NAME_SHORT="Market Pulse",
-    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"],
+    KNOWN_DUPLICATE_RULES=["fred_api", "grok_endpoint"],
     TITLE="Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/market-pulse",),
     SCREEN_SECTION_DECISIONS=[],
@@ -822,7 +830,7 @@ _MARKET_PULSE.update(
     },
     RULES=_TANUKI["RULES"] + _MARKET["RULES"] + _MACRO_RULES + [
         {"id": "market_holidays", "name": "休場日（祝日）の一覧の作り方",
-         "patterns": [r"def\s+_?\w*holidays\s*\("]},
+         "patterns": [r"def\s+_?\w*holidays\s*\("], "exclude": r"^(?:browser_checks|scripts/analysis)/"},
     ],
 
     HTML_COPIES=[],

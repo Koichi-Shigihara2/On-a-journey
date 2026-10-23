@@ -412,13 +412,13 @@ def test_market_data_layer_settings():
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["IO_HELPER_BY_CALLER"]] == ["market_data", "macro_data"]
     for flag in ("RESOLVE_STRICT", "FULL_SCAN", "SCREEN_SECTIONS", "WORKFLOW_SUMMARY", "NONPROD_SCAN", "DATA_UNREAD_KEYS", "CSV_COLUMNS", "JS_ID_HELPERS"):
         assert not any(flag in inv.LAYERS[k] for k in inv.LAYERS) and not hasattr(inv, flag)
-    assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
+    assert md["KNOWN_DUPLICATE_RULES"] == []   # 2026-10-23 [[MARKET-CALENDAR-UNIVERSE-UNIFY-1]] で取引日・暫定の足・S&P500を1か所に
 
 
 def test_market_data_check_known_rules_warn_and_new_unread_key_warns():
     """市場データ層の CHECK-INV（2026-10-22）: 既知の規則の二重3つは WARN、それ以外の新しい二重は NG。
     誰も読まないキー（data_keys）は新しくできたものだけ WARN-INV-6。"""
-    known = inv.LAYERS["market_data"]["KNOWN_DUPLICATE_RULES"]
+    known = ["trading_day"]   # 仕組みの確かめ（市場データ層の既知の二重は2026-10-23に無くなった）
     saved = _inventory()
     saved["rules"] = [_rule("trading_day", ["common/market_data/fetcher.py", "src/market/market_pulse/breadth_calculator.py"])]
     saved["data_keys"] = {"unread_keys": [{"key": "eps_actual", "sources": ["common/market_data/analyst_history/{T}.json"]}],
@@ -519,7 +519,7 @@ def test_macro_layers_settings():
     assert not (mp["IO_HELPER_BY_CALLER"] or mp["EXTRA_OUTPUT_DIRS"])
     assert "macro_data" in inv.CHECK_LAYERS and "macro_pulse" in inv.CHECK_LAYERS
     assert md["KNOWN_DUPLICATE_RULES"] == ["fred_api", "atomic_write_json"]
-    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"]
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["recession_score", "step_signal", "fred_api", "grok_endpoint"]
     # 本番外のコードの注記は MACRO PULSE の 05_audit.py だけ（Market Pulse は段階2で4つとも消して空）
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]
 
@@ -547,7 +547,7 @@ def test_market_pulse_layer_settings():
     assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
     assert mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",) and not mp["IO_HELPER_BY_CALLER"]
     assert inv.CHECK_LAYERS[-2] == "market_pulse"
-    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"]
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["fred_api", "grok_endpoint"]
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
     assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 50 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]

@@ -2139,6 +2139,15 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
   定期cronには組み込まない一過性ツール、CLIの`--backfill`/`--start`
   フラグ経由で手動実行。`start=`指定時は`period`より優先、hypecore.py
   切替の前提作業で`start="2021-01-01"`の5.5年分バックフィルに使用）。
+- `common/market_data/calendar_universe.py`（2026-10-23、`[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]`）: 市場の暦と銘柄の集合の置き場。
+  意味ごとの関数をここだけに置き、読み手（fetcher.py・reader.py・daily_guard.py・report_consistency_check.py・MACRO PULSEの05_main.py・
+  Market Pulseのbreadth_calculator.py・collect_and_send.py・futures_snapshot.py・sector_rotation.py・market_calendar.py・TANUKIのpipeline.py）は
+  ここから呼ぶ（pandas_market_calendarsを直接呼ばない）。
+  NYSEの取引日・休場日・取引時間（XNYS。2000〜2027年でNYSEの暦と同じ）・銘柄ごとの取引日（^N225はJPX、先物はCME_TradeDate、JPY=Xは土日を除く）・
+  日足の確定時刻と暫定の足の判定（`bar_final_at`・`is_provisional_bar`・`expected_provisional_kind`、先物の一覧`FUTURES_SYMBOLS`）・
+  連邦の祝日と営業日（`us_federal_holidays`等。経済指標の公表の予定用で、NYSEの休場日とは別の概念: コロンブス・デー・退役軍人の日を含み、
+  聖金曜日・ジューンティーンスを含まない）・S&P500の構成銘柄（`_sp500_constituents_cache.json`が正。Market Pulseの
+  `data/sp500_tickers.json`はbrowser_checksが読む写しで、`write_sp500_copy`が書く）・Market Pulseの`data/nyse_holidays.json`（画面の休場の行）の書き手
 - `common/market_data/reader.py`: 読み取り専用API。
   `get_latest_price()`・`get_price_series()`・`get_price_series_as_of(as_of_date)`
   （`get_price_series()`の「終点＝daily/の最新保存日」を任意の過去日に
@@ -2314,6 +2323,7 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
 | contracts.py（FinancialEntry必須キー変更等） | quarterly.py::save_raw_table()・normalizer.py::save_normalized()の検証が全銘柄で走るため、変更後は全105銘柄のupdate.pyを実行しContractViolationが新規発生しないか確認 → report_consistency_check.py |
 | data_fetcher.py（TTMReader・_select_fcf_source） | 全銘柄fcf_list_raw/fcf_5yr_avgに影響するため全銘柄pipeline.py再実行 → report_consistency_check.py |
 | common/market_data/fetcher.py（daily/attributes/analyst_history各層のスキーマ・取得ロジック） | スキーマ変更時は影響銘柄でfetch_daily_prices/fetch_weekly_attributes/fetch_analyst_eventsを再実行しJSON構造を更新 → 本番消費者8ファイル（beta_fetcher.py/data_fetcher.py/valuation_fetcher.py/pipeline.py/collect.py/collect_and_send.py/breadth_calculator.py/hypecore.py）のpipeline.py再実行で反映確認。診断ツール2（audit.py/score_verifier.py）・周辺ツール2（extract_key_facts.py/backfill_tech_pulse.py）を含め全12ファイル切替済み |
+| common/market_data/calendar_universe.py（取引日・休場日・日足の確定時刻と暫定の足・連邦の祝日・S&P500の構成銘柄） | 変えたら読み手（市場データ層のdaily・TANUKIのRfの古さ・Market Pulseのブレッス・8段階の結論・休場の行・MACRO PULSEの公表日の予定・rccのCHECK-57/62）を前後で比べる。NYSEとの違い・連邦の祝日との違いは`[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]`の表（BACKLOG_DONE.md） |
 | common/market_data/reader.py（get_latest_price/get_attributes/get_ma_deviation/get_earnings_history/get_recommendations_history/get_price_on_or_after/get_price_series_as_of等の読み取りAPI） | 戻り値の意味・キーを変更する場合は本番消費者8ファイル＋診断ツール2ファイル（score_verifier.py・audit.py）＋周辺ツール2ファイル（extract_key_facts.py・backfill_tech_pulse.py）の全12ファイルへ影響するため、変更前に全消費者のgrep洗い出し必須。get_ma_deviation()のwindow引数の意味変更はma200代数逆算（data_fetcher.py）に直結するため特に注意 |
 | extract_key_facts.py | EPS quarterly.json 再生成 → report_consistency_check.py（CHECK-17/19確認）|
 | core_calculator.py / calculator/dcf.py | 影響銘柄のpipeline.py再実行 |

@@ -778,25 +778,13 @@ def _aligned_pair_closes(sym_a, sym_b, days=10):
     return (d_prev, sa[d_prev], sb[d_prev]), (d_now, sa[d_now], sb[d_now])
 
 
-def provisional_kind(symbol, record):
-    """daily/の行が暫定（日足の確定前に保存、`_provisional`、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）なら、
-    設計上の暫定の種類（"清算前"・"日中"）か、想定外の暫定（None）かを返す。暫定でなければFalse。
-    区別は銘柄ごとの日足の区切り（fetcher.expected_provisional_kind）から判定する。"""
-    if not record.get("_provisional"):
-        return False
-    try:
-        from common.market_data.fetcher import expected_provisional_kind
-        return expected_provisional_kind(symbol, record["date"])
-    except Exception as e:
-        print(f"[WARN] 暫定の種類の判定失敗（{symbol}）: {e}")
-        return None
-
-
 def _mark_provisional_item(item, record, symbol):
     """暫定の値に`provisional: True`を付ける。夜の取得の時点で構造上必ず暫定になる値（先物の清算前・為替やドル指数の日の区切り前）は
     `provisional_kind`（"清算前"・"日中"）も付け、data_qualityをpartialにしない。それ以外の暫定（本来は確定しているはずの値）は
     `provisional_kind`を付けず、data_qualityをpartialにする（指示書㉕ STEP B、清算値の実測を受けた修正）。"""
-    kind = provisional_kind(symbol, record)
+    # 暫定かどうか・その種類は calendar_universe.record_provisional_kind（日足の区切りの定義、[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]）
+    from common.market_data.calendar_universe import record_provisional_kind
+    kind = record_provisional_kind(symbol, record)
     if kind is False:
         return item
     item["provisional"] = True
@@ -1462,12 +1450,8 @@ def check_data_freshness(now_utc=None, symbols=("^GSPC", "SPY")):
     out = {"checked_at": now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"), "expected_close_date": None,
            "daily_latest": {}, "stale": None}
     try:
-        import pandas_market_calendars as _mcal
-        cal = _mcal.get_calendar("NYSE")
-        sched = cal.schedule(start_date=(now_utc - timedelta(days=10)).date(), end_date=now_utc.date())
-        closed = sched[sched["market_close"] <= now_utc]
-        if len(closed):
-            out["expected_close_date"] = closed.index[-1].strftime("%Y-%m-%d")
+        from common.market_data.calendar_universe import nyse_latest_closed_day
+        out["expected_close_date"] = nyse_latest_closed_day(now_utc, lookback_days=10)
         if HAS_MARKET_DATA:
             from common.market_data.reader import get_latest_price as _md_get_latest_price
             for s in symbols:
@@ -1629,32 +1613,8 @@ def sentiment_signal(score, history, window_start):
 
 def signal_window_start(now_utc, n=20):
     """now_utc時点の直近n営業日（NYSE）の初日。"""
-    import pandas_market_calendars as _mcal
-    days = _mcal.get_calendar("NYSE").valid_days(start_date=(now_utc - timedelta(days=n * 2 + 15)).date().isoformat(),
-                                                 end_date=now_utc.date().isoformat())
-    return days[-n].strftime("%Y-%m-%d")
-
-
-def write_nyse_holidays(path=None, now_utc=None):
-    """MP-21（指示書㉓）: 資金フローの直近7日グリッドで米国の祝日にも「休場」行を入れるため、
-    前年〜翌年のNYSEの休場日（土日以外）をdata/nyse_holidays.jsonに書く。"""
-    path = path or os.path.join(DATA_DIR, "nyse_holidays.json")
-    now_utc = now_utc or datetime.now(timezone.utc)
-    try:
-        import pandas as _pd
-        import pandas_market_calendars as _mcal
-        y = now_utc.year
-        start, end = f"{y - 1}-01-01", f"{y + 1}-12-31"
-        valid = set(d.strftime("%Y-%m-%d") for d in _mcal.get_calendar("NYSE").valid_days(start_date=start, end_date=end))
-        hol = [d.strftime("%Y-%m-%d") for d in _pd.bdate_range(start, end) if d.strftime("%Y-%m-%d") not in valid]
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({"source": "pandas_market_calendars NYSE", "from": start, "to": end, "holidays": hol},
-                      f, ensure_ascii=False, indent=1)
-        return hol
-    except Exception as e:
-        print(f"[WARN] NYSE休場日の書き出しに失敗: {e}")
-        return None
+    from common.market_data.calendar_universe import nyse_trading_days_ending
+    return nyse_trading_days_ending(now_utc.date(), n)[0]
 
 
 def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear_greed_data=None, tech_pulse_data=None, asset_flow_data=None, take_profit_checklist=None, buy_checklist=None, data_freshness=None, stage_result=None, haiku=None, ai_facts=None, hindenburg=None, implb=None, implc=None):
@@ -1973,7 +1933,8 @@ if __name__ == "__main__":
     print(f"[INFO] 天気: {stage_result['weather']['label']} / data_quality: {stage_result['data_quality']['status']}")
     for _k, _v in stage_result["stages"].items():
         print(f"  段階{_k}: {_v.get('line')}")
-    write_nyse_holidays(now_utc=_now_utc)
+    from common.market_data.calendar_universe import write_nyse_holidays   # MP-21: 画面の休場の行（data/nyse_holidays.json）
+    write_nyse_holidays(os.path.join(DATA_DIR, "nyse_holidays.json"), now_utc=_now_utc)
 
     # MP-28（指示書㉓）: AIの入力は確定した事実のJSONだけ（ニュースは渡さない）
     ai_facts = build_ai_facts(stage_result, structured_data, sentiment_data, fear_greed_data, tech_pulse_data,

@@ -32,28 +32,23 @@ src/value/tanuki_valuation/beta_fetcher.py がcommon.market_data.reader
 順次対応する。
 """
 
-import io
 import json
 import math
 import os
 import sys
 import tempfile
 import time
-from datetime import datetime, time as dtime, timedelta, timezone
-from zoneinfo import ZoneInfo
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-import requests
 import yaml
 import yfinance as yf
-import pandas_market_calendars as mcal
 
 # ── パス設定 ──────────────────────────────────────────────
 MARKET_DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(os.path.dirname(MARKET_DATA_DIR))  # common/market_data -> common -> リポジトリルート
 _MONITOR_TICKERS_YAML = os.path.join(_REPO_ROOT, "config", "monitor_tickers.yaml")
-_SP500_CACHE_FILENAME = "_sp500_constituents_cache.json"
 
 # common.yfinance_utils.safe_yf_ticker()（リトライ2回・待機3秒）経由で
 # .info を呼ぶための準備（src/value/tanuki_valuation/beta_fetcher.pyと同型
@@ -212,28 +207,12 @@ def _load_json(path: str, default: Any) -> Any:
 
 # ── NYSE営業日カレンダー（BACKLOG確定事項1） ──────────────
 
-_NYSE_CALENDAR = None
-
-
-def get_nyse_calendar():
-    """pandas_market_calendarsのNYSEカレンダーを返す（プロセス内でキャッシュ）。"""
-    global _NYSE_CALENDAR
-    if _NYSE_CALENDAR is None:
-        _NYSE_CALENDAR = mcal.get_calendar("NYSE")
-    return _NYSE_CALENDAR
-
-
-def is_trading_day(day: Any, calendar=None) -> bool:
-    """指定日がNYSE営業日かを判定する。
-
-    day: date/datetime または 'YYYY-MM-DD' 文字列。
-    層またぎ再計算の禁止（BACKLOG確定事項4）によりreader.py側の連続性
-    保証（get_price_series()）とは別の軽量な単日判定ユーティリティ。
-    """
-    cal = calendar or get_nyse_calendar()
-    day_str = day.isoformat() if hasattr(day, "isoformat") else str(day)
-    valid_days = cal.valid_days(start_date=day_str, end_date=day_str)
-    return len(valid_days) > 0
+# 暦（NYSE・銘柄ごとの取引日）・日足の確定時刻と暫定の足・S&P500の構成銘柄は common/market_data/calendar_universe.py に置く
+# （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23）。ここでは読み込んで使う
+from common.market_data.calendar_universe import (  # noqa: E402
+    FUTURES_SYMBOLS, bar_final_at, exchange_trading_days, is_flat_futures_bar, is_provisional_bar, is_symbol_trading_day,
+    sp500_constituents,
+)
 
 
 # ── 保存前検証（BACKLOG確定事項5） ────────────────────────
@@ -514,100 +493,15 @@ RESET_WINDOW_MIN_SYMBOLS = 20
 
 
 # [[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]（2026-09-30、指示書㉔の追加確認）: Yahooの日足が確定する前に保存された行
-# （取引時間中・清算前の値）を「暫定」として印を付け、確定した日足が届いたら置き換える。
-# 日足の確定時刻（Yahooの日足の区切り。history_metadataのexchangeTimezoneName・currentTradingPeriodで確認）:
-#   - 米国株・ETF・米国指数: NYSEの引け（短縮取引日を含む）。^VIXは15:15 CT（引け＋15分）、^TNXは14:00 CT（引け−1時間）
-#   - ^N225: 15:30 JST。ただしYahooは引け後も翌朝まで終値の無い足（出来高0）を返し、取引時間中の足も出来高0のため、
-#     出来高が0の足は確定とみなさない
-#   - JPY=X: 翌日0:00 Europe/London（Yahooの為替の日足はロンドンの暦日）
-#   - CL=F・GC=F: 翌日0:00 America/New_York（Yahooの先物の日足はニューヨークの暦日。確定した終値は清算値）
-_TZ_NY, _TZ_LDN, _TZ_TYO = ZoneInfo("America/New_York"), ZoneInfo("Europe/London"), ZoneInfo("Asia/Tokyo")
-_NYSE_CLOSE_CACHE: Dict[str, Optional[datetime]] = {}
-# 先物の清算値がYahooの日足に入るまでの遅れ。実測（2026-09-29〜30）: 09-28の足は09-29 01:06 UTCではまだ取引中の値、
-# 09-29 22:26 UTCには清算値。09-29の足は09-30 00:15 UTCでもまだ取引中の値。確定の判定は安全側に、NYの翌日0時から24時間後とする
-# （それまでは暫定として毎晩の取得で値を更新し、24時間後の取得で確定する）
-FUTURES_FINAL_DELAY = timedelta(hours=24)
-
-
-def _nyse_close_utc(day: str) -> Optional[datetime]:
-    if day not in _NYSE_CLOSE_CACHE:
-        s = get_nyse_calendar().schedule(start_date=day, end_date=day)
-        _NYSE_CLOSE_CACHE[day] = s["market_close"].iloc[0].to_pydatetime() if len(s) else None
-    return _NYSE_CLOSE_CACHE[day]
-
-
-def bar_final_at(symbol: str, day: str) -> Optional[datetime]:
-    """Yahooの日足（symbol・day）が確定する時刻（UTC）。取引日でない場合はNone。"""
-    d = datetime.strptime(day, "%Y-%m-%d").date()
-    if symbol == "JPY=X":
-        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_LDN).astimezone(timezone.utc)
-    if symbol in FUTURES_SYMBOLS:
-        # 先物（CL=F・GC=F、実装CでES=F・NQ=F・NIY=Fを追加）: Yahooの日足はニューヨークの暦日、確定した終値は清算値
-        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc) + FUTURES_FINAL_DELAY
-    if symbol == "DX-Y.NYB":
-        # ドル指数（ICEの先物に基づく指数）: Yahooの日足はニューヨークの暦日（実装B、指示書㉖）
-        return datetime.combine(d + timedelta(days=1), dtime(0, 0), _TZ_NY).astimezone(timezone.utc)
-    if symbol == "^N225":
-        return datetime.combine(d, dtime(15, 30), _TZ_TYO).astimezone(timezone.utc)
-    close = _nyse_close_utc(day)
-    if close is None:
-        return None
-    if symbol == "^VIX":
-        return close + timedelta(minutes=15)
-    if symbol == "^TNX":
-        return close - timedelta(hours=1)
-    return close
-
-
-def is_flat_futures_bar(symbol: str, bar: Dict[str, Any]) -> bool:
-    """先物のO=H=L=Cかつ出来高0の足（2026-10-11、Koichi判断）。暫定の行を確定にする根拠として扱わない。
-    Yahooの直近2年の日足ではNIY=Fだけに出る（501本中279本）。取引中の値（出来高つき）で保存した行が、後でこの足に変わる
-    （NIY=Fの09-30: 66995・出来高5,911 → 66810・出来高0）。出来高が常に0の銘柄（JPY=X・DX-Y.NYB・^TNX等）は対象外。"""
-    if symbol not in FUTURES_SYMBOLS or bar.get("volume"):
-        return False
-    o, h, l, c = (bar.get(k) for k in ("open", "high", "low", "close"))
-    return c is not None and o == h == l == c
-
-
-def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:
-    """確定前の日足か（確定時刻より前に取得した足、^N225の出来高0の足、先物の平らな足）。"""
-    now = now or datetime.now(timezone.utc)
-    if symbol == "^N225" and not bar.get("volume"):
-        return True
-    if is_flat_futures_bar(symbol, bar):
-        return True
-    final = bar_final_at(symbol, bar["date"])
-    return final is not None and now < final
-
-
-def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:
-    """夜の取得の時点で、構造上まだ確定していない日足か（設計上の暫定）。その種類を返す。
-
-    夜の取得はNYSEの引け＋CLOSE_WAIT（common/market_data/daily_guard.py）以降に行う。日足の確定時刻（bar_final_at）が
-    それより後の銘柄は、夜の取得で保存した当日の行が必ず暫定になる（先物の清算値・為替やドル指数の日の区切り）。
-      - "清算前": 先物（FUTURES_SYMBOLS。確定値は清算値）
-      - "日中": それ以外（JPY=X〈ロンドンの暦日〉・DX-Y.NYB〈ニューヨークの暦日〉など、日の区切りがNYSEの引けより後）
-      - None: 夜の取得の時点で確定しているはずの足（米国株・ETF・指数・^N225等）。これが暫定なら想定外
-    NYSEの休場日の足（為替等）は、その日の16:00（ニューヨーク時間）を引けとみなす。
-    """
-    from common.market_data.daily_guard import CLOSE_WAIT
-    final = bar_final_at(symbol, day)
-    if final is None:
-        return None
-    close = _nyse_close_utc(day)
-    if close is None:
-        d = datetime.strptime(day, "%Y-%m-%d").date()
-        close = datetime.combine(d, dtime(16, 0), _TZ_NY).astimezone(timezone.utc)
-    if final <= close + CLOSE_WAIT:
-        return None
-    return "清算前" if symbol in FUTURES_SYMBOLS else "日中"
+# （取引時間中・清算前の値）を「暫定」として印を付け、確定した日足が届いたら置き換える。日足の確定時刻（bar_final_at）と
+# 暫定の判定（is_provisional_bar・is_flat_futures_bar）は calendar_universe.py（2026-10-23に移した）
 
 
 # [[MARKETDATA-FUTURES-ROLL-1]]（2026-09-30）: 先物の連続シンボル（CL=F・GC=F）は限月の乗り換え日に前日比が不連続になる
 # （2026-09-18: 夕方の取得で10月限→11月限に切り替わり、前日比−5.52%〈同じ11月限では−1.18%〉）。
 # 取得時にYahooのunderlyingSymbol（例: CLX26.NYM）を行に記録し、その限月自身の終値・前営業日の終値も記録する
 # （contract・contract_close・contract_prev_date・contract_prev_close）。Market Pulseは同じ限月どうしで前日比を計算する。
-FUTURES_SYMBOLS = {"CL=F", "GC=F", "ES=F", "NQ=F", "NIY=F"}
+# FUTURES_SYMBOLS（先物の連続シンボル）は calendar_universe.py（日足の確定時刻・取引日の暦が先物かどうかで決まるため）
 
 
 def _futures_contract(symbol: str) -> Optional[str]:
@@ -712,23 +606,7 @@ def _retry_missing_closes(history: Dict[str, List[Dict[str, Any]]], attempts: Op
 PROVISIONAL_REFETCH_MAX_DAYS = 90   # 10-11時点の最古の暫定の行（JPY=Xの08-15、57日前）を含み、bで7日後には印が変わるため通常は数日で足りる
 NO_BAR_MARK_DAYS = 7
 NO_BAR_MARK = "_no_yahoo_bar"
-# 取引日の情報源（推測で作らない）: 先物はpandas_market_calendarsのCME_TradeDate（清算のある取引日。CMEGlobex_*はLabor Dayの短縮取引を
-# 取引日に含むが、清算は無くYahooの日足も無い）、^N225はJPX（find_missing_trading_daysと同じ）。JPY=Xは土日を除く
-_TRADING_DAY_CALENDARS = {"^N225": "JPX", **{s: "CME_TradeDate" for s in FUTURES_SYMBOLS}}
-_WEEKDAY_ONLY_SYMBOLS = {"JPY=X"}
-_TRADING_DAY_SETS: Dict[str, set] = {}
-
-
-def is_symbol_trading_day(symbol: str, day: str) -> bool:
-    """その日がその銘柄の取引日か（c）。対象はJPY=X・先物・^N225で、それ以外の銘柄は判定しない（True）。"""
-    if symbol in _WEEKDAY_ONLY_SYMBOLS:
-        return datetime.strptime(day, "%Y-%m-%d").weekday() < 5
-    name = _TRADING_DAY_CALENDARS.get(symbol)
-    if name is None:
-        return True
-    if name not in _TRADING_DAY_SETS:
-        _TRADING_DAY_SETS[name] = set(_calendar_trading_days(name))
-    return day in _TRADING_DAY_SETS[name]
+# 銘柄ごとの取引日（c）は calendar_universe.is_symbol_trading_day（^N225はJPX、先物はCME_TradeDate、JPY=Xは土日を除く）
 
 
 def _stale_provisional_dates(symbol: str, base_dir: str, now: datetime) -> List[str]:
@@ -1022,21 +900,8 @@ def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> Li
     if not have:
         return []
     lo, hi = min(have), max(have)
-    days = _calendar_trading_days(_NON_NYSE_CALENDARS.get(symbol, "NYSE"))
+    days = exchange_trading_days(_NON_NYSE_CALENDARS.get(symbol, "NYSE"))
     return [d for d in days if lo <= d <= hi and d not in have]
-
-
-_TRADING_DAYS_CACHE: Dict[str, List[str]] = {}
-
-
-def _calendar_trading_days(name: str) -> List[str]:
-    """取引所カレンダーの2000-01-01〜本日+10日の取引日（'YYYY-MM-DD'、昇順）。プロセス内でキャッシュ
-    （daily/全銘柄を走査するCHECK-57で銘柄ごとにカレンダーを計算すると遅いため）。"""
-    if name not in _TRADING_DAYS_CACHE:
-        end = (datetime.now(timezone.utc) + timedelta(days=10)).strftime("%Y-%m-%d")
-        _TRADING_DAYS_CACHE[name] = [d.strftime("%Y-%m-%d")
-                                     for d in mcal.get_calendar(name).valid_days(start_date="2000-01-01", end_date=end)]
-    return _TRADING_DAYS_CACHE[name]
 
 
 def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:
@@ -1440,79 +1305,13 @@ def get_monitor_tickers(config_path: Optional[str] = None) -> List[str]:
         return []
 
 
-def get_sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) -> List[str]:
-    """S&P500構成銘柄リストを取得する（Wikipedia→GitHub CSVフォールバック、
-    {max_age_days}日キャッシュ）。
-
-    src/market/market_pulse/breadth_calculator.py::get_sp500_tickers() と
-    同じ取得ロジックだが、market_dataは一次データ層として他レイヤーの
-    consumerスクリプトに依存すべきではないため独立実装として保持する
-    （意図的な重複であり、DRY違反の見落としではない）。
-    """
-    base = _resolve_base_dir(base_dir)
-    cache_path = os.path.join(base, _SP500_CACHE_FILENAME)
-
-    if os.path.exists(cache_path):
-        try:
-            with open(cache_path, "r", encoding="utf-8") as f:
-                cache = json.load(f)
-            fetched_at = datetime.fromisoformat(cache["fetched_at"])
-            if fetched_at.tzinfo is None:
-                fetched_at = fetched_at.replace(tzinfo=timezone.utc)
-            age_days = (datetime.now(timezone.utc) - fetched_at).days
-            if age_days < max_age_days and cache.get("tickers"):
-                return cache["tickers"]
-        except Exception:
-            pass
-
-    tickers: Optional[List[str]] = None
-    try:
-        headers = {"User-Agent": "Mozilla/5.0 (compatible; MarketDataFetcher/1.0)"}
-        resp = requests.get(
-            "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-            headers=headers, timeout=30,
-        )
-        resp.raise_for_status()
-        tables = pd.read_html(io.StringIO(resp.text))
-        df = tables[0]
-        tickers = [t.strip() for t in df["Symbol"].str.replace(".", "-", regex=False).tolist() if t.strip()]
-    except Exception as e:
-        print(f"   [WARN] S&P500構成銘柄のWikipedia取得失敗: {e}")
-
-    if not tickers:
-        try:
-            csv_url = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
-            resp = requests.get(csv_url, timeout=30)
-            resp.raise_for_status()
-            df = pd.read_csv(io.StringIO(resp.text))
-            tickers = [t.strip() for t in df["Symbol"].str.replace(".", "-", regex=False).tolist() if t.strip()]
-        except Exception as e:
-            print(f"   [WARN] S&P500構成銘柄のGitHub CSV取得失敗: {e}")
-
-    if tickers and len(tickers) >= 400:
-        _atomic_write_json(cache_path, {
-            "fetched_at": _now_iso(), "count": len(tickers), "tickers": tickers,
-        })
-        return tickers
-
-    # 両ソースとも失敗した場合、期限切れキャッシュがあればそれを返す
-    # （完全な空リストで日次バッチを回すよりは安全）
-    if os.path.exists(cache_path):
-        try:
-            with open(cache_path, "r", encoding="utf-8") as f:
-                return json.load(f).get("tickers", [])
-        except Exception:
-            pass
-    return []
-
-
 def get_default_symbol_universe(base_dir: Optional[str] = None) -> List[str]:
     """S&P500構成銘柄＋監視銘柄＋指数/ETF/商品の和集合を返す
     （BACKLOG [[MARKETDATA-LAYER-CONSTRUCTION-1]]設計。fetch_daily_prices()の
     本番バッチ実行が対象とすべき銘柄ユニバース）。
     """
     universe: List[str] = []
-    universe.extend(get_sp500_constituents(base_dir=base_dir))
+    universe.extend(sp500_constituents(base_dir=base_dir))
     universe.extend(get_monitor_tickers())
     universe.extend(INDEX_ETF_COMMODITY_SYMBOLS)
     return _dedupe_symbols(universe)

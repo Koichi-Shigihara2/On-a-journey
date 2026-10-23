@@ -7,17 +7,16 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`src/market/market_pulse/`・`docs/market-monitor/market-pulse/index.html`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-23、Koichiさんの判断）。手で動かすスクリプト4つを消し、出力はすべて残す。sp500_tickers.json・nyse_holidays.json は市場データ層・MACRO PULSE との二重で、R-A の終わりの見直し（論点⑤）で扱う。誰も読まないキー48は残す（下の注記）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 7（ファイル 6・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 4／規則の二重 18（検出式 19種のうち。Market Pulseのファイルを含むもの 6）
+**件数**: 出力 5（ファイル 4・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 2／規則の二重 14（検出式 19種のうち。Market Pulseのファイルを含むもの 2）
 
-**画面の項目**: 画面が読むキー 152（この段階の書き手あり 151・ほかの書き手あり 0・画面の中で作る値 0・**書き手なし 1**）／書き手があるのに誰も読まないキー **50**
+**画面の項目**: 画面が読むキー 152（この段階の書き手あり 150・ほかの書き手あり 1・画面の中で作る値 0・**書き手なし 1**）／書き手があるのに誰も読まないキー **50**
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 2件／解決できた読み込み 22件＋ファイル名で当たった行 18件（4.8%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 1件／解決できた読み込み 20件＋ファイル名で当たった行 14件（2.9%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
 フォルダを決めきれない行（ファイル名で当たった行）:
 - `scripts/analysis/market_pulse_redesign.py` 行 58（`docs/market-monitor/market-pulse/data/market_data.json`）: `md = json.loads(subprocess.run(["git", "-C", REPO, "show", f"{DATA_REV}:docs/market-monitor/market-pulse/data/market_dat`
-- `scripts/analysis/market_pulse_redesign.py` 行 60（`docs/market-monitor/market-pulse/data/sp500_tickers.json`）: `sp500 = json.loads(subprocess.run(["git", "-C", REPO, "show", f"{DATA_REV}:docs/market-monitor/market-pulse/data/sp500_t`
 
 ## 消したもの（段階2、2026-10-23）
 
@@ -31,8 +30,6 @@
 | 1件 | `src/market/market_pulse/02_market_rss.txt`<br>（1ファイル） | 市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む |  | 1 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/breadth_data.json`<br>（1ファイル） | S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す | `breadth_calculator.py:save_breadth` | 4 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | AS-IS-334 | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/market_data.json`<br>（1ファイル） | 1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures | `collect_and_send.py:save_data_to_json_and_csv` | 8・テスト3 | market-monitor/market-pulse/index.html（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・Market Pulse（市況の判定・8段階の結論・天気）・Market Pulseの画面 | AS-IS-300・AS-IS-388・AS-IS-390 | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/nyse_holidays.json`<br>（1ファイル） | 前年〜翌年のNYSEの休場日（pandas_market_calendars から毎回書く）。画面の休場の行の表示に使う。**休場日の情報は市場データ層（fetcher.py・daily_guard.py が pandas_market_calendars を直接）と MACRO PULSE（05_main.py の us_holidays、手で書いた祝日の規則）にも別にある** | `collect_and_send.py:write_nyse_holidays` | 3 | market-monitor/market-pulse/index.html（直接） | 効く: Market Pulseの画面 | — | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/sp500_tickers.json`<br>（1ファイル） | S&P500の構成銘柄の一覧の控え（7日以内なら取り直さない）。**市場データ層の common/market_data/_sp500_constituents_cache.json と同じ情報の別の写し**（取り方も同じ。2026-10-23 は503銘柄で一致。fetcher.py の get_sp500_constituents は意図的な独立の実装と書く） | `breadth_calculator.py:get_sp500_tickers` | 3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord・メール）
 
@@ -50,7 +47,7 @@
 
 ### `src/market/market_pulse/02_market_rss.txt`（1件）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 19・1067
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 19・1055
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -58,8 +55,8 @@
 - 起動元: .github/workflows/Market_Pulse_Update.yml
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 71・175・366・409・458（経由 `browser_checks/check_dependency_map.py::expected_hindenburg_active`）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 44
-- Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 33
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 28・221・368・1877・1936（経由 `src/market/market_pulse/collect_and_send.py::_load_latest_breadth`）
+- Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 29
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 28・221・368・1837・1896（経由 `src/market/market_pulse/collect_and_send.py::_load_latest_breadth`）
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -68,9 +65,9 @@
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 68・146・157・177・331・353・366・399・409・412・448・458（経由 `browser_checks/check_dependency_map.py::expected_breadth_summary`、`browser_checks/check_dependency_map.py::expected_fear_greed_score`、`browser_checks/check_dependency_map.py::expected_hindenburg_active` ほか）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 41・153・337・810・914（経由 `browser_checks/market_pulse_elements.py::load_entries`）
 - Python・保存済みファイル: `common/system_health.py` 行 158・1041・1110（経由 `common/system_health.py::check_d_actions`）
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 26・552・581・600・668・1883・1893・1896・1905・1958（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 26・552・581・600・668・1843・1853・1856・1865・1918（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 34・35・142（経由 `src/portfolio/snapshot.py::main`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 490・604・608・853・1144（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 489・603・607・852・1143（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1393
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 239
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 332・348・364・396・421・1579・1607・1677・1696・1723・1742・1762 ほか6（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg`）
@@ -85,20 +82,6 @@
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/stonks-silo/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/tanuki_valuation/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json））: `docs/value-monitor/tanuki_valuation/stock.html`
-
-### `docs/market-monitor/market-pulse/data/nyse_holidays.json`（2件以上）
-- 起動元: .github/workflows/Market_Pulse_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `from`(1)・`holidays`(2)・`source`(2)・`to`(1)
-- Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 399・409（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 218・221・539（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
-- JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1392
-
-### `docs/market-monitor/market-pulse/data/sp500_tickers.json`（2件以上）
-- 起動元: .github/workflows/Market_Pulse_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(1)・`fetched_at`(1)・`tickers`(2)
-- Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 412・448・458（経由 `browser_checks/market_pulse_elements.py::classify_base_dates`、`browser_checks/market_pulse_elements.py::run_derivation_checks`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 47・864・944
-- Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 34
 
 ## 画面の項目
 
@@ -210,7 +193,7 @@
 | f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1064・1064 | 残す（2026-10-23） |
 | f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed_reasons` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1064 | 残す（2026-10-23） |
 | VIX指数 | `fear_greed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 637・693・921・932 | 残す（2026-10-23） |
-| x.title_ja)?'日本語の見出しはAI（Grok）による訳で、下の小さな | `fetched_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json`<br>`docs/market-monitor/market-pulse/data/sp500_tickers.json` | 1078・1086・1096・1104 | 残す（2026-10-23） |
+| x.title_ja)?'日本語の見出しはAI（Grok）による訳で、下の小さな | `fetched_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1078・1086・1096・1104 | 残す（2026-10-23） |
 | — | `fg_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1166・1216 | 残す（2026-10-23） |
 | 記録なし | `flowing` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1056 | 残す（2026-10-23） |
 | — | `futures` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1094 | 残す（2026-10-23） |
@@ -221,7 +204,7 @@
 | — | `headlines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1070 | 残す（2026-10-23） |
 | 銘柄 | `held` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1057 | 残す（2026-10-23） |
 | シグナル | `history_from` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 998 | 残す（2026-10-23） |
-| — | `holidays` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/nyse_holidays.json` | 1392 | 残す（2026-10-23） |
+| — | `holidays` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/nyse_holidays.json` | 1392 | 残す（2026-10-23） |
 | 件数不足 | `horizon` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 995・995 | 残す（2026-10-23） |
 | 銘柄 | `hype_phase` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1057・1057 | 残す（2026-10-23） |
 | VIX指数 | `indicators` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 637・637・694・715 | 残す（2026-10-23） |
@@ -284,7 +267,7 @@
 | 件数不足 | `signal` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 995・1006・1013・1013 | 残す（2026-10-23） |
 | 記録なし | `signals` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 986・992 | 残す（2026-10-23） |
 | 傾き: 上向き | `slope_up` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1268・1271 | 残す（2026-10-23） |
-| 取得できず（取得時刻から時間以内の見出しが無い） | `source` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json`<br>`docs/market-monitor/market-pulse/data/nyse_holidays.json` | 1075 | 残す（2026-10-23） |
+| 取得できず（取得時刻から時間以内の見出しが無い） | `source` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1075 | 残す（2026-10-23） |
 | 前日比 | `sox_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 735・735・1042 | 残す（2026-10-23） |
 | — | `sox_value` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 735・735 | 残す（2026-10-23） |
 | 前日比 | `sox_vs_sp500_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1042 | 残す（2026-10-23） |
@@ -305,7 +288,7 @@
 | 該当なし | `time_jst` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1103・1103 | 残す（2026-10-23） |
 | f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1067・1067・1103 | 残す（2026-10-23） |
 | f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title_ja` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1067・1067・1078 | 残す（2026-10-23） |
-| 同限月 | `to` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json`<br>`docs/market-monitor/market-pulse/data/nyse_holidays.json` | 723 | 残す（2026-10-23） |
+| 同限月 | `to` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 723 | 残す（2026-10-23） |
 | セクター | `trail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1027・1027・1027 | 残す（2026-10-23） |
 | 取得できず: ${escHtml(dq.unavailable.join( | `unavailable` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1121・1121 | 残す（2026-10-23） |
 | 件数不足 | `up_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 995 | 残す（2026-10-23） |
@@ -326,7 +309,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
-| （ページの先頭） | `as_of`（この段階の書き手あり）<br>`change`（この段階の書き手あり）<br>`change_bp`（この段階の書き手あり）<br>`change_percent`（この段階の書き手あり）<br>`checked_at`（この段階の書き手あり）<br>`comments_history`（この段階の書き手あり）<br>`contract_roll`（この段階の書き手あり）<br>`credit`（この段階の書き手あり）<br>`data_freshness`（この段階の書き手あり）<br>`data_quality`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`expected_close_date`（この段階の書き手あり）<br>`expected_provisional_elements`（この段階の書き手あり）<br>`failed`（この段階の書き手あり）<br>`failed_reasons`（この段階の書き手あり）<br>`fetched_at`（この段階の書き手あり）<br>`gold`（この段階の書き手あり）<br>`haiku`（この段階の書き手あり）<br>`headlines`（この段階の書き手あり）<br>`holidays`（この段階の書き手あり）<br>`indicators`（この段階の書き手あり）<br>`is_fallback`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`judgment`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`m7_pct`（この段階の書き手あり）<br>`market`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`old_elements`（この段階の書き手あり）<br>`provisional`（この段階の書き手あり）<br>`provisional_elements`（この段階の書き手あり）<br>`provisional_kind`（この段階の書き手あり）<br>`published_utc`（この段階の書き手あり）<br>`publisher`（この段階の書き手あり）<br>`relevance`（この段階の書き手あり）<br>`risk_off_score`（この段階の書き手あり）<br>`roll_suspect`（この段階の書き手あり）<br>`semis_m7`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`sox_pct`（この段階の書き手あり）<br>`sox_value`（この段階の書き手あり）<br>`stage_conclusions`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`tags`（この段階の書き手あり）<br>`title_ja`（この段階の書き手あり）<br>`to`（この段階の書き手あり）<br>`unavailable`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
+| （ページの先頭） | `as_of`（この段階の書き手あり）<br>`change`（この段階の書き手あり）<br>`change_bp`（この段階の書き手あり）<br>`change_percent`（この段階の書き手あり）<br>`checked_at`（この段階の書き手あり）<br>`comments_history`（この段階の書き手あり）<br>`contract_roll`（この段階の書き手あり）<br>`credit`（この段階の書き手あり）<br>`data_freshness`（この段階の書き手あり）<br>`data_quality`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`expected_close_date`（この段階の書き手あり）<br>`expected_provisional_elements`（この段階の書き手あり）<br>`failed`（この段階の書き手あり）<br>`failed_reasons`（この段階の書き手あり）<br>`fetched_at`（この段階の書き手あり）<br>`gold`（この段階の書き手あり）<br>`haiku`（この段階の書き手あり）<br>`headlines`（この段階の書き手あり）<br>`holidays`（ほかの書き手あり）<br>`indicators`（この段階の書き手あり）<br>`is_fallback`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`judgment`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`m7_pct`（この段階の書き手あり）<br>`market`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`old_elements`（この段階の書き手あり）<br>`provisional`（この段階の書き手あり）<br>`provisional_elements`（この段階の書き手あり）<br>`provisional_kind`（この段階の書き手あり）<br>`published_utc`（この段階の書き手あり）<br>`publisher`（この段階の書き手あり）<br>`relevance`（この段階の書き手あり）<br>`risk_off_score`（この段階の書き手あり）<br>`roll_suspect`（この段階の書き手あり）<br>`semis_m7`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`sox_pct`（この段階の書き手あり）<br>`sox_value`（この段階の書き手あり）<br>`stage_conclusions`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`tags`（この段階の書き手あり）<br>`title_ja`（この段階の書き手あり）<br>`to`（この段階の書き手あり）<br>`unavailable`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
 | ① メーター | `score`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり） |  |
 | ① メーター2つ横並び | `components`（この段階の書き手あり）<br>`fear_greed`（この段階の書き手あり）<br>`qqq_vs_spy_20d`（この段階の書き手あり）<br>`rating`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`tech_pulse`（この段階の書き手あり）<br>`vxn_latest`（この段階の書き手あり） |  |
 | ② 関連指標バー | `ad_ratio_5d`（この段階の書き手あり）<br>`advances`（この段階の書き手あり）<br>`breadth`（この段階の書き手あり）<br>`chg_pct`（この段階の書き手あり）<br>`contango`（この段階の書き手あり）<br>`declines`（この段階の書き手あり）<br>`desc`（この段階の書き手あり）<br>`detail`（この段階の書き手あり）<br>`indicators`（この段階の書き手あり）<br>`mcclellan_oscillator`（この段階の書き手あり）<br>`new_highs_52w`（この段階の書き手あり）<br>`new_lows_52w`（この段階の書き手あり）<br>`nh_nl_diff`（この段階の書き手あり）<br>`pct_above_200ma`（この段階の書き手あり）<br>`pct_above_50ma`（この段階の書き手あり）<br>`raw`（この段階の書き手あり）<br>`rsp_spy_divergence_20d_avg`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`sub_scores`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`vol_ratio`（この段階の書き手あり）<br>`weight`（この段階の書き手あり） |  |
@@ -352,24 +335,20 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:723`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:866`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:894` | いいえ |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:229`<br>`src/tail/edgar_rss_monitor.py:433`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:605` | いいえ |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1726`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1727`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | いいえ |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:622`<br>`src/value/tanuki_valuation/pipeline.py:624`<br>`src/value/tanuki_valuation/pipeline.py:626`<br>`src/value/tanuki_valuation/pipeline.py:865`<br>`src/value/tanuki_valuation/pipeline.py:878`<br>`src/value/tanuki_valuation/pipeline.py:898`<br>`src/value/tanuki_valuation/pipeline.py:900`<br>`src/value/tanuki_valuation/pipeline.py:967`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:970`<br>`src/value/tanuki_valuation/pipeline.py:1355`<br>`src/value/tanuki_valuation/pipeline.py:1382`<br>`src/value/tanuki_valuation/pipeline.py:1387`<br>`src/value/tanuki_valuation/pipeline.py:1433`<br>`src/value/tanuki_valuation/pipeline.py:1738`<br>`src/value/tanuki_valuation/pipeline.py:1916` | いいえ |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:621`<br>`src/value/tanuki_valuation/pipeline.py:623`<br>`src/value/tanuki_valuation/pipeline.py:625`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:966`<br>`src/value/tanuki_valuation/pipeline.py:967`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:1354`<br>`src/value/tanuki_valuation/pipeline.py:1381`<br>`src/value/tanuki_valuation/pipeline.py:1386`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1737`<br>`src/value/tanuki_valuation/pipeline.py:1915` | いいえ |
 | β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1121` | いいえ |
 | FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1105` | いいえ |
-| 取引日（市場の営業日）の決め方 | 5 | `common/market_data/fetcher.py:226`<br>`common/market_data/fetcher.py:722`<br>`common/market_data/fetcher.py:1011`<br>`common/market_data/fetcher.py:1032`<br>`common/market_data/fetcher.py:1042`<br>`common/market_data/reader.py:104`<br>`common/sec_data/report_consistency_check.py:1555`<br>`src/market/macro_pulse/05_main.py:442`<br>`src/market/macro_pulse/05_main.py:456`<br>`src/market/market_pulse/breadth_calculator.py:342` | はい |
-| 暫定の足（取引時間中・取得の途中の行）の判定 | 4 | `common/market_data/fetcher.py:403`<br>`common/market_data/fetcher.py:411`<br>`common/market_data/fetcher.py:450`<br>`common/market_data/fetcher.py:572`<br>`common/market_data/fetcher.py:583`<br>`common/market_data/fetcher.py:734`<br>`common/market_data/fetcher.py:746`<br>`common/sec_data/report_consistency_check.py:1585`<br>`src/market/market_pulse/collect_and_send.py:781`<br>`src/market/market_pulse/collect_and_send.py:795`<br>`src/market/market_pulse/futures_snapshot.py:38` | はい |
-| S&P500の構成銘柄の一覧の取り方 | 3 | `common/market_data/fetcher.py:1443`<br>`common/market_data/reader.py:377`<br>`src/market/market_pulse/breadth_calculator.py:69` | はい |
-| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1580`<br>`src/market/macro_pulse/05_main.py:1700` | いいえ |
-| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1563`<br>`src/market/macro_pulse/05_main.py:1576` | いいえ |
-| FREDのAPIを直接呼ぶ所（系列の値・公表日） | 3 | `common/macro_data/fetcher.py:69`<br>`src/market/macro_pulse/05_main.py:527`<br>`src/market/market_pulse/market_calendar.py:63` | はい |
-| AI（Grok）のAPIの宛先の直書き | 10 | `src/market/macro_pulse/05_main.py:1339`<br>`src/market/macro_pulse/05_main.py:1832`<br>`src/market/market_pulse/collect_and_send.py:1147`<br>`src/market/market_pulse/news_headlines.py:41`<br>`src/tail/kpi_proposer.py:71`<br>`src/tail/quarterly_review_generator.py:78`<br>`src/tail/sec_ctrl_fetcher.py:50`<br>`src/tail/text_kpi_extractor.py:47`<br>`src/value/adjusted_eps_analyzer/ai_analyzer.py:74`<br>`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py:35`<br>`src/value/tanuki_valuation/validator.py:37` | はい |
-| JSONの書き込み（一時ファイル→置き換え）の実装 | 2 | `common/macro_data/fetcher.py:79`<br>`common/market_data/fetcher.py:180` | いいえ |
-| 休場日（祝日）の一覧の作り方 | 2 | `src/market/macro_pulse/05_main.py:409`<br>`src/market/market_pulse/collect_and_send.py:1638` | はい |
+| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1527`<br>`src/market/macro_pulse/05_main.py:1647` | いいえ |
+| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1510`<br>`src/market/macro_pulse/05_main.py:1523` | いいえ |
+| FREDのAPIを直接呼ぶ所（系列の値・公表日） | 3 | `common/macro_data/fetcher.py:69`<br>`src/market/macro_pulse/05_main.py:473`<br>`src/market/market_pulse/market_calendar.py:63` | はい |
+| AI（Grok）のAPIの宛先の直書き | 10 | `src/market/macro_pulse/05_main.py:1286`<br>`src/market/macro_pulse/05_main.py:1779`<br>`src/market/market_pulse/collect_and_send.py:1135`<br>`src/market/market_pulse/news_headlines.py:41`<br>`src/tail/kpi_proposer.py:71`<br>`src/tail/quarterly_review_generator.py:78`<br>`src/tail/sec_ctrl_fetcher.py:50`<br>`src/tail/text_kpi_extractor.py:47`<br>`src/value/adjusted_eps_analyzer/ai_analyzer.py:74`<br>`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py:35`<br>`src/value/tanuki_valuation/validator.py:37` | はい |
+| JSONの書き込み（一時ファイル→置き換え）の実装 | 2 | `common/macro_data/fetcher.py:79`<br>`common/market_data/fetcher.py:175` | いいえ |
 
-1か所だけのもの: 成長率の上限・下限（1）
+1か所だけのもの: 成長率の上限・下限（1）・取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）（1）・暫定の足の判定（日足の確定時刻・暫定かどうか・暫定の種類を決める関数）（1）・S&P500の構成銘柄の一覧の取り方（取得元を直接読む所）（1）・休場日（祝日）の一覧の作り方（1）
 
 ## 本番外のコード（src/market/market_pulse）
 
@@ -377,16 +356,16 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（7ファイル・3,795行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（7ファイル・3,672行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
-| `breadth_calculator.py` | 517 | `.github/workflows/Market_Pulse_Update.yml` | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
-| `collect_and_send.py` | 1,988 | `.github/workflows/Market_Pulse_Update.yml` | — | — | 4件 |
-| `futures_snapshot.py` | 69 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
-| `market_calendar.py` | 204 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
+| `breadth_calculator.py` | 444 | `.github/workflows/Market_Pulse_Update.yml` | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
+| `collect_and_send.py` | 1,949 | `.github/workflows/Market_Pulse_Update.yml` | — | — | 4件 |
+| `futures_snapshot.py` | 60 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
+| `market_calendar.py` | 205 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
 | `news_headlines.py` | 274 | — | `browser_checks/market_pulse_elements.py` | `src/market/market_pulse/collect_and_send.py` | 1件 |
-| `sector_rotation.py` | 289 | — | — | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/stage_conclusions.py` | 2件 |
+| `sector_rotation.py` | 286 | — | — | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/stage_conclusions.py` | 2件 |
 | `stage_conclusions.py` | 454 | — | — | `src/market/market_pulse/collect_and_send.py` | 4件 |
 
 ## 止める条件の内訳

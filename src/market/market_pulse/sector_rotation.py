@@ -193,14 +193,11 @@ def breakdown(get_series: GetSeries, as_of: str) -> List[Dict[str, Any]]:
         rec = next((r for r in series if r.get("date") == d), {})
         if rec.get("_provisional"):
             # 暫定の行（日足の確定前に保存）。夜の取得の時点で構造上必ず暫定になるもの（先物の清算前・為替やドル指数の日の区切り前）は
-            # 種類（"清算前"・"日中"）を付ける。種類の判定は銘柄ごとの日足の区切り（fetcher.expected_provisional_kind）による
+            # 種類（"清算前"・"日中"）を付ける。種類の判定は銘柄ごとの日足の区切り（calendar_universe.record_provisional_kind。
+            # 判定に失敗したら None）
             row["provisional"] = True
-            try:
-                from common.market_data.fetcher import expected_provisional_kind
-                kind = expected_provisional_kind(sym, d)
-            except Exception as e:
-                print(f"[WARN] 暫定の種類の判定失敗（{sym}）: {e}")
-                kind = None
+            from common.market_data.calendar_universe import record_provisional_kind
+            kind = record_provisional_kind(sym, rec)
             if kind:
                 row["provisional_kind"] = kind
         rows.append(row)

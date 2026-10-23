@@ -28,7 +28,8 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from .fetcher import MARKET_DATA_DIR, get_nyse_calendar, get_sp500_constituents
+from .calendar_universe import nyse_trading_days_ending, sp500_constituents
+from .fetcher import MARKET_DATA_DIR
 
 __all__ = [
     "get_latest_price",
@@ -101,21 +102,6 @@ def get_latest_price(symbol: str, base_dir: Optional[str] = None) -> Optional[Di
     return latest
 
 
-def _expected_trading_days(anchor_date: str, days: int, calendar=None) -> List[str]:
-    """anchor_date（'YYYY-MM-DD'）を最終日とする、直近days営業日分の日付
-    文字列リストを返す（NYSEカレンダー基準、BACKLOG確定事項1）。
-    """
-    if days <= 0:
-        return []
-    cal = calendar or get_nyse_calendar()
-    anchor = datetime.strptime(anchor_date, "%Y-%m-%d").date()
-    # 長期休場クラスタでも確実にdays件確保できるよう余裕を持って遡る
-    lookback_start = anchor - timedelta(days=days * 3 + 15)
-    valid_days = cal.valid_days(start_date=lookback_start.isoformat(), end_date=anchor.isoformat())
-    tail = valid_days[-days:]
-    return [d.strftime("%Y-%m-%d") for d in tail]
-
-
 def _price_series_ending_at(symbol: str, anchor_date: str, days: int,
                              base_dir: str) -> List[Dict[str, Any]]:
     """anchor_date（'YYYY-MM-DD'）を終点として、そこから遡ったdays営業日分の
@@ -123,7 +109,7 @@ def _price_series_ending_at(symbol: str, anchor_date: str, days: int,
     get_price_series()・get_price_series_as_of()の双方から呼ばれる
     （終点日のみが異なる）。
 
-    NYSE営業日カレンダー（pandas_market_calendars）で「本来存在すべき
+    NYSE営業日カレンダー（calendar_universe.py、pandas_market_calendarsのXNYS）で「本来存在すべき
     営業日集合」を計算し、実際に保存されているレコード日付集合と突合する
     （BACKLOG確定事項1）。データが1件でも存在する銘柄については、返り値は
     常にちょうどdays件になる（欠損している営業日は`{"date": ..., "_gap":
@@ -136,7 +122,7 @@ def _price_series_ending_at(symbol: str, anchor_date: str, days: int,
     if not records or days <= 0:
         return []
 
-    expected_dates = _expected_trading_days(anchor_date, days)
+    expected_dates = nyse_trading_days_ending(anchor_date, days)   # NYSEの取引日（BACKLOG確定事項1）
 
     series: List[Dict[str, Any]] = []
     for d in expected_dates:
@@ -376,7 +362,7 @@ def get_index_series(symbol: str, days: int = 30, base_dir: Optional[str] = None
 
 def get_sp500_constituents_prices(symbols: Optional[List[str]] = None,
                                    base_dir: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
-    """S&P500構成銘柄（省略時はfetcher.get_sp500_constituents()）の
+    """S&P500構成銘柄（省略時はcalendar_universe.sp500_constituents()）の
     daily/{SYMBOL}.json最新レコードを一括取得する（breadth計算用）。
 
     daily/にデータが存在しない銘柄（fetcher.py未実行分）は結果dictに
@@ -385,7 +371,7 @@ def get_sp500_constituents_prices(symbols: Optional[List[str]] = None,
     アクセスを伴いうる）を省略できる。
     """
     base = _resolve_base_dir(base_dir)
-    target_symbols = symbols if symbols is not None else get_sp500_constituents(base_dir=base)
+    target_symbols = symbols if symbols is not None else sp500_constituents(base_dir=base)
     result: Dict[str, Dict[str, Any]] = {}
     for symbol in target_symbols:
         price = get_latest_price(symbol, base_dir=base)

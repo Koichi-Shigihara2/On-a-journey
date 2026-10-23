@@ -10,7 +10,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "<module>",
-     "line": 1590
+     "line": 1389
     }
    ],
    "writers_outside_layer": [],
@@ -64,9 +64,9 @@
    "kind": "ファイル",
    "writers": [
     {
-     "file": "common/market_data/fetcher.py",
-     "func": "get_sp500_constituents",
-     "line": 1493
+     "file": "common/market_data/calendar_universe.py",
+     "func": "sp500_constituents",
+     "line": 339
     }
    ],
    "writers_outside_layer": [],
@@ -74,6 +74,7 @@
     ".github/workflows/Beta_Config_Update.yml",
     ".github/workflows/Market_Data_Daily_Update.yml",
     ".github/workflows/Market_Data_Weekly_Update.yml",
+    ".github/workflows/Market_Pulse_Update.yml",
     ".github/workflows/SEC_Data_Audit.yml",
     ".github/workflows/Score_Verifier.yml",
     ".github/workflows/TANUKI_VALUATION_Update.yml"
@@ -83,37 +84,74 @@
    "top_keys": [
     {
      "key": "count",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "fetched_at",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "tickers",
-     "reader_files": 1
+     "reader_files": 2
     }
    ],
    "readers": [
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 56,
+     "file": "common/market_data/calendar_universe.py",
+     "line": 297,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
      "type": "Python"
+    },
+    {
+     "file": "common/market_data/calendar_universe.py",
+     "line": 359,
+     "func": "write_sp500_copy",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 71,
+     "func": "get_sp500_tickers_copy",
+     "how": "保存済みファイル",
+     "via": "common/market_data/calendar_universe.py::write_sp500_copy",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 434,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/calendar_universe.py::write_sp500_copy",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_calendar_universe.py",
+     "line": 45,
+     "func": "test_write_sp500_copy_copies_the_cache",
+     "how": "保存済みファイル",
+     "via": "common/market_data/calendar_universe.py::write_sp500_copy",
+     "type": "テスト"
     }
    ],
    "readers_compute": [],
    "producers": [],
-   "screens": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "経由（common/market_data/calendar_universe.py → docs/market-monitor/market-pulse/data/nyse_holidays.json）"
+    }
+   ],
    "definitions": [],
    "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 0,
+   "reader_count": 2,
+   "reader_count_test": 1,
    "reader_count_compute": 0,
-   "group": "1件",
-   "note": "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さずに使う）。読み手の1件はファイル名の定数の行で、読むのは書き手の get_sp500_constituents 自身（控えが新しければそれを返す）",
+   "group": "2件以上",
+   "note": "S&P500の構成銘柄の一覧の控え（正。calendar_universe.sp500_constituents が7日以内なら取り直さずに使う）。市場データ層の取得の銘柄の範囲（fetcher）・reader・Market Pulseのブレッス（写しを data/sp500_tickers.json に書く）が使う",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -123,7 +161,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_analyst_events",
-     "line": 1424
+     "line": 1289
     }
    ],
    "writers_outside_layer": [],
@@ -162,7 +200,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 311,
+     "line": 297,
      "func": "get_analyst_events",
      "how": "保存済みファイル",
      "via": "grep",
@@ -170,7 +208,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 312,
+     "line": 298,
      "func": "get_analyst_events",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_json",
@@ -178,7 +216,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 332,
+     "line": 318,
      "func": "get_earnings_history",
      "how": "保存済みファイル",
      "via": "grep",
@@ -186,7 +224,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 333,
+     "line": 319,
      "func": "get_earnings_history",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_json",
@@ -194,7 +232,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 356,
+     "line": 342,
      "func": "get_recommendations_history",
      "how": "保存済みファイル",
      "via": "grep",
@@ -202,7 +240,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 357,
+     "line": 343,
      "func": "get_recommendations_history",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_json",
@@ -415,7 +453,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_weekly_attributes",
-     "line": 1279
+     "line": 1144
     }
    ],
    "writers_outside_layer": [],
@@ -586,7 +624,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 272,
+     "line": 258,
      "func": "get_attributes",
      "how": "保存済みファイル",
      "via": "grep",
@@ -594,7 +632,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 275,
+     "line": 261,
      "func": "get_attributes",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_json",
@@ -602,7 +640,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 292,
+     "line": 278,
      "func": "get_calendar",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -818,7 +856,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 427,
+     "line": 426,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -826,7 +864,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 991,
+     "line": 990,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -834,7 +872,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1069,
+     "line": 1068,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -842,7 +880,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3268,
+     "line": 3267,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -850,7 +888,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3864,
+     "line": 3863,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1612,37 +1650,37 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "_append_daily_record",
-     "line": 400
+     "line": 379
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_replace_provisional_records",
-     "line": 444
+     "line": 423
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "mark_and_repair_provisional_rows",
-     "line": 469
+     "line": 448
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_repair_close_missing_records",
-     "line": 503
+     "line": 482
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "_mark_no_bar_rows",
-     "line": 790
+     "line": 668
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "backfill_daily_prices",
-     "line": 966
+     "line": 844
     },
     {
      "file": "common/market_data/fetcher.py",
      "func": "repair_missing_trading_days",
-     "line": 1068
+     "line": 933
     }
    ],
    "writers_outside_layer": [],
@@ -1729,7 +1767,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 736,
+     "line": 614,
      "func": "_stale_provisional_dates",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1737,7 +1775,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 753,
+     "line": 631,
      "func": "_refetch_stale_provisional",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1745,7 +1783,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 840,
+     "line": 718,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1753,7 +1791,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 882,
+     "line": 760,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1761,7 +1799,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 883,
+     "line": 761,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1769,7 +1807,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 987,
+     "line": 865,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1777,7 +1815,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 988,
+     "line": 866,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1785,7 +1823,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1017,
+     "line": 895,
      "func": "find_missing_trading_days",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1793,7 +1831,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1576,
+     "line": 1375,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::repair_close_missing_records",
@@ -1801,7 +1839,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1587,
+     "line": 1386,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
@@ -1809,7 +1847,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 70,
+     "line": 71,
      "func": "_load_daily_payload",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1817,7 +1855,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 71,
+     "line": 72,
      "func": "_load_daily_payload",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_json",
@@ -1825,7 +1863,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 96,
+     "line": 97,
      "func": "get_latest_price",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1833,7 +1871,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 134,
+     "line": 120,
      "func": "_price_series_ending_at",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1841,7 +1879,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 163,
+     "line": 149,
      "func": "get_price_series",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1849,7 +1887,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 169,
+     "line": 155,
      "func": "get_price_series",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1857,7 +1895,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 193,
+     "line": 179,
      "func": "get_price_series_as_of",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1865,7 +1903,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 217,
+     "line": 203,
      "func": "get_price_on_or_after",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1873,7 +1911,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 242,
+     "line": 228,
      "func": "get_ma_deviation",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1881,7 +1919,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 372,
+     "line": 358,
      "func": "get_index_series",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1889,7 +1927,7 @@
     },
     {
      "file": "common/market_data/reader.py",
-     "line": 391,
+     "line": 377,
      "func": "get_sp500_constituents_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1905,7 +1943,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3547,
+     "line": 3548,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -1913,7 +1951,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3680,
+     "line": 3681,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -1961,7 +1999,7 @@
     },
     {
      "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 207,
+     "line": 144,
      "func": "compute_breadth",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1969,7 +2007,7 @@
     },
     {
      "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 377,
+     "line": 304,
      "func": "fetch_rsp_spy_divergence",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1977,7 +2015,7 @@
     },
     {
      "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 378,
+     "line": 305,
      "func": "fetch_rsp_spy_divergence",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1985,7 +2023,7 @@
     },
     {
      "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 508,
+     "line": 435,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -1993,7 +2031,7 @@
     },
     {
      "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 510,
+     "line": 437,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2081,7 +2119,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 851,
+     "line": 839,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2089,7 +2127,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 881,
+     "line": 869,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2097,7 +2135,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 882,
+     "line": 870,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2105,7 +2143,15 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 930,
+     "line": 918,
+     "func": "get_realtime_data",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 942,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2121,7 +2167,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 966,
+     "line": 955,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2129,7 +2175,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 967,
+     "line": 991,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2137,7 +2183,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1003,
+     "line": 992,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2145,7 +2191,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1004,
+     "line": 1021,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2153,15 +2199,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1033,
-     "func": "get_realtime_data",
-     "how": "保存済みファイル",
-     "via": "common/market_data/reader.py::_load_daily_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1250,
+     "line": 1238,
      "func": "collect_asset_flow",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2169,7 +2207,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1325,
+     "line": 1313,
      "func": "sp500_up_vs_50d",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2177,7 +2215,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1474,
+     "line": 1458,
      "func": "check_data_freshness",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2185,7 +2223,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1872,
+     "line": 1832,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2193,7 +2231,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1890,
+     "line": 1850,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2201,7 +2239,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1931,
+     "line": 1891,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2209,7 +2247,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1937,
+     "line": 1897,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2217,7 +2255,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1967,
+     "line": 1927,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2225,7 +2263,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1972,
+     "line": 1932,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2297,7 +2335,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 427,
+     "line": 426,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -3438,181 +3476,322 @@
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
    "decision": "残す（2026-10-22）"
+  },
+  {
+   "path": "docs/market-monitor/market-pulse/data/nyse_holidays.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/calendar_universe.py",
+     "func": "write_nyse_holidays",
+     "line": 118
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "from",
+     "reader_files": 2
+    },
+    {
+     "key": "holidays",
+     "reader_files": 2
+    },
+    {
+     "key": "source",
+     "reader_files": 2
+    },
+    {
+     "key": "to",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 399,
+     "func": "run_browser_checks",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 409,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 218,
+     "func": "expected_holiday_rows",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 221,
+     "func": "expected_holiday_rows",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 539,
+     "func": "run_market_pulse_element_checks",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
+     "type": "Python"
+    },
+    {
+     "file": "docs/market-monitor/market-pulse/index.html",
+     "line": 1392,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    },
+    {
+     "file": "src/market/market_pulse/collect_and_send.py",
+     "line": 1937,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/market-pulse/index.html",
+     "how": "直接"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 4,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "前年〜翌年のNYSEの休場日（土日以外、XNYS）。Market Pulse（collect_and_send.py）が毎晩 calendar_universe.write_nyse_holidays で書き、画面（market-pulse/index.html）が休場の行に使う（2026-10-23に書き手を calendar_universe.py へ移した）",
+   "decision": "残す（2026-10-22）"
+  },
+  {
+   "path": "docs/market-monitor/market-pulse/data/sp500_tickers.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/calendar_universe.py",
+     "func": "write_sp500_copy",
+     "line": 364
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "count",
+     "reader_files": 0
+    },
+    {
+     "key": "fetched_at",
+     "reader_files": 0
+    },
+    {
+     "key": "tickers",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 412,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::run_derivation_checks",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 448,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::classify_base_dates",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_dependency_map.py",
+     "line": 458,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "browser_checks/market_pulse_elements.py::run_derivation_checks",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 47,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 864,
+     "func": "run_derivation_checks",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/market_pulse_elements.py",
+     "line": 944,
+     "func": "classify_base_dates",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/breadth_calculator.py",
+     "line": 30,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 3,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "S&P500の構成銘柄の写し（正は common/market_data/_sp500_constituents_cache.json）。Market Pulseの breadth_calculator.py が calendar_universe.write_sp500_copy で書き、browser_checks/market_pulse_elements.py が読む（2026-10-23に書き手を calendar_universe.py へ移した）",
+   "decision": "残す（2026-10-22）"
   }
  ],
  "rules": [
   {
    "id": "trading_day",
-   "name": "取引日（市場の営業日）の決め方",
+   "name": "取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）",
    "patterns": [
-    "def\\s+_?\\w*(?:trading_days?|business_days?|business_day_add|market_open)\\w*\\s*\\(",
+    "^\\s*(?:import|from)\\s+pandas_market_calendars\\b",
+    "def\\s+_?\\w*(?:business_days?|business_day_add)\\w*\\s*\\(",
     "function\\s+\\w*(?:[Tt]radingDays?|[Bb]usinessDays?|[Mm]arketOpen)\\w*\\s*\\("
    ],
    "sites": [
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 226,
-     "text": "def is_trading_day(day: Any, calendar=None) -> bool:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 27,
+     "text": "import pandas_market_calendars as mcal"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 722,
-     "text": "def is_symbol_trading_day(symbol: str, day: str) -> bool:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 276,
+     "text": "def us_federal_business_days_add(start: date, n: int) -> date:"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 1011,
-     "text": "def find_missing_trading_days(symbol: str, base_dir: Optional[str] = None) -> List[str]:"
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 1032,
-     "text": "def _calendar_trading_days(name: str) -> List[str]:"
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 1042,
-     "text": "def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = None) -> Dict[str, Dict[str, List[str]]]:"
-    },
-    {
-     "file": "common/market_data/reader.py",
-     "line": 104,
-     "text": "def _expected_trading_days(anchor_date: str, days: int, calendar=None) -> List[str]:"
-    },
-    {
-     "file": "common/sec_data/report_consistency_check.py",
-     "line": 1555,
-     "text": "def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tuple[str, str]]:"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 442,
-     "text": "def nth_us_business_day(year: int, month: int, n: int) -> date:"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 456,
-     "text": "def us_business_days_add(start: date, n: int) -> date:"
-    },
-    {
-     "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 342,
-     "text": "def _recent_trading_days(anchor_date: str, n: int) -> list:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 289,
+     "text": "def previous_us_federal_business_day(d: date) -> date:"
     }
    ],
    "files": [
-    "common/market_data/fetcher.py",
-    "common/market_data/reader.py",
-    "common/sec_data/report_consistency_check.py",
-    "src/market/macro_pulse/05_main.py",
-    "src/market/market_pulse/breadth_calculator.py"
+    "common/market_data/calendar_universe.py"
    ],
    "in_layer": true,
-   "duplicated": true
+   "duplicated": false
   },
   {
    "id": "provisional_bar",
-   "name": "暫定の足（取引時間中・取得の途中の行）の判定",
+   "name": "暫定の足の判定（日足の確定時刻・暫定かどうか・暫定の種類を決める関数）",
    "patterns": [
-    "def\\s+_?\\w*provisional\\w*\\s*\\(",
+    "def\\s+_?(?:bar_final_at|is_provisional_\\w+|is_flat_\\w+_bar|\\w*provisional_kind\\w*)\\s*\\(",
     "function\\s+\\w*[Pp]rovisional\\w*\\s*\\("
    ],
    "sites": [
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 403,
-     "text": "def _mark_provisional(symbol: str, record: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 161,
+     "text": "def bar_final_at(symbol: str, day: str) -> Optional[datetime]:"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 411,
-     "text": "def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], base_dir: str,"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 183,
+     "text": "def is_flat_futures_bar(symbol: str, bar: Dict[str, Any]) -> bool:"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 450,
-     "text": "def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optional[str] = None,"
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "line": 572,
+     "file": "common/market_data/calendar_universe.py",
+     "line": 193,
      "text": "def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 583,
+     "file": "common/market_data/calendar_universe.py",
+     "line": 204,
      "text": "def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 734,
-     "text": "def _stale_provisional_dates(symbol: str, base_dir: str, now: datetime) -> List[str]:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 227,
+     "text": "def record_provisional_kind(symbol: str, record: Dict[str, Any]):"
     },
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 746,
-     "text": "def _refetch_stale_provisional(symbols: List[str], history: Dict[str, List[Dict[str, Any]]], base_dir: str,"
-    },
-    {
-     "file": "common/sec_data/report_consistency_check.py",
-     "line": 1585,
-     "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
-    },
-    {
-     "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 781,
-     "text": "def provisional_kind(symbol, record):"
-    },
-    {
-     "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 795,
-     "text": "def _mark_provisional_item(item, record, symbol):"
-    },
-    {
-     "file": "src/market/market_pulse/futures_snapshot.py",
-     "line": 38,
-     "text": "def _provisional_kind(symbol: str, bar_time: datetime) -> Optional[str]:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 239,
+     "text": "def provisional_kind_at(symbol: str, bar_time: datetime) -> Optional[str]:"
     }
    ],
    "files": [
-    "common/market_data/fetcher.py",
-    "common/sec_data/report_consistency_check.py",
-    "src/market/market_pulse/collect_and_send.py",
-    "src/market/market_pulse/futures_snapshot.py"
+    "common/market_data/calendar_universe.py"
    ],
    "in_layer": true,
-   "duplicated": true
+   "duplicated": false
   },
   {
    "id": "sp500_constituents",
-   "name": "S&P500の構成銘柄の一覧の取り方",
+   "name": "S&P500の構成銘柄の一覧の取り方（取得元を直接読む所）",
    "patterns": [
-    "def\\s+_?\\w*sp500_(?:tickers|constituents)\\w*\\s*\\("
+    "List_of_S%26P_500_companies",
+    "s-and-p-500-companies"
    ],
    "sites": [
     {
-     "file": "common/market_data/fetcher.py",
-     "line": 1443,
-     "text": "def get_sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) -> List[str]:"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 321,
+     "text": "resp = requests.get(\"https://en.wikipedia.org/wiki/List_of_S%26P_500_companies\", headers=headers, timeout=30)"
     },
     {
-     "file": "common/market_data/reader.py",
-     "line": 377,
-     "text": "def get_sp500_constituents_prices(symbols: Optional[List[str]] = None,"
-    },
-    {
-     "file": "src/market/market_pulse/breadth_calculator.py",
-     "line": 69,
-     "text": "def get_sp500_tickers():"
+     "file": "common/market_data/calendar_universe.py",
+     "line": 330,
+     "text": "resp = requests.get(\"https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv\","
     }
    ],
    "files": [
-    "common/market_data/fetcher.py",
-    "common/market_data/reader.py",
-    "src/market/market_pulse/breadth_calculator.py"
+    "common/market_data/calendar_universe.py"
    ],
    "in_layer": true,
-   "duplicated": true
+   "duplicated": false
   }
  ],
  "non_production_code": [],
@@ -3629,15 +3808,43 @@
   },
   {
    "dir": "common/market_data",
+   "file": "common/market_data/calendar_universe.py",
+   "decision": "残す（2026-10-22）",
+   "lines": 379,
+   "workflows": [],
+   "code": [
+    "common/sec_data/report_consistency_check.py",
+    "src/market/macro_pulse/05_main.py",
+    "src/market/market_pulse/breadth_calculator.py",
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/futures_snapshot.py",
+    "src/market/market_pulse/market_calendar.py",
+    "src/market/market_pulse/sector_rotation.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/market_data/daily_guard.py",
+    "common/market_data/fetcher.py",
+    "common/market_data/reader.py"
+   ],
+   "tests": [
+    "tests/test_calendar_universe.py",
+    "tests/test_market_data_fetcher.py",
+    "tests/test_market_data_reader.py",
+    "tests/test_market_pulse_provisional_kind.py"
+   ]
+  },
+  {
+   "dir": "common/market_data",
    "file": "common/market_data/daily_guard.py",
    "decision": "残す（2026-10-22）",
-   "lines": 81,
+   "lines": 84,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
    "code": [],
    "same_dir": [
-    "common/market_data/fetcher.py"
+    "common/market_data/calendar_universe.py"
    ],
    "tests": [
     "tests/test_close_missing_price.py",
@@ -3649,21 +3856,18 @@
    "dir": "common/market_data",
    "file": "common/market_data/fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 1595,
+   "lines": 1394,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml",
     ".github/workflows/Market_Data_Weekly_Update.yml"
    ],
    "code": [
     "common/macro_data/fetcher.py",
-    "common/sec_data/report_consistency_check.py",
-    "src/market/market_pulse/collect_and_send.py",
-    "src/market/market_pulse/futures_snapshot.py",
-    "src/market/market_pulse/sector_rotation.py",
-    "src/value/tanuki_valuation/pipeline.py"
+    "common/sec_data/report_consistency_check.py"
    ],
    "same_dir": [
     "common/market_data/__init__.py",
+    "common/market_data/calendar_universe.py",
     "common/market_data/reader.py"
    ],
    "tests": [
@@ -3672,7 +3876,6 @@
     "tests/test_market_data_fetcher.py",
     "tests/test_market_data_reader.py",
     "tests/test_market_data_stale_provisional.py",
-    "tests/test_market_pulse_provisional_kind.py",
     "tests/test_output_inventory_check.py"
    ]
   },
@@ -3680,7 +3883,7 @@
    "dir": "common/market_data",
    "file": "common/market_data/reader.py",
    "decision": "残す（2026-10-22）",
-   "lines": 394,
+   "lines": 380,
    "workflows": [],
    "code": [
     "browser_checks/check_dependency_map.py",
@@ -3777,22 +3980,29 @@
   }
  ],
  "stop_condition": {
-  "outputs": 5,
+  "outputs": 7,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 11,
+  "python_read_sites_into_layer_resolved": 12,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
-    "line": 1559,
+    "line": 1358,
     "func": "<module>",
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 17,
-  "name_hit_sites_undetermined": [],
+  "name_hit_sites_resolved": 22,
+  "name_hit_sites_undetermined": [
+   {
+    "file": "scripts/analysis/market_pulse_redesign.py",
+    "line": 60,
+    "output": "docs/market-monitor/market-pulse/data/sp500_tickers.json",
+    "text": "sp500 = json.loads(subprocess.run([\"git\", \"-C\", REPO, \"show\", f\"{DATA_REV}:docs/market-monitor/market-pulse/data/sp500_t"
+   }
+  ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.034,
+  "ratio_reader": 0.056,
   "threshold": 0.1,
   "hit": false
  },
@@ -3917,6 +4127,6 @@
     "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
    }
   ],
-  "written_key_count": 74
+  "written_key_count": 78
  }
 }

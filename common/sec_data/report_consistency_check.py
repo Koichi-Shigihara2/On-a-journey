@@ -1595,7 +1595,8 @@ def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[
     （NIY=FはYahooの日足の半分以上が平らな足）、WARNはa・bで片づくはずの期間を過ぎた行だけにする（2026-10-11、当初の4日から変更）。
     Returns: [(symbol, WARNメッセージ)]（1行1件）
     """
-    from common.market_data.fetcher import bar_final_at, NO_BAR_MARK
+    from common.market_data.calendar_universe import bar_final_at
+    from common.market_data.fetcher import NO_BAR_MARK
     base = base_dir or os.path.join(REPO_ROOT, "common", "market_data")
     now = now or datetime.now(timezone.utc)
     out: list[tuple[str, str]] = []

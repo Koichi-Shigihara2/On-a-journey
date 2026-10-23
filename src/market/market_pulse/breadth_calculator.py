@@ -16,14 +16,10 @@ S&P500構成銘柄を対象に、以下のブレッスデータを日次で算�
   docs/market-monitor/market-pulse/data/breadth_data.json
 """
 
-import functools
 import os
 import sys
 import json
 import time
-import io
-import pandas as pd
-import requests
 from datetime import datetime, timezone, timedelta
 
 # ── パス設定 ──────────────────────────────────────────────
@@ -65,78 +61,19 @@ if not HAS_MARKET_DATA:
     except Exception:
         pass
 
+# NYSEの取引日・S&P500の構成銘柄は common/market_data/calendar_universe.py（[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23）
+from common.market_data.calendar_universe import nyse_trading_days_ending, write_sp500_copy  # noqa: E402
 
-def get_sp500_tickers():
-    """
-    S&P500構成銘柄リストを取得。
-    優先順: キャッシュ(7日) → Wikipedia(requests) → GitHub CSV → 期限切れキャッシュ
-    """
-    # キャッシュ確認
-    if os.path.exists(TICKERS_CACHE):
-        try:
-            with open(TICKERS_CACHE, 'r', encoding='utf-8') as f:
-                cache = json.load(f)
-            cached_date = datetime.fromisoformat(cache["fetched_at"])
-            if (datetime.now(JST) - cached_date).days < 7:
-                print(f"[INFO] S&P500銘柄リスト: キャッシュ使用 ({len(cache['tickers'])}銘柄, {cache['fetched_at']})")
-                return cache["tickers"]
-        except Exception as e:
-            print(f"[WARN] キャッシュ読み込み失敗: {e}")
 
-    tickers = None
-
-    # ソース1: Wikipedia（requests で User-Agent を付けて取得）
-    print("[INFO] WikipediaからS&P500構成銘柄を取得中...")
-    try:
-        headers = {"User-Agent": "Mozilla/5.0 (compatible; MarketPulseBot/1.0)"}
-        resp = requests.get(
-            "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-            headers=headers,
-            timeout=30
-        )
-        resp.raise_for_status()
-        tables = pd.read_html(io.StringIO(resp.text))
-        df = tables[0]
-        tickers = df["Symbol"].str.replace(".", "-", regex=False).tolist()
-        tickers = [t.strip() for t in tickers if t.strip()]
-        print(f"[INFO] Wikipedia取得成功: {len(tickers)}銘柄")
-    except Exception as e:
-        print(f"[WARN] Wikipedia取得失敗: {e}")
-
-    # ソース2: GitHub datasets/s-and-p-500-companies（フォールバック）
+def get_sp500_tickers_copy() -> list:
+    """S&P500の構成銘柄（common/market_data/_sp500_constituents_cache.json が正）を読み、data/sp500_tickers.json に写す
+    （写しは browser_checks/market_pulse_elements.py が読む）。取れなければ終了する（[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23）。"""
+    tickers = write_sp500_copy(TICKERS_CACHE)
     if not tickers:
-        print("[INFO] GitHub CSVからS&P500構成銘柄を取得中...")
-        try:
-            csv_url = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
-            resp = requests.get(csv_url, timeout=30)
-            resp.raise_for_status()
-            df = pd.read_csv(io.StringIO(resp.text))
-            tickers = df["Symbol"].str.replace(".", "-", regex=False).tolist()
-            tickers = [t.strip() for t in tickers if t.strip()]
-            print(f"[INFO] GitHub CSV取得成功: {len(tickers)}銘柄")
-        except Exception as e:
-            print(f"[WARN] GitHub CSV取得失敗: {e}")
-
-    # 取得成功 → キャッシュ保存
-    if tickers and len(tickers) >= 400:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        with open(TICKERS_CACHE, 'w', encoding='utf-8') as f:
-            json.dump({
-                "fetched_at": datetime.now(JST).isoformat(),
-                "count": len(tickers),
-                "tickers": tickers
-            }, f, ensure_ascii=False, indent=2)
-        return tickers
-
-    # すべて失敗 → 期限切れキャッシュを使う
-    if os.path.exists(TICKERS_CACHE):
-        with open(TICKERS_CACHE, 'r', encoding='utf-8') as f:
-            cache = json.load(f)
-        print(f"[WARN] 期限切れキャッシュを使用 ({len(cache['tickers'])}銘柄)")
-        return cache["tickers"]
-
-    print("[ERROR] S&P500銘柄リストの取得手段がすべて失敗しました")
-    sys.exit(1)
+        print("[ERROR] S&P500銘柄リストの取得手段がすべて失敗しました")
+        sys.exit(1)
+    print(f"[INFO] S&P500銘柄リスト: {len(tickers)}銘柄（common/market_data/_sp500_constituents_cache.json）")
+    return tickers
 
 
 def compute_breadth(tickers):
@@ -226,7 +163,7 @@ def compute_breadth(tickers):
     loaded = trimmed
     if ahead:
         print(f"[WARN] 基準日{last_date}より新しい終値を持つ銘柄{ahead}件は基準日までで集計")
-    last6 = _recent_trading_days(last_date, 6)
+    last6 = tuple(nyse_trading_days_ending(last_date, 6))
     prev_day = last6[-2]
 
     for ticker, series in loaded:
@@ -338,16 +275,6 @@ def compute_breadth(tickers):
     return result
 
 
-@functools.lru_cache(maxsize=64)
-def _recent_trading_days(anchor_date: str, n: int) -> list:
-    """anchor_date（'YYYY-MM-DD'、当日を含む）までの直近n営業日（NYSE）を古い順に返す。"""
-    import pandas_market_calendars as _mcal
-    anchor = datetime.strptime(anchor_date, "%Y-%m-%d").date()
-    days = _mcal.get_calendar("NYSE").valid_days(
-        start_date=(anchor - timedelta(days=n * 3 + 15)).isoformat(), end_date=anchor.isoformat())
-    return tuple(d.strftime("%Y-%m-%d") for d in days[-n:])
-
-
 def fetch_rsp_spy_divergence():
     """
     RSP（Equal Weight S&P500 ETF）とSPY（Cap Weight S&P500 ETF）の
@@ -385,7 +312,7 @@ def fetch_rsp_spy_divergence():
         if len(common) < 2:
             print("[WARN] RSP/SPYの有効データが不足しています")
             return None
-        trading = _recent_trading_days(common[-1], 40)
+        trading = tuple(nyse_trading_days_ending(common[-1], 40))
         pos = {d: i for i, d in enumerate(trading)}
         rsp_returns, spy_returns = [], []
         for a, b in zip(common, common[1:]):
@@ -504,7 +431,7 @@ def save_breadth(data):
 
 
 if __name__ == "__main__":
-    tickers = get_sp500_tickers()
+    tickers = get_sp500_tickers_copy()
     breadth = compute_breadth(tickers)
     if breadth:
         rsp_spy = fetch_rsp_spy_divergence()

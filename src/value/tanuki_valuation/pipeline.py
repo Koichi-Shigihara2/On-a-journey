@@ -63,12 +63,12 @@ from common.sec_data.split_adjust import load_split_history, adjust_share_points
 try:
     from common.market_data.reader import get_calendar as _md_get_calendar
     from common.market_data.reader import get_latest_price as _md_get_latest_price
-    from common.market_data.fetcher import get_nyse_calendar as _md_get_nyse_calendar
+    from common.market_data.calendar_universe import nyse_trading_days as _md_nyse_trading_days
     HAS_MARKET_DATA = True
 except Exception:
     _md_get_calendar = None
     _md_get_latest_price = None
-    _md_get_nyse_calendar = None
+    _md_nyse_trading_days = None
     HAS_MARKET_DATA = False
 
 # GROWTH-STRUCTURAL-MISMATCH-CANDIDATES-1（TRUST-SUMMARY-EPIC-1骨子②）:
@@ -238,7 +238,7 @@ RF_FALLBACK_FIXED = 0.043
 RF_LIVE_MAX_STALE_TRADING_DAYS = 5
 
 
-def _resolve_live_risk_free_rate(get_latest_price=None, calendar=None, today=None) -> dict:
+def _resolve_live_risk_free_rate(get_latest_price=None, today=None) -> dict:
     """^TNXの最新の有効な終値からRfの現在値を返す。
 
     返り値: {"rate", "date", "source", "reason"}
@@ -264,11 +264,10 @@ def _resolve_live_risk_free_rate(get_latest_price=None, calendar=None, today=Non
             from zoneinfo import ZoneInfo
             today = datetime.now(ZoneInfo("America/New_York")).date()
         today_str = today.isoformat() if hasattr(today, "isoformat") else str(today)
-        cal = calendar or (_md_get_nyse_calendar() if _md_get_nyse_calendar else None)
-        if cal is None:
+        if _md_nyse_trading_days is None:
             return _fallback("unavailable")
         start = (date.fromisoformat(close_date) + timedelta(days=1)).isoformat()
-        elapsed = len(cal.valid_days(start_date=start, end_date=today_str)) if start <= today_str else 0
+        elapsed = len(_md_nyse_trading_days(start, today_str)) if start <= today_str else 0
         if elapsed > RF_LIVE_MAX_STALE_TRADING_DAYS:
             return _fallback(f"stale({close_date})")
         return {"rate": float(latest["close"]) / 100.0, "date": close_date,
