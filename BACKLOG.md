@@ -1861,6 +1861,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ## 優先度：高
 
+（[[OUTPUT-INVENTORY-CHECK-1]]〈R-A〉は2026-10-23、11層の段階1〜3と終わりの見直しが済んで完了、BACKLOG_DONE.md「2026-10-23（完了）」参照）
+
 （[[SEC-FETCH-CACHE-MTIME-CI-1]]は2026-10-10、submissionsで新しい提出を検知してcompany_factsを取り直す方式に変更して完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
 
 ---
@@ -1877,212 +1879,101 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [OUTPUT-INVENTORY-CHECK-1] 出力の一覧（書き手・読み手・画面・定義・規則）を機械が照合できる形で作り、読み手の無い出力・二重の規則・名前と中身のずれをCHECKで検知する（型A・B・Eの根治策）
-**型・処置（2026-10-19 束ね）:** 型A・B・E・根治策（R-A。R-B〈同じ規則の二重実装〉を統合）
+### [HOLDINGS-SINGLE-SOURCE-1] 保有銘柄の一覧が3か所（portfolio.json・discover_config.jsonの区分「保有中」・TAILのpositions_index.json）にあり、Portfolioの画面に「区分未反映」の警告が出る。正をportfolio.jsonの1つにする
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-Aの論点⑥。実装の順は ⑥ → R-E1 → R-E2、実装の指示はチャット側）
 **優先度:** 高
-**分類:** 根治策 / 全サブシステム（SECデータ層から）・`common/sec_data/report_consistency_check.py`
-**登録日:** 2026-10-19
-**発見:** 初回の束ね（`docs/architecture/BUNDLING_2026-10-19.md`）
+**分類:** 根治策 / Portfolio（`docs/portfolio/index.html`・`src/portfolio/snapshot.py`）・TAIL・新規登録（`common/registration/register_ticker.py`・`common/sec_data/registration_validator.py`）・System Health・Market Pulse・rcc
+**登録日:** 2026-10-23
+**発見:** R-AのPortfolioの段階2（2026-10-23、チャット側が論点⑥に挙げた）
 
 #### 内容
-- CHAT_RULES.md「発見の溜め方と根治の判断」5の型Aの根治策。出力ごとの書き手・読み手・画面・定義を、機械が照合できる形（JSON等）の一覧にし、`report_consistency_check.py`のCHECKで次をNGにする:
-  一覧に無い出力／一覧で読み手とされている処理が実際には読んでいない／同じ出力・同じ規則の定義が2か所にある
-- R-B（型B）の統合: 一覧に「規則」の欄（同じ規則の定義の場所）を足し、3つ目のNGの条件で二重の実装を検知する。R-Bを別の根治策にしない（チャット側の判断、2026-10-19）
-- 型Eの統合: 一覧の「定義」の欄で、名前・表示の言葉と中身を照合する。「検証」の欄（届いたか・AIの出力を確かめるか）も持つ
-- NGの範囲: CHECKを足すとNGが増えるため、銘柄ごとのNGと全体のNGを分ける（[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]を統合）
-- 一覧はgrepで機械的に下書きし、AIは確認と分類だけを行う。段階的に進める（SECデータ層 → TANUKI VALUATION・TANUKI SCORE → ほか）。各段階は「一覧を作る → Koichiさんが画面の項目と機能を投資判断に使っているかで残す／消すを判断 → 消してから残りにCHECKを有効にする」
-- [[TICKER-EXCEPTION-LEDGER-1]]は単独では実装しない。要否は一覧の結果で決める（統合して移設）
+- 保有銘柄の正を`docs/portfolio/data/portfolio.json`（証券会社ごとの保有。コードの書き手なし、人の入力・「管理の操作の手順」でClaude Codeが編集）の1つにする
+- `config/discover_config.json`（写し`docs/portfolio/data/discover_config.json`）の区分「保有中」をやめ、Portfolioの画面は保有の表を`portfolio.json`から作る（`index.html`の「⚠️ 区分未反映」〈区分が保有中でない〉・「⚠️ 未登録」の警告を消す）
+- `docs/portfolio/tail/data/positions_index.json`は「仮説を登録した銘柄」（TAILの監視の対象）として残し、保有と仮説のずれ（保有なのに仮説が無い・仮説があるのに保有でない）を`report_consistency_check.py`のWARNにする
+- `discover_config`・`Discover_Config_Sync`の名前（Discoverサブシステムは2026-09-01に削除。FINDINGS 2026-10-23 型E）もここで扱う（区分「保有中」をやめた後に残る中身〈区分・メモ〉の名前と置き場を決める）
+- 10-23の時点では3か所とも同じ9銘柄
 
-#### 束ねた件
-- FINDINGS: 2026-10-16（TAILのsecret名、済）・2026-10-15（RICEのwarnings）・2026-10-15（読み手0件の出力6種。削除の候補で、この根治策の段階で判断）・2026-10-15（segment_xbrl_status・method_changeが画面に出ない）・
-  2026-10-16（TAILの最新のレビューの二重実装、済）・2026-10-16（RSSの誤検知、済）・2026-10-19（daily pickのGrokの文言）・2026-10-19（EPS ANALYZERのQ4の年次の選び方）・2026-10-19（stock.htmlの算式の説明の古い文言、型E）
-- BACKLOG（統合してBACKLOG_DONE.mdへ）: 型A・E・作り: [[TICKER-EXCEPTION-LEDGER-1]]・[[NAV-LINK-AUDIT-CI-1]]・[[RICE-WARNINGS-ALWAYS-TRUE-1]]・[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]・[[STAGE-LIFECYCLE-LABEL-MIXUP-1]]・[[DAILY-PICK-RICE-SCORE-MISSING-1]]・[[DOC-BROKEN-REFS-1]]・
-  [[TANUKI-INSIDER-ZERO-VS-NODATA-1]]・[[EPS-TICKERS-HTML-PERIOD-LABEL-1]]・[[STONKS-HERO-DISCOVER-LABEL-1]]・[[STONKS-TANUKI-BADGE-404-1]]・[[STONKS-SUMMARY-GAAP-REASON-RAW-1]]・[[TANUKI-BETA-BASIS-FIELDS-UNLABELED-1]]・[[EPS-AI-ANALYSIS-ERROR-SILENT-1]]、
-  型B（元のR-B）: [[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]・[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]・[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[HYPECORE-RECOMMENDATION-DUPLICATE-1]]・[[EPS-TTM-PERIOD-ORDER-REVERSED-1]]・[[STONKS-MONEY-FORMAT-SIGN-1]]
-- 残す件との関係: 型Bの[[SYSHEALTH-SEVERITY-MISMATCH-1]]（確認待ち）・[[EPS-SHARES-BASIS-MISMATCH-1]]（投資判断に今効く）は残す。直すときは一覧の「規則」の欄に載せる
+#### 読み手の影響表（2026-10-23の一覧〈portfolio_layer.json・tail_layer.json〉とgrepから。本番のコードだけ）
+| ファイル | 読むもの | 使い方 | 変更の要否（案） |
+|---|---|---|---|
+| `docs/portfolio/index.html` | portfolio.json・discover_config.json（写し） | 保有の集計と、区分「保有中」の銘柄で表を作る。区分のずれを「区分未反映」・「未登録」で警告 | 要（表をportfolio.jsonから作り、警告を消す） |
+| `src/portfolio/snapshot.py` | portfolio.json | 日ごとの資産の合計（history.json） | 不要（すでにportfolio.json） |
+| `common/system_health.py`（`_portfolio_tickers`・`check_k_ticker_audit`） | portfolio.json | 保有銘柄の監査 | 不要（確認だけ） |
+| `src/market/market_pulse/sector_rotation.py`（`watch_list`・`watch_tickers`）・`collect_and_send.py`（`compute_implb`・`compute_implc`） | portfolio.json・positions_index.json | 段階7の監視銘柄（保有と仮説の和） | 要確認（保有と仮説のどちらを使うかを決める） |
+| `src/tail/quarterly_review_generator.py`（`generate_review`・`get_avg_cost`） | portfolio.json | レビューの取得単価 | 不要 |
+| `src/tail/edgar_rss_monitor.py`・`sec_ctrl_fetcher.py`・`workflow_write.py` | positions_index.json | TAILの監視の対象（仮説を登録した銘柄） | 不要（意味を「仮説を登録した銘柄」と明記） |
+| `docs/portfolio/tail/index.html`・`detail.html`・`docs/common/ticker-links.js` | positions_index.json（index.htmlはportfolio.jsonも） | TAILの画面・銘柄のリンク | 要確認 |
+| `common/registration/register_ticker.py`（Step 6） | config/discover_config.json（書く） | 新規登録で区分・メモを書く | 要（区分「保有中」を書かない。名前の変更） |
+| `common/sec_data/registration_validator.py`（P1-Step6・P4） | config/discover_config.json | 新規登録の検証・孤立エントリ | 要（区分の検証をやめる・名前の変更） |
+| `common/sec_data/report_consistency_check.py`（CHECK-32 `_check_discover_config_sync`、`_check_core_position_review_coverage` 等） | discover_config.json の2か所・positions_index.json | 写しの一致・TAILのレビューの網羅 | 要（保有と仮説のずれのWARNを足す。CHECK-32は写しが残るかで決める） |
+| `.github/workflows/Discover_Config_Sync.yml` | config/discover_config.json → docs/の写し | 写しの同期 | 要（名前の変更・写しが要るか） |
 
 #### 始める段（CHAT_RULES 4）
-出力項目の棚卸し（`docs/architecture/new_data_platform/archive/OUTPUT_ITEMS_INVENTORY.md`〈07-22の凍結版〉を、grepの下書きで今に合わせる）。SECデータ層から
+定義（保有・仮説・区分の意味を決める）
 
 #### 投資判断への影響
-理論株価の値は直接は変えない。保有銘柄の監視の通知が届かない型（TAILのsecret名）の再発を防ぐ。型Bのうち定義v2の前提の3件（倍率・業種・赤字の質）は、定義v2の検証の前に要る
-
-#### SEC層の段階の一覧に入れる本番外のコード（2026-10-19追記。チャット側の提案をKoichiさんが了承）
-- 出力ではない本番外のコードも、SEC層の段階の一覧に入れる。対象は`scripts/analysis`（2,740行）・`browser_checks`（3,208行）・`discover/stonks-silo`（2,620行。Discoverを消した後も古い名前のフォルダに残っている。2026-10-21に`src/value/stonks_silo/`へ移し、SEC層の本番外の対象から外した。STONKS SILOの段階の一覧で扱う）
-- 各ファイルについて、ワークフロー・ほかのコード・テストから呼ばれているかをgrepで示し、Koichiさんが残す／消す／移すを判断する
-- 理由: 行数が多すぎる疑いの確かめ。出力の一覧だけでは、本番外のコードが対象に入らないため
-- 行数の数え方: 各フォルダの`git ls-files '*.py'`から`tests/`と`test_`を除いた行の合計（2026-10-19）
-
-#### SEC層の段階（2026-10-20 済）
-- 段階1（一覧の下書き）: `5dda340c96`。`scripts/inventory/build_output_inventory.py` → `docs/architecture/output_inventory/sec_layer.json`・`sec_layer.md`
-- 段階2（Koichiさんの判断と削除）: `b6294a559b`。消したもの: `share_unit_fix_log.json`（15ファイル）・`spac_shell_detection_log.json`（98ファイル）・`store_v2/`の保存の関数とCLI・`scripts/analysis`の14ファイル。
-  98銘柄のannual・quarterly・normalized・Layer3・TTMは削除の前後で一致（generated_atを除く）。
-  保留（消さない、チャット側の判断待ち）: `submissions_legacy_{CIK}.json`（`fetcher.py`の旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読まれている。段階1の一覧は書き手の関数の中の読み込みを数えていなかった）、
-  `scripts/analysis`の3ファイル（`futures_roll_suspects.py`は`backfill_futures_roll.py`の入力、`market_pulse_redesign.py`は`stage_conclusions.py`のdocstringが参照、`macro_cfnai_ma3_rows_repair.py`は`browser_checks/check_macro_pulse.py`の文が名前を出す）
-- 段階3（CHECK）: 第2部のcommit（件名「feat: R-A SEC層の段階3、出力の一覧のCHECK-INV-1〜4」）。`report_consistency_check.py`のCHECK-INV-1（NG、一覧に無い出力）・INV-2（NG、読み手とされているファイルが読んでいない・読み手0件の出力）・
-  INV-3（規則の二重。既知の5つはWARN、SEC層を含む6つ目はNG）・INV-4（WARN、注記の無い出力）。[GLOBAL]で銘柄ごとのNGと混ぜない。一覧の作り方はスクリプト1つ（rccはそれをimportする）
-- 段階3で一覧のスクリプトを直した: 入れ子の関数の中の名前を外側の関数で解決する（`submissions_legacy`の読み手が見えるようになった）、段階2の判断の欄（`DECISIONS`・消したもの）
-- 保留4件の決着（2026-10-20、チャット側の判断）: `submissions_legacy`は残す（`_fetch_legacy_submissions`が読む）、`market_pulse_redesign.py`は残す（Market Pulseの作り直しの検討中）、
-  `futures_roll_suspects.py`と`src/market/market_pulse/backfill_futures_roll.py`は組で削除（互いの参照のほかは0件）、`macro_cfnai_ma3_rows_repair.py`は修復が`70793c2185`で実行済みのため削除（check_macro_pulse.pyのN-07は前後とも一致）。件名「refactor: R-A SEC層の保留4件の決着」のcommit
-#### TANUKI VALUATION・TANUKI Scoreの段階（2026-10-20 済、保留2件）
-- 段階1（一覧の下書き）: `1f2212c895`（`build_output_inventory.py --layer tanuki` → `tanuki_layer.json`・`tanuki_layer.md`）
-- 段階2（判断と削除）: `d180cf8bab`。本番外の4つ（diag_iv_trace.py・growth_model_audit.py・remove_legacy_tanuki_score.py・pipeline_log.txt）と、6月から更新の無い`docs/value-monitor/tanuki_score/daily_pick.json`・`history.json`を削除。
-  画面が読むのに書き手の無いキー15は全ファイルで探し、消すものは0（11は別のJSONにあり抜き取りで見落とし、2つはページの中で作る値、`market_data`は画面の説明の文の誤検出、`rice_na_reason`はRICEを出せないときだけ書く〈今は該当0銘柄〉）
-- **保留（チャット側の判断待ち）**:
-  ①今日の特選銘柄: `docs/integrated-dashboard/history.json`の読み手は`daily_pick.py`自身（前日の分類との比較・同じ日の2回目の実行を止める）だけで、判定の実績表は`tanuki_valuation/data/{T}/score_history.json`を読む。選出をやめるとhistory.jsonは読み手0件になる（依頼の前提と違うため止めた）。
-  ②誰も読まないキー（53→42。書き手のファイルの中の読み・画面のループを読みに数えた）: 書くのをやめる確認（98銘柄のlatest.jsonのiv・判定の前後比較）にはpipelineの手元での実行が要り、手元にXAI_API_KEYがある（Grokを呼ぶ）。書き手はpipeline・core_calculator・validator・growth_sanity・rice・adjustmentsに散る
-- 段階3（CHECK）: 件名「feat: R-A TANUKIの段階3、CHECK-INVをTANUKIにも当てる」のcommit。CHECK-INV-1〜4をTANUKIにも当て、INV-5（NG、画面が読むのに書き手の無いキーが新しくできた）・INV-6（WARN、誰も読まないキーが新しくできた）を足した。
-  既知の規則の二重（TANUKIを含む: 期の名前・割安割高のしきい値・β・WACC・FCFの基準）はWARN。成長率の上限・下限の式はMACRO PULSEの変数〈MAX_GAP_DAYS等〉を拾わないように直した（TANUKIでは1ファイルだけになり二重でなくなった）。
-  一覧のスクリプト: 読み手をパスの全体で照合（同じ名前の別のファイル〈history.json・tickers.json〉の誤った読み手103件が消えた）、パースを段階で共有。rccのCHECK-INVはSEC層とTANUKIで約27秒
-- **保留2件の決着（2026-10-20）**: ①今日の特選銘柄はKoichiさんの判断で機能をまるごと削除（`ad6af70b5c`。daily_pick.py・integrated-dashboard/のJSON 2つ〈フォルダごと〉・画面の区画・ワークフローの段、XAI_API_KEYのenv。
-  TANUKI_Score_Update.ymlはworkflow_dispatch `39427928710`でsuccess、画面は判定の実績表を含めてエラー無し〈手元の配信のロゴの404だけ〉）。
-  ②誰も読まないキー34のうち14の書き込みをやめた（件名「refactor: R-A TANUKI、誰も読まない14キーの書き込みをやめる」のcommit）。前後ともXAI_API_KEYを外してpipelineを手元で回し、96銘柄のlatest.jsonのiv・判定・RICE・TANUKI Scoreは前後で同じ（消したキーと時刻のほかの差も0）。
-  残した20キーの理由は一覧の注記（書き手が見つからない9・テストが参照6・名前が一般的2・validatorの検証の結果2・rccが名前の組で読む1）
-#### HypeCoreの段階（2026-10-21 済）
-- 段階1（一覧の下書き）: `42bf2d11d9`（`build_output_inventory.py --layer hypecore` → `hypecore_layer.json`・`hypecore_layer.md`）。出力3、読み手0件0、画面が読むキー49（書き手なし0）、誰も読まないキー0、規則の二重のうちHypeCoreを含むもの1（TTMの作り方）。
-  キーは全ファイル（98銘柄）で照合（TANUKIの段階2の抜き取りの見落としの教訓）。一覧のスクリプトに画面の区画・ワークフローが自分で書くStep Summary・本番外のHTMLの複製・範囲外のページの確認の表を足した
-- 段階2（判断と削除）: 件名「refactor: R-A HypeCoreの段階2、hypecore.html・Step SummaryのLC・Rec・Extreme Fearのページを削除」のcommit。
-  detail.htmlの7区画はすべて残す（Koichiさんの判断）。消したもの: `src/value/hypecore/hypecore.html`（436行、古い単ページ版）、HypeCore_Update.ymlのStep SummaryのLC・Recの列（常に「--」）、
-  Extreme Fearのページ（`docs/value-monitor/extreme-fear/index.html` 394行と、ナビの項目・HOMEのカード・site-header.jsの`ef`・site-theme.cssの色。Koichiさんの判断: 使っていない）。リンクの監査でリンク切れ0件
-- 段階3（CHECK）: 件名「feat: R-A HypeCoreの段階3、CHECK-INVをHypeCoreにも当てる」のcommit。CHECK-INV-1〜6をHypeCoreにも当てた（INV-5は本番のワークフローでWARN）。既知の規則の二重（TTMの作り方）はWARN。
-  rccのCHECK-INVはSEC層・TANUKI・HypeCoreで約32秒（SEC層・TANUKIだけのときは約26秒）
-- 読み手の数え方の誤り（同じ名前のファイル。HypeCoreの`tickers.json`の読み手が16件と出る。実際は3件）は直さず、一覧の注記に実際の読み手を書いた。
-  この誤りがあると、本当の読み手が読むのをやめても、同じ名前のほかのファイル（TANUKIの`tickers.json`）を読む行が残っていればCHECK-INV-2は「読み手が読んでいない」を出さない（見逃しうる）
-  → 直した（2026-10-21、件名「fix: R-A 一覧のスクリプトの読み手をパスの全体で照合する」のcommit）。ファイル名で当たった行は、行のパスを組み立て（os.path.join・f文字列・Pathの/・モジュールの定数・JSの+と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。フォルダを決めきれない行は止める条件の「読み方を決めきれない」に数える（SEC層3.5%・TANUKI 1.9%・HypeCore 0.0%）。HypeCoreの`tickers.json`の読み手は15件→3件。同じcommitで一覧を作る時間を縮めた（読み書きの場所・関数の代入の索引・コメントを除いた行をモジュールごとに1回だけ作る。出力は前後で同じ。rccのCHECK-INVは直す前の約32秒〈照合の直しだけでは約39秒〉→約21秒）
-#### EPSの段階（2026-10-21 済）
-- 段階1（一覧の下書き）: 件名「chore: R-A EPSの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer eps` → `eps_layer.json`・`eps_layer.md`）。出力5（ファイル4・Step Summary 1）、読み手0件0・テストだけ0、画面が読むキー112（書き手なし4）、誰も読まないキー14、規則の二重のうちEPSを含むもの3（Q4の逆算・同じ期の値の選び方・TTMの作り方）。本番外のコードの候補0件
-- 最初の下書きは止める条件で止めた（`config/cik_lookup.csv`にEPSの外の書き手、1/6）。チャット側の判断でEPSの`save_cik_map`を消し（件名「fix: R-A EPSのget_cikを登録簿を読むだけにし、cik_lookup.csvの書き込みを消す」）、出力から外れた
-- 一覧のスクリプトの直し: 空の文字列の既定値（`eps_data_dir: str = ""`）の引数を呼び出し元からたどる、`from core_calculator import …`のようなsys.pathの形のimportを同じフォルダから探す。直す前は`annual.json`が「テストだけ」に見えた（TANUKIの`calculator/adjustments.py`がFCFの外れ値の一過性の費用の突合に読む）。画面が `../../common/sec_data/rotce/${ticker}.json` のようにファイル名がプレースホルダーだけのJSONを読むとき、型で照合する（直す前は ROTCE の区画のキー18が「書き手なし」に見えた）。範囲外のページの確認にGitHubのAPIで読み書きするページ（admin.html）の読み・書き・起動するワークフローを足した
-- Q4の逆算（`extract_key_facts.py`）を`implied_q4_value()`に寄せられるか（読むだけで調べた）: 寄せられるのは純利益のQ4だけで、EPSが company_facts を Layer3 と同じ形（`first_filed`・`first_val`・`_asof`）で持つ必要がある。調整項目のQ4（年次−9か月の累計）・株式数は対象外
-- 段階2（第1部、件名「refactor: R-A EPSの段階2、管理のページ2つと誰も読まない11キーを消す」のcommit）: Koichiさんの判断で管理のページ2つ（`docs/value-monitor/admin.html`・`adjusted_eps_analyzer/admin.html`、計4,246行）を削除し、操作はClaude Codeが代わりにする（CLAUDE_CODE_START.md「管理の操作の手順」。コードを書き換える2つ〈`growth_sanity.py`のDamodaranの業種の上書き・`portfolio/index.html`のPW_HASH〉は手順にせずチャット側が扱いを決める）。stock.html・一覧の表は残す。`workflow_dependencies.json`の管理のページだけが読んだ欄を削除。誰も読まないキー14のうち11の書き込みをやめた（テストが参照する3つは残す。EPSの286ファイル・TANUKIの96銘柄の理論株価・判定は前後で同じ）
-- 段階3（第2部、件名「feat: R-A EPSの段階3、CHECK-INVをEPSにも当てる」のcommit）: CHECK_LAYERSにeps（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重3つ（Q4の逆算・同じ期の値の選び方・TTMの作り方）はWARN。rccのCHECK-INVは約25.5秒（3段階のときは約22.3秒）
-- 残り4件の決着（2026-10-21、チャット側の判断。件名「refactor: R-A EPSの段階の残り、ワークフロー2本の削除とコードを書き換える管理の操作の手順」のcommit）: 管理のページだけが起動していたワークフロー2本（`TANUKI_CIK_Lookup.yml`〈`cik_lookup.csv`の書き手の二重〉・`TANUKI_Segment_AI.yml`）と出力の`config/cik_lookup_result.json`を削除（23本→21本）。コードを書き換える2つ（Damodaranの業種の上書き・portfolioのパスワード）はCLAUDE_CODE_START.md「管理の操作の手順」に足した（パスワードはKoichiさんが手元でハッシュだけを作って渡す）
-#### STONKS SILOの段階（2026-10-21 済）
-- 段階1（一覧の下書き）: 件名「chore: R-A STONKS SILOの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer stonks` → `stonks_layer.json`・`stonks_layer.md`）。出力1（`docs/value-monitor/stonks-silo/data/results.json`、読み手8・テスト7）と、ワークフローの中で書くStep Summary 1。画面が読むキー80（書き手なし0）、誰も読まないキー12、規則の二重のうちSTONKSを含むもの1（データの古さ・遅れの判定〈SEC層の既知の二重と同じ〉）。画面の区画3（index.htmlのコメントの区切りが少なく、「Table」に66キー）。本番外のコードの候補0件（6ファイル2,620行すべて呼ばれる）。止める条件は書き手0%・読み方5.6%（`fetcher.py:73`）
-- 一覧のスクリプトの直し: `working-directory: <フォルダ>`の段で`python <ファイル名>`と動かすワークフローを起動元・Step Summaryの元として当てる（直す前はSTONKS SILOのStep Summaryが拾えず、TANUKIの一覧の起動元7か所も「見つからない」だった）
-- フォルダの名前（`discover/`の下にある）の付け替えの影響（数えただけ。付け替えはチャット側が段階2で決める）: ワークフロー1（`Stonks_Silo_Update.yml`の`working-directory`）、テスト10ファイル（`os.path.join(..., "discover", "stonks-silo", "src")`でsys.pathに足す。ほかにdocstringだけ1）、リポジトリの根を階層の数で求めるコード6ファイル（STONKSの.py全部。同じ深さ〈例: `src/value/stonks_silo/`〉なら変えなくてよい）、一覧のスクリプトの設定5か所（SEC層の`NON_PRODUCTION_DIRS`・STONKSの`LAYER`・`LAYER_DIRS`・`OUTSIDE_PREFIXES`・`READ_PREFIXES`）。importのパッケージ名としての参照は0（どのファイルもsys.path経由で名前だけで読む）。コメント・文書: コード7ファイル（`layer3_builder.py`・`q4_implied.py`・TANUKIの`pipeline.py`・STONKSの.pyの見出し・画面1）、SYSTEM_MAP.md 8行・CLAUDE_CODE_START.md 2行・BACKLOG.md 1行
-- 段階2（第1部、件名「refactor: R-A STONKS SILOの段階2、フォルダの付け替えと誰も読まない10キーを消す」のcommit）: 画面の区画はKoichiさんの判断ですべて残す。チャット側の判断で`discover/stonks-silo/src/`→`src/value/stonks_silo/`（出力・画面の場所は変えない、SYSTEM_MAP.mdに理由）、画面の見出しの「Discover · 10x Candidates」を「Value Monitor · Early-Stage Growth」に。誰も読まないキー12のうち10の書き込みをやめた（計算に使うgross_margin_trend・テストが参照するlatest_yearは残す）。手元の前後とCIの手動の実行（run 39598656283、success）で、results.jsonは消したキーと時刻のほか同じ、overall_verdict・overall_scoreは24銘柄すべて同じ。一覧の取り違え（register_ticker.pyをSTONKSのpipeline.pyの呼び出しとした）は、引用符の中のパスを全体で照合して直した
-- 段階3（第2部、件名「feat: R-A STONKS SILOの段階3、CHECK-INVをSTONKS SILOにも当てる」のcommit）: CHECK_LAYERSにstonks（CHECK-INV-1〜6、INV-5は本番のワークフローではWARN）。既知の規則の二重1つ（データの古さ・遅れの判定）はWARN。rccのCHECK-INVは約26.3秒（4段階のときは約25.5秒）
-
-#### 市場データ層（common/market_data）の段階（2026-10-22 済）
-- 段階1（一覧の下書き）: 件名「chore: R-A 市場データ層の段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`）。出力7（すべてファイル、書き手はすべて`common/market_data/fetcher.py`、外の書き手0）: daily・attributes・analyst_history・`{T}/market_data_violations_log.json`（各596ファイル）・`_daily_close_retry_log.json`・`_sp500_constituents_cache.json`・`/tmp/daily_status.json`（ワークフローの中だけ）。
-  読み手0件1（`_daily_close_retry_log.json`。書き手が追記のために読み直すだけ）、テストだけ0、1件3（violations_logの1件はパスを作る関数、sp500の控えの1件はファイル名の定数の行で、どちらも実際に読むのは書き手自身）、2件以上3（daily 18・attributes 13・analyst_history 3。投資判断に効くのはdaily・attributes〈TANUKI・HypeCore〉とanalyst_history〈HypeCore〉）。
-  誰も読まないキー20（94のうち。violations_logの区画のキー・analyst_historyのEPSの実績と予想・推奨の内訳・attributesの`next_quarter_eps_date`・`_validation_warnings`等）。規則の二重3（取引日の決め方5ファイル・暫定の足の判定4ファイル・S&P500の構成銘柄の取り方3ファイル。どれも市場データ層を含む）。本番外のコードの候補0件（3ファイル2,135行すべて呼ばれる）。止める条件は書き手0%・読み方3.1%（`fetcher.py:1624`の`--repair-provisional`の入力ファイル）
-- 一覧のスクリプトの直し（Python +194行。設定の追加は約60行、残りは新しい汎用の機能）: 画面を持たない共有の層で、汎用の`_load_json(path)`・`_atomic_write_json(path)`がすべての出力の読み手・書き手になり、それを呼ぶものすべてが読み手になった（TANUKIの`data_fetcher.py`がanalyst_historyの読み手、等）。
-  段階ごとの印で直した（既存の5段階の一覧は前後で同じ〈スクリプトの変更の前後で作る一覧を比べて差0〉。R-Aの終わりに全段階へ広げるか決める）:
-  `IO_HELPER_BY_CALLER`（パスを引数で受けて読み書きする関数は、その出力のパスを渡す呼び出し箇所を読み手・書き手にする）、`DATA_UNREAD_KEYS`（画面の無い層の誰も読まないキー。JSONの全ファイル・入れ子8段まで）、
-  `RESOLVE_STRICT`（`os.path.join`で呼び出し元ごとの候補をそれぞれつなぐ・テストの呼び出しを引数の候補にしない・argparseの引数のパスをワークフローが渡す値から決める・絶対パスの出力・`io.StringIO`をファイルとしない・外のモジュールの関数〈`mcal.get_calendar`〉を同じ名前のリポジトリの関数にしない・ワークフローの`git add`の行を読み手にしない・`{T}`が`^GSPC`に当たる）。印が違う段階では索引を作り直す
-- 一覧の限り: 起動元は書き手のファイル（`fetcher.py`）を動かすワークフローで数えるため、DailyとWeeklyの区別が無い（`--layer`の引数を見ない）。`TANUKI_VALUATION_Update.yml`の「ワークフローが自分で書く出力」は、コメントの中のモジュール名（`common.market_data.reader`）で当たった誤り。CHECK-INVにはまだ入れていない
-- 段階2（第1部、件名「refactor: R-A 市場データ層の段階2、検証の結果のログ・取り直しの記録と誰も読まない1キーを消す」のcommit。Koichiさんの判断）: `{T}/market_data_violations_log.json`（596ファイル）と書き手（`_write_violations_section`・`_violations_log_path`）、`_daily_close_retry_log.json`と追記の処理を削除（保存前の検証・終値の取り直しは残す）。attributesの`next_quarter_eps_date`の書き込みをやめた。
-  analyst_historyの8キー（`current_price_target`・`eps_actual`・`eps_difference`・`eps_estimate`・`price_target_action`・`prior_price_target`・`strong_buy`・`strong_sell`）は溜まる履歴のため残す（3系統とも追記型。earnings_historyはYahooが直近3〜4四半期だけを返し、recommendationsは取得日ごとのスナップショット、upgrades_downgradesは重複を除いて追記）。ワークフロー2本の`git add`の行・`.gitattributes`の行・UPDATE_SCHEDULE.md・`workflow_dependencies.json`の出力の2行も消した。
-  前後の比較: yfinanceの応答を記録して再生するハーネスで11銘柄（株式・ETF・指数・先物・為替）を旧コード／新コードで回し、daily・attributes・analyst_historyの33ファイルは`next_quarter_eps_date`のほか同じ、新コードは検証のログ・取り直しの記録を書かない。TANUKI（96銘柄の理論株価・判定・funda・timing）とHypeCore（98銘柄の全月のstage・小区分）は前後で同じ（手元、XAI・Discordを外し、作り直したデータは戻した）。一覧は出力5、誰も読まないキー10（残す理由を注記）
-- 段階3（第2部、件名「feat: R-A 市場データ層の段階3、CHECK-INVを市場データ層にも当てる」のcommit）: CHECK_LAYERSにmarket_data（CHECK-INV-1〜6。画面が無いため、誰も読まないキー〈data_keys〉が新しくできたらWARN-INV-6）。既知の規則の二重3つ（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方）はWARN（直さず、R-Aの後の根治策の入力）。
-  市場データ層は解決の厳しさ（RESOLVE_STRICT）が違い索引を作り直すため最後に置いた。rccのCHECK-INVは約43.2秒（5段階のときは約27.8秒、市場データ層の分が約15.3秒）
-- **次はTAILの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
-
-#### TANUKI TAIL（src/tail）の段階（2026-10-22 済）
-- 段階1（一覧の下書き）: 件名「chore: R-A TAILの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer tail` → `tail_layer.json`・`tail_layer.md`）。出力20（ファイル19・Discord 1）。書き手はすべて`src/tail`の.py（外の書き手0。ワークフローが自分で書く出力・Step Summaryも0）。
-  読み手0件1（`ctrl/{T}/index.json`。書き手がまとめ直すほかに読むコードは無い）、テストだけ0、1件4、2件以上14。画面（index.html・detail.html・decision_log.html）が読むキー180（書き手なし0）、誰も読まないキー30。規則の二重のうちTAILを含むもの4（同じ期の値の選び方・期の名前・会計年度の決め方・AI〈Grok〉の呼び方〈7ファイル〉）。本番外のコードの候補0件（13ファイル7,115行すべて呼ばれる）。止める条件は書き手0%・読み方0%
-- AIの出力（Grok）のキー: reviewsの`stage1`・`stage2`・`call2`、kpi_proposalsの`proposed_kpis`・`rejected_kpis`、ctrlの`item4_excerpt_ja`、mda・risk_factors・legal_proceedingsの`excerpt_ja`・`segment_outlook`。scenarioはレビューの`stage2.scenarios`から作る（一覧の「何か」の欄）
-- 注記に紐づけたもの（直さない）: レビューの財務の時点（[[TAIL-REVIEW-PERIOD-FILTER-1]]・[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]〈統合済み〉）、SECのUser-Agentの直書き（FINDINGS 2026-10-22）。`kpi_proposer.py`（kpi_proposals・`config/tail_kpi_map.json`の書き手）はワークフローが無く手で動かす（銘柄追加手順）
-- 一覧の限り: `ctrl/{T}/…`と`{item_key}/{T}/…`（mda・risk_factors・legal_proceedings）は同じ型に当たり、読み手が混ざる（注記に書いた）。範囲外: `satellite_alerts.json`は書き手・読み手0件のファイル（FINDINGS 2026-10-22、型A）
-- 一覧のスクリプト（+88行、TAILの設定・注記・規則が約75行）: 市場データ層の印のうち`RESOLVE_STRICT`だけを使った（`os.path.join`の候補ごとの連結で`kpi/{T}_layer2.json`が、絶対パスの一致で`/tmp/tail_commit_message.txt`が決まる。使わないと止める条件に当たる〈書き手25%〉）。`IO_HELPER_BY_CALLER`はTAILにパスを引数で受ける汎用の読み書きの関数が無いため、`DATA_UNREAD_KEYS`は画面があり画面の段階の数え方を使うため、使わない。
-  `RESOLVE_STRICT`を段階の数にし、2（TAILから）で2つ足した: 同じフォルダの`import X as Y`（`sec_items_fetcher.py`の`import sec_ctrl_fetcher as _ctrl`）・名前の並びを回すforの変数（`for path in (period_path, latest_path)`）。市場データ層は1のまま（2にするとMarket Pulseの画面の「経由」の元の表示が1行変わるため）。既存6段階の一覧は前後で差0
-- rccのCHECK-INVは約46.8秒（6段階、TAILは入れていない。参考: TAILを入れると約68.8秒）
-- 一覧のスクリプトの直し（件名「fix: R-A 一覧のスクリプトで、APIを使うページの相対パスの読み込みもページのフォルダから照合する」のcommit）: GitHubのAPIを使うページ（今は`docs/portfolio/tail/index.html`だけ）の`fetch('data/…' + 変数 + …)`を、リポジトリの根からとページのフォルダからの両方の候補で照合する。`ctrl/{T}/index.json`は読み手0件→1件（index.htmlが読む）、`{item_key}/{T}/index.json`は1件→2件以上、index.htmlが12の出力の読み手に。全7段階で読み手0件・テストだけが変わったのはTAILだけで、過去の段階2で消したものの判定は変わらない。secの一覧は画面の「経由」の元の表示2行が変わった
-- 段階2（第1部、件名「refactor: R-A TAILの段階2、satellite_alerts.jsonを消し、残すキーの理由を一覧に書く」のcommit。Koichiさんの判断）: `satellite_alerts.json`を削除（FINDINGSは削除で済）。ほかの出力はすべて残す。誰も読まないキー30もすべて残し、理由（AIの出力・人の入力・レビューの入力の控え・待ち行列の状態・品質の印）を`UNREAD_KEY_NOTES`に書いた。
-  `segment_outlook`はTANUKIのreport.txtに出ていない（2026-09-18の[[SEGMENT-KPI-NARRATIVE-EXTRACTION-FUTURE-IDEA-1]]のSTEP 4で表示を消し、取得はGrokで続いている。FINDINGS 2026-10-22、型A）。画面に出していないレビューのAIの文・品質の印はIDEAS_AND_WATCH.mdの[[UI-STORY-REDESIGN-1]]に追記
-- 段階3（第2部、件名「feat: R-A TAILの段階3、CHECK-INVをTAILにも当てる」のcommit）: CHECK_LAYERSにtail（最後。市場データ層〈RESOLVE_STRICT 1〉・TAIL〈2〉の順で索引を作り直す）。既知の規則の二重4つ（同じ期の値の選び方・期の名前・会計年度・AI〈Grok〉の呼び方7ファイル）はWARN（直さず、R-Aの後の根治策の入力）。rccのCHECK-INVは約67.3秒（6段階のときは約46.8秒）。時間を縮める直しはR-Aの終わりの見直しで扱う
-- **次はPortfolioの段階1**（残りの順は2026-10-21 チャット側が決めた: market_data → TAIL → Portfolio → MACRO PULSE → Market Pulse）
-
-#### Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data）の段階（2026-10-22 段階1済、2026-10-23 段階2・3済）
-- 段階1（一覧の下書き）: 件名「chore: R-A Portfolioの段階1、出力の一覧の下書き」のcommit（`build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`）。出力4（すべてファイル）:
-  `history.json`（`snapshot.py`、TANUKI_Score_Update.yml）・`portfolio.json`（**コードの書き手なし、人の入力**。「管理の操作の手順」でClaude Codeが直接編集、最後の更新は2026-06-03。読み手9: 画面・snapshot.py・TAIL・System Health・Market Pulse）・`discover_config.json`と`theme_config.json`（Discover_Config_Sync.ymlが`config/`から`cp`で写す）。
-  読み手0件0、テストだけ0、1件2（history.json・theme_config.json。theme_configのdocs/の写しを読むのはrccの同期の確認〈CHECK-32〉だけで、画面は読まない）、2件以上2。画面（`docs/portfolio/index.html`）が読むキー33（書き手なし0）、誰も読まないキー10（history.jsonの合計9つ・themes）。
-  規則の二重のうちPortfolioを含むもの0。本番外のコードの候補0件（snapshot.py 142行は呼ばれる）。止める条件は書き手0%・読み方6.2%（`scripts/analysis/market_pulse_redesign.py`の`git show`）
-- 一覧のスクリプト（+78行、Portfolioの設定・注記が約45行）: 新しい機能 `EXTRA_OUTPUT_DIRS`（Pythonの書き手の無いファイルも出力に加える。書き手はワークフローの`cp`、無ければ空。Portfolioはコードの書き手が`history.json`だけで、`portfolio.json`と写しが一覧から漏れるため）、
-  `SCREEN_PAGES`にファイルそのものも書けるように（`docs/portfolio/`にはTAILの画面もある）、`RESOLVE_STRICT` 3（ワークフローの`git commit -m`の件名・`cp`の写し先・`git add`の`\`の続きの行を読みとしない。`git commit -F <ファイル>`は読み。TAILの一覧を変えないよう2と分けた）。Portfolioは3を使う（使わないと`git add`の行が読み手になり、読み方が10.0%で止める条件の境目）。
-  `IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`は使わない（汎用の読み書きの関数が無い・画面がある）。既存7段階の一覧は前後で差0。rccのCHECK-INVは約66.7秒（7段階、Portfolioは入れていない）
-- 段階2（第1部、件名「refactor: R-A Portfolioの段階2、theme_config.jsonとthemesを消す」のcommit。2026-10-23 Koichiさんの判断）:
-  `config/theme_config.json`・`docs/portfolio/data/theme_config.json`を削除し、Discover_Config_Sync.ymlのtheme_configの行（paths・cp・git add・件名）とrccのCHECK-32のtheme_configの組を外した。ワークフローのコメントの読み手（削除済みの`src/discover/collect.py`）を今の読み手（`register_ticker.py`・`registration_validator.py`）に直した。
-  `config/discover_config.json`の各銘柄の`themes`（91銘柄）を消し（docs/の写しも同じ内容に。pushで同期のワークフローも走る）、書き手の`register_ticker.py`のStep 6も書くのをやめた（読み手は`tickers`のキーと`category`だけ。名前・`.items()`・`for`の経路をgrepして0件）。
-  history.json・portfolio.json・discover_config.jsonは残す。history.jsonの合計9キーは日ごとの記録で作り直せないため残し、理由を`UNREAD_KEY_NOTES`に書いた。
-  前後の比較: 画面が読むキーは33→32（書き手なし0のまま）。減った`color`は画面の中の`PHASE_CFG`の値で、theme_config.jsonのキーと名前が同じだったため一覧が書き手に数えていた（`label`も同じで、書き手の表示が「ほかの書き手あり」に変わった）。`registration_validator.py`の全銘柄の出力は前後で同じ（NG=7・WARN=11は前から）。`register_ticker.py`のStep 6を写しのファイルに当てた結果は`themes`が無いことだけ違う
-- 範囲外（直さない）: 保有銘柄の一覧が3か所にある件はPROJECT_STATUS.mdのR-Aの終わりの論点⑥。`discover_config.json`・Discover_Config_Sync.ymlの名前はFINDINGS 2026-10-23（型E）
-- 段階3（第2部、件名「feat: R-A Portfolioの段階3、CHECK-INVをPortfolioにも当てる」のcommit）: CHECK_LAYERSにportfolio（最後。解決の厳しさ3で索引を作り直す）。Portfolioを含む規則の二重は0で、rccのWARNは149件のまま。rccのCHECK-INVは約64〜66秒（8段階。同じ条件で7段階は約58秒で、Portfolioの分は約8秒）。rcc全体は約85秒。時間を縮める直しはR-Aの終わりの見直し（論点②）で扱う
-- 段階1〜3が済んだ。次はMACRO PULSEの段階1（残りの順は2026-10-21 チャット側が決めた: MACRO PULSE → Market Pulse）
-
-#### MACRO PULSE（common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulse）の段階（2026-10-23 段階1〜3済）
-- 段階1（一覧の下書き）: 件名「chore: R-A MACRO PULSEの段階1、出力の一覧の下書き」のcommit。2つに分けた: `--layer macro_data` → `macro_data_layer.json`・`.md`（画面の無い共有のデータ層）、`--layer macro_pulse` → `macro_pulse_layer.json`・`.md`（画面は`docs/market-monitor/macro-pulse/index.html`）
-- macro_data: 出力4（`series/{series_id}.json` 26ファイル・`macro_data_violations_log.json`・`series_meta.json`〈**コードの書き手なし、人の手で書く静的なファイル**〉・Step Summary）。読み手0件0、テストだけ0、1件1（series_meta.json〈fetcher.py〉）、2件以上2。
-  series はMACRO PULSE・Market Pulseが`reader.py`経由で読み、violations_logはSystem Healthの[L]が読む。誰も読まないキー3（series_metaの`consumers`・`input_id`、seriesの`fallback_used`）。止める条件は書き手0%・読み方0%。
-  本番外のコードの候補1（`migrate_bamlh0a0hym2_history.py`、ワークフロー・ほかのコードから呼ばれない。実行は2ff481b3ad〈2026-08-12〉の1回）
-- macro_pulse: 出力8（CSV 5つ・`05_meta.json`・`05_events.csv.bak_{datetime}`〈05_backfill_nfp_mom.pyの控え、gitに無い。読み手0件〉・Discord）。2件以上6。
-  AIの出力（Grok）: `05_fed_context.csv`のregime・dominant_concern・dominant_label・ai_reason、`05_weekly_analysis.csv`のsummary・factor_analysis・watchpoints・indicator_comments（一覧の「何か」の欄）。
-  画面が読む列・キー48（書き手なし0）、誰も読まない列8（05_events.csvの`analysis`〈全行が空〉・`ret_t1`・`ret_t5`・`ret_t10`・`ret_t20`・`surprise_pct`〈画面の`COL`の対応表にあるが使われない〉、05_fed_context.csvの`zq_price`・`zq_ticker`）。
-  本番外のコードの候補3（`05_import_history.py`・`05_backfill_nfp_mom.py`・`05_audit.py`。どれもワークフロー・ほかのコードから呼ばれない。実行の記録〈commit〉は一覧の表）。
-  **止める条件は書き手12.5%で当たる**: 決めきれない書き込みではなく、`scripts/analysis/macro_events_sp500_asof_repair.py`（M-3の修復のスクリプトの残り。ほかの3つは2026-10-20に削除）が本当に`05_events.csv`を書くため（出力8のうち1）。読み方は1.9%（`05_import_history.py`の`import_from_csv`が引数のファイルを読む）
-- 規則の二重（MACRO PULSE・マクロデータ層のファイルを含むもの）: 取引日の決め方（`05_main.py`の米国の祝日・営業日）・景気後退リスクの点数の計算（Python・JS）・指標ごとの段階の信号（Python・JS）・FREDのAPIを直接呼ぶ所（`common/macro_data/fetcher.py`・`05_main.py`の公表日・`market_calendar.py`の公表日）・AI（Grok）の宛先の直書き（10ファイル）・JSONの書き込みの実装（macro_data・market_data）
-- 一覧のスクリプト（+169行、2段階の設定・注記・検出式が約119行）: 新しい印 `CSV_COLUMNS`（CSVの見出しの行の列をJSONのキーと同じに扱う）・`NONPROD_NOTES`（本番外のコードの表に「実行の記録・注記」の欄）・`JS_ID_HELPERS`（ページの`el('id')`のようにgetElementByIdを包んだ関数も要素のidとし、画面の区画を決める）・`RESOLVE_STRICT` 4（`importlib`でファイルから読み込んだモジュール〈`_m = module_from_spec(spec_from_file_location(…, 05_main.py))`〉をimportと同じに扱う）。
-  `EXTRA_OUTPUT_DIRS`はコード・文書のファイルを出力にしないようにした（Portfolioの一覧は変わらない）。macro_dataは市場データ層と同じ`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`・`RESOLVE_STRICT` 1と`EXTRA_OUTPUT_DIRS`（series_meta.json）を使う。既存8段階の一覧は前後で差0。CHECK-INVには入れていない
-- 範囲外: FINDINGS 2026-10-23（型E 2行: `common/macro_data`の説明文の「本番の消費者は存在しない」、Grokの代わりの文と週次のワークフローの「Gemini」）
-- 段階2（第1部、件名「refactor: R-A MACRO PULSEの段階2、手で動かすスクリプト4つと誰も読まない列・キーを消す」のcommit。2026-10-23 Koichiさんの判断）:
-  1回だけの修復・移行で適用済みの`scripts/analysis/macro_events_sp500_asof_repair.py`・`05_backfill_nfp_mom.py`・`migrate_bamlh0a0hym2_history.py`を削除し、参照するテスト（`TestSp500AsofRepairWindow`）を消した。`05_import_history.py`は、CLAUDE_CODE_START.md・MACRO_PULSE_LOGIC_INVENTORY.md等に履歴の作り直しに使う手順が無い（過去の実行・復旧の記録だけ）ため**削除**。
-  `05_events.csv`の`analysis`（全行が空）・`ret_t1/5/10/20`・`surprise_pct`の列を消し（kaihatsu上で消してcommit）、`05_main.py`の書き込み（新しい行・`--fill-returns`・`--recalc`）と画面の`COL`の対応表の2行も消した。名前のgrep（for・items()・行の丸ごとの写しを含む）で想定外の読み手は無かった。
-  macro_dataの誰も読まないキー3つを消した: `series_meta.json`の`consumers`（reader.pyに切り替える前の取り方の古い説明）・`input_id`（INPUT_DATA_AS_IS.mdの表から作り直せる参照の番号）、`series/BAMLH0A0HYM2.json`の`fallback_used`（消した移行のスクリプトが6,947件に書いた値、すべてFalse）。消した移行のスクリプトだけが読んでいた`source_detail`が新しく誰も読まないキーになり、値の出所の記録として残す（`UNREAD_KEY_NOTES`）。`zq_price`・`zq_ticker`・`05_audit.py`・violations_logは残す。
-  前後の比較（scratchpadに写したデータで05_main.pyの関数を動かす。XAI・Discordを外す）: 60週分の点数・局面・指標の値、比較バーと同じ過去の点数の差（7日・30日）、サプライズ、直近の発表、週次の解説でGrokに渡す引数、`--recalc`・`--fill-returns`の結果（消した列のほか）がすべて同じ。`browser_checks/check_macro_pulse.py`（実ブラウザ）は前後とも一致67・不一致5・判定不能1で、各行も同じ。
-  一覧を作り直し、止める条件は2つとも0%・0%（macro_pulseの12.5%は消した修復のスクリプトの分）。macro_pulseの解決の厳しさは1にし、段階1で足した4（importlibで読み込んだモジュール）は使う所が無くなったため外した。
-  文書: MACRO_PULSE_LOGIC_INVENTORY.mdの2-1（書き手・`--date`）とM-3の修復のスクリプトに削除を注記、SYSTEM_MAP.mdの2か所に削除を注記
-- 段階3（第2部、件名「feat: R-A MACRO PULSEの段階3、CHECK-INVをmacro_data・macro_pulseにも当てる」のcommit）: CHECK_LAYERSの市場データ層の後にmacro_data・macro_pulse（解決の厳しさはどれも1で、索引を作り直さない）。既知の規則の二重（macro_data 2: FREDのAPI・JSONの書き込み、macro_pulse 5: 取引日・景気後退リスクの点数・段階の信号・FREDのAPI・Grokの宛先）はWARN。rccのWARNは149→156件。rccのCHECK-INVは約67秒（10段階。8段階のときは約65秒）、rcc全体は約87秒。macro_dataのStep Summaryに注記を足した
-- 段階1〜3が済んだ。次はMarket Pulseの段階1（R-Aの最後のサブシステム）
-
-#### Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の段階（2026-10-23 段階1〜3済）
-- 段階1（一覧の下書き）: 件名「chore: R-A Market Pulseの段階1、出力の一覧の下書き」のcommit。`--layer market_pulse` → `market_pulse_layer.json`・`.md`（画面は`docs/market-monitor/market-pulse/index.html`）
-- 出力7: `market_data.json`・`market_data.csv`（列を数える）・`breadth_data.json`・`sp500_tickers.json`・`nyse_holidays.json`・`02_market_rss.txt`（**コードの書き手なし、人の手で書くRSSの一覧**。読み手は`collect_and_send.py`の`get_market_news`）・メール（Gmail）。
-  **通知はDiscordでなくメール**（`collect_and_send.py`の`send_email`、smtplib。Market PulseにDiscordの送信は無い）。読み手0件0、テストだけ0、1件2（`market_data.csv`は書き手が見出しを確かめるだけ・`02_market_rss.txt`）、2件以上4。
-  AIの出力（Grok）: `market_data.json`のsummary・comments_historyのsummary・haiku（judgmentはsummaryから取り出す）、headlinesのitemsのtitle_ja・marketとtranslation・relevance、`market_data.csv`のsummary列（一覧の「何か」の欄）。
-  画面が読むキー152（書き手なし1: `m7_missing`。`sector_rotation.py`がM7の値が欠けた日だけ書くため、今のデータに無い）、誰も読まないキー48（`ai_facts`・`backfilled_at`・`stage3`・`stage4`等。CSVの`sentiment_score`・`sentiment_label`、breadth_dataの`stocks_ahead_of_base_date`を含む）。
-  本番外のコードの候補4（`backfill_implb.py`・`backfill_implc.py`・`backfill_stage_conclusions.py`・`backfill_tech_pulse.py`。どれもワークフロー・ほかのコードから呼ばれない。実行の記録〈commit〉と手順の文書は一覧の表）。止める条件は書き手0%・読み方4.3%
-- 同じ情報の別の写し: `sp500_tickers.json`は市場データ層の`_sp500_constituents_cache.json`と同じ（2026-10-23は503銘柄で一致、取り方も同じ）。`nyse_holidays.json`の休場日は、市場データ層（pandas_market_calendarsを直接）とMACRO PULSE（`05_main.py`の`us_holidays`、手で書いた祝日の規則）にも別にある
-- 規則の二重（Market Pulseのファイルを含むもの6）: 既知の5つ全部に当たる（取引日〈`breadth_calculator.py`の`_recent_trading_days`〉・暫定の足〈`collect_and_send.py`・`futures_snapshot.py`〉・S&P500の構成銘柄〈`get_sp500_tickers`〉・FREDの直接の呼び出し〈`market_calendar.py`の公表日〉・Grokの宛先〈`collect_and_send.py`・`news_headlines.py`〉）。
-  新しい検出式「休場日の一覧の作り方」が`05_main.py`の`us_holidays`と`collect_and_send.py`の`write_nyse_holidays`に当たる
-- 2026-09-26からの再設計（`MARKET_PULSE_REDESIGN.md`、実装A〜C）で足した出力のキーを`market_data.json`の「何か」に注記した（stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures）。直していない
-- 一覧のスクリプト（+79行）: メール（smtplibの`send_message`・`sendmail`）を通知の出力に数える（smtplibを使うのはリポジトリで`collect_and_send.py`だけで、ほかの段階は変わらないため印にしない）。
-  段階の印は既存のものだけ: `CSV_COLUMNS`（market_data.csv）・`NONPROD_NOTES`（手で動かすスクリプトの実行の記録）・`RESOLVE_STRICT` 2（`import collect_and_send as cs`。1では手で動かすスクリプトの書き手3件を決めきれず止める条件33.3%で当たる。3も同じ一覧）・`EXTRA_OUTPUT_DIRS`（02_market_rss.txt）。
-  既存10段階の一覧は前後で差0。CHECK-INVには入れていない。画面の区画はページに`<!-- -->`の見出しが少なく（7つ）、ほとんどのキーが「③ 折れ線グラフ」に入る（推定の精度は低い）
-- 段階2（第1部、Koichiさんの判断 2026-10-23。件名「refactor: R-A Market Pulseの段階2、手で動かすスクリプト4つを消す」のcommit）:
-  `backfill_implb.py`・`backfill_implc.py`・`backfill_stage_conclusions.py`・`backfill_tech_pulse.py`を削除（一過性の道具で適用済み）。名前のgrepで、ワークフロー・ほかのコード・テストからの参照は0件（テストの説明文1か所・コードのコメントの「backfill_tech_pulse.py型」は残す）。
-  CLAUDE_CODE_START.mdのマージの手順（統合済み）の2か所と`series_meta.json`のVXNCLSの注記に削除を注記。過去の記録（BACKLOG_DONE.md・MARKET_PULSE_REDESIGN.md の経緯）は消していない。
-  出力7はすべて残す（`sp500_tickers.json`・`nyse_holidays.json`は市場データ層・MACRO PULSEとの二重で、PROJECT_STATUS.mdの論点⑤）。誰も読まないキー48も全部残し、理由を`UNREAD_KEY_NOTES`に書いた（段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。
-  再設計・画面のストーリー化〈[[UI-STORY-REDESIGN-1]]〉の入力。`backfilled_at`は書き手が消えるため「過去の行の記録」）。消した`backfill_implc.py`だけが読んでいた`headlines.relevance`の`true`・`false`（Grokの関係の判定の件数）が新しく誰も読まないキーになり、判定の記録として残した（計50）。IDEAS_AND_WATCH.mdの[[UI-STORY-REDESIGN-1]]に1行。
-  一覧を作り直した（止める条件は書き手0%・読み方4.8%）。消したスクリプトがほかの段階の出力の読み手に数えられていた（NG-INV-2が11件: TANUKI・HypeCore・市場データ層・マクロデータ層・TAIL・Portfolio）ため、その6段階の一覧も作り直した。一覧の「消したもの」の見出しの日付がPortfolio・MACRO PULSE（2つ）でも2026-10-20のままだった（段階の日付の表に足していなかった）ため直した
-- 段階3（第2部、件名「feat: R-A Market Pulseの段階3、CHECK-INVをMarket Pulseにも当てる」のcommit）: CHECK_LAYERSのTAILの後・Portfolioの前にmarket_pulse（解決の厳しさ2でTAILと同じ。索引を作り直す回数は増えない）。
-  既知の規則の二重6つ（取引日・暫定の足・S&P500の構成銘柄・FREDの直接の呼び出し・Grokの宛先・休場日の一覧の作り方）はWARN。rccのWARNは156→162件。rccのCHECK-INVは約72.6秒（11段階）
-- **R-Aの11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3が済んだ（2026-10-23）。次はR-Aの終わりの見直し（PROJECT_STATUS.mdの論点①〜⑥、チャット側が論点ごとの案を出す）**
-
-#### R-Aの終わりの見直し（Koichiさんの判断 2026-10-23）
-- 1（論点③、件名「refactor: R-Aの終わりの見直し1、一覧のスクリプトの段階ごとの印を1つの設定にする」のcommit）: 解決の厳しさ・キーの全ファイルの走査・画面の区画・ワークフローのStep Summary・本番外のコードの走査・CSVの列・getElementByIdを包んだ関数の印をやめ、全段階で一番厳しい側の設定にした（コードの分かれ道を外した）。
-  画面の無い層（SEC層・市場データ層・マクロデータ層）だけJSONの誰も読まないキーを出す。
-  **`IO_HELPER_BY_CALLER`（汎用の読み書きの関数を、パスを渡す呼び出し箇所に置き換える）は広げなかった**: SEC層に当てると`SECReader`の`self._load_json(path)`形の呼び出し（`get_annual_range`のlistdirのパス等）を読み手にできず、
-  本当の読み手（TANUKIの`data_fetcher.py`・`core_calculator.py`・`pipeline.py`、STONKSの`pipeline.py`、`fetcher.py`の旧CIKの控えの読み）が消え、TANUKIの一覧が約290秒かかった。市場データ層・マクロデータ層だけのまま。
-  11層の一覧の差: 読み手の増減27行をコードで確かめた。消えた本番の読み手はワークフローの`git add`（`\`の続きの行を含む）・commitの件名の6行（Beta_Config_Update・Score_Verifier・TAILの2本）で読みではない。
-  増えた読み手1行（STONKSの`pipeline.py`→`financial_as_of.build`→`load_submissions`がsubmissions.jsonを読む）は本当の読み手。消えたテストの読み手20行は、一時のフォルダ・差し替えた関数を渡すテストの呼び出しか、関数の名前の取り違え（`_save_result`）。
-  新しく出たもの: SEC層の誰も読まないキー129（JSONのキー12,527のうち）、TANUKIの画面の誰も読まないキー29→50（増えた21はすべて`history/{filename_safe}.json`の過去のスナップショットにだけある古いキー）、SEC層の本番外のコードの候補から、ほかのコードが参照する2ファイル（見たファイルの一覧には残る）。
-  過去の段階2で消したもの（DELETED）は11層とも前後で同じ。出力の数も同じ。CHECK-INVはNG=0（rccのCHECK-INVは約72.6秒→約117.7秒。TANUKI・SEC層のキーの全ファイルの走査による）
-- 2（論点②、件名「perf: R-Aの終わりの見直し2、CHECK-INVの時間を短くする」のcommit）: 時間の大半は出力のJSON（TANUKIのhistory約2.9万ファイル等）を読んでキーを集めることだった。
-  ファイルごとのキーの要約（最上位のキー・入れ子8段までのキー・キーごとの親）を、ファイルの中身のgitのblobのhashで控えて使い回す（`.cache/output_inventory/file_keys.json`、.gitignore済み。
-  hashはindexのblobで、作業ツリーで変えたファイルは`git hash-object`で今の中身から作る。今のどのファイルの中身でもないblobの控えは書くときに捨てる）。
-  あわせて、文字の照合の前に式に必ず要る文字列を`in`で見る・段階に関係しない規則の検出と`git ls-files`をプロセスで1回にした。11層の一覧は前後でバイト単位で同じ。
-  **rccのCHECK-INVは約117.7秒→控えのある2回目から約26.9秒（控えの無い1回目は約65.7秒）。rcc全体は約138秒→約49秒**。入力が変わったときに古い控えを使わないことをテスト2件で確かめる（一時のgitのリポジトリで、commit前に作業ツリーの中身を変える）
-- 3（論点④、件名「refactor: R-Aの終わりの見直し3、一覧のスクリプトを解析・段階の設定・書き出しに分ける」のcommit）: `scripts/inventory/`を4つに分けた（中身は移すだけ）。
-  `inventory_layers.py`（段階の設定: 対象のフォルダ・注記・判断・消したもの・規則の検出式・既知の二重・CHECK_LAYERS。840行）・
-  `inventory_analysis.py`（AST・grep・パスの解決・一覧の組み立て・キーの控え・CHECK-INV。`set_layer()`がこのモジュールの変数を段階の値に差し替える。2,446行）・
-  `inventory_render.py`（mdの書き出し。今の段階の値は解析のモジュールから読む。294行）・`build_output_inventory.py`（入口: コマンドと、rccが呼ぶ`run_check`。72行）。
-  3,609行→合計3,652行（各ファイルの説明文・import）。一覧のスクリプト自身として解析から外すのを`scripts/inventory/`の全ファイルに広げた（段階の設定に出力のパスが並ぶため）。
-  11層の一覧は前後でバイト単位で同じ、テストは同じ43件でパス（テストは`inventory_analysis`を読む）。段階を足すときは`inventory_layers.py`に設定を足す
+あり（保有銘柄の監視の対象・画面の表）。今は3か所が同じで値は違っていない
 
 #### 規模の見込み
-大（段階ごと。SECデータ層だけで数セッション、推定）
+中
+
+---
+
+### [MARKET-CALENDAR-UNIVERSE-UNIFY-1] 取引日・休場日・暫定の足の判定・S&P500の構成銘柄を、common/の1か所にまとめる（R-E1）
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型B・根治策（R-E1。R-Aの論点⑤。実装は[[HOLDINGS-SINGLE-SOURCE-1]]の後、実装の指示はチャット側）
+**優先度:** 高
+**分類:** 根治策 / common/market_data・MACRO PULSE・Market Pulse・rcc
+**登録日:** 2026-10-23
+**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）
+
+#### 内容（2026-10-23の一覧の検出）
+- 取引日（市場の営業日）の決め方: 5ファイル（`common/market_data/fetcher.py`・`common/market_data/reader.py`・`common/sec_data/report_consistency_check.py`・`src/market/macro_pulse/05_main.py`・`src/market/market_pulse/breadth_calculator.py`）
+- 休場日: Market Pulseの`docs/market-monitor/market-pulse/data/nyse_holidays.json`（`collect_and_send.py::write_nyse_holidays`、pandas_market_calendarsから書く）・市場データ層のpandas_market_calendarsの直接の呼び出し（`fetcher.py`・`daily_guard.py`）・MACRO PULSEの`05_main.py::us_holidays`（手で書いた祝日の規則）
+- 暫定の足の判定: 4ファイル（`common/market_data/fetcher.py`・`common/sec_data/report_consistency_check.py`・`src/market/market_pulse/collect_and_send.py`・`src/market/market_pulse/futures_snapshot.py`）
+- S&P500の構成銘柄: `docs/market-monitor/market-pulse/data/sp500_tickers.json`（`breadth_calculator.py::get_sp500_tickers`）と`common/market_data/_sp500_constituents_cache.json`（`fetcher.py::get_sp500_constituents`）。同じ取り方の別の写し（10-23は503銘柄で一致）
+- これらを`common/`の1か所（市場データ層の読み取りのAPI等）にまとめ、各読み手はそこから読む
+
+#### 条件
+- 各読み手の前後比較（全銘柄・全系列）: 市場データ層のdaily・TANUKI・HypeCore・Market Pulse（ブレッス・8段階の結論）・MACRO PULSE（点数・局面）・rccで、まとめる前後の出力が同じであること
+
+#### 束ねた件
+- FINDINGS 2026-10-20（`NIY=F`の2026-10-07の行が確定値でない足のまま確定値の顔で残る、型C）
+
+#### 始める段（CHAT_RULES 4）
+定義（取引日・休場日・暫定の足の決まりを1つにする）
+
+#### 投資判断への影響
+将来ありうる（片方だけがずれる）。今は値の違いは見つかっていない
+
+#### 規模の見込み
+中
+
+---
+
+### [EXTERNAL-API-CLIENT-UNIFY-1] Grok・SEC・FREDの呼び出しを共通の呼び出し口にまとめ、費用・失敗の扱いをそろえる（R-E2）
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-E2。R-Aの論点⑤。実装は[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]の後、実装の指示はチャット側）
+**優先度:** 高
+**分類:** 根治策 / 外部のAPIを呼ぶ全サブシステム（TANUKI・EPS・TAIL・MACRO PULSE・Market Pulse・SECデータ層・マクロデータ層）
+**登録日:** 2026-10-23
+**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）・FINDINGS
+
+#### 内容（2026-10-23の一覧の検出とgrep）
+- Grokの呼び出し: 10ファイル11か所（`05_main.py`は2か所）: `src/market/macro_pulse/05_main.py`・`src/market/market_pulse/collect_and_send.py`・`news_headlines.py`・`src/tail/kpi_proposer.py`・`quarterly_review_generator.py`・`sec_ctrl_fetcher.py`・`text_kpi_extractor.py`・`src/value/adjusted_eps_analyzer/ai_analyzer.py`・`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py`・`validator.py`。
+  宛先・モデル・タイムアウト・再試行・429・費用の扱いを共通の呼び出し口にそろえる。Grokが使えないときの代わりの文（MACRO PULSEの「Gemini」の文言）もそろえる
+- SECのUser-Agent: 10ファイル10か所に直書き（文字列4種）。GitHubのsecretの`SEC_USER_AGENT_EMAIL`から読む共通の呼び出し口にする
+- FREDのAPIの直接の呼び出し: 3ファイル（`common/macro_data/fetcher.py`・`src/market/macro_pulse/05_main.py`の公表日・`src/market/market_pulse/market_calendar.py`の公表日）
+
+#### 束ねた件
+- FINDINGS 2026-10-21（`SEC_USER_AGENT_EMAIL`の読み手が無い、型A）・2026-10-22（SECのUser-Agentの直書き、型B）・2026-10-23（Grokの代わりの文とワークフローの「Gemini」、型E）
+
+#### 始める段（CHAT_RULES 4）
+取得の確認（呼び出し口ごとの失敗の扱い）
+
+#### 投資判断への影響
+将来ありうる（呼び出しの失敗・費用の扱いが場所ごとに違う）。今は値の違いは見つかっていない
+
+#### 規模の見込み
+中
 
 ---
 

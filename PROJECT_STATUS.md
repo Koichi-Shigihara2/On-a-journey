@@ -18,7 +18,8 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`: **11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3が済んだ（2026-10-23）。CHECK-INVはこの11段階。次はR-Aの終わりの見直し（下の論点①〜⑥）で、チャット側が論点ごとの案を出す**。
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`: **11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3と、R-Aの終わりの見直し1〜4が済み、R-Aを閉じた（2026-10-23。BACKLOG_DONE.mdへ）。CHECK-INVはこの11段階。
+   次は ⑥[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]] → R-E2[[EXTERNAL-API-CLIENT-UNIFY-1]] の順で、チャット側が実装の指示を出す**。
    FINDINGS.mdの2026-10-23のcheck_macro_pulse.pyの行（型C、確認の結果が実行の時刻で変わる）は束ねの入力のまま残す
    - （済 2026-10-23）Market Pulseの段階3: CHECK-INVをMarket Pulseにも当てた（11段階、TAILの後。既知の規則の二重6つはWARN、rccのCHECK-INVは約72.6秒）
    - （済 2026-10-23）Market Pulseの段階2（Koichiさんの判断）: 手で動かすスクリプト4つ（backfill_*）を消した。出力7・誰も読まないキー48は残す（理由は一覧に。消したスクリプトだけが読んでいた`relevance`の`true`・`false`も残し計50）。消したスクリプトをほかの6段階の一覧が読み手に数えていたため作り直した。BACKLOG.mdの「Market Pulseの段階」
@@ -30,17 +31,17 @@
    - （済 2026-10-23）Portfolioの段階2（Koichiさんの判断）: `theme_config.json`（`config/`・`docs/`）を消し、Discover_Config_Sync.ymlの写しとrccのCHECK-32の組を外した。`discover_config.json`の各銘柄の`themes`を消し、`register_ticker.py`も書くのをやめた。history.json・portfolio.json・discover_config.jsonは残す（history.jsonの合計9キーは日ごとの記録で作り直せない）。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - （済 2026-10-22）Portfolioの段階1の一覧の下書き: `build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`。出力4（`portfolio.json`はコードの書き手なし・人の入力、写し2つはワークフローの`cp`）、読み手0件0、画面が読むキー33（書き手なし0）、誰も読まないキー10、Portfolioを含む規則の二重0。止める条件は書き手0%・読み方6.2%。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
-     ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
+     ①（済 2026-10-23、見直し4: CHECK-INV-3の種類の数＋MAC-11・MAC-20の2件の1つの数に。CHAT_RULES.md「発見の溜め方と根治の判断」6）二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
      ②rccのCHECK-INVの時間（約72.6秒、11段階。市場データ層・マクロデータ層・MACRO PULSE・TAIL・Market Pulse・Portfolioは解決の厳しさが違い索引を作り直す）
        → 済（2026-10-23、見直し2）: キーの要約をファイルの中身のhashで控える。CHECK-INVは見直し1の後の約117.7秒→約26.9秒（控えの無い1回目は約65.7秒）
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
        → 済（2026-10-23、見直し1）: `IO_HELPER_BY_CALLER`のほかは全段階で1つの設定に。`IO_HELPER_BY_CALLER`はSEC層で本当の読み手が消えるため広げない（BACKLOG.mdの「R-Aの終わりの見直し」）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）
        → 済（2026-10-23、見直し3）: `inventory_layers.py`（段階の設定）・`inventory_analysis.py`（解析・CHECK-INV）・`inventory_render.py`（md）・`build_output_inventory.py`（入口）に分けた
-     ⑤規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）。
+     ⑤（2026-10-23、見直し4でBACKLOGに登録: R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]・R-E2[[EXTERNAL-API-CLIENT-UNIFY-1]]）規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）。
        同じ情報の別の写し: `docs/market-monitor/market-pulse/data/sp500_tickers.json`と`common/market_data/_sp500_constituents_cache.json`（S&P500の構成銘柄）、
        休場日の3か所（Market Pulseの`nyse_holidays.json`・市場データ層のpandas_market_calendarsの直接の呼び出し・MACRO PULSEの`05_main.py`の`us_holidays`）（2026-10-23 Market Pulseの段階2で追加）
-     ⑥保有銘柄の一覧が3か所（`docs/portfolio/data/portfolio.json`・`config/discover_config.json`の区分「保有中」・TAILの`docs/portfolio/tail/data/positions_index.json`）にあり、Portfolioの画面に「区分未反映」の警告がある。正を1つにするか（2026-10-23 チャット側が挙げた。Portfolioの段階2の範囲外。10-23の時点では3か所とも同じ9銘柄）
+     ⑥（2026-10-23、見直し4でBACKLOGに登録: [[HOLDINGS-SINGLE-SOURCE-1]]）保有銘柄の一覧が3か所（`docs/portfolio/data/portfolio.json`・`config/discover_config.json`の区分「保有中」・TAILの`docs/portfolio/tail/data/positions_index.json`）にあり、Portfolioの画面に「区分未反映」の警告がある。正を1つにするか（2026-10-23 チャット側が挙げた。Portfolioの段階2の範囲外。10-23の時点では3か所とも同じ9銘柄）
    - （済 2026-10-22）TAILの`segment_outlook`（MD&AのセグメントのAIの見通し）の生成を止めた（件名「refactor: TAILのsegment_outlookの生成を止める」。読み手0件・report.txtにも出ていなかった。`segment_growth_outlook_ai.py`を削除）
    - （済 2026-10-22）市場データ層の段階1の一覧の下書き: `build_output_inventory.py --layer market_data` → `market_data_layer.json`・`market_data_layer.md`。出力7、読み手0件1（`_daily_close_retry_log.json`）、誰も読まないキー20、規則の二重3（取引日・暫定の足・S&P500の構成銘柄）。止める条件は書き手0%・読み方3.1%。
      一覧のスクリプトに段階ごとの印3つ（汎用の読み書きの関数は呼び出し箇所を読み手・書き手に、画面の無い層の誰も読まないキー、解決を厳しく）。既存の5段階の一覧は差0。段階2（2026-10-22）: 検証の結果のログ（596ファイル）・取り直しの記録・attributesの`next_quarter_eps_date`を削除、analyst_historyの8キーは溜まる履歴のため残す。TANUKI・HypeCoreは前後で同じ。段階3（2026-10-22）: CHECK-INVを市場データ層にも（既知の規則の二重3つはWARN、rccのCHECK-INVは約43.2秒）。**次はTAILの段階1**。
@@ -74,6 +75,8 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-23（R-Aの終わりの見直し・R-Aを閉じた）**: 見直し1（段階ごとの印を1つの設定に。IO_HELPER_BY_CALLERはSEC層で本当の読み手が消えるため広げない）・2（キーの要約をファイルの中身のhashで控え、CHECK-INVは約117.7秒→約26.9秒）・3（一覧のスクリプトを4ファイルに）・4（二重の規則の数え方を1つに、BACKLOGに[[HOLDINGS-SINGLE-SOURCE-1]]・[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]・[[EXTERNAL-API-CLIENT-UNIFY-1]]、[[OUTPUT-INVENTORY-CHECK-1]]をBACKLOG_DONE.mdへ）。アクティブBACKLOG 15件。
+  **終業の数（10-16と同じ数え方。二重実装の規則は2026-10-23からの1つの数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **21**（CHECK-INV-3の規則の種類19〈11段階〉＋検出式で拾えないMAC-11・MAC-20の2）、サブシステム 10、Python 68,359行・133ファイル（68,214行・130ファイルから+145行・+3ファイル: 一覧のスクリプトを4ファイルに分け、キーの控えを足した）、テスト34,845行、docs配下のHTML・JS 20,306行・20ファイル、ワークフロー21本
 - **2026-10-22（終業のブラッシュアップ）**: 今日のまとめ。①R-Cの公開の確認①（手順11、APP 1,135.99ドル。HON・FLYWの試算の差はTTMのファイル由来で②で出る）・FINDINGS 型B（SECのUser-Agentの直書き10ファイル10か所）。
   ②R-Aの市場データ層の段階1〜3（出力7→5、検証の結果のログ596ファイル・取り直しの記録・`next_quarter_eps_date`を削除、yfinanceの応答を記録して再生するハーネスで前後同じ、TANUKI・HypeCoreも前後同じ）とTAILの段階1〜3（出力20、`satellite_alerts.json`を削除、誰も読まないキー30は理由を注記）。
   ③一覧のスクリプトの直し（段階ごとの印、APIを使うページの相対パス）。④TAILの`segment_outlook`の生成の停止。CHECK-INVは7段階・約67秒。一覧はsec・tanuki・stonks・market_dataを作り直した（本番のデータの増分〈method_change等〉・F3の表の1行・行の番号）
