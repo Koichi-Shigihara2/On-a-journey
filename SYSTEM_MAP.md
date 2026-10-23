@@ -2233,12 +2233,9 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
   CLIパターン）から`.github/workflows/Macro_Data_Update.yml`が呼び出す。
   `start`未指定時は常に全期間履歴を取得する設計であり、日次cronが
   毎回全期間を再取得する非効率が判明済み（`[[MACRODATA-FULL-HISTORY-
-  DAILY-REFETCH-1]]`、対応未定）。fredapiクライアントはモジュール
-  レベルで1つだけ生成し使い回す（切替前の各ファイルが呼び出しの都度
-  `Fred()`を個別生成していた設計は踏襲しない）。`FRED_API_KEY`環境
-  変数名・クライアント初期化方法（`Fred(api_key=...)`）は切替前の
-  `05_main.py`・`collect_and_send.py`側の実装を実コード確認の上で
-  踏襲。
+  DAILY-REFETCH-1]]`、対応未定）。fredapiクライアントはプロセスで1つだけ
+  生成し使い回す。2026-10-24から生成は`common/external_api.py`の
+  `fred_client()`（外部APIの呼び出し口、[[EXTERNAL-API-CLIENT-UNIFY-1]]）。
 - `common/macro_data/reader.py`: 読み取り専用API。
   `get_latest(series_id)`・`get_series(series_id, start=None,
   end=None)`（期間内の全エントリを観測日昇順で返す、観測日を含む
@@ -2300,6 +2297,21 @@ FRED分の過去データ移管は実質完了、SEC EDGAR・yfinance分は次�
   参照。
 
 ---
+
+## 外部APIの呼び出し口とsecret（`common/external_api.py`、2026-10-24、[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+
+Grok・SEC・FREDへの通信はこの1ファイルを通す。そろえるのは通信の部分だけで、プロンプト・モデル・温度・応答の読み方は呼び出し側に残す。
+
+| 相手 | 入口 | タイムアウト | 失敗の形 | secret（環境変数） | 使うワークフロー |
+|---|---|---|---|---|---|
+| Grok（xAI） | `grok_request`（応答のJSON）・`grok_text`（答えの文字） | 120秒 | `ExternalApiError`（呼び出し側が代わりの文 `GROK_UNAVAILABLE_TEXT`・None・例外に読み替える） | `XAI_API_KEY` | Adjusted_Eps・MACRO_PULSE・Market_Pulse・TAIL_RSS_Monitor・TAIL_SEC_Ctrl・TAIL_SEC_Items・TANUKI_VALUATION |
+| SEC（EDGAR） | `sec_get`（応答。404等はそのまま） | 120秒 | 429・5xxは再試行後の最後の応答、通信の失敗は `ExternalApiError`。環境変数が無ければ `SystemExit` | `SEC_USER_AGENT_EMAIL`（User-Agent は `On-a-journey <値>`） | SEC_Data_Update・Adjusted_Eps_Analyzer_update・TANUKI_TAIL_KPI_Update・TANUKI_TAIL_RSS_Monitor・TANUKI_TAIL_SEC_Ctrl・TANUKI_TAIL_SEC_Items・TANUKI_VALUATION_Update（先頭の `env:`） |
+| FRED | `fred_get`（REST、公表日の予定）・`fred_client`（fredapi、系列） | 30秒 | `ExternalApiError`・キーが無ければ `RuntimeError` | `FRED_API_KEY` | Macro_Data_Update・MACRO_PULSE・Market_Pulse・Adjusted_Eps |
+
+- 再試行は429・5xx・通信の失敗だけ、2秒→5秒待って計3回（`RETRY_ATTEMPTS`・`RETRY_WAITS_SEC`）。SECは毎秒10件まで（`SEC_MIN_INTERVAL_SEC`）
+- Grokのトークンの使用量は呼び出しごとに `[grok] <label>: model=… prompt_tokens=… completion_tokens=… total_tokens=…` とログに出る
+- 手元でSECを呼ぶときは、その回だけ `SEC_USER_AGENT_EMAIL` を付ける（CLAUDE_CODE_START.md「SECの連絡先」）。pytest は `tests/conftest.py` の試験用の値
+- 一覧の規則 grok_endpoint・grok_call・fred_api は、このファイルだけに当たる（ほかに当たれば CHECK-INV-3 の二重）
 
 ## 既知の技術的負債（2026-09-16新設）
 

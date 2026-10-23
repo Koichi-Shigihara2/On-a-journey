@@ -1881,33 +1881,6 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [EXTERNAL-API-CLIENT-UNIFY-1] Grok・SEC・FREDの呼び出しを共通の呼び出し口にまとめ、費用・失敗の扱いをそろえる（R-E2）
-**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-E2。R-Aの論点⑤。実装は[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]の後、実装の指示はチャット側）
-**優先度:** 高
-**分類:** 根治策 / 外部のAPIを呼ぶ全サブシステム（TANUKI・EPS・TAIL・MACRO PULSE・Market Pulse・SECデータ層・マクロデータ層）
-**登録日:** 2026-10-23
-**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）・FINDINGS
-
-#### 内容（2026-10-23の一覧の検出とgrep）
-- Grokの呼び出し: 10ファイル11か所（`05_main.py`は2か所）: `src/market/macro_pulse/05_main.py`・`src/market/market_pulse/collect_and_send.py`・`news_headlines.py`・`src/tail/kpi_proposer.py`・`quarterly_review_generator.py`・`sec_ctrl_fetcher.py`・`text_kpi_extractor.py`・`src/value/adjusted_eps_analyzer/ai_analyzer.py`・`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py`・`validator.py`。
-  宛先・モデル・タイムアウト・再試行・429・費用の扱いを共通の呼び出し口にそろえる。Grokが使えないときの代わりの文（MACRO PULSEの「Gemini」の文言）もそろえる
-- SECのUser-Agent: 10ファイル10か所に直書き（文字列4種）。GitHubのsecretの`SEC_USER_AGENT_EMAIL`から読む共通の呼び出し口にする
-- FREDのAPIの直接の呼び出し: 3ファイル（`common/macro_data/fetcher.py`・`src/market/macro_pulse/05_main.py`の公表日・`src/market/market_pulse/market_calendar.py`の公表日）
-
-#### 束ねた件
-- FINDINGS 2026-10-21（`SEC_USER_AGENT_EMAIL`の読み手が無い、型A）・2026-10-22（SECのUser-Agentの直書き、型B）・2026-10-23（Grokの代わりの文とワークフローの「Gemini」、型E）
-
-#### 始める段（CHAT_RULES 4）
-取得の確認（呼び出し口ごとの失敗の扱い）
-
-#### 投資判断への影響
-将来ありうる（呼び出しの失敗・費用の扱いが場所ごとに違う）。今は値の違いは見つかっていない
-
-#### 規模の見込み
-中
-
----
-
 ### [SYSHEALTH-SEVERITY-MISMATCH-1] System HealthのDiscordの先頭の絵文字・文言・各欄の絵文字・Overallの行・終了コードが別々の判定から出ていて、同じ実行で重大度が食い違う
 **型・処置（2026-10-19 束ね）:** 型B・残す（確認待ち（次回の確認手順2）。直すときは[[OUTPUT-INVENTORY-CHECK-1]]の一覧の「規則」の欄に載せる）
 **優先度:** 高

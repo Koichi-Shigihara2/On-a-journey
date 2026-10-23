@@ -21,6 +21,7 @@
 2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`: **11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3と、R-Aの終わりの見直し1〜4が済み、R-Aを閉じた（2026-10-23。BACKLOG_DONE.mdへ）。CHECK-INVはこの11段階。
    次は ⑥[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]] → R-E2[[EXTERNAL-API-CLIENT-UNIFY-1]] の順で、チャット側が実装の指示を出す**。
    - （済 2026-10-23）⑥[[HOLDINGS-SINGLE-SOURCE-1]]: 保有の正をportfolio.json（画面の表・CHECK-65）、discover_config.json・Discover_Config_Sync.yml・CHECK-32を削除、休眠はcik_lookup.csvのstatusのdormant。本番の画面はCLAUDE_CODE_START.mdの次回の確認手順12。
+   - （済 2026-10-24）R-E2[[EXTERNAL-API-CLIENT-UNIFY-1]]: Grok・SEC・FREDの通信を`common/external_api.py`の1か所に（タイムアウト・429/5xxの再試行・失敗の形・ログ、Grokのトークンの使用量）。SECのUser-Agentは環境変数`SEC_USER_AGENT_EMAIL`から作り無ければ止まる（直書き4種〈実在のアドレス2か所〉を削除、SECを呼ぶワークフロー7本がsecretを渡す。RSS Monitor run 39980369717で確認）。代わりの文の「Gemini」を消した。前後で同じ。CHECK-INV-3は20件／12種（BACKLOGのアクティブ12件）
    - （済 2026-10-23）R-E1[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]: 取引日・休場日・暫定の足・S&P500の構成銘柄を`common/market_data/calendar_universe.py`に1か所。連邦の祝日はNYSEと別の関数。前後で同じ。CHECK-INV-3は26件／15種。**次はR-E2[[EXTERNAL-API-CLIENT-UNIFY-1]]**
    FINDINGS.mdの2026-10-23のcheck_macro_pulse.pyの行（型C、確認の結果が実行の時刻で変わる）は束ねの入力のまま残す
    - （済 2026-10-23）Market Pulseの段階3: CHECK-INVをMarket Pulseにも当てた（11段階、TAILの後。既知の規則の二重6つはWARN、rccのCHECK-INVは約72.6秒）

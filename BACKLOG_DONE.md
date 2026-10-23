@@ -2,6 +2,48 @@
 
 ---
 
+## 2026-10-24（完了）
+
+### ✅ [EXTERNAL-API-CLIENT-UNIFY-1] Grok・SEC・FREDの呼び出しを共通の呼び出し口にまとめ、費用・失敗の扱いをそろえる（R-E2）
+**完了（2026-10-24）:** 件名「R-E2 EXTERNAL-API-CLIENT-UNIFY-1: 外部API（Grok・SEC・FRED）の呼び出し口を common/external_api.py の1か所に」のcommit。`common/external_api.py` に1か所。前後で同じ（下の「実施」）
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-E2。R-Aの論点⑤。実装は[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]の後、実装の指示はチャット側）
+**優先度:** 高
+**分類:** 根治策 / 外部のAPIを呼ぶ全サブシステム（TANUKI・EPS・TAIL・MACRO PULSE・Market Pulse・SECデータ層・マクロデータ層）
+**登録日:** 2026-10-23
+**発見:** R-Aの一覧の規則の二重（CHECK-INV-3の既知のWARN）・FINDINGS
+
+#### 内容（2026-10-23の一覧の検出とgrep）
+- Grokの呼び出し: 10ファイル11か所（`05_main.py`は2か所）: `src/market/macro_pulse/05_main.py`・`src/market/market_pulse/collect_and_send.py`・`news_headlines.py`・`src/tail/kpi_proposer.py`・`quarterly_review_generator.py`・`sec_ctrl_fetcher.py`・`text_kpi_extractor.py`・`src/value/adjusted_eps_analyzer/ai_analyzer.py`・`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py`・`validator.py`。
+  宛先・モデル・タイムアウト・再試行・429・費用の扱いを共通の呼び出し口にそろえる。Grokが使えないときの代わりの文（MACRO PULSEの「Gemini」の文言）もそろえる
+- SECのUser-Agent: 10ファイル10か所に直書き（文字列4種）。GitHubのsecretの`SEC_USER_AGENT_EMAIL`から読む共通の呼び出し口にする
+- FREDのAPIの直接の呼び出し: 3ファイル（`common/macro_data/fetcher.py`・`src/market/macro_pulse/05_main.py`の公表日・`src/market/market_pulse/market_calendar.py`の公表日）
+
+#### 束ねた件
+- FINDINGS 2026-10-21（`SEC_USER_AGENT_EMAIL`の読み手が無い、型A）・2026-10-22（SECのUser-Agentの直書き、型B）・2026-10-23（Grokの代わりの文とワークフローの「Gemini」、型E）
+
+#### 始める段（CHAT_RULES 4）
+取得の確認（呼び出し口ごとの失敗の扱い）
+
+#### 投資判断への影響
+将来ありうる（呼び出しの失敗・費用の扱いが場所ごとに違う）。今は値の違いは見つかっていない
+
+#### 規模の見込み
+中
+
+#### 実施（2026-10-24、Koichiさんの判断 2026-10-23）
+- 0（呼び出しの表）: Grok 10ファイル11か所はモデル grok-4.3（EPSだけ環境変数 XAI_MODEL、既定 grok-4.20-0309-reasoning、用途ごとの意図）・温度と最大トークンは用途ごと・タイムアウト30〜120秒・再試行は同じモデルを3回まわす所と無い所・失敗の戻り値は例外／None／代わりの文がばらばら・トークンの記録はどこも無し。
+  SEC 10ファイルは User-Agent 直書き4種・間隔0.1〜0.3秒が各ファイル・429/5xxの再試行は無し・SECを呼ぶワークフロー7本のどれも SEC_USER_AGENT_EMAIL を渡していない。FRED 3ファイル（fredapi 1・REST 2）。止める条件（意図か決められないモデル・引数の違い）には当たらない
+- 1: `common/external_api.py` を新設（宛先・タイムアウト Grok 120／SEC 120／FRED 30秒・再試行 429/5xx/通信の失敗に2秒→5秒で計3回・ExternalApiError・ログ）。Grok 11か所・SEC 約20か所・FRED 3か所をここに。
+  Grokのトークンの使用量をログに出す。代わりの文は GROK_UNAVAILABLE_TEXT の1つ（MACRO PULSEの「Gemini」の文言とワークフローの表示を消した）。SECは環境変数 SEC_USER_AGENT_EMAIL から User-Agent を作り、無ければ SystemExit。毎秒10件の制限は sec_get で守り、各ファイルの sleep を消した。
+  ワークフロー7本の先頭の env に SEC_USER_AGENT_EMAIL。TAILの訳の項目ごとのタイムアウト（60/120）は1つの設定（120）に。一覧の規則 grok_endpoint・grok_call（call_grok の名前で当てるのをやめ宛先だけ）・fred_api が external_api.py だけに当たり、既知の二重から外した（CHECK-INV-3 26件/15種→20件/12種、rcc WARN 154→148）
+- 2（前後の比較、scratchpadの記録・再生のハーネス）: SEC層（APP・NVDA）・dimension aggregate・TAIL（RSS・XBRL・Ctrl・text KPI）・EPS（会社の情報・company facts）・登録の事前確認・TANUKIのインサイダー取引・MACRO PULSEとMarket Pulseの公表日の予定の26の結果が同じ、送ったリクエスト47件が同じ順で、User-Agent は全部環境変数の値。
+  Grok 13の呼び出しの送る中身（プロンプト・モデル・引数）と、記録した応答を再生した読み方の結果が同じ（違うのはタイムアウトだけ）。失敗の時は、試す回数が全部3回に、代わりの文が GROK_UNAVAILABLE_TEXT に（意図した違い）。FREDの系列3つ（DGS1・VIXCLS・UMCSENT）同じ。
+  check_macro_pulse.py（68/4/1、既知）・check_dependency_map.py（全項目一致）。pushの後 TANUKI_TAIL_RSS_Monitor run 39980369717 success（secretが渡り、9銘柄のCIK・RSSの取得が成功）
+- 3: FINDINGS 2026-10-21・2026-10-22・2026-10-23 の3行を済に。CLAUDE_CODE_START.md（外部APIの呼び出しのルール・手元でSECを呼ぶときの手順）・SYSTEM_MAP.md（外部APIの呼び出し口とsecret）
+- 残ること: 実在のアドレスは過去のcommitの中には残る（履歴は書き換えない）
+
+---
+
 ## 2026-10-23（完了）
 
 ### ✅ [MARKET-CALENDAR-UNIVERSE-UNIFY-1] 取引日・休場日・暫定の足の判定・S&P500の構成銘柄を、common/の1か所にまとめる（R-E1）
