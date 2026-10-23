@@ -93,7 +93,7 @@ class TestAssessTransientQualitative:
     def test_grok_4_3_model_used_exclusively(self):
         """[[GROK-MODEL-PRICE-1]]確定済みのgrok-4.3のみを使用し、
         新しいモデル名を独自に導入していないことの回帰テスト"""
-        assert fcf_ai_module.GROK_MODELS == ["grok-4.3", "grok-4.3", "grok-4.3"]
+        assert fcf_ai_module.GROK_MODEL == "grok-4.3"
 
 
 class TestFcfOutlierResultToDictAiAssessment:

@@ -44,13 +44,9 @@ if _REPO_ROOT not in sys.path:
 from common.sec_data import tickers as _tickers_mod  # noqa: E402
 from common.sec_data.parser import SECParser  # noqa: E402
 
-SEC_HEADERS = {
-    "User-Agent": "Koichi Personal Investment Tools koichi@example.com",
-    "Accept": "application/json",
-}
+from common.external_api import sec_get  # noqa: E402  User-Agent・毎秒10件の制限・再試行（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
 _SUBMISSIONS_URL   = "https://data.sec.gov/submissions/CIK{cik}.json"
 _COMPANY_FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
-_RATE_LIMIT_DELAY  = 0.15  # SEC APIは10リクエスト/秒制限（他のfetcherと同じ値）
 
 _LISTING_AGE_THRESHOLD_YEARS = 3
 
@@ -86,10 +82,9 @@ class PreflightResult:
         return not self.flags and not self.errors
 
 
-def _fetch_json(url: str, timeout: int = 30) -> dict | None:
+def _fetch_json(url: str) -> dict | None:
     try:
-        time.sleep(_RATE_LIMIT_DELAY)
-        resp = requests.get(url, headers=SEC_HEADERS, timeout=timeout)
+        resp = sec_get(url, "登録の事前確認")
         if resp.status_code != 200:
             return None
         return resp.json()

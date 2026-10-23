@@ -10,7 +10,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._save_cik_cache",
-     "line": 111
+     "line": 107
     }
    ],
    "writers_outside_layer": [],
@@ -23,7 +23,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 84,
+     "line": 83,
      "func": "SECFetcher.__init__",
      "how": "保存済みファイル",
      "via": "grep",
@@ -31,7 +31,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 85,
+     "line": 84,
      "func": "SECFetcher.__init__",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._load_cik_cache",
@@ -39,7 +39,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 103,
+     "line": 99,
      "func": "SECFetcher._load_cik_cache",
      "how": "保存済みファイル",
      "via": "AST",
@@ -185,7 +185,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._fetch_legacy_company_facts",
-     "line": 231
+     "line": 225
     }
    ],
    "writers_outside_layer": [],
@@ -211,7 +211,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 246,
+     "line": 240,
      "func": "SECFetcher._read_json_or_none",
      "how": "保存済みファイル",
      "via": "AST",
@@ -219,7 +219,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 437,
+     "line": 429,
      "func": "SECFetcher._fetch_legacy_submissions._local",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -712,7 +712,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 603,
+     "line": 595,
      "func": "<module>",
      "how": "その場で計算",
      "via": "common/sec_data/fetcher.py::SECFetcher",
@@ -736,7 +736,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 84,
+     "line": 83,
      "func": "_make_fetcher",
      "how": "その場で計算",
      "via": "common/sec_data/fetcher.py::SECFetcher",
@@ -903,7 +903,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 386,
+     "line": 385,
      "func": "test_check60_missing_file_warns",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -911,7 +911,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 397,
+     "line": 396,
      "func": "test_check60_fetch_failed_and_old_sec_lag",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -919,7 +919,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 418,
+     "line": 417,
      "func": "test_m_healthy",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -927,7 +927,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 423,
+     "line": 422,
      "func": "test_m_missing_file_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -935,7 +935,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 429,
+     "line": 428,
      "func": "test_m_stale_generated_at_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -943,7 +943,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 435,
+     "line": 434,
      "func": "test_m_partial_only_without_generated_at_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -951,7 +951,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 441,
+     "line": 440,
      "func": "test_m_fetch_failed_ratio",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -959,7 +959,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 444,
+     "line": 443,
      "func": "test_m_fetch_failed_ratio",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -967,7 +967,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 451,
+     "line": 450,
      "func": "test_m_sec_lag_thresholds",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -975,7 +975,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 454,
+     "line": 453,
      "func": "test_m_sec_lag_thresholds",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -983,7 +983,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -991,7 +991,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 488,
+     "line": 487,
      "func": "test_m_acknowledged_accn_is_not_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -999,7 +999,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 499,
+     "line": 498,
      "func": "test_m_other_accn_of_same_ticker_is_still_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1007,7 +1007,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 506,
+     "line": 505,
      "func": "test_check60_one_line_per_accn_and_ledger_match",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -3458,7 +3458,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher.fetch_company_facts",
-     "line": 191
+     "line": 186
     }
    ],
    "writers_outside_layer": [],
@@ -3524,7 +3524,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 509,
+     "line": 501,
      "func": "load_company_facts",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3532,7 +3532,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 513,
+     "line": 505,
      "func": "load_company_facts",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3964,7 +3964,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 212,
+     "line": 190,
      "func": "fetch_real_us_gaap_concepts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3972,7 +3972,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 573,
+     "line": 551,
      "func": "route_rejected_to_layer3",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3980,7 +3980,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 743,
+     "line": 721,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3988,7 +3988,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 801,
+     "line": 779,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3996,7 +3996,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 842,
+     "line": 820,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4004,7 +4004,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 203,
+     "line": 172,
      "func": "load_layer1_financials",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4012,7 +4012,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1574,
+     "line": 1543,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4036,7 +4036,7 @@
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 427,
+     "line": 411,
      "func": "fetch_layer3_kpis",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4044,7 +4044,7 @@
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 557,
+     "line": 541,
      "func": "fetch_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4676,7 +4676,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 121,
+     "line": 120,
      "func": "_run",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4684,7 +4684,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 149,
+     "line": 148,
      "func": "test_case_a_no_local_company_facts_fetches",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4692,7 +4692,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 161,
+     "line": 160,
      "func": "test_case_a_fetch_failure_is_failed_without_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4700,7 +4700,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 174,
+     "line": 173,
      "func": "test_case_b_new_filing_refreshes",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4708,7 +4708,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 186,
+     "line": 185,
      "func": "test_case_c_no_new_filing_does_not_call_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4716,7 +4716,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 199,
+     "line": 198,
      "func": "test_case_c_ignores_file_mtime",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4724,7 +4724,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 213,
+     "line": 212,
      "func": "test_amendment_only_new_filing_triggers_refresh",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4732,7 +4732,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 225,
+     "line": 224,
      "func": "test_sec_lag_when_accn_still_missing_after_refresh",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4740,7 +4740,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 241,
+     "line": 240,
      "func": "test_sec_lag_keeps_earlier_missing_filing_when_later_one_arrives",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4748,7 +4748,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 253,
+     "line": 252,
      "func": "test_company_facts_refetch_failure_uses_local",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4756,7 +4756,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 265,
+     "line": 264,
      "func": "test_submissions_failure_continues_with_local_files",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4764,7 +4764,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 322,
+     "line": 321,
      "func": "test_legacy_cik_company_facts_failure_uses_local_legacy",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4772,7 +4772,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 343,
+     "line": 342,
      "func": "test_dry_run_plan_writes_nothing",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4780,7 +4780,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5951,7 +5951,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher.fetch_submissions",
-     "line": 340
+     "line": 334
     }
    ],
    "writers_outside_layer": [],
@@ -5989,7 +5989,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 529,
+     "line": 521,
      "func": "load_submissions",
      "how": "保存済みファイル",
      "via": "grep",
@@ -5997,7 +5997,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 533,
+     "line": 525,
      "func": "load_submissions",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6005,7 +6005,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 551,
+     "line": 543,
      "func": "load_former_names",
      "how": "保存済みファイル",
      "via": "grep",
@@ -6013,7 +6013,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 555,
+     "line": 547,
      "func": "load_former_names",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6308,7 +6308,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._fetch_legacy_submissions",
-     "line": 458
+     "line": 450
     }
    ],
    "writers_outside_layer": [],
@@ -6338,7 +6338,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 186,
+     "line": 181,
      "func": "SECFetcher.fetch_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6346,7 +6346,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 239,
+     "line": 233,
      "func": "SECFetcher._fetch_legacy_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6354,7 +6354,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 246,
+     "line": 240,
      "func": "SECFetcher._read_json_or_none",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6362,7 +6362,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 488,
+     "line": 480,
      "func": "SECFetcher.fetch_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6370,7 +6370,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 606,
+     "line": 598,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6404,7 +6404,7 @@
     {
      "file": "common/sec_data/dimension_aggregate_fetcher.py",
      "func": "_save_dimension_aggregate_registry",
-     "line": 103
+     "line": 100
     }
    ],
    "writers_outside_layer": [],
@@ -6460,7 +6460,7 @@
     },
     {
      "file": "common/sec_data/dimension_aggregate_fetcher.py",
-     "line": 95,
+     "line": 92,
      "func": "load_dimension_aggregate_registry",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6468,7 +6468,7 @@
     },
     {
      "file": "common/sec_data/dimension_aggregate_fetcher.py",
-     "line": 407,
+     "line": 402,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6476,7 +6476,7 @@
     },
     {
      "file": "common/sec_data/dimension_aggregate_fetcher.py",
-     "line": 439,
+     "line": 434,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -7621,7 +7621,7 @@
    "readers": [
     {
      "file": ".github/workflows/SEC_Data_Update.yml",
-     "line": 110,
+     "line": 112,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -8778,7 +8778,7 @@
     },
     {
      "file": "common/registration/preflight_check.py",
-     "line": 163,
+     "line": 158,
      "func": "run_preflight_check",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -8786,7 +8786,7 @@
     },
     {
      "file": "common/registration/preflight_check.py",
-     "line": 212,
+     "line": 207,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -8890,7 +8890,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 474,
+     "line": 466,
      "func": "SECFetcher.fetch_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9218,7 +9218,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 739,
+     "line": 717,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9226,7 +9226,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 842,
+     "line": 820,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9234,7 +9234,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 426,
+     "line": 407,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9242,7 +9242,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
+     "line": 459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9250,7 +9250,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 645,
+     "line": 636,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9258,7 +9258,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 677,
+     "line": 668,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9274,7 +9274,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 581,
+     "line": 559,
      "func": "extract_layer3",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9282,7 +9282,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 701,
+     "line": 679,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9298,7 +9298,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 158,
+     "line": 155,
      "func": "get_cik",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9306,7 +9306,7 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 430,
+     "line": 427,
      "func": "extract_quarterly_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9898,7 +9898,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -10445,17 +10445,17 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 723,
+     "line": 720,
      "text": "q4_net = annual_net - q1q3_sum"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 866,
+     "line": 863,
      "text": "q4_val = annual_val - ytd_9m_val"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 894,
+     "line": 891,
      "text": "q4_val = annual_val - q123_sum"
     }
    ],
@@ -10519,17 +10519,17 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 229,
+     "line": 219,
      "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 433,
+     "line": 419,
      "text": "if latest[\"filed\"] >= prev_filed:"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 605,
+     "line": 602,
      "text": "if cand['filed'] > existing_filed:"
     }
    ],
@@ -10649,12 +10649,12 @@
    "sites": [
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 389,
+     "line": 375,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 196,
+     "line": 180,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
@@ -10710,7 +10710,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 143,
+     "line": 137,
      "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
     }
    ],
@@ -10992,7 +10992,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/dimension_aggregate_fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 439,
+   "lines": 434,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -11023,7 +11023,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 608,
+   "lines": 600,
    "workflows": [],
    "code": [
     "src/tail/kpi_proposer.py",
@@ -11657,7 +11657,7 @@
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
-    "line": 109,
+    "line": 111,
     "output": "common/sec_data/data/{T}/annual_{YYYY}.json",
     "text": "annual_count=$(ls -1 $dir/annual_*.json 2>/dev/null | wc -l)"
    }
@@ -11682,11 +11682,11 @@
   {
    "workflow": ".github/workflows/SEC_Data_Update.yml",
    "lines": [
-    102,
-    103,
     104,
     105,
-    111
+    106,
+    107,
+    113
    ],
    "keys": []
   },
@@ -11717,11 +11717,11 @@
   {
    "workflow": ".github/workflows/TANUKI_VALUATION_Update.yml",
    "lines": [
-    102,
-    103,
     104,
     105,
-    110
+    106,
+    107,
+    112
    ],
    "keys": [
     {

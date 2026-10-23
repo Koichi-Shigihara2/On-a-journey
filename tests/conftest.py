@@ -10,10 +10,15 @@ sys.modules上でMagicMockのまま残っていないかを確かめる。残っ
 比較を伴わないテストは本物のコードを実行せずに成功しうる。スタブが要るテストは
 `_tanuki_pipeline_stub.load_stubbed_pipeline()`を使う（スタブはpipelineのimportの間だけ入れて戻す）。
 """
+import os
 import sys
 from unittest import mock
 
 import pytest
+
+# [[EXTERNAL-API-CLIENT-UNIFY-1]]（2026-10-24）: SECの User-Agent は環境変数 SEC_USER_AGENT_EMAIL から作り、無ければ止まる。
+# テストは本物のSECを呼ばないが、呼び出し口（common/external_api.sec_get）を通るテストのために試験用の値を入れる
+os.environ.setdefault("SEC_USER_AGENT_EMAIL", "tests@example.invalid")
 
 _NO_MOCK_MODULES = ("data_fetcher", "core_calculator", "validator", "growth_sanity", "xlrd")
 

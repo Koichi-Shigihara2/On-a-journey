@@ -2,14 +2,10 @@
 企業メタデータ取得モジュール
 - SECのSubmissions APIから企業情報（SICコード、会社名など）を取得
 """
-import requests
 from typing import Dict, Optional
 
-HEADERS = {
-    'User-Agent': 'jamablue01@gmail.com',
-    'Accept-Encoding': 'gzip, deflate',
-    'Host': 'data.sec.gov'
-}
+# User-Agent（環境変数 SEC_USER_AGENT_EMAIL）・毎秒10件の制限・再試行は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+from common.external_api import sec_get
 
 def get_company_metadata(cik: str) -> Dict:
     """
@@ -27,7 +23,7 @@ def get_company_metadata(cik: str) -> Dict:
     """
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     try:
-        response = requests.get(url, headers=HEADERS, timeout=10)
+        response = sec_get(url, "EPS 会社の情報")
         if response.status_code == 200:
             data = response.json()
             return {

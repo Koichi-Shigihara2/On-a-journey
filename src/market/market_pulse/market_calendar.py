@@ -56,13 +56,20 @@ def _http_json(url: str, params: Optional[dict] = None) -> Any:
     return json.loads(r.content.decode("utf-8-sig"))
 
 
-def econ_events(start: date, end: date, get_json: Callable = _http_json, api_key: Optional[str] = None) -> List[dict]:
+def _fred_json(path: str, params: dict, api_key: Optional[str] = None) -> Any:
+    """FREDのREST APIの応答（common/external_api.py の fred_get。キー・file_type はそこで足す）。"""
+    from common.external_api import fred_get
+    return fred_get(path, params, api_key=api_key)
+
+
+def econ_events(start: date, end: date, get_json: Optional[Callable] = None, api_key: Optional[str] = None) -> List[dict]:
+    """get_json(path, params) は試験で差し替える（既定は FRED の REST API）。"""
     key = api_key if api_key is not None else os.getenv("FRED_API_KEY")
     if not key:
         raise RuntimeError("FRED_API_KEYが無い")
-    j = get_json("https://api.stlouisfed.org/fred/releases/dates",
-                 {"api_key": key, "file_type": "json", "realtime_start": start.isoformat(), "realtime_end": end.isoformat(),
-                  "include_release_dates_with_no_data": "true", "limit": 1000, "sort_order": "asc"})
+    params = {"realtime_start": start.isoformat(), "realtime_end": end.isoformat(),
+              "include_release_dates_with_no_data": "true", "limit": 1000, "sort_order": "asc"}
+    j = get_json("releases/dates", params) if get_json is not None else _fred_json("releases/dates", params, api_key=key)
     out = []
     for x in j.get("release_dates", []):
         rid = x.get("release_id")

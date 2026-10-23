@@ -78,7 +78,6 @@ class _Resp:
 
 def _make_fetcher(tmp_path, monkeypatch, routes, ticker="TEST", legacy=None):
     """routes: {url末尾の部分文字列: (status, payload) | Exception}。呼ばれたURLはcallsに記録する。"""
-    monkeypatch.setattr(fetcher_mod.SECFetcher, "RATE_LIMIT_DELAY", 0)
     monkeypatch.setattr(fetcher_mod, "_load_cik_history",
                         lambda: ({ticker: {"legacy_ciks": [legacy]}} if legacy else {}))
     f = fetcher_mod.SECFetcher(data_dir=str(tmp_path))

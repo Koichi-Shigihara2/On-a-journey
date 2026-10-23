@@ -502,7 +502,7 @@ _TAIL.update(
             "銘柄ごとの投資の仮説（エントリーの理由・条件・撤退の目安・監視するKPI）。画面の入力から書く（人の入力）",
         "docs/portfolio/tail/data/journal.json": "売買・仮説の見直しの記録（判断の日誌）。画面の入力から書く（人の入力）",
         "/tmp/tail_commit_message.txt": "TANUKI_TAIL_Position_Writeの1回の書き込みのcommitの件名（同じワークフローの後の段が git commit -F で読む）",
-        "docs/portfolio/tail/data/rss_state.json": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+        "docs/portfolio/tail/data/rss_state.json": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。",
         "docs/portfolio/tail/data/review_queue.json":
             "四半期のレビューを作る待ち行列（新規提出で積み、レビューを作ったら completed・古い期は superseded）",
         "docs/portfolio/tail/data/reviews/{T}_{Q}_review.json":
@@ -513,21 +513,21 @@ _TAIL.update(
             "銘柄ごとのシナリオ（bull/base/bear）のDCF。tail_dcf_bridge.py がレビューの stage2.scenarios（**AIの出力**）とLayer2のKPIから作る",
         "docs/portfolio/tail/data/prediction_history.json": "レビューの予想（AIの出力のKPIの予想）と実績の突合の履歴（予想の当たり外れ）",
         "docs/portfolio/tail/data/kpi/{T}_layer2.json":
-            "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
-        "docs/portfolio/tail/data/kpi/{T}_layer3.json": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+            "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。",
+        "docs/portfolio/tail/data/kpi/{T}_layer3.json": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。",
         "docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json":
             "銘柄ごとのKPIの提案。**AIの出力（Grok）**: proposed_kpis・rejected_kpis（却下はXBRLとの照合の結果）。"
             "kpi_proposer.py は手で動かす（CLAUDE_CODE_START.md「TANUKI TAIL 銘柄追加手順」。ワークフローは無い）",
         "config/tail_kpi_map.json": "銘柄ごとに監視するKPIとXBRLのタグの対応。kpi_proposer.py（手で動かす）が提案のうち照合を通ったものを書く",
         "docs/portfolio/tail/data/ctrl/{T}/latest.json":
-            "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+            "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。",
         "docs/portfolio/tail/data/ctrl/{T}/{Q}.json":
             "銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。"
             "この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる",
         "docs/portfolio/tail/data/ctrl/{T}/index.json": "銘柄ごとにItem 4を取った四半期の一覧（quarters）。画面の index.html が最新の四半期を選ぶのに読む",
         "docs/portfolio/tail/data/{item_key}/{T}/latest.json":
             "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。"
-            "**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。" + "SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+            "**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。",
         "docs/portfolio/tail/data/{item_key}/{T}/{Q}.json":
             "銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる",
         "docs/portfolio/tail/data/{item_key}/{T}/index.json":
@@ -546,7 +546,7 @@ _TAIL.update(
     OUTSIDE_HINT="tail", OUTSIDE_PREFIXES=("docs/portfolio/tail/", "src/tail/"),
     READ_PREFIXES=("docs/portfolio/tail", "src/tail"),
     READ_HINT="tail", NAME_SHORT="TAIL",
-    KNOWN_DUPLICATE_RULES=["latest_filed", "quarter_label", "fiscal_year", "grok_call"], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["latest_filed", "quarter_label", "fiscal_year"], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/tail",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
@@ -582,8 +582,10 @@ _TAIL.update(
         "last_checked": "残す: RSSで銘柄を最後に確かめた時点の記録（提出の遅れの判定の状態）",
     },
     RULES=_TANUKI["RULES"] + [
-        {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・モデル・再試行）",
-         "patterns": [r"^\s*GROK_URL\s*=", r"def\s+_?\w*call_grok\w*\s*\("]},
+        # 宛先・再試行は common/external_api.py の1か所（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）。各ファイルの call_grok は
+        # プロンプト・モデル・温度を組む呼び出し側の関数なので当てない
+        {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・再試行）",
+         "patterns": [r"^\s*GROK_URL\s*=", r"[\"']https://api\.x\.ai/v1/chat/completions[\"']"]},
     ],
 
     HTML_COPIES=[],
@@ -697,7 +699,7 @@ _MACRO_DATA.update(
     OUTSIDE_HINT="macro_data", OUTSIDE_PREFIXES=("common/macro_data/",),
     READ_PREFIXES=("common/macro_data",),
     READ_HINT="macro_data", NAME_SHORT="マクロデータ層",
-    KNOWN_DUPLICATE_RULES=["fred_api", "atomic_write_json"], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["atomic_write_json"], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
         "source_detail": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。"
                          "読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ",
@@ -755,7 +757,7 @@ _MACRO_PULSE.update(
     OUTSIDE_HINT="macro", OUTSIDE_PREFIXES=("docs/market-monitor/macro-pulse/", "src/market/macro_pulse/"),
     READ_PREFIXES=("docs/market-monitor/macro-pulse", "src/market/macro_pulse"),
     READ_HINT="macro", NAME_SHORT="MACRO PULSE",
-    KNOWN_DUPLICATE_RULES=["recession_score", "step_signal", "fred_api", "grok_endpoint"],
+    KNOWN_DUPLICATE_RULES=["recession_score", "step_signal"],
     TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
@@ -810,7 +812,7 @@ _MARKET_PULSE.update(
     OUTSIDE_HINT="market-pulse", OUTSIDE_PREFIXES=("docs/market-monitor/market-pulse/", "src/market/market_pulse/"),
     READ_PREFIXES=("docs/market-monitor/market-pulse", "src/market/market_pulse"),
     READ_HINT="market-pulse", NAME_SHORT="Market Pulse",
-    KNOWN_DUPLICATE_RULES=["fred_api", "grok_endpoint"],
+    KNOWN_DUPLICATE_RULES=[],
     TITLE="Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/market-pulse",),
     SCREEN_SECTION_DECISIONS=[],

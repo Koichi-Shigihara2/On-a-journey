@@ -84,6 +84,10 @@ if not HAS_MACRO_DATA:
 # 連邦の祝日・営業日（経済指標の公表の予定用。NYSEの休場日ではない）は common/market_data/calendar_universe.py
 # （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23に us_holidays・us_business_days_add から移した。規則は同じ）
 from common.market_data.calendar_universe import previous_us_federal_business_day, us_federal_business_days_add  # noqa: E402
+# 外部APIの呼び出し（Grok・FRED。再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
+from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, grok_text  # noqa: E402
+# [[GROK-MODEL-PRICE-1]]: grok-3-mini/grok-3は実際にはgrok-4.3へ自動ルーティングされ、grok-2-1212は廃止済み。実際に応答する現行モデル名
+GROK_MODEL = "grok-4.3"
 
 # ─────────────────────────────────────────────────────────────────
 #  カラム定義
@@ -458,7 +462,7 @@ def michigan_release_dates(months_ahead: int = 3) -> list[tuple[str, date]]:
     return results
 
 # ─────────────────────────────────────────────────────────────────
-#  FRED Release Calendar（変更なし）
+#  FRED Release Calendar（呼び出しは common/external_api.py の fred_get）
 # ─────────────────────────────────────────────────────────────────
 def fred_release_dates(fred_api_key: str, days_ahead: int = 90) -> dict[str, list[date]]:
     today    = date.today()
@@ -469,35 +473,22 @@ def fred_release_dates(fred_api_key: str, days_ahead: int = 90) -> dict[str, lis
         if not release_id:
             continue
         all_dates = []
-        url = (
-            f"https://api.stlouisfed.org/fred/release/dates"
-            f"?release_id={release_id}"
-            f"&realtime_start={today.strftime('%Y-%m-%d')}"
-            f"&realtime_end={end_date.strftime('%Y-%m-%d')}"
-            f"&include_release_dates_with_no_data=true"
-            f"&api_key={fred_api_key}"
-            f"&file_type=json"
-        )
-        for attempt in range(3):
-            try:
-                r = requests.get(url, timeout=20)
-                r.raise_for_status()
-                data  = r.json()
-                dates = [
-                    datetime.strptime(d["date"], "%Y-%m-%d").date()
-                    for d in data.get("release_dates", [])
-                    if datetime.strptime(d["date"], "%Y-%m-%d").date() >= today
-                ]
-                all_dates.extend(dates)
-                time.sleep(0.3)
-                break
-            except Exception as e:
-                wait = 2 ** attempt
-                if attempt < 2:
-                    logger.warning(f"[FRED Release] {ind_name} attempt {attempt+1}: {e} → retry {wait}s")
-                    time.sleep(wait)
-                else:
-                    logger.warning(f"[FRED Release] {ind_name} failed: {e}")
+        try:
+            data = fred_get("release/dates", {
+                "release_id": release_id,
+                "realtime_start": today.strftime('%Y-%m-%d'),
+                "realtime_end": end_date.strftime('%Y-%m-%d'),
+                "include_release_dates_with_no_data": "true",
+            }, api_key=fred_api_key)
+            dates = [
+                datetime.strptime(d["date"], "%Y-%m-%d").date()
+                for d in data.get("release_dates", [])
+                if datetime.strptime(d["date"], "%Y-%m-%d").date() >= today
+            ]
+            all_dates.extend(dates)
+            time.sleep(0.3)
+        except Exception as e:
+            logger.warning(f"[FRED Release] {ind_name} failed: {e}")
         results[ind_name] = sorted(set(all_dates))
         logger.info(f"[FRED Release] {ind_name}: {[str(d) for d in results[ind_name]]}")
     return results
@@ -1283,35 +1274,13 @@ Market Context:
 
 Respond ONLY in this exact JSON format (no markdown, no extra text):
 {{"regime":"EASING","dominant_concern":"EMPLOYMENT_FOCUS","dominant_label":"雇用重視","ai_reason":"日本語で100字以内で判断理由を記載。"}}"""
-    url = "https://api.x.ai/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}",
-    }
-    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
-    text = None
-    for model in models:
-        try:
-            logger.info(f"Grokモデル試行中 (FOMC): {model}")
-            r = requests.post(url, headers=headers, json={
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 1024,
-                "temperature": 0.1,
-            }, timeout=60)
-            r.raise_for_status()
-            text = r.json()["choices"][0]["message"]["content"]
-            logger.info(f"Grokモデル成功 (FOMC): {model}")
-            break
-        except Exception as e:
-            logger.warning(f"Grokモデル失敗 (FOMC) ({model}): {e}")
-            text = None
+    try:
+        text = grok_text([{"role": "user", "content": prompt}], GROK_MODEL, "MACRO PULSE FOMC", api_key=api_key,
+                         max_tokens=1024, temperature=0.1)
+    except ExternalApiError as e:
+        logger.error(f"Grokの呼び出しに失敗しました (FOMC): {e}")
+        text = None
     if not text:
-        logger.error("すべてのGrokモデルで失敗しました (FOMC)")
         return _fallback_regime(ff_current, zq_rate, cuts_implied)
     raw = text.strip()
     m = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -1776,40 +1745,15 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
 以下のJSON形式で回答してください（マークダウンなし、バッククォートなし）:
 {{"summary":"全体の景気判断を3〜4文で簡潔に（150字以内）","factor_analysis":"スコア変動の要因分析を3〜5文で。各指標の差分データを根拠として言及すること（200字以内）","watchpoints":"今後1〜2週間で注視すべきポイントを2〜3個（200字以内）","indicator_comments":"Yield Curve 10Y-2Y:コメント;HY Spread:コメント;Philadelphia Fed Manufacturing:コメント;Chicago Fed National Activity:コメント;Initial Claims 4W MA:コメント;Building Permits:コメント;Michigan Consumer Sentiment:コメント;Sahm Rule Recession Indicator:コメント の形式で必ず半角セミコロン(;)で8個に区切る。各コメントは20字以内。句読点に全角セミコロンや。を使わないこと"}}"""
 
-    url = "https://api.x.ai/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}",
-    }
-    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
-    text = None
-    used_model = None
-    prompt_len = len(prompt)
-    logger.info(f"Grok weekly analysis: prompt length={prompt_len} chars")
-    for model in models:
-        try:
-            logger.info(f"Grokモデル試行中: {model}")
-            r = requests.post(url, headers=headers, json={
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 4096,
-                "temperature": 0.3,
-            }, timeout=60)
-            r.raise_for_status()
-            text = r.json()["choices"][0]["message"]["content"]
-            used_model = model
-            logger.info(f"Grokモデル成功: {model}")
-            break
-        except Exception as e:
-            logger.warning(f"Grokモデル失敗 ({model}): {e}")
-            text = None
-
+    used_model = GROK_MODEL
+    logger.info(f"Grok weekly analysis: prompt length={len(prompt)} chars")
+    try:
+        text = grok_text([{"role": "user", "content": prompt}], GROK_MODEL, "MACRO PULSE 週次の解説", api_key=api_key,
+                         max_tokens=4096, temperature=0.3)
+    except ExternalApiError as e:
+        logger.error(f"Grokの呼び出しに失敗しました（週次の解説）: {e}")
+        text = None
     if not text:
-        logger.error("すべてのGrokモデルで失敗しました")
         return _fallback_weekly_analysis(target_date, score_data, score_1w, score_1m)
 
     raw = text.strip()
@@ -1833,8 +1777,8 @@ def _fallback_weekly_analysis(target_date, score_data, score_1w, score_1m):
 
     return {
         "summary": f"景気後退リスクスコアは{score}/100（{phase}局面）。先週比{score_1w:+d}ptで{direction}傾向。AI解説は生成できませんでした（ルールベース判定）。",
-        "factor_analysis": f"先週比{score_1w:+d}pt、前月比{score_1m:+d}ptの変動。詳細な要因分析にはGemini API接続が必要です。",
-        "watchpoints": "Gemini API未接続のため注視ポイントは自動生成されていません。各指標の個別トレンドを確認してください。",
+        "factor_analysis": f"先週比{score_1w:+d}pt、前月比{score_1m:+d}ptの変動。{GROK_UNAVAILABLE_TEXT}。",
+        "watchpoints": f"{GROK_UNAVAILABLE_TEXT}。各指標の個別トレンドを確認してください。",
         "indicator_comments": "",
     }
 

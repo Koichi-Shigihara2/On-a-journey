@@ -71,7 +71,6 @@ class SECFetcher:
     CIK_LOOKUP_URL = "https://www.sec.gov/cgi-bin/browse-edgar"
 
     # SEC APIは10リクエスト/秒制限
-    RATE_LIMIT_DELAY = 0.15
     
     def __init__(self, data_dir: str = None):
         if data_dir:
@@ -84,17 +83,14 @@ class SECFetcher:
         self.cik_cache_path = os.path.join(self.data_dir, "_cik_cache.json")
         self.cik_cache = self._load_cik_cache()
         
-        # User-Agent必須（SEC要件）
-        self.headers = {
-            "User-Agent": "Koichi Personal Investment Tools koichi@example.com",
-            "Accept": "application/json"
-        }
         # SECへのリクエスト数（update.pyが実行の最後に表示する。[[SEC-FETCH-CACHE-MTIME-CI-1]]）
         self.request_count = 0
 
-    def _get(self, url: str, timeout: int):
+    def _get(self, url: str, timeout: int = 0):
+        """SECから取る（common/external_api.py の sec_get。User-Agent・毎秒10件の制限・再試行。timeout は使わない）。"""
+        from common.external_api import sec_get
         self.request_count += 1
-        return requests.get(url, headers=self.headers, timeout=timeout)
+        return sec_get(url, "SEC層")
 
     def _load_cik_cache(self) -> dict:
         """CIKキャッシュ読み込み"""
@@ -171,7 +167,6 @@ class SECFetcher:
         print(f"   [{ticker}] SEC API取得中... (CIK: {cik})")
 
         try:
-            time.sleep(self.RATE_LIMIT_DELAY)
             resp = self._get(url, timeout=30)
 
             if resp.status_code == 200:
@@ -224,7 +219,6 @@ class SECFetcher:
         url = f"{self.BASE_URL}/CIK{legacy_cik}.json"
         print(f"   [{ticker}] 旧CIK({legacy_cik})取得中...")
         try:
-            time.sleep(self.RATE_LIMIT_DELAY)
             resp = self._get(url, timeout=30)
             if resp.status_code == 200:
                 data = resp.json()
@@ -363,7 +357,6 @@ class SECFetcher:
 
         url = f"https://data.sec.gov/submissions/CIK{cik}.json"
         try:
-            time.sleep(self.RATE_LIMIT_DELAY)
             resp = self._get(url, timeout=30)
         except Exception as e:
             print(f"   [{ticker}] submissions({cik}) API 例外: {e}")
@@ -386,7 +379,6 @@ class SECFetcher:
                 continue
             archive_url = f"https://data.sec.gov/submissions/{fname}"
             try:
-                time.sleep(self.RATE_LIMIT_DELAY)
                 aresp = self._get(archive_url, timeout=30)
             except Exception as e:
                 print(f"   [{ticker}] submissions({cik}) archive({fname}) 例外: {e}")

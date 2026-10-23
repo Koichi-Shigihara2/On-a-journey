@@ -3549,12 +3549,26 @@ NVDA +18% / MSFT -12% / AVAV +93% / IOT applied=False→True 等、20銘柄のIV
 
 ## 重要ルール
 
-### AI APIキー管理ルール
+### 外部API（Grok・SEC・FRED）の呼び出しのルール（2026-10-24、[[EXTERNAL-API-CLIENT-UNIFY-1]]）
 
-- システム全体のAI APIはxAI（XAI_API_KEY）に統一されている
-- 新規AI API呼び出しを実装する際は必ずGrok（`api.x.ai/v1/chat/completions`）を使用すること
-- モデルはフォールバック方式：`["grok-3-mini", "grok-3", "grok-2-1212"]` の順で試行
+- 外部APIの通信は `common/external_api.py` の1か所を通す。宛先・タイムアウト・再試行（429・5xx・通信の失敗は2秒→5秒待って計3回）・失敗の形（`ExternalApiError`）・ログはここで決まる。プロンプト・モデル・温度・応答の読み方は呼び出し側に書く
+  - Grok: `grok_request(payload, label)`（応答のJSON）・`grok_text(messages, model, label, **引数)`（答えの文字）。トークンの使用量はここでログに出る。Grokが使えないときに画面・データに出す文は `GROK_UNAVAILABLE_TEXT` の1つ
+  - SEC: `sec_get(url, label)`。User-Agent は `On-a-journey <SEC_USER_AGENT_EMAIL>`、毎秒10件の制限もここで守る。呼び出し側で User-Agent・sleep を書かない
+  - FRED: `fred_get(path, params)`（REST）・`fred_client()`（fredapi の Fred）
+- AI APIはxAI（`XAI_API_KEY`）に統一。モデルは grok-4.3（[[GROK-MODEL-PRICE-1]]）。EPSの調整項目だけ `XAI_MODEL`（既定 grok-4.20-0309-reasoning）
 - GeminiやOpenAI等の別APIを使用しているコードを発見した場合はGrokに移行すること
+- 一覧の規則（grok_endpoint・grok_call・fred_api）が `common/external_api.py` 以外に当たったら、CHECK-INV-3 で二重として出る
+
+### SECの連絡先（SEC_USER_AGENT_EMAIL）と手元で動かすとき
+
+- SECは連絡先のメールを User-Agent に求める。値は GitHub の secret `SEC_USER_AGENT_EMAIL` にだけ置き、コードに書かない（実在のアドレスをコードに直書きしない）
+- SECを呼ぶワークフロー7本（SEC_Data_Update・Adjusted_Eps_Analyzer_update・TANUKI_TAIL_KPI_Update・TANUKI_TAIL_RSS_Monitor・TANUKI_TAIL_SEC_Ctrl・TANUKI_TAIL_SEC_Items・TANUKI_VALUATION_Update）は、先頭の `env:` で `SEC_USER_AGENT_EMAIL: ${{ secrets.SEC_USER_AGENT_EMAIL }}` を渡す。SECを呼ぶワークフローを足したら同じ行を足す
+- 環境変数が無いと `sec_get` は `SystemExit` で止まる（架空のアドレスで続けない。`except Exception` では受けられない）
+- 手元でSECを呼ぶスクリプト（`common/sec_data/update.py`・登録の事前確認・TAIL・EPS・TANUKIのインサイダー取引）を動かすときは、その回だけ環境変数を付ける:
+  ```bash
+  SEC_USER_AGENT_EMAIL='<連絡先のメール>' python common/sec_data/update.py APP
+  ```
+  シェルの設定ファイル・リポジトリの中のファイルには書かない。pytest は `tests/conftest.py` が試験用の値（`tests@example.invalid`）を入れ、本物のSECは呼ばない
 
 ### 財務指標計算における期ズレ防止ルール（BUG-NETDEBT-5の教訓）
 

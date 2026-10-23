@@ -42,6 +42,7 @@ if repo_root not in sys.path:
 # kpi_data_layer3引数等、KPI自動取得/AI text抽出の精度階層）とは
 # 完全に別概念のため、SEC側を指す場合は必ず「SEC EDGAR Layer3」と
 # 明示して区別する。
+from common.external_api import ExternalApiError, grok_messages, grok_text  # noqa: E402
 from common.sec_data.layer3_builder import (  # noqa: E402
     build_ticker_store, get_quarterly_series, get_latest_quarterly,
     WEIGHTED_AVG_DILUTED_SHARES_TAG,
@@ -75,12 +76,8 @@ JST = ZoneInfo("Asia/Tokyo")
 
 # ── Grok API 設定 ──────────────────────────────────────────────
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
-GROK_URL    = "https://api.x.ai/v1/chat/completions"
-# [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-# 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-# 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-# ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-GROK_MODELS = ["grok-4.3", "grok-4.3", "grok-4.3"]
+# [[GROK-MODEL-PRICE-1]]: grok-4.3（grok-3-mini/grok-3は自動でgrok-4.3へ、grok-2-1212は廃止済み）。宛先・再試行は common/external_api.py
+GROK_MODEL = "grok-4.3"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Grok API
@@ -94,40 +91,12 @@ def call_grok(
 ) -> str:
     if not XAI_API_KEY:
         raise RuntimeError("XAI_API_KEY が設定されていません")
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {XAI_API_KEY}",
-    }
-    messages: List[Dict[str, str]] = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": user_prompt})
-
-    last_error: Optional[Exception] = None
-    for model in GROK_MODELS:
-        try:
-            print(f"  [Grok] モデル試行: {model}")
-            resp = requests.post(
-                GROK_URL,
-                headers=headers,
-                json={
-                    "model":       model,
-                    "messages":    messages,
-                    "max_tokens":  max_tokens,
-                    "temperature": temperature,
-                },
-                timeout=120,
-            )
-            resp.raise_for_status()
-            text = resp.json()["choices"][0]["message"]["content"]
-            print(f"  [Grok] 成功: {model}")
-            return text
-        except Exception as e:
-            print(f"  [Grok] 失敗 ({model}): {e}")
-            last_error = e
-            time.sleep(1)
-    raise RuntimeError(f"すべてのGrokモデルで失敗: {last_error}")
+    # 呼び出し（再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+    try:
+        return grok_text(grok_messages(user_prompt, system_prompt), GROK_MODEL, "TAIL 四半期レビュー", api_key=XAI_API_KEY,
+                         max_tokens=max_tokens, temperature=temperature)
+    except ExternalApiError as e:
+        raise RuntimeError(f"Grokの呼び出しに失敗: {e}") from e
 
 
 def extract_json_from_response(text: str) -> Dict[str, Any]:

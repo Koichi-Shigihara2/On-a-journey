@@ -17,6 +17,7 @@ import os
 import pandas as pd
 import pytest
 
+from common import external_api
 from common.macro_data import fetcher
 
 
@@ -48,7 +49,7 @@ def _series(pairs):
 class TestFetchSeries:
     def test_missing_api_key_returns_none_without_retry(self, monkeypatch):
         monkeypatch.delenv("FRED_API_KEY", raising=False)
-        monkeypatch.setattr(fetcher, "_FRED_CLIENT", None)
+        monkeypatch.setattr(external_api, "_FRED_CLIENT", [None])
         result = fetcher.fetch_series("BAMLH0A0HYM2")
         assert result is None
 
@@ -215,7 +216,7 @@ class TestFetchStatusField:
     def test_missing_api_key_has_fetch_status_failed_with_reason(self, tmp_path, monkeypatch):
         base = str(tmp_path)
         monkeypatch.delenv("FRED_API_KEY", raising=False)
-        monkeypatch.setattr(fetcher, "_FRED_CLIENT", None)
+        monkeypatch.setattr(external_api, "_FRED_CLIENT", [None])
         result = fetcher.update_series("TESTSERIES", base_dir=base)
         assert result["fetch_status"] == "failed"
         assert "FRED_API_KEY" in result["failure_reason"]

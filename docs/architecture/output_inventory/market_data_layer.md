@@ -77,7 +77,7 @@
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 73・191・317・369・390・468（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `common/system_health.py` 行 86（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 404・478（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 1087・1212・1235（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 1084・1209・1232（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 639・1015（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 235・466・521・524・1060（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 115・256（経由 `common/market_data/reader.py::get_attributes`）
@@ -160,7 +160,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `from`(2)・`holidays`(2)・`source`(2)・`to`(2)
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 399・409（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 218・221・539（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1937
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1914
 - JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1392
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -192,7 +192,7 @@
 
 - `.github/workflows/Market_Data_Daily_Update.yml`（行 120・121・122・123・125）: 
 - `.github/workflows/Market_Data_Weekly_Update.yml`（行 67・68・71・72）: 
-- `.github/workflows/TANUKI_VALUATION_Update.yml`（行 102・103・104・105・110）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
+- `.github/workflows/TANUKI_VALUATION_Update.yml`（行 104・105・106・107・112）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）
 

@@ -117,7 +117,7 @@
    "readers": [
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 113,
+     "line": 105,
      "func": "_series_meta_path",
      "how": "保存済みファイル",
      "via": "grep",
@@ -125,7 +125,7 @@
     },
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 365,
+     "line": 357,
      "func": "fetch_all_series",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::_load_json",
@@ -133,7 +133,7 @@
     },
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 411,
+     "line": 403,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -141,7 +141,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 253,
+     "line": 254,
      "func": "TestFetchAllSeriesFailureIsolation.test_one_series_raising_unexpected_exception_does_not_abort_others",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -149,7 +149,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 285,
+     "line": 286,
      "func": "TestFetchAllSeriesFailureIsolation.test_series_where_fred_call_fails_is_isolated_from_others",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -157,7 +157,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 405,
+     "line": 406,
      "func": "TestStartParamPropagation.test_fetch_all_series_start_reaches_every_series",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -165,7 +165,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 420,
+     "line": 421,
      "func": "TestStartParamPropagation.test_fetch_all_series_no_start_omits_observation_start_for_every_series",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -173,7 +173,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 436,
+     "line": 437,
      "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -181,7 +181,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 439,
+     "line": 440,
      "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -189,7 +189,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 458,
+     "line": 459,
      "func": "TestFetchAllSeries.test_defaults_to_series_meta_keys",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -197,7 +197,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 471,
+     "line": 472,
      "func": "TestFetchAllSeries.test_explicit_series_ids_overrides_meta",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -205,7 +205,7 @@
     },
     {
      "file": "tests/test_macro_data_fetcher.py",
-     "line": 478,
+     "line": 479,
      "func": "TestFetchAllSeries.test_missing_series_meta_yields_no_targets",
      "how": "保存済みファイル",
      "via": "common/macro_data/fetcher.py::fetch_all_series",
@@ -247,7 +247,7 @@
     {
      "file": "common/macro_data/fetcher.py",
      "func": "_write_violations_section",
-     "line": 243
+     "line": 235
     }
    ],
    "writers_outside_layer": [],
@@ -369,7 +369,7 @@
    "readers": [
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 117,
+     "line": 109,
      "func": "_violations_log_path",
      "how": "保存済みファイル",
      "via": "grep",
@@ -409,7 +409,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_l_macro_data",
@@ -509,7 +509,7 @@
     {
      "file": "common/macro_data/fetcher.py",
      "func": "update_series",
-     "line": 327
+     "line": 319
     }
    ],
    "writers_outside_layer": [],
@@ -619,7 +619,7 @@
     },
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 109,
+     "line": 101,
      "func": "_series_path",
      "how": "保存済みファイル",
      "via": "grep",
@@ -675,7 +675,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 696,
+     "line": 687,
      "func": "fred_latest",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -683,7 +683,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 719,
+     "line": 710,
      "func": "fred_latest_with_prev",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -691,7 +691,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 737,
+     "line": 728,
      "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -699,7 +699,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 738,
+     "line": 729,
      "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -707,7 +707,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 741,
+     "line": 732,
      "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -715,7 +715,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 757,
+     "line": 748,
      "func": "get_implied_cuts",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -723,7 +723,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 795,
+     "line": 786,
      "func": "get_financial_context",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -731,7 +731,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 796,
+     "line": 787,
      "func": "get_financial_context",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -739,7 +739,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 797,
+     "line": 788,
      "func": "get_financial_context",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -747,7 +747,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 841,
+     "line": 832,
      "func": "get_sp500_with_asof",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -755,7 +755,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 955,
+     "line": 946,
      "func": "fetch_event_row",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -763,7 +763,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 962,
+     "line": 953,
      "func": "fetch_event_row",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -771,7 +771,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1024,
+     "line": 1015,
      "func": "_load_sp500_cache",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -779,7 +779,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1098,
+     "line": 1089,
      "func": "fill_returns",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -787,7 +787,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1995,
+     "line": 1939,
      "func": "refresh_monthly_indicators",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -795,7 +795,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2030,
+     "line": 1974,
      "func": "_store_values",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -803,7 +803,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2054,
+     "line": 1998,
      "func": "apply_revisions",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -811,7 +811,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2222,
+     "line": 2166,
      "func": "_load_weekly_liquidity_series",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -819,7 +819,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2361,
+     "line": 2305,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -827,7 +827,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2366,
+     "line": 2310,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -835,7 +835,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2372,
+     "line": 2316,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -843,7 +843,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2374,
+     "line": 2318,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -851,7 +851,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2384,
+     "line": 2328,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -859,7 +859,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2386,
+     "line": 2330,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -867,7 +867,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2388,
+     "line": 2332,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -875,7 +875,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2391,
+     "line": 2335,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -883,7 +883,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2456,
+     "line": 2400,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -891,7 +891,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2641,
+     "line": 2585,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -915,7 +915,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1185,
+     "line": 1162,
      "func": "fetch_fred_short_bond",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -923,7 +923,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1235,
+     "line": 1212,
      "func": "collect_asset_flow",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -931,7 +931,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1851,
+     "line": 1828,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -939,7 +939,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1894,
+     "line": 1871,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -1231,7 +1231,7 @@
     {
      "file": "common/macro_data/fetcher.py",
      "func": "<module>",
-     "line": 432
+     "line": 424
     }
    ],
    "writers_outside_layer": [],
@@ -1287,17 +1287,17 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 723,
+     "line": 720,
      "text": "q4_net = annual_net - q1q3_sum"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 866,
+     "line": 863,
      "text": "q4_val = annual_val - ytd_9m_val"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 894,
+     "line": 891,
      "text": "q4_val = annual_val - q123_sum"
     }
    ],
@@ -1361,17 +1361,17 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 229,
+     "line": 219,
      "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 433,
+     "line": 419,
      "text": "if latest[\"filed\"] >= prev_filed:"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 605,
+     "line": 602,
      "text": "if cand['filed'] > existing_filed:"
     }
    ],
@@ -1491,12 +1491,12 @@
    "sites": [
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 389,
+     "line": 375,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 196,
+     "line": 180,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
@@ -1552,7 +1552,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 143,
+     "line": 137,
      "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
     }
    ],
@@ -1753,7 +1753,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1121,
+     "line": 1115,
      "text": "def _determine_beta("
     }
    ],
@@ -1789,7 +1789,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1105,
+     "line": 1099,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -1821,12 +1821,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1527,
+     "line": 1496,
      "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1647,
+     "line": 1616,
      "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
     }
    ],
@@ -1852,12 +1852,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1510,
+     "line": 1479,
      "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1523,
+     "line": 1492,
      "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
     }
    ],
@@ -1877,28 +1877,21 @@
    ],
    "sites": [
     {
-     "file": "common/macro_data/fetcher.py",
-     "line": 69,
-     "text": "_FRED_CLIENT = Fred(api_key=api_key)"
+     "file": "common/external_api.py",
+     "line": 30,
+     "text": "FRED_URL = \"https://api.stlouisfed.org/fred/\""
     },
     {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 473,
-     "text": "f\"https://api.stlouisfed.org/fred/release/dates\""
-    },
-    {
-     "file": "src/market/market_pulse/market_calendar.py",
-     "line": 63,
-     "text": "j = get_json(\"https://api.stlouisfed.org/fred/releases/dates\","
+     "file": "common/external_api.py",
+     "line": 146,
+     "text": "_FRED_CLIENT[0] = Fred(api_key=_fred_key())"
     }
    ],
    "files": [
-    "common/macro_data/fetcher.py",
-    "src/market/macro_pulse/05_main.py",
-    "src/market/market_pulse/market_calendar.py"
+    "common/external_api.py"
    ],
-   "in_layer": true,
-   "duplicated": true
+   "in_layer": false,
+   "duplicated": false
   },
   {
    "id": "grok_endpoint",
@@ -1908,75 +1901,16 @@
    ],
    "sites": [
     {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 1286,
-     "text": "url = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 1779,
-     "text": "url = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1135,
-     "text": "url = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/market/market_pulse/news_headlines.py",
-     "line": 41,
+     "file": "common/external_api.py",
+     "line": 28,
      "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/kpi_proposer.py",
-     "line": 71,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/quarterly_review_generator.py",
-     "line": 78,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 50,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/text_kpi_extractor.py",
-     "line": 47,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/value/adjusted_eps_analyzer/ai_analyzer.py",
-     "line": 74,
-     "text": "XAI_API_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
-     "line": 35,
-     "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/value/tanuki_valuation/validator.py",
-     "line": 37,
-     "text": "XAI_ENDPOINT = \"https://api.x.ai/v1/chat/completions\""
     }
    ],
    "files": [
-    "src/market/macro_pulse/05_main.py",
-    "src/market/market_pulse/collect_and_send.py",
-    "src/market/market_pulse/news_headlines.py",
-    "src/tail/kpi_proposer.py",
-    "src/tail/quarterly_review_generator.py",
-    "src/tail/sec_ctrl_fetcher.py",
-    "src/tail/text_kpi_extractor.py",
-    "src/value/adjusted_eps_analyzer/ai_analyzer.py",
-    "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
-    "src/value/tanuki_valuation/validator.py"
+    "common/external_api.py"
    ],
    "in_layer": false,
-   "duplicated": true
+   "duplicated": false
   },
   {
    "id": "atomic_write_json",
@@ -1987,7 +1921,7 @@
    "sites": [
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 79,
+     "line": 71,
      "text": "def _atomic_write_json(path: str, payload: Any) -> None:"
     },
     {
@@ -2020,7 +1954,7 @@
    "dir": "common/macro_data",
    "file": "common/macro_data/fetcher.py",
    "decision": "残す（2026-10-23）",
-   "lines": 439,
+   "lines": 431,
    "workflows": [
     ".github/workflows/Macro_Data_Update.yml"
    ],

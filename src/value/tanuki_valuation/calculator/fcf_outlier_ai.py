@@ -32,9 +32,8 @@ from typing import Any, Dict, List, Optional
 import requests
 
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
-GROK_URL = "https://api.x.ai/v1/chat/completions"
-# [[GROK-MODEL-PRICE-1]]確定済みの現行モデル名をそのまま使う
-GROK_MODELS = ["grok-4.3", "grok-4.3", "grok-4.3"]
+# [[GROK-MODEL-PRICE-1]]: grok-4.3（grok-3-mini/grok-3は自動でgrok-4.3へ、grok-2-1212は廃止済み）。宛先・再試行は common/external_api.py
+GROK_MODEL = "grok-4.3"
 
 _VALID_ASSESSMENTS = {"transient", "structural_concern", "uncertain"}
 
@@ -59,40 +58,15 @@ def call_grok(
     max_tokens: int = 500,
     temperature: float = 0.3,
 ) -> str:
-    """[[quarterly_review_generator.py::call_grok()]]と同型実装
-    （フォールバックループ・タイムアウト・エラーハンドリングを踏襲）。"""
+    """Grok を呼ぶ（common/external_api.py。再試行・タイムアウト・ログ。[[EXTERNAL-API-CLIENT-UNIFY-1]]）。失敗は RuntimeError。"""
     if not XAI_API_KEY:
         raise RuntimeError("XAI_API_KEY が設定されていません")
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {XAI_API_KEY}",
-    }
-    messages: List[Dict[str, str]] = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": user_prompt})
-
-    last_error: Optional[Exception] = None
-    for model in GROK_MODELS:
-        try:
-            resp = requests.post(
-                GROK_URL,
-                headers=headers,
-                json={
-                    "model": model,
-                    "messages": messages,
-                    "max_tokens": max_tokens,
-                    "temperature": temperature,
-                },
-                timeout=120,
-            )
-            resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"]
-        except Exception as e:
-            last_error = e
-            time.sleep(1)
-    raise RuntimeError(f"すべてのGrokモデルで失敗: {last_error}")
+    from common.external_api import ExternalApiError, grok_messages, grok_text
+    try:
+        return grok_text(grok_messages(user_prompt, system_prompt), GROK_MODEL, "TANUKI FCFの一過性費用", api_key=XAI_API_KEY,
+                         max_tokens=max_tokens, temperature=temperature)
+    except ExternalApiError as e:
+        raise RuntimeError(f"Grokの呼び出しに失敗: {e}") from e
 
 
 def extract_json_from_response(text: str) -> Dict[str, Any]:

@@ -34,7 +34,6 @@ XAI_API_KEY = os.environ.get("XAI_API_KEY", "")
 # ルーティングされる（実測確認済み）ため、実態に合わせ現行モデル名を
 # 明示する。
 XAI_MODEL = "grok-4.3"
-XAI_ENDPOINT = "https://api.x.ai/v1/chat/completions"
 
 
 def _extract_params(data: Dict[str, Any], ticker: str = "") -> Dict[str, Any]:
@@ -205,10 +204,6 @@ def call_xai_api(prompt: str) -> Optional[Dict[str, Any]]:
         print("[WARN] XAI_API_KEY not set, skipping AI validation")
         return None
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {XAI_API_KEY}"
-    }
     payload = {
         "model": XAI_MODEL,
         "messages": [
@@ -218,35 +213,23 @@ def call_xai_api(prompt: str) -> Optional[Dict[str, Any]]:
         "max_tokens": 1024
     }
 
-    for attempt in range(2):  # 最大2回試行（タイムアウト時1回リトライ）
+    # 呼び出し（宛先・タイムアウト・再試行・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+    from common.external_api import ExternalApiError, grok_request
+    try:
+        result = grok_request(payload, "TANUKI 計算の検証", api_key=XAI_API_KEY)
+    except ExternalApiError as e:
+        print(f"[ERROR] xAI API request failed: {e}")
+        return None
+    text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    json_start = text.find("{")
+    json_end = text.rfind("}") + 1
+    if json_start >= 0 and json_end > json_start:
         try:
-            response = requests.post(XAI_ENDPOINT, headers=headers, json=payload, timeout=60)
-            response.raise_for_status()
-
-            result = response.json()
-            text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-
-            json_start = text.find("{")
-            json_end = text.rfind("}") + 1
-            if json_start >= 0 and json_end > json_start:
-                json_str = text[json_start:json_end]
-                return json.loads(json_str)
-
-            print(f"[WARN] Could not parse JSON from xAI response: {text[:200]}")
-            return None
-
-        except requests.exceptions.Timeout:
-            if attempt == 0:
-                print(f"[WARN] xAI API timeout (attempt 1/2), retrying...")
-                continue
-            print(f"[ERROR] xAI API request timed out after 2 attempts")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"[ERROR] xAI API request failed: {e}")
-            return None
+            return json.loads(text[json_start:json_end])
         except json.JSONDecodeError as e:
             print(f"[ERROR] Failed to parse xAI response as JSON: {e}")
             return None
+    print(f"[WARN] Could not parse JSON from xAI response: {text[:200]}")
     return None
 
 

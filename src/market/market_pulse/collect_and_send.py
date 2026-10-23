@@ -1132,35 +1132,12 @@ def analyse_market(facts):
     """xAI Grok API（OpenAI互換エンドポイント）で「AIの見解」を生成する（MP-28、指示書㉓）。
     入力は確定した事実のJSON（build_ai_facts()）だけ。戻り値は(見解の本文, 俳句)。"""
     prompt = AI_PROMPT.format(facts=json.dumps(facts, ensure_ascii=False, indent=1, default=str))
-    url = "https://api.x.ai/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {XAI_API_KEY}",
-    }
-    # [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-    # 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-    # 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-    # ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-    models = ["grok-4.3", "grok-4.3", "grok-4.3"]
-    last_error = None
-    for model in models:
-        try:
-            print(f"[INFO] Grokモデル試行中: {model}")
-            resp = requests.post(url, headers=headers, json={
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 2048,
-                "temperature": 0.3,
-            }, timeout=120)
-            resp.raise_for_status()
-            text = resp.json()["choices"][0]["message"]["content"]
-            print(f"[OK] Grokモデル成功: {model}")
-            return split_haiku(text)
-        except Exception as e:
-            print(f"[WARN] Grokモデル失敗 ({model}): {e}")
-            last_error = e
-    print("[ERROR] すべてのGrokモデルで失敗しました")
-    raise last_error
+    # 呼び出し（再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）。失敗は例外のまま上へ（実行を失敗にする）
+    # [[GROK-MODEL-PRICE-1]]: grok-4.3（grok-3-mini/grok-3は自動でgrok-4.3へ、grok-2-1212は廃止済み）
+    from common.external_api import grok_text
+    text = grok_text([{"role": "user", "content": prompt}], "grok-4.3", "Market Pulse AIの見解", api_key=XAI_API_KEY,
+                     max_tokens=2048, temperature=0.3)
+    return split_haiku(text)
 
 
 def fetch_fred_short_bond(asset_def):

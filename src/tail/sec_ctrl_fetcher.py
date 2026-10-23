@@ -31,6 +31,7 @@ repo_root  = os.path.abspath(os.path.join(script_dir, "..", ".."))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 from common.sec_data import tickers as _tickers_mod  # noqa: E402
+from common.external_api import ExternalApiError, grok_messages, grok_text, sec_get  # noqa: E402
 
 DATA_DIR     = os.path.join(repo_root, "docs", "portfolio", "tail", "data")
 CTRL_DIR     = os.path.join(DATA_DIR, "ctrl")
@@ -40,19 +41,11 @@ JST = ZoneInfo("Asia/Tokyo")
 
 EDGAR_BASE = "https://www.sec.gov"
 EDGAR_DATA = "https://data.sec.gov"
-EDGAR_HDR  = {
-    "User-Agent": "TANUKI-TAIL-Bot contact@example.com",
-    "Accept-Encoding": "gzip, deflate",
-}
 
 # ── Grok API ──────────────────────────────────────────────────
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
-GROK_URL    = "https://api.x.ai/v1/chat/completions"
-# [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-# 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-# 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-# ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-GROK_MODELS = ["grok-4.3", "grok-4.3", "grok-4.3"]
+# [[GROK-MODEL-PRICE-1]]: grok-4.3（grok-3-mini/grok-3は自動でgrok-4.3へ、grok-2-1212は廃止済み）。宛先・再試行は common/external_api.py
+GROK_MODEL = "grok-4.3"
 
 # ── シグナル検出パターン ──────────────────────────────────────
 _RE_NOT_EFFECTIVE = re.compile(
@@ -83,7 +76,7 @@ _RE_EFFECTIVE = re.compile(
 # Grok 翻訳
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _translate_excerpt(text: str, item_description: str, timeout: int = 60) -> Optional[str]:
+def _translate_excerpt(text: str, item_description: str) -> Optional[str]:
     """SEC filing抜粋を Grok で日本語訳する（[[TAIL-SEC-ITEMS-1]]、
     2026-09-13に旧`_translate_item4()`を項目非依存へ汎用化。
     `item_description`に翻訳対象セクションの説明文を渡す）。
@@ -104,24 +97,12 @@ def _translate_excerpt(text: str, item_description: str, timeout: int = 60) -> O
         "翻訳文のみを出力し、説明や前置きは不要です。\n\n"
         f"{text}"
     )
-    headers = {
-        "Authorization": f"Bearer {XAI_API_KEY}",
-        "Content-Type":  "application/json",
-    }
-    payload = {
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0,
-        "max_tokens": 1500,
-    }
-    for model in GROK_MODELS:
-        try:
-            payload["model"] = model
-            resp = requests.post(GROK_URL, headers=headers, json=payload, timeout=timeout)
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"].strip()
-        except Exception as e:
-            print(f"  [Grok/{model}] 翻訳失敗: {e}")
+    # 呼び出し（宛先・タイムアウト〈1つの設定〉・再試行・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+    try:
+        return grok_text([{"role": "user", "content": prompt}], GROK_MODEL, f"TAIL 訳 {item_description}", api_key=XAI_API_KEY,
+                         temperature=0, max_tokens=1500).strip()
+    except ExternalApiError as e:
+        print(f"  [Grok/{GROK_MODEL}] 翻訳失敗: {e}")
     return None
 
 
@@ -129,11 +110,11 @@ def _translate_excerpt(text: str, item_description: str, timeout: int = 60) -> O
 # EDGAR ユーティリティ
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def _edgar_get(url: str, timeout: int = 60) -> Optional[requests.Response]:
+def _edgar_get(url: str) -> Optional[requests.Response]:
+    """EDGARから取る（common/external_api.py の sec_get。User-Agent・毎秒10件の制限・再試行）。失敗は None。"""
     try:
-        resp = requests.get(url, headers=EDGAR_HDR, timeout=timeout)
+        resp = sec_get(url, "TAIL EDGAR")
         resp.raise_for_status()
-        time.sleep(0.15)
         return resp
     except Exception as e:
         print(f"  [EDGAR] 取得失敗 {url}: {e}")
@@ -336,7 +317,7 @@ def fetch_ctrl(ticker: str, cik: str):
 
     url  = f"{EDGAR_BASE}/Archives/edgar/data/{cik_int}/{accn_nd}/{pdoc}"
     print(f"  [{ticker}] 10-Q 取得: {url}")
-    resp = _edgar_get(url, timeout=120)
+    resp = _edgar_get(url)
     if not resp:
         return None
 

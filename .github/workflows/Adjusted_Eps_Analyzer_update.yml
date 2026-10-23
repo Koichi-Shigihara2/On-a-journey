@@ -17,6 +17,10 @@ on:
         required: false
         default: ''
 
+env:
+  # SECに名乗る連絡先（common/external_api.py が User-Agent を作る。無ければ止まる。[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+  SEC_USER_AGENT_EMAIL: ${{ secrets.SEC_USER_AGENT_EMAIL }}
+
 jobs:
   update:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'

@@ -49,7 +49,7 @@
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
      "func": "main",
-     "line": 458
+     "line": 439
     }
    ],
    "writers_outside_layer": [],
@@ -110,7 +110,7 @@
     {
      "file": "src/tail/text_kpi_extractor.py",
      "func": "extract_layer3",
-     "line": 677
+     "line": 655
     }
    ],
    "writers_outside_layer": [],
@@ -148,7 +148,7 @@
    "readers": [
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 169,
+     "line": 138,
      "func": "load_layer3_kpi",
      "how": "保存済みファイル",
      "via": "grep",
@@ -156,7 +156,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 172,
+     "line": 141,
      "func": "load_layer3_kpi",
      "how": "保存済みファイル",
      "via": "AST",
@@ -164,7 +164,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1571,
+     "line": 1540,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer3_kpi",
@@ -172,7 +172,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1775,
+     "line": 1744,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer3_kpi",
@@ -180,7 +180,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer3_kpi",
@@ -213,7 +213,7 @@
    "reader_count_test": 1,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -223,7 +223,7 @@
     {
      "file": "src/tail/edgar_rss_monitor.py",
      "func": "save_state",
-     "line": 368
+     "line": 354
     }
    ],
    "writers_outside_layer": [],
@@ -281,7 +281,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 361,
+     "line": 347,
      "func": "load_state",
      "how": "保存済みファイル",
      "via": "AST",
@@ -289,7 +289,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 606,
+     "line": 592,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::load_state",
@@ -297,7 +297,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 638,
+     "line": 624,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::load_state",
@@ -328,7 +328,7 @@
    "reader_count_test": 0,
    "reader_count_compute": 0,
    "group": "1件",
-   "note": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -338,7 +338,7 @@
     {
      "file": "src/tail/kpi_proposer.py",
      "func": "update_tail_kpi_map",
-     "line": 707
+     "line": 685
     }
    ],
    "writers_outside_layer": [],
@@ -386,7 +386,7 @@
    "readers": [
     {
      "file": ".github/workflows/TANUKI_TAIL_KPI_Update.yml",
-     "line": 49,
+     "line": 51,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -394,7 +394,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 65,
+     "line": 66,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -402,7 +402,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 147,
+     "line": 125,
      "func": "load_kpi_map",
      "how": "保存済みファイル",
      "via": "AST",
@@ -410,7 +410,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 387,
+     "line": 365,
      "func": "post_process_proposals",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_kpi_map",
@@ -418,7 +418,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 740,
+     "line": 718,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_kpi_map",
@@ -426,7 +426,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 769,
+     "line": 747,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_kpi_map",
@@ -434,7 +434,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 842,
+     "line": 820,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_kpi_map",
@@ -442,7 +442,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 854,
+     "line": 832,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_kpi_map",
@@ -450,7 +450,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 62,
+     "line": 63,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -458,7 +458,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 610,
+     "line": 579,
      "func": "_load_tail_kpi_map",
      "how": "保存済みファイル",
      "via": "AST",
@@ -466,7 +466,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 661,
+     "line": 630,
      "func": "_get_effective_thesis_kpis",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_tail_kpi_map",
@@ -474,7 +474,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 672,
+     "line": 641,
      "func": "_build_kpi_monitoring_section",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_tail_kpi_map",
@@ -482,7 +482,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1075,
+     "line": 1044,
      "func": "build_stage1_prompt",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_tail_kpi_map",
@@ -490,7 +490,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1648,
+     "line": 1617,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_tail_kpi_map",
@@ -498,7 +498,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1775,
+     "line": 1744,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_tail_kpi_map",
@@ -514,7 +514,7 @@
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 722,
+     "line": 706,
      "func": "main",
      "how": "保存済みファイル",
      "via": "AST",
@@ -522,7 +522,7 @@
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 758,
+     "line": 742,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/xbrl_segment_fetcher.py::main",
@@ -712,7 +712,7 @@
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
      "func": "main",
-     "line": 447
+     "line": 428
     }
    ],
    "writers_outside_layer": [],
@@ -806,7 +806,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 301,
+     "line": 282,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -814,7 +814,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 303,
+     "line": 284,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -822,7 +822,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 327,
+     "line": 308,
      "func": "fetch_ctrl",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -830,7 +830,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
@@ -885,7 +885,7 @@
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -895,7 +895,7 @@
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
      "func": "main",
-     "line": 447
+     "line": 428
     }
    ],
    "writers_outside_layer": [],
@@ -1017,7 +1017,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 301,
+     "line": 282,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1025,7 +1025,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 303,
+     "line": 284,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1033,7 +1033,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 327,
+     "line": 308,
      "func": "fetch_ctrl",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -1049,7 +1049,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
@@ -1202,7 +1202,7 @@
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
      "func": "_write_layer2_output",
-     "line": 686
+     "line": 670
     }
    ],
    "writers_outside_layer": [],
@@ -1325,7 +1325,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 160,
+     "line": 129,
      "func": "load_layer2_kpi",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1333,7 +1333,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 164,
+     "line": 133,
      "func": "load_layer2_kpi",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1341,7 +1341,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1570,
+     "line": 1539,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer2_kpi",
@@ -1349,7 +1349,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1775,
+     "line": 1744,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer2_kpi",
@@ -1357,7 +1357,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1787,
+     "line": 1756,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/tail_dcf_bridge.py::_load_layer2_kpi",
@@ -1365,7 +1365,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer2_kpi",
@@ -1641,7 +1641,7 @@
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -1651,17 +1651,17 @@
     {
      "file": "src/tail/kpi_proposer.py",
      "func": "propose_kpis",
-     "line": 764
+     "line": 742
     },
     {
      "file": "src/tail/kpi_proposer.py",
      "func": "propose_kpis",
-     "line": 771
+     "line": 749
     },
     {
      "file": "src/tail/kpi_proposer.py",
      "func": "propose_kpis",
-     "line": 814
+     "line": 792
     }
    ],
    "writers_outside_layer": [],
@@ -1733,7 +1733,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 113,
+     "line": 91,
      "func": "load_proposal",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1741,7 +1741,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 117,
+     "line": 95,
      "func": "load_proposal",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1749,7 +1749,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 586,
+     "line": 564,
      "func": "extract_layer3",
      "how": "保存済みファイル",
      "via": "src/tail/text_kpi_extractor.py::load_proposal",
@@ -1757,7 +1757,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 701,
+     "line": 679,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/text_kpi_extractor.py::load_proposal",
@@ -1765,7 +1765,7 @@
     },
     {
      "file": "src/tail/text_kpi_extractor.py",
-     "line": 713,
+     "line": 691,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/text_kpi_extractor.py::load_proposal",
@@ -1929,7 +1929,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 136,
+     "line": 114,
      "func": "load_thesis",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1937,7 +1937,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 140,
+     "line": 118,
      "func": "load_thesis",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1945,7 +1945,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 727,
+     "line": 705,
      "func": "propose_kpis",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_thesis",
@@ -1953,7 +1953,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 842,
+     "line": 820,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_thesis",
@@ -1961,7 +1961,7 @@
     },
     {
      "file": "src/tail/kpi_proposer.py",
-     "line": 854,
+     "line": 832,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/kpi_proposer.py::load_thesis",
@@ -1969,7 +1969,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 151,
+     "line": 120,
      "func": "load_thesis",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1977,7 +1977,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 155,
+     "line": 124,
      "func": "load_thesis",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1985,7 +1985,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1569,
+     "line": 1538,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_thesis",
@@ -1993,7 +1993,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1775,
+     "line": 1744,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_thesis",
@@ -2001,7 +2001,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1787,
+     "line": 1756,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/tail_dcf_bridge.py::_load_thesis",
@@ -2009,7 +2009,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_thesis",
@@ -2242,7 +2242,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1543,
+     "line": 1520,
      "func": "compute_implb",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2250,7 +2250,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1567,
+     "line": 1544,
      "func": "compute_implc",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2258,7 +2258,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1929,
+     "line": 1906,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2290,7 +2290,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 261,
+     "line": 247,
      "func": "get_core_tickers",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2298,7 +2298,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 295,
+     "line": 281,
      "func": "get_monitored_tickers",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2306,7 +2306,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 332,
+     "line": 318,
      "func": "get_excluded_positions",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2314,7 +2314,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 338,
+     "line": 324,
      "func": "get_excluded_positions",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2322,7 +2322,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 589,
+     "line": 575,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2330,7 +2330,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 590,
+     "line": 576,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_excluded_positions",
@@ -2338,7 +2338,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 638,
+     "line": 624,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2346,7 +2346,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 37,
+     "line": 38,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2354,7 +2354,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 397,
+     "line": 378,
      "func": "load_tail_tickers",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2362,7 +2362,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 416,
+     "line": 397,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::load_tail_tickers",
@@ -2370,7 +2370,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
+     "line": 459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::load_tail_tickers",
@@ -2575,7 +2575,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 61,
+     "line": 62,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2583,7 +2583,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 961,
+     "line": 930,
      "func": "_load_past_predictions",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2591,7 +2591,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1600,
+     "line": 1569,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_past_predictions",
@@ -2599,7 +2599,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1775,
+     "line": 1744,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_past_predictions",
@@ -2607,7 +2607,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::_load_past_predictions",
@@ -2654,12 +2654,12 @@
     {
      "file": "src/tail/edgar_rss_monitor.py",
      "func": "save_queue",
-     "line": 381
+     "line": 367
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
      "func": "save_queue",
-     "line": 1541
+     "line": 1510
     }
    ],
    "writers_outside_layer": [],
@@ -2677,7 +2677,7 @@
    "readers": [
     {
      "file": ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml",
-     "line": 53,
+     "line": 55,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2685,7 +2685,7 @@
     },
     {
      "file": ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml",
-     "line": 71,
+     "line": 73,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2693,7 +2693,7 @@
     },
     {
      "file": ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml",
-     "line": 90,
+     "line": 92,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2749,7 +2749,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 374,
+     "line": 360,
      "func": "load_queue",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2757,7 +2757,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 607,
+     "line": 593,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::load_queue",
@@ -2765,7 +2765,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 638,
+     "line": 624,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::load_queue",
@@ -2797,7 +2797,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 57,
+     "line": 58,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2805,7 +2805,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1535,
+     "line": 1504,
      "func": "load_queue",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2813,7 +2813,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1746,
+     "line": 1715,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -2821,7 +2821,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1787,
+     "line": 1756,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/review_status.py::load_queue",
@@ -2829,7 +2829,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -3038,7 +3038,7 @@
     {
      "file": "src/tail/quarterly_review_generator.py",
      "func": "generate_review",
-     "line": 1723
+     "line": 1692
     }
    ],
    "writers_outside_layer": [],
@@ -3160,7 +3160,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1787,
+     "line": 1756,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/tail_dcf_bridge.py::_load_latest_review",
@@ -3168,7 +3168,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1811,
+     "line": 1780,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/tail_dcf_bridge.py::_load_latest_review",
@@ -3307,7 +3307,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 589
+     "line": 580
     }
    ],
    "writers_outside_layer": [],
@@ -3337,7 +3337,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 445,
+     "line": 426,
      "func": "main",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3345,7 +3345,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 453,
+     "line": 434,
      "func": "main",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3353,7 +3353,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
+     "line": 459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::main",
@@ -3420,7 +3420,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 578
+     "line": 569
     }
    ],
    "writers_outside_layer": [],
@@ -3554,7 +3554,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 301,
+     "line": 282,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3562,7 +3562,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 303,
+     "line": 284,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3570,7 +3570,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 327,
+     "line": 308,
      "func": "fetch_ctrl",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -3578,7 +3578,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 433,
+     "line": 414,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -3586,7 +3586,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 444,
+     "line": 425,
      "func": "main",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3594,7 +3594,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
+     "line": 459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::main",
@@ -3610,7 +3610,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
@@ -3704,7 +3704,7 @@
    "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない）",
+   "note": "銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -3714,7 +3714,7 @@
     {
      "file": "src/tail/sec_items_fetcher.py",
      "func": "_save_result",
-     "line": 563
+     "line": 554
     }
    ],
    "writers_outside_layer": [],
@@ -3880,7 +3880,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 301,
+     "line": 282,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3888,7 +3888,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 303,
+     "line": 284,
      "func": "_stored_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3896,7 +3896,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 327,
+     "line": 308,
      "func": "fetch_ctrl",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -3904,7 +3904,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 433,
+     "line": 414,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::_stored_latest",
@@ -3912,7 +3912,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 443,
+     "line": 424,
      "func": "main",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3920,7 +3920,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 444,
+     "line": 425,
      "func": "main",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3928,7 +3928,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 445,
+     "line": 426,
      "func": "main",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3936,7 +3936,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 453,
+     "line": 434,
      "func": "main",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3944,7 +3944,7 @@
     },
     {
      "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 478,
+     "line": 459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/sec_ctrl_fetcher.py::main",
@@ -3952,7 +3952,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 366,
+     "line": 361,
      "func": "_stored_period",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3960,7 +3960,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 368,
+     "line": 363,
      "func": "_stored_period",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3968,7 +3968,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 376,
+     "line": 371,
      "func": "_unchanged_marker",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -3976,7 +3976,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 412,
+     "line": 407,
      "func": "fetch_annual",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -3984,7 +3984,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 479,
+     "line": 472,
      "func": "fetch_quarterly_updates",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -3992,7 +3992,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 610,
+     "line": 601,
      "func": "fetch_and_save_all_items",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4000,7 +4000,7 @@
     },
     {
      "file": "src/tail/sec_items_fetcher.py",
-     "line": 617,
+     "line": 608,
      "func": "fetch_and_save_all_items",
      "how": "保存済みファイル",
      "via": "src/tail/sec_items_fetcher.py::_stored_period",
@@ -4024,7 +4024,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 473,
+     "line": 472,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_f_tail",
@@ -4171,7 +4171,7 @@
     {
      "file": "src/tail/edgar_rss_monitor.py",
      "func": "send_discord",
-     "line": 404
+     "line": 390
     }
    ],
    "writers_outside_layer": [],
@@ -4227,17 +4227,17 @@
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 723,
+     "line": 720,
      "text": "q4_net = annual_net - q1q3_sum"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 866,
+     "line": 863,
      "text": "q4_val = annual_val - ytd_9m_val"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 894,
+     "line": 891,
      "text": "q4_val = annual_val - q123_sum"
     }
    ],
@@ -4301,17 +4301,17 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 229,
+     "line": 219,
      "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 433,
+     "line": 419,
      "text": "if latest[\"filed\"] >= prev_filed:"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-     "line": 605,
+     "line": 602,
      "text": "if cand['filed'] > existing_filed:"
     }
    ],
@@ -4431,12 +4431,12 @@
    "sites": [
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 389,
+     "line": 375,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
      "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 196,
+     "line": 180,
      "text": "def quarter_label(period_end: str) -> str:"
     },
     {
@@ -4492,7 +4492,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 143,
+     "line": 137,
      "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
     }
    ],
@@ -4693,7 +4693,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1121,
+     "line": 1115,
      "text": "def _determine_beta("
     }
    ],
@@ -4729,7 +4729,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1105,
+     "line": 1099,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -4743,73 +4743,23 @@
   },
   {
    "id": "grok_call",
-   "name": "AI（Grok）の呼び方（APIの宛先・モデル・再試行）",
+   "name": "AI（Grok）の呼び方（APIの宛先・再試行）",
    "patterns": [
     "^\\s*GROK_URL\\s*=",
-    "def\\s+_?\\w*call_grok\\w*\\s*\\("
+    "[\\\"']https://api\\.x\\.ai/v1/chat/completions[\\\"']"
    ],
    "sites": [
     {
-     "file": "src/market/market_pulse/news_headlines.py",
-     "line": 41,
+     "file": "common/external_api.py",
+     "line": 28,
      "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/kpi_proposer.py",
-     "line": 71,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/kpi_proposer.py",
-     "line": 90,
-     "text": "def call_grok(user_prompt: str, system_prompt: str = \"\", max_tokens: int = 3000, temperature: float = 0.4) -> str:"
-    },
-    {
-     "file": "src/tail/quarterly_review_generator.py",
-     "line": 78,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/quarterly_review_generator.py",
-     "line": 89,
-     "text": "def call_grok("
-    },
-    {
-     "file": "src/tail/sec_ctrl_fetcher.py",
-     "line": 50,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/text_kpi_extractor.py",
-     "line": 47,
-     "text": "GROK_URL    = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/tail/text_kpi_extractor.py",
-     "line": 68,
-     "text": "def call_grok(user_prompt: str, system_prompt: str = \"\", max_tokens: int = 3000) -> str:"
-    },
-    {
-     "file": "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
-     "line": 35,
-     "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
-    },
-    {
-     "file": "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
-     "line": 56,
-     "text": "def call_grok("
     }
    ],
    "files": [
-    "src/market/market_pulse/news_headlines.py",
-    "src/tail/kpi_proposer.py",
-    "src/tail/quarterly_review_generator.py",
-    "src/tail/sec_ctrl_fetcher.py",
-    "src/tail/text_kpi_extractor.py",
-    "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py"
+    "common/external_api.py"
    ],
-   "in_layer": true,
-   "duplicated": true
+   "in_layer": false,
+   "duplicated": false
   }
  ],
  "non_production_code": [],
@@ -4828,7 +4778,7 @@
    "dir": "src/tail",
    "file": "src/tail/edgar_rss_monitor.py",
    "decision": "残す（2026-10-22）",
-   "lines": 638,
+   "lines": 624,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
    ],
@@ -4848,7 +4798,7 @@
    "dir": "src/tail",
    "file": "src/tail/kpi_proposer.py",
    "decision": "残す（2026-10-22）",
-   "lines": 854,
+   "lines": 832,
    "workflows": [],
    "code": [
     "common/sec_data/report_consistency_check.py"
@@ -4874,7 +4824,7 @@
    "dir": "src/tail",
    "file": "src/tail/quarterly_review_generator.py",
    "decision": "残す（2026-10-22）",
-   "lines": 1811,
+   "lines": 1780,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
    ],
@@ -4908,7 +4858,7 @@
    "dir": "src/tail",
    "file": "src/tail/sec_ctrl_fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 478,
+   "lines": 459,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_SEC_Ctrl.yml"
    ],
@@ -4924,7 +4874,7 @@
    "dir": "src/tail",
    "file": "src/tail/sec_items_fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 677,
+   "lines": 668,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_SEC_Items.yml"
    ],
@@ -4958,7 +4908,7 @@
    "dir": "src/tail",
    "file": "src/tail/text_kpi_extractor.py",
    "decision": "残す（2026-10-22）",
-   "lines": 713,
+   "lines": 691,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
    ],
@@ -4999,14 +4949,12 @@
    "dir": "src/tail",
    "file": "src/tail/xbrl_segment_fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 758,
+   "lines": 742,
    "workflows": [
     ".github/workflows/TANUKI_TAIL_KPI_Update.yml",
     ".github/workflows/TANUKI_TAIL_RSS_Monitor.yml"
    ],
-   "code": [
-    "common/sec_data/dimension_aggregate_fetcher.py"
-   ],
+   "code": [],
    "same_dir": [
     "src/tail/kpi_proposer.py"
    ],

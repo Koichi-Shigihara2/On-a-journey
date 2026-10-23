@@ -97,7 +97,7 @@ jobs:
           XAI_API_KEY:      ${{ secrets.XAI_API_KEY }}
           DISCORD_WEB_HOOK: ${{ secrets.DISCORD_WEB_HOOK }}
         run: |
-          echo "Waiting 60s for Gemini API rate limit cooldown..."
+          echo "Waiting 60s before the weekly analysis (Grok)..."
           sleep 60
           python src/market/macro_pulse/05_main.py --weekly-analysis
 

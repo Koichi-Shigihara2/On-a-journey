@@ -72,12 +72,9 @@ import requests  # common/sec_data/fetcher.pyと同様、必須依存として�
 _MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
 REGISTRY_PATH = os.path.join(_MODULE_DIR, "dimension_aggregate_registry.json")
 
-SEC_HEADERS = {
-    "User-Agent": "Koichi Personal Investment Tools koichi@example.com",
-    "Accept": "application/json,application/xml,text/xml,*/*",
-}
 SEC_BASE = "https://www.sec.gov"
-THROTTLE = 0.2  # SECリクエスト間隔（秒）。xbrl_segment_fetcher.pyと同一値
+# User-Agent・リクエストの間隔（毎秒10件）・再試行は common/external_api.py の sec_get（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+from common.external_api import sec_get  # noqa: E402
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -119,8 +116,7 @@ def get_filing_directory_items(cik: int, accn: str) -> Optional[List[str]]:
     """
     url = f"{SEC_BASE}/Archives/edgar/data/{int(cik)}/{accn.replace('-', '')}/index.json"
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(url, headers=SEC_HEADERS, timeout=20)
+        r = sec_get(url, "dimension aggregate")
         r.raise_for_status()
         data = r.json()
         return [it["name"] for it in data.get("directory", {}).get("item", [])]
@@ -167,8 +163,7 @@ def find_instance_document(items: List[str]) -> Optional[str]:
 def download_instance_xml(cik: int, accn: str, filename: str) -> Optional[str]:
     url = f"{SEC_BASE}/Archives/edgar/data/{int(cik)}/{accn.replace('-', '')}/{filename}"
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(url, headers=SEC_HEADERS, timeout=90)
+        r = sec_get(url, "dimension aggregate")
         if r.status_code != 200:
             print(f"  HTTP {r.status_code}: {filename}")
             return None

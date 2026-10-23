@@ -1013,20 +1013,15 @@ class TanukiDataFetcher:
         import xml.etree.ElementTree as ET
         from datetime import datetime, timedelta
         try:
-            import requests as _req
+            from common.external_api import sec_get   # User-Agent・毎秒10件の制限・再試行（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
         except ImportError:
             return None
-
-        headers = {'User-Agent': 'tanuki-valuation research@example.com'}
         cutoff = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
         cik_num = cik.lstrip('0') or '0'
         cik_padded = cik_num.zfill(10)
 
         try:
-            r = _req.get(
-                f'https://data.sec.gov/submissions/CIK{cik_padded}.json',
-                headers=headers, timeout=10
-            )
+            r = sec_get(f'https://data.sec.gov/submissions/CIK{cik_padded}.json', "TANUKI インサイダー取引")
             if r.status_code != 200:
                 return None
             sub_data = r.json()
@@ -1059,8 +1054,7 @@ class TanukiDataFetcher:
                 f'https://www.sec.gov/Archives/edgar/data/{cik_num}/{accn_nd}/{fname}'
             )
             try:
-                time.sleep(0.1)
-                r = _req.get(xml_url, headers=headers, timeout=10)
+                r = sec_get(xml_url, "TANUKI インサイダー取引")
                 if r.status_code != 200:
                     continue
                 root = ET.fromstring(r.content)

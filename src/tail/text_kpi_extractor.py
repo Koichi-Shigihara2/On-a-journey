@@ -32,6 +32,7 @@ repo_root  = os.path.abspath(os.path.join(script_dir, "..", ".."))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 from common.sec_data import tickers as _tickers_mod  # noqa: E402
+from common.external_api import ExternalApiError, grok_messages, grok_text, sec_get  # noqa: E402
 
 DATA_DIR          = os.path.join(repo_root, "docs", "portfolio", "tail", "data")
 KPI_DIR           = os.path.join(DATA_DIR, "kpi")
@@ -41,15 +42,10 @@ JST = ZoneInfo("Asia/Tokyo")
 
 EDGAR_BASE  = "https://www.sec.gov"
 EDGAR_DATA  = "https://data.sec.gov"
-EDGAR_HDR   = {"User-Agent": "TANUKI-TAIL-Bot contact@example.com", "Accept-Encoding": "gzip, deflate"}
 
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
-GROK_URL    = "https://api.x.ai/v1/chat/completions"
-# [[GROK-MODEL-PRICE-1]]対応: grok-3-mini/grok-3は実際にはgrok-4.3へ
-# 自動ルーティングされ、grok-2-1212は廃止済み（API側でModel not found）。
-# 実態に合わせ、実際に応答する現行モデル名を明示する（フォールバック
-# ループ構造自体は一時的なネットワーク障害時の再試行として維持）。
-GROK_MODELS = ["grok-4.3", "grok-4.3", "grok-4.3"]
+# [[GROK-MODEL-PRICE-1]]: grok-4.3（grok-3-mini/grok-3は自動でgrok-4.3へ、grok-2-1212は廃止済み）。宛先・再試行は common/external_api.py
+GROK_MODEL = "grok-4.3"
 
 EXTRACT_SYSTEM = (
     "あなたは決算資料からKPI数値を抽出する専門家です。"
@@ -68,30 +64,12 @@ MAX_TEXT_CHARS = 12000
 def call_grok(user_prompt: str, system_prompt: str = "", max_tokens: int = 3000) -> str:
     if not XAI_API_KEY:
         raise RuntimeError("XAI_API_KEY が設定されていません")
-    headers  = {"Content-Type": "application/json", "Authorization": f"Bearer {XAI_API_KEY}"}
-    messages: List[Dict[str, str]] = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": user_prompt})
-
-    last_error: Optional[Exception] = None
-    for model in GROK_MODELS:
-        try:
-            print(f"  [Grok] モデル試行: {model}")
-            resp = requests.post(
-                GROK_URL, headers=headers,
-                json={"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": 0.1},
-                timeout=120,
-            )
-            resp.raise_for_status()
-            text = resp.json()["choices"][0]["message"]["content"]
-            print(f"  [Grok] 成功: {model}")
-            return text
-        except Exception as e:
-            print(f"  [Grok] 失敗 ({model}): {e}")
-            last_error = e
-            time.sleep(1)
-    raise RuntimeError(f"すべてのGrokモデルで失敗: {last_error}")
+    # 呼び出し（再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+    try:
+        return grok_text(grok_messages(user_prompt, system_prompt), GROK_MODEL, "TAIL KPIの抽出", api_key=XAI_API_KEY,
+                         max_tokens=max_tokens, temperature=0.1)
+    except ExternalApiError as e:
+        raise RuntimeError(f"Grokの呼び出しに失敗: {e}") from e
 
 
 def extract_json_from_response(text: str) -> Dict[str, Any]:
@@ -126,11 +104,11 @@ def get_manual_kpis(proposal: Dict[str, Any]) -> List[Dict[str, Any]]:
 # EDGAR テキスト取得
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def edgar_get(url: str, timeout: int = 30) -> Optional[requests.Response]:
+def edgar_get(url: str) -> Optional[requests.Response]:
+    """EDGARから取る（common/external_api.py の sec_get。User-Agent・毎秒10件の制限・再試行）。失敗は None。"""
     try:
-        resp = requests.get(url, headers=EDGAR_HDR, timeout=timeout)
+        resp = sec_get(url, "TAIL EDGAR")
         resp.raise_for_status()
-        time.sleep(0.15)
         return resp
     except Exception as e:
         print(f"  [EDGAR] 取得失敗 {url}: {e}")
@@ -226,7 +204,7 @@ def fetch_10q_mda(cik: str) -> Tuple[Optional[str], Optional[str]]:
 
     url  = f"{EDGAR_BASE}/Archives/edgar/data/{cik_int}/{accn_nd}/{pdoc}"
     print(f"  [EDGAR] 10-Q 取得: {url}")
-    resp = edgar_get(url, timeout=90)
+    resp = edgar_get(url)
     if not resp:
         return None, None
 
@@ -271,7 +249,7 @@ def fetch_8k_exhibit99(cik: str) -> Optional[str]:
         ex_path = m.group(1)
         if not ex_path.startswith("http"):
             ex_path = EDGAR_BASE + ex_path
-        ex_resp = edgar_get(ex_path, timeout=60)
+        ex_resp = edgar_get(ex_path)
         if not ex_resp:
             continue
 
@@ -331,7 +309,7 @@ def fetch_10q_mda_full(cik: str) -> Tuple[Optional[str], Optional[str]]:
         return None, None
 
     url  = f"{EDGAR_BASE}/Archives/edgar/data/{cik_int}/{accn_nd}/{pdoc}"
-    resp = edgar_get(url, timeout=90)
+    resp = edgar_get(url)
     if not resp:
         return None, None
 
@@ -391,7 +369,7 @@ def fetch_8k_exhibit99_full(cik: str) -> Optional[str]:
         ex_path = m.group(1)
         if not ex_path.startswith("http"):
             ex_path = EDGAR_BASE + ex_path
-        ex_resp = edgar_get(ex_path, timeout=60)
+        ex_resp = edgar_get(ex_path)
         if not ex_resp:
             continue
 

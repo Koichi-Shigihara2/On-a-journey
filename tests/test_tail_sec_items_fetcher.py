@@ -230,55 +230,30 @@ class TestSaveResult:
 
 
 class TestTranslateTimeoutConfig:
-    """[[TAIL-SEC-ITEMS-1]]: MD&Aのみ翻訳タイムアウトを120秒へ延長
-    （STEP2-BパイロットでMD&Aが60秒では複数回タイムアウトする実例を
-    確認したため）。他項目・既存Item4は60秒のまま。"""
+    """[[TAIL-SEC-ITEMS-1]]: MD&Aは60秒では複数回タイムアウトした（STEP2-Bパイロット）。
+    [[EXTERNAL-API-CLIENT-UNIFY-1]]（2026-10-24）から訳のタイムアウトは項目によらず common/external_api.py の
+    1つの設定（Grok 120秒）。"""
 
-    def test_mda_uses_120s_timeout(self):
-        assert sif.ITEM_CONFIGS["mda"]["translate_timeout"] == 120
-
-    def test_risk_factors_and_legal_proceedings_keep_60s_timeout(self):
-        assert sif.ITEM_CONFIGS["risk_factors"]["translate_timeout"] == 60
-        assert sif.ITEM_CONFIGS["legal_proceedings"]["translate_timeout"] == 60
-
-    def test_translate_excerpt_default_timeout_is_60s(self, monkeypatch):
-        """既存Item4呼び出し（timeout引数省略）が無変更であることを確認"""
+    def test_translate_excerpt_uses_shared_grok_timeout(self, monkeypatch):
+        from common import external_api
         captured = {}
 
         class _FakeResp:
-            def raise_for_status(self):
-                pass
+            status_code = 200
 
             def json(self):
-                return {"choices": [{"message": {"content": "ok"}}]}
+                return {"choices": [{"message": {"content": "ok"}}], "usage": {}}
 
         def _fake_post(url, headers=None, json=None, timeout=None):
-            captured["timeout"] = timeout
+            captured.update(url=url, timeout=timeout, model=json["model"], temperature=json["temperature"])
             return _FakeResp()
 
         monkeypatch.setattr(sif._ctrl, "XAI_API_KEY", "dummy")
-        monkeypatch.setattr(sif._ctrl.requests, "post", _fake_post)
-        sif._ctrl._translate_excerpt("text", "desc")
-        assert captured["timeout"] == 60
-
-    def test_translate_excerpt_respects_explicit_timeout(self, monkeypatch):
-        captured = {}
-
-        class _FakeResp:
-            def raise_for_status(self):
-                pass
-
-            def json(self):
-                return {"choices": [{"message": {"content": "ok"}}]}
-
-        def _fake_post(url, headers=None, json=None, timeout=None):
-            captured["timeout"] = timeout
-            return _FakeResp()
-
-        monkeypatch.setattr(sif._ctrl, "XAI_API_KEY", "dummy")
-        monkeypatch.setattr(sif._ctrl.requests, "post", _fake_post)
-        sif._ctrl._translate_excerpt("text", "desc", timeout=120)
-        assert captured["timeout"] == 120
+        monkeypatch.setattr(external_api.requests, "post", _fake_post)
+        assert sif._ctrl._translate_excerpt("text", "desc") == "ok"
+        assert captured == {"url": external_api.GROK_URL, "timeout": 120, "model": "grok-4.3", "temperature": 0}
+        assert external_api.TIMEOUT_SEC["grok"] == 120
+        assert all("translate_timeout" not in cfg for cfg in sif.ITEM_CONFIGS.values())
 
 
 class TestReportDateConversion:

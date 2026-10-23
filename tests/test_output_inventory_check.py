@@ -462,7 +462,7 @@ def test_tail_layer_settings():
     assert not tl["IO_HELPER_BY_CALLER"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
     assert inv.CHECK_LAYERS[-3] == "tail"
-    assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year", "grok_call"]
+    assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year"]  # grok_call は external_api.py の1か所に（R-E2）
 
 
 def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):
@@ -518,8 +518,8 @@ def test_macro_layers_settings():
     assert mp["LAYER_DIRS"] == ("src/market/macro_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/macro-pulse",)
     assert not (mp["IO_HELPER_BY_CALLER"] or mp["EXTRA_OUTPUT_DIRS"])
     assert "macro_data" in inv.CHECK_LAYERS and "macro_pulse" in inv.CHECK_LAYERS
-    assert md["KNOWN_DUPLICATE_RULES"] == ["fred_api", "atomic_write_json"]
-    assert mp["KNOWN_DUPLICATE_RULES"] == ["recession_score", "step_signal", "fred_api", "grok_endpoint"]
+    assert md["KNOWN_DUPLICATE_RULES"] == ["atomic_write_json"]  # fred_api は external_api.py の1か所に（R-E2）
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["recession_score", "step_signal"]
     # 本番外のコードの注記は MACRO PULSE の 05_audit.py だけ（Market Pulse は段階2で4つとも消して空）
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]
 
@@ -547,7 +547,7 @@ def test_market_pulse_layer_settings():
     assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
     assert mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",) and not mp["IO_HELPER_BY_CALLER"]
     assert inv.CHECK_LAYERS[-2] == "market_pulse"
-    assert mp["KNOWN_DUPLICATE_RULES"] == ["fred_api", "grok_endpoint"]
+    assert mp["KNOWN_DUPLICATE_RULES"] == []  # fred_api・grok_endpoint は external_api.py の1か所に（R-E2）
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
     assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 50 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]

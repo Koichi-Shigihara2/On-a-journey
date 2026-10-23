@@ -44,11 +44,10 @@ REVIEW_QUEUE_PATH = os.path.join(DATA_DIR, "review_queue.json")
 JST = ZoneInfo("Asia/Tokyo")
 
 # ── SEC API 設定 ──────────────────────────────────────────────
-SEC_HEADERS = {
-    "User-Agent": "Koichi Personal Investment Tools koichi@example.com",
-    "Accept":     "application/xml,application/atom+xml,*/*",
-}
-THROTTLE = 0.3
+# User-Agent・リクエストの間隔（毎秒10件）・再試行は common/external_api.py の sec_get（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+from common.external_api import sec_get  # noqa: E402
 
 # 提出の遅れ: 次の報告期（最新の提出の対象期末＋3か月）の法定の提出期限を過ぎても提出が無ければ、
 # 期限を過ぎてからの平日の数を遅れの日数として、毎回アラートを出す（提出が見つかれば止まる）。
@@ -87,8 +86,7 @@ def _fetch_rss_form(cik: str, form_type: str) -> tuple:
         "&dateb=&owner=include&count=5&search_text=&output=atom"
     )
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(url, headers=SEC_HEADERS, timeout=20)
+        r = sec_get(url, "TAIL RSS")
         r.raise_for_status()
         xml = r.text
     except Exception as e:
@@ -123,11 +121,7 @@ def get_filing_period(cik: str, accn: str) -> Optional[str]:
     この鮮度要件を壊すリスクがあるため見送り、重複APIコールは許容する。
     """
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(
-            f"https://data.sec.gov/submissions/CIK{cik}.json",
-            headers=SEC_HEADERS, timeout=20,
-        )
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS")
         r.raise_for_status()
         recent = r.json().get("filings", {}).get("recent", {})
         accns  = recent.get("accessionNumber", [])
@@ -147,11 +141,7 @@ def get_fiscal_year_end(cik: str) -> Optional[str]:
     過ぎた銘柄だけが呼ぶ（毎回の実行で全銘柄を呼ばない）。
     """
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(
-            f"https://data.sec.gov/submissions/CIK{cik}.json",
-            headers=SEC_HEADERS, timeout=20,
-        )
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS")
         r.raise_for_status()
         fye = r.json().get("fiscalYearEnd")
         return fye if fye and len(fye) == 4 and fye.isdigit() else None
@@ -240,11 +230,7 @@ def get_cik_map(tickers: List[str]) -> Dict[str, Optional[str]]:
     upper = {t.upper() for t in tickers}
     result: Dict[str, Optional[str]] = {t: None for t in upper}
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(
-            "https://www.sec.gov/files/company_tickers.json",
-            headers=SEC_HEADERS, timeout=15,
-        )
+        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL RSS")
         r.raise_for_status()
         for entry in r.json().values():
             t = entry.get("ticker", "").upper()

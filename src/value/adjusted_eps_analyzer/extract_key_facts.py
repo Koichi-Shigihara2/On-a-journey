@@ -50,11 +50,8 @@ from common.market_data.reader import get_attributes as _get_market_data_attribu
 CIK_FILE = os.path.join(CONFIG_DIR, "cik_lookup.csv")
 ADJUSTMENT_ITEMS_FILE = os.path.join(CONFIG_DIR, "adjustment_items.json")
 
-HEADERS = {
-    'User-Agent': 'jamablue01@gmail.com',  # 必須：連絡先メールアドレス
-    'Accept-Encoding': 'gzip, deflate',
-    'Host': 'data.sec.gov'
-}
+# SECへの User-Agent（環境変数 SEC_USER_AGENT_EMAIL）・毎秒10件の制限・再試行は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+from common.external_api import sec_get  # noqa: E402
 
 # 四半期とみなす期間の範囲（日数）- 少し余裕を持たせる
 QUARTER_DAYS_MIN = 70
@@ -175,7 +172,7 @@ def fetch_company_facts(cik: str) -> Dict:
     print(f"Fetching company facts from {url}")
     
     try:
-        response = requests.get(url, headers=HEADERS, timeout=30)
+        response = sec_get(url, "EPS company facts")
         response.raise_for_status()
         return response.json()
     except Exception as e:

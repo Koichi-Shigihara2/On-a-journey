@@ -7,7 +7,7 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`docs/portfolio/tail/`・`docs/value-monitor/tanuki_valuation/`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-22、Koichiさんの判断）。satellite_alerts.json だけを消し、ほかの出力はすべて残す（ctrl/{T}/index.json は画面の index.html が読む）。誰も読まないキー30もすべて残す（作った時点の記録で作り直せない）。画面に出していないレビューのキーは IDEAS_AND_WATCH.md の [[UI-STORY-REDESIGN-1]] に記録。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 20（ファイル 19・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 4／2件以上 15／規則の二重 10（検出式 11種のうち。TAILのファイルを含むもの 4）
+**件数**: 出力 20（ファイル 19・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 4／2件以上 15／規則の二重 9（検出式 11種のうち。TAILのファイルを含むもの 3）
 
 **画面の項目**: 画面が読むキー 180（この段階の書き手あり 163・ほかの書き手あり 12・画面の中で作る値 5・**書き手なし 0**）／書き手があるのに誰も読まないキー **31**
 
@@ -25,14 +25,14 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `/tmp/tail_commit_message.txt`<br>（0ファイル） | TANUKI_TAIL_Position_Writeの1回の書き込みのcommitの件名（同じワークフローの後の段が git commit -F で読む） | `workflow_write.py:main` | 1 | — | — | — | 残す（2026-10-22） |
 | 1件 | `docs/portfolio/tail/data/ctrl/{T}/index.json`<br>（9ファイル） | 銘柄ごとにItem 4を取った四半期の一覧（quarters）。画面の index.html が最新の四半期を選ぶのに読む | `sec_ctrl_fetcher.py:main` | 1・テスト1 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-402 | 残す（2026-10-22） |
-| 1件 | `docs/portfolio/tail/data/kpi/{T}_layer3.json`<br>（3ファイル） | 銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない） | `text_kpi_extractor.py:extract_layer3` | 1・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | — | 残す（2026-10-22） |
-| 1件 | `docs/portfolio/tail/data/rss_state.json`<br>（1ファイル） | SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない） | `edgar_rss_monitor.py:save_state` | 1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | AS-IS-403・AS-IS-404・AS-IS-405 | 残す（2026-10-22） |
+| 1件 | `docs/portfolio/tail/data/kpi/{T}_layer3.json`<br>（3ファイル） | 銘柄ごとの、決算の本文から取ったKPI（Layer3。XBRLに無い数値）。 | `text_kpi_extractor.py:extract_layer3` | 1・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | — | 残す（2026-10-22） |
+| 1件 | `docs/portfolio/tail/data/rss_state.json`<br>（1ファイル） | SEC EDGARのRSSで見た銘柄ごとの最後の提出・確認の日時（新規提出・提出の遅れの判定に使う）。 | `edgar_rss_monitor.py:save_state` | 1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | AS-IS-403・AS-IS-404・AS-IS-405 | 残す（2026-10-22） |
 | 2件以上 | `config/tail_kpi_map.json`<br>（1ファイル） | 銘柄ごとに監視するKPIとXBRLのタグの対応。kpi_proposer.py（手で動かす）が提案のうち照合を通ったものを書く | `kpi_proposer.py:update_tail_kpi_map` | 4・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | AS-IS-437・AS-IS-438・AS-IS-439・AS-IS-440・AS-IS-441 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/scenario/{T}/{sc_name}.json`<br>（27ファイル） | 銘柄ごとのシナリオ（bull/base/bear）のDCF。tail_dcf_bridge.py がレビューの stage2.scenarios（**AIの出力**）とLayer2のKPIから作る | `tail_dcf_bridge.py:generate_scenario_files` | 2 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-446 | 残す（2026-10-22） |
-| 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/latest.json`<br>（9ファイル） | 銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない） | `sec_ctrl_fetcher.py:main` | 3・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
+| 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/latest.json`<br>（9ファイル） | 銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。 | `sec_ctrl_fetcher.py:main` | 3・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`<br>（36ファイル） | 銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる | `sec_ctrl_fetcher.py:main` | 3・テスト3 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-402 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/journal.json`<br>（1ファイル） | 売買・仮説の見直しの記録（判断の日誌）。画面の入力から書く（人の入力） | `workflow_write.py:register_journal` | 3・テスト1 | portfolio/tail/decision_log.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-412・AS-IS-470 | 残す（2026-10-22） |
-| 2件以上 | `docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>（9ファイル） | 銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない） | `xbrl_segment_fetcher.py:_write_layer2_output` | 8・テスト4 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
+| 2件以上 | `docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>（9ファイル） | 銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。 | `xbrl_segment_fetcher.py:_write_layer2_output` | 8・テスト4 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`<br>（9ファイル） | 銘柄ごとのKPIの提案。**AIの出力（Grok）**: proposed_kpis・rejected_kpis（却下はXBRLとの照合の結果）。kpi_proposer.py は手で動かす（CLAUDE_CODE_START.md「TANUKI TAIL 銘柄追加手順」。ワークフローは無い） | `kpi_proposer.py:propose_kpis`<br>`kpi_proposer.py:propose_kpis`<br>`kpi_proposer.py:propose_kpis` | 3・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/positions/{T}_thesis.json`<br>（9ファイル） | 銘柄ごとの投資の仮説（エントリーの理由・条件・撤退の目安・監視するKPI）。画面の入力から書く（人の入力） | `workflow_write.py:register_position`<br>`workflow_write.py:confirm_kpis` | 4・テスト2 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（経由） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-455 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/positions_index.json`<br>（1ファイル） | TAILの保有・監視銘柄の一覧（positions）。画面の入力（Position Write）から書き、RSS Monitor・SEC Ctrl・Items・Market Pulse等が監視の対象に読む | `workflow_write.py:register_position` | 10・テスト4 | common/ticker-links.js（直接）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/tail/decision_log.html（経由）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-469 | 残す（2026-10-22） |
@@ -40,7 +40,7 @@
 | 2件以上 | `docs/portfolio/tail/data/review_queue.json`<br>（1ファイル） | 四半期のレビューを作る待ち行列（新規提出で積み、レビューを作ったら completed・古い期は superseded） | `edgar_rss_monitor.py:save_queue`<br>`quarterly_review_generator.py:save_queue` | 9・テスト3（1） | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-394・AS-IS-406・AS-IS-407・AS-IS-408・AS-IS-409・AS-IS-410・AS-IS-481 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`<br>（43ファイル） | 銘柄・四半期ごとのレビュー。**AIの出力（Grok）**: stage1（健康度・推奨・理由等）・stage2（シナリオ〈bull/base/bear〉・KPIの予想等）・call2。grok_call1_success・grok_call2_success・stage2_json_valid はAIの呼び出しの結果の印、kpi_snapshot・layer3_snapshot・macro_snapshot は作った時点の入力の控え。レビューは対象の期にかかわらず作った時点の最新の財務で書かれる（[[TAIL-REVIEW-PERIOD-FILTER-1]]。06-06の一括生成の分は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]、統合済み） | `quarterly_review_generator.py:generate_review` | 3・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/index.json`<br>（36ファイル） | 銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分 | `sec_items_fetcher.py:_save_result` | 2・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-469 | 残す（2026-10-22） |
-| 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/latest.json`<br>（36ファイル） | 銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。SECへの取得のUser-Agentは直書き（FINDINGS 2026-10-22、型B。直さない） | `sec_items_fetcher.py:_save_result` | 4・テスト4 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-056・AS-IS-071 | 残す（2026-10-22） |
+| 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/latest.json`<br>（36ファイル） | 銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。 | `sec_items_fetcher.py:_save_result` | 4・テスト4 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-056・AS-IS-071 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`<br>（174ファイル） | 銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる | `sec_items_fetcher.py:_save_result` | 5・テスト6 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-013・AS-IS-019・AS-IS-046・AS-IS-047・AS-IS-056・AS-IS-071・AS-IS-300・AS-IS-334・AS-IS-388・AS-IS-390・AS-IS-391・AS-IS-469・AS-IS-481 | 残す（2026-10-22） |
 
 ### 人が見るもの（Step Summary・Discord）
@@ -64,7 +64,7 @@
 ### `docs/portfolio/tail/data/kpi/{T}_layer3.json`（1件）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `fetched_at`(0)・`kpis`(1)・`layer3_complete`(0)・`not_found`(0)・`quarter`(2)・`ticker`(2)
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 169・172・1571・1775・1811（経由 `src/tail/quarterly_review_generator.py::load_layer3_kpi`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 138・141・1540・1744・1780（経由 `src/tail/quarterly_review_generator.py::load_layer3_kpi`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::load_layer3_kpi`）
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/index.html`
@@ -72,17 +72,17 @@
 ### `docs/portfolio/tail/data/rss_state.json`（1件）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ADBE`(0)・`APP`(0)・`CELH`(0)・`CRWV`(0)・`NVDA`(0)・`PLTR`(0)・`SOFI`(0)・`SOUN`(0)・`TSLA`(0)
-- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 41・361・606・638（経由 `src/tail/edgar_rss_monitor.py::load_state`）
+- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 41・347・592・624（経由 `src/tail/edgar_rss_monitor.py::load_state`）
 - 画面（経由（src/tail/edgar_rss_monitor.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/tail/edgar_rss_monitor.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/index.html`
 
 ### `config/tail_kpi_map.json`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ADBE`(0)・`APP`(0)・`CELH`(0)・`CRWV`(1)・`NVDA`(0)・`PLTR`(1)・`SOFI`(1)・`SOUN`(1)・`TSLA`(1)
-- Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 65・147・387・740・769・842・854（経由 `src/tail/kpi_proposer.py::load_kpi_map`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 62・610・661・672・1075・1648・1775（経由 `src/tail/quarterly_review_generator.py::_load_tail_kpi_map`）
-- Python・保存済みファイル: `src/tail/xbrl_segment_fetcher.py` 行 48・722・758（経由 `src/tail/xbrl_segment_fetcher.py::main`）
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_KPI_Update.yml` 行 49
+- Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 66・125・365・718・747・820・832（経由 `src/tail/kpi_proposer.py::load_kpi_map`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 63・579・630・641・1044・1617・1744（経由 `src/tail/quarterly_review_generator.py::_load_tail_kpi_map`）
+- Python・保存済みファイル: `src/tail/xbrl_segment_fetcher.py` 行 48・706・742（経由 `src/tail/xbrl_segment_fetcher.py::main`）
+- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_KPI_Update.yml` 行 51
 - テスト・保存済みファイル: `tests/test_xbrl_segment_fetcher_unit_label.py` 行 88・90・97・109・132（経由 `tests/test_xbrl_segment_fetcher_unit_label.py::TestTailKpiMapConfigConsistency._load_config`）
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json））: `docs/portfolio/tail/index.html`
@@ -97,19 +97,19 @@
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(2)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
 - Python・保存済みファイル: `common/system_health.py` 行 223・1043・1110（経由 `common/system_health.py::check_f_tail`）
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1388
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 472（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 
 ### `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(2)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`quarters`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
 - Python・保存済みファイル: `common/system_health.py` 行 223・1043・1110（経由 `common/system_health.py::check_f_tail`）
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1380・1387・1388・2414
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 472（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 
 ### `docs/portfolio/tail/data/journal.json`（2件以上）
@@ -126,7 +126,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `fetched_at`(1)・`kpis`(8)・`layer2_complete`(1)・`missing_kpis`(2)・`ticker`(11)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2094・2098・3504・3681（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 47・50・93・164・253（経由 `src/tail/prediction_tracker.py::_load_layer2_actuals`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 160・164・1570・1775・1787・1811（経由 `src/tail/quarterly_review_generator.py::load_layer2_kpi`、`src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 129・133・1539・1744・1756・1780（経由 `src/tail/quarterly_review_generator.py::load_layer2_kpi`、`src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 105・108・206・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 203・207・255・339・364（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 3320（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
@@ -149,7 +149,7 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(1)・`proposed_kpis`(2)・`rejected_kpis`(1)・`thesis_version`(0)・`ticker`(5)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2169・2173・3516・3681（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
-- Python・保存済みファイル: `src/tail/text_kpi_extractor.py` 行 113・117・586・701・713（経由 `src/tail/text_kpi_extractor.py::load_proposal`）
+- Python・保存済みファイル: `src/tail/text_kpi_extractor.py` 行 91・95・564・679・691（経由 `src/tail/text_kpi_extractor.py::load_proposal`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 2585
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
@@ -157,8 +157,8 @@
 ### `docs/portfolio/tail/data/positions/{T}_thesis.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_Position_Write.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `created_at`(0)・`entry_condition`(1)・`entry_date`(2)・`entry_price`(3)・`entry_story`(2)・`exit_condition`(1)・`exit_guide`(3)・`holding_period`(0)・`kpis`(4)・`status`(3)・`strategy_name`(1)・`thesis`(3)・`ticker`(6)・`type`(2)・`updated_at`(1)・`version`(2)
-- Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 136・140・727・842・854（経由 `src/tail/kpi_proposer.py::load_thesis`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 151・155・1569・1775・1787・1811（経由 `src/tail/quarterly_review_generator.py::load_thesis`、`src/tail/tail_dcf_bridge.py::_load_thesis`）
+- Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 114・118・705・820・832（経由 `src/tail/kpi_proposer.py::load_thesis`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 120・124・1538・1744・1756・1780（経由 `src/tail/quarterly_review_generator.py::load_thesis`、`src/tail/tail_dcf_bridge.py::_load_thesis`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 97・100・205・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_thesis`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 299
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::load_thesis`）
@@ -170,10 +170,10 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `positions`(11)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1915・1988・2000・2093・2168・3488・3496・3504・3516・3681（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 399・478（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1543・1567・1929（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1520・1544・1906（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 222・258（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
-- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 39・261・295・332・338・589・590・638（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 37・397・416・478（経由 `src/tail/sec_ctrl_fetcher.py::load_tail_tickers`）
+- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 39・247・281・318・324・575・576・624（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 38・378・397・459（経由 `src/tail/sec_ctrl_fetcher.py::load_tail_tickers`）
 - Python・保存済みファイル: `src/tail/workflow_write.py` 行 32
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 37
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 377
@@ -190,7 +190,7 @@
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ADBE`(0)・`APP`(1)・`CELH`(1)・`CRWV`(0)・`NVDA`(0)・`PLTR`(1)・`SOFI`(1)・`SOUN`(1)・`TSLA`(1)・`_updated_at`(1)
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 31・173
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 61・961・1600・1775・1811（経由 `src/tail/quarterly_review_generator.py::_load_past_predictions`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 62・930・1569・1744・1780（経由 `src/tail/quarterly_review_generator.py::_load_past_predictions`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 916
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::_load_past_predictions`）
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
@@ -200,14 +200,14 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `queue`(8)
 - Python・その場で計算: `common/sec_data/report_consistency_check.py` 行 1996（経由 `src/tail/quarterly_review_generator.py::load_queue`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1996・3488・3681（経由 `src/tail/quarterly_review_generator.py::load_queue`）
-- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 42・374・607・638（経由 `src/tail/edgar_rss_monitor.py::load_queue`）
+- Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 42・360・593・624（経由 `src/tail/edgar_rss_monitor.py::load_queue`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 73・92・164（経由 `src/tail/review_status.py::load_queue`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 57・1535・1746・1787・1811（経由 `src/tail/quarterly_review_generator.py::load_queue`、`src/tail/review_status.py::load_queue`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 58・1504・1715・1756・1780（経由 `src/tail/quarterly_review_generator.py::load_queue`、`src/tail/review_status.py::load_queue`）
 - Python・保存済みファイル: `src/tail/review_status.py` 行 27・49
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 87・200・337（経由 `src/tail/review_status.py::load_queue`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 305
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 953
-- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` 行 53・71・90
+- ワークフロー・保存済みファイル: `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` 行 55・73・92
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `src/tail/quarterly_review_generator.py::load_queue`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `src/tail/quarterly_review_generator.py::load_queue`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58・82・85・92・93・103・105・114・118（経由 `src/tail/quarterly_review_generator.py::load_queue`、`src/tail/review_status.py::load_queue`）
@@ -216,7 +216,7 @@
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `call2`(1)・`data_version`(1)・`filed_date`(1)・`generated_at`(2)・`grok_call1_success`(1)・`grok_call2_success`(1)・`kpi_snapshot`(1)・`layer1_complete`(1)・`layer2_complete`(1)・`layer2_missing_kpis`(1)・`layer3_snapshot`(1)・`macro_snapshot`(1)・`quarter`(4)・`stage1`(1)・`stage2`(3)・`stage2_json_valid`(1)・`thesis_version`(1)・`ticker`(4)・`transcript_available`(1)
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 74・92・164・253（経由 `src/tail/prediction_tracker.py::_load_reviews_for_ticker`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 1787・1811（経由 `src/tail/tail_dcf_bridge.py::_load_latest_review`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 1756・1780（経由 `src/tail/tail_dcf_bridge.py::_load_latest_review`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 89・91・200・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_review`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58・82・85・92・93・103・105・118（経由 `src/tail/prediction_tracker.py::_load_reviews_for_ticker`、`src/tail/tail_dcf_bridge.py::_load_latest_review`）
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
@@ -225,7 +225,7 @@
 ### `docs/portfolio/tail/data/{item_key}/{T}/index.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `periods`(1)・`quarters`(2)
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 445・453・478（経由 `src/tail/sec_ctrl_fetcher.py::main`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 426・434・459（経由 `src/tail/sec_ctrl_fetcher.py::main`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1380
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 188・196・197
@@ -234,11 +234,11 @@
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(2)・`changed`(1)・`effective`(3)・`excerpt`(2)・`excerpt_ja`(2)・`fetched_at`(2)・`filing_date`(5)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(1)・`material_weaknesses`(3)・`period`(2)・`quarter`(3)・`report_date`(2)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(3)・`ticker`(7)
 - Python・保存済みファイル: `common/system_health.py` 行 223・1043・1110（経由 `common/system_health.py::check_f_tail`）
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327・433・444・478（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・425・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 338
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1388
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 162
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 472（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 186・202・225・226
 
@@ -246,13 +246,13 @@
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(4)・`changed`(2)・`effective`(3)・`excerpt`(4)・`excerpt_ja`(4)・`fetched_at`(3)・`filing_date`(7)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(3)・`material_weaknesses`(3)・`period`(4)・`periods`(2)・`quarter`(4)・`quarters`(2)・`report_date`(4)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(4)・`ticker`(9)
 - Python・保存済みファイル: `common/system_health.py` 行 223・1043・1110（経由 `common/system_health.py::check_f_tail`）
-- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327・433・443・444・445・453・478（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
-- Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 366・368・376・412・479・610・617（経由 `src/tail/sec_items_fetcher.py::_stored_period`）
+- Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・424・425・426・434・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
+- Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 361・363・371・407・472・601・608（経由 `src/tail/sec_items_fetcher.py::_stored_period`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 338
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1380・1387・1388・2414
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 162
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 472（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 184・186・188・197・202・226
 - テスト・保存済みファイル: `tests/test_tail_sec_items_unchanged.py` 行 89・91
@@ -554,18 +554,17 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | TAILを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:723`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:866`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:894` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:229`<br>`src/tail/edgar_rss_monitor.py:433`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:605` | はい |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | はい |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1727`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
-| 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
-| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | はい |
+| 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
+| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:137` | はい |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:621`<br>`src/value/tanuki_valuation/pipeline.py:623`<br>`src/value/tanuki_valuation/pipeline.py:625`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:966`<br>`src/value/tanuki_valuation/pipeline.py:967`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:1354`<br>`src/value/tanuki_valuation/pipeline.py:1381`<br>`src/value/tanuki_valuation/pipeline.py:1386`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1737`<br>`src/value/tanuki_valuation/pipeline.py:1915` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1121` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1105` | いいえ |
-| AI（Grok）の呼び方（APIの宛先・モデル・再試行） | 6 | `src/market/market_pulse/news_headlines.py:41`<br>`src/tail/kpi_proposer.py:71`<br>`src/tail/kpi_proposer.py:90`<br>`src/tail/quarterly_review_generator.py:78`<br>`src/tail/quarterly_review_generator.py:89`<br>`src/tail/sec_ctrl_fetcher.py:50`<br>`src/tail/text_kpi_extractor.py:47`<br>`src/tail/text_kpi_extractor.py:68`<br>`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py:35`<br>`src/value/tanuki_valuation/calculator/fcf_outlier_ai.py:56` | はい |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1115` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1099` | いいえ |
 
-1か所だけのもの: 成長率の上限・下限（1）
+1か所だけのもの: 成長率の上限・下限（1）・AI（Grok）の呼び方（APIの宛先・再試行）（1）
 
 ## 本番外のコード（src/tail）
 
@@ -573,22 +572,22 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（12ファイル・6,912行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（12ファイル・6,779行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
-| `edgar_rss_monitor.py` | 638 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | `common/sec_data/report_consistency_check.py`<br>`scripts/analysis/market_pulse_redesign.py`<br>`src/market/market_pulse/sector_rotation.py` | — | 3件 |
-| `kpi_proposer.py` | 854 | — | `common/sec_data/report_consistency_check.py` | — | 0件 |
+| `edgar_rss_monitor.py` | 624 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | `common/sec_data/report_consistency_check.py`<br>`scripts/analysis/market_pulse_redesign.py`<br>`src/market/market_pulse/sector_rotation.py` | — | 3件 |
+| `kpi_proposer.py` | 832 | — | `common/sec_data/report_consistency_check.py` | — | 0件 |
 | `prediction_tracker.py` | 285 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | — | — | 1件 |
-| `quarterly_review_generator.py` | 1,811 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | `common/sec_data/report_consistency_check.py` | — | 3件 |
+| `quarterly_review_generator.py` | 1,780 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | `common/sec_data/report_consistency_check.py` | — | 3件 |
 | `review_status.py` | 71 | — | — | `src/tail/prediction_tracker.py`<br>`src/tail/quarterly_review_generator.py`<br>`src/tail/tail_dcf_bridge.py` | 1件 |
-| `sec_ctrl_fetcher.py` | 478 | `.github/workflows/TANUKI_TAIL_SEC_Ctrl.yml` | — | `src/tail/sec_items_fetcher.py` | 1件 |
-| `sec_items_fetcher.py` | 677 | `.github/workflows/TANUKI_TAIL_SEC_Items.yml` | — | — | 3件 |
+| `sec_ctrl_fetcher.py` | 459 | `.github/workflows/TANUKI_TAIL_SEC_Ctrl.yml` | — | `src/tail/sec_items_fetcher.py` | 1件 |
+| `sec_items_fetcher.py` | 668 | `.github/workflows/TANUKI_TAIL_SEC_Items.yml` | — | — | 3件 |
 | `tail_dcf_bridge.py` | 349 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | — | `src/tail/quarterly_review_generator.py` | 3件 |
-| `text_kpi_extractor.py` | 713 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | — | — | 1件 |
+| `text_kpi_extractor.py` | 691 | `.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | — | — | 1件 |
 | `thesis_utils.py` | 48 | — | — | `src/tail/kpi_proposer.py`<br>`src/tail/quarterly_review_generator.py` | 0件 |
 | `workflow_write.py` | 230 | `.github/workflows/TANUKI_TAIL_Position_Write.yml` | — | — | 1件 |
-| `xbrl_segment_fetcher.py` | 758 | `.github/workflows/TANUKI_TAIL_KPI_Update.yml`<br>`.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | `common/sec_data/dimension_aggregate_fetcher.py` | `src/tail/kpi_proposer.py` | 3件 |
+| `xbrl_segment_fetcher.py` | 742 | `.github/workflows/TANUKI_TAIL_KPI_Update.yml`<br>`.github/workflows/TANUKI_TAIL_RSS_Monitor.yml` | — | `src/tail/kpi_proposer.py` | 3件 |
 
 ## 止める条件の内訳
 

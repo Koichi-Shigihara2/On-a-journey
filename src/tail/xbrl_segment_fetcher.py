@@ -51,12 +51,9 @@ OUTPUT_DIR = os.path.join(
 )
 
 # ── SEC API 設定 ──────────────────────────────────────────────
-SEC_HEADERS = {
-    "User-Agent": "Koichi Personal Investment Tools koichi@example.com",
-    "Accept": "application/json,application/xml,*/*",
-}
 SEC_BASE = "https://www.sec.gov"
-THROTTLE  = 0.2   # SEC リクエスト間隔（秒）
+# User-Agent・リクエストの間隔（毎秒10件）・再試行は common/external_api.py の sec_get（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
+from common.external_api import sec_get  # noqa: E402
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -67,11 +64,7 @@ def get_cik(ticker: str) -> Optional[str]:
     """EDGAR company_tickers.json からティッカー → CIK（10桁）"""
     ticker = ticker.upper()
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(
-            "https://www.sec.gov/files/company_tickers.json",
-            headers=SEC_HEADERS, timeout=15,
-        )
+        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL KPI XBRL")
         r.raise_for_status()
         for entry in r.json().values():
             if entry.get("ticker", "").upper() == ticker:
@@ -116,11 +109,7 @@ def get_10q_filings(cik: str, n: int = 8) -> List[Dict[str, Any]]:
             })
 
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(
-            f"https://data.sec.gov/submissions/CIK{cik}.json",
-            headers=SEC_HEADERS, timeout=20,
-        )
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL KPI XBRL")
         r.raise_for_status()
         data = r.json()
         _extract(data.get("filings", {}).get("recent", {}))
@@ -134,11 +123,7 @@ def get_10q_filings(cik: str, n: int = 8) -> List[Dict[str, Any]]:
                 if not nm.endswith(".json"):
                     continue
                 try:
-                    time.sleep(THROTTLE)
-                    sr = requests.get(
-                        f"https://data.sec.gov/submissions/{nm}",
-                        headers=SEC_HEADERS, timeout=20,
-                    )
+                    sr = sec_get(f"https://data.sec.gov/submissions/{nm}", "TAIL KPI XBRL")
                     sr.raise_for_status()
                     _extract(sr.json())
                 except Exception:
@@ -160,8 +145,7 @@ def download_xbrl(cik: str, accn: str, xml_file: str) -> Optional[str]:
         f"{accn.replace('-', '')}/{xml_file}"
     )
     try:
-        time.sleep(THROTTLE)
-        r = requests.get(url, headers=SEC_HEADERS, timeout=90)
+        r = sec_get(url, "TAIL KPI XBRL")
         if r.status_code != 200:
             print(f"  HTTP {r.status_code}: {xml_file}")
             return None

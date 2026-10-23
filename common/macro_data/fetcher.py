@@ -27,9 +27,8 @@ workflow_dispatch）を新設し、本ファイル末尾の`__main__`ブロッ�
         series_meta.json                  系列単位のメタ情報（fred_release_id等、静的ファイル）
         macro_data_violations_log.json    保存前検証の結果ログ（0件でも毎回書き込む）
 
-FRED_API_KEY環境変数名・fredapiクライアントの初期化方法（`Fred(api_key=...)`）は
-`05_main.py::get_fred()`・`collect_and_send.py`側の既存3関数と同一のものを
-実コード確認の上で踏襲している（新規の変数名は導入していない）。
+FRED_API_KEY環境変数名は既存のものを踏襲する。fredapiクライアントの初期化は
+common/external_api.py の fred_client()（FREDの呼び出し口、2026-10-24、[[EXTERNAL-API-CLIENT-UNIFY-1]]）。
 """
 
 import json
@@ -47,7 +46,6 @@ JST = timezone(timedelta(hours=9))
 # （実コード確認済み、新規の変数名は導入しない）
 FRED_API_KEY_ENV = "FRED_API_KEY"
 
-_FRED_CLIENT = None
 
 
 # ── FREDクライアント（モジュールレベルで1つだけ生成し使い回す） ──────
@@ -60,14 +58,8 @@ def _get_fred_client():
     APIキー未設定・fredapi未インストールの場合は例外を送出する
     （呼び出し元のfetch_series()がtry/exceptで捕捉しNoneを返す）。
     """
-    global _FRED_CLIENT
-    if _FRED_CLIENT is None:
-        from fredapi import Fred
-        api_key = os.environ.get(FRED_API_KEY_ENV, "")
-        if not api_key:
-            raise RuntimeError(f"{FRED_API_KEY_ENV} not set.")
-        _FRED_CLIENT = Fred(api_key=api_key)
-    return _FRED_CLIENT
+    from common.external_api import fred_client   # FREDの呼び出し口（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
+    return fred_client()
 
 
 def _now_jst_iso() -> str:

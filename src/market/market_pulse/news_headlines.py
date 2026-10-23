@@ -38,7 +38,6 @@ DISPLAY_MAX_AGE_HOURS = 48        # 画面（本表・折りたたみ）に出�
                                   # 実行は米国の取引日の後だけなので、週明けの実行でも前の取引日の夕方以降のニュースは入る）。
                                   # index.htmlのHEADLINES_MAX_AGE_HOURSと同じ値（テストで一致を確かめる）
 
-GROK_URL = "https://api.x.ai/v1/chat/completions"
 GROK_MODEL = "grok-4.3"
 
 
@@ -143,11 +142,9 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
 
 
 def _default_post(payload: dict, api_key: str) -> dict:
-    import requests
-    r = requests.post(GROK_URL, json=payload, timeout=60,
-                      headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"})
-    r.raise_for_status()
-    return r.json()
+    """Grok に payload を送り、応答のJSONを返す（common/external_api.py。失敗は例外）。"""
+    from common.external_api import grok_request
+    return grok_request(payload, "Market Pulse 見出しの訳", api_key=api_key)
 
 
 def translate_titles(titles: List[str], post: Callable[[dict, str], dict] = _default_post,

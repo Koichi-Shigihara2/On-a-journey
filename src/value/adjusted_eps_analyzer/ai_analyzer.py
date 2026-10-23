@@ -71,7 +71,8 @@ def load_prompt() -> str:
 XAI_API_KEY = os.environ.get("XAI_API_KEY")
 # ★ モデル名を環境変数から取得可能に（デフォルトは現行値）
 XAI_MODEL = os.environ.get("XAI_MODEL", "grok-4.20-0309-reasoning")
-XAI_API_URL = "https://api.x.ai/v1/chat/completions"
+# 宛先・タイムアウト・再試行・ログは common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]）。Grokが使えないときの文は GROK_UNAVAILABLE_TEXT
+from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, grok_request  # noqa: E402
 
 def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustments: List[Dict[str, Any]]) -> str:
     if not adjustments:
@@ -85,7 +86,7 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
         print(f"  [AI] XAI_API_KEY not set for {ticker}")
         return json.dumps({
             "health": "Caution",
-            "comment": "AI分析にはXAI_API_KEY環境変数が必要です。",
+            "comment": f"{GROK_UNAVAILABLE_TEXT}（XAI_API_KEYが無い）",
             "sources": []
         }, ensure_ascii=False)
 
@@ -104,23 +105,12 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
 
     print(f"  [AI] Calling XAI API for {ticker} {fiscal_period}...")
     try:
-        response = requests.post(
-            XAI_API_URL,
-            headers={
-                "Authorization": f"Bearer {XAI_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": XAI_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.3,
-                "response_format": {"type": "json_object"}
-            },
-            timeout=30
-        )
-        print(f"  [AI] Response status: {response.status_code}")
-        response.raise_for_status()
-        result = response.json()
+        result = grok_request({
+            "model": XAI_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.3,
+            "response_format": {"type": "json_object"}
+        }, f"EPS 調整項目 {ticker}", api_key=XAI_API_KEY)
         content = result['choices'][0]['message']['content']
         parsed = json.loads(content)
 
@@ -136,14 +126,12 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
 
         print(f"  [AI] Analysis successful for {ticker} {fiscal_period}")
         return json.dumps(parsed, ensure_ascii=False)
-    except requests.exceptions.RequestException as e:
+    except ExternalApiError as e:
         error_msg = f"Request failed: {str(e)}"
         print(f"  [AI] Error: {error_msg}")
-        if hasattr(e, 'response') and e.response is not None:
-            print(f"  [AI] Response body: {e.response.text}")
         return json.dumps({
             "health": "Error",
-            "comment": f"AI分析中にリクエストエラーが発生しました: {error_msg}",
+            "comment": f"{GROK_UNAVAILABLE_TEXT}（{error_msg}）",
             "sources": []
         }, ensure_ascii=False)
     except json.JSONDecodeError as e:
@@ -160,6 +148,6 @@ def analyze_adjustments(ticker: str, fiscal_period_data: Dict[str, Any], adjustm
         print(f"  [AI] Error: {error_msg}")
         return json.dumps({
             "health": "Error",
-            "comment": f"AI分析中に予期せぬエラーが発生しました: {error_msg}",
+            "comment": f"{GROK_UNAVAILABLE_TEXT}（{error_msg}）",
             "sources": []
         }, ensure_ascii=False)
