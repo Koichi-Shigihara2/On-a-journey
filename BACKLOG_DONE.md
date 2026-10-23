@@ -4,6 +4,62 @@
 
 ## 2026-10-23（完了）
 
+### ✅ [HOLDINGS-SINGLE-SOURCE-1] 保有銘柄の一覧が3か所（portfolio.json・discover_config.jsonの区分「保有中」・TAILのpositions_index.json）にあり、Portfolioの画面に「区分未反映」の警告が出る。正をportfolio.jsonの1つにする
+**完了（2026-10-23）:** 第1部（保有の正をportfolio.json、CHECK-65）・第2部（discover_config.json・Discover_Config_Sync.yml・CHECK-32を削除、休眠はcik_lookup.csvのstatusのdormant）。本番の画面（Portfolioの保有の表）の確認は次の朝のKoichiさんの目視（CLAUDE_CODE_START.mdの次回の確認手順12）
+**型・処置（2026-10-23 R-Aの終わりの見直し）:** 型X・根治策（R-Aの論点⑥。実装の順は ⑥ → R-E1 → R-E2、実装の指示はチャット側）
+**優先度:** 高
+**分類:** 根治策 / Portfolio（`docs/portfolio/index.html`・`src/portfolio/snapshot.py`）・TAIL・新規登録（`common/registration/register_ticker.py`・`common/sec_data/registration_validator.py`）・System Health・Market Pulse・rcc
+**登録日:** 2026-10-23
+**発見:** R-AのPortfolioの段階2（2026-10-23、チャット側が論点⑥に挙げた）
+
+#### 内容
+- 保有銘柄の正を`docs/portfolio/data/portfolio.json`（証券会社ごとの保有。コードの書き手なし、人の入力・「管理の操作の手順」でClaude Codeが編集）の1つにする
+- `config/discover_config.json`（写し`docs/portfolio/data/discover_config.json`）の区分「保有中」をやめ、Portfolioの画面は保有の表を`portfolio.json`から作る（`index.html`の「⚠️ 区分未反映」〈区分が保有中でない〉・「⚠️ 未登録」の警告を消す）
+- `docs/portfolio/tail/data/positions_index.json`は「仮説を登録した銘柄」（TAILの監視の対象）として残し、保有と仮説のずれ（保有なのに仮説が無い・仮説があるのに保有でない）を`report_consistency_check.py`のWARNにする
+- `discover_config`・`Discover_Config_Sync`の名前（Discoverサブシステムは2026-09-01に削除。FINDINGS 2026-10-23 型E）もここで扱う（区分「保有中」をやめた後に残る中身〈区分・メモ〉の名前と置き場を決める）
+- 10-23の時点では3か所とも同じ9銘柄
+
+#### 実施（2026-10-23、Koichiさんの判断）
+- 第1部（件名「feat: HOLDINGS-SINGLE-SOURCE-1 第1部、保有の正をportfolio.jsonにする」のcommit）: Portfolioの画面の保有の表を`portfolio.json`（株数>0）から作り、`discover_config.json`を読むのと「⚠️ 区分未反映」「⚠️ 未登録」の警告を消した。
+  `register_ticker.py`・`registration_validator.py`はもともと区分「保有中」を書かない・検証しない（書くのは「監視中」、検証は登録の有無だけ）ので変更なし。
+  rccにCHECK-65（保有なのに仮説が無い・仮説があるのに保有でない、WARN。仮説はTAILの`get_monitored_tickers()`をそのまま使う。10-23は0件）。
+  SYSTEM_MAP.mdに「保有銘柄と仮説の正」、FIELD_DEFINITIONS.mdのAS-IS-469に`positions_index.json`の意味（仮説を登録した銘柄）とMarket Pulseの段階7（保有∪仮説）。
+  前後で同じ: Portfolioの画面の要約・明細の表（9銘柄＋合計・キャッシュ、Playwright）・System Healthの[K]・TAILの監視の対象・段階7の監視銘柄・`snapshot.py`のスナップショット・登録の検証の全銘柄（NG 7・WARN 11）
+- 調べた結果（2026-10-23、Aに当たる）: `discover_config.json`の区分の「監視中」（83）・「休眠」（1、BBAI）とメモ（4銘柄）を読むコードは、登録の検証（`register_ticker.py`のStep 6が「監視中」を書く・`registration_validator.py`のP1-Step6〈登録の有無〉・P4〈孤立〉）のほかに無かった。
+  画面のメモの列は`portfolio.json`の各ポジションのmemo。BBAIの休眠はどこにも効いていなかった（`cik_lookup.csv`はstatus=active・4つの印すべてtrue・monitor_tickersにあり）
+- 第2部（件名「refactor: HOLDINGS-SINGLE-SOURCE-1 第2部、discover_config.jsonを消す」のcommit）: `config/discover_config.json`・`docs/portfolio/data/discover_config.json`・`Discover_Config_Sync.yml`（ワークフロー21→20本）・rccのCHECK-32を削除。
+  休眠は`cik_lookup.csv`の`status`の新しい値`dormant`（BBAI。`tickers.py`の除外は`retired`・`provisioning`だけなので各システムには通したまま）。`register_ticker.py`のStep 6・`registration_validator.py`のP1-Step6とP4のDiscoverOrphanを削除（cik_lookup.csvだけを見る）。
+  登録の検証の全銘柄はNG 7→2・WARN 11→11: 消えたNG 5件はすべてP1-Step6（`discover_config.json`に未登録のENTG・KLAC・LRCX・RMBS・TER。2026-07-09に手動で一括登録した5銘柄）で、ほかの行は前後で同じ。
+  消したメモ4件（人の書いた文。gitの履歴にも残る）: ELF「モニタリングに値する「高リスク・高リターン」銘柄だが、複数の罠とレポート不整合に要注意」／RXRX「ハイリスク・ハイリターンの「バリュートラップ候補」、モニタリング価値はあるが投資判断には極めて慎重な姿勢が必要」／
+  SOUN「事業の成長性は魅力的だが、財務の質が極めて低く、「悪い銘柄」に近い。ただしショートスクイーズの可能性を考慮すると完全に無視はできない。」／TASK「モニタリング対象としては条件付きで価値があるものの、複数の罠（バリュートラップ）の可能性を内包しており、レポート内部にも不整合・要注意点が存在」。
+  文書: CLAUDE_CODE_START.md「管理の操作の手順」（休眠はcik_lookup.csvのstatus）・新規登録の手順・銘柄の削除の手順、SYSTEM_MAP.md（statusの値・配置の経緯・保有と仮説）、FIELD_DEFINITIONS.md（AS-IS-264）・INPUT_DATA_AS_IS.md（INPUT-C-006）、UPDATE_SCHEDULE.mdを作り直した
+
+#### 読み手の影響表（2026-10-23の一覧〈portfolio_layer.json・tail_layer.json〉とgrepから。本番のコードだけ）
+| ファイル | 読むもの | 使い方 | 変更の要否（案） |
+|---|---|---|---|
+| `docs/portfolio/index.html` | portfolio.json・discover_config.json（写し） | 保有の集計と、区分「保有中」の銘柄で表を作る。区分のずれを「区分未反映」・「未登録」で警告 | 要（表をportfolio.jsonから作り、警告を消す） |
+| `src/portfolio/snapshot.py` | portfolio.json | 日ごとの資産の合計（history.json） | 不要（すでにportfolio.json） |
+| `common/system_health.py`（`_portfolio_tickers`・`check_k_ticker_audit`） | portfolio.json | 保有銘柄の監査 | 不要（確認だけ） |
+| `src/market/market_pulse/sector_rotation.py`（`watch_list`・`watch_tickers`）・`collect_and_send.py`（`compute_implb`・`compute_implc`） | portfolio.json・positions_index.json | 段階7の監視銘柄（保有と仮説の和） | 要確認（保有と仮説のどちらを使うかを決める） |
+| `src/tail/quarterly_review_generator.py`（`generate_review`・`get_avg_cost`） | portfolio.json | レビューの取得単価 | 不要 |
+| `src/tail/edgar_rss_monitor.py`・`sec_ctrl_fetcher.py`・`workflow_write.py` | positions_index.json | TAILの監視の対象（仮説を登録した銘柄） | 不要（意味を「仮説を登録した銘柄」と明記） |
+| `docs/portfolio/tail/index.html`・`detail.html`・`docs/common/ticker-links.js` | positions_index.json（index.htmlはportfolio.jsonも） | TAILの画面・銘柄のリンク | 要確認 |
+| `common/registration/register_ticker.py`（Step 6） | config/discover_config.json（書く） | 新規登録で区分・メモを書く | 要（区分「保有中」を書かない。名前の変更） |
+| `common/sec_data/registration_validator.py`（P1-Step6・P4） | config/discover_config.json | 新規登録の検証・孤立エントリ | 要（区分の検証をやめる・名前の変更） |
+| `common/sec_data/report_consistency_check.py`（CHECK-32 `_check_discover_config_sync`、`_check_core_position_review_coverage` 等） | discover_config.json の2か所・positions_index.json | 写しの一致・TAILのレビューの網羅 | 要（保有と仮説のずれのWARNを足す。CHECK-32は写しが残るかで決める） |
+| `.github/workflows/Discover_Config_Sync.yml` | config/discover_config.json → docs/の写し | 写しの同期 | 要（名前の変更・写しが要るか） |
+
+#### 始める段（CHAT_RULES 4）
+定義（保有・仮説・区分の意味を決める）
+
+#### 投資判断への影響
+あり（保有銘柄の監視の対象・画面の表）。今は3か所が同じで値は違っていない
+
+#### 規模の見込み
+中
+
+---
+
 ### ✅ [OUTPUT-INVENTORY-CHECK-1] 出力の一覧（書き手・読み手・画面・定義・規則）を機械が照合できる形で作り、読み手の無い出力・二重の規則・名前と中身のずれをCHECKで検知する（型A・B・Eの根治策）
 **完了（2026-10-23）:** 11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3と、R-Aの終わりの見直し（1: 段階ごとの印を1つの設定に〈IO_HELPER_BY_CALLERは広げない〉、2: キーの要約をファイルの中身のhashで控えCHECK-INVを約26.9秒に、3: 一覧のスクリプトを解析・段階の設定・書き出しに分ける、4: 記録とBACKLOGの登録）が済んだ。後継は[[HOLDINGS-SINGLE-SOURCE-1]]（論点⑥）→[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]（R-E1）→[[EXTERNAL-API-CLIENT-UNIFY-1]]（R-E2）
 **型・処置（2026-10-19 束ね）:** 型A・B・E・根治策（R-A。R-B〈同じ規則の二重実装〉を統合）

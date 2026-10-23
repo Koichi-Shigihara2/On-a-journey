@@ -80,6 +80,11 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
      APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
      HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
+12. **Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
+   - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）
+   - 期限: 2026-10-24
+   - 確認の手順: Koichiさんが`https://koichi-shigihara2.github.io/On-a-journey/portfolio/`を開き、保有の表が9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）＋合計・キャッシュで、
+     「⚠️ 区分未反映」「⚠️ 未登録」が出ていないこと（手元のPlaywrightでは前後で同じ。総資産・時価・評価損益は株価で動く）。確かめたらこの手順を済にする
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-22 R-Cの公開の確認①・FINDINGS 型B・R-Aの市場データ層とTAILの段階1〜3・segment_outlookの停止（確認の残りは上の「次回の確認手順」2・5・7・8・9・11②）**
@@ -96,7 +101,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - Market Pulse: 段階1（`--layer market_pulse`、出力7。通知はメール、`02_market_rss.txt`はコードの書き手なし）→段階2（手で動かすスクリプト4つ〈backfill_*〉を削除、出力・誰も読まないキーは残す）→段階3（CHECK-INV、11段階で約72.6秒）。check_macro_pulse.pyの10-23の不一致5件は実行の時刻による（FINDINGS 型C、画面の値は誤っていない）
 - **src/market/market_pulse・docs/market-monitor/market-pulseに出力・列を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer market_pulse`で一覧を作り直してcommitする**（しないとゲートがNG）
 - R-Aの11層の段階1〜3と終わりの見直し1〜4が済み、R-Aを閉じた（一覧のスクリプトは`scripts/inventory/`の4ファイル: 設定`inventory_layers.py`・解析`inventory_analysis.py`・md`inventory_render.py`・入口`build_output_inventory.py`。
-  キーの控えは`.cache/output_inventory/`〈.gitignore済み〉）。次は[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1 → R-E2（チャット側が実装の指示を出す）。R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
+  キーの控えは`.cache/output_inventory/`〈.gitignore済み〉）。次は[[HOLDINGS-SINGLE-SOURCE-1]] → R-E1 → R-E2（チャット側が実装の指示を出す）。
+- `[[HOLDINGS-SINGLE-SOURCE-1]]`済（2026-10-23）: 保有の正はportfolio.json、discover_config.jsonは削除、休眠は`cik_lookup.csv`の`status`の`dormant`、保有と仮説のずれはCHECK-65。次はR-E1`[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]`（チャット側が実装の指示を出す）R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
 - `b6294a559b`: share_unit_fix_log・spac_shell_detection_log・store_v2の保存とCLI・scripts/analysisの14ファイルを削除（127ファイル）。98銘柄のSECの出力は前後で一致。submissions_legacyとscripts/analysisの3ファイルは保留（チャット側の判断待ち）
