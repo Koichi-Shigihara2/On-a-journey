@@ -1893,6 +1893,13 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - `discover_config`・`Discover_Config_Sync`の名前（Discoverサブシステムは2026-09-01に削除。FINDINGS 2026-10-23 型E）もここで扱う（区分「保有中」をやめた後に残る中身〈区分・メモ〉の名前と置き場を決める）
 - 10-23の時点では3か所とも同じ9銘柄
 
+#### 実施（2026-10-23、Koichiさんの判断）
+- 第1部（件名「feat: HOLDINGS-SINGLE-SOURCE-1 第1部、保有の正をportfolio.jsonにする」のcommit）: Portfolioの画面の保有の表を`portfolio.json`（株数>0）から作り、`discover_config.json`を読むのと「⚠️ 区分未反映」「⚠️ 未登録」の警告を消した。
+  `register_ticker.py`・`registration_validator.py`はもともと区分「保有中」を書かない・検証しない（書くのは「監視中」、検証は登録の有無だけ）ので変更なし。
+  rccにCHECK-65（保有なのに仮説が無い・仮説があるのに保有でない、WARN。仮説はTAILの`get_monitored_tickers()`をそのまま使う。10-23は0件）。
+  SYSTEM_MAP.mdに「保有銘柄と仮説の正」、FIELD_DEFINITIONS.mdのAS-IS-469に`positions_index.json`の意味（仮説を登録した銘柄）とMarket Pulseの段階7（保有∪仮説）。
+  前後で同じ: Portfolioの画面の要約・明細の表（9銘柄＋合計・キャッシュ、Playwright）・System Healthの[K]・TAILの監視の対象・段階7の監視銘柄・`snapshot.py`のスナップショット・登録の検証の全銘柄（NG 7・WARN 11）
+
 #### 読み手の影響表（2026-10-23の一覧〈portfolio_layer.json・tail_layer.json〉とgrepから。本番のコードだけ）
 | ファイル | 読むもの | 使い方 | 変更の要否（案） |
 |---|---|---|---|

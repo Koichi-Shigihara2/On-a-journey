@@ -1615,3 +1615,21 @@ class TestCheck56CurrentPriceMissing:
 
     def test_missing_latest_is_skipped(self):
         assert rcc._check_current_price_missing("ADBE", {}) == []
+
+
+def test_check65_holdings_vs_theses(tmp_path, monkeypatch):
+    """CHECK-65（2026-10-23）: 保有（portfolio.json の株数>0）と仮説（TAIL の get_monitored_tickers）のずれを WARN にする。"""
+    import src.tail.edgar_rss_monitor as erm
+    pf = tmp_path / "docs" / "portfolio" / "data"
+    pf.mkdir(parents=True)
+    (pf / "portfolio.json").write_text(json.dumps({"brokers": {
+        "A": {"positions": {"AAA": {"shares": 10}, "BBB": {"shares": 0}}},
+        "B": {"positions": {"CCC": {"shares": 5}}}}}), encoding="utf-8")
+    monkeypatch.setattr(rcc, "REPO_ROOT", str(tmp_path))
+    monkeypatch.setattr(erm, "get_monitored_tickers", lambda: ["AAA", "BBB", "DDD"])
+    warn = rcc._check_holdings_vs_theses()
+    assert warn == ["  [WARN-65 保有と仮説のずれ] CCC: 保有（portfolio.json）なのに仮説（positions_index.json）が無い",
+                    "  [WARN-65 保有と仮説のずれ] BBB: 仮説（positions_index.json）があるのに保有でない（portfolio.json）",
+                    "  [WARN-65 保有と仮説のずれ] DDD: 仮説（positions_index.json）があるのに保有でない（portfolio.json）"]
+    monkeypatch.setattr(erm, "get_monitored_tickers", lambda: ["AAA", "CCC"])
+    assert rcc._check_holdings_vs_theses() == []

@@ -248,7 +248,7 @@ AS-IS-320/321/322/325（Market Pulse ETF/指数の束ね行）は、`value`（�
 | AS-IS-459〜463 | TANUKI TAIL | 投資テーゼ・エントリーストーリー・エグジット目安・取得単価・監視開始日（core型） | `thesis/entry_story/exit_guide/entry_price/entry_date` | 投資判断の根拠記録 | 同上（ポジション登録フォーム、core型） | 手動入力データ |
 | AS-IS-464〜467 | TANUKI TAIL | 戦略名・エントリー条件・エグジット条件・保有期間（satellite型） | `strategy_name/entry_condition/exit_condition/holding_period` | 短期戦略の条件記録 | 同上（ポジション登録フォーム、satellite型） | 手動入力データ |
 | AS-IS-468 | TANUKI TAIL | KPI一覧（パススルー格納） | `kpis[]`（core/satellite共通） | 提案KPIの保存先 | AS-IS-425〜436のproposed_kpis[]を`workflow_write.py`がそのまま保存 | 手動入力データ |
-| AS-IS-469 | TANUKI TAIL | ポジション一覧インデックス | `positions`（positions_index.json） | 登録済みthesisファイル名配列 | `workflow_write.py`（ポジション登録時に自動追記） | 手動入力データ（登録操作の副産物） |
+| AS-IS-469 | TANUKI TAIL | ポジション一覧インデックス | `positions`（positions_index.json） | 登録済みthesisファイル名配列。**意味は「仮説を登録した銘柄（TAILの監視の対象）」で、保有かどうかは表さない**（保有の正は`docs/portfolio/data/portfolio.json`。Market Pulseの段階7の監視銘柄は保有∪仮説。2026-10-23 [[HOLDINGS-SINGLE-SOURCE-1]]） | `workflow_write.py`（ポジション登録時に自動追記） | 手動入力データ（登録操作の副産物） |
 | AS-IS-470〜477 | TANUKI TAIL | 判断ログ一式（timestamp/ticker/type/reason/health_score_at_action/tags/price/shares） | `journal.json` entries | 売買判断・テーゼ修正等の記録 | `docs/portfolio/tail/index.html`「ジャーナル記録」フォーム | 手動入力データ |
 
 **注記**: 44件のうち39件（AS-IS-455〜477）は`docs/portfolio/tail/`の

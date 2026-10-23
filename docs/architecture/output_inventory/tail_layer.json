@@ -1237,7 +1237,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2116,
+     "line": 2142,
      "func": "_check_kpi_fetch_failures",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1245,7 +1245,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2120,
+     "line": 2146,
      "func": "_check_kpi_fetch_failures",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1253,7 +1253,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3525,
+     "line": 3557,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures",
@@ -1261,7 +1261,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3702,
+     "line": 3734,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures",
@@ -1693,7 +1693,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2191,
+     "line": 2217,
      "func": "_check_kpi_rejected_proposals",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1701,7 +1701,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2195,
+     "line": 2221,
      "func": "_check_kpi_rejected_proposals",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1709,7 +1709,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3537,
+     "line": 3569,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals",
@@ -1717,7 +1717,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3702,
+     "line": 3734,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals",
@@ -2116,13 +2116,21 @@
    "top_keys": [
     {
      "key": "positions",
-     "reader_files": 10
+     "reader_files": 11
     }
    ],
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2010,
+     "line": 1963,
+     "func": "_check_holdings_vs_theses",
+     "how": "保存済みファイル",
+     "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 2036,
      "func": "_check_core_position_review_coverage",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_excluded_positions",
@@ -2130,7 +2138,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2022,
+     "line": 2048,
      "func": "_check_core_position_review_coverage",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2138,7 +2146,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2115,
+     "line": 2141,
      "func": "_check_kpi_fetch_failures",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2146,7 +2154,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2190,
+     "line": 2216,
      "func": "_check_kpi_rejected_proposals",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2154,7 +2162,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3515,
+     "line": 3541,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2162,7 +2170,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3525,
+     "line": 3549,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2170,7 +2178,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3537,
+     "line": 3557,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2178,7 +2186,15 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3702,
+     "line": 3569,
+     "func": "run_checks",
+     "how": "保存済みファイル",
+     "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 3734,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2685,7 +2701,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2018,
+     "line": 2044,
      "func": "_check_core_position_review_coverage",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -2693,7 +2709,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3515,
+     "line": 3541,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -2701,7 +2717,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3702,
+     "line": 3734,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -2975,7 +2991,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2018,
+     "line": 2044,
      "func": "_check_core_position_review_coverage",
      "how": "その場で計算",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -3384,7 +3400,9 @@
      "how": "直接"
     }
    ],
-   "definitions": [],
+   "definitions": [
+    "AS-IS-469"
+   ],
    "decision_effect": [
     "TANUKI TAILの画面（保有銘柄の監視）"
    ],
@@ -4133,6 +4151,7 @@
     "AS-IS-388",
     "AS-IS-390",
     "AS-IS-391",
+    "AS-IS-469",
     "AS-IS-481"
    ],
    "decision_effect": [
@@ -4495,7 +4514,7 @@
    "sites": [
     {
      "file": "docs/portfolio/index.html",
-     "line": 673,
+     "line": 650,
      "text": "<span class=\"hcc-meta\">乖離${c.upside!=null?(c.upside>=0?'+':'')+c.upside.toFixed(0)+'%':'—'} · F:${c.funda} T:${c.timing}"
     },
     {
@@ -4820,6 +4839,7 @@
    ],
    "same_dir": [],
    "tests": [
+    "tests/test_report_consistency_check.py",
     "tests/test_tail_rss_false_new_filing.py",
     "tests/test_tail_rss_overdue.py"
    ]

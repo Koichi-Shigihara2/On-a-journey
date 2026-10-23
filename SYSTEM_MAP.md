@@ -518,6 +518,16 @@ DUAL-MGMT-1]]`参照。
 削除）を実装しようとし、実装直前の調査で`collect.py`という致命的な
 読み手を発見して停止した経緯がある（詳細はBACKLOG_DONE.md参照）。
 
+### 保有銘柄と仮説の正（2026-10-23、[[HOLDINGS-SINGLE-SOURCE-1]]）
+
+| 何か | 正 | 意味 | 読み手 |
+|---|---|---|---|
+| 保有銘柄 | `docs/portfolio/data/portfolio.json`（コードの書き手なし、人の入力。CLAUDE_CODE_START.md「管理の操作の手順」でClaude Codeが編集） | 証券会社ごとのポジションで、株数が0より大きい銘柄 | Portfolioの画面の保有の表（2026-10-23から`discover_config.json`の区分「保有中」ではなくこれから作る）・`snapshot.py`・System Healthの[K]・TAILのレビューの取得単価 |
+| 仮説を登録した銘柄（TAILの監視の対象） | `docs/portfolio/tail/data/positions_index.json`（`workflow_write.py`がポジションの登録で追記） | thesisファイルの一覧。保有かどうかは表さない | TAILのRSS Monitor・SEC Ctrl・Items・TAILの画面・`ticker-links.js` |
+| Market Pulseの段階7の監視銘柄 | `sector_rotation.py::watch_tickers` | 保有（portfolio.json）∪ 仮説（positions_index.json） | Market Pulseの段階7 |
+
+保有と仮説のずれ（保有なのに仮説が無い・仮説があるのに保有でない）は、`report_consistency_check.py`のCHECK-65がWARNにする。
+
 ### config/読み込み失敗の横断検知（CHECK-32〜34の一般化原則、2026-08-16追記）
 
 `report_consistency_check.py`のCHECK-32（`_check_discover_config_sync()`）・

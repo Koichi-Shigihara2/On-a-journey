@@ -88,7 +88,6 @@
     .badge-SELL {background:rgba(239,68,68,.10);  color:#ef4444}
     .badge-PASS {background:rgba(71,85,105,.10);  color:#475569}
     .badge-UNDETERMINED {background:rgba(148,163,184,.12); color:#94a3b8}
-    .badge-warn {background:rgba(245,158,11,.1);  color:var(--amb);font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:3px;white-space:nowrap}
 
     /* Phase distribution */
     .dist-bar{display:flex;flex-wrap:wrap;gap:16px;background:var(--sur);border:1px solid var(--bdr);padding:16px 20px;border-radius:8px;margin-bottom:24px}
@@ -213,7 +212,6 @@ const BASE      = '/On-a-journey';
 const PF_PATH   = BASE + '/portfolio/data/portfolio.json';
 const T_BASE    = BASE + '/value-monitor/tanuki_valuation/data/';
 const H_BASE    = BASE + '/value-monitor/hypecore/data/';
-const DISC_PATH = BASE + '/portfolio/data/discover_config.json';
 const HIST_PATH = BASE + '/portfolio/data/history.json';
 const TS        = '?t=' + Date.now();
 
@@ -268,15 +266,13 @@ const CAT_META = {
 
 // ── Main data loader ──
 async function loadData() {
-  const [pfRes, discRes, univRes, histPreRes] = await Promise.allSettled([
+  const [pfRes, univRes, histPreRes] = await Promise.allSettled([
     fetch(PF_PATH   + TS).then(r => r.ok ? r.json() : null),
-    fetch(DISC_PATH + TS).then(r => r.ok ? r.json() : null),
     fetch(T_BASE + 'tickers.json' + TS).then(r => r.ok ? r.json() : null),
     fetch(HIST_PATH + TS).then(r => r.ok ? r.json() : null),
   ]);
 
   const pf     = pfRes.status  === 'fulfilled' ? pfRes.value   : null;
-  const disc   = discRes.status === 'fulfilled' ? discRes.value : null;
   // PORT-LOGIC-1: HYPEMIX仕込み候補抽出用にTANUKI VALUATION全銘柄ロスターを取得
   const universeTickers = univRes.status === 'fulfilled' ? (univRes.value?.tickers ?? []) : [];
   const _histPre = histPreRes.status === 'fulfilled' ? histPreRes.value : null;
@@ -292,13 +288,6 @@ async function loadData() {
 
   const lu = document.getElementById('last-updated');
   if (lu && pf.last_updated) lu.textContent = toJST(pf.last_updated + 'T00:00:00+09:00');
-
-  // 保有中 tickers from discover_config
-  const discTickers = disc?.tickers ?? {};
-  const holdingTickers = Object.entries(discTickers)
-    .filter(([, info]) => info.category === '保有中')
-    .map(([t]) => t)
-    .sort();
 
   // Brokers
   const brokers = pf.brokers ?? {};
@@ -327,10 +316,8 @@ async function loadData() {
     brokerSummaries.push({ name: brokerName, cash: bCash, positions: bPositions });
   }
 
-  // Tickers to display: 保有中 from discover_config (for table)
-  // Also include any tickers that are in posAgg but not in holdingTickers (warn them)
-  const displayTickers = holdingTickers.length > 0 ? holdingTickers
-    : Object.keys(posAgg).sort();
+  // 表に出す銘柄: portfolio.json で株数のある銘柄（保有の正は portfolio.json。2026-10-23 [[HOLDINGS-SINGLE-SOURCE-1]]）
+  const displayTickers = Object.keys(posAgg).sort();
 
   if (displayTickers.length === 0 && Object.keys(posAgg).length === 0) {
     document.getElementById('summary-section').innerHTML =
@@ -400,16 +387,11 @@ async function loadData() {
     const funda  = tk?.funda_score  ?? 0;
     const timing = tk?.timing_score ?? 0;
 
-    // Warn if in posAgg but not in discover 保有中
-    const inDiscover   = discTickers[ticker];
-    const notHolding   = inDiscover ? inDiscover.category !== '保有中' : false;
-    const notInDisc    = !inDiscover && totalShares > 0;
-
     const memo = [...new Set(agg.memos)].join(' / ');
 
     return { ticker, totalShares, weightedAvgCost, totalPosCost, currentPrice, posValue,
              posPnl, pnlPct, ivps, upside, stageLabel, substageLabel,
-             cat, funda, timing, notHolding, notInDisc, memo };
+             cat, funda, timing, memo };
   });
 
   const totalAssets = totalValue + totalCashAll;
@@ -505,15 +487,10 @@ function _renderTable() {
   const { rows, totalCost, totalValue, totalPnl, totalPnlPct, totalCashAll } = _pfState;
   const tableRows = rows.map(r => {
     const m = CAT_META[r.cat] ?? CAT_META['PASS'];
-    const warn = r.notHolding
-      ? `<span class="badge-warn" title="discover_configの区分が保有中ではありません">⚠️ 区分未反映</span>` : '';
-    const notInWarn = r.notInDisc
-      ? `<span class="badge-warn" title="discover_configに未登録">⚠️ 未登録</span>` : '';
     const sharesDisp = r.totalShares > 0 ? r.totalShares.toLocaleString() : '<span class="neu">—</span>';
     return `<tr>
       <td>
         <a class="tkr-a" href="../value-monitor/tanuki_valuation/stock.html?ticker=${r.ticker}">${r.ticker}</a>
-        ${warn}${notInWarn}
       </td>
       <td class="mono">${sharesDisp}</td>
       <td class="mono" data-priority="low">${r.weightedAvgCost > 0 ? fmtC(r.weightedAvgCost) : '—'}</td>

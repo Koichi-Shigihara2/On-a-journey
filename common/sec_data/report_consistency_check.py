@@ -1942,6 +1942,32 @@ def _get_latest_10q_10k_filed_date(ticker: str) -> Optional[str]:
     return latest_filed
 
 
+def _check_holdings_vs_theses() -> list[str]:
+    """CHECK-65: 保有（docs/portfolio/data/portfolio.json）と仮説（docs/portfolio/tail/data/positions_index.json）のずれ
+    （2026-10-23新設、WARN、[[HOLDINGS-SINGLE-SOURCE-1]]）。
+
+    保有の正は portfolio.json（株数が0より大きいポジション。Portfolio の画面の表と同じ）。positions_index.json は
+    「仮説を登録した銘柄（TAIL の監視の対象）」で、TAIL の `get_monitored_tickers()` をそのまま使う（検査側で作り直さない）。
+    保有なのに仮説が無い銘柄（TAIL の監視から漏れる）と、仮説があるのに保有でない銘柄（売った後に仮説が残る）を WARN にする。
+    """
+    from src.tail.edgar_rss_monitor import get_monitored_tickers
+
+    pf_path = os.path.join(REPO_ROOT, "docs", "portfolio", "data", "portfolio.json")
+    try:
+        with open(pf_path, encoding="utf-8") as f:
+            pf = json.load(f)
+    except Exception as e:
+        return [f"  [WARN-65 保有と仮説のずれ] portfolio.json を読めない（{type(e).__name__}: {e}）"]
+    held = {t for b in (pf.get("brokers") or {}).values() for t, p in ((b or {}).get("positions") or {}).items()
+            if ((p or {}).get("shares") or 0) > 0}
+    theses = set(get_monitored_tickers())
+    warn = [f"  [WARN-65 保有と仮説のずれ] {t}: 保有（portfolio.json）なのに仮説（positions_index.json）が無い"
+            for t in sorted(held - theses)]
+    warn += [f"  [WARN-65 保有と仮説のずれ] {t}: 仮説（positions_index.json）があるのに保有でない（portfolio.json）"
+             for t in sorted(theses - held)]
+    return warn
+
+
 def _check_core_position_review_coverage() -> tuple[list[str], list[str]]:
     """CHECK-37: TAIL保有ポジション（2026-08-19以降は全保有ポジションが
     RSS監視・四半期レビュー自動生成の対象、`[[TAIL-COVERAGE-POLICY-
@@ -3518,6 +3544,12 @@ def run_checks(args=None) -> tuple[int, int]:
     if core_review_ng:
         flagged.append(("[GLOBAL]", core_review_ng, []))
         total_ng += len(core_review_ng)
+
+    # CHECK-65: ティッカー非依存の単発チェック（保有〈portfolio.json〉と仮説〈positions_index.json〉のずれ、WARN）
+    holdings_warn = _check_holdings_vs_theses()
+    if holdings_warn:
+        flagged.append(("[GLOBAL]", [], holdings_warn))
+        total_warn += len(holdings_warn)
 
     # CHECK-38: ティッカー非依存の単発チェック（TAIL登録KPIの取得失敗
     # 検知、[[TAIL-XBRL-SEGMENT-FETCHER-NONDIMENSIONED-GAP-1]]）。
