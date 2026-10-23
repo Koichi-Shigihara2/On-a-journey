@@ -78,6 +78,8 @@ def get_tickers_by_flag(flag: str, csv_path: str | None = None) -> list[str]:
 # 'retired'（登録抹消済み）に加え、2026-09-03より'provisioning'
 # （登録処理中・Step 8のNG=0確認前）も除外する（[[REGISTER-FLOW-
 # REDESIGN-1]]方針2、common/registration/register_ticker.py参照）。
+# 'dormant'（休眠: 人が見る印で、各パイプラインには通す。2026-10-23に discover_config.json の区分「休眠」から移した、
+# [[HOLDINGS-SINGLE-SOURCE-1]]）も除外しない。
 # 'candidate'（検証中だが各パイプラインには通す運用、WST/CON等）は
 # 現状の既存動作を維持するため除外しない（statusによるパイプライン
 # 対象外化は現状candidateには適用されていない。フラグ判定基準

@@ -16,11 +16,11 @@ Usage:
         # ブロックしない設計）。NG>0の場合は昇格せずexit 1。
 
 チェック項目:
-    P1. 7ステップ登録完全性 (SEC/Beta/Valuation/HypeCore/Discover/Monitor)
+    P1. 登録完全性 (SEC/Beta/Valuation/HypeCore/EPS/Monitor。Discover〈Step 6〉は2026-10-23に削除)
     P2. データ品質・鮮度 (旧XBRL形式、TTM陳腐化。旧P2-A〈latest_revenue TTM乖離〉は
         2026-09-24廃止、register_ticker.py Step 7.5のCHECK-35/41/47が代替)
     P3. segment_config 整合性 (fiscal_year鮮度、weight合計、growth率)
-    P4. Config 孤立エントリ (discover_config/cik_lookup の非監視残存)
+    P4. Config 孤立エントリ (cik_lookup の非監視残存)
     P5. 自動更新ワークフロー カバレッジ
     P6. CIK断絶候補検知 (新規登録銘柄の法人再編疑い)
     P7. stonks_siloフラグ判定基準 ([[FLAG-THRESHOLD-DESIGN-1]]案C: TTM営業利益<0
@@ -51,7 +51,6 @@ HYPECORE_DIR = os.path.join(_REPO_ROOT, "docs", "value-monitor", "hypecore", "da
 EPS_DIR      = os.path.join(_REPO_ROOT, "docs", "value-monitor", "adjusted_eps_analyzer", "data")
 BETA_CFG     = os.path.join(_REPO_ROOT, "config", "beta_config.json")
 SEG_CFG      = os.path.join(_REPO_ROOT, "config", "segment_config.json")
-DISCOVER_CFG = os.path.join(_REPO_ROOT, "config", "discover_config.json")
 CIK_CSV      = os.path.join(_REPO_ROOT, "config", "cik_lookup.csv")
 MONITOR_YAML = os.path.join(_REPO_ROOT, "config", "monitor_tickers.yaml")
 CIK_HISTORY_JSON = os.path.join(_REPO_ROOT, "common", "sec_data", "cik_history.json")
@@ -150,7 +149,6 @@ class Issues:
 
 def check_p1_registration_completeness(ticker: str, issues: Issues,
                                         beta_overrides: dict,
-                                        discover_tickers: set,
                                         monitor_set: set,
                                         eps_disabled: set = None) -> None:
     """7ステップ各段のデータ存在確認"""
@@ -183,10 +181,6 @@ def check_p1_registration_completeness(ticker: str, issues: Issues,
         eps_path = os.path.join(EPS_DIR, ticker)
         if not os.path.exists(eps_path):
             issues.warn("P1-Step5b-EPS", f"{ticker}: EPS analyzer データなし")
-
-    # Step 6: discover_config
-    if ticker not in discover_tickers:
-        issues.ng("P1-Step6-Discover", f"{ticker}: discover_config.json に未登録")
 
     # Step 7: monitor_tickers.yaml
     if ticker not in monitor_set:
@@ -393,13 +387,6 @@ def check_p3_segment_config(issues: Issues) -> None:
 
 def check_p4_orphan_configs(issues: Issues, monitor_set: set) -> None:
 
-    # discover_config の非監視残存
-    disc = _load_json(DISCOVER_CFG) or {}
-    disc_tickers = set(disc.get("tickers", {}).keys())
-    for t in sorted(disc_tickers - monitor_set):
-        issues.warn("P4-DiscoverOrphan", f"{t}: discover_config.json に残存するが monitor_tickers 未登録"
-                    " [削除漏れ?]")
-
     # cik_lookup の非監視残存 (annual data あり)
     try:
         with open(CIK_CSV, encoding="utf-8") as f:
@@ -480,9 +467,6 @@ def run(target_tickers: Optional[list] = None, summary_only: bool = False) -> Is
     beta = _load_json(BETA_CFG) or {}
     beta_overrides = beta.get("overrides", {})
 
-    disc = _load_json(DISCOVER_CFG) or {}
-    discover_tickers = set(disc.get("tickers", {}).keys())
-
     tickers_to_check = target_tickers if target_tickers else tickers.get_all_tickers()
 
     # cik_lookup.csv の eps=false 銘柄を収集（EPS analyzer 非対応銘柄の WARN 抑制用）
@@ -507,7 +491,7 @@ def run(target_tickers: Optional[list] = None, summary_only: bool = False) -> Is
     # ── P1 / P2 / P6: 銘柄ごとチェック ────────────────────────────────
     for t in tickers_to_check:
         check_p1_registration_completeness(t, all_issues, beta_overrides,
-                                           discover_tickers, monitor_set,
+                                           monitor_set,
                                            eps_disabled=eps_disabled)
         check_p2_data_quality(t, all_issues)
         check_p6_cik_discontinuity_candidate(t, all_issues, cik_history)
@@ -553,7 +537,6 @@ def _print_report(issues: Issues, n_tickers: int, summary_only: bool) -> None:
         "P1-Step3-Valuation":"P1-Step3  Valuation 未生成",
         "P1-Step5-HypeCore": "P1-Step5  HypeCore 未実行",
         "P1-Step5b-EPS":     "P1-Step5b EPS Analyzer なし",
-        "P1-Step6-Discover": "P1-Step6  Discover 未登録",
         "P1-Step7-Monitor":  "P1-Step7  monitor_tickers 未登録",
         "P2-B-XBRL":         "P2-B  旧XBRL (net_income=None)",
         "P2-C-AnnualStale":  "P2-C  年次データ陳腐化",
@@ -562,7 +545,6 @@ def _print_report(issues: Issues, n_tickers: int, summary_only: bool) -> None:
         "P3-SegFY":          "P3-FY segment fiscal_year鮮度",
         "P3-SegWeight":      "P3-W  segment weight合計不正",
         "P3-SegGrowth":      "P3-G  segment growth率異常",
-        "P4-DiscoverOrphan": "P4-D  discover_config孤立エントリ",
         "P4-CIKOrphan":      "P4-C  cik_lookup孤立エントリ",
         "P4-CIKIncomplete":  "P4-CI cik_lookup登録途中",
         "P4-SecDataOrphan":  "P4-S  SEC data孤立ディレクトリ",

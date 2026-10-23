@@ -597,9 +597,6 @@ _PORTFOLIO.update(
             "CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。"
             "Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む",
         "docs/portfolio/data/history.json": "日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む",
-        "docs/portfolio/data/discover_config.json":
-            "銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。"
-            "Portfolioの画面が保有中の銘柄を選ぶのに読む。各銘柄の themes（読み手なし）は2026-10-23に消し、register_ticker.py も書くのをやめた",
     },
     DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
@@ -607,9 +604,13 @@ _PORTFOLIO.update(
         ("docs/portfolio/data/theme_config.json",
          "削除（2026-10-23、Koichiさんの判断）。元の config/theme_config.json も消し、Discover_Config_Sync.yml の写しと rcc の同期の確認（CHECK-32）の組も外した。"
          "docs/ の写しを読むのは CHECK-32 だけで、画面は読んでいなかった（画面の color・label は画面の中の PHASE_CFG の値）"),
+        ("docs/portfolio/data/discover_config.json（と元の config/discover_config.json・Discover_Config_Sync.yml・rcc の CHECK-32）",
+         "削除（2026-10-23、Koichiさんの判断、[[HOLDINGS-SINGLE-SOURCE-1]]）。保有の正を portfolio.json にし、画面は区分「保有中」を読まなくなった。"
+         "区分の監視中・休眠とメモを読むコードは登録の検証（register_ticker.py の Step 6・registration_validator.py の P1-Step6・P4）のほかに無かった。"
+         "休眠（BBAI）は cik_lookup.csv の status の dormant に移した"),
     ],
     DECISION_NOTE="段階2の判断（2026-10-23、Koichiさんの判断）。theme_config.json（config/・docs/）を消し、discover_config.json の各銘柄の themes を消した。"
-                  "history.json・portfolio.json・discover_config.json は残す。history.json の合計9キーは日ごとの記録で作り直せないため残す（下の注記）。"
+                  "history.json・portfolio.json・discover_config.json は残す（discover_config.json は後の [[HOLDINGS-SINGLE-SOURCE-1]] で削除）。history.json の合計9キーは日ごとの記録で作り直せないため残す（下の注記）。"
                   "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="portfolio", OUTSIDE_PREFIXES=("docs/portfolio/data/", "src/portfolio/"),
     READ_PREFIXES=("docs/portfolio/data", "src/portfolio"),

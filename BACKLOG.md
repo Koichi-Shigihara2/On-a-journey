@@ -1899,6 +1899,14 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   rccにCHECK-65（保有なのに仮説が無い・仮説があるのに保有でない、WARN。仮説はTAILの`get_monitored_tickers()`をそのまま使う。10-23は0件）。
   SYSTEM_MAP.mdに「保有銘柄と仮説の正」、FIELD_DEFINITIONS.mdのAS-IS-469に`positions_index.json`の意味（仮説を登録した銘柄）とMarket Pulseの段階7（保有∪仮説）。
   前後で同じ: Portfolioの画面の要約・明細の表（9銘柄＋合計・キャッシュ、Playwright）・System Healthの[K]・TAILの監視の対象・段階7の監視銘柄・`snapshot.py`のスナップショット・登録の検証の全銘柄（NG 7・WARN 11）
+- 調べた結果（2026-10-23、Aに当たる）: `discover_config.json`の区分の「監視中」（83）・「休眠」（1、BBAI）とメモ（4銘柄）を読むコードは、登録の検証（`register_ticker.py`のStep 6が「監視中」を書く・`registration_validator.py`のP1-Step6〈登録の有無〉・P4〈孤立〉）のほかに無かった。
+  画面のメモの列は`portfolio.json`の各ポジションのmemo。BBAIの休眠はどこにも効いていなかった（`cik_lookup.csv`はstatus=active・4つの印すべてtrue・monitor_tickersにあり）
+- 第2部（件名「refactor: HOLDINGS-SINGLE-SOURCE-1 第2部、discover_config.jsonを消す」のcommit）: `config/discover_config.json`・`docs/portfolio/data/discover_config.json`・`Discover_Config_Sync.yml`（ワークフロー21→20本）・rccのCHECK-32を削除。
+  休眠は`cik_lookup.csv`の`status`の新しい値`dormant`（BBAI。`tickers.py`の除外は`retired`・`provisioning`だけなので各システムには通したまま）。`register_ticker.py`のStep 6・`registration_validator.py`のP1-Step6とP4のDiscoverOrphanを削除（cik_lookup.csvだけを見る）。
+  登録の検証の全銘柄はNG 7→2・WARN 11→11: 消えたNG 5件はすべてP1-Step6（`discover_config.json`に未登録のENTG・KLAC・LRCX・RMBS・TER。2026-07-09に手動で一括登録した5銘柄）で、ほかの行は前後で同じ。
+  消したメモ4件（人の書いた文。gitの履歴にも残る）: ELF「モニタリングに値する「高リスク・高リターン」銘柄だが、複数の罠とレポート不整合に要注意」／RXRX「ハイリスク・ハイリターンの「バリュートラップ候補」、モニタリング価値はあるが投資判断には極めて慎重な姿勢が必要」／
+  SOUN「事業の成長性は魅力的だが、財務の質が極めて低く、「悪い銘柄」に近い。ただしショートスクイーズの可能性を考慮すると完全に無視はできない。」／TASK「モニタリング対象としては条件付きで価値があるものの、複数の罠（バリュートラップ）の可能性を内包しており、レポート内部にも不整合・要注意点が存在」。
+  文書: CLAUDE_CODE_START.md「管理の操作の手順」（休眠はcik_lookup.csvのstatus）・新規登録の手順・銘柄の削除の手順、SYSTEM_MAP.md（statusの値・配置の経緯・保有と仮説）、FIELD_DEFINITIONS.md（AS-IS-264）・INPUT_DATA_AS_IS.md（INPUT-C-006）、UPDATE_SCHEDULE.mdを作り直した
 
 #### 読み手の影響表（2026-10-23の一覧〈portfolio_layer.json・tail_layer.json〉とgrepから。本番のコードだけ）
 | ファイル | 読むもの | 使い方 | 変更の要否（案） |
@@ -2748,7 +2756,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 | Step 3 / 3.5 | TANUKI VALUATIONの`pipeline.py`（tanuki=true）/ セグメントの確認（一時停止） | 自動 / 一時停止 |
 | Step 4 | `audit.py --check-beta`（止めない） | 自動 |
 | Step 5 / 5b | HypeCore（hypecore=true、`_poc.json`の有無で判定）/ EPS Analyzer（eps=true） | 自動 |
-| Step 6 / 7 | `discover_config.json` / `monitor_tickers.yaml` | 自動 |
+| Step 7 | `monitor_tickers.yaml`（Step 6〈`discover_config.json`〉は2026-10-23に削除、[[HOLDINGS-SINGLE-SOURCE-1]]） | 自動 |
 | Step 7.5 | `report_consistency_check.py --ticker T --include-provisioning --include-yfinance-checks --fail-on-ng`（NGで昇格を止める） | 自動 |
 | Step 8 | `registration_validator.py`（NG=0なら`--target-status`へ昇格） | 自動 |
 | Step 8.5 | 対象システム横断チェック（4フラグ・segment_config・rpo_config・TAIL・monitor_tickers・EPSのチェックリスト） | 手動 |

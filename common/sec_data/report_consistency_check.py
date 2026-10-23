@@ -279,55 +279,6 @@ def _check_output_inventory() -> tuple[list[str], list[str]]:
         return [f"  [NG-INV-0 一覧を作れない] {type(e).__name__}: {e}"], []
 
 
-def _check_discover_config_sync() -> list[str]:
-    """CHECK-32: config/discover_config.jsonと
-    docs/portfolio/data/側コピーの内容一致を検証する
-    （[[DISCOVER-CONFIG-DUAL-MGMT-1]]の同期漏れ検知。書き手が複数
-    存在するため`Discover_Config_Sync.yml`が自動同期する設計だが、
-    同期漏れ・ワークフロー失敗をNGとして検出する。
-    [[FCFCONFIG-MISSING-DETECTION-WEAK-1]]と同型のサイレント破損対策）。
-    ティッカー非依存の単発チェックのため、check_ticker()内ではなく
-    run_checks()から直接1回だけ呼ばれる。NGメッセージのリストを返す。
-    theme_config.jsonの組は、ファイルごと消したため2026-10-23に外した（R-A Portfolioの段階2）。
-    """
-    ng: list[str] = []
-    pairs = [
-        ("config/discover_config.json", "docs/portfolio/data/discover_config.json"),
-    ]
-    for src_rel, dst_rel in pairs:
-        src_path = os.path.join(REPO_ROOT, src_rel)
-        dst_path = os.path.join(REPO_ROOT, dst_rel)
-        if not os.path.exists(src_path):
-            ng.append(f"  [NG-32 discover_config同期不整合] {src_rel} が存在しない")
-            continue
-        if not os.path.exists(dst_path):
-            ng.append(
-                f"  [NG-32 discover_config同期不整合] {dst_rel} が存在しない "
-                f"（{src_rel}からの同期未実施の可能性）"
-            )
-            continue
-        try:
-            with open(src_path, encoding="utf-8") as f:
-                src_data = json.load(f)
-            with open(dst_path, encoding="utf-8") as f:
-                dst_data = json.load(f)
-        except Exception as e:
-            ng.append(f"  [NG-32 discover_config同期不整合] {src_rel}/{dst_rel} 読み込みエラー ({e})")
-            continue
-        # JSONパース後の内容で比較する（バイト単位比較はしない）。
-        # Windows core.autocrlf=true環境ではgit checkout時にCRLF/LFが
-        # 混在しうるが、git自体はこれを「変更なし」とみなす（コミット時に
-        # 正規化される）ため、生バイト比較は改行コード差だけで誤検知
-        # （false NG）を起こす（2026-08-15実測で確認済み）。
-        if src_data != dst_data:
-            ng.append(
-                f"  [NG-32 discover_config同期不整合] {src_rel} と {dst_rel} の内容が"
-                f"一致しない → Discover_Config_Sync.ymlの自動同期が未実行・失敗している"
-                f"可能性（自動修正なし）"
-            )
-    return ng
-
-
 # CHECK-34: config/設定ファイル読み込みの横断解決チェック用レジストリ
 # （[[CONFIG-LOAD-SILENT-FALLBACK-1]]、2026-09-13に残り3件〈prompts.yaml・
 # maturity_config.json・segment_config.json/growth_options_config.json〉
@@ -3492,13 +3443,8 @@ def run_checks(args=None) -> tuple[int, int]:
             total_ng   += len(ng)
             total_warn += len(annotated_warn)
 
-    # CHECK-32: ティッカー非依存の単発チェック（discover_config同期）。
-    # --tickerフィルタの有無に関わらず常時実行する（ticker単位のデータとは
-    # 無関係な、config/とdocs/の同期状態そのものを検証するため）。
-    discover_sync_ng = _check_discover_config_sync()
-    if discover_sync_ng:
-        flagged.append(("[GLOBAL]", discover_sync_ng, []))
-        total_ng += len(discover_sync_ng)
+    # CHECK-32（config/discover_config.json と docs/ の写しの一致）は2026-10-23に削除した（[[HOLDINGS-SINGLE-SOURCE-1]]。
+    # discover_config.json・Discover_Config_Sync.yml とも消した）。
 
     # CHECK-INV-1〜6: ティッカー非依存の単発チェック（出力の一覧〈SEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・マクロデータ層・MACRO PULSE・TAIL・Market Pulse・Portfolio〉、[[OUTPUT-INVENTORY-CHECK-1]]）。
     # 銘柄ごとのNGと混ぜず[GLOBAL]に置く。--tickerフィルタの有無に関わらず常時実行する。

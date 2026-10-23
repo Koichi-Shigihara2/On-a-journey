@@ -113,7 +113,7 @@
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 806・827・844・871・948（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `common/market_data/fetcher.py` 行 736・753・840・882・883・987・988・1017・1576・1587（経由 `common/market_data/fetcher.py::_load_json`、`common/market_data/fetcher.py::_stale_provisional_dates`、`common/market_data/fetcher.py::fetch_daily_prices` ほか）
 - Python・保存済みファイル: `common/market_data/reader.py` 行 70・71・96・134・163・169・193・217・242・372・391（経由 `common/market_data/reader.py::_load_daily_payload`、`common/market_data/reader.py::_load_json`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1625・3601・3734（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1576・3547・3680（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 371・374・423・674・706（経由 `common/sec_data/rotce.py::_load_prices`）
 - Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 207・377・378・508・510（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 143・237・401・402・407・445・452・453・761・762・851・881 ほか17（経由 `common/market_data/reader.py::_load_daily_payload`）
@@ -187,8 +187,8 @@
 
 | 規則 | ファイル数 | 場所 | 市場データ層を含む |
 |---|---|---|---|
-| 取引日（市場の営業日）の決め方 | 5 | `common/market_data/fetcher.py:226`<br>`common/market_data/fetcher.py:722`<br>`common/market_data/fetcher.py:1011`<br>`common/market_data/fetcher.py:1032`<br>`common/market_data/fetcher.py:1042`<br>`common/market_data/reader.py:104`<br>`common/sec_data/report_consistency_check.py:1604`<br>`src/market/macro_pulse/05_main.py:442`<br>`src/market/macro_pulse/05_main.py:456`<br>`src/market/market_pulse/breadth_calculator.py:342` | はい |
-| 暫定の足（取引時間中・取得の途中の行）の判定 | 4 | `common/market_data/fetcher.py:403`<br>`common/market_data/fetcher.py:411`<br>`common/market_data/fetcher.py:450`<br>`common/market_data/fetcher.py:572`<br>`common/market_data/fetcher.py:583`<br>`common/market_data/fetcher.py:734`<br>`common/market_data/fetcher.py:746`<br>`common/sec_data/report_consistency_check.py:1634`<br>`src/market/market_pulse/collect_and_send.py:781`<br>`src/market/market_pulse/collect_and_send.py:795`<br>`src/market/market_pulse/futures_snapshot.py:38` | はい |
+| 取引日（市場の営業日）の決め方 | 5 | `common/market_data/fetcher.py:226`<br>`common/market_data/fetcher.py:722`<br>`common/market_data/fetcher.py:1011`<br>`common/market_data/fetcher.py:1032`<br>`common/market_data/fetcher.py:1042`<br>`common/market_data/reader.py:104`<br>`common/sec_data/report_consistency_check.py:1555`<br>`src/market/macro_pulse/05_main.py:442`<br>`src/market/macro_pulse/05_main.py:456`<br>`src/market/market_pulse/breadth_calculator.py:342` | はい |
+| 暫定の足（取引時間中・取得の途中の行）の判定 | 4 | `common/market_data/fetcher.py:403`<br>`common/market_data/fetcher.py:411`<br>`common/market_data/fetcher.py:450`<br>`common/market_data/fetcher.py:572`<br>`common/market_data/fetcher.py:583`<br>`common/market_data/fetcher.py:734`<br>`common/market_data/fetcher.py:746`<br>`common/sec_data/report_consistency_check.py:1585`<br>`src/market/market_pulse/collect_and_send.py:781`<br>`src/market/market_pulse/collect_and_send.py:795`<br>`src/market/market_pulse/futures_snapshot.py:38` | はい |
 | S&P500の構成銘柄の一覧の取り方 | 3 | `common/market_data/fetcher.py:1443`<br>`common/market_data/reader.py:377`<br>`src/market/market_pulse/breadth_calculator.py:69` | はい |
 
 ## 本番外のコード（common/market_data）

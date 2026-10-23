@@ -100,7 +100,7 @@
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 301・303・327（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1388
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 
 ### `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
@@ -110,7 +110,7 @@
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1380・1387・1388・2414
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 
 ### `docs/portfolio/tail/data/journal.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_Position_Write.yml
@@ -124,7 +124,7 @@
 ### `docs/portfolio/tail/data/kpi/{T}_layer2.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_KPI_Update.yml・.github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `fetched_at`(1)・`kpis`(8)・`layer2_complete`(1)・`missing_kpis`(2)・`ticker`(11)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2142・2146・3557・3734（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2093・2097・3503・3680（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 47・50・93・164・253（経由 `src/tail/prediction_tracker.py::_load_layer2_actuals`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 160・164・1570・1775・1787・1811（経由 `src/tail/quarterly_review_generator.py::load_layer2_kpi`、`src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 105・108・206・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
@@ -148,7 +148,7 @@
 ### `docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(1)・`proposed_kpis`(2)・`rejected_kpis`(1)・`thesis_version`(0)・`ticker`(5)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2217・2221・3569・3734（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2168・2172・3515・3680（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
 - Python・保存済みファイル: `src/tail/text_kpi_extractor.py` 行 113・117・586・701・713（経由 `src/tail/text_kpi_extractor.py::load_proposal`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 2585
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
@@ -168,7 +168,7 @@
 ### `docs/portfolio/tail/data/positions_index.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_Position_Write.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `positions`(11)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1963・2036・2048・2141・2216・3541・3549・3557・3569・3734（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1914・1987・1999・2092・2167・3487・3495・3503・3515・3680（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 399・478（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1559・1583・1969（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 225・261（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
@@ -198,8 +198,8 @@
 ### `docs/portfolio/tail/data/review_queue.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `queue`(8)
-- Python・その場で計算: `common/sec_data/report_consistency_check.py` 行 2044（経由 `src/tail/quarterly_review_generator.py::load_queue`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2044・3541・3734（経由 `src/tail/quarterly_review_generator.py::load_queue`）
+- Python・その場で計算: `common/sec_data/report_consistency_check.py` 行 1995（経由 `src/tail/quarterly_review_generator.py::load_queue`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1995・3487・3680（経由 `src/tail/quarterly_review_generator.py::load_queue`）
 - Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 42・374・607・638（経由 `src/tail/edgar_rss_monitor.py::load_queue`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 73・92・164（経由 `src/tail/review_status.py::load_queue`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 57・1535・1746・1787・1811（経由 `src/tail/quarterly_review_generator.py::load_queue`、`src/tail/review_status.py::load_queue`）
@@ -239,7 +239,7 @@
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 893・1388
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 162
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 186・202・225・226
 
 ### `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`（2件以上）
@@ -253,7 +253,7 @@
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 162
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_f_tail`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_f_tail`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_f_tail`）
 - テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 184・186・188・197・202・226
 - テスト・保存済みファイル: `tests/test_tail_sec_items_unchanged.py` 行 89・91
 
@@ -556,7 +556,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:723`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:866`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:894` | いいえ |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:229`<br>`src/tail/edgar_rss_monitor.py:433`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:605` | はい |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1634`<br>`common/sec_data/report_consistency_check.py:1775`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1726`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | はい |

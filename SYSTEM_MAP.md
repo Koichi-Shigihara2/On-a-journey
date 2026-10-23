@@ -211,7 +211,7 @@ Market Pulse/PORTFOLIO。特にPORTFOLIOの旧記載`docs/management/portfolio/`
 | ticker / cik / name | 銘柄コード・CIK・会社名 |
 | eps_sector | EPS ANALYZERのセクター分類上書き（`sector_classifier_v2.py`が参照。多くの銘柄で空欄） |
 | stonks_silo / tanuki / eps / hypecore | 各システムの対象可否フラグ（後述） |
-| status | active / candidate / retired。新規登録手順Step 0.5で記録（詳細はCLAUDE_CODE_START.md参照） |
+| status | active / candidate / retired / provisioning / dormant。新規登録手順Step 0.5で記録（詳細はCLAUDE_CODE_START.md参照）。各システムから外れるのは retired・provisioning だけ。dormant（休眠）は人が見る印で各システムには通す（2026-10-23に discover_config.json の区分「休眠」から移した、[[HOLDINGS-SINGLE-SOURCE-1]]） |
 | registered_date / registration_source / registration_note | 登録日・登録経緯（moomoo_screening/manual_thesis等）・登録理由の要約 |
 
 **銘柄リスト統一アクセサ（`common/sec_data/tickers.py`、2026-07-12 ZS-TICKERS-LEAK-1で新設・
@@ -493,7 +493,7 @@ repos/.../contents/{path}`）はパスが`config/`でも`src/`でも`docs/`で�
 | ファイル | 経緯 |
 |---|---|
 | `portfolio.json` | 2026-05-23 21:37 `config/`のみに作成→66分後の22:43、`4ff1f1992`「portfolio.jsonをdocs/以下に配置・fetchパス修正」でdocs/コピーを追加 |
-| `discover_config.json` | 2026-05-23 `config/`に作成（`ee1b6ddad`）→同日中に`7875c6be1`「discover_config配置・認証DOM修正」でdocs/コピーを追加 |
+| `discover_config.json` | 2026-05-23 `config/`に作成（`ee1b6ddad`）→同日中に`7875c6be1`「discover_config配置・認証DOM修正」でdocs/コピーを追加。2026-10-23に`config/`・docs/の両方と`Discover_Config_Sync.yml`を削除（[[HOLDINGS-SINGLE-SOURCE-1]]） |
 | `theme_config.json` | 2026-05-31 `config/`のみに作成→4日後の06-04、`2e99c8844`「docs/ 全HTMLリンク整合性修正」で「GitHub Pagesから参照可能に」とコミットメッセージに明記した上でdocs/コピーを追加。2026-10-23に`config/`・`docs/`の両方を削除（読み手がrccの同期の確認だけ、R-A Portfolioの段階2） |
 
 新規に手動設定ファイルを追加する際、フロントエンドから直接fetchする
@@ -527,10 +527,11 @@ DUAL-MGMT-1]]`参照。
 | Market Pulseの段階7の監視銘柄 | `sector_rotation.py::watch_tickers` | 保有（portfolio.json）∪ 仮説（positions_index.json） | Market Pulseの段階7 |
 
 保有と仮説のずれ（保有なのに仮説が無い・仮説があるのに保有でない）は、`report_consistency_check.py`のCHECK-65がWARNにする。
+銘柄の区分・メモの`discover_config.json`（区分「保有中」「監視中」「休眠」）は2026-10-23に削除した。休眠は`cik_lookup.csv`の`status`の`dormant`。
 
 ### config/読み込み失敗の横断検知（CHECK-32〜34の一般化原則、2026-08-16追記）
 
-`report_consistency_check.py`のCHECK-32（`_check_discover_config_sync()`）・
+`report_consistency_check.py`のCHECK-32（`_check_discover_config_sync()`、2026-10-23に削除）・
 CHECK-33（fcf_conversion_config.json専用、CHECK-34へ統合済み・廃止）・
 CHECK-34（`_check_config_loaders_resolvable()`）は、いずれも同一原則
 「**チェッカー独自の代理判定（`os.path.exists()`・バイト比較等）ではなく、

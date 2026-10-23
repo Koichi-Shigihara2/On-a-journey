@@ -3811,7 +3811,7 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 | 〇〇のセグメント・成熟プロファイル・成長オプションを変えて | 銘柄設定タブ | `config/segment_config.json`・`config/maturity_config.json`・`config/growth_options_config.json`を直接編集する（セグメントは下の「新規銘柄のセグメント設定判断ルール」に従い10-Kから。根拠を`comment`に書く） |
 | Phase2成長率のセクター別の上限を変えて | 銘柄設定タブ「上限テーブル」 | `config/maturity_config.json`のセクター別の上限の表を直接編集する |
 | RPOのホワイトリストを変えて | RPO設定タブ | `config/rpo_config.json`のwhitelistを理由付きで直接編集する |
-| Discoverの区分・メモを変えて | Discover設定タブ | `config/discover_config.json`を直接編集する（pushで`Discover_Config_Sync.yml`が`docs/portfolio/data/`へ写す） |
+| 〇〇を休眠にして・休眠から戻して | Discover設定タブ（2026-10-23まで`config/discover_config.json`の区分） | `config/cik_lookup.csv`のその行の`status`を`dormant`（休眠）・`active`にする。`dormant`は人が見る印で、各システムには通したまま（外すのは`retired`・`provisioning`だけ）。`discover_config.json`は2026-10-23に削除した（[[HOLDINGS-SINGLE-SOURCE-1]]。保有はportfolio.json、メモは置き場が無い） |
 | ポートフォリオを変えて | ポートフォリオタブ「保存」 | `docs/portfolio/data/portfolio.json`を直接編集する |
 | 〇〇を更新して（全銘柄） | 実行タブ・一括実行 | `gh workflow run SEC_Data_Update.yml --ref kaihatsu`。完了で連鎖（HypeCore・EPS・Stonks → TANUKI VALUATION → TANUKI Score）が動く |
 | 〇〇を更新して（一部の銘柄） | 銘柄管理「SECデータ取得」「選択銘柄を更新実行」・実行タブ・EPSの管理「選択した銘柄を更新」 | 必要なワークフローだけを銘柄を指定して起動する（例: `gh workflow run TANUKI_VALUATION_Update.yml --ref kaihatsu -f tickers=NVDA`）。SEC_Data_Updateを銘柄を指定して起動しても、連鎖の下流は全銘柄で動く |
@@ -3896,7 +3896,7 @@ python common/registration/register_ticker.py [TICKER] --target-status active
 このスクリプトはStep 1（SEC取得）・Step 2（β取得）・Step 3（TANUKI
 VALUATIONパイプライン実行）・Step 4（audit.py --check-beta）・Step 5
 （HypeCore、hypecore=trueのみ）・Step 5b（EPS Analyzer、eps=trueのみ）・
-Step 6（Discover登録）・Step 7（monitor_tickers.yaml追加）・Step 7.5
+Step 7（monitor_tickers.yaml追加。Step 6〈Discover登録〉は2026-10-23に削除）・Step 7.5
 （report_consistency_check.pyを`--ticker <T> --include-provisioning
 --include-yfinance-checks --fail-on-ng`で実行、NGまたは対象0件なら昇格を止める。
 2026-09-24追加、[[REGISTRATION-VALIDATOR-P2A-PERIOD-MISMATCH-1]]）・Step 8
@@ -3989,7 +3989,7 @@ Step 1〜8はシステム個別の登録手順だが、「意図した通りに�
   - 補正値: `adjusted_net = pretax - median(正常四半期の税費用)`
 - **split_history.yaml 管理**: 株式分割が確認された銘柄は `config/split_history.yaml` に追記する。
   現在登録済み: NOW（2025-12-18 5:1）。追記後は EPS Analyzer を単体実行して TTM adj_eps を確認すること。
-- Step 6 の discover_config.json は **dict 形式**（キー=ticker）。list 形式のコードは誤り
+- Step 6（discover_config.json）は2026-10-23に削除した（[[HOLDINGS-SINGLE-SOURCE-1]]）
 - Step 7 の monitor_tickers.yaml は **単純リスト形式**（yaml.dump 使用不可 → コメントが消える）
 - Step 8 の NG は必ず解消してからコミットする。主なNG要因:
   - `P2-A NG`: latest_revenue が TTM の 3 倍以上乖離 → SEC パーサーのタグ確認
@@ -4128,7 +4128,6 @@ grep -rln "[TICKER]" . --include="*.py" --include="*.html" --include="*.js" \
 
 # Step 1: 削除対象を確認
 grep [TICKER] config/cik_lookup.csv
-grep [TICKER] config/discover_config.json
 
 # Step 2: 設定ファイルから削除
 # cik_lookup.csv から該当行を削除
@@ -4147,17 +4146,7 @@ with open('config/beta_config.json', 'w', encoding='utf-8', newline='') as f:
     json.dump(d, f, indent=2, ensure_ascii=False)
 "
 
-# discover_config.json から削除
-# 2026-08-15: docs/側同期はDiscover_Config_Sync.ymlが自動実行
-# （[[DISCOVER-CONFIG-DUAL-MGMT-1]]）
-python3 -c "
-import json
-with open('config/discover_config.json', encoding='utf-8') as f:
-    d = json.load(f)
-d['tickers'] = {k: v for k, v in d['tickers'].items() if k != '[TICKER]'}
-with open('config/discover_config.json', 'w', encoding='utf-8', newline='') as f:
-    json.dump(d, f, ensure_ascii=False, indent=2)
-"
+# （discover_config.json は2026-10-23に削除した。[[HOLDINGS-SINGLE-SOURCE-1]]）
 
 # monitor_tickers.yaml から削除
 python3 -c "

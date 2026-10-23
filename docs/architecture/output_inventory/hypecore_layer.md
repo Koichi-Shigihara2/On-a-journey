@@ -58,10 +58,10 @@
 - 起動元: .github/workflows/HypeCore_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated`(2)・`generated_at`(8)・`method_change`(4)・`monthly`(16)・`ticker`(20)
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 52・67・68・175・206（経由 `browser_checks/check_signal_consistency_section.py::_piv_points`、`browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
-- Python・保存済みファイル: `common/registration/register_ticker.py` 行 241・414・457・468（経由 `common/registration/register_ticker.py::step5_hypecore`）
+- Python・保存済みファイル: `common/registration/register_ticker.py` 行 239・393・435・446（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・364・367・368・369 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
-- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 177・509・692・706・708（経由 `common/sec_data/registration_validator.py::check_p1_registration_completeness`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2864・2893・2904（経由 `common/screening/dcf_validity_checker.py::_load_json`）
+- Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 175・493・674・688・690（経由 `common/sec_data/registration_validator.py::check_p1_registration_completeness`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2815・2844・2855（経由 `common/screening/dcf_validity_checker.py::_load_json`）
 - Python・保存済みファイル: `common/system_health.py` 行 238・1044・1110（経由 `common/system_health.py::check_g_hypecore`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1559・1967（経由 `src/market/market_pulse/sector_rotation.py::_hype_phase`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 244・269（経由 `src/market/market_pulse/sector_rotation.py::_hype_phase`）
@@ -81,10 +81,10 @@
 - テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 165
 - テスト・保存済みファイル: `tests/test_method_change.py` 行 78・88（経由 `src/value/tanuki_valuation/score_watcher.py::load_hype_stage`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 151・207・211・226・233・253・266・285・289・294・299・304 ほか44（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`tests/test_pipeline_logic.py::_write_poc_json`）
-- テスト・保存済みファイル: `tests/test_register_ticker_preflight.py` 行 62・84・100・118（経由 `common/registration/register_ticker.py::step5_hypecore`）
+- テスト・保存済みファイル: `tests/test_register_ticker_preflight.py` 行 61・83・99・117（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 148（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_g_hypecore`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_g_hypecore`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 289・297・429・442（経由 `common/system_health.py::check_g_hypecore`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -211,7 +211,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:723`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:866`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:894` | いいえ |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:229`<br>`src/tail/edgar_rss_monitor.py:433`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:605` | いいえ |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1634`<br>`common/sec_data/report_consistency_check.py:1775`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1726`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | はい |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | いいえ |

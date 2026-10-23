@@ -142,7 +142,7 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-C-003` | `config/maturity_config.json` | DCF成熟プロファイル | 記載済み |
 | `INPUT-C-004` | `config/rpo_config.json` | RPO調整設定 | 記載済み |
 | `INPUT-C-005` | `config/beta_config.json` | β値オーバーライド | 記載済み |
-| `INPUT-C-006` | `config/discover_config.json` | 銘柄別テーマ・区分 | 記載済み |
+| `INPUT-C-006` | `config/discover_config.json` | 銘柄別テーマ・区分（2026-10-23に削除、[[HOLDINGS-SINGLE-SOURCE-1]]） | 記載済み |
 | `INPUT-C-007` | `config/theme_config.json` | テーママスタ | 記載済み |
 | `INPUT-C-008` | `config/portfolio.json` | 保有株数・取得単価 | 記載済み（ただし保持場所が`docs/portfolio/data/portfolio.json`と重複、2-Dで詳述）。**【2026-08-15追記】`[[PORTFOLIO-CONFIG-DUP-1]]`実装完了、`config/portfolio.json`は削除・`docs/portfolio/data/portfolio.json`に統一済み** |
 | `INPUT-C-014` | `config/adjustment_items.json` | EPS Analyzerの調整項目カテゴリ・XBRLタグ定義（`version: "2026-04"`） | 記載済み（当初考慮漏れ→追加済み） |

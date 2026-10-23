@@ -4,115 +4,6 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "docs/portfolio/data/discover_config.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": ".github/workflows/Discover_Config_Sync.yml",
-     "func": "cp config/discover_config.json",
-     "line": 40
-    }
-   ],
-   "writers_outside_layer": [],
-   "extra": true,
-   "launched_by": [
-    ".github/workflows/Discover_Config_Sync.yml"
-   ],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [
-    {
-     "key": "candidates",
-     "reader_files": 0
-    },
-    {
-     "key": "last_updated",
-     "reader_files": 0
-    },
-    {
-     "key": "tickers",
-     "reader_files": 1
-    }
-   ],
-   "readers": [
-    {
-     "file": "common/sec_data/report_consistency_check.py",
-     "line": 295,
-     "func": "_check_discover_config_sync",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/report_consistency_check.py",
-     "line": 3498,
-     "func": "run_checks",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/report_consistency_check.py",
-     "line": 3734,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_check41_registration_ng.py",
-     "line": 89,
-     "func": "test_run_checks_passes_registration_mode",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 64,
-     "func": "test_include_provisioning_targets_provisioning_ticker",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 71,
-     "func": "test_ticker_excluded_to_zero_exits_2",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 77,
-     "func": "test_ticker_meaning_unchanged_for_active",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 82,
-     "func": "test_no_ticker_filter_keeps_active_only",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_discover_config_sync",
-     "type": "テスト"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 2,
-   "reader_count_compute": 0,
-   "group": "1件",
-   "note": "銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。Portfolioの画面が保有中の銘柄を選ぶのに読む。各銘柄の themes（読み手なし）は2026-10-23に消し、register_ticker.py も書くのをやめた",
-   "decision": "残す（2026-10-23）"
-  },
-  {
    "path": "docs/portfolio/data/history.json",
    "kind": "ファイル",
    "writers": [
@@ -185,7 +76,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1955,
+     "line": 1906,
      "func": "_check_holdings_vs_theses",
      "how": "保存済みファイル",
      "via": "grep",
@@ -193,7 +84,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1957,
+     "line": 1908,
      "func": "_check_holdings_vs_theses",
      "how": "保存済みファイル",
      "via": "AST",
@@ -201,7 +92,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3549,
+     "line": 3495,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_holdings_vs_theses",
@@ -209,7 +100,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3734,
+     "line": 3680,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_holdings_vs_theses",
@@ -577,7 +468,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 290,
+     "line": 289,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_portfolio_tickers",
@@ -585,7 +476,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 298,
+     "line": 297,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_portfolio_tickers",
@@ -593,7 +484,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 430,
+     "line": 429,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_portfolio_tickers",
@@ -601,7 +492,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 443,
+     "line": 442,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_portfolio_tickers",
@@ -641,6 +532,7 @@
     }
    ],
    "definitions": [
+    "AS-IS-264",
     "AS-IS-391",
     "AS-IS-393",
     "AS-IS-469"
@@ -804,12 +696,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1634,
+     "line": 1585,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1775,
+     "line": 1726,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -1270,15 +1162,19 @@
   {
    "what": "docs/portfolio/data/theme_config.json",
    "detail": "削除（2026-10-23、Koichiさんの判断）。元の config/theme_config.json も消し、Discover_Config_Sync.yml の写しと rcc の同期の確認（CHECK-32）の組も外した。docs/ の写しを読むのは CHECK-32 だけで、画面は読んでいなかった（画面の color・label は画面の中の PHASE_CFG の値）"
+  },
+  {
+   "what": "docs/portfolio/data/discover_config.json（と元の config/discover_config.json・Discover_Config_Sync.yml・rcc の CHECK-32）",
+   "detail": "削除（2026-10-23、Koichiさんの判断、[[HOLDINGS-SINGLE-SOURCE-1]]）。保有の正を portfolio.json にし、画面は区分「保有中」を読まなくなった。区分の監視中・休眠とメモを読むコードは登録の検証（register_ticker.py の Step 6・registration_validator.py の P1-Step6・P4）のほかに無かった。休眠（BBAI）は cik_lookup.csv の status の dormant に移した"
   }
  ],
  "stop_condition": {
-  "outputs": 3,
+  "outputs": 2,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
   "python_read_sites_into_layer_resolved": 6,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 9,
+  "name_hit_sites_resolved": 8,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -1288,7 +1184,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.062,
+  "ratio_reader": 0.067,
   "threshold": 0.1,
   "hit": false
  },
@@ -1493,7 +1389,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/portfolio/data/discover_config.json",
      "docs/portfolio/data/portfolio.json"
     ],
     "label": "",
@@ -1509,7 +1404,6 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/portfolio/data/discover_config.json",
      "docs/portfolio/data/portfolio.json"
     ],
     "label": "",
@@ -1697,9 +1591,10 @@
     "page": "docs/portfolio/index.html",
     "key": "tickers",
     "has_writer": true,
-    "status": "この段階の書き手あり",
+    "status": "ほかの書き手あり",
     "sources": [
-     "docs/portfolio/data/discover_config.json"
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json"
     ],
     "label": "",
     "lines": [
@@ -1922,7 +1817,7 @@
     "note": "残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない"
    }
   ],
-  "written_key_count": 127,
+  "written_key_count": 40,
   "sections": [
    {
     "page": "docs/portfolio/index.html",
@@ -2137,7 +2032,7 @@
      },
      {
       "key": "tickers",
-      "status": "この段階の書き手あり",
+      "status": "ほかの書き手あり",
       "lines": [
        277
       ]

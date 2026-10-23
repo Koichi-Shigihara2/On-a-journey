@@ -35,8 +35,7 @@ Usage:
         着手時に明示指定方式を採用した）。
 
     --dry-run
-        本スクリプト自身が行う書き込み（Step 6 discover_config.json・
-        Step 7 monitor_tickers.yaml・Step 8 promote）のみをスキップし、
+        本スクリプト自身が行う書き込み（Step 7 monitor_tickers.yaml・Step 8 promote）のみをスキップし、
         「実行されたであろう内容」を表示する。Step 1/3/5/5b（update.py・
         pipeline.py・hypecore.py・adjusted_eps_analyzer/pipeline.py）は
         ネイティブなdry-runモードを持たないサブプロセス呼び出しのため、
@@ -99,7 +98,6 @@ except Exception:
 
 CIK_CSV      = os.path.join(_REPO_ROOT, "config", "cik_lookup.csv")
 BETA_CFG     = os.path.join(_REPO_ROOT, "config", "beta_config.json")
-DISCOVER_CFG = os.path.join(_REPO_ROOT, "config", "discover_config.json")
 MONITOR_YAML = os.path.join(_REPO_ROOT, "config", "monitor_tickers.yaml")
 SEC_DATA_DIR = os.path.join(_REPO_ROOT, "common", "sec_data", "data")
 
@@ -259,27 +257,8 @@ def step5b_eps_analyzer(ticker: str) -> None:
               "cik_lookup.csvのeps列をfalseに設定することを検討）")
 
 
-# ─── Step 6: Discover 監視リストに追加 ───────────────────────────────────
-
-def step6_discover_register(ticker: str, dry_run: bool) -> None:
-    print("\n--- Step 6: Discover 監視リストに追加 ---")
-    with open(DISCOVER_CFG, encoding="utf-8") as f:
-        config = json.load(f)
-    if ticker in config.get("tickers", {}):
-        print(f"  {ticker} はすでに登録済みです")
-        return
-    if dry_run:
-        print(f"  [dry-run] {ticker} をDiscover監視リストに追加します（実際には書き込みません）")
-        return
-    # themes は読み手が無いため 2026-10-23 に書くのをやめた（R-A Portfolioの段階2）
-    config.setdefault("tickers", {})[ticker] = {"category": "監視中", "memo": ""}
-    config["last_updated"] = datetime.now().date().isoformat()
-    with open(DISCOVER_CFG, "w", encoding="utf-8") as f:
-        json.dump(config, f, ensure_ascii=False, indent=2)
-    print(f"  {ticker} をDiscover監視リストに追加しました")
-    print("  （docs/portfolio/data/discover_config.jsonへの同期はDiscover_Config_Sync.ymlが自動実行、"
-          "push後数分内に反映）")
-
+# Step 6（Discover 監視リスト〈config/discover_config.json〉に追加）は2026-10-23に削除した（[[HOLDINGS-SINGLE-SOURCE-1]]）。
+# 区分・メモを読むコードが無く、休眠などの状態は cik_lookup.csv の status で持つ。
 
 # ─── Step 7: monitor_tickers.yaml に追加 ─────────────────────────────────
 
@@ -420,7 +399,6 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
     else:
         print("\n--- Step 5b: スキップ（eps=false） ---")
 
-    step6_discover_register(ticker, dry_run)
     step7_monitor_register(ticker, dry_run)
 
     ok = step7_5_consistency_check(ticker, row)

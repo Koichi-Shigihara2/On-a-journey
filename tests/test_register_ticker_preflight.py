@@ -38,7 +38,6 @@ def _patch_all_steps_success(monkeypatch, call_log):
     monkeypatch.setattr(rt, "step1_sec_data", lambda t: call_log.append("step1") or True)
     monkeypatch.setattr(rt, "step2_beta", lambda t, dry_run: call_log.append("step2"))
     monkeypatch.setattr(rt, "step4_audit", lambda t: call_log.append("step4"))
-    monkeypatch.setattr(rt, "step6_discover_register", lambda t, dry_run: call_log.append("step6"))
     monkeypatch.setattr(rt, "step7_monitor_register", lambda t, dry_run: call_log.append("step7"))
     monkeypatch.setattr(
         rt, "step8_validate_and_promote",

@@ -241,7 +241,7 @@ AS-IS-320/321/322/325（Market Pulse ETF/指数の束ね行）は、`value`（�
 | AS-IS-242 | MACRO PULSE | コンセンサス予想値 | `CONSENSUS`（`05_indicator_schedule.csv`） | 経済指標発表の市場予想値 | `05_indicator_schedule.csv`（Discordリマインダー経由で運用者が手動入力、`update_schedule()`は空文字で初期化のみ） | 手動入力データ |
 | AS-IS-249 | Discover | 銘柄区分・メモ | `tickers{}.category/memo` | 保有中/監視中/様子見の区分とメモ書き | `docs/discover/admin.html`（`saveDiscoverConfig()`） | 手動入力データ |
 | AS-IS-263 | Discover | テーママスタ（ID/ラベル/カラー） | `theme_config`（`config/theme_config.json`） | テーマ分類の定義 | `docs/discover/admin.html`（`saveThemeConfig()`） | 手動入力データ |
-| AS-IS-264 | Discover | 銘柄別テーマ割当・区分・メモ | `discover_config`（`config/discover_config.json`） | 銘柄ごとのテーマ・区分設定 | `docs/discover/admin.html`（`saveDiscoverConfig()`） | 手動入力データ |
+| AS-IS-264 | Discover | 銘柄別テーマ割当・区分・メモ | `discover_config`（`config/discover_config.json`） | 銘柄ごとのテーマ・区分設定。**2026-10-23に削除**（保有の正はportfolio.json、休眠は`cik_lookup.csv`の`status`の`dormant`。[[HOLDINGS-SINGLE-SOURCE-1]]） | `docs/discover/admin.html`（`saveDiscoverConfig()`） | 手動入力データ |
 | AS-IS-412〜416 | TANUKI TAIL | **2026-09-23削除済み**（`satellite_monitor.py`自体を削除、以下は削除前の記録） ウォッチリストアラート記録一式 | `journal.json`（timestamp/ticker/type/reason/tags） | サテライト監視アラートの記録 | `satellite_monitor.py`が自動記録（人手介在は限定的、アラート発報の自動記録） | 手動入力データ（自動記録寄り、下記備考参照） |
 | AS-IS-425〜436 | TANUKI TAIL | KPI提案（名称/説明/出典/閾値/XBRLタグ等11フィールド） | `proposed_kpis[].*` | AI提案KPIの最終確定内容 | `docs/portfolio/tail/index.html`「KPI設定モーダル」（Grok提案を人間が確認・編集して確定） | 手動入力データ（**AI下書き＋人手承認のハイブリッド**、下記備考参照） |
 | AS-IS-455〜458 | TANUKI TAIL | ポジション基本情報（ticker/type/status/version） | `positions/{T}_thesis.json`共通ヘッダ | 監視銘柄の基本属性 | `docs/portfolio/tail/index.html`→`workflow_write.py`（ポジション登録フォーム） | 手動入力データ |
