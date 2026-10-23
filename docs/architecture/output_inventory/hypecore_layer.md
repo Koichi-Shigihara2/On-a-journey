@@ -27,7 +27,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `src/value/hypecore/data/{T}_poc.json`<br>（0ファイル） | 銘柄ごとの月次の期待・実体の指標とステージ判定の作業用の出力（.gitignore。docs/ に写す元） | `hypecore.py:run_poc` | 1 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | — | AS-IS-391 | 残す（2026-10-21） |
 | 2件以上 | `docs/value-monitor/hypecore/data/tickers.json`<br>（1ファイル） | 一覧のページ用の、HypeCoreの対象銘柄の名前の一覧（tickers・count・updated_at）。読み手は docs/common/ticker-links.js・docs/index.html・docs/value-monitor/hypecore/index.html の3つ（2026-10-21 に読み手をパスの全体で照合するよう直し、同じ名前の tanuki_valuation/data/tickers.json の読み手が混ざらなくなった） | `hypecore.py:_save_tickers_index` | 3・テスト1 | common/ticker-links.js（直接）<br>index.html（直接）<br>value-monitor/hypecore/index.html（直接） | 効く: HypeCoreの画面 | — | 残す（2026-10-21） |
-| 2件以上 | `docs/value-monitor/hypecore/data/{T}_poc.json`<br>（98ファイル） | 銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む） | `hypecore.py:<module>` | 18・テスト11 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（直接）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCoreの画面・TANUKI VALUATIONの画面 | AS-IS-391 | 残す（2026-10-21） |
+| 2件以上 | `docs/value-monitor/hypecore/data/{T}_poc.json`<br>（98ファイル） | 銘柄ごとの月次の期待・実体の指標とステージ・小区分の判定（src/value/hypecore/data/ から写したもの。画面とTANUKIのtimingが読む） | `hypecore.py:<module>` | 18・テスト10 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（直接）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCoreの画面・TANUKI VALUATIONの画面 | AS-IS-391 | 残す（2026-10-21） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -56,7 +56,7 @@
 
 ### `docs/value-monitor/hypecore/data/{T}_poc.json`（2件以上）
 - 起動元: .github/workflows/HypeCore_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated`(2)・`generated_at`(8)・`method_change`(4)・`monthly`(16)・`ticker`(21)
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated`(2)・`generated_at`(8)・`method_change`(4)・`monthly`(16)・`ticker`(20)
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 52・67・68・175・206（経由 `browser_checks/check_signal_consistency_section.py::_piv_points`、`browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 241・414・457・468（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・364・367・368・369 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
@@ -78,14 +78,13 @@
 - テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 127（経由 `src/value/tanuki_valuation/score_watcher.py::load_hype_stage`）
 - テスト・保存済みファイル: `tests/test_dcf_phase1_taper.py` 行 91（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_dcf_validity_checker.py` 行 46・64・77・86・95・107・118・128・133・143・155・165（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`）
-- テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 117・165・168（経由 `src/market/market_pulse/sector_rotation.py::_hype_phase`）
+- テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 165
 - テスト・保存済みファイル: `tests/test_method_change.py` 行 78・88（経由 `src/value/tanuki_valuation/score_watcher.py::load_hype_stage`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 151・207・211・226・233・253・266・285・289・294・299・304 ほか44（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`tests/test_pipeline_logic.py::_write_poc_json`）
 - テスト・保存済みファイル: `tests/test_register_ticker_preflight.py` 行 62・84・100・118（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 148（経由 `common/registration/register_ticker.py::step5_hypecore`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 473（経由 `common/system_health.py::check_g_hypecore`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::check_g_hypecore`）
-- テスト・保存済みファイル: `tests/test_tail_sec_items_fetcher.py` 行 181・193・194・216・220（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_hype_info`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -225,6 +224,14 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 ## 本番外のコード（src/value/hypecore）
 
 参照: ワークフロー（ファイル名・モジュール名が出てくるもの）／ほかのコード（importか、ファイル名・モジュール名の文字列。同じフォルダは別欄）／テスト
+
+候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
+
+候補は0件。見たファイル（1ファイル・1,291行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+
+| ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
+|---|---|---|---|---|---|
+| `hypecore.py` | 1,291 | `.github/workflows/HypeCore_Update.yml` | `common/registration/register_ticker.py` | — | 7件 |
 
 ## 止める条件の内訳
 

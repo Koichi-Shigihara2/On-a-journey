@@ -33,6 +33,7 @@
      ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
      ②rccのCHECK-INVの時間（約72.6秒、11段階。市場データ層・マクロデータ層・MACRO PULSE・TAIL・Market Pulse・Portfolioは解決の厳しさが違い索引を作り直す）
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
+       → 済（2026-10-23、見直し1）: `IO_HELPER_BY_CALLER`のほかは全段階で1つの設定に。`IO_HELPER_BY_CALLER`はSEC層で本当の読み手が消えるため広げない（BACKLOG.mdの「R-Aの終わりの見直し」）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）
      ⑤規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）。
        同じ情報の別の写し: `docs/market-monitor/market-pulse/data/sp500_tickers.json`と`common/market_data/_sp500_constituents_cache.json`（S&P500の構成銘柄）、

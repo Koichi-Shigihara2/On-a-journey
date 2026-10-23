@@ -476,7 +476,7 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 99,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 99,
    "top_keys": [],
    "readers": [
     {
@@ -522,7 +522,7 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 96,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 96,
    "top_keys": [],
    "readers": [
     {
@@ -568,7 +568,7 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 28601,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 28601,
    "top_keys": [
     {
      "key": "alpha",
@@ -579,12 +579,24 @@
      "reader_files": 0
     },
     {
+     "key": "approx_value",
+     "reader_files": 0
+    },
+    {
+     "key": "beta",
+     "reader_files": 0
+    },
+    {
      "key": "bs_adjustment",
      "reader_files": 0
     },
     {
      "key": "calculation_date",
      "reader_files": 1
+    },
+    {
+     "key": "calculation_steps",
+     "reader_files": 0
     },
     {
      "key": "components",
@@ -643,6 +655,10 @@
      "reader_files": 0
     },
     {
+     "key": "implied_irr",
+     "reader_files": 0
+    },
+    {
      "key": "intrinsic_value_beta",
      "reader_files": 0
     },
@@ -663,12 +679,32 @@
      "reader_files": 0
     },
     {
+     "key": "invalid",
+     "reader_files": 0
+    },
+    {
+     "key": "invalid_reason",
+     "reader_files": 0
+    },
+    {
+     "key": "kpi_data",
+     "reader_files": 0
+    },
+    {
      "key": "latest_period_missing",
+     "reader_files": 0
+    },
+    {
+     "key": "m_total",
      "reader_files": 0
     },
     {
      "key": "maturity_profile",
      "reader_files": 0
+    },
+    {
+     "key": "method_change",
+     "reader_files": 1
     },
     {
      "key": "phase1_growth",
@@ -728,6 +764,10 @@
     },
     {
      "key": "software_system_reclassification",
+     "reader_files": 0
+    },
+    {
+     "key": "target_irr_deviation",
      "reader_files": 0
     },
     {
@@ -881,18 +921,10 @@
     },
     {
      "key": "overrides",
-     "reader_files": 9
+     "reader_files": 8
     }
    ],
    "readers": [
-    {
-     "file": ".github/workflows/Beta_Config_Update.yml",
-     "line": 88,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
     {
      "file": "common/registration/register_ticker.py",
      "line": 101,
@@ -1366,110 +1398,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 80,
-     "func": "TestRefreshTickersMarketDataSource.test_updates_beta_from_market_data",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 89,
-     "func": "TestRefreshTickersMarketDataSource.test_missing_market_data_is_skipped_not_raised",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 98,
-     "func": "TestRefreshTickersMarketDataSource.test_unchanged_beta_produces_no_update",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 105,
-     "func": "TestRefreshTickersMarketDataSource.test_beta_is_capped_at_upper_bound",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 111,
-     "func": "TestRefreshTickersMarketDataSource.test_beta_is_floored_at_lower_bound",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 121,
-     "func": "TestRefreshTickersMarketDataSource.test_zero_or_negative_beta_still_floors_via_refresh",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 129,
-     "func": "TestRefreshTickersMarketDataSource.test_dry_run_does_not_write_config",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 173,
-     "func": "TestOverridesMergePreservesExtraKeys.test_sector_key_survives_beta_update",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 188,
-     "func": "TestOverridesMergePreservesExtraKeys.test_provisional_classification_keys_survive_beta_update",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 201,
-     "func": "TestOverridesMergePreservesExtraKeys.test_sector_key_survives_no_change_case",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 211,
-     "func": "TestDamodaranOverridesProtection.test_existing_damodaran_source_is_protected",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 223,
-     "func": "TestDamodaranOverridesProtection.test_first_time_damodaran_apply_preserves_existing_extra_keys",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_beta_fetcher.py",
-     "line": 236,
-     "func": "TestDamodaranOverridesProtection.test_market_data_is_not_consulted_for_damodaran_tickers",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/beta_fetcher.py::load_config",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_core_calculator_rf_reference.py",
      "line": 23,
      "func": "_calc",
@@ -1814,14 +1742,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 168,
-     "func": "test_hypergrowth_not_ng_after_p2a_removal",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/registration_validator.py::_load_json",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_sec_freshness.py",
      "line": 473,
      "func": "test_main_exits_two_when_m_is_critical",
@@ -2004,46 +1924,6 @@
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
      "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 181,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 193,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 194,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 216,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 220,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
-     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -2096,8 +1976,8 @@
     "AS-IS-013"
    ],
    "decision_effect": [],
-   "reader_count": 10,
-   "reader_count_test": 13,
+   "reader_count": 9,
+   "reader_count_test": 10,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う",
@@ -2431,7 +2311,7 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 96,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 96,
    "top_keys": [
     {
      "key": "alpha",
@@ -2439,6 +2319,10 @@
     },
     {
      "key": "alpha_was_capped",
+     "reader_files": 2
+    },
+    {
+     "key": "breakeven_estimate",
      "reader_files": 2
     },
     {
@@ -2455,7 +2339,11 @@
     },
     {
      "key": "components",
-     "reader_files": 25
+     "reader_files": 24
+    },
+    {
+     "key": "computed_runway_months",
+     "reader_files": 3
     },
     {
      "key": "dcf_components",
@@ -2518,8 +2406,12 @@
      "reader_files": 0
     },
     {
+     "key": "fcfe_valuation",
+     "reader_files": 1
+    },
+    {
      "key": "financial_health",
-     "reader_files": 8
+     "reader_files": 7
     },
     {
      "key": "formula",
@@ -2666,7 +2558,19 @@
      "reader_files": 4
     },
     {
+     "key": "segment_growth_quarter",
+     "reader_files": 3
+    },
+    {
+     "key": "segment_growth_source",
+     "reader_files": 3
+    },
+    {
      "key": "segment_ttm_applied",
+     "reader_files": 2
+    },
+    {
+     "key": "segment_xbrl_status",
      "reader_files": 2
     },
     {
@@ -3908,46 +3812,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 251,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_uses_latest_quarter_excludes_ytd",
-     "how": "保存済みファイル",
-     "via": "src/tail/tail_dcf_bridge.py::_load_layer1_financials",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 291,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_q4_timing_excludes_bs_concept_shares",
-     "how": "保存済みファイル",
-     "via": "src/tail/tail_dcf_bridge.py::_load_layer1_financials",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 299,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_missing_file_returns_empty",
-     "how": "保存済みファイル",
-     "via": "src/tail/tail_dcf_bridge.py::_load_layer1_financials",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 357,
-     "func": "TestQuarterlyReviewGeneratorRegression.test_load_layer1_financials_matches_pre_migration_values",
-     "how": "保存済みファイル",
-     "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 412,
-     "func": "TestQuarterlyReviewGeneratorRegression.test_load_layer1_financials_q4_timing_excludes_bs_concept_shares",
-     "how": "保存済みファイル",
-     "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_iv_formula.py",
      "line": 47,
      "func": "_load",
@@ -3988,43 +3852,11 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_market_pulse_implc.py",
-     "line": 374,
-     "func": "TestCalendar.test_earnings_limited_to_given_tickers",
-     "how": "保存済みファイル",
-     "via": "src/market/market_pulse/market_calendar.py::earnings_events",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_pulse_implc.py",
-     "line": 381,
-     "func": "TestCalendar.test_build_calendar_records_failures",
-     "how": "保存済みファイル",
-     "via": "src/market/market_pulse/market_calendar.py::earnings_events",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_pulse_sector_rotation.py",
-     "line": 117,
-     "func": "TestWatchList.test_union_order_and_line",
-     "how": "保存済みファイル",
-     "via": "src/market/market_pulse/sector_rotation.py::_tanuki_score",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_market_pulse_sector_rotation.py",
      "line": 162,
      "func": "TestCalcDates.test_calculated_range",
      "how": "保存済みファイル",
      "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_market_pulse_sector_rotation.py",
-     "line": 168,
-     "func": "TestCalcDates.test_calculated_range",
-     "how": "保存済みファイル",
-     "via": "src/market/market_pulse/sector_rotation.py::_tanuki_score",
      "type": "テスト"
     },
     {
@@ -4185,14 +4017,6 @@
      "func": "test_no_ticker_filter_keeps_active_only",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 168,
-     "func": "test_hypergrowth_not_ng_after_p2a_removal",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/registration_validator.py::_load_json",
      "type": "テスト"
     },
     {
@@ -4463,7 +4287,7 @@
     "TANUKI SCOREの画面"
    ],
    "reader_count": 27,
-   "reader_count_test": 20,
+   "reader_count_test": 19,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む",
@@ -4484,7 +4308,7 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 96,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 96,
    "top_keys": [],
    "readers": [
     {
@@ -4734,17 +4558,9 @@
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [],
    "readers": [
-    {
-     "file": ".github/workflows/Score_Verifier.yml",
-     "line": 45,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
     {
      "file": "common/system_health.py",
      "line": 101,
@@ -4838,7 +4654,7 @@
    "decision_effect": [
     "TANUKI SCOREの画面"
    ],
-   "reader_count": 3,
+   "reader_count": 2,
    "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -5517,6 +5333,388 @@
    "found_by": "名前を挙げた候補"
   }
  ],
+ "non_production_scanned": [
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/__init__.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 98,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/beta_fetcher.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 319,
+   "workflows": [
+    ".github/workflows/Beta_Config_Update.yml"
+   ],
+   "code": [
+    "common/registration/register_ticker.py",
+    "common/sec_data/audit.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_beta_fetcher.py",
+    "tests/test_discord_user_agent.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/__init__.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 108,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/core_calculator.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_output_inventory_check.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1534,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/core_calculator.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": [
+    "tests/test_compose_fcf_bottom_up.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/dcf.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 454,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/core_calculator.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py",
+    "src/value/tanuki_valuation/calculator/fcfe.py",
+    "src/value/tanuki_valuation/calculator/scenarios.py",
+    "src/value/tanuki_valuation/calculator/sensitivity.py"
+   ],
+   "tests": [
+    "tests/test_pipeline_logic.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/fcf_outlier_ai.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 153,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/core_calculator.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/fcfe.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 192,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/future_values.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 112,
+   "workflows": [],
+   "code": [
+    "src/tail/tail_dcf_bridge.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/growth.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 377,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/rice.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 566,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/core_calculator.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/scenarios.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 245,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 385,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/growth.py"
+   ],
+   "tests": [
+    "tests/test_segment_growth_xbrl.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/sensitivity.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 246,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation/calculator",
+   "file": "src/value/tanuki_valuation/calculator/wacc.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 133,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/__init__.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/core_calculator.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1032,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/pipeline.py",
+    "src/value/tanuki_valuation/validator.py"
+   ],
+   "tests": [
+    "tests/test_core_calculator_rf_reference.py",
+    "tests/test_core_calculator_v0_note.py",
+    "tests/test_sensitivity_tapering.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/data_fetcher.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1215,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/core_calculator.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "tests": [
+    "tests/test_data_fetcher_market_data_switch.py",
+    "tests/test_fcf_component_lists.py",
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_pipeline_logic.py",
+    "tests/test_retention_and_fcf_points.py",
+    "tests/test_ttm_flow_key_names.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/diag_iv_trace.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 0,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/growth_model_audit.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 0,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/growth_sanity.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 668,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/maturity_config.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/maturity_config.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 294,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/core_calculator.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "tests": [
+    "tests/test_pipeline_logic.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/pipeline.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 3879,
+   "workflows": [
+    ".github/workflows/TANUKI_VALUATION_Update.yml"
+   ],
+   "code": [
+    "common/registration/register_ticker.py",
+    "common/sec_data/audit.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_output_inventory_check.py",
+    "tests/test_pipeline_logic.py",
+    "tests/test_stonks_silo_financial_as_of.py",
+    "tests/test_stonks_silo_pipeline.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/pipeline_log.txt",
+   "decision": "残す（2026-10-20）",
+   "lines": 0,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/remove_legacy_tanuki_score.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 0,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/score_verifier.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 124,
+   "workflows": [
+    ".github/workflows/Score_Verifier.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_score_verifier.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/score_watcher.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 314,
+   "workflows": [
+    ".github/workflows/TANUKI_VALUATION_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_close_missing_price.py",
+    "tests/test_discord_user_agent.py",
+    "tests/test_method_change.py"
+   ]
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/segment_config.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 227,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/calculator/growth.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "src/value/tanuki_valuation",
+   "file": "src/value/tanuki_valuation/validator.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 476,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "tests": [
+    "tests/test_iv_formula.py"
+   ]
+  }
+ ],
  "f3_zero_reader": [
   {
    "name": "spac_shell_detection_log",
@@ -5606,7 +5804,7 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 69,
+  "name_hit_sites_resolved": 67,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
   "ratio_reader": 0.02,
@@ -5966,6 +6164,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -6120,6 +6319,7 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "label": "",
@@ -6259,6 +6459,22 @@
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "max",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "",
+    "lines": [
+     969,
+     970,
+     1327
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "max_eps_per",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -6282,6 +6498,25 @@
     "label": "",
     "lines": [
      488
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "min",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "",
+    "lines": [
+     969,
+     970,
+     1322,
+     1327,
+     1349,
+     1349
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7004,6 +7239,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "FCFは年次の値で評価（判定は通常どおり）",
@@ -7161,9 +7397,9 @@
     "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "yoy_growth",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "label": "",
     "lines": [
@@ -7686,6 +7922,20 @@
     "label": "",
     "lines": [
      538
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/index.html",
+    "key": "title",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "",
+    "lines": [
+     585
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -8305,6 +8555,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "参考: 実績CAGR等",
@@ -8667,11 +8918,9 @@
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "end",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/normalized/AAPL_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ABBV_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ADBE_quarterly_normalized.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "label": "",
     "lines": [
@@ -9014,6 +9263,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -9171,6 +9421,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "上限",
@@ -9186,6 +9437,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "上限",
@@ -9456,6 +9708,7 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "label": "",
@@ -9745,6 +9998,29 @@
    },
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "max",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "",
+    "lines": [
+     1448,
+     1449,
+     2134,
+     2144,
+     2559,
+     2616,
+     2617,
+     2642,
+     2688,
+     2759
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "method",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -9756,6 +10032,29 @@
     "lines": [
      816,
      1787
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "min",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "",
+    "lines": [
+     1448,
+     1449,
+     1449,
+     1580,
+     2616,
+     2617,
+     2688,
+     2753,
+     2759,
+     2773
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10293,6 +10592,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -10322,6 +10622,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -10431,6 +10732,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "売上(推定=最新Revenue×weight) | 構成比 | 成長率シナリオ（",
@@ -11082,6 +11384,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -11234,6 +11537,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
@@ -11329,6 +11633,20 @@
     "lines": [
      2718,
      2727
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "title",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "label": "(' + count + '銘柄)",
+    "lines": [
+     2813
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11617,6 +11935,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "セグメント別売上構成（推定）",
@@ -11663,6 +11982,26 @@
   ],
   "unread_keys": [
    {
+    "key": "alpha_clipped",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "inputs"
+    ],
+    "note": ""
+   },
+   {
+    "key": "alpha_raw",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "inputs"
+    ],
+    "note": ""
+   },
+   {
     "key": "applicable",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
@@ -11671,6 +12010,14 @@
      "software_system_reclassification"
     ],
     "note": "残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）"
+   },
+   {
+    "key": "approx_value",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [],
+    "note": ""
    },
    {
     "key": "assumed_realization_years",
@@ -11691,6 +12038,67 @@
      "rice"
     ],
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
+   },
+   {
+    "key": "base_cagr",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "growth_scenarios"
+    ],
+    "note": ""
+   },
+   {
+    "key": "calculation_steps",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "config_growth",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "AWS",
+     "All Other",
+     "Apps",
+     "Automotive",
+     "Client",
+     "Client and Gaming",
+     "Commercial",
+     "Compute and Networking",
+     "Data Center",
+     "Embedded",
+     "Energy Generation and Storage",
+     "Financial Services",
+     "Gaming",
+     "Government",
+     "Graphics",
+     "Intelligent Cloud",
+     "International",
+     "Lending",
+     "More Personal Computing",
+     "North America",
+     "Productivity and Business Processes",
+     "Services and Other",
+     "Software Platform",
+     "Technology Platform"
+    ],
+    "note": ""
+   },
+   {
+    "key": "constraints",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "step2"
+    ],
+    "note": ""
    },
    {
     "key": "current_subgroup",
@@ -11733,6 +12141,36 @@
     "note": "残す: 名前が一般的で、grep で読み手を決めきれない"
    },
    {
+    "key": "fcf_calc_method",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "components"
+    ],
+    "note": ""
+   },
+   {
+    "key": "fcf_list",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "inputs"
+    ],
+    "note": ""
+   },
+   {
+    "key": "fiscal_year_end",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "kpi_data"
+    ],
+    "note": ""
+   },
+   {
     "key": "formula_verification",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
@@ -11754,17 +12192,38 @@
     "note": "残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）"
    },
    {
-    "key": "intrinsic_value_pt",
+    "key": "implied_irr",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [],
+    "note": ""
+   },
+   {
+    "key": "input",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "detail"
+    ],
+    "note": ""
+   },
+   {
+    "key": "intrinsic_value_pt",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "inputs"
+    ],
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
     "key": "invalid_reason",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "parents": [],
@@ -11781,14 +12240,31 @@
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    },
    {
+    "key": "kpi_data",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
     "key": "labels",
     "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "parents": [
      "latest_period_missing"
     ],
     "note": "残す: 名前が一般的で、grep で読み手を決めきれない"
+   },
+   {
+    "key": "m_total",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [],
+    "note": ""
    },
    {
     "key": "max_eps",
@@ -11908,6 +12384,74 @@
     "note": "残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）"
    },
    {
+    "key": "step1",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "calculation_steps"
+    ],
+    "note": ""
+   },
+   {
+    "key": "step2",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "calculation_steps"
+    ],
+    "note": ""
+   },
+   {
+    "key": "step3",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "calculation_steps"
+    ],
+    "note": ""
+   },
+   {
+    "key": "step4",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "calculation_steps"
+    ],
+    "note": ""
+   },
+   {
+    "key": "step5",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "calculation_steps"
+    ],
+    "note": ""
+   },
+   {
+    "key": "target_irr_deviation",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
+    "key": "total_revenue",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+    ],
+    "parents": [
+     "kpi_data"
+    ],
+    "note": ""
+   },
+   {
     "key": "upside_pct",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
@@ -11943,6 +12487,3957 @@
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    }
   ],
-  "written_key_count": 509
- }
+  "written_key_count": 632,
+  "sections": [
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "section": "（ページの先頭）",
+    "keys": [
+     {
+      "key": "all",
+      "status": "ほかの書き手あり",
+      "lines": [
+       422
+      ]
+     },
+     {
+      "key": "asset_turnover",
+      "status": "この段階の書き手あり",
+      "lines": [
+       899,
+       1169
+      ]
+     },
+     {
+      "key": "available",
+      "status": "この段階の書き手あり",
+      "lines": [
+       482
+      ]
+     },
+     {
+      "key": "base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       480
+      ]
+     },
+     {
+      "key": "base_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       462
+      ]
+     },
+     {
+      "key": "buyback_ttm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       506
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       463,
+       464,
+       483,
+       484,
+       485,
+       486,
+       487,
+       488,
+       491,
+       498,
+       503,
+       504
+      ]
+     },
+     {
+      "key": "credit",
+      "status": "ほかの書き手あり",
+      "lines": [
+       398
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       399,
+       400
+      ]
+     },
+     {
+      "key": "desc",
+      "status": "ほかの書き手あり",
+      "lines": [
+       600
+      ]
+     },
+     {
+      "key": "detected",
+      "status": "この段階の書き手あり",
+      "lines": [
+       500
+      ]
+     },
+     {
+      "key": "dilution_3yr_annual_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       496
+      ]
+     },
+     {
+      "key": "dividend_yield",
+      "status": "この段階の書き手あり",
+      "lines": [
+       503
+      ]
+     },
+     {
+      "key": "dupont",
+      "status": "この段階の書き手あり",
+      "lines": [
+       494,
+       842,
+       846,
+       846,
+       875,
+       1131,
+       1137,
+       1169,
+       1170
+      ]
+     },
+     {
+      "key": "excluded",
+      "status": "この段階の書き手あり",
+      "lines": [
+       846
+      ]
+     },
+     {
+      "key": "fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       338,
+       339,
+       1047,
+       1052,
+       1052,
+       1053
+      ]
+     },
+     {
+      "key": "fcf_base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       462
+      ]
+     },
+     {
+      "key": "fcf_floor_applied",
+      "status": "この段階の書き手あり",
+      "lines": [
+       464
+      ]
+     },
+     {
+      "key": "fcf_history",
+      "status": "この段階の書き手あり",
+      "lines": [
+       499
+      ]
+     },
+     {
+      "key": "fcf_outlier",
+      "status": "この段階の書き手あり",
+      "lines": [
+       500
+      ]
+     },
+     {
+      "key": "fear_greed",
+      "status": "ほかの書き手あり",
+      "lines": [
+       396
+      ]
+     },
+     {
+      "key": "fields",
+      "status": "この段階の書き手あり",
+      "lines": [
+       502
+      ]
+     },
+     {
+      "key": "filled_components",
+      "status": "ほかの書き手あり",
+      "lines": [
+       997
+      ]
+     },
+     {
+      "key": "filled_from_annual",
+      "status": "ほかの書き手あり",
+      "lines": [
+       992,
+       997
+      ]
+     },
+     {
+      "key": "financial_health",
+      "status": "この段階の書き手あり",
+      "lines": [
+       496,
+       506,
+       507
+      ]
+     },
+     {
+      "key": "financial_leverage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       900
+      ]
+     },
+     {
+      "key": "funda_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       474
+      ]
+     },
+     {
+      "key": "generated_at",
+      "status": "ほかの書き手あり",
+      "lines": [
+       1039
+      ]
+     },
+     {
+      "key": "growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       495
+      ]
+     },
+     {
+      "key": "indicators",
+      "status": "ほかの書き手あり",
+      "lines": [
+       397
+      ]
+     },
+     {
+      "key": "industry",
+      "status": "この段階の書き手あり",
+      "lines": [
+       498,
+       1112,
+       1124
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       343,
+       545,
+       597,
+       994
+      ]
+     },
+     {
+      "key": "latest_period_missing",
+      "status": "この段階の書き手あり",
+      "lines": [
+       502,
+       502
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       393,
+       457,
+       502,
+       559,
+       586,
+       598,
+       644,
+       854,
+       908,
+       1009,
+       1010,
+       1010,
+       1011,
+       1024,
+       1037,
+       1037,
+       1047,
+       1047,
+       1051,
+       1052,
+       1052,
+       1053,
+       1055,
+       1069,
+       1095,
+       1120,
+       1133,
+       1206,
+       1231,
+       1248,
+       1248,
+       1265,
+       1282,
+       1333,
+       1349,
+       1432,
+       1439,
+       1486,
+       1489,
+       1495
+      ]
+     },
+     {
+      "key": "matrix",
+      "status": "この段階の書き手あり",
+      "lines": [
+       478,
+       539
+      ]
+     },
+     {
+      "key": "max",
+      "status": "この段階の書き手あり",
+      "lines": [
+       969,
+       970,
+       1327
+      ]
+     },
+     {
+      "key": "max_eps_per",
+      "status": "この段階の書き手あり",
+      "lines": [
+       487
+      ]
+     },
+     {
+      "key": "max_eps_reliability",
+      "status": "この段階の書き手あり",
+      "lines": [
+       488
+      ]
+     },
+     {
+      "key": "min",
+      "status": "この段階の書き手あり",
+      "lines": [
+       969,
+       970,
+       1322,
+       1327,
+       1349,
+       1349
+      ]
+     },
+     {
+      "key": "monthly",
+      "status": "ほかの書き手あり",
+      "lines": [
+       457,
+       457
+      ]
+     },
+     {
+      "key": "n_quarters",
+      "status": "ほかの書き手あり",
+      "lines": [
+       995
+      ]
+     },
+     {
+      "key": "net_current_assets_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       505
+      ]
+     },
+     {
+      "key": "net_debt",
+      "status": "この段階の書き手あり",
+      "lines": [
+       507
+      ]
+     },
+     {
+      "key": "net_margin",
+      "status": "この段階の書き手あり",
+      "lines": [
+       898,
+       1170
+      ]
+     },
+     {
+      "key": "no_data",
+      "status": "画面の中で作る値",
+      "lines": [
+       1009
+      ]
+     },
+     {
+      "key": "note",
+      "status": "この段階の書き手あり",
+      "lines": [
+       565
+      ]
+     },
+     {
+      "key": "payout_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       504
+      ]
+     },
+     {
+      "key": "peg",
+      "status": "この段階の書き手あり",
+      "lines": [
+       485,
+       551,
+       552,
+       552,
+       553
+      ]
+     },
+     {
+      "key": "per",
+      "status": "この段階の書き手あり",
+      "lines": [
+       351,
+       351,
+       484,
+       550,
+       550,
+       1050,
+       1050,
+       1050,
+       1059,
+       1113,
+       1113,
+       1113,
+       1125
+      ]
+     },
+     {
+      "key": "per_is_forward",
+      "status": "この段階の書き手あり",
+      "lines": [
+       491
+      ]
+     },
+     {
+      "key": "ps",
+      "status": "この段階の書き手あり",
+      "lines": [
+       486,
+       555,
+       556,
+       557
+      ]
+     },
+     {
+      "key": "ptbv",
+      "status": "ほかの書き手あり",
+      "lines": [
+       962,
+       962,
+       963,
+       963,
+       990,
+       993
+      ]
+     },
+     {
+      "key": "ptbv_pctl",
+      "status": "ほかの書き手あり",
+      "lines": [
+       996,
+       996
+      ]
+     },
+     {
+      "key": "quarter_end",
+      "status": "ほかの書き手あり",
+      "lines": [
+       998
+      ]
+     },
+     {
+      "key": "qx",
+      "status": "この段階の書き手あり",
+      "lines": [
+       541,
+       542,
+       543
+      ]
+     },
+     {
+      "key": "qy",
+      "status": "この段階の書き手あり",
+      "lines": [
+       541,
+       542,
+       543
+      ]
+     },
+     {
+      "key": "rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       495
+      ]
+     },
+     {
+      "key": "reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1008
+      ]
+     },
+     {
+      "key": "reliability",
+      "status": "この段階の書き手あり",
+      "lines": [
+       882,
+       1131
+      ]
+     },
+     {
+      "key": "reliability_reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       884,
+       1137
+      ]
+     },
+     {
+      "key": "rev_yoy",
+      "status": "この段階の書き手あり",
+      "lines": [
+       458
+      ]
+     },
+     {
+      "key": "rice",
+      "status": "この段階の書き手あり",
+      "lines": [
+       480,
+       480,
+       482,
+       497
+      ]
+     },
+     {
+      "key": "risk_off_score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       398
+      ]
+     },
+     {
+      "key": "roe",
+      "status": "この段階の書き手あり",
+      "lines": [
+       841,
+       891,
+       891,
+       893,
+       893,
+       901
+      ]
+     },
+     {
+      "key": "roe_10yr_avg",
+      "status": "この段階の書き手あり",
+      "lines": [
+       483
+      ]
+     },
+     {
+      "key": "roe_decomposed",
+      "status": "この段階の書き手あり",
+      "lines": [
+       876,
+       877,
+       881,
+       891,
+       891,
+       893,
+       893,
+       897
+      ]
+     },
+     {
+      "key": "roic_wacc_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       497
+      ]
+     },
+     {
+      "key": "rotce",
+      "status": "ほかの書き手あり",
+      "lines": [
+       962,
+       963,
+       990,
+       991,
+       991,
+       993
+      ]
+     },
+     {
+      "key": "rotce_pctl",
+      "status": "ほかの書き手あり",
+      "lines": [
+       996
+      ]
+     },
+     {
+      "key": "rule40",
+      "status": "この段階の書き手あり",
+      "lines": [
+       347,
+       347,
+       347,
+       347,
+       347
+      ]
+     },
+     {
+      "key": "rule40_yoy_netmargin",
+      "status": "ほかの書き手あり",
+      "lines": [
+       459
+      ]
+     },
+     {
+      "key": "score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       396
+      ]
+     },
+     {
+      "key": "sell_reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       477
+      ]
+     },
+     {
+      "key": "signal",
+      "status": "ほかの書き手あり",
+      "lines": [
+       988
+      ]
+     },
+     {
+      "key": "signal_reason",
+      "status": "ほかの書き手あり",
+      "lines": [
+       994
+      ]
+     },
+     {
+      "key": "stage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       354,
+       460,
+       1092,
+       1092,
+       1099,
+       1099
+      ]
+     },
+     {
+      "key": "stage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       469
+      ]
+     },
+     {
+      "key": "structural_deficit",
+      "status": "この段階の書き手あり",
+      "lines": [
+       463
+      ]
+     },
+     {
+      "key": "substage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       468
+      ]
+     },
+     {
+      "key": "substituted_by_annual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       565
+      ]
+     },
+     {
+      "key": "tanuki_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       476
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "この段階の書き手あり",
+      "lines": [
+       342,
+       342,
+       442,
+       588,
+       589,
+       840,
+       896,
+       1238,
+       1238,
+       1269,
+       1269,
+       1320,
+       1423,
+       1426,
+       1427,
+       1442,
+       1444,
+       1445,
+       1455,
+       1457,
+       1458,
+       1487,
+       1490
+      ]
+     },
+     {
+      "key": "tickers",
+      "status": "この段階の書き手あり",
+      "lines": [
+       418,
+       442,
+       447,
+       959,
+       961,
+       964
+      ]
+     },
+     {
+      "key": "timing_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       475
+      ]
+     },
+     {
+      "key": "upside_percent",
+      "status": "この段階の書き手あり",
+      "lines": [
+       461
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       397,
+       430,
+       438
+      ]
+     },
+     {
+      "key": "year",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1046,
+       1046
+      ]
+     },
+     {
+      "key": "yoy_growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       465
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "section": "④ 判定実績バックテスト",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       782,
+       783,
+       783,
+       788
+      ]
+     },
+     {
+      "key": "invalid",
+      "status": "この段階の書き手あり",
+      "lines": [
+       733
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       723,
+       746,
+       746,
+       819
+      ]
+     },
+     {
+      "key": "market_data",
+      "status": "書き手なし",
+      "lines": [
+       809
+      ]
+     },
+     {
+      "key": "price_at_judgment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       790,
+       790
+      ]
+     },
+     {
+      "key": "return_30d",
+      "status": "この段階の書き手あり",
+      "lines": [
+       737,
+       737,
+       737,
+       791
+      ]
+     },
+     {
+      "key": "return_60d",
+      "status": "この段階の書き手あり",
+      "lines": [
+       738,
+       738,
+       738,
+       792
+      ]
+     },
+     {
+      "key": "return_90d",
+      "status": "この段階の書き手あり",
+      "lines": [
+       739,
+       740,
+       740,
+       793
+      ]
+     },
+     {
+      "key": "tanuki_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       732,
+       782,
+       789,
+       789
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "この段階の書き手あり",
+      "lines": [
+       741,
+       787,
+       787
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "section": "（JSで作る要素 #cat-board-body）",
+    "keys": [
+     {
+      "key": "all",
+      "status": "ほかの書き手あり",
+      "lines": [
+       707
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "section": "（区画を決められない）",
+    "keys": [
+     {
+      "key": "desc",
+      "status": "ほかの書き手あり",
+      "lines": [
+       622
+      ]
+     },
+     {
+      "key": "fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1116,
+       1117
+      ]
+     },
+     {
+      "key": "filled_from_annual",
+      "status": "ほかの書き手あり",
+      "lines": [
+       1016
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       619,
+       1018
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       608,
+       620,
+       1013,
+       1014,
+       1015,
+       1016,
+       1115,
+       1116,
+       1117
+      ]
+     },
+     {
+      "key": "per",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1184
+      ]
+     },
+     {
+      "key": "signal",
+      "status": "ほかの書き手あり",
+      "lines": [
+       1013,
+       1014,
+       1015
+      ]
+     },
+     {
+      "key": "signal_reason",
+      "status": "ほかの書き手あり",
+      "lines": [
+       1015
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "この段階の書き手あり",
+      "lines": [
+       610,
+       611
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/index.html",
+    "section": "（ページの先頭）",
+    "keys": [
+     {
+      "key": "base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       394,
+       397,
+       403,
+       404,
+       590
+      ]
+     },
+     {
+      "key": "calculation_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       417,
+       569
+      ]
+     },
+     {
+      "key": "cf_conversion",
+      "status": "この段階の書き手あり",
+      "lines": [
+       416
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       393,
+       398,
+       401,
+       413,
+       418,
+       578,
+       579
+      ]
+     },
+     {
+      "key": "count",
+      "status": "この段階の書き手あり",
+      "lines": [
+       419
+      ]
+     },
+     {
+      "key": "current_price",
+      "status": "この段階の書き手あり",
+      "lines": [
+       393
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       498,
+       498
+      ]
+     },
+     {
+      "key": "fcf_base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       418
+      ]
+     },
+     {
+      "key": "fcf_base_method",
+      "status": "この段階の書き手あり",
+      "lines": [
+       418
+      ]
+     },
+     {
+      "key": "growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       494,
+       494
+      ]
+     },
+     {
+      "key": "growth_options",
+      "status": "この段階の書き手あり",
+      "lines": [
+       419
+      ]
+     },
+     {
+      "key": "growth_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       397
+      ]
+     },
+     {
+      "key": "growth_scenarios",
+      "status": "この段階の書き手あり",
+      "lines": [
+       397,
+       420
+      ]
+     },
+     {
+      "key": "intrinsic_value_beta",
+      "status": "この段階の書き手あり",
+      "lines": [
+       395
+      ]
+     },
+     {
+      "key": "intrinsic_value_per_share",
+      "status": "この段階の書き手あり",
+      "lines": [
+       394,
+       394,
+       558
+      ]
+     },
+     {
+      "key": "ivps_beta",
+      "status": "画面の中で作る値",
+      "lines": [
+       488,
+       488
+      ]
+     },
+     {
+      "key": "ma200",
+      "status": "この段階の書き手あり",
+      "lines": [
+       413
+      ]
+     },
+     {
+      "key": "ma200_dev_md",
+      "status": "画面の中で作る値",
+      "lines": [
+       472,
+       472,
+       473,
+       473
+      ]
+     },
+     {
+      "key": "method",
+      "status": "この段階の書き手あり",
+      "lines": [
+       418
+      ]
+     },
+     {
+      "key": "moat_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       398,
+       579
+      ]
+     },
+     {
+      "key": "moat_score_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       401,
+       578
+      ]
+     },
+     {
+      "key": "price",
+      "status": "この段階の書き手あり",
+      "lines": [
+       486
+      ]
+     },
+     {
+      "key": "primary",
+      "status": "この段階の書き手あり",
+      "lines": [
+       397,
+       420
+      ]
+     },
+     {
+      "key": "q",
+      "status": "この段階の書き手あり",
+      "lines": [
+       415,
+       496,
+       496,
+       496
+      ]
+     },
+     {
+      "key": "rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       397
+      ]
+     },
+     {
+      "key": "rice",
+      "status": "この段階の書き手あり",
+      "lines": [
+       403,
+       403,
+       404,
+       415,
+       416,
+       491,
+       491,
+       590,
+       590
+      ]
+     },
+     {
+      "key": "rice_per",
+      "status": "画面の中で作る値",
+      "lines": [
+       476,
+       476,
+       476
+      ]
+     },
+     {
+      "key": "rice_per_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       404
+      ]
+     },
+     {
+      "key": "scenario_valuations",
+      "status": "この段階の書き手あり",
+      "lines": [
+       394,
+       397
+      ]
+     },
+     {
+      "key": "source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       420
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "この段階の書き手あり",
+      "lines": [
+       423,
+       444,
+       445,
+       466,
+       485,
+       564
+      ]
+     },
+     {
+      "key": "tickers",
+      "status": "この段階の書き手あり",
+      "lines": [
+       538
+      ]
+     },
+     {
+      "key": "title",
+      "status": "この段階の書き手あり",
+      "lines": [
+       585
+      ]
+     },
+     {
+      "key": "type",
+      "status": "この段階の書き手あり",
+      "lines": [
+       521
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       402
+      ]
+     },
+     {
+      "key": "wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       402,
+       495,
+       495
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（ページの先頭）",
+    "keys": [
+     {
+      "key": "action",
+      "status": "この段階の書き手あり",
+      "lines": [
+       850
+      ]
+     },
+     {
+      "key": "adj_net_income",
+      "status": "この段階の書き手あり",
+      "lines": [
+       836
+      ]
+     },
+     {
+      "key": "ai_concerns",
+      "status": "この段階の書き手あり",
+      "lines": [
+       879
+      ]
+     },
+     {
+      "key": "alpha",
+      "status": "この段階の書き手あり",
+      "lines": [
+       802
+      ]
+     },
+     {
+      "key": "alpha_uncapped",
+      "status": "この段階の書き手あり",
+      "lines": [
+       804
+      ]
+     },
+     {
+      "key": "alpha_was_capped",
+      "status": "この段階の書き手あり",
+      "lines": [
+       803
+      ]
+     },
+     {
+      "key": "analyst_count",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1015
+      ]
+     },
+     {
+      "key": "analyst_rec_key",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1016
+      ]
+     },
+     {
+      "key": "analyst_target_high",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1014
+      ]
+     },
+     {
+      "key": "analyst_target_low",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1013
+      ]
+     },
+     {
+      "key": "analyst_target_mean",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1012
+      ]
+     },
+     {
+      "key": "analyst_target_median",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1011
+      ]
+     },
+     {
+      "key": "analyst_vs_iv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1017
+      ]
+     },
+     {
+      "key": "applied",
+      "status": "この段階の書き手あり",
+      "lines": [
+       833,
+       861,
+       925,
+       933
+      ]
+     },
+     {
+      "key": "asset_turnover",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1647
+      ]
+     },
+     {
+      "key": "available",
+      "status": "この段階の書き手あり",
+      "lines": [
+       870
+      ]
+     },
+     {
+      "key": "base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       871,
+       1277,
+       1277,
+       1492
+      ]
+     },
+     {
+      "key": "base_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       817
+      ]
+     },
+     {
+      "key": "base_wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1152
+      ]
+     },
+     {
+      "key": "base_years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1152
+      ]
+     },
+     {
+      "key": "bear",
+      "status": "この段階の書き手あり",
+      "lines": [
+       872,
+       1278,
+       1278
+      ]
+     },
+     {
+      "key": "beta",
+      "status": "この段階の書き手あり",
+      "lines": [
+       971
+      ]
+     },
+     {
+      "key": "bs_adjustment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       858
+      ]
+     },
+     {
+      "key": "bull",
+      "status": "この段階の書き手あり",
+      "lines": [
+       873,
+       1276,
+       1276
+      ]
+     },
+     {
+      "key": "calculation_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       797
+      ]
+     },
+     {
+      "key": "cash",
+      "status": "この段階の書き手あり",
+      "lines": [
+       862
+      ]
+     },
+     {
+      "key": "cash_and_equivalents",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1588
+      ]
+     },
+     {
+      "key": "clipped",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1385
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       795,
+       804,
+       809,
+       810,
+       816,
+       817,
+       818,
+       819,
+       887,
+       889,
+       890,
+       891,
+       892,
+       893,
+       894,
+       966,
+       967,
+       993,
+       994,
+       996,
+       997,
+       998,
+       999,
+       1011,
+       1012,
+       1013,
+       1014,
+       1015,
+       1016,
+       1017,
+       1027,
+       1028,
+       1029,
+       1030,
+       1357
+      ]
+     },
+     {
+      "key": "conversion_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       837,
+       934
+      ]
+     },
+     {
+      "key": "count",
+      "status": "この段階の書き手あり",
+      "lines": [
+       826
+      ]
+     },
+     {
+      "key": "current_price",
+      "status": "この段階の書き手あり",
+      "lines": [
+       795
+      ]
+     },
+     {
+      "key": "cv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       821
+      ]
+     },
+     {
+      "key": "dcf_components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       801,
+       808
+      ]
+     },
+     {
+      "key": "dcf_type",
+      "status": "この段階の書き手あり",
+      "lines": [
+       807
+      ]
+     },
+     {
+      "key": "detected",
+      "status": "この段階の書き手あり",
+      "lines": [
+       847
+      ]
+     },
+     {
+      "key": "diluted_shares",
+      "status": "この段階の書き手あり",
+      "lines": [
+       892,
+       999
+      ]
+     },
+     {
+      "key": "dilution_3yr_annual_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1568
+      ]
+     },
+     {
+      "key": "dilution_comment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1571
+      ]
+     },
+     {
+      "key": "dilution_severity",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1570
+      ]
+     },
+     {
+      "key": "divergence_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       838,
+       926
+      ]
+     },
+     {
+      "key": "divergence_warning",
+      "status": "この段階の書き手あり",
+      "lines": [
+       839
+      ]
+     },
+     {
+      "key": "dupont",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1613
+      ]
+     },
+     {
+      "key": "end",
+      "status": "この段階の書き手あり",
+      "lines": [
+       346,
+       346,
+       358,
+       361
+      ]
+     },
+     {
+      "key": "estimated_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       835
+      ]
+     },
+     {
+      "key": "estimated_revenue",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1363
+      ]
+     },
+     {
+      "key": "excluded",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1618
+      ]
+     },
+     {
+      "key": "expected_return_pct",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1317
+      ]
+     },
+     {
+      "key": "fcf_2yr_avg",
+      "status": "この段階の書き手あり",
+      "lines": [
+       819,
+       819
+      ]
+     },
+     {
+      "key": "fcf_5yr_avg",
+      "status": "この段階の書き手あり",
+      "lines": [
+       818,
+       818
+      ]
+     },
+     {
+      "key": "fcf_base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       815
+      ]
+     },
+     {
+      "key": "fcf_base_method",
+      "status": "この段階の書き手あり",
+      "lines": [
+       816
+      ]
+     },
+     {
+      "key": "fcf_base_used",
+      "status": "この段階の書き手あり",
+      "lines": [
+       817
+      ]
+     },
+     {
+      "key": "fcf_estimation",
+      "status": "この段階の書き手あり",
+      "lines": [
+       832
+      ]
+     },
+     {
+      "key": "fcf_outlier",
+      "status": "この段階の書き手あり",
+      "lines": [
+       829
+      ]
+     },
+     {
+      "key": "fcf_value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       855
+      ]
+     },
+     {
+      "key": "fields",
+      "status": "この段階の書き手あり",
+      "lines": [
+       340,
+       1086
+      ]
+     },
+     {
+      "key": "financial_health",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1496,
+       1564
+      ]
+     },
+     {
+      "key": "financial_leverage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1648
+      ]
+     },
+     {
+      "key": "fiscal_year",
+      "status": "この段階の書き手あり",
+      "lines": [
+       854,
+       866
+      ]
+     },
+     {
+      "key": "formula",
+      "status": "この段階の書き手あり",
+      "lines": [
+       798,
+       1068,
+       1068
+      ]
+     },
+     {
+      "key": "found",
+      "status": "この段階の書き手あり",
+      "lines": [
+       851
+      ]
+     },
+     {
+      "key": "future_value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1320,
+       1333
+      ]
+     },
+     {
+      "key": "future_values",
+      "status": "この段階の書き手あり",
+      "lines": [
+       988
+      ]
+     },
+     {
+      "key": "growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1365,
+       1383,
+       1509,
+       1509
+      ]
+     },
+     {
+      "key": "growth_options",
+      "status": "この段階の書き手あり",
+      "lines": [
+       824
+      ]
+     },
+     {
+      "key": "growth_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1276,
+       1277,
+       1278,
+       1413,
+       1420,
+       1427
+      ]
+     },
+     {
+      "key": "growth_sanity",
+      "status": "この段階の書き手あり",
+      "lines": [
+       990
+      ]
+     },
+     {
+      "key": "growth_scenarios",
+      "status": "この段階の書き手あり",
+      "lines": [
+       980
+      ]
+     },
+     {
+      "key": "growth_years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       977
+      ]
+     },
+     {
+      "key": "high_growth_rate_used",
+      "status": "この段階の書き手あり",
+      "lines": [
+       887
+      ]
+     },
+     {
+      "key": "high_growth_years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889
+      ]
+     },
+     {
+      "key": "industry",
+      "status": "この段階の書き手あり",
+      "lines": [
+       894
+      ]
+     },
+     {
+      "key": "insider_buy_count",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1027
+      ]
+     },
+     {
+      "key": "insider_latest_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1030
+      ]
+     },
+     {
+      "key": "insider_net_direction",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1029
+      ]
+     },
+     {
+      "key": "insider_sell_count",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1028
+      ]
+     },
+     {
+      "key": "intrinsic_value_beta",
+      "status": "この段階の書き手あり",
+      "lines": [
+       791
+      ]
+     },
+     {
+      "key": "intrinsic_value_per_share",
+      "status": "この段階の書き手あり",
+      "lines": [
+       788,
+       1276,
+       1277,
+       1278,
+       1492
+      ]
+     },
+     {
+      "key": "intrinsic_value_rf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       792
+      ]
+     },
+     {
+      "key": "is_annual",
+      "status": "ほかの書き手あり",
+      "lines": [
+       345
+      ]
+     },
+     {
+      "key": "items",
+      "status": "この段階の書き手あり",
+      "lines": [
+       853
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1078,
+       1305
+      ]
+     },
+     {
+      "key": "latest_period_missing",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1086,
+       1086,
+       1088,
+       1089
+      ]
+     },
+     {
+      "key": "latest_revenue",
+      "status": "この段階の書き手あり",
+      "lines": [
+       997,
+       1357
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       356,
+       764,
+       1086,
+       1287,
+       1356
+      ]
+     },
+     {
+      "key": "long_term_debt",
+      "status": "この段階の書き手あり",
+      "lines": [
+       864
+      ]
+     },
+     {
+      "key": "ma_addback_detected_but_not_applied",
+      "status": "この段階の書き手あり",
+      "lines": [
+       846
+      ]
+     },
+     {
+      "key": "ma_addback_excluded",
+      "status": "この段階の書き手あり",
+      "lines": [
+       845
+      ]
+     },
+     {
+      "key": "market_return",
+      "status": "この段階の書き手あり",
+      "lines": [
+       973,
+       1126,
+       1498
+      ]
+     },
+     {
+      "key": "matrix",
+      "status": "この段階の書き手あり",
+      "lines": [
+       978
+      ]
+     },
+     {
+      "key": "maturity_profile",
+      "status": "この段階の書き手あり",
+      "lines": [
+       885,
+       889
+      ]
+     },
+     {
+      "key": "max",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1448,
+       1449
+      ]
+     },
+     {
+      "key": "method",
+      "status": "この段階の書き手あり",
+      "lines": [
+       816
+      ]
+     },
+     {
+      "key": "min",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1448,
+       1449,
+       1449,
+       1580
+      ]
+     },
+     {
+      "key": "model",
+      "status": "この段階の書き手あり",
+      "lines": [
+       881
+      ]
+     },
+     {
+      "key": "name",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1369
+      ]
+     },
+     {
+      "key": "net_cash",
+      "status": "この段階の書き手あり",
+      "lines": [
+       859
+      ]
+     },
+     {
+      "key": "net_cash_per_share",
+      "status": "この段階の書き手あり",
+      "lines": [
+       860
+      ]
+     },
+     {
+      "key": "net_debt",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1496,
+       1566
+      ]
+     },
+     {
+      "key": "net_margin",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1646
+      ]
+     },
+     {
+      "key": "next_earnings_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1068,
+       1068,
+       1569
+      ]
+     },
+     {
+      "key": "ni_ocf_divergence",
+      "status": "画面の中で作る値",
+      "lines": [
+       1113
+      ]
+     },
+     {
+      "key": "note",
+      "status": "この段階の書き手あり",
+      "lines": [
+       840,
+       849,
+       874,
+       1088
+      ]
+     },
+     {
+      "key": "overall",
+      "status": "この段階の書き手あり",
+      "lines": [
+       880
+      ]
+     },
+     {
+      "key": "per",
+      "status": "この段階の書き手あり",
+      "lines": [
+       993
+      ]
+     },
+     {
+      "key": "per_adjusted",
+      "status": "この段階の書き手あり",
+      "lines": [
+       994
+      ]
+     },
+     {
+      "key": "phase1",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889
+      ]
+     },
+     {
+      "key": "primary",
+      "status": "この段階の書き手あり",
+      "lines": [
+       981,
+       982
+      ]
+     },
+     {
+      "key": "pv_high",
+      "status": "この段階の書き手あり",
+      "lines": [
+       809
+      ]
+     },
+     {
+      "key": "pv_phase1",
+      "status": "この段階の書き手あり",
+      "lines": [
+       811
+      ]
+     },
+     {
+      "key": "pv_phase2",
+      "status": "この段階の書き手あり",
+      "lines": [
+       812
+      ]
+     },
+     {
+      "key": "pv_terminal",
+      "status": "この段階の書き手あり",
+      "lines": [
+       810
+      ]
+     },
+     {
+      "key": "rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       982,
+       1301,
+       1306,
+       1509,
+       1509
+      ]
+     },
+     {
+      "key": "rate_is_sector_default",
+      "status": "この段階の書き手あり",
+      "lines": [
+       933
+      ]
+     },
+     {
+      "key": "ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       820,
+       821
+      ]
+     },
+     {
+      "key": "raw_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       834
+      ]
+     },
+     {
+      "key": "raw_weighted_growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1381,
+       1382
+      ]
+     },
+     {
+      "key": "reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1627,
+       1627
+      ]
+     },
+     {
+      "key": "recommended_g",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1384
+      ]
+     },
+     {
+      "key": "return_metrics",
+      "status": "この段階の書き手あり",
+      "lines": [
+       989
+      ]
+     },
+     {
+      "key": "revenue_decline",
+      "status": "画面の中で作る値",
+      "lines": [
+       1113
+      ]
+     },
+     {
+      "key": "revenue_ttm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       996
+      ]
+     },
+     {
+      "key": "revenue_ttm_end",
+      "status": "この段階の書き手あり",
+      "lines": [
+       998
+      ]
+     },
+     {
+      "key": "rice",
+      "status": "この段階の書き手あり",
+      "lines": [
+       869,
+       1414,
+       1414,
+       1414,
+       1421,
+       1421,
+       1421,
+       1428,
+       1428,
+       1428,
+       1437
+      ]
+     },
+     {
+      "key": "rice_adj",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1415,
+       1415,
+       1415,
+       1422,
+       1422,
+       1422,
+       1429,
+       1429,
+       1429
+      ]
+     },
+     {
+      "key": "rice_na_reason",
+      "status": "書き手なし",
+      "lines": [
+       1414,
+       1414,
+       1421,
+       1421,
+       1428,
+       1428
+      ]
+     },
+     {
+      "key": "rice_per_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1416,
+       1416,
+       1423,
+       1423,
+       1430,
+       1430
+      ]
+     },
+     {
+      "key": "risk_free_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       972
+      ]
+     },
+     {
+      "key": "roe_decomposed",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1636,
+       1636,
+       1636,
+       1649
+      ]
+     },
+     {
+      "key": "roe_used",
+      "status": "この段階の書き手あり",
+      "lines": [
+       891
+      ]
+     },
+     {
+      "key": "rpo",
+      "status": "この段階の書き手あり",
+      "lines": [
+       966
+      ]
+     },
+     {
+      "key": "rpo_pv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       967
+      ]
+     },
+     {
+      "key": "rule",
+      "status": "この段階の書き手あり",
+      "lines": [
+       848
+      ]
+     },
+     {
+      "key": "sbc_ttm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1567
+      ]
+     },
+     {
+      "key": "scenario_valuations",
+      "status": "この段階の書き手あり",
+      "lines": [
+       987,
+       1492
+      ]
+     },
+     {
+      "key": "score_comment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1078,
+       1078
+      ]
+     },
+     {
+      "key": "sector",
+      "status": "この段階の書き手あり",
+      "lines": [
+       893
+      ]
+     },
+     {
+      "key": "segment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       985
+      ]
+     },
+     {
+      "key": "segment_growth_quarter",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1389,
+       1389
+      ]
+     },
+     {
+      "key": "segment_growth_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1380
+      ]
+     },
+     {
+      "key": "segments",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1355
+      ]
+     },
+     {
+      "key": "sensitivity",
+      "status": "この段階の書き手あり",
+      "lines": [
+       975
+      ]
+     },
+     {
+      "key": "shares_yr_3ago",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1600
+      ]
+     },
+     {
+      "key": "shares_yr_now",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1600
+      ]
+     },
+     {
+      "key": "short_term_debt",
+      "status": "この段階の書き手あり",
+      "lines": [
+       865
+      ]
+     },
+     {
+      "key": "short_term_investments",
+      "status": "この段階の書き手あり",
+      "lines": [
+       863
+      ]
+     },
+     {
+      "key": "source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       981
+      ]
+     },
+     {
+      "key": "substituted_by_annual",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1089
+      ]
+     },
+     {
+      "key": "tanuki_score",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1050,
+       1050,
+       1078
+      ]
+     },
+     {
+      "key": "terminal_growth_used",
+      "status": "この段階の書き手あり",
+      "lines": [
+       890
+      ]
+     },
+     {
+      "key": "total_debt",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1588
+      ]
+     },
+     {
+      "key": "total_pv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       825
+      ]
+     },
+     {
+      "key": "total_transient_amount",
+      "status": "この段階の書き手あり",
+      "lines": [
+       852
+      ]
+     },
+     {
+      "key": "transient_evidence",
+      "status": "この段階の書き手あり",
+      "lines": [
+       851,
+       852,
+       853
+      ]
+     },
+     {
+      "key": "upside_percent",
+      "status": "この段階の書き手あり",
+      "lines": [
+       796
+      ]
+     },
+     {
+      "key": "upside_percent_beta",
+      "status": "この段階の書き手あり",
+      "lines": [
+       794
+      ]
+     },
+     {
+      "key": "upside_percent_rf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       793
+      ]
+     },
+     {
+      "key": "v0",
+      "status": "この段階の書き手あり",
+      "lines": [
+       801
+      ]
+     },
+     {
+      "key": "v0_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       801
+      ]
+     },
+     {
+      "key": "val",
+      "status": "ほかの書き手あり",
+      "lines": [
+       362
+      ]
+     },
+     {
+      "key": "validation",
+      "status": "この段階の書き手あり",
+      "lines": [
+       878
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       970
+      ]
+     },
+     {
+      "key": "wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       969,
+       1126,
+       1498
+      ]
+     },
+     {
+      "key": "wacc_values",
+      "status": "この段階の書き手あり",
+      "lines": [
+       976
+      ]
+     },
+     {
+      "key": "warnings",
+      "status": "この段階の書き手あり",
+      "lines": [
+       875
+      ]
+     },
+     {
+      "key": "weight",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1362,
+       1383
+      ]
+     },
+     {
+      "key": "years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       889
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #all-matrices-grid）",
+    "keys": [
+     {
+      "key": "available",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2742
+      ]
+     },
+     {
+      "key": "base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2738
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2746,
+       2768,
+       2769
+      ]
+     },
+     {
+      "key": "deficit_quality",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2754
+      ]
+     },
+     {
+      "key": "error",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2728,
+       2819
+      ]
+     },
+     {
+      "key": "fcf_base_used",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2768
+      ]
+     },
+     {
+      "key": "fcf_estimation",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2766
+      ]
+     },
+     {
+      "key": "fcf_margin",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2766
+      ]
+     },
+     {
+      "key": "latest_revenue",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2769
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2642,
+       2673,
+       2683,
+       2689,
+       2698,
+       2811
+      ]
+     },
+     {
+      "key": "max",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2559,
+       2616,
+       2617,
+       2642,
+       2688,
+       2759
+      ]
+     },
+     {
+      "key": "min",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2616,
+       2617,
+       2688,
+       2753,
+       2759,
+       2773
+      ]
+     },
+     {
+      "key": "note",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2737,
+       2814
+      ]
+     },
+     {
+      "key": "revenue_growth_pct",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2754
+      ]
+     },
+     {
+      "key": "rice",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2736,
+       2738
+      ]
+     },
+     {
+      "key": "roe_10yr_avg",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2746
+      ]
+     },
+     {
+      "key": "runway",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2751
+      ]
+     },
+     {
+      "key": "runway_months",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2751
+      ]
+     },
+     {
+      "key": "ticker",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2618,
+       2632,
+       2642,
+       2660,
+       2667,
+       2673,
+       2677,
+       2690,
+       2693,
+       2694,
+       2698,
+       2701,
+       2706
+      ]
+     },
+     {
+      "key": "tickers",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2718,
+       2727
+      ]
+     },
+     {
+      "key": "title",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2813
+      ]
+     },
+     {
+      "key": "type",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2632,
+       2666
+      ]
+     },
+     {
+      "key": "upside_percent",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2735
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2733
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #cf-margin-chart）",
+    "keys": [
+     {
+      "key": "paper_bgcolor",
+      "status": "画面の中で作る値",
+      "lines": [
+       432,
+       461
+      ]
+     },
+     {
+      "key": "plot_bgcolor",
+      "status": "画面の中で作る値",
+      "lines": [
+       433
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #cf-quality-chart）",
+    "keys": [
+     {
+      "key": "paper_bgcolor",
+      "status": "画面の中で作る値",
+      "lines": [
+       488
+      ]
+     },
+     {
+      "key": "plot_bgcolor",
+      "status": "画面の中で作る値",
+      "lines": [
+       462,
+       489
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #cf-waterfall-chart）",
+    "keys": [
+     {
+      "key": "base_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       508
+      ]
+     },
+     {
+      "key": "estimated_fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       508
+      ]
+     },
+     {
+      "key": "fcf_base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       508
+      ]
+     },
+     {
+      "key": "fcf_estimation",
+      "status": "この段階の書き手あり",
+      "lines": [
+       508
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #cf-waterfall-section）",
+    "keys": [
+     {
+      "key": "CapEx",
+      "status": "ほかの書き手あり",
+      "lines": [
+       395
+      ]
+     },
+     {
+      "key": "DA",
+      "status": "ほかの書き手あり",
+      "lines": [
+       403
+      ]
+     },
+     {
+      "key": "OCF",
+      "status": "ほかの書き手あり",
+      "lines": [
+       395
+      ]
+     },
+     {
+      "key": "Revenue",
+      "status": "ほかの書き手あり",
+      "lines": [
+       395,
+       399,
+       403
+      ]
+     },
+     {
+      "key": "SBC",
+      "status": "ほかの書き手あり",
+      "lines": [
+       399
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       385
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #growth-sanity-container）",
+    "keys": [
+     {
+      "key": "amount",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1769
+      ]
+     },
+     {
+      "key": "bear_multiplier",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1683
+      ]
+     },
+     {
+      "key": "bull_multiplier",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1684
+      ]
+     },
+     {
+      "key": "category",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1768
+      ]
+     },
+     {
+      "key": "clipped",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1695
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1681,
+       1682,
+       1683,
+       1684,
+       1943,
+       1943,
+       2186
+      ]
+     },
+     {
+      "key": "damodaran_industry",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2232,
+       2232
+      ]
+     },
+     {
+      "key": "damodaran_year",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2233,
+       2233
+      ]
+     },
+     {
+      "key": "delay_years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1988
+      ]
+     },
+     {
+      "key": "fcf",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2131,
+       2141,
+       2155,
+       2155,
+       2161,
+       2161
+      ]
+     },
+     {
+      "key": "fcf_growth_cap",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1682
+      ]
+     },
+     {
+      "key": "fcf_growth_floor",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1681
+      ]
+     },
+     {
+      "key": "fcf_history",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2129
+      ]
+     },
+     {
+      "key": "fcf_margin",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1988
+      ]
+     },
+     {
+      "key": "fcf_ttm_end",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2186
+      ]
+     },
+     {
+      "key": "growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1879,
+       1885
+      ]
+     },
+     {
+      "key": "growth_cap",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1698,
+       1698
+      ]
+     },
+     {
+      "key": "growth_floor",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1698
+      ]
+     },
+     {
+      "key": "insider_latest_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2186
+      ]
+     },
+     {
+      "key": "item_name",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1768
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2130,
+       2136,
+       2157,
+       2158,
+       2158
+      ]
+     },
+     {
+      "key": "market_return",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1954
+      ]
+     },
+     {
+      "key": "max",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2134,
+       2144
+      ]
+     },
+     {
+      "key": "method",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1787
+      ]
+     },
+     {
+      "key": "moat_phase1_years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1943
+      ]
+     },
+     {
+      "key": "moat_score_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1943
+      ]
+     },
+     {
+      "key": "name",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1984
+      ]
+     },
+     {
+      "key": "next_earnings_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2186
+      ]
+     },
+     {
+      "key": "note",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1990,
+       1990
+      ]
+     },
+     {
+      "key": "op_margin",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1928
+      ]
+     },
+     {
+      "key": "options",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1981
+      ]
+     },
+     {
+      "key": "penetration",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1988
+      ]
+     },
+     {
+      "key": "phase1",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1879,
+       1879
+      ]
+     },
+     {
+      "key": "phase1_growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2231
+      ]
+     },
+     {
+      "key": "phase1_growth_auto_adjusted",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2205
+      ]
+     },
+     {
+      "key": "phase2",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1885,
+       1885
+      ]
+     },
+     {
+      "key": "probability",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1988
+      ]
+     },
+     {
+      "key": "pv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1985
+      ]
+     },
+     {
+      "key": "raw_weighted_growth",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1697,
+       1698
+      ]
+     },
+     {
+      "key": "recommended_g",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1692,
+       1693,
+       2206
+      ]
+     },
+     {
+      "key": "recommended_g_median",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2207
+      ]
+     },
+     {
+      "key": "rpo_adjustment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1927,
+       1928
+      ]
+     },
+     {
+      "key": "rpo_incremental",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1927
+      ]
+     },
+     {
+      "key": "signals",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2200
+      ]
+     },
+     {
+      "key": "tam",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1988
+      ]
+     },
+     {
+      "key": "v0",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1861,
+       1900,
+       2191,
+       2191
+      ]
+     },
+     {
+      "key": "verdict",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2199,
+       2229
+      ]
+     },
+     {
+      "key": "wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1954
+      ]
+     },
+     {
+      "key": "warnings",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2202
+      ]
+     },
+     {
+      "key": "year",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2149,
+       2159,
+       2159
+      ]
+     },
+     {
+      "key": "years",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1879,
+       1885
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #history-chart-section）",
+    "keys": [
+     {
+      "key": "current_price",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2509
+      ]
+     },
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2507
+      ]
+     },
+     {
+      "key": "intrinsic_value_per_share",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2508
+      ]
+     },
+     {
+      "key": "invalid",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2504
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       2505
+      ]
+     },
+     {
+      "key": "ma200",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2510
+      ]
+     },
+     {
+      "key": "scenario_bear",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2511
+      ]
+     },
+     {
+      "key": "scenario_bull",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2512
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #hype-history-body）",
+    "keys": [
+     {
+      "key": "date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       547
+      ]
+     },
+     {
+      "key": "from_peak",
+      "status": "この段階の書き手あり",
+      "lines": [
+       557
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       562
+      ]
+     },
+     {
+      "key": "lifecycle",
+      "status": "この段階の書き手あり",
+      "lines": [
+       548
+      ]
+     },
+     {
+      "key": "ma200_dev",
+      "status": "この段階の書き手あり",
+      "lines": [
+       556
+      ]
+     },
+     {
+      "key": "phase",
+      "status": "この段階の書き手あり",
+      "lines": [
+       550
+      ]
+     },
+     {
+      "key": "price",
+      "status": "この段階の書き手あり",
+      "lines": [
+       552
+      ]
+     },
+     {
+      "key": "price_iv_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       553
+      ]
+     },
+     {
+      "key": "recommendation",
+      "status": "この段階の書き手あり",
+      "lines": [
+       551
+      ]
+     },
+     {
+      "key": "rev_yoy",
+      "status": "この段階の書き手あり",
+      "lines": [
+       554
+      ]
+     },
+     {
+      "key": "rule40",
+      "status": "この段階の書き手あり",
+      "lines": [
+       555
+      ]
+     },
+     {
+      "key": "stage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       549
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #hype-history-section）",
+    "keys": [
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       535
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #hype-signal-row）",
+    "keys": [
+     {
+      "key": "base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       574
+      ]
+     },
+     {
+      "key": "expectation_score",
+      "status": "ほかの書き手あり",
+      "lines": [
+       590,
+       593
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       586,
+       592,
+       594,
+       595,
+       596
+      ]
+     },
+     {
+      "key": "monthly",
+      "status": "ほかの書き手あり",
+      "lines": [
+       585
+      ]
+     },
+     {
+      "key": "rice",
+      "status": "この段階の書き手あり",
+      "lines": [
+       574,
+       574
+      ]
+     },
+     {
+      "key": "stage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       588
+      ]
+     },
+     {
+      "key": "stage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       589
+      ]
+     },
+     {
+      "key": "upside_percent",
+      "status": "この段階の書き手あり",
+      "lines": [
+       575
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #layer2AdjustedIvps）",
+    "keys": [
+     {
+      "key": "alpha",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2379
+      ]
+     },
+     {
+      "key": "bs_adjustment",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2381
+      ]
+     },
+     {
+      "key": "components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2377,
+       2380
+      ]
+     },
+     {
+      "key": "dcf_components",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2376
+      ]
+     },
+     {
+      "key": "diluted_shares",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2380
+      ]
+     },
+     {
+      "key": "growth_options",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2378
+      ]
+     },
+     {
+      "key": "net_cash_per_share",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2381
+      ]
+     },
+     {
+      "key": "rpo_pv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2377
+      ]
+     },
+     {
+      "key": "total_pv",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2378
+      ]
+     },
+     {
+      "key": "v0",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2376
+      ]
+     },
+     {
+      "key": "v0_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2376
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #rfMarketBlock）",
+    "keys": [
+     {
+      "key": "required_growth_rf_base",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2290
+      ]
+     },
+     {
+      "key": "required_growth_rf_live",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2291
+      ]
+     },
+     {
+      "key": "risk_free_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2294
+      ]
+     },
+     {
+      "key": "risk_free_rate_live",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2292
+      ]
+     },
+     {
+      "key": "risk_free_rate_live_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2296,
+       2296
+      ]
+     },
+     {
+      "key": "wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2294
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #rfValueBlock）",
+    "keys": [
+     {
+      "key": "intrinsic_value_rf_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2257,
+       2259
+      ]
+     },
+     {
+      "key": "market_return",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2254
+      ]
+     },
+     {
+      "key": "risk_free_rate",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2257
+      ]
+     },
+     {
+      "key": "risk_free_rate_live_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2260,
+       2261
+      ]
+     },
+     {
+      "key": "risk_free_rate_live_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2260
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2262
+      ]
+     },
+     {
+      "key": "wacc",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2254,
+       2257,
+       2262
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（JSで作る要素 #signal-consistency-body）",
+    "keys": [
+     {
+      "key": "erp",
+      "status": "この段階の書き手あり",
+      "lines": [
+       659
+      ]
+     },
+     {
+      "key": "label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       686
+      ]
+     },
+     {
+      "key": "length",
+      "status": "ほかの書き手あり",
+      "lines": [
+       673,
+       674,
+       675,
+       695,
+       702,
+       702,
+       714
+      ]
+     },
+     {
+      "key": "month",
+      "status": "ほかの書き手あり",
+      "lines": [
+       672,
+       702,
+       702,
+       709
+      ]
+     },
+     {
+      "key": "monthly",
+      "status": "ほかの書き手あり",
+      "lines": [
+       666
+      ]
+     },
+     {
+      "key": "price_iv_ratio",
+      "status": "この段階の書き手あり",
+      "lines": [
+       672,
+       675,
+       675,
+       695,
+       710
+      ]
+     },
+     {
+      "key": "risk_free_rate_live",
+      "status": "この段階の書き手あり",
+      "lines": [
+       691
+      ]
+     },
+     {
+      "key": "risk_free_rate_live_date",
+      "status": "この段階の書き手あり",
+      "lines": [
+       689,
+       690
+      ]
+     },
+     {
+      "key": "risk_free_rate_live_source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       688,
+       689
+      ]
+     },
+     {
+      "key": "stage",
+      "status": "この段階の書き手あり",
+      "lines": [
+       711,
+       715,
+       715
+      ]
+     },
+     {
+      "key": "stage_label",
+      "status": "ほかの書き手あり",
+      "lines": [
+       711,
+       722
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "section": "（区画を決められない）",
+    "keys": [
+     {
+      "key": "CapEx",
+      "status": "ほかの書き手あり",
+      "lines": [
+       389,
+       389,
+       391
+      ]
+     },
+     {
+      "key": "OCF",
+      "status": "ほかの書き手あり",
+      "lines": [
+       388,
+       391
+      ]
+     },
+     {
+      "key": "pv_fcf_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2421
+      ]
+     },
+     {
+      "key": "pv_phase1_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2412
+      ]
+     },
+     {
+      "key": "pv_phase2_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2412
+      ]
+     },
+     {
+      "key": "pv_tv_rm",
+      "status": "この段階の書き手あり",
+      "lines": [
+       2412,
+       2421
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "workflow_outputs": [
+  {
+   "workflow": ".github/workflows/TANUKI_VALUATION_Update.yml",
+   "lines": [
+    102,
+    103,
+    104,
+    105,
+    110
+   ],
+   "keys": [
+    {
+     "key": "intrinsic_value_per_share",
+     "in_json": true
+    },
+    {
+     "key": "overall",
+     "in_json": true
+    },
+    {
+     "key": "validation",
+     "in_json": true
+    }
+   ]
+  }
+ ]
 }

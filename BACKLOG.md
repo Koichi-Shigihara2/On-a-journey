@@ -2060,6 +2060,16 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   既知の規則の二重6つ（取引日・暫定の足・S&P500の構成銘柄・FREDの直接の呼び出し・Grokの宛先・休場日の一覧の作り方）はWARN。rccのWARNは156→162件。rccのCHECK-INVは約72.6秒（11段階）
 - **R-Aの11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3が済んだ（2026-10-23）。次はR-Aの終わりの見直し（PROJECT_STATUS.mdの論点①〜⑥、チャット側が論点ごとの案を出す）**
 
+#### R-Aの終わりの見直し（Koichiさんの判断 2026-10-23）
+- 1（論点③、件名「refactor: R-Aの終わりの見直し1、一覧のスクリプトの段階ごとの印を1つの設定にする」のcommit）: 解決の厳しさ・キーの全ファイルの走査・画面の区画・ワークフローのStep Summary・本番外のコードの走査・CSVの列・getElementByIdを包んだ関数の印をやめ、全段階で一番厳しい側の設定にした（コードの分かれ道を外した）。
+  画面の無い層（SEC層・市場データ層・マクロデータ層）だけJSONの誰も読まないキーを出す。
+  **`IO_HELPER_BY_CALLER`（汎用の読み書きの関数を、パスを渡す呼び出し箇所に置き換える）は広げなかった**: SEC層に当てると`SECReader`の`self._load_json(path)`形の呼び出し（`get_annual_range`のlistdirのパス等）を読み手にできず、
+  本当の読み手（TANUKIの`data_fetcher.py`・`core_calculator.py`・`pipeline.py`、STONKSの`pipeline.py`、`fetcher.py`の旧CIKの控えの読み）が消え、TANUKIの一覧が約290秒かかった。市場データ層・マクロデータ層だけのまま。
+  11層の一覧の差: 読み手の増減27行をコードで確かめた。消えた本番の読み手はワークフローの`git add`（`\`の続きの行を含む）・commitの件名の6行（Beta_Config_Update・Score_Verifier・TAILの2本）で読みではない。
+  増えた読み手1行（STONKSの`pipeline.py`→`financial_as_of.build`→`load_submissions`がsubmissions.jsonを読む）は本当の読み手。消えたテストの読み手20行は、一時のフォルダ・差し替えた関数を渡すテストの呼び出しか、関数の名前の取り違え（`_save_result`）。
+  新しく出たもの: SEC層の誰も読まないキー129（JSONのキー12,527のうち）、TANUKIの画面の誰も読まないキー29→50（増えた21はすべて`history/{filename_safe}.json`の過去のスナップショットにだけある古いキー）、SEC層の本番外のコードの候補から、ほかのコードが参照する2ファイル（見たファイルの一覧には残る）。
+  過去の段階2で消したもの（DELETED）は11層とも前後で同じ。出力の数も同じ。CHECK-INVはNG=0（rccのCHECK-INVは約72.6秒→約117.7秒。TANUKI・SEC層のキーの全ファイルの走査による）
+
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）
 

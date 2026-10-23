@@ -275,9 +275,7 @@ def test_empty_string_default_is_resolved_from_callers(monkeypatch):
            "    return os.path.join(d, t, 'annual.json')\n"
            "def run():\n"
            "    load('X', os.path.join('docs', 'eps', 'data'))\n")
-    rel = "src/x/test_default_e.py"
-    # 段階の設定はモジュールの変数（最後に set_layer() した段階のもの）。run_check() が市場データ層〈RESOLVE_STRICT〉で終わっても同じになるよう固定する
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", False)
+    rel = "src/x/default_e.py"   # test_ で始まる名前はテストの呼び出し（候補にしない）になるので避ける
     mod = inv.Module(rel, ast.parse(src), src)
     monkeypatch.setitem(inv.MODULES, rel, mod)
     monkeypatch.setitem(inv.CALLERS, (rel, "load"), [(rel, 5)])
@@ -321,9 +319,8 @@ def test_loose_reference_compares_whole_path():
 
 
 def _strict_module(monkeypatch, rel, src, callers):
-    """RESOLVE_STRICT（市場データ層の段階から）を立て、小さなモジュールと呼び出し元の索引を作る。"""
+    """小さなモジュールと呼び出し元の索引を作る（解決の厳しさは2026-10-23から全段階で同じ）。"""
     import ast
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", True)
     mod = inv.Module(rel, ast.parse(src), src)
     monkeypatch.setitem(inv.MODULES, rel, mod)
     for name, lines in callers.items():
@@ -398,27 +395,23 @@ def test_strict_external_module_call_is_not_matched_by_name(monkeypatch):
 
 def test_strict_git_add_line_and_index_symbol(monkeypatch):
     """ワークフローの git add の行は読み手にしない。{T} は指数の記号（^GSPC）にも当たる（2026-10-22）。"""
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", True)
     tmpl = "common/md/_retry_log.json"
     pats, _ = inv.needles_for(tmpl)
     line = "          git add common/md/_retry_log.json || true"
     assert inv.mention_class(tmpl, pats, ".github/workflows/x.yml", 1, line, line) == "no"
     assert inv.template_regex("common/md/daily/{T}.json").match("common/md/daily/^GSPC.json")
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", False)
-    assert not inv.template_regex("common/md/daily/{T}.json").match("common/md/daily/^GSPC.json")
 
 
 def test_market_data_layer_settings():
-    """市場データ層（段階1・3、2026-10-22）: 画面を持たない共有のデータ層。CHECK-INV は最後の段階（索引を作り直すため）。"""
+    """市場データ層（段階1・3、2026-10-22）: 画面を持たない共有のデータ層。
+    段階ごとの印は2026-10-23に全段階で1つの設定にした。汎用の読み書きの関数の印だけは市場データ層・マクロデータ層だけ（SEC層で本当の読み手が消えるため）。"""
     md = inv.LAYERS["market_data"]
     assert md["LAYER_DIRS"] == ("common/market_data",)
-    assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
-    assert not md["SCREEN_PAGES"]
+    assert md["IO_HELPER_BY_CALLER"] and not md["SCREEN_PAGES"]
     assert inv.CHECK_LAYERS[-6:] == ("market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio")
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio"]
-    # 解決の厳しさの順（索引を作り直す回数を少なくする）
-    levels = [inv.LAYERS[k]["RESOLVE_STRICT"] for k in inv.CHECK_LAYERS]
-    assert levels == sorted(levels)
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["IO_HELPER_BY_CALLER"]] == ["market_data", "macro_data"]
+    for flag in ("RESOLVE_STRICT", "FULL_SCAN", "SCREEN_SECTIONS", "WORKFLOW_SUMMARY", "NONPROD_SCAN", "DATA_UNREAD_KEYS", "CSV_COLUMNS", "JS_ID_HELPERS"):
+        assert not any(flag in inv.LAYERS[k] for k in inv.LAYERS) and not hasattr(inv, flag)
     assert md["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents"]
 
 
@@ -440,7 +433,7 @@ def test_market_data_check_known_rules_warn_and_new_unread_key_warns():
 
 
 def test_strict2_loop_over_names_and_same_folder_import(monkeypatch):
-    """RESOLVE_STRICT 2（TAIL の段階から）: for path in (a, b) の変数は並びのそれぞれのパス。
+    """（TAIL の段階から）for path in (a, b) の変数は並びのそれぞれのパス。
     import sec_ctrl_fetcher as _ctrl（sys.path に自分のフォルダを足す形）は同じフォルダのモジュール（2026-10-22）。"""
     import ast
     src = ("import os\n"
@@ -452,29 +445,24 @@ def test_strict2_loop_over_names_and_same_folder_import(monkeypatch):
            "        open(path, 'w')\n")
     rel = "src/tl/ctrl_k.py"
     mod = _strict_module(monkeypatch, rel, src, {})
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", 2)
     writes, _ = inv._io_sites(mod)
     assert [w["path"] for w in writes] == ["docs/tail/data/{T}/{Q}.json", "docs/tail/data/{T}/latest.json"]
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", 1)
-    assert [w["path"] for w in inv._io_sites(mod)[0]] == ["{path}"]
     monkeypatch.setattr(inv, "ALL_PY", {"src/tl/ctrl_k.py", "src/tl/items_l.py"})
     isrc = "import ctrl_k as _ctrl\nDATA_DIR = _ctrl.BASE\n"
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", 2)
     assert inv.Module("src/tl/items_l.py", ast.parse(isrc), isrc).mod_imports == {"_ctrl": "src/tl/ctrl_k.py"}
-    monkeypatch.setattr(inv, "RESOLVE_STRICT", 1)
+    monkeypatch.setattr(inv, "ALL_PY", {"src/tl/items_l.py"})   # 同じフォルダに無いモジュールはリポジトリの外
     assert inv.Module("src/tl/items_l.py", ast.parse(isrc), isrc).mod_imports == {}
 
 
 def test_tail_layer_settings():
-    """TAIL（段階1・3、2026-10-22）: 解決の厳しさは 2。汎用の読み書きの関数の印・画面の無い層のキーの印は使わない。
-    CHECK-INV の最後の段階で、既知の規則の二重は TAIL を含む4つ（同じ期の値の選び方・期の名前・会計年度・AIの呼び方）。"""
+    """TAIL（段階1・3、2026-10-22）: 汎用の読み書きの関数の印は使わない。
+    既知の規則の二重は TAIL を含む4つ（同じ期の値の選び方・期の名前・会計年度・AIの呼び方）。"""
     tl = inv.LAYERS["tail"]
     assert tl["LAYER_DIRS"] == ("src/tail",)
-    assert tl["RESOLVE_STRICT"] == 2 and not tl["IO_HELPER_BY_CALLER"] and not tl["DATA_UNREAD_KEYS"]
+    assert not tl["IO_HELPER_BY_CALLER"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
     assert inv.CHECK_LAYERS[-3] == "tail"
     assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year", "grok_call"]
-    assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1
 
 
 def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):
@@ -490,8 +478,8 @@ def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):
 
 
 def test_strict3_workflow_commit_copy_and_continuation(monkeypatch):
-    """RESOLVE_STRICT 3（Portfolio の段階から）: git commit -m の件名・cp の写し先・git add の \\ の続きの行は読みでない。
-    git commit -F <ファイル> は読み（TAIL の /tmp/tail_commit_message.txt）。2 では今までどおり（2026-10-22）。"""
+    """（Portfolio の段階から）git commit -m の件名・cp の写し先・git add の \\ の続きの行は読みでない。
+    git commit -F <ファイル> は読み（TAIL の /tmp/tail_commit_message.txt）。cp の元は読み（2026-10-22）。"""
     wf = ("      - run: |\n"
           "          cp config/theme_x.json docs/pf/data/theme_x.json\n"
           "          git add docs/a.json \\\n"
@@ -502,60 +490,51 @@ def test_strict3_workflow_commit_copy_and_continuation(monkeypatch):
     tmpl = "docs/pf/data/theme_x.json"
     pats, _ = inv.needles_for(tmpl)
 
-    def cls(level, n, t=tmpl, p=pats):
-        monkeypatch.setattr(inv, "RESOLVE_STRICT", level)
+    def cls(n, t=tmpl, p=pats):
         inv._MENTIONS.pop((rel, n), None)
         return inv.mention_class(t, p, rel, n, wf.splitlines()[n - 1], wf)
-    assert [cls(3, n) for n in (2, 4)] == ["no", "no"]
-    assert cls(2, 4) == "reader"
+    assert [cls(n) for n in (2, 4)] == ["no", "no"]
+    spats, _ = inv.needles_for("config/theme_x.json")
+    assert cls(2, "config/theme_x.json", spats) == "reader"
     mpats, _ = inv.needles_for("/tmp/msg_x.txt")
-    assert cls(3, 6, "/tmp/msg_x.txt", mpats) == "reader"
+    assert cls(6, "/tmp/msg_x.txt", mpats) == "reader"
 
 
 def test_portfolio_layer_settings():
     """Portfolio（段階1、2026-10-22。段階3、2026-10-23）: 画面は docs/portfolio/index.html だけ（同じフォルダに TAIL の画面がある）。
-    Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV の最後の段階（解決の厳しさ 3）。"""
+    Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV の最後の段階。"""
     pf = inv.LAYERS["portfolio"]
     assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
-    assert pf["RESOLVE_STRICT"] == 3
     assert inv.CHECK_LAYERS[-1] == "portfolio"
     assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["macro_data", "market_pulse", "portfolio"]
 
 
 def test_macro_layers_settings():
-    """MACRO PULSE（段階1・2、2026-10-23）: 共有のデータ層 macro_data（画面なし、市場データ層と同じ印。series_meta.json は書き手の無いファイル）と、
-    macro_pulse（CSV の列をキーとして数える・ページの el('id')）。解決の厳しさはどちらも 1。段階3（2026-10-23）で CHECK-INV に入れた。"""
+    """MACRO PULSE（段階1・2、2026-10-23）: 共有のデータ層 macro_data（画面なし、市場データ層と同じ汎用の読み書きの関数の印。series_meta.json は書き手の無いファイル）と、
+    macro_pulse（画面あり）。段階3（2026-10-23）で CHECK-INV に入れた。"""
     md, mp = inv.LAYERS["macro_data"], inv.LAYERS["macro_pulse"]
     assert md["LAYER_DIRS"] == ("common/macro_data",) and not md["SCREEN_PAGES"]
-    assert md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"] and md["RESOLVE_STRICT"] == 1
-    assert md["EXTRA_OUTPUT_DIRS"] == ("common/macro_data",)
+    assert md["IO_HELPER_BY_CALLER"] and md["EXTRA_OUTPUT_DIRS"] == ("common/macro_data",)
     assert mp["LAYER_DIRS"] == ("src/market/macro_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/macro-pulse",)
-    assert mp["RESOLVE_STRICT"] == 1 and mp["CSV_COLUMNS"] and mp["JS_ID_HELPERS"]
-    assert not (mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"] or mp["EXTRA_OUTPUT_DIRS"])
+    assert not (mp["IO_HELPER_BY_CALLER"] or mp["EXTRA_OUTPUT_DIRS"])
     assert "macro_data" in inv.CHECK_LAYERS and "macro_pulse" in inv.CHECK_LAYERS
     assert md["KNOWN_DUPLICATE_RULES"] == ["fred_api", "atomic_write_json"]
     assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"]
-    # 既存の段階の一覧を変えないよう、足した印はこの2つの段階だけ
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
-    # Market Pulse も CSV の列を数える（本番外のコードの注記は段階2で4つとも消して空）
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"]] == ["macro_pulse", "market_pulse"]
+    # 本番外のコードの注記は MACRO PULSE の 05_audit.py だけ（Market Pulse は段階2で4つとも消して空）
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]
 
 
-def test_csv_columns_are_keys_only_with_flag(tmp_path, monkeypatch):
-    """CSV_COLUMNS: CSV の見出しの行の列を {列: ""} にする（BOM 付きでも）。印が無ければ CSV は読まない（None）。"""
-    (tmp_path / "x.csv").write_text("﻿date,score , phase\n2026-10-23,40,中立\n", encoding="utf-8")
+def test_csv_columns_are_keys(tmp_path, monkeypatch):
+    """CSV の見出しの行の列を {列: ""} にする（BOM 付きでも。MACRO PULSE の段階から、2026-10-23から全段階）。"""
+    (tmp_path / "x.csv").write_text("\ufeffdate,score , phase\n2026-10-23,40,中立\n", encoding="utf-8")
     monkeypatch.setattr(inv, "REPO", str(tmp_path))
-    monkeypatch.setattr(inv, "CSV_COLUMNS", True)
     assert inv.data_file_obj("x.csv") == {"date": "", "score": "", "phase": ""}
     assert inv.data_output_ext() == (".json", ".csv")
-    monkeypatch.setattr(inv, "CSV_COLUMNS", False)
-    assert inv.data_file_obj("x.csv") is None
-    assert inv.data_output_ext() == (".json",)
+    assert inv.data_file_obj("missing.csv") is None
 
 
 def test_js_id_helper_definitions():
-    """JS_ID_HELPERS: getElementById を包んだ関数の名前（矢印関数・function の両方）。"""
+    """getElementById を包んだ関数の名前（矢印関数・function の両方。MACRO PULSE の段階から、2026-10-23から全段階）。"""
     page = ("const el = id => document.getElementById(id);\n"
             "function $id(x) { return document.getElementById(x); }\n"
             "const other = document.getElementById('a');\n")
@@ -563,12 +542,10 @@ def test_js_id_helper_definitions():
 
 
 def test_market_pulse_layer_settings():
-    """Market Pulse（段階1、2026-10-23）: 手で動かすスクリプトは import collect_and_send as cs で同じパスを使う（解決の厳しさ 2）。
-    02_market_rss.txt（人の手で書く入力）も出力に加える。段階3（2026-10-23）で CHECK-INV に入れた（TAIL と同じ厳しさ 2 の後）。"""
+    """Market Pulse（段階1、2026-10-23）: 02_market_rss.txt（人の手で書く入力）も出力に加える。段階3（2026-10-23）で CHECK-INV に入れた。"""
     mp = inv.LAYERS["market_pulse"]
     assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
-    assert mp["RESOLVE_STRICT"] == 2 and mp["CSV_COLUMNS"] and mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",)
-    assert not (mp["JS_ID_HELPERS"] or mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"])
+    assert mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",) and not mp["IO_HELPER_BY_CALLER"]
     assert inv.CHECK_LAYERS[-2] == "market_pulse"
     assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"]
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]

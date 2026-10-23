@@ -29,10 +29,6 @@
      "reader_files": 5
     },
     {
-     "key": "method_change",
-     "reader_files": 2
-    },
-    {
      "key": "tickers",
      "reader_files": 10
     }
@@ -64,7 +60,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1117,
+     "line": 1118,
      "func": "_check_runway_divergence",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -72,7 +68,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2645,
+     "line": 2646,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -80,7 +76,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3455,
+     "line": 3456,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -855,70 +851,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 943,
-     "func": "TestCheckRunwayDivergence.test_warn_48_fires_when_stonks_safe_and_tanuki_danger",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 952,
-     "func": "TestCheckRunwayDivergence.test_warn_48_fires_when_stonks_danger_and_tanuki_safe",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 961,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_both_danger",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 970,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_both_safe",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 980,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_one_is_watch",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 988,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_tanuki_runway_missing",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 996,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_stonks_runway_missing",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1004,
-     "func": "TestCheckRunwayDivergence.test_no_warn_48_when_stonks_runway_is_none",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_sec_freshness.py",
      "line": 473,
      "func": "test_main_exits_two_when_m_is_critical",
@@ -956,46 +888,6 @@
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_e_silo",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 181,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 193,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 194,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 216,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 220,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
      "type": "テスト"
     }
    ],
@@ -1050,7 +942,7 @@
     "TANUKI VALUATIONの画面"
    ],
    "reader_count": 8,
-   "reader_count_test": 7,
+   "reader_count_test": 5,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、四半期・年次の財務の推移（financial_vectors）。STONKS SILOの画面・TANUKI VALUATIONの赤字銘柄の評価とTANUKI Score・rcc・System Healthが読む",
@@ -1203,12 +1095,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1633,
+     "line": 1634,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1774,
+     "line": 1775,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -3116,7 +3008,7 @@
     "note": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）"
    }
   ],
-  "written_key_count": 133,
+  "written_key_count": 132,
   "sections": [
    {
     "page": "docs/value-monitor/stonks-silo/index.html",

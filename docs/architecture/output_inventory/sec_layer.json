@@ -73,7 +73,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "ticker",
@@ -193,7 +193,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 4,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 4,
    "top_keys": [
     {
      "key": "cik",
@@ -253,7 +253,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "collisions",
@@ -373,7 +373,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "mismatches",
@@ -493,7 +493,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "collisions",
@@ -1015,14 +1015,6 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 224,
-     "func": "_read",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 238,
      "func": "repo",
      "how": "保存済みファイル",
@@ -1039,58 +1031,10 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 262,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 263,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 264,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 268,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 269,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 270,
      "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
      "how": "保存済みファイル",
      "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 278,
-     "func": "test_rollback_without_failures_changes_nothing",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
      "type": "テスト"
     },
     {
@@ -1185,11 +1129,11 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 1392,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 1392,
    "top_keys": [
     {
      "key": "bs",
-     "reader_files": 16
+     "reader_files": 15
     },
     {
      "key": "bs_provenance",
@@ -1201,15 +1145,19 @@
     },
     {
      "key": "cf",
-     "reader_files": 13
+     "reader_files": 12
     },
     {
      "key": "cf_provenance",
-     "reader_files": 5
+     "reader_files": 4
+    },
+    {
+     "key": "data_quality",
+     "reader_files": 3
     },
     {
      "key": "form",
-     "reader_files": 9
+     "reader_files": 8
     },
     {
      "key": "other",
@@ -1221,15 +1169,15 @@
     },
     {
      "key": "period",
-     "reader_files": 15
+     "reader_files": 13
     },
     {
      "key": "pl",
-     "reader_files": 24
+     "reader_files": 23
     },
     {
      "key": "pl_provenance",
-     "reader_files": 5
+     "reader_files": 4
     },
     {
      "key": "shares",
@@ -1241,16 +1189,40 @@
     },
     {
      "key": "ticker",
-     "reader_files": 23
+     "reader_files": 21
     }
    ],
    "readers": [
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 66,
+     "func": "_load_json",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
     {
      "file": "common/screening/dcf_validity_checker.py",
      "line": 79,
      "func": "_load_annual",
      "how": "保存済みファイル",
      "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 80,
+     "func": "_load_annual",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 166,
+     "func": "check_b_source_label",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
      "type": "Python"
     },
     {
@@ -1271,6 +1243,30 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
+     "line": 254,
+     "func": "check_e_transition_sample",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 364,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 367,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
      "line": 368,
      "func": "check_ticker",
      "how": "保存済みファイル",
@@ -1287,10 +1283,26 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
+     "line": 370,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
      "line": 408,
      "func": "main",
      "how": "保存済みファイル",
-     "via": "common/screening/dcf_validity_checker.py::_load_annual",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 448,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
      "type": "Python"
     },
     {
@@ -1935,6 +1947,14 @@
     },
     {
      "file": "src/value/stonks_silo/pipeline.py",
+     "line": 175,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
      "line": 256,
      "func": "<module>",
      "how": "保存済みファイル",
@@ -2443,6 +2463,22 @@
      "func": "TestSharesFromMarketData.test_implied_shares_preferred_over_outstanding",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader._load_json",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_dcf_validity_checker.py",
+     "line": 46,
+     "func": "TestCheckBSourceLabelSegmentXbrl.test_segment_xbrl_source_is_not_flagged_and_is_explicitly_recognized",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_dcf_validity_checker.py",
+     "line": 64,
+     "func": "TestCheckBSourceLabelSegmentXbrl.test_existing_segment_weighted_unconfigured_mismatch_still_flagged",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
      "type": "テスト"
     },
     {
@@ -3006,166 +3042,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 881,
-     "func": "TestCheckDupontNullValidity.test_warn_43_fires_when_dupont_none_and_equity_positive",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 888,
-     "func": "TestCheckDupontNullValidity.test_warn_43_fires_when_dupont_key_missing_and_equity_positive",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 896,
-     "func": "TestCheckDupontNullValidity.test_no_warn_43_when_dupont_none_but_negative_equity",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 904,
-     "func": "TestCheckDupontNullValidity.test_no_warn_43_when_dupont_none_but_equity_unavailable",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 915,
-     "func": "TestCheckDupontNullValidity.test_no_warn_43_when_dupont_is_excluded_dict",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 923,
-     "func": "TestCheckDupontNullValidity.test_no_warn_43_when_dupont_is_valid_decomposition",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_read_latest_annual_bs",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1483,
-     "func": "TestCheck54SplitHistoryRegistration._run",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1487,
-     "func": "TestCheck54SplitHistoryRegistration.test_unregistered_split_fires",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1494,
-     "func": "TestCheck54SplitHistoryRegistration.test_registered_split_within_tolerance_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1499,
-     "func": "TestCheck54SplitHistoryRegistration.test_date_far_from_registered_fires",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1505,
-     "func": "TestCheck54SplitHistoryRegistration.test_noise_band_ignored",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1510,
-     "func": "TestCheck54SplitHistoryRegistration.test_before_local_data_start_ignored",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1514,
-     "func": "TestCheck54SplitHistoryRegistration.test_reverse_split_fires",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1518,
-     "func": "TestCheck54SplitHistoryRegistration.test_fetch_failure_is_skip_not_warn",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_local_data_start",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1559,
-     "func": "TestCheck55AnnualDaPartialConcept.test_partial_adopted_with_diverging_total_fires",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1567,
-     "func": "TestCheck55AnnualDaPartialConcept.test_total_concept_adopted_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1575,
-     "func": "TestCheck55AnnualDaPartialConcept.test_within_one_percent_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1583,
-     "func": "TestCheck55AnnualDaPartialConcept.test_no_total_concept_for_same_end_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1593,
-     "func": "TestCheck55AnnualDaPartialConcept.test_only_latest_year_is_checked",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1596,
-     "func": "TestCheck55AnnualDaPartialConcept.test_missing_files_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_roic_shared_module.py",
      "line": 40,
      "func": "TestCalcRoicWaccRatioBasic.test_ok",
@@ -3508,46 +3384,6 @@
      "how": "保存済みファイル",
      "via": "src/value/stonks_silo/financial_as_of.py::scoring_fy_end",
      "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 181,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._calc_g_fundamental",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 193,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._calc_g_fundamental",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 194,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._calc_g_fundamental",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 216,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._calc_g_fundamental",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 220,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._calc_g_fundamental",
-     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -3609,7 +3445,7 @@
     "理論株価・判定（TANUKI VALUATION）"
    ],
    "reader_count": 17,
-   "reader_count_test": 23,
+   "reader_count_test": 21,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "生データから1年分ずつ取り出した年次の財務（損益・貸借・CF）",
@@ -3630,7 +3466,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "cik",
@@ -3642,7 +3478,7 @@
     },
     {
      "key": "facts",
-     "reader_files": 15
+     "reader_files": 14
     }
    ],
    "readers": [
@@ -4519,110 +4355,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 251,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_uses_latest_quarter_excludes_ytd",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 291,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_q4_timing_excludes_bs_concept_shares",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 299,
-     "func": "TestTailDcfBridgeRegression.test_load_layer1_financials_missing_file_returns_empty",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 357,
-     "func": "TestQuarterlyReviewGeneratorRegression.test_load_layer1_financials_matches_pre_migration_values",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 412,
-     "func": "TestQuarterlyReviewGeneratorRegression.test_load_layer1_financials_q4_timing_excludes_bs_concept_shares",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 464,
-     "func": "TestHypecoreRegression.test_fetch_quarterly_fundamentals_excludes_ytd_and_annual",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_gate2_phase3b1_reader_integration.py",
-     "line": 473,
-     "func": "TestHypecoreRegression.test_fetch_quarterly_fundamentals_missing_file_returns_empty",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 44,
-     "func": "TestYoyFormula.test_yoy_normal_case",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 67,
-     "func": "TestYoyFormula.test_yoy_skips_when_prior_year_value_is_none",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 85,
-     "func": "TestYoyFormula.test_yoy_skips_when_prior_year_value_is_zero",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 114,
-     "func": "TestYoyFormula.test_yoy_uses_calendar_matching_not_naive_index_when_series_has_gap",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 129,
-     "func": "TestYoyFormula.test_yoy_insufficient_history_returns_empty",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_layer3_formula_yoy.py",
-     "line": 147,
-     "func": "TestDivisionFormulaUnaffected.test_existing_division_formula_still_works",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/layer3_builder.py::load_company_facts",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_pipeline_logic.py",
      "line": 2625,
      "func": "TestFinancialSectorRevenueParsing.test_revenue_concept_override_uses_single_tag",
@@ -4684,54 +4416,6 @@
      "func": "test_no_ticker_filter_keeps_active_only",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1559,
-     "func": "TestCheck55AnnualDaPartialConcept.test_partial_adopted_with_diverging_total_fires",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1567,
-     "func": "TestCheck55AnnualDaPartialConcept.test_total_concept_adopted_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1575,
-     "func": "TestCheck55AnnualDaPartialConcept.test_within_one_percent_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1583,
-     "func": "TestCheck55AnnualDaPartialConcept.test_no_total_concept_for_same_end_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1593,
-     "func": "TestCheck55AnnualDaPartialConcept.test_only_latest_year_is_checked",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1596,
-     "func": "TestCheck55AnnualDaPartialConcept.test_missing_files_silent",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept",
      "type": "テスト"
     },
     {
@@ -5112,14 +4796,6 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 224,
-     "func": "_read",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 234,
      "func": "repo",
      "how": "保存済みファイル",
@@ -5152,42 +4828,10 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 263,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 264,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 268,
      "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
      "how": "保存済みファイル",
      "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 269,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 270,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
      "type": "テスト"
     },
     {
@@ -5474,7 +5118,7 @@
     "保有銘柄の監視（TANUKI TAIL）"
    ],
    "reader_count": 22,
-   "reader_count_test": 18,
+   "reader_count_test": 15,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
@@ -5495,7 +5139,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 3425,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 3425,
    "top_keys": [
     {
      "key": "bs",
@@ -5508,6 +5152,10 @@
     {
      "key": "cf",
      "reader_files": 6
+    },
+    {
+     "key": "cf_provenance",
+     "reader_files": 1
     },
     {
      "key": "data_quality",
@@ -6311,7 +5959,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "accn_to_filingdate",
@@ -6492,6 +6140,14 @@
      "type": "Python"
     },
     {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 175,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/fetcher.py::load_submissions",
+     "type": "Python"
+    },
+    {
      "file": "tests/test_bs_field_cross_year_misselect.py",
      "line": 304,
      "func": "TestRealDataCrmVrt.test_crm_2011_stockholders_equity_uses_own_fy2011_10k_value",
@@ -6622,10 +6278,23 @@
    ],
    "readers_compute": [],
    "producers": [],
-   "screens": [],
+   "screens": [
+    {
+     "page": "docs/value-monitor/stonks-silo/index.html",
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+    }
+   ],
    "definitions": [],
    "decision_effect": [],
-   "reader_count": 5,
+   "reader_count": 6,
    "reader_count_test": 7,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -6647,7 +6316,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 4,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 4,
    "top_keys": [
     {
      "key": "accn_to_filingdate",
@@ -6908,11 +6577,11 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "fields",
-     "reader_files": 11
+     "reader_files": 10
     },
     {
      "key": "generated_at",
@@ -6920,7 +6589,7 @@
     },
     {
      "key": "ticker",
-     "reader_files": 15
+     "reader_files": 13
     }
    ],
    "readers": [
@@ -7741,86 +7410,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1188,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_fires_on_appstyle_divergence",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1202,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_fired_when_values_match",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1218,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_fired_within_tolerance",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1235,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_fires_just_above_tolerance_boundary",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1251,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_window_misaligned",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1267,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_ttm_side_has_missing_quarters",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1281,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_fewer_than_4_quarters_available",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1311,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_aggregates_multiple_fields",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1321,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_missing_files_returns_empty",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1336,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_included_in_ng",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_runway_cash_unify.py",
      "line": 149,
      "func": "TestStiQuarterlyMissing.test_sitm_type_measured_zero_is_not_missing",
@@ -7862,14 +7451,6 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 224,
-     "func": "_read",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 236,
      "func": "repo",
      "how": "保存済みファイル",
@@ -7894,14 +7475,6 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 262,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 263,
      "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
      "how": "保存済みファイル",
@@ -7910,50 +7483,10 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 264,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 268,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 269,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 270,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 277,
      "func": "test_rollback_without_failures_changes_nothing",
      "how": "保存済みファイル",
      "via": "common/sec_data/rollback_failed.py::ticker_paths",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 278,
-     "func": "test_rollback_without_failures_changes_nothing",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
      "type": "テスト"
     },
     {
@@ -7976,46 +7509,6 @@
      "file": "tests/test_sensitivity_tapering.py",
      "line": 65,
      "func": "TestCalculatePtSensitivityCenter.test_two_stage_center_unchanged",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 181,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 193,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 194,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 216,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 220,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
      "how": "保存済みファイル",
      "via": "common/sec_data/reader.py::SECReader.get_rpo_context",
      "type": "テスト"
@@ -8085,7 +7578,7 @@
     "理論株価・判定（TANUKI VALUATION）"
    ],
    "reader_count": 8,
-   "reader_count_test": 14,
+   "reader_count_test": 12,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "四半期の財務を項目ごとの時系列に並べ直し、Q4の逆算を足したもの",
@@ -8106,7 +7599,7 @@
     ".github/workflows/SEC_Data_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
     {
      "key": "generated_at",
@@ -8118,11 +7611,11 @@
     },
     {
      "key": "series",
-     "reader_files": 11
+     "reader_files": 10
     },
     {
      "key": "ticker",
-     "reader_files": 18
+     "reader_files": 16
     }
    ],
    "readers": [
@@ -8983,102 +8476,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_registration_consistency_gate.py",
-     "line": 168,
-     "func": "test_hypergrowth_not_ng_after_p2a_removal",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/registration_validator.py::_load_json",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1188,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_fires_on_appstyle_divergence",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1202,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_fired_when_values_match",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1218,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_fired_within_tolerance",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1235,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_fires_just_above_tolerance_boundary",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1251,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_window_misaligned",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1267,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_ttm_side_has_missing_quarters",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1281,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_skips_when_fewer_than_4_quarters_available",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1311,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_aggregates_multiple_fields",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1321,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_missing_files_returns_empty",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_report_consistency_check.py",
-     "line": 1336,
-     "func": "TestCheck47TtmParserLayer3Reconciliation.test_warn_47_not_included_in_ng",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 224,
-     "func": "_read",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_sec_update_ticker_failure.py",
      "line": 237,
      "func": "repo",
@@ -9104,34 +8501,10 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 262,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 263,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 264,
      "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
      "how": "保存済みファイル",
      "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 268,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
      "type": "テスト"
     },
     {
@@ -9144,26 +8517,10 @@
     },
     {
      "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 270,
-     "func": "test_rollback_restores_failed_existing_and_removes_new_ticker",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
      "line": 277,
      "func": "test_rollback_without_failures_changes_nothing",
      "how": "保存済みファイル",
      "via": "common/sec_data/rollback_failed.py::ticker_paths",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_update_ticker_failure.py",
-     "line": 278,
-     "func": "test_rollback_without_failures_changes_nothing",
-     "how": "保存済みファイル",
-     "via": "tests/test_sec_update_ticker_failure.py::_read",
      "type": "テスト"
     },
     {
@@ -9415,46 +8772,6 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 181,
-     "func": "TestSaveResult.test_saves_period_latest_and_index",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 193,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 194,
-     "func": "TestSaveResult.test_index_merges_across_calls_without_clobbering",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 216,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tail_sec_items_fetcher.py",
-     "line": 220,
-     "func": "TestSaveResult.test_latest_json_keeps_most_recent_report_date_regardless_of_call_order",
-     "how": "保存済みファイル",
-     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
-     "type": "テスト"
-    },
-    {
      "file": "tests/test_ttm_flow_key_names.py",
      "line": 39,
      "func": "_real_series0",
@@ -9589,7 +8906,7 @@
     "理論株価・判定（TANUKI VALUATION）"
    ],
    "reader_count": 9,
-   "reader_count_test": 13,
+   "reader_count_test": 11,
    "reader_count_compute": 2,
    "group": "2件以上",
    "note": "直近4四半期の合計（TTM）の時系列",
@@ -10932,198 +10249,6 @@
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
      "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 55,
-     "func": "TestGetActiveTickers.test_returns_only_flagged_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 64,
-     "func": "TestGetActiveTickers.test_excludes_retired_status_even_if_flag_true",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 74,
-     "func": "TestGetActiveTickers.test_excludes_provisioning_status_even_if_flag_true",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 82,
-     "func": "TestGetActiveTickers.test_candidate_status_is_still_included",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 86,
-     "func": "TestGetActiveTickers.test_empty_flag_value_excluded",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 93,
-     "func": "TestGetActiveTickers.test_case_and_whitespace_insensitive",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 108,
-     "func": "TestGetRegistrableTickers.test_includes_provisioning_status",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 115,
-     "func": "TestGetRegistrableTickers.test_still_excludes_retired_status",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 121,
-     "func": "TestGetRegistrableTickers.test_excludes_flag_false_even_if_provisioning",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 139,
-     "func": "TestGetRegistrableTickersNoFlag.test_returns_all_flags_regardless_of_flag_values",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 148,
-     "func": "TestGetRegistrableTickersNoFlag.test_includes_provisioning_status",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 155,
-     "func": "TestGetRegistrableTickersNoFlag.test_excludes_retired_status",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 162,
-     "func": "TestGetRegistrableTickersNoFlag.test_default_flag_is_none",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 217,
-     "func": "TestConvenienceWrappersUseActiveTickers.test_get_tanuki_tickers_excludes_retired",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 224,
-     "func": "TestConvenienceWrappersUseActiveTickers.test_get_stonks_silo_tickers_excludes_retired",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 231,
-     "func": "TestConvenienceWrappersUseActiveTickers.test_get_eps_tickers_excludes_retired",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 238,
-     "func": "TestConvenienceWrappersUseActiveTickers.test_get_hypecore_tickers_excludes_retired",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 251,
-     "func": "TestGetAllRows.test_returns_all_columns",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 261,
-     "func": "TestGetAllRows.test_returns_all_rows_regardless_of_flags_or_status",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 267,
-     "func": "TestGetAllRows.test_default_path_matches_get_all_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 268,
-     "func": "TestGetAllRows.test_default_path_matches_get_all_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 276,
-     "func": "TestProductionCikLookup.test_zs_excluded_from_tanuki_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 280,
-     "func": "TestProductionCikLookup.test_zs_included_in_stonks_silo_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_tickers.py",
-     "line": 283,
-     "func": "TestProductionCikLookup.test_rklb_excluded_from_tanuki_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/tickers.py::_load",
-     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -11135,7 +10260,7 @@
     },
     {
      "page": "docs/portfolio/tail/detail.html",
-     "how": "経由（src/tail/tail_dcf_bridge.py → docs/portfolio/scenario/{T}/{sc_name}.json）"
+     "how": "経由（src/tail/sec_items_fetcher.py → docs/portfolio/tail/data/{item_key}/{T}/latest.json）"
     },
     {
      "page": "docs/portfolio/tail/index.html",
@@ -11182,7 +10307,7 @@
     "保有銘柄の監視（TANUKI TAIL）"
    ],
    "reader_count": 28,
-   "reader_count_test": 17,
+   "reader_count_test": 16,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える",
@@ -11203,8 +10328,12 @@
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
    "files_tracked": 98,
-   "top_keys_sampled_files": 3,
+   "top_keys_sampled_files": 98,
    "top_keys": [
+    {
+     "key": "company_reported",
+     "reader_files": 2
+    },
     {
      "key": "current",
      "reader_files": 3
@@ -11766,6 +10895,96 @@
  "non_production_code": [
   {
    "dir": "scripts/analysis",
+   "file": "scripts/analysis/market_pulse_redesign.py",
+   "decision": "残す（2026-10-20。Market Pulse の作り直しの検討中。src/market/market_pulse/stage_conclusions.py が同じ値を使う）",
+   "lines": 478,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "browser_checks",
+   "file": "browser_checks/check_dependency_map.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 458,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "browser_checks",
+   "file": "browser_checks/check_macro_pulse.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1273,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "browser_checks",
+   "file": "browser_checks/check_signal_consistency_section.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 206,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "browser_checks",
+   "file": "browser_checks/check_tanuki_score_undetermined.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 86,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "browser_checks",
+   "file": "browser_checks/check_valuation_chart_basis.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 213,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/fye_change_candidate_scan.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 168,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/newfield_q4_cutoff_check.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 217,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": [],
+   "found_by": "どこからも呼ばれない"
+  }
+ ],
+ "non_production_scanned": [
+  {
+   "dir": "scripts/analysis",
    "file": "scripts/analysis/daily_intraday_rows_scan.py",
    "decision": "残す（2026-10-20）",
    "lines": 123,
@@ -11847,6 +11066,676 @@
     "browser_checks/check_dependency_map.py"
    ],
    "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/__init__.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 46,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/audit.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 468,
+   "workflows": [
+    ".github/workflows/SEC_Data_Audit.yml"
+   ],
+   "code": [
+    "common/registration/register_ticker.py",
+    "common/system_health.py"
+   ],
+   "same_dir": [
+    "common/sec_data/update_notify.py"
+   ],
+   "tests": [
+    "tests/test_audit_market_data_switch.py",
+    "tests/test_discord_user_agent.py",
+    "tests/test_sec_update_ticker_failure.py",
+    "tests/test_ttm_flow_key_names.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/conditional_tags.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 84,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/parser.py"
+   ],
+   "tests": [
+    "tests/test_conditional_tags_and_stale_latest.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/config.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 90,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/__init__.py",
+    "common/sec_data/fetcher.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/reader.py",
+    "common/sec_data/rotce.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_sec_data_config.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/contracts.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 399,
+   "workflows": [],
+   "code": [
+    "src/value/tanuki_valuation/calculator/growth.py",
+    "src/value/tanuki_valuation/data_fetcher.py",
+    "src/value/tanuki_valuation/growth_sanity.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/normalizer.py",
+    "common/sec_data/ttm_calculator.py"
+   ],
+   "tests": [
+    "tests/test_contracts.py",
+    "tests/test_first_filed.py",
+    "tests/test_growth.py",
+    "tests/test_report_consistency_check.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/dimension_aggregate_fetcher.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 439,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/parser.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/fact_selection.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 143,
+   "workflows": [],
+   "code": [
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/normalizer.py",
+    "common/sec_data/q4_implied.py",
+    "common/sec_data/quarterly.py"
+   ],
+   "tests": [
+    "tests/test_first_filed.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/fetcher.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 608,
+   "workflows": [],
+   "code": [
+    "src/tail/kpi_proposer.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+    "src/value/stonks_silo/analyzer.py",
+    "src/value/stonks_silo/financial_as_of.py",
+    "src/value/stonks_silo/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/__init__.py",
+    "common/sec_data/dimension_aggregate_fetcher.py",
+    "common/sec_data/fye_change_candidate_scan.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/revenue_tag_conflict_check.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_eps_cik_history_merge.py",
+    "tests/test_sec_freshness.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/freshness.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 202,
+   "workflows": [],
+   "code": [
+    "common/system_health.py"
+   ],
+   "same_dir": [
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_output_inventory_check.py",
+    "tests/test_sec_freshness.py",
+    "tests/test_sec_update_ticker_failure.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/fye_change_candidate_scan.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 168,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/layer3_builder.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1590,
+   "workflows": [],
+   "code": [
+    "src/tail/kpi_proposer.py",
+    "src/tail/quarterly_review_generator.py",
+    "src/tail/tail_dcf_bridge.py",
+    "src/tail/xbrl_segment_fetcher.py",
+    "src/value/hypecore/hypecore.py",
+    "src/value/stonks_silo/financial_trend_calculator.py",
+    "src/value/stonks_silo/pipeline.py",
+    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/newfield_q4_cutoff_check.py",
+    "common/sec_data/reader.py",
+    "common/sec_data/rotce.py",
+    "common/sec_data/ttm_calculator.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_conditional_tags_and_stale_latest.py",
+    "tests/test_contracts.py",
+    "tests/test_first_filed.py",
+    "tests/test_gate2_phase3b1_reader_integration.py",
+    "tests/test_layer3_accessor_wrappers.py",
+    "tests/test_layer3_annual_misclassification.py",
+    "tests/test_layer3_no_merge_window_independent.py",
+    "tests/test_layer3_operating_income_backfill.py",
+    "tests/test_layer3_shares_non_additive.py",
+    "tests/test_layer3_ticker_overrides_single_source.py",
+    "tests/test_net_income_parent_attribution.py",
+    "tests/test_output_inventory_check.py",
+    "tests/test_tangible_equity_tags.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/newfield_q4_cutoff_check.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 217,
+   "workflows": [],
+   "code": [],
+   "same_dir": [],
+   "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/normalizer.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 509,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/parser.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_first_filed.py",
+    "tests/test_normalizer.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/parser.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 4070,
+   "workflows": [],
+   "code": [
+    "common/registration/preflight_check.py",
+    "src/value/tanuki_valuation/calculator/rice.py"
+   ],
+   "same_dir": [
+    "common/sec_data/__init__.py",
+    "common/sec_data/fye_change_candidate_scan.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/revenue_tag_conflict_check.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_bs_entity_mixing.py",
+    "tests/test_bs_field_cross_year_misselect.py",
+    "tests/test_cash_tag_missing.py",
+    "tests/test_conditional_tags_and_stale_latest.py",
+    "tests/test_fcf_bottom_up_capex_concept.py",
+    "tests/test_fiscal_year_anchor_window.py",
+    "tests/test_fy_collision_log_dedup.py",
+    "tests/test_fy_tag_provenance.py",
+    "tests/test_gross_profit_backfill.py",
+    "tests/test_net_income_parent_attribution.py",
+    "tests/test_parser_merge_duration.py",
+    "tests/test_parser_period_length_validated_fields.py",
+    "tests/test_pipeline_logic.py",
+    "tests/test_pl_field_cross_accn_alignment.py",
+    "tests/test_preflight_check.py",
+    "tests/test_tag_fallback_selection.py",
+    "tests/test_tangible_equity_tags.py",
+    "tests/test_total_liabilities_backfill.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/q4_implied.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 237,
+   "workflows": [],
+   "code": [
+    "src/value/stonks_silo/financial_trend_calculator.py"
+   ],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/normalizer.py",
+    "common/sec_data/rotce.py",
+    "common/sec_data/ttm_calculator.py"
+   ],
+   "tests": [
+    "tests/test_first_filed.py",
+    "tests/test_normalizer.py",
+    "tests/test_ttm_calculator.py",
+    "tests/test_ttm_flow_key_names.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/quarterly.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 1129,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_cash_tag_missing.py",
+    "tests/test_fcf_bottom_up_capex_concept.py",
+    "tests/test_first_filed.py",
+    "tests/test_layer3_no_merge_window_independent.py",
+    "tests/test_layer3_ticker_overrides_single_source.py",
+    "tests/test_ltdebt_priority_reversal.py",
+    "tests/test_net_income_parent_attribution.py",
+    "tests/test_normalized_selection_window.py",
+    "tests/test_pipeline_logic.py",
+    "tests/test_quarterly_classify_period.py",
+    "tests/test_retention_and_fcf_points.py",
+    "tests/test_tag_fallback_selection.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/reader.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 843,
+   "workflows": [],
+   "code": [
+    "src/value/stonks_silo/analyzer.py",
+    "src/value/stonks_silo/pipeline.py",
+    "src/value/tanuki_valuation/core_calculator.py",
+    "src/value/tanuki_valuation/data_fetcher.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/__init__.py",
+    "common/sec_data/report_consistency_check.py"
+   ],
+   "tests": [
+    "tests/test_close_missing_price.py",
+    "tests/test_gate2_phase3b1_reader_integration.py",
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_pipeline_logic.py",
+    "tests/test_reader_fcf_list_with_dates.py",
+    "tests/test_runway_cash_unify.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/registration_validator.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 709,
+   "workflows": [],
+   "code": [
+    "common/registration/register_ticker.py",
+    "common/system_health.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_registration_consistency_gate.py",
+    "tests/test_registration_validator.py",
+    "tests/test_stonks_flag_rule.py",
+    "tests/test_ttm_flow_key_names.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/report_consistency_check.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 3712,
+   "workflows": [
+    ".github/workflows/Adjusted_Eps_Analyzer_update.yml",
+    ".github/workflows/SEC_Data_Update.yml",
+    ".github/workflows/Stonks_Silo_Update.yml",
+    ".github/workflows/TANUKI_VALUATION_Update.yml"
+   ],
+   "code": [
+    "common/registration/register_ticker.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_check31_fields_snapshot_hash.py",
+    "tests/test_check41_registration_ng.py",
+    "tests/test_check47_contiguous_window.py",
+    "tests/test_close_missing_price.py",
+    "tests/test_first_filed.py",
+    "tests/test_latest_period_guard.py",
+    "tests/test_market_data_stale_provisional.py",
+    "tests/test_registration_consistency_gate.py",
+    "tests/test_report_consistency_check.py",
+    "tests/test_rotce.py",
+    "tests/test_runway_cash_unify.py",
+    "tests/test_sec_freshness.py",
+    "tests/test_sec_update_ticker_failure.py",
+    "tests/test_share_count_outlier_check.py",
+    "tests/test_stonks_flag_rule.py",
+    "tests/test_update_schedule.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/revenue_tag_conflict_check.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 188,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/update.py"
+   ],
+   "tests": []
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/roic.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 136,
+   "workflows": [],
+   "code": [
+    "src/value/adjusted_eps_analyzer/execution_metrics.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_roic_shared_module.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/rollback_failed.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 112,
+   "workflows": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/update.py",
+    "common/sec_data/update_notify.py"
+   ],
+   "tests": [
+    "tests/test_sec_update_ticker_failure.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/rotce.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 714,
+   "workflows": [
+    ".github/workflows/Market_Data_Daily_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/report_consistency_check.py"
+   ],
+   "tests": [
+    "tests/test_conditional_tags_and_stale_latest.py",
+    "tests/test_market_data_stale_provisional.py",
+    "tests/test_rotce.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/share_unit_fix.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 202,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/report_consistency_check.py"
+   ],
+   "tests": [
+    "tests/test_share_unit_fix.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/split_adjust.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 97,
+   "workflows": [],
+   "code": [
+    "src/value/adjusted_eps_analyzer/pipeline.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/rotce.py"
+   ],
+   "tests": [
+    "tests/test_share_count_outlier_check.py",
+    "tests/test_split_adjust.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/stonks_flag_rule.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 122,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/registration_validator.py",
+    "common/sec_data/report_consistency_check.py"
+   ],
+   "tests": [
+    "tests/test_stonks_flag_rule.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/tag_definitions.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 352,
+   "workflows": [],
+   "code": [
+    "src/tail/kpi_proposer.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
+   ],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/quarterly.py",
+    "common/sec_data/rotce.py"
+   ],
+   "tests": [
+    "tests/test_cash_tag_missing.py",
+    "tests/test_extract_key_facts_net_income_selection.py",
+    "tests/test_fcf_bottom_up_capex_concept.py",
+    "tests/test_net_income_parent_attribution.py",
+    "tests/test_tag_fallback_selection.py",
+    "tests/test_tangible_equity_tags.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/tickers.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 169,
+   "workflows": [],
+   "code": [
+    "browser_checks/check_signal_consistency_section.py",
+    "browser_checks/check_valuation_chart_basis.py",
+    "common/registration/preflight_check.py",
+    "common/screening/dcf_validity_checker.py",
+    "common/screening/report_txt_parser.py",
+    "common/system_health.py",
+    "src/tail/kpi_proposer.py",
+    "src/tail/sec_ctrl_fetcher.py",
+    "src/tail/sec_items_fetcher.py",
+    "src/tail/tail_dcf_bridge.py",
+    "src/tail/text_kpi_extractor.py",
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+    "src/value/adjusted_eps_analyzer/pipeline.py",
+    "src/value/hypecore/hypecore.py",
+    "src/value/stonks_silo/pipeline.py",
+    "src/value/tanuki_valuation/pipeline.py",
+    "src/value/tanuki_valuation/score_verifier.py"
+   ],
+   "same_dir": [
+    "common/sec_data/config.py",
+    "common/sec_data/fye_change_candidate_scan.py",
+    "common/sec_data/newfield_q4_cutoff_check.py",
+    "common/sec_data/registration_validator.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/revenue_tag_conflict_check.py"
+   ],
+   "tests": [
+    "tests/test_eps_get_cik_registry_only.py",
+    "tests/test_flag_consumer_audit_3.py",
+    "tests/test_iv_formula.py",
+    "tests/test_no_direct_ticker_access.py",
+    "tests/test_sec_data_config.py",
+    "tests/test_tickers.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/ttm_calculator.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 408,
+   "workflows": [],
+   "code": [
+    "src/value/stonks_silo/financial_as_of.py",
+    "src/value/tanuki_valuation/data_fetcher.py"
+   ],
+   "same_dir": [
+    "common/sec_data/reader.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_close_missing_price.py",
+    "tests/test_contracts.py",
+    "tests/test_output_inventory_check.py",
+    "tests/test_retention_and_fcf_points.py",
+    "tests/test_stonks_silo_financial_as_of.py",
+    "tests/test_ttm_anchor_reach.py",
+    "tests/test_ttm_calculator.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/update.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 432,
+   "workflows": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "code": [
+    "common/registration/register_ticker.py"
+   ],
+   "same_dir": [
+    "common/sec_data/audit.py",
+    "common/sec_data/freshness.py",
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/update_notify.py"
+   ],
+   "tests": [
+    "tests/test_sec_freshness.py",
+    "tests/test_sec_update_ticker_failure.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/update_notify.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 95,
+   "workflows": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_sec_update_ticker_failure.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/utils.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 432,
+   "workflows": [],
+   "code": [
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/__init__.py",
+    "common/sec_data/fye_change_candidate_scan.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/quarterly.py",
+    "common/sec_data/report_consistency_check.py"
+   ],
+   "tests": [
+    "tests/test_check31_fields_snapshot_hash.py",
+    "tests/test_fiscal_year_anchor_window.py"
+   ]
   }
  ],
  "f3_zero_reader": [
@@ -11931,7 +11820,7 @@
   "outputs": 21,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 58,
+  "python_read_sites_into_layer_resolved": 59,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/sec_data/report_consistency_check.py",
@@ -11959,5 +11848,1008 @@
   "ratio_reader": 0.022,
   "threshold": 0.1,
   "hit": false
+ },
+ "workflow_outputs": [
+  {
+   "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
+   "lines": [
+    120,
+    121,
+    122,
+    123,
+    125
+   ],
+   "keys": []
+  },
+  {
+   "workflow": ".github/workflows/SEC_Data_Update.yml",
+   "lines": [
+    102,
+    103,
+    104,
+    105,
+    111
+   ],
+   "keys": []
+  },
+  {
+   "workflow": ".github/workflows/Stonks_Silo_Update.yml",
+   "lines": [
+    75,
+    76,
+    77,
+    78,
+    87
+   ],
+   "keys": [
+    {
+     "key": "overall_score",
+     "in_json": false
+    },
+    {
+     "key": "overall_verdict",
+     "in_json": false
+    },
+    {
+     "key": "tickers",
+     "in_json": true
+    }
+   ]
+  },
+  {
+   "workflow": ".github/workflows/TANUKI_VALUATION_Update.yml",
+   "lines": [
+    102,
+    103,
+    104,
+    105,
+    110
+   ],
+   "keys": [
+    {
+     "key": "intrinsic_value_per_share",
+     "in_json": false
+    },
+    {
+     "key": "overall",
+     "in_json": false
+    },
+    {
+     "key": "validation",
+     "in_json": false
+    }
+   ]
+  }
+ ],
+ "data_keys": {
+  "unread_keys": [
+   {
+    "key": "accn_aligned",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "accn_aligned_anchor",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "acquisition",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "acre",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "aligned_to_sibling_accn",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "annual_fill_max_days",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "appeal",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "bs_tag_sources",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "business",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "business_combination",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "business_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "businesscombinations",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "case_filed",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "charge",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "claim",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "claimant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "classAction",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "class_action_lawsuit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "companies",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "complaints",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "computed_year",
+    "sources": [
+     "common/sec_data/data/{T}/fy_tag_mismatch_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "cross_check",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "current_employees",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "current_litigation_m",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "defendant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "derivative",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "derivativeInstrument",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "diff_base",
+    "sources": [
+     "common/sec_data/data/{T}/bs_identity_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "diff_base_pct",
+    "sources": [
+     "common/sec_data/data/{T}/bs_identity_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "diff_extended",
+    "sources": [
+     "common/sec_data/data/{T}/bs_identity_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "dimension_aggregate_applied",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "ecd",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "employee",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "entity",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "eps_basic",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json",
+     "common/sec_data/ttm/{T}_ttm_series.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "extra_components",
+    "sources": [
+     "common/sec_data/data/{T}/bs_identity_violations_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "facility",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "fcf_method",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "ffd",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "financing_cash_flow",
+    "sources": [
+     "common/sec_data/ttm/{T}_ttm_series.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "first_quarter",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "former_employee",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "frame",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "gap_amount",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "goodwill",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json",
+     "docs/common/sec_data/rotce/_summary.json",
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "gp_anchor_realigned",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "gp_anchor_realigned_tag",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "gp_estimate",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "gp_rejected_reason",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "individuals",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "instrument",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "insuranceCompany",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "insurance_company",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "insurance_reserves",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "interest_expense",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "interest_income",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "invest",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "investing_cash_flow",
+    "sources": [
+     "common/sec_data/ttm/{T}_ttm_series.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "investment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "judicialCase",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "last_quarter",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "legacy_ciks_merged",
+    "sources": [
+     "common/sec_data/data/{T}/submissions.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "lender",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "min_quarters",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "mmbtu",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "n_periods",
+    "sources": [
+     "common/sec_data/ttm/{T}_ttm_series.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "nonop_items",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "nonop_net",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "numberOfCompany",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "numberOfSegment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "operating_segment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "operating_segments",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "other_nonop_income",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "other_provenance",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "other_side",
+    "sources": [
+     "common/sec_data/data/{T}/fye_boundary_collision_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "override_applied",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/fye_boundary_collision_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "override_reason",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "own_data_side",
+    "sources": [
+     "common/sec_data/data/{T}/fye_boundary_collision_log.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "patent",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "percentage",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "plaintiff",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "plantiff",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "position",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "pretax_raw",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "project",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "ptbv_pctl_max",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "ptbv_pctl_min",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "pure",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reference_only",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json",
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "registration_note",
+    "sources": [
+     "config/cik_lookup.csv"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reportableSegment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reportable_segment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reportable_segments",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reportable_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reportingUnit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reporting_Unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "reporting_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "restaurant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "restricted_cash",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "restructuring_charges_deducted",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "retiree",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "revenue_tag_realigned",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "revenue_tag_realigned_to",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "rich",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "rotce_pctl_max",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "rotce_pctl_min",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "rotce_series",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "rotce_ttm_tce_avg",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "securities",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "security",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "segement",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "sga_captured",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "sga_total",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json",
+     "common/sec_data/data/{T}/quarterly_{Q}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "shares_provenance",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "shares_source",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "source_is_own_data",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "sqft",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "sqm",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "srt",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "store",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "stores",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "subsidiaries",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "survivor",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "tradingDay",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "trading_day",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "upscale",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "verification_command",
+    "sources": [
+     "common/sec_data/dimension_aggregate_registry.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "vote",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "votePerShare",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   }
+  ],
+  "written_key_count": 12527
  }
 }

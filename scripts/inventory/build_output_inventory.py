@@ -172,29 +172,20 @@ NON_PRODUCTION_FILES: List[str] = []         # 本番外のコードの候補（
 SCREEN_PAGES: Tuple[str, ...] = ()           # 画面の項目の表を作るページのフォルダ（TANUKI）
 SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, 区画の始まりの行の式, 次の区画の行の式, 判断)
 UNREAD_KEY_NOTES: Dict[str, str] = {}      # 誰も読まないキーを残した理由（段階2の判断）
-FULL_SCAN = False      # キーを抜き取りでなく全ファイルで集める（HypeCore の段階から。TANUKI の段階2で抜き取りが見落としを生んだ）
-SCREEN_SECTIONS = False    # 画面の区画（HTML の <!-- 見出し --> ごと）の一覧を作る
 HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の候補と、比べる docs/ のページ
 PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）
-WORKFLOW_SUMMARY = False   # 段階のファイルを動かすワークフローが自分で書く Step Summary と、それが読むキーの有無
 SECTION_DECISIONS: Dict[str, str] = {}   # 画面の区画の判断（ページ → 判断。そのページの区画すべてに当てる）
-NONPROD_SCAN = False   # 名前を挙げた候補が無くても、段階のフォルダの .py のうちどこからも呼ばれないものを本番外のコードの候補にする（EPS の段階から）
 IO_HELPER_BY_CALLER = False   # パスを引数で受けて読み書きする汎用の関数（_load_json・_atomic_write_json 等）を読み手・書き手にせず、その出力のパスを渡す呼び出し箇所をそうする（市場データ層の段階から）
 # Pythonの書き手の無いファイルも出力に加えるフォルダ（Portfolio の段階から）。そのフォルダの git にあるファイルのうち、どの出力の型にも当たらないものを
 # 出力にし、書き手はワークフローの cp（あれば）、無ければ「書き手なし（人の手で書く）」とする
 EXTRA_OUTPUT_DIRS: Tuple[str, ...] = ()
-DATA_UNREAD_KEYS = False   # 画面の無い層で、この段階のJSONのキー（入れ子まで）のうち、テストを除くコードに読みの形で出てこないものを出す（市場データ層の段階から）
-# パスと呼び出しの解決を厳しくする（市場データ層の段階から）: join の候補ごとの連結・テストの呼び出しを引数の候補にしない・argparse の引数・
-# 絶対パスの出力・StringIO・リポジトリの外のモジュールの関数。既存の段階の一覧を変えないよう段階ごとの印にした（R-A の終わりに全段階へ広げるか決める）
-# 2 は TAIL の段階から: 同じフォルダの import X as Y・名前の並びを回す for の変数（市場データ層の一覧を変えないよう 1 と分けた）
-# 3 は Portfolio の段階から: ワークフローの git commit -m の件名・cp の写し先・git add の \ の続きの行を読みとしない（TAIL の一覧を変えないよう 2 と分けた）
-RESOLVE_STRICT = 0
-# CSV の出力の列（見出しの行）を JSON のキーと同じに扱い、画面が読む列・誰も読まない列を数える（MACRO PULSE の段階から）
-CSV_COLUMNS = False
 # 本番外のコードの候補ごとの注記（実行の記録〈commit〉等、ファイル → 1文）。空でなければ表に欄を足す（MACRO PULSE の段階から）
 NONPROD_NOTES: Dict[str, str] = {}
-# 画面の区画: ページの中で getElementById を包んだ関数（const el = id => document.getElementById(id) 等）の呼び出しも要素の id とする（MACRO PULSE の段階から）
-JS_ID_HELPERS = False
+# 段階ごとの印（解決の厳しさ・キーの全ファイルの走査・画面の区画・ワークフローの Step Summary・本番外のコードの走査・CSV の列・
+# getElementById を包んだ関数）は、R-A の終わりの見直し（2026-10-23）で全段階に同じ一番厳しい側の設定にした（印は無い）。
+# 画面の無い層だけ、JSON のキー（入れ子まで）のうち誰も読まないものを出す（画面のある層は画面の項目の表で出す）。
+# IO_HELPER_BY_CALLER だけは段階ごと（市場データ層・マクロデータ層）: SEC層に広げると self._load_json(path) 形の呼び出しを
+# 読み手にできず、SECReader 経由の本当の読み手が消えるため
 
 _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
@@ -202,10 +193,8 @@ _SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD
             READ_PREFIXES=READ_PREFIXES, READ_HINT=READ_HINT, NAME_SHORT=NAME_SHORT, TITLE=TITLE, DECISION_NOTE=DECISION_NOTE,
             NON_PRODUCTION_FILES=NON_PRODUCTION_FILES, SCREEN_PAGES=SCREEN_PAGES, KNOWN_DUPLICATE_RULES=KNOWN_DUPLICATE_RULES,
             SCREEN_SECTION_DECISIONS=SCREEN_SECTION_DECISIONS, UNREAD_KEY_NOTES=UNREAD_KEY_NOTES,
-            FULL_SCAN=FULL_SCAN, SCREEN_SECTIONS=SCREEN_SECTIONS, HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
-            WORKFLOW_SUMMARY=WORKFLOW_SUMMARY, SECTION_DECISIONS=SECTION_DECISIONS, NONPROD_SCAN=NONPROD_SCAN,
-            IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, RESOLVE_STRICT=RESOLVE_STRICT, DATA_UNREAD_KEYS=DATA_UNREAD_KEYS,
-            EXTRA_OUTPUT_DIRS=EXTRA_OUTPUT_DIRS, CSV_COLUMNS=CSV_COLUMNS, NONPROD_NOTES=NONPROD_NOTES, JS_ID_HELPERS=JS_ID_HELPERS)
+HTML_COPIES=HTML_COPIES, PAGE_CHECKS=PAGE_CHECKS,
+SECTION_DECISIONS=SECTION_DECISIONS, IO_HELPER_BY_CALLER=IO_HELPER_BY_CALLER, EXTRA_OUTPUT_DIRS=EXTRA_OUTPUT_DIRS,NONPROD_NOTES=NONPROD_NOTES)
 # ---- TANUKI VALUATION・TANUKI Score（段階1、2026-10-20）
 _TANUKI = dict(_SEC)
 _TANUKI.update(
@@ -331,10 +320,10 @@ _HYPECORE.update(
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={},
     RULES=_TANUKI["RULES"],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],   # 段階1で比べた src/value/hypecore/hypecore.html は段階2で削除
     PAGE_CHECKS=[],   # 段階1で確かめた docs/value-monitor/extreme-fear/ は段階2で削除
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={"docs/value-monitor/hypecore/detail.html": "残す（2026-10-21、Koichiさんの判断）"},
 )
 # ---- EPS（adjusted_eps_analyzer、段階1、2026-10-21）
@@ -350,7 +339,7 @@ _EPS.update(
     ],
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "docs/value-monitor/adjusted_eps_analyzer/data/summary.json":
             "全銘柄の一覧（銘柄ごとの最新期のGAAP EPS・調整後EPS・差・前年比・健全性）と実行の結果（run_status）。EPSの画面の一覧・TANUKI VALUATIONの調整後EPSが読む",
@@ -391,10 +380,10 @@ _EPS.update(
         **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('adjusted_income', 'condition1', 'detected_items', 'adjustment_amount', 'dta_detected', 'maturity_monitor', 'sbc_per_share', 'sector_threshold', 'sector_exclusions', 'split_adjusted', 'xbrl_eps')},
     },
     RULES=_TANUKI["RULES"],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],   # 段階1で確かめた docs/value-monitor/admin.html は段階2で削除
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={
         "docs/value-monitor/adjusted_eps_analyzer/stock.html": "残す（2026-10-21、Koichiさんの判断）",
         "docs/value-monitor/adjusted_eps_analyzer/index.html": "残す（2026-10-21、Koichiさんの判断: 一覧の表）",
@@ -414,7 +403,7 @@ _STONKS.update(
     ],
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "docs/value-monitor/stonks-silo/data/results.json":
             "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、"
@@ -447,10 +436,10 @@ _STONKS.update(
         **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('angle', 'composite', 'population_size', 'fields_available', 'fields_missing', 'heatmap_fields', 'financial_vectors_note', 'gross_margin_note', 'ticker_count', 'unit_economics_label')},
     },
     RULES=_TANUKI["RULES"],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={
         "docs/value-monitor/stonks-silo/index.html":
             "残す（2026-10-21、Koichiさんの判断: 一覧の表・買い／回避シグナル・黒字化への道のり・拡大再生産・①〜③・推移のグラフ・財務トレンド・使い方のすべて）",
@@ -464,7 +453,7 @@ _MARKET.update(
     OUT_JSON=f"{OUT_DIR}/market_data_layer.json", OUT_MD=f"{OUT_DIR}/market_data_layer.md",
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "common/market_data/daily/{T}.json":
             "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -513,9 +502,8 @@ _MARKET.update(
         {"id": "sp500_constituents", "name": "S&P500の構成銘柄の一覧の取り方",
          "patterns": [r"def\s+_?\w*sp500_(?:tickers|constituents)\w*\s*\("]},
     ],
-    FULL_SCAN=True,
-    WORKFLOW_SUMMARY=True,
-    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=1, DATA_UNREAD_KEYS=True,
+
+    IO_HELPER_BY_CALLER=True,
 )
 # ---- TANUKI TAIL（src/tail・docs/portfolio/tail、段階1、2026-10-22）
 _TAIL = dict(_SEC)
@@ -530,7 +518,7 @@ _TAIL.update(
     ],
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "docs/portfolio/tail/data/positions_index.json":
             "TAILの保有・監視銘柄の一覧（positions）。画面の入力（Position Write）から書き、RSS Monitor・SEC Ctrl・Items・Market Pulse等が監視の対象に読む",
@@ -621,12 +609,12 @@ _TAIL.update(
         {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・モデル・再試行）",
          "patterns": [r"^\s*GROK_URL\s*=", r"def\s+_?\w*call_grok\w*\s*\("]},
     ],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={},
-    RESOLVE_STRICT=2,
+
 )
 # ---- Portfolio（src/portfolio・docs/portfolio/index.html・docs/portfolio/data、段階1、2026-10-22）
 _PORTFOLIO = dict(_SEC)
@@ -640,7 +628,7 @@ _PORTFOLIO.update(
     ],
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "docs/portfolio/data/portfolio.json":
             "証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、"
@@ -671,13 +659,13 @@ _PORTFOLIO.update(
                       for k in ("cash_usd", "cost_usd", "equity_usd", "total_cash_jpy", "total_cash_usd", "total_equity_jpy",
                                 "total_equity_usd", "total_pnl_jpy", "total_pnl_pct")},
     RULES=_TANUKI["RULES"],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={},
     EXTRA_OUTPUT_DIRS=("docs/portfolio/data",),
-    RESOLVE_STRICT=3,
+
 )
 # ---- MACRO PULSE（段階1、2026-10-23）。共有のデータ層 common/macro_data（画面なし）と、src/market/macro_pulse・docs/market-monitor/macro-pulse の2つ
 _MACRO_DECISION_PREFIXES = DECISION_PREFIXES + [
@@ -706,7 +694,7 @@ _MACRO_DATA.update(
     DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "common/macro_data/series/{series_id}.json":
             "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。"
@@ -738,11 +726,9 @@ _MACRO_DATA.update(
                          "読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ",
     },
     RULES=_TANUKI["RULES"] + _MACRO_RULES,
-    FULL_SCAN=True,
-    WORKFLOW_SUMMARY=True,
-    DATA_UNREAD_KEYS=True,
+
     # _atomic_write_json(path)・_load_json(path) で読み書きする（市場データ層と同じ作り）。series_meta.json は書き手の無い静的なファイル
-    IO_HELPER_BY_CALLER=True, RESOLVE_STRICT=1, EXTRA_OUTPUT_DIRS=("common/macro_data",),
+    IO_HELPER_BY_CALLER=True,EXTRA_OUTPUT_DIRS=("common/macro_data",),
 )
 _MACRO_PULSE = dict(_SEC)
 _MACRO_PULSE.update(
@@ -752,7 +738,7 @@ _MACRO_PULSE.update(
     DECISION_PREFIXES=_MACRO_DECISION_PREFIXES,
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=["src/market/macro_pulse/05_audit.py"],
-    NONPROD_SCAN=True,
+
     NONPROD_NOTES={
         "src/market/macro_pulse/05_audit.py":
             "手で動かす05_events.csvの監査（重複の行等、読むだけで書かない）。ワークフローからは呼ばれず、テストが重複の判定を使う。"
@@ -799,14 +785,12 @@ _MACRO_PULSE.update(
     UNREAD_KEY_NOTES={k: "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
                       for k in ("zq_price", "zq_ticker")},
     RULES=_TANUKI["RULES"] + _MARKET["RULES"][:1] + _MACRO_RULES,
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={},
-    # 出力は CSV が5つ（列を JSON のキーと同じに数える）。ページは要素を el('id')（getElementById を包んだ関数）で取る。
-    # 解決の厳しさ 0 ではテストの呼び出しの引数が読み手に混ざる（市場データ層・macro_data と同じ 1）
-    CSV_COLUMNS=True, RESOLVE_STRICT=1, JS_ID_HELPERS=True,
+
 )
 # ---- Market Pulse（段階1、2026-10-23）。src/market/market_pulse と docs/market-monitor/market-pulse
 _MARKET_PULSE = dict(_SEC)
@@ -820,7 +804,7 @@ _MARKET_PULSE.update(
     ],
     NON_PRODUCTION_DIRS=[],
     NON_PRODUCTION_FILES=[],
-    NONPROD_SCAN=True,
+
     ANNOTATIONS={
         "docs/market-monitor/market-pulse/data/market_data.json":
             "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。"
@@ -877,14 +861,13 @@ _MARKET_PULSE.update(
         {"id": "market_holidays", "name": "休場日（祝日）の一覧の作り方",
          "patterns": [r"def\s+_?\w*holidays\s*\("]},
     ],
-    FULL_SCAN=True, SCREEN_SECTIONS=True,
+
     HTML_COPIES=[],
     PAGE_CHECKS=[],
-    WORKFLOW_SUMMARY=True,
+
     SECTION_DECISIONS={},
-    # 出力の CSV（market_data.csv）の列を数える。手で動かすスクリプトは import collect_and_send as cs で同じパスを使う（解決の厳しさ 2。1 では書き手3件を決めきれない）
     # 02_market_rss.txt（人の手で書くRSSの一覧、.py でない入力）も出力に加え、読み手を出す
-    CSV_COLUMNS=True, RESOLVE_STRICT=2, EXTRA_OUTPUT_DIRS=("src/market/market_pulse",),
+EXTRA_OUTPUT_DIRS=("src/market/market_pulse",),
 )
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
                            "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE,
@@ -1034,7 +1017,7 @@ class Module:
                     local = posixpath.join(posixpath.dirname(rel), cand)
                     if cand in ALL_PY:
                         self.mod_imports[a.asname or a.name] = cand
-                    elif RESOLVE_STRICT >= 2 and local in ALL_PY:
+                    elif local in ALL_PY:
                         # sys.path に自分のフォルダを足して読む形（import sec_ctrl_fetcher as _ctrl 等。TAIL の段階から）
                         self.mod_imports[a.asname or a.name] = local
                     else:
@@ -1206,12 +1189,11 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             best = None
             assigns, loops = _func_index(mod, func)
             if expr.id in loops:
-                if RESOLVE_STRICT >= 2:
-                    # for path in (period_path, latest_path): のように名前の並びを回すものは、並びのそれぞれのパス（TAIL の段階から）
-                    seqs = [n.iter for n in ast.walk(func) if isinstance(n, ast.For) and isinstance(n.target, ast.Name)
-                            and n.target.id == expr.id and isinstance(n.iter, (ast.Tuple, ast.List))]
-                    if len(seqs) == 1 and seqs[0].elts:
-                        return ALT.join(dict.fromkeys(r(e) for e in seqs[0].elts))
+                # for path in (period_path, latest_path): のように名前の並びを回すものは、並びのそれぞれのパス（TAIL の段階から）
+                seqs = [n.iter for n in ast.walk(func) if isinstance(n, ast.For) and isinstance(n.target, ast.Name)
+                        and n.target.id == expr.id and isinstance(n.iter, (ast.Tuple, ast.List))]
+                if len(seqs) == 1 and seqs[0].elts:
+                    return ALT.join(dict.fromkeys(r(e) for e in seqs[0].elts))
                 return placeholder_for(expr)
             for n in assigns.get(expr.id, []):
                 if n.lineno < getattr(use_node, "lineno", 10 ** 9) and (best is None or n.lineno > best.lineno):
@@ -1260,7 +1242,7 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             other = load_module(mod.mod_imports[expr.value.id])
             if other is not None and expr.attr in other.consts:
                 return resolve(other.consts[expr.attr][-1], other, other.consts[expr.attr][-1], depth + 1)
-        if RESOLVE_STRICT and isinstance(expr.value, ast.Name):
+        if isinstance(expr.value, ast.Name):
             return resolve_cli_arg(mod, expr.attr)
         return UNRESOLVED
     if isinstance(expr, ast.BinOp):
@@ -1290,8 +1272,6 @@ def resolve(expr: ast.AST, mod: Module, use_node: ast.AST, depth: int = 0) -> st
             parts = [r(a) for a in expr.args]
             if not parts:
                 return UNRESOLVED
-            if not RESOLVE_STRICT:
-                return posixpath.join(*parts)
             # 呼び出し元ごとに違う引数（ALT で並べた候補）は、候補ごとにつなぐ（最後の候補にだけつながないよう。市場データ層の段階から）
             joined = [""]
             for p in parts:
@@ -1418,7 +1398,7 @@ def caller_args(func: ast.AST, pname: str, mod: Module) -> Iterable[Tuple[Module
     for (c_rel, c_line) in [c for k in keys for c in CALLERS.get(k, [])]:
         cm = MODULES.get(c_rel)
         # テストが渡す一時のフォルダは本番の書き先・読み先ではないので、候補にしない（市場データ層の段階から）
-        if cm is None or (RESOLVE_STRICT and is_test(c_rel)):
+        if cm is None or is_test(c_rel):
             continue
         for call in cm.calls_by_line.get(c_line, []):
             fn = call.func.attr if isinstance(call.func, ast.Attribute) else (call.func.id if isinstance(call.func, ast.Name) else "")
@@ -1503,7 +1483,7 @@ def _io_sites(mod: Module) -> Tuple[List[dict], List[dict]]:
         elif fname in ("to_csv", "to_json", "to_parquet") and node.args:
             writes.append({**site, "path": normalize_path(resolve(node.args[0], mod, node)), "kind": "ファイル"})
         elif fname in ("read_json", "read_csv", "read_parquet") and node.args and not (   # メモリの上の文字列（io.StringIO 等）はファイルでない
-                RESOLVE_STRICT and isinstance(node.args[0], ast.Call) and getattr(node.args[0].func, "attr", getattr(node.args[0].func, "id", "")) in ("StringIO", "BytesIO")):
+                isinstance(node.args[0], ast.Call) and getattr(node.args[0].func, "attr", getattr(node.args[0].func, "id", "")) in ("StringIO", "BytesIO")):
             reads.append({**site, "path": normalize_path(resolve(node.args[0], mod, node)), "kind": "ファイル"})
         elif fname in ("replace", "move", "copy", "copyfile", "copy2") and isinstance(f, ast.Attribute) \
                 and isinstance(f.value, ast.Name) and f.value.id in ("os", "shutil") and len(node.args) >= 2:
@@ -1539,8 +1519,8 @@ def template_regex(tmpl: str) -> re.Pattern:
     for m in PH_RE.finditer(tmpl):
         out += re.escape(tmpl[pos:m.start()])
         ph = m.group(0)
-        # 指数の記号（^GSPC 等）は先頭が ^（RESOLVE_STRICT の段階から）
-        t_rx = r"[A-Z0-9^][A-Z0-9.=^-]*" if RESOLVE_STRICT else r"[A-Z0-9][A-Z0-9.=^-]*"
+        # 指数の記号（^GSPC 等）は先頭が ^
+        t_rx = r"[A-Z0-9^][A-Z0-9.=^-]*"
         out += r"\d{4}" if ph == "{YYYY}" else (t_rx if ph == "{T}" else r"[^/]+")
         pos = m.end()
     out += re.escape(tmpl[pos:])
@@ -1649,7 +1629,7 @@ def classify_mention(tmpl: str, p: str) -> str:
     p = alts[0] if alts else ""
     if p.startswith("${GITHUB_WORKSPACE}/"):   # ワークフローのリポジトリの根
         p = p[len("${GITHUB_WORKSPACE}/"):]
-    if RESOLVE_STRICT and p == tmpl:   # 出力そのものが絶対パス（ワークフローが渡す /tmp/… 等。市場データ層の段階から）
+    if p == tmpl:   # 出力そのものが絶対パス（ワークフローが渡す /tmp/… 等。市場データ層の段階から）
         return "reader"
     if p.startswith("/"):   # 根が絶対パス（テストが渡す /repo 等）: リポジトリの最上位のフォルダの所から
         segs = p.split("/")
@@ -1874,10 +1854,10 @@ def line_mentions(rel: str, line_no: int, line: str, text: str) -> List[Tuple[st
 
 def mention_class(tmpl: str, pats: List[re.Pattern], rel: str, line_no: int, line: str, text: str) -> str:
     """その行がこの出力を読むか: reader・undetermined・no（別のファイル・ファイル名でない文字列）。"""
-    # ワークフローの git add・git rm 等はcommitするだけで読まない（RESOLVE_STRICT の段階から）
-    if RESOLVE_STRICT and rel.endswith((".yml", ".yaml")) and re.match(r"\s*git\s+(add|rm|diff|checkout|restore)\b", line):
+    # ワークフローの git add・git rm 等はcommitするだけで読まない
+    if rel.endswith((".yml", ".yaml")) and re.match(r"\s*git\s+(add|rm|diff|checkout|restore)\b", line):
         return "no"
-    if RESOLVE_STRICT >= 3 and rel.endswith((".yml", ".yaml")):
+    if rel.endswith((".yml", ".yaml")):
         # git commit -m の件名に出てくるファイル名と、cp の写し先（書く側）は読みではない（Portfolio の段階から）。
         # git commit -F <ファイル> は件名をファイルから読む（TAIL の /tmp/tail_commit_message.txt）。git add 等の \ の続きの行も読みではない
         if re.match(r"\s*git\s+commit\b", line) and not re.search(r"\s(-F|--file)[\s=]", line):
@@ -1980,7 +1960,7 @@ def _calls_in(mod: Module) -> List[Tuple[int, str, str]]:
             # ほかで解決できないメソッドの呼び出し: リポジトリで1か所だけに定義された名前（8文字以上）ならそれとみなす
             # （リポジトリの外のモジュールの関数〈mcal.get_calendar 等〉は除く。市場データ層の段階から）
             if not any(ln == node.lineno and nm.split(".")[-1] == f.attr for ln, _r, nm in out) \
-                    and not (RESOLVE_STRICT and isinstance(f.value, ast.Name) and f.value.id in mod.ext_imports):
+                    and not (isinstance(f.value, ast.Name) and f.value.id in mod.ext_imports):
                 defs = DEF_INDEX.get(f.attr, [])
                 if len(defs) > 1:   # 属性の呼び出しなので、メソッドの定義が1つならそれ
                     defs = [d for d in defs if "." in d[1]]
@@ -1997,8 +1977,7 @@ _PREPARED: Dict[str, object] = {}
 def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     """リポジトリのコードを読んで、パースと呼び出しの索引を作る。段階に関係しないので、同じプロセスでは1回だけ作る
     （report_consistency_check.py が SEC 層と TANUKI を続けて作るとき）。force で作り直す。"""
-    # 解決の厳しさ（RESOLVE_STRICT）が違う段階では、呼び出しの索引・読み書きの場所の控えが変わるので作り直す
-    if _PREPARED and not force and _PREPARED.get("strict") == RESOLVE_STRICT:
+    if _PREPARED and not force:
         return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
     for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT):   # 作り直すときに積み増さない
         g.clear()
@@ -2023,7 +2002,7 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
                 CALLERS[(src_rel, name)].append((rel, line))
                 call = next(iter(mod.calls_by_line.get(line, [])), None)
                 CALL_FUNC[(rel, line)] = mod.qualname(call) if call is not None else "<module>"
-    _PREPARED.update(files=files, py_files=py_files, texts=texts, strict=RESOLVE_STRICT)
+    _PREPARED.update(files=files, py_files=py_files, texts=texts)
     return files, py_files, texts
 
 
@@ -2207,7 +2186,7 @@ def build() -> dict:
             matched = sorted(f for f in tracked if rx.match(f))
             o["files_tracked"] = len(matched)
             keys: Dict[str, int] = {}
-            for f in (matched if FULL_SCAN else [matched[0], matched[len(matched) // 2], matched[-1]] if matched else []):
+            for f in matched:
                 try:
                     with open(os.path.join(REPO, f), encoding="utf-8") as fh:
                         d = json.load(fh)
@@ -2216,7 +2195,7 @@ def build() -> dict:
                 if isinstance(d, dict):
                     for k in d:
                         keys[k] = keys.get(k, 0) + 1
-            o["top_keys_sampled_files"] = len(matched) if FULL_SCAN else min(3, len(matched))
+            o["top_keys_sampled_files"] = len(matched)
             o["top_keys"] = [{"key": k} for k in sorted(keys)]
 
         # 2. 読み手（保存済みファイル）
@@ -2439,10 +2418,9 @@ def build() -> dict:
             out.append(line)
         return out
     pairs = [(d, rel) for d in NON_PRODUCTION_DIRS for rel in sorted(git_ls_files(f"{d}/*.py", f"{d}/**/*.py"))]
-    if NON_PRODUCTION_FILES or NONPROD_SCAN:
-        # 段階のフォルダの .py をすべて見て、名前を挙げたものと、どこからも呼ばれないものを候補にする
-        layer_files = git_ls_files(*[f"{d}/*.py" for d in LAYER_DIRS], *[f"{d}/**/*.py" for d in LAYER_DIRS])
-        pairs += [(posixpath.dirname(rel), rel) for rel in sorted(set(NON_PRODUCTION_FILES) | set(layer_files))]
+    # 段階のフォルダの .py をすべて見て、名前を挙げたものと、どこからも呼ばれないものを候補にする
+    layer_files = git_ls_files(*[f"{d}/*.py" for d in LAYER_DIRS], *[f"{d}/**/*.py" for d in LAYER_DIRS])
+    pairs += [(posixpath.dirname(rel), rel) for rel in sorted(set(NON_PRODUCTION_FILES) | set(layer_files))]
     for d, rel in pairs:
         if is_test(rel) or "/tests/" in rel:
             continue
@@ -2487,12 +2465,11 @@ def build() -> dict:
             "workflows": refs(workflows), "code": [f for f in refs(prod_code) if not f.startswith(d + "/")],
             "same_dir": [f for f in refs(prod_code) if f.startswith(d + "/")], "tests": refs(test_code),
         })
-    nonprod_scanned = [dict(x) for x in nonprod] if NONPROD_SCAN else []
-    if NON_PRODUCTION_FILES or NONPROD_SCAN:
-        nonprod = [x for x in nonprod if x["file"] in NON_PRODUCTION_FILES
-                   or (not x["workflows"] and not x["code"] and not x["same_dir"] and not x["file"].endswith("__init__.py"))]
-        for x in nonprod:
-            x["found_by"] = "名前を挙げた候補" if x["file"] in NON_PRODUCTION_FILES else "どこからも呼ばれない"
+    nonprod_scanned = [dict(x) for x in nonprod]
+    nonprod = [x for x in nonprod if x["file"] in NON_PRODUCTION_FILES
+               or (not x["workflows"] and not x["code"] and not x["same_dir"] and not x["file"].endswith("__init__.py"))]
+    for x in nonprod:
+        x["found_by"] = "名前を挙げた候補" if x["file"] in NON_PRODUCTION_FILES else "どこからも呼ばれない"
 
     # F3 の6種の場所
     f3 = []
@@ -2565,7 +2542,7 @@ def build() -> dict:
         "outputs": [outputs[k] for k in sorted(outputs, key=lambda k: (["読み手0件", "テストだけ", "1件", "2件以上", "人が見る"].index(outputs[k]["group"]), k))],
         "rules": rules_out,
         "non_production_code": nonprod,
-        **({"non_production_scanned": nonprod_scanned} if NONPROD_SCAN else {}),
+        "non_production_scanned": nonprod_scanned,
         "f3_zero_reader": f3,
         "deleted": [{"what": a, "detail": b} for a, b in DELETED],
         "stop_condition": stop,
@@ -2573,15 +2550,13 @@ def build() -> dict:
     if SCREEN_PAGES:
         writer_files = {w["file"] for o in outputs.values() for w in o["writers"]}
         result["screen"] = screen_items(outputs, texts, tracked, writer_files)
-        if SCREEN_SECTIONS:
-            result["screen"]["sections"] = screen_sections(result["screen"], texts)
+        result["screen"]["sections"] = screen_sections(result["screen"], texts)
     if HTML_COPIES:
         result["html_copies"] = html_copies(texts)
     if PAGE_CHECKS:
         result["page_checks"] = page_checks(tracked, texts, py_files)
-    if WORKFLOW_SUMMARY:
-        result["workflow_outputs"] = workflow_outputs(outputs, tracked, texts, layer_py)
-    if DATA_UNREAD_KEYS:
+    result["workflow_outputs"] = workflow_outputs(outputs, tracked, texts, layer_py)
+    if not SCREEN_PAGES:   # 画面の無い層だけ（画面のある層は画面の項目の表で誰も読まないキーを出す）
         result["data_keys"] = data_unread_keys(outputs, texts, tracked)
     return result
 
@@ -2652,11 +2627,10 @@ def screen_sections(sc: dict, texts: Dict[str, str]) -> List[dict]:
         sections, id_sec = _html_sections(raw)
         funcs = _js_functions(raw)
         id_lines = [(n, a or b) for n, line in enumerate(raw, 1) for a, b in JS_ID_RE.findall(line)]
-        if JS_ID_HELPERS:
-            helpers = {a or b for a, b in JS_ID_HELPER_DEF_RE.findall("\n".join(raw))}
-            if helpers:
-                hrx = re.compile(r"(?<![\w.$])(?:" + "|".join(re.escape(h) for h in sorted(helpers)) + r")\(\s*['\"]([\w-]+)['\"]\s*\)")
-                id_lines = sorted(id_lines + [(n, m) for n, line in enumerate(raw, 1) for m in hrx.findall(line)])
+        helpers = {a or b for a, b in JS_ID_HELPER_DEF_RE.findall("\n".join(raw))}
+        if helpers:
+            hrx = re.compile(r"(?<![\w.$])(?:" + "|".join(re.escape(h) for h in sorted(helpers)) + r")\(\s*['\"]([\w-]+)['\"]\s*\)")
+            id_lines = sorted(id_lines + [(n, m) for n, line in enumerate(raw, 1) for m in hrx.findall(line)])
 
         def enclosing(line: int) -> Optional[Tuple[str, int, int]]:
             c = [f for f in funcs if f[1] <= line <= f[2]]
@@ -2870,7 +2844,6 @@ def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[s
 
 # ---------------------------------------------------------------- 画面の項目（TANUKI）
 
-SCREEN_SAMPLE = 12   # 画面の項目の表で、キーを集める JSON のファイルの数（型ごと）
 JP_RE = re.compile(r"[぀-ヿ一-鿿]")
 SNAKE_RE = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)+$")
 # プロパティの読み: 式の後ろの .key / ?.key（直前が識別子・閉じ括弧のときだけ。'.css_class' 等の文字列を除く）
@@ -2895,9 +2868,9 @@ def json_keys(obj, depth: int = 0, max_depth: int = 8, out: Optional[Set[str]] =
 
 
 def data_file_obj(rel: str):
-    """出力のファイルの中身（JSON）。CSV_COLUMNS の段階では、CSV の見出しの行の列を {列: ""} にして JSON のキーと同じに扱う。読めなければ None。"""
+    """出力のファイルの中身（JSON）。CSV は見出しの行の列を {列: ""} にして JSON のキーと同じに扱う。読めなければ None。"""
     try:
-        if CSV_COLUMNS and rel.endswith(".csv"):
+        if rel.endswith(".csv"):
             with open(os.path.join(REPO, rel), encoding="utf-8-sig", newline="") as fh:
                 return {c.strip(): "" for c in next(csv.reader(fh), []) if c.strip()}
         with open(os.path.join(REPO, rel), encoding="utf-8") as fh:
@@ -2907,14 +2880,7 @@ def data_file_obj(rel: str):
 
 
 def data_output_ext() -> Tuple[str, ...]:
-    return (".json", ".csv") if CSV_COLUMNS else (".json",)
-
-
-def sample_files(files: List[str], n: int = SCREEN_SAMPLE) -> List[str]:
-    """200ファイルまでは全部、それより多ければ等間隔に n 個（銘柄ごとにキーが違うため、銘柄の数の分は全部見る）。"""
-    if len(files) <= 200 or FULL_SCAN:
-        return files
-    return [files[round(i * (len(files) - 1) / (n - 1))] for i in range(n)]
+    return (".json", ".csv")
 
 
 def page_code_lines(rel: str, text: str) -> List[Tuple[int, str]]:
@@ -2960,7 +2926,7 @@ def code_read_names(texts: Dict[str, str]) -> Set[str]:
 
 
 def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str]) -> dict:
-    """画面の無い層の、書き手があるのに誰も読まないキー（DATA_UNREAD_KEYS）。この段階の JSON の出力の全ファイルのキー（入れ子8段まで）のうち、
+    """画面の無い層の、書き手があるのに誰も読まないキー（data_keys）。この段階の JSON の出力の全ファイルのキー（入れ子8段まで）のうち、
     テストを除くコードに読みの形で出てこないもの。画面の段階の screen_items と同じ読みの形で判定する（Python の for k in d・d.items() で回して読むものは拾えない）。"""
     written: Dict[str, Set[str]] = defaultdict(set)
     for k, o in outputs.items():
@@ -3004,7 +2970,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             continue
         rx = template_regex(k)
         matched = sorted(f for f in tracked if rx.match(f))
-        for f in sample_files(matched):
+        for f in matched:
             d = data_file_obj(f)
             if d is None:
                 continue
@@ -3031,7 +2997,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                 continue
             else:
                 cands = sorted(f for f in docs_json if f.endswith(tail if tail.startswith(("_", "-")) else "/" + tail) or f == tail)
-            for f in sample_files(cands):
+            for f in cands:
                 try:
                     with open(os.path.join(REPO, f), encoding="utf-8") as fh:
                         d = json.load(fh)
@@ -3157,7 +3123,7 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
         for u in now["screen"].get("unread_keys", []):
             if u["key"] not in known_ur:
                 warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
-    # 画面の無い層（DATA_UNREAD_KEYS、市場データ層から）: 誰も読まないキーが新しくできたら WARN（INV-6 と同じ）
+    # 画面の無い層（data_keys、市場データ層から）: 誰も読まないキーが新しくできたら WARN（INV-6 と同じ）
     if now.get("data_keys") is not None:
         known_dk = {u["key"] for u in (saved.get("data_keys") or {}).get("unread_keys", [])}
         for u in now["data_keys"].get("unread_keys", []):
@@ -3166,8 +3132,7 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
-# CHECK-INV を当てる段階（段階3が済んだもの）。市場データ層・マクロデータ層・MACRO PULSE（1）・TAIL・Market Pulse（2）・Portfolio（3）は解決の厳しさ（RESOLVE_STRICT）が違い
-# 索引を作り直すため、厳しさの順に最後に置く（同じ厳しさの段階を続けると作り直さない）
+# CHECK-INV を当てる段階（段階3が済んだもの）。どの段階も同じ設定なので、呼び出しの索引は1回だけ作る
 CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio")
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
@@ -3329,7 +3294,7 @@ def render_md(inv: dict) -> str:
         sc = inv["screen"]
         L.append("## 画面の項目")
         L.append("")
-        scope = "全ファイル" if FULL_SCAN else f"型ごとに等間隔で{SCREEN_SAMPLE}ファイル"
+        scope = "全ファイル"
         L.append("画面（" + "・".join(f"`{p}`" for p in sc["pages"]) + "）のJSが読むキー（`.key`・`?.key`・`['key']`。"
                  "この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の出力のJSON（"
                  f"{scope}、入れ子8段まで）と、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する。"
@@ -3441,7 +3406,7 @@ def render_md(inv: dict) -> str:
     L.append("")
     L.append("参照: ワークフロー（ファイル名・モジュール名が出てくるもの）／ほかのコード（importか、ファイル名・モジュール名の文字列。同じフォルダは別欄）／テスト")
     L.append("")
-    if NONPROD_SCAN and not NON_PRODUCTION_FILES:
+    if not NON_PRODUCTION_FILES:
         L.append("候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）")
         L.append("")
         if not inv["non_production_code"]:
