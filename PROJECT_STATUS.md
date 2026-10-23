@@ -18,7 +18,9 @@
      統合35件・捨てる5件を移し、アクティブ51件→14件。削除の3件（`is_latest`・`docs/README.md`・`recommended_g_hypecore`の表示）は`3b6cd1b3bf`
    - F5（TAILの提出遅延のアラート）: 法定の期限（10-Q 45日・10-K 90日）で判定し、遅れのあいだ毎回通知（件名「fix: TAILの提出の遅れを法定の期限で判定し、遅れのあいだ毎回通知」のcommit）。最初の平日のRSS Monitorで確かめる（CLAUDE_CODE_START.md「次回の確認手順」10）
    - 残っている確認（手順9のTAILのエラーの回の経路ほか）はCLAUDE_CODE_START.md「次回の確認手順」を正とし、下の2と並行して確かめる。手順3（NIY=F）・手順10（F5の直しの後のRSS Monitor）は2026-10-20に済（`889d28bdd7`）
-2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`の**残り3つのサブシステムの段階を、Portfolio → MACRO PULSE → Market Pulse の順に。Portfolioの段階1〜3・MACRO PULSEの段階1〜3・Market Pulseの段階1が済んだ（2026-10-23）。次はKoichiさんの判断（Market Pulseの段階2）**（2026-10-21 チャット側が決めた順。済んだのはSEC層・TANUKI・HypeCore・EPS・STONKS SILO・市場データ層・TAIL・Portfolio・MACRO PULSE〈macro_data・macro_pulse〉。CHECK-INVはこの10段階）
+2. R-A `[[OUTPUT-INVENTORY-CHECK-1]]`: **11層（sec・tanuki・hypecore・eps・stonks・market_data・tail・portfolio・macro_data・macro_pulse・market_pulse）の段階1〜3が済んだ（2026-10-23）。CHECK-INVはこの11段階。次はR-Aの終わりの見直し（下の論点①〜⑥）で、チャット側が論点ごとの案を出す**。
+   FINDINGS.mdの2026-10-23のcheck_macro_pulse.pyの行（型C、確認の結果が実行の時刻で変わる）は束ねの入力のまま残す
+   - （済 2026-10-23）Market Pulseの段階3: CHECK-INVをMarket Pulseにも当てた（11段階、TAILの後。既知の規則の二重6つはWARN、rccのCHECK-INVは約72.6秒）
    - （済 2026-10-23）Market Pulseの段階2（Koichiさんの判断）: 手で動かすスクリプト4つ（backfill_*）を消した。出力7・誰も読まないキー48は残す（理由は一覧に。消したスクリプトだけが読んでいた`relevance`の`true`・`false`も残し計50）。消したスクリプトをほかの6段階の一覧が読み手に数えていたため作り直した。BACKLOG.mdの「Market Pulseの段階」
    - （済 2026-10-23）Market Pulseの段階1の一覧の下書き: `--layer market_pulse` → `market_pulse_layer.json`・`.md`（出力7、通知はDiscordでなくメール、02_market_rss.txtはコードの書き手なし。画面が読むキー152〈書き手なし1〉、誰も読まないキー48、本番外のコードの候補は手で動かすスクリプト4つ）。止める条件は当たらない。既知の規則の二重5つ全部に当たり、新しく休場日の一覧の作り方が二重（MACRO PULSE）。sp500_tickers.jsonは市場データ層の控えと同じ情報の別の写し。BACKLOG.mdの「Market Pulseの段階」
    - （済 2026-10-23）MACRO PULSEの段階3: CHECK-INVをmacro_data・macro_pulseにも当てた（10段階、rccのCHECK-INVは約67秒）
@@ -29,7 +31,7 @@
    - （済 2026-10-22）Portfolioの段階1の一覧の下書き: `build_output_inventory.py --layer portfolio` → `portfolio_layer.json`・`portfolio_layer.md`。出力4（`portfolio.json`はコードの書き手なし・人の入力、写し2つはワークフローの`cp`）、読み手0件0、画面が読むキー33（書き手なし0）、誰も読まないキー10、Portfolioを含む規則の二重0。止める条件は書き手0%・読み方6.2%。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「Portfolioの段階」
    - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
      ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
-     ②rccのCHECK-INVの時間（約67秒、10段階。市場データ層・マクロデータ層・MACRO PULSE・TAIL・Portfolioは解決の厳しさが違い索引を作り直す）
+     ②rccのCHECK-INVの時間（約72.6秒、11段階。市場データ層・マクロデータ層・MACRO PULSE・TAIL・Market Pulse・Portfolioは解決の厳しさが違い索引を作り直す）
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）
      ⑤規則の二重の根治（取引日の決め方・暫定の足の判定・S&P500の構成銘柄の取り方・AI〈Grok〉の呼び方7ファイル 等。CHECK-INV-3で既知のWARN）。

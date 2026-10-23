@@ -414,8 +414,8 @@ def test_market_data_layer_settings():
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["RESOLVE_STRICT"] and md["IO_HELPER_BY_CALLER"] and md["DATA_UNREAD_KEYS"]
     assert not md["SCREEN_PAGES"]
-    assert inv.CHECK_LAYERS[-5:] == ("market_data", "macro_data", "macro_pulse", "tail", "portfolio")
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "macro_data", "macro_pulse", "tail", "portfolio"]
+    assert inv.CHECK_LAYERS[-6:] == ("market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio")
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["RESOLVE_STRICT"]] == ["market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio"]
     # 解決の厳しさの順（索引を作り直す回数を少なくする）
     levels = [inv.LAYERS[k]["RESOLVE_STRICT"] for k in inv.CHECK_LAYERS]
     assert levels == sorted(levels)
@@ -472,7 +472,7 @@ def test_tail_layer_settings():
     assert tl["LAYER_DIRS"] == ("src/tail",)
     assert tl["RESOLVE_STRICT"] == 2 and not tl["IO_HELPER_BY_CALLER"] and not tl["DATA_UNREAD_KEYS"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
-    assert inv.CHECK_LAYERS[-2] == "tail"
+    assert inv.CHECK_LAYERS[-3] == "tail"
     assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year", "grok_call"]
     assert inv.LAYERS["market_data"]["RESOLVE_STRICT"] == 1
 
@@ -519,7 +519,7 @@ def test_portfolio_layer_settings():
     assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
     assert pf["RESOLVE_STRICT"] == 3
     assert inv.CHECK_LAYERS[-1] == "portfolio"
-    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["macro_data", "portfolio"]
+    assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["macro_data", "market_pulse", "portfolio"]
 
 
 def test_macro_layers_settings():
@@ -564,12 +564,12 @@ def test_js_id_helper_definitions():
 
 def test_market_pulse_layer_settings():
     """Market Pulse（段階1、2026-10-23）: 手で動かすスクリプトは import collect_and_send as cs で同じパスを使う（解決の厳しさ 2）。
-    02_market_rss.txt（人の手で書く入力）も出力に加える。CHECK-INV にはまだ入れない（段階2の判断待ち）。"""
+    02_market_rss.txt（人の手で書く入力）も出力に加える。段階3（2026-10-23）で CHECK-INV に入れた（TAIL と同じ厳しさ 2 の後）。"""
     mp = inv.LAYERS["market_pulse"]
     assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
     assert mp["RESOLVE_STRICT"] == 2 and mp["CSV_COLUMNS"] and mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",)
     assert not (mp["JS_ID_HELPERS"] or mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"])
-    assert "market_pulse" not in inv.CHECK_LAYERS
+    assert inv.CHECK_LAYERS[-2] == "market_pulse"
     assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"]
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
