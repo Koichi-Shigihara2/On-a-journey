@@ -902,9 +902,14 @@ CODE_EXT = (".py", ".js", ".html", ".yml", ".yaml")
 
 # ---------------------------------------------------------------- 共通
 
+_LS_FILES: Dict[Tuple[str, ...], List[str]] = {}   # git ls-files の結果（索引を作り直すときに捨てる）
+
+
 def git_ls_files(*args: str) -> List[str]:
-    out = subprocess.run(["git", "ls-files", *args], cwd=REPO, capture_output=True, text=True, encoding="utf-8", check=True).stdout
-    return [line for line in out.splitlines() if line]
+    if args not in _LS_FILES:
+        out = subprocess.run(["git", "ls-files", *args], cwd=REPO, capture_output=True, text=True, encoding="utf-8", check=True).stdout
+        _LS_FILES[args] = [line for line in out.splitlines() if line]
+    return list(_LS_FILES[args])
 
 
 def read_text(rel: str) -> str:
@@ -1543,6 +1548,10 @@ def tail_match(tmpl: str, path: str) -> bool:
     return any(template_regex("/".join(parts[i:])).match(tail) for i in range(1, len(parts)))
 
 
+# 式が当たるのに必ず入っている文字列（式の文字 → 文字列）。照合の前に `in` で見て、入っていない文字は式を回さない（R-A の終わりの見直し2）
+_NEEDLE_LIT: Dict[str, str] = {}
+
+
 def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
     """(ファイル名の grep の式, 一緒に必要なフォルダの語)。"""
     base = posixpath.basename(tmpl)
@@ -1555,16 +1564,28 @@ def needles_for(tmpl: str) -> Tuple[List[re.Pattern], Optional[str]]:
         # プレースホルダーの所は、前後・途中のどこでも任意の文字（annual_{YYYY}.json の末尾の年も）
         body = r"[^\"'\s]{0,40}?".join(re.escape(p) for p in lits)
         pats.append(re.compile(body + re.escape(ext)))
+        _NEEDLE_LIT[pats[-1].pattern] = max([p for p in lits if p] + [ext], key=len)
         first = next((p for p in lits if p), "")
         if len(first) >= 6:
             pats.append(re.compile(r"[\"'`]" + re.escape(first) + r"[\"'`]"))
+            _NEEDLE_LIT[pats[-1].pattern] = first
     need_dir = None
     if lit_core in GENERIC_BASES or len(lit_core) < 6 or AMBIGUOUS_BASES.get(base, False):
         parts = [p for p in posixpath.dirname(tmpl).split("/") if p and not PH_RE.search(p)]
         need_dir = parts[-1] if parts else None
         if not pats:
             pats.append(re.compile(re.escape(ext) if ext else r"$^"))
+            if ext:
+                _NEEDLE_LIT[pats[-1].pattern] = ext
     return pats, need_dir
+
+
+def quick_search(rx: re.Pattern, text: str) -> bool:
+    """rx.search(text) と同じ結果。式に必ず要る文字列が text に無ければ、式を回さずに False。"""
+    lit = _NEEDLE_LIT.get(rx.pattern)
+    if lit and lit not in text:
+        return False
+    return rx.search(text) is not None
 
 
 # ---------------------------------------------------------------- 読み込みの行のパスの解決（2026-10-21、同じ名前の別のフォルダのファイルを分ける）
@@ -1979,7 +2000,8 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     （report_consistency_check.py が SEC 層と TANUKI を続けて作るとき）。force で作り直す。"""
     if _PREPARED and not force:
         return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
-    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT):   # 作り直すときに積み増さない
+    for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT,
+              _BLOBS, _SUMMARY, _LS_FILES, _RULE_SITES):   # 作り直すときに積み増さない
         g.clear()
     files = code_files()
     TOP_DIRS.update(f.split("/")[0] for f in git_ls_files() if "/" in f)
@@ -2142,9 +2164,9 @@ def build() -> dict:
             texts[p] = t
             if only_ext and need_dir and need_dir not in t:
                 continue
-            if not any(rx.search(t) for rx in pats):   # 行で当たるなら全体でも当たる（全体で当たらないファイルを先に飛ばす）
+            if not any(quick_search(rx, t) for rx in pats):   # 行で当たるなら全体でも当たる（全体で当たらないファイルを先に飛ばす）
                 continue
-            if any(any(rx.search(line) for rx in pats) and mention_class(tmpl, pats, p, i, line, t) == "reader"
+            if any(any(quick_search(rx, line) for rx in pats) and mention_class(tmpl, pats, p, i, line, t) == "reader"
                    for i, line in enumerate(t.splitlines(), 1)):
                 hits.append(p)
         return hits
@@ -2187,14 +2209,9 @@ def build() -> dict:
             o["files_tracked"] = len(matched)
             keys: Dict[str, int] = {}
             for f in matched:
-                try:
-                    with open(os.path.join(REPO, f), encoding="utf-8") as fh:
-                        d = json.load(fh)
-                except (OSError, ValueError):
-                    continue
-                if isinstance(d, dict):
-                    for k in d:
-                        keys[k] = keys.get(k, 0) + 1
+                sm = file_summary(f)["j"]
+                for k in (sm or {}).get("top") or []:
+                    keys[k] = keys.get(k, 0) + 1
             o["top_keys_sampled_files"] = len(matched)
             o["top_keys"] = [{"key": k} for k in sorted(keys)]
 
@@ -2226,7 +2243,7 @@ def build() -> dict:
         only_ext = not PH_RE.sub("", re.sub(r"\.\w+$", "", posixpath.basename(key)))
         for rel in files:
             t = texts.get(rel, "")
-            if not t or (only_ext and need_dir and need_dir not in t) or not any(rx.search(t) for rx in pats):
+            if not t or (only_ext and need_dir and need_dir not in t) or not any(quick_search(rx, t) for rx in pats):
                 continue
             mod = MODULES.get(rel) if rel.endswith(".py") else None
             for i, line in enumerate(t.splitlines(), 1):
@@ -2235,7 +2252,7 @@ def build() -> dict:
                 s = line.strip()
                 if s.startswith(("//", "<!--", "#", "*", "/*")) and not rel.endswith(".py"):
                     continue
-                if any(rx.search(line) for rx in pats):
+                if any(quick_search(rx, line) for rx in pats):
                     if in_own(rel, i):
                         continue
                     mc = mention_class(key, pats, rel, i, line, t)
@@ -2326,7 +2343,7 @@ def build() -> dict:
         # 5. 定義
         ids = []
         for row in fd_rows:
-            if (need_dir is None or need_dir in row) and any(rx.search(row) for rx in pats):
+            if (need_dir is None or need_dir in row) and any(quick_search(rx, row) for rx in pats):
                 m = re.match(r"^\|\s*(AS-IS-\d+)", row)
                 if m:
                     ids.append(m.group(1))
@@ -2336,7 +2353,7 @@ def build() -> dict:
         reader_files = sorted({r_["file"] for r_ in o["readers"] + o["readers_compute"]})
         for k in o["top_keys"]:
             krx = re.compile(r"[\"'`]" + re.escape(k["key"]) + r"[\"'`]|\." + re.escape(k["key"]) + r"\b")
-            k["reader_files"] = sum(1 for f in reader_files if krx.search(texts.get(f, "")))
+            k["reader_files"] = sum(1 for f in reader_files if k["key"] in texts.get(f, "") and krx.search(texts.get(f, "")))
 
         # 投資判断に効くか（読み手のパスの前方一致）
         eff = []
@@ -2366,9 +2383,17 @@ def build() -> dict:
         o["note"] = ANNOTATIONS.get(o["path"], "")
         o["decision"] = DECISIONS.get(o["path"], DECISION_DEFAULT)
 
-    # 6. 規則
+    # 6. 規則（当たる場所は段階に関係しないので、同じ式はプロセスで1回だけ探す）
     rules_out = []
     for rule in RULES:
+        rkey = (tuple(rule["patterns"]), rule.get("context"))
+        if rkey in _RULE_SITES:
+            sites = [dict(x) for x in _RULE_SITES[rkey]]
+            files_hit = sorted({x["file"] for x in sites})
+            rules_out.append({"id": rule["id"], "name": rule["name"], "patterns": rule["patterns"], "sites": sites,
+                              "files": files_hit, "in_layer": any(in_layer(f) for f in files_hit),
+                              "duplicated": len(files_hit) >= 2})
+            continue
         sites = []
         for rel in files:
             if is_test(rel) or not rel.endswith((".py", ".js", ".html")):
@@ -2383,6 +2408,7 @@ def build() -> dict:
                     continue
                 if any(re.search(p, line) for p in rule["patterns"]):
                     sites.append({"file": rel, "line": i, "text": line.strip()[:120]})
+        _RULE_SITES[rkey] = [dict(x) for x in sites]
         files_hit = sorted({s["file"] for s in sites})
         rules_out.append({"id": rule["id"], "name": rule["name"], "patterns": rule["patterns"], "sites": sites,
                           "files": files_hit, "in_layer": any(in_layer(f) for f in files_hit),
@@ -2427,9 +2453,11 @@ def build() -> dict:
         stem = posixpath.splitext(posixpath.basename(rel))[0]
         base = posixpath.basename(rel)
         # 参照の式: リポジトリからのパス・モジュール名・親フォルダ付きのファイル名。ファイル名だけはリポジトリで1つのときに限る
-        alts = [re.escape(rel), re.escape(module_rel_to_dotted(rel)), re.escape(posixpath.join(posixpath.basename(posixpath.dirname(rel)), base))]
+        name_lits = [rel, module_rel_to_dotted(rel), posixpath.join(posixpath.basename(posixpath.dirname(rel)), base)]
+        alts = [re.escape(x) for x in name_lits]
         if basename_count[base] == 1:
             alts.append(r"(?<![\w-])" + re.escape(base))
+            name_lits.append(base)
         name_rx = re.compile("|".join(alts))
         is_py = rel.endswith(".py")
         same_dir_import = re.compile(r"^\s*(from|import)\s+" + re.escape(stem) + r"\b" if is_py else r"(?!x)x")
@@ -2446,7 +2474,8 @@ def build() -> dict:
                 if f == rel:
                     continue
                 lines = code_lines(f)
-                if name_rx.search(code_text(f)):
+                ct = code_text(f)
+                if any(x in ct for x in name_lits) and name_rx.search(ct):   # 文字列が無ければ式は当たらない
                     out.append(f)
                     continue
                 mod = MODULES.get(f) if f.endswith(".py") else None
@@ -2826,11 +2855,7 @@ def workflow_outputs(outputs: Dict[str, dict], tracked: List[str], texts: Dict[s
         rx = template_regex(k)
         for f in tracked:
             if rx.match(f):
-                try:
-                    with open(os.path.join(REPO, f), encoding="utf-8") as fh:
-                        json_keys(json.load(fh), out=keys)
-                except (OSError, ValueError):
-                    pass
+                keys.update((file_summary(f)["j"] or {}).get("keys", []))
     out = []
     for wf in sorted(f for f in tracked if f.startswith(".github/workflows/") and f.endswith((".yml", ".yaml"))):
         t = texts.get(wf) or read_text(wf)
@@ -2877,6 +2902,132 @@ def data_file_obj(rel: str):
             return json.load(fh)
     except (OSError, ValueError, StopIteration):
         return None
+
+
+# ---------------------------------------------------------------- データのファイルのキーの控え（R-A の終わりの見直し2、2026-10-23）
+# 一覧の時間の大半は、出力のJSON（TANUKI の history 約2.9万ファイル等）を読んでキーを集めること。ファイルごとのキーの要約
+# （最上位のキー・入れ子8段までのキー・キーごとの親のキー）を、ファイルの中身の git の blob の hash で控えて使い回す。
+# hash は index の blob（git ls-files -s）で、作業ツリーで変えたファイルは git hash-object で今の中身から作る（中身が変われば別の控え）。
+KEY_CACHE_FILE = ".cache/output_inventory/file_keys.json"   # .gitignore 済み。無ければ作り直す
+_KEY_CACHE: Dict[str, dict] = {}       # blob → 要約
+_KEY_CACHE_STATE = {"loaded": False, "dirty": False}
+_BLOBS: Dict[str, str] = {}            # パス → blob（このプロセスで1回）
+_SUMMARY: Dict[str, dict] = {}         # パス → 要約（このプロセスで1回）
+_RULE_SITES: Dict[Tuple[Tuple[str, ...], Optional[str]], List[dict]] = {}   # 規則の式 → 当たる場所（このプロセスで1回）
+
+
+def file_blobs() -> Dict[str, str]:
+    """git にあるファイルの、作業ツリーの今の中身の blob の hash（パス → hash）。"""
+    out: Dict[str, str] = {}
+    r = subprocess.run(["git", "-C", REPO, "ls-files", "-s", "-z"], capture_output=True, check=True)
+    for ent in r.stdout.decode("utf-8").split("\0"):
+        if "\t" in ent:
+            meta, path = ent.split("\t", 1)
+            out[path] = meta.split()[1]
+    r = subprocess.run(["git", "-C", REPO, "diff", "--name-only", "-z"], capture_output=True, check=True)
+    changed = [p for p in r.stdout.decode("utf-8").split("\0") if p]
+    for p in changed:
+        out.pop(p, None)
+    changed = [p for p in changed if os.path.isfile(os.path.join(REPO, p))]
+    if changed:
+        r = subprocess.run(["git", "-C", REPO, "hash-object", "--stdin-paths"], input="\n".join(changed).encode("utf-8"),
+                           capture_output=True, check=True)
+        out.update(zip(changed, r.stdout.decode("utf-8").split()))
+    return out
+
+
+def json_parents(obj, parent: str = "", depth: int = 0, out: Optional[Dict[str, Set[str]]] = None) -> Dict[str, Set[str]]:
+    """キーごとの親のキー（入れ子8段まで。リストは親を引き継ぐ）。"""
+    out = defaultdict(set) if out is None else out
+    if depth > 8:
+        return out
+    if isinstance(obj, dict):
+        for kk, vv in obj.items():
+            if isinstance(kk, str):
+                out[kk].add(parent)
+            json_parents(vv, kk if isinstance(kk, str) else parent, depth + 1, out)
+    elif isinstance(obj, list):
+        for vv in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
+            json_parents(vv, parent, depth + 1, out)
+    return out
+
+
+def _summarize_obj(obj) -> Optional[dict]:
+    if obj is None:
+        return None
+    return {"top": list(obj) if isinstance(obj, dict) else None, "keys": sorted(json_keys(obj)),
+            "parents": {k: sorted(v) for k, v in sorted(json_parents(obj).items())}}
+
+
+def _summarize(rel: str) -> dict:
+    """j: JSON として読んだ要約（読めなければ None）。c: CSV の見出しの列の要約（CSV のときだけ）。"""
+    try:
+        with open(os.path.join(REPO, rel), encoding="utf-8") as fh:
+            j = _summarize_obj(json.load(fh))
+    except (OSError, ValueError):
+        j = None
+    return {"j": j, "c": _summarize_obj(data_file_obj(rel)) if rel.endswith(".csv") else None}
+
+
+def _load_key_cache() -> None:
+    _KEY_CACHE_STATE["loaded"] = True
+    try:
+        with open(os.path.join(REPO, KEY_CACHE_FILE), encoding="utf-8") as fh:
+            d = json.load(fh)
+        _KEY_CACHE.update({b: d["summaries"][i] for b, i in d["blobs"].items()})
+    except (OSError, ValueError, KeyError, IndexError, TypeError):
+        pass
+
+
+def file_summary(rel: str) -> dict:
+    """ファイルのキーの要約。同じ中身（blob）なら前の実行の控えを使う。"""
+    sm = _SUMMARY.get(rel)
+    if sm is not None:
+        return sm
+    if not _KEY_CACHE_STATE["loaded"]:
+        _load_key_cache()
+    if not _BLOBS:
+        _BLOBS.update(file_blobs())
+    blob = _BLOBS.get(rel)
+    sm = _KEY_CACHE.get(blob) if blob else None
+    if sm is None:
+        sm = _summarize(rel)
+        if blob:
+            _KEY_CACHE[blob] = sm
+            _KEY_CACHE_STATE["dirty"] = True
+    _SUMMARY[rel] = sm
+    return sm
+
+
+def data_summary(rel: str) -> Optional[dict]:
+    """data_file_obj と同じ読み方（CSV は見出しの列）の要約。"""
+    sm = file_summary(rel)
+    return sm["c"] if rel.endswith(".csv") else sm["j"]
+
+
+def save_key_cache() -> None:
+    """控えを書く。今のどのファイルの中身でもない blob の控えは捨てる。同じ要約は1つにまとめる。"""
+    if not _KEY_CACHE_STATE["dirty"]:
+        return
+    live = set(_BLOBS.values()) if _BLOBS else set(_KEY_CACHE)
+    summaries: List[dict] = []
+    index: Dict[str, int] = {}
+    blobs: Dict[str, int] = {}
+    for b in sorted(_KEY_CACHE):
+        if b not in live:
+            continue
+        k = json.dumps(_KEY_CACHE[b], ensure_ascii=False, sort_keys=True)
+        if k not in index:
+            index[k] = len(summaries)
+            summaries.append(_KEY_CACHE[b])
+        blobs[b] = index[k]
+    path = os.path.join(REPO, KEY_CACHE_FILE)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"blobs": blobs, "summaries": summaries}, fh, ensure_ascii=False, separators=(",", ":"))
+    os.replace(tmp, path)
+    _KEY_CACHE_STATE["dirty"] = False
 
 
 def data_output_ext() -> Tuple[str, ...]:
@@ -2934,10 +3085,10 @@ def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: L
             continue
         rx = template_regex(k)
         for f in sorted(f for f in tracked if rx.match(f)):
-            d = data_file_obj(f)
+            d = data_summary(f)
             if d is None:
                 continue
-            for key in json_keys(d):
+            for key in d["keys"]:
                 written[key].add(k)
     read_names = code_read_names(texts)
     unread = [{"key": key, "sources": sorted(written[key]), "note": UNREAD_KEY_NOTES.get(key, "")} for key in sorted(written)
@@ -2953,30 +3104,19 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
     # 書き手のある JSON のキー（この段階の docs/ の出力。各型から3ファイルまで）
     written: Dict[str, Set[str]] = defaultdict(set)
     written_parents: Dict[str, Set[str]] = defaultdict(set)
-
-    def _parents(obj, parent: str = "", depth: int = 0) -> None:
-        if depth > 8:
-            return
-        if isinstance(obj, dict):
-            for kk, vv in obj.items():
-                if isinstance(kk, str):
-                    written_parents[kk].add(parent)
-                _parents(vv, kk if isinstance(kk, str) else parent, depth + 1)
-        elif isinstance(obj, list):
-            for vv in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
-                _parents(vv, parent, depth + 1)
     for k, o in outputs.items():
         if o["kind"] != "ファイル" or not k.endswith(data_output_ext()) or not k.startswith("docs/"):
             continue
         rx = template_regex(k)
         matched = sorted(f for f in tracked if rx.match(f))
         for f in matched:
-            d = data_file_obj(f)
+            d = data_summary(f)
             if d is None:
                 continue
-            for key in json_keys(d):
+            for key in d["keys"]:
                 written[key].add(k)
-            _parents(d)
+            for key, ps in d["parents"].items():
+                written_parents[key].update(ps)
     docs_json = [f for f in tracked if f.startswith("docs/") and f.endswith(".json")]
     items = []
     for pg in pages:
@@ -2998,12 +3138,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             else:
                 cands = sorted(f for f in docs_json if f.endswith(tail if tail.startswith(("_", "-")) else "/" + tail) or f == tail)
             for f in cands:
-                try:
-                    with open(os.path.join(REPO, f), encoding="utf-8") as fh:
-                        d = json.load(fh)
-                except (OSError, ValueError):
-                    continue
-                for key in json_keys(d):
+                for key in (file_summary(f)["j"] or {}).get("keys", []):
                     fetched[key].add(f)
         # ページの中で作る値: オブジェクトのキー（key: ・{ key, } の省略形）、宣言・代入（const key = ・obj.key = ）
         local_keys = set(re.findall(r"[{,]\s*([A-Za-z_][A-Za-z0-9_]*)\s*:(?!:)", text))
@@ -3147,6 +3282,7 @@ def run_check(layers: Tuple[str, ...] = CHECK_LAYERS) -> Tuple[List[str], List[s
             _RUN_CHECK_CACHE[layer] = _run_check(layer)
         ng += _RUN_CHECK_CACHE[layer][0]
         warn += _RUN_CHECK_CACHE[layer][1]
+    save_key_cache()
     return ng, warn
 
 
@@ -3452,6 +3588,7 @@ def main() -> int:
     args = ap.parse_args()
     set_layer(args.layer)
     inv = build()
+    save_key_cache()
     js = json.dumps(inv, ensure_ascii=False, indent=1) + "\n"
     md = render_md(inv)
     if args.check:

@@ -32,6 +32,7 @@
    - **R-Aの終わりの見直しの論点**（2026-10-22 チャット側が挙げた。全段階が済んでから決める）:
      ①二重の規則の数え方: 終業の数を`SYSTEM_MAP.md`の【二重】（5、MACRO PULSEの画面の監査だけ）と、一覧の検出（CHECK-INV-3のWARN 21件・13種）のどちらにするか。MAC-11・MAC-20は検出式では拾えない（数字の直書き・読み方の違い）。CHECK-INV-3は【二重】を置き換えられない（2026-10-23 MACRO PULSEの段階1で照合）
      ②rccのCHECK-INVの時間（約72.6秒、11段階。市場データ層・マクロデータ層・MACRO PULSE・TAIL・Market Pulse・Portfolioは解決の厳しさが違い索引を作り直す）
+       → 済（2026-10-23、見直し2）: キーの要約をファイルの中身のhashで控える。CHECK-INVは見直し1の後の約117.7秒→約26.9秒（控えの無い1回目は約65.7秒）
      ③段階ごとの印（`RESOLVE_STRICT`〈市場データ層1・TAIL 2〉・`IO_HELPER_BY_CALLER`・`DATA_UNREAD_KEYS`）を全段階に広げるか（広げると既存の段階の一覧が変わる。多くは誤った読み手が減る向き）
        → 済（2026-10-23、見直し1）: `IO_HELPER_BY_CALLER`のほかは全段階で1つの設定に。`IO_HELPER_BY_CALLER`はSEC層で本当の読み手が消えるため広げない（BACKLOG.mdの「R-Aの終わりの見直し」）
      ④一覧のスクリプトの作り（`scripts/inventory/build_output_inventory.py`、3,000行超。段階の設定と汎用の機能が同じファイル）

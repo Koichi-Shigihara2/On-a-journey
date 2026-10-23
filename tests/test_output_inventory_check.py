@@ -564,3 +564,59 @@ def test_mail_notification_is_output(monkeypatch):
     assert [(w["path"], w["kind"]) for w in inv._io_sites(mod)[0]] == [("メール（GMAIL_USER）", "通知")]
     other = _strict_module(monkeypatch, "src/mp/queue_k.py", "def f(q, m):\n    q.send_message(m)\n", {})
     assert inv._io_sites(other)[0] == []
+
+
+def _fresh_key_cache(monkeypatch, repo):
+    """データのファイルのキーの控えを、一時のリポジトリで空から始める（R-A の終わりの見直し2）。"""
+    monkeypatch.setattr(inv, "REPO", str(repo))
+    for name in ("_BLOBS", "_SUMMARY", "_KEY_CACHE"):
+        monkeypatch.setattr(inv, name, {})
+    monkeypatch.setattr(inv, "_KEY_CACHE_STATE", {"loaded": False, "dirty": False})
+
+
+def _git(repo, *args):
+    import subprocess
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True)
+
+
+def test_key_summary_follows_file_content_hash(tmp_path, monkeypatch):
+    """キーの要約は中身の blob の hash で引く。commit 前に作業ツリーで中身を変えたら、前の控えを使わずに読み直す（2026-10-23）。"""
+    _git(tmp_path, "init", "-q")
+    (tmp_path / "d.json").write_text('{"a": {"x": 1}}', encoding="utf-8")
+    _git(tmp_path, "add", "d.json")
+    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", "x")
+    _fresh_key_cache(monkeypatch, tmp_path)
+    assert inv.data_summary("d.json")["keys"] == ["a", "x"]
+    assert inv.data_summary("d.json")["parents"] == {"a": [""], "x": ["a"]}
+    # 作業ツリーだけで中身を変える（index の blob は古いまま）。新しいプロセスと同じに、パスごとの控えを捨てる
+    (tmp_path / "d.json").write_text('{"b": 2}', encoding="utf-8")
+    monkeypatch.setattr(inv, "_BLOBS", {})
+    monkeypatch.setattr(inv, "_SUMMARY", {})
+    assert inv.data_summary("d.json")["keys"] == ["b"]
+    assert len(inv._KEY_CACHE) == 2   # 中身ごとに別の控え
+    # 元の中身に戻すと、読まずに前の控えを使う
+    (tmp_path / "d.json").write_text('{"a": {"x": 1}}', encoding="utf-8")
+    monkeypatch.setattr(inv, "_BLOBS", {})
+    monkeypatch.setattr(inv, "_SUMMARY", {})
+    monkeypatch.setattr(inv, "_summarize", lambda rel: (_ for _ in ()).throw(AssertionError("読み直した")))
+    assert inv.data_summary("d.json")["keys"] == ["a", "x"]
+
+
+def test_key_cache_file_roundtrip_drops_stale_blobs(tmp_path, monkeypatch):
+    """控えのファイルを書いて読み直すと同じ要約を使う。今のどのファイルの中身でもない blob は書かない（2026-10-23）。"""
+    import json as _json
+    _git(tmp_path, "init", "-q")
+    (tmp_path / "d.json").write_text('{"a": 1}', encoding="utf-8")
+    (tmp_path / "e.csv").write_text("﻿date,score\n2026-10-23,1\n", encoding="utf-8")
+    _git(tmp_path, "add", "d.json", "e.csv")
+    _fresh_key_cache(monkeypatch, tmp_path)
+    inv._KEY_CACHE["0" * 40] = {"j": None, "c": None}   # 古い中身の控え
+    inv._KEY_CACHE_STATE["dirty"] = True
+    assert inv.data_summary("e.csv")["keys"] == ["date", "score"] and inv.file_summary("e.csv")["j"] is None
+    inv.data_summary("d.json")
+    inv.save_key_cache()
+    saved = _json.load(open(tmp_path / inv.KEY_CACHE_FILE, encoding="utf-8"))
+    assert "0" * 40 not in saved["blobs"] and len(saved["blobs"]) == 2
+    _fresh_key_cache(monkeypatch, tmp_path)
+    monkeypatch.setattr(inv, "_summarize", lambda rel: (_ for _ in ()).throw(AssertionError("読み直した")))
+    assert inv.data_summary("d.json")["keys"] == ["a"]
