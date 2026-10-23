@@ -15,7 +15,7 @@
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
-## 消したもの（段階2、2026-10-20）
+## 消したもの（段階2、2026-10-23）
 
 - `common/macro_data/migrate_bamlh0a0hym2_history.py`: 削除（2026-10-23、Koichiさんの判断）。05_events.csv の HY Spread の行を series/BAMLH0A0HYM2.json へ移す一度きりの移行で、2026-08-12（2ff481b3ad）に適用済み
 - `series_meta.json の consumers・input_id、series/BAMLH0A0HYM2.json の fallback_used`: 削除（2026-10-23）。誰も読まない。consumers は reader.py に切り替える前の取り方の古い説明（読み手は一覧が出す）、input_id は INPUT_DATA_AS_IS.md の表から作り直せる参照の番号、fallback_used は消した移行のスクリプトが移した6,947件に書いた値（すべて False）
@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `common/macro_data/series_meta.json`<br>（1ファイル） | 系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。fetcher.py が取得する系列の一覧として読む |  | 1・テスト2 | — | — | — | 残す（2026-10-23） |
 | 2件以上 | `common/macro_data/macro_data_violations_log.json`<br>（1ファイル） | 系列ごとの保存前の検証の結果（警告と取得の成否 fetch_status）。System Health の [L]（check_l_macro_data）が取得の失敗を見るのに読む | `fetcher.py:_write_violations_section` | 2・テスト3 | — | — | — | 残す（2026-10-23） |
-| 2件以上 | `common/macro_data/series/{series_id}.json`<br>（26ファイル） | FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む | `fetcher.py:update_series` | 9・テスト3 | market-monitor/macro-pulse/index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: MACRO PULSE（景気後退リスクの点数・局面） | AS-IS-019・AS-IS-046 | 残す（2026-10-23） |
+| 2件以上 | `common/macro_data/series/{series_id}.json`<br>（26ファイル） | FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py）が reader.py 経由で読む | `fetcher.py:update_series` | 8・テスト3 | market-monitor/macro-pulse/index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: MACRO PULSE（景気後退リスクの点数・局面） | AS-IS-019・AS-IS-046 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -61,15 +61,14 @@
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 109
 - Python・保存済みファイル: `common/macro_data/reader.py` 行 41・49・50・62・80・116（経由 `common/macro_data/reader.py::_load_json`、`common/macro_data/reader.py::_load_series_payload`）
 - Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 750・773・791・792・795・811・849・850・851・895・1009・1016 ほか16（経由 `common/macro_data/reader.py::_load_series_payload`）
-- Python・保存済みファイル: `src/market/market_pulse/backfill_tech_pulse.py` 行 304・366（経由 `common/macro_data/reader.py::_load_series_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 478・505・1197・1247・1891・1934（経由 `common/macro_data/reader.py::_load_series_payload`）
 - ワークフロー・保存済みファイル: `.github/workflows/Macro_Data_Update.yml` 行 75
 - テスト・保存済みファイル: `tests/test_macro_data_reader.py` 行 40・45・52・59・64・70・76・82・89・97・103・108 ほか10（経由 `common/macro_data/reader.py::_load_series_payload`）
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 218（経由 `common/macro_data/reader.py::_load_series_payload`）
 - テスト・保存済みファイル: `tests/test_macro_pulse_logic.py` 行 57・66・73・397・418・436・437・457（経由 `common/macro_data/reader.py::_load_series_payload`）
 - 画面（経由（src/market/macro_pulse/05_main.py → docs/market-monitor/macro-pulse/data/05_events.csv））: `docs/market-monitor/macro-pulse/index.html`
-- 画面（経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
-- 画面（経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
+- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
 
 ## 誰も読まないキー
 
@@ -128,7 +127,7 @@
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `fetcher.py` | 439 | `.github/workflows/Macro_Data_Update.yml` | — | `common/macro_data/__init__.py`<br>`common/macro_data/reader.py` | 2件 |
-| `reader.py` | 125 | — | `browser_checks/market_pulse_elements.py`<br>`src/market/macro_pulse/05_main.py`<br>`src/market/market_pulse/backfill_tech_pulse.py`<br>`src/market/market_pulse/collect_and_send.py` | `common/macro_data/__init__.py` | 1件 |
+| `reader.py` | 125 | — | `browser_checks/market_pulse_elements.py`<br>`src/market/macro_pulse/05_main.py`<br>`src/market/market_pulse/collect_and_send.py` | `common/macro_data/__init__.py` | 1件 |
 
 ## 止める条件の内訳
 

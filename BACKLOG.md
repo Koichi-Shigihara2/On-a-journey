@@ -2036,7 +2036,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段階3（第2部、件名「feat: R-A MACRO PULSEの段階3、CHECK-INVをmacro_data・macro_pulseにも当てる」のcommit）: CHECK_LAYERSの市場データ層の後にmacro_data・macro_pulse（解決の厳しさはどれも1で、索引を作り直さない）。既知の規則の二重（macro_data 2: FREDのAPI・JSONの書き込み、macro_pulse 5: 取引日・景気後退リスクの点数・段階の信号・FREDのAPI・Grokの宛先）はWARN。rccのWARNは149→156件。rccのCHECK-INVは約67秒（10段階。8段階のときは約65秒）、rcc全体は約87秒。macro_dataのStep Summaryに注記を足した
 - 段階1〜3が済んだ。次はMarket Pulseの段階1（R-Aの最後のサブシステム）
 
-#### Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の段階（2026-10-23 段階1済）
+#### Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の段階（2026-10-23 段階1・2済）
 - 段階1（一覧の下書き）: 件名「chore: R-A Market Pulseの段階1、出力の一覧の下書き」のcommit。`--layer market_pulse` → `market_pulse_layer.json`・`.md`（画面は`docs/market-monitor/market-pulse/index.html`）
 - 出力7: `market_data.json`・`market_data.csv`（列を数える）・`breadth_data.json`・`sp500_tickers.json`・`nyse_holidays.json`・`02_market_rss.txt`（**コードの書き手なし、人の手で書くRSSの一覧**。読み手は`collect_and_send.py`の`get_market_news`）・メール（Gmail）。
   **通知はDiscordでなくメール**（`collect_and_send.py`の`send_email`、smtplib。Market PulseにDiscordの送信は無い）。読み手0件0、テストだけ0、1件2（`market_data.csv`は書き手が見出しを確かめるだけ・`02_market_rss.txt`）、2件以上4。
@@ -2050,7 +2050,12 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 一覧のスクリプト（+79行）: メール（smtplibの`send_message`・`sendmail`）を通知の出力に数える（smtplibを使うのはリポジトリで`collect_and_send.py`だけで、ほかの段階は変わらないため印にしない）。
   段階の印は既存のものだけ: `CSV_COLUMNS`（market_data.csv）・`NONPROD_NOTES`（手で動かすスクリプトの実行の記録）・`RESOLVE_STRICT` 2（`import collect_and_send as cs`。1では手で動かすスクリプトの書き手3件を決めきれず止める条件33.3%で当たる。3も同じ一覧）・`EXTRA_OUTPUT_DIRS`（02_market_rss.txt）。
   既存10段階の一覧は前後で差0。CHECK-INVには入れていない。画面の区画はページに`<!-- -->`の見出しが少なく（7つ）、ほとんどのキーが「③ 折れ線グラフ」に入る（推定の精度は低い）
-- **次はKoichiさんの判断（段階2）**
+- 段階2（第1部、Koichiさんの判断 2026-10-23。件名「refactor: R-A Market Pulseの段階2、手で動かすスクリプト4つを消す」のcommit）:
+  `backfill_implb.py`・`backfill_implc.py`・`backfill_stage_conclusions.py`・`backfill_tech_pulse.py`を削除（一過性の道具で適用済み）。名前のgrepで、ワークフロー・ほかのコード・テストからの参照は0件（テストの説明文1か所・コードのコメントの「backfill_tech_pulse.py型」は残す）。
+  CLAUDE_CODE_START.mdのマージの手順（統合済み）の2か所と`series_meta.json`のVXNCLSの注記に削除を注記。過去の記録（BACKLOG_DONE.md・MARKET_PULSE_REDESIGN.md の経緯）は消していない。
+  出力7はすべて残す（`sp500_tickers.json`・`nyse_holidays.json`は市場データ層・MACRO PULSEとの二重で、PROJECT_STATUS.mdの論点⑤）。誰も読まないキー48も全部残し、理由を`UNREAD_KEY_NOTES`に書いた（段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。
+  再設計・画面のストーリー化〈[[UI-STORY-REDESIGN-1]]〉の入力。`backfilled_at`は書き手が消えるため「過去の行の記録」）。消した`backfill_implc.py`だけが読んでいた`headlines.relevance`の`true`・`false`（Grokの関係の判定の件数）が新しく誰も読まないキーになり、判定の記録として残した（計50）。IDEAS_AND_WATCH.mdの[[UI-STORY-REDESIGN-1]]に1行。
+  一覧を作り直した（止める条件は書き手0%・読み方4.8%）。消したスクリプトがほかの段階の出力の読み手に数えられていた（NG-INV-2が11件: TANUKI・HypeCore・市場データ層・マクロデータ層・TAIL・Portfolio）ため、その6段階の一覧も作り直した。一覧の「消したもの」の見出しの日付がPortfolio・MACRO PULSE（2つ）でも2026-10-20のままだった（段階の日付の表に足していなかった）ため直した
 
 #### 規模の見込み
 大（段階ごと。SECデータ層だけで数セッション、推定）

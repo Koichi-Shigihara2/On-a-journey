@@ -18,7 +18,7 @@
 フォルダを決めきれない行（ファイル名で当たった行）:
 - `scripts/analysis/market_pulse_redesign.py` 行 393（`docs/portfolio/data/portfolio.json`）: `pf = json.loads(subprocess.run(["git", "-C", REPO, "show", f"{DATA_REV}:docs/portfolio/data/portfolio.json"],`
 
-## 消したもの（段階2、2026-10-20）
+## 消したもの（段階2、2026-10-23）
 
 - `docs/portfolio/data/theme_config.json`: 削除（2026-10-23、Koichiさんの判断）。元の config/theme_config.json も消し、Discover_Config_Sync.yml の写しと rcc の同期の確認（CHECK-32）の組も外した。docs/ の写しを読むのは CHECK-32 だけで、画面は読んでいなかった（画面の color・label は画面の中の PHASE_CFG の値）
 
@@ -28,7 +28,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `docs/portfolio/data/history.json`<br>（1ファイル） | 日ごとの資産のスナップショット（snapshot.py が portfolio.json と株価・為替から作って追記）。Portfolioの画面の推移が読む | `snapshot.py:main` | 1 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | 残す（2026-10-23） |
 | 2件以上 | `docs/portfolio/data/discover_config.json`<br>（1ファイル） | 銘柄の区分（保有中・候補等）とメモ。config/discover_config.json（新規登録の register_ticker.py が書く）を Discover_Config_Sync.yml が写したもの。Portfolioの画面が保有中の銘柄を選ぶのに読む。各銘柄の themes（読み手なし）は2026-10-23に消し、register_ticker.py も書くのをやめた | `.github/workflows/Discover_Config_Sync.yml:cp config/discover_config.json` | 2・テスト2 | portfolio/index.html（直接） | 効く: Portfolioの画面 | — | 残す（2026-10-23） |
-| 2件以上 | `docs/portfolio/data/portfolio.json`<br>（1ファイル） | 証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む |  | 9・テスト5 | market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | 効く: 保有銘柄の監視（TANUKI TAIL）・Portfolioの画面・TANUKI TAILの画面（保有銘柄の監視） | AS-IS-391・AS-IS-393 | 残す（2026-10-23） |
+| 2件以上 | `docs/portfolio/data/portfolio.json`<br>（1ファイル） | 証券会社ごとの保有（銘柄・株数・取得単価・現金）。**コードの書き手は無い（人の入力）**: 管理のページ（2026-10-21に削除）の代わりに、CLAUDE_CODE_START.md「管理の操作の手順」の「ポートフォリオを変えて」でClaude Codeが直接編集する。最後の更新は2026-06-03。Portfolioの画面・snapshot.py・TAIL（取得単価・画面）・System Health（保有の無い監視銘柄）・Market Pulse（監視銘柄）が読む |  | 7・テスト5 | market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | 効く: 保有銘柄の監視（TANUKI TAIL）・Portfolioの画面・TANUKI TAILの画面（保有銘柄の監視） | AS-IS-391・AS-IS-393 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -45,7 +45,7 @@
 ### `docs/portfolio/data/discover_config.json`（2件以上）
 - 起動元: .github/workflows/Discover_Config_Sync.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `candidates`(0)・`last_updated`(1)・`tickers`(2)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 294・3471・3701（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 295・3472・3702（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 216
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_discover_config_sync`）
@@ -54,8 +54,6 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `brokers`(7)・`last_updated`(2)
 - Python・保存済みファイル: `common/system_health.py` 行 52・729・776・1049・1110（経由 `common/system_health.py::_portfolio_tickers`）
-- Python・保存済みファイル: `src/market/market_pulse/backfill_implb.py` 行 49・63（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
-- Python・保存済みファイル: `src/market/market_pulse/backfill_implc.py` 行 39・62（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1559・1583・1967・1969（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 218・261（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 25・30・142（経由 `src/portfolio/snapshot.py::main`）
@@ -67,9 +65,9 @@
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/system_health.py::_portfolio_tickers`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 290・298・430・443（経由 `common/system_health.py::_portfolio_tickers`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::get_avg_cost`）
-- 画面（経由（src/market/market_pulse/backfill_implb.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
+- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
-- 画面（経由（src/market/market_pulse/backfill_implb.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
 
 ## 画面の項目
 
@@ -158,7 +156,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:723`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:866`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:894` | いいえ |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:229`<br>`src/tail/edgar_rss_monitor.py:433`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:605` | いいえ |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1633`<br>`common/sec_data/report_consistency_check.py:1774`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1634`<br>`common/sec_data/report_consistency_check.py:1775`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:389`<br>`src/tail/xbrl_segment_fetcher.py:196`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:143` | いいえ |

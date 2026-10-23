@@ -898,22 +898,6 @@
      "type": "Python"
     },
     {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "line": 304,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "line": 366,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
      "file": "src/market/market_pulse/collect_and_send.py",
      "line": 478,
      "func": "fetch_vxn_from_fred",
@@ -1219,11 +1203,11 @@
     },
     {
      "page": "docs/market-monitor/market-pulse/index.html",
-     "how": "経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json）"
+     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json）"
+     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
     }
    ],
    "definitions": [
@@ -1233,11 +1217,11 @@
    "decision_effect": [
     "MACRO PULSE（景気後退リスクの点数・局面）"
    ],
-   "reader_count": 9,
+   "reader_count": 8,
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む",
+   "note": "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py）が reader.py 経由で読む",
    "decision": "残す（2026-10-23）"
   },
   {
@@ -2059,7 +2043,6 @@
    "code": [
     "browser_checks/market_pulse_elements.py",
     "src/market/macro_pulse/05_main.py",
-    "src/market/market_pulse/backfill_tech_pulse.py",
     "src/market/market_pulse/collect_and_send.py"
    ],
    "same_dir": [

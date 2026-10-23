@@ -51,6 +51,9 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 #### 追記（2026-10-22、R-AのTAILの段階2）
 - TAILのレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）で作っているが画面に出していないキー: AIの文の`business_model`・`competitive_advantage`・`management`・`recommendation_reason`と、品質の印の`grok_call1_success`・`grok_call2_success`・`stage2_json_valid`・`layer1_complete`・`layer3_complete`（kpiのLayer3）・`layer2_missing_kpis`・`transcript_available`（`docs/architecture/output_inventory/tail_layer.md`の「誰も読まないキー」）。画面の作り直しのときに出すかを決める
 
+#### 追記（2026-10-23、R-AのMarket Pulseの段階2）
+- Market Pulseの`market_data.json`で作っているが誰も読まないキー48（段階の結論の根拠の値〈`stage3`・`stage4`・`conditions`・`threshold_pt`等〉とその日に取った値〈`ai_facts`・`new_highs`・`prev_close`等〉。一覧は`docs/architecture/output_inventory/market_pulse_layer.md`）は、過去の日の分を取り直せないため残した。画面の作り直しの入力にする
+
 #### 着手の条件
 [[OUTPUT-INVENTORY-CHECK-1]]（R-A）のTANUKIの段階が済んでいること（それ以外の画面は、その段階が済んでから）
 

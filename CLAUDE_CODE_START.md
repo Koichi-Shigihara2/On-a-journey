@@ -93,7 +93,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - **docs/portfolio/data・src/portfolio・docs/portfolio/index.htmlに出力を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer portfolio`で一覧を作り直してcommitする**（しないとゲートがNG）
 - MACRO PULSE: 段階1 `6088b8636f`（`--layer macro_data`〈出力4〉と`--layer macro_pulse`〈出力8、CSVの列を数える〉）→段階2 `31aa31b875`（手で動かすスクリプト3つ・修復のスクリプト1つ、`05_events.csv`の誰も読まない6列、macro_dataの誰も読まないキー3つを削除）→段階3（CHECK-INV、10段階で約67秒）
 - **common/macro_data・src/market/macro_pulse・docs/market-monitor/macro-pulseに出力・列を足す・読み手を変える変更をしたら、`python scripts/inventory/build_output_inventory.py --layer macro_data`（`--layer macro_pulse`）で一覧を作り直してcommitする**（しないとゲートがNG）
-- Market Pulse: 段階1（`--layer market_pulse`、出力7。通知はメール、`02_market_rss.txt`はコードの書き手なし。CHECK-INVにはまだ入れない）。check_macro_pulse.pyの10-23の不一致5件は実行の時刻による（FINDINGS 型C、画面の値は誤っていない）
+- Market Pulse: 段階1（`--layer market_pulse`、出力7。通知はメール、`02_market_rss.txt`はコードの書き手なし）→段階2（手で動かすスクリプト4つ〈backfill_*〉を削除、出力・誰も読まないキー48は残す）。check_macro_pulse.pyの10-23の不一致5件は実行の時刻による（FINDINGS 型C、画面の値は誤っていない）
 - 次はKoichiさんの判断（R-AのMarket Pulseの段階2）。R-Aの終わりの見直しの論点（①〜⑥）はPROJECT_STATUS.mdの次の作業2
 
 **2026-10-20 夜 R-A SEC層の段階2（削除）・段階3（CHECK-INV-1〜4）**
@@ -575,12 +575,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - （統合済み 2026-10-01）`feature/mp-impl-b`（`36309d41f3`、kaihatsuから分岐。設計上の暫定値〈先物の清算前・為替とドル指数の日の区切り前〉はdata_qualityをpartialにせず「暫定（清算前）」「暫定（日中）」と表示する修正を含む）: 実装B（段階5のセクターの四象限・段階6のグループ別・段階7の監視銘柄・段階1にSOXとM7）＋段階7の表の見出しに
   TANUKI SCORE・HypeCoreの計算日。daily/に14銘柄を追加（`^SOX`・`^NDX`・`DX-Y.NYB`・XLK〜XLCの11本。データは2021-01-04〜09-29/30）、fetcherの取得対象も追加。
   **マージは今夜（米国09-30）の実行報告をチャットで確認してから。** 手順: (1) kaihatsuへマージ（`market_data.json`は`.gitattributes`の`merge=ours`のため
-  ブランチ側の変更は黙って捨てられる。ローカルに`git config merge.ours.driver true`が要る） (2) `python src/market/market_pulse/backfill_implb.py`を
+  ブランチ側の変更は黙って捨てられる。ローカルに`git config merge.ours.driver true`が要る） (2) `python src/market/market_pulse/backfill_implb.py`（2026-10-23に削除）を
   実行し直して`market_data.json`の既存エントリに実装Bの要素を付け直す (3) 09-29/30からマージまでに5営業日程度より多く空いたら、14銘柄を
   `python common/market_data/fetcher.py <14銘柄> --layer daily --repair-missing-days`で埋める（5営業日以内なら夜間の取得の抜け補完で埋まる）
   (4) 3ゲート＋browser_checks（57件一致だった）→commit→push。
 - （統合済み 2026-10-06、`31812675c0`）`feature/mp-impl-c`（`2e45457c9b`、Bから分岐。Bの`36309d41f3`をマージ済み、段階8の先物・ドル円にも暫定の表示）: 実装C（段階2のRSSの見出し・段階8の予定表と先物・日本の項目）。daily/にES=F・NQ=F・NIY=Fを追加（2021〜09-30）。
-  **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`の再実行は任意（最新エントリだけに付く。
+  **Bをマージした翌晩の実行を確認してから。** 手順: (1) マージ（Bの後なので差分はCの分だけ） (2) `backfill_implc.py`（2026-10-23に削除）の再実行は任意（最新エントリだけに付く。
   翌晩の本番実行で自然に付く） (3) 空きが5営業日程度を超えたらES=F・NQ=F・NIY=Fを`--repair-missing-days`で埋める (4) 3ゲート＋browser_checks（60件一致）。
   **既知の不一致（2026-10-03 チャット側の指示）**: `browser_checks/check_dependency_map.py`の⑤Hollow Rallyだけが不一致になった場合は、
   `[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]`（MACRO PULSE側がHollow Rallyの判定を週単位に変えた〈M-2 STEP 4〉のに、期待値が旧ロジック〈6行前・前日比〉のまま）

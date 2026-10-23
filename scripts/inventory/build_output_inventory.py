@@ -710,7 +710,7 @@ _MACRO_DATA.update(
     ANNOTATIONS={
         "common/macro_data/series/{series_id}.json":
             "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。"
-            "MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py・backfill_tech_pulse.py）が reader.py 経由で読む",
+            "MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py）が reader.py 経由で読む",
         "common/macro_data/macro_data_violations_log.json":
             "系列ごとの保存前の検証の結果（警告と取得の成否 fetch_status）。System Health の [L]（check_l_macro_data）が取得の失敗を見るのに読む",
         "common/macro_data/series_meta.json":
@@ -819,25 +819,8 @@ _MARKET_PULSE.update(
         ("docs/market-monitor/market-pulse/index.html", "Market Pulseの画面"),
     ],
     NON_PRODUCTION_DIRS=[],
-    NON_PRODUCTION_FILES=["src/market/market_pulse/backfill_implb.py", "src/market/market_pulse/backfill_implc.py",
-                          "src/market/market_pulse/backfill_stage_conclusions.py", "src/market/market_pulse/backfill_tech_pulse.py"],
+    NON_PRODUCTION_FILES=[],
     NONPROD_SCAN=True,
-    NONPROD_NOTES={
-        "src/market/market_pulse/backfill_implb.py":
-            "手で動かす一過性の付け足し（market_data.jsonの既存のエントリに実装B〈指示書㉖〉の sector_rotation・semis_m7・commodity_fx・段階5〜7）。"
-            "collect_and_send.py を import して同じパス・関数を使う。実行の記録: eb6cf8d98d（2026-10-01、107エントリ）。"
-            "手順の文書: CLAUDE_CODE_START.md（実装Bのマージの手順）・MARKET_PULSE_REDESIGN.md 7章",
-        "src/market/market_pulse/backfill_implc.py":
-            "手で動かす一過性の付け足し（最新のエントリだけに実装C〈指示書㉗〉の headlines・calendar・futures。--only headlines は見出しだけ取り直し、Grokを1回呼ぶ）。"
-            "実行の記録: 01634073a9・747936b56c（2026-10-09、--only headlines）。1193cd5845（2026-09-30）は実装と同じcommit。"
-            "手順の文書: CLAUDE_CODE_START.md（実装Cのマージの手順、再実行は任意）・MARKET_PULSE_REDESIGN.md 7章",
-        "src/market/market_pulse/backfill_stage_conclusions.py":
-            "手で動かす一過性の付け足し（既存のエントリに stage_conclusions・weather・data_quality・sentiment.signal。指示書㉓ 実装A）。"
-            "実行の記録: 59406c6131・14b03af90f（2026-09-30、実装と同じcommit）。手順の文書: MARKET_PULSE_REDESIGN.md 7章",
-        "src/market/market_pulse/backfill_tech_pulse.py":
-            "手で動かす補完（tech_pulse の無いエントリを daily/ と VXNCLS から埋める）。実行の記録: 140ce1877c（2026-05-03）・c50a9f3ded（2026-05-21）。"
-            "最後のコードの変更は4930458e72（2026-08-13、VXNCLSを reader.py 経由に）。手順の文書は切り替えの記録（BACKLOG・FIELD_DEFINITIONS 等）だけ",
-    },
     ANNOTATIONS={
         "docs/market-monitor/market-pulse/data/market_data.json":
             "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。"
@@ -858,18 +841,38 @@ _MARKET_PULSE.update(
             "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
         "メール（GMAIL_PASSWORD・GMAIL_USER）": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",
     },
-    DECISION_DEFAULT="（段階2の判断待ち）",
+    DECISION_DEFAULT="残す（2026-10-23）",
     DECISIONS={},
-    DELETED=[],
-    DECISION_NOTE="段階2の判断はまだ（Koichiさんの判断待ち）",
+    DELETED=[
+        ("src/market/market_pulse/backfill_implb.py・backfill_implc.py・backfill_stage_conclusions.py・backfill_tech_pulse.py",
+         "削除（2026-10-23、Koichiさんの判断）。手で動かす一過性の付け足し・補完で適用済み（implb は eb6cf8d98d〈2026-10-01〉、implc は 01634073a9・747936b56c〈2026-10-09〉、"
+         "stage_conclusions は 59406c6131・14b03af90f〈2026-09-30〉、tech_pulse は 140ce1877c〈2026-05-03〉・c50a9f3ded〈2026-05-21〉）。"
+         "ワークフロー・ほかのコード・テストからの参照は無かった。過去の記録（BACKLOG_DONE.md・MARKET_PULSE_REDESIGN.md の経緯）は残す"),
+    ],
+    DECISION_NOTE="段階2の判断（2026-10-23、Koichiさんの判断）。手で動かすスクリプト4つを消し、出力はすべて残す。sp500_tickers.json・nyse_holidays.json は"
+                  "市場データ層・MACRO PULSE との二重で、R-A の終わりの見直し（論点⑤）で扱う。誰も読まないキー48は残す（下の注記）。"
+                  "スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す",
     OUTSIDE_HINT="market-pulse", OUTSIDE_PREFIXES=("docs/market-monitor/market-pulse/", "src/market/market_pulse/"),
     READ_PREFIXES=("docs/market-monitor/market-pulse", "src/market/market_pulse"),
     READ_HINT="market-pulse", NAME_SHORT="Market Pulse",
-    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint"],
+    KNOWN_DUPLICATE_RULES=["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"],
     TITLE="Market Pulse（src/market/market_pulse・docs/market-monitor/market-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/market-pulse",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={},
+    UNREAD_KEY_NOTES={
+        **{k: "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
+           for k in (
+                 "ad_ratio", "ai_facts", "base_n", "breadth_date", "conditions", "distribution", "divergence_vs_sp", "earnings_tickers",
+                 "etf", "etf_change_percent", "hy_bond", "ig_bond", "ivw_minus_ive_pt", "mcclellan_negative", "median_pct", "momentum_lag_weeks",
+                 "new_highs", "new_lows", "nh_le_2x_nl", "nh_nl", "nh_nl_both_2_2pct", "one_month_ago", "one_week_ago", "prev_close",
+                 "prev_date", "ratio_weeks", "raw_change", "raw_change_percent", "risk_avg_pct", "rsp_spy_divergence", "safe_avg_pct", "sentiment_label",
+                 "sentiment_score", "sox_date", "sp500_ma200", "sp500_ma_dev", "sp500_uptrend_50d", "stage1_vix", "stage3", "stage4",
+                 "stocks_ahead_of_base_date", "threshold_pt", "ultra_short", "vix_level", "vxn_available", "week", "zscore",
+           )},
+        **{k: "残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ"
+           for k in ("true", "false")},
+        "backfilled_at": "残す: 過去の行の記録（2026-10-09 に最新のエントリの見出しを取り直した印。書き手の backfill_implc.py は2026-10-23に削除し、新しい行には付かない）",
+    },
     RULES=_TANUKI["RULES"] + _MARKET["RULES"] + _MACRO_RULES + [
         {"id": "market_holidays", "name": "休場日（祝日）の一覧の作り方",
          "patterns": [r"def\s+_?\w*holidays\s*\("]},
@@ -3248,7 +3251,8 @@ def render_md(inv: dict) -> str:
     L.append("")
     if inv["deleted"]:
         L.append("## 消したもの（段階2、" + {"HypeCore": "2026-10-21", "EPS": "2026-10-21", "STONKS": "2026-10-21",
-                                            "市場データ層": "2026-10-22", "TAIL": "2026-10-22"}.get(NAME_SHORT, "2026-10-20") + "）")
+                                            "市場データ層": "2026-10-22", "TAIL": "2026-10-22", "Portfolio": "2026-10-23",
+                                            "マクロデータ層": "2026-10-23", "MACRO PULSE": "2026-10-23", "Market Pulse": "2026-10-23"}.get(NAME_SHORT, "2026-10-20") + "）")
         L.append("")
         for x in inv["deleted"]:
             L.append(f"- `{x['what']}`: {x['detail']}")

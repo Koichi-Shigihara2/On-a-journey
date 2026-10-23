@@ -537,9 +537,9 @@ def test_macro_layers_settings():
     assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "recession_score", "step_signal", "fred_api", "grok_endpoint"]
     # 既存の段階の一覧を変えないよう、足した印はこの2つの段階だけ
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["JS_ID_HELPERS"]] == ["macro_pulse"]
-    # Market Pulse（段階1）も CSV の列・本番外のコードの注記を使う
+    # Market Pulse も CSV の列を数える（本番外のコードの注記は段階2で4つとも消して空）
     assert [k for k in inv.LAYERS if inv.LAYERS[k]["CSV_COLUMNS"]] == ["macro_pulse", "market_pulse"]
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse", "market_pulse"]
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["NONPROD_NOTES"]] == ["macro_pulse"]
 
 
 def test_csv_columns_are_keys_only_with_flag(tmp_path, monkeypatch):
@@ -570,8 +570,10 @@ def test_market_pulse_layer_settings():
     assert mp["RESOLVE_STRICT"] == 2 and mp["CSV_COLUMNS"] and mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",)
     assert not (mp["JS_ID_HELPERS"] or mp["IO_HELPER_BY_CALLER"] or mp["DATA_UNREAD_KEYS"])
     assert "market_pulse" not in inv.CHECK_LAYERS
-    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint"]
+    assert mp["KNOWN_DUPLICATE_RULES"] == ["trading_day", "provisional_bar", "sp500_constituents", "fred_api", "grok_endpoint", "market_holidays"]
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
+    # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
+    assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 50 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]
 
 
 def test_mail_notification_is_output(monkeypatch):

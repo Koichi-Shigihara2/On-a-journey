@@ -58,7 +58,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "market_data.json の指標を平らにした1日1行（指標_value 等）。**AIの出力（Grok）**: summary 列（judgment 列は summary から取り出す）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "src/market/market_pulse/02_market_rss.txt",
@@ -109,7 +109,7 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/market-pulse/data/breadth_data.json",
@@ -249,37 +249,12 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/market-pulse/data/market_data.json",
    "kind": "ファイル",
    "writers": [
-    {
-     "file": "src/market/market_pulse/backfill_implb.py",
-     "func": "main",
-     "line": 57
-    },
-    {
-     "file": "src/market/market_pulse/backfill_implc.py",
-     "func": "main",
-     "line": 56
-    },
-    {
-     "file": "src/market/market_pulse/backfill_stage_conclusions.py",
-     "func": "main",
-     "line": 71
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "func": "main",
-     "line": 261
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "func": "main",
-     "line": 360
-    },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
@@ -469,14 +444,6 @@
      "how": "保存済みファイル",
      "via": "grep",
      "type": "JS・HTML"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "line": 46,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
@@ -865,12 +832,12 @@
     "Market Pulse（市況の判定・8段階の結論・天気）",
     "Market Pulseの画面"
    ],
-   "reader_count": 9,
+   "reader_count": 8,
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/market-pulse/data/nyse_holidays.json",
@@ -973,7 +940,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "前年〜翌年のNYSEの休場日（pandas_market_calendars から毎回書く）。画面の休場の行の表示に使う。**休場日の情報は市場データ層（fetcher.py・daily_guard.py が pandas_market_calendars を直接）と MACRO PULSE（05_main.py の us_holidays、手で書いた祝日の規則）にも別にある**",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "docs/market-monitor/market-pulse/data/sp500_tickers.json",
@@ -1075,7 +1042,7 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "S&P500の構成銘柄の一覧の控え（7日以内なら取り直さない）。**市場データ層の common/market_data/_sp500_constituents_cache.json と同じ情報の別の写し**（取り方も同じ。2026-10-23 は503銘柄で一致。fetcher.py の get_sp500_constituents は意図的な独立の実装と書く）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   },
   {
    "path": "メール（GMAIL_PASSWORD・GMAIL_USER）",
@@ -1111,7 +1078,7 @@
    "reader_count_compute": 0,
    "group": "人が見る",
    "note": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",
-   "decision": "（段階2の判断待ち）"
+   "decision": "残す（2026-10-23）"
   }
  ],
  "rules": [
@@ -2055,101 +2022,12 @@
    "duplicated": true
   }
  ],
- "non_production_code": [
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_implb.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 63,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_implc.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 62,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_stage_conclusions.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 78,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_tech_pulse.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 366,
-   "workflows": [],
-   "code": [
-    "common/market_data/fetcher.py"
-   ],
-   "same_dir": [],
-   "tests": [],
-   "found_by": "名前を挙げた候補"
-  }
- ],
+ "non_production_code": [],
  "non_production_scanned": [
   {
    "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_implb.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 63,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_implc.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 62,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_stage_conclusions.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 78,
-   "workflows": [],
-   "code": [],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/market_pulse",
-   "file": "src/market/market_pulse/backfill_tech_pulse.py",
-   "decision": "（段階2の判断待ち）",
-   "lines": 366,
-   "workflows": [],
-   "code": [
-    "common/market_data/fetcher.py"
-   ],
-   "same_dir": [],
-   "tests": []
-  },
-  {
-   "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/breadth_calculator.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 517,
    "workflows": [
     ".github/workflows/Market_Pulse_Update.yml"
@@ -2166,18 +2044,13 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/collect_and_send.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 1988,
    "workflows": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
    "code": [],
-   "same_dir": [
-    "src/market/market_pulse/backfill_implb.py",
-    "src/market/market_pulse/backfill_implc.py",
-    "src/market/market_pulse/backfill_stage_conclusions.py",
-    "src/market/market_pulse/backfill_tech_pulse.py"
-   ],
+   "same_dir": [],
    "tests": [
     "tests/test_collect_and_send_market_data_switch.py",
     "tests/test_market_pulse_implc.py",
@@ -2188,7 +2061,7 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/futures_snapshot.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 69,
    "workflows": [],
    "code": [],
@@ -2202,7 +2075,7 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/market_calendar.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 204,
    "workflows": [],
    "code": [],
@@ -2216,14 +2089,13 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/news_headlines.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 274,
    "workflows": [],
    "code": [
     "browser_checks/market_pulse_elements.py"
    ],
    "same_dir": [
-    "src/market/market_pulse/backfill_implc.py",
     "src/market/market_pulse/collect_and_send.py"
    ],
    "tests": [
@@ -2233,12 +2105,11 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/sector_rotation.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 289,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "src/market/market_pulse/backfill_implb.py",
     "src/market/market_pulse/collect_and_send.py",
     "src/market/market_pulse/stage_conclusions.py"
    ],
@@ -2250,14 +2121,11 @@
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/stage_conclusions.py",
-   "decision": "（段階2の判断待ち）",
+   "decision": "残す（2026-10-23）",
    "lines": 454,
    "workflows": [],
    "code": [],
    "same_dir": [
-    "src/market/market_pulse/backfill_implb.py",
-    "src/market/market_pulse/backfill_implc.py",
-    "src/market/market_pulse/backfill_stage_conclusions.py",
     "src/market/market_pulse/collect_and_send.py"
    ],
    "tests": [
@@ -2320,14 +2188,19 @@
    "sites": []
   }
  ],
- "deleted": [],
+ "deleted": [
+  {
+   "what": "src/market/market_pulse/backfill_implb.py・backfill_implc.py・backfill_stage_conclusions.py・backfill_tech_pulse.py",
+   "detail": "削除（2026-10-23、Koichiさんの判断）。手で動かす一過性の付け足し・補完で適用済み（implb は eb6cf8d98d〈2026-10-01〉、implc は 01634073a9・747936b56c〈2026-10-09〉、stage_conclusions は 59406c6131・14b03af90f〈2026-09-30〉、tech_pulse は 140ce1877c〈2026-05-03〉・c50a9f3ded〈2026-05-21〉）。ワークフロー・ほかのコード・テストからの参照は無かった。過去の記録（BACKLOG_DONE.md・MARKET_PULSE_REDESIGN.md の経緯）は残す"
+  }
+ ],
  "stop_condition": {
   "outputs": 7,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 26,
+  "python_read_sites_into_layer_resolved": 22,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 19,
+  "name_hit_sites_resolved": 18,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -2343,7 +2216,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.043,
+  "ratio_reader": 0.048,
   "threshold": 0.1,
   "hit": false
  },
@@ -2367,7 +2240,7 @@
      1271,
      1271
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2383,7 +2256,7 @@
      1290,
      1292
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2398,7 +2271,7 @@
     "lines": [
      637
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2416,7 +2289,7 @@
      862,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2434,7 +2307,7 @@
      859,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2451,7 +2324,7 @@
      1130,
      1132
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2468,7 +2341,7 @@
      1369,
      1377
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2482,7 +2355,7 @@
     "lines": [
      1096
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2497,7 +2370,7 @@
      995,
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2516,7 +2389,7 @@
      858,
      865
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2530,7 +2403,7 @@
     "lines": [
      1215
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2545,7 +2418,7 @@
      1057,
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2559,7 +2432,7 @@
     "lines": [
      1100
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2574,7 +2447,7 @@
      717,
      717
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2588,7 +2461,7 @@
     "lines": [
      717
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2618,7 +2491,7 @@
      1369,
      1377
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2634,7 +2507,7 @@
      1152,
      1152
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2649,7 +2522,7 @@
      1132,
      1132
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2665,7 +2538,7 @@
      840,
      840
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2679,7 +2552,7 @@
     "lines": [
      802
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2693,7 +2566,7 @@
     "lines": [
      1038
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2710,7 +2583,7 @@
      1166,
      1216
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2724,7 +2597,7 @@
     "lines": [
      849
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2738,7 +2611,7 @@
     "lines": [
      1096
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2752,7 +2625,7 @@
     "lines": [
      721
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2772,7 +2645,7 @@
      1396,
      1396
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2788,7 +2661,7 @@
      1279,
      1280
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2802,7 +2675,7 @@
     "lines": [
      1131
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2819,7 +2692,7 @@
      1126,
      1406
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2862,7 +2735,7 @@
      1401,
      1406
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2876,7 +2749,7 @@
     "lines": [
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2890,7 +2763,7 @@
     "lines": [
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2906,7 +2779,7 @@
      859,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2921,7 +2794,7 @@
      843,
      1352
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2936,7 +2809,7 @@
      843,
      1204
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2951,7 +2824,7 @@
      1153,
      1153
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2965,7 +2838,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2979,7 +2852,7 @@
     "lines": [
      1104
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -2993,7 +2866,7 @@
     "lines": [
      1102
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3008,7 +2881,7 @@
      1025,
      1025
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3025,7 +2898,7 @@
      1132,
      1406
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3039,7 +2912,7 @@
     "lines": [
      1129
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3054,7 +2927,7 @@
      1064,
      1064
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3068,7 +2941,7 @@
     "lines": [
      1064
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3088,7 +2961,7 @@
      1166,
      1216
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3106,7 +2979,7 @@
      1096,
      1104
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3121,7 +2994,7 @@
      1166,
      1216
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3135,7 +3008,7 @@
     "lines": [
      1056
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3149,7 +3022,7 @@
     "lines": [
      1094
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3165,7 +3038,7 @@
      629,
      629
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3179,7 +3052,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3196,7 +3069,7 @@
      1142,
      1142
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3211,7 +3084,7 @@
      987,
      990
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3225,7 +3098,7 @@
     "lines": [
      1070
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3239,7 +3112,7 @@
     "lines": [
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3253,7 +3126,7 @@
     "lines": [
      998
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3267,7 +3140,7 @@
     "lines": [
      1392
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3282,7 +3155,7 @@
      995,
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3297,7 +3170,7 @@
      1057,
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3321,7 +3194,7 @@
      1397,
      1406
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3335,7 +3208,7 @@
     "lines": [
      1282
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3351,7 +3224,7 @@
      1344,
      1369
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3368,7 +3241,7 @@
      1087,
      1096
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3385,7 +3258,7 @@
      1395,
      1395
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3432,7 +3305,7 @@
      1369,
      1369
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3446,7 +3319,7 @@
     "lines": [
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3480,7 +3353,7 @@
      1341,
      1352
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3497,7 +3370,7 @@
      1113,
      1115
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3511,7 +3384,7 @@
     "lines": [
      1066
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3528,7 +3401,7 @@
      1043,
      1043
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3541,7 +3414,7 @@
      1043,
      1043
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3558,7 +3431,7 @@
      736,
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3572,7 +3445,7 @@
     "lines": [
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3587,7 +3460,7 @@
      1089,
      1090
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3603,7 +3476,7 @@
      1279,
      1280
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3620,7 +3493,7 @@
      866,
      866
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3634,7 +3507,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3649,7 +3522,7 @@
      722,
      723
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3666,7 +3539,7 @@
      1025,
      1027
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3680,7 +3553,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3698,7 +3571,7 @@
      1096,
      1159
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3713,7 +3586,7 @@
     "lines": [
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3728,7 +3601,7 @@
     "lines": [
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3748,7 +3621,7 @@
      884,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3764,7 +3637,7 @@
      1121,
      1130
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3778,7 +3651,7 @@
     "lines": [
      1111
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3792,7 +3665,7 @@
     "lines": [
      993
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3806,7 +3679,7 @@
     "lines": [
      1195
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3822,7 +3695,7 @@
      884,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3840,7 +3713,7 @@
      884,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3856,7 +3729,7 @@
      1198,
      1299
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3871,7 +3744,7 @@
      727,
      730
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3886,7 +3759,7 @@
      1121,
      1130
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3903,7 +3776,7 @@
      731,
      731
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3918,7 +3791,7 @@
      1075,
      1087
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3933,7 +3806,7 @@
      1075,
      1075
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3947,7 +3820,7 @@
     "lines": [
      957
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3968,7 +3841,7 @@
      1057,
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3982,7 +3855,7 @@
     "lines": [
      932
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -3997,7 +3870,7 @@
      1025,
      1027
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4011,7 +3884,7 @@
     "lines": [
      843
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4026,7 +3899,7 @@
      1014,
      1112
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4042,7 +3915,7 @@
      1096,
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4056,7 +3929,7 @@
     "lines": [
      1089
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4071,7 +3944,7 @@
      770,
      772
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4085,7 +3958,7 @@
     "lines": [
      723
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4099,7 +3972,7 @@
     "lines": [
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4119,7 +3992,7 @@
      884,
      884
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4133,7 +4006,7 @@
     "lines": [
      1114
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4164,7 +4037,7 @@
      1166,
      1216
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4179,7 +4052,7 @@
      1057,
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4193,7 +4066,7 @@
     "lines": [
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4207,7 +4080,7 @@
     "lines": [
      1022
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4221,7 +4094,7 @@
     "lines": [
      1024
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4236,7 +4109,7 @@
      734,
      1038
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4265,7 +4138,7 @@
      1397,
      1397
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4283,7 +4156,7 @@
      1013,
      1014
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4298,7 +4171,7 @@
      986,
      992
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4313,7 +4186,7 @@
      1268,
      1271
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4328,7 +4201,7 @@
     "lines": [
      1075
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4344,7 +4217,7 @@
      735,
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4359,7 +4232,7 @@
      735,
      735
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4373,7 +4246,7 @@
     "lines": [
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4387,7 +4260,7 @@
     "lines": [
      1042
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4404,7 +4277,7 @@
      1111,
      1136
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4418,7 +4291,7 @@
     "lines": [
      1104
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4438,7 +4311,7 @@
      1132,
      1132
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4452,7 +4325,7 @@
     "lines": [
      832
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4470,7 +4343,7 @@
      809,
      1142
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4484,7 +4357,7 @@
     "lines": [
      1046
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4498,7 +4371,7 @@
     "lines": [
      1136
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4512,7 +4385,7 @@
     "lines": [
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4526,7 +4399,7 @@
     "lines": [
      1165
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4541,7 +4414,7 @@
      1057,
      1057
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4559,7 +4432,7 @@
      1166,
      1216
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4576,7 +4449,7 @@
      1341,
      1352
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4591,7 +4464,7 @@
      1103,
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4606,7 +4479,7 @@
      1103,
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4622,7 +4495,7 @@
      1067,
      1103
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4638,7 +4511,7 @@
      1067,
      1078
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4653,7 +4526,7 @@
     "lines": [
      723
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4669,7 +4542,7 @@
      1027,
      1027
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4684,7 +4557,7 @@
      1121,
      1121
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4698,7 +4571,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4726,7 +4599,7 @@
      1096,
      1397
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4740,7 +4613,7 @@
     "lines": [
      840
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4754,7 +4627,7 @@
     "lines": [
      955
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4768,7 +4641,7 @@
     "lines": [
      1054
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4785,7 +4658,7 @@
      1112,
      1114
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4800,7 +4673,7 @@
      843,
      843
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4815,7 +4688,7 @@
      1014,
      1014
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -4829,7 +4702,7 @@
     "lines": [
      995
     ],
-    "decision": "（段階2の判断待ち）"
+    "decision": "残す（2026-10-23）"
    }
   ],
   "unread_keys": [
@@ -4841,7 +4714,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "ai_facts",
@@ -4849,7 +4722,7 @@
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "backfilled_at",
@@ -4859,7 +4732,7 @@
     "parents": [
      "headlines"
     ],
-    "note": ""
+    "note": "残す: 過去の行の記録（2026-10-09 に最新のエントリの見出しを取り直した印。書き手の backfill_implc.py は2026-10-23に削除し、新しい行には付かない）"
    },
    {
     "key": "base_n",
@@ -4869,7 +4742,7 @@
     "parents": [
      "outcomes"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "breadth_date",
@@ -4879,7 +4752,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "conditions",
@@ -4889,7 +4762,7 @@
     "parents": [
      "hindenburg"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "distribution",
@@ -4899,7 +4772,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "divergence_vs_sp",
@@ -4909,7 +4782,7 @@
     "parents": [
      "NYSE Composite"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "earnings_tickers",
@@ -4919,7 +4792,7 @@
     "parents": [
      "calendar"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "etf",
@@ -4929,7 +4802,7 @@
     "parents": [
      "roll_suspect"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "etf_change_percent",
@@ -4939,7 +4812,17 @@
     "parents": [
      "roll_suspect"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
+   },
+   {
+    "key": "false",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ],
+    "parents": [
+     "relevance"
+    ],
+    "note": "残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ"
    },
    {
     "key": "hy_bond",
@@ -4950,7 +4833,7 @@
      "asset_flow",
      "資産の前営業日比"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "ig_bond",
@@ -4961,7 +4844,7 @@
      "asset_flow",
      "資産の前営業日比"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "ivw_minus_ive_pt",
@@ -4971,7 +4854,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "mcclellan_negative",
@@ -4981,7 +4864,7 @@
     "parents": [
      "conditions"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "median_pct",
@@ -4991,7 +4874,7 @@
     "parents": [
      "outcomes"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "momentum_lag_weeks",
@@ -5001,7 +4884,7 @@
     "parents": [
      "sector_rotation"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "new_highs",
@@ -5011,7 +4894,7 @@
     "parents": [
      "hindenburg"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "new_lows",
@@ -5021,7 +4904,7 @@
     "parents": [
      "hindenburg"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "nh_le_2x_nl",
@@ -5031,7 +4914,7 @@
     "parents": [
      "conditions"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "nh_nl",
@@ -5041,7 +4924,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "nh_nl_both_2_2pct",
@@ -5051,7 +4934,7 @@
     "parents": [
      "conditions"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "one_month_ago",
@@ -5061,7 +4944,7 @@
     "parents": [
      "fear_greed"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "one_week_ago",
@@ -5071,7 +4954,7 @@
     "parents": [
      "fear_greed"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "prev_close",
@@ -5081,7 +4964,7 @@
     "parents": [
      "contract_roll"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "prev_date",
@@ -5093,7 +4976,7 @@
      "commodity_fx",
      "contract_roll"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "ratio_weeks",
@@ -5103,7 +4986,7 @@
     "parents": [
      "sector_rotation"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "raw_change",
@@ -5113,7 +4996,7 @@
     "parents": [
      "contract_roll"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "raw_change_percent",
@@ -5123,7 +5006,7 @@
     "parents": [
      "contract_roll"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "risk_avg_pct",
@@ -5133,7 +5016,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "rsp_spy_divergence",
@@ -5143,7 +5026,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "safe_avg_pct",
@@ -5153,7 +5036,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sentiment_label",
@@ -5161,7 +5044,7 @@
      "docs/market-monitor/market-pulse/data/market_data.csv"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sentiment_score",
@@ -5169,7 +5052,7 @@
      "docs/market-monitor/market-pulse/data/market_data.csv"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sox_date",
@@ -5179,7 +5062,7 @@
     "parents": [
      "semis_m7"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sp500_ma200",
@@ -5189,7 +5072,7 @@
     "parents": [
      "checks"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sp500_ma_dev",
@@ -5199,7 +5082,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "sp500_uptrend_50d",
@@ -5209,7 +5092,7 @@
     "parents": [
      "conditions"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "stage1_vix",
@@ -5220,7 +5103,7 @@
      "signals",
      "過去の実績（段階8）"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "stage3",
@@ -5230,7 +5113,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "stage4",
@@ -5240,7 +5123,7 @@
     "parents": [
      "inputs"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "stocks_ahead_of_base_date",
@@ -5248,7 +5131,7 @@
      "docs/market-monitor/market-pulse/data/breadth_data.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "threshold_pt",
@@ -5258,7 +5141,17 @@
     "parents": [
      "roll_suspect"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
+   },
+   {
+    "key": "true",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ],
+    "parents": [
+     "relevance"
+    ],
+    "note": "残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ"
    },
    {
     "key": "ultra_short",
@@ -5269,7 +5162,7 @@
      "asset_flow",
      "資産の前営業日比"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "vix_level",
@@ -5279,7 +5172,7 @@
     "parents": [
      "sub_scores"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "vxn_available",
@@ -5289,7 +5182,7 @@
     "parents": [
      "components"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "week",
@@ -5299,7 +5192,7 @@
     "parents": [
      "trail"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
     "key": "zscore",
@@ -5309,7 +5202,7 @@
     "parents": [
      "divergence"
     ],
-    "note": ""
+    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    }
   ],
   "written_key_count": 382,

@@ -362,7 +362,7 @@
     },
     {
      "file": "tests/test_output_inventory_check.py",
-     "line": 428,
+     "line": 431,
      "func": "test_market_data_check_known_rules_warn_and_new_unread_key_warns",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1897,7 +1897,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1624,
+     "line": 1625,
      "func": "_check_daily_missing_trading_days",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -1905,7 +1905,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3568,
+     "line": 3569,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -1913,7 +1913,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3701,
+     "line": 3702,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -1957,38 +1957,6 @@
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::_load_prices",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_implb.py",
-     "line": 31,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/market_data/reader.py::_load_daily_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_stage_conclusions.py",
-     "line": 46,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/market_data/reader.py::_load_daily_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "line": 280,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/market_data/reader.py::_load_daily_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/market_pulse/backfill_tech_pulse.py",
-     "line": 284,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/market_data/reader.py::_load_daily_payload",
      "type": "Python"
     },
     {
@@ -3041,7 +3009,7 @@
     },
     {
      "file": "tests/test_output_inventory_check.py",
-     "line": 432,
+     "line": 435,
      "func": "test_market_data_check_known_rules_warn_and_new_unread_key_warns",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3404,7 +3372,7 @@
     },
     {
      "page": "docs/market-monitor/market-pulse/index.html",
-     "how": "経由（src/market/market_pulse/backfill_tech_pulse.py → docs/market-monitor/market-pulse/data/market_data.json）"
+     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
     },
     {
      "page": "docs/portfolio/index.html",
@@ -3464,7 +3432,7 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 18,
+   "reader_count": 15,
    "reader_count_test": 9,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -3513,17 +3481,17 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1603,
+     "line": 1604,
      "text": "def _check_daily_missing_trading_days(base_dir: Optional[str] = None) -> list[tuple[str, str]]:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 441,
+     "line": 442,
      "text": "def nth_us_business_day(year: int, month: int, n: int) -> date:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 455,
+     "line": 456,
      "text": "def us_business_days_add(start: date, n: int) -> date:"
     },
     {
@@ -3587,7 +3555,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1633,
+     "line": 1634,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
@@ -3719,9 +3687,6 @@
     "browser_checks/market_pulse_elements.py",
     "common/sec_data/audit.py",
     "scripts/analysis/market_pulse_redesign.py",
-    "src/market/market_pulse/backfill_implb.py",
-    "src/market/market_pulse/backfill_stage_conclusions.py",
-    "src/market/market_pulse/backfill_tech_pulse.py",
     "src/market/market_pulse/breadth_calculator.py",
     "src/market/market_pulse/collect_and_send.py",
     "src/value/adjusted_eps_analyzer/extract_key_facts.py",
