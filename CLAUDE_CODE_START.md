@@ -39,7 +39,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 **2026-10-25（日）に確かめること（先頭。上から順に）**:
 - A. 手順11②（R-Cの公開の確認②）: 日曜のSEC_Data_Update（SECの取得は2026-10-24から`common/external_api.py`の`sec_get`、User-Agentはsecretの`SEC_USER_AGENT_EMAIL`。初めての日曜の本番）と連鎖のTANUKI VALUATIONの後。
   SEC_Data_Updateのログに`[ERROR] 環境変数 SEC_USER_AGENT_EMAIL が無い`が無く、98銘柄が取れていること（`[sec] … 再試行`の行が出ていればその数も見る）を先に確かめてから、手順11の②の手順
-- B. 手順12（Portfolioの本番の画面）: 10-24の期限までに確かめていなければ10-25に
+- B. （済 2026-10-24）手順12（Portfolioの本番の画面）
 - C. 日曜の束ね: FINDINGS.mdの未登録の行を束ねる（CHAT_RULES.md「発見の溜め方と根治の判断」）。入力に次の2件を含める
   - MACRO PULSEのS&P500のt+N（`05_events.csv`の`sp500_t1`〜`sp500_t20`）は連邦の営業日（`us_federal_business_days_add`）で数え、NYSEの取引日と違う（2016〜2027年で1,576組。FINDINGS.md 2026-10-23、型C）
   - NIY=Fの古い行: `common/market_data/daily/NIY=F.json`の2026-10-05・10-06・10-07の3行がO=H=L=C・出来高0の平らな足なのに`_provisional`も`_no_yahoo_bar`も無い（FINDINGS.md 2026-10-20は10-07だけを書いている。2026-10-24に3行を確かめた）。
@@ -89,11 +89,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
      APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
      HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
-12. **Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
+12. （済 2026-10-24、Koichiさんの目視。同時に portfolio.json を各社の画面・取引の履歴に合わせた）**Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
    - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）。確かめていなければ10-25（上のB）
    - 期限: 2026-10-25
    - 確認の手順: Koichiさんが`https://koichi-shigihara2.github.io/On-a-journey/portfolio/`を開き、保有の表が9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）＋合計・キャッシュで、
      「⚠️ 区分未反映」「⚠️ 未登録」が出ていないこと（手元のPlaywrightでは前後で同じ。総資産・時価・評価損益は株価で動く）。確かめたらこの手順を済にする
+   - 結果（2026-10-24 12:35〜12:51、Koichiさんが各社の画面と楽天の取引の履歴で確認）: portfolio.json を合わせた（株数は同じ。Moomooの TSLA 20株を Moomoo(N)〈NISA成長〉へ、Moomoo(N)の CRWV 77.92、MONEXの NVDA 172.01・cash 8,262.07、楽天の PLTR 34.6707〈実際の購入の単価。楽天の表示 177.75 は旧NISAから特定へ移したときの時価〉・SOFI 13.7474）。取得総額の合計 117,375.84→107,199.27 USD、現金の合計 9,494.27→9,508.63 USD。history.json の過去の行は直さない（次の snapshot から新しい取得総額）。手元のPlaywrightで9銘柄・警告なし・consoleのエラー0、PLTRの加重平均単価 24.32
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-22 R-Cの公開の確認①・FINDINGS 型B・R-Aの市場データ層とTAILの段階1〜3・segment_outlookの停止（確認の残りは上の「次回の確認手順」2・5・7・8・9・11②）**
