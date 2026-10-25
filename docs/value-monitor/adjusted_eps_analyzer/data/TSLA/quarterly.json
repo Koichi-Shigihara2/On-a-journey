@@ -1,36 +1,89 @@
 {
   "ticker": "TSLA",
-  "last_updated": "2026-10-18T15:05:37.873821",
+  "last_updated": "2026-10-25T15:16:30.434206",
   "quarters": [
     {
+      "gaap_eps": 0.22225360067777464,
+      "adjusted_eps": 0.4979995482705408,
+      "gaap_net_income": 787000000.0,
+      "adjusted_net_income": 1763416400.425985,
+      "diluted_shares_used": 3541000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 1165000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 976416400.4259851,
+          "tax_rate_applied": 0.16187433439829607
+        }
+      ],
+      "net_adjustment_total": 976416400.4259851,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV",
+      "revenue": 28046000000.0,
+      "diluted_shares": 3541000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 152000000.0,
+      "pretax_income": 939000000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "調整項目は恒常的なSBC（株式報酬費用）であり、非現金ながら毎期発生する報酬コストで一過性とは言えません。GAAP EPS 0.222に対しAdjusted EPS 0.498と2倍以上に跳ね上がるため、市場がGAAPベースで判断する場合、Teslaのキャッシュ生成力や事業実力が過小評価されやすく、株価に下方圧力がかかるリスクがあります。一方でSBCは株式希薄化を伴う実質コストのため、調整を加えすぎると過大評価リスクも生じます。投資家は希薄化後EPSやFCFを重視し、SBCのトレンドを監視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業では毎期継続的に発生する恒常的コストであり、従業員報酬としての実質的な価値移転を伴う（reason: 非現金費用、category: 株式報酬関連）",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.31468926553672316,
-      "adjusted_eps": 0.5901321131662048,
+      "adjusted_eps": 0.34723507550858196,
       "gaap_net_income": 1114000000.0,
-      "adjusted_net_income": 2089067680.608365,
+      "adjusted_net_income": 1229212167.3003802,
       "diluted_shares_used": 3540000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 1151000000,
+          "amount": 1151000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 975067680.6083649,
           "tax_rate_applied": 0.15285171102661596
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": -1015000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": -859855513.3079848,
+          "tax_rate_applied": 0.15285171102661596
         }
       ],
-      "net_adjustment_total": 975067680.6083649,
+      "net_adjustment_total": 115212167.30038011,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 28236000000.0,
       "diluted_shares": 3540000000.0,
       "period_end": "2026-06-30",
@@ -38,26 +91,14 @@
       "quarter": 2,
       "tax_expense": 201000000.0,
       "pretax_income": 1315000000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 118.0%）",
-        "sbc_contribution": 1.18,
-        "sbc_to_revenue": 0.041,
-        "sbc_per_share": 0.3251,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
-      },
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCは恒常的なコスト（毎期発生する非現金費用）であり一過性ではないため、この調整によりAdjusted EPSがGAAPの約1.9倍に引き上げられている。市場がGAAP EPSで判断する場合、テスラの現金創出力や事業実力が見えにくくなり過小評価のリスクがある一方、SBCによる株主希薄化を無視した過大評価リスクも高い。投資家は調整後のEPSだけでなく、希薄化後株式数やフリーキャッシュフローを総合的に検証すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用としてadd_backされた株式報酬費用。テスラのようなテック企業では継続的に発生する恒常的コストであり一過性ではない。",
-            "confidence": 0.2
-          }
-        ]
       }
     },
     {
@@ -85,10 +126,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 22387000000.0,
       "diluted_shares": 3538000000.0,
       "period_end": "2026-03-31",
@@ -135,10 +172,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 24901000000.0,
       "diluted_shares": 3528000000.0,
       "period_end": "2025-12-31",
@@ -185,10 +218,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 28095000000.0,
       "diluted_shares": 3526000000.0,
       "period_end": "2025-09-30",
@@ -222,10 +251,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 22496000000.0,
       "diluted_shares": 3519000000.0,
       "period_end": "2025-06-30",
@@ -259,10 +284,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 19335000000.0,
       "diluted_shares": 3521000000.0,
       "period_end": "2025-03-31",
@@ -296,10 +317,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 25707000000.0,
       "diluted_shares": 3498000000.0,
       "period_end": "2024-12-31",
@@ -333,10 +350,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 25182000000.0,
       "diluted_shares": 3497000000.0,
       "period_end": "2024-09-30",
@@ -370,10 +383,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 25500000000.0,
       "diluted_shares": 3481000000.0,
       "period_end": "2024-06-30",
@@ -407,10 +416,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 21301000000.0,
       "diluted_shares": 3484000000.0,
       "period_end": "2024-03-31",
@@ -444,10 +449,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 25167000000.0,
       "diluted_shares": 3485000000.0,
       "period_end": "2023-12-31",
@@ -481,10 +482,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 23350000000.0,
       "diluted_shares": 3493000000.0,
       "period_end": "2023-09-30",
@@ -518,10 +515,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 24927000000.0,
       "diluted_shares": 3478000000.0,
       "period_end": "2023-06-30",
@@ -555,10 +548,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 23329000000.0,
       "diluted_shares": 3468000000.0,
       "period_end": "2023-03-31",
@@ -592,10 +581,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 24318000000.0,
       "diluted_shares": 3475000000.0,
       "period_end": "2022-12-31",
@@ -629,10 +614,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 21454000000.0,
       "diluted_shares": 3468000000.0,
       "period_end": "2022-09-30",
@@ -666,10 +647,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 16934000000.0,
       "diluted_shares": 3464000000.0,
       "period_end": "2022-06-30",
@@ -703,10 +680,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 18756000000.0,
       "diluted_shares": 3472000000.0,
       "period_end": "2022-03-31",
@@ -740,10 +713,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 17719000000.0,
       "diluted_shares": 3386000000.0,
       "period_end": "2021-12-31",
@@ -777,10 +746,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 13757000000.0,
       "diluted_shares": 3369000000.0,
       "period_end": "2021-09-30",
@@ -814,18 +779,13 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 11958000000.0,
       "diluted_shares": 3357000000.0,
       "period_end": "2021-06-30",
       "fiscal_year": 2021,
       "quarter": 2,
       "tax_expense": 115000000.0,
-      "pretax_income": 1257000000.0,
-      "split_adjusted": true
+      "pretax_income": 1257000000.0
     },
     {
       "gaap_eps": 0.12886142983230361,
@@ -852,18 +812,13 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 10389000000.0,
       "diluted_shares": 3399000000.0,
       "period_end": "2021-03-31",
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 69000000.0,
-      "pretax_income": 507000000.0,
-      "split_adjusted": true
+      "pretax_income": 507000000.0
     },
     {
       "gaap_eps": 0.08310249307479224,
@@ -890,10 +845,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 10744000000.0,
       "diluted_shares": 3249000000.0,
       "period_end": "2020-12-31",
@@ -927,18 +878,13 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 8771000000.0,
       "diluted_shares": 3315000000.0,
       "period_end": "2020-09-30",
       "fiscal_year": 2020,
       "quarter": 3,
       "tax_expense": 186000000.0,
-      "pretax_income": 517000000.0,
-      "split_adjusted": true
+      "pretax_income": 517000000.0
     },
     {
       "gaap_eps": 0.03346203346203346,
@@ -965,18 +911,13 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 6036000000.0,
       "diluted_shares": 3108000000.0,
       "period_end": "2020-06-30",
       "fiscal_year": 2020,
       "quarter": 2,
       "tax_expense": 21000000.0,
-      "pretax_income": 125000000.0,
-      "split_adjusted": true
+      "pretax_income": 125000000.0
     },
     {
       "gaap_eps": 0.005365526492287056,
@@ -1003,18 +944,13 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 5985000000.0,
       "diluted_shares": 2982000000.0,
       "period_end": "2020-03-31",
       "fiscal_year": 2020,
       "quarter": 1,
       "tax_expense": 2000000.0,
-      "pretax_income": 18000000.0,
-      "split_adjusted": true
+      "pretax_income": 18000000.0
     },
     {
       "gaap_eps": 0.03963509958662157,
@@ -1041,18 +977,13 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 7384000000.0,
       "diluted_shares": 2661000000.0,
       "period_end": "2019-12-31",
       "fiscal_year": 2019,
       "quarter": 4,
       "tax_expense": 110000000.0,
-      "pretax_income": 215469000.0,
-      "split_adjusted": true
+      "pretax_income": 215469000.0
     },
     {
       "gaap_eps": 0.05169920462762111,
@@ -1079,18 +1010,13 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 6303000000.0,
       "diluted_shares": 2766000000.0,
       "period_end": "2019-09-30",
       "fiscal_year": 2019,
       "quarter": 3,
       "tax_expense": 26000000.0,
-      "pretax_income": 169000000.0,
-      "split_adjusted": true
+      "pretax_income": 169000000.0
     },
     {
       "gaap_eps": -0.15379811676082863,
@@ -1117,18 +1043,13 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 6350000000.0,
       "diluted_shares": 2655000000.0,
       "period_end": "2019-06-30",
       "fiscal_year": 2019,
       "quarter": 2,
       "tax_expense": 19000000.0,
-      "pretax_income": -389334000.0,
-      "split_adjusted": true
+      "pretax_income": -389334000.0
     },
     {
       "gaap_eps": -0.2705722543352601,
@@ -1155,18 +1076,13 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 4541000000.0,
       "diluted_shares": 2595000000.0,
       "period_end": "2019-03-31",
       "fiscal_year": 2019,
       "quarter": 1,
       "tax_expense": 23000000.0,
-      "pretax_income": -679135000.0,
-      "split_adjusted": true
+      "pretax_income": -679135000.0
     },
     {
       "gaap_eps": 0.05450683860883157,
@@ -1206,18 +1122,13 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 7225873000.0,
       "diluted_shares": 2559000000.0,
       "period_end": "2018-12-31",
       "fiscal_year": 2018,
       "quarter": 4,
       "tax_expense": 57837000.0,
-      "pretax_income": 197320000.0,
-      "split_adjusted": true
+      "pretax_income": 197320000.0
     },
     {
       "gaap_eps": 0.11667265917602995,
@@ -1257,18 +1168,13 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 6824000000.0,
       "diluted_shares": 2670000000.0,
       "period_end": "2018-09-30",
       "fiscal_year": 2018,
       "quarter": 3,
       "tax_expense": 17000000.0,
-      "pretax_income": 328516000.0,
-      "split_adjusted": true
+      "pretax_income": 328516000.0
     },
     {
       "gaap_eps": -0.28139280889270596,
@@ -1295,18 +1201,13 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 4002231000.0,
       "diluted_shares": 2549955000.0,
       "period_end": "2018-06-30",
       "fiscal_year": 2018,
       "quarter": 2,
       "tax_expense": 13707000.0,
-      "pretax_income": -703832000.0,
-      "split_adjusted": true
+      "pretax_income": -703832000.0
     },
     {
       "gaap_eps": -0.27966017523323045,
@@ -1333,18 +1234,13 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 3408751000.0,
       "diluted_shares": 2537190000.0,
       "period_end": "2018-03-31",
       "fiscal_year": 2018,
       "quarter": 1,
       "tax_expense": 5605000.0,
-      "pretax_income": -703946000.0,
-      "split_adjusted": true
+      "pretax_income": -703946000.0
     },
     {
       "gaap_eps": -0.2712248995983936,
@@ -1371,18 +1267,13 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 3288249000.0,
       "diluted_shares": 2490000000.0,
       "period_end": "2017-12-31",
       "fiscal_year": 2017,
       "quarter": 4,
       "tax_expense": 31546000.0,
-      "pretax_income": -643804000.0,
-      "split_adjusted": true
+      "pretax_income": -643804000.0
     },
     {
       "gaap_eps": -0.24682136438445687,
@@ -1409,18 +1300,13 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 2984675000.0,
       "diluted_shares": 2509410000.0,
       "period_end": "2017-09-30",
       "fiscal_year": 2017,
       "quarter": 3,
       "tax_expense": -285000.0,
-      "pretax_income": -619661000.0,
-      "split_adjusted": true
+      "pretax_income": -619661000.0
     },
     {
       "gaap_eps": -0.13574356987789427,
@@ -1447,18 +1333,13 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 2789557000.0,
       "diluted_shares": 2478180000.0,
       "period_end": "2017-06-30",
       "fiscal_year": 2017,
       "quarter": 2,
       "tax_expense": 15647000.0,
-      "pretax_income": -320750000.0,
-      "split_adjusted": true
+      "pretax_income": -320750000.0
     },
     {
       "gaap_eps": -0.1358083172453211,
@@ -1485,27 +1366,22 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 2696270000.0,
       "diluted_shares": 2431935000.0,
       "period_end": "2017-03-31",
       "fiscal_year": 2017,
       "quarter": 1,
       "tax_expense": 25278000.0,
-      "pretax_income": -304999000.0,
-      "split_adjusted": true
+      "pretax_income": -304999000.0
     }
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.15187865379912913,
+      "value": 0.11321826161183965,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.1243323677139243,
-      "prior_4q_avg_yoy": -0.027546286085204822
+      "recent_4q_avg_yoy": 0.09497688078423956,
+      "prior_4q_avg_yoy": -0.018241380827600094
     },
     "roic_trend": {
       "years": [
@@ -1533,9 +1409,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.04076356424422723,
+      "value": 0.04153890037795051,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

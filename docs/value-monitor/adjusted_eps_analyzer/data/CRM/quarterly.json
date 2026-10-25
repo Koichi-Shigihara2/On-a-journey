@@ -1,6 +1,6 @@
 {
   "ticker": "CRM",
-  "last_updated": "2026-10-18T15:02:27.418236",
+  "last_updated": "2026-10-25T15:14:19.102362",
   "quarters": [
     {
       "gaap_eps": 4.294762484774665,
@@ -53,13 +53,6 @@
       "filing_date": "2026-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 11345000000.0,
       "diluted_shares": 821000000.0,
       "period_end": "2026-07-31",
@@ -73,33 +66,29 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 2613000000,
-              "adjustment_amount": -2613000000,
-              "net_amount": -2024041739.894552
-            }
-          ],
-          "condition1": "純利益変動87% / 売上変動11% = 8.0倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       },
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 117.0%）",
-        "sbc_contribution": 1.17,
-        "sbc_to_revenue": 0.08,
-        "sbc_per_share": 1.1035,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整大",
+        "comment": "投資公正価値変動の巨額な非経常利益がGAAP EPS（4.29）を大幅に押し上げており、市場がGAAP EPSのみで判断する場合、企業の経常的な事業実力（Adjusted EPS 2.77）を正しく把握しにくくなっている。SBCは恒常的な運用コストであるため調整の影響は限定的だが、リストラと投資FV変動は一過性要素が強く、GAAP依存だと実力以上の収益に見える過大評価リスクが高い。過小評価の可能性は低く、むしろ一時的利益による過大評価に注意すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用",
+            "confidence": 0.8
+          },
+          {
+            "item": "investment_fv_change",
+            "snippet": "非現金・非経常の投資時価評価変動",
+            "confidence": 0.85
+          }
+        ]
       }
     },
     {
@@ -140,13 +129,6 @@
       "filing_date": "2026-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 11133000000.0,
       "diluted_shares": 871000000.0,
       "period_end": "2026-04-30",
@@ -193,13 +175,6 @@
       "filing_date": "2026-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 11201000000.0,
       "diluted_shares": 956000000.0,
       "period_end": "2026-01-31",
@@ -246,13 +221,6 @@
       "filing_date": "2025-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 10259000000.0,
       "diluted_shares": 952000000.0,
       "period_end": "2025-10-31",
@@ -299,13 +267,6 @@
       "filing_date": "2025-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 10236000000.0,
       "diluted_shares": 962000000.0,
       "period_end": "2025-07-31",
@@ -352,13 +313,6 @@
       "filing_date": "2025-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9829000000.0,
       "diluted_shares": 970000000.0,
       "period_end": "2025-04-30",
@@ -405,13 +359,6 @@
       "filing_date": "2025-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9993000000.0,
       "diluted_shares": 974000000.0,
       "period_end": "2025-01-31",
@@ -458,13 +405,6 @@
       "filing_date": "2024-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9444000000.0,
       "diluted_shares": 965000000.0,
       "period_end": "2024-10-31",
@@ -511,13 +451,6 @@
       "filing_date": "2024-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9325000000.0,
       "diluted_shares": 973000000.0,
       "period_end": "2024-07-31",
@@ -564,13 +497,6 @@
       "filing_date": "2024-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9133000000.0,
       "diluted_shares": 985000000.0,
       "period_end": "2024-04-30",
@@ -617,13 +543,6 @@
       "filing_date": "2024-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 9287000000.0,
       "diluted_shares": 984000000.0,
       "period_end": "2024-01-31",
@@ -670,13 +589,6 @@
       "filing_date": "2023-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 8720000000.0,
       "diluted_shares": 981000000.0,
       "period_end": "2023-10-31",
@@ -723,13 +635,6 @@
       "filing_date": "2023-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 8603000000.0,
       "diluted_shares": 986000000.0,
       "period_end": "2023-07-31",
@@ -789,13 +694,6 @@
       "filing_date": "2023-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 8247000000.0,
       "diluted_shares": 988000000.0,
       "period_end": "2023-04-30",
@@ -809,16 +707,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": -141000000,
-              "adjustment_amount": 141000000,
-              "net_amount": 86070552.14723927
-            }
-          ],
-          "condition1": "純利益変動611% / 売上変動11% = 54.1倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -874,13 +762,6 @@
       "filing_date": "2023-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 8384000000.0,
       "diluted_shares": 997000000.0,
       "period_end": "2023-01-31",
@@ -894,16 +775,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": -314000000,
-              "adjustment_amount": 314000000,
-              "net_amount": 248060000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の320%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -933,13 +804,6 @@
       "filing_date": "2022-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 7837000000.0,
       "diluted_shares": 1000000000.0,
       "period_end": "2022-10-31",
@@ -973,13 +837,6 @@
       "filing_date": "2022-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 7720000000.0,
       "diluted_shares": 1001000000.0,
       "period_end": "2022-07-31",
@@ -1033,13 +890,6 @@
       "filing_date": "2022-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 7411000000.0,
       "diluted_shares": 1001000000.0,
       "period_end": "2022-04-30",
@@ -1047,23 +897,12 @@
       "quarter": 1,
       "tax_expense": -57000000.0,
       "pretax_income": -29000000.0,
-      "dta_detected": true,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:UnrealizedGainLossOnInvestments",
-              "xbrl_value": -28000000,
-              "adjustment_amount": 28000000,
-              "net_amount": 22120000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の100%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1106,13 +945,6 @@
       "filing_date": "2022-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 7326000000.0,
       "diluted_shares": 974000000.0,
       "period_end": "2022-01-31",
@@ -1126,16 +958,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 34000000,
-              "adjustment_amount": -34000000,
-              "net_amount": -26860000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の121%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1165,13 +987,6 @@
       "filing_date": "2021-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 6863000000.0,
       "diluted_shares": 1001000000.0,
       "period_end": "2021-10-31",
@@ -1218,13 +1033,6 @@
       "filing_date": "2021-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 6340000000.0,
       "diluted_shares": 950000000.0,
       "period_end": "2021-07-31",
@@ -1238,16 +1046,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 526000000,
-              "adjustment_amount": -526000000,
-              "net_amount": -340690072.6392252
-            }
-          ],
-          "condition1": "FV変動が純利益の98%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1290,13 +1088,6 @@
       "filing_date": "2021-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 5963000000.0,
       "diluted_shares": 940000000.0,
       "period_end": "2021-04-30",
@@ -1310,16 +1101,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 288000000,
-              "adjustment_amount": -288000000,
-              "net_amount": -223629139.0728477
-            }
-          ],
-          "condition1": "純利益変動374% / 売上変動23% = 16.6倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1369,13 +1150,6 @@
       "filing_date": "2021-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 5817000000.0,
       "diluted_shares": 930000000.0,
       "period_end": "2021-01-31",
@@ -1383,23 +1157,12 @@
       "quarter": 4,
       "tax_expense": -1511000000.0,
       "pretax_income": -1244000000.0,
-      "dta_detected": true,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 260000000,
-              "adjustment_amount": -260000000,
-              "net_amount": -205400000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の97%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1442,13 +1205,6 @@
       "filing_date": "2020-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 5419000000.0,
       "diluted_shares": 939000000.0,
       "period_end": "2020-10-31",
@@ -1462,16 +1218,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 1036000000,
-              "adjustment_amount": -1036000000,
-              "net_amount": -895932800.0
-            }
-          ],
-          "condition1": "FV変動が純利益の96%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1508,21 +1254,13 @@
       "filing_date": "2020-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 5151000000.0,
       "diluted_shares": 922000000.0,
       "period_end": "2020-07-31",
       "fiscal_year": 2021,
       "quarter": 2,
       "tax_expense": -1786000000.0,
-      "pretax_income": 839000000.0,
-      "dta_detected": true
+      "pretax_income": 839000000.0
     },
     {
       "gaap_eps": 0.10843373493975904,
@@ -1562,13 +1300,6 @@
       "filing_date": "2020-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 4865000000.0,
       "diluted_shares": 913000000.0,
       "period_end": "2020-04-30",
@@ -1582,16 +1313,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 192000000,
-              "adjustment_amount": -192000000,
-              "net_amount": -151680000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の194%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1621,13 +1342,6 @@
       "filing_date": "2020-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 4851000000.0,
       "diluted_shares": 850000000.0,
       "period_end": "2020-01-31",
@@ -1661,13 +1375,6 @@
       "filing_date": "2019-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 4513000000.0,
       "diluted_shares": 879000000.0,
       "period_end": "2019-10-31",
@@ -1714,13 +1421,6 @@
       "filing_date": "2019-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 3997000000.0,
       "diluted_shares": 795000000.0,
       "period_end": "2019-07-31",
@@ -1734,16 +1434,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 109000000,
-              "adjustment_amount": -109000000,
-              "net_amount": -60481707.317073174
-            }
-          ],
-          "condition1": "FV変動が純利益の120%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1773,13 +1463,6 @@
       "filing_date": "2019-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 3737000000.0,
       "diluted_shares": 793000000.0,
       "period_end": "2019-04-30",
@@ -1799,13 +1482,6 @@
       "filing_date": "2019-01-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 0.0,
       "diluted_shares": 793000000.0,
       "period_end": "2019-01-31",
@@ -1839,13 +1515,6 @@
       "filing_date": "2018-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 3392000000.0,
       "diluted_shares": 785000000.0,
       "period_end": "2018-10-31",
@@ -1892,13 +1561,6 @@
       "filing_date": "2018-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 3281000000.0,
       "diluted_shares": 774000000.0,
       "period_end": "2018-07-31",
@@ -1912,16 +1574,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 143000000,
-              "adjustment_amount": -143000000,
-              "net_amount": -100904761.9047619
-            }
-          ],
-          "condition1": "純利益変動1586% / 売上変動27% = 58.0倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -1964,13 +1616,6 @@
       "filing_date": "2018-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 3006000000.0,
       "diluted_shares": 754000000.0,
       "period_end": "2018-04-30",
@@ -1984,16 +1629,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 211000000,
-              "adjustment_amount": -211000000,
-              "net_amount": -188529870.12987012
-            }
-          ],
-          "condition1": "純利益変動3836% / 売上変動25% = 151.0倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -2023,13 +1658,6 @@
       "filing_date": "2018-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 2865000000.0,
       "diluted_shares": 735000000.0,
       "period_end": "2018-01-31",
@@ -2076,13 +1704,6 @@
       "filing_date": "2017-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 2701000000.0,
       "diluted_shares": 738000000.0,
       "period_end": "2017-10-31",
@@ -2142,13 +1763,6 @@
       "filing_date": "2017-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 2577000000.0,
       "diluted_shares": 729000000.0,
       "period_end": "2017-07-31",
@@ -2162,16 +1776,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": -8000000,
-              "adjustment_amount": 8000000,
-              "net_amount": 4084753.56978351
-            }
-          ],
-          "condition1": "前年同期データなし（条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -2227,13 +1831,6 @@
       "filing_date": "2017-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 2397000000.0,
       "diluted_shares": 722000000.0,
       "period_end": "2017-04-30",
@@ -2247,16 +1844,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 3000000,
-              "adjustment_amount": -3000000,
-              "net_amount": -2370000.0
-            }
-          ],
-          "condition1": "前年同期データなし（条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -2286,13 +1873,6 @@
       "filing_date": "2016-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 0.0,
       "diluted_shares": 690468000.0,
       "period_end": "2016-10-31",

@@ -1,6 +1,6 @@
 {
   "ticker": "RXRX",
-  "last_updated": "2026-10-18T15:05:04.282348",
+  "last_updated": "2026-10-25T15:16:08.755081",
   "quarters": [
     {
       "gaap_eps": -0.24603722173841444,
@@ -40,10 +40,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 7670000.0,
       "diluted_shares": 532460085.0,
       "period_end": "2026-06-30",
@@ -51,28 +47,18 @@
       "quarter": 2,
       "tax_expense": -1000.0,
       "pretax_income": -131006000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 62.3%）",
-        "sbc_contribution": 0.623,
-        "sbc_to_revenue": 2.517,
-        "sbc_per_share": 0.0363,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目のSBCと無形資産償却はともに非現金だが恒常的に発生する費用（特にSBCは人材獲得のための継続コスト、無形資産償却も買収後の定期償却）であり、一過性とは言い難い。市場がGAAP EPS(-0.246)で判断する場合、調整後EPS(-0.188)より悪い業績像を見て企業の実力を過小評価する可能性がある。ただしこれらを除外しすぎると実質的な経済コストや株式希薄化を無視した過大評価リスクも生じる。投資家は調整後だけでなくキャッシュバーンや希薄化影響を総合的に見るべき。",
+        "health": "過大調整",
+        "comment": "SBCと無形資産償却はともに恒常的に発生する非現金費用であり、調整によりAdjusted EPSの赤字幅が縮小されています。市場がGAAP EPS（より大きな赤字）で判断する場合、企業の実力（調整後ベースの運営状況）が過小評価される可能性がありますが、SBCは株主希薄化を伴う実質的な継続コストのため、調整が過大で将来的に過大評価リスクを招く恐れがあります。投資家はフリーキャッシュフローや継続的なSBC規模、希薄化効果を重点的に検証すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金だがテック/バイオ企業では毎期発生する恒常的な運用コストであり、真に一過性とはみなせない",
+            "snippet": "非現金費用だが、成長企業で毎期発生する恒常的な運用コスト（株式報酬関連）",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却は買収関連の非現金費用だが、償却期間を通じて継続的に発生する恒常的性格が強い",
+            "snippet": "買収関連無形資産の償却で定期的に計上される恒常的な非現金費用",
             "confidence": 0.2
           }
         ]
@@ -116,10 +102,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 6472000.0,
       "diluted_shares": 529303984.0,
       "period_end": "2026-03-31",
@@ -179,10 +161,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 35538000.0,
       "diluted_shares": 447446109.0,
       "period_end": "2025-12-31",
@@ -242,10 +220,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 5175000.0,
       "diluted_shares": 446988046.0,
       "period_end": "2025-09-30",
@@ -292,10 +266,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 19223000.0,
       "diluted_shares": 417361147.0,
       "period_end": "2025-06-30",
@@ -342,10 +312,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14745000.0,
       "diluted_shares": 402771972.0,
       "period_end": "2025-03-31",
@@ -392,10 +358,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 4546000.0,
       "diluted_shares": 274207146.0,
       "period_end": "2024-12-31",
@@ -442,10 +404,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 26082000.0,
       "diluted_shares": 282583048.0,
       "period_end": "2024-09-30",
@@ -492,10 +450,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14417000.0,
       "diluted_shares": 242196409.0,
       "period_end": "2024-06-30",
@@ -542,10 +496,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13794000.0,
       "diluted_shares": 236019349.0,
       "period_end": "2024-03-31",
@@ -592,10 +542,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 10891000.0,
       "diluted_shares": 207853702.0,
       "period_end": "2023-12-31",
@@ -642,10 +588,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 10533000.0,
       "diluted_shares": 214327186.0,
       "period_end": "2023-09-30",
@@ -692,10 +634,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 11017000.0,
       "diluted_shares": 201415475.0,
       "period_end": "2023-06-30",
@@ -742,10 +680,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 12134000.0,
       "diluted_shares": 191618238.0,
       "period_end": "2023-03-31",
@@ -792,10 +726,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13676000.0,
       "diluted_shares": 175537487.0,
       "period_end": "2022-12-31",
@@ -842,10 +772,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13160000.0,
       "diluted_shares": 173435970.0,
       "period_end": "2022-09-30",
@@ -892,10 +818,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 7674000.0,
       "diluted_shares": 172212390.0,
       "period_end": "2022-06-30",
@@ -942,10 +864,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 5333000.0,
       "diluted_shares": 170690392.0,
       "period_end": "2022-03-31",
@@ -992,10 +910,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 2533000.0,
       "diluted_shares": 125348110.0,
       "period_end": "2021-12-31",
@@ -1042,10 +956,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 2534000.0,
       "diluted_shares": 168533550.0,
       "period_end": "2021-09-30",
@@ -1092,10 +1002,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 2549000.0,
       "diluted_shares": 138360646.0,
       "period_end": "2021-06-30",
@@ -1142,10 +1048,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 2562000.0,
       "diluted_shares": 23035623.0,
       "period_end": "2021-03-31",
@@ -1192,10 +1094,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 2691000.0,
       "diluted_shares": 21781386.0,
       "period_end": "2020-12-31",
@@ -1242,10 +1140,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 1025000.0,
       "diluted_shares": 21817900.0,
       "period_end": "2020-09-30",
@@ -1279,10 +1173,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 186000.0,
       "diluted_shares": 21652277.0,
       "period_end": "2020-06-30",
@@ -1316,10 +1206,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 60000.0,
       "diluted_shares": 21639891.0,
       "period_end": "2020-03-31",

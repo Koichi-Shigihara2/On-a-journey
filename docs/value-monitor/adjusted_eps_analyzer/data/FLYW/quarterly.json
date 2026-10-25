@@ -1,6 +1,6 @@
 {
   "ticker": "FLYW",
-  "last_updated": "2026-10-18T15:07:48.828883",
+  "last_updated": "2026-10-25T15:18:35.306722",
   "quarters": [
     {
       "gaap_eps": -0.0665580627311416,
@@ -40,7 +40,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 167744000.0,
       "diluted_shares": 122404404.0,
       "period_end": "2026-06-30",
@@ -50,16 +49,16 @@
       "pretax_income": -5317000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "SBCと無形資産償却の両調整項目は恒常的な性質が強く、一過性ではないため、調整後のプラスEPSは持続可能性に疑問が残る。市場がGAAP EPS（マイナス）のマイナス印象で判断する場合、企業の実力（調整後プラス）を過小評価する可能性がある。ただしSBCは実質的な株主希薄化コストであるため、調整を過度に信用すると過大評価リスクも生じる。投資家は非GAAPの持続可能性と希薄化影響を注視すべき。",
+        "comment": "SBCと無形資産償却はともに恒常的な非現金費用であり、一過性とは言えません。GAAP EPSが大幅赤字である一方、Adjusted EPSはプラス転換しており、市場がGAAP指標のみで判断する場合、この企業のキャッシュ生成力や事業実力が過小評価されるリスクがあります。ただし恒常的調整を加算しているため、調整後の実力も過大評価される可能性があり、投資家はフリーキャッシュフローや収益の持続可能性を重点的に検証すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが恒常的に発生する報酬コストであり、成長企業では毎期継続的に計上される。",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で発生するが、定期的かつ予測可能な償却であり一過性ではなく複数年にわたって続く。",
+            "snippet": "無形資産償却費は買収関連で発生するが、定期的に計上される恒常的な費用である。",
             "confidence": 0.2
           }
         ]
@@ -116,7 +115,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 188112000.0,
       "diluted_shares": 127945858.0,
       "period_end": "2026-03-31",
@@ -189,7 +187,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 157544000.0,
       "diluted_shares": 127747476.0,
       "period_end": "2025-12-31",
@@ -203,16 +200,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": -678000,
-              "adjustment_amount": -678000,
-              "net_amount": -535620.0
-            }
-          ],
-          "condition1": "FV変動が純利益の2055%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -268,7 +255,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 200138000.0,
       "diluted_shares": 127675613.0,
       "period_end": "2025-09-30",
@@ -341,7 +327,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 131891000.0,
       "diluted_shares": 121852349.0,
       "period_end": "2025-06-30",
@@ -414,7 +399,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 133452000.0,
       "diluted_shares": 123235263.0,
       "period_end": "2025-03-31",
@@ -474,7 +458,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 117550000.0,
       "diluted_shares": 129339462.0,
       "period_end": "2024-12-31",
@@ -534,7 +517,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 156815000.0,
       "diluted_shares": 129155010.0,
       "period_end": "2024-09-30",
@@ -594,7 +576,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 103676000.0,
       "diluted_shares": 124562015.0,
       "period_end": "2024-06-30",
@@ -654,7 +635,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 114103000.0,
       "diluted_shares": 123143343.0,
       "period_end": "2024-03-31",
@@ -714,7 +694,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 100545000.0,
       "diluted_shares": 114828494.0,
       "period_end": "2023-12-31",
@@ -774,7 +753,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 123323000.0,
       "diluted_shares": 125480393.0,
       "period_end": "2023-09-30",
@@ -834,7 +812,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 84869000.0,
       "diluted_shares": 111133221.0,
       "period_end": "2023-06-30",
@@ -894,7 +871,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 94357000.0,
       "diluted_shares": 109787528.0,
       "period_end": "2023-03-31",
@@ -967,7 +943,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 73053000.0,
       "diluted_shares": 107935514.0,
       "period_end": "2022-12-31",
@@ -981,16 +956,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": -3102000,
-              "adjustment_amount": -3102000,
-              "net_amount": -2450580.0
-            }
-          ],
-          "condition1": "FV変動が純利益の275%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1046,7 +1011,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 95232000.0,
       "diluted_shares": 107925637.0,
       "period_end": "2022-09-30",
@@ -1119,7 +1083,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 56537000.0,
       "diluted_shares": 107426898.0,
       "period_end": "2022-06-30",
@@ -1179,7 +1142,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 64553000.0,
       "diluted_shares": 106739771.0,
       "period_end": "2022-03-31",
@@ -1239,7 +1201,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 51394000.0,
       "diluted_shares": 71168054.0,
       "period_end": "2021-12-31",
@@ -1299,7 +1260,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 67788000.0,
       "diluted_shares": 118445907.0,
       "period_end": "2021-09-30",
@@ -1359,7 +1319,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 36976000.0,
       "diluted_shares": 52496862.0,
       "period_end": "2021-06-30",
@@ -1419,7 +1378,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 44991000.0,
       "diluted_shares": 52496862.0,
       "period_end": "2021-03-31",
@@ -1479,7 +1437,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 42086000.0,
       "diluted_shares": 27286944.0,
       "period_end": "2020-09-30",
@@ -1539,7 +1496,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 23757000.0,
       "diluted_shares": 27286944.0,
       "period_end": "2020-06-30",

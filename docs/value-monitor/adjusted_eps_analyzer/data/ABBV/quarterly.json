@@ -1,6 +1,6 @@
 {
   "ticker": "ABBV",
-  "last_updated": "2026-10-18T15:07:40.937796",
+  "last_updated": "2026-10-25T15:18:17.273193",
   "quarters": [
     {
       "gaap_eps": 2.0400903444381706,
@@ -40,10 +40,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 16990000000.0,
       "diluted_shares": 1771000000.0,
       "period_end": "2026-06-30",
@@ -51,28 +47,18 @@
       "quarter": 2,
       "tax_expense": 662000000.0,
       "pretax_income": 4275000000.0,
-      "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.105,
-        "sbc_to_revenue": 0.01,
-        "sbc_per_share": 0.0937,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却費はともに恒常的に発生するコスト（非現金ながら毎期計上）であり、一過性とは判断しにくいため調整の妥当性に疑問が残ります。市場がGAAP EPS（2.04）で評価している場合、調整後EPS（2.93）の企業実力が見えにくくなり実力を過小評価している可能性がありますが、恒常的項目の加算戻しが大きいため過大調整のリスクが高く、持続可能な利益が過大に見積もられる恐れもあります。投資家はキャッシュフローと無形資産の経済的価値減耗を慎重に検証すべきです。",
+        "comment": "主な調整項目である無形資産償却とSBCはともに恒常的な非現金費用であり、調整幅がGAAP EPSを約44%押し上げているため過大調整の可能性が高い。市場がGAAP EPSで判断する場合、これら非現金項目によりAbbVieのキャッシュ生成力や事業実力が過小評価されやすく、株価に悪影響を及ぼすリスクがある。ただし継続費用を除外した調整後EPSに過度に依拠すると企業価値の過大評価を招く恐れもあるため、投資家はFCFやROICを併せて検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用ですが、従業員報酬として毎期発生する恒常的なコストであり、買収関連ではなくコア事業に関わる項目です。",
+            "snippet": "株式報酬費用は非現金だが、従業員報酬として毎期発生する恒常的なコストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり、長期にわたり毎期発生する恒常的非現金費用です。",
+            "snippet": "買収関連無形資産の償却はM&A後複数期にわたって継続的に発生する会計費用であり、一過性とはみなせない。",
             "confidence": 0.2
           }
         ]
@@ -129,10 +115,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 15002000000.0,
       "diluted_shares": 1774000000.0,
       "period_end": "2026-03-31",
@@ -146,16 +128,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 2387000000,
-              "adjustment_amount": 2387000000,
-              "net_amount": 1599773384.7637415
-            }
-          ],
-          "condition1": "FV変動が純利益の343%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -211,10 +183,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 16618000000.0,
       "diluted_shares": 1773000000.0,
       "period_end": "2025-12-31",
@@ -228,16 +196,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1406000000,
-              "adjustment_amount": 1406000000,
-              "net_amount": 1110740000.0
-            }
-          ],
-          "condition1": "純利益変動8355% / 売上変動10% = 832.3倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -293,10 +251,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 15776000000.0,
       "diluted_shares": 1772000000.0,
       "period_end": "2025-09-30",
@@ -310,16 +264,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 776000000,
-              "adjustment_amount": 776000000,
-              "net_amount": 613040000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の417%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -375,10 +319,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 15423000000.0,
       "diluted_shares": 1771000000.0,
       "period_end": "2025-06-30",
@@ -392,16 +332,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 2795000000.0,
-              "adjustment_amount": 2795000000.0,
-              "net_amount": 1690335267.5693102
-            }
-          ],
-          "condition1": "FV変動が純利益の298%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -457,10 +387,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13343000000.0,
       "diluted_shares": 1772000000.0,
       "period_end": "2025-03-31",
@@ -474,16 +400,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1518000000,
-              "adjustment_amount": 1518000000,
-              "net_amount": 1177411338.9626057
-            }
-          ],
-          "condition1": "FV変動が純利益の118%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -539,10 +455,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 15102000000.0,
       "diluted_shares": 1773000000.0,
       "period_end": "2024-12-31",
@@ -556,16 +468,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 279000000,
-              "adjustment_amount": 279000000,
-              "net_amount": 220410000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の1268%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -621,10 +523,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14460000000.0,
       "diluted_shares": 1772000000.0,
       "period_end": "2024-09-30",
@@ -638,16 +536,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1356000000,
-              "adjustment_amount": 1356000000,
-              "net_amount": 1017162902.4507449
-            }
-          ],
-          "condition1": "FV変動が純利益の87%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -703,10 +591,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14462000000.0,
       "diluted_shares": 1771000000.0,
       "period_end": "2024-06-30",
@@ -720,16 +604,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1476000000.0,
-              "adjustment_amount": 1476000000.0,
-              "net_amount": 943593093.793747
-            }
-          ],
-          "condition1": "FV変動が純利益の108%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -785,10 +659,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 12310000000.0,
       "diluted_shares": 1773000000.0,
       "period_end": "2024-03-31",
@@ -802,16 +672,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 660000000,
-              "adjustment_amount": 660000000,
-              "net_amount": 515719178.0821918
-            }
-          ],
-          "condition1": "純利益変動473% / 売上変動1% = 680.0倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -867,10 +727,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14301000000.0,
       "diluted_shares": 1773000000.0,
       "period_end": "2023-12-31",
@@ -884,16 +740,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1696000000,
-              "adjustment_amount": 1696000000,
-              "net_amount": 1339840000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の206%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -936,10 +782,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13927000000.0,
       "diluted_shares": 1771000000.0,
       "period_end": "2023-09-30",
@@ -999,10 +841,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13865000000.0,
       "diluted_shares": 1771000000.0,
       "period_end": "2023-06-30",
@@ -1016,16 +854,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1552000000.0,
-              "adjustment_amount": 1552000000.0,
-              "net_amount": 1204928270.0421941
-            }
-          ],
-          "condition1": "純利益変動119% / 売上変動5% = 24.2倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1081,10 +909,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 12225000000.0,
       "diluted_shares": 1776000000.0,
       "period_end": "2023-03-31",
@@ -1098,16 +922,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1872000000,
-              "adjustment_amount": 1872000000,
-              "net_amount": 945894291.7547568
-            }
-          ],
-          "condition1": "FV変動が純利益の783%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1163,10 +977,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 15121000000.0,
       "diluted_shares": 1778000000.0,
       "period_end": "2022-12-31",
@@ -1180,16 +990,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 2114000000,
-              "adjustment_amount": 2114000000,
-              "net_amount": 1273549817.2959805
-            }
-          ],
-          "condition1": "FV変動が純利益の85%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1232,10 +1032,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14812000000.0,
       "diluted_shares": 1776000000.0,
       "period_end": "2022-09-30",
@@ -1295,10 +1091,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14583000000.0,
       "diluted_shares": 1776000000.0,
       "period_end": "2022-06-30",
@@ -1312,16 +1104,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 1609000000.0,
-              "adjustment_amount": 1609000000.0,
-              "net_amount": 1260997455.470738
-            }
-          ],
-          "condition1": "FV変動が純利益の174%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1364,10 +1146,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13538000000.0,
       "diluted_shares": 1778000000.0,
       "period_end": "2022-03-31",
@@ -1414,10 +1192,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14886000000.0,
       "diluted_shares": 1777000000.0,
       "period_end": "2021-12-31",
@@ -1464,10 +1238,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 14342000000.0,
       "diluted_shares": 1777000000.0,
       "period_end": "2021-09-30",
@@ -1527,10 +1297,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13959000000.0,
       "diluted_shares": 1776000000.0,
       "period_end": "2021-06-30",
@@ -1544,16 +1310,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 2692000000.0,
-              "adjustment_amount": 2692000000.0,
-              "net_amount": 1777648275.8620691
-            }
-          ],
-          "condition1": "FV変動が純利益の351%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1596,10 +1352,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13010000000.0,
       "diluted_shares": 1775000000.0,
       "period_end": "2021-03-31",
@@ -1666,10 +1418,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 13858000000.0,
       "diluted_shares": 1673000000.0,
       "period_end": "2020-12-31",
@@ -1677,23 +1425,12 @@
       "quarter": 4,
       "tax_expense": -1224000000.0,
       "pretax_income": -1188000000.0,
-      "dta_detected": true,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 4675000000,
-              "adjustment_amount": 4675000000,
-              "net_amount": 3693250000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の12986%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1736,10 +1473,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 12902000000.0,
       "diluted_shares": 1774000000.0,
       "period_end": "2020-09-30",
@@ -1799,10 +1532,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 10425000000.0,
       "diluted_shares": 1647000000.0,
       "period_end": "2020-06-30",
@@ -1816,16 +1545,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 809000000.0,
-              "adjustment_amount": 809000000.0,
-              "net_amount": 755222543.3526012
-            }
-          ],
-          "condition1": "FV変動が純利益の110%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -1881,10 +1600,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8619000000.0,
       "diluted_shares": 1484000000.0,
       "period_end": "2020-03-31",
@@ -1944,10 +1659,6 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8704000000.0,
       "diluted_shares": 1484000000.0,
       "period_end": "2019-12-31",
@@ -2007,10 +1718,6 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8479000000.0,
       "diluted_shares": 1483000000.0,
       "period_end": "2019-09-30",
@@ -2083,10 +1790,6 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8255000000.0,
       "diluted_shares": 1484000000.0,
       "period_end": "2019-06-30",
@@ -2100,16 +1803,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 2304000000.0,
-              "adjustment_amount": 2304000000.0,
-              "net_amount": 2115568773.2342007
-            }
-          ],
-          "condition1": "FV変動が純利益の311%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
         }
       }
@@ -2165,10 +1858,6 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 7828000000.0,
       "diluted_shares": 1483000000.0,
       "period_end": "2019-03-31",
@@ -2228,10 +1917,6 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8305000000.0,
       "diluted_shares": 1546000000.0,
       "period_end": "2018-12-31",
@@ -2291,10 +1976,6 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8236000000.0,
       "diluted_shares": 1515000000.0,
       "period_end": "2018-09-30",
@@ -2354,10 +2035,6 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 8278000000.0,
       "diluted_shares": 1572000000.0,
       "period_end": "2018-06-30",
@@ -2417,10 +2094,6 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 7934000000.0,
       "diluted_shares": 1596000000.0,
       "period_end": "2018-03-31",
@@ -2506,10 +2179,6 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 7739000000.0,
       "diluted_shares": 1603000000.0,
       "period_end": "2017-12-31",
@@ -2523,23 +2192,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "偶発対価公正価値変動損益",
-              "xbrl_tag": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
-              "xbrl_value": 79000000,
-              "adjustment_amount": 79000000,
-              "net_amount": 62410000.0
-            },
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:DerivativeGainLossOnDerivativeNet",
-              "xbrl_value": -97000000,
-              "adjustment_amount": 97000000,
-              "net_amount": 76630000.0
-            }
-          ],
-          "condition1": "FV変動が純利益の338%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益、デリバティブ公正価値変動損益"
         }
       }
@@ -2595,10 +2247,6 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 6995000000.0,
       "diluted_shares": 1603000000.0,
       "period_end": "2017-09-30",
@@ -2658,10 +2306,6 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 6944000000.0,
       "diluted_shares": 1600000000.0,
       "period_end": "2017-06-30",
@@ -2721,10 +2365,6 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "sector_exclusions": [
-        "ma_integration",
-        "iprd_amortization"
-      ],
       "revenue": 6538000000.0,
       "diluted_shares": 1603000000.0,
       "period_end": "2017-03-31",

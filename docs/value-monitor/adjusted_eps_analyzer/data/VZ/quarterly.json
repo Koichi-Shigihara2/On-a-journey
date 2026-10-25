@@ -1,6 +1,6 @@
 {
   "ticker": "VZ",
-  "last_updated": "2026-10-18T15:08:19.005373",
+  "last_updated": "2026-10-25T15:19:01.352140",
   "quarters": [
     {
       "gaap_eps": 0.9194437784703908,
@@ -27,10 +27,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34253000000.0,
       "diluted_shares": 4171000000.0,
       "period_end": "2026-06-30",
@@ -38,24 +34,14 @@
       "quarter": 2,
       "tax_expense": 1325000000.0,
       "pretax_income": 5160000000.0,
-      "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.0,
-        "sbc_to_revenue": 0.0,
-        "sbc_per_share": 0.0,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
         "health": "調整小",
-        "comment": "M&A統合費用は特定の買収に伴う一過性のコスト（非経常項目）と見なされ、調整によりEPSが約2.6%押し上げられている。市場がGAAP EPS中心に評価する場合、これら一時的費用で企業の実力が過小評価される可能性がある。投資家は今後のシナジー実現とM&A頻度を注視すべきで、過小評価リスクはあるが恒常化すれば調整の信頼性が低下する恐れもある。",
+        "comment": "M&A統合費用は典型的な一過性項目であり、調整によりAdjusted EPSがGAAPを上回る。市場がGAAP EPS中心に判断する場合、一時的コストの影響で企業の持続的な収益力が過小評価されやすく、株価の undervaluation リスクが生じる。投資家は調整後実績の持続可能性と今後のM&A頻度を注視すべき。",
         "sources": [
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト",
-            "confidence": 0.75
+            "snippet": "一過性の買収統合コストとしてadd_backされており、M&A関連費用は非経常的とみなされる（reason: 一過性の買収統合コスト、category: 買収・統合関連）",
+            "confidence": 0.8
           }
         ]
       }
@@ -98,10 +84,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34440000000.0,
       "diluted_shares": 4210000000.0,
       "period_end": "2026-03-31",
@@ -148,10 +130,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 36381000000.0,
       "diluted_shares": 4231000000.0,
       "period_end": "2025-12-31",
@@ -198,10 +176,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33821000000.0,
       "diluted_shares": 4233000000.0,
       "period_end": "2025-09-30",
@@ -235,10 +209,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34504000000.0,
       "diluted_shares": 4228000000.0,
       "period_end": "2025-06-30",
@@ -272,10 +242,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33485000000.0,
       "diluted_shares": 4226000000.0,
       "period_end": "2025-03-31",
@@ -309,10 +275,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 35681000000.0,
       "diluted_shares": 4223000000.0,
       "period_end": "2024-12-31",
@@ -346,10 +308,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33330000000.0,
       "diluted_shares": 4225000000.0,
       "period_end": "2024-09-30",
@@ -383,10 +341,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32796000000.0,
       "diluted_shares": 4221000000.0,
       "period_end": "2024-06-30",
@@ -420,10 +374,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32981000000.0,
       "diluted_shares": 4219000000.0,
       "period_end": "2024-03-31",
@@ -470,10 +420,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 35130000000.0,
       "diluted_shares": 4215000000.0,
       "period_end": "2023-12-31",
@@ -507,10 +453,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33336000000.0,
       "diluted_shares": 4216000000.0,
       "period_end": "2023-09-30",
@@ -557,10 +499,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32596000000.0,
       "diluted_shares": 4213000000.0,
       "period_end": "2023-06-30",
@@ -594,10 +532,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32912000000.0,
       "diluted_shares": 4211000000.0,
       "period_end": "2023-03-31",
@@ -631,10 +565,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 35251000000.0,
       "diluted_shares": 4204000000.0,
       "period_end": "2022-12-31",
@@ -668,10 +598,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34241000000.0,
       "diluted_shares": 4204000000.0,
       "period_end": "2022-09-30",
@@ -718,10 +644,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33789000000.0,
       "diluted_shares": 4202000000.0,
       "period_end": "2022-06-30",
@@ -755,10 +677,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33554000000.0,
       "diluted_shares": 4202000000.0,
       "period_end": "2022-03-31",
@@ -792,10 +710,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34067000000.0,
       "diluted_shares": 4150000000.0,
       "period_end": "2021-12-31",
@@ -829,10 +743,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32915000000.0,
       "diluted_shares": 4144000000.0,
       "period_end": "2021-09-30",
@@ -866,10 +776,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33764000000.0,
       "diluted_shares": 4143000000.0,
       "period_end": "2021-06-30",
@@ -903,10 +809,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32867000000.0,
       "diluted_shares": 4142000000.0,
       "period_end": "2021-03-31",
@@ -940,10 +842,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34692000000.0,
       "diluted_shares": 4142000000.0,
       "period_end": "2020-12-31",
@@ -977,10 +875,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 31543000000.0,
       "diluted_shares": 4142000000.0,
       "period_end": "2020-09-30",
@@ -1014,10 +908,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 30447000000.0,
       "diluted_shares": 4141000000.0,
       "period_end": "2020-06-30",
@@ -1051,10 +941,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 31610000000.0,
       "diluted_shares": 4141000000.0,
       "period_end": "2020-03-31",
@@ -1088,10 +974,6 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34775000000.0,
       "diluted_shares": 4140000000.0,
       "period_end": "2019-12-31",
@@ -1125,10 +1007,6 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32894000000.0,
       "diluted_shares": 4140000000.0,
       "period_end": "2019-09-30",
@@ -1162,10 +1040,6 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32071000000.0,
       "diluted_shares": 4139000000.0,
       "period_end": "2019-06-30",
@@ -1199,10 +1073,6 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32128000000.0,
       "diluted_shares": 4140000000.0,
       "period_end": "2019-03-31",
@@ -1249,10 +1119,6 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 34281000000.0,
       "diluted_shares": 4132000000.0,
       "period_end": "2018-12-31",
@@ -1299,10 +1165,6 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32607000000.0,
       "diluted_shares": 4140000000.0,
       "period_end": "2018-09-30",
@@ -1349,10 +1211,6 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32203000000.0,
       "diluted_shares": 4139000000.0,
       "period_end": "2018-06-30",
@@ -1399,10 +1257,6 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 31772000000.0,
       "diluted_shares": 4107000000.0,
       "period_end": "2018-03-31",
@@ -1449,10 +1303,6 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 33955000000.0,
       "diluted_shares": 4089000000.0,
       "period_end": "2017-12-31",
@@ -1499,10 +1349,6 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 31717000000.0,
       "diluted_shares": 4089000000.0,
       "period_end": "2017-09-30",
@@ -1549,10 +1395,6 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 30548000000.0,
       "diluted_shares": 4087000000.0,
       "period_end": "2017-06-30",
@@ -1586,10 +1428,6 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 29814000000.0,
       "diluted_shares": 4087000000.0,
       "period_end": "2017-03-31",

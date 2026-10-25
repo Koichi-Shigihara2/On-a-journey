@@ -1,6 +1,6 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-10-18T15:04:41.341178",
+  "last_updated": "2026-10-25T15:15:48.831860",
   "quarters": [
     {
       "gaap_eps": -0.17552269392148023,
@@ -27,10 +27,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 83772000.0,
       "diluted_shares": 503593000.0,
       "period_end": "2026-06-30",
@@ -38,20 +34,16 @@
       "quarter": 2,
       "tax_expense": -29053000.0,
       "pretax_income": -117445000.0,
-      "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.0,
-        "sbc_to_revenue": 0.0,
-        "sbc_per_share": 0.0,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
-        "health": "Error",
-        "comment": "AI分析中にリクエストエラーが発生しました: Request failed: HTTPSConnectionPool(host='api.x.ai', port=443): Read timed out. (read timeout=30)",
-        "sources": []
+        "health": "調整中",
+        "comment": "調整項目「ローン公正価値評価損益」は市場金利変動による一時的な非現金評価損であり、非経常的性質が強い。GAAP EPSはこれにより実態より悪化して表示されており(-0.176→-0.153)、市場がGAAPベースで判断する場合にONDSのコア事業の実力が過小評価される可能性が高い。投資家は調整後EPSを重視すべきだが、金利変動次第で類似項目が再発するリスクもあり、過小評価の可能性を注視しつつ金融関連のボラティリティをモニタリングする必要がある。",
+        "sources": [
+          {
+            "item": "loan_fair_value",
+            "snippet": "市場金利変動による一時的評価替え",
+            "confidence": 0.65
+          }
+        ]
       }
     },
     {
@@ -79,10 +71,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 50122000.0,
       "diluted_shares": 461706000.0,
       "period_end": "2026-03-31",
@@ -96,16 +84,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "ワラント公正価値変動損益",
-              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
-              "xbrl_value": -389548000,
-              "adjustment_amount": -389548000,
-              "net_amount": -307742920.0
-            }
-          ],
-          "condition1": "FV変動が純利益の107%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
       }
@@ -135,10 +113,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 30111120.0,
       "diluted_shares": 221769000.0,
       "period_end": "2025-12-31",
@@ -152,16 +126,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "ワラント公正価値変動損益",
-              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
-              "xbrl_value": 82225000.0,
-              "adjustment_amount": 82225000.0,
-              "net_amount": 64957750.0
-            }
-          ],
-          "condition1": "FV変動が純利益の82%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
       }
@@ -191,10 +155,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 10098310.0,
       "diluted_shares": 259909415.0,
       "period_end": "2025-09-30",
@@ -208,16 +168,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:UnrealizedGainLossOnInvestments",
-              "xbrl_value": 6893277,
-              "adjustment_amount": -6893277,
-              "net_amount": -5445688.83
-            }
-          ],
-          "condition1": "FV変動が純利益の92%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -233,10 +183,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 6273000.0,
       "diluted_shares": 150653000.0,
       "period_end": "2025-06-30",
@@ -256,10 +202,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 4248000.0,
       "diluted_shares": 105005000.0,
       "period_end": "2025-03-31",
@@ -293,10 +235,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 4129042.0,
       "diluted_shares": 69917000.0,
       "period_end": "2024-12-31",
@@ -316,10 +254,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 1480792.0,
       "diluted_shares": 70741662.0,
       "period_end": "2024-09-30",
@@ -339,10 +273,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 957851.0,
       "diluted_shares": 66377505.0,
       "period_end": "2024-06-30",
@@ -362,10 +292,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 625009.0,
       "diluted_shares": 63035122.0,
       "period_end": "2024-03-31",
@@ -385,10 +311,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 4961285.0,
       "diluted_shares": 52740215.0,
       "period_end": "2023-12-31",
@@ -408,10 +330,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 2665190.0,
       "diluted_shares": 53892848.0,
       "period_end": "2023-09-30",
@@ -431,10 +349,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 5468964.0,
       "diluted_shares": 51112218.0,
       "period_end": "2023-06-30",
@@ -454,10 +368,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 2595991.0,
       "diluted_shares": 47697767.0,
       "period_end": "2023-03-31",
@@ -477,10 +387,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 478912.0,
       "diluted_shares": 42242525.0,
       "period_end": "2022-12-31",
@@ -500,10 +406,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 632489.0,
       "diluted_shares": 42661607.0,
       "period_end": "2022-09-30",
@@ -523,10 +425,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 604219.0,
       "diluted_shares": 42167548.0,
       "period_end": "2022-06-30",
@@ -546,10 +444,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 410198.0,
       "diluted_shares": 40990604.0,
       "period_end": "2022-03-31",
@@ -569,10 +463,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 571246.0,
       "diluted_shares": 34180897.0,
       "period_end": "2021-12-31",
@@ -592,10 +482,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 283329.0,
       "diluted_shares": 38837940.0,
       "period_end": "2021-09-30",
@@ -615,10 +501,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 887432.0,
       "diluted_shares": 28890547.0,
       "period_end": "2021-06-30",
@@ -638,10 +520,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 1164764.0,
       "diluted_shares": 26672040.0,
       "period_end": "2021-03-31",
@@ -661,10 +539,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 194121.0,
       "diluted_shares": 60132656.0,
       "period_end": "2020-12-31",
@@ -684,10 +558,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 614026.0,
       "diluted_shares": 60132656.0,
       "period_end": "2020-09-30",
@@ -707,10 +577,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 1155374.0,
       "diluted_shares": 60132656.0,
       "period_end": "2020-06-30",
@@ -730,10 +596,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 200198.0,
       "diluted_shares": 50887702.0,
       "period_end": "2020-03-31",
@@ -753,10 +615,6 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 6800.0,
       "diluted_shares": 50887702.0,
       "period_end": "2019-12-31",
@@ -776,10 +634,6 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 88132.0,
       "diluted_shares": 50887702.0,
       "period_end": "2019-09-30",
@@ -799,10 +653,6 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 193157.0,
       "diluted_shares": 50887702.0,
       "period_end": "2019-06-30",
@@ -822,10 +672,6 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 32294.0,
       "diluted_shares": 50887702.0,
       "period_end": "2019-03-31",
@@ -845,10 +691,6 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 106849.0,
       "diluted_shares": 50887702.0,
       "period_end": "2018-12-31",
@@ -882,10 +724,6 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 35176.0,
       "diluted_shares": 50887702.0,
       "period_end": "2018-09-30",
@@ -899,16 +737,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:DerivativeGainLossOnDerivativeNet",
-              "xbrl_value": 1928873,
-              "adjustment_amount": -1928873,
-              "net_amount": -1523809.6700000002
-            }
-          ],
-          "condition1": "FV変動が純利益の431%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
       }
@@ -938,10 +766,6 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 16444.0,
       "diluted_shares": 50887702.0,
       "period_end": "2018-06-30",
@@ -955,16 +779,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:DerivativeGainLossOnDerivativeNet",
-              "xbrl_value": -1845031.0,
-              "adjustment_amount": 1845031.0,
-              "net_amount": 1457574.49
-            }
-          ],
-          "condition1": "FV変動が純利益の7711%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
       }
@@ -1007,10 +821,6 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 29382.0,
       "diluted_shares": 50887702.0,
       "period_end": "2018-03-31",
@@ -1024,16 +834,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "デリバティブ公正価値変動損益",
-              "xbrl_tag": "us-gaap:DerivativeGainLossOnDerivativeNet",
-              "xbrl_value": 869129,
-              "adjustment_amount": -869129,
-              "net_amount": -686611.91
-            }
-          ],
-          "condition1": "FV変動が純利益の14397%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
       }
@@ -1049,10 +849,6 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 65055.0,
       "diluted_shares": 50887702.0,
       "period_end": "2017-12-31",
@@ -1072,10 +868,6 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 40134.0,
       "diluted_shares": 50887702.0,
       "period_end": "2017-09-30",
@@ -1095,10 +887,6 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 1355.0,
       "diluted_shares": 50887702.0,
       "period_end": "2017-06-30",
@@ -1118,10 +906,6 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "sector_exclusions": [
-        "sbc",
-        "amortization_intangibles"
-      ],
       "revenue": 302.0,
       "diluted_shares": 50887702.0,
       "period_end": "2017-03-31",

@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-10-18T15:05:16.958639",
+  "last_updated": "2026-10-25T15:16:17.133756",
   "quarters": [
     {
       "gaap_eps": 0.11582334188862344,
@@ -27,10 +27,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 1218676000.0,
       "diluted_shares": 1351990000.0,
       "period_end": "2026-06-30",
@@ -38,23 +34,13 @@
       "quarter": 2,
       "tax_expense": 47717000.0,
       "pretax_income": 204309000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が30%超（現在 130.5%）",
-        "sbc_contribution": 1.305,
-        "sbc_to_revenue": 0.063,
-        "sbc_per_share": 0.0569,
-        "sector_threshold": {
-          "sbc_contribution": 0.3,
-          "sbc_to_revenue": 0.05
-        }
-      },
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCは成長企業で毎期発生する恒常的な運用コストであり、非現金とはいえ株主希薄化等の実質的影響があるため、この調整によりAdjusted EPSが実力以上に高く見えています。市場がGAAP EPSで判断する場合、保守的な評価となり企業の実力が過小評価されている可能性は低いですが、SBCを排除した調整依存の数字に過度に依拠すると過大評価リスクが生じます。投資家はSBCの継続性と希薄化効果を注視し、長期的な資本効率を評価すべきです。",
+        "health": "調整大",
+        "comment": "SBCは成長企業で毎期発生する恒常的なコストであり、非現金ながら従業員報酬としての経済的実態と株式希薄化を伴うため調整の正当性は中程度。GAAP EPSが0.116と低く出ているため、市場がこの銘柄の実力を過小評価している可能性はあるが、Adjusted EPSを過度に信用すると持続可能性を見誤る過大評価リスクが高い。投資家は希薄化後株式数やキャッシュフローへの影響を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、SoFiのようなテック企業では人材確保のための恒常的コストであり一過性ではない。",
+            "snippet": "非現金費用として株式報酬費用をadd_back。成長企業において毎期継続的に発生する恒常的コストであり、一過性ではない。",
             "confidence": 0.2
           }
         ]
@@ -85,10 +71,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 1100368000.0,
       "diluted_shares": 1378011000.0,
       "period_end": "2026-03-31",
@@ -122,10 +104,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 1025051000.0,
       "diluted_shares": 1251767000.0,
       "period_end": "2025-12-31",
@@ -159,10 +137,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 961600000.0,
       "diluted_shares": 1291011000.0,
       "period_end": "2025-09-30",
@@ -196,10 +170,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 854944000.0,
       "diluted_shares": 1182877000.0,
       "period_end": "2025-06-30",
@@ -233,10 +203,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 771759000.0,
       "diluted_shares": 1185466000.0,
       "period_end": "2025-03-31",
@@ -277,18 +243,13 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 734125000.0,
       "diluted_shares": 1101390000.0,
       "period_end": "2024-12-31",
       "fiscal_year": 2024,
       "quarter": 4,
       "tax_expense": -265320000.0,
-      "pretax_income": 67153000.0,
-      "dta_detected": true
+      "pretax_income": 67153000.0
     },
     {
       "gaap_eps": 0.055000226357010275,
@@ -315,10 +276,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 697121000.0,
       "diluted_shares": 1104450000.0,
       "period_end": "2024-09-30",
@@ -352,10 +309,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 598618000.0,
       "diluted_shares": 1065171000.0,
       "period_end": "2024-06-30",
@@ -389,10 +342,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 644995000.0,
       "diluted_shares": 1042477000.0,
       "period_end": "2024-03-31",
@@ -439,10 +388,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 615404000.0,
       "diluted_shares": 945024000.0,
       "period_end": "2023-12-31",
@@ -489,10 +434,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 537209000.0,
       "diluted_shares": 951183107.0,
       "period_end": "2023-09-30",
@@ -526,10 +467,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 498018000.0,
       "diluted_shares": 936569420.0,
       "period_end": "2023-06-30",
@@ -576,10 +513,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 472158000.0,
       "diluted_shares": 929270723.0,
       "period_end": "2023-03-31",
@@ -613,10 +546,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 456679000.0,
       "diluted_shares": 900886000.0,
       "period_end": "2022-12-31",
@@ -650,10 +579,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 423985000.0,
       "diluted_shares": 916762973.0,
       "period_end": "2022-09-30",
@@ -687,10 +612,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 362527000.0,
       "diluted_shares": 910046750.0,
       "period_end": "2022-06-30",
@@ -724,10 +645,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 330344000.0,
       "diluted_shares": 852853596.0,
       "period_end": "2022-03-31",
@@ -761,10 +678,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 285608000.0,
       "diluted_shares": 526730261.0,
       "period_end": "2021-12-31",
@@ -811,10 +724,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 272006000.0,
       "diluted_shares": 800565830.0,
       "period_end": "2021-09-30",
@@ -828,16 +737,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "ワラント公正価値変動損益",
-              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
-              "xbrl_value": -64405000,
-              "adjustment_amount": -64405000,
-              "net_amount": -64014679.736154824
-            }
-          ],
-          "condition1": "FV変動が純利益の214%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
       }
@@ -880,10 +779,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 231274000.0,
       "diluted_shares": 365036365.0,
       "period_end": "2021-06-30",
@@ -897,16 +792,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "ワラント公正価値変動損益",
-              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
-              "xbrl_value": 70989000.0,
-              "adjustment_amount": 70989000.0,
-              "net_amount": 70955521.10138337
-            }
-          ],
-          "condition1": "純利益変動2217% / 売上変動101% = 21.9倍（閾値5倍）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
       }
@@ -949,10 +834,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 195984000.0,
       "diluted_shares": 116152593.0,
       "period_end": "2021-03-31",
@@ -966,16 +847,6 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "ワラント公正価値変動損益",
-              "xbrl_tag": "us-gaap:FairValueAdjustmentOfWarrants",
-              "xbrl_value": 89920000,
-              "adjustment_amount": 89920000,
-              "net_amount": 88253401.10108228
-            }
-          ],
-          "condition1": "FV変動が純利益の149%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
       }
@@ -1005,10 +876,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 200787000.0,
       "diluted_shares": 75320032.0,
       "period_end": "2020-09-30",
@@ -1049,18 +916,13 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
-      "sector_exclusions": [
-        "loan_fair_value",
-        "loan_loss_provision_abnormal"
-      ],
       "revenue": 114952000.0,
       "diluted_shares": 72147293.0,
       "period_end": "2020-06-30",
       "fiscal_year": 2020,
       "quarter": 2,
       "tax_expense": -99768000.0,
-      "pretax_income": -91960000.0,
-      "dta_detected": true
+      "pretax_income": -91960000.0
     }
   ],
   "execution_metrics": {

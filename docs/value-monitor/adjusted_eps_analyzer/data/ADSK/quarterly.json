@@ -1,6 +1,6 @@
 {
   "ticker": "ADSK",
-  "last_updated": "2026-10-18T15:06:03.181319",
+  "last_updated": "2026-10-25T15:16:53.165604",
   "quarters": [
     {
       "gaap_eps": 2.3317535545023698,
@@ -40,13 +40,6 @@
       "filing_date": "2026-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 2046000000.0,
       "diluted_shares": 211000000.0,
       "period_end": "2026-07-31",
@@ -54,28 +47,18 @@
       "quarter": 2,
       "tax_expense": 101000000.0,
       "pretax_income": 593000000.0,
-      "maturity_monitor": {
-        "alert": "SBC寄与率が40%超（現在 112.6%）",
-        "sbc_contribution": 1.126,
-        "sbc_to_revenue": 0.09,
-        "sbc_per_share": 0.872,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の主力であるSBC（株式報酬費用）は恒常的な運用コストであり、無形資産償却も買収後の継続的費用であるため、GAAP EPSは非現金項目を反映して企業の実力（特にキャッシュ生成力）を過小評価している可能性があります。ただしSBCは株主希薄化の実質コストを含むため、Adjusted EPSを過度に信用すると過大評価リスクが生じます。投資家はFree Cash Flowや希薄化影響を併せて確認すべきです。",
+        "comment": "主な調整項目であるSBCと無形資産償却はともに恒常的な性質が強く、GAAP EPSで市場が判断する場合に企業の実力（非現金費用を除いたキャッシュ生成力など）が過小評価されている可能性がある。ただしSBCは報酬としての実質的コストであり希薄化効果も伴うため、Adjusted EPSを過信すると過大評価リスクが生じる。投資家は非GAAPの持続可能性と株主還元への影響を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、毎期発生する恒常的コストであり一過性ではない",
+            "snippet": "株式報酬費用は非現金費用として加算されているが、テック企業では毎期発生する恒常的なコストであり、一過性ではない。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金償却で、一定期間継続して発生する恒常的項目",
+            "snippet": "無形資産償却費は買収関連で非現金だが、過去の買収による定期的な償却であり恒常的と見なされる。",
             "confidence": 0.2
           }
         ]
@@ -132,13 +115,6 @@
       "filing_date": "2026-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1934000000.0,
       "diluted_shares": 212000000.0,
       "period_end": "2026-04-30",
@@ -198,13 +174,6 @@
       "filing_date": "2026-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1957000000.0,
       "diluted_shares": 215000000.0,
       "period_end": "2026-01-31",
@@ -264,13 +233,6 @@
       "filing_date": "2025-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1853000000.0,
       "diluted_shares": 215000000.0,
       "period_end": "2025-10-31",
@@ -330,13 +292,6 @@
       "filing_date": "2025-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1763000000.0,
       "diluted_shares": 215000000.0,
       "period_end": "2025-07-31",
@@ -396,13 +351,6 @@
       "filing_date": "2025-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1633000000.0,
       "diluted_shares": 216000000.0,
       "period_end": "2025-04-30",
@@ -449,13 +397,6 @@
       "filing_date": "2025-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1639000000.0,
       "diluted_shares": 217000000.0,
       "period_end": "2025-01-31",
@@ -502,13 +443,6 @@
       "filing_date": "2024-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1570000000.0,
       "diluted_shares": 217000000.0,
       "period_end": "2024-10-31",
@@ -555,13 +489,6 @@
       "filing_date": "2024-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1505000000.0,
       "diluted_shares": 217000000.0,
       "period_end": "2024-07-31",
@@ -608,13 +535,6 @@
       "filing_date": "2024-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1417000000.0,
       "diluted_shares": 217000000.0,
       "period_end": "2024-04-30",
@@ -661,13 +581,6 @@
       "filing_date": "2024-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1469000000.0,
       "diluted_shares": 216000000.0,
       "period_end": "2024-01-31",
@@ -714,13 +627,6 @@
       "filing_date": "2023-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1414000000.0,
       "diluted_shares": 216000000.0,
       "period_end": "2023-10-31",
@@ -767,13 +673,6 @@
       "filing_date": "2023-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1345000000.0,
       "diluted_shares": 215000000.0,
       "period_end": "2023-07-31",
@@ -820,13 +719,6 @@
       "filing_date": "2023-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1269000000.0,
       "diluted_shares": 216000000.0,
       "period_end": "2023-04-30",
@@ -873,13 +765,6 @@
       "filing_date": "2023-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1318000000.0,
       "diluted_shares": 218000000.0,
       "period_end": "2023-01-31",
@@ -926,13 +811,6 @@
       "filing_date": "2022-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1280000000.0,
       "diluted_shares": 217000000.0,
       "period_end": "2022-10-31",
@@ -979,13 +857,6 @@
       "filing_date": "2022-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1237000000.0,
       "diluted_shares": 218000000.0,
       "period_end": "2022-07-31",
@@ -1032,13 +903,6 @@
       "filing_date": "2022-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1170000000.0,
       "diluted_shares": 219000000.0,
       "period_end": "2022-04-30",
@@ -1085,13 +949,6 @@
       "filing_date": "2022-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1211600000.0,
       "diluted_shares": 222000000.0,
       "period_end": "2022-01-31",
@@ -1138,13 +995,6 @@
       "filing_date": "2021-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1126000000.0,
       "diluted_shares": 222000000.0,
       "period_end": "2021-10-31",
@@ -1191,13 +1041,6 @@
       "filing_date": "2021-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1060000000.0,
       "diluted_shares": 222000000.0,
       "period_end": "2021-07-31",
@@ -1244,13 +1087,6 @@
       "filing_date": "2021-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 989000000.0,
       "diluted_shares": 222000000.0,
       "period_end": "2021-04-30",
@@ -1304,21 +1140,13 @@
       "filing_date": "2021-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 1039200000.0,
       "diluted_shares": 222000000.0,
       "period_end": "2021-01-31",
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": -661500000.0,
-      "pretax_income": 249800000.0,
-      "dta_detected": true
+      "pretax_income": 249800000.0
     },
     {
       "gaap_eps": 0.5946918578497525,
@@ -1358,13 +1186,6 @@
       "filing_date": "2020-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 952400000.0,
       "diluted_shares": 222300000.0,
       "period_end": "2020-10-31",
@@ -1411,13 +1232,6 @@
       "filing_date": "2020-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 913100000.0,
       "diluted_shares": 222200000.0,
       "period_end": "2020-07-31",
@@ -1464,13 +1278,6 @@
       "filing_date": "2020-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 885700000.0,
       "diluted_shares": 221300000.0,
       "period_end": "2020-04-30",
@@ -1517,13 +1324,6 @@
       "filing_date": "2020-01-31",
       "form": "10-K",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 899300000.0,
       "diluted_shares": 222500000.0,
       "period_end": "2020-01-31",
@@ -1570,13 +1370,6 @@
       "filing_date": "2019-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 842700000.0,
       "diluted_shares": 221900000.0,
       "period_end": "2019-10-31",
@@ -1623,13 +1416,6 @@
       "filing_date": "2019-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 796800000.0,
       "diluted_shares": 222400000.0,
       "period_end": "2019-07-31",
@@ -1676,13 +1462,6 @@
       "filing_date": "2019-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 735500000.0,
       "diluted_shares": 219600000.0,
       "period_end": "2019-04-30",
@@ -1702,13 +1481,6 @@
       "filing_date": "2019-01-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 0.0,
       "diluted_shares": 219600000.0,
       "period_end": "2019-01-31",
@@ -1768,13 +1540,6 @@
       "filing_date": "2018-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 660900000.0,
       "diluted_shares": 218900000.0,
       "period_end": "2018-10-31",
@@ -1834,13 +1599,6 @@
       "filing_date": "2018-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 611700000.0,
       "diluted_shares": 219000000.0,
       "period_end": "2018-07-31",
@@ -1900,13 +1658,6 @@
       "filing_date": "2018-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 559900000.0,
       "diluted_shares": 218600000.0,
       "period_end": "2018-04-30",
@@ -1926,13 +1677,6 @@
       "filing_date": "2018-01-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 0.0,
       "diluted_shares": 218600000.0,
       "period_end": "2018-01-31",
@@ -1979,13 +1723,6 @@
       "filing_date": "2017-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 515300000.0,
       "diluted_shares": 219600000.0,
       "period_end": "2017-10-31",
@@ -2045,13 +1782,6 @@
       "filing_date": "2017-07-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 501800000.0,
       "diluted_shares": 219500000.0,
       "period_end": "2017-07-31",
@@ -2111,13 +1841,6 @@
       "filing_date": "2017-04-30",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 485700000.0,
       "diluted_shares": 219900000.0,
       "period_end": "2017-04-30",
@@ -2177,13 +1900,6 @@
       "filing_date": "2016-10-31",
       "form": "10-Q",
       "sector": "Technology",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing",
-        "fx_gains_losses",
-        "derivative_gains_losses",
-        "tax_one_time"
-      ],
       "revenue": 489600000.0,
       "diluted_shares": 222300000.0,
       "period_end": "2016-10-31",

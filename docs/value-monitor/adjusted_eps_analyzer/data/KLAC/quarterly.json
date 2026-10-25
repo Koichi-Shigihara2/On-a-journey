@@ -1,6 +1,6 @@
 {
   "ticker": "KLAC",
-  "last_updated": "2026-10-18T15:08:58.048024",
+  "last_updated": "2026-10-25T15:19:20.970984",
   "quarters": [
     {
       "gaap_eps": 1.0329076341679846,
@@ -53,7 +53,6 @@
       "filing_date": "2026-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3657556000.0,
       "diluted_shares": 1319633000.0,
       "period_end": "2026-06-30",
@@ -63,21 +62,21 @@
       "pretax_income": 2138213000.0,
       "ai_analysis": {
         "health": "調整中",
-        "comment": "調整項目の主力はSBCと無形資産償却であり、これらは恒常的な非現金費用に該当する一方、リストラ費用は一過性。市場がGAAP EPS（1.03）を基準に判断する場合、非現金・買収関連費用を排除した実力値（Adjusted EPS 1.09）が把握しにくく、企業の実力を過小評価する可能性がある。ただしSBCは株主希薄化を伴う実質コストであるため、調整の加算が持続可能性を過大に見せているリスクもあり、投資家はコア事業のキャッシュフローと希薄化効果を総合的に評価する必要がある。",
+        "comment": "SBCと無形資産償却は恒常的な非現金費用だが、リストラは一過性。GAAP EPSではこれらを控除しているため、市場がGAAPベースで判断する場合にKLACの真の実力（特にキャッシュフロー生成力）が過小評価されるリスクがある。半導体装置セクターでは非GAAP調整が一般的だが、SBCの継続性と株式希薄化を考慮すると過大評価リスクも一部存在。投資家は調整後EPSを主眼に置きつつ、SBCの経済的実態を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だがテック企業では毎期発生する恒常的コストであり、一過性とはみなせない",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、調整により加算されているが、信頼できる継続コストと見なされる可能性が高い",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aに基づく定期的な非現金費用で、恒常的な性質を持つ",
+            "snippet": "無形資産償却費は買収関連で複数期にわたって発生する恒常的な非現金項目であり、調整の根拠は非キャッシュ性にあるがコア事業に関連",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用であり、非経常的と判断できる",
+            "snippet": "リストラ費用は一過性の事業再編費用であり、調整して加算するのは標準的で真に非経常的",
             "confidence": 0.8
           }
         ]
@@ -134,15 +133,13 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3415078000.0,
       "diluted_shares": 1317500000.0,
       "period_end": "2026-03-31",
       "fiscal_year": 2026,
       "quarter": 3,
       "tax_expense": 215771000.0,
-      "pretax_income": 1416761000.0,
-      "split_adjusted": true
+      "pretax_income": 1416761000.0
     },
     {
       "gaap_eps": 0.8678817353362271,
@@ -195,15 +192,13 @@
       "filing_date": "2025-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3297146000.0,
       "diluted_shares": 1320090000.0,
       "period_end": "2025-12-31",
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 184621000.0,
-      "pretax_income": 1330303000.0,
-      "split_adjusted": true
+      "pretax_income": 1330303000.0
     },
     {
       "gaap_eps": 0.8468284723638588,
@@ -256,15 +251,13 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3209696000.0,
       "diluted_shares": 1323810000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2026,
       "quarter": 1,
       "tax_expense": 188436000.0,
-      "pretax_income": 1309476000.0,
-      "split_adjusted": true
+      "pretax_income": 1309476000.0
     },
     {
       "gaap_eps": 0.8993250103551247,
@@ -317,7 +310,6 @@
       "filing_date": "2025-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3174741000.0,
       "diluted_shares": 1337502000.0,
       "period_end": "2025-06-30",
@@ -377,15 +369,13 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3063029000.0,
       "diluted_shares": 1333030000.0,
       "period_end": "2025-03-31",
       "fiscal_year": 2025,
       "quarter": 3,
       "tax_expense": 176017000.0,
-      "pretax_income": 1264433000.0,
-      "split_adjusted": true
+      "pretax_income": 1264433000.0
     },
     {
       "gaap_eps": 0.615658647312695,
@@ -438,15 +428,13 @@
       "filing_date": "2024-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 3076851000.0,
       "diluted_shares": 1339260000.0,
       "period_end": "2024-12-31",
       "fiscal_year": 2025,
       "quarter": 2,
       "tax_expense": 148002000.0,
-      "pretax_income": 972529000.0,
-      "split_adjusted": true
+      "pretax_income": 972529000.0
     },
     {
       "gaap_eps": 0.7013681057111925,
@@ -499,15 +487,13 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2841541000.0,
       "diluted_shares": 1348580000.0,
       "period_end": "2024-09-30",
       "fiscal_year": 2025,
       "quarter": 1,
       "tax_expense": 132836000.0,
-      "pretax_income": 1078687000.0,
-      "split_adjusted": true
+      "pretax_income": 1078687000.0
     },
     {
       "gaap_eps": 0.6141897642137386,
@@ -560,7 +546,6 @@
       "filing_date": "2024-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2568735000.0,
       "diluted_shares": 1361869000.0,
       "period_end": "2024-06-30",
@@ -633,15 +618,13 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2359830000.0,
       "diluted_shares": 1358560000.0,
       "period_end": "2024-03-31",
       "fiscal_year": 2024,
       "quarter": 3,
       "tax_expense": 100467000.0,
-      "pretax_income": 702008000.0,
-      "split_adjusted": true
+      "pretax_income": 702008000.0
     },
     {
       "gaap_eps": 0.4275353384120833,
@@ -707,15 +690,13 @@
       "filing_date": "2023-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2486726000.0,
       "diluted_shares": 1362540000.0,
       "period_end": "2023-12-31",
       "fiscal_year": 2024,
       "quarter": 2,
       "tax_expense": 108736000.0,
-      "pretax_income": 691270000.0,
-      "split_adjusted": true
+      "pretax_income": 691270000.0
     },
     {
       "gaap_eps": 0.540739146924962,
@@ -768,15 +749,13 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2396956000.0,
       "diluted_shares": 1371040000.0,
       "period_end": "2023-09-30",
       "fiscal_year": 2024,
       "quarter": 1,
       "tax_expense": 110336000.0,
-      "pretax_income": 851711000.0,
-      "split_adjusted": true
+      "pretax_income": 851711000.0
     },
     {
       "gaap_eps": 0.4882190608621243,
@@ -829,15 +808,13 @@
       "filing_date": "2023-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2355137000.0,
       "diluted_shares": 1402350000.0,
       "period_end": "2023-06-30",
       "fiscal_year": 2023,
       "quarter": 4,
       "tax_expense": 401839000.0,
-      "pretax_income": 1086493000.0,
-      "split_adjusted": true
+      "pretax_income": 1086493000.0
     },
     {
       "gaap_eps": 0.5033264813011649,
@@ -890,15 +867,13 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2432608000.0,
       "diluted_shares": 1386450000.0,
       "period_end": "2023-03-31",
       "fiscal_year": 2023,
       "quarter": 3,
       "tax_expense": 102846000.0,
-      "pretax_income": 800683000.0,
-      "split_adjusted": true
+      "pretax_income": 800683000.0
     },
     {
       "gaap_eps": 0.6894573348548244,
@@ -951,15 +926,13 @@
       "filing_date": "2022-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2983887000.0,
       "diluted_shares": 1419660000.0,
       "period_end": "2022-12-31",
       "fiscal_year": 2023,
       "quarter": 2,
       "tax_expense": 164178000.0,
-      "pretax_income": 1142973000.0,
-      "split_adjusted": true
+      "pretax_income": 1142973000.0
     },
     {
       "gaap_eps": 0.7196755118789587,
@@ -1012,15 +985,13 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2724424000.0,
       "diluted_shares": 1425630000.0,
       "period_end": "2022-09-30",
       "fiscal_year": 2023,
       "quarter": 1,
       "tax_expense": 43963000.0,
-      "pretax_income": 1069954000.0,
-      "split_adjusted": true
+      "pretax_income": 1069954000.0
     },
     {
       "gaap_eps": 0.5314070799379763,
@@ -1073,15 +1044,13 @@
       "filing_date": "2022-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2486739000.0,
       "diluted_shares": 1515550000.0,
       "period_end": "2022-06-30",
       "fiscal_year": 2022,
       "quarter": 4,
       "tax_expense": 167177000.0,
-      "pretax_income": 972551000.0,
-      "split_adjusted": true
+      "pretax_income": 972551000.0
     },
     {
       "gaap_eps": 0.4832272829494794,
@@ -1121,15 +1090,13 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2288676000.0,
       "diluted_shares": 1511860000.0,
       "period_end": "2022-03-31",
       "fiscal_year": 2022,
       "quarter": 3,
       "tax_expense": 115625000.0,
-      "pretax_income": 846197000.0,
-      "split_adjusted": true
+      "pretax_income": 846197000.0
     },
     {
       "gaap_eps": 0.47097701715343565,
@@ -1182,15 +1149,13 @@
       "filing_date": "2021-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2352630000.0,
       "diluted_shares": 1523310000.0,
       "period_end": "2021-12-31",
       "fiscal_year": 2022,
       "quarter": 2,
       "tax_expense": 209388000.0,
-      "pretax_income": 926832000.0,
-      "split_adjusted": true
+      "pretax_income": 926832000.0
     },
     {
       "gaap_eps": 0.696445472915716,
@@ -1243,15 +1208,13 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 2083838000.0,
       "diluted_shares": 1534100000.0,
       "period_end": "2021-09-30",
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": -302137000.0,
-      "pretax_income": 766280000.0,
-      "split_adjusted": true
+      "pretax_income": 766280000.0
     },
     {
       "gaap_eps": 0.40722479203793177,
@@ -1304,15 +1267,13 @@
       "filing_date": "2021-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1925471000.0,
       "diluted_shares": 1554370000.0,
       "period_end": "2021-06-30",
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": 283101000.0,
-      "pretax_income": 916079000.0,
-      "split_adjusted": true
+      "pretax_income": 916079000.0
     },
     {
       "gaap_eps": 0.36575126160905913,
@@ -1365,15 +1326,13 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1803773000.0,
       "diluted_shares": 1551590000.0,
       "period_end": "2021-03-31",
       "fiscal_year": 2021,
       "quarter": 3,
       "tax_expense": 73233000.0,
-      "pretax_income": 640729000.0,
-      "split_adjusted": true
+      "pretax_income": 640729000.0
     },
     {
       "gaap_eps": 0.2939386731807663,
@@ -1426,15 +1385,13 @@
       "filing_date": "2020-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1650870000.0,
       "diluted_shares": 1555600000.0,
       "period_end": "2020-12-31",
       "fiscal_year": 2021,
       "quarter": 2,
       "tax_expense": 70419000.0,
-      "pretax_income": 527670000.0,
-      "split_adjusted": true
+      "pretax_income": 527670000.0
     },
     {
       "gaap_eps": 0.26883253857659706,
@@ -1487,15 +1444,13 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1538620000.0,
       "diluted_shares": 1564420000.0,
       "period_end": "2020-09-30",
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 63664000.0,
-      "pretax_income": 484231000.0,
-      "split_adjusted": true
+      "pretax_income": 484231000.0
     },
     {
       "gaap_eps": 0.2602784722002468,
@@ -1548,15 +1503,13 @@
       "filing_date": "2020-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1459593000.0,
       "diluted_shares": 1580050000.0,
       "period_end": "2020-06-30",
       "fiscal_year": 2020,
       "quarter": 4,
       "tax_expense": 101686000.0,
-      "pretax_income": 512939000.0,
-      "split_adjusted": true
+      "pretax_income": 512939000.0
     },
     {
       "gaap_eps": 0.04991474308400988,
@@ -1622,15 +1575,13 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1423964000.0,
       "diluted_shares": 1571720000.0,
       "period_end": "2020-03-31",
       "fiscal_year": 2020,
       "quarter": 3,
       "tax_expense": 37190000.0,
-      "pretax_income": 115642000.0,
-      "split_adjusted": true
+      "pretax_income": 115642000.0
     },
     {
       "gaap_eps": 0.2399161518093557,
@@ -1683,15 +1634,13 @@
       "filing_date": "2019-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1509453000.0,
       "diluted_shares": 1586200000.0,
       "period_end": "2019-12-31",
       "fiscal_year": 2020,
       "quarter": 2,
       "tax_expense": 44622000.0,
-      "pretax_income": 425177000.0,
-      "split_adjusted": true
+      "pretax_income": 425177000.0
     },
     {
       "gaap_eps": 0.216400946724869,
@@ -1731,15 +1680,13 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1413414000.0,
       "diluted_shares": 1601310000.0,
       "period_end": "2019-09-30",
       "fiscal_year": 2020,
       "quarter": 1,
       "tax_expense": 25120000.0,
-      "pretax_income": 371645000.0,
-      "split_adjusted": true
+      "pretax_income": 371645000.0
     },
     {
       "gaap_eps": 0.13879986492427476,
@@ -1792,15 +1739,13 @@
       "filing_date": "2019-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1258435000.0,
       "diluted_shares": 1569490000.0,
       "period_end": "2019-06-30",
       "fiscal_year": 2019,
       "quarter": 4,
       "tax_expense": 121214000.0,
-      "pretax_income": 339059000.0,
-      "split_adjusted": true
+      "pretax_income": 339059000.0
     },
     {
       "gaap_eps": 0.12261454873967756,
@@ -1840,15 +1785,13 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1097311000.0,
       "diluted_shares": 1571820000.0,
       "period_end": "2019-03-31",
       "fiscal_year": 2019,
       "quarter": 3,
       "tax_expense": 28745000.0,
-      "pretax_income": 221473000.0,
-      "split_adjusted": true
+      "pretax_income": 221473000.0
     },
     {
       "gaap_eps": 0.2417981237880614,
@@ -1888,15 +1831,13 @@
       "filing_date": "2018-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1119898000.0,
       "diluted_shares": 1526480000.0,
       "period_end": "2018-12-31",
       "fiscal_year": 2019,
       "quarter": 2,
       "tax_expense": 46863000.0,
-      "pretax_income": 415963000.0,
-      "split_adjusted": true
+      "pretax_income": 415963000.0
     },
     {
       "gaap_eps": 0.2536752881479726,
@@ -1936,15 +1877,13 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1093260000.0,
       "diluted_shares": 1560830000.0,
       "period_end": "2018-09-30",
       "fiscal_year": 2019,
       "quarter": 1,
       "tax_expense": 31624000.0,
-      "pretax_income": 427568000.0,
-      "split_adjusted": true
+      "pretax_income": 427568000.0
     },
     {
       "gaap_eps": 0.22161102568338648,
@@ -1984,15 +1923,13 @@
       "filing_date": "2018-06-30",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1070004000.0,
       "diluted_shares": 1573780000.0,
       "period_end": "2018-06-30",
       "fiscal_year": 2018,
       "quarter": 4,
       "tax_expense": 653666000.0,
-      "pretax_income": 1002433000.0,
-      "split_adjusted": true
+      "pretax_income": 1002433000.0
     },
     {
       "gaap_eps": 0.19521567928957195,
@@ -2032,15 +1969,13 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 1021294000.0,
       "diluted_shares": 1572010000.0,
       "period_end": "2018-03-31",
       "fiscal_year": 2018,
       "quarter": 3,
       "tax_expense": 59102000.0,
-      "pretax_income": 365983000.0,
-      "split_adjusted": true
+      "pretax_income": 365983000.0
     },
     {
       "gaap_eps": -0.08577915152598875,
@@ -2080,15 +2015,13 @@
       "filing_date": "2017-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 975822000.0,
       "diluted_shares": 1565870000.0,
       "period_end": "2017-12-31",
       "fiscal_year": 2018,
       "quarter": 2,
       "tax_expense": 481626000.0,
-      "pretax_income": 347307000.0,
-      "split_adjusted": true
+      "pretax_income": 347307000.0
     },
     {
       "gaap_eps": 0.17798107015698844,
@@ -2128,15 +2061,13 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 969581000.0,
       "diluted_shares": 1578460000.0,
       "period_end": "2017-09-30",
       "fiscal_year": 2018,
       "quarter": 1,
       "tax_expense": 55216000.0,
-      "pretax_income": 336152000.0,
-      "split_adjusted": true
+      "pretax_income": 336152000.0
     },
     {
       "gaap_eps": 0.16074068439136333,
@@ -2176,15 +2107,13 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 913809000.0,
       "diluted_shares": 1577460000.0,
       "period_end": "2017-03-31",
       "fiscal_year": 2017,
       "quarter": 3,
       "tax_expense": 65587000.0,
-      "pretax_income": 319149000.0,
-      "split_adjusted": true
+      "pretax_income": 319149000.0
     },
     {
       "gaap_eps": 0.15163343367934676,
@@ -2224,15 +2153,13 @@
       "filing_date": "2016-12-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 876885000.0,
       "diluted_shares": 1571230000.0,
       "period_end": "2016-12-31",
       "fiscal_year": 2017,
       "quarter": 2,
       "tax_expense": 68594000.0,
-      "pretax_income": 306845000.0,
-      "split_adjusted": true
+      "pretax_income": 306845000.0
     }
   ],
   "execution_metrics": {

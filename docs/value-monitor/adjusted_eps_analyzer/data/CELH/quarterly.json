@@ -1,6 +1,6 @@
 {
   "ticker": "CELH",
-  "last_updated": "2026-10-18T15:02:19.526570",
+  "last_updated": "2026-10-25T15:13:58.221437",
   "quarters": [
     {
       "gaap_eps": 0.21520396367924713,
@@ -40,10 +40,6 @@
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 817925000.0,
       "diluted_shares": 256933000.0,
       "period_end": "2026-06-30",
@@ -57,34 +53,23 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.21520396367924713,
           "official_eps": 0.36,
           "eps_diff_pct": 40.2,
           "note": "XBRLと公式発表のGAAP EPSに40%の差異があります。公式EPS: $0.36, XBRL計算EPS: $0.22。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
         }
       },
-      "maturity_monitor": {
-        "alert": null,
-        "sbc_contribution": 0.0,
-        "sbc_to_revenue": 0.0,
-        "sbc_per_share": 0.0,
-        "sector_threshold": {
-          "sbc_contribution": 0.4,
-          "sbc_to_revenue": 0.25
-        }
-      },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の主力は80M超のリストラ費用（一過性）であり、GAAP EPSを大幅に低下させているため、市場がGAAPベースで評価する場合にCELHの事業実力（調整後0.48程度）が過小評価されている可能性が高い。ただし無形資産償却（5.9M）は毎期発生する恒常的項目のため、調整EPSにはやや過大評価のリスクも含まれる。投資家はリストラの完了状況と今後の償却負担を注視し、持続的な収益性を判断すべき。",
+        "comment": "リストラ費用（80.86M USD）は一過性の事業再編コストと見なせ、GAAP EPSを大幅に低下させているため、市場がGAAPベースで評価する場合にCELHの本業収益力（Adjusted EPS 0.48）が十分に見えず、実力を過小評価している可能性が高い。一方、無形資産償却は買収に伴う恒常的費用であり、これを全額加算する調整は実力をやや過大に映すリスクもある。投資家はリストラ完了後の収益安定性と今後の償却負担を注視し、過小評価の機会を検討すべきだが、調整依存度の高さから持続可能性の確認が必要。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却であり、恒常的な非現金費用である。",
+            "snippet": "買収関連無形資産の償却は定期的に発生する恒常的非現金費用であり、毎期の業績に影響を与え続ける。",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用であり、非経常的である。",
+            "snippet": "一過性の事業再編費用として計上されたリストラ費用は非経常的であり、GAAP EPSを一時的に大きく圧縮している。",
             "confidence": 0.8
           }
         ]
@@ -154,10 +139,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 782615000.0,
       "diluted_shares": 259764000.0,
       "period_end": "2026-03-31",
@@ -171,7 +152,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.42384241080365254,
           "official_eps": 0.33,
           "eps_diff_pct": 28.4,
           "note": "XBRLと公式発表のGAAP EPSに28%の差異があります。公式EPS: $0.33, XBRL計算EPS: $0.42。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -242,10 +222,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 721628000.0,
       "diluted_shares": 254911000.0,
       "period_end": "2025-12-31",
@@ -259,7 +235,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.09704955847334952,
           "official_eps": 0.26,
           "eps_diff_pct": 62.7,
           "note": "XBRLと公式発表のGAAP EPSに63%の差異があります。公式EPS: $0.26, XBRL計算EPS: $0.10。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -330,10 +305,6 @@
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 725106000.0,
       "diluted_shares": 257778000.0,
       "period_end": "2025-09-30",
@@ -347,7 +318,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.23669203733445057,
           "official_eps": -0.3,
           "eps_diff_pct": 21.1,
           "note": "XBRLと公式発表のGAAP EPSに21%の差異があります。公式EPS: $-0.30, XBRL計算EPS: $-0.24。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -405,10 +375,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 739259000.0,
       "diluted_shares": 260211000.0,
       "period_end": "2025-06-30",
@@ -468,10 +434,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 329276000.0,
       "diluted_shares": 237172000.0,
       "period_end": "2025-03-31",
@@ -485,7 +447,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.1872860202722075,
           "official_eps": 0.15,
           "eps_diff_pct": 24.9,
           "note": "XBRLと公式発表のGAAP EPSに25%の差異があります。公式EPS: $0.15, XBRL計算EPS: $0.19。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -543,10 +504,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 332197000.0,
       "diluted_shares": 237404000.0,
       "period_end": "2024-12-31",
@@ -560,7 +517,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.07951003352934238,
           "official_eps": -0.13,
           "eps_diff_pct": 38.8,
           "note": "XBRLと公式発表のGAAP EPSに39%の差異があります。公式EPS: $-0.13, XBRL計算EPS: $-0.08。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -618,10 +574,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 265748000.0,
       "diluted_shares": 233696000.0,
       "period_end": "2024-09-30",
@@ -635,7 +587,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.027197726961522662,
           "official_eps": -0.0024,
           "eps_diff_pct": 1233.2,
           "note": "XBRLと公式発表のGAAP EPSに1233%の差異があります。公式EPS: $-0.00, XBRL計算EPS: $0.03。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -693,10 +644,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 401977000.0,
       "diluted_shares": 237595000.0,
       "period_end": "2024-06-30",
@@ -756,10 +703,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 355708000.0,
       "diluted_shares": 237523000.0,
       "period_end": "2024-03-31",
@@ -773,7 +716,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.3275935383099742,
           "official_eps": 0.27,
           "eps_diff_pct": 21.3,
           "note": "XBRLと公式発表のGAAP EPSに21%の差異があります。公式EPS: $0.27, XBRL計算EPS: $0.33。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -831,10 +773,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 347435000.0,
       "diluted_shares": 236964000.0,
       "period_end": "2023-12-31",
@@ -848,7 +786,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.21149204098512855,
           "official_eps": 0.17,
           "eps_diff_pct": 24.4,
           "note": "XBRLと公式発表のGAAP EPSに24%の差異があります。公式EPS: $0.17, XBRL計算EPS: $0.21。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -906,10 +843,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 384757000.0,
       "diluted_shares": 237273000.0,
       "period_end": "2023-09-30",
@@ -969,10 +902,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 325883000.0,
       "diluted_shares": 236832000.0,
       "period_end": "2023-06-30",
@@ -986,7 +915,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.21749172409133902,
           "official_eps": 0.17,
           "eps_diff_pct": 27.9,
           "note": "XBRLと公式発表のGAAP EPSに28%の差異があります。公式EPS: $0.17, XBRL計算EPS: $0.22。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1044,10 +972,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 259939000.0,
       "diluted_shares": 236277000.0,
       "period_end": "2023-03-31",
@@ -1061,7 +985,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.17448587886252154,
           "official_eps": -0.0916,
           "eps_diff_pct": 290.5,
           "note": "XBRLと公式発表のGAAP EPSに290%の差異があります。公式EPS: $-0.09, XBRL計算EPS: $0.17。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1119,10 +1042,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 177964000.0,
       "diluted_shares": 226947000.0,
       "period_end": "2022-12-31",
@@ -1136,7 +1055,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.09351522602193464,
           "official_eps": -0.28,
           "eps_diff_pct": 66.6,
           "note": "XBRLと公式発表のGAAP EPSに67%の差異があります。公式EPS: $-0.28, XBRL計算EPS: $-0.09。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1194,10 +1112,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 188233000.0,
       "diluted_shares": 227388000.0,
       "period_end": "2022-09-30",
@@ -1205,14 +1119,12 @@
       "quarter": 3,
       "tax_expense": 35492000.0,
       "pretax_income": -146404000.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.7999366721199008,
           "official_eps": -2.46,
           "eps_diff_pct": 67.5,
           "note": "XBRLと公式発表のGAAP EPSに67%の差異があります。公式EPS: $-2.46, XBRL計算EPS: $-0.80。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1270,18 +1182,13 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 154020000.0,
       "diluted_shares": 235116000.0,
       "period_end": "2022-06-30",
       "fiscal_year": 2022,
       "quarter": 2,
       "tax_expense": 2810000.0,
-      "pretax_income": 11968000.0,
-      "split_adjusted": true
+      "pretax_income": 11968000.0
     },
     {
       "gaap_eps": 0.028437370937594467,
@@ -1334,18 +1241,13 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 133388000.0,
       "diluted_shares": 234867000.0,
       "period_end": "2022-03-31",
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": 3351000.0,
-      "pretax_income": 10030000.0,
-      "split_adjusted": true
+      "pretax_income": 10030000.0
     },
     {
       "gaap_eps": -0.014391938798714532,
@@ -1398,10 +1300,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 104254257.0,
       "diluted_shares": 233067000.0,
       "period_end": "2021-12-31",
@@ -1415,7 +1313,6 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.014391938798714532,
           "official_eps": 0.0553,
           "eps_diff_pct": 126.0,
           "note": "XBRLと公式発表のGAAP EPSに126%の差異があります。公式EPS: $0.06, XBRL計算EPS: $-0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1473,10 +1370,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 94909000.0,
       "diluted_shares": 223827000.0,
       "period_end": "2021-09-30",
@@ -1484,14 +1377,12 @@
       "quarter": 3,
       "tax_expense": -834000.0,
       "pretax_income": 1911791.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.012267469965643108,
           "official_eps": -0.0419,
           "eps_diff_pct": 129.3,
           "note": "XBRLと公式発表のGAAP EPSに129%の差異があります。公式EPS: $-0.04, XBRL計算EPS: $0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1549,10 +1440,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 65073000.0,
       "diluted_shares": 231714000.0,
       "period_end": "2021-06-30",
@@ -1560,14 +1447,12 @@
       "quarter": 2,
       "tax_expense": 0,
       "pretax_income": 3960344.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.01709151799200739,
           "official_eps": 0.0033,
           "eps_diff_pct": 417.9,
           "note": "XBRLと公式発表のGAAP EPSに418%の差異があります。公式EPS: $0.00, XBRL計算EPS: $0.02。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1625,10 +1510,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 50035000.0,
       "diluted_shares": 230775000.0,
       "period_end": "2021-03-31",
@@ -1636,14 +1517,12 @@
       "quarter": 1,
       "tax_expense": 0,
       "pretax_income": 585424.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.0025367739139854836,
           "official_eps": 0.01,
           "eps_diff_pct": 74.6,
           "note": "XBRLと公式発表のGAAP EPSに75%の差異があります。公式EPS: $0.01, XBRL計算EPS: $0.00。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1701,10 +1580,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 35664512.0,
       "diluted_shares": 223332000.0,
       "period_end": "2020-12-31",
@@ -1712,14 +1587,12 @@
       "quarter": 4,
       "tax_expense": 116177.0,
       "pretax_income": 1782038.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.007459123636559025,
           "official_eps": 0.0236,
           "eps_diff_pct": 68.4,
           "note": "XBRLと公式発表のGAAP EPSに68%の差異があります。公式EPS: $0.02, XBRL計算EPS: $0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1777,10 +1650,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 36839149.0,
       "diluted_shares": 224544717.0,
       "period_end": "2020-09-30",
@@ -1788,14 +1657,12 @@
       "quarter": 3,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.02116996143801504,
           "official_eps": 0.06,
           "eps_diff_pct": 64.7,
           "note": "XBRLと公式発表のGAAP EPSに65%の差異があります。公式EPS: $0.06, XBRL計算EPS: $0.02。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1853,10 +1720,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 30037227.0,
       "diluted_shares": 214419195.0,
       "period_end": "2020-06-30",
@@ -1864,14 +1727,12 @@
       "quarter": 2,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.0072676982114404445,
           "official_eps": 0.02,
           "eps_diff_pct": 63.7,
           "note": "XBRLと公式発表のGAAP EPSに64%の差異があります。公式EPS: $0.02, XBRL計算EPS: $0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1942,10 +1803,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 28184889.0,
       "diluted_shares": 211018248.0,
       "period_end": "2020-03-31",
@@ -1953,14 +1810,12 @@
       "quarter": 1,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.002587695638530749,
           "official_eps": 0.01,
           "eps_diff_pct": 74.1,
           "note": "XBRLと公式発表のGAAP EPSに74%の差異があります。公式EPS: $0.01, XBRL計算EPS: $0.00。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -1992,10 +1847,6 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 24115120.0,
       "diluted_shares": 192550197.0,
       "period_end": "2019-12-31",
@@ -2003,14 +1854,12 @@
       "quarter": 4,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.006092338612356756,
           "official_eps": -0.0162,
           "eps_diff_pct": 62.4,
           "note": "XBRLと公式発表のGAAP EPSに62%の差異があります。公式EPS: $-0.02, XBRL計算EPS: $-0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2042,10 +1891,6 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 20423847.0,
       "diluted_shares": 187597530.0,
       "period_end": "2019-09-30",
@@ -2053,14 +1898,12 @@
       "quarter": 3,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.0051228926095135685,
           "official_eps": 0.02,
           "eps_diff_pct": 74.4,
           "note": "XBRLと公式発表のGAAP EPSに74%の差異があります。公式EPS: $0.02, XBRL計算EPS: $0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2092,10 +1935,6 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 16121929.0,
       "diluted_shares": 172008351.0,
       "period_end": "2019-06-30",
@@ -2103,14 +1942,12 @@
       "quarter": 2,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.00856525274171136,
           "official_eps": -0.0257,
           "eps_diff_pct": 66.7,
           "note": "XBRLと公式発表のGAAP EPSに67%の差異があります。公式EPS: $-0.03, XBRL計算EPS: $-0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2155,10 +1992,6 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 14485650.0,
       "diluted_shares": 185062227.0,
       "period_end": "2019-03-31",
@@ -2166,7 +1999,6 @@
       "quarter": 1,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY",
         "FAIR_VALUE_ADJUSTED"
@@ -2174,23 +2006,12 @@
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.06298742962819744,
           "official_eps": 0.19,
           "eps_diff_pct": 66.8,
           "note": "XBRLと公式発表のGAAP EPSに67%の差異があります。公式EPS: $0.19, XBRL計算EPS: $0.06。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
         },
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "detected_items": [
-            {
-              "item_name": "投資公正価値変動損益",
-              "xbrl_tag": "us-gaap:GainLossOnInvestments",
-              "xbrl_value": 12273213,
-              "adjustment_amount": -12273213,
-              "net_amount": -9695838.27
-            }
-          ],
-          "condition1": "FV変動が純利益の105%占有（超高materiality → 条件1スキップ）",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 投資公正価値変動損益"
         }
       }
@@ -2220,10 +2041,6 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 14680367.0,
       "diluted_shares": 150152088.0,
       "period_end": "2018-12-31",
@@ -2231,14 +2048,12 @@
       "quarter": 4,
       "tax_expense": 0,
       "pretax_income": -849772.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.005659408479221415,
           "official_eps": -0.0166,
           "eps_diff_pct": 65.9,
           "note": "XBRLと公式発表のGAAP EPSに66%の差異があります。公式EPS: $-0.02, XBRL計算EPS: $-0.01。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2270,18 +2085,13 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 16565316.0,
       "diluted_shares": 153295725.0,
       "period_end": "2018-09-30",
       "fiscal_year": 2018,
       "quarter": 3,
       "tax_expense": 0,
-      "pretax_income": 0,
-      "split_adjusted": true
+      "pretax_income": 0
     },
     {
       "gaap_eps": -0.021885021658744414,
@@ -2308,18 +2118,13 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 9298327.0,
       "diluted_shares": 153011409.0,
       "period_end": "2018-06-30",
       "fiscal_year": 2018,
       "quarter": 2,
       "tax_expense": 0,
-      "pretax_income": 0,
-      "split_adjusted": true
+      "pretax_income": 0
     },
     {
       "gaap_eps": -0.020207454149603194,
@@ -2346,18 +2151,13 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 12059976.0,
       "diluted_shares": 142348659.0,
       "period_end": "2018-03-31",
       "fiscal_year": 2018,
       "quarter": 1,
       "tax_expense": 0,
-      "pretax_income": 0,
-      "split_adjusted": true
+      "pretax_income": 0
     },
     {
       "gaap_eps": -0.03816261089284065,
@@ -2384,10 +2184,6 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 9140941.0,
       "diluted_shares": 136463724.0,
       "period_end": "2017-12-31",
@@ -2395,14 +2191,12 @@
       "quarter": 4,
       "tax_expense": 0,
       "pretax_income": -5207812.0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.03816261089284065,
           "official_eps": -0.12,
           "eps_diff_pct": 68.2,
           "note": "XBRLと公式発表のGAAP EPSに68%の差異があります。公式EPS: $-0.12, XBRL計算EPS: $-0.04。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2434,18 +2228,13 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 10785796.0,
       "diluted_shares": 136463724.0,
       "period_end": "2017-09-30",
       "fiscal_year": 2017,
       "quarter": 3,
       "tax_expense": 0,
-      "pretax_income": 0,
-      "split_adjusted": true
+      "pretax_income": 0
     },
     {
       "gaap_eps": 0.002758982256452755,
@@ -2472,10 +2261,6 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 10236898.0,
       "diluted_shares": 170632848.0,
       "period_end": "2017-06-30",
@@ -2483,14 +2268,12 @@
       "quarter": 2,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": 0.002758982256452755,
           "official_eps": 0.01,
           "eps_diff_pct": 72.4,
           "note": "XBRLと公式発表のGAAP EPSに72%の差異があります。公式EPS: $0.01, XBRL計算EPS: $0.00。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"
@@ -2522,10 +2305,6 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "一般消費財 / 製造 / EV",
-      "sector_exclusions": [
-        "inventory_writeoff",
-        "gov_subsidy_timing"
-      ],
       "revenue": 6000429.0,
       "diluted_shares": 125351559.0,
       "period_end": "2017-03-31",
@@ -2533,14 +2312,12 @@
       "quarter": 1,
       "tax_expense": 0,
       "pretax_income": 0,
-      "split_adjusted": true,
       "special_flags": [
         "EPS_DISCREPANCY"
       ],
       "special_notes": {
         "eps_discrepancy": {
           "flag": "EPS_DISCREPANCY",
-          "xbrl_eps": -0.015008189886174451,
           "official_eps": -0.05,
           "eps_diff_pct": 70.0,
           "note": "XBRLと公式発表のGAAP EPSに70%の差異があります。公式EPS: $-0.05, XBRL計算EPS: $-0.02。買収関連負債の公正価値変動など、特殊な会計処理が影響している可能性があります。当ツールのAdj EPSはこれらの一過性項目を除外した実力ベースの値です。"

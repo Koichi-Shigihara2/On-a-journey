@@ -1,14 +1,107 @@
 {
   "ticker": "MSCI",
-  "last_updated": "2026-10-18T15:07:08.499965",
+  "last_updated": "2026-10-25T15:17:47.997343",
   "quarters": [
     {
+      "gaap_eps": 4.854771784232365,
+      "adjusted_eps": 5.687537030698024,
+      "gaap_net_income": 351000000.0,
+      "adjusted_net_income": 411208927.3194672,
+      "diluted_shares_used": 72300000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 27500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 22557840.61696658,
+          "tax_rate_applied": 0.17971488665576069
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 45200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 37076887.12315962,
+          "tax_rate_applied": 0.17971488665576069
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 574199.5793409675,
+          "tax_rate_applied": 0.17971488665576069
+        }
+      ],
+      "net_adjustment_total": 60208927.31946716,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 892000000.0,
+      "diluted_shares": 72300000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 76900000.0,
+      "pretax_income": 427900000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "SBCと無形資産償却は恒常的に発生する非現金費用であり、調整の多くが一過性とは言えないため調整後EPSは持続可能な実力を過大に見せている可能性が高い。貸倒引当異常分のみ一時的と判断されるが影響は限定的。市場がGAAP EPSを基準に判断する場合、非現金項目を控除した保守的な数字によりキャッシュ生成力や事業実力が過小評価されるリスクがある一方、SBCの株主希薄化効果を無視した加算は将来的な過大評価リスクも伴う。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コストであり株主希薄化を伴う",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は過去のM&Aから継続的に発生する恒常的非現金項目",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分を加算調整",
+            "confidence": 0.7
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 4.691358024691358,
-      "adjusted_eps": 5.1837651214598255,
+      "adjusted_eps": 5.483931091407727,
       "gaap_net_income": 342000000.0,
-      "adjusted_net_income": 377896477.35442126,
+      "adjusted_net_income": 399778576.5636233,
       "diluted_shares_used": 72900000.0,
       "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 25400000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 20816678.64845435,
+          "tax_rate_applied": 0.18044572250179727
+        },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
@@ -21,31 +114,32 @@
           "category": "買収・統合関連",
           "net_amount": 35896477.35442128,
           "tax_rate_applied": 0.18044572250179727
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1300000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 1065420.5607476635,
+          "tax_rate_applied": 0.18044572250179727
         }
       ],
-      "net_adjustment_total": 35896477.35442128,
+      "net_adjustment_total": 57778576.56362329,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 867000000.0,
       "diluted_shares": 72900000.0,
       "period_end": "2026-06-30",
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 75300000.0,
-      "pretax_income": 417300000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目の無形資産償却費は買収関連で毎期発生する恒常的な非現金費用であり、一過性とは判断しにくい。市場がGAAP EPS（4.69）で評価する場合、非現金償却を控除した実態利益が見えにくくなり企業の実力を過小評価する可能性がある。ただし本償却は過去買収の経済的コストを反映するため、Adjusted EPS（5.18）使用時は持続的利益を過大評価するリスクもある。投資家はキャッシュフローと買収戦略の持続可能性に注目すべき。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却（category:買収・統合関連）。これは毎期継続的に発生する恒常的コストであり非経常的とは言えない。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 417300000.0
     },
     {
       "gaap_eps": 5.53133514986376,
@@ -98,7 +192,6 @@
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 850800000.0,
       "diluted_shares": 73400000.0,
       "period_end": "2026-03-31",
@@ -158,7 +251,6 @@
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 822528000.0,
       "diluted_shares": 76636000.0,
       "period_end": "2025-12-31",
@@ -168,11 +260,11 @@
       "pretax_income": 576620000.0
     },
     {
-      "gaap_eps": 4.249023883832383,
-      "adjusted_eps": 4.9373625810442645,
+      "gaap_eps": 4.247859007832898,
+      "adjusted_eps": 4.936548448777944,
       "gaap_net_income": 325386000.0,
-      "adjusted_net_income": 378098289.09378874,
-      "diluted_shares_used": 76579000.0,
+      "adjusted_net_income": 378139611.1763905,
+      "diluted_shares_used": 76600000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -184,21 +276,21 @@
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 18535549.300392427,
-          "tax_rate_applied": 0.17937090802707636
+          "net_amount": 18531903.753536433,
+          "tax_rate_applied": 0.17953230825092162
         },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
-          "amount": 40937000,
+          "amount": 41000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "買収関連無形資産の償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
-          "net_amount": 33594093.13809557,
-          "tax_rate_applied": 0.17937090802707636
+          "net_amount": 33639175.36171222,
+          "tax_rate_applied": 0.17953230825092162
         },
         {
           "item_id": "loan_loss_provision_abnormal",
@@ -210,22 +302,21 @@
           "reason": "マクロ変動による一時的影響",
           "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
           "category": "金融関連",
-          "net_amount": 582646.6553007758,
-          "tax_rate_applied": 0.17937090802707636
+          "net_amount": 582532.0611418457,
+          "tax_rate_applied": 0.17953230825092162
         }
       ],
-      "net_adjustment_total": 52712289.09378877,
+      "net_adjustment_total": 52753611.1763905,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
-      "revenue": 793426000.0,
-      "diluted_shares": 76579000.0,
+      "revenue": 793400000.0,
+      "diluted_shares": 76600000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2025,
       "quarter": 3,
-      "tax_expense": 71122000.0,
-      "pretax_income": 396508000.0
+      "tax_expense": 71200000.0,
+      "pretax_income": 396586000.0
     },
     {
       "gaap_eps": 3.918064516129032,
@@ -278,7 +369,6 @@
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 772700000.0,
       "diluted_shares": 77500000.0,
       "period_end": "2025-06-30",
@@ -338,7 +428,6 @@
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 745800000.0,
       "diluted_shares": 77800000.0,
       "period_end": "2025-03-31",
@@ -398,7 +487,6 @@
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 743509000.0,
       "diluted_shares": 78960000.0,
       "period_end": "2024-12-31",
@@ -458,7 +546,6 @@
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 724705000.0,
       "diluted_shares": 78729000.0,
       "period_end": "2024-09-30",
@@ -518,7 +605,6 @@
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 707949000.0,
       "diluted_shares": 79245000.0,
       "period_end": "2024-06-30",
@@ -578,7 +664,6 @@
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 679965000.0,
       "diluted_shares": 79508000.0,
       "period_end": "2024-03-31",
@@ -638,7 +723,6 @@
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 690106000.0,
       "diluted_shares": 79843000.0,
       "period_end": "2023-12-31",
@@ -698,7 +782,6 @@
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 625439000.0,
       "diluted_shares": 79500000.0,
       "period_end": "2023-09-30",
@@ -758,7 +841,6 @@
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 621157000.0,
       "diluted_shares": 79905000.0,
       "period_end": "2023-06-30",
@@ -818,7 +900,6 @@
       "filing_date": "2023-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 592218000.0,
       "diluted_shares": 80482000.0,
       "period_end": "2023-03-31",
@@ -878,7 +959,6 @@
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 576208000.0,
       "diluted_shares": 81215000.0,
       "period_end": "2022-12-31",
@@ -925,7 +1005,6 @@
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 560639000.0,
       "diluted_shares": 80874000.0,
       "period_end": "2022-09-30",
@@ -972,7 +1051,6 @@
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 551806000.0,
       "diluted_shares": 81295000.0,
       "period_end": "2022-06-30",
@@ -1019,7 +1097,6 @@
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 559945000.0,
       "diluted_shares": 82286000.0,
       "period_end": "2022-03-31",
@@ -1066,7 +1143,6 @@
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 549842000.0,
       "diluted_shares": 83479000.0,
       "period_end": "2021-12-31",
@@ -1113,7 +1189,6 @@
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 517099000.0,
       "diluted_shares": 83554000.0,
       "period_end": "2021-09-30",
@@ -1160,7 +1235,6 @@
       "filing_date": "2021-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 498180000.0,
       "diluted_shares": 83295000.0,
       "period_end": "2021-06-30",
@@ -1207,7 +1281,6 @@
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 478423000.0,
       "diluted_shares": 83493000.0,
       "period_end": "2021-03-31",
@@ -1254,7 +1327,6 @@
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 443661000.0,
       "diluted_shares": 84517000.0,
       "period_end": "2020-12-31",
@@ -1301,7 +1373,6 @@
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 425333000.0,
       "diluted_shares": 84479000.0,
       "period_end": "2020-09-30",
@@ -1348,7 +1419,6 @@
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 409616000.0,
       "diluted_shares": 84349000.0,
       "period_end": "2020-06-30",
@@ -1395,7 +1465,6 @@
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 416780000.0,
       "diluted_shares": 85548000.0,
       "period_end": "2020-03-31",
@@ -1442,7 +1511,6 @@
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 406606000.0,
       "diluted_shares": 85536000.0,
       "period_end": "2019-12-31",
@@ -1489,7 +1557,6 @@
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 394251000.0,
       "diluted_shares": 85550000.0,
       "period_end": "2019-09-30",
@@ -1536,7 +1603,6 @@
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 385558000.0,
       "diluted_shares": 85393000.0,
       "period_end": "2019-06-30",
@@ -1583,7 +1649,6 @@
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 371381000.0,
       "diluted_shares": 85649000.0,
       "period_end": "2019-03-31",
@@ -1630,7 +1695,6 @@
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 361688000.0,
       "diluted_shares": 89701000.0,
       "period_end": "2018-12-31",
@@ -1677,7 +1741,6 @@
       "filing_date": "2018-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 357934000.0,
       "diluted_shares": 91372000.0,
       "period_end": "2018-09-30",
@@ -1724,7 +1787,6 @@
       "filing_date": "2018-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 363046000.0,
       "diluted_shares": 91586000.0,
       "period_end": "2018-06-30",
@@ -1771,7 +1833,6 @@
       "filing_date": "2018-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 351316000.0,
       "diluted_shares": 92587000.0,
       "period_end": "2018-03-31",
@@ -1818,7 +1879,6 @@
       "filing_date": "2017-12-31",
       "form": "10-K",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 334779000.0,
       "diluted_shares": 91914000.0,
       "period_end": "2017-12-31",
@@ -1865,7 +1925,6 @@
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 322097000.0,
       "diluted_shares": 91868000.0,
       "period_end": "2017-09-30",
@@ -1912,7 +1971,6 @@
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 316089000.0,
       "diluted_shares": 91708000.0,
       "period_end": "2017-06-30",
@@ -1959,7 +2017,6 @@
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": null,
-      "sector_exclusions": [],
       "revenue": 301207000.0,
       "diluted_shares": 91624000.0,
       "period_end": "2017-03-31",
@@ -1971,11 +2028,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.009887703030387648,
+      "value": 0.03323093441985457,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.11598316464542735,
-      "prior_4q_avg_yoy": 0.1060954616150397
+      "recent_4q_avg_yoy": 0.12334543972964854,
+      "prior_4q_avg_yoy": 0.09011450530979397
     },
     "roic_trend": {
       "years": [
@@ -2003,9 +2060,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": null,
-      "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "value": 0.030829596412556053,
+      "reason": "ok",
+      "period_end": "2026-09-30"
     }
   }
 }
