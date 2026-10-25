@@ -78,6 +78,11 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の登録とシミュレーション。実装は止めた）**: 1 `1f0d0f81bc`（FINDINGSに4行: TSLAのFCFの注記の文言〈E〉・`_calc_fcf`のリース〈B〉・anomalyの読み手なし〈A〉・TSLAのEPSの調整のずれ〈C〉）、2 `08a6c84b1c`（BACKLOGに登録、アクティブ12→13件）。
+  案4（YTDのベースのずれ・逆転で四半期を欠けに）・案1（ベースが混在の印）を全98銘柄で試算し、止める条件（HON・RCATのほかに理論株価1%以上・判定の変化）に当たった: 案4の逆転の条件でALABの理論株価 −11.37%（156.77→138.95、判定は変わらない）。
+  結果はBACKLOG.mdの[[QUARTERLY-BASIS-MIX-1]]の「シミュレーション（2026-10-26）」。コードは変えていない（試算のコードはscratchpadに退避）。次はチャット側が直し方を決める。
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。10-24と同じ）、サブシステム 10、
+  Python 68,146行・135ファイル（10-24と同じ）、テスト34,977行、docs配下のHTML・JS 20,283行・20ファイル、ワークフロー20本。FINDINGSの型A（anomalyの読み手なし）は印のキーで出力のファイルではないため、一覧の数には入れていない
 - **2026-10-24（R-E2 [[EXTERNAL-API-CLIENT-UNIFY-1]]）**: 1 `dbb8fb4694`（`common/external_api.py`を新設し、Grok 10ファイル11か所・SEC 10ファイル・FRED 3ファイルをそこから呼ぶ。SECのUser-Agentは環境変数から、SECを呼ぶワークフロー7本がsecretを渡す）・3 `324d3a62b0`（FINDINGS 3行を済、BACKLOG_DONE、SYSTEM_MAP）。
   前後で同じ（SEC・FREDの26の結果と送るリクエスト47件、Grok 13の呼び出しの送る中身と読み方、FREDの系列3つ）。TANUKI_TAIL_RSS_Monitor run 39980369717でsecretが渡り取得が成功。アクティブBACKLOG 12件。
   10-25の確認（手順11②・手順12・日曜の束ね）をCLAUDE_CODE_START.md「次回の確認手順」の先頭に。束ねの入力にMACRO PULSEのt+N（連邦の営業日）とNIY=Fの古い行（10-05〜10-07の3行）。
