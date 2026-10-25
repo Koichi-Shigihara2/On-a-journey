@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -73.9,
-  "calculation_date": "2026-10-24T05:39:10+09:00",
+  "calculation_date": "2026-10-26T00:21:28+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -185,7 +185,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
-    "fcf_value": 1030280000,
+    "fcf_value": 1030280000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 62.17792032963227,
     "transient_evidence": {
@@ -261,30 +261,30 @@
   "rice": {
     "available": true,
     "q": 1.3047,
-    "cf_conversion": 5.5395,
+    "cf_conversion": 5.4706,
     "cf_adj": 9.6199,
     "wacc": 0.1,
     "q_years": 3,
     "cf_years": 3,
-    "avg_intensity": 0.0451,
+    "avg_intensity": 0.0458,
     "warnings": true,
     "note": "販売・マーケティング費未取得（FYTTM@2025-07-31, TTM@2024-07-31, TTM@2023-07-31）: 投資強度が過小になる可能性",
     "bear": {
       "growth_rate": 0.07,
-      "rice": 5.059,
-      "rice_per_ratio": 0.098,
+      "rice": 4.996,
+      "rice_per_ratio": 0.0967,
       "rice_adj": 8.786
     },
     "base": {
       "growth_rate": 0.1,
-      "rice": 7.227,
-      "rice_per_ratio": 0.1399,
+      "rice": 7.138,
+      "rice_per_ratio": 0.1382,
       "rice_adj": 12.551
     },
     "bull": {
       "growth_rate": 0.12,
-      "rice": 8.673,
-      "rice_per_ratio": 0.1679,
+      "rice": 8.565,
+      "rice_per_ratio": 0.1658,
       "rice_adj": 15.061
     }
   },
@@ -301,11 +301,11 @@
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      1030280000,
-      782439000,
-      557692000,
-      402502000,
-      403475000
+      1030280000.0,
+      782439000.0,
+      557692000.0,
+      402502000.0,
+      403475000.0
     ],
     "diluted_shares": 139757405,
     "roe_10yr_avg": 0.15624003066923298,
@@ -409,10 +409,11 @@
     "matrix": "①投資効率系",
     "quadrant": "左上",
     "label": "割高×高効率",
-    "key_metric_y": "RICE = 7.227",
+    "key_metric_y": "RICE = 7.138",
     "qx": false,
     "qy": true
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,

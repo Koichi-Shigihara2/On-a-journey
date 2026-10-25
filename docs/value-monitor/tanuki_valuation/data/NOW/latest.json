@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 7.8,
-  "calculation_date": "2026-10-24T05:37:01+09:00",
+  "calculation_date": "2026-10-26T00:19:08+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,7 +191,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
-    "fcf_value": 4580000000,
+    "fcf_value": 4580000000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 44.57070707070707,
     "transient_evidence": {
@@ -309,11 +309,11 @@
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      4580000000,
-      3849000000,
-      3083000000,
-      2306000000,
-      2022000000
+      4580000000.0,
+      3849000000.0,
+      3083000000.0,
+      2306000000.0,
+      2022000000.0
     ],
     "diluted_shares": 1033862000,
     "roe_10yr_avg": -0.010608523173643702,
@@ -409,7 +409,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 65,
   "score_comment": "若干割安(8%)、FCF黒字、売上成長加速",
-  "timing_score": 50,
+  "timing_score": 55,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -422,6 +422,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -471,7 +472,7 @@
     "dilution_3yr_annual_pct": 0.94,
     "shares_yr_now": 1046691000,
     "shares_yr_3ago": 203535000,
-    "buyback_ttm": 3406000000
+    "buyback_ttm": 3406000000.0
   },
   "net_current_assets_ratio": -0.0221,
   "dupont": {
@@ -516,7 +517,7 @@
     "recommended_g": 0.22003643559980282,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=24.1%のため中央値モデル適用",
-    "hype_phase_used": 4,
+    "hype_phase_used": 3,
     "signals": [
       "業界平均Software (System & Application)(21.6%)の1.0倍以内 ✅",
       "過去実績(3yr:22.4% / 5yr:24.1%)と整合 ✅",

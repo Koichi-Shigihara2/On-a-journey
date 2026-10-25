@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -20.6,
-  "calculation_date": "2026-10-24T05:35:49+09:00",
+  "calculation_date": "2026-10-26T00:17:49+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -179,7 +179,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2026,
-    "fcf_value": 255478000,
+    "fcf_value": 255478000.0,
     "threshold_pct": 0.6,
     "deviation_pct": 534.1859379809554,
     "transient_evidence": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 13300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業固有の構造的悪化ではなく外部要因による一過性の費用と判断できる。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一時的な外部要因による問題と判断される。"
       }
     },
     "action": "flagged",
@@ -323,11 +323,11 @@
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      255478000,
-      171074000,
-      -1472000,
-      -19169000,
-      -204489000
+      255478000.0,
+      171074000.0,
+      -1472000.0,
+      -19169000.0,
+      -204489000.0
     ],
     "diluted_shares": 585605209,
     "roe_10yr_avg": -0.2174748582925125,
@@ -423,7 +423,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 90,
   "score_comment": "割高(-21%超)、FCF黒字、売上成長加速",
-  "timing_score": 40,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -436,6 +436,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2022,
@@ -529,7 +530,7 @@
     "recommended_g": 0.4033503850664405,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=45.3%のため中央値モデル適用",
-    "hype_phase_used": 4,
+    "hype_phase_used": 3,
     "signals": [
       "過去実績(3yr:35.4% / 5yr:45.3%)と整合 ✅"
     ],

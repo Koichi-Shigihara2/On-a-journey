@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -64.6,
-  "calculation_date": "2026-10-24T05:33:05+09:00",
+  "calculation_date": "2026-10-26T00:15:12+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -259,7 +259,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
-    "fcf_value": 8403000000,
+    "fcf_value": 8403000000.0,
     "threshold_pct": 0.6,
     "deviation_pct": 121.13157894736841,
     "transient_evidence": {
@@ -276,7 +276,7 @@
       "total_transient_amount": 186000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、通常のリストラ費用として一時的な性格が強いため。"
       }
     },
     "action": "flagged",
@@ -387,11 +387,11 @@
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      8403000000,
-      4043000000,
-      1357000000,
-      1867000000,
-      3330000000
+      8403000000.0,
+      4043000000.0,
+      1357000000.0,
+      1867000000.0,
+      3330000000.0
     ],
     "diluted_shares": 1632475042,
     "roe_10yr_avg": 0.06422545341763311,
@@ -499,6 +499,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,

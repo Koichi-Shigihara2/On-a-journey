@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 245.4,
-  "calculation_date": "2026-10-24T05:39:28+09:00",
+  "calculation_date": "2026-10-26T00:21:56+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -167,7 +167,7 @@
     "base_fcf": 1293632.32,
     "method": "avg_5yr",
     "fcf_5yr_avg": 1293632.32,
-    "fcf_2yr_avg": -37269286.0,
+    "fcf_2yr_avg": -37269285.5,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -177,7 +177,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
-    "fcf_value": -44163468,
+    "fcf_value": -44163468.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -200,7 +200,7 @@
       "total_transient_amount": 2230643,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的問題ではなく外部要因による一過性の金融費用と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、構造的な収益力悪化ではなく事業運営上の一過性問題と判断される。"
       }
     },
     "action": "flagged",
@@ -284,16 +284,16 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -28912648.333333332,
-    "fcf_2yr_avg": -37269286.0,
+    "fcf_5yr_avg": -28912648.0,
+    "fcf_2yr_avg": -37269285.5,
     "structural_deficit": true,
     "fcf_base_used": 7078245.653333333,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -44163468,
-      -30375104,
-      -12199373
+      -44163468.0,
+      -30375103.0,
+      -12199373.0
     ],
     "diluted_shares": 46280322,
     "roe_10yr_avg": -0.6296839227208106,
@@ -320,7 +320,7 @@
     "pv_high": 40603680.3917028,
     "pv_terminal": 72139783.57751945,
     "roe_used": -0.6296839227208106,
-    "fcf_floor_applied": 30206280.653333332,
+    "fcf_floor_applied": 30206280.32,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -402,6 +402,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -456,11 +457,11 @@
   "net_current_assets_ratio": 0.8099,
   "dupont": {
     "ni_ttm": -102225933,
-    "revenue_ttm": 16095934,
+    "revenue_ttm": 15775408,
     "total_assets": 100076091,
     "equity": 72574377,
-    "net_margin": -6.351,
-    "asset_turnover": 0.1608,
+    "net_margin": -6.4801,
+    "asset_turnover": 0.1576,
     "financial_leverage": 1.3789,
     "roe_decomposed": -1.4086,
     "dupont_bs_period": "2026Q2"

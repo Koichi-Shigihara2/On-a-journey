@@ -1,17 +1,18 @@
 TSLA INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-24T05:38:18+09:00
+Generated: 2026-10-26T00:20:27+09:00
 Price: $372.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: TRIM
+Classification: WATCH
+Classification_Pre_Rounding: TRIM
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -86.1%
+  Deviation_Rate: -89.1%
   MA200_Deviation: -3.7%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $412 median ($128-$600) | 38 analysts | vs IV: +694.5%
-Comment: 割高(-86%超)、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $412 median ($128-$600) | 38 analysts | vs IV: +912.7%
+Comment: DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +34,7 @@ Matrix: ②収益性系
 Quadrant: 左下
 Label: 割高×低ROE
 Key_Metric_Y: ROE_avg (10yr) = -0.5%
-Deviation_Rate: -86.1%
+Deviation_Rate: -89.1%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,66 +59,72 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $372.22
-Intrinsic_Value_BASE: $51.92
-Deviation_BASE: -86.1%
+Intrinsic_Value_BASE: $40.73
+Deviation_BASE: -89.1%
 Scenarios:
-BEAR: Growth=10.5%, IV=$48.68, Deviation=-86.9%
-BASE: Growth=15.0%, IV=$51.92, Deviation=-86.1%
-BULL: Growth=18.0%, IV=$54.17, Deviation=-85.4%
-Return_Outlook(BASE): 1年後: $59.71 (-84.0%) / 3年後: $78.96 (-78.8%) / 5年後: $93.99 (-74.7%)
-  5yr_Annualized_Return: -24.1%/yr
+BEAR: Growth=10.5%, IV=$38.37, Deviation=-89.7%
+BASE: Growth=15.0%, IV=$40.73, Deviation=-89.1%
+BULL: Growth=18.0%, IV=$42.37, Deviation=-88.6%
+Return_Outlook(BASE): 1年後: $46.84 (-87.4%) / 3年後: $61.95 (-83.4%) / 5年後: $73.73 (-80.2%)
+  5yr_Annualized_Return: -27.7%/yr
 Growth_Rate_Rec: 5.2% (recommended  ⚠️ +9.8pt above recommended)
 Growth_Rate_Parallel: 採用値 15.0%（segment_xbrl） / 参考 5.2%（実績CAGR等ベース）
-  ⚠️ 実績YoY(直近最大4四半期平均)は10.5%だが、下限15%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
-TTM_YoY_Growth: 11.8%
-(DCF Base vs TTM actual: +3.2pt premium)
+  ⚠️ 実績YoY(直近最大4四半期平均)は13.7%だが、下限15%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
+TTM_YoY_Growth: 8.3%
+(DCF Base vs TTM actual: +6.7pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 14.82%
-  参考①β込みWACC_IV: $33.22 (Deviation: -91.1%)
-  参考②Rf理論上限_IV（Rf 4.99%、^TNX 2026-10-23）: $200.67 (Deviation: -46.1%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.99%（^TNX 2026-10-23）に変化すると、Rf基準の必要成長率は+6.9%→+21.1%（+14.1pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $27.09 (Deviation: -92.7%)
+  参考②Rf理論上限_IV（Rf 4.99%、^TNX 2026-10-23）: $149.29 (Deviation: -59.9%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.99%（^TNX 2026-10-23）に変化すると、Rf基準の必要成長率は+13.9%→+28.9%（+15.0pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 1.845
 Valuation_Gap_Analysis:
-  DCF_IV:           $52 (保守的FCFベース・現在実力値)
+  DCF_IV:           $41 (保守的FCFベース・現在実力値)
   Market_Price:     $372
-  Gap:              -86% (市場が将来成長を先取り)
-  Implied_FCF_2030: $90.16B (現在株価を正当化するために必要な5年後FCF)
-  Current_FCF:      $8.13B
-  Required_Growth:  62%/yr (現在FCFから必要成長率を逆算)
-FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $8,131.67M (5yr平均（回復判定） + R&D補正) [ボトムアップ: OCF-CapEx]
+  Gap:              -89% (市場が将来成長を先取り)
+  Implied_FCF_2030: $90.05B (現在株価を正当化するために必要な5年後FCF)
+  Current_FCF:      $5.93B
+  Required_Growth:  72%/yr (現在FCFから必要成長率を逆算)
+FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
+FCF_Base: $5,934.67M (直近1yr（CAGR減少） + R&D補正) [ボトムアップ: OCF-CapEx]
 FCF_Breakdown（直近年）: OCF=$14,747M / CapEx=$8,527M / SBC(非現金)=$2,825M / D&A=$5,030M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-DCF_Reliability: NORMAL  (通常判定適用)
-DCF_FCF_PV: $62.67B (Ph1=$33.74B + Ph2=$28.93B, 4yr, pre-alpha, Rm=10%)
+DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)
+  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
+   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]
+   [DCF-REL-SYNC-1: FCF実績が5年平均から40%乖離]
+DCF_FCF_PV: $45.74B (Ph1=$24.63B + Ph2=$21.11B, 4yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@5.0%
 DCF_Phase1_Taper: 15.0% → 5.0% (4yr linear taper to Phase2 growth, DCF-1b; path=15.0%, 11.7%, 8.3%, 5.0%)
-DCF_TV_PV:  $107.25B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $169.92B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $78.27B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $124.01B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0.681B (optional segment premium)
-Equity_Value: $205.07B (= v0 + RPO_PV + GO_PV + Net_Cash $34.46B)
+Equity_Value: $160.87B (= v0 + RPO_PV + GO_PV + Net_Cash $36.18B)
 Shares_Used: 3949.5M (source: yf_implied)
-→ Intrinsic_Value: $51.92 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $40.73 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $54.70  $59.93  $65.38
-  10.0%       $47.59  $51.92  $56.37
-  11.0%       $42.38  $46.05  $49.77
+  9.0%       $42.76  $46.58  $50.55
+  10.0%       $37.57  $40.73  $43.98
+  11.0%       $33.77  $36.45  $39.16
+一過性費用の定性評価（AI・参考情報、action判定には未使用）:
+  Assessment: 一時的な問題と判断（参考）
+  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的な費用であるため。
 Financial_Health:
-  Net_Debt: $-34.46B (negative=net cash)
-  Total_Debt: $9.06B  Cash: $15.22B  ST_Invest: $28.30B
-  Net_Debt_Period: 2026Q2
+  Net_Debt: $-36.18B (negative=net cash)
+  Total_Debt: $9.27B  Cash: $17.85B  ST_Invest: $27.59B
+  Net_Debt_Period: 2026Q3
   SBC_TTM: $2,825M
   Dilution_3yr_Annual: +0.51%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
   ⚠️ 期中に大規模な株式発行の可能性（+11.9%乖離: yf=3950M vs SEC=3528M）
   Next_Earnings_Date: 2026-10-22
-  DuPont_ROE: 純利益率3.7% × 資産回転率0.70x × 財務レバレッジ1.71x = ROE4.4%
+  DuPont_ROE: 純利益率3.1% × 資産回転率0.66x × 財務レバレッジ1.76x = ROE3.6%
 FCF_History:
   2021: $5.45B (FCF_Margin: 10.1%)
   2022: $8.07B (FCF_Margin: 9.9%)
@@ -126,9 +133,9 @@ FCF_History:
   2025: $6.32B (FCF_Margin: 6.7%)
   FCF_CAGR_3yr: -7.8%
 Segment_Breakdown:
-  Automotive & Services and Other: $83.8B (88%, YoY 11%)
-  Energy Generation and Storage: $11.0B (12%, YoY 7%)
-  Segment_Weighted_Growth: 10.5%
+  Automotive & Services and Other: $84.3B (89%, YoY 14%)
+  Energy Generation and Storage: $10.5B (11%, YoY 7%)
+  Segment_Weighted_Growth: 13.7%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -284,7 +291,7 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.0
-HYPE_Signal: 実体軟化・期待崩壊中 — 売上成長+11.8%はあるが、EPSが予想比-39.2%の大幅ミスで期待の修正が続いている。
+HYPE_Signal: 実体軟化・期待崩壊中 — 売上成長+8.3%はあるが、EPSが予想比-39.2%の大幅ミスで期待の修正が続いている。
 Phase_History (recent 6 months):
 2026-05: Phase2 (期待拡大期)
 2026-06: Phase4 (期待剥落期)
@@ -342,10 +349,10 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 2.0%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $412 median ($128-$600) | 38 analysts | vs IV: +694.5%
+Analyst_Consensus: Buy | Target: $412 median ($128-$600) | 38 analysts | vs IV: +912.7%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
-Revenue_Growth_YoY: 11.8%
+Revenue_Growth_YoY: 8.3%
 Next_Earnings_Date: 2026-10-22
 Breakeven_Estimate: 黒字化：達成済み
 Definition:

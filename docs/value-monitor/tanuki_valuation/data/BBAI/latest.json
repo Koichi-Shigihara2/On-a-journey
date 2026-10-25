@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 2.8,
-  "calculation_date": "2026-10-24T05:33:31+09:00",
+  "calculation_date": "2026-10-26T00:15:36+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -173,7 +173,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
-    "fcf_value": -72702000,
+    "fcf_value": -72702000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -220,11 +220,11 @@
       "total_transient_amount": 4721000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』または『マクロ変動による一時的影響』と明記されており、構造的な悪化ではなく一時的な問題を示す。"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」または「マクロ変動による一時的影響」と明記されており、構造的悪化を示す内容はない。"
       }
     },
     "action": "excluded",
-    "note": "FY2025 FCF($-72.7M)がマイナス。一過性費用合計$5M(リストラ・事業再編関連(リストラ費用 $0M)、リストラ・事業再編関連(リストラ費用 $1M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M))による影響と判断し除外。5年平均($-42M)を採用。"
+    "note": "FY2025 FCF($-72.7M)がマイナス。一過性費用合計$5M(リストラ・事業再編関連(リストラ費用 $0M)、リストラ・事業再編関連(リストラ費用 $1M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、リストラ・事業再編関連(リストラ費用 $2M))による影響と判断し除外。5年平均($-41M)を採用。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -304,18 +304,18 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -42079000.0,
+    "fcf_5yr_avg": -41380829.6,
     "fcf_2yr_avg": -50169000.0,
     "structural_deficit": true,
     "fcf_base_used": 22189760.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -72702000,
-      -27636000,
-      -15078000,
-      -41998000,
-      -52981000
+      -72702000.0,
+      -27636000.0,
+      -15078000.0,
+      -41998000.0,
+      -49490148.0
     ],
     "diluted_shares": 479494493,
     "roe_10yr_avg": -0.2484547921784387,
@@ -342,7 +342,7 @@
     "pv_high": 110120481.24906236,
     "pv_terminal": 206068706.15540186,
     "roe_used": -0.2484547921784387,
-    "fcf_floor_applied": 52292760.0,
+    "fcf_floor_applied": 51594589.6,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -423,6 +423,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 14.9,
-  "calculation_date": "2026-10-24T05:34:54+09:00",
+  "calculation_date": "2026-10-26T00:17:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,7 +191,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
-    "fcf_value": 1182109000,
+    "fcf_value": 1182109000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 61.550065242715476,
     "transient_evidence": {
@@ -226,7 +226,7 @@
       "total_transient_amount": 17024000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の一過性問題と判断される。"
+        "reasoning": "いずれもマクロ変動による一時的影響と明記された貸倒引当金の異常変動分であり、事業運営上の恒常的・構造的問題を示す内容ではない。"
       }
     },
     "action": "flagged",
@@ -335,11 +335,11 @@
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      1182109000,
-      925459000,
-      714622000,
-      454166000,
-      382290000
+      1182109000.0,
+      925459000.0,
+      714622000.0,
+      454166000.0,
+      382290000.0
     ],
     "diluted_shares": 359075024,
     "roe_10yr_avg": 0.002579819891484164,
@@ -392,7 +392,7 @@
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
-    "insider_sell_count": 224,
+    "insider_sell_count": 210,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-10-09",
     "revenue_ttm": 3966725000,
@@ -448,6 +448,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,

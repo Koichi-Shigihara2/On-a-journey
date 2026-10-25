@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -1.3,
-  "calculation_date": "2026-10-24T05:33:57+09:00",
+  "calculation_date": "2026-10-26T00:16:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -244,7 +244,7 @@
   "fcf_base": {
     "base_fcf": 336807000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 197972200.0,
+    "fcf_5yr_avg": 197972111.4,
     "fcf_2yr_avg": 336807000.0,
     "cv": 0.923,
     "cv_threshold": 0.5,
@@ -255,9 +255,9 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
-    "fcf_value": 462774000,
+    "fcf_value": 462774000.0,
     "threshold_pct": 0.6,
-    "deviation_pct": 133.757062860341,
+    "deviation_pct": 133.75716747545886,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -302,7 +302,7 @@
       "total_transient_amount": 340364000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、構造的な収益力悪化を示す内容ではない。"
+        "reasoning": "すべての項目がマクロ変動や一過性の事業再編による一時的費用と明記されており、構造的な悪化を示す兆候はない。"
       }
     },
     "action": "flagged",
@@ -386,18 +386,18 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 197972200.0,
+    "fcf_5yr_avg": 197972111.4,
     "fcf_2yr_avg": 336807000.0,
     "structural_deficit": false,
     "fcf_base_used": 336807000.0,
     "fcf_base_method": "recent_2yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      462774000,
-      210840000,
-      245989000,
-      98527000,
-      -28269000
+      462774000.0,
+      210840000.0,
+      245989000.0,
+      98527000.0,
+      -28269443.0
     ],
     "diluted_shares": 253035047,
     "roe_10yr_avg": -0.08510160736586729,
@@ -505,6 +505,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "LAYER3-FIRST-FILED-DATE-1",
   "fcf_history": [
     {
       "year": 2021,
