@@ -37,8 +37,11 @@ BACKLOG.mdのアクティブは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-U
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
 **2026-10-25（日）に確かめること（先頭。上から順に）**:
-- A. 手順11②（R-Cの公開の確認②）: 日曜のSEC_Data_Update（SECの取得は2026-10-24から`common/external_api.py`の`sec_get`、User-Agentはsecretの`SEC_USER_AGENT_EMAIL`。初めての日曜の本番）と連鎖のTANUKI VALUATIONの後。
+- A. （済 2026-10-26 01:00 JST）手順11②（R-Cの公開の確認②）: 日曜のSEC_Data_Update（SECの取得は2026-10-24から`common/external_api.py`の`sec_get`、User-Agentはsecretの`SEC_USER_AGENT_EMAIL`。初めての日曜の本番）と連鎖のTANUKI VALUATIONの後。
   SEC_Data_Updateのログに`[ERROR] 環境変数 SEC_USER_AGENT_EMAIL が無い`が無く、98銘柄が取れていること（`[sec] … 再試行`の行が出ていればその数も見る）を先に確かめてから、手順11の②の手順
+  - 結果: schedule `40205244163`（10-25 15:04 UTC＝10-26 00:04 JSTに起動。scheduleが約3時間遅れ、連鎖の行の日付は10-26）はsuccess。完了 98/98・FAILED 0・巻き戻しなし・Gate NG=0（WARN 423）・Discord「送信完了」。
+    SEC_USER_AGENT_EMAILの未設定のエラー・SystemExitは0件、`再試行`・429・5xxの行も0件（SECへのリクエスト302・98.6秒）。鮮度は OK_NO_NEW 85 / REFRESHED 9（LMT・META・TSLA・HON・TDY・MSCI・JNJ・PM・LRCX）/ SEC_LAG 4 / FETCH_FAILED 0。
+    連鎖: HypeCore `40205696298` → TANUKI VALUATION `40205878211`（success）と`40206552306`（Stonks Silo・EPSの後、success。同じ日の行を書き直した）→ TANUKI Score `40207049920`・`40208232961`（success）。11②の結果は下の11
 - B. （済 2026-10-24）手順12（Portfolioの本番の画面）
 - C. 日曜の束ね: FINDINGS.mdの未登録の行を束ねる（CHAT_RULES.md「発見の溜め方と根治の判断」）。入力に次の2件を含める
   - MACRO PULSEのS&P500のt+N（`05_events.csv`の`sp500_t1`〜`sp500_t20`）は連邦の営業日（`us_federal_business_days_add`）で数え、NYSEの取引日と違う（2016〜2027年で1,576組。FINDINGS.md 2026-10-23、型C）
@@ -53,7 +56,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 3. （済 2026-10-20）NIY=Fの2026-10-08の足: `common/market_data/daily/NIY=F.json`の10-08の行は`_no_yahoo_bar: true`で`_provisional`は無い。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（BACKLOG_DONE.mdの「確認（2026-10-20、移設）」）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
 4. （済 2026-10-19 夜）日曜の連鎖の後の残り: Step Summaryの表（17:28 JST）と「🛠」の欄（17:30 JST）をKoichiさんが目視で確認、timingの差はチャット側が想定どおりと判定。`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設（結果はBACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
-   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない）
+   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない。10-25〈run `40205244163`〉も4銘柄ともSEC_LAG〈case b、7月末の10-Qがcompanyfactsに未反映、88〜89日〉で残す。submissionsの最新も7月末でQ3の10-Qはまだ提出されていない）
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
 6. （済 2026-10-19）月曜の安全網: HypeCoreはschedule `39230653656`（09:31〜09:32 UTC）でsuccess、commit `5fb554d71a`、連鎖のTANUKI VALUATION `39230891630`もsuccess。Adjusted EPSはschedule `39232746231`（09:47 UTC起動）でsuccess、「summary.jsonの最終更新は2026-10-18T15:08（24時間以内）のため、意図的にスキップ」でcommitなし。Runner Imageは2本ともubuntu-24.04 20261012.334.1（Ubuntu 26への移行はまだ、FINDINGS.md 2026-10-18）
@@ -89,6 +92,14 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
      APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
      HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
+   - ②（2026-10-26 01:00 JST、SEC `40205244163`・TANUKI VALUATION `40206552306`〈`fefea12e10`〉の後）: **HONを除き済、HONだけ残す（チャット側の判断）**。株価は10-24の行と同じ（金曜の終値）で、変化はすべて株価以外から来る
+     - 済: normalized 98ファイル・56,661エントリすべてに`first_filed`・`first_val`、`_asof`は0件。APPの`Revenue`の2023-12-31のQ4（implied）が953,261,000。CHECK-64は77件・23銘柄（WARN、見込みどおり）。
+       FLYW 45.17→43.19（−4.37%、試算どおり）、APP 1,135.99のまま。96銘柄の10-26の行すべて（history・score_history）に`method_change: LAYER3-FIRST-FILED-DATE-1`
+     - 理論株価が1%以上動いた銘柄: HON −84.95%・TSLA −21.55%・LRCX +14.46%・LMT +7.48%・TDY +5.42%・FLYW −4.37%・PM +4.31%・META −3.74%・MSCI +2.40%・JNJ −1.09%。FLYW以外はREFRESHED（新しい10-Q）の銘柄。ほかはSNPS +0.17%だけ
+     - 判定の変化6件: CAKE TRIM→HOLD・CDNS HOLD→TRIM・PM TRIM→HOLD・SNPS TRIM→HOLD（HypeCoreの週次の更新でstageが変わった。株価・RSI〈10-16→10-23の終値〉による。試算ではR-CによるHypeCoreのstageの変化0）、
+       HON TRIM→WATCH・TSLA TRIM→WATCH（新しい10-Qで理論株価が下がった）。funda_scoreの変化はHON 90→40・TSLA 65→40・JNJ 55→40・LMT 65→55・META 75→100・TDY 70→80で、すべて新しい10-Qの銘柄。R-Cによる判定・funda_scoreの変化は0
+     - 残す: HONは122.45→18.43（−84.95%）で試算（117.33）と違う。2026Q3の10-Q（2026-10-22提出）が継続事業ベースの数字（Q3の売上4,994M・前年同期を10,408M→4,929Mに組み替え、Q3の営業CF 117M）で、
+       TTMの2026-09-30が旧ベースの3四半期と新ベースのQ3の混在（営業CF 1,947M・FCF 1,182M）になり、基準のFCFが5年平均4,627M→直近1年1,182M（`deviation_large`）に変わった。R-Cの分はこの変化に埋もれて分けられない。FINDINGS.md 2026-10-26
 12. （済 2026-10-24、Koichiさんの目視。同時に portfolio.json を各社の画面・取引の履歴に合わせた）**Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
    - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）。確かめていなければ10-25（上のB）
    - 期限: 2026-10-25
