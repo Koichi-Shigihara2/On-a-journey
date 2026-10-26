@@ -461,6 +461,102 @@ class TestUpdateLiquidityCsvSp500:
         assert df.iloc[0]["stealth_signal"] == "neutral"
 
 
+# ─────────────────────────────────────────────────────────────────
+#  [[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]: 新しいFOMC声明が出たら同じ月の行を判定し直す
+# ─────────────────────────────────────────────────────────────────
+_FOMC_CAL_HTML = (
+    '<a href="/newsevents/pressreleases/monetary20260729a.htm">Statement</a>'
+    '<a href="/newsevents/pressreleases/monetary20260729a1.htm">Implementation Note</a>'
+    '<a href="/newsevents/pressreleases/monetary20260916a.htm">Statement</a>'
+    '<a href="/newsevents/pressreleases/monetary20260916a1.htm">Implementation Note</a>'
+)
+_FED_CTX_CSV = (
+    "record_date,fomc_date,regime,dominant_concern,dominant_label,ff_current,zq_ticker,zq_price,zq_rate,cuts_implied,"
+    "ai_reason,updated_at,regime_source\n"
+    "2026-08-01,2026-07-29,TIGHTENING,INFLATION_FOCUS,物価重視,3.625,FRED:DGS1,,4.04,-1.66,旧,2026-08-01 00:00:00,FOMC声明分析（Grok）\n"
+    "2026-09-05,2026-07-29,TIGHTENING,INFLATION_FOCUS,物価重視,3.875,FRED:DGS1,,4.51,-2.54,旧,2026-09-05 00:00:00,FOMC声明分析（Grok）\n"
+)
+
+
+class _FakeResp:
+    def __init__(self, text, status=200):
+        self.text, self.status_code = text, status
+
+    def raise_for_status(self):
+        if self.status_code != 200:
+            raise RuntimeError(self.status_code)
+
+
+class TestFedContextNewStatement:
+    def _setup(self, tmp_path, monkeypatch, grok_reply='{"regime":"EASING","dominant_concern":"EMPLOYMENT_FOCUS",'
+                                                      '"dominant_label":"雇用重視","ai_reason":"新"}'):
+        p = tmp_path / "05_fed_context.csv"
+        p.write_text(_FED_CTX_CSV, encoding="utf-8")
+        monkeypatch.setattr(main05, "FED_CONTEXT_PATH", str(p))
+        monkeypatch.setattr(main05, "BASE_DATA_DIR", str(tmp_path))
+        calls = {"frb": [], "grok": 0}
+
+        def _frb(path, label=""):
+            calls["frb"].append(path)
+            if path == main05.FOMC_CALENDAR_PATH:
+                return _FakeResp(_FOMC_CAL_HTML)
+            return _FakeResp("<p>The Federal Open Market Committee decided ...</p>")
+
+        def _grok(*a, **k):
+            calls["grok"] += 1
+            if grok_reply is None:
+                raise main05.ExternalApiError("down")
+            return grok_reply
+
+        monkeypatch.setattr(main05, "frb_get", _frb)
+        monkeypatch.setattr(main05, "grok_text", _grok)
+        monkeypatch.setenv("XAI_API_KEY", "test")
+        monkeypatch.setattr(main05, "get_ff_current", lambda: 3.875)
+        monkeypatch.setattr(main05, "get_zq_futures", lambda target_date=None: ("FRED:DGS1", None, 4.52))
+        return p, calls
+
+    def test_latest_statement_is_a_htm_and_not_after_target(self, tmp_path, monkeypatch):
+        self._setup(tmp_path, monkeypatch)
+        assert main05.find_latest_fomc_statement(date(2026, 9, 17)) == (
+            "2026-09-16", "/newsevents/pressreleases/monetary20260916a.htm")
+        assert main05.find_latest_fomc_statement(date(2026, 9, 15))[0] == "2026-07-29"
+
+    def test_rejudges_same_month_row_on_new_statement(self, tmp_path, monkeypatch):
+        p, calls = self._setup(tmp_path, monkeypatch)
+        assert main05.refresh_fed_context_on_new_statement(date(2026, 9, 17)) is True
+        df = pd.read_csv(p, dtype=str).fillna("")
+        assert len(df) == 2                                   # 行は足さず、9月の行を書き換える
+        last = df.iloc[-1]
+        assert (last["record_date"], last["fomc_date"], last["regime"], last["ai_reason"]) == (
+            "2026-09-17", "2026-09-16", "EASING", "新")
+        assert calls["grok"] == 1
+
+    def test_no_new_statement_writes_nothing_and_skips_grok(self, tmp_path, monkeypatch):
+        p, calls = self._setup(tmp_path, monkeypatch)
+        before = p.read_bytes()
+        assert main05.refresh_fed_context_on_new_statement(date(2026, 9, 15)) is False
+        assert p.read_bytes() == before and calls["grok"] == 0
+
+    def test_weekly_without_new_statement_updates_rates_only(self, tmp_path, monkeypatch):
+        p, calls = self._setup(tmp_path, monkeypatch)
+        main05.update_fed_context(date(2026, 9, 15))
+        last = pd.read_csv(p, dtype=str).fillna("").iloc[-1]
+        assert (last["record_date"], last["fomc_date"], last["regime"]) == ("2026-09-05", "2026-07-29", "TIGHTENING")
+        assert last["zq_rate"] == "4.52" and calls["grok"] == 0
+
+    def test_grok_failure_keeps_previous_judgment(self, tmp_path, monkeypatch):
+        p, calls = self._setup(tmp_path, monkeypatch, grok_reply=None)
+        main05.update_fed_context(date(2026, 9, 17))
+        last = pd.read_csv(p, dtype=str).fillna("").iloc[-1]
+        assert (last["fomc_date"], last["regime"], last["ai_reason"]) == ("2026-07-29", "TIGHTENING", "旧")
+
+    def test_calendar_unavailable_does_not_rejudge(self, tmp_path, monkeypatch):
+        p, calls = self._setup(tmp_path, monkeypatch)
+        monkeypatch.setattr(main05, "frb_get", lambda path, label="": _FakeResp("", 503))
+        assert main05.refresh_fed_context_on_new_statement(date(2026, 9, 17)) is False
+        assert calls["grok"] == 0
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main([__file__, "-v"]))

@@ -2312,6 +2312,16 @@ REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会�
 
 次のFOMC（2026年10月下旬）の後も同じ遅れが起きるため、それまでに対応するか、Market Pulse側のセッションと担当を決める（2026-10-11追記）
 
+#### 対応（2026-10-26、Koichiさんの判断）
+- `update_fed_context()`: その月の行があっても、行の`fomc_date`より新しい声明が対象日以前に出ていれば、声明を取り直してGrokで判定し直し、同じ月の行を書き換える（`record_date`は判定した日）。新しい声明が無ければ今のまま（Grokを呼ばない）
+- 声明の日付は今の取得元（FRBの`fomccalendars.htm`の声明のリンク。`05_indicator_schedule.csv`にFOMCの行は無い）。声明のリンクは出た後にだけ載る。同じ日のa.htm（声明）とa1.htm（実施の注記）はページの先に出る声明を選ぶ（今までと同じ）
+- FRBの呼び出しは`common/external_api.py`の`frb_get`（新設）に。声明の本文かGrokが取れなかったときは前の声明の判定を数値ベースで上書きしない（次の実行で取り直す）。予定のページが取れないときは判定し直さない
+- `update_fed_context()`は週1回（土曜の`--update-schedule`）しか呼ばれないため、毎日の実行（22:15 UTC）の最初に`refresh_fed_context_on_new_statement()`を足した。新しい声明が無ければ何も書かない
+- 前後の比較（手元。FRBのページは1回取って記録・再生、Grokは05_fed_context.csvに残る各声明の判定を記録した応答として、FF・ZQは固定値）:
+  新しい声明の無い10-26は、日次は05_fed_context.csvが全列同じ（書かない）、週次はupdated_atだけが違う（今までも毎回書き換わる列）。画面・週次AIはこのCSVを読むので同じ。
+  過去の4回（04-29・06-17・07-29・09-16）の会合の翌日（その時点までの行で）は、日次・週次とも判定し直しが起き、同じ月の行のfomc_dateが会合の日に（行は増えない）
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順8（10-29朝）
+
 ---
 
 （[[CHECK-DEPMAP-HOLLOW-RALLY-STALE-1]]は2026-10-19、[[OUTPUT-INVENTORY-CHECK-1]]に統合、BACKLOG_DONE.md「2026-10-19（初回の束ね）」参照）

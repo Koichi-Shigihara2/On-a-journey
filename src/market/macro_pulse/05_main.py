@@ -84,8 +84,8 @@ if not HAS_MACRO_DATA:
 # 連邦の祝日・営業日（経済指標の公表の予定用。NYSEの休場日ではない）は common/market_data/calendar_universe.py
 # （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23に us_holidays・us_business_days_add から移した。規則は同じ）
 from common.market_data.calendar_universe import previous_us_federal_business_day, us_federal_business_days_add  # noqa: E402
-# 外部APIの呼び出し（Grok・FRED。再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
-from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, grok_text  # noqa: E402
+# 外部APIの呼び出し（Grok・FRED・FRB。再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
+from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, frb_get, grok_text  # noqa: E402
 # [[GROK-MODEL-PRICE-1]]: grok-3-mini/grok-3は実際にはgrok-4.3へ自動ルーティングされ、grok-2-1212は廃止済み。実際に応答する現行モデル名
 GROK_MODEL = "grok-4.3"
 
@@ -1189,49 +1189,60 @@ def recalc(events: pd.DataFrame) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────
 #  fed_context.csv 更新（v5から継承）パス修正のみ
 # ─────────────────────────────────────────────────────────────────
-def fetch_latest_fomc_statement():
-    cal_url = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
-    found_url = None
-    fomc_date = None
+FOMC_CALENDAR_PATH = "/monetarypolicy/fomccalendars.htm"
+# FOMCの予定のページの声明のリンク（日付はリンクのファイル名のYYYYMMDD）
+_FOMC_STATEMENT_LINK_PATTERNS = [
+    r'href="(/newsevents/pressreleases/monetary(\d{8})a\d?\.htm)"',
+    r'href="(/monetarypolicy/(\d{8})a\d?\.htm)"',
+]
+
+
+def find_latest_fomc_statement(target_date: date = None):
+    """FOMCの予定のページ（fomccalendars.htm）から、target_date 以前に出た最新の声明の (日付'YYYY-MM-DD', パス)。
+    取れなければ (None, None)。声明のリンクは出た後にだけ載るので、予定の会合（未来の日付）は拾わない。"""
     try:
-        r = requests.get(cal_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+        r = frb_get(FOMC_CALENDAR_PATH, "FOMC calendar")
         r.raise_for_status()
         html = r.text
-        pats = [
-            r'href="(/newsevents/pressreleases/monetary(\d{8})a\d?\.htm)"',
-            r'href="(/monetarypolicy/(\d{8})a\d?\.htm)"',
-        ]
-        candidates = []
-        for pat in pats:
-            for path, dt in re.findall(pat, html):
-                candidates.append((dt, path))
-        if candidates:
-            candidates.sort(key=lambda x: x[0], reverse=True)
-            best_dt, best_path = candidates[0]
-            found_url = "https://www.federalreserve.gov" + best_path
-            fomc_date = datetime.strptime(best_dt, "%Y%m%d").strftime("%Y-%m-%d")
     except Exception as e:
         logger.warning(f"FOMC calendar fetch: {e}")
+        return None, None
+    limit = target_date.strftime("%Y%m%d") if target_date else "99999999"
+    candidates = []
+    for pat in _FOMC_STATEMENT_LINK_PATTERNS:
+        for path, dt in re.findall(pat, html):
+            if dt <= limit:
+                candidates.append((dt, path))
+    if not candidates:
+        return None, None
+    # 日付だけで並べる（同じ日の a.htm〈声明〉と a1.htm〈実施の注記〉は、ページの先に出る声明を選ぶ。2026-10-26 までと同じ）
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    best_dt, best_path = candidates[0]
+    return datetime.strptime(best_dt, "%Y%m%d").strftime("%Y-%m-%d"), best_path
 
-    if not found_url:
+
+def fetch_latest_fomc_statement(target_date: date = None):
+    fomc_date, found_path = find_latest_fomc_statement(target_date)
+
+    if not found_path:
         known = ["20260507","20260318","20260129","20251218","20251107","20250918","20250730"]
         today_str = date.today().strftime("%Y%m%d")
         for best_dt in sorted([d for d in known if d <= today_str], reverse=True):
-            u = f"https://www.federalreserve.gov/newsevents/pressreleases/monetary{best_dt}a.htm"
+            p = f"/newsevents/pressreleases/monetary{best_dt}a.htm"
             try:
-                r = requests.get(u, headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+                r = frb_get(p, "FOMC statement (known)")
                 if r.status_code == 200:
-                    found_url = u
+                    found_path = p
                     fomc_date = datetime.strptime(best_dt, "%Y%m%d").strftime("%Y-%m-%d")
                     break
             except Exception:
                 pass
 
-    if not found_url:
+    if not found_path:
         return None, None
 
     try:
-        r2 = requests.get(found_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+        r2 = frb_get(found_path, "FOMC statement")
         r2.raise_for_status()
         text = re.sub(r'<[^>]+>', ' ', r2.text)
         text = re.sub(r'\s+', ' ', text).strip()
@@ -1328,17 +1339,24 @@ def update_fed_context(target_date: date):
     def _n(v):
         return "" if v is None else str(v)
 
-    if already:
-        last_idx = ctx_df[ctx_df["record_date"].str.startswith(record_month)].index[-1]
-        ctx_df.loc[last_idx, "ff_current"] = str(ff_current)
-        ctx_df.loc[last_idx, "updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # [[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]（2026-10-26）: その月の行があっても、行が判定に使った声明より新しい声明が
+    # 出ていれば、声明を取り直してREGIME・主眼を判定し直し、同じ月の行を書き換える（record_dateは判定した日）
+    last_idx = ctx_df[ctx_df["record_date"].str.startswith(record_month)].index[-1] if already else None
+    rejudge = already and newer_fomc_statement(ctx_df.loc[last_idx, "fomc_date"], target_date) is not None
+
+    def _update_rates(idx):
+        ctx_df.loc[idx, "ff_current"] = str(ff_current)
+        ctx_df.loc[idx, "updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if zq_rate is not None:
-            ctx_df.loc[last_idx, "zq_ticker"]    = zq_ticker or ""
-            ctx_df.loc[last_idx, "zq_price"]     = _n(zq_price)
-            ctx_df.loc[last_idx, "zq_rate"]      = _n(zq_rate)
-            ctx_df.loc[last_idx, "cuts_implied"] = _n(cuts_implied)
+            ctx_df.loc[idx, "zq_ticker"]    = zq_ticker or ""
+            ctx_df.loc[idx, "zq_price"]     = _n(zq_price)
+            ctx_df.loc[idx, "zq_rate"]      = _n(zq_rate)
+            ctx_df.loc[idx, "cuts_implied"] = _n(cuts_implied)
+
+    if already and not rejudge:
+        _update_rates(last_idx)
     else:
-        fomc_date, stmt_text = fetch_latest_fomc_statement()
+        fomc_date, stmt_text = fetch_latest_fomc_statement(target_date)
         if stmt_text:
             analysis = analyze_fomc_with_grok(
                 fomc_date or target_date.strftime("%Y-%m-%d"),
@@ -1363,11 +1381,51 @@ def update_fed_context(target_date: date):
             "regime_source":    analysis.get("regime_source", "DGS1数値ベース"),
             "updated_at":       datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        ctx_df = pd.concat([ctx_df, pd.DataFrame([new_row])], ignore_index=True)
+        if rejudge and analysis.get("regime_source") != "FOMC声明分析（Grok）":
+            # 声明の本文かGrokが取れなかった: 前の声明のGrokの判定を数値ベースで上書きしない（次の実行で取り直す）
+            logger.warning(f"新しいFOMC声明（{fomc_date}）を判定し直せなかった。{record_month}の行は前の声明のまま")
+            _update_rates(last_idx)
+        elif rejudge:
+            logger.info(f"新しいFOMC声明（{fomc_date}）で判定し直し、{record_month}の行を書き換える"
+                        f"（前の声明 {ctx_df.loc[last_idx, 'fomc_date']}）")
+            for k, v in new_row.items():
+                ctx_df.loc[last_idx, k] = v
+        else:
+            ctx_df = pd.concat([ctx_df, pd.DataFrame([new_row])], ignore_index=True)
 
     os.makedirs(BASE_DATA_DIR, exist_ok=True)
     ctx_df.to_csv(FED_CONTEXT_PATH, index=False, encoding="utf-8")
     logger.info(f"Fed context saved: {FED_CONTEXT_PATH}")
+
+
+def newer_fomc_statement(row_fomc_date: str, target_date: date):
+    """行が判定に使った声明（row_fomc_date）より新しい声明が target_date 以前に出ていれば、その (日付, パス)。無ければ None。
+    予定のページが取れないときも None（判定し直さない）。"""
+    fomc_date, path = find_latest_fomc_statement(target_date)
+    if fomc_date and fomc_date > str(row_fomc_date or ""):
+        return fomc_date, path
+    return None
+
+
+def refresh_fed_context_on_new_statement(target_date: date) -> bool:
+    """毎日の実行から呼ぶ（[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]、2026-10-26）。最新の行の声明より新しい声明が
+    出ていれば update_fed_context() で判定し直す（Grokを呼ぶ）。無ければ何も書かず、Grok・FREDも呼ばない。
+    update_fed_context()は週1回の--update-scheduleだけなので、これが無いと会合の後の土曜まで反映されない。"""
+    if not os.path.exists(FED_CONTEXT_PATH):
+        return False
+    try:
+        fc = pd.read_csv(FED_CONTEXT_PATH, dtype=str).fillna("")
+        last_fomc = fc.iloc[-1]["fomc_date"] if not fc.empty else ""
+    except Exception as e:
+        logger.warning(f"fed_context read: {e}")
+        return False
+    newer = newer_fomc_statement(last_fomc, target_date)
+    if newer is None:
+        logger.info(f"新しいFOMC声明なし（最新の行の声明 {last_fomc or '不明'}）")
+        return False
+    logger.info(f"新しいFOMC声明 {newer[0]}（最新の行の声明 {last_fomc}）→ Fed contextを判定し直す")
+    update_fed_context(target_date)
+    return True
 
 # ─────────────────────────────────────────────────────────────────
 #  週次AI解説（--weekly-analysis）
@@ -2502,6 +2560,12 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
         logger.info("=== FILL RETURNS MODE ===")
         fill_returns()
         return
+
+    # [[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]: 新しいFOMC声明が出ていれば、その日のうちにREGIME・主眼を判定し直す
+    try:
+        refresh_fed_context_on_new_statement(target_date)
+    except Exception as e:
+        logger.error(f"Fed contextの判定し直し: {e}\n{traceback.format_exc()}")
 
     fin_ctx  = get_financial_context(target_date)
     sp500_t0, sp500_t0_asof = get_sp500_with_asof(target_date)

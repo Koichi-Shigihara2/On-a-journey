@@ -10,6 +10,7 @@ common/external_api.py
   - SEC（EDGAR）: sec_get(url) が応答を返す（404等はそのまま。429・5xxは再試行し、それでもだめなら最後の応答）。
     User-Agent は環境変数 SEC_USER_AGENT_EMAIL から作り、無ければ止める（架空のアドレスで続けない）。毎秒10件の制限を守る
   - FRED: fred_get(path, params) がREST APIの応答のJSONを返す。fred_client() は fredapi の Fred（系列の取得、マクロデータ層）
+  - FRB（www.federalreserve.gov）: frb_get(path) が応答を返す（FOMCの予定・声明のページ。404等はそのまま）
 
 失敗の形: 通信が最後まで失敗したら ExternalApiError（requests.exceptions.RequestException の仲間なので、
 これまでの `except requests.exceptions.RequestException` / `except Exception` で受けられる）。
@@ -24,10 +25,11 @@ import requests
 # ── 1つの設定 ────────────────────────────────────────────────────
 RETRY_ATTEMPTS = 3                       # 1回目＋再試行2回
 RETRY_WAITS_SEC = (2, 5)                 # 再試行の前に待つ秒数（429・5xx・通信の失敗）
-TIMEOUT_SEC = {"grok": 120, "sec": 120, "fred": 30}   # 2026-10-24 までの呼び出しごとの値の最大
+TIMEOUT_SEC = {"grok": 120, "sec": 120, "fred": 30, "frb": 20}   # 2026-10-24 までの呼び出しごとの値の最大（frbは2026-10-26）
 GROK_URL = "https://api.x.ai/v1/chat/completions"
 SEC_MIN_INTERVAL_SEC = 0.11              # SECは毎秒10件まで
 FRED_URL = "https://api.stlouisfed.org/fred/"
+FRB_URL = "https://www.federalreserve.gov"
 GROK_UNAVAILABLE_TEXT = "AI（Grok）の解説は取得できませんでした"
 SEC_USER_AGENT_ENV = "SEC_USER_AGENT_EMAIL"
 FRED_API_KEY_ENV = "FRED_API_KEY"
@@ -145,3 +147,10 @@ def fred_client():
         from fredapi import Fred
         _FRED_CLIENT[0] = Fred(api_key=_fred_key())
     return _FRED_CLIENT[0]
+
+
+# ── FRB ──────────────────────────────────────────────────────────
+def frb_get(path: str, label: str = "") -> requests.Response:
+    """FRB（https://www.federalreserve.gov<path>）のページ。404等はそのまま返し、呼び出し側が読む。
+    MACRO PULSEのFOMCの予定（fomccalendars.htm）と声明（[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]、2026-10-26）。"""
+    return _request("frb", "GET", FRB_URL + path, f"FRB {label or path}", headers={"User-Agent": "Mozilla/5.0"})

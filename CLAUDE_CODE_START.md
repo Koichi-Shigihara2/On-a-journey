@@ -64,10 +64,11 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
    - 期限: 2026-10-31
    - 確認の手順: 月次の行が観測日（公表日）に置かれること
-8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）
-   - 日時: いつでも
-   - 期限: 次のFOMC（10月下旬。日付はFRBの予定表で確かめる）の声明の前
-   - 確認の手順: 対応するか担当を決める（チャット側の判断）
+8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す）
+   - 日時: 10-29（木）朝（10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
+   - 期限: 2026-10-29
+   - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
+     REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
 9. **TANUKI TAILのRSS Monitorの残り**（`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`、どちらも移設済み。ファイルで見る3点とログの`DISCORD_WEBHOOK: ***`は2026-10-19に確認済み。新規提出の回〈run `39786981021`、10-22 TSLA 2026Q3の「★ 新規提出」・「Discord 送信OK」・Discordへの着信〉は2026-10-23に確認済み。結果はBACKLOG_DONE.mdの「確認」の欄。残りは「RSS 取得エラー」の回だけ）
    - 日時: 平日の実行（cronは08:00 UTC＝17:00 JST。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
