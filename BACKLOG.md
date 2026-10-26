@@ -1925,6 +1925,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 前後の比較（全98銘柄、手元でHypeCore・TANUKIを前・後〈今日〉・後〈日曜のTTM〉）: 変わるのはHON・RCATだけ、保有の9銘柄は変化0、印はHONだけ（試算と同じ）
 - 公開（案1）: 2026-10-26の手動のTANUKI VALUATION（run `40297293158`）→TANUKI Score（run `40299283243`）、どちらもsuccess。HONに印・WATCH・funda 25・注記。ほかに理論株価が動いたIONQ（−5.65%）・JNJ・LMT・TSLAは、10-26のMarket Data Weeklyの株式数の更新による（判定の変化0）
 - 残り: 案4の公開（2026-11-01のSEC_Data_Update、CLAUDE_CODE_START.mdの次回の確認手順13）。逆転の6銘柄はFINDINGS.md 2026-10-26（anomalyの行）で日曜の束ねの入力
+- 続き（2026-10-26、Koichiさんの判断）: `e7e289c5e7` report.txtの注記に`basis_mix.restated`の組み替えた期・項目・値・変化率（変化の大きい順に3件まで）。印の無い銘柄のreport.txtは前後で同じ、誰も読まないキー 51→50。
+  画面はHONの注記・WATCH・信頼性LOWとconsoleのエラー0、TSLAは前と同じ（手元のPlaywright）。+387行は不具合の根治のため「数を増やさない」の対象外（CHAT_RULES.md「発見の溜め方と根治の判断」6）。公開は同じ日の手動のTANUKI VALUATION
 
 ---
 

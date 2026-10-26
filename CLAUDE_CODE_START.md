@@ -112,7 +112,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: 2026-11-02
    - 確認の手順:
      - HON・RCATのTTM（`common/sec_data/ttm/{T}_ttm_series.json`）: HONの2026Q3・2025Q3のCapExが欠けではなく候補の別のタグの値（673M・959M、TTM 2026-09-30のFCF 1,182M→約1,274M）か。RCATは2023-07-31のTTMの営業CFが欠け。HONのTTMの先頭に`basis_mix`、点に`basis_mixed`（2025-09-30〜2026-09-30）、`normalized/HON_quarterly_normalized.json`に`basis_mix`
-     - HONの理論株価が約22.42（18.43から+21.65%、株価で動く分を除く）、判定WATCH・funda 25のまま、注記が出ている
+     - HONの理論株価が約22.42（18.43から+21.65%、株価で動く分を除く）、判定WATCH・funda 25のまま、注記が出ている（report.txtの注記に「組み替え: 2025Q3 営業利益 2,407M → 866M（−64.0%）」等の3行。2026-10-26 `e7e289c5e7`から）
      - ほかの銘柄の変化0（理論株価・判定・funda・stageが、株価・Market Data Weeklyの株式数等で動く分を除いて前日と同じ。HypeCoreのstageはHONも変わらない見込み）
      - rccのCHECK-66（WARN、新設）が1件（HON）で、「保存した印が食い違う」の行が無い
      - method_changeの印（`config/method_change.json`の11-01・11-02）がその日の行にある
