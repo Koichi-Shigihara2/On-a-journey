@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 19.91917786570951,
   "intrinsic_value_beta": 13.79,
-  "upside_percent_beta": -94.4,
-  "intrinsic_value_rf": 95.11,
-  "upside_percent_rf": -61.6,
-  "intrinsic_value_rf_rate": 0.0498799991607666,
+  "upside_percent_beta": -94.5,
+  "intrinsic_value_rf": 95.24,
+  "upside_percent_rf": -61.8,
+  "intrinsic_value_rf_rate": 0.04986000061035156,
   "v0": 154446103259.8416,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.6923058237021449,
@@ -25,12 +25,12 @@
     "2年後": {
       "future_value": 24.96,
       "value_growth_pct": 25.3,
-      "expected_return_pct": -89.9
+      "expected_return_pct": -90.0
     },
     "3年後": {
       "future_value": 27.94,
       "value_growth_pct": 40.3,
-      "expected_return_pct": -88.7
+      "expected_return_pct": -88.8
     },
     "4年後": {
       "future_value": 31.28,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -92.0,
-  "calculation_date": "2026-10-26T20:23:48+09:00",
+  "calculation_date": "2026-10-27T05:34:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -375,7 +375,7 @@
     "roe_10yr_avg": 0.16483471992908214,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 248.0,
+    "current_price": 249.08999633789062,
     "latest_revenue": 716924000000.0,
     "rpo": 4500000000,
     "beta": 1.443,
@@ -406,11 +406,11 @@
     "alpha_uncapped": 0.6923058237021449,
     "per": 19.951729,
     "per_is_forward": false,
-    "per_adjusted": 18.1,
+    "per_adjusted": 18.18,
     "peg": 1.512,
     "ps": 3.4485943,
     "ev_ebitda": 16.598,
-    "ma200": 243.29289993286136,
+    "ma200": 243.3068999481201,
     "forward_eps": 10.43008,
     "next_quarter_eps": 1.96,
     "analyst_target_median": 329.5,
@@ -429,7 +429,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 1554.2,
     "max_eps": 14.3325,
-    "max_eps_per": 17.3,
+    "max_eps_per": 17.4,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30"
   },
@@ -456,11 +456,11 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": 0.17909944229567487,
-  "risk_free_rate_live": 0.0498799991607666,
-  "risk_free_rate_live_date": "2026-10-23",
+  "required_growth_rf_base": 0.18013408788650098,
+  "risk_free_rate_live": 0.04986000061035156,
+  "risk_free_rate_live_date": "2026-10-26",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.3349131704477313,
+  "required_growth_rf_live": 0.3357252109871607,
   "tanuki_score": "WATCH",
   "funda_score": 90,
   "score_comment": "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH",
@@ -477,7 +477,6 @@
     "qx": false,
     "qy": true
   },
-  "method_change": "LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -593,7 +592,7 @@
     "fcf_margin_bear_multiplier": 0.4,
     "fcf_margin_note": "FCFマージン悪化(4.4%→1.3%) BEAR補正係数=0.400"
   },
-  "erp": -0.0078,
+  "erp": -0.008,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }
