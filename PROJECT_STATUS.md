@@ -11,7 +11,13 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順）**:
+**次の作業（2026-10-26 終業 更新。上から順）**:
+1. 11-01（日）の確認と束ね: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）の後に、FINDINGS.mdの未登録の15行＋NIY=Fの1行を束ねる（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）。その前に10-29朝の手順8（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）と10-31までの手順7
+2. 束ねで決めた根治
+3. 次の大きな作業: 銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）か、画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
+4. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
+
+**（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
    - 10-19の確認: `[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`・`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設。月曜の安全網（手順6）も済
    - 初回の束ね: `docs/architecture/BUNDLING_2026-10-19.md`（「確定」の節）。根治策5件（R-A `[[OUTPUT-INVENTORY-CHECK-1]]`〈R-Bを統合〉・R-C `[[LAYER3-FIRST-FILED-DATE-1]]`を広げる・R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`）。
@@ -72,12 +78,16 @@
    - SEC層の保留4件は2026-10-20に決着（残す2・削除で3ファイル。BACKLOG.mdの`[[OUTPUT-INVENTORY-CHECK-1]]`「SEC層の段階」）
    - F3の残りの4種（HypeCore `low_base_effect`・Stonks `fields_missing`・EPS `maturity_monitor.alert`・`market_data_violations_log`）は、それぞれのサブシステムの段階で判断する（`market_data_violations_log`は2026-10-22に削除で済）
 3. （済 2026-10-21）R-C `[[LAYER3-FIRST-FILED-DATE-1]]`: `first_filed`・`first_val`、Q4の逆算を年次と同じ時点の値どうし、CHECK-64。APPの理論株価は戻らない（シミュレーション −1.47%。窓の中の基準の混在は`FINDINGS.md` 2026-10-21、[[STAGE-V2-ROLLOUT-1]]で決める）。公開の確認は`CLAUDE_CODE_START.md`「次回の確認手順」11。TAIL側の残りは`[[TAIL-REVIEW-PERIOD-FILTER-1]]`
-4. `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
+4. （済 2026-10-26）`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
 
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-26（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を日時の順に並べ直し（10-29の8 → 10-31の7 → 11-01の13・5と束ね → 起きた回の2・9。済んだ1・3・4・6・10・11・12は番号だけ）、11-01の束ねの入力の一覧（FINDINGS.mdの未登録の15行＋NIY=F）。`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`をBACKLOG_DONE.mdへ（アクティブ13→12件、`^### [`の機械カウント。`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`は10-29の確認まで残す）。ID重複0・BACKLOG_DONEとIDEAS_AND_WATCHとの重なり0（BACKLOG_DONEの中の同じIDの見出し13件は2026-10-09から同じ）。一覧（output_inventory）の古い8層（sec・tanuki・hypecore・eps・stonks・tail・market_pulse・portfolio）を作り直した（行番号と本番のデータの差。EPSの誰も読まないキー14→3は10-21に書き込みをやめたキーが本番のファイルから消えたため）。
+  **今日のまとめ**: 日曜の連鎖の確認（A済・11②はHONを除き済・5は残す）→TSLA（新しい10-Qの実際の業績）・HON（ベースの混在）の調査→`[[QUARTERLY-BASIS-MIX-1]]`（案1・案4、HONの公開、report.txtの組み替えの3行）→`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`→`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`と9銘柄の日足の取り込み
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。今日は変わらず）、サブシステム 10、Python 68,646行・136ファイル（今日の始め〈`6f34e661a7`の前〉の68,146行・135ファイルから+500行・+1ファイル: `6f34e661a7` +387・`e7e289c5e7` +21・`62ca8135a7` +73・`1d6c35f81a` +19）、テスト35,300行（+323）、docs配下のHTML・JS 20,288行・20ファイル（+5、stock.htmlの注記）、ワークフロー20本、アクティブBACKLOG 12件。
+  **行数の増加の扱い**: +500行はすべて「数を増やさない」の対象外（新しい機能・出力ではない）。+387・+21は不具合の根治（TTMが新旧のベースで混ざりHONの理論株価が−84.95%になった件。Koichiさんの判断）、+73は不具合の根治（FOMCの声明が次の月の最初の土曜まで反映されない件）、+19は手順の抜けの補完（登録の時の日足の過去分の取り込み）（+92はチャット側の判断）。CHAT_RULES.md「発見の溜め方と根治の判断」6
 - **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の実装と案1の公開）**: 1 `6f34e661a7`（案4は「組み替えた申告」の条件だけ・案1の印・CHECK-66・method_change 10-26・11-01・11-02）。前後で変わるのはHON・RCATだけ、保有の9銘柄は変化0。手動のTANUKI VALUATION run 40297293158でHONに印・WATCH・funda 25。案4は11-01のSEC_Data_Updateで公開（次回の確認手順13）。
   **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、Python 68,533行・136ファイル（68,146行・135ファイルから+387行・+1ファイル: basis_mix.pyを足し、Layer3・TANUKI・HypeCore・rccに印の扱い。減らしたものは無い）、テスト35,158行（+181）、docs配下のHTML・JS 20,288行・20ファイル（+5）、ワークフロー20本。TANUKIのlatest.jsonの`basis_mix.restated`（組み替えた期の明細）は画面が読まず、一覧の「誰も読まないキー」に入った（50→51。下の続きで50に戻した）。
   **+387行の理由**: 不具合の根治のため（TTMが新旧のベースで混ざり、HONの理論株価が122.45→18.43〈−84.95%〉になった件）。新しい機能・出力ではないので、CHAT_RULES.md「発見の溜め方と根治の判断」6の「数を増やさない」の対象外（2026-10-26、Koichiさんの判断）

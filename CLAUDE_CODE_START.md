@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-24 の更新〈10-25の確認を先頭に〉。確認する日時〈JST〉の順〈9だけは番号を保つため末尾〉。済んだ手順は番号だけ残す〈BACKLOGが4・6を参照するため〉。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件。`^### [`の機械カウントも12件）。それまでは**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-10-26 終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -36,78 +36,21 @@ BACKLOG.mdのアクティブは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-U
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
-**2026-10-25（日）に確かめること（先頭。上から順に）**:
-- A. （済 2026-10-26 01:00 JST）手順11②（R-Cの公開の確認②）: 日曜のSEC_Data_Update（SECの取得は2026-10-24から`common/external_api.py`の`sec_get`、User-Agentはsecretの`SEC_USER_AGENT_EMAIL`。初めての日曜の本番）と連鎖のTANUKI VALUATIONの後。
-  SEC_Data_Updateのログに`[ERROR] 環境変数 SEC_USER_AGENT_EMAIL が無い`が無く、98銘柄が取れていること（`[sec] … 再試行`の行が出ていればその数も見る）を先に確かめてから、手順11の②の手順
-  - 結果: schedule `40205244163`（10-25 15:04 UTC＝10-26 00:04 JSTに起動。scheduleが約3時間遅れ、連鎖の行の日付は10-26）はsuccess。完了 98/98・FAILED 0・巻き戻しなし・Gate NG=0（WARN 423）・Discord「送信完了」。
-    SEC_USER_AGENT_EMAILの未設定のエラー・SystemExitは0件、`再試行`・429・5xxの行も0件（SECへのリクエスト302・98.6秒）。鮮度は OK_NO_NEW 85 / REFRESHED 9（LMT・META・TSLA・HON・TDY・MSCI・JNJ・PM・LRCX）/ SEC_LAG 4 / FETCH_FAILED 0。
-    連鎖: HypeCore `40205696298` → TANUKI VALUATION `40205878211`（success）と`40206552306`（Stonks Silo・EPSの後、success。同じ日の行を書き直した）→ TANUKI Score `40207049920`・`40208232961`（success）。11②の結果は下の11
-- B. （済 2026-10-24）手順12（Portfolioの本番の画面）
-- C. 日曜の束ね: FINDINGS.mdの未登録の行を束ねる（CHAT_RULES.md「発見の溜め方と根治の判断」）。入力に次の2件を含める
-  - MACRO PULSEのS&P500のt+N（`05_events.csv`の`sp500_t1`〜`sp500_t20`）は連邦の営業日（`us_federal_business_days_add`）で数え、NYSEの取引日と違う（2016〜2027年で1,576組。FINDINGS.md 2026-10-23、型C）
-  - NIY=Fの古い行: `common/market_data/daily/NIY=F.json`の2026-10-05・10-06・10-07の3行がO=H=L=C・出来高0の平らな足なのに`_provisional`も`_no_yahoo_bar`も無い（FINDINGS.md 2026-10-20は10-07だけを書いている。2026-10-24に3行を確かめた）。
-    印は保存の時にだけ付き、付け直しは`--repair-provisional`（範囲外）。daily/のNIY=Fを読むものは無い
+**確かめる順（日時の順）**:
+① 10-29（木）朝 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか）
+② 10-31（金）まで … 手順7（Building Permitsの行。公表の翌朝）
+③ 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
+④ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
 
-1. （済 2026-10-19）Adjusted_EPS_Data_UpdateのStep Summary: Koichiさんが10-18に目視で確認、`[[EPS-SILENT-TICKER-FAILURE-1]]`を移設
-2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
-   - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
-   - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
-   - 確認の手順: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。確かめたら移設する
-3. （済 2026-10-20）NIY=Fの2026-10-08の足: `common/market_data/daily/NIY=F.json`の10-08の行は`_no_yahoo_bar: true`で`_provisional`は無い。`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設（BACKLOG_DONE.mdの「確認（2026-10-20、移設）」）。10-07の行に印が無い件はFINDINGS.md 2026-10-20
-4. （済 2026-10-19 夜）日曜の連鎖の後の残り: Step Summaryの表（17:28 JST）と「🛠」の欄（17:30 JST）をKoichiさんが目視で確認、timingの差はチャット側が想定どおりと判定。`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`を移設（結果はBACKLOG_DONE.mdの「確認（2026-10-19 夜、移設）」）
-5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
-   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18はSEC_LAGのまま継続〈`_freshness.json`〉、変更していない。10-25〈run `40205244163`〉も4銘柄ともSEC_LAG〈case b、7月末の10-Qがcompanyfactsに未反映、88〜89日〉で残す。submissionsの最新も7月末でQ3の10-Qはまだ提出されていない）
-   - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
-   - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
-6. （済 2026-10-19）月曜の安全網: HypeCoreはschedule `39230653656`（09:31〜09:32 UTC）でsuccess、commit `5fb554d71a`、連鎖のTANUKI VALUATION `39230891630`もsuccess。Adjusted EPSはschedule `39232746231`（09:47 UTC起動）でsuccess、「summary.jsonの最終更新は2026-10-18T15:08（24時間以内）のため、意図的にスキップ」でcommitなし。Runner Imageは2本ともubuntu-24.04 20261012.334.1（Ubuntu 26への移行はまだ、FINDINGS.md 2026-10-18）
-7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
-   - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
-   - 期限: 2026-10-31
-   - 確認の手順: 月次の行が観測日（公表日）に置かれること
-8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す）
+8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装 `62ca8135a7`。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す。BACKLOGにはこの確認まで残す）
    - 日時: 10-29（木）朝（10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
    - 期限: 2026-10-29
    - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
      REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
-9. **TANUKI TAILのRSS Monitorの残り**（`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`、どちらも移設済み。ファイルで見る3点とログの`DISCORD_WEBHOOK: ***`は2026-10-19に確認済み。新規提出の回〈run `39786981021`、10-22 TSLA 2026Q3の「★ 新規提出」・「Discord 送信OK」・Discordへの着信〉は2026-10-23に確認済み。結果はBACKLOG_DONE.mdの「確認」の欄。残りは「RSS 取得エラー」の回だけ）
-   - 日時: 平日の実行（cronは08:00 UTC＝17:00 JST。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
-   - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
-   - 確認の手順:
-     - 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている
-     - （済 2026-10-23）新規提出か遅延のアラートがある回のログに「Discord 送信OK」があり、Discordに届いている
-     - 確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
-10. （済 2026-10-20）F5の直しの後の最初の平日のRSS Monitor: 直し（`7492427f3f`、10-19 10:50 UTCのpush）の後の実行はschedule `39276537966`（10-19 15:16 UTC起動、head `d154e71c71`は直しを含む、success、commit `0f91fe9895`）の1回（10-20 08:45 UTCの時点で今日の回は未起動）。
-   「RSS チェック」で9銘柄とも「変更なし (…、遅れ0日)」、次の期末・10-Qの期限は表のとおり（APP・CELH・CRWV・PLTR・SOFI・SOUN・TSLAは2026-09-30・2026-11-16、NVDAは2026-10-26・2026-12-10、ADBEは2026-11-28・2027-01-12）。
-   「⚠ 提出遅延アラート」・「★ 新規提出」・「RSS 取得エラー」は0件、新規pending 0件。`docs/portfolio/tail/data/rss_state.json`の`no_filing_days`は9銘柄とも0（TSLAは10から0）。9の経路（エラーの回・新規提出の回）はこの回でも通っていない
-11. **R-Cの公開の確認**（`[[LAYER3-FIRST-FILED-DATE-1]]`、2026-10-21 commit。BACKLOG_DONE.mdの「シミュレーション」が試算の値）
-   - 2026-10-21 21:34 JSTのTANUKI VALUATION（`f9417ebd89`）で公開済み。APPの理論株価`intrinsic_value_per_share`は1,135.99ドルで試算どおり。10-22朝はチャット側が確かめる
-   - 日時: ①10-22 05:30〜06:00 JSTのStonks Silo・TANUKI VALUATIONの後（Layer3をその場で作る読み手なので、日曜を待たずに出る。事例39）、②次の日曜（10-25）のSEC_Data_Updateと連鎖のTANUKI VALUATIONの後
-   - 期限: 2026-10-26
-   - ①済（2026-10-22 05:30〜05:44 JSTのTANUKI VALUATION、`eccc5ef5d9`）: APP 1,135.99ドル（−1.47%、試算どおり）。全銘柄（96）の10-22の行に`method_change: LAYER3-FIRST-FILED-DATE-1`。
-     理論株価が0.1%以上動いたのはAPPだけ。HON・FLYWは不変（122.45・45.17）。判定の変化はDDOG BUY→WATCHの1件で、IV不変・株価256.43→273.09による（R-Cと無関係）
-   - HON・FLYWが①で動かなかった理由（2026-10-22、手元で確かめた）: 試算の差分は全部`common/sec_data/ttm/{T}_ttm_series.json`（SEC_Data_Updateの手順5がLayer3から作る。最終更新は10-18の連鎖）から来る。
-     TTMだけを新コードで作り直すとHON 117.33・FLYW 43.19（試算と同じ）、normalized・HypeCoreのpoc.jsonだけを作り直しても122.45・45.17のまま
-     （HONのnormalizedは営業利益率が0.2198→0.2068に変わるが理論株価は動かない。HypeCoreのrev_yoyは変わらない）。TTMの差は、HONは2026-06-30のTTMの営業利益8,366M→7,872M等、FLYWは2025-06-30以前のTTMの営業CF・FCF。②でTTMが作り直されて出る
-   - 確認の手順: ①（済、上）APPの理論株価がシミュレーションのとおり（1,135.99ドル前後〈株価・F&Gで動く分を除く〉、−1.47%）で、判定・TANUKI Scoreは変わらない。
-     history・score_historyのその日の行に`method_change: LAYER3-FIRST-FILED-DATE-1`（`config/method_change.json`の10-22・10-25・10-26）。
-     ②`common/sec_data/normalized/{T}_quarterly_normalized.json`の各エントリに`first_filed`・`first_val`が入り、`_asof`は入っていない。
-     APPの`Revenue`の2023-12-31のQ4が+953.3M。rccのCHECK-64（年次の組み替え）が約77件・23銘柄で出る（WARN、NGにしない）。
-     HONの理論株価が−4.19%（122.45→117.33）・FLYWが−4.37%（45.17→43.19）（株価・F&Gで動く分を除く）、判定・TANUKI Scoreの変化0。②でも動かなければ、チャット側が原因を調べる
-   - ②（2026-10-26 01:00 JST、SEC `40205244163`・TANUKI VALUATION `40206552306`〈`fefea12e10`〉の後）: **HONを除き済、HONだけ残す（チャット側の判断）**。株価は10-24の行と同じ（金曜の終値）で、変化はすべて株価以外から来る
-     - 済: normalized 98ファイル・56,661エントリすべてに`first_filed`・`first_val`、`_asof`は0件。APPの`Revenue`の2023-12-31のQ4（implied）が953,261,000。CHECK-64は77件・23銘柄（WARN、見込みどおり）。
-       FLYW 45.17→43.19（−4.37%、試算どおり）、APP 1,135.99のまま。96銘柄の10-26の行すべて（history・score_history）に`method_change: LAYER3-FIRST-FILED-DATE-1`
-     - 理論株価が1%以上動いた銘柄: HON −84.95%・TSLA −21.55%・LRCX +14.46%・LMT +7.48%・TDY +5.42%・FLYW −4.37%・PM +4.31%・META −3.74%・MSCI +2.40%・JNJ −1.09%。FLYW以外はREFRESHED（新しい10-Q）の銘柄。ほかはSNPS +0.17%だけ
-     - 判定の変化6件: CAKE TRIM→HOLD・CDNS HOLD→TRIM・PM TRIM→HOLD・SNPS TRIM→HOLD（HypeCoreの週次の更新でstageが変わった。株価・RSI〈10-16→10-23の終値〉による。試算ではR-CによるHypeCoreのstageの変化0）、
-       HON TRIM→WATCH・TSLA TRIM→WATCH（新しい10-Qで理論株価が下がった）。funda_scoreの変化はHON 90→40・TSLA 65→40・JNJ 55→40・LMT 65→55・META 75→100・TDY 70→80で、すべて新しい10-Qの銘柄。R-Cによる判定・funda_scoreの変化は0
-     - 残す: HONは122.45→18.43（−84.95%）で試算（117.33）と違う。2026Q3の10-Q（2026-10-22提出）が継続事業ベースの数字（Q3の売上4,994M・前年同期を10,408M→4,929Mに組み替え、Q3の営業CF 117M）で、
-       TTMの2026-09-30が旧ベースの3四半期と新ベースのQ3の混在（営業CF 1,947M・FCF 1,182M）になり、基準のFCFが5年平均4,627M→直近1年1,182M（`deviation_large`）に変わった。R-Cの分はこの変化に埋もれて分けられない。FINDINGS.md 2026-10-26
-     - HONは残す（2026-10-26）: 直しは`[[QUARTERLY-BASIS-MIX-1]]`（2026-10-26登録・実装 `6f34e661a7`）。案1（ベースが混在の印）は2026-10-26の手動のTANUKI VALUATION（run `40297293158`、`54444b67e2`）で公開済み:HONに`basis_mix`（組み替え2026-10-22）・WATCH・funda 40→25・report.txtの「DCF_Reliability: LOW ⚠️ (ベースが混在…)」・`method_change: LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1`。理論株価18.43は案4（日曜のSEC_Data_UpdateでTTMを作り直す）の後に約22.42になる見込み。下の13で済にする
-12. （済 2026-10-24、Koichiさんの目視。同時に portfolio.json を各社の画面・取引の履歴に合わせた）**Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
-   - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）。確かめていなければ10-25（上のB）
-   - 期限: 2026-10-25
-   - 確認の手順: Koichiさんが`https://koichi-shigihara2.github.io/On-a-journey/portfolio/`を開き、保有の表が9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）＋合計・キャッシュで、
-     「⚠️ 区分未反映」「⚠️ 未登録」が出ていないこと（手元のPlaywrightでは前後で同じ。総資産・時価・評価損益は株価で動く）。確かめたらこの手順を済にする
-   - 結果（2026-10-24 12:35〜12:51、Koichiさんが各社の画面と楽天の取引の履歴で確認）: portfolio.json を合わせた（株数は同じ。Moomooの TSLA 20株を Moomoo(N)〈NISA成長〉へ、Moomoo(N)の CRWV 77.92、MONEXの NVDA 172.01・cash 8,262.07、楽天の PLTR 34.6707〈実際の購入の単価。楽天の表示 177.75 は旧NISAから特定へ移したときの時価〉・SOFI 13.7474）。取得総額の合計 117,375.84→107,199.27 USD、現金の合計 9,494.27→9,508.63 USD。history.json の過去の行は直さない（次の snapshot から新しい取得総額）。手元のPlaywrightで9銘柄・警告なし・consoleのエラー0、PLTRの加重平均単価 24.32
+7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
+   - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
+   - 期限: 2026-10-31
+   - 確認の手順: 月次の行が観測日（公表日）に置かれること
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
    - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後
    - 期限: 2026-11-02
@@ -118,7 +61,51 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - rccのCHECK-66（WARN、新設）が1件（HON）で、「保存した印が食い違う」の行が無い
      - method_changeの印（`config/method_change.json`の11-01・11-02）がその日の行にある
      - 新しい四半期の申告でHONの組み替えが進んでも、印は直近4四半期がそろうまで（2027-06-30の期末まで）残る
+5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
+   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG〈case b、7月末の10-Qがcompanyfactsに未反映〉で残す。submissionsの最新も7月末でQ3の10-Qはまだ提出されていない）
+   - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
+   - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
+
+**11-01（日）の束ね**（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の15行と、束ね済みで未修正の1行（2026-10-26 終業に機械的に拾った。型は各行のとおり）:
+- 2026-10-26 型A: Layer3の`anomaly`（YTDの逆転）を読む所が無い。逆転のある6銘柄（ALAB・AMAT・CELH〈保有〉・KULR・ONDS・RKLB）、逆転の条件も入れるとALABの理論株価 −11.37%
+- 2026-10-26 型E: TSLAのreport.txt・画面のFCFの注記の文言のずれ（「FY2025」・一過性費用・FCF内訳が年次）
+- 2026-10-26 型C: TSLAの調整後EPSの公正価値の調整（2026Q2は調整、Q3の−142Mは条件3に届かず未調整）
+- 2026-10-26 型B: `ttm_calculator.py::_calc_fcf`のリースの式（CapExのタグにリースを含む銘柄〈AMZN等〉向け。TSLAは+82M）
+- 2026-10-26 型C: HONの新旧ベースの混在（`[[QUARTERLY-BASIS-MIX-1]]`で直し中。手順13で済めば「済」に）
+- 2026-10-26 型X: MACRO PULSEの予備のFOMCの日付の一覧が古い・stooqの取得2か所が`external_api.py`を通らない
+- 2026-10-26 型C: 日足の取り込み（`backfill_daily_prices`）が既存の行も上書きする（登録の手順のStep 1.5も同じ。株式分割で過去の値が直るとき〈調整後の値に置き換える必要がある場合〉も合わせて考える）
+- 2026-10-24 型X: `src/portfolio/snapshot.py`が文字コードを指定せずに読む（手元のWindowsは`PYTHONUTF8=1`が要る）
+- 2026-10-23 型C: MACRO PULSEの`05_events.csv`の`sp500_t1`〜`sp500_t20`が連邦の営業日で数える（NYSEの取引日と違う、2016〜2027年で1,576組）
+- 2026-10-23 型C: `browser_checks/check_macro_pulse.py`の不一致5件は実行の時刻による（確認の時刻の決め方）
+- 2026-10-23 型E: `common/macro_data/__init__.py`・`reader.py`の説明文が「本番消費者は存在しない」のまま
+- 2026-10-22 型E: `common/market_data/__init__.py`の説明文が「消費者はまだ存在しない」のまま
+- 2026-10-21 型E: 一覧の「誰も読まないキー」が過去に書いたキーも数える（数の名前と中身のずれ）
+- 2026-10-20 型E: TANUKI_Score_Update.ymlの名前・`workflow_dependencies.json`と中身（Portfolioのスナップショットだけ）のずれ
+- 2026-10-20 型E: 削除した`spac_shell_detection_log`・`share_unit_fix_log`・`store_v2`を文書がまだ参照している
+- 2026-10-20（束ね済み・未修正）: `common/market_data/daily/NIY=F.json`の2026-10-05〜10-07の3行がO=H=L=C・出来高0の平らな足なのに印が無い（付け直しは`--repair-provisional`、daily/のNIY=Fを読むものは無い）
+
+**起きた回・いつでも**:
+2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
+   - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
+   - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
+   - 確認の手順: Discordの1行の本文（ログに出ない）の先頭🟢／🟡／🔴・文言とOverall・終了コードが同じ重大度であること。確かめたら移設する
+9. **TANUKI TAILのRSS Monitorの残り**（`[[TAIL-RSS-FALSE-NEW-FILING-1]]`・`[[TAIL-RSS-SECRET-NAME-1]]`、どちらも移設済み。残りは「RSS 取得エラー」の回だけ。ほかの経路は2026-10-19・10-23に確認済み〈BACKLOG_DONE.mdの「確認」の欄〉）
+   - 日時: 平日の実行（cronは08:00 UTC＝17:00 JST。scheduleは数時間遅れるため`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
+   - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
+   - 確認の手順: 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている。確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
+
+**済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-26 日曜の連鎖の確認・TSLA/HONの調査・[[QUARTERLY-BASIS-MIX-1]]・MACRO PULSEのFOMC・日足の履歴（確認の残りは上の「次回の確認手順」8・7・13・5・2・9）**
+- 10-25〜26の確認 `0aed93a0be`: 手順A済（SEC_Data_Update `40205244163` 98/98・FAILED 0・Gate NG=0、SEC_USER_AGENT_EMAILのエラー0件）。手順11②はHONを除き済（normalizedの`first_filed`・`first_val`、APPのQ4 953.3M、CHECK-64 77件・23銘柄、FLYW −4.37%）。手順5は4銘柄ともSEC_LAGで残す
+- TSLA・HONの調査（読み取り）: TSLAの理論株価 −21.55%・判定TRIM→WATCHは新しい10-Q（2026Q3）の実際の業績による。HONの −84.95%は10-Qが前年同期を継続事業ベースに組み替え、TTMが新旧のベースで混ざったため。FINDINGSに4行 `1f0d0f81bc`（TSLAの注記の文言・`_calc_fcf`のリース・`anomaly`の読み手なし・TSLAのEPSの調整）
+- `[[QUARTERLY-BASIS-MIX-1]]`: 登録 `08a6c84b1c`・シミュレーション `2e8fdd9d0c`（逆転の条件でALAB −11.37%が止める条件に当たった）→実装 `6f34e661a7`（案4は「組み替えた申告」の条件だけ・案1の印・CHECK-66・method_change 10-26・11-01・11-02）→
+  手動のTANUKI VALUATION（run `40297293158`）でHONに印・WATCH・funda 25を公開、記録 `bffcc4f869`・`838cad6a23`→report.txtの注記に組み替えの3行 `e7e289c5e7`（HONは営業利益 2,407M→866M〈−64.0%〉・CapEx 374M→150M〈−59.9%〉・売上 10,408M→4,929M〈−52.6%〉、手動のTANUKI VALUATION run `40314475228`で公開）→記録 `67717d8bce`（+387行は不具合の根治のため対象外）。案4の公開は11-01（手順13）
+- `[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]` `62ca8135a7`: 新しいFOMC声明が出たら同じ月の行を判定し直す。`update_fed_context()`は週1回しか呼ばれないため、毎日の実行に「新しい声明があるときだけ」の呼び出しを足した。FRBの呼び出しは`external_api.frb_get`。確認は10-29朝（手順8）
+- `[[MARKETDATA-DAILY-HISTORY-POLICY-1]]` `1d6c35f81a`（決まり「日足は2021-01-01か上場日の遅い方から」をUPDATE_SCHEDULE.md 3章に、register_ticker.pyにStep 1.5）→S&P500の構成銘柄9つ（AVGO・BE・ILMN・P・RDDT・SKYD・TWLO・VMRK・VYLR）の過去分 `87afc91f23`
+  （取り込みは既存の行も上書きするため、重なる230行は取り込みの前の値に戻した。ブレッスの分母 50日線 494→502・200日線 492→500）→記録 `4ed8015193`（+92行も対象外）。BACKLOG_DONE.mdへ移設
+- **新しい銘柄を登録するときは、register_ticker.pyのStep 1.5が日足の過去分を取る**（手で取り直すときも`python common/market_data/fetcher.py <TICKER> --backfill --start 2021-01-01`で必ず銘柄を指定する。省くと全銘柄が対象）
 
 **2026-10-22 R-Cの公開の確認①・FINDINGS 型B・R-Aの市場データ層とTAILの段階1〜3・segment_outlookの停止（確認の残りは上の「次回の確認手順」2・5・7・8・9・11②）**
 - `e3cb083a08`: 手順11の①済（10-22 05:30〜05:44 JSTのTANUKI VALUATION、APP 1,135.99ドル）。HON・FLYWの試算の差は`common/sec_data/ttm/{T}_ttm_series.json`由来（normalized・HypeCoreではない）で、②（10-25のSEC_Data_Update）で出る。FINDINGS 型B（SECのUser-Agentの直書き10ファイル10か所・4種）
