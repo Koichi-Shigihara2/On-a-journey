@@ -9,7 +9,7 @@
 
 **件数**: 出力 20（ファイル 19・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 4／2件以上 15／規則の二重 9（検出式 11種のうち。TAILのファイルを含むもの 3）
 
-**画面の項目**: 画面が読むキー 180（この段階の書き手あり 163・ほかの書き手あり 12・画面の中で作る値 5・**書き手なし 0**）／書き手があるのに誰も読まないキー **31**
+**画面の項目**: 画面が読むキー 181（この段階の書き手あり 163・ほかの書き手あり 13・画面の中で作る値 5・**書き手なし 0**）／書き手があるのに誰も読まないキー **31**
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 35件＋ファイル名で当たった行 57件（0.0%）→ 当たらない
 
@@ -30,7 +30,7 @@
 | 2件以上 | `config/tail_kpi_map.json`<br>（1ファイル） | 銘柄ごとに監視するKPIとXBRLのタグの対応。kpi_proposer.py（手で動かす）が提案のうち照合を通ったものを書く | `kpi_proposer.py:update_tail_kpi_map` | 4・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | AS-IS-437・AS-IS-438・AS-IS-439・AS-IS-440・AS-IS-441 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/scenario/{T}/{sc_name}.json`<br>（27ファイル） | 銘柄ごとのシナリオ（bull/base/bear）のDCF。tail_dcf_bridge.py がレビューの stage2.scenarios（**AIの出力**）とLayer2のKPIから作る | `tail_dcf_bridge.py:generate_scenario_files` | 2 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-446 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/latest.json`<br>（9ファイル） | 銘柄ごとの最新の10-QのItem 4（内部統制）の抜粋と判定。**AIの出力（Grok）**: item4_excerpt_ja（抜粋の和訳）。 | `sec_ctrl_fetcher.py:main` | 3・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
-| 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`<br>（36ファイル） | 銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる | `sec_ctrl_fetcher.py:main` | 3・テスト3 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-402 | 残す（2026-10-22） |
+| 2件以上 | `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`<br>（37ファイル） | 銘柄・四半期ごとのItem 4の抜粋（latest.jsonと同じ中身の期ごとの控え）。**AIの出力**: item4_excerpt_ja。この型は{item_key}の型（mda・risk_factors・legal_proceedings）にも当たり、読み手が混ざる | `sec_ctrl_fetcher.py:main` | 3・テスト3 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-402 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/journal.json`<br>（1ファイル） | 売買・仮説の見直しの記録（判断の日誌）。画面の入力から書く（人の入力） | `workflow_write.py:register_journal` | 3・テスト1 | portfolio/tail/decision_log.html（直接）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-412・AS-IS-470 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>（9ファイル） | 銘柄ごとのXBRLのセグメント・KPIの四半期の値（Layer2）。TANUKI VALUATIONのセグメント成長率（segment_growth_xbrl.py）も読む。 | `xbrl_segment_fetcher.py:_write_layer2_output` | 8・テスト4 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`<br>（9ファイル） | 銘柄ごとのKPIの提案。**AIの出力（Grok）**: proposed_kpis・rejected_kpis（却下はXBRLとの照合の結果）。kpi_proposer.py は手で動かす（CLAUDE_CODE_START.md「TANUKI TAIL 銘柄追加手順」。ワークフローは無い） | `kpi_proposer.py:propose_kpis`<br>`kpi_proposer.py:propose_kpis`<br>`kpi_proposer.py:propose_kpis` | 3・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | — | 残す（2026-10-22） |
@@ -41,7 +41,7 @@
 | 2件以上 | `docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`<br>（43ファイル） | 銘柄・四半期ごとのレビュー。**AIの出力（Grok）**: stage1（健康度・推奨・理由等）・stage2（シナリオ〈bull/base/bear〉・KPIの予想等）・call2。grok_call1_success・grok_call2_success・stage2_json_valid はAIの呼び出しの結果の印、kpi_snapshot・layer3_snapshot・macro_snapshot は作った時点の入力の控え。レビューは対象の期にかかわらず作った時点の最新の財務で書かれる（[[TAIL-REVIEW-PERIOD-FILTER-1]]。06-06の一括生成の分は[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]、統合済み） | `quarterly_review_generator.py:generate_review` | 3・テスト1 | portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由） | — | — | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/index.json`<br>（36ファイル） | 銘柄・項目ごとに取った期の一覧（periods）。型は ctrl/{T}/index.json にも当たり、読み手の1件（sec_ctrl_fetcher.py）は ctrl の分 | `sec_items_fetcher.py:_save_result` | 2・テスト2 | portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-469 | 残す（2026-10-22） |
 | 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/latest.json`<br>（36ファイル） | 銘柄ごとの最新のMD&A・リスク要因・訴訟（item_key = mda・risk_factors・legal_proceedings）の抜粋。**AIの出力（Grok）**: excerpt_ja（和訳）。segment_outlook（MD&Aのセグメントの見通し）は2026-10-22に生成を止め、過去のファイルにだけ残る。型は ctrl/ にも当たる。 | `sec_items_fetcher.py:_save_result` | 4・テスト4 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-056・AS-IS-071 | 残す（2026-10-22） |
-| 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`<br>（174ファイル） | 銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる | `sec_items_fetcher.py:_save_result` | 5・テスト6 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-013・AS-IS-019・AS-IS-046・AS-IS-047・AS-IS-056・AS-IS-071・AS-IS-300・AS-IS-334・AS-IS-388・AS-IS-390・AS-IS-391・AS-IS-469・AS-IS-481 | 残す（2026-10-22） |
+| 2件以上 | `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`<br>（178ファイル） | 銘柄・期ごとのMD&A・リスク要因・訴訟の抜粋の控え。**AIの出力**: excerpt_ja（segment_outlook は2026-10-22に生成を止めた）。型は ctrl/ にも当たる | `sec_items_fetcher.py:_save_result` | 5・テスト6 | portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接） | 効く: TANUKI TAILの画面（保有銘柄の監視） | AS-IS-013・AS-IS-019・AS-IS-046・AS-IS-047・AS-IS-056・AS-IS-071・AS-IS-300・AS-IS-334・AS-IS-388・AS-IS-390・AS-IS-391・AS-IS-469・AS-IS-481 | 残す（2026-10-22） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -124,12 +124,12 @@
 ### `docs/portfolio/tail/data/kpi/{T}_layer2.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_KPI_Update.yml・.github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `fetched_at`(1)・`kpis`(8)・`layer2_complete`(1)・`missing_kpis`(2)・`ticker`(11)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2094・2098・3504・3681（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2147・2151・3557・3747（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 47・50・93・164・253（経由 `src/tail/prediction_tracker.py::_load_layer2_actuals`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 129・133・1539・1744・1756・1780（経由 `src/tail/quarterly_review_generator.py::load_layer2_kpi`、`src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 105・108・206・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 203・207・255・339・364（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 3320（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 3364（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 321
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1356
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
@@ -148,7 +148,7 @@
 ### `docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(1)・`proposed_kpis`(2)・`rejected_kpis`(1)・`thesis_version`(0)・`ticker`(5)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2169・2173・3516・3681（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2222・2226・3569・3747（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
 - Python・保存済みファイル: `src/tail/text_kpi_extractor.py` 行 91・95・564・679・691（経由 `src/tail/text_kpi_extractor.py::load_proposal`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 2585
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals`）
@@ -168,7 +168,7 @@
 ### `docs/portfolio/tail/data/positions_index.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_Position_Write.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `positions`(11)
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1915・1988・2000・2093・2168・3488・3496・3504・3516・3681（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1968・2041・2053・2146・2221・3541・3549・3557・3569・3747（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 399・478（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1520・1544・1906（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 222・258（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
@@ -198,8 +198,8 @@
 ### `docs/portfolio/tail/data/review_queue.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `queue`(8)
-- Python・その場で計算: `common/sec_data/report_consistency_check.py` 行 1996（経由 `src/tail/quarterly_review_generator.py::load_queue`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1996・3488・3681（経由 `src/tail/quarterly_review_generator.py::load_queue`）
+- Python・その場で計算: `common/sec_data/report_consistency_check.py` 行 2049（経由 `src/tail/quarterly_review_generator.py::load_queue`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2049・3541・3747（経由 `src/tail/quarterly_review_generator.py::load_queue`）
 - Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 42・360・593・624（経由 `src/tail/edgar_rss_monitor.py::load_queue`）
 - Python・保存済みファイル: `src/tail/prediction_tracker.py` 行 73・92・164（経由 `src/tail/review_status.py::load_queue`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 58・1504・1715・1756・1780（経由 `src/tail/quarterly_review_generator.py::load_queue`、`src/tail/review_status.py::load_queue`）
@@ -313,7 +313,7 @@
 | — | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 175・187・201 | 残す（2026-10-22） |
 | — | `value` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi/{T}_layer3.json` | 117・171・172 | 残す（2026-10-22） |
 
-### `docs/portfolio/tail/detail.html`（72項目）
+### `docs/portfolio/tail/detail.html`（73項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -388,6 +388,7 @@
 | テーゼデータなし | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 390・390・390・415 | 残す（2026-10-22） |
 | — | `unit` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi/{T}_layer3.json` | 534 | 残す（2026-10-22） |
 | — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 372・446 | 残す（2026-10-22） |
+| — | `val` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/HON/latest.json` | 369・445 | 残す（2026-10-22） |
 | — | `value` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi/{T}_layer3.json` | 262・345・345・358 | 残す（2026-10-22） |
 
 ### `docs/portfolio/tail/index.html`（98項目）
@@ -508,7 +509,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
 | 認証画面 | `value`（この段階の書き手あり） |  |
-| アプリシェル（認証後に表示） | `base`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`call2`（この段階の書き手あり）<br>`company`（この段階の書き手あり）<br>`components`（ほかの書き手あり）<br>`concerns`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`data`（この段階の書き手あり）<br>`effective`（この段階の書き手あり）<br>`entry_condition`（この段階の書き手あり）<br>`entry_date`（この段階の書き手あり）<br>`entry_price`（この段階の書き手あり）<br>`entry_story`（この段階の書き手あり）<br>`entry_story_progress`（この段階の書き手あり）<br>`excerpt`（この段階の書き手あり）<br>`excerpt_ja`（この段階の書き手あり）<br>`exit_condition`（この段階の書き手あり）<br>`exit_distance`（この段階の書き手あり）<br>`exit_distance_reason`（この段階の書き手あり）<br>`exit_guide`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`five_perspectives`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`health_score`（この段階の書き手あり）<br>`historical_analogy`（この段階の書き手あり）<br>`implication`（この段階の書き手あり）<br>`intrinsic_value`（画面の中で作る値）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`key_assumptions`（この段階の書き手あり）<br>`kpi_current`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり）<br>`kpi_format`（この段階の書き手あり）<br>`kpi_layer1_keys`（この段階の書き手あり）<br>`kpis`（この段階の書き手あり）<br>`label`（ほかの書き手あり）<br>`macro_implications`（この段階の書き手あり）<br>`market_attention`（この段階の書き手あり）<br>`material_weaknesses`（この段階の書き手あり）<br>`next_kpis`（この段階の書き手あり）<br>`next_review_focus`（この段階の書き手あり）<br>`operating_margin_terminal`（この段階の書き手あり）<br>`optimism_bias_warning`（この段階の書き手あり）<br>`outcome`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`positions`（この段階の書き手あり）<br>`positives`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`queue`（この段階の書き手あり）<br>`recommendation`（この段階の書き手あり）<br>`revenue_growth_y1`（この段階の書き手あり）<br>`revenue_growth_y2`（この段階の書き手あり）<br>`revenue_growth_y3`（この段階の書き手あり）<br>`risk_factors`（この段階の書き手あり）<br>`scenarios`（この段階の書き手あり）<br>`significant_deficiencies`（この段階の書き手あり）<br>`similarity`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`stage1`（この段階の書き手あり）<br>`stage2`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`strategy_name`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`thesis`（この段階の書き手あり）<br>`thesis_questions`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`unit`（この段階の書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`value`（この段階の書き手あり） |  |
+| アプリシェル（認証後に表示） | `base`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`call2`（この段階の書き手あり）<br>`company`（この段階の書き手あり）<br>`components`（ほかの書き手あり）<br>`concerns`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`data`（この段階の書き手あり）<br>`effective`（この段階の書き手あり）<br>`entry_condition`（この段階の書き手あり）<br>`entry_date`（この段階の書き手あり）<br>`entry_price`（この段階の書き手あり）<br>`entry_story`（この段階の書き手あり）<br>`entry_story_progress`（この段階の書き手あり）<br>`excerpt`（この段階の書き手あり）<br>`excerpt_ja`（この段階の書き手あり）<br>`exit_condition`（この段階の書き手あり）<br>`exit_distance`（この段階の書き手あり）<br>`exit_distance_reason`（この段階の書き手あり）<br>`exit_guide`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`five_perspectives`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`health_score`（この段階の書き手あり）<br>`historical_analogy`（この段階の書き手あり）<br>`implication`（この段階の書き手あり）<br>`intrinsic_value`（画面の中で作る値）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`key_assumptions`（この段階の書き手あり）<br>`kpi_current`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり）<br>`kpi_format`（この段階の書き手あり）<br>`kpi_layer1_keys`（この段階の書き手あり）<br>`kpis`（この段階の書き手あり）<br>`label`（ほかの書き手あり）<br>`macro_implications`（この段階の書き手あり）<br>`market_attention`（この段階の書き手あり）<br>`material_weaknesses`（この段階の書き手あり）<br>`next_kpis`（この段階の書き手あり）<br>`next_review_focus`（この段階の書き手あり）<br>`operating_margin_terminal`（この段階の書き手あり）<br>`optimism_bias_warning`（この段階の書き手あり）<br>`outcome`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`positions`（この段階の書き手あり）<br>`positives`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`queue`（この段階の書き手あり）<br>`recommendation`（この段階の書き手あり）<br>`revenue_growth_y1`（この段階の書き手あり）<br>`revenue_growth_y2`（この段階の書き手あり）<br>`revenue_growth_y3`（この段階の書き手あり）<br>`risk_factors`（この段階の書き手あり）<br>`scenarios`（この段階の書き手あり）<br>`significant_deficiencies`（この段階の書き手あり）<br>`similarity`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`stage1`（この段階の書き手あり）<br>`stage2`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`strategy_name`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`thesis`（この段階の書き手あり）<br>`thesis_questions`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`unit`（この段階の書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`val`（ほかの書き手あり）<br>`value`（この段階の書き手あり） |  |
 | （区画を決められない） | `base_intrinsic_value`（この段階の書き手あり）<br>`future_values`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり） |  |
 
 ### `docs/portfolio/tail/index.html`
@@ -543,7 +544,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | `spac_shell_detection_log` | いいえ（後の段階） | — | — |
 | `share_unit_fix_log` | いいえ（後の段階） | — | — |
-| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1050`<br>`src/value/hypecore/hypecore.py:1095` |
+| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1066`<br>`src/value/hypecore/hypecore.py:1111` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
 | `market_data_violations_log` | いいえ（後の段階） | — | — |
@@ -555,14 +556,14 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 規則 | ファイル数 | 場所 | TAILを含む |
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:817`<br>`common/sec_data/layer3_builder.py:1055`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | はい |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1585`<br>`common/sec_data/report_consistency_check.py:1727`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:284` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:873`<br>`common/sec_data/layer3_builder.py:1111`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | はい |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1587`<br>`common/sec_data/report_consistency_check.py:1780`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:137` | はい |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1135`<br>`docs/value-monitor/tanuki_valuation/stock.html:1136`<br>`src/value/tanuki_valuation/pipeline.py:621`<br>`src/value/tanuki_valuation/pipeline.py:623`<br>`src/value/tanuki_valuation/pipeline.py:625`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:966`<br>`src/value/tanuki_valuation/pipeline.py:967`<br>`src/value/tanuki_valuation/pipeline.py:968`<br>`src/value/tanuki_valuation/pipeline.py:969`<br>`src/value/tanuki_valuation/pipeline.py:1354`<br>`src/value/tanuki_valuation/pipeline.py:1381`<br>`src/value/tanuki_valuation/pipeline.py:1386`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1737`<br>`src/value/tanuki_valuation/pipeline.py:1915` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1115` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1099` | いいえ |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1140`<br>`docs/value-monitor/tanuki_valuation/stock.html:1141`<br>`src/value/tanuki_valuation/pipeline.py:622`<br>`src/value/tanuki_valuation/pipeline.py:624`<br>`src/value/tanuki_valuation/pipeline.py:626`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:910`<br>`src/value/tanuki_valuation/pipeline.py:930`<br>`src/value/tanuki_valuation/pipeline.py:932`<br>`src/value/tanuki_valuation/pipeline.py:1001`<br>`src/value/tanuki_valuation/pipeline.py:1002`<br>`src/value/tanuki_valuation/pipeline.py:1003`<br>`src/value/tanuki_valuation/pipeline.py:1004`<br>`src/value/tanuki_valuation/pipeline.py:1389`<br>`src/value/tanuki_valuation/pipeline.py:1416`<br>`src/value/tanuki_valuation/pipeline.py:1421`<br>`src/value/tanuki_valuation/pipeline.py:1467`<br>`src/value/tanuki_valuation/pipeline.py:1772`<br>`src/value/tanuki_valuation/pipeline.py:1950` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1127` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1111` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・AI（Grok）の呼び方（APIの宛先・再試行）（1）
 

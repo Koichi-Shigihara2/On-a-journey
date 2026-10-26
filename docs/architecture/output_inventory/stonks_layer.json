@@ -29,6 +29,10 @@
      "reader_files": 5
     },
     {
+     "key": "method_change",
+     "reader_files": 2
+    },
+    {
      "key": "tickers",
      "reader_files": 10
     }
@@ -44,7 +48,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 178,
+     "line": 180,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -52,7 +56,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 214,
+     "line": 216,
      "func": "_load_stonks_results",
      "how": "保存済みファイル",
      "via": "AST",
@@ -60,7 +64,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1069,
+     "line": 1071,
      "func": "_check_runway_divergence",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -68,7 +72,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2624,
+     "line": 2677,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -76,7 +80,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3434,
+     "line": 3487,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -148,7 +152,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 2726,
+     "line": 2731,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -164,7 +168,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 438,
+     "line": 439,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -172,7 +176,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 489,
+     "line": 490,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
@@ -180,7 +184,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 823,
+     "line": 856,
      "func": "TanukiValuationPipeline._compute_tanuki_score",
      "how": "保存済みファイル",
      "via": "grep",
@@ -188,7 +192,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 827,
+     "line": 860,
      "func": "TanukiValuationPipeline._compute_tanuki_score",
      "how": "保存済みファイル",
      "via": "AST",
@@ -196,7 +200,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1143,
+     "line": 1178,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
@@ -204,7 +208,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1322,
+     "line": 1357,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -212,7 +216,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1608,
+     "line": 1643,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "grep",
@@ -220,7 +224,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1613,
+     "line": 1648,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "AST",
@@ -228,7 +232,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3523,
+     "line": 3567,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "grep",
@@ -236,7 +240,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3527,
+     "line": 3571,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "AST",
@@ -244,11 +248,19 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3863,
+     "line": 3907,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
      "type": "Python"
+    },
+    {
+     "file": "tests/test_basis_mix.py",
+     "line": 165,
+     "func": "TestTanuki.test_score_rounds_to_watch_and_drops_yoy_parts",
+     "how": "保存済みファイル",
+     "via": "tests/test_pipeline_logic.py::_write_stonks_json",
+     "type": "テスト"
     },
     {
      "file": "tests/test_dcf_phase1_taper.py",
@@ -942,7 +954,7 @@
     "TANUKI VALUATIONの画面"
    ],
    "reader_count": 8,
-   "reader_count_test": 5,
+   "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "赤字・小型の成長株の全銘柄の評価（生存能力〈runway〉・黒字化の道筋・拡大再生産・バリュエーション・総合の判定と点数）と、四半期・年次の財務の推移（financial_vectors）。STONKS SILOの画面・TANUKI VALUATIONの赤字銘柄の評価とTANUKI Score・rcc・System Healthが読む",
@@ -1019,12 +1031,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 817,
+     "line": 873,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1055,
+     "line": 1111,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -1095,12 +1107,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1585,
+     "line": 1587,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1727,
+     "line": 1780,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -1157,7 +1169,7 @@
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 284,
+     "line": 285,
      "text": "rev_ttm       = rev.rolling(4).sum()"
     }
    ],
@@ -1287,97 +1299,97 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1135,
+     "line": 1140,
      "text": "<div class=\"upside-badge ${upside >= 0 ? 'positive' : 'negative'}\" id=\"displayUpside\">"
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1136,
+     "line": 1141,
      "text": "${upside >= 0 ? '▲' : '▼'} ${Math.abs(upside).toFixed(1)}%"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 621,
+     "line": 622,
      "text": "if upside > 30:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 623,
+     "line": 624,
      "text": "elif upside >= 10:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 625,
+     "line": 626,
      "text": "elif upside >= 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 864,
+     "line": 897,
      "text": "and upside is not None and upside < -20"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 877,
+     "line": 910,
      "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 897,
+     "line": 930,
      "text": "elif upside is not None and upside > 20 and timing >= 50:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 899,
+     "line": 932,
      "text": "elif upside is not None and upside > 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 966,
+     "line": 1001,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 967,
+     "line": 1002,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 968,
+     "line": 1003,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 969,
+     "line": 1004,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1354,
+     "line": 1389,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1381,
+     "line": 1416,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1386,
+     "line": 1421,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1432,
+     "line": 1467,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1737,
+     "line": 1772,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1915,
+     "line": 1950,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1441,7 +1453,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1115,
+     "line": 1127,
      "text": "def _determine_beta("
     }
    ],
@@ -1477,7 +1489,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1099,
+     "line": 1111,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -1609,11 +1621,11 @@
    "sites": [
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1050
+     "line": 1066
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1095
+     "line": 1111
     }
    ]
   },
@@ -3008,7 +3020,7 @@
     "note": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）"
    }
   ],
-  "written_key_count": 132,
+  "written_key_count": 133,
   "sections": [
    {
     "page": "docs/value-monitor/stonks-silo/index.html",

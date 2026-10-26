@@ -76,7 +76,7 @@
    "readers": [
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1907,
+     "line": 1960,
      "func": "_check_holdings_vs_theses",
      "how": "保存済みファイル",
      "via": "grep",
@@ -84,7 +84,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1909,
+     "line": 1962,
      "func": "_check_holdings_vs_theses",
      "how": "保存済みファイル",
      "via": "AST",
@@ -92,7 +92,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3496,
+     "line": 3549,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_holdings_vs_theses",
@@ -100,7 +100,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3681,
+     "line": 3747,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_holdings_vs_theses",
@@ -620,12 +620,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 817,
+     "line": 873,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1055,
+     "line": 1111,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -696,12 +696,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1585,
+     "line": 1587,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1727,
+     "line": 1780,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -758,7 +758,7 @@
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 284,
+     "line": 285,
      "text": "rev_ttm       = rev.rolling(4).sum()"
     }
    ],
@@ -888,97 +888,97 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1135,
+     "line": 1140,
      "text": "<div class=\"upside-badge ${upside >= 0 ? 'positive' : 'negative'}\" id=\"displayUpside\">"
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1136,
+     "line": 1141,
      "text": "${upside >= 0 ? '▲' : '▼'} ${Math.abs(upside).toFixed(1)}%"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 621,
+     "line": 622,
      "text": "if upside > 30:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 623,
+     "line": 624,
      "text": "elif upside >= 10:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 625,
+     "line": 626,
      "text": "elif upside >= 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 864,
+     "line": 897,
      "text": "and upside is not None and upside < -20"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 877,
+     "line": 910,
      "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 897,
+     "line": 930,
      "text": "elif upside is not None and upside > 20 and timing >= 50:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 899,
+     "line": 932,
      "text": "elif upside is not None and upside > 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 966,
+     "line": 1001,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 967,
+     "line": 1002,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 968,
+     "line": 1003,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 969,
+     "line": 1004,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1354,
+     "line": 1389,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1381,
+     "line": 1416,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1386,
+     "line": 1421,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1432,
+     "line": 1467,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1737,
+     "line": 1772,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1915,
+     "line": 1950,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1042,7 +1042,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1115,
+     "line": 1127,
      "text": "def _determine_beta("
     }
    ],
@@ -1078,7 +1078,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1099,
+     "line": 1111,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -1126,11 +1126,11 @@
    "sites": [
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1050
+     "line": 1066
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1095
+     "line": 1111
     }
    ]
   },
