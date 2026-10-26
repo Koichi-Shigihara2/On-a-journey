@@ -697,6 +697,25 @@ class TanukiValuationPipeline:
         return bm if bm.get("mixed") else None
 
     @staticmethod
+    def _basis_mix_restated_lines(bm: dict, limit: int = 3) -> list:
+        """ベースが混在の注記の「組み替えた期・項目・前の申告の値 → 組み替えた値（変化率）」の行。変化の大きい順にlimit件まで。
+        期は期末の月からの暦の四半期（segment_growth_xbrl._quarter_labelと同じ）。"""
+        labels = {"Revenue": "売上", "OperatingIncome": "営業利益", "CapEx": "CapEx"}
+        rows = sorted(bm.get("restated") or [], key=lambda r: -abs(r.get("change_pct") or 0))
+        lines = []
+        for r in rows[:limit]:
+            end = str(r.get("end", ""))[:10]
+            try:
+                q = f"{int(end[:4])}Q{(int(end[5:7]) - 1) // 3 + 1}"
+            except ValueError:
+                q = end
+            pct = r.get("change_pct") or 0
+            sign = "−" if pct < 0 else "+"
+            lines.append(f"組み替え: {q} {labels.get(r.get('field'), r.get('field'))} "
+                         f"{r['first_val']/1e6:,.0f}M → {r['val']/1e6:,.0f}M（{sign}{abs(pct):.1f}%）")
+        return lines
+
+    @staticmethod
     def _latest_period_missing_unsubstituted(valuation: dict) -> dict | None:
         """最新期欠けのガードが発動する（欠けがあり、年次の値での代用が無い）ならその判定結果を返す。"""
         lpm = valuation.get("latest_period_missing") or {}
@@ -2023,6 +2042,8 @@ class TanukiValuationPipeline:
                 L.append(f"DCF_Reliability: LOW ⚠️ ({BASIS_MIX_NOTE}, IV参考値)")
                 L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
                 L.append(f"   {_bm_r.get('note', '')}。")
+                for _rs in self._basis_mix_restated_lines(_bm_r):
+                    L.append(f"   {_rs}")
                 L.append("   直近の4四半期が組み替えの前後のベースで混ざるため、TTMのFCF・売上の伸び・Rule40・EPSの伸びは比べられない"
                          "（Funda_Scoreの3部品は対象外）。]")
             elif _reliability_b_raw == "LOW":

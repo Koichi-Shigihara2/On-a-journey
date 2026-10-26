@@ -179,3 +179,28 @@ class TestTanuki:
         report = pipe._generate_report("BM", v, _minimal_score_data(), _minimal_extra())
         assert f"DCF_Reliability: LOW ⚠️ ({bm.NOTE}, IV参考値)" in report
         assert "10-Q（2026-10-22提出）が前年同期を組み替え" in report
+
+    def test_report_restated_lines(self, tmp_path):
+        """組み替えた期・項目・前の申告の値 → 組み替えた値（変化率）を変化の大きい順に3件まで"""
+        pipe = _make_pipe(tmp_path)
+        v = _minimal_valuation()
+        v["basis_mix"] = dict(_BM, restated=[
+            {"field": "CapEx", "end": "2025-09-30", "first_val": 374e6, "val": 150e6, "change_pct": -59.9},
+            {"field": "OperatingIncome", "end": "2025-09-30", "first_val": 2407e6, "val": 866e6, "change_pct": -64.0},
+            {"field": "Revenue", "end": "2025-09-30", "first_val": 10408e6, "val": 4929e6, "change_pct": -52.6},
+            {"field": "Revenue", "end": "2025-06-30", "first_val": 100e6, "val": 125e6, "change_pct": 25.0},
+        ])
+        report = pipe._generate_report("BM", v, _minimal_score_data(), _minimal_extra())
+        lines = [ln.strip() for ln in report.splitlines() if ln.strip().startswith("組み替え: ")]
+        assert lines == [
+            "組み替え: 2025Q3 営業利益 2,407M → 866M（−64.0%）",
+            "組み替え: 2025Q3 CapEx 374M → 150M（−59.9%）",
+            "組み替え: 2025Q3 売上 10,408M → 4,929M（−52.6%）",
+        ]
+
+    def test_report_without_restated(self, tmp_path):
+        pipe = _make_pipe(tmp_path)
+        v = _minimal_valuation()
+        v["basis_mix"] = _BM
+        report = pipe._generate_report("BM", v, _minimal_score_data(), _minimal_extra())
+        assert "組み替え: " not in report
