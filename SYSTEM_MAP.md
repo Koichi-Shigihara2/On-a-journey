@@ -192,7 +192,7 @@ AutoTrade運用実体・OpenD前提を追記、report.txt統合レポートの�
 | MACRO PULSE | マクロ環境・景気後退リスク | docs/market-monitor/macro-pulse/ |
 | Market Pulse | 市場センチメント・資金フロー | docs/market-monitor/market-pulse/ |
 | PORTFOLIO | 保有ポートフォリオ管理 | docs/portfolio/ |
-| AutoTrade | F&G×TQQQ自動売買 | C:\Users\shigi\AutoTrade\fg_level2\（リポジトリ外、運用中の実体。下記「AutoTrade/OpenD運用前提」参照） |
+| AutoTrade | F&G×TQQQ自動売買（2026-10-26に停止。タスクスケジューラの3タスクを無効にした） | C:\Users\shigi\AutoTrade\fg_level2\（リポジトリ外。ファイルは残している。下記「AutoTrade/OpenD運用前提」参照） |
 
 （2026-07-10全件棚卸しで、上記5システムの出力先パス記載がリポジトリ実態と
 乖離していたことが判明したため修正: STONKS SILO/EPS ANALYZER/MACRO PULSE/
@@ -426,12 +426,19 @@ TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T
 
 ---
 
-## AutoTrade/OpenD運用前提（2026-07-10追記）
+## AutoTrade/OpenD運用前提（2026-07-10追記、2026-10-26 停止）
 
-**運用中の実体はリポジトリ外:** `C:\Users\shigi\AutoTrade\fg_level2\`が実際に稼働している
+**2026-10-26 停止:** Windowsタスクスケジューラの`FG_Level2_Signal`・`FG_Level2_Entry`・
+`FG_Level2_Monitor`の3タスクを無効にした（`Disable-ScheduledTask`。`Enable-ScheduledTask`で
+戻せる）。`C:\Users\shigi\AutoTrade\fg_level2\`のファイル（trader.py・config.json・
+signal.json・state.json・trade_log.jsonl等）は消さずに残している。
+ペーパーの売買は、2026-06-05の売り注文（order_id `307537`、TAKE_PROFIT +12.15%）が
+未確定のまま（state.jsonの`pending_sell`）で、それ以降止まっていた。
+
+**実体はリポジトリ外（停止まで）:** `C:\Users\shigi\AutoTrade\fg_level2\`が
 F&G Level2×TQQQ自動売買システム（Windowsタスクスケジューラから`trader.py --entry`/
 `--monitor`を日次実行、moomoo OpenD経由で発注）。signal.json/state.json/trade_log.jsonlが
-日次で更新される。
+日次で更新されていた。
 
 **リポジトリ内の陳腐化した初期複製は削除済み（2026-09-16）:** `src/subport/fg_level2/`は
 2026-05-03の開発初期に作成された同名モジュール一式（trader.py/signal.py/config.json等）
@@ -441,11 +448,12 @@ F&G Level2×TQQQ自動売買システム（Windowsタスクスケジューラか
 タスク3件の実行パス）で確認した上で削除した（`[[STALE-SUBPORT-CLEANUP-1]]`、
 詳細はBACKLOG_DONE.md「2026-09-16（完了）」参照）。
 
-**OpenD常時起動という運用前提:** AutoTrade運用のため、moomoo OpenD（ローカルゲートウェイ）は
-既に常時起動している（2026-07-10 DESIGN-16調査時に確認）。この前提により、Moomoo API Skillや
-Moomoo Skills Hub等、OpenD経由のローカル連携機能が「導入すれば追加のローカル常駐プロセスなしで
-利用可能」という状態にある。ただしPC自体の停止・再起動時はOpenD接続も途切れるため、
-GitHub Actions（クラウド・端末状態非依存）と同等の可用性は持たない。
+**OpenD常時起動の前提は無くなった（2026-10-26）:** AutoTradeの停止で、moomoo OpenD
+（ローカルゲートウェイ）を常時起動しておく理由は無くなった。2026-07-10（DESIGN-16調査時）からは
+「AutoTrade運用のためOpenDは常時起動している。Moomoo API Skill・Moomoo Skills Hub等の
+OpenD経由のローカル連携は、追加のローカル常駐プロセスなしで使える」としていたが、
+今後OpenD経由の機能を使うときは、OpenDの起動を別に用意する前提で考える
+（起動しても、PCの停止・再起動で接続が途切れ、GitHub Actionsと同じ可用性は持たない点は同じ）。
 
 ---
 
