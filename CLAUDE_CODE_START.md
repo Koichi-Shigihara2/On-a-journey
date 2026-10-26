@@ -3947,7 +3947,10 @@ python -c "import yfinance as yf; t = yf.Ticker('[TICKER]'); print(t.info.get('c
 python common/registration/register_ticker.py [TICKER] --target-status active
 ```
 
-このスクリプトはStep 1（SEC取得）・Step 2（β取得）・Step 3（TANUKI
+このスクリプトはStep 1（SEC取得）・Step 1.5（日足の過去分の取り込み。2026-10-26追加、[[MARKETDATA-DAILY-HISTORY-POLICY-1]]。
+決まり「日足は2021-01-01か上場日の遅い方から」〈`docs/architecture/UPDATE_SCHEDULE.md`の「日足の履歴の取り方」〉により、
+`python common/market_data/fetcher.py [TICKER] --backfill --start 2021-01-01`をその銘柄だけに実行する。非ブロッキングで、失敗したら登録の後に同じコマンドで取り直す。
+銘柄を省くと全銘柄の過去分を取り直すので、手で実行するときも必ず銘柄を指定する）・Step 2（β取得）・Step 3（TANUKI
 VALUATIONパイプライン実行）・Step 4（audit.py --check-beta）・Step 5
 （HypeCore、hypecore=trueのみ）・Step 5b（EPS Analyzer、eps=trueのみ）・
 Step 7（monitor_tickers.yaml追加。Step 6〈Discover登録〉は2026-10-23に削除）・Step 7.5

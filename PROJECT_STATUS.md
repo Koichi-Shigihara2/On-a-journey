@@ -81,6 +81,12 @@
 - **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の実装と案1の公開）**: 1 `6f34e661a7`（案4は「組み替えた申告」の条件だけ・案1の印・CHECK-66・method_change 10-26・11-01・11-02）。前後で変わるのはHON・RCATだけ、保有の9銘柄は変化0。手動のTANUKI VALUATION run 40297293158でHONに印・WATCH・funda 25。案4は11-01のSEC_Data_Updateで公開（次回の確認手順13）。
   **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、Python 68,533行・136ファイル（68,146行・135ファイルから+387行・+1ファイル: basis_mix.pyを足し、Layer3・TANUKI・HypeCore・rccに印の扱い。減らしたものは無い）、テスト35,158行（+181）、docs配下のHTML・JS 20,288行・20ファイル（+5）、ワークフロー20本。TANUKIのlatest.jsonの`basis_mix.restated`（組み替えた期の明細）は画面が読まず、一覧の「誰も読まないキー」に入った（50→51。下の続きで50に戻した）。
   **+387行の理由**: 不具合の根治のため（TTMが新旧のベースで混ざり、HONの理論株価が122.45→18.43〈−84.95%〉になった件）。新しい機能・出力ではないので、CHAT_RULES.md「発見の溜め方と根治の判断」6の「数を増やさない」の対象外（2026-10-26、Koichiさんの判断）
+- **2026-10-26（軽い2件: [[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]・[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）**: 1 `62ca8135a7`（新しいFOMC声明が出たら、その月の行があってもREGIME・主眼を判定し直す。
+  `update_fed_context()`は週1回〈土曜の--update-schedule〉しか呼ばれないため、毎日の実行に「新しい声明があるときだけ」の呼び出しを足した。FRBの呼び出しは`external_api.frb_get`。確認は10-29朝〈次回の確認手順8〉）、
+  2（日足の履歴の決まりをUPDATE_SCHEDULE.md 3章に、register_ticker.pyにStep 1.5〈その銘柄だけ2021-01-01から取り込む〉。上場日より遅く始まる9銘柄〈どれもS&P500の構成銘柄で登録銘柄ではない〉は報告だけ）。
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、
+  Python 68,646行・136ファイル（68,554行から+92行: 1で+73〈05_main.py +64・external_api.py +9〉、2で+19〈register_ticker.py〉。減らしたものは無い）、テスト35,300行（+117）、docs配下のHTML・JS 20,288行・20ファイル（変わらず）、ワークフロー20本。
+  +92行が「数を増やさない」の対象外（不具合の根治）に当たるかは判断していない（Koichiさんの判断）
 - **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の残り: report.txtの組み替えの明細・画面の確かめ）**: 1 `e7e289c5e7`（report.txtの「ベースが混在」の注記に、組み替えた期・項目・前の申告の値 → 組み替えた値・変化率を変化の大きい順に3件まで。`basis_mix.restated`に読み手ができ、誰も読まないキー 51→50）。
   HONは「2025Q3 営業利益 2,407M → 866M（−64.0%）・CapEx 374M → 150M（−59.9%）・売上 10,408M → 4,929M（−52.6%）」（CapExは`basis_mix.restated`の値〈Layer3の今の値〉で、BACKLOGの調査・指示の例の41Mとは違う。41Mの出どころとの照合はしていない）。
   前後の比較（手元でTANUKI全96銘柄、Grok・SECは呼ばない）: report.txtはGeneratedの行を除きHON以外の95銘柄が同じ。CHECK-INV NG=0。画面（Playwright、手元）: HONに注記・WATCH・DCF信頼性LOWの文、consoleのエラー0。TSLAは`6f34e661a7`の前のstock.htmlと本文が同じ。

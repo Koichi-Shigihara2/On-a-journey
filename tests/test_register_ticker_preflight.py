@@ -36,6 +36,7 @@ def _fake_row(ticker="AAA"):
 def _patch_all_steps_success(monkeypatch, call_log):
     """Step 1〜8をすべて成功として短絡させ、呼び出し順序だけを記録する"""
     monkeypatch.setattr(rt, "step1_sec_data", lambda t: call_log.append("step1") or True)
+    monkeypatch.setattr(rt, "step1_5_daily_history", lambda t: call_log.append("step1_5"))
     monkeypatch.setattr(rt, "step2_beta", lambda t, dry_run: call_log.append("step2"))
     monkeypatch.setattr(rt, "step4_audit", lambda t: call_log.append("step4"))
     monkeypatch.setattr(rt, "step7_monitor_register", lambda t, dry_run: call_log.append("step7"))
@@ -119,3 +120,23 @@ class TestPreflightIntegration:
         assert ok is False
         assert "step1" in call_log
         assert "step8" not in call_log
+
+
+class TestDailyHistoryStep:
+    """[[MARKETDATA-DAILY-HISTORY-POLICY-1]]: Step 1.5で、その銘柄だけ日足を2021-01-01から取り込む"""
+
+    def test_runs_after_step1_before_step2(self, monkeypatch):
+        call_log: list[str] = []
+        monkeypatch.setattr(rt, "_load_cik_row", lambda t: _fake_row(t))
+        monkeypatch.setattr(rt, "run_preflight_check", lambda t: PreflightResult(ticker=t))
+        monkeypatch.setattr(rt, "print_preflight_report", lambda result: None)
+        _patch_all_steps_success(monkeypatch, call_log)
+
+        assert rt.register_one("AAA", "candidate", dry_run=True) is True
+        assert call_log.index("step1") < call_log.index("step1_5") < call_log.index("step2")
+
+    def test_backfills_only_the_ticker_from_2021(self, monkeypatch):
+        cmds = []
+        monkeypatch.setattr(rt, "_run", lambda cmd, label: cmds.append(cmd) or 1)
+        rt.step1_5_daily_history("AAA")      # 失敗（exit 1）でも例外にしない（非ブロッキング）
+        assert cmds == [[rt.PYTHON, "common/market_data/fetcher.py", "AAA", "--backfill", "--start", "2021-01-01"]]

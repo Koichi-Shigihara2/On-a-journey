@@ -142,6 +142,23 @@ def step1_sec_data(ticker: str) -> bool:
     return True
 
 
+# ─── Step 1.5: 日足の過去分の取り込み ─────────────────────────────────────
+# 決まり「日足は2021-01-01か上場日の遅い方から」（[[MARKETDATA-DAILY-HISTORY-POLICY-1]]、2026-10-26。
+# docs/architecture/UPDATE_SCHEDULE.md「日足の履歴の取り方」）。毎日の取得は直近5日分だけを足すため、
+# 登録の時にその銘柄だけ過去分を取る（HypeCoreのMA200・β・TANUKIの価格の履歴が登録の日から動く）。
+# 上場日が2021-01-01より後の銘柄は、yfinanceが上場日からの足を返す
+DAILY_HISTORY_START = "2021-01-01"
+
+
+def step1_5_daily_history(ticker: str) -> None:
+    # 銘柄を必ず渡す（省くと fetcher.py は全銘柄の過去分を取り直す）
+    rc = _run([PYTHON, "common/market_data/fetcher.py", ticker, "--backfill", "--start", DAILY_HISTORY_START],
+              "Step 1.5: 日足の過去分の取り込み")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.5 は非ブロッキング（exit={rc}）。登録の後に同じコマンドで取り直すこと"
+              "（取れないままだと毎日の取得の日からの日足しか無い）")
+
+
 # ─── Step 2: β取得 ───────────────────────────────────────────────────────
 
 def step2_beta(ticker: str, dry_run: bool) -> None:
@@ -372,6 +389,8 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
 
     if not step1_sec_data(ticker):
         return False
+
+    step1_5_daily_history(ticker)
 
     step2_beta(ticker, dry_run)
 

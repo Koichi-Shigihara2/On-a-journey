@@ -157,6 +157,14 @@ daily/の行のうち、日足の確定前に保存したものには`_provision
 
 **`FUTURES_FINAL_DELAY`（+24時間）を維持する理由**（2026-09-30決定）: 実測では先物の日足はニューヨークの翌日0時に清算値へ置き換わるため、0にもできる。しかし0にすると、清算値の反映が遅れた日（翌日0時を過ぎても取引中の値のままの日）に、取引中の値が確定値として保存され、以後置き換わらない。+24時間の不利益は暫定の印が一晩長く残るだけ（値は翌晩の取得で清算値に置き換わり、Market Pulseでは設計上の暫定値としてdata_qualityをpartialにしない）。[[MARKETDATA-DAILY-PROVISIONAL-ROWS-1]]
 
+### 日足の履歴の取り方（2026-10-26決定、[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）
+
+- **決まり: `common/market_data/daily/{SYMBOL}.json`の日足は、2021-01-01か上場日の遅い方から持つ**（2026-08-11の一括の取り込み〈`backfill_daily_prices(start="2021-01-01")`〉と同じ。上場日が後の銘柄はyfinanceが上場日からの足を返す）
+- 毎日の取得（`fetch_daily_prices()`）は直近5日分だけを足す。対象に入った日より前の足は取らないので、**新しい銘柄は登録の時にその銘柄だけ過去分を取り込む**:
+  `python common/market_data/fetcher.py <TICKER> --backfill --start 2021-01-01`（`register_ticker.py`のStep 1.5が実行する。銘柄を省くと全銘柄の過去分を取り直すので必ず指定する）
+- 2021年より前の取り込みはしない（2026-10-14の決定。運用には不要。HypeCoreのstageの定義v2の検証の結果が際どいときだけ、hypecoreの98銘柄に限って一度だけ取り込む。取り込むときは既存の銘柄と登録の手順の両方に同じ取り込みを入れる）
+- 登録銘柄（`config/cik_lookup.csv`）以外の監視・市場の銘柄（Market Pulse・MACRO PULSE・S&P500の構成銘柄等）で、一括の取り込みの後に対象に入ったものは、入った日からの日足しか無い（2026-10-26はS&P500の構成銘柄の9銘柄。一覧は[[MARKETDATA-DAILY-HISTORY-POLICY-1]]の「対応」）。登録銘柄はすべて2021-01-01か上場日から持つ
+
 ---
 
 ## 4. 画面ごとの表示データと時点

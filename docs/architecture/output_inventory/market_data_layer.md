@@ -59,7 +59,7 @@
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml・.github/workflows/Market_Data_Weekly_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `earnings_history`(2)・`events`(2)・`recommendations_history`(2)・`symbol`(2)
 - Python・保存済みファイル: `common/market_data/reader.py` 行 297・298・318・319・342・343（経由 `common/market_data/reader.py::_load_json`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 393・430・489・521・1060（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 409・446・505・537・1076（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 70
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 330・338・347・358・367・378・389・397・400・411・423・433 ほか2（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 424
@@ -79,12 +79,12 @@
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 404・478（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 1084・1209・1232（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 639・1015（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 235・466・521・524・1060（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 236・482・537・540・1076（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 115・256（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/stonks_silo/valuation_fetcher.py` 行 94（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 104・176・288（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 744（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 426・990・1068・3267・3863（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 755（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427・1025・1103・3311・3907（経由 `common/market_data/reader.py::get_attributes`）
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 69
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 42・66・71・78・87・95・99・104・111（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 59・67・71（経由 `common/market_data/reader.py::get_attributes`）
@@ -121,15 +121,15 @@
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 806・827・844・871・948（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `common/market_data/fetcher.py` 行 614・631・718・760・761・865・866・895・1375・1386（経由 `common/market_data/fetcher.py::_load_json`、`common/market_data/fetcher.py::_stale_provisional_dates`、`common/market_data/fetcher.py::fetch_daily_prices` ほか）
 - Python・保存済みファイル: `common/market_data/reader.py` 行 71・72・97・120・149・155・179・203・228・358・377（経由 `common/market_data/reader.py::_load_daily_payload`、`common/market_data/reader.py::_load_json`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1576・3548・3681（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1578・3601・3747（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 371・374・423・674・706（経由 `common/sec_data/rotce.py::_load_prices`）
 - Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 144・304・305・435・437（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 143・237・401・402・407・445・452・453・761・762・839・869 ほか17（経由 `common/market_data/reader.py::_load_daily_payload`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 158・237・512・524（経由 `common/market_data/reader.py::_load_daily_payload`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 159・238・528・540（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 115（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/value/stonks_silo/valuation_fetcher.py` 行 87（経由 `common/market_data/reader.py::_load_daily_payload`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 737・810（経由 `common/market_data/reader.py::_load_daily_payload`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 426（経由 `common/market_data/reader.py::_load_daily_payload`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 748・821（経由 `common/market_data/reader.py::_load_daily_payload`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 427（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_verifier.py` 行 47・77（経由 `common/market_data/reader.py::_load_daily_payload`）
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Daily_Update.yml` 行 124
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
@@ -200,7 +200,7 @@
 |---|---|---|---|
 | `spac_shell_detection_log` | いいえ（後の段階） | — | — |
 | `share_unit_fix_log` | いいえ（後の段階） | — | — |
-| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1050`<br>`src/value/hypecore/hypecore.py:1095` |
+| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1066`<br>`src/value/hypecore/hypecore.py:1111` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
 | `market_data_violations_log` | いいえ（後の段階） | — | — |
@@ -226,7 +226,7 @@
 |---|---|---|---|---|---|
 | `calendar_universe.py` | 379 | — | `common/sec_data/report_consistency_check.py`<br>`src/market/macro_pulse/05_main.py`<br>`src/market/market_pulse/breadth_calculator.py`<br>`src/market/market_pulse/collect_and_send.py`<br>ほか4 | `common/market_data/daily_guard.py`<br>`common/market_data/fetcher.py`<br>`common/market_data/reader.py` | 4件 |
 | `daily_guard.py` | 84 | `.github/workflows/Market_Data_Daily_Update.yml` | — | `common/market_data/calendar_universe.py` | 3件 |
-| `fetcher.py` | 1,394 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/reader.py` | 6件 |
+| `fetcher.py` | 1,394 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/reader.py` | 7件 |
 | `reader.py` | 380 | — | `browser_checks/check_dependency_map.py`<br>`browser_checks/market_pulse_elements.py`<br>`common/sec_data/audit.py`<br>`scripts/analysis/market_pulse_redesign.py`<br>ほか9 | `common/market_data/__init__.py` | 6件 |
 
 ## 止める条件の内訳
