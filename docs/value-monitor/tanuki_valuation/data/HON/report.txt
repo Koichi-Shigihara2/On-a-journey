@@ -1,18 +1,18 @@
 HON INTEGRATED INVESTMENT REPORT
-Generated: 2026-10-26T00:36:43+09:00
+Generated: 2026-10-26T18:17:57+09:00
 Price: $221.15
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
 Classification_Pre_Rounding: HOLD
-Funda_Score: 40/100
+Funda_Score: 25/100
 Timing_Score (components):
   Deviation_Rate: -91.7%
   MA200_Deviation: -4.2%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $255 median ($186-$303) | 23 analysts | vs IV: +1283.9%
-Comment: DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH
+  Analyst_Consensus: Buy | Target: $254 median ($186-$290) | 23 analysts | vs IV: +1278.5%
+Comment: DCF信頼性LOW(ベースが混在（事業の分離・売却等による組み替え）)のためupside依存判定を抑制→WATCH
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -90,10 +90,10 @@ FCF_Breakdown（直近年）: OCF=$6,408M / CapEx=$986M / SBC(非現金)=$196M /
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)
+DCF_Reliability: LOW ⚠️ (ベースが混在（事業の分離・売却等による組み替え）, IV参考値)
   [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
-   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]
-   [DCF-REL-SYNC-1: FCF実績が5年平均から73%乖離]
+   ベースが混在（事業の分離・売却等による組み替え）: 10-Q（2026-10-22提出）が前年同期を組み替え、直近の4四半期に組み替えの前の申告の四半期が残る。
+   直近の4四半期が組み替えの前後のベースで混ざるため、TTMのFCF・売上の伸び・Rule40・EPSの伸びは比べられない（Funda_Scoreの3部品は対象外）。]
 DCF_FCF_PV: $4.82B (5yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $11.42B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $16.25B (= FCF_PV + TV_PV, Rm=10% enterprise value)
@@ -110,7 +110,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $12.30  $12.39  $12.47
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目が一過性の事業再編費用と明記されており、構造的な収益力悪化を示す兆候とは認められない。
+  Reasoning: すべて「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。
 Financial_Health:
   Net_Debt: $+10.41B (negative=net cash)
   Total_Debt: $16.59B  Cash: $5.69B  ST_Invest: $0.49B
@@ -271,13 +271,13 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 7.8x
+  Market_PER_GAAP: 11.0x
   Adjusted_EPS_PER: 8.9x (TTM調整後EPS: $24.9739)
-  Delta: +1.1x (more expensive on adjusted basis)
+  Delta: -2.1x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-22
-  Next_Quarter_EPS: $2.16 (yfinance analyst estimate)
-  Next_FY_EPS: $9.82 (yfinance forward EPS)
+  Next_Quarter_EPS: $2.45 (yfinance analyst estimate)
+  Next_FY_EPS: $9.84 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -299,10 +299,10 @@ Phase_History (recent 6 months):
 2026-09: Phase4 (期待剥落期)
 2026-10: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 7.8x
-  PEG: 3.47
-  PS:  1.8x
-  EV_EBITDA: 10.9x
+  PER: 11.0x
+  PEG: 3.31
+  PS:  1.9x
+  EV_EBITDA: 9.0x
   PEG_Signal: 割高水準（成長率対比でPEG>2.0）
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
@@ -322,9 +322,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 4.44%  (ForwardEPS $9.82 / Price $221.15)
+  Forward_Earnings_Yield: 4.45%  (ForwardEPS $9.84 / Price $221.15)
   Risk_Free_Rate (10Y):  4.99%  (^TNX 2026-10-23)
-  ERP: -0.55%
+  ERP: -0.54%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 4.99%, ^TNX 2026-10-23]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -348,7 +348,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 2.5%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $255 median ($186-$303) | 23 analysts | vs IV: +1283.9%
+Analyst_Consensus: Buy | Target: $254 median ($186-$290) | 23 analysts | vs IV: +1278.5%
 Insider_Activity: Sell優勢 | 買い0件 / 売り7件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 3.9%

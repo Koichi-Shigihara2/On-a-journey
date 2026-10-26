@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -91.7,
-  "calculation_date": "2026-10-26T00:36:43+09:00",
+  "calculation_date": "2026-10-26T18:17:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 210000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が一過性の事業再編費用と明記されており、構造的な収益力悪化を示す兆候とは認められない。"
+        "reasoning": "すべて「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -344,34 +344,92 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.226363546248248,
-    "per": 7.803987,
+    "per": 10.964303,
     "per_is_forward": false,
     "per_adjusted": 8.86,
-    "peg": 3.4743,
-    "ps": 1.7606297,
-    "ev_ebitda": 10.936,
+    "peg": 3.3074,
+    "ps": 1.8570669,
+    "ev_ebitda": 9.035,
     "ma200": 230.72868743896484,
-    "forward_eps": 9.81581,
-    "next_quarter_eps": 2.16,
-    "analyst_target_median": 255.0,
-    "analyst_target_mean": 254.91304,
+    "forward_eps": 9.84365,
+    "next_quarter_eps": 2.45,
+    "analyst_target_median": 254.0,
+    "analyst_target_mean": 253.47826,
     "analyst_target_low": 186.0,
-    "analyst_target_high": 303.0,
+    "analyst_target_high": 290.0,
     "analyst_count": 23,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.04465558,
-    "payout_ratio": 0.347,
+    "dividend_yield": 0.035912234,
+    "payout_ratio": 0.38869998,
     "insider_buy_count": 0,
     "insider_sell_count": 7,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-10-05",
     "revenue_ttm": 33614000000,
     "revenue_ttm_end": "2026-09-30",
-    "analyst_vs_iv": 1283.9,
+    "analyst_vs_iv": 1278.5,
     "max_eps": 22.957,
     "max_eps_per": 9.6,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30"
+  },
+  "basis_mix": {
+    "mixed": true,
+    "recast_filed": "2026-10-22",
+    "trigger_filed": "2026-10-22",
+    "trigger_form": "10-Q",
+    "restated": [
+      {
+        "field": "CapEx",
+        "end": "2025-09-30",
+        "first_val": 374000000.0,
+        "val": 150000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -59.9
+      },
+      {
+        "field": "OperatingIncome",
+        "end": "2025-09-30",
+        "first_val": 2407000000,
+        "val": 866000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -64.0
+      },
+      {
+        "field": "Revenue",
+        "end": "2025-09-30",
+        "first_val": 10408000000,
+        "val": 4929000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -52.6
+      }
+    ],
+    "latest_end": "2026-09-30",
+    "old_basis_quarters": {
+      "Revenue": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "OperatingIncome": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "CapEx": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ]
+    },
+    "mixed_ttm_ends": [
+      "2025-09-30",
+      "2025-12-31",
+      "2026-03-31",
+      "2026-06-30",
+      "2026-09-30"
+    ],
+    "note": "ベースが混在（事業の分離・売却等による組み替え）: 10-Q（2026-10-22提出）が前年同期を組み替え、直近の4四半期に組み替えの前の申告の四半期が残る"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -402,12 +460,12 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.0755599039540531,
   "tanuki_score": "WATCH",
-  "funda_score": 40,
-  "score_comment": "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH",
+  "funda_score": 25,
+  "score_comment": "DCF信頼性LOW(ベースが混在（事業の分離・売却等による組み替え）)のためupside依存判定を抑制→WATCH",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "割高(-92%超)、FCF黒字、売上安定成長",
+  "pre_rounding_comment": "割高(-92%超)、FCF黒字",
   "rounded_by_policy": "B",
   "matrix": {
     "matrix": "④キャッシュ創出力系",
@@ -417,7 +475,7 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "LAYER3-FIRST-FILED-DATE-1",
+  "method_change": "LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -541,7 +599,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0055,
+  "erp": -0.0054,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
