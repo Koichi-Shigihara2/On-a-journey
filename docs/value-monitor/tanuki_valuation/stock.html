@@ -1090,6 +1090,11 @@ function render(d) {
           ? 'FCFは年次の値で評価しています（判定は通常どおり）。'
           : 'FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWATCHに丸めています。'}</span>
       </div>` : ''}
+      ${d.basis_mix && d.basis_mix.mixed ? `
+      <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
+        ⚠️ <strong>ベースが混在（事業の分離・売却等による組み替え）</strong><br>
+        <span style="font-size:12px">${d.basis_mix.note || ''}。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして判定をWATCHに丸め、Funda_Scoreの売上の伸び・Rule40・EPSの伸びは使っていません。</span>
+      </div>` : ''}
       ${fcfLowReliability ? `
       <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
         ⚠️ <strong>FCF信頼性注意（${industryName || sectorName}）</strong><br>

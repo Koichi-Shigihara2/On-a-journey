@@ -392,8 +392,19 @@ def calc_ttm_series(
     return series
 
 
-def save_ttm_series(ticker: str, series: list[dict], n_periods: int = 6) -> str:
-    """TTM系列をJSONファイルに保存し、パスを返す"""
+def mark_basis_mix(series: list[dict], basis_mix: dict | None) -> list[dict]:
+    """ベースが混在（[[QUARTERLY-BASIS-MIX-1]]、common/sec_data/basis_mix.py）の期末の点に
+    "basis_mixed": true を付ける（混在していなければ何も付けない）。"""
+    ends = set((basis_mix or {}).get("mixed_ttm_ends") or [])
+    for s in series:
+        if s.get("ttm_end") in ends:
+            s["basis_mixed"] = True
+    return series
+
+
+def save_ttm_series(ticker: str, series: list[dict], n_periods: int = 6,
+                    basis_mix: dict | None = None) -> str:
+    """TTM系列をJSONファイルに保存し、パスを返す。basis_mix（混在の判定）があればファイルの先頭に置く"""
     os.makedirs(TTM_DIR, exist_ok=True)
     path = os.path.join(TTM_DIR, f"{ticker.upper()}_ttm_series.json")
     data = {
@@ -402,6 +413,8 @@ def save_ttm_series(ticker: str, series: list[dict], n_periods: int = 6) -> str:
         "n_periods": n_periods,
         "series": series,
     }
+    if basis_mix:
+        data["basis_mix"] = basis_mix
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     logger.info("[%s] TTM series saved -> %s", ticker, path)

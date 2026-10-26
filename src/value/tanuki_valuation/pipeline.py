@@ -40,6 +40,7 @@ _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_
 if _REPO_ROOT_FOR_IMPORT not in sys.path:
     sys.path.insert(0, _REPO_ROOT_FOR_IMPORT)
 from common.sec_data.contracts import Classification  # GATE2-PHASE3B-1③-b
+from common.sec_data.basis_mix import NOTE as BASIS_MIX_NOTE  # [[QUARTERLY-BASIS-MIX-1]] ベースが混在の注記
 from common.method_change import stamp as _stamp_method_change  # [[LAYER3-RETENTION-PERIOD-1]] 計算方法の変更の印
 from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     build_ticker_store,
@@ -690,6 +691,12 @@ class TanukiValuationPipeline:
         return (required_fcf5 / fcf_base) ** 0.2 - 1
 
     @staticmethod
+    def _basis_mixed(valuation: dict) -> dict | None:
+        """ベースが混在（[[QUARTERLY-BASIS-MIX-1]]、common/sec_data/basis_mix.py）ならその判定結果を返す。"""
+        bm = valuation.get("basis_mix") or {}
+        return bm if bm.get("mixed") else None
+
+    @staticmethod
     def _latest_period_missing_unsubstituted(valuation: dict) -> dict | None:
         """最新期欠けのガードが発動する（欠けがあり、年次の値での代用が無い）ならその判定結果を返す。"""
         lpm = valuation.get("latest_period_missing") or {}
@@ -754,6 +761,9 @@ class TanukiValuationPipeline:
         # 年次で代用している場合（substituted_by_annual=True）は判定を変えない（注記だけ）
         if TanukiValuationPipeline._latest_period_missing_unsubstituted(valuation):
             return "LOW"
+        # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]、2026-10-26）: TTMの4四半期が組み替えの前後のベースで混ざるならLOW
+        if TanukiValuationPipeline._basis_mixed(valuation):
+            return "LOW"
 
         fcf_outlier = valuation.get("fcf_outlier", {}) or {}
         detected = fcf_outlier.get("detected", False)
@@ -810,6 +820,10 @@ class TanukiValuationPipeline:
         yoy_dec = eps_entry.get("yoy_growth")
         if yoy_dec is not None:
             eps_yoy = yoy_dec * 100
+
+        # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]）の間は、前年と比べる部品（売上の伸び・Rule40・EPSの伸び）を使わない
+        if self._basis_mixed(valuation):
+            rev_yoy = rule40_yoy_netmargin = eps_yoy = None
 
         # calcFunda (JS移植)
         funda = 0
@@ -944,7 +958,9 @@ class TanukiValuationPipeline:
                 and self._calc_dcf_reliability_policy_b(valuation) == "LOW"):
             score = Classification.WATCH
             _lpm = self._latest_period_missing_unsubstituted(valuation)
+            _bm = self._basis_mixed(valuation)
             comment = (f"DCF信頼性LOW({_lpm['note']})のためupside依存判定を抑制→WATCH" if _lpm
+                       else f"DCF信頼性LOW({BASIS_MIX_NOTE})のためupside依存判定を抑制→WATCH" if _bm
                        else "DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH")
             sell_reason = None
             _rounded_by_policy = "B"
@@ -2002,6 +2018,13 @@ class TanukiValuationPipeline:
                 L.append(f"DCF_Reliability: LOW ⚠️ ({_lpm_r['note']}, IV参考値)")
                 L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
                 L.append("   TTMの最新の点で営業CF・設備投資の4四半期がそろわず、古い点のFCFで評価しているため。]")
+            elif self._basis_mixed(valuation):
+                _bm_r = self._basis_mixed(valuation)
+                L.append(f"DCF_Reliability: LOW ⚠️ ({BASIS_MIX_NOTE}, IV参考値)")
+                L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")
+                L.append(f"   {_bm_r.get('note', '')}。")
+                L.append("   直近の4四半期が組み替えの前後のベースで混ざるため、TTMのFCF・売上の伸び・Rule40・EPSの伸びは比べられない"
+                         "（Funda_Scoreの3部品は対象外）。]")
             elif _reliability_b_raw == "LOW":
                 L.append("DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)")
                 L.append("  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。")

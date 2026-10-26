@@ -37,6 +37,7 @@ from common.sec_data.layer3_builder import (  # noqa: E402
     build_ticker_store, get_quarterly_series,
 )
 from common.method_change import stamp as _stamp_method_change  # noqa: E402  計算方法の変更の印
+from common.sec_data.basis_mix import from_store as _basis_mix_from_store  # noqa: E402  [[QUARTERLY-BASIS-MIX-1]]
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-8:
 # yfinance直接呼び出し（.history()・.info・upgrades_downgrades・
@@ -292,6 +293,21 @@ def fetch_quarterly_fundamentals(ticker: str) -> pd.DataFrame:
     # 明示。NAMING_CONVENTIONS.md規則2、STONKS SILOのrule40_cagr3y_opmarginとの
     # 定義相違を区別するための改名）。
     rule40_yoy_netmargin = rev_yoy + net_margin if not net_margin.empty else pd.Series(dtype=float)
+
+    # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]、common/sec_data/basis_mix.py）: その期か1年前の期で終わる
+    # 4四半期が組み替えの前後のベースで混ざる期は、売上の伸び・Rule40を使わない（None）
+    bm = _basis_mix_from_store(store)
+    if bm:
+        mixed_ends = set(bm.get("mixed_ttm_ends") or [])
+        ends = [d.strftime("%Y-%m-%d") for d in rev_yoy.index]
+        bad = [rev_yoy.index[i] for i, e in enumerate(ends)
+               if e in mixed_ends or (i >= 4 and ends[i - 4] in mixed_ends)]
+        if bad:
+            rev_yoy = rev_yoy.copy()
+            rev_yoy.loc[bad] = np.nan
+            if not rule40_yoy_netmargin.empty:
+                rule40_yoy_netmargin = rule40_yoy_netmargin.copy()
+                rule40_yoy_netmargin.loc[rule40_yoy_netmargin.index.intersection(bad)] = np.nan
 
     result = pd.DataFrame({
         "rev_yoy":              rev_yoy,

@@ -675,6 +675,17 @@ class TanukiDataFetcher:
         if latest_period_missing:
             print(f"   [{ticker}] ⚠️ {latest_period_missing['note']}")
 
+        # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]、common/sec_data/basis_mix.py。混在していなければNone）
+        basis_mix = None
+        if HAS_SEC:
+            try:
+                from common.sec_data.basis_mix import load as _load_basis_mix
+                basis_mix = _load_basis_mix(ticker)
+            except Exception as e:
+                print(f"   [{ticker}] ベースの混在の判定エラー: {e}")
+        if basis_mix:
+            print(f"   [{ticker}] ⚠️ {basis_mix['note']}")
+
         ttm_series_data = ttm_reader.get_series()
         rice_annual_data = build_rice_annual_shape(ttm_series_data) if ttm_series_data else []
         if rice_annual_data:
@@ -1001,6 +1012,7 @@ class TanukiDataFetcher:
             "fcf_ttm_end": fcf_ttm_end,
             "fcf_ttm_periods": fcf_ttm_periods,
             "latest_period_missing": latest_period_missing,
+            "basis_mix": basis_mix,
             "rice_annual_data": rice_annual_data,
             "rice_data_source": rice_data_source,
             "rice_sector": self._get_rice_sector(ticker, sector),

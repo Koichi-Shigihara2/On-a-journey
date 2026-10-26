@@ -13,6 +13,8 @@ report_consistency_check.py
   WARN 63. 最新期欠け          latest.jsonのlatest_period_missingで、TTMの最新の点の営業CF・設備投資が欠け、
                               年次の値での代用も無い（DCF信頼性LOW→WATCH、[[LAYER3-LATEST-FILING-TAG-DROP-1]]）
                               （2026-09-26、MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1）
+  WARN 66. ベースが混在        TTMの4四半期が組み替え（事業の分離・売却等）の前後のベースで混ざる銘柄と期
+                              （DCF信頼性LOW→WATCH、common/sec_data/basis_mix.py、[[QUARTERLY-BASIS-MIX-1]]、2026-10-26）
   NG  4. 割引率1段             Discount_Rate_Primary 行なし（旧WACC単独形式）
   NG  7. RPO条件違反           RPO_PV>0 & whitelist外 & RPO/Revenue<0.3
   NG  8. Matrix④高FCFラベル赤字 Matrix④ Label="高FCF" & 最新FCF実績マイナス
@@ -1721,6 +1723,57 @@ def _check_restated_annual(norm_dir: Optional[str] = None) -> list[tuple[str, st
                 out.append((t, f"  [WARN-64 年次の組み替え] {t}: {fname} {a['end']} 年次 今{cur / 1e6:,.1f}M"
                                f"（{a.get('filed', '?')}）／最初{first / 1e6:,.1f}M（{a.get('first_filed', '?')}）、"
                                f"ずれ{(cur - first) / abs(cur) * 100:+.1f}%{basis}"))
+    return out
+
+
+def _check_basis_mix(ttm_dir: Optional[str] = None, norm_dir: Optional[str] = None) -> list[tuple[str, str]]:
+    """CHECK-66: ベースが混在（事業の分離・売却等による組み替え）の銘柄と期（2026-10-26新設、NG化しない、
+    [[QUARTERLY-BASIS-MIX-1]]）。
+
+    判定は common/sec_data/basis_mix.py の1か所（TANUKI VALUATIONのDCF信頼性LOW・HypeCoreのrev_yoyと同じ）。
+    TTM（ttm/{T}_ttm_series.json）の "basis_mix" を読み、無ければLayer3から同じ規則で判定する。
+    SEC_Data_Updateが書いたnormalizedの "basis_mix"・TTMの点の "basis_mixed" が判定と食い違えば、そのことも書く。
+    台帳は {"check": "WARN-66", "ticker": 銘柄, "match": "組み替え <組み替えの日>"}。
+    Returns: [(ticker, WARNメッセージ)]
+    """
+    from common.sec_data import basis_mix as _bm
+    tdir = ttm_dir or TTM_DIR
+    ndir = norm_dir or NORMALIZED_DIR
+    out: list[tuple[str, str]] = []
+    if not os.path.isdir(tdir):
+        return out
+    for name in sorted(os.listdir(tdir)):
+        if not name.endswith("_ttm_series.json"):
+            continue
+        t = name[: -len("_ttm_series.json")]
+        try:
+            info = _bm.load(t, ttm_dir=tdir)
+        except Exception as e:
+            out.append((t, f"  [WARN-66 ベースが混在] {t}: 判定できない（{type(e).__name__}: {e}）"))
+            continue
+        try:
+            with open(os.path.join(tdir, name), encoding="utf-8") as f:
+                ttm = json.load(f) or {}
+        except Exception:
+            ttm = {}
+        marked = sorted(p.get("ttm_end") for p in ttm.get("series") or [] if p.get("basis_mixed"))
+        stored_norm = None
+        try:
+            with open(os.path.join(ndir, f"{t}_quarterly_normalized.json"), encoding="utf-8") as f:
+                stored_norm = (json.load(f) or {}).get("basis_mix")
+        except Exception:
+            pass
+        if _bm.is_mixed(info):
+            old = "・".join(f"{fld} {','.join(ends)}" for fld, ends in (info.get("old_basis_quarters") or {}).items())
+            out.append((t, f"  [WARN-66 ベースが混在] {t}: 組み替え {info.get('recast_filed')}（きっかけ "
+                           f"{info.get('trigger_form', '')} {info.get('trigger_filed')}）、最新期 {info.get('latest_end')}、"
+                           f"旧ベースの四半期 {old}、混在するTTMの期末 {','.join(info.get('mixed_ttm_ends') or [])}"
+                           f" → DCF信頼性LOW・WATCH、fundaの3部品とHypeCoreのrev_yoy・Rule40は対象外"))
+        if "basis_mix" in ttm:
+            want = sorted(info.get("mixed_ttm_ends") or []) if _bm.is_mixed(info) else []
+            if marked != want or (stored_norm or None) != (ttm.get("basis_mix") or None):
+                out.append((t, f"  [WARN-66 ベースが混在] {t}: 保存した印が食い違う（TTMの点 {marked}・判定 {want}・"
+                               f"normalized {'あり' if stored_norm else 'なし'}）→ SEC_Data_Updateで作り直す"))
     return out
 
 
@@ -3596,6 +3649,19 @@ def run_checks(args=None) -> tuple[int, int]:
     if restated_msgs:
         flagged.append(("[GLOBAL]", [], restated_msgs))
         total_warn += len(restated_msgs)
+
+    # CHECK-66: ベースが混在（事業の分離・売却等による組み替え）の銘柄と期（NG化しない、[[QUARTERLY-BASIS-MIX-1]]）
+    basis_msgs = []
+    for _t, _w in _check_basis_mix():
+        if ticker_filter and _t not in ticker_filter:
+            continue
+        _msg, _is_new = annotate_warn(_t, _w, warn_ledger)
+        basis_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if basis_msgs:
+        flagged.append(("[GLOBAL]", [], basis_msgs))
+        total_warn += len(basis_msgs)
 
     # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
     # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。

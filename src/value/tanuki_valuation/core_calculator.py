@@ -955,6 +955,9 @@ class KoichiValuationCalculator:
                 "insider_latest_date": financials.get("insider_latest_date"),
             }
         }
+        # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]）。混在しているときだけキーを置く
+        if financials.get("basis_mix"):
+            result["basis_mix"] = financials["basis_mix"]
 
         return result
 

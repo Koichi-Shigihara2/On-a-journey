@@ -96,6 +96,13 @@ NON_ADDITIVE_FIELDS = frozenset({
     "shares_outstanding_period_end_sec",
 })
 
+# [[QUARTERLY-BASIS-MIX-1]] 案4（2026-10-26）: YTDの差し引きで四半期を作るとき、今の累計の申告が前年同期を
+# この割合以上組み替えていて、前の累計がそれより前の申告から来ていれば、作らずに欠けにする（累計どうしの
+# ベースが違う）。HONの2026Q3の10-Qは比較期間を継続事業ベースに組み替え、「9か月（新しいベース）− 6か月
+# （前の10-Q、旧ベース）」のCapExが369−538=−169になっていた。累計の逆転（今の累計が前の累計より小さい）だけでは
+# 欠けにしない（ALAB等のCapExで理論株価が変わるため。2026-10-26のシミュレーション、FINDINGS.md 2026-10-26）
+YTD_RESTATE_MIN_RATIO = 0.20
+
 # [[LAYER3-ANNUAL-MISCLASSIFICATION-BBAI-1]]対応。quarterly.py::
 # _classify_period()の`fp=='FY' and days>130`判定（[[XBRL-TAG-KLAC-1]]
 # 対応時に追加、[[QUARTERLY-CLASSIFY-PERIOD-NO-UPPER-BOUND-1]]で上限が
@@ -680,9 +687,40 @@ def _apply_sign_normalize(entries: list, mode: str | None) -> list:
 # YTD→単四半期差分変換（NORMALIZER-YTD-METADATA-STALE-1対応）
 # ---------------------------------------------------------------------------
 
-def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
+def _restating_filings(raw_entries: list) -> frozenset:
+    """[[QUARTERLY-BASIS-MIX-1]] 案4: 同じ項目の前年の同じ期（YTD・単独四半期）を YTD_RESTATE_MIN_RATIO 以上
+    組み替えた申告（accn）。first_filed が今の申告より前で、first_val と今の値の差が first_val の絶対値の
+    その割合以上で、同じ申告がその期の約1年後（330〜400日）の同じ長さの期も申告しているもの。"""
+    by_accn: dict = defaultdict(set)
+    for e in raw_entries:
+        if not e.get("is_annual") and e.get("accn") and e.get("start") and e.get("end"):
+            by_accn[e["accn"]].add((e["start"], e["end"]))
+    out = set()
+    for e in raw_entries:
+        fv, ff, v, f, accn = e.get("first_val"), e.get("first_filed"), e.get("val"), e.get("filed"), e.get("accn")
+        if e.get("is_annual") or fv is None or v is None or not fv or not ff or not f or not accn or ff >= f:
+            continue
+        if abs(v - fv) < YTD_RESTATE_MIN_RATIO * abs(fv):
+            continue
+        try:
+            s0, e0 = date.fromisoformat(e["start"]), date.fromisoformat(e["end"])
+            later = any(330 <= (date.fromisoformat(e1) - e0).days <= 400
+                        and abs((date.fromisoformat(e1) - date.fromisoformat(s1)).days - (e0 - s0).days) <= 15
+                        for s1, e1 in by_accn[accn])
+        except (KeyError, ValueError, TypeError):
+            later = False
+        if later:
+            out.add(accn)
+    return frozenset(out)
+
+
+def _ytd_to_quarterly(fy_entries: list, restating: frozenset = frozenset()) -> tuple[list, list]:
     """
     YTDエントリのリストを受け取り、差分変換した単一四半期エントリを返す。
+
+    [[QUARTERLY-BASIS-MIX-1]] 案4: 今の累計の申告がrestating（_restating_filings()）に入っていて
+    前の累計がそれより前の申告から来ているときは、差し引きで四半期を作らずに欠けにする
+    （次の差し引きの起点には今の累計を使う）。
 
     normalizer.py::_ytd_to_quarterly() と同一のアルゴリズムだが、差分変換後の
     start/period_days を変換後の期間（前四半期end翌日〜当四半期end）に
@@ -705,6 +743,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
     prev_ytd: float = 0
     prev_ytd_known = False
     prev_end: str | None = None
+    prev_filed = ""
     # [[LAYER3-FIRST-FILED-DATE-1]]: 前回までの累計の first_filed・first_val・_asof（valと同じ計算でたどる）
     prev_first: dict = ZERO_TERM
 
@@ -716,6 +755,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd += standalone
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_filed = max(prev_filed, entry.get("filed", ""))
             prev_first = derive([(1, prev_first), (1, entry)])
             new_entry["val"] = standalone
             converted.append(new_entry)
@@ -726,6 +766,18 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
             prev_ytd = entry["val"]
             prev_ytd_known = True
             prev_end = entry["end"]
+            prev_filed = entry.get("filed", "")
+            prev_first = derive([(1, entry)])
+            continue
+
+        if entry.get("accn") in restating and prev_filed < entry.get("filed", ""):
+            logger.warning(
+                "YTD basis break for end=%s fp=%s val=%s prev_ytd=%s prev_filed=%s filed=%s: quarter left missing",
+                entry.get("end"), entry.get("fp"), entry["val"], prev_ytd, prev_filed, entry.get("filed"),
+            )
+            prev_ytd = entry["val"]
+            prev_end = entry["end"]
+            prev_filed = entry.get("filed", "")
             prev_first = derive([(1, entry)])
             continue
 
@@ -754,6 +806,7 @@ def _ytd_to_quarterly(fy_entries: list) -> tuple[list, list]:
 
         prev_ytd = entry["val"]
         prev_end = entry["end"]
+        prev_filed = entry.get("filed", "")
         new_entry["is_ytd"] = False
         new_entry["val"] = standalone
         if new_start:
@@ -772,6 +825,8 @@ def _normalize_field_entries(raw_entries: list, additive: bool = True) -> list:
 
     additive=False（株式数等の足し算できない値、NON_ADDITIVE_FIELDS）のときは
     変換せず、年次と単独四半期のエントリだけを返す（YTD累計は捨てる）。
+
+    [[QUARTERLY-BASIS-MIX-1]] 案4: 累計どうしのベースが違う差し引きは欠けにする（_ytd_to_quarterly()）。
     """
     if not raw_entries:
         return []
@@ -796,11 +851,12 @@ def _normalize_field_entries(raw_entries: list, additive: bool = True) -> list:
     for e in chain_entries:
         by_fy_start[e["start"]].append(e)
 
+    restating = _restating_filings(raw_entries)
     converted: list = []
     unresolved: list = []
     for fy_start, fy_entries in by_fy_start.items():
         sorted_entries = sorted(fy_entries, key=lambda x: x["end"])
-        c, u = _ytd_to_quarterly(sorted_entries)
+        c, u = _ytd_to_quarterly(sorted_entries, restating)
         converted.extend(c)
         unresolved.extend(u)
 

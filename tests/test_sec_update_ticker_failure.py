@@ -80,7 +80,7 @@ def pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(upd, "check_revenue_tag_conflict", lambda t, data_dir=None: {"status": "OK", "conflicts": []})
     monkeypatch.setattr(upd, "build_ticker_store", lambda t: {"fields": {}})
     monkeypatch.setattr(upd, "calc_ttm_series", lambda t, store: [])
-    monkeypatch.setattr(upd, "save_ttm_series", lambda t, s: calls["ttm_saved"].append(t))
+    monkeypatch.setattr(upd, "save_ttm_series", lambda t, s, basis_mix=None: calls["ttm_saved"].append(t))
 
     summary = tmp_path / "step_summary.md"
     result = tmp_path / "runner_temp" / "sec_update_result.json"

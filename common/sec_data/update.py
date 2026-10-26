@@ -33,7 +33,8 @@ from common.sec_data.parser import SECParser
 from common.sec_data.quarterly import build_raw_table, check_revenue_quality
 from common.sec_data.normalizer import normalize, save_normalized
 from common.sec_data.layer3_builder import build_ticker_store
-from common.sec_data.ttm_calculator import calc_ttm_series, save_ttm_series
+from common.sec_data.ttm_calculator import calc_ttm_series, mark_basis_mix, save_ttm_series
+from common.sec_data.basis_mix import from_store as basis_mix_from_store
 from common.sec_data.revenue_tag_conflict_check import check_revenue_tag_conflict, _format_conflict
 # 失敗の一覧（JSON）の書き出し先。リポジトリの外（環境変数SEC_UPDATE_RESULT → RUNNER_TEMP → 一時ディレクトリ）。
 # 巻き戻しの段（rollback_failed.py）と同じ場所を使う
@@ -242,7 +243,14 @@ def process_ticker(ticker: str, fetcher: SECFetcher, parser: SECParser, data_dir
     if store is None:
         raise TickerFailed(STAGE_TTM, "Layer3ストアを構築できない")
     ttm_series = calc_ttm_series(ticker, store)
-    save_ttm_series(ticker, ttm_series)
+    # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]）の印をTTMとnormalizedに置く（判定はLayer3で1か所、basis_mix.py）
+    bm = basis_mix_from_store(store)
+    mark_basis_mix(ttm_series, bm)
+    save_ttm_series(ticker, ttm_series, basis_mix=bm)
+    if bm:
+        normalized["basis_mix"] = bm
+        save_normalized(ticker, normalized)
+        print(f"   ⚠️ {bm['note']}")
     n = len(ttm_series)
     fields_sample = list(ttm_series[0].get("flow", {}).keys()) if ttm_series else []
     print(f"   TTM: {n} periods → {fields_sample[:5]}...")
