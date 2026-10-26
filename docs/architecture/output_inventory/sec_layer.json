@@ -3470,7 +3470,7 @@
    "top_keys": [
     {
      "key": "cik",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "entityName",
@@ -3520,6 +3520,14 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/basis_mix.py",
+     "line": 186,
+     "func": "load",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "Python"
     },
     {
@@ -3712,6 +3720,14 @@
      "func": "_check_share_count_outliers",
      "how": "保存済みファイル",
      "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 1750,
+     "func": "_check_basis_mix",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "Python"
     },
     {
@@ -4139,6 +4155,14 @@
      "type": "Python"
     },
     {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 683,
+     "func": "TanukiDataFetcher.get_financials",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "line": 402,
      "func": "TanukiValuationPipeline._get_layer3_store",
@@ -4216,6 +4240,14 @@
      "func": "TestAuditTickerCanadaCheck.test_missing_attributes_skips_check_without_error",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_basis_mix.py",
+     "line": 98,
+     "func": "TestLoad.test_reads_saved_mark_in_ttm",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "テスト"
     },
     {
@@ -5117,8 +5149,8 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 22,
-   "reader_count_test": 15,
+   "reader_count": 24,
+   "reader_count_test": 16,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
@@ -7627,7 +7659,7 @@
     },
     {
      "key": "series",
-     "reader_files": 10
+     "reader_files": 11
     },
     {
      "key": "ticker",
@@ -7681,6 +7713,22 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/basis_mix.py",
+     "line": 177,
+     "func": "load",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/basis_mix.py",
+     "line": 179,
+     "func": "load",
+     "how": "保存済みファイル",
+     "via": "AST",
      "type": "Python"
     },
     {
@@ -7853,6 +7901,14 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
+     "line": 1750,
+     "func": "_check_basis_mix",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
      "line": 1873,
      "func": "_check_stonks_silo_flag_rule",
      "how": "保存済みファイル",
@@ -7885,10 +7941,18 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
+     "line": 3655,
+     "func": "run_checks",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
      "line": 3747,
      "func": "<module>",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "Python"
     },
     {
@@ -7969,6 +8033,22 @@
      "func": "TTMReader.__init__",
      "how": "保存済みファイル",
      "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/data_fetcher.py",
+     "line": 683,
+     "func": "TanukiDataFetcher.get_financials",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 427,
+     "func": "TanukiValuationPipeline.run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "Python"
     },
     {
@@ -8076,11 +8156,19 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_basis_mix.py",
+     "line": 98,
+     "func": "TestLoad.test_reads_saved_mark_in_ttm",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_check41_registration_ng.py",
      "line": 89,
      "func": "test_run_checks_passes_registration_mode",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8113,6 +8201,102 @@
      "func": "test_contiguous_mismatch_still_warns",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 68,
+     "func": "TestPriceFromMarketData.test_current_price_from_daily_close",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 76,
+     "func": "TestPriceFromMarketData.test_missing_daily_data_gives_none_not_zero",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 83,
+     "func": "TestPriceFromMarketData.test_market_data_unavailable_entirely",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 91,
+     "func": "TestAttributesFromMarketData.test_all_fields_correctly_mapped",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 112,
+     "func": "TestAttributesFromMarketData.test_forward_pe_used_when_trailing_pe_missing",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 121,
+     "func": "TestAttributesFromMarketData.test_negative_forward_pe_used_is_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 129,
+     "func": "TestAttributesFromMarketData.test_trailing_pe_used_is_not_flagged_forward",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 137,
+     "func": "TestAttributesFromMarketData.test_missing_attributes_falls_back_to_neutral_defaults",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 165,
+     "func": "TestMa200Roundtrip.test_ma200_is_algebraically_derived_from_deviation",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 177,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_deviation_unavailable",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 184,
+     "func": "TestMa200Roundtrip.test_ma200_is_none_when_price_is_zero",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_data_fetcher_market_data_switch.py",
+     "line": 191,
+     "func": "TestSharesFromMarketData.test_implied_shares_preferred_over_outstanding",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8416,7 +8600,7 @@
      "line": 64,
      "func": "test_include_provisioning_targets_provisioning_ticker",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8424,7 +8608,7 @@
      "line": 71,
      "func": "test_ticker_excluded_to_zero_exits_2",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8432,7 +8616,7 @@
      "line": 77,
      "func": "test_ticker_meaning_unchanged_for_active",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8440,7 +8624,7 @@
      "line": 82,
      "func": "test_no_ticker_filter_keeps_active_only",
      "how": "保存済みファイル",
-     "via": "common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation",
+     "via": "common/sec_data/basis_mix.py::load",
      "type": "テスト"
     },
     {
@@ -8753,8 +8937,8 @@
    "decision_effect": [
     "理論株価・判定（TANUKI VALUATION）"
    ],
-   "reader_count": 9,
-   "reader_count_test": 10,
+   "reader_count": 10,
+   "reader_count_test": 12,
    "reader_count_compute": 2,
    "group": "2件以上",
    "note": "直近4四半期の合計（TTM）の時系列",
@@ -10921,9 +11105,7 @@
    "lines": 46,
    "workflows": [],
    "code": [],
-   "same_dir": [
-    "common/sec_data/report_consistency_check.py"
-   ],
+   "same_dir": [],
    "tests": []
   },
   {
@@ -10946,6 +11128,25 @@
     "tests/test_discord_user_agent.py",
     "tests/test_sec_update_ticker_failure.py",
     "tests/test_ttm_flow_key_names.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/basis_mix.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 190,
+   "workflows": [],
+   "code": [
+    "src/value/hypecore/hypecore.py",
+    "src/value/tanuki_valuation/data_fetcher.py",
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "same_dir": [
+    "common/sec_data/report_consistency_check.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_basis_mix.py"
    ]
   },
   {
@@ -11111,6 +11312,7 @@
     "src/value/tanuki_valuation/pipeline.py"
    ],
    "same_dir": [
+    "common/sec_data/basis_mix.py",
     "common/sec_data/newfield_q4_cutoff_check.py",
     "common/sec_data/reader.py",
     "common/sec_data/rotce.py",
@@ -11118,6 +11320,7 @@
     "common/sec_data/update.py"
    ],
    "tests": [
+    "tests/test_basis_mix.py",
     "tests/test_conditional_tags_and_stale_latest.py",
     "tests/test_contracts.py",
     "tests/test_first_filed.py",
@@ -11669,9 +11872,9 @@
   "outputs": 21,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 61,
+  "python_read_sites_into_layer_resolved": 62,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 75,
+  "name_hit_sites_resolved": 76,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",

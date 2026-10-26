@@ -567,8 +567,8 @@
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 28889,
-   "top_keys_sampled_files": 28889,
+   "files_tracked": 28985,
+   "top_keys_sampled_files": 28985,
    "top_keys": [
     {
      "key": "alpha",
@@ -581,6 +581,10 @@
     {
      "key": "approx_value",
      "reader_files": 0
+    },
+    {
+     "key": "basis_mix",
+     "reader_files": 1
     },
     {
      "key": "beta",
@@ -2152,6 +2156,10 @@
     {
      "key": "alpha_was_capped",
      "reader_files": 2
+    },
+    {
+     "key": "basis_mix",
+     "reader_files": 4
     },
     {
      "key": "breakeven_estimate",
@@ -7658,11 +7666,10 @@
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "CapEx",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/normalized/AAPL_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ABBV_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ADBE_quarterly_normalized.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
     "lines": [
@@ -7711,11 +7718,10 @@
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "Revenue",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/normalized/AAPL_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ABBV_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ADBE_quarterly_normalized.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
     "lines": [
@@ -8066,9 +8072,12 @@
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "basis_mix",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+    ],
     "label": "FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT",
     "lines": [
      1093,
@@ -8602,7 +8611,8 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
     "lines": [
@@ -9737,6 +9747,21 @@
      2758,
      2764,
      2778
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "mixed",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+    ],
+    "label": "FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT",
+    "lines": [
+     1093
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11500,11 +11525,10 @@
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "val",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/normalized/AAPL_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ABBV_quarterly_normalized.json",
-     "docs/common/sec_data/normalized/ADBE_quarterly_normalized.json"
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
     ],
     "label": "",
     "lines": [
@@ -12041,6 +12065,17 @@
     "note": "残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）"
    },
    {
+    "key": "restated",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+    ],
+    "parents": [
+     "basis_mix"
+    ],
+    "note": ""
+   },
+   {
     "key": "segment_quarter",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -12170,7 +12205,7 @@
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    }
   ],
-  "written_key_count": 632,
+  "written_key_count": 649,
   "sections": [
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
@@ -13607,7 +13642,7 @@
      },
      {
       "key": "basis_mix",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        1093,
        1093,
@@ -14214,6 +14249,13 @@
       ]
      },
      {
+      "key": "mixed",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1093
+      ]
+     },
+     {
       "key": "model",
       "status": "この段階の書き手あり",
       "lines": [
@@ -14713,7 +14755,7 @@
      },
      {
       "key": "val",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        362
       ]
@@ -15062,7 +15104,7 @@
     "keys": [
      {
       "key": "CapEx",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        395
       ]
@@ -15083,7 +15125,7 @@
      },
      {
       "key": "Revenue",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        395,
        399,
@@ -16059,7 +16101,7 @@
     "keys": [
      {
       "key": "CapEx",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        389,
        389,

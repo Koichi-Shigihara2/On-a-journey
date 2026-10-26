@@ -78,6 +78,8 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の実装と案1の公開）**: 1 `6f34e661a7`（案4は「組み替えた申告」の条件だけ・案1の印・CHECK-66・method_change 10-26・11-01・11-02）。前後で変わるのはHON・RCATだけ、保有の9銘柄は変化0。手動のTANUKI VALUATION run 40297293158でHONに印・WATCH・funda 25。案4は11-01のSEC_Data_Updateで公開（次回の確認手順13）。
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1、二重実装の規則 **14**（CHECK-INV-3の規則の種類12＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、Python 68,533行・136ファイル（68,146行・135ファイルから+387行・+1ファイル: basis_mix.pyを足し、Layer3・TANUKI・HypeCore・rccに印の扱い。減らしたものは無い）、テスト35,158行（+181）、docs配下のHTML・JS 20,288行・20ファイル（+5）、ワークフロー20本。TANUKIのlatest.jsonの`basis_mix.restated`（組み替えた期の明細）は画面が読まず、一覧の「誰も読まないキー」に入った（50→51）
 - **2026-10-26（[[QUARTERLY-BASIS-MIX-1]]の登録とシミュレーション。実装は止めた）**: 1 `1f0d0f81bc`（FINDINGSに4行: TSLAのFCFの注記の文言〈E〉・`_calc_fcf`のリース〈B〉・anomalyの読み手なし〈A〉・TSLAのEPSの調整のずれ〈C〉）、2 `08a6c84b1c`（BACKLOGに登録、アクティブ12→13件）。
   案4（YTDのベースのずれ・逆転で四半期を欠けに）・案1（ベースが混在の印）を全98銘柄で試算し、止める条件（HON・RCATのほかに理論株価1%以上・判定の変化）に当たった: 案4の逆転の条件でALABの理論株価 −11.37%（156.77→138.95、判定は変わらない）。
   結果はBACKLOG.mdの[[QUARTERLY-BASIS-MIX-1]]の「シミュレーション（2026-10-26）」。コードは変えていない（試算のコードはscratchpadに退避）。次はチャット側が直し方を決める。

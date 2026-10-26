@@ -1920,6 +1920,12 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   - HONの判定: fundaの部品（売上の伸び・Rule40・EPSの伸び）がNoneでfunda 40→25（FCFの部品だけ）、HOLD→信頼性LOWの丸めでWATCHのまま（200日線からの乖離−4.15%でSELLの技術的な条件に当たらない）
 - 決めること（チャット側）: 案4の逆転の条件を外して「組み替えた申告」だけにするか（その場合、止める条件に当たる銘柄は無い）、逆転も入れてALAB等の変化を受け入れるか
 
+#### 実装と公開（2026-10-26、Koichiさんの判断: 案4は「組み替えた申告」の条件だけ、逆転は入れない）
+- 実装 `6f34e661a7`: `common/sec_data/basis_mix.py`（判定の1か所、Layer3）、`layer3_builder.py`（案4）、`update.py`・`ttm_calculator.py`（TTMの`basis_mix`・点の`basis_mixed`、normalizedの`basis_mix`）、TANUKI VALUATION（DCF信頼性LOW→WATCH、fundaの3部品を使わない、report.txt・stock.htmlの注記）、HypeCore（rev_yoy・Rule40をNone）、rccのCHECK-66（WARN）、`config/method_change.json`の10-26・11-01・11-02
+- 前後の比較（全98銘柄、手元でHypeCore・TANUKIを前・後〈今日〉・後〈日曜のTTM〉）: 変わるのはHON・RCATだけ、保有の9銘柄は変化0、印はHONだけ（試算と同じ）
+- 公開（案1）: 2026-10-26の手動のTANUKI VALUATION（run `40297293158`）→TANUKI Score（run `40299283243`）、どちらもsuccess。HONに印・WATCH・funda 25・注記。ほかに理論株価が動いたIONQ（−5.65%）・JNJ・LMT・TSLAは、10-26のMarket Data Weeklyの株式数の更新による（判定の変化0）
+- 残り: 案4の公開（2026-11-01のSEC_Data_Update、CLAUDE_CODE_START.mdの次回の確認手順13）。逆転の6銘柄はFINDINGS.md 2026-10-26（anomalyの行）で日曜の束ねの入力
+
 ---
 
 ### [SYSHEALTH-SEVERITY-MISMATCH-1] System HealthのDiscordの先頭の絵文字・文言・各欄の絵文字・Overallの行・終了コードが別々の判定から出ていて、同じ実行で重大度が食い違う

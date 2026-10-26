@@ -100,13 +100,23 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
        HON TRIM→WATCH・TSLA TRIM→WATCH（新しい10-Qで理論株価が下がった）。funda_scoreの変化はHON 90→40・TSLA 65→40・JNJ 55→40・LMT 65→55・META 75→100・TDY 70→80で、すべて新しい10-Qの銘柄。R-Cによる判定・funda_scoreの変化は0
      - 残す: HONは122.45→18.43（−84.95%）で試算（117.33）と違う。2026Q3の10-Q（2026-10-22提出）が継続事業ベースの数字（Q3の売上4,994M・前年同期を10,408M→4,929Mに組み替え、Q3の営業CF 117M）で、
        TTMの2026-09-30が旧ベースの3四半期と新ベースのQ3の混在（営業CF 1,947M・FCF 1,182M）になり、基準のFCFが5年平均4,627M→直近1年1,182M（`deviation_large`）に変わった。R-Cの分はこの変化に埋もれて分けられない。FINDINGS.md 2026-10-26
-     - HONは残す（2026-10-26）: 直しは`[[QUARTERLY-BASIS-MIX-1]]`（2026-10-26登録）。シミュレーションで止める条件に当たり実装していない（BACKLOG.mdの「シミュレーション（2026-10-26）」）。直し方が決まって公開した後に、HONの理論株価・判定・注記を確かめて済にする
+     - HONは残す（2026-10-26）: 直しは`[[QUARTERLY-BASIS-MIX-1]]`（2026-10-26登録・実装 `6f34e661a7`）。案1（ベースが混在の印）は2026-10-26の手動のTANUKI VALUATION（run `40297293158`、`54444b67e2`）で公開済み:HONに`basis_mix`（組み替え2026-10-22）・WATCH・funda 40→25・report.txtの「DCF_Reliability: LOW ⚠️ (ベースが混在…)」・`method_change: LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1`。理論株価18.43は案4（日曜のSEC_Data_UpdateでTTMを作り直す）の後に約22.42になる見込み。下の13で済にする
 12. （済 2026-10-24、Koichiさんの目視。同時に portfolio.json を各社の画面・取引の履歴に合わせた）**Portfolioの本番の画面**（`[[HOLDINGS-SINGLE-SOURCE-1]]`、2026-10-23 第1部 `4173796c92`・第2部 `4e5fd23a0b`。BACKLOG_DONE.mdへ移設済み）
    - 日時: 2026-10-24 朝（GitHub Pagesの反映の後）。確かめていなければ10-25（上のB）
    - 期限: 2026-10-25
    - 確認の手順: Koichiさんが`https://koichi-shigihara2.github.io/On-a-journey/portfolio/`を開き、保有の表が9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA）＋合計・キャッシュで、
      「⚠️ 区分未反映」「⚠️ 未登録」が出ていないこと（手元のPlaywrightでは前後で同じ。総資産・時価・評価損益は株価で動く）。確かめたらこの手順を済にする
    - 結果（2026-10-24 12:35〜12:51、Koichiさんが各社の画面と楽天の取引の履歴で確認）: portfolio.json を合わせた（株数は同じ。Moomooの TSLA 20株を Moomoo(N)〈NISA成長〉へ、Moomoo(N)の CRWV 77.92、MONEXの NVDA 172.01・cash 8,262.07、楽天の PLTR 34.6707〈実際の購入の単価。楽天の表示 177.75 は旧NISAから特定へ移したときの時価〉・SOFI 13.7474）。取得総額の合計 117,375.84→107,199.27 USD、現金の合計 9,494.27→9,508.63 USD。history.json の過去の行は直さない（次の snapshot から新しい取得総額）。手元のPlaywrightで9銘柄・警告なし・consoleのエラー0、PLTRの加重平均単価 24.32
+13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
+   - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後
+   - 期限: 2026-11-02
+   - 確認の手順:
+     - HON・RCATのTTM（`common/sec_data/ttm/{T}_ttm_series.json`）: HONの2026Q3・2025Q3のCapExが欠けではなく候補の別のタグの値（673M・959M、TTM 2026-09-30のFCF 1,182M→約1,274M）か。RCATは2023-07-31のTTMの営業CFが欠け。HONのTTMの先頭に`basis_mix`、点に`basis_mixed`（2025-09-30〜2026-09-30）、`normalized/HON_quarterly_normalized.json`に`basis_mix`
+     - HONの理論株価が約22.42（18.43から+21.65%、株価で動く分を除く）、判定WATCH・funda 25のまま、注記が出ている
+     - ほかの銘柄の変化0（理論株価・判定・funda・stageが、株価・Market Data Weeklyの株式数等で動く分を除いて前日と同じ。HypeCoreのstageはHONも変わらない見込み）
+     - rccのCHECK-66（WARN、新設）が1件（HON）で、「保存した印が食い違う」の行が無い
+     - method_changeの印（`config/method_change.json`の11-01・11-02）がその日の行にある
+     - 新しい四半期の申告でHONの組み替えが進んでも、印は直近4四半期がそろうまで（2027-06-30の期末まで）残る
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-22 R-Cの公開の確認①・FINDINGS 型B・R-Aの市場データ層とTAILの段階1〜3・segment_outlookの停止（確認の残りは上の「次回の確認手順」2・5・7・8・9・11②）**
