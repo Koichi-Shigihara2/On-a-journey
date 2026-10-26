@@ -2951,11 +2951,11 @@ BACKLOG_DONE.md「2026-08-27（完了）」参照）
   ① Claude CodeにMoomoo API Skillをインストール・動作確認
   ② 蓄積済みsignal.jsonデータ（約62件）でF&G Level2×TQQQ戦略をバックテスト
   ③ 結果が良好なら手製trader.pyをAPI Skillに移行
-- 懸念: OpenDのローカルPC起動が前提だが、KoichiさんのAutoTrade運用のためOpenDは
-  既に常時起動しており、この制約は実質的に解消済み（2026-07-10確認）。
-  ただしPC自体の停止・再起動（ハードウェア障害・停電・OS更新等）が発生した場合は
-  連携も止まるため、「運用上の恒常的な制約」ではなく「稀な障害シナリオ」として
-  引き続き留意する
+- 懸念: OpenDのローカルPC起動が前提。2026-07-10の時点ではAutoTrade運用のためOpenDが
+  常時起動しており、この制約は実質的に解消済みとしていたが、2026-10-26にAutoTradeを停止し、
+  OpenDの常時起動の前提は無くなった（SYSTEM_MAP.md「AutoTrade/OpenD運用前提」）。
+  この項目に着手するときは、OpenDを別に起動する手順が要る。
+  起動しても、PC自体の停止・再起動（ハードウェア障害・停電・OS更新等）で連携は止まる
 - 参考: https://www.moomoo.com/ja/community/feed/moomoo-api-skills-now-unlocked-ai-becomes-a-24-7-116413328916486
 
 【SCREEN-2STAGE-1】二段階スクリーニング運用（構想）
