@@ -27,7 +27,7 @@ Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
 **次回の確認手順（2026-10-26 終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+BACKLOG.mdのアクティブは**11件**（2026-10-28、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -38,19 +38,14 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **確かめる順（日時の順）**:
 ① 10-29（木）朝 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか）
-② 10-31（金）まで … 手順7（Building Permitsの行。公表の翌朝）
-③ 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
-④ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
+② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
+③ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
 
 8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装 `62ca8135a7`。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す。BACKLOGにはこの確認まで残す）
    - 日時: 10-29（木）朝（10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
    - 期限: 2026-10-29
    - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
      REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
-7. **Building Permitsの行**（`[[MACRO-PULSE-SLOT-ROWS-1]]`）
-   - 日時: 次のBuilding Permitsの公表（10月中旬〜下旬。日付はCensusの予定表かALFREDで確かめる）の翌朝 07:15 JST（22:15 UTC）のMACRO PULSEの後
-   - 期限: 2026-10-31
-   - 確認の手順: 月次の行が観測日（公表日）に置かれること
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
    - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後
    - 期限: 2026-11-02
@@ -94,7 +89,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
    - 確認の手順: 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている。確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 
-**済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
+**済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-26 日曜の連鎖の確認・TSLA/HONの調査・[[QUARTERLY-BASIS-MIX-1]]・MACRO PULSEのFOMC・日足の履歴（確認の残りは上の「次回の確認手順」8・7・13・5・2・9）**
