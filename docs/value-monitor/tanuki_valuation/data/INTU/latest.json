@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 663.5127252663727,
   "intrinsic_value_beta": 679.07,
-  "upside_percent_beta": 99.8,
-  "intrinsic_value_rf": 3137.48,
-  "upside_percent_rf": 823.1,
-  "intrinsic_value_rf_rate": 0.04986000061035156,
+  "upside_percent_beta": 106.8,
+  "intrinsic_value_rf": 3122.4,
+  "upside_percent_rf": 850.6,
+  "intrinsic_value_rf_rate": 0.04993000030517578,
   "v0": 180854438112.86566,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.8,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 748.24,
       "value_growth_pct": 12.8,
-      "expected_return_pct": 120.1
+      "expected_return_pct": 127.8
     },
     "2年後": {
       "future_value": 843.79,
       "value_growth_pct": 27.2,
-      "expected_return_pct": 148.3
+      "expected_return_pct": 156.9
     },
     "3年後": {
       "future_value": 951.54,
       "value_growth_pct": 43.4,
-      "expected_return_pct": 180.0
+      "expected_return_pct": 189.7
     },
     "4年後": {
       "future_value": 1073.05,
       "value_growth_pct": 61.7,
-      "expected_return_pct": 215.7
+      "expected_return_pct": 226.7
     },
     "5年後": {
       "future_value": 1210.08,
       "value_growth_pct": 82.4,
-      "expected_return_pct": 256.0
+      "expected_return_pct": 268.4
     }
   },
-  "upside_percent": 95.2,
-  "calculation_date": "2026-10-27T05:41:32+09:00",
+  "upside_percent": 102.0,
+  "calculation_date": "2026-10-28T05:41:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 293000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由が一過性の事業再編費用と明記されており、構造的悪化ではなく事業運営上の一時的費用と判断される。"
+        "reasoning": "理由に「一過性の事業再編費用」と明記されており、典型的な一時的リストラ費用と判断されるため"
       }
     },
     "action": "flagged",
@@ -335,7 +335,7 @@
     "roe_10yr_avg": 0.3074588003021922,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 339.8900146484375,
+    "current_price": 328.45001220703125,
     "latest_revenue": 21448000000.0,
     "rpo": 2000000,
     "beta": 0.976,
@@ -366,11 +366,11 @@
     "alpha_uncapped": 1.291326961269207,
     "per": 20.862091,
     "per_is_forward": false,
-    "per_adjusted": 13.89,
+    "per_adjusted": 13.42,
     "peg": 0.9278,
     "ps": 4.2785425,
     "ev_ebitda": 13.577,
-    "ma200": 366.1874008178711,
+    "ma200": 364.59515075683595,
     "forward_eps": 26.94382,
     "next_quarter_eps": 2.64,
     "analyst_target_median": 400.0,
@@ -389,7 +389,7 @@
     "revenue_ttm_end": "2026-07-31",
     "analyst_vs_iv": -39.7,
     "max_eps": 24.7796,
-    "max_eps_per": 13.7,
+    "max_eps_per": 13.3,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-07-31"
   },
@@ -416,14 +416,14 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.3536547744226559,
-  "risk_free_rate_live": 0.04986000061035156,
-  "risk_free_rate_live_date": "2026-10-26",
+  "required_growth_rf_base": -0.3580654949250708,
+  "risk_free_rate_live": 0.04993000030517578,
+  "risk_free_rate_live_date": "2026-10-27",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.2684393903484352,
+  "required_growth_rf_live": -0.2727483984805351,
   "tanuki_score": "BUY",
   "funda_score": 80,
-  "score_comment": "割安圏(95%)で買い余地大、FCF黒字、売上安定成長",
+  "score_comment": "割安圏(102%)で買い余地大、FCF黒字、売上安定成長",
   "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -488,7 +488,7 @@
     "shares_yr_3ago": 283000000,
     "buyback_ttm": 5412000000.0
   },
-  "net_current_assets_ratio": 0.0612,
+  "net_current_assets_ratio": 0.0634,
   "dupont": {
     "ni_ttm": 4566000000,
     "revenue_ttm": 21448000000,
@@ -560,7 +560,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0294,
+  "erp": 0.0321,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
