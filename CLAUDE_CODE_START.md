@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-26 終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**11件**（2026-10-28、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-10-28 終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**12件**（2026-10-28 終業、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件、`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を登録して12件。`[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`は同じ日に登録・移設）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -37,12 +37,12 @@ BACKLOG.mdのアクティブは**11件**（2026-10-28、`^### [`の機械カウ�
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
 **確かめる順（日時の順）**:
-① 10-29（木）朝 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか）
+① 10-29（木）夜 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか。07:15 JSTの実行が済んだのを`gh run list`で先に確かめる）
 ② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
 ③ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
 
 8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装 `62ca8135a7`。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す。BACKLOGにはこの確認まで残す）
-   - 日時: 10-29（木）朝（10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
+   - 日時: 10-29（木）夜（2026-10-28 終業で朝→夜に。10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
    - 期限: 2026-10-29
    - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
      REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
@@ -92,6 +92,13 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
+
+**2026-10-28 手順7の済・SOFIの会社発表ROTCE（2026-Q3）・Portfolioの明細表（確認の残りは上の「次回の確認手順」8・13・5・2・9）**
+- 手順7済 `4c344f59e5`: `[[MACRO-PULSE-SLOT-ROWS-1]]`をBACKLOG_DONE.mdへ（チャット側の確認、`05_events.csv`の`permit_2026-09-01`が観測日 2026-09-01・actual 1400、8月分のrevised_actual 1403がCensusと一致、`known_at_source`=written）。コード・データの変更なし
+- SOFIの会社発表ROTCE: 2026-09-30に0.099（Q3の資料 p.51） `7cbb9652f1`・`112e2681d6`、metricの`source`・`long_term_target.source`をQ3の資料に `639033fe78`・`a7e972cca7`（guidanceのsource・既存6行は変えない）。`SOFI.json`のcompany_reportedの2026-09-30はcomputed null（Layer3にQ3が無い）。CHECK-61は0件のまま
+- **`python common/sec_data/rotce.py <TICKER>`と銘柄を指定すると、`docs/common/sec_data/rotce/_summary.json`がその銘柄だけになる**（98→1）。commitする前に戻すか、引数なし（全銘柄）で実行する。FINDINGS.md 2026-10-28（型—）`4d7b18c53c`、11-01の束ねの入力に足した `0458fa6cfd`
+- `[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`: 明細表のメモをinfo-tooltipの「メモ」に `89bedfcc01`（1900px幅でPLTRの行 465px→56px、960px幅で列は隠れる）、登録 `e6eaaaf0f5`・移設 `b249bbd5cf`
+- `[[PORTFOLIO-TABLE-OVERFLOW-1]]`登録 `9e62e38727`（明細表が1900px幅で入れ物より+103px。直し方はほかの画面の同じ形の表との揃え方を含めてチャット側が決める。実装はしていない）
 
 **2026-10-26 日曜の連鎖の確認・TSLA/HONの調査・[[QUARTERLY-BASIS-MIX-1]]・MACRO PULSEのFOMC・日足の履歴（確認の残りは上の「次回の確認手順」8・7・13・5・2・9）**
 - 10-25〜26の確認 `0aed93a0be`: 手順A済（SEC_Data_Update `40205244163` 98/98・FAILED 0・Gate NG=0、SEC_USER_AGENT_EMAILのエラー0件）。手順11②はHONを除き済（normalizedの`first_filed`・`first_val`、APPのQ4 953.3M、CHECK-64 77件・23銘柄、FLYW −4.37%）。手順5は4銘柄ともSEC_LAGで残す
