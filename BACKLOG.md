@@ -2675,22 +2675,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ## 優先度：低（アイデア段階）
 
-### [PORTFOLIO-MEMO-COLUMN-WRAP-1] Portfolioの③ポートフォリオ明細で、メモのある行（PLTR）が縦に伸びる
-**型・処置:** 型D（寸法の決め打ち）・直す（チャット側の指示、2026-10-28）
-**優先度:** 低（表示だけ。理論株価・判定・保有の数字は変わらない）
-**分類:** 画面の表示 / Portfolio（`docs/portfolio/index.html`の明細表のメモの列）
-**登録日:** 2026-10-28
-**発見:** チャット側（2026-10-28、PLTRの行が縦に伸びる）
-
-#### 内容
-- ③ポートフォリオ明細のメモの`td`（`docs/portfolio/index.html`の明細の行の最後の列）が`max-width:160px;white-space:normal`。表は`width:100%`でほかの`td`は`nowrap`のため、
-  メモの列がmin-content（約60px）まで縮み、日本語が1文字ずつ折り返して行が縦に伸びる
-- メモがあるのは`docs/portfolio/data/portfolio.json`のPLTRの1件（74文字、楽天の表示の取得単価と実際の購入の単価の違い）。メモの列はこの1か所だけ
-
-#### 直し方
-- メモの`td`の中身を、サイト共通のinfo-tooltip（`docs/common/info-tooltip.js`の`data-info-text`）の「メモ」の1語にし、全文はホバー（タップ）で出す。
-  `data-priority="low"`（960px以下で隠す）はそのまま
-- 確かめる: Playwrightで1900px幅に描画し、PLTRの行の高さがほかの行と同じ・「メモ」へのホバーで全文が出る・960px以下でメモの列が隠れる
+（[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]は2026-10-28、実装・push済みで完了、BACKLOG_DONE.md「2026-10-28（完了）」参照）
 
 ---
 

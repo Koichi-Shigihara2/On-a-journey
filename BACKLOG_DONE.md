@@ -4,6 +4,28 @@
 
 ## 2026-10-28（完了）
 
+### ✅ [PORTFOLIO-MEMO-COLUMN-WRAP-1] Portfolioの③ポートフォリオ明細で、メモのある行（PLTR）が縦に伸びる
+**完了（2026-10-28）:** 修正 `89bedfcc01`（メモのtdの中身をinfo-tooltipの`<span data-info-text="…">メモ</span>`に、max-width:160px・white-space:normalを外した。data-priority="low"はそのまま）、登録 `e6eaaaf0f5`
+- 確認（Playwright、手元でdocs/を配って描画）: 1900px幅でPLTRの行の高さ 465px→56px（ほかの行は56〜57px）、「メモ」へのホバーで全文が出る。960px幅でメモの列はdisplay:none（前後同じ）。pageerror 0件
+- 参考: 1900px幅で明細表は前後とも横に約100px溢れる（.tbl-wrapのscrollWidth 1258→1257・clientWidth 1158、右端のスコアの列が横スクロール）。この修正の前からで、変えていない
+**型・処置:** 型D（寸法の決め打ち）・直す（チャット側の指示、2026-10-28）
+**優先度:** 低（表示だけ。理論株価・判定・保有の数字は変わらない）
+**分類:** 画面の表示 / Portfolio（`docs/portfolio/index.html`の明細表のメモの列）
+**登録日:** 2026-10-28
+**発見:** チャット側（2026-10-28、PLTRの行が縦に伸びる）
+
+#### 内容
+- ③ポートフォリオ明細のメモの`td`（`docs/portfolio/index.html`の明細の行の最後の列）が`max-width:160px;white-space:normal`。表は`width:100%`でほかの`td`は`nowrap`のため、
+  メモの列がmin-content（約60px）まで縮み、日本語が1文字ずつ折り返して行が縦に伸びる
+- メモがあるのは`docs/portfolio/data/portfolio.json`のPLTRの1件（74文字、楽天の表示の取得単価と実際の購入の単価の違い）。メモの列はこの1か所だけ
+
+#### 直し方
+- メモの`td`の中身を、サイト共通のinfo-tooltip（`docs/common/info-tooltip.js`の`data-info-text`）の「メモ」の1語にし、全文はホバー（タップ）で出す。
+  `data-priority="low"`（960px以下で隠す）はそのまま
+- 確かめる: Playwrightで1900px幅に描画し、PLTRの行の高さがほかの行と同じ・「メモ」へのホバーで全文が出る・960px以下でメモの列が隠れる
+
+---
+
 ### ✅ [MACRO-PULSE-SLOT-ROWS-1] MACRO PULSEのNFP・Building Permits・Michiganの行が発表予定日の枠の日付に置かれ、後から書いた値が枠の日付の時点で使えたことになっている
 **完了（2026-10-28）:** 本番の確認で完了（チャット側の確認、origin/kaihatsu `e653c6b83c`）。コード・データの変更なし（次回の確認手順7）
 - `05_events.csv`の`permit_2026-09-01`（Building Permitsの9月分）が観測日 2026-09-01 に置かれている（予定表の枠 2026-10-20 ではない）。10-20（米国時間）の公表の後の実行で書かれた行（`updated_at` 2026-10-21 00:39:07、`known_at` 2026-10-21T00:39:07Z）
