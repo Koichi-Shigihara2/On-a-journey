@@ -2,9 +2,9 @@
   "intrinsic_value_per_share": 18.426379908824984,
   "intrinsic_value_beta": 22.6,
   "upside_percent_beta": -89.7,
-  "intrinsic_value_rf": 121.46,
-  "upside_percent_rf": -44.5,
-  "intrinsic_value_rf_rate": 0.04993000030517578,
+  "intrinsic_value_rf": 118.31,
+  "upside_percent_rf": -46.0,
+  "intrinsic_value_rf_rate": 0.050450000762939456,
   "v0": 17569915227.72188,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -91.6,
-  "calculation_date": "2026-10-28T05:41:15+09:00",
+  "calculation_date": "2026-10-29T05:43:15+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 210000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべて「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -315,7 +315,7 @@
     "roe_10yr_avg": 0.2919913205352972,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 218.80999755859375,
+    "current_price": 219.25999450683594,
     "latest_revenue": 37442000000.0,
     "rpo": 18798000000,
     "beta": 0.901,
@@ -346,11 +346,11 @@
     "alpha_uncapped": 1.226363546248248,
     "per": 10.964303,
     "per_is_forward": false,
-    "per_adjusted": 8.76,
+    "per_adjusted": 8.78,
     "peg": 3.3074,
     "ps": 1.8570669,
     "ev_ebitda": 9.035,
-    "ma200": 230.7554248046875,
+    "ma200": 230.75786003112793,
     "forward_eps": 9.84365,
     "next_quarter_eps": 2.45,
     "analyst_target_median": 254.0,
@@ -369,7 +369,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 1278.5,
     "max_eps": 22.957,
-    "max_eps_per": 9.5,
+    "max_eps_per": 9.6,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30"
   },
@@ -454,15 +454,15 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": 0.0059932769689614585,
-  "risk_free_rate_live": 0.04993000030517578,
-  "risk_free_rate_live_date": "2026-10-27",
+  "required_growth_rf_base": 0.006406715084900538,
+  "risk_free_rate_live": 0.050450000762939456,
+  "risk_free_rate_live_date": "2026-10-28",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.07370514479613788,
+  "required_growth_rf_live": 0.07859048508374777,
   "tanuki_score": "WATCH",
   "funda_score": 25,
   "score_comment": "DCF信頼性LOW(ベースが混在（事業の分離・売却等による組み替え）)のためupside依存判定を抑制→WATCH",
-  "timing_score": 40,
+  "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "割高(-92%超)、FCF黒字",
@@ -598,7 +598,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0049,
+  "erp": -0.0056,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
