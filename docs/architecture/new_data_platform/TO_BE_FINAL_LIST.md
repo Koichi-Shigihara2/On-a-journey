@@ -307,7 +307,7 @@ TANUKIの簡易版`risk_events`を廃止。
 | AS-IS-028 | 5-1. TANUKI VALUATION / moat_score / moat_phase1_years / moat_gross_margin_norm / mo… | moat_score / moat_phase1_years / moat_gross_margin_norm / moat_roic_norm / moat_fcf_margin_norm | 導出データ |
 | AS-IS-029 | 5-1. TANUKI VALUATION / pv_high / pv_terminal | pv_high / pv_terminal | 導出データ |
 | AS-IS-030 | 5-1. TANUKI VALUATION / alpha_uncapped | alpha_uncapped | 導出データ |
-| AS-IS-033 | 5-1. TANUKI VALUATION / max_eps / max_eps_per / max_eps_reliability | max_eps / max_eps_per / max_eps_reliability | 導出データ |
+| AS-IS-033 | 5-1. TANUKI VALUATION / max_eps / max_eps_per / max_eps_reliability | max_eps / max_eps_per / max_eps_reliability / max_eps_shares / max_eps_shares_basis（分母はTTMの期間の加重平均の株式数〈EPS ANALYZERのttm.json〉、無ければ今の完全希薄化後の株式数。[[EPS-SHARES-BASIS-MISMATCH-1]] 2026-10-29） | 導出データ |
 | AS-IS-036 | 5-1. TANUKI VALUATION / score_comment | score_comment | 導出データ |
 | AS-IS-038 | 5-1. TANUKI VALUATION / sell_reason | sell_reason | 導出データ |
 | AS-IS-039 | 5-1. TANUKI VALUATION / pre_rounding_score | pre_rounding_score | 導出データ |

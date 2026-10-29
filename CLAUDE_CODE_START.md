@@ -37,8 +37,17 @@ BACKLOG.mdのアクティブは**11件**（2026-10-29 終業、`^### [`の機械
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
 **確かめる順（日時の順）**:
-① 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
-② 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
+① 10-30（金）朝 … 手順14（最大EPSの分母。push後の最初のTANUKI VALUATION〈10-30 05:48 JSTごろ〉が済んだのを`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に確かめる）
+② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
+③ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
+
+14. **最大EPSの分母をTTMの期間の加重平均の株式数に**（`[[EPS-SHARES-BASIS-MISMATCH-1]]`、2026-10-29 実装。BACKLOGにはこの確認まで残す）
+   - 日時: 10-30（金）朝（push後の最初のTANUKI VALUATION〈Adjusted_EPS_Updateの後、10-30 05:48 JSTごろ〉の後）
+   - 期限: 2026-10-30
+   - 確認の手順: `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`の`components`に`max_eps_shares`・`max_eps_shares_basis`がある。basisは94銘柄が"ttm_weighted_avg"、BKNG・FCXが"current_diluted_fallback"（EPS ANALYZERが無い）。
+     手元の試算（10-29、全96銘柄・Grok/SECなし）では、ONDSの最大EPS PER 14.9→9.3・BROS 66.2→48.6・PLTR 122.8→131.3・XOM 22.8→23.4、max_epsが1%超えて変わるのは55銘柄（max_eps_perの1%超は54、VZは丸めで1%未満）、
+     max_eps系のほかのキー（理論株価・判定・funda・stage等）は96銘柄すべて差0。本番では株価・株式数の更新で動く分を除いて同じか。TANUKI SCOREの画面の最大EPS PERの列でBKNG・FCXにtooltip「EPS ANALYZERのTTMが無いため今の株式数で割っている」。
+     method_changeの印（`config/method_change.json`の2026-10-30）がその日の行にある。確かめたら移設する
 
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
    - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後

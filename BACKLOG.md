@@ -2534,6 +2534,15 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 #### 方針
 直すのは最大EPSの分母（TTMの期間の加重平均の株式数にする）。実装はチャット側の指示待ち
 
+#### 対応（2026-10-29、チャット側の指示）
+- `pipeline.py::select_max_eps_shares()`（新設）: EPS ANALYZERの`ttm.json`の`ttm[]`で、`period`（"TTM <end> to <start>"）の`<end>`が`max_eps_ttm_end`と同じ要素の`diluted_shares`。一致する要素が無い・0以下なら`components.diluted_shares`。
+  `compute_max_eps()`は分母の株式数と基準を受け取り、`components.max_eps_shares`・`max_eps_shares_basis`（"ttm_weighted_avg"／"current_diluted_fallback"）を足す。理論株価の1株あたりは変えない
+- TANUKI SCOREの画面: 最大EPS PERの表示は変えず、fallbackのときだけtooltip「EPS ANALYZERのTTMが無いため今の株式数で割っている」
+- 定義: FIELD_DEFINITIONS.md・TO_BE_FINAL_LIST.mdのAS-IS-033、出力の一覧（TANUKI）の規則「EPSの分母の株式数」（1か所）。`config/method_change.json`に2026-10-30
+- 手元の試算（全96銘柄、Grok・SECなし、前後を続けて実行）: max_eps系以外のキーは96銘柄すべて差0。basisは94銘柄がttm_weighted_avg、BKNG・FCXがfallback。max_epsが1%超えて変わるのは55銘柄（max_eps_perでは54、VZは丸めで1%未満）。
+  ONDS 14.9→9.3・BROS 66.2→48.6・CART 15.7→17.7・SITM 117.2→102.6・TSLA 212.5→190.2・PLTR 122.8→131.3
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順14（10-30朝）
+
 ---
 
 （[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]は2026-10-19、[[OUTPUT-INVENTORY-CHECK-1]]に統合、BACKLOG_DONE.md「2026-10-19（初回の束ね）」参照）
