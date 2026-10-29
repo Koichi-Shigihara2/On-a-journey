@@ -238,6 +238,13 @@ _TANUKI.update(
                       r"function\s+\w*(?:[Ww]acc|WACC|[Bb]eta)\w*\s*\("]},
         {"id": "fcf_fallback", "name": "FCFの基準の選び方・推定のフォールバック",
          "patterns": [r"def\s+_?\w*(?:fcf_base|select_fcf_source|estimate_fcf|fcf_fallback|fcf_2yr_avg|fcf_5yr_avg)\w*\s*\("]},
+        # [[EPS-SHARES-BASIS-MISMATCH-1]]（2026-10-29）: 期間の利益を割るEPSの分母は期間の加重平均の株式数
+        # （EPS ANALYZERのdiluted_shares）。最大EPSはEPS ANALYZERのttm.jsonの同じ期末のTTMの値を読む。
+        # 1株あたりの理論株価・時価総額は今の完全希薄化後の株式数（components.diluted_shares）
+        {"id": "eps_shares_basis",
+         "name": "EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・"
+                 "1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）",
+         "patterns": [r"def\s+_?\w*(?:max_eps_shares|eps_shares_basis)\w*\s*\("]},
     ],
 )
 # ---- HypeCore（段階1、2026-10-21）

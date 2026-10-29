@@ -172,10 +172,33 @@ def _latest_ttm_entry(ttm_series: dict | None) -> dict | None:
     return max(entries, key=lambda e: e["ttm_end"])
 
 
-def compute_max_eps(ttm_entry: dict | None, diluted_shares, current_price) -> dict:
-    """[[TANUKI-MAXEPS-NI-SOURCE-1]]: 最大EPS = (純利益TTM + 株式報酬TTM) / 希薄化後株式数。
+def select_max_eps_shares(eps_ttm: dict | None, ttm_end: str | None, diluted_shares) -> tuple:
+    """[[EPS-SHARES-BASIS-MISMATCH-1]]: 最大EPSの分母の株式数と、その基準を返す。
+
+    期間の利益を割るEPSの分母は、その期間の加重平均の株式数（2026-10-14 Koichi了承）。
+    EPS ANALYZERのttm.jsonの ttm[] で、period（"TTM <end> to <start>"）の <end> が
+    最大EPSのTTMの期末（ttm_end）と同じ要素の diluted_shares を使う → "ttm_weighted_avg"。
+    一致する要素が無い・0以下なら、今の完全希薄化後の株式数（components.diluted_shares）
+    → "current_diluted_fallback"。1株あたりの理論株価・時価総額は今の株式数のまま（変えない）。
+    """
+    if ttm_end:
+        for e in (eps_ttm or {}).get("ttm") or []:
+            parts = str((e or {}).get("period") or "").split()
+            if len(parts) >= 2 and parts[0] == "TTM" and parts[1] == ttm_end:
+                shares = e.get("diluted_shares")
+                if isinstance(shares, (int, float)) and shares > 0:
+                    return shares, "ttm_weighted_avg"
+                break
+    return diluted_shares, "current_diluted_fallback"
+
+
+def compute_max_eps(ttm_entry: dict | None, shares, current_price,
+                    shares_basis: str = "current_diluted_fallback") -> dict:
+    """[[TANUKI-MAXEPS-NI-SOURCE-1]]: 最大EPS = (純利益TTM + 株式報酬TTM) / 株式数。
 
     純利益・株式報酬とも同じTTMエントリ（ttm_entry.flow）から取る。
+    分母の株式数（shares）と基準（shares_basis）は select_max_eps_shares() で決める
+    （[[EPS-SHARES-BASIS-MISMATCH-1]]）。
     - 純利益がNone → max_eps/max_eps_perともNone、信頼性LOW
     - 株式報酬がNone → 0として計算し信頼性MED
     - 両方そろう → 信頼性HIGH
@@ -192,10 +215,10 @@ def compute_max_eps(ttm_entry: dict | None, diluted_shares, current_price) -> di
         reliability = "HIGH"
     max_eps = None
     max_eps_per = None
-    if ni is not None and diluted_shares and diluted_shares > 0:
+    if ni is not None and shares and shares > 0:
         max_earn = ni + (sbc or 0)
         if max_earn > 0:
-            max_eps = round(max_earn / diluted_shares, 4)
+            max_eps = round(max_earn / shares, 4)
             if current_price and current_price > 0:
                 max_eps_per = round(current_price / max_eps, 1)
     return {
@@ -203,6 +226,8 @@ def compute_max_eps(ttm_entry: dict | None, diluted_shares, current_price) -> di
         "max_eps_per": max_eps_per,
         "max_eps_reliability": reliability,
         "max_eps_ttm_end": (ttm_entry or {}).get("ttm_end"),
+        "max_eps_shares": shares,
+        "max_eps_shares_basis": shares_basis,
     }
 
 
@@ -1330,7 +1355,7 @@ class TanukiValuationPipeline:
                 (_at_median_ld - _iv_ld) / abs(_iv_ld) * 100, 1
             )
 
-        # max_eps / max_eps_per / max_eps_reliability: (GAAP NI TTM + SBC TTM) / 希薄化後株式数
+        # max_eps / max_eps_per / max_eps_reliability: (GAAP NI TTM + SBC TTM) / TTMの期間の加重平均の株式数
         # [[TANUKI-MAXEPS-NI-SOURCE-1]]: 以前はdupont.ni_ttm（DuPont分解が成功した銘柄だけに
         # 入る。負の純資産・売上$15M未満では欠ける）と年次のfinancial_health.sbc_ttmを使い、
         # 片側だけで計算していた。純利益・株式報酬ともTTM系列の最新エントリから取る
@@ -1345,10 +1370,28 @@ class TanukiValuationPipeline:
                     _ttm_entry_me = _latest_ttm_entry(json.load(_tf_me))
             except Exception as _e_me:
                 print(f"   [{ticker}] 最大EPS用TTM系列の読み込みエラー: {_e_me}")
+        # [[EPS-SHARES-BASIS-MISMATCH-1]]: 分母はTTMの期間の加重平均の株式数（EPS ANALYZERのttm.json）。
+        # 無ければ今の完全希薄化後の株式数（components.diluted_shares。理論株価の1株あたりはこちらのまま）
+        _eps_ttm_me = None
+        _eps_ttm_path_me = os.path.join(
+            self.repo_root, "docs", "value-monitor", "adjusted_eps_analyzer", "data", ticker, "ttm.json"
+        )
+        if os.path.exists(_eps_ttm_path_me):
+            try:
+                with open(_eps_ttm_path_me, encoding="utf-8") as _ef_me:
+                    _eps_ttm_me = json.load(_ef_me)
+            except Exception as _e_me:
+                print(f"   [{ticker}] 最大EPS用EPS ANALYZERのTTMの読み込みエラー: {_e_me}")
+        _shares_me, _shares_basis_me = select_max_eps_shares(
+            _eps_ttm_me,
+            (_ttm_entry_me or {}).get("ttm_end"),
+            (latest_data.get("components") or {}).get("diluted_shares"),
+        )
         latest_data["components"].update(compute_max_eps(
             _ttm_entry_me,
-            (latest_data.get("components") or {}).get("diluted_shares"),
+            _shares_me,
             (latest_data.get("components") or {}).get("current_price"),
+            _shares_basis_me,
         ))
 
         with open(latest_path, "w", encoding="utf-8") as f:
