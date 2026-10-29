@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 309.8062093327845,
   "intrinsic_value_beta": 205.37,
-  "upside_percent_beta": -26.2,
-  "intrinsic_value_rf": 1463.88,
-  "upside_percent_rf": 425.8,
-  "intrinsic_value_rf_rate": 0.050450000762939456,
+  "upside_percent_beta": -22.7,
+  "intrinsic_value_rf": 1521.14,
+  "upside_percent_rf": 472.2,
+  "intrinsic_value_rf_rate": 0.04988999843597412,
   "v0": 69742741700.85483,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.010835243544233488,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 415.89,
       "value_growth_pct": 34.2,
-      "expected_return_pct": 49.4
+      "expected_return_pct": 56.4
     },
     "2年後": {
       "future_value": 558.3,
       "value_growth_pct": 80.2,
-      "expected_return_pct": 100.5
+      "expected_return_pct": 110.0
     },
     "3年後": {
       "future_value": 749.46,
       "value_growth_pct": 141.9,
-      "expected_return_pct": 169.2
+      "expected_return_pct": 181.9
     },
     "4年後": {
       "future_value": 1006.09,
       "value_growth_pct": 224.7,
-      "expected_return_pct": 261.4
+      "expected_return_pct": 278.5
     },
     "5年後": {
       "future_value": 1350.58,
       "value_growth_pct": 335.9,
-      "expected_return_pct": 385.1
+      "expected_return_pct": 408.0
     }
   },
-  "upside_percent": 11.3,
-  "calculation_date": "2026-10-29T05:38:05+09:00",
+  "upside_percent": 16.5,
+  "calculation_date": "2026-10-30T05:37:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -226,7 +226,7 @@
       "total_transient_amount": 17024000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による貸倒引当金の増加で、事業運営上の一時的な影響と明記されており、収益力の構造的悪化を示す兆候とは判断されない。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
@@ -345,7 +345,7 @@
     "roe_10yr_avg": 0.002579819891484164,
     "roe_years_used": 7,
     "roe_outlier_adj": false,
-    "current_price": 278.4100036621094,
+    "current_price": 265.8399963378906,
     "latest_revenue": 3427158000.0,
     "rpo": 3471400000,
     "beta": 1.488,
@@ -376,11 +376,11 @@
     "alpha_uncapped": 0.010835243544233488,
     "per": 539.3,
     "per_is_forward": false,
-    "per_adjusted": 113.52,
+    "per_adjusted": 108.4,
     "peg": 1.4,
     "ps": 24.409197,
     "ev_ebitda": 1123.285,
-    "ma200": 197.07417518615722,
+    "ma200": 197.7758751678467,
     "forward_eps": 2.98446,
     "next_quarter_eps": 0.64,
     "analyst_target_median": 300.0,
@@ -398,10 +398,12 @@
     "revenue_ttm": 3966725000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": -3.2,
-    "max_eps": 2.7867,
-    "max_eps_per": 99.9,
+    "max_eps": 2.7391,
+    "max_eps_per": 97.1,
     "max_eps_reliability": "HIGH",
-    "max_eps_ttm_end": "2026-06-30"
+    "max_eps_ttm_end": "2026-06-30",
+    "max_eps_shares": 365306750.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -427,14 +429,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.34241033711854474,
-  "required_growth_rf_base": -0.10215037319290654,
-  "risk_free_rate_live": 0.050450000762939456,
-  "risk_free_rate_live_date": "2026-10-28",
+  "required_growth_rf_base": -0.11040833792186922,
+  "risk_free_rate_live": 0.04988999843597412,
+  "risk_free_rate_live_date": "2026-10-29",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.02416825440586101,
+  "required_growth_rf_live": 0.007283306996784811,
   "tanuki_score": "WATCH",
   "funda_score": 90,
-  "score_comment": "割安(11%)傾向、FCF黒字、売上成長加速",
+  "score_comment": "割安(16%)傾向、FCF黒字、売上成長加速",
   "timing_score": 55,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -448,6 +450,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "EPS-SHARES-BASIS-MISMATCH-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -498,7 +501,7 @@
     "shares_yr_now": 363472000,
     "shares_yr_3ago": 315410000
   },
-  "net_current_assets_ratio": 0.0413,
+  "net_current_assets_ratio": 0.0433,
   "dupont": {
     "ni_ttm": 177584000,
     "revenue_ttm": 3966725000,
@@ -549,7 +552,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0397,
+  "erp": -0.0387,
   "dilution_severity": "medium",
   "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

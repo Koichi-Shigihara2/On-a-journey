@@ -2,9 +2,9 @@
   "intrinsic_value_per_share": 6.110216696197638,
   "intrinsic_value_beta": 3.54,
   "upside_percent_beta": -30.3,
-  "intrinsic_value_rf": 17.51,
-  "upside_percent_rf": 244.7,
-  "intrinsic_value_rf_rate": 0.050450000762939456,
+  "intrinsic_value_rf": 17.96,
+  "upside_percent_rf": 253.6,
+  "intrinsic_value_rf_rate": 0.04988999843597412,
   "v0": 1964854002.633311,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 20.3,
-  "calculation_date": "2026-10-29T05:39:07+09:00",
+  "calculation_date": "2026-10-30T05:38:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -316,7 +316,7 @@
     "peg": null,
     "ps": 40.778717,
     "ev_ebitda": null,
-    "ma200": 8.727150015830993,
+    "ma200": 8.678500013351439,
     "forward_eps": -0.645,
     "next_quarter_eps": -0.21,
     "analyst_target_median": 10.0,
@@ -337,7 +337,9 @@
     "max_eps": null,
     "max_eps_per": null,
     "max_eps_reliability": "HIGH",
-    "max_eps_ttm_end": "2026-06-30"
+    "max_eps_ttm_end": "2026-06-30",
+    "max_eps_shares": 896050211.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -363,10 +365,10 @@
     "ai_comment": null
   },
   "required_growth_rf_base": -0.2081726156129361,
-  "risk_free_rate_live": 0.050450000762939456,
-  "risk_free_rate_live_date": "2026-10-28",
+  "risk_free_rate_live": 0.04988999843597412,
+  "risk_free_rate_live_date": "2026-10-29",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.13307702541845434,
+  "required_growth_rf_live": -0.1378778634084975,
   "tanuki_score": "WATCH",
   "funda_score": 100,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
@@ -383,6 +385,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "EPS-SHARES-BASIS-MISMATCH-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -488,7 +491,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.1774,
+  "erp": -0.1769,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }

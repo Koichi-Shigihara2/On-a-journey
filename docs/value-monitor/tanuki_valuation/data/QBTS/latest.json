@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 3.3411150612001257,
   "intrinsic_value_beta": 2.3,
-  "upside_percent_beta": -80.5,
-  "intrinsic_value_rf": 8.69,
-  "upside_percent_rf": -26.1,
-  "intrinsic_value_rf_rate": 0.050450000762939456,
+  "upside_percent_beta": -80.1,
+  "intrinsic_value_rf": 8.91,
+  "upside_percent_rf": -22.9,
+  "intrinsic_value_rf_rate": 0.04988999843597412,
   "v0": 360990504.30109894,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 4.35,
       "value_growth_pct": 30.2,
-      "expected_return_pct": -63.0
+      "expected_return_pct": -62.4
     },
     "2年後": {
       "future_value": 5.68,
       "value_growth_pct": 70.1,
-      "expected_return_pct": -51.7
+      "expected_return_pct": -50.9
     },
     "3年後": {
       "future_value": 7.4,
       "value_growth_pct": 121.6,
-      "expected_return_pct": -37.1
+      "expected_return_pct": -36.0
     },
     "4年後": {
       "future_value": 9.65,
       "value_growth_pct": 188.9,
-      "expected_return_pct": -18.0
+      "expected_return_pct": -16.5
     },
     "5年後": {
       "future_value": 12.59,
       "value_growth_pct": 276.9,
-      "expected_return_pct": 7.0
+      "expected_return_pct": 8.9
     }
   },
-  "upside_percent": -71.6,
-  "calculation_date": "2026-10-29T05:40:41+09:00",
+  "upside_percent": -71.1,
+  "calculation_date": "2026-10-30T05:39:43+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 46000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の在庫評価損」と明記されており、事業運営上の一時的な在庫調整と判断されるため。"
+        "reasoning": "理由欄に「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -314,7 +314,7 @@
     "roe_10yr_avg": -0.6722089889662023,
     "roe_years_used": 3,
     "roe_outlier_adj": true,
-    "current_price": 11.770000457763672,
+    "current_price": 11.5600004196167,
     "latest_revenue": 24587000.0,
     "rpo": 40700000,
     "beta": 2.14,
@@ -349,7 +349,7 @@
     "peg": null,
     "ps": 356.25323,
     "ev_ebitda": null,
-    "ma200": 19.47357494354248,
+    "ma200": 19.387274947166443,
     "forward_eps": -0.37765,
     "next_quarter_eps": -0.09,
     "analyst_target_median": 36.0,
@@ -370,7 +370,9 @@
     "max_eps": null,
     "max_eps_per": null,
     "max_eps_reliability": "HIGH",
-    "max_eps_ttm_end": "2026-06-30"
+    "max_eps_ttm_end": "2026-06-30",
+    "max_eps_shares": 350430047.5,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -396,14 +398,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.3038846624227339,
-  "required_growth_rf_base": 0.2621356861958677,
-  "risk_free_rate_live": 0.050450000762939456,
-  "risk_free_rate_live_date": "2026-10-28",
+  "required_growth_rf_base": 0.25759939675192234,
+  "risk_free_rate_live": 0.04988999843597412,
+  "risk_free_rate_live_date": "2026-10-29",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.3818345323449732,
+  "required_growth_rf_live": 0.3692432217953796,
   "tanuki_score": "PASS",
   "funda_score": 10,
-  "score_comment": "割高(-72%超)、FCFマイナス（投資フェーズ）、売上成長停滞",
+  "score_comment": "割高(-71%超)、FCFマイナス（投資フェーズ）、売上成長停滞",
   "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -417,6 +419,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "EPS-SHARES-BASIS-MISMATCH-1",
   "fcf_history": [
     {
       "year": 2021,
@@ -468,7 +471,7 @@
     "shares_yr_3ago": 119647777
   },
   "computed_runway_months": 86.42186593534096,
-  "net_current_assets_ratio": 0.1194,
+  "net_current_assets_ratio": 0.1215,
   "dupont": {
     "excluded": true,
     "reason": "revenue_too_small"
@@ -513,7 +516,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0825,
+  "erp": -0.0826,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }
