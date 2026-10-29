@@ -37,16 +37,9 @@ BACKLOG.mdのアクティブは**12件**（2026-10-28 終業、`^### [`の機械
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
 **確かめる順（日時の順）**:
-① 10-30（金）朝 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか。07:15 JSTの実行が済んだのを`gh run list`で先に確かめる。2026-10-29に10-29夜から変更、`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正の後）
-② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
-③ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
+① 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
+② 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
 
-8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装 `62ca8135a7`。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す。BACKLOGにはこの確認まで残す）
-   - 日時: 10-30（金）朝（2026-10-29に夜→翌朝へ。10-29 01:50 UTCの実行〈run `40802582209`〉はGrokが`regime`に`HOLDING`を返して判定し直せず、
-     `[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`で直した。その後の毎日の実行〈10-29 22:15 UTC＝10-30 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後。行の声明が09-16のままなので自動で判定し直す）
-   - 期限: 2026-10-30
-   - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
-     REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
    - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後
    - 期限: 2026-11-02
@@ -91,7 +84,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
    - 確認の手順: 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている。確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 
-**済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
+**済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）、`[[EPS-SHARES-BASIS-MISMATCH-1]]`（最大EPSの分母を直す。原則は了承済み）の実装の指示
 
 **2026-10-28 手順7の済・SOFIの会社発表ROTCE（2026-Q3）・Portfolioの明細表（確認の残りは上の「次回の確認手順」8・13・5・2・9）**

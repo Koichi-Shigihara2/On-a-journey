@@ -2203,65 +2203,11 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
 ---
 
-### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
-**型・処置（2026-10-19 束ね）:** 型C・残す（判断待ち（次回の確認手順8、期限は次のFOMC））
-**残す理由（2026-10-26 終業）:** 実装・push済み（`62ca8135a7`）。10-29（木）朝の確認（CLAUDE_CODE_START.mdの次回の確認手順8: 10-28の声明が05_fed_context.csvとREGIMEバーに入ったか）が済むまで残す。2026-10-29: 確認は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]の修正の後の10-30（金）朝に回した
-**優先度:** 中
-**分類:** データの取得遅れ / MACRO PULSE（05_main.py）
-**登録日:** 2026-10-03
-**発見:** 指示書M-1 STEP 2。記録: B-07
-
-#### 内容
-`update_fed_context()`は`record_date`の月（`record_month`）に既に行があれば、FF・DGS1・IMPLIED CUTSだけを更新し、FOMC声明の
-取得とGrokによるREGIME・主眼の判定をしない。FOMCは月の最初の土曜より後に開かれるため、会合のたびに次の月の最初の土曜の
-実行まで前回の声明に基づく判定が続く。`05_fed_context.csv`の記録: 04-29の会合→05-02に反映（3日）、06-17→07-04（17日）、
-07-29→08-01（3日）、09-16→10-03時点で未反映（17日。9月の行は09-05に07-29の声明で判定済み）。
-
-#### 実害
-REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会合後最大2〜3週間、前回の声明に基づく判定のまま表示される
-（FRB主眼のtooltipに「2026-07-29のFOMC声明に基づく判定です」と出るため、基準日は分かる）。週次AIの入力（FED context）も同じ。
-
-#### 着手条件
-なし（修正はしていない）
-
-次のFOMC（2026年10月下旬）の後も同じ遅れが起きるため、それまでに対応するか、Market Pulse側のセッションと担当を決める（2026-10-11追記）
-
-#### 対応（2026-10-26、Koichiさんの判断）
-- `update_fed_context()`: その月の行があっても、行の`fomc_date`より新しい声明が対象日以前に出ていれば、声明を取り直してGrokで判定し直し、同じ月の行を書き換える（`record_date`は判定した日）。新しい声明が無ければ今のまま（Grokを呼ばない）
-- 声明の日付は今の取得元（FRBの`fomccalendars.htm`の声明のリンク。`05_indicator_schedule.csv`にFOMCの行は無い）。声明のリンクは出た後にだけ載る。同じ日のa.htm（声明）とa1.htm（実施の注記）はページの先に出る声明を選ぶ（今までと同じ）
-- FRBの呼び出しは`common/external_api.py`の`frb_get`（新設）に。声明の本文かGrokが取れなかったときは前の声明の判定を数値ベースで上書きしない（次の実行で取り直す）。予定のページが取れないときは判定し直さない
-- `update_fed_context()`は週1回（土曜の`--update-schedule`）しか呼ばれないため、毎日の実行（22:15 UTC）の最初に`refresh_fed_context_on_new_statement()`を足した。新しい声明が無ければ何も書かない
-- 前後の比較（手元。FRBのページは1回取って記録・再生、Grokは05_fed_context.csvに残る各声明の判定を記録した応答として、FF・ZQは固定値）:
-  新しい声明の無い10-26は、日次は05_fed_context.csvが全列同じ（書かない）、週次はupdated_atだけが違う（今までも毎回書き換わる列）。画面・週次AIはこのCSVを読むので同じ。
-  過去の4回（04-29・06-17・07-29・09-16）の会合の翌日（その時点までの行で）は、日次・週次とも判定し直しが起き、同じ月の行のfomc_dateが会合の日に（行は増えない）
-- 確認: CLAUDE_CODE_START.mdの次回の確認手順8（10-29朝）
-
-#### 確認（2026-10-29）
-- 10-28の声明の後の毎日の実行（run `40802582209`、2026-10-29 01:50 UTC）は新しい声明 2026-10-28 を見つけて判定し直そうとしたが、Grokが`regime`に`HOLDING`を返してはじかれ、
-  「判定し直せなかった」の分岐で10月の行は09-16の声明のまま（`updated_at`だけが変わる）。この件の判定し直しの仕組みは動いている。原因は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]
-- 手順8は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]の修正の後の実行（10-29 22:15 UTCの枠）で確かめる（10-30朝）
+（[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]は2026-10-29、本番の確認で完了、BACKLOG_DONE.md「2026-10-29（完了）」参照）
 
 ---
 
-### [MACRO-PULSE-FOMC-REGIME-INVALID-1] MACRO PULSEのFOMC声明の判定で、Grokが決まりに無いregime（HOLDING）を返してはじかれ、新しい声明の判定が入らない
-**型・処置:** 型X（取得元のばらつき: Grokの答えの値を、プロンプトで決めずに例1つで受けていた）・直す（チャット側の判断、2026-10-29）
-**優先度:** 中（REGIMEバー・ステルスのLAYER 1・週次AIの入力が前の声明の判定のまま。理論株価・判定は変わらない）
-**分類:** AIの出力の検査 / MACRO PULSE（`src/market/macro_pulse/05_main.py::analyze_fomc_with_grok`）
-**登録日:** 2026-10-29
-**発見:** 次回の確認手順8の調査（2026-10-29、run `40802582209`）
-
-#### 内容
-- run `40802582209`（2026-10-29 01:50 UTC）: 声明の本文は取れた（Grokへの入力 985トークン）が、Grokが`regime='HOLDING'`を返し、
-  `analyze_fomc_with_grok()`の値の検査（EASING・BALANCED・TIGHTENINGのどれか）ではじかれて数値ベースの判定に。`update_fed_context()`は
-  `regime_source`がGrokでないため「新しいFOMC声明（2026-10-28）を判定し直せなかった」の分岐へ。10月の行は09-16の声明のまま
-- プロンプトはJSONの例を1つ（`"regime":"EASING"`）示すだけで、選べる値と意味を書いていない。据え置きの声明に「HOLDING」と答えた
-- `dominant_concern`は値を検査していない。`dominant_label`はGrokが書き、数値ベースの判定はTIGHTENINGのとき「インフレ警戒」（Grokの判定の行は「物価重視」）
-
-#### 直し方（チャット側の指示、2026-10-29）
-- プロンプトに選べる値と意味を書く（`fcf_outlier_ai.py`の書き方に揃える）。regime: EASING（利下げした、または次の動きが利下げと示唆）／TIGHTENING（利上げした、または次の動きが利上げと示唆）／
-  BALANCED（据え置きで、どちらとも示唆していない）。「据え置き」は値ではなく示唆の向きで選ぶと明記。dominant_concern: INFLATION_FOCUS／EMPLOYMENT_FOCUS／BALANCED。値の外は使わないと明記し、dominant_labelは書かせない
-- 返り値の検査: dominant_concernも3つの値の外ならはじく。dominant_labelはコードでdominant_concernから決める（物価重視・雇用重視・両睨み）。`_fallback_regime()`の「インフレ警戒」も「物価重視」に
-- 確認: 修正の後の毎日の実行（10-29 22:15 UTCの枠）で、行の声明が09-16のままなので自動で判定し直す。CLAUDE_CODE_START.mdの次回の確認手順8（10-30朝）
+（[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]は2026-10-29、本番の確認で完了、BACKLOG_DONE.md「2026-10-29（完了）」参照）
 
 ---
 
