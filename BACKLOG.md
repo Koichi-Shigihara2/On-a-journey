@@ -2129,6 +2129,16 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 - 投資判断への影響: なし
 - 規模の見込み: 小
 
+#### 対応（2026-10-29、チャット側の指示）
+- `docs/common/site-theme.css`: 640px以下で、ナビを横スクロールの1行に（`flex-wrap: nowrap`・`overflow-x: auto`・スクロールバーを隠す）。ナビを含むヘッダーは折り返し、ナビの入れ物を全幅の段に（`header:has(.site-nav)`）。ページ内のCSSは変えない
+- `docs/common/site-nav.js`: 640px以下で、現在のツール（`a.active`）をナビの中央に寄せる。`scrollIntoView`はページ（window）も横に動かす（Market Pulse等は本文が390pxより広い）ため、ナビの`scrollLeft`だけを変える。
+  認証の画面の後にヘッダーを出すTAIL・フォントの読み込み後に幅が変わるページ・隣の要素でナビが後から狭くなるMACRO PULSEがあるため、ナビと現在のツールの大きさが変わるたびに寄せ直し（ResizeObserver）、人がナビを触ったらやめる
+- 確認（Playwright、docs/を手元で配り、TAILは`tail_auth`・Portfolioは`portfolio_auth`で通した。詳細のページはNVDA）: 390pxのヘッダーの高さ（前→後）
+  TANUKI SCORE 233→93・TANUKI VALUATION 385→99・同stock 459→151・EPS index 253→145・EPS stock 239→137・EPS tickers 251→143・STONKS SILO 369→99・Market Pulse 229→115・MACRO PULSE 369→129・
+  HYPE CORE 365→73・同detail 365→73・PORTFOLIO 203→97・TANUKI TAIL 202→89・同detail 306→85・同decision_log 194→86（ナビは全ページ1行。stockのページが高いのはヘッダーの中の版・検索・銘柄のリンクの段）。
+  documentのscrollWidthは増えない（TANUKI VALUATION 562→419、ほかは同じ）。現在のツールは15ページともナビと画面の中に見え、ページのスクロールは0のまま。
+  1440pxはヘッダーの高さが全ページ同じで、スクリーンショットの差はロゴの横の点の点滅・時計など、同じコードを2回描画しても変わる所だけ
+
 ---
 
 （[[NAV-LINK-AUDIT-CI-1]]は2026-10-19、[[OUTPUT-INVENTORY-CHECK-1]]に統合、BACKLOG_DONE.md「2026-10-19（初回の束ね）」参照）
