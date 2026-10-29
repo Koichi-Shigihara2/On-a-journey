@@ -106,6 +106,14 @@ a:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
   background: var(--bdr);
   margin: 0 4px;
 }
+/* スマホ幅ではナビを折り返さず、横スクロールの1行にする。ロゴの段の下に全幅で置く（NAV-MOBILE-1）。
+ * 現在のツールは site-nav.js が見える位置までナビの中だけスクロールする */
+@media (max-width: 640px) {
+  header:has(.site-nav) { flex-wrap: wrap; row-gap: 6px; }
+  header:has(.site-nav) > :has(.site-nav) { flex: 1 1 100%; min-width: 0; max-width: 100%; }
+  .site-nav { flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; }
+  .site-nav::-webkit-scrollbar { display: none; }
+}
 
 /* === サブナビ（ツール内のサブページ。site-nav.js の置換対象外。NAV-LINK-INTEGRITY-1） ===
  * <nav data-sub-nav><a href="...">ダッシュボード</a><a class="active" ...>銘柄一覧</a></nav>

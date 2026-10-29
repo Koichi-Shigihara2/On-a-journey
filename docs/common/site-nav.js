@@ -51,6 +51,31 @@
     targets.forEach(function (t) {
       var fresh = build(active);
       t.parentNode.replaceChild(fresh, t);
+      centerActive(fresh);
+    });
+  }
+
+  // NAV-MOBILE-1: スマホ幅（site-theme.css の 640px 以下）ではナビが横スクロールの1行になるので、
+  // 現在のツールをナビの中央に寄せる。scrollIntoView はページ（window）も横に動かすため使わず、ナビの scrollLeft だけ変える
+  // ヘッダーが後から表示される（認証の画面の後）・フォントの読み込みや隣の要素でナビの幅が後から変わるページがあるため、
+  // ナビ・現在のツールの大きさが変わるたびに寄せ直す。人がナビを触ったら寄せ直しをやめる
+  function centerActive(nav) {
+    if (!window.matchMedia || !window.matchMedia('(max-width: 640px)').matches) return;
+    var a = nav.querySelector('a.active');
+    if (!a) return;
+    var center = function () {
+      var nr = nav.getBoundingClientRect();
+      if (!nr.width) return;
+      var ar = a.getBoundingClientRect();
+      nav.scrollLeft += (ar.left + ar.width / 2) - (nr.left + nr.width / 2);
+    };
+    center();
+    if (!window.ResizeObserver) return;
+    var ro = new ResizeObserver(center);
+    ro.observe(nav);
+    ro.observe(a);
+    ['pointerdown', 'touchstart', 'wheel'].forEach(function (ev) {
+      nav.addEventListener(ev, function () { ro.disconnect(); }, { once: true, passive: true });
     });
   }
 
