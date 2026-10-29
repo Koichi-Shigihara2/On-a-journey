@@ -2205,7 +2205,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
 ### [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
 **型・処置（2026-10-19 束ね）:** 型C・残す（判断待ち（次回の確認手順8、期限は次のFOMC））
-**残す理由（2026-10-26 終業）:** 実装・push済み（`62ca8135a7`）。10-29（木）朝の確認（CLAUDE_CODE_START.mdの次回の確認手順8: 10-28の声明が05_fed_context.csvとREGIMEバーに入ったか）が済むまで残す
+**残す理由（2026-10-26 終業）:** 実装・push済み（`62ca8135a7`）。10-29（木）朝の確認（CLAUDE_CODE_START.mdの次回の確認手順8: 10-28の声明が05_fed_context.csvとREGIMEバーに入ったか）が済むまで残す。2026-10-29: 確認は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]の修正の後の10-30（金）朝に回した
 **優先度:** 中
 **分類:** データの取得遅れ / MACRO PULSE（05_main.py）
 **登録日:** 2026-10-03
@@ -2235,6 +2235,33 @@ REGIMEバー（REGIME・FRB主眼・理由）とステルスのLAYER 1が、会�
   新しい声明の無い10-26は、日次は05_fed_context.csvが全列同じ（書かない）、週次はupdated_atだけが違う（今までも毎回書き換わる列）。画面・週次AIはこのCSVを読むので同じ。
   過去の4回（04-29・06-17・07-29・09-16）の会合の翌日（その時点までの行で）は、日次・週次とも判定し直しが起き、同じ月の行のfomc_dateが会合の日に（行は増えない）
 - 確認: CLAUDE_CODE_START.mdの次回の確認手順8（10-29朝）
+
+#### 確認（2026-10-29）
+- 10-28の声明の後の毎日の実行（run `40802582209`、2026-10-29 01:50 UTC）は新しい声明 2026-10-28 を見つけて判定し直そうとしたが、Grokが`regime`に`HOLDING`を返してはじかれ、
+  「判定し直せなかった」の分岐で10月の行は09-16の声明のまま（`updated_at`だけが変わる）。この件の判定し直しの仕組みは動いている。原因は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]
+- 手順8は[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]の修正の後の実行（10-29 22:15 UTCの枠）で確かめる（10-30朝）
+
+---
+
+### [MACRO-PULSE-FOMC-REGIME-INVALID-1] MACRO PULSEのFOMC声明の判定で、Grokが決まりに無いregime（HOLDING）を返してはじかれ、新しい声明の判定が入らない
+**型・処置:** 型X（取得元のばらつき: Grokの答えの値を、プロンプトで決めずに例1つで受けていた）・直す（チャット側の判断、2026-10-29）
+**優先度:** 中（REGIMEバー・ステルスのLAYER 1・週次AIの入力が前の声明の判定のまま。理論株価・判定は変わらない）
+**分類:** AIの出力の検査 / MACRO PULSE（`src/market/macro_pulse/05_main.py::analyze_fomc_with_grok`）
+**登録日:** 2026-10-29
+**発見:** 次回の確認手順8の調査（2026-10-29、run `40802582209`）
+
+#### 内容
+- run `40802582209`（2026-10-29 01:50 UTC）: 声明の本文は取れた（Grokへの入力 985トークン）が、Grokが`regime='HOLDING'`を返し、
+  `analyze_fomc_with_grok()`の値の検査（EASING・BALANCED・TIGHTENINGのどれか）ではじかれて数値ベースの判定に。`update_fed_context()`は
+  `regime_source`がGrokでないため「新しいFOMC声明（2026-10-28）を判定し直せなかった」の分岐へ。10月の行は09-16の声明のまま
+- プロンプトはJSONの例を1つ（`"regime":"EASING"`）示すだけで、選べる値と意味を書いていない。据え置きの声明に「HOLDING」と答えた
+- `dominant_concern`は値を検査していない。`dominant_label`はGrokが書き、数値ベースの判定はTIGHTENINGのとき「インフレ警戒」（Grokの判定の行は「物価重視」）
+
+#### 直し方（チャット側の指示、2026-10-29）
+- プロンプトに選べる値と意味を書く（`fcf_outlier_ai.py`の書き方に揃える）。regime: EASING（利下げした、または次の動きが利下げと示唆）／TIGHTENING（利上げした、または次の動きが利上げと示唆）／
+  BALANCED（据え置きで、どちらとも示唆していない）。「据え置き」は値ではなく示唆の向きで選ぶと明記。dominant_concern: INFLATION_FOCUS／EMPLOYMENT_FOCUS／BALANCED。値の外は使わないと明記し、dominant_labelは書かせない
+- 返り値の検査: dominant_concernも3つの値の外ならはじく。dominant_labelはコードでdominant_concernから決める（物価重視・雇用重視・両睨み）。`_fallback_regime()`の「インフレ警戒」も「物価重視」に
+- 確認: 修正の後の毎日の実行（10-29 22:15 UTCの枠）で、行の声明が09-16のままなので自動で判定し直す。CLAUDE_CODE_START.mdの次回の確認手順8（10-30朝）
 
 ---
 

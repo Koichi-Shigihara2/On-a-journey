@@ -37,13 +37,14 @@ BACKLOG.mdのアクティブは**12件**（2026-10-28 終業、`^### [`の機械
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
 **確かめる順（日時の順）**:
-① 10-29（木）夜 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか。07:15 JSTの実行が済んだのを`gh run list`で先に確かめる）
+① 10-30（金）朝 … 手順8（10-28のFOMCの声明が05_fed_context.csvとREGIMEバーに入ったか。07:15 JSTの実行が済んだのを`gh run list`で先に確かめる。2026-10-29に10-29夜から変更、`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正の後）
 ② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
 ③ 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
 
 8. **FRBの主眼の月次の遅れ**（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、2026-10-26 実装 `62ca8135a7`。毎日のMACRO PULSE〈22:15 UTC〉が新しい声明を見つけたら同じ月の行を判定し直す。BACKLOGにはこの確認まで残す）
-   - 日時: 10-29（木）夜（2026-10-28 終業で朝→夜に。10-28〈米国時間〉の声明の後の毎日の実行〈10-28 22:15 UTC＝10-29 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後）
-   - 期限: 2026-10-29
+   - 日時: 10-30（金）朝（2026-10-29に夜→翌朝へ。10-29 01:50 UTCの実行〈run `40802582209`〉はGrokが`regime`に`HOLDING`を返して判定し直せず、
+     `[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`で直した。その後の毎日の実行〈10-29 22:15 UTC＝10-30 07:15 JST。scheduleは数時間遅れることがあるため`gh run list --workflow MACRO_PULSE_Update.yml`で先に確かめる〉の後。行の声明が09-16のままなので自動で判定し直す）
+   - 期限: 2026-10-30
    - 確認の手順: 10-28の声明が`docs/market-monitor/macro-pulse/data/05_fed_context.csv`に入り（10月の行の`fomc_date`が2026-10-28・`record_date`が判定した日・`regime_source`がFOMC声明分析（Grok）、行は増えない）、
      REGIMEバー（FRB主眼）のtooltipの声明の日付が2026-10-28になっていること。ログに「新しいFOMC声明 2026-10-28」。確かめたら移設する
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
