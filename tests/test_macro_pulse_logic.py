@@ -557,6 +557,59 @@ class TestFedContextNewStatement:
         assert calls["grok"] == 0
 
 
+# ─────────────────────────────────────────────────────────────────
+#  [[MACRO-PULSE-FOMC-REGIME-INVALID-1]]: Grokが決まりに無い値を返したらはじく・主眼のラベルはコードで決める
+# ─────────────────────────────────────────────────────────────────
+class TestFomcGrokValues:
+    def _analyze(self, monkeypatch, reply, cuts_implied=-2.58):
+        monkeypatch.setenv("XAI_API_KEY", "test")
+        prompts = []
+
+        def _grok(messages, *a, **k):
+            prompts.append(messages[0]["content"])
+            return reply
+
+        monkeypatch.setattr(main05, "grok_text", _grok)
+        return main05.analyze_fomc_with_grok("2026-10-28", "The Committee decided to maintain ...", 3.875, 4.52,
+                                             cuts_implied), prompts
+
+    def test_holding_regime_is_rejected(self, monkeypatch):
+        r, _ = self._analyze(monkeypatch, '{"regime":"HOLDING","dominant_concern":"INFLATION_FOCUS","ai_reason":"x"}')
+        assert r["regime_source"] == "DGS1数値ベース"
+
+    def test_unknown_concern_is_rejected(self, monkeypatch):
+        r, _ = self._analyze(monkeypatch, '{"regime":"BALANCED","dominant_concern":"GROWTH_FOCUS","ai_reason":"x"}')
+        assert r["regime_source"] == "DGS1数値ベース"
+
+    @pytest.mark.parametrize("concern,label", [
+        ("INFLATION_FOCUS", "物価重視"), ("EMPLOYMENT_FOCUS", "雇用重視"), ("BALANCED", "両睨み")])
+    def test_label_comes_from_concern(self, monkeypatch, concern, label):
+        reply = '{"regime":"BALANCED","dominant_concern":"%s","dominant_label":"インフレ警戒","ai_reason":"x"}' % concern
+        r, _ = self._analyze(monkeypatch, reply)
+        assert (r["regime"], r["dominant_concern"], r["dominant_label"], r["regime_source"]) == (
+            "BALANCED", concern, label, "FOMC声明分析（Grok）")
+
+    def test_prompt_lists_allowed_values_and_no_label(self, monkeypatch):
+        _, prompts = self._analyze(monkeypatch, '{"regime":"BALANCED","dominant_concern":"BALANCED","ai_reason":"x"}')
+        for v in ("EASING", "TIGHTENING", "BALANCED", "INFLATION_FOCUS", "EMPLOYMENT_FOCUS", "HOLDING"):
+            assert v in prompts[0]
+        assert "dominant_label" not in prompts[0]
+
+    @pytest.mark.parametrize("cuts,concern", [(None, "BALANCED"), (1.5, "EMPLOYMENT_FOCUS"),
+                                              (-2.58, "INFLATION_FOCUS"), (0.2, "BALANCED")])
+    def test_fallback_label_comes_from_concern(self, cuts, concern):
+        r = main05._fallback_regime(3.875, 4.52, cuts)
+        assert (r["dominant_concern"], r["dominant_label"]) == (concern, main05._CONCERN_LABELS[concern])
+
+    def test_holding_on_new_statement_keeps_previous_judgment(self, tmp_path, monkeypatch):
+        p, calls = TestFedContextNewStatement()._setup(
+            tmp_path, monkeypatch, grok_reply='{"regime":"HOLDING","dominant_concern":"INFLATION_FOCUS","ai_reason":"新"}')
+        main05.update_fed_context(date(2026, 9, 17))
+        last = pd.read_csv(p, dtype=str).fillna("").iloc[-1]
+        assert (last["fomc_date"], last["regime"], last["ai_reason"]) == ("2026-07-29", "TIGHTENING", "旧")
+        assert calls["grok"] == 1
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main([__file__, "-v"]))

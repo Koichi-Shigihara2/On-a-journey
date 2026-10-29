@@ -1258,16 +1258,26 @@ def fetch_latest_fomc_statement(target_date: date = None):
         logger.warning(f"FOMC statement body: {e}")
         return None, None
 
+# [[MACRO-PULSE-FOMC-REGIME-INVALID-1]]（2026-10-29）: REGIME・FRB主眼の値はこの3つずつだけ。
+# 主眼のラベル（dominant_label）はここで主眼から決める（Grokには書かせない）
+_VALID_REGIMES = ("EASING", "TIGHTENING", "BALANCED")
+_CONCERN_LABELS = {"INFLATION_FOCUS": "物価重視", "EMPLOYMENT_FOCUS": "雇用重視", "BALANCED": "両睨み"}
+
 def _fallback_regime(ff_current, zq_rate, cuts_implied):
     src = "DGS1数値ベース"
     if cuts_implied is None:
-        return {"regime":"BALANCED","dominant_concern":"BALANCED","dominant_label":"両睨み","ai_reason":"データ取得失敗のためルールベース判定。","regime_source":src}
-    if cuts_implied >= 1.0:
-        return {"regime":"EASING","dominant_concern":"EMPLOYMENT_FOCUS","dominant_label":"雇用重視","ai_reason":f"DGS1ベースで{cuts_implied:.1f}回の利下げを織り込み。EASING局面と判定（AI分析なし）。","regime_source":src}
+        regime, concern, reason = "BALANCED", "BALANCED", "データ取得失敗のためルールベース判定。"
+    elif cuts_implied >= 1.0:
+        regime, concern = "EASING", "EMPLOYMENT_FOCUS"
+        reason = f"DGS1ベースで{cuts_implied:.1f}回の利下げを織り込み。EASING局面と判定（AI分析なし）。"
     elif cuts_implied <= -1.0:
-        return {"regime":"TIGHTENING","dominant_concern":"INFLATION_FOCUS","dominant_label":"インフレ警戒","ai_reason":f"DGS1ベースで{abs(cuts_implied):.1f}回の利上げを織り込み。TIGHTENING局面と判定（AI分析なし）。","regime_source":src}
+        regime, concern = "TIGHTENING", "INFLATION_FOCUS"
+        reason = f"DGS1ベースで{abs(cuts_implied):.1f}回の利上げを織り込み。TIGHTENING局面と判定（AI分析なし）。"
     else:
-        return {"regime":"BALANCED","dominant_concern":"BALANCED","dominant_label":"両睨み","ai_reason":f"DGS1ベースの織り込みが{cuts_implied:+.1f}回でBALANCED局面と判定（AI分析なし）。","regime_source":src}
+        regime, concern = "BALANCED", "BALANCED"
+        reason = f"DGS1ベースの織り込みが{cuts_implied:+.1f}回でBALANCED局面と判定（AI分析なし）。"
+    return {"regime": regime, "dominant_concern": concern, "dominant_label": _CONCERN_LABELS[concern],
+            "ai_reason": reason, "regime_source": src}
 
 def analyze_fomc_with_grok(fomc_date, stmt_text, ff_current, zq_rate, cuts_implied):
     api_key = os.environ.get("XAI_API_KEY", "")
@@ -1283,8 +1293,19 @@ Market Context:
 - 1-year Treasury yield (FRED DGS1), used as a proxy for the expected policy rate 12 months ahead (no term-premium adjustment): {zq_rate}%
 - Market-implied rate changes in 12M: {cuts_implied:+.1f} cuts (25bp each)
 
+Allowed values (use ONLY these values; any other value is invalid):
+- regime: choose by the direction the policy points, not by whether the rate changed.
+  - EASING: the Committee cut the rate, or the statement signals that the next move is a cut
+  - TIGHTENING: the Committee raised the rate, or the statement signals that the next move is a hike
+  - BALANCED: the rate was held and the statement signals neither a cut nor a hike
+  "Held" is not a value (do not answer HOLDING, HOLD, PAUSE, NEUTRAL, etc.). If the rate was held, choose one of the three above by the direction the statement signals.
+- dominant_concern:
+  - INFLATION_FOCUS: inflation is the Committee's main concern
+  - EMPLOYMENT_FOCUS: employment (the labor market) is the Committee's main concern
+  - BALANCED: the Committee weighs inflation and employment about equally
+
 Respond ONLY in this exact JSON format (no markdown, no extra text):
-{{"regime":"EASING","dominant_concern":"EMPLOYMENT_FOCUS","dominant_label":"雇用重視","ai_reason":"日本語で100字以内で判断理由を記載。"}}"""
+{{"regime":"EASING or TIGHTENING or BALANCED","dominant_concern":"INFLATION_FOCUS or EMPLOYMENT_FOCUS or BALANCED","ai_reason":"日本語で100字以内で判断理由を記載。"}}"""
     try:
         text = grok_text([{"role": "user", "content": prompt}], GROK_MODEL, "MACRO PULSE FOMC", api_key=api_key,
                          max_tokens=1024, temperature=0.1)
@@ -1297,10 +1318,13 @@ Respond ONLY in this exact JSON format (no markdown, no extra text):
     m = re.search(r'\{.*\}', raw, re.DOTALL)
     if m:
         parsed = json.loads(m.group())
-        _VALID_REGIMES = {"EASING", "BALANCED", "TIGHTENING"}
         if parsed.get("regime") not in _VALID_REGIMES:
             logger.warning(f"Grok returned invalid regime '{parsed.get('regime')}'. Using fallback.")
             return _fallback_regime(ff_current, zq_rate, cuts_implied)
+        if parsed.get("dominant_concern") not in _CONCERN_LABELS:
+            logger.warning(f"Grok returned invalid dominant_concern '{parsed.get('dominant_concern')}'. Using fallback.")
+            return _fallback_regime(ff_current, zq_rate, cuts_implied)
+        parsed["dominant_label"] = _CONCERN_LABELS[parsed["dominant_concern"]]
         parsed["regime_source"] = "FOMC声明分析（Grok）"
         return parsed
     logger.warning(f"No JSON found in Grok response (FOMC). Full response: {raw[:500]}")
