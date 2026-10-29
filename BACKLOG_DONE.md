@@ -4,6 +4,65 @@
 
 ## 2026-10-29（完了）
 
+### ✅ [NAV-MOBILE-1] スマホ幅（390px）でグローバルナビ11項目が3段以上に折り返し、ヘッダーが画面の大きな割合を占める
+**完了（2026-10-29）:** 実装・push済み（`2d3defffab`、対応の記録 `8e59e4f068`）。CSS・JSだけの変更で、本番の確認はPlaywrightで手元のdocs/を描画して済ませた（チャット側の指示で、この確認の後に移設）。ヘッダーの高さ・scrollWidth・現在のツールの位置は下の「対応」
+**型・処置（2026-10-19 束ね）:** 型D・根治策の本体（型Dの根治策（R-D）の本体）
+**優先度:** 中
+**分類:** 表示（ナビゲーション） / 全ページ共通・`docs/common/site-nav.js`・`docs/common/site-theme.css`
+**登録日:** 2026-10-17
+**発見:** [[NAV-LINK-INTEGRITY-1]]の確認（EPS stock.htmlのsticky化・HYPE COREの高さの決め打ちの削除の後、390px幅でヘッダーの高さを測った。FINDINGS.md 2026-10-17 型D）
+
+#### 内容（観測した事実）
+- 390px幅では、11項目のグローバルナビが3段以上（ページにより1列）に折り返す。stickyのヘッダーは画面（高さ844px）に残り続ける（EPS stockは273px・HYPE COREは401px・TANUKI stockは495px）
+- ページごとにヘッダーのレイアウト（`flex-wrap`の有無・ロゴとナビの並び）が違い、HYPE COREはロゴの右にナビが1列に並ぶ
+- 全ページ共通の課題で、ページごとに直すと[[NAV-LINK-INTEGRITY-1]]の決まり（ナビ・サブナビのCSSをページ内に書かない）に反する
+
+#### 390px幅でのヘッダーの高さ（2026-10-17、`kaihatsu`の[[NAV-LINK-INTEGRITY-1]]の修正の後、Playwrightで計測）
+| ページ | 高さ | position |
+|---|---|---|
+| HOME | 61px（ナビ無し、カード） | static |
+| TANUKI SCORE | 233px | sticky |
+| TANUKI VALUATION index | 421px | sticky |
+| TANUKI VALUATION stock.html | 495px | sticky |
+| EPS ANALYZER index | 287px | static |
+| EPS ANALYZER stock.html | 273px | sticky |
+| EPS ANALYZER tickers.html | 285px | static |
+| ~~EPS ANALYZER admin.html~~（2026-10-21削除） | 403px | static |
+| ~~value-monitor/admin.html~~（2026-10-21削除） | 403px | static |
+| STONKS SILO | 403px | static |
+| Market Pulse | 263px | static |
+| ~~Extreme Fear~~（2026-10-21削除） | 166px | static |
+| MACRO PULSE | 403px | static |
+| HYPE CORE index | 401px | sticky |
+| HYPE CORE detail.html | 401px | sticky |
+| PORTFOLIO | 237px | static |
+| TANUKI TAIL index | 237px | sticky |
+| TANUKI TAIL detail.html | 341px | sticky |
+| TANUKI TAIL decision_log.html | 228px | static |
+
+#### 直し方の候補（未決定）
+- `site-nav.js`・`site-theme.css`の側で、狭い幅ではナビを折りたたむ（メニューボタン・横スクロールの1行・現在のツールだけ表示など）。ページ内のCSSでは直さない
+- stickyのヘッダーは、狭い幅ではナビの部分を固定しない（ロゴの行だけ固定）ことも合わせて検討する
+
+#### 根治策としての範囲（2026-10-19 初回の束ね、根治策R-D）
+型D（寸法の決め打ち）の根治策の本体とする（`docs/architecture/BUNDLING_2026-10-19.md`）。
+- 束ねた件: FINDINGS 2026-10-17（HYPE COREのヘッダーの高さの決め打ち、[[NAV-LINK-INTEGRITY-1]] A-6で済）・2026-10-17（EPS stock.htmlのヘッダーが390px幅で273px）
+- 始める段（CHAT_RULES 4）: 定義（全ページ共通のCSSで、ナビの畳み方を決める）
+- 投資判断への影響: なし
+- 規模の見込み: 小
+
+#### 対応（2026-10-29、チャット側の指示）
+- `docs/common/site-theme.css`: 640px以下で、ナビを横スクロールの1行に（`flex-wrap: nowrap`・`overflow-x: auto`・スクロールバーを隠す）。ナビを含むヘッダーは折り返し、ナビの入れ物を全幅の段に（`header:has(.site-nav)`）。ページ内のCSSは変えない
+- `docs/common/site-nav.js`: 640px以下で、現在のツール（`a.active`）をナビの中央に寄せる。`scrollIntoView`はページ（window）も横に動かす（Market Pulse等は本文が390pxより広い）ため、ナビの`scrollLeft`だけを変える。
+  認証の画面の後にヘッダーを出すTAIL・フォントの読み込み後に幅が変わるページ・隣の要素でナビが後から狭くなるMACRO PULSEがあるため、ナビと現在のツールの大きさが変わるたびに寄せ直し（ResizeObserver）、人がナビを触ったらやめる
+- 確認（Playwright、docs/を手元で配り、TAILは`tail_auth`・Portfolioは`portfolio_auth`で通した。詳細のページはNVDA）: 390pxのヘッダーの高さ（前→後）
+  TANUKI SCORE 233→93・TANUKI VALUATION 385→99・同stock 459→151・EPS index 253→145・EPS stock 239→137・EPS tickers 251→143・STONKS SILO 369→99・Market Pulse 229→115・MACRO PULSE 369→129・
+  HYPE CORE 365→73・同detail 365→73・PORTFOLIO 203→97・TANUKI TAIL 202→89・同detail 306→85・同decision_log 194→86（ナビは全ページ1行。stockのページが高いのはヘッダーの中の版・検索・銘柄のリンクの段）。
+  documentのscrollWidthは増えない（TANUKI VALUATION 562→419、ほかは同じ）。現在のツールは15ページともナビと画面の中に見え、ページのスクロールは0のまま。
+  1440pxはヘッダーの高さが全ページ同じで、スクリーンショットの差はロゴの横の点の点滅・時計など、同じコードを2回描画しても変わる所だけ
+
+---
+
 ### ✅ [MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1] MACRO PULSEのREGIME・FRB主眼が月に1回しか判定されず、FOMCの声明が次の月の最初の土曜まで反映されない（9/16の声明が10/3時点で未反映）
 **完了（2026-10-29）:** 本番の確認で完了（次回の確認手順8）。手で起動したMACRO PULSE（`--update-schedule`、run `40856853804`、2026-10-29 10:22 UTC、data commit `05483eea9c`）のログに「新しいFOMC声明（2026-10-28）で判定し直し、2026-10の行を書き換える（前の声明 2026-09-16）」
 - `05_fed_context.csv`の10月の行: record_date 2026-10-28・fomc_date 2026-10-28・regime BALANCED・dominant_concern INFLATION_FOCUS・dominant_label 物価重視・regime_source FOMC声明分析（Grok）・ai_reason「金利据え置き、インフレ高止まりと価格安定を強調。次の一手へのシグナルなし。」。行の数は8のまま（増えない）
