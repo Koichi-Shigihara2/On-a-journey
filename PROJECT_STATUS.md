@@ -11,11 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-28 終業 更新。上から順）**:
-1. 10-29（木）夜: CLAUDE_CODE_START.md「次回の確認手順」の8（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、10-28のFOMCの声明）。07:15 JSTの実行（MACRO_PULSE_Update.yml）が済んだのを`gh run list`で先に確かめる。手順7は2026-10-28に済
-2. 11-01（日）の確認と束ね: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）の後に、FINDINGS.mdの未登録の16行＋NIY=Fの1行を束ねる（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
-3. 束ねで決めた根治
-4. 次の大きな作業: 銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）か、画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
+**次の作業（2026-10-29 終業 更新。上から順）**:
+1. （済 2026-10-29）10-29の手順8（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、10-28のFOMCの声明）。01:50 UTCの毎日の実行はGrokの`HOLDING`ではじかれ、`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`（`8616e06c71`）で直した後、
+   update-scheduleの手動実行（run `40856853804`）で10月の行がfomc_date 2026-10-28・BALANCED・物価重視（Grok）に。2件を移設
+2. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+3. 続いて束ね: FINDINGS.mdの未登録の16行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）。束ねで決めた根治
+4. 束ねの後に、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
 
 **（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
@@ -85,6 +86,15 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-29（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（手順8を済に、確かめる順は 11-01の13・5と束ね → 起きた回の2・9）、2026-10-29の日付つきのブロックを足した。
+  アクティブ11件（`^### [`の機械カウント。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の登録で13件、`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`と2件の移設で11件）。
+  BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・BACKLOG_DONE.mdへの移設の印91件の先はすべてBACKLOG_DONE.mdにある（ほかにIDEAS_AND_WATCH.mdへの印1件〈`[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]`、先はある〉。10-28の「90件」はこの1件を含む数で、今日の2件で92件）。
+  BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで、10-28と同じ。FINDINGS.mdの未登録（束ねる前）は16行（今日は足していない）。
+  **今日のまとめ**: 手順8の調査（run `40802582209`、Grokが`regime`に`HOLDING`）→`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の登録・修正（`8616e06c71`: プロンプトに選べる値と意味、dominant_concernの検査、ラベルは`_CONCERN_LABELS`の1か所で決める）→
+  update-scheduleの手動実行（run `40856853804`）で手順8済、2件を移設（`4bcd823efb`）
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1（変わらず）、二重実装の規則 **14**（CHECK-INV-3の規則の種類12〈WARN 20件〉＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、
+  Python 68,670行・136ファイル（10-28の68,646行から+24行: `src/market/macro_pulse/05_main.py`）、テスト35,353行（+53行: `tests/test_macro_pulse_logic.py`）、docs配下のHTML・JS 20,288行・20ファイル（変わらず）、ワークフロー20本、アクティブBACKLOG 11件。
+  数え方は10-28と同じ（`git ls-files`のPythonからtestsと`test_`を除き、`wc -l`と同じく最後の改行の無い行は数えない。10-28の終業の`d4f1b9d8ab`で数え直して68,646行・35,300行・20,288行が一致）
 - **2026-10-28（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（手順7を済に、確かめる順は 10-29夜の8 → 11-01の13・5と束ね → 起きた回の2・9。手順8は朝→夜、07:15 JSTの実行を`gh run list`で先に確かめる）、
   2026-10-28の日付つきのブロックを足した。アクティブ12件（`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`の移設で11件、`[[PORTFOLIO-TABLE-OVERFLOW-1]]`の登録で12件。`[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`は同じ日に登録・移設）。
   BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印90件の先はすべてBACKLOG_DONE.mdにある。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで、10-26の終業（`73d7e1b085`）と同じ（今日は増えていない）。
