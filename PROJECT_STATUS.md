@@ -11,13 +11,14 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-29 終業 更新。上から順）**:
-1. （済 2026-10-29）10-29の手順8（`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`、10-28のFOMCの声明）。01:50 UTCの毎日の実行はGrokの`HOLDING`ではじかれ、`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`（`8616e06c71`）で直した後、
-   update-scheduleの手動実行（run `40856853804`）で10月の行がfomc_date 2026-10-28・BALANCED・物価重視（Grok）に。2件を移設
-2. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-3. 続いて束ね: FINDINGS.mdの未登録の16行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）。束ねで決めた根治
-4. 束ねの後に、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
-5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
+**次の作業（2026-10-29 夜の終業 更新。上から順）**:
+1. 10-30（金）朝: CLAUDE_CODE_START.md「次回の確認手順」の14（`[[EPS-SHARES-BASIS-MISMATCH-1]]`、最大EPSの分母）。本番のTANUKI VALUATION（10-30 05:48 JSTごろ）で`max_eps_shares_basis`が94銘柄ttm_weighted_avg・BKNG/FCX fallback、
+   max_eps以外の変化0（株価・株式数で動く分を除く）、method_changeの印。`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に実行を確かめる。確かめたら移設
+2. 次の作業: `[[TAIL-REVIEW-PERIOD-FILTER-1]]`（チャット側の依頼文あり。STEP 0の調査から）
+3. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+4. 続いて束ね: FINDINGS.mdの未登録の16行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）。束ねで決めた根治
+5. 束ねの後に、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
+6. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
 
 **（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
@@ -83,9 +84,17 @@
 4. （済 2026-10-26）`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`（日足の履歴の決まりと、登録の手順への過去分の取り込み）。次の新規銘柄の登録の前に必要
 5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`、2026-10-14から一時停止中）— 依存: 3・4の後。再検証は§7(a)〜(d)の方法で
 
-**後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`。
+**後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`（R-Dは2026-10-29に済、`2d3defffab`）。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-29 夜（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（確かめる順は 10-30朝の14 → 11-01の13・5と束ね → 起きた回の2・9）、2026-10-29 夜の日付つきのブロックを足した。
+  アクティブ9件（`^### [`の機械カウント。`[[NAV-MOBILE-1]]`・`[[PORTFOLIO-TABLE-OVERFLOW-1]]`の移設で11件→9件。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は実装済みで手順14まで残す）。
+  BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印94件（BACKLOG_DONE.md 93・IDEAS_AND_WATCH.md 1）の先はすべてある。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は16行（今夜は足していない）。
+  **今夜のまとめ**: `[[EPS-SHARES-BASIS-MISMATCH-1]]`（`a6e31f9b2d`・`d591289cc2`。最大EPSの分母をTTMの期間の加重平均の株式数に、手元の全96銘柄でmax_eps系以外は差0・1%超55銘柄、10-30朝に手順14）→
+  `[[NAV-MOBILE-1]]`（`2d3defffab`・`8e59e4f068`・`98a5465501`。390pxでナビを横スクロールの1行に、全15ページのヘッダーが低くなる）→`[[PORTFOLIO-TABLE-OVERFLOW-1]]`（`c60cd8aad2`・`667859f3ca`・`d4e6124e2b`。CASHのラベルを短く、表が入れ物に収まる）
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1（変わらず）、二重実装の規則 **14**（CHECK-INV-3の規則の種類12〈WARN 20件〉＋MAC-11・MAC-20の2。TANUKIの一覧に足した規則「EPSの分母の株式数」は1か所で二重ではない）、サブシステム 10、
+  Python 68,720行・136ファイル（今日の終業の68,670行から+50行: `pipeline.py`・`scripts/inventory/inventory_layers.py`）、テスト35,382行（+29行: `tests/test_tanuki_max_eps.py`）、docs配下のHTML・JS 20,315行・20ファイル（+27行: `site-nav.js`・TANUKI SCOREの`index.html`。`site-theme.css`はCSSで数えない）、ワークフロー20本、アクティブBACKLOG 9件。
+  数え方は10-28と同じ（今日の終業の`79bb736750`で数え直して68,670行・35,353行・20,288行が一致）
 - **2026-10-29（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（手順8を済に、確かめる順は 11-01の13・5と束ね → 起きた回の2・9）、2026-10-29の日付つきのブロックを足した。
   アクティブ11件（`^### [`の機械カウント。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の登録で13件、`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`と2件の移設で11件）。
   BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・BACKLOG_DONE.mdへの移設の印91件の先はすべてBACKLOG_DONE.mdにある（ほかにIDEAS_AND_WATCH.mdへの印1件〈`[[EXTERNAL-TRIGGER-MARKETPULSE-RECHECK-1]]`、先はある〉。10-28の「90件」はこの1件を含む数で、今日の2件で92件）。
