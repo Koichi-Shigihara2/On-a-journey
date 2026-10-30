@@ -11,14 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-29 夜の終業 更新。上から順）**:
-1. 10-30（金）朝: CLAUDE_CODE_START.md「次回の確認手順」の14（`[[EPS-SHARES-BASIS-MISMATCH-1]]`、最大EPSの分母）。本番のTANUKI VALUATION（10-30 05:48 JSTごろ）で`max_eps_shares_basis`が94銘柄ttm_weighted_avg・BKNG/FCX fallback、
-   max_eps以外の変化0（株価・株式数で動く分を除く）、method_changeの印。`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に実行を確かめる。確かめたら移設
-2. 次の作業: `[[TAIL-REVIEW-PERIOD-FILTER-1]]`（チャット側の依頼文あり。STEP 0の調査から）
-3. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-4. 続いて束ね: FINDINGS.mdの未登録の16行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）。束ねで決めた根治
-5. 束ねの後に、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
-6. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
+**次の作業（2026-10-30 終業 更新。上から順）**:
+1. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+2. 続いて束ね: FINDINGS.mdの未登録の17行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」。2026-10-30に1行足した）
+3. 11月上旬: CLAUDE_CODE_START.md「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
+4. 束ねの後に、残りのアクティブの件と、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
+5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
 
 **（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
@@ -87,6 +85,13 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`（R-Dは2026-10-29に済、`2d3defffab`）。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-30（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（手順14を済に、手順15を足した。確かめる順は 11-01の13・5と束ね → 起きた回の2・9 → 11月上旬の15）、2026-10-30の日付つきのブロックを足した。
+  アクティブ7件（`^### [`の機械カウント。`[[EPS-SHARES-BASIS-MISMATCH-1]]`・`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の移設で9件→7件）。
+  BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印は今日の2件で前回の94件から96件（BACKLOG_DONE.md 95・IDEAS_AND_WATCH.md 1）、先はすべてある（正規表現`^（[[ID]]は…BACKLOG_DONE.md`で機械的に数えると97件で、前回の終業の`0f6c884e36`でも95件と1件多く出る。数え方の差で、今日の差は+2）。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は17行（今日1行）。
+  **今日のまとめ**: 手順14済（チャット側の確認、本番`1ca5367b4e`）→`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設（`3b2203b39f`）→本番の後に増えたWARN-INV-6（`max_eps_shares`の読み手なし）を、TANUKI SCOREの最大EPS PERのtooltipに分母の株式数と基準を常に出して解消（`74e675255e`、WARN 227→226）→`[[TAIL-REVIEW-PERIOD-FILTER-1]]`（STEP 0で後付けは28本〈NVDA_2026Q2は外れる〉、コード `f9a7563010`・28本の印 `61635da542`・記録と移設 `5936daf37b`。比較・集計から外す期の判定は`review_status.is_comparable()`の1か所、予測の振り返りは照合できる予測が全銘柄0件に〈2027Q1ごろまで空〉）→手順15とFINDINGS 2026-10-30の1行（`9c6c2fa732`）
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1（変わらず）、二重実装の規則 **14**（CHECK-INV-3の規則の種類12〈WARN 20件〉＋MAC-11・MAC-20の2。TAILの一覧に足した規則「比較・集計から外すレビュー」は1か所で二重ではない）、サブシステム 10、
+  Python 68,863行・136ファイル（前回の終業の68,720行から+143行: `src/tail/quarterly_review_generator.py` +100・`review_status.py` +50・`prediction_tracker.py` −11・`scripts/inventory/inventory_layers.py` +4）、テスト35,565行・153ファイル（+183行: `tests/test_tail_review_period_filter.py`）、docs配下のHTML・JS 20,343行・20ファイル（+28行: TAILの`detail.html` +12・`index.html` +8、TANUKI SCOREの`index.html` +8）、ワークフロー20本、アクティブBACKLOG 7件。
+  数え方は10-28と同じ（`git ls-tree`のPythonからtestsと`test_`を除き、`wc -l`と同じく改行の数。前回の終業の`0f6c884e36`で数え直して68,720行・35,382行・20,315行が一致）。+354行は全部「数を増やさない」の対象外（不具合の根治と、その根治で出た読み手なしのキーの解消）
 - **2026-10-29 夜（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（確かめる順は 10-30朝の14 → 11-01の13・5と束ね → 起きた回の2・9）、2026-10-29 夜の日付つきのブロックを足した。
   アクティブ9件（`^### [`の機械カウント。`[[NAV-MOBILE-1]]`・`[[PORTFOLIO-TABLE-OVERFLOW-1]]`の移設で11件→9件。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は実装済みで手順14まで残す）。
   BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印94件（BACKLOG_DONE.md 93・IDEAS_AND_WATCH.md 1）の先はすべてある。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は16行（今夜は足していない）。

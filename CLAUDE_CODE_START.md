@@ -26,7 +26,7 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-10-29 夜の終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+**次回の確認手順（2026-10-30 終業の更新。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
 BACKLOG.mdのアクティブは**7件**（2026-10-30、`^### [`の機械カウント。手順14の合格〈チャット側の確認〉で`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設、9件→8件。`[[TAIL-REVIEW-PERIOD-FILTER-1]]`を実装して移設、8件→7件）。それまでは**9件**（2026-10-29 夜の終業、`^### [`の機械カウント。`[[NAV-MOBILE-1]]`・`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を実装して移設、11件→9件。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は実装済みで手順14の確認まで残す）。それまでは**11件**（2026-10-29 終業、`^### [`の機械カウント。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`を登録して13件、手順8の確認で`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`と一緒に移設して11件）。それまでは**12件**（2026-10-28 終業、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件、`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を登録して12件。`[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`は同じ日に登録・移設）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
@@ -93,13 +93,15 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）・14（2026-10-30。チャット側の確認、本番 `1ca5367b4e` のTANUKI VALUATIONでbasis 94銘柄ttm_weighted_avg・BKNG/FCX fallback、最大EPS PER ONDS 9.3・PLTR 131.0・XOM 23.5、method_changeの印は96銘柄。判定が変わった7銘柄〈CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA〉は株価・金利による。BACKLOG_DONE.mdの`[[EPS-SHARES-BASIS-MISMATCH-1]]`）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は2026-10-30に手順14の合格で移設
-- **次の作業（2026-10-30）**: 手順14済・`[[TAIL-REVIEW-PERIOD-FILTER-1]]`済 → 11-01の手順13・5と束ね（入力17行）→ 手順15（11月上旬のTAILのレビューの後）
+- **次の作業（2026-10-30 終業）**: ① 11-01（日）のSEC_Data_Updateと連鎖のTANUKI VALUATIONの後に手順13・5、続いて束ね（入力17行） ② 11月上旬: 手順15（保有銘柄の次のTAILのレビューの後） ③ 束ねの後: 残りのアクティブの件と、銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかの判断
 
-**2026-10-30 手順14の済・TAILのレビューの期の絞り込み（確認の残りは上の「次回の確認手順」13・5・2・9）**
+**2026-10-30 手順14の済・TAILのレビューの期の絞り込み（終業 このcommit。確認の残りは上の「次回の確認手順」13・5・15・2・9）**
 - 手順14済 `3b2203b39f`（`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設）。本番の後に増えたWARN-INV-6（`max_eps_shares`の読み手なし）は、TANUKI SCOREの最大EPS PERのtooltipに分母の株式数と基準を常に出して直した `74e675255e`（WARN 227→226）
 - `[[TAIL-REVIEW-PERIOD-FILTER-1]]`: コード `f9a7563010`（比較・集計から外す期の判定は`src/tail/review_status.py`の`is_comparable()`の1か所。生成はSEC Layer3を期末日・申告日〈first_val〉、Layer2を期で絞る。`data_as_of`・`backfilled`・`backfilled_note`）・データ `61635da542`（後付けの28本に印、prediction_history.jsonの照合できる予測は全銘柄0件に。前はすべて後付けのレビューから）。BACKLOG_DONE.mdへ移設
 - **TAILのレビューの`backfilled`は「対象の期の次の四半期の申告日 < 作った日」で機械的に付く**。遅れて作ったレビューはスコア推移・過去のスコアの引き継ぎ・予測の振り返りから外れる
 - 手元の画面の確認はscratchpadの`tail_bf_check.py`（tail_auth）・`score_tip.py`（このセッションのscratchpad）
+- 手順15の追加とFINDINGS 2026-10-30（出力の一覧〈TAIL〉で`prediction_history.json`の`predicted`・`actual`・`accuracy`が「データから消えた」扱い、照合できる予測がまた出るとゲートがNG）`9c6c2fa732`。束ねの入力は17行
+- 終業の数: Python 68,863行・136ファイル（+143）、テスト35,565行（+183）、HTML・JS 20,343行（+28）、二重の規則14、アクティブ7件（PROJECT_STATUS.mdの2026-10-30）
 
 **2026-10-29 夜 最大EPSの分母・スマホ幅のナビ・Portfolioの明細表（確認の残りは上の「次回の確認手順」14・13・5・2・9）**
 - `[[EPS-SHARES-BASIS-MISMATCH-1]]`: 実装 `a6e31f9b2d`（`pipeline.py::select_max_eps_shares()`、分母はEPS ANALYZERの`ttm.json`の同じ期末のTTMの`diluted_shares`、無ければ`components.diluted_shares`。
