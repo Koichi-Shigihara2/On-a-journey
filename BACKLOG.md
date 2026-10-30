@@ -1861,6 +1861,35 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ## 優先度：高
 
+### [MACRODATA-FRED-IMPORT-PATH-1] Macro Data UpdateのFREDの取得が2026-10-24から25系列すべて失敗し、MACRO PULSE・Market Pulseが読むFREDの値が10-22で止まっている
+**型・処置:** 型は束ねで決める・直す（チャット側の指示、2026-10-30）
+**優先度:** 高（MACRO PULSEの点数・流動性、Market PulseのVXN・HYスプレッド・3か月国債が6日前の値のまま）
+**分類:** データ取得 / `common/macro_data/fetcher.py`（`.github/workflows/Macro_Data_Update.yml`が`python common/macro_data/fetcher.py`で直接動かす）
+**登録日:** 2026-10-30
+**発見:** [[METHOD-CHANGE-PUBLISH-TIMING-1]]・[[SYSHEALTH-SEVERITY-MISMATCH-1]]の読み取りの調査（2026-10-30。System Healthの`[L] MacroData ⚠️ 取得失敗(25件)`が10-25から6日続いていた）
+
+#### 内容（2026-10-30に確認した事実）
+- `common/macro_data/macro_data_violations_log.json`: 25系列が`fetch_status: failed`、`failure_reason`「FREDクライアント初期化失敗: No module named 'common'」。
+  10-23 23:30 JSTの実行（`cae22f9588`）は失敗0、R-E2（`dbb8fb4694`、10-24 00:40 JST）の後の最初の実行（10-24 22:41 JST、`8cd60ad933`）から毎回25件
+- 原因: R-E2で`_get_fred_client()`（61行）が関数の中で`from common.external_api import fred_client`を読むようになった。ワークフローは`python common/macro_data/fetcher.py`で直接動かし、
+  検索パスに入るのは`common/macro_data/`だけでリポジトリの根が入らない。このファイルには根を`sys.path`に足す行が無い。pytestは根をパスに入れて動くため、テストでは見つからなかった
+- 影響: `common/macro_data/series/*.json`のFREDの値は2026-10-22の分まで（例: T10Y2Yの最後は as_of 2026-10-22、fetched_at 10-23 23:30 JST）。
+  読み手はMACRO PULSE（`src/market/macro_pulse/05_main.py`、`common.macro_data.reader`経由）とMarket Pulse（`src/market/market_pulse/collect_and_send.py`）
+- System Healthの`[L] MacroData`は⚠️どまりで、6日間🔴にならなかった（FINDINGS.md 2026-10-30）
+
+#### 直し方（チャット側の指示、2026-10-30）
+1. `common/macro_data/fetcher.py`の先頭に、`common/market_data/daily_guard.py`（22〜23行）と同じ形で根を`sys.path`に足す
+2. 再発防止のテスト: ワークフローが`python <path>.py`で直接動かすスクリプトが、根をパスに入れない動かし方でも`common.`・`src.`のimportを通ること
+3. 欠けた期間を埋め戻す（`python common/macro_data/fetcher.py --start 2026-10-20`）
+4. 確認: 次のMacro Data UpdateとSystem Healthが✅に戻ること（CLAUDE_CODE_START.mdの次回の確認手順）
+
+#### 対応（2026-10-30）
+- `common/macro_data/fetcher.py`: 先頭で根を`sys.path`に足す（`daily_guard.py`と同じ形）
+- テスト`tests/test_workflow_script_imports.py`: ワークフローの各stepの`run`から`python <path>.py`を拾い（`working-directory`を足す、29本）、ASTの全体（関数の中も含む）から`common`・`src`のimportを拾う。子プロセス（cwd=根、PYTHONPATHなし）で`sys.path[0]`をスクリプトのフォルダにし（`python <path>`と同じ。`python -c`のままだと''＝根が先頭に入り見逃す）、最上位のパスを決める文（os・sys・pathlibのimport、代入、関数の定義、sys.pathを触るif・try・式。`__main__`のifは中のsys.pathを触る文だけ）だけを実行して、拾ったモジュールがすべて根の下に見つかるかを確かめる。スクリプトの本体は動かさない（通信・書き込みをしない）。直す前の`fetcher.py`では1件だけ落ち（`fetcher.py`）、ほかの24本は通る（4本は`common`・`src`を読まない）
+- 埋め戻し: 手元で`python common/macro_data/fetcher.py --start 2025-09-25`（毎日の実行と同じ直近400日。`--start 2026-10-20`では観測日が10-20より前の月次の系列〈9月分の公表が10月下旬〉が取れないため）。25系列成功・失敗0、最後の観測日が新しくなったのは20系列（T10Y2Y 10-22→10-29、BAMLH0A0HYM2 10-22→10-28、VXNCLS 10-22→10-28、DGS3MO 10-21→10-28、IC4WSA 10-17→10-24、UMCSENT・MICH・M2SL・CFNAIMA3 8月分→9月分等）。残りの5系列（FEDFUNDS・GACDFSA066MSFRBPHI・PAYEMS・PERMIT・SAHMCURRENT）は新しい公表が無い（`series/`の26ファイルのうちCFNAIは`series_meta.json`に無く取得の対象外）。保存の形は系列（`series/{ID}.json`の`records`に観測日ごとの値・`as_of`・`fetched_at`、同じ観測日は上書き）。MACRO PULSE・Market Pulseの読み口（`common.macro_data.reader`）で新しい値が返ることを確かめた（画面・CSVは各自の次の実行で新しくなる）
+
+---
+
 （[[OUTPUT-INVENTORY-CHECK-1]]〈R-A〉は2026-10-23、11層の段階1〜3と終わりの見直しが済んで完了、BACKLOG_DONE.md「2026-10-23（完了）」参照）
 （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]〈R-E1〉は2026-10-23、取引日・休場日・暫定の足・S&P500の構成銘柄をcalendar_universe.pyにまとめて完了、BACKLOG_DONE.md「2026-10-23（完了）」参照）
 （[[HOLDINGS-SINGLE-SOURCE-1]]は2026-10-23、保有の正をportfolio.jsonにしdiscover_config.jsonを消して完了、BACKLOG_DONE.md「2026-10-23（完了）」参照。本番の画面の目視はCLAUDE_CODE_START.mdの次回の確認手順12）
