@@ -33,10 +33,15 @@ common/external_api.py の fred_client()（FREDの呼び出し口、2026-10-24�
 
 import json
 import os
+import sys
 import tempfile
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
+
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO_ROOT not in sys.path:   # ワークフローは python common/macro_data/fetcher.py で直接動かす（[[MACRODATA-FRED-IMPORT-PATH-1]]）
+    sys.path.insert(0, _REPO_ROOT)
 
 MACRO_DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 
