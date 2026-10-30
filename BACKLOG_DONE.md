@@ -58,6 +58,11 @@
 - method_changeの印（`config/method_change.json`の2026-10-30）が96銘柄のscore_historyに入っている
 - 判定が変わった7銘柄（CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA）は株価・金利の動きによるもの（最大EPSは判定に使われない）
 
+#### 追記（2026-10-30、チャット側の指示）: 分母の株式数をTANUKI SCOREのtooltipに
+- 本番の実行の後、rccのWARNが226→227件。増えた1件は`[WARN-INV-6 TANUKI 誰も読まないキー] max_eps_shares`（画面は`max_eps_shares_basis`だけを読んでいた）
+- TANUKI SCOREの最大EPS PERの列のtooltipに、分母の株式数（`max_eps_shares`、百万株）と基準（TTMの期間の加重平均／今の完全希薄化後の株式数）を常に出す。fallbackのときは前からの文言「EPS ANALYZERのTTMが無いため今の株式数で割っている」を続ける。出力の一覧（TANUKI）を作り直した
+- 確認（Playwright、手元のdocs/、1600px）: PLTR「分母の株式数: 2,569.0百万株（TTMの期間の加重平均）」・ONDS 361.7百万株、BKNG・FCXは「（今の完全希薄化後の株式数）。EPS ANALYZERのTTMが無いため今の株式数で割っている」、ページのエラー0
+
 ---
 
 ## 2026-10-29（完了）

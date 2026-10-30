@@ -349,7 +349,7 @@ function renderDetailTable() {
       <td style="text-align:center">${fcfDisp}</td>
       <td class="num">${pct(s.upside)}</td>
       <td class="num" style="font-family:var(--mono)">${s.per != null ? s.per.toFixed(1) + 'x' + (s.perIsFwd ? '<span class="per-fwd" title="trailing PE がないため予想PER">Fwd</span>' : '') : '<span class="neu">—</span>'}</td>
-      <td class="num" style="font-family:var(--mono);${s.maxEpsRel === 'LOW' ? 'opacity:.45' : ''}">${s.maxEpsPer != null ? (s.maxEpsFallback ? `<span data-info-text="${escAttr('EPS ANALYZERのTTMが無いため今の株式数で割っている')}">${s.maxEpsPer.toFixed(1)}x</span>` : s.maxEpsPer.toFixed(1) + 'x') : '<span class="neu">—</span>'}</td>
+      <td class="num" style="font-family:var(--mono);${s.maxEpsRel === 'LOW' ? 'opacity:.45' : ''}">${s.maxEpsPer != null ? (s.maxEpsSharesInfo ? `<span data-info-text="${escAttr(s.maxEpsSharesInfo)}">${s.maxEpsPer.toFixed(1)}x</span>` : s.maxEpsPer.toFixed(1) + 'x') : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.perGap != null && s.perGap > 0 ? 'color:#f97316' : ''}">${s.perGap != null ? (s.perGap > 0 ? '+' : '') + s.perGap.toFixed(1) : '<span class="neu">—</span>'}</td>
       <td>${stageLabel(s.stage, s.stageL)}</td>
     </tr>`;
@@ -488,6 +488,14 @@ function renderDetailTable() {
     const maxEpsRel  = tk?.components?.max_eps_reliability ?? 'LOW';
     // [[EPS-SHARES-BASIS-MISMATCH-1]]: 分母がTTMの加重平均の株式数でない（今の株式数で割った）とき
     const maxEpsFallback = tk?.components?.max_eps_shares_basis === 'current_diluted_fallback';
+    // 分母の株式数（百万株）と基準をtooltipに常に出す
+    const maxEpsShares   = tk?.components?.max_eps_shares ?? null;
+    const maxEpsSharesInfo = [
+      maxEpsShares != null
+        ? `分母の株式数: ${(maxEpsShares / 1e6).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}百万株（${maxEpsFallback ? '今の完全希薄化後の株式数' : 'TTMの期間の加重平均'}）`
+        : null,
+      maxEpsFallback ? 'EPS ANALYZERのTTMが無いため今の株式数で割っている' : null,
+    ].filter(Boolean).join('。');
     // [[TANUKISCORE-PER-FORWARD-MIX-1]]: perがtrailing PEの代わりの予想PERなら、GAAPの最大EPS PERと
     // 比べる意味がないため乖離は算出しない（表示は「—」）
     const perIsFwd   = tk?.components?.per_is_forward ?? false;
@@ -510,7 +518,7 @@ function renderDetailTable() {
 
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
-             matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, perGap, dupont,
+             matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, maxEpsSharesInfo, perGap, dupont,
              growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier, latestMissing,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });
