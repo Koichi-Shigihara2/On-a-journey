@@ -2010,6 +2010,10 @@ E・I・Lの「🔴 読み込みエラー」の終了コードが1→2に変わ�
 #### 追記（2026-10-14、未確認のまま）
 10-13 03:40 UTCのSystem Health（run `38342842526`）も全項目✅・Overall ✅ HEALTHY・success（終了コード0）で一致。10-14の実行は23:59 UTC（10-13）の時点で未起動。
 Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日の一致はまだ確かめていない
+#### 追記（2026-10-30、ログでは一致。Discordの本文はKoichiさんの確認待ち）
+10-11の修正の後、終了コードが0以外の回は6回（2026-10-25〜10-30、毎日1回）。理由はどれも`[L] MacroData ⚠️ 取得失敗(25件)`の1件（[[MACRODATA-FRED-IMPORT-PATH-1]]）。
+6回ともOverallの行「⚠️ WARNING（問題1件）」と終了コード1で、同じ重大度で一致した。Discordの1行の本文はログに出ないため、10-30の各項目の判定を`build_one_line()`に渡して手元で組み立てた（送信はしていない）: `🟡 System Health 2026-10-30: WARNING | SEC✅ … CronRuns✅ TickerAudit✅ MacroData⚠️取得失敗(25件): BAMLH0A0H SecFresh✅`（これも同じ重大度）。🔴の回は修正の後まだ無い（🔴の経路はテストだけ）。
+手順2の条件は「Discordに実際に届いた本文」なので、10-25〜10-30のどれか1通の先頭が🟡・WARNINGで、MacroDataの欄が⚠️であることをKoichiさんが見たら移設する
 ---
 
 （[[TAIL-CTRL-WEEKLY-NOOP-POSITIONS-INDEX-1]]は2026-10-14、本番の実行で確認して完了、BACKLOG_DONE.md「2026-10-14（完了）」参照）
@@ -2073,6 +2077,40 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 #### 束ねた件
 - FINDINGS: 2026-10-15（計算方法の変更がpushの翌朝に印なしで公開）・2026-10-19（計算方法の変更の印が日付単位）
 - BACKLOG（統合してBACKLOG_DONE.mdへ）: [[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]・[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]。[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]（[[LAYER3-FIRST-FILED-DATE-1]]に統合）のファイルの作り直しの時点の部分も重なる
+
+#### STEP 0（2026-10-30、読み取りのみ。実装は11-01の手順13〈[[QUARTERLY-BASIS-MIX-1]]の案4の公開〉と束ねの後）
+**1. 計算方法の変更が公開に出る経路**
+
+| 経路 | ワークフロー（いつ） | 読むもの | どこで |
+|---|---|---|---|
+| Layer3をその場で作る（pushの後の最初の実行で出る） | TANUKI VALUATION（毎日。Market Data Daily→Stonks→TANUKIの連鎖。日曜はHypeCoreの後） | `build_ticker_store()`（`company_facts.json`から作る） | `pipeline.py`の1237行（PS比率のTTM売上）・3053（希薄化率）・3295（DuPont）・3527（長期負債）・3667・3703（粗利率3年） |
+| 同上 | Stonks Silo（毎日） | 同上 | `stonks_silo/pipeline.py`の147行・`financial_trend_calculator.py`の388行 |
+| 同上 | HypeCore（日曜のSEC_Data_Updateの後と、月曜04:00 UTCの安全網だけ） | 同上 | `hypecore.py`の262行 |
+| 同上 | Market Data Daily（ROTCE） | 同上 | `common/sec_data/rotce.py`の415行 |
+| 同上 | TAIL（レビュー生成・KPI・DCF） | 同上 | `quarterly_review_generator.py`・`tail_dcf_bridge.py`・`xbrl_segment_fetcher.py`・`kpi_proposer.py` |
+| 日曜に作り直すファイル（日曜のSEC_Data_Updateで出る） | SEC_Data_Update（日曜12:00 UTC）が`ttm/{T}_ttm_series.json`・`normalized/{T}_quarterly_normalized.json`を書く（`update.py`の201・249・252行） | — | — |
+| TTMの読み手 | TANUKI VALUATION（毎日） | `ttm/{T}_ttm_series.json` | `data_fetcher.py`の`TTMReader`（FCFの基準）、`pipeline.py`の1365行（最大EPS）・3177（DuPont）・3454（セグメントの成長率）、`basis_mix.load()` |
+| TTMの読み手 | rcc・audit・登録の検証（ゲート） | 同上 | — |
+| normalizedの読み手 | TANUKI VALUATIONの`stock.html`の336行（fetchで直接読む） | `normalized/{T}_quarterly_normalized.json` | — |
+
+同じTANUKI VALUATIONの1回の実行の中で、Layer3から取る値（すぐ出る）とTTMファイルから取る値（日曜まで古い）が混ざる。
+
+**2. 印の付き方**
+- 印を書く所: TANUKIの`latest.json`・`history/`・`history.json`・`score_history.json`（`pipeline.py`の1257・1258・1292・1318行）、HypeCoreの`poc.json`（1149行）、Stonksの結果（232行）、ROTCEの`{T}.json`・`_summary.json`
+- Discord: `score_watcher.py`の179〜184行は、`latest.json`に印があるとその銘柄の変化をすべて「🛠 計算方法の変更による変化 — 相場の変化ではありません」の見出しの下に入れる（211〜224行）
+- 実際の印（`score_history.json`の判定の変化）: 10-26は`LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1`が96銘柄に付き、判定の変化6件（CAKE・CDNS・HON・SCCO・SNPS・TSLA）のうち計算方法の変更によるものはHONだけ（TSLAは新しい10-Q、残り4件は相場）だが6件とも🛠の下に入った。10-30は`EPS-SHARES-BASIS-MISMATCH-1`が96銘柄に付き、判定の変化7件（CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA）は株価・金利によるもの（最大EPSは判定に使われない）だが、乖離率の変化（NOW・RXRX）も含め全部が🛠の下に入った
+- 印の日付に実行が無い例: 10-18（`LAYER3-RETENTION-PERIOD-1`）・10-25（`LAYER3-FIRST-FILED-DATE-1`）は付いた行が0件（日曜の連鎖は翌日のJSTに動いた）
+
+**3. HypeCoreとTANUKI VALUATIONの読み合い**
+- HypeCore→TANUKI: `hypecore.py`の329行`fetch_tanuki_iv()`がTANUKIの`history/`・`latest.json`の理論株価を読む（348行。stageの「期待と実体」の入力、534行）
+- TANUKI→HypeCore: `pipeline.py`が`hypecore/data/{T}_poc.json`を読む（847行`_compute_tanuki_score`〈rule40・MA200乖離〉・1467行`_compute_matrix_position`・1641行`_generate_report`・3597行`_inject_ttm_for_general_segment`〈rev_yoy〉・3777行`_load_hype_info`〈フェーズ・timing〉・3829行`_save_hypecore_history`）
+- 順序はSEC→HypeCore→TANUKIで、HypeCoreが読むのはいつも前回のTANUKIの理論株価。HypeCoreは週1回（日曜と月曜の安全網）なので、平日に計算方法の変更でTANUKIの理論株価が変わると、HypeCoreのstageに届くのは次の日曜、TANUKIのtimingに返るのはその後（最大で約1週間遅れる）
+
+**4. 11-01の[[QUARTERLY-BASIS-MIX-1]]の公開が通る経路**
+- 案4（HONのTTMの作り直し）は「日曜に作り直すファイル」の経路: 11-01のSEC_Data_Updateが`ttm/HON_ttm_series.json`（`basis_mix`）と`normalized/HON_*`を書き、続くHypeCore→TANUKI VALUATIONが`TTMReader`・最大EPS・DuPont・`basis_mix.load()`で読んで公開する。`stock.html`はnormalizedを直接読む
+- 案1の印（Layer3の部分）は「その場で作る」経路で、10-26にもう出ている
+- HypeCoreのstage: 11-01のHypeCoreはTANUKIより先に動き10-31時点のHONの理論株価を読む。新しい理論株価（約22.42）がHypeCoreに入るのは月曜の安全網（11-02 13:00 JST）か次の日曜
+- 印: `config/method_change.json`に11-01と11-02があるため、11-02朝（05:48 JST）の毎日のTANUKI VALUATIONで起きる相場の判定の変化も全部🛠の下に入る見込み（10-30と同じ形）
 
 #### 始める段（CHAT_RULES 4）
 定義（計算方法の変更が公開に出る時点の決まり）

@@ -11,12 +11,14 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-30 終業 更新。上から順）**:
-1. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: CLAUDE_CODE_START.md「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-2. 続いて束ね: FINDINGS.mdの未登録の17行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」。2026-10-30に1行足した）
-3. 11月上旬: CLAUDE_CODE_START.md「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
-4. 束ねの後に、残りのアクティブの件と、次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかをチャット側と決める
-5. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: データ基盤の2件（`[[LAYER3-FIRST-FILED-DATE-1]]`・`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`）は済んだ。再開の時期はチャット側の判断
+**次の作業（2026-10-30 夜の終業 更新。上から順）**:
+1. 10-31（土）朝: CLAUDE_CODE_START.md「次回の確認手順」の16（`[[MACRODATA-FRED-IMPORT-PATH-1]]`。Macro Data Updateが成功25件・失敗0件、System Healthが`[L] ✅`・Overall ✅・終了コード0、MACRO PULSEとMarket PulseのFREDの日付が新しい。確かめたら移設。期限2026-11-01）
+2. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+3. 続いて束ね: FINDINGS.mdの未登録の18行＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
+4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
+5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
+6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
+7. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: 再開の時期はチャット側の判断
 
 **（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
@@ -85,6 +87,11 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`（R-Dは2026-10-29に済、`2d3defffab`）。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-10-30 夜（終業のブラッシュアップ・2回目）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（確かめる順は 10-31朝の16 → 11-01の13・5と束ね → 11月上旬の15 → 束ねの後の`[[METHOD-CHANGE-PUBLISH-TIMING-1]]` → 起きた回の2・9。手順15の本文を日時の順に13・5の後へ）、2026-10-30 夜の日付つきのブロックを足した。
+  アクティブ8件（`^### [`の機械カウント。`[[MACRODATA-FRED-IMPORT-PATH-1]]`の登録で7件→8件、手順16の確認まで残す）。
+  BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印は**97件**（BACKLOG_DONE.md 96・IDEAS_AND_WATCH.md 1。正規表現`^（[[ID]]は…（BACKLOG_DONE.md|IDEAS_AND_WATCH.md）`の機械の数）で、先はすべてある。今夜の移設は0件。**数え方の注記（一度だけ）**: 10-29 夜の「94件」と10-30の「96件」は前回の数に手で足した数で、機械で数えると1件多い（10-30の時点で97件。同じIDの印の重複は無い）。以後は機械の数を書く。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は18行（今夜1行）。
+  **今夜のまとめ**: 読み取りの調査（A: `[[SYSHEALTH-SEVERITY-MISMATCH-1]]`は10-25〜10-30の6回でOverall「⚠️ WARNING（問題1件）」と終了コード1が一致、手元で組み立てたDiscordの1行も🟡・WARNING。Discordに届いた本文をKoichiさんが見たら移設。B: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`のSTEP 0をBACKLOGの項目に記録、実装は11-01の手順13と束ねの後）→調査の途中で見つけた`[[MACRODATA-FRED-IMPORT-PATH-1]]`（FREDの25系列が10-24夜から全滅）を登録・修正 `3de80f90cf`・埋め戻し `19bdd8b965`・記録 `557c38f4de`（FINDINGS 2026-10-30の2行目、束ねの入力18行、手順16）
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1（変わらず）、二重実装の規則 **14**（変わらず）、サブシステム 10、Python 68,868行・136ファイル（前回の終業`1b74be5549`の68,863行から+5行: `common/macro_data/fetcher.py`）、テスト35,722行・154ファイル（+157行: `tests/test_workflow_script_imports.py`）、docs配下のHTML・JS 20,343行・20ファイル（±0）、ワークフロー20本、アクティブBACKLOG 8件。数え方は10-28と同じ（`git ls-tree`、改行の数）。+162行は全部「数を増やさない」の対象外（不具合の根治と再発防止のテスト）
 - **2026-10-30（終業のブラッシュアップ）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（手順14を済に、手順15を足した。確かめる順は 11-01の13・5と束ね → 起きた回の2・9 → 11月上旬の15）、2026-10-30の日付つきのブロックを足した。
   アクティブ7件（`^### [`の機械カウント。`[[EPS-SHARES-BASIS-MISMATCH-1]]`・`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の移設で9件→7件）。
   BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印は今日の2件で前回の94件から96件（BACKLOG_DONE.md 95・IDEAS_AND_WATCH.md 1）、先はすべてある（正規表現`^（[[ID]]は…BACKLOG_DONE.md`で機械的に数えると97件で、前回の終業の`0f6c884e36`でも95件と1件多く出る。数え方の差で、今日の差は+2）。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は17行（今日1行）。
