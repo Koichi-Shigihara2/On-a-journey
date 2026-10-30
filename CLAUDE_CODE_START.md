@@ -39,6 +39,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 **確かめる順（日時の順）**:
 ① 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下）
 ② 起きた回・いつでも … 手順2（⚠️・🔴の日）・手順9（RSS 取得エラーの回）
+③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
+
+15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
+   - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
+   - 期限: 2026-11-30
+   - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
 
 13. **ベースが混在の直しの日曜の公開**（`[[QUARTERLY-BASIS-MIX-1]]`、実装 `6f34e661a7`。案4は日曜のSEC_Data_UpdateでTTMを作り直したときに出る）
    - 日時: 2026-11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後
@@ -55,7 +61,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
 
-**11-01（日）の束ね**（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の16行と、束ね済みで未修正の1行（2026-10-26 終業に機械的に拾い、2026-10-28の1行を足した。型は各行のとおり）:
+**11-01（日）の束ね**（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の17行と、束ね済みで未修正の1行（2026-10-26 終業に機械的に拾い、2026-10-28・2026-10-30の1行ずつを足した。型は各行のとおり）:
+- 2026-10-30 型—: 出力の一覧（TAIL）で`prediction_history.json`の`predicted`・`actual`・`accuracy`が「データから消えた」扱い。照合できる予測がまた出ると一覧とずれ、ゲートがNGになる（データの有る無しで一覧が揺れる。型は束ねで決める）
 - 2026-10-28 型—: `common/sec_data/rotce.py`を銘柄指定で実行すると`_summary.json`（TANUKI SCOREの散布図用）が1銘柄になる（98→1。本番のMarket Data Dailyは全銘柄で実行するため起きない。どの型にも当てはまらない）
 - 2026-10-26 型A: Layer3の`anomaly`（YTDの逆転）を読む所が無い。逆転のある6銘柄（ALAB・AMAT・CELH〈保有〉・KULR・ONDS・RKLB）、逆転の条件も入れるとALABの理論株価 −11.37%
 - 2026-10-26 型E: TSLAのreport.txt・画面のFCFの注記の文言のずれ（「FY2025」・一過性費用・FCF内訳が年次）
@@ -86,7 +93,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）・14（2026-10-30。チャット側の確認、本番 `1ca5367b4e` のTANUKI VALUATIONでbasis 94銘柄ttm_weighted_avg・BKNG/FCX fallback、最大EPS PER ONDS 9.3・PLTR 131.0・XOM 23.5、method_changeの印は96銘柄。判定が変わった7銘柄〈CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA〉は株価・金利による。BACKLOG_DONE.mdの`[[EPS-SHARES-BASIS-MISMATCH-1]]`）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は2026-10-30に手順14の合格で移設
-- **次の作業（2026-10-30）**: 手順14済・`[[TAIL-REVIEW-PERIOD-FILTER-1]]`済 → 11-01の手順13・5と束ね
+- **次の作業（2026-10-30）**: 手順14済・`[[TAIL-REVIEW-PERIOD-FILTER-1]]`済 → 11-01の手順13・5と束ね（入力17行）→ 手順15（11月上旬のTAILのレビューの後）
 
 **2026-10-30 手順14の済・TAILのレビューの期の絞り込み（確認の残りは上の「次回の確認手順」13・5・2・9）**
 - 手順14済 `3b2203b39f`（`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設）。本番の後に増えたWARN-INV-6（`max_eps_shares`の読み手なし）は、TANUKI SCOREの最大EPS PERのtooltipに分母の株式数と基準を常に出して直した `74e675255e`（WARN 227→226）
