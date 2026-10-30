@@ -67,21 +67,10 @@ def _classify_deviation(dev_pct: float) -> str:
 def _load_reviews_for_ticker(ticker: str, queue: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     """ticker の全レビューを四半期昇順で返す。
 
-    キューでsuperseded・skipped_oldの期のレビューは外す（ファイルは残っているが、その期の決算の
-    中身ではないため。[[TAIL-REVIEW-LATEST-MISMATCH-1]]）。
+    キューでsuperseded・skipped_oldの期のレビュー（[[TAIL-REVIEW-LATEST-MISMATCH-1]]）と、後から作った
+    レビュー（backfilled、[[TAIL-REVIEW-PERIOD-FILTER-1]]）は外す。判定はreview_status.is_comparable()。
     """
-    excluded = review_status.excluded_quarters(review_status.load_queue() if queue is None else queue, ticker)
-    pattern = os.path.join(REVIEWS_DIR, f"{ticker}_*_review.json")
-    files = sorted(glob.glob(pattern))
-    reviews = []
-    for fp in files:
-        with open(fp, encoding="utf-8") as f:
-            rv = json.load(f)
-        if rv.get("quarter") in excluded:
-            continue
-        reviews.append(rv)
-    reviews.sort(key=lambda r: r.get("quarter", ""))
-    return reviews
+    return review_status.comparable_reviews(REVIEWS_DIR, ticker, queue)
 
 
 def track_ticker(ticker: str) -> List[Dict[str, Any]]:

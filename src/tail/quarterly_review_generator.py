@@ -25,7 +25,7 @@ import csv
 import time
 import argparse
 import requests
-from datetime import datetime
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 from typing import Optional, Dict, Any, List, Tuple
 
@@ -44,8 +44,8 @@ if repo_root not in sys.path:
 # 明示して区別する。
 from common.external_api import ExternalApiError, grok_messages, grok_text  # noqa: E402
 from common.sec_data.layer3_builder import (  # noqa: E402
-    build_ticker_store, get_quarterly_series, get_latest_quarterly,
-    WEIGHTED_AVG_DILUTED_SHARES_TAG,
+    build_ticker_store, get_field_entries, get_quarterly_series, get_latest_quarterly,
+    CURRENT_VALUE_MAX_LAG_DAYS, WEIGHTED_AVG_DILUTED_SHARES_TAG,
 )
 from src.tail.thesis_utils import thesis_narrative_fields  # noqa: E402
 from src.tail import review_status  # noqa: E402
@@ -158,7 +158,111 @@ def load_tanuki_valuation(ticker: str) -> Optional[Dict[str, Any]]:
     }
 
 
-def load_layer1_financials(ticker: str) -> Dict[str, Any]:
+def _end_to_quarter(end: str) -> str:
+    yr, mo, _ = end.split("-")
+    return f"{yr}Q{(int(mo) - 1) // 3 + 1}"
+
+
+# ── 対象の期のデータに絞る（[[TAIL-REVIEW-PERIOD-FILTER-1]]、2026-10-30） ──
+# SEC EDGAR Layer3: 対象の期末日以前の期で、first_filed が対象の期の申告日以前のもの。値は first_val（その時点の値）。
+# Layer2（xbrl_segment_fetcherのKPI）: 対象の期以前の期だけ（filed はその期を最後に載せた申告の日付で、
+# 最初の申告ではないため絞らない。前年同期の値が後の申告の比較欄から入っている）。
+# TAIL側のLayer3（本文のKPI、1期分）: 保存されている期が対象の期と同じときだけ使う。
+# latest.json（sbc_ttm・forward_eps・理論株価）・マクロは期で絞れず、作った時点の値になる。
+_PERIOD_FIELDS = ("revenue", "net_income", "operating_cash_flow", "total_assets", "stockholders_equity")
+
+
+def _target_period_end(store: Optional[Dict[str, Any]], accn: str, quarter: str) -> Optional[str]:
+    """対象の期の期末日。対象の申告（accn）の値の期末の最大、無ければ期の名前（暦の四半期）が同じ期末の最大。"""
+    if not store:
+        return None
+    ents = [e for f in _PERIOD_FIELDS for e in get_field_entries(store, f) if e.get("end")]
+    own = [e["end"] for e in ents if accn and e.get("accn") == accn]
+    if own:
+        return max(own)
+    same_q = [e["end"] for e in ents if _end_to_quarter(e["end"]) == quarter]
+    return max(same_q) if same_q else None
+
+
+def _next_filing_date(store: Optional[Dict[str, Any]], period_end: Optional[str]) -> Optional[str]:
+    """対象の期末より後の期末を持つ最初の10-Q・10-Kの申告日（first_filed）。まだ無ければNone。"""
+    if not store or not period_end:
+        return None
+    dates = [e.get("first_filed") or e.get("filed")
+             for f in _PERIOD_FIELDS for e in get_field_entries(store, f)
+             if (e.get("end") or "") > period_end and str(e.get("form") or "").startswith(("10-Q", "10-K"))]
+    dates = [d for d in dates if d]
+    return min(dates) if dates else None
+
+
+def _series_as_of(store: Dict[str, Any], field: str, period_end: Optional[str], as_of: Optional[str],
+                  source_tag: Optional[str] = None) -> List[Dict[str, Any]]:
+    """get_quarterly_series()を期末日・申告日で絞り、値をその時点の値（first_val）にする。絞らないときはそのまま。"""
+    series = get_quarterly_series(store, field, source_tag=source_tag)
+    if not period_end:
+        return series
+    out = []
+    for e in series:
+        if e["end"] > period_end:
+            continue
+        if as_of:
+            if (e.get("first_filed") or e.get("filed") or "") > as_of:
+                continue
+            if e.get("first_val") is not None:
+                e = {**e, "val": e["first_val"]}
+        out.append(e)
+    return out
+
+
+def _latest_as_of(store: Dict[str, Any], field: str, period_end: Optional[str], as_of: Optional[str],
+                  source_tag: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """get_latest_quarterly()の対象の期版。絞った系列の末尾が対象の期末からCURRENT_VALUE_MAX_LAG_DAYS以内なら返す。"""
+    if not period_end:
+        return get_latest_quarterly(store, field, source_tag=source_tag)
+    series = _series_as_of(store, field, period_end, as_of, source_tag)
+    if not series:
+        return None
+    try:
+        lag = (date.fromisoformat(period_end) - date.fromisoformat(series[-1]["end"])).days
+    except ValueError:
+        return None
+    return series[-1] if lag <= CURRENT_VALUE_MAX_LAG_DAYS else None
+
+
+def filter_layer2_to_quarter(kpi_data: Optional[Dict[str, Any]], quarter: str) -> Optional[Dict[str, Any]]:
+    """Layer2のKPIを対象の期以前の期だけにした写しを返す（期の形が違えば絞らない）。"""
+    if not kpi_data or review_status.quarter_key(quarter) is None:
+        return kpi_data
+    qk = review_status.quarter_key(quarter)
+    kpis = {}
+    for name, info in (kpi_data.get("kpis") or {}).items():
+        data = [dp for dp in info.get("data", [])
+                if review_status.quarter_key(dp.get("quarter")) is not None
+                and review_status.quarter_key(dp.get("quarter")) <= qk]
+        kpis[name] = {**info, "data": data}
+    return {**kpi_data, "kpis": kpis}
+
+
+def layer3_kpi_for_quarter(kpi_layer3: Optional[Dict[str, Any]], quarter: str) -> Optional[Dict[str, Any]]:
+    """TAIL側のLayer3（本文のKPI）は保存されている期が対象の期と同じときだけ使う。"""
+    if kpi_layer3 and kpi_layer3.get("quarter") == quarter:
+        return kpi_layer3
+    return None
+
+
+def backfilled_note(next_filed: Optional[str], generated_at: str, filtered: bool) -> str:
+    """後から作ったレビューの理由。filtered=Falseは絞り込みを入れる前に作ったレビュー（2026-10-30に印を付けた分）。"""
+    head = f"対象の期の次の四半期の申告（{next_filed}）の後（{str(generated_at)[:10]}）に作ったレビュー。"
+    if filtered:
+        body = "SECの財務・KPIは対象の期までに絞ったが、"
+    else:
+        body = "SECの財務・KPIは作った時点の最新（対象の期より後の期を含む）で、"
+    return (head + body + "TANUKI VALUATIONのSBC（TTM）・予想EPS・理論株価とマクロの値は作った時点の値。"
+            "スコアの推移・予測の振り返りからは外す")
+
+
+def load_layer1_financials(ticker: str, period_end: Optional[str] = None, as_of: Optional[str] = None,
+                           store: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """SEC EDGAR Layer3（company_facts.json由来の統合スキーマ）四半期
     データ + latest.json から財務指標（TANUKI TAIL側の「layer1」区分、
     ＝財務諸表由来のKPI）を取得する。
@@ -166,28 +270,28 @@ def load_layer1_financials(ticker: str) -> Dict[str, Any]:
     ※ 戻り値の意味上の区分名「layer1」（財務諸表由来）は、本関数が参照
     するデータソース「SEC EDGAR Layer3」（layer3_builder.py、統合
     スキーマ）とは無関係の別軸の用語。混同しないこと。
+
+    period_end・as_of（[[TAIL-REVIEW-PERIOD-FILTER-1]]）: 渡すと、SEC EDGAR Layer3の値を対象の期末日以前・
+    申告日（as_of）以前に申告された値（first_val）に絞る。latest.json由来のsbc_ttm・eps_forwardは絞れない。
     """
     result: Dict[str, Any] = {}
 
-    store = build_ticker_store(ticker)
+    if store is None:
+        store = build_ticker_store(ticker)
     if store is not None:
 
-        def _end_to_quarter(end: str) -> str:
-            yr, mo, _ = end.split("-")
-            return f"{yr}Q{(int(mo) - 1) // 3 + 1}"
-
-        rev = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["Revenue"])
-        oi  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["OperatingIncome"])
-        sbc = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["SBC"])
-        ni  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["NetIncome"])
+        rev = _latest_as_of(store, _SEC_LAYER3_FIELD_MAP["Revenue"], period_end, as_of)
+        oi  = _latest_as_of(store, _SEC_LAYER3_FIELD_MAP["OperatingIncome"], period_end, as_of)
+        sbc = _latest_as_of(store, _SEC_LAYER3_FIELD_MAP["SBC"], period_end, as_of)
+        ni  = _latest_as_of(store, _SEC_LAYER3_FIELD_MAP["NetIncome"], period_end, as_of)
         # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応: shares_dilutedは
         # CommonStockSharesOutstanding（期末発行済株式数、BS概念）を
         # フォールバックタグとして含むため、source_tagで加重平均
         # （PL概念）由来のみに絞り込む（pipeline.py::[[LAYER3-
         # SHARESDILUTED-TAG-GAP-1]]と同一条件、common/sec_data/
         # layer3_builder.pyの共通定数を参照）。
-        sd  = get_latest_quarterly(store, _SEC_LAYER3_FIELD_MAP["SharesDiluted"],
-                                    source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG)
+        sd  = _latest_as_of(store, _SEC_LAYER3_FIELD_MAP["SharesDiluted"], period_end, as_of,
+                            source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG)
 
         if rev and oi and rev.get("val"):
             result["operating_margin"] = round(oi["val"] / rev["val"], 4)
@@ -198,12 +302,12 @@ def load_layer1_financials(ticker: str) -> Dict[str, Any]:
 
         # 直近4四半期の営業利益率推移
         rev_qs = sorted(
-            get_quarterly_series(store, _SEC_LAYER3_FIELD_MAP["Revenue"]),
+            _series_as_of(store, _SEC_LAYER3_FIELD_MAP["Revenue"], period_end, as_of),
             key=lambda x: x.get("end", ""), reverse=True,
         )[:4]
         oi_map = {
             x["end"]: x["val"]
-            for x in get_quarterly_series(store, _SEC_LAYER3_FIELD_MAP["OperatingIncome"])
+            for x in _series_as_of(store, _SEC_LAYER3_FIELD_MAP["OperatingIncome"], period_end, as_of)
         }
         opm_history = []
         for r in reversed(rev_qs):
@@ -895,29 +999,22 @@ def _calc_qoq_text(kpi_data: Optional[Dict[str, Any]], quarter: str = "") -> str
 
 
 def _load_past_health_scores(ticker: str, current_quarter: str, n: int = 8) -> str:
-    """過去n四半期分の health_score 推移を文字列で返す（current_quarter を除く）"""
-    if not os.path.exists(REVIEWS_DIR):
-        return ""
+    """過去n四半期分の health_score 推移を文字列で返す。
+
+    current_quarter より前の期で、比較に使えるレビューだけ（superseded・skipped_old・後から作ったものを外す。
+    判定は review_status.is_comparable()、[[TAIL-REVIEW-PERIOD-FILTER-1]]）。
+    """
     entries: List[Tuple[str, int, str]] = []
-    for fname in os.listdir(REVIEWS_DIR):
-        if not (fname.startswith(f"{ticker}_") and fname.endswith("_review.json")):
-            continue
-        q = fname[len(ticker) + 1 : -len("_review.json")]
-        if q == current_quarter:
-            continue
-        fpath = os.path.join(REVIEWS_DIR, fname)
+    for rv in review_status.comparable_reviews(REVIEWS_DIR, ticker, before_quarter=current_quarter):
+        hs  = (rv.get("stage1") or {}).get("health_score")
+        rec = (rv.get("stage1") or {}).get("recommendation", "")
         try:
-            with open(fpath, encoding="utf-8") as f:
-                rv = json.load(f)
-            hs  = rv.get("stage1", {}).get("health_score")
-            rec = rv.get("stage1", {}).get("recommendation", "")
             if hs is not None:
-                entries.append((q, int(hs), rec))
-        except Exception:
+                entries.append((rv["quarter"], int(hs), rec))
+        except (TypeError, ValueError):
             pass
     if not entries:
         return ""
-    entries.sort(key=lambda x: x[0])
     recent = entries[-n:]
     return " / ".join(f"{q}:{hs}({rec})" for q, hs, rec in recent)
 
@@ -1252,28 +1349,17 @@ def build_stage2_prompt(
 
 
 def _load_past_call2(ticker: str, current_quarter: str, max_items: int = 2) -> List[Dict[str, Any]]:
-    """同一tickerの直近2回分のcall2結果を返す（current_quarterを除く）"""
-    if not os.path.exists(REVIEWS_DIR):
-        return []
-    candidates: List[tuple] = []
-    for fname in os.listdir(REVIEWS_DIR):
-        if fname.startswith(f"{ticker}_") and fname.endswith("_review.json"):
-            q = fname[len(ticker) + 1 : -len("_review.json")]
-            if q != current_quarter:
-                candidates.append((q, fname))
-    candidates.sort(key=lambda x: x[0], reverse=True)
+    """同一tickerの直近2回分のcall2結果を返す。
 
+    current_quarter より前の期で、比較に使えるレビューだけ（判定は review_status.is_comparable()、
+    [[TAIL-REVIEW-PERIOD-FILTER-1]]）。
+    """
+    reviews = review_status.comparable_reviews(REVIEWS_DIR, ticker, before_quarter=current_quarter)
     results: List[Dict[str, Any]] = []
-    for q, fname in candidates[:max_items]:
-        fpath = os.path.join(REVIEWS_DIR, fname)
-        try:
-            with open(fpath, encoding="utf-8") as f:
-                rv = json.load(f)
-            c2 = rv.get("call2")
-            if c2:
-                results.append({"quarter": q, "call2": c2})
-        except Exception:
-            pass
+    for rv in reversed(reviews[-max_items:]):
+        c2 = rv.get("call2")
+        if c2:
+            results.append({"quarter": rv["quarter"], "call2": c2})
     return results
 
 
@@ -1535,12 +1621,22 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
     print(f"  {ticker} {quarter} レビュー生成開始")
     print(f"{'─' * 60}")
 
+    # 対象の期のデータに絞る（[[TAIL-REVIEW-PERIOD-FILTER-1]]）。期末日はSEC EDGAR Layer3の対象の申告から、
+    # 申告日（as_of）はキューのfiled。後から作ったか（backfilled）は次の四半期の申告日と作った日で機械的に決める
+    store      = build_ticker_store(ticker)
+    period_end = _target_period_end(store, accn, quarter)
+    data_as_of = filed_date or None
+    next_filed = _next_filing_date(store, period_end)
+    backfilled = review_status.is_backfilled(next_filed, now_jst.isoformat())
+
     thesis     = load_thesis(ticker)
-    kpi_data   = load_layer2_kpi(ticker)
-    kpi_layer3 = load_layer3_kpi(ticker)
+    kpi_data   = filter_layer2_to_quarter(load_layer2_kpi(ticker), quarter)
+    kpi_layer3 = layer3_kpi_for_quarter(load_layer3_kpi(ticker), quarter)
     macro_ctx  = load_macro_context()
     valuation  = load_tanuki_valuation(ticker)
-    layer1     = load_layer1_financials(ticker)
+    layer1     = load_layer1_financials(ticker, period_end=period_end, as_of=data_as_of, store=store)
+    if backfilled:
+        print(f"  [INFO] 次の四半期の申告（{next_filed}）の後に作るため backfilled=true")
 
     if not thesis:
         print(f"  [ERROR] {ticker} の thesis.json がないためスキップ")
@@ -1673,6 +1769,10 @@ def generate_review(entry: Dict[str, Any], dry_run: bool = False) -> Optional[st
         # idempotencyフィールド
         "data_version":         accn,
         "filed_date":           filed_date,
+        # [[TAIL-REVIEW-PERIOD-FILTER-1]]: 判断に使った財務・KPIの時点と、後から作ったか
+        "data_as_of":           data_as_of,
+        "backfilled":           backfilled,
+        "backfilled_note":      backfilled_note(next_filed, now_jst.isoformat(), filtered=True) if backfilled else None,
         "layer1_complete":      bool(accn),
         "layer2_complete":      kpi_data.get("layer2_complete", False) if kpi_data else False,
         "layer2_missing_kpis":  kpi_data.get("missing_kpis", []) if kpi_data else [],

@@ -196,6 +196,7 @@
     .hist-q    { font-family: var(--mono); font-size: 11px; font-weight: 700; width: 72px; flex-shrink: 0; padding-top: 2px; color: var(--txt); }
     .hist-sc   { font-family: var(--mono); font-size: 14px; font-weight: 700; flex-shrink: 0; }
     .hist-sum  { font-size: 12px; line-height: 1.5; color: var(--sub); flex: 1; min-width: 0; }
+    .bf-badge  { display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(245,158,11,.4); color: var(--amb); flex-shrink: 0; }
     .hist-delta { display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-left: 3px; vertical-align: middle; }
     .delta-up   { color: var(--grn); background: rgba(16,185,129,.1); }
     .delta-dn   { color: var(--red); background: rgba(244,63,94,.1); }
@@ -249,6 +250,7 @@
 
 <script src="../../common/site-nav.js"></script>
 <script src="../../common/ticker-links.js"></script>
+<script src="../../common/info-tooltip.js"></script>
 <script>
 /* ─── 認証 ─── */
 var PW_HASH     = '1ccaba2b5d2e782f70745dc02ee88f537d51f6938bd6c22982a3d4d685be483a';
@@ -553,7 +555,9 @@ function buildReview() {
   var gc    = scoreColor(score);
 
   out += '<div class="muted-meta">' + esc(q) +
-    (rv.generated_at ? ' — ' + esc(rv.generated_at.slice(0, 10)) : '') + '</div>';
+    (rv.generated_at ? ' — ' + esc(rv.generated_at.slice(0, 10)) : '') +
+    (rv.data_as_of ? ' / データの時点 ' + esc(rv.data_as_of) : '') +
+    (rv.backfilled ? ' ' + backfilledBadge(rv) : '') + '</div>';
 
   out += '<div class="gauge-row">' +
     '<span class="gauge-num" style="color:' + gc + '">' + score + '</span>' +
@@ -588,6 +592,7 @@ function buildReview() {
 
   /* スコア推移ミニグラフ */
   var scoreData = Object.keys(S.reviews)
+    .filter(function (sq) { return !S.reviews[sq].backfilled; })
     .sort(function (a, b) { return quarterToNum(a) - quarterToNum(b); })
     .map(function (sq) {
       var sc2 = (S.reviews[sq].stage1 || {}).health_score;
@@ -927,6 +932,11 @@ function buildCtrl() {
   return out;
 }
 
+/* 後から作ったレビュー（backfilled）の印。理由はbackfilled_note（[[TAIL-REVIEW-PERIOD-FILTER-1]]） */
+function backfilledBadge(rv) {
+  return '<span class="bf-badge" data-info-text="' + esc(rv.backfilled_note || '対象の期の次の申告の後に作ったレビュー') + '">後付け</span>';
+}
+
 /* ══════════════════════════════════
    セクション6: 過去レビュー履歴
 ══════════════════════════════════ */
@@ -947,7 +957,8 @@ function buildHistory() {
     /* 前期比デルタ: 現在行 vs 1期前 */
     var deltaHtml = '';
     var olderQ    = qs[sliceIdx + 2];
-    if (olderQ !== undefined && score != null) {
+    var bf        = !!S.reviews[q].backfilled;
+    if (olderQ !== undefined && score != null && !bf && !S.reviews[olderQ].backfilled) {
       var olderSc = ((S.reviews[olderQ].stage1 || {}).health_score);
       if (olderSc != null) {
         var delta = score - olderSc;
@@ -958,6 +969,7 @@ function buildHistory() {
 
     out += '<div class="hist-row">' +
       '<span class="hist-q">' + esc(q) + '</span>' +
+      (bf ? backfilledBadge(S.reviews[q]) : '') +
       '<span class="hist-sc" style="color:' + gc + '">' + (score != null ? score : '–') + deltaHtml + '</span>' +
       (rec ? '<span class="rec-badge rec-' + rec.toLowerCase() + '">' + esc(rec) + '</span>' : '') +
       '<span class="hist-sum">' + esc(summ) + '</span>' +

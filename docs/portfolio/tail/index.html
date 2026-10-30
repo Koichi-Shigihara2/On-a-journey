@@ -230,6 +230,7 @@
     .rv-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .rv-quarter { font-family: var(--mono); font-size: 16px; font-weight: 700; }
     .rv-date { font-family: var(--mono); font-size: 10px; color: var(--mut); }
+    .bf-badge  { display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(245,158,11,.4); color: var(--amb); flex-shrink: 0; margin-left: 6px; }
     .gauge-wrap { margin-bottom: 14px; }
     .gauge-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .gauge-num { font-family: var(--mono); font-size: 22px; font-weight: 700; }
@@ -1701,6 +1702,11 @@ function tBlock(label, text) {
   return '<div class="t-block"><div class="t-label">' + esc(label) + '</div><div class="t-text">' + esc(text) + '</div></div>';
 }
 
+/* 後から作ったレビュー（backfilled）の印。理由はbackfilled_note（[[TAIL-REVIEW-PERIOD-FILTER-1]]） */
+function backfilledBadge(rv) {
+  return '<span class="bf-badge" data-info-text="' + esc(rv.backfilled_note || '対象の期の次の申告の後に作ったレビュー') + '">後付け</span>';
+}
+
 /* ─── Tab 1: レビュー ─── */
 function buildTabReview(ticker, targetQ) {
   var reviews = loadedReviews[ticker];
@@ -1740,6 +1746,7 @@ function buildTabReview(ticker, targetQ) {
       var orc = or ? or.recommendation : '';
       return '<div class="hist-item" onclick="showReviewQ(\'' + esc(ticker) + '\',\'' + esc(oq) + '\')">' +
         '<span class="hist-q">' + esc(oq) + '</span>' +
+        (reviews[oq] && reviews[oq].backfilled ? backfilledBadge(reviews[oq]) : '') +
         '<span class="rec-badge rec-' + esc((orc || '').toLowerCase()) + '" style="font-size:10px">' + esc(orc) + '</span>' +
         '<span class="hist-sc">' + osc + '点</span></div>';
     }).join('');
@@ -1751,7 +1758,8 @@ function buildTabReview(ticker, targetQ) {
   var predHtml = _buildPredictionSection(ticker, q);
 
   return [
-    '<div class="rv-head"><span class="rv-quarter">' + esc(q) + '</span><span class="rv-date">生成: ' + esc(genDate) + '</span></div>',
+    '<div class="rv-head"><span class="rv-quarter">' + esc(q) + (rv.backfilled ? backfilledBadge(rv) : '') + '</span><span class="rv-date">生成: ' + esc(genDate) +
+      (rv.data_as_of ? ' / データの時点: ' + esc(rv.data_as_of) : '') + '</span></div>',
     '<div class="gauge-wrap">',
     '<div class="gauge-top"><span class="gauge-num" style="color:' + gc + '">' + score + '</span>',
     '<span class="rec-badge ' + recCls + '">' + esc(rec) + '</span></div>',

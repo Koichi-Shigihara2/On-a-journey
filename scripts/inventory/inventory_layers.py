@@ -593,6 +593,10 @@ _TAIL.update(
         # プロンプト・モデル・温度を組む呼び出し側の関数なので当てない
         {"id": "grok_call", "name": "AI（Grok）の呼び方（APIの宛先・再試行）",
          "patterns": [r"^\s*GROK_URL\s*=", r"[\"']https://api\.x\.ai/v1/chat/completions[\"']"]},
+        # 比較・集計から外すレビュー（superseded・skipped_old・backfilled・対象より後の期）は src/tail/review_status.py の
+        # 1か所（[[TAIL-REVIEW-PERIOD-FILTER-1]]、2026-10-30）。画面は同じ条件をbackfilled・statusで読むだけ
+        {"id": "review_comparable", "name": "比較・集計から外すレビュー（superseded・skipped_old・後付け・対象より後の期）",
+         "patterns": [r"def\s+(?:is_comparable|is_backfilled|comparable_reviews)\s*\("]},
     ],
 
     HTML_COPIES=[],
