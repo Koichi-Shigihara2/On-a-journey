@@ -4,6 +4,46 @@
 
 ## 2026-10-30（完了）
 
+### ✅ [TAIL-REVIEW-PERIOD-FILTER-1] TANUKI TAILのレビューは対象の期にかかわらず作った時点の最新の財務で書かれ、後から作った過去の期のレビュー・スコアの推移が期ごとの比較になっていない
+**完了（2026-10-30）:** 実装・push済み（コード `f9a7563010`、28本の印と予測の振り返りの作り直し `61635da542`）。チャット側の指示で、ゲートと手元の画面の確認の後に移設。結果は下の「対応」「確認」
+**型・処置（2026-10-21）:** 型C。[[LAYER3-FIRST-FILED-DATE-1]]（2026-10-21完了）から、TAIL側の変更の部分だけを分けて残す（[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「期末日で絞る部分」）
+**優先度:** 中
+**分類:** 表示・データの意味 / TANUKI TAIL（`src/tail/quarterly_review_generator.py` L209-236・`docs/portfolio/tail/detail.html`のスコア推移・過去レビュー履歴・`prediction_tracker.py`）
+**登録日:** 2026-10-21
+**着手条件:** いつでも（直し方はチャット側が判断。作り直すならGrokの費用がかかる）
+
+#### 内容
+- `quarterly_review_generator.py`はLayer3の`get_latest_quarterly()`・`get_quarterly_series()`で、対象の期にかかわらず生成の時点の最新の財務を使う。対象の期末日までデータを絞っていない（BACKLOG_DONE.mdの[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「内容」）
+- Layer3の各エントリに`first_filed`・`first_val`が入った（2026-10-21）ため、「対象の期末日までの期」と「その時点で申告されていた値」の両方で絞れるようになった
+- 確かめること: 06-06の一括生成の各期のレビューの`kpi_snapshot`・`layer3_snapshot`が対象の期の数字か。スコアの推移・履歴・予測の振り返りの表示を外す・印を付ける・作り直すのどれにするか
+
+#### STEP 0（2026-10-30、読み取りのみ）
+- 判定の基準を「対象の期の次の四半期の10-Q/10-Kの申告日（Layer3のfirst_filed）< generated_at」にすると**28本**（チャット側の80日の目安の29本からNVDA_2026Q2が外れる。作ったのは2026-08-20で、次の10-Qは2026-08-26）。
+  PLTR_2023Q3〜2025Q3の7本はfiled_date・data_versionが無く、期の名前（暦の四半期）から期末日を決めた。28本のうち2025Q4の6本（APP・CELH・PLTR・SOFI・SOUN・TSLA）はキューでsuperseded（前から画面・振り返りの対象外）
+- `kpi_snapshot`は作った時点の最新の4期（例: PLTR_2023Q3・SOFI_2023Q3・TSLA_2023Q3は2025Q1〜2026Q1、NVDA_2026Q1は後の2026Q2・Q3を含む）。TAIL側のLayer3（本文のKPI）は1期分で上書き
+- Layer2の`filed`はその期を最後に載せた申告の日付（最初の申告ではない）で、first_valも無い。申告日で絞ると後の申告の比較欄から入った前年同期の値が落ちる（後付けでないレビューでもAPP_2025Q4 8点・NVDA_2026Q2 3点・ADBE_2026Q2 2点）
+- 読み手: detail.html（completedだけ。スコア推移・過去レビュー履歴・最新レビュー）・index.html（completedだけ。最新の期、`buildTabReview`は過去の期も開ける）・prediction_tracker.py（superseded・skipped_oldを外す）・
+  quarterly_review_generator.pyの`_load_past_health_scores()`・`_load_past_call2()`（supersededも後の期も読んでいた）・tail_dcf_bridge.py（最新のレビュー）
+- rccのWARN 226→227の1件は`[WARN-INV-6 TANUKI 誰も読まないキー] max_eps_shares`（botのTANUKI VALUATION `1ca5367b4e`から。`3b2203b3`の前後は差0）→ 別のcommitで直した（BACKLOG_DONE.mdの[[EPS-SHARES-BASIS-MISMATCH-1]]の追記）
+
+#### 対応（2026-10-30、チャット側の判断）
+- 判定の1か所: `src/tail/review_status.py`の`is_backfilled()`（次の四半期の申告日 < 作った日）・`is_comparable()`（superseded・skipped_old・backfilled・対象の期と後の期を外す）・`comparable_reviews()`。
+  使う所: prediction_tracker.py・`_load_past_health_scores()`・`_load_past_call2()`。画面は同じ条件をレビューの`backfilled`とキューの`status`で読むだけ。出力の一覧（TAIL）の規則「比較・集計から外すレビュー」（1か所）
+- 生成（`quarterly_review_generator.py`）: SEC EDGAR Layer3は対象の期末日以前・申告日（キューのfiled）以前に申告された値（first_val）、Layer2は対象の期以前の期だけ（filedでは絞らない）、TAIL側のLayer3は期が同じときだけ。
+  レビューに`data_as_of`（キューのfiled）・`backfilled`・`backfilled_note`を書く。backfilledは機械的に決める（遅れて作ったレビューにも付く）。latest.jsonのsbc_ttm・forward_eps・理論株価とマクロは期で絞れず、作った時点の値（理由の文に書く）
+- 既存の28本: `data_as_of`（作った日）・`backfilled: true`・`backfilled_note`を足した（中身は変えない、1ファイル3行）
+- 画面: detail.htmlはスコア推移から後付けを外し、過去レビュー履歴に「後付け」の印（info-tooltipで理由）、前期比は両方が後付けでないときだけ。最新レビューの見出しにデータの時点。index.htmlの`buildTabReview`は見出しと過去のレビューの一覧に印・データの時点
+- prediction_history.jsonを作り直した: 照合できる予測は**全銘柄0件**に（前はSOFI 18件・TSLA 21件で、すべて後付けのレビュー〈2023Q3〜2025Q3〉からだった）。予測の振り返りの欄・Stage1のプロンプトの振り返りは、後付けでないレビューの1年後の実績が出るまで（最初は2027Q1ごろ）空になる
+- テスト: `tests/test_tail_review_period_filter.py`（期末日・次の申告日・backfilledの判定、first_filed・first_valの絞り込み、Layer2・TAIL側のLayer3、外す期の判定と生成側・予測の振り返り、公開データの28本の印）
+
+#### 確認（2026-10-30、手元）
+- 生成の関数をGrokなしで試した: SOFI_2023Q3は営業利益率の推移2022Q4〜2023Q3・KPIの期2022Q4〜2023Q3（前は2025Q1〜2026Q1）、NVDA_2026Q2は2025Q3〜2026Q2、PLTR_2024Q1は2023Q2〜2024Q1
+- Playwright（手元のdocs/、tail_authで通す、1440px）: SOFIのdetail.htmlでスコア推移の点は2026Q1・Q2だけ、過去レビュー履歴の7本に「後付け」、TSLAの前期比は2026Q2（−5）だけ、NVDAは2026Q1に印。
+  index.htmlで SOFI 2024Q1 を開くと見出しに「後付け」「データの時点: 2026-06-06」、過去のレビューの一覧に印7つ。ページのエラー0
+- 新しいレビューを作るときの確かめは、次のTAILのレビュー生成（新しい10-Q・10-Kの後）で`data_as_of`・`backfilled: false`・kpi_snapshotの期が対象の期まで
+
+---
+
 ### ✅ [EPS-SHARES-BASIS-MISMATCH-1] TANUKI VALUATION（最大EPS・理論株価の1株あたり）とEPS ANALYZERで、EPSの分母の株式数の取り方が違う
 **完了（2026-10-30）:** 実装・push済み（`a6e31f9b2d`、文書と設定 `d591289cc2`）。本番の確認（次回の確認手順14）はチャット側が済ませた（本番 `1ca5367b4e` のTANUKI VALUATION）。結果は下の「確認」
 **型・処置（2026-10-19 束ね）:** 型B・残す（投資判断に今効く（最大EPSの分母）。直すときは[[OUTPUT-INVENTORY-CHECK-1]]の一覧の「規則」の欄に載せる）

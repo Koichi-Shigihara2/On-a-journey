@@ -2541,17 +2541,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ---
 
-### [TAIL-REVIEW-PERIOD-FILTER-1] TANUKI TAILのレビューは対象の期にかかわらず作った時点の最新の財務で書かれ、後から作った過去の期のレビュー・スコアの推移が期ごとの比較になっていない
-**型・処置（2026-10-21）:** 型C。[[LAYER3-FIRST-FILED-DATE-1]]（2026-10-21完了）から、TAIL側の変更の部分だけを分けて残す（[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「期末日で絞る部分」）
-**優先度:** 中
-**分類:** 表示・データの意味 / TANUKI TAIL（`src/tail/quarterly_review_generator.py` L209-236・`docs/portfolio/tail/detail.html`のスコア推移・過去レビュー履歴・`prediction_tracker.py`）
-**登録日:** 2026-10-21
-**着手条件:** いつでも（直し方はチャット側が判断。作り直すならGrokの費用がかかる）
-
-#### 内容
-- `quarterly_review_generator.py`はLayer3の`get_latest_quarterly()`・`get_quarterly_series()`で、対象の期にかかわらず生成の時点の最新の財務を使う。対象の期末日までデータを絞っていない（BACKLOG_DONE.mdの[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]の「内容」）
-- Layer3の各エントリに`first_filed`・`first_val`が入った（2026-10-21）ため、「対象の期末日までの期」と「その時点で申告されていた値」の両方で絞れるようになった
-- 確かめること: 06-06の一括生成の各期のレビューの`kpi_snapshot`・`layer3_snapshot`が対象の期の数字か。スコアの推移・履歴・予測の振り返りの表示を外す・印を付ける・作り直すのどれにするか
+（[[TAIL-REVIEW-PERIOD-FILTER-1]]は2026-10-30、実装・push済みで完了、BACKLOG_DONE.md「2026-10-30（完了）」参照）
 
 ---
 
