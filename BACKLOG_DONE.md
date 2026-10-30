@@ -2,6 +2,64 @@
 
 ---
 
+## 2026-10-30（完了）
+
+### ✅ [EPS-SHARES-BASIS-MISMATCH-1] TANUKI VALUATION（最大EPS・理論株価の1株あたり）とEPS ANALYZERで、EPSの分母の株式数の取り方が違う
+**完了（2026-10-30）:** 実装・push済み（`a6e31f9b2d`、文書と設定 `d591289cc2`）。本番の確認（次回の確認手順14）はチャット側が済ませた（本番 `1ca5367b4e` のTANUKI VALUATION）。結果は下の「確認」
+**型・処置（2026-10-19 束ね）:** 型B・残す（投資判断に今効く（最大EPSの分母）。直すときは[[OUTPUT-INVENTORY-CHECK-1]]の一覧の「規則」の欄に載せる）
+**優先度:** 中
+**分類:** 指標の定義 / TANUKI VALUATION（`data_fetcher.py::_determine_diluted_shares()`→`components.diluted_shares`）・EPS ANALYZER（`extract_key_facts.py`の`diluted_shares`→`diluted_shares_used`）
+**登録日:** 2026-10-14
+**着手条件（2026-10-14 終業）:** チャット側の実装の指示（株式数の原則は2026-10-14にKoichi了承済み）
+**発見:** [[SEC-XOM-CIK-HOLDING-REORG-1]]の検証（XOMの最大EPSとEPS ANALYZERのEPSの分母が違う）
+
+#### 内容（2026-10-14に確認した事実）
+- TANUKI VALUATIONは`_determine_diluted_shares()`で、market_data（yfinance）の`implied_shares_outstanding`（完全希薄化後の現在値）を最優先にし、無ければyfinanceの発行済株式数とSECの希薄化後株式数の大きい方等を使う
+- EPS ANALYZERは各四半期のXBRLの希薄化後の加重平均株式数（無ければEPSからの逆算・基本株式数・隣の四半期）
+- XOM: TANUKI 4,111.9M（yfinanceのimplied。指示書の「期末の発行済株式数〈parser.pyの代用〉」ではない。値が近いのは偶然）、EPS ANALYZER 4,173.9M（EPS 3.48からの逆算＝原本の加重平均4,174M）。差−1.5%
+- tanuki=trueかつEPS ANALYZERのある94銘柄で、TANUKIの株式数÷EPS ANALYZERの直近四半期の株式数−1の絶対値が1%を超えるのは53銘柄:
+  BROS +30.1%・ASTS +30.1%（Up-Cの持分を含むimplied）、LITE +21.4%、ONDS +15.6%、RDW +13.4%、TSLA +11.6%、RCAT +11.6%、IONQ +10.2%、V +10.2%（複数の株式クラス）、SITM +9.4%、
+  PAYS −8.9%、DOCN −7.6%、PLTR −6.4%、ALAB −5.4%、BSY −5.3%、FICO −4.9%、CART −4.7%、SOFI −4.5%、FRSH −4.4%、INTU −3.5%、DDOG −3.2%、CPRT −3.2%、
+  JOBY +2.7%、CAKE +2.6%、DELL −2.5%、MRVL −2.4%、QBTS +2.4%、ZETA −2.2%、SPIR +2.1%、LYFT −2.0%、AVAV +2.0%、VRT −2.0%、LOAR −1.9%、S +1.9%、SCCO +1.8%、
+  AMD −1.6%、ADBE −1.6%、CEG −1.6%、HQY −1.5%、CELH −1.5%、XOM −1.5%、RMBS −1.4%、GEV −1.4%、SOUN +1.2%、JNJ −1.2%、GTLB −1.2%、FROG +1.2%、TDY −1.2%、ELF −1.2%、
+  KLAC −1.1%、AMZN −1.1%、HEI −1.1%、VST −1.1%
+- 時点（現在値と期間の加重平均）と範囲（完全希薄化・Up-Cの持分・株式クラスの含め方）の2つが違う
+
+#### 株式数の使い分けの原則（Koichi了承、2026-10-14）
+- 1株あたりの理論株価・時価総額 ＝ 今の完全希薄化後の株式数（TANUKI VALUATIONの`diluted_shares`）
+- 期間の利益を割るもの（EPS） ＝ その期間の加重平均の株式数（EPS ANALYZER）
+- 食い違いの原因は、TANUKI VALUATIONの最大EPSがTTMの利益を今の株式数で割っていることだけ。直すのは最大EPSの分母（理論株価の1株あたりは今のまま）
+
+#### 最大EPSを読む処理（2026-10-14、grep `max_eps`・`maxEps`・`最大EPS`）
+| 処理 | 何を読むか | どう使うか |
+|---|---|---|
+| TANUKI VALUATION `pipeline.py::compute_max_eps()`（L173）・呼び出し（L1283付近） | TTM系列の最新の純利益・株式報酬、`components.diluted_shares`、株価 | `components.max_eps`・`max_eps_per`・`max_eps_reliability`・`max_eps_ttm_end`を書く（分母はここ） |
+| TANUKI SCORE `index.html`（L512-517・L377-378・L398-399） | `components.max_eps_per`・`max_eps_reliability` | 「最大EPS PER」列（信頼性LOWは薄く表示）と「乖離」列（PER−最大EPS PER。予想PERのときは出さない）。並べ替えの列 |
+| `tests/test_tanuki_max_eps.py` | `compute_max_eps()` | テスト |
+- `_compute_tanuki_score()`（判定）・report.txt・`score_watcher.py`・`daily_pick.py`（2026-10-20削除）・TANUKI VALUATION `stock.html`は最大EPSを読まない（grepで該当なし）
+- `report_consistency_check.py`の`_max_eps`（NG-14・NG-15）は名前が同じだけで、EPS ANALYZERの直近四半期のadj・GAAPのEPSの大きい方。最大EPSとは別
+- 設計の文書（`docs/architecture/new_data_platform/FIELD_DEFINITIONS.md`・`TO_BE_FINAL_LIST.md`・archive）に定義の記載がある。分母を変えるときは合わせて直す
+
+#### 方針
+直すのは最大EPSの分母（TTMの期間の加重平均の株式数にする）。実装はチャット側の指示待ち
+
+#### 対応（2026-10-29、チャット側の指示）
+- `pipeline.py::select_max_eps_shares()`（新設）: EPS ANALYZERの`ttm.json`の`ttm[]`で、`period`（"TTM <end> to <start>"）の`<end>`が`max_eps_ttm_end`と同じ要素の`diluted_shares`。一致する要素が無い・0以下なら`components.diluted_shares`。
+  `compute_max_eps()`は分母の株式数と基準を受け取り、`components.max_eps_shares`・`max_eps_shares_basis`（"ttm_weighted_avg"／"current_diluted_fallback"）を足す。理論株価の1株あたりは変えない
+- TANUKI SCOREの画面: 最大EPS PERの表示は変えず、fallbackのときだけtooltip「EPS ANALYZERのTTMが無いため今の株式数で割っている」
+- 定義: FIELD_DEFINITIONS.md・TO_BE_FINAL_LIST.mdのAS-IS-033、出力の一覧（TANUKI）の規則「EPSの分母の株式数」（1か所）。`config/method_change.json`に2026-10-30
+- 手元の試算（全96銘柄、Grok・SECなし、前後を続けて実行）: max_eps系以外のキーは96銘柄すべて差0。basisは94銘柄がttm_weighted_avg、BKNG・FCXがfallback。max_epsが1%超えて変わるのは55銘柄（max_eps_perでは54、VZは丸めで1%未満）。
+  ONDS 14.9→9.3・BROS 66.2→48.6・CART 15.7→17.7・SITM 117.2→102.6・TSLA 212.5→190.2・PLTR 122.8→131.3
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順14（10-30朝）
+
+#### 確認（2026-10-30、チャット側。本番 `1ca5367b4e` のTANUKI VALUATION〈2026-10-30 05:47 JST〉）
+- `components.max_eps_shares_basis`: 94銘柄が"ttm_weighted_avg"、BKNG・FCXが"current_diluted_fallback"（手元の試算と同じ）
+- 最大EPS PER: ONDS 9.3・PLTR 131.0・XOM 23.5（手元の試算 9.3・131.3・23.4。差は株価・株式数の更新の分）
+- method_changeの印（`config/method_change.json`の2026-10-30）が96銘柄のscore_historyに入っている
+- 判定が変わった7銘柄（CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA）は株価・金利の動きによるもの（最大EPSは判定に使われない）
+
+---
+
 ## 2026-10-29（完了）
 
 ### ✅ [PORTFOLIO-TABLE-OVERFLOW-1] Portfolioの③ポートフォリオ明細が1900px幅で入れ物より約100px広く、右端のスコアの列が横スクロールしないと見えない
