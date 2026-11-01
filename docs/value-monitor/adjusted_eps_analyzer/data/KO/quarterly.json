@@ -1,7 +1,97 @@
 {
   "ticker": "KO",
-  "last_updated": "2026-10-25T15:15:04.884470",
+  "last_updated": "2026-11-01T17:25:38.325876",
   "quarters": [
+    {
+      "gaap_eps": 0.9292999536393138,
+      "adjusted_eps": 0.944251081184284,
+      "gaap_net_income": 4009000000.0,
+      "adjusted_net_income": 4073499164.229001,
+      "diluted_shares_used": 4314000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 77000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 64499164.229001254,
+          "tax_rate_applied": 0.16234851650647722
+        }
+      ],
+      "net_adjustment_total": 64499164.229001254,
+      "filing_date": "2026-10-02",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV",
+      "revenue": 13380000000.0,
+      "diluted_shares": 4314000000.0,
+      "period_end": "2026-10-02",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 777000000.0,
+      "pretax_income": 4786000000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "SBC（株式報酬費用）は恒常的な報酬コストであり一過性ではないため、調整の正当性は低い。市場がGAAP EPSで判断する場合、非現金費用を反映した実質的な企業コストが見えており、実力が見えにくくなっているとは言えない。むしろAdjusted EPSは恒常コストを加算戻ししているため過大評価のリスクがあり、過小評価の可能性は限定的。投資家はSBCによる株式希薄化効果と継続的な報酬水準を注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、企業の実質的な報酬コストを表す（非一過性）。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 1.0259680037097147,
+      "adjusted_eps": 1.0383652736190596,
+      "gaap_net_income": 4425000000.0,
+      "adjusted_net_income": 4478469425.119004,
+      "diluted_shares_used": 4313000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 61000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 49418711.094837055,
+          "tax_rate_applied": 0.18985719516660565
+        },
+        {
+          "item_id": "litigation_settlement",
+          "item_name": "訴訟和解金・罰金",
+          "amount": 5000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非経常的な訴訟関連費用",
+          "extracted_from": "us-gaap:LitigationSettlementExpense",
+          "category": "訴訟・罰金関連",
+          "net_amount": 4050714.0241669714,
+          "tax_rate_applied": 0.18985719516660565
+        }
+      ],
+      "net_adjustment_total": 53469425.119004026,
+      "filing_date": "2026-07-03",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV",
+      "revenue": 13380000000.0,
+      "diluted_shares": 4313000000.0,
+      "period_end": "2026-07-03",
+      "fiscal_year": 2026,
+      "quarter": 2,
+      "tax_expense": 1037000000.0,
+      "pretax_income": 5462000000.0
+    },
     {
       "gaap_eps": 0.9095966620305981,
       "adjusted_eps": 0.9213423838646548,
@@ -46,23 +136,7 @@
       "fiscal_year": 2026,
       "quarter": 1,
       "tax_expense": 645000000.0,
-      "pretax_income": 4569000000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "訴訟和解金は明確に一過性の非経常項目だが、株式報酬費用(SBC)は恒常的に発生するコストであり加算調整の妥当性に疑問が残る。調整後EPSはGAAPをわずかに上回るのみで影響は小さい。市場がGAAP EPS中心に判断する場合、非現金・非経常項目の影響で企業の実力がやや過小評価されている可能性はあるものの、SBCの恒常性を考慮すると過大評価リスクも存在する。投資家はSBCの継続性と希薄化効果を注視し、調整の質を見極める必要がある。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "毎期発生する株式報酬費用を非現金費用としてadd_back。恒常的なコストであり、調整の正当性は限定的。",
-            "confidence": 0.2
-          },
-          {
-            "item": "litigation_settlement",
-            "snippet": "非経常的な訴訟関連費用としてadd_back。一過性の項目であり、調整は妥当。",
-            "confidence": 0.95
-          }
-        ]
-      }
+      "pretax_income": 4569000000.0
     },
     {
       "gaap_eps": 0.5265476466496638,
@@ -1513,7 +1587,7 @@
         "SHARE_STRUCTURE_MISMATCH"
       ],
       "special_notes": {
-        "share_structure_mismatch": "diluted_shares=4,306,000 は直近四半期(2026-04-03, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
+        "share_structure_mismatch": "diluted_shares=4,306,000 は直近四半期(2026-10-02, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
       }
     },
     {
@@ -1650,7 +1724,7 @@
         "SHARE_STRUCTURE_MISMATCH"
       ],
       "special_notes": {
-        "share_structure_mismatch": "diluted_shares=4,320,000 は直近四半期(2026-04-03, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
+        "share_structure_mismatch": "diluted_shares=4,320,000 は直近四半期(2026-10-02, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
       }
     },
     {
@@ -1715,7 +1789,7 @@
         "SHARE_STRUCTURE_MISMATCH"
       ],
       "special_notes": {
-        "share_structure_mismatch": "diluted_shares=4,327,000 は直近四半期(2026-04-03, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
+        "share_structure_mismatch": "diluted_shares=4,327,000 は直近四半期(2026-10-02, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
       }
     },
     {
@@ -1780,17 +1854,17 @@
         "SHARE_STRUCTURE_MISMATCH"
       ],
       "special_notes": {
-        "share_structure_mismatch": "diluted_shares=4,334,000 は直近四半期(2026-04-03, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
+        "share_structure_mismatch": "diluted_shares=4,334,000 は直近四半期(2026-10-02, 4,314,000,000株)の1%未満のため、株式数構造が別物（IPO前/株式併合前等）と判定し表示・TTM・年次集計から除外"
       }
     }
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.03401614819052882,
+      "value": 0.043223742594731655,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.05234253814152534,
-      "prior_4q_avg_yoy": 0.018326389950996523
+      "recent_4q_avg_yoy": 0.07160902429862344,
+      "prior_4q_avg_yoy": 0.028385281703891783
     },
     "roic_trend": {
       "years": [
@@ -1818,9 +1892,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.004490057729313663,
+      "value": 0.005754857997010463,
       "reason": "ok",
-      "period_end": "2026-04-03"
+      "period_end": "2026-10-02"
     }
   }
 }

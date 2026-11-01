@@ -1,23 +1,139 @@
 {
   "ticker": "BBAI",
-  "last_updated": "2026-10-25T15:13:36.390159",
+  "last_updated": "2026-11-01T17:24:32.493188",
   "quarters": [
     {
+      "gaap_eps": -0.19123334577909445,
+      "adjusted_eps": -0.009290504566582628,
+      "gaap_net_income": -91854000.0,
+      "adjusted_net_income": -4462453.987730056,
+      "diluted_shares_used": 480324180.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 4624000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 4595631.901840491,
+          "tax_rate_applied": 0.006134969325153374
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 6447000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 6407447.852760737,
+          "tax_rate_applied": 0.006134969325153374
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 59000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 58638.03680981595,
+          "tax_rate_applied": 0.006134969325153374
+        },
+        {
+          "item_id": "goodwill_impairment",
+          "item_name": "のれん減損",
+          "amount": 76737000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金減損",
+          "extracted_from": "us-gaap:GoodwillImpairmentLoss",
+          "category": "買収・統合関連",
+          "net_amount": 76266220.8588957,
+          "tax_rate_applied": 0.006134969325153374
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 64000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 63607.36196319019,
+          "tax_rate_applied": 0.006134969325153374
+        }
+      ],
+      "net_adjustment_total": 87391546.01226994,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 43581000.0,
+      "diluted_shares": 480324180.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -567000.0,
+      "pretax_income": -92421000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目の大部分を占める巨額のれん減損(76M超)を加算することでGAAP EPS(-0.191)がAdjusted EPS(-0.009)へと大幅に改善されており、市場がGAAP EPSのみで判断する場合、非現金・一過性費用により同社の運用実力(特にAI事業の潜在力)が過小評価されている可能性が高い。ただしSBCと無形資産償却は恒常的に発生するコストであり、これらを加算した調整EPSは企業実力を過大評価するリスクもある。投資家はコア事業の収益性とSBCの継続規模、のれん減損が示す過去買収の経済効果を注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが成長企業では毎期発生する恒常的な株式報酬コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で、買収が継続する限り毎期発生する実質的なコスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストであり非経常的",
+            "confidence": 0.8
+          },
+          {
+            "item": "goodwill_impairment",
+            "snippet": "非現金減損で一過性とみなされるが、過去買収の価値毀損を示唆する",
+            "confidence": 0.7
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用で非経常的",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": -0.053742286370096475,
-      "adjusted_eps": -0.02753264647360827,
+      "adjusted_eps": -0.027445002773317465,
       "gaap_net_income": -25749000.0,
-      "adjusted_net_income": -13191439.403356124,
+      "adjusted_net_income": -13149447.560596645,
       "diluted_shares_used": 479119921.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 4743000,
+          "amount": 4743000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 4742078.814481044,
           "tax_rate_applied": 0.0001942200124300808
@@ -49,6 +165,19 @@
           "tax_rate_applied": 0.0001942200124300808
         },
         {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 42000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 41991.842759477935,
+          "tax_rate_applied": 0.0001942200124300808
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 384000,
@@ -62,7 +191,7 @@
           "tax_rate_applied": 0.0001942200124300808
         }
       ],
-      "net_adjustment_total": 12557560.596643876,
+      "net_adjustment_total": 12599552.439403355,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -72,33 +201,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 5000.0,
-      "pretax_income": -25744000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の多くがSBCや無形資産償却といった恒常的・非現金費用を含んでおり、GAAP EPS(-0.054)がAdjusted EPS(-0.028)の2倍近い赤字を示すことで、市場が企業の実力（特に運用面の効率や非現金項目除いたパフォーマンス）を過小評価している可能性が高い。M&A統合やリストラは一過性だが、SBC・償却は毎期発生しやすく過大調整リスクもあるため、投資家は希薄化効果やキャッシュフローへの影響を注視すべき。全体として過小評価リスクが優勢だが、調整の質に注意が必要。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用として加算調整。技術企業では恒常的に発生する株式報酬コストであり、完全に一過性とは言えない。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は非現金だが、過去のM&Aによる継続的な費用で恒常的性格が強い。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとして明確に位置づけられており、M&A完了後に終了する性質。",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用。リストラは通常非経常的で今後繰り返さない可能性が高い。",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": -25744000.0
     },
     {
       "gaap_eps": -0.11999123653665529,
@@ -358,9 +461,9 @@
     },
     {
       "gaap_eps": -0.7131168826453517,
-      "adjusted_eps": -0.03860443948682524,
+      "adjusted_eps": -0.0387167251480494,
       "gaap_net_income": -228619000.0,
-      "adjusted_net_income": -12376243.734826446,
+      "adjusted_net_income": -12412241.530150235,
       "diluted_shares_used": 320591204.0,
       "adjustments": [
         {
@@ -392,14 +495,14 @@
         {
           "item_id": "goodwill_impairment",
           "item_name": "のれん減損",
-          "amount": 70636000,
+          "amount": 70600000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金減損",
           "extracted_from": "us-gaap:GoodwillImpairmentLoss",
           "category": "買収・統合関連",
-          "net_amount": 70631674.18035476,
+          "net_amount": 70595676.38503096,
           "tax_rate_applied": 6.124100522735724e-05
         },
         {
@@ -442,7 +545,7 @@
           "tax_rate_applied": 6.124100522735724e-05
         }
       ],
-      "net_adjustment_total": 216242756.26517355,
+      "net_adjustment_total": 216206758.46984977,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -1718,11 +1821,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.1558433133968076,
+      "value": 0.0789176857424027,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": -0.11402921439239473,
-      "prior_4q_avg_yoy": 0.041814099004412866
+      "recent_4q_avg_yoy": 0.015072785638915245,
+      "prior_4q_avg_yoy": -0.06384490010348745
     },
     "roic_trend": {
       "years": [
@@ -1750,9 +1853,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.12906473645541375,
+      "value": 0.10610128266905303,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

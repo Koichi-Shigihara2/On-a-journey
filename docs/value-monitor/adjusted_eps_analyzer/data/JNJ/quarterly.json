@@ -1,6 +1,6 @@
 {
   "ticker": "JNJ",
-  "last_updated": "2026-10-25T15:18:55.953321",
+  "last_updated": "2026-11-01T17:29:07.811480",
   "quarters": [
     {
       "gaap_eps": 0.08576329331046312,
@@ -82,32 +82,32 @@
       "pretax_income": 34000000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目には恒常的なSBC・無形資産償却（毎期発生する非現金費用）と一過性のリストラ・異常貸倒・税務DTA除外が混在。GAAP EPSがプラスなのは一時的な税務メリットによるもので、Adjusted EPSが大幅マイナスとなるため、市場がGAAPベースで判断する場合に企業の実力（特に税効果除いた収益力）が過大評価されやすい。過小評価リスクは低いが、買収償却やSBCの持続性を考慮すると実力は調整後負の水準に近く、投資家は非GAAP項目の再発可能性と税務正常化の妥当性を注視すべき。",
+        "comment": "GAAP EPSがプラスである一方、Adjusted EPSが大幅にマイナスとなる大きな調整が見られる。SBCや無形資産償却は恒常的なコストであり調整の妥当性に疑問が残るが、税務の一時的利益除外（DTA認識）が主因で実力はGAAPほど強くない可能性が高い。市場がGAAP EPSで判断する場合、税務特例による見かけの利益で企業実力を過大評価するリスクがあり、過小評価の可能性は低い。投資家は調整項目の持続性とコア事業の収益力を注視し、過大評価リスクに警戒すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用、非現金費用だが恒常的な報酬コストとして毎期発生",
+            "snippet": "株式報酬費用は非現金費用だが毎期発生する恒常的な運用コストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却、定期的に発生する買収影響費用",
+            "snippet": "買収関連無形資産の償却は定期的に発生し、恒常的な性質を持つ。",
             "confidence": 0.2
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響の異常貸倒引当金",
+            "snippet": "マクロ変動による一時的影響として異常変動分を調整対象とした。",
             "confidence": 0.75
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用としてのリストラ費用",
+            "snippet": "一過性の事業再編費用としてリストラ費用を調整。",
             "confidence": 0.8
           },
           {
             "item": "tax_one_time_dta",
-            "snippet": "DTA認識除外（tax_expense=-176Mに対しmedian_normal_tax=1,026Mの一時的税務利益除外）",
-            "confidence": 0.85
+            "snippet": "DTA認識（繰延税金資産）除外は税_expenseとmedian_normal_taxの差異に基づく一時的調整。",
+            "confidence": 0.9
           }
         ]
       }

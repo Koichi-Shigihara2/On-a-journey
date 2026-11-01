@@ -1,12 +1,92 @@
 {
   "ticker": "GEV",
-  "last_updated": "2026-10-25T15:18:41.856282",
+  "last_updated": "2026-11-01T17:29:08.237566",
   "quarters": [
     {
+      "gaap_eps": 4.817164179104478,
+      "adjusted_eps": 5.44631174285523,
+      "gaap_net_income": 1291000000.0,
+      "adjusted_net_income": 1459611547.0852017,
+      "diluted_shares_used": 268000000.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 239000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 172953475.33632287,
+          "tax_rate_applied": 0.2763452914798206
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 723654.7085201794,
+          "tax_rate_applied": 0.2763452914798206
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": -7000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": -5065582.959641256,
+          "tax_rate_applied": 0.2763452914798206
+        }
+      ],
+      "net_adjustment_total": 168611547.0852018,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 12642000000.0,
+      "diluted_shares": 268000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 493000000.0,
+      "pretax_income": 1784000000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "主な調整項目である無形資産償却費（買収関連）は恒常的な非現金費用であり、リストラ費用や異常貸倒引当金は一過性と判断される。調整によりEPSが4.82から5.45へ引き上げられているが、償却費のadd_backが大半を占めるため調整後の実力は過大に見積もられている可能性がある。市場がGAAP EPSで判断する場合、非現金償却によるEPS低下で企業の実力を過小評価するリスクがあり、投資家は持続可能性の低い調整を除いたコア収益力を注視すべき。過小評価の可能性はあるが、過大調整のリスクも同時に抱えている。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却。これは毎期発生する可能性が高い恒常的費用。",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響。異常変動分として一過性とみなせる。",
+            "confidence": 0.75
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用。リストラ費用は典型的には非経常的。",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 2.474074074074074,
-      "adjusted_eps": 3.0925925925925926,
+      "adjusted_eps": 3.024450721908349,
       "gaap_net_income": 668000000.0,
-      "adjusted_net_income": 835000000.0,
+      "adjusted_net_income": 816601694.9152542,
       "diluted_shares_used": 270000000.0,
       "adjustments": [
         {
@@ -21,9 +101,35 @@
           "category": "買収・統合関連",
           "net_amount": 167000000.0,
           "tax_rate_applied": 0.2923728813559322
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": -10000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": -7076271.186440678,
+          "tax_rate_applied": 0.2923728813559322
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": -16000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": -11322033.898305085,
+          "tax_rate_applied": 0.2923728813559322
         }
       ],
-      "net_adjustment_total": 167000000.0,
+      "net_adjustment_total": 148601694.91525424,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
@@ -33,18 +139,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 276000000.0,
-      "pretax_income": 944000000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の無形資産償却費は買収関連の非現金費用ですが、恒常的に発生する性質を持ちます。市場がGAAP EPS（2.47）で判断する場合、非現金償却を除いたAdjusted EPS（3.09）による企業の実力が見えにくくなり、実力を過小評価している可能性があります。ただし償却が毎期続く恒常コストであるため、調整により持続可能な利益を過大に見せ過大評価のリスクもあります。投資家は償却スケジュール、キャッシュフロー実態、今後の買収戦略に注目すべきです。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 944000000.0
     },
     {
       "gaap_eps": 17.44485294117647,
@@ -855,11 +950,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.047378746842097696,
+      "value": 0.07516496508121173,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.13438688945038207,
-      "prior_4q_avg_yoy": 0.08700814260828438
+      "recent_4q_avg_yoy": 0.17180003445435418,
+      "prior_4q_avg_yoy": 0.09663506937314245
     },
     "roic_trend": {
       "years": [
@@ -889,7 +984,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

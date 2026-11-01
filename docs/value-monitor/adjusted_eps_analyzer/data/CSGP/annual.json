@@ -1,15 +1,15 @@
 {
   "ticker": "CSGP",
-  "last_updated": "2026-10-25T15:14:21.493561",
+  "last_updated": "2026-11-01T17:25:00.663942",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": 7000000.0,
-      "adjusted_net_income": 300586046.90396154,
+      "adjusted_net_income": 300680785.39521325,
       "diluted_shares_used": 418850000.0,
       "gaap_eps": 0.016712426883132386,
-      "adjusted_eps": 0.7176460472817513,
+      "adjusted_eps": 0.717872234440046,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -40,14 +40,14 @@
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
-          "amount": 37000000.0,
+          "amount": 7000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "一過性の買収統合コスト",
           "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
           "category": "買収・統合関連",
-          "net_amount": 24755395.68345324,
+          "net_amount": 4683453.237410072,
           "tax_rate_applied": 0.33093525179856115
         },
         {
@@ -73,21 +73,34 @@
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 47766812.227074236,
-          "tax_rate_applied": 0.32532751091703055
+          "net_amount": 47662745.09803922,
+          "tax_rate_applied": 0.32679738562091504
         },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
-          "amount": 31800000,
+          "amount": 32000000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "買収関連無形資産の償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
-          "net_amount": 21454585.152838428,
-          "tax_rate_applied": 0.32532751091703055
+          "net_amount": 21542483.66013072,
+          "tax_rate_applied": 0.32679738562091504
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 30000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 20196078.43137255,
+          "tax_rate_applied": 0.32679738562091504
         },
         {
           "item_id": "loan_loss_provision_abnormal",
@@ -99,8 +112,8 @@
           "reason": "マクロ変動による一時的影響",
           "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
           "category": "金融関連",
-          "net_amount": 6072052.401746725,
-          "tax_rate_applied": 0.32532751091703055
+          "net_amount": 6058823.529411765,
+          "tax_rate_applied": 0.32679738562091504
         },
         {
           "item_id": "sbc",
@@ -207,7 +220,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 293586046.90396154
+      "net_adjustment_total": 293680785.39521325
     },
     {
       "year": "2024",

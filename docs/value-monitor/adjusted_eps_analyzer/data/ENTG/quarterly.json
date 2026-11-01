@@ -1,14 +1,125 @@
 {
   "ticker": "ENTG",
-  "last_updated": "2026-10-25T15:19:24.440138",
+  "last_updated": "2026-11-01T17:29:30.211196",
   "quarters": [
     {
+      "gaap_eps": 1.0253411306042886,
+      "adjusted_eps": 1.4211832829019226,
+      "gaap_net_income": 157800000.0,
+      "adjusted_net_income": 218720107.2386059,
+      "diluted_shares_used": 153900000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 19700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 16668418.230563002,
+          "tax_rate_applied": 0.15388739946380697
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 45600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 38582734.5844504,
+          "tax_rate_applied": 0.15388739946380697
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 5200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 4399785.522788203,
+          "tax_rate_applied": 0.15388739946380697
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 1500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 1269168.9008042894,
+          "tax_rate_applied": 0.15388739946380697
+        }
+      ],
+      "net_adjustment_total": 60920107.238605894,
+      "filing_date": "2026-09-26",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 1005700000.0,
+      "diluted_shares": 153900000.0,
+      "period_end": "2026-09-26",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 28700000.0,
+      "pretax_income": 186500000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目のうちSBCと無形資産償却が大半を占め恒常的な性質が強く、調整後EPSがGAAP EPSを約38%上回る水準となっている。市場がGAAP EPSのみで評価する場合、非現金・買収関連の費用により企業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただしSBCは株主希薄化を伴う実質コスト、無形資産償却も経済的減価を反映するため過大調整のリスクもあり、投資家はこれら恒常項目の持続性と真の経済的利益を慎重に検証する必要がある。過小評価リスクが高い一方で、調整依存度の高さから過大評価リスクも併存する。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だがテック企業では毎期発生する恒常的な株式報酬コストであり、株主希薄化の実質的影響を伴う",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で、継続的なM&Aを実施する企業では恒常的に発生する項目",
+            "confidence": 0.2
+          },
+          {
+            "item": "inventory_writeoff",
+            "snippet": "一過性の在庫評価損であり、通常の事業運営とは切り離して考えるべき非経常項目",
+            "confidence": 0.8
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用で、リストラ関連の非経常的コスト",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.609375,
-      "adjusted_eps": 0.8955211171662124,
+      "adjusted_eps": 1.0416382833787465,
       "gaap_net_income": 93600000.0,
-      "adjusted_net_income": 137552043.59673023,
+      "adjusted_net_income": 159995640.32697546,
       "diluted_shares_used": 153600000.0,
       "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 18400000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 15642506.8119891,
+          "tax_rate_applied": 0.14986376021798364
+        },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
@@ -20,6 +131,19 @@
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
           "net_amount": 39191280.65395095,
+          "tax_rate_applied": 0.14986376021798364
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 8000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 6801089.918256131,
           "tax_rate_applied": 0.14986376021798364
         },
         {
@@ -36,7 +160,7 @@
           "tax_rate_applied": 0.14986376021798364
         }
       ],
-      "net_adjustment_total": 43952043.59673025,
+      "net_adjustment_total": 66395640.32697548,
       "filing_date": "2026-06-27",
       "form": "10-Q",
       "sector": null,
@@ -46,23 +170,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 16500000.0,
-      "pretax_income": 110100000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整項目である無形資産償却費（46.1M USD）は買収に伴う恒常的な非現金費用であり、リストラ費用（5.6M USD）は一過性と判断される。GAAP EPS 0.61に対しAdjusted EPS 0.90と大幅に加算されており、市場がGAAPベースで評価する場合に企業の実力（特にコア収益力）が過小評価される可能性がある。ただし、無形資産償却は毎期発生する恒常コストであるため、調整の過大さからAdjusted EPSが実力を過大に示しているリスクもある。投資家は償却費の継続性と経済的実態を注視し、過小評価リスクを考慮しつつコア事業のキャッシュ生成力を優先的に評価すべき。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却であり、毎期発生する恒常的な非現金費用（基準: 0.2）。",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "一過性の事業再編費用であり、非経常的とみなせる（基準: 0.8）。",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": 110100000.0
     },
     {
       "gaap_eps": 0.6005221932114883,
@@ -2315,11 +2423,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.04998821268969052,
+      "value": 0.08920801141140616,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.03334437607738396,
-      "prior_4q_avg_yoy": -0.01664383661230655
+      "recent_4q_avg_yoy": 0.09504662929568379,
+      "prior_4q_avg_yoy": 0.005838617884277625
     },
     "roic_trend": {
       "years": [
@@ -2347,9 +2455,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": null,
-      "reason": "no_sbc_data",
-      "period_end": "2026-06-27"
+      "value": 0.01958834642537536,
+      "reason": "ok",
+      "period_end": "2026-09-26"
     }
   }
 }

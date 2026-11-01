@@ -1,14 +1,107 @@
 {
   "ticker": "TER",
-  "last_updated": "2026-10-25T15:19:20.816618",
+  "last_updated": "2026-11-01T17:29:33.576588",
   "quarters": [
     {
+      "gaap_eps": 2.1739850922527966,
+      "adjusted_eps": 2.3786501366875346,
+      "gaap_net_income": 342407000.0,
+      "adjusted_net_income": 374642153.82856005,
+      "diluted_shares_used": 157502000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 21685000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 18459367.032120127,
+          "tax_rate_applied": 0.14874950278440732
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 5251000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4469916.360879077,
+          "tax_rate_applied": 0.14874950278440732
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 10932000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 9305870.43556086,
+          "tax_rate_applied": 0.14874950278440732
+        }
+      ],
+      "net_adjustment_total": 32235153.82856006,
+      "filing_date": "2026-09-27",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 1305950000.0,
+      "diluted_shares": 157502000.0,
+      "period_end": "2026-09-27",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 59833000.0,
+      "pretax_income": 402240000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目のうちSBCと無形資産償却は恒常的な性質が強く（毎期発生する運用コストおよび買収後継続償却）、在庫評価損のみ一過性と見なせる。調整後EPSはGAAP比約9.5%高く、市場がGAAP EPSのみで判断する場合、非現金・一過性費用を控除した企業の実力（キャッシュ生成力）が過小評価される可能性がある。ただしSBC・償却の加算は持続的利益を過大に見せるリスクがあり、過大調整の懸念も残る。投資家は各項目の再発可能性を個別に監視し、在庫関連のサプライチェーン要因を注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが恒常的な株式報酬費用として毎期発生する運用コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で継続的に発生する非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "inventory_writeoff",
+            "snippet": "一過性の在庫評価損として非経常的と明記",
+            "confidence": 0.75
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 2.375076889906337,
-      "adjusted_eps": 2.401834923846744,
+      "adjusted_eps": 2.529172381824211,
       "gaap_net_income": 374533000.0,
-      "adjusted_net_income": 378752554.6461646,
+      "adjusted_net_income": 398832780.4070053,
       "diluted_shares_used": 157693000.0,
       "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 20062000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 17025886.024005204,
+          "tax_rate_applied": 0.15133655547775882
+        },
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
@@ -21,9 +114,22 @@
           "category": "買収・統合関連",
           "net_amount": 4219554.646164583,
           "tax_rate_applied": 0.15133655547775882
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 3599000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 3054339.736835546,
+          "tax_rate_applied": 0.15133655547775882
         }
       ],
-      "net_adjustment_total": 4219554.646164583,
+      "net_adjustment_total": 24299780.407005332,
       "filing_date": "2026-06-28",
       "form": "10-Q",
       "sector": null,
@@ -33,18 +139,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 66788000.0,
-      "pretax_income": 441321000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目は買収に伴う無形資産償却費の加算戻しであり、恒常的に発生する非現金費用であるため一過性とは言えない。GAAP EPSに比べてAdjusted EPSは僅かに高いが影響は小さい。市場がGAAP EPSのみで判断する場合、非現金償却を控除した保守的な数字を見ているため企業の実力（特に買収後のキャッシュ創出力）をやや過小評価している可能性がある。ただし償却は過去買収の経済的コストを反映しており完全に無視できない。投資家は調整後EPSを参考にしつつ、継続的な買収戦略と無形資産の減損リスクを注視すべき。過小評価リスクは限定的で過大調整の懸念は低い。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は恒常的な非現金費用であり、毎期発生する可能性が高い",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 441321000.0
     },
     {
       "gaap_eps": 2.5305640843462154,
@@ -2323,11 +2418,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.5462481415263339,
+      "value": 0.7109764535028955,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.5978897263772671,
-      "prior_4q_avg_yoy": 0.051641584850933134
+      "recent_4q_avg_yoy": 0.7615143455377972,
+      "prior_4q_avg_yoy": 0.050537892034901624
     },
     "roic_trend": {
       "years": [
@@ -2355,9 +2450,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": null,
-      "reason": "no_sbc_data",
-      "period_end": "2026-06-28"
+      "value": 0.016604770473601593,
+      "reason": "ok",
+      "period_end": "2026-09-27"
     }
   }
 }

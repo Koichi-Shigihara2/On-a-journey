@@ -1,7 +1,51 @@
 {
   "ticker": "MO",
-  "last_updated": "2026-10-25T15:18:47.290646",
+  "last_updated": "2026-11-01T17:29:02.688233",
   "quarters": [
+    {
+      "gaap_eps": 1.5086878370281607,
+      "adjusted_eps": 1.5183060654973746,
+      "gaap_net_income": 2518000000.0,
+      "adjusted_net_income": 2534052823.3151183,
+      "diluted_shares_used": 1669000000.0,
+      "adjustments": [
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 21000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 16052823.315118397,
+          "tax_rate_applied": 0.2355798421372192
+        }
+      ],
+      "net_adjustment_total": 16052823.315118397,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 6132000000.0,
+      "diluted_shares": 1669000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 776000000.0,
+      "pretax_income": 3294000000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "調整項目は買収関連無形資産の償却であり、恒常的に複数期にわたって発生する非現金費用であるため一過性とは言えません。GAAP EPSとAdjusted EPSの差が0.01未満と極めて小さく、市場がGAAPベースで判断していても企業の実力はほぼ正確に反映されており、見えにくくなっている可能性は低いです。投資家としては償却が買収の経済的コストを表す点を考慮し、調整後EPSに過度に依存しないよう注意が必要。過小評価リスクは低いが、調整を繰り返すことで実態を過大評価するリスクに留意すべきです。",
+        "sources": [
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は、買収後も複数年にわたって毎期発生する恒常的な非現金費用である。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 1.3760479041916167,
       "adjusted_eps": 1.3868533332788162,
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 631000000.0,
-      "pretax_income": 2929000000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目は買収関連の無形資産償却費であり、恒常的に発生する非現金費用（一過性ではない）。調整額は小さく（EPS差約0.01）、市場がGAAP EPSで判断する場合に償却を加回した実力値が見えにくくなり、企業の実力をやや過小評価するリスクがある。ただし償却は買収の経済的コストを反映する面もあるため、過大評価リスクも否定できない。投資家は調整後EPSだけでなく、フリーキャッシュフローや買収の長期収益性に着目すべき。",
-        "sources": [
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却であり、毎期発生する恒常的な非現金費用（非一過性）。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 2929000000.0
     },
     {
       "gaap_eps": 1.3048416019127316,
@@ -1355,11 +1388,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.015015246206468774,
+      "value": 0.03154843377158706,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": -0.0044232110143360235,
-      "prior_4q_avg_yoy": -0.019438457220804797
+      "recent_4q_avg_yoy": 0.0055163890051142285,
+      "prior_4q_avg_yoy": -0.026032044766472834
     },
     "roic_trend": {
       "years": [
@@ -1389,7 +1422,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

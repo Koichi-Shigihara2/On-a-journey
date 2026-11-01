@@ -1,6 +1,6 @@
 {
   "ticker": "MRVL",
-  "last_updated": "2026-10-25T15:15:17.167735",
+  "last_updated": "2026-11-01T17:25:57.455926",
   "quarters": [
     {
       "gaap_eps": 0.3343465045592705,
@@ -49,16 +49,16 @@
       "pretax_income": 378300000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "主な調整は買収由来の無形資産償却（恒常的非現金費用）で、リストラは一過性。GAAP EPS 0.33に対しAdjusted EPS 0.53と差が大きく、市場がGAAP重視の場合、買収シナジー等による企業の実力が見えにくくなり過小評価のリスクがある。投資家は償却費の継続性と調整の妥当性を注視すべきで、過大調整による過大評価リスクも存在する。",
+        "comment": "主な調整項目である無形資産償却費（約2.15億ドル）は買収に伴う恒常的な非現金費用であり、リストラ費用（300万ドル）は一過性と判断される。GAAP EPS（0.33）がこれらを反映して低く出ているため、市場がGAAPベースで判断する場合に企業の実力（特にキャッシュ稼得力）が過小評価される可能性が高い。投資家は調整後EPS（0.53）を参考にすべきだが、無形資産償却の加算が毎期続く点を考慮すると過大評価リスクもあり、慎重にコア収益性を分析する必要がある。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。これは毎期発生する恒常的な非現金費用であり、調整により実力値が大きく上方修正される。",
+            "snippet": "買収関連無形資産の償却。これは恒常的に発生する非現金費用であり、調整の妥当性に注意が必要。",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用。リストラ関連として非経常的とみなせるが、金額は全体調整に比べて小さい。",
+            "snippet": "一過性の事業再編費用。リストラ費用は通常非経常的とみなされる。",
             "confidence": 0.8
           }
         ]
@@ -1052,9 +1052,9 @@
     },
     {
       "gaap_eps": 0.007739992470824445,
-      "adjusted_eps": -0.1188894466055967,
+      "adjusted_eps": -0.11945413477224244,
       "gaap_net_income": 6168000.0,
-      "adjusted_net_income": -94743000.0,
+      "adjusted_net_income": -95193000.0,
       "diluted_shares_used": 796900000.0,
       "adjustments": [
         {
@@ -1099,12 +1099,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -100911000.0,
-          "net_amount": -100911000.0,
-          "note": "tax_expense=-62,461,000, median_normal_tax=38,450,000"
+          "amount": -101361000.0,
+          "net_amount": -101361000.0,
+          "note": "tax_expense=-62,461,000, median_normal_tax=38,900,000"
         }
       ],
-      "net_adjustment_total": -100911000.0,
+      "net_adjustment_total": -101361000.0,
       "filing_date": "2022-01-29",
       "form": "10-K",
       "sector": "Technology",
@@ -1295,9 +1295,9 @@
     },
     {
       "gaap_eps": 0.02472488038277512,
-      "adjusted_eps": -0.09985645933014355,
+      "adjusted_eps": -0.10052930622009569,
       "gaap_net_income": 16536000.0,
-      "adjusted_net_income": -66784000.0,
+      "adjusted_net_income": -67234000.0,
       "diluted_shares_used": 668800000.0,
       "adjustments": [
         {
@@ -1329,12 +1329,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -83320000.0,
-          "net_amount": -83320000.0,
-          "note": "tax_expense=-44,870,000, median_normal_tax=38,450,000"
+          "amount": -83770000.0,
+          "net_amount": -83770000.0,
+          "note": "tax_expense=-44,870,000, median_normal_tax=38,900,000"
         }
       ],
-      "net_adjustment_total": -83320000.0,
+      "net_adjustment_total": -83770000.0,
       "filing_date": "2021-01-30",
       "form": "10-K",
       "sector": "Technology",
@@ -1853,9 +1853,9 @@
     },
     {
       "gaap_eps": 0.012023502665663374,
-      "adjusted_eps": -0.10968977975590101,
+      "adjusted_eps": -0.11049027926759632,
       "gaap_net_income": 6759000.0,
-      "adjusted_net_income": -61662000.0,
+      "adjusted_net_income": -62112000.0,
       "diluted_shares_used": 562149000.0,
       "adjustments": [
         {
@@ -1900,12 +1900,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -68421000.0,
-          "net_amount": -68421000.0,
-          "note": "tax_expense=-29,971,000, median_normal_tax=38,450,000"
+          "amount": -68871000.0,
+          "net_amount": -68871000.0,
+          "note": "tax_expense=-29,971,000, median_normal_tax=38,900,000"
         }
       ],
-      "net_adjustment_total": -68421000.0,
+      "net_adjustment_total": -68871000.0,
       "filing_date": "2018-08-04",
       "form": "10-Q",
       "sector": "Technology",
@@ -2146,65 +2146,6 @@
       "quarter": 1,
       "tax_expense": 5166000.0,
       "pretax_income": 111787000.0
-    },
-    {
-      "gaap_eps": 0.1390868641673578,
-      "adjusted_eps": 0.1874853497868096,
-      "gaap_net_income": 72616000.0,
-      "adjusted_net_income": 97884413.75554521,
-      "diluted_shares_used": 522091000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 28263000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 23285333.484609537,
-          "tax_rate_applied": 0.176119538456302
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 2299000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1894101.1810889617,
-          "tax_rate_applied": 0.176119538456302
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 108000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 88979.08984671938,
-          "tax_rate_applied": 0.176119538456302
-        }
-      ],
-      "net_adjustment_total": 25268413.755545218,
-      "filing_date": "2016-10-29",
-      "form": "10-Q",
-      "sector": "Technology",
-      "revenue": 623651000.0,
-      "diluted_shares": 522091000.0,
-      "period_end": "2016-10-29",
-      "fiscal_year": 2017,
-      "quarter": 3,
-      "tax_expense": 15523000.0,
-      "pretax_income": 88139000.0
     }
   ],
   "execution_metrics": {

@@ -1,15 +1,73 @@
 {
   "ticker": "LLY",
-  "last_updated": "2026-10-25T15:14:58.302521",
+  "last_updated": "2026-11-01T17:25:52.108902",
   "quarters": [
     {
+      "gaap_eps": 7.22072979628386,
+      "adjusted_eps": 7.392529220416238,
+      "gaap_net_income": 6451000000.0,
+      "adjusted_net_income": 6604485605.519867,
+      "diluted_shares_used": 893400000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 200000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 153485605.51986676,
+          "tax_rate_applied": 0.23257197240066618
+        }
+      ],
+      "net_adjustment_total": 153485605.51986676,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "ヘルスケア / バイオ",
+      "revenue": 24397000000.0,
+      "diluted_shares": 893400000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 1955000000.0,
+      "pretax_income": 8406000000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "株式報酬費用（SBC）は恒常的なコストであり一過性ではない（毎期発生する運営コスト）。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な数字により企業の実力（特にキャッシュ生成力）が過小評価されている可能性がある。ただしSBCは株主希薄化を伴う実質コストのため、Adjusted EPSを過度に信用すると過大評価リスクが生じる。投資家はSBCの継続性・規模推移と希薄化効果を注視し、調整の妥当性を検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用としてadd_backされているが、SBCは継続的に発生する恒常的コストであり一過性とは言えない（reason: 非現金費用、category: 株式報酬関連）。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 7.938905673044646,
-      "adjusted_eps": 7.938905673044646,
+      "adjusted_eps": 8.11147191509958,
       "gaap_net_income": 7095000000.0,
-      "adjusted_net_income": 7095000000.0,
+      "adjusted_net_income": 7249222450.524494,
       "diluted_shares_used": 893700000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 201000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 154222450.52449444,
+          "tax_rate_applied": 0.2327241267438088
+        }
+      ],
+      "net_adjustment_total": 154222450.52449444,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -19,12 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 2152000000.0,
-      "pretax_income": 9247000000.0,
-      "ai_analysis": {
-        "health": "Excellent",
-        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
-        "sources": []
-      }
+      "pretax_income": 9247000000.0
     },
     {
       "gaap_eps": 8.255385645719388,
@@ -94,9 +147,9 @@
     },
     {
       "gaap_eps": 6.211059190031152,
-      "adjusted_eps": 6.340821239090069,
+      "adjusted_eps": 6.34081944493799,
       "gaap_net_income": 5582500000.0,
-      "adjusted_net_income": 5699130129.694154,
+      "adjusted_net_income": 5699128517.110266,
       "diluted_shares_used": 898800000.0,
       "adjustments": [
         {
@@ -109,21 +162,21 @@
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 116630129.69415408,
-          "tax_rate_applied": 0.2281262098335269
+          "net_amount": 116628517.11026616,
+          "tax_rate_applied": 0.22813688212927757
         }
       ],
-      "net_adjustment_total": 116630129.69415408,
+      "net_adjustment_total": 116628517.11026616,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
-      "revenue": 17600800000.0,
+      "revenue": 17601000000.0,
       "diluted_shares": 898800000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2025,
       "quarter": 3,
-      "tax_expense": 1649900000.0,
-      "pretax_income": 7232400000.0
+      "tax_expense": 1650000000.0,
+      "pretax_income": 7232500000.0
     },
     {
       "gaap_eps": 6.290842409424316,
@@ -1355,11 +1408,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.12924090141919575,
+      "value": 0.007512194658124416,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.4990796277763032,
-      "prior_4q_avg_yoy": 0.36983872635710746
+      "recent_4q_avg_yoy": 0.46094510501316543,
+      "prior_4q_avg_yoy": 0.453432910355041
     },
     "roic_trend": {
       "years": [
@@ -1387,9 +1440,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": null,
-      "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "value": 0.008197729229003565,
+      "reason": "ok",
+      "period_end": "2026-09-30"
     }
   }
 }

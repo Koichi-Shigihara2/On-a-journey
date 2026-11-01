@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-10-25T15:13:26.394110",
+  "last_updated": "2026-11-01T17:24:23.355080",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
@@ -88,32 +88,32 @@
       "pretax_income": -5463000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "GAAP EPSが-0.10の赤字に対しAdjusted EPSが+0.96と大幅に改善しており、主に無形資産償却（43M）とSBCの加算が寄与しています。これらは恒常的な非現金項目であるため、市場がGAAP EPSのみで判断する場合、企業のキャッシュ生成力や事業実力を過小評価するリスクが高く、株価が実力以下に抑えられる可能性があります。一方でM&A統合費用や異常貸倒引当金・在庫評価損は一過性が高いため、調整の妥当性は概ね認められますが、償却費の継続性から過大評価リスクも存在。投資家は調整後EPSの持続可能性と買収戦略の影響を注視すべきです。",
+        "comment": "調整総額が大きくGAAP EPS(-0.10)がAdjusted EPS(0.96)に大幅転換しており、市場がGAAPベースで判断する場合、企業の実力(特に非現金項目を考慮した収益力)を過小評価している可能性がある。ただし主調整である無形資産償却(43M)とSBCは恒常的性格が強く、一過性項目(M&A統合・異常貸倒・在庫減損)は相対的に小さいため過大調整リスクも存在。投資家は持続可能なコア利益と買収戦略の長期影響を注視し、過小評価と過大評価の両リスクを考慮すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として株式報酬費用を加算。ただし恒常的に発生する運用コストであり一過性は低い",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却を加算。定期的に発生する非現金項目で恒常的性質が強い",
+            "snippet": "非現金費用だが成長企業では毎期発生する恒常的な運用コスト",
             "confidence": 0.25
           },
           {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は非現金だが買収戦略継続企業では繰り返し発生する",
+            "confidence": 0.3
+          },
+          {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとしてM&A関連費用を加算。非経常的と判断",
+            "snippet": "一過性の買収統合コストでありM&A完了後の非経常的費用",
             "confidence": 0.8
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響の異常貸倒引当金を加算。マクロ要因次第で一過性",
-            "confidence": 0.7
+            "snippet": "マクロ変動による異常変動分として一時的な影響と明記",
+            "confidence": 0.75
           },
           {
             "item": "inventory_writeoff",
-            "snippet": "一過性の在庫評価損・減損を加算。非経常的イベントによるもの",
-            "confidence": 0.75
+            "snippet": "一過性の在庫評価損であり通常事業運営とは異なる特殊要因",
+            "confidence": 0.7
           }
         ]
       }
@@ -2650,25 +2650,6 @@
       "quarter": 3,
       "tax_expense": 1102000.0,
       "pretax_income": -1081000.0
-    },
-    {
-      "gaap_eps": -0.18100524377223953,
-      "adjusted_eps": -0.18100524377223953,
-      "gaap_net_income": -4172000.0,
-      "adjusted_net_income": -4172000.0,
-      "diluted_shares_used": 23049056.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
-      "filing_date": "2016-10-29",
-      "form": "10-Q",
-      "sector": null,
-      "revenue": 50116000.0,
-      "diluted_shares": 23049056.0,
-      "period_end": "2016-10-29",
-      "fiscal_year": 2017,
-      "quarter": 2,
-      "tax_expense": -48000.0,
-      "pretax_income": -4220000.0
     }
   ],
   "execution_metrics": {

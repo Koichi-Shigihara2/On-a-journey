@@ -1,6 +1,6 @@
 {
   "ticker": "ADSK",
-  "last_updated": "2026-10-25T15:16:53.165604",
+  "last_updated": "2026-11-01T17:27:18.803824",
   "quarters": [
     {
       "gaap_eps": 2.3317535545023698,
@@ -49,16 +49,16 @@
       "pretax_income": 593000000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "主な調整項目であるSBCと無形資産償却はともに恒常的な性質が強く、GAAP EPSで市場が判断する場合に企業の実力（非現金費用を除いたキャッシュ生成力など）が過小評価されている可能性がある。ただしSBCは報酬としての実質的コストであり希薄化効果も伴うため、Adjusted EPSを過信すると過大評価リスクが生じる。投資家は非GAAPの持続可能性と株主還元への影響を注視すべき。",
+        "comment": "調整項目のSBCと無形資産償却はともに恒常的な非現金費用であり、調整後EPS（3.11）がGAAP EPS（2.33）を大幅に上回る要因となっている。市場がGAAP EPS中心に判断する場合、企業の現金生成力やコア事業の実力を過小評価している可能性がある。ただしSBCは実質的な報酬コストとして株主希薄化を伴うため、調整の信頼性は中程度。投資家は過小評価リスクを考慮しつつ、SBCの継続性による過大評価リスクにも注意すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、テック企業では毎期発生する恒常的なコストであり、一過性ではない。",
+            "snippet": "株式報酬費用は非現金費用として毎期発生する恒常的なコストであり、調整により実力が見えにくくなる典型例。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で非現金だが、過去の買収による定期的な償却であり恒常的と見なされる。",
+            "snippet": "無形資産償却費は買収関連で定期的に発生する非現金項目であり、恒常的性質が強い。",
             "confidence": 0.2
           }
         ]
@@ -1097,9 +1097,9 @@
     },
     {
       "gaap_eps": 4.104954954954955,
-      "adjusted_eps": 0.9045045045045045,
+      "adjusted_eps": 0.9,
       "gaap_net_income": 911300000.0,
-      "adjusted_net_income": 200800000.0,
+      "adjusted_net_income": 199800000.0,
       "diluted_shares_used": 222000000.0,
       "adjustments": [
         {
@@ -1131,12 +1131,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -710500000.0,
-          "net_amount": -710500000.0,
-          "note": "tax_expense=-661,500,000, median_normal_tax=49,000,000"
+          "amount": -711500000.0,
+          "net_amount": -711500000.0,
+          "note": "tax_expense=-661,500,000, median_normal_tax=50,000,000"
         }
       ],
-      "net_adjustment_total": -710500000.0,
+      "net_adjustment_total": -711500000.0,
       "filing_date": "2021-01-31",
       "form": "10-K",
       "sector": "Technology",
@@ -1848,65 +1848,6 @@
       "quarter": 1,
       "tax_expense": 8200000.0,
       "pretax_income": -121400000.0
-    },
-    {
-      "gaap_eps": -0.6423751686909581,
-      "adjusted_eps": -0.3740602622028925,
-      "gaap_net_income": -142800000.0,
-      "adjusted_net_income": -83153596.28770301,
-      "diluted_shares_used": 222300000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 56600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 50690487.238979116,
-          "tax_rate_applied": 0.10440835266821345
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 6090023.201856148,
-          "tax_rate_applied": 0.10440835266821345
-        },
-        {
-          "item_id": "restructuring",
-          "item_name": "リストラ費用",
-          "amount": 3200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の事業再編費用",
-          "extracted_from": "us-gaap:RestructuringCharges",
-          "category": "リストラ・事業再編関連",
-          "net_amount": 2865893.271461717,
-          "tax_rate_applied": 0.10440835266821345
-        }
-      ],
-      "net_adjustment_total": 59646403.712296985,
-      "filing_date": "2016-10-31",
-      "form": "10-Q",
-      "sector": "Technology",
-      "revenue": 489600000.0,
-      "diluted_shares": 222300000.0,
-      "period_end": "2016-10-31",
-      "fiscal_year": 2017,
-      "quarter": 3,
-      "tax_expense": 13500000.0,
-      "pretax_income": -129300000.0
     }
   ],
   "execution_metrics": {

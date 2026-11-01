@@ -1,15 +1,15 @@
 {
   "ticker": "GOOGL",
-  "last_updated": "2026-10-25T15:14:42.007200",
+  "last_updated": "2026-11-01T17:25:20.286466",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": 132170000000.0,
-      "adjusted_net_income": 150967570391.67377,
+      "adjusted_net_income": 151070152768.28503,
       "diluted_shares_used": 12230500000.0,
       "gaap_eps": 10.80659008217162,
-      "adjusted_eps": 12.343532185247845,
+      "adjusted_eps": 12.351919608215939,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -35,6 +35,19 @@
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 5063911428.376566,
+          "tax_rate_applied": 0.20478777820719757
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 129000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 102582376.6112715,
           "tax_rate_applied": 0.20478777820719757
         },
         {
@@ -90,7 +103,7 @@
           "tax_rate_applied": 0.173466701763622
         }
       ],
-      "net_adjustment_total": 18797570391.673756
+      "net_adjustment_total": 18900152768.285027
     },
     {
       "year": "2024",

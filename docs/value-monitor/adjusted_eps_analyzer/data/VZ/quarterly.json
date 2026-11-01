@@ -1,12 +1,74 @@
 {
   "ticker": "VZ",
-  "last_updated": "2026-10-25T15:19:01.352140",
+  "last_updated": "2026-11-01T17:29:25.111605",
   "quarters": [
     {
+      "gaap_eps": 1.2492189377553473,
+      "adjusted_eps": 1.345685881865805,
+      "gaap_net_income": 5198000000.0,
+      "adjusted_net_income": 5599398954.443615,
+      "diluted_shares_used": 4161000000.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 57000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 44254817.027632564,
+          "tax_rate_applied": 0.22359970126960418
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 460000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 357144137.41598207,
+          "tax_rate_applied": 0.22359970126960418
+        }
+      ],
+      "net_adjustment_total": 401398954.4436146,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "通信・インフラ",
+      "revenue": 34313000000.0,
+      "diluted_shares": 4161000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 1497000000.0,
+      "pretax_income": 6695000000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "M&A統合費用は一過性の買収関連コスト、貸倒引当金の異常変動分もマクロ要因による一時的影響と判断され、両者とも調整によりGAAP EPSを押し下げていた項目である。市場がGAAP EPS中心に評価する場合、企業の実力（収益力）が過小評価される可能性がある。調整幅はEPSで約0.1（約8%）と中程度であり、投資家はM&A費用の再発リスクと貸倒引当金の異常変動が今後もマクロ環境次第で発生しうる点に注目すべき。過小評価リスクはあるが、貸倒関連は金融事業の性質上完全に一過性とは言い切れないため、持続的な監視が必要。",
+        "sources": [
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストとしてadd_backされており、M&A関連の非経常的費用に該当。ほぼ一過性とみなせる。",
+            "confidence": 0.8
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分をadd_back。理由から一過性とされるが、金融関連費用として再発の可能性も残る。",
+            "confidence": 0.65
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.9194437784703908,
-      "adjusted_eps": 0.9434989936047906,
+      "adjusted_eps": 1.0258212853980697,
       "gaap_net_income": 3835000000.0,
-      "adjusted_net_income": 3935334302.3255816,
+      "adjusted_net_income": 4278700581.3953485,
       "diluted_shares_used": 4171000000.0,
       "adjustments": [
         {
@@ -21,9 +83,22 @@
           "category": "買収・統合関連",
           "net_amount": 100334302.32558139,
           "tax_rate_applied": 0.2567829457364341
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 462000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 343366279.0697674,
+          "tax_rate_applied": 0.2567829457364341
         }
       ],
-      "net_adjustment_total": 100334302.32558139,
+      "net_adjustment_total": 443700581.3953488,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
@@ -33,18 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 1325000000.0,
-      "pretax_income": 5160000000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "M&A統合費用は典型的な一過性項目であり、調整によりAdjusted EPSがGAAPを上回る。市場がGAAP EPS中心に判断する場合、一時的コストの影響で企業の持続的な収益力が過小評価されやすく、株価の undervaluation リスクが生じる。投資家は調整後実績の持続可能性と今後のM&A頻度を注視すべき。",
-        "sources": [
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとしてadd_backされており、M&A関連費用は非経常的とみなされる（reason: 一過性の買収統合コスト、category: 買収・統合関連）",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": 5160000000.0
     },
     {
       "gaap_eps": 1.1983372921615203,
@@ -1439,11 +1503,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.00681754766090927,
+      "value": -0.010591486926803402,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.013898867857997465,
-      "prior_4q_avg_yoy": 0.020716415518906735
+      "recent_4q_avg_yoy": 0.013852793279219993,
+      "prior_4q_avg_yoy": 0.024444280206023395
     },
     "roic_trend": {
       "years": [
@@ -1473,7 +1537,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

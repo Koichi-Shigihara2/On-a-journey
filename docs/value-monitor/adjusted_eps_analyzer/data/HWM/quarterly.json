@@ -1,7 +1,51 @@
 {
   "ticker": "HWM",
-  "last_updated": "2026-10-25T15:17:21.150902",
+  "last_updated": "2026-11-01T17:27:45.735041",
   "quarters": [
+    {
+      "gaap_eps": 1.4175,
+      "adjusted_eps": 1.4325,
+      "gaap_net_income": 567000000.0,
+      "adjusted_net_income": 573000000.0,
+      "diluted_shares_used": 400000000.0,
+      "adjustments": [
+        {
+          "item_id": "tax_one_time",
+          "item_name": "一過性税効果",
+          "amount": 6000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": false,
+          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
+          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
+          "category": "税効果関連",
+          "net_amount": 6000000,
+          "tax_rate_applied": 0.0
+        }
+      ],
+      "net_adjustment_total": 6000000.0,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "宇宙・航空",
+      "revenue": 2703000000.0,
+      "diluted_shares": 400000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 154000000.0,
+      "pretax_income": 721000000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "調整項目は一過性の税効果（法人税率変更や過年度税額戻し等）であり、恒常的コストではない。GAAP EPS（1.4175）がこの一過性税影響で押し下げられているため、市場がGAAPベースで判断する場合に企業の実力（Adjusted EPS 1.4325）が過小評価されやすい。投資家としてはこの一過性項目を除いた実力収益力を重視すべきであり、過小評価リスクが存在する一方で、税効果の再発可能性は低く大きな過大調整の懸念はない。",
+        "sources": [
+          {
+            "item": "tax_one_time",
+            "snippet": "法人税率変更・過年度税額戻し等の一過性影響",
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 1.328358208955224,
       "adjusted_eps": 1.2786069651741294,
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 115000000.0,
-      "pretax_income": 649000000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目は一過性の税効果（法人税率変更・過年度税額戻し等）であり、恒常的コストではないためGAAP EPSを一時的に押し上げている。市場がGAAP EPS（1.328）で判断する場合、経常的な企業実力（Adjusted EPS 1.279）を過大評価するリスクがあり、実力の過小評価可能性は低い。投資家は税効果の一過性を確認し、調整後ベースでの持続的収益力を注視すべき。",
-        "sources": [
-          {
-            "item": "tax_one_time",
-            "snippet": "法人税率変更・過年度税額戻し等の一過性影響",
-            "confidence": 0.9
-          }
-        ]
-      }
+      "pretax_income": 649000000.0
     },
     {
       "gaap_eps": 1.4392059553349876,
@@ -888,9 +921,9 @@
     },
     {
       "gaap_eps": 0.08200455580865604,
-      "adjusted_eps": -0.1867881548974943,
+      "adjusted_eps": -0.18906605922551253,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": -82000000.0,
+      "adjusted_net_income": -83000000.0,
       "diluted_shares_used": 439000000.0,
       "adjustments": [
         {
@@ -922,12 +955,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -118000000.0,
-          "net_amount": -118000000.0,
-          "note": "tax_expense=-48,000,000, median_normal_tax=70,000,000"
+          "amount": -119000000.0,
+          "net_amount": -119000000.0,
+          "note": "tax_expense=-48,000,000, median_normal_tax=71,000,000"
         }
       ],
-      "net_adjustment_total": -118000000.0,
+      "net_adjustment_total": -119000000.0,
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -1456,11 +1489,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.09016627435481162,
+      "value": 0.12112538079058631,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.17914165082287814,
-      "prior_4q_avg_yoy": 0.08897537646806652
+      "recent_4q_avg_yoy": 0.2180168802261492,
+      "prior_4q_avg_yoy": 0.0968914994355629
     },
     "roic_trend": {
       "years": [
@@ -1490,7 +1523,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

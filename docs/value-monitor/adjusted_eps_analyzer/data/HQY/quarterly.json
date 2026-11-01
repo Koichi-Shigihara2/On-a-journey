@@ -1,6 +1,6 @@
 {
   "ticker": "HQY",
-  "last_updated": "2026-10-25T15:17:58.961901",
+  "last_updated": "2026-11-01T17:28:14.571883",
   "quarters": [
     {
       "gaap_eps": 0.781345966148499,
@@ -62,21 +62,21 @@
       "pretax_income": 87865000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の大部分をSBC（2221万ドル）と無形資産償却（4150万ドル）が占め、これらは恒常的な非現金費用であるため、調整後EPS（1.36）がGAAP EPS（0.78）を大幅に上回る形となっている。市場がGAAP EPSのみで判断する場合、非現金項目を排除した企業の実力（キャッシュフロー生成力など）が見えにくくなり、過小評価の可能性がある。ただしSBCは経済的コストとして実質的な希薄化効果があるため、調整をそのまま信じると過大評価リスクも伴う。投資家は調整の持続可能性と真のフリーキャッシュフローを重点的に検証すべき。",
+        "comment": "主な調整はSBC（恒常的・非現金）と無形資産償却（買収由来の継続的非現金費用）、および少額のM&A統合費用（一過性）。Adjusted EPSがGAAPの0.78から1.36へ約74%上方修正されており、市場がGAAP EPS中心に判断する場合、非現金項目を排除した企業の実力（キャッシュ生成力）が過小評価されるリスクが高い。投資家はSBCによる希薄化効果や今後の償却スケジュール、M&A戦略を注視すべきで、調整依存度が高いため過大評価リスクも併存する。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、毎期継続して発生する恒常的な報酬コストであり、調整の正当性は中程度。",
+            "snippet": "株式報酬費用は非現金費用だが、成長企業で毎期発生する恒常的な運用コストである。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連無形資産の償却で、定期的に発生する恒常的項目。真に一過性とは言えない。",
+            "snippet": "買収関連無形資産の償却は非現金だが、過去のM&Aに基づく継続的な費用であり一過性とは言えない。",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり、非経常的とみなせる。",
+            "snippet": "M&A統合費用は一過性の買収統合コストであり、調整の正当性が高い。",
             "confidence": 0.8
           }
         ]
@@ -1345,9 +1345,9 @@
     },
     {
       "gaap_eps": 0.07091795610407114,
-      "adjusted_eps": -0.05488973162964627,
+      "adjusted_eps": -0.06209780784629818,
       "gaap_net_income": 5367000.0,
-      "adjusted_net_income": -4154000.0,
+      "adjusted_net_income": -4699500.0,
       "diluted_shares_used": 75679000.0,
       "adjustments": [
         {
@@ -1392,12 +1392,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -9521000.0,
-          "net_amount": -9521000.0,
-          "note": "tax_expense=-4,694,000, median_normal_tax=4,827,000"
+          "amount": -10066500.0,
+          "net_amount": -10066500.0,
+          "note": "tax_expense=-4,694,000, median_normal_tax=5,372,500"
         }
       ],
-      "net_adjustment_total": -9521000.0,
+      "net_adjustment_total": -10066500.0,
       "filing_date": "2021-01-31",
       "form": "10-K",
       "sector": null,
@@ -2241,52 +2241,6 @@
       "quarter": 1,
       "tax_expense": 1808000.0,
       "pretax_income": 15837000.0
-    },
-    {
-      "gaap_eps": 0.10001165248947114,
-      "adjusted_eps": 0.15656274394948622,
-      "gaap_net_income": 6008000.0,
-      "adjusted_net_income": 9405193.717277486,
-      "diluted_shares_used": 60073000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 2068000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 1414129.7518779878,
-          "tax_rate_applied": 0.31618483951741405
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 2900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1983063.9653994993,
-          "tax_rate_applied": 0.31618483951741405
-        }
-      ],
-      "net_adjustment_total": 3397193.717277487,
-      "filing_date": "2016-10-31",
-      "form": "10-Q",
-      "sector": null,
-      "revenue": 43358000.0,
-      "diluted_shares": 60073000.0,
-      "period_end": "2016-10-31",
-      "fiscal_year": 2017,
-      "quarter": 3,
-      "tax_expense": 2778000.0,
-      "pretax_income": 8786000.0
     }
   ],
   "execution_metrics": {

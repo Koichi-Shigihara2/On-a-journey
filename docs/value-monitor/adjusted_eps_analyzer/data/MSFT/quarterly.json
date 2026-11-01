@@ -1,7 +1,69 @@
 {
   "ticker": "MSFT",
-  "last_updated": "2026-10-25T15:15:27.820565",
+  "last_updated": "2026-11-01T17:26:09.397560",
   "quarters": [
+    {
+      "gaap_eps": 4.919285522428149,
+      "adjusted_eps": 5.361831740296798,
+      "gaap_net_income": 36629000000.0,
+      "adjusted_net_income": 39924199138.249954,
+      "diluted_shares_used": 7446000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 3134000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2498102104.323983,
+          "tax_rate_applied": 0.20290296607403216
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1000000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 797097033.9259678,
+          "tax_rate_applied": 0.20290296607403216
+        }
+      ],
+      "net_adjustment_total": 3295199138.249951,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 92279000000.0,
+      "diluted_shares": 7446000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2027,
+      "quarter": 1,
+      "tax_expense": 9324000000.0,
+      "pretax_income": 45953000000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目はSBCと無形資産償却費の2つで、両者とも恒常的に発生する非現金費用です。SBCは従業員報酬として実質的な継続コスト、無形資産償却も買収後の複数年にわたる定期費用です。市場がGAAP EPS（4.92）のみで判断する場合、これら非現金項目を控除した数字に着目するため企業の実力（キャッシュ生成力やAdjusted EPS 5.36）が過小評価される可能性があります。ただし恒常的コストを加算還元しているため、調整後EPSを過信すると過大評価リスクが生じます。投資家はSBCの株式希薄化効果や買収戦略の経済的リターンを注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用だが恒常的に毎期発生する株式報酬費用であり、実質的な運用コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で、買収後も継続して発生する恒常的費用",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 4.7988729370723195,
       "adjusted_eps": 5.08997909072145,
@@ -46,23 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 4,
       "tax_expense": 32185000000.0,
-      "pretax_income": 67951000000.0,
-      "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目のSBCと無形資産償却はMicrosoftにとって毎期発生する恒常的なコストであり、一過性とは言い難い。市場がGAAP EPSで判断する場合、非現金費用を反映した保守的な実績を使用するため、企業の実力（調整後キャッシュ生成力など）が見えにくくなり、過小評価の可能性がある。ただしSBCは株主希薄化を伴う実質コストのため、Adjusted EPSを過度に信用すると過大評価リスクも存在する。投資家は調整の持続可能性とF CFへの影響を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、テック企業では人材確保のため毎期恒常的に発生する恒常的コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去M&Aから生じるもので、Microsoftの継続的買収活動により恒常的に発生",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 67951000000.0
     },
     {
       "gaap_eps": 4.2683680322364,
@@ -1769,11 +1815,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.028770370935861017,
+      "value": 0.023738165206588085,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.17798246703452703,
-      "prior_4q_avg_yoy": 0.149212096098666
+      "recent_4q_avg_yoy": 0.1789160457539855,
+      "prior_4q_avg_yoy": 0.15517788054739742
     },
     "roic_trend": {
       "years": [
@@ -1801,9 +1847,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.034686191074027574,
+      "value": 0.033962223257729275,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

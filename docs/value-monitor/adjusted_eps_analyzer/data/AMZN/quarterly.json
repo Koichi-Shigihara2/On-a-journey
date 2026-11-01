@@ -1,7 +1,51 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-10-25T15:13:20.839812",
+  "last_updated": "2026-11-01T17:24:16.960211",
   "quarters": [
+    {
+      "gaap_eps": 1.8926708756519353,
+      "adjusted_eps": 2.273529939630136,
+      "gaap_net_income": 20685000000.0,
+      "adjusted_net_income": 24847408710.217754,
+      "diluted_shares_used": 10929000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 5406000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 4162408710.217756,
+          "tax_rate_applied": 0.2300390843104411
+        }
+      ],
+      "net_adjustment_total": 4162408710.217756,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 201944000000.0,
+      "diluted_shares": 10929000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 6180000000.0,
+      "pretax_income": 26865000000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "当該調整項目である株式報酬費用(SBC)は恒常的なコストであり、一過性ではない。Amazonは継続的に大量のSBCを計上しており、非現金ながら株式希薄化を通じて実質的な経済コストとなる。GAAP EPS(1.89)がSBC加算前の値であるため、市場がGAAPベースで判断する場合に同社の真の実力(調整後EPS 2.27)が過小評価される可能性がある。ただしSBCを全額add_backした調整EPSは実態を過大に示すリスクもあり、投資家は希薄化影響や将来のSBCトレンドを慎重に監視する必要がある。過小評価リスクが高い一方で、調整依存の過大評価にも警戒すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業において毎期発生する恒常的な報酬コストであり、株式希薄化を伴う本質的な費用である。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 5.745849766119417,
       "adjusted_eps": 6.174979727871749,
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 18199000000.0,
-      "pretax_income": 80846000000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "株式報酬費用(SBC)は恒常的に毎期発生する運用コストであり、一過性調整とは言えない。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な実力を適切に反映しており、企業の実力が見えにくくなっているとは言えない。むしろSBCを加算したAdjusted EPSを重視すると実力を過大評価するリスクが高く、投資家は株式希薄化効果も含めて総合的に評価すべき。したがってこの調整により市場が実力を過小評価している可能性は低い。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが、Amazonにおいて毎期発生する恒常的な株式報酬関連コスト",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 80846000000.0
     },
     {
       "gaap_eps": 2.7823248114769172,
@@ -477,9 +510,9 @@
     },
     {
       "gaap_eps": 0.02728432623417411,
-      "adjusted_eps": -0.36102267150848955,
+      "adjusted_eps": -0.3630837177348121,
       "gaap_net_income": 278000000.0,
-      "adjusted_net_income": -3678460000.0,
+      "adjusted_net_income": -3699460000.0,
       "diluted_shares_used": 10189000000.0,
       "adjustments": [
         {
@@ -498,9 +531,9 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -4372000000.0,
-          "net_amount": -4372000000.0,
-          "note": "tax_expense=-3,217,000,000, median_normal_tax=1,155,000,000"
+          "amount": -4393000000.0,
+          "net_amount": -4393000000.0,
+          "note": "tax_expense=-3,217,000,000, median_normal_tax=1,176,000,000"
         },
         {
           "item_id": "warrant_fv_change",
@@ -516,7 +549,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -3956460000.0,
+      "net_adjustment_total": -3977460000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,
@@ -1321,11 +1354,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.049446468782431724,
+      "value": 0.04024921595786729,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.15814558273277923,
-      "prior_4q_avg_yoy": 0.10869911395034751
+      "recent_4q_avg_yoy": 0.1548563645171398,
+      "prior_4q_avg_yoy": 0.11460714855927251
     },
     "roic_trend": {
       "years": [
@@ -1353,9 +1386,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.030098800634078743,
+      "value": 0.026769797567642514,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "ticker": "DELL",
-  "last_updated": "2026-10-25T15:18:31.777288",
+  "last_updated": "2026-11-01T17:28:45.284396",
   "quarters": [
     {
       "gaap_eps": 6.338957055214724,
@@ -35,12 +35,12 @@
       "tax_expense": 998000000.0,
       "pretax_income": 5131000000.0,
       "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目は買収関連無形資産償却であり、恒常的に発生する非現金費用です。市場がGAAP EPS（6.34）で判断する場合、非現金償却により企業の実質的な収益力が見えにくくなり、実力を過小評価する可能性があります。ただし償却は過去のM&Aプレミアムを反映する経済的コストであるため、Adjusted EPS（6.46）を過度に信用すると過大評価リスクもあります。投資家は調整の持続性と買収リターンを注視すべきです。影響度は全体EPSの約2%と小さい。",
+        "health": "調整中",
+        "comment": "調整項目は買収関連無形資産償却の加算戻しであり、恒常的に発生する非現金費用です。市場がGAAP EPSで判断する場合、非現金償却を差し引いた保守的な数字で企業実力が見えにくくなり、実力を過小評価するリスクがあります。一方で償却は買収の経済的コストを反映するため、調整後EPSを過信すると過大評価リスクも存在します。投資家は償却スケジュールと将来の買収依存度を注視し、調整の持続可能性を評価すべきです。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は、M&A実行後に複数会計期間にわたって継続的に計上される非現金費用であり、一過性ではなく恒常的な性質を持つ。",
+            "snippet": "買収関連無形資産の償却は、買収後の複数年にわたって毎期発生する恒常的な非現金費用であり、一過性とは言えない。",
             "confidence": 0.2
           }
         ]
@@ -2118,52 +2118,6 @@
       "quarter": 1,
       "tax_expense": -641000000.0,
       "pretax_income": -1975000000.0
-    },
-    {
-      "gaap_eps": -2.748335552596538,
-      "adjusted_eps": -1.4269623670451839,
-      "gaap_net_income": -2064000000.0,
-      "adjusted_net_income": -1071648737.6509331,
-      "diluted_shares_used": 751000000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 150000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 113282107.5740944,
-          "tax_rate_applied": 0.24478594950603733
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1164000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 879069154.7749724,
-          "tax_rate_applied": 0.24478594950603733
-        }
-      ],
-      "net_adjustment_total": 992351262.3490669,
-      "filing_date": "2016-10-28",
-      "form": "10-Q",
-      "sector": null,
-      "revenue": 16247000000.0,
-      "diluted_shares": 751000000.0,
-      "period_end": "2016-10-28",
-      "fiscal_year": 2017,
-      "quarter": 3,
-      "tax_expense": -669000000.0,
-      "pretax_income": -2733000000.0
     }
   ],
   "execution_metrics": {

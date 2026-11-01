@@ -1,7 +1,69 @@
 {
   "ticker": "KLAC",
-  "last_updated": "2026-10-25T15:19:20.970984",
+  "last_updated": "2026-11-01T17:29:38.922959",
   "quarters": [
+    {
+      "gaap_eps": 1.1811688826784963,
+      "adjusted_eps": 1.263648192322146,
+      "gaap_net_income": 1548588000.0,
+      "adjusted_net_income": 1656723653.618642,
+      "diluted_shares_used": 1311064000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 84073000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 71375321.35287778,
+          "tax_rate_applied": 0.15103158739574207
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 43300000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 36760332.26576437,
+          "tax_rate_applied": 0.15103158739574207
+        }
+      ],
+      "net_adjustment_total": 108135653.61864215,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 4136015000.0,
+      "diluted_shares": 1311064000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2027,
+      "quarter": 1,
+      "tax_expense": 275494000.0,
+      "pretax_income": 1824082000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目のSBCと無形資産償却費はいずれも恒常的な非現金費用であり、一過性とは言えません。市場がGAAP EPS（1.18）を基準に判断する場合、これらの加算調整により企業の実力（調整後EPS 1.26）が過小評価される可能性があります。特に半導体装置大手KLACでは非GAAPが一般的ですが、SBCの経済的コストや株式希薄化を無視すると過大評価リスクも生じます。投資家はキャッシュフローと継続的な償却負担を総合的に評価すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する株式報酬費用であり、恒常的コストである",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で定期的に発生し、恒常的な非現金費用である",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 1.0329076341679846,
       "adjusted_eps": 1.0944527488144382,
@@ -59,28 +121,7 @@
       "fiscal_year": 2026,
       "quarter": 4,
       "tax_expense": 775154000.0,
-      "pretax_income": 2138213000.0,
-      "ai_analysis": {
-        "health": "調整中",
-        "comment": "SBCと無形資産償却は恒常的な非現金費用だが、リストラは一過性。GAAP EPSではこれらを控除しているため、市場がGAAPベースで判断する場合にKLACの真の実力（特にキャッシュフロー生成力）が過小評価されるリスクがある。半導体装置セクターでは非GAAP調整が一般的だが、SBCの継続性と株式希薄化を考慮すると過大評価リスクも一部存在。投資家は調整後EPSを主眼に置きつつ、SBCの経済的実態を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用であり、調整により加算されているが、信頼できる継続コストと見なされる可能性が高い",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で複数期にわたって発生する恒常的な非現金項目であり、調整の根拠は非キャッシュ性にあるがコア事業に関連",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用であり、調整して加算するのは標準的で真に非経常的",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": 2138213000.0
     },
     {
       "gaap_eps": 0.9115673624288425,
@@ -201,11 +242,11 @@
       "pretax_income": 1330303000.0
     },
     {
-      "gaap_eps": 0.8468284723638588,
-      "adjusted_eps": 0.9243552776844025,
+      "gaap_eps": 0.8468297517464768,
+      "adjusted_eps": 0.9243566741939835,
       "gaap_net_income": 1121040000.0,
       "adjusted_net_income": 1223670760.151389,
-      "diluted_shares_used": 1323810000.0,
+      "diluted_shares_used": 1323808000.0,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -252,7 +293,7 @@
       "form": "10-Q",
       "sector": null,
       "revenue": 3209696000.0,
-      "diluted_shares": 1323810000.0,
+      "diluted_shares": 1323808000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2026,
       "quarter": 1,
@@ -2164,11 +2205,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.12212948689186717,
+      "value": -0.0683905505522365,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.11704358454962233,
-      "prior_4q_avg_yoy": 0.2391730714414895
+      "recent_4q_avg_yoy": 0.1568032064206127,
+      "prior_4q_avg_yoy": 0.2251937569728492
     },
     "roic_trend": {
       "years": [
@@ -2196,9 +2237,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.022447776602736908,
+      "value": 0.020327053939601283,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }
