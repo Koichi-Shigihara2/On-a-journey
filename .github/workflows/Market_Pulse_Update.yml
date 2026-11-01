@@ -53,6 +53,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config merge.ours.driver true
+          # 見出しのファイル（data/headlines/）は merge=ours にしない。衝突したらリモートの版に戻し、collect_and_send.py が
+          # ${RUNNER_TEMP}/headlines_pending.json に残したこの回の入力で積み足し直す（最大3回、だめならjobを失敗に）。
+          # ほかのファイル（market_data.json 等）は今までどおり merge=ours。
+          # git add は scripts/gen_update_schedule.py が出力のパスを読むためにも書く（headlines_push.py も同じパスを add する）
           git add docs/market-monitor/market-pulse/data/
-          git diff --staged --quiet || git commit -m "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"
-          bash .github/scripts/push_with_retry.sh kaihatsu
+          python src/market/market_pulse/headlines_push.py \
+            --add docs/market-monitor/market-pulse/data/ \
+            --message "chore: auto-update market pulse data $(date -u '+%Y-%m-%d %H:%M') UTC"

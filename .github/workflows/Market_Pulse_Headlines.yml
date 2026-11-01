@@ -3,6 +3,7 @@ name: Market Pulse Headlines
 # 見出しの日ごとの積み足し（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01）。6時間ごと・土日も含む。
 # Grokは呼ばない。新しい記事が無ければ何も書かず、commitしない。夜のMarket Pulseの回も同じファイルに積み足す（訳・判定を写す）。
 # 監視: System Healthの[N]（fetchesの最新が12時間より古ければ⚠️、24時間より古ければ🔴）と[J]（cronのあるワークフロー）。
+# push: headlines_push.py（衝突したら見出しのファイルをリモートの版に戻し、この回の入力〈${RUNNER_TEMP}/headlines_pending.json〉で積み足し直す。最大3回、だめならjobを失敗に）。
 # 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   schedule:
@@ -43,11 +44,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config merge.ours.driver true
+          # 新しい記事が無ければ「新しい変更が無い（commit・push しない）」で終わる。
+          # git add は scripts/gen_update_schedule.py が出力のパスを読むためにも書く（headlines_push.py も同じパスを add する）
           git add docs/market-monitor/market-pulse/data/headlines/
-          if git diff --staged --quiet; then
-            echo "新しい記事が無い（commitしない）"
-            exit 0
-          fi
-          git commit -m "chore: auto-update market pulse headlines $(date -u '+%Y-%m-%d %H:%M') UTC"
-          bash .github/scripts/push_with_retry.sh kaihatsu
+          python src/market/market_pulse/headlines_push.py \
+            --add docs/market-monitor/market-pulse/data/headlines/ \
+            --message "chore: auto-update market pulse headlines $(date -u '+%Y-%m-%d %H:%M') UTC"

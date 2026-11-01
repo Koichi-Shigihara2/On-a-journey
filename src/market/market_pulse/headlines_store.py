@@ -179,8 +179,37 @@ def annotations_from(h: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
             for x in h.get("items") or [] if x.get("link")}
 
 
+PENDING_NAME = "headlines_pending.json"   # GitHub Actions の一時のフォルダ（RUNNER_TEMP、同じ job の段で共有）に置く
+
+
+def save_pending(payload: Dict[str, Any], path: Optional[str] = None) -> Optional[str]:
+    """この回の accumulate の入力（items・訳と判定・取得の時刻・回・配信元の結果）を一時のファイルに残す。
+    push が衝突したら headlines_push.py が、見出しのファイルをリモートの版に戻してからこれで積み足し直す。
+    path を省くと ${RUNNER_TEMP}/headlines_pending.json。RUNNER_TEMP が無い（手元）なら残さない（None）。"""
+    if not path and not os.environ.get("RUNNER_TEMP"):
+        return None
+    path = path or os.path.join(os.environ.get("RUNNER_TEMP", ""), "headlines_pending.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
+    return path
+
+
+def load_pending(path: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    if not path and not os.environ.get("RUNNER_TEMP"):
+        return None
+    path = path or os.path.join(os.environ.get("RUNNER_TEMP", ""), "headlines_pending.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 def store_from_fetch(h: Dict[str, Any], run: str, *, annotate: bool = False,
-                     data_dir: str = HEADLINES_DIR) -> Dict[str, Any]:
-    """fetch_headlines() の結果（all_items）を積み足す。annotate=True なら h["items"] の訳・判定を写す（夜の回）。"""
-    return accumulate(h.get("all_items") or [], fetched_at=h["fetched_at"], run=run, sources=sources_status(h),
-                      annotations=annotations_from(h) if annotate else None, data_dir=data_dir)
+                     data_dir: str = HEADLINES_DIR, pending_path: Optional[str] = None) -> Dict[str, Any]:
+    """fetch_headlines() の結果（all_items）を積み足す。annotate=True なら h["items"] の訳・判定を写す（夜の回）。
+    pending_path（既定は ${RUNNER_TEMP}/headlines_pending.json、手元では残さない）に、この回の入力を残す（積み足しの前に書く）。"""
+    payload = {"items": h.get("all_items") or [], "fetched_at": h["fetched_at"], "run": run,
+               "sources": sources_status(h), "annotations": annotations_from(h) if annotate else None}
+    save_pending(payload, pending_path)
+    return accumulate(payload["items"], data_dir, fetched_at=payload["fetched_at"], run=run,
+                      sources=payload["sources"], annotations=payload["annotations"])

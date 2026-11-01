@@ -27,12 +27,15 @@ def test_every_workflow_pushes_through_the_retry_script():
         name = os.path.basename(path)
         if "git push" in text:
             problems.append(f"{name}: git pushを直接実行している")
-        if "git commit" in text:
+        # 2026-11-01: Market Pulseの2本（見出しの日ごとの積み足しを書く）は src/market/market_pulse/headlines_push.py で
+        # commit・pushする（pull --rebase と push を最大3回。衝突したら見出しのファイルをリモートの版に戻して積み足し直す）
+        uses_headlines_push = "python src/market/market_pulse/headlines_push.py" in text
+        if "git commit" in text or uses_headlines_push:
             n_commit += 1
-            if "bash .github/scripts/push_with_retry.sh" not in text:
-                problems.append(f"{name}: commitしているがpush_with_retry.shを呼んでいない")
+            if "bash .github/scripts/push_with_retry.sh" not in text and not uses_headlines_push:
+                problems.append(f"{name}: commitしているがpush_with_retry.sh（またはheadlines_push.py）を呼んでいない")
     assert problems == []
-    assert n_commit >= 18   # 2026-10-21 に TANUKI_CIK_Lookup.yml・TANUKI_Segment_AI.yml、2026-10-23 に Discover_Config_Sync.yml を削除（20本のうち commit するのは18本）
+    assert n_commit >= 19   # 2026-11-01 に Market_Pulse_Headlines.yml を追加。2026-10-21 に TANUKI_CIK_Lookup.yml・TANUKI_Segment_AI.yml、2026-10-23 に Discover_Config_Sync.yml を削除（20本のうち commit するのは18本）
 
 
 def _git_bash():

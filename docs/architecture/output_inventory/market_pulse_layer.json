@@ -112,6 +112,79 @@
    "decision": "残す（2026-10-23）"
   },
   {
+   "path": "${RUNNER_TEMP}/headlines_pending.json",
+   "kind": "一時ファイル",
+   "writers": [
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "func": "save_pending",
+     "line": 192
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Pulse_Headlines.yml",
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "files_tracked": null,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "src/market/market_pulse/headlines_push.py",
+     "line": 114,
+     "func": "push",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/headlines_store.py::load_pending",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_push.py",
+     "line": 148,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/headlines_store.py::load_pending",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_push.py",
+     "line": 152,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "src/market/market_pulse/headlines_store.py::load_pending",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "line": 200,
+     "func": "load_pending",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "line": 203,
+     "func": "load_pending",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "screens": [],
+   "definitions": [],
+   "producers": [],
+   "decision_effect": [
+    "Market Pulse（市況の判定・8段階の結論・天気）"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job のheadlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない）",
+   "decision": "残す（2026-10-23）"
+  },
+  {
    "path": "docs/market-monitor/market-pulse/data/breadth_data.json",
    "kind": "ファイル",
    "writers": [
@@ -319,6 +392,14 @@
      "type": "Python"
     },
     {
+     "file": "tests/test_market_pulse_headlines_push.py",
+     "line": 206,
+     "func": "test_gitattributes_headlines_not_merge_ours",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_market_pulse_headlines_store.py",
      "line": 289,
      "func": "TestSystemHealthN.test_thresholds",
@@ -415,10 +496,10 @@
     "Market Pulse（市況の判定・8段階の結論・天気）"
    ],
    "reader_count": 2,
-   "reader_count_test": 3,
+   "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
-   "note": "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力",
+   "note": "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す）",
    "decision": "残す（2026-10-23）"
   },
   {
@@ -760,6 +841,30 @@
      "type": "Python"
     },
     {
+     "file": "tests/test_market_pulse_headlines_push.py",
+     "line": 98,
+     "func": "test_conflict_rebuilds_and_keeps_both_runs",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_push.py",
+     "line": 106,
+     "func": "test_conflict_rebuilds_and_keeps_both_runs",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_push.py",
+     "line": 207,
+     "func": "test_gitattributes_headlines_not_merge_ours",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_pipeline_logic.py",
      "line": 332,
      "func": "TestFundaScorePenalty.test_runway_under_12_applies_30pt_penalty",
@@ -1003,7 +1108,7 @@
     "Market Pulseの画面"
    ],
    "reader_count": 8,
-   "reader_count_test": 3,
+   "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures",
@@ -1940,16 +2045,33 @@
   },
   {
    "dir": "src/market/market_pulse",
+   "file": "src/market/market_pulse/headlines_push.py",
+   "decision": "残す（2026-10-23）",
+   "lines": 152,
+   "workflows": [
+    ".github/workflows/Market_Pulse_Headlines.yml",
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_market_pulse_headlines_push.py"
+   ]
+  },
+  {
+   "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/headlines_store.py",
    "decision": "残す（2026-10-23）",
-   "lines": 186,
+   "lines": 215,
    "workflows": [],
    "code": [],
    "same_dir": [
     "src/market/market_pulse/collect_and_send.py",
-    "src/market/market_pulse/headlines_fetch.py"
+    "src/market/market_pulse/headlines_fetch.py",
+    "src/market/market_pulse/headlines_push.py"
    ],
    "tests": [
+    "tests/test_market_pulse_headlines_push.py",
     "tests/test_market_pulse_headlines_store.py"
    ]
   },
@@ -2080,22 +2202,28 @@
   }
  ],
  "stop_condition": {
-  "outputs": 6,
+  "outputs": 7,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 22,
+  "python_read_sites_into_layer_resolved": 23,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 17,
+  "name_hit_sites_resolved": 18,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
     "line": 58,
     "output": "docs/market-monitor/market-pulse/data/market_data.json",
     "text": "md = json.loads(subprocess.run([\"git\", \"-C\", REPO, \"show\", f\"{DATA_REV}:docs/market-monitor/market-pulse/data/market_dat"
+   },
+   {
+    "file": "src/market/market_pulse/headlines_store.py",
+    "line": 182,
+    "output": "${RUNNER_TEMP}/headlines_pending.json",
+    "text": "PENDING_NAME = \"headlines_pending.json\"   # GitHub Actions の一時のフォルダ（RUNNER_TEMP、同じ job の段で共有）に置く"
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.025,
+  "ratio_reader": 0.047,
   "threshold": 0.1,
   "hit": false
  },

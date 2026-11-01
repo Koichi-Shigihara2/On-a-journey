@@ -809,7 +809,10 @@ _MARKET_PULSE.update(
             "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、"
             "取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。"
             "読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。"
-            "大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力",
+            "大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す）",
+        "${RUNNER_TEMP}/headlines_pending.json":
+            "その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job の"
+            "headlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない）",
         "src/market/market_pulse/02_market_rss.txt":
             "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
         "メール（GMAIL_PASSWORD・GMAIL_USER）": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",
