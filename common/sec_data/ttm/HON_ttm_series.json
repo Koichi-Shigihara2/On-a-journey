@@ -1,6 +1,6 @@
 {
   "ticker": "HON",
-  "generated_at": "2026-10-26T00:07:32.104311",
+  "generated_at": "2026-11-02T02:18:10.767859",
   "n_periods": 6,
   "series": [
     {
@@ -22,12 +22,12 @@
           "missing": 0
         },
         "capital_expenditure": {
-          "val": 765000000.0,
+          "val": 673000000,
           "quarters_used": 4,
           "missing": 0
         },
         "stock_based_compensation": {
-          "val": 224000000.0,
+          "val": 354000000,
           "quarters_used": 4,
           "missing": 0
         },
@@ -82,9 +82,10 @@
           "missing": 0
         },
         "FCF": {
-          "val": 1182000000.0
+          "val": 1274000000.0
         }
-      }
+      },
+      "basis_mixed": true
     },
     {
       "ttm_end": "2025-09-30",
@@ -105,12 +106,12 @@
           "missing": 0
         },
         "capital_expenditure": {
-          "val": 850000000.0,
+          "val": 959000000.0,
           "quarters_used": 4,
           "missing": 0
         },
         "stock_based_compensation": {
-          "val": 156000000.0,
+          "val": 133000000.0,
           "quarters_used": 4,
           "missing": 0
         },
@@ -165,9 +166,10 @@
           "missing": 0
         },
         "FCF": {
-          "val": 6635000000.0
+          "val": 6526000000.0
         }
-      }
+      },
+      "basis_mixed": true
     },
     {
       "ttm_end": "2024-09-30",
@@ -491,5 +493,63 @@
         }
       }
     }
-  ]
+  ],
+  "basis_mix": {
+    "mixed": true,
+    "recast_filed": "2026-10-22",
+    "trigger_filed": "2026-10-22",
+    "trigger_form": "10-Q",
+    "restated": [
+      {
+        "field": "CapEx",
+        "end": "2025-09-30",
+        "first_val": 374000000.0,
+        "val": 150000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -59.9
+      },
+      {
+        "field": "OperatingIncome",
+        "end": "2025-09-30",
+        "first_val": 2407000000,
+        "val": 866000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -64.0
+      },
+      {
+        "field": "Revenue",
+        "end": "2025-09-30",
+        "first_val": 10408000000,
+        "val": 4929000000,
+        "first_filed": "2025-10-23",
+        "change_pct": -52.6
+      }
+    ],
+    "latest_end": "2026-09-30",
+    "old_basis_quarters": {
+      "Revenue": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "OperatingIncome": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ],
+      "CapEx": [
+        "2025-12-31",
+        "2026-03-31",
+        "2026-06-30"
+      ]
+    },
+    "mixed_ttm_ends": [
+      "2025-09-30",
+      "2025-12-31",
+      "2026-03-31",
+      "2026-06-30",
+      "2026-09-30"
+    ],
+    "note": "ベースが混在（事業の分離・売却等による組み替え）: 10-Q（2026-10-22提出）が前年同期を組み替え、直近の4四半期に組み替えの前の申告の四半期が残る"
+  }
 }
