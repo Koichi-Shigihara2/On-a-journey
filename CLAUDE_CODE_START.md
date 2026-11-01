@@ -39,7 +39,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 **確かめる順（日時の順）**:
 ① （済 2026-11-01 朝）手順16
 ② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力28行）
-②' 11-03（火）朝 JST（11-02 21:30 UTC頃〈冬時間〉のMarket Pulseの実行の後） … 手順17・手順18・手順19
+②' 11-03（火）朝 JST（11-02 21:30 UTC頃〈冬時間〉のMarket Pulseの実行の後） … 手順17・手順18・手順19・手順20
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
 ④ 束ねの後 … `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断
 ⑤ 起きた回・いつでも … 手順2（Discordの本文をKoichiさんが見たら）・手順9（RSS 取得エラーの回）
@@ -86,6 +86,16 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 11-03の朝に、`2026-11-02.json`に`run: evening`の取得の記録があり、夜の回の訳・判定（`title_ja`・`market`）が写っている記事がある（夜の回の`headlines.items`に入った記事）
      - System Healthの[N]が✅（11-02 23:30 UTCの実行の通知）
    - 満たしたらBACKLOGの①に確認を書き足す（①はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
+
+20. **5分足の日ごとの保存**（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]` ②、2026-11-01 機能 `9cd26116a8`・最初の一回のデータ `21c4db3b1d`）
+   - 日時: 手順17と同じ2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後
+   - 期限: 2026-11-03
+   - 確認の手順:
+     - `docs/market-monitor/market-pulse/data/intraday/2026-11-02.json`があり、`tickers`に10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）がそろい、`missing`が空
+     - 11-01（日）の夜の先物などの分（`2026-11-01.json`）も入っている（最初の一回は10-30まで）
+     - 実行のログに「5分足の保存: 書いた …」があり、「5分足の保存に失敗」が無い。System Healthの[O]が✅（11-02 23:30 UTCの実行）
+     - 2026-11-02.jsonは、ETで11-02が終わる前に書いた分なので、次の回（11-03の夜）で夜の先物の足が足される（足が増える）
+   - 満たしたらBACKLOGの②に確認を書き足す（②はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
 
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
@@ -136,7 +146,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 16（2026-11-01 朝。Macro Data Update `41088482451`・`41215187475`とも成功25件/失敗0件、System Health `41160489865`〈10-31 02:32 UTC〉で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSE・Market PulseのFREDの日付が新しい。BACKLOG_DONE.mdの`[[MACRODATA-FRED-IMPORT-PATH-1]]`）・1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）・14（2026-10-30。チャット側の確認、本番 `1ca5367b4e` のTANUKI VALUATIONでbasis 94銘柄ttm_weighted_avg・BKNG/FCX fallback、最大EPS PER ONDS 9.3・PLTR 131.0・XOM 23.5、method_changeの印は96銘柄。判定が変わった7銘柄〈CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA〉は株価・金利による。BACKLOG_DONE.mdの`[[EPS-SHARES-BASIS-MISMATCH-1]]`）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は2026-10-30に手順14の合格で移設
-- **次の作業（2026-10-30 夜の終業）**: ① （済 2026-11-01 朝）手順16 ② 11-01（日）: 手順13・手順5、続いて束ね（入力28行） ②' 11-03朝: 手順17・手順18・手順19 ③ 11月上旬: 手順15 ④ 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装と、残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも）
+- **次の作業（2026-10-30 夜の終業）**: ① （済 2026-11-01 朝）手順16 ② 11-01（日）: 手順13・手順5、続いて束ね（入力28行） ②' 11-03朝: 手順17・手順18・手順19・手順20 ③ 11月上旬: 手順15 ④ 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装と、残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも）
 
 **2026-10-30 夜 FREDの取得の直し・2件の読み取りの調査（終業 このcommit。確認の残りは上の「次回の確認手順」16・13・5・15・2・9）**
 - 読み取りの調査: `[[SYSHEALTH-SEVERITY-MISMATCH-1]]`は10-25〜10-30の6回でOverall・終了コードが一致（ログ）、Discordの本文をKoichiさんが見たら移設（手順2）。`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`のSTEP 0（公開の経路・印の付き方・HypeCoreとTANUKIの読み合い・11-01の公開の経路）はBACKLOGの項目に。実装は11-01の手順13と束ねの後
