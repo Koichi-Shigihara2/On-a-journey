@@ -9,6 +9,10 @@
 - 満期: 米国の月次オプション（第3金曜、休場なら前営業日。3・6・9・12月は先物・オプションの同時満期）、
   日本のSQ（第2金曜、休場なら前営業日。3・6・9・12月はメジャーSQ）
 取得に失敗した取得元は推測で埋めず、failedに記録する。
+
+2026-11-01（[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]）: FREDとFRBの取得の関数を分けた（get_fred はFREDのパス、get_frb はFRBのパスを受ける）。
+R-E2の後、build_calendar がURLを受ける関数を econ_events に渡し続け、パス"releases/dates"がURLとして使われて
+2026-10-24から経済指標が毎回取れていなかった。どちらも既定は common/external_api.py の呼び出し口で、差し替えは名前を付けて渡す。
 """
 from __future__ import annotations
 
@@ -49,27 +53,33 @@ def parse_fed_time(s: str) -> Optional[time]:
     return time(h, mi)
 
 
-def _http_json(url: str, params: Optional[dict] = None) -> Any:
-    import requests
-    r = requests.get(url, params=params, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
-    r.raise_for_status()
-    return json.loads(r.content.decode("utf-8-sig"))
+FED_CALENDAR_PATH = "/json/calendar.json"
 
 
 def _fred_json(path: str, params: dict, api_key: Optional[str] = None) -> Any:
-    """FREDのREST APIの応答（common/external_api.py の fred_get。キー・file_type はそこで足す）。"""
+    """FREDのREST API（https://api.stlouisfed.org/fred/<path>）の応答（common/external_api.py の fred_get。キー・file_type はそこで足す）。"""
     from common.external_api import fred_get
     return fred_get(path, params, api_key=api_key)
 
 
-def econ_events(start: date, end: date, get_json: Optional[Callable] = None, api_key: Optional[str] = None) -> List[dict]:
-    """get_json(path, params) は試験で差し替える（既定は FRED の REST API）。"""
+def _frb_json(path: str) -> Any:
+    """FRB（https://www.federalreserve.gov<path>）のJSON（common/external_api.py の frb_get。2xx以外は例外）。
+    calendar.json は先頭にBOMが付くことがあるので utf-8-sig で読む（2026-11-01 までの _http_json と同じ）。"""
+    from common.external_api import frb_get
+    r = frb_get(path, "FRB calendar.json")
+    r.raise_for_status()
+    return json.loads(r.content.decode("utf-8-sig"))
+
+
+def econ_events(start: date, end: date, *, get_fred: Callable[..., Any] = _fred_json,
+                api_key: Optional[str] = None) -> List[dict]:
+    """get_fred(path, params, api_key=...) はFREDのパス（"releases/dates"）を受ける。試験で差し替えるときも同じ形の関数を渡す。"""
     key = api_key if api_key is not None else os.getenv("FRED_API_KEY")
     if not key:
         raise RuntimeError("FRED_API_KEYが無い")
     params = {"realtime_start": start.isoformat(), "realtime_end": end.isoformat(),
               "include_release_dates_with_no_data": "true", "limit": 1000, "sort_order": "asc"}
-    j = get_json("releases/dates", params) if get_json is not None else _fred_json("releases/dates", params, api_key=key)
+    j = get_fred("releases/dates", params, api_key=key)
     out = []
     for x in j.get("release_dates", []):
         rid = x.get("release_id")
@@ -79,8 +89,9 @@ def econ_events(start: date, end: date, get_json: Optional[Callable] = None, api
     return out
 
 
-def fed_events(start: date, end: date, get_json: Callable = _http_json) -> List[dict]:
-    j = get_json("https://www.federalreserve.gov/json/calendar.json")
+def fed_events(start: date, end: date, *, get_frb: Callable[[str], Any] = _frb_json) -> List[dict]:
+    """get_frb(path) はFRBのパス（FED_CALENDAR_PATH）を受ける。試験で差し替えるときも同じ形の関数を渡す。"""
+    j = get_frb(FED_CALENDAR_PATH)
     out = []
     for e in j.get("events", []):
         typ = e.get("type")
@@ -187,16 +198,20 @@ def expiry_events(start: date, end: date) -> List[dict]:
     return out
 
 
-def build_calendar(repo_root: str, earnings_tickers: List[str], now: Optional[datetime] = None,
-                   get_json: Callable = _http_json, get_calendar: Optional[Callable[[str], dict]] = None) -> Dict[str, Any]:
-    """今後7日（米国東部時間の今日から）の予定。取得元ごとに失敗をfailedに記録する。"""
+def build_calendar(repo_root: str, earnings_tickers: List[str], now: Optional[datetime] = None, *,
+                   get_fred: Optional[Callable[..., Any]] = None, get_frb: Optional[Callable[[str], Any]] = None,
+                   get_calendar: Optional[Callable[[str], dict]] = None) -> Dict[str, Any]:
+    """今後7日（米国東部時間の今日から）の予定。取得元ごとに失敗をfailedに記録する。
+    get_fred・get_frb は試験で差し替えるときだけ渡す（渡さなければ econ_events・fed_events の既定〈common/external_api.py〉）。"""
     now = now or datetime.now(timezone.utc)
     start = now.astimezone(ET).date()
     end = start + timedelta(days=WINDOW_DAYS - 1)
     events: List[dict] = []
     failed: List[str] = []
-    for name, fn in (("経済指標（FRED）", lambda: econ_events(start, end, get_json)),
-                     ("FOMC・FRB要人（Federal Reserve）", lambda: fed_events(start, end, get_json)),
+    fred_kw = {"get_fred": get_fred} if get_fred is not None else {}
+    frb_kw = {"get_frb": get_frb} if get_frb is not None else {}
+    for name, fn in (("経済指標（FRED）", lambda: econ_events(start, end, **fred_kw)),
+                     ("FOMC・FRB要人（Federal Reserve）", lambda: fed_events(start, end, **frb_kw)),
                      ("決算", lambda: earnings_events(start, end, earnings_tickers, repo_root, get_calendar)),
                      ("祝日・短縮取引", lambda: holiday_events(start, end)),
                      ("満期", lambda: expiry_events(start, end))):

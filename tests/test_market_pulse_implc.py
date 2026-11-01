@@ -341,14 +341,19 @@ class TestCalendar:
             {"type": "Speeches", "title": "Speech - Chair", "month": "2026-10", "days": "1", "time": "10:00 a.m."},
             {"type": "Stat", "title": "H.4.1", "month": "2026-10", "days": "1", "time": ""},
             {"type": "FOMC", "title": "FOMC Minutes", "month": "2026-11", "days": "18", "time": "2:00 p.m."}]}
-        ev = mc.fed_events(date(2026, 9, 30), date(2026, 10, 28), get_json=lambda url, p=None: j)
+        paths = []
+        ev = mc.fed_events(date(2026, 9, 30), date(2026, 10, 28), get_frb=lambda path: paths.append(path) or j)
+        assert paths == ["/json/calendar.json"]   # FRBのパスを渡す（URLではない）
         assert [(e["date_et"], e["kind"], e["time_jst"]) for e in ev] == [
             ("2026-10-28", "FOMC", "2026-10-29 03:00"), ("2026-10-01", "FRB要人の講演", "2026-10-01 23:00")]
 
     def test_econ_only_whitelisted_and_no_time(self):
         j = {"release_dates": [{"date": "2026-10-02", "release_id": 50, "release_name": "Employment Situation"},
                                {"date": "2026-10-02", "release_id": 999, "release_name": "Minor"}]}
-        ev = mc.econ_events(date(2026, 9, 30), date(2026, 10, 6), get_json=lambda url, p=None: j, api_key="k")
+        calls = []
+        ev = mc.econ_events(date(2026, 9, 30), date(2026, 10, 6),
+                            get_fred=lambda path, params, api_key=None: calls.append((path, api_key)) or j, api_key="k")
+        assert calls == [("releases/dates", "k")]   # FREDのパスを渡す（URLではない）
         assert [(e["title"], e["time_et"]) for e in ev] == [("雇用統計", None)]   # 時刻は推測で付けない
 
     def test_holidays_and_early_close(self):
@@ -376,11 +381,53 @@ class TestCalendar:
         assert sorted(e["title"] for e in ev) == ["AAA 決算発表", "BBB 決算発表"]   # ZZZは対象外
 
     def test_build_calendar_records_failures(self, tmp_path):
-        def bad(url, params=None):
+        def bad(*a, **k):
             raise ConnectionError("down")
-        c = mc.build_calendar(str(tmp_path), [], now=datetime(2026, 9, 30, 12, tzinfo=timezone.utc), get_json=bad)
+        c = mc.build_calendar(str(tmp_path), [], now=datetime(2026, 9, 30, 12, tzinfo=timezone.utc), get_fred=bad, get_frb=bad)
         assert "経済指標（FRED）" in c["failed"] and "FOMC・FRB要人（Federal Reserve）" in c["failed"]
         assert c["status"] == "partial"   # 祝日・満期・決算は取得できる
+
+    def test_build_calendar_default_path_uses_external_api(self, tmp_path, monkeypatch):
+        """取得の関数を渡さない既定の経路（本番と同じ）を通す（[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]）。
+        外へ出るのは requests.get だけを差し替え、common/external_api.py が組み立てるURL・引数を確かめる。
+        2026-10-24〜11-01 は build_calendar がURLを受ける関数を渡し、パス"releases/dates"がURLとして使われていた。"""
+        from common import external_api as ea
+
+        class _Resp:
+            def __init__(self, body: bytes):
+                self.status_code = 200
+                self.content = body
+
+            def json(self):
+                return json.loads(self.content.decode("utf-8-sig"))
+
+            def raise_for_status(self):
+                pass
+
+        fred = {"release_dates": [{"date": "2026-11-06", "release_id": 50, "release_name": "Employment Situation"}]}
+        frb = {"events": [{"type": "Speeches", "title": "Speech - Governor", "month": "2026-11", "days": "4",
+                           "time": "10:00 a.m."}]}
+        calls = []
+
+        def fake_get(url, timeout=None, params=None, headers=None, **kw):
+            calls.append((url, dict(params or {})))
+            if url == ea.FRED_URL + "releases/dates":
+                return _Resp(json.dumps(fred).encode())
+            if url == ea.FRB_URL + "/json/calendar.json":
+                return _Resp(b"\xef\xbb\xbf" + json.dumps(frb).encode())   # BOMつき
+            raise AssertionError(f"想定外のURL: {url}")
+
+        monkeypatch.setattr(ea.requests, "get", fake_get)
+        monkeypatch.setenv("FRED_API_KEY", "test-key")
+        c = mc.build_calendar(str(tmp_path), [], now=datetime(2026, 11, 2, 21, tzinfo=timezone.utc))
+        assert c["failed"] == [] and c["status"] == "ok"
+        assert [u for u, _ in calls] == [ea.FRED_URL + "releases/dates", ea.FRB_URL + "/json/calendar.json"]
+        fred_params = calls[0][1]
+        assert fred_params["api_key"] == "test-key" and fred_params["file_type"] == "json"
+        assert fred_params["realtime_start"] == "2026-11-02" and fred_params["realtime_end"] == "2026-11-08"
+        kinds = {(e.get("date_et"), e["kind"], e["title"]) for e in c["events"]}
+        assert ("2026-11-06", "経済指標", "雇用統計") in kinds
+        assert ("2026-11-04", "FRB要人の講演", "Speech - Governor") in kinds
 
 
 class TestFutures:
