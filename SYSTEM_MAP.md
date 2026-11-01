@@ -419,6 +419,8 @@ TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T
   欄の表示は「ファイル名（初回予定 MM-DD HH:MM UTC・猶予 MM-DD HH:MM UTCまで）」。`[[SYSHEALTH-CRONRUNS-NEVER-RUN-1]]`）。
   登録日時が取れない・猶予の終わりちょうど以降も0件なら成功なし
 - E・I・Lの「🔴 読み込みエラー」は終了コード2（ラベルに合わせる。2026-10-11にKoichi承認で据え置き、`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
+- [N] Headlines（`_check_n()`、2026-11-01、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]` ①）: `docs/market-monitor/market-pulse/data/headlines/`の`fetches`の最新の`fetched_at`が12時間より古ければ⚠️、24時間より古ければ🔴（取得の記録なし・読めないも🔴）。フォルダが無ければ未作成（スキップ）。見出しのファイルの本番の読み手
+- [O] Intraday（`_check_o()`、2026-11-01、②）: 引けを過ぎた直近のNYSEの取引日の`docs/market-monitor/market-pulse/data/intraday/YYYY-MM-DD.json`が無ければ⚠️。欠けた銘柄（missing）は詳細に出すだけ。5分足のファイルの本番の読み手
 - [I] EPS Analyzer（`_check_i()`、2026-10-11に3つ目の判定を追加、`[[EPS-SILENT-TICKER-FAILURE-1]]`）: summary.jsonの`last_updated`（14日）・
   eps=trueの銘柄の行の有無に加えて、`run_status.started_at`より前の`generated_at`（無い行を含む）を持つeps=trueの行＝今回の全銘柄の実行で
   作り直されていない行を「{日付}の実行で未更新n件: 銘柄(理由)」として⚠️（重大度1）。`run_status`の無いsummary.json（実装前の形）では
@@ -1618,7 +1620,7 @@ Market Pulse  ← yfinance / CNN F&G / FREDデータ
 　　ニュースの見出し（CNBC Earnings・Yahoo Finance S&P 500・Google News ビジネス〈US〉のRSS、news_headlines.py）:
 　　market_data.json の headlines（配信元ごとに16件、画面は48時間）に加え、日ごとの積み足しを
 　　docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json（記事の時刻の米国東部の日付）に書く
-　　（headlines_store.py の accumulate の1か所。6時間ごとの Market_Pulse_Headlines.yml〈Grokなし〉と
+　　（headlines_store.py の accumulate の1か所。6時間ごとの Market_Pulse_Headlines.yml〈headlines_fetch.py、Grokなし〉と
 　　夜の Market Pulse の回〈訳・判定を写す〉。読み手は System Health の [N]、
 　　大きく動いた日の事後分析の材料H の入力。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01）
 　　5分足（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F、yfinance の start/end 指定）:
@@ -1626,6 +1628,9 @@ Market Pulse  ← yfinance / CNN F&G / FREDデータ
 　　夜の回が書く（intraday_store.py の update の1か所。直近10取引日のうち無い日・足りない日だけ取り直す。
 　　時刻はETにそろえる〈^VIX・^TNX はシカゴ時間で返る〉）。読み手は System Health の [O]、
 　　事後分析の材料M・X の入力。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②、2026-11-01）
+　　push: Market_Pulse_Update.yml と Market_Pulse_Headlines.yml は headlines_push.py で commit・push する
+　　（見出しのファイルは merge=ours にせず、pull --rebase が衝突したらリモートの版に戻して、その回の入力
+　　〈${RUNNER_TEMP}/headlines_pending.json〉で積み足し直す。最大3回、だめなら job を失敗に。ほかのファイルは merge=ours のまま）
 MACRO PULSE   ← FREDデータ / FRBステートメント
 　　整合性チェック: src/market/macro_pulse/05_audit.py（05_events.csvの重複行検出・
 　　NFP水準残存兆候の検出、report_consistency_check.py相当の軽量版。MACRO-NFP-1 2026-07-07新設）

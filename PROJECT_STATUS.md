@@ -11,10 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-10-30 夜の終業 更新。上から順）**:
+**次の作業（2026-11-01 終業 更新。上から順）**:
 1. （済 2026-11-01 朝）「次回の確認手順」の16: Macro Data Update 2回とも成功25件・失敗0件、System Health `41160489865` で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSEとMarket PulseのFREDの日付が新しい。`[[MACRODATA-FRED-IMPORT-PATH-1]]`をBACKLOG_DONE.mdへ移設（アクティブ8件→7件）
-2. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-3. 続いて束ね: FINDINGS.mdの未登録の27行（2026-11-01にDOCNの1行・R6-INVの6行・チャット側の確認の1行・出力の一覧の1行を足した）＋NIY=Fの1行＋経済指標（FRED）の取得の失敗の1行（登録済み[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]、原因の型を束ねる。2026-11-01 チャット側の指示）（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
+2. （未、次回へ。2026-11-01 12:59 UTCの時点でSEC_Data_Updateが起動していない）11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
+3. （未、次回へ）続いて束ね: FINDINGS.mdの未登録の27行（2026-11-01にDOCNの1行・R6-INVの6行・チャット側の確認の1行・出力の一覧の1行を足した）＋NIY=Fの1行＋経済指標（FRED）の取得の失敗の1行（登録済み[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]、原因の型を束ねる。2026-11-01 チャット側の指示）（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
+3'. 11-03（火）朝: まず夜のMarket Pulse（11-02 21:30 UTC頃）が成功してpushまで済んだかを見る（pushが`headlines_push.py`を通るようになったため）。続いて「次回の確認手順」の17（経済指標）・18（見出しの配信元3本）・19（見出しの積み足し・`Market_Pulse_Headlines.yml`の最初の数回）・20（5分足の`2026-11-02.json`）
+3''. その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤
 4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
 5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
 6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
@@ -87,6 +89,14 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`（R-Dは2026-10-29に済、`2d3defffab`）。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-11-01（Market Pulseの大きく動いた日の事後分析の準備・終業のブラッシュアップ）**: チャット側の指示で、EPIC `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の調査・登録と、1/8〜4/8の実装をした。
+  - 調査（読み取り）と登録 `b9d170bb3f`: 10-30（S&P500 −1.82%、ギャップが動きの64%）・9-21の事後分析の実現可能性。FINDINGSに4行、BACKLOG（高）にEPICと前提の3件（アクティブ7→11）
+  - 1/8 `[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]` `8fcd156800`: 予定の経済指標（FRED）が10-24から毎回`MissingSchema: Invalid URL 'releases/dates'`で失敗していた（R-E2で`fred_get`がパスを受けるようにしたのに、呼び出し元がURL全体の関数を渡していた。試験は差し替えた関数しか通していなかった）。FRED・FRBの取得の関数を分け、既定の経路を通す試験を足した。`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`（中）を登録（アクティブ12）。記録 `427eb801d8`
+  - 2/8 `[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]` `faa452e1b9`: CNBC id 10000664（名前は"CNBC Markets"、中身はFinance〈型E〉）は200のまま10-21 15:30 UTCの記事で止まっていた。配信元をCNBC Earnings・Yahoo Finance S&P 500・Google News ビジネス（US）の3本に、訳と判定のmax_tokensを8000→16000。記録 `b9329741c9`。別件でFINDINGSに「出力の一覧が古いのにCHECK-INVはNG=0で通る」理由の1行 `27bff5b900`
+  - 3/8 ① 見出しの日ごとの積み足し `32f336a225`: `headlines_store.py`（積み足しの1か所。記事の時刻のETの日付、正規化したリンク→題名で重複を除く、also_in・title_updates）・`headlines_fetch.py`・新しいワークフロー`Market_Pulse_Headlines.yml`（6時間ごと、Grokなし、新しい記事が無ければcommitしない）・夜の回は訳と判定を写す・System Health [N]（12時間⚠️・24時間🔴）。追加の指示で`merge=ours`をやめ、`headlines_push.py`（衝突したらリモートの版に戻し`${RUNNER_TEMP}/headlines_pending.json`で積み足し直す、3回だめならjob失敗）`11775155c2`。記録 `309d68188b`・`ac8d664a60`
+  - 4/8 ② 5分足の保存 `9cd26116a8`: `intraday_store.py`（10本〈8本＋ES=F・NQ=F〉、ETの日付で1ファイル、列の配列OHLCV・整形なし、直近10取引日のうち無い日・足りない日だけ取り直す、引けの前の今日は書かない）・夜の回から呼ぶ・System Health [O]（直近の取引日のファイルが無ければ⚠️）。STEP 0で「1日50KB超」「08-07〜は取れない〈Yahooは今日から60日（暦日）〉」で止めて報告し、形B・09-04〜に決定。最初の一回のデータ `21c4db3b1d`（49ファイル・3.0MB、取引日40日は10本そろい、09-21・10-30を含む）。記録 `eb9b1f8a3f`（EPICの「5分足は60営業日」を訂正）
+  - 手順17・18の時刻は冬時間に直した（Market Pulseは21:30 UTC頃＝06:30 JST）。次回の確認手順17〜20は11-03朝
+  - 終業のブラッシュアップ: アクティブ12件（`^### [`の機械カウント）、移設0件（今日の4件は本番の確認待ちで残す）。BACKLOG.mdの中のID重複0、BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0。Market Pulse Headlinesは13:05 UTCの時点で手動・cronとも0回（12:40の枠が遅れているか、足したばかりのscheduleがまだ有効でない）。SEC_Data_Update（12:00 UTCの枠）も未起動で、手順13・5・束ねは次回に回した。SYSTEM_MAP.mdにheadlines_fetch.py・headlines_push.pyと[N]・[O]を足した。ゲート: pytest `tests/ src/subport/day_trade/test_logic.py` 2650件成功・6件スキップ、audit 0、rcc NG=0・WARN=226
 - **2026-10-30 夜（終業のブラッシュアップ・2回目）**: CLAUDE_CODE_START.mdの次回の確認手順を更新（確かめる順は 10-31朝の16 → 11-01の13・5と束ね → 11月上旬の15 → 束ねの後の`[[METHOD-CHANGE-PUBLISH-TIMING-1]]` → 起きた回の2・9。手順15の本文を日時の順に13・5の後へ）、2026-10-30 夜の日付つきのブロックを足した。
   アクティブ8件（`^### [`の機械カウント。`[[MACRODATA-FRED-IMPORT-PATH-1]]`の登録で7件→8件、手順16の確認まで残す）。
   BACKLOG.mdの中のID重複0・BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0・移設の印は**97件**（BACKLOG_DONE.md 96・IDEAS_AND_WATCH.md 1。正規表現`^（[[ID]]は…（BACKLOG_DONE.md|IDEAS_AND_WATCH.md）`の機械の数）で、先はすべてある。今夜の移設は0件。**数え方の注記（一度だけ）**: 10-29 夜の「94件」と10-30の「96件」は前回の数に手で足した数で、機械で数えると1件多い（10-30の時点で97件。同じIDの印の重複は無い）。以後は機械の数を書く。BACKLOG_DONE.mdの中で同じIDの✅見出しが複数あるのは12 IDで変わらず。FINDINGS.mdの未登録（束ねる前）は18行（今夜1行）。
