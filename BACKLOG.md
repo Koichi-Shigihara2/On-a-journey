@@ -1939,6 +1939,26 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 関係するメモ: IDEAS_AND_WATCH.mdのCNBC Marketsのフィードの遅さ・同じ見出しの繰り返し（2026-10-09）
 - 対応: まず停止の原因（URLの移転か、配信の終了か）を読み取りで調べる。戻せなければ、代わりの米国の配信元を候補から実際に取得して確かめ、チャット側が決める
 
+#### 段階1の調査（2026-11-01、読み取り・保存しない試し取得）
+- id 10000664 は HTTP 200 のまま、`lastBuildDate` 2026-10-21 15:21 GMT・最新記事 10-21 15:30:50 GMT で止まっている（`search.cnbc.com`の別の書き方のURLも同じ）。CNBCのRSSの一覧（cnbc.com/rss-feeds/、54本）に移転先は無く、終了の告知も見当たらない。ほかのCNBCのフィード（Top News・US News・Earnings）は動いている
+- 名前と中身の食い違い（型E）: 一覧では id 10000664 は「Finance」。「Markets」のフィードは一覧に無い。最初の実装（`1193cd5845`、2026-09-30）から名前が中身と違っていた
+- `market_data.json`のheadlinesでは、最後の新しい記事は10-21のエントリ（取得 10-21 20:30 UTC）。10-22・10-23のエントリは止まった16件を ok として保存し（72時間の判定の前）、10-26のエントリから stale
+- 代わりの候補を取得して比べた（11-01 日曜）: CNBC Earnings（30件・約2.5日・秒まで・10-29 16:00 ET〜10-30 9:30 ETに14件）、Yahoo Finance ^GSPC（17件・約19時間・秒まで・題名で市況と分かる15/17）、Nasdaq Markets（約6時間）、MarketWatch（Top Storiesは分まで・個人のお金の記事、MarketPulseは2025-07で停止）、Seeking Alpha（7件）。Reuters（feeds.reuters.com は接続できない・reutersagency は404）と Yahoo の rssindex（404）は取得できない
+- 推奨（段階1）: CNBC Earnings に替える
+
+#### 決定（2026-11-01 チャット側）
+1. id 10000664（中身は Finance、名前は "CNBC Markets"）を外す
+2. 配信元を3本にする: CNBC Earnings（id 15839135、決算の材料）・Yahoo Finance ^GSPC（マクロ・市況の材料）・Google News ビジネス（US）（そのまま、広く拾う役）
+3. 名前は中身に合わせる（"CNBC Earnings"・"Yahoo Finance S&P 500"）。過去のデータの "CNBC Markets" は書き換えない
+4. 72時間の stale の判定は今のまま（止まった直後の数回が ok になる件は、①の積み足しでは害が無い）
+
+#### 実装（2026-11-01、`faa452e1b9`）
+- `news_headlines.py`の`SOURCES`を3本に。`PER_SOURCE`・`MAX_ITEMS`は同じで、候補（`MAX_CANDIDATES`）は32→48件。題名での重複の除き方はそのまま
+- 訳と判定（`translate_titles`）の`max_tokens`を8000→16000。本番のログで32件が出力969・考える分を含めて2,964トークン（10-23 run 40019408216）、16件が1,404〜1,766トークン（10-26〜10-30）で、48件は4,500前後の見込み（8000では余裕が2倍に満たない）。`finish_reason`がstop以外なら訳も判定も全件捨てる扱いは変えない
+- 試験: 3本のどれか1本が失敗・stale・0件でも残り2本で partial、2本が失敗でも partial、Yahooの実際の1件の形（pubDate `+0000`・linkは他社のサイトで`?.tsrc=rss`付き）をパース
+- 手元で本物の3本を取得（保存なし、2026-11-01 10:37 UTC）: status ok・failed 空・48件（CNBC Earnings 16件〈最新 10-31 15:37〉・Yahoo 16件〈11-01 10:13〉・Google 16件〈11-01 09:37〉）、表示の本表20件
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順18（11-02 20:30 UTCの本番の実行）。済むまでBACKLOGに残す
+
 #### 完了の条件
 - 配信元が2つ以上 ok
 
