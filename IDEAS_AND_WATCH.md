@@ -29,7 +29,7 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 
 ---
 
-### [UI-STORY-REDESIGN-1] 全体の画面を、MACRO PULSEを参考に、画面が意図している機能がストーリーとして分かる形に直す
+### [UI-STORY-REDESIGN-1] 全体の画面を、MARKET PULSEを参考に、画面が意図している機能がストーリーとして分かる形に直す
 **優先度:** 低（将来の機能。着手は基盤の整備〈[[OUTPUT-INVENTORY-CHECK-1]]の各段階〉の後）
 **分類:** 表示の作り直しの案 / 全サブシステムの画面（`docs/`）
 **登録日:** 2026-10-19
@@ -53,6 +53,10 @@ BACKLOG.md には、実害がある、または実害の確認が必要な不具
 
 #### 追記（2026-10-23、R-AのMarket Pulseの段階2）
 - Market Pulseの`market_data.json`で作っているが誰も読まないキー48（段階の結論の根拠の値〈`stage3`・`stage4`・`conditions`・`threshold_pt`等〉とその日に取った値〈`ai_facts`・`new_highs`・`prev_close`等〉。一覧は`docs/architecture/output_inventory/market_pulse_layer.md`）は、過去の日の分を取り直せないため残した。画面の作り直しの入力にする
+
+#### 追記（2026-11-01）
+- 手本はMARKET PULSE（上から順に読み解ける形）とする（2026-11-01、Koichiさん）。MACRO PULSE自体も整理の対象（[[MACRO-PULSE-CONCEPT-SPLIT-1]]）
+- 見出しの「MACRO PULSEを参考に」は、事実と合わなくなったので「MARKET PULSEを参考に」に直した（2026-11-01）
 
 #### 着手の条件
 [[OUTPUT-INVENTORY-CHECK-1]]（R-A）のTANUKIの段階が済んでいること（それ以外の画面は、その段階が済んでから）
@@ -445,3 +449,36 @@ SGA（selling_general_and_administrative）・SM（selling_and_marketing）
 #### 対応案（実装しない）
 - 表の右端に、続きがあることを示す影を付ける
 - モバイル幅では主な列だけを出し、残りは行を開いた詳細に回す
+
+---
+
+### [MARKET-PULSE-NAV-SECTOR-VIEW-1] HOME・ナビの並びと、Market Pulseのセクター4象限の見やすさ
+**優先度:** 低（画面の要望。着手はBACKLOGが0件になった後）
+**登録日:** 2026-11-01
+**発見:** Koichiさんの希望（2026-11-01）
+
+#### 内容
+① HOME（`docs/index.html`のカード）とナビ（`docs/common/site-header.js`）の並びを、MARKET PULSE → MACRO PULSE を先頭にする。ほかは今の順のまま
+② Market Pulseのセクター4象限のグラフ（`docs/market-monitor/market-pulse/index.html`「セクター4象限（週次の位置…）」、段階5）で、表示するセクターを選べるようにする。既定は全部表示（線が密集して動きが分かりにくい）
+③ 同じ画面のセクターの表の「週次の位置」の行で、グラフのセクターごとの色をセクター名の左に出す
+
+#### 分かっていること（チャット側、2026-11-01）
+- ①: HOMEのカードの並び・site-header.jsのナビの並び、両方を変える。ナビのリンクの検査（NAV-LINK系のテスト・browser_checks）が並びを前提にしていないかを着手時に確かめる
+- ③: セクターの色は、グラフと表で同じ定義（1か所）から取る。同じ画面のウォッチの表（セクターの列）にも同じ色を出す
+- ②③は表示だけで、`market_data.json`の出力は変えない見込み
+
+---
+
+### [MACRO-PULSE-CONCEPT-SPLIT-1] MACRO PULSEを、上から順に読み解ける形に整理する（目的ごとに画面を分けてもよい）
+**優先度:** 低（画面の作り直しの案。着手はBACKLOGが0件になった後）
+**登録日:** 2026-11-01
+**発見:** Koichiさんの希望（2026-11-01）
+
+#### 目的
+MACRO PULSEは、もともと「3か月後に景気後退が始まらないか」を予測する画面だった。今は「足元で市場参加者・当局がどう見ているか」の判定（FOMCの声明・流動性・REGIME等）と混ざっている。Market Pulseのように、上から順に論理の流れで読めるよう整理する。目的が違うなら画面を分ける
+
+#### 着手時に決めること
+- 各区画・指標を「景気後退の先行き（3〜6か月）」と「足元の見方（市場参加者・当局）」のどちらに属するかで分ける（出力の一覧〈`docs/architecture/output_inventory/`のMACRO PULSEの段階〉を入力にする）
+- 1画面で順序を整理するか、2画面に分けるか
+- Market Pulse・HOMEのカードの説明文（「景気後退リスクの3層スコアリング…」）との整合
+- [[UI-STORY-REDESIGN-1]]と一緒に進める
