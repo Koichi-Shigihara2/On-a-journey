@@ -516,9 +516,30 @@
    "launched_by": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
-   "files_tracked": 0,
-   "top_keys_sampled_files": 0,
-   "top_keys": [],
+   "files_tracked": 49,
+   "top_keys_sampled_files": 49,
+   "top_keys": [
+    {
+     "key": "date_et",
+     "reader_files": 1
+    },
+    {
+     "key": "interval",
+     "reader_files": 1
+    },
+    {
+     "key": "missing",
+     "reader_files": 3
+    },
+    {
+     "key": "tickers",
+     "reader_files": 4
+    },
+    {
+     "key": "tz",
+     "reader_files": 2
+    }
+   ],
    "readers": [
     {
      "file": "common/system_health.py",
@@ -2927,6 +2948,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -5028,6 +5050,14 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
+    "key": "interval",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
     "key": "ivw_minus_ive_pt",
     "sources": [
      "docs/market-monitor/market-pulse/data/market_data.json"
@@ -5386,7 +5416,7 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    }
   ],
-  "written_key_count": 381,
+  "written_key_count": 399,
   "sections": [
    {
     "page": "docs/market-monitor/market-pulse/index.html",

@@ -9,7 +9,7 @@
 
 **件数**: 出力 8（ファイル 7・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 5／規則の二重 12（検出式 20種のうち。Market Pulseのファイルを含むもの 0）
 
-**画面の項目**: 画面が読むキー 152（この段階の書き手あり 150・ほかの書き手あり 1・画面の中で作る値 0・**書き手なし 1**）／書き手があるのに誰も読まないキー **50**
+**画面の項目**: 画面が読むキー 152（この段階の書き手あり 150・ほかの書き手あり 1・画面の中で作る値 0・**書き手なし 1**）／書き手があるのに誰も読まないキー **51**
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 2件／解決できた読み込み 25件＋ファイル名で当たった行 22件（4.1%）→ 当たらない
 
@@ -32,7 +32,7 @@
 | 2件以上 | `${RUNNER_TEMP}/headlines_pending.json` | その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job のheadlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない） | `headlines_store.py:save_pending` | 2 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/breadth_data.json`<br>（1ファイル） | S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す | `breadth_calculator.py:save_breadth` | 4 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | AS-IS-334 | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>（0ファイル） | 見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す） | `headlines_store.py:accumulate` | 2・テスト4 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>（0ファイル） | 10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す | `intraday_store.py:update` | 2・テスト3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>（49ファイル） | 10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す | `intraday_store.py:update` | 2・テスト3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/market_data.json`<br>（1ファイル） | 1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures | `collect_and_send.py:save_data_to_json_and_csv` | 8・テスト4 | market-monitor/market-pulse/index.html（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・Market Pulse（市況の判定・8段階の結論・天気）・Market Pulseの画面 | AS-IS-300・AS-IS-388・AS-IS-390 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord・メール）
@@ -80,6 +80,7 @@
 
 ### `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Update.yml
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `date_et`(1)・`interval`(1)・`missing`(3)・`tickers`(4)・`tz`(2)
 - Python・保存済みファイル: `common/system_health.py` 行 1031・1034・1045・1144・1210（経由 `common/system_health.py::_check_o`）
 - Python・保存済みファイル: `src/market/market_pulse/intraday_store.py` 行 92・94
 - テスト・保存済みファイル: `tests/test_market_pulse_intraday_store.py` 行 240・246・251・255（経由 `common/system_health.py::_check_o`）
@@ -134,6 +135,7 @@
 - `false`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ
 - `hy_bond`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `ig_bond`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `interval`（`docs/market-monitor/market-pulse/data/intraday/{date_et}.json`）
 - `ivw_minus_ive_pt`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `mcclellan_negative`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `median_pct`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
@@ -205,7 +207,7 @@
 | ）`:"最新"} | `data_freshness` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1131 | 残す（2026-10-23） |
 | — | `data_quality` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1111・1119・1126・1406 | 残す（2026-10-23） |
 | }時点の値） | `date` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/market_data.csv` | 676・699・726・756 | 残す（2026-10-23） |
-| 該当なし | `date_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1103 | 残す（2026-10-23） |
+| 該当なし | `date_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1103 | 残す（2026-10-23） |
 | 該当なし | `date_local` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1103 | 残す（2026-10-23） |
 | VIX短期vs中期 | `declines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/market_data.json` | 859・884 | 残す（2026-10-23） |
 | スコア構成指標 | `desc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 843・1352 | 残す（2026-10-23） |
