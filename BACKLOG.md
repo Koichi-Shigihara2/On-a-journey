@@ -1904,6 +1904,25 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 試験で、既定の経路（`get_json`を渡さない呼び出し）を通す
 - 10-20・10-22の原因が分かっている
 
+#### 段階1の調査（2026-11-01、読み取り・ワークフローのログ）
+- 10-24以降: ログで裏付けた。run `40019408216`（10-23 20:30:03 UTC）・`40395998274`・`40763740447`・`40949511133`・`41123569762`の
+  「予定の取得に失敗: 経済指標（FRED） (MissingSchema: Invalid URL 'releases/dates': No scheme supplied. …)」。R-E2（`dbb8fb4694`）の前は
+  `econ_events`の既定`get_json=_http_json`に完全なURLとapi_key・file_typeを渡していた。R-E2で`econ_events`はパスを受ける形に変わり、
+  呼び出し元の`build_calendar`（`:198`）は直していなかった
+- 10-20・10-22は別の原因（FRED側の一時的な不調、R-E2の前）: 10-20はrun `39319539706`の`ReadTimeout … (read timeout=30)`（当時は再試行なし）、
+  10-22はrun `39670586295`の`JSONDecodeError: Expecting value: line 1 column 1 (char 0)`（2xxで中身がJSONでない）。前後の10-21・10-23は成功
+- 同じ形の取り違えはほかに無い（R-E2で形が変わった取得の関数の引数は`econ_events`だけ。MACRO PULSEの`fred_get`・`frb_get`、TAIL、
+  Market Pulseのほかの差し替え口は形が合う）。`fed_events`はfederalreserve.govを`requests`で直接呼び、`external_api`を通っていなかった
+- 試験が通らなかった理由: 差し替えの試験だけで、既定の経路を通す試験が無かった。差し替えた関数は第1引数を見ず、`build_calendar`の試験は必ず失敗する関数を渡していた
+- 2xxで中身がJSONでない応答の再試行は、external_api全体の決まりのため[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]（優先度：中）に分けた
+
+#### 実装（2026-11-01 `8fcd156800`）
+- `econ_events(get_fred=_fred_json)`・`fed_events(get_frb=_frb_json)`に分け、`build_calendar(get_fred=None, get_frb=None)`は渡されたときだけ名前を付けて渡す。
+  `fed_events`も`external_api.frb_get`を通す（再試行あり、タイムアウトは20秒。前は30秒）。`_http_json`を削除
+- 既定の経路を通す試験`test_build_calendar_default_path_uses_external_api`（`requests.get`だけを差し替え、FREDのURL・api_key・file_type、FRBのURLを確かめる。
+  直す前のコードでは「想定外のURL: releases/dates」で落ちる）。手元で本物のFRED・FRBに通した`build_calendar`（保存なし）はfailedなし、11-03〜11-06の経済指標5件とFRBの講演が入った
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順17（11-02 20:30 UTCの実行）。満たしたらBACKLOG_DONE.mdへ移す。それまで残す
+
 ---
 
 ### [MARKETPULSE-HEADLINES-CNBC-STALE-1] CNBC Markets の見出しが10-27から stale（5回連続）。配信元が実質Googleだけで、保存される見出しは約6時間分
@@ -2152,6 +2171,27 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 ## 優先度：中（こなれてきたら対応）
 
 （[[NAV-LINK-INTEGRITY-1]]は2026-10-17、実装・push済みで完了、BACKLOG_DONE.md「2026-10-17（完了）」参照）
+
+---
+
+### [EXTERNAL-API-NONJSON-2XX-RETRY-1] 外部APIの呼び出し口で、2xxなのに中身がJSONでない応答が再試行されず1回で失敗になる
+**処理の順番:** [[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れの外
+**型・処置:** 不具合・直す（external_api全体の決まり）
+**優先度:** 中
+**分類:** 外部APIの呼び出し口 / `common/external_api.py`（`_request`・`fred_get`・`frb_get`・`sec_get`等、JSONを返す呼び出し口すべて）
+**登録日:** 2026-11-01
+**発見:** [[MARKETPULSE-CALENDAR-ECON-FETCH-1]]の段階1の調査。FINDINGS.md 2026-11-01（2xxで中身がJSONでない応答）
+
+#### 内容
+- 2026-10-22のエントリ（Market Pulse run `39670586295`、10-21 20:30:58 UTC）で、予定の経済指標（FRED）が`JSONDecodeError: Expecting value: line 1 column 1 (char 0)`で失敗した（2xxで中身がJSONでない。当時は`_http_json`、R-E2の前）
+- 今の`_request`（`external_api.py:46-68`）は429・5xx・通信の失敗だけを再試行する。`fred_get`の`resp.json()`（`:139`）など、2xxで中身がJSONでない応答は再試行されず1回で失敗になる
+- 対象: `fred_get`・`frb_get`・`sec_get`など、JSONを返す呼び出し口すべて（`frb_get`・`sec_get`は応答をそのまま返し、呼び出し側が読むので、どこで判定するかを含めて決める）
+
+#### 案
+- 中身がJSONでない2xxを、通信の失敗と同じ扱いで再試行の対象にする
+
+#### 完了の条件
+- JSONを返す呼び出し口で、2xxで中身がJSONでない応答が再試行され、尽きたら`ExternalApiError`になる。試験で確かめる
 
 ---
 

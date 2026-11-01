@@ -38,7 +38,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **確かめる順（日時の順）**:
 ① （済 2026-11-01 朝）手順16
-② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力26行）
+② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力27行）
+②' 11-03（火）朝 JST（11-02 20:30 UTCのMarket Pulseの実行の後） … 手順17
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
 ④ 束ねの後 … `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断
 ⑤ 起きた回・いつでも … 手順2（Discordの本文をKoichiさんが見たら）・手順9（RSS 取得エラーの回）
@@ -58,12 +59,22 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
    - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
 
+17. **Market Pulseの予定の経済指標（FRED）**（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`、2026-11-01 実装 `8fcd156800`）
+   - 日時: 2026-11-02 20:30 UTC（11-03 05:30 JST）のMarket Pulseの実行の後（Market Data Dailyの完了で起動。`gh run list --workflow Market_Pulse_Update.yml`で先に確かめる）
+   - 期限: 2026-11-03
+   - 確認の手順: `docs/market-monitor/market-pulse/data/market_data.json`の最新エントリで、
+     - `calendar.failed`に「経済指標（FRED）」が無い（ログに「予定の取得に失敗」が無い）
+     - FOMC・FRBの行（FRB要人の講演等）が前と同じく入っている（`fed_events`も`external_api.frb_get`を通すようにした）
+     - 経済指標の行が入っている（11-03〜の週のJOLTS・ADP・雇用統計など。手元の試し取得では11-03 JOLTS・製造業受注、11-04 ADP、11-05 新規失業保険申請件数、11-06 雇用統計）
+   - 満たしたらBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30
    - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
 
-**11-01（日）の束ね**（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の26行と、束ね済みで未修正の1行（2026-10-26 終業に機械的に拾い、2026-10-28の1行・2026-10-30の2行・2026-10-31の1行・2026-11-01の6行〈R6-INV〉と1行〈チャット側の確認〉を足した。型は各行のとおり）:
+**11-01（日）の束ね**（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の26行と、束ね済みで未修正の1行と、登録済みで束ねの入力にする1行（2026-10-26 終業に機械的に拾い、2026-10-28の1行・2026-10-30の2行・2026-10-31の1行・2026-11-01の6行〈R6-INV〉と1行〈チャット側の確認〉、2026-11-01の経済指標の1行〈チャット側の指示〉を足した。型は各行のとおり）:
+- 2026-11-01（登録済み・実装 `8fcd156800`、[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]）: Market Pulseの予定の経済指標（FRED）が10-24から毎回失敗。原因の型: 呼ばれる側の引数の意味を変えたのに、呼び出し元を直さず、試験も差し替えた関数しか通していなかった（R-E2）。再発の防止の候補: 取得の関数を引数で受ける箇所には、既定の経路を通す試験を必ず置く
 - 2026-11-01 型B: `_calc_fcf`・parser.pyのFCFの式がリースの支払いを足している（32銘柄すべてCapExにリースを含まない。AMZN −49.2%等、判定の変化0。直すのは手順13の後と決定）
 - 2026-11-01 型X: VZのCapExが候補に無いタグで、FCFがOCFと同じ（TANUKIのfcf_base 37.6B）
 - 2026-11-01 型X: LOARのCapExが候補外のタグで、FCFがOCFと同じ
@@ -105,7 +116,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 16（2026-11-01 朝。Macro Data Update `41088482451`・`41215187475`とも成功25件/失敗0件、System Health `41160489865`〈10-31 02:32 UTC〉で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSE・Market PulseのFREDの日付が新しい。BACKLOG_DONE.mdの`[[MACRODATA-FRED-IMPORT-PATH-1]]`）・1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）・14（2026-10-30。チャット側の確認、本番 `1ca5367b4e` のTANUKI VALUATIONでbasis 94銘柄ttm_weighted_avg・BKNG/FCX fallback、最大EPS PER ONDS 9.3・PLTR 131.0・XOM 23.5、method_changeの印は96銘柄。判定が変わった7銘柄〈CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA〉は株価・金利による。BACKLOG_DONE.mdの`[[EPS-SHARES-BASIS-MISMATCH-1]]`）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は2026-10-30に手順14の合格で移設
-- **次の作業（2026-10-30 夜の終業）**: ① （済 2026-11-01 朝）手順16 ② 11-01（日）: 手順13・手順5、続いて束ね（入力26行） ③ 11月上旬: 手順15 ④ 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装と、残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも）
+- **次の作業（2026-10-30 夜の終業）**: ① （済 2026-11-01 朝）手順16 ② 11-01（日）: 手順13・手順5、続いて束ね（入力27行） ②' 11-03朝: 手順17 ③ 11月上旬: 手順15 ④ 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装と、残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも）
 
 **2026-10-30 夜 FREDの取得の直し・2件の読み取りの調査（終業 このcommit。確認の残りは上の「次回の確認手順」16・13・5・15・2・9）**
 - 読み取りの調査: `[[SYSHEALTH-SEVERITY-MISMATCH-1]]`は10-25〜10-30の6回でOverall・終了コードが一致（ログ）、Discordの本文をKoichiさんが見たら移設（手順2）。`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`のSTEP 0（公開の経路・印の付き方・HypeCoreとTANUKIの読み合い・11-01の公開の経路）はBACKLOGの項目に。実装は11-01の手順13と束ねの後
