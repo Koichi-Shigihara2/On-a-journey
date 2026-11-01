@@ -466,6 +466,8 @@ def test_main_exits_two_when_m_is_critical(monkeypatch):
     monkeypatch.setattr(sh, "_check_m", lambda: {"label": "🔴 " + m_detail, "ok": False,
                                                  "detail": m_detail, "critical": True})
     monkeypatch.setattr(sh, "get_registered_tickers", lambda: [])
+    # [N]（見出しの積み足しの鮮度）は実データの headlines/ を読むため、正常に固定する
+    monkeypatch.setattr(sh, "_check_n", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
     sent = []
     monkeypatch.setattr(sh, "post_discord", lambda text: sent.append(text) or False)
     monkeypatch.setattr(sys, "argv", ["system_health.py", "--quiet"])

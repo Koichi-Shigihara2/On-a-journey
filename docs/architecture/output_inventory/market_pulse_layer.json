@@ -10,12 +10,12 @@
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1726
+     "line": 1736
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1733
+     "line": 1743
     }
    ],
    "writers_outside_layer": [],
@@ -211,7 +211,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1814,
+     "line": 1824,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_latest_breadth",
@@ -219,7 +219,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1873,
+     "line": 1883,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_latest_breadth",
@@ -252,13 +252,183 @@
    "decision": "残す（2026-10-23）"
   },
   {
+   "path": "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "func": "accumulate",
+     "line": 165
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Pulse_Headlines.yml",
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "files_tracked": 0,
+   "top_keys_sampled_files": 0,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "common/system_health.py",
+     "line": 984,
+     "func": "_check_n",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1007,
+     "func": "check_n_headlines",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1104,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1167,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "line": 71,
+     "func": "_load_day",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/headlines_store.py",
+     "line": 72,
+     "func": "_load_day",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 289,
+     "func": "TestSystemHealthN.test_thresholds",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 299,
+     "func": "TestSystemHealthN.test_latest_across_files",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 303,
+     "func": "TestSystemHealthN.test_no_dir_is_skip",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 309,
+     "func": "TestSystemHealthN.test_no_fetches_is_red",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 314,
+     "func": "TestSystemHealthN.test_unreadable_is_red",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_headlines_store.py",
+     "line": 321,
+     "func": "TestSystemHealthN.test_store_output_is_read_by_check",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 474,
+     "func": "test_main_exits_two_when_m_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 291,
+     "func": "test_main_one_line_shows_j_and_k_in_full",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 299,
+     "func": "test_main_warning_only_j_exits_one",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 431,
+     "func": "test_main_overall_severity_matches_discord_and_exit_code",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 444,
+     "func": "test_main_red_label_of_other_check_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_n",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [
+    "Market Pulse（市況の判定・8段階の結論・天気）"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 3,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力",
+   "decision": "残す（2026-10-23）"
+  },
+  {
    "path": "docs/market-monitor/market-pulse/data/market_data.json",
    "kind": "ファイル",
    "writers": [
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1700
+     "line": 1710
     }
    ],
    "writers_outside_layer": [],
@@ -415,7 +585,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1041,
+     "line": 1092,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -423,7 +593,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1167,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -487,7 +657,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1820,
+     "line": 1830,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_recent_entries",
@@ -495,7 +665,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1830,
+     "line": 1840,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_tech_pulse_history",
@@ -503,7 +673,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1833,
+     "line": 1843,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score",
@@ -511,7 +681,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1842,
+     "line": 1852,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_div_history",
@@ -519,7 +689,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1895,
+     "line": 1905,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_recent_entries",
@@ -551,7 +721,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 490,
+     "line": 515,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -559,7 +729,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 604,
+     "line": 629,
      "func": "TanukiValuationPipeline._load_live_fg",
      "how": "保存済みファイル",
      "via": "grep",
@@ -567,7 +737,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 608,
+     "line": 633,
      "func": "TanukiValuationPipeline._load_live_fg",
      "how": "保存済みファイル",
      "via": "AST",
@@ -575,7 +745,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 885,
+     "line": 910,
      "func": "TanukiValuationPipeline._compute_tanuki_score",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -583,7 +753,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1178,
+     "line": 1203,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -735,7 +905,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 474,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -743,7 +913,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 291,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -751,7 +921,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 299,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -759,7 +929,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 431,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -767,7 +937,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 444,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -846,7 +1016,7 @@
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "send_email",
-     "line": 1752
+     "line": 1762
     }
    ],
    "writers_outside_layer": [],
@@ -1037,7 +1207,7 @@
     },
     {
      "file": "docs/portfolio/tail/index.html",
-     "line": 942,
+     "line": 943,
      "text": "function _updateReviewStaleness() {"
     },
     {
@@ -1194,17 +1364,17 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 571,
+     "line": 581,
      "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1094,
+     "line": 1104,
      "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1323,
+     "line": 1333,
      "text": "xClamped: s.upside > X_MAX_CLIP,"
     },
     {
@@ -1224,87 +1394,87 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 622,
+     "line": 647,
      "text": "if upside > 30:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 624,
+     "line": 649,
      "text": "elif upside >= 10:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 626,
+     "line": 651,
      "text": "elif upside >= 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 897,
+     "line": 922,
      "text": "and upside is not None and upside < -20"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 910,
+     "line": 935,
      "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 930,
+     "line": 955,
      "text": "elif upside is not None and upside > 20 and timing >= 50:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 932,
+     "line": 957,
      "text": "elif upside is not None and upside > 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1001,
+     "line": 1026,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1002,
+     "line": 1027,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1003,
+     "line": 1028,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1004,
+     "line": 1029,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1389,
+     "line": 1432,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1416,
+     "line": 1459,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1421,
+     "line": 1464,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1467,
+     "line": 1510,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1772,
+     "line": 1815,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1950,
+     "line": 1993,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1415,6 +1585,25 @@
    ],
    "in_layer": false,
    "duplicated": true
+  },
+  {
+   "id": "eps_shares_basis",
+   "name": "EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）",
+   "patterns": [
+    "def\\s+_?\\w*(?:max_eps_shares|eps_shares_basis)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 175,
+     "text": "def select_max_eps_shares(eps_ttm: dict | None, ttm_end: str | None, diluted_shares) -> tuple:"
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "in_layer": false,
+   "duplicated": false
   },
   {
    "id": "trading_day",
@@ -1537,12 +1726,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1554,
+     "line": 1578,
      "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1674,
+     "line": 1698,
      "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
     }
    ],
@@ -1568,12 +1757,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1537,
+     "line": 1561,
      "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1550,
+     "line": 1574,
      "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
     }
    ],
@@ -1637,7 +1826,7 @@
    "sites": [
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 71,
+     "line": 76,
      "text": "def _atomic_write_json(path: str, payload: Any) -> None:"
     },
     {
@@ -1706,7 +1895,7 @@
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/collect_and_send.py",
    "decision": "残す（2026-10-23）",
-   "lines": 1926,
+   "lines": 1936,
    "workflows": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
@@ -1714,6 +1903,7 @@
    "same_dir": [],
    "tests": [
     "tests/test_collect_and_send_market_data_switch.py",
+    "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_implc.py",
     "tests/test_market_pulse_provisional_kind.py",
     "tests/test_market_pulse_stage_conclusions.py"
@@ -1730,20 +1920,51 @@
     "src/market/market_pulse/collect_and_send.py"
    ],
    "tests": [
+    "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_implc.py"
+   ]
+  },
+  {
+   "dir": "src/market/market_pulse",
+   "file": "src/market/market_pulse/headlines_fetch.py",
+   "decision": "残す（2026-10-23）",
+   "lines": 43,
+   "workflows": [
+    ".github/workflows/Market_Pulse_Headlines.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_market_pulse_headlines_store.py"
+   ]
+  },
+  {
+   "dir": "src/market/market_pulse",
+   "file": "src/market/market_pulse/headlines_store.py",
+   "decision": "残す（2026-10-23）",
+   "lines": 186,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/headlines_fetch.py"
+   ],
+   "tests": [
+    "tests/test_market_pulse_headlines_store.py"
    ]
   },
   {
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/market_calendar.py",
    "decision": "残す（2026-10-23）",
-   "lines": 212,
+   "lines": 227,
    "workflows": [],
    "code": [],
    "same_dir": [
     "src/market/market_pulse/collect_and_send.py"
    ],
    "tests": [
+    "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_implc.py"
    ]
   },
@@ -1751,15 +1972,17 @@
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/news_headlines.py",
    "decision": "残す（2026-10-23）",
-   "lines": 271,
+   "lines": 286,
    "workflows": [],
    "code": [
     "browser_checks/market_pulse_elements.py"
    ],
    "same_dir": [
-    "src/market/market_pulse/collect_and_send.py"
+    "src/market/market_pulse/collect_and_send.py",
+    "src/market/market_pulse/headlines_fetch.py"
    ],
    "tests": [
+    "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_implc.py"
    ]
   },
@@ -1775,6 +1998,7 @@
     "src/market/market_pulse/stage_conclusions.py"
    ],
    "tests": [
+    "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_provisional_kind.py",
     "tests/test_market_pulse_sector_rotation.py"
    ]
@@ -1856,12 +2080,12 @@
   }
  ],
  "stop_condition": {
-  "outputs": 5,
+  "outputs": 6,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 20,
+  "python_read_sites_into_layer_resolved": 22,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 14,
+  "name_hit_sites_resolved": 17,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -1871,7 +2095,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.029,
+  "ratio_reader": 0.025,
   "threshold": 0.1,
   "hit": false
  },
@@ -4857,7 +5081,7 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    }
   ],
-  "written_key_count": 380,
+  "written_key_count": 381,
   "sections": [
    {
     "page": "docs/market-monitor/market-pulse/index.html",

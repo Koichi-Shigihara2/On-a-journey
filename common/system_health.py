@@ -957,6 +957,57 @@ def check_m_sec_freshness() -> tuple[str, bool, str]:
     return r["label"], r["ok"], r["detail"]
 
 
+# ── N. 見出しの積み足しの鮮度（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01） ──
+# docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json の fetches（取得の記録。新しい記事か変更があった回だけ書く）の
+# 最新の fetched_at を見る。6時間ごとの取得（Market_Pulse_Headlines.yml）と夜のMarket Pulseの回が書く。
+# 12時間より古ければ⚠️、24時間より古ければ🔴。フォルダが無ければ未作成（スキップ、⚠️・問題に数えない）
+_HEADLINES_DIR = os.path.join(_REPO_ROOT, "docs", "market-monitor", "market-pulse", "data", "headlines")
+HEADLINES_WARN_HOURS = 12
+HEADLINES_NG_HOURS = 24
+_HEADLINES_SCAN_FILES = 5   # 名前（日付）の新しい順にこの数のファイルを見る（未来の日付の記事だけのファイルがあっても取得の記録を拾う）
+
+
+def _check_n(data_dir: Optional[str] = None, now: Optional[datetime] = None) -> dict:
+    data_dir = data_dir or _HEADLINES_DIR
+    now = now or _utcnow()
+
+    def result(label, ok, detail, critical=False):
+        return {"label": label, "ok": ok, "detail": detail, "critical": critical}
+
+    if not os.path.isdir(data_dir):
+        return result("⚠️  見出しのフォルダ未作成（スキップ）", True, "headlines dir not found (skip)")
+    dates = sorted((n[:-5] for n in os.listdir(data_dir) if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", n)), reverse=True)
+    latest = None
+    latest_run = None
+    for date_et in dates[:_HEADLINES_SCAN_FILES]:
+        try:
+            with open(os.path.join(data_dir, f"{date_et}.json"), encoding="utf-8") as f:
+                doc = json.load(f)
+        except Exception as e:
+            return result(f"🔴 見出しのファイルを読めない: {date_et}.json（{e}）", False, f"unreadable {date_et}.json: {e}", True)
+        for fe in doc.get("fetches") or []:
+            try:
+                t = datetime.strptime(fe.get("fetched_at") or "", "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+            if latest is None or t > latest:
+                latest, latest_run = t, fe.get("run")
+    if latest is None:
+        return result("🔴 見出しの取得の記録なし", False, "no fetches", True)
+    age_h = (now - latest).total_seconds() / 3600
+    detail = f"最新の取得 {latest.strftime('%m-%d %H:%M')} UTC（{age_h:.1f}時間前・{latest_run}）"
+    if age_h > HEADLINES_NG_HOURS:
+        return result(f"🔴 {detail}・{HEADLINES_NG_HOURS}時間超", False, detail, True)
+    if age_h > HEADLINES_WARN_HOURS:
+        return result(f"⚠️  {detail}・{HEADLINES_WARN_HOURS}時間超", False, detail)
+    return result(f"✅ {detail}", True, detail)
+
+
+def check_n_headlines() -> tuple[str, bool, str]:
+    r = _check_n()
+    return r["label"], r["ok"], r["detail"]
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def discord_notify_label(sent: bool) -> str:
     """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
@@ -977,7 +1028,7 @@ def build_one_line(run_date: str, results: dict) -> str:
     labels = {
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
-        "K": "TickerAudit", "L": "MacroData", "M": "SecFresh",
+        "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -1050,6 +1101,8 @@ def main() -> int:
     label_l, ok_l, det_l = check_l_macro_data()
     m = _check_m()
     label_m, ok_m, det_m = m["label"], m["ok"], m["detail"]
+    n = _check_n()
+    label_n, ok_n, det_n = n["label"], n["ok"], n["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -1067,9 +1120,12 @@ def main() -> int:
         "L": {"ok": ok_l, "short": det_l[:20]},
         # Mも切らない（どの銘柄・何日かが通知から読めるように）
         "M": {"ok": ok_m, "short": det_m},
+        # N（見出しの積み足しの鮮度、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）も切らない（最新の取得の時刻が読めるように）
+        "N": {"ok": ok_n, "short": det_n},
     }
     labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
-              "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m}
+              "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m,
+              "N": label_n}
     for key, r in results.items():
         r["severity"] = _item_severity(labels[key], r["ok"])
     # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
@@ -1093,6 +1149,7 @@ def main() -> int:
         print(f"[K] TickerAudit:   {label_k}")
         print(f"[L] MacroData:     {label_l}")
         print(f"[M] SecFreshness:  {label_m}")
+        print(f"[N] Headlines:     {label_n}")
         print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知

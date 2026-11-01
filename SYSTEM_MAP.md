@@ -1615,6 +1615,12 @@ pipeline.py              # 全銘柄を統合・TANUKI SCORE算出
 Market Pulse  ← yfinance / CNN F&G / FREDデータ
 　　TAKE PROFIT / BUY チェックリスト（F&G×200日MA×HYスプレッド×ヒンデンブルグ簡易版、
 　　MP-LOGIC-1/2 2026-06-24実装）を market_data.json に出力
+　　ニュースの見出し（CNBC Earnings・Yahoo Finance S&P 500・Google News ビジネス〈US〉のRSS、news_headlines.py）:
+　　market_data.json の headlines（配信元ごとに16件、画面は48時間）に加え、日ごとの積み足しを
+　　docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json（記事の時刻の米国東部の日付）に書く
+　　（headlines_store.py の accumulate の1か所。6時間ごとの Market_Pulse_Headlines.yml〈Grokなし〉と
+　　夜の Market Pulse の回〈訳・判定を写す〉。読み手は System Health の [N]、
+　　大きく動いた日の事後分析の材料H の入力。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01）
 MACRO PULSE   ← FREDデータ / FRBステートメント
 　　整合性チェック: src/market/macro_pulse/05_audit.py（05_events.csvの重複行検出・
 　　NFP水準残存兆候の検出、report_consistency_check.py相当の軽量版。MACRO-NFP-1 2026-07-07新設）

@@ -805,6 +805,11 @@ _MARKET_PULSE.update(
             "market_data.json の指標を平らにした1日1行（指標_value 等）。**AIの出力（Grok）**: summary 列（judgment 列は summary から取り出す）",
         "docs/market-monitor/market-pulse/data/breadth_data.json":
             "S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す",
+        "docs/market-monitor/market-pulse/data/headlines/{date_et}.json":
+            "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、"
+            "取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。"
+            "読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。"
+            "大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力",
         "src/market/market_pulse/02_market_rss.txt":
             "市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む",
         "メール（GMAIL_PASSWORD・GMAIL_USER）": "その日の市況の判定・AIの見解のGmailへの送信（自分あて）",

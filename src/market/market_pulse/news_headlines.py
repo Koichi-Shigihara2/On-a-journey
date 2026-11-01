@@ -103,10 +103,13 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
     各配信元の新しい順にPER_SOURCE件、全体で時刻の新しい順にMAX_CANDIDATES件（同じ見出しは1件にまとめる）。
     画面に出す件数（MAX_ITEMS）への絞り込みはsplit_for_display()で行う。
     最新記事が取得時刻からSTALE_HOURS時間より古い配信元は見出しを使わず、failedに入れる（推測で埋めない）。
-    statusは、failedの配信元を除いて見出しが1件以上あればok（failedが無い）かpartial、0件ならfailed。"""
+    statusは、failedの配信元を除いて見出しが1件以上あればok（failedが無い）かpartial、0件ならfailed。
+    all_items（2026-11-01、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）: PER_SOURCEで切る前の全件（failedの配信元〈staleを含む〉は入れない。
+    同じ見出しもまとめない）。headlines_store.accumulate()の入力で、market_data.jsonには保存しない（compute_implc()が外す）。"""
     import feedparser
     now = now or datetime.now(timezone.utc)
     items: List[Dict[str, Any]] = []
+    all_items: List[Dict[str, Any]] = []
     failed: List[str] = []
     reasons: Dict[str, str] = {}
     for s in SOURCES:
@@ -132,6 +135,7 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
                 reasons[s["name"]] = "stale"
             else:
                 items.extend(got[:PER_SOURCE])
+                all_items.extend(dict(x) for x in got)
         except Exception as ex:
             print(f"[WARN] ニュースの見出しの取得に失敗: {s['name']} ({type(ex).__name__}: {ex})")
             failed.append(s["name"])
@@ -146,7 +150,7 @@ def fetch_headlines(fetch: Callable[[str], bytes] = _default_fetch, now: Optiona
     uniq = uniq[:MAX_CANDIDATES]
     status = "failed" if not uniq else ("ok" if not failed else "partial")
     return {"fetched_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "items": uniq, "failed": failed, "failed_reasons": reasons,
-            "status": status, "sources": [s["name"] for s in SOURCES]}
+            "status": status, "sources": [s["name"] for s in SOURCES], "all_items": all_items}
 
 
 def _default_post(payload: dict, api_key: str) -> dict:

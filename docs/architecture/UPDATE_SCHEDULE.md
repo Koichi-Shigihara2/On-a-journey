@@ -20,7 +20,7 @@
 
 <!-- BEGIN GENERATED: workflows（scripts/gen_update_schedule.pyが生成。手で編集しない） -->
 
-全20本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
+全21本（.github/workflows/）。時刻はcronの指定（GitHubの混雑で遅れて起動することがある）。
 
 | ワークフロー | 起動（cron） UTC | 起動（cron） JST | 起動元（workflow_run、完了で起動） | 手動の入力 | 同時実行 | ガード・動く条件 | 出力先（commitするパス） | 下流 |
 |---|---|---|---|---|---|---|---|---|
@@ -31,6 +31,7 @@
 | `Macro_Data_Update.yml`<br>Macro Data Update | 毎日 10:00 | 毎日 19:00 | — | series_ids | — | — | `common/macro_data/macro_data_violations_log.json`<br>`common/macro_data/series/` | — |
 | `Market_Data_Daily_Update.yml`<br>Market Data Daily Update | 月〜金 20:47<br>月〜金 21:17・21:47・22:17・22:47<br>月〜金 23:17<br>火〜土 01:47<br>火〜土 02:17 | 火〜土 05:47<br>火〜土 06:17・06:47・07:17・07:47<br>火〜土 08:17<br>火〜土 10:47<br>火〜土 11:17 | — | tickers・guard | market-data-daily | 段「Guard (NYSE close + 20 min / closes already saved)」<br>段「Cancel this run when no new data was saved (downstream stays idle)」 | `common/market_data/_sp500_constituents_cache.json`<br>`common/market_data/daily/`<br>`docs/common/sec_data/rotce/` | Market_Pulse_Update.yml<br>Stonks_Silo_Update.yml |
 | `Market_Data_Weekly_Update.yml`<br>Market Data Weekly Update | 日 13:20 | 日 22:20 | — | tickers | — | — | `common/market_data/_sp500_constituents_cache.json`<br>`common/market_data/analyst_history/`<br>`common/market_data/attributes/` | — |
+| `Market_Pulse_Headlines.yml`<br>Market Pulse Headlines | 毎日 00:40・06:40・12:40・18:40 | 毎日 09:40・15:40・21:40 ／ 毎日（翌日） 03:40 | — | あり（入力なし） | market-pulse-headlines | — | `docs/market-monitor/market-pulse/data/headlines/` | — |
 | `Market_Pulse_Update.yml`<br>Market_Pulse_Update | — | — | Market_Data_Daily_Update.yml | あり（入力なし） | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/market-monitor/market-pulse/data/` | — |
 | `SEC_Data_Audit.yml`<br>SEC Data Quality Audit | — | — | SEC_Data_Update.yml | tickers | — | — | （commitしない） | — |
 | `SEC_Data_Update.yml`<br>SEC Data Update | 日 12:00 | 日 21:00 | — | tickers | — | — | `common/sec_data/data/`<br>`common/sec_data/normalized/`<br>`common/sec_data/ttm/`<br>`docs/common/sec_data/normalized/` | Adjusted_Eps_Analyzer_update.yml<br>HypeCore_Update.yml<br>SEC_Data_Audit.yml<br>Stonks_Silo_Update.yml |
@@ -68,6 +69,7 @@ Market Data Daily Updateは外部（Cloudflare Worker）からも起動する（
 | 下流 | 取得の完了で Market Pulse・Stonks Silo → Stonks Siloの完了で TANUKI VALUATION → その完了で TANUKI Score（ポートフォリオのスナップショット。daily pickは2026-10-20に削除） | 同左 |
 | MACRO PULSE | 22:15 UTC（JST 07:15、連鎖とは独立） | 同左 |
 | System Health | 23:30 UTC（JST 08:30） | 同左 |
+| 見出しの取得（Market Pulse Headlines） | 6時間ごと 00:40・06:40・12:40・18:40 UTC（土日も含む）。12:40は8:40 ETで寄り付き前 | 同じUTCの時刻。12:40は7:40 ETで寄り付き前 |
 | Score Verifier | 00:00 UTC（JST 09:00） | 同左 |
 
 - **Market Data Dailyの起動**: 外部起動（下の節）と、GitHubのschedule＝20:47〜23:17 UTCの30分おき（6回。20:17は2026-10-01に削除）と保険の01:47・02:17 UTC（UTCの火〜土）。各起動の最初に
@@ -89,6 +91,10 @@ Market Data Daily Updateは外部（Cloudflare Worker）からも起動する（
 - **週次**: SEC Data Update（日曜12:00 UTC）の完了で HypeCore・Adjusted EPS・Stonks Silo・SEC Data Audit が動き、
   HypeCore・Adjusted EPS・Stonks Siloの完了でTANUKI VALUATIONが動く。Market Data Weekly（日曜13:20 UTC）は属性・アナリスト情報
 - **その他の定時**: Macro Data（毎日10:00 UTC、FRED）、MACRO PULSEの補完（毎日13:03 UTC）、TANUKI TAILのRSS（平日08:00 UTC）など（1章）
+- **見出しの積み足し**（Market Pulse Headlines、2026-11-01）: 6時間ごと（00:40・06:40・12:40・18:40 UTC、土日も含む）に3本の配信元の見出しを
+  `docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json`（記事の時刻の米国東部の日付）に積み足す。Grokは呼ばず、新しい記事が無ければcommitしない。
+  夜のMarket Pulseの回も同じファイルに積み足し、訳・判定を写す。時刻は夏時間・冬時間で変えない（記事の時刻で振り分けるため、寄り付き前の回が遅れても
+  夜の記事はフィードに残っている限り拾える）。監視はSystem Healthの[N]（取得の記録の最新が12時間より古ければ⚠️、24時間より古ければ🔴）と[J]
 
 ### 外部起動と保険の関係（2026-10-03）
 
@@ -213,3 +219,4 @@ YAMLのコメント・`config/workflow_dependencies.json`にあった経緯を�
 | 2026-10-01 | Market Data Daily | 20:17 UTCのcronを削除（夏時間は引けから17分でガードが必ず何もせず、冬時間は引け前） | `6de1c89644` |
 | 2026-10-03 | Market Data Daily | 外部起動（Cloudflare Worker、平日20:25・20:55・21:25 UTC＋21:50の確認）を追加し、scheduleは保険に。workflow_dispatchに入力`guard`（既定false、trueでガードを通す）。reset_windowで終わった実行はcommitしない（`_daily_close_retry_log.json`だけのcommitが残っていた） | `4af62bcd1f`・`8dc0deaf0e` |
 | 2026-10-03 | Market Pulse・Stonks Silo・TANUKI VALUATION | 金曜の安全網のcron（22:50・22:40・22:30 UTC）を削除。10-03（土）01:15〜01:28 UTCに遅れて起動し、Market Data Dailyの取得（02:06）より前の前日のデータで動いた（TANUKI VALUATIONはこの夜3回） | `791faa1f02` |
+| 2026-11-01 | Market Pulse Headlines（新設） | 見出しの日ごとの積み足し。6時間ごと（00:40・06:40・12:40・18:40 UTC、土日も含む）。MACRO PULSEの13:03 UTCと重ならない時刻。pushはpush_with_retry.sh、見出しのファイルは.gitattributesでmerge=ours（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①） | （この変更のcommit） |

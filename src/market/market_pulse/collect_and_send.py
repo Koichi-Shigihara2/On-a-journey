@@ -1540,8 +1540,18 @@ def compute_implc(implb=None):
     # 画面の表示（訳・折りたたみ）だけに使い、AIの見解の入力（build_ai_facts）には渡さない。
     # annotate_headlines()は失敗しても例外を出さず、title_ja・marketをNoneにする（原文だけ・全件を出す）
     _nh.annotate_headlines(out["headlines"])
+    # 見出しの日ごとの積み足し（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）。切る前の全件（all_items）はmarket_data.jsonに保存しない。
+    # 訳・判定はこの回の結果を写す（Grokを追加で呼ばない）。失敗しても毎晩の実行は止めない
+    all_items = out["headlines"].pop("all_items", None)
+    if all_items:
+        try:
+            import headlines_store as _hs
+            r = _hs.store_from_fetch(dict(out["headlines"], all_items=all_items), "evening", annotate=True)
+            print(f"[INFO] 見出しの積み足し: 新しい記事 {r['new']}件・変更 {r['updated']}件・書いたファイル {r['written']}")
+        except Exception as e:
+            print(f"[WARN] 見出しの積み足しに失敗: {type(e).__name__}: {e}")
     try:
-        wt = ((implb or {}).get("watch_list") or {}).get("tickers") or _sr.watch_tickers(REPO_ROOT)
+        wt =((implb or {}).get("watch_list") or {}).get("tickers") or _sr.watch_tickers(REPO_ROOT)
         tickers = sorted(set(wt.get("all") or []) | set(_sr.M7))
         from common.market_data.reader import get_calendar as _md_get_calendar
         out["calendar"] = _mc.build_calendar(REPO_ROOT, tickers, get_calendar=_md_get_calendar)
