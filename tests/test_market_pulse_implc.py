@@ -41,7 +41,7 @@ def _rss(items):
 class TestHeadlines:
     def test_sources_us_only(self):
         # NHK 経済は外した（[[MARKETPULSE-HEADLINES-NHK-STALE-1]]、日本の配信元は置かない）
-        assert [s["region"] for s in nh.SOURCES] == ["米国", "米国"]
+        assert [s["region"] for s in nh.SOURCES] == ["米国", "米国", "米国"]
         assert not any("nhk" in s["url"] for s in nh.SOURCES)
         assert not hasattr(nh, "REGION_MAX")   # 地域の枠は置かない（米国だけ。表示の上限はMAX_ITEMS）
 
@@ -52,7 +52,7 @@ class TestHeadlines:
         assert h["status"] == "ok" and h["failed"] == [] and h["failed_reasons"] == {}
         titles = [x["title"] for x in h["items"]]
         assert titles.count("Stocks rise") == 1          # 同じ見出しは1件
-        cnbc = [x for x in h["items"] if x["source"] == "CNBC Markets"][0]
+        cnbc = [x for x in h["items"] if x["source"] == "CNBC Earnings"][0]
         assert set(cnbc) == {"title", "published_utc", "link", "source", "region"}   # 見出し・時刻・リンク・出典のみ
         assert cnbc["published_utc"] == "2026-09-29T22:00:00Z"
 
@@ -62,10 +62,10 @@ class TestHeadlines:
                 raise ConnectionError("down")
             return RSS.format(t1="A " + url[-5:], t2="B " + url[-5:]).encode()
         h = nh.fetch_headlines(fetch_one_bad, now=NOW)
-        assert h["status"] == "partial" and h["failed"] == ["CNBC Markets"] and h["items"]
-        assert h["failed_reasons"] == {"CNBC Markets": "fetch_error"}
+        assert h["status"] == "partial" and h["failed"] == ["CNBC Earnings"] and h["items"]
+        assert h["failed_reasons"] == {"CNBC Earnings": "fetch_error"}
         h = nh.fetch_headlines(lambda url: (_ for _ in ()).throw(TimeoutError("x")), now=NOW)
-        assert h["status"] == "failed" and h["items"] == [] and len(h["failed"]) == 2
+        assert h["status"] == "failed" and h["items"] == [] and len(h["failed"]) == 3
 
     @pytest.mark.parametrize("hours,stale", [(72, False), (72.0003, True), (1, False), (24 * 60, True)])
     def test_stale_boundary_72h(self, hours, stale):
@@ -77,7 +77,7 @@ class TestHeadlines:
             assert h["status"] == "failed" and h["items"] == []
             assert h["failed_reasons"] == {s["name"]: "stale" for s in nh.SOURCES}
         else:
-            assert h["status"] == "ok" and h["failed"] == [] and len(h["items"]) == 4
+            assert h["status"] == "ok" and h["failed"] == [] and len(h["items"]) == 6
 
     def test_one_stale_source_is_partial_and_its_items_dropped(self):
         # 2026-10-07〜09のNHKの再現: 取得は成功（200）するが記事が2か月前 → その配信元の見出しは使わずfailed（stale）
@@ -86,7 +86,7 @@ class TestHeadlines:
                 return _rss([("Old news", "Sat, 08 Aug 2026 06:10:11 GMT", None)])
             return _rss([("Fresh news", "Tue, 29 Sep 2026 22:00:00 GMT", None)])
         h = nh.fetch_headlines(fetch, now=NOW)
-        assert h["status"] == "partial" and h["failed"] == ["CNBC Markets"] and h["failed_reasons"] == {"CNBC Markets": "stale"}
+        assert h["status"] == "partial" and h["failed"] == ["CNBC Earnings"] and h["failed_reasons"] == {"CNBC Earnings": "stale"}
         assert [x["title"] for x in h["items"]] == ["Fresh news"]
 
     def test_no_dates_is_stale(self):
@@ -96,16 +96,81 @@ class TestHeadlines:
         assert h["status"] == "failed" and set(h["failed_reasons"].values()) == {"stale"}
 
     def test_fetch_16_per_source_keeps_all_candidates(self):
-        # 各配信元から16件取り、データには全件（最大MAX_CANDIDATES=32件）を残す（[[MARKETPULSE-HEADLINES-RELEVANCE-1]]）。
-        # 表示の上限（MAX_ITEMS）はsplit_for_display()で掛ける
-        assert nh.PER_SOURCE == 16 and nh.MAX_CANDIDATES == 32 and nh.MAX_ITEMS == 20
+        # 各配信元から16件取り、データには全件（最大MAX_CANDIDATES=48件、配信元3本）を残す（[[MARKETPULSE-HEADLINES-RELEVANCE-1]]・
+        # [[MARKETPULSE-HEADLINES-CNBC-STALE-1]]）。表示の上限（MAX_ITEMS）はsplit_for_display()で掛ける
+        assert nh.PER_SOURCE == 16 and nh.MAX_CANDIDATES == 48 and nh.MAX_ITEMS == 20
         def fetch(url):
             return _rss([(f"{url[-8:]} {i}", f"Tue, 29 Sep 2026 23:{i:02d}:00 GMT", None) for i in range(25)])
         h = nh.fetch_headlines(fetch, now=NOW + timedelta(hours=1))
-        assert len(h["items"]) == 32
-        assert [x["region"] for x in h["items"]] == ["米国"] * 32
+        assert len(h["items"]) == 48
+        assert [x["region"] for x in h["items"]] == ["米国"] * 48
         main, folded = nh.split_for_display(h)    # 判定なし（relevanceなし）→ 新しい順に20件、折りたたみ無し
         assert main == h["items"][:20] and folded == []
+
+    def test_three_sources_names_and_urls(self):
+        # 2026-11-01（[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]）: id 10000664（"CNBC Markets"、中身はFinance）を外し、3本にした
+        assert [s["name"] for s in nh.SOURCES] == ["CNBC Earnings", "Yahoo Finance S&P 500", "Google News ビジネス（US）"]
+        assert not any("10000664" in s["url"] for s in nh.SOURCES)
+        assert "id/15839135/" in nh.SOURCES[0]["url"] and "s=%5EGSPC" in nh.SOURCES[1]["url"]
+        assert len({s["key"] for s in nh.SOURCES}) == 3
+        assert [bool(s.get("publisher_suffix")) for s in nh.SOURCES] == [False, False, True]   # 末尾の出典名を切るのはGoogleだけ
+
+    @pytest.mark.parametrize("bad,reason", [("fetch_error", "fetch_error"), ("stale", "stale"), ("empty", "no_items")])
+    @pytest.mark.parametrize("which", [0, 1, 2])
+    def test_one_of_three_fails_rest_partial(self, which, bad, reason):
+        # 3本のどれか1本が失敗・stale・0件でも、残りの2本で partial になり、残りの見出しは入る
+        name = nh.SOURCES[which]["name"]
+        bad_url = nh.SOURCES[which]["url"]
+
+        def fetch(url):
+            if url == bad_url:
+                if bad == "fetch_error":
+                    raise ConnectionError("down")
+                if bad == "stale":
+                    return _rss([("Old news", "Sat, 26 Sep 2026 21:00:00 GMT", None)])
+                return _rss([])
+            return _rss([(f"Fresh {url[-12:]}", "Tue, 29 Sep 2026 22:00:00 GMT", None)])
+        h = nh.fetch_headlines(fetch, now=NOW)
+        assert h["status"] == "partial" and h["failed"] == [name] and h["failed_reasons"] == {name: reason}
+        others = [s["name"] for i, s in enumerate(nh.SOURCES) if i != which]
+        assert sorted({x["source"] for x in h["items"]}) == sorted(others) and len(h["items"]) == 2
+
+    def test_two_of_three_fail_still_partial(self):
+        def fetch(url):
+            if "google" in url:
+                return _rss([("Fresh", "Tue, 29 Sep 2026 22:00:00 GMT", None)])
+            raise ConnectionError("down")
+        h = nh.fetch_headlines(fetch, now=NOW)
+        assert h["status"] == "partial" and h["failed"] == ["CNBC Earnings", "Yahoo Finance S&P 500"]
+        assert [x["source"] for x in h["items"]] == ["Google News ビジネス（US）"]
+
+    def test_yahoo_rss_item_shape(self):
+        # 2026-11-01 に実際に取得した Yahoo Finance ^GSPC のRSSの1件の形（pubDateは +0000、linkは他社のサイトで ?.tsrc=rss が付く、
+        # <guid isPermaLink="false">、題名の &amp;）。<source>は無いので出典名は切らない
+        yahoo = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss version="2.0">
+    <channel>
+        <copyright>Copyright (c) 2026 Yahoo Inc. All rights reserved.</copyright>
+        <description>Latest Financial News for ^GSPC</description>
+        <item>
+            <description>A single tax code section can legally shift most of a day trader's short-term gains into a lower tax bracket.</description>
+            <guid isPermaLink="false">5786cb61-ac57-3a9f-a0e6-dc818f5f287c</guid>
+            <link>https://247wallst.com/personal-finance/2026/11/01/trade-futures-or-sp-500-index-options-the-irs-treats-60-of-your-gains-as-long-term-even-on-a-day-trade/?.tsrc=rss</link>
+            <pubDate>Sun, 01 Nov 2026 10:13:28 +0000</pubDate>
+            <title>Trade Futures or S&amp;P 500 Index Options? The IRS Treats 60% of Your Gains as Long-Term, Even on a Day Trade</title>
+        </item>
+    </channel>
+</rss>""".encode("utf-8")
+        yurl = nh.SOURCES[1]["url"]
+        h = nh.fetch_headlines(lambda url: yahoo if url == yurl else _rss([]), now=datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc))
+        y = [x for x in h["items"] if x["source"] == "Yahoo Finance S&P 500"]
+        assert len(y) == 1
+        assert y[0] == {
+            "title": "Trade Futures or S&P 500 Index Options? The IRS Treats 60% of Your Gains as Long-Term, Even on a Day Trade",
+            "published_utc": "2026-11-01T10:13:28Z",
+            "link": "https://247wallst.com/personal-finance/2026/11/01/trade-futures-or-sp-500-index-options-the-irs-treats-60-of-your-gains-as-long-term-even-on-a-day-trade/?.tsrc=rss",
+            "source": "Yahoo Finance S&P 500", "region": "米国"}
+        assert "Yahoo Finance S&P 500" not in h["failed"]
 
     def test_publisher_split_google_only(self):
         def fetch(url):
@@ -158,7 +223,7 @@ class TestHeadlineTranslation:
             return _resp("```json\n" + _rows(("株が上昇", True), ("セール情報", False)) + "\n```")
         r = nh.translate_titles(["Stocks rise", "Prime Day deals"], post=post, api_key="k")
         assert r == {"ja": ["株が上昇", "セール情報"], "market": [True, False]}
-        assert sent["temperature"] == 0 and sent["model"] == nh.GROK_MODEL and sent["max_tokens"] == 8000
+        assert sent["temperature"] == 0 and sent["model"] == nh.GROK_MODEL and sent["max_tokens"] == 16000
         prompt = sent["messages"][0]["content"]
         assert '["Stocks rise", "Prime Day deals"]' in prompt and "http" not in prompt   # 見出しの文字だけ（リンク等は渡さない）
 

@@ -1,6 +1,6 @@
 """Market Pulse 実装C（指示書㉗、2026-09-30）: 段階2のニュースの見出し。
 
-設計書 MARKET_PULSE_REDESIGN.md 4章の推奨のとおり、米国はCNBC MarketsとGoogle News ビジネス（US）のRSSから、
+設計書 MARKET_PULSE_REDESIGN.md 4章の推奨のとおり、米国のRSS（配信元は SOURCES。2026-11-01 に3本へ）から、
 見出し・時刻・出典のリンクだけを取る（本文・要約は使わない）。ニュースはAIの入力に入れない（確定した事実のJSONだけの方針）。
 取得に失敗した配信元は推測で埋めず、failedに記録する（data_qualityと画面の「取得できず」に使う）。
 
@@ -14,6 +14,12 @@
 - 各配信元から16件取り、翻訳と同じ1回の呼び出しで「市況と関係あり」（market: true/false）も返させる。データには全件残し、
   画面はtrueを最大MAX_ITEMS件出し、falseは「関係の薄い見出し N件」に折りたたむ（split_for_display()）。
 - 判定が使えないとき（失敗・形が崩れた・全件false）は、全件を今までどおり出す。判定はAIの見解の入力には渡さない。
+
+2026-11-01（[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]、チャット側の決定）:
+- CNBCのid 10000664（名前は"CNBC Markets"だったが、CNBCの一覧での中身はFinance）を外した。URLは200のまま、
+  2026-10-21 15:30 UTCの記事で止まっていた。
+- 配信元はCNBC Earnings（決算の材料）・Yahoo Finance S&P 500（^GSPCのRSS、マクロ・市況の材料）・
+  Google News ビジネス（US）（広く拾う役）の3本。過去のデータの"CNBC Markets"は書き換えない。
 """
 from __future__ import annotations
 
@@ -25,8 +31,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 SOURCES = [
-    {"key": "cnbc_markets", "name": "CNBC Markets", "region": "米国",
-     "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html"},
+    {"key": "cnbc_earnings", "name": "CNBC Earnings", "region": "米国",
+     "url": "https://www.cnbc.com/id/15839135/device/rss/rss.html"},
+    {"key": "yahoo_sp500", "name": "Yahoo Finance S&P 500", "region": "米国",
+     "url": "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC&region=US&lang=en-US"},
     {"key": "google_business_us", "name": "Google News ビジネス（US）", "region": "米国", "publisher_suffix": True,
      "url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en"},
 ]
@@ -166,7 +174,10 @@ def translate_titles(titles: List[str], post: Callable[[dict, str], dict] = _def
         '各要素は {"ja": 文字列, "market": true または false}（説明や前置きは不要）。\n\n'
         + json.dumps(titles, ensure_ascii=False)
     )
-    payload = {"model": GROK_MODEL, "messages": [{"role": "user", "content": prompt}], "temperature": 0, "max_tokens": 8000}
+    # max_tokens（2026-11-01、配信元3本・最大48件に）: 本番のログでは、32件で出力969・考える分を含めて2,964トークン
+    # （2026-10-23 run 40019408216）、16件で1,404〜1,766トークン（10-26〜10-30）。48件は4,500前後の見込みで、8,000では余裕が2倍に満たない。
+    # 途中で切れると訳も判定も全件捨てる（finish_reason）ため、上限を16,000にする（払うのは使った分だけ）
+    payload = {"model": GROK_MODEL, "messages": [{"role": "user", "content": prompt}], "temperature": 0, "max_tokens": 16000}
     try:
         choice = post(payload, api_key)["choices"][0]
         finish = choice.get("finish_reason")
