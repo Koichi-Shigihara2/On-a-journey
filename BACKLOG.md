@@ -2025,7 +2025,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 **実装（2026-11-01、`32f336a225`）**
 - `headlines_store.py`の`accumulate`が積み足しの1か所（6時間ごとの`headlines_fetch.py`と、夜の`collect_and_send.py::compute_implc`から）。変更のあった回だけ、取得した時刻の米国東部の日付のファイルの`fetches`に記録（配信元ごとのok・理由、新しい件数・日付ごと）
 - `news_headlines.fetch_headlines`に`all_items`（切る前の全件。failed・staleの配信元は入れない）。`compute_implc`が外してから保存する
-- `.github/workflows/Market_Pulse_Headlines.yml`（`40 0,6,12,18 * * *`）。pushは`push_with_retry.sh`、見出しのファイルは`.gitattributes`で`merge=ours`（夜の回と重なってもjobを落とさない。抜けた分は次の回にフィードから拾い直す）。System Healthの[J]に自動で入る（毎日・許容3日）
+- `.github/workflows/Market_Pulse_Headlines.yml`（`40 0,6,12,18 * * *`）。pushは当初`push_with_retry.sh`と`.gitattributes`の`merge=ours`だったが、片方の回の積み足しを黙って捨てるため、追加の指示（2026-11-01）で`headlines_push.py`に替えた（`11775155c2`。`merge=ours`を外し、pull --rebaseが衝突したら見出しのファイルをリモートの版に戻し、その回の入力〈`${RUNNER_TEMP}/headlines_pending.json`〉でaccumulateをやり直してpush。最大3回、だめならjobを失敗に。夜のMarket Pulseも同じ。試験は本物のgitの一時のリモートと2つの作業コピーで、両方の記事・夜の回の訳と判定が残ることを確かめる）。System Healthの[J]に自動で入る（毎日・許容3日）
 - System Health [N]（`_check_n`）: ちょうど12時間は✅、12時間を超えると⚠️、24時間を超えると🔴。フォルダが無ければ未作成（スキップ）。新しい記事が無い回は書かないため、記事が12時間来ないときも⚠️になる
 - 出力の一覧（market_pulse）を作り直し（出力5→6、読み手は`common/system_health.py`）、ANNOTATIONSに1文。UPDATE_SCHEDULE.md（生成・夏時間と冬時間の表・その他の定時・変更の経緯）・SYSTEM_MAP.md（Market Pulseのデータの流れ）
 - 試験 `tests/test_market_pulse_headlines_store.py`（正規化・題名での重複・also_in・title_updates・米国東部の日付〈夏時間と冬時間の境目・時刻なし〉・staleを積まない・新しい記事が無い回は書かない・夜の回の訳と判定・all_itemsを保存しない・[N]の閾値）
