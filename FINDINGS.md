@@ -86,3 +86,4 @@
 | 2026-11-01 | LYFTのCapExの上書きタグ`CapitalizedComputerSoftwareAdditions`は2025年の値が0。CF計算書の行は独自タグで、FCFがOCFと同じ（R6-INVで発見） | X | あり | — | 未登録（束ねる前） |
 | 2026-11-01 | CapExが無いとき、parserは0とみなしてFCF＝OCF、TTMはNone。同じFCFで規則が2つ（R6-INVで発見） | B | あり（年次で代用する銘柄） | — | 未登録（束ねる前） |
 | 2026-11-01 | layer3_builder.py:1063-1079の`calc_fcf`は呼び出し元0件なのに「両方が本関数を呼ぶ」と書かれている（R6-INVで発見） | E | なし | — | 未登録（束ねる前） |
+| 2026-11-01 | ファイナンス・リースの負債（FinanceLeaseLiability・…Noncurrent・…Current）がparser.pyのlong_term_debt・short_term_debtの候補に無く、TANUKIの純有利子負債に入っていない（LongTermDebtAndCapitalLeaseObligationsのタグの銘柄を除く）。company_facts.jsonの最新の値でMSFT 66.6B（年次のtotal_debt 40.3B）・AMZN 13.5B・WMT 6.8B・GOOGL 2.6B・VZ 2.5B・META 1.2B・BROS 420M（total_debt 200M）・DOCN 410M。FCFの式（2026-11-01の1行目）を直すときに合わせて扱う（チャット側の確認で発見） | B | あり（理論株価。FCFの式を直した後も過大のまま残る） | — | 未登録（束ねる前） |

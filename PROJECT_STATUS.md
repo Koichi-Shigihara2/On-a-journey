@@ -14,7 +14,7 @@
 **次の作業（2026-10-30 夜の終業 更新。上から順）**:
 1. （済 2026-11-01 朝）「次回の確認手順」の16: Macro Data Update 2回とも成功25件・失敗0件、System Health `41160489865` で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSEとMarket PulseのFREDの日付が新しい。`[[MACRODATA-FRED-IMPORT-PATH-1]]`をBACKLOG_DONE.mdへ移設（アクティブ8件→7件）
 2. 11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-3. 続いて束ね: FINDINGS.mdの未登録の25行（2026-11-01にDOCNの1行・R6-INVの6行を足した）＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
+3. 続いて束ね: FINDINGS.mdの未登録の26行（2026-11-01にDOCNの1行・R6-INVの6行・チャット側の確認の1行を足した）＋NIY=Fの1行（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
 4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
 5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
 6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
