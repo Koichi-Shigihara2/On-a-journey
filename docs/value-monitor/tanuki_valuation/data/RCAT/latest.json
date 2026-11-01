@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 56.9,
-  "calculation_date": "2026-10-31T05:40:50+09:00",
+  "calculation_date": "2026-11-02T02:31:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -250,7 +250,7 @@
     "cf_years": 0,
     "avg_intensity": 0.0,
     "warnings": true,
-    "note": "年次データ不足（最低2年分必要）"
+    "note": "Q計算不可（OCF/純利益データなし）"
   },
   "fcf_source": "annual_fallback",
   "fcf_ttm_end": null,
@@ -265,7 +265,7 @@
     "substituted_by_annual": true,
     "note": "最新期の営業CFが未取得（最新期は年次の値で代用）"
   },
-  "rice_data_source": "ttm_series",
+  "rice_data_source": "annual_fallback",
   "components": {
     "fcf_5yr_avg": -16477214.333333334,
     "fcf_2yr_avg": -24016321.0,
@@ -331,7 +331,7 @@
     "insider_buy_count": 0,
     "insider_sell_count": 7,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-10-19",
+    "insider_latest_date": "2026-10-30",
     "revenue_ttm": 71540000,
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 106.4,
@@ -387,6 +387,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "QUARTERLY-BASIS-MIX-1",
   "fcf_history": [
     {
       "year": 2021,
