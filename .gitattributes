@@ -5,6 +5,8 @@ docs/market-monitor/market-pulse/data/breadth_data.json text eol=lf merge=ours
 # 見出しの日ごとの積み足しは merge=ours にしない（片方の回の積み足しを黙って捨てない）。push の衝突は
 # src/market/market_pulse/headlines_push.py が、リモートの版に戻して積み足し直す（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）
 docs/market-monitor/market-pulse/data/headlines/*.json text eol=lf
+# 5分足の日ごとの保存（夜のMarket Pulseの回だけが書く。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②）
+docs/market-monitor/market-pulse/data/intraday/*.json text eol=lf
 docs/market-monitor/macro-pulse/data/*.csv              text eol=lf merge=ours
 docs/market-monitor/macro-pulse/data/*.json             text eol=lf merge=ours
 docs/market-monitor/fg-level2/data/*.json               text eol=lf merge=ours

@@ -361,7 +361,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1104,
+     "line": 1142,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -369,7 +369,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1167,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -449,7 +449,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 474,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -457,7 +457,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 291,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -465,7 +465,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 299,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -473,7 +473,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 431,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -481,7 +481,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 444,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -500,6 +500,167 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す）",
+   "decision": "残す（2026-10-23）"
+  },
+  {
+   "path": "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "src/market/market_pulse/intraday_store.py",
+     "func": "update",
+     "line": 170
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Pulse_Update.yml"
+   ],
+   "files_tracked": 0,
+   "top_keys_sampled_files": 0,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": "common/system_health.py",
+     "line": 1031,
+     "func": "_check_o",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1034,
+     "func": "_check_o",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1045,
+     "func": "check_o_intraday",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1144,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1210,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/intraday_store.py",
+     "line": 92,
+     "func": "_load",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/market_pulse/intraday_store.py",
+     "line": 94,
+     "func": "_load",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_market_pulse_intraday_store.py",
+     "line": 240,
+     "func": "TestSystemHealthO.test_missing_latest_trading_day_file_warns",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_intraday_store.py",
+     "line": 246,
+     "func": "TestSystemHealthO.test_before_close_uses_previous_trading_day",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_intraday_store.py",
+     "line": 251,
+     "func": "TestSystemHealthO.test_present_with_missing_is_ok_with_detail",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_intraday_store.py",
+     "line": 255,
+     "func": "TestSystemHealthO.test_no_dir_is_skip",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 475,
+     "func": "test_main_exits_two_when_m_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 292,
+     "func": "test_main_one_line_shows_j_and_k_in_full",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 300,
+     "func": "test_main_warning_only_j_exits_one",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 432,
+     "func": "test_main_overall_severity_matches_discord_and_exit_code",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 445,
+     "func": "test_main_red_label_of_other_check_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [
+    "Market Pulse（市況の判定・8段階の結論・天気）"
+   ],
+   "reader_count": 2,
+   "reader_count_test": 3,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す",
    "decision": "残す（2026-10-23）"
   },
   {
@@ -666,7 +827,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1092,
+     "line": 1130,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -674,7 +835,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1167,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1010,7 +1171,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 474,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1018,7 +1179,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 291,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1026,7 +1187,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 299,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1034,7 +1195,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 431,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1042,7 +1203,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 444,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -2000,7 +2161,7 @@
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/collect_and_send.py",
    "decision": "残す（2026-10-23）",
-   "lines": 1936,
+   "lines": 1944,
    "workflows": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
@@ -2010,6 +2171,7 @@
     "tests/test_collect_and_send_market_data_switch.py",
     "tests/test_market_pulse_headlines_store.py",
     "tests/test_market_pulse_implc.py",
+    "tests/test_market_pulse_intraday_store.py",
     "tests/test_market_pulse_provisional_kind.py",
     "tests/test_market_pulse_stage_conclusions.py"
    ]
@@ -2055,7 +2217,8 @@
    "code": [],
    "same_dir": [],
    "tests": [
-    "tests/test_market_pulse_headlines_push.py"
+    "tests/test_market_pulse_headlines_push.py",
+    "tests/test_push_with_retry.py"
    ]
   },
   {
@@ -2073,6 +2236,20 @@
    "tests": [
     "tests/test_market_pulse_headlines_push.py",
     "tests/test_market_pulse_headlines_store.py"
+   ]
+  },
+  {
+   "dir": "src/market/market_pulse",
+   "file": "src/market/market_pulse/intraday_store.py",
+   "decision": "残す（2026-10-23）",
+   "lines": 189,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "src/market/market_pulse/collect_and_send.py"
+   ],
+   "tests": [
+    "tests/test_market_pulse_intraday_store.py"
    ]
   },
   {
@@ -2202,12 +2379,12 @@
   }
  ],
  "stop_condition": {
-  "outputs": 7,
+  "outputs": 8,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 23,
+  "python_read_sites_into_layer_resolved": 25,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 18,
+  "name_hit_sites_resolved": 22,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -2223,7 +2400,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.047,
+  "ratio_reader": 0.041,
   "threshold": 0.1,
   "hit": false
  },

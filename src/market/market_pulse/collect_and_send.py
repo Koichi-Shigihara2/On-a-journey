@@ -1914,6 +1914,14 @@ if __name__ == "__main__":
     implb = compute_implb(structured_data, lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
     # 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の予定・先物とドル円の最新値（AIの入力には入れない）
     implc = compute_implc(implb)
+    # 5分足の日ごとの保存（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②）。直近10取引日のうち無い日・足りない日だけ取り直す。
+    # 引けの前の今日は書かない。失敗しても毎晩の実行は止めない（画面・判定には使わない）
+    try:
+        import intraday_store as _is
+        _r = _is.update(_now_utc)
+        print(f"[INFO] 5分足の保存: 書いた {_r['written']}・そろい済み {_r['skipped_complete']}日・欠け {_r['missing']}")
+    except Exception as e:
+        print(f"[WARN] 5分足の保存に失敗: {type(e).__name__}: {e}")
     stage_result = build_stage_conclusions(
         structured_data, asset_flow_data, sentiment_data.get("breadth"), data_freshness.get("expected_close_date"),
         get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb, implc=implc)

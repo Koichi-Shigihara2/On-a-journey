@@ -810,6 +810,12 @@ _MARKET_PULSE.update(
             "取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。"
             "読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。"
             "大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す）",
+        "docs/market-monitor/market-pulse/data/intraday/{date_et}.json":
+            "10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとに"
+            "t〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update"
+            "（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]"
+            "（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。"
+            "Yahooの5分足は今日から60日（暦日）で消えるため残す",
         "${RUNNER_TEMP}/headlines_pending.json":
             "その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job の"
             "headlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない）",

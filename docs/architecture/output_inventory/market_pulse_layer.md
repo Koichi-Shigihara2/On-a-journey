@@ -7,11 +7,11 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`src/market/market_pulse/`・`docs/market-monitor/market-pulse/index.html`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-23、Koichiさんの判断）。手で動かすスクリプト4つを消し、出力はすべて残す。sp500_tickers.json・nyse_holidays.json は市場データ層・MACRO PULSE との二重で、R-A の終わりの見直し（論点⑤）で扱う。誰も読まないキー48は残す（下の注記）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 7（ファイル 6・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 4／規則の二重 12（検出式 20種のうち。Market Pulseのファイルを含むもの 0）
+**件数**: 出力 8（ファイル 7・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 5／規則の二重 12（検出式 20種のうち。Market Pulseのファイルを含むもの 0）
 
 **画面の項目**: 画面が読むキー 152（この段階の書き手あり 150・ほかの書き手あり 1・画面の中で作る値 0・**書き手なし 1**）／書き手があるのに誰も読まないキー **50**
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 2件／解決できた読み込み 23件＋ファイル名で当たった行 18件（4.7%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 2件／解決できた読み込み 25件＋ファイル名で当たった行 22件（4.1%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
@@ -32,6 +32,7 @@
 | 2件以上 | `${RUNNER_TEMP}/headlines_pending.json` | その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job のheadlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない） | `headlines_store.py:save_pending` | 2 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/breadth_data.json`<br>（1ファイル） | S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す | `breadth_calculator.py:save_breadth` | 4 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | AS-IS-334 | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>（0ファイル） | 見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す） | `headlines_store.py:accumulate` | 2・テスト4 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>（0ファイル） | 10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す | `intraday_store.py:update` | 2・テスト3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/market_data.json`<br>（1ファイル） | 1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures | `collect_and_send.py:save_data_to_json_and_csv` | 8・テスト4 | market-monitor/market-pulse/index.html（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・Market Pulse（市況の判定・8段階の結論・天気）・Market Pulseの画面 | AS-IS-300・AS-IS-388・AS-IS-390 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord・メール）
@@ -70,18 +71,26 @@
 
 ### `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Headlines.yml・.github/workflows/Market_Pulse_Update.yml
-- Python・保存済みファイル: `common/system_health.py` 行 984・1007・1104・1167（経由 `common/system_health.py::_check_n`）
+- Python・保存済みファイル: `common/system_health.py` 行 984・1007・1142・1210（経由 `common/system_health.py::_check_n`）
 - Python・保存済みファイル: `src/market/market_pulse/headlines_store.py` 行 71・72
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_push.py` 行 206
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_store.py` 行 289・299・303・309・314・321（経由 `common/system_health.py::_check_n`）
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 474（経由 `common/system_health.py::_check_n`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 291・299・431・444（経由 `common/system_health.py::_check_n`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 475（経由 `common/system_health.py::_check_n`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 292・300・432・445（経由 `common/system_health.py::_check_n`）
+
+### `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`（2件以上）
+- 起動元: .github/workflows/Market_Pulse_Update.yml
+- Python・保存済みファイル: `common/system_health.py` 行 1031・1034・1045・1144・1210（経由 `common/system_health.py::_check_o`）
+- Python・保存済みファイル: `src/market/market_pulse/intraday_store.py` 行 92・94
+- テスト・保存済みファイル: `tests/test_market_pulse_intraday_store.py` 行 240・246・251・255（経由 `common/system_health.py::_check_o`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 475（経由 `common/system_health.py::_check_o`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 292・300・432・445（経由 `common/system_health.py::_check_o`）
 
 ### `docs/market-monitor/market-pulse/data/market_data.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Update.yml
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 68・146・157・177・331・353・366・399・409・412・448・458（経由 `browser_checks/check_dependency_map.py::expected_breadth_summary`、`browser_checks/check_dependency_map.py::expected_fear_greed_score`、`browser_checks/check_dependency_map.py::expected_hindenburg_active` ほか）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 41・153・337・810・914（経由 `browser_checks/market_pulse_elements.py::load_entries`）
-- Python・保存済みファイル: `common/system_health.py` 行 158・1092・1167（経由 `common/system_health.py::check_d_actions`）
+- Python・保存済みファイル: `common/system_health.py` 行 158・1130・1210（経由 `common/system_health.py::check_d_actions`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 26・552・581・600・668・1830・1840・1843・1852・1905（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 34・35・142（経由 `src/portfolio/snapshot.py::main`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 515・629・633・910・1203（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg`）
@@ -89,8 +98,8 @@
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 239
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_push.py` 行 98・106・207
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 332・348・364・396・421・1579・1607・1677・1696・1723・1742・1762 ほか6（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg`）
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 474（経由 `common/system_health.py::check_d_actions`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 291・299・431・444（経由 `common/system_health.py::check_d_actions`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 475（経由 `common/system_health.py::check_d_actions`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 292・300・432・445（経由 `common/system_health.py::check_d_actions`）
 - 画面（経由（src/portfolio/snapshot.py → docs/portfolio/data/history.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
@@ -372,16 +381,17 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（10ファイル・4,103行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（11ファイル・4,300行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `breadth_calculator.py` | 444 | `.github/workflows/Market_Pulse_Update.yml` | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
-| `collect_and_send.py` | 1,936 | `.github/workflows/Market_Pulse_Update.yml` | — | — | 5件 |
+| `collect_and_send.py` | 1,944 | `.github/workflows/Market_Pulse_Update.yml` | — | — | 6件 |
 | `futures_snapshot.py` | 60 | — | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
 | `headlines_fetch.py` | 43 | `.github/workflows/Market_Pulse_Headlines.yml` | — | — | 1件 |
-| `headlines_push.py` | 152 | `.github/workflows/Market_Pulse_Headlines.yml`<br>`.github/workflows/Market_Pulse_Update.yml` | — | — | 1件 |
+| `headlines_push.py` | 152 | `.github/workflows/Market_Pulse_Headlines.yml`<br>`.github/workflows/Market_Pulse_Update.yml` | — | — | 2件 |
 | `headlines_store.py` | 215 | — | — | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/headlines_fetch.py`<br>`src/market/market_pulse/headlines_push.py` | 2件 |
+| `intraday_store.py` | 189 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
 | `market_calendar.py` | 227 | — | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
 | `news_headlines.py` | 286 | — | `browser_checks/market_pulse_elements.py` | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/headlines_fetch.py` | 2件 |
 | `sector_rotation.py` | 286 | — | — | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/stage_conclusions.py` | 3件 |

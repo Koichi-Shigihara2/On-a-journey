@@ -1621,6 +1621,11 @@ Market Pulse  ← yfinance / CNN F&G / FREDデータ
 　　（headlines_store.py の accumulate の1か所。6時間ごとの Market_Pulse_Headlines.yml〈Grokなし〉と
 　　夜の Market Pulse の回〈訳・判定を写す〉。読み手は System Health の [N]、
 　　大きく動いた日の事後分析の材料H の入力。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01）
+　　5分足（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F、yfinance の start/end 指定）:
+　　docs/market-monitor/market-pulse/data/intraday/YYYY-MM-DD.json（ETの日付、銘柄ごとに列の配列 t・o・h・l・c・v）に
+　　夜の回が書く（intraday_store.py の update の1か所。直近10取引日のうち無い日・足りない日だけ取り直す。
+　　時刻はETにそろえる〈^VIX・^TNX はシカゴ時間で返る〉）。読み手は System Health の [O]、
+　　事後分析の材料M・X の入力。[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②、2026-11-01）
 MACRO PULSE   ← FREDデータ / FRBステートメント
 　　整合性チェック: src/market/macro_pulse/05_audit.py（05_events.csvの重複行検出・
 　　NFP水準残存兆候の検出、report_consistency_check.py相当の軽量版。MACRO-NFP-1 2026-07-07新設）

@@ -95,6 +95,10 @@ Market Data Daily Updateは外部（Cloudflare Worker）からも起動する（
   `docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json`（記事の時刻の米国東部の日付）に積み足す。Grokは呼ばず、新しい記事が無ければcommitしない。
   夜のMarket Pulseの回も同じファイルに積み足し、訳・判定を写す。時刻は夏時間・冬時間で変えない（記事の時刻で振り分けるため、寄り付き前の回が遅れても
   夜の記事はフィードに残っている限り拾える）。監視はSystem Healthの[N]（取得の記録の最新が12時間より古ければ⚠️、24時間より古ければ🔴）と[J]
+- **5分足の保存**（2026-11-01）: 夜のMarket Pulseの回（collect_and_send.py、引けの後）が10本の5分足を
+  `docs/market-monitor/market-pulse/data/intraday/YYYY-MM-DD.json`（ETの日付）に書く。新しい起動は無い。直近10取引日のうち無い日・足りない日だけを
+  取り直すので、夜の回が抜けても次の回で埋まる（Yahooの5分足は今日から60日〈暦日〉で消えるため、抜けが10取引日を超える前に気づく必要がある）。
+  引けの前の今日は書かない。監視はSystem Healthの[O]（直近の取引日のファイルが無ければ⚠️）
 
 ### 外部起動と保険の関係（2026-10-03）
 
@@ -219,4 +223,5 @@ YAMLのコメント・`config/workflow_dependencies.json`にあった経緯を�
 | 2026-10-01 | Market Data Daily | 20:17 UTCのcronを削除（夏時間は引けから17分でガードが必ず何もせず、冬時間は引け前） | `6de1c89644` |
 | 2026-10-03 | Market Data Daily | 外部起動（Cloudflare Worker、平日20:25・20:55・21:25 UTC＋21:50の確認）を追加し、scheduleは保険に。workflow_dispatchに入力`guard`（既定false、trueでガードを通す）。reset_windowで終わった実行はcommitしない（`_daily_close_retry_log.json`だけのcommitが残っていた） | `4af62bcd1f`・`8dc0deaf0e` |
 | 2026-10-03 | Market Pulse・Stonks Silo・TANUKI VALUATION | 金曜の安全網のcron（22:50・22:40・22:30 UTC）を削除。10-03（土）01:15〜01:28 UTCに遅れて起動し、Market Data Dailyの取得（02:06）より前の前日のデータで動いた（TANUKI VALUATIONはこの夜3回） | `791faa1f02` |
-| 2026-11-01 | Market Pulse Headlines（新設） | 見出しの日ごとの積み足し。6時間ごと（00:40・06:40・12:40・18:40 UTC、土日も含む）。MACRO PULSEの13:03 UTCと重ならない時刻。pushは`headlines_push.py`（見出しのファイルはmerge=oursにせず、衝突したらリモートの版に戻して積み足し直す。最大3回、だめならjobを失敗に。夜のMarket Pulseも同じ）（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①） | `32f336a225`・（この変更のcommit） |
+| 2026-11-01 | Market Pulse Headlines（新設） | 見出しの日ごとの積み足し。6時間ごと（00:40・06:40・12:40・18:40 UTC、土日も含む）。MACRO PULSEの13:03 UTCと重ならない時刻。pushは`headlines_push.py`（見出しのファイルはmerge=oursにせず、衝突したらリモートの版に戻して積み足し直す。最大3回、だめならjobを失敗に。夜のMarket Pulseも同じ）（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①） | `32f336a225`・`11775155c2` |
+| 2026-11-01 | Market Pulse | 夜の回で10本の5分足を日ごとのファイル（data/intraday/）に保存する（新しい起動は無い。pushはheadlines_push.pyでdata/をまとめてadd）（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②） | （この変更のcommit） |

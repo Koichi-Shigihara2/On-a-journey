@@ -1008,6 +1008,44 @@ def check_n_headlines() -> tuple[str, bool, str]:
     return r["label"], r["ok"], r["detail"]
 
 
+# ── O. 5分足の日ごとの保存（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②、2026-11-01） ──
+# docs/market-monitor/market-pulse/data/intraday/YYYY-MM-DD.json は夜のMarket Pulseの回が書く。
+# 引けを過ぎた直近のNYSEの取引日のファイルが無ければ⚠️（Yahooの5分足は60日で消えるので、気づけば次の回で取り直せる）。
+# 欠けた銘柄（missing）は詳細に出すだけ。フォルダが無ければ未作成（スキップ）
+_INTRADAY_DIR = os.path.join(_REPO_ROOT, "docs", "market-monitor", "market-pulse", "data", "intraday")
+
+
+def _check_o(data_dir: Optional[str] = None, now: Optional[datetime] = None) -> dict:
+    data_dir = data_dir or _INTRADAY_DIR
+    now = now or _utcnow()
+
+    def result(label, ok, detail):
+        return {"label": label, "ok": ok, "detail": detail, "critical": False}
+
+    if not os.path.isdir(data_dir):
+        return result("⚠️  5分足のフォルダ未作成（スキップ）", True, "intraday dir not found (skip)")
+    from common.market_data.calendar_universe import nyse_latest_closed_day
+    date_et = nyse_latest_closed_day(now)
+    if date_et is None:
+        return result("✅ 直近の取引日なし", True, "no closed trading day")
+    if not os.path.exists(os.path.join(data_dir, f"{date_et}.json")):
+        return result(f"⚠️  直近の取引日 {date_et} の5分足のファイルが無い", False, f"{date_et}: ファイルなし")
+    try:
+        with open(os.path.join(data_dir, f"{date_et}.json"), encoding="utf-8") as f:
+            doc = json.load(f)
+    except Exception as e:
+        return result(f"⚠️  5分足のファイルを読めない: {date_et}.json（{e}）", False, f"unreadable {date_et}.json: {e}")
+    n = len(doc.get("tickers") or {})
+    missing = doc.get("missing") or {}
+    detail = f"{date_et}: {n}本" + (f"・欠け {', '.join(f'{k}({v})' for k, v in missing.items())}" if missing else "")
+    return result(f"✅ {detail}", True, detail)
+
+
+def check_o_intraday() -> tuple[str, bool, str]:
+    r = _check_o()
+    return r["label"], r["ok"], r["detail"]
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def discord_notify_label(sent: bool) -> str:
     """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
@@ -1028,7 +1066,7 @@ def build_one_line(run_date: str, results: dict) -> str:
     labels = {
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
-        "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines",
+        "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines", "O": "Intraday",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -1103,6 +1141,8 @@ def main() -> int:
     label_m, ok_m, det_m = m["label"], m["ok"], m["detail"]
     n = _check_n()
     label_n, ok_n, det_n = n["label"], n["ok"], n["detail"]
+    o = _check_o()
+    label_o, ok_o, det_o = o["label"], o["ok"], o["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -1122,10 +1162,12 @@ def main() -> int:
         "M": {"ok": ok_m, "short": det_m},
         # N（見出しの積み足しの鮮度、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）も切らない（最新の取得の時刻が読めるように）
         "N": {"ok": ok_n, "short": det_n},
+        # O（5分足の日ごとの保存、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②）も切らない
+        "O": {"ok": ok_o, "short": det_o},
     }
     labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
               "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m,
-              "N": label_n}
+              "N": label_n, "O": label_o}
     for key, r in results.items():
         r["severity"] = _item_severity(labels[key], r["ok"])
     # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
@@ -1150,6 +1192,7 @@ def main() -> int:
         print(f"[L] MacroData:     {label_l}")
         print(f"[M] SecFreshness:  {label_m}")
         print(f"[N] Headlines:     {label_n}")
+        print(f"[O] Intraday:      {label_o}")
         print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知
