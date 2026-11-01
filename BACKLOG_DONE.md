@@ -2,6 +2,44 @@
 
 ---
 
+## 2026-11-01（完了）
+
+### ✅ [MACRODATA-FRED-IMPORT-PATH-1] Macro Data UpdateのFREDの取得が2026-10-24から25系列すべて失敗し、MACRO PULSE・Market Pulseが読むFREDの値が10-22で止まっている
+**完了（2026-11-01）:** 修正 `3de80f90cf`・埋め戻し `19bdd8b965`・記録 `557c38f4de`。次回の確認手順16で本番の実行を確かめて移設。結果は下の「確認」
+**型・処置:** 型は束ねで決める・直す（チャット側の指示、2026-10-30）
+**優先度:** 高（MACRO PULSEの点数・流動性、Market PulseのVXN・HYスプレッド・3か月国債が6日前の値のまま）
+**分類:** データ取得 / `common/macro_data/fetcher.py`（`.github/workflows/Macro_Data_Update.yml`が`python common/macro_data/fetcher.py`で直接動かす）
+**登録日:** 2026-10-30
+**発見:** [[METHOD-CHANGE-PUBLISH-TIMING-1]]・[[SYSHEALTH-SEVERITY-MISMATCH-1]]の読み取りの調査（2026-10-30。System Healthの`[L] MacroData ⚠️ 取得失敗(25件)`が10-25から6日続いていた）
+
+#### 内容（2026-10-30に確認した事実）
+- `common/macro_data/macro_data_violations_log.json`: 25系列が`fetch_status: failed`、`failure_reason`「FREDクライアント初期化失敗: No module named 'common'」。
+  10-23 23:30 JSTの実行（`cae22f9588`）は失敗0、R-E2（`dbb8fb4694`、10-24 00:40 JST）の後の最初の実行（10-24 22:41 JST、`8cd60ad933`）から毎回25件
+- 原因: R-E2で`_get_fred_client()`（61行）が関数の中で`from common.external_api import fred_client`を読むようになった。ワークフローは`python common/macro_data/fetcher.py`で直接動かし、
+  検索パスに入るのは`common/macro_data/`だけでリポジトリの根が入らない。このファイルには根を`sys.path`に足す行が無い。pytestは根をパスに入れて動くため、テストでは見つからなかった
+- 影響: `common/macro_data/series/*.json`のFREDの値は2026-10-22の分まで（例: T10Y2Yの最後は as_of 2026-10-22、fetched_at 10-23 23:30 JST）。
+  読み手はMACRO PULSE（`src/market/macro_pulse/05_main.py`、`common.macro_data.reader`経由）とMarket Pulse（`src/market/market_pulse/collect_and_send.py`）
+- System Healthの`[L] MacroData`は⚠️どまりで、6日間🔴にならなかった（FINDINGS.md 2026-10-30）
+
+#### 直し方（チャット側の指示、2026-10-30）
+1. `common/macro_data/fetcher.py`の先頭に、`common/market_data/daily_guard.py`（22〜23行）と同じ形で根を`sys.path`に足す
+2. 再発防止のテスト: ワークフローが`python <path>.py`で直接動かすスクリプトが、根をパスに入れない動かし方でも`common.`・`src.`のimportを通ること
+3. 欠けた期間を埋め戻す（`python common/macro_data/fetcher.py --start 2026-10-20`）
+4. 確認: 次のMacro Data UpdateとSystem Healthが✅に戻ること（CLAUDE_CODE_START.mdの次回の確認手順）
+
+#### 対応（2026-10-30）
+- `common/macro_data/fetcher.py`: 先頭で根を`sys.path`に足す（`daily_guard.py`と同じ形）
+- テスト`tests/test_workflow_script_imports.py`: ワークフローの各stepの`run`から`python <path>.py`を拾い（`working-directory`を足す、29本）、ASTの全体（関数の中も含む）から`common`・`src`のimportを拾う。子プロセス（cwd=根、PYTHONPATHなし）で`sys.path[0]`をスクリプトのフォルダにし（`python <path>`と同じ。`python -c`のままだと''＝根が先頭に入り見逃す）、最上位のパスを決める文（os・sys・pathlibのimport、代入、関数の定義、sys.pathを触るif・try・式。`__main__`のifは中のsys.pathを触る文だけ）だけを実行して、拾ったモジュールがすべて根の下に見つかるかを確かめる。スクリプトの本体は動かさない（通信・書き込みをしない）。直す前の`fetcher.py`では1件だけ落ち（`fetcher.py`）、ほかの24本は通る（4本は`common`・`src`を読まない）
+- 埋め戻し: 手元で`python common/macro_data/fetcher.py --start 2025-09-25`（毎日の実行と同じ直近400日。`--start 2026-10-20`では観測日が10-20より前の月次の系列〈9月分の公表が10月下旬〉が取れないため）。25系列成功・失敗0、最後の観測日が新しくなったのは20系列（T10Y2Y 10-22→10-29、BAMLH0A0HYM2 10-22→10-28、VXNCLS 10-22→10-28、DGS3MO 10-21→10-28、IC4WSA 10-17→10-24、UMCSENT・MICH・M2SL・CFNAIMA3 8月分→9月分等）。残りの5系列（FEDFUNDS・GACDFSA066MSFRBPHI・PAYEMS・PERMIT・SAHMCURRENT）は新しい公表が無い（`series/`の26ファイルのうちCFNAIは`series_meta.json`に無く取得の対象外）。保存の形は系列（`series/{ID}.json`の`records`に観測日ごとの値・`as_of`・`fetched_at`、同じ観測日は上書き）。MACRO PULSE・Market Pulseの読み口（`common.macro_data.reader`）で新しい値が返ることを確かめた（画面・CSVは各自の次の実行で新しくなる）
+
+#### 確認（2026-11-01、次回の確認手順16）
+- Macro Data Update: 修正のpush（10-30 11:44 UTC）の後の2回、run `41088482451`（10-30 16:17 UTC、ストアの更新 `e02476fe32` 10-31 01:19 JST）・`41215187475`（10-31 15:30 UTC、`56ad473772` 11-01 00:32 JST）とも「完了: 25系列処理、成功25件/失敗0件」（success）
+- System Health run `41160489865`（10-31 02:32 UTC＝11:32 JST。10-31 01:19 JSTのストアの更新の後）: `[L] MacroData: ✅ 全系列取得成功`・`Overall: ✅ HEALTHY`・conclusion success（10-29・10-30はfailure）。11-01 00:32 JSTの更新の後の実行は、確認の時点（11-01 01:22 UTC）でまだ動いていない
+- チャット側の確認: `common/macro_data/macro_data_violations_log.json`の`fetch_status: failed` 0件（手元でも26件すべて`ok`）。MACRO PULSEの`05_liquidity.csv`の最新行がh41_date 2026-10-28・fed_balance 6,745,635（`0307e9d39f`）。Market PulseがVXN 25.18（10-29）・HY 3.26（10-29）・DGS3MO 4.18（10-28）
+- 手元で見たもの: Market Pulse（10-30 20:31 UTCの`400487716a`、run `41123569762`）は前日（`2b6a671c5c`）と比べて`asset_flow.short_bond`の日付 2026-10-21→2026-10-28・4.25→4.18、`vxn_latest` 28.72→25.18、`hy_spread.current` 3.4→3.26（10-28・10-29の回は同じ値のまま）。MACRO PULSEの`05_events.csv`に新しい観測日のFREDの行（`yc_10y2y_2026-10-30`・`hy_spread_2026-10-29`・`ic4wsa_2026-10-24`、CFNAIの改定値）
+
+---
+
 ## 2026-10-30（完了）
 
 ### ✅ [TAIL-REVIEW-PERIOD-FILTER-1] TANUKI TAILのレビューは対象の期にかかわらず作った時点の最新の財務で書かれ、後から作った過去の期のレビュー・スコアの推移が期ごとの比較になっていない
