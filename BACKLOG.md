@@ -2008,6 +2008,30 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 画面の48時間の打ち切り（`:246`）と既存の`headlines`は変えない
 - 前提: 2/8
 
+**段階1の調査（2026-11-01、読み取り・保存しない試し取得）**
+- 日の区切りは記事の published の米国東部の日付がよい。材料H（前日の引け〜当日の引け）がいつも2ファイルで組め、夜の回の遅れ（01:47・02:17 UTCの保険の起動等）に左右されない。取得した日で振り分けると、記事の入るファイルが最初に拾った回で決まり、2ファイルの保証が無い
+- 大きさの見込み: 1件は訳・判定込みで中央値552バイト（Googleのリンクが最大525文字）。1日約80件・50〜65KB、1年365ファイル・約18〜25MB。リポジトリはPUBLICで、中身は今の`market_data.json`の`headlines`と同じ範囲（本文・要約なし）
+- リンク（3本の実際の形）: CNBCはクエリ無し、Yahooは16件すべて`.tsrc=rss`、Googleは70件すべて中継のリンクで`oc=5`。保存済みの330リンクで、同じリンクで題名が変わったもの・同じ題名でリンクが違うものは0件
+- 寄り付き前は12:40 UTC（8:40 EDT・7:40 EST）。記事の時刻で振り分けるので、GitHubのscheduleが遅れてもフィードに残る限り拾える。Market_Pulse_Update.ymlにジョブを足すと、今の`update`の`if`がscheduleでも通り、[J]も朝の成功が夜の失敗を隠すため、別のワークフローにする
+- 出力の一覧: 書き手が積み足しのために読み直すだけでは読み手に数えず、INV-2「読み手0件の出力」でNGになる（前例 `_daily_close_retry_log.json`）→ System Healthの検査を本番の読み手にする
+- 寄り道の発見: 11-01から冬時間で、Market Pulseは21:30 UTC頃（06:30 JST）に動く（外部起動の21:25 UTCの回で取得）。手順17・18の「20:30 UTC」は夏時間の時刻だった（2026-11-01 の docs の commit で直した）
+
+**決定（2026-11-01 チャット側）**: 段階1の案のとおり。ただし
+1. 取得の回は新しいワークフローで6時間ごと（00:40・06:40・12:40・18:40 UTC、土日も含む）。Grokは呼ばない。新しい記事が無ければcommitしない。夜のMarket Pulseの回も積み足す（訳・判定はその回の結果を写す）
+2. 監視はSystem Healthに検査を1つ（fetchesの最新が12時間より古ければ警告、24時間より古ければNG）。これを本番の読み手として出力の一覧に載せ、ANNOTATIONSに1文
+3. 夜の回は`fetch_headlines`の返り値に切る前の全件を別のキーで足す（market_data.jsonには保存しない）。止まった配信元（stale）の記事は積まない
+4. そのほか（置き場所・振り分け・重複の除き方・also_in・title_updates・既存の`headlines`を変えない）は段階1の案のとおり
+
+**実装（2026-11-01、`32f336a225`）**
+- `headlines_store.py`の`accumulate`が積み足しの1か所（6時間ごとの`headlines_fetch.py`と、夜の`collect_and_send.py::compute_implc`から）。変更のあった回だけ、取得した時刻の米国東部の日付のファイルの`fetches`に記録（配信元ごとのok・理由、新しい件数・日付ごと）
+- `news_headlines.fetch_headlines`に`all_items`（切る前の全件。failed・staleの配信元は入れない）。`compute_implc`が外してから保存する
+- `.github/workflows/Market_Pulse_Headlines.yml`（`40 0,6,12,18 * * *`）。pushは`push_with_retry.sh`、見出しのファイルは`.gitattributes`で`merge=ours`（夜の回と重なってもjobを落とさない。抜けた分は次の回にフィードから拾い直す）。System Healthの[J]に自動で入る（毎日・許容3日）
+- System Health [N]（`_check_n`）: ちょうど12時間は✅、12時間を超えると⚠️、24時間を超えると🔴。フォルダが無ければ未作成（スキップ）。新しい記事が無い回は書かないため、記事が12時間来ないときも⚠️になる
+- 出力の一覧（market_pulse）を作り直し（出力5→6、読み手は`common/system_health.py`）、ANNOTATIONSに1文。UPDATE_SCHEDULE.md（生成・夏時間と冬時間の表・その他の定時・変更の経緯）・SYSTEM_MAP.md（Market Pulseのデータの流れ）
+- 試験 `tests/test_market_pulse_headlines_store.py`（正規化・題名での重複・also_in・title_updates・米国東部の日付〈夏時間と冬時間の境目・時刻なし〉・staleを積まない・新しい記事が無い回は書かない・夜の回の訳と判定・all_itemsを保存しない・[N]の閾値）
+- 手元で本物の3本を2回（保存先はscratchpad、2026-11-01 11:26 UTC）: 1回目は切る前の117件から新しい記事116件・also_in 1件、5ファイル（10-28 1件・10-29 22件・10-30 32件・10-31 54件・11-01 7件、大きいもので42KB）。2回目は「新しい記事も変更も無い」で何も書かなかった。重複のidとリンクは0件
+- 確認: CLAUDE_CODE_START.mdの次回の確認手順19。済むまでBACKLOGに残す
+
 #### ② [4/8] 5分足の保存
 - ^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYGを、該当日だけでなく毎日、日ごとの別ファイルに保存する
 - 時刻はETにそろえる。取得は`start`/`end`指定
