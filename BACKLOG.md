@@ -2136,6 +2136,21 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 続き（2026-10-26、Koichiさんの判断）: `e7e289c5e7` report.txtの注記に`basis_mix.restated`の組み替えた期・項目・値・変化率（変化の大きい順に3件まで）。印の無い銘柄のreport.txtは前後で同じ、誰も読まないキー 51→50。
   画面はHONの注記・WATCH・信頼性LOWとconsoleのエラー0、TSLAは前と同じ（手元のPlaywright）。+387行は不具合の根治のため「数を増やさない」の対象外（CHAT_RULES.md「発見の溜め方と根治の判断」6）。公開は同じ日の手動のTANUKI VALUATION
 
+#### 確認（2026-11-02 朝、手順13。1項目が条件どおりでないため移設しない）
+- 本番: SEC_Data_Update run `41330561316`（11-01 17:15 UTC起動、success、data `0a4f7e9953`）→HypeCore `bf2cb93875`→TANUKI VALUATION run `41331296808`・`41331901357`（success。`dbd08abe96` 02:39 JST・`325f44bd1a` 02:52 JST）→TANUKI Score run `41333692054`
+- チャット側の確認済み: HONのTTM 2026-09-30のFCF 1,274M・TTMの`basis_mix`・点の`basis_mixed`（2025-09-30・2026-09-30）、理論株価22.416、WATCH、report.txtの組み替えの3行、method_change 11-01・11-02
+- HONのfunda 25（前と同じ）: 済
+- HypeCoreのstage（`bf2cb93875`の前後、全98銘柄の月ごと）: HONは変化0。過去の月の変化0。当月（2026-10）の行だけ16銘柄が変わった（AAPL・CAKE・CDNS・DDOG・DELL・IOT・LMT・MO・MRVL・MSFT・NET・NOW・PLTR・PM・TDY・WMT）。前の実行（10-26）の月の途中の株価で付けた当月の行を、月末の株価で付け直したもの（16銘柄とも株価が動いている。CDNS・MO・MSFT・NOWは売上の前年比もQ3の10-Qで更新）。計算方法の変更によるものではない
+- 理論株価の変化（`dbd08abe96`の親と今の`latest.json`、株価は前後で同じ）: 19銘柄（AMZN・BBAI・CDNS・CSGP・ENTG・GEV・GOOGL・HWM・KLAC・KO・LLY・MO・MSFT・NOW・RMBS・SCCO・TER・VRT・VZ）とHON。VZを除く18銘柄は`fcf_ttm_end`が前進（CDNS・RMBSは2026-03-31→09-30、KOは04-03→10-02、ほかは6月末→9月末）。
+  normalizedの前後（`0a4f7e9953`の前後）では、前からあった四半期の値の変化は前年同期（2025Q3）だけで、新しい10-Qの比較の列による: CSGP・LLYは丸め（百万単位へ、差0.1%未満）、GOOGLは自社株買い（FCFに入らない）、KLAC（×10）・NOW（×5）は株式分割の調整・SCCOは株式数の調整（`SharesDiluted`だけ）、**VRTは営業CFの2025Q3が508.7M→482.7M（−26M）**。
+  VRTは基準のFCFが`recent_2yr`（TTM 2026-09-30と2025-09-30の平均）のため、この組み替えで基準のFCFが約−13M（2,234Mの約0.6%）動いた分が、`fcf_ttm_end`の前進のほかに入る（CHECK-66・案1の印の対象ではない〈20%未満〉）。
+  **VZは`fcf_ttm_end`が無い**（CapExのタグが候補外、FINDINGS 2026-11-01）。株価は前後で同じで、変化はQ3の10-Qの貸借対照表・売上・最大EPS（`net_debt_period` 2026Q2→Q3、純有利子負債163.5B→161.7B、`revenue_ttm_end`・`max_eps_ttm_end` 6月末→9月末）による（理論株価 +0.49%）
+- 判定が変わった銘柄（10銘柄）: GOOGL HOLD→WATCH（理論株価−46.01%、新しい期のFCF）・VZ HOLD→BUY（funda 40→55、Q3の10-Q）・CDNS TRIM→HOLD・MSFT TRIM→HOLD（どちらもtimingとHypeCoreの段階、理論株価も新しい期）・AAPL TRIM→HOLD・CAKE HOLD→TRIM・PLTR TRIM→HOLD・PM TRIM→HOLD・TDY TRIM→HOLD・WMT TRIM→HOLD（理論株価・fundaは変わらず、HypeCoreの当月の段階が変わってtimingが動いた）。HONは変わらない
+- **rccのCHECK-66: 1件（HON）だが、「保存した印が食い違う」の行が出る**（`report_consistency_check.py --fail-on-ng` NG=0・WARN 225）。
+  `TTMの点 ['2025-09-30', '2026-09-30']・判定 ['2025-09-30', '2025-12-31', '2026-03-31', '2026-06-30', '2026-09-30']・normalized あり`。
+  データは正しい: TTMの系列は直近の期末と同じ月の各年の点だけ（2021-09-30〜2026-09-30の6点）で、書き手（`ttm_calculator.py::mark_basis_mix`）は系列にある点だけに印を付ける（判定と系列の共通は2025-09-30・2026-09-30で、保存した印と一致）。normalizedとTTMの`basis_mix`も同じ。
+  検査（`report_consistency_check.py::_check_basis_mix`の1773行）が系列に無い期末まで印を求めている（10-26の実装の時点ではTTMに`basis_mix`が無く、この比較は通っていなかった）。FINDINGS.md 2026-11-02。条件どおりでないため、移設と手順13の済はチャット側の判断を待つ
+
 ---
 
 ### [SYSHEALTH-SEVERITY-MISMATCH-1] System HealthのDiscordの先頭の絵文字・文言・各欄の絵文字・Overallの行・終了コードが別々の判定から出ていて、同じ実行で重大度が食い違う

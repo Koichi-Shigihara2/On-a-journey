@@ -38,7 +38,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **確かめる順（日時の順）**:
 ① （済 2026-11-01 朝）手順16
-② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力28行）。**2026-11-01 終業の時点（12:59 UTC）では未**: SEC_Data_Updateが起動していない（最新は10-25の`40205244163`）。手順13・5・束ねは次回に回す
+② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力28行）。**2026-11-01 終業の時点（12:59 UTC）では未**: SEC_Data_Updateが起動していない（最新は10-25の`40205244163`）。手順13・5・束ねは次回に回す。**2026-11-02 朝**: SEC_Data_Update `41330561316`（11-01 17:15 UTC）の後に確認。手順13は1項目（rccのCHECK-66の「保存した印が食い違う」の行、検査の側）が残り未済、手順5・束ねは下の各項目
 ②' 11-03（火）朝 JST（11-02 21:30 UTC頃〈冬時間〉のMarket Pulseの実行の後） … 手順17・手順18・手順19・手順20。**まず夜のMarket Pulseが成功してpushまで済んだかを見る**（`gh run list --workflow Market_Pulse_Update.yml`。2026-11-01からpushは`headlines_push.py`を通る〈見出しのファイルの衝突は積み足し直す、3回だめならjobが失敗〉ため、Commit and pushの段のログも見る）。手順19は新しいワークフロー`Market_Pulse_Headlines.yml`の最初の回から（2026-11-01 13:05 UTCの時点で手動・cronとも0回）
 ②'' その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の流れ）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤（1/8・2/8・3/8①・4/8②は2026-11-01に実装、確認待ち）
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
@@ -55,6 +55,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - rccのCHECK-66（WARN、新設）が1件（HON）で、「保存した印が食い違う」の行が無い
      - method_changeの印（`config/method_change.json`の11-01・11-02）がその日の行にある
      - 新しい四半期の申告でHONの組み替えが進んでも、印は直近4四半期がそろうまで（2027-06-30の期末まで）残る
+   - **2026-11-02 朝の確認（未済。チャット側の判断待ち）**: SEC_Data_Update run `41330561316`→TANUKI VALUATION run `41331901357`の後。HONのTTM・理論株価22.416・WATCH・funda 25・report.txtの3行・method_changeは合格、HypeCoreの過去の月のstageの変化0（当月の行の16銘柄は月末の株価による）、19銘柄の理論株価の変化はfcf_ttm_end の前進（VZはQ3の10-Qの貸借対照表・売上、VRTは前年同期の営業CFの組み替え−26Mも少し入る）。
+     **rccのCHECK-66は1件（HON）だが「保存した印が食い違う」の行が出る**（検査がTTMの系列に無い四半期末まで印を求めている。データは正しい。FINDINGS.md 2026-11-02）。詳細はBACKLOG.mdの`[[QUARTERLY-BASIS-MIX-1]]`「確認（2026-11-02 朝、手順13）」。移設はしていない
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
    - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG〈case b、7月末の10-Qがcompanyfactsに未反映〉で残す。submissionsの最新も7月末でQ3の10-Qはまだ提出されていない）
    - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
