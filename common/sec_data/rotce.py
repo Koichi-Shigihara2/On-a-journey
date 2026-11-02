@@ -681,7 +681,7 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
         r["generated_at"] = generated_at
         _path = os.path.join(out_dir, f"{r['ticker']}.json")
         # 前回の{TICKER}.jsonの method_change_applied と比べ、新しいIDを初めて読んだ実行でscopeの銘柄に印を付ける
-        _method_change.stamp(r, prev=_method_change.read_json(_path), ticker=r["ticker"])
+        _method_change.stamp(r, prev=_method_change.previous_output("rotce", r["ticker"], base_dir=out_dir), ticker=r["ticker"])
         with open(_path, "w", encoding="utf-8") as f:
             json.dump(r, f, ensure_ascii=False, indent=1)
         rows[r["ticker"]] = _summary_row(r)
@@ -697,7 +697,7 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
         "tickers": rows,
     }
     # 全銘柄をまとめたファイル: scopeの銘柄が1つでもあれば先頭に付ける
-    _method_change.stamp(summary, prev=_method_change.read_json(os.path.join(out_dir, "_summary.json")))
+    _method_change.stamp(summary, prev=_method_change.previous_output("rotce_summary", base_dir=out_dir))
     with open(os.path.join(out_dir, "_summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=1)
     return summary

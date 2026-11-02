@@ -3667,6 +3667,19 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", [], basis_msgs))
         total_warn += len(basis_msgs)
 
+    # CHECK-67: 計算方法の変更の「前回の出力」が全件とも見つからない種類（NG化しない、[[METHOD-CHANGE-PUBLISH-TIMING-1]]。
+    # 判定は common/method_change.py::check_previous_outputs の1か所）
+    from common import method_change as _mc_check
+    mc_msgs = []
+    for _w in _mc_check.check_previous_outputs():
+        _msg, _is_new = annotate_warn("[GLOBAL]", _w, warn_ledger)
+        mc_msgs.append(_msg)
+        if _is_new:
+            total_warn_new += 1
+    if mc_msgs:
+        flagged.append(("[GLOBAL]", [], mc_msgs))
+        total_warn += len(mc_msgs)
+
     # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
     # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。
     fresh_msgs = []

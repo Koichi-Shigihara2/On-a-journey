@@ -34,6 +34,18 @@ CONFIG_PATH = os.path.join(_REPO_ROOT, "config", "method_change.json")
 ENV_NAME = "METHOD_CHANGE"
 KEY = "method_change"
 APPLIED_KEY = "method_change_applied"
+# 前回の出力が見つからず、新しい形の件の印を決められなかった出力に付ける（rccのCHECK-67が全件で付いていればWARN）
+PREV_MISSING_KEY = "method_change_prev_missing"
+# 「前回の出力」は前回公開したもの（docs/配下）から読む（2026-11-03。HypeCoreは手元の書き出し先
+# src/value/hypecore/data/〈.gitignore、CIに無い〉から読んでいて、CIで毎回「前回の出力が無い」になり印が付かなかった）。
+# {種類: (リポジトリの根からのフォルダ, ファイル名〈{T}は銘柄〉)}
+PUBLISHED = {
+    "tanuki": ("docs/value-monitor/tanuki_valuation/data", "{T}/latest.json"),
+    "hypecore": ("docs/value-monitor/hypecore/data", "{T}_poc.json"),
+    "stonks": ("docs/value-monitor/stonks-silo/data", "results.json"),
+    "rotce": ("docs/common/sec_data/rotce", "{T}.json"),
+    "rotce_summary": ("docs/common/sec_data/rotce", "_summary.json"),
+}
 _ID_RE = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+$")
 _JST = timezone(timedelta(hours=9))
 _UNSET = object()
@@ -125,20 +137,52 @@ def stamp(entry: dict, today: date | None = None, config_path: str | None = None
     prev を渡さない呼び出しは、古い形（日付）と環境変数の印だけ（2026-11-01までの動き）。
     """
     if prev is _UNSET:
-        ids, applied = active_method_changes(today, config_path), None
-    else:
-        ids, applied = marks(prev, ticker, today, config_path)
-    return apply(entry, ids, applied)
+        return apply(entry, active_method_changes(today, config_path), None)
+    ids, applied = marks(prev, ticker, today, config_path)
+    return apply(entry, ids, applied, prev_missing=prev is None)
 
 
-def apply(entry: dict, ids: list[str], applied: Optional[list[str]]) -> dict:
-    """marks() の結果を entry に書く（同じ実行の複数の出力に同じ印を付けるとき）。前の印は消す"""
+def apply(entry: dict, ids: list[str], applied: Optional[list[str]], prev_missing: bool = False) -> dict:
+    """marks() の結果を entry に書く（同じ実行の複数の出力に同じ印を付けるとき）。前の印は消す。
+    prev_missing: 前回の出力が無かった（新しい形の件があるときだけ PREV_MISSING_KEY を書く）"""
     entry.pop(KEY, None)
+    entry.pop(PREV_MISSING_KEY, None)
     if ids:
         entry[KEY] = ",".join(ids)
     if applied is not None:
         entry[APPLIED_KEY] = list(applied)
+        if prev_missing:
+            entry[PREV_MISSING_KEY] = True
     return entry
+
+
+def previous_output(kind: str, ticker: Optional[str] = None, base_dir: Optional[str] = None) -> Optional[dict]:
+    """前回公開した出力（PUBLISHEDの場所）。base_dir は書き出し先を変えられる書き手（TANUKI・ROTCEのテスト等）が渡す"""
+    folder, name = PUBLISHED[kind]
+    d = base_dir or os.path.join(_REPO_ROOT, folder)
+    return read_json(os.path.join(d, name.format(T=(ticker or "").upper())))
+
+
+def check_previous_outputs(root: Optional[str] = None, config_path: str | None = None) -> list[str]:
+    """CHECK-67（WARN）: 新しい形の件があるのに、ある種類の公開の出力が全件とも「前回の出力が無い」（PREV_MISSING_KEY）なら、
+    印を付けられていない（前回の出力を読む場所の誤り等）。種類ごとに1行。判定の1か所（rccが呼ぶ）"""
+    import glob
+    if not new_form_ids(config_path):
+        return []
+    root = root or _REPO_ROOT
+    out = []
+    for kind, (folder, name) in PUBLISHED.items():
+        paths = glob.glob(os.path.join(root, folder, name.replace("{T}", "*")))
+        if kind == "rotce":
+            paths = [p for p in paths if not os.path.basename(p).startswith("_")]
+        docs = [d for d in (read_json(p) for p in paths) if d is not None]
+        if not docs:
+            continue
+        missing = sum(1 for d in docs if d.get(PREV_MISSING_KEY))
+        if missing == len(docs):
+            out.append(f"  [WARN-67 計算方法の変更の前回の出力] {kind}: 公開の出力 {len(docs)}件すべてで前回の出力が見つからず、"
+                       f"新しい形の件の印を付けられていない（{folder}）。common/method_change.py の PUBLISHED と書き手の読み方を確かめる")
+    return out
 
 
 def read_json(path: str) -> Optional[dict]:

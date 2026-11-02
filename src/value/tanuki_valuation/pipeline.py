@@ -1260,10 +1260,13 @@ class TanukiValuationPipeline:
         # 印は前回のlatest.jsonの method_change_applied と比べて1回だけ決め、この実行の出力（latest.json・
         # history/・history.json・score_history.json・hypecore_history/）に同じ印を付ける（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
         latest_path = os.path.join(ticker_dir, "latest.json")
-        _mc_ids, _mc_applied = _method_change.marks(_method_change.read_json(latest_path), ticker)
+        # 前回の出力は公開の場所（output_dir＝docs/value-monitor/tanuki_valuation/data。テストでは一時フォルダ）
+        _mc_prev = _method_change.previous_output("tanuki", ticker, base_dir=self.output_dir)
+        _mc_ids, _mc_applied = _method_change.marks(_mc_prev, ticker)
+        _mc_prev_missing = _mc_prev is None
         self.__dict__.setdefault("_method_change_marks", {})[ticker] = (_mc_ids, _mc_applied)
-        _method_change.apply(latest_data, _mc_ids, _mc_applied)
-        _method_change.apply(valuation, _mc_ids, _mc_applied)
+        _method_change.apply(latest_data, _mc_ids, _mc_applied, prev_missing=_mc_prev_missing)
+        _method_change.apply(valuation, _mc_ids, _mc_applied, prev_missing=_mc_prev_missing)
         with open(latest_path, "w", encoding="utf-8") as f:
             json.dump(latest_data, f, ensure_ascii=False, indent=2)
 

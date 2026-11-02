@@ -154,11 +154,11 @@ class TestFirstReadMarks:
         assert mc.scope_for("LAYER3-RETENTION-PERIOD-1", "CAKE", cfg) == mc.ALL
 
     def test_no_previous_output_records_without_marking(self, tmp_path, monkeypatch):
-        """前回の出力が無い（新しい銘柄）は比べる相手が無いので印を付けず、読んだことだけ書く"""
+        """前回の出力が無い（新しい銘柄）は比べる相手が無いので印を付けず、読んだことと「前回の出力が無い」を書く"""
         monkeypatch.delenv(mc.ENV_NAME, raising=False)
         cfg = _cfg(tmp_path, [_NEW])
         assert mc.stamp({}, date(2026, 11, 6), cfg, prev=None, ticker="HON") == {
-            "method_change_applied": ["FCF-DEFINITION-SINGLE-SOURCE-1"]}
+            "method_change_applied": ["FCF-DEFINITION-SINGLE-SOURCE-1"], "method_change_prev_missing": True}
 
     def test_whole_file_output_is_marked_when_scope_has_tickers(self, tmp_path, monkeypatch):
         monkeypatch.delenv(mc.ENV_NAME, raising=False)
@@ -256,3 +256,61 @@ class TestScopeScript:
         assert json.loads(cfg.read_text(encoding="utf-8"))["changes"][-1]["id"] == "FCF-DEFINITION-SINGLE-SOURCE-1"
         with pytest.raises(SystemExit):
             ms.write_entry(e, str(cfg))
+
+
+# ── 前回の出力は公開の場所（docs/配下）から読む・CHECK-67（2026-11-03） ──
+
+class TestPreviousOutput:
+    def test_hypecore_reads_published_docs_copy(self, tmp_path, monkeypatch):
+        """HypeCoreは手元の書き出し先（src/value/hypecore/data/、CIに無い）でなく docs/ の写しを前回の出力にする"""
+        monkeypatch.setattr(mc, "_REPO_ROOT", str(tmp_path))
+        d = tmp_path / "docs" / "value-monitor" / "hypecore" / "data"
+        d.mkdir(parents=True)
+        (d / "HON_poc.json").write_text(json.dumps({"method_change_applied": ["X-1"]}), encoding="utf-8")
+        assert mc.previous_output("hypecore", "hon") == {"method_change_applied": ["X-1"]}
+        assert mc.previous_output("hypecore", "CAKE") is None
+
+    def test_base_dir_overrides_location(self, tmp_path):
+        (tmp_path / "HON").mkdir()
+        (tmp_path / "HON" / "latest.json").write_text(json.dumps({"a": 1}), encoding="utf-8")
+        assert mc.previous_output("tanuki", "HON", base_dir=str(tmp_path)) == {"a": 1}
+
+    def test_writers_use_previous_output(self):
+        """書き手はどれも previous_output（PUBLISHEDの場所）で前回の出力を読む"""
+        srcs = {
+            "src/value/hypecore/hypecore.py": 'previous_output("hypecore", ticker)',
+            "src/value/tanuki_valuation/pipeline.py": 'previous_output("tanuki", ticker, base_dir=self.output_dir)',
+            "src/value/stonks_silo/pipeline.py": 'previous_output("stonks"',
+            "common/sec_data/rotce.py": 'previous_output("rotce"',
+        }
+        for path, needle in srcs.items():
+            with open(os.path.join(_REPO_ROOT, path), encoding="utf-8") as f:
+                assert needle in f.read(), path
+
+    def test_prev_missing_flag(self, tmp_path, monkeypatch):
+        monkeypatch.delenv(mc.ENV_NAME, raising=False)
+        cfg = _cfg(tmp_path, [_NEW])
+        assert mc.stamp({}, date(2026, 11, 6), cfg, prev=None, ticker="HON")[mc.PREV_MISSING_KEY] is True
+        assert mc.PREV_MISSING_KEY not in mc.stamp({mc.PREV_MISSING_KEY: True}, date(2026, 11, 6), cfg, prev={}, ticker="HON")
+        assert mc.PREV_MISSING_KEY not in mc.stamp({}, date(2026, 11, 6), _cfg(tmp_path, [_OLD]), prev=None, ticker="HON")
+
+
+class TestCheckPreviousOutputs:
+    def _write(self, root, flags):
+        d = root / "docs" / "value-monitor" / "hypecore" / "data"
+        d.mkdir(parents=True, exist_ok=True)
+        for i, f in enumerate(flags):
+            (d / f"T{i}_poc.json").write_text(json.dumps({mc.PREV_MISSING_KEY: True} if f else {}), encoding="utf-8")
+
+    def test_warn_when_all_outputs_missed_previous(self, tmp_path):
+        self._write(tmp_path, [True, True, True])
+        w = mc.check_previous_outputs(str(tmp_path), _cfg(tmp_path, [_NEW]))
+        assert len(w) == 1 and "WARN-67" in w[0] and "hypecore" in w[0]
+
+    def test_no_warn_when_some_found(self, tmp_path):
+        self._write(tmp_path, [True, False, True])        # 新しい銘柄だけ前回の出力が無い
+        assert mc.check_previous_outputs(str(tmp_path), _cfg(tmp_path, [_NEW])) == []
+
+    def test_no_warn_without_new_form_entries(self, tmp_path):
+        self._write(tmp_path, [True, True])
+        assert mc.check_previous_outputs(str(tmp_path), _cfg(tmp_path, [_OLD])) == []

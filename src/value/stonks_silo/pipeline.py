@@ -232,7 +232,7 @@ def run(tickers: list[str] | None = None) -> dict:
     # 計算方法の変更の印: 前回のresults.jsonの method_change_applied と比べ、新しいIDを初めて読んだ実行で付ける
     # （全銘柄をまとめたファイルなので、scopeの銘柄が1つでもあれば先頭に付ける）。
     # 銘柄を指定した実行は一部の銘柄しか計算しないので、新しい形の件は読んだことにしない（前回の一覧を引き継ぐ）
-    _prev_output = _method_change.read_json(str(_OUTPUT_FILE))
+    _prev_output = _method_change.previous_output("stonks")  # _OUTPUT_DIR と同じ公開の場所
     if partial:
         _method_change.stamp(output)
         if _prev_output and _method_change.APPLIED_KEY in _prev_output:

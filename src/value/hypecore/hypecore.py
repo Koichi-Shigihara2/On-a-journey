@@ -1148,7 +1148,8 @@ def run_poc(ticker: str = "PLTR") -> dict:
     }
     out_path = _OUT_DIR / f"{ticker}_poc.json"
     # 前回の{TICKER}_poc.jsonの method_change_applied と比べ、新しいIDを初めて読んだ実行でscopeの銘柄に印を付ける
-    _method_change.stamp(result, prev=_method_change.read_json(str(out_path)), ticker=ticker)
+    # 前回の出力は公開した docs/value-monitor/hypecore/data/{T}_poc.json から読む（src/value/hypecore/data/ はCIに無い、2026-11-03）
+    _method_change.stamp(result, prev=_method_change.previous_output("hypecore", ticker), ticker=ticker)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n保存完了: {out_path}")
