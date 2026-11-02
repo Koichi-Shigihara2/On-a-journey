@@ -2108,6 +2108,38 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   - 実例（2026-11-02、手順13の確認）: VRTの2026Q3の10-Q（11-01のSEC_Data_Updateで取り込み）が前年同期（2025Q3）の営業CFを508.7M→482.7M（−26M）に組み替えた。基準のFCFが`recent_2yr`（TTM 2026-09-30と2025-09-30の平均）のため約−13M（2,234Mの約0.6%）動いた（20%未満で[[QUARTERLY-BASIS-MIX-1]]の印の対象ではない）
 - 実装は全銘柄のシミュレーションと`config/method_change.json`の印つきで
 
+#### 段の分け方（チャット側、2026-11-02）
+- 段1: FCFの式・リースの負債・CapExの欠け・VZ/LOAR/LYFTのタグ・`calc_fcf`の削除・STONKS SILOの式
+- 段1b: `adjustments.py::adjust_negative_fcf`の不連続（FCFの平均が0以下なら売上×8%を下限にする。0の前後で値が飛ぶ。FINDINGS 2026-11-02）。**段1と段1bは一緒に1回の計算方法の変更として公開する**（チャット側、2026-11-02 夜）
+- 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）
+- 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）
+- 段4: 版で値が違う176行（VRTの実例）の調査
+
+#### 段1のSTEP 0（2026-11-02 夜、読み取りと手元のシミュレーション。実装・公開はしていない）
+1. FCFの式の実装箇所: `ttm_calculator.py:116`（`_calc_fcf`、382行でTTMの`flow.FCF`）・`parser.py:3381-3395`（年次・四半期の`cf.free_cash_flow`、CapExが無いと0とみなし`ocf != 0`のときだけ書く、`fcf_method`・`finance_lease_payments_applied`も書く）・
+   `layer3_builder.py:1063`（`calc_fcf`、呼び出し元0件）・STONKS SILOの`fetcher.py:160`（`free_cash_flow`が無いときOCF − |CapEx|）・`analyzer.py:531`（月次バーン、CapExが無いとOCFだけ）。
+   読み手: `finance_lease_payments_applied`は`data_fetcher.py:605`のprintだけ、`fcf_method`は0件。年次の`free_cash_flow`は`reader.py`の226・327、`data_fetcher.py:536`、`pipeline.py`の2937・3759、STONKSの`analyzer.py:282`。TTMの`flow.FCF`は`data_fetcher.py`のTTMReader（287・295・363）。
+   置き場所の案: `common/sec_data/fcf.py`の`free_cash_flow(ocf, capex)`（OCF − |CapEx|、どちらかがNoneならNone）。`calc_fcf`・`fcf_method`・`finance_lease_payments_applied`は削除
+2. CapExの欠け: parserは0（FCF＝OCF）、TTMはNone（TANUKIはTTMの点が足りないと年次へ。今はAPP・CRWV・LOAR・LYFT・RCAT・VZ）。「欠けはNone」にそろえると年次の平均は欠けた年を飛ばす。5年の範囲で効くのはAPPの2025年だけ
+   （APPの2025年の10-KのCF計算書にCapExの行が無い〈Other investing activitiesだけ〉。APPは2026-05-07から`TICKER_RESTRICTIONS`でTTMのCapExを除外）
+3. リースの負債: 純有利子負債（`reader.get_net_cash`、最新の`quarterly_*.json`）のlong_term_debt・short_term_debtに選ばれたタグを、company_factsの値の一致で全銘柄特定。
+   タグ名にリースを含む（`LongTermDebtAndCapitalLeaseObligations`系）のはABBV・ELF・GEV・HEI・KO・LRCX・PM・RXRX・VZ・XOM。**タグ名だけでは足りない**: HONの`LongTermDebt`（14,169M）はリースを含むタグの合計（10,386＋3,783）と一致し、10-Kでもリースは「Total Long-term debt」の行（VSTも値の一致）。
+   案: タグ名か値の一致でリースを含むなら足さない、それ以外に`FinanceLeaseLiability`（Noncurrent＋Current、無ければ合計）。案A（負債と同じ期末の値だけ）13銘柄（MSFT 70,973M・AMZN 14,495M・WMT 6,832M・GOOGL 3,705M・CRM 633M・BROS 411M・DOCN 410M・TSLA 256M等）、
+   案B（10-Kにしか出ない会社のため400日以内の最新の値も）23銘柄（META 1,184M・CRWV 221M・APP 123M等）。32銘柄は10-Kのリースの注記（BSの行の列挙）で確認: 負債の行にあるのはHEI・HON・PM・RXRX・VZ・TSLA（TSLAは使うタグ`LongTermDebt` 7,956Mにリースを含まず、足しても二重にならない）、ほかは「その他の負債」等。値の一致の規則で二重になる銘柄は無い。オペレーティング・リースは入れない
+4. CapExのタグ: 全体の候補に2タグ（`PaymentsToAcquireOtherProductiveAssets`・`PaymentsForProceedsFromProductiveAssets`）を足すと、FCXの2009〜2011年の年次（2011年 2,534M→134M）とVZの古い四半期52期（候補の中で最新の期末のタグを勝者にするため）も変わる→VZ・LOARだけ銘柄別の`capex_concept`。
+   LYFTのCF計算書の行は独自タグ`lyft:PaymentsToAcquirePropertyAndEquipmentAndScooterFleet`（2025年52.8M・2024年83.5M・2023年149.8M）で、companyfactsのAPIに入らない。上書き`CapitalizedComputerSoftwareAdditions`は`60603f9835`（2026-09-17）由来で2024・2025年は0。
+   CapExの候補は`tag_definitions.py`（parser）と`config/sec_concept_definitions.json`（Layer3）の2か所に定義
+5. 全銘柄のシミュレーション（市場データ・株価固定、Grok・SECなし、前後とも派生ファイルを作り直しTANUKI→HypeCore→TANUKI。1〜4〈リースは案B・VZ/LOARは銘柄別、LYFTは今のまま〉）: 96銘柄のうち33銘柄が変わる、**判定の変化はVZ BUY→HOLDだけ**、stageの変化0。
+   理論株価: AMZN 2.08→122.18（5年平均が+3.34B→−0.56Bになり`adjust_negative_fcf`の売上×8%〈57.35B〉に切り替わる＝段1b）・VZ −73.8%（年次の代用→TTM、fcf_base 37.6B→18.5B）・APP −48.1%（2025年のFCFが欠け）・BROS −26.8%・DOCN −14.4%・LOAR +12.5%・GOOGL −7.6%・MSFT −5.4%（純有利子負債 −29.0B→+41.9B）・CRM −4.9%・WMT・META −3.3%等。scopeは34銘柄（scratchpad、configには書いていない）
+6. 保有銘柄の判定の変化0（APP −48.1% BUYのまま・TSLA −1.2%・CRWV −0.5%・SOUN −0.0%、ほかは0）
+
+#### 決定（チャット側、2026-11-02 夜）
+- 段1b: `adjust_negative_fcf`の不連続を段1と一緒に直す。連続な規則の案（成長のCapExを分けた維持のCapExのFCF・DCF信頼性LOWで参考値に等）を全銘柄で試算して決める
+- APP: 「CapExは0」を機械的に判定する（その申告にCapExの候補のタグも`PaymentsToAcquire*`の設備・生産資産のタグも無ければ0、印「CF計算書にCapExの行なし」。候補に無い取得のタグがあればNone＋CHECK〈新設、WARN〉）。APPの`TICKER_RESTRICTIONS`が要るかも確かめる
+- LYFT: 上書き（`CapitalizedComputerSoftwareAdditions`）はやめる前提。独自タグを申告のXBRLから取れるか調べ、取れなければ`fact_overrides.json`に10-K・10-Qの引用つきで入れる
+- CapExの候補の定義を1か所にする（parserとLayer3）
+- リースの負債は案B（400日以内の最新の値）・値の一致の規則で、使った値の時点を記録する
+
 #### 束ねた件
 - FINDINGS: 2026-10-26のTSLAの3行（注記の文言・`_calc_fcf`のリースの式・調整後EPSの調整）・2026-10-26 Layer3の`anomaly`・2026-10-31 DOCNの`anomaly`・2026-11-01のFCFの式（リースを足している）・VZ・LOAR・LYFT・CapEx欠け・`calc_fcf`・ファイナンス・リースの負債（12行）
 
