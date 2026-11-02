@@ -2153,6 +2153,38 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
+### [FCF-DEFINITION-SINGLE-SOURCE-1] FCFとその入力（CapEx・リース・符号）の定義を1か所にし、欠けを0とみなさない（型Bを中心にした根治策）
+**型・処置（2026-11-01 束ね）:** 型B（中心）・A・C・E・X・根治策。登録だけ（実装の指示待ち）
+**優先度:** 高
+**分類:** 根治策 / `common/sec_data/parser.py`・`ttm_calculator.py::_calc_fcf`・`layer3_builder.py`（`calc_fcf`・`_apply_sign_normalize`）・`normalizer.py`・STONKS SILO・TANUKI VALUATION（report.txt・画面の注記）・EPS ANALYZER（調整後EPS）
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- FCF＝OCF − \|CapEx\|。parser・ttm_calculator・STONKS SILOの2か所を共通の関数にし、`layer3_builder.calc_fcf`（呼び出し元0件）は削除する
+- CapExが欠けた期は欠けとし、0とみなさない（今はparserがFCF＝OCF、TTMがNoneで、同じFCFに規則が2つ）
+- 符号の正規化は差し引きの前のYTDで行う（今は`normalizer.py`の106〜111行・`layer3_builder`の`_apply_sign_normalize`が差し引きの後にabs）。四半期は符号つきで保存する（Layer3の`anomaly`〈YTDの逆転〉の扱いもここで決まる）
+- ファイナンス・リースの負債を純有利子負債に1回だけ入れる（`LongTermDebtAndCapitalLeaseObligations`の銘柄は足さない）
+- CapExのタグの候補の抜け（VZ・LOAR・LYFT）と、候補外のタグで欠ける銘柄を検知するCHECK
+- report.txt・画面のFCFの注記は、計算に使った値・期から作る（TSLAの「FY2025」等の文言）
+- 調整後EPSの調整を年度内の全四半期でそろえる（TSLAの2026Q2は調整、Q3の−142Mは未調整）
+- 版で値が違う176行（R1-INVの手順4）が[[QUARTERLY-BASIS-MIX-1]]の型か（比較期間の組み替え）を調べる
+- 実装は全銘柄のシミュレーションと`config/method_change.json`の印つきで
+
+#### 束ねた件
+- FINDINGS: 2026-10-26のTSLAの3行（注記の文言・`_calc_fcf`のリースの式・調整後EPSの調整）・2026-10-26 Layer3の`anomaly`・2026-10-31 DOCNの`anomaly`・2026-11-01のFCFの式（リースを足している）・VZ・LOAR・LYFT・CapEx欠け・`calc_fcf`・ファイナンス・リースの負債（12行）
+
+#### 始める段（CHAT_RULES 4）
+定義（FCFとその入力の定義・符号）
+
+#### 投資判断への影響
+今あり（理論株価。2026-11-01の手元の試算でAMZN −49.2%・BROS −15.6%等、判定の変化0。VZ・LOAR・LYFTのFCF、MSFT等の純有利子負債）
+
+#### 規模の見込み
+大
+
+---
+
 ### [SYSHEALTH-SEVERITY-MISMATCH-1] System HealthのDiscordの先頭の絵文字・文言・各欄の絵文字・Overallの行・終了コードが別々の判定から出ていて、同じ実行で重大度が食い違う
 **型・処置（2026-10-19 束ね）:** 型B・残す（確認待ち（次回の確認手順2）。直すときは[[OUTPUT-INVENTORY-CHECK-1]]の一覧の「規則」の欄に載せる）
 **優先度:** 高
@@ -2256,6 +2288,33 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 
 ---
 
+### [CHECK-REFERENCE-DEFINITION-1] 検査・一覧・説明文を、書き手のコードと実際に使った入力と照合する（実行の時刻・データの有無・過去のファイルで結果が変わらない）
+**型・処置（2026-11-01 束ね）:** 型E（中心）・A・C・根治策。登録だけ（実装の指示待ち）
+**優先度:** 中
+**分類:** 根治策 / `common/system_health.py`・`scripts/inventory/`（`inventory_analysis.py::check_inventory`・`build_output_inventory.py --check`）・`browser_checks/check_macro_pulse.py`・各モジュールの説明文・`docs/architecture/`の文書・`.github/workflows/`・`config/workflow_dependencies.json`
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- 検査・一覧・説明文は、書き手のコードと実際に使った入力と照合する。実行の時刻・データの有無・過去のファイルで結果が変わらないようにする
+- System Healthの重大度を、割合・続いた日数で決める表を1か所に（全系列の停止・N日の継続は🔴）
+- 文書・説明文に書いたパスが存在するか、「消費者なし」と書いた説明文と一覧の読み手、ワークフローの名前と中身、CHECK-INVと`build_output_inventory.py --check`のずれ
+
+#### 束ねた件
+- FINDINGS: 2026-10-30の2行（出力の一覧〈TAIL〉の`prediction_history.json`のキー・System Healthの`[L] MacroData`の重大度）・2026-10-23 `check_macro_pulse.py`の不一致（実行の時刻）・2026-10-21 一覧の「誰も読まないキー」の数・2026-10-20 `TANUKI_Score_Update.yml`の名前・2026-10-20 削除した文書の参照・2026-10-22・10-23の説明文（market_data・macro_data）・2026-11-01 CHECK-INVと`--check`（9行）
+- 束ねの後の発見（入力に入れていない。入れるかはチャット側の判断）: FINDINGS 2026-11-02（rccのCHECK-66がTTMの系列に無い四半期末まで印を求める）
+
+#### 始める段（CHAT_RULES 4）
+定義（検査・一覧・説明文が照合する相手の決まり）
+
+#### 投資判断への影響
+今あり（FREDの全25系列の停止が6日続いても⚠️どまりで、MACRO PULSE・Market PulseのFREDの値が古いまま公開された）
+
+#### 規模の見込み
+中
+
+---
+
 ### [EXTERNAL-API-NONJSON-2XX-RETRY-1] 外部APIの呼び出し口で、2xxなのに中身がJSONでない応答が再試行されず1回で失敗になる
 **処理の順番:** [[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れの外
 **型・処置:** 不具合・直す（external_api全体の決まり）
@@ -2353,6 +2412,7 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 - FINDINGS: 2026-10-18（ubuntu-latestのUbuntu 26への移行）は確認待ちのため残し、この根治策の対象とする
 - BACKLOG（統合してBACKLOG_DONE.mdへ）: [[MARKETDATA-FUTURES-ROLL-1]]・[[CIK-REORG-DETECTION-1]]・[[SBC-TAG-STOCKOPTIONPLAN-1]]・[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]・[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]・[[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]・[[LAYER3-CUSTOM-TAG-MIGRATION-1]]
 - 残す件との関係: [[SEC-COMPANYFACTS-API-LAG-1]]・[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]は確認待ちのため残す
+- 2026-11-01の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）で統合: FINDINGS 2026-10-26のMACRO PULSEの予備のFOMCの日付の一覧（`05_main.py::fetch_latest_fomc_statement`、実際の声明の日と合わず2026-05-07より後が無い）。同じ行のstooqの取得2か所は[[COMMON-PATH-GUARD-1]]
 
 #### 始める段（CHAT_RULES 4）
 取得の確認
@@ -2845,6 +2905,59 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 ---
 
 ## 優先度：低（アイデア段階）
+
+### [MARKETDATA-DAILY-ROW-WRITE-1] 日足の行の書き込みを1つの関数にし、確定の行は上書きしない（直すときは理由と前の値を残す）
+**型・処置（2026-11-01 束ね）:** 型C・根治策。登録だけ（実装の指示待ち）
+**優先度:** 低
+**分類:** 根治策 / `common/market_data/fetcher.py`（毎日の取得・`backfill_daily_prices`・`--repair-provisional`）・`common/registration/register_ticker.py`（Step 1.5）・`common/market_data/calendar_universe.py`（暫定の足の判定）
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- 日足の書き込みを1つの関数にする
+- 確定の行は上書きしない。直すときは理由と前の値を残す（株式分割の調整も同じ経路）
+- 暫定の印は全経路で付ける（今は行を保存する時にだけ付き、2026-10-11より前に保存した行には付かない）
+
+#### 束ねた件
+- FINDINGS: 2026-10-26 `backfill_daily_prices`が既存の行も上書きする・2026-10-20 `daily/NIY=F.json`の平らな足に印が無い（2行）
+
+#### 始める段（CHAT_RULES 4）
+定義（日足の行の書き込みの決まり。確定・暫定・訂正）
+
+#### 投資判断への影響
+なし（出来高・高値・安値の過去の値が変わりうる。終値はほぼ同じ）
+
+#### 規模の見込み
+小〜中
+
+---
+
+### [COMMON-PATH-GUARD-1] 共通化の後の抜け道をテストで禁止する（呼び出し口・日付・文字コード・集計ファイルの書き直し）
+**型・処置（2026-11-01 束ね）:** 型—・X・C・根治策。登録だけ（実装の指示待ち）
+**優先度:** 低
+**分類:** 根治策 / `tests/`（静的な検査のテスト）・`src/market/macro_pulse/05_main.py`（stooq）・`common/market_data/calendar_universe.py`・`src/portfolio/snapshot.py`ほか・`common/sec_data/rotce.py`
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- `common/external_api.py`以外の`requests.get`を禁止する（MACRO PULSEのstooqの取得2か所）
+- 市場の日付に連邦の営業日を使うことを禁止する（`05_events.csv`の`sp500_t1`〜`t20`）
+- 文字コードを指定しない`open`を禁止する（ruff PLW1514、8か所）
+- 集計ファイルを一部の銘柄で書き直すことを禁止する（`rotce.py`の`_summary.json`）
+
+#### 束ねた件
+- FINDINGS: 2026-10-28 `rotce.py`の`_summary.json`・2026-10-26 stooqの取得2か所（MACRO PULSEの行のうち。予備のFOMCの日付は[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）・2026-10-24 `snapshot.py`の文字コード・2026-10-23 `05_events.csv`のt+N（4行）
+
+#### 始める段（CHAT_RULES 4）
+取得の確認（共通化の後の抜け道をテストで検知する）
+
+#### 投資判断への影響
+なし〜小（t+Nの終値は点数・局面に使わない。stooqは呼び出し口の再試行・User-Agentの決まりの外）
+
+#### 規模の見込み
+小
+
+---
 
 （[[PORTFOLIO-TABLE-OVERFLOW-1]]は2026-10-29、実装・push済みで完了、BACKLOG_DONE.md「2026-10-29（完了）」参照）
 

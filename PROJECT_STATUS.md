@@ -11,14 +11,16 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-01 終業 更新。上から順）**:
+**次の作業（2026-11-02 朝 更新〈それまでは2026-11-01 終業〉。上から順）**:
 1. （済 2026-11-01 朝）「次回の確認手順」の16: Macro Data Update 2回とも成功25件・失敗0件、System Health `41160489865` で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSEとMarket PulseのFREDの日付が新しい。`[[MACRODATA-FRED-IMPORT-PATH-1]]`をBACKLOG_DONE.mdへ移設（アクティブ8件→7件）
-2. （未、次回へ。2026-11-01 12:59 UTCの時点でSEC_Data_Updateが起動していない）11-01（日）のSEC_Data_Update（12:00 UTCの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後: 「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`の案4の公開）・5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）
-3. （未、次回へ）続いて束ね: FINDINGS.mdの未登録の27行（2026-11-01にDOCNの1行・R6-INVの6行・チャット側の確認の1行・出力の一覧の1行を足した）＋NIY=Fの1行＋経済指標（FRED）の取得の失敗の1行（登録済み[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]、原因の型を束ねる。2026-11-01 チャット側の指示）（入力の一覧はCLAUDE_CODE_START.mdの「11-01（日）の束ね」）
+2. （2026-11-02 朝に確認。SEC_Data_Update run `41330561316`〈11-01 17:15 UTC〉の後）「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`）: HONのデータ・理論株価・判定・funda・HypeCoreのstageは合格、**rccのCHECK-66の「保存した印が食い違う」の行（検査の側。FINDINGS 2026-11-02）が残り未済・移設していない。手順13の閉じ方（CHECK-66を直すか、この行を許して移設するか）はチャット側の判断待ち**。
+   5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）: CDNS・KO・RMBSはREFRESHEDでwarn_acknowledged.jsonの3件を削除、Vだけ残す（BACKLOGの件も残す）
+3. （済 2026-11-02 朝）束ね: `docs/architecture/BUNDLING_2026-11-01.md`（FINDINGSの29行）。根治策4件を登録（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`高・`[[CHECK-REFERENCE-DEFINITION-1]]`中・`[[MARKETDATA-DAILY-ROW-WRITE-1]]`低・`[[COMMON-PATH-GUARD-1]]`低、登録だけで実装は許可されていない）、
+   MACRO PULSEの予備のFOMCの日付は`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`に統合、捨てるは0。アクティブ12件→16件（見込み15件との差は手順13が未済のため）
 3'. 11-03（火）朝: まず夜のMarket Pulse（11-02 21:30 UTC頃）が成功してpushまで済んだかを見る（pushが`headlines_push.py`を通るようになったため）。続いて「次回の確認手順」の17（経済指標）・18（見出しの配信元3本）・19（見出しの積み足し・`Market_Pulse_Headlines.yml`の最初の数回）・20（5分足の`2026-11-02.json`）
 3''. その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤
 4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
-5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
+5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断（2026-11-02に登録した根治策4件の着手の順を含む。`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`は全銘柄のシミュレーションとmethod_changeの印つき）。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
 6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
 7. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: 再開の時期はチャット側の判断
 
