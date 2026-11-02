@@ -2108,12 +2108,18 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   - 実例（2026-11-02、手順13の確認）: VRTの2026Q3の10-Q（11-01のSEC_Data_Updateで取り込み）が前年同期（2025Q3）の営業CFを508.7M→482.7M（−26M）に組み替えた。基準のFCFが`recent_2yr`（TTM 2026-09-30と2025-09-30の平均）のため約−13M（2,234Mの約0.6%）動いた（20%未満で[[QUARTERLY-BASIS-MIX-1]]の印の対象ではない）
 - 実装は全銘柄のシミュレーションと`config/method_change.json`の印つきで
 
-#### 段の分け方（チャット側、2026-11-02）
-- 段1: FCFの式・リースの負債・CapExの欠け・VZ/LOAR/LYFTのタグ・`calc_fcf`の削除・STONKS SILOの式
-- 段1b: `adjustments.py::adjust_negative_fcf`の不連続（FCFの平均が0以下なら売上×8%を下限にする。0の前後で値が飛ぶ。FINDINGS 2026-11-02）。**段1と段1bは一緒に1回の計算方法の変更として公開する**（チャット側、2026-11-02 夜）
+#### 段の分け方（チャット側、2026-11-02。夜に更新）
+- 段1: FCFの式（OCF − |CapEx|）を`common/sec_data/fcf.py`の1か所に、parser・ttm_calculator・STONKS SILOの2か所をそれに。`layer3_builder.calc_fcf`は削除。
+  CapExの欠けは今の扱いのまま（parserは呼び出し側で0とみなす、とコメントで明示。TTMはNone）。リースの負債は案B・値の一致の規則・時点を記録しreport.txtに出す。
+  VZ・LOARは銘柄別の`capex_concept`。LYFTは上書き（`CapitalizedComputerSoftwareAdditions`）をやめ、10-Kの年次3年（2025 52.8M・2024 83.5M・2023 149.8M）を`fact_overrides.json`に引用つきで。
+  CapExの候補の定義を1か所に（値の変化0）
+- 段1b（段1と一緒に1回の計算方法の変更として公開する）: 2026-09-17の決定（STEP6 決定3: 構造的赤字はIVを参考値に・Policyは変えない・注記）を保ったまま、
+  ①売上×8%の下限が効く条件を`structural_deficit`（5年・2年とも≤0）と同じ1つの条件に ②Policy Aの発火を「DCFの基準に下限の値を実際に使ったとき」に
 - 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）
 - 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）
-- 段4: 版で値が違う176行（VRTの実例）の調査
+- 段4: 版で値が違う176行（VRTの実例）の調査。parserとLayer3で採る申告が違う15期（FLYW 2022年 7.07M／1.35M・ASTS 2022年 30.3M／57.3M・HON 2023・2024年の組み替え等）も
+- 段5（新）: 申告のXBRLインスタンスの取得（SEC_Data_Updateで取得・記録・再利用）。「CapExは0」の判定（CF計算書にCapExの行が無い期。LYFT・NVDAの独自タグで誤らない）、
+  CapExの欠けの規則の1つ化、APPの`TICKER_RESTRICTIONS`の除外の廃止（試算 +21.5%）、LYFTの独自タグの四半期（TTM）。`dimension_aggregate_fetcher.py`の仕組みを広げる案から
 
 #### 段1のSTEP 0（2026-11-02 夜、読み取りと手元のシミュレーション。実装・公開はしていない）
 1. FCFの式の実装箇所: `ttm_calculator.py:116`（`_calc_fcf`、382行でTTMの`flow.FCF`）・`parser.py:3381-3395`（年次・四半期の`cf.free_cash_flow`、CapExが無いと0とみなし`ocf != 0`のときだけ書く、`fcf_method`・`finance_lease_payments_applied`も書く）・
@@ -2139,6 +2145,28 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - LYFT: 上書き（`CapitalizedComputerSoftwareAdditions`）はやめる前提。独自タグを申告のXBRLから取れるか調べ、取れなければ`fact_overrides.json`に10-K・10-Qの引用つきで入れる
 - CapExの候補の定義を1か所にする（parserとLayer3）
 - リースの負債は案B（400日以内の最新の値）・値の一致の規則で、使った値の時点を記録する
+
+#### 段1b・CのSTEP 0（2026-11-02 夜、読み取りと手元の試算）
+- 売上×8%の下限: 2026-04-04（`1a46c71dc4`「FCF現実的補正」）は**売上×8%を負の側の下限**、04-06（`f06ebdae6f`「成長企業向けに正のfloor」）に+8%へ。効く銘柄は19（AMZNが加わり20、保有のCRWV・SOFI・SOUNを含む）
+- 連続な規則の案の試算（段1＋C〜Eの後）: 案1（維持のCapEx＝min(|CapEx|, D&A)、平均が0以下の銘柄だけ）は0の前後で連続にならない（AMZN 2.08→102.83）、
+  案2（代用しない）・案3（0で止める）は連続だが理論株価が大きな負・保有のCRWV（PASS）・SOUN（SELL）の判定が変わる→チャット側の決定は上の段1b（決定3を保つ）
+- 「CapExは0」の機械的な判定（companyfactsだけ）は、LYFT（全期）・NVDA（2021〜2023年の8期）の独自タグで誤る→段5。APPは0の期が2024Q1〜2026Q2の9期で、除外をやめると+21.5%
+- LYFTの独自タグ: `dimension_aggregate_fetcher.py`は独自namespace・期間の値を申告のXBRLインスタンスから取れる（貸借対照表の検算専用、Layer3は読まない）。
+  手元に`SEC_USER_AGENT_EMAIL`が無く、取得は試していない。`fact_overrides.json`は年次だけ・parserだけ（TTMに届かない）で、抽出値の無い年は埋めない（→`fill_missing`を足した）
+- CapExの候補は`tag_definitions.py`・parser・`config/sec_concept_definitions.json`の3か所とも同じ4タグ・同じ順（1か所にしても値の変化0）
+
+#### 段1・段1bの実装（2026-11-02 夜、手元のcommitだけ。push・公開はチャット側が表を見てから）
+- `b0807466f7`（コード）・`5da915468d`（テスト）・`2f5de89079`（設定）・`c64ae4ff16`（修正）
+  - `common/sec_data/fcf.py`（`free_cash_flow`）をparser・ttm_calculator・STONKS SILO（`fetcher.py`・`analyzer.py`）から。`ttm_calculator._calc_fcf`・`layer3_builder.calc_fcf`は削除。`fcf_method`・`finance_lease_payments_applied`は書かない
+  - `common/sec_data/finance_lease.py`＋`reader.get_net_cash`: リースの負債（値の一致の規則・案B）。`bs_adjustment.finance_lease`・`financial_health.finance_lease`に額・期末・方式、report.txtのFinancial_Healthに`Finance_Lease:`の1行
+  - VZ・LOARの`capex_concept`、LYFTの上書きの廃止、`fact_overrides.json`のLYFT（`fill_missing`、10-K `0001628280-26-006960` R8.htmの引用）、CapExの候補はJSONから廃止（`candidates_source`）
+  - 段1b: `adjustments.is_structural_deficit`を下限と`components.structural_deficit`の1つの条件に、`components.fcf_floor_used_in_base`（基準を決めた直後に判定）でPolicy A
+  - `c64ae4ff16`: 最初はcomponentsを作る時点の`base_fcf`と比べていて、R&Dの資本化等の後の値と一致せずCRWV・SOFI・SOUN等でPolicy Aが外れた（手元の試算で発見して直した）
+- 手元の全銘柄の試算（前と同じ条件・順番。前＝`49cdf7f0a8`のコード、後＝`c64ae4ff16`）: 96銘柄のうち35銘柄が変わる。**判定の変化3件: VZ BUY→HOLD・BROS WATCH→TRIM・S WATCH→HOLD**（stageの変化0、保有銘柄の判定の変化0）。
+  理論株価: AMZN 2.08→122.18（構造的赤字〈5年 −0.56B・2年 −18.17B〉で下限が効く、Policy AでWATCH、IVは参考値の注記）・VZ −73.8%・BROS −26.8%・DOCN −14.4%・LOAR +12.5%・LYFT −8.0%・GOOGL −7.6%・MSFT −5.4%・CRM −4.9%・WMT・META −3.3%等。
+  Policy Aが外れたのはBROS・S（2年平均が正で下限が効かなくなった）。COHR・RCATは2年平均も負（構造的赤字）で、下限を基準に使いPolicy Aのまま（段1のSTEP 0の報告の「BROS・COHR・RCAT・S」は誤り）
+- scope: `scripts/method_change_scope.py diff`で作った（scratchpad、configへの書き込みは公開の承認の後）。新しいキー（`fcf_floor_used_in_base`・`finance_lease`）で96銘柄すべてに項目が入る。判定・funda・乖離率・理論株価・stageが変わるのは28銘柄
+- 残り: 公開（push・派生ファイルの同時commit・scopeの書き込み・TANUKI→HypeCore→TANUKIの手動の実行）はチャット側の許可の後。確認はCLAUDE_CODE_START.mdの次回の確認手順21
 
 #### 束ねた件
 - FINDINGS: 2026-10-26のTSLAの3行（注記の文言・`_calc_fcf`のリースの式・調整後EPSの調整）・2026-10-26 Layer3の`anomaly`・2026-10-31 DOCNの`anomaly`・2026-11-01のFCFの式（リースを足している）・VZ・LOAR・LYFT・CapEx欠け・`calc_fcf`・ファイナンス・リースの負債（12行）
