@@ -31,14 +31,11 @@
   },
   "cf": {
     "operating_cash_flow": 849737000,
-    "capital_expenditure": 4200000,
-    "finance_lease_payments": 46748000,
+    "capital_expenditure": 83470000,
     "depreciation_and_amortization": 148892000,
     "stock_based_compensation": 330921000,
     "buyback": 50000000,
-    "free_cash_flow": 849737000,
-    "fcf_method": "traditional",
-    "finance_lease_payments_applied": true
+    "free_cash_flow": 766267000
   },
   "shares": {
     "shares_diluted": 413651000,
@@ -201,16 +198,11 @@
       "fy_tag": 2024
     },
     "capital_expenditure": {
-      "accn": "0001759509-25-000025",
-      "filed": "2025-02-14",
-      "is_own_data": true,
-      "fy_tag": 2024
-    },
-    "finance_lease_payments": {
-      "accn": "0001759509-25-000025",
-      "filed": "2025-02-14",
-      "is_own_data": true,
-      "fy_tag": 2024
+      "accn": "0001628280-26-006960",
+      "filed": "2026-02-11",
+      "is_own_data": false,
+      "override_applied": true,
+      "override_reason": "LYFTのCF計算書のCapExの行「Purchases of property and equipment and scooter fleet」は独自タグlyft:PaymentsToAcquirePropertyAndEquipmentAndScooterFleetで、companyfactsのAPIに入らない（標準のCapExの候補タグは申告していない）。10-K（accn 0001628280-26-006960、2026-02-11提出、FY2025）のCF計算書（R8.htm、単位千ドル）の値を引用する。上書き（CapitalizedComputerSoftwareAdditions、60603f9835）はやめた（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02）。抽出値が無い年なのでfill_missingで埋める。四半期（TTM）は段5（申告のXBRLインスタンスの取得）"
     },
     "depreciation_and_amortization": {
       "accn": "0001759509-25-000025",
