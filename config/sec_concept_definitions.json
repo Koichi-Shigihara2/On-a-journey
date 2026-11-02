@@ -29,12 +29,7 @@
     "capital_expenditure": {
       "category": "flow",
       "unit": "USD",
-      "candidates": [
-        "PaymentsToAcquirePropertyPlantAndEquipment",
-        "PaymentsToAcquireProductiveAssets",
-        "PaymentsForCapitalImprovements",
-        "PaymentsToAcquireOtherPropertyPlantAndEquipment"
-      ],
+      "candidates_source": "common/sec_data/tag_definitions.py::TAG_CANDIDATES['CAPITAL_EXPENDITURE']（parser.py・quarterly.pyと共通）をlayer3_builder.load_concept_definitions()が候補として補う（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02にJSON側の候補リストを廃止。廃止の時点で3か所とも同じ4タグ・同じ順）",
       "sign_normalize": "abs",
       "_note": "2026-07-23 CAPEX-SIGN-UNNORMALIZED-1対応に基づきsign_normalizeを明示"
     },
