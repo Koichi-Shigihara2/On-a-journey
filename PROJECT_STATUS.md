@@ -20,7 +20,7 @@
 3'. 11-03（火）朝: まず夜のMarket Pulse（11-02 21:30 UTC頃）が成功してpushまで済んだかを見る（pushが`headlines_push.py`を通るようになったため）。続いて「次回の確認手順」の17（経済指標）・18（見出しの配信元3本）・19（見出しの積み足し・`Market_Pulse_Headlines.yml`の最初の数回）・20（5分足の`2026-11-02.json`）
 3''. その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤
 4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）
-5. 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断（2026-11-02に登録した根治策4件の着手の順を含む。`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`は全銘柄のシミュレーションとmethod_changeの印つき）。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
+5. （実装 2026-11-02 夜、`2b42795069`）`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`: 計算方法の変更の印を「新しいIDを初めて読んだ実行・scopeの銘柄と項目」に、scopeは`scripts/method_change_scope.py`で作る、変更のcommitで派生ファイルも作り直す、読み合いは手動で TANUKI → HypeCore → TANUKI（CLAUDE_CODE_START.md「計算方法の変更の手順」）。確認は次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）のときの「次回の確認手順」の21、それまでBACKLOGに残す。束ねの後: 残りのアクティブの件の判断（2026-11-02に登録した根治策4件の着手の順を含む。`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`は全銘柄のシミュレーションとmethod_changeの印つき）。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
 6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
 7. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: 再開の時期はチャット側の判断
 

@@ -1221,6 +1221,15 @@ Plotlyの`measure:'total'`の棒の高さは前の棒の合計になるため、
 **教訓**: 反映の時期を前提にする前に、各読み手が「保存済みの出力ファイル」を読むのか、「元データからその場で計算」するのかを確かめる。
 影響表には「読み方（ファイル／その場で計算）」の列を足し、その場で計算する読み手は「pushの後の最初の実行（平日の夜の連鎖を含む）」で反映されるものとして、印の日付と確認の時期を決める。
 
+**計算方法の変更の公開の手順（2026-11-02、`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、実装 `2b42795069`。チャット側の決定）**
+- 公開の時点: 計算方法の変更のcommitでは、影響する派生ファイル（`common/sec_data/ttm/`・`normalized/`等）を同時に作り直してcommitする。
+  「その場で作る」経路と「日曜に作り直す」経路が、次の定時実行で同時に出る（事例39の時期のずれを作らない）
+- 印: `config/method_change.json`の件は`{id, committed_at, scope:[{ticker, fields, before, after}]}`。scopeは変更のときの全銘柄のシミュレーション
+  （株価・市場データを固定した前後）から`scripts/method_change_scope.py`で機械的に作る（手で書かない）。各出力は前回の出力の`method_change_applied`と比べ、
+  新しいIDを初めて読んだ実行でだけscopeの銘柄に印を付ける（日付では決めない）。Discordは「計算方法の分（before→after）」と「残り（相場等）」に分ける
+- 読み合い: 理論株価が動く変更を出すときは、`workflow_dispatch`で TANUKI VALUATION → HypeCore → TANUKI VALUATION を1回まわす（連鎖の常設の変更はしない）
+- 依頼文には、scopeを作るシミュレーション・派生ファイルの同時のcommit・読み合いの手動の実行を入れる（手順はCLAUDE_CODE_START.md「計算方法の変更の手順」）
+
 **事例40: RICEを測定不能のときNoneにする変更で、ログ用のprintがNoneを書式化して例外になり、成功した計算の結果が捨てられて4銘柄で「エラー」表示が約4週間続いた（2026-10-15に発見、`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`）**
 - `1895356e0a`（2026-09-19、`[[RICE-ADJ-ASYMMETRIC-ZERO-1]]`）で、CF変換率がマイナスの銘柄のRICE（`base.rice`）を0やマイナスの値ではなくNone（測定不能）にした。
 - `core_calculator.py:753-756`のログ用のprint（`base={_base_rice:.1f}`）がNoneを書式化してTypeErrorになり、同じtryの中にあったため、exceptが`calculate_rice()`の成功した結果を捨てて`available=False`・note「エラー: unsupported format string passed to NoneType.__format__」に置き換えた。

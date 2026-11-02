@@ -43,7 +43,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 ②'' その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の流れ）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤（1/8・2/8・3/8①・4/8②は2026-11-01に実装、確認待ち）
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
 ②''' （済 2026-11-02 夜）手順13の閉じ方: チャット側の判断でCHECK-66の検査を直した（`20ef290ee5`）。`[[QUARTERLY-BASIS-MIX-1]]`を移設、FINDINGSのHONの行（2026-10-26）は「済（手順13）」
-④ 束ねの後 … `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（STEP 0は2026-10-30に済、BACKLOGの項目）と、残りのアクティブの件の判断（2026-11-02に登録した根治策4件〈実装は許可されていない〉の着手の順を含む）
+④ 束ねの後 … （済 2026-11-02 夜）`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（`2b42795069`、確認は手順21＝次の計算方法の変更の公開のとき）。残りのアクティブの件の判断（2026-11-02に登録した根治策4件〈実装は許可されていない〉の着手の順を含む）
+④' 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき … 手順21（「計算方法の変更の手順」に沿って出す）
 ⑤ 起きた回・いつでも … 手順2（Discordの本文をKoichiさんが見たら）・手順9（RSS 取得エラーの回）
 
 5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、残りはVだけ）
@@ -88,6 +89,17 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 実行のログに「5分足の保存: 書いた …」があり、「5分足の保存に失敗」が無い。System Healthの[O]が✅（11-02 23:30 UTCの実行）
      - 2026-11-02.jsonは、ETで11-02が終わる前に書いた分なので、次の回（11-03の夜）で夜の先物の足が足される（足が増える）
    - 満たしたらBACKLOGの②に確認を書き足す（②はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
+
+21. **計算方法の変更の印の最初の本番**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、2026-11-02 実装 `2b42795069`）
+   - 日時: 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき。そのcommitの後の最初のTANUKI VALUATION（と、読み合いの手動の TANUKI → HypeCore → TANUKI）の後
+   - 期限: その変更の公開の翌日
+   - 確認の手順:
+     - `config/method_change.json`の新しい形の件のscopeが`scripts/method_change_scope.py diff --write`で作られている（手で書いていない）。派生ファイル（ttm/・normalized/）が同じcommitに入っている
+     - 最初の実行のlatest.json: scopeの銘柄だけに`method_change`、全銘柄に`method_change_applied`（そのID）。scope外の銘柄に`method_change`が無い
+     - 次の実行（読み合いの2回目のTANUKI・翌朝の毎日の実行）では`method_change`が付かない（`method_change_applied`はそのまま）
+     - Discordの「TANUKI SCORE 変化検知」: 🛠に入るのはscopeの項目（判定・乖離率・funda・stage）の変化だけで、各行に「計算方法の分」と「残り（相場等）」がある。scope外の銘柄・項目の変化は📈相場の変化
+     - HypeCoreの{T}_poc.json・ROTCE・Stonksにも、最初の実行だけ印（全銘柄のファイルは先頭）
+   - 満たしたら`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
 
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
@@ -138,7 +150,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **済んだ手順（番号だけ）**: 13（2026-11-02。朝の確認〈記録 `ddf4721e85`〉でHONのデータ・理論株価22.416・WATCH・funda 25・report.txtの3行・method_changeは合格、rccのCHECK-66の「保存した印が食い違う」の行〈検査の側〉だけ残り、夜にチャット側の指示で検査を直して〈`20ef290ee5`〉CHECK-66はHONの1件・食い違いの行なし。BACKLOG_DONE.mdの`[[QUARTERLY-BASIS-MIX-1]]`）・16（2026-11-01 朝。Macro Data Update `41088482451`・`41215187475`とも成功25件/失敗0件、System Health `41160489865`〈10-31 02:32 UTC〉で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSE・Market PulseのFREDの日付が新しい。BACKLOG_DONE.mdの`[[MACRODATA-FRED-IMPORT-PATH-1]]`）・1（2026-10-19）・3（2026-10-20）・4（2026-10-19 夜）・6（2026-10-19）・7（2026-10-28。チャット側の確認で`permit_2026-09-01`が観測日に置かれていた。BACKLOG_DONE.mdの`[[MACRO-PULSE-SLOT-ROWS-1]]`）・8（2026-10-29。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`の修正 `8616e06c71` の後、手で起動したMACRO PULSE〈`--update-schedule`、run `40856853804`〉で10月の行がfomc_date・record_date 2026-10-28、regime BALANCED・主眼 物価重視〈Grok〉に。BACKLOG_DONE.mdの`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`）・10（2026-10-20）・11（2026-10-26。①10-22・②10-25の連鎖でHONを除き済、HONの残りは13へ。結果は下の「2026-10-26」のブロックとBACKLOG_DONE.mdの`[[LAYER3-FIRST-FILED-DATE-1]]`）・12（2026-10-24）・14（2026-10-30。チャット側の確認、本番 `1ca5367b4e` のTANUKI VALUATIONでbasis 94銘柄ttm_weighted_avg・BKNG/FCX fallback、最大EPS PER ONDS 9.3・PLTR 131.0・XOM 23.5、method_changeの印は96銘柄。判定が変わった7銘柄〈CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA〉は株価・金利による。BACKLOG_DONE.mdの`[[EPS-SHARES-BASIS-MISMATCH-1]]`）。10-25（日）に確かめることのA・Bは済、Cの束ねは11-01へ
 - **判断待ち**: `[[HYPECORE-STAGE-TIMESCALE-1]]`（定義v2の検証は一時停止中。データ基盤の2件の後に再開）。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は2026-10-30に手順14の合格で移設
-- **次の作業（2026-11-02 夜）**: ① （済 2026-11-01 朝）手順16 ② （済 2026-11-02）手順13は夜にCHECK-66の検査を直して済（`20ef290ee5`、`[[QUARTERLY-BASIS-MIX-1]]`を移設、アクティブ15件）、手順5はVだけ残す、束ねは済（根治策4件を登録） ②' 11-03朝: まず夜のMarket Pulseの成功とpush、続いて手順17・手順18・手順19・手順20 ②'' その後: 5/8 DAILY-ENTRY-GAP-1 → 6/8 ③ → 7/8 ④ → 8/8 ⑤ ③ 11月上旬: 手順15 ④ 束ねの後: `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装と、残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも）
+- **次の作業（2026-11-02 夜）**: ① （済 2026-11-01 朝）手順16 ② （済 2026-11-02）手順13は夜にCHECK-66の検査を直して済（`20ef290ee5`、`[[QUARTERLY-BASIS-MIX-1]]`を移設、アクティブ15件）、手順5はVだけ残す、束ねは済（根治策4件を登録） ②' 11-03朝: まず夜のMarket Pulseの成功とpush、続いて手順17・手順18・手順19・手順20 ②'' その後: 5/8 DAILY-ENTRY-GAP-1 → 6/8 ③ → 7/8 ④ → 8/8 ⑤ ③ 11月上旬: 手順15 ④ （済 2026-11-02 夜）`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（`2b42795069`、手順21で確認・それまでBACKLOGに残す）。残りの件の判断（銀行の貸倒引当金の機能・画面のストーリー化のどちらから始めるかも） ④' 次の計算方法の変更のとき: 手順21
 
 **2026-10-30 夜 FREDの取得の直し・2件の読み取りの調査（終業 このcommit。確認の残りは上の「次回の確認手順」16・13・5・15・2・9）**
 - 読み取りの調査: `[[SYSHEALTH-SEVERITY-MISMATCH-1]]`は10-25〜10-30の6回でOverall・終了コードが一致（ログ）、Discordの本文をKoichiさんが見たら移設（手順2）。`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`のSTEP 0（公開の経路・印の付き方・HypeCoreとTANUKIの読み合い・11-01の公開の経路）はBACKLOGの項目に。実装は11-01の手順13と束ねの後
@@ -3915,6 +3927,27 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
   クローズ。TTM-DATA-DRIFTは2026-09-24にCHECK-47発火で着手条件3が成立）
 
 ---
+
+## 計算方法の変更の手順（2026-11-02、`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、実装 `2b42795069`）
+
+計算方法（理論株価・判定・funda・stage・Layer3・TTMの作り方）を変えるcommitは、次の順でする（チャット側の決定、2026-11-02）。
+
+1. **全銘柄のシミュレーション（株価・市場データを固定した前後）とscope**: 前のコードで手元のTANUKI VALUATION（Grok・SECのインサイダー取引は呼ばない）・HypeCore・Stonks・ROTCEのうち変更が届くものを回し
+   `python scripts/method_change_scope.py snapshot <前>`、新しいコードで同じように回し`snapshot <後>`、
+   `python scripts/method_change_scope.py diff --id <BACKLOGの項目ID> --before <前> --after <後> --write`で`config/method_change.json`に
+   `{"id", "committed_at", "scope": [{"ticker", "fields", "before", "after"}]}`を足す。**scopeは手で書かない**。公開のデータは`git checkout`で戻す。
+   同じ項目で2回目の変更を出すときは、IDの末尾に番号を足す（例: `FCF-DEFINITION-SINGLE-SOURCE-1-2`）
+2. **公開の時点を1つに**: 影響する派生ファイル（`common/sec_data/ttm/`・`normalized/`等、日曜のSEC_Data_Updateが作り直すもの）を、
+   計算方法の変更のcommitと同時に作り直してcommitする。「その場で作る」経路（Layer3を`build_ticker_store()`で毎回作る読み手）と
+   「日曜に作り直す」経路（TTM・normalizedを読む読み手）が、次の定時実行で同時に出る（CHAT_RULES.md 事例39・「計算方法の変更の公開の手順」）
+3. **読み合い**: 理論株価が動く変更を出すときは、pushの後に`gh workflow run`で TANUKI VALUATION → HypeCore → TANUKI VALUATION を1回まわす
+   （`gh workflow run TANUKI_VALUATION_Update.yml --ref kaihatsu`→終わったら`HypeCore_Update.yml`→終わったら`TANUKI_VALUATION_Update.yml`。
+   HypeCoreのstageは前回のTANUKIの理論株価を読み、TANUKIのtimingはHypeCoreのstageを読むため。ワークフローの連鎖の常設の変更はしない）
+4. **印**: 各出力（TANUKIのlatest.json・history/・history.json・score_history.json・hypecore_history/、HypeCoreの{T}_poc.json、Stonksのresults.json、ROTCE）は、
+   前回の出力の`method_change_applied`と比べ、新しいIDを初めて読んだ実行でだけscopeの銘柄に`method_change`を付ける（日付では決めない）。
+   Discord（`score_watcher.py`）は、印のある銘柄の変化のうちscopeの項目に当たるものだけを「🛠 計算方法の変更による変化」に入れ、
+   「計算方法の分（scopeのbefore→after）」と「残り（相場等）」に分けて出す。古い形`{"id", "date"}`の件（〜2026-11-01）は記録として残す（その日の全銘柄）
+5. 確認: 最初の実行の後に、🛠に入った銘柄がscopeの判定・funda・乖離率・stageの変わる銘柄と一致すること、次の実行で印が付かないこと
 
 ## 管理の操作の手順（2026-10-21、管理のページの削除の後）
 
