@@ -1,11 +1,11 @@
 {
   "intrinsic_value_per_share": 65.5369862129379,
-  "intrinsic_value_beta": 112.65,
-  "upside_percent_beta": 81.4,
+  "intrinsic_value_beta": 100.47,
+  "upside_percent_beta": 61.8,
   "intrinsic_value_rf": 290.47,
   "upside_percent_rf": 367.7,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 11381238542.33203,
+  "v0": 10239499611.471964,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.09912033451913904,
   "alpha_was_capped": false,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 5.5,
-  "calculation_date": "2026-11-02T02:49:27+09:00",
+  "calculation_date": "2026-11-02T21:12:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 5
   },
   "wacc": {
-    "value": 0.075034,
-    "beta": 0.562,
+    "value": 0.079594,
+    "beta": 0.642,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -119,43 +119,43 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 11381238542.33203,
-    "pv_high_growth": 1265892960.5216465,
-    "pv_terminal": 10115345581.810383,
+    "v0": 10239499611.471964,
+    "pv_high_growth": 1246578191.7800756,
+    "pv_terminal": 8992921419.691889,
     "high_growth_detail": [
       {
         "year": 1,
         "fcf": 125438250.0,
-        "discount_factor": 1.075034,
-        "pv": 116683053.74527688
+        "discount_factor": 1.079594,
+        "pv": 116190206.6888108
       },
       {
         "year": 2,
         "fcf": 188157375.0,
-        "discount_factor": 1.1556981011560001,
-        "pv": 162808414.0761272
+        "discount_factor": 1.1655232048359998,
+        "pv": 161435975.03618604
       },
       {
         "year": 3,
         "fcf": 282236062.5,
-        "discount_factor": 1.2424147524781395,
-        "pv": 227167346.44131327
+        "discount_factor": 1.2582918588017165,
+        "pv": 224300952.5379717
       },
       {
         "year": 4,
         "fcf": 423354093.75,
-        "discount_factor": 1.3356381010155842,
-        "pv": 316967667.68490106
+        "discount_factor": 1.3584443410111802,
+        "pv": 311646256.6547772
       },
       {
         "year": 5,
         "fcf": 635031140.625,
-        "discount_factor": 1.4358563702871876,
-        "pv": 442266478.57402796
+        "discount_factor": 1.466568359889624,
+        "pv": 433004800.8623296
       }
     ],
     "terminal_fcf": 654082074.84375,
-    "terminal_value": 14524183391.298796,
+    "terminal_value": 13188734017.093801,
     "v0_rm": 6966953032.238233,
     "pv_fcf_rm": 1165045785.0773976,
     "pv_tv_rm": 5801907247.160835
@@ -292,7 +292,7 @@
     "current_price": 62.11000061035156,
     "latest_revenue": 496283000.0,
     "rpo": 0,
-    "beta": 0.562,
+    "beta": 0.642,
     "sector": "Industrials",
     "industry": "Aerospace & Defense",
     "eps_data": {
@@ -307,8 +307,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
-    "pv_high": 1265892960.5216465,
-    "pv_terminal": 10115345581.810383,
+    "pv_high": 1246578191.7800756,
+    "pv_terminal": 8992921419.691889,
     "roe_used": 0.023600079647414063,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
@@ -318,12 +318,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.09912033451913904,
-    "per": 86.718315,
+    "per": 87.478874,
     "per_is_forward": false,
     "per_adjusted": 77.25,
     "peg": null,
-    "ps": 9.840863,
-    "ev_ebitda": 30.86,
+    "ps": 9.927173,
+    "ev_ebitda": 31.097,
     "ma200": 66.51430009841918,
     "forward_eps": 1.61396,
     "next_quarter_eps": 0.33,
@@ -358,7 +358,7 @@
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $1.27B + pv_terminal $10.12B = $11.38B (差異0.00%)"
+        "detail": "2段階: pv_high $1.25B + pv_terminal $8.99B = $10.24B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,

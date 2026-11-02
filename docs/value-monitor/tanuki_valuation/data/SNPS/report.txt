@@ -1,5 +1,5 @@
 SNPS INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-02T02:49:57+09:00
+Generated: 2026-11-02T21:12:57+09:00
 Price: $467.61
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -72,12 +72,12 @@ FCF_Margin_Bear_Adj: FCFマージン悪化(22.0%→19.1%) BEAR補正係数=0.868
 TTM_YoY_Growth: 49.5%
 (DCF Base vs TTM actual: -35.6pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
-WACC_CAPM_Reference: 11.29%
-  参考①β込みWACC_IV: $207.15 (Deviation: -55.7%)
+WACC_CAPM_Reference: 11.19%
+  参考①β込みWACC_IV: $210.58 (Deviation: -55.0%)
   参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $1,071.60 (Deviation: +129.2%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は-12.6%→-5.5%（+7.2pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
-Beta: 1.227
+Beta: 1.208
 FCF_TTM_End: 2026-07-31 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $2,223.20M (5yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
 FCF_Breakdown（直近年）: OCF=$1,519M / CapEx=$169M / SBC(非現金)=$893M / D&A=$660M
@@ -101,7 +101,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $164.32  $216.68  $273.20
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一時的な問題を示す。
+  Reasoning: マクロ変動による一時的影響と明記された貸倒引当金であり、事業運営上の構造的問題ではなく一過性の財務調整と判断される。
 Financial_Health:
   Net_Debt: $+6.43B (negative=net cash)
   Total_Debt: $10.04B  Cash: $3.61B  ST_Invest: $0.00B
@@ -110,7 +110,7 @@ Financial_Health:
   Dilution_3yr_Annual: +1.92%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
   ⚠️ 期中に大規模な株式発行の可能性（+15.7%乖離: yf=192M vs SEC=166M）
-  Next_Earnings_Date: 2026-08-27
+  Next_Earnings_Date: 2026-12-10
   DuPont_ROE: 純利益率11.4% × 資産回転率0.20x × 財務レバレッジ1.53x = ROE3.5%
 FCF_History:
   2021: $1.40B (FCF_Margin: 33.3%)
@@ -262,13 +262,13 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 76.0x
+  Market_PER_GAAP: 82.6x
   Adjusted_EPS_PER: 31.7x (TTM調整後EPS: $14.7393)
-  Delta: -44.3x (cheaper on adjusted basis)
+  Delta: -50.9x (cheaper on adjusted basis)
 Forward_Estimates:
-  Next_Earnings_Date: 2026-08-27
+  Next_Earnings_Date: 2026-12-10
   Next_Quarter_EPS: $4.13 (yfinance analyst estimate)
-  Next_FY_EPS: $18.73 (yfinance forward EPS)
+  Next_FY_EPS: $18.58 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -290,10 +290,10 @@ Phase_History (recent 6 months):
 2026-09: Phase3 (陶酔期)
 2026-10: Phase2 (期待拡大期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 76.0x
-  PEG: 2.19
-  PS:  8.8x
-  EV_EBITDA: 43.2x
+  PER: 82.6x
+  PEG: 2.43
+  PS:  9.5x
+  EV_EBITDA: 46.7x
   PEG_Signal: 割高水準（成長率対比でPEG>2.0）
   PS_Signal: 適正水準
 Definition:
@@ -313,9 +313,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 4.01%  (ForwardEPS $18.73 / Price $467.61)
+  Forward_Earnings_Yield: 3.97%  (ForwardEPS $18.58 / Price $467.61)
   Risk_Free_Rate (10Y):  4.93%  (^TNX 2026-10-30)
-  ERP: -0.92%
+  ERP: -0.96%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 4.93%, ^TNX 2026-10-30]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -343,7 +343,7 @@ Analyst_Consensus: Strong Buy | Target: $600 median ($475-$700) | 25 analysts | 
 Insider_Activity: Sell優勢 | 買い0件 / 売り9件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 49.5%
-Next_Earnings_Date: 2026-08-27
+Next_Earnings_Date: 2026-12-10
 Breakeven_Estimate: 黒字化：達成済み
 Definition:
 

@@ -1,11 +1,11 @@
 {
   "intrinsic_value_per_share": 443.85581249203506,
-  "intrinsic_value_beta": 351.41,
-  "upside_percent_beta": -43.6,
+  "intrinsic_value_beta": 346.21,
+  "upside_percent_beta": -44.5,
   "intrinsic_value_rf": 2078.09,
   "upside_percent_rf": 233.4,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 31982058587.826714,
+  "v0": 31603755346.30079,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.5,
   "alpha_was_capped": true,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -28.8,
-  "calculation_date": "2026-11-02T02:47:54+09:00",
+  "calculation_date": "2026-11-02T21:10:05+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 10
   },
   "wacc": {
-    "value": 0.112654,
-    "beta": 1.222,
+    "value": 0.11350900000000001,
+    "beta": 1.237,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -124,73 +124,73 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 31982058587.826714,
-    "pv_high_growth": 14098143074.475798,
-    "pv_terminal": 17883915513.350914,
+    "v0": 31603755346.30079,
+    "pv_high_growth": 14038388596.50544,
+    "pv_terminal": 17565366749.79535,
     "high_growth_detail": [
       {
         "year": 1,
         "fcf": 1540771639.9325063,
-        "discount_factor": 1.112654,
-        "pv": 1384771582.1203234
+        "discount_factor": 1.113509,
+        "pv": 1383708295.06767
       },
       {
         "year": 2,
         "fcf": 1721162467.9504528,
-        "discount_factor": 1.237998923716,
-        "pv": 1390277838.6787124
+        "discount_factor": 1.2399022930810002,
+        "pv": 1388143628.377025
       },
       {
         "year": 3,
         "fcf": 1922673136.1767936,
-        "discount_factor": 1.3774644544683023,
-        "pv": 1395805989.7225735
+        "discount_factor": 1.3806423624663315,
+        "pv": 1392593178.68691
       },
       {
         "year": 4,
         "fcf": 2147776318.2797475,
-        "discount_factor": 1.5326413351219745,
-        "pv": 1401356122.3107803
+        "discount_factor": 1.5373576963875224,
+        "pv": 1397056991.5684454
       },
       {
         "year": 5,
         "fcf": 2399234184.20256,
-        "discount_factor": 1.7052995120888055,
-        "pv": 1406928323.848378
+        "discount_factor": 1.7118616311467738,
+        "pv": 1401535112.7388234
       },
       {
         "year": 6,
         "fcf": 2680132293.877152,
-        "discount_factor": 1.8974083233236578,
-        "pv": 1412522682.0879598
+        "discount_factor": 1.9061733330366133,
+        "pv": 1406027588.0617793
       },
       {
         "year": 7,
         "fcf": 2993917459.154023,
-        "discount_factor": 2.1111589605793615,
-        "pv": 1418139285.1310484
+        "discount_factor": 2.122541161896266,
+        "pv": 1410534463.5480587
       },
       {
         "year": 8,
         "fcf": 3344440038.5401797,
-        "discount_factor": 2.348989462124469,
-        "pv": 1423778221.4294853
+        "discount_factor": 2.3634686866419496,
+        "pv": 1415055785.3558908
       },
       {
         "year": 9,
         "fcf": 3736001183.7304325,
-        "discount_factor": 2.613612520990639,
-        "pv": 1429439579.786821
+        "discount_factor": 2.631743653793991,
+        "pv": 1419591599.7914593
       },
       {
         "year": 10,
         "fcf": 4173405617.6793094,
-        "discount_factor": 2.9080464259303183,
-        "pv": 1435123449.359715
+        "discount_factor": 2.9304702441924935,
+        "pv": 1424141953.3093786
       }
     ],
     "terminal_fcf": 4298607786.209689,
-    "terminal_value": 52007256590.2399,
+    "terminal_value": 51474784588.603485,
     "v0_rm": 38702965450.1157,
     "pv_fcf_rm": 15027259937.791708,
     "pv_tv_rm": 23675705512.32399
@@ -320,7 +320,7 @@
     "current_price": 623.3800048828125,
     "latest_revenue": 3134459000.0,
     "rpo": 2586200000,
-    "beta": 1.222,
+    "beta": 1.237,
     "sector": "Financial Services",
     "industry": "Financial Data & Stock Exchanges",
     "eps_data": {
@@ -335,8 +335,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 10,
-    "pv_high": 14098143074.475798,
-    "pv_terminal": 17883915513.350914,
+    "pv_high": 14038388596.50544,
+    "pv_terminal": 17565366749.79535,
     "roe_used": 0.7790061145302385,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
@@ -346,22 +346,22 @@
     "rpo_pv": 21252118.055248853,
     "growth_option_pv": 0,
     "alpha_uncapped": 3.2718256810270017,
-    "per": 31.73299,
+    "per": 32.965626,
     "per_is_forward": false,
     "per_adjusted": 27.95,
-    "peg": 1.866,
-    "ps": 13.039305,
-    "ev_ebitda": 25.093,
+    "peg": 1.9636,
+    "ps": 13.203668,
+    "ev_ebitda": 25.368,
     "ma200": 573.4688993835449,
-    "forward_eps": 22.39284,
+    "forward_eps": 22.42096,
     "next_quarter_eps": 5.09,
     "analyst_target_median": 684.0,
-    "analyst_target_mean": 681.4706,
-    "analyst_target_low": 550.0,
+    "analyst_target_mean": 684.1177,
+    "analyst_target_low": 585.0,
     "analyst_target_high": 735.0,
     "analyst_count": 17,
     "analyst_rec_key": "strong_buy",
-    "dividend_yield": 0.0029021024,
+    "dividend_yield": 0.012852639,
     "payout_ratio": 0.42040002,
     "insider_buy_count": 1,
     "insider_sell_count": 2,
@@ -386,7 +386,7 @@
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $14.10B + pv_terminal $17.88B = $31.98B (差異0.00%)"
+        "detail": "2段階: pv_high $14.04B + pv_terminal $17.57B = $31.60B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -479,7 +479,7 @@
     "excluded": true,
     "reason": "negative_equity"
   },
-  "next_earnings_date": "2026-10-20",
+  "next_earnings_date": "2027-01-26",
   "breakeven_reason": "ACHIEVED",
   "segment_configured": false,
   "phase1_growth_original": 0.15,
@@ -510,7 +510,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0134,
+  "erp": -0.0133,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

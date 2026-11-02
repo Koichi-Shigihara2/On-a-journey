@@ -1,11 +1,11 @@
 {
-  "intrinsic_value_per_share": 5.492259629747953,
-  "intrinsic_value_beta": 2.71,
-  "upside_percent_beta": 64.4,
+  "intrinsic_value_per_share": 5.492233402973168,
+  "intrinsic_value_beta": 2.68,
+  "upside_percent_beta": 62.7,
   "intrinsic_value_rf": 19.76,
   "upside_percent_rf": 1097.6,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 112743463.96922225,
+  "v0": 111474646.19056395,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
   "alpha_was_capped": false,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 232.9,
-  "calculation_date": "2026-11-02T02:47:39+09:00",
+  "calculation_date": "2026-11-02T21:09:42+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 4
   },
   "wacc": {
-    "value": 0.174385,
-    "beta": 2.305,
+    "value": 0.17592400000000002,
+    "beta": 2.332,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -124,41 +124,41 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 112743463.96922225,
-    "pv_high_growth": 40603680.3917028,
-    "pv_terminal": 72139783.57751945,
+    "v0": 111474646.19056395,
+    "pv_high_growth": 40468629.23745146,
+    "pv_terminal": 71006016.9531125,
     "high_growth_detail": [
       {
         "year": 1,
         "growth_rate": 0.5013,
         "fcf": 10626847.476842731,
-        "discount_factor": 1.174385,
-        "pv": 9048861.724939207
+        "discount_factor": 1.175924,
+        "pv": 9037018.9543225
       },
       {
         "year": 2,
         "growth_rate": 0.3627,
         "fcf": 14480706.72506688,
-        "discount_factor": 1.37918,
-        "pv": 10499503.602697277
+        "discount_factor": 1.382797,
+        "pv": 10472038.967046298
       },
       {
         "year": 3,
         "growth_rate": 0.224,
         "fcf": 17723907.740335677,
-        "discount_factor": 1.619688,
-        "pv": 10942788.21761957
+        "discount_factor": 1.626064,
+        "pv": 10899880.036601113
       },
       {
         "year": 4,
         "growth_rate": 0.0853,
         "fcf": 19235419.83198433,
-        "discount_factor": 1.902138,
-        "pv": 10112526.846446743
+        "discount_factor": 1.912128,
+        "pv": 10059691.279481543
       }
     ],
     "terminal_fcf": 19812482.42694386,
-    "terminal_value": 137219811.1087984,
+    "terminal_value": 135772610.5845773,
     "v0_rm": 241399611.17233604,
     "pv_fcf_rm": 48082581.43252657,
     "pv_tv_rm": 193317029.73980945
@@ -200,7 +200,7 @@
       "total_transient_amount": 2230643,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく外部要因による一過性の金融費用と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく外部要因による一過性の費用と判断される。"
       }
     },
     "action": "flagged",
@@ -250,7 +250,7 @@
     "long_term_debt": 0.0,
     "short_term_debt": 0.0,
     "net_cash": 12783933.0,
-    "net_cash_per_share": 0.27622826392608074,
+    "net_cash_per_share": 0.2762269448740046,
     "fiscal_year": 2025,
     "applied": true,
     "sector_guard": "none",
@@ -295,14 +295,14 @@
       -30375103.0,
       -12199373.0
     ],
-    "diluted_shares": 46280322,
+    "diluted_shares": 46280543,
     "roe_10yr_avg": -0.6296839227208106,
     "roe_years_used": 7,
     "roe_outlier_adj": true,
     "current_price": 1.649999976158142,
     "latest_revenue": 16170404.0,
     "rpo": 107267.0,
-    "beta": 2.305,
+    "beta": 2.332,
     "sector": "Technology",
     "industry": "Electronic Components",
     "eps_data": {
@@ -317,8 +317,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 4,
-    "pv_high": 40603680.3917028,
-    "pv_terminal": 72139783.57751945,
+    "pv_high": 40468629.23745146,
+    "pv_terminal": 71006016.9531125,
     "roe_used": -0.6296839227208106,
     "fcf_floor_applied": 30206280.32,
     "fcf_growth_floor": 0.15,
@@ -332,7 +332,7 @@
     "per_is_forward": false,
     "per_adjusted": null,
     "peg": null,
-    "ps": 4.571696,
+    "ps": 4.715482,
     "ev_ebitda": null,
     "ma200": 2.913299999833107,
     "forward_eps": 0.0,
@@ -383,11 +383,11 @@
     "ai_comment": null
   },
   "phase1_growth": 0.5013391731944579,
-  "required_growth_rf_base": -0.32886148704067253,
+  "required_growth_rf_base": -0.3288608460713722,
   "risk_free_rate_live": 0.04928999900817871,
   "risk_free_rate_live_date": "2026-10-30",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.2737436679660755,
+  "required_growth_rf_live": -0.2737429743566283,
   "tanuki_score": "PASS",
   "funda_score": 0,
   "score_comment": "割安圏(233%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",

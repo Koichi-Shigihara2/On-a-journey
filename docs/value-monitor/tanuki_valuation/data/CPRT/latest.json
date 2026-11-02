@@ -1,11 +1,11 @@
 {
   "intrinsic_value_per_share": 29.428130715300046,
-  "intrinsic_value_beta": 28.82,
-  "upside_percent_beta": -4.3,
+  "intrinsic_value_beta": 27.95,
+  "upside_percent_beta": -7.2,
   "intrinsic_value_rf": 117.34,
   "upside_percent_rf": 289.5,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 26701175923.72791,
+  "v0": 25889748852.511917,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
   "alpha_was_capped": true,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -2.3,
-  "calculation_date": "2026-11-02T02:47:53+09:00",
+  "calculation_date": "2026-11-02T21:10:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 9
   },
   "wacc": {
-    "value": 0.101311,
-    "beta": 1.023,
+    "value": 0.10330600000000001,
+    "beta": 1.058,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -124,67 +124,67 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 26701175923.72791,
-    "pv_high_growth": 9916121936.09333,
-    "pv_terminal": 16785053987.634579,
+    "v0": 25889748852.511917,
+    "pv_high_growth": 9825304072.12132,
+    "pv_terminal": 16064444780.390594,
     "high_growth_detail": [
       {
         "year": 1,
         "fcf": 1149055792.4232714,
-        "discount_factor": 1.101311,
-        "pv": 1043352688.2263697
+        "discount_factor": 1.103306,
+        "pv": 1041466095.9183323
       },
       {
         "year": 2,
         "fcf": 1282633139.1938214,
-        "discount_factor": 1.212885918721,
-        "pv": 1057505177.8541304
+        "discount_factor": 1.2172841296359997,
+        "pv": 1053684269.73361
       },
       {
         "year": 3,
         "fcf": 1431738807.293861,
-        "discount_factor": 1.335764604032543,
-        "pv": 1071849638.0062633
+        "discount_factor": 1.3430368839321762,
+        "pv": 1066045783.5692353
       },
       {
         "year": 4,
         "fcf": 1598177958.8196702,
-        "discount_factor": 1.4710922518316838,
-        "pv": 1086388672.654451
+        "discount_factor": 1.4817806522636736,
+        "pv": 1078552319.0481532
       },
       {
         "year": 5,
         "fcf": 1783965605.3499496,
-        "discount_factor": 1.6201300789570034,
-        "pv": 1101124921.09178
+        "discount_factor": 1.6348574843264243,
+        "pv": 1091205577.5216146
       },
       {
         "year": 6,
         "fcf": 1991351002.877091,
-        "discount_factor": 1.7842670773862164,
-        "pv": 1116061058.4118567
+        "discount_factor": 1.8037480716022498,
+        "pv": 1104007280.3006217
       },
       {
         "year": 7,
         "fcf": 2222844882.6409473,
-        "discount_factor": 1.9650329592632911,
-        "pv": 1131199795.9944205
+        "discount_factor": 1.9900860698871916,
+        "pv": 1116959168.8900921
       },
       {
         "year": 8,
         "fcf": 2481249847.5378103,
-        "discount_factor": 2.1641124133992142,
-        "pv": 1146543881.9975448
+        "discount_factor": 2.195673901422958,
+        "pv": 1130063005.2257662
       },
       {
         "year": 9,
         "fcf": 2769694302.101634,
-        "discount_factor": 2.3833608061131017,
-        "pv": 1162096101.8565137
+        "discount_factor": 2.4225001894833573,
+        "pv": 1143320571.9138963
       }
     ],
     "terminal_fcf": 2852785131.1646833,
-    "terminal_value": 40004839802.62068,
+    "terminal_value": 38916120524.44115,
     "v0_rm": 27260173627.018974,
     "pv_fcf_rm": 9976468200.513573,
     "pv_tv_rm": 17283705426.5054
@@ -238,7 +238,7 @@
       "total_transient_amount": 6068000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題を示すため構造的悪化とは判断されない。"
       }
     },
     "action": "flagged",
@@ -318,19 +318,19 @@
     "bear": {
       "growth_rate": 0.081,
       "rice": 0.451,
-      "rice_per_ratio": 0.0241,
+      "rice_per_ratio": 0.0232,
       "rice_adj": 0.451
     },
     "base": {
       "growth_rate": 0.116,
       "rice": 0.646,
-      "rice_per_ratio": 0.0345,
+      "rice_per_ratio": 0.0332,
       "rice_adj": 0.646
     },
     "bull": {
       "growth_rate": 0.139,
       "rice": 0.774,
-      "rice_per_ratio": 0.0414,
+      "rice_per_ratio": 0.0398,
       "rice_adj": 0.774
     }
   },
@@ -360,7 +360,7 @@
     "current_price": 30.1299991607666,
     "latest_revenue": 4666209000.0,
     "rpo": 89492000,
-    "beta": 1.023,
+    "beta": 1.058,
     "sector": "Industrials",
     "industry": "Specialty Business Services",
     "eps_data": {
@@ -375,8 +375,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 2,
     "moat_phase1_years": 9,
-    "pv_high": 9916121936.09333,
-    "pv_terminal": 16785053987.634579,
+    "pv_high": 9825304072.12132,
+    "pv_terminal": 16064444780.390594,
     "roe_used": 0.24580360821209676,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
@@ -386,12 +386,12 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.0323751544908062,
-    "per": 18.709679,
+    "per": 19.43871,
     "per_is_forward": false,
     "per_adjusted": 19.08,
-    "peg": 2.833,
-    "ps": 5.757047,
-    "ev_ebitda": 12.045,
+    "peg": 3.0225,
+    "ps": 5.981373,
+    "ev_ebitda": 12.606,
     "ma200": 32.36910012245178,
     "forward_eps": 1.81,
     "next_quarter_eps": 0.4,
@@ -426,7 +426,7 @@
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $9.92B + pv_terminal $16.79B = $26.70B (差異0.00%)"
+        "detail": "2段階: pv_high $9.83B + pv_terminal $16.06B = $25.89B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,

@@ -1,11 +1,11 @@
 {
   "intrinsic_value_per_share": 238.38129280747773,
-  "intrinsic_value_beta": 138.84,
-  "upside_percent_beta": -77.7,
+  "intrinsic_value_beta": 140.43,
+  "upside_percent_beta": -77.5,
   "intrinsic_value_rf": 1042.52,
   "upside_percent_rf": 67.4,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 93317143564.87766,
+  "v0": 94049002011.5615,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
   "alpha_was_capped": true,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -61.7,
-  "calculation_date": "2026-11-02T02:48:44+09:00",
+  "calculation_date": "2026-11-02T21:11:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 6
   },
   "wacc": {
-    "value": 0.13385800000000003,
-    "beta": 1.594,
+    "value": 0.13306,
+    "beta": 1.58,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -124,49 +124,49 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 93317143564.87766,
-    "pv_high_growth": 40037159670.44207,
-    "pv_terminal": 53279983894.43558,
+    "v0": 94049002011.5615,
+    "pv_high_growth": 40129178132.92777,
+    "pv_terminal": 53919823878.63371,
     "high_growth_detail": [
       {
         "year": 1,
         "fcf": 9212237722.425741,
-        "discount_factor": 1.133858,
-        "pv": 8124683798.523044
+        "discount_factor": 1.13306,
+        "pv": 8130405911.801442
       },
       {
         "year": 2,
         "fcf": 9616031438.176603,
-        "discount_factor": 1.285633964164,
-        "pv": 7479602831.144517
+        "discount_factor": 1.2838249635999999,
+        "pv": 7490142122.810958
       },
       {
         "year": 3,
         "fcf": 10037524367.711645,
-        "discount_factor": 1.457726355339065,
-        "pv": 6885739789.877732
+        "discount_factor": 1.4546507132566158,
+        "pv": 6900298660.178033
       },
       {
         "year": 4,
         "fcf": 10477492308.564009,
-        "discount_factor": 1.6528546898120415,
-        "pv": 6339028090.700147
+        "discount_factor": 1.6482065371625412,
+        "pv": 6356904958.404949
       },
       {
         "year": 5,
         "fcf": 10936745063.269531,
-        "discount_factor": 1.8741025128809017,
-        "pv": 5835724026.887613
+        "discount_factor": 1.8675168989973887,
+        "pv": 5856303131.25473
       },
       {
         "year": 6,
         "fcf": 11416127929.884771,
-        "discount_factor": 2.1249661270501137,
-        "pv": 5372381133.309021
+        "discount_factor": 2.116008697577981,
+        "pv": 5395123348.477661
       }
     ],
     "terminal_fcf": 11758611767.781315,
-    "terminal_value": 113218161025.4512,
+    "terminal_value": 114094816299.06184,
     "v0_rm": 139074894310.95383,
     "pv_fcf_rm": 44254468646.15225,
     "pv_tv_rm": 94820425664.80157
@@ -220,7 +220,7 @@
       "total_transient_amount": 448000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断できるため。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -302,19 +302,19 @@
     "bear": {
       "growth_rate": 0.031,
       "rice": 0.511,
-      "rice_per_ratio": 0.0173,
+      "rice_per_ratio": 0.0209,
       "rice_adj": 0.937
     },
     "base": {
       "growth_rate": 0.044,
       "rice": 0.725,
-      "rice_per_ratio": 0.0245,
+      "rice_per_ratio": 0.0297,
       "rice_adj": 1.329
     },
     "bull": {
       "growth_rate": 0.053,
       "rice": 0.873,
-      "rice_per_ratio": 0.0295,
+      "rice_per_ratio": 0.0357,
       "rice_adj": 1.601
     }
   },
@@ -344,7 +344,7 @@
     "current_price": 622.75,
     "latest_revenue": 67589000000.0,
     "rpo": 44100000000,
-    "beta": 1.594,
+    "beta": 1.58,
     "sector": "Industrials",
     "industry": "Farm & Heavy Construction Machinery",
     "eps_data": {
@@ -359,8 +359,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 6,
-    "pv_high": 40037159670.44207,
-    "pv_terminal": 53279983894.43558,
+    "pv_high": 40129178132.92777,
+    "pv_terminal": 53919823878.63371,
     "roe_used": 0.3412824297368841,
     "fcf_floor_applied": 0.0,
     "fcf_growth_floor": 0.15,
@@ -370,22 +370,22 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 1.433386204894913,
-    "per": 29.573828,
+    "per": 24.440739,
     "per_is_forward": false,
     "per_adjusted": 25.0,
-    "peg": 1.3697,
-    "ps": 4.2258916,
-    "ev_ebitda": 21.845,
+    "peg": 1.0833,
+    "ps": 3.6807444,
+    "ev_ebitda": 18.799,
     "ma200": 809.9079992675781,
-    "forward_eps": 32.58528,
-    "next_quarter_eps": 7.03,
-    "analyst_target_median": 957.5,
-    "analyst_target_mean": 945.76,
+    "forward_eps": 32.17609,
+    "next_quarter_eps": 6.52,
+    "analyst_target_median": 869.5,
+    "analyst_target_mean": 861.26,
     "analyst_target_low": 575.0,
-    "analyst_target_high": 1155.0,
+    "analyst_target_high": 1150.0,
     "analyst_count": 26,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.008749379,
+    "dividend_yield": 0.0023324424,
     "payout_ratio": 0.26,
     "insider_buy_count": 0,
     "insider_sell_count": 14,
@@ -393,7 +393,7 @@
     "insider_latest_date": "2026-10-27",
     "revenue_ttm": 74729000000,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 301.7,
+    "analyst_vs_iv": 264.8,
     "max_eps": 23.7277,
     "max_eps_per": 26.2,
     "max_eps_reliability": "HIGH",
@@ -410,7 +410,7 @@
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $40.04B + pv_terminal $53.28B = $93.32B (差異0.00%)"
+        "detail": "2段階: pv_high $40.13B + pv_terminal $53.92B = $94.05B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -510,7 +510,7 @@
     "roe_decomposed": 0.5591,
     "dupont_bs_period": "2026Q2"
   },
-  "next_earnings_date": "2026-10-29",
+  "next_earnings_date": "2027-01-28",
   "breakeven_reason": "ACHIEVED",
   "segment_configured": false,
   "phase1_growth_original": 0.246,
@@ -541,7 +541,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.003,
+  "erp": 0.0024,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

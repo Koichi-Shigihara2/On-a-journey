@@ -1,11 +1,11 @@
 {
   "intrinsic_value_per_share": 20.88535778705097,
-  "intrinsic_value_beta": 9.62,
-  "upside_percent_beta": -77.6,
+  "intrinsic_value_beta": 9.52,
+  "upside_percent_beta": -77.8,
   "intrinsic_value_rf": 79.79,
   "upside_percent_rf": 86.1,
   "intrinsic_value_rf_rate": 0.04928999900817871,
-  "v0": 1616487788.8070843,
+  "v0": 1599002702.4246192,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.008868526368073984,
   "alpha_was_capped": false,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -51.3,
-  "calculation_date": "2026-11-02T02:48:35+09:00",
+  "calculation_date": "2026-11-02T21:11:10+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -53,8 +53,8 @@
     "phase1_years": 5
   },
   "wacc": {
-    "value": 0.17341600000000001,
-    "beta": 2.288,
+    "value": 0.174784,
+    "beta": 2.312,
     "risk_free_rate": 0.043,
     "market_return": 0.1,
     "method": "CAPM"
@@ -124,43 +124,43 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 1616487788.8070843,
-    "pv_high_growth": 613344507.6962185,
-    "pv_terminal": 1003143281.1108658,
+    "v0": 1599002702.4246192,
+    "pv_high_growth": 611109682.819226,
+    "pv_terminal": 987893019.6053933,
     "high_growth_detail": [
       {
         "year": 1,
         "fcf": 125280088.69660924,
-        "discount_factor": 1.173416,
-        "pv": 106765280.76710156
+        "discount_factor": 1.174784,
+        "pv": 106640955.86644799
       },
       {
         "year": 2,
         "fcf": 157219852.18554005,
-        "discount_factor": 1.376905109056,
-        "pv": 114183505.56730033
+        "discount_factor": 1.3801174466560002,
+        "pv": 113917734.00624774
       },
       {
         "year": 3,
         "fcf": 197302557.6402874,
-        "discount_factor": 1.6156824854480554,
-        "pv": 122117160.65336448
+        "discount_factor": 1.6213398944523225,
+        "pv": 121691052.14482793
       },
       {
         "year": 4,
         "fcf": 247604222.4327907,
-        "discount_factor": 1.8958676793445153,
-        "pv": 130602058.95719387
+        "discount_factor": 1.9047241665642773,
+        "pv": 129994792.30602548
       },
       {
         "year": 5,
         "fcf": 310730138.0163578,
-        "discount_factor": 2.2246414688257237,
-        "pv": 139676501.7512582
+        "discount_factor": 2.237639475293048,
+        "pv": 138865148.49567693
       }
     ],
     "terminal_fcf": 320052042.15684855,
-    "terminal_value": 2231634142.3331323,
+    "terminal_value": 2210548418.035477,
     "v0_rm": 3593076174.236083,
     "pv_fcf_rm": 754117067.6101573,
     "pv_tv_rm": 2838959106.625926
@@ -290,7 +290,7 @@
     "current_price": 42.869998931884766,
     "latest_revenue": 1638159000.0,
     "rpo": 2562000,
-    "beta": 2.288,
+    "beta": 2.312,
     "sector": "Consumer Cyclical",
     "industry": "Restaurants",
     "eps_data": {
@@ -305,8 +305,8 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
-    "pv_high": 613344507.6962185,
-    "pv_terminal": 1003143281.1108658,
+    "pv_high": 611109682.819226,
+    "pv_terminal": 987893019.6053933,
     "roe_used": 0.002111553897160473,
     "fcf_floor_applied": 145683320.0,
     "fcf_growth_floor": 0.15,
@@ -316,17 +316,17 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.008868526368073984,
-    "per": 57.625,
+    "per": 59.541664,
     "per_is_forward": false,
     "per_adjusted": 51.75,
-    "peg": 1.48,
-    "ps": 3.865798,
-    "ev_ebitda": 21.233,
+    "peg": 1.73,
+    "ps": 3.994378,
+    "ev_ebitda": 21.824,
     "ma200": 53.362749900817875,
-    "forward_eps": 1.30598,
-    "next_quarter_eps": 0.24,
-    "analyst_target_median": 69.0,
-    "analyst_target_mean": 66.32,
+    "forward_eps": 1.30642,
+    "next_quarter_eps": 0.25,
+    "analyst_target_median": 66.0,
+    "analyst_target_mean": 65.32,
     "analyst_target_low": 29.0,
     "analyst_target_high": 95.0,
     "analyst_count": 25,
@@ -339,7 +339,7 @@
     "insider_latest_date": "2026-10-30",
     "revenue_ttm": 1882457000,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 230.4,
+    "analyst_vs_iv": 216.0,
     "max_eps": 0.8825,
     "max_eps_per": 48.6,
     "max_eps_reliability": "HIGH",
@@ -356,7 +356,7 @@
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $0.61B + pv_terminal $1.00B = $1.62B (差異0.00%)"
+        "detail": "2段階: pv_high $0.61B + pv_terminal $0.99B = $1.60B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
