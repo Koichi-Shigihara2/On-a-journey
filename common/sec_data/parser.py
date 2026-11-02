@@ -408,8 +408,9 @@ class SECParser:
         # （旧タグPaymentsToAcquireProductiveAssetsは2022-09-30で申告停止）。
         "operating_cash_flow": list(TAG_CANDIDATES["OPERATING_CASH_FLOW"]),
         "capital_expenditure": list(TAG_CANDIDATES["CAPITAL_EXPENDITURE"]),
-        # ファイナンスリース返済（AMZN等）: FCF計算から除外するために別取得
-        "finance_lease_payments": list(TAG_CANDIDATES["FINANCE_LEASE_PAYMENTS"]),
+        # finance_lease_payments（ファイナンス・リースの返済）は2026-11-02に取得・書き込みをやめた
+        # （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1。FCFの式でリースの支払いを足さなくなり、読み手0件。
+        # Layer3・TTMの finance_lease_payments は別の経路〈config/sec_concept_definitions.json〉で残る）
         # 減価償却費（R&D資本化・維持CapEx分離に使用）
         # DepreciationAndAmortization: 最も汎用的なタグ（多くの企業）
         # DepreciationDepletionAndAmortization: 資源系企業等で使用
@@ -3372,7 +3373,7 @@ class SECParser:
             _record("pl", field, extracted.get(field, {}).get(period_type, {}).get(period))
 
         # CF
-        for field in ["operating_cash_flow", "capital_expenditure", "finance_lease_payments",
+        for field in ["operating_cash_flow", "capital_expenditure",
                       "depreciation_and_amortization", "stock_based_compensation", "buyback"]:
             _record("cf", field, extracted.get(field, {}).get(period_type, {}).get(period))
         
