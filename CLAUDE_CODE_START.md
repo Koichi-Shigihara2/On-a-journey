@@ -100,6 +100,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - Discordの「TANUKI SCORE 変化検知」: 🛠に入るのはscopeの項目（判定・乖離率・funda・stage）の変化だけで、各行に「計算方法の分」と「残り（相場等）」がある。scope外の銘柄・項目の変化は📈相場の変化
      - HypeCoreの{T}_poc.json・ROTCE・Stonksにも、最初の実行だけ印（全銘柄のファイルは先頭）
    - 満たしたら`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+   - **2026-11-02 夜〜11-03（FCF-DEFINITION-SINGLE-SOURCE-1 段1・段1bの公開）: HypeCoreの印だけ不合格、ほかは合格**。TANUKIの印はscopeの36銘柄だけ・2回目は0、理論株価・判定は試算と一致、Discordの🛠は6銘柄8件で「計算方法の分」「残り」つき。HypeCoreは前回の出力を`src/value/hypecore/data/`（CIに無い）から読み、印を付けない。直し方はチャット側の判断（BACKLOGの「手順21の確認」）。移設していない
 
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後

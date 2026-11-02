@@ -2166,7 +2166,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   理論株価: AMZN 2.08→122.18（構造的赤字〈5年 −0.56B・2年 −18.17B〉で下限が効く、Policy AでWATCH、IVは参考値の注記）・VZ −73.8%・BROS −26.8%・DOCN −14.4%・LOAR +12.5%・LYFT −8.0%・GOOGL −7.6%・MSFT −5.4%・CRM −4.9%・WMT・META −3.3%等。
   Policy Aが外れたのはBROS・S（2年平均が正で下限が効かなくなった）。COHR・RCATは2年平均も負（構造的赤字）で、下限を基準に使いPolicy Aのまま（段1のSTEP 0の報告の「BROS・COHR・RCAT・S」は誤り）
 - scope: `scripts/method_change_scope.py diff`で作った（scratchpad、configへの書き込みは公開の承認の後）。新しいキー（`fcf_floor_used_in_base`・`finance_lease`）で96銘柄すべてに項目が入る。判定・funda・乖離率・理論株価・stageが変わるのは28銘柄
-- 残り: 公開（push・派生ファイルの同時commit・scopeの書き込み・TANUKI→HypeCore→TANUKIの手動の実行）はチャット側の許可の後。確認はCLAUDE_CODE_START.mdの次回の確認手順21
+- 公開前の直し（2026-11-02 夜、チャット側の指示）: `3bc681b137`（Policy Aの通しの経路のテスト2本、c64ae4ff16の前の比べ方では1本目が失敗）・`d7bcb40fe0`（scopeは前の出力にあった項目だけ、36銘柄）・`962eb7d145`（parserのfinance_lease_paymentsの取得・書き込みをやめた。fixed_registry.jsonでフィックスした年は凍結の仕組みで旧値が写されキーが残る〈finance_lease_payments_applied 361件・finance_lease_payments 49件〉。free_cash_flowも同じで、フィックスした年の年次のFCFは旧い式のまま）
+- 公開（2026-11-02 夜〜11-03）: push（`b0807466f7`〜`b7b2390e7d`）、TANUKI→HypeCore→TANUKI、出力の一覧の作り直し `97e14f1d7a`（SEC層のWARN-INV-6 2件は消えた）。公開の理論株価・判定は試算と全96銘柄で一致。結果は[[METHOD-CHANGE-PUBLISH-TIMING-1]]の「手順21の確認」。段2〜段5が残るのでBACKLOGに残す
 
 #### 束ねた件
 - FINDINGS: 2026-10-26のTSLAの3行（注記の文言・`_calc_fcf`のリースの式・調整後EPSの調整）・2026-10-26 Layer3の`anomaly`・2026-10-31 DOCNの`anomaly`・2026-11-01のFCFの式（リースを足している）・VZ・LOAR・LYFT・CapEx欠け・`calc_fcf`・ファイナンス・リースの負債（12行）
@@ -2422,6 +2423,19 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
   （古い規則では10-26の日付の印で全部🛠に入っていた）
 - 本番の値: 手元でTANUKI VALUATIONを前（10-30のコード）・後で全96銘柄回し、latest.json（時刻を除く）の差0（理論株価・判定とも0）。`config/method_change.json`に新しい形の件が無いため、出力は変わらない
 - 残り: 新しい計算方法の変更の件はまだ無い。次の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）が最初の本番の確認（CLAUDE_CODE_START.mdの次回の確認手順21）。それまでBACKLOGに残す
+
+#### 手順21の確認（2026-11-02 夜〜11-03、最初の本番＝[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1・段1bの公開）
+- 公開: 派生ファイルの作り直し `35a53e1246`（data 3,928件・ttm 25件、generated_atと丸めだけの171件は戻した）・scope `b7b2390e7d`（`scripts/method_change_scope.py diff --write`、36銘柄）を同じpushで。
+  読み合い: TANUKI VALUATION run `41460290935`（workflow_dispatch、success、data `42d91f9bed`）→ HypeCore run `41463310936`（workflow_dispatch、success、`0750db99de`）→ TANUKI VALUATION run `41463718847`（HypeCoreの完了でworkflow_runが起動、success、`87a4f9a75a`）。3つ目は連鎖で自動に動くので手で起動していない
+- 合格: 公開の理論株価・判定は手元の試算（after4）と全96銘柄で一致（差0）。1回目のlatest.jsonで`FCF-DEFINITION-SINGLE-SOURCE-1`の印はscopeの36銘柄だけ・`method_change_applied`は96/96、2回目は印0。
+  Discordの本文（1回目、実行の前の`.watcher_state.json`と実行後のlatest.json・poc.jsonからscore_watcherで組み立て）: 🛠に6銘柄8件（AMZN・BROS・LOAR・LYFT・S・VZ）、各行に「計算方法の分（株価を固定した試算）」と「残り（相場等）」（どれも残り0・なし）。
+  AMZNのreport.txtに「構造的赤字銘柄」の注記と`Finance_Lease: +$14.49B`、MSFTに`Finance_Lease: +$70.97B`
+- **不合格: HypeCoreの{T}_poc.jsonに印が付かない。** `hypecore.py`は前回の出力を`src/value/hypecore/data/{T}_poc.json`（.gitignore、CIに無い）から読むため、
+  前回の出力が無い扱いで印を付けず`method_change_applied`だけ書いた（今回はstageの変化0で通知への影響は無い）。直すなら前回の出力を`docs/value-monitor/hypecore/data/`の写しから読む。
+  今回の分はもう読んだことになっている（poc.jsonの`method_change_applied`にID）。あわせてrccにWARN-INV-6（HypeCore `method_change_applied` 誰も読まないキー）が出た
+- 気づいたこと: 古い形の`{"id": "QUARTERLY-BASIS-MIX-1", "date": "2026-11-02"}`が同じ日（JST）だったため、1回目・2回目とも全銘柄に`QUARTERLY-BASIS-MIX-1`の印も付き、
+  Discordの🛠の見出しにも並んだ（scope外の銘柄に変化が無かったので本文への影響なし。日付が変わると付かない）
+- 移設はしない（HypeCoreの印が残り）。直し方はチャット側の判断
 
 #### 始める段（CHAT_RULES 4）
 定義（計算方法の変更が公開に出る時点の決まり）
