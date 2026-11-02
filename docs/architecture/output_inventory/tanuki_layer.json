@@ -10,7 +10,7 @@
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
      "func": "save_state",
-     "line": 65
+     "line": 72
     }
    ],
    "writers_outside_layer": [],
@@ -416,7 +416,7 @@
    "readers": [
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 38,
+     "line": 45,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -424,7 +424,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 59,
+     "line": 66,
      "func": "load_state",
      "how": "保存済みファイル",
      "via": "AST",
@@ -432,7 +432,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 271,
+     "line": 338,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_state",
@@ -440,7 +440,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 314,
+     "line": 381,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_state",
@@ -468,7 +468,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_hypecore_history",
-     "line": 3887
+     "line": 3905
     }
    ],
    "writers_outside_layer": [],
@@ -514,7 +514,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1298
+     "line": 1305
     }
    ],
    "writers_outside_layer": [],
@@ -560,15 +560,15 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1266
+     "line": 1273
     }
    ],
    "writers_outside_layer": [],
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 29657,
-   "top_keys_sampled_files": 29657,
+   "files_tracked": 30329,
+   "top_keys_sampled_files": 30329,
    "top_keys": [
     {
      "key": "alpha",
@@ -708,7 +708,11 @@
     },
     {
      "key": "method_change",
-     "reader_files": 1
+     "reader_files": 0
+    },
+    {
+     "key": "method_change_applied",
+     "reader_files": 0
     },
     {
      "key": "phase1_growth",
@@ -834,7 +838,7 @@
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1283,
+     "line": 1284,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/hypecore/hypecore.py::fetch_tanuki_iv",
@@ -1131,7 +1135,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1045,
+     "line": 1134,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1139,7 +1143,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1187,7 +1191,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 290,
+     "line": 293,
      "func": "KoichiValuationCalculator.calculate_pt",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1195,7 +1199,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1026,
+     "line": 1030,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1251,7 +1255,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1065,
+     "line": 1068,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector",
@@ -1259,7 +1263,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1106,
+     "line": 1109,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1267,7 +1271,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1174,
+     "line": 1177,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1275,7 +1279,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1400,
+     "line": 1407,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1283,7 +1287,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1932,
+     "line": 1939,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1291,7 +1295,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1933,
+     "line": 1940,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1299,7 +1303,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3892,
+     "line": 3910,
      "func": "TanukiValuationPipeline._load_beta_sector",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1307,7 +1311,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3894,
+     "line": 3912,
      "func": "TanukiValuationPipeline._load_beta_sector",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1315,7 +1319,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3950,
+     "line": 3968,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1563,7 +1567,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1964,
+     "line": 1966,
      "func": "TestNewTickerIntegration.test_dcf_reliability_low_shown_in_report_for_negative_fcf_ticker",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1571,7 +1575,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1989,
+     "line": 1991,
      "func": "TestNewTickerIntegration.test_matrix4_uses_actual_negative_fcf_margin_for_new_ticker",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1579,7 +1583,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2226,
+     "line": 2229,
      "func": "TestMatrix4TailNoneRegression.test_matrix4_tail_none_uses_last_real_margin",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1587,7 +1591,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2248,
+     "line": 2251,
      "func": "TestMatrix4TailNoneRegression.test_matrix4_all_none_floor_applied_shows_na",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1595,7 +1599,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2280,
+     "line": 2283,
      "func": "TestScenarioValuationsAlwaysRendered.test_bear_bull_non_zero_when_scenario_valuations_populated",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1603,7 +1607,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2295,
+     "line": 2298,
      "func": "TestScenarioValuationsAlwaysRendered.test_bear_bull_show_zero_when_scenario_valuations_absent",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1611,7 +1615,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2570,
+     "line": 2573,
      "func": "TestMatrix2ROEDefinitionDynamicYear.test_matrix2_definition_uses_roe_years_used",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1619,7 +1623,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2584,
+     "line": 2587,
      "func": "TestMatrix2ROEDefinitionDynamicYear.test_matrix2_definition_default_10yr",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1627,7 +1631,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3072,
+     "line": 3075,
      "func": "TestRiceNegativeLabel.test_negative_rice_label_contains_ocf_loss",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1635,7 +1639,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3095,
+     "line": 3098,
      "func": "TestRiceNegativeLabel.test_zero_rice_label_is_low_efficiency",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1643,7 +1647,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3110,
+     "line": 3113,
      "func": "TestRiceNegativeLabel.test_positive_rice_label_is_not_ocf_loss",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1651,7 +1655,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3509,
+     "line": 3512,
      "func": "TestDuPontReportTextReason.test_negative_equity_reason_shown_not_revenue_too_small",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1659,7 +1663,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3518,
+     "line": 3521,
      "func": "TestDuPontReportTextReason.test_revenue_too_small_reason_shown",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1667,7 +1671,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3527,
+     "line": 3530,
      "func": "TestDuPontReportTextReason.test_unknown_reason_falls_back_to_raw_reason_string",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1675,7 +1679,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3994,
+     "line": 3997,
      "func": "TestDcfReliabilityLabelUnified.test_dcf_reliability_normal_shown_for_positive_fcf_ticker",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1683,7 +1687,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4114,
+     "line": 4118,
      "func": "TestLiveRiskFreeRate._report",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1691,7 +1695,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4117,
+     "line": 4121,
      "func": "TestLiveRiskFreeRate.test_report_erp_uses_live_rf_with_date",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1699,15 +1703,23 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4125,
+     "line": 4129,
      "func": "TestLiveRiskFreeRate.test_report_marks_fixed_fallback",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
      "type": "テスト"
     },
     {
+     "file": "tests/test_policy_a_floor_end_to_end.py",
+     "line": 55,
+     "func": "_run",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1731,7 +1743,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1739,7 +1751,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1747,7 +1759,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1755,7 +1767,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_h_config",
@@ -1813,7 +1825,7 @@
    ],
    "decision_effect": [],
    "reader_count": 9,
-   "reader_count_test": 9,
+   "reader_count_test": 10,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う",
@@ -1826,7 +1838,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_tickers_index",
-     "line": 3944
+     "line": 3962
     }
    ],
    "writers_outside_layer": [],
@@ -1892,7 +1904,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1032,
+     "line": 1121,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -1900,7 +1912,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1041,
+     "line": 1130,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1908,7 +1920,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -1988,7 +2000,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 49,
+     "line": 56,
      "func": "get_tickers",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1996,7 +2008,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 52,
+     "line": 59,
      "func": "get_tickers",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2004,7 +2016,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 264,
+     "line": 331,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::get_tickers",
@@ -2012,7 +2024,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 314,
+     "line": 381,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::get_tickers",
@@ -2052,7 +2064,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -2060,7 +2072,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -2068,7 +2080,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -2076,7 +2088,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -2084,7 +2096,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::get_registered_tickers",
@@ -2134,12 +2146,12 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1260
+     "line": 1267
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1397
+     "line": 1404
     }
    ],
    "writers_outside_layer": [],
@@ -2175,11 +2187,11 @@
     },
     {
      "key": "calculation_date",
-     "reader_files": 8
+     "reader_files": 9
     },
     {
      "key": "components",
-     "reader_files": 24
+     "reader_files": 25
     },
     {
      "key": "computed_runway_months",
@@ -2219,7 +2231,7 @@
     },
     {
      "key": "fcf_history",
-     "reader_files": 6
+     "reader_files": 7
     },
     {
      "key": "fcf_margin_bear_mult_applied",
@@ -2287,7 +2299,7 @@
     },
     {
      "key": "intrinsic_value_per_share",
-     "reader_files": 15
+     "reader_files": 17
     },
     {
      "key": "intrinsic_value_rf",
@@ -2311,7 +2323,11 @@
     },
     {
      "key": "method_change",
-     "reader_files": 4
+     "reader_files": 3
+    },
+    {
+     "key": "method_change_applied",
+     "reader_files": 2
     },
     {
      "key": "net_current_assets_ratio",
@@ -2467,7 +2483,7 @@
     },
     {
      "key": "wacc",
-     "reader_files": 5
+     "reader_files": 6
     }
    ],
    "readers": [
@@ -2557,6 +2573,14 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "browser_checks/check_valuation_chart_basis.py::main",
+     "type": "Python"
+    },
+    {
+     "file": "common/method_change.py",
+     "line": 147,
+     "func": "read_json",
+     "how": "保存済みファイル",
+     "via": "AST",
      "type": "Python"
     },
     {
@@ -2889,7 +2913,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1902,
+     "line": 1906,
      "func": "_check_moat_score_neutral_fallback_scope",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_latest",
@@ -2897,23 +2921,23 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2306,
-     "func": "_check_dcf_validation_failures",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/report_consistency_check.py",
      "line": 2310,
      "func": "_check_dcf_validation_failures",
      "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/report_consistency_check.py",
+     "line": 2314,
+     "func": "_check_dcf_validation_failures",
+     "how": "保存済みファイル",
      "via": "AST",
      "type": "Python"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2372,
+     "line": 2376,
      "func": "_read_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2921,7 +2945,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2375,
+     "line": 2379,
      "func": "_read_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2929,7 +2953,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2672,
+     "line": 2676,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_latest",
@@ -2937,7 +2961,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2869,
+     "line": 2873,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -2945,7 +2969,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2898,
+     "line": 2902,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -2953,7 +2977,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2909,
+     "line": 2913,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -2961,7 +2985,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3487,
+     "line": 3491,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_latest",
@@ -2969,7 +2993,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3531,
+     "line": 3535,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_latest",
@@ -2977,7 +3001,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3582,
+     "line": 3586,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_dcf_validation_failures",
@@ -2985,7 +3009,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3630,
+     "line": 3634,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
@@ -2993,10 +3017,42 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3747,
+     "line": 3751,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 684,
+     "func": "build_all",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 700,
+     "func": "build_all",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 709,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 717,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
      "type": "Python"
     },
     {
@@ -3025,7 +3081,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1038,
+     "line": 1127,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -3033,7 +3089,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1040,
+     "line": 1129,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3041,7 +3097,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3057,7 +3113,7 @@
     },
     {
      "file": "docs/portfolio/tail/detail.html",
-     "line": 363,
+     "line": 365,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3065,7 +3121,7 @@
     },
     {
      "file": "docs/portfolio/tail/index.html",
-     "line": 1004,
+     "line": 1005,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3161,7 +3217,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1547,
+     "line": 1557,
      "func": "compute_implc",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/market_calendar.py::earnings_events",
@@ -3169,7 +3225,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1904,
+     "line": 1914,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/sector_rotation.py::_tanuki_score",
@@ -3177,7 +3233,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1906,
+     "line": 1916,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/market_calendar.py::earnings_events",
@@ -3185,7 +3241,7 @@
     },
     {
      "file": "src/market/market_pulse/market_calendar.py",
-     "line": 111,
+     "line": 122,
      "func": "earnings_events",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3193,7 +3249,7 @@
     },
     {
      "file": "src/market/market_pulse/market_calendar.py",
-     "line": 114,
+     "line": 125,
      "func": "earnings_events",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3201,7 +3257,7 @@
     },
     {
      "file": "src/market/market_pulse/market_calendar.py",
-     "line": 200,
+     "line": 215,
      "func": "build_calendar",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/market_calendar.py::earnings_events",
@@ -3249,7 +3305,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 221,
+     "line": 325,
      "func": "load_layer1_financials",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3257,7 +3313,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 223,
+     "line": 327,
      "func": "load_layer1_financials",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3265,7 +3321,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1542,
+     "line": 1636,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_tanuki_valuation",
@@ -3273,7 +3329,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1543,
+     "line": 1637,
      "func": "generate_review",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
@@ -3281,7 +3337,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1744,
+     "line": 1844,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_tanuki_valuation",
@@ -3289,7 +3345,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1756,
+     "line": 1856,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/tail/tail_dcf_bridge.py::_load_latest_valuation",
@@ -3297,7 +3353,7 @@
     },
     {
      "file": "src/tail/quarterly_review_generator.py",
-     "line": 1780,
+     "line": 1880,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_tanuki_valuation",
@@ -3401,10 +3457,34 @@
     },
     {
      "file": "src/value/hypecore/hypecore.py",
-     "line": 1283,
+     "line": 1151,
+     "func": "run_poc",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 1284,
      "func": "<module>",
      "how": "保存済みファイル",
-     "via": "src/value/hypecore/hypecore.py::fetch_tanuki_iv",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 235,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 265,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/method_change.py::read_json",
      "type": "Python"
     },
     {
@@ -3417,7 +3497,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3935,
+     "line": 3953,
      "func": "TanukiValuationPipeline._save_tickers_index",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3425,7 +3505,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3950,
+     "line": 3968,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index",
@@ -3433,7 +3513,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 72,
+     "line": 79,
      "func": "load_latest",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3441,7 +3521,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 75,
+     "line": 82,
      "func": "load_latest",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3449,7 +3529,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 106,
+     "line": 113,
      "func": "detect_changes",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
@@ -3457,7 +3537,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 277,
+     "line": 344,
      "func": "main",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
@@ -3465,7 +3545,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
-     "line": 314,
+     "line": 381,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
@@ -3649,7 +3729,7 @@
     },
     {
      "file": "tests/test_market_pulse_implc.py",
-     "line": 373,
+     "line": 443,
      "func": "TestCalendar.test_earnings_limited_to_given_tickers",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3675,6 +3755,30 @@
      "file": "tests/test_method_change.py",
      "line": 88,
      "func": "TestScoreWatcherMethodChange.test_hype_change_uses_poc_mark",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_method_change.py",
+     "line": 197,
+     "func": "TestScoreWatcherScope.test_only_scope_fields_go_to_method_section",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_method_change.py",
+     "line": 211,
+     "func": "TestScoreWatcherScope.test_ticker_without_mark_is_market",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_method_change.py",
+     "line": 218,
+     "func": "TestScoreWatcherScope.test_hype_stage_outside_scope_is_market",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/score_watcher.py::load_latest",
      "type": "テスト"
@@ -3745,7 +3849,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2867,
+     "line": 2870,
      "func": "TestSTInvestQuarterlyOverride.test_ionq_st_invest_uses_quarterly_value",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3753,7 +3857,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2877,
+     "line": 2880,
      "func": "TestSTInvestQuarterlyOverride.test_ionq_st_invest_uses_quarterly_value",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3761,7 +3865,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2902,
+     "line": 2905,
      "func": "TestSTInvestQuarterlyOverride.test_ionq_net_debt_corrected",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3769,7 +3873,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2909,
+     "line": 2912,
      "func": "TestSTInvestQuarterlyOverride.test_ionq_net_debt_corrected",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3777,7 +3881,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3037,
+     "line": 3040,
      "func": "TestNvdaCrossFilingSTI.test_nvda_latest_json_reports_quarterly_sti_not_approximated",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3785,7 +3889,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 3041,
+     "line": 3044,
      "func": "TestNvdaCrossFilingSTI.test_nvda_latest_json_reports_quarterly_sti_not_approximated",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3825,7 +3929,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3857,7 +3961,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3865,7 +3969,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3873,7 +3977,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3881,7 +3985,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_c_latest",
@@ -3893,6 +3997,30 @@
      "func": "test_older_pending_is_skipped_without_generating",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_tanuki_valuation",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_review_period_filter.py",
+     "line": 77,
+     "func": "test_layer1_financials_filtered_to_period_and_first_val",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_review_period_filter.py",
+     "line": 86,
+     "func": "test_layer1_financials_without_period_is_latest_as_before",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_tail_review_period_filter.py",
+     "line": 94,
+     "func": "test_layer1_drops_values_first_filed_after_as_of",
+     "how": "保存済みファイル",
+     "via": "src/tail/quarterly_review_generator.py::load_layer1_financials",
      "type": "テスト"
     }
    ],
@@ -3962,8 +4090,8 @@
     "TANUKI VALUATIONの画面",
     "TANUKI SCOREの画面"
    ],
-   "reader_count": 27,
-   "reader_count_test": 18,
+   "reader_count": 30,
+   "reader_count_test": 19,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む",
@@ -3976,7 +4104,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_report",
-     "line": 3903
+     "line": 3921
     }
    ],
    "writers_outside_layer": [],
@@ -4037,7 +4165,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2364,
+     "line": 2368,
      "func": "_read_report",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4045,7 +4173,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2367,
+     "line": 2371,
      "func": "_read_report",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4053,7 +4181,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2668,
+     "line": 2672,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_report",
@@ -4061,7 +4189,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3451,
+     "line": 3455,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4069,7 +4197,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3487,
+     "line": 3491,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_report",
@@ -4077,7 +4205,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3747,
+     "line": 3751,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::run_checks",
@@ -4220,7 +4348,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1322
+     "line": 1329
     },
     {
      "file": "src/value/tanuki_valuation/score_verifier.py",
@@ -4255,7 +4383,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1039,
+     "line": 1128,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4263,7 +4391,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1210,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4279,7 +4407,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 475,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4287,7 +4415,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4295,7 +4423,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4303,7 +4431,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4311,7 +4439,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_b_score_history",
@@ -4349,7 +4477,7 @@
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
      "func": "main",
-     "line": 304
+     "line": 371
     }
    ],
    "writers_outside_layer": [],
@@ -4391,7 +4519,7 @@
     {
      "file": "src/value/tanuki_valuation/score_watcher.py",
      "func": "post_discord",
-     "line": 251
+     "line": 318
     }
    ],
    "writers_outside_layer": [],
@@ -4433,7 +4561,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2312,
+     "line": 2313,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -4492,12 +4620,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 873,
+     "line": 878,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1111,
+     "line": 1101,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -4563,7 +4691,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3035,
+     "line": 3036,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
@@ -4573,7 +4701,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1780,
+     "line": 1784,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -4583,7 +4711,7 @@
     },
     {
      "file": "docs/portfolio/tail/index.html",
-     "line": 942,
+     "line": 943,
      "text": "function _updateReviewStaleness() {"
     },
     {
@@ -4620,7 +4748,7 @@
    "sites": [
     {
      "file": "common/sec_data/ttm_calculator.py",
-     "line": 254,
+     "line": 234,
      "text": "def calc_ttm_series("
     },
     {
@@ -4683,12 +4811,12 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 451,
+     "line": 452,
      "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 460,
+     "line": 461,
      "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
     },
     {
@@ -4805,52 +4933,52 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1026,
+     "line": 1029,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1027,
+     "line": 1030,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1028,
+     "line": 1031,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1029,
+     "line": 1032,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1432,
+     "line": 1439,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1459,
+     "line": 1466,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1464,
+     "line": 1471,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1510,
+     "line": 1517,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1815,
+     "line": 1822,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1993,
+     "line": 2000,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -4914,7 +5042,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1127,
+     "line": 1119,
      "text": "def _determine_beta("
     }
    ],
@@ -4950,7 +5078,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1111,
+     "line": 1103,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -5037,7 +5165,9 @@
    "workflows": [],
    "code": [],
    "same_dir": [],
-   "tests": []
+   "tests": [
+    "tests/test_workflow_script_imports.py"
+   ]
   },
   {
    "dir": "src/value/tanuki_valuation",
@@ -5075,7 +5205,7 @@
    "dir": "src/value/tanuki_valuation/calculator",
    "file": "src/value/tanuki_valuation/calculator/adjustments.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1534,
+   "lines": 1552,
    "workflows": [],
    "code": [
     "src/value/tanuki_valuation/core_calculator.py"
@@ -5230,7 +5360,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/core_calculator.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1035,
+   "lines": 1039,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5240,6 +5370,7 @@
    "tests": [
     "tests/test_core_calculator_rf_reference.py",
     "tests/test_core_calculator_v0_note.py",
+    "tests/test_policy_a_floor_end_to_end.py",
     "tests/test_sensitivity_tapering.py"
    ]
   },
@@ -5247,7 +5378,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/data_fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1221,
+   "lines": 1213,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5315,7 +5446,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/pipeline.py",
    "decision": "残す（2026-10-20）",
-   "lines": 3965,
+   "lines": 3983,
    "workflows": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
@@ -5329,7 +5460,8 @@
     "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
     "tests/test_stonks_silo_financial_as_of.py",
-    "tests/test_stonks_silo_pipeline.py"
+    "tests/test_stonks_silo_pipeline.py",
+    "tests/test_workflow_script_imports.py"
    ]
   },
   {
@@ -5370,7 +5502,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/score_watcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 314,
+   "lines": 381,
    "workflows": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
@@ -5484,7 +5616,7 @@
   "outputs": 11,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 31,
+  "python_read_sites_into_layer_resolved": 33,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "src/value/tanuki_valuation/data_fetcher.py",
@@ -5500,9 +5632,16 @@
    }
   ],
   "name_hit_sites_resolved": 67,
-  "name_hit_sites_undetermined": [],
+  "name_hit_sites_undetermined": [
+   {
+    "file": "scripts/method_change_scope.py",
+    "line": 142,
+    "output": "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+    "text": "p = os.path.join(src, t, \"latest.json\")"
+   }
+  ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.02,
+  "ratio_reader": 0.029,
   "threshold": 0.1,
   "hit": false
  },
@@ -12040,6 +12179,18 @@
     "note": "残す: テストが参照する"
    },
    {
+    "key": "method_change_applied",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "parents": [],
+    "note": ""
+   },
+   {
     "key": "moat_fcf_margin_norm",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
@@ -12240,7 +12391,7 @@
     "note": "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
    }
   ],
-  "written_key_count": 651,
+  "written_key_count": 658,
   "sections": [
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
