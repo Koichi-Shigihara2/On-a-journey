@@ -235,6 +235,9 @@ class KoichiValuationCalculator:
         )
         adjusted_fcf_2yr = fcf_2yr_avg  # ログ表示用
         base_fcf = fcf_base_result.base_fcf
+        # 売上×8%の下限の値をDCFの基準に使ったか（Policy Aの条件、段1b 2026-11-02）。この後のR&Dの資本化・
+        # 外れ値の除外等で base_fcf は変わるため、基準を決めた直後に判定する
+        _floor_used_in_base = bool(fcf_adjustment.floor_applied > 0 and fcf_base_result.base_fcf == adjusted_fcf_5yr)
         print(f"   [{ticker}] FCFベース: {fcf_base_result.method}  "
               f"5yr=${adjusted_fcf_5yr/1e9:.2f}B  "
               f"2yr=${adjusted_fcf_2yr/1e9:.2f}B  "
@@ -921,7 +924,7 @@ class KoichiValuationCalculator:
                 "fcf_floor_applied": fcf_adjustment.floor_applied,
                 # 売上×8%の下限の値を、DCFの基準（fcf_base）に実際に使ったか。Policy A（DCF信頼性LOW→WATCH）の条件
                 # （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1b、2026-11-02）
-                "fcf_floor_used_in_base": bool(fcf_adjustment.floor_applied > 0 and base_fcf == adjusted_fcf_5yr),
+                "fcf_floor_used_in_base": _floor_used_in_base,
                 "fcf_growth_floor": 0.15,
                 "fcf_growth_cap": 0.50,
                 "bear_multiplier": 0.7,
