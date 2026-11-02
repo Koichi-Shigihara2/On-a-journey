@@ -65,7 +65,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_bs_identity_violations_log",
-     "line": 3859
+     "line": 3853
     }
    ],
    "writers_outside_layer": [],
@@ -245,7 +245,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_collision_log",
-     "line": 3477
+     "line": 3471
     }
    ],
    "writers_outside_layer": [],
@@ -365,7 +365,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_tag_mismatch_log",
-     "line": 3495
+     "line": 3489
     }
    ],
    "writers_outside_layer": [],
@@ -485,7 +485,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fye_boundary_collision_log",
-     "line": 3522
+     "line": 3516
     }
    ],
    "writers_outside_layer": [],
@@ -618,6 +618,14 @@
     {
      "key": "generated_at",
      "reader_files": 1
+    },
+    {
+     "key": "method_change",
+     "reader_files": 0
+    },
+    {
+     "key": "method_change_applied",
+     "reader_files": 0
     },
     {
      "key": "reference_only",
@@ -1121,7 +1129,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4029
+     "line": 4062
     }
    ],
    "writers_outside_layer": [],
@@ -1133,11 +1141,11 @@
    "top_keys": [
     {
      "key": "bs",
-     "reader_files": 15
+     "reader_files": 16
     },
     {
      "key": "bs_provenance",
-     "reader_files": 7
+     "reader_files": 8
     },
     {
      "key": "bs_tag_sources",
@@ -1145,7 +1153,7 @@
     },
     {
      "key": "cf",
-     "reader_files": 12
+     "reader_files": 13
     },
     {
      "key": "cf_provenance",
@@ -1173,11 +1181,11 @@
     },
     {
      "key": "pl",
-     "reader_files": 23
+     "reader_files": 24
     },
     {
      "key": "pl_provenance",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "shares",
@@ -1307,7 +1315,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 506,
+     "line": 507,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -1315,7 +1323,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 812,
+     "line": 813,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -1323,7 +1331,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3990,
+     "line": 4002,
      "func": "SECParser._apply_fixed_registry_freeze",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1331,7 +1339,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3996,
+     "line": 4008,
      "func": "SECParser._apply_fixed_registry_freeze",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1339,7 +1347,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4052,
+     "line": 4085,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -2602,6 +2610,54 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 39,
+     "func": "test_registry_frozen_derived_is_marked",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 42,
+     "func": "test_registry_frozen_derived_is_marked",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 76,
+     "func": "test_freeze_rejects_computed_field",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 84,
+     "func": "test_freeze_recomputes_from_frozen_inputs",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 95,
+     "func": "test_frozen_derived_stays_frozen",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_freeze_inputs_only.py",
+     "line": 104,
+     "func": "test_reported_value_is_not_recomputed",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_gate2_phase3b1_reader_integration.py",
      "line": 123,
      "func": "TestGetRpoContextAfterMigration.test_ttm_and_yoy_unaffected_by_ytd_exclusion",
@@ -3461,7 +3517,7 @@
     "理論株価・判定（TANUKI VALUATION）"
    ],
    "reader_count": 17,
-   "reader_count_test": 22,
+   "reader_count_test": 23,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "生データから1年分ずつ取り出した年次の財務（損益・貸借・CF）",
@@ -3628,7 +3684,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 483,
+     "line": 484,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3636,7 +3692,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 490,
+     "line": 491,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3644,7 +3700,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4052,
+     "line": 4085,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3652,7 +3708,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4062,
+     "line": 4095,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -5467,7 +5523,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4040
+     "line": 4073
     }
    ],
    "writers_outside_layer": [],
@@ -6357,7 +6413,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 499,
+     "line": 500,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6365,7 +6421,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 504,
+     "line": 505,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_former_names",
@@ -6373,7 +6429,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4052,
+     "line": 4085,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6381,7 +6437,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4062,
+     "line": 4095,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6820,7 +6876,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 506,
+     "line": 507,
      "func": "SECParser.parse_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6828,7 +6884,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 772,
+     "line": 773,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6836,7 +6892,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 824,
+     "line": 825,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6844,7 +6900,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3718,
+     "line": 3712,
      "func": "SECParser._bs_identity_extra_components",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6852,7 +6908,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3832,
+     "line": 3826,
      "func": "SECParser._check_bs_identity_violations",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6860,7 +6916,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3934,
+     "line": 3928,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6870,7 +6926,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 3718,
+     "line": 3712,
      "func": "SECParser._bs_identity_extra_components",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6878,7 +6934,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3934,
+     "line": 3928,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -10762,6 +10818,14 @@
      "reader_files": 3
     },
     {
+     "key": "method_change",
+     "reader_files": 0
+    },
+    {
+     "key": "method_change_applied",
+     "reader_files": 0
+    },
+    {
      "key": "notes",
      "reader_files": 3
     },
@@ -11014,7 +11078,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2313,
+     "line": 2314,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -11144,7 +11208,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3036,
+     "line": 3037,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
@@ -11264,32 +11328,32 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 452,
+     "line": 453,
      "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 461,
+     "line": 462,
      "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 93,
+     "line": 112,
      "text": "def detect_fiscal_end_month(us_gaap: dict, candidate_keys: Sequence[str]) -> int:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 274,
+     "line": 293,
      "text": "def detect_fiscal_anchor_date(us_gaap: dict, candidate_keys: Sequence[str]) -> Optional[Tuple[int, int]]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 309,
+     "line": 328,
      "text": "def detect_fiscal_anchor_clusters("
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 349,
+     "line": 368,
      "text": "def determine_fiscal_year(end_date, fiscal_end_month: int,"
     },
     {
@@ -11634,7 +11698,8 @@
    ],
    "same_dir": [
     "common/sec_data/parser.py",
-    "common/sec_data/ttm_calculator.py"
+    "common/sec_data/ttm_calculator.py",
+    "common/sec_data/utils.py"
    ],
    "tests": [
     "tests/test_fcf_definition_single_source.py"
@@ -11783,7 +11848,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/parser.py",
    "decision": "残す（2026-10-20）",
-   "lines": 4065,
+   "lines": 4098,
    "workflows": [],
    "code": [
     "common/registration/preflight_check.py",
@@ -11805,6 +11870,7 @@
     "tests/test_fcf_bottom_up_capex_concept.py",
     "tests/test_fcf_definition_single_source.py",
     "tests/test_fiscal_year_anchor_window.py",
+    "tests/test_freeze_inputs_only.py",
     "tests/test_fy_collision_log_dedup.py",
     "tests/test_fy_tag_provenance.py",
     "tests/test_gross_profit_backfill.py",
@@ -12194,7 +12260,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/utils.py",
    "decision": "残す（2026-10-20）",
-   "lines": 432,
+   "lines": 451,
    "workflows": [],
    "code": [
     "src/value/adjusted_eps_analyzer/extract_key_facts.py",
@@ -12209,7 +12275,8 @@
    ],
    "tests": [
     "tests/test_check31_fields_snapshot_hash.py",
-    "tests/test_fiscal_year_anchor_window.py"
+    "tests/test_fiscal_year_anchor_window.py",
+    "tests/test_freeze_inputs_only.py"
    ]
   }
  ],
@@ -12663,13 +12730,6 @@
     "note": ""
    },
    {
-    "key": "fcf_method",
-    "sources": [
-     "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "ffd",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json",
@@ -12680,15 +12740,7 @@
    {
     "key": "finance_lease_payments",
     "sources": [
-     "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/ttm/{T}_ttm_series.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "finance_lease_payments_applied",
-    "sources": [
-     "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
     "note": ""
    },
@@ -12864,6 +12916,14 @@
     "key": "lender",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json"
+    ],
+    "note": ""
+   },
+   {
+    "key": "method_change_applied",
+    "sources": [
+     "docs/common/sec_data/rotce/_summary.json",
+     "docs/common/sec_data/rotce/{T}.json"
     ],
     "note": ""
    },

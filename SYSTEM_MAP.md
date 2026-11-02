@@ -1144,6 +1144,18 @@ SEC EDGAR
 │    （CLAUDE_CODE_START.md該当節・BACKLOG_DONE.md「2026-08-05（完了）」
 │    Stage2/Stage3エントリ参照。BACKLOG_DONE.mdの過去記述と実データが
 │    後続タスクにより乖離しうるため）。
+│    **凍結の規則（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1の残り、2026-11-03。
+│    凍結の説明はこの1か所）**: 凍結するのは申告の値（入力）だけ。計算した
+│    値は凍結せず、凍結した入力から毎回作る。`fields_snapshot`に入れては
+│    いけない項目は`common/sec_data/utils.py`の`FREEZE_FORBIDDEN_FIELDS`
+│    （`free_cash_flow`・旗`fcf_method`・`finance_lease_payments_applied`・
+│    取らなくなった`finance_lease_payments`。凍結の時に入っていれば止める）。
+│    逆算した値（provenanceの`derived`。`gross_profit`＝売上−売上原価・
+│    `total_liabilities`＝総資産−株主資本、`FREEZE_DERIVED_RECOMPUTE`）は
+│    凍結の後に凍結した入力から引き直す。入力が無く逆算の値そのものを
+│    凍結する年は、エントリの`frozen_derived`（項目の一覧）に書く（「逆算
+│    の凍結」の印。`operating_income`の逆算も式が複数のためこの印が要る）。
+│    テスト`tests/test_freeze_inputs_only.py`が登録の側を検査する。
 │    **追記（[[SECDATA-STORAGE-FRAGMENTATION-1]] 2026-08-05実装完了、
 │    新DB構築プロジェクト フェーズ1 Step1本線）**: `data/quarterly_
 │    {FYQ}.json`のpl/cf/shares区分が従来XBRL申告のYTD累積値のまま

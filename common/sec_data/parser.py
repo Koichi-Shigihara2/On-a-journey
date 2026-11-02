@@ -20,6 +20,7 @@ from .conditional_tags import CONDITIONAL_CANDIDATES, conditional_candidate
 from .utils import (
     determine_fiscal_year, detect_fiscal_end_month, detect_fiscal_anchor_date,
     detect_fiscal_anchor_clusters, _day_of_year, FIXED_REGISTRY_CATEGORIES,
+    FREEZE_FORBIDDEN_FIELDS, FREEZE_DERIVED_RECOMPUTE,
 )
 from .fetcher import load_submissions, load_former_names
 from .dimension_aggregate_fetcher import (
@@ -3377,14 +3378,7 @@ class SECParser:
                       "depreciation_and_amortization", "stock_based_compensation", "buyback"]:
             _record("cf", field, extracted.get(field, {}).get(period_type, {}).get(period))
         
-        # FCF計算。式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-02）。
-        # CapExの欠けはここで0とみなす（今の扱い。TTMはNone。1つの規則にするのは段5）。
-        # 営業CFが無い・0の期は書かない（今の扱い）
-        from common.sec_data.fcf import free_cash_flow
-        ocf   = data["cf"].get("operating_cash_flow", 0)
-        capex = data["cf"].get("capital_expenditure", 0)  # 欠けは0とみなす（呼び出し側の扱い）
-        if ocf != 0:
-            data["cf"]["free_cash_flow"] = free_cash_flow(ocf, capex)
+        self._set_free_cash_flow(data)
         
         # Shares
         for field in ["shares_diluted", "shares_basic"]:
@@ -3950,6 +3944,20 @@ class SECParser:
                 "source_citation": entry.get("source_citation"),
             }
 
+    @staticmethod
+    def _set_free_cash_flow(data: Dict[str, Any]) -> None:
+        """FCF計算。式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-02）。
+        CapExの欠けはここで0とみなす（今の扱い。TTMはNone。1つの規則にするのは段5）。
+        営業CFが無い・0の期は書かない（今の扱い）。凍結の後にも呼ぶ（凍結した入力から作り直す、2026-11-03）"""
+        from common.sec_data.fcf import free_cash_flow
+        cf = data.get("cf") or {}
+        ocf = cf.get("operating_cash_flow", 0)
+        capex = cf.get("capital_expenditure", 0)  # 欠けは0とみなす（呼び出し側の扱い）
+        if ocf != 0:
+            data.setdefault("cf", {})["free_cash_flow"] = free_cash_flow(ocf, capex)  # 既にあれば同じ位置で書き換え
+        else:
+            cf.pop("free_cash_flow", None)
+
     # CHECK-31（compute_fields_snapshot_hash）と探索順を共有する単一定義
     _FIXED_REGISTRY_CATEGORIES = FIXED_REGISTRY_CATEGORIES
 
@@ -3974,6 +3982,10 @@ class SECParser:
         （`layer3_builder.py`・`ttm_calculator.py`）は`parser.py`とは
         完全に独立した別パイプラインのため対象外（[[TTM-DATA-DRIFT-
         BEHIND-PIPELINE-1]]、スコープ限定は設計時に確定済み）。
+
+        凍結するのは申告の値（入力）だけ（2026-11-03、規則は utils.FREEZE_*）。
+        計算した値（FCF）と、逆算した値（gross_profit・total_liabilities のderived）は
+        凍結した入力から凍結の後に作り直す。fields_snapshot に計算した値があれば止める
         """
         registry = _load_fixed_registry().get(ticker, {})
         if not registry:
@@ -3997,6 +4009,12 @@ class SECParser:
                 old_data = json.load(f)
 
             fixed_fields = entry.get("fields_snapshot", [])
+            forbidden = sorted(set(fixed_fields) & FREEZE_FORBIDDEN_FIELDS)
+            if forbidden:
+                raise RuntimeError(
+                    f"{ticker} {year}: fixed_registry.jsonのfields_snapshotに計算した値 {forbidden}"
+                    f"（凍結するのは申告の値だけ、utils.FREEZE_FORBIDDEN_FIELDS）"
+                )
             for field in fixed_fields:
                 found = False
                 for category in self._FIXED_REGISTRY_CATEGORIES:
@@ -4016,6 +4034,21 @@ class SECParser:
                         f"記録されたフィールド'{field}'が旧annual_{year}.jsonに"
                         f"見つからない（registryとデータの不整合）"
                     )
+            self._recompute_after_freeze(result["annual"][year], fixed_fields)
+
+    @staticmethod
+    def _recompute_after_freeze(annual: Dict[str, Any], fixed_fields) -> None:
+        """凍結した入力から計算した値を作り直す（2026-11-03）。
+        逆算の値（provenanceのderived）は凍結していなければ入力から引き直す。FCFは毎回 fcf.py で作る"""
+        fixed = set(fixed_fields)
+        for field, (cat, plus, minus) in FREEZE_DERIVED_RECOMPUTE.items():
+            if field in fixed:
+                continue  # 逆算の凍結（frozen_derived）
+            prov = (annual.get(f"{cat}_provenance") or {}).get(field) or {}
+            vals = annual.get(cat) or {}
+            if prov.get("derived") and vals.get(plus) is not None and vals.get(minus) is not None:
+                vals[field] = vals[plus] - vals[minus]
+        SECParser._set_free_cash_flow(annual)
 
     def save_parsed_data(self, ticker: str, parsed: dict) -> None:
         """パース済みデータを個別ファイルに保存"""

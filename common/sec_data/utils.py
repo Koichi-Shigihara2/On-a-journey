@@ -29,6 +29,25 @@ def compute_snapshot_hash(data: Dict[str, Any]) -> str:
 # 探索するカテゴリ順（同メソッドとCHECK-31で共有する単一定義）。
 FIXED_REGISTRY_CATEGORIES = ("bs", "pl", "cf", "shares", "other")
 
+# 凍結の規則（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1の残り、2026-11-03）。説明は SYSTEM_MAP.md の fixed_registry の節の1か所。
+# 凍結するのは申告の値（入力）だけ。計算した値は凍結せず、凍結した入力から毎回作る。
+# fields_snapshot に入れてはいけない項目（計算した値・もう書かない項目）。parser の凍結とテストが読む
+FREEZE_FORBIDDEN_FIELDS = frozenset({
+    "free_cash_flow",                  # 計算した値（common/sec_data/fcf.py）
+    "fcf_method",                      # 計算の旗（2026-11-02からparserは書かない）
+    "finance_lease_payments_applied",  # 同上
+    "finance_lease_payments",          # 2026-11-02からparserは取らない（FCFの式に使わない）
+})
+# 逆算した値（provenanceのderived）を凍結した入力から作り直す項目: {項目: (区分, 引かれる数, 引く数)}。
+# 式は parser の _backfill_gross_profit_from_revenue_cogs・_backfill_total_liabilities_via_identity と同じ。
+# 入力が無く逆算の値そのものを凍結する年は、fixed_registry のエントリの frozen_derived（項目の一覧）に書く（「逆算の凍結」の印）
+FREEZE_DERIVED_RECOMPUTE = {
+    "gross_profit": ("pl", "revenue", "cost_of_revenue"),
+    "total_liabilities": ("bs", "total_assets", "stockholders_equity"),
+}
+# 逆算の値を持ちうる項目（凍結するなら frozen_derived が要る）。operating_income は作り直しの式が複数のため FREEZE_DERIVED_RECOMPUTE に無い
+FREEZE_DERIVABLE_FIELDS = frozenset(FREEZE_DERIVED_RECOMPUTE) | {"operating_income"}
+
 
 def compute_fields_snapshot_hash(data: Dict[str, Any], fields: Sequence[str]) -> str:
     """fixed_registry.jsonの`fields_snapshot_hash`算出方式
