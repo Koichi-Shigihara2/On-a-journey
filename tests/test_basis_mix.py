@@ -98,6 +98,34 @@ class TestLoad:
         assert bm.load("HON", ttm_dir=str(tmp_path)) == saved
 
 
+class TestCheck66SavedMark:
+    """rccのCHECK-66「保存した印が食い違う」は、判定の期末のうちTTMの系列にある点だけと比べる（2026-11-02）。
+    系列は毎年同じ月の点だけなので、系列に無い四半期末（HONの2025-12-31〜2026-06-30）は印を求めない"""
+
+    _ENDS = ["2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30", "2026-09-30"]
+
+    def _run(self, tmp_path, marked_ends):
+        from common.sec_data import report_consistency_check as rcc
+        ttm_dir, norm_dir = tmp_path / "ttm", tmp_path / "norm"
+        ttm_dir.mkdir()
+        norm_dir.mkdir()
+        saved = {"mixed": True, "note": "x", "recast_filed": "2026-10-22", "mixed_ttm_ends": self._ENDS}
+        series = [{"ttm_end": f"{y}-09-30", **({"basis_mixed": True} if f"{y}-09-30" in marked_ends else {})}
+                  for y in range(2021, 2027)]
+        (ttm_dir / "HON_ttm_series.json").write_text(json.dumps({"series": series, "basis_mix": saved}), encoding="utf-8")
+        (norm_dir / "HON_quarterly_normalized.json").write_text(json.dumps({"basis_mix": saved}), encoding="utf-8")
+        return [m for _, m in rcc._check_basis_mix(ttm_dir=str(ttm_dir), norm_dir=str(norm_dir))]
+
+    def test_quarter_ends_not_in_series_are_not_required(self, tmp_path):
+        msgs = self._run(tmp_path, ["2025-09-30", "2026-09-30"])
+        assert len(msgs) == 1 and "組み替え 2026-10-22" in msgs[0]
+        assert not any("食い違う" in m for m in msgs)
+
+    def test_missing_mark_on_series_point_is_reported(self, tmp_path):
+        msgs = self._run(tmp_path, ["2026-09-30"])
+        assert any("食い違う" in m and "2025-09-30" in m for m in msgs)
+
+
 class TestYtdBreak:
     def _chain(self, accn_q3="F"):
         return [

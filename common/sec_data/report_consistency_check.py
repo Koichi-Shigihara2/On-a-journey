@@ -1756,6 +1756,7 @@ def _check_basis_mix(ttm_dir: Optional[str] = None, norm_dir: Optional[str] = No
                 ttm = json.load(f) or {}
         except Exception:
             ttm = {}
+        series_ends = {p.get("ttm_end") for p in ttm.get("series") or []}
         marked = sorted(p.get("ttm_end") for p in ttm.get("series") or [] if p.get("basis_mixed"))
         stored_norm = None
         try:
@@ -1770,7 +1771,10 @@ def _check_basis_mix(ttm_dir: Optional[str] = None, norm_dir: Optional[str] = No
                            f"旧ベースの四半期 {old}、混在するTTMの期末 {','.join(info.get('mixed_ttm_ends') or [])}"
                            f" → DCF信頼性LOW・WATCH、fundaの3部品とHypeCoreのrev_yoy・Rule40は対象外"))
         if "basis_mix" in ttm:
-            want = sorted(info.get("mixed_ttm_ends") or []) if _bm.is_mixed(info) else []
+            # TTMの系列は毎年同じ月の点だけ（最新の期末と同じ月）。判定の期末のうち系列に無い四半期末には
+            # 印を付ける点が無いので、系列にある期末だけと比べる（2026-11-02、FINDINGS 2026-11-02）
+            want = (sorted(e for e in info.get("mixed_ttm_ends") or [] if e in series_ends)
+                    if _bm.is_mixed(info) else [])
             if marked != want or (stored_norm or None) != (ttm.get("basis_mix") or None):
                 out.append((t, f"  [WARN-66 ベースが混在] {t}: 保存した印が食い違う（TTMの点 {marked}・判定 {want}・"
                                f"normalized {'あり' if stored_norm else 'なし'}）→ SEC_Data_Updateで作り直す"))
