@@ -53,7 +53,7 @@ if __name__ == "__main__":
 from common.sec_data.layer3_builder import (
     build_ticker_store, extract_field_raw_entries, get_field_entries, load_company_facts,
 )
-from common.method_change import stamp as stamp_method_change  # 計算方法の変更の印
+from common import method_change as _method_change  # 計算方法の変更の印（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
 from common.sec_data.q4_implied import build_q4_implied_entries
 from common.sec_data.split_adjust import adjust_share_points, load_split_history
 from common.sec_data.tag_definitions import (
@@ -679,8 +679,10 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
         if r["ticker"] in reported:
             r["company_reported"] = company_reported_block(reported[r["ticker"]], r["history"], r["current"])
         r["generated_at"] = generated_at
-        stamp_method_change(r)
-        with open(os.path.join(out_dir, f"{r['ticker']}.json"), "w", encoding="utf-8") as f:
+        _path = os.path.join(out_dir, f"{r['ticker']}.json")
+        # 前回の{TICKER}.jsonの method_change_applied と比べ、新しいIDを初めて読んだ実行でscopeの銘柄に印を付ける
+        _method_change.stamp(r, prev=_method_change.read_json(_path), ticker=r["ticker"])
+        with open(_path, "w", encoding="utf-8") as f:
             json.dump(r, f, ensure_ascii=False, indent=1)
         rows[r["ticker"]] = _summary_row(r)
     summary = {
@@ -694,7 +696,8 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
         },
         "tickers": rows,
     }
-    stamp_method_change(summary)
+    # 全銘柄をまとめたファイル: scopeの銘柄が1つでもあれば先頭に付ける
+    _method_change.stamp(summary, prev=_method_change.read_json(os.path.join(out_dir, "_summary.json")))
     with open(os.path.join(out_dir, "_summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=1)
     return summary

@@ -19,6 +19,10 @@ TANUKI VALUATIONパイプライン実行後に呼び出す。
   latest.json（HypeCoreのstageは{TICKER}_poc.json）に計算方法の変更の印
   （"method_change"、common/method_change.py）がある実行では、その変化を
   「計算方法の変更による変化」として、相場の変化とは別の節で通知する。
+  2026-11-02（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）: 新しい形の件（config/method_change.json の scope つき）は、
+  印のある銘柄の変化のうち、scopeの項目（fields）に当たるものだけを🛠の節に入れ、
+  「計算方法の分（scopeの before→after、株価を固定した試算）」と「残り（相場等）」に分けて出す。
+  scopeの項目に当たらない変化と、印の無い銘柄の変化は相場の節。scopeの無い件・古い形は今までどおり全部🛠
 
 使用方法:
     python score_watcher.py
@@ -33,6 +37,9 @@ from pathlib import Path
 
 
 REPO_ROOT   = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from common import method_change as _method_change  # noqa: E402  計算方法の変更のscope
 DATA_DIR    = REPO_ROOT / "docs" / "value-monitor" / "tanuki_valuation" / "data"
 HYPE_DIR    = REPO_ROOT / "docs" / "value-monitor" / "hypecore" / "data"
 STATE_FILE  = DATA_DIR / ".watcher_state.json"
@@ -175,15 +182,73 @@ def detect_changes(ticker: str, prev_state: dict) -> tuple[list[dict], dict]:
             "detail": f"Phase{prev_stage}({prev_label}) → **Phase{cur_stage}({cur_label})**",
         })
 
-    # 計算方法の変更の印（latest.json・poc.json）を各変化に付ける
+    # 計算方法の変更の印（latest.json・poc.json）を各変化に付ける。
+    # scopeつきの件は、変化の項目がscopeの項目に当たるときだけ付け、計算方法の分と残りを添える
+    prev_vals = {"score": prev_score, "upside": prev_upside, "funda": prev_funda, "hype": prev_stage}
+    cur_vals = {"score": cur_score, "upside": cur_upside, "funda": cur_funda, "hype": cur_stage}
     mc_latest = latest.get("method_change")
     mc_hype = load_hype_method_change(ticker)
     for c in changes:
         mc = mc_hype if c["type"] == "hype" else mc_latest
         if mc:
-            c["method_change"] = mc
+            _attach_method_change(c, ticker, mc, prev_vals[c["type"]], cur_vals[c["type"]])
 
     return changes, new_state
+
+
+# 変化の種類 → scopeの項目（latest.jsonのキー、HypeCoreは "hype.stage"）。upsideは理論株価の変化でも動く
+_TYPE_FIELDS = {
+    "score": ("tanuki_score",),
+    "upside": ("upside_percent", "intrinsic_value_per_share"),
+    "funda": ("funda_score",),
+    "hype": ("hype.stage",),
+}
+
+
+def _fmt(v) -> str:
+    if isinstance(v, float):
+        return f"{v:,.2f}"
+    return "—" if v is None else str(v)
+
+
+def _method_part(ctype: str, scope: dict, prev, cur) -> str:
+    """scopeの before→after（計算方法の分）と、実際の変化との差（残り）の文"""
+    fields = [f for f in _TYPE_FIELDS[ctype] if f in scope["fields"]]
+    b, a = scope["before"], scope["after"]
+    parts = [f"{f} {_fmt(b.get(f))} → {_fmt(a.get(f))}" for f in fields]
+    text = "計算方法の分（株価を固定した試算）: " + "・".join(parts)
+    f0 = fields[0]
+    if ctype in ("upside", "funda") and f0 != "intrinsic_value_per_share":
+        try:
+            method = a.get(f0) - b.get(f0)
+            rest = (cur - prev) - method
+            text += f"／残り（相場等）: {rest:+.1f}" + ("pt" if ctype == "upside" else "")
+        except TypeError:
+            text += "／残り（相場等）: —"
+    elif ctype in ("score", "hype"):
+        if (b.get(f0), a.get(f0)) == (prev, cur):
+            text += "／残り（相場等）: なし"
+        else:
+            text += f"／残り（相場等）: {_fmt(a.get(f0))} → {_fmt(cur)}"
+    else:
+        text += "／残り（相場等）: 理論株価以外（株価等）"
+    return text
+
+
+def _attach_method_change(c: dict, ticker: str, mc: str, prev, cur) -> None:
+    covered: list[str] = []
+    notes: list[str] = []
+    for cid in [i for i in mc.split(",") if i]:
+        scope = _method_change.scope_for(cid, ticker)
+        if scope == _method_change.ALL:
+            covered.append(cid)
+        elif scope and any(f in scope["fields"] for f in _TYPE_FIELDS[c["type"]]):
+            covered.append(cid)
+            notes.append(f"{cid} {_method_part(c['type'], scope, prev, cur)}")
+    if covered:
+        c["method_change"] = ",".join(covered)
+        if notes:
+            c["method_note"] = "／".join(notes)
 
 
 def build_discord_message(ticker_changes: dict[str, list[dict]]) -> str:
@@ -206,6 +271,8 @@ def build_discord_message(ticker_changes: dict[str, list[dict]]) -> str:
             for c in sorted_changes:
                 comment = f"　*{c['comment']}*" if c.get("comment") else ""
                 lines.append(f"　{c['label']}: {c['detail']}{comment}")
+                if c.get("method_note"):
+                    lines.append(f"　　{c['method_note']}")
             lines.append("")
 
     market = {t: [c for c in cs if not c.get("method_change")] for t, cs in ticker_changes.items()}
@@ -219,7 +286,7 @@ def build_discord_message(ticker_changes: dict[str, list[dict]]) -> str:
             lines.append("📈 **相場の変化**")
             lines.append("")
             _section(market)
-        ids = sorted({c["method_change"] for cs in method.values() for c in cs})
+        ids = sorted({i for cs in method.values() for c in cs for i in c["method_change"].split(",")})
         lines.append(f"🛠 **計算方法の変更による変化**（{', '.join(ids)}）— 相場の変化ではありません")
         lines.append("")
         _section(method)

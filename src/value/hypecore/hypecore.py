@@ -36,7 +36,7 @@ if str(_REPO_ROOT) not in sys.path:
 from common.sec_data.layer3_builder import (  # noqa: E402
     build_ticker_store, get_quarterly_series,
 )
-from common.method_change import stamp as _stamp_method_change  # noqa: E402  計算方法の変更の印
+from common import method_change as _method_change  # noqa: E402  計算方法の変更の印（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
 from common.sec_data.basis_mix import from_store as _basis_mix_from_store  # noqa: E402  [[QUARTERLY-BASIS-MIX-1]]
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-8:
@@ -1146,8 +1146,9 @@ def run_poc(ticker: str = "PLTR") -> dict:
         "generated_at": datetime.now(JST).strftime("%Y-%m-%dT%H:%M:%S+09:00"),
         "monthly":      out,
     }
-    _stamp_method_change(result)
     out_path = _OUT_DIR / f"{ticker}_poc.json"
+    # 前回の{TICKER}_poc.jsonの method_change_applied と比べ、新しいIDを初めて読んだ実行でscopeの銘柄に印を付ける
+    _method_change.stamp(result, prev=_method_change.read_json(str(out_path)), ticker=ticker)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\n保存完了: {out_path}")

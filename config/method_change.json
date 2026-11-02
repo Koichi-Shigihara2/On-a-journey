@@ -1,5 +1,5 @@
 {
-  "_note": "計算方法の変更の印（common/method_change.py）。公開データを作り直す日（JST）に {\"id\": \"<BACKLOGの項目ID>\", \"date\": \"YYYY-MM-DD\"} を足すと、その日の実行の判定・評価の履歴とDiscordの通知に印が付く。過去の行は記録として残す",
+  "_note": "計算方法の変更の印（common/method_change.py）。新しい形（2026-11-02〜、[[METHOD-CHANGE-PUBLISH-TIMING-1]]）: {\"id\", \"committed_at\", \"scope\": [{\"ticker\", \"fields\", \"before\", \"after\"}]} を scripts/method_change_scope.py diff --write で足す（scopeは手で書かない）。各出力は前回の出力の method_change_applied と比べ、新しいIDを初めて読んだ実行でだけscopeの銘柄に印を付ける（日付では決めない。scopeの無い件は全銘柄）。古い形 {\"id\", \"date\"} はその日（JST）の実行の全銘柄に印（2026-11-01までの件、記録として残す）",
   "changes": [
     {
       "id": "LAYER3-RETENTION-PERIOD-1",

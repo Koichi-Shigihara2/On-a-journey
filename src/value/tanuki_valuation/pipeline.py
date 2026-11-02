@@ -41,7 +41,7 @@ if _REPO_ROOT_FOR_IMPORT not in sys.path:
     sys.path.insert(0, _REPO_ROOT_FOR_IMPORT)
 from common.sec_data.contracts import Classification  # GATE2-PHASE3B-1③-b
 from common.sec_data.basis_mix import NOTE as BASIS_MIX_NOTE  # [[QUARTERLY-BASIS-MIX-1]] ベースが混在の注記
-from common.method_change import stamp as _stamp_method_change  # [[LAYER3-RETENTION-PERIOD-1]] 計算方法の変更の印
+from common import method_change as _method_change  # 計算方法の変更の印（[[LAYER3-RETENTION-PERIOD-1]]・[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
 from common.sec_data.layer3_builder import (  # フェーズD Step2-1
     build_ticker_store,
     get_field_entries,
@@ -1253,10 +1253,14 @@ class TanukiValuationPipeline:
             ticker, valuation, extra.get("fcf_history", [])
         )
         # 計算方法の変更の印（common/method_change.py）。score_watcher.pyはlatest.jsonの印で
-        # 判定の変化を「計算方法の変更による変化」として通知する
-        _stamp_method_change(latest_data)
-        _stamp_method_change(valuation)
+        # 判定の変化を「計算方法の変更による変化」として通知する。
+        # 印は前回のlatest.jsonの method_change_applied と比べて1回だけ決め、この実行の出力（latest.json・
+        # history/・history.json・score_history.json・hypecore_history/）に同じ印を付ける（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
         latest_path = os.path.join(ticker_dir, "latest.json")
+        _mc_ids, _mc_applied = _method_change.marks(_method_change.read_json(latest_path), ticker)
+        self.__dict__.setdefault("_method_change_marks", {})[ticker] = (_mc_ids, _mc_applied)
+        _method_change.apply(latest_data, _mc_ids, _mc_applied)
+        _method_change.apply(valuation, _mc_ids, _mc_applied)
         with open(latest_path, "w", encoding="utf-8") as f:
             json.dump(latest_data, f, ensure_ascii=False, indent=2)
 
@@ -1289,7 +1293,7 @@ class TanukiValuationPipeline:
             "scenario_bear": (valuation.get("scenario_valuations") or {}).get("bear", {}).get("intrinsic_value_per_share"),
             "scenario_bull": (valuation.get("scenario_valuations") or {}).get("bull", {}).get("intrinsic_value_per_share"),
         }
-        _stamp_method_change(entry)
+        _method_change.apply(entry, _mc_ids, _mc_applied)
         # 同日エントリを上書き
         history_summary = [e for e in history_summary if e.get("date") != date_str]
         history_summary.append(entry)
@@ -1315,7 +1319,7 @@ class TanukiValuationPipeline:
             "price_at_judgment": valuation.get("components", {}).get("current_price"),
             "hype_phase": (_growth_sanity.get("hype_phase_used") if isinstance(_growth_sanity, dict) else None),
         }
-        _stamp_method_change(sh_entry)
+        _method_change.apply(sh_entry, _mc_ids, _mc_applied)
         score_history = [e for e in score_history if e.get("date") != date_only]
         score_history.append(sh_entry)
         score_history.sort(key=lambda e: e.get("date", ""))
@@ -3880,7 +3884,8 @@ class TanukiValuationPipeline:
                     history = json.load(f)
             except Exception:
                 history = []
-        _stamp_method_change(entry)
+        _mc_ids, _mc_applied = getattr(self, "_method_change_marks", {}).get(ticker) or (_method_change.active_method_changes(), None)
+        _method_change.apply(entry, _mc_ids, _mc_applied)
         history = [e for e in history if e.get("date") != date_only]
         history.append(entry)
         history.sort(key=lambda e: e.get("date", ""))
