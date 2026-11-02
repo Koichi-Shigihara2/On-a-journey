@@ -245,6 +245,11 @@ class TestScopeScript:
              "before": {"intrinsic_value_per_share": 122.45, "tanuki_score": "TRIM"},
              "after": {"intrinsic_value_per_share": 18.43, "tanuki_score": "WATCH"}},
         ]
+        # 前の出力に無かった項目（新しいキー）・銘柄は数えない
+        b2, a2 = {"HON": {"x": 1}}, {"HON": {"x": 1, "new_key": 5}, "NEWT": {"x": 2}}
+        assert ms.build_scope(b2, a2) == []
+        assert ms.build_scope({"HON": {"x": 1, "gone": 3}}, {"HON": {"x": 1}}) == [
+            {"ticker": "HON", "fields": ["gone"], "before": {"gone": 3}, "after": {"gone": None}}]
         cfg = tmp_path / "mc.json"
         cfg.write_text(json.dumps({"changes": [_OLD]}), encoding="utf-8")
         ms.write_entry(e, str(cfg))

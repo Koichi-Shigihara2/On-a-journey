@@ -104,11 +104,13 @@ def _same(a: Any, b: Any) -> bool:
 
 
 def build_scope(before: dict, after: dict) -> list[dict]:
-    """前後で値の違う銘柄・項目の一覧（銘柄の順）。片方にしか無い項目も違いとする"""
+    """前の出力にあった項目のうち、値が変わった（無くなったも含む）銘柄・項目の一覧（銘柄の順）。
+    前の出力に無かった項目（その変更で足した新しいキー）と、前の出力に無かった銘柄は数えない
+    （新しいキーを数えると全銘柄がscopeに入る。[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1の公開の前、2026-11-02）"""
     scope = []
-    for t in sorted(set(before) | set(after)):
+    for t in sorted(before):
         b, a = before.get(t) or {}, after.get(t) or {}
-        fields = sorted(k for k in set(b) | set(a) if not _same(b.get(k), a.get(k)))
+        fields = sorted(k for k in b if not _same(b.get(k), a.get(k)))
         if fields:
             scope.append({"ticker": t, "fields": fields,
                           "before": {k: b.get(k) for k in fields}, "after": {k: a.get(k) for k in fields}})
