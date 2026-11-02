@@ -57,10 +57,10 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 新しい四半期の申告でHONの組み替えが進んでも、印は直近4四半期がそろうまで（2027-06-30の期末まで）残る
    - **2026-11-02 朝の確認（未済。チャット側の判断待ち）**: SEC_Data_Update run `41330561316`→TANUKI VALUATION run `41331901357`の後。HONのTTM・理論株価22.416・WATCH・funda 25・report.txtの3行・method_changeは合格、HypeCoreの過去の月のstageの変化0（当月の行の16銘柄は月末の株価による）、19銘柄の理論株価の変化はfcf_ttm_end の前進（VZはQ3の10-Qの貸借対照表・売上、VRTは前年同期の営業CFの組み替え−26Mも少し入る）。
      **rccのCHECK-66は1件（HON）だが「保存した印が食い違う」の行が出る**（検査がTTMの系列に無い四半期末まで印を求めている。データは正しい。FINDINGS.md 2026-11-02）。詳細はBACKLOG.mdの`[[QUARTERLY-BASIS-MIX-1]]`「確認（2026-11-02 朝、手順13）」。移設はしていない
-5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、CDNS・KO・RMBS・V）
-   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG〈case b、7月末の10-Qがcompanyfactsに未反映〉で残す。submissionsの最新も7月末でQ3の10-Qはまだ提出されていない）
-   - 期限: Q3の10-Q（10月末〜11月上旬の提出）の取り込みまで
-   - 確認の手順: `common/sec_data/data/_freshness.json`で4銘柄がREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`の4件を消して移設する。Q3でも入らなければ直し方の候補2をチャット側が判断
+5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、残りはVだけ）
+   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG。**11-01〈run `41330561316`〉でCDNS・KO・RMBSはREFRESHED〈Q3の10-Qまで〉、VはSEC_LAG**〈local 2026-04-29、submissions 2026-07-29〉、XOMはOK_NO_NEW。2026-11-02 朝にwarn_acknowledged.jsonのCDNS・KO・RMBSの3件を消した）
+   - 期限: Vの7月の10-Q（`0001403161-26-000104`）がcompanyfactsに入るまで
+   - 確認の手順: `common/sec_data/data/_freshness.json`でVがREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`のVの1件を消して移設する。入らないままなら直し方の候補2をチャット側が判断
 
 17. **Market Pulseの予定の経済指標（FRED）**（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`、2026-11-01 実装 `8fcd156800`）
    - 日時: 2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後（冬時間〈11-01から〉は外部起動の21:25 UTCの回で取得し、Market Data Dailyの完了で起動。`gh run list --workflow Market_Pulse_Update.yml`で先に確かめる）

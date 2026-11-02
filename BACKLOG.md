@@ -2524,6 +2524,12 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 - SEC_Data_Updateの手動実行（run `38194243923`）の`_freshness.json`（2026-10-12T02:05:31Z）: CDNS・KO・RMBS・VはSEC_LAGのまま（4銘柄ともSECの`company_tickers.json`のCIKとcik_lookup.csvは一致）。
   System Health（02:32 UTC）の[M]は✅、確認済み4件（CDNS 75日・KO 75日・RMBS 76日・V 75日）
 
+#### 追記（2026-11-02 朝、手順5。CDNS・KO・RMBSは解消、Vだけ残る）
+- 11-01のSEC_Data_Update（run `41330561316`、data `0a4f7e9953`）の`_freshness.json`: CDNS（local 2026-10-28）・KO（2026-10-28）・RMBS（2026-10-26）はREFRESHED（Q3の10-Qまで入り、TTMの期末はCDNS・RMBS 2026-09-30、KO 2026-10-02）。
+  VはSEC_LAG（local 2026-04-29、submissions 2026-07-29、pending `0001403161-26-000104`）。XOMはOK_NO_NEW（XOMの確認済みの行は2026-10-12に削除済み）
+- `config/warn_acknowledged.json`のCDNS・KO・RMBSの3件（WARN-60）を削除。Vの1件は残す
+- 本項目はVの7月の10-Qがcompanyfactsに入るまで残す（Vの次の確認も毎週日曜のSEC_Data_Updateの後、手順5）
+
 ---
 
 （[[STONKS-DATA-ASOF-MISSING-1]]は2026-10-10実装完了、BACKLOG_DONE.md「2026-10-10（完了）」参照）
