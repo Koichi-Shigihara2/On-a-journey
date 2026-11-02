@@ -26,15 +26,15 @@
     },
     {
      "key": "generated_at",
-     "reader_files": 8
+     "reader_files": 6
     },
     {
      "key": "method_change",
-     "reader_files": 2
+     "reader_files": 1
     },
     {
      "key": "tickers",
-     "reader_files": 13
+     "reader_files": 11
     }
    ],
    "readers": [
@@ -45,14 +45,6 @@
      "how": "保存済みファイル",
      "via": "grep",
      "type": "ワークフロー"
-    },
-    {
-     "file": "common/method_change.py",
-     "line": 147,
-     "func": "read_json",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "Python"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
@@ -92,38 +84,6 @@
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/rotce.py",
-     "line": 684,
-     "func": "build_all",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/rotce.py",
-     "line": 700,
-     "func": "build_all",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/rotce.py",
-     "line": 709,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/sec_data/rotce.py",
-     "line": 717,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
      "type": "Python"
     },
     {
@@ -207,22 +167,6 @@
      "type": "Python"
     },
     {
-     "file": "src/value/hypecore/hypecore.py",
-     "line": 1151,
-     "func": "run_poc",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/hypecore/hypecore.py",
-     "line": 1284,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
      "file": "src/value/stonks_silo/pipeline.py",
      "line": 36,
      "func": "<module>",
@@ -243,7 +187,7 @@
      "line": 515,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
+     "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score",
      "type": "Python"
     },
     {
@@ -272,15 +216,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1263,
-     "func": "TanukiValuationPipeline._save_result",
-     "how": "保存済みファイル",
-     "via": "common/method_change.py::read_json",
-     "type": "Python"
-    },
-    {
-     "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1407,
+     "line": 1410,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -288,7 +224,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1693,
+     "line": 1696,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "grep",
@@ -296,7 +232,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1698,
+     "line": 1701,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "AST",
@@ -304,7 +240,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3627,
+     "line": 3630,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "grep",
@@ -312,7 +248,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3631,
+     "line": 3634,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "AST",
@@ -320,7 +256,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3968,
+     "line": 3971,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -1011,12 +947,8 @@
    "producers": [],
    "screens": [
     {
-     "page": "docs/index.html",
-     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
-    },
-    {
      "page": "docs/portfolio/index.html",
-     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
     },
     {
      "page": "docs/portfolio/tail/detail.html",
@@ -1032,15 +964,11 @@
     },
     {
      "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/hypecore/detail.html",
-     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
-    },
-    {
-     "page": "docs/value-monitor/hypecore/index.html",
-     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
@@ -1062,11 +990,10 @@
    "definitions": [],
    "decision_effect": [
     "理論株価・判定（TANUKI VALUATION）",
-    "HypeCore（TANUKI のtiming・判定の入力）",
     "STONKS SILOの画面",
     "TANUKI VALUATIONの画面"
    ],
-   "reader_count": 12,
+   "reader_count": 9,
    "reader_count_test": 8,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -1477,32 +1404,32 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1439,
+     "line": 1442,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1466,
+     "line": 1469,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1471,
+     "line": 1474,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1517,
+     "line": 1520,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1822,
+     "line": 1825,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2000,
+     "line": 2003,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1712,6 +1639,7 @@
    "code": [],
    "same_dir": [],
    "tests": [
+    "tests/test_method_change.py",
     "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
     "tests/test_stonks_silo_financial_as_of.py",
@@ -1799,7 +1727,7 @@
   "outputs": 1,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 8,
+  "python_read_sites_into_layer_resolved": 6,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "src/value/stonks_silo/fetcher.py",
@@ -1809,9 +1737,16 @@
    }
   ],
   "name_hit_sites_resolved": 12,
-  "name_hit_sites_undetermined": [],
+  "name_hit_sites_undetermined": [
+   {
+    "file": "common/method_change.py",
+    "line": 45,
+    "output": "docs/value-monitor/stonks-silo/data/results.json",
+    "text": "\"stonks\": (\"docs/value-monitor/stonks-silo/data\", \"results.json\"),"
+   }
+  ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.048,
+  "ratio_reader": 0.1,
   "threshold": 0.1,
   "hit": false
  },

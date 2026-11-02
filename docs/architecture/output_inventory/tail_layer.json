@@ -1261,7 +1261,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3751,
+     "line": 3764,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures",
@@ -1453,7 +1453,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3424,
+     "line": 3427,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series",
@@ -1717,7 +1717,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3751,
+     "line": 3764,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_kpi_rejected_proposals",
@@ -2194,7 +2194,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3751,
+     "line": 3764,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/edgar_rss_monitor.py::get_monitored_tickers",
@@ -2717,7 +2717,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3751,
+     "line": 3764,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/tail/quarterly_review_generator.py::load_queue",
@@ -4633,32 +4633,32 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1439,
+     "line": 1442,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1466,
+     "line": 1469,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1471,
+     "line": 1474,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1517,
+     "line": 1520,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1822,
+     "line": 1825,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2000,
+     "line": 2003,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -5112,6 +5112,12 @@
   "name_hit_sites_resolved": 56,
   "name_hit_sites_undetermined": [
    {
+    "file": "common/method_change.py",
+    "line": 43,
+    "output": "docs/portfolio/tail/data/ctrl/{T}/latest.json",
+    "text": "\"tanuki\": (\"docs/value-monitor/tanuki_valuation/data\", \"{T}/latest.json\"),"
+   },
+   {
     "file": "scripts/method_change_scope.py",
     "line": 79,
     "output": "docs/portfolio/tail/data/{item_key}/{T}/latest.json",
@@ -5131,7 +5137,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.032,
+  "ratio_reader": 0.043,
   "threshold": 0.1,
   "hit": false
  },
