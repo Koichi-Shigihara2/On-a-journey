@@ -505,6 +505,13 @@ class TestFetchWeeklyAttributesCalendar:
         assert saved["forward_pe"] == 18.0  # .info由来フィールドは正常に保存される
 
 
+def _rel(days: int) -> str:
+    """今日（実行した日）からの相対の日付（YYYY-MM-DD）。次回決算の行は「今より未来」で判定されるため、
+    日付を決め打ちすると日が過ぎた時点でテストが失敗する（2026-11-03に"2026-11-03"の行で発生、FINDINGS 2026-11-03）"""
+    from datetime import date as _date, timedelta as _td
+    return (_date.today() + _td(days=days)).isoformat()
+
+
 class TestFetchWeeklyAttributesNextQuarterEps:
     """[[EPS-1]]で追加したnext_quarter_eps_estimate/next_quarter_eps_dateの
     回帰テスト。Ticker.earnings_datesをmonkeypatchし、ネットワークアクセスなしで
@@ -533,9 +540,9 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         EPS Estimateが存在する場合、その値・日付が抽出されること"""
         base = str(tmp_path)
         df = self._make_earnings_dates([
-            ("2026-12-09", 6.33, None),
-            ("2026-09-10", 6.09, 6.13),
-            ("2026-06-11", 5.81, 5.96),
+            (_rel(36), 6.33, None),
+            (_rel(-54), 6.09, 6.13),
+            (_rel(-145), 5.81, 5.96),
         ])
         self._patch(monkeypatch, earnings_dates=df)
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
@@ -549,8 +556,8 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         アナリスト網羅性不足でNaNの場合、Noneのまま（例外にならない）"""
         base = str(tmp_path)
         df = self._make_earnings_dates([
-            ("2026-11-15", None, None),
-            ("2026-08-14", 0.05, 0.06),
+            (_rel(12), None, None),
+            (_rel(-81), 0.05, 0.06),
         ])
         self._patch(monkeypatch, earnings_dates=df)
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
@@ -563,7 +570,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         """全行がReported EPS確定済み（次回決算日が未定でyfinance側に
         まだ行が生成されていない）場合もNoneのまま"""
         base = str(tmp_path)
-        df = self._make_earnings_dates([("2026-06-11", 5.81, 5.96)])
+        df = self._make_earnings_dates([(_rel(-145), 5.81, 5.96)])
         self._patch(monkeypatch, earnings_dates=df)
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
 
@@ -596,9 +603,9 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         （sort_index()による最小日付選択の回帰テスト）"""
         base = str(tmp_path)
         df = self._make_earnings_dates([
-            ("2027-03-10", 7.00, None),
-            ("2026-12-09", 6.33, None),
-            ("2026-09-10", 6.09, 6.13),
+            (_rel(127), 7.00, None),
+            (_rel(36), 6.33, None),
+            (_rel(-54), 6.09, 6.13),
         ])
         self._patch(monkeypatch, earnings_dates=df)
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
@@ -616,10 +623,10 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         より未来の行のみを対象とすることでこの過去欠損行を除外する。"""
         base = str(tmp_path)
         df = self._make_earnings_dates([
-            ("2026-11-03", 0.28, None),      # 真の次回決算（未発表）
-            ("2026-08-04", 0.19, 0.27),
-            ("2022-05-10", 0.04, None),      # 過去のデータ欠損行（誤認の原因）
-            ("2022-02-23", 0.05, 0.11),
+            (_rel(30), 0.28, None),     # 真の次回決算（未発表）
+            (_rel(-91), 0.19, 0.27),
+            (_rel(-1638), 0.04, None),      # 過去のデータ欠損行（誤認の原因）
+            (_rel(-1714), 0.05, 0.11),
         ])
         self._patch(monkeypatch, earnings_dates=df)
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
