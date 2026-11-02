@@ -11,12 +11,12 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-02 朝 更新〈それまでは2026-11-01 終業〉。上から順）**:
+**次の作業（2026-11-02 夜 更新〈それまでは2026-11-02 朝〉。上から順）**:
 1. （済 2026-11-01 朝）「次回の確認手順」の16: Macro Data Update 2回とも成功25件・失敗0件、System Health `41160489865` で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSEとMarket PulseのFREDの日付が新しい。`[[MACRODATA-FRED-IMPORT-PATH-1]]`をBACKLOG_DONE.mdへ移設（アクティブ8件→7件）
-2. （2026-11-02 朝に確認。SEC_Data_Update run `41330561316`〈11-01 17:15 UTC〉の後）「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`）: HONのデータ・理論株価・判定・funda・HypeCoreのstageは合格、**rccのCHECK-66の「保存した印が食い違う」の行（検査の側。FINDINGS 2026-11-02）が残り未済・移設していない。手順13の閉じ方（CHECK-66を直すか、この行を許して移設するか）はチャット側の判断待ち**。
+2. （2026-11-02 朝に確認。SEC_Data_Update run `41330561316`〈11-01 17:15 UTC〉の後）「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`）: HONのデータ・理論株価・判定・funda・HypeCoreのstageは合格、rccのCHECK-66の「保存した印が食い違う」の行（検査の側。FINDINGS 2026-11-02）が残った。**2026-11-02 夜にチャット側の指示で検査を直し（`20ef290ee5`、系列にある期末だけと比べる）、CHECK-66はHONの1件・食い違いの行なし。手順13は済、`[[QUARTERLY-BASIS-MIX-1]]`をBACKLOG_DONE.mdへ移設（アクティブ16件→15件）**。
    5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）: CDNS・KO・RMBSはREFRESHEDでwarn_acknowledged.jsonの3件を削除、Vだけ残す（BACKLOGの件も残す）
 3. （済 2026-11-02 朝）束ね: `docs/architecture/BUNDLING_2026-11-01.md`（FINDINGSの29行）。根治策4件を登録（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`高・`[[CHECK-REFERENCE-DEFINITION-1]]`中・`[[MARKETDATA-DAILY-ROW-WRITE-1]]`低・`[[COMMON-PATH-GUARD-1]]`低、登録だけで実装は許可されていない）、
-   MACRO PULSEの予備のFOMCの日付は`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`に統合、捨てるは0。アクティブ12件→16件（見込み15件との差は手順13が未済のため）
+   MACRO PULSEの予備のFOMCの日付は`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`に統合、捨てるは0。アクティブ12件→16件（見込み15件との差は手順13が未済のため。11-02 夜の移設で15件）
 3'. 11-03（火）朝: まず夜のMarket Pulse（11-02 21:30 UTC頃）が成功してpushまで済んだかを見る（pushが`headlines_push.py`を通るようになったため）。続いて「次回の確認手順」の17（経済指標）・18（見出しの配信元3本）・19（見出しの積み足し・`Market_Pulse_Headlines.yml`の最初の数回）・20（5分足の`2026-11-02.json`）
 3''. その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤
 4. 11月上旬: 「次回の確認手順」の15（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、保有銘柄の次のTAILのレビューの生成の後。期限2026-11-30）

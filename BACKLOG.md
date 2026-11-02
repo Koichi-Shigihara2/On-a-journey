@@ -2089,70 +2089,6 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [QUARTERLY-BASIS-MIX-1] 10-Qの比較期間の組み替え（事業の分離・売却等）で、TTMの4四半期が新旧のベースで混ざり、YTDの差し引きで作る四半期がベースをまたぐ
-**型・処置:** 型C（期ごとの数字の基準が混ざる）・直す（Koichiさんの判断、2026-10-26）
-**優先度:** 高
-**分類:** データの基準の混在 / Layer3（`common/sec_data/layer3_builder.py::_ytd_to_quarterly`）・TTM（`ttm_calculator.py`）・TANUKI VALUATION・HypeCore・TANUKI Score・rcc
-**登録日:** 2026-10-26
-**発見:** 2026-10-25（日）の確認（手順11②）。FINDINGS.md 2026-10-26（HONの新旧ベースの混在）
-
-#### 内容（2026-10-26の読み取りの調査）
-- HONの2026Q3の10-Q（2026-10-22提出）は、売上・営業利益・CapExの比較期間を継続事業ベースに組み替えた（2025Q3の売上10,408M→4,929M、CapEx 374M→41M）。営業CFは会社全体のタグのままで組み替えなし
-- Layer3はキャッシュフロー計算書のYTDから四半期を作る。Q3は「9か月（新しい10-Q、新しいベース）− 6か月（前の10-Q、旧ベース）」で、CapExは369−538=−169（`anomaly`が付き、絶対値の169で保存）。2025Q3の41も同じ（375−416）
-- TTMは各期の最新の値を4つ足すため、売上は9,758・9,143・9,719（旧）＋4,994（新）＝33,614、FCFは1,182M。TANUKIの基準のFCFは`avg_5yr`（4,627M）→`recent_1yr`（1,182M）、理論株価122.45→18.43、判定TRIM→WATCH、funda 90→40
-- 全98銘柄で、最新の申告が前年同期の売上・営業CFを20%以上組み替えたのはHON・RCAT。どちらも直近TTMが混在。保有の9銘柄は0件。四半期の組み替えを拾うCHECKは無い（CHECK-64は年次だけ）
-
-#### 対応方針（チャット側の指示、2026-10-26）
-- 案4: `layer3_builder.py::_ytd_to_quarterly`で、同じ期のYTDが前の申告と今の申告でずれた（または逆転した）ときは、YTDの差し引きで四半期を作らず欠けにする。欠けは既存の`latest_period_missing`等の扱いに乗せる
-- 案1: 最新の申告が前年同期の売上・営業利益・CapExのどれかを20%以上組み替えたら、その銘柄のTTM・normalizedに「ベースが混在」の印を付ける。残りの四半期が新しいベースにそろうまで（最長3四半期）残す
-  - TANUKI: DCFの信頼性をLOWにし、判定をWATCHに丸める。report.txt・画面に「ベースが混在（事業の分離・売却等による組み替え）」と注記
-  - HypeCoreのrev_yoy・fundaの部品（売上の伸び・Rule40・EPSの伸び）は、印のある間はNone
-  - rccにCHECK（WARN）を新設。印の付いた銘柄と期を出す
-- 実装の前に全98銘柄でシミュレーションする。止める条件: HON・RCATのほかに、理論株価が1%以上か判定が変わる銘柄があれば、実装せずに報告する
-- 前後の比較: 印の無い銘柄のLayer3・TTM・normalized・理論株価・判定・stageが前後で同じ。保有の9銘柄は変化0
-- `config/method_change.json`に公開する日（JST）で足す
-
-#### シミュレーション（2026-10-26、全98銘柄。止める条件に当たり、実装していない）
-- 方法: Layer3（`build_ticker_store`）→TTM（`calc_ttm_series`）を今のコードと案4のコードで作って比べた（今のコードのTTMは公開中の98ファイルと数値で一致）。
-  理論株価・判定は、TTMが変わる銘柄だけTANUKI VALUATIONを手元で前後に回した（Grok・SECのインサイダー取引は前後とも呼ばない）。公開のデータは戻した
-- 案4の「組み替えた申告」（前年同期のYTD・四半期を20%以上組み替えた申告の累計から前の申告の累計を引かない）: TTMが変わるのはHON・RCATだけ
-  - HON: 2026Q3・2025Q3のCapExは欠けになるが、候補の別のタグの値で埋まる（673M・959M）。TTM 2026-09-30のFCF 1,182M→1,274M、理論株価 18.43→22.42（+21.65%）、判定WATCHのまま
-  - RCAT: 2023-07-31のTTMの営業CFが欠ける。理論株価7.27のまま、判定WATCHのまま
-- 案4の「逆転」（CapEx・リース・SBC・D&Aの累計が前の累計より小さい）: ALAB・AMAT・CELH・KULR・ONDS・RKLBのLayer3・TTMも変わる
-  - **ALAB: 2024-06-30・2024-12-31のCapExが欠け、TTM 2025-06-30・2024-06-30のFCFが無くなる。理論株価 156.77→138.95（−11.37%）**、判定GROWTH_PREMIUMのまま（止める条件に当たった）
-  - ONDS（3点のFCFが無くなる）・AMAT（−0.02%）・CELH（2021-06-30のD&A、保有）・KULR・RKLB（TANUKIの対象外）は理論株価・判定の変化0
-- 案1の印（全98銘柄）: 印が付くのはHONだけ（組み替えの日2026-10-22、直近4四半期のうち2025Q4・2026Q1・Q2が旧ベース、混在する期末は2025-09-30〜2026-09-30）
-  - 最初の規則（組み替えた申告より前の申告の四半期を旧ベースとする）ではAPP（保有）にも付いた。APPは2025-08-06から毎回の申告が前年同期の売上を組み替えていて（−34.2%・−30.3%・年次−31.5%・−21.9%）、
-    直近4四半期は組み替えの後のベースでそろっている。組み替えの日を「220日以内に続く20%以上の組み替えの最初の申告」にして外した
-  - normalizedで判定するとRCATにも付く（2025Q2の売上の最初の値1.13Mは別のタグの値で、見かけの組み替え）。TTMはLayer3から作るので判定はLayer3でする
-  - HONの判定: fundaの部品（売上の伸び・Rule40・EPSの伸び）がNoneでfunda 40→25（FCFの部品だけ）、HOLD→信頼性LOWの丸めでWATCHのまま（200日線からの乖離−4.15%でSELLの技術的な条件に当たらない）
-- 決めること（チャット側）: 案4の逆転の条件を外して「組み替えた申告」だけにするか（その場合、止める条件に当たる銘柄は無い）、逆転も入れてALAB等の変化を受け入れるか
-
-#### 実装と公開（2026-10-26、Koichiさんの判断: 案4は「組み替えた申告」の条件だけ、逆転は入れない）
-- 実装 `6f34e661a7`: `common/sec_data/basis_mix.py`（判定の1か所、Layer3）、`layer3_builder.py`（案4）、`update.py`・`ttm_calculator.py`（TTMの`basis_mix`・点の`basis_mixed`、normalizedの`basis_mix`）、TANUKI VALUATION（DCF信頼性LOW→WATCH、fundaの3部品を使わない、report.txt・stock.htmlの注記）、HypeCore（rev_yoy・Rule40をNone）、rccのCHECK-66（WARN）、`config/method_change.json`の10-26・11-01・11-02
-- 前後の比較（全98銘柄、手元でHypeCore・TANUKIを前・後〈今日〉・後〈日曜のTTM〉）: 変わるのはHON・RCATだけ、保有の9銘柄は変化0、印はHONだけ（試算と同じ）
-- 公開（案1）: 2026-10-26の手動のTANUKI VALUATION（run `40297293158`）→TANUKI Score（run `40299283243`）、どちらもsuccess。HONに印・WATCH・funda 25・注記。ほかに理論株価が動いたIONQ（−5.65%）・JNJ・LMT・TSLAは、10-26のMarket Data Weeklyの株式数の更新による（判定の変化0）
-- 残り: 案4の公開（2026-11-01のSEC_Data_Update、CLAUDE_CODE_START.mdの次回の確認手順13）。逆転の6銘柄はFINDINGS.md 2026-10-26（anomalyの行）で日曜の束ねの入力
-- 続き（2026-10-26、Koichiさんの判断）: `e7e289c5e7` report.txtの注記に`basis_mix.restated`の組み替えた期・項目・値・変化率（変化の大きい順に3件まで）。印の無い銘柄のreport.txtは前後で同じ、誰も読まないキー 51→50。
-  画面はHONの注記・WATCH・信頼性LOWとconsoleのエラー0、TSLAは前と同じ（手元のPlaywright）。+387行は不具合の根治のため「数を増やさない」の対象外（CHAT_RULES.md「発見の溜め方と根治の判断」6）。公開は同じ日の手動のTANUKI VALUATION
-
-#### 確認（2026-11-02 朝、手順13。1項目が条件どおりでないため移設しない）
-- 本番: SEC_Data_Update run `41330561316`（11-01 17:15 UTC起動、success、data `0a4f7e9953`）→HypeCore `bf2cb93875`→TANUKI VALUATION run `41331296808`・`41331901357`（success。`dbd08abe96` 02:39 JST・`325f44bd1a` 02:52 JST）→TANUKI Score run `41333692054`
-- チャット側の確認済み: HONのTTM 2026-09-30のFCF 1,274M・TTMの`basis_mix`・点の`basis_mixed`（2025-09-30・2026-09-30）、理論株価22.416、WATCH、report.txtの組み替えの3行、method_change 11-01・11-02
-- HONのfunda 25（前と同じ）: 済
-- HypeCoreのstage（`bf2cb93875`の前後、全98銘柄の月ごと）: HONは変化0。過去の月の変化0。当月（2026-10）の行だけ16銘柄が変わった（AAPL・CAKE・CDNS・DDOG・DELL・IOT・LMT・MO・MRVL・MSFT・NET・NOW・PLTR・PM・TDY・WMT）。前の実行（10-26）の月の途中の株価で付けた当月の行を、月末の株価で付け直したもの（16銘柄とも株価が動いている。CDNS・MO・MSFT・NOWは売上の前年比もQ3の10-Qで更新）。計算方法の変更によるものではない
-- 理論株価の変化（`dbd08abe96`の親と今の`latest.json`、株価は前後で同じ）: 19銘柄（AMZN・BBAI・CDNS・CSGP・ENTG・GEV・GOOGL・HWM・KLAC・KO・LLY・MO・MSFT・NOW・RMBS・SCCO・TER・VRT・VZ）とHON。VZを除く18銘柄は`fcf_ttm_end`が前進（CDNS・RMBSは2026-03-31→09-30、KOは04-03→10-02、ほかは6月末→9月末）。
-  normalizedの前後（`0a4f7e9953`の前後）では、前からあった四半期の値の変化は前年同期（2025Q3）だけで、新しい10-Qの比較の列による: CSGP・LLYは丸め（百万単位へ、差0.1%未満）、GOOGLは自社株買い（FCFに入らない）、KLAC（×10）・NOW（×5）は株式分割の調整・SCCOは株式数の調整（`SharesDiluted`だけ）、**VRTは営業CFの2025Q3が508.7M→482.7M（−26M）**。
-  VRTは基準のFCFが`recent_2yr`（TTM 2026-09-30と2025-09-30の平均）のため、この組み替えで基準のFCFが約−13M（2,234Mの約0.6%）動いた分が、`fcf_ttm_end`の前進のほかに入る（CHECK-66・案1の印の対象ではない〈20%未満〉）。
-  **VZは`fcf_ttm_end`が無い**（CapExのタグが候補外、FINDINGS 2026-11-01）。株価は前後で同じで、変化はQ3の10-Qの貸借対照表・売上・最大EPS（`net_debt_period` 2026Q2→Q3、純有利子負債163.5B→161.7B、`revenue_ttm_end`・`max_eps_ttm_end` 6月末→9月末）による（理論株価 +0.49%）
-- 判定が変わった銘柄（10銘柄）: GOOGL HOLD→WATCH（理論株価−46.01%、新しい期のFCF）・VZ HOLD→BUY（funda 40→55、Q3の10-Q）・CDNS TRIM→HOLD・MSFT TRIM→HOLD（どちらもtimingとHypeCoreの段階、理論株価も新しい期）・AAPL TRIM→HOLD・CAKE HOLD→TRIM・PLTR TRIM→HOLD・PM TRIM→HOLD・TDY TRIM→HOLD・WMT TRIM→HOLD（理論株価・fundaは変わらず、HypeCoreの当月の段階が変わってtimingが動いた）。HONは変わらない
-- **rccのCHECK-66: 1件（HON）だが、「保存した印が食い違う」の行が出る**（`report_consistency_check.py --fail-on-ng` NG=0・WARN 225）。
-  `TTMの点 ['2025-09-30', '2026-09-30']・判定 ['2025-09-30', '2025-12-31', '2026-03-31', '2026-06-30', '2026-09-30']・normalized あり`。
-  データは正しい: TTMの系列は直近の期末と同じ月の各年の点だけ（2021-09-30〜2026-09-30の6点）で、書き手（`ttm_calculator.py::mark_basis_mix`）は系列にある点だけに印を付ける（判定と系列の共通は2025-09-30・2026-09-30で、保存した印と一致）。normalizedとTTMの`basis_mix`も同じ。
-  検査（`report_consistency_check.py::_check_basis_mix`の1773行）が系列に無い期末まで印を求めている（10-26の実装の時点ではTTMに`basis_mix`が無く、この比較は通っていなかった）。FINDINGS.md 2026-11-02。条件どおりでないため、移設と手順13の済はチャット側の判断を待つ
-
----
-
 ### [FCF-DEFINITION-SINGLE-SOURCE-1] FCFとその入力（CapEx・リース・符号）の定義を1か所にし、欠けを0とみなさない（型Bを中心にした根治策）
 **型・処置（2026-11-01 束ね）:** 型B（中心）・A・C・E・X・根治策。登録だけ（実装の指示待ち）
 **優先度:** 高
@@ -2169,6 +2105,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - report.txt・画面のFCFの注記は、計算に使った値・期から作る（TSLAの「FY2025」等の文言）
 - 調整後EPSの調整を年度内の全四半期でそろえる（TSLAの2026Q2は調整、Q3の−142Mは未調整）
 - 版で値が違う176行（R1-INVの手順4）が[[QUARTERLY-BASIS-MIX-1]]の型か（比較期間の組み替え）を調べる
+  - 実例（2026-11-02、手順13の確認）: VRTの2026Q3の10-Q（11-01のSEC_Data_Updateで取り込み）が前年同期（2025Q3）の営業CFを508.7M→482.7M（−26M）に組み替えた。基準のFCFが`recent_2yr`（TTM 2026-09-30と2025-09-30の平均）のため約−13M（2,234Mの約0.6%）動いた（20%未満で[[QUARTERLY-BASIS-MIX-1]]の印の対象ではない）
 - 実装は全銘柄のシミュレーションと`config/method_change.json`の印つきで
 
 #### 束ねた件
