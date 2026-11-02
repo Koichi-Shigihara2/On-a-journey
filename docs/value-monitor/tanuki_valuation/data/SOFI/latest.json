@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 126.4,
-  "calculation_date": "2026-11-02T21:24:55+09:00",
+  "calculation_date": "2026-11-02T23:24:59+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -194,7 +194,7 @@
     "base_fcf": 289068320.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 289068320.0,
-    "fcf_2yr_avg": -5906138500.0,
+    "fcf_2yr_avg": -5906858500.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -204,7 +204,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
-    "fcf_value": -8792187000.0,
+    "fcf_value": -8792989000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -215,7 +215,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "FY2025 FCF($-8792.2M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($-8793.0M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -275,7 +275,8 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": null
   },
   "rice": {
     "available": false,
@@ -295,18 +296,18 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -5553193600.0,
-    "fcf_2yr_avg": -5906138500.0,
+    "fcf_5yr_avg": -5553781000.0,
+    "fcf_2yr_avg": -5906858500.0,
     "structural_deficit": true,
     "fcf_base_used": 447912653.3333333,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -8792187000.0,
-      -3020090000.0,
-      -2811098000.0,
-      -9681054000.0,
-      -3461539000.0
+      -8792989000.0,
+      -3020728000.0,
+      -2811617000.0,
+      -9681553000.0,
+      -3462018000.0
     ],
     "diluted_shares": 1296617325,
     "roe_10yr_avg": -0.15120344803977956,
@@ -333,7 +334,8 @@
     "pv_high": 6230098021.777416,
     "pv_terminal": 11856340832.357136,
     "roe_used": -0.15120344803977956,
-    "fcf_floor_applied": 5842261920.0,
+    "fcf_floor_applied": 5842849320.0,
+    "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -416,31 +418,34 @@
     "qx": true,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": -1401962000,
-      "fcf_margin": -142.3
+      "fcf": -1402478000,
+      "fcf_margin": -142.4
     },
     {
       "year": 2022,
-      "fcf": -7348571000,
+      "fcf": -7349059000,
       "fcf_margin": -467.0
     },
     {
       "year": 2023,
-      "fcf": -7338039000,
+      "fcf": -7338548000,
       "fcf_margin": -345.7
     },
     {
       "year": 2024,
-      "fcf": -1273542000,
+      "fcf": -1274072000,
       "fcf_margin": -47.6
     },
     {
       "year": 2025,
-      "fcf": -3984136000,
+      "fcf": -3984902000,
       "fcf_margin": -110.3
     }
   ],
@@ -463,11 +468,12 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": null,
     "dilution_3yr_annual_pct": 11.59,
     "shares_yr_now": 1251767000,
     "shares_yr_3ago": 900886000
   },
-  "computed_runway_months": 22.143488073700297,
+  "computed_runway_months": 22.13923152940775,
   "dupont": {
     "ni_ttm": 636264000,
     "revenue_ttm": 4305695000,

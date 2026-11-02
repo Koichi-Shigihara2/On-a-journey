@@ -1,5 +1,5 @@
 AMZN INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-02T21:19:55+09:00
+Generated: 2026-11-02T23:18:33+09:00
 Price: $240.35
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,11 +8,11 @@ Classification: WATCH
 Classification_Pre_Rounding: TRIM
 Funda_Score: 55/100
 Timing_Score (components):
-  Deviation_Rate: -99.1%
+  Deviation_Rate: -49.2%
   MA200_Deviation: -1.3%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $328 median ($230-$405) | 58 analysts | vs IV: +15706.2%
-Comment: DCF信頼性LOW(FCF外れ値未解消)のためupside依存判定を抑制→WATCH
+  Analyst_Consensus: Strong Buy | Target: $328 median ($230-$405) | 58 analysts | vs IV: +168.5%
+Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -34,7 +34,7 @@ Matrix: ②収益性系
 Quadrant: 左上
 Label: 割高×高ROE
 Key_Metric_Y: ROE_avg (10yr) = 16.5%
-Deviation_Rate: -99.1%
+Deviation_Rate: -49.2%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,61 +59,59 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $240.35
-Intrinsic_Value_BASE: $2.08
-Deviation_BASE: -99.1%
+Intrinsic_Value_BASE: $122.18
+Deviation_BASE: -49.2%
 Scenarios:
-BEAR: Growth=3.3%, IV=$0.77, Deviation=-99.7%
-BASE: Growth=11.9%, IV=$2.08, Deviation=-99.1%
-BULL: Growth=14.3%, IV=$2.47, Deviation=-99.0%
-Return_Outlook(BASE): 1年後: $2.33 (-99.0%) / 3年後: $2.92 (-98.8%) / 5年後: $3.66 (-98.5%)
-  5yr_Annualized_Return: -56.7%/yr
+BEAR: Growth=3.3%, IV=$99.78, Deviation=-58.5%
+BASE: Growth=11.9%, IV=$122.18, Deviation=-49.2%
+BULL: Growth=14.3%, IV=$128.95, Deviation=-46.3%
+Return_Outlook(BASE): 1年後: $136.77 (-43.1%) / 3年後: $171.38 (-28.7%) / 5年後: $214.75 (-10.7%)
+  5yr_Annualized_Return: -2.2%/yr
 Growth_Rate_Rec: 13.0% (recommended)
 FCF_Margin_Bear_Adj: FCFマージン悪化(4.4%→1.3%) BEAR補正係数=0.400
 TTM_YoY_Growth: 15.4%
 (DCF Base vs TTM actual: -3.5pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 12.60%
-  参考①β込みWACC_IV: $-0.22 (Deviation: -100.1%)
-  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $31.17 (Deviation: -87.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は+43.2%→+60.8%（+17.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $82.72 (Deviation: -65.6%)
+  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $621.83 (Deviation: +158.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は-18.9%→-9.0%（+10.0pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 1.456
-Valuation_Gap_Analysis:
-  DCF_IV:           $2 (保守的FCFベース・現在実力値)
-  Market_Price:     $240
-  Gap:              -99% (市場が将来成長を先取り)
-  Implied_FCF_2030: $166.94B (現在株価を正当化するために必要な5年後FCF)
-  Current_FCF:      $3.34B
-  Required_Growth:  119%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
-FCF_Base: $3,340.00M (5yr平均) [ボトムアップ: OCF-CapEx]
+⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
+   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
+    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
+    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
+FCF_Base: $57,353.92M (5yr平均) [実績avg: $-556.2M]
 FCF_Breakdown（直近年）: OCF=$139,514M / CapEx=$131,819M / SBC(非現金)=$19,467M / D&A=$65,756M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
-DCF_Reliability: LOW ⚠️ (FCF外れ値未解消, IV参考値)
-  [Policy B: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
-   fcf_outlier未解消（一過性費用で説明不可）のため、IVは参考値扱い。]
-DCF_FCF_PV: $32.77B (Ph1=$16.98B + Ph2=$15.78B, 5yr, pre-alpha, Rm=10%)
+DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)
+  [Policy A: LOW時はBUY/TRIM/HOLD/WATCHをWATCHへ丸め。SELL/PASSは維持。
+   FCF実績がマイナスのためIVはrevenue_floorベース推定値。IV絶対値より方向感参考用。]
+DCF_FCF_PV: $562.68B (Ph1=$291.66B + Ph2=$271.02B, 5yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=5yr@0.0%, Phase2=5yr@8.0%
 DCF_Phase1_Taper: 11.9% → 8.0% (5yr linear taper to Phase2 growth, DCF-1b; path=11.9%, 11.0%, 10.0%, 9.0%, 8.0%)
-DCF_TV_PV:  $48.44B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $81.20B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $831.72B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $1394.41B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.6923 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0.515B (optional segment premium)
-Equity_Value: $22.44B (= v0 + RPO_PV + GO_PV + Net_Cash $-59.28B)
+Equity_Value: $1321.15B (= v0 + RPO_PV + GO_PV + Net_Cash $-73.77B)
 Shares_Used: 10813.1M (source: yf_implied)
-→ Intrinsic_Value: $2.08 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $122.18 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $2.76  $3.55  $4.36
-  10.0%       $1.45  $2.08  $2.71
-  11.0%       $0.48  $1.00  $1.51
+  9.0%       $133.95  $147.50  $161.42
+  10.0%       $111.36  $122.18  $133.12
+  11.0%       $94.84  $103.70  $112.52
 Financial_Health:
-  Net_Debt: $+59.28B (negative=net cash)
-  Total_Debt: $173.50B  Cash: $55.78B  ST_Invest: $58.44B
+  Net_Debt: $+73.77B (negative=net cash)
+  Total_Debt: $188.00B  Cash: $55.78B  ST_Invest: $58.44B
   Net_Debt_Period: 2026Q3
+  Finance_Lease: +$14.49B をLTDebtに含む（2026-09-30、負債と同じ期末、FinanceLeaseLiabilityNoncurrent+FinanceLeaseLiabilityCurrent）
   SBC_TTM: $19,467M
   Dilution_3yr_Annual: +2.05%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
@@ -344,7 +342,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: N/A%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $328 median ($230-$405) | 58 analysts | vs IV: +15706.2%
+Analyst_Consensus: Strong Buy | Target: $328 median ($230-$405) | 58 analysts | vs IV: +168.5%
 Insider_Activity: Sell優勢 | 買い0件 / 売り27件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 15.4%

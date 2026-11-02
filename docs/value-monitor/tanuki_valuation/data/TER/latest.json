@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -55.0,
-  "calculation_date": "2026-11-02T21:30:06+09:00",
+  "calculation_date": "2026-11-02T23:32:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 25782000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由欄に「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目の理由が「一過性の在庫評価損」と明記されており、事業運営上の一時的な在庫調整の問題を示すため。"
       }
     },
     "action": "flagged",
@@ -284,7 +284,15 @@
     "ltdebt_estimated_zero": true,
     "ltdebt_last_confirmed_zero_year": 2022,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-12-31",
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": true,
@@ -363,6 +371,7 @@
     "pv_terminal": 6984310469.537367,
     "roe_used": 0.23320885093272534,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -446,6 +455,9 @@
     "qy": false
   },
   "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -492,6 +504,14 @@
     "ltdebt_last_confirmed_zero_year": 2022,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-12-31",
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": -2.01,
     "shares_yr_now": 159719000,
     "shares_yr_3ago": 169734000,

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -58.5,
-  "calculation_date": "2026-11-02T21:30:11+09:00",
+  "calculation_date": "2026-11-02T23:32:41+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -104,8 +104,8 @@
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.103,
-      "intrinsic_value_per_share": 103.03
+      "growth_rate": 0.105,
+      "intrinsic_value_per_share": 104.4
     },
     "base": {
       "growth_rate": 0.097,
@@ -268,7 +268,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-09-27",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    }
   },
   "rice": {
     "available": true,
@@ -339,7 +347,7 @@
     "high_growth_rate_used": 0.09696783854733271,
     "high_growth_years": 8,
     "terminal_growth_used": 0.03,
-    "moat_score": 0.7747,
+    "moat_score": 0.7708,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 8,
@@ -347,6 +355,7 @@
     "pv_terminal": 32477176925.790962,
     "roe_used": 0.5024980189137432,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -430,31 +439,34 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2022,
-      "fcf": 2565153000,
-      "fcf_margin": 14.9
+      "fcf": 2553640000,
+      "fcf_margin": 14.8
     },
     {
       "year": 2023,
-      "fcf": 4692355000,
-      "fcf_margin": 26.9
+      "fcf": 4677370000,
+      "fcf_margin": 26.8
     },
     {
       "year": 2024,
-      "fcf": 4511294000,
-      "fcf_margin": 30.3
+      "fcf": 4255599000,
+      "fcf_margin": 28.6
     },
     {
       "year": 2025,
-      "fcf": 5418137000,
+      "fcf": 5414078000,
       "fcf_margin": 29.4
     },
     {
       "year": 2026,
-      "fcf": 4896223000,
+      "fcf": 4891252000,
       "fcf_margin": 21.1
     }
   ],
@@ -477,6 +489,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-09-27",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    },
     "dilution_3yr_annual_pct": -2.45,
     "shares_yr_now": 1261102000,
     "shares_yr_3ago": 1358336000,
@@ -501,7 +521,7 @@
   "phase1_growth_auto_adjusted": true,
   "recommended_g": 0.09696783854733271,
   "fcf_margin_bear_mult_applied": true,
-  "fcf_margin_note": "FCFマージン悪化(26.9%→21.1%) BEAR補正係数=0.783",
+  "fcf_margin_note": "FCFマージン悪化(26.4%→21.1%) BEAR補正係数=0.800",
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
@@ -522,8 +542,8 @@
       "RR×ROIC(4.9%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],
     "warnings": [],
-    "fcf_margin_bear_multiplier": 0.7834,
-    "fcf_margin_note": "FCFマージン悪化(26.9%→21.1%) BEAR補正係数=0.783"
+    "fcf_margin_bear_multiplier": 0.8003,
+    "fcf_margin_note": "FCFマージン悪化(26.4%→21.1%) BEAR補正係数=0.800"
   },
   "erp": 0.0019,
   "dilution_severity": "positive",

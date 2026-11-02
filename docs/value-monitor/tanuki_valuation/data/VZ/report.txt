@@ -1,17 +1,17 @@
 VZ INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-02T21:29:45+09:00
+Generated: 2026-11-02T23:31:58+09:00
 Price: $44.73
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: BUY
+Classification: HOLD
 Funda_Score: 55/100
 Timing_Score (components):
-  Deviation_Rate: +92.1%
+  Deviation_Rate: -49.7%
   MA200_Deviation: -4.5%
   HypeCore_Phase: Phase2 (期待拡大期)
-  Analyst_Consensus: Buy | Target: $50 median ($44-$62) | 22 analysts | vs IV: -41.8%
-Comment: 割安圏(92%)で買い余地大、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $50 median ($44-$62) | 22 analysts | vs IV: +122.1%
+Comment: 割高(-50%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -29,11 +29,11 @@ PASS: Funda<25, excluded from consideration
 
 
 [2. MATRIX POSITION]
-Matrix: ④キャッシュ創出力系
-Quadrant: 右上
-Label: 割安×高FCF
-Key_Metric_Y: FCF_Margin = 26.9%
-Deviation_Rate: +92.1%
+Matrix: ①投資効率系
+Quadrant: 左下
+Label: 割高×低効率
+Key_Metric_Y: RICE = 0.036
+Deviation_Rate: -49.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,47 +58,54 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $44.73
-Intrinsic_Value_BASE: $85.94
-Deviation_BASE: +92.1%
+Intrinsic_Value_BASE: $22.51
+Deviation_BASE: -49.7%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 1.4% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=1.0%, IV=$83.63 （推奨値ベース）
-BASE: Growth=1.4%, IV=$85.94 （推奨値ベース）
-BULL: Growth=1.7%, IV=$87.50 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $87.18 (+94.9%) / 3年後: $89.70 (+100.5%) / 5年後: $92.30 (+106.3%)
-  5yr_Annualized_Return: +15.6%/yr
+BEAR: Growth=1.0%, IV=$21.37 （推奨値ベース）
+BASE: Growth=1.4%, IV=$22.51 （推奨値ベース）
+BULL: Growth=1.7%, IV=$23.28 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $22.83 (-49.0%) / 3年後: $23.50 (-47.5%) / 5年後: $24.18 (-45.9%)
+  5yr_Annualized_Return: -11.6%/yr
 TTM_YoY_Growth: 1.4%
 (DCF Base vs TTM actual: +0.0pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 6.01%
-  参考①β込みWACC_IV: $250.15 (Deviation: +459.2%)
-  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $411.52 (Deviation: +820.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は-42.6%→-37.9%（+4.7pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $103.36 (Deviation: +131.1%)
+  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $182.83 (Deviation: +308.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は-33.9%→-28.5%（+5.4pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 0.3
-FCF_Base: $37,640.80M (5yr平均) [ボトムアップ: OCF-CapEx]
-⚠️ FCF内訳: CapEx申告タグなし（標準候補4タグを直近5年分いずれも未申告）のため、生FCF（OCFからCapExを0として扱った値）を採用。
+FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
+FCF_Base: $18,534.40M (5yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Breakdown（直近年）: OCF=$37,137M / CapEx=$17,011M / SBC(非現金)=N/A / D&A=$18,349M
+  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
+   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
+   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: NORMAL  (通常判定適用)
-Latest_Period_Note: 最新期の設備投資が未取得（最新期は年次の値で代用）
-DCF_FCF_PV: $148.56B (5yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $369.37B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $517.93B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_FCF_PV: $73.15B (5yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $181.88B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $255.03B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.4000 (HypeCore expectation premium; Rm basis) [CAPPED: セクター別上限到達]
 RPO_PV: $0 (RPO/Revenue=0.02 < 0.3, not applied)
 Growth_Option_PV: $0
-Equity_Value: $356.19B (= v0 + RPO_PV + GO_PV + Net_Cash $-161.74B)
+Equity_Value: $93.29B (= v0 + RPO_PV + GO_PV + Net_Cash $-161.74B)
 Shares_Used: 4144.6M (source: yf_implied)
-→ Intrinsic_Value: $85.94 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $22.51 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $110.27  $106.60  $103.41
-  10.0%       $88.99  $85.94  $83.34
-  11.0%       $73.03  $70.45  $68.28
+  9.0%       $34.49  $32.68  $31.11
+  10.0%       $24.01  $22.51  $21.23
+  11.0%       $16.15  $14.88  $13.81
+一過性費用の定性評価（AI・参考情報、action判定には未使用）:
+  Assessment: 一時的な問題と判断（参考）
+  Reasoning: 理由がすべてマクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の財務調整を示す。
 Financial_Health:
   Net_Debt: $+161.74B (negative=net cash)
   Total_Debt: $166.23B  Cash: $4.50B
   Net_Debt_Period: 2026Q3
+  Finance_Lease: 負債のタグに含まれる（LongTermDebtAndCapitalLeaseObligationsと一致、2026-09-30）
   SBC_TTM: N/A
   Dilution_3yr_Annual: +0.21%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
@@ -189,16 +196,20 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 
 
 [5. RICE METRICS]
-Available: false
-Exclusion_Reason: CF計算不可（Revenue/CapExデータなし）
-BEAR: RICE=N/A
-BASE: RICE=N/A
-BULL: RICE=N/A
+Available: true
+Exclusion_Reason: N/A
+BEAR: RICE=0.026
+BASE: RICE=0.036
+BULL: RICE=0.044
 Components (BASE scenario):
-G  = N/A
-Q  = 2.4992   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 0.0  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+G  = 1.4%  [TANUKI forward growth rate]
+Q  = 2.6352   [OCF / (NetIncome + SBC), 3yr avg]
+CF = 0.1039  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+CF_adj = 0.1039  [R&D除外・CapExのみ投資強度]
+RICE_adj = 0.036  [参考：R&D資本化想定]
 WACC = 10.0%
+VC_Factor = 0.94  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
+ROIC_WACC_Ratio = 0.94  [NOPAT/InvestedCapital / 0.10]
 SBC_Adjusted: false
 Definition:
 
@@ -327,7 +338,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: N/A%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $50 median ($44-$62) | 22 analysts | vs IV: -41.8%
+Analyst_Consensus: Buy | Target: $50 median ($44-$62) | 22 analysts | vs IV: +122.1%
 Insider_Activity: Sell優勢 | 買い0件 / 売り11件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 1.4%

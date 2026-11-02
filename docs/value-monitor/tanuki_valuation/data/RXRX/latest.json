@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 317.4,
-  "calculation_date": "2026-11-02T21:24:32+09:00",
+  "calculation_date": "2026-11-02T23:24:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -157,7 +157,7 @@
     "base_fcf": 5974480.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 5974480.0,
-    "fcf_2yr_avg": -368305000.0,
+    "fcf_2yr_avg": -373071000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -167,7 +167,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
-    "fcf_value": -350481000.0,
+    "fcf_value": -352270000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -190,11 +190,11 @@
       "total_transient_amount": 1393000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "両項目とも「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断されるため、収益力の構造的悪化を示す兆候とは言えない。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($-350.5M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($-352.3M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -254,7 +254,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-06-30",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    }
   },
   "rice": {
     "available": false,
@@ -274,15 +282,15 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -291531600.0,
-    "fcf_2yr_avg": -368305000.0,
+    "fcf_5yr_avg": -293438000.0,
+    "fcf_2yr_avg": -373071000.0,
     "structural_deficit": true,
     "fcf_base_used": 244131146.66666666,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -350481000.0,
-      -386129000.0,
+      -352270000.0,
+      -393872000.0,
       -342163000.0,
       -265457000.0,
       -113428000.0
@@ -312,7 +320,8 @@
     "pv_high": 1299616151.1527069,
     "pv_terminal": 7971882145.586476,
     "roe_used": -0.5125061112141825,
-    "fcf_floor_applied": 297506080.0,
+    "fcf_floor_applied": 299412480.0,
+    "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -392,11 +401,14 @@
     "matrix": "④キャッシュ創出力系",
     "quadrant": "右下",
     "label": "割安×低FCF",
-    "key_metric_y": "FCF_Margin = -497.9%",
+    "key_metric_y": "FCF_Margin = -506.5%",
     "qx": true,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -415,13 +427,13 @@
     },
     {
       "year": 2024,
-      "fcf": -369203000,
-      "fcf_margin": -627.5
+      "fcf": -372869000,
+      "fcf_margin": -633.7
     },
     {
       "year": 2025,
-      "fcf": -371808000,
-      "fcf_margin": -497.9
+      "fcf": -378277000,
+      "fcf_margin": -506.5
     }
   ],
   "financial_health": {
@@ -443,11 +455,19 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-06-30",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    },
     "dilution_3yr_annual_pct": 36.6,
     "shares_yr_now": 447446109,
     "shares_yr_3ago": 175537487
   },
-  "computed_runway_months": 17.61176736380067,
+  "computed_runway_months": 17.31058457162344,
   "net_current_assets_ratio": 0.2007,
   "dupont": {
     "ni_ttm": -518884000,

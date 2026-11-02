@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -3.5,
-  "calculation_date": "2026-11-02T21:20:45+09:00",
+  "calculation_date": "2026-11-02T23:19:35+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -244,11 +244,11 @@
   "fcf_base": {
     "base_fcf": 336807000.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 197972111.4,
+    "fcf_5yr_avg": 197935911.4,
     "fcf_2yr_avg": 336807000.0,
-    "cv": 0.923,
+    "cv": 0.924,
     "cv_threshold": 0.5,
-    "ratio": 0.923,
+    "ratio": 0.924,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -257,7 +257,7 @@
     "fiscal_year": 2025,
     "fcf_value": 462774000.0,
     "threshold_pct": 0.6,
-    "deviation_pct": 133.75716747545886,
+    "deviation_pct": 133.79991873470615,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
@@ -302,7 +302,7 @@
       "total_transient_amount": 340364000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "全項目の理由がマクロ変動や一過性の事業再編による一時的影響と明記されており、構造的悪化を示唆する内容はない。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "flagged",
@@ -366,7 +366,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-06-30",
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": false,
@@ -386,7 +394,7 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 197972111.4,
+    "fcf_5yr_avg": 197935911.4,
     "fcf_2yr_avg": 336807000.0,
     "structural_deficit": false,
     "fcf_base_used": 336807000.0,
@@ -395,9 +403,9 @@
     "fcf_list_raw": [
       462774000.0,
       210840000.0,
-      245989000.0,
-      98527000.0,
-      -28269443.0
+      245937000.0,
+      98479000.0,
+      -28350443.0
     ],
     "diluted_shares": 253035047,
     "roe_10yr_avg": -0.08510160736586729,
@@ -417,7 +425,7 @@
     "high_growth_rate_used": 0.17,
     "high_growth_years": 5,
     "terminal_growth_used": 0.025,
-    "moat_score": 0.2869,
+    "moat_score": 0.2868,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
@@ -425,6 +433,7 @@
     "pv_terminal": 3788139457.7857513,
     "roe_used": -0.08510160736586729,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -507,26 +516,29 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": -99642592,
+      "fcf": -99736694,
       "fcf_margin": -31.7
     },
     {
       "year": 2022,
-      "fcf": 99981000,
+      "fcf": 99918000,
       "fcf_margin": 15.3
     },
     {
       "year": 2023,
-      "fcf": 123829000,
+      "fcf": 123785000,
       "fcf_margin": 9.4
     },
     {
       "year": 2024,
-      "fcf": 239569000,
+      "fcf": 239508000,
       "fcf_margin": 17.7
     },
     {
@@ -554,6 +566,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-06-30",
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": 3.95,
     "shares_yr_now": 254911000,
     "shares_yr_3ago": 226947000,

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -28.8,
-  "calculation_date": "2026-11-02T21:26:56+09:00",
+  "calculation_date": "2026-11-02T23:27:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -280,7 +280,8 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2024
+    "stdebt_last_confirmed_zero_year": 2024,
+    "finance_lease": null
   },
   "rice": {
     "available": false,
@@ -339,6 +340,7 @@
     "pv_terminal": 17565366749.79535,
     "roe_used": 0.7790061145302385,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -423,6 +425,9 @@
     "qy": true
   },
   "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -469,6 +474,7 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": true,
     "stdebt_last_confirmed_zero_year": 2024,
+    "finance_lease": null,
     "dilution_3yr_annual_pct": -1.92,
     "shares_yr_now": 76636000,
     "shares_yr_3ago": 81215000,

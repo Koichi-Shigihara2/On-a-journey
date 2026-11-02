@@ -1,5 +1,5 @@
 {
-  "intrinsic_value_per_share": 6.631673288931545,
+  "intrinsic_value_per_share": 6.631164408473304,
   "intrinsic_value_beta": 2.97,
   "upside_percent_beta": -29.7,
   "intrinsic_value_rf": 24.46,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 57.1,
-  "calculation_date": "2026-11-02T21:24:57+09:00",
+  "calculation_date": "2026-11-02T23:25:01+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -63,7 +63,7 @@
     "matrix": [
       [
         4.13,
-        7.76,
+        7.75,
         14.61
       ],
       [
@@ -174,7 +174,7 @@
     "base_fcf": 13513600.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 13513600.0,
-    "fcf_2yr_avg": -114112500.0,
+    "fcf_2yr_avg": -114329000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -184,7 +184,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
-    "fcf_value": -115542000.0,
+    "fcf_value": -115879000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -195,7 +195,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "FY2025 FCF($-115.5M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($-115.9M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
   },
   "fcf_estimation": {
     "applied": false,
@@ -238,10 +238,10 @@
   "bs_adjustment": {
     "cash": 202776000.0,
     "short_term_investments": 0.0,
-    "long_term_debt": 0.0,
+    "long_term_debt": 226000.0,
     "short_term_debt": 0.0,
-    "net_cash": 202776000.0,
-    "net_cash_per_share": 0.45658736194796523,
+    "net_cash": 202550000.0,
+    "net_cash_per_share": 0.4560784814897244,
     "fiscal_year": 2025,
     "applied": true,
     "sector_guard": "none",
@@ -255,7 +255,17 @@
     "ltdebt_estimated_zero": true,
     "ltdebt_last_confirmed_zero_year": 2024,
     "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2023
+    "stdebt_last_confirmed_zero_year": 2023,
+    "finance_lease": {
+      "value": 226000.0,
+      "end": "2026-06-30",
+      "basis": "latest_within_400d",
+      "tags": [
+        "FinanceLeaseLiabilityCurrent"
+      ],
+      "debt_end": null,
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": false,
@@ -275,17 +285,17 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -96188000.0,
-    "fcf_2yr_avg": -114112500.0,
+    "fcf_5yr_avg": -96422250.0,
+    "fcf_2yr_avg": -114329000.0,
     "structural_deficit": true,
     "fcf_base_used": 45634933.333333336,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -115542000.0,
-      -112683000.0,
-      -74795000.0,
-      -81732000.0
+      -115879000.0,
+      -112779000.0,
+      -74938000.0,
+      -82093000.0
     ],
     "diluted_shares": 444112161,
     "roe_10yr_avg": -0.5433997576468458,
@@ -312,7 +322,8 @@
     "pv_high": 340207378.3111422,
     "pv_terminal": 774752622.0502459,
     "roe_used": -0.5433997576468458,
-    "fcf_floor_applied": 109701600.0,
+    "fcf_floor_applied": 109935850.0,
+    "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -343,7 +354,7 @@
     "insider_latest_date": "2026-09-21",
     "revenue_ttm": 203200000,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 80.9,
+    "analyst_vs_iv": 81.0,
     "max_eps": null,
     "max_eps_per": null,
     "max_eps_reliability": "HIGH",
@@ -391,45 +402,48 @@
     "matrix": "④キャッシュ創出力系",
     "quadrant": "右下",
     "label": "割安×低FCF",
-    "key_metric_y": "FCF_Margin = -58.6%",
+    "key_metric_y": "FCF_Margin = -58.7%",
     "qx": true,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": -864358,
-      "fcf_margin": -4.1
+      "fcf": -1500358,
+      "fcf_margin": -7.1
     },
     {
       "year": 2022,
-      "fcf": -94045000,
-      "fcf_margin": -302.1
+      "fcf": -95348000,
+      "fcf_margin": -306.3
     },
     {
       "year": 2023,
-      "fcf": -68498000,
-      "fcf_margin": -149.3
+      "fcf": -68657000,
+      "fcf_margin": -149.7
     },
     {
       "year": 2024,
-      "fcf": -109393000,
-      "fcf_margin": -129.2
+      "fcf": -109518000,
+      "fcf_margin": -129.3
     },
     {
       "year": 2025,
-      "fcf": -98955000,
-      "fcf_margin": -58.6
+      "fcf": -99124000,
+      "fcf_margin": -58.7
     }
   ],
   "financial_health": {
-    "total_debt": 0.0,
+    "total_debt": 226000.0,
     "cash_and_equivalents": 202776000.0,
     "short_term_investments": 0.0,
-    "long_term_debt": 0.0,
+    "long_term_debt": 226000.0,
     "short_term_debt": 0.0,
-    "net_debt": -202776000.0,
+    "net_debt": -202550000.0,
     "sbc_ttm": 80620000,
     "net_debt_period": "Cash=2026Q2/Debt=FY2025",
     "cash_missing": false,
@@ -442,11 +456,21 @@
     "ltdebt_last_confirmed_zero_year": 2024,
     "stdebt_estimated_zero": true,
     "stdebt_last_confirmed_zero_year": 2023,
+    "finance_lease": {
+      "value": 226000.0,
+      "end": "2026-06-30",
+      "basis": "latest_within_400d",
+      "tags": [
+        "FinanceLeaseLiabilityCurrent"
+      ],
+      "debt_end": null,
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": 37.56,
     "shares_yr_now": 409456342,
     "shares_yr_3ago": 157317695
   },
-  "computed_runway_months": 24.590086402910416,
+  "computed_runway_months": 24.548161898228482,
   "net_current_assets_ratio": 0.11,
   "dupont": {
     "ni_ttm": -137027000,

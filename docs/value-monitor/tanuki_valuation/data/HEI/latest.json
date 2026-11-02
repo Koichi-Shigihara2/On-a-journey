@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -75.8,
-  "calculation_date": "2026-11-02T21:26:17+09:00",
+  "calculation_date": "2026-11-02T23:26:40+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -256,7 +256,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-07-31",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    }
   },
   "rice": {
     "available": true,
@@ -325,7 +333,7 @@
     "high_growth_rate_used": 0.1,
     "high_growth_years": 6,
     "terminal_growth_used": 0.03,
-    "moat_score": 0.4456,
+    "moat_score": 0.4445,
     "moat_score_source": "measured",
     "moat_score_n_present": 2,
     "moat_phase1_years": 6,
@@ -333,6 +341,7 @@
     "pv_terminal": 8487730402.816709,
     "roe_used": 0.15624003066923298,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -415,32 +424,35 @@
     "qx": false,
     "qy": true
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": 409088000,
+      "fcf": 407901000,
       "fcf_margin": 21.9
     },
     {
       "year": 2022,
-      "fcf": 437442000,
-      "fcf_margin": 19.8
+      "fcf": 435874000,
+      "fcf_margin": 19.7
     },
     {
       "year": 2023,
-      "fcf": 401964000,
+      "fcf": 399301000,
       "fcf_margin": 13.5
     },
     {
       "year": 2024,
-      "fcf": 618057000,
-      "fcf_margin": 16.0
+      "fcf": 614109000,
+      "fcf_margin": 15.9
     },
     {
       "year": 2025,
-      "fcf": 865309000,
-      "fcf_margin": 19.3
+      "fcf": 861380000,
+      "fcf_margin": 19.2
     }
   ],
   "financial_health": {
@@ -462,6 +474,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-07-31",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
+    },
     "dilution_3yr_annual_pct": 0.66,
     "shares_yr_now": 140771000,
     "shares_yr_3ago": 138037000

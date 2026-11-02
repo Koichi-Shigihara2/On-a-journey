@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -89.7,
-  "calculation_date": "2026-11-02T21:26:28+09:00",
+  "calculation_date": "2026-11-02T23:26:52+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 210000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が『一過性の事業再編費用』と明記されており、構造的な悪化ではなく事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄にすべて「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -278,7 +278,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-09-30",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligations＋Currentと一致"
+    }
   },
   "rice": {
     "available": false,
@@ -329,7 +337,7 @@
     "high_growth_rate_used": 0.026350000000000002,
     "high_growth_years": 5,
     "terminal_growth_used": 0.025,
-    "moat_score": 0.3474,
+    "moat_score": 0.3459,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
@@ -337,6 +345,7 @@
     "pv_terminal": 13855463293.068094,
     "roe_used": 0.2919913205352972,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -473,36 +482,39 @@
     "matrix": "④キャッシュ創出力系",
     "quadrant": "左下",
     "label": "割高×低FCF",
-    "key_metric_y": "FCF_Margin = 14.6%",
+    "key_metric_y": "FCF_Margin = 14.5%",
     "qx": false,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": 5210000000,
-      "fcf_margin": 15.1
+      "fcf": 5143000000,
+      "fcf_margin": 15.0
     },
     {
       "year": 2022,
-      "fcf": 4587000000,
-      "fcf_margin": 12.9
+      "fcf": 4508000000,
+      "fcf_margin": 12.7
     },
     {
       "year": 2023,
-      "fcf": 4388000000,
-      "fcf_margin": 12.0
+      "fcf": 4301000000,
+      "fcf_margin": 11.7
     },
     {
       "year": 2024,
-      "fcf": 5046000000,
-      "fcf_margin": 13.1
+      "fcf": 4933000000,
+      "fcf_margin": 12.8
     },
     {
       "year": 2025,
-      "fcf": 5474000000,
-      "fcf_margin": 14.6
+      "fcf": 5422000000,
+      "fcf_margin": 14.5
     }
   ],
   "financial_health": {
@@ -524,6 +536,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-09-30",
+      "included_in_debt": "LongTermDebtAndCapitalLeaseObligations＋Currentと一致"
+    },
     "dilution_3yr_annual_pct": -2.01,
     "shares_yr_now": 642800000,
     "shares_yr_3ago": 683100000,

@@ -1,5 +1,5 @@
 SOUN INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-02T21:24:57+09:00
+Generated: 2026-11-02T23:25:01+09:00
 Price: $4.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -11,7 +11,7 @@ Timing_Score (components):
   Deviation_Rate: +57.1%
   MA200_Deviation: -41.3%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $12 median ($6-$17) | 7 analysts | vs IV: +80.9%
+  Analyst_Consensus: Strong Buy | Target: $12 median ($6-$17) | 7 analysts | vs IV: +81.0%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -33,7 +33,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ④キャッシュ創出力系
 Quadrant: 右下
 Label: 割安×低FCF
-Key_Metric_Y: FCF_Margin = -58.6%
+Key_Metric_Y: FCF_Margin = -58.7%
 Deviation_Rate: +57.1%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -84,7 +84,7 @@ FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $45.63M (4yr平均 + R&D補正) [実績avg: $-96.2M]
+FCF_Base: $45.63M (4yr平均 + R&D補正) [実績avg: $-96.4M]
 FCF_Breakdown（直近年）: OCF=$-98M / CapEx=$1M / SBC(非現金)=$81M / D&A=$1M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
@@ -98,12 +98,12 @@ DCF_v0:     $2.74B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0 (RPO/Revenue=0.30 < 0.3, not applied)
 Growth_Option_PV: $0
-Equity_Value: $2.95B (= v0 + RPO_PV + GO_PV + Net_Cash $0.20B)
+Equity_Value: $2.94B (= v0 + RPO_PV + GO_PV + Net_Cash $0.20B)
 Shares_Used: 444.1M (source: yf_implied)
 → Intrinsic_Value: $6.63 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $4.13  $7.76  $14.61
+  9.0%       $4.13  $7.75  $14.61
   10.0%       $3.60  $6.63  $12.27
   11.0%       $3.20  $5.79  $10.52
 Financial_Health:
@@ -111,6 +111,7 @@ Financial_Health:
   Total_Debt: $0.00B  Cash: $0.20B
   Debt内訳: LTDebt=$0.00B (推定ゼロ、最終確認: FY2024)  STDebt=$0.00B (推定ゼロ、最終確認: FY2023)
   Net_Debt_Period: Cash=2026Q2/Debt=FY2025
+  Finance_Lease: +$0.00B をLTDebtに含む（2026-06-30、400日以内の最新（10-Kの値）、FinanceLeaseLiabilityCurrent）
   SBC_TTM: $81M
   Dilution_3yr_Annual: +37.56%/yr  深刻な希薄化 ⚠️ 株主価値毀損リスク大
   Dilution_Comment: 継続なら1株価値を年率37.6%毀損。株主価値毀損リスク大。
@@ -119,11 +120,11 @@ Financial_Health:
   DuPont_ROE: 純利益率-67.4% × 資産回転率0.30x × 財務レバレッジ1.36x = ROE-27.9%
     ⚠️ DuPont_Reliability: LOW (単四半期NI集中（一過性要因の可能性）)
 FCF_History:
-  2021: $-0.00B (FCF_Margin: -4.1%)
-  2022: $-0.09B (FCF_Margin: -302.1%)
-  2023: $-0.07B (FCF_Margin: -149.3%)
-  2024: $-0.11B (FCF_Margin: -129.2%)
-  2025: $-0.10B (FCF_Margin: -58.6%)
+  2021: $-0.00B (FCF_Margin: -7.1%)
+  2022: $-0.10B (FCF_Margin: -306.3%)
+  2023: $-0.07B (FCF_Margin: -149.7%)
+  2024: $-0.11B (FCF_Margin: -129.3%)
+  2025: $-0.10B (FCF_Margin: -58.7%)
 Segment_Breakdown:
   Voice AI: $0.2B (100%, YoY 56%)
   Segment_Weighted_Growth: 55.9%
@@ -338,7 +339,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: N/A%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $12 median ($6-$17) | 7 analysts | vs IV: +80.9%
+Analyst_Consensus: Strong Buy | Target: $12 median ($6-$17) | 7 analysts | vs IV: +81.0%
 Insider_Activity: Sell優勢 | 買い0件 / 売り6件 | 直近90日
 Runway_Months: 24.5
 Revenue_Growth_YoY: 99.4%

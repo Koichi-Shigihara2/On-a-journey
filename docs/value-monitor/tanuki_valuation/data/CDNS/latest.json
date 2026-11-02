@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -58.3,
-  "calculation_date": "2026-11-02T21:26:01+09:00",
+  "calculation_date": "2026-11-02T23:26:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -226,7 +226,7 @@
       "total_transient_amount": 29303000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -290,7 +290,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2015
+    "stdebt_last_confirmed_zero_year": 2015,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-12-31",
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": true,
@@ -369,6 +377,7 @@
     "pv_terminal": 23468872720.291214,
     "roe_used": 0.27531422571666087,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -453,6 +462,9 @@
     "qy": false
   },
   "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -499,6 +511,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": true,
     "stdebt_last_confirmed_zero_year": 2015,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-12-31",
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": -0.21,
     "shares_yr_now": 273312000,
     "shares_yr_3ago": 275011000,

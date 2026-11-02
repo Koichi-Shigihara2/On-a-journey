@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 56.9,
-  "calculation_date": "2026-11-02T21:23:59+09:00",
+  "calculation_date": "2026-11-02T23:24:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -238,7 +238,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-03-31",
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": false,
@@ -304,6 +312,7 @@
     "pv_terminal": 443953775.1336291,
     "roe_used": -0.5152251275168697,
     "fcf_floor_applied": 19735534.333333336,
+    "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -388,6 +397,9 @@
     "qy": false
   },
   "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -433,7 +445,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2026-03-31",
+      "included_in_debt": null
+    }
   },
   "net_current_assets_ratio": 0.5608,
   "dupont": {

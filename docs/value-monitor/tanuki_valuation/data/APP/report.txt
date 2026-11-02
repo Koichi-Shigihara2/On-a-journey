@@ -1,5 +1,5 @@
 APP INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-02T21:20:02+09:00
+Generated: 2026-11-02T23:18:45+09:00
 Price: $228.50
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,11 +7,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: BUY
 Funda_Score: 100/100
 Timing_Score (components):
-  Deviation_Rate: +399.1%
+  Deviation_Rate: +398.5%
   MA200_Deviation: -45.0%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Buy | Target: $440 median ($325-$625) | 31 analysts | vs IV: -61.4%
-Comment: 割安圏(399%)で買い余地大、FCF黒字、売上成長加速
+Comment: 割安圏(398%)で買い余地大、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 右上
 Label: 割安×高効率
 Key_Metric_Y: RICE = 6.660
-Deviation_Rate: +399.1%
+Deviation_Rate: +398.5%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,68 +58,69 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $228.50
-Intrinsic_Value_BASE: $1,140.36
-Deviation_BASE: +399.1%
+Intrinsic_Value_BASE: $1,139.10
+Deviation_BASE: +398.5%
 Scenarios:
-BEAR: Growth=31.0%, IV=$700.97, Deviation=+206.8%
-BASE: Growth=44.3%, IV=$1,140.36, Deviation=+399.1%
-BULL: Growth=53.1%, IV=$1,553.24, Deviation=+579.8%
-Return_Outlook(BASE): 1年後: $1,645.32 (+620.1%) / 3年後: $3,425.06 (+1398.9%) / 5年後: $7,129.92 (+3020.3%)
-  5yr_Annualized_Return: +99.0%/yr
+BEAR: Growth=31.0%, IV=$700.05, Deviation=+206.4%
+BASE: Growth=44.3%, IV=$1,139.10, Deviation=+398.5%
+BULL: Growth=53.1%, IV=$1,551.66, Deviation=+579.1%
+Return_Outlook(BASE): 1年後: $1,643.50 (+619.3%) / 3年後: $3,421.27 (+1397.3%) / 5年後: $7,122.04 (+3016.9%)
+  5yr_Annualized_Return: +98.9%/yr
 Growth_Rate_Rec: 24.8% (recommended  ⚠️ +19.4pt above recommended)
 Growth_Rate_Parallel: 採用値 44.3%（segment_xbrl） / 参考 24.8%（実績CAGR等ベース）
 TTM_YoY_Growth: 40.6%
 (DCF Base vs TTM actual: +3.7pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $346.56 (Deviation: +51.7%)
-  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $6,778.41 (Deviation: +2866.5%)
+  参考①β込みWACC_IV: $345.92 (Deviation: +51.4%)
+  参考②Rf理論上限_IV（Rf 4.93%、^TNX 2026-10-30）: $6,772.71 (Deviation: +2864.0%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在4.93%（^TNX 2026-10-30）に変化すると、Rf基準の必要成長率は-27.9%→-19.0%（+8.9pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
-FCF_Base: $3,035.05M (直近2yr平均) [ボトムアップ: OCF-CapEx]
+FCF_Base: $3,032.66M (直近2yr平均) [ボトムアップ: OCF-CapEx]
 FCF_Breakdown（直近年）: OCF=$3,971M / CapEx=N/A / SBC(非現金)=$210M / D&A=$195M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: NORMAL  (通常判定適用)
 Latest_Period_Note: 最新期の設備投資が未取得（最新期は年次の値で代用）
-DCF_FCF_PV: $150.36B (Ph1=$93.77B + Ph2=$56.58B, 10yr, pre-alpha, Rm=10%)
+DCF_FCF_PV: $150.24B (Ph1=$93.70B + Ph2=$56.54B, 10yr, pre-alpha, Rm=10%)
 Maturity_Profile: Phase1=4yr@0.0%, Phase2=4yr@12.0%
 DCF_Phase1_Taper: 44.3% → 12.0% (10yr linear taper to Phase2 growth, DCF-1b; path=44.3%, 40.7%, 37.1%, 33.5%, 29.9%, 26.3%, 22.8%, 19.2%, 15.6%, 12.0%)
-DCF_TV_PV:  $231.37B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $381.73B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_TV_PV:  $231.19B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $381.43B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 1.0000 (HypeCore expectation premium; Rm basis) [CAPPED: セクター別上限到達]
 RPO_PV: $0 (RPO/Revenue=0.01 < 0.3, not applied)
 Growth_Option_PV: $0.355B (optional segment premium)
-Equity_Value: $381.62B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.46B)
+Equity_Value: $381.20B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.58B)
 Shares_Used: 334.7M (source: yf_implied)
-→ Intrinsic_Value: $1140.36 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $1139.10 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  5yr  10yr  15yr
-  9.0%       $587.95  $1,415.24  $3,298.98
-  10.0%       $487.44  $1,140.36  $2,569.48
-  11.0%       $414.21  $942.83  $2,055.92
+  9.0%       $587.12  $1,413.76  $3,296.02
+  10.0%       $486.69  $1,139.10  $2,567.10
+  11.0%       $413.52  $941.72  $2,053.94
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。
+  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的な費用と記述されているため、事業運営上の一過性問題と判断。
 Financial_Health:
-  Net_Debt: $+0.46B (negative=net cash)
-  Total_Debt: $3.52B  Cash: $3.05B
-  Debt内訳: LTDebt=$3.52B  STDebt=$0.00B (推定ゼロ、最終確認: FY2024)
+  Net_Debt: $+0.58B (negative=net cash)
+  Total_Debt: $3.64B  Cash: $3.05B
+  Debt内訳: LTDebt=$3.64B  STDebt=$0.00B (推定ゼロ、最終確認: FY2024)
   Net_Debt_Period: 2026Q2
+  Finance_Lease: +$0.12B をLTDebtに含む（2025-12-31、400日以内の最新（10-Kの値）、FinanceLeaseLiabilityNoncurrent+FinanceLeaseLiabilityCurrent）
   SBC_TTM: $210M
   Dilution_3yr_Annual: -2.73%/yr  自社株買いによる株主還元 ✅
   Dilution_Comment: 株式数が減少し1株あたり価値が向上している。
   Next_Earnings_Date: 2026-11-05
   DuPont_ROE: 純利益率67.8% × 資産回転率0.79x × 財務レバレッジ2.61x = ROE139.4%
 FCF_History:
-  2021: $0.36B (FCF_Margin: 13.0%)
-  2022: $0.41B (FCF_Margin: 14.7%)
-  2023: $1.06B (FCF_Margin: 32.3%)
-  2024: $2.10B (FCF_Margin: 44.6%)
+  2021: $0.36B (FCF_Margin: 12.9%)
+  2022: $0.41B (FCF_Margin: 14.6%)
+  2023: $1.06B (FCF_Margin: 32.2%)
+  2024: $2.09B (FCF_Margin: 44.5%)
   2025: $3.97B (FCF_Margin: 72.5%)
-  FCF_CAGR_3yr: +112.7%
+  FCF_CAGR_3yr: +112.8%
 Segment_Breakdown:
   Software Platform: $5.5B (100%, YoY 44%)
   Segment_Weighted_Growth: 44.3%

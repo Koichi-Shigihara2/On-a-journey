@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 119.4,
-  "calculation_date": "2026-11-02T21:28:44+09:00",
+  "calculation_date": "2026-11-02T23:29:54+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 11051000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による貸倒引当金繰入と一過性のリストラ費用は、いずれも外部要因または一時的な事業再編によるもので、構造的な収益力悪化を示す兆候ではない。"
+        "reasoning": "マクロ変動による一時的な貸倒引当金繰入と、明示的に一過性とされるリストラ費用のみで、事業の構造的悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
@@ -284,7 +284,15 @@
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-09-30",
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": true,
@@ -363,6 +371,7 @@
     "pv_terminal": 3027857732.7702007,
     "roe_used": -0.02621381859445087,
     "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -447,6 +456,9 @@
     "qy": false
   },
   "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2021,
@@ -493,6 +505,14 @@
     "ltdebt_last_confirmed_zero_year": null,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": "2025-09-30",
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": 5.78,
     "shares_yr_now": 127747476,
     "shares_yr_3ago": 107935514

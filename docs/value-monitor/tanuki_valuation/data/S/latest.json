@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -15.2,
-  "calculation_date": "2026-11-02T21:24:50+09:00",
+  "calculation_date": "2026-11-02T23:24:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -173,11 +173,11 @@
   "fcf_base": {
     "base_fcf": 48180500.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 80102240.0,
+    "fcf_5yr_avg": -30691600.0,
     "fcf_2yr_avg": 48180500.0,
-    "cv": 3.053,
+    "cv": 999.0,
     "cv_threshold": 0.5,
-    "ratio": 3.053,
+    "ratio": 999.0,
     "threshold": 0.5
   },
   "fcf_outlier": {
@@ -219,7 +219,7 @@
       "total_transient_amount": 12265000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断できるため。"
+        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -283,7 +283,15 @@
     "ltdebt_estimated_zero": true,
     "ltdebt_last_confirmed_zero_year": 2022,
     "stdebt_estimated_zero": false,
-    "stdebt_last_confirmed_zero_year": null
+    "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": null,
+      "included_in_debt": null
+    }
   },
   "rice": {
     "available": false,
@@ -341,7 +349,8 @@
     "pv_high": 1394710654.9960256,
     "pv_terminal": 7904363849.397817,
     "roe_used": -0.2183403383548284,
-    "fcf_floor_applied": 110793840.0,
+    "fcf_floor_applied": 0.0,
+    "fcf_floor_used_in_base": false,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
     "bear_multiplier": 0.7,
@@ -409,14 +418,14 @@
   "risk_free_rate_live_date": "2026-10-30",
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.030779324078956005,
-  "tanuki_score": "WATCH",
+  "tanuki_score": "HOLD",
   "funda_score": 75,
-  "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
+  "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
   "timing_score": 45,
   "sell_reason": null,
-  "pre_rounding_score": "HOLD",
-  "pre_rounding_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
-  "rounded_by_policy": "A",
+  "pre_rounding_score": null,
+  "pre_rounding_comment": null,
+  "rounded_by_policy": null,
   "matrix": {
     "matrix": "④キャッシュ創出力系",
     "quadrant": "左下",
@@ -425,7 +434,10 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
+  "method_change": "QUARTERLY-BASIS-MIX-1,FCF-DEFINITION-SINGLE-SOURCE-1",
+  "method_change_applied": [
+    "FCF-DEFINITION-SINGLE-SOURCE-1"
+  ],
   "fcf_history": [
     {
       "year": 2022,
@@ -472,6 +484,14 @@
     "ltdebt_last_confirmed_zero_year": 2022,
     "stdebt_estimated_zero": false,
     "stdebt_last_confirmed_zero_year": null,
+    "finance_lease": {
+      "value": 0.0,
+      "end": null,
+      "basis": null,
+      "tags": [],
+      "debt_end": null,
+      "included_in_debt": null
+    },
     "dilution_3yr_annual_pct": 5.92,
     "shares_yr_now": 330111148,
     "shares_yr_3ago": 277802861
