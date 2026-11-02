@@ -2169,6 +2169,19 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 公開前の直し（2026-11-02 夜、チャット側の指示）: `3bc681b137`（Policy Aの通しの経路のテスト2本、c64ae4ff16の前の比べ方では1本目が失敗）・`d7bcb40fe0`（scopeは前の出力にあった項目だけ、36銘柄）・`962eb7d145`（parserのfinance_lease_paymentsの取得・書き込みをやめた。fixed_registry.jsonでフィックスした年は凍結の仕組みで旧値が写されキーが残る〈finance_lease_payments_applied 361件・finance_lease_payments 49件〉。free_cash_flowも同じで、フィックスした年の年次のFCFは旧い式のまま）
 - 公開（2026-11-02 夜〜11-03）: push（`b0807466f7`〜`b7b2390e7d`）、TANUKI→HypeCore→TANUKI、出力の一覧の作り直し `97e14f1d7a`（SEC層のWARN-INV-6 2件は消えた）。公開の理論株価・判定は試算と全96銘柄で一致。結果は[[METHOD-CHANGE-PUBLISH-TIMING-1]]の「手順21の確認」。段2〜段5が残るのでBACKLOGに残す
 
+#### 段1の残り: 凍結した年のFCF（2026-11-03、読み取りと手元の試算。実装はしていない）
+- `common/sec_data/fixed_registry.json`でFCF系（`free_cash_flow`・`fcf_method`・`finance_lease_payments_applied`、49件は`finance_lease_payments`も）を凍結しているのは26銘柄・361年
+  （ADBE・AMAT・AMD・AMZN・CDNS・CSGP・DDOG・FLYW・FROG・FRSH・GTLB・HQY・HWM・INTU・IOT・JNJ・KO・LLY・LMT・LOAR・META・NET・PEP・TASK・VZ・ZETA）。
+  凍結の仕組み（`parser._apply_fixed_registry_freeze`）が旧annual_{year}.jsonの値を写すため、段1の新しい式は効かない
+- 新しい式で値が変わる年は7銘柄・43年: AMZN 2014〜2025（12年、リースの支払いの分 −1.3B〜−11.2B）・META 2012〜2015・2019〜2025（11年）・VZ 2019〜2025（7年、**凍結の値がFCF＝営業CF**〈CapExが無かった頃の値〉で、
+  新しい式は約半分。2025年 37.1B→20.1B）・LOAR 2023〜2025（同じくCapExの分）・IOT 2021〜2025・CSGP 2023〜2025・AMAT 2023〜2024（小さい）
+- TANUKIが年次の`free_cash_flow`を使う所: Moat Scoreの`fcf_margin_3yr_avg`（直近3年、Phase1の年数に効く）・BEARの補正・FCFの履歴（表示）・年次の代用の平均（今は該当なし、7銘柄ともTTM）
+- 手元の試算（凍結の年のFCFだけ新しい式に、TANUKI→HypeCore→TANUKI、株価固定）: **理論株価が変わるのはVZだけ 22.51→23.23（+3.2%、Moat Score 0.30→0.16でPhase1 5→4年）**、判定・funda・stageの変化0。
+  AMZN・CSGP・LOAR・METAはMoat Scoreが少し変わるだけ
+- 凍結の対象を「入力（営業CF・CapEx等）だけ、計算した値は毎回作る」にする案: 計算した値の凍結は`free_cash_flow`（361）と旗の`fcf_method`・`finance_lease_payments_applied`（361、もう書いていない）。
+  `gross_profit`（306）・`operating_income`（325）・`total_liabilities`（324）は申告の値の年と逆算した年が混ざる（逆算の年は計算した値）。
+  直すなら、FCF系3つを`fields_snapshot`から外し`fields_snapshot_hash`を作り直す（rccのCHECK-31が比べる）。逆算した年の3項目は別に判断
+
 #### 束ねた件
 - FINDINGS: 2026-10-26のTSLAの3行（注記の文言・`_calc_fcf`のリースの式・調整後EPSの調整）・2026-10-26 Layer3の`anomaly`・2026-10-31 DOCNの`anomaly`・2026-11-01のFCFの式（リースを足している）・VZ・LOAR・LYFT・CapEx欠け・`calc_fcf`・ファイナンス・リースの負債（12行）
 
@@ -2436,6 +2449,8 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 - 気づいたこと: 古い形の`{"id": "QUARTERLY-BASIS-MIX-1", "date": "2026-11-02"}`が同じ日（JST）だったため、1回目・2回目とも全銘柄に`QUARTERLY-BASIS-MIX-1`の印も付き、
   Discordの🛠の見出しにも並んだ（scope外の銘柄に変化が無かったので本文への影響なし。日付が変わると付かない）
 - 移設はしない（HypeCoreの印が残り）。直し方はチャット側の判断
+- 直し（2026-11-03、チャット側の指示）: `e196105b5e` 「前回の出力」を全経路で公開の場所（docs/配下）から読む（`common/method_change.py`の`PUBLISHED`・`previous_output()`。HypeCoreは`docs/value-monitor/hypecore/data/{T}_poc.json`、TANUKI・ROTCEは書き出し先〈本番は公開の場所〉、Stonksは公開の場所）。前回の出力が無い出力に`method_change_prev_missing`、ある種類の全件に付いていればrccのCHECK-67（WARN、判定は`check_previous_outputs()`の1か所）。出力の一覧の作り直し `528139fa25` でHypeCoreの`method_change_applied`のWARN-INV-6は消えた。
+  **手順21の判定: TANUKI・Discordは2026-11-03に合格、HypeCoreは次の計算方法の変更で確認**（今回のIDはpoc.jsonに読んだ記録がある）。移設は次の変更の確認の後
 
 #### 始める段（CHAT_RULES 4）
 定義（計算方法の変更が公開に出る時点の決まり）
