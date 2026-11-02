@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 585.9059496358269,
   "intrinsic_value_beta": 382.64,
-  "upside_percent_beta": -46.2,
-  "intrinsic_value_rf": 3118.68,
-  "upside_percent_rf": 338.5,
-  "intrinsic_value_rf_rate": 0.04928999900817871,
+  "upside_percent_beta": -47.2,
+  "intrinsic_value_rf": 3183.75,
+  "upside_percent_rf": 339.6,
+  "intrinsic_value_rf_rate": 0.048940000534057615,
   "v0": 13605258843.379368,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.8,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 650.53,
       "value_growth_pct": 11.0,
-      "expected_return_pct": -8.5
+      "expected_return_pct": -10.2
     },
     "2年後": {
       "future_value": 722.28,
       "value_growth_pct": 23.3,
-      "expected_return_pct": 1.6
+      "expected_return_pct": -0.3
     },
     "3年後": {
       "future_value": 801.93,
       "value_growth_pct": 36.9,
-      "expected_return_pct": 12.8
+      "expected_return_pct": 10.7
     },
     "4年後": {
       "future_value": 890.38,
       "value_growth_pct": 52.0,
-      "expected_return_pct": 25.2
+      "expected_return_pct": 22.9
     },
     "5年後": {
       "future_value": 988.58,
       "value_growth_pct": 68.7,
-      "expected_return_pct": 39.0
+      "expected_return_pct": 36.5
     }
   },
-  "upside_percent": -17.6,
-  "calculation_date": "2026-11-02T23:49:20+09:00",
+  "upside_percent": -19.1,
+  "calculation_date": "2026-11-03T06:45:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -238,7 +238,7 @@
       "total_transient_amount": 1485000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
       }
     },
     "action": "flagged",
@@ -370,7 +370,7 @@
     "roe_10yr_avg": 0.49254188801844273,
     "roe_years_used": 5,
     "roe_outlier_adj": false,
-    "current_price": 711.22998046875,
+    "current_price": 724.1900024414062,
     "latest_revenue": 1990869000.0,
     "rpo": 680400000,
     "beta": 1.341,
@@ -402,11 +402,11 @@
     "alpha_uncapped": 2.0686759296774593,
     "per": 20.591488,
     "per_is_forward": false,
-    "per_adjusted": 17.85,
+    "per_adjusted": 18.17,
     "peg": 0.7722,
     "ps": 6.4175496,
     "ev_ebitda": 16.393,
-    "ma200": 1123.0656964111329,
+    "ma200": 1118.7806967163085,
     "forward_eps": 47.23809,
     "next_quarter_eps": 10.77,
     "analyst_target_median": 900.0,
@@ -425,7 +425,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 53.6,
     "max_eps": 41.6681,
-    "max_eps_per": 17.1,
+    "max_eps_per": 17.4,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30",
     "max_eps_shares": 23742500.0,
@@ -455,11 +455,11 @@
     "ai_comment": null
   },
   "phase1_growth": 0.11028856655055874,
-  "required_growth_rf_base": -0.22069644011776712,
-  "risk_free_rate_live": 0.04928999900817871,
-  "risk_free_rate_live_date": "2026-10-30",
+  "required_growth_rf_base": -0.21787682593915236,
+  "risk_free_rate_live": 0.048940000534057615,
+  "risk_free_rate_live_date": "2026-11-02",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.15669547490958902,
+  "required_growth_rf_live": -0.15673809534639416,
   "tanuki_score": "HOLD",
   "funda_score": 100,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
@@ -476,7 +476,6 @@
     "qx": false,
     "qy": true
   },
-  "method_change": "QUARTERLY-BASIS-MIX-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1"
   ],
@@ -542,7 +541,7 @@
     "shares_yr_3ago": 26347000,
     "buyback_ttm": 3593974000.0
   },
-  "net_current_assets_ratio": 0.0089,
+  "net_current_assets_ratio": 0.0087,
   "dupont": {
     "excluded": true,
     "reason": "negative_equity"
@@ -577,7 +576,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0171,
+  "erp": 0.0163,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
