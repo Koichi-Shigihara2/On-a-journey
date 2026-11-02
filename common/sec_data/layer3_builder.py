@@ -65,7 +65,7 @@ from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries, 
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
 from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
-from .tag_definitions import NET_INCOME_CANDIDATES, with_derived_net_income, with_derived_intangibles
+from .tag_definitions import NET_INCOME_CANDIDATES, TAG_CANDIDATES, with_derived_net_income, with_derived_intangibles
 from .share_unit_fix import with_share_unit_fix
 from .conditional_tags import conditional_candidate
 
@@ -235,6 +235,11 @@ def load_concept_definitions() -> dict:
     ni = defs.get("fields", {}).get("net_income")
     if ni is not None:
         ni["candidates"] = list(NET_INCOME_CANDIDATES)
+    # CapExの候補もJSONから廃止し、tag_definitions.pyのTAG_CANDIDATES（parser.py・quarterly.pyと共通）を補う
+    # （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02。3か所とも同じ4タグ・同じ順で、値の変化0）
+    cx = defs.get("fields", {}).get("capital_expenditure")
+    if cx is not None:
+        cx["candidates"] = list(TAG_CANDIDATES["CAPITAL_EXPENDITURE"])
     return defs
 
 
@@ -1060,23 +1065,8 @@ def _build_missing_quarter_implied_entries(entries: list) -> list:
 # FCF共有関数（parser.py・ttm_calculator.pyの既存計算式と同一）
 # ---------------------------------------------------------------------------
 
-def calc_fcf(ocf: float | None, capex: float | None, fl: float | None) -> float | None:
-    """
-    FCF = OCF - max(0, |CapEx| - |FinanceLeasePmts|)
-
-    parser.py（1503-1505行付近）・ttm_calculator.py::_calc_fcf()と
-    同一の計算式。quarterly/annual生成側とTTM集計側の両方が本関数を
-    呼ぶことで、[[Q4-IMPLIED-CALC-TRIPLICATION-1]]と同種の独立実装リスク
-    （FCF計算式の重複実装）を解消する。
-
-    CapExは本モジュールのLayer2定義でsign_normalize="abs"が既に
-    適用されている前提のため、ここでも念のためabs()を通す
-    （二重abs()は符号に影響しない）。
-    """
-    if ocf is None or capex is None:
-        return None
-    pure_capex = abs(capex) - abs(fl or 0)
-    return ocf - max(0, pure_capex)
+# calc_fcf()は呼び出し元0件のまま「両方が本関数を呼ぶ」と書かれていたため削除した
+# （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02。FCFの式は common/sec_data/fcf.py の1か所）
 
 
 # ---------------------------------------------------------------------------

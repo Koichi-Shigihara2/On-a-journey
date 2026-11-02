@@ -276,14 +276,14 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
     # 設計判断。parser.py側のみ対応、quarterly.py側のTTM抽出は本タスクの
     # スコープ外＝未対応のまま）。注: 金額自体は小さく（LYFTのOCFは
     # $1.0B超）、この修正単体でLYFTのraw_fcfへの影響は軽微。
-    "LYFT": {
-        "capex_concept": "CapitalizedComputerSoftwareAdditions",
-        "note": "標準CapExタグ4種を一度も申告せず、ソフトウェア資産化費用"
-                "（CapitalizedComputerSoftwareAdditions）のみ計上。LYFT限定"
-                "オーバーライドとし、グローバル候補リストへは追加しない"
-                "（21銘柄が同タグを申告しており、うちAPPは既存のexclude"
-                "設定と衝突するため）。",
-    },
+    # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1（2026-11-02）: LYFTの上書き（CapitalizedComputerSoftwareAdditions、
+    # 60603f9835）はやめた。CF計算書の行は独自タグ lyft:PaymentsToAcquirePropertyAndEquipmentAndScooterFleet で
+    # companyfactsのAPIに入らない（2024・2025年のソフトウェアの値は0で、FCFが営業CFと同じになっていた）。
+    # 10-Kの年次3年は common/sec_data/fact_overrides.json に引用つき（四半期〈TTM〉は段5）。
+    # VZ・LOARはCF計算書のCapExの行が候補外のタグ。全体の候補に足すとFCXの2009〜2011年・VZの古い四半期の値も
+    # 変わる（候補の中で最新の期末のタグを勝者にするため）ので、銘柄別にする
+    "VZ": {"capex_concept": "PaymentsToAcquireOtherProductiveAssets"},
+    "LOAR": {"capex_concept": "PaymentsForProceedsFromProductiveAssets"},
 }
 
 # 会計年度タイプ（将来対応用）

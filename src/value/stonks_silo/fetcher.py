@@ -156,8 +156,9 @@ def _normalize_record(raw: dict, year: int, ticker: str, errors: list) -> dict:
         ocf = cf["operating_cash_flow"]
         capex = cf["capital_expenditure"]
         if ocf is not None and capex is not None:
-            # CapEx は通常マイナス値で格納されているが、符号が揃っていない場合も考慮
-            cf["free_cash_flow"] = ocf - abs(capex)
+            # 式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]）
+            from common.sec_data.fcf import free_cash_flow
+            cf["free_cash_flow"] = free_cash_flow(ocf, capex)
             errors.append({
                 "year": year,
                 "section": "cf",

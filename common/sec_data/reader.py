@@ -472,6 +472,22 @@ class SECReader:
             return None
         return None
 
+    def _finance_lease(self, ticker: str, lt_debt: float, st_debt: float) -> dict:
+        """純有利子負債に足すファイナンス・リースの負債（common/sec_data/finance_lease.py）。読めなければ0"""
+        from common.sec_data.finance_lease import finance_lease_liability
+        from common.sec_data.parser import SECParser
+        from common.sec_data.quarterly import TICKER_RESTRICTIONS
+        tags = list(SECParser.XBRL_MAPPING["long_term_debt"]) + list(SECParser.XBRL_MAPPING["short_term_debt"])
+        _ov = TICKER_RESTRICTIONS.get(ticker.upper(), {}).get("ltdebt_concept")
+        if _ov:
+            tags.append(_ov)
+        try:
+            with open(os.path.join(self.data_dir, ticker.upper(), "company_facts.json"), encoding="utf-8") as f:
+                facts = json.load(f)
+        except (OSError, ValueError):
+            facts = None
+        return finance_lease_liability(facts, lt_debt or None, st_debt or None, tags)
+
     def get_net_cash(self, ticker: str, sector: Optional[str] = None, industry: str = "") -> dict:
         """
         ネットキャッシュ関連BSデータを取得 v8.1
@@ -728,6 +744,13 @@ class SECReader:
             st_debt = 0.0
             sector_guard = "fintech_st_debt_excluded"
 
+        # ファイナンス・リースの負債（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02、common/sec_data/finance_lease.py）:
+        # 負債に選ばれた値がリースを含むタグと一致しなければ足す（保険・金融のガードの銘柄は足さない）
+        finance_lease = None
+        if sector_guard == "none":
+            finance_lease = self._finance_lease(ticker, lt_debt, st_debt)
+            lt_debt += finance_lease["value"]
+
         net_cash = (cash + st_inv) - (lt_debt + st_debt)
         available = (not cash_missing) and any([cash, st_inv, lt_debt, st_debt])
 
@@ -741,6 +764,7 @@ class SECReader:
             "available":              available,
             "sector_guard":           sector_guard,
             "net_debt_period":        net_debt_period,
+            "finance_lease":          finance_lease,
             "cash_missing":           cash_missing,
             "sti_approximated":       sti_approximated,
             "sti_residual_pct":       sti_residual_pct,

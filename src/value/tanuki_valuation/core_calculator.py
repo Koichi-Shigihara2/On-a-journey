@@ -48,7 +48,7 @@ from calculator import (
     determine_growth_rate, GrowthResult,
     calculate_two_stage_dcf, DCFResult,
     DEFAULT_HIGH_GROWTH_YEARS, DEFAULT_TERMINAL_GROWTH,
-    adjust_fcf, adjust_rpo, calculate_alpha,
+    adjust_fcf, is_structural_deficit, adjust_rpo, calculate_alpha,
     calculate_intrinsic_value, calculate_per_share_value, calculate_upside,
     DEFAULT_RETENTION_RATE, DEFAULT_ALPHA_CAP,
     calculate_sensitivity_matrix, create_sensitivity_calc_func, SensitivityResult,
@@ -219,7 +219,7 @@ class KoichiValuationCalculator:
         print(f"   [{ticker}] 成長率: {high_growth_rate:.1%} (source: {growth_result.source})")
 
         # ── STEP 3: FCF補正（マイナスFCF対応） ──
-        fcf_adjustment = adjust_fcf(fcf_avg=fcf_avg, latest_revenue=latest_revenue)
+        fcf_adjustment = adjust_fcf(fcf_avg=fcf_avg, latest_revenue=latest_revenue, fcf_2yr_avg=fcf_2yr_avg)
         adjusted_fcf_5yr = fcf_adjustment.adjusted_fcf
         if fcf_adjustment.method != "none":
             print(f"   [{ticker}] FCF補正: ${fcf_adjustment.original_fcf:,.0f} → ${adjusted_fcf_5yr:,.0f}")
@@ -889,10 +889,8 @@ class KoichiValuationCalculator:
                 # は変更せず、report.txt上でSTONKS SILOの赤字銘柄評価
                 # 枠組みを参照するよう促す注記のみ追加する（保守的スコープ、
                 # 5yr平均のみ負・2yr平均のみ負〈S型、改善途上〉は対象外）。
-                "structural_deficit": (
-                    (financials.get("fcf_5yr_avg") or 0) <= 0
-                    and (fcf_2yr_avg or 0) <= 0
-                ),
+                # 条件は売上×8%の下限が効く条件と同じ1つ（is_structural_deficit、段1b 2026-11-02）
+                "structural_deficit": is_structural_deficit(financials.get("fcf_5yr_avg"), fcf_2yr_avg),
                 "fcf_base_used": base_fcf,
                 "fcf_base_method": fcf_base_result.method,
                 "fcf_outlier_excl_avg": _fcf_outlier_excl_avg,
@@ -921,6 +919,9 @@ class KoichiValuationCalculator:
                 "pv_terminal": pv_terminal,
                 "roe_used": roe_avg,
                 "fcf_floor_applied": fcf_adjustment.floor_applied,
+                # 売上×8%の下限の値を、DCFの基準（fcf_base）に実際に使ったか。Policy A（DCF信頼性LOW→WATCH）の条件
+                # （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1b、2026-11-02）
+                "fcf_floor_used_in_base": bool(fcf_adjustment.floor_applied > 0 and base_fcf == adjusted_fcf_5yr),
                 "fcf_growth_floor": 0.15,
                 "fcf_growth_cap": 0.50,
                 "bear_multiplier": 0.7,

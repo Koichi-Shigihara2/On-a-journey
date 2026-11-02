@@ -987,8 +987,11 @@ class TanukiValuationPipeline:
         # を意味するようになった（appliedは現在「データ欠損フォールバック
         # 使用」を示すフラグに再定義されており、floor値が使われるか否かとは
         # 無関係）。ガード条件を削除し、floor_applied>0のみで判定する。
-        _floor_applied = valuation.get("components", {}).get("fcf_floor_applied", 0) or 0
-        _policy_a_fires = _floor_applied > 0
+        #
+        # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1b（2026-11-02）: 発火は「下限の値をDCFの基準に実際に使ったとき」
+        # （components.fcf_floor_used_in_base）。2026-11-01までは fcf_floor_applied>0 で、
+        # DCFの基準が2年平均の銘柄（BROS・COHR・RCAT・S）にも効いていた
+        _policy_a_fires = bool(valuation.get("components", {}).get("fcf_floor_used_in_base"))
         if _policy_a_fires and score not in (Classification.SELL, Classification.PASS, Classification.UNDETERMINED):
             score = Classification.WATCH
             comment = "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH"
@@ -2319,6 +2322,14 @@ class TanukiValuationPipeline:
         _nd_period = fin_health.get("net_debt_period")
         if _nd_period:
             L.append(f"  Net_Debt_Period: {_nd_period}")
+        # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1: ファイナンス・リースの負債（足した額と時点、または負債に含まれる理由）
+        _fl = fin_health.get("finance_lease") or {}
+        if _fl.get("value"):
+            _fl_basis = "負債と同じ期末" if _fl.get("basis") == "same_end" else "400日以内の最新（10-Kの値）"
+            L.append(f"  Finance_Lease: +${_fl['value']/1e9:.2f}B をLTDebtに含む（{_fl.get('end')}、{_fl_basis}、"
+                     f"{'+'.join(_fl.get('tags') or [])}）")
+        elif _fl.get("included_in_debt"):
+            L.append(f"  Finance_Lease: 負債のタグに含まれる（{_fl['included_in_debt']}、{_fl.get('debt_end')}）")
         L.append(f"  SBC_TTM: ${sbc_ttm/1e6:,.0f}M" if sbc_ttm is not None else "  SBC_TTM: N/A")
         if dilution_3yr is not None:
             L.append(f"  Dilution_3yr_Annual: {dilution_3yr:+.2f}%/yr  {_dil_badge}")
@@ -3013,6 +3024,8 @@ class TanukiValuationPipeline:
                 "ltdebt_last_confirmed_zero_year": bs_adj.get("ltdebt_last_confirmed_zero_year"),
                 "stdebt_estimated_zero": bs_adj.get("stdebt_estimated_zero", False),
                 "stdebt_last_confirmed_zero_year": bs_adj.get("stdebt_last_confirmed_zero_year"),
+                # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1: long_term_debtに足したファイナンス・リースの負債と時点
+                "finance_lease": bs_adj.get("finance_lease"),
             }
             # フォールバックRunway: stonks-siloにない銘柄でも資金枯渇リスクを検出
             # 条件: 直近四半期EPS<0, 直近年FCF<0, またはcash<$100M のいずれか

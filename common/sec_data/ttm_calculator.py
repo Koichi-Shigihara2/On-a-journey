@@ -17,6 +17,7 @@ from datetime import date, datetime
 from .contracts import validate_field_classification
 from .layer3_builder import load_concept_definitions, get_field_entries
 from .q4_implied import build_q4_implied_entries
+from .fcf import free_cash_flow
 
 logger = logging.getLogger(__name__)
 
@@ -112,27 +113,6 @@ validate_field_classification(_LAYER3_FIELD_DEFS, FLOW_FIELDS, STOCK_FIELDS, SHA
 # ---------------------------------------------------------------------------
 # Rolling TTM系列
 # ---------------------------------------------------------------------------
-
-def _calc_fcf(
-    ocf: float | None,
-    capex: float | None,
-    fl: float | None,
-    da: float | None = None,
-) -> float | None:
-    """
-    FCF計算（parser.pyと同じ計算式）。
-
-    FCF = OCF - (|CapEx| - |FinanceLeasePmts|)
-    ファイナンスリースはCapExから除外（AMZN等対応）。
-
-    OCF または CapEx が None の場合は None を返す。
-    FinanceLeasePmts が None の場合は 0 として扱う。
-    """
-    if ocf is None or capex is None:
-        return None
-    pure_capex = abs(capex) - abs(fl or 0)
-    return ocf - max(0, pure_capex)
-
 
 def _select_anchors(all_end_dates: list[str], n_periods: int) -> list[str]:
     """
@@ -374,12 +354,11 @@ def calc_ttm_series(
                 "missing": max(0, 4 - len(last4)),
             }
 
-        # FCF計算（派生値・quarters_used/missingなし）
+        # FCF計算（派生値・quarters_used/missingなし）。式は common/sec_data/fcf.py の1か所
+        # （[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。CapExの欠けはNone（FCFも作らない）
         ocf_val   = flow.get("operating_cash_flow", {}).get("val")
         capex_val = flow.get("capital_expenditure", {}).get("val")
-        fl_val    = flow.get("finance_lease_payments", {}).get("val")
-        da_val    = flow.get("depreciation_and_amortization", {}).get("val")  # v8.2: 維持CapEx分離用
-        fcf_val = _calc_fcf(ocf_val, capex_val, fl_val, da_val)
+        fcf_val = free_cash_flow(ocf_val, capex_val)
         if fcf_val is not None:
             flow["FCF"] = {"val": fcf_val}
 

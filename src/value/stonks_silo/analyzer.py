@@ -527,11 +527,11 @@ class StonksAnalyzer:
         # 月次バーン = (OCF - |CapEx|) / 12
         # CapEx は正・負どちらで格納されていても abs() で正規化して差し引く
         monthly_burn = None
-        if ocf is not None and capex is not None:
-            annual_burn = ocf - abs(capex)
-            monthly_burn = annual_burn / 12
-        elif ocf is not None:
-            monthly_burn = ocf / 12
+        # 式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。
+        # CapExの欠けは0とみなす（今の扱い。1つの規則にするのは段5）
+        from common.sec_data.fcf import free_cash_flow
+        if ocf is not None:
+            monthly_burn = free_cash_flow(ocf, capex if capex is not None else 0) / 12
 
         # Runway 計算
         runway_months = None

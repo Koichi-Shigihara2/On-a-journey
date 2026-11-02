@@ -3376,23 +3376,14 @@ class SECParser:
                       "depreciation_and_amortization", "stock_based_compensation", "buyback"]:
             _record("cf", field, extracted.get(field, {}).get(period_type, {}).get(period))
         
-        # FCF計算（ファイナンスリース除外）
-        #
-        # FCF = OCF - (|CapEx| - |FinanceLeasePmts|)
-        # ファイナンスリースはCapExから除外（AMZN等対応）
+        # FCF計算。式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-02）。
+        # CapExの欠けはここで0とみなす（今の扱い。TTMはNone。1つの規則にするのは段5）。
+        # 営業CFが無い・0の期は書かない（今の扱い）
+        from common.sec_data.fcf import free_cash_flow
         ocf   = data["cf"].get("operating_cash_flow", 0)
-        capex = data["cf"].get("capital_expenditure", 0)
-        fl    = data["cf"].get("finance_lease_payments", 0)
-
-        # CapEx・ファイナンスリースはSECデータで負値の場合があるためabs()
-        abs_capex = abs(capex)
-        abs_fl    = abs(fl)
-        pure_capex = abs_capex - abs_fl  # リース除外後の純CapEx
-
+        capex = data["cf"].get("capital_expenditure", 0)  # 欠けは0とみなす（呼び出し側の扱い）
         if ocf != 0:
-            data["cf"]["free_cash_flow"] = ocf - max(0, pure_capex)
-            data["cf"]["fcf_method"] = "traditional"
-            data["cf"]["finance_lease_payments_applied"] = abs_fl > 0
+            data["cf"]["free_cash_flow"] = free_cash_flow(ocf, capex)
         
         # Shares
         for field in ["shares_diluted", "shares_basic"]:
@@ -3902,8 +3893,11 @@ class SECParser:
                 if field_data is None:
                     continue
                 annual = field_data.get("annual", {})
-                if annual.get(year) is None:
-                    continue  # 抽出値が存在しない年度は対象外（元実装と同じゲート条件）
+                # 抽出値が存在しない年度は対象外（元実装と同じゲート条件）。ただし "fill_missing": true の
+                # 上書きは、タグが companyfacts に無い値（独自タグ等）を引用つきで埋める
+                # （LYFTのCapEx、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02）
+                if annual.get(year) is None and not ov.get("fill_missing"):
+                    continue
                 annual[year] = ov["value"]
                 field_data.setdefault("_annual_provenance", {})[year] = {
                     "accn": ov.get("source_accn"),

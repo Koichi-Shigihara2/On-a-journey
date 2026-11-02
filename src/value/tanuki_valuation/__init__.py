@@ -31,7 +31,7 @@ from .dcf import (
 )
 
 from .adjustments import (
-    adjust_fcf, adjust_rpo, calculate_alpha,
+    adjust_fcf, is_structural_deficit, adjust_rpo, calculate_alpha,
     calculate_intrinsic_value, calculate_per_share_value, calculate_upside,
     calculate_growth_option_pv, determine_fcf_base,
     FCFAdjustmentResult, RPOAdjustmentResult, AlphaResult,
@@ -74,7 +74,7 @@ __all__ = [
     "DCFResult", "ThreeStageDCFResult",
     "DEFAULT_HIGH_GROWTH_YEARS", "DEFAULT_TERMINAL_GROWTH",
     # Adjustments
-    "adjust_fcf", "adjust_rpo", "calculate_alpha",
+    "adjust_fcf", "is_structural_deficit", "adjust_rpo", "calculate_alpha",
     "calculate_intrinsic_value", "calculate_per_share_value", "calculate_upside",
     "calculate_growth_option_pv", "determine_fcf_base",
     "FCFAdjustmentResult", "RPOAdjustmentResult", "AlphaResult",

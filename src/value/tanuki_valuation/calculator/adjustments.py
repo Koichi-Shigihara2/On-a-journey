@@ -330,13 +330,26 @@ def determine_fcf_base(
 # 既存関数（変更なし）
 # ========================================
 
+def is_structural_deficit(fcf_5yr_avg: Optional[float], fcf_2yr_avg: Optional[float]) -> bool:
+    """構造的赤字（5年・2年平均とも実績FCFが0以下）。売上×8%の下限が効く条件と、report.txt・画面の
+    「構造的赤字銘柄」の印（components.structural_deficit）の1つの条件
+    （[[FCF-CONVRATE-LOWER-DIVERGENCE-1]] STEP6 決定3〈2026-09-17〉の定義、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1b〈2026-11-02〉で共通化）"""
+    return (fcf_5yr_avg or 0) <= 0 and (fcf_2yr_avg or 0) <= 0
+
+
 def adjust_fcf(
     fcf_avg: float,
     latest_revenue: float,
+    fcf_2yr_avg: Optional[float],
     revenue_floor_ratio: float = 0.08
 ) -> FCFAdjustmentResult:
-    """FCF補正（マイナスFCF対応）"""
-    if fcf_avg > 0:
+    """FCF補正（マイナスFCF対応）: 構造的赤字（5年・2年平均とも0以下）のときだけ、5年平均の下限を売上×8%にする。
+
+    [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1b（2026-11-02）: 2026-11-01までは5年平均だけで決めていたため、
+    2年平均が正の銘柄（BROS・COHR・RCAT・S）にも下限が付き（DCFの基準は2年平均で、下限の値は使われない）、
+    Policy A（DCF信頼性LOW→WATCH）だけが効いていた。構造的赤字のIVは参考値（決定3、注記）のまま。
+    """
+    if not is_structural_deficit(fcf_avg, fcf_2yr_avg):
         return FCFAdjustmentResult(
             adjusted_fcf=fcf_avg,
             original_fcf=fcf_avg,
@@ -807,6 +820,9 @@ class BSAdjustmentResult:
     ltdebt_last_confirmed_zero_year: Optional[int] = None
     stdebt_estimated_zero: bool = False
     stdebt_last_confirmed_zero_year: Optional[int] = None
+    # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1: long_term_debtに足したファイナンス・リースの負債
+    # （{"value","end","basis","tags","debt_end","included_in_debt"}、reader.get_net_cash()）
+    finance_lease: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -830,6 +846,7 @@ class BSAdjustmentResult:
             "ltdebt_last_confirmed_zero_year": self.ltdebt_last_confirmed_zero_year,
             "stdebt_estimated_zero":  self.stdebt_estimated_zero,
             "stdebt_last_confirmed_zero_year": self.stdebt_last_confirmed_zero_year,
+            "finance_lease":          self.finance_lease,
         }
 
 
@@ -878,6 +895,7 @@ def calculate_bs_adjustment(
         ltdebt_estimated_zero=net_cash_data.get("ltdebt_estimated_zero", False),
         ltdebt_last_confirmed_zero_year=net_cash_data.get("ltdebt_last_confirmed_zero_year"),
         stdebt_estimated_zero=net_cash_data.get("stdebt_estimated_zero", False),
+        finance_lease=net_cash_data.get("finance_lease"),
         stdebt_last_confirmed_zero_year=net_cash_data.get("stdebt_last_confirmed_zero_year"),
     )
 

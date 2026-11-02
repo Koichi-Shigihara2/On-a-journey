@@ -497,13 +497,15 @@ def _load_layer3_tag_to_field_index() -> Dict[str, str]:
     except Exception:
         return {}
 
-    from common.sec_data.tag_definitions import NET_INCOME_SOURCE_TAGS
+    from common.sec_data.tag_definitions import NET_INCOME_SOURCE_TAGS, TAG_CANDIDATES
 
     index: Dict[str, str] = {}
     for field_name, field_def in defs.get("fields", {}).items():
         # [[NET-INCOME-NCI-PARENT-ATTRIBUTION-1]]: net_incomeはJSONの候補
         # リストを廃止し、tag_definitions.pyの共通定義を唯一の正とする
+        # （CapExも同じ。[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02）
         tags = (NET_INCOME_SOURCE_TAGS if field_name == "net_income"
+                else TAG_CANDIDATES["CAPITAL_EXPENDITURE"] if field_name == "capital_expenditure"
                 else field_def.get("candidates", []))
         for tag in tags:
             tag_local = tag.split(":")[-1]

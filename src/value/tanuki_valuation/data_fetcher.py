@@ -599,14 +599,6 @@ class TanukiDataFetcher:
                 fcf_list, annual_fcf_dates = self.sec_reader.get_fcf_list_with_dates(ticker, years=5)
                 print(f"   [{ticker}] SEC FCF list: {len(fcf_list)}年分")
 
-                # ファイナンスリース除外が適用されたか確認
-                _annual = self.sec_reader.get_annual_range(ticker, 1)
-                if _annual:
-                    _fl_applied = _annual[0].get("cf", {}).get("finance_lease_payments_applied", False)
-                    _fl_amt = _annual[0].get("cf", {}).get("finance_lease_payments", 0)
-                    if _fl_applied:
-                        print(f"   [{ticker}] ファイナンスリース除外: ${abs(_fl_amt):,.0f}をCapExから控除")
-
                 # [[FCF-CONVRATE-LOWER-DIVERGENCE-1]]ボトムアップFCF移行
                 # （2026-09-17）: CapEx・SBC・OCF・D&Aを個別系列として取得する
                 # （report.txtでのFCF内訳開示用、DCF計算のraw_fcf自体は従来通り
