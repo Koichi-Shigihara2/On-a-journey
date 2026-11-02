@@ -174,7 +174,11 @@ def test_layer3_json_candidates_match_tag_definitions():
         "finance_lease_payments": "FINANCE_LEASE_PAYMENTS",
         "buyback": "BUYBACK",
     }
-    mismatches = {f: (fields[f].get("candidates"), list(TAG_CANDIDATES[k]))
+    # capital_expenditureはJSONの候補リストを廃止し、load_concept_definitions()がTAG_CANDIDATESを補う
+    # （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1、2026-11-02）
+    assert "candidates" not in fields["capital_expenditure"] and fields["capital_expenditure"].get("candidates_source")
+    resolved = layer3_builder.load_concept_definitions()["fields"]
+    mismatches = {f: (resolved[f].get("candidates"), list(TAG_CANDIDATES[k]))
                   for f, k in pairs.items()
-                  if fields[f].get("candidates") != list(TAG_CANDIDATES[k])}
+                  if resolved[f].get("candidates") != list(TAG_CANDIDATES[k])}
     assert mismatches == {}

@@ -36,8 +36,15 @@ def _entry(start, end, val, fy, accn="0000000000-00-000001", fp="FY", form="10-K
 
 
 class TestLyftCapexConceptOverride:
-    def test_lyft_has_capex_concept_override(self):
-        assert TICKER_RESTRICTIONS["LYFT"]["capex_concept"] == "CapitalizedComputerSoftwareAdditions"
+    def test_lyft_override_removed_and_vz_loar_are_per_ticker(self):
+        """[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1（2026-11-02）: LYFTの上書き（ソフトウェアの資産化、2024・2025年は0）はやめ、
+        10-Kの値をfact_overrides.jsonに。VZ・LOARはCF計算書のCapExの行が候補外のタグで、銘柄別のcapex_concept
+        （全体の候補に足すとFCX・VZの過去の値が変わる）"""
+        assert "capex_concept" not in TICKER_RESTRICTIONS.get("LYFT", {})
+        assert TICKER_RESTRICTIONS["VZ"]["capex_concept"] == "PaymentsToAcquireOtherProductiveAssets"
+        assert TICKER_RESTRICTIONS["LOAR"]["capex_concept"] == "PaymentsForProceedsFromProductiveAssets"
+        for tag in ("PaymentsToAcquireOtherProductiveAssets", "PaymentsForProceedsFromProductiveAssets"):
+            assert tag not in TAG_CANDIDATES["CAPITAL_EXPENDITURE"]
 
     def test_standard_candidates_yield_nothing_for_lyft_shaped_data(self):
         """標準4候補タグのいずれも申告されていない場合、

@@ -1570,6 +1570,7 @@ class TestDcfReliabilityLowRounding:
             "upside_percent": -5.0,   # HOLDになる条件
             "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 1_000_000_000,  # LOW判定トリガー
+                "fcf_floor_used_in_base": True,  # 段1b: 下限の値をDCFの基準に使った
                 "diluted_shares": None,
             },
             "fcf_base": {"base_fcf": 500_000_000},
@@ -1596,6 +1597,7 @@ class TestDcfReliabilityLowRounding:
             "upside_percent": 30.0,
             "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 1_000_000_000,  # LOW判定トリガー
+                "fcf_floor_used_in_base": True,  # 段1b: 下限の値をDCFの基準に使った
                 "diluted_shares": None,
             },
             "fcf_base": {"base_fcf": 1_000_000},      # FCF正（funda+25）
@@ -1749,7 +1751,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1},
+            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1, "fcf_floor_used_in_base": True},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": False, "divergence_warning": ""},
@@ -1777,7 +1779,7 @@ class TestDcfReliabilityPolicyB:
         _write_stonks_json(tmp_path, {})
         valuation = {
             "upside_percent": -5.0,
-            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1},
+            "components": {"current_price": 100.0, "diluted_shares": None, "fcf_floor_applied": 1, "fcf_floor_used_in_base": True},
             "fcf_base": {"base_fcf": 500_000_000},
             "financial_health": {},
             "fcf_estimation": {"applied": True, "fallback_reason": "CapEx申告タグなし"},
@@ -2016,6 +2018,7 @@ class TestNewTickerIntegration:
             "upside_percent": -5.0,
             "components": {"current_price": 100.0, 
                 "fcf_floor_applied": 900_000_000,  # LOW判定トリガー
+                "fcf_floor_used_in_base": True,
                 "diluted_shares": None,
             },
             "fcf_base": {"base_fcf": 900_000_000},
@@ -4033,6 +4036,7 @@ class TestPriceMissingIsUndetermined:
         _write_stonks_json(tmp_path, {})
         v = self._valuation(None)
         v["components"]["fcf_floor_applied"] = 1_000_000_000
+        v["components"]["fcf_floor_used_in_base"] = True
         assert pipe._compute_tanuki_score("BBAI", v)["score"] == "UNDETERMINED"
 
     def test_price_present_keeps_normal_classification(self, tmp_path):

@@ -27,7 +27,9 @@ def test_json_has_no_ticker_overrides_copy():
 
 @pytest.mark.parametrize("ticker,field,expected", [
     # 2026-07-24移行以降に追加され、Layer3に反映されていなかった設定
-    ("LYFT", "capital_expenditure", ("override_concept", "CapitalizedComputerSoftwareAdditions")),
+    # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1（2026-11-02）: LYFTの上書きはやめ、VZ・LOARを銘柄別に
+    ("VZ", "capital_expenditure", ("override_concept", "PaymentsToAcquireOtherProductiveAssets")),
+    ("LOAR", "capital_expenditure", ("override_concept", "PaymentsForProceedsFromProductiveAssets")),
     ("CPRT", "cash_and_equivalents", ("override_concept", "CashAndCashEquivalentsAtCarryingValue")),
     ("HEI", "cash_and_equivalents", ("override_concept", "CashAndCashEquivalentsAtCarryingValue")),
     ("CPRT", "cost_of_revenue", ("append_concept", "CostDirectMaterial")),
