@@ -2851,6 +2851,13 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
   確定時刻を過ぎて同じ足で確定する分（以前の`_replace_provisional_records`と同じ動き）、拒否0。テスト（`test_market_data_daily_write.py` 10本、
   既存の2本〈同じ日付の上書き・backfillのマージ〉は新しい規則に書き換え）、ゲート3種（pytest 2750件成功・5件スキップ、audit 0、rcc NG 0・WARN 222〈+3はNIY=FのWARN-62〉）
 - **依頼と違った点**: 暫定の判定で印の無い過去の行は3行でなく779行（NIY=F 777・GC=F 2）。3行だけに付け、ほかはFINDINGS 2026-11-03。
+- **残りの779行（2026-11-03 夜、`646aa02138` コード・`dff021dcef` データ）**: 読み手をgrepで確かめた。NIY=F・GC=Fの日足の読み手（Market Pulseの`collect_and_send.py`〈直近2件〉・
+  `sector_rotation.py`〈直近10日〉・`futures_snapshot.py`〈最新〉、`daily_guard.py`はGC=Fを数えない、`market_pulse_redesign.py`は固定のcommitの版）は
+  どれも2026-10-02より前の行を使わず、印が付いても今の出力は変わらない（足なしの印の行は`reader.py`・`rotce.py`・`daily_guard.py`が除く）。
+  毎日の取得の取り直し（a）は90日前（今は2026-08-05）までで、NIY=Fの754行には届かず足なしの印に変わらない→`--repair-provisional`が渡した行に
+  毎日の取得のbと同じ判定（`_mark_no_bar_rows(only_dates)`）で足なしの印を付けるようにし、置き換えも渡した行だけに。`--keep-values`で置き換えなし。
+  NIY=Fの777行（10-05〜10-07を含む）は足なしの印（Yahooも平ら、値は同じ）。GC=Fの2行はYahooに今は平らでない足があり、値を変えないため暫定の印だけ。
+  rccのWARN-62は222→221（NIY=Fの3件が消え、GC=Fの2件が増えた。GC=Fの2件は90日の外で毎日の取得では片づかず残る）。テスト2本、pytest 2752件成功・5件スキップ
   分割の調整の経路は無く、理由つきの入口だけ用意（FINDINGS 2026-11-03）
 
 ---
