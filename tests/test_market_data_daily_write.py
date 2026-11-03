@@ -134,6 +134,45 @@ def test_n225_zero_volume_bar_is_marked_on_backfill(tmp_path, monkeypatch):
     assert _read(base, "^N225")["2026-10-30"]["_provisional"] is True
 
 
+# ── --repair-provisional: 渡した行だけに印、足が無い・平らなままの古い行は足なしの印（毎日の取得の90日の外も） ──
+def _seed(base, sym, rows):
+    os.makedirs(os.path.join(base, "daily"), exist_ok=True)
+    with open(os.path.join(base, "daily", f"{sym}.json"), "w", encoding="utf-8") as f:
+        json.dump({"symbol": sym, "records": rows}, f)
+
+
+def test_repair_provisional_marks_old_flat_rows_no_bar_without_changing_values(tmp_path, monkeypatch):
+    base = str(tmp_path)
+    rows = [_flat("2021-01-04", 27255.0), _flat("2021-01-05", 27160.0), _bar("2021-01-06", 27300.0)]
+    _seed(base, "NIY=F", rows)
+    monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None:
+                        {"NIY=F": [_flat("2021-01-04", 27255.0), _bar("2021-01-06", 27310.0)]})
+    out = fetcher.mark_and_repair_provisional_rows([{"symbol": "NIY=F", "date": "2021-01-04"},
+                                                    {"symbol": "NIY=F", "date": "2021-01-05"}], base_dir=base, now=LATE)
+    got = _read(base, "NIY=F")
+    assert out["NIY=F"]["no_bar"] == 2 and out["NIY=F"]["still_provisional"] == []
+    for d, r in zip(("2021-01-04", "2021-01-05"), rows[:2]):
+        assert got[d].get("_no_yahoo_bar") is True and "_provisional" not in got[d]
+        assert {k: got[d][k] for k in ("open", "high", "low", "close", "volume")} == {k: r[k] for k in ("open", "high", "low", "close", "volume")}
+    assert got["2021-01-06"] == rows[2]   # 渡していない行は触らない（Yahooの値が違っても）
+
+
+def test_repair_provisional_keep_values_and_download_failure(tmp_path, monkeypatch):
+    base = str(tmp_path)
+    _seed(base, "GC=F", [_flat("2021-09-10", 1789.6)])
+    monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None:
+                        {"GC=F": [_bar("2021-09-10", 1792.1, vol=136246)]})
+    out = fetcher.mark_and_repair_provisional_rows([{"symbol": "GC=F", "date": "2021-09-10"}], base_dir=base, now=LATE,
+                                                   replace=False)
+    row = _read(base, "GC=F")["2021-09-10"]
+    assert out["GC=F"]["replaced_with_final"] == 0 and row["_provisional"] is True and row["close"] == 1789.6
+    # 取得に失敗した銘柄は足なしにしない
+    _seed(base, "NIY=F", [_flat("2021-01-04", 27255.0)])
+    monkeypatch.setattr(fetcher, "_download_historical_bars", lambda syms, period="5d", start=None: {})
+    out = fetcher.mark_and_repair_provisional_rows([{"symbol": "NIY=F", "date": "2021-01-04"}], base_dir=base, now=LATE)
+    assert out["NIY=F"]["no_bar"] == 0 and _read(base, "NIY=F")["2021-01-04"]["_provisional"] is True
+
+
 # ── daily/ を直接書く場所の禁止（COMMON-PATH-GUARD と同じ形） ──
 def _py_files():
     out = subprocess.run(["git", "ls-files", "*.py"], cwd=REPO, capture_output=True, text=True, encoding="utf-8", check=True)

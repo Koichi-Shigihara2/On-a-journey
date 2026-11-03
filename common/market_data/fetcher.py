@@ -536,11 +536,15 @@ def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], 
 
 
 def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optional[str] = None,
-                                     now: Optional[datetime] = None) -> Dict[str, Any]:
+                                     now: Optional[datetime] = None, replace: bool = True) -> Dict[str, Any]:
     """一過性（CLIの--repair-provisional）: 確定前に保存された既存の行（rows=[{"symbol","date"}]、
     scripts/analysis/daily_intraday_rows_scan.pyの結果）に暫定の印を付け、確定した日足で置き換える。
-    確定した日足がまだ取れない行は印を付けたまま残し、次回以降の日次取得で置き換わる。"""
+    置き換え・足なしの印は渡した日付の行だけ。Yahooに足が無い・先物の平らな足のまま確定時刻からNO_BAR_MARK_DAYS日を過ぎた行は、
+    毎日の取得のbと同じ判定（_mark_no_bar_rows）で足なしの印にする（毎日の取得の取り直しはPROVISIONAL_REFETCH_MAX_DAYS日前までで、
+    それより古い行には届かないため。2026-11-03 [[MARKETDATA-DAILY-ROW-WRITE-1]]）。
+    replace=False（--keep-values）は確定した日足があっても置き換えない。確定した日足がまだ取れない行は印を付けたまま残す。"""
     base = _resolve_base_dir(base_dir)
+    now = now or datetime.now(timezone.utc)
     by_sym: Dict[str, List[str]] = {}
     for r in rows:
         by_sym.setdefault(r["symbol"], []).append(r["date"])
@@ -553,10 +557,16 @@ def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optio
         ds = set(dates)
         write_daily_rows(sym, [{**rec, "_provisional": True} for rec in payload["records"] if rec.get("date") in ds],
                          base, now=now, source="--repair-provisional", reason=MARK_ONLY)
-        bars = [b for b in (_download_historical_bars([sym], start=min(dates)).get(sym) or []) if _has_valid_close(b)]
-        n = _replace_provisional_records(sym, bars, base_dir=base, now=now)
-        left = [r["date"] for r in _load_json(path, default={}).get("records", []) if r.get("_provisional")]
-        out[sym] = {"marked": len(ds), "replaced_with_final": n, "still_provisional": left}
+        raw = _download_historical_bars([sym], start=min(dates)).get(sym) or []
+        got = [b for b in raw if b.get("date") in ds]
+        bars = [b for b in got if _has_valid_close(b)]
+        n = _replace_provisional_records(sym, bars, base_dir=base, now=now) if replace else 0
+        no_bar = []
+        if raw:   # 取得に失敗した銘柄は足なしと判定しない
+            bar_dates = {b["date"] for b in got if not is_flat_futures_bar(sym, b)}
+            no_bar = _mark_no_bar_rows(sym, bar_dates, min(dates), base, now, only_dates=ds)
+        left = [r["date"] for r in _load_json(path, default={}).get("records", []) if r.get("_provisional") and r.get("date") in ds]
+        out[sym] = {"marked": len(ds), "replaced_with_final": n, "no_bar": len(no_bar), "still_provisional": left}
     return out
 
 
@@ -742,9 +752,11 @@ def _refetch_stale_provisional(symbols: List[str], history: Dict[str, List[Dict[
     return out
 
 
-def _mark_no_bar_rows(symbol: str, bar_dates: set, covered_from: Optional[str], base_dir: str, now: datetime) -> List[str]:
+def _mark_no_bar_rows(symbol: str, bar_dates: set, covered_from: Optional[str], base_dir: str, now: datetime,
+                      only_dates: Optional[set] = None) -> List[str]:
     """b: 取得した範囲（covered_from以降）にYahooの足が無いまま、確定時刻からNO_BAR_MARK_DAYS日を過ぎた暫定の行は、
-    行を消さずに`_provisional`を外して`_no_yahoo_bar`の印を付ける。印を付けた日付を返す。"""
+    行を消さずに`_provisional`を外して`_no_yahoo_bar`の印を付ける。印を付けた日付を返す。
+    only_dates を渡すと、その日付の行だけ（--repair-provisional）。"""
     if covered_from is None:
         return []
     path = os.path.join(base_dir, "daily", f"{symbol}.json")
@@ -756,6 +768,8 @@ def _mark_no_bar_rows(symbol: str, bar_dates: set, covered_from: Optional[str], 
     for r in payload.get("records", []):
         d = r.get("date")
         if not r.get("_provisional") or r.get(NO_BAR_MARK) or not d or d < covered_from or d in bar_dates:
+            continue
+        if only_dates is not None and d not in only_dates:
             continue
         final = bar_final_at(symbol, d)
         if final is not None and now >= final + timedelta(days=NO_BAR_MARK_DAYS):
@@ -1430,7 +1444,12 @@ if __name__ == "__main__":
     )
     arg_parser.add_argument(
         "--repair-provisional", default=None, metavar="SCAN_JSON",
-        help="一過性: daily_intraday_rows_scan.pyの結果（rows）の行に暫定の印を付け、確定した日足で置き換える",
+        help="一過性: daily_intraday_rows_scan.pyの結果（rows）の行に暫定の印を付け、確定した日足で置き換える"
+             "（Yahooに足が無い・平らな足のまま確定時刻から7日を過ぎた行は足なしの印に）",
+    )
+    arg_parser.add_argument(
+        "--keep-values", action="store_true",
+        help="--repair-provisionalで、確定した日足があっても置き換えない（印だけ付ける）",
     )
     arg_parser.add_argument(
         "--repair-missing-days", action="store_true",
@@ -1441,7 +1460,7 @@ if __name__ == "__main__":
     if args.repair_provisional:
         with open(args.repair_provisional, encoding="utf-8") as f:
             scan_rows = json.load(f)["rows"]
-        print(json.dumps(mark_and_repair_provisional_rows(scan_rows), ensure_ascii=False, indent=1))
+        print(json.dumps(mark_and_repair_provisional_rows(scan_rows, replace=not args.keep_values), ensure_ascii=False, indent=1))
         sys.exit(0)
 
     if args.repair_missing_days:
