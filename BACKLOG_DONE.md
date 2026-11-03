@@ -2,6 +2,109 @@
 
 ---
 
+## 2026-11-04（完了）
+
+### ✅ [EXTERNAL-API-NONJSON-2XX-RETRY-1] 外部APIの呼び出し口で、2xxなのに中身がJSONでない応答が再試行されず1回で失敗になる
+**完了（2026-11-04）:** 本番の確認で合格（下の「確認」）
+**処理の順番:** [[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れの外
+**型・処置:** 不具合・直す（external_api全体の決まり）
+**優先度:** 中
+**分類:** 外部APIの呼び出し口 / `common/external_api.py`（`_request`・`fred_get`・`frb_get`・`sec_get`等、JSONを返す呼び出し口すべて）
+**登録日:** 2026-11-01
+**発見:** [[MARKETPULSE-CALENDAR-ECON-FETCH-1]]の段階1の調査。FINDINGS.md 2026-11-01（2xxで中身がJSONでない応答）
+
+#### 内容
+- 2026-10-22のエントリ（Market Pulse run `39670586295`、10-21 20:30:58 UTC）で、予定の経済指標（FRED）が`JSONDecodeError: Expecting value: line 1 column 1 (char 0)`で失敗した（2xxで中身がJSONでない。当時は`_http_json`、R-E2の前）
+- 今の`_request`（`external_api.py:46-68`）は429・5xx・通信の失敗だけを再試行する。`fred_get`の`resp.json()`（`:139`）など、2xxで中身がJSONでない応答は再試行されず1回で失敗になる
+- 対象: `fred_get`・`frb_get`・`sec_get`など、JSONを返す呼び出し口すべて（`frb_get`・`sec_get`は応答をそのまま返し、呼び出し側が読むので、どこで判定するかを含めて決める）
+
+#### 案
+- 中身がJSONでない2xxを、通信の失敗と同じ扱いで再試行の対象にする
+
+#### 完了の条件
+- JSONを返す呼び出し口で、2xxで中身がJSONでない応答が再試行され、尽きたら`ExternalApiError`になる。試験で確かめる
+
+#### 実装（2026-11-03、チャット側の方針どおり）
+- 判定は`common/external_api.py::_request`の1か所（`expect_json`、`_nonjson_reason()`）。JSONを期待する呼び出しで2xxの中身がJSONとして読めない（空・HTML等。先頭のBOMは許す）ときは、429・5xxと同じ回数（3回）・待ち時間（2秒・5秒）で再試行し、尽きたら`ExternalApiError`（理由「HTTP 200・2xx・非JSON（nバイト、先頭: '…'）」、先頭60文字。ログにも出る）。404等の2xx以外と、JSONを期待しない呼び出しの動きは変えない
+- `expect_json=True`: Grok（`grok_request`）・FRED（`fred_get`）は常に。SECはJSONを読む呼び出し（SEC層の`fetcher._get`〈submissions・companyfacts〉・登録の事前確認・dimension aggregateのindex.json・TAIL RSSのsubmissions 2か所とcompany_tickers.json・TAIL KPI XBRLのcompany_tickers.json・submissions・アーカイブ・EPSの会社の情報・EPSのcompany facts・TANUKIのインサイダー取引のsubmissions）、FRBはMarket Pulseの`/json/calendar.json`。テキスト・HTML・XMLの呼び出し（TAIL RSSのフィード・10-K/10-Qの本文〈sec_ctrl_fetcher・text_kpi_extractor〉・dimension aggregateのファイル・XBRLのXML・インサイダー取引のForm 4のXML・MACRO PULSEのFOMCの予定・声明のページ）は変えない。fredapiの`fred_client()`（マクロデータ層）は`_request`を通らないので対象外
+- 呼び出し元はどれも`except Exception`で受けるので、尽きたときは今までどおり失敗の扱い（SEC層の`fetcher.py:369`等、`resp.json()`が例外の外にあった所は、取得の失敗として受けられるようになる）
+- 試験: `tests/test_external_api.py`（空・HTMLの2xx→再試行→成功、3回とも非JSON→`ExternalApiError`と理由、JSONを期待しない呼び出しは1回、404・503は今までどおり、BOM付きのJSON、Grok）。手元でFRBの予定・FREDの経済指標を実際に取得して確認（6件・10件）
+- 確認: 次回の確認手順17に追加（11-04 06:30 JSTのMarket Pulseの回）。移設はその確認の後
+
+#### 確認（2026-11-04 朝、次回の確認手順17の追加）
+- Market Pulse run `41722373345`（11-03 21:30 UTC起動、success）の2026-11-04 06:34 JSTのエントリ: `calendar.failed`が空。経済指標の行（11-03 JOLTS・製造業受注、11-04 ADP雇用統計、11-05 新規失業保険申請件数、11-06 雇用統計）と
+  FRBの行（11-06 12:15 ET、Bowman副議長〈Vice Chair for Supervision〉の講演）が入っている
+- ログに「2xx・非JSON」「再試行」「予定の取得に失敗」の行は出ず（再試行の経路は通らなかった）
+- チャット側の指示（2026-11-04 朝）で移設
+
+---
+
+### ✅ [MARKETDATA-DAILY-ROW-WRITE-1] 日足の行の書き込みを1つの関数にし、確定の行は上書きしない（直すときは理由と前の値を残す）
+**完了（2026-11-04）:** 本番の確認で合格（下の「確認」）
+**型・処置（2026-11-01 束ね）:** 型C・根治策。**実装済み 2026-11-03（`2395a604b5`・`eaa2be2fef`）、次回の確認手順24の後に移設**
+**優先度:** 低
+**分類:** 根治策 / `common/market_data/fetcher.py`（毎日の取得・`backfill_daily_prices`・`--repair-provisional`）・`common/registration/register_ticker.py`（Step 1.5）・`common/market_data/calendar_universe.py`（暫定の足の判定）
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- 日足の書き込みを1つの関数にする
+- 確定の行は上書きしない。直すときは理由と前の値を残す（株式分割の調整も同じ経路）
+- 暫定の印は全経路で付ける（今は行を保存する時にだけ付き、2026-10-11より前に保存した行には付かない）
+
+#### 束ねた件
+- FINDINGS: 2026-10-26 `backfill_daily_prices`が既存の行も上書きする・2026-10-20 `daily/NIY=F.json`の平らな足に印が無い（2行）
+
+#### 始める段（CHAT_RULES 4）
+定義（日足の行の書き込みの決まり。確定・暫定・訂正）
+
+#### 投資判断への影響
+なし（出来高・高値・安値の過去の値が変わりうる。終値はほぼ同じ）
+
+#### 規模の見込み
+小〜中
+
+#### 実装（2026-11-03 `2395a604b5` コード・テスト、`eaa2be2fef` データ。確認は次回の確認手順24、その後に移設）
+- **列挙（STEP 0）**: daily/を書くのは`common/market_data/fetcher.py`の7関数だけだった（`_append_daily_record`〈毎日の取得の最新の足・欠けた日〉・
+  `_replace_provisional_records`・`mark_and_repair_provisional_rows`〈--repair-provisional〉・`_repair_close_missing_records`・`_mark_no_bar_rows`・
+  `backfill_daily_prices`〈--backfill、登録のStep 1.5は`register_ticker.py`がこのCLIを呼ぶ〉・`repair_missing_trading_days`）。株式分割の調整で
+  daily/を書く経路は無い（`split_adjust.py`はSECの株数だけ）。daily/を読むだけのもの（reader・rotce・daily_guard・Market Pulse等）は対象外
+- **1つの関数**: `write_daily_rows(symbol, rows, base_dir, now, source, reason)`。7関数はみなこれを呼ぶ。直接書く場所は
+  `tests/test_market_data_daily_write.py`の`DAILY_WRITE_ALLOWED`の1か所で禁止（AST。前のコードでは7関数を検出）
+- **確定の行**: `_provisional`でなく終値のある行は上書きしない。値（open・high・low・close・volume・限月の欄）が違えば書かずに
+  `common/market_data/_daily_rejected_overwrites.json`に記録（行・項目・前と新しい値・経路・回数・最初と最後の時刻、90日。同じ新しい値は1件にまとめる）。
+  Market_Data_Daily_Updateがcommitし、その実行の分をStep Summaryに出す。同じ値なら印も含めてそのまま。直すのは理由を指定した経路だけ
+  （`CORRECTION_REASONS`: split_adjust・provisional_final・manual。`correct_daily_rows`）で、行の`_corrections`に前の値・理由・時刻を残す
+- **暫定の印**: 書く行すべてに`is_provisional_bar`（先物の平らな足・^N225の出来高0・確定時刻の前）で付ける。以前は毎日の取得のときだけで、
+  --backfill・抜けた日の取り直し・終値の取り直しでは付かなかった。印だけを変える経路（--repair-provisional・足なしの印）は`reason=MARK_ONLY`で値を変えられない。
+  上書きのマージ（`_merge_daily_records`）は削除
+- **NIY=F**: 2026-10-05〜10-07の3行に`--repair-provisional`で印（値は同じ。Yahooの足も平らで置き換えなし）。rccにWARN-62が3件出る（確定時刻から11日を過ぎた暫定の行）。
+  次の夜の取得で取り直し→平らな足は「足が無い」扱い→足なしの印に変わって消える見込み（手順24）
+- **確認**: 今のdaily/の全855,773行を新しい関数に通した: 855,766行は同じ、7行は今の暫定の行（DX-Y.NYB・JPY=Xの11-02、NIY=Fの10-26〜10-30）が
+  確定時刻を過ぎて同じ足で確定する分（以前の`_replace_provisional_records`と同じ動き）、拒否0。テスト（`test_market_data_daily_write.py` 10本、
+  既存の2本〈同じ日付の上書き・backfillのマージ〉は新しい規則に書き換え）、ゲート3種（pytest 2750件成功・5件スキップ、audit 0、rcc NG 0・WARN 222〈+3はNIY=FのWARN-62〉）
+- **依頼と違った点**: 暫定の判定で印の無い過去の行は3行でなく779行（NIY=F 777・GC=F 2）。3行だけに付け、ほかはFINDINGS 2026-11-03。
+- **残りの779行（2026-11-03 夜、`646aa02138` コード・`dff021dcef` データ）**: 読み手をgrepで確かめた。NIY=F・GC=Fの日足の読み手（Market Pulseの`collect_and_send.py`〈直近2件〉・
+  `sector_rotation.py`〈直近10日〉・`futures_snapshot.py`〈最新〉、`daily_guard.py`はGC=Fを数えない、`market_pulse_redesign.py`は固定のcommitの版）は
+  どれも2026-10-02より前の行を使わず、印が付いても今の出力は変わらない（足なしの印の行は`reader.py`・`rotce.py`・`daily_guard.py`が除く）。
+  毎日の取得の取り直し（a）は90日前（今は2026-08-05）までで、NIY=Fの754行には届かず足なしの印に変わらない→`--repair-provisional`が渡した行に
+  毎日の取得のbと同じ判定（`_mark_no_bar_rows(only_dates)`）で足なしの印を付けるようにし、置き換えも渡した行だけに。`--keep-values`で置き換えなし。
+  NIY=Fの777行（10-05〜10-07を含む）は足なしの印（Yahooも平ら、値は同じ）。GC=Fの2行はYahooに今は平らでない足があり、値を変えないため暫定の印だけ。
+  rccのWARN-62は222→221（NIY=Fの3件が消え、GC=Fの2件が増えた。GC=Fの2件は90日の外で毎日の取得では片づかず残る）。テスト2本、pytest 2752件成功・5件スキップ
+  分割の調整の経路は無く、理由つきの入口だけ用意（FINDINGS 2026-11-03）
+
+#### 確認（2026-11-04 朝、次回の確認手順24）
+- Market Data Daily run `41721714983`（11-03 21:25 UTC起動、success）・commit `b4a01f8dea`
+- 拒んだ上書き1件（`common/market_data/_daily_rejected_overwrites.json`）: KVUE 2026-10-30の出来高 66,595,400→66,377,525（経路`fetch_daily_prices`）。Yahooの後からの改訂で、保存の時点の値を残した。ログに「確定の行への違う値の上書きを1件拒んだ」、結果の`rejected_overwrites: 1`
+- 既存の確定の行の変化なし（`git show --numstat b4a01f8dea -- common/market_data/daily/`）: 574ファイルは+9/-0（新しい日の1行）、指数6ファイル（^NYA・^RUT・^SOX・^TNX・^VIX・^VIX9D）は+11/-0、NIY=Fは+14/-0（限月の欄つきの1行）。
+  削除のある6ファイル（CL=F・ES=F・GC=F・NQ=F〈+18/-4〉、DX-Y.NYB・JPY=X〈+15/-4〉）は11-02の暫定の行の置き換えと11-03の行の追加だけ
+- NIY=F: 足なしの印（`_no_yahoo_bar`）の行は`dff021dcef`の時点と同じ（ファイル全体で790行、行の中身のmd5が一致。うち2021-01-04〜2026-10-07が779行で、手順の777行を含む）。この回でファイルの差分は11-03の行の追加だけ
+- GC=F: 2021-09-10（終値1792.1・出来高136,246）・2022-05-25（終値1846.3・出来高182,823）は置き換えた値のまま、`_corrections`は各1件、暫定の印なし
+- rcc（手元、b4a01f8deaの後のe3e4792e36）: NG 0・WARN 219、WARN-62 0件
+- チャット側の指示（2026-11-04 朝）で移設
+
+---
+
 ## 2026-11-03（完了）
 
 ### ✅ [COMMON-PATH-GUARD-1] 共通化の後の抜け道をテストで禁止する（呼び出し口・日付・文字コード・集計ファイルの書き直し）
