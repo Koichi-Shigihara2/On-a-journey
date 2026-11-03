@@ -1,6 +1,6 @@
 {
   "ticker": "RMBS",
-  "last_updated": "2026-11-01T17:29:27.481397",
+  "last_updated": "2026-11-03T13:40:53.240157",
   "quarters": [
     {
       "gaap_eps": 0.6854156708460492,
@@ -61,22 +61,22 @@
       "tax_expense": 15970000.0,
       "pretax_income": 90535000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主な調整であるSBC（株式報酬費用）はテック企業で恒常的に発生する報酬コストであり、無形資産償却も買収後の継続的非現金費用であるため、調整後EPSは実力を過大に示す可能性が高い。リストラ費用のみ一過性。市場がGAAP EPSで判断する場合、非現金費用により企業の実力が見えにくくなり過小評価のリスクがあるが、SBC加算による過大評価リスクが大きい。投資家はSBCの希薄化効果や持続可能性を注視し、調整の質を慎重に評価すべき。",
+        "health": "調整大",
+        "comment": "主な調整が恒常的なSBCと無形資産償却であるため、Adjusted EPSがGAAPを20%上回るものの市場がGAAPベースで評価する場合でも企業の実力は部分的にしか隠れていない。リストラは一過性だが金額が小さい。投資家としてSBCの経済的コストと希薄化を考慮する必要があり、過小評価の可能性はある一方で過大調整リスクが高い。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが、株式報酬は継続的に発生する恒常的コスト（毎期同様の調整が予想される）",
+            "snippet": "株式報酬費用はテック企業で毎期発生する恒常的コストであり、非現金でも実質的な報酬コストとして考慮すべき。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aに伴う恒常的な非現金費用",
+            "snippet": "無形資産償却費は買収後の継続的な非現金費用で、恒常的な可能性が高い。",
             "confidence": 0.2
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用であり、非経常的と判断",
+            "snippet": "リストラ費用は一過性の事業再編費用であり、調整対象としてほぼ適切。",
             "confidence": 0.8
           }
         ]
@@ -557,9 +557,9 @@
     },
     {
       "gaap_eps": 0.5279603928252576,
-      "adjusted_eps": -0.8400382364346328,
+      "adjusted_eps": -0.8322015709403097,
       "gaap_net_income": 58545000.0,
-      "adjusted_net_income": -93151000.0,
+      "adjusted_net_income": -92282000.0,
       "diluted_shares_used": 110889000.0,
       "adjustments": [
         {
@@ -607,9 +607,22 @@
           "amount": -151696000.0,
           "net_amount": -151696000.0,
           "note": "tax_expense=-146,744,000, median_normal_tax=4,952,000"
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 1100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 869000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -151696000.0,
+      "net_adjustment_total": -150827000.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -619,13 +632,22 @@
       "fiscal_year": 2023,
       "quarter": 4,
       "tax_expense": -146744000.0,
-      "pretax_income": -88199000.0
+      "pretax_income": -88199000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.9316000902730761,
-      "adjusted_eps": 1.0492251357100544,
+      "adjusted_eps": 0.999999675377244,
       "gaap_net_income": 103198000.0,
-      "adjusted_net_income": 116227914.40828127,
+      "adjusted_net_income": 110774964.0399142,
       "diluted_shares_used": 110775000.0,
       "adjustments": [
         {
@@ -666,9 +688,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": -96239.85824862446,
           "tax_rate_applied": 0.03760141751375548
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -5666000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -5452950.368367062,
+          "tax_rate_applied": 0.03760141751375548
         }
       ],
-      "net_adjustment_total": 13029914.408281263,
+      "net_adjustment_total": 7576964.039914201,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -678,13 +713,22 @@
       "fiscal_year": 2023,
       "quarter": 3,
       "tax_expense": 4032000.0,
-      "pretax_income": 107230000.0
+      "pretax_income": 107230000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.5132480891748281,
-      "adjusted_eps": 0.07708712287524305,
+      "adjusted_eps": 0.1259307712296485,
       "gaap_net_income": 168880000.0,
-      "adjusted_net_income": 8603000.0,
+      "adjusted_net_income": 14054000.0,
       "diluted_shares_used": 111601000.0,
       "adjustments": [
         {
@@ -732,9 +776,22 @@
           "amount": -160277000.0,
           "net_amount": -160277000.0,
           "note": "tax_expense=-155,325,000, median_normal_tax=4,952,000"
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 6900000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 5451000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -160277000.0,
+      "net_adjustment_total": -154826000.0,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -744,7 +801,16 @@
       "fiscal_year": 2023,
       "quarter": 2,
       "tax_expense": -155325000.0,
-      "pretax_income": 13555000.0
+      "pretax_income": 13555000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.029517871762345594,
@@ -816,9 +882,9 @@
     },
     {
       "gaap_eps": 0.14569022215726396,
-      "adjusted_eps": 0.23818019915484587,
+      "adjusted_eps": 0.27095627792937166,
       "gaap_net_income": 15949000.0,
-      "adjusted_net_income": 26074062.761879288,
+      "adjusted_net_income": 29662125.657484174,
       "diluted_shares_used": 109472000.0,
       "adjustments": [
         {
@@ -846,9 +912,35 @@
           "category": "買収・統合関連",
           "net_amount": 2826657.038423821,
           "tax_rate_applied": 0.2890701613622181
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 5000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 3554649.1931889094,
+          "tax_rate_applied": 0.2890701613622181
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": 47000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": 33413.70241597575,
+          "tax_rate_applied": 0.2890701613622181
         }
       ],
-      "net_adjustment_total": 10125062.76187929,
+      "net_adjustment_total": 13713125.657484174,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -858,7 +950,16 @@
       "fiscal_year": 2022,
       "quarter": 4,
       "tax_expense": 6485000.0,
-      "pretax_income": 22434000.0
+      "pretax_income": 22434000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益、投資公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.008386774084064236,
@@ -956,9 +1057,9 @@
     },
     {
       "gaap_eps": 0.3106951160005323,
-      "adjusted_eps": 0.4125081453175974,
+      "adjusted_eps": 0.36747986763636087,
       "gaap_net_income": 35020000.0,
-      "adjusted_net_income": 46495855.59947299,
+      "adjusted_net_income": 41420493.280632414,
       "diluted_shares_used": 112715000.0,
       "adjustments": [
         {
@@ -986,9 +1087,22 @@
           "category": "買収・統合関連",
           "net_amount": 3506613.965744401,
           "tax_rate_applied": 0.0772068511198946
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -5500000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -5075362.31884058,
+          "tax_rate_applied": 0.0772068511198946
         }
       ],
-      "net_adjustment_total": 11475855.599472992,
+      "net_adjustment_total": 6400493.280632412,
       "filing_date": "2022-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -998,13 +1112,22 @@
       "fiscal_year": 2022,
       "quarter": 2,
       "tax_expense": 2930000.0,
-      "pretax_income": 37950000.0
+      "pretax_income": 37950000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.6025898861578501,
-      "adjusted_eps": -0.49817966084871557,
+      "adjusted_eps": -0.41255858106606913,
       "gaap_net_income": -66218000.0,
-      "adjusted_net_income": -54744464.7510045,
+      "adjusted_net_income": -45335649.91476927,
       "diluted_shares_used": 109889000.0,
       "adjustments": [
         {
@@ -1032,9 +1155,35 @@
           "category": "買収・統合関連",
           "net_amount": 3756382.259831974,
           "tax_rate_applied": 0.007822963594301716
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 1200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 1190612.443686838,
+          "tax_rate_applied": 0.007822963594301716
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 8283000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 8218202.392548399,
+          "tax_rate_applied": 0.007822963594301716
         }
       ],
-      "net_adjustment_total": 11473535.248995496,
+      "net_adjustment_total": 20882350.08523073,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -1044,7 +1193,16 @@
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": 514000.0,
-      "pretax_income": -65704000.0
+      "pretax_income": -65704000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益、デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.05314934923605972,

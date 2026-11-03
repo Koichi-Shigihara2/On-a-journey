@@ -1,6 +1,6 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-11-01T17:26:44.874739",
+  "last_updated": "2026-11-03T13:37:18.317055",
   "quarters": [
     {
       "gaap_eps": 0.11582334188862344,
@@ -36,11 +36,11 @@
       "pretax_income": 204309000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "株式報酬費用(SBC)は恒常的な運用コストであり一過性ではないため、調整によりAdjusted EPSが約38%押し上げられている。市場がGAAP EPSで判断する場合、非現金だが株式希薄化を伴う実質コストが反映された低いEPSにより企業の実力が見えにくくなり、成長性・収益力を過小評価するリスクがある。投資家はSBCの継続性と将来の希薄化効果を注視すべきで、調整依存が高いため過大評価リスクも存在する。",
+        "comment": "SBCは毎期継続的に発生する恒常的な人材確保コストであり、一過性ではない。GAAP EPSはこれを控除した保守的な数値を示しているため、市場がGAAP EPS中心に判断する場合、SoFiの真の実力（非現金費用の実態や成長投資効率）を過小評価している可能性がある。ただしSBCは株式希薄化を伴う実質コストのため、調整後EPSを過信すると企業価値の過大評価リスクが生じる。投資家は調整の持続可能性と希薄化影響を慎重に検証すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされており、Adjusted EPS算出時に恒常的に発生するテック企業の運用コストを加算している。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされており、Adjusted EPS算出時に加算。毎期発生する恒常的な報酬関連コストであり、将来も継続的に見込まれる。",
             "confidence": 0.2
           }
         ]
@@ -655,9 +655,9 @@
     },
     {
       "gaap_eps": -0.43320340199706125,
-      "adjusted_eps": -0.28932969378361956,
+      "adjusted_eps": -0.2690318780631965,
       "gaap_net_income": -228181341.0,
-      "adjusted_net_income": -152398705.121696,
+      "adjusted_net_income": -141707231.34954768,
       "diluted_shares_used": 526730261.0,
       "adjustments": [
         {
@@ -672,9 +672,22 @@
           "category": "株式報酬関連",
           "net_amount": 75782635.878304,
           "tax_rate_applied": 0.012243738715049166
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 10824000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 10691473.772148307,
+          "tax_rate_applied": 0.012243738715049166
         }
       ],
-      "net_adjustment_total": 75782635.878304,
+      "net_adjustment_total": 86474109.65045232,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -684,7 +697,16 @@
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": 2760000.0,
-      "pretax_income": -225421341.0
+      "pretax_income": -225421341.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.03753220394130487,

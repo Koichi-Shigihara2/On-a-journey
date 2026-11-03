@@ -1,15 +1,15 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-11-01T17:26:16.872020",
+  "last_updated": "2026-11-03T13:36:47.215299",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": -132235000.0,
-      "adjusted_net_income": -72722938.83,
+      "adjusted_net_income": -71543250.0,
       "diluted_shares_used": 184334103.75,
       "gaap_eps": -0.7173658987125978,
-      "adjusted_eps": -0.3945170066230894,
+      "adjusted_eps": -0.3881172747991838,
       "adjustments": [
         {
           "item_id": "warrant_fv_change",
@@ -27,6 +27,19 @@
         {
           "item_id": "investment_fv_change",
           "item_name": "投資公正価値変動損益",
+          "amount": 1493277,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": 1179688.83,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
           "amount": -6893277,
           "unit": "USD",
           "direction": "add_back",
@@ -38,7 +51,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 59512061.17
+      "net_adjustment_total": 60691750.0
     },
     {
       "year": "2024",
@@ -124,11 +137,24 @@
       "year": "2018",
       "filing_date": "2018-12-31",
       "gaap_net_income": -12096864.0,
-      "adjusted_net_income": -12855963.15,
+      "adjusted_net_income": -12874078.64,
       "diluted_shares_used": 50887702.0,
       "gaap_eps": -0.23771684561429007,
-      "adjusted_eps": -0.2526339890529936,
+      "adjusted_eps": -0.2529899786003306,
       "adjustments": [
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -22931,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -18115.49,
+          "tax_rate_applied": 0.21
+        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -182,7 +208,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -759099.1500000003
+      "net_adjustment_total": -777214.6400000002
     },
     {
       "year": "2017",

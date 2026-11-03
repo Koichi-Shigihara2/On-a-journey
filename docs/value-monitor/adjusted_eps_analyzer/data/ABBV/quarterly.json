@@ -1,6 +1,6 @@
 {
   "ticker": "ABBV",
-  "last_updated": "2026-11-01T17:28:31.745824",
+  "last_updated": "2026-11-03T13:39:11.568470",
   "quarters": [
     {
       "gaap_eps": 2.0400903444381706,
@@ -48,17 +48,17 @@
       "tax_expense": 662000000.0,
       "pretax_income": 4275000000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の株式報酬費用と無形資産償却費はともに恒常的な非現金項目であり、特に後者はAbbVieの過去の大型買収（Allergan等）による長期的な償却であるため、Adjusted EPSを大幅に押し上げている（2.04→2.93）。市場がGAAP EPS中心に評価する場合、非現金費用の影響で企業の現金創出力や事業実力が過小評価される可能性が高い。ただしこれらは経済的コストを伴う恒常項目であるため、調整依存度が高く過大評価のリスクも存在する。投資家は調整後の持続可能性とフリーキャッシュフローを重点的に検証すべき。",
+        "health": "過大調整",
+        "comment": "SBCと無形資産償却の両調整項目は恒常的な性質が強く（毎期発生する非現金費用）、特にAbbVieの買収戦略を考慮すると無形資産償却は長期的に続く経常項目です。GAAP EPS 2.04に対しAdjusted EPS 2.93と約44%の大きな開きが生じていますが、市場がGAAPベースで判断する場合、非現金ではあるものの実質的な経済コストを反映した数字が見えにくくなり、企業の実力を過小評価する可能性があります。一方で、これらを加算した調整EPSは持続可能な利益を過大評価するリスクもあり、投資家は買収依存のビジネスモデルと株主希薄化効果を注視すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが企業が継続的に付与する恒常的な株式報酬費用であり、毎期発生する調整項目",
+            "snippet": "株式報酬費用は非現金費用として加算されているが、毎期継続的に発生する恒常的な運用コストである",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で、複数年にわたって継続する恒常的な非現金費用",
+            "snippet": "無形資産償却費は買収関連の非現金償却として加算されているが、AbbVieのような連続買収企業では長期にわたって発生する恒常的項目である",
             "confidence": 0.2
           }
         ]
@@ -746,9 +746,9 @@
     },
     {
       "gaap_eps": 1.0039525691699605,
-      "adjusted_eps": 2.1005776831863785,
+      "adjusted_eps": 2.1046964629573326,
       "gaap_net_income": 1778000000.0,
-      "adjusted_net_income": 3720123076.9230766,
+      "adjusted_net_income": 3727417435.897436,
       "diluted_shares_used": 1771000000.0,
       "adjustments": [
         {
@@ -776,9 +776,22 @@
           "category": "買収・統合関連",
           "net_amount": 1823589743.5897436,
           "tax_rate_applied": 0.0882051282051282
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 8000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 7294358.974358975,
+          "tax_rate_applied": 0.0882051282051282
         }
       ],
-      "net_adjustment_total": 1942123076.9230769,
+      "net_adjustment_total": 1949417435.897436,
       "filing_date": "2023-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -788,7 +801,16 @@
       "fiscal_year": 2023,
       "quarter": 3,
       "tax_expense": 172000000.0,
-      "pretax_income": 1950000000.0
+      "pretax_income": 1950000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.1428571428571428,
@@ -996,9 +1018,9 @@
     },
     {
       "gaap_eps": 2.223536036036036,
-      "adjusted_eps": 3.298641247000924,
+      "adjusted_eps": 3.190422754457892,
       "gaap_net_income": 3949000000.0,
-      "adjusted_net_income": 5858386854.673641,
+      "adjusted_net_income": 5666190811.917216,
       "diluted_shares_used": 1776000000.0,
       "adjustments": [
         {
@@ -1026,9 +1048,22 @@
           "category": "買収・統合関連",
           "net_amount": 1796224698.658176,
           "tax_rate_applied": 0.10188765067091199
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -214000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -192196042.75642484,
+          "tax_rate_applied": 0.10188765067091199
         }
       ],
-      "net_adjustment_total": 1909386854.673641,
+      "net_adjustment_total": 1717190811.917216,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1038,7 +1073,16 @@
       "fiscal_year": 2022,
       "quarter": 3,
       "tax_expense": 448000000.0,
-      "pretax_income": 4397000000.0
+      "pretax_income": 4397000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.5202702702702703,
@@ -1110,9 +1154,9 @@
     },
     {
       "gaap_eps": 2.5253093363329584,
-      "adjusted_eps": 3.6331439842857645,
+      "adjusted_eps": 3.249682477266468,
       "gaap_net_income": 4490000000.0,
-      "adjusted_net_income": 6459730004.060089,
+      "adjusted_net_income": 5777935444.579781,
       "diluted_shares_used": 1778000000.0,
       "adjustments": [
         {
@@ -1140,9 +1184,22 @@
           "category": "買収・統合関連",
           "net_amount": 1690814047.9090538,
           "tax_rate_applied": 0.08850994721883881
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -748000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -681794559.4803085,
+          "tax_rate_applied": 0.08850994721883881
         }
       ],
-      "net_adjustment_total": 1969730004.060089,
+      "net_adjustment_total": 1287935444.5797806,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1152,13 +1209,22 @@
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": 436000000.0,
-      "pretax_income": 4926000000.0
+      "pretax_income": 4926000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 2.2757456387169386,
-      "adjusted_eps": 3.078730286951307,
+      "adjusted_eps": 3.1750054489101562,
       "gaap_net_income": 4044000000.0,
-      "adjusted_net_income": 5470903719.912473,
+      "adjusted_net_income": 5641984682.713347,
       "diluted_shares_used": 1777000000.0,
       "adjustments": [
         {
@@ -1186,9 +1252,22 @@
           "category": "買収・統合関連",
           "net_amount": 1331776805.251641,
           "tax_rate_applied": 0.26258205689277897
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 232000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 171080962.80087528,
+          "tax_rate_applied": 0.26258205689277897
         }
       ],
-      "net_adjustment_total": 1426903719.9124725,
+      "net_adjustment_total": 1597984682.7133477,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
@@ -1198,13 +1277,22 @@
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": 1440000000.0,
-      "pretax_income": 5484000000.0
+      "pretax_income": 5484000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.7889701744513224,
-      "adjusted_eps": 2.7763730236535036,
+      "adjusted_eps": 2.8239236276937065,
       "gaap_net_income": 3179000000.0,
-      "adjusted_net_income": 4933614863.032276,
+      "adjusted_net_income": 5018112286.411716,
       "diluted_shares_used": 1777000000.0,
       "adjustments": [
         {
@@ -1232,9 +1320,22 @@
           "category": "買収・統合関連",
           "net_amount": 1638215351.2340658,
           "tax_rate_applied": 0.13778139408733386
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 98000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 84497423.37944129,
+          "tax_rate_applied": 0.13778139408733386
         }
       ],
-      "net_adjustment_total": 1754614863.0322757,
+      "net_adjustment_total": 1839112286.411717,
       "filing_date": "2021-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1244,7 +1345,16 @@
       "fiscal_year": 2021,
       "quarter": 3,
       "tax_expense": 508000000.0,
-      "pretax_income": 3687000000.0
+      "pretax_income": 3687000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.4313063063063063,
@@ -1316,9 +1426,9 @@
     },
     {
       "gaap_eps": 2.0016901408450702,
-      "adjusted_eps": 3.181470254905891,
+      "adjusted_eps": 3.003829965563107,
       "gaap_net_income": 3553000000.0,
-      "adjusted_net_income": 5647109702.457956,
+      "adjusted_net_income": 5331798188.874515,
       "diluted_shares_used": 1775000000.0,
       "adjustments": [
         {
@@ -1346,9 +1456,22 @@
           "category": "買収・統合関連",
           "net_amount": 1846824579.5601552,
           "tax_rate_applied": 0.08072445019404915
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -343000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -315311513.58344114,
+          "tax_rate_applied": 0.08072445019404915
         }
       ],
-      "net_adjustment_total": 2094109702.4579558,
+      "net_adjustment_total": 1778798188.8745146,
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1358,7 +1481,16 @@
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 312000000.0,
-      "pretax_income": 3865000000.0
+      "pretax_income": 3865000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.021518230723251645,
@@ -1437,9 +1569,9 @@
     },
     {
       "gaap_eps": 1.3010146561443066,
-      "adjusted_eps": 2.4805317512138143,
+      "adjusted_eps": 2.583257156929417,
       "gaap_net_income": 2308000000.0,
-      "adjusted_net_income": 4400463326.653307,
+      "adjusted_net_income": 4582698196.392786,
       "diluted_shares_used": 1774000000.0,
       "adjustments": [
         {
@@ -1467,9 +1599,22 @@
           "category": "買収・統合関連",
           "net_amount": 1942605210.4208417,
           "tax_rate_applied": 0.07494989979959919
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 197000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 182234869.73947895,
+          "tax_rate_applied": 0.07494989979959919
         }
       ],
-      "net_adjustment_total": 2092463326.6533067,
+      "net_adjustment_total": 2274698196.3927855,
       "filing_date": "2020-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1479,7 +1624,16 @@
       "fiscal_year": 2020,
       "quarter": 3,
       "tax_expense": 187000000.0,
-      "pretax_income": 2495000000.0
+      "pretax_income": 2495000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.44808743169398907,
@@ -1551,9 +1705,9 @@
     },
     {
       "gaap_eps": 2.0283018867924527,
-      "adjusted_eps": 2.4735069490968002,
+      "adjusted_eps": 2.5206463086349076,
       "gaap_net_income": 3010000000.0,
-      "adjusted_net_income": 3670684312.4596515,
+      "adjusted_net_income": 3740639122.0142026,
       "diluted_shares_used": 1484000000.0,
       "adjustments": [
         {
@@ -1594,9 +1748,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 16517107.811491285,
           "tax_rate_applied": 0.028405422853453842
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 72000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 69954809.55455132,
+          "tax_rate_applied": 0.028405422853453842
         }
       ],
-      "net_adjustment_total": 660684312.4596514,
+      "net_adjustment_total": 730639122.0142027,
       "filing_date": "2020-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1606,13 +1773,22 @@
       "fiscal_year": 2020,
       "quarter": 1,
       "tax_expense": 88000000.0,
-      "pretax_income": 3098000000.0
+      "pretax_income": 3098000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.887466307277628,
-      "adjusted_eps": 2.158877755349538,
+      "adjusted_eps": 2.40602580993477,
       "gaap_net_income": 2801000000.0,
-      "adjusted_net_income": 3203774588.9387145,
+      "adjusted_net_income": 3570542301.9431987,
       "diluted_shares_used": 1484000000.0,
       "adjustments": [
         {
@@ -1653,9 +1829,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 9211061.285500748,
           "tax_rate_applied": 0.16263079222720478
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 438000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 366767713.0044843,
+          "tax_rate_applied": 0.16263079222720478
         }
       ],
-      "net_adjustment_total": 402774588.9387145,
+      "net_adjustment_total": 769542301.9431988,
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
@@ -1665,13 +1854,22 @@
       "fiscal_year": 2019,
       "quarter": 4,
       "tax_expense": 544000000.0,
-      "pretax_income": 3345000000.0
+      "pretax_income": 3345000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.270397842211733,
-      "adjusted_eps": 1.5789502416694552,
+      "adjusted_eps": 1.6932289081352785,
       "gaap_net_income": 1884000000.0,
-      "adjusted_net_income": 2341583208.395802,
+      "adjusted_net_income": 2511058470.764618,
       "diluted_shares_used": 1483000000.0,
       "adjustments": [
         {
@@ -1712,9 +1910,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 20713643.178410795,
           "tax_rate_applied": 0.05847076461769116
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 180000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 169475262.3688156,
+          "tax_rate_applied": 0.05847076461769116
         }
       ],
-      "net_adjustment_total": 457583208.3958021,
+      "net_adjustment_total": 627058470.7646177,
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1724,7 +1935,16 @@
       "fiscal_year": 2019,
       "quarter": 3,
       "tax_expense": 117000000.0,
-      "pretax_income": 2001000000.0
+      "pretax_income": 2001000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.49932614555256066,
@@ -1809,9 +2029,9 @@
     },
     {
       "gaap_eps": 1.6561024949426837,
-      "adjusted_eps": 2.1384814056158477,
+      "adjusted_eps": 2.248497648400955,
       "gaap_net_income": 2456000000.0,
-      "adjusted_net_income": 3171367924.528302,
+      "adjusted_net_income": 3334522012.578616,
       "diluted_shares_used": 1483000000.0,
       "adjustments": [
         {
@@ -1852,9 +2072,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 161223270.44025156,
           "tax_rate_applied": 0.03459119496855346
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 169000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 163154088.05031446,
+          "tax_rate_applied": 0.03459119496855346
         }
       ],
-      "net_adjustment_total": 715367924.528302,
+      "net_adjustment_total": 878522012.5786164,
       "filing_date": "2019-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -1864,7 +2097,16 @@
       "fiscal_year": 2019,
       "quarter": 1,
       "tax_expense": 88000000.0,
-      "pretax_income": 2544000000.0
+      "pretax_income": 2544000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -1.1811125485122898,
@@ -2198,9 +2440,9 @@
     },
     {
       "gaap_eps": 1.017467248908297,
-      "adjusted_eps": 1.1855071859595,
+      "adjusted_eps": 1.3647174078435869,
       "gaap_net_income": 1631000000.0,
-      "adjusted_net_income": 1900368019.0930786,
+      "adjusted_net_income": 2187642004.7732697,
       "diluted_shares_used": 1603000000.0,
       "adjustments": [
         {
@@ -2241,9 +2483,35 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 5449642.004773269,
           "tax_rate_applied": 0.22147971360381863
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 401000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 312186634.8448687,
+          "tax_rate_applied": 0.22147971360381863
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -32000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -24912649.164677802,
+          "tax_rate_applied": 0.22147971360381863
         }
       ],
-      "net_adjustment_total": 269368019.09307873,
+      "net_adjustment_total": 556642004.7732697,
       "filing_date": "2017-09-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -2253,13 +2521,22 @@
       "fiscal_year": 2017,
       "quarter": 3,
       "tax_expense": 464000000.0,
-      "pretax_income": 2095000000.0
+      "pretax_income": 2095000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益、デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.196875,
-      "adjusted_eps": 1.377957660433489,
+      "adjusted_eps": 1.3743970463238417,
       "gaap_net_income": 1915000000.0,
-      "adjusted_net_income": 2204732256.6935825,
+      "adjusted_net_income": 2199035274.118147,
       "diluted_shares_used": 1600000000.0,
       "adjustments": [
         {
@@ -2300,9 +2577,35 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 8952401.189970251,
           "tax_rate_applied": 0.18614534636634084
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 61000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 49645133.87165321,
+          "tax_rate_applied": 0.18614534636634084
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -68000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -55342116.44708882,
+          "tax_rate_applied": 0.18614534636634084
         }
       ],
-      "net_adjustment_total": 289732256.69358265,
+      "net_adjustment_total": 284035274.118147,
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -2312,13 +2615,22 @@
       "fiscal_year": 2017,
       "quarter": 2,
       "tax_expense": 438000000.0,
-      "pretax_income": 2353000000.0
+      "pretax_income": 2353000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益、デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.067373674360574,
-      "adjusted_eps": 1.2863746008353225,
+      "adjusted_eps": 1.3523818894223378,
       "gaap_net_income": 1711000000.0,
-      "adjusted_net_income": 2062058485.139022,
+      "adjusted_net_income": 2167868168.7440076,
       "diluted_shares_used": 1603000000.0,
       "adjustments": [
         {
@@ -2359,9 +2671,35 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 13123681.687440075,
           "tax_rate_applied": 0.1797698945349952
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 85000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 69719558.9645254,
+          "tax_rate_applied": 0.1797698945349952
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 44000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 36090124.64046021,
+          "tax_rate_applied": 0.1797698945349952
         }
       ],
-      "net_adjustment_total": 351058485.13902205,
+      "net_adjustment_total": 456868168.74400765,
       "filing_date": "2017-03-31",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -2371,7 +2709,16 @@
       "fiscal_year": 2017,
       "quarter": 1,
       "tax_expense": 375000000.0,
-      "pretax_income": 2086000000.0
+      "pretax_income": 2086000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益、デリバティブ公正価値変動損益"
+        }
+      }
     }
   ],
   "execution_metrics": {

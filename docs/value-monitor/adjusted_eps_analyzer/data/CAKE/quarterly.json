@@ -1,7 +1,51 @@
 {
   "ticker": "CAKE",
-  "last_updated": "2026-11-01T17:24:37.737715",
+  "last_updated": "2026-11-03T13:34:33.086265",
   "quarters": [
+    {
+      "gaap_eps": 1.190915625667826,
+      "adjusted_eps": 1.3050507857600968,
+      "gaap_net_income": 61300000.0,
+      "adjusted_net_income": 67174879.09542947,
+      "diluted_shares_used": 51473000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 7035000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 5874879.095429467,
+          "tax_rate_applied": 0.16490702268237858
+        }
+      ],
+      "net_adjustment_total": 5874879.095429467,
+      "filing_date": "2026-09-29",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 1033440000.0,
+      "diluted_shares": 51473000.0,
+      "period_end": "2026-09-29",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 12105000.0,
+      "pretax_income": 73405000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目は株式報酬費用(SBC)で、恒常的に発生する非現金コストです。市場がGAAP EPS(1.19)で判断する場合、非現金費用により企業の実力(調整後EPS 1.31)が過小評価される可能性がありますが、SBCは報酬としての実質的コスト(株主希薄化含む)であるため調整の妥当性に疑問があり、調整後EPS relianceは過大評価リスクを伴います。投資家はSBCの規模推移と希薄化影響を注視すべきです。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、企業が継続的に付与する報酬であり恒常的コストの性質を持つ(毎期発生するSBC)。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 1.4104763868838937,
       "adjusted_eps": 1.5711617128853472,
@@ -12,12 +56,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 8761000,
+          "amount": 8761000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 7791631.4578104885,
           "tax_rate_applied": 0.1106458785743079
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 8509000.0,
-      "pretax_income": 76903000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目は恒常的な株式報酬費用(SBC)であり、非現金だが毎期発生するコストのため一過性とは言えません。市場がGAAP EPS(1.41)で判断する場合、SBC控除後のEPSを見て企業の実力(特にキャッシュ生成力)を過小評価している可能性があります。ただしSBCは株式希薄化という実質的コストを伴うため、Adjusted EPS(1.57)による加算戻しは企業実力を過大評価するリスクがあり、投資家はSBCの継続性・規模・希薄化影響を注視し、キャッシュフローとの整合性を確認すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、毎期発生する恒常的な株式報酬関連コストであり、調整の正当性に留意が必要",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 76903000.0
     },
     {
       "gaap_eps": 1.0225570116603033,
@@ -81,9 +114,9 @@
     },
     {
       "gaap_eps": 0.5926757430330992,
-      "adjusted_eps": 0.685764882239001,
+      "adjusted_eps": 0.8392687631439039,
       "gaap_net_income": 28775000.0,
-      "adjusted_net_income": 33294570.797585737,
+      "adjusted_net_income": 40747337.719399676,
       "diluted_shares_used": 48551000.0,
       "adjustments": [
         {
@@ -98,9 +131,22 @@
           "category": "株式報酬関連",
           "net_amount": 4519570.797585737,
           "tax_rate_applied": 0.3345743819808986
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 11200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 7452766.921813935,
+          "tax_rate_applied": 0.3345743819808986
         }
       ],
-      "net_adjustment_total": 4519570.797585737,
+      "net_adjustment_total": 11972337.719399672,
       "filing_date": "2025-12-30",
       "form": "10-K",
       "sector": null,
@@ -110,7 +156,16 @@
       "fiscal_year": 2025,
       "quarter": 4,
       "tax_expense": 14468000.0,
-      "pretax_income": 43243000.0
+      "pretax_income": 43243000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.6561420108606221,
@@ -1084,11 +1139,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.008749804981188498,
+      "value": 0.03002539657644361,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.05630846345526244,
-      "prior_4q_avg_yoy": 0.047558658474073943
+      "recent_4q_avg_yoy": 0.07902730998900209,
+      "prior_4q_avg_yoy": 0.04900191341255848
     },
     "roic_trend": {
       "years": [
@@ -1116,9 +1171,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.008508857039352858,
+      "value": 0.006807361820715281,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-29"
     }
   }
 }

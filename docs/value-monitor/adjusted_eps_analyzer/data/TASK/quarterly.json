@@ -1,6 +1,6 @@
 {
   "ticker": "TASK",
-  "last_updated": "2026-11-01T17:28:36.439641",
+  "last_updated": "2026-11-03T13:39:17.186700",
   "quarters": [
     {
       "gaap_eps": 0.23751357954078847,
@@ -48,17 +48,17 @@
       "tax_expense": 7540000.0,
       "pretax_income": 29509000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却費はともに恒常的に発生する費用（SBCは人材確保のための継続コスト、無形資産償却は買収後の複数年続く償却）であり、一過性とは言えません。GAAP EPS（0.24）に対しAdjusted EPS（0.31）は約30%高い水準ですが、これらを加算バックした調整は企業の実力を過大に示すリスクがあります。市場がGAAP EPSで判断する場合、保守的な評価となっており、この調整により実力が過小評価されている可能性は低い一方、調整後数値を過信すると過大評価のリスクが高まります。投資家はSBCの希薄化効果や買収の真の経済コストに注目し、持続可能性を慎重に検証すべきです。",
+        "health": "調整大",
+        "comment": "調整項目の株式報酬費用と無形資産償却費はともに恒常的に発生する非現金費用であり、一過性とは判断しにくい項目です。市場がGAAP EPS（0.2375）を基準に評価する場合、非現金コストにより企業の実力（調整後EPS 0.308への約30%の上昇）が過小評価されている可能性があります。ただしSBCによる株式希薄化や買収関連償却の継続性を考慮すると、調整後数値に過度に依拠すれば過大評価リスクも存在します。投資家はフリーキャッシュフローや希薄化後EPSを重点的に検証し、調整の持続可能性を注視すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬費用（人材確保のための継続コスト）",
+            "snippet": "株式報酬費用は非現金費用として毎期発生する恒常的な報酬コストであり、一過性とはみなせない。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却。買収後の複数年にわたって継続発生する恒常的費用",
+            "snippet": "無形資産償却費は買収関連の非現金償却で、償却期間中は恒常的に発生する費用である。",
             "confidence": 0.2
           }
         ]
@@ -597,9 +597,9 @@
     },
     {
       "gaap_eps": 0.1692469610334061,
-      "adjusted_eps": 0.29734986834308325,
+      "adjusted_eps": 0.26831211410520517,
       "gaap_net_income": 16277000.0,
-      "adjusted_net_income": 28597050.0,
+      "adjusted_net_income": 25804400.0,
       "diluted_shares_used": 96173071.0,
       "adjustments": [
         {
@@ -640,9 +640,22 @@
           "category": "金融関連",
           "net_amount": 81370.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -3535000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": -2792650.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 12320050.0,
+      "net_adjustment_total": 9527400.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,
@@ -652,7 +665,16 @@
       "fiscal_year": 2023,
       "quarter": 4,
       "tax_expense": 29342000.0,
-      "pretax_income": 45619000.0
+      "pretax_income": 45619000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.10391863098880162,
@@ -724,9 +746,9 @@
     },
     {
       "gaap_eps": 0.10317718415594786,
-      "adjusted_eps": 0.22191072969636266,
+      "adjusted_eps": 0.24935516588599185,
       "gaap_net_income": 10132000.0,
-      "adjusted_net_income": 21791634.76573646,
+      "adjusted_net_income": 24486678.53678023,
       "diluted_shares_used": 98200005.0,
       "adjustments": [
         {
@@ -754,9 +776,22 @@
           "category": "買収・統合関連",
           "net_amount": 2963333.9040118703,
           "tax_rate_applied": 0.42178850653426925
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 4661000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": 2695043.771043771,
+          "tax_rate_applied": 0.42178850653426925
         }
       ],
-      "net_adjustment_total": 11659634.76573646,
+      "net_adjustment_total": 14354678.53678023,
       "filing_date": "2023-06-30",
       "form": "10-Q",
       "sector": null,
@@ -766,7 +801,16 @@
       "fiscal_year": 2023,
       "quarter": 2,
       "tax_expense": 7391000.0,
-      "pretax_income": 17523000.0
+      "pretax_income": 17523000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.09419274533993303,
@@ -1081,9 +1125,9 @@
     },
     {
       "gaap_eps": 0.11127328621131517,
-      "adjusted_eps": 0.2654171563498458,
+      "adjusted_eps": 0.2701356559439231,
       "gaap_net_income": 11586000.0,
-      "adjusted_net_income": 27635772.05430471,
+      "adjusted_net_income": 28127071.79172021,
       "diluted_shares_used": 104122026.0,
       "adjustments": [
         {
@@ -1124,9 +1168,22 @@
           "category": "金融関連",
           "net_amount": 310056.09251913516,
           "tax_rate_applied": 0.35270126822727527
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 759000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": 491299.7374154981,
+          "tax_rate_applied": 0.35270126822727527
         }
       ],
-      "net_adjustment_total": 16049772.054304712,
+      "net_adjustment_total": 16541071.79172021,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": null,
@@ -1136,7 +1193,16 @@
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": 6313000.0,
-      "pretax_income": 17899000.0
+      "pretax_income": 17899000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.20142960608385319,

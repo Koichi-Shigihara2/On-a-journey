@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-11-01T17:24:16.963393",
+  "last_updated": "2026-11-03T13:34:12.051755",
   "years": [
     {
       "year": "2025",
@@ -198,10 +198,10 @@
       "year": "2022",
       "filing_date": "2022-12-31",
       "gaap_net_income": -2722000000.0,
-      "adjusted_net_income": 5917835865.479107,
+      "adjusted_net_income": 6311596761.531654,
       "diluted_shares_used": 10216500000.0,
       "gaap_eps": -0.26643175255713797,
-      "adjusted_eps": 0.5792429761150205,
+      "adjusted_eps": 0.6177846387247741,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -250,6 +250,19 @@
           "tax_rate_applied": 0.023461407684461068
         },
         {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 170000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 166011560.69364163,
+          "tax_rate_applied": 0.023461407684461068
+        },
+        {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "amount": 5209000000,
@@ -287,9 +300,22 @@
           "category": "株式報酬関連",
           "net_amount": 2372388909.988606,
           "tax_rate_applied": 0.27003418154196734
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 312000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 227749335.35890618,
+          "tax_rate_applied": 0.27003418154196734
         }
       ],
-      "net_adjustment_total": 8639835865.479107
+      "net_adjustment_total": 9033596761.531654
     },
     {
       "year": "2021",

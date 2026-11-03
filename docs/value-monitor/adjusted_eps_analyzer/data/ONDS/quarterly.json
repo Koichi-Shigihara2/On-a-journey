@@ -1,12 +1,12 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-11-01T17:26:16.870250",
+  "last_updated": "2026-11-03T13:36:47.177745",
   "quarters": [
     {
       "gaap_eps": -0.17552269392148023,
-      "adjusted_eps": -0.1526566952242292,
+      "adjusted_eps": -0.17544796843554153,
       "gaap_net_income": -88392000.0,
-      "adjusted_net_income": -76876843.11805525,
+      "adjusted_net_income": -88354368.76835966,
       "diluted_shares_used": 503593000.0,
       "adjustments": [
         {
@@ -21,9 +21,22 @@
           "category": "金融関連",
           "net_amount": 11515156.88194474,
           "tax_rate_applied": 0.24737536719315426
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -15250000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -11477525.650304398,
+          "tax_rate_applied": 0.24737536719315426
         }
       ],
-      "net_adjustment_total": 11515156.88194474,
+      "net_adjustment_total": 37631.23164034262,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
@@ -34,14 +47,28 @@
       "quarter": 2,
       "tax_expense": -29053000.0,
       "pretax_income": -117445000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      },
       "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目「loan_fair_value」は市場金利変動による一時的な公正価値評価損益（add_back）であり、主に一過性と見なせるため、GAAP EPS（-0.1755）が調整後EPS（-0.1527）より悪化し、市場がGAAPベースで判断する場合に企業の実力（コア業績）が過小評価される可能性がある。投資家として注目すべきは、この金融関連の非コア変動を除いた実質的な損失縮小だが、公正価値評価が今後も金利環境次第で繰り返されるリスクがあり、過大調整の懸念も残る。",
+        "health": "調整小",
+        "comment": "調整項目であるローン公正価値変動とワラント公正価値変動は金額がほぼ同規模で相殺されており、GAAP EPS(-0.1755)とAdjusted EPS(-0.1754)に実質的な差が生じていない。このため市場がGAAP EPSを基準に判断していても企業の実力が見えにくくなる可能性は低く、過小評価のリスクは限定的である。ただし両項目とも非現金・市場変動要因による一時的性格が強く、コア事業の収益力を測る上では除外して分析すべき。投資家は今後の金利・株価変動によるボラティリティリスクに留意し、運用ベースの業績トレンドを注視する必要がある。",
         "sources": [
           {
             "item": "loan_fair_value",
-            "snippet": "市場金利変動による一時的評価替えであり、金融関連の非経常的項目としてadd_back調整されている。",
+            "snippet": "市場金利変動による一時的評価替え",
             "confidence": 0.7
+          },
+          {
+            "item": "warrant_fv_change",
+            "snippet": "非現金・非経常のワラント時価評価変動",
+            "confidence": 0.65
           }
         ]
       }
@@ -90,9 +117,9 @@
     },
     {
       "gaap_eps": -0.4503228314146702,
-      "adjusted_eps": -0.15741557205921478,
+      "adjusted_eps": -0.15209612330848768,
       "gaap_net_income": -99867644.0,
-      "adjusted_net_income": -34909894.0,
+      "adjusted_net_income": -33730205.17,
       "diluted_shares_used": 221769000.0,
       "adjustments": [
         {
@@ -107,9 +134,22 @@
           "category": "公正価値変動関連",
           "net_amount": 64957750.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": 1493277,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": 1179688.83,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 64957750.0,
+      "net_adjustment_total": 66137438.83,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
@@ -126,7 +166,7 @@
       "special_notes": {
         "fair_value_auto_detect": {
           "flag": "FAIR_VALUE_ADJUSTED",
-          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益 / 同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 投資公正価値変動損益"
         }
       }
     },
@@ -682,12 +722,26 @@
     },
     {
       "gaap_eps": -0.22833353724638616,
-      "adjusted_eps": -0.22833353724638616,
+      "adjusted_eps": -0.22868952679372317,
       "gaap_net_income": -11619369.0,
-      "adjusted_net_income": -11619369.0,
+      "adjusted_net_income": -11637484.49,
       "diluted_shares_used": 50887702.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -22931,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -18115.49,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": -18115.49,
       "filing_date": "2018-12-31",
       "form": "10-K",
       "sector": "通信・インフラ",
@@ -697,7 +751,16 @@
       "fiscal_year": 2018,
       "quarter": 4,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.008794502058670285,

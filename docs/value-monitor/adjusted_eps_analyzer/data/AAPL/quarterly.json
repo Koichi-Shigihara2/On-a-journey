@@ -1,7 +1,51 @@
 {
   "ticker": "AAPL",
-  "last_updated": "2026-11-01T17:24:06.281743",
+  "last_updated": "2026-11-03T13:33:51.192533",
   "quarters": [
+    {
+      "gaap_eps": 2.0863017385644023,
+      "adjusted_eps": 2.204243709349221,
+      "gaap_net_income": 30711000000.0,
+      "adjusted_net_income": 32447141900.195595,
+      "diluted_shares_used": 14720306000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 3266000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 1736141900.1955929,
+          "tax_rate_applied": 0.4684195039205165
+        }
+      ],
+      "net_adjustment_total": 1736141900.1955929,
+      "filing_date": "2026-09-26",
+      "form": "10-K",
+      "sector": "Technology",
+      "revenue": 114477000000.0,
+      "diluted_shares": 14720306000.0,
+      "period_end": "2026-09-26",
+      "fiscal_year": 2026,
+      "quarter": 4,
+      "tax_expense": 27062000000.0,
+      "pretax_income": 57773000000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "SBCは恒常的な報酬コスト（毎期発生）であるため、この調整は一過性ではなく実力を過大に表示する可能性が高い。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な数字に依拠しており企業の実力が見えにくくなっているが、株主希薄化の実態を反映した評価とも言える。投資家はSBCの継続性と希薄化効果を注視すべきで、Adjusted EPS依存による過大評価リスクが高い。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、Appleにおいて継続的に発生する恒常的な運用コストであり一過性ではない。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 2.0244414487957467,
       "adjusted_eps": 2.2142869107130356,
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 3,
       "tax_expense": 6478000000.0,
-      "pretax_income": 36267000000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBC（株式報酬費用）は恒常的な報酬コスト（毎期発生）であり一過性ではないため、調整により実力以上のEPSを示している可能性が高い。市場がGAAP EPSで判断する場合、非現金費用を控除した保守的な数字を使用することになり、企業の実力（キャッシュ生成力）が見えにくくなり過小評価のリスクが生じる。ただしSBCは実質的な希薄化コストであるため、調整EPS依存は過大評価リスクを高める。投資家はSBCの継続性と株式希薄化影響を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用としてadd_backされているが、株式報酬関連のカテゴリに属しテック企業では毎期発生する恒常的コストである。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 36267000000.0
     },
     {
       "gaap_eps": 2.0085736173332474,
@@ -1303,11 +1336,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.07954486290800918,
+      "value": 0.08433082399068158,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.1413565472703584,
-      "prior_4q_avg_yoy": 0.061811684362349226
+      "recent_4q_avg_yoy": 0.1508151873873138,
+      "prior_4q_avg_yoy": 0.06648436339663223
     },
     "roic_trend": {
       "years": [
@@ -1335,9 +1368,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.03108292130107753,
+      "value": 0.028529748333726426,
       "reason": "ok",
-      "period_end": "2026-06-27"
+      "period_end": "2026-09-26"
     }
   }
 }

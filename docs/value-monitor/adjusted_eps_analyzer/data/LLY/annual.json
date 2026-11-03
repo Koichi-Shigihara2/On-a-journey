@@ -1,6 +1,6 @@
 {
   "ticker": "LLY",
-  "last_updated": "2026-11-01T17:25:52.111473",
+  "last_updated": "2026-11-03T13:36:06.695431",
   "years": [
     {
       "year": "2025",
@@ -134,10 +134,10 @@
       "year": "2023",
       "filing_date": "2023-12-31",
       "gaap_net_income": 5240400000.0,
-      "adjusted_net_income": 5788464862.423743,
+      "adjusted_net_income": 5780873094.948636,
       "diluted_shares_used": 902275000.0,
       "gaap_eps": 5.807985370313928,
-      "adjusted_eps": 6.415410891827595,
+      "adjusted_eps": 6.406996863427044,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -150,6 +150,19 @@
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 75116852.6499044,
+          "tax_rate_applied": 0.3750677816147721
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": -121000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": -75616798.42461258,
           "tax_rate_applied": 0.3750677816147721
         },
         {
@@ -192,6 +205,19 @@
           "tax_rate_applied": 0.15591938340753506
         },
         {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": 65800000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": 55540504.57178419,
+          "tax_rate_applied": 0.15591938340753506
+        },
+        {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "amount": 131200000,
@@ -203,9 +229,22 @@
           "category": "株式報酬関連",
           "net_amount": 115349990.19415571,
           "tax_rate_applied": 0.12080800156893509
+        },
+        {
+          "item_id": "investment_fv_change",
+          "item_name": "投資公正価値変動損益",
+          "amount": 14200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の投資時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnInvestments",
+          "category": "公正価値変動関連",
+          "net_amount": 12484526.377721122,
+          "tax_rate_applied": 0.12080800156893509
         }
       ],
-      "net_adjustment_total": 548064862.4237431
+      "net_adjustment_total": 540473094.9486359
     },
     {
       "year": "2022",
@@ -506,10 +545,10 @@
       "year": "2018",
       "filing_date": "2018-12-31",
       "gaap_net_income": 3232000000.0,
-      "adjusted_net_income": 3698145294.0856214,
+      "adjusted_net_income": 3569773019.8364167,
       "diluted_shares_used": 1034991750.0,
       "gaap_eps": 3.1227302053373855,
-      "adjusted_eps": 3.5731157220196406,
+      "adjusted_eps": 3.4490835505079307,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -551,6 +590,19 @@
           "tax_rate_applied": 0.17716535433070865
         },
         {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -53600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -44103937.00787401,
+          "tax_rate_applied": 0.17716535433070865
+        },
+        {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "amount": 70200000.0,
@@ -561,6 +613,19 @@
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 55458000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -46700000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -36893000.0,
           "tax_rate_applied": 0.21
         },
         {
@@ -575,18 +640,31 @@
           "category": "株式報酬関連",
           "net_amount": 58466840.87859312,
           "tax_rate_applied": 0.14019351649127762
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -55100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -47375337.2413306,
+          "tax_rate_applied": 0.14019351649127762
         }
       ],
-      "net_adjustment_total": 466145294.08562136
+      "net_adjustment_total": 337773019.8364168
     },
     {
       "year": "2017",
       "filing_date": "2017-12-31",
       "gaap_net_income": -204100000.0,
-      "adjusted_net_income": 68650268.63032073,
+      "adjusted_net_income": 198446666.32337052,
       "diluted_shares_used": 1055355750.0,
       "gaap_eps": -0.19339450228039218,
-      "adjusted_eps": 0.06504940976568396,
+      "adjusted_eps": 0.18803769849491087,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -599,6 +677,19 @@
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 57038000.0,
+          "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 52600000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 41554000.0,
           "tax_rate_applied": 0.21
         },
         {
@@ -615,6 +706,19 @@
           "tax_rate_applied": 0.060851926977687626
         },
         {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 51300000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 48178296.14604463,
+          "tax_rate_applied": 0.060851926977687626
+        },
+        {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "amount": 69900000.0,
@@ -625,6 +729,19 @@
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 55897818.326061085,
+          "tax_rate_applied": 0.20031733439111463
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 50100000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 40064101.547005154,
           "tax_rate_applied": 0.20031733439111463
         },
         {
@@ -654,7 +771,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 272750268.6303207
+      "net_adjustment_total": 402546666.3233705
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "ticker": "COHR",
-  "last_updated": "2026-11-01T17:24:52.140496",
+  "last_updated": "2026-11-03T13:34:58.183933",
   "years": [
     {
       "year": "2026",
@@ -446,10 +446,10 @@
       "year": "2024",
       "filing_date": "2024-06-30",
       "gaap_net_income": -156154000.0,
-      "adjusted_net_income": -54333547.448563814,
+      "adjusted_net_income": -52226251.10298249,
       "diluted_shares_used": 151418000.0,
       "gaap_eps": -1.0312776552325351,
-      "adjusted_eps": -0.35883149591570235,
+      "adjusted_eps": -0.34491441640348236,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -475,6 +475,19 @@
           "extracted_from": "us-gaap:RestructuringCharges",
           "category": "リストラ・事業再編関連",
           "net_amount": 8214531.6008037515,
+          "tax_rate_applied": 0.2978432685867381
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 6000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnDerivativeInstrumentsNetPretax",
+          "category": "公正価値変動関連",
+          "net_amount": 4212940.388479572,
           "tax_rate_applied": 0.2978432685867381
         },
         {
@@ -543,6 +556,19 @@
           "tax_rate_applied": 0.24864293071291374
         },
         {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -14000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnDerivativeInstrumentsNetPretax",
+          "category": "公正価値変動関連",
+          "net_amount": -10518998.970019206,
+          "tax_rate_applied": 0.24864293071291374
+        },
+        {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
           "amount": 45957000,
@@ -567,9 +593,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 243987.29288650805,
           "tax_rate_applied": 0.23514955207991212
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 11000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:GainLossOnDerivativeInstrumentsNetPretax",
+          "category": "公正価値変動関連",
+          "net_amount": 8413354.927120967,
+          "tax_rate_applied": 0.23514955207991212
         }
       ],
-      "net_adjustment_total": 101820452.55143619
+      "net_adjustment_total": 103927748.89701751
     },
     {
       "year": "2023",

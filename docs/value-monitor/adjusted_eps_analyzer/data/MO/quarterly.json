@@ -1,6 +1,6 @@
 {
   "ticker": "MO",
-  "last_updated": "2026-11-01T17:29:02.688233",
+  "last_updated": "2026-11-03T13:40:15.544203",
   "quarters": [
     {
       "gaap_eps": 1.5086878370281607,
@@ -36,11 +36,11 @@
       "pretax_income": 3294000000.0,
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目は買収関連無形資産の償却であり、恒常的に複数期にわたって発生する非現金費用であるため一過性とは言えません。GAAP EPSとAdjusted EPSの差が0.01未満と極めて小さく、市場がGAAPベースで判断していても企業の実力はほぼ正確に反映されており、見えにくくなっている可能性は低いです。投資家としては償却が買収の経済的コストを表す点を考慮し、調整後EPSに過度に依存しないよう注意が必要。過小評価リスクは低いが、調整を繰り返すことで実態を過大評価するリスクに留意すべきです。",
+        "comment": "調整項目は買収関連の無形資産償却費で、複数年にわたって継続発生する恒常的な非現金費用です。一過性ではなく毎期見込まれるため、調整によりAdjusted EPSがやや上方修正されていますが影響は0.01程度と小さいです。市場がGAAP EPSで判断する場合、償却費が実力値をやや低下させて見せている可能性があり、企業の実力がわずかに見えにくくなるリスクがあります。ただし恒常的項目であるため過小評価の可能性は限定的で、むしろ調整を過信すると持続可能性を過大評価するリスクがあります。投資家は買収の経済効果と償却の継続性を注視すべきです。",
         "sources": [
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は、買収後も複数年にわたって毎期発生する恒常的な非現金費用である。",
+            "snippet": "買収関連無形資産の償却は、買収後に複数期にわたって発生する非現金費用であり、恒常的な調整項目と考えられる。",
             "confidence": 0.2
           }
         ]
@@ -904,9 +904,9 @@
     },
     {
       "gaap_eps": -0.9678972712680578,
-      "adjusted_eps": -0.8804012841091493,
+      "adjusted_eps": -0.8317924023542002,
       "gaap_net_income": -1809000000.0,
-      "adjusted_net_income": -1645470000.0,
+      "adjusted_net_income": -1554620000.0,
       "diluted_shares_used": 1869000000.0,
       "adjustments": [
         {
@@ -947,9 +947,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 92430000.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 115000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 90850000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 163530000.0,
+      "net_adjustment_total": 254380000.0,
       "filing_date": "2019-12-31",
       "form": "10-K",
       "sector": null,
@@ -959,13 +972,22 @@
       "fiscal_year": 2019,
       "quarter": 4,
       "tax_expense": 2064000000.0,
-      "pretax_income": 255000000.0
+      "pretax_income": 255000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -1.39186295503212,
-      "adjusted_eps": -1.38479133638585,
+      "adjusted_eps": -1.1202296035018664,
       "gaap_net_income": -2600000000.0,
-      "adjusted_net_income": -2586790216.3687677,
+      "adjusted_net_income": -2092588899.3414865,
       "diluted_shares_used": 1868000000.0,
       "adjustments": [
         {
@@ -993,9 +1015,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 3885230.4797742236,
           "tax_rate_applied": 0.22295390404515522
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 636000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 494201317.0272813,
+          "tax_rate_applied": 0.22295390404515522
         }
       ],
-      "net_adjustment_total": 13209783.63123236,
+      "net_adjustment_total": 507411100.65851367,
       "filing_date": "2019-09-30",
       "form": "10-Q",
       "sector": null,
@@ -1005,13 +1040,22 @@
       "fiscal_year": 2019,
       "quarter": 3,
       "tax_expense": 474000000.0,
-      "pretax_income": -2126000000.0
+      "pretax_income": -2126000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.067379679144385,
-      "adjusted_eps": 1.0858535582064994,
+      "adjusted_eps": 1.1950547099958864,
       "gaap_net_income": 1996000000.0,
-      "adjusted_net_income": 2030546153.8461537,
+      "adjusted_net_income": 2234752307.6923075,
       "diluted_shares_used": 1870000000.0,
       "adjustments": [
         {
@@ -1026,9 +1070,22 @@
           "category": "リストラ・事業再編関連",
           "net_amount": 34546153.84615385,
           "tax_rate_applied": 0.2323076923076923
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 266000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 204206153.84615386,
+          "tax_rate_applied": 0.2323076923076923
         }
       ],
-      "net_adjustment_total": 34546153.84615385,
+      "net_adjustment_total": 238752307.6923077,
       "filing_date": "2019-06-30",
       "form": "10-Q",
       "sector": null,
@@ -1038,7 +1095,16 @@
       "fiscal_year": 2019,
       "quarter": 2,
       "tax_expense": 604000000.0,
-      "pretax_income": 2600000000.0
+      "pretax_income": 2600000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.5932203389830508,

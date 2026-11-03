@@ -1,6 +1,6 @@
 {
   "ticker": "RCAT",
-  "last_updated": "2026-11-01T17:26:17.668901",
+  "last_updated": "2026-11-03T13:36:47.498980",
   "quarters": [
     {
       "gaap_eps": -0.2575755362047806,
@@ -593,9 +593,9 @@
     },
     {
       "gaap_eps": -0.019367610364349024,
-      "adjusted_eps": -0.01610958431165426,
+      "adjusted_eps": -0.016482589158522482,
       "gaap_net_income": -3811599.0,
-      "adjusted_net_income": -3170410.51,
+      "adjusted_net_income": -3243818.8899999997,
       "diluted_shares_used": 196802751.0,
       "adjustments": [
         {
@@ -623,9 +623,22 @@
           "category": "買収・統合関連",
           "net_amount": 44366.4,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -92922,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -73408.38,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 641188.4900000001,
+      "net_adjustment_total": 567780.1100000001,
       "filing_date": "2022-07-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -635,13 +648,22 @@
       "fiscal_year": 2022,
       "quarter": 2,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.0047345120699049574,
-      "adjusted_eps": 0.007446980098362547,
+      "adjusted_eps": 0.007882858913898007,
       "gaap_net_income": 931765.0,
-      "adjusted_net_income": 1465586.17,
+      "adjusted_net_income": 1551368.32,
       "diluted_shares_used": 196802751.0,
       "adjustments": [
         {
@@ -669,9 +691,22 @@
           "category": "買収・統合関連",
           "net_amount": 133097.62,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 108585.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 85782.15000000001,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 533821.17,
+      "net_adjustment_total": 619603.3200000001,
       "filing_date": "2022-04-30",
       "form": "10-K",
       "sector": "Technology",
@@ -681,7 +716,16 @@
       "fiscal_year": 2022,
       "quarter": 4,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.013032424531504643,
@@ -740,9 +784,9 @@
     },
     {
       "gaap_eps": -0.013925623427896086,
-      "adjusted_eps": -0.010313121944113475,
+      "adjusted_eps": -0.009836186182173846,
       "gaap_net_income": -2740601.0,
-      "adjusted_net_income": -2029650.77,
+      "adjusted_net_income": -1935788.5,
       "diluted_shares_used": 196802751.0,
       "adjustments": [
         {
@@ -757,9 +801,22 @@
           "category": "株式報酬関連",
           "net_amount": 710950.23,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 118813,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 93862.27,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 710950.23,
+      "net_adjustment_total": 804812.5,
       "filing_date": "2021-10-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -769,13 +826,22 @@
       "fiscal_year": 2021,
       "quarter": 3,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.007915397483442698,
-      "adjusted_eps": -0.006308075032955205,
+      "adjusted_eps": -0.0056888971028662095,
       "gaap_net_income": -1557772.0,
-      "adjusted_net_income": -1241446.52,
+      "adjusted_net_income": -1119590.6,
       "diluted_shares_used": 196802751.0,
       "adjustments": [
         {
@@ -803,9 +869,22 @@
           "category": "買収・統合関連",
           "net_amount": 12897.54,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 154248,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": 121855.92,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 316325.48,
+      "net_adjustment_total": 438181.39999999997,
       "filing_date": "2021-07-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -815,7 +894,16 @@
       "fiscal_year": 2021,
       "quarter": 2,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 0.00023606377331585165,
@@ -887,9 +975,9 @@
     },
     {
       "gaap_eps": -0.045651089501284464,
-      "adjusted_eps": -0.04219984130201514,
+      "adjusted_eps": -0.05564785783914169,
       "gaap_net_income": -8984260.0,
-      "adjusted_net_income": -8305044.86,
+      "adjusted_net_income": -10951651.51,
       "diluted_shares_used": 196802751.0,
       "adjustments": [
         {
@@ -917,9 +1005,22 @@
           "category": "買収・統合関連",
           "net_amount": 4401.09,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -3350135,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -2646606.65,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 679215.14,
+      "net_adjustment_total": -1967391.5099999998,
       "filing_date": "2021-01-31",
       "form": "10-Q",
       "sector": "Technology",
@@ -929,7 +1030,16 @@
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.003670075729784895,

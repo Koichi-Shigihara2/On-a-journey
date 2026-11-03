@@ -1,6 +1,6 @@
 {
   "ticker": "QBTS",
-  "last_updated": "2026-11-01T17:26:28.964396",
+  "last_updated": "2026-11-03T13:36:45.501554",
   "quarters": [
     {
       "gaap_eps": -0.12951133940835932,
@@ -48,17 +48,17 @@
       "tax_expense": 8000.0,
       "pretax_income": -48020000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCと無形資産償却の両調整項目は恒常的な非現金費用であり、一過性とは言えない。SBCは従業員報酬として毎期発生し、株主希薄化の実態を伴う。無形資産償却も買収後の継続的な費用であるため、Adjusted EPS（-0.0896）はGAAP EPS（-0.1295）より実力を過大に見せている可能性が高い。市場がGAAP EPSで判断する場合、企業の実力を適切に反映しており過小評価のリスクは低い。むしろ調整値を過信すると過大評価リスクが生じる。投資家はSBCの継続性と希薄化効果、無形資産の経済的価値を注視し、コア事業のキャッシュ生成力を確認すべき。",
+        "health": "調整中",
+        "comment": "調整項目のSBCと無形資産償却費はともに非現金だが恒常的に発生しやすい項目（SBCは成長企業で毎期計上、無形資産償却も買収後継続）であるため、一過性とは言い難い。市場がGAAP EPS(-0.13)で判断する場合、これら非現金費用により実態より大きな損失として映り、企業の実力（調整後EPS-0.09）が過小評価される可能性がある。ただし恒常的コストを加算調整しているため、調整後EPSを過度に楽観視すると過大評価リスクも伴う。投資家はSBCの今後の希薄化効果や償却スケジュール、キャッシュフロー持続性を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金だが毎期発生する恒常的コストであり、株主希薄化を伴うため一過性調整の根拠は弱い。",
+            "snippet": "非現金費用として株式報酬費用を加算調整。成長企業では恒常的に発生するコストであり一過性ではない。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の継続的償却であり、恒常的な非現金費用として毎期計上される性質を持つ。",
+            "snippet": "買収関連無形資産の償却費を加算調整。定期的に発生する非現金項目で継続性が高い。",
             "confidence": 0.2
           }
         ]
@@ -125,9 +125,9 @@
     },
     {
       "gaap_eps": -0.13177376450226302,
-      "adjusted_eps": -0.11407462328420875,
+      "adjusted_eps": -0.08114830533836143,
       "gaap_net_income": -42326000.0,
-      "adjusted_net_income": -36641000.0,
+      "adjusted_net_income": -26065000.0,
       "diluted_shares_used": 321202025.0,
       "adjustments": [
         {
@@ -168,9 +168,22 @@
           "category": "在庫・サプライチェーン関連",
           "net_amount": -13000.0,
           "tax_rate_applied": 0.0
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 10576000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 10576000.0,
+          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 5685000.0,
+      "net_adjustment_total": 16261000.0,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": null,
@@ -180,7 +193,16 @@
       "fiscal_year": 2025,
       "quarter": 4,
       "tax_expense": 0,
-      "pretax_income": -42326000.0
+      "pretax_income": -42326000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.4090707883665149,
@@ -333,9 +355,9 @@
     },
     {
       "gaap_eps": -0.01892672621117379,
-      "adjusted_eps": -0.00490188592519609,
+      "adjusted_eps": -0.018668364702295933,
       "gaap_net_income": -5421000.0,
-      "adjusted_net_income": -1404000.0,
+      "adjusted_net_income": -5347000.0,
       "diluted_shares_used": 286420374.0,
       "adjustments": [
         {
@@ -363,9 +385,22 @@
           "category": "在庫・サプライチェーン関連",
           "net_amount": 24000.0,
           "tax_rate_applied": 0.0
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -3943000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -3943000.0,
+          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 4017000.0,
+      "net_adjustment_total": 74000.0,
       "filing_date": "2025-03-31",
       "form": "10-Q",
       "sector": null,
@@ -375,7 +410,16 @@
       "fiscal_year": 2025,
       "quarter": 1,
       "tax_expense": 0,
-      "pretax_income": -5421000.0
+      "pretax_income": -5421000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.4480165828541628,
@@ -447,9 +491,9 @@
     },
     {
       "gaap_eps": -0.11266681523222205,
-      "adjusted_eps": -0.09677946482399608,
+      "adjusted_eps": -0.0986448764654158,
       "gaap_net_income": -22712000.0,
-      "adjusted_net_income": -19509340.0,
+      "adjusted_net_income": -19885380.0,
       "diluted_shares_used": 201585533.0,
       "adjustments": [
         {
@@ -464,9 +508,22 @@
           "category": "株式報酬関連",
           "net_amount": 3202660.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -476000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -376040.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 3202660.0,
+      "net_adjustment_total": 2826620.0,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": null,
@@ -476,13 +533,22 @@
       "fiscal_year": 2024,
       "quarter": 3,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.10327695189038562,
-      "adjusted_eps": -0.08390546516498562,
+      "adjusted_eps": -0.09397900540716828,
       "gaap_net_income": -17778000.0,
-      "adjusted_net_income": -14443410.0,
+      "adjusted_net_income": -16177460.0,
       "diluted_shares_used": 172139085.0,
       "adjustments": [
         {
@@ -497,9 +563,22 @@
           "category": "株式報酬関連",
           "net_amount": 3334590.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -2195000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -1734050.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 3334590.0,
+      "net_adjustment_total": 1600540.0,
       "filing_date": "2024-06-30",
       "form": "10-Q",
       "sector": null,
@@ -509,13 +588,22 @@
       "fiscal_year": 2024,
       "quarter": 2,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.1073223114294852,
-      "adjusted_eps": -0.09013716512999409,
+      "adjusted_eps": -0.07714913207606122,
       "gaap_net_income": -17312000.0,
-      "adjusted_net_income": -14539890.0,
+      "adjusted_net_income": -12444810.0,
       "diluted_shares_used": 161308490.0,
       "adjustments": [
         {
@@ -530,9 +618,22 @@
           "category": "株式報酬関連",
           "net_amount": 2772110.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 2652000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 2095080.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 2772110.0,
+      "net_adjustment_total": 4867190.0,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": null,
@@ -542,7 +643,16 @@
       "fiscal_year": 2024,
       "quarter": 1,
       "tax_expense": 0,
-      "pretax_income": 0
+      "pretax_income": 0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.11870104016895376,

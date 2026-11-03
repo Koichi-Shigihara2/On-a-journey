@@ -1,6 +1,6 @@
 {
   "ticker": "RDW",
-  "last_updated": "2026-11-01T17:26:26.483271",
+  "last_updated": "2026-11-03T13:36:58.099232",
   "quarters": [
     {
       "gaap_eps": -0.185837615208855,
@@ -36,11 +36,11 @@
       "pretax_income": -39109000.0,
       "ai_analysis": {
         "health": "調整小",
-        "comment": "調整項目はM&A統合費用という一過性のコストであり、add_backによりGAAP EPS(-0.1858)がわずかに改善されるが、影響額は極めて小さくAdjusted EPSとの差は0.00005未満。市場がGAAP EPSで判断していても企業の実力が見えにくくなる程度は低く、過小評価リスクは限定的。投資家は今後のM&A統合が本当に一過性で終わるかを確認すべき。",
+        "comment": "調整項目「ma_integration」はM&A統合費用として一過性の買収統合コストと分類されており、ほぼ非経常的と判断できるが、金額が1.1万ドルと小さくEPSへの影響は0.00005程度に留まる。GAAP EPSとAdjusted EPSの差異が極めて僅少のため、市場がGAAPベースで判断していても企業の実力が見えにくくなる可能性は低い。投資家としては過小評価リスクは限定的だが、今後のM&A活動次第で同様費用が散発的に発生する可能性に留意し、コア事業の収益性を別途モニタリングすべき。",
         "sources": [
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト",
+            "snippet": "一過性の買収統合コスト (M&A統合費用、category:買収・統合関連、reason:一過性の買収統合コスト)",
             "confidence": 0.8
           }
         ]
@@ -81,9 +81,9 @@
     },
     {
       "gaap_eps": -0.7149903665811899,
-      "adjusted_eps": -0.5019628802933352,
+      "adjusted_eps": -0.531750101028564,
       "gaap_net_income": -85473000.0,
-      "adjusted_net_income": -60006785.08783839,
+      "adjusted_net_income": -63567676.58638573,
       "diluted_shares_used": 119544268.0,
       "adjustments": [
         {
@@ -124,9 +124,22 @@
           "category": "在庫・サプライチェーン関連",
           "net_amount": 8685233.294414727,
           "tax_rate_applied": 0.22639767574465774
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -4603000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -3560891.4985473403,
+          "tax_rate_applied": 0.22639767574465774
         }
       ],
-      "net_adjustment_total": 25466214.91216161,
+      "net_adjustment_total": 21905323.41361427,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -136,16 +149,39 @@
       "fiscal_year": 2025,
       "quarter": 4,
       "tax_expense": -25014000.0,
-      "pretax_income": -110487000.0
+      "pretax_income": -110487000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.28235800081176554,
-      "adjusted_eps": -0.28235800081176554,
+      "adjusted_eps": -0.3593177093913024,
       "gaap_net_income": -41152000.0,
-      "adjusted_net_income": -41152000.0,
+      "adjusted_net_income": -52368420.0,
       "diluted_shares_used": 145744055.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -14198000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -11216420.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": -11216420.0,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -155,13 +191,22 @@
       "fiscal_year": 2025,
       "quarter": 3,
       "tax_expense": 6862000.0,
-      "pretax_income": -34290000.0
+      "pretax_income": -34290000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -1.082899502807997,
-      "adjusted_eps": -0.9236104955846479,
+      "adjusted_eps": -0.7871773424484855,
       "gaap_net_income": -96979000.0,
-      "adjusted_net_income": -82713882.51545341,
+      "adjusted_net_income": -70495619.67233357,
       "diluted_shares_used": 89554940.0,
       "adjustments": [
         {
@@ -189,9 +234,22 @@
           "category": "在庫・サプライチェーン関連",
           "net_amount": 1809614.0851809266,
           "tax_rate_applied": 0.25160707808894683
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 16326000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 12218262.843119854,
+          "tax_rate_applied": 0.25160707808894683
         }
       ],
-      "net_adjustment_total": 14265117.484546585,
+      "net_adjustment_total": 26483380.32766644,
       "filing_date": "2025-06-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -201,7 +259,16 @@
       "fiscal_year": 2025,
       "quarter": 2,
       "tax_expense": -32604000.0,
-      "pretax_income": -129583000.0
+      "pretax_income": -129583000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.04140906101049234,
@@ -302,9 +369,9 @@
     },
     {
       "gaap_eps": -0.3150341846436114,
-      "adjusted_eps": -0.298864262423091,
+      "adjusted_eps": -0.3273968251776638,
       "gaap_net_income": -20959000.0,
-      "adjusted_net_income": -19883226.5876534,
+      "adjusted_net_income": -21781477.672530446,
       "diluted_shares_used": 66529288.0,
       "adjustments": [
         {
@@ -319,9 +386,22 @@
           "category": "買収・統合関連",
           "net_amount": 1075773.4123466008,
           "tax_rate_applied": 0.022024170593999345
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -1941000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -1898251.0848770475,
+          "tax_rate_applied": 0.022024170593999345
         }
       ],
-      "net_adjustment_total": 1075773.4123466008,
+      "net_adjustment_total": -822477.6725304467,
       "filing_date": "2024-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -331,7 +411,16 @@
       "fiscal_year": 2024,
       "quarter": 3,
       "tax_expense": -472000.0,
-      "pretax_income": -21431000.0
+      "pretax_income": -21431000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.2753657652471236,
@@ -377,12 +466,26 @@
     },
     {
       "gaap_eps": -0.123451544757796,
-      "adjusted_eps": -0.123451544757796,
+      "adjusted_eps": -0.11050018905853,
       "gaap_net_income": -8095000.0,
-      "adjusted_net_income": -8095000.0,
+      "adjusted_net_income": -7245750.0,
       "diluted_shares_used": 65572286.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 1075000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 849250.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 849250.0,
       "filing_date": "2024-03-31",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -392,7 +495,16 @@
       "fiscal_year": 2024,
       "quarter": 1,
       "tax_expense": 109000.0,
-      "pretax_income": -7986000.0
+      "pretax_income": -7986000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.12818975449264644,
@@ -602,9 +714,9 @@
     },
     {
       "gaap_eps": -0.705216391515084,
-      "adjusted_eps": -0.6629479027734241,
+      "adjusted_eps": -0.6578874754114818,
       "gaap_net_income": -31792949.0,
-      "adjusted_net_income": -29887377.996490613,
+      "adjusted_net_income": -29659241.05728705,
       "diluted_shares_used": 45082544.0,
       "adjustments": [
         {
@@ -619,9 +731,22 @@
           "category": "買収・統合関連",
           "net_amount": 1905571.003509386,
           "tax_rate_applied": 0.2616927533865223
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 309000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 228136.9392035646,
+          "tax_rate_applied": 0.2616927533865223
         }
       ],
-      "net_adjustment_total": 1905571.003509386,
+      "net_adjustment_total": 2133707.9427129505,
       "filing_date": "2021-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -631,7 +756,16 @@
       "fiscal_year": 2021,
       "quarter": 4,
       "tax_expense": -11269000.0,
-      "pretax_income": -43061949.0
+      "pretax_income": -43061949.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.5507307196559909,

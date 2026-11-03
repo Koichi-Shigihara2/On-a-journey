@@ -1,6 +1,6 @@
 {
   "ticker": "RKLB",
-  "last_updated": "2026-11-01T17:26:21.855494",
+  "last_updated": "2026-11-03T13:36:48.010100",
   "quarters": [
     {
       "gaap_eps": -0.07822681196331158,
@@ -477,12 +477,26 @@
     },
     {
       "gaap_eps": -0.31240864535925583,
-      "adjusted_eps": -0.31240864535925583,
+      "adjusted_eps": -0.2806682282681372,
       "gaap_net_income": -23560263.0,
-      "adjusted_net_income": -23560263.0,
+      "adjusted_net_income": -21166563.0,
       "diluted_shares_used": 75414888.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 3030000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 2393700.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 2393700.0,
       "filing_date": "2021-03-31",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -492,7 +506,16 @@
       "fiscal_year": 2021,
       "quarter": 1,
       "tax_expense": 264000.0,
-      "pretax_income": -23296263.0
+      "pretax_income": -23296263.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.2512368645299851,

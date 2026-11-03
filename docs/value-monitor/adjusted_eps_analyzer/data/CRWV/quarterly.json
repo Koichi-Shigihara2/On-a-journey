@@ -1,6 +1,6 @@
 {
   "ticker": "CRWV",
-  "last_updated": "2026-11-01T17:24:52.130765",
+  "last_updated": "2026-11-03T13:34:56.838803",
   "quarters": [
     {
       "gaap_eps": -1.1361161524500907,
@@ -36,11 +36,11 @@
       "pretax_income": -564000000.0,
       "ai_analysis": {
         "health": "過大調整",
-        "comment": "調整項目は株式報酬費用（SBC）であり、恒常的なコストであるため一過性とは言えません。非現金項目として加算していますが、株主希薄化の実質コストを伴う恒常費用です。市場がGAAP EPS(-1.136)で判断する場合、調整後EPS(-0.87)で示される企業の実力（損失の縮小）が分かりにくくなり、過小評価の可能性があります。投資家はSBC依存度と将来の希薄化リスクを注視すべきで、過大調整により実力が見かけ上良く見える過大評価リスクも同時に存在します。",
+        "comment": "調整項目のSBC（株式報酬費用）は恒常的に発生するコストであり、一過性とは判断しにくい。GAAP EPS(-1.136)がAdjusted EPS(-0.870)よりも大幅に悪化しているため、市場がGAAPベースで評価する場合、非現金費用を無視した企業の実力が見えにくくなり、過小評価の可能性がある。ただしSBCは株主希薄化の実質コストであるため、加算調整は過大評価リスクを伴う。投資家は調整の持続可能性と希薄化影響を注視すべき。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用としてSBCをadd_backしているが、毎期発生する恒常的な株式報酬関連コストであり一過性ではない。",
+            "snippet": "非現金費用として株式報酬費用をadd_back。毎期発生する恒常的なSBCであり、一過性調整とは言えない。",
             "confidence": 0.2
           }
         ]
@@ -265,9 +265,9 @@
     },
     {
       "gaap_eps": -0.23359633027522936,
-      "adjusted_eps": -0.21354192660550458,
+      "adjusted_eps": -0.18768211009174313,
       "gaap_net_income": -50924000.0,
-      "adjusted_net_income": -46552140.0,
+      "adjusted_net_income": -40914700.0,
       "diluted_shares_used": 218000000.0,
       "adjustments": [
         {
@@ -295,9 +295,22 @@
           "category": "買収・統合関連",
           "net_amount": -1580000.0,
           "tax_rate_applied": 0.21
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": 7136000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:UnrealizedGainLossOnDerivatives",
+          "category": "公正価値変動関連",
+          "net_amount": 5637440.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 4371860.0,
+      "net_adjustment_total": 10009300.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -307,7 +320,16 @@
       "fiscal_year": 2024,
       "quarter": 4,
       "tax_expense": 119000000.0,
-      "pretax_income": 68076000.0
+      "pretax_income": 68076000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -1.6828667109435658,

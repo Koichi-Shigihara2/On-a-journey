@@ -1,6 +1,6 @@
 {
   "ticker": "AMZN",
-  "last_updated": "2026-11-01T17:24:16.960211",
+  "last_updated": "2026-11-03T13:34:12.049034",
   "quarters": [
     {
       "gaap_eps": 1.8926708756519353,
@@ -35,12 +35,12 @@
       "tax_expense": 6180000000.0,
       "pretax_income": 26865000000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "当該調整項目である株式報酬費用(SBC)は恒常的なコストであり、一過性ではない。Amazonは継続的に大量のSBCを計上しており、非現金ながら株式希薄化を通じて実質的な経済コストとなる。GAAP EPS(1.89)がSBC加算前の値であるため、市場がGAAPベースで判断する場合に同社の真の実力(調整後EPS 2.27)が過小評価される可能性がある。ただしSBCを全額add_backした調整EPSは実態を過大に示すリスクもあり、投資家は希薄化影響や将来のSBCトレンドを慎重に監視する必要がある。過小評価リスクが高い一方で、調整依存の過大評価にも警戒すべき。",
+        "health": "過大調整",
+        "comment": "SBCは恒常的に発生する運用コストであり、一過性調整とは言えません。市場がGAAP EPS（1.89）を基準に判断する場合、非現金費用を加算したAdjusted EPS（2.27）の企業実力が見えにくくなり、銘柄の収益力を過小評価するリスクがあります。ただしSBCは実質的な株主希薄化コストであるため、この調整を過度に信頼すると過大評価のリスクが生じます。投資家はSBCの継続規模と将来の希薄化影響を慎重に監視すべきです。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業において毎期発生する恒常的な報酬コストであり、株式希薄化を伴う本質的な費用である。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、Amazonのビジネスモデル上毎期発生する恒常的コストであり、株主価値に実質的な影響を及ぼす。",
             "confidence": 0.2
           }
         ]
@@ -572,9 +572,9 @@
     },
     {
       "gaap_eps": 0.27799825767108705,
-      "adjusted_eps": 0.8031795972224504,
+      "adjusted_eps": 0.8192488606716462,
       "gaap_net_income": 2872000000.0,
-      "adjusted_net_income": 8297648418.905134,
+      "adjusted_net_income": 8463659979.598776,
       "diluted_shares_used": 10331000000.0,
       "adjustments": [
         {
@@ -589,9 +589,22 @@
           "category": "株式報酬関連",
           "net_amount": 5425648418.905134,
           "tax_rate_applied": 0.023461407684461068
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 170000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 166011560.69364163,
+          "tax_rate_applied": 0.023461407684461068
         }
       ],
-      "net_adjustment_total": 5425648418.905134,
+      "net_adjustment_total": 5591659979.598776,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
@@ -601,7 +614,16 @@
       "fiscal_year": 2022,
       "quarter": 3,
       "tax_expense": 69000000.0,
-      "pretax_income": 2941000000.0
+      "pretax_income": 2941000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": -0.1993120393120393,
@@ -660,9 +682,9 @@
     },
     {
       "gaap_eps": -0.37793727263789206,
-      "adjusted_eps": -0.14468696195176423,
+      "adjusted_eps": -0.12229493212589596,
       "gaap_net_income": -3844000000.0,
-      "adjusted_net_income": -1471611090.011394,
+      "adjusted_net_income": -1243861754.6524878,
       "diluted_shares_used": 10171000000.0,
       "adjustments": [
         {
@@ -677,9 +699,22 @@
           "category": "株式報酬関連",
           "net_amount": 2372388909.988606,
           "tax_rate_applied": 0.27003418154196734
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": 312000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": 227749335.35890618,
+          "tax_rate_applied": 0.27003418154196734
         }
       ],
-      "net_adjustment_total": 2372388909.988606,
+      "net_adjustment_total": 2600138245.3475122,
       "filing_date": "2022-03-31",
       "form": "10-Q",
       "sector": null,
@@ -689,7 +724,16 @@
       "fiscal_year": 2022,
       "quarter": 1,
       "tax_expense": -1422000000.0,
-      "pretax_income": -5266000000.0
+      "pretax_income": -5266000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
+        }
+      }
     },
     {
       "gaap_eps": 1.391122766122766,
