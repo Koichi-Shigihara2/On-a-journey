@@ -2079,8 +2079,8 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   CapExの候補の定義を1か所に（値の変化0）
 - 段1b（段1と一緒に1回の計算方法の変更として公開する）: 2026-09-17の決定（STEP6 決定3: 構造的赤字はIVを参考値に・Policyは変えない・注記）を保ったまま、
   ①売上×8%の下限が効く条件を`structural_deficit`（5年・2年とも≤0）と同じ1つの条件に ②Policy Aの発火を「DCFの基準に下限の値を実際に使ったとき」に
-- 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）
-- 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）
+- 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）**済 2026-11-03（`3c58eb2bf6`）**
+- 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）**済 2026-11-03（`3c58eb2bf6`）**
 - 段4: 版で値が違う176行（VRTの実例）の調査。parserとLayer3で採る申告が違う15期（FLYW 2022年 7.07M／1.35M・ASTS 2022年 30.3M／57.3M・HON 2023・2024年の組み替え等）も
 - 段5（新）: 申告のXBRLインスタンスの取得（SEC_Data_Updateで取得・記録・再利用）。「CapExは0」の判定（CF計算書にCapExの行が無い期。LYFT・NVDAの独自タグで誤らない）、
   CapExの欠けの規則の1つ化、APPの`TICKER_RESTRICTIONS`の除外の廃止（試算 +21.5%）、LYFTの独自タグの四半期（TTM）。`dimension_aggregate_fetcher.py`の仕組みを広げる案から
@@ -2158,6 +2158,25 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 #### 規模の見込み
 大
+
+#### 段2・段3の実装と公開（2026-11-03 夜、`3c58eb2bf6` コード・テスト、`52b285a19d` 派生ファイル、`5686ffcd58` scope〈ID FCF-DEFINITION-SINGLE-SOURCE-1-3〉）
+- **段2**: 設備投資の abs を差し引きの前の申告の値（タグごとのYTD・年次）に（`fact_selection.abs_entry`をLayer2・Layer3の両方で）。差し引きの後の abs・Q4の abs（`q4_implied.py`）はやめ、
+  単独の四半期・Q4は符号つき。Layer3で値が変わる四半期は11（ALAB 2024-06-30・KULR 2023-06-30・ONDS 2023-06-30・2024-09-30〈R1-INVの逆転〉、ONDS 2022-12-31・FLYW 2021-12-31・
+  INTUの07-31の5年〈Q4の逆算。INTUは10-Kの年次がその年の9か月の累計より小さい、FLYWは2021年の年次が後の10-Kで組み替え〉）。R1-INVの残り（AMATのリース×2・RKLBのリース・ONDSのSBC）と
+  DOCNのSBCは abs をかけない項目で、もともと負で保存されていて変わらない。TTMの設備投資の合計が負の点は欠けにして印`capex_ttm_negative`（`fcf.ttm_capex`の1か所、FLYW TTM 2022-06-30・
+  ONDS TTM 2025-06-30）、FCFは作らず既存の代用（TTMReaderはその点を飛ばす、最新の点なら最新期欠けのガード）。INTUの07-31のTTMは10-Kの年次と一致（FY2025 114M→84M）
+- **段3**: data_fetcherが`fcf_period_labels`（"TTM 2026-09-30"・"FY2025"）と直近の点の内訳`fcf_latest_components`を渡し、外れ値の注記・FCF内訳（report.txtの`FCF_Breakdown（TTM …）`・
+  画面の`fcf_outlier.period_label`）を計算に使った期と値で。一過性費用はEPSの`quarterly.json`のTTMの4四半期から探す。除外しない理由は3つの文言（同じ期の調整に無い／$…Mは乖離の20%〈…〉に届かず／
+  上方乖離のため除外しない）。調整後EPSの公正価値の損益は案B（年度のどれかの四半期で調整した項目は、その年度のほかの四半期でも同じ項目を調整、`fair_value_detector.apply_fair_value_detection`の1か所）
+- **試算**（手元、作り直し→TANUKI→HypeCore→TANUKI、EPSはSEC・Grok・Alpha Vantageを呼ばない同じ条件の今の規則と比べる）: 理論株価はINTU +0.34%だけ（FLYW・ONDSの負のTTMは使う5点の外）、
+  判定の変化0、fundaはSOUN 60→50だけ。外れ値の除外の判定はBBAI 除外→要確認・KULR・ONDS 要確認→除外（一過性費用をTTMの期で探すため。どれもFCFが負で除外後の平均を使わず、理論株価・判定は同じ）。
+  注記の3つの形のずれ（全銘柄）: 前 76・38・92 → 後 0・0・0
+- **公開**: push → EPS（run 41645014346）→ TANUKI（41647008312、印96銘柄）→ HypeCore（41649514238）→ TANUKI（41649911954、印0）。理論株価・判定は試算と全96銘柄で一致、
+  注記の3つの形は公開の版で0・0・0。**fundaの違い**: SOUN 60→35（試算は60→50。全部が案Bの分で、手元のEPSの試算は公開のEPS〈AI・Alpha Vantage等の調整〉とSOUNの20四半期が違うため。
+  公開のEPSの伸び 64.8%→−17.6%〈2026Q2 −0.0499、2025Q2 −0.0425。2025Q2に条件付き対価の公正価値の調整が年度内でそろって入った〉、判定はWATCHのまま）、AAPL 90→80は
+  新しい四半期（FY2026Q4、2026-09-26）で計算方法の変更ではない。Discordの🛠はSOUNだけで「計算方法の分 60→50／残り −15.0」（残りも計算方法の分）、AAPLは相場の節
+- テスト: `test_capex_sign.py`・`test_fcf_notes_and_fv_year.py`（既存の`test_first_filed.py`のQ4の abs・`test_ttm_anchor_reach.py`の負の設備投資の例を新しい規則に）、pytest 2762件成功・5件スキップ、
+  audit 0、rcc NG 0・WARN 219。出力の一覧（sec・tanuki・eps）を作り直した。段4・段5が残るのでBACKLOGに残す
 
 ---
 
